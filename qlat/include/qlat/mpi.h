@@ -5,7 +5,7 @@
 
 #include <qlat-utils/cache.h>
 
-#ifdef QLAT_USE_MALLOPT
+#ifndef QLAT_NO_MALLOPT
 #include <malloc.h>
 #endif
 
@@ -1035,7 +1035,7 @@ inline void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
   }
   displayln_info("qlat::begin(): q_num_threads = " +
                  show(omp_get_max_threads()));
-#ifdef QLAT_USE_MALLOPT
+#ifndef QLAT_NO_MALLOPT
   std::string q_malloc_mmap_threshold =
       get_env_default("q_malloc_mmap_threshold", "");
   if (q_malloc_mmap_threshold != "") {

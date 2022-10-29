@@ -1,4 +1,4 @@
-qlat::begin(): MPI Initialized. num_node = 2
+qlat::begin(): MPI Initialized. num_node = 4
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 1
 qlat::begin(): q_num_threads = 2
@@ -6,9 +6,9 @@ q_verbose=10
 q_malloc_mmap_threshold='' (default)
 qlat::begin(): GeometryNode =
 { initialized = true
-, num_node    = 2
+, num_node    = 4
 , id_node     = 0
-, size_node   = 1x1x1x2
+, size_node   = 1x1x2x2
 , coor_node   = 0x0x0x0 }
 q_timer_max_func_name_len=50 (default)
 q_mk_id_node_in_shuffle_seed='' (default)
@@ -24,13 +24,26 @@ q_field_init='fast' (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
+make_shuffle_plan_generic: num_send_packs =         14
+make_shuffle_plan_generic: num_recv_packs =         16
+make_shuffle_plan_generic: num_send_msgs  =          2
+make_shuffle_plan_generic: num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_packs =         56
+make_shuffle_plan_generic: total num_recv_packs =         64
+make_shuffle_plan_generic: total num_send_msgs  =          8
+make_shuffle_plan_generic: total num_recv_msgs  =          8
+make_shuffle_plan_generic: global_comm_size =       1728
 Cache: 'ShufflePlanCache': 0 / 16 [8] to add
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 1x1x1x4 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 demo: save selection 'fsel' to disk as a field
 write_field: fn='huge-data/t0/fsel.field'.
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 QFile: open 'huge-data/t0/fsel.field.partial.partial' with 'w'.
 QFile: close 'huge-data/t0/fsel.field.partial.partial' with 'w'.
 qrename: 'huge-data/t0/fsel.field.partial.partial' 'huge-data/t0/fsel.field.partial'
 q_write_par_limit=16 (default)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 QFile: open 'huge-data/t0/fsel.field.partial' with 'a'.
 QFile: close 'huge-data/t0/fsel.field.partial' with 'a'.
 qrename: 'huge-data/t0/fsel.field.partial' 'huge-data/t0/fsel.field'
@@ -41,12 +54,17 @@ QFile: close 'huge-data/t0/fsel.field' with 'r'.
 q_read_par_limit=16 (default)
 QFile: open 'huge-data/t0/fsel.field' with 'r'.
 QFile: close 'huge-data/t0/fsel.field' with 'r'.
+shuffle_field_back(f,fs,sp): 1x1x1x4 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 demo: init field 'f'
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=BA968301.
 demo: fill with random numbers
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: possible to only keep selected points non-zero for field 'f'.
 demo: (DOES NOT CHANGE THE SIZE IN MOMEORY)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 FieldsWriter: open 'huge-data/t0/demo.lfs'.
 QFile: open 'huge-data/t0/demo.lfs/geon-info.txt' with 'w'.
@@ -67,60 +85,44 @@ QFile: open 'huge-data/t0/demo.lfs/06/0000000012' with 'w'.
 QFile: open 'huge-data/t0/demo.lfs/06/0000000013' with 'w'.
 QFile: open 'huge-data/t0/demo.lfs/07/0000000014' with 'w'.
 QFile: open 'huge-data/t0/demo.lfs/07/0000000015' with 'w'.
-QFile: open 'huge-data/t0/demo.lfs/08/0000000016' with 'w'.
-QFile: open 'huge-data/t0/demo.lfs/08/0000000017' with 'w'.
-QFile: open 'huge-data/t0/demo.lfs/09/0000000018' with 'w'.
-QFile: open 'huge-data/t0/demo.lfs/09/0000000019' with 'w'.
-QFile: open 'huge-data/t0/demo.lfs/10/0000000020' with 'w'.
-QFile: open 'huge-data/t0/demo.lfs/10/0000000021' with 'w'.
-QFile: open 'huge-data/t0/demo.lfs/11/0000000022' with 'w'.
-QFile: open 'huge-data/t0/demo.lfs/11/0000000023' with 'w'.
-QFile: open 'huge-data/t0/demo.lfs/12/0000000024' with 'w'.
-QFile: open 'huge-data/t0/demo.lfs/12/0000000025' with 'w'.
-QFile: open 'huge-data/t0/demo.lfs/13/0000000026' with 'w'.
-QFile: open 'huge-data/t0/demo.lfs/13/0000000027' with 'w'.
-QFile: open 'huge-data/t0/demo.lfs/14/0000000028' with 'w'.
-QFile: open 'huge-data/t0/demo.lfs/14/0000000029' with 'w'.
-QFile: open 'huge-data/t0/demo.lfs/15/0000000030' with 'w'.
-QFile: open 'huge-data/t0/demo.lfs/15/0000000031' with 'w'.
-make_shuffle_plan_generic: num_send_packs =         27
-make_shuffle_plan_generic: num_recv_packs =        288
-make_shuffle_plan_generic: num_send_msgs  =          1
-make_shuffle_plan_generic: num_recv_msgs  =          1
-make_shuffle_plan_generic: total num_send_packs =         54
+make_shuffle_plan_generic: num_send_packs =         14
+make_shuffle_plan_generic: num_recv_packs =        144
+make_shuffle_plan_generic: num_send_msgs  =          2
+make_shuffle_plan_generic: num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_packs =         56
 make_shuffle_plan_generic: total num_recv_packs =        576
-make_shuffle_plan_generic: total num_send_msgs  =          2
-make_shuffle_plan_generic: total num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_msgs  =          8
+make_shuffle_plan_generic: total num_recv_msgs  =          8
 make_shuffle_plan_generic: global_comm_size =       1728
 Cache: 'ShufflePlanCache': 1 / 16 [8] to add
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          2
-make_shuffle_plan_generic: num_recv_packs =         53
-make_shuffle_plan_generic: num_send_msgs  =          1
-make_shuffle_plan_generic: num_recv_msgs  =          1
-make_shuffle_plan_generic: total num_send_packs =          4
+make_shuffle_plan_generic: num_recv_packs =         26
+make_shuffle_plan_generic: num_send_msgs  =          2
+make_shuffle_plan_generic: num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_packs =          6
 make_shuffle_plan_generic: total num_recv_packs =        103
-make_shuffle_plan_generic: total num_send_msgs  =          2
-make_shuffle_plan_generic: total num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_msgs  =          8
+make_shuffle_plan_generic: total num_recv_msgs  =          8
 make_shuffle_plan_generic: global_comm_size =        128
 demo: save to disk
 write(sfw,fn,field): writing field with fn='f.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='f.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writing field with fn='f.float.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='f.float.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 demo: save sf to disk
 write(sfw,fn,field): writing field with fn='sf.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='sf.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writing field with fn='sf.float.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='sf.float.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 QFile: close 'huge-data/t0/demo.lfs/00/0000000000' with 'w'.
 QFile: close 'huge-data/t0/demo.lfs/00/0000000001' with 'w'.
 QFile: close 'huge-data/t0/demo.lfs/01/0000000002' with 'w'.
@@ -137,22 +139,6 @@ QFile: close 'huge-data/t0/demo.lfs/06/0000000012' with 'w'.
 QFile: close 'huge-data/t0/demo.lfs/06/0000000013' with 'w'.
 QFile: close 'huge-data/t0/demo.lfs/07/0000000014' with 'w'.
 QFile: close 'huge-data/t0/demo.lfs/07/0000000015' with 'w'.
-QFile: close 'huge-data/t0/demo.lfs/08/0000000016' with 'w'.
-QFile: close 'huge-data/t0/demo.lfs/08/0000000017' with 'w'.
-QFile: close 'huge-data/t0/demo.lfs/09/0000000018' with 'w'.
-QFile: close 'huge-data/t0/demo.lfs/09/0000000019' with 'w'.
-QFile: close 'huge-data/t0/demo.lfs/10/0000000020' with 'w'.
-QFile: close 'huge-data/t0/demo.lfs/10/0000000021' with 'w'.
-QFile: close 'huge-data/t0/demo.lfs/11/0000000022' with 'w'.
-QFile: close 'huge-data/t0/demo.lfs/11/0000000023' with 'w'.
-QFile: close 'huge-data/t0/demo.lfs/12/0000000024' with 'w'.
-QFile: close 'huge-data/t0/demo.lfs/12/0000000025' with 'w'.
-QFile: close 'huge-data/t0/demo.lfs/13/0000000026' with 'w'.
-QFile: close 'huge-data/t0/demo.lfs/13/0000000027' with 'w'.
-QFile: close 'huge-data/t0/demo.lfs/14/0000000028' with 'w'.
-QFile: close 'huge-data/t0/demo.lfs/14/0000000029' with 'w'.
-QFile: close 'huge-data/t0/demo.lfs/15/0000000030' with 'w'.
-QFile: close 'huge-data/t0/demo.lfs/15/0000000031' with 'w'.
 QFile: open 'huge-data/t0/demo.lfs/geon-info.txt' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/geon-info.txt' with 'r'.
 FieldsWriter: open 'huge-data/t0/demo.lfs'.
@@ -172,50 +158,34 @@ QFile: open 'huge-data/t0/demo.lfs/06/0000000012' with 'a'.
 QFile: open 'huge-data/t0/demo.lfs/06/0000000013' with 'a'.
 QFile: open 'huge-data/t0/demo.lfs/07/0000000014' with 'a'.
 QFile: open 'huge-data/t0/demo.lfs/07/0000000015' with 'a'.
-QFile: open 'huge-data/t0/demo.lfs/08/0000000016' with 'a'.
-QFile: open 'huge-data/t0/demo.lfs/08/0000000017' with 'a'.
-QFile: open 'huge-data/t0/demo.lfs/09/0000000018' with 'a'.
-QFile: open 'huge-data/t0/demo.lfs/09/0000000019' with 'a'.
-QFile: open 'huge-data/t0/demo.lfs/10/0000000020' with 'a'.
-QFile: open 'huge-data/t0/demo.lfs/10/0000000021' with 'a'.
-QFile: open 'huge-data/t0/demo.lfs/11/0000000022' with 'a'.
-QFile: open 'huge-data/t0/demo.lfs/11/0000000023' with 'a'.
-QFile: open 'huge-data/t0/demo.lfs/12/0000000024' with 'a'.
-QFile: open 'huge-data/t0/demo.lfs/12/0000000025' with 'a'.
-QFile: open 'huge-data/t0/demo.lfs/13/0000000026' with 'a'.
-QFile: open 'huge-data/t0/demo.lfs/13/0000000027' with 'a'.
-QFile: open 'huge-data/t0/demo.lfs/14/0000000028' with 'a'.
-QFile: open 'huge-data/t0/demo.lfs/14/0000000029' with 'a'.
-QFile: open 'huge-data/t0/demo.lfs/15/0000000030' with 'a'.
-QFile: open 'huge-data/t0/demo.lfs/15/0000000031' with 'a'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          2
-make_shuffle_plan_generic: num_recv_packs =         53
-make_shuffle_plan_generic: num_send_msgs  =          1
-make_shuffle_plan_generic: num_recv_msgs  =          1
-make_shuffle_plan_generic: total num_send_packs =          4
+make_shuffle_plan_generic: num_recv_packs =         26
+make_shuffle_plan_generic: num_send_msgs  =          2
+make_shuffle_plan_generic: num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_packs =          6
 make_shuffle_plan_generic: total num_recv_packs =        103
-make_shuffle_plan_generic: total num_send_msgs  =          2
-make_shuffle_plan_generic: total num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_msgs  =          8
+make_shuffle_plan_generic: total num_recv_msgs  =          8
 make_shuffle_plan_generic: global_comm_size =        128
 demo: save to disk append
 write(sfw,fn,field): writing field with fn='fa.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='fa.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writing field with fn='fa.float.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='fa.float.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 demo: save sf to disk append
 write(sfw,fn,field): writing field with fn='sfa.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='sfa.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writing field with fn='sfa.float.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='sfa.float.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 QFile: close 'huge-data/t0/demo.lfs/00/0000000000' with 'a'.
 QFile: close 'huge-data/t0/demo.lfs/00/0000000001' with 'a'.
 QFile: close 'huge-data/t0/demo.lfs/01/0000000002' with 'a'.
@@ -232,22 +202,6 @@ QFile: close 'huge-data/t0/demo.lfs/06/0000000012' with 'a'.
 QFile: close 'huge-data/t0/demo.lfs/06/0000000013' with 'a'.
 QFile: close 'huge-data/t0/demo.lfs/07/0000000014' with 'a'.
 QFile: close 'huge-data/t0/demo.lfs/07/0000000015' with 'a'.
-QFile: close 'huge-data/t0/demo.lfs/08/0000000016' with 'a'.
-QFile: close 'huge-data/t0/demo.lfs/08/0000000017' with 'a'.
-QFile: close 'huge-data/t0/demo.lfs/09/0000000018' with 'a'.
-QFile: close 'huge-data/t0/demo.lfs/09/0000000019' with 'a'.
-QFile: close 'huge-data/t0/demo.lfs/10/0000000020' with 'a'.
-QFile: close 'huge-data/t0/demo.lfs/10/0000000021' with 'a'.
-QFile: close 'huge-data/t0/demo.lfs/11/0000000022' with 'a'.
-QFile: close 'huge-data/t0/demo.lfs/11/0000000023' with 'a'.
-QFile: close 'huge-data/t0/demo.lfs/12/0000000024' with 'a'.
-QFile: close 'huge-data/t0/demo.lfs/12/0000000025' with 'a'.
-QFile: close 'huge-data/t0/demo.lfs/13/0000000026' with 'a'.
-QFile: close 'huge-data/t0/demo.lfs/13/0000000027' with 'a'.
-QFile: close 'huge-data/t0/demo.lfs/14/0000000028' with 'a'.
-QFile: close 'huge-data/t0/demo.lfs/14/0000000029' with 'a'.
-QFile: close 'huge-data/t0/demo.lfs/15/0000000030' with 'a'.
-QFile: close 'huge-data/t0/demo.lfs/15/0000000031' with 'a'.
 Cache: 'ShuffledFieldsReaderCache': 0 / 4 [1] to add
 QFile: open 'huge-data/t0/demo.lfs/geon-info.txt' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/geon-info.txt' with 'r'.
@@ -268,22 +222,6 @@ QFile: open 'huge-data/t0/demo.lfs/06/0000000012' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/06/0000000013' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/07/0000000014' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/07/0000000015' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/08/0000000016' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/08/0000000017' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/09/0000000018' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/09/0000000019' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/10/0000000020' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/10/0000000021' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/11/0000000022' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/11/0000000023' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/12/0000000024' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/12/0000000025' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/13/0000000026' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/13/0000000027' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/14/0000000028' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/14/0000000029' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/15/0000000030' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/15/0000000031' with 'r'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.field' from 'huge-data/t0/demo.lfs'.
@@ -316,63 +254,75 @@ demo:    12 : 'sfa.field' from 'huge-data/t0/demo.lfs'.
 demo:    13 : 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
 demo:    14 : 'sfa.float.field' from 'huge-data/t0/demo.lfs'.
 demo:    15 : 'sfa.float.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          2
-make_shuffle_plan_generic: num_recv_packs =         53
-make_shuffle_plan_generic: num_send_msgs  =          1
-make_shuffle_plan_generic: num_recv_msgs  =          1
-make_shuffle_plan_generic: total num_send_packs =          4
+make_shuffle_plan_generic: num_recv_packs =         26
+make_shuffle_plan_generic: num_send_msgs  =          2
+make_shuffle_plan_generic: num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_packs =          6
 make_shuffle_plan_generic: total num_recv_packs =        103
-make_shuffle_plan_generic: total num_send_msgs  =          2
-make_shuffle_plan_generic: total num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_msgs  =          8
+make_shuffle_plan_generic: total num_recv_msgs  =          8
 make_shuffle_plan_generic: global_comm_size =        128
 read(sfr,fn,field): reading field with fn='f.float.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=1E530CB4 for fn='f.float.field' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,field): reading field with fn='f.float.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B98B28E0 for fn='f.float.sfield' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='f.float.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B98B28E0 for fn='f.float.sfield' from path 'huge-data/t0/demo.lfs' with sbs.
 read(sfr,fn,field): reading field with fn='sf.float.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=B98B28E0 for fn='sf.float.field' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sf.float.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B98B28E0 for fn='sf.float.sfield' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='sf.float.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B98B28E0 for fn='sf.float.sfield' from path 'huge-data/t0/demo.lfs' with sbs.
 read(sfr,fn,field): reading field with fn='fa.float.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=1E530CB4 for fn='fa.float.field' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,field): reading field with fn='fa.float.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B98B28E0 for fn='fa.float.sfield' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='fa.float.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B98B28E0 for fn='fa.float.sfield' from path 'huge-data/t0/demo.lfs' with sbs.
 read(sfr,fn,field): reading field with fn='sfa.float.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=B98B28E0 for fn='sfa.float.field' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sfa.float.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B98B28E0 for fn='sfa.float.sfield' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='sfa.float.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B98B28E0 for fn='sfa.float.sfield' from path 'huge-data/t0/demo.lfs' with sbs.
 QFile: open 'huge-data/t0/demo.lfs/geon-info.txt' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/geon-info.txt' with 'r'.
@@ -393,27 +343,12 @@ QFile: open 'huge-data/t0/demo.lfs/06/0000000012' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/06/0000000013' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/07/0000000014' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/07/0000000015' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/08/0000000016' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/08/0000000017' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/09/0000000018' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/09/0000000019' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/10/0000000020' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/10/0000000021' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/11/0000000022' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/11/0000000023' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/12/0000000024' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/12/0000000025' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/13/0000000026' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/13/0000000027' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/14/0000000028' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/14/0000000029' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/15/0000000030' with 'r'.
-QFile: open 'huge-data/t0/demo.lfs/15/0000000031' with 'r'.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t0/demo.lfs'.
@@ -422,23 +357,27 @@ read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.field' from 'h
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t0/demo.lfs'.
@@ -446,118 +385,145 @@ read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.field' from '
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 QFile: close 'huge-data/t0/demo.lfs/00/0000000000' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/00/0000000001' with 'r'.
@@ -575,22 +541,6 @@ QFile: close 'huge-data/t0/demo.lfs/06/0000000012' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/06/0000000013' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/07/0000000014' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/07/0000000015' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/08/0000000016' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/08/0000000017' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/09/0000000018' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/09/0000000019' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/10/0000000020' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/10/0000000021' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/11/0000000022' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/11/0000000023' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/12/0000000024' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/12/0000000025' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/13/0000000026' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/13/0000000027' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/14/0000000028' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/14/0000000029' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/15/0000000030' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/15/0000000031' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/00/0000000000' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/00/0000000000' with 'r'.
 4B7F2131  fn='huge-data/t0/demo.lfs/00/0000000000'
@@ -794,11 +744,15 @@ demo: random select 4 points on entire lattice
 demo: random select points on each time slice
 demo: select 2 points per time slice
 demo: selection is stored in 'fsel' of type 'FieldSelection'
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 1x1x1x4 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 demo: save selection 'fsel' to disk as a field
 write_field: fn='huge-data/t1/fsel.field'.
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 QFile: open 'huge-data/t1/fsel.field.partial.partial' with 'w'.
 QFile: close 'huge-data/t1/fsel.field.partial.partial' with 'w'.
 qrename: 'huge-data/t1/fsel.field.partial.partial' 'huge-data/t1/fsel.field.partial'
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 QFile: open 'huge-data/t1/fsel.field.partial' with 'a'.
 QFile: close 'huge-data/t1/fsel.field.partial' with 'a'.
 qrename: 'huge-data/t1/fsel.field.partial' 'huge-data/t1/fsel.field'
@@ -808,12 +762,17 @@ QFile: open 'huge-data/t1/fsel.field' with 'r'.
 QFile: close 'huge-data/t1/fsel.field' with 'r'.
 QFile: open 'huge-data/t1/fsel.field' with 'r'.
 QFile: close 'huge-data/t1/fsel.field' with 'r'.
+shuffle_field_back(f,fs,sp): 1x1x1x4 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 demo: init field 'f'
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=BA968301.
 demo: fill with random numbers
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: possible to only keep selected points non-zero for field 'f'.
 demo: (DOES NOT CHANGE THE SIZE IN MOMEORY)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 FieldsWriter: open 'huge-data/t1/demo.lfs'.
 QFile: open 'huge-data/t1/demo.lfs/geon-info.txt' with 'w'.
@@ -834,50 +793,34 @@ QFile: open 'huge-data/t1/demo.lfs/06/0000000012' with 'w'.
 QFile: open 'huge-data/t1/demo.lfs/06/0000000013' with 'w'.
 QFile: open 'huge-data/t1/demo.lfs/07/0000000014' with 'w'.
 QFile: open 'huge-data/t1/demo.lfs/07/0000000015' with 'w'.
-QFile: open 'huge-data/t1/demo.lfs/08/0000000016' with 'w'.
-QFile: open 'huge-data/t1/demo.lfs/08/0000000017' with 'w'.
-QFile: open 'huge-data/t1/demo.lfs/09/0000000018' with 'w'.
-QFile: open 'huge-data/t1/demo.lfs/09/0000000019' with 'w'.
-QFile: open 'huge-data/t1/demo.lfs/10/0000000020' with 'w'.
-QFile: open 'huge-data/t1/demo.lfs/10/0000000021' with 'w'.
-QFile: open 'huge-data/t1/demo.lfs/11/0000000022' with 'w'.
-QFile: open 'huge-data/t1/demo.lfs/11/0000000023' with 'w'.
-QFile: open 'huge-data/t1/demo.lfs/12/0000000024' with 'w'.
-QFile: open 'huge-data/t1/demo.lfs/12/0000000025' with 'w'.
-QFile: open 'huge-data/t1/demo.lfs/13/0000000026' with 'w'.
-QFile: open 'huge-data/t1/demo.lfs/13/0000000027' with 'w'.
-QFile: open 'huge-data/t1/demo.lfs/14/0000000028' with 'w'.
-QFile: open 'huge-data/t1/demo.lfs/14/0000000029' with 'w'.
-QFile: open 'huge-data/t1/demo.lfs/15/0000000030' with 'w'.
-QFile: open 'huge-data/t1/demo.lfs/15/0000000031' with 'w'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =         11
-make_shuffle_plan_generic: num_send_msgs  =          1
-make_shuffle_plan_generic: num_recv_msgs  =          1
-make_shuffle_plan_generic: total num_send_packs =          2
+make_shuffle_plan_generic: num_recv_packs =          5
+make_shuffle_plan_generic: num_send_msgs  =          2
+make_shuffle_plan_generic: num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_packs =          4
 make_shuffle_plan_generic: total num_recv_packs =         20
-make_shuffle_plan_generic: total num_send_msgs  =          2
-make_shuffle_plan_generic: total num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_msgs  =          8
+make_shuffle_plan_generic: total num_recv_msgs  =          8
 make_shuffle_plan_generic: global_comm_size =         20
 demo: save to disk
 write(sfw,fn,field): writing field with fn='f.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='f.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writing field with fn='f.float.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='f.float.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 demo: save sf to disk
 write(sfw,fn,field): writing field with fn='sf.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='sf.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writing field with fn='sf.float.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='sf.float.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 QFile: close 'huge-data/t1/demo.lfs/00/0000000000' with 'w'.
 QFile: close 'huge-data/t1/demo.lfs/00/0000000001' with 'w'.
 QFile: close 'huge-data/t1/demo.lfs/01/0000000002' with 'w'.
@@ -894,22 +837,6 @@ QFile: close 'huge-data/t1/demo.lfs/06/0000000012' with 'w'.
 QFile: close 'huge-data/t1/demo.lfs/06/0000000013' with 'w'.
 QFile: close 'huge-data/t1/demo.lfs/07/0000000014' with 'w'.
 QFile: close 'huge-data/t1/demo.lfs/07/0000000015' with 'w'.
-QFile: close 'huge-data/t1/demo.lfs/08/0000000016' with 'w'.
-QFile: close 'huge-data/t1/demo.lfs/08/0000000017' with 'w'.
-QFile: close 'huge-data/t1/demo.lfs/09/0000000018' with 'w'.
-QFile: close 'huge-data/t1/demo.lfs/09/0000000019' with 'w'.
-QFile: close 'huge-data/t1/demo.lfs/10/0000000020' with 'w'.
-QFile: close 'huge-data/t1/demo.lfs/10/0000000021' with 'w'.
-QFile: close 'huge-data/t1/demo.lfs/11/0000000022' with 'w'.
-QFile: close 'huge-data/t1/demo.lfs/11/0000000023' with 'w'.
-QFile: close 'huge-data/t1/demo.lfs/12/0000000024' with 'w'.
-QFile: close 'huge-data/t1/demo.lfs/12/0000000025' with 'w'.
-QFile: close 'huge-data/t1/demo.lfs/13/0000000026' with 'w'.
-QFile: close 'huge-data/t1/demo.lfs/13/0000000027' with 'w'.
-QFile: close 'huge-data/t1/demo.lfs/14/0000000028' with 'w'.
-QFile: close 'huge-data/t1/demo.lfs/14/0000000029' with 'w'.
-QFile: close 'huge-data/t1/demo.lfs/15/0000000030' with 'w'.
-QFile: close 'huge-data/t1/demo.lfs/15/0000000031' with 'w'.
 QFile: open 'huge-data/t1/demo.lfs/geon-info.txt' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/geon-info.txt' with 'r'.
 FieldsWriter: open 'huge-data/t1/demo.lfs'.
@@ -929,50 +856,34 @@ QFile: open 'huge-data/t1/demo.lfs/06/0000000012' with 'a'.
 QFile: open 'huge-data/t1/demo.lfs/06/0000000013' with 'a'.
 QFile: open 'huge-data/t1/demo.lfs/07/0000000014' with 'a'.
 QFile: open 'huge-data/t1/demo.lfs/07/0000000015' with 'a'.
-QFile: open 'huge-data/t1/demo.lfs/08/0000000016' with 'a'.
-QFile: open 'huge-data/t1/demo.lfs/08/0000000017' with 'a'.
-QFile: open 'huge-data/t1/demo.lfs/09/0000000018' with 'a'.
-QFile: open 'huge-data/t1/demo.lfs/09/0000000019' with 'a'.
-QFile: open 'huge-data/t1/demo.lfs/10/0000000020' with 'a'.
-QFile: open 'huge-data/t1/demo.lfs/10/0000000021' with 'a'.
-QFile: open 'huge-data/t1/demo.lfs/11/0000000022' with 'a'.
-QFile: open 'huge-data/t1/demo.lfs/11/0000000023' with 'a'.
-QFile: open 'huge-data/t1/demo.lfs/12/0000000024' with 'a'.
-QFile: open 'huge-data/t1/demo.lfs/12/0000000025' with 'a'.
-QFile: open 'huge-data/t1/demo.lfs/13/0000000026' with 'a'.
-QFile: open 'huge-data/t1/demo.lfs/13/0000000027' with 'a'.
-QFile: open 'huge-data/t1/demo.lfs/14/0000000028' with 'a'.
-QFile: open 'huge-data/t1/demo.lfs/14/0000000029' with 'a'.
-QFile: open 'huge-data/t1/demo.lfs/15/0000000030' with 'a'.
-QFile: open 'huge-data/t1/demo.lfs/15/0000000031' with 'a'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =         11
-make_shuffle_plan_generic: num_send_msgs  =          1
-make_shuffle_plan_generic: num_recv_msgs  =          1
-make_shuffle_plan_generic: total num_send_packs =          2
+make_shuffle_plan_generic: num_recv_packs =          5
+make_shuffle_plan_generic: num_send_msgs  =          2
+make_shuffle_plan_generic: num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_packs =          4
 make_shuffle_plan_generic: total num_recv_packs =         20
-make_shuffle_plan_generic: total num_send_msgs  =          2
-make_shuffle_plan_generic: total num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_msgs  =          8
+make_shuffle_plan_generic: total num_recv_msgs  =          8
 make_shuffle_plan_generic: global_comm_size =         20
 demo: save to disk append
 write(sfw,fn,field): writing field with fn='fa.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='fa.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writing field with fn='fa.float.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='fa.float.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 demo: save sf to disk append
 write(sfw,fn,field): writing field with fn='sfa.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='sfa.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writing field with fn='sfa.float.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='sfa.float.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 QFile: close 'huge-data/t1/demo.lfs/00/0000000000' with 'a'.
 QFile: close 'huge-data/t1/demo.lfs/00/0000000001' with 'a'.
 QFile: close 'huge-data/t1/demo.lfs/01/0000000002' with 'a'.
@@ -989,22 +900,6 @@ QFile: close 'huge-data/t1/demo.lfs/06/0000000012' with 'a'.
 QFile: close 'huge-data/t1/demo.lfs/06/0000000013' with 'a'.
 QFile: close 'huge-data/t1/demo.lfs/07/0000000014' with 'a'.
 QFile: close 'huge-data/t1/demo.lfs/07/0000000015' with 'a'.
-QFile: close 'huge-data/t1/demo.lfs/08/0000000016' with 'a'.
-QFile: close 'huge-data/t1/demo.lfs/08/0000000017' with 'a'.
-QFile: close 'huge-data/t1/demo.lfs/09/0000000018' with 'a'.
-QFile: close 'huge-data/t1/demo.lfs/09/0000000019' with 'a'.
-QFile: close 'huge-data/t1/demo.lfs/10/0000000020' with 'a'.
-QFile: close 'huge-data/t1/demo.lfs/10/0000000021' with 'a'.
-QFile: close 'huge-data/t1/demo.lfs/11/0000000022' with 'a'.
-QFile: close 'huge-data/t1/demo.lfs/11/0000000023' with 'a'.
-QFile: close 'huge-data/t1/demo.lfs/12/0000000024' with 'a'.
-QFile: close 'huge-data/t1/demo.lfs/12/0000000025' with 'a'.
-QFile: close 'huge-data/t1/demo.lfs/13/0000000026' with 'a'.
-QFile: close 'huge-data/t1/demo.lfs/13/0000000027' with 'a'.
-QFile: close 'huge-data/t1/demo.lfs/14/0000000028' with 'a'.
-QFile: close 'huge-data/t1/demo.lfs/14/0000000029' with 'a'.
-QFile: close 'huge-data/t1/demo.lfs/15/0000000030' with 'a'.
-QFile: close 'huge-data/t1/demo.lfs/15/0000000031' with 'a'.
 Cache: 'ShuffledFieldsReaderCache': 1 / 4 [1] to add
 QFile: open 'huge-data/t1/demo.lfs/geon-info.txt' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/geon-info.txt' with 'r'.
@@ -1025,22 +920,6 @@ QFile: open 'huge-data/t1/demo.lfs/06/0000000012' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/06/0000000013' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/07/0000000014' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/07/0000000015' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/08/0000000016' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/08/0000000017' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/09/0000000018' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/09/0000000019' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/10/0000000020' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/10/0000000021' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/11/0000000022' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/11/0000000023' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/12/0000000024' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/12/0000000025' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/13/0000000026' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/13/0000000027' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/14/0000000028' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/14/0000000029' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/15/0000000030' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/15/0000000031' with 'r'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.field' from 'huge-data/t1/demo.lfs'.
@@ -1073,63 +952,75 @@ demo:    12 : 'sfa.field' from 'huge-data/t1/demo.lfs'.
 demo:    13 : 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
 demo:    14 : 'sfa.float.field' from 'huge-data/t1/demo.lfs'.
 demo:    15 : 'sfa.float.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =         11
-make_shuffle_plan_generic: num_send_msgs  =          1
-make_shuffle_plan_generic: num_recv_msgs  =          1
-make_shuffle_plan_generic: total num_send_packs =          2
+make_shuffle_plan_generic: num_recv_packs =          5
+make_shuffle_plan_generic: num_send_msgs  =          2
+make_shuffle_plan_generic: num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_packs =          4
 make_shuffle_plan_generic: total num_recv_packs =         20
-make_shuffle_plan_generic: total num_send_msgs  =          2
-make_shuffle_plan_generic: total num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_msgs  =          8
+make_shuffle_plan_generic: total num_recv_msgs  =          8
 make_shuffle_plan_generic: global_comm_size =         20
 read(sfr,fn,field): reading field with fn='f.float.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=1E530CB4 for fn='f.float.field' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,field): reading field with fn='f.float.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=A3049D06 for fn='f.float.sfield' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='f.float.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=A3049D06 for fn='f.float.sfield' from path 'huge-data/t1/demo.lfs' with sbs.
 read(sfr,fn,field): reading field with fn='sf.float.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=A3049D06 for fn='sf.float.field' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sf.float.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=A3049D06 for fn='sf.float.sfield' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='sf.float.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=A3049D06 for fn='sf.float.sfield' from path 'huge-data/t1/demo.lfs' with sbs.
 read(sfr,fn,field): reading field with fn='fa.float.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=1E530CB4 for fn='fa.float.field' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,field): reading field with fn='fa.float.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=A3049D06 for fn='fa.float.sfield' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='fa.float.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=A3049D06 for fn='fa.float.sfield' from path 'huge-data/t1/demo.lfs' with sbs.
 read(sfr,fn,field): reading field with fn='sfa.float.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=A3049D06 for fn='sfa.float.field' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sfa.float.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=A3049D06 for fn='sfa.float.sfield' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='sfa.float.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=A3049D06 for fn='sfa.float.sfield' from path 'huge-data/t1/demo.lfs' with sbs.
 QFile: open 'huge-data/t1/demo.lfs/geon-info.txt' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/geon-info.txt' with 'r'.
@@ -1150,27 +1041,12 @@ QFile: open 'huge-data/t1/demo.lfs/06/0000000012' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/06/0000000013' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/07/0000000014' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/07/0000000015' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/08/0000000016' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/08/0000000017' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/09/0000000018' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/09/0000000019' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/10/0000000020' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/10/0000000021' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/11/0000000022' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/11/0000000023' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/12/0000000024' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/12/0000000025' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/13/0000000026' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/13/0000000027' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/14/0000000028' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/14/0000000029' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/15/0000000030' with 'r'.
-QFile: open 'huge-data/t1/demo.lfs/15/0000000031' with 'r'.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t1/demo.lfs'.
@@ -1179,23 +1055,27 @@ read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.field' from 'h
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t1/demo.lfs'.
@@ -1203,118 +1083,145 @@ read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.field' from '
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 QFile: close 'huge-data/t1/demo.lfs/00/0000000000' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/00/0000000001' with 'r'.
@@ -1332,22 +1239,6 @@ QFile: close 'huge-data/t1/demo.lfs/06/0000000012' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/06/0000000013' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/07/0000000014' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/07/0000000015' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/08/0000000016' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/08/0000000017' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/09/0000000018' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/09/0000000019' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/10/0000000020' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/10/0000000021' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/11/0000000022' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/11/0000000023' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/12/0000000024' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/12/0000000025' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/13/0000000026' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/13/0000000027' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/14/0000000028' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/14/0000000029' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/15/0000000030' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/15/0000000031' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/00/0000000000' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/00/0000000000' with 'r'.
 6D301127  fn='huge-data/t1/demo.lfs/00/0000000000'
@@ -1551,11 +1442,15 @@ demo: random select 8 points on entire lattice
 demo: random select points on each time slice
 demo: select 0 points per time slice
 demo: selection is stored in 'fsel' of type 'FieldSelection'
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 1x1x1x4 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 demo: save selection 'fsel' to disk as a field
 write_field: fn='huge-data/t2/fsel.field'.
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 QFile: open 'huge-data/t2/fsel.field.partial.partial' with 'w'.
 QFile: close 'huge-data/t2/fsel.field.partial.partial' with 'w'.
 qrename: 'huge-data/t2/fsel.field.partial.partial' 'huge-data/t2/fsel.field.partial'
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 QFile: open 'huge-data/t2/fsel.field.partial' with 'a'.
 QFile: close 'huge-data/t2/fsel.field.partial' with 'a'.
 qrename: 'huge-data/t2/fsel.field.partial' 'huge-data/t2/fsel.field'
@@ -1565,12 +1460,17 @@ QFile: open 'huge-data/t2/fsel.field' with 'r'.
 QFile: close 'huge-data/t2/fsel.field' with 'r'.
 QFile: open 'huge-data/t2/fsel.field' with 'r'.
 QFile: close 'huge-data/t2/fsel.field' with 'r'.
+shuffle_field_back(f,fs,sp): 1x1x1x4 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 demo: init field 'f'
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=BA968301.
 demo: fill with random numbers
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: possible to only keep selected points non-zero for field 'f'.
 demo: (DOES NOT CHANGE THE SIZE IN MOMEORY)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 FieldsWriter: open 'huge-data/t2/demo.lfs'.
 QFile: open 'huge-data/t2/demo.lfs/geon-info.txt' with 'w'.
@@ -1591,50 +1491,34 @@ QFile: open 'huge-data/t2/demo.lfs/06/0000000012' with 'w'.
 QFile: open 'huge-data/t2/demo.lfs/06/0000000013' with 'w'.
 QFile: open 'huge-data/t2/demo.lfs/07/0000000014' with 'w'.
 QFile: open 'huge-data/t2/demo.lfs/07/0000000015' with 'w'.
-QFile: open 'huge-data/t2/demo.lfs/08/0000000016' with 'w'.
-QFile: open 'huge-data/t2/demo.lfs/08/0000000017' with 'w'.
-QFile: open 'huge-data/t2/demo.lfs/09/0000000018' with 'w'.
-QFile: open 'huge-data/t2/demo.lfs/09/0000000019' with 'w'.
-QFile: open 'huge-data/t2/demo.lfs/10/0000000020' with 'w'.
-QFile: open 'huge-data/t2/demo.lfs/10/0000000021' with 'w'.
-QFile: open 'huge-data/t2/demo.lfs/11/0000000022' with 'w'.
-QFile: open 'huge-data/t2/demo.lfs/11/0000000023' with 'w'.
-QFile: open 'huge-data/t2/demo.lfs/12/0000000024' with 'w'.
-QFile: open 'huge-data/t2/demo.lfs/12/0000000025' with 'w'.
-QFile: open 'huge-data/t2/demo.lfs/13/0000000026' with 'w'.
-QFile: open 'huge-data/t2/demo.lfs/13/0000000027' with 'w'.
-QFile: open 'huge-data/t2/demo.lfs/14/0000000028' with 'w'.
-QFile: open 'huge-data/t2/demo.lfs/14/0000000029' with 'w'.
-QFile: open 'huge-data/t2/demo.lfs/15/0000000030' with 'w'.
-QFile: open 'huge-data/t2/demo.lfs/15/0000000031' with 'w'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =          4
+make_shuffle_plan_generic: num_recv_packs =          2
 make_shuffle_plan_generic: num_send_msgs  =          1
 make_shuffle_plan_generic: num_recv_msgs  =          1
-make_shuffle_plan_generic: total num_send_packs =          2
+make_shuffle_plan_generic: total num_send_packs =          4
 make_shuffle_plan_generic: total num_recv_packs =          7
-make_shuffle_plan_generic: total num_send_msgs  =          2
-make_shuffle_plan_generic: total num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_msgs  =          5
+make_shuffle_plan_generic: total num_recv_msgs  =          5
 make_shuffle_plan_generic: global_comm_size =          8
 demo: save to disk
 write(sfw,fn,field): writing field with fn='f.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='f.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writing field with fn='f.float.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='f.float.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 demo: save sf to disk
 write(sfw,fn,field): writing field with fn='sf.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='sf.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writing field with fn='sf.float.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='sf.float.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 QFile: close 'huge-data/t2/demo.lfs/00/0000000000' with 'w'.
 QFile: close 'huge-data/t2/demo.lfs/00/0000000001' with 'w'.
 QFile: close 'huge-data/t2/demo.lfs/01/0000000002' with 'w'.
@@ -1651,22 +1535,6 @@ QFile: close 'huge-data/t2/demo.lfs/06/0000000012' with 'w'.
 QFile: close 'huge-data/t2/demo.lfs/06/0000000013' with 'w'.
 QFile: close 'huge-data/t2/demo.lfs/07/0000000014' with 'w'.
 QFile: close 'huge-data/t2/demo.lfs/07/0000000015' with 'w'.
-QFile: close 'huge-data/t2/demo.lfs/08/0000000016' with 'w'.
-QFile: close 'huge-data/t2/demo.lfs/08/0000000017' with 'w'.
-QFile: close 'huge-data/t2/demo.lfs/09/0000000018' with 'w'.
-QFile: close 'huge-data/t2/demo.lfs/09/0000000019' with 'w'.
-QFile: close 'huge-data/t2/demo.lfs/10/0000000020' with 'w'.
-QFile: close 'huge-data/t2/demo.lfs/10/0000000021' with 'w'.
-QFile: close 'huge-data/t2/demo.lfs/11/0000000022' with 'w'.
-QFile: close 'huge-data/t2/demo.lfs/11/0000000023' with 'w'.
-QFile: close 'huge-data/t2/demo.lfs/12/0000000024' with 'w'.
-QFile: close 'huge-data/t2/demo.lfs/12/0000000025' with 'w'.
-QFile: close 'huge-data/t2/demo.lfs/13/0000000026' with 'w'.
-QFile: close 'huge-data/t2/demo.lfs/13/0000000027' with 'w'.
-QFile: close 'huge-data/t2/demo.lfs/14/0000000028' with 'w'.
-QFile: close 'huge-data/t2/demo.lfs/14/0000000029' with 'w'.
-QFile: close 'huge-data/t2/demo.lfs/15/0000000030' with 'w'.
-QFile: close 'huge-data/t2/demo.lfs/15/0000000031' with 'w'.
 QFile: open 'huge-data/t2/demo.lfs/geon-info.txt' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/geon-info.txt' with 'r'.
 FieldsWriter: open 'huge-data/t2/demo.lfs'.
@@ -1686,50 +1554,34 @@ QFile: open 'huge-data/t2/demo.lfs/06/0000000012' with 'a'.
 QFile: open 'huge-data/t2/demo.lfs/06/0000000013' with 'a'.
 QFile: open 'huge-data/t2/demo.lfs/07/0000000014' with 'a'.
 QFile: open 'huge-data/t2/demo.lfs/07/0000000015' with 'a'.
-QFile: open 'huge-data/t2/demo.lfs/08/0000000016' with 'a'.
-QFile: open 'huge-data/t2/demo.lfs/08/0000000017' with 'a'.
-QFile: open 'huge-data/t2/demo.lfs/09/0000000018' with 'a'.
-QFile: open 'huge-data/t2/demo.lfs/09/0000000019' with 'a'.
-QFile: open 'huge-data/t2/demo.lfs/10/0000000020' with 'a'.
-QFile: open 'huge-data/t2/demo.lfs/10/0000000021' with 'a'.
-QFile: open 'huge-data/t2/demo.lfs/11/0000000022' with 'a'.
-QFile: open 'huge-data/t2/demo.lfs/11/0000000023' with 'a'.
-QFile: open 'huge-data/t2/demo.lfs/12/0000000024' with 'a'.
-QFile: open 'huge-data/t2/demo.lfs/12/0000000025' with 'a'.
-QFile: open 'huge-data/t2/demo.lfs/13/0000000026' with 'a'.
-QFile: open 'huge-data/t2/demo.lfs/13/0000000027' with 'a'.
-QFile: open 'huge-data/t2/demo.lfs/14/0000000028' with 'a'.
-QFile: open 'huge-data/t2/demo.lfs/14/0000000029' with 'a'.
-QFile: open 'huge-data/t2/demo.lfs/15/0000000030' with 'a'.
-QFile: open 'huge-data/t2/demo.lfs/15/0000000031' with 'a'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =          4
+make_shuffle_plan_generic: num_recv_packs =          2
 make_shuffle_plan_generic: num_send_msgs  =          1
 make_shuffle_plan_generic: num_recv_msgs  =          1
-make_shuffle_plan_generic: total num_send_packs =          2
+make_shuffle_plan_generic: total num_send_packs =          4
 make_shuffle_plan_generic: total num_recv_packs =          7
-make_shuffle_plan_generic: total num_send_msgs  =          2
-make_shuffle_plan_generic: total num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_msgs  =          5
+make_shuffle_plan_generic: total num_recv_msgs  =          5
 make_shuffle_plan_generic: global_comm_size =          8
 demo: save to disk append
 write(sfw,fn,field): writing field with fn='fa.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='fa.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writing field with fn='fa.float.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='fa.float.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 demo: save sf to disk append
 write(sfw,fn,field): writing field with fn='sfa.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='sfa.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writing field with fn='sfa.float.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='sfa.float.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 QFile: close 'huge-data/t2/demo.lfs/00/0000000000' with 'a'.
 QFile: close 'huge-data/t2/demo.lfs/00/0000000001' with 'a'.
 QFile: close 'huge-data/t2/demo.lfs/01/0000000002' with 'a'.
@@ -1746,22 +1598,6 @@ QFile: close 'huge-data/t2/demo.lfs/06/0000000012' with 'a'.
 QFile: close 'huge-data/t2/demo.lfs/06/0000000013' with 'a'.
 QFile: close 'huge-data/t2/demo.lfs/07/0000000014' with 'a'.
 QFile: close 'huge-data/t2/demo.lfs/07/0000000015' with 'a'.
-QFile: close 'huge-data/t2/demo.lfs/08/0000000016' with 'a'.
-QFile: close 'huge-data/t2/demo.lfs/08/0000000017' with 'a'.
-QFile: close 'huge-data/t2/demo.lfs/09/0000000018' with 'a'.
-QFile: close 'huge-data/t2/demo.lfs/09/0000000019' with 'a'.
-QFile: close 'huge-data/t2/demo.lfs/10/0000000020' with 'a'.
-QFile: close 'huge-data/t2/demo.lfs/10/0000000021' with 'a'.
-QFile: close 'huge-data/t2/demo.lfs/11/0000000022' with 'a'.
-QFile: close 'huge-data/t2/demo.lfs/11/0000000023' with 'a'.
-QFile: close 'huge-data/t2/demo.lfs/12/0000000024' with 'a'.
-QFile: close 'huge-data/t2/demo.lfs/12/0000000025' with 'a'.
-QFile: close 'huge-data/t2/demo.lfs/13/0000000026' with 'a'.
-QFile: close 'huge-data/t2/demo.lfs/13/0000000027' with 'a'.
-QFile: close 'huge-data/t2/demo.lfs/14/0000000028' with 'a'.
-QFile: close 'huge-data/t2/demo.lfs/14/0000000029' with 'a'.
-QFile: close 'huge-data/t2/demo.lfs/15/0000000030' with 'a'.
-QFile: close 'huge-data/t2/demo.lfs/15/0000000031' with 'a'.
 Cache: 'ShuffledFieldsReaderCache': 2 / 4 [1] to add
 QFile: open 'huge-data/t2/demo.lfs/geon-info.txt' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/geon-info.txt' with 'r'.
@@ -1782,22 +1618,6 @@ QFile: open 'huge-data/t2/demo.lfs/06/0000000012' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/06/0000000013' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/07/0000000014' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/07/0000000015' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/08/0000000016' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/08/0000000017' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/09/0000000018' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/09/0000000019' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/10/0000000020' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/10/0000000021' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/11/0000000022' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/11/0000000023' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/12/0000000024' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/12/0000000025' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/13/0000000026' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/13/0000000027' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/14/0000000028' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/14/0000000029' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/15/0000000030' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/15/0000000031' with 'r'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.field' from 'huge-data/t2/demo.lfs'.
@@ -1830,63 +1650,75 @@ demo:    12 : 'sfa.field' from 'huge-data/t2/demo.lfs'.
 demo:    13 : 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
 demo:    14 : 'sfa.float.field' from 'huge-data/t2/demo.lfs'.
 demo:    15 : 'sfa.float.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =          4
+make_shuffle_plan_generic: num_recv_packs =          2
 make_shuffle_plan_generic: num_send_msgs  =          1
 make_shuffle_plan_generic: num_recv_msgs  =          1
-make_shuffle_plan_generic: total num_send_packs =          2
+make_shuffle_plan_generic: total num_send_packs =          4
 make_shuffle_plan_generic: total num_recv_packs =          7
-make_shuffle_plan_generic: total num_send_msgs  =          2
-make_shuffle_plan_generic: total num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_msgs  =          5
+make_shuffle_plan_generic: total num_recv_msgs  =          5
 make_shuffle_plan_generic: global_comm_size =          8
 read(sfr,fn,field): reading field with fn='f.float.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=1E530CB4 for fn='f.float.field' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,field): reading field with fn='f.float.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B9C5079C for fn='f.float.sfield' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='f.float.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B9C5079C for fn='f.float.sfield' from path 'huge-data/t2/demo.lfs' with sbs.
 read(sfr,fn,field): reading field with fn='sf.float.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=B9C5079C for fn='sf.float.field' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sf.float.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B9C5079C for fn='sf.float.sfield' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='sf.float.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B9C5079C for fn='sf.float.sfield' from path 'huge-data/t2/demo.lfs' with sbs.
 read(sfr,fn,field): reading field with fn='fa.float.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=1E530CB4 for fn='fa.float.field' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,field): reading field with fn='fa.float.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B9C5079C for fn='fa.float.sfield' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='fa.float.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B9C5079C for fn='fa.float.sfield' from path 'huge-data/t2/demo.lfs' with sbs.
 read(sfr,fn,field): reading field with fn='sfa.float.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=B9C5079C for fn='sfa.float.field' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sfa.float.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B9C5079C for fn='sfa.float.sfield' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='sfa.float.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B9C5079C for fn='sfa.float.sfield' from path 'huge-data/t2/demo.lfs' with sbs.
 QFile: open 'huge-data/t2/demo.lfs/geon-info.txt' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/geon-info.txt' with 'r'.
@@ -1907,27 +1739,12 @@ QFile: open 'huge-data/t2/demo.lfs/06/0000000012' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/06/0000000013' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/07/0000000014' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/07/0000000015' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/08/0000000016' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/08/0000000017' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/09/0000000018' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/09/0000000019' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/10/0000000020' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/10/0000000021' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/11/0000000022' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/11/0000000023' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/12/0000000024' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/12/0000000025' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/13/0000000026' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/13/0000000027' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/14/0000000028' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/14/0000000029' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/15/0000000030' with 'r'.
-QFile: open 'huge-data/t2/demo.lfs/15/0000000031' with 'r'.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t2/demo.lfs'.
@@ -1936,23 +1753,27 @@ read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.field' from 'h
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t2/demo.lfs'.
@@ -1960,118 +1781,145 @@ read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.field' from '
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
-shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x1x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x1x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 QFile: close 'huge-data/t2/demo.lfs/00/0000000000' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/00/0000000001' with 'r'.
@@ -2089,22 +1937,6 @@ QFile: close 'huge-data/t2/demo.lfs/06/0000000012' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/06/0000000013' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/07/0000000014' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/07/0000000015' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/08/0000000016' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/08/0000000017' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/09/0000000018' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/09/0000000019' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/10/0000000020' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/10/0000000021' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/11/0000000022' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/11/0000000023' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/12/0000000024' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/12/0000000025' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/13/0000000026' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/13/0000000027' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/14/0000000028' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/14/0000000029' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/15/0000000030' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/15/0000000031' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/00/0000000000' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/00/0000000000' with 'r'.
 7452B80A  fn='huge-data/t2/demo.lfs/00/0000000000'
@@ -2321,22 +2153,6 @@ QFile: close 'huge-data/t2/demo.lfs/06/0000000012' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/06/0000000013' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/07/0000000014' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/07/0000000015' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/08/0000000016' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/08/0000000017' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/09/0000000018' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/09/0000000019' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/10/0000000020' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/10/0000000021' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/11/0000000022' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/11/0000000023' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/12/0000000024' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/12/0000000025' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/13/0000000026' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/13/0000000027' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/14/0000000028' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/14/0000000029' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/15/0000000030' with 'r'.
-QFile: close 'huge-data/t2/demo.lfs/15/0000000031' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/00/0000000000' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/00/0000000001' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/01/0000000002' with 'r'.
@@ -2353,22 +2169,6 @@ QFile: close 'huge-data/t1/demo.lfs/06/0000000012' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/06/0000000013' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/07/0000000014' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/07/0000000015' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/08/0000000016' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/08/0000000017' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/09/0000000018' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/09/0000000019' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/10/0000000020' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/10/0000000021' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/11/0000000022' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/11/0000000023' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/12/0000000024' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/12/0000000025' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/13/0000000026' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/13/0000000027' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/14/0000000028' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/14/0000000029' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/15/0000000030' with 'r'.
-QFile: close 'huge-data/t1/demo.lfs/15/0000000031' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/00/0000000000' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/00/0000000001' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/01/0000000002' with 'r'.
@@ -2385,24 +2185,8 @@ QFile: close 'huge-data/t0/demo.lfs/06/0000000012' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/06/0000000013' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/07/0000000014' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/07/0000000015' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/08/0000000016' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/08/0000000017' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/09/0000000018' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/09/0000000019' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/10/0000000020' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/10/0000000021' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/11/0000000022' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/11/0000000023' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/12/0000000024' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/12/0000000025' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/13/0000000026' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/13/0000000027' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/14/0000000028' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/14/0000000029' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/15/0000000030' with 'r'.
-QFile: close 'huge-data/t0/demo.lfs/15/0000000031' with 'r'.
 Cache: 'ShufflePlanCache': 2 / 16 [8] clear
-clear_mem_cache: 442880 bytes (0.000 GB) freed.
+clear_mem_cache: 237056 bytes (0.000 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

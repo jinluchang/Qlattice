@@ -1,4 +1,4 @@
-qlat::begin(): MPI Initialized. num_node = 2
+qlat::begin(): MPI Initialized. num_node = 4
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 1
 qlat::begin(): q_num_threads = 2
@@ -6,9 +6,9 @@ q_verbose=10
 q_malloc_mmap_threshold='' (default)
 qlat::begin(): GeometryNode =
 { initialized = true
-, num_node    = 2
+, num_node    = 4
 , id_node     = 0
-, size_node   = 1x1x1x2
+, size_node   = 1x1x1x4
 , coor_node   = 0x0x0x0 }
 q_timer_max_func_name_len=50 (default)
 q_mk_id_node_in_shuffle_seed='' (default)
@@ -17,6 +17,8 @@ q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
 display_geometry_node : id_node =     0 ; coor_node = 0x0x0x0 ; id_node_in_shuffle =     0 ; hostname = qcdserver16
 display_geometry_node : id_node =     1 ; coor_node = 0x0x0x1 ; id_node_in_shuffle =     1 ; hostname = qcdserver16
+display_geometry_node : id_node =     2 ; coor_node = 0x0x0x2 ; id_node_in_shuffle =     2 ; hostname = qcdserver16
+display_geometry_node : id_node =     3 ; coor_node = 0x0x0x3 ; id_node_in_shuffle =     3 ; hostname = qcdserver16
 q_time_limit=43200 (default)
 get_time_limit()=12.000000 hours
 q_budget=900 (default)
@@ -95,15 +97,15 @@ geo = { initialized   = true
 , eo            = 0
 , geon          =
 { initialized = true
-, num_node    = 2
+, num_node    = 4
 , id_node     = 0
-, size_node   = 1x1x1x2
+, size_node   = 1x1x1x4
 , coor_node   = 0x0x0x0 }
 , multiplicity  = 1
-, node_site     = 4x4x4x4
+, node_site     = 4x4x4x2
 , expan_left    = 0x0x0x0
 , expan_right   = 0x0x0x0
-, node_site_exp = 4x4x4x4
+, node_site_exp = 4x4x4x2
 , is_only_local = true }
 block_site = 2x2x2x2
 ls = 8, neig = 100, nkeep = 50
@@ -125,6 +127,21 @@ invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.617E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  37 sqrt(qnorm_r/qnorm_in)=8.799E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=37 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 7.949385E-08 from 8.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.598E+00 stop_rsd=1.000E-08 
+cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.548E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 4.690693E-08 from 8.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.661E+00 stop_rsd=1.000E-08 
+cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.623E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 4.822591E-08 from 8.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.617E+00 stop_rsd=1.000E-08 
+cg_with_f: final iter=  37 sqrt(qnorm_r/qnorm_in)=8.799E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=37 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 7.949384E-08 from 8.000000E+00
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.598E+00 stop_rsd=1.000E-08 
@@ -155,29 +172,14 @@ invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.617E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  37 sqrt(qnorm_r/qnorm_in)=8.799E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=37 cycle=1 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): checking 7.949385E-08 from 8.000000E+00
-invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.598E+00 stop_rsd=1.000E-08 
-cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.548E-09 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): checking 4.690693E-08 from 8.000000E+00
-invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.661E+00 stop_rsd=1.000E-08 
-cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.623E-09 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): checking 4.822591E-08 from 8.000000E+00
-invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.617E+00 stop_rsd=1.000E-08 
-cg_with_f: final iter=  37 sqrt(qnorm_r/qnorm_in)=8.799E-09 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): total_iter=37 cycle=1 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): checking 7.949385E-08 from 8.000000E+00
-prop qnorm =  2.02304498733453215E+02
-prop qnorm =  5.07076866655436720E-01
+invert_with_cg(5d,5d,inv,cg): checking 7.949384E-08 from 8.000000E+00
+prop qnorm =  2.02304498733453784E+02
+prop qnorm =  5.07076866655436165E-01
 find_max_eigen_value_hermop_sym2:     1: sqrt_qnorm_ratio = 1.15444278295577396E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:     2: sqrt_qnorm_ratio = 1.28174895744192630E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:     3: sqrt_qnorm_ratio = 1.38696569401745684E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:     4: sqrt_qnorm_ratio = 1.48877146814636552E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:     5: sqrt_qnorm_ratio = 1.58623325176833019E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:     2: sqrt_qnorm_ratio = 1.28174895744192674E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:     3: sqrt_qnorm_ratio = 1.38696569401745617E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:     4: sqrt_qnorm_ratio = 1.48877146814636507E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:     5: sqrt_qnorm_ratio = 1.58623325176833041E+00. (max eigen value of hermop_sym2)
 QFile: open 'results/free-4nt8/results=1000/checkpoint.txt' with 'w'.
 QFile: close 'results/free-4nt8/results=1000/checkpoint.txt' with 'w'.
 release_lock: Release lock 'results/free-4nt8/results=1000-lock'
@@ -246,15 +248,15 @@ geo = { initialized   = true
 , eo            = 0
 , geon          =
 { initialized = true
-, num_node    = 2
+, num_node    = 4
 , id_node     = 0
-, size_node   = 1x1x1x2
+, size_node   = 1x1x1x4
 , coor_node   = 0x0x0x0 }
 , multiplicity  = 1
-, node_site     = 4x4x4x4
+, node_site     = 4x4x4x2
 , expan_left    = 0x0x0x0
 , expan_right   = 0x0x0x0
-, node_site_exp = 4x4x4x4
+, node_site_exp = 4x4x4x2
 , is_only_local = true }
 block_site = 2x2x2x2
 ls = 8, neig = 100, nkeep = 50
@@ -262,69 +264,69 @@ invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.638E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.421E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): checking 4.525139E-08 from 8.000000E+00
+invert_with_cg(5d,5d,inv,cg): checking 4.525138E-08 from 8.000000E+00
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.678E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.602E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 4.805639E-08 from 8.000000E+00
-invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.730E+00 stop_rsd=1.000E-08 
-cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=6.087E-09 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): checking 5.129898E-08 from 8.000000E+00
-invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.638E+00 stop_rsd=1.000E-08 
-cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.421E-09 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): checking 4.525139E-08 from 8.000000E+00
-invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.678E+00 stop_rsd=1.000E-08 
-cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.602E-09 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): checking 4.805639E-08 from 8.000000E+00
-invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.730E+00 stop_rsd=1.000E-08 
-cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=6.087E-09 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): checking 5.129898E-08 from 8.000000E+00
-invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.638E+00 stop_rsd=1.000E-08 
-cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.421E-09 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): checking 4.525139E-08 from 8.000000E+00
-invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.678E+00 stop_rsd=1.000E-08 
-cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.602E-09 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): checking 4.805639E-08 from 8.000000E+00
-invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.730E+00 stop_rsd=1.000E-08 
-cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=6.087E-09 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): checking 5.129898E-08 from 8.000000E+00
-invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.638E+00 stop_rsd=1.000E-08 
-cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.421E-09 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): checking 4.525139E-08 from 8.000000E+00
-invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.678E+00 stop_rsd=1.000E-08 
-cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.602E-09 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): checking 4.805640E-08 from 8.000000E+00
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.730E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=6.087E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 5.129897E-08 from 8.000000E+00
-prop qnorm =  2.80969993217556237E+02
-prop qnorm =  7.21126316898619280E-01
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.638E+00 stop_rsd=1.000E-08 
+cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.421E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 4.525138E-08 from 8.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.678E+00 stop_rsd=1.000E-08 
+cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.602E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 4.805639E-08 from 8.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.730E+00 stop_rsd=1.000E-08 
+cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=6.087E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 5.129898E-08 from 8.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.638E+00 stop_rsd=1.000E-08 
+cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.421E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 4.525138E-08 from 8.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.678E+00 stop_rsd=1.000E-08 
+cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.602E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 4.805639E-08 from 8.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.730E+00 stop_rsd=1.000E-08 
+cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=6.087E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 5.129897E-08 from 8.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.638E+00 stop_rsd=1.000E-08 
+cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.421E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 4.525138E-08 from 8.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.678E+00 stop_rsd=1.000E-08 
+cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.602E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 4.805639E-08 from 8.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.730E+00 stop_rsd=1.000E-08 
+cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=6.087E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 5.129897E-08 from 8.000000E+00
+prop qnorm =  2.80969993217558113E+02
+prop qnorm =  7.21126316898656805E-01
 find_max_eigen_value_hermop_sym2:     1: sqrt_qnorm_ratio = 1.15752294238541942E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:     2: sqrt_qnorm_ratio = 1.28254240720921020E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:     3: sqrt_qnorm_ratio = 1.38719889216406833E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:     4: sqrt_qnorm_ratio = 1.48902999500903155E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:     5: sqrt_qnorm_ratio = 1.58659082254578321E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:     2: sqrt_qnorm_ratio = 1.28254240720920998E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:     3: sqrt_qnorm_ratio = 1.38719889216406900E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:     4: sqrt_qnorm_ratio = 1.48902999500903177E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:     5: sqrt_qnorm_ratio = 1.58659082254578254E+00. (max eigen value of hermop_sym2)
 QFile: open 'results/free-4nt8/results=1010/checkpoint.txt' with 'w'.
 QFile: close 'results/free-4nt8/results=1010/checkpoint.txt' with 'w'.
 release_lock: Release lock 'results/free-4nt8/results=1010-lock'
@@ -332,7 +334,7 @@ qremove: 'results/free-4nt8/results=1010-lock/time.txt'
 program finished successfully for 'free-4nt8'.
 CHECK: finished successfully.
 Cache: 'CommPlanCache': 6 / 32 [16] clear
-clear_mem_cache: 12416512 bytes (0.012 GB) freed.
+clear_mem_cache: 6514432 bytes (0.006 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

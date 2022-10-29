@@ -730,7 +730,7 @@ inline void print_mem_info(std::string stmp = "")
   cudaMemGetInfo(&freeM,&totalM);
   freeD = freeM*pow(0.5,30);totalD = totalM*pow(0.5,30);
   #endif
-  #ifdef QLAT_USE_SYSINFO
+  #ifndef QLAT_NO_SYSINFO
   struct sysinfo s_info;
   sysinfo(&s_info);
   #ifdef QLAT_USE_ACC
