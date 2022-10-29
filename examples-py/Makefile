@@ -4,18 +4,19 @@ all: run
 
 tests = auto-cexprs.log \
 		auto-cexprs-kpipi.log \
+		set-rand.log \
 		make-sample-gauge-field.log \
 		qar.log \
 		lat-io.log \
 		field-utils.log \
 		qcd-utils.log \
-		hmc-pions.log \
 		hmc-pure-gauge.log \
 		field-selection.log \
 		selected-field.log \
 		fields-io.log \
-		free-invert.log \
-		qlat-id-node.log
+		qlat-id-node.log \
+		hmc-pions.log \
+		free-invert.log
 
 tests_gpt = gpt-qlat-convert.log \
 			gpt-qlat-smear.log \

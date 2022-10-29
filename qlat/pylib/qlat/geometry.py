@@ -75,20 +75,19 @@ class Geometry:
         return self.show()
 
     def __repr__(self):
-        return self.show_all()
+        return self.show()
 
     def show(self):
-        return "Geometry({}, {})".format(
-                str(self.total_site()),
-                self.multiplicity())
-
-    def show_all(self):
-        return "Geometry({}, {}, expansion_left={}, expansion_right={}, eo={})".format(
-                str(self.total_site()),
-                self.multiplicity(),
-                str(self.expansion_left()),
-                str(self.expansion_right()),
-                self.eo())
+        total_site = self.total_site()
+        multiplicity = self.multiplicity()
+        expan_left = self.expansion_left()
+        expan_right = self.expansion_right()
+        eo = self.eo()
+        zero = [ 0, 0, 0, 0, ]
+        if expan_left == zero and expan_right == zero and eo == 0:
+            return f"Geometry({total_site},{multiplicity})"
+        else:
+            return f"Geometry({total_site},{multiplicity},expan_left={expan_left},expan_right={expan_right},eo={eo})"
 
     def coordinate_g_from_l(self, xl):
         return c.coordinate_g_from_l_geo(self, xl)

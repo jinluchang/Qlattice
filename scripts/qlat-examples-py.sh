@@ -22,6 +22,7 @@ name=qlat-examples-py
     for log in *.log ; do
         echo diff "$build/$log" "$log"
         diff "$build/$log" "$log" || cat "$build/$log".full || true
+        cp -rpv "$build/$log" "$log" || true
     done
 
     echo "!!!! $name build !!!!"

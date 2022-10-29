@@ -22,6 +22,7 @@ name=qlat-examples-cpp
     for log in examples-cpp/*/log ; do
         echo diff "$build/$log" "$log"
         diff "$build/$log" "$log" | grep 'CHECK: ' && cat "$build/$log".full || true
+        cp -rpv "$build/$log" "$log" || true
     done
 
     echo "!!!! $name build !!!!"
