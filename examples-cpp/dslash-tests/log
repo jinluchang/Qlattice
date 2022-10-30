@@ -1,4 +1,4 @@
-qlat::begin(): MPI Initialized. num_node = 4
+qlat::begin(): MPI Initialized. num_node = 2
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 1
 qlat::begin(): q_num_threads = 2
@@ -6,9 +6,9 @@ q_verbose=10
 q_malloc_mmap_threshold='' (default)
 qlat::begin(): GeometryNode =
 { initialized = true
-, num_node    = 4
+, num_node    = 2
 , id_node     = 0
-, size_node   = 1x1x2x2
+, size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
 q_timer_max_func_name_len=50 (default)
 q_mk_id_node_in_shuffle_seed='' (default)
@@ -24,18 +24,18 @@ plaq :  1.00000000000000000E+00
 Cache: 'CommPlanCache': 1 / 32 [16] to add
 spatial plaq :  1.00000000000000000E+00
 trace:  1.00000000000000000E+00
-plaq :  9.48525556759219235E-01
-spatial plaq :  9.48399549357766380E-01
-trace:  9.86912011041233272E-01
+plaq :  9.48525556759219013E-01
+spatial plaq :  9.48399549357766269E-01
+trace:  9.86912011041233161E-01
 Cache: 'CommPlanCache': 2 / 32 [16] to add
 Cache: 'CommPlanCache': 3 / 32 [16] to add
-plaq 1x1 :  9.48651564160671867E-01
-plaq 1x2 :  9.25212586145467530E-01
+plaq 1x1 :  9.48651564160671756E-01
+plaq 1x2 :  9.25212586145467419E-01
 plaq 2x1 :  9.24250174916469658E-01
-plaq 2x2 :  9.01246024497744713E-01
+plaq 2x2 :  9.01246024497744824E-01
 plaq 1x3 :  9.03090375346354279E-01
-plaq 3x1 :  9.00130741296361059E-01
-plaq 2x3 :  8.79795304171444692E-01
+plaq 3x1 :  9.00130741296360948E-01
+plaq 2x3 :  8.79795304171444581E-01
 plaq 3x2 :  8.75518924731070847E-01
 plaq 3x3 :  8.55309122171914904E-01
 plaq (1,1,0,0)x2 :  4.32532616020453915E+01
@@ -47,270 +47,270 @@ qnorm(diff after qnormalization) = 0.000000E+00
 2.246065E+01, 2.246065E+01 qnorm(diff) = 5.056177E-32
 qnorm(diff after qnormalization) = 1.595287E-33
 2.828676E+01, 2.828676E+01 qnorm(diff) = 3.805121E-31
-qnorm(diff after qnormalization) = 1.416695E-32
-3.318975E+01, 3.318975E+01 qnorm(diff) = 6.005443E-31
-qnorm(diff after qnormalization) = 2.292135E-32
-3.744811E+01, 3.744811E+01 qnorm(diff) = 1.173806E-30
-qnorm(diff after qnormalization) = 6.013755E-32
-4.120674E+01, 4.120674E+01 qnorm(diff) = 2.897488E-30
-qnorm(diff after qnormalization) = 6.741778E-32
-4.454089E+01, 4.454089E+01 qnorm(diff) = 2.714144E-30
-qnorm(diff after qnormalization) = 4.477748E-32
-4.749140E+01, 4.749140E+01 qnorm(diff) = 1.802819E-30
-qnorm(diff after qnormalization) = 3.997471E-32
-5.008413E+01, 5.008413E+01 qnorm(diff) = 1.910571E-30
-qnorm(diff after qnormalization) = 4.053878E-32
-5.234027E+01, 5.234027E+01 qnorm(diff) = 1.896025E-30
-qnorm(diff after qnormalization) = 3.881557E-32
-5.428147E+01, 5.428147E+01 qnorm(diff) = 1.917737E-30
-qnorm(diff after qnormalization) = 3.683245E-32
-5.593236E+01, 5.593236E+01 qnorm(diff) = 1.915135E-30
-qnorm(diff after qnormalization) = 3.528449E-32
-5.732141E+01, 5.732141E+01 qnorm(diff) = 1.951958E-30
-qnorm(diff after qnormalization) = 3.566305E-32
-5.848045E+01, 5.848045E+01 qnorm(diff) = 2.015820E-30
-qnorm(diff after qnormalization) = 7.392550E-32
-5.944300E+01, 5.944300E+01 qnorm(diff) = 4.214552E-30
-qnorm(diff after qnormalization) = 9.585941E-32
-6.024207E+01, 6.024207E+01 qnorm(diff) = 5.427528E-30
-qnorm(diff after qnormalization) = 3.951601E-32
-6.090815E+01, 6.090815E+01 qnorm(diff) = 2.025298E-30
-qnorm(diff after qnormalization) = 3.390414E-32
-6.146781E+01, 6.146781E+01 qnorm(diff) = 2.000744E-30
-qnorm(diff after qnormalization) = 3.273441E-32
-6.194305E+01, 6.194305E+01 qnorm(diff) = 1.886693E-30
-qnorm(diff after qnormalization) = 3.132580E-32
-6.235138E+01, 6.235138E+01 qnorm(diff) = 1.916258E-30
-qnorm(diff after qnormalization) = 3.095736E-32
+qnorm(diff after qnormalization) = 3.150365E-32
+3.318975E+01, 3.318975E+01 qnorm(diff) = 1.338324E-30
+qnorm(diff after qnormalization) = 4.755657E-32
+3.744811E+01, 3.744811E+01 qnorm(diff) = 2.184240E-30
+qnorm(diff after qnormalization) = 4.206418E-32
+4.120674E+01, 4.120674E+01 qnorm(diff) = 1.872051E-30
+qnorm(diff after qnormalization) = 4.855663E-32
+4.454089E+01, 4.454089E+01 qnorm(diff) = 1.838599E-30
+qnorm(diff after qnormalization) = 4.296487E-32
+4.749140E+01, 4.749140E+01 qnorm(diff) = 1.889634E-30
+qnorm(diff after qnormalization) = 6.950091E-32
+5.008413E+01, 5.008413E+01 qnorm(diff) = 3.120036E-30
+qnorm(diff after qnormalization) = 6.588977E-32
+5.234027E+01, 5.234027E+01 qnorm(diff) = 3.342484E-30
+qnorm(diff after qnormalization) = 6.838643E-32
+5.428147E+01, 5.428147E+01 qnorm(diff) = 3.394643E-30
+qnorm(diff after qnormalization) = 1.001938E-31
+5.593236E+01, 5.593236E+01 qnorm(diff) = 5.413106E-30
+qnorm(diff after qnormalization) = 6.570008E-32
+5.732141E+01, 5.732141E+01 qnorm(diff) = 3.351560E-30
+qnorm(diff after qnormalization) = 4.034991E-32
+5.848045E+01, 5.848045E+01 qnorm(diff) = 2.084194E-30
+qnorm(diff after qnormalization) = 3.845645E-32
+5.944300E+01, 5.944300E+01 qnorm(diff) = 2.082586E-30
+qnorm(diff after qnormalization) = 3.624257E-32
+6.024207E+01, 6.024207E+01 qnorm(diff) = 2.098601E-30
+qnorm(diff after qnormalization) = 6.264361E-32
+6.090815E+01, 6.090815E+01 qnorm(diff) = 3.478542E-30
+qnorm(diff after qnormalization) = 4.069752E-32
+6.146781E+01, 6.146781E+01 qnorm(diff) = 2.145275E-30
+qnorm(diff after qnormalization) = 3.542967E-32
+6.194305E+01, 6.194305E+01 qnorm(diff) = 1.907460E-30
+qnorm(diff after qnormalization) = 3.150714E-32
+6.235138E+01, 6.235138E+01 qnorm(diff) = 2.066274E-30
+qnorm(diff after qnormalization) = 5.915668E-32
 plaq :  1.00000000000000000E+00
 spatial plaq :  1.00000000000000000E+00
 trace:  1.00000000000000000E+00
-plaq :  9.48013133008751563E-01
-spatial plaq :  9.48361111693226233E-01
-trace:  9.86668447688210715E-01
-plaq 1x1 :  9.47665154324276671E-01
-plaq 1x2 :  9.22564303303687994E-01
+plaq :  9.48013133008751896E-01
+spatial plaq :  9.48361111693226455E-01
+trace:  9.86668447688210826E-01
+plaq 1x1 :  9.47665154324277004E-01
+plaq 1x2 :  9.22564303303687772E-01
 plaq 2x1 :  9.23198723801185062E-01
-plaq 2x2 :  8.99458961834796789E-01
-plaq 1x3 :  8.98161593918192946E-01
-plaq 3x1 :  8.98668059022398880E-01
-plaq 2x3 :  8.76551322949157274E-01
+plaq 2x2 :  8.99458961834797122E-01
+plaq 1x3 :  8.98161593918192835E-01
+plaq 3x1 :  8.98668059022398769E-01
+plaq 2x3 :  8.76551322949157385E-01
 plaq 3x2 :  8.74369361641947784E-01
-plaq 3x3 :  8.51511991520023215E-01
-plaq (1,1,0,0)x2 :  4.31210259594704937E+01
+plaq 3x3 :  8.51511991520023326E-01
+plaq (1,1,0,0)x2 :  4.31210259594704794E+01
 plaq (2,1,0,0)x1 :  4.42790577388240933E+01
 Cache: 'CommPlanCache': 5 / 32 [16] to add
 Cache: 'CommPlanCache': 6 / 32 [16] to add
-find_max_eigen_value_hermop_sym2:     1: sqrt_qnorm_ratio = 1.79007997920204676E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:     1: sqrt_qnorm_ratio = 1.79007997920204698E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:     2: sqrt_qnorm_ratio = 2.38308414192340035E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:     3: sqrt_qnorm_ratio = 3.08637021159097236E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:     4: sqrt_qnorm_ratio = 3.98424237434212447E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:     5: sqrt_qnorm_ratio = 4.82124926434953327E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:     6: sqrt_qnorm_ratio = 5.33870046275685528E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:     7: sqrt_qnorm_ratio = 5.60205113158098555E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:     8: sqrt_qnorm_ratio = 5.74015187241126856E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:     9: sqrt_qnorm_ratio = 5.82126078077663056E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    10: sqrt_qnorm_ratio = 5.87398835461322477E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    11: sqrt_qnorm_ratio = 5.91070054827578506E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:     3: sqrt_qnorm_ratio = 3.08637021159097191E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:     4: sqrt_qnorm_ratio = 3.98424237434212580E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:     5: sqrt_qnorm_ratio = 4.82124926434953149E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:     6: sqrt_qnorm_ratio = 5.33870046275685262E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:     7: sqrt_qnorm_ratio = 5.60205113158098822E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:     8: sqrt_qnorm_ratio = 5.74015187241126768E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:     9: sqrt_qnorm_ratio = 5.82126078077662790E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    10: sqrt_qnorm_ratio = 5.87398835461322655E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    11: sqrt_qnorm_ratio = 5.91070054827578417E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:    12: sqrt_qnorm_ratio = 5.93744422424121154E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    13: sqrt_qnorm_ratio = 5.95758007945507284E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    14: sqrt_qnorm_ratio = 5.97315840355459304E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    15: sqrt_qnorm_ratio = 5.98550406389896406E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    16: sqrt_qnorm_ratio = 5.99550351549139915E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    17: sqrt_qnorm_ratio = 6.00376400990890424E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    18: sqrt_qnorm_ratio = 6.01070946259650007E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    19: sqrt_qnorm_ratio = 6.01664099019635135E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    20: sqrt_qnorm_ratio = 6.02177617889289873E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    21: sqrt_qnorm_ratio = 6.02627498572150255E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    13: sqrt_qnorm_ratio = 5.95758007945507462E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    14: sqrt_qnorm_ratio = 5.97315840355459127E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    15: sqrt_qnorm_ratio = 5.98550406389896583E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    16: sqrt_qnorm_ratio = 5.99550351549139826E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    17: sqrt_qnorm_ratio = 6.00376400990890335E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    18: sqrt_qnorm_ratio = 6.01070946259650274E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    19: sqrt_qnorm_ratio = 6.01664099019635046E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    20: sqrt_qnorm_ratio = 6.02177617889289696E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    21: sqrt_qnorm_ratio = 6.02627498572150166E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:    22: sqrt_qnorm_ratio = 6.03025703869795926E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:    23: sqrt_qnorm_ratio = 6.03381332381945246E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    24: sqrt_qnorm_ratio = 6.03701417142740571E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    24: sqrt_qnorm_ratio = 6.03701417142740837E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:    25: sqrt_qnorm_ratio = 6.03991478070237431E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    26: sqrt_qnorm_ratio = 6.04255909137915559E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    27: sqrt_qnorm_ratio = 6.04498253494889770E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    28: sqrt_qnorm_ratio = 6.04721401804719694E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    26: sqrt_qnorm_ratio = 6.04255909137915292E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    27: sqrt_qnorm_ratio = 6.04498253494890037E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    28: sqrt_qnorm_ratio = 6.04721401804719605E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:    29: sqrt_qnorm_ratio = 6.04927737356388384E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:    30: sqrt_qnorm_ratio = 6.05119243811815544E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    31: sqrt_qnorm_ratio = 6.05297586376311880E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    32: sqrt_qnorm_ratio = 6.05464173801863126E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    33: sqrt_qnorm_ratio = 6.05620206370857783E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    31: sqrt_qnorm_ratio = 6.05297586376311969E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    32: sqrt_qnorm_ratio = 6.05464173801863037E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    33: sqrt_qnorm_ratio = 6.05620206370857872E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:    34: sqrt_qnorm_ratio = 6.05766713479499153E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    35: sqrt_qnorm_ratio = 6.05904583398125052E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    36: sqrt_qnorm_ratio = 6.06034587068114217E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    37: sqrt_qnorm_ratio = 6.06157397295650036E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    38: sqrt_qnorm_ratio = 6.06273604350959072E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    39: sqrt_qnorm_ratio = 6.06383728731027993E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    40: sqrt_qnorm_ratio = 6.06488231662861121E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    41: sqrt_qnorm_ratio = 6.06587523792039107E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    42: sqrt_qnorm_ratio = 6.06681972403237246E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    43: sqrt_qnorm_ratio = 6.06771907445740144E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    44: sqrt_qnorm_ratio = 6.06857626580958431E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    45: sqrt_qnorm_ratio = 6.06939399425859438E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    46: sqrt_qnorm_ratio = 6.07017471132640463E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    47: sqrt_qnorm_ratio = 6.07092065418588067E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    48: sqrt_qnorm_ratio = 6.07163387139103516E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    49: sqrt_qnorm_ratio = 6.07231624480111165E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    50: sqrt_qnorm_ratio = 6.07296950832538673E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    51: sqrt_qnorm_ratio = 6.07359526400612548E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    52: sqrt_qnorm_ratio = 6.07419499586769795E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    53: sqrt_qnorm_ratio = 6.07477008188674095E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    54: sqrt_qnorm_ratio = 6.07532180437832725E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    55: sqrt_qnorm_ratio = 6.07585135904340135E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    35: sqrt_qnorm_ratio = 6.05904583398124963E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    36: sqrt_qnorm_ratio = 6.06034587068114305E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    37: sqrt_qnorm_ratio = 6.06157397295649591E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    38: sqrt_qnorm_ratio = 6.06273604350959605E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    39: sqrt_qnorm_ratio = 6.06383728731027816E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    40: sqrt_qnorm_ratio = 6.06488231662861299E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    41: sqrt_qnorm_ratio = 6.06587523792039018E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    42: sqrt_qnorm_ratio = 6.06681972403237424E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    43: sqrt_qnorm_ratio = 6.06771907445739966E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    44: sqrt_qnorm_ratio = 6.06857626580958343E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    45: sqrt_qnorm_ratio = 6.06939399425859527E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    46: sqrt_qnorm_ratio = 6.07017471132640551E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    47: sqrt_qnorm_ratio = 6.07092065418587978E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    48: sqrt_qnorm_ratio = 6.07163387139103783E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    49: sqrt_qnorm_ratio = 6.07231624480111254E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    50: sqrt_qnorm_ratio = 6.07296950832538407E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    51: sqrt_qnorm_ratio = 6.07359526400612459E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    52: sqrt_qnorm_ratio = 6.07419499586769618E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    53: sqrt_qnorm_ratio = 6.07477008188674272E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    54: sqrt_qnorm_ratio = 6.07532180437832547E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    55: sqrt_qnorm_ratio = 6.07585135904340401E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:    56: sqrt_qnorm_ratio = 6.07635986288212759E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    57: sqrt_qnorm_ratio = 6.07684836114378335E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    58: sqrt_qnorm_ratio = 6.07731783345592902E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    57: sqrt_qnorm_ratio = 6.07684836114378424E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    58: sqrt_qnorm_ratio = 6.07731783345592724E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:    59: sqrt_qnorm_ratio = 6.07776919925229997E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    60: sqrt_qnorm_ratio = 6.07820332259953844E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    60: sqrt_qnorm_ratio = 6.07820332259953933E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:    61: sqrt_qnorm_ratio = 6.07862101650683417E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    62: sqrt_qnorm_ratio = 6.07902304678919769E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    62: sqrt_qnorm_ratio = 6.07902304678919592E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:    63: sqrt_qnorm_ratio = 6.07941013554390874E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    64: sqrt_qnorm_ratio = 6.07978296429045884E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    65: sqrt_qnorm_ratio = 6.08014217681656177E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    66: sqrt_qnorm_ratio = 6.08048838176628603E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    67: sqrt_qnorm_ratio = 6.08082215500111634E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    68: sqrt_qnorm_ratio = 6.08114404176002665E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    69: sqrt_qnorm_ratio = 6.08145455864113682E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    70: sqrt_qnorm_ratio = 6.08175419542407703E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    64: sqrt_qnorm_ratio = 6.07978296429045972E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    65: sqrt_qnorm_ratio = 6.08014217681655911E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    66: sqrt_qnorm_ratio = 6.08048838176629136E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    67: sqrt_qnorm_ratio = 6.08082215500111278E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    68: sqrt_qnorm_ratio = 6.08114404176002488E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    69: sqrt_qnorm_ratio = 6.08145455864113949E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    70: sqrt_qnorm_ratio = 6.08175419542407525E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:    71: sqrt_qnorm_ratio = 6.08204341674979254E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    72: sqrt_qnorm_ratio = 6.08232266367208130E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    73: sqrt_qnorm_ratio = 6.08259235509343110E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    74: sqrt_qnorm_ratio = 6.08285288909599942E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    72: sqrt_qnorm_ratio = 6.08232266367207952E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    73: sqrt_qnorm_ratio = 6.08259235509343377E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    74: sqrt_qnorm_ratio = 6.08285288909599853E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:    75: sqrt_qnorm_ratio = 6.08310464417734398E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    76: sqrt_qnorm_ratio = 6.08334798039933577E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    77: sqrt_qnorm_ratio = 6.08358324045765908E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    78: sqrt_qnorm_ratio = 6.08381075067857946E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    79: sqrt_qnorm_ratio = 6.08403082194880707E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    80: sqrt_qnorm_ratio = 6.08424375058386335E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    76: sqrt_qnorm_ratio = 6.08334798039933400E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    77: sqrt_qnorm_ratio = 6.08358324045766174E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    78: sqrt_qnorm_ratio = 6.08381075067857768E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    79: sqrt_qnorm_ratio = 6.08403082194881062E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    80: sqrt_qnorm_ratio = 6.08424375058386158E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:    81: sqrt_qnorm_ratio = 6.08444981913958660E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    82: sqrt_qnorm_ratio = 6.08464929717119318E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    83: sqrt_qnorm_ratio = 6.08484244194371815E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    84: sqrt_qnorm_ratio = 6.08502949909742252E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    85: sqrt_qnorm_ratio = 6.08521070327136382E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    86: sqrt_qnorm_ratio = 6.08538627868817983E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    87: sqrt_qnorm_ratio = 6.08555643970266225E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    82: sqrt_qnorm_ratio = 6.08464929717119407E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    83: sqrt_qnorm_ratio = 6.08484244194371993E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    84: sqrt_qnorm_ratio = 6.08502949909741897E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    85: sqrt_qnorm_ratio = 6.08521070327136737E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    86: sqrt_qnorm_ratio = 6.08538627868817894E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    87: sqrt_qnorm_ratio = 6.08555643970266047E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:    88: sqrt_qnorm_ratio = 6.08572139131676604E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    89: sqrt_qnorm_ratio = 6.08588132966324658E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    90: sqrt_qnorm_ratio = 6.08603644246010589E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    89: sqrt_qnorm_ratio = 6.08588132966325102E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    90: sqrt_qnorm_ratio = 6.08603644246010322E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:    91: sqrt_qnorm_ratio = 6.08618690943778251E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    92: sqrt_qnorm_ratio = 6.08633290274093408E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    93: sqrt_qnorm_ratio = 6.08647458730646829E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    94: sqrt_qnorm_ratio = 6.08661212121939332E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    95: sqrt_qnorm_ratio = 6.08674565604796225E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    96: sqrt_qnorm_ratio = 6.08687533715942930E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    92: sqrt_qnorm_ratio = 6.08633290274093230E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    93: sqrt_qnorm_ratio = 6.08647458730647095E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    94: sqrt_qnorm_ratio = 6.08661212121939155E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    95: sqrt_qnorm_ratio = 6.08674565604796403E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    96: sqrt_qnorm_ratio = 6.08687533715942841E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:    97: sqrt_qnorm_ratio = 6.08700130401769268E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    98: sqrt_qnorm_ratio = 6.08712369046399893E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:    99: sqrt_qnorm_ratio = 6.08724262498178081E+00. (max eigen value of hermop_sym2)
-find_max_eigen_value_hermop_sym2:   100: sqrt_qnorm_ratio = 6.08735823094666095E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    98: sqrt_qnorm_ratio = 6.08712369046399981E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:    99: sqrt_qnorm_ratio = 6.08724262498178259E+00. (max eigen value of hermop_sym2)
+find_max_eigen_value_hermop_sym2:   100: sqrt_qnorm_ratio = 6.08735823094665740E+00. (max eigen value of hermop_sym2)
 testing multiply_m_full and multiply_m
 1.424626E+01, 1.424626E+01 qnorm(diff) = 0.000000E+00
 qnorm(diff after qnormalization) = 0.000000E+00
 2.190967E+01, 2.190967E+01 qnorm(diff) = 8.548820E-32
 qnorm(diff after qnormalization) = 5.119905E-33
 1.618527E+02, 1.618527E+02 qnorm(diff) = 3.645712E-30
-qnorm(diff after qnormalization) = 4.360319E-32
-2.790764E+03, 2.790764E+03 qnorm(diff) = 1.571969E-28
-qnorm(diff after qnormalization) = 8.422143E-32
-3.217821E+03, 3.217821E+03 qnorm(diff) = 3.324852E-28
-qnorm(diff after qnormalization) = 8.050213E-32
-4.069080E+03, 4.069080E+03 qnorm(diff) = 3.675388E-28
-qnorm(diff after qnormalization) = 7.066343E-32
-5.287321E+03, 5.287321E+03 qnorm(diff) = 3.364565E-28
-qnorm(diff after qnormalization) = 6.519383E-32
-5.408037E+03, 5.408037E+03 qnorm(diff) = 3.261876E-28
-qnorm(diff after qnormalization) = 6.446859E-32
-5.057906E+03, 5.057906E+03 qnorm(diff) = 3.031822E-28
-qnorm(diff after qnormalization) = 6.282250E-32
-4.987892E+03, 4.987892E+03 qnorm(diff) = 3.163131E-28
-qnorm(diff after qnormalization) = 6.659799E-32
-5.281433E+03, 5.281433E+03 qnorm(diff) = 3.522206E-28
-qnorm(diff after qnormalization) = 7.048298E-32
-5.628790E+03, 5.628790E+03 qnorm(diff) = 3.930824E-28
-qnorm(diff after qnormalization) = 7.024816E-32
-5.745833E+03, 5.745833E+03 qnorm(diff) = 3.640519E-28
-qnorm(diff after qnormalization) = 6.653744E-32
-5.657254E+03, 5.657254E+03 qnorm(diff) = 3.648213E-28
-qnorm(diff after qnormalization) = 6.795845E-32
-5.502695E+03, 5.502695E+03 qnorm(diff) = 3.557579E-28
-qnorm(diff after qnormalization) = 6.716140E-32
-5.378101E+03, 5.378101E+03 qnorm(diff) = 3.396695E-28
-qnorm(diff after qnormalization) = 6.652036E-32
-5.347313E+03, 5.347313E+03 qnorm(diff) = 3.433927E-28
-qnorm(diff after qnormalization) = 6.691078E-32
-5.465870E+03, 5.465870E+03 qnorm(diff) = 3.804615E-28
-qnorm(diff after qnormalization) = 7.270777E-32
-5.748435E+03, 5.748435E+03 qnorm(diff) = 4.160503E-28
-qnorm(diff after qnormalization) = 8.742186E-32
-6.107181E+03, 6.107181E+03 qnorm(diff) = 5.084717E-28
-qnorm(diff after qnormalization) = 8.698050E-32
+qnorm(diff after qnormalization) = 2.664853E-32
+2.790764E+03, 2.790764E+03 qnorm(diff) = 9.124499E-29
+qnorm(diff after qnormalization) = 3.176727E-32
+3.217821E+03, 3.217821E+03 qnorm(diff) = 1.304018E-28
+qnorm(diff after qnormalization) = 4.431768E-32
+4.069080E+03, 4.069080E+03 qnorm(diff) = 1.948311E-28
+qnorm(diff after qnormalization) = 9.443764E-32
+5.287321E+03, 5.287321E+03 qnorm(diff) = 4.716538E-28
+qnorm(diff after qnormalization) = 5.767673E-32
+5.408037E+03, 5.408037E+03 qnorm(diff) = 2.815718E-28
+qnorm(diff after qnormalization) = 5.500772E-32
+5.057906E+03, 5.057906E+03 qnorm(diff) = 2.765058E-28
+qnorm(diff after qnormalization) = 6.447752E-32
+4.987892E+03, 4.987892E+03 qnorm(diff) = 3.425705E-28
+qnorm(diff after qnormalization) = 7.182494E-32
+5.281433E+03, 5.281433E+03 qnorm(diff) = 3.669412E-28
+qnorm(diff after qnormalization) = 8.710487E-32
+5.628790E+03, 5.628790E+03 qnorm(diff) = 4.689971E-28
+qnorm(diff after qnormalization) = 7.519088E-32
+5.745833E+03, 5.745833E+03 qnorm(diff) = 4.122939E-28
+qnorm(diff after qnormalization) = 6.393493E-32
+5.657254E+03, 5.657254E+03 qnorm(diff) = 3.305764E-28
+qnorm(diff after qnormalization) = 1.372751E-31
+5.502695E+03, 5.502695E+03 qnorm(diff) = 7.006302E-28
+qnorm(diff after qnormalization) = 7.881993E-32
+5.378101E+03, 5.378101E+03 qnorm(diff) = 4.103892E-28
+qnorm(diff after qnormalization) = 6.256642E-32
+5.347313E+03, 5.347313E+03 qnorm(diff) = 3.184009E-28
+qnorm(diff after qnormalization) = 7.607114E-32
+5.465870E+03, 5.465870E+03 qnorm(diff) = 3.928101E-28
+qnorm(diff after qnormalization) = 7.569864E-32
+5.748435E+03, 5.748435E+03 qnorm(diff) = 4.184066E-28
+qnorm(diff after qnormalization) = 6.831833E-32
+6.107181E+03, 6.107181E+03 qnorm(diff) = 3.774477E-28
+qnorm(diff after qnormalization) = 6.487915E-32
 testing multiply_m_full and multiply_m_with_prec_sym2
 1.424626E+01, 1.424626E+01 qnorm(diff) = 2.407940E-31
 qnorm(diff after qnormalization) = 1.806438E-32
 2.190967E+01, 2.190967E+01 qnorm(diff) = 1.335279E-29
 qnorm(diff after qnormalization) = 6.033906E-31
 1.618527E+02, 1.618527E+02 qnorm(diff) = 2.019076E-27
-qnorm(diff after qnormalization) = 1.216848E-29
-2.790764E+03, 2.790764E+03 qnorm(diff) = 4.855039E-26
-qnorm(diff after qnormalization) = 1.739760E-29
-3.217821E+03, 3.217821E+03 qnorm(diff) = 8.564267E-26
-qnorm(diff after qnormalization) = 2.646325E-29
-4.069080E+03, 4.069080E+03 qnorm(diff) = 1.498215E-25
-qnorm(diff after qnormalization) = 3.682031E-29
-5.287321E+03, 5.287321E+03 qnorm(diff) = 2.093569E-25
-qnorm(diff after qnormalization) = 3.926505E-29
-5.408037E+03, 5.408037E+03 qnorm(diff) = 2.102201E-25
-qnorm(diff after qnormalization) = 3.870490E-29
-5.057906E+03, 5.057906E+03 qnorm(diff) = 1.986858E-25
-qnorm(diff after qnormalization) = 3.934768E-29
-4.987892E+03, 4.987892E+03 qnorm(diff) = 2.043377E-25
-qnorm(diff after qnormalization) = 4.095621E-29
-5.281433E+03, 5.281433E+03 qnorm(diff) = 2.238441E-25
-qnorm(diff after qnormalization) = 4.227446E-29
-5.628790E+03, 5.628790E+03 qnorm(diff) = 2.393295E-25
-qnorm(diff after qnormalization) = 4.247518E-29
-5.745833E+03, 5.745833E+03 qnorm(diff) = 2.413620E-25
-qnorm(diff after qnormalization) = 4.199461E-29
-5.657254E+03, 5.657254E+03 qnorm(diff) = 2.344358E-25
-qnorm(diff after qnormalization) = 4.144344E-29
-5.502695E+03, 5.502695E+03 qnorm(diff) = 2.228584E-25
-qnorm(diff after qnormalization) = 4.058884E-29
-5.378101E+03, 5.378101E+03 qnorm(diff) = 2.140788E-25
-qnorm(diff after qnormalization) = 3.982098E-29
-5.347313E+03, 5.347313E+03 qnorm(diff) = 2.147466E-25
-qnorm(diff after qnormalization) = 4.015175E-29
-5.465870E+03, 5.465870E+03 qnorm(diff) = 2.330294E-25
-qnorm(diff after qnormalization) = 4.264616E-29
-5.748435E+03, 5.748435E+03 qnorm(diff) = 2.701426E-25
-qnorm(diff after qnormalization) = 4.700553E-29
-6.107181E+03, 6.107181E+03 qnorm(diff) = 3.145658E-25
-qnorm(diff after qnormalization) = 5.143119E-29
-m_e_e qnorm(diff) = 5.317276E-32
-mdag_e_e qnorm(diff) = 1.774248E-31
+qnorm(diff after qnormalization) = 1.220754E-29
+2.790764E+03, 2.790764E+03 qnorm(diff) = 4.885052E-26
+qnorm(diff after qnormalization) = 1.732034E-29
+3.217821E+03, 3.217821E+03 qnorm(diff) = 8.576445E-26
+qnorm(diff after qnormalization) = 2.648226E-29
+4.069080E+03, 4.069080E+03 qnorm(diff) = 1.508521E-25
+qnorm(diff after qnormalization) = 3.685442E-29
+5.287321E+03, 5.287321E+03 qnorm(diff) = 2.093110E-25
+qnorm(diff after qnormalization) = 3.946898E-29
+5.408037E+03, 5.408037E+03 qnorm(diff) = 2.108428E-25
+qnorm(diff after qnormalization) = 3.892756E-29
+5.057906E+03, 5.057906E+03 qnorm(diff) = 2.003221E-25
+qnorm(diff after qnormalization) = 3.950222E-29
+4.987892E+03, 4.987892E+03 qnorm(diff) = 2.061505E-25
+qnorm(diff after qnormalization) = 4.140357E-29
+5.281433E+03, 5.281433E+03 qnorm(diff) = 2.245254E-25
+qnorm(diff after qnormalization) = 4.250953E-29
+5.628790E+03, 5.628790E+03 qnorm(diff) = 2.411242E-25
+qnorm(diff after qnormalization) = 4.285165E-29
+5.745833E+03, 5.745833E+03 qnorm(diff) = 2.446198E-25
+qnorm(diff after qnormalization) = 4.244505E-29
+5.657254E+03, 5.657254E+03 qnorm(diff) = 2.364543E-25
+qnorm(diff after qnormalization) = 4.176588E-29
+5.502695E+03, 5.502695E+03 qnorm(diff) = 2.250756E-25
+qnorm(diff after qnormalization) = 4.091249E-29
+5.378101E+03, 5.378101E+03 qnorm(diff) = 2.160793E-25
+qnorm(diff after qnormalization) = 4.016639E-29
+5.347313E+03, 5.347313E+03 qnorm(diff) = 2.170461E-25
+qnorm(diff after qnormalization) = 4.072930E-29
+5.465870E+03, 5.465870E+03 qnorm(diff) = 2.374249E-25
+qnorm(diff after qnormalization) = 4.326050E-29
+5.748435E+03, 5.748435E+03 qnorm(diff) = 2.742393E-25
+qnorm(diff after qnormalization) = 4.770712E-29
+6.107181E+03, 6.107181E+03 qnorm(diff) = 3.200923E-25
+qnorm(diff after qnormalization) = 5.237971E-29
+m_e_e qnorm(diff) = 5.720239E-32
+mdag_e_e qnorm(diff) = 1.559294E-31
 qnorm = 4.999825E-01, dot = 4.999825E-01
-dot = ( 1.54658672594264353E+01 + -1.56115759426543033E+00 j)
-dot = ( 1.54658672594264566E+01 + -1.56115759426543077E+00 j)
-dot = ( 1.50573546380568662E-02 +  2.23739510093451562E-03 j)
-dot = ( 1.50573546380568402E-02 +  2.23739510093451301E-03 j)
-dot = ( 7.63806233839045774E+01 +  1.22923045064885645E+01 j)
-dot = ( 7.63806233839048332E+01 +  1.22923045064886374E+01 j)
+dot = ( 1.54658672594264637E+01 + -1.56115759426543610E+00 j)
+dot = ( 1.54658672594264708E+01 + -1.56115759426543410E+00 j)
+dot = ( 1.50573546380568593E-02 +  2.23739510093450347E-03 j)
+dot = ( 1.50573546380568767E-02 +  2.23739510093450694E-03 j)
+dot = ( 7.63806233839045206E+01 +  1.22923045064885841E+01 j)
+dot = ( 7.63806233839050321E+01 +  1.22923045064887084E+01 j)
 qnorm = 5.000175E-01, dot = 5.000175E-01
 multiply qnorm = 4.382773E+00
 cg_with_f: start max_num_iter=50000        sqrt(qnorm_in)=2.094E+00 stop_rsd=1.000E-08 
-cg_with_f: final iter= 167 sqrt(qnorm_r/qnorm_in)=8.960E-09 stop_rsd=1.000E-08
+cg_with_f: final iter= 167 sqrt(qnorm_r/qnorm_in)=8.963E-09 stop_rsd=1.000E-08
 qnorm = 5.000175E-01
-diff qnorm = 4.404034E-14
+diff qnorm = 4.404897E-14
 orig qnorm = 1.000000E+00
 tmp qnorm = 6.381193E+03
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 3.803129E+03
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=2.947E+03 stop_rsd=1.000E-12 
-cg_with_f: final max_num_iter= 200 sqrt(qnorm_r/qnorm_in)=1.329E-09 stop_rsd=1.000E-12
-cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=3.916E-06 stop_rsd=7.525E-04 
-cg_with_f: final iter= 122 sqrt(qnorm_r/qnorm_in)=6.457E-04 stop_rsd=7.525E-04
+cg_with_f: final max_num_iter= 200 sqrt(qnorm_r/qnorm_in)=1.299E-09 stop_rsd=1.000E-12
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=3.827E-06 stop_rsd=7.698E-04 
+cg_with_f: final iter= 122 sqrt(qnorm_r/qnorm_in)=6.614E-04 stop_rsd=7.698E-04
 invert_with_cg(5d,5d,inv,cg): total_iter=323 cycle=2 stop_rsd=1.000E-12
-invert_with_cg(5d,5d,inv,cg): checking 3.783873E-09 from 3.803129E+03
-invert diff qnorm = 1.431769E-17
+invert_with_cg(5d,5d,inv,cg): checking 3.871240E-09 from 3.803129E+03
+invert diff qnorm = 1.498650E-17
 CHECK: finished successfully.
 Cache: 'CommPlanCache': 7 / 32 [16] clear
-clear_mem_cache: 8215808 bytes (0.008 GB) freed.
+clear_mem_cache: 12471040 bytes (0.012 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.
