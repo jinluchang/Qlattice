@@ -18,6 +18,7 @@ q.qremove_all_info("results")
 q.qmkdir_info("results")
 
 rs = q.RngState("seed")
+rs_prop = rs.split("prop")
 
 total_site = [ 4, 4, 4, 8, ]
 geo = q.Geometry(total_site, 1)
@@ -25,11 +26,8 @@ geo = q.Geometry(total_site, 1)
 q.displayln_info(f"CHECK: total_site = {total_site}")
 q.displayln_info(f"CHECK: geo = {geo}")
 
-rs_prop = rs.split("prop")
-
 prop = q.Prop(geo)
 prop.set_rand(rs_prop, 1.0, 0.0)
-
 q.displayln_info(f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm()}")
 
 n_points = 16
