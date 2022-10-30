@@ -607,9 +607,11 @@ void set_selected_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
 template <class M>
 void set_selected_field(SelectedField<M>& sf, const SelectedPoints<M>& sp,
                         const FieldSelection& fsel, const PointSelection& psel)
-// all psel points must be selected
+// Does not clear sf's original value if not assigned
 {
   TIMER("set_selected_field(sf,sp,fsel,psel)");
+  qassert(fsel.f_local_idx.geo().is_only_local);
+  qassert(geo_remult(sf.geo()) == fsel.f_local_idx.geo());
   const long n_points = sp.n_points;
   qassert(n_points == (long)psel.size());
   const Geometry& geo = fsel.f_rank.geo();
@@ -620,11 +622,13 @@ void set_selected_field(SelectedField<M>& sf, const SelectedPoints<M>& sp,
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {
       const long sf_idx = fsel.f_local_idx.get_elem(xl);
-      qassert(0 <= sf_idx and sf_idx < sf.n_elems);
-      const Vector<M> spv = sp.get_elems_const(idx);
-      Vector<M> fv = sf.get_elems(sf_idx);
-      for (int m = 0; m < geo.multiplicity; ++m) {
-        fv[m] = spv[m];
+      if (sf_idx >= 0) {
+        qassert(sf_idx < sf.n_elems);
+        const Vector<M> spv = sp.get_elems_const(idx);
+        Vector<M> fv = sf.get_elems(sf_idx);
+        for (int m = 0; m < geo.multiplicity; ++m) {
+          fv[m] = spv[m];
+        }
       }
     }
   });
@@ -633,7 +637,7 @@ void set_selected_field(SelectedField<M>& sf, const SelectedPoints<M>& sp,
 template <class M>
 void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
                          const PointSelection& psel, const FieldSelection& fsel)
-// all psel points must be selected
+// only assign available points
 {
   TIMER("set_selected_points(sp,sf,psel,fsel)");
   const Geometry& geo = sf.geo();
@@ -646,11 +650,13 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {
       const long sf_idx = fsel.f_local_idx.get_elem(xl);
-      qassert(0 <= sf_idx and sf_idx < sf.n_elems);
-      const Vector<M> fv = sf.get_elems_const(sf_idx);
-      Vector<M> spv = sp.get_elems(idx);
-      for (int m = 0; m < geo.multiplicity; ++m) {
-        spv[m] = fv[m];
+      if (sf_idx >= 0) {
+        qassert(sf_idx < sf.n_elems);
+        const Vector<M> fv = sf.get_elems_const(sf_idx);
+        Vector<M> spv = sp.get_elems(idx);
+        for (int m = 0; m < geo.multiplicity; ++m) {
+          spv[m] = fv[m];
+        }
       }
     }
   });

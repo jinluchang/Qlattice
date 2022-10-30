@@ -6,4 +6,11 @@ CHECK: sc_prop1.qnorm() = 0.0
 CHECK: s_prop.qnorm() = 12258.458633053084
 CHECK: s_prop1.qnorm() = 0.0
 CHECK: s_prop2.qnorm() = 0.0
+CHECK: sp_prop.qnorm() = 1545.465159186052
+CHECK: sp_prop1.qnorm() = 0.0
+CHECK: prop_norm.qnorm() = 49114.374940213835
+CHECK: s_prop_norm.qnorm() = 12258.458633053084
+CHECK: s_prop_norm1.qnorm() = 0.0
+CHECK: sp_prop_norm.qnorm() = 1545.465159186052
+CHECK: sp_prop_norm1.qnorm() = 0.0
 CHECK: finished successfully.

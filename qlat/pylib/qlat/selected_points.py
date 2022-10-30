@@ -38,7 +38,7 @@ class SelectedPoints:
             else:
                 raise Exception("SelectedPoints @= psel not match")
         elif isinstance(f1, SelectedField):
-            # psel must be subset of fsel
+            # only assign available points
             c.set_spfield_sfield(self, f1)
         elif isinstance(f1, Field):
             c.set_spfield_field(self, f1)

@@ -39,7 +39,7 @@ class SelectedField:
         elif isinstance(f1, Field):
             c.set_sfield_field(self, f1)
         elif isinstance(f1, SelectedPoints):
-            # psel must be subset of fsel
+            # psel may not have to be subset of fsel
             c.set_sfield_spfield(self, f1)
         else:
             assert False

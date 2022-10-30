@@ -65,6 +65,34 @@ s_prop2 @= sc_prop
 s_prop2 -= s_prop
 q.displayln_info(f"CHECK: s_prop2.qnorm() = {s_prop2.qnorm()}")
 
+sp_prop = q.PselProp(psel)
+sp_prop @= prop
+q.displayln_info(f"CHECK: sp_prop.qnorm() = {sp_prop.qnorm()}")
+
+sp_prop1 = q.PselProp(psel)
+sp_prop1 @= sc_prop
+sp_prop1 -= sp_prop
+q.displayln_info(f"CHECK: sp_prop1.qnorm() = {sp_prop1.qnorm()}")
+
+prop_norm = q.sqrt_double_field(q.qnorm_field(prop))
+q.displayln_info(f"CHECK: prop_norm.qnorm() = {prop_norm.qnorm()}")
+
+s_prop_norm = q.sqrt_double_field(q.qnorm_field(s_prop))
+q.displayln_info(f"CHECK: s_prop_norm.qnorm() = {s_prop_norm.qnorm()}")
+
+s_prop_norm1 = q.SelectedField("double", fsel)
+s_prop_norm1 @= prop_norm
+s_prop_norm1 -= s_prop_norm
+q.displayln_info(f"CHECK: s_prop_norm1.qnorm() = {s_prop_norm1.qnorm()}")
+
+sp_prop_norm = q.sqrt_double_field(q.qnorm_field(sp_prop))
+q.displayln_info(f"CHECK: sp_prop_norm.qnorm() = {sp_prop_norm.qnorm()}")
+
+sp_prop_norm1 = q.SelectedPoints("double", psel)
+sp_prop_norm1 @= prop_norm
+sp_prop_norm1 -= sp_prop_norm
+q.displayln_info(f"CHECK: sp_prop_norm1.qnorm() = {sp_prop_norm1.qnorm()}")
+
 q.timer_display()
 
 q.displayln_info(f"CHECK: finished successfully.")
