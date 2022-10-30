@@ -693,10 +693,14 @@ def get_cexpr_meson_jj():
         op_list = jj_list + m1m2_list
         assert len(op_list) == 15
         mm_list = [
-                mk_pi_0("t_2", True) * mk_pi_0("t_1") + "pi0^dag(x[t]+tsep) * pi0(-tsep)",
-                mk_pi_p("t_2", True) * mk_pi_p("t_1") + "pi+^dag(x[t]+tsep) * pi+(-tsep)",
-                mk_k_0("t_2", True) * mk_k_0("t_1") + "K0^dag(x[t]+tsep) * K0(-tsep)",
-                mk_k_p("t_2", True) * mk_k_p("t_1") + "K+^dag(x[t]+tsep) * K+(-tsep)",
+                mk_pi_0("t_2", True) * mk_pi_0("t_1")
+                + "pi0^dag(x[t]+tsep) * pi0(-tsep)",
+                mk_sym(1)/2 * (mk_pi_p("t_2", True) * mk_pi_p("t_1") + mk_pi_m("t_2", True) * mk_pi_m("t_1"))
+                + "pi+^dag(x[t]+tsep) * pi+(-tsep)",
+                mk_sym(1)/2 * (mk_k_0("t_2", True) * mk_k_0("t_1") + mk_k_0_bar("t_2", True) * mk_k_0_bar("t_1"))
+                + "K0^dag(x[t]+tsep) * K0(-tsep)",
+                mk_sym(1)/2 * (mk_k_p("t_2", True) * mk_k_p("t_1") + mk_k_m("t_2", True) * mk_k_m("t_1"))
+                + "K+^dag(x[t]+tsep) * K+(-tsep)",
                 ]
         assert len(mm_list) == 4
         exprs_self_energy = [ op * mm for mm in mm_list for op in op_list ]
@@ -893,13 +897,6 @@ def get_cexpr_meson_jwjj_t1():
         diagram_type_dict[((('t_1', 'x_1'), 1), (('w', 't_1'), 1), (('x_1', 'w'), 1), (('x_2', 'x_2'), 1))] = None
         diagram_type_dict[((('t_1', 'w'), 1), (('w', 't_1'), 1), (('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
         diagram_type_dict[((('t_1', 'w'), 1), (('w', 't_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1))] = None
-        diagram_type_dict[((('t_2', 'x_1'), 1), (('w', 'x_2'), 1), (('x_1', 'w'), 1), (('x_2', 't_2'), 1))] = 'TypeA3'
-        diagram_type_dict[((('t_2', 'w'), 1), (('w', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_2'), 1))] = 'TypeA4'
-        diagram_type_dict[((('t_2', 'x_1'), 1), (('w', 't_2'), 1), (('x_1', 'x_2'), 1), (('x_2', 'w'), 1))] = 'TypeA4'
-        diagram_type_dict[((('t_2', 'w'), 1), (('w', 'x_1'), 1), (('x_1', 't_2'), 1), (('x_2', 'x_2'), 1))] = None
-        diagram_type_dict[((('t_2', 'x_1'), 1), (('w', 't_2'), 1), (('x_1', 'w'), 1), (('x_2', 'x_2'), 1))] = None
-        diagram_type_dict[((('t_2', 'w'), 1), (('w', 't_2'), 1), (('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
-        diagram_type_dict[((('t_2', 'w'), 1), (('w', 't_2'), 1), (('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1))] = None
         jj_list = [
                 (sum([ mk_j_mu("x_2", mu) * mk_j_mu("x_1", mu) for mu in range(4) ])
                  + "j_mu(x) * j_mu(y)"),
@@ -929,15 +926,13 @@ def get_cexpr_meson_jwjj_t1():
             return mk_jpi_mu(p, mu) + mk_jk_mu(p, mu)
         def mk_jw_a_mu(p, mu):
             return mk_j5pi_mu(p, mu) + mk_j5k_mu(p, mu)
-        mm_list = [
+        jm_list = [
                 mk_jw_a_mu("w", 3) * mk_pi_p("t_1") + "jw_a_t(0) * pi+(-tsep)",
                 mk_jw_a_mu("w", 3) * mk_k_p("t_1") + "jw_a_t(0) * K+(-tsep)",
-                mk_jw_a_mu("w", 3) * mk_pi_p("t_2") + "jw_a_t(0) * pi+(tsep)",
-                mk_jw_a_mu("w", 3) * mk_k_p("t_2") + "jw_a_t(0) * K+(tsep)",
                 ]
-        assert len(mm_list) == 4
-        exprs = [ op * mm for mm in mm_list for op in op_list ]
-        assert len(exprs) == 48
+        assert len(jm_list) == 2
+        exprs = [ op * jm for jm in jm_list for op in op_list ]
+        assert len(exprs) == 24
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
         q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
         cexpr.optimize()

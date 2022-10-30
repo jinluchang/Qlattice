@@ -52,7 +52,7 @@ if [ "$(uname)" == "Darwin" ]; then
     add-to-colon-list LIBRARY_PATH "/usr/local/opt/llvm/lib"
     add-to-colon-list CPATH "/usr/local/opt/openssl@3/include"
     add-to-colon-list CPATH "/usr/local/opt/llvm/include"
-    if [ -z "$USE_COMPILER" ] ; then
+    if [ -z ${USE_COMPILER+x} ] ; then
         export USE_COMPILER=clang
     fi
     export CGPT_EXTRA_LDFLAGS="-undefined dynamic_lookup"
@@ -62,59 +62,59 @@ else
     echo "Setting for $(uname) as if it is a Linux"
 fi
 
-if [ -z "$USE_COMPILER" ] ; then
+if [ -z ${USE_COMPILER+x} ] ; then
     export USE_COMPILER=gcc
 fi
 
-if [ -z "$CC" ] ; then
+if [ -z ${CC+x} ] ; then
     export CC=CC.sh
 fi
 
-if [ -z "$CXX" ] ; then
+if [ -z ${CXX+x} ] ; then
     export CXX=CXX.sh
 fi
 
-if [ -z "$CFLAGS" ] ; then
+if [ -z ${CFLAGS+x} ] ; then
     export CFLAGS=
 fi
 
-if [ -z "$CXXFLAGS" ] ; then
+if [ -z ${CXXFLAGS+x} ] ; then
     export CXXFLAGS=
 fi
 
-if [ -z "$LDFLAGS" ] ; then
+if [ -z ${LDFLAGS+x} ] ; then
     export LDFLAGS=
 fi
 
-if [ -z "$LIBS" ] ; then
+if [ -z ${LIBS+x} ] ; then
     export LIBS=
 fi
 
-if [ -z "$MPICC" ] ; then
+if [ -z ${MPICC+x} ] ; then
     export MPICC=MPICC.sh
 fi
 
-if [ -z "$MPICXX" ] ; then
+if [ -z ${MPICXX+x} ] ; then
     export MPICXX=MPICXX.sh
 fi
 
-if [ -z "$QLAT_CXX" ] ; then
+if [ -z ${QLAT_CXX+x} ] ; then
     export QLAT_CXX=CXX.sh
 fi
 
-if [ -z "$QLAT_MPICXX" ] ; then
+if [ -z ${QLAT_MPICXX+x} ] ; then
     export QLAT_MPICXX=MPICXX.sh
 fi
 
-if [ -z "$NPY_BLAS_ORDER" ] ; then
+if [ -z ${NPY_BLAS_ORDER+x} ] ; then
     export NPY_BLAS_ORDER=openblas
 fi
 
-if [ -z "$NPY_LAPACK_ORDER" ] ; then
+if [ -z ${NPY_LAPACK_ORDER+x} ] ; then
     export NPY_LAPACK_ORDER=openblas
 fi
 
-if [ -z "$NPY_NUM_BUILD_JOBS" ] ; then
+if [ -z ${NPY_NUM_BUILD_JOBS+x} ] ; then
     export NPY_NUM_BUILD_JOBS=$num_proc
 fi
 
