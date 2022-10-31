@@ -709,14 +709,15 @@ def run_get_prop(job_tag, traj, *, get_gt, get_psel, get_fsel, get_psel_smear, g
         for pt in prop_types:
             prop_load_dict[pt]()
         #
-        # prop_lookup_cache[(pos_src, type_src, type_snk,)] == get_prop_pos_snk where get_prop_pos_snk(pos_snk) ==> ama_prop
+        # prop_lookup_cache[(pos_src, type_src, type_snk,)] ==> get_prop_pos_snk
+        # where get_prop_pos_snk(pos_snk) ==> ama_prop
         prop_lookup_cache = q.mk_cache(f"prop_lookup_cache", f"{job_tag}", f"{traj}")
         prop_norm_lookup_cache = q.mk_cache(f"prop_norm_lookup_cache", f"{job_tag}", f"{traj}")
         q.timer_display()
         q.timer_merge()
         def get_prop(flavor, p_snk, p_src, *, is_norm_sqrt = False):
             if is_norm_sqrt:
-                return get_prop_norm_lookup_snk_src(prop_lookup_cache, flavor, p_snk, p_src)
+                return get_prop_norm_lookup_snk_src(prop_norm_lookup_cache, flavor, p_snk, p_src)
             else:
                 return get_prop_lookup_snk_src(prop_lookup_cache, flavor, p_snk, p_src)
         return get_prop

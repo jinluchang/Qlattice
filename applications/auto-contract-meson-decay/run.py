@@ -294,8 +294,8 @@ def get_cexpr_meson_f_corr():
         diagram_type_dict = dict()
         diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 't_1'), 1))] = 'Type1'
         exprs = [
-                mk_j5pi_mu("x_1", 3) * mk_pi_p("t_1") + "A_pi(t_sep) * pi+(0)",
-                mk_j5k_mu("x_1", 3)  * mk_k_p("t_1") + "A_K(t_sep) * K+(0)",
+                mk_j5pi_mu("x_1", 3) * mk_pi_p("t_1") + "A_pi(0) * pi+(-t_sep)",
+                mk_j5k_mu("x_1", 3)  * mk_k_p("t_1") + "A_K(0) * K+(-t_sep)",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
         q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
@@ -890,9 +890,9 @@ def get_cexpr_meson_jwjj_t1():
     fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_jwjj_t1"
     def calc_cexpr():
         diagram_type_dict = dict()
-        diagram_type_dict[((('t_1', 'x_1'), 1), (('w', 'x_2'), 1), (('x_1', 'w'), 1), (('x_2', 't_1'), 1))] = 'TypeA1'
-        diagram_type_dict[((('t_1', 'w'), 1), (('w', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'TypeA2'
-        diagram_type_dict[((('t_1', 'x_1'), 1), (('w', 't_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 'w'), 1))] = 'TypeA2'
+        diagram_type_dict[((('t_1', 'x_1'), 1), (('w', 'x_2'), 1), (('x_1', 'w'), 1), (('x_2', 't_1'), 1))] = 'Type1'
+        diagram_type_dict[((('t_1', 'w'), 1), (('w', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'Type2'
+        diagram_type_dict[((('t_1', 'x_1'), 1), (('w', 't_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 'w'), 1))] = 'Type2'
         diagram_type_dict[((('t_1', 'w'), 1), (('w', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))] = None
         diagram_type_dict[((('t_1', 'x_1'), 1), (('w', 't_1'), 1), (('x_1', 'w'), 1), (('x_2', 'x_2'), 1))] = None
         diagram_type_dict[((('t_1', 'w'), 1), (('w', 't_1'), 1), (('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
@@ -959,8 +959,52 @@ def auto_contract_meson_jwjj_t1(job_tag, traj, get_prop, get_psel, get_fsel):
     r_limit = get_r_limit(total_site)
     n_points = len(xg_psel_list)
     n_pairs = n_points * (n_points - 1) // 2 + n_points
+    #
+    threshold = rup.dict_params[job_tag]["meson_jwjj_t1_threshold"]
+    u_rand_prob = q.SelectedField("double", fsel, 1)
+    u_rand_prob.set_rand(q.RngState(f"auto_contract_meson_jwjj_t1,{job_tag},{traj}"), 1.0, 0.0)
+    fn_meson_corr = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"
+    if get_load_path(fn_meson_corr) is None:
+        q.displayln_info("auto_contract_meson_jwjj_t1: '{fn_meson_corr}' does not exist. Skipping.")
+        return
+    ld_meson_corr = q.load_lat_data(get_load_path(fn_meson_corr))
+    arr_meson_corr = ld_meson_corr.to_numpy()
+    def get_corr(t_op, t_meson, meson_type):
+        # meson_type = 0 (for pion)
+        # meson_type = 1 (for kaon)
+        t = (t_op - t_meson) % t_size
+        return abs(arr_meson_corr[meson_type, t].item())
+    def get_prop_norm_sqrt(*args):
+        return ama_extract(get_prop(*args, is_norm_sqrt = True), is_sloppy = True)
+    def get_estimate(xg_snk, xg1_src, xg2_src, t_1):
+        meson_type = 0
+        corr = get_corr(xg_snk[3], t_1, meson_type)
+        w = ("point-snk", xg_snk,)
+        x_1 = ("point", xg1_src,)
+        x_2 = ("point", xg2_src,)
+        t_1s = ("wall", t_1,)
+        p1t = get_prop_norm_sqrt("l", x_1, t_1s)
+        p2t = get_prop_norm_sqrt("l", x_2, t_1s)
+        p1w = get_prop_norm_sqrt("l", x_1, w)
+        p2w = get_prop_norm_sqrt("l", x_2, w)
+        return p1t * p2t * p1w * p2w / corr
+    def get_weight(idx_snk, xg_snk, xg1_src, xg2_src, t_1):
+        # return weight for this point (1 / prob or zero)
+        est = get_estimate(xg_snk, xg1_src, xg2_src, t_1)
+        prob = est / threshold
+        q.displayln_info(5, f"get_weight: {prob} {est} {threshold}")
+        if prob >= 1:
+            return 1
+        rand = u_rand_prob.get_elem(idx_snk).item()
+        if rand < prob:
+            return 1.0 / prob
+        else:
+            return 0
+    #
     def load_data():
         idx_pair = 0
+        n_total = 0
+        n_selected = 0
         for idx1, xg1_src in enumerate(xg_psel_list):
             xg1_src = tuple(xg1_src.tolist())
             xg1_src_t = xg1_src[3]
@@ -971,40 +1015,46 @@ def auto_contract_meson_jwjj_t1(job_tag, traj, get_prop, get_psel, get_fsel):
                 if idx2 > idx1:
                     continue
                 idx_pair += 1
-                q.displayln_info(f"auto_contract_meson_jwjj_t1: {idx_pair}/{n_pairs} {xg1_src} {xg2_src}")
-                for xg_snk in xg_fsel_list:
+                q.displayln_info(1, f"auto_contract_meson_jwjj_t1: {idx_pair}/{n_pairs} {xg1_src} {xg2_src}")
+                for idx_snk, xg_snk in enumerate(xg_fsel_list):
                     xg_snk = tuple(xg_snk.tolist())
                     xg_t = xg_snk[3]
                     xg1_xg_t = q.rel_mod(xg1_src_t - xg_t, t_size)
                     xg2_xg_t = q.rel_mod(xg2_src_t - xg_t, t_size)
                     t_2 = (max(0, xg1_xg_t, xg2_xg_t) + xg_t + tsep) % total_site[3]
                     t_1 = (min(0, xg1_xg_t, xg2_xg_t) + xg_t - tsep) % total_site[3]
+                    weight = get_weight(idx_snk, xg_snk, xg1_src, xg2_src, t_1)
+                    n_total += 1
+                    if weight == 0:
+                        continue
+                    n_selected += 1
                     pd = {
                             "w" : ("point-snk", xg_snk,),
                             "x_1" : ("point", xg1_src,),
                             "x_2" : ("point", xg2_src,),
-                            "t_2" : ("wall", t_2),
-                            "t_1" : ("wall", t_1),
+                            "t_2" : ("wall", t_2,),
+                            "t_1" : ("wall", t_1,),
                             "size" : total_site,
                             }
                     t1 = t_1 % t_size
                     t2 = t_2 % t_size
                     r = get_r(x_rel)
-                    yield pd, t1, t2, r
+                    yield weight, pd, t1, t2, r
+                q.displayln_info(1, f"auto_contract_meson_jwjj_t1: {idx_pair}/{n_pairs} n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
     @q.timer
     def feval(args):
-        pd, t1, t2, r = args
+        weight, pd, t1, t2, r = args
         val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
-        return val, t1, t2, r
+        return weight, val, t1, t2, r
     def sum_function(val_list):
         counts = np.zeros((t_size, t_size, r_limit,), dtype = complex)
         values = np.zeros((t_size, t_size, r_limit, len(expr_names),), dtype = complex)
-        for val, t1, t2, r in val_list:
+        for weight, val, t1, t2, r in val_list:
             r_idx_low, r_idx_high, coef_low, coef_high = get_interp_idx_coef(r, r_limit)
-            counts[t1, t2, r_idx_low] += coef_low
-            counts[t1, t2, r_idx_high] += coef_high
-            values[t1, t2, r_idx_low] += coef_low * val
-            values[t1, t2, r_idx_high] += coef_high * val
+            counts[t1, t2, r_idx_low] += coef_low * weight
+            counts[t1, t2, r_idx_high] += coef_high * weight
+            values[t1, t2, r_idx_low] += coef_low * weight * val
+            values[t1, t2, r_idx_high] += coef_high * weight * val
         return counts, values
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum(
@@ -1100,15 +1150,15 @@ def run_job(job_tag, traj):
             q.timer_fork()
             get_prop = get_get_prop()
             # ADJUST ME
+            auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contract_meson_jwjj_t1(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel)
-            auto_contract_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel)
-            auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
+            auto_contract_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contract_meson_f_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contract_meson_f_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
             #
