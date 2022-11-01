@@ -584,7 +584,7 @@ def main():
     load_observables()
     print(len(psq_list))
     
-    hmc = HMC(m_sq,lmbd,alpha,total_site,mult,steps, recalculate_masses, fresh_start)
+    hmc = HMC(m_sq,lmbd,alpha,total_site,mult,steps,mass_force_coef,recalculate_masses,fresh_start)
     
     # Create the geometry for the axial current field
     geo_cur = q.Geometry(total_site, 3)
@@ -735,7 +735,7 @@ alpha = 0.1
 recalculate_masses = False
 fresh_start = False
 
-version = "1-4"
+version = "1-6"
 date = datetime.datetime.now().date()
 
 for i in range(1,len(sys.argv),2):
