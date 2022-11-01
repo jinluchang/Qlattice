@@ -133,7 +133,7 @@ class HMC:
         self.V = self.Vx*total_site[3]
         self.total_site = total_site
         
-        self.fileid = f"{self.total_site[0]}x{self.total_site[3]}_msq_{self.m_sq}_lmbd_{self.lmbd}_alph_{self.alpha}_{datetime.datetime.now().date()}_{version}"
+        self.fileid = f"{self.total_site[0]}x{self.total_site[3]}_msq_{self.m_sq}_lmbd_{self.lmbd}_alph_{self.alpha}_{date}_{version}"
         self.fileidwc = f"{self.total_site[0]}x{self.total_site[3]}_msq_{self.m_sq}_lmbd_{self.lmbd}_alph_{self.alpha}_*_{version}"
         
         # The number of trajectories to calculate before taking measurements
@@ -525,7 +525,7 @@ def update_theta_dist(elems,norm_factor):
         theta_dist[histogram_bin(np.pi/2+np.arccos(elems[0]/phi_sq**0.5),np.pi/2,6)]+=1.0/norm_factor
 
 def save_observables():
-    with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}_{version}.bin", "wb") as output:
+    with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{date}_{version}.bin", "wb") as output:
         pickle.dump({"accept_rates": accept_rates, 
                     "psq_list": psq_list, 
                     "phi_list": phi_list, 
@@ -546,7 +546,7 @@ def save_observables():
                     "field_pred": fields_pred},output)
 
 def load_observables():
-    filename = f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}_{version}.bin"
+    filename = f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{date}_{version}.bin"
     if len(glob.glob(filename)):
         with open(filename,"rb") as input:
             data = pickle.load(input)
@@ -722,6 +722,7 @@ recalculate_masses = False
 fresh_start = False
 
 version = "1-4"
+date = datetime.datetime.now().date()
 
 for i in range(1,len(sys.argv),2):
     try:
