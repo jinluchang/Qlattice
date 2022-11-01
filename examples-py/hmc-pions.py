@@ -123,12 +123,13 @@ class Field_fft:
                 [field_ft.get_elem([0,0,0,0],1),field_ft.get_elem([1,0,0,0],1),field_ft.get_elem([0,2,0,0],1),field_ft.get_elem([3,0,0,0],1)]]
 
 class HMC:
-    def __init__(self, m_sq, lmbd, alpha, total_site, mult, steps, recalculate_masses, fresh_start):
+    def __init__(self, m_sq, lmbd, alpha, total_site, mult, steps, mass_force_coef, recalculate_masses, fresh_start):
         self.m_sq = m_sq
         self.lmbd = lmbd
         self.alpha = alpha
         self.mult = mult
         self.steps = steps
+        self.mass_force_coef = mass_force_coef
         self.Vx = total_site[0]*total_site[1]*total_site[2]
         self.V = self.Vx*total_site[3]
         self.total_site = total_site
@@ -250,7 +251,7 @@ class HMC:
         # (pi/2)**(-2), we have our estimated masses
         self.masses *= 4/np.pi**2
         # A safer method for estimating the masses away from equilibrium
-        self.force_mod_av*=1.0/self.divisor/10.0
+        self.force_mod_av*=1.0/self.divisor/self.mass_force_coef
         # Choose the larger of the two choices
         self.choose_larger(self.masses, self.force_mod_av)
         self.aux2.set_unit()
@@ -715,6 +716,9 @@ mult = 4
 n_traj = 1000
 # The number of steps to take in a single trajectory
 steps = 20
+# The factor by which to scale down the force when setting a lower limit
+# on Fourier acceleration masses
+mass_force_coef = 1000.0
 
 # Use action for a Euclidean scalar field. The Lagrangian will be:
 # (1/2)*[sum i]|dphi_i|^2 + (1/2)*m_sq*[sum i]|phi_i|^2
@@ -746,12 +750,14 @@ for i in range(1,len(sys.argv),2):
             alpha = float(sys.argv[i+1])
         elif(sys.argv[i]=="-s"):
             steps = int(sys.argv[i+1])
+        elif(sys.argv[i]=="-f"):
+            mass_force_coef = float(sys.argv[i+1])
         elif(sys.argv[i]=="-r"):
             recalculate_masses = True
         elif(sys.argv[i]=="-R"):
             fresh_start = True
     except:
-        raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -m for mass squared, -l for lambda, -a for alpha, -s for the number of steps in a trajectory, -r to force recalculating the masses, and -R to force recalculating the masses and the initial field. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1")
+        raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -m for mass squared, -l for lambda, -a for alpha, -s for the number of steps in a trajectory, -f for the factor by which to scale down the force when setting a lower limit for Fourier acceleration masses, -r to force recalculating the masses, and -R to force recalculating the masses and the initial field. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1 -f 100.0")
 
 size_node_list = [
         [1, 1, 1, 1],
