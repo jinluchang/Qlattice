@@ -171,6 +171,9 @@ class HMC:
         
         # Create a field to store the masses used for Fourier acceleration
         self.masses = q.Field("double",geo,mult)
+        # Create a field to store the estimated optimal Fourier accleration
+        # masses before lower bounds are applied
+        self.masses_est = q.Field("double",geo,mult)
         
         if(fresh_start):
             self.masses.set_unit()
@@ -234,6 +237,7 @@ class HMC:
                 self.update_masses_w_fit()
                 self.vev=np.mean(self.vevs)
                 self.masses.save_double(f"output_data/masses_{self.fileid}.field")
+                self.masses_est.save_double(f"output_data/masses_wo_lower_bound_{self.fileid}.field")
             self.run_hmc(self.rs.split("4hmc-{}".format(self.traj)))
         self.traj += 1
     
@@ -250,6 +254,7 @@ class HMC:
         # After multiplying the ratio of force_mod_av/field_mod_av by
         # (pi/2)**(-2), we have our estimated masses
         self.masses *= 4/np.pi**2
+        self.masses_est@=self.masses
         # A safer method for estimating the masses away from equilibrium
         self.force_mod_av*=1.0/self.divisor/self.mass_force_coef
         # Choose the larger of the two choices
