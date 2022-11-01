@@ -526,7 +526,8 @@ def update_theta_dist(elems,norm_factor):
 
 def save_observables():
     with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{date}_{version}.bin", "wb") as output:
-        pickle.dump({"accept_rates": accept_rates, 
+        pickle.dump({"trajs": trajs,
+                    "accept_rates": accept_rates, 
                     "psq_list": psq_list, 
                     "phi_list": phi_list, 
                     "timeslices": timeslices, 
@@ -550,6 +551,7 @@ def load_observables():
     if len(glob.glob(filename)):
         with open(filename,"rb") as input:
             data = pickle.load(input)
+            trajs.extend(data["trajs"])
             accept_rates.extend(data["accept_rates"])
             psq_list.extend(data["psq_list"])
             phi_list.extend(data["phi_list"])
@@ -590,6 +592,7 @@ def main():
     
     for traj in range(1,n_traj+1):
         # Run the HMC algorithm to update the field configuration
+        trajs.append(hmc.traj)
         hmc.run_traj()
 
         # Calculate the expectation values of phi and phi^2
@@ -672,6 +675,8 @@ def main():
     hmc.save_field()
     save_observables()
 
+# Stores the trajectory number for debugging purposes
+trajs = []
 # Stores the average phi^2 for each trajectory
 psq_list=[]
 psq_pred_list=[]
