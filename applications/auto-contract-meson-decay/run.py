@@ -987,7 +987,9 @@ def auto_contract_meson_jwjj_t1(job_tag, traj, get_prop, get_psel, get_fsel):
         p2t = get_prop_norm_sqrt("l", x_2, t_1s)
         p1w = get_prop_norm_sqrt("l", x_1, w)
         p2w = get_prop_norm_sqrt("l", x_2, w)
-        return p1t * p2t * p1w * p2w / corr
+        p1ws = get_prop_norm_sqrt("s", x_1, w)
+        p2ws = get_prop_norm_sqrt("s", x_2, w)
+        return p1t * p2t * (p1w * p2w + 4.0 * p1ws * p2ws) / corr
     def get_weight(idx_snk, xg_snk, xg1_src, xg2_src, t_1):
         # return weight for this point (1 / prob or zero)
         est = get_estimate(xg_snk, xg1_src, xg2_src, t_1)
