@@ -14,8 +14,11 @@ cd $src_dir
 tar xaf $distfiles/$name-*.tar.*
 
 cd $name-*
-./configure \
-    --prefix=$prefix
+./bootstrap \
+    --prefix=$prefix \
+    --parallel=$num_proc \
+    -- \
+    -DCMAKE_BUILD_TYPE:STRING=Release
 make -j$num_proc
 make install
 

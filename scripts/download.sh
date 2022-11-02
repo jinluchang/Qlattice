@@ -40,7 +40,7 @@ dget "autoconf-2.71.tar.gz" "http://ftp.gnu.org/gnu/autoconf/autoconf-2.71.tar.g
 
 dget "automake-1.16.5.tar.gz" "http://ftp.gnu.org/gnu/automake/automake-1.16.5.tar.gz"
 
-dget "cmake-3.21.3.tar.gz" "https://github.com/Kitware/CMake/releases/download/v3.21.3/cmake-3.21.3.tar.gz"
+dget "cmake-3.24.3.tar.gz" "https://github.com/Kitware/CMake/releases/download/v3.24.3/cmake-3.24.3.tar.gz"
 
 dget "hdf5-1.10.7.tar.bz2" "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.7/src/hdf5-1.10.7.tar.bz2"
 
