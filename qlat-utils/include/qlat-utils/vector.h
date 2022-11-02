@@ -214,7 +214,7 @@ inline void displayln_malloc_stats()
 template <class M>
 struct API vector {
   // Avoid copy constructor when possible
-  // (it is likely not be what you think it is)
+  // (it is likely not what you think it is)
   //
   bool is_copy;  // do not free memory if is_copy=true
   bool is_acc; // if place data on cudaMallocManaged memory (default false)
@@ -398,7 +398,7 @@ struct API vector {
 template <class M>
 struct API vector_acc : vector<M> {
   // Avoid copy constructor when possible
-  // (it is likely not be what you think it is)
+  // (it is likely not what you think it is)
   //
   using vector<M>::v;
   using vector<M>::is_copy;
@@ -431,6 +431,36 @@ struct API vector_acc : vector<M> {
     is_copy = false;
     is_acc = true;
     *this = vp;
+  }
+  vector_acc(const vector<M>& vp)
+  {
+#ifndef QLAT_USE_ACC
+    qassert(false);
+#endif
+    is_copy = true;
+    qassert(vp.is_acc);
+    is_acc = vp.is_acc;
+    v = vp.v;
+  }
+  vector_acc(vector<M>&& vp) noexcept
+  {
+    qassert(vp.is_acc);
+    is_copy = vp.is_copy;
+    is_acc = vp.is_acc;
+    v = vp.v;
+    vp.is_copy = true;
+  }
+  ~vector_acc() {}
+  //
+  const vector_acc<M>& operator=(const vector<M>& vp)
+  {
+    this->vector<M>::operator=(vp);
+    return *this;
+  }
+  const vector_acc<M>& operator=(const std::vector<M>& vp)
+  {
+    this->vector<M>::operator=(vp);
+    return *this;
   }
 };
 
