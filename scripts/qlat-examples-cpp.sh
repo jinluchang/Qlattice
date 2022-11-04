@@ -15,9 +15,9 @@ name=qlat-examples-cpp
 
     rsync -a --delete "$wd"/examples-cpp "$build"/
 
-    q_verbose=1 make -C "$build"/examples-cpp compile -j $num_proc || true
+    time q_verbose=1 make -C "$build"/examples-cpp compile -j $num_proc || true
 
-    q_verbose=1 make -C "$build"/examples-cpp run || true
+    time q_verbose=1 make -C "$build"/examples-cpp run || true
 
     cd "$wd"
 

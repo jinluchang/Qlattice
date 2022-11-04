@@ -30,11 +30,11 @@ tests_gpt = \
 			gpt-qlat-rbc-ukqcd-invert.log \
 			gpt-qlat-madwf.log
 
-all: run-all
-
-run-all: run $(tests_gpt)
+all: run run-gpt
 
 run: update-sources $(tests) cqlat-ext.log
+
+run-gpt: update-sources $(tests_gpt)
 
 update-sources:
 	-for i in $(tests) $(tests_gpt) ; do touch "$${i%.log}.py" ; done

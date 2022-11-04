@@ -77,7 +77,7 @@ jobs:
         for i in examples-py/*.log examples-cpp/*/log ; do
           echo $i
           diff $HOME/qlat-build/default/qlat-examples/$i $i | grep 'CHECK: ' || echo Good
-          cp $HOME/qlat-build/default/qlat-examples/$i $i || echo Failed
+          cp $HOME/qlat-build/default/qlat-examples/$i $i
         done
 
     - name: Check error

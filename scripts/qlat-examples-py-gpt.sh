@@ -15,7 +15,7 @@ name=qlat-examples-py
 
     rsync -a --delete "$wd"/examples-py "$build"/
 
-    q_verbose=1 make -C "$build"/examples-py run-all || true
+    time q_verbose=1 make -C "$build"/examples-py run-gpt || true
 
     cd "$wd"
 
