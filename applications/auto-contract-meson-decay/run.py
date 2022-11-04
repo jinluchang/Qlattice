@@ -886,8 +886,8 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
 # ----
 
 @q.timer
-def get_cexpr_meson_jwjj_t1():
-    fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_jwjj_t1"
+def get_cexpr_meson_jwjj():
+    fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_jwjj"
     def calc_cexpr():
         diagram_type_dict = dict()
         diagram_type_dict[((('t_1', 'x_1'), 1), (('w', 'x_2'), 1), (('x_1', 'w'), 1), (('x_2', 't_1'), 1))] = 'Type1'
@@ -942,13 +942,13 @@ def get_cexpr_meson_jwjj_t1():
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
 @q.timer_verbose
-def auto_contract_meson_jwjj_t1(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_jwjj_t1.lat"
-    fn_counts = f"{job_tag}/auto-contract/traj-{traj}/meson_jwjj_t1_counts.lat"
+def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
+    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_jwjj.lat"
+    fn_counts = f"{job_tag}/auto-contract/traj-{traj}/meson_jwjj.lat"
     if get_load_path(fn) is not None:
         assert get_load_path(fn_counts) is not None
         return
-    cexpr = get_cexpr_meson_jwjj_t1()
+    cexpr = get_cexpr_meson_jwjj()
     expr_names = get_cexpr_names(cexpr)
     total_site = rup.get_total_site(job_tag)
     psel = get_psel()
@@ -962,12 +962,12 @@ def auto_contract_meson_jwjj_t1(job_tag, traj, get_prop, get_psel, get_fsel):
     n_points = len(xg_psel_list)
     n_pairs = n_points * (n_points - 1) // 2 + n_points
     #
-    threshold = rup.dict_params[job_tag]["meson_jwjj_t1_threshold"]
+    threshold = rup.dict_params[job_tag]["meson_jwjj_threshold"]
     u_rand_prob = q.SelectedField("double", fsel, 1)
-    u_rand_prob.set_rand(q.RngState(f"auto_contract_meson_jwjj_t1,{job_tag},{traj}"), 1.0, 0.0)
+    u_rand_prob.set_rand(q.RngState(f"auto_contract_meson_jwjj,{job_tag},{traj}"), 1.0, 0.0)
     fn_meson_corr = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"
     if get_load_path(fn_meson_corr) is None:
-        q.displayln_info("auto_contract_meson_jwjj_t1: '{fn_meson_corr}' does not exist. Skipping.")
+        q.displayln_info("auto_contract_meson_jwjj: '{fn_meson_corr}' does not exist. Skipping.")
         return
     ld_meson_corr = q.load_lat_data(get_load_path(fn_meson_corr))
     arr_meson_corr = ld_meson_corr.to_numpy()
@@ -977,10 +977,13 @@ def auto_contract_meson_jwjj_t1(job_tag, traj, get_prop, get_psel, get_fsel):
         t = (t_op - t_meson) % t_size
         return abs(arr_meson_corr[meson_type, t].item())
     def get_prop_norm_sqrt(*args):
-        return ama_extract(get_prop(*args, is_norm_sqrt = True))
+        is_sloppy = False
+        return ama_extract(get_prop(*args, is_norm_sqrt = True), is_sloppy = is_sloppy)
     def get_estimate(xg_snk, xg1_src, xg2_src, t_1, t_2):
-        meson_type = 0
-        corr = get_corr(xg_snk[3], t_1, meson_type)
+        corr1 = get_corr(xg_snk[3], t_1, 0)
+        corr1s = get_corr(xg_snk[3], t_1, 1)
+        corr2 = get_corr(xg_snk[3], t_2, 0)
+        corr2s = get_corr(xg_snk[3], t_2, 1)
         w = ("point-snk", xg_snk,)
         x_1 = ("point", xg1_src,)
         x_2 = ("point", xg2_src,)
@@ -992,14 +995,31 @@ def auto_contract_meson_jwjj_t1(job_tag, traj, get_prop, get_psel, get_fsel):
         p2t2 = get_prop_norm_sqrt("l", x_2, t_2s)
         wt1 = get_prop_norm_sqrt("l", w, t_1s)
         wt2 = get_prop_norm_sqrt("l", w, t_2s)
-        p1w = get_prop_norm_sqrt("l", x_1, w)
-        p2w = get_prop_norm_sqrt("l", x_2, w)
-        p1ws = get_prop_norm_sqrt("s", x_1, w)
-        p2ws = get_prop_norm_sqrt("s", x_2, w)
+        p1t1s = get_prop_norm_sqrt("s", x_1, t_1s)
+        p2t1s = get_prop_norm_sqrt("s", x_2, t_1s)
+        p1t2s = get_prop_norm_sqrt("s", x_1, t_2s)
+        p2t2s = get_prop_norm_sqrt("s", x_2, t_2s)
+        wt1s = get_prop_norm_sqrt("s", w, t_1s)
+        wt2s = get_prop_norm_sqrt("s", w, t_2s)
+        wp1 = get_prop_norm_sqrt("l", x_1, w)
+        wp2 = get_prop_norm_sqrt("l", x_2, w)
+        wp1s = get_prop_norm_sqrt("s", x_1, w)
+        wp2s = get_prop_norm_sqrt("s", x_2, w)
         p1p2 = get_prop_norm_sqrt("l", x_1, x_2)
         p1p2s = get_prop_norm_sqrt("s", x_1, x_2)
-        v1 = (p1t1 * p2t1 + p1t2 * p2t2) * (p1w * p2w + p1ws * p2ws)
-        return v1 / corr
+        values = [
+                2 * (p1t1 * p2t1 / corr1 + p1t2 * p2t2 / corr2) * (wp1 * wp2),
+                2 * (p1t1s * p2t1 / corr1s + p1t2s * p2t2 / corr2s) * (wp1s * wp2),
+                2 * (p1t1 * p2t1s / corr1s + p1t2 * p2t2s / corr2s) * (wp1 * wp2s),
+                5 * (p1t1 * wt1 / corr1 + p1t2 * wt2 / corr2) * (p1p2 * wp2),
+                4 * (p1t1 * wt1s / corr1s + p1t2 * wt2s / corr2s) * (p1p2 * wp2),
+                1 * (p1t1s * wt1 / corr1s + p1t2s * wt2 / corr2s) * (p1p2s * wp2s),
+                5 * (p2t1 * wt1 / corr1 + p2t2 * wt2 / corr2) * (p1p2 * wp1),
+                4 * (p2t1 * wt1s / corr1s + p2t2 * wt2s / corr2s) * (p1p2 * wp1),
+                1 * (p2t1s * wt1 / corr1s + p2t2s * wt2 / corr2s) * (p1p2s * wp1s),
+                ]
+        q.displayln_info(6, f"get_estimate: {values}")
+        return sum(values)
     def get_weight(idx_snk, xg_snk, xg1_src, xg2_src, t_1, t_2):
         # return weight for this point (1 / prob or zero)
         est = get_estimate(xg_snk, xg1_src, xg2_src, t_1, t_2)
@@ -1027,7 +1047,7 @@ def auto_contract_meson_jwjj_t1(job_tag, traj, get_prop, get_psel, get_fsel):
                 if idx2 > idx1:
                     continue
                 idx_pair += 1
-                q.displayln_info(1, f"auto_contract_meson_jwjj_t1: {idx_pair}/{n_pairs} {xg1_src} {xg2_src}")
+                q.displayln_info(1, f"auto_contract_meson_jwjj: {idx_pair}/{n_pairs} {xg1_src} {xg2_src}")
                 for idx_snk, xg_snk in enumerate(xg_fsel_list):
                     xg_snk = tuple(xg_snk.tolist())
                     xg_t = xg_snk[3]
@@ -1052,7 +1072,7 @@ def auto_contract_meson_jwjj_t1(job_tag, traj, get_prop, get_psel, get_fsel):
                     t2 = t_2 % t_size
                     r = get_r(x_rel)
                     yield weight, pd, t1, t2, r
-                q.displayln_info(1, f"auto_contract_meson_jwjj_t1: {idx_pair}/{n_pairs} n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
+                q.displayln_info(1, f"auto_contract_meson_jwjj: {idx_pair}/{n_pairs} n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
     @q.timer
     def feval(args):
         weight, pd, t1, t2, r = args
@@ -1163,7 +1183,7 @@ def run_job(job_tag, traj):
             get_prop = get_get_prop()
             # ADJUST ME
             auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel)
-            auto_contract_meson_jwjj_t1(job_tag, traj, get_prop, get_psel, get_fsel)
+            auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel)
@@ -1189,7 +1209,7 @@ def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_m())
     benchmark_eval_cexpr(get_cexpr_meson_jt())
     benchmark_eval_cexpr(get_cexpr_meson_jj())
-    benchmark_eval_cexpr(get_cexpr_meson_jwjj_t1())
+    benchmark_eval_cexpr(get_cexpr_meson_jwjj())
 
 def test():
     # ADJUST ME

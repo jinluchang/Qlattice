@@ -223,8 +223,8 @@ rup.dict_params["32IH2"][tag] = 8
 rup.dict_params["48I"][tag] = 12
 rup.dict_params["64I"][tag] = 18
 
-tag = "meson_jwjj_t1_threshold"
-rup.dict_params["test-4nt8"][tag] = 1e-4
+tag = "meson_jwjj_threshold"
+rup.dict_params["test-4nt8"][tag] = 0.1
 rup.dict_params["test-4nt16"][tag] = 1
 rup.dict_params["24D"][tag] = 1
 rup.dict_params["32D"][tag] = 1
