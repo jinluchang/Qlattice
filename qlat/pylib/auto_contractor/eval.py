@@ -55,7 +55,7 @@ def eval_cexpr_eval(cexpr : CExpr, *, positions_dict, props):
     assert cexpr.function is not None
     return cexpr.function["cexpr_function_eval"](positions_dict, props)
 
-def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop):
+def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_ama_and_sloppy = False):
     # return 1 dimensional np.array
     # cexpr can be cexpr object or can be a compiled function
     # xg = positions_dict[position]
@@ -63,9 +63,11 @@ def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop):
     # e.g. ("point-snk", [ 1, 2, 3, 4, ]) = positions_dict["x_1"]
     # e.g. flavor = "l"
     # e.g. xg_snk = ("point-snk", [ 1, 2, 3, 4, ])
+    # if is_ama_and_sloppy: return (val_ama, val_sloppy,)
+    # if not is_ama_and_sloppy: return val_ama
     # interface function
     assert cexpr.function is not None
-    return cexpr.function["cexpr_function"](positions_dict = positions_dict, get_prop = get_prop)
+    return cexpr.function["cexpr_function"](positions_dict = positions_dict, get_prop = get_prop, is_ama_and_sloppy = is_ama_and_sloppy)
 
 @q.timer
 def cache_compiled_cexpr(calc_cexpr, fn_base):
@@ -109,7 +111,11 @@ def benchmark_show_check(check):
     return " ".join([ f"{v:.10E}" for v in check ])
 
 @q.timer
-def benchmark_eval_cexpr(cexpr : CExpr, *, benchmark_size = 10, benchmark_num = 10, benchmark_rng_state = None):
+def benchmark_eval_cexpr(cexpr : CExpr, *,
+        benchmark_size = 10,
+        benchmark_num = 10,
+        benchmark_num_ama = 2,
+        benchmark_rng_state = None):
     if benchmark_rng_state is None:
         benchmark_rng_state = q.RngState("benchmark_eval_cexpr")
     expr_names = get_cexpr_names(cexpr)
@@ -165,8 +171,12 @@ def benchmark_eval_cexpr(cexpr : CExpr, *, benchmark_size = 10, benchmark_num = 
     def benchmark_eval_cexpr_run_with_ama():
         res_list = []
         for k in range(benchmark_size):
-            res = eval_cexpr(cexpr, positions_dict = positions_dict_list[k], get_prop = get_prop_ama)
-            res_list.append(res)
+            res1 = eval_cexpr(cexpr, positions_dict = positions_dict_list[k], get_prop = get_prop_ama)
+            res2 = eval_cexpr(cexpr, positions_dict = positions_dict_list[k], get_prop = get_prop)
+            res_ama, res_sloppy = eval_cexpr(cexpr, positions_dict = positions_dict_list[k], get_prop = get_prop_ama, is_ama_and_sloppy = True)
+            assert res1 == res_ama
+            assert res2 == res_sloppy
+            res_list.append(res_ama)
         res = np.array(res_list)
         assert res.shape == (benchmark_size, n_expr,)
         return res
@@ -180,18 +190,19 @@ def benchmark_eval_cexpr(cexpr : CExpr, *, benchmark_size = 10, benchmark_num = 
     def check_res(res):
         return [ np.tensordot(res, cv).item() for cv in check_vector_list ]
     q.displayln_info(f"benchmark_eval_cexpr: benchmark_size={benchmark_size}")
-    check = None
-    check_ama = None
     q.timer_fork(0)
+    check = None
     for i in range(benchmark_num):
         res = benchmark_eval_cexpr_run()
         new_check = check_res(res)
-        res_ama = benchmark_eval_cexpr_run_with_ama()
-        new_check_ama = check_res(res_ama)
         if check is None:
             check = new_check
         else:
             assert check == new_check
+    check_ama = None
+    for i in range(benchmark_num_ama):
+        res_ama = benchmark_eval_cexpr_run_with_ama()
+        new_check_ama = check_res(res_ama)
         if check_ama is None:
             check_ama = new_check_ama
         else:

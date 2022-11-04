@@ -883,13 +883,23 @@ class CExprCodeGenPy:
     def cexpr_function(self):
         append = self.append
         append(f"@timer")
-        append(f"def cexpr_function(*, positions_dict, get_prop):")
+        append(f"def cexpr_function(*, positions_dict, get_prop, is_ama_and_sloppy = False):")
         self.indent += 4
         append(f"# get_props")
         append(f"props = cexpr_function_get_prop(positions_dict, get_prop)")
         append(f"# eval")
-        append(f"val = cexpr_function_eval(positions_dict, props)")
-        append(f"return val")
+        append(f"ama_val = cexpr_function_eval(positions_dict, props)")
+        append(f"# extract sloppy val")
+        append(f"val_sloppy = ama_extract(ama_val, is_sloppy = True)")
+        append(f"# extract AMA val")
+        append(f"val_ama = ama_extract(ama_val)")
+        append(f"# return")
+        append(f"if is_ama_and_sloppy:")
+        append(f"    # return both AMA corrected results and sloppy results")
+        append(f"    return val_ama, val_sloppy")
+        append(f"else:")
+        append(f"    # return AMA corrected results by default")
+        append(f"    return val_ama")
         self.indent -= 4
 
     def cexpr_function_get_prop(self):
@@ -966,12 +976,10 @@ class CExprCodeGenPy:
         append(f"factors = cexpr_function_get_factor(positions_dict)")
         append(f"# apply eval to the factors and AMA props")
         append(f"ama_val = ama_apply2_r(cexpr_function_eval_with_props, factors, ama_props)")
-        append(f"# extract AMA val")
-        append(f"val = ama_extract(ama_val)")
         append(f"# set flops")
         append(f"acc_timer_flops('py:cexpr_function_eval', ama_counts(ama_val) * total_sloppy_flops)")
         append(f"# return")
-        append(f"return val")
+        append(f"return ama_val")
         self.indent -= 4
 
     def cexpr_function_eval_with_props(self):
