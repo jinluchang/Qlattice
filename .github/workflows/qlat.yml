@@ -18,6 +18,7 @@ jobs:
     - name: Set PATH
       run: |
         echo "$HOME/bin" >> $GITHUB_PATH
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
 
     - name: Show info
       run: |

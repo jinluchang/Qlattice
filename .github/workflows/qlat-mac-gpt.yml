@@ -18,7 +18,7 @@ jobs:
     - name: Set PATH
       run: |
         echo "$HOME/bin" >> $GITHUB_PATH
-        echo "/Library/Frameworks/Python.framework/Versions/3.11/bin" >> $GITHUB_PATH
+        echo "$HOME/Library/Python/3.11/bin" >> $GITHUB_PATH
 
     - name: Show info
       run: |
