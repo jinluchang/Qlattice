@@ -48,20 +48,29 @@ jobs:
 
     - name: Download dependencies
       run: |
-        ./scripts/download-core.sh || echo Failed
+        ./scripts/download-core.sh
 
-    - name: Build everything
+    - name: Build dependencies
       run: |
         export num_proc=4
-        ./build.sh default || echo Failed
+        ./scripts/setenv.default.sh
+        ./scripts/fftw_mpi.sh
+        ./scripts/fftwf_mpi.sh
+        ./scripts/cuba.sh
+        ./scripts/eigen.sh
+
+    - name: Build Qlattice
+      run: |
+        export num_proc=4
+        ./scripts/qlat.sh
 
     - name: Testing pylib qlat
       run: |
-        ./scripts/qlat-examples-py.sh || echo Failed
+        ./scripts/qlat-examples-py.sh
 
     - name: Testing qlat
       run: |
-        ./scripts/qlat-examples-cpp.sh || echo Failed
+        ./scripts/qlat-examples-cpp.sh
 
     - name: Copying logs
       run: |
