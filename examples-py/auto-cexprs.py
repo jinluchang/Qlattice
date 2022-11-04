@@ -16,8 +16,6 @@ def get_cexpr_zeros():
                 mk_k_p("t_2", True)     * mk_k_0("t_1")     + "k+^dag  * k0    ",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
-        q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
-        cexpr.optimize()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
@@ -30,8 +28,6 @@ def get_cexpr_meson_corr():
                 mk_k_p("t_2", True)     * mk_k_p("t_1")     + "k^dag  * k    ",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
-        q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
-        cexpr.optimize()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
@@ -44,8 +40,6 @@ def get_cexpr_meson_f_corr():
                 mk_j5k_mu("x_2", 3)     * mk_k_p("t_1")     + "a_k    * k    ",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
-        q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
-        cexpr.optimize()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
@@ -96,8 +90,6 @@ def get_cexpr_meson_bk_bpi_corr():
                 + "(i ubar g5 u') * (u'bar gmu (1-g5) u)(dbar  gmu (1-g5) s) * (i sbar g5 d)",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
-        q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
-        cexpr.optimize()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
@@ -112,8 +104,6 @@ def get_cexpr_meson_corr2():
                 mk_kappa_p("x_2", True) * mk_kappa_p("x_1") + "kappa  * kappa",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
-        q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
-        cexpr.optimize()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
@@ -129,8 +119,6 @@ def get_cexpr_meson_corr3():
                     ),
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
-        q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
-        cexpr.optimize()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
@@ -146,8 +134,6 @@ def get_cexpr_meson_f_corr2():
                     ) + "(a_k  * k )",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
-        q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
-        cexpr.optimize()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
@@ -184,8 +170,6 @@ def get_cexpr_meson_quark_mass():
                     ),
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
-        q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
-        cexpr.optimize()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
@@ -225,8 +209,6 @@ def get_cexpr_meson_jt_zv():
                     ),
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
-        q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
-        cexpr.optimize()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
@@ -253,8 +235,6 @@ def get_cexpr_meson_jj_mm():
                 + f"j_mu j_mu",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
-        q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
-        cexpr.optimize()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
@@ -283,8 +263,6 @@ def get_cexpr_meson_jj_xx():
                 + f"x[a] x[b] j_a j_b",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
-        q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
-        cexpr.optimize()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
@@ -329,8 +307,6 @@ def get_cexpr_meson_jj_mm_types():
             typed_exprs.append((expr, 'Type3'))
             typed_exprs.append((expr, 'Type4'))
         cexpr = contract_simplify_compile(*typed_exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
-        q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
-        cexpr.optimize()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 

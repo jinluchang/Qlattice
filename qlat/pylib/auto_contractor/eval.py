@@ -77,19 +77,41 @@ def cache_compiled_cexpr(calc_cexpr, fn_base):
     # Load the python module and assign function and total_sloppy_flops
     # Return fully loaded cexpr
     # interface function
-    cexpr = q.pickle_cache_call(calc_cexpr, fn_base + ".pickle")
-    if not q.does_file_exist_sync_node(fn_base + ".py"):
-        q.qtouch_info(fn_base + ".py", cexpr_code_gen_py(cexpr))
-        q.qtouch_info(fn_base + ".txt", display_cexpr(cexpr))
-        time.sleep(1)
-        q.sync_node()
+    fn_pickle = fn_base + ".pickle"
+    fn_py = fn_base + ".py"
+    def calc_compile_cexpr():
+        cexpr_original = calc_cexpr()
+        cexpr_optimized = copy.deepcopy(cexpr_original)
+        cexpr_optimized.optimize()
+        code_py = cexpr_code_gen_py(cexpr_optimized)
+        data = dict()
+        data["cexpr_optimized"] = cexpr_optimized
+        data["cexpr_original"] = cexpr_original
+        data["code_py"] = code_py
+        q.save_pickle_obj(data, fn_pickle)
+        q.qtouch_info(fn_py, code_py)
+        content_original = display_cexpr(cexpr_original)
+        q.qtouch_info(fn_base + ".original.txt", content_original)
+        content_optimized = display_cexpr(cexpr_optimized)
+        q.qtouch_info(fn_base + ".optimized.txt", content_optimized)
+        return cexpr_optimized
+    if q.get_id_node() == 0 and not q.does_file_exist(fn_pickle):
+        calc_compile_cexpr()
+    q.sync_node()
+    while not q.does_file_exist(fn_pickle):
+        q.displayln(3, f"cache_compiled_cexpr: Node {q.get_id_node()}: waiting for '{fn_pickle}'.")
+        time.sleep(0.1)
+    cexpr = q.load_pickle_obj(fn_pickle)["cexpr_optimized"]
+    while not q.does_file_exist(fn_py):
+        q.displayln(3, f"cache_compiled_cexpr: Node {q.get_id_node()}: waiting for '{fn_py}'.")
+        time.sleep(0.1)
     module = importlib.import_module(fn_base.replace("/", "."))
     cexpr.function = {
-            # cexpr_function(positions_dict, get_prop) => val as 1-D np.array
+            # cexpr_function(positions_dict, get_prop, is_ama_and_sloppy = False) => val as 1-D np.array
             "cexpr_function" : module.cexpr_function,
             # cexpr_function_get_prop(positions_dict, get_prop) => props
             "cexpr_function_get_prop" : module.cexpr_function_get_prop,
-            # cexpr_function_eval(positions_dict, props) => val as 1-D np.array
+            # cexpr_function_eval(positions_dict, props) => ama_val as AmaVal of 1-D np.array
             "cexpr_function_eval" : module.cexpr_function_eval,
             }
     cexpr.total_sloppy_flops = module.total_sloppy_flops
@@ -174,8 +196,8 @@ def benchmark_eval_cexpr(cexpr : CExpr, *,
             res1 = eval_cexpr(cexpr, positions_dict = positions_dict_list[k], get_prop = get_prop_ama)
             res2 = eval_cexpr(cexpr, positions_dict = positions_dict_list[k], get_prop = get_prop)
             res_ama, res_sloppy = eval_cexpr(cexpr, positions_dict = positions_dict_list[k], get_prop = get_prop_ama, is_ama_and_sloppy = True)
-            assert res1 == res_ama
-            assert res2 == res_sloppy
+            assert q.qnorm(res1 - res_ama) == 0
+            assert q.qnorm(res2 - res_sloppy) == 0
             res_list.append(res_ama)
         res = np.array(res_list)
         assert res.shape == (benchmark_size, n_expr,)

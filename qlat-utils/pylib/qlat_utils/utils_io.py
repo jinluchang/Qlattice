@@ -83,15 +83,15 @@ def qload_datatable(path, is_par = False):
     return cu.qload_datatable(path, is_par)
 
 @timer
+def check_all_files_crc32_info(path):
+    return cu.check_all_files_crc32_info(path)
+
+@timer
 def save_pickle_obj(obj, path):
     # only save from node 0
     # mk_file_dirs_info(path)
     if get_id_node() == 0:
         qtouch(path, pickle.dumps(obj))
-
-@timer
-def check_all_files_crc32_info(path):
-    return cu.check_all_files_crc32_info(path)
 
 @timer
 def load_pickle_obj(path, default_value = None):

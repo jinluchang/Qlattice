@@ -404,6 +404,15 @@ class CExpr:
         for name, term in self.named_terms:
             assert term.coef == 1
             assert term.a_ops == []
+        checks = [
+                self.variables_factor == [],
+                self.variables_prop == [],
+                self.variables_tr == [],
+                self.variables_prod == [],
+                ]
+        if not all(checks):
+            # likely collect_op is already performed
+            return
         # collect ea_coef factors into variables
         self.variables_factor = collect_factor_in_cexpr(self.named_exprs)
         # collect prop expr into variables
