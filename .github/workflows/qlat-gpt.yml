@@ -29,7 +29,9 @@ jobs:
         sudo apt-get install -y libgsl-dev zlib1g-dev libssl-dev libopenmpi-dev python3-sympy python3-numpy python3-scipy python3-psutil libmpfr-dev meson ninja-build
 
     - name: Display Python version
-      run: python -c "import sys; print(sys.version)"
+      run: |
+        python3 -c "import sys; print(sys.version)"
+        python3 -c "import numpy as np ; np.show_config()"
 
     - name: Download dependencies
       run: |
@@ -40,13 +42,13 @@ jobs:
         export num_proc=4
         ./build.sh default-gpt || echo Failed
 
-    - name: Testing qlat
-      run: |
-        ./scripts/qlat-examples-cpp.sh || echo Failed
-
     - name: Testing pylib qlat
       run: |
         ./scripts/qlat-examples-py-gpt.sh || echo Failed
+
+    - name: Testing qlat
+      run: |
+        ./scripts/qlat-examples-cpp.sh || echo Failed
 
     - name: Copying logs
       run: |

@@ -30,7 +30,9 @@ jobs:
         pip3 install psutil sympy
 
     - name: Display Python version
-      run: python3 -c "import sys; print(sys.version)"
+      run: |
+        python3 -c "import sys; print(sys.version)"
+        python3 -c "import numpy as np ; np.show_config()"
 
     - name: Download dependencies
       run: |
@@ -41,14 +43,14 @@ jobs:
         export num_proc=4
         ./build.sh default || echo Failed
 
+    - name: Testing pylib qlat
+      run: |
+        ./scripts/qlat-examples-py.sh || echo Failed
+
     - name: Testing qlat
       run: |
         export num_proc=4
         ./scripts/qlat-examples-cpp.sh || echo Failed
-
-    - name: Testing pylib qlat
-      run: |
-        ./scripts/qlat-examples-py.sh || echo Failed
 
     - name: Copying logs
       run: |
