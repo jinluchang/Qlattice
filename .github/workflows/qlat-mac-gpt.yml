@@ -37,7 +37,6 @@ jobs:
         python3 -c "import sys; print(sys.version)"
         python3 -c "import sys; print(sys.path)"
         python3 -c "import numpy as np ; np.show_config()"
-        type pip3
         meson --version
 
     - name: Download dependencies

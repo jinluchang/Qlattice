@@ -30,14 +30,13 @@ jobs:
         # brew update
         brew install gsl zlib openssl@3 llvm open-mpi mpfr ninja autoconf automake flock
         # brew upgrade
-        pip3 install psutil sympy numpy scipy meson
+        pip3 install -v psutil sympy numpy scipy meson
 
     - name: Display Python version
       run: |
         python3 -c "import sys; print(sys.version)"
         python3 -c "import sys; print(sys.path)"
         python3 -c "import numpy as np ; np.show_config()"
-        type pip3
         meson --version
 
     - name: Download dependencies
