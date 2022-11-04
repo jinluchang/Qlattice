@@ -118,6 +118,7 @@ if [ -z ${NPY_NUM_BUILD_JOBS+x} ] ; then
     export NPY_NUM_BUILD_JOBS=$num_proc
 fi
 
+add-to-colon-list PATH "$HOME/.local/bin"
 add-to-colon-list PATH "$prefix/bin"
 for v in "$prefix"/lib/python3*/*-packages ; do
     add-to-colon-list PYTHONPATH "$v"
