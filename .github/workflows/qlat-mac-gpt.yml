@@ -31,6 +31,8 @@ jobs:
         brew install gsl zlib openssl@3 llvm open-mpi mpfr ninja autoconf automake flock
         # brew upgrade
         pip3 install psutil sympy numpy scipy meson
+        # add python bin to path
+        echo "/Library/Frameworks/Python.framework/Versions/3.11/bin" >> $GITHUB_PATH
 
     - name: Display Python version
       run: |
