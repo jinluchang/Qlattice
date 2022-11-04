@@ -26,4 +26,4 @@ echo "!!!! $name build !!!!"
 
 rm -rf $temp_dir || true
 
-} 2>&1 | tee $prefix/log.$name-build.txt
+} 2>&1 | tee $prefix/log.$name-build.txt || true
