@@ -64,7 +64,7 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/c-lime.sh
-        ./scripts/grid.avx2.sh
+        ./scripts/grid.gen16.sh
 
     - name: Build GPT
       run: |
@@ -102,7 +102,7 @@ jobs:
     - name: Build more packages Grid-tblum
       run: |
         export num_proc=3
-        ./scripts/grid-tblum.avx2.sh
+        ./scripts/grid-tblum.gen16.sh
 
     - name: Build more packages Hadrons-tblum
       run: |
