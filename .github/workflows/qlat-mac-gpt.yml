@@ -20,8 +20,10 @@ jobs:
         whoami
         pwd
         ls
-        export
+        type python3
+        type pip3
         sysctl -a
+        export
 
     - name: Install Brew packages
       run: |
