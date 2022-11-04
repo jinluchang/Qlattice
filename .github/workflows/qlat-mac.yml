@@ -74,14 +74,6 @@ jobs:
         export num_proc=3
         ./scripts/qlat-examples-cpp.sh
 
-    - name: Copying logs
-      run: |
-        for i in examples-py/*.log examples-cpp/*/log ; do
-          echo $i
-          diff $HOME/qlat-build/default/qlat-examples/$i $i | grep 'CHECK: ' || echo Good
-          cp $HOME/qlat-build/default/qlat-examples/$i $i
-        done
-
     - name: Check error
       run: |
         ! git diff | grep '^[+-]CHECK: '
