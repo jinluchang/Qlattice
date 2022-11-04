@@ -26,9 +26,9 @@ jobs:
     - name: Install Brew packages
       run: |
         brew update
-        brew install gsl zlib openssl@3 llvm open-mpi numpy scipy mpfr meson ninja autoconf automake flock
+        brew install gsl zlib openssl@3 llvm open-mpi mpfr ninja autoconf automake flock
         # brew upgrade
-        pip3 install psutil sympy
+        pip3 install psutil sympy numpy scipy meson
 
     - name: Display Python version
       run: |
