@@ -53,7 +53,7 @@ jobs:
 
     - name: Build dependencies
       run: |
-        export num_proc=4
+        export num_proc=3
         ./scripts/setenv.default.sh
         ./scripts/fftw_mpi.sh
         ./scripts/fftwf_mpi.sh
@@ -62,7 +62,7 @@ jobs:
 
     - name: Build Qlattice
       run: |
-        export num_proc=4
+        export num_proc=3
         ./scripts/qlat.sh
 
     - name: Testing pylib qlat
@@ -71,7 +71,7 @@ jobs:
 
     - name: Testing qlat
       run: |
-        export num_proc=4
+        export num_proc=3
         ./scripts/qlat-examples-cpp.sh
 
     - name: Copying logs

@@ -39,7 +39,7 @@ jobs:
 
     - name: Build dependencies
       run: |
-        export num_proc=4
+        export num_proc=2
         ./scripts/setenv.default.sh
         ./scripts/fftw_mpi.sh
         ./scripts/fftwf_mpi.sh
@@ -48,18 +48,18 @@ jobs:
 
     - name: Build Grid
       run: |
-        export num_proc=4
+        export num_proc=2
         ./scripts/c-lime.sh
         ./scripts/grid.avx2.sh
 
     - name: Build GPT
       run: |
-        export num_proc=4
+        export num_proc=2
         ./scripts/gpt.sh
 
     - name: Build Qlattice
       run: |
-        export num_proc=4
+        export num_proc=2
         ./scripts/qlat-grid-io.sh
 
     - name: Testing pylib qlat
@@ -69,6 +69,7 @@ jobs:
 
     - name: Testing qlat
       run: |
+        export num_proc=2
         ./scripts/qlat-examples-cpp.sh
 
     - name: Copying logs
@@ -81,17 +82,17 @@ jobs:
 
     - name: Build more packages HDF5
       run: |
-        export num_proc=4
+        export num_proc=2
         ./scripts/hdf5.sh
 
     - name: Build more packages Grid-tblum
       run: |
-        export num_proc=4
+        export num_proc=2
         ./scripts/grid-tblum.avx2.sh
 
     - name: Build more packages Hadrons-tblum
       run: |
-        export num_proc=4
+        export num_proc=2
         ./scripts/hadrons-tblum.sh
 
     - name: Check error
