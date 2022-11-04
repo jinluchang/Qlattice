@@ -24,10 +24,10 @@ jobs:
       run: |
         whoami
         pwd
-        ls
         type python3
         type pip3
         export
+        cat /proc/cpuinfo
 
     - name: Install Python packages
       run: |

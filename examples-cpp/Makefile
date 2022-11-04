@@ -4,7 +4,6 @@ tests = qlat-vector-utils \
 		qlat-fft-tests \
 		qlat-smear-tests \
 		qcd-utils-tests \
-		dslash-tests \
 		lbl-muon-part \
 		rng-state-tests \
 		field-rng-tests \
@@ -12,32 +11,39 @@ tests = qlat-vector-utils \
 		dist-io \
 		selected-field \
 		fields-io \
-		heatbath \
-		propagators \
-		hmc \
 		simple-1 \
-		template
+		hmc \
+		heatbath \
+		template \
+		dslash-tests \
+		propagators
 
 all: run
 
-compile:
-	-time for i in $(tests) ; do make "$$i".compile ; done
+compile: $(patsubst %, %.compile, $(tests))
 
-run:
-	-time for i in $(tests) ; do make "$$i".run ; done
+run: $(patsubst %, %.run, $(tests))
 
-clean:
-	-time for i in $(tests) ; do make "$$i".clean ; done
+clean: $(patsubst %, %.clean, $(tests))
+
+compile-proj:
+	meson build
+	time ninja -C build
+
+run-proj: compile-proj
+	time ninja -C build run
+	if diff build/log log | grep 'CHECK: ' ; then cat build/log.full ; else echo passed ; fi
+	cp build/log log
+	cp build/log.full log.full
+
+clean-proj:
+	-rm -rf build log.full
 
 %.compile:
-	wd="$@" ; cd "$${wd%.compile}" && meson build
-	wd="$@" ; cd "$${wd%.compile}" && time ninja -C build -j3
+	$(MAKE) -f ../Makefile -C $(patsubst %.compile, %, $@) compile-proj
 
-%.run: %.compile
-	-wd="$@" ; cd "$${wd%.run}" && time ninja -C build run
-	-wd="$@" ; cd "$${wd%.run}" && if diff build/log log | grep 'CHECK: ' ; then cat build/log.full ; else echo passed ; fi
-	-wd="$@" ; cd "$${wd%.run}" && cp build/log log
-	-wd="$@" ; cd "$${wd%.run}" && cp build/log.full log.full
+%.run:
+	$(MAKE) -f ../Makefile -C $(patsubst %.run, %, $@) run-proj
 
 %.clean:
-	-wd="$@" ; cd "$${wd%.clean}" && rm -rf build log.full
+	$(MAKE) -f ../Makefile -C $(patsubst %.clean, %, $@) clean-proj

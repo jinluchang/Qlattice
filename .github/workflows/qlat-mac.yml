@@ -24,11 +24,10 @@ jobs:
       run: |
         whoami
         pwd
-        ls
         type python3
         type pip3
-        sysctl -a
         export
+        sysctl -a
 
     - name: Install Python packages
       run: |
@@ -45,7 +44,7 @@ jobs:
     - name: Install Brew packages
       run: |
         # brew update
-        brew install gsl zlib openssl@3 llvm open-mpi mpfr ninja autoconf automake flock
+        brew install gsl zlib openssl@3 llvm open-mpi mpfr ninja autoconf automake flock findutils
         # brew upgrade
 
     - name: Download dependencies
