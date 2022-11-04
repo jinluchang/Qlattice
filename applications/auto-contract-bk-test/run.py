@@ -25,6 +25,7 @@ load_path_list[:] = [
         # os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-psrc-prop/results"),
         # os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-smear-prop/results"),
         "/sdcc/u/jluchang/qcdqedta/luchang/data-gen/fill-wsnk-prop/results",
+        "/sdcc/u/jluchang/qcdqedta/summit-oakforest-data-cache",
         ]
 
 # ----
