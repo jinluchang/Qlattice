@@ -94,17 +94,17 @@ jobs:
           cp $HOME/qlat-build/default/qlat-examples/$i $i
         done
 
-    - name: Build more packages: HDF5
+    - name: Build more packages HDF5
       run: |
         export num_proc=4
         ./scripts/hdf5.sh
 
-    - name: Build more packages: Grid-tblum
+    - name: Build more packages Grid-tblum
       run: |
         export num_proc=4
         ./scripts/grid-tblum.avx2.sh
 
-    - name: Build more packages: Hadrons-tblum
+    - name: Build more packages Hadrons-tblum
       run: |
         export num_proc=4
         ./scripts/hadrons-tblum.sh
