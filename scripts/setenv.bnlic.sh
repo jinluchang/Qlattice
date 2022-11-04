@@ -4,11 +4,11 @@
 
 name=setenv
 
+mkdir -p "$prefix"
+
 {
 
 echo "!!!! build $name !!!!"
-
-mkdir -p "$prefix/bin"
 
 cat - scripts/setenv.sh >"$prefix/setenv.sh" << EOF
 echo "Sourcing '$prefix/setenv.sh'"
