@@ -15,6 +15,10 @@ jobs:
 
     - uses: actions/checkout@v3
 
+    - name: Set PATH
+      run: |
+        echo "/Library/Frameworks/Python.framework/Versions/3.11/bin" >> $GITHUB_PATH
+
     - name: Show info
       run: |
         whoami
@@ -25,21 +29,23 @@ jobs:
         sysctl -a
         export
 
-    - name: Install Brew packages
+    - name: Install Python packages
       run: |
-        # brew update
-        brew install gsl zlib openssl@3 llvm open-mpi mpfr ninja autoconf automake flock
-        # brew upgrade
-        pip3 install psutil sympy numpy scipy meson
-        # add python bin to path
-        echo "/Library/Frameworks/Python.framework/Versions/3.11/bin" >> $GITHUB_PATH
+        pip3 install -v psutil sympy numpy scipy meson
 
     - name: Display Python version
       run: |
         python3 -c "import sys; print(sys.version)"
         python3 -c "import sys; print(sys.path)"
         python3 -c "import numpy as np ; np.show_config()"
+        type meson
         meson --version
+
+    - name: Install Brew packages
+      run: |
+        # brew update
+        brew install gsl zlib openssl@3 llvm open-mpi mpfr ninja autoconf automake flock
+        # brew upgrade
 
     - name: Download dependencies
       run: |

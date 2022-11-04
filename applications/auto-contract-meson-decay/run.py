@@ -929,10 +929,12 @@ def get_cexpr_meson_jwjj_t1():
         jm_list = [
                 mk_jw_a_mu("w", 3) * mk_pi_p("t_1") + "jw_a_t(0) * pi+(-tsep)",
                 mk_jw_a_mu("w", 3) * mk_k_p("t_1") + "jw_a_t(0) * K+(-tsep)",
+                mk_jw_a_mu("w", 3) * mk_pi_p("t_2") + "jw_a_t(0) * pi+(tsep)",
+                mk_jw_a_mu("w", 3) * mk_k_p("t_2") + "jw_a_t(0) * K+(tsep)",
                 ]
-        assert len(jm_list) == 2
+        assert len(jm_list) == 4
         exprs = [ op * jm for jm in jm_list for op in op_list ]
-        assert len(exprs) == 24
+        assert len(exprs) == 48
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
         q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
         cexpr.optimize()
@@ -975,24 +977,32 @@ def auto_contract_meson_jwjj_t1(job_tag, traj, get_prop, get_psel, get_fsel):
         t = (t_op - t_meson) % t_size
         return abs(arr_meson_corr[meson_type, t].item())
     def get_prop_norm_sqrt(*args):
-        return ama_extract(get_prop(*args, is_norm_sqrt = True), is_sloppy = True)
-    def get_estimate(xg_snk, xg1_src, xg2_src, t_1):
+        return ama_extract(get_prop(*args, is_norm_sqrt = True))
+    def get_estimate(xg_snk, xg1_src, xg2_src, t_1, t_2):
         meson_type = 0
         corr = get_corr(xg_snk[3], t_1, meson_type)
         w = ("point-snk", xg_snk,)
         x_1 = ("point", xg1_src,)
         x_2 = ("point", xg2_src,)
         t_1s = ("wall", t_1,)
-        p1t = get_prop_norm_sqrt("l", x_1, t_1s)
-        p2t = get_prop_norm_sqrt("l", x_2, t_1s)
+        t_2s = ("wall", t_2,)
+        p1t1 = get_prop_norm_sqrt("l", x_1, t_1s)
+        p2t1 = get_prop_norm_sqrt("l", x_2, t_1s)
+        p1t2 = get_prop_norm_sqrt("l", x_1, t_2s)
+        p2t2 = get_prop_norm_sqrt("l", x_2, t_2s)
+        wt1 = get_prop_norm_sqrt("l", w, t_1s)
+        wt2 = get_prop_norm_sqrt("l", w, t_2s)
         p1w = get_prop_norm_sqrt("l", x_1, w)
         p2w = get_prop_norm_sqrt("l", x_2, w)
         p1ws = get_prop_norm_sqrt("s", x_1, w)
         p2ws = get_prop_norm_sqrt("s", x_2, w)
-        return p1t * p2t * (p1w * p2w + 4.0 * p1ws * p2ws) / corr
-    def get_weight(idx_snk, xg_snk, xg1_src, xg2_src, t_1):
+        p1p2 = get_prop_norm_sqrt("l", x_1, x_2)
+        p1p2s = get_prop_norm_sqrt("s", x_1, x_2)
+        v1 = (p1t1 * p2t1 + p1t2 * p2t2) * (p1w * p2w + p1ws * p2ws)
+        return v1 / corr
+    def get_weight(idx_snk, xg_snk, xg1_src, xg2_src, t_1, t_2):
         # return weight for this point (1 / prob or zero)
-        est = get_estimate(xg_snk, xg1_src, xg2_src, t_1)
+        est = get_estimate(xg_snk, xg1_src, xg2_src, t_1, t_2)
         prob = est / threshold
         q.displayln_info(5, f"get_weight: {prob} {est} {threshold}")
         if prob >= 1:
@@ -1023,9 +1033,9 @@ def auto_contract_meson_jwjj_t1(job_tag, traj, get_prop, get_psel, get_fsel):
                     xg_t = xg_snk[3]
                     xg1_xg_t = q.rel_mod(xg1_src_t - xg_t, t_size)
                     xg2_xg_t = q.rel_mod(xg2_src_t - xg_t, t_size)
-                    t_2 = (max(0, xg1_xg_t, xg2_xg_t) + xg_t + tsep) % total_site[3]
                     t_1 = (min(0, xg1_xg_t, xg2_xg_t) + xg_t - tsep) % total_site[3]
-                    weight = get_weight(idx_snk, xg_snk, xg1_src, xg2_src, t_1)
+                    t_2 = (max(0, xg1_xg_t, xg2_xg_t) + xg_t + tsep) % total_site[3]
+                    weight = get_weight(idx_snk, xg_snk, xg1_src, xg2_src, t_1, t_2)
                     n_total += 1
                     if weight == 0:
                         continue
@@ -1034,8 +1044,8 @@ def auto_contract_meson_jwjj_t1(job_tag, traj, get_prop, get_psel, get_fsel):
                             "w" : ("point-snk", xg_snk,),
                             "x_1" : ("point", xg1_src,),
                             "x_2" : ("point", xg2_src,),
-                            "t_2" : ("wall", t_2,),
                             "t_1" : ("wall", t_1,),
+                            "t_2" : ("wall", t_2,),
                             "size" : total_site,
                             }
                     t1 = t_1 % t_size

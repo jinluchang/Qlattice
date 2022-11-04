@@ -9,30 +9,41 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
 
     - uses: actions/checkout@v3
+
+    - name: Set PATH
+      run: |
+        echo "$HOME/bin" >> $GITHUB_PATH
 
     - name: Show info
       run: |
         whoami
         pwd
         ls
+        type python3
+        type pip3
         export
 
-    - name: Install Ubuntu packages
+    - name: Install Python packages
       run: |
-        sudo apt-get update
-        sudo apt-get install -y libgsl-dev zlib1g-dev libssl-dev libopenmpi-dev python3-sympy python3-numpy python3-scipy python3-psutil libmpfr-dev meson ninja-build
+        pip3 install -v psutil sympy numpy scipy meson
 
     - name: Display Python version
       run: |
         python3 -c "import sys; print(sys.version)"
         python3 -c "import sys; print(sys.path)"
         python3 -c "import numpy as np ; np.show_config()"
+        type meson
         meson --version
+
+    - name: Install Ubuntu packages
+      run: |
+        # sudo apt-get update
+        sudo apt-get install -y libgsl-dev zlib1g-dev libssl-dev libopenmpi-dev libmpfr-dev ninja-build
 
     - name: Download dependencies
       run: |
