@@ -34,6 +34,7 @@ jobs:
       run: |
         python3 -c "import sys; print(sys.version)"
         python3 -c "import numpy as np ; np.show_config()"
+        meson --version
 
     - name: Download dependencies
       run: |
