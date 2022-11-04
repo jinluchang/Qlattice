@@ -38,10 +38,27 @@ jobs:
       run: |
         ./scripts/download-core.sh || echo Failed
 
-    - name: Build Qlattice Grid/GPT
+    - name: Build dependencies
       run: |
         export num_proc=4
-        ./build.sh default-gpt || echo Failed
+        ./scripts/setenv.default.sh
+        ./scripts/fftw_mpi.sh
+        ./scripts/fftwf_mpi.sh
+        ./scripts/cuba.sh
+        ./scripts/eigen.sh
+
+    - name: Build Qlattice
+      run: |
+        export num_proc=4
+        ./scripts/qlat.sh
+
+    - name: Build Grid/GPT
+      run: |
+        export num_proc=4
+        ./scripts/c-lime.sh
+        ./scripts/grid.avx2.sh
+        ./scripts/gpt.sh
+        ./scripts/qlat-grid-io.sh
 
     - name: Testing pylib qlat
       run: |
