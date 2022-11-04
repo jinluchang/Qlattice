@@ -30,7 +30,7 @@ jobs:
 
     - name: Install Python packages
       run: |
-        pip3 install -v psutil sympy numpy scipy meson
+        pip3 install --user psutil sympy numpy scipy meson
 
     - name: Display Python version
       run: |
