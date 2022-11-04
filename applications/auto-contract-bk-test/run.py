@@ -37,10 +37,8 @@ def get_cexpr_meson_corr():
                 mk_k_p("t_2", True)     * mk_k_p("t_1")     + "k^dag  * k    ",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
-        q.displayln_info(display_cexpr(cexpr))
-        cexpr.collect_op()
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/meson_corr-cexpr")
+    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/get_cexpr_meson_corr")
 
 @q.timer
 def get_cexpr_meson_f_corr():
@@ -50,10 +48,8 @@ def get_cexpr_meson_f_corr():
                 mk_j5k_mu("x_2", 3)     * mk_k_p("t_1")     + "a_k    * k    ",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
-        q.displayln_info(display_cexpr(cexpr))
-        cexpr.collect_op()
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/meson_f_corr-cexpr")
+    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/get_cexpr_meson_f_corr")
 
 def mk_bk_vv_aa(p : str):
     s = 0
@@ -101,10 +97,8 @@ def get_cexpr_meson_bk_bpi_corr():
                 + "(i ubar g5 u') * (u'bar gmu (1-g5) u)(dbar  gmu (1-g5) s) * (i sbar g5 d)",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
-        q.displayln_info(display_cexpr(cexpr))
-        cexpr.collect_op()
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/meson_bk_bpi-cexpr")
+    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/get_cexpr_meson_bk_bpi_corr")
 
 @q.timer_verbose
 def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
