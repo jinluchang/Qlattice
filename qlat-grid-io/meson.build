@@ -38,7 +38,7 @@ grid = declare_dependency(
 
 deps = [ omp, py3.dependency(), grid, qlat ]
 
-c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/include/qlat-grid-io/*.h', check: true)
+c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/include/qlat-grid-io/*.h | grep -v "/config.h$"', check: true)
 headers = c.stdout().strip().split('\n')
 install_headers(headers, subdir: 'qlat-grid-io')
 

@@ -46,7 +46,7 @@ if not cpp.check_header('Eigen/Eigen')
   deps += [ eigen, ]
 endif
 
-c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/include/qlat/*.h | grep -v "config.h$"', check: true)
+c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/include/qlat/*.h | grep -v "/config.h$"', check: true)
 headers = c.stdout().strip().split('\n')
 install_headers(headers, subdir: 'qlat')
 
