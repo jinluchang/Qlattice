@@ -61,7 +61,7 @@ py3.install_sources(pysources, subdir: 'qlat_grid_io')
 
 c = run_command('bash', '-c', 'ls $MESON_SOURCE_ROOT/bin/*', check: true)
 scripts = c.stdout().strip().split('\n')
-install_data(scripts, install_dir: 'bin')
+install_data(scripts, install_dir: 'bin', install_mode: 'rwxr-xr-x')
 
 pkg = import('pkgconfig')
 pkg.generate(

@@ -25,7 +25,7 @@ zlib = dependency('zlib')
 
 deps = [ omp, py3.dependency(), zlib ]
 
-c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/include/qlat-utils/*.h | grep -v "config.h$"', check: true)
+c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/include/qlat-utils/*.h | grep -v "/config.h$"', check: true)
 headers = c.stdout().strip().split('\n')
 install_headers(headers, subdir: 'qlat-utils')
 
@@ -50,7 +50,7 @@ py3.install_sources(pysources, subdir: 'qlat_utils')
 
 c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/bin/*', check: true)
 scripts = c.stdout().strip().split('\n')
-install_data(scripts, install_dir: 'bin')
+install_data(scripts, install_dir: 'bin', install_mode: 'rwxr-xr-x')
 
 pkg = import('pkgconfig')
 pkg.generate(

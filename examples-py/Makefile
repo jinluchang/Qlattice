@@ -20,6 +20,7 @@ tests = \
 		hmc-pions.log
 
 tests_gpt = \
+			grid-qlat-io-test.log \
 			gpt-qlat-convert.log \
 			gpt-qlat-sample-gauge-field.log \
 			gpt-qlat-smear.log \
