@@ -37,10 +37,13 @@ def random_permute(l, rs):
     return cu.random_permute(l, rs)
 
 def show_memory_usage():
-    import psutil
-    rss = psutil.Process().memory_info().rss / (1024 * 1024 * 1024)
-    displayln_info(f"show_memory_usage: rss = {rss:.6f} GB")
-    # displayln_info_malloc_stats()
+    try:
+        import psutil
+        rss = psutil.Process().memory_info().rss / (1024 * 1024 * 1024)
+        displayln_info(f"show_memory_usage: rss = {rss:.6f} GB")
+        # displayln_info_malloc_stats()
+    except:
+        displayln_info(f"show_memory_usage: no psutil.")
 
 def displayln_malloc_stats():
     return cu.displayln_malloc_stats()
