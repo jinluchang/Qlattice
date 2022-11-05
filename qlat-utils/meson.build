@@ -50,11 +50,12 @@ py3.install_sources(pysources, subdir: 'qlat_utils')
 
 c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/bin/*', check: true)
 scripts = c.stdout().strip().split('\n')
-install_data(scripts, install_dir: 'bin', install_mode: 'rwxr-xr-x')
+install_data(scripts, install_dir: get_option('bindir'), install_mode: 'rwxr-xr-x')
 
 pkg = import('pkgconfig')
 pkg.generate(
   name: 'qlat-utils',
   description: 'Qlattice utilities.',
   libraries: [ '-lz', '-lm' ],
+  install_dir: get_option('libdir') / 'pkgconfig',
   )
