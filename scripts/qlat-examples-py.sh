@@ -19,7 +19,7 @@ name=qlat-examples-py
 
     cd "$wd"
 
-    for log in *.log ; do
+    for log in examples-py/*.log ; do
         echo diff "$build/$log" "$log"
         diff "$build/$log" "$log" || cat "$build/$log".full || true
         cp -rpv "$build/$log" "$log" || true
