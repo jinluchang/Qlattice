@@ -23,7 +23,7 @@ if get_option('use_cxx')
   mpic = dependency('', required: false)
 else
   message('use_cxx=false (use meson\'s automatic MPI detection.)')
-  mpic = dependency('mpi', language: 'cpp')
+  mpic = dependency('mpi', language: 'cpp').as_system()
 endif
 
 omp = dependency('openmp').as_system()
@@ -42,10 +42,10 @@ qlat_utils = declare_dependency(
   dependencies: [ py3.dependency(), omp, zlib, math, ],
   )
 
-deps = [ py3.dependency(), omp, qlat_utils, fftw_mpi, fftwf_mpi, fftw, fftwf, mpic, zlib, math, ]
+deps = [ qlat_utils, fftw_mpi, fftwf_mpi, fftw, fftwf, mpic, ]
 
 if not cpp.check_header('Eigen/Eigen')
-  eigen = dependency('eigen3')
+  eigen = dependency('eigen3').as_system()
   deps += [ eigen, ]
 endif
 

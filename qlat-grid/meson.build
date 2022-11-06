@@ -63,6 +63,11 @@ qlat = declare_dependency(
 
 deps = [ qlat, grid, ]
 
+if not cpp.check_header('Eigen/Eigen')
+  eigen = dependency('eigen3').as_system()
+  deps += [ eigen, ]
+endif
+
 subdir('include')
 
 subdir('pylib')
