@@ -19,8 +19,8 @@ name=qlat-grid
 
     cd "$build"
 
-    rm -rfv "$prefix"/lib/python3*/*-packages/cqlat-grid.*
-    rm -rfv "$prefix"/lib/python3*/*-packages/qlat-grid
+    rm -rfv "$prefix"/lib/python3*/*-packages/cqlat_grid.*
+    rm -rfv "$prefix"/lib/python3*/*-packages/qlat_grid
 
     export CXX="$(grid-config --cxx)"
     # export CXX_LD="$(grid-config --cxxld)"

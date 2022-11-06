@@ -17,8 +17,6 @@ name=qlat
 
     cd "$build"
 
-    rm -rfv "$prefix"/include/qlat
-    rm -rfv "$prefix"/include/qlat-setup.h
     rm -rfv "$prefix"/lib/python3*/*-packages/cqlat.*
     rm -rfv "$prefix"/lib/python3*/*-packages/qlat
     rm -rfv "$prefix"/lib/python3*/*-packages/qlat_gpt.py
