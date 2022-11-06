@@ -31,7 +31,7 @@ jobs:
 
     - name: Install Python packages
       run: |
-        pip3 install --user psutil sympy numpy scipy meson
+        pip3 install --user psutil sympy numpy scipy meson ninja
 
     - name: Display Python version
       run: |
@@ -40,11 +40,13 @@ jobs:
         python3 -c "import numpy as np ; np.show_config()"
         type meson
         meson --version
+        type ninja
+        ninja --version
 
     - name: Install Brew packages
       run: |
         # brew update
-        brew install gsl zlib openssl@3 llvm open-mpi mpfr ninja autoconf automake flock findutils
+        brew install gsl zlib openssl@3 llvm open-mpi mpfr autoconf automake flock findutils fftw eigen
         # brew upgrade
 
     - name: Download dependencies
@@ -55,10 +57,6 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/setenv.default.sh
-        ./scripts/fftw_mpi.sh
-        ./scripts/fftwf_mpi.sh
-        ./scripts/cuba.sh
-        ./scripts/eigen.sh
 
     - name: Build Qlattice
       run: |

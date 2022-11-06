@@ -9,11 +9,16 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
 
     - uses: actions/checkout@v3
+
+    - name: Set PATH
+      run: |
+        echo "$HOME/bin" >> $GITHUB_PATH
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
 
     - name: Show info
       run: |
@@ -22,16 +27,24 @@ jobs:
         export
         cat /proc/cpuinfo
 
-    - name: Install Ubuntu packages
+    - name: Install Python packages
       run: |
-        sudo apt-get update
-        sudo apt-get install -y libgsl-dev zlib1g-dev libssl-dev libopenmpi-dev python3-sympy python3-numpy python3-scipy python3-psutil libmpfr-dev meson ninja-build
+        pip3 install --user psutil sympy numpy scipy meson ninja
 
     - name: Display Python version
       run: |
         python3 -c "import sys; print(sys.version)"
+        python3 -c "import sys; print(sys.path)"
         python3 -c "import numpy as np ; np.show_config()"
+        type meson
         meson --version
+        type ninja
+        ninja --version
+
+    - name: Install Ubuntu packages
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgsl-dev zlib1g-dev libssl-dev libeigen3-dev libopenmpi-dev libfftw3-mpi-dev libmpfr-dev
 
     - name: Download dependencies
       run: |
@@ -41,10 +54,6 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/setenv.default.sh
-        ./scripts/fftw_mpi.sh
-        ./scripts/fftwf_mpi.sh
-        ./scripts/cuba.sh
-        ./scripts/eigen.sh
 
     - name: Build Grid
       run: |

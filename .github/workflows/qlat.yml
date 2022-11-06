@@ -31,7 +31,7 @@ jobs:
 
     - name: Install Python packages
       run: |
-        pip3 install --user psutil sympy numpy scipy meson
+        pip3 install --user psutil sympy numpy scipy meson ninja
 
     - name: Display Python version
       run: |
@@ -40,11 +40,13 @@ jobs:
         python3 -c "import numpy as np ; np.show_config()"
         type meson
         meson --version
+        type ninja
+        ninja --version
 
     - name: Install Ubuntu packages
       run: |
         # sudo apt-get update
-        sudo apt-get install -y libgsl-dev zlib1g-dev libssl-dev libopenmpi-dev libmpfr-dev ninja-build
+        sudo apt-get install -y libgsl-dev zlib1g-dev libssl-dev libeigen3-dev libopenmpi-dev libfftw3-mpi-dev libmpfr-dev
 
     - name: Download dependencies
       run: |
@@ -54,10 +56,6 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/setenv.default.sh
-        ./scripts/fftw_mpi.sh
-        ./scripts/fftwf_mpi.sh
-        ./scripts/cuba.sh
-        ./scripts/eigen.sh
 
     - name: Build Qlattice
       run: |
