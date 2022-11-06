@@ -26,15 +26,23 @@ else
   mpic = dependency('mpi', language: 'cpp')
 endif
 
-omp = dependency('openmp')
-fftw = dependency('fftw3')
-fftwf = dependency('fftw3f')
+omp = dependency('openmp').as_system()
+fftw = dependency('fftw3').as_system()
+fftwf = dependency('fftw3f').as_system()
 fftw_mpi = cpp.find_library('fftw3_mpi')
 fftwf_mpi = cpp.find_library('fftw3f_mpi')
-zlib = dependency('zlib')
+zlib = dependency('zlib').as_system()
 math = cpp.find_library('m')
 
-deps = [ omp, py3.dependency(), fftw_mpi, fftwf_mpi, fftw, fftwf, mpic, zlib, math, ]
+qlat_utils_include = run_command('qlat-utils-include', check: true).stdout().strip().split('\n')
+message('qlat_utils include', qlat_utils_include)
+
+qlat_utils = declare_dependency(
+  include_directories:  include_directories(qlat_utils_include),
+  dependencies: [ py3.dependency(), omp, zlib, math, ],
+  )
+
+deps = [ py3.dependency(), omp, qlat_utils, fftw_mpi, fftwf_mpi, fftw, fftwf, mpic, zlib, math, ]
 
 if not cpp.check_header('Eigen/Eigen')
   eigen = dependency('eigen3')

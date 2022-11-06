@@ -1,3 +1,3 @@
-subdir('qlat-grid-io')
+subdir('qlat-grid')
 
 incdir = include_directories('.')

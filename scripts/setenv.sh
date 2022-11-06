@@ -9,6 +9,7 @@ add-to-colon-list () {
     local name="$1"
     local new_value="$2"
     local value="${!name}"
+    local v
     if [ -z "$value" ] ; then
         export "$name"="$new_value"
     else
@@ -26,6 +27,7 @@ add-to-colon-list () {
 organize-colon-list() {
     local name="$1"
     local value="${!name}"
+    local v
     if [ -n "$value" ] ; then
         IFS=':' read -a vs <<< "$value"
         value=''
@@ -123,6 +125,9 @@ add-to-colon-list PATH "$prefix/bin"
 for v in "$prefix"/lib/python3*/*-packages ; do
     add-to-colon-list PYTHONPATH "$v"
 done
+for v in "$prefix"/lib/python3*/*-packages/*/include ; do
+    add-to-colon-list CPATH "$v"
+done
 add-to-colon-list PYTHONPATH "$prefix/gpt/lib"
 add-to-colon-list PYTHONPATH "$prefix/gpt/lib/cgpt/build"
 add-to-colon-list LD_RUN_PATH "$prefix/lib"
@@ -131,8 +136,8 @@ add-to-colon-list LD_LIBRARY_PATH "$prefix/lib"
 add-to-colon-list LD_LIBRARY_PATH "$prefix/lib64"
 add-to-colon-list LIBRARY_PATH "$prefix/lib"
 add-to-colon-list LIBRARY_PATH "$prefix/lib64"
-add-to-colon-list CPATH "$prefix/include/ncurses"
-add-to-colon-list CPATH "$prefix/include"
+add-to-colon-list C_INCLUDE_PATH "$prefix/include"
+add-to-colon-list CPLUS_INCLUDE_PATH "$prefix/include"
 add-to-colon-list PKG_CONFIG_PATH "$prefix/lib/pkgconfig"
 
 organize-colon-list PATH
@@ -141,6 +146,8 @@ organize-colon-list LD_RUN_PATH
 organize-colon-list LD_LIBRARY_PATH
 organize-colon-list LIBRARY_PATH
 organize-colon-list CPATH
+organize-colon-list C_INCLUDE_PATH
+organize-colon-list CPLUS_INCLUDE_PATH
 organize-colon-list PKG_CONFIG_PATH
 
 echo
@@ -154,3 +161,5 @@ for v in \
 export | grep --color=never " $v="'"' || true
 done
 echo
+
+unset v

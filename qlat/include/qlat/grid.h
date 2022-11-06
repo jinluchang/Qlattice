@@ -78,8 +78,9 @@ inline void grid_begin(
     const std::vector<Coordinate>& size_node_list = std::vector<Coordinate>())
 {
   using namespace Grid;
-  system("rm /dev/shm/Grid* >/dev/null 2>&1");
+  const int ret = system("rm /dev/shm/Grid* >/dev/null 2>&1");
   Grid_init(argc, argv);
+  displayln_info(ssprintf("grid_begin: rm returns %d", ret));
   const int num_node = init_mpi(argc, argv);
   Coordinate size_node;
   for (int i = 0; i < (int)size_node_list.size(); ++i) {
@@ -106,7 +107,8 @@ inline void grid_end(const bool is_preserving_cache = false)
 {
   end(is_preserving_cache);
   Grid::Grid_finalize();
-  system("rm /dev/shm/Grid* >/dev/null 2>&1");
+  const int ret = system("rm /dev/shm/Grid* >/dev/null 2>&1");
+  displayln_info(ssprintf("grid_end: rm returns %d", ret));
 }
 
 inline void grid_convert(Grid::LatticeGaugeFieldF& ggf, const GaugeField& gf)
@@ -128,9 +130,9 @@ inline void grid_convert(Grid::LatticeGaugeFieldF& ggf, const GaugeField& gf)
                                     sizeof(ComplexF)>*)ms.data());
     qassert(sizeof(LorentzColourMatrixF) ==
             ms.data_size() / sizeof(ComplexT) * sizeof(ComplexF));
-    qassert(fs.size() * sizeof(ComplexT) == ms.data_size());
+    qassert((long)fs.size() * (long)sizeof(ComplexT) == ms.data_size());
     qassert(fs.size() == ds.size());
-    for (int i = 0; i < fs.size(); ++i) {
+    for (int i = 0; i < (int)fs.size(); ++i) {
       fs[i] = ds[i];
     }
     pokeLocalSite(gms, ggf, coor);
@@ -193,7 +195,7 @@ inline void grid_convert(FermionField5d& ff, const Grid::LatticeFermionF& gff)
       array<ComplexT, sizeof(WilsonVector) / sizeof(ComplexT)>& ds =
           (array<ComplexT, sizeof(WilsonVector) / sizeof(ComplexT)>&)
               wvs[m];
-      for (int k = 0; k < sizeof(WilsonVector) / sizeof(ComplexT); ++k) {
+      for (int k = 0; k < (int)(sizeof(WilsonVector) / sizeof(ComplexT)); ++k) {
         ds[k] = fs[k];
       }
     }
@@ -216,7 +218,7 @@ inline void grid_convert(Grid::LatticeFermionF& gff, const FermionField5d& ff)
       const array<ComplexT, sizeof(WilsonVector) / sizeof(ComplexT)>& ds =
           (const array<ComplexT, sizeof(WilsonVector) / sizeof(ComplexT)>&)
               wvs[m];
-      for (int k = 0; k < sizeof(WilsonVector) / sizeof(ComplexT); ++k) {
+      for (int k = 0; k < (int)(sizeof(WilsonVector) / sizeof(ComplexT)); ++k) {
         fs[k] = ds[k];
       }
       pokeLocalSite(fs, gff, coor);

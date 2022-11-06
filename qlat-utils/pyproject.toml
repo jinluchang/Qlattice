@@ -7,6 +7,6 @@ name = 'qlat-utils'
 dynamic = [ 'version', ]
 description = 'Qlattice utilities'
 readme = 'README.md'
-license = { text = 'GPL-3.0-or-later' }
+license = { text = 'GPL-3.0-or-later', }
 keyword = [ 'qar', 'Timer', 'RngState', ]
 authors = [ { name = 'Luchang Jin', email = 'ljin.luchang@gmail.com' }, ]

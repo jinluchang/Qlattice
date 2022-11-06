@@ -1,4 +1,4 @@
-import cqlat_grid_io as cgi
+import cqlat_grid as cgi
 
 import sys
 

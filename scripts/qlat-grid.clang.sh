@@ -6,7 +6,7 @@ export USE_COMPILER=clang
 
 . scripts/conf.sh
 
-name=qlat-grid-io
+name=qlat-grid
 
 {
 
@@ -14,25 +14,24 @@ name=qlat-grid-io
 
     echo "!!!! build $name !!!!"
 
-    build="$prefix/build-qlat-grid-io-clang"
+    build="$prefix/build-qlat-grid-clang"
     mkdir -p "$build"
 
     cd "$build"
 
-    rm -rfv "$prefix"/include/qlat-grid-io
-    rm -rfv "$prefix"/lib/python3*/*-packages/cqlat-grid-io.*
-    rm -rfv "$prefix"/lib/python3*/*-packages/qlat-grid-io
+    rm -rfv "$prefix"/lib/python3*/*-packages/cqlat-grid.*
+    rm -rfv "$prefix"/lib/python3*/*-packages/qlat-grid
 
     export CXX="$(grid-config --cxx)"
     # export CXX_LD="$(grid-config --cxxld)"
 
-    ( cd "$wd/qlat-grid-io/pylib/cqlat_grid_io" ; bash update.sh )
+    ( cd "$wd/qlat-grid/pylib/cqlat_grid" ; bash update.sh )
 
-    touch "$wd"/qlat-grid-io/meson.build
+    touch "$wd"/qlat-grid/meson.build
 
     prefix_python="$prefix/lib/python3/qlat-packages"
 
-    meson "$wd/qlat-grid-io" \
+    meson "$wd/qlat-grid" \
         -Dpython.platlibdir="$prefix_python" -Dpython.purelibdir="$prefix_python" \
         --prefix="$prefix"
     ninja -j$num_proc

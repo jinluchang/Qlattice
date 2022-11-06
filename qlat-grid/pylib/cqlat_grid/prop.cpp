@@ -1,6 +1,6 @@
 #include "lib.h"
 
-#include <qlat-grid-io/qlat-grid-io.h>
+#include <qlat-grid/qlat-grid.h>
 
 EXPORT(save_prop_float, {
   using namespace qlat;

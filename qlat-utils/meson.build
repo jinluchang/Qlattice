@@ -18,11 +18,11 @@ py3 = py_mod.find_installation('python3')
 message(py3.path())
 message(py3.get_install_dir())
 
-omp = dependency('openmp')
-zlib = dependency('zlib')
+omp = dependency('openmp').as_system()
+zlib = dependency('zlib').as_system()
 math = cpp.find_library('m')
 
-deps = [ omp, py3.dependency(), zlib, math, ]
+deps = [ omp, py3.dependency().as_system(), zlib, math, ]
 
 subdir('include')
 subdir('pylib')

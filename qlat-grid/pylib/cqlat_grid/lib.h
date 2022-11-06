@@ -4,7 +4,7 @@
 // Original author Christoph Lehner
 // With modifications from Luchang Jin
 
-#define PY_PKG_NAME cqlat_grid_io
+#define PY_PKG_NAME cqlat_grid
 
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>

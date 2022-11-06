@@ -32,3 +32,5 @@ from qlat_utils.qplot import \
         display_img
 
 from qlat_utils.parallel import *
+
+from qlat_utils.get_include_dir import *

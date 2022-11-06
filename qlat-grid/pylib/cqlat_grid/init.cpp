@@ -1,6 +1,6 @@
 #include "lib.h"
 
-#include <qlat-grid-io/qlat-grid-io.h>
+#include <qlat-grid/qlat-grid.h>
 
 EXPORT(begin_with_grid, {
   using namespace qlat;

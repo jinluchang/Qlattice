@@ -1,4 +1,4 @@
-project('qlat-grid-io', 'cpp',
+project('qlat-grid', 'cpp',
   version: '0.2',
   license: 'GPL-3.0-or-later',
   default_options: [
@@ -18,12 +18,12 @@ py3 = py_mod.find_installation('python3')
 message(py3.path())
 message(py3.get_install_dir())
 
-omp = dependency('openmp')
-fftw = dependency('fftw3')
-fftwf = dependency('fftw3f')
+omp = dependency('openmp').as_system()
+fftw = dependency('fftw3').as_system()
+fftwf = dependency('fftw3f').as_system()
 fftw_mpi = cpp.find_library('fftw3_mpi')
 fftwf_mpi = cpp.find_library('fftw3f_mpi')
-zlib = dependency('zlib')
+zlib = dependency('zlib').as_system()
 math = cpp.find_library('m')
 
 message('Collecting Grid information using \'grid-config\':')
@@ -36,13 +36,32 @@ message('Grid CXXFLAGS:', grid_cxxflags)
 message('Grid LDFLAGS:', grid_ldflags)
 message('Grid LIBS:', grid_libs)
 
+grid_compile_args = []
+grid_include_directories = []
+foreach f : grid_cxxflags
+  if f.startswith('-I')
+    grid_include_directories += f.substring(2)
+  else
+    grid_compile_args += f
+  endif
+endforeach
+
 grid = declare_dependency(
-  compile_args: grid_cxxflags,
+  include_directories: grid_include_directories,
+  compile_args: grid_compile_args,
   link_args: grid_ldflags + grid_libs,
   dependencies: cpp.find_library('Grid'),
   ).as_system()
 
-deps = [ omp, py3.dependency(), grid, fftw_mpi, fftwf_mpi, fftw, fftwf, zlib, math, ]
+qlat_include = run_command('qlat-include', check: true).stdout().strip().split('\n')
+message('qlat include', qlat_include)
+
+qlat = declare_dependency(
+  include_directories: include_directories(qlat_include),
+  dependencies: [ py3.dependency().as_system(), omp, zlib, math, fftw_mpi, fftwf_mpi, fftw, fftwf, zlib, math, ],
+  )
+
+deps = [ qlat, grid, ]
 
 subdir('include')
 

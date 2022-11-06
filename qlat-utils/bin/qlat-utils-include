@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+
+import qlat_utils as q
+
+for path in q.get_include_list():
+    print(path)

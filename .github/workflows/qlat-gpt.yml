@@ -60,7 +60,7 @@ jobs:
     - name: Build Qlattice
       run: |
         export num_proc=2
-        ./scripts/qlat-grid-io.sh
+        ./scripts/qlat-grid.sh
 
     - name: Testing pylib qlat
       run: |

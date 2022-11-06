@@ -1,4 +1,4 @@
 c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.py', check: true)
 pysources = files(c.stdout().strip().split('\n'))
-py3.install_sources(pysources, subdir: 'qlat_grid_io')
+py3.install_sources(pysources, subdir: 'qlat_grid')
 

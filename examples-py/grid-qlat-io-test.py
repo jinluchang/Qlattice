@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import qlat_grid_io as qgi
+import qlat_grid as qgi
 import qlat as q
 
 qgi.begin_with_grid()

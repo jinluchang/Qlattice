@@ -13,9 +13,8 @@ else
 endif
 
 config = configure_file(output: 'config.h', configuration: conf_data)
-
-install_headers(config, subdir: 'qlat-utils')
+py3.install_sources(config, subdir: 'qlat_utils/include/qlat-utils')
 
 c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.h | grep -v "^config.h$"', check: true)
 cpp_headers = files(c.stdout().strip().split('\n'))
-install_headers(cpp_headers, subdir: 'qlat-utils')
+py3.install_sources(cpp_headers, subdir: 'qlat_utils/include/qlat-utils')
