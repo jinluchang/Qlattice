@@ -11,7 +11,7 @@ project('qlat-grid-io', 'cpp',
 
 add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
 
-run_command('bash', '-c', 'cd "$MESON_SOURCE_ROOT"/pylib/cqlat_grid_io ; bash update.sh', check: true)
+cpp = meson.get_compiler('cpp')
 
 py_mod = import('python')
 py3 = py_mod.find_installation('python3')
@@ -19,53 +19,35 @@ message(py3.path())
 message(py3.get_install_dir())
 
 omp = dependency('openmp')
+fftw = dependency('fftw3')
+fftwf = dependency('fftw3f')
+fftw_mpi = cpp.find_library('fftw3_mpi')
+fftwf_mpi = cpp.find_library('fftw3f_mpi')
+zlib = dependency('zlib')
+math = cpp.find_library('m')
 
-qlat = dependency('qlat', method: 'pkg-config')
-
-message('Collecting Grid information using meson option \'grid_prefix\':')
-grid_prefix = get_option('grid_prefix')
-grid_cxxflags = run_command(grid_prefix / 'bin' / 'grid-config', '--cxxflags', check: true).stdout().strip().split()
-grid_ldflags = run_command(grid_prefix / 'bin' / 'grid-config', '--ldflags', check: true).stdout().strip().split()
-grid_libs = run_command(grid_prefix / 'bin' / 'grid-config', '--libs', check: true).stdout().strip().split()
+message('Collecting Grid information using \'grid-config\':')
+grid_prefix = run_command('grid-config', '--prefix', check: true).stdout().strip()
+message('grid: prefix =', grid_prefix)
+grid_cxxflags = run_command('grid-config', '--cxxflags', check: true).stdout().strip().split()
+grid_ldflags = run_command('grid-config', '--ldflags', check: true).stdout().strip().split()
+grid_libs = run_command('grid-config', '--libs', check: true).stdout().strip().split()
 message('Grid CXXFLAGS:', grid_cxxflags)
 message('Grid LDFLAGS:', grid_ldflags)
 message('Grid LIBS:', grid_libs)
 
 grid = declare_dependency(
   compile_args: grid_cxxflags,
-  link_args: grid_ldflags + grid_libs + [ '-lGrid', ],
-  )
+  link_args: grid_ldflags + grid_libs,
+  dependencies: cpp.find_library('Grid'),
+  ).as_system()
 
-deps = [ omp, py3.dependency(), grid, qlat ]
+deps = [ omp, py3.dependency(), grid, fftw_mpi, fftwf_mpi, fftw, fftwf, zlib, math, ]
 
-c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/include/qlat-grid-io/*.h | grep -v "/config.h$"', check: true)
-headers = c.stdout().strip().split('\n')
-install_headers(headers, subdir: 'qlat-grid-io')
+subdir('include')
 
-c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/pylib/cqlat_grid_io/*.cpp', check: true)
-sources = c.stdout().strip().split('\n')
+subdir('pylib')
 
-incdir = include_directories('include')
-
-lib = py3.extension_module('cqlat_grid_io',
-  sources,
-  dependencies: deps,
-  include_directories: incdir,
-  install: true,
-  # gnu_symbol_visibility: 'default',
-  )
-
-c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/pylib/qlat_grid_io/*.py', check: true)
-pysources = c.stdout().strip().split('\n')
-py3.install_sources(pysources, subdir: 'qlat_grid_io')
-
-c = run_command('bash', '-c', 'ls $MESON_SOURCE_ROOT/bin/*', check: true)
+c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls bin/*', check: true)
 scripts = c.stdout().strip().split('\n')
 install_data(scripts, install_dir: 'bin', install_mode: 'rwxr-xr-x')
-
-pkg = import('pkgconfig')
-pkg.generate(
-  name: 'qlat-grid-io',
-  description: 'IO utilities using Qlattice and Grid.',
-  requires: [ 'qlat', ],
-  )

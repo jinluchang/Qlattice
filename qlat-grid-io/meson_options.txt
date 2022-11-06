@@ -1,4 +1,0 @@
-option(
-  'grid_prefix', type: 'string', value: '/usr/local',
-  description: 'Location of the Grid installation.'
-  )

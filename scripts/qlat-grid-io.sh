@@ -21,19 +21,8 @@ name=qlat-grid-io
     rm -rfv "$prefix"/lib/python3*/*-packages/cqlat-grid-io.*
     rm -rfv "$prefix"/lib/python3*/*-packages/qlat-grid-io
 
-    if [ -n "$QLAT_MPICXX" ] ; then
-        export CXX="$QLAT_MPICXX"
-        export MPICXX=false
-    fi
-    if [ -n "$QLAT_CXXFLAGS" ] ; then
-        export CXXFLAGS="$QLAT_CXXFLAGS"
-    fi
-    if [ -n "$QLAT_LDFLAGS" ] ; then
-        export LDFLAGS="$QLAT_LDFLAGS"
-    fi
-    if [ -n "$QLAT_LIBS" ] ; then
-        export LIBS="$QLAT_LIBS"
-    fi
+    export CXX="$(grid-config --cxx)"
+    # export CXX_LD="$(grid-config --cxxld)"
 
     ( cd "$wd/qlat-grid-io/pylib/cqlat_grid_io" ; bash update.sh )
 
@@ -43,7 +32,7 @@ name=qlat-grid-io
 
     meson "$wd/qlat-grid-io" \
         -Dpython.platlibdir="$prefix_python" -Dpython.purelibdir="$prefix_python" \
-        --prefix="$prefix" -Dgrid_prefix="$prefix"
+        --prefix="$prefix"
     ninja -j$num_proc
     ninja install
 

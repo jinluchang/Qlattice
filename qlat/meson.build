@@ -11,16 +11,12 @@ project('qlat', 'cpp',
 
 add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
 
-run_command('bash', '-c', 'cd "$MESON_SOURCE_ROOT"/pylib/cqlat ; bash update.sh', check: true)
-
 cpp = meson.get_compiler('cpp')
 
 py_mod = import('python')
 py3 = py_mod.find_installation('python3')
 message(py3.path())
 message(py3.get_install_dir())
-
-omp = dependency('openmp')
 
 if get_option('use_cxx')
   message('use_cxx=true (use CXX compiler without additional MPI options.)')
@@ -30,71 +26,25 @@ else
   mpic = dependency('mpi', language: 'cpp')
 endif
 
+omp = dependency('openmp')
 fftw = dependency('fftw3')
 fftwf = dependency('fftw3f')
 fftw_mpi = cpp.find_library('fftw3_mpi')
 fftwf_mpi = cpp.find_library('fftw3f_mpi')
 zlib = dependency('zlib')
-math = cpp.find_library('m', required : false)
+math = cpp.find_library('m')
 
-qutils = dependency('qlat-utils')
-
-deps = [ omp, py3.dependency(), qutils, fftw_mpi, fftwf_mpi, fftw, fftwf, mpic, zlib, math, ]
+deps = [ omp, py3.dependency(), fftw_mpi, fftwf_mpi, fftw, fftwf, mpic, zlib, math, ]
 
 if not cpp.check_header('Eigen/Eigen')
   eigen = dependency('eigen3')
   deps += [ eigen, ]
 endif
 
-c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/include/qlat/*.h | grep -v "/config.h$"', check: true)
-headers = c.stdout().strip().split('\n')
-install_headers(headers, subdir: 'qlat')
+subdir('include')
 
-c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/include/qlat/vector_utils/*.h', check: true)
-headers = c.stdout().strip().split('\n')
-install_headers(headers, subdir: 'qlat/vector_utils')
+subdir('pylib')
 
-install_headers('include/qlat/qlat-setup.h')
-
-c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/pylib/cqlat/*.cpp', check: true)
-sources = c.stdout().strip().split('\n')
-
-subdir('include/qlat')
-
-incdir = include_directories('include')
-
-lib = py3.extension_module('cqlat',
-  sources,
-  dependencies: deps,
-  include_directories: incdir,
-  install: true,
-  # gnu_symbol_visibility: 'default',
-  )
-
-c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/pylib/qlat/*.py', check: true)
-pysources = c.stdout().strip().split('\n')
-py3.install_sources(pysources, subdir: 'qlat')
-
-c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/pylib/auto_contractor/*.py', check: true)
-pysources = c.stdout().strip().split('\n')
-py3.install_sources(pysources, subdir: 'auto_contractor')
-
-c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/pylib/rbc_ukqcd_params/*.py', check: true)
-pysources = c.stdout().strip().split('\n')
-py3.install_sources(pysources, subdir: 'rbc_ukqcd_params')
-
-c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/pylib/*.py', check: true)
-pysources = c.stdout().strip().split('\n')
-py3.install_sources(pysources)
-
-c = run_command('bash', '-c', 'ls $MESON_SOURCE_ROOT/bin/*', check: true)
-scripts = c.stdout().strip().split('\n')
-install_data(scripts, install_dir: 'bin', install_mode: 'rwxr-xr-x')
-
-pkg = import('pkgconfig')
-pkg.generate(
-  name: 'qlat',
-  description: 'Qlattice - A simple lattice QCD library.',
-  requires: [ 'fftw3', 'fftw3f', 'qlat-utils', ],
-  libraries: [ '-lfftw3_mpi', '-lfftw3f_mpi', '-lz', '-lm' ],
-  )
+c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls bin/*', check: true)
+scripts = files(c.stdout().strip().split('\n'))
+install_data(scripts, install_dir: get_option('bindir'), install_mode: 'rwxr-xr-x')
