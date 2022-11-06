@@ -11,25 +11,47 @@ project('qlat-ext', 'cpp',
 
 add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
 
+cpp = meson.get_compiler('cpp')
+
 py_mod = import('python')
 py3 = py_mod.find_installation('python3')
-
 message(py3.path())
 message(py3.get_install_dir())
-
-omp = dependency('openmp')
 
 if get_option('use_cxx')
   message('use_cxx=true (use CXX compiler without additional MPI options.)')
   mpic = dependency('', required: false)
 else
   message('use_cxx=false (use meson\'s automatic MPI detection.)')
-  mpic = dependency('mpi', language: 'cpp')
+  mpic = dependency('mpi', language: 'cpp').as_system()
 endif
 
-qlat = dependency('qlat', method: 'pkg-config')
+omp = dependency('openmp').as_system()
+zlib = dependency('zlib').as_system()
 
-deps = [ omp, py3.dependency(), mpic, qlat ]
+fftw = dependency('fftw3').as_system()
+fftwf = dependency('fftw3f').as_system()
+message('fftw libdir', fftw.get_variable('libdir'))
+message('fftwf libdir', fftwf.get_variable('libdir'))
+fftw_mpi = cpp.find_library('fftw3_mpi', dirs: fftw.get_variable('libdir'))
+fftwf_mpi = cpp.find_library('fftw3f_mpi', dirs: fftwf.get_variable('libdir'))
+
+math = cpp.find_library('m')
+
+qlat_include = run_command('qlat-include', check: true).stdout().strip().split('\n')
+message('qlat include', qlat_include)
+
+qlat = declare_dependency(
+  include_directories: include_directories(qlat_include),
+  dependencies: [ omp, fftw_mpi, fftwf_mpi, fftw, fftwf, mpic, zlib, math, ],
+  )
+
+deps = [ qlat, ]
+
+if not cpp.check_header('Eigen/Eigen')
+  eigen = dependency('eigen3').as_system()
+  deps += [ eigen, ]
+endif
 
 subdir('pylib/cqlat_ext')
 

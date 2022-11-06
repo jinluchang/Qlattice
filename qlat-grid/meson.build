@@ -62,7 +62,7 @@ message('qlat include', qlat_include)
 
 qlat = declare_dependency(
   include_directories: include_directories(qlat_include),
-  dependencies: [ py3.dependency().as_system(), omp, zlib, math, fftw_mpi, fftwf_mpi, fftw, fftwf, zlib, math, ],
+  dependencies: [ py3.dependency().as_system(), omp, fftw_mpi, fftwf_mpi, fftw, fftwf, zlib, math, ],
   )
 
 deps = [ qlat, grid, ]

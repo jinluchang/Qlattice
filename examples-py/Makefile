@@ -50,7 +50,7 @@ update-sources:
 
 cqlat-ext.log: cqlat-ext/meson.build
 	-meson cqlat-ext-build cqlat-ext
-	-cd cqlat-ext-build ; ninja -j2 ; q_verbose=1 python3 -c "import ctypes; import sys; flags = sys.getdlopenflags(); sys.setdlopenflags(flags | ctypes.RTLD_GLOBAL); import cqlat_ext as ce ; ce.hello_world() ; import qlat as q ; q.timer_display()" >../"$@".full 2>&1
+	-cd cqlat-ext-build ; ninja -j2 ; q_verbose=1 python3 -c "import ctypes; import sys; flags = sys.getdlopenflags(); sys.setdlopenflags(flags | ctypes.RTLD_GLOBAL); import cqlat_ext as ce ; ce.hello_world() ; import qlat as q ; q.timer_display() ; q.displayln_info('CHECK: finished successfully.')" >../"$@".full 2>&1
 	-grep "CHECK: " "$@".full >"$@".new
 	-if diff "$@".new "$@" ; then echo passed ; else cat "$@".full ; fi
 	-mv -v "$@".new "$@"
