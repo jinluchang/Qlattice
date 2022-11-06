@@ -1,0 +1,13 @@
+[build-system]
+build-backend = 'mesonpy'
+requires = [ 'meson-python', 'qlat', ]
+
+[project]
+name = 'qlat-grid'
+dynamic = [ 'version', ]
+description = 'Qlattice interface of some functions from Grid'
+readme = 'README.md'
+license = { text = 'GPL-3.0-or-later' }
+keyword = [ 'Lattice', 'QCD', 'SelectedField', 'SelectedPoints', ]
+authors = [ { name = 'Luchang Jin', email = 'ljin.luchang@gmail.com' }, ]
+dependencies = [ 'qlat', ]
