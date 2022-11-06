@@ -1,5 +1,5 @@
 project('qlat-grid', 'cpp',
-  version: '0.2',
+  version: '0.4',
   license: 'GPL-3.0-or-later',
   default_options: [
     'warning_level=3',
