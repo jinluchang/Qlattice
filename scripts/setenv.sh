@@ -48,6 +48,7 @@ if [ "$(uname)" == "Darwin" ]; then
     export q_num_mp_processes=0
     add-to-colon-list PATH "/usr/local/opt/openssl@3/bin"
     add-to-colon-list PATH "/usr/local/opt/llvm/bin"
+    add-to-colon-list PATH "/usr/local/opt/findutils/libexec/gnubin"
     add-to-colon-list LD_RUN_PATH "/usr/local/opt/llvm/lib/c++"
     add-to-colon-list LIBRARY_PATH "/usr/local/opt/openssl@3/lib"
     add-to-colon-list LIBRARY_PATH "/usr/local/opt/llvm/lib/c++"

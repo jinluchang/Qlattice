@@ -22,11 +22,15 @@ else
 endif
 
 omp = dependency('openmp').as_system()
+zlib = dependency('zlib').as_system()
+
 fftw = dependency('fftw3').as_system()
 fftwf = dependency('fftw3f').as_system()
-fftw_mpi = cpp.find_library('fftw3_mpi')
-fftwf_mpi = cpp.find_library('fftw3f_mpi')
-zlib = dependency('zlib').as_system()
+message('fftw libdir', fftw.get_variable('libdir'))
+message('fftwf libdir', fftwf.get_variable('libdir'))
+fftw_mpi = cpp.find_library('fftw3_mpi', dirs: fftw.get_variable('libdir'))
+fftwf_mpi = cpp.find_library('fftw3f_mpi', dirs: fftwf.get_variable('libdir'))
+
 math = cpp.find_library('m')
 
 qlat_include = run_command('qlat-include', check: true).stdout().strip().split('\n')
