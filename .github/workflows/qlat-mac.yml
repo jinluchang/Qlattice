@@ -46,7 +46,7 @@ jobs:
     - name: Install Brew packages
       run: |
         # brew update
-        brew install gsl zlib openssl@3 llvm open-mpi mpfr autoconf automake flock findutils eigen fftw --with-mpi
+        brew install gsl zlib openssl@3 llvm open-mpi mpfr autoconf automake flock findutils eigen fftw --with-mpi hdf5-mpi
         # brew upgrade
 
     - name: Download dependencies

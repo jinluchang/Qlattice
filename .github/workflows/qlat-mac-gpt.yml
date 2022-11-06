@@ -46,7 +46,7 @@ jobs:
     - name: Install Brew packages
       run: |
         # brew update
-        brew install gsl zlib openssl@3 llvm open-mpi mpfr autoconf automake flock findutils eigen fftw --with-mpi
+        brew install gsl zlib openssl@3 llvm open-mpi mpfr autoconf automake flock findutils eigen fftw --with-mpi hdf5-mpi
         # brew upgrade
 
     - name: Download dependencies
@@ -83,11 +83,6 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/qlat-examples-cpp.sh
-
-    - name: Build more packages HDF5
-      run: |
-        export num_proc=3
-        ./scripts/hdf5.sh
 
     - name: Build more packages Grid-tblum
       run: |
