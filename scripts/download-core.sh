@@ -18,6 +18,8 @@ dget() {
 
 dget "fftw-3.3.10.tar.gz" "http://www.fftw.org/fftw-3.3.10.tar.gz"
 
+dget "eigen-3.3.7.tar.bz2" "https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.bz2"
+
 dget "c-lime.tar.gz" "https://github.com/usqcd-software/c-lime/tarball/master"
 
 dget "hdf5-1.10.7.tar.bz2" "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.7/src/hdf5-1.10.7.tar.bz2"

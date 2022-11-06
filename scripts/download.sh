@@ -26,7 +26,7 @@ dget "Cuba-4.2.1.tar.gz"  "http://www.feynarts.de/cuba/Cuba-4.2.1.tar.gz"
 
 dget "gsl-2.7.1.tar.gz" "https://gnu.askapache.com/gsl/gsl-2.7.1.tar.gz"
 
-dget "eigen-3.3.9.tar.bz2" "https://gitlab.com/libeigen/eigen/-/archive/3.3.9/eigen-3.3.9.tar.bz2"
+dget "eigen-3.3.7.tar.bz2" "https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.bz2"
 
 dget "c-lime.tar.gz" "https://github.com/usqcd-software/c-lime/tarball/master"
 
