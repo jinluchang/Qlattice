@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+
+import qlat_grid as qgi
+
+for path in qgi.get_include_list():
+    print(path)

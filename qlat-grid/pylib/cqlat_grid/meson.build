@@ -3,7 +3,7 @@
 c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.cpp', check: true)
 cpp_sources = files(c.stdout().strip().split('\n'))
 
-lib = py3.extension_module('cqlat_grid_io',
+lib = py3.extension_module('cqlat_grid',
   cpp_sources,
   dependencies: deps,
   include_directories: incdir,
