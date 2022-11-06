@@ -16,6 +16,6 @@ set -e
 ./scripts/c-lime.sh
 ./scripts/grid.gen16.sh
 ./scripts/gpt.sh
-./scripts/qlat-grid-io.sh
+./scripts/qlat-grid.sh
 
 } 2>&1 | tee $prefix/log.build.txt

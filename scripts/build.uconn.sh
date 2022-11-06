@@ -33,6 +33,6 @@ set -e
 ./scripts/hdf5.sh
 ./scripts/grid.avx512.sh
 ./scripts/gpt.sh
-./scripts/qlat-grid-io.sh
+./scripts/qlat-grid.sh
 
 } 2>&1 | tee $prefix/log.build.txt
