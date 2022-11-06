@@ -57,8 +57,6 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/setenv.default.sh
-        ./scripts/fftw_mpi.sh
-        ./scripts/fftwf_mpi.sh
 
     - name: Build Qlattice
       run: |
