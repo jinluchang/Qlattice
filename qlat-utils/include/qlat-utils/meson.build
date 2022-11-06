@@ -17,5 +17,5 @@ config = configure_file(output: 'config.h', configuration: conf_data)
 install_headers(config, subdir: 'qlat-utils')
 
 c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.h | grep -v "^config.h$"', check: true)
-qlat_utils_headers = files(c.stdout().strip().split('\n'))
-install_headers(qlat_utils_headers, subdir: 'qlat-utils')
+cpp_headers = files(c.stdout().strip().split('\n'))
+install_headers(cpp_headers, subdir: 'qlat-utils')

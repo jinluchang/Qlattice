@@ -30,7 +30,7 @@ subdir('pylib/cqlat_utils')
 incdir = include_directories('include')
 
 py3.extension_module('cqlat_utils',
-  cqlat_utils_sources + config,
+  cpp_sources + config,
   dependencies: deps,
   include_directories: incdir,
   install: true,
@@ -40,8 +40,8 @@ py3.extension_module('cqlat_utils',
 subdir('pylib/qlat_utils')
 
 c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls bin/*', check: true)
-qlat_utils_scripts = files(c.stdout().strip().split('\n'))
-install_data(qlat_utils_scripts, install_dir: get_option('bindir'), install_mode: 'rwxr-xr-x')
+scripts = files(c.stdout().strip().split('\n'))
+install_data(scripts, install_dir: get_option('bindir'), install_mode: 'rwxr-xr-x')
 
 pkg = import('pkgconfig')
 pkg.generate(

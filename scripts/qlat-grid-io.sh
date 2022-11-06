@@ -35,6 +35,8 @@ name=qlat-grid-io
         export LIBS="$QLAT_LIBS"
     fi
 
+    ( cd "$wd/qlat-grid-io/pylib/cqlat_grid_io" ; bash update.sh )
+
     touch "$wd"/qlat-grid-io/meson.build
 
     prefix_python="$prefix/lib/python3/qlat-packages"

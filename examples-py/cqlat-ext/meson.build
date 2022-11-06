@@ -11,8 +11,6 @@ project('qlat-ext', 'cpp',
 
 add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
 
-run_command('bash', '-c', 'cd "$MESON_SOURCE_ROOT"/pylib/cqlat_ext ; bash update.sh', check: true)
-
 py_mod = import('python')
 py3 = py_mod.find_installation('python3')
 
@@ -33,13 +31,12 @@ qlat = dependency('qlat', method: 'pkg-config')
 
 deps = [ omp, py3.dependency(), mpic, qlat ]
 
-c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/pylib/cqlat_ext/*.cpp', check: true)
-sources = c.stdout().strip().split('\n')
+subdir('pylib/cqlat_ext')
 
 incdir = include_directories('include')
 
 lib = py3.extension_module('cqlat_ext',
-  sources,
+  cqlat_ext_sources,
   dependencies: deps,
   include_directories: incdir,
   install: true,
