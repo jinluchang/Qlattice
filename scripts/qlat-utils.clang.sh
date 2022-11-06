@@ -40,7 +40,7 @@ name=qlat-utils
 
     prefix_python="$prefix/lib/python3/qlat-packages"
 
-    meson "$wd/qlat-utils" \
+    meson setup "$wd/qlat-utils" \
         -Dpython.platlibdir="$prefix_python" -Dpython.purelibdir="$prefix_python" \
         --prefix="$prefix"
     time ninja -j$num_proc

@@ -31,7 +31,7 @@ name=qlat-grid
 
     prefix_python="$prefix/lib/python3/qlat-packages"
 
-    meson "$wd/qlat-grid" \
+    meson setup "$wd/qlat-grid" \
         -Dpython.platlibdir="$prefix_python" -Dpython.purelibdir="$prefix_python" \
         --prefix="$prefix"
     ninja -j$num_proc
