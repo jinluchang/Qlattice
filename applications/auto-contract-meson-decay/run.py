@@ -17,6 +17,12 @@ from params import *
 
 load_path_list[:] = [
         "results",
+        "qcddata",
+        "qcddata-1",
+        "qcddata-2",
+        "qcddata-3",
+        "qcddata-4",
+        "qcddata-5",
         "../qcddata",
         os.path.join(os.getenv("HOME"), "qcddata"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-gf-gt/results"),
