@@ -960,6 +960,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     geo = q.Geometry(total_site, 1)
     t_size = total_site[3]
     r_limit = get_r_limit(total_site)
+    n_elems = len(xg_fsel_list)
     n_points = len(xg_psel_list)
     n_pairs = n_points * (n_points - 1) // 2 + n_points
     #
@@ -980,34 +981,88 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     def get_prop_norm_sqrt(*args):
         is_sloppy = True
         return abs(ama_extract(get_prop(*args, is_norm_sqrt = True), is_sloppy = is_sloppy))
-    def get_estimate(xg_snk, xg1_src, xg2_src, t_1, t_2):
+    def load_psrc_psrc_prop_norm_sqrt(flavor, i):
+        xg1_src = tuple(xg_psel_list[i])
+        x_1 = ("point", xg1_src,)
+        v_list = []
+        for j in range(n_points):
+            xg2_src = tuple(xg_psel_list[j])
+            x_2 = ("point", xg2_src,)
+            v = get_prop_norm_sqrt(flavor, x_1, x_2)
+            v_list.append(v)
+        return np.array(v_list)
+    psrc_psrc_prop_norm_sqrt = np.array([
+        q.parallel_map(lambda i: load_psrc_psrc_prop_norm_sqrt(flavor, i), range(n_points))
+        for flavor in [ "l", "s", ]
+        ], dtype = float)
+    def load_wsrc_psrc_prop_norm_sqrt(flavor, t):
+        ts = ("wall", t,)
+        v_list = []
+        for j in range(n_points):
+            xg2_src = tuple(xg_psel_list[j])
+            x_2 = ("point", xg2_src,)
+            v = get_prop_norm_sqrt(flavor, x_2, ts)
+            v_list.append(v)
+        return np.array(v_list)
+    wsrc_psrc_prop_norm_sqrt = np.array([
+        q.parallel_map(lambda t: load_wsrc_psrc_prop_norm_sqrt(flavor, t), range(t_size))
+        for flavor in [ "l", "s", ]
+        ], dtype = float)
+    def load_wsrc_psnk_prop_norm_sqrt(flavor, t):
+        ts = ("wall", t,)
+        v_list = []
+        for j in range(n_elems):
+            xg2_snk = tuple(xg_fsel_list[j])
+            x_2 = ("point-snk", xg2_snk,)
+            v = get_prop_norm_sqrt(flavor, x_2, ts)
+            v_list.append(v)
+        return np.array(v_list)
+    wsrc_psnk_prop_norm_sqrt = np.array([
+        q.parallel_map(lambda t: load_wsrc_psnk_prop_norm_sqrt(flavor, t), range(t_size))
+        for flavor in [ "l", "s", ]
+        ], dtype = float)
+    def load_psrc_psnk_prop_norm_sqrt(flavor, i):
+        xg1_src = tuple(xg_psel_list[i])
+        x_1 = ("point", xg1_src,)
+        v_list = []
+        for j in range(n_elems):
+            xg2_snk = tuple(xg_fsel_list[j])
+            x_2 = ("point-snk", xg2_snk,)
+            v = get_prop_norm_sqrt(flavor, x_2, x_1)
+            v_list.append(v)
+        return np.array(v_list)
+    psrc_psnk_prop_norm_sqrt = np.array([
+        q.parallel_map(lambda i: load_psrc_psnk_prop_norm_sqrt(flavor, i), range(n_points))
+        for flavor in [ "l", "s", ]
+        ], dtype = float)
+    def get_estimate(idx_snk, idx1, idx2, t_1, t_2):
+        flavor_l = 0
+        flavor_s = 1
+        xg_snk = tuple(xg_fsel_list[idx_snk])
+        # xg1_src = tuple(xg_psel_list[idx1])
+        # xg2_src = tuple(xg_psel_list[idx2])
         corr1 = get_corr(xg_snk[3], t_1, 0)
         # corr1s = get_corr(xg_snk[3], t_1, 1)
         corr2 = get_corr(xg_snk[3], t_2, 0)
         # corr2s = get_corr(xg_snk[3], t_2, 1)
-        w = ("point-snk", xg_snk,)
-        x_1 = ("point", xg1_src,)
-        x_2 = ("point", xg2_src,)
-        t_1s = ("wall", t_1,)
-        t_2s = ("wall", t_2,)
-        p1t1 = get_prop_norm_sqrt("l", x_1, t_1s)
-        p2t1 = get_prop_norm_sqrt("l", x_2, t_1s)
-        p1t2 = get_prop_norm_sqrt("l", x_1, t_2s)
-        p2t2 = get_prop_norm_sqrt("l", x_2, t_2s)
-        wt1 = get_prop_norm_sqrt("l", w, t_1s)
-        wt2 = get_prop_norm_sqrt("l", w, t_2s)
-        wp1 = get_prop_norm_sqrt("l", x_1, w)
-        wp2 = get_prop_norm_sqrt("l", x_2, w)
-        p1p2 = get_prop_norm_sqrt("l", x_1, x_2)
-        # p1t1s = get_prop_norm_sqrt("s", x_1, t_1s)
-        # p2t1s = get_prop_norm_sqrt("s", x_2, t_1s)
-        # p1t2s = get_prop_norm_sqrt("s", x_1, t_2s)
-        # p2t2s = get_prop_norm_sqrt("s", x_2, t_2s)
-        # wt1s = get_prop_norm_sqrt("s", w, t_1s)
-        # wt2s = get_prop_norm_sqrt("s", w, t_2s)
-        # wp1s = get_prop_norm_sqrt("s", x_1, w)
-        # wp2s = get_prop_norm_sqrt("s", x_2, w)
-        # p1p2s = get_prop_norm_sqrt("s", x_1, x_2)
+        p1t1 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_1, idx1].item()
+        p2t1 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_1, idx2].item()
+        wt1 = wsrc_psnk_prop_norm_sqrt[flavor_l, t_1, idx_snk].item()
+        wt2 = wsrc_psnk_prop_norm_sqrt[flavor_l, t_2, idx_snk].item()
+        p1t2 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_2, idx1].item()
+        p2t2 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_2, idx2].item()
+        p1p2 = psrc_psrc_prop_norm_sqrt[flavor_l, idx1, idx2].item()
+        wp1 = psrc_psnk_prop_norm_sqrt[flavor_l, idx1, idx_snk].item()
+        wp2 = psrc_psnk_prop_norm_sqrt[flavor_l, idx2, idx_snk].item()
+        # p1t1s = wsrc_psrc_prop_norm_sqrt[flavor_s, t_1, idx1].item()
+        # p2t1s = get_prop_norm_sqrt(flavor_s, idx2, t_1)
+        # p1t2s = get_prop_norm_sqrt(flavor_s, idx1, t_2)
+        # p2t2s = get_prop_norm_sqrt(flavor_s, idx2, t_2)
+        # wt1s = get_prop_norm_sqrt(flavor_s, idx_snk, t_1)
+        # wt2s = get_prop_norm_sqrt(flavor_s, idx_snk, t_2)
+        # wp1s = get_prop_norm_sqrt(flavor_s, idx1, idx_snk)
+        # wp2s = get_prop_norm_sqrt(flavor_s, idx2, idx_snk)
+        # p1p2s = get_prop_norm_sqrt(flavor_s, idx1, idx2)
         values = [
                 2 * (p1t1 * p2t1 / corr1 + p1t2 * p2t2 / corr2) * (wp1 * wp2),
                 # 2 * (p1t1s * p2t1 / corr1s + p1t2s * p2t2 / corr2s) * (wp1s * wp2),
@@ -1024,9 +1079,9 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
         # q.displayln_info(6, f"get_estimate: {value} {values}")
         return value
     @q.timer
-    def get_weight(idx_snk, xg_snk, xg1_src, xg2_src, t_1, t_2):
+    def get_weight(idx_snk, idx1, idx2, t_1, t_2):
         # return weight for this point (1 / prob or zero)
-        est = get_estimate(xg_snk, xg1_src, xg2_src, t_1, t_2)
+        est = get_estimate(idx_snk, idx1, idx2, t_1, t_2)
         prob = est / threshold
         # q.displayln_info(5, f"get_weight: {prob} {est} {threshold}")
         if prob >= 1:
@@ -1047,12 +1102,14 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
                     continue
                 idx_pair += 1
                 q.displayln_info(1, f"auto_contract_meson_jwjj: {idx_pair}/{n_pairs} {xg1_src} {xg2_src}")
-                for idx_snk, xg_snk in enumerate(xg_fsel_list):
-                    xg_snk = tuple(xg_snk.tolist())
-                    yield xg1_src, xg2_src, xg_snk, idx_snk
+                for idx_snk in range(n_elems):
+                    yield idx_snk, idx1, idx2
     @q.timer
     def feval(args):
-        xg1_src, xg2_src, xg_snk, idx_snk = args
+        idx_snk, idx1, idx2 = args
+        xg_snk = tuple(xg_fsel_list[idx_snk])
+        xg1_src = tuple(xg_psel_list[idx1])
+        xg2_src = tuple(xg_psel_list[idx2])
         xg1_src_t = xg1_src[3]
         xg2_src_t = xg2_src[3]
         xg_t = xg_snk[3]
@@ -1060,7 +1117,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
         xg2_xg_t = q.rel_mod(xg2_src_t - xg_t, t_size)
         t_1 = (min(0, xg1_xg_t, xg2_xg_t) + xg_t - tsep) % total_site[3]
         t_2 = (max(0, xg1_xg_t, xg2_xg_t) + xg_t + tsep) % total_site[3]
-        weight = get_weight(idx_snk, xg_snk, xg1_src, xg2_src, t_1, t_2)
+        weight = get_weight(idx_snk, idx1, idx2, t_1, t_2)
         if weight == 0:
             return None
         pd = {
@@ -1099,7 +1156,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
         return counts, values
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum(
-            q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 64))
+            q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = n_points))
     q.displayln_info("timer_display for auto_contract_meson_jj")
     q.timer_display()
     q.timer_merge()
@@ -1228,7 +1285,7 @@ def test():
     q.qremove_all_info("locks")
     q.qremove_all_info("cache")
     assert not q.does_file_exist_sync_node("results")
-    get_all_cexpr()
+    # get_all_cexpr()
     run_job("test-4nt8", 1000)
     # run_job("test-4nt16", 1000)
     # run_job("16IH2", 1000)
