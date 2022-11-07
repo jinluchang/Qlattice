@@ -18,6 +18,8 @@ dget() {
 
 dget "eigen-3.3.7.tar.bz2" "https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.bz2"
 
+dget "fftw-3.3.10.tar.gz" "http://www.fftw.org/fftw-3.3.10.tar.gz"
+
 dget "c-lime.tar.gz" "https://github.com/usqcd-software/c-lime/tarball/master"
 
 if [ -d Grid-lehner ] ; then
