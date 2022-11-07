@@ -70,8 +70,6 @@ def get_cexpr_meson_corr():
                 mk_k_p("t_2", True) * mk_k_p("t_1") + f"K+^dag(t_sep) * K+(0)",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
-        q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
-        cexpr.optimize()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
@@ -304,8 +302,6 @@ def get_cexpr_meson_f_corr():
                 mk_j5k_mu("x_1", 3)  * mk_k_p("t_1") + "A_K(0) * K+(-t_sep)",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
-        q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
-        cexpr.optimize()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
@@ -492,8 +488,6 @@ def get_cexpr_meson_jt():
                 -mk_k_p("t_2p", True) * mk_vec_mu("s", "s", "x", 3) * mk_k_p("t_1p") + "- K+^dag(T/2+tsep) * sbar gt s * K+(T/2-tsep)",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
-        q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
-        cexpr.optimize()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
@@ -579,8 +573,6 @@ def get_cexpr_meson_m():
                 ]
         exprs = [ m * mm for mm in mm_list for m in m_list ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
-        q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
-        cexpr.optimize()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
@@ -805,8 +797,6 @@ def get_cexpr_meson_jj():
         exprs = exprs_self_energy + exprs_decay1 + exprs_decay2 + exprs_decay_m
         assert len(exprs) == 132
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
-        q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
-        cexpr.optimize()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
@@ -903,6 +893,13 @@ def get_cexpr_meson_jwjj():
         diagram_type_dict[((('t_1', 'x_1'), 1), (('w', 't_1'), 1), (('x_1', 'w'), 1), (('x_2', 'x_2'), 1))] = None
         diagram_type_dict[((('t_1', 'w'), 1), (('w', 't_1'), 1), (('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
         diagram_type_dict[((('t_1', 'w'), 1), (('w', 't_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1))] = None
+        diagram_type_dict[((('t_2', 'w'), 1), (('w', 'x_1'), 1), (('x_1', 't_2'), 1), (('x_2', 'x_2'), 1))] = None
+        diagram_type_dict[((('t_2', 'x_1'), 1), (('w', 'x_2'), 1), (('x_1', 'w'), 1), (('x_2', 't_2'), 1))] = 'Type1'
+        diagram_type_dict[((('t_2', 'w'), 1), (('w', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_2'), 1))] = 'Type2'
+        diagram_type_dict[((('t_2', 'x_1'), 1), (('w', 't_2'), 1), (('x_1', 'x_2'), 1), (('x_2', 'w'), 1))] = 'Type2'
+        diagram_type_dict[((('t_2', 'x_1'), 1), (('w', 't_2'), 1), (('x_1', 'w'), 1), (('x_2', 'x_2'), 1))] = None
+        diagram_type_dict[((('t_2', 'w'), 1), (('w', 't_2'), 1), (('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
+        diagram_type_dict[((('t_2', 'w'), 1), (('w', 't_2'), 1), (('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1))] = None
         jj_list = [
                 (sum([ mk_j_mu("x_2", mu) * mk_j_mu("x_1", mu) for mu in range(4) ])
                  + "j_mu(x) * j_mu(y)"),
@@ -942,8 +939,6 @@ def get_cexpr_meson_jwjj():
         exprs = [ op * jm for jm in jm_list for op in op_list ]
         assert len(exprs) == 48
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
-        q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
-        cexpr.optimize()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
