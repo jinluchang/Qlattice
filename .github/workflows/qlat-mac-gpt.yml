@@ -46,7 +46,7 @@ jobs:
     - name: Install Brew packages
       run: |
         # brew update
-        brew install gsl zlib openssl@3 llvm open-mpi mpfr autoconf automake flock findutils eigen fftw hdf5-mpi
+        brew install gsl zlib openssl@3 llvm open-mpi mpfr autoconf automake flock findutils eigen hdf5-mpi
         # brew upgrade
 
     - name: Download dependencies
@@ -57,6 +57,8 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/setenv.default.sh
+        ./scripts/fftw_mpi.sh
+        ./scripts/fftwf_mpi.sh
         ./scripts/eigen.sh
 
     - name: Build Grid
