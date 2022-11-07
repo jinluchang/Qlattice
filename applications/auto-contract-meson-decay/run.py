@@ -945,7 +945,7 @@ def get_cexpr_meson_jwjj():
 @q.timer_verbose
 def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_jwjj.lat"
-    fn_counts = f"{job_tag}/auto-contract/traj-{traj}/meson_jwjj.lat"
+    fn_counts = f"{job_tag}/auto-contract/traj-{traj}/meson_jwjj_counts.lat"
     if get_load_path(fn) is not None:
         assert get_load_path(fn_counts) is not None
         return
