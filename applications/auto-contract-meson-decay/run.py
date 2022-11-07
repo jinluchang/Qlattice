@@ -1219,9 +1219,12 @@ def get_all_cexpr():
 
 def test():
     # ADJUST ME
+    assert q.get_num_node() <= 4
+    q.qremove_all_info("results/test-4nt8")
+    q.qremove_info("results")
     q.qremove_all_info("locks")
     q.qremove_all_info("cache")
-    q.qremove_all_info("results")
+    assert not q.does_file_exist_sync_node("results")
     get_all_cexpr()
     run_job("test-4nt8", 1000)
     # run_job("test-4nt16", 1000)
