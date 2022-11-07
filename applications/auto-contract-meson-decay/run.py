@@ -1026,6 +1026,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
                 ]
         q.displayln_info(6, f"get_estimate: {values}")
         return sum(values)
+    @q.timer
     def get_weight(idx_snk, xg_snk, xg1_src, xg2_src, t_1, t_2):
         # return weight for this point (1 / prob or zero)
         est = get_estimate(xg_snk, xg1_src, xg2_src, t_1, t_2)
@@ -1041,58 +1042,63 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     #
     def load_data():
         idx_pair = 0
-        n_total = 0
-        n_selected = 0
         for idx1, xg1_src in enumerate(xg_psel_list):
             xg1_src = tuple(xg1_src.tolist())
-            xg1_src_t = xg1_src[3]
             for idx2, xg2_src in enumerate(xg_psel_list):
                 xg2_src = tuple(xg2_src.tolist())
-                xg2_src_t = xg2_src[3]
-                x_rel = [ q.rel_mod(xg2_src[mu] - xg1_src[mu], total_site[mu]) for mu in range(4) ]
                 if idx2 > idx1:
                     continue
                 idx_pair += 1
                 q.displayln_info(1, f"auto_contract_meson_jwjj: {idx_pair}/{n_pairs} {xg1_src} {xg2_src}")
                 for idx_snk, xg_snk in enumerate(xg_fsel_list):
                     xg_snk = tuple(xg_snk.tolist())
-                    xg_t = xg_snk[3]
-                    xg1_xg_t = q.rel_mod(xg1_src_t - xg_t, t_size)
-                    xg2_xg_t = q.rel_mod(xg2_src_t - xg_t, t_size)
-                    t_1 = (min(0, xg1_xg_t, xg2_xg_t) + xg_t - tsep) % total_site[3]
-                    t_2 = (max(0, xg1_xg_t, xg2_xg_t) + xg_t + tsep) % total_site[3]
-                    weight = get_weight(idx_snk, xg_snk, xg1_src, xg2_src, t_1, t_2)
-                    n_total += 1
-                    if weight == 0:
-                        continue
-                    n_selected += 1
-                    pd = {
-                            "w" : ("point-snk", xg_snk,),
-                            "x_1" : ("point", xg1_src,),
-                            "x_2" : ("point", xg2_src,),
-                            "t_1" : ("wall", t_1,),
-                            "t_2" : ("wall", t_2,),
-                            "size" : total_site,
-                            }
-                    t1 = t_1 % t_size
-                    t2 = t_2 % t_size
-                    r = get_r(x_rel)
-                    yield weight, pd, t1, t2, r
-                q.displayln_info(1, f"auto_contract_meson_jwjj: {idx_pair}/{n_pairs} n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
+                    yield xg1_src, xg2_src, xg_snk, idx_snk
     @q.timer
     def feval(args):
-        weight, pd, t1, t2, r = args
+        xg1_src, xg2_src, xg_snk, idx_snk = args
+        xg1_src_t = xg1_src[3]
+        xg2_src_t = xg2_src[3]
+        xg_t = xg_snk[3]
+        xg1_xg_t = q.rel_mod(xg1_src_t - xg_t, t_size)
+        xg2_xg_t = q.rel_mod(xg2_src_t - xg_t, t_size)
+        t_1 = (min(0, xg1_xg_t, xg2_xg_t) + xg_t - tsep) % total_site[3]
+        t_2 = (max(0, xg1_xg_t, xg2_xg_t) + xg_t + tsep) % total_site[3]
+        weight = get_weight(idx_snk, xg_snk, xg1_src, xg2_src, t_1, t_2)
+        if weight == 0:
+            return None
+        pd = {
+                "w" : ("point-snk", xg_snk,),
+                "x_1" : ("point", xg1_src,),
+                "x_2" : ("point", xg2_src,),
+                "t_1" : ("wall", t_1,),
+                "t_2" : ("wall", t_2,),
+                "size" : total_site,
+                }
+        t1 = t_1 % t_size
+        t2 = t_2 % t_size
+        x_rel = [ q.rel_mod(xg2_src[mu] - xg1_src[mu], total_site[mu]) for mu in range(4) ]
+        r = get_r(x_rel)
         val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
         return weight, val, t1, t2, r
     def sum_function(val_list):
+        n_total = 0
+        n_selected = 0
         counts = np.zeros((t_size, t_size, r_limit,), dtype = complex)
         values = np.zeros((t_size, t_size, r_limit, len(expr_names),), dtype = complex)
-        for weight, val, t1, t2, r in val_list:
+        for val in val_list:
+            n_total += 1
+            if val is None:
+                continue
+            n_selected += 1
+            weight, val, t1, t2, r = val
             r_idx_low, r_idx_high, coef_low, coef_high = get_interp_idx_coef(r, r_limit)
             counts[t1, t2, r_idx_low] += coef_low * weight
             counts[t1, t2, r_idx_high] += coef_high * weight
             values[t1, t2, r_idx_low] += coef_low * weight * val
             values[t1, t2, r_idx_high] += coef_high * weight * val
+            if n_selected % 100 == 0:
+                q.displayln_info(1, f"auto_contract_meson_jwjj: n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
+        q.displayln_info(1, f"auto_contract_meson_jwjj: Final: n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
         return counts, values
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum(
