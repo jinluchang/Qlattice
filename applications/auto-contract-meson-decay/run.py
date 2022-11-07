@@ -902,29 +902,11 @@ def get_cexpr_meson_jwjj():
         diagram_type_dict[((('t_2', 'w'), 1), (('w', 't_2'), 1), (('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1))] = None
         jj_list = [
                 (sum([ mk_j_mu("x_2", mu) * mk_j_mu("x_1", mu) for mu in range(4) ])
-                 + "j_mu(x) * j_mu(y)"),
+                    + "j_mu(x) * j_mu(y)"),
                 (mk_j_mu("x_2", 3) * mk_j_mu("x_1", 3)
-                 + "j_t(x) * j_t(y)"),
-                (sum([ mk_j_mu("x_2", mu) * mk_j_mu("x_1", mu) for mu in range(3) ])
-                 + "j_i(x) * j_i(y)"),
+                    + "j_t(x) * j_t(y)"),
                 ]
-        assert len(jj_list) == 3
-        m2_list = [
-                mk_m("u", "x_2") + "ubar_u(x)",
-                mk_m("d", "x_2") + "dbar_d(x)",
-                mk_m("s", "x_2") + "sbar_s(x)",
-                ]
-        assert len(m2_list) == 3
-        m1_list = [
-                mk_m("u", "x_1") + "ubar_u(y)",
-                mk_m("d", "x_1") + "dbar_d(y)",
-                mk_m("s", "x_1") + "sbar_s(y)",
-                ]
-        assert len(m1_list) == 3
-        m1m2_list = [ m2 * m1 for m2 in m2_list for m1 in m1_list ]
-        assert len(m1m2_list) == 9
-        op_list = jj_list + m1m2_list
-        assert len(op_list) == 12
+        assert len(jj_list) == 2
         def mk_jw_v_mu(p, mu):
             return mk_jpi_mu(p, mu) + mk_jk_mu(p, mu)
         def mk_jw_a_mu(p, mu):
@@ -936,8 +918,8 @@ def get_cexpr_meson_jwjj():
                 mk_jw_a_mu("w", 3) * mk_k_p("t_2") + "jw_a_t(0) * K+(tsep)",
                 ]
         assert len(jm_list) == 4
-        exprs = [ op * jm for jm in jm_list for op in op_list ]
-        assert len(exprs) == 48
+        exprs = [ jj * jm for jm in jm_list for jj in jj_list ]
+        assert len(exprs) == 8
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
