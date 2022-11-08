@@ -141,8 +141,8 @@ class HMC:
         self.start_measurements = 0
         self.init_length = 20
         self.block_init_length = 20
-        self.block_length = 95
-        self.num_blocks = 4
+        self.block_length = 195
+        self.num_blocks = 200
         self.final_block_length = 200
         # A variable to store the estimated vacuum expectation value of sigma
         self.vev = 0
@@ -190,14 +190,12 @@ class HMC:
         
         # Fields to store everything we need to do linear regression to
         # determine what HMC masses to use for Fourier acceleration
-        self.field_av = q.Field("double",geo,geo.multiplicity())
-        self.force_av = q.Field("double",geo,geo.multiplicity())
-        self.field_sq_av = q.Field("double",geo,geo.multiplicity())
+        self.final_field_sq_av = q.Field("double",geo,geo.multiplicity())
+        self.field_field_cor = q.Field("double",geo,geo.multiplicity())
         self.force_mod_av = q.Field("double",geo,geo.multiplicity())
-        self.field_mod_av = q.Field("double",geo,geo.multiplicity())
-        self.field_force_cor = q.Field("double",geo,geo.multiplicity())
         self.divisor = 0
         self.mask = q.Field("double",geo,geo.multiplicity())
+        self.slopes = q.Field("double",geo,geo.multiplicity())
         self.aux1 = q.Field("double",geo,geo.multiplicity())
         self.aux2 = q.Field("double",geo,geo.multiplicity())
         self.reset_fit_variables()
@@ -244,25 +242,17 @@ class HMC:
     def update_masses_w_fit(self):
         # Estimate the masses we should use in order to evolve each field 
         # mode by half of its period
-        self.force_av.multiply_double(self.field_av)
-        self.force_av*=1/self.divisor
-        self.field_force_cor-=self.force_av
-        self.field_av.multiply_double(self.field_av)
-        self.field_av*=1/self.divisor
-        self.field_sq_av-=self.field_av
-        q.field_double.set_ratio_double(self.masses,self.field_force_cor,self.field_sq_av)
+        q.field_double.set_ratio_double(self.slopes,self.field_field_cor,self.final_field_sq_av)
         # After multiplying the ratio of force_mod_av/field_mod_av by
         # (pi/2)**(-2), we have our estimated masses
-        self.masses *= 4/np.pi**2
-        self.masses_est@=self.masses
-        # A safer method for estimating the masses away from equilibrium
-        self.force_mod_av*=1.0/self.divisor/self.mass_force_coef
-        # Choose the larger of the two choices
-        self.choose_larger(self.masses, self.force_mod_av)
+        self.aux1 @= self.slopes
+        self.aux1 *= -0.5
         self.aux2.set_unit()
-        self.aux2*=0.01
-        self.choose_larger(self.masses, self.aux2)
+        self.aux1 += self.aux2
+        self.masses.multiply_double(self.aux1)
+        self.masses_est@=self.masses
         
+        self.update_masses_w_safe_fit()
         self.reset_fit_variables()
     
     def choose_larger(self, field1, field2):
@@ -275,16 +265,19 @@ class HMC:
         field1+=field2
     
     def update_masses_w_safe_fit(self):
-        self.update_masses_w_fit()
+        # A safer method for estimating the masses away from equilibrium
+        self.force_mod_av*=1.0/self.divisor/self.mass_force_coef
+        # Choose the larger of the two choices
+        self.choose_larger(self.masses, self.force_mod_av)
+        self.aux2.set_unit()
+        self.aux2*=0.01
+        self.choose_larger(self.masses, self.aux2)
     
     def reset_fit_variables(self):
         # Reset all accumulated variables
-        self.field_av.set_zero()
-        self.force_av.set_zero()
-        self.field_sq_av.set_zero()
+        self.final_field_sq_av.set_zero()
+        self.field_field_cor.set_zero()
         self.force_mod_av.set_zero()
-        self.field_mod_av.set_zero()
-        self.field_force_cor.set_zero()
         self.divisor = 0
     
     def load_masses(self):
@@ -347,7 +340,6 @@ class HMC:
         # Keep using the same estimated masses for every trajectory 
         # in this block
         self.run_hmc(self.rs.split("hmc-est-mass{}".format(self.traj)))
-        self.vevs.append(self.field.glb_sum()[0]/self.V)
     
     @q.timer_verbose
     def run_hmc(self, rs):
@@ -386,7 +378,15 @@ class HMC:
         # trajectories, save the field update
         if flag or not self.perform_metro:
             q.displayln_info(f"run_hmc: update field (traj={self.traj})")
-            self.field.set_field(self.f0.get_field())
+            if(self.estimate_masses):
+                q.field_double.set_double_from_complex(self.aux1,self.field.get_field_ft())
+                q.field_double.set_double_from_complex(self.aux2,self.f0.get_field_ft())
+                self.aux1.multiply_double(self.aux2)
+                self.field_field_cor+=self.aux1
+                self.aux2.multiply_double(self.aux2)
+                self.final_field_sq_av+=self.aux2
+                self.divisor+=1
+            self.field.set_field_ft(self.f0.get_field_ft())
     
     @q.timer_verbose
     def run_hmc_evolve(self, field, momentum, rs):
@@ -431,19 +431,6 @@ class HMC:
             if(self.safe_estimate_masses):
                 q.field_double.set_abs_from_complex(self.aux1,force.get_field_ft())
                 self.force_mod_av+=self.aux1
-                q.field_double.set_abs_from_complex(self.aux1,field.get_field_ft())
-                self.field_mod_av+=self.aux1
-                self.divisor+=1
-            if(self.estimate_masses):
-                q.field_double.set_double_from_complex(self.aux1,field.get_field_ft())
-                self.field_av+=self.aux1
-                q.field_double.set_double_from_complex(self.aux2,force.get_field_ft())
-                self.force_av+=self.aux2
-                self.aux2.multiply_double(self.aux1)
-                self.field_force_cor+=self.aux2
-                self.aux1.multiply_double(self.aux1)
-                self.field_sq_av+=self.aux1
-                self.divisor+=1
     
     @q.timer_verbose
     def sm_evolve(self, field_init, momentum, fg_dt, dt):
@@ -622,6 +609,7 @@ def main():
         #q.displayln_info(ms)
         
         hmc.display_masses("Masses:", hmc.masses)
+        hmc.display_masses("Slopes:", hmc.slopes)
         q.displayln_info("vev: ")
         q.displayln_info(hmc.vev)
         
@@ -672,9 +660,9 @@ def main():
                             update_phi_i_dist(elems[2],hmc.vev,norm_factor)
                             update_phi_i_dist(elems[3],hmc.vev,norm_factor)
                             update_theta_dist(elems,norm_factor)
-        if traj%50 == 0:
-            hmc.save_field()
-            save_observables()
+        #if traj%50 == 0:
+        #    hmc.save_field()
+        #    save_observables()
     
     # Saves the final field configuration so that the next run can be 
     # started where this one left off
@@ -718,7 +706,7 @@ total_site = [4,4,4,8]
 mult = 4
 
 # The number of trajectories to calculate
-n_traj = 1000
+n_traj = 10000
 # The number of steps to take in a single trajectory
 steps = 20
 # The factor by which to scale down the force when setting a lower limit
