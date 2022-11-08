@@ -45,7 +45,7 @@ def get_r(x_rel):
     return fac * math.sqrt(q.c_sqr(x_rel))
 
 def get_r_limit(total_site):
-    return math.ceil(get_r([ total_site[i] // 2 for i in range(4) ])) + 1
+    return math.ceil(get_r([ (l + 1) // 2 for l in total_site ])) + 1
 
 def get_interp_idx_coef(x, limit = None):
     # return x_idx_low, x_idx_high, coef_low, coef_high
@@ -817,7 +817,7 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     tsep = rup.dict_params[job_tag]["meson_tensor_tsep"]
     geo = q.Geometry(total_site, 1)
     t_size = total_site[3]
-    r_limit = get_r_limit(total_site)
+    r_limit = get_r_limit(total_site[0:3])
     def load_data():
         for idx, xg_src in enumerate(xg_psel_list):
             xg_src = tuple(xg_src.tolist())
@@ -838,7 +838,7 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
                         "size" : total_site,
                         }
                 t = x_rel_t % t_size
-                r = get_r(x_rel)
+                r = get_r(x_rel[0:3])
                 yield pd, t, r
     @q.timer
     def feval(args):
@@ -941,7 +941,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     tsep = rup.dict_params[job_tag]["meson_tensor_tsep"]
     geo = q.Geometry(total_site, 1)
     t_size = total_site[3]
-    r_limit = get_r_limit(total_site)
+    r_limit = get_r_limit(total_site[0:3])
     n_elems = len(xg_fsel_list)
     n_points = len(xg_psel_list)
     n_pairs = n_points * (n_points - 1) // 2 + n_points
@@ -1110,10 +1110,10 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
                 "t_2" : ("wall", t_2,),
                 "size" : total_site,
                 }
-        t1 = t_1 % t_size
-        t2 = t_2 % t_size
+        t1 = xg1_xg_t
+        t2 = xg2_xg_t
         x_rel = [ q.rel_mod(xg2_src[mu] - xg1_src[mu], total_site[mu]) for mu in range(4) ]
-        r = get_r(x_rel)
+        r = get_r(x_rel[0:3])
         val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
         return weight, val, t1, t2, r
     def sum_function(val_list):
