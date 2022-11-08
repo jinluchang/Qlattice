@@ -1097,6 +1097,8 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
         xg_t = xg_snk[3]
         xg1_xg_t = q.rel_mod(xg1_src_t - xg_t, t_size)
         xg2_xg_t = q.rel_mod(xg2_src_t - xg_t, t_size)
+        if abs(xg2_xg_t - xg1_xg_t) >= t_size // 2:
+            return None
         t_1 = (min(0, xg1_xg_t, xg2_xg_t) + xg_t - tsep) % total_site[3]
         t_2 = (max(0, xg1_xg_t, xg2_xg_t) + xg_t + tsep) % total_site[3]
         weight = get_weight(idx_snk, idx1, idx2, t_1, t_2)
