@@ -816,6 +816,7 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     xg_psel_list = np.array(psel.to_list())
     tsep = rup.dict_params[job_tag]["meson_tensor_tsep"]
     geo = q.Geometry(total_site, 1)
+    total_volume = geo.total_volume()
     t_size = total_site[3]
     r_limit = get_r_limit(total_site[0:3])
     def load_data():
@@ -1144,8 +1145,8 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     q.displayln_info("timer_display for auto_contract_meson_jj")
     q.timer_display()
     q.timer_merge()
-    res_count *= 1.0 / (len(xg_psel_list) * fsel.prob())
-    res_sum *= 1.0 / (len(xg_psel_list) * fsel.prob())
+    res_count *= 1.0 / (total_volume * fsel.prob() / t_size)
+    res_sum *= 1.0 / (total_volume * fsel.prob() / t_size)
     ld_count = q.mk_lat_data([
         [ "t1", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
         [ "t2", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
