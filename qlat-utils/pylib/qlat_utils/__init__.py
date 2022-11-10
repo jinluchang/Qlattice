@@ -29,6 +29,7 @@ from qlat_utils.qplot import \
         azip, \
         plot_save, plot_view, \
         gnuplot_png_density, \
+        plot_save_display_width, \
         display_img
 
 from qlat_utils.parallel import *

@@ -201,10 +201,15 @@ def mk_pyplot_folder(path = None):
         os.makedirs(path)
     return path
 
-def display_img(fn):
-    from IPython.display import Image, display
-    print(f"fn='{fn}'")
-    display(Image(filename = fn))
+def display_img(fn, *, width = None):
+    from IPython.display import HTML, display
+    print(f"display_img: fn='{fn}'")
+    show_width = ""
+    if width is not None:
+        show_width = f"width='{width}'"
+    display(HTML(data = f"<img src='{fn}' {show_width} />"))
+
+plot_save_display_width = None
 
 def plot_save(
         fn = None,
@@ -215,6 +220,7 @@ def plot_save(
         is_run_make = True,
         is_display = False,
         is_verbose = False,
+        display_width = None,
         ):
     # fn is full name of the plot or None
     # dts is dict_datatable, e.g. { "table.txt" : [ [ 0, 1, ], [ 1, 2, ], ], }
@@ -269,6 +275,9 @@ def plot_save(
         print(f"fn={fn}")
         print(f"is_run_make={is_run_make}")
         print(f"is_display={is_display}")
+    if display_width is None:
+        display_width = plot_save_display_width
+        print(f"display_width={display_width}")
     populate_pyplot_folder(
             path,
             fn = target_fn,
@@ -288,9 +297,10 @@ def plot_save(
             path_img = os.path.join(path, "plot-0.png")
         else:
             path_img = target
-        print(f"plot_save: plot created at '{path_img}'.")
         if is_display:
-            display_img(path_img)
+            display_img(path_img, width = display_width)
+        else:
+            print(f"plot_save: plot created at '{path_img}'.")
         return path_img
     else:
         assert not is_display
