@@ -203,6 +203,7 @@ def mk_pyplot_folder(path = None):
 
 def display_img(fn):
     from IPython.display import Image, display
+    print(f"fn='{fn}'")
     display(Image(filename = fn))
 
 def plot_save(
@@ -287,12 +288,14 @@ def plot_save(
             path_img = os.path.join(path, "plot-0.png")
         else:
             path_img = target
+        print(f"plot_save: plot created at '{path_img}'.")
         if is_display:
             display_img(path_img)
         return path_img
     else:
         assert not is_display
         # return directory that contain the sources instead of the png path
+        print(f"plot_save: creating data for plot at '{path}'.")
         return path
 
 def plot_view(
