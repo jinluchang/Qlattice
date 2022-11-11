@@ -7,4 +7,4 @@ EXPORT(hello_world, {
     displayln_info("Hello world!");
   }
   Py_RETURN_NONE;
-});
+})
