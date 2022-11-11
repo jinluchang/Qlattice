@@ -58,7 +58,7 @@ def mk_bk_vv_aa(p : str):
         v1 = mk_vec_mu("s", "d", p, mu) - mk_vec5_mu("s", "d", p, mu)
         v2 = mk_vec_mu("s", "d", p, mu) - mk_vec5_mu("s", "d", p, mu)
         s = s + v1 * v2
-    return s + f"Ok_{{VV+AA}}"
+    return s + f"(sbar gmu (1-g5) d)(sbar gmu (1-g5) d)({p})"
 
 def mk_bpi_vv_aa(p : str):
     s = 0
@@ -66,7 +66,7 @@ def mk_bpi_vv_aa(p : str):
         v1 = mk_vec_mu("u", "d", p, mu) - mk_vec5_mu("u", "d", p, mu)
         v2 = mk_vec_mu("u", "d", p, mu) - mk_vec5_mu("u", "d", p, mu)
         s = s + v1 * v2
-    return s + f"Opi_{{VV+AA}}"
+    return s + f"(ubar gmu (1-g5) d)(ubar gmu (1-g5) d)({p})"
 
 def mk_bkpi1_vv_aa(p : str):
     s = 0
@@ -74,7 +74,7 @@ def mk_bkpi1_vv_aa(p : str):
         v1 = mk_vec_mu("d", "u", p, mu) - mk_vec5_mu("d", "u", p, mu)
         v2 = mk_vec_mu("u'", "s", p, mu) - mk_vec5_mu("u'", "s", p, mu)
         s = s + v1 * v2
-    return s + f"Okpi_{{VV+AA}}"
+    return s + f"(dbar gmu (1-g5) u)(u'bar gmu (1-g5) s)({p})"
 
 def mk_bkpi2_vv_aa(p : str):
     s = 0
@@ -82,121 +82,208 @@ def mk_bkpi2_vv_aa(p : str):
         v1 = mk_vec_mu("u'", "u", p, mu) - mk_vec5_mu("u'", "u", p, mu)
         v2 = mk_vec_mu("d", "s", p, mu) - mk_vec5_mu("d", "s", p, mu)
         s = s + v1 * v2
-    return s + f"Okpi_{{VV+AA}}"
+    return s + f"(u'bar gmu (1-g5) u)(dbar gmu (1-g5) s)({p})"
+
+def mk_bkpi1p_vv_aa(p : str):
+    s = 0
+    for mu in range(4):
+        v1 = mk_vec_mu("d", "u", p, mu) + mk_vec5_mu("d", "u", p, mu)
+        v2 = mk_vec_mu("u'", "s", p, mu) + mk_vec5_mu("u'", "s", p, mu)
+        s = s + v1 * v2
+    return s + f"(dbar gmu (1+g5) u)(u'bar gmu (1+g5) s)({p})"
+
+def mk_bkpi2p_vv_aa(p : str):
+    s = 0
+    for mu in range(4):
+        v1 = mk_vec_mu("u'", "u", p, mu) + mk_vec5_mu("u'", "u", p, mu)
+        v2 = mk_vec_mu("d", "s", p, mu) + mk_vec5_mu("d", "s", p, mu)
+        s = s + v1 * v2
+    return s + f"(u'bar gmu (1+g5) u)(dbar gmu (1+g5) s)({p})"
+
+def mk_bkpi3_vv_aa(p : str):
+    s = 0
+    for mu in range(4):
+        v1 = mk_vec_mu("s", "u", p, mu) - mk_vec5_mu("s", "u", p, mu)
+        v2 = mk_vec_mu("u'", "d", p, mu) - mk_vec5_mu("u'", "d", p, mu)
+        s = s + v1 * v2
+    return s + f"(sbar gmu (1-g5) u)(u'bar gmu (1-g5) d)({p})"
+
+def mk_bkpi4_vv_aa(p : str):
+    s = 0
+    for mu in range(4):
+        v1 = mk_vec_mu("u'", "u", p, mu) - mk_vec5_mu("u'", "u", p, mu)
+        v2 = mk_vec_mu("s", "d", p, mu) - mk_vec5_mu("s", "d", p, mu)
+        s = s + v1 * v2
+    return s + f"(u'bar gmu (1-g5) u)(sbar gmu (1-g5) d)({p})"
+
+def mk_bkpi3p_vv_aa(p : str):
+    s = 0
+    for mu in range(4):
+        v1 = mk_vec_mu("s", "u", p, mu) + mk_vec5_mu("s", "u", p, mu)
+        v2 = mk_vec_mu("u'", "d", p, mu) + mk_vec5_mu("u'", "d", p, mu)
+        s = s + v1 * v2
+    return s + f"(sbar gmu (1+g5) u)(u'bar gmu (1+g5) d)({p})"
+
+def mk_bkpi4p_vv_aa(p : str):
+    s = 0
+    for mu in range(4):
+        v1 = mk_vec_mu("u'", "u", p, mu) + mk_vec5_mu("u'", "u", p, mu)
+        v2 = mk_vec_mu("s", "d", p, mu) + mk_vec5_mu("s", "d", p, mu)
+        s = s + v1 * v2
+    return s + f"(u'bar gmu (1+g5) u)(sbar gmu (1+g5) d)({p})"
 
 @q.timer
 def get_cexpr_meson_bk_bpi_corr():
     def calc_cexpr():
         t_1, t_2, x = ['t_1', 't_2', 'x']
         terms = [
-                tr(gamma_x*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0000
-                tr(gamma_x*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_x*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0001
-                tr(gamma_x*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0002
-                tr(gamma_x*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_x*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0003
-                tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)*gamma_x*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0004
-                tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x))*tr(gamma_x*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0005
-                tr(gamma_x*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_x*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0006
-                tr(gamma_x*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_x*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0007
-                tr(gamma_y*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0008
-                tr(gamma_y*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_y*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0009
-                tr(gamma_y*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0010
-                tr(gamma_y*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_y*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0011
-                tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)*gamma_y*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0012
-                tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x))*tr(gamma_y*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0013
-                tr(gamma_y*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_y*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0014
-                tr(gamma_y*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_y*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0015
-                tr(gamma_z*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0016
-                tr(gamma_z*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_z*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0017
-                tr(gamma_z*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0018
-                tr(gamma_z*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_z*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0019
-                tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)*gamma_z*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0020
-                tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x))*tr(gamma_z*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0021
-                tr(gamma_z*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_z*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0022
-                tr(gamma_z*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_z*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0023
-                tr(gamma_t*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0024
-                tr(gamma_t*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_t*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0025
-                tr(gamma_t*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0026
-                tr(gamma_t*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_t*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0027
-                tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)*gamma_t*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0028
-                tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x))*tr(gamma_t*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0029
-                tr(gamma_t*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_t*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0030
-                tr(gamma_t*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_t*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0031
-                tr(gamma_x*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0032
-                tr(gamma_x*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_x*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0033
-                tr(gamma_x*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0034
-                tr(gamma_x*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_x*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0035
-                tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_x*S_l(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0036
-                tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_x*S_l(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0037
-                tr(gamma_x*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_x*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0038
-                tr(gamma_x*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_x*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0039
-                tr(gamma_y*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0040
-                tr(gamma_y*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_y*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0041
-                tr(gamma_y*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0042
-                tr(gamma_y*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_y*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0043
-                tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_y*S_l(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0044
-                tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_y*S_l(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0045
-                tr(gamma_y*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_y*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0046
-                tr(gamma_y*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_y*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0047
-                tr(gamma_z*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0048
-                tr(gamma_z*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_z*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0049
-                tr(gamma_z*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0050
-                tr(gamma_z*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_z*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0051
-                tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_z*S_l(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0052
-                tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_z*S_l(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0053
-                tr(gamma_z*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_z*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0054
-                tr(gamma_z*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_z*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0055
-                tr(gamma_t*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0056
-                tr(gamma_t*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_t*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0057
-                tr(gamma_t*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0058
-                tr(gamma_t*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_t*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0059
-                tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_t*S_l(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0060
-                tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_t*S_l(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0061
-                tr(gamma_t*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_t*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0062
-                tr(gamma_t*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_t*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0063
-                tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_x*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0064
-                tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_x*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0065
-                tr(gamma_x*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)*gamma_x*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0066
-                tr(gamma_x*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_x*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0067
-                tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_y*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0068
-                tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_y*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0069
-                tr(gamma_y*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)*gamma_y*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0070
-                tr(gamma_y*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_y*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0071
-                tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_z*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0072
-                tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_z*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0073
-                tr(gamma_z*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)*gamma_z*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0074
-                tr(gamma_z*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_z*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0075
-                tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_t*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0076
-                tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_t*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0077
-                tr(gamma_t*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)*gamma_t*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0078
-                tr(gamma_t*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_t*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0079
-                tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_x*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0080
-                tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_x*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0081
-                tr(gamma_x*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_x*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0082
-                tr(gamma_x*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_x*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0083
-                tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_y*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0084
-                tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_y*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0085
-                tr(gamma_y*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_y*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0086
-                tr(gamma_y*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_y*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0087
-                tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_z*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0088
-                tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_z*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0089
-                tr(gamma_z*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_z*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0090
-                tr(gamma_z*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_z*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0091
-                tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_t*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0092
-                tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_t*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0093
-                tr(gamma_t*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_t*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0094
-                tr(gamma_t*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_t*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0095
+          tr(gamma_x*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0000
+          tr(gamma_x*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_x*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0001
+          tr(gamma_x*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0002
+          tr(gamma_x*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_x*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0003
+          tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)*gamma_x*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0004
+          tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x))*tr(gamma_x*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0005
+          tr(gamma_x*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_x*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0006
+          tr(gamma_x*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_x*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0007
+          tr(gamma_y*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0008
+          tr(gamma_y*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_y*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0009
+          tr(gamma_y*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0010
+          tr(gamma_y*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_y*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0011
+          tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)*gamma_y*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0012
+          tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x))*tr(gamma_y*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0013
+          tr(gamma_y*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_y*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0014
+          tr(gamma_y*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_y*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0015
+          tr(gamma_z*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0016
+          tr(gamma_z*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_z*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0017
+          tr(gamma_z*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0018
+          tr(gamma_z*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_z*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0019
+          tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)*gamma_z*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0020
+          tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x))*tr(gamma_z*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0021
+          tr(gamma_z*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_z*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0022
+          tr(gamma_z*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_z*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0023
+          tr(gamma_t*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0024
+          tr(gamma_t*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_t*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0025
+          tr(gamma_t*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0026
+          tr(gamma_t*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_t*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0027
+          tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x)*gamma_t*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0028
+          tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_s(t_2,x))*tr(gamma_t*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0029
+          tr(gamma_t*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_t*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0030
+          tr(gamma_t*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_t*S_l(x,t_2)*gamma_5*S_s(t_2,x)), # term_ADT00_0031
+          tr(gamma_x*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0032
+          tr(gamma_x*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_x*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0033
+          tr(gamma_x*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0034
+          tr(gamma_x*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_x*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0035
+          tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_x*S_l(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0036
+          tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_x*S_l(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0037
+          tr(gamma_x*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_x*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0038
+          tr(gamma_x*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_x*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0039
+          tr(gamma_y*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0040
+          tr(gamma_y*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_y*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0041
+          tr(gamma_y*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0042
+          tr(gamma_y*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_y*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0043
+          tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_y*S_l(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0044
+          tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_y*S_l(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0045
+          tr(gamma_y*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_y*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0046
+          tr(gamma_y*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_y*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0047
+          tr(gamma_z*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0048
+          tr(gamma_z*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_z*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0049
+          tr(gamma_z*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0050
+          tr(gamma_z*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_z*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0051
+          tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_z*S_l(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0052
+          tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_z*S_l(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0053
+          tr(gamma_z*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_z*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0054
+          tr(gamma_z*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_z*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0055
+          tr(gamma_t*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0056
+          tr(gamma_t*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_t*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0057
+          tr(gamma_t*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0058
+          tr(gamma_t*gamma_5*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_t*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0059
+          tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_t*S_l(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0060
+          tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_t*S_l(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0061
+          tr(gamma_t*S_l(x,t_1)*gamma_5*S_l(t_1,x)*gamma_t*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0062
+          tr(gamma_t*S_l(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_t*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0063
+          tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_x*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0064
+          tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_x*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0065
+          tr(gamma_x*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)*gamma_x*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0066
+          tr(gamma_x*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_x*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0067
+          tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_y*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0068
+          tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_y*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0069
+          tr(gamma_y*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)*gamma_y*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0070
+          tr(gamma_y*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_y*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0071
+          tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_z*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0072
+          tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_z*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0073
+          tr(gamma_z*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)*gamma_z*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0074
+          tr(gamma_z*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_z*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0075
+          tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_t*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0076
+          tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_t*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0077
+          tr(gamma_t*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)*gamma_t*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0078
+          tr(gamma_t*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_t*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0079
+          tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_x*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0080
+          tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_x*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0081
+          tr(gamma_x*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_x*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0082
+          tr(gamma_x*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_x*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0083
+          tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_y*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0084
+          tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_y*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0085
+          tr(gamma_y*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_y*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0086
+          tr(gamma_y*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_y*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0087
+          tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_z*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0088
+          tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_z*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0089
+          tr(gamma_z*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_z*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0090
+          tr(gamma_z*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_z*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0091
+          tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_t*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0092
+          tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_t*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0093
+          tr(gamma_t*gamma_5*S_s(x,t_1)*gamma_5*S_l(t_1,x))*tr(gamma_t*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0094
+          tr(gamma_t*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_t*S_s(x,t_1)*gamma_5*S_l(t_1,x)), # term_ADT00_0095
+          tr(gamma_x*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0096
+          tr(gamma_x*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_x*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0097
+          tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_x*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0098
+          tr(gamma_x*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_x*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0099
+          tr(gamma_y*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0100
+          tr(gamma_y*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_y*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0101
+          tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_y*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0102
+          tr(gamma_y*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_y*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0103
+          tr(gamma_z*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0104
+          tr(gamma_z*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_z*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0105
+          tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_z*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0106
+          tr(gamma_z*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_z*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0107
+          tr(gamma_t*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0108
+          tr(gamma_t*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_t*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0109
+          tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)*gamma_t*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0110
+          tr(gamma_t*S_l(x,t_1)*gamma_5*S_s(t_1,x)*gamma_t*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0111
+          tr(gamma_x*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0112
+          tr(gamma_x*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_x*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0113
+          tr(gamma_x*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_x*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0114
+          tr(gamma_x*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_x*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0115
+          tr(gamma_y*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0116
+          tr(gamma_y*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_y*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0117
+          tr(gamma_y*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_y*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0118
+          tr(gamma_y*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_y*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0119
+          tr(gamma_z*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0120
+          tr(gamma_z*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_z*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0121
+          tr(gamma_z*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_z*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0122
+          tr(gamma_z*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_z*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0123
+          tr(gamma_t*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0124
+          tr(gamma_t*gamma_5*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_t*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0125
+          tr(gamma_t*gamma_5*S_l(x,t_2)*gamma_5*S_l(t_2,x))*tr(gamma_t*S_l(x,t_1)*gamma_5*S_s(t_1,x)), # term_ADT00_0126
+          tr(gamma_t*S_l(x,t_1)*gamma_5*S_s(t_1,x))*tr(gamma_t*S_l(x,t_2)*gamma_5*S_l(t_2,x)), # term_ADT00_0127
+        ]
+        bk = mk_meson("d", "s", "t_2") * mk_bk_vv_aa("x") * mk_meson("d", "s", "t_1")
+        bpi = mk_meson("d", "u", "t_2") * mk_bpi_vv_aa("x") * mk_meson("d", "u", "t_1")
+        bkpi1 = mk_meson("u", "u'", "t_2") * mk_bkpi1_vv_aa("x") * mk_meson("s", "d", "t_1")
+        bkpi2 = mk_meson("u", "u'", "t_2") * mk_bkpi2_vv_aa("x") * mk_meson("s", "d", "t_1")
+        bkpi1p = mk_meson("u", "u'", "t_2") * mk_bkpi1p_vv_aa("x") * mk_meson("s", "d", "t_1")
+        bkpi2p = mk_meson("u", "u'", "t_2") * mk_bkpi2p_vv_aa("x") * mk_meson("s", "d", "t_1")
+        bkpi3 = mk_meson("u", "u'", "t_2") * mk_bkpi3_vv_aa("x") * mk_meson("d", "s", "t_1")
+        bkpi4 = mk_meson("u", "u'", "t_2") * mk_bkpi4_vv_aa("x") * mk_meson("d", "s", "t_1")
+        bkpi3p = mk_meson("u", "u'", "t_2") * mk_bkpi3p_vv_aa("x") * mk_meson("d", "s", "t_1")
+        bkpi4p = mk_meson("u", "u'", "t_2") * mk_bkpi4p_vv_aa("x") * mk_meson("d", "s", "t_1")
+        exprs = terms + [
+            bk, bpi,
+            bkpi1, bkpi2,
+            bkpi1p, bkpi2p,
+            bkpi3, bkpi4,
+            bkpi3p, bkpi4p,
                 ]
-        exprs = [
-                mk_meson("d", "s", "t_2") * mk_bk_vv_aa("x") * mk_meson("d", "s", "t_1")
-                + "(i dbar g5 s)  * (sbar  gmu (1-g5) d)(sbar  gmu (1-g5) d) * (i dbar g5 s)",
-                mk_meson("d", "u", "t_2") * mk_bpi_vv_aa("x") * mk_meson("d", "u", "t_1")
-                + "(i dbar g5 u)  * (ubar  gmu (1-g5) d)(ubar  gmu (1-g5) d) * (i dbar g5 u)",
-                mk_meson("u", "u'", "t_2") * mk_bkpi1_vv_aa("x") * mk_meson("s", "d", "t_1")
-                + "(i ubar g5 u') * (dbar  gmu (1-g5) u)(u'bar gmu (1-g5) s) * (i sbar g5 d)",
-                mk_meson("u", "u'", "t_2") * mk_bkpi2_vv_aa("x") * mk_meson("s", "d", "t_1")
-                + "(i ubar g5 u') * (u'bar gmu (1-g5) u)(dbar  gmu (1-g5) s) * (i sbar g5 d)",
-                ]
-        cexpr = contract_simplify_compile(*(terms + exprs), is_isospin_symmetric_limit = True)
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/get_cexpr_meson_bk_bpi_corr")
 
@@ -251,7 +338,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
         [ "t_sep", total_site[3], ],
         ])
     ld.from_numpy(res_sum)
-    q.displayln_info(ld.show())
+    # q.displayln_info(ld.show())
     ld.save(get_save_path(fn))
 
 @q.timer_verbose
@@ -305,7 +392,7 @@ def auto_contract_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel):
         [ "t_sep", total_site[3], ],
         ])
     ld.from_numpy(res_sum)
-    q.displayln_info(ld.show())
+    # q.displayln_info(ld.show())
     ld.save(get_save_path(fn))
 
 @q.timer_verbose
@@ -367,7 +454,7 @@ def auto_contract_meson_bk_bpi_corr(job_tag, traj, get_prop, get_psel, get_fsel)
         [ "ama", 2, [ "ama", "sloppy", ], ],
         ])
     ld.from_numpy(res_sum)
-    q.displayln_info(ld.show())
+    # q.displayln_info(ld.show())
     ld.save(get_save_path(fn))
 
 ### ------
@@ -449,11 +536,16 @@ def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_bk_bpi_corr())
 
 def test():
+    # ADJUST ME
+    assert q.get_num_node() <= 4
+    q.qremove_all_info("results/test-4nt8")
+    q.qremove_info("results")
+    assert not q.does_file_exist_sync_node("results")
     q.qremove_all_info("locks")
-    q.qremove_all_info("results")
     q.qremove_all_info("cache")
     get_all_cexpr()
     run_job("test-4nt8", 1000)
+    # run_job("test-4nt16", 1000)
     # run_job("16IH2", 1000)
 
 size_node_list = [

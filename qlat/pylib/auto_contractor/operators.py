@@ -76,22 +76,22 @@ def mk_scalar5(f1 : str, f2 : str, p : str, is_dagger = False):
     s2 = new_spin_index()
     c = new_color_index()
     if not is_dagger:
-        return Qb(f1, p, s1, c) * G(5, s1, s2) * Qv(f2, p, s2, c)
+        return Qb(f1, p, s1, c) * G(5, s1, s2) * Qv(f2, p, s2, c) + f"({f1}bar g5 {f2})({p})"
     else:
-        return -Qb(f2, p, s1, c) * G(5, s1, s2) * Qv(f1, p, s2, c)
+        return -Qb(f2, p, s1, c) * G(5, s1, s2) * Qv(f1, p, s2, c) + f"(-{f2}bar g5 {f1})({p})"
 
 def mk_vec_mu(f1 : str, f2 : str, p : str, mu, is_dagger = False):
     s1 = new_spin_index()
     s2 = new_spin_index()
     c = new_color_index()
     if not is_dagger:
-        return Qb(f1, p, s1, c) * G(mu, s1, s2) * Qv(f2, p, s2, c) + f"vec_mu({f1},{f2},{p},{mu})"
+        return Qb(f1, p, s1, c) * G(mu, s1, s2) * Qv(f2, p, s2, c) + f"({f1}bar g{mu} {f2})({p})"
     else:
         if mu in [ 0, 1, 2, 5 ]:
-            return -Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c) + f"vec_mu({f1},{f2},{p},{mu})^dag"
+            return -Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c) + f"(-{f2}bar g{mu} {f1})({p})"
         else:
             assert mu in [ 3, ]
-            return Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c) + f"vec_mu({f1},{f2},{p},{mu})^dag"
+            return Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c) + f"({f2}bar g{mu} {f1})({p})"
 
 def mk_vec5_mu(f1 : str, f2 : str, p : str, mu, is_dagger = False):
     s1 = new_spin_index()
@@ -99,21 +99,21 @@ def mk_vec5_mu(f1 : str, f2 : str, p : str, mu, is_dagger = False):
     s3 = new_spin_index()
     c = new_color_index()
     if not is_dagger:
-        return Qb(f1, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f2, p, s3, c) + f"vec5_mu({f1},{f2},{p},{mu})"
+        return Qb(f1, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f2, p, s3, c) + f"({f1}bar g{mu} g5 {f2})({p})"
     else:
         if mu in [ 0, 1, 2, ]:
-            return -Qb(f2, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f1, p, s3, c) + f"vec5_mu({f1},{f2},{p},{mu})^dag"
+            return -Qb(f2, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f1, p, s3, c) + f"(-{f2}bar g{mu} {f1})({p})"
         else:
             assert mu in [ 3, 5, ]
-            return Qb(f2, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f1, p, s3, c) + f"vec5_mu({f1},{f2},{p},{mu})^dag"
+            return Qb(f2, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f1, p, s3, c) + f"({f2}bar g{mu} {f1})({p})"
 
 def mk_meson(f1 : str, f2 : str, p : str, is_dagger = False):
     # mk_meson("u", "d", p) => i ubar g5 d
     # mk_meson("u", "d", p, True) => i dbar g5 u
     if not is_dagger:
-        return sympy.I * mk_scalar5(f1, f2, p, is_dagger)
+        return sympy.I * mk_scalar5(f1, f2, p, is_dagger) + f"(i {f1}bar g5 {f2})({p})"
     else:
-        return -sympy.I * mk_scalar5(f1, f2, p, is_dagger)
+        return -sympy.I * mk_scalar5(f1, f2, p, is_dagger) + f"(i {f2}bar g5 {f1})({p})"
 
 def show_dagger(is_dagger):
     if not is_dagger:
