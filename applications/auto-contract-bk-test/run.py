@@ -15,8 +15,14 @@ from params import *
 
 load_path_list[:] = [
         "results",
-        "../qcddata",
-        os.path.join(os.getenv("HOME"), "qcddata"),
+        "qcddata",
+        "qcddata-1",
+        "qcddata-2",
+        "qcddata-3",
+        "qcddata-4",
+        "qcddata-5",
+        # "../qcddata",
+        # os.path.join(os.getenv("HOME"), "qcddata"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-gf-gt/results"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-sel/results"),
         # os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-fsel-self-loop/results"),
@@ -24,8 +30,8 @@ load_path_list[:] = [
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-wsrc-prop/results"),
         # os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-psrc-prop/results"),
         # os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-smear-prop/results"),
-        "/sdcc/u/jluchang/qcdqedta/luchang/data-gen/fill-wsnk-prop/results",
-        "/sdcc/u/jluchang/qcdqedta/summit-oakforest-data-cache",
+        # "/sdcc/u/jluchang/qcdqedta/luchang/data-gen/fill-wsnk-prop/results",
+        # "/sdcc/u/jluchang/qcdqedta/summit-oakforest-data-cache",
         ]
 
 # ----
