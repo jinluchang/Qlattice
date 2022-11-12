@@ -12,7 +12,7 @@ find ~/.cache/pip/wheels -type f || true
 
 # rm -rfv ~/.cache/pip/wheels || true
 
-opts="--verbose --no-index --no-cache-dir -f $distfiles/python-packages"
+opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
 pip3 install $opts meson
 
