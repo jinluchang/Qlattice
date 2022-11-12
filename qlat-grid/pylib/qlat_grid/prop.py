@@ -1,4 +1,4 @@
-from qlat_grid.cgi import cgi
+import qlat_grid.cg as cg
 
 import qlat as q
 

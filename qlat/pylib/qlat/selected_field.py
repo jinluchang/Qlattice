@@ -1,4 +1,4 @@
-import qlat.cqlat as c
+import qlat.c as c
 
 from qlat_utils import *
 from qlat.geometry import *

@@ -1,4 +1,4 @@
-from qlat_grid.cgi import cgi
+import qlat_grid.cg as cg
 
 from qlat_grid.init import *
 from qlat_grid.prop import *

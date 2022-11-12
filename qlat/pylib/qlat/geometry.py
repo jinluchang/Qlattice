@@ -1,4 +1,4 @@
-import qlat.cqlat as c
+import qlat.c as c
 
 class Geometry:
 

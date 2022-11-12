@@ -1,9 +1,9 @@
-import qlat.cqlat as c
+import qlat.c as c
 
-from qlat.cqlat import mod_coordinate
-from qlat.cqlat import smod_coordinate
+from qlat.c import mod_coordinate
+from qlat.c import smod_coordinate
 
-from qlat.cqlat import index_from_coordinate, coordinate_from_index
+from qlat.c import index_from_coordinate, coordinate_from_index
 
 import numpy as np
 

@@ -3,6 +3,6 @@ import sys
 flags = sys.getdlopenflags()
 sys.setdlopenflags(flags | ctypes.RTLD_GLOBAL)
 
-import cqlat_grid as cgi
+from cqlat_grid import *
 
 sys.setdlopenflags(flags)

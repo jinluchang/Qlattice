@@ -1,11 +1,4 @@
-import ctypes
-import sys
-flags = sys.getdlopenflags()
-sys.setdlopenflags(flags | ctypes.RTLD_GLOBAL)
-
-import qlat.cqlat as c
-
-sys.setdlopenflags(flags)
+import qlat.c as c
 
 from qlat_utils import *
 

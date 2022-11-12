@@ -1,10 +1,10 @@
-import qlat.cqlat as c
+import qlat.c as c
 
 import os
 import pickle
 
-from qlat.cqlat import check_time_limit, check_stop
-from qlat.cqlat import get_time_limit, get_default_budget
+from qlat.c import check_time_limit, check_stop
+from qlat.c import get_time_limit, get_default_budget
 
 from qlat_utils import *
 
