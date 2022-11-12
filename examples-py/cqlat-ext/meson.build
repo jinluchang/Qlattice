@@ -53,21 +53,5 @@ if not cpp.check_header('Eigen/Eigen')
   deps += [ eigen, ]
 endif
 
+subdir('include')
 subdir('pylib/cqlat_ext')
-
-incdir = include_directories('include')
-
-lib = py3.extension_module('cqlat_ext',
-  cqlat_ext_sources,
-  dependencies: deps,
-  include_directories: incdir,
-  install: true,
-  # gnu_symbol_visibility: 'default',
-  )
-
-pkg = import('pkgconfig')
-pkg.generate(
-  name: 'qlat-ext',
-  description: 'Qlattice - A simple lattice QCD library.',
-  requires: [ 'qlat', ],
-  )
