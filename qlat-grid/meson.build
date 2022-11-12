@@ -77,5 +77,5 @@ subdir('include')
 subdir('pylib')
 
 c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls bin/*', check: true)
-scripts = c.stdout().strip().split('\n')
-install_data(scripts, install_dir: 'bin', install_mode: 'rwxr-xr-x')
+scripts = files(c.stdout().strip().split('\n'))
+install_data(scripts, install_dir: get_option('bindir'), install_mode: 'rwxr-xr-x')
