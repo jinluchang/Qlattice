@@ -20,6 +20,8 @@ name=qlat-packages
 
     opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
+    pip3 install $opts -f "$build" meson-python
+
     python3 -m build -ns -o "$build" "$wd"/qlat-utils
 
     pip3 install $opts -f "$build" qlat-utils

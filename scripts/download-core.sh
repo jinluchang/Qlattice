@@ -2,9 +2,9 @@
 
 . scripts/conf.sh
 
-mkdir -p $distfiles
+mkdir -p "$distfiles"
 
-cd $distfiles
+cd "$distfiles"
 
 dget() {
     name="$1"
@@ -16,9 +16,15 @@ dget() {
     fi
 }
 
-dget "eigen-3.3.7.tar.bz2" "https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.bz2"
+aget() {
+    url="$1"
+    name="${1##*/}"
+    dget "$name" "$url"
+}
 
-dget "fftw-3.3.10.tar.gz" "http://www.fftw.org/fftw-3.3.10.tar.gz"
+aget "https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.bz2"
+
+aget "http://www.fftw.org/fftw-3.3.10.tar.gz"
 
 dget "c-lime.tar.gz" "https://github.com/usqcd-software/c-lime/tarball/master"
 
@@ -64,4 +70,4 @@ else
     ( cd Hadrons-tblum ; git clean -f ; ./bootstrap.sh )
 fi
 
-cd $wd
+cd "$wd"
