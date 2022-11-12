@@ -1,17 +1,17 @@
-import cqlat_utils as cu
+import qlat_utils.cu as cu
 
 import os
 import pickle
 
-from cqlat_utils import qremove
-from cqlat_utils import qremove_all
-from cqlat_utils import qmkdir, qmkdir_info
-from cqlat_utils import does_file_exist
-from cqlat_utils import is_directory
-from cqlat_utils import is_regular_file
-from cqlat_utils import qrename, qrename_info
-from cqlat_utils import qls
-from cqlat_utils import qls_all
+from qlat_utils.cu import qremove
+from qlat_utils.cu import qremove_all
+from qlat_utils.cu import qmkdir, qmkdir_info
+from qlat_utils.cu import does_file_exist
+from qlat_utils.cu import is_directory
+from qlat_utils.cu import is_regular_file
+from qlat_utils.cu import qrename, qrename_info
+from qlat_utils.cu import qls
+from qlat_utils.cu import qls_all
 
 from qlat_utils.qar import *
 

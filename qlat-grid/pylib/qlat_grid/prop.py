@@ -1,4 +1,5 @@
-import cqlat_grid as cgi
+from qlat_grid.cgi import cgi
+
 import qlat as q
 
 def save_prop_float(prop, path):

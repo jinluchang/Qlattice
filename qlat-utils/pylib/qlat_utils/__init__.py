@@ -1,11 +1,4 @@
-import ctypes
-import sys
-flags = sys.getdlopenflags()
-sys.setdlopenflags(flags | ctypes.RTLD_GLOBAL)
-
-import cqlat_utils as cu
-
-sys.setdlopenflags(flags)
+import qlat_utils.cu as cu
 
 from qlat_utils.timer import *
 

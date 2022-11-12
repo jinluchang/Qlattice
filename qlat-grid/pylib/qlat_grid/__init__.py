@@ -1,11 +1,4 @@
-import ctypes
-import sys
-flags = sys.getdlopenflags()
-sys.setdlopenflags(flags | ctypes.RTLD_GLOBAL)
-
-import cqlat_grid as cgi
-
-sys.setdlopenflags(flags)
+from qlat_grid.cgi import cgi
 
 from qlat_grid.init import *
 from qlat_grid.prop import *

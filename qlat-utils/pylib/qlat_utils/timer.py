@@ -1,10 +1,10 @@
-import cqlat_utils as cu
+import qlat_utils.cu as cu
 
-from cqlat_utils import get_id_node, get_num_node
-from cqlat_utils import timer_reset, timer_fork, timer_merge
-from cqlat_utils import verbose_level
-from cqlat_utils import get_actual_start_time, get_start_time, get_time
-from cqlat_utils import flush
+from qlat_utils.cu import get_id_node, get_num_node
+from qlat_utils.cu import timer_reset, timer_fork, timer_merge
+from qlat_utils.cu import verbose_level
+from qlat_utils.cu import get_actual_start_time, get_start_time, get_time
+from qlat_utils.cu import flush
 
 import functools
 

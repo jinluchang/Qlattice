@@ -1,4 +1,4 @@
-import cqlat_utils as cu
+import qlat_utils.cu as cu
 
 import numpy as np
 

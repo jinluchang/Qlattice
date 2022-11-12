@@ -1,5 +1,3 @@
-import cqlat_utils as cu
-
 from qlat_utils.cache import *
 from qlat_utils.rng_state import *
 from qlat_utils.utils import *

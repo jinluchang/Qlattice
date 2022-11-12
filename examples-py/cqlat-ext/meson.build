@@ -38,7 +38,7 @@ fftwf_mpi = cpp.find_library('fftw3f_mpi', dirs: fftwf.get_variable('libdir'))
 
 math = cpp.find_library('m')
 
-qlat_include = run_command('qlat-include', check: true).stdout().strip().split('\n')
+qlat_include = run_command(py3.path(), '-c', 'import qlat as q ; print("\\n".join(q.get_include_list()))', check: true).stdout().strip().split('\n')
 message('qlat include', qlat_include)
 
 qlat = declare_dependency(
