@@ -15,8 +15,9 @@ find ~/.cache/pip/wheels -type f || true
 opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
 pip3 install $opts psutil
-pip3 install $opts numpy
 pip3 install $opts sympy
+pip3 install $opts cython
+pip3 install $opts numpy
 pip3 install $opts scipy
 
 echo "!!!! $name build !!!!"
