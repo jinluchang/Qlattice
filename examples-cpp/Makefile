@@ -31,10 +31,11 @@ compile-proj:
 	time ninja -C build
 
 run-proj: compile-proj
-	time ninja -C build run
-	if diff build/log log | grep 'CHECK: ' ; then cat build/log.full ; else echo passed ; fi
-	cp build/log log
-	cp build/log.full log.full
+	-rm log
+	-time ninja -C build run
+	-if diff build/log log | grep 'CHECK: ' ; then cat build/log.full ; else echo passed ; fi
+	-cp build/log log
+	-cp build/log.full log.full
 
 clean-proj:
 	-rm -rf build log.full
