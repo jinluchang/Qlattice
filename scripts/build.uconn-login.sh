@@ -8,7 +8,6 @@ set -e
 
 ./scripts/xz.sh
 ./scripts/tar.sh
-./scripts/gsl.sh
 ./scripts/gmp.sh
 ./scripts/mpfr.sh
 ./scripts/mpc.sh
@@ -18,6 +17,7 @@ set -e
 ./scripts/openssl.sh
 ./scripts/libffi.sh
 ./scripts/zlib.sh
+./scripts/gsl.sh
 ./scripts/openblas.sh
 ./scripts/python.sh
 ./scripts/python-pip.sh
