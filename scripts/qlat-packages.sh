@@ -20,7 +20,21 @@ name=qlat-packages
 
     opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
+    pip3 install $opts -f "$build" flit_core
+    pip3 install $opts -f "$build" tomli
+    pip3 install $opts -f "$build" wheel
+    pip3 install $opts -f "$build" packaging
+    pip3 install $opts -f "$build" pep517
+    pip3 install $opts -f "$build" build
+    pip3 install $opts -f "$build" pyproject-metadata
+    pip3 install $opts -f "$build" setuptools_scm
+    pip3 install $opts -f "$build" scikit-build
     pip3 install $opts -f "$build" meson-python
+    pip3 install $opts -f "$build" psutil
+    pip3 install $opts -f "$build" cython
+    pip3 install $opts -f "$build" setuptools
+    pip3 install $opts -f "$build" numpy
+    pip3 install $opts -f "$build" sympy
 
     python3 -m build -ns -o "$build" "$wd"/qlat-utils
 
@@ -30,9 +44,13 @@ name=qlat-packages
 
     pip3 install $opts -f "$build" qlat
 
-    python3 -m build -ns -o "$build" "$wd"/qlat-grid
+    if grid-config --prefix >/dev/null 2>&1 ; then
 
-    pip3 install $opts -f "$build" qlat-grid
+        python3 -m build -ns -o "$build" "$wd"/qlat-grid
+
+        pip3 install $opts -f "$build" qlat-grid
+
+    fi
 
     echo "!!!! $name build !!!!"
 

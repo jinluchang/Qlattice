@@ -8,6 +8,7 @@
 
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
+#include <qlat/grid.h>
 #include <qlat-utils/show.h>
 #include <qlat/py_convert.h>
 

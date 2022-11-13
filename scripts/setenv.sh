@@ -124,10 +124,14 @@ fi
 add-to-colon-list PATH "$HOME/.local/bin"
 add-to-colon-list PATH "$prefix/bin"
 for v in "$prefix"/lib/python3*/*-packages ; do
-    add-to-colon-list PYTHONPATH "$v"
+    if [ -d "$v" ] ; then
+        add-to-colon-list PYTHONPATH "$v"
+    fi
 done
 for v in "$prefix"/lib/python3*/*-packages/*/include ; do
-    add-to-colon-list CPATH "$v"
+    if [ -d "$v" ] ; then
+        add-to-colon-list CPATH "$v"
+    fi
 done
 add-to-colon-list PYTHONPATH "$prefix/gpt/lib"
 add-to-colon-list PYTHONPATH "$prefix/gpt/lib/cgpt/build"
@@ -140,6 +144,7 @@ add-to-colon-list LIBRARY_PATH "$prefix/lib64"
 add-to-colon-list C_INCLUDE_PATH "$prefix/include"
 add-to-colon-list CPLUS_INCLUDE_PATH "$prefix/include"
 add-to-colon-list PKG_CONFIG_PATH "$prefix/lib/pkgconfig"
+add-to-colon-list PKG_CONFIG_PATH "$prefix/lib64/pkgconfig"
 
 organize-colon-list PATH
 organize-colon-list PYTHONPATH

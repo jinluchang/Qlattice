@@ -1,4 +1,4 @@
-from qlat_grid.cgi import cgi
+import qlat_grid.cg as cg
 
 import sys
 
@@ -7,7 +7,7 @@ def begin_with_grid(argv = None, size_node_list = None):
         size_node_list = []
     if argv is None:
         argv = sys.argv
-    return cgi.begin_with_grid(argv, size_node_list)
+    return cg.begin_with_grid(argv, size_node_list)
 
 def end_with_grid(is_preserving_cache = False):
-    return cgi.end_with_grid(is_preserving_cache)
+    return cg.end_with_grid(is_preserving_cache)

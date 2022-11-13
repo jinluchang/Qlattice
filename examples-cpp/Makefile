@@ -27,7 +27,7 @@ run: $(patsubst %, %.run, $(tests))
 clean: $(patsubst %, %.clean, $(tests))
 
 compile-proj:
-	meson build
+	meson setup build
 	time ninja -C build
 
 run-proj: compile-proj
