@@ -55,7 +55,6 @@ jobs:
 
     - name: Setup testing environments
       run: |
-        export num_proc=2
         ./scripts/setenv.default.sh
 
     - name: Testing pylib qlat
