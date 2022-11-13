@@ -121,6 +121,10 @@ if [ -z ${NPY_NUM_BUILD_JOBS+x} ] ; then
     export NPY_NUM_BUILD_JOBS=$num_proc
 fi
 
+if [ -z ${q_num_threads+x} ] ; then
+    export q_num_threads=2
+fi
+
 add-to-colon-list PATH "$HOME/.local/bin"
 add-to-colon-list PATH "$prefix/bin"
 for v in "$prefix"/lib/python3*/*-packages ; do
