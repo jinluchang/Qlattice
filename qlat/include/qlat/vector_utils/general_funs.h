@@ -1266,7 +1266,7 @@ Ty sum_local_to_global_vector(Ty src, MPI_Comm* commp=NULL)
   int rank  = qlat::get_id_node();
   if(commp != NULL){MPI_Comm_size(*commp, &Nmpi);MPI_Comm_rank(*commp, &rank);}
 
-  qlat::vector<long > size_global;size_global.resize(Nmpi);for(unsigned long i=0;i<size_global.size();i++){size_global[i]=0;}
+  qlat::vector<long > size_global;size_global.resize(Nmpi);for(unsigned long i=0;i<(unsigned long)size_global.size();i++){size_global[i]=0;}
 
   size_global[rank] = src.size();
 

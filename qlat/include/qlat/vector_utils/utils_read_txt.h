@@ -1231,6 +1231,7 @@ struct corr_dat
 
   inline crc32_t write_part(size_t off , size_t Psize, int type = 0)
   {
+    (void)type;
     qassert(head_off != 0);
     qassert(write_bsize > 0);
     qassert(write_type == 0 or write_type == 1);

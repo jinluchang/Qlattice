@@ -48,8 +48,8 @@ name=qlat
     meson setup "$wd/qlat" \
         -Dpython.platlibdir="$prefix_python" -Dpython.purelibdir="$prefix_python" \
         --prefix="$prefix" $option
-    ninja -j$num_proc
-    ninja install
+    meson compile -j$num_proc
+    meson install
 
     echo "!!!! $name build !!!!"
 

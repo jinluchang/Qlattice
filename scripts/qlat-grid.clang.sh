@@ -34,8 +34,8 @@ name=qlat-grid
     meson setup "$wd/qlat-grid" \
         -Dpython.platlibdir="$prefix_python" -Dpython.purelibdir="$prefix_python" \
         --prefix="$prefix"
-    ninja -j$num_proc
-    ninja install
+    time meson compile -j$num_proc
+    meson install
 
     echo "!!!! $name build !!!!"
 
