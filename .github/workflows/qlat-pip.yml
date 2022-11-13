@@ -84,6 +84,7 @@ jobs:
 
     - name: Install Qlat-Grid
       run: |
+        source ~/qlat-build/default/setenv.sh
         pip3 install -v --no-build-isolation ./qlat-grid
 
     - name: Testing pylib qlat
