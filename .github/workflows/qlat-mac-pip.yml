@@ -63,8 +63,8 @@ jobs:
     - name: Install Qlattice
       run: |
         source ~/qlat-build/default/setenv.sh
-        pip3 install -v --no-build-isolation ./qlat-utils
-        pip3 install -v --no-build-isolation ./qlat
+        pip3 install --user -v --no-build-isolation ./qlat-utils
+        pip3 install --user -v --no-build-isolation ./qlat
 
     - name: Testing pylib qlat
       run: |
@@ -90,7 +90,7 @@ jobs:
     - name: Install Qlat-Grid
       run: |
         source ~/qlat-build/default/setenv.sh
-        pip3 install -v --no-build-isolation ./qlat-grid
+        pip3 install --user -v --no-build-isolation ./qlat-grid
 
     - name: Testing pylib qlat
       run: |
