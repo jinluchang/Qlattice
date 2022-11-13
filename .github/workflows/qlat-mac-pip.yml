@@ -49,6 +49,10 @@ jobs:
         brew install gsl zlib openssl@3 llvm open-mpi mpfr autoconf automake flock findutils eigen hdf5-mpi patchelf
         # brew upgrade
 
+    - name: Download dependencies
+      run: |
+        ./scripts/download-core.sh
+
     - name: Build dependencies
       run: |
         export num_proc=3
@@ -71,10 +75,6 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/qlat-examples-cpp.sh
-
-    - name: Download dependencies
-      run: |
-        ./scripts/download-core.sh
 
     - name: Build Grid
       run: |
