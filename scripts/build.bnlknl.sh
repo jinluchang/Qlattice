@@ -6,8 +6,10 @@ set -e
 
 ./scripts/setenv.bnlknl.sh
 
-./scripts/xz.sh
 ./scripts/tar.sh
+
+./scripts/zlib.sh
+./scripts/xz.sh
 ./scripts/gsl.sh
 ./scripts/gmp.sh
 ./scripts/mpfr.sh
@@ -17,7 +19,6 @@ set -e
 ./scripts/perl.sh
 ./scripts/openssl.sh
 ./scripts/libffi.sh
-./scripts/zlib.sh
 ./scripts/openblas.sh
 ./scripts/python.sh
 ./scripts/python-pip.sh
@@ -26,7 +27,6 @@ set -e
 ./scripts/python-packages.sh
 
 ./scripts/cuba.sh
-./scripts/zlib.sh
 ./scripts/eigen.sh
 
 ./scripts/fftw_mpi.sh

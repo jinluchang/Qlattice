@@ -18,7 +18,6 @@ if [ -z "\$num_proc" ] ; then
 fi
 export PYTHONPATH=
 module purge
-module add python/3.8-anaconda-2020-11
 module add gcc/9.3.0
 module add openmpi/3.1.1-gnu
 module list

@@ -8,13 +8,20 @@ set -e
 
 ./scripts/tar.sh
 
+./scripts/zlib.sh
+./scripts/openssl.sh
+./scripts/libffi.sh
+./scripts/openblas.sh
+./scripts/python.sh
+./scripts/python-pip.sh
+./scripts/ninja.sh
+./scripts/python-meson.sh
+./scripts/python-packages.sh
+
 ./scripts/fftw_mpi.sh
 ./scripts/fftwf_mpi.sh
 ./scripts/cuba.sh
-./scripts/zlib.sh
 ./scripts/eigen.sh
-./scripts/ninja.sh
-./scripts/python-meson.sh
 
 ./scripts/qlat.sh
 
