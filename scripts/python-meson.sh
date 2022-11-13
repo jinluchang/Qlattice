@@ -15,6 +15,7 @@ find ~/.cache/pip/wheels -type f || true
 opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
 pip3 install $opts meson
+pip3 install $opts ninja
 
 echo "!!!! $name build !!!!"
 

@@ -21,6 +21,8 @@ message(py3.get_install_dir())
 message('Collecting Grid information using \'grid-config\':')
 grid_prefix = run_command('grid-config', '--prefix', check: true).stdout().strip()
 message('Grid: prefix =', grid_prefix)
+message('Grid: CXX =', run_command('grid-config', '--cxx', check: true).stdout().strip())
+message('Grid: CXXLD =', run_command('grid-config', '--cxxld', check: true).stdout().strip())
 grid_cxxflags = run_command('grid-config', '--cxxflags', check: true).stdout().strip().split()
 grid_ldflags = run_command('grid-config', '--ldflags', check: true).stdout().strip().split()
 grid_libs = run_command('grid-config', '--libs', check: true).stdout().strip().split()
@@ -32,22 +34,37 @@ grid_compile_args = []
 grid_include_directories = []
 foreach f : grid_cxxflags
   if f.startswith('-I')
-    grid_include_directories += f.substring(2)
+    v = f.substring(2)
+    if v not in grid_include_directories
+      grid_include_directories += v
+    endif
   else
-    grid_compile_args += f
+    if f not in grid_compile_args
+      grid_compile_args += f
+    endif
   endif
 endforeach
+
+qlat_lib_names = [ 'z', 'm', 'fftw3', 'fftw3f', ]
 
 grid_link_args = []
 grid_lib_dirs = []
 grid_lib_names = [ 'Grid', ]
 foreach f : grid_ldflags + grid_libs
   if f.startswith('-L')
-    grid_lib_dirs += f.substring(2)
+    v = f.substring(2)
+    if v not in grid_lib_dirs
+      grid_lib_dirs += v
+    endif
   elif f.startswith('-l')
-    grid_lib_names += f.substring(2)
+    v = f.substring(2)
+    if v not in grid_lib_names + qlat_lib_names
+      grid_lib_names += v
+    endif
   else
-    grid_link_args += f
+    if f not in grid_link_args
+      grid_link_args += f
+    endif
   endif
 endforeach
 

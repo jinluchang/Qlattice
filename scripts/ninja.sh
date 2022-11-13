@@ -17,10 +17,10 @@ name=ninja
 
     cd $name-*
 
-    python3 configure.py --bootstrap
+    python3 configure.py --bootstrap --verbose
 
     mkdir -p $prefix/bin
-    cp -pv ninja $prefix/bin
+    cp -pv ninja $prefix/bin/ninja-backend
 
     cd $wd
     echo "!!!! $name build !!!!"

@@ -22,6 +22,7 @@ set -e
 ./scripts/python-pip.sh
 ./scripts/ninja.sh
 ./scripts/python-meson.sh
+./scripts/python-meson-py.sh
 ./scripts/python-packages.sh
 
 ./scripts/fftw_mpi.sh

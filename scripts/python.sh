@@ -19,6 +19,14 @@ name=Python
     mkdir -p $build_dir || true
     cd $build_dir
 
+    if [ -f "$prefix/lib64/libffi.a" ] ; then
+        export LDFLAGS="-L$prefix/lib64"
+        export LIBS="-lffi"
+    elif [ -f "$prefix/lib/libffi.a" ] ; then
+        export LDFLAGS="-L$prefix/lib"
+        export LIBS="-lffi"
+    fi
+
     $src_dir/$name-*/configure \
         --prefix=$prefix
 

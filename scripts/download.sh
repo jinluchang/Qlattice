@@ -56,8 +56,6 @@ aget "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.7/src/h
 
 aget "http://mirrors.concertpass.com/gcc/releases/gcc-12.2.0/gcc-12.2.0.tar.xz"
 
-aget "https://ftp.gnu.org/gnu/binutils/binutils-2.39.tar.xz"
-
 aget "https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.4.tar.bz2"
 
 aget "https://github.com/llvm/llvm-project/releases/download/llvmorg-15.0.2/llvm-project-15.0.2.src.tar.xz"
@@ -72,19 +70,21 @@ aget "https://github.com/libffi/libffi/releases/download/v3.4.4/libffi-3.4.4.tar
 
 aget "https://github.com/skvadrik/re2c/releases/download/2.2/re2c-2.2.tar.xz"
 
-aget "https://github.com/xianyi/OpenBLAS/releases/download/v0.3.21/OpenBLAS-0.3.21.tar.gz"
-
 aget "https://zlib.net/zlib-1.2.13.tar.gz"
 
 aget "https://gigenet.dl.sourceforge.net/project/gnuplot/gnuplot/5.4.5/gnuplot-5.4.5.tar.gz"
 
 aget "https://cytranet.dl.sourceforge.net/project/tclap/tclap-1.2.5.tar.gz"
 
+aget "https://github.com/xianyi/OpenBLAS/releases/download/v0.3.21/OpenBLAS-0.3.21.tar.gz"
+
+aget "https://ftp.gnu.org/gnu/binutils/binutils-2.38.tar.xz"
+
 (
 mkdir -p python-packages
 cd python-packages
+dget "ninja-1.0.tar.gz" "https://github.com/jinluchang/Ninja-dummy/archive/refs/tags/1.0.tar.gz"
 aget "https://files.pythonhosted.org/packages/a3/50/c4d2727b99052780aad92c7297465af5fe6eec2dbae490aa9763273ffdc1/pip-22.3.1.tar.gz"
-aget "https://files.pythonhosted.org/packages/f7/69/938374c8ebfeda683863b22e936f5d465ac9f5bf42be238504c018123190/ninja-1.11.1.tar.gz"
 aget "https://files.pythonhosted.org/packages/69/78/ed2b5d1d88ab5f86f93f72a4f5d86989dcea939c274917d53acdd534056b/meson-0.64.0.tar.gz"
 aget "https://files.pythonhosted.org/packages/9e/e2/2e440c30e93fc5b505ee56169a4396b05e797a1daadb721aba429adbfd51/scikit-build-0.15.0.tar.gz"
 aget "https://files.pythonhosted.org/packages/52/fa/931038182be739955cf83179d9b9a6ce9832bc5f9a917a006f765cb53a1f/build-0.8.0.tar.gz"
@@ -102,10 +102,7 @@ aget "https://files.pythonhosted.org/packages/ed/46/e298a50dde405e1c202e316fa6a3
 aget "https://files.pythonhosted.org/packages/26/86/902ee78db1bab1f0410f799869a49bb03b83be8d44c23b224d9db34f21c3/sympy-1.9.tar.gz"
 aget "https://files.pythonhosted.org/packages/95/ba/7384cb4db4ed474d4582944053549e02ec25da630810e4a23454bc9fa617/mpmath-1.2.1.tar.gz"
 aget "https://files.pythonhosted.org/packages/d4/cf/3965bddbb4f1a61c49aacae0e78fd1fe36b5dc36c797b31f30cf07dcbbb7/mpmath-1.2.1-py3-none-any.whl"
-aget "https://files.pythonhosted.org/packages/b4/a2/4faa34bf0cdbefd5c706625f1234987795f368eb4e97bde9d6f46860843e/scipy-1.8.0.tar.gz"
-aget "https://files.pythonhosted.org/packages/66/99/fc60e2287bb2309b8db4d0f080770ecc8d37dc64911e37b86698ec4b6a51/pybind11-2.7.1.tar.gz"
-aget "https://files.pythonhosted.org/packages/c6/e6/986a967dcca91d89e36f4d4a2f69a052030bce01a7cd48a6b7fba1a50189/pythran-0.9.12.post1.tar.gz"
-aget "https://files.pythonhosted.org/packages/e1/0a/a1e28f3c532655032a73482cb11ae63f8c38c8f58dc1a713b3791855fa68/pythran-0.9.12.post1-py3-none-any.whl"
+aget "https://files.pythonhosted.org/packages/99/e0/ed0e81de05cfa4ecbcbceec6603d175387d8bc7a6332cbfd155d09958ccf/pythran-0.12.0.tar.gz"
 aget "https://files.pythonhosted.org/packages/e5/69/882ee5c9d017149285cab114ebeab373308ef0f874fcdac9beb90e0ac4da/ply-3.11.tar.gz"
 aget "https://files.pythonhosted.org/packages/a6/fb/7ff6a4ee66673c5964d3cf515ae85ba2076bc64bc2dcbbbd0153718b005f/gast-0.5.0.tar.gz"
 aget "https://files.pythonhosted.org/packages/36/09/a4a6a967ca5bcfc0bd6162df4ee93017301fa7d9671483c849300bdba0db/beniget-0.4.0.tar.gz"
@@ -113,6 +110,8 @@ aget "https://files.pythonhosted.org/packages/47/b6/ea8a7728f096a597f0032564e801
 aget "https://files.pythonhosted.org/packages/4d/19/e11fcc88288f68ae48e3aa9cf5a6fd092a88e629cb723465666c44d487a0/pep517-0.13.0.tar.gz"
 aget "https://files.pythonhosted.org/packages/4c/76/1e41fbb365ad20b6efab2e61b0f4751518444c953b390f9b2d36cf97eea0/Cython-0.29.32.tar.gz"
 aget "https://files.pythonhosted.org/packages/64/8e/9929b64e146d240507edaac2185cd5516f00b133be5b39250d253be25a64/numpy-1.23.4.tar.gz"
+aget "https://files.pythonhosted.org/packages/2f/23/aaf147a5bc31c8be286f07d862b3699d7b49e3411fb75087525b5c31ab3e/pybind11-2.10.1.tar.gz"
+aget "https://files.pythonhosted.org/packages/0a/2e/44795c6398e24e45fa0bb61c3e98de1cfea567b1b51efd3751e2f7ff9720/scipy-1.9.3.tar.gz"
 )
 
 if [ -d Grid-paboyle ] ; then

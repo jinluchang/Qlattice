@@ -17,6 +17,8 @@ opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/pyt
 pip3 install $opts psutil
 pip3 install $opts sympy
 pip3 install $opts cython
+pip3 install $opts pythran
+pip3 install $opts pybind11
 pip3 install $opts numpy
 pip3 install $opts scipy
 

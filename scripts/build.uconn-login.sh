@@ -24,6 +24,7 @@ set -e
 ./scripts/re2c.sh
 ./scripts/ninja.sh
 ./scripts/python-meson.sh
+./scripts/python-meson-py.sh
 ./scripts/python-packages.sh
 
 ./scripts/openmpi.sh

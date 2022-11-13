@@ -31,6 +31,12 @@ module add intel/psxe2020
 module list
 export CC="\$CC_OLD"
 export CXX="\$CXX_OLD"
+if [ -z "\$CC" ] ; then
+    unset CC
+fi
+if [ -z "\$CXX" ] ; then
+    unset CXX
+fi
 if [ -z "\$USE_COMPILER" ] ; then
     export USE_COMPILER=gcc
 fi
