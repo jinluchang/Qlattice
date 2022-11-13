@@ -24,7 +24,7 @@ aget() {
 
 dget "c-lime.tar.gz" "https://github.com/usqcd-software/c-lime/tarball/master"
 
-dget "ninja-1.11.1.tar.gz" "https://github.com/ninja-build/ninja/archive/refs/tags/v1.11.1.zip"
+dget "ninja-1.11.1.tar.gz" "https://github.com/ninja-build/ninja/archive/refs/tags/v1.11.1.tar.gz"
 
 dget "lapack-3.10.1.tar.gz" "https://github.com/Reference-LAPACK/lapack/archive/refs/tags/v3.10.1.tar.gz"
 
