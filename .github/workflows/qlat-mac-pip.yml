@@ -49,9 +49,12 @@ jobs:
         brew install gsl zlib openssl@3 llvm open-mpi mpfr autoconf automake flock findutils eigen hdf5-mpi patchelf
         # brew upgrade
 
-    - name: Setup testing environments
+    - name: Build dependencies
       run: |
+        export num_proc=3
         ./scripts/setenv.default.sh
+        ./scripts/fftw_mpi.sh
+        ./scripts/fftwf_mpi.sh
 
     - name: Install Qlattice
       run: |
@@ -72,13 +75,6 @@ jobs:
     - name: Download dependencies
       run: |
         ./scripts/download-core.sh
-
-    - name: Build dependencies
-      run: |
-        export num_proc=3
-        ./scripts/setenv.default.sh
-        ./scripts/fftw_mpi.sh
-        ./scripts/fftwf_mpi.sh
 
     - name: Build Grid
       run: |
