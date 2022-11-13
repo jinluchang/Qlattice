@@ -22,7 +22,11 @@ set -e
 ./scripts/cmake.sh
 ./scripts/python.sh
 ./scripts/python-pip.sh
+./scripts/re2c.sh
+./scripts/ninja.sh
+./scripts/ninja-script.sh
 ./scripts/python-meson.sh
+./scripts/python-meson-py.sh
 ./scripts/python-packages.sh
 
 ./scripts/openmpi.sh

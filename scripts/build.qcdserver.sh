@@ -23,6 +23,7 @@ set -e
 ./scripts/python-pip.sh
 ./scripts/re2c.sh
 ./scripts/ninja.sh
+./scripts/ninja-script.sh
 ./scripts/python-meson.sh
 ./scripts/python-meson-py.sh
 ./scripts/python-packages.sh

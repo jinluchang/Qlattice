@@ -12,6 +12,7 @@ set -e
 
 ./scripts/cuba.sh
 ./scripts/eigen.sh
+./scripts/ninja-script.sh
 
 ./scripts/qlat.sh
 
