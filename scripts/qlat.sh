@@ -39,8 +39,6 @@ name=qlat
         export LIBS="$QLAT_LIBS"
     fi
 
-    ( cd "$wd/qlat/pylib/cqlat" ; bash update.sh )
-
     touch "$wd"/qlat/meson.build
 
     prefix_python="$prefix/lib/python3/qlat-packages"

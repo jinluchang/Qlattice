@@ -23,8 +23,6 @@ name=qlat-grid
     export CXX="$(grid-config --cxx)"
     # export CXX_LD="$(grid-config --cxxld)"
 
-    ( cd "$wd/qlat-grid/pylib/cqlat_grid" ; bash update.sh )
-
     touch "$wd"/qlat-grid/meson.build
 
     prefix_python="$prefix/lib/python3/qlat-packages"
