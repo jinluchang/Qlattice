@@ -76,14 +76,22 @@ message('Grid: lib_dirs =', grid_lib_dirs)
 message('Grid: lib_names =', grid_lib_names)
 
 grid_deps = []
+grid_link_args_not_found_libs = []
 foreach lib : grid_lib_names
-  grid_deps += cpp.find_library(lib, dirs: grid_lib_dirs)
+  dep = cpp.find_library(lib, dirs: grid_lib_dirs, required: false)
+  if dep.found()
+    grid_deps += dep
+  else
+    grid_link_args_not_found_libs += '-l' + lib
+  endif
 endforeach
+
+message('Grid: link_args_not_found_libs =', grid_link_args_not_found_libs)
 
 grid = declare_dependency(
   include_directories: grid_include_directories,
   compile_args: grid_compile_args,
-  link_args: grid_link_args,
+  link_args: grid_link_args + grid_link_args_not_found_libs,
   dependencies: grid_deps,
   ).as_system()
 

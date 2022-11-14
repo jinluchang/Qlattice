@@ -36,6 +36,9 @@ set -e
 ./scripts/eigen.sh
 ./scripts/qlat.sh
 
+./scripts/qlat-examples-py.sh
+./scripts/qlat-examples-cpp.sh
+
 ./scripts/autoconf.sh
 ./scripts/automake.sh
 ./scripts/c-lime.sh
@@ -43,6 +46,8 @@ set -e
 ./scripts/grid.avx2.sh
 ./scripts/gpt.sh
 ./scripts/qlat-grid.sh
+
+./scripts/qlat-examples-py-gpt.sh
 
 ./scripts/gnuplot.sh
 ./scripts/python-jupyter.sh

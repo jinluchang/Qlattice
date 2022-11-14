@@ -4,7 +4,7 @@ set -e
 
 {
 
-./scripts/setenv.default.sh
+./scripts/setenv.uconn.sh
 
 ./scripts/xz.sh
 ./scripts/tar.sh
