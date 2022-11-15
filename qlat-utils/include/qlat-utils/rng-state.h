@@ -371,7 +371,3 @@ inline double g_rand_gen(RngState& rs, const double center = 0.0,
 inline RngState& get_global_rng_state() { return getGlobalRngState(); }
 
 }  // namespace qlat
-
-#ifndef USE_NAMESPACE
-using namespace qlat;
-#endif

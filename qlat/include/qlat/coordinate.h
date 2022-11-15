@@ -8,29 +8,6 @@
 namespace qlat
 {  //
 
-struct API Coordinate : public array<int, DIMN> {
-  qacc Coordinate() { array<int, DIMN>::fill(0); }
-
-  qacc Coordinate(int first, int second, int third, int fourth)
-  {
-    int *p = data();
-    p[0] = first;
-    p[1] = second;
-    p[2] = third;
-    p[3] = fourth;
-  }
-
-  qacc long product() const
-  {
-    long ret = 1;
-    int size_ = size();
-    for (int i = 0; i < size_; i++) {
-      ret *= operator[](i);
-    }
-    return ret;
-  }
-};
-
 qacc bool operator==(const Coordinate &c1, const Coordinate &c2)
 {
   return c1[0] == c2[0] and c1[1] == c2[1] and c1[2] == c2[2] and

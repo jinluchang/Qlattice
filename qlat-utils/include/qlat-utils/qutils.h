@@ -626,7 +626,3 @@ T identity(const T& x)
 }
 
 }  // namespace qlat
-
-#ifndef USE_NAMESPACE
-using namespace qlat;
-#endif

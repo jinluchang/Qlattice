@@ -3,7 +3,6 @@
 #include <qlat/setup.h>
 #include <qlat/mpi.h>
 
-
 namespace qlat
 {  //
 

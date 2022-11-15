@@ -371,7 +371,3 @@ inline void fdisplayln(FILE* fp, const std::string& str)
 }
 
 }  // namespace qlat
-
-#ifndef USE_NAMESPACE
-using namespace qlat;
-#endif

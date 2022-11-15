@@ -1,6 +1,6 @@
 #pragma once
 
-#include <omp.h>
+#include <qlat-utils/timer.h>
 #include <qlat-utils/crc32.h>
 #include <qlat-utils/qutils-io.h>
 #include <qlat-utils/qutils.h>
@@ -624,7 +624,3 @@ inline void lat_data_save_info(const std::string& path, const LatData& ld)
 }
 
 }  // namespace qlat
-
-#ifndef USE_NAMESPACE
-using namespace qlat;
-#endif

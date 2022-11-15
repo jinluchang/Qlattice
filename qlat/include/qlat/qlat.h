@@ -1,8 +1,8 @@
 #pragma once
 
+#include <qlat/core.h>
+
 #include <qlat/setup.h>
-
-
 
 #include <qlat/utils-coordinate.h>
 

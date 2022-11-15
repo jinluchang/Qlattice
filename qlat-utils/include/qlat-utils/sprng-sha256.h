@@ -86,7 +86,3 @@ inline bool operator==(const SprngSha256& ss1, const SprngSha256& ss2)
 }
 
 }  // namespace qlat
-
-#ifndef USE_NAMESPACE
-using namespace qlat;
-#endif

@@ -30,7 +30,6 @@
 #include <vector>
 
 #ifdef USE_PAPI
-#include <omp.h>
 #include <papi.h>
 #endif
 
@@ -835,7 +834,3 @@ inline void DisplayInfo(const char* cname, const char* fname,
 }
 
 }  // namespace qlat
-
-#ifndef USE_NAMESPACE
-using namespace qlat;
-#endif
