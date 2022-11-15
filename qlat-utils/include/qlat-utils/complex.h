@@ -50,4 +50,9 @@ double qnorm(const std::complex<T>& x)
 
 const Complex ii(0, 1);
 
+inline std::string show(const Complex& x)
+{
+  return ssprintf("(%24.17E + %24.17E j)", x.real(), x.imag());
+}
+
 }  // namespace qlat

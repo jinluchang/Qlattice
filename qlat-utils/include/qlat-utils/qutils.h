@@ -1,60 +1,13 @@
 #pragma once
 
-#include <qlat-utils/array.h>
-#include <qlat-utils/complex.h>
-#include <qlat-utils/show.h>
-#include <qlat-utils/timer.h>
+#include <qlat-utils/core.h>
 
 #include <vector>
 #include <map>
 #include <set>
-#include <cassert>
-
-#define qwarn(str)                                                     \
-  {                                                                    \
-    std::string msg = qlat::ssprintf(                                  \
-        "qwarn: %s from '%s' line %d. (id_node=%d thread_num=%d "      \
-        "id_node_in_shuffle=%d)",                                      \
-        qlat::get_c_str(str), __FILE__, __LINE__, qlat::get_id_node(), \
-        qlat::get_thread_num(), qlat::get_id_node_in_shuffle());       \
-    qlat::displayln(msg);                                              \
-    qlat::Timer::display_stack_always();                               \
-  }
-
-#define qqassert(x)                      \
-  {                                      \
-    if (not(x)) {                        \
-      qwarn("qassert: " #x);             \
-      usleep((useconds_t)(0.1 * 1.0e6)); \
-      throw std::string("qassert");      \
-    }                                    \
-  }
-
-// #define SKIP_ASSERT
-
-#ifdef SKIP_ASSERT
-#define qassert(x) assert(true)
-#elif defined QLAT_IN_ACC
-#define qassert(x) assert(x)
-#else
-#define qassert(x) qqassert(x)
-#endif
 
 namespace qlat
 {  //
-
-const double PI = 3.141592653589793;
-
-template <class T>
-qacc T sqr(const T& x)
-{
-  return x * x;
-}
-
-inline std::string show(const Complex& x)
-{
-  return ssprintf("(%24.17E + %24.17E j)", x.real(), x.imag());
-}
 
 template <class M>
 void clear(std::vector<M>& vec)

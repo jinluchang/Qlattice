@@ -45,49 +45,9 @@ API inline MPI_Comm& get_comm_internal()
 
 inline MPI_Comm get_comm() { return get_comm_internal(); }
 
-struct API GeometryNode {
-  bool initialized;
-  // About node geometry.
-  int num_node;
-  // num_node = size_node[0] * size_node[1] * size_node[2] * size_node[3]
-  int id_node;
-  // id_node = get_id_node()
-  // 0 <= id_node < num_node
-  Coordinate size_node;
-  Coordinate coor_node;
-  // 0 <= coor_node[i] < size_node[i]
-  //
-  qacc void init() { memset((void*)this, 0, sizeof(GeometryNode)); }
-  qacc void init(const int id_node_, const Coordinate& size_node_)
-  {
-    initialized = true;
-    num_node = product(size_node_);
-    id_node = id_node_;
-    size_node = size_node_;
-    coor_node = coordinate_from_index(id_node_, size_node_);
-  }
-  //
-  qacc GeometryNode() { init(); }
-  qacc GeometryNode(const int id_node_, const Coordinate& size_node_)
-  {
-    init(id_node_, size_node_);
-  }
-};
-
 qacc bool is_initialized(const GeometryNode& geon) { return geon.initialized; }
 
 qacc void init(GeometryNode& geon) { geon.init(); }
-
-API inline GeometryNode& get_geometry_node_internal()
-{
-  static GeometryNode geon;
-  return geon;
-}
-
-inline const GeometryNode& get_geometry_node()
-{
-  return get_geometry_node_internal();
-}
 
 qacc bool operator==(const GeometryNode& geon1, const GeometryNode& geon2)
 {
