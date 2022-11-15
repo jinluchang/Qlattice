@@ -22,7 +22,9 @@ set -e
 
 wd="$(pwd)"
 distfiles="$wd/distfiles"
-temp_dir="$prefix/temp"
+if [ -z "$temp_dir" ] then
+   temp_dir="$prefix/temp"
+fi
 src_dir="$temp_dir/src"
 build_dir="$temp_dir/build"
 
