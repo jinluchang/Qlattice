@@ -27,11 +27,11 @@ run: $(patsubst %, %.run, $(tests))
 clean: $(patsubst %, %.clean, $(tests))
 
 compile-proj:
+	-rm log
 	meson setup build
 	time ninja -C build
 
 run-proj: compile-proj
-	-rm log
 	-time ninja -C build run
 	-if diff build/log log | grep 'CHECK: ' ; then cat build/log.full ; else echo passed ; fi
 	-cp build/log log

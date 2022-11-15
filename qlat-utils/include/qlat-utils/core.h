@@ -5,6 +5,7 @@
 #include <qlat-utils/show.h>
 #include <qlat-utils/timer.h>
 
+#include <unistd.h>
 #include <cassert>
 
 #define qwarn(str)                                                     \
