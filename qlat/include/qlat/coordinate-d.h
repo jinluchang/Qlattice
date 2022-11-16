@@ -98,4 +98,45 @@ qacc double dot_product(const CoordinateD& c1, const CoordinateD& c2)
   return c1[0] * c2[0] + c1[1] * c2[1] + c1[2] * c2[2] + c1[3] * c2[3];
 }
 
+qacc CoordinateD mod(const CoordinateD& x, const CoordinateD& size)
+{
+  CoordinateD ret;
+  ret[0] = mod(x[0], size[0]);
+  ret[1] = mod(x[1], size[1]);
+  ret[2] = mod(x[2], size[2]);
+  ret[3] = mod(x[3], size[3]);
+  return ret;
+}
+
+qacc CoordinateD smod(const CoordinateD& x, const CoordinateD& size)
+{
+  CoordinateD ret;
+  ret[0] = smod(x[0], size[0]);
+  ret[1] = smod(x[1], size[1]);
+  ret[2] = smod(x[2], size[2]);
+  ret[3] = smod(x[3], size[3]);
+  return ret;
+}
+
+qacc CoordinateD smod_sym(const CoordinateD& x, const CoordinateD& size)
+{
+  CoordinateD ret;
+  ret[0] = smod_sym(x[0], size[0]);
+  ret[1] = smod_sym(x[1], size[1]);
+  ret[2] = smod_sym(x[2], size[2]);
+  ret[3] = smod_sym(x[3], size[3]);
+  return ret;
+}
+
+qacc CoordinateD middle_mod(const CoordinateD& x, const CoordinateD& y,
+                            const CoordinateD& size)
+{
+  CoordinateD ret;
+  ret[0] = middle_mod(x[0], y[0], size[0]);
+  ret[1] = middle_mod(x[1], y[1], size[1]);
+  ret[2] = middle_mod(x[2], y[2], size[2]);
+  ret[3] = middle_mod(x[3], y[3], size[3]);
+  return ret;
+}
+
 }  // namespace qlat

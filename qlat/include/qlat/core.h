@@ -232,47 +232,6 @@ inline std::string show(const CoordinateD& c)
   return ssprintf("(%23.16e,%23.16e,%23.16e,%23.16e)", c[0], c[1], c[2], c[3]);
 }
 
-qacc CoordinateD mod(const CoordinateD& x, const CoordinateD& size)
-{
-  CoordinateD ret;
-  ret[0] = mod(x[0], size[0]);
-  ret[1] = mod(x[1], size[1]);
-  ret[2] = mod(x[2], size[2]);
-  ret[3] = mod(x[3], size[3]);
-  return ret;
-}
-
-qacc CoordinateD smod(const CoordinateD& x, const CoordinateD& size)
-{
-  CoordinateD ret;
-  ret[0] = smod(x[0], size[0]);
-  ret[1] = smod(x[1], size[1]);
-  ret[2] = smod(x[2], size[2]);
-  ret[3] = smod(x[3], size[3]);
-  return ret;
-}
-
-qacc CoordinateD smod_sym(const CoordinateD& x, const CoordinateD& size)
-{
-  CoordinateD ret;
-  ret[0] = smod_sym(x[0], size[0]);
-  ret[1] = smod_sym(x[1], size[1]);
-  ret[2] = smod_sym(x[2], size[2]);
-  ret[3] = smod_sym(x[3], size[3]);
-  return ret;
-}
-
-qacc CoordinateD middle_mod(const CoordinateD& x, const CoordinateD& y,
-                            const CoordinateD& size)
-{
-  CoordinateD ret;
-  ret[0] = middle_mod(x[0], y[0], size[0]);
-  ret[1] = middle_mod(x[1], y[1], size[1]);
-  ret[2] = middle_mod(x[2], y[2], size[2]);
-  ret[3] = middle_mod(x[3], y[3], size[3]);
-  return ret;
-}
-
 // --------------------
 
 struct API GeometryNode {
@@ -1222,20 +1181,202 @@ using FermionField5d = FermionField5dT<>;
 
 // --------------------
 
-
-
-
+using PointSelection = std::vector<Coordinate>;
 
 // --------------------
 
-
-
+template <class M>
+struct API SelectedPoints {
+  // Avoid copy constructor when possible
+  // (it is likely not be what you think it is)
+  //
+  bool initialized;
+  int multiplicity;
+  long n_points;
+  vector_acc<M> points;  // global quantity, same on each node
+  // points.size() == n_points * multiplicity if initialized = true
+  //
+  void init()
+  {
+    initialized = false;
+    multiplicity = 0;
+    n_points = 0;
+    points.init();
+  }
+  void init(const long n_points_, const int multiplicity_)
+  {
+    if (initialized) {
+      qassert(multiplicity_ == multiplicity);
+      qassert(n_points_ == n_points);
+      qassert((long)points.size() == n_points * multiplicity);
+    } else {
+      init();
+      initialized = true;
+      multiplicity = multiplicity_;
+      n_points = n_points_;
+      points.resize(n_points * multiplicity);
+      if (1 == get_field_init()) {
+        set_zero(*this);
+      } else if (2 == get_field_init()) {
+        set_u_rand_float(get_data(points), RngState(show(get_time())));
+      } else {
+        qassert(0 == get_field_init());
+      }
+    }
+  }
+  void init(const PointSelection& psel, const int multiplicity)
+  {
+    init(psel.size(), multiplicity);
+  }
+  //
+  SelectedPoints() { init(); }
+  //
+  qacc M& get_elem(const long& idx)
+  {
+    qassert(1 == multiplicity);
+    return points[idx];
+  }
+  qacc const M& get_elem(const long& idx) const
+  {
+    qassert(1 == multiplicity);
+    return points[idx];
+  }
+  //
+  qacc M& get_elem(const long& idx, const int m)
+  {
+    qassert(0 <= m and m < multiplicity);
+    return points[idx * multiplicity + m];
+  }
+  qacc const M& get_elem(const long& idx, const int m) const
+  {
+    qassert(0 <= m and m < multiplicity);
+    return points[idx * multiplicity + m];
+  }
+  //
+  qacc Vector<M> get_elems(const long idx)
+  {
+    return Vector<M>(&points[idx * multiplicity], multiplicity);
+  }
+  qacc Vector<M> get_elems_const(const long idx) const
+  // Be cautious about the const property
+  // 改不改靠自觉
+  {
+    return Vector<M>(&points[idx * multiplicity], multiplicity);
+  }
+};
 
 // --------------------
 
+struct API FieldSelection {
+  FieldM<int64_t, 1>
+      f_rank;  // rank when the points being selected (-1 if not selected)
+  //
+  long n_per_tslice;  // num points per time slice (not enforced and should work
+                      // properly if not true)
+  double prob;        // (double)n_per_tslice / (double)spatial_vol
+  //
+  FieldM<long, 1>
+      f_local_idx;  // idx of points on this node (-1 if not selected)
+  long n_elems;     // num points of this node
+  //
+  vector_acc<int64_t> ranks;  // rank of the selected points
+  vector_acc<long> indices;   // local indices of selected points
+  //
+  void init()
+  {
+    f_rank.init();
+    n_per_tslice = 0;
+    prob = 0.0;
+    f_local_idx.init();
+    n_elems = 0;
+    ranks.init();
+    indices.init();
+  }
+  //
+  FieldSelection() { init(); }
+};
 
+// --------------------
 
-
-
+template <class M>
+struct API SelectedField {
+  // Avoid copy constructor when possible
+  // (it is likely not be what you think it is)
+  //
+  bool initialized;
+  long n_elems;
+  box_acc<Geometry> geo;
+  vector_acc<M> field;  // field.size() == n_elems * multiplicity
+  //
+  void init()
+  {
+    initialized = false;
+    geo.init();
+    field.init();
+  }
+  void init(const Geometry& geo_, const long n_elems_, const int multiplicity)
+  {
+    if (initialized) {
+      qassert(geo() == geo_remult(geo_, multiplicity));
+      qassert(n_elems == n_elems_);
+      qassert((long)field.size() == n_elems * multiplicity);
+    } else {
+      init();
+      initialized = true;
+      geo.set(geo_remult(geo_, multiplicity));
+      n_elems = n_elems_;
+      field.resize(n_elems * multiplicity);
+      if (1 == get_field_init()) {
+        set_zero(*this);
+      } else if (2 == get_field_init()) {
+        set_u_rand_float(get_data(field), RngState(show(get_time())));
+      } else {
+        qassert(0 == get_field_init());
+      }
+    }
+  }
+  void init(const FieldSelection& fsel, const int multiplicity)
+  {
+    init(fsel.f_rank.geo(), fsel.n_elems, multiplicity);
+  }
+  //
+  SelectedField() { init(); }
+  //
+  qacc M& get_elem(const long idx)
+  {
+    qassert(1 == geo().multiplicity);
+    return field[idx];
+  }
+  qacc const M& get_elem(const long idx) const
+  {
+    qassert(1 == geo().multiplicity);
+    return field[idx];
+  }
+  qacc M& get_elem(const long idx, const int m)
+  {
+    const int multiplicity = geo().multiplicity;
+    qassert(0 <= m and m < multiplicity);
+    return field[idx * multiplicity + m];
+  }
+  qacc const M& get_elem(const long idx, const int m) const
+  {
+    const int multiplicity = geo().multiplicity;
+    qassert(0 <= m and m < multiplicity);
+    return field[idx * multiplicity + m];
+  }
+  //
+  qacc Vector<M> get_elems(const long idx)
+  {
+    const int multiplicity = geo().multiplicity;
+    return Vector<M>(&field[idx * multiplicity], multiplicity);
+  }
+  qacc Vector<M> get_elems_const(const long idx) const
+  // Be cautious about the const property
+  // 改不改靠自觉
+  {
+    const int multiplicity = geo().multiplicity;
+    return Vector<M>(&field[idx * multiplicity], multiplicity);
+  }
+};
 
 }  // namespace qlat

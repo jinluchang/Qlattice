@@ -132,35 +132,6 @@ inline void set_n_per_tslice(FieldM<int64_t, 1>& f_rank,
   });
 }
 
-struct API FieldSelection {
-  FieldM<int64_t, 1>
-      f_rank;  // rank when the points being selected (-1 if not selected)
-  //
-  long n_per_tslice;  // num points per time slice (not enforced and should work
-                      // properly if not true)
-  double prob;        // (double)n_per_tslice / (double)spatial_vol
-  //
-  FieldM<long, 1>
-      f_local_idx;  // idx of points on this node (-1 if not selected)
-  long n_elems;     // num points of this node
-  //
-  vector_acc<int64_t> ranks;  // rank of the selected points
-  vector_acc<long> indices;   // local indices of selected points
-  //
-  void init()
-  {
-    f_rank.init();
-    n_per_tslice = 0;
-    prob = 0.0;
-    f_local_idx.init();
-    n_elems = 0;
-    ranks.init();
-    indices.init();
-  }
-  //
-  FieldSelection() { init(); }
-};
-
 inline void update_field_selection(FieldSelection& fsel)
 // interface function
 // update fsel based only on f_rank
@@ -309,87 +280,6 @@ inline PointSelection psel_from_fsel_local(const FieldSelection& fsel)
   });
   return psel;
 }
-
-template <class M>
-struct API SelectedField {
-  // Avoid copy constructor when possible
-  // (it is likely not be what you think it is)
-  //
-  bool initialized;
-  long n_elems;
-  box_acc<Geometry> geo;
-  vector_acc<M> field;  // field.size() == n_elems * multiplicity
-  //
-  void init()
-  {
-    initialized = false;
-    geo.init();
-    field.init();
-  }
-  void init(const Geometry& geo_, const long n_elems_, const int multiplicity)
-  {
-    if (initialized) {
-      qassert(geo() == geo_remult(geo_, multiplicity));
-      qassert(n_elems == n_elems_);
-      qassert((long)field.size() == n_elems * multiplicity);
-    } else {
-      init();
-      initialized = true;
-      geo.set(geo_remult(geo_, multiplicity));
-      n_elems = n_elems_;
-      field.resize(n_elems * multiplicity);
-      if (1 == get_field_init()) {
-        set_zero(*this);
-      } else if (2 == get_field_init()) {
-        set_u_rand_float(get_data(field), RngState(show(get_time())));
-      } else {
-        qassert(0 == get_field_init());
-      }
-    }
-  }
-  void init(const FieldSelection& fsel, const int multiplicity)
-  {
-    init(fsel.f_rank.geo(), fsel.n_elems, multiplicity);
-  }
-  //
-  SelectedField() { init(); }
-  //
-  qacc M& get_elem(const long idx)
-  {
-    qassert(1 == geo().multiplicity);
-    return field[idx];
-  }
-  qacc const M& get_elem(const long idx) const
-  {
-    qassert(1 == geo().multiplicity);
-    return field[idx];
-  }
-  qacc M& get_elem(const long idx, const int m)
-  {
-    const int multiplicity = geo().multiplicity;
-    qassert(0 <= m and m < multiplicity);
-    return field[idx * multiplicity + m];
-  }
-  qacc const M& get_elem(const long idx, const int m) const
-  {
-    const int multiplicity = geo().multiplicity;
-    qassert(0 <= m and m < multiplicity);
-    return field[idx * multiplicity + m];
-  }
-  //
-  qacc Vector<M> get_elems(const long idx)
-  {
-    const int multiplicity = geo().multiplicity;
-    return Vector<M>(&field[idx * multiplicity], multiplicity);
-  }
-  qacc Vector<M> get_elems_const(const long idx) const
-  // Be cautious about the const property
-  // 改不改靠自觉
-  {
-    const int multiplicity = geo().multiplicity;
-    return Vector<M>(&field[idx * multiplicity], multiplicity);
-  }
-};
 
 template <class M, class N>
 SelectedField<M>& qcast(SelectedField<N>& x)
