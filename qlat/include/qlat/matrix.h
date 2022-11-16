@@ -7,69 +7,6 @@
 
 namespace qlat
 {  //
-//  alignas(QLAT_ALIGNED_BYTES)
-template <int DIMN, class T = ComplexT>
-struct API ALIGN MatrixT
-{
-  T p[DIMN * DIMN];
-  //
-  // convert to double array
-  qacc double* d() { return (double*)p; }
-  qacc const double* d() const { return (const double*)p; }
-  //
-  // convert to Eigen MatrixT
-  qacc Eigen::Matrix<T, DIMN, DIMN, Eigen::RowMajor>& em()
-  {
-    return *((Eigen::Matrix<T, DIMN, DIMN, Eigen::RowMajor>*)this);
-  }
-  qacc const Eigen::Matrix<T, DIMN, DIMN, Eigen::RowMajor>& em() const
-  {
-    return *((Eigen::Matrix<T, DIMN, DIMN, Eigen::RowMajor>*)this);
-  }
-  //
-  qacc T& operator()(int i, int j)
-  {
-    qassert(0 <= i && i < DIMN);
-    qassert(0 <= j && j < DIMN);
-    return p[i * DIMN + j];
-  }
-  qacc const T& operator()(int i, int j) const
-  {
-    qassert(0 <= i && i < DIMN);
-    qassert(0 <= j && j < DIMN);
-    return p[i * DIMN + j];
-  }
-  //
-  qacc const MatrixT& operator+=(const MatrixT& x)
-  {
-    *this = *this + x;
-    return *this;
-  }
-  //
-  qacc const MatrixT& operator-=(const MatrixT& x)
-  {
-    *this = *this - x;
-    return *this;
-  }
-  //
-  qacc const MatrixT& operator*=(const MatrixT& x)
-  {
-    *this = *this * x;
-    return *this;
-  }
-  //
-  qacc const MatrixT& operator*=(const T& x)
-  {
-    *this = *this * x;
-    return *this;
-  }
-  //
-  qacc const MatrixT& operator/=(const T& x)
-  {
-    *this = *this / x;
-    return *this;
-  }
-};
 
 template <int DIMN, class T>
 qacc MatrixT<DIMN, T> operator+(const MatrixT<DIMN, T>& x,
@@ -379,30 +316,6 @@ qacc T matrix_determinant(const MatrixT<DIMN, T>& x)
 }
 
 template <class T = ComplexT>
-struct API ColorMatrixT : MatrixT<NUM_COLOR, T> {
-  qacc ColorMatrixT() {}
-  qacc ColorMatrixT(const MatrixT<NUM_COLOR, T>& m) { *this = m; }
-  //
-  qacc const ColorMatrixT& operator=(const MatrixT<NUM_COLOR, T>& m)
-  {
-    *this = (const ColorMatrixT&)m;
-    return *this;
-  }
-};
-
-template <class T = ComplexT>
-struct API WilsonMatrixT : MatrixT<4 * NUM_COLOR, T> {
-  qacc WilsonMatrixT() {}
-  qacc WilsonMatrixT(const MatrixT<4 * NUM_COLOR, T>& m) { *this = m; }
-  //
-  qacc const WilsonMatrixT& operator=(const MatrixT<4 * NUM_COLOR, T>& m)
-  {
-    *this = (const WilsonMatrixT&)m;
-    return *this;
-  }
-};
-
-template <class T = ComplexT>
 struct API NonRelWilsonMatrixT : MatrixT<2 * NUM_COLOR, T> {
   qacc NonRelWilsonMatrixT() {}
   qacc NonRelWilsonMatrixT(const MatrixT<2 * NUM_COLOR, T>& m) { *this = m; }
@@ -410,18 +323,6 @@ struct API NonRelWilsonMatrixT : MatrixT<2 * NUM_COLOR, T> {
   qacc const NonRelWilsonMatrixT& operator=(const MatrixT<2 * NUM_COLOR, T>& m)
   {
     *this = (const NonRelWilsonMatrixT&)m;
-    return *this;
-  }
-};
-
-template <class T = ComplexT>
-struct API SpinMatrixT : MatrixT<4, T> {
-  qacc SpinMatrixT() {}
-  qacc SpinMatrixT(const MatrixT<4, T>& m) { *this = m; }
-  //
-  qacc const SpinMatrixT& operator=(const MatrixT<4, T>& m)
-  {
-    *this = (const SpinMatrixT&)m;
     return *this;
   }
 };
@@ -546,7 +447,10 @@ struct API SpinMatrixConstantsT {
   {
     return get_instance().cps_gms;
   }
-  API static const SpinMatrixT<T>& get_gamma5() { return get_instance().gamma5; }
+  API static const SpinMatrixT<T>& get_gamma5()
+  {
+    return get_instance().gamma5;
+  }
   API static const SpinMatrixT<T>& get_cap_sigma(int i)
   {
     return get_instance().cap_sigmas[i];
@@ -755,13 +659,7 @@ qacc void convert_wm_from_mspincolor(WilsonMatrixT<T>& wm,
 
 #ifndef QLAT_NO_DEFAULT_TYPE
 
-typedef ColorMatrixT<> ColorMatrix;
-
-typedef WilsonMatrixT<> WilsonMatrix;
-
 typedef NonRelWilsonMatrixT<> NonRelWilsonMatrix;
-
-typedef SpinMatrixT<> SpinMatrix;
 
 typedef SpinMatrixConstantsT<> SpinMatrixConstants;
 

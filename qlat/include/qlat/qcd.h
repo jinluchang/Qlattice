@@ -20,37 +20,6 @@
 namespace qlat
 {  //
 
-template <class T = ComplexT>
-struct API GaugeFieldT : FieldM<ColorMatrixT<T>, 4> {
-};
-
-template <class T = ComplexT>
-struct API Propagator4dT : FieldM<WilsonMatrixT<T>, 1> {
-};
-
-template <class T = ComplexT>
-struct API FermionField4dT : FieldM<WilsonVectorT<T>, 1> {
-};
-
-template <class T = ComplexT>
-struct API FermionField5dT : Field<WilsonVectorT<T> > {
-};
-
-#ifndef QLAT_NO_DEFAULT_TYPE
-
-typedef GaugeFieldT<> GaugeField;
-
-typedef Propagator4dT<> Propagator4d;
-
-typedef FermionField4dT<> FermionField4d;
-
-typedef FermionField5dT<> FermionField5d;
-
-#endif
-
-struct GaugeTransform : FieldM<ColorMatrix, 1> {
-};
-
 struct U1GaugeTransform : FieldM<ComplexF, 1> {
 };
 

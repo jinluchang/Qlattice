@@ -7,61 +7,6 @@
 namespace qlat
 {  //
 
-template <int DIMN, class T = ComplexT>
-struct API ALIGN MvectorT
-{
-  T p[DIMN];
-  //
-  // convert to double array
-  qacc double* d() { return (double*)p; }
-  qacc const double* d() const { return (const double*)p; }
-  //
-  // convert to Eigen Matrix
-  qacc Eigen::Matrix<T, DIMN, 1>& em()
-  {
-    return *((Eigen::Matrix<T, DIMN, 1>*)this);
-  }
-  qacc const Eigen::Matrix<T, DIMN, 1>& em() const
-  {
-    return *((Eigen::Matrix<T, DIMN, 1>*)this);
-  }
-  //
-  qacc T& operator()(int i)
-  {
-    qassert(0 <= i && i < DIMN);
-    return p[i];
-  }
-  qacc const T& operator()(int i) const
-  {
-    qassert(0 <= i && i < DIMN);
-    return p[i];
-  }
-  //
-  qacc const MvectorT& operator+=(const MvectorT& x)
-  {
-    *this = *this + x;
-    return *this;
-  }
-  //
-  qacc const MvectorT& operator-=(const MvectorT& x)
-  {
-    *this = *this - x;
-    return *this;
-  }
-  //
-  qacc const MvectorT& operator*=(const T& x)
-  {
-    *this = *this * x;
-    return *this;
-  }
-  //
-  qacc const MvectorT& operator/=(const T& x)
-  {
-    *this = *this / x;
-    return *this;
-  }
-};
-
 template <int DIMN, class T>
 qacc MvectorT<DIMN, T> operator+(const MvectorT<DIMN, T>& x,
                                  const MvectorT<DIMN, T>& y)
@@ -146,38 +91,6 @@ qacc MvectorT<DIMN, T> vector_conjugate(const MvectorT<DIMN, T>& x)
   ret.em() = x.em().conjugate();
   return ret;
 }
-
-template <class T = ComplexT>
-struct API WilsonVectorT : MvectorT<4 * NUM_COLOR, T> {
-  qacc WilsonVectorT() {}
-  qacc WilsonVectorT(const MvectorT<4 * NUM_COLOR, T>& m) { *this = m; }
-  //
-  qacc const WilsonVectorT& operator=(const MvectorT<4 * NUM_COLOR, T>& m)
-  {
-    *this = (const WilsonVectorT&)m;
-    return *this;
-  }
-};
-
-template <class T = ComplexT>
-struct API SpinVectorT : MvectorT<4, T> {
-  qacc SpinVectorT() {}
-  qacc SpinVectorT(const MvectorT<4, T>& m) { *this = m; }
-  //
-  qacc const SpinVectorT& operator=(const MvectorT<4, T>& m)
-  {
-    *this = (const SpinVectorT&)m;
-    return *this;
-  }
-};
-
-#ifndef QLAT_NO_DEFAULT_TYPE
-
-typedef WilsonVectorT<> WilsonVector;
-
-typedef SpinVectorT<> SpinVector;
-
-#endif
 
 template <int DIMN, class T>
 std::string show(const MvectorT<DIMN, T>& m)

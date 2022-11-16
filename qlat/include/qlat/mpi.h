@@ -49,19 +49,6 @@ qacc bool is_initialized(const GeometryNode& geon) { return geon.initialized; }
 
 qacc void init(GeometryNode& geon) { geon.init(); }
 
-qacc bool operator==(const GeometryNode& geon1, const GeometryNode& geon2)
-{
-  return geon1.initialized == geon2.initialized &&
-         geon1.num_node == geon2.num_node && geon1.id_node == geon2.id_node &&
-         geon1.size_node == geon2.size_node &&
-         geon1.coor_node == geon2.coor_node;
-}
-
-qacc bool operator!=(const GeometryNode& geon1, const GeometryNode& geon2)
-{
-  return !(geon1 == geon2);
-}
-
 inline int id_node_from_coor_node(const Coordinate& coor_node)
 {
   return index_from_coordinate(coor_node, get_geometry_node().size_node);
@@ -919,17 +906,6 @@ inline void display_geometry_node()
   }
   fflush(get_output_file());
   sync_node();
-}
-
-inline std::string show(const qlat::GeometryNode& geon)
-{
-  std::string s;
-  s += ssprintf("{ initialized = %s\n", show(geon.initialized).c_str());
-  s += ssprintf(", num_node    = %d\n", geon.num_node);
-  s += ssprintf(", id_node     = %d\n", geon.id_node);
-  s += ssprintf(", size_node   = %s\n", show(geon.size_node).c_str());
-  s += ssprintf(", coor_node   = %s }", show(geon.coor_node).c_str());
-  return s;
 }
 
 inline Coordinate plan_size_node(const int num_node)
