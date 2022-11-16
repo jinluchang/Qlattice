@@ -642,7 +642,7 @@ void extend_links_to_vecs(qlat::vector_gpu<T >& gfE, const GaugeFieldT<Tg >& gf,
 }
 
 template <class T>
-void rotate_Vec_prop(Propagator4dT<T>& prop, qlat::vector_gpu<T > &propT, unsigned int NVmpi, unsigned int groupP, int dir = 0)
+void rotate_Vec_prop(Propagator4dT<T>& prop, qlat::vector_gpu<ComplexT<T> > &propT, unsigned int NVmpi, unsigned int groupP, int dir = 0)
 {
   TIMER("Rotate Vec prop");
   ///unsigned int NVmpi = fd.mz*fd.my*fd.mx;
@@ -942,10 +942,10 @@ void rotate_prop(Propagator4dT<T>& prop, int dir = 0)
   const Geometry& geo = prop.geo();
   long long Nvol =  geo.local_volume();
 
-  T* src =  (T*) qlat::get_data(prop).data();
+  ComplexT<T>* src =  (ComplexT<T>*) qlat::get_data(prop).data();
   qacc_for(index, long(Nvol), {
-    ALIGN T buf[12*12];
-    T* res = &src[index*12*12];
+    ALIGN ComplexT<T> buf[12*12];
+    ComplexT<T>* res = &src[index*12*12];
     for(int i=0;i<12*12;i++){buf[i] = res[i];}
 
     for(int d1 = 0;d1 < 4; d1++)
@@ -1103,8 +1103,8 @@ void smear_propagator_gwu_convension(Propagator4dT<Ty>& prop, const GaugeFieldT<
 {
   if (0 == step) {return;}
   rotate_prop(prop, 0);
-  Ty* src = (Ty*) qlat::get_data(prop).data();
-  smear_propagator_gwu_convension_inner<Ty, 1, 12*4, Tg>(src, gf, width, step, mom, smear_in_time_dir, mode);
+  ComplexT<Ty>* src = (ComplexT<Ty>*) qlat::get_data(prop).data();
+  smear_propagator_gwu_convension_inner<ComplexT<Ty>, 1, 12*4, Tg>(src, gf, width, step, mom, smear_in_time_dir, mode);
   rotate_prop(prop, 1);
 }
 
