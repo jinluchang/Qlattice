@@ -8,6 +8,12 @@
 namespace qlat
 {  //
 
+qacc long sqr(const qlat::Coordinate& xg)
+{
+  return sqr((long)xg[0]) + sqr((long)xg[1]) + sqr((long)xg[2]) +
+         sqr((long)xg[3]);
+}
+
 qacc Coordinate operator/(const Coordinate &coor, const int integer)
 {
   return Coordinate(coor[0] / integer, coor[1] / integer, coor[2] / integer,

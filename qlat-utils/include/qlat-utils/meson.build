@@ -1,12 +1,16 @@
 conf_data = configuration_data()
 
-if cpp.has_function('malloc_stats', prefix: '#include <malloc.h>')
+if cpp.has_function('malloc_stats', prefix: '#include <malloc.h>', dependencies: deps)
   conf_data.set('QLAT_USE_MALLOC_STATS', true)
 endif
 
-if cpp.check_header('endian.h')
+if not cpp.has_function('aligned_alloc', prefix: '#include <cstdlib>', dependencies: deps)
+  conf_data.set('QLAT_NO_ALIGNED_ALLOC', true)
+endif
+
+if cpp.check_header('endian.h', dependencies: deps)
   # do nothing
-elif cpp.check_header('machine/endian.h')
+elif cpp.check_header('machine/endian.h', dependencies: deps)
   conf_data.set('QLAT_USE_MACHINE_ENDIAN_H', true)
 else
   error('Cannot find endian.h header file.')

@@ -1,11 +1,9 @@
 #pragma once
 
-#include <qlat-utils/config.h>
 #include <qlat-utils/qutils-vec.h>
 #include <qlat-utils/qutils.h>
 
 #include <cstdlib>
-#include <stdlib.h>
 #include <cstring>
 #include <unordered_map>
 
@@ -142,7 +140,7 @@ inline void clear_mem_cache()
 inline void* alloc_mem_alloc_no_acc(const long size)
 {
   const size_t alignment = get_alignment();
-#if defined NO_ALIGNED_ALLOC
+#if defined QLAT_NO_ALIGNED_ALLOC
   return malloc(size);
 #else
   return aligned_alloc(alignment, size);
@@ -217,7 +215,7 @@ struct API vector {
   // (it is likely not what you think it is)
   //
   bool is_copy;  // do not free memory if is_copy=true
-  bool is_acc; // if place data on cudaMallocManaged memory (default false)
+  bool is_acc;   // if place data on cudaMallocManaged memory (default false)
   Vector<M> v;
   //
   vector()
@@ -507,7 +505,7 @@ struct API box {
   // (it is likely not be what you think it is)
   //
   bool is_copy;  // do not free memory if is_copy=true
-  bool is_acc; // if place data on cudaMallocManaged memory (default false)
+  bool is_acc;   // if place data on cudaMallocManaged memory (default false)
   Handle<M> v;
   //
   box()
@@ -611,14 +609,8 @@ struct API box {
     return *this;
   }
   //
-  qacc const M& operator()() const
-  {
-    return v();
-  }
-  qacc M& operator()()
-  {
-    return v();
-  }
+  qacc const M& operator()() const { return v(); }
+  qacc M& operator()() { return v(); }
   //
   qacc bool null() const { return v.null(); }
 };

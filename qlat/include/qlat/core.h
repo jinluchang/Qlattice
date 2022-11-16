@@ -10,7 +10,7 @@
 
 #include <qlat/config.h>
 
-#if defined NO_ALIGNED_ALLOC
+#if defined QLAT_NO_ALIGNED_ALLOC
 #define QLAT_ALIGNED_BYTES 1
 // #define EIGEN_MALLOC_ALREADY_ALIGNED 0
 #define EIGEN_MAX_ALIGN_BYTES 0
@@ -101,12 +101,6 @@ qacc long index_from_coordinate(const Coordinate& x, const Coordinate& size)
 qacc int eo_from_coordinate(const Coordinate& xl)
 {
   return 2 - (xl[0] + xl[1] + xl[2] + xl[3] + 16 * 1024 * 1024) % 2;
-}
-
-qacc long sqr(const qlat::Coordinate& xg)
-{
-  return sqr((long)xg[0]) + sqr((long)xg[1]) + sqr((long)xg[2]) +
-         sqr((long)xg[3]);
 }
 
 qacc bool operator==(const Coordinate& c1, const Coordinate& c2)

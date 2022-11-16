@@ -4,7 +4,6 @@
 // Orignal author: Peter Boyle <paboyle@ph.ed.ac.uk>
 
 #include <qlat-utils/qacc.h>
-#include <qlat-utils/qutils-io.h>
 
 namespace qlat
 {  //
