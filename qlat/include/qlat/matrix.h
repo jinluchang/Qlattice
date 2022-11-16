@@ -315,19 +315,23 @@ qacc T matrix_determinant(const MatrixT<DIMN, T>& x)
   return d;
 }
 
-template <class T = ComplexT>
-struct API NonRelWilsonMatrixT : MatrixT<2 * NUM_COLOR, T> {
+template <class T = Real>
+struct API NonRelWilsonMatrixT : MatrixT<2 * NUM_COLOR, ComplexT<T> > {
   qacc NonRelWilsonMatrixT() {}
-  qacc NonRelWilsonMatrixT(const MatrixT<2 * NUM_COLOR, T>& m) { *this = m; }
+  qacc NonRelWilsonMatrixT(const MatrixT<2 * NUM_COLOR, ComplexT<T> >& m)
+  {
+    *this = m;
+  }
   //
-  qacc const NonRelWilsonMatrixT& operator=(const MatrixT<2 * NUM_COLOR, T>& m)
+  qacc const NonRelWilsonMatrixT& operator=(
+      const MatrixT<2 * NUM_COLOR, ComplexT<T> >& m)
   {
     *this = (const NonRelWilsonMatrixT&)m;
     return *this;
   }
 };
 
-template <class T = ComplexT>
+template <class T = Real>
 struct API SpinMatrixConstantsT {
   SpinMatrixT<T> unit;
   array<SpinMatrixT<T>, 4>
@@ -349,13 +353,13 @@ struct API SpinMatrixConstantsT {
     // gamma_x
     gammas[0].em() << 0, 0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, -1, 0, 0, 0;
     // gamma_y
-    gammas[1].em() << 0, 0, 0, (T)-ii, 0, 0, (T)ii, 0, 0, (T)ii, 0, 0, (T)-ii,
+    gammas[1].em() << 0, 0, 0, (ComplexT<T>)-ii, 0, 0, (ComplexT<T>)ii, 0, 0, (ComplexT<T>)ii, 0, 0, (ComplexT<T>)-ii,
         0, 0, 0;
     // gamma_z
     gammas[2].em() << 0, 0, 1, 0, 0, 0, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0;
-    gammas[0] *= (T)(-ii);
-    gammas[1] *= (T)(-ii);
-    gammas[2] *= (T)(-ii);
+    gammas[0] *= (ComplexT<T>)(-ii);
+    gammas[1] *= (ComplexT<T>)(-ii);
+    gammas[2] *= (ComplexT<T>)(-ii);
     // gamma_t
     gammas[3].em() << 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0;
     //
@@ -368,8 +372,8 @@ struct API SpinMatrixConstantsT {
     // Sigma_x
     cap_sigmas[0].em() << 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0;
     // Sigma_y
-    cap_sigmas[1].em() << 0, (T)-ii, 0, 0, (T)ii, 0, 0, 0, 0, 0, 0, (T)-ii, 0,
-        0, (T)ii, 0;
+    cap_sigmas[1].em() << 0, (ComplexT<T>)-ii, 0, 0, (ComplexT<T>)ii, 0, 0, 0, 0, 0, 0, (ComplexT<T>)-ii, 0,
+        0, (ComplexT<T>)ii, 0;
     // Sigma_z
     cap_sigmas[2].em() << 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1;
     //
@@ -694,20 +698,19 @@ enum DATA_TYPE {
   Complex_TYPE = FLOATIND + 2 + MAXTYPE * sizeof(Complex),
   ComplexF_TYPE = FLOATIND + 3 + MAXTYPE * sizeof(ComplexF),
   //
-  ColorMatrix_TYPE = FLOATIND + 4 + MAXTYPE * sizeof(ColorMatrixT<Complex>),
-  ColorMatrixF_TYPE = FLOATIND + 5 + MAXTYPE * sizeof(ColorMatrixT<ComplexF>),
-  WilsonMatrix_TYPE = FLOATIND + 6 + MAXTYPE * sizeof(WilsonMatrixT<Complex>),
-  WilsonMatrixF_TYPE = FLOATIND + 7 + MAXTYPE * sizeof(WilsonMatrixT<ComplexF>),
-  SpinMatrix_TYPE = FLOATIND + 8 + MAXTYPE * sizeof(SpinMatrixT<Complex>),
-  SpinMatrixF_TYPE = FLOATIND + 9 + MAXTYPE * sizeof(SpinMatrixT<ComplexF>),
-  WilsonVector_TYPE = FLOATIND + 10 + MAXTYPE * sizeof(WilsonVectorT<Complex>),
-  WilsonVectorF_TYPE =
-      FLOATIND + 11 + MAXTYPE * sizeof(WilsonVectorT<ComplexF>),
+  ColorMatrix_TYPE = FLOATIND + 4 + MAXTYPE * sizeof(ColorMatrixT<double>),
+  ColorMatrixF_TYPE = FLOATIND + 5 + MAXTYPE * sizeof(ColorMatrixT<float>),
+  WilsonMatrix_TYPE = FLOATIND + 6 + MAXTYPE * sizeof(WilsonMatrixT<double>),
+  WilsonMatrixF_TYPE = FLOATIND + 7 + MAXTYPE * sizeof(WilsonMatrixT<float>),
+  SpinMatrix_TYPE = FLOATIND + 8 + MAXTYPE * sizeof(SpinMatrixT<double>),
+  SpinMatrixF_TYPE = FLOATIND + 9 + MAXTYPE * sizeof(SpinMatrixT<float>),
+  WilsonVector_TYPE = FLOATIND + 10 + MAXTYPE * sizeof(WilsonVectorT<double>),
+  WilsonVectorF_TYPE = FLOATIND + 11 + MAXTYPE * sizeof(WilsonVectorT<float>),
   //
   NonRelWilsonMatrix_TYPE =
-      FLOATIND + 12 + MAXTYPE * sizeof(NonRelWilsonMatrixT<Complex>),
+      FLOATIND + 12 + MAXTYPE * sizeof(NonRelWilsonMatrixT<double>),
   NonRelWilsonMatrixF_TYPE =
-      FLOATIND + 13 + MAXTYPE * sizeof(NonRelWilsonMatrixT<ComplexF>),
+      FLOATIND + 13 + MAXTYPE * sizeof(NonRelWilsonMatrixT<float>),
   INVALID_TYPE = 9999999
 };
 

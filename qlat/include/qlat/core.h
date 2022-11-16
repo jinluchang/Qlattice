@@ -42,8 +42,6 @@ const int DIMN = 4;
 
 const int NUM_COLOR = 3;
 
-typedef Complex ComplexT;  // default Complex type
-
 inline void warn(const std::string& str = "")
 {
   if (str != "") {
@@ -995,7 +993,7 @@ struct API FieldM : Field<M> {
 
 // --------------------
 
-template <int DIMN, class T = ComplexT>
+template <int DIMN, class T>
 struct API ALIGN MatrixT
 {
   T p[DIMN * DIMN];
@@ -1058,36 +1056,40 @@ struct API ALIGN MatrixT
   }
 };
 
-template <class T = ComplexT>
-struct API ColorMatrixT : MatrixT<NUM_COLOR, T> {
+template <class T = Real>
+struct API ColorMatrixT : MatrixT<NUM_COLOR, ComplexT<T> > {
   qacc ColorMatrixT() {}
-  qacc ColorMatrixT(const MatrixT<NUM_COLOR, T>& m) { *this = m; }
+  qacc ColorMatrixT(const MatrixT<NUM_COLOR, ComplexT<T> >& m) { *this = m; }
   //
-  qacc const ColorMatrixT& operator=(const MatrixT<NUM_COLOR, T>& m)
+  qacc const ColorMatrixT& operator=(const MatrixT<NUM_COLOR, ComplexT<T> >& m)
   {
     *this = (const ColorMatrixT&)m;
     return *this;
   }
 };
 
-template <class T = ComplexT>
-struct API WilsonMatrixT : MatrixT<4 * NUM_COLOR, T> {
+template <class T = Real>
+struct API WilsonMatrixT : MatrixT<4 * NUM_COLOR, ComplexT<T> > {
   qacc WilsonMatrixT() {}
-  qacc WilsonMatrixT(const MatrixT<4 * NUM_COLOR, T>& m) { *this = m; }
+  qacc WilsonMatrixT(const MatrixT<4 * NUM_COLOR, ComplexT<T> >& m)
+  {
+    *this = m;
+  }
   //
-  qacc const WilsonMatrixT& operator=(const MatrixT<4 * NUM_COLOR, T>& m)
+  qacc const WilsonMatrixT& operator=(
+      const MatrixT<4 * NUM_COLOR, ComplexT<T> >& m)
   {
     *this = (const WilsonMatrixT&)m;
     return *this;
   }
 };
 
-template <class T = ComplexT>
-struct API SpinMatrixT : MatrixT<4, T> {
+template <class T = Real>
+struct API SpinMatrixT : MatrixT<4, ComplexT<T> > {
   qacc SpinMatrixT() {}
-  qacc SpinMatrixT(const MatrixT<4, T>& m) { *this = m; }
+  qacc SpinMatrixT(const MatrixT<4, ComplexT<T> >& m) { *this = m; }
   //
-  qacc const SpinMatrixT& operator=(const MatrixT<4, T>& m)
+  qacc const SpinMatrixT& operator=(const MatrixT<4, ComplexT<T> >& m)
   {
     *this = (const SpinMatrixT&)m;
     return *this;
@@ -1106,7 +1108,7 @@ typedef SpinMatrixT<> SpinMatrix;
 
 // --------------------
 
-template <int DIMN, class T = ComplexT>
+template <int DIMN, class T>
 struct API ALIGN MvectorT
 {
   T p[DIMN];
@@ -1161,24 +1163,28 @@ struct API ALIGN MvectorT
   }
 };
 
-template <class T = ComplexT>
-struct API WilsonVectorT : MvectorT<4 * NUM_COLOR, T> {
+template <class T = Real>
+struct API WilsonVectorT : MvectorT<4 * NUM_COLOR, ComplexT<T> > {
   qacc WilsonVectorT() {}
-  qacc WilsonVectorT(const MvectorT<4 * NUM_COLOR, T>& m) { *this = m; }
+  qacc WilsonVectorT(const MvectorT<4 * NUM_COLOR, ComplexT<T> >& m)
+  {
+    *this = m;
+  }
   //
-  qacc const WilsonVectorT& operator=(const MvectorT<4 * NUM_COLOR, T>& m)
+  qacc const WilsonVectorT& operator=(
+      const MvectorT<4 * NUM_COLOR, ComplexT<T> >& m)
   {
     *this = (const WilsonVectorT&)m;
     return *this;
   }
 };
 
-template <class T = ComplexT>
-struct API SpinVectorT : MvectorT<4, T> {
+template <class T = Real>
+struct API SpinVectorT : MvectorT<4, ComplexT<T> > {
   qacc SpinVectorT() {}
-  qacc SpinVectorT(const MvectorT<4, T>& m) { *this = m; }
+  qacc SpinVectorT(const MvectorT<4, ComplexT<T> >& m) { *this = m; }
   //
-  qacc const SpinVectorT& operator=(const MvectorT<4, T>& m)
+  qacc const SpinVectorT& operator=(const MvectorT<4, ComplexT<T> >& m)
   {
     *this = (const SpinVectorT&)m;
     return *this;
@@ -1195,19 +1201,19 @@ typedef SpinVectorT<> SpinVector;
 
 // --------------------
 
-template <class T = ComplexT>
+template <class T = Real>
 struct API GaugeFieldT : FieldM<ColorMatrixT<T>, 4> {
 };
 
-template <class T = ComplexT>
+template <class T = Real>
 struct API Propagator4dT : FieldM<WilsonMatrixT<T>, 1> {
 };
 
-template <class T = ComplexT>
+template <class T = Real>
 struct API FermionField4dT : FieldM<WilsonVectorT<T>, 1> {
 };
 
-template <class T = ComplexT>
+template <class T = Real>
 struct API FermionField5dT : Field<WilsonVectorT<T> > {
 };
 

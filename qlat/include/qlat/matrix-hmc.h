@@ -112,7 +112,7 @@ qacc ColorMatrixT<T> matrix_evolve(const ColorMatrixT<T>& gf_cm,
                                    const ColorMatrixT<T>& gm_cm,
                                    const double step_size)
 {
-  const ColorMatrixT<T> t = (T)step_size * gm_cm;
+  const ColorMatrixT<T> t = (ComplexT<T>)step_size * gm_cm;
   return make_matrix_exp(t) * gf_cm;
 }
 

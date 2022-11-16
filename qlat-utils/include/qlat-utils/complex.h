@@ -7,14 +7,16 @@
 #include <thrust/complex.h>
 #endif
 
+
 namespace qlat
 {  //
 
+using Real = double;  // default Real type
+
 #ifdef QLAT_USE_ACC
 
-typedef thrust::complex<double> Complex;
-
-typedef thrust::complex<float> ComplexF;
+template <class T = Real>
+using ComplexT = thrust::complex<T>;
 
 template <class T>
 qacc thrust::complex<T> qconj(const thrust::complex<T>& x)
@@ -30,9 +32,8 @@ qacc double qnorm(const thrust::complex<T>& x)
 
 #else
 
-typedef std::complex<double> Complex;
-
-typedef std::complex<float> ComplexF;
+template <class T = Real>
+using ComplexT = std::complex<T>;
 
 template <class T>
 std::complex<T> qconj(const std::complex<T>& x)
@@ -48,9 +49,16 @@ double qnorm(const std::complex<T>& x)
 
 #endif
 
-const Complex ii(0, 1);
+using Complex = ComplexT<Real>;
 
-inline std::string show(const Complex& x)
+using ComplexD = ComplexT<double>;
+
+using ComplexF = ComplexT<float>;
+
+const ComplexD ii(0, 1);
+
+template <class T>
+inline std::string show(const ComplexT<T>& x)
 {
   return ssprintf("(%24.17E + %24.17E j)", x.real(), x.imag());
 }

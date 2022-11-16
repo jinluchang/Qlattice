@@ -328,7 +328,7 @@ long save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
   return file_size;
 }
 
-template <class T = ComplexT>
+template <class T = Real>
 long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field");
@@ -401,7 +401,8 @@ long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
   return file_size;
 }
 
-inline long load_gauge_field_cps3x3(GaugeFieldT<Complex>& gf,
+template <class T = Real>
+inline long load_gauge_field_cps3x3(GaugeFieldT<T>& gf,
                                     const std::string& path)
 // assuming gf already initialized and have correct size;
 {
@@ -421,7 +422,7 @@ inline long load_gauge_field_cps3x3(GaugeFieldT<Complex>& gf,
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<array<Complex, 9> > vt = gft.get_elems(xl);
     to_from_big_endian_64(get_data(vt));
-    Vector<ColorMatrixT<Complex> > v = gf.get_elems(xl);
+    Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       assign_truncate(v[m], vt[m]);
     }
@@ -430,7 +431,8 @@ inline long load_gauge_field_cps3x3(GaugeFieldT<Complex>& gf,
   return file_size;
 }
 
-inline long load_gauge_field_milc(GaugeFieldT<Complex>& gf,
+template <class T = Real>
+inline long load_gauge_field_milc(GaugeFieldT<T>& gf,
                                   const std::string& path,
                                   const bool par_read = false)
 // assuming gf already initialized and have correct size;
@@ -456,7 +458,7 @@ inline long load_gauge_field_milc(GaugeFieldT<Complex>& gf,
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<array<ComplexF, 9> > vt = gft.get_elems(xl);
     to_from_big_endian_32((char*)vt.data(), vt.data_size());
-    Vector<ColorMatrixT<Complex> > v = gf.get_elems(xl);
+    Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       // assign_truncate(v[m], vt[m]);
       v[m](0, 0) = vt[m][0 * 3 + 0];
@@ -487,7 +489,7 @@ void twist_boundary_at_boundary(GaugeFieldT<T>& gf, double lmom, int mu)
     Coordinate xg = geo.coordinate_g_from_l(xl);
     if (xg[mu] == len - 1) {
       ColorMatrixT<T>& mat = gf.get_elem(xl, mu);
-      mat *= ComplexT(std::polar(1.0, amp));
+      mat *= ComplexT<T>(std::polar(1.0, amp));
     }
   }
 }

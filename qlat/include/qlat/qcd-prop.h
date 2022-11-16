@@ -441,7 +441,7 @@ void free_mom_invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
       kg[i] = smod(kg[i], total_site[i]);
       kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)total_site[i];
       ks[i] = sin(kk[i]);
-      pg += SpinMatrixConstantsT<T>::get_cps_gammas()[i] * (T)ks[i];
+      pg += SpinMatrixConstantsT<T>::get_cps_gammas()[i] * (ComplexT<T>)ks[i];
       p2 += sqr(ks[i]);
       wp += 2.0 * sqr(sin(kk[i] / 2.0));
     }
@@ -451,7 +451,7 @@ void free_mom_invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
     SpinMatrixT<T> m;
     set_unit(m, mass * lwa);
     SpinMatrixT<T> ipgm = pg;
-    ipgm *= (T)(-ii);
+    ipgm *= (ComplexT<T>)(-ii);
     ipgm += m;
     ipgm *= lwa / (p2 + sqr(mass * lwa));
     WilsonMatrixT<T>& wm_sol = sol.get_elem(kl);

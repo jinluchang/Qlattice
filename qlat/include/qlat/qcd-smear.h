@@ -84,8 +84,8 @@ inline ColorMatrix gf_link_ape_smear_no_comm(const GaugeField& gf,
                                              const double alpha)
 {
   return color_matrix_su_projection(
-      (ComplexT)(1.0 - alpha) * gf.get_elem(xl, mu) +
-      (ComplexT)(alpha / 6.0) * gf_staple_no_comm(gf, xl, mu));
+      (Complex)(1.0 - alpha) * gf.get_elem(xl, mu) +
+      (Complex)(alpha / 6.0) * gf_staple_no_comm(gf, xl, mu));
 }
 
 inline void gf_ape_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
@@ -127,8 +127,8 @@ inline ColorMatrix gf_link_spatial_ape_smear_no_comm(const GaugeField& gf,
 {
   const double multi = mu == 3 ? 6.0 : 4.0;
   return color_matrix_su_projection(
-      (ComplexT)(1.0 - alpha) * gf.get_elem(xl, mu) +
-      (ComplexT)(alpha / multi) * gf_spatial_staple_no_comm(gf, xl, mu));
+      (Complex)(1.0 - alpha) * gf.get_elem(xl, mu) +
+      (Complex)(alpha / multi) * gf_spatial_staple_no_comm(gf, xl, mu));
 }
 
 inline void gf_spatial_ape_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
@@ -184,8 +184,8 @@ inline ColorMatrix gf_link_hyp_smear_3_no_comm(const GaugeField& gf,
              gf.get_elem(coordinate_shifts(xl_mu, -m - 1), m);
     }
   }
-  ret = (ComplexT)(1.0 - alpha3) * gf.get_elem(xl, mu) +
-        (ComplexT)(alpha3 / 2.0) * ret;
+  ret = (Complex)(1.0 - alpha3) * gf.get_elem(xl, mu) +
+        (Complex)(alpha3 / 2.0) * ret;
   return color_matrix_su_projection(ret);
 }
 
@@ -213,8 +213,8 @@ inline ColorMatrix gf_link_hyp_smear_2_no_comm(const GaugeField& gf,
                                          m, mu, nu, alpha3);
     }
   }
-  ret = (ComplexT)(1.0 - alpha2) * gf.get_elem(xl, mu) +
-        (ComplexT)(alpha2 / 4.0) * ret;
+  ret = (Complex)(1.0 - alpha2) * gf.get_elem(xl, mu) +
+        (Complex)(alpha2 / 4.0) * ret;
   return color_matrix_su_projection(ret);
 }
 
@@ -240,8 +240,8 @@ inline ColorMatrix gf_link_hyp_smear_1_no_comm(
                                          m, mu, alpha2, alpha3);
     }
   }
-  ret = (ComplexT)(1.0 - alpha1) * gf.get_elem(xl, mu) +
-        (ComplexT)(alpha1 / 6.0) * ret;
+  ret = (Complex)(1.0 - alpha1) * gf.get_elem(xl, mu) +
+        (Complex)(alpha1 / 6.0) * ret;
   return color_matrix_su_projection(ret);
 }
 

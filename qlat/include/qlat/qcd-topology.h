@@ -24,7 +24,7 @@ qacc ColorMatrix gf_clover_leaf_no_comm(const GaugeField& gf1,
                               make_array<int>(nu, -mu - 1, -nu - 1, mu));
   m += gf_wilson_line_no_comm(gf1, xl,
                               make_array<int>(-nu - 1, mu, nu, -mu - 1));
-  return (ComplexT)0.25 * m;
+  return (Complex)0.25 * m;
 }
 
 qacc ColorMatrix gf_clover_leaf_m_n_no_comm(const GaugeField& gf1,
@@ -46,7 +46,7 @@ qacc ColorMatrix gf_clover_leaf_m_n_no_comm(const GaugeField& gf1,
   cm +=
       gf_wilson_line_no_comm(gf1, xl, make_array<int>(-nu - 1, mu, nu, -mu - 1),
                              make_array<int>(n, m, n, m));
-  return (ComplexT)0.25 * cm;
+  return (Complex)0.25 * cm;
 }
 
 inline void gf_clover_leaf_field_no_comm(CloverLeafField& clf,
@@ -162,7 +162,7 @@ qacc double clf_topology_density(const CloverLeafField& clf,
   const Vector<ColorMatrix> v = clf.get_elems_const(xl);
   array<ColorMatrix, 6> arr;
   for (int i = 0; i < 6; ++i) {
-    arr[i] = (ComplexT)0.5 * (v[i] - matrix_adjoint(v[i]));
+    arr[i] = (Complex)0.5 * (v[i] - matrix_adjoint(v[i]));
   }
   const double fac = -1.0 / (4.0 * PI * PI);
   double sum = 0.0;
