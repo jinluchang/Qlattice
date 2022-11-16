@@ -806,52 +806,52 @@ qacc DATA_TYPE get_data_type<ComplexF>()
   return ComplexF_TYPE;
 }
 template <>
-qacc DATA_TYPE get_data_type<ColorMatrixT<Complex> >()
+qacc DATA_TYPE get_data_type<ColorMatrixT<double> >()
 {
   return ColorMatrix_TYPE;
 }
 template <>
-qacc DATA_TYPE get_data_type<ColorMatrixT<ComplexF> >()
+qacc DATA_TYPE get_data_type<ColorMatrixT<float> >()
 {
   return ColorMatrixF_TYPE;
 }
 template <>
-qacc DATA_TYPE get_data_type<WilsonMatrixT<Complex> >()
+qacc DATA_TYPE get_data_type<WilsonMatrixT<double> >()
 {
   return WilsonMatrix_TYPE;
 }
 template <>
-qacc DATA_TYPE get_data_type<WilsonMatrixT<ComplexF> >()
+qacc DATA_TYPE get_data_type<WilsonMatrixT<float> >()
 {
   return WilsonMatrixF_TYPE;
 }
 template <>
-qacc DATA_TYPE get_data_type<SpinMatrixT<Complex> >()
+qacc DATA_TYPE get_data_type<SpinMatrixT<double> >()
 {
   return SpinMatrix_TYPE;
 }
 template <>
-qacc DATA_TYPE get_data_type<SpinMatrixT<ComplexF> >()
+qacc DATA_TYPE get_data_type<SpinMatrixT<float> >()
 {
   return SpinMatrixF_TYPE;
 }
 template <>
-qacc DATA_TYPE get_data_type<WilsonVectorT<Complex> >()
+qacc DATA_TYPE get_data_type<WilsonVectorT<double> >()
 {
   return WilsonVector_TYPE;
 }
 template <>
-qacc DATA_TYPE get_data_type<WilsonVectorT<ComplexF> >()
+qacc DATA_TYPE get_data_type<WilsonVectorT<float> >()
 {
   return WilsonVectorF_TYPE;
 }
 template <>
-qacc DATA_TYPE get_data_type<NonRelWilsonMatrixT<Complex> >()
+qacc DATA_TYPE get_data_type<NonRelWilsonMatrixT<double> >()
 {
   return NonRelWilsonMatrix_TYPE;
 }
 template <>
-qacc DATA_TYPE get_data_type<NonRelWilsonMatrixT<ComplexF> >()
+qacc DATA_TYPE get_data_type<NonRelWilsonMatrixT<float> >()
 {
   return NonRelWilsonMatrixF_TYPE;
 }
