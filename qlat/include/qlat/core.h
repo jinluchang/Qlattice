@@ -38,9 +38,9 @@
 namespace qlat
 {  //
 
-const int DIMN = 4;
+constexpr int DIMN = 4;
 
-const int NUM_COLOR = 3;
+constexpr int NUM_COLOR = 3;
 
 inline void warn(const std::string& str = "")
 {
@@ -109,58 +109,58 @@ qacc long sqr(const qlat::Coordinate& xg)
          sqr((long)xg[3]);
 }
 
-qacc bool operator==(const Coordinate &c1, const Coordinate &c2)
+qacc bool operator==(const Coordinate& c1, const Coordinate& c2)
 {
   return c1[0] == c2[0] and c1[1] == c2[1] and c1[2] == c2[2] and
          c1[3] == c2[3];
 }
 
-qacc bool operator!=(const Coordinate &c1, const Coordinate &c2)
+qacc bool operator!=(const Coordinate& c1, const Coordinate& c2)
 {
   return !(c1 == c2);
 }
 
-qacc Coordinate operator+(const Coordinate &coor1, const Coordinate &coor2)
+qacc Coordinate operator+(const Coordinate& coor1, const Coordinate& coor2)
 {
   return Coordinate(coor1[0] + coor2[0], coor1[1] + coor2[1],
                     coor1[2] + coor2[2], coor1[3] + coor2[3]);
 }
 
-qacc Coordinate operator-(const Coordinate &coor1, const Coordinate &coor2)
+qacc Coordinate operator-(const Coordinate& coor1, const Coordinate& coor2)
 {
   return Coordinate(coor1[0] - coor2[0], coor1[1] - coor2[1],
                     coor1[2] - coor2[2], coor1[3] - coor2[3]);
 }
 
-qacc Coordinate operator-(const Coordinate &coor)
+qacc Coordinate operator-(const Coordinate& coor)
 {
   return Coordinate(-coor[0], -coor[1], -coor[2], -coor[3]);
 }
 
-qacc Coordinate operator*(const int integer, const Coordinate &coor)
+qacc Coordinate operator*(const int integer, const Coordinate& coor)
 {
   return Coordinate(integer * coor[0], integer * coor[1], integer * coor[2],
                     integer * coor[3]);
 }
 
-qacc Coordinate operator*(const Coordinate &coor, const int integer)
+qacc Coordinate operator*(const Coordinate& coor, const int integer)
 {
   return integer * coor;
 }
 
-qacc Coordinate operator*(const Coordinate &coor1, const Coordinate &coor2)
+qacc Coordinate operator*(const Coordinate& coor1, const Coordinate& coor2)
 {
   return Coordinate(coor1[0] * coor2[0], coor1[1] * coor2[1],
                     coor1[2] * coor2[2], coor1[3] * coor2[3]);
 }
 
-qacc Coordinate operator%(const Coordinate &coor1, const Coordinate &coor2)
+qacc Coordinate operator%(const Coordinate& coor1, const Coordinate& coor2)
 {
   return Coordinate(coor1[0] % coor2[0], coor1[1] % coor2[1],
                     coor1[2] % coor2[2], coor1[3] % coor2[3]);
 }
 
-qacc Coordinate operator%(const Coordinate &coor, const int integer)
+qacc Coordinate operator%(const Coordinate& coor, const int integer)
 {
   return Coordinate(coor[0] % integer, coor[1] % integer, coor[2] % integer,
                     coor[3] % integer);
@@ -708,13 +708,13 @@ qacc bool is_matching_geo_mult(const Geometry& geo1, const Geometry& geo2)
 qacc bool is_matching_geo_included(const Geometry& geo1, const Geometry& geo2)
 {
   bool include = is_matching_geo_mult(geo1, geo2);
-  for(int i=0;i<4;i++) {
-    if(geo2.expansion_left[i] < geo1.expansion_left[i]) {
+  for (int i = 0; i < 4; i++) {
+    if (geo2.expansion_left[i] < geo1.expansion_left[i]) {
       include = false;
     }
   }
-  for(int i=0;i<4;i++) {
-    if(geo2.expansion_right[i] < geo1.expansion_right[i]) {
+  for (int i = 0; i < 4; i++) {
+    if (geo2.expansion_right[i] < geo1.expansion_right[i]) {
       include = false;
     }
   }
@@ -810,7 +810,8 @@ struct API Field {
       }
       initialized = true;
     } else {
-      if (not is_matching_geo_included(geo_remult(geo_, multiplicity_), geo())) {
+      if (not is_matching_geo_included(geo_remult(geo_, multiplicity_),
+                                       geo())) {
         displayln("old geo = " + show(geo()));
         displayln("new geo = " + show(geo_remult(geo_, multiplicity_)));
         qassert(false);
@@ -916,7 +917,8 @@ struct API Field {
     const Geometry& geo_v = geo();
     if (not geo_v.is_on_node(x)) {
 #ifndef QLAT_IN_ACC
-      displayln("Field::get_elems_const: x=" + show(x) + "\ngeo=" + show(geo_v));
+      displayln("Field::get_elems_const: x=" + show(x) +
+                "\ngeo=" + show(geo_v));
 #endif
       qassert(false);
     }
@@ -973,10 +975,7 @@ struct API Field {
 template <class M, int multiplicity>
 struct API FieldM : Field<M> {
   using Field<M>::init;
-  void init(const Geometry& geo_)
-  {
-    Field<M>::init(geo_, multiplicity);
-  }
+  void init(const Geometry& geo_) { Field<M>::init(geo_, multiplicity); }
   void init(const Geometry& geo_, const int multiplicity_)
   {
     qassert(multiplicity == multiplicity_);
@@ -994,8 +993,7 @@ struct API FieldM : Field<M> {
 // --------------------
 
 template <int DIMN, class T>
-struct API ALIGN MatrixT
-{
+struct API ALIGN MatrixT {
   T p[DIMN * DIMN];
   //
   // convert to double array
@@ -1096,21 +1094,16 @@ struct API SpinMatrixT : MatrixT<4, ComplexT<T> > {
   }
 };
 
-#ifndef QLAT_NO_DEFAULT_TYPE
+using ColorMatrix = ColorMatrixT<>;
 
-typedef ColorMatrixT<> ColorMatrix;
+using WilsonMatrix = WilsonMatrixT<>;
 
-typedef WilsonMatrixT<> WilsonMatrix;
-
-typedef SpinMatrixT<> SpinMatrix;
-
-#endif
+using SpinMatrix = SpinMatrixT<>;
 
 // --------------------
 
 template <int DIMN, class T>
-struct API ALIGN MvectorT
-{
+struct API ALIGN MvectorT {
   T p[DIMN];
   //
   // convert to double array
@@ -1191,18 +1184,18 @@ struct API SpinVectorT : MvectorT<4, ComplexT<T> > {
   }
 };
 
-#ifndef QLAT_NO_DEFAULT_TYPE
+using WilsonVector = WilsonVectorT<>;
 
-typedef WilsonVectorT<> WilsonVector;
-
-typedef SpinVectorT<> SpinVector;
-
-#endif
+using SpinVector = SpinVectorT<>;
 
 // --------------------
 
 template <class T = Real>
 struct API GaugeFieldT : FieldM<ColorMatrixT<T>, 4> {
+};
+
+template <class T = Real>
+struct API GaugeTransformT : FieldM<ColorMatrixT<T>, 1> {
 };
 
 template <class T = Real>
@@ -1217,21 +1210,32 @@ template <class T = Real>
 struct API FermionField5dT : Field<WilsonVectorT<T> > {
 };
 
-#ifndef QLAT_NO_DEFAULT_TYPE
+using GaugeField = GaugeFieldT<>;
 
-typedef GaugeFieldT<> GaugeField;
+using GaugeTransform = GaugeTransformT<>;
 
-typedef Propagator4dT<> Propagator4d;
+using Propagator4d = Propagator4dT<>;
 
-typedef FermionField4dT<> FermionField4d;
+using FermionField4d = FermionField4dT<>;
 
-typedef FermionField5dT<> FermionField5d;
-
-#endif
-
-struct GaugeTransform : FieldM<ColorMatrix, 1> {
-};
+using FermionField5d = FermionField5dT<>;
 
 // --------------------
+
+
+
+
+
+// --------------------
+
+
+
+
+// --------------------
+
+
+
+
+
 
 }  // namespace qlat
