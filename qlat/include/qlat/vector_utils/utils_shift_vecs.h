@@ -890,11 +890,11 @@ void shift_fieldM(shift_vec& svec, std::vector<Propagator4dT<Ty >* >& src, std::
   if(src.size() < 1)return;
   int biva_or = src.size();
 
-  std::vector<Ty* > srcP;std::vector<Ty* > resP;
+  std::vector<ComplexT<Ty>* > srcP;std::vector<ComplexT<Ty>* > resP;
   srcP.resize(biva_or);resP.resize(biva_or);
   for(int bi=0;bi<biva_or;bi++){
-    srcP[bi] = (Ty*) qlat::get_data(*src[bi]).data();
-    resP[bi] = (Ty*) qlat::get_data(*res[bi]).data();
+    srcP[bi] = (ComplexT<Ty>*) qlat::get_data(*src[bi]).data();
+    resP[bi] = (ComplexT<Ty>*) qlat::get_data(*res[bi]).data();
   }
   svec.shift_vecs(srcP, resP, iDir , 12*12);
 }
