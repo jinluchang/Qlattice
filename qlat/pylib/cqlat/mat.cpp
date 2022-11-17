@@ -254,7 +254,7 @@ EXPORT(set_state_wm, {
   WilsonMatrix& obj = py_convert_type<WilsonMatrix>(p_obj);
   const char* buffer = PyBytes_AsString(p_obj1);
   const long len = PyBytes_Size(p_obj1);
-  pqassert(len == sizeof(WilsonMatrix));
+  qassert(len == sizeof(WilsonMatrix));
   std::memcpy((void*)&obj, (void*)buffer, len);
   Py_RETURN_NONE;
 })
@@ -279,7 +279,7 @@ EXPORT(set_state_sm, {
   SpinMatrix& obj = py_convert_type<SpinMatrix>(p_obj);
   const char* buffer = PyBytes_AsString(p_obj1);
   const long len = PyBytes_Size(p_obj1);
-  pqassert(len == sizeof(SpinMatrix));
+  qassert(len == sizeof(SpinMatrix));
   std::memcpy((void*)&obj, (void*)buffer, len);
   Py_RETURN_NONE;
 })

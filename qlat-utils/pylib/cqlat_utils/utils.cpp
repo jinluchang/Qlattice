@@ -10,9 +10,9 @@ EXPORT(random_permute, {
     return NULL;
   }
   const RngState& rs = py_convert_type<RngState>(p_rng);
-  pqassert(PyList_Check(p_list));
+  qassert(PyList_Check(p_list));
   const long len = PyList_Size(p_list);
-  pqassert(len >= 0);
+  qassert(len >= 0);
   std::vector<PyObject*> vec(len);
   for (long i = 0; i < len; ++i) {
     vec[i] = PyList_GetItem(p_list, i);

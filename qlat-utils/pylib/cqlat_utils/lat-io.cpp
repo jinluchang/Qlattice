@@ -148,7 +148,7 @@ EXPORT(get_dim_name_lat_data, {
     return NULL;
   }
   LatData& ld = py_convert_type<LatData>(p_ld);
-  pqassert(0 <= dim and dim < (long)ld.info.size());
+  qassert(0 <= dim and dim < (long)ld.info.size());
   return py_convert(ld.info[dim].name);
 })
 
@@ -160,7 +160,7 @@ EXPORT(get_dim_size_lat_data, {
     return NULL;
   }
   LatData& ld = py_convert_type<LatData>(p_ld);
-  pqassert(0 <= dim and dim < (long)ld.info.size());
+  qassert(0 <= dim and dim < (long)ld.info.size());
   return py_convert(ld.info[dim].size);
 })
 
@@ -172,7 +172,7 @@ EXPORT(get_dim_indices_lat_data, {
     return NULL;
   }
   LatData& ld = py_convert_type<LatData>(p_ld);
-  pqassert(0 <= dim and dim < (long)ld.info.size());
+  qassert(0 <= dim and dim < (long)ld.info.size());
   return py_convert(ld.info[dim].indices);
 })
 
@@ -212,7 +212,7 @@ EXPORT(set_dim_name_lat_data, {
   }
   LatData& ld = py_convert_type<LatData>(p_ld);
   long ndim = ld.info.size();
-  pqassert(0 <= dim and dim < ndim);
+  qassert(0 <= dim and dim < ndim);
   py_convert(ld.info[dim].name, p_name);
   if (NULL == p_indices) {
     clear(ld.info[dim].indices);

@@ -112,8 +112,8 @@ API inline RngState& getGlobalRngState()
 
 inline void setType(RngState& rs, const unsigned long type)
 {
-  pqassert(ULONG_MAX == rs.type);
-  pqassert(ULONG_MAX != type);
+  qassert(ULONG_MAX == rs.type);
+  qassert(ULONG_MAX != type);
   rs.type = type;
   rs.cacheAvail = 0;
   rs.gaussianAvail = false;
@@ -130,12 +130,12 @@ inline void splitTwoUint32(uint32_t& a, uint32_t& b, const uint64_t x)
 {
   b = (uint32_t)x;
   a = (uint32_t)(x >> 32);
-  pqassert(x == patchTwoUint32(a, b));
+  qassert(x == patchTwoUint32(a, b));
 }
 
 inline void exportRngState(uint32_t* v, const RngState& rs)
 {
-  pqassert(24 == RNG_STATE_NUM_OF_INT32);
+  qassert(24 == RNG_STATE_NUM_OF_INT32);
   splitTwoUint32(v[0], v[1], rs.numBytes);
   for (int i = 0; i < 8; ++i) {
     v[2 + i] = rs.hash[i];
@@ -157,7 +157,7 @@ inline void exportRngState(uint32_t* v, const RngState& rs)
 
 inline void importRngState(RngState& rs, const uint32_t* v)
 {
-  pqassert(24 == RNG_STATE_NUM_OF_INT32);
+  qassert(24 == RNG_STATE_NUM_OF_INT32);
   rs.numBytes = patchTwoUint32(v[0], v[1]);
   for (int i = 0; i < 8; ++i) {
     rs.hash[i] = v[2 + i];
@@ -185,7 +185,7 @@ inline void exportRngState(std::vector<uint32_t>& v, const RngState& rs)
 
 inline void importRngState(RngState& rs, const std::vector<uint32_t>& v)
 {
-  pqassert(RNG_STATE_NUM_OF_INT32 == v.size());
+  qassert(RNG_STATE_NUM_OF_INT32 == v.size());
   importRngState(rs, v.data());
 }
 
@@ -282,7 +282,7 @@ inline void computeHashWithInput(uint32_t hash[8], const RngState& rs,
 
 inline uint64_t randGen(RngState& rs)
 {
-  pqassert(0 <= rs.cacheAvail && rs.cacheAvail <= 3);
+  qassert(0 <= rs.cacheAvail && rs.cacheAvail <= 3);
   rs.index += 1;
   if (rs.cacheAvail > 0) {
     rs.cacheAvail -= 1;

@@ -62,13 +62,13 @@ inline void py_convert(PyObject*& out, PyObject* in) { out = in; }
 
 inline void py_convert(int& out, PyObject* in)
 {
-  pqassert(PyLong_Check(in));
+  qassert(PyLong_Check(in));
   out = PyLong_AsLong(in);
 }
 
 inline void py_convert(long& out, PyObject* in)
 {
-  pqassert(PyLong_Check(in));
+  qassert(PyLong_Check(in));
   out = PyLong_AsLong(in);
 }
 
@@ -79,7 +79,7 @@ inline void py_convert(double& out, PyObject* in)
   } else if (PyLong_Check(in)) {
     out = PyLong_AsLong(in);
   } else {
-    pqassert(false);
+    qassert(false);
   }
 }
 
@@ -90,7 +90,7 @@ inline void py_convert(Complex& out, PyObject* in)
   } else if (PyFloat_Check(in)) {
     out = PyFloat_AsDouble(in);
   } else {
-    pqassert(PyComplex_Check(in));
+    qassert(PyComplex_Check(in));
     Py_complex& py_out = (Py_complex&)out;
     py_out = PyComplex_AsCComplex(in);
   }
@@ -98,7 +98,7 @@ inline void py_convert(Complex& out, PyObject* in)
 
 inline void py_convert(bool& out, PyObject* in)
 {
-  pqassert(PyBool_Check(in));
+  qassert(PyBool_Check(in));
   out = in == Py_True;
 }
 
@@ -111,11 +111,11 @@ inline void py_convert(std::string& s, PyObject* in)
     s = std::string(PyBytes_AsString(in), size);
   } else if (PyUnicode_Check(in)) {
     PyObject* temp = PyUnicode_AsEncodedString(in, "UTF-8", "strict");
-    pqassert(temp);
+    qassert(temp);
     s = PyBytes_AS_STRING(temp);
     Py_DECREF(temp);
   } else {
-    pqassert(false);
+    qassert(false);
   }
 }
 
@@ -133,7 +133,7 @@ void py_convert(std::vector<M>& out, PyObject* in)
       py_convert(out[i], PyTuple_GetItem(in, i));
     }
   } else {
-    pqassert(false);
+    qassert(false);
   }
 }
 
@@ -155,7 +155,7 @@ inline void py_convert<bool>(std::vector<bool>& out, PyObject* in)
       out[i] = v;
     }
   } else {
-    pqassert(false);
+    qassert(false);
   }
 }
 
@@ -163,17 +163,17 @@ template <class M>
 void py_convert(Vector<M> out, PyObject* in)
 {
   if (PyList_Check(in)) {
-    pqassert(out.size() == PyList_Size(in));
+    qassert(out.size() == PyList_Size(in));
     for (long i = 0; i < out.size(); i++) {
       py_convert(out[i], PyList_GetItem(in, i));
     }
   } else if (PyTuple_Check(in)) {
-    pqassert(out.size() == PyTuple_Size(in));
+    qassert(out.size() == PyTuple_Size(in));
     for (long i = 0; i < out.size(); i++) {
       py_convert(out[i], PyTuple_GetItem(in, i));
     }
   } else {
-    pqassert(false);
+    qassert(false);
   }
 }
 
@@ -181,17 +181,17 @@ template <class M, unsigned long N>
 void py_convert(array<M, N>& out, PyObject* in)
 {
   if (PyList_Check(in)) {
-    pqassert(out.size() == PyList_Size(in));
+    qassert(out.size() == PyList_Size(in));
     for (long i = 0; i < out.size(); i++) {
       py_convert(out[i], PyList_GetItem(in, i));
     }
   } else if (PyTuple_Check(in)) {
-    pqassert(out.size() == PyTuple_Size(in));
+    qassert(out.size() == PyTuple_Size(in));
     for (long i = 0; i < out.size(); i++) {
       py_convert(out[i], PyTuple_GetItem(in, i));
     }
   } else {
-    pqassert(false);
+    qassert(false);
   }
 }
 

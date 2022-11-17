@@ -65,7 +65,7 @@ PyObject* set_elems_field_ctype(PyObject* p_field, const Coordinate& xg,
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
   const int multiplicity = f.geo().multiplicity;
-  pqassert((long)PyBytes_Size(p_val) == (long)multiplicity * (long)sizeof(M));
+  qassert((long)PyBytes_Size(p_val) == (long)multiplicity * (long)sizeof(M));
   const Vector<M> val((M*)PyBytes_AsString(p_val), multiplicity);
   field_set_elems(f, xg, val);
   Py_RETURN_NONE;
@@ -76,7 +76,7 @@ PyObject* set_elem_field_ctype(PyObject* p_field, const Coordinate& xg,
                                const int m, PyObject* p_val)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
-  pqassert(PyBytes_Size(p_val) == sizeof(M));
+  qassert(PyBytes_Size(p_val) == sizeof(M));
   const M& val = *(M*)PyBytes_AsString(p_val);
   if (m >= 0) {
     field_set_elem(f, xg, m, val);
@@ -110,7 +110,7 @@ PyObject* set_elems_field_ctype(PyObject* p_field, const long index,
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
   const int multiplicity = f.geo().multiplicity;
-  pqassert((long)PyBytes_Size(p_val) == (long)multiplicity * (long)sizeof(M));
+  qassert((long)PyBytes_Size(p_val) == (long)multiplicity * (long)sizeof(M));
   const Vector<M> val((M*)PyBytes_AsString(p_val), multiplicity);
   assign(f.get_elems(index), val);
   Py_RETURN_NONE;
@@ -121,7 +121,7 @@ PyObject* set_elem_field_ctype(PyObject* p_field, const long index,
                                const int m, PyObject* p_val)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
-  pqassert(PyBytes_Size(p_val) == sizeof(M));
+  qassert(PyBytes_Size(p_val) == sizeof(M));
   const M& val = *(M*)PyBytes_AsString(p_val);
   if (m >= 0) {
     f.get_elem(index, m) = val;
@@ -214,7 +214,7 @@ PyObject* fft_fields_ctype(const std::vector<PyObject*> p_field_vec,
   } else if (use_plan == 1) {
     fft_fieldM(vec, fft_direction, ft4D);
   } else {
-    pqassert(false);
+    qassert(false);
   }
   Py_RETURN_NONE;
 }
@@ -246,7 +246,7 @@ PyObject* split_fields_field_ctype(const std::vector<PyObject*>& p_f_vec,
   const int nf = p_f_vec.size();
   std::vector<Handle<Field<M> > > vec(nf);
   for (int i = 0; i < nf; ++i) {
-    pqassert(py_get_ctype(p_f_vec[i]) == ctype);
+    qassert(py_get_ctype(p_f_vec[i]) == ctype);
     Field<M>& fi = py_convert_type_field<M>(p_f_vec[i]);
     vec[i].init(fi);
   }
@@ -263,7 +263,7 @@ PyObject* merge_fields_field_ctype(PyObject* p_field,
   const int nf = p_f_vec.size();
   std::vector<ConstHandle<Field<M> > > vec(nf);
   for (int i = 0; i < nf; ++i) {
-    pqassert(py_get_ctype(p_f_vec[i]) == ctype);
+    qassert(py_get_ctype(p_f_vec[i]) == ctype);
     const Field<M>& fi = py_convert_type_field<M>(p_f_vec[i]);
     vec[i].init(fi);
   }
@@ -281,7 +281,7 @@ PyObject* merge_fields_ms_ctype(PyObject* p_field,
   const int multiplicity = p_f_vec.size();
   std::vector<ConstHandle<Field<M> > > vec(multiplicity);
   for (int m = 0; m < multiplicity; ++m) {
-    pqassert(py_get_ctype(p_f_vec[m]) == ctype);
+    qassert(py_get_ctype(p_f_vec[m]) == ctype);
     const Field<M>& fm = py_convert_type_field<M>(p_f_vec[m]);
     vec[m].init(fm);
   }
@@ -408,7 +408,7 @@ EXPORT(assign_as_field, {
     FIELD_DISPATCH(p_ret, assign_as_field_ctype, ctype1, f, p_field1);
   } else {
     displayln("assign_as_field: " + ctype + " " + ctype1);
-    pqassert(false);
+    qassert(false);
   }
   return p_ret;
 })
@@ -440,7 +440,7 @@ EXPORT(assign_from_field, {
     FIELD_DISPATCH(p_ret, assign_from_field_ctype, ctype, p_field, f1);
   } else {
     displayln("assign_from_field: " + ctype + " " + ctype1);
-    pqassert(false);
+    qassert(false);
   }
   return p_ret;
 })
@@ -595,16 +595,16 @@ EXPORT(fft_fields, {
   }
   const std::vector<PyObject*> p_f_vec =
       py_convert_data<std::vector<PyObject*> >(p_field_vec);
-  pqassert(p_f_vec.size() >= 1);
+  qassert(p_f_vec.size() >= 1);
   const std::string ctype = py_get_ctype(p_f_vec[0]);
   for (long i = 0; i < (long)p_f_vec.size(); ++i) {
-    pqassert(ctype == py_get_ctype(p_f_vec[i]));
+    qassert(ctype == py_get_ctype(p_f_vec[i]));
   }
   const std::vector<int> fft_dirs =
       py_convert_data<std::vector<int> >(p_fft_dirs);
   const std::vector<bool> fft_is_forwards =
       py_convert_data<std::vector<bool> >(p_fft_is_forwards);
-  pqassert(fft_dirs.size() == fft_is_forwards.size());
+  qassert(fft_dirs.size() == fft_is_forwards.size());
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, fft_fields_ctype, ctype, p_f_vec, fft_dirs,
                  fft_is_forwards, mode_fft);
@@ -620,7 +620,7 @@ EXPORT(field_shift_field, {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_field);
-  pqassert(py_get_ctype(p_field_new) == py_get_ctype(p_field));
+  qassert(py_get_ctype(p_field_new) == py_get_ctype(p_field));
   const Coordinate shift = py_convert_data<Coordinate>(p_shift);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, field_shift_field_ctype, ctype, p_field_new, p_field,
@@ -712,7 +712,7 @@ EXPORT(set_sqrt_double_field, {
   Field<double>& f = py_convert_type_field<double>(p_field);
   const Field<double>& f1 = py_convert_type_field<double>(p_field1);
   const Geometry geo = geo_resize(f1.geo());
-  pqassert(geo.is_only_local);
+  qassert(geo.is_only_local);
   f.init();
   f.init(geo);
   qacc_for(index, geo.local_volume(), {

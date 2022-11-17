@@ -26,8 +26,8 @@ EXPORT(mk_fermion_action_zmobius, {
   const int ls = omega.size();
   FermionAction* pfa = new FermionAction(mass, ls, m5, 0.0, true, true);
   FermionAction& fa = *pfa;
-  pqassert(fa.bs.size() == omega.size());
-  pqassert(fa.cs.size() == omega.size());
+  qassert(fa.bs.size() == omega.size());
+  qassert(fa.cs.size() == omega.size());
   for (int i = 0; i < (int)omega.size(); ++i) {
     fa.bs[i] = 0.5 * (1.0 / omega[i] + 1.0);
     fa.cs[i] = fa.bs[i] - 1.0;
@@ -101,9 +101,9 @@ EXPORT(get_mobius_scale_fermion_action, {
   }
   const FermionAction& fa = py_convert_type<FermionAction>(p_fa);
   if (fa.is_using_zmobius) {
-    pqassert(fa.mobius_scale == 0.0);
+    qassert(fa.mobius_scale == 0.0);
   } else {
-    pqassert(fa.mobius_scale != 0.0);
+    qassert(fa.mobius_scale != 0.0);
   }
   return py_convert(fa.mobius_scale);
 })

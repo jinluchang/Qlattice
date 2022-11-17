@@ -7,7 +7,6 @@
 #include <thrust/complex.h>
 #endif
 
-
 namespace qlat
 {  //
 

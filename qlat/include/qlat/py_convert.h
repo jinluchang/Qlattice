@@ -4,38 +4,39 @@
 #include <qlat-utils/py_convert.h>
 #include <qlat/qlat.h>
 
-#define FIELD_DISPATCH(p_ret, fname, ctype, ...)                            \
-  {                                                                         \
-    if ("ColorMatrix" == (ctype)) {                                         \
-      (p_ret) = fname<ColorMatrix>(__VA_ARGS__);                            \
-    } else if ("WilsonMatrix" == (ctype)) {                                 \
-      (p_ret) = fname<WilsonMatrix>(__VA_ARGS__);                           \
-    } else if ("NonRelWilsonMatrix" == (ctype)) {                           \
-      (p_ret) = fname<NonRelWilsonMatrix>(__VA_ARGS__);                     \
-    } else if ("SpinMatrix" == (ctype)) {                                   \
-      (p_ret) = fname<SpinMatrix>(__VA_ARGS__);                             \
-    } else if ("WilsonVector" == (ctype)) {                                 \
-      (p_ret) = fname<WilsonVector>(__VA_ARGS__);                           \
-    } else if ("Complex" == (ctype)) {                                      \
-      (p_ret) = fname<Complex>(__VA_ARGS__);                                \
-    } else if ("ComplexF" == (ctype)) {                                     \
-      (p_ret) = fname<ComplexF>(__VA_ARGS__);                               \
-    } else if ("double" == (ctype)) {                                       \
-      (p_ret) = fname<double>(__VA_ARGS__);                                 \
-    } else if ("float" == (ctype)) {                                        \
-      (p_ret) = fname<float>(__VA_ARGS__);                                  \
-    } else if ("long" == (ctype)) {                                         \
-      (p_ret) = fname<long>(__VA_ARGS__);                                   \
-    } else if ("int64_t" == (ctype)) {                                      \
-      (p_ret) = fname<int64_t>(__VA_ARGS__);                                \
-    } else if ("char" == (ctype)) {                                         \
-      (p_ret) = fname<char>(__VA_ARGS__);                                   \
-    } else if ("int8_t" == (ctype)) {                                       \
-      (p_ret) = fname<int8_t>(__VA_ARGS__);                                 \
-    } else {                                                                \
-      pqerr("%s %s='%s' does not exist.", #fname, #ctype, (ctype).c_str()); \
-      (p_ret) = NULL;                                                       \
-    }                                                                       \
+#define FIELD_DISPATCH(p_ret, fname, ctype, ...)                        \
+  {                                                                     \
+    if ("ColorMatrix" == (ctype)) {                                     \
+      (p_ret) = fname<ColorMatrix>(__VA_ARGS__);                        \
+    } else if ("WilsonMatrix" == (ctype)) {                             \
+      (p_ret) = fname<WilsonMatrix>(__VA_ARGS__);                       \
+    } else if ("NonRelWilsonMatrix" == (ctype)) {                       \
+      (p_ret) = fname<NonRelWilsonMatrix>(__VA_ARGS__);                 \
+    } else if ("SpinMatrix" == (ctype)) {                               \
+      (p_ret) = fname<SpinMatrix>(__VA_ARGS__);                         \
+    } else if ("WilsonVector" == (ctype)) {                             \
+      (p_ret) = fname<WilsonVector>(__VA_ARGS__);                       \
+    } else if ("Complex" == (ctype)) {                                  \
+      (p_ret) = fname<Complex>(__VA_ARGS__);                            \
+    } else if ("ComplexF" == (ctype)) {                                 \
+      (p_ret) = fname<ComplexF>(__VA_ARGS__);                           \
+    } else if ("double" == (ctype)) {                                   \
+      (p_ret) = fname<double>(__VA_ARGS__);                             \
+    } else if ("float" == (ctype)) {                                    \
+      (p_ret) = fname<float>(__VA_ARGS__);                              \
+    } else if ("long" == (ctype)) {                                     \
+      (p_ret) = fname<long>(__VA_ARGS__);                               \
+    } else if ("int64_t" == (ctype)) {                                  \
+      (p_ret) = fname<int64_t>(__VA_ARGS__);                            \
+    } else if ("char" == (ctype)) {                                     \
+      (p_ret) = fname<char>(__VA_ARGS__);                               \
+    } else if ("int8_t" == (ctype)) {                                   \
+      (p_ret) = fname<int8_t>(__VA_ARGS__);                             \
+    } else {                                                            \
+      qerr(qlat::ssprintf("%s %s='%s' does not exist.", #fname, #ctype, \
+                          (ctype).c_str()));                            \
+      (p_ret) = NULL;                                                   \
+    }                                                                   \
   }
 
 namespace qlat
@@ -74,34 +75,34 @@ inline bool check_ctype_name<WilsonVector>(const std::string& ctype)
 inline void py_convert(Coordinate& out, PyObject* in)
 {
   if (PyList_Check(in)) {
-    pqassert(DIMN == PyList_Size(in));
+    qassert(DIMN == PyList_Size(in));
     for (size_t i = 0; i < out.size(); i++) {
       py_convert(out[i], PyList_GetItem(in, i));
     }
   } else if (PyTuple_Check(in)) {
-    pqassert(DIMN == PyTuple_Size(in));
+    qassert(DIMN == PyTuple_Size(in));
     for (size_t i = 0; i < out.size(); i++) {
       py_convert(out[i], PyTuple_GetItem(in, i));
     }
   } else {
-    pqassert(false);
+    qassert(false);
   }
 }
 
 inline void py_convert(CoordinateD& out, PyObject* in)
 {
   if (PyList_Check(in)) {
-    pqassert(DIMN == PyList_Size(in));
+    qassert(DIMN == PyList_Size(in));
     for (size_t i = 0; i < out.size(); i++) {
       py_convert(out[i], PyList_GetItem(in, i));
     }
   } else if (PyTuple_Check(in)) {
-    pqassert(DIMN == PyTuple_Size(in));
+    qassert(DIMN == PyTuple_Size(in));
     for (size_t i = 0; i < out.size(); i++) {
       py_convert(out[i], PyTuple_GetItem(in, i));
     }
   } else {
-    pqassert(false);
+    qassert(false);
   }
 }
 
@@ -133,7 +134,7 @@ Field<M>& py_convert_type_field(PyObject* in)
 // py_convert_type<Field<M> >(in);
 {
   const std::string ctype = py_get_ctype(in);
-  pqassert(check_ctype_name<M>(ctype));
+  qassert(check_ctype_name<M>(ctype));
   Field<M>& f = py_convert_type<Field<M> >(in);
   return f;
 }
@@ -143,10 +144,10 @@ FieldM<M, multiplicity>& py_convert_type_field(PyObject* in)
 // py_convert_type<FieldM<M, multiplicity> >(in);
 {
   const std::string ctype = py_get_ctype(in);
-  pqassert(check_ctype_name<M>(ctype));
+  qassert(check_ctype_name<M>(ctype));
   FieldM<M, multiplicity>& f = py_convert_type<FieldM<M, multiplicity> >(in);
   if (is_initialized(f)) {
-    pqassert(multiplicity == f.geo().multiplicity);
+    qassert(multiplicity == f.geo().multiplicity);
   }
   return f;
 }
@@ -157,7 +158,7 @@ SelectedField<M>& py_convert_type_sfield(PyObject* in)
 // py_convert_type<SelectedField<M> >(in);
 {
   const std::string ctype = py_get_ctype(in);
-  pqassert(check_ctype_name<M>(ctype));
+  qassert(check_ctype_name<M>(ctype));
   SelectedField<M>& f = py_convert_type<SelectedField<M> >(in);
   return f;
 }
@@ -168,7 +169,7 @@ SelectedPoints<M>& py_convert_type_spoints(PyObject* in)
 // py_convert_type<SelectedPoints<M> >(in);
 {
   const std::string ctype = py_get_ctype(in);
-  pqassert(check_ctype_name<M>(ctype));
+  qassert(check_ctype_name<M>(ctype));
   SelectedPoints<M>& f = py_convert_type<SelectedPoints<M> >(in);
   return f;
 }

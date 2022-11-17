@@ -187,7 +187,7 @@ PyObject* set_elems_spfield_ctype(PyObject* p_field, const long idx,
 {
   SelectedPoints<M>& f = py_convert_type_spoints<M>(p_field);
   const int multiplicity = f.multiplicity;
-  pqassert((long)PyBytes_Size(p_val) == (long)multiplicity * (long)sizeof(M));
+  qassert((long)PyBytes_Size(p_val) == (long)multiplicity * (long)sizeof(M));
   const Vector<M> val((M*)PyBytes_AsString(p_val), multiplicity);
   assign(f.get_elems(idx), val);
   Py_RETURN_NONE;
@@ -198,7 +198,7 @@ PyObject* set_elem_spfield_ctype(PyObject* p_field, const long idx,
                                 const int m, PyObject* p_val)
 {
   SelectedPoints<M>& f = py_convert_type_spoints<M>(p_field);
-  pqassert(PyBytes_Size(p_val) == sizeof(M));
+  qassert(PyBytes_Size(p_val) == sizeof(M));
   const M& val = *(M*)PyBytes_AsString(p_val);
   f.get_elem(idx, m) = val;
   Py_RETURN_NONE;
@@ -287,7 +287,7 @@ EXPORT(set_spfield, {
   }
   PyField pf_new = py_convert_field(p_spfield_new);
   PyField pf = py_convert_field(p_spfield);
-  pqassert(pf_new.ctype == pf.ctype);
+  qassert(pf_new.ctype == pf.ctype);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_spfield_ctype, pf.ctype, pf_new, pf);
   return p_ret;
@@ -303,7 +303,7 @@ EXPORT(set_spfield_field, {
   PyField pspf = py_convert_field(p_spfield);
   const PointSelection& psel = py_convert_type<PointSelection>(p_spfield, "psel");
   PyField pf = py_convert_field(p_field);
-  pqassert(pspf.ctype == pf.ctype);
+  qassert(pspf.ctype == pf.ctype);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_spfield_field_ctype, pf.ctype, pspf, pf, psel);
   return p_ret;
@@ -320,7 +320,7 @@ EXPORT(set_spfield_sfield, {
   const PointSelection& psel = py_convert_type<PointSelection>(p_spfield, "psel");
   PyField psf = py_convert_field(p_sfield);
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_sfield, "fsel");
-  pqassert(pspf.ctype == psf.ctype);
+  qassert(pspf.ctype == psf.ctype);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_spfield_sfield_ctype, psf.ctype, pspf, psf, psel, fsel);
   return p_ret;
@@ -336,7 +336,7 @@ EXPORT(set_field_spfield, {
   PyField pf = py_convert_field(p_field);
   PyField pspf = py_convert_field(p_spfield);
   const PointSelection& psel = py_convert_type<PointSelection>(p_spfield, "psel");
-  pqassert(pspf.ctype == pf.ctype);
+  qassert(pspf.ctype == pf.ctype);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_field_spfield_ctype, pf.ctype, pf, pspf, psel);
   return p_ret;
@@ -350,7 +350,7 @@ EXPORT(set_sfield_spfield, {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_spfield);
-  pqassert(ctype == py_get_ctype(p_sfield));
+  qassert(ctype == py_get_ctype(p_sfield));
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_sfield, "fsel");
   const PointSelection& psel = py_convert_type<PointSelection>(p_spfield, "psel");
   PyObject* p_ret = NULL;
@@ -367,7 +367,7 @@ EXPORT(set_add_spfield, {
   }
   PyField pf_new = py_convert_field(p_field_new);
   PyField pf = py_convert_field(p_field);
-  pqassert(pf_new.ctype == pf.ctype);
+  qassert(pf_new.ctype == pf.ctype);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_add_spfield_ctype, pf.ctype, pf_new, pf);
   return p_ret;
@@ -382,7 +382,7 @@ EXPORT(set_sub_spfield, {
   }
   PyField pf_new = py_convert_field(p_field_new);
   PyField pf = py_convert_field(p_field);
-  pqassert(pf_new.ctype == pf.ctype);
+  qassert(pf_new.ctype == pf.ctype);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_sub_spfield_ctype, pf.ctype, pf_new, pf);
   return p_ret;
@@ -421,7 +421,7 @@ EXPORT(acc_field_spfield, {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_spfield);
-  pqassert(ctype == py_get_ctype(p_field));
+  qassert(ctype == py_get_ctype(p_field));
   const PointSelection& psel = py_convert_type<PointSelection>(p_spfield, "psel");
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, acc_field_spfield_ctype, ctype, p_field, p_spfield, psel);

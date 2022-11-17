@@ -135,7 +135,7 @@ EXPORT(gf_twist_boundary_at_boundary, {
     return NULL;
   }
   GaugeField& gf = py_convert_type<GaugeField>(p_gf);
-  pqassert(0 <= mu and mu < 4);
+  qassert(0 <= mu and mu < 4);
   twist_boundary_at_boundary(gf, lmom, mu);
   Py_RETURN_NONE;
 })

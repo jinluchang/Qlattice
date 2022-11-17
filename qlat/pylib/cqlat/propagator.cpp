@@ -68,7 +68,7 @@ EXPORT(set_rand_u1_sol_psel, {
       py_convert_type<SelectedPoints<WilsonMatrix> >(p_sp_prop);
   const Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
   const FieldM<Complex, 1>& fu1 = py_convert_type_field<Complex, 1>(p_fu1);
-  pqassert(fu1.geo().multiplicity == 1);
+  qassert(fu1.geo().multiplicity == 1);
   const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
   set_rand_u1_sol_psel(sp_prop, prop, fu1, psel);
   Py_RETURN_NONE;
@@ -106,7 +106,7 @@ EXPORT(set_rand_u1_sol_fsel, {
       py_convert_type<SelectedField<WilsonMatrix> >(p_sf_prop);
   const Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
   const FieldM<Complex, 1>& fu1 = py_convert_type_field<Complex, 1>(p_fu1);
-  pqassert(fu1.geo().multiplicity == 1);
+  qassert(fu1.geo().multiplicity == 1);
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   set_rand_u1_sol_fsel(sf_prop, prop, fu1, fsel);
   Py_RETURN_NONE;
@@ -224,7 +224,7 @@ EXPORT(free_scalar_invert_mom_cfield, {
   if (!PyArg_ParseTuple(args, "Od", &p_field, &mass)) {
     return NULL;
   }
-  pqassert("Complex" == py_get_ctype(p_field));
+  qassert("Complex" == py_get_ctype(p_field));
   Field<Complex>& f = py_convert_type_field<Complex>(p_field);
   const CoordinateD momtwist;
   prop_free_scalar_invert(f, mass, momtwist);

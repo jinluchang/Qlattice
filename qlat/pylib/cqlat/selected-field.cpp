@@ -16,7 +16,7 @@ PyObject* mk_sfield_fsel_ctype(const FieldSelection& fsel, const int multiplicit
 {
   SelectedField<M>* pf = new SelectedField<M>();
   SelectedField<M>& f = *pf;
-  pqassert(multiplicity > 0);
+  qassert(multiplicity > 0);
   f.init(fsel, multiplicity);
   return py_convert((void*)pf);
 }
@@ -205,7 +205,7 @@ PyObject* set_elems_sfield_ctype(PyObject* p_field, const long idx,
 {
   SelectedField<M>& f = py_convert_type_sfield<M>(p_field);
   const int multiplicity = f.geo().multiplicity;
-  pqassert((long)PyBytes_Size(p_val) == (long)multiplicity * (long)sizeof(M));
+  qassert((long)PyBytes_Size(p_val) == (long)multiplicity * (long)sizeof(M));
   const Vector<M> val((M*)PyBytes_AsString(p_val), multiplicity);
   assign(f.get_elems(idx), val);
   Py_RETURN_NONE;
@@ -216,7 +216,7 @@ PyObject* set_elem_sfield_ctype(PyObject* p_field, const long idx,
                                 const int m, PyObject* p_val)
 {
   SelectedField<M>& f = py_convert_type_sfield<M>(p_field);
-  pqassert(PyBytes_Size(p_val) == sizeof(M));
+  qassert(PyBytes_Size(p_val) == sizeof(M));
   const M& val = *(M*)PyBytes_AsString(p_val);
   f.get_elem(idx, m) = val;
   Py_RETURN_NONE;
@@ -296,7 +296,7 @@ PyObject* to_from_endianness_sfield_ctype(PyObject* pf,
   } else if ("little_64" == endianness_tag) {
     to_from_little_endian_64(get_data(f));
   } else {
-    pqassert(false);
+    qassert(false);
   }
   Py_RETURN_NONE;
 }
@@ -363,7 +363,7 @@ EXPORT(set_sfield, {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_sfield);
-  pqassert(py_get_ctype(p_sfield_new) == ctype);
+  qassert(py_get_ctype(p_sfield_new) == ctype);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_sfield_ctype, ctype, p_sfield_new, p_sfield);
   return p_ret;
@@ -377,7 +377,7 @@ EXPORT(set_sfield_field, {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_field);
-  pqassert(py_get_ctype(p_sfield) == ctype);
+  qassert(py_get_ctype(p_sfield) == ctype);
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_sfield, "fsel");
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_sfield_field_ctype, ctype, p_sfield, p_field, fsel);
@@ -392,7 +392,7 @@ EXPORT(set_field_sfield, {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_field);
-  pqassert(py_get_ctype(p_sfield) == ctype);
+  qassert(py_get_ctype(p_sfield) == ctype);
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_sfield, "fsel");
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_field_sfield_ctype, ctype, p_field, p_sfield, fsel);
@@ -407,7 +407,7 @@ EXPORT(set_sfield_sfield, {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_sfield);
-  pqassert(py_get_ctype(p_sfield0) == ctype);
+  qassert(py_get_ctype(p_sfield0) == ctype);
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_sfield, "fsel");
   const FieldSelection& fsel0 = py_convert_type<FieldSelection>(p_sfield0, "fsel");
   PyObject* p_ret = NULL;
@@ -423,7 +423,7 @@ EXPORT(set_add_sfield, {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_field);
-  pqassert(py_get_ctype(p_field_new) == ctype);
+  qassert(py_get_ctype(p_field_new) == ctype);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_add_sfield_ctype, ctype, p_field_new, p_field);
   return p_ret;
@@ -437,7 +437,7 @@ EXPORT(set_sub_sfield, {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_field);
-  pqassert(py_get_ctype(p_field_new) == ctype);
+  qassert(py_get_ctype(p_field_new) == ctype);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_sub_sfield_ctype, ctype, p_field_new, p_field);
   return p_ret;
@@ -476,7 +476,7 @@ EXPORT(acc_field_sfield, {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_sfield);
-  pqassert(py_get_ctype(p_sfield) == ctype);
+  qassert(py_get_ctype(p_sfield) == ctype);
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_sfield, "fsel");
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, acc_field_sfield_ctype, ctype, p_field, p_sfield, fsel);
@@ -494,7 +494,7 @@ EXPORT(field_shift_sfield, {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_sfield);
-  pqassert(py_get_ctype(p_sfield_new) == ctype);
+  qassert(py_get_ctype(p_sfield_new) == ctype);
   const Coordinate shift = py_convert_data<Coordinate>(p_shift);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, field_shift_sfield_ctype, ctype, p_sfield_new, p_sfield,
@@ -588,7 +588,7 @@ EXPORT(set_sqrt_double_sfield, {
   SelectedField<double>& f = py_convert_type_sfield<double>(p_field);
   const SelectedField<double>& f1 = py_convert_type_sfield<double>(p_field1);
   const Geometry& geo = f1.geo();
-  pqassert(geo.is_only_local);
+  qassert(geo.is_only_local);
   f.init();
   f.init(geo, f1.n_elems, geo.multiplicity);
   qacc_for(idx, f.n_elems, {
@@ -666,7 +666,7 @@ EXPORT(glb_sum_tslice_double_sfield, {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_field);
-  pqassert(py_get_ctype(p_spfield) == ctype);
+  qassert(py_get_ctype(p_spfield) == ctype);
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_field, "fsel");
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, glb_sum_tslice_double_sfield_ctype, ctype, p_spfield,
@@ -683,7 +683,7 @@ EXPORT(glb_sum_tslice_long_sfield, {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_field);
-  pqassert(py_get_ctype(p_spfield) == ctype);
+  qassert(py_get_ctype(p_spfield) == ctype);
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_field, "fsel");
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, glb_sum_tslice_long_sfield_ctype, ctype, p_spfield,
@@ -775,7 +775,7 @@ EXPORT(set_u_rand_double_sfield, {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_sfield);
-  pqassert(py_get_ctype(p_sfield) == ctype);
+  qassert(py_get_ctype(p_sfield) == ctype);
   const FieldSelection& fsel =
       py_convert_type<FieldSelection>(p_sfield, "fsel");
   const RngState& rng = py_convert_type<RngState>(p_rng);

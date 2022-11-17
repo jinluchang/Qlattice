@@ -1,6 +1,6 @@
 // vim: set ts=2 sw=2 expandtab:
 
-// Copyright (c) 2014 Luchang Jin
+// Copyright (c) 2022 Luchang Jin
 // All rights reserved.
 
 // This program is free software: you can redistribute it and/or modify
@@ -23,30 +23,16 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <cassert>
 #include <sstream>
 #include <string>
 #include <vector>
-
-#define API __attribute__((visibility("default")))
 
 #define PSTRX(x) #x
 
 #define PSTR(x) PSTRX(x)
 
-#define pqassert(x)                                              \
-  {                                                              \
-    if (!(x))                                                    \
-      throw std::string("Assert " #x " failed in file " __FILE__ \
-                        ":" PSTR(__LINE__));                     \
-  };
-
-#define pqerr(...)                                                    \
-  {                                                                   \
-    const std::string msg =                                           \
-        qlat::ssprintf(__VA_ARGS__) +                                 \
-        qlat::ssprintf(" in from '%s' line %d ", __FILE__, __LINE__); \
-    throw std::string(msg);                                           \
-  };
+#define API __attribute__((visibility("default")))
 
 namespace qlat
 {  //
@@ -55,7 +41,7 @@ inline std::string vssprintf(const char* fmt, va_list args)
 {
   char* cstr;
   int ret = vasprintf(&cstr, fmt, args);
-  pqassert(ret >= 0);
+  assert(ret >= 0);
   const std::string str = std::string(cstr);
   std::free(cstr);
   return str;

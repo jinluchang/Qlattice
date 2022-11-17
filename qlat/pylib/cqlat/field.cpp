@@ -13,7 +13,7 @@ PyObject* mk_field_ctype(PyObject* p_geo, const int multiplicity)
     if (multiplicity == 0) {
       f.init(geo);
     } else {
-      pqassert(multiplicity > 0);
+      qassert(multiplicity > 0);
       f.init(geo, multiplicity);
     }
   }
@@ -185,9 +185,9 @@ PyObject* get_mview_field_ctype(PyObject* p_field)
   Field<M>& f = py_convert_type_field<M>(p_field);
   Vector<M> fv = get_data(f);
   PyObject* p_mview = py_convert_mview(fv);
-  pqassert(p_field != NULL);
+  qassert(p_field != NULL);
   Py_INCREF(p_field);
-  pqassert(!((PyMemoryViewObject*)p_mview)->mbuf->master.obj);
+  qassert(!((PyMemoryViewObject*)p_mview)->mbuf->master.obj);
   ((PyMemoryViewObject*)p_mview)->mbuf->master.obj = p_field;
   return p_mview;
 }
@@ -228,7 +228,7 @@ EXPORT(set_field, {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_field);
-  pqassert(py_get_ctype(p_field_new) == ctype);
+  qassert(py_get_ctype(p_field_new) == ctype);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_field_ctype, ctype, p_field_new, p_field);
   return p_ret;
@@ -242,7 +242,7 @@ EXPORT(set_add_field, {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_field);
-  pqassert(py_get_ctype(p_field_new) == ctype);
+  qassert(py_get_ctype(p_field_new) == ctype);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_add_field_ctype, ctype, p_field_new, p_field);
   return p_ret;
@@ -256,7 +256,7 @@ EXPORT(set_sub_field, {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_field);
-  pqassert(py_get_ctype(p_field_new) == ctype);
+  qassert(py_get_ctype(p_field_new) == ctype);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_sub_field_ctype, ctype, p_field_new, p_field);
   return p_ret;
@@ -297,7 +297,7 @@ EXPORT(set_mul_cfield_field, {
   }
   const std::string ctype = py_get_ctype(p_field);
   FieldM<Complex, 1>& f_factor = py_convert_type_field<Complex, 1>(p_cfield);
-  pqassert(f_factor.geo().multiplicity == 1);
+  qassert(f_factor.geo().multiplicity == 1);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_mul_field_ctype, ctype, p_field, f_factor);
   return p_ret;

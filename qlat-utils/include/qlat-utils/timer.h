@@ -19,6 +19,7 @@
 #pragma once
 
 #include <qlat-utils/show.h>
+#include <qlat-utils/assert.h>
 
 #include <sys/time.h>
 #include <algorithm>
@@ -481,18 +482,18 @@ struct API Timer {
   API static void merge()
   // call merge only after fork
   {
-    pqassert(get_start_time_history().size() >= 1);
+    qassert(get_start_time_history().size() >= 1);
     get_start_time() = get_start_time_history().back();
     get_start_time_history().pop_back();
-    pqassert(get_max_call_times_for_always_show_info_history().size() >= 1);
+    qassert(get_max_call_times_for_always_show_info_history().size() >= 1);
     max_call_times_for_always_show_info() =
         get_max_call_times_for_always_show_info_history().back();
     get_max_call_times_for_always_show_info_history().pop_back();
     std::vector<std::vector<TimerInfo> >& tdb_history =
         get_timer_database_history();
     std::vector<TimerInfo>& tdb = get_timer_database();
-    pqassert(tdb_history.size() >= 1);
-    pqassert(tdb.size() >= tdb_history.back().size());
+    qassert(tdb_history.size() >= 1);
+    qassert(tdb.size() >= tdb_history.back().size());
     for (long i = 0; i < (long)tdb_history.back().size(); ++i) {
       tdb[i].merge(tdb_history.back()[i]);
     }
@@ -608,7 +609,7 @@ struct API Timer {
       displayln(ssprintf("%s::%s ERROR: isRunning=%d", cname,
                          info.fname.c_str(), isRunning));
       Timer::display_stack();
-      pqassert(false);
+      qassert(false);
     }
     TimerInfo& info = get_timer_database()[info_index];
     info.call_times++;
@@ -629,12 +630,12 @@ struct API Timer {
   {
     TimerInfo& info = get_timer_database()[info_index];
     std::vector<long>& t_stack = get_timer_stack();
-    pqassert(not t_stack.empty());
+    qassert(not t_stack.empty());
     if (not(t_stack.back() == info_index)) {
       displayln(ssprintf("%s::%s ERROR: stack is corrupted", cname,
                          info.fname.c_str()));
       Timer::display_stack();
-      pqassert(false);
+      qassert(false);
     }
     t_stack.pop_back();
     if (isRunning <= 0) {
@@ -642,7 +643,7 @@ struct API Timer {
       displayln(ssprintf("%s::%s ERROR: isRunning=%d", cname,
                          info.fname.c_str(), isRunning));
       Timer::display_stack();
-      pqassert(false);
+      qassert(false);
     }
     isRunning -= 1;
     if (isRunning != 0) {
@@ -814,7 +815,7 @@ inline void Display(const char* cname, const char* fname, const char* format,
   va_list args;
   va_start(args, format);
   char* str;
-  pqassert(vasprintf(&str, format, args) >= 0);
+  qassert(vasprintf(&str, format, args) >= 0);
   display(ssprintf("%s::%s : %s", cname, fname, str));
   std::free(str);
 }
@@ -829,7 +830,7 @@ inline void DisplayInfo(const char* cname, const char* fname,
   va_list args;
   va_start(args, format);
   char* str;
-  pqassert(vasprintf(&str, format, args) >= 0);
+  qassert(vasprintf(&str, format, args) >= 0);
   display_info(ssprintf("%s::%s : %s", cname, fname, str));
   std::free(str);
 }
