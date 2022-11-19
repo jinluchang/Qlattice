@@ -926,7 +926,7 @@ inline bool read(const QarFile& qar, const std::string& fn, QFile& qfile_in)
   }
 }
 
-inline bool has(const QarFile& qar, const std::string& fn)
+inline bool has_regular_file(const QarFile& qar, const std::string& fn)
 // interface function
 {
   qassert(not qar.null());
@@ -937,11 +937,11 @@ inline bool has(const QarFile& qar, const std::string& fn)
   return read(qar, fn, qfile);
 }
 
-inline bool has_file_or_directory(const QarFile& qar, const std::string& fn)
+inline bool has(const QarFile& qar, const std::string& fn)
 // interface function
 {
   qassert(not qar.null());
-  if (has(qar, fn)) {
+  if (has_regular_file(qar, fn)) {
     return true;
   } else {
     qassert(qar.p->is_read_through);

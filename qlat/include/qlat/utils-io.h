@@ -117,11 +117,11 @@ inline bool does_file_exist_sync_node(const std::string& fn)
   return 0 != nfile;
 }
 
-inline bool does_file_exist_qar_sync_node(const std::string& fn)
+inline bool does_regular_file_exist_qar_sync_node(const std::string& fn)
 {
   long nfile = 0;
   if (0 == get_id_node()) {
-    if (does_file_exist_qar(fn)) {
+    if (does_regular_file_exist_qar(fn)) {
       nfile = 1;
     }
   }
@@ -129,11 +129,11 @@ inline bool does_file_exist_qar_sync_node(const std::string& fn)
   return 0 != nfile;
 }
 
-inline bool does_file_or_directory_exist_qar_sync_node(const std::string& fn)
+inline bool does_file_exist_qar_sync_node(const std::string& fn)
 {
   long nfile = 0;
   if (0 == get_id_node()) {
-    if (does_file_or_directory_exist_qar(fn)) {
+    if (does_file_exist_qar(fn)) {
       nfile = 1;
     }
   }

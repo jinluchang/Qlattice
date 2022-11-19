@@ -2,6 +2,17 @@
 
 #include <qlat-utils/qar-cache.h>
 
+EXPORT(does_regular_file_exist_qar, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_path)) {
+    return NULL;
+  }
+  const std::string path = py_convert_data<std::string>(p_path);
+  const bool ret = does_regular_file_exist_qar(path);
+  return py_convert(ret);
+})
+
 EXPORT(does_file_exist_qar, {
   using namespace qlat;
   PyObject* p_path = NULL;
@@ -10,17 +21,6 @@ EXPORT(does_file_exist_qar, {
   }
   const std::string path = py_convert_data<std::string>(p_path);
   const bool ret = does_file_exist_qar(path);
-  return py_convert(ret);
-})
-
-EXPORT(does_file_or_directory_exist_qar, {
-  using namespace qlat;
-  PyObject* p_path = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_path)) {
-    return NULL;
-  }
-  const std::string path = py_convert_data<std::string>(p_path);
-  const bool ret = does_file_or_directory_exist_qar(path);
   return py_convert(ret);
 })
 

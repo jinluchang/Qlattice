@@ -24,7 +24,7 @@ inline bool get_does_file_exist(const std::string& fn)
   DoesFileExistCache& cache = get_does_file_exist_cache();
   if (not cache.has(key)) {
     TIMER_VERBOSE("get_does_file_exist");
-    cache[key] = does_file_or_directory_exist_qar_sync_node(fn);
+    cache[key] = does_file_exist_qar_sync_node(fn);
   }
   return cache[key];
 }

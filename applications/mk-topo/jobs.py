@@ -24,7 +24,7 @@ def get_load_path(*fns):
         else:
             for path in load_path_list:
                 p = os.path.join(path, fn)
-                if q.does_file_or_directory_exist_qar_sync_node(p):
+                if q.does_file_exist_qar_sync_node(p):
                     return p
         return None
     return get(fns)

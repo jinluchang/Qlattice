@@ -1,8 +1,8 @@
 import qlat_utils.cu as cu
 
 from qlat_utils.cu import get_qar_multi_vol_max_size
+from qlat_utils.cu import does_regular_file_exist_qar
 from qlat_utils.cu import does_file_exist_qar
-from qlat_utils.cu import does_file_or_directory_exist_qar
 from qlat_utils.cu import qcat
 from qlat_utils.cu import qcat_bytes
 
@@ -24,17 +24,17 @@ def qcopy_file(path_src, path_dst):
 def list_qar(path_qar):
     return cu.list_qar(path_qar)
 
+def does_regular_file_exist_qar_sync_node(path):
+    if get_num_node() != 1:
+        import cqlat as c
+        return c.does_regular_file_exist_qar_sync_node(path)
+    return does_regular_file_exist_qar(path)
+
 def does_file_exist_qar_sync_node(path):
     if get_num_node() != 1:
         import cqlat as c
         return c.does_file_exist_qar_sync_node(path)
     return does_file_exist_qar(path)
-
-def does_file_or_directory_exist_qar_sync_node(path):
-    if get_num_node() != 1:
-        import cqlat as c
-        return c.does_file_or_directory_exist_qar_sync_node(path)
-    return does_file_or_directory_exist_qar(path)
 
 def qcat_sync_node(path):
     if get_num_node() != 1:

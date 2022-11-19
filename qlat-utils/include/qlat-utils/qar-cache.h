@@ -7,9 +7,9 @@
 namespace qlat
 {  //
 
-inline bool does_file_exist_qar(const std::string& path);
+inline bool does_regular_file_exist_qar(const std::string& path);
 
-inline bool does_file_or_directory_exist_qar(const std::string& path);
+inline bool does_file_exist_qar(const std::string& path);
 
 inline QFile qfopen(const std::string& path, const std::string& mode);
 
@@ -46,7 +46,7 @@ struct API QarFileMultiVol : std::vector<QarFile> {
       // maximally 1024 * 1024 * 1024 volumes
       for (long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
         const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
-        if (not does_file_exist_qar(path_qar_v)) {
+        if (not does_regular_file_exist_qar(path_qar_v)) {
           break;
         }
         push_back(qfopen(path_qar_v, mode));
@@ -65,6 +65,20 @@ struct API QarFileMultiVol : std::vector<QarFile> {
   bool null() const { return size() == 0; }
 };
 
+inline bool has_regular_file(const QarFileMultiVol& qar, const std::string& fn)
+// interface function
+{
+  for (unsigned long i = 0; i < qar.size(); ++i) {
+    const QarFile& qar_v = qar[i];
+    qassert(not qar_v.null());
+    qassert(qar_v.mode() == "r");
+    if (has_regular_file(qar_v, fn)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 inline bool has(const QarFileMultiVol& qar, const std::string& fn)
 // interface function
 {
@@ -73,21 +87,6 @@ inline bool has(const QarFileMultiVol& qar, const std::string& fn)
     qassert(not qar_v.null());
     qassert(qar_v.mode() == "r");
     if (has(qar_v, fn)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-inline bool has_file_or_directory(const QarFileMultiVol& qar,
-                                  const std::string& fn)
-// interface function
-{
-  for (unsigned long i = 0; i < qar.size(); ++i) {
-    const QarFile& qar_v = qar[i];
-    qassert(not qar_v.null());
-    qassert(qar_v.mode() == "r");
-    if (has_file_or_directory(qar_v, fn)) {
       return true;
     }
   }
@@ -151,7 +150,7 @@ inline std::string mk_new_qar_read_cache_key(const QarFileMultiVol& qar,
     if (path_dir == "/" or path_dir == ".") {
       return key;
     }
-    if (has(qar, path_dir + ".qar")) {
+    if (has_regular_file(qar, path_dir + ".qar")) {
       const std::string key_new = path_dir + "/";
       qassert(pathd.substr(0, key_new.size()) == key_new);
       QarFileMultiVol& qar_new = cache[key + key_new];
@@ -160,7 +159,7 @@ inline std::string mk_new_qar_read_cache_key(const QarFileMultiVol& qar,
       }
       qassert(not qar_new.null());
       const std::string path_new = pathd.substr(key_new.size());
-      if (has_file_or_directory(qar_new, path_new)) {
+      if (has(qar_new, path_new)) {
         return key + key_new;
       } else {
         return mk_new_qar_read_cache_key(qar_new, key + key_new, path_new);
@@ -195,7 +194,7 @@ inline std::string mk_new_qar_read_cache_key(const std::string& path)
       qar.init(path_dir + ".qar", "r");
       qassert(not qar.null());
       const std::string path_new = pathd.substr(key.size());
-      if (has_file_or_directory(qar, path_new)) {
+      if (has(qar, path_new)) {
         return key;
       } else {
         return mk_new_qar_read_cache_key(qar, key, path_new);
@@ -228,7 +227,7 @@ inline std::string get_qar_read_cache_key(const std::string& path)
     if (key == path.substr(0, key.size())) {
       const QarFileMultiVol& qar = cache[key];
       const std::string path_new = path.substr(key.size());
-      if (has_file_or_directory(qar, path_new)) {
+      if (has(qar, path_new)) {
         return key;
       } else {
         return mk_new_qar_read_cache_key(qar, key, path_new);
@@ -241,9 +240,25 @@ inline std::string get_qar_read_cache_key(const std::string& path)
   return mk_new_qar_read_cache_key(path);
 }
 
-inline bool does_file_exist_qar(const std::string& path)
+inline bool does_regular_file_exist_qar(const std::string& path)
 // interface function
 // Note: should only check file, not directory.
+{
+  TIMER("does_regular_file_exist_qar");
+  const std::string key = get_qar_read_cache_key(path);
+  if (key == path) {
+    return true;
+  } else if (key == "") {
+    return false;
+  }
+  qassert(key == path.substr(0, key.size()));
+  const std::string fn = path.substr(key.size());
+  QarFileMultiVol& qar = get_qar_read_cache()[key];
+  return has_regular_file(qar, fn);
+}
+
+inline bool does_file_exist_qar(const std::string& path)
+// interface function
 {
   TIMER("does_file_exist_qar");
   const std::string key = get_qar_read_cache_key(path);
@@ -256,22 +271,6 @@ inline bool does_file_exist_qar(const std::string& path)
   const std::string fn = path.substr(key.size());
   QarFileMultiVol& qar = get_qar_read_cache()[key];
   return has(qar, fn);
-}
-
-inline bool does_file_or_directory_exist_qar(const std::string& path)
-// interface function
-{
-  TIMER("does_file_or_directory_exist_qar");
-  const std::string key = get_qar_read_cache_key(path);
-  if (key == path) {
-    return true;
-  } else if (key == "") {
-    return false;
-  }
-  qassert(key == path.substr(0, key.size()));
-  const std::string fn = path.substr(key.size());
-  QarFileMultiVol& qar = get_qar_read_cache()[key];
-  return has_file_or_directory(qar, fn);
 }
 
 inline QFile qfopen(const std::string& path, const std::string& mode)
@@ -418,7 +417,7 @@ inline int qar_extract(const std::string& path_qar,
       0,
       fname + ssprintf(": '%s' '%s' %s.", path_qar.c_str(), path_folder.c_str(),
                        is_remove_qar_after ? "remove qar " : "keep qar"));
-  if (not does_file_exist_qar(path_qar)) {
+  if (not does_regular_file_exist_qar(path_qar)) {
     qwarn(fname + ssprintf(": '%s' '%s' qar does not exist.", path_qar.c_str(),
                            path_folder.c_str()));
     return 1;
@@ -473,7 +472,7 @@ inline int qcopy_file(const std::string& path_src, const std::string& path_dst)
   TIMER_VERBOSE_FLOPS("qcopy_file");
   displayln(0,
             fname + ssprintf(": '%s' %s.", path_src.c_str(), path_dst.c_str()));
-  if (not does_file_exist_qar(path_src)) {
+  if (not does_regular_file_exist_qar(path_src)) {
     qwarn(fname + ssprintf(": '%s' does not exist.", path_src.c_str()));
     return 1;
   }
@@ -650,7 +649,7 @@ inline DataTable qload_datatable_par(QFile& qfile)
 inline DataTable qload_datatable_serial(const std::string& path)
 {
   TIMER("qload_datatable_serial(path)");
-  if (not does_file_exist_qar(path)) {
+  if (not does_regular_file_exist_qar(path)) {
     return DataTable();
   }
   QFile qfile = qfopen(path, "r");
@@ -663,7 +662,7 @@ inline DataTable qload_datatable_serial(const std::string& path)
 inline DataTable qload_datatable_par(const std::string& path)
 {
   TIMER("qload_datatable_par(path)");
-  if (not does_file_exist_qar(path)) {
+  if (not does_regular_file_exist_qar(path)) {
     return DataTable();
   }
   QFile qfile = qfopen(path, "r");
@@ -673,7 +672,8 @@ inline DataTable qload_datatable_par(const std::string& path)
   return ret;
 }
 
-inline DataTable qload_datatable(const std::string& path, const bool is_par = false)
+inline DataTable qload_datatable(const std::string& path,
+                                 const bool is_par = false)
 {
   if (is_par) {
     return qload_datatable_par(path);
