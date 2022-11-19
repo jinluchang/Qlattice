@@ -1,3 +1,5 @@
+#include <qlat-ext/hello.h>
+
 #include "lib.h"
 
 EXPORT(hello_world, {

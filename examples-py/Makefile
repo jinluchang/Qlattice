@@ -33,13 +33,13 @@ tests_gpt = \
 
 all: run run-gpt
 
-run: update-sources $(tests) cqlat-ext.log
+run: update-sources $(tests) qlat-ext.log
 
 run-gpt: update-sources $(tests_gpt)
 
 update-sources:
 	-for i in $(tests) $(tests_gpt) ; do touch "$${i%.log}.py" ; done
-	-touch cqlat-ext/meson.build
+	-touch qlat-ext/meson.build
 
 %.log: %.py
 	-rm -rf results output_data cache
@@ -48,14 +48,14 @@ update-sources:
 	-if diff "$@".new "$@" ; then echo passed ; else cat "$@".full ; fi
 	-mv -v "$@".new "$@"
 
-cqlat-ext.log: cqlat-ext/meson.build
-	-meson setup cqlat-ext-build cqlat-ext --prefix=$$PWD/cqlat-ext-prefix
-	-cd cqlat-ext-build ; ninja -j2 ; ninja install
-	-PYTHONPATH="$$(ls -d "$$PWD"/cqlat-ext-prefix/lib*/python3*/*-packages)":"$$PYTHONPATH" q_verbose=1 python3 -c "import ctypes; import sys; flags = sys.getdlopenflags(); sys.setdlopenflags(flags | ctypes.RTLD_GLOBAL); import cqlat_ext as ce ; ce.hello_world() ; import qlat as q ; q.timer_display() ; q.displayln_info('CHECK: finished successfully.')" >"$@".full 2>&1
+qlat-ext.log: qlat-ext/meson.build
+	-meson setup qlat-ext-build qlat-ext
+	-meson compile -C qlat-ext-build -j2
+	-meson compile -C qlat-ext-build run >"$@".full 2>&1
 	-grep "CHECK: " "$@".full >"$@".new
 	-if diff "$@".new "$@" ; then echo passed ; else cat "$@".full ; fi
 	-mv -v "$@".new "$@"
 
 clean:
 	-rm -v *.log.full
-	-rm -rf results output_data cache cqlat-ext-build cqlat-ext-prefix
+	-rm -rf results output_data cache qlat-ext-build

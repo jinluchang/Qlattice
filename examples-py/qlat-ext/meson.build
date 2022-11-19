@@ -53,5 +53,12 @@ if not cpp.check_header('Eigen/Eigen')
   deps += [ eigen, ]
 endif
 
+envdata = environment()
+
 subdir('include')
-subdir('pylib/cqlat_ext')
+subdir('pylib')
+
+run_target('run',
+  command: [ 'bash', '-c', 'cd @CURRENT_SOURCE_DIR@ ; export PYTHONPATH="$PYTHONPATH_PREPEND:$PYTHONPATH" ; pwd ; ./run.py', ],
+  depends: pylib,
+  env: envdata)

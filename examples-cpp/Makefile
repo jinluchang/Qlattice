@@ -28,12 +28,12 @@ clean: $(patsubst %, %.clean, $(tests))
 
 compile-proj:
 	-meson setup build
-	-time ninja -C build
+	-time meson compile -C build
 
 run-proj: compile-proj
 	-mkdir build
 	-touch build/log build/log.full
-	-time ninja -C build run
+	-time meson compile -C build run
 	-if diff build/log log | grep 'CHECK: ' ; then cat build/log.full ; else echo passed ; fi
 	-cp build/log log
 	-cp build/log.full log.full
