@@ -19,31 +19,34 @@
 #include <qlat-utils/show.h>
 #include <qlat-utils/qacc.h>
 
-#define MK_ERR_MSG(str)                                                     \
-  qlat::ssprintf("qwarn: %s from '%s' line %d. (id_node=%d thread_num=%d)", \
-                 qlat::get_c_str(str), __FILE__, __LINE__,                  \
-                 qlat::get_id_node(), qlat::get_thread_num())
+#define MK_ERR_MSG(tag, str)                                             \
+  qlat::ssprintf("%s: %s from '%s' line %d. (id_node=%d thread_num=%d)", \
+                 qlat::get_c_str(tag), qlat::get_c_str(str), __FILE__,   \
+                 __LINE__, qlat::get_id_node(), qlat::get_thread_num())
 
-#define qqwarn(str)                      \
-  {                                      \
-    std::string msg = MK_ERR_MSG(str);   \
-    qlat::displayln(msg);                \
-    qlat::Timer::display_stack_always(); \
+#define qqwarn(str)                             \
+  {                                             \
+    std::string msg = MK_ERR_MSG("qwarn", str); \
+    qlat::displayln(msg);                       \
+    qlat::Timer::display_stack_always();        \
   }
 
-#define qqerr(str)                       \
-  {                                      \
-    std::string msg = MK_ERR_MSG(str);   \
-    qlat::displayln(msg);                \
-    qlat::Timer::display_stack_always(); \
-    throw std::string(msg);              \
+#define qqerr(str)                             \
+  {                                            \
+    std::string msg = MK_ERR_MSG("qerr", str); \
+    qlat::displayln(msg);                      \
+    qlat::Timer::display_stack_always();       \
+    throw std::string(msg);                    \
   };
 
-#define qqassert(x)          \
-  {                          \
-    if (not(x)) {            \
-      qqerr("qassert: " #x); \
-    }                        \
+#define qqassert(x)                                \
+  {                                                \
+    if (not(x)) {                                  \
+      std::string msg = MK_ERR_MSG("qassert", #x); \
+      qlat::displayln(msg);                        \
+      qlat::Timer::display_stack_always();         \
+      throw std::string(msg);                      \
+    }                                              \
   }
 
 #ifdef SKIP_ASSERT
