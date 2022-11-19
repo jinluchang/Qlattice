@@ -54,7 +54,11 @@ if not cpp.check_header('Eigen/Eigen')
 endif
 
 envdata = environment(
-  [ 'PYTHONPATH=' + run_command('bash', '-c', 'echo "$PYTHONPATH"', check: true).stdout().strip(), ],
+  [
+    'PYTHONPATH=' + run_command('bash', '-c', 'echo "$PYTHONPATH"', check: true).stdout().strip(),
+    'q_verbose=2',
+    'OMP_NUM_THREADS=2',
+    ],
   method: 'prepend')
 
 subdir('include')
