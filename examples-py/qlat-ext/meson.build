@@ -53,12 +53,16 @@ if not cpp.check_header('Eigen/Eigen')
   deps += [ eigen, ]
 endif
 
-envdata = environment()
+envdata = environment(
+  [ 'PYTHONPATH=' + run_command('bash', '-c', 'echo "$PYTHONPATH"', check: true).stdout().strip(), ],
+  method: 'prepend')
 
 subdir('include')
 subdir('pylib')
 
+run_py = files('run.py')
+
 run_target('run',
-  command: [ 'bash', '-c', 'cd @CURRENT_SOURCE_DIR@ ; export PYTHONPATH="$PYTHONPATH_PREPEND:$PYTHONPATH" ; pwd ; ./run.py', ],
+  command: [ run_py, ],
   depends: pylib,
   env: envdata)
