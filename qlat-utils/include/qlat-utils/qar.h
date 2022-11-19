@@ -443,6 +443,12 @@ inline std::string qgetline(const QFile& qfile)
   if (size > 0) {
     std::string ret;
     const long pos = ftell(qfile.get_fp()) - qfile.p->offset_start;
+    if (pos < 0) {
+      qerr(
+          ssprintf("qgetline: '%s' initial_pos='%ld' final_pos='%ld' "
+                   "getline_size='%ld'.",
+                   qfile.path().c_str(), qfile.p->pos, pos, size));
+    }
     qassert(pos >= 0);
     if (qfile.p->offset_end != -1 and
         qfile.p->offset_start + pos > qfile.p->offset_end) {
