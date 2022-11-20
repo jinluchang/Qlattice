@@ -10,7 +10,11 @@
 namespace qlat
 {  //
 
-using Real = double;  // default Real type
+using RealD = double;
+
+using RealF = float;
+
+using Real = RealD;  // default Real type
 
 #ifdef QLAT_USE_ACC
 
@@ -48,11 +52,11 @@ double qnorm(const std::complex<T>& x)
 
 #endif
 
-using Complex = ComplexT<Real>;
-
 using ComplexD = ComplexT<double>;
 
 using ComplexF = ComplexT<float>;
+
+using Complex = ComplexT<Real>;
 
 const ComplexD ii(0, 1);
 
