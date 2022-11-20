@@ -52,9 +52,9 @@ double qnorm(const std::complex<T>& x)
 
 #endif
 
-using ComplexD = ComplexT<double>;
+using ComplexD = ComplexT<RealD>;
 
-using ComplexF = ComplexT<float>;
+using ComplexF = ComplexT<RealF>;
 
 using Complex = ComplexT<Real>;
 
