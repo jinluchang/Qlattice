@@ -74,6 +74,22 @@ def mk_bpi_vv_aa(p : str):
         s = s + v1 * v2
     return s + f"(ubar gmu (1-g5) d)(ubar gmu (1-g5) d)({p})"
 
+def mk_bkp_vv_aa(p : str):
+    s = 0
+    for mu in range(4):
+        v1 = mk_vec_mu("s", "d", p, mu) + mk_vec5_mu("s", "d", p, mu)
+        v2 = mk_vec_mu("s", "d", p, mu) + mk_vec5_mu("s", "d", p, mu)
+        s = s + v1 * v2
+    return s + f"(sbar gmu (1+g5) d)(sbar gmu (1+g5) d)({p})"
+
+def mk_bpip_vv_aa(p : str):
+    s = 0
+    for mu in range(4):
+        v1 = mk_vec_mu("u", "d", p, mu) + mk_vec5_mu("u", "d", p, mu)
+        v2 = mk_vec_mu("u", "d", p, mu) + mk_vec5_mu("u", "d", p, mu)
+        s = s + v1 * v2
+    return s + f"(ubar gmu (1+g5) d)(ubar gmu (1+g5) d)({p})"
+
 def mk_bkpi1_vv_aa(p : str):
     s = 0
     for mu in range(4):
@@ -274,6 +290,8 @@ def get_cexpr_meson_bk_bpi_corr():
         ]
         bk = mk_meson("d", "s", "t_2") * mk_bk_vv_aa("x") * mk_meson("d", "s", "t_1")
         bpi = mk_meson("d", "u", "t_2") * mk_bpi_vv_aa("x") * mk_meson("d", "u", "t_1")
+        bkp = mk_meson("d", "s", "t_2") * mk_bkp_vv_aa("x") * mk_meson("d", "s", "t_1")
+        bpip = mk_meson("d", "u", "t_2") * mk_bpip_vv_aa("x") * mk_meson("d", "u", "t_1")
         bkpi1 = mk_meson("u", "u'", "t_2") * mk_bkpi1_vv_aa("x") * mk_meson("s", "d", "t_1")
         bkpi2 = mk_meson("u", "u'", "t_2") * mk_bkpi2_vv_aa("x") * mk_meson("s", "d", "t_1")
         bkpi1p = mk_meson("u", "u'", "t_2") * mk_bkpi1p_vv_aa("x") * mk_meson("s", "d", "t_1")
@@ -283,11 +301,12 @@ def get_cexpr_meson_bk_bpi_corr():
         bkpi3p = mk_meson("u", "u'", "t_2") * mk_bkpi3p_vv_aa("x") * mk_meson("d", "s", "t_1")
         bkpi4p = mk_meson("u", "u'", "t_2") * mk_bkpi4p_vv_aa("x") * mk_meson("d", "s", "t_1")
         exprs = terms + [
-            bk, bpi,
-            bkpi1, bkpi2,
-            bkpi1p, bkpi2p,
-            bkpi3, bkpi4,
-            bkpi3p, bkpi4p,
+                bk, bkp,
+                bpi, bpip,
+                bkpi1, bkpi2,
+                bkpi1p, bkpi2p,
+                bkpi3, bkpi4,
+                bkpi3p, bkpi4p,
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
         return cexpr
