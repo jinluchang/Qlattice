@@ -47,7 +47,10 @@ def interpolate_list(v, i):
 
 def interpolate(v_arr, i_arr):
     vt = v_arr.transpose()
-    return np.array([ interpolate_list(vt, i) for i in i_arr ]).transpose()
+    if isinstance(i_arr, (int, float,)):
+        return interpolate_list(vt, i_arr).transpose()
+    else:
+        return np.array([ interpolate_list(vt, i) for i in i_arr ]).transpose()
 
 def partial_sum_list(x, *, is_half_last = False):
     """Modify in-place, preserve length"""
