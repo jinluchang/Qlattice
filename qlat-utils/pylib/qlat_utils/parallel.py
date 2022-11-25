@@ -29,12 +29,20 @@ def get_q_num_mp_processes():
     get_q_num_mp_processes = lambda : v
     return v
 
+def set_q_num_mp_processes(v):
+    global get_q_num_mp_processes
+    get_q_num_mp_processes = lambda : v
+
 def get_q_verbose_parallel_map():
     global get_q_verbose_parallel_map
     s = getenv("q_verbose_parallel_map", default = "1")
     v = int(s)
     get_q_verbose_parallel_map = lambda : v
     return v
+
+def set_q_verbose_parallel_map(v):
+    global get_q_verbose_parallel_map
+    get_q_verbose_parallel_map = lambda : v
 
 @timer
 def parallel_map(func, iterable,

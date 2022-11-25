@@ -5,6 +5,8 @@ import shutil
 import tempfile
 import subprocess
 
+from qlat_utils.timer import *
+
 def mk_file_dirs(fn):
     path = os.path.dirname(fn)
     if path != "":
@@ -211,6 +213,7 @@ def display_img(fn, *, width = None):
 
 plot_save_display_width = None
 
+@timer
 def plot_save(
         fn = None,
         dts = None,
@@ -286,13 +289,16 @@ def plot_save(
             plot_lines = lines,
             )
     if is_run_make:
-        status = subprocess.run([ "make", "-C", path, ], capture_output = True, text = True)
-        if is_verbose or status.returncode != 0:
-            print("stdout:")
-            print(status.stdout)
-            print("stderr:")
-            print(status.stderr)
-        assert status.returncode == 0
+        @timer
+        def qplot_run_make():
+            status = subprocess.run([ "make", "-C", path, ], capture_output = True, text = True)
+            if is_verbose or status.returncode != 0:
+                print("stdout:")
+                print(status.stdout)
+                print("stderr:")
+                print(status.stderr)
+            assert status.returncode == 0
+        qplot_run_make()
         if target is None:
             path_img = os.path.join(path, "plot-0.png")
         else:
