@@ -503,10 +503,14 @@ def g_rejk(jk_list, jk_idx_list, *,
     return None
 
 def g_jk_avg(jk_list):
+    if isinstance(jk_list, (int, float, complex)):
+        return jk_list
     return jk_avg(jk_list)
 
 @use_kwargs(default_g_jk_kwargs)
 def g_jk_err(jk_list, *, eps, jk_type, **_kwargs):
+    if isinstance(jk_list, (int, float, complex)):
+        return 0
     if jk_type == "super":
         return jk_err(jk_list, eps)
     elif jk_type == "rjk":
