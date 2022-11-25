@@ -1,5 +1,6 @@
 from qlat_utils.lat_io import *
 from qlat_utils.rng_state import *
+from qlat_utils.timer import *
 
 import math
 import copy
@@ -464,6 +465,7 @@ default_g_jk_kwargs["rng_state"] = RngState("rejk")  # for jk_type = "rjk"
 default_g_jk_kwargs["jk_blocking_func"] = None  # for jk_type = "rjk"
 
 @use_kwargs(default_g_jk_kwargs)
+@timer
 def g_jk(data_list, *, eps, **_kwargs):
     return jackknife(data_list, eps)
 
@@ -480,6 +482,7 @@ def g_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state, *, jk_type, **_kwarg
     return rjk_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state)
 
 @use_kwargs(default_g_jk_kwargs)
+@timer
 def g_rejk(jk_list, jk_idx_list, *,
         jk_type,
         all_jk_idx,
