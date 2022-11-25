@@ -243,12 +243,12 @@ def average(data_list):
 def block_data(data_list, block_size, is_overlapping = True):
     # return the list of block averages
     # the blocks may overlap if is_overlapping == True
+    if block_size == 1:
+        return data_list
     assert block_size >= 1
     size = len(data_list)
     if block_size >= size:
         return [ average(data_list), ]
-    elif block_size == 1:
-        return data_list
     blocks = []
     start = 0
     stop = block_size
@@ -272,7 +272,8 @@ def avg_err(data_list, eps = 1, *, block_size = 1):
     return (avg, err,)
 
 def jackknife(data_list, eps = 1):
-    # normal jackknife uses eps = 1, scale the fluctuation by eps
+    """Return jk[i] = avg + \\frac{eps}{N} \\sum_{i=1}^N (v[i] - avg)
+    normal jackknife uses eps = 1, scale the fluctuation by eps"""
     data_list_real = [ d for d in data_list if d is not None ]
     n = len(data_list_real)
     fac = eps / n
@@ -327,7 +328,9 @@ def jk_avg(jk_list):
     return jk_list[0]
 
 def jk_err(jk_list, eps = 1, *, block_size = 1):
-    # same eps as the eps used in the 'jackknife' function
+    """Return \\frac{1}{eps} \\sqrt{ \\sum_{i=1}^N (jk[i] - jk_avg)^2 } when block_size=1
+    Note: len(jk_list) = N + 1
+    Same eps as the eps used in the 'jackknife' function"""
     avg = jk_avg(jk_list)
     blocks = block_data(jk_list[1:], block_size)
     diff_sqr = average([ fsqr(jk - avg) for jk in blocks ])
@@ -387,13 +390,13 @@ def mk_jk_blocking_func(block_size = 1, block_size_dict = None):
     return f
 
 def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func = None):
-    # return rjk_list
-    # len(rjk_list) == 1 + n_rand_sample
-    # distribution of rjk_list should be similar as the distribution of avg
-    # r_{i,j} ~ N(0, 1)
-    # avg = jk_avg(jk_list)
-    # n = len(jk_list)
-    # rjk_list[i] = avg + \sum_{j=1}^{n-1} r_{i,j} (jk_list[j] - avg)
+    """return rjk_list
+    len(rjk_list) == 1 + n_rand_sample
+    distribution of rjk_list should be similar as the distribution of avg
+    r_{i,j} ~ N(0, 1)
+    avg = jk_avg(jk_list)
+    len(jk_list) = n + 1
+    rjk_list[i] = avg + \\sum_{j=1}^{n} r_{i,j} (jk_list[j] - avg)"""
     assert jk_idx_list[0] == "avg"
     assert isinstance(n_rand_sample, int)
     assert n_rand_sample >= 0
@@ -401,16 +404,32 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func
     rs = rng_state
     avg = jk_avg(jk_list)
     n = len(jk_list) - 1
-    jk_diff = [ jk_list[j] - avg for j in range(1, n) ]
+    jk_diff = [ jk_list[j] - avg for j in range(1, n + 1) ]
     rjk_list = [ avg, ]
     if jk_blocking_func is None:
         blocked_jk_idx_list = jk_idx_list
     else:
         blocked_jk_idx_list = [ jk_blocking_func(idx) for idx in jk_idx_list[:] ]
+    assert len(blocked_jk_idx_list[1:]) == n
     for i in range(n_rand_sample):
         rsi = rs.split(i)
         r = [ rsi.split(idx).g_rand_gen() for idx in blocked_jk_idx_list[1:] ]
-        rjk_list.append(avg + sum([ r[j] * jk_diff[j] for j in range(n - 1) ]))
+        rjk_list.append(avg + sum([ r[j] * jk_diff[j] for j in range(n) ]))
+    return rjk_list
+
+def rjk_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state):
+    """return rjk_list
+    n = n_rand_sample
+    len(rjk_list) == 1 + n
+    rjk_list[i] = val + err * r[i] for i in 1..n
+    where r[i] ~ N(0, 1)"""
+    assert n_rand_sample >= 0
+    assert isinstance(rng_state, RngState)
+    rjk_list = [ val, ]
+    rs = rng_state.split(rs_tag)
+    for i in range(n_rand_sample):
+        r = rs.g_rand_gen()
+        rjk_list.append(val + r * err)
     return rjk_list
 
 def rjackknife(data_list, jk_idx_list, n_rand_sample, rng_state, *, eps = 1):
@@ -421,7 +440,11 @@ def rjk_avg(rjk_list):
     return jk_avg(rjk_list)
 
 def rjk_err(rjk_list, eps = 1):
-    return jk_err(rjk_list, eps * np.sqrt(len(rjk_list)))
+    """Return \\frac{1}{eps} \\sqrt{ \\frac{1}{N} \\sum_{i=1}^N (jk[i] - jk_avg)^2 }
+    Note: len(jk_list) = N + 1
+    Same eps as the eps used in the 'jackknife' function"""
+    n = len(rjk_list) - 1
+    return jk_err(rjk_list, eps * np.sqrt(n))
 
 def rjk_avg_err(rjk_list, eps = 1):
     return rjk_avg(rjk_list), rjk_err(rjk_list, eps)
@@ -452,6 +475,11 @@ def g_jk_blocking_func(idx, *, jk_blocking_func, **_kwargs):
         return jk_blocking_func(idx)
 
 @use_kwargs(default_g_jk_kwargs)
+def g_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state, *, jk_type, **_kwargs):
+    assert jk_type == "rjk"
+    return rjk_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state)
+
+@use_kwargs(default_g_jk_kwargs)
 def g_rejk(jk_list, jk_idx_list, *,
         jk_type,
         all_jk_idx,
@@ -462,6 +490,8 @@ def g_rejk(jk_list, jk_idx_list, *,
         **_kwargs,):
     # jk_type in [ "rjk", "super", ]
     if jk_type == "super":
+        if jk_blocking_func is None:
+            displayln_info("g_rejk: jk_type={jk_type} does not support jk_blocking_func={jk_blocking_func}")
         if all_jk_idx is None:
             assert get_all_jk_idx is not None
             all_jk_idx = get_all_jk_idx()
