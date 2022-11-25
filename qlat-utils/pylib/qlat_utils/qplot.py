@@ -205,7 +205,7 @@ def mk_pyplot_folder(path = None):
 
 def display_img(fn, *, width = None):
     from IPython.display import HTML, display
-    print(f"display_img: fn='{fn}'")
+    displayln_info(0, f"display_img: fn='{fn}'")
     show_width = ""
     if width is not None:
         show_width = f"width='{width}'"
@@ -244,7 +244,7 @@ def plot_save(
                 "set xlabel '$x$'",
                 "set ylabel '$y$'",
                 ]
-        print(f"cmds={cmds}")
+        displayln_info(0, f"cmds={cmds}")
     if dts is None:
         x = np.arange(31) * (6 / 30) - 3
         y = np.cos(x)
@@ -252,7 +252,7 @@ def plot_save(
         dts = {
                 "table.txt" : azip(x, y, yerr),
                 }
-        print(f"dts={dts}")
+        displayln_info(f"dts={dts}")
         if lines is None:
             lines = [
                     "plot [-3:3] [-1.5:1.5]",
@@ -261,7 +261,7 @@ def plot_save(
                     ]
             if "table.txt" in dts:
                 lines.append("'table.txt' w yerrorb t '$y = \\cos(x)$'")
-            print(f"lines={lines}")
+            displayln_info(f"lines={lines}")
     elif lines is None:
         lines = [
                 "plot [:] [:]",
@@ -273,14 +273,14 @@ def plot_save(
                 lines.append(f"'{key}' u 1:2 w p t '{key}'")
             else:
                 lines.append(f"'{key}' t '{key}'")
-        print(f"lines={lines}")
+        displayln_info(f"lines={lines}")
     if fn is None:
-        print(f"fn={fn}")
-        print(f"is_run_make={is_run_make}")
-        print(f"is_display={is_display}")
+        displayln_info(f"fn={fn}")
+        displayln_info(f"is_run_make={is_run_make}")
+        displayln_info(f"is_display={is_display}")
     if display_width is None:
         display_width = plot_save_display_width
-        print(f"display_width={display_width}")
+        displayln_info(0, f"display_width={display_width}")
     populate_pyplot_folder(
             path,
             fn = target_fn,
@@ -293,10 +293,10 @@ def plot_save(
         def qplot_run_make():
             status = subprocess.run([ "make", "-C", path, ], capture_output = True, text = True)
             if is_verbose or status.returncode != 0:
-                print("stdout:")
-                print(status.stdout)
-                print("stderr:")
-                print(status.stderr)
+                displayln_info("stdout:")
+                displayln_info(status.stdout)
+                displayln_info("stderr:")
+                displayln_info(status.stderr)
             assert status.returncode == 0
         qplot_run_make()
         if target is None:
@@ -306,12 +306,12 @@ def plot_save(
         if is_display:
             display_img(path_img, width = display_width)
         else:
-            print(f"plot_save: plot created at '{path_img}'.")
+            displayln_info(0, f"plot_save: plot created at '{path_img}'.")
         return path_img
     else:
         assert not is_display
         # return directory that contain the sources instead of the png path
-        print(f"plot_save: creating data for plot at '{path}'.")
+        displayln_info(0, f"plot_save: creating data for plot at '{path}'.")
         return path
 
 def plot_view(
