@@ -129,7 +129,7 @@ def mk_makefile(fn = None):
     # fn is the target file name, e.g. plot.pdf or plot.png
     if fn is not None:
         name = get_plot_name(fn)
-        target = "install-png"
+        target = "install"
     else:
         name = "plot-0"
         target = "png"
@@ -156,7 +156,7 @@ def mk_makefile(fn = None):
         "install-png: png",
         f"\tmv '{name}.png' ../'{name}.png'",
         "",
-        "install: install-pdf install-png",
+        "install: install-png install-pdf",
         "",
         ])
 
