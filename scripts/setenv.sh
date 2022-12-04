@@ -121,6 +121,10 @@ if [ -z ${NPY_NUM_BUILD_JOBS+x} ] ; then
     export NPY_NUM_BUILD_JOBS=$num_proc
 fi
 
+if [ -z ${NINJA_NUM_JOBS+x} ] ; then
+    export NINJA_NUM_JOBS=$num_proc
+fi
+
 if [ -z ${q_num_threads+x} ] ; then
     export q_num_threads=2
 fi

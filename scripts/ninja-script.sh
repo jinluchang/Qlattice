@@ -10,17 +10,25 @@ echo "!!!! build $name !!!!"
 
 mkdir -p $prefix/bin
 
+echo "Trying to find ninja-backend"
+
 ninja_path="$(which ninja-backend || true)"
 
 if [ -z "$ninja_path" ] ; then
-    ninja_path="$(which ninja)"
-    while [ "$ninja_path" = "$prefix/bin/ninja" ] ; do
-        rm -rfv "$ninja_path"
-        sleep 0.1
+    echo "Cannot find ninja-backend. Trying to find ninja"
+    for i in {1..10} ; do
         ninja_path="$(which ninja || true)"
         if [ -z "$ninja_path" ] ; then
             echo "Cannot find usable ninja."
             exit 1
+        elif [ "$ninja_path" = "$prefix/bin/ninja" ] ; then
+            echo "Found $ninja_path, must be the link created by this script."
+            echo "Will remove $ninja_path and find ninja again."
+            rm -rfv "$ninja_path"
+            sleep 0.1
+        else
+            echo "Found ninja at $ninja_path"
+            break
         fi
     done
 fi
@@ -33,10 +41,11 @@ cat - >"$prefix/bin/ninja" << EOF
 # Need to limit the number of JOBS by ninja
 # See https://github.com/ninja-build/ninja/issues/1482
 
-if [ -z "\$num_proc" ] ; then
-    "$ninja_path" "\$@"
+if [ -z "\$NINJA_NUM_JOBS" ] ; then
+    # Default should be no parallelization
+    "$ninja_path" -j1 "\$@"
 else
-    "$ninja_path" -j"\$num_proc" "\$@"
+    "$ninja_path" -j"\$NINJA_NUM_JOBS" "\$@"
 fi
 EOF
 chmod +x "$prefix/bin/ninja"
