@@ -26,13 +26,3 @@ EXPORT(begin_with_grid, {
   grid_begin(&argc, &argv, node_size_list);
   Py_RETURN_NONE;
 })
-
-EXPORT(end_with_grid, {
-  using namespace qlat;
-  bool is_preserving_cache = false;
-  if (!PyArg_ParseTuple(args, "b", &is_preserving_cache)) {
-    return NULL;
-  }
-  grid_end(is_preserving_cache);
-  Py_RETURN_NONE;
-})

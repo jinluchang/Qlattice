@@ -30,6 +30,8 @@
 #include <cmath>
 #include <string>
 #include <vector>
+#include <map>
+#include <set>
 
 #ifdef USE_PAPI
 #include <papi.h>
@@ -283,6 +285,20 @@ inline long long get_total_flops()
   return flops;
 }
 
+template <class K>
+bool has(const std::set<K>& m, const K& key)
+{
+  typename std::set<K>::const_iterator it = m.find(key);
+  return it != m.end();
+}
+
+template <class K, class M>
+bool has(const std::map<K, M>& m, const K& key)
+{
+  typename std::map<K, M>::const_iterator it = m.find(key);
+  return it != m.end();
+}
+
 API inline void initialize_papi()
 {
 #ifdef USE_PAPI
@@ -305,6 +321,8 @@ struct API TimerInfo {
   long long dflops;
   long long accumulated_flops;
   int call_times;
+  //
+  TimerInfo() { init(); }
   //
   void init()
   {
@@ -395,12 +413,18 @@ struct API Timer {
   const char* cname;
   long info_index;
   bool is_using_total_flops;
-  long isRunning;
+  long is_running;
   double start_time;
   double stop_time;
   long long start_flops;
   long long stop_flops;
   long long flops;
+  //
+  API static std::map<std::string, long>& get_timer_info_index_map()
+  {
+    static std::map<std::string, long> timer_info_index_map;
+    return timer_info_index_map;
+  }
   //
   API static std::vector<TimerInfo>& get_timer_database()
   {
@@ -413,11 +437,13 @@ struct API Timer {
     static std::vector<std::vector<TimerInfo> > timer_database_history;
     return timer_database_history;
   }
+  //
   API static std::vector<double>& get_start_time_history()
   {
     static std::vector<double> history;
     return history;
   }
+  //
   API static std::vector<long>&
   get_max_call_times_for_always_show_info_history()
   {
@@ -568,23 +594,21 @@ struct API Timer {
     get_start_time();
     initialize_papi();
     info_index = -1;
-    isRunning = 0;
+    is_running = 0;
   }
   void init(const std::string& fname_str)
   {
+    std::map<std::string, long>& tiim = get_timer_info_index_map();
     std::vector<TimerInfo>& tdb = get_timer_database();
-    const long size = tdb.size();
-    for (long i = 0; i < size; i++) {
-      if (fname_str == tdb[i].fname) {
-        info_index = i;
-        return;
-      }
+    if (has(tiim, fname_str)) {
+      info_index = tiim[fname_str];
+    } else {
+      info_index = tdb.size();
+      tiim[fname_str] = info_index;
+      TimerInfo info;
+      info.fname = fname_str;
+      tdb.push_back(info);
     }
-    info_index = tdb.size();
-    TimerInfo info;
-    tdb.push_back(info);
-    tdb[info_index].init();
-    tdb[info_index].fname = fname_str;
   }
   void init(const std::string& cname_str, const std::string& fname_str)
   {
@@ -598,16 +622,16 @@ struct API Timer {
   void start(bool verbose = false)
   {
     get_timer_stack().push_back(info_index);
-    if (isRunning > 0) {
-      isRunning += 1;
+    if (is_running > 0) {
+      is_running += 1;
       return;
-    } else if (isRunning == 0) {
-      isRunning = 1;
+    } else if (is_running == 0) {
+      is_running = 1;
     } else {
       TimerInfo& info = get_timer_database()[info_index];
       info.show_avg_always("debug", max_function_name_length_shown());
-      displayln(ssprintf("%s::%s ERROR: isRunning=%d", cname,
-                         info.fname.c_str(), isRunning));
+      displayln(ssprintf("%s::%s ERROR: is_running=%d", cname,
+                         info.fname.c_str(), is_running));
       Timer::display_stack();
       qassert(false);
     }
@@ -638,15 +662,15 @@ struct API Timer {
       qassert(false);
     }
     t_stack.pop_back();
-    if (isRunning <= 0) {
+    if (is_running <= 0) {
       info.show_avg_always("debug", max_function_name_length_shown());
-      displayln(ssprintf("%s::%s ERROR: isRunning=%d", cname,
-                         info.fname.c_str(), isRunning));
+      displayln(ssprintf("%s::%s ERROR: is_running=%d", cname,
+                         info.fname.c_str(), is_running));
       Timer::display_stack();
       qassert(false);
     }
-    isRunning -= 1;
-    if (isRunning != 0) {
+    is_running -= 1;
+    if (is_running != 0) {
       return;
     }
     stop_time = get_time();
@@ -694,7 +718,7 @@ struct API Timer {
     }
   }
   //
-  API static void display(const std::string& str = "")
+  API static void display(const std::string& tag = "")
   {
     double total_time = get_total_time();
     const std::vector<TimerInfo>& tdb = get_timer_database();
@@ -709,7 +733,7 @@ struct API Timer {
     displayln_info(ssprintf(
         "Timer::display-start: %s (level=%ld) fname : time%% number of calls; "
         "Avg,Tot sec; Avg,Tot flops; Gflops",
-        str.c_str(), (long)tdb_history.size()));
+        tag.c_str(), (long)tdb_history.size()));
     const long dbsize = db.size();
     for (long i = 0; i < dbsize; i++) {
       if (db[i]->call_times > 0) {
@@ -719,7 +743,7 @@ struct API Timer {
     displayln_info(ssprintf(
         "Timer::display-end:   %s (level=%ld) --------------------- total %.4E "
         "sec ----------------------",
-        str.c_str(), (long)tdb_history.size(), total_time));
+        tag.c_str(), (long)tdb_history.size(), total_time));
   }
   //
   API static void autodisplay(const double time)

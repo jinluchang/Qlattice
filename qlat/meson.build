@@ -1,4 +1,4 @@
-project('qlat', 'cpp',
+project('qlat', 'cpp', 'cython',
   version: '0.9',
   license: 'GPL-3.0-or-later',
   default_options: [
@@ -7,11 +7,14 @@ project('qlat', 'cpp',
     'libdir=lib',
     'optimization=2',
     'debug=false',
+    'cython_language=cpp',
     ])
 
 add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
 
 cpp = meson.get_compiler('cpp')
+
+fs = import('fs')
 
 py_mod = import('python')
 py3 = py_mod.find_installation('python3')

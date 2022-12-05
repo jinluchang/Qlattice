@@ -110,20 +110,6 @@ void clear(std::vector<M>& vec)
   std::swap(empty, vec);
 }
 
-template <class K>
-bool has(const std::set<K>& m, const K& key)
-{
-  typename std::set<K>::const_iterator it = m.find(key);
-  return it != m.end();
-}
-
-template <class K, class M>
-bool has(const std::map<K, M>& m, const K& key)
-{
-  typename std::map<K, M>::const_iterator it = m.find(key);
-  return it != m.end();
-}
-
 // -------------------
 
 qacc bool is_big_endian()

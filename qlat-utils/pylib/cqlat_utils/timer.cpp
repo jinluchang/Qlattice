@@ -65,20 +65,6 @@ EXPORT(set_flops_timer, {
   Py_RETURN_NONE;
 })
 
-EXPORT(timer_display, {
-  using namespace qlat;
-  PyObject* p_str = NULL;
-  if (!PyArg_ParseTuple(args, "|O", &p_str)) {
-    return NULL;
-  }
-  std::string str;
-  if (p_str != NULL) {
-    py_convert(str, p_str);
-  }
-  Timer::display(str);
-  Py_RETURN_NONE;
-})
-
 EXPORT(timer_autodisplay, {
   using namespace qlat;
   Timer::autodisplay();

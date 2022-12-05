@@ -1,6 +1,6 @@
 from qlat_utils.timer import *
 
-import qlat_utils.cu as cu
+import qlat_utils.c as cu
 
 # Usage:
 # cache_x = q.mk_cache("xx")

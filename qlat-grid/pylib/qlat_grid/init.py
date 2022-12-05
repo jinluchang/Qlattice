@@ -1,4 +1,4 @@
-import qlat_grid.cg as cg
+import qlat_grid.c as cg
 
 import sys
 

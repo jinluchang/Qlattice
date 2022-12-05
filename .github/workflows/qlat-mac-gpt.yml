@@ -31,7 +31,7 @@ jobs:
 
     - name: Install Python packages
       run: |
-        pip3 install --user psutil sympy numpy scipy meson ninja
+        pip3 install --user psutil sympy numpy scipy meson ninja cython
 
     - name: Display Python version
       run: |

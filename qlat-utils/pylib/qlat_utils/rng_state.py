@@ -1,4 +1,4 @@
-import qlat_utils.cu as cu
+import qlat_utils.c as cu
 
 class RngState:
 

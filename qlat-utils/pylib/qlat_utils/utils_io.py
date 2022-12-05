@@ -1,17 +1,17 @@
-import qlat_utils.cu as cu
+import qlat_utils.c as cu
 
 import os
 import pickle
 
-from qlat_utils.cu import qremove
-from qlat_utils.cu import qremove_all
-from qlat_utils.cu import qmkdir, qmkdir_info
-from qlat_utils.cu import does_file_exist
-from qlat_utils.cu import is_directory
-from qlat_utils.cu import is_regular_file
-from qlat_utils.cu import qrename, qrename_info
-from qlat_utils.cu import qls
-from qlat_utils.cu import qls_all
+from qlat_utils.c import qremove
+from qlat_utils.c import qremove_all
+from qlat_utils.c import qmkdir, qmkdir_info
+from qlat_utils.c import does_file_exist
+from qlat_utils.c import is_directory
+from qlat_utils.c import is_regular_file
+from qlat_utils.c import qrename, qrename_info
+from qlat_utils.c import qls
+from qlat_utils.c import qls_all
 
 from qlat_utils.qar import *
 
@@ -113,13 +113,13 @@ def pickle_cache_call(func, path):
 
 def qremove_info(path):
     if get_num_node() != 1:
-        import cqlat as c
+        import qlat.c as c
         return c.qremove_info(path)
     return qremove(path)
 
 def qremove_all_info(path):
     if get_num_node() != 1:
-        import cqlat as c
+        import qlat.c as c
         return c.qremove_all_info(path)
     return qremove_all(path)
 

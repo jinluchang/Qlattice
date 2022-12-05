@@ -1,10 +1,10 @@
-import qlat_utils.cu as cu
+import qlat_utils.c as cu
 
-from qlat_utils.cu import get_qar_multi_vol_max_size
-from qlat_utils.cu import does_regular_file_exist_qar
-from qlat_utils.cu import does_file_exist_qar
-from qlat_utils.cu import qcat
-from qlat_utils.cu import qcat_bytes
+from qlat_utils.c import get_qar_multi_vol_max_size
+from qlat_utils.c import does_regular_file_exist_qar
+from qlat_utils.c import does_file_exist_qar
+from qlat_utils.c import qcat
+from qlat_utils.c import qcat_bytes
 
 from qlat_utils.timer import *
 

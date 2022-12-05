@@ -1,27 +1,5 @@
 #include "lib.h"
 
-EXPORT(qremove_info, {
-  using namespace qlat;
-  PyObject* p_path = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_path)) {
-    return NULL;
-  }
-  const std::string path = py_convert_data<std::string>(p_path);
-  const int ret = qremove_info(path);
-  return py_convert(ret);
-})
-
-EXPORT(qremove_all_info, {
-  using namespace qlat;
-  PyObject* p_path = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_path)) {
-    return NULL;
-  }
-  const std::string path = py_convert_data<std::string>(p_path);
-  const int ret = qremove_all_info(path);
-  return py_convert(ret);
-})
-
 EXPORT(qmkdir_sync_node, {
   using namespace qlat;
   PyObject* p_path = NULL;
