@@ -63,12 +63,14 @@ envdata = environment(
     ],
   method: 'prepend')
 
-subdir('include')
-subdir('pylib')
+envdata.prepend('PYTHONPATH', meson.current_build_dir())
 
-run_py = files('run.py')
+subdir('include')
+subdir('qlat_ext')
+
+run_py = fs.copyfile(files('run.py'))
 
 run_target('run',
-  command: [ run_py, ],
-  depends: copy + [ cplib ],
+  command: [ 'bash', '-c', 'cd "$MESON_SUBDIR" ; ./run.py', ],
+  depends: copy + [ cplib, run_py, ],
   env: envdata)

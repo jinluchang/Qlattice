@@ -4,8 +4,10 @@ from libcpp cimport bool
 cdef extern from "qlat-utils/timer.h" namespace "qlat":
     cdef cppclass Timer:
         Timer()
-        Timer(string)
-        void start(bool verbose = False)
-        void stop(bool verbose = False)
+        Timer(const string&)
+        void start()
+        void start(bool is_verbose)
+        void stop()
+        void stop(bool is_verbose)
         @staticmethod
-        void display(string& tag)
+        void display(const string& tag)

@@ -2,12 +2,6 @@
 
 #include <qlat-utils/qar-cache.h>
 
-EXPORT(flush, {
-  using namespace qlat;
-  fflush(get_output_file());
-  Py_RETURN_NONE;
-})
-
 EXPORT(qremove, {
   using namespace qlat;
   PyObject* p_path = NULL;

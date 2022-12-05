@@ -5,6 +5,8 @@ from qlat_utils.c import timer_reset, timer_fork, timer_merge
 from qlat_utils.c import verbose_level
 from qlat_utils.c import get_actual_start_time, get_start_time, get_time
 from qlat_utils.c import flush
+from qlat_utils.c import timer, timer_verbose
+from qlat_utils.c import timer_display
 
 import functools
 
@@ -51,34 +53,6 @@ class Timer:
             return
         cu.set_flops_timer(self, flops)
 
-def timer(func):
-    fname = "py:" + func.__name__
-    qtimer = Timer(fname)
-    @functools.wraps(func)
-    def qtimer_func(*args, **kwargs):
-        qtimer.start()
-        start_flops = timer_total_flops[fname]
-        ret = func(*args, **kwargs)
-        stop_flops = timer_total_flops[fname]
-        qtimer.set_flops(stop_flops - start_flops)
-        qtimer.stop()
-        return ret
-    return qtimer_func
-
-def timer_verbose(func):
-    fname = "py:" + func.__name__
-    qtimer = Timer(fname, True)
-    @functools.wraps(func)
-    def qtimer_func(*args, **kwargs):
-        qtimer.start()
-        start_flops = timer_total_flops[fname]
-        ret = func(*args, **kwargs)
-        stop_flops = timer_total_flops[fname]
-        qtimer.set_flops(stop_flops - start_flops)
-        qtimer.stop()
-        return ret
-    return qtimer_func
-
 def displayln(level, *args):
     if isinstance(level, int):
         if level <= verbose_level():
@@ -100,10 +74,6 @@ def get_total_time():
 
 def get_actual_total_time():
     return get_time() - get_actual_start_time()
-
-def timer_display(*params):
-    cu.timer_display(*params)
-    flush()
 
 def timer_autodisplay():
     cu.timer_autodisplay()
