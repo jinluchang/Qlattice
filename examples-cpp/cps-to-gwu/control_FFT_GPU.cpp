@@ -218,10 +218,6 @@ int main(int argc, char* argv[])
   }
   /////==========test correct
 
-  fflush_MPI();
-  qlat::Timer::display();
-
-  qlat::end();
-  return 0;
+  return end_Lat();
 }
 

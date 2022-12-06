@@ -10,7 +10,7 @@
 #include "utils_fft_desc.h"
 
 //////TODO
-//////GPU support, Ty template, shift of fieldM
+//////GPU support, Td template, shift of fieldM
 
 namespace qlat
 {
@@ -884,34 +884,34 @@ void shift_fieldM(shift_vec& svec, std::vector<qlat::FieldM<Ty, civ> >& src, std
   svec.shift_vecs(srcP, resP, iDir , civ);
 }
 
-template <class Ty>
-void shift_fieldM(shift_vec& svec, std::vector<Propagator4dT<Ty >* >& src, std::vector<Propagator4dT<Ty >* >& res, std::vector<int >& iDir)
+template <class Td>
+void shift_fieldM(shift_vec& svec, std::vector<Propagator4dT<Td >* >& src, std::vector<Propagator4dT<Td >* >& res, std::vector<int >& iDir)
 {
   if(src.size() < 1)return;
   int biva_or = src.size();
 
-  std::vector<ComplexT<Ty>* > srcP;std::vector<ComplexT<Ty>* > resP;
+  std::vector<ComplexT<Td>* > srcP;std::vector<ComplexT<Td>* > resP;
   srcP.resize(biva_or);resP.resize(biva_or);
   for(int bi=0;bi<biva_or;bi++){
-    srcP[bi] = (ComplexT<Ty>*) qlat::get_data(*src[bi]).data();
-    resP[bi] = (ComplexT<Ty>*) qlat::get_data(*res[bi]).data();
+    srcP[bi] = (ComplexT<Td>*) qlat::get_data(*src[bi]).data();
+    resP[bi] = (ComplexT<Td>*) qlat::get_data(*res[bi]).data();
   }
   svec.shift_vecs(srcP, resP, iDir , 12*12);
 }
 
-template <class Ty>
-void shift_fieldM(shift_vec& svec, Propagator4dT<Ty >& src, Propagator4dT<Ty >& res, std::vector<int >& iDir)
+template <class Td>
+void shift_fieldM(shift_vec& svec, Propagator4dT<Td >& src, Propagator4dT<Td >& res, std::vector<int >& iDir)
 {
-  std::vector<Propagator4dT<Ty >* >srcP(1);srcP[0] = &src;
-  std::vector<Propagator4dT<Ty >* >resP(1);resP[0] = &res;
+  std::vector<Propagator4dT<Td >* >srcP(1);srcP[0] = &src;
+  std::vector<Propagator4dT<Td >* >resP(1);resP[0] = &res;
   shift_fieldM(svec, srcP, resP, iDir);
 }
 
-template <class Ty>
-void shift_fieldM(shift_vec& svec, std::vector<Propagator4dT<Ty > > & src, std::vector< Propagator4dT<Ty > >& res, std::vector<int >& iDir)
+template <class Td>
+void shift_fieldM(shift_vec& svec, std::vector<Propagator4dT<Td > > & src, std::vector< Propagator4dT<Td > >& res, std::vector<int >& iDir)
 {
-  std::vector<Propagator4dT<Ty >* >srcP(0);srcP.resize(src.size());
-  std::vector<Propagator4dT<Ty >* >resP(0);resP.resize(res.size());
+  std::vector<Propagator4dT<Td >* >srcP(0);srcP.resize(src.size());
+  std::vector<Propagator4dT<Td >* >resP(0);resP.resize(res.size());
   for(int i=0;i<src.size();i++){srcP[i] = &src[i];}
   for(int i=0;i<res.size();i++){resP[i] = &res[i];}
   shift_fieldM(svec, srcP, resP, iDir);

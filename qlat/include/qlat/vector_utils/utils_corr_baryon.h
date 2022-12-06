@@ -17,6 +17,520 @@
 
 namespace qlat{
 
+////simple gpu version, under Yi-bo's implimentation
+///////Proton contractions, for checks only
+template <typename Ty>
+void proton_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, std::vector<qpropT >& prop3,
+  qlat::vector_acc<Ty > &res, const ga_M &ga2,const int ind2, const ga_M &ga1, const int ind1, int clear=1){
+  TIMER("Proton_vectorE");
+  if(prop1.size() == 0){res.resize(0); return ;}
+  const qlat::Geometry &geo = prop1[0].geo();
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+
+  ////ga2/ind2 for source, gam1/ind1 for sink
+  ////"[]|+N" type diagram
+  //check_prop_size(prop1);check_prop_size(prop2);check_prop_size(prop3);
+  int NTt  = fd.Nv[3];
+  LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
+  int nmass = prop1.size();
+  qassert(prop1.size() == prop2.size());
+  qassert(prop1.size() == prop3.size());
+  if(clear == 1){ini_resE(res, nmass, fd);}
+  if(clear == 0){qassert(res.size() == long(nmass*NTt * Nxyz));}
+    
+  ////Prop format, src d-4, c-3, sink d-4, c-3, Nt, EigenVTa<Nxyz>
+  if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");qassert(false);}
+
+  qlat::vector_acc<Ty* > p1 = EigenM_to_pointers(prop1);
+  qlat::vector_acc<Ty* > p2 = EigenM_to_pointers(prop2);
+  qlat::vector_acc<Ty* > p3 = EigenM_to_pointers(prop3);
+
+  Ty epsl[3][3];
+  for(int i=0;i<3;i++)for(int j=0;j<3;j++){epsl[i][j] = 0;}
+  for(int i=0;i<3;i++){epsl[i][i]=0;epsl[i][(i+1)%3]=Ty(1,0);epsl[i][(i+2)%3]=Ty(-1,0);}
+
+  for(int d2=0;d2<4;d2++)
+  for(int c21=0;c21<3;c21++)
+  for(int ib=1;ib<3;ib++)
+  {
+    int c22=(c21+ib)%3,c23=(c22+ib)%3;
+    for(int d1=0;d1<4;d1++)
+    for(int c11=0;c11<3;c11++)
+    for(int ia=1;ia<3;ia++)
+    {
+      int c12=(c11+ia)%3,c13=(c12+ia)%3;
+      Ty giE = epsl[c11][c12]*epsl[c21][c22]*ga1.g[d1]*ga2.g[d2];
+
+      #pragma omp parallel for
+      for(int ji=0;ji<nmass*NTt;ji++)
+      {
+        int massi = ji/NTt;
+        int ti    = ji%NTt;
+
+        int m1 = (ind2*3+c21)*12+ind1*3+c11;
+        int m2 = (ga2.ind[d2]*3+c22)*12+d1*3+c12;
+        int m3 = (d2*3+c23)*12+ga1.ind[d1]*3+c13;
+
+        int n1 = (ind2*3+c21)*12+ga1.ind[d1]*3+c11;
+        int n2 = (ga2.ind[d2]*3+c22)*12+d1*3+c12;
+        int n3 = (d2*3+c23)*12+ind1*3+c13;
+
+        Ty* tp1 = &p1[massi][(m1*NTt+ti)*Nxyz];
+        Ty* tp2 = &p2[massi][(m2*NTt+ti)*Nxyz];
+        Ty* tp3 = &p3[massi][(m3*NTt+ti)*Nxyz];
+        Ty* tn1 = &p1[massi][(n1*NTt+ti)*Nxyz];
+        Ty* tn2 = &p2[massi][(n2*NTt+ti)*Nxyz];
+        Ty* tn3 = &p3[massi][(n3*NTt+ti)*Nxyz];
+        Ty* tr0 = &(res.data()[(massi*NTt + ti)*Nxyz]);
+
+        #if USEQACC==1
+        qacc_forNB(i, long(Nxyz),{ tr0[i] -= ((tp1[i]*tp2[i]*tp3[i] + tn1[i]*tn2[i]*tn3[i])*giE); });
+        #else
+        EAy vp1(tp1,Nxyz);
+        EAy vp2(tp2,Nxyz);
+        EAy vp3(tp3,Nxyz);
+        EAy vn1(tn1,Nxyz);
+        EAy vn2(tn2,Nxyz);
+        EAy vn3(tn3,Nxyz);
+        EAy vr0(tr0,Nxyz);
+        vr0 -= ((vp1*vp2*vp3 + vn1*vn2*vn3)*giE);
+        #endif
+
+      }
+      qacc_barrier(dummy);
+    }
+  }
+
+}
+
+
+///proton sector corr with prop gwu convention
+template <typename Ty>
+void proton_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, std::vector<qpropT >& prop3,
+        qlat::vector_acc<Ty > &res, const ga_M &ga1,int t0,int dT,int clear=1,int oppo=0){
+  TIMER("Proton_vectorE");
+  if(prop1.size() == 0){res.resize(0); return;}
+
+  int nmass = prop1.size();
+  if(prop1.size() == 0){res.resize(0); return ;}
+  const qlat::Geometry &geo = prop1[0].geo();
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+
+  int NTt  = fd.Nv[3];
+  LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
+
+  qassert(prop1.size() == prop2.size());
+  qassert(prop1.size() == prop3.size());
+
+  if(clear == 1){ini_resE(res,nmass,fd);}
+
+  //int nv = res.size();int Nsize = res[0].size();
+  qlat::vector_acc<Ty >  resE0;resE0.resize(res.size());
+  qlat::vector_acc<Ty >  resE1;resE1.resize(res.size());
+  ////qlat::set_zero(resE0);qlat::set_zero(resE1);
+
+  proton_vectorE(prop1,prop2,prop3,resE0,ga1,0,ga1,0,1);
+  proton_vectorE(prop1,prop2,prop3,resE0,ga1,1,ga1,1,0);
+  proton_vectorE(prop1,prop2,prop3,resE1,ga1,2,ga1,2,1);
+  proton_vectorE(prop1,prop2,prop3,resE1,ga1,3,ga1,3,0);
+
+  std::vector<int > map_sec = get_map_sec(dT,fd.nt);
+  //////int Nt = fd.Nt;
+
+  /////int t0 = 0;
+  int nt = fd.nt;
+  ///for(int massi=0;massi<nmass;massi++)
+  ///for(int ti = 0;ti<Nt;ti++)
+  #pragma omp parallel for
+  for(int ji=0;ji<nmass*NTt;ji++)
+  {
+    int massi = ji/NTt;
+    int ti    = ji%NTt;
+    int t = ti + fd.Pos0[fd.rank][3];
+    Ty* tr0 = &(res.data()[(massi*NTt+ti)*Nxyz]);
+    Ty* tv0 = &(resE0.data()[(massi*NTt+ti)*Nxyz]);
+    Ty* tv1 = &(resE1.data()[(massi*NTt+ti)*Nxyz]);
+
+    #if USEQACC==0
+    EAy r0(tr0,Nxyz);
+    EAy v0(tv0,Nxyz);
+    EAy v1(tv1,Nxyz);
+    #endif
+
+    if(map_sec[(t-t0+nt)%nt]%2==0)
+    {
+      #if USEQACC==1
+      if(oppo==0)qacc_forNB(i, long(Nxyz), { tr0[i] += tv0[i]; });
+      if(oppo==1)qacc_forNB(i, long(Nxyz), { tr0[i] += tv1[i]; });
+      #else
+      if(oppo==0){r0 += v0;}
+      if(oppo==1){r0 += v1;}
+      #endif
+
+    }
+    if(map_sec[(t-t0+nt)%nt]%2==1)
+    {
+      #if USEQACC==1
+      if(oppo==0)qacc_forNB(i, long(Nxyz), { tr0[i] += tv1[i]; });
+      if(oppo==1)qacc_forNB(i, long(Nxyz), { tr0[i] += tv0[i]; });
+      #else
+      if(oppo==0){r0 += v1;}
+      if(oppo==1){r0 += v0;}
+      #endif
+
+    }
+  }
+  qacc_barrier(dummy);
+}
+
+////container
+template <typename Ty>
+void proton_corrE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, std::vector<qpropT >& prop3,
+  const ga_M &ga2,const int ind2, const ga_M &ga1,const int ind1,
+  qlat::vector_acc<Ty > &res, int clear=1,const Coordinate& mom = Coordinate()){
+  qlat::vector_acc<Ty > resE;
+  proton_vectorE(prop1,prop2,prop3,ga2,ind2,ga1,ind1,resE,1);
+  vec_corrE(resE,res,clear,mom);
+}
+
+////container
+template <typename Ty>
+void proton_corrE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, std::vector<qpropT >& prop3,
+ qlat::vector_acc<Ty > &res, const ga_M &ga1,const int t0,const int dT,int clear=1,const Coordinate& mom = Coordinate()){
+  qlat::vector_acc<Ty >  resE;
+  proton_vectorE(prop1,prop2,prop3,resE, ga1, t0,dT,1);
+
+  vec_corrE(resE,res,clear,mom);
+}
+
+////simple gpu version
+/////A source gamma, B sink Gamma, G projections with fermion sign, mL shape of diagram
+template <typename Ty>
+void baryon_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, std::vector<qpropT >& prop3,
+  qlat::vector_acc<Ty > &res, ga_M &A, ga_M &B, qlat::vector_acc<Ty > &G, qlat::vector_acc<int > &mL, int clear=1){
+  TIMER("Proton_vectorE");
+  if(prop1.size() == 0){res.resize(0); return ;}
+  ////check_prop_size(prop1);check_prop_size(prop2);check_prop_size(prop3);
+  const qlat::Geometry &geo = prop1[0].geo();
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+
+  int NTt  = fd.Nv[3];
+  LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
+  int nmass = prop1.size();
+  qassert(prop1.size() == prop2.size());
+  qassert(prop1.size() == prop3.size());
+  qassert(G.size()  == 16);
+  qassert(mL.size() == 3);
+  qassert(fd.order_ch == 0);
+  if(clear == 1){ini_resE(res,nmass,fd);}
+
+  ////if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");qassert(false);}
+  if(res.size()==0){print0("Size of res wrong. \n");qassert(false);}
+
+  qlat::vector_acc<Ty* > p1 = EigenM_to_pointers(prop1);
+  qlat::vector_acc<Ty* > p2 = EigenM_to_pointers(prop2);
+  qlat::vector_acc<Ty* > p3 = EigenM_to_pointers(prop3);
+
+  Ty epsl[3][3];
+  for(int i=0;i<3;i++)for(int j=0;j<3;j++){epsl[i][j] = 0;}
+  for(int i=0;i<3;i++){epsl[i][i]=0;epsl[i][(i+1)%3]=1;epsl[i][(i+2)%3]=-1;}
+
+  //mL = {};
+  //std::vector<int > mL;mL.resize(3);
+  //mL[0] = 0;mL[1] = 1;mL[2] = 2;
+  std::vector<int > nmL;nmL.resize(3);
+  std::vector<int > bmL;bmL.resize(3);
+
+  {
+    for(int a1=0;a1<3;a1++)
+    for(int ia=1;ia<3;ia++)
+    for(int b1=0;b1<3;b1++)
+    for(int ib=1;ib<3;ib++)
+    {
+      int b2=(b1+ib)%3,b3=(b2+ib)%3;
+      int a2=(a1+ia)%3,a3=(a2+ia)%3;
+      for(int m2=0;m2<4;m2++)
+      for(int m1=0;m1<4;m1++)
+      for(int n2=0;n2<4;n2++)
+      for(int n1=0;n1<4;n1++)
+      {
+        Ty Gv =  G[m1*4+n1];
+        double norm = std::sqrt(Gv.real()*Gv.real() + Gv.imag()*Gv.imag());
+        if(norm < 1e-20)continue;
+
+        int m3 = A.ind[m2];
+        int n3 = B.ind[n2];
+        Ty giE = epsl[a1][a2]*epsl[b1][b2]*A.g[m2]*B.g[n2]*G[m1*4+n1];
+        nmL[0] = n1;nmL[1] = n2;nmL[2] = n3;
+        bmL[0] = b1;bmL[1] = b2;bmL[2] = b3;
+        int nm1 = nmL[mL[0]];
+        int nm2 = nmL[mL[1]];
+        int nm3 = nmL[mL[2]];
+
+        int bm1 = bmL[mL[0]];
+        int bm2 = bmL[mL[1]];
+        int bm3 = bmL[mL[2]];
+
+        #pragma omp parallel for
+        for(int ji=0;ji<nmass*NTt;ji++)
+        {
+          int massi = ji/NTt;
+          int ti    = ji%NTt;
+
+          int o1 = (m1*3+a1)*12+(nm1*3+bm1);
+          int o2 = (m2*3+a2)*12+(nm2*3+bm2);
+          int o3 = (m3*3+a3)*12+(nm3*3+bm3);
+
+          Ty* tp1 = &p1[massi][(o1*NTt+ti)*Nxyz];
+          Ty* tp2 = &p2[massi][(o2*NTt+ti)*Nxyz];
+          Ty* tp3 = &p3[massi][(o3*NTt+ti)*Nxyz];
+          Ty* tr0 = &(res.data()[(massi*NTt + ti)*Nxyz]);
+
+          #if USEQACC==1
+          qacc_forNB(i, long(Nxyz),{ tr0[i] += (tp1[i]*tp2[i]*tp3[i] * giE); });
+          #else
+          EAy vp1(tp1,Nxyz);
+          EAy vp2(tp2,Nxyz);
+          EAy vp3(tp3,Nxyz);
+          EAy vr0(tr0,Nxyz);
+          vr0 += (vp1*vp2*vp3 * giE);
+          #endif
+
+        }
+        qacc_barrier(dummy);
+      }
+    }
+  }
+}
+
+////3pt insertion version
+////A source gamma, B sink Gamma, G projections with fermion sign, mL shape of diagram
+template <typename Ty>
+void baryon_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, std::vector<qpropT >& prop3,
+  std::vector<qpropT >& resP, ga_M &A, ga_M &B, qlat::vector_acc<Ty > &G, qlat::vector_acc<int > &mL, int insertion,int clear=1)
+{
+  TIMER("Baryon_vectorE_insertion");
+  if(prop1.size() == 0){resP.resize(0); return ;}
+  ////check_prop_size(prop1);check_prop_size(prop2);check_prop_size(prop3);
+  const qlat::Geometry &geo = prop1[0].geo();
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+  qassert(insertion == 0 or insertion == 1 or insertion == 2);
+
+  int NTt  = fd.Nv[3];
+  LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
+  const int nmass = prop1.size();
+  qassert(prop1.size() == prop2.size());
+  qassert(prop1.size() == prop3.size());
+  qassert(G.size()  == 16);
+  qassert(mL.size() == 3);
+  qassert(fd.order_ch == 0);
+
+  if(clear==1){
+    if(int(resP.size()) != nmass){resP.resize(nmass);}
+    for(int mi=0;mi<nmass;mi++){
+      if(!resP[mi].initialized){resP[mi].init(geo);}
+      else{qlat::set_zero(resP[mi]);}
+    }
+  }
+  qassert(int(resP.size()) == nmass);
+  for(int mi=0;mi<nmass;mi++){qassert(resP[mi].initialized);}
+
+  /////check_prop_size(resP);
+
+  qlat::vector_acc<Ty* > p1 = EigenM_to_pointers(prop1);
+  qlat::vector_acc<Ty* > p2 = EigenM_to_pointers(prop2);
+  qlat::vector_acc<Ty* > p3 = EigenM_to_pointers(prop3);
+  qlat::vector_acc<Ty* > rP = EigenM_to_pointers(resP);
+
+  Ty epsl[3][3];
+  for(int i=0;i<3;i++)for(int j=0;j<3;j++){epsl[i][j] = 0;}
+  for(int i=0;i<3;i++){epsl[i][i]=0;epsl[i][(i+1)%3]=1;epsl[i][(i+2)%3]=-1;}
+
+  std::vector<int > nmL;nmL.resize(3);
+  std::vector<int > bmL;bmL.resize(3);
+
+  {
+    for(int a1=0;a1<3;a1++)
+    for(int ia=1;ia<3;ia++)
+    for(int b1=0;b1<3;b1++)
+    for(int ib=1;ib<3;ib++)
+    {
+      int b2=(b1+ib)%3,b3=(b2+ib)%3;
+      int a2=(a1+ia)%3,a3=(a2+ia)%3;
+      for(int m2=0;m2<4;m2++)
+      for(int m1=0;m1<4;m1++)
+      for(int n2=0;n2<4;n2++)
+      for(int n1=0;n1<4;n1++)
+      {
+        Ty Gv =  G[m1*4+n1];
+        double norm = std::sqrt(Gv.real()*Gv.real() + Gv.imag()*Gv.imag());
+        if(norm < 1e-20)continue;
+
+        int m3 = A.ind[m2];
+        int n3 = B.ind[n2];
+        Ty giE = epsl[a1][a2]*epsl[b1][b2]*A.g[m2]*B.g[n2]*G[m1*4+n1];
+        nmL[0] = n1;nmL[1] = n2;nmL[2] = n3;
+        bmL[0] = b1;bmL[1] = b2;bmL[2] = b3;
+        int nm1 = nmL[mL[0]];
+        int nm2 = nmL[mL[1]];
+        int nm3 = nmL[mL[2]];
+
+        int bm1 = bmL[mL[0]];
+        int bm2 = bmL[mL[1]];
+        int bm3 = bmL[mL[2]];
+
+        #pragma omp parallel for
+        for(int ji=0;ji<nmass*NTt;ji++)
+        {
+          int massi = ji/NTt;
+          int ti    = ji%NTt;
+
+          int o1 = (m1*3+a1)*12+(nm1*3+bm1);
+          int o2 = (m2*3+a2)*12+(nm2*3+bm2);
+          int o3 = (m3*3+a3)*12+(nm3*3+bm3);
+
+          int r0 = 0;
+          if(insertion == 0){r0 = (m1*3+a1)*12+(nm1*3+bm1);}
+          if(insertion == 1){r0 = (m2*3+a2)*12+(nm2*3+bm2);}
+          if(insertion == 2){r0 = (m3*3+a3)*12+(nm3*3+bm3);}
+
+          Ty* tp1 = &p1[massi][(o1*NTt+ti)*Nxyz];
+          Ty* tp2 = &p2[massi][(o2*NTt+ti)*Nxyz];
+          Ty* tp3 = &p3[massi][(o3*NTt+ti)*Nxyz];
+          Ty* tr0 = &rP[massi][(r0*NTt+ti)*Nxyz];
+
+          #if USEQACC==1
+          if(insertion == 0)qacc_forNB(i, long(Nxyz),{ tr0[i] += (tp2[i]*tp3[i] * giE); });
+          if(insertion == 1)qacc_forNB(i, long(Nxyz),{ tr0[i] += (tp1[i]*tp3[i] * giE); });
+          if(insertion == 2)qacc_forNB(i, long(Nxyz),{ tr0[i] += (tp1[i]*tp2[i] * giE); });
+          #else
+          EAy vp1(tp1,Nxyz);
+          EAy vp2(tp2,Nxyz);
+          EAy vp3(tp3,Nxyz);
+          EAy vr0(tr0,Nxyz);
+          if(insertion == 0){vr0 += vp2*vp3 * giE;}
+          if(insertion == 1){vr0 += vp1*vp3 * giE;}
+          if(insertion == 2){vr0 += vp1*vp2 * giE;}
+          #endif
+        }
+        qacc_barrier(dummy);
+      }
+    }
+  }
+
+}
+
+template <typename Ty>
+void baryon_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, std::vector<qpropT >& prop3,
+  std::vector< std::vector<qpropT > >& resP, const int ud, const std::vector<int >& map_sec, std::vector< std::vector<qpropT > >& buf) 
+{
+  if(prop1.size() == 0){resP.resize(0); return ;}
+  const qlat::Geometry &geo = prop1[0].geo();
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+
+  const long Nt = fd.Nt;
+  const long Nxyz = fd.Nx * fd.Ny * fd.Nz;
+  ga_matrices_cps   ga_cps;
+  ga_M& A = ga_cps.ga[1][3];
+  ga_M& B = ga_cps.ga[1][3];
+
+  ////get all 4 prj
+  if(buf.size() != 16){buf.resize(16);}
+  for(int i=0;i<16;i++){
+    init_qpropT(buf[i], prop1.size(), geo);
+    clear_qpropT(buf[i]);
+  }
+  if(resP.size()!=4){resP.resize(4);}
+  for(int i=0;i<4;i++){
+    init_qpropT(resP[i], prop1.size(), geo);
+    {clear_qpropT(resP[i]);} ////must clear!
+  }
+
+  std::vector<Ty > factor(4);
+  factor[0] = 1.0/2.0;
+  //for(int i=1;i<4;i++){factor[i] = Ty(0.0, 1.0/2.0);}
+  for(int i=1;i<4;i++){factor[i] = Ty(1.0/2.0, 0.0);}  ///complex sign convention here?
+
+  std::vector<ga_M > gL(8);
+  gL[0] = ga_cps.ga[0][0];gL[1] = ga_cps.ga[0][4];
+
+  for(int i=1;i<4;i++){
+    gL[i*2 + 0] =                   ga_cps.ga[i][5]; ////need reverse or not
+    gL[i*2 + 1] = ga_cps.ga[0][4] * ga_cps.ga[i][5];
+  }
+
+  std::vector<int > udL = {0,0,  1};
+
+  qlat::vector_acc<Ty > G;G.resize(16);
+  qlat::vector_acc<int > mL;mL.resize(3);
+
+  //std::vector<int > inL = {0,0,  1,1,  2,2,  3,3,  0,2,  1,3,  2,0,  3,1 };
+  //for(int ind=0;ind<8;ind++)
+  //for(int insertion=0;insertion<3;insertion++)
+  //{   
+  //  if(udL[insertion] == ud) 
+  //  {   
+  //    int ind1 = inL[ind*2 + 0];
+  //    int ind2 = inL[ind*2 + 1];
+  //    clear_qv(G);G[ind2*4 + ind1] = +1.0/2.0; //// (1+r4)/2, could be non-zero for all elements...
+  //    mL[0] = 0;mL[1] = 1;mL[2] = 2;
+  //    baryon_vectorE(prop1, prop2, prop3, resP[0], A, B, G, mL, insertion, 0); 
+  //    ////baryon_vectorE(prop1,prop2,prop3, resE, ga2,ga1, G, mL, fd, 1); 
+  //    clear_qv(G);G[ind2*4 + ind1] = -1.0/2.0;
+  //    mL[0] = 1;mL[1] = 0;mL[2] = 2;
+  //    baryon_vectorE(prop1, prop2, prop3, resP[0], A, B, G, mL, insertion, 0); //// no clear sum
+  //  }   
+  //}
+
+  for(int ind=0;ind<16;ind++)
+  for(int insertion=0;insertion<3;insertion++)
+  {   
+    if(udL[insertion] == ud) 
+    {   
+      int ind1 = ind/4;
+      int ind2 = ind%4;
+      qlat::vector_acc<Ty > G;G.resize(16);
+      qlat::vector_acc<int > mL;mL.resize(3);
+      clear_qv(G);G[ind2*4 + ind1] = +1.0/1.0; //// (1+r4)/2, could be non-zero for all elements...
+      mL[0] = 0;mL[1] = 1;mL[2] = 2;
+      baryon_vectorE(prop1, prop2, prop3, buf[ind], A, B, G, mL, insertion, 0); 
+      ////baryon_vectorE(prop1,prop2,prop3, resE, ga2,ga1, G, mL, fd, 1); 
+      clear_qv(G);G[ind2*4 + ind1] = -1.0/1.0;
+      mL[0] = 1;mL[1] = 0;mL[2] = 2;
+      baryon_vectorE(prop1, prop2, prop3, buf[ind], A, B, G, mL, insertion, 0); //// no clear sum
+    }   
+  }
+
+
+  for(int prj=0;prj<4;prj++)
+  {
+    for(int ti = 0; ti < Nt; ti++)
+    {
+      int seci = map_sec[ti + fd.init]%2;
+      for(int si = 0; si < 2 ;si++)//// 1 + r4 sectors
+      for(int gd=0;gd<4;gd++)
+      {
+        Ty sign  = gL[prj*2 + si].g[gd]           * factor[prj];
+        int bind = gL[prj*2 + si].ind[gd]*4 + gd ; //// need reverse or not
+
+        if(seci == 1 and si == 1){sign = (-1.0) * sign;} //// reverse sign if seci == 1
+        for(int da = 0; da < 12*12; da++)
+        for(unsigned int vi = 0; vi < prop1.size();vi++)
+        {
+          Ty* src = (Ty*) qlat::get_data(buf[bind][vi]).data();
+          Ty* res = (Ty*) qlat::get_data(resP[prj][vi]).data();
+          const long off_d = da*Nt*Nxyz + ti*Nxyz;
+          cpy_data_threadC(&res[off_d], &src[off_d], Nxyz, 1, false, sign);
+        }
+        qacc_barrier(dummy);
+      }
+    }
+  }
+
+}
+
+
+
 #ifdef QLAT_USE_ACC
 template<typename Ty, int bfac, int Blocks>
 __global__ void baryon_vectorEV_global(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
@@ -417,439 +931,84 @@ void baryon_vectorEV(Ty** p1, Ty** p2, Ty** p3, Ty* resP, int nmass,
 }
 
 ////container 
-template <typename Ta>
-void baryon_vectorEV(EigenMTa &prop1, EigenMTa &prop2, EigenMTa &prop3, EigenVTa &res,
-  ga_M &A, ga_M &B, qlat::vector_acc<Ta > &GV, qlat::vector_acc<int > &mLV,
-  fft_desc_basic &fd,int clear=1){
+template <typename Ty>
+void baryon_vectorEV(EigenTy& prop1, EigenTy& prop2, EigenTy& prop3,
+  qlat::vector_gpu<Ty > &res, ga_M &A, ga_M &B, qlat::vector_acc<Ty > &GV, qlat::vector_acc<int > &mLV,
+  fft_desc_basic& fd, int clear=1){
+
+  if(prop1.size() == 0){res.resize(0); return ;}
+  check_prop_size(prop1, fd);check_prop_size(prop2, fd);check_prop_size(prop3, fd);
+
   int NTt  = fd.Nv[3];
   long Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
-
-  check_prop_size(prop1);check_prop_size(prop2);check_prop_size(prop3);
-  int nmass = prop1.size()/(12*12*NTt);
+  ////check_prop_size(prop1);check_prop_size(prop2);check_prop_size(prop3);
+  int nmass = prop1.size();
   qassert(prop1.size() == prop2.size());
   qassert(prop1.size() == prop3.size());
   int Ngv = GV.size()/16;
-  long resL = Ngv * nmass*NTt * Nxyz;
+  const unsigned long resL = Ngv * nmass*NTt * Nxyz;
   if(clear == 1){if(res.size()!= resL){res.resize(resL); } }
   if(res.size() != resL){print0("Size of res wrong. \n");qassert(false);}
 
-  qlat::vector_acc<Ta* > prop1P = EigenM_to_pointers(prop1);
-  qlat::vector_acc<Ta* > prop2P = EigenM_to_pointers(prop2);
-  qlat::vector_acc<Ta* > prop3P = EigenM_to_pointers(prop3);
-  Ta** p1 = prop1P.data();
-  Ta** p2 = prop2P.data();
-  Ta** p3 = prop3P.data();
-  Ta* resP = res.data();
+  qlat::vector_acc<Ty* > prop1P = EigenM_to_pointers(prop1, Nxyz);
+  qlat::vector_acc<Ty* > prop2P = EigenM_to_pointers(prop2, Nxyz);
+  qlat::vector_acc<Ty* > prop3P = EigenM_to_pointers(prop3, Nxyz);
+  Ty** p1 = prop1P.data();
+  Ty** p2 = prop2P.data();
+  Ty** p3 = prop3P.data();
+  Ty* resP = res.data();
 
   baryon_vectorEV(p1, p2, p3, resP, nmass, A, B, GV, mLV, fd, clear);
 }
 
-////simple gpu version
-///////Proton contractions
-template <typename Ta>
-void proton_vectorE(EigenMTa &prop1, EigenMTa &prop2, EigenMTa &prop3,
-  const ga_M &ga2,const int ind2, const ga_M &ga1, const int ind1,
-      EigenVTa &res, fft_desc_basic &fd,int clear=1){
-  TIMER("Proton_vectorE");
-  ////ga2/ind2 for source, gam1/ind1 for sink
-  ////"[]|+N" type diagram
-  check_prop_size(prop1);check_prop_size(prop2);check_prop_size(prop3);
-  int NTt  = fd.Nv[3];
-  LInt Nxyz = prop1[0].size();
-  int nmass = prop1.size()/(12*12*NTt);
-  qassert(prop1.size() == prop2.size());
-  qassert(prop1.size() == prop3.size());
-  if(clear == 1){ini_resE(res,nmass,fd);}
-  if(clear == 0){qassert(res.size() == long(nmass*NTt * Nxyz));}
-    
-  ////Prop format, src d-4, c-3, sink d-4, c-3, Nt, EigenVTa<Nxyz>
-  if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");qassert(false);}
-
-  Ta epsl[3][3];
-  for(int i=0;i<3;i++)for(int j=0;j<3;j++){epsl[i][j] = 0;}
-  for(int i=0;i<3;i++){epsl[i][i]=0;epsl[i][(i+1)%3]=Ta(1,0);epsl[i][(i+2)%3]=Ta(-1,0);}
-
-  for(int d2=0;d2<4;d2++)
-  for(int c21=0;c21<3;c21++)
-  for(int ib=1;ib<3;ib++)
-  {
-    int c22=(c21+ib)%3,c23=(c22+ib)%3;
-    for(int d1=0;d1<4;d1++)
-    for(int c11=0;c11<3;c11++)
-    for(int ia=1;ia<3;ia++)
-    {
-      int c12=(c11+ia)%3,c13=(c12+ia)%3;
-      Ta giE = epsl[c11][c12]*epsl[c21][c22]*ga1.g[d1]*ga2.g[d2];
-
-      #pragma omp parallel for
-      for(int ji=0;ji<nmass*NTt;ji++)
-      {
-        int massi = ji/NTt;
-        int ti    = ji%NTt;
-
-        int m1 = massi*12*12 + (ind2*3+c21)*12+ind1*3+c11;
-        int m2 = massi*12*12 + (ga2.ind[d2]*3+c22)*12+d1*3+c12;
-        int m3 = massi*12*12 + (d2*3+c23)*12+ga1.ind[d1]*3+c13;
-
-        int n1 = massi*12*12 + (ind2*3+c21)*12+ga1.ind[d1]*3+c11;
-        int n2 = massi*12*12 + (ga2.ind[d2]*3+c22)*12+d1*3+c12;
-        int n3 = massi*12*12 + (d2*3+c23)*12+ind1*3+c13;
-
-        Ta* tp1 = prop1[m1*NTt+ti].data();
-        Ta* tp2 = prop2[m2*NTt+ti].data();
-        Ta* tp3 = prop3[m3*NTt+ti].data();
-        Ta* tn1 = prop1[n1*NTt+ti].data();
-        Ta* tn2 = prop2[n2*NTt+ti].data();
-        Ta* tn3 = prop3[n3*NTt+ti].data();
-        Ta* tr0 = &(res.data()[(massi*NTt + ti)*Nxyz]);
-
-        #if USEQACC==1
-        qacc_forNB(i, long(Nxyz),{ tr0[i] -= ((tp1[i]*tp2[i]*tp3[i] + tn1[i]*tn2[i]*tn3[i])*giE); });
-        #else
-        EAa vp1(tp1,Nxyz);
-        EAa vp2(tp2,Nxyz);
-        EAa vp3(tp3,Nxyz);
-        EAa vn1(tn1,Nxyz);
-        EAa vn2(tn2,Nxyz);
-        EAa vn3(tn3,Nxyz);
-        EAa vr0(tr0,Nxyz);
-        vr0 -= ((vp1*vp2*vp3 + vn1*vn2*vn3)*giE);
-        #endif
-
-      }
-      qacc_barrier(dummy);
-    }
-  }
-
-}
-
-///container for 
-template <typename Ta>
-void proton_vectorE(EigenMTa &prop1, EigenMTa &prop2, EigenMTa &prop3,
-        EigenVTa &res, fft_desc_basic &fd, const ga_M &ga1,int t0,int dT,int clear=1,int oppo=0){
-  TIMER("Proton_vectorE");
-  int NTt  = fd.Nv[3];
-  LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
-  int nmass = prop1.size()/(12*12*NTt);
-  qassert(prop1.size() == prop2.size());
-  qassert(prop1.size() == prop3.size());
-
-  if(clear == 1){ini_resE(res,nmass,fd);}
-
-  //int nv = res.size();int Nsize = res[0].size();
-  EigenVTa resE0;resE0.resize(res.size());
-  EigenVTa resE1;resE1.resize(res.size());
-  ////qlat::set_zero(resE0);qlat::set_zero(resE1);
-
-  proton_vectorE(prop1,prop2,prop3,ga1,0,ga1,0,resE0,fd,1);
-  proton_vectorE(prop1,prop2,prop3,ga1,1,ga1,1,resE0,fd,0);
-  proton_vectorE(prop1,prop2,prop3,ga1,2,ga1,2,resE1,fd,1);
-  proton_vectorE(prop1,prop2,prop3,ga1,3,ga1,3,resE1,fd,0);
-
-  std::vector<int > map_sec = get_sec_map(dT,fd.nt);
-  //////int Nt = fd.Nt;
-
-  /////int t0 = 0;
-  int nt = fd.nt;
-  ///for(int massi=0;massi<nmass;massi++)
-  ///for(int ti = 0;ti<Nt;ti++)
-  #pragma omp parallel for
-  for(int ji=0;ji<nmass*NTt;ji++)
-  {
-    int massi = ji/NTt;
-    int ti    = ji%NTt;
-    int t = ti + fd.Pos0[fd.rank][3];
-    Ta* tr0 = &(res.data()[(massi*NTt+ti)*Nxyz]);
-    Ta* tv0 = &(resE0.data()[(massi*NTt+ti)*Nxyz]);
-    Ta* tv1 = &(resE1.data()[(massi*NTt+ti)*Nxyz]);
-
-    #if USEQACC==0
-    EAa r0(tr0,Nxyz);
-    EAa v0(tv0,Nxyz);
-    EAa v1(tv1,Nxyz);
-    #endif
-
-    if(map_sec[(t-t0+nt)%nt]%2==0)
-    {
-      #if USEQACC==1
-      if(oppo==0)qacc_forNB(i, long(Nxyz), { tr0[i] += tv0[i]; });
-      if(oppo==1)qacc_forNB(i, long(Nxyz), { tr0[i] += tv1[i]; });
-      #else
-      if(oppo==0){r0 += v0;}
-      if(oppo==1){r0 += v1;}
-      #endif
-
-    }
-    if(map_sec[(t-t0+nt)%nt]%2==1)
-    {
-      #if USEQACC==1
-      if(oppo==0)qacc_forNB(i, long(Nxyz), { tr0[i] += tv1[i]; });
-      if(oppo==1)qacc_forNB(i, long(Nxyz), { tr0[i] += tv0[i]; });
-      #else
-      if(oppo==0){r0 += v1;}
-      if(oppo==1){r0 += v0;}
-      #endif
-
-    }
-  }
-  qacc_barrier(dummy);
-}
-
-////container
-template <typename Ta>
-void proton_corrE(EigenMTa &prop1, EigenMTa &prop2, EigenMTa &prop3,
-  const ga_M &ga2,const int ind2, const ga_M &ga1,const int ind1,
-  EigenVTa &res, fft_desc_basic &fd,int clear=1,const Coordinate& mom = Coordinate()){
-  EigenVTa resE;
-  proton_vectorE(prop1,prop2,prop3,ga2,ind2,ga1,ind1,resE,fd,1);
-  vec_corrE(resE,res,fd,clear,mom);
-}
-
-////container
-template <typename Ta>
-void proton_corrE(EigenMTa &prop1, EigenMTa &prop2, EigenMTa &prop3,
- EigenVTa &res, fft_desc_basic &fd, const ga_M &ga1,const int t0,const int dT,int clear=1,const Coordinate& mom = Coordinate()){
-  EigenVTa resE;
-  proton_vectorE(prop1,prop2,prop3,resE,fd, ga1, t0,dT,1);
-
-  vec_corrE(resE,res,fd,clear,mom);
-}
 
 
-////simple gpu version
-/////A source gamma, B sink Gamma, G projections with fermion sign, mL shape of diagram
-template <typename Ta>
-void baryon_vectorE(EigenMTa &prop1, EigenMTa &prop2, EigenMTa &prop3,
-  ga_M &A, ga_M &B, qlat::vector_acc<Ta > &G, qlat::vector_acc<int > &mL,
-        EigenVTa &res, fft_desc_basic &fd,int clear=1){
-  TIMER("Proton_vectorE");
-  check_prop_size(prop1);check_prop_size(prop2);check_prop_size(prop3);
-  int NTt  = fd.Nv[3];
-  LInt Nxyz = prop1[0].size();
-  int nmass = prop1.size()/(12*12*NTt);
-  qassert(prop1.size() == prop2.size());
-  qassert(prop1.size() == prop3.size());
-  qassert(G.size()  == 16);
-  qassert(mL.size() == 3);
-  if(clear == 1){ini_resE(res,nmass,fd);}
-
-  //if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");qassert(false);}
-  if(res.size()==0){print0("Size of res wrong. \n");qassert(false);}
-
-  Ta epsl[3][3];
-  for(int i=0;i<3;i++)for(int j=0;j<3;j++){epsl[i][j] = 0;}
-  for(int i=0;i<3;i++){epsl[i][i]=0;epsl[i][(i+1)%3]=1;epsl[i][(i+2)%3]=-1;}
-
-  //mL = {};
-  //std::vector<int > mL;mL.resize(3);
-  //mL[0] = 0;mL[1] = 1;mL[2] = 2;
-  std::vector<int > nmL;nmL.resize(3);
-  std::vector<int > bmL;bmL.resize(3);
-
-  {
-    for(int a1=0;a1<3;a1++)
-    for(int ia=1;ia<3;ia++)
-    for(int b1=0;b1<3;b1++)
-    for(int ib=1;ib<3;ib++)
-    {
-      int b2=(b1+ib)%3,b3=(b2+ib)%3;
-      int a2=(a1+ia)%3,a3=(a2+ia)%3;
-      for(int m2=0;m2<4;m2++)
-      for(int m1=0;m1<4;m1++)
-      for(int n2=0;n2<4;n2++)
-      for(int n1=0;n1<4;n1++)
-      {
-        Ta Gv =  G[m1*4+n1];
-        double norm = std::sqrt(Gv.real()*Gv.real() + Gv.imag()*Gv.imag());
-        if(norm < 1e-20)continue;
-
-        int m3 = A.ind[m2];
-        int n3 = B.ind[n2];
-        Ta giE = epsl[a1][a2]*epsl[b1][b2]*A.g[m2]*B.g[n2]*G[m1*4+n1];
-        nmL[0] = n1;nmL[1] = n2;nmL[2] = n3;
-        bmL[0] = b1;bmL[1] = b2;bmL[2] = b3;
-        int nm1 = nmL[mL[0]];
-        int nm2 = nmL[mL[1]];
-        int nm3 = nmL[mL[2]];
-
-        int bm1 = bmL[mL[0]];
-        int bm2 = bmL[mL[1]];
-        int bm3 = bmL[mL[2]];
-
-        #pragma omp parallel for
-        for(int ji=0;ji<nmass*NTt;ji++)
-        {
-          int massi = ji/NTt;
-          int ti    = ji%NTt;
-
-          int o1 = massi*12*12 + (m1*3+a1)*12+(nm1*3+bm1);
-          int o2 = massi*12*12 + (m2*3+a2)*12+(nm2*3+bm2);
-          int o3 = massi*12*12 + (m3*3+a3)*12+(nm3*3+bm3);
-
-          Ta* tp1 = prop1[o1*NTt+ti].data();
-          Ta* tp2 = prop2[o2*NTt+ti].data();
-          Ta* tp3 = prop3[o3*NTt+ti].data();
-          Ta* tr0 = &(res.data()[(massi*NTt + ti)*Nxyz]);
-
-          #if USEQACC==1
-          qacc_forNB(i, long(Nxyz),{ tr0[i] += (tp1[i]*tp2[i]*tp3[i] * giE); });
-          #else
-          EAa vp1(tp1,Nxyz);
-          EAa vp2(tp2,Nxyz);
-          EAa vp3(tp3,Nxyz);
-          EAa vr0(tr0,Nxyz);
-          vr0 += (vp1*vp2*vp3 * giE);
-          #endif
-
-        }
-        qacc_barrier(dummy);
-      }
-    }
-  }
-
-}
-
-////3pt insertion version
-////A source gamma, B sink Gamma, G projections with fermion sign, mL shape of diagram
-template <typename Ta>
-void baryon_vectorE(EigenMTa &prop1, EigenMTa &prop2, EigenMTa &prop3,
-  ga_M &A, ga_M &B, qlat::vector_acc<Ta > &G, qlat::vector_acc<int > &mL, int insertion,
-        EigenMTa &resP, fft_desc_basic &fd,int clear=1)
+template <typename Ty>
+void baryon_corrE(EigenTy& prop1, EigenTy& prop2, EigenTy& prop3,
+  qlat::vector_gpu<Ty > &res,  ga_M &ga2,int ind2,ga_M &ga1,int ind1,
+  fft_desc_basic& fd, int clear=1,const Coordinate& mom = Coordinate())
 {
-  TIMER("Baryon_vectorE_insertion");
-  check_prop_size(prop1);check_prop_size(prop2);check_prop_size(prop3);
-  int NTt  = fd.Nv[3];
-  LInt Nxyz = prop1[0].size();
-  int nmass = prop1.size()/(12*12*NTt);
-  qassert(prop1.size() == prop2.size());
-  qassert(prop1.size() == prop3.size());
-  qassert(G.size()  == 16);
-  qassert(mL.size() == 3);
-  qassert(fd.order_ch == 0);
-
-  if(clear==1){ini_propE(resP,nmass,fd);}
-  /////check_prop_size(resP);
-
-  Ta epsl[3][3];
-  for(int i=0;i<3;i++)for(int j=0;j<3;j++){epsl[i][j] = 0;}
-  for(int i=0;i<3;i++){epsl[i][i]=0;epsl[i][(i+1)%3]=1;epsl[i][(i+2)%3]=-1;}
-
-  std::vector<int > nmL;nmL.resize(3);
-  std::vector<int > bmL;bmL.resize(3);
-
-  {
-    for(int a1=0;a1<3;a1++)
-    for(int ia=1;ia<3;ia++)
-    for(int b1=0;b1<3;b1++)
-    for(int ib=1;ib<3;ib++)
-    {
-      int b2=(b1+ib)%3,b3=(b2+ib)%3;
-      int a2=(a1+ia)%3,a3=(a2+ia)%3;
-      for(int m2=0;m2<4;m2++)
-      for(int m1=0;m1<4;m1++)
-      for(int n2=0;n2<4;n2++)
-      for(int n1=0;n1<4;n1++)
-      {
-        Ta Gv =  G[m1*4+n1];
-        double norm = std::sqrt(Gv.real()*Gv.real() + Gv.imag()*Gv.imag());
-        if(norm < 1e-20)continue;
-
-        int m3 = A.ind[m2];
-        int n3 = B.ind[n2];
-        Ta giE = epsl[a1][a2]*epsl[b1][b2]*A.g[m2]*B.g[n2]*G[m1*4+n1];
-        nmL[0] = n1;nmL[1] = n2;nmL[2] = n3;
-        bmL[0] = b1;bmL[1] = b2;bmL[2] = b3;
-        int nm1 = nmL[mL[0]];
-        int nm2 = nmL[mL[1]];
-        int nm3 = nmL[mL[2]];
-
-        int bm1 = bmL[mL[0]];
-        int bm2 = bmL[mL[1]];
-        int bm3 = bmL[mL[2]];
-
-        #pragma omp parallel for
-        for(int ji=0;ji<nmass*NTt;ji++)
-        {
-          int massi = ji/NTt;
-          int ti    = ji%NTt;
-
-          int o1 = massi*12*12 + (m1*3+a1)*12+(nm1*3+bm1);
-          int o2 = massi*12*12 + (m2*3+a2)*12+(nm2*3+bm2);
-          int o3 = massi*12*12 + (m3*3+a3)*12+(nm3*3+bm3);
-
-          int r0 = 0;
-          if(insertion == 0){r0 = massi*12*12 + (m1*3+a1)*12+(nm1*3+bm1);}
-          if(insertion == 1){r0 = massi*12*12 + (m2*3+a2)*12+(nm2*3+bm2);}
-          if(insertion == 2){r0 = massi*12*12 + (m3*3+a3)*12+(nm3*3+bm3);}
-
-          Ta* tp1 = prop1[o1*NTt+ti].data();
-          Ta* tp2 = prop2[o2*NTt+ti].data();
-          Ta* tp3 = prop3[o3*NTt+ti].data();
-          Ta* tr0 = resP[r0*NTt+ti].data();
-
-          #if USEQACC==1
-          if(insertion == 0)qacc_forNB(i, long(Nxyz),{ tr0[i] += (tp2[i]*tp3[i] * giE); });
-          if(insertion == 1)qacc_forNB(i, long(Nxyz),{ tr0[i] += (tp1[i]*tp3[i] * giE); });
-          if(insertion == 2)qacc_forNB(i, long(Nxyz),{ tr0[i] += (tp1[i]*tp2[i] * giE); });
-          #else
-          EAa vp1(tp1,Nxyz);
-          EAa vp2(tp2,Nxyz);
-          EAa vp3(tp3,Nxyz);
-          EAa vr0(tr0,Nxyz);
-          if(insertion == 0){vr0 += vp2*vp3 * giE;}
-          if(insertion == 1){vr0 += vp1*vp3 * giE;}
-          if(insertion == 2){vr0 += vp1*vp2 * giE;}
-          #endif
-        }
-        qacc_barrier(dummy);
-      }
-    }
-  }
-
-}
-
-template <typename Ta>
-void baryon_corrE(EigenMTa &prop1, EigenMTa &prop2, EigenMTa &prop3,
-   ga_M &ga2,int ind2,ga_M &ga1,int ind1,
-  EigenVTa &res, fft_desc_basic &fd,int clear=1,const Coordinate& mom = Coordinate())
-{
+  if(prop1.size() == 0){res.resize(0); return ;}
   int NTt  = fd.Nv[3];
   ////LInt Nxyz = prop1[0].size();
-  int nmass = prop1.size()/(12*12*NTt);
+  int nmass = prop1.size();
   ////int nt = fd.nt;
 
-  EigenVTa resE;
-  ini_resE(resE,nmass,fd);
+  qlat::vector_acc<Ty > resE;
+  ini_resE(resE, nmass,fd);
 
-  qlat::vector_acc<Ta > G;G.resize(16);
+  qlat::vector_acc<Ty > G;G.resize(16);
   qlat::vector_acc<int > mL;mL.resize(3);
 
   clear_qv(G);G[ind2*4 + ind1] = +1.0;
   mL[0] = 0;mL[1] = 1;mL[2] = 2;
-  baryon_vectorE(prop1,prop2,prop3, ga2,ga1, G, mL, resE, fd, 1);
+  baryon_vectorE(prop1,prop2,prop3, resE, ga2,ga1, G, mL, fd, 1);
   clear_qv(G);G[ind2*4 + ind1] = -1.0;
   mL[0] = 1;mL[1] = 0;mL[2] = 2;
-  baryon_vectorE(prop1,prop2,prop3, ga2,ga1, G, mL, resE, fd, 0);
+  baryon_vectorE(prop1,prop2,prop3, resE, ga2,ga1, G, mL, fd, 0);
 
   ////proton_vectorE(prop1,prop2,prop3,ga2,ind2,ga1,ind1,resE,fd,1);
 
   vec_corrE(resE,res,fd,clear,mom);
 }
 
-template <typename Ta>
-void Omega_corrE(EigenMTa &prop1, EigenMTa &prop2, EigenMTa &prop3,
-   ga_M &ga2,int ind2,ga_M &ga1,int ind1,
-  EigenVTa &res, fft_desc_basic &fd,int clear=1,const Coordinate& mom = Coordinate())
+template <typename Ty>
+void Omega_corrE(EigenTy& prop1, EigenTy& prop2, EigenTy& prop3,
+  qlat::vector_gpu<Ty > &res, ga_M &ga2,int ind2,ga_M &ga1,int ind1, int clear=1,const Coordinate& mom = Coordinate())
 {
+  if(prop1.size() == 0){res.resize(0); return ;}
+  const qlat::Geometry &geo = prop1[0].geo();
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+
   int NTt  = fd.Nv[3];
   ///LInt Nxyz = prop1[0].size();
-  int nmass = prop1.size()/(12*12*NTt);
+  int nmass = prop1.size();
   ///int nt = fd.nt;
 
-  EigenVTa resE;
+  qlat::vector_acc<Ty > resE;
   ini_resE(resE,nmass,fd);
 
-  qlat::vector_acc<Ta > G;G.resize(16);
+  qlat::vector_acc<Ty > G;G.resize(16);
   qlat::vector_acc<int > mL;mL.resize(3);
 
   std::vector<int > dia;dia.resize(6);
@@ -865,7 +1024,7 @@ void Omega_corrE(EigenMTa &prop1, EigenMTa &prop2, EigenMTa &prop3,
   {
     clear_qv(G);G[ind2*4 + ind1] = sn[di];
     mL[0] = (dia[di]/100)%10;mL[1] =  (dia[di]%100)/10;mL[2] = dia[di]%10;
-    baryon_vectorE(prop1,prop2,prop3, ga2,ga1, G, mL, resE, fd, 0);
+    baryon_vectorE(prop1,prop2,prop3, resE, ga2,ga1, G, mL, fd, 0);
   }
      
   ////clear_qv(G);G[ind2*4 + ind1] = +1.0;

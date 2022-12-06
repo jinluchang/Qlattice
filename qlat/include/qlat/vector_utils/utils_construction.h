@@ -25,20 +25,23 @@
 #define USEQACC   0
 #endif
 
-#define EigenMTa std::vector<qlat::vector_acc<Ta > >
-#define EigenVTa qlat::vector_acc<Ta >
+#define EigenTy std::vector<qlat::vector_gpu<Ty > >
+
+///#define EigenMTa std::vector<qlat::vector_acc<Ta > >
+//#define EigenVTa qlat::vector_acc<Ta >
 #define EAy   Eigen::Map<Eigen::Array<Ty ,Eigen::Dynamic,1 > >
-#define EAa   Eigen::Map<Eigen::Array<Ta ,Eigen::Dynamic,1 > >
+//#define EAa   Eigen::Map<Eigen::Array<Ta ,Eigen::Dynamic,1 > >
 
 #include "utils_corr_prop.h"
 #include "utils_corr_meson.h"
 #include "utils_corr_baryon.h"
+#include "utils_corr_seq.h"
 
-
-#undef  EigenMTa
-#undef  EigenVTa
+#undef  EigenTy
+///#undef  EigenMTa
+//#undef  EigenVTa
 #undef  EAy
-#undef  EAa
+//#undef  EAa
 
 
 #endif

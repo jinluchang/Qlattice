@@ -402,8 +402,8 @@ void applyGaugeFieldScaling_long(Ty *gauge, long Vh, QudaGaugeParam *param, Quda
 }
 
 
-template <class Ty, class T1>
-void Ffield4d_to_quda_ff(T1*  quda_ff, qlat::FermionField4dT<Ty>& ff, int dir = 1)
+template <class Td, class T1>
+void Ffield4d_to_quda_ff(T1*  quda_ff, qlat::FermionField4dT<Td>& ff, int dir = 1)
 {
   TIMER("Ffield4d_to_quda_ff(ff, quda_ff)");
   qassert(ff.initialized);
@@ -413,7 +413,7 @@ void Ffield4d_to_quda_ff(T1*  quda_ff, qlat::FermionField4dT<Ty>& ff, int dir = 
   long V = geo.local_volume();
   long Vh = V / 2;
 
-  Ty* src = (Ty*) qlat::get_data(ff).data();
+  qlat::ComplexT<Td>* src = (qlat::ComplexT<Td>*) qlat::get_data(ff).data();
 
   //
   #pragma omp parallel for
@@ -430,8 +430,8 @@ void Ffield4d_to_quda_ff(T1*  quda_ff, qlat::FermionField4dT<Ty>& ff, int dir = 
 
 }
 
-template <class Ty, class T1>
-void quda_ff_to_Ffield4d(qlat::FermionField4dT<Ty>& ff, T1* quda_ff)
+template <class Td, class T1>
+void quda_ff_to_Ffield4d(qlat::FermionField4dT<Td>& ff, T1* quda_ff)
 {
   Ffield4d_to_quda_ff(quda_ff, ff, 0);
 }

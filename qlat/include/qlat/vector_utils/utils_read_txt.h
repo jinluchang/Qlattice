@@ -1229,9 +1229,8 @@ struct corr_dat
     ////return off_file ;
   }
 
-  inline crc32_t write_part(size_t off , size_t Psize, int type = 0)
+  inline crc32_t write_part(size_t off , size_t Psize)
   {
-    (void)type;
     qassert(head_off != 0);
     qassert(write_bsize > 0);
     qassert(write_type == 0 or write_type == 1);
@@ -1270,7 +1269,7 @@ struct corr_dat
         shift_off(total_write);
         size_t diff = total - total_write;
         const long cur = get_off();
-        crc32_t crc32_tem = write_part(cur, diff , node_control );
+        crc32_t crc32_tem = write_part(cur, diff );
         crc32_list.push_back(crc32_tem);
         crc32_size.push_back(diff * write_bsize);
         total_write += diff;
@@ -1306,7 +1305,7 @@ struct corr_dat
       {
         size_t pos_file_cur = head_off + fi * partF*write_bsize;
         size_t off_data = fi * partF;
-        crc32_t crc32_tem = write_part(off_data, partF , node_control );
+        crc32_t crc32_tem = write_part(off_data, partF  );
         crc32_tem = crc32_combine(crc32_tem, 0, end_of_file - pos_file_cur - partF * write_bsize);
         crc32_total ^= crc32_tem;
       }
@@ -1398,7 +1397,7 @@ struct corr_dat
     {
       qassert(write_bsize > 0);
       qassert(write_type == 0 or write_type == 1);
-      crc32_t crc32_tem = write_part(0, double_size , node_control );
+      crc32_t crc32_tem = write_part(0, double_size );
       crc32_list.push_back(crc32_tem);
       crc32_size.push_back(double_size * write_bsize);
       shift_off(0);

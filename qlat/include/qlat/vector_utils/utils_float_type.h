@@ -75,11 +75,11 @@ namespace qlat{
 ////
 
 #define qnoi qlat::FieldM<Complexq, 1>
-//////dim 12*12 --> Nt --> Nxyz
-#define qprop  qlat::FieldM<Complexq, 12*12>
-
 #define qnoiT qlat::FieldM<Ty, 1>
+
 //////dim 12*12 --> Nt --> Nxyz
+/////only memory size and geo are used, donot use others
+#define qprop   qlat::FieldM<Complexq, 12*12>
 #define qpropT  qlat::FieldM<Ty, 12*12>
 
 /////Fields for staggered fermion
@@ -280,7 +280,15 @@ void zero_Ty(Ty* a, size_t size,int GPU=0, bool dummy=true)
 
   ////#pragma omp parallel for
   ////for(size_t isp=0;isp<size;isp++){  a[isp] = 0;}
-  memset((void*) a, 0, sizeof(Ty) * size);
+  const unsigned int Nv = omp_get_max_threads();
+  const unsigned int dN = (size + Nv - 1) / Nv;
+  #pragma omp parallel for
+  for(unsigned int isp=0;isp<Nv;isp++)
+  {
+    Ty* tmp = &a[isp * dN + 0];
+    const int step = isp*(dN+1) <= size ? dN : (size - isp*dN); 
+    memset((void*) tmp, 0, sizeof(Ty) * step);
+  }
 }
 
 template<typename Ty>

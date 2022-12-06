@@ -13,8 +13,8 @@
 namespace qlat
 {
 
-template <class T>
-void set_rand_link(GaugeFieldT<T> &gf, const int seed = -1)
+template <class Td>
+void set_rand_link(GaugeFieldT<Td> &gf, const int seed = -1)
 {
   if(seed == -1)
   {
@@ -22,11 +22,11 @@ void set_rand_link(GaugeFieldT<T> &gf, const int seed = -1)
   }else{
     //T* res = (T*) gf.get_elem_offset(0).p;
     const Geometry& geo = gf.geo();
-    T* res = (T*) qlat::get_data(gf).data();
-    random_Ty(res, geo.local_volume()*geo.multiplicity*sizeof(ColorMatrixT<T>)/sizeof(T), 1, seed);
+    qlat::ComplexT<Td>* res = (qlat::ComplexT<Td>*) qlat::get_data(gf).data();
+    random_Ty(res, geo.local_volume()*geo.multiplicity*sizeof(ColorMatrixT<Td>)/(sizeof(Td)*2), 1, seed);
 
     //qacc_for(isp, gf.field.size(), { set_unit(gf.get_elem_offset(isp), 1.0);});
-    ColorMatrixT<T> unit;set_unit(unit, 1.0);
+    ColorMatrixT<Td> unit;set_unit(unit, 1.0);
     /////TODO This function cannot be done on GPU
     /////Eigen normalize/normalized problem 
     for(long isp=0;isp<gf.field.size();isp++)

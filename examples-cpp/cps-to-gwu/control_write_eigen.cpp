@@ -8,6 +8,7 @@ int main(int argc, char* argv[])
   inputpara in0;
   begin_Lat(&argc, &argv, in0);
 
+  {
   int nx,ny,nz,nt;
   nx = in0.nx;ny = in0.ny;nz = in0.nz;nt = in0.nt;
 
@@ -139,129 +140,9 @@ int main(int argc, char* argv[])
   close_eigensystem_file(file_read , io_read , in_read_eigen );
   close_eigensystem_file(file_write, io_write, in_write_eigen);
 
+  }
 
-  //////===Open file for write
-  //inputpara in_writeqlat;in_writeqlat.read_geo(geo);
-  //int bfac_eigen = 12;
-  //bool read = false;
-  //std::string VECS_TYPE = std::string("Eigen_system_nvec.12.tzyx.R/I");
-  //std::string INFO_LIST = std::string("NONE");
-  //bool rotate_bfac = true;
-  //open_file_qlat_noisesT(Sname, bfac_eigen, in_writeqlat, read, save_single, nread, VECS_TYPE, INFO_LIST, rotate_bfac);
-  //////===Open file for write
+  return end_Lat();
 
-  
-  //{
-  //std::vector<qlat::FermionField4dT<Complex > > eigen;
-  //load_gwu_eigen(ename,eigen,io_use, n0 , n1,true, true);
-  //double* tmp = (double*)(qlat::get_data(eigen[1]).data());
-  //print0("value pre %.3e %.3e \n", tmp[0], tmp[1]);
-  //}
-
-  //if(file_type == 2 or file_type == 3){
-  //  if(file_type == 2){load_qlat_eigen(ename, eigenD, n0, n1);}
-  //  if(file_type == 3){load_qlat_eigen(ename, eigenF, n0, n1);}
-  //}else{
-  //  bool read = true;bool check = true;
-
-  //  std::vector<double* > respD;respD.resize(nread);
-  //  std::vector<float*  > respF;respF.resize(nread);
-  //  eigenD.resize(nread);
-  //  eigenF.resize(nread);
-  //  for(int iv=0;iv<nread;iv++){
-  //    if(file_type == 0){eigenD[iv].init(io_use.geop);respD[iv]=(double*)(qlat::get_data(eigenD[iv]).data());}
-  //    if(file_type == 1){eigenF[iv].init(io_use.geop);respF[iv]=(float* )(qlat::get_data(eigenF[iv]).data());}
-  //  }
-
-  //  if(file_type == 0){load_gwu_eigen(ename, respD, io_use, n0, n1, check, read);}
-  //  if(file_type == 1){load_gwu_eigen(ename, respF, io_use, n0, n1, check, read);}
-  //}
-
-  //bool single_file = 0;
-  //if(file_type == 0){single_file = false;}
-  //if(file_type == 1){single_file = true ;}
-  //if(file_type == 2){single_file = false;}
-  //if(file_type == 3){single_file = true ;}
-
-
-  //double* tmp = (double*)(qlat::get_data(eigenD[1]).data());
-  //print0("values %.3e %.3e \n", tmp[1], tmp[2]);
-
-  //if(!single_file){
-  //  io_vec io_use(geo, IO_DEFAULT);
-  //  bool read = false;
-  //  int save_type = 1;
-  //  ////if(save_single == true){save_type = 3;}
-
-  //  int each = io_use.ionum;
-  //  std::vector<qlat::FieldM<qlat::Complex , 12> > noi_buf;noi_buf.resize(each);
-  //  for(int iv=0;iv<each;iv++){noi_buf[iv].init(geo);}
-
-  //  inputpara in;
-  //  FILE* file = open_eigensystem_file(Sname, eigenD.size(), read, io_use, in, save_type);
-
-  //  std::vector<long > job =  job_create(eigenD.size(), each);
-  //  for(LInt ji = 0; ji < job.size()/2 ; ji++)
-  //  {
-  //    for(long iv=0;iv < job[ji*2 + 1];iv++){noi_buf[iv] = eigenD[job[ji*2 + 0] + iv];}
-  //    load_eigensystem_vecs(file, noi_buf, io_use, in, job[ji*2 + 0], job[ji*2 + 0] + job[ji*2 + 1]);
-  //    /////load_qlat_noisesT(file, noi_buf, io_use, in, job[ji*2 + 0], job[ji*2 + 0] + job[ji*2 + 1]);
-  //  }
-
-  //  close_eigensystem_file(file, io_use, in);
-
-  //}
-  //if( single_file){save_qlat_eigen(Sname, eigenF, save_single, in_eigen.INFO_LIST);}
-
-
-  //if(!single_file){
-  //  std::vector<qlat::FermionField4dT<qlat::Complex  > > eigen;eigen.resize(eigenD.size());
-  //  LInt cpy_size = (LInt)(qlat::get_data(eigenD[0]).data_size()/(sizeof(qlat::Complex)));
-  //  for(LInt iv=0;iv<eigenD.size();iv++){
-  //    eigen[iv].init(geo);
-  //    qlat::Complex* p0 = (qlat::Complex*)(qlat::get_data(eigenD[iv]).data());
-  //    qlat::Complex* p1 = (qlat::Complex*)(qlat::get_data(eigen[iv]).data());
-  //    cpy_data_thread(p1, p0, cpy_size, 1);
-  //  }
-  //  io_vec io_use(geo, IO_DEFAULT);
-  //  save_gwu_eigen(Sname, eigen, io_use, 0, eigen.size(), true);
-  //  /////save_qlat_eigen(Sname, eigenD, true, in_eigen.INFO_LIST);
-  //}
-
-
-  //if(!single_file){
-  //  io_vec io_use(geo, IO_DEFAULT);
-  //  bool read = true;
-  //  int save_type = 2;
-  //  //if(save_single == true){save_type = 3;}
-
-  //  int each = io_use.ionum;
-  //  std::vector<qlat::FieldM<qlat::Complex , 12> > noi_buf;noi_buf.resize(each);
-  //  for(int iv=0;iv<each;iv++){noi_buf[iv].init(geo);}
-
-  //  inputpara in;
-  //  FILE* file = open_eigensystem_file(Sname, eigenD.size(), read, io_use, in, save_type);
-
-  //  std::vector<long > job =  job_create(eigenD.size(), each);
-  //  for(LInt ji = 0; ji < job.size()/2 ; ji++)
-  //  {
-  //    load_eigensystem_vecs(file, noi_buf, io_use, in, job[ji*2 + 0], job[ji*2 + 0] + job[ji*2 + 1]);
-  //    for(long iv=0;iv < job[ji*2 + 1];iv++){eigenD[job[ji*2 + 0] + iv] = noi_buf[iv];}
-  //  }
-
-  //  close_eigensystem_file(file, io_use, in);
-
-  //}
-  //if( single_file){load_qlat_eigen(Sname, eigenF);}
-
-  //if(!single_file){save_qlat_eigen(Sname, eigenD, save_single, in_eigen.INFO_LIST);}
-  //if( single_file){save_qlat_eigen(Sname, eigenF, save_single, in_eigen.INFO_LIST);}
-
-
-  fflush_MPI();
-  qlat::Timer::display();
-
-  qlat::end();
-  return 0;
 }
 

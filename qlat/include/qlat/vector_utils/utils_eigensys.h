@@ -15,15 +15,15 @@
 
 ///#define SUMMIT 0
 
-#define Elocal std::vector<qlat::vector<Complexq > >
 ////#define Vlocal qlat::vector_acc<Complexq >
+#define Elocal std::vector<qlat::vector<Complexq > >
 #define Vlocal qlat::vector_gpu<Complexq >
 #define EIGENERROR 1e-11
 
 namespace qlat{
 
 struct eigen_ov {
-  qlat::fft_desc_basic* fdp;
+  Geometry geo;
 
   Elocal Mvec;     //  nvec --> 2*bfac --> b_size*6
   Elocal Mvec_Sm;  //  Smeared eigensystem 
@@ -88,7 +88,7 @@ struct eigen_ov {
   //EigenV alpha3pt_ker_low;
 
   /////Construction and memory allocations
-  eigen_ov(qlat::fft_desc_basic &fd,int n_vec_or, long long bsize0=-1, double extra_mem_factor_set = 0.82);
+  eigen_ov(const Geometry& geo_,int n_vec_or, long long bsize0=-1, double extra_mem_factor_set = 0.82);
 
   void copy_evec_to_GPU(int nini);
   template <typename Ty >
@@ -153,7 +153,6 @@ struct eigen_ov {
   ~eigen_ov()
   {
     clear_GPU_mem(1);
-    fdp = NULL;
   }
 
 };
@@ -208,10 +207,11 @@ void eigen_ov::setup_bfac(long long bsize0)
 
 }
 
-eigen_ov::eigen_ov(qlat::fft_desc_basic &fd,int n_vec_or, long long bsize0, double extra_mem_factor_set)
+eigen_ov::eigen_ov(const Geometry& geo_,int n_vec_or, long long bsize0, double extra_mem_factor_set)
 {
-  fdp  = &fd;
-  if(fd.order_ch != 0){abort_r("Currently not supported for change fd order.\n ");}
+  geo = geo_;
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+  ///if(fd.order_ch != 0){abort_r("Currently not supported for change fd order.\n ");}
 
   rho = 1.5;
   Eeigenerror = EIGENERROR;
@@ -286,7 +286,7 @@ void eigen_ov::setup_gpufac(int nprop)
 
   int vfac = ncutgpu;int vini = 8 * vfac;
   int vres = int((totalD*extra_mem_factor*sm_factor - mem_prop )/memV); 
-  if(fdp->rank != 0){vres=0;};sum_all_size(&vres, 1);
+  if(qlat::get_id_node() != 0){vres=0;};sum_all_size(&vres, 1);
   /////TODO Need global sum and average the final result?
   /////TODO need to test the continuous memory less thant 8GB
 
@@ -356,7 +356,6 @@ void eigen_ov::clear_GPU_mem(int cpu_also)
   {
     Mvec.resize(0);
     Mvec_Sm.resize(0);
-    fdp = NULL;
   }
 
   gpu_mem_set = false;
@@ -429,7 +428,6 @@ void eigen_ov::copy_FieldM_to_Mvec(qlat::FieldM<Ty , 12>& src, int ncur, int sm,
   TIMERA("COPY Eigen Vectors Mvec");
   if(ncur >= n_vec){abort_r("Cannot copy to position larger than n_vec ! \n");}
   if(dir == 0){if(!src.initialized){
-    Geometry geo;fdp->get_geo(geo);
     src.init(geo);
   }}
   Ty* s0 = (Ty*) qlat::get_data(src).data();
@@ -571,7 +569,6 @@ void eigen_ov::smear_eigen(const std::string& Ename_Sm,
   const CoordinateD& mom, const bool smear_in_time_dir)
 {
   TIMER("smear eigen system");
-  Geometry geo;fdp->get_geo(geo);
   ////load if exist
   if(Ename_Sm != std::string("NONE") and get_file_size_MPI(Ename_Sm.c_str(), true) != 0){
     load_eigen_Mvec(Ename_Sm, 1);
@@ -585,7 +582,7 @@ void eigen_ov::smear_eigen(const std::string& Ename_Sm,
   print_mem_info("Eigen Memory Allocate Done");
 
   const int each = 12;
-  long Ncopy = fdp->Nvol * 12;
+  long Ncopy = geo.local_volume() * 12;
   qlat::vector_gpu<Complexq > buf;buf.resize(each * Ncopy);
 
   move_index mv_idx;
@@ -595,11 +592,11 @@ void eigen_ov::smear_eigen(const std::string& Ename_Sm,
     int flag = 0;
     ////copy to buf
     for(int iv=0;iv<job[ji*2 + 1];iv++){copy_to_FieldM(&buf[iv*Ncopy], job[ji*2 + 0] + iv,  0, true);}
-    flag = 0;mv_idx.dojob(buf.data(), buf.data(), 1, each , fdp->Nvol*12, flag, 1, true);
+    flag = 0;mv_idx.dojob(buf.data(), buf.data(), 1, each , geo.local_volume()*12, flag, 1, true);
 
     smear_propagator_gwu_convension_inner<Complexq, 4,each  , Tg>(buf.data(), gf, width, step, mom, smear_in_time_dir);
 
-    flag = 1;mv_idx.dojob(buf.data(), buf.data(), 1, each , fdp->Nvol*12, flag, 1, true);
+    flag = 1;mv_idx.dojob(buf.data(), buf.data(), 1, each , geo.local_volume()*12, flag, 1, true);
     ////copy from buf
     for(int iv=0;iv<job[ji*2 + 1];iv++){copy_FieldM_to_Mvec(&buf[iv*Ncopy], job[ji*2 + 0] + iv,  1, 1, true);}
   }
@@ -619,7 +616,6 @@ void eigen_ov::smear_eigen(const std::string& Ename_Sm,
 void eigen_ov::save_eigen_Mvec(const std::string& ename, int sm)
 {
   if(sm == 1 and enable_smearE == false){print0("Could not save smear eigen without set it up.");return ;}
-  Geometry geo;fdp->get_geo(geo);
   io_vec& io_use = get_io_vec_plan(geo);
 
   const int nini = 0;
@@ -648,8 +644,12 @@ void eigen_ov::load_eigen_Mvec(const std::string& ename, int sm, int nini, int c
 {
   int ntotal = nini + n_vec;
   Ftype norm_err  = 1e-3;
+  std::string val = get_env(std::string("q_eigen_norm_err"));
+  if(val != ""){norm_err = stringtodouble(val);}
+  int print_norms = 0; 
+  val = get_env(std::string("q_eigen_print_norm"));
+  if(val != ""){print_norms = stringtonum(val);}
 
-  Geometry geo;fdp->get_geo(geo);
   io_vec& io_use = get_io_vec_plan(geo);
 
   long La = 2*bfac/BFAC_GROUP_CPU;
@@ -677,8 +677,10 @@ void eigen_ov::load_eigen_Mvec(const std::string& ename, int sm, int nini, int c
       if(checknorm == 1 and sm == 0){
         Ftype* Psrc = (Ftype*) qlat::get_data(buf[iv]).data();
         Ftype normf = get_norm_vec(Psrc, noden);
+        if(print_norms == 1){
+        print0("Eigen vector %8d, norm 1.0 + %+.8e flag . \n", int(job[ji*2 + 0] + iv + nini), normf - 1.0);}
         if(fabs(normf - 1.0) > norm_err){
-          print0("Eigen vector %d, norm %.3e wrong. \n", int(job[ji*2 + 0] + iv), normf);
+          print0("Eigen vector %d, norm 1.0 + %.8e wrong. \n", int(job[ji*2 + 0] + iv + nini), normf - 1.0);
           abort_r("");
         }
       }
@@ -790,6 +792,7 @@ void eigen_ov::initialize_mass()
   initialize_mass(mass,12,one_minus_halfD);
 }
 
+
 void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vector<double> &mass, int mode_sm = 0,int one_minus_halfD_or=1)
 {
   int mN   = mass.size();
@@ -834,6 +837,7 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
 
   int Ng = 0;if(ncutgpu!=0){Ng = ei.n_vec/ncutgpu + 1;}
   int nini = 0;
+  /////each group have ncutgpu of vectors
   for(int ng=0;ng<Ng + 1;ng++)
   {
     if(nini >= ei.n_vec)break;
@@ -849,13 +853,14 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
     long n = Ns;
     long w = b_size;
 
-    TIMER_FLOPS("vec reduce");
-    long long vGb = 2*bfac*m*n*w;
-    int Fcount0   = 6 + 2;  
-    timer.flops  += vGb*Fcount0;
+    TIMERA("prop low vec reduce");
+    //TIMER_FLOPS("vec reduce");
+    //long long vGb = 2*bfac*m*n*w;
+    //int Fcount0   = 6 + 2;  
+    //timer.flops  += vGb*Fcount0;
 
     std::vector<long > jobA = job_create(2*bfac, ei.BFAC_GROUP_CPU);
-    if(nini > ncutbuf){jobA = job_create(2*bfac, ei.bfac_group);}
+    if(nini > ncutbuf){jobA = job_create(2*bfac, ei.bfac_group);} //// vector size groups
     for(LInt jobi=0;jobi < jobA.size()/2; jobi++)
     {
       long bini = jobA[jobi*2 + 0]; long bcut = jobA[jobi*2+1];
@@ -957,15 +962,18 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
 
 }
 
-////dir == 0, from src to EigenM res
-////dir == 1 from EigenM res to src
-template <typename Ty >
-void copy_eigen_prop_to_EigenM(Ty* src, EigenM& res, LInt b_size, int nmass, qlat::fft_desc_basic& fd, int dir = 0,int GPU = 1)
+////dir == 1, from src to EigenG res
+////dir == 0  from EigenG res to src
+template <typename T, typename Ty>
+void copy_eigen_prop_to_EigenG(std::vector<qlat::vector_gpu<Ty > >& res, T* src, 
+  LInt b_size, int nmass, qlat::fft_desc_basic& fd, int GPU = 1, int dir = 1)
 {
-  if(nmass == 0){return ;}
-  if(dir == 0){ini_propE(res, nmass, fd, false);}
+  if(nmass == 0){res.resize(0); return ;}
+  if(dir == 1){
+    ini_propG(res, nmass, 12*12*size_t(fd.Nvol), false);
+  }
 
-  int Ns    = 12*nmass;
+  int Ns    = nmass*12;
   int  NTt  = fd.Nv[3];
   LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   LInt total = 6*NTt*Nxyz;
@@ -979,6 +987,8 @@ void copy_eigen_prop_to_EigenM(Ty* src, EigenM& res, LInt b_size, int nmass, qla
   for(int d0=0;d0<Ns;d0++)
   for(LInt gi=0;gi<group;gi++)
   {
+    int massi = d0/12;
+    int d0i   = d0%12;
     LInt mi = gi*each;
 
     ////index for res
@@ -992,13 +1002,10 @@ void copy_eigen_prop_to_EigenM(Ty* src, EigenM& res, LInt b_size, int nmass, qla
     long bi = xi/b_size;
     long bj = xi%b_size;
 
-    Ty* s0       = &src[(chi*bfac+bi)*Ns*b_size  + d0*b_size + bj];
-    Complexq* tems = (Complexq*) qlat::get_data(res[(d0*12 + d1)*NTt+ti]).data();
-    Complexq* s1 = &tems[vi];
-    if(dir == 0){cpy_data_thread(s1, s0, each , GPU, false);}
-    if(dir == 1){cpy_data_thread(s0, s1, each , GPU, false);}
-
-    /////useS[(chi*bfac+bi)*Ns*b_size  + is*b_size + bj] = s0[(d0*12 + d1)*NTt+ti][vi];
+    T* s0   = &src[(chi*bfac+bi)*Ns*b_size  + d0*b_size + bj];
+    Ty* s1  = (Ty*) &res[massi][((d0i*12 + d1)*NTt+ti)*Nxyz + vi];
+    if(dir == 1){cpy_data_thread(s1, s0, each , GPU, false);}
+    if(dir == 0){cpy_data_thread(s0, s1, each , GPU, false);}
 
   }
   qacc_barrier(dummy);
@@ -1043,27 +1050,6 @@ void FieldM_src_to_FieldM_prop(std::vector<qlat::FieldM<Ty , 1> >& src, std::vec
   if(res.size() != src.size()){res.resize(nV);}
   for(int iv=0;iv<nV;iv++)FieldM_src_to_FieldM_prop(src[iv], res[iv], GPU, false);
   qacc_barrier(dummy);
-
-  //bool do_ini = true;if(res.size() == src.size())if(res[src.size()-1].initialized){do_ini = false;}
-  //if(do_ini){res.resize(nV);for(int iv=0;iv<nV;iv++){res[iv].init(geo);}}
-
-  ////std::vector<int > nv, Nv, mv;
-  ////geo_to_nv(geo, nv, Nv,mv);
-  //long Ncopy = geo.local_volume();
-
-  //Ty* s0 = NULL; Ty* s1 = NULL;Ty* st = NULL;
-  //for(int iv=0;iv<nV;iv++)
-  //{
-  //  s0 = (Ty*) qlat::get_data(src[iv]).data();
-  //  st = (Ty*) qlat::get_data(res[iv]).data();
-  //  for(unsigned int d0=0;d0<12;d0++)
-  //  {
-  //    //////diagonal elements
-  //    s1 = &st[(d0*12+d0)*Ncopy + 0];
-  //    cpy_data_thread(s1, s0, Ncopy , GPU, false);
-  //  }
-  //}
-  //qacc_barrier(dummy);
 
 }
 
@@ -1134,7 +1120,7 @@ void copy_eigen_src_to_FieldM(qlat::vector_gpu<Ty >& src, std::vector<qlat::Fiel
     long bj = xi%b_size;
 
     s0 = &psrc[(chi*bfac+bi)*nV*b_size  + d0*b_size + bj];
-    st = (Complexq*) qlat::get_data(res[d0a]).data();
+    st = (Ty*) qlat::get_data(res[d0a]).data();
     s1 = &st[((d0b*12 + d1)*NTt+ti)*Nxyz + vi];
 
     if(dir == 0){cpy_data_thread(s1, s0, each , GPU, false);}
@@ -1163,7 +1149,7 @@ void copy_FieldM_to_eigen_src(std::vector<qlat::FieldM<Ty , civ> >& src, qlat::v
 
 #undef  Elocal
 #undef  EIGENERROR
-////#undef  Vlocal
+#undef  Vlocal
 
 #endif
 

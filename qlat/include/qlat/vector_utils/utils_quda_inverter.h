@@ -154,6 +154,7 @@ struct quda_inverter {
 
   std::vector<quda::ColorSpinorField *> kSpace;
   std::vector<quda::ColorSpinorField *> fSpace;
+  std::vector<quda::ColorSpinorField *> kSpace_cpu;
   std::vector<quda::Complex > evalsK;
   std::vector<quda::Complex > evalsF;
 
@@ -175,6 +176,7 @@ struct quda_inverter {
   ///quda::ColorSpinorField *gsrcD, *gresD;
   quda::ColorSpinorField *gtmp1D, *gtmp2D;
   quda::ColorSpinorField *gtmp1F, *gtmp2F;
+  quda::ColorSpinorField *gadd; ////for low mode addition
 
   quda::ColorSpinorField *ctmp0, *ctmp1, *ctmp2;
   quda::ColorSpinorField *gtmp0, *gtmp1, *gtmp2;
@@ -330,6 +332,7 @@ quda_inverter::quda_inverter(const Geometry& geo, QudaTboundary t_boundary)
   //gsrcD= NULL; gresD= NULL;
   gtmp1D = NULL;gtmp2D = NULL;
   gtmp1F = NULL;gtmp2F = NULL;
+  gadd = NULL;
 
   ctmp0 = NULL; ctmp1 = NULL; ctmp2 = NULL;
   gtmp0 = NULL; gtmp1 = NULL; gtmp2 = NULL;
@@ -418,13 +421,16 @@ void quda_inverter::free_csfield(const int mode)
   if(gtmp0 != NULL){delete gtmp0;gtmp0=NULL;}
 
   if(gtmp1 != NULL){delete gtmp1;gtmp1=NULL;}
-  if(gtmp2 != NULL){delete gtmp2;gtmp2=NULL;}}
+  if(gtmp2 != NULL){delete gtmp2;gtmp2=NULL;}
+  if(gadd  != NULL){delete gadd;gadd=NULL;}
+  }
 
   if(mode == 0 or mode == 3){
   if(gtmp1D!= NULL){delete gtmp1D;gtmp1D=NULL;}
   if(gtmp2D!= NULL){delete gtmp2D;gtmp2D=NULL;}
   if(gtmp1F!= NULL){delete gtmp1F;gtmp1F=NULL;}
   if(gtmp2F!= NULL){delete gtmp2F;gtmp2F=NULL;}}
+
 
 }
 
@@ -784,7 +790,11 @@ void quda_inverter::save_evecs(const char* filename, const bool read, const int 
     if(n1!=0){qlat::load_qlat_noisesT(filename1, eigF, read, single_file, VECS_TYPE, INFO_LIST, 0,   n1, false);}
   }
 
+  /////===load to gpu
   if(read == true){
+  for (int i = 0; i < kSpace.size(); i++) delete kSpace[i];kSpace.resize(0);
+  for (int i = 0; i < fSpace.size(); i++) delete fSpace[i];fSpace.resize(0);
+
   eig_param.n_ev_deflate = ns0;eig_solveK = quda::EigenSolver::create(&eig_param, *mat_E, profileEigensolve);
   eig_param.n_ev_deflate = ns1;eig_solveF = quda::EigenSolver::create(&eig_param, *mat_E, profileEigensolve);
 
@@ -850,6 +860,7 @@ void quda_inverter::free_mem(){
   for (int i = 0; i < kSpace.size(); i++) delete kSpace[i];kSpace.resize(0);
   for (int i = 0; i < fSpace.size(); i++) delete fSpace[i];fSpace.resize(0);
   for (int i = 0; i < ZSpace.size(); i++) delete ZSpace[i];ZSpace.resize(0);
+  for (int i = 0; i < kSpace_cpu.size(); i++) delete kSpace_cpu[i];kSpace_cpu.resize(0);
   evalsK.resize(0);
   evalsF.resize(0);
   evalsZ.resize(0);
@@ -1339,6 +1350,8 @@ void quda_inverter::setup_inv_mass(const double mass)
 {
   TIMER("setup_inv_mass");
   int verbos = 0;
+  std::string val = qlat::get_env(std::string("qlat_quda_verbos"));
+  if(val != ""){verbos = stringtonum(val);}
   if(verbos == 0)
   {
     inv_param.verbosity   = QUDA_SUMMARIZE;
@@ -1629,7 +1642,18 @@ void quda_inverter::setup_eigen(const double mass, const int num_eigensys, const
   eig_param.invert_param = &inv_param;
 
   ////===basice eig parameters
-  eig_param.eig_type = QUDA_EIG_TR_LANCZOS; ////or QUDA_EIG_IR_ARNOLDI
+  //QUDA_EIG_TR_LANCZOS,     // Thick restarted lanczos solver
+  //QUDA_EIG_BLK_TR_LANCZOS, // Block Thick restarted lanczos solver
+  //QUDA_EIG_IR_ARNOLDI,     // Implicitly Restarted Arnoldi solver
+  //QUDA_EIG_BLK_IR_ARNOLDI, // Block Implicitly Restarted Arnoldi solver
+  int eigensolve_type = 0;
+  std::string val = qlat::get_env(std::string("qlat_quda_eigensolve_type"));
+  if(val != ""){eigensolve_type = stringtonum(val);}
+  if(eigensolve_type == 0){eig_param.eig_type = QUDA_EIG_TR_LANCZOS; } // Thick restarted lanczos solver
+  if(eigensolve_type == 1){eig_param.eig_type = QUDA_EIG_BLK_TR_LANCZOS; } //Block Thick restarted lanczos solver
+  if(eigensolve_type == 2){eig_param.eig_type = QUDA_EIG_IR_ARNOLDI;} // Implicitly Restarted Arnoldi solver
+  if(eigensolve_type == 3){eig_param.eig_type = QUDA_EIG_BLK_IR_ARNOLDI;}  // Block Implicitly Restarted Arnoldi solver
+
   eig_param.spectrum = QUDA_SPECTRUM_SR_EIG;
   if ((eig_param.eig_type == QUDA_EIG_TR_LANCZOS || eig_param.eig_type == QUDA_EIG_BLK_TR_LANCZOS)
       && !(eig_param.spectrum == QUDA_SPECTRUM_LR_EIG || eig_param.spectrum == QUDA_SPECTRUM_SR_EIG)) {
@@ -1733,6 +1757,8 @@ void quda_inverter::setup_eigen(const double mass, const int num_eigensys, const
     //if(compute == true ){singleE = false;}
     //if(compute == false){singleE = true;}
     evalsK.resize(nvec, 0.0);
+
+    ////for (int i = 0; i < kSpace_cpu.size(); i++) delete kSpace_cpu[i];kSpace_cpu.resize(0);
     for (int i = 0; i < nvec; i++){kSpace.push_back(quda::ColorSpinorField::Create(cs_gpuD));}
     fSpace.resize(0);evalsF.resize(0);
     //for (int i = 0; i < nvec; i++) { 
@@ -1758,6 +1784,15 @@ void quda_inverter::setup_eigen(const double mass, const int num_eigensys, const
     }
     /////evals_ERR = (*eig_solveK).residua;
     evals_ERR.resize(evalsK.size(), 0.0);
+
+    //for (int i = 0; i < kSpace.size(); i++) delete kSpace[i];kSpace.resize(0);
+    //for(int i=0;i<nvec;i++)
+    //{
+    //  kSpace.push_back(quda::ColorSpinorField::Create(cs_gpuD));
+    //  *kSpace[i] = *kSpace_cpu[i];
+    //}
+
+    ////copy to GPU float and stuff, assummed all double
   }
 
 }
@@ -2014,7 +2049,7 @@ void quda_inverter::check_residualF()
     quda::Complex resn = quda::blas::norm2(*gtmp1);
     quda::Complex evals  = quda::blas::cDotProduct(*gsrc, *gtmp1) / quda::blas::norm2(*gsrc);
     quda::Complex factor = sqrt(quda::blas::norm2(*gtmp1)) / sqrt(quda::blas::norm2(*gsrc));
-    quda::blas::caxpby(evals, *gsrc , n_unit, *gtmp1 );
+    quda::blas::caxpby(evals, *gsrc , n_unit, *gtmp1 ); ///tmp = ev*src + n * gtmp
     quda::Complex residual = sqrt(quda::blas::norm2(*gtmp1)/ quda::blas::norm2(*gsrc));
 
     quda::blas::zero(*gtmp1);
@@ -2105,6 +2140,7 @@ void quda_inverter::prepare_low_prop(int mode )
     //  s0_e.real(), s0_o.real(), n0_e.real(), n0_o.real());
   }
 
+  quda::Complex n_unit(1.0, 0.0);
   if(mode == 0){
     ////mode 0 write
     quda::blas::zero(*gres);
@@ -2117,7 +2153,9 @@ void quda_inverter::prepare_low_prop(int mode )
     (*gtmp1).Even() = (*gsrc).Even();
 
     if(gtmp1D == NULL){gtmp1D = new quda::ColorSpinorField(cs_gpuD);}
+    if(gtmp2D == NULL){gtmp2D = new quda::ColorSpinorField(cs_gpuD);}
     if(gtmp1F == NULL){gtmp1F = new quda::ColorSpinorField(cs_gpuF);}
+    if(gtmp2F == NULL){gtmp2F = new quda::ColorSpinorField(cs_gpuF);}
     //if(gtmp2D == NULL){gtmp2D = new quda::ColorSpinorField(cs_gpuD);}
     //if(gtmp2F == NULL){gtmp2F = new quda::ColorSpinorField(cs_gpuF);}
 
@@ -2156,10 +2194,14 @@ void quda_inverter::prepare_low_prop(int mode )
       ////std::vector<quda::ColorSpinorField *> sol;
       //sol.push_back(&(gres->Even()));
       quda::blas::caxpy(A.data(), eig_vecs, buf);
-      gres->Even() = *buf[0];
-      //sol[0] = &(gres->Odd());
+      /////gres->Even() = gres->Even() + *buf[0];
+      gtmp2->Even() = *buf[0];
+      quda::blas::caxpby(n_unit, gtmp2->Even() , n_unit, gres->Even());
+      ////sol[0] = &(gres->Odd());
       quda::blas::caxpy(B.data(), eig_vecs, buf);
-      gres->Odd() = *buf[0];
+      gtmp2->Odd()  = *buf[0];
+      quda::blas::caxpby(n_unit, gtmp2->Odd()  , n_unit, gres->Odd());
+      ////gres->Odd()  = gres->Odd() + *buf[0];
     }
 
     quda::blas::zero((*gtmp1).Odd());
@@ -2521,14 +2563,33 @@ void get_staggered_prop(quda_inverter& qinv, qlat::FieldM<Ty, 3>& src, qlat::Fie
 
   //Ty norm = norm_FieldM(prop);
   //print0("normp %.3e %.3e \n", norm.real(), norm.imag());
+  if(low_only == 0){
+    qinv.do_inv(qinv.cres->V(), qinv.csrc->V(), mass, err, niter, prec_type);
+  }
 
   if(low_only == 1){
     (*qinv.gsrc) = (*qinv.csrc);
     qinv.prepare_low_prop();
     (*qinv.cres) = (*qinv.gres);
   }
-  else{
+
+  if(low_only == 2){
+    if(qinv.gadd == NULL){
+      quda::ColorSpinorParam param(*qinv.gres);
+      qinv.gadd  = quda::ColorSpinorField::Create(param);
+    }
+
     qinv.do_inv(qinv.cres->V(), qinv.csrc->V(), mass, err, niter, prec_type);
+    (*qinv.gadd) = (*qinv.cres);
+
+    (*qinv.gsrc) = (*qinv.csrc);
+    qinv.prepare_low_prop();
+
+    quda::Complex n_unit(+1.0, 0.0);
+    quda::Complex p_unit(-1.0, 0.0);
+    quda::blas::caxpby(n_unit, *qinv.gadd  , p_unit, *qinv.gres);
+
+    (*qinv.cres) = (*qinv.gres);
   }
 
   if(!prop.initialized){prop.init(src.geo());} ////allocate mem for prop

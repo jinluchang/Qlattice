@@ -38,7 +38,6 @@ int main(int argc, char* argv[])
   momentum_dat mdat(geo, in.mom_cut);
   print_mem_info("momentum dat");
 
-
   print_mem_info("io_vec");
 
   /////========load links
@@ -58,10 +57,15 @@ int main(int argc, char* argv[])
   int nmass = in.nmass;qassert(nmass > 0);
   std::vector<double> massL = in.masses;
 
+  ////qprop tmpa;tmpa.init(geo);
+  ////print0("vol %ld %ld \n", geo.local_volume(), long(qlat::get_data_size(tmpa)));
+
   ////===load eigen
+  print_time();
   fflush_MPI();
-  fft_desc_basic fd(geo);
-  eigen_ov ei(fd, n_vec, in.bini, in.nmass + 1);
+  ////fft_desc_basic fd(geo);
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+  eigen_ov ei(geo, n_vec, in.bini, in.nmass + 1);
 
   fflush_MPI();
   int mode_sm = 0;
@@ -75,6 +79,7 @@ int main(int argc, char* argv[])
     ei.smear_eigen(std::string(ename), gf, src_width, src_step);
     mode_sm = 2;
   }
+  print_time();
 
   ei.initialize_mass(massL, 12);
   ei.print_info();
@@ -103,8 +108,9 @@ int main(int argc, char* argv[])
   /////===load noise and prop
   char names[450],namep[500];
   std::vector<qprop > FpropV;FpropV.resize(nmass);
-  Propagator4dT<Complexq > tmp;tmp.init(geo);
+  Propagator4dT<Ftype > tmp;tmp.init(geo);
   lms_para<Complexq > srcI;/////buffers and parameters for lms
+  print_time();
   for(int si = 0; si < in.nsource; si++)
   {
     if(in.output_vec != std::string("NONE") and ckpoint == 1){
@@ -144,6 +150,8 @@ int main(int argc, char* argv[])
       if(prop_type == 0){load_gwu_prop( namep, tmp);}
       if(prop_type == 1){load_qlat_prop(namep, tmp);}
       prop4d_to_qprop(FpropV[im], tmp);
+      double sum = check_sum_prop(FpropV[im]);
+      print0("===checksum %s %.8e \n", namep, sum);
     }
     /////===load noise and prop
 
@@ -214,10 +222,6 @@ int main(int argc, char* argv[])
 
   }
 
-  fflush_MPI();
-  qlat::Timer::display();
-
-  qlat::end();
-  return 0;
+  return end_Lat();
 }
 

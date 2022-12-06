@@ -63,7 +63,6 @@ int main(int argc, char* argv[])
   ////cudaDeviceSynchronize();
   //for(int i=0;i< in.debuga;i++){matrix_prod_gpu(a.data(), b.data(), c1.data(), m,n,w,L, Conj, true,false, modeGPU);fflush_MPI();}
   for(int i=0;i< in.debuga;i++){matrix_prod(a.data(), b.data(), c1.data(), m,n,w,L, Conj);fflush_MPI();}
-  fflush_MPI();
     
   //for(int i=0;i< in.debuga;i++){matrix_prod_cpu(&a[0],&b[0],&c0[0], m,n,w,L, Conj);fflush_MPI();}
   //print0("END CPU Multi! \n");
@@ -78,12 +77,6 @@ int main(int argc, char* argv[])
   //print0("END CPU Multi! \n");
   //fflush_MPI();
 
-
-
-  fflush_MPI();
-  qlat::Timer::display();
-
-  qlat::end();
-  return 0;
+  return end_Lat();
 }
 

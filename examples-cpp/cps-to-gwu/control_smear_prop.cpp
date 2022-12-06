@@ -176,11 +176,7 @@ int main(int argc, char* argv[])
     }
   }
 
-  fflush_MPI();
-  qlat::Timer::display();
-
-  qlat::end();
-  return 0;
+  return end_Lat();
 }
 
 

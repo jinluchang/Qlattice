@@ -101,8 +101,7 @@ __global__ void gauss_smear_global4(T* pres, const T* psrc, const T* gf, const T
 }
 #endif
 
-
-
+////Ty must be complex
 template <typename Ty >
 struct smear_fun{
 
@@ -152,8 +151,8 @@ struct smear_fun{
   bool  mem_setup_flag;
   qlat::vector_acc<qlat::Complex > mom_factors;
 
-  //template <class Tg>
-  //void setup(const GaugeFieldT<Tg >& gf, const CoordinateD& mom, const bool smear_in_time_dir){
+  //template <class Td>
+  //void setup(const GaugeFieldT<Td >& gf, const CoordinateD& mom, const bool smear_in_time_dir){
   //  qlat::vector_acc<qlat::Complex > momF(8);
   //  for (int i = 0; i < 8; ++i) {
   //    const int dir = i - 4;
@@ -398,8 +397,8 @@ struct smear_fun{
 
   //void gauge_setup(qlat::vector_gpu<T >& gfE, const GaugeFieldT<Tg >& gf,
   //           const qlat::vector_acc<qlat::Complex >& momF = qlat::vector_acc<qlat::Complex >(), bool force_update = false);
-  template <class Tg>
-  void gauge_setup(const GaugeFieldT<Tg >& gf, const CoordinateD& mom_, bool force_update = false)
+  template <class Td>
+  void gauge_setup(const GaugeFieldT<Td >& gf, const CoordinateD& mom_, bool force_update = false)
   {
     qlat::vector_acc<qlat::Complex > momF(8);
     for (int i = 0; i < 8; ++i) {
@@ -416,7 +415,7 @@ struct smear_fun{
     if(mom_factors.size() != 8){update = true;}
     else{for(int i=0;i<momF.size();i++){if(momF[i]!=mom_factors[i]){update = true;}}}
 
-    crc32_t tmp_gauge_checksum = quick_checksum((Tg*) qlat::get_data(gf).data(), qlat::get_data_size(gf) / sizeof(Tg) );
+    crc32_t tmp_gauge_checksum = quick_checksum((Td*) qlat::get_data(gf).data(), qlat::get_data_size(gf) / sizeof(Td) );
     if(gauge_checksum != tmp_gauge_checksum ){update = true;}
 
     if(update){
@@ -427,7 +426,7 @@ struct smear_fun{
       extend_links_to_vecs(gauge.data(), gf, momF);
       gauge_setup_flag = true;
       gauge_check = (void*) qlat::get_data(gf).data();
-      gauge_checksum = quick_checksum((Tg*) qlat::get_data(gf).data(), qlat::get_data_size(gf) / sizeof(Tg));
+      gauge_checksum = quick_checksum((Td*) qlat::get_data(gf).data(), qlat::get_data_size(gf) / sizeof(Td));
       ///Need to redistribute when copied
       fft_copy = 0 ;
     }
@@ -600,11 +599,11 @@ inline SmearPlanKey get_smear_plan_key(const Geometry& geo, const bool smear_in_
 /////smear plan buffer related
 
 ////TODO need to change other parts for c0, c1
-template <class T, class Tg>
-void extend_links_to_vecs(T* resE, const GaugeFieldT<Tg >& gf, const qlat::vector_acc<qlat::Complex >& mom_factors=qlat::vector_acc<qlat::Complex >()){
+template <class T, class Td>
+void extend_links_to_vecs(T* resE, const GaugeFieldT<Td >& gf, const qlat::vector_acc<qlat::Complex >& mom_factors=qlat::vector_acc<qlat::Complex >()){
   TIMERB("extend_links_to_vecs");
   const Geometry& geo = gf.geo();
-  GaugeFieldT<Tg > gf1;
+  GaugeFieldT<Td > gf1;
   set_left_expanded_gauge_field(gf1, gf);
   const int dir_limit = 4;
   ////set up mom factors
@@ -621,9 +620,9 @@ void extend_links_to_vecs(T* resE, const GaugeFieldT<Tg >& gf, const qlat::vecto
   qacc_for(index,  geo.local_volume(),{
     for (int dir = -dir_limit; dir < dir_limit; ++dir) {
       const Coordinate xl = geo.coordinate_from_index(index);
-      const ColorMatrixT<Tg > link =
+      const ColorMatrixT<Td > link =
           dir >= 0 ? gf1.get_elem(xl, dir)
-                   : (ColorMatrixT<Tg >)matrix_adjoint(
+                   : (ColorMatrixT<Td >)matrix_adjoint(
                          gf1.get_elem(coordinate_shifts(xl, dir), -dir - 1));
       ////convention used in gauss_smear_kernel CPU and gauss_smear_global4
       ////also in multiply_gauge of utils_shift_vecs.h
@@ -635,12 +634,13 @@ void extend_links_to_vecs(T* resE, const GaugeFieldT<Tg >& gf, const qlat::vecto
   });
 }
 
-template <class T, class Tg>
-void extend_links_to_vecs(qlat::vector_gpu<T >& gfE, const GaugeFieldT<Tg >& gf, const qlat::vector_acc<qlat::Complex >& mom_factors=qlat::vector_acc<qlat::Complex >()){
+template <class T, class Td>
+void extend_links_to_vecs(qlat::vector_gpu<T >& gfE, const GaugeFieldT<Td >& gf, const qlat::vector_acc<qlat::Complex >& mom_factors=qlat::vector_acc<qlat::Complex >()){
   gfE.resize(2*4* gf.geo().local_volume() * 9);
   extend_links_to_vecs(gfE.data(), gf, mom_factors);
 }
 
+/////T is double or float
 template <class T>
 void rotate_Vec_prop(Propagator4dT<T>& prop, qlat::vector_gpu<ComplexT<T> > &propT, unsigned int NVmpi, unsigned int groupP, int dir = 0)
 {
@@ -962,8 +962,9 @@ void rotate_prop(Propagator4dT<T>& prop, int dir = 0)
 }
 
 
-template <class Ty, int c0,int d0, class Tg>
-void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Tg >& gf,
+////Td is double or float
+template <class Ty, int c0,int d0, class Td>
+void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
                       const double width, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1)
 {
   TIMER_FLOPS("smear propagator");
@@ -1034,8 +1035,8 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Tg >& gf,
   /////rotate_prop(prop, 1);
 }
 
-template <class Ty, class Tg>
-void smear_propagator_gwu_convension(qpropT& prop, const GaugeFieldT<Tg >& gf,
+template <class Ty, class Td>
+void smear_propagator_gwu_convension(qpropT& prop, const GaugeFieldT<Td >& gf,
                       const double width, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1)
 {
   if (0 == step) {return;}
@@ -1054,7 +1055,7 @@ void smear_propagator_gwu_convension(qpropT& prop, const GaugeFieldT<Tg >& gf,
     }
   });
 
-  smear_propagator_gwu_convension_inner<Ty, 1, 12*4, Tg>(src, gf, width, step, mom, smear_in_time_dir, mode);
+  smear_propagator_gwu_convension_inner<Ty, 1, 12*4, Td>(src, gf, width, step, mom, smear_in_time_dir, mode);
 
   qacc_for(isp, Nvol, {
     ALIGN Ty buf[12*12];
@@ -1068,14 +1069,14 @@ void smear_propagator_gwu_convension(qpropT& prop, const GaugeFieldT<Tg >& gf,
   flag = 1;mv_civ.dojob(src, src, 1, 12*12, Nvol, flag, 1, false);
 }
 
-template <class Ty, class Tg>
-void smear_propagator_gwu_convension(qlat::FieldM<Ty , 12>& prop, const GaugeFieldT<Tg >& gf,
+template <class Ty, class Td>
+void smear_propagator_gwu_convension(qlat::FieldM<ComplexT<Ty> , 12>& prop, const GaugeFieldT<Td >& gf,
                       const double width, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1)
 {
   if (0 == step) {return;}
-  Ty* src = (Ty*) qlat::get_data(prop).data();
+  ComplexT<Ty>* src = (ComplexT<Ty>*) qlat::get_data(prop).data();
   qacc_for(isp, prop.geo().local_volume(), {
-    ALIGN Ty buf[12];
+    ALIGN ComplexT<Ty> buf[12];
     for(int i=0;i<12;i++){buf[i] = src[isp*12 + i];}
     for(int d0=0;d0<4;d0++)
     for(int c0=0;c0<   3;c0++)
@@ -1084,9 +1085,9 @@ void smear_propagator_gwu_convension(qlat::FieldM<Ty , 12>& prop, const GaugeFie
     }
   });
 
-  smear_propagator_gwu_convension_inner<Ty, 1, 4, Tg>(src, gf, width, step, mom, smear_in_time_dir, mode);
+  smear_propagator_gwu_convension_inner<ComplexT<Ty>, 1, 4, Td>(src, gf, width, step, mom, smear_in_time_dir, mode);
   qacc_for(isp, prop.geo().local_volume(), {
-    ALIGN Ty buf[12];
+    ALIGN ComplexT<Ty> buf[12];
     for(int i=0;i<12;i++){buf[i] = src[isp*12 + i];}
     for(int d0=0;d0<4;d0++)
     for(int c0=0;c0<   3;c0++)
@@ -1097,19 +1098,19 @@ void smear_propagator_gwu_convension(qlat::FieldM<Ty , 12>& prop, const GaugeFie
 }
 
 
-template <class Ty, class Tg>
-void smear_propagator_gwu_convension(Propagator4dT<Ty>& prop, const GaugeFieldT<Tg >& gf,
+template <class Ty, class Td>
+void smear_propagator_gwu_convension(Propagator4dT<Ty>& prop, const GaugeFieldT<Td >& gf,
                       const double width, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1)
 {
   if (0 == step) {return;}
   rotate_prop(prop, 0);
   ComplexT<Ty>* src = (ComplexT<Ty>*) qlat::get_data(prop).data();
-  smear_propagator_gwu_convension_inner<ComplexT<Ty>, 1, 12*4, Tg>(src, gf, width, step, mom, smear_in_time_dir, mode);
+  smear_propagator_gwu_convension_inner<ComplexT<Ty>, 1, 12*4, Td>(src, gf, width, step, mom, smear_in_time_dir, mode);
   rotate_prop(prop, 1);
 }
 
-template <class T, class Tg>
-void smear_propagator_qlat_convension(Propagator4dT<T>& prop, const GaugeFieldT<Tg >& gf,
+template <class T, class Td>
+void smear_propagator_qlat_convension(Propagator4dT<T>& prop, const GaugeFieldT<Td >& gf,
                       const double coef, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1)
 {
   if(coef <= 0){return ;}

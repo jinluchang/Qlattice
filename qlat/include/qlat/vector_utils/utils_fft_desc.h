@@ -63,6 +63,8 @@ struct fft_desc_basic
     Nmpi  = qlat::get_num_node();
     rank  = qlat::get_id_node();
 
+    qassert(geo.node_site != qlat::Coordinate());
+
     ////set nv, Nv, mv, iniv
     geo_to_nv(geo, nv, Nv, mv);
 
@@ -78,6 +80,8 @@ struct fft_desc_basic
   inline void set_variable();
   inline void print_info();
   inline long get_mi_curr(int dir=3);
+  inline long get_tmi_curr();
+  inline long get_xyzmi_curr();
   inline void check_mem();
   inline Coordinate coordinate_l_from_index(LInt isp) const;
   inline Coordinate coordinate_g_from_g_index(LInt isp) const ;
@@ -136,6 +140,18 @@ inline long fft_desc_basic::get_mi_curr(int dir)
 
   return re;
 }
+
+inline long fft_desc_basic::get_tmi_curr()
+{
+  int tmi = Pos0[rank][3]/Nt;
+  return tmi;
+}
+
+inline long fft_desc_basic::get_xyzmi_curr()
+{
+  return get_mi_curr(3);
+}
+
 
 inline Coordinate fft_desc_basic::coordinate_l_from_index(LInt isp) const
 {

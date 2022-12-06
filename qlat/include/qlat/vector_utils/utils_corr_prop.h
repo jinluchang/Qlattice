@@ -12,49 +12,243 @@
 #include "utils_fft_desc.h"
 #include "utils_reduce_vec.h"
 #include "utils_grid_src.h"
+#include "utils_shift_vecs.h"
 
 namespace qlat{
 
 template<typename Ty>
-void prop4d_src_gamma(Propagator4dT<Ty >& prop, ga_M& ga,int dir = 0){
+void init_qpropT(std::vector<qpropT >& res, const unsigned int size, const Geometry& geo)
+{
+  if(res.size() != size){
+    res.resize(size);
+  }
+  for(unsigned int i=0;i<res.size();i++){
+    if(!res[i].initialized){res[i].init(geo);}
+  }
+
+}
+
+template<typename Ty>
+void clear_qpropT(std::vector<qpropT >& res)
+{
+  for(unsigned int i=0;i<res.size();i++){
+    qlat::set_zero(res[i]);
+  }
+}
+
+
+template<typename Td, int dir, bool conj>
+void prop4d_src_gammaT(Propagator4dT<Td >& prop, ga_M& ga){
+  TIMERA("prop4d_src_gamma");
   ////Rowmajor (a,b), b is continues in memory
   qacc_for(isp, long(prop.geo().local_volume()),{
-    qlat::WilsonMatrixT<Ty>& v0 =  prop.get_elem_offset(isp);
-    qlat::WilsonMatrixT<Ty>  v1 = v0;
+    qlat::WilsonMatrixT<Td>& v0 =  prop.get_elem_offset(isp);
+    qlat::WilsonMatrixT<Td>  v1 = v0;
 
-    for (int s = 0; s < 4; ++s)
+    for(int s = 0; s < 4; ++s)
     for(int c0 = 0;c0< 3 ; c0++)
-    for (int d0 = 0; d0 < 4; ++d0)
+    for(int d0 = 0; d0 < 4; ++d0)
     {
       /////Source multiply
-      if(dir==0)for(int c1=0;c1<3;c1++)v0(s*3 + c0, ga.ind[d0]*3 + c1) = ga.g[d0] * v1(s*3 + c0, d0*3 + c1);
+      if(dir==0)for(int c1=0;c1<3;c1++){
+        if(!conj){v0(s*3 + c0, ga.ind[d0]*3 + c1) = ga.g[d0] * v1(s*3 + c0, d0*3 + c1);}
+        if( conj){v0(s*3 + c0, ga.ind[d0]*3 + c1) = qlat::qconj(ga.g[d0] * v1(s*3 + c0, d0*3 + c1));}
+      }
       /////Sink multiply
-      if(dir==1)for(int c1=0;c1<3;c1++)v0(d0*3 + c0, s*3 + c1) = ga.g[d0] * v1(ga.ind[d0]*3 + c0, s*3 + c1);
+      if(dir==1)for(int c1=0;c1<3;c1++){
+        if(!conj){v0(d0*3 + c0, s*3 + c1) = ga.g[d0] * v1(ga.ind[d0]*3 + c0, s*3 + c1);}
+        if( conj){v0(d0*3 + c0, s*3 + c1) = qlat::qconj(ga.g[d0] * v1(ga.ind[d0]*3 + c0, s*3 + c1));}
+      }
+    }
+  });
+}
 
-      ///////Source multiply
-      //if(dir==0)for(int c1=0;c1<3;c1++)cp_C(v0(s*3 + c0, ga.ind[d0]*3 + c1), ga.g[d0] * v1(s*3 + c0, d0*3 + c1));
-      ///////Sink multiply
-      //if(dir==1)for(int c1=0;c1<3;c1++)cp_C(v0(d0*3 + c0, s*3 + c1), ga.g[d0] * v1(ga.ind[d0]*3 + c0, s*3 + c1));
+template<typename Td>
+void prop4d_src_gamma(Propagator4dT<Td >& prop, ga_M& ga, bool conj = false){
+  if(!conj){prop4d_src_gammaT<Td, 0, false>(prop, ga);}
+  if( conj){prop4d_src_gammaT<Td, 0, true >(prop, ga);}
+}
+template<typename Td>
+void prop4d_sink_gamma(Propagator4dT<Td >& prop, ga_M& ga, bool conj = false){
+  if(!conj){prop4d_src_gammaT<Td, 1, false>(prop, ga);}
+  if( conj){prop4d_src_gammaT<Td, 1, true >(prop, ga);}
+}
+
+template<typename Ty, int dir, bool conj>
+void qprop_src_gamma_T(Ty* res, ga_M& ga, const long Nsize){
+  TIMERA("qprop_src_gamma");
+  ////Rowmajor (a,b), b is continues in memory
+  ///Ty* res = (Ty*) qlat::get_data(prop1).data()
+  //const long Nsize = prop.geo().local_volume();
+  qacc_for(isp, Nsize,{
+    Ty src[12*12];
+    Ty buf[12*12];
+    for(int i=0;i<12*12;i++){src[i] = res[i*Nsize + isp];}
+
+    for(int d1 = 0;d1 < 4; d1++)
+    for(int c1 = 0;c1 < 3; c1++)
+    for(int d0 = 0;d0 < 4; d0++)
+    for(int c0 = 0;c0 < 3; c0++)
+    {
+      /////Source multiply
+      if(dir==0)
+      {
+        buf[(ga.ind[d1]*3 + c1) * 12 + d0*3 + c0] = ga.g[d1] * src[(d1*3 + c1 )*12 + d0*3 + c0];
+      }
+      /////Sink multiply
+      if(dir==1)
+      {
+        buf[(d1*3 + c1)*12 + d0*3 + c0] = ga.g[d0] * src[(d1*3 + c1)*12 + ga.ind[d0]*3 + c0];
+      }
+    }
+
+    for(int i=0;i<12*12;i++){
+      if(!conj){res[i*Nsize + isp] = buf[i];}
+      if( conj){res[i*Nsize + isp] = qlat::qconj(buf[i]);}
     }
   });
 }
 
 template<typename Ty>
-void prop4d_sink_gamma(Propagator4dT<Ty >& prop, ga_M& ga){
-  prop4d_src_gamma(prop, ga ,1);
+void qprop_src_gamma(qpropT& prop, ga_M& ga, bool conj = false){
+  Ty* res = (Ty*) qlat::get_data(prop).data();
+  const long Nsize = prop.geo().local_volume();
+  if(!conj)qprop_src_gamma_T<Ty, 0, false>(res, ga, Nsize);
+  if( conj)qprop_src_gamma_T<Ty, 0, true >(res, ga, Nsize);
 }
 
 
 template<typename Ty>
-void prop4d_cps_to_ps(Propagator4dT<Ty >& prop, int dir=0){
+void qprop_sink_gamma(qpropT& prop, ga_M& ga, bool conj = false){
+  Ty* res = (Ty*) qlat::get_data(prop).data();
+  const long Nsize = prop.geo().local_volume();
+  if(!conj)qprop_src_gamma_T<Ty, 1, false>(res, ga, Nsize);
+  if( conj)qprop_src_gamma_T<Ty, 1, true >(res, ga, Nsize);
+}
+
+template<typename Ty>
+void Gprop_src_gamma(EigenTy& prop, ga_M& ga, bool conj = false){
+  for(unsigned long iv=0;iv<prop.size();iv++)
+  {
+    Ty* res = (Ty*) qlat::get_data(prop[iv]).data();
+    if(!conj)qprop_src_gamma_T<Ty, 0, false>(res, ga, prop[iv].size()/(12*12));
+    if( conj)qprop_src_gamma_T<Ty, 0, true >(res, ga, prop[iv].size()/(12*12));
+  }
+}
+
+template<typename Ty>
+void Gprop_sink_gamma(EigenTy& prop, ga_M& ga, bool conj = false){
+  for(unsigned long iv=0;iv<prop.size();iv++)
+  {
+    Ty* res = (Ty*) qlat::get_data(prop[iv]).data();
+    if(!conj)qprop_src_gamma_T<Ty, 1, false>(res, ga, prop[iv].size()/(12*12));
+    if( conj)qprop_src_gamma_T<Ty, 1, true >(res, ga, prop[iv].size()/(12*12));
+  }
+}
+
+template<typename Ty>
+void qprop_move_dc_in(Ty* src, const qlat::Geometry &geo, const int dir = 1)
+{
+  move_index mv_civ;
+  const long sizeF = geo.local_volume();
+
+  if(dir == 1){mv_civ.move_civ_in( src, src, 1, 12*12, sizeF, 1, true);}
+  if(dir == 0){mv_civ.move_civ_out(src, src, 1, sizeF, 12*12, 1, true);}
+}
+
+template<typename Ty>
+void qprop_move_dc_in(qpropT& src, const int dir = 1)
+{
+  qassert(src.initialized);
+  qprop_move_dc_in((Ty*) qlat::get_data(src).data(), src.geo(), dir);
+}
+
+template<typename Ty>
+void qprop_move_dc_out(Ty* src, const qlat::Geometry &geo)
+{
+  qprop_move_dc_in(src, geo, 0);
+}
+
+template<typename Ty>
+void qprop_move_dc_out(qpropT& src)
+{
+  qprop_move_dc_in(src, 0);
+}
+
+template<typename Ty>
+void qprop_sub_add(std::vector<qpropT >& res, std::vector< qpropT >& s0, const Ty f0, const Ty f1)
+{
+  if(s0.size() == 0){res.resize(0); return ;}
+  const int Nvec = s0.size();
+  const qlat::Geometry &geo = s0[0].geo();
+  const long Nvol = geo.local_volume();
+
+  init_qpropT(res, Nvec, geo);
+  for(int vi=0;vi<Nvec;vi++)
+  {
+    Ty* p0 = (Ty* ) qlat::get_data(s0[vi]).data();
+    Ty* r0 = (Ty* ) qlat::get_data(res[vi]).data(); 
+    for(int dc=0;dc<12*12;dc++){
+      qacc_for(isp, geo.local_volume(),{
+        r0[dc*Nvol + isp] = r0[dc*Nvol + isp]*f0 + p0[dc*Nvol + isp] * f1;
+      });
+    }
+  }
+}
+
+template<typename Ty>
+void qprop_sub_add(std::vector<qpropT >& res, std::vector< qpropT >& s0, std::vector< qpropT >& s1, const Ty f0, const Ty f1)
+{
+  if(s0.size() == 0){res.resize(0); return ;}
+  qassert(s0.size() == s1.size());
+  const int Nvec = s0.size();
+  const qlat::Geometry &geo = s0[0].geo();
+  const long Nvol = geo.local_volume();
+
+  init_qpropT(res, Nvec, geo);
+  for(int vi=0;vi<Nvec;vi++)
+  {
+    Ty* p0 = (Ty* ) qlat::get_data(s0[vi]).data();
+    Ty* p1 = (Ty* ) qlat::get_data(s1[vi]).data(); 
+    Ty* r0 = (Ty* ) qlat::get_data(res[vi]).data(); 
+    for(int dc=0;dc<12*12;dc++){
+      qacc_for(isp, geo.local_volume(),{
+        r0[dc*Nvol + isp] = (p0[dc*Nvol + isp] + p1[dc*Nvol + isp] * f0) * f1;
+      });
+    }
+  }
+}
+
+template<typename Ty>
+void shift_vecs_cov_qpropT(std::vector< std::vector<qpropT > >& res, std::vector< qpropT >& s0, shift_vec& svec,
+  std::vector<std::vector<qpropT >>& buf)
+{
+  if(res.size() != 5){res.resize(5);}
+  if(buf.size() != 2){buf.resize(2);}
+  qprop_sub_add(res[0], s0, Ty(0.0,0.0), Ty(1.0,0.0) );////equal
+
+  init_qpropT(buf[0], s0.size(), s0[0].geo());
+  init_qpropT(buf[1], s0.size(), s0[0].geo());
+
+  for(int nu = 0; nu < 4 ; nu++)
+  {
+    shift_vecs_dir_qpropT(s0, buf[0], nu, +1, svec);
+    shift_vecs_dir_qpropT(s0, buf[1], nu, -1, svec);
+    qprop_sub_add(res[1 + nu], buf[0], buf[1], Ty(-1.0,0.0), Ty(1.0/2.0, 0.0) );////equal
+  }
+}
+
+
+template<typename Td>
+void prop4d_cps_to_ps(Propagator4dT<Td >& prop, int dir=0){
   /////sn is -1 for default
-  Ty sn =-1;if(dir == 1){sn= 1;}
-  const Ty sqrt2= Ty(std::sqrt(2.0), 0.0);
+  qlat::ComplexT<Td > sn =-1;if(dir == 1){sn= 1;}
+  const qlat::ComplexT<Td>sqrt2= qlat::ComplexT<Td>(std::sqrt(2.0), 0.0);
 
   ////Rowmajor (a,b), b is continues in memory
   qacc_for(isp, prop.geo().local_volume(),{
-    qlat::WilsonMatrixT<Ty >  v0 = prop.get_elem_offset(isp);
-    qlat::WilsonMatrixT<Ty >  v1 = prop.get_elem_offset(isp);
+    qlat::WilsonMatrixT<Td >  v0 = prop.get_elem_offset(isp);
+    qlat::WilsonMatrixT<Td >  v1 = prop.get_elem_offset(isp);
 
     int dr,d0,d1;
     /////Src rotation
@@ -91,13 +285,13 @@ void prop4d_cps_to_ps(Propagator4dT<Ty >& prop, int dir=0){
   });
 }
 
-template<typename Ty>
-void prop4d_ps_to_cps(Propagator4dT<Ty >& prop){
+template<typename Td>
+void prop4d_ps_to_cps(Propagator4dT<Td >& prop){
   prop4d_cps_to_ps(prop, 1);
 }
 
-template<typename Ty>
-void get_corr_pion(std::vector<qlat::FermionField4dT<Ty > > &prop,const Coordinate &x_ini, std::vector<double > &write ){
+template<typename Td>
+void get_corr_pion(std::vector<qlat::FermionField4dT<Td > > &prop,const Coordinate &x_ini, std::vector<double > &write ){
 
   const qlat::Geometry &geo = prop[0].geo();
 
@@ -106,13 +300,13 @@ void get_corr_pion(std::vector<qlat::FermionField4dT<Ty > > &prop,const Coordina
   ///long Nsum = Nvol/Nt;
   int tini = x_ini[3];
 
-  qlat::vector_acc<Ty > res;res.resize(Nvol);
+  qlat::vector_acc<qlat::ComplexT<Td> > res;res.resize(Nvol);
 
   qacc_for(isp, long(Nvol),{
-    Ty buf(0.0,0.0);
+    qlat::ComplexT<Td> buf(0.0,0.0);
 
     for(int dc2=0;dc2<12;dc2++){
-      Ty* a = (Ty* ) &(prop[dc2].get_elem_offset(isp));
+      qlat::ComplexT<Td>* a = (qlat::ComplexT<Td>* ) &(prop[dc2].get_elem_offset(isp));
       for(int dc1=0;dc1<12;dc1++)
       {
         buf+=a[dc1]*qlat::qconj(a[dc1]);
@@ -273,12 +467,12 @@ inline std::vector<Coordinate > string_to_coord(std::string& INFO){
   return posL;
 }
 
-template<typename Ta>
-void shift_result_t(EigenVTa& Esrc, int nt, int tini){
+template<typename Ty>
+void shift_result_t(qlat::vector_acc<Ty >& Esrc, int nt, int tini){
   if(tini == 0){return ;}
   long Ntotal = Esrc.size();
   if(Ntotal %(nt) != 0){abort_r("Correlation function size wrong!\n");}
-  EigenVTa tmp;tmp.resize(Ntotal);
+  qlat::vector_acc<Ty > tmp;tmp.resize(Ntotal);
   qacc_for(i, Ntotal, {
     const int iv = i/nt;
     const int t  = i%nt;
@@ -287,140 +481,187 @@ void shift_result_t(EigenVTa& Esrc, int nt, int tini){
   cpy_data_thread(Esrc.data(), tmp.data(), tmp.size(), 1);
 }
 
-template<typename Ta>
-void ini_propE(EigenMTa &prop,int nmass, qlat::fft_desc_basic &fd, bool clear = true){
-  LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
-  int NTt  = fd.Nv[3];
-  int do_resize = 0;
-  if(prop.size() != (LInt) (nmass*12*12*NTt)){do_resize = 1;}
-  for(unsigned int i=0;i<prop.size();i++){if((LInt) prop[i].size() != Nxyz){do_resize=1;}}
+//template<typename Ta>
+//void ini_propE(EigenMTa &prop,int nmass, qlat::fft_desc_basic &fd, bool clear = true){
+//  LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
+//  int NTt  = fd.Nv[3];
+//  int do_resize = 0;
+//  if(prop.size() != (LInt) (nmass*12*12*NTt)){do_resize = 1;}
+//  for(unsigned int i=0;i<prop.size();i++){if((LInt) prop[i].size() != Nxyz){do_resize=1;}}
+//
+//  if(do_resize == 1)
+//  {
+//    for(unsigned int i=0;i<prop.size();i++){prop[i].resize(0);}prop.resize(0);
+//    prop.resize(nmass*12*12*NTt);
+//    for(unsigned int i=0;i<prop.size();i++){
+//      prop[i].resize(Nxyz);
+//    }
+//  }
+//  if(clear){zeroE(prop);}
+//}
 
-  if(do_resize == 1)
-  {
-    for(unsigned int i=0;i<prop.size();i++){prop[i].resize(0);}prop.resize(0);
-    prop.resize(nmass*12*12*NTt);
-    for(unsigned int i=0;i<prop.size();i++){
-      prop[i].resize(Nxyz);
+//////default dir == 0 from prop4d to propE
+//template<typename Ty, typename Ta>
+//void copy_propE(std::vector<Ty* > &pV1, EigenMTa &prop, qlat::fft_desc_basic &fd, int dir=0){
+//  TIMER("Copy prop");
+//  qassert(fd.order_ch == 0);
+//  const LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
+//  const int NTt  = fd.Nv[3];
+//  Geometry geo;fd.get_geo(geo);
+//  int nmass = 0;
+//  if(dir==0){nmass = pV1.size();ini_propE(prop,nmass,fd);}
+//  if(dir==1){
+//    nmass = prop.size()/(12*12*NTt);
+//    qassert(int(pV1.size()) == nmass);
+//    //if(pV1.size() != (LInt) nmass){
+//    //  pV1.resize(0);
+//    //  pV1.resize(nmass);for(int i=0;i<nmass;i++){pV1[i].init(geo);}
+//    //}
+//  }
+//
+//  for(int mi = 0;mi < nmass;mi++)
+//  {
+//    Ty* pv = pV1[mi];
+//    /////Propagator4dT<Ty >& pv = pV1[mi];
+//    qlat::vector_acc<Ta* > ps = EigenM_to_pointers(prop);
+//    qacc_for(isp, long(NTt*Nxyz),{
+//      int ti = isp/Nxyz;
+//      int xi = isp%Nxyz;
+//      /////qlat::WilsonMatrixT<Ty>& v0 =  pv.get_elem_offset(isp);
+//      Ty* v0 = &pv[isp * 12 * 12];
+//
+//      for(int c0 = 0;c0 < 3; c0++)
+//      for(int d0 = 0;d0 < 4; d0++)
+//      for(int c1 = 0;c1 < 3; c1++)
+//      for(int d1 = 0;d1 < 4; d1++)
+//      {
+//        LInt off = mi*12*12 + (d1*3+c1)*12+d0*3+c0;
+//        if(dir==0){ps[off*NTt+ti][xi] = v0[(d0*3 + c0)*12 +  d1*3 + c1];}
+//        if(dir==1){v0[(d0*3 + c0)*12 +  d1*3 + c1] = ps[off*NTt+ti][xi];}
+//      }
+//    });
+//  }
+//
+//}
+
+//template<typename Ty, typename Ta>
+//void copy_propE(Propagator4dT<Ty > &pV, EigenMTa &prop, qlat::fft_desc_basic &fd, int dir=0){
+//  int nmass = 1;
+//  if(dir==0){
+//    qassert(pV.initialized);
+//    ini_propE(prop,nmass,fd);
+//  }
+//  if(dir==1){
+//    nmass = prop.size()/(12*12*fd.Nv[3]);
+//    qassert(nmass == 1);
+//    if(!pV.initialized){
+//      Geometry geo;fd.get_geo(geo);
+//      pV.init(geo);
+//    }
+//  }
+//  std::vector<Ty* > PTy;PTy.resize(1);
+//  PTy[0] = (Ty*) (qlat::get_data(pV).data());
+//  copy_propE(PTy, prop, fd, dir);
+//}
+
+//template<typename Ty, typename Ta>
+//void copy_propE(std::vector<Propagator4dT<Ty > > &pV, EigenMTa &prop, qlat::fft_desc_basic &fd, int dir=0){
+//  int nmass = 0;
+//  if(dir==0){nmass = pV.size();ini_propE(prop,nmass,fd);}
+//  if(dir==1){
+//    nmass = prop.size()/(12*12*fd.Nv[3]);
+//    bool do_init = false;
+//    if(pV.size() != (LInt) nmass){do_init = true;}
+//    if(pV.size() > 0){if(!pV[0].initialized){do_init = true;}}
+//    if(do_init)
+//    {
+//      pV.resize(0);
+//      Geometry geo;fd.get_geo(geo);
+//      pV.resize(nmass);for(int i=0;i<nmass;i++){pV[i].init(geo);}
+//    }
+//  }
+//  std::vector<Ty* > PTy;PTy.resize(nmass);
+//  for(int im=0;im<nmass;im++){PTy[im] = (Ty*) (qlat::get_data(pV[im]).data());}
+//  copy_propE(PTy, prop, fd, dir);
+//}
+//
+//template<typename Ty, typename Ta>
+//void copy_prop4d_to_propE(EigenMTa &prop, std::vector<Propagator4dT<Ty > > &pV1, qlat::fft_desc_basic &fd){
+//  copy_propE(pV1, prop, fd, 0);
+//}
+//template<typename Ty, typename Ta>
+//void copy_propE_to_prop4d(std::vector<Propagator4dT<Ty > > &pV1, EigenMTa &prop, qlat::fft_desc_basic &fd){
+//  copy_propE(pV1, prop, fd, 1);
+//}
+//
+//template<typename Ty, typename Ta>
+//void copy_prop4d_to_propE(EigenMTa &prop, Propagator4dT<Ty > &pV1, qlat::fft_desc_basic &fd){
+//  copy_propE(pV1, prop, fd, 0);
+//}
+//template<typename Ty, typename Ta>
+//void copy_propE_to_prop4d(Propagator4dT<Ty > &pV1, EigenMTa &prop, qlat::fft_desc_basic &fd){
+//  copy_propE(pV1, prop, fd, 1);
+//}
+//
+
+template<typename Ty>
+void ini_propG(EigenTy& prop, const long nmass, size_t Nsize, bool clear = true){
+  if(long(prop.size()) != nmass){prop.resize(nmass);}
+  for(unsigned long i=0;i<prop.size();i++){
+    if(prop[i].size() != Nsize){
+      prop[i].resize(Nsize);
+    }
+    else{
+      if(clear){prop[i].set_zero();}
     }
   }
-  if(clear){zeroE(prop);}
 }
 
-////default dir == 0 from prop4d to propE
-template<typename Ty, typename Ta>
-void copy_propE(std::vector<Ty* > &pV1, EigenMTa &prop, qlat::fft_desc_basic &fd, int dir=0){
-  TIMER("Copy prop");
-  qassert(fd.order_ch == 0);
-  const LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
-  const int NTt  = fd.Nv[3];
-  Geometry geo;fd.get_geo(geo);
-  int nmass = 0;
-  if(dir==0){nmass = pV1.size();ini_propE(prop,nmass,fd);}
-  if(dir==1){
-    nmass = prop.size()/(12*12*NTt);
-    qassert(int(pV1.size()) == nmass);
-    //if(pV1.size() != (LInt) nmass){
-    //  pV1.resize(0);
-    //  pV1.resize(nmass);for(int i=0;i<nmass;i++){pV1[i].init(geo);}
-    //}
-  }
-
-  for(int mi = 0;mi < nmass;mi++)
+template <typename Ty >
+void check_prop_size(EigenTy& prop, fft_desc_basic& fd){
+  for(unsigned int i=0;i<prop.size();i++)
   {
-    Ty* pv = pV1[mi];
-    /////Propagator4dT<Ty >& pv = pV1[mi];
-    qlat::vector_acc<Ta* > ps = EigenM_to_pointers(prop);
-    qacc_for(isp, long(NTt*Nxyz),{
-      int ti = isp/Nxyz;
-      int xi = isp%Nxyz;
-      /////qlat::WilsonMatrixT<Ty>& v0 =  pv.get_elem_offset(isp);
-      Ty* v0 = &pv[isp * 12 * 12];
-
-      for(int c0 = 0;c0 < 3; c0++)
-      for(int d0 = 0;d0 < 4; d0++)
-      for(int c1 = 0;c1 < 3; c1++)
-      for(int d1 = 0;d1 < 4; d1++)
-      {
-        LInt off = mi*12*12 + (d1*3+c1)*12+d0*3+c0;
-        if(dir==0){ps[off*NTt+ti][xi] = v0[(d0*3 + c0)*12 +  d1*3 + c1];}
-        if(dir==1){v0[(d0*3 + c0)*12 +  d1*3 + c1] = ps[off*NTt+ti][xi];}
-      }
-    });
-  }
-
-}
-
-template<typename Ty, typename Ta>
-void copy_propE(Propagator4dT<Ty > &pV, EigenMTa &prop, qlat::fft_desc_basic &fd, int dir=0){
-  int nmass = 1;
-  if(dir==0){
-    qassert(pV.initialized);
-    ini_propE(prop,nmass,fd);
-  }
-  if(dir==1){
-    nmass = prop.size()/(12*12*fd.Nv[3]);
-    qassert(nmass == 1);
-    if(!pV.initialized){
-      Geometry geo;fd.get_geo(geo);
-      pV.init(geo);
-    }
-  }
-  std::vector<Ty* > PTy;PTy.resize(1);
-  PTy[0] = (Ty*) (qlat::get_data(pV).data());
-  copy_propE(PTy, prop, fd, dir);
-}
-
-template<typename Ty, typename Ta>
-void copy_propE(std::vector<Propagator4dT<Ty > > &pV, EigenMTa &prop, qlat::fft_desc_basic &fd, int dir=0){
-  int nmass = 0;
-  if(dir==0){nmass = pV.size();ini_propE(prop,nmass,fd);}
-  if(dir==1){
-    nmass = prop.size()/(12*12*fd.Nv[3]);
-    bool do_init = false;
-    if(pV.size() != (LInt) nmass){do_init = true;}
-    if(pV.size() > 0){if(!pV[0].initialized){do_init = true;}}
-    if(do_init)
+    if(prop[0].size() != size_t(fd.Nvol)*12*12)
     {
-      pV.resize(0);
-      Geometry geo;fd.get_geo(geo);
-      pV.resize(nmass);for(int i=0;i<nmass;i++){pV[i].init(geo);}
+      print0("Size of Prop wrong. \n");
+      qassert(false);
     }
   }
-  std::vector<Ty* > PTy;PTy.resize(nmass);
-  for(int im=0;im<nmass;im++){PTy[im] = (Ty*) (qlat::get_data(pV[im]).data());}
-  copy_propE(PTy, prop, fd, dir);
 }
 
-template<typename Ty, typename Ta>
-void copy_prop4d_to_propE(EigenMTa &prop, std::vector<Propagator4dT<Ty > > &pV1, qlat::fft_desc_basic &fd){
-  copy_propE(pV1, prop, fd, 0);
-}
-template<typename Ty, typename Ta>
-void copy_propE_to_prop4d(std::vector<Propagator4dT<Ty > > &pV1, EigenMTa &prop, qlat::fft_desc_basic &fd){
-  copy_propE(pV1, prop, fd, 1);
-}
-
-template<typename Ty, typename Ta>
-void copy_prop4d_to_propE(EigenMTa &prop, Propagator4dT<Ty > &pV1, qlat::fft_desc_basic &fd){
-  copy_propE(pV1, prop, fd, 0);
-}
-template<typename Ty, typename Ta>
-void copy_propE_to_prop4d(Propagator4dT<Ty > &pV1, EigenMTa &prop, qlat::fft_desc_basic &fd){
-  copy_propE(pV1, prop, fd, 1);
-}
-
-template <typename Ta >
-void check_prop_size(EigenMTa &prop){
-  int sizep = prop.size();
-  if(sizep%(12*12) != 0 or sizep == 0)
+template <typename Ty >
+void copy_qprop_to_propG(EigenTy& res, std::vector<qpropT >& src, const qlat::Geometry &geo, int GPU = 1, int dir = 1)
+{
+  int nvec = 0;
+  if(dir == 1){
+    nvec = src.size();
+    res.resize(nvec);
+  }
+  if(dir == 0){
+    nvec = res.size();
+    src.resize(nvec);
+    for(int ni=0;ni<nvec;ni++){
+      src[ni].init(geo);
+      qassert(res[ni].size() == size_t(12*12*geo.local_volume()));
+    }
+  }
+  if(nvec == 0){return ;}
+  
+  for(int ni=0;ni<nvec;ni++)
   {
-    print0("Size of Prop wrong. \n");
-    qassert(false);
+    if(dir == 1){res[ni].copy_from((Complexq*) qlat::get_data(src[ni]).data(), 12*12*geo.local_volume(), GPU);}
+    if(dir == 0){res[ni].copy_to((Complexq*) qlat::get_data(src[ni]).data(), GPU);}
   }
 }
 
-template <typename Ta >
-void ini_resE(EigenVTa &res, int nmass, qlat::fft_desc_basic &fd){
+template <typename Ty >
+void copy_propG_to_qprop(std::vector<qpropT >& res, EigenTy& src, const qlat::Geometry &geo, int GPU = 1)
+{
+  copy_qprop_to_propG(src, res, geo, 0, GPU);
+}
+
+template <typename Ty >
+void ini_resE(qlat::vector_acc<Ty > &res, int nmass, qlat::fft_desc_basic &fd){
   int NTt  = fd.Nv[3];
   LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   int do_resize = 0;
@@ -432,15 +673,16 @@ void ini_resE(EigenVTa &res, int nmass, qlat::fft_desc_basic &fd){
   clear_qv(res);
 }
 
-inline std::vector<int >  get_sec_map(int dT,int nt){
+inline std::vector<int >  get_map_sec(int dT,int nt){
   std::vector<int > map_sec;map_sec.resize(nt);
   int secN = 2*nt/dT;double lensec = nt/(1.0*secN);
   int tcount = 0;
   int t0 = 0;
   for(int si=0;si<secN;si++)
   {
-    for(int t=t0;t <= (si+1)*lensec;t++)
+    for(int t=t0;t < (si+1)*lensec;t++)///boundary with the same sector?
     {
+      qassert(t < nt);
       map_sec[t] = si;
       tcount = tcount + 1;
     }
@@ -636,6 +878,62 @@ void get_phases(std::vector<Ty >& phases, Coordinate& pL, const Coordinate& src,
     phases[isp] = Ty(std::cos(v0), -1.0* std::sin(v0));
   }
 }
+
+/////V -- 12a x 12b   to   12b x 12a -- V
+template<typename Ty>
+void copy_qprop_to_propE(std::vector<qlat::vector_acc<Ty > >& Eprop, std::vector<qpropT >& src, int dir = 1){
+  TIMERA("copy_qprop_to_propE");
+  const int nmass = src.size();
+  std::vector<Ty* > ps;ps.resize(nmass);
+  
+  for(int mi=0;mi<nmass;mi++){
+    qassert(src[mi].initialized);
+    ps[mi] = (Ty*) qlat::get_data(src[mi]).data();
+  }
+
+  const qlat::Geometry &geo = src[0].geo();
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+  if(dir == 1){ini_propE(Eprop, nmass, fd);}
+  
+  ///const long sizeF = geo.local_volume();
+  const long nvec  = Eprop.size()/nmass;
+  const long sizeF = Eprop[0].size();
+  qassert(nvec * sizeF == 12*12*geo.local_volume());
+
+  ////V x 12 a x 12 b to 12b x 12a x V
+  for(int mi=0;mi<nmass;mi++)
+  for(long i=0;i<nvec;i++)
+  {
+    if(dir == 1)cpy_data_thread(Eprop[mi*nvec + i].data(), &ps[mi][i*sizeF], sizeF, 1, false);
+    if(dir == 0)cpy_data_thread(&ps[mi][i*sizeF], Eprop[mi*nvec + i].data(), sizeF, 1, false);
+  }
+  qacc_barrier(dummy);
+}
+
+template<typename Ty>
+void copy_propE_to_qprop(std::vector<qpropT >& src, std::vector<qlat::vector_acc<Ty > >& Eprop){
+  copy_qprop_to_propE(Eprop, src, 0);
+}
+
+template<typename Ty>
+void noise_to_propT(qpropT& prop, qnoiT& noi){
+  qassert(noi.initialized);
+  const Geometry& geo = noi.geo();
+
+  if(!prop.initialized){prop.init(geo);}
+
+  Ty* res = (Ty*) qlat::get_data(prop).data();
+  Ty* src = (Ty*) qlat::get_data(noi ).data();
+
+  const long Nvol = geo.local_volume();
+
+  for(int d0=0;d0<12;d0++){
+    cpy_data_thread(&res[(d0*12+d0)*Nvol + 0], src, Nvol, 1, false);
+  }
+  qacc_barrier(dummy);
+
+}
+
 
 
 }

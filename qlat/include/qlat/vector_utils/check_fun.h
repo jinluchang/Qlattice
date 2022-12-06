@@ -50,8 +50,8 @@ void diff_prop(Propagator4dT<T>& p0, Propagator4dT<T>& p1, double err=1e-15)
     for(int d0=0;d0<12;d0++)
     for(int d1=0;d1<12;d1++)
     {
-      T p0 = s0(d0,d1);
-      T p1 = s1(d0,d1);
+      qlat::ComplexT<T > p0 = s0(d0,d1);
+      qlat::ComplexT<T > p1 = s1(d0,d1);
 
       double diff = 0.0;
       double n0 = qlat::qnorm(p0);
@@ -259,7 +259,29 @@ void print_sum(const Ty* a, size_t size, std::string stmp=std::string(""), int G
   print0("%s, sum %.3e \n", stmp.c_str(), qlat::qnorm(sum[0]) );
 }
 
-
+template <typename Ty>
+double check_sum_prop(qpropT& p0)
+{
+  ////int rank = qlat::get_id_node();
+  const Geometry& geo = p0.geo();
+  double check_sum = 0.0;
+  const Ty* src = (Ty*) qlat::get_data(p0).data();
+  const long Nvol = geo.local_volume();
+  for(long index = 0; index < Nvol; ++index){
+    Coordinate xl = geo.coordinate_from_index(index);
+    Coordinate xg = geo.coordinate_g_from_l(xl);
+    double cor = xg[0]*0.5 + xg[1]*1.7 + xg[2]*xg[2]*2.5 + xg[3]*xg[3]*0.2;
+    for(long dc = 0;dc<12*12;dc++)
+    {
+      Ty fac = Ty(std::cos(cor + dc) , std::sin(cor*5.7  + dc*dc) );
+      check_sum += qlat::qnorm( src[dc*Nvol + index] * fac ) ;
+    }
+  }
+  sum_all_size(&check_sum,1);
+  MPI_Barrier(get_comm());fflush(stdout);
+  /////print0("==prop check_sum %.8e \n", check_sum);
+  return check_sum;
+}
 
 }
 

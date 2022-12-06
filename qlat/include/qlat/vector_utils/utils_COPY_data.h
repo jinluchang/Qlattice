@@ -76,8 +76,8 @@ void cpy_data_from_index(qlat::vector<T >& res, qlat::vector<T >& src, const qla
 }
 
 #ifdef QLAT_USE_ACC
-template <typename T0, typename T1, typename TInt, int bfac, int ADD_FAC>
-__global__ void cpy_data_thread_global(T0* Pres, const T1* Psrc,  const TInt Nvol, const double ADD)
+template <typename T0, typename T1, typename TInt, int bfac, int ADD_FAC, typename Tadd>
+__global__ void cpy_data_thread_global(T0* Pres, const T1* Psrc,  const TInt Nvol, const Tadd ADD)
 {
   TInt off = blockIdx.x*blockDim.x*bfac + threadIdx.x;
   for(int i=0;i<bfac;i++)
@@ -90,8 +90,8 @@ __global__ void cpy_data_thread_global(T0* Pres, const T1* Psrc,  const TInt Nvo
 #endif
 
 //////Copy data thread, cannot give to zero with ADD = 0
-template <typename T0, typename T1, typename TInt>
-void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU=1, bool dummy=true, const double ADD = 0)
+template <typename T0, typename T1, typename TInt, typename Tadd>
+void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, bool dummy, const Tadd ADD)
 {
   (void)dummy;
   if(GPU != 0 and GPU != 1){qassert(false);}
@@ -108,8 +108,8 @@ void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU=1,
   dim3 dimBlock(    Threads,    1, 1);
   dim3 dimGrid(     Nb,    1, 1);
 
-  if( do_copy)cpy_data_thread_global<T0, T1, TInt , Biva, 0><<< dimGrid, dimBlock >>>(Pres, Psrc, Nvol, ADD);
-  if(!do_copy)cpy_data_thread_global<T0, T1, TInt , Biva, 1><<< dimGrid, dimBlock >>>(Pres, Psrc, Nvol, ADD);
+  if( do_copy)cpy_data_thread_global<T0, T1, TInt , Biva, 0, Tadd><<< dimGrid, dimBlock >>>(Pres, Psrc, Nvol, ADD);
+  if(!do_copy)cpy_data_thread_global<T0, T1, TInt , Biva, 1, Tadd><<< dimGrid, dimBlock >>>(Pres, Psrc, Nvol, ADD);
 
   if(dummy)qacc_barrier(dummy);
   return ;}
@@ -138,8 +138,8 @@ void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU=1,
 //////Copy data thread
 //0--> host to host, 1 device to device
 //2--> ===from host to device, 3 ===from device to host
-template <typename T0, typename T1,  typename TInt>
-void cpy_data_thread(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU=1, bool dummy=true, const double ADD = 0)
+template <typename T0, typename T1,  typename TInt, typename Tadd>
+void cpy_data_threadT(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, bool dummy, const Tadd ADD)
 {
   if((void*) Pres == (void*) Psrc){return ;}////return if points are the same
   TIMERA("cpy_data_thread");
@@ -158,7 +158,7 @@ void cpy_data_thread(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU=1, bool 
   }else{
     qlat::vector_acc< T0 > buf;buf.resize(Nvol);T0* s0 = (T0*) qlat::get_data(buf).data();
     /////host to host
-    CPY_data_thread_basic(s0, Psrc, Nvol, 0, false);
+    CPY_data_thread_basic(s0, Psrc, Nvol, 0, false, 0.0);
     /////devic to device
     CPY_data_thread_basic(Pres, s0, Nvol, 1, dummy, ADD);
   }
@@ -173,7 +173,7 @@ void cpy_data_thread(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU=1, bool 
   }else{
     qlat::vector_acc< T0 > buf;buf.resize(Nvol);T0* s0 = (T0*) qlat::get_data(buf).data();
     /////device to device
-    CPY_data_thread_basic(s0, Psrc, Nvol, 1, true);
+    CPY_data_thread_basic(s0, Psrc, Nvol, 1,  true, 0.0);
     /////host to host
     CPY_data_thread_basic(Pres, s0, Nvol, 0, false, ADD);
   }
@@ -182,7 +182,18 @@ void cpy_data_thread(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU=1, bool 
   #else
   CPY_data_thread_basic(Pres, Psrc, Nvol, 0, false, ADD);
   #endif
+}
 
+template <typename T0, typename T1,  typename TInt>
+void cpy_data_thread(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU=1, bool dummy=true, const double ADD = 0)
+{
+  cpy_data_threadT<T0, T1, TInt, double>(Pres, Psrc, Nvol, GPU, dummy, ADD);
+}
+
+template <typename T0, typename T1,  typename TInt>
+void cpy_data_threadC(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU=1, bool dummy=true, const T1 ADD = 0)
+{
+  cpy_data_threadT<T0, T1, TInt, T1>(Pres, Psrc, Nvol, GPU, dummy, ADD);
 }
 
 template <typename Ty>

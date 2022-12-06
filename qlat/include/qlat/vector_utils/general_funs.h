@@ -19,370 +19,10 @@
 #include <iterator>
 #include "utils_read_txt.h"
 #include "utils_vector_GPU.h"
+#include "utils_mpi.h"
 
 namespace qlat
 {
-
-template<typename Iy>
-void reduce_MPI_type(Iy num, MPI_Datatype& curr, unsigned int& size)
-{
-  if(num <= 0){curr = MPI_BYTE; size = 1;return;}
-  //if(num%(sizeof(std::complex<double>)) == 0){curr = MPI::DOUBLE_COMPLEX ; size=sizeof( std::complex<double> );return;}
-  //if(num%(sizeof(std::complex<float >)) == 0){curr = MPI::COMPLEX        ; size=sizeof( std::complex<float > );return;}
-
-  if(num%(sizeof(std::int64_t )) == 0){curr = MPI_INT64_T ; size=sizeof(std::int64_t );return;}
-  if(num%(sizeof(std::int32_t )) == 0){curr = MPI_INT32_T ; size=sizeof(std::int32_t );return;}
-  if(num%(sizeof(std::int16_t )) == 0){curr = MPI_INT16_T ; size=sizeof(std::int16_t );return;}
-  if(num%(sizeof(std::int8_t  )) == 0){curr = MPI_INT8_T  ; size=sizeof(std::int8_t  );return;}
-}
-
-template<class M>
-unsigned int get_MPI_type(MPI_Datatype& curr)
-{
-  curr = MPI_BYTE;unsigned int size = 1;
-  DATA_TYPE typenum = get_data_type<M >();
-  if(typenum == INVALID_TYPE){
-    if(get_id_node()== 0){printf("Type not found !!!! \n");}qassert(false); return 0;
-  }
-
-  int dtype = typenum % MAXTYPE;
-  if(dtype <= FLOATIND + 3){
-
-    size = typenum/MAXTYPE;
-
-    if(dtype == 0){curr =  MPI_CHAR                 ; return size ;}
-    if(dtype == 1){curr =  MPI_UNSIGNED_CHAR        ; return size ;}
-    if(dtype == 2){curr =  MPI_SHORT                ; return size ;}
-    if(dtype == 3){curr =  MPI_UNSIGNED_SHORT       ; return size ;}
-    if(dtype == 4){curr =  MPI_INT                  ; return size ;}
-    if(dtype == 5){curr =  MPI_UNSIGNED             ; return size ;}
-    if(dtype == 6){curr =  MPI_LONG                 ; return size ;}
-    if(dtype == 7){curr =  MPI_UNSIGNED_LONG        ; return size ;}
-    if(dtype == 8){curr =  MPI_LONG_LONG            ; return size ;}
-    if(dtype == 9){curr =  MPI_UNSIGNED_LONG_LONG   ; return size ;}
-    if(dtype ==10){curr =  MPI_INT8_T               ; return size ;}
-    if(dtype ==11){curr =  MPI_UINT8_T              ; return size ;}
-    if(dtype ==12){curr =  MPI_INT16_T              ; return size ;}
-    if(dtype ==13){curr =  MPI_UINT16_T             ; return size ;}
-    if(dtype ==14){curr =  MPI_INT32_T              ; return size ;}
-    if(dtype ==15){curr =  MPI_UINT32_T             ; return size ;}
-    if(dtype ==16){curr =  MPI_INT64_T              ; return size ;}
-    if(dtype ==17){curr =  MPI_UINT64_T             ; return size ;}
-    
-    if(dtype ==FLOATIND+0){curr =  MPI_DOUBLE               ; return size ;}
-    if(dtype ==FLOATIND+1){curr =  MPI_FLOAT                ; return size ;}
-    if(dtype ==FLOATIND+2){curr =  MPI_C_DOUBLE_COMPLEX     ; return size ;}
-    if(dtype ==FLOATIND+3){curr =  MPI_C_FLOAT_COMPLEX      ; return size ;}
-  }
-  else{
-    if( get_data_type_is_double<M >()){curr = MPI_C_DOUBLE_COMPLEX; size = Complex_TYPE/MAXTYPE ;return size ;}
-    if(!get_data_type_is_double<M >()){curr = MPI_C_FLOAT_COMPLEX ; size = ComplexF_TYPE/MAXTYPE;return size ;}
-  }
-
-  if(get_id_node()== 0){printf("Type not found !!!! \n");}qassert(false);
-  return 0;
-
-}
-
-template<typename Ty>
-void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, MPI_Comm* commp=NULL)
-{
-  TIMER("global sum sum_all_size");
-  if(size == 0){return ;}
-  if(qlat::get_num_node() == 1){
-    if(src == sav){return;}
-    if(src != sav){
-      cpy_data_thread(sav, src, size, GPU, true);return;}
-  }
-
-  const int iomp = omp_get_thread_num(); ////each thread will have it's own buf
-  Ty* buf_res;int GPU_set = GPU;
-  #ifndef QLAT_USE_ACC
-  GPU_set = 0;
-  #endif
-  VectorGPUKey gkey(size_t(size)*sizeof(Ty), ssprintf("sum_all_size_buf_%d", iomp), GPU_set); ////read buffers for global sum
-  if(src == sav){
-    const vector_gpu<char >& tmp = get_vector_gpu_plan<char >(gkey);
-    buf_res = (Ty*) tmp.p;
-  }else{buf_res = sav;}////small modify for pointers
-
-  MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(double);
-  M_size = get_MPI_type<Ty >(curr);
-
-  qassert(sizeof(Ty)%M_size == 0);int fac = sizeof(Ty)/M_size;
-
-
-  Ty* tem_src = NULL; Ty* tem_res = NULL;
-  std::vector<Ty > tem_sHIP,tem_rHIP;
-  bool do_copy = false;
-
-  #ifdef __NO_GPU_DIRECT__
-  #ifdef QLAT_USE_ACC
-  if(GPU == 1){do_copy = true;}
-  #endif
-  #endif
-
-  if(do_copy == false){tem_src = src;tem_res = buf_res;}
-  if(do_copy == true ){
-    tem_sHIP.resize(size);tem_rHIP.resize(size);
-
-    cpy_data_thread(&tem_sHIP[0], src, size, 3, true);
-    tem_src = &tem_sHIP[0];tem_res = &tem_rHIP[0];
-  }
-  
-  if(commp == NULL){MPI_Allreduce(tem_src,tem_res, size * fac, curr, MPI_SUM, get_comm());}
-  else{MPI_Allreduce(tem_src,tem_res, size * fac, curr, MPI_SUM, *commp);}
-
-  if(do_copy == true){
-    cpy_data_thread(buf_res, &tem_rHIP[0], size, 2, true);
-  }
-
-
-  if(src == sav)
-  {
-    cpy_data_thread(sav, buf_res, size, GPU, true);
-  }
-  if(src != sav){safe_free_vector_gpu_plan<char>(gkey);}
-}
-
-template<typename Ty>
-void sum_all_size(Ty *src,long size, int GPU=0, MPI_Comm* commp=NULL)
-{
-  sum_all_size(src,src,size, GPU, commp);
-}
-
-template<typename Ty>
-void Bcast_all_Nt(Ty *src,long size,const qlat::Geometry &geo)
-{
-  if(qlat::get_num_node() == 1){return;}
-  int Nt = geo.node_site[3];
-  int Nmpi  = qlat::get_num_node();
-
-  const Coordinate vg = geo.total_site();
-  const int nt = vg[3];
-
-  if(nt/Nt != Nmpi){
-    sum_all_size(src,size);
-    return;
-  }
-
-  int mt = nt/Nt;
-  int rank  = qlat::get_id_node();
-  long size_c = sizeof(Ty)*size/mt;
-
-  unsigned short t0 = 0;
-  {
-    Coordinate xl = geo.coordinate_from_index(0);
-    xl[3] = 0;
-    Coordinate xg = geo.coordinate_g_from_l(xl);
-    t0 = xg[3];
-  }
-
-  std::vector<int > send,recv,spls,rpls;
-  send.resize(Nmpi);
-  recv.resize(Nmpi);
-  spls.resize(Nmpi);
-  rpls.resize(Nmpi);
-
-  std::fill(send.begin(), send.end(), 0);
-  std::fill(recv.begin(), recv.end(), 0);
-  std::fill(spls.begin(), spls.end(), 0);
-  std::fill(rpls.begin(), rpls.end(), 0);
-
-  for(int ti=0;ti<mt;ti++){
-    int tini = ti*Nt;
-    if(t0 == tini){
-      for(int ri=0;ri<Nmpi;ri++)if(ri != rank)
-      {
-        send[ri] = size_c;
-        spls[ri] = size_c*ti;
-      }
-    }
-
-    if(t0 != tini){
-      int ri_recv = ti;
-      recv[ri_recv] = size_c;
-      rpls[ri_recv] = size_c*ti;
-    }
-  }
-
-  MPI_Alltoallv(src,(int*) &send[0],(int*) &spls[0], MPI_CHAR,
-                src,(int*) &recv[0],(int*) &rpls[0], MPI_CHAR, get_comm());
-
-}
-
-////Need add explanations
-template<typename Ty>
-void Redistribute_all_Nt(Ty *src,long size,const qlat::Geometry &geo, int GPU=0)
-{
-  if(qlat::get_num_node() == 1){return;}
-  int Nt = geo.node_site[3];
-  int Nmpi  = qlat::get_num_node();
-
-  const Coordinate vg = geo.total_site();
-  const int nt = vg[3];
-
-  int mt = nt/Nt;
-  if(mt != Nmpi){print0("Not supported !");qassert(false);return;}
-
-  /////int rank  = qlat::get_id_node();
-  long size_c = sizeof(Ty)*size/mt;
-
-  std::vector<int > send,recv,spls,rpls;
-  send.resize(Nmpi);
-  recv.resize(Nmpi);
-  spls.resize(Nmpi);
-  rpls.resize(Nmpi);
-
-  for(int ri=0;ri<Nmpi;ri++)
-  {
-    send[ri] = size_c;
-    spls[ri] = size_c*ri;
-
-    recv[ri] = size_c;
-    rpls[ri] = size_c*ri;
-  }
-
-  //Ty* buf;
-  //if(GPU == 0){buf = (Ty *)aligned_alloc_no_acc(size*sizeof(Ty));}
-  //if(GPU == 1){gpuMalloc(buf, size, Ty);}
-  qlat::vector_gpu<Ty > buf; buf.resize(size, GPU);
-
-  {
-  ////TIMER("MPI call CPU");
-  MPI_Alltoallv(src   ,(int*) &send[0],(int*) &spls[0], MPI_CHAR,
-            buf.data(),(int*) &recv[0],(int*) &rpls[0], MPI_CHAR, get_comm());
-  }
-
-  #ifdef QLAT_USE_ACC
-  if(GPU == 0){
-    #pragma omp parallel for
-    for(long isp=0;isp<size;isp++){src[isp] = buf[isp];}
-    ///delete [] buf;
-    //free(buf);
-  }
-  if(GPU == 1){
-    /////qacc_for(isp, size,{ src[isp] = buf[isp];});
-    cudaMemcpy(src, buf.data(), size*sizeof(Ty), cudaMemcpyDeviceToDevice);
-    ////gpuFree(buf);
-  }
-  #else
-  #pragma omp parallel for
-  for(long isp=0;isp<size;isp++){src[isp] = buf[isp];}
-  //delete [] buf;
-  //free(buf);
-  #endif
-
-}
-
-inline void abort_sum(double flag, std::string stmp=std::string(""))
-{
-  sum_all_size(&flag,1);
-  if(flag > 0)
-  {
-    abort_r(stmp);
-  }
-}
-
-inline void fflush_MPI(){
-  MPI_Barrier(get_comm());
-  fflush(stdout);
-}
-
-//////"INT_MAX"
-//////offset by number of char
-template<typename Iy0, typename Iy1>
-void MPI_Alltoallv_Send_Recv(char* src, Iy0* send, Iy1* spls, char* res, Iy0* recv, Iy1* rpls, MPI_Comm& comm)
-{
-  int num_node;MPI_Comm_size(comm, &num_node);
-  int id_node;MPI_Comm_rank(comm, &id_node);
-  std::vector<MPI_Request> send_reqs(num_node);
-  int mpi_tag = id_node;
-  int c1 = 0;
-
-  /////===get proper M_size
-  MPI_Datatype curr = MPI_BYTE;unsigned int M_size = 1;unsigned int M_tem = 1;
-  for(int n = 0; n < num_node; n++){
-    if(send[n]!= 0){
-      reduce_MPI_type(send[n], curr, M_tem);
-      if(M_size == 1){M_size = M_tem;}
-      else{if(M_tem != M_size){curr = MPI_BYTE;M_size = 1;break;}}
-    }
-  }
-  /////
-
-  for(int n = 0; n < num_node; n++){
-    if(send[n]!=0){MPI_Isend(&src[spls[n]], int(send[n]/M_size), curr, n, mpi_tag + n, comm, &send_reqs[c1]);c1 += 1;}
-  }
-
-  for(int n = 0; n < num_node; n++){
-    if(recv[n]!=0){MPI_Recv( &res[rpls[n]], int(recv[n]/M_size), curr, n, mpi_tag + n, comm, MPI_STATUS_IGNORE);}
-  }
-  if(c1!=0){MPI_Waitall(c1, send_reqs.data(), MPI_STATUS_IGNORE);}
-}
-
-
-
-template<typename Ty>
-void MPI_Alltoallv_mode(Ty* src0, int* send, int* spls, Ty* res0, int* recv, int* rpls, MPI_Comm& comm, int mode=0, int GPU = 0)
-{
-  (void)GPU;
-  Ty* src = NULL;Ty* res = NULL;
-
-  std::vector<Ty > tem_src,tem_res;
-  bool do_copy = false;
-  #ifdef __NO_GPU_DIRECT__
-  #ifdef QLAT_USE_ACC
-  if(GPU == 1){do_copy = true;}
-  #endif
-  #endif
-
-  if(do_copy == false){src = src0; res = res0;}
-
-  ////resize buffers
-  long max_src = 0;
-  long max_res = 0;
-  if(do_copy == true){
-    int num_node;MPI_Comm_size(comm, &num_node);
-    for(int n = 0; n < num_node; n++){
-      long cur_size = spls[n]/sizeof(Ty) + send[n]/sizeof(Ty);
-      if(cur_size > max_src){max_src = cur_size;}
-      cur_size = rpls[n]/sizeof(Ty) + recv[n]/sizeof(Ty);
-      if(cur_size > max_res){max_res = cur_size;}
-    }
-
-    tem_src.resize(max_src);tem_res.resize(max_res);
-    cpy_data_thread(&tem_src[0], src0, max_src, 3);
-    cpy_data_thread(&tem_res[0], res0, max_res, 3);
-    src = &tem_src[0]; res = &tem_res[0];
-  }
-
-  if(mode == 0){
-    MPI_Alltoallv(src, send, spls, MPI_CHAR,
-                  res, recv, rpls, MPI_CHAR, comm);
-  }
-  if(mode == 1){
-    MPI_Alltoallv_Send_Recv((char*) src, send, spls, (char*) res, recv, rpls, comm);
-
-    //int num_node;MPI_Comm_size(comm, &num_node);
-    //int id_node;MPI_Comm_rank(comm, &id_node);
-    //std::vector<MPI_Request> send_reqs(num_node);
-    //int mpi_tag = id_node;
-    //int c1 = 0;
-    //for(int n = 0; n < num_node; n++){
-    //  if(send[n]!=0){MPI_Isend(&src[spls[n]/sizeof(Ty)], send[n], MPI_CHAR, n, mpi_tag + n, comm, &send_reqs[c1]);c1 += 1;}
-    //}
-
-    //for(int n = 0; n < num_node; n++){
-    //  if(recv[n]!=0){MPI_Recv( &res[rpls[n]/sizeof(Ty)], recv[n], MPI_CHAR, n, mpi_tag + n, comm, MPI_STATUS_IGNORE);}
-    //}
-    //if(c1!=0){MPI_Waitall(c1, send_reqs.data(), MPI_STATUS_IGNORE);}
-  }
-
-
-  if(do_copy == true){cpy_data_thread(res0, &tem_res[0], max_res, 2);}
-
-}
 
 ////Only cpu verstion
 ////flag = 1 --> biva * sizeF * civ * size_inner --> biva * civ * sizeF * size_inner
@@ -903,8 +543,8 @@ inline Ty norm_FieldM(qlat::FieldM<Ty , civ>& a)
   //print0("norm %.3e %.3e \n", norm.real(), norm.imag());
 }
 
-template <class T>
-void random_prop(Propagator4dT<T >& prop, int seed = -1)
+template <class Td>
+void random_prop(Propagator4dT<Td >& prop, int seed = -1)
 {
   qassert(prop.initialized);
   ////print0("print time %.3f\n", tm.tv_sec);
@@ -918,30 +558,26 @@ void random_prop(Propagator4dT<T >& prop, int seed = -1)
   const Geometry& geo = prop.geo();
 
   qacc_for(isp,  geo.local_volume(),{
-    qlat::WilsonMatrixT<T >& v0 =  prop.get_elem_offset(isp);
-    //for(int ci=0;ci<12*12;ci++){
-    //  //v0.p[ci] = T(std::cos((ini+isp + ci*2)*0.5 + (isp+ ci%4)/5) , ((5.0+ci)/(isp+1))*ini*0.1 + (isp*2 + ci%3)/5); 
-    //  v0.p[ci] = T(std::cos((ini+isp + ci*2)*0.5 + ci) , ((5.0+ci)/(isp+1))*ini*0.1 + 0.2); 
-    //}
+    qlat::WilsonMatrixT<Td>& v0 =  prop.get_elem_offset(isp);
     for(int ci=0;ci<12*12;ci++){
-      v0.p[ci] = (ci/(12*12.0))*T(std::cos((ini+isp + ci*2)*0.5 + ci) , (ci+(5.0+ci)/(isp+1))*ini*0.1 + 0.2); 
+      v0.p[ci] = (ci/(12*12.0))* qlat::ComplexT<Td>(std::cos((ini+isp + ci*2)*0.5 + ci) , (ci+(5.0+ci)/(isp+1))*ini*0.1 + 0.2); 
     }
   }); 
 }
 
-template <class T>
-void random_link(GaugeFieldT<T> &gf, const int seed = -1)
+template <class Td>
+void random_link(GaugeFieldT<Td> &gf, const int seed = -1)
 {
   if(seed == -1)
   {
     qacc_for(isp, gf.field.size(), { set_unit(gf.get_elem_offset(isp), 1.0);});
   }else{
     const Geometry& geo = gf.geo();
-    T* res = (T*) qlat::get_data(gf).data();
-    random_Ty(res, geo.local_volume()*geo.multiplicity*sizeof(ColorMatrixT<T>)/sizeof(T), 1, seed);
+    qlat::ComplexT<Td>* res = (qlat::ComplexT<Td>*) qlat::get_data(gf).data();
+    random_Ty(res, geo.local_volume()*geo.multiplicity*sizeof(ColorMatrixT<Td>)/(sizeof(Td)*2), 1, seed);
 
     //qacc_for(isp, gf.field.size(), { set_unit(gf.get_elem_offset(isp), 1.0);});
-    ColorMatrixT<T> unit;set_unit(unit, 1.0);
+    ColorMatrixT<Td> unit;set_unit(unit, 1.0);
     /////TODO This function cannot be done on GPU
     /////Eigen normalize/normalized problem
     for(long isp=0;isp<gf.field.size();isp++)
@@ -1171,6 +807,16 @@ inline void begin_Lat(int* argc, char** argv[], inputpara& in, int read_Lat = 0)
 
 }
 
+inline int end_Lat()
+{
+  fflush_MPI();
+  qlat::end();
+  fflush_MPI();
+  qlat::Timer::display();
+  if(qlat::is_MPI_initialized()){MPI_Finalize();}
+  return 0;
+}
+
 inline std::vector<long > job_create(long total, long each)
 {
   if(total < 1 or each < 1){
@@ -1234,13 +880,39 @@ inline Ty inv_self(const Ty& lam, double m, double rho,int one_minus_halfD=1)
 }
 
 template<typename Ty>
-qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qlat::vector_gpu<Ty > >& src)
+qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qpropT >& src)
 {
   qlat::vector_acc< Ty* >  res;
   res.resize(src.size());
   for(LInt iv=0;iv<src.size();iv++)
   {
-    res[iv] = src[iv].data();
+    res[iv] = (Ty*) qlat::get_data(src[iv]).data();
+  }
+  return res;
+}
+
+template<typename Ty>
+qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qlat::vector_gpu<Ty > >& src, long Nvol = -1)
+{
+  qlat::vector_acc< Ty* >  res;
+  const size_t Nvec = src.size();
+  if(Nvec == 0){return res;}
+
+  if(Nvol != -1){
+    qassert(src[0].size() % Nvol == 0);
+  }else{
+    Nvol = src[0].size();
+  }
+
+  const size_t Nt = src[0].size() / Nvol;
+  res.resize(Nvec * Nt);
+  for(size_t iv=0;iv<Nvec;iv++)
+  {
+    qassert(src[iv].size() == Nt * Nvol);
+    for(size_t it=0;it<Nt;it++)
+    {
+      res[iv*Nt + it] = &src[iv].data()[it* Nvol];
+    }
   }
   return res;
 }
@@ -1266,10 +938,10 @@ Ty sum_local_to_global_vector(Ty src, MPI_Comm* commp=NULL)
   int rank  = qlat::get_id_node();
   if(commp != NULL){MPI_Comm_size(*commp, &Nmpi);MPI_Comm_rank(*commp, &rank);}
 
-  qlat::vector<long > size_global;size_global.resize(Nmpi);for(unsigned long i=0;i<(unsigned long)size_global.size();i++){size_global[i]=0;}
+  qlat::vector<long > size_global;size_global.resize(Nmpi);
+  zero_Ty(size_global.data(), size_global.size(), 0);
 
   size_global[rank] = src.size();
-
   sum_all_size(size_global.data(), size_global.size(), 0, commp);
 
   long total = 0;long current = 0;
@@ -1326,23 +998,17 @@ inline std::vector<long > random_list(const long n, const long m, const int seed
 
 }
 
-///num to be zero for nodes
-template<typename Ty>
-void sum_value_mpi(Ty& num)
-{
-  //int Nmpi  = qlat::get_num_node();
-  //int rank  = qlat::get_id_node();
-  Ty buf = num;
-  long nvalue = 0;
-  if(std::fabs(num) > 1e-30){nvalue = 1;}
-  sum_all_size(&buf, 1);
-  sum_all_size(&nvalue, 1);
-  if(nvalue != 0){buf = buf/nvalue;}
-  num = buf;
-}
-
-
-
+//inline qlat::vector_acc<int > Coordinates_to_list(std::vector<Coordinate >& moms)
+//{
+//  qlat::vector_acc<int > momN;
+//  momN.resize(moms.size() * 4);
+//  for(unsigned int i=0;i<moms.size;i++){
+//    for(int j=0;j<4;j++){
+//      momN[i*4 + j] = moms[i][j];
+//    }
+//  }
+//  return momN;
+//}
 
 }
 

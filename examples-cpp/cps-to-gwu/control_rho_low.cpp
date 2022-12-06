@@ -74,19 +74,13 @@ int main(int argc, char* argv[])
   double length = (geo.local_volume()*pow(0.5,30))*12*sizeof(Complexq);
   print0("Eign system vector size %.3e GB, total %.3e GB; \n", length,n_vec*length);
 
-  ////std::vector<qlat::FermionField4dT<Complexq > > eigen;
   std::vector<qlat::FieldM<Complexq, 12> > eigen;
-  ////eigen.resize(n_vec);
 
   //int threadio = false;
   //int threadio = true;
   {
     TIMER("new io read");
-    int Nv = omp_get_max_threads();
-    int useio = ionum;
-    if(useio > qlat::get_num_node()){useio = qlat::get_num_node();}
-    if(Nv*useio > 64){Nv = 64/useio;}
-    io_vec io_use(geo,ionum, true, Nv);
+    io_vec io_use(geo, in.ionum);
 
     //load_gwu_eigen(ename,eigen,io_use,vini,n_vec,true, true);
     inputpara in_read_eigen;
@@ -108,7 +102,7 @@ int main(int argc, char* argv[])
   /////Switch d,c to outter side
   size_t Nvol = geo.local_volume();
   int Nt = geo.node_site[3];
-  qlat::FermionField4dT<Complexq > tmp;tmp.init(geo);
+  qlat::FermionField4dT<Ftype > tmp;tmp.init(geo);
   for(LInt iv=0;iv<eigen.size();iv++){
     Complexq* src = (Complexq* ) qlat::get_data(eigen[iv]).data();
     Complexq* buf = (Complexq* ) qlat::get_data(tmp).data();
@@ -191,7 +185,7 @@ int main(int argc, char* argv[])
 
     std::string ktem(key_T);
     std::string dtem(dimN);
-    corr_dat res(ktem, dtem);
+    corr_dat<Ftype > res(ktem, dtem);
     res.print_info();
 
     char names[500];
