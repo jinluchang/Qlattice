@@ -1,1 +1,0 @@
-incdir = include_directories('.')
