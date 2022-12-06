@@ -1339,7 +1339,6 @@ void Fermion_to_prop4d(Propagator4dT<Td>& prop, std::vector<qlat::FermionField4d
   prop4d_to_Fermion(prop, buf, 0);
 }
 
-
 template <typename Td>
 void save_gwu_prop(const char *filename,Propagator4dT<Td>& prop){
   qassert(prop.initialized);

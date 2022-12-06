@@ -168,6 +168,7 @@ void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_
 
   if(MPI_para.size() == 3)
   {
+    #ifdef __QLAT_WITH_FFT_MPI__
     MPI_Comm_split(get_comm(), color_xyz, ranku, &fft_comm);
     for(int i=0;i<int(nv.size());i++){nrank[i] = nv[i];}
 
@@ -192,7 +193,11 @@ void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_
     /////each node has data vol/("Nv[0]")
     MPI_datasize = datasize/(nrank[0]/block0);
     if(local_0_start != ranku or local_n0 != block0){abort_r("fft_mpi not correct !\n");}
-  }else{
+    #else
+    abort_r("fft_mpi not set! \n");
+    #endif
+  }
+  else{
 
     ////void* vb_dat = NULL;
     if(single_type == 0)fft_dat =  fftw_malloc(datasize);
@@ -482,6 +487,10 @@ struct fft_schedule{
 
     b0 = job[1];c0 = job[2];///////NEED_COPY = job[4];
     /////====Set up b0, c0
+
+    #ifndef __QLAT_WITH_FFT_MPI__
+    enable_MPI = 0;
+    #endif
 
     if(GPU){qassert(enable_MPI == 0);}
     NEED_COPY = 0;

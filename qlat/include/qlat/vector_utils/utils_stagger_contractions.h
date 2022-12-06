@@ -53,8 +53,6 @@ void cf_simple_pion(std::vector<colorFT >& cf0, std::vector<colorFT >& cf1, Eige
 
 }
 
-////P5_ij(x) = Xib_i(x) (-1)^(x+y+z+t) Xi_j(x)       :  g5 x g5 [Goldstone, exotic parity partner 0^{+-}]
-
 }
 
 
