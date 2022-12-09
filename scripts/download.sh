@@ -42,7 +42,7 @@ aget "https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.bz2"
 
 aget "https://gmplib.org/download/gmp/gmp-6.2.1.tar.bz2"
 
-aget "https://www.mpfr.org/mpfr-current/mpfr-4.1.0.tar.bz2"
+aget "https://ftp.gnu.org/gnu/mpfr/mpfr-4.1.1.tar.xz"
 
 aget "https://ftp.gnu.org/gnu/mpc/mpc-1.2.1.tar.gz"
 
