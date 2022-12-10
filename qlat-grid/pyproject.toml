@@ -1,6 +1,6 @@
 [build-system]
 build-backend = 'mesonpy'
-requires = [ 'meson-python', 'qlat', ]
+requires = [ 'meson-python', 'qlat', 'meson>=0.64', ]
 
 [project]
 name = 'qlat-grid'
