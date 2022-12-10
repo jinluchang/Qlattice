@@ -219,7 +219,15 @@ def display_img(fn, *, width = None):
     show_width = ""
     if width is not None:
         show_width = f"width='{width}'"
-    display(HTML(data = f"<img src='{fn}' {show_width} />"))
+    try:
+      import google.colab
+      is_in_colab = True
+    except:
+      is_in_colab = False
+    if not is_in_colab:
+        display(HTML(data = f"<img src='{fn}' {show_width} />"))
+    else:
+        display(Image(filename = fn, width = width))
 
 plot_save_display_width = None
 
