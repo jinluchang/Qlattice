@@ -36,6 +36,7 @@ test-extras = []
 container-engine = "docker"
 
 manylinux-x86_64-image = "manylinux_2_28"
+manylinux-aarch64-image = "manylinux_2_28"
 
 [tool.cibuildwheel.linux]
 archs = [ "x86_64", "aarch64", ]
