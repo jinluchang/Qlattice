@@ -57,7 +57,7 @@ make_shuffle_plan_fft: total num_recv_msgs  =          8
 make_shuffle_plan_fft: global_comm_size =        512
 Cache: 'VectorGPUKey': 0 / 16 [8] to add
 ==Jobs dim 3, 4 4 4 , nvec 1, civ 12, bsize 16. 
-==N_extra 1, enable_MPI 1, GPU 0, b0 1, c0 12, mode_rot -1, need copy 0. 
+==N_extra 2, enable_MPI 0, GPU 0, b0 1, c0 12, mode_rot 0, need copy 0. 
 Cache: 'FFTGPUPlanCache': 0 / 16 [8] to add
 CHECK: Consistency: orig qnorm: 1.2353811813E+04 ; fft qnorm 7.9064395602E+05 ; new fft qnorm: 7.9064395602E+05
 CHECK: finished successfully.
@@ -67,7 +67,7 @@ Cache: 'FftComplexFieldPlanCache': 3 / 32 [16] clear
 FftComplexFieldPlan::end(): free a plan.
 FftComplexFieldPlan::end(): free a plan.
 FftComplexFieldPlan::end(): free a plan.
-clear_mem_cache: 155648 bytes (0.000 GB) freed.
+clear_mem_cache: 160768 bytes (0.000 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.
