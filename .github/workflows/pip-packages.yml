@@ -31,9 +31,6 @@ jobs:
         with:
           package-dir: qlat
           output-dir: wheelhouse
-      - uses: actions/upload-artifact@v3
-        with:
-          path: ./wheelhouse/*.whl
 
   make_sdist:
     name: Make SDist
