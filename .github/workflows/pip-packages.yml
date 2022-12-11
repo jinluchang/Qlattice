@@ -61,6 +61,7 @@ jobs:
 
     - name: Build sdist for qlat-grid
       run: |
+        source ~/qlat-build/default/setenv.sh
         ( cd qlat-grid ; pipx run build --sdist )
 
     - uses: actions/upload-artifact@v3
