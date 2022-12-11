@@ -8,7 +8,9 @@
 
 #include "general_funs.h"
 #include "utils_Vec_redistribute.h"
+#ifdef __QLAT_WITH_FFT_MPI__
 #include "fftw3-mpi.h"
+#endif
 //#include <inc/cufft.h>
 #ifdef QLAT_USE_ACC
 #include <cufftXt.h>

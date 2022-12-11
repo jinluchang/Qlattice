@@ -105,8 +105,11 @@ fftw = dependency('fftw3').as_system()
 fftwf = dependency('fftw3f').as_system()
 message('fftw libdir', fftw.get_variable('libdir'))
 message('fftwf libdir', fftwf.get_variable('libdir'))
-fftw_mpi = cpp.find_library('fftw3_mpi', dirs: fftw.get_variable('libdir'))
-fftwf_mpi = cpp.find_library('fftw3f_mpi', dirs: fftwf.get_variable('libdir'))
+fftw_all = [ fftw, fftwf, ]
+
+# fftw_mpi = cpp.find_library('fftw3_mpi', dirs: fftw.get_variable('libdir'))
+# fftwf_mpi = cpp.find_library('fftw3f_mpi', dirs: fftwf.get_variable('libdir'))
+# fftw_all += [ fftw_mpi, fftwf_mpi, ]
 
 math = cpp.find_library('m')
 
@@ -115,7 +118,7 @@ message('qlat include', qlat_include)
 
 qlat = declare_dependency(
   include_directories: include_directories(qlat_include),
-  dependencies: [ py3.dependency().as_system(), omp, fftw_mpi, fftwf_mpi, fftw, fftwf, zlib, math, ],
+  dependencies: [ py3.dependency().as_system(), omp, fftw_all, zlib, math, ],
   )
 
 deps = [ qlat, grid, ]

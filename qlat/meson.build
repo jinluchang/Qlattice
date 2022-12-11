@@ -36,8 +36,11 @@ fftw = dependency('fftw3').as_system()
 fftwf = dependency('fftw3f').as_system()
 message('fftw libdir', fftw.get_variable('libdir'))
 message('fftwf libdir', fftwf.get_variable('libdir'))
-fftw_mpi = cpp.find_library('fftw3_mpi', dirs: fftw.get_variable('libdir'))
-fftwf_mpi = cpp.find_library('fftw3f_mpi', dirs: fftwf.get_variable('libdir'))
+fftw_all = [ fftw, fftwf, ]
+
+# fftw_mpi = cpp.find_library('fftw3_mpi', dirs: fftw.get_variable('libdir'))
+# fftwf_mpi = cpp.find_library('fftw3f_mpi', dirs: fftwf.get_variable('libdir'))
+# fftw_all += [ fftw_mpi, fftwf_mpi, ]
 
 math = cpp.find_library('m')
 
@@ -49,7 +52,7 @@ qlat_utils = declare_dependency(
   dependencies: [ py3.dependency(), omp, zlib, math, ],
   )
 
-deps = [ qlat_utils, fftw_mpi, fftwf_mpi, fftw, fftwf, mpic, ]
+deps = [ qlat_utils, fftw_all, mpic, ]
 
 if not cpp.check_header('Eigen/Eigen')
   eigen = dependency('eigen3').as_system()

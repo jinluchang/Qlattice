@@ -26,7 +26,7 @@ environment = {}
 environment-pass = []
 build-verbosity = ""
 
-before-all = ""
+before-all = "yum install -y eigen3-devel"
 before-build = ""
 repair-wheel-command = ""
 
