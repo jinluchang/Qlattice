@@ -14,7 +14,7 @@ authors = [ { name = 'Luchang Jin', email = 'ljin.luchang@gmail.com' }, ]
 dependencies = [ 'qlat-utils', 'sympy', ]
 
 [tool.cibuildwheel]
-build = "cp*-manylinux_x86_64"
+build = [ "cp*-manylinux_x86_64", "cp*-macosx_x86_64", ]
 skip = ""
 test-skip = ""
 
@@ -26,7 +26,6 @@ environment = {}
 environment-pass = []
 build-verbosity = ""
 
-before-all = "yum install -y openmpi-devel fftw-devel eigen3-devel"
 before-build = ""
 repair-wheel-command = ""
 
@@ -40,9 +39,11 @@ container-engine = "docker"
 manylinux-x86_64-image = "manylinux_2_28"
 
 [tool.cibuildwheel.linux]
+before-all = "yum install -y openmpi-devel fftw-devel eigen3-devel"
 repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
 
 [tool.cibuildwheel.macos]
+before-all = "brew install zlib llvm open-mpi findutils eigen"
 repair-wheel-command = "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
 
 [tool.cibuildwheel.windows]
