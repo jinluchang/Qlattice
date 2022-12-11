@@ -55,6 +55,7 @@ jobs:
     - name: Build Grid
       run: |
         export num_proc=2
+        ./scripts/setenv.default.sh
         ./scripts/c-lime.sh
         ./scripts/grid.avx2.sh
 
