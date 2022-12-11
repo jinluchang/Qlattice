@@ -44,7 +44,7 @@ repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
 
 [tool.cibuildwheel.macos]
 before-all = "brew install zlib llvm open-mpi findutils eigen"
-environment = { PATH="/usr/local/opt/llvm/bin:/usr/local/opt/findutils/libexec/gnubin:$PATH", LD_RUN_PATH="/usr/local/opt/llvm/lib/c++", LIBRARY_PATH="/usr/local/opt/llvm/lib/c++:/usr/local/opt/llvm/lib", CPATH="/usr/local/opt/llvm/include" }
+environment = { PATH="/usr/local/opt/llvm/bin:/usr/local/opt/findutils/libexec/gnubin:$PATH", LD_RUN_PATH="/usr/local/opt/llvm/lib/c++", LIBRARY_PATH="/usr/local/opt/llvm/lib/c++:/usr/local/opt/llvm/lib", CPATH="/usr/local/opt/llvm/include", CXX="clang++" }
 repair-wheel-command = "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
 
 [tool.cibuildwheel.windows]
