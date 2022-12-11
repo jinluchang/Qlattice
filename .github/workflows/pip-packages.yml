@@ -35,6 +35,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Install Ubuntu packages
+      run: |
+        # sudo apt-get update
+        sudo apt-get install -y zlib1g-dev libeigen3-dev libopenmpi-dev libfftw3-dev
+
     - name: Build SDist
       run: |
         ( cd qlat-utils ; pipx run build --sdist )
