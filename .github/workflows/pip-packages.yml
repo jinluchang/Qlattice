@@ -63,9 +63,10 @@ jobs:
       run: |
         source ~/qlat-build/default/setenv.sh
         ( cd qlat-grid ; pipx run build --sdist )
+    - name: Collecting sdist
+      run: |
+        mkdir -p dist
+        mv ./qlat*/dist/*.tar.gz ./dist
     - uses: actions/upload-artifact@v3
       with:
-        path: |
-          ./qlat/dist/*.tar.gz
-          ./qlat-utils/dist/*.tar.gz
-          ./qlat-grid/dist/*.tar.gz
+        path: ./dist/*.tar.gz
