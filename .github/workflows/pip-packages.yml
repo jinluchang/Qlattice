@@ -38,12 +38,28 @@ jobs:
     - name: Install Ubuntu packages
       run: |
         # sudo apt-get update
-        sudo apt-get install -y zlib1g-dev libeigen3-dev libopenmpi-dev libfftw3-dev
+        sudo apt-get install -y libgsl-dev zlib1g-dev libssl-dev libeigen3-dev libopenmpi-dev libfftw3-mpi-dev libfftw3-dev libmpfr-dev libhdf5-mpi-dev libhdf5-dev patchelf
 
-    - name: Build SDist
+    - name: Build sdist for qlat-utils
       run: |
         ( cd qlat-utils ; pipx run build --sdist )
+
+    - name: Build sdist for qlat
+      run: |
         ( cd qlat ; pipx run build --sdist )
+
+    - name: Download dependencies
+      run: |
+        ./scripts/download-core.sh
+
+    - name: Build Grid
+      run: |
+        export num_proc=2
+        ./scripts/c-lime.sh
+        ./scripts/grid.avx2.sh
+
+    - name: Build sdist for qlat-grid
+      run: |
         ( cd qlat-grid ; pipx run build --sdist )
 
     - uses: actions/upload-artifact@v3
