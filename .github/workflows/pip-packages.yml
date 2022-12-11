@@ -66,4 +66,7 @@ jobs:
 
     - uses: actions/upload-artifact@v3
       with:
-        path: ./qlat*/dist/*.tar.gz
+        path: |
+          ./qlat/dist/*.tar.gz
+          ./qlat-utils/dist/*.tar.gz
+          ./qlat-grid/dist/*.tar.gz
