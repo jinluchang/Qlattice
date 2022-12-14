@@ -1,0 +1,4 @@
+namespace qlat
+{  //
+
+}  // namespace qlat

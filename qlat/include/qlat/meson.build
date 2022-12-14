@@ -16,8 +16,7 @@ c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.h | grep -v "^config.h$
 cpp_headers = files(c.stdout().strip().split('\n'))
 py3.install_sources(cpp_headers, subdir: 'qlat/include/qlat')
 
-c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls vector_utils/*.h', check: true)
-vector_utils_cpp_headers = files(c.stdout().strip().split('\n'))
-py3.install_sources(vector_utils_cpp_headers, subdir: 'qlat/include/qlat/vector_utils')
-
 py3.install_sources('qlat-setup.h', subdir: 'qlat/include')
+
+subdir('vector_utils')
+subdir('lib')
