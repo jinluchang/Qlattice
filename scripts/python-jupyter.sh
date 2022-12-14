@@ -14,10 +14,10 @@ find ~/.cache/pip/wheels -type f || true
 
 # opts="--verbose --no-index --no-cache-dir -f $distfiles/python-packages"
 
-pip3 install notebook
-pip3 install jupyterlab
-pip3 install matplotlib
-pip3 install lz4
+time pip3 install notebook
+time pip3 install jupyterlab
+time pip3 install matplotlib
+time pip3 install lz4
 
 echo "!!!! $name build !!!!"
 

@@ -14,10 +14,10 @@ find ~/.cache/pip/wheels -type f || true
 
 opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
-pip3 install $opts wheel
-pip3 uninstall setuptools -y
-pip3 install $opts setuptools
-pip3 install $opts --upgrade pip
+time pip3 install $opts wheel
+time pip3 uninstall setuptools -y
+time pip3 install $opts setuptools
+time pip3 install $opts --upgrade pip
 
 echo "!!!! $name build !!!!"
 
