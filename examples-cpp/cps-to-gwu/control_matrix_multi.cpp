@@ -1,3 +1,6 @@
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/sysinfo.h>
 #include "utils_Matrix_prod.h"
 #include "general_funs.h"
@@ -52,7 +55,7 @@ int main(int argc, char* argv[])
   qlat::vector_gpu<Complexq > c1;c1.resize(L * m * n);
 
 
-  print0("start memory allocation! \n");
+  print0("end memory allocation! \n");
   fflush_MPI();
 
 

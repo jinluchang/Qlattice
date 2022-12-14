@@ -285,9 +285,11 @@ void zero_Ty(Ty* a, size_t size,int GPU=0, bool dummy=true)
   #pragma omp parallel for
   for(unsigned int isp=0;isp<Nv;isp++)
   {
-    Ty* tmp = &a[isp * dN + 0];
     const int step = isp*(dN+1) <= size ? dN : (size - isp*dN); 
-    memset((void*) tmp, 0, sizeof(Ty) * step);
+    if(step > 0 and isp * dN < size){
+      Ty* tmp = &a[isp * dN + 0];
+      memset((void*) tmp, 0, sizeof(Ty) * step);
+    }
   }
 }
 

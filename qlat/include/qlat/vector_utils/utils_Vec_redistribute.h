@@ -11,7 +11,6 @@
 
 namespace qlat{
 
-
 ////////each MPI NT will have all nx,ny,nz
 struct Vec_redistribute
 {

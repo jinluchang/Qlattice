@@ -466,15 +466,16 @@ inline void random_Ty(Ty* a, long N0,int GPU=0, int seed = 0, const int mode = 0
   double ini = qlat::u_rand_gen(rs);
   #ifdef QLAT_USE_ACC
   if(GPU == 1){
-    size_t bfac = size_t(std::sqrt(N0));
-    qacc_for(isp, long(N0/bfac + 1),{
-     for(size_t i=0;i<size_t(bfac);i++){
-      size_t off = isp*bfac + i;
-      if(off < size_t(N0)){
-        if(mode==0){a[off] = Ty(std::cos((ini+isp)*0.5) , (5.0/(isp+1))*ini*0.1);}
-        if(mode==1){a[off] = Ty(std::cos((ini+isp)*0.5) , sin(5.0*(isp+1))*ini*0.1);}
+    long bfac = long(std::sqrt(N0));
+    long Nuse = long(N0/bfac + 1);
+    qacc_for(isp, Nuse,{
+      for(long i=0;i<bfac;i++){
+        size_t off = isp*bfac + i;
+        if(off < size_t(N0)){
+          if(mode==0){a[off] = Ty(std::cos((ini+isp)*0.5) , (5.0/(isp+1))*ini*0.1);}
+          if(mode==1){a[off] = Ty(std::cos((ini+isp)*0.5) , std::sin(5.0*(isp+1))*ini*0.1);}
+        }
       }
-    }
     });
     return ;
   }

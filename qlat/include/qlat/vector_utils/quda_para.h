@@ -72,7 +72,7 @@ inline void quda_end()
 }
 
 template <class T>
-void quda_convert_gauge(qlat::vector<T>& qgf, GaugeField& gf, int dir = 0)
+void quda_convert_gauge(qlat::vector<qlat::ComplexT<T > >& qgf, GaugeField& gf, int dir = 0)
 {
   TIMER("quda_convert_gauge(qgf,gf)");
   const Geometry& geo = gf.geo();
