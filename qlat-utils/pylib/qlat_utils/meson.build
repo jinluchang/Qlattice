@@ -18,7 +18,3 @@ cplib = py3.extension_module('cp',
   subdir: 'qlat_utils',
   # gnu_symbol_visibility: 'default',
   )
-
-c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.h', check: true)
-hsources = files(c.stdout().strip().split('\n'))
-py3.install_sources(hsources, subdir: 'qlat_utils/include')

@@ -1,2 +1,2 @@
-cdef extern from "utils-io.h" namespace "qlat":
+cdef extern from "qlat-utils/lib/utils-io.h" namespace "qlat":
     void flush()

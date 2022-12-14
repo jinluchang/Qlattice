@@ -22,3 +22,5 @@ py3.install_sources(config, subdir: 'qlat_utils/include/qlat-utils')
 c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.h | grep -v "^config.h$"', check: true)
 cpp_headers = files(c.stdout().strip().split('\n'))
 py3.install_sources(cpp_headers, subdir: 'qlat_utils/include/qlat-utils')
+
+subdir('lib')
