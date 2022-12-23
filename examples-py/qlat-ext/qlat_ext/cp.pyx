@@ -1,4 +1,5 @@
-from qlat_utils cimport *
+from qlat_ext.everything cimport *
+from qlat.everything cimport *
 
 cdef void hello_world_c():
     cdef Timer timer = Timer(b"hello_world")
