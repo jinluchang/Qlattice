@@ -1,5 +1,5 @@
 project('qlat-grid', 'cpp', 'cython',
-  version: '0.13',
+  version: '0.14',
   license: 'GPL-3.0-or-later',
   default_options: [
     'warning_level=3',
