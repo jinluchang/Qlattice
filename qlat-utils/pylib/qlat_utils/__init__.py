@@ -1,12 +1,12 @@
 import qlat_utils.c as cu
 
+from qlat_utils.c import Coordinate, RngState
+
 from qlat_utils.timer import *
 
 from qlat_utils.cache import *
 
 from qlat_utils.qar import *
-
-from qlat_utils.rng_state import *
 
 from qlat_utils.utils import *
 
