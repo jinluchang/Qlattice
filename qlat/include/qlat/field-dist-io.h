@@ -92,7 +92,7 @@ inline QFile dist_open(const std::string& path, const int id_node,
 
 inline void dist_close(QFile& fp)
 {
-  qclose(fp);
+  qfclose(fp);
 }
 
 template <class M>
@@ -191,7 +191,7 @@ inline void dist_write_geo_info(const Geometry& geo, const int sizeof_M,
     qwrite_data(ssprintf("PI_float = %hhx %hhx %hhx %hhx\n", pifc[0], pifc[1],
                          pifc[2], pifc[3]),
                 fp);
-    qclose(fp);
+    qfclose(fp);
   }
 }
 
@@ -303,7 +303,7 @@ long dist_write_dist_data(const std::vector<DistData<M> >& dds,
     for (size_t i = 0; i < crcs.size(); ++i) {
       qwrite_data(ssprintf("%08X\n", crcs[i]), fp);
     }
-    qclose(fp);
+    qfclose(fp);
   }
   qtouch_info(path + "/checkpoint");
   timer.flops += total_bytes;

@@ -280,7 +280,7 @@ inline void read_gauge_field_header(GaugeFieldInfo& gfi,
         }
       }
     }
-    qclose(qfile);
+    qfclose(qfile);
   }
   bcast(gfi.total_site);
   bcast(gfi.trace);

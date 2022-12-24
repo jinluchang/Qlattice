@@ -45,6 +45,7 @@ struct API LatData {
   {
     QFile qfile = qfopen(fn, "r");
     load(qfile);
+    qfclose(qfile);
   }
   //
   void save(QFile& qfile) const;
@@ -52,6 +53,7 @@ struct API LatData {
   {
     QFile qfile = qfopen(fn + ".partial", "w");
     save(qfile);
+    qfclose(qfile);
     qrename(fn + ".partial", fn);
   };
 };

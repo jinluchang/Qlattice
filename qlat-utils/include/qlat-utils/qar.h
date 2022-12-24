@@ -219,7 +219,7 @@ struct QFileInternal {
       if (fp != NULL) {
         displayln_info(1, ssprintf("QFile: close '%s' with '%s'.", path.c_str(),
                                    mode.c_str()));
-        qclose(fp);
+        qfclose(fp);
       }
     } else {
       fp = NULL;
@@ -282,7 +282,7 @@ inline const std::string& QFile::mode() const { return p->mode; }
 
 inline FILE* QFile::get_fp() const { return p->fp; }
 
-inline void qclose(QFile& qfile)
+inline void qfclose(QFile& qfile)
 // interface function
 {
   qfile.close();

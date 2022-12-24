@@ -215,7 +215,7 @@ inline void save_lbl_pis(const std::vector<PointInfo>& pis,
     fprintf(fp, "%5d    %3d %3d %3d %3d    %2d %2d\n", i, c[0], c[1], c[2],
             c[3], pi.type, pi.accuracy);
   }
-  qclose(fp);
+  qfclose(fp);
 }
 
 inline void save_lbl_pis_info(const std::vector<PointInfo>& pis,
@@ -309,7 +309,7 @@ inline void save_lbl_pcs(const std::vector<Coordinate>& pcs,
     const Coordinate& c = pcs[i];
     fprintf(fp, "%5d    %3d %3d %3d %3d\n", i, c[0], c[1], c[2], c[3]);
   }
-  qclose(fp);
+  qfclose(fp);
 }
 
 inline void save_lbl_pcs_info(const std::vector<Coordinate>& pcs,

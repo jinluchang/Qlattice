@@ -319,7 +319,7 @@ inline void write_compressed_eigen_system_info(
       qwrite_data(ssprintf("gs[%d] = %d\n", i, cesi.total_site[i]), fp);
     }
     qwrite_data(ssprintf("gs[4] = %d\n", cesi.ls), fp);
-    qclose(fp);
+    qfclose(fp);
     qrename(root + "/metadata.txt.partial", root + "/metadata.txt");
   }
 }
@@ -591,7 +591,7 @@ inline void vbflush(VBFile& fp)
 inline void vbclose(VBFile& fp)
 {
   vbflush(fp);
-  qclose(fp.fp);
+  qfclose(fp.fp);
 }
 
 inline void vbread_data(const Vector<uint8_t>& v, VBFile& fp)
@@ -648,7 +648,7 @@ inline void set_vfile_size(VFile& fp)
     qassert(not fpr.null());
     qfseek(fpr, 0, SEEK_END);
     fp.size = qftell(fpr);
-    qclose(fpr);
+    qfclose(fpr);
   }
 }
 
@@ -1088,7 +1088,7 @@ inline std::vector<double> read_eigen_values(const std::string& path)
       qassert(1 == qfscanf(file, "%lE\n", &vals[k]));
       displayln(ssprintf("%d %24.17E", k, sqrt(vals[k])));
     }
-    qclose(file);
+    qfclose(file);
   } else {
     glb_sum(n_eigen_values);
     vals.resize(n_eigen_values, 0.0);
@@ -1328,7 +1328,7 @@ inline crc32_t save_half_vectors(const std::vector<HalfVector>& hvs,
     crc = crc32_par(crc, get_data(buffer));
     qwrite_data(get_data(buffer), fp);
   }
-  qclose(fp);
+  qfclose(fp);
   if (is_saving_crc) {
     qtouch(fn + ".crc32", ssprintf("%08X\n", crc));
   }
@@ -1363,7 +1363,7 @@ inline long decompress_eigen_vectors_node(
   QFile fp = qfopen(new_fn + ".orig-crc32", "w");
   qassert(not fp.null());
   qwrite_data(get_data(crcs), fp);
-  qclose(fp);
+  qfclose(fp);
   std::vector<BlockedHalfVector> bhvs;
   decompress_eigen_system(bhvs, cesb, cesc);
   std::vector<HalfVector> hvs;
@@ -1417,7 +1417,7 @@ inline void combine_crc32(const std::string& path, const int idx_size,
         if (not fp.null()) {
           qread_data(get_data(crcs), fp);
           to_from_big_endian_32(get_data(crcs));
-          qclose(fp);
+          qfclose(fp);
         } else {
           displayln(fname +
                     ssprintf(": ERROR: %02d/%010d orig-crc32 do not exist",
@@ -1439,7 +1439,7 @@ inline void combine_crc32(const std::string& path, const int idx_size,
         }
       }
       get_monitor_file() = NULL;
-      qclose(mfp);
+      qfclose(mfp);
     }
     const std::string fn = path + "/checksums.txt";
     if (not does_file_exist(fn)) {
@@ -1467,7 +1467,7 @@ inline void combine_crc32(const std::string& path, const int idx_size,
       for (size_t i = 0; i < crcs.size(); ++i) {
         qwrite_data(ssprintf("%08X\n", crcs[i]), fp);
       }
-      qclose(fp);
+      qfclose(fp);
       qrename(fn + ".partial", fn);
     }
     qtouch(path + "/checkpoint");
@@ -1720,7 +1720,7 @@ inline void decompressed_eigen_vectors_check_crc32(const std::string& path)
     for (size_t i = 0; i < crcs.size(); ++i) {
       qwrite_data(ssprintf("%08X\n", crcs[i]), fp);
     }
-    qclose(fp);
+    qfclose(fp);
     qrename(fn + ".partial", fn);
   }
   release_lock();

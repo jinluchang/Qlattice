@@ -88,7 +88,7 @@ inline void save_point_selection(const PointSelection& psel,
     const Coordinate& c = psel[i];
     qfprintf(qfile, "%5ld    %3d %3d %3d %3d\n", i, c[0], c[1], c[2], c[3]);
   }
-  qclose(qfile);
+  qfclose(qfile);
   qrename(path + ".partial", path);
 }
 

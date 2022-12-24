@@ -130,7 +130,7 @@ inline void save_pd(const PointDistribution& pd, const Coordinate& total_site,
         qassert(pd[index] == 0.0);
       }
     }
-    qclose(fp);
+    qfclose(fp);
     qrename(path + ".partial", path);
   }
 }
@@ -156,7 +156,7 @@ inline void load_pd(PointDistribution& pd, const Coordinate& total_site,
         qassert(pd[index] == 0.0);
       }
     }
-    qclose(fp);
+    qfclose(fp);
   }
   bcast(get_data(pd));
 }

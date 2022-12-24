@@ -324,7 +324,7 @@ long write_selected_field(const SelectedField<M>& sf, const std::string& path,
       }
       qwrite_data(v, fp);
     }
-    qclose(fp);
+    qfclose(fp);
   } else {
     for (size_t i = 0; i < sfs.size(); ++i) {
       const Vector<M> v = get_data(sfs[i].field);
@@ -369,7 +369,7 @@ inline long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
       }
       pos = qftell(fp);
     }
-    qclose(fp);
+    qfclose(fp);
   }
   bcast(get_data_one_elem(pos));
   bcast(get_data_one_elem(total_site));
@@ -463,7 +463,7 @@ long read_selected_field(SelectedField<M>& sf, const std::string& path,
       crc ^= crc32_shift(crc32_par(v),
                          (new_num_node - new_id_node - 1) * v.data_size());
     }
-    qclose(fp);
+    qfclose(fp);
   }
   glb_sum_byte(crc);
   if (crc != crc_info) {
@@ -638,7 +638,7 @@ inline bool is_selected_field(const std::string& path)
         }
       }
     }
-    qclose(fp);
+    qfclose(fp);
   }
   bcast(get_data(nfile));
   return nfile > 0;

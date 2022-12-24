@@ -204,7 +204,7 @@ inline long save_low_modes_decompress(LowModes& lm, const std::string& path)
     for (size_t i = 0; i < crcs.size(); ++i) {
       qwrite_data(ssprintf("%08X\n", crcs[i]), fp);
     }
-    qclose(fp);
+    qfclose(fp);
   }
   if (get_id_node() == 0) {
     const std::string fn = path + "/eigen-values.txt";
@@ -214,7 +214,7 @@ inline long save_low_modes_decompress(LowModes& lm, const std::string& path)
     for (long i = 0; i < lm.eigen_values.size(); ++i) {
       qwrite_data(ssprintf("%.20lE\n", lm.eigen_values[i]), fp);
     }
-    qclose(fp);
+    qfclose(fp);
   }
   qtouch_info(path + "/checkpoint");
   timer.flops += total_bytes;

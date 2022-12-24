@@ -303,9 +303,9 @@ inline void qset_line_buf(FILE* f)
   std::setvbuf(f, NULL, _IOLBF, 0);
 }
 
-inline int qclose(FILE*& file)
+inline int qfclose(FILE*& file)
 {
-  TIMER("qclose");
+  TIMER("qfclose");
   if (NULL != file) {
     FILE* tmp_file = file;
     file = NULL;
@@ -324,7 +324,7 @@ inline int qrename(const std::string& old_path, const std::string& new_path)
 
 inline void switch_monitor_file(const std::string& path)
 {
-  qclose(get_monitor_file());
+  qfclose(get_monitor_file());
   get_monitor_file() = qopen(path, "a");
   qset_line_buf(get_monitor_file());
 }
@@ -459,10 +459,10 @@ inline FILE* qopen_info(const std::string& path, const std::string& mode)
   }
 }
 
-inline int qclose_info(FILE*& file)
+inline int qfclose_info(FILE*& file)
 {
-  TIMER("qclose_info");
-  return qclose(file);
+  TIMER("qfclose_info");
+  return qfclose(file);
 }
 
 inline int qrename_info(const std::string& old_path,

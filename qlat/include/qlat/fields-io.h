@@ -224,7 +224,7 @@ inline void fields_writer_dirs_geon_info(const GeometryNode& geon,
   qwrite_data(ssprintf("geon.size_node[1] = %d\n", geon.size_node[1]), qfile);
   qwrite_data(ssprintf("geon.size_node[2] = %d\n", geon.size_node[2]), qfile);
   qwrite_data(ssprintf("geon.size_node[3] = %d\n", geon.size_node[3]), qfile);
-  qclose(qfile);
+  qfclose(qfile);
 }
 
 inline Coordinate shuffled_fields_reader_size_node_info(const std::string& path)
