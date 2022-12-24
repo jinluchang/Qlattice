@@ -1,6 +1,6 @@
 #pragma once
 
-#include <qlat/setup.h>
+#include <qlat/core.h>
 #include <qlat/mvector.h>
 
 #include <cmath>
