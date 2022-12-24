@@ -814,8 +814,8 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 32 
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 96AFBBCB <- f1 only selected
 QFile: open 'huge-data/points-1024/f.lat.partial' with 'w'.
-qrename: 'huge-data/points-1024/f.lat.partial' 'huge-data/points-1024/f.lat'
 QFile: close 'huge-data/points-1024/f.lat.partial' with 'w'.
+qrename: 'huge-data/points-1024/f.lat.partial' 'huge-data/points-1024/f.lat'
 QFile: open 'huge-data/points-1024/f.lat' with 'r'.
 QFile: close 'huge-data/points-1024/f.lat' with 'r'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)

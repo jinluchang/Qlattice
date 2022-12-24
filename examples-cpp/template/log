@@ -89,8 +89,8 @@ tsep[       6] re-im[      im]  0.00000000000000000E+00
 tsep[       7] re-im[      re]  7.00000000000000000E+00
 tsep[       7] re-im[      im]  0.00000000000000000E+00
 QFile: open 'results/free-4nt8/results=1000/data.lat.partial' with 'w'.
-qrename: 'results/free-4nt8/results=1000/data.lat.partial' 'results/free-4nt8/results=1000/data.lat'
 QFile: close 'results/free-4nt8/results=1000/data.lat.partial' with 'w'.
+qrename: 'results/free-4nt8/results=1000/data.lat.partial' 'results/free-4nt8/results=1000/data.lat'
 geo = { initialized   = true
 , eo            = 0
 , geon          =
@@ -240,8 +240,8 @@ tsep[       6] re-im[      im]  0.00000000000000000E+00
 tsep[       7] re-im[      re]  7.00000000000000000E+00
 tsep[       7] re-im[      im]  0.00000000000000000E+00
 QFile: open 'results/free-4nt8/results=1010/data.lat.partial' with 'w'.
-qrename: 'results/free-4nt8/results=1010/data.lat.partial' 'results/free-4nt8/results=1010/data.lat'
 QFile: close 'results/free-4nt8/results=1010/data.lat.partial' with 'w'.
+qrename: 'results/free-4nt8/results=1010/data.lat.partial' 'results/free-4nt8/results=1010/data.lat'
 geo = { initialized   = true
 , eo            = 0
 , geon          =

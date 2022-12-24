@@ -371,14 +371,14 @@ gf_wilson_flow: t =  2.00000000000000011E-01 ; E =  5.99912986704202122E-01 ; t^
            2 tot(topo_density) -3.49802468569529457E-03
            2 avg(topo_density^2)  8.35628185211913578E-06
 QFile: open 'results/gf_info/traj=2.lat.partial' with 'w'.
-qrename: 'results/gf_info/traj=2.lat.partial' 'results/gf_info/traj=2.lat'
 QFile: close 'results/gf_info/traj=2.lat.partial' with 'w'.
+qrename: 'results/gf_info/traj=2.lat.partial' 'results/gf_info/traj=2.lat'
 QFile: open 'results/wilson_flow_energy_info/traj=2.lat.partial' with 'w'.
-qrename: 'results/wilson_flow_energy_info/traj=2.lat.partial' 'results/wilson_flow_energy_info/traj=2.lat'
 QFile: close 'results/wilson_flow_energy_info/traj=2.lat.partial' with 'w'.
+qrename: 'results/wilson_flow_energy_info/traj=2.lat.partial' 'results/wilson_flow_energy_info/traj=2.lat'
 QFile: open 'results/gm_force_info/traj=2.lat.partial' with 'w'.
-qrename: 'results/gm_force_info/traj=2.lat.partial' 'results/gm_force_info/traj=2.lat'
 QFile: close 'results/gm_force_info/traj=2.lat.partial' with 'w'.
+qrename: 'results/gm_force_info/traj=2.lat.partial' 'results/gm_force_info/traj=2.lat'
 # norm_idx gm_force_magnitude
     0  6.77462752209160524E+00
     1  6.95591453514394242E+00
@@ -577,14 +577,14 @@ gf_wilson_flow: t =  2.00000000000000011E-01 ; E =  9.25517311948635069E-01 ; t^
            2 tot(topo_density) -8.88666298510614461E-02
            2 avg(topo_density^2)  2.07894550269613213E-05
 QFile: open 'results/gf_info/traj=4.lat.partial' with 'w'.
-qrename: 'results/gf_info/traj=4.lat.partial' 'results/gf_info/traj=4.lat'
 QFile: close 'results/gf_info/traj=4.lat.partial' with 'w'.
+qrename: 'results/gf_info/traj=4.lat.partial' 'results/gf_info/traj=4.lat'
 QFile: open 'results/wilson_flow_energy_info/traj=4.lat.partial' with 'w'.
-qrename: 'results/wilson_flow_energy_info/traj=4.lat.partial' 'results/wilson_flow_energy_info/traj=4.lat'
 QFile: close 'results/wilson_flow_energy_info/traj=4.lat.partial' with 'w'.
+qrename: 'results/wilson_flow_energy_info/traj=4.lat.partial' 'results/wilson_flow_energy_info/traj=4.lat'
 QFile: open 'results/gm_force_info/traj=4.lat.partial' with 'w'.
-qrename: 'results/gm_force_info/traj=4.lat.partial' 'results/gm_force_info/traj=4.lat'
 QFile: close 'results/gm_force_info/traj=4.lat.partial' with 'w'.
+qrename: 'results/gm_force_info/traj=4.lat.partial' 'results/gm_force_info/traj=4.lat'
 Cache: 'CommPlanCache': 6 / 32 [16] to add
 # norm_idx gm_force_magnitude
     0  1.29647900205106748E+00
@@ -932,14 +932,14 @@ gf_wilson_flow: t =  2.00000000000000011E-01 ; E =  3.98698494370809009E-01 ; t^
            2 tot(topo_density)  2.99761996090847777E-04
            2 avg(topo_density^2)  3.67985467023373897E-06
 QFile: open 'results/gf_info/traj=2.lat.partial' with 'w'.
-qrename: 'results/gf_info/traj=2.lat.partial' 'results/gf_info/traj=2.lat'
 QFile: close 'results/gf_info/traj=2.lat.partial' with 'w'.
+qrename: 'results/gf_info/traj=2.lat.partial' 'results/gf_info/traj=2.lat'
 QFile: open 'results/wilson_flow_energy_info/traj=2.lat.partial' with 'w'.
-qrename: 'results/wilson_flow_energy_info/traj=2.lat.partial' 'results/wilson_flow_energy_info/traj=2.lat'
 QFile: close 'results/wilson_flow_energy_info/traj=2.lat.partial' with 'w'.
+qrename: 'results/wilson_flow_energy_info/traj=2.lat.partial' 'results/wilson_flow_energy_info/traj=2.lat'
 QFile: open 'results/gm_force_info/traj=2.lat.partial' with 'w'.
-qrename: 'results/gm_force_info/traj=2.lat.partial' 'results/gm_force_info/traj=2.lat'
 QFile: close 'results/gm_force_info/traj=2.lat.partial' with 'w'.
+qrename: 'results/gm_force_info/traj=2.lat.partial' 'results/gm_force_info/traj=2.lat'
 # norm_idx gm_force_magnitude
     0  6.00841709489937692E+00
     1  6.16336780426232789E+00
@@ -1138,14 +1138,14 @@ gf_wilson_flow: t =  2.00000000000000011E-01 ; E =  6.88420696925417852E-01 ; t^
            2 tot(topo_density) -1.01901695994393859E-02
            2 avg(topo_density^2)  9.95445717431649219E-06
 QFile: open 'results/gf_info/traj=4.lat.partial' with 'w'.
-qrename: 'results/gf_info/traj=4.lat.partial' 'results/gf_info/traj=4.lat'
 QFile: close 'results/gf_info/traj=4.lat.partial' with 'w'.
+qrename: 'results/gf_info/traj=4.lat.partial' 'results/gf_info/traj=4.lat'
 QFile: open 'results/wilson_flow_energy_info/traj=4.lat.partial' with 'w'.
-qrename: 'results/wilson_flow_energy_info/traj=4.lat.partial' 'results/wilson_flow_energy_info/traj=4.lat'
 QFile: close 'results/wilson_flow_energy_info/traj=4.lat.partial' with 'w'.
+qrename: 'results/wilson_flow_energy_info/traj=4.lat.partial' 'results/wilson_flow_energy_info/traj=4.lat'
 QFile: open 'results/gm_force_info/traj=4.lat.partial' with 'w'.
-qrename: 'results/gm_force_info/traj=4.lat.partial' 'results/gm_force_info/traj=4.lat'
 QFile: close 'results/gm_force_info/traj=4.lat.partial' with 'w'.
+qrename: 'results/gm_force_info/traj=4.lat.partial' 'results/gm_force_info/traj=4.lat'
 CHECK: finished successfully.
 Cache: 'CommPlanCache': 7 / 32 [16] clear
 clear_mem_cache: 4130816 bytes (0.004 GB) freed.

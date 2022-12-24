@@ -192,8 +192,8 @@ QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.sfield.partial' with 'a'
 QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.sfield.partial' with 'a'.
 qrename: 'results/test-4nt8/results=1000/psrc-prop-0.sfield.partial' 'results/test-4nt8/results=1000/psrc-prop-0.sfield'
 QFile: open 'results/test-4nt8/results=1000/pion-corr.lat.partial' with 'w'.
-qrename: 'results/test-4nt8/results=1000/pion-corr.lat.partial' 'results/test-4nt8/results=1000/pion-corr.lat'
 QFile: close 'results/test-4nt8/results=1000/pion-corr.lat.partial' with 'w'.
+qrename: 'results/test-4nt8/results=1000/pion-corr.lat.partial' 'results/test-4nt8/results=1000/pion-corr.lat'
 QFile: open 'results/test-4nt8/results=1000/pion-corr.txt.partial' with 'w'.
 QFile: close 'results/test-4nt8/results=1000/pion-corr.txt.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1000/pion-corr.txt.partial' 'results/test-4nt8/results=1000/pion-corr.txt'
@@ -367,8 +367,8 @@ QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.sfield.partial' with 'a'
 QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.sfield.partial' with 'a'.
 qrename: 'results/test-4nt8/results=1010/psrc-prop-0.sfield.partial' 'results/test-4nt8/results=1010/psrc-prop-0.sfield'
 QFile: open 'results/test-4nt8/results=1010/pion-corr.lat.partial' with 'w'.
-qrename: 'results/test-4nt8/results=1010/pion-corr.lat.partial' 'results/test-4nt8/results=1010/pion-corr.lat'
 QFile: close 'results/test-4nt8/results=1010/pion-corr.lat.partial' with 'w'.
+qrename: 'results/test-4nt8/results=1010/pion-corr.lat.partial' 'results/test-4nt8/results=1010/pion-corr.lat'
 QFile: open 'results/test-4nt8/results=1010/pion-corr.txt.partial' with 'w'.
 QFile: close 'results/test-4nt8/results=1010/pion-corr.txt.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1010/pion-corr.txt.partial' 'results/test-4nt8/results=1010/pion-corr.txt'
@@ -543,8 +543,8 @@ QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.sfield.partial' with 'a'
 QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.sfield.partial' with 'a'.
 qrename: 'results/free-4nt8/results=1000/psrc-prop-0.sfield.partial' 'results/free-4nt8/results=1000/psrc-prop-0.sfield'
 QFile: open 'results/free-4nt8/results=1000/pion-corr.lat.partial' with 'w'.
-qrename: 'results/free-4nt8/results=1000/pion-corr.lat.partial' 'results/free-4nt8/results=1000/pion-corr.lat'
 QFile: close 'results/free-4nt8/results=1000/pion-corr.lat.partial' with 'w'.
+qrename: 'results/free-4nt8/results=1000/pion-corr.lat.partial' 'results/free-4nt8/results=1000/pion-corr.lat'
 QFile: open 'results/free-4nt8/results=1000/pion-corr.txt.partial' with 'w'.
 QFile: close 'results/free-4nt8/results=1000/pion-corr.txt.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1000/pion-corr.txt.partial' 'results/free-4nt8/results=1000/pion-corr.txt'
@@ -718,8 +718,8 @@ QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.sfield.partial' with 'a'
 QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.sfield.partial' with 'a'.
 qrename: 'results/free-4nt8/results=1010/psrc-prop-0.sfield.partial' 'results/free-4nt8/results=1010/psrc-prop-0.sfield'
 QFile: open 'results/free-4nt8/results=1010/pion-corr.lat.partial' with 'w'.
-qrename: 'results/free-4nt8/results=1010/pion-corr.lat.partial' 'results/free-4nt8/results=1010/pion-corr.lat'
 QFile: close 'results/free-4nt8/results=1010/pion-corr.lat.partial' with 'w'.
+qrename: 'results/free-4nt8/results=1010/pion-corr.lat.partial' 'results/free-4nt8/results=1010/pion-corr.lat'
 QFile: open 'results/free-4nt8/results=1010/pion-corr.txt.partial' with 'w'.
 QFile: close 'results/free-4nt8/results=1010/pion-corr.txt.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1010/pion-corr.txt.partial' 'results/free-4nt8/results=1010/pion-corr.txt'
