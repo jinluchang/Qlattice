@@ -40,24 +40,24 @@ def timer_verbose(func):
 
 cdef class Coordinate:
 
-    cdef cp.Coordinate c
+    cdef cp.Coordinate xx
 
     def __cinit__(self):
-        self.c = cp.Coordinate()
+        self.xx = cp.Coordinate()
 
     def __init__(self, list x = None):
         if x is not None:
             assert len(x) == 4
-            self.c = cp.Coordinate(x[0], x[1], x[2], x[3])
+            self.xx = cp.Coordinate(x[0], x[1], x[2], x[3])
 
     def __imatmul__(self, Coordinate v1):
-        self.c = v1.c
+        self.xx = v1.xx
         return self
 
     cpdef Coordinate copy(self, cp.bool is_copying_data = True):
         cdef Coordinate x = Coordinate()
         if is_copying_data:
-            x.c = self.c
+            x.xx = self.xx
         return x
 
     def __copy__(self):
@@ -67,47 +67,47 @@ cdef class Coordinate:
         return self.copy()
 
     def list(self):
-        return [ self.c[0], self.c[1], self.c[2], self.c[3], ]
+        return [ self.xx[0], self.xx[1], self.xx[2], self.xx[3], ]
 
 ### -------------------------------------------------------------------
 
 cdef class RngState:
 
-    cdef cp.RngState rs
+    cdef cp.RngState xx
     cdef readonly long cdata
 
     def __cinit__(self):
-        self.rs = cp.RngState()
-        self.cdata = <long>&(self.rs)
+        self.xx = cp.RngState()
+        self.cdata = <long>&(self.xx)
 
     def __init__(self, x = None, y = None):
         cdef cp.string seed
         if x is None:
             assert y is None
             # make a new rng
-            self.rs = cp.RngState()
+            self.xx = cp.RngState()
         elif isinstance(x, RngState):
             if y is None:
                 # make a copy of x
-                self.rs = (<RngState>x).rs
+                self.xx = (<RngState>x).xx
             else:
                 # split into a new rng
                 seed = str(y)
-                self.rs = cp.RngState((<RngState>x).rs, seed)
+                self.xx = cp.RngState((<RngState>x).xx, seed)
         else:
             assert y is None
             # seed a new rng
             seed = str(x)
-            self.rs = cp.RngState(seed)
+            self.xx = cp.RngState(seed)
 
     def __imatmul__(self, RngState v1):
-        self.rs = v1.rs
+        self.xx = v1.xx
         return self
 
     cpdef RngState copy(self, cp.bool is_copying_data = True):
         cdef RngState x = RngState()
         if is_copying_data:
-            x.rs = self.rs
+            x.xx = self.xx
         return x
 
     def __copy__(self):
@@ -118,22 +118,22 @@ cdef class RngState:
 
     cpdef RngState split(self, const cp.string& seed):
         cdef RngState x = RngState()
-        x.rs = self.rs.split(seed)
+        x.xx = self.xx.split(seed)
         return x
 
     cpdef cp.uint64_t rand_gen(self):
-        return cp.rand_gen(self.rs)
+        return cp.rand_gen(self.xx)
 
     cpdef u_rand_gen(self, double upper = 1.0, double lower = 0.0):
-        return cp.u_rand_gen(self.rs, upper, lower)
+        return cp.u_rand_gen(self.xx, upper, lower)
 
     cpdef g_rand_gen(self, double center = 0.0, double sigma = 1.0):
-        return cp.g_rand_gen(self.rs, center, sigma)
+        return cp.g_rand_gen(self.xx, center, sigma)
 
     cpdef c_rand_gen(self, Coordinate size):
         # size can be total_site of the lattice
         cdef Coordinate x = Coordinate()
-        x.c = cp.c_rand_gen(self.rs, size.c)
+        x.xx = cp.c_rand_gen(self.xx, size.xx)
         return x
 
     def select(self, list l):
