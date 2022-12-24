@@ -144,9 +144,9 @@ def benchmark_eval_cexpr(cexpr : CExpr, *,
     n_expr = len(expr_names)
     n_pos = len(cexpr.positions)
     prop_dict = {}
-    size = [ 8, 8, 8, 16, ]
+    size = q.Coordinate([ 8, 8, 8, 16, ])
     positions = [
-            ("point", tuple(benchmark_rng_state.split(f"positions {pos_idx}").c_rand_gen(size)),)
+            ("point", tuple(benchmark_rng_state.split(f"positions {pos_idx}").c_rand_gen(size).list()),)
             for pos_idx in range(n_pos)
             ]
     set_flavors = set()
@@ -167,7 +167,7 @@ def benchmark_eval_cexpr(cexpr : CExpr, *,
                 prop_dict[(flavor, pos_snk, pos_src,)] = mk_ama_val(prop, pos_src, [ prop, prop_ama, ], [ 0, 1, ], [ 1.0, 0.5, ])
     def mk_pos_dict(k):
         positions_dict = {}
-        positions_dict["size"] = size
+        positions_dict["size"] = size.list()
         idx_list = q.random_permute(list(range(n_pos)), benchmark_rng_state.split(f"pos_dict {k}"))
         for pos, idx in zip(cexpr.positions, idx_list):
             positions_dict[pos] = positions[idx]
