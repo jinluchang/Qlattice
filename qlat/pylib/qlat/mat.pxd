@@ -1,4 +1,4 @@
-from libcpp.complex import complex[double] as Complex
+from qlat_utils.complex cimport *
 
 cdef extern from "qlat/matrix.h" namespace "qlat":
 

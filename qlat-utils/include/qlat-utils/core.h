@@ -27,6 +27,7 @@
 #include <qlat-utils/complex.h>
 #include <qlat-utils/array.h>
 #include <qlat-utils/vector.h>
+#include <qlat-utils/coordinate.h>
 
 #include <unistd.h>
 #include <cassert>
@@ -51,103 +52,5 @@ qacc T sqr(const T& x)
 {
   return x * x;
 }
-
-// ----------------
-
-qacc long modl(const long x, const long len)
-{
-  qassert(0 < len);
-  const int m = x % len;
-  if (0 <= m) {
-    return m;
-  } else {
-    return m + len;
-  }
-}
-
-qacc int mod(const int x, const int len)
-{
-  qassert(0 < len);
-  const int m = x % len;
-  if (0 <= m) {
-    return m;
-  } else {
-    return m + len;
-  }
-}
-
-qacc double mod(const double x, const double len)
-{
-  qassert(0 < len);
-  const double m = x - trunc(x / len) * len;
-  if (0 <= m) {
-    return m;
-  } else {
-    return m + len;
-  }
-}
-
-qacc int smod(const int x, const int len)
-{
-  qassert(0 < len);
-  const int m = mod(x, len);
-  if (m * 2 < len) {
-    return m;
-  } else {
-    return m - len;
-  }
-}
-
-qacc double smod(const double x, const double len)
-{
-  qassert(0 < len);
-  const double m = mod(x, len);
-  if (m * 2 < len) {
-    return m;
-  } else {
-    return m - len;
-  }
-}
-
-qacc double smod_sym(const double x, const double len,
-                     const double eps = 1.0e-8)
-{
-  const double m = smod(x, len);
-  if (std::abs(std::abs(m * 2) - len) < eps) {
-    return 0;
-  } else {
-    return m;
-  }
-}
-
-qacc int middle_mod(const int x, const int y, const int len)
-{
-  qassert(0 < len);
-  const int xm = mod(x, len);
-  const int ym = mod(y, len);
-  if (xm <= ym) {
-    const int r = smod(ym - xm, len);
-    return mod(xm + r / 2, len);
-  } else {
-    const int r = smod(xm - ym, len);
-    return mod(ym + r / 2, len);
-  }
-}
-
-qacc double middle_mod(const double x, const double y, const double len)
-{
-  qassert(0 < len);
-  const double xm = mod(x, len);
-  const double ym = mod(y, len);
-  if (xm <= ym) {
-    const double r = smod(ym - xm, len);
-    return mod(xm + r / 2, len);
-  } else {
-    const double r = smod(xm - ym, len);
-    return mod(ym + r / 2, len);
-  }
-}
-
-// ----------------
 
 }  // namespace qlat
