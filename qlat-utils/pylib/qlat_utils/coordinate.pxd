@@ -1,6 +1,6 @@
 from qlat_utils.rng_state cimport *
 
-cdef extern from "qlat-utils/coordinate.h" namespace "qlat":
+cdef extern from "qlat-utils/core.h" namespace "qlat":
 
     cdef cppclass Coordinate:
         Coordinate()

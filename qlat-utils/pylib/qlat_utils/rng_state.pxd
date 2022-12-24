@@ -1,7 +1,7 @@
 from libcpp.string cimport string
 from libc.stdint cimport uint64_t
 
-cdef extern from "qlat-utils/rng-state.h" namespace "qlat":
+cdef extern from "qlat-utils/core.h" namespace "qlat":
 
     cdef cppclass RngState:
         RngState()
