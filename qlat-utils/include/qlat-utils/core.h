@@ -21,8 +21,9 @@
 #include <qlat-utils/config.h>
 
 #include <qlat-utils/show.h>
-#include <qlat-utils/timer.h>
 #include <qlat-utils/qacc.h>
+#include <qlat-utils/assert.h>
+#include <qlat-utils/timer.h>
 #include <qlat-utils/qacc-func.h>
 #include <qlat-utils/complex.h>
 #include <qlat-utils/array.h>
@@ -30,17 +31,6 @@
 #include <qlat-utils/coordinate.h>
 
 #include <unistd.h>
-#include <cassert>
-
-#ifdef SKIP_ASSERT
-#define qassert(x) assert(true)
-#elif defined QLAT_IN_ACC
-#define qassert(x) assert(x)
-#else
-#define qassert(x) qqassert(x)
-#endif
-
-// #define SKIP_ASSERT
 
 namespace qlat
 {  //

@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include <qlat-utils/config.h>
 #include <qlat-utils/qacc.h>
 #include <qlat-utils/array.h>
 #include <qlat-utils/rng-state.h>

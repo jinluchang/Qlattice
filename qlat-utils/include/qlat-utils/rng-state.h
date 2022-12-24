@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include <qlat-utils/config.h>
 #include <qlat-utils/sha256.h>
 #include <qlat-utils/show.h>
 #include <stdint.h>
