@@ -45,7 +45,7 @@ cdef class Coordinate:
     def __cinit__(self):
         self.c = cp.Coordinate()
 
-    def __init__(self, list x):
+    def __init__(self, list x = None):
         if x is not None:
             assert len(x) == 4
             self.c = cp.Coordinate(x[0], x[1], x[2], x[3])
