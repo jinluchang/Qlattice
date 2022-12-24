@@ -1,6 +1,6 @@
 // vim: set ts=2 sw=2 expandtab:
 
-// Copyright (c) 2016 Luchang Jin
+// Copyright (c) 2022 Luchang Jin
 // All rights reserved.
 
 // This program is free software: you can redistribute it and/or modify
