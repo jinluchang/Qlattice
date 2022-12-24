@@ -7,15 +7,15 @@ cdef extern from "qlat-utils/coordinate.h" namespace "qlat":
         Coordinate(int x, int y, int z, int t)
         int& operator[](unsigned long i)
 
-    cdef Coordinate coordinate_from_index(long index, const Coordinate& size)
-    cdef long index_from_coordinate(const Coordinate& x, const Coordinate& size)
-    cdef int eo_from_coordinate(const Coordinate& xl)
+    Coordinate coordinate_from_index(long index, const Coordinate& size)
+    long index_from_coordinate(const Coordinate& x, const Coordinate& size)
+    int eo_from_coordinate(const Coordinate& xl)
 
-    cdef Coordinate mod(const Coordinate& x, const Coordinate& size)
-    cdef Coordinate smod(const Coordinate& x, const Coordinate& size)
-    cdef Coordinate middle_mod(const Coordinate& x, const Coordinate& size)
+    Coordinate mod(const Coordinate& x, const Coordinate& size)
+    Coordinate smod(const Coordinate& x, const Coordinate& size)
+    Coordinate middle_mod(const Coordinate& x, const Coordinate& size)
 
-    cdef Coordinate c_rand_gen(RngState& rs, const Coordinate& size)
+    Coordinate c_rand_gen(RngState& rs, const Coordinate& size)
 
     cdef cppclass CoordinateD:
         CoordinateD()

@@ -11,6 +11,6 @@ cdef extern from "qlat-utils/rng-state.h" namespace "qlat":
         RngState split(const string& sindex)
         RngState newtype(const unsigned long type)
 
-    cdef uint64_t rand_gen(RngState& rs)
-    cdef double u_rand_gen(RngState& rs, const double upper, const double lower)
-    cdef double g_rand_gen(RngState& rs, const double center, const double sigma)
+    uint64_t rand_gen(RngState& rs)
+    double u_rand_gen(RngState& rs, const double upper, const double lower)
+    double g_rand_gen(RngState& rs, const double center, const double sigma)
