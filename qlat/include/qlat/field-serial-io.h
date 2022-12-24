@@ -70,7 +70,7 @@ long serial_write_field(const Field<M>& f, const std::string& path,
       }
       qwrite_data(v, qfile);
     }
-    qfile.close();
+    qfclose(qfile);
   } else {
     for (size_t i = 0; i < fs.size(); ++i) {
       const Vector<M> v = get_data(fs[i]);
@@ -127,7 +127,7 @@ long serial_read_field(Field<M>& f, const std::string& path,
                  get_comm());
       }
     }
-    qfile.close();
+    qfclose(qfile);
   } else {
     for (size_t i = 0; i < fs.size(); ++i) {
       Vector<M> v = get_data(fs[i]);
@@ -173,7 +173,7 @@ long serial_read_field_par(Field<M>& f, const std::string& path,
       Vector<M> v = get_data(fs[i]);
       qread_data(v, qfile);
     }
-    qfile.close();
+    qfclose(qfile);
   }
   shuffle_field_back(f, fs, new_size_node);
   sync_node();
@@ -365,7 +365,7 @@ inline void read_geo_info(Coordinate& total_site, int& multiplicity, int& sizeof
         }
       }
     }
-    qfile.close();
+    qfclose(qfile);
   }
   bcast(Vector<Coordinate>(&total_site, 1));
   bcast(Vector<int>(&multiplicity, 1));
@@ -544,7 +544,7 @@ inline bool is_field(const std::string& path)
         }
       }
     }
-    qfile.close();
+    qfclose(qfile);
   }
   bcast(get_data(nfile));
   return nfile > 0;

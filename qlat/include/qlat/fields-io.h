@@ -293,7 +293,7 @@ struct API FieldsWriter {
     qassert(not qfile.null());
   }
   //
-  void close() { qfile.close(); }
+  void close() { qfclose(qfile); }
 };
 
 struct API FieldsReader {
@@ -345,17 +345,17 @@ struct API FieldsReader {
     max_offset = 0;
   }
   //
-  void close() { qfile.close(); }
+  void close() { qfclose(qfile); }
 };
 
 inline void mkfile(FieldsReader& fr)
-// create the file (open with appending)
+// create the file (open with appending and then close)
 // does not open the file
 {
   if (fr.qfile.null() and fr.path != "") {
     fr.qfile =
         qfopen(dist_file_name(fr.path, fr.geon.id_node, fr.geon.num_node), "a");
-    fr.qfile.close();
+    qfclose(fr.qfile);
   }
 }
 

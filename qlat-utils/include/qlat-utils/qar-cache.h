@@ -490,8 +490,8 @@ inline int qcopy_file(const std::string& path_src, const std::string& path_dst)
   QFile qfile_out = qfopen(path_dst + ".acc", "w");
   qassert(not qfile_out.null());
   timer.flops += write_from_qfile(qfile_out, qfile_in);
-  qfile_out.close();
-  qfile_in.close();
+  qfclose(qfile_out);
+  qfclose(qfile_in);
   qrename(path_dst + ".acc", path_dst);
   return 0;
 }
@@ -528,7 +528,9 @@ inline crc32_t compute_crc32(QFile& qfile)
 inline crc32_t compute_crc32(const std::string& path)
 {
   QFile qfile = qfopen(path, "r");
-  return compute_crc32(qfile);
+  const crc32_t ret = compute_crc32(qfile);
+  qfclose(qfile);
+  return ret;
 }
 
 inline std::vector<std::string> qgetlines(const std::string& fn)
@@ -536,6 +538,7 @@ inline std::vector<std::string> qgetlines(const std::string& fn)
   QFile qfile = qfopen(fn, "r");
   qassert(not qfile.null());
   std::vector<std::string> lines = qgetlines(qfile);
+  qfclose(qfile);
   return lines;
 }
 
@@ -552,6 +555,7 @@ inline std::string qcat(const std::string& path)
   std::string ret(length, 0);
   const long length_actual = qfread(&ret[0], 1, length, qfile);
   qassert(length == length_actual);
+  qfclose(qfile);
   return ret;
 }
 
@@ -563,6 +567,7 @@ inline int qtouch(const std::string& path)
   if (qfile.null()) {
     return 1;
   }
+  qfclose(qfile);
   return 0;
 }
 
@@ -575,7 +580,7 @@ inline int qtouch(const std::string& path, const std::string& content)
   }
   const long total_bytes = qwrite_data(content, qfile);
   qassert(total_bytes == long(content.size()));
-  qfile.close();
+  qfclose(qfile);
   return qrename(path + ".partial", path);
 }
 
@@ -588,7 +593,7 @@ inline int qappend(const std::string& path, const std::string& content)
   }
   const long total_bytes = qwrite_data(content, qfile);
   qassert(total_bytes == long(content.size()));
-  qfile.close();
+  qfclose(qfile);
   return 0;
 }
 
@@ -655,7 +660,7 @@ inline DataTable qload_datatable_serial(const std::string& path)
   QFile qfile = qfopen(path, "r");
   qassert(not qfile.null());
   DataTable ret = qload_datatable(qfile);
-  qfile.close();
+  qfclose(qfile);
   return ret;
 }
 
@@ -668,7 +673,7 @@ inline DataTable qload_datatable_par(const std::string& path)
   QFile qfile = qfopen(path, "r");
   qassert(not qfile.null());
   DataTable ret = qload_datatable_par(qfile);
-  qfile.close();
+  qfclose(qfile);
   return ret;
 }
 

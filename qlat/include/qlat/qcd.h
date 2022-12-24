@@ -579,7 +579,7 @@ inline void read_gauge_transform_header(GaugeTransformInfo& info,
         }
       }
     }
-    qfile.close();
+    qfclose(qfile);
   }
   bcast(info.hdr_version);
   bcast(info.storage_format);
