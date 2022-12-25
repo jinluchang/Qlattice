@@ -918,7 +918,7 @@ class CExprCodeGenPy:
     def cexpr_function_get_prop(self):
         append = self.append
         cexpr = self.cexpr
-        append(f"@timer")
+        append(f"@timer_flops")
         append(f"def cexpr_function_get_prop(positions_dict, get_prop):")
         self.indent += 4
         append(f"# set positions")
@@ -941,8 +941,10 @@ class CExprCodeGenPy:
             append(f"{name},")
         append(f"]")
         self.indent -= 4
-        # return
-        append(f"return props")
+        append(f"# set flops")
+        append(f"total_flops = len(props) * 144 * 2 * 8")
+        append(f"# return")
+        append(f"return total_flops, props")
         self.indent -= 4
 
     def cexpr_function_get_factor(self):
@@ -978,7 +980,7 @@ class CExprCodeGenPy:
     def cexpr_function_eval(self):
         append = self.append
         cexpr = self.cexpr
-        append(f"@timer")
+        append(f"@timer_flops")
         append(f"def cexpr_function_eval(positions_dict, props):")
         self.indent += 4
         append(f"# load AMA props with proper format")
@@ -990,15 +992,15 @@ class CExprCodeGenPy:
         append(f"# apply eval to the factors and AMA props")
         append(f"ama_val = ama_apply2_r(cexpr_function_eval_with_props, factors, ama_props)")
         append(f"# set flops")
-        append(f"acc_timer_flops('py:cexpr_function_eval', ama_counts(ama_val) * total_sloppy_flops)")
+        append(f"total_flops = ama_counts(ama_val) * total_sloppy_flops")
         append(f"# return")
-        append(f"return ama_val")
+        append(f"return total_flops, ama_val")
         self.indent -= 4
 
     def cexpr_function_eval_with_props(self):
         append = self.append
         cexpr = self.cexpr
-        append(f"@timer")
+        append(f"@timer_flops")
         append(f"def cexpr_function_eval_with_props(factors, props):")
         self.indent += 4
         append(f"# set factors")
@@ -1065,9 +1067,9 @@ class CExprCodeGenPy:
         append(f"])")
         self.indent -= 4
         append(f"# set flops")
-        append(f"acc_timer_flops('py:cexpr_function_eval_with_props', total_sloppy_flops)")
+        append(f"total_flops = total_sloppy_flops")
         append(f"# return")
-        append(f"return results")
+        append(f"return total_flops, results")
         self.indent -= 4
 
     def total_flops(self):

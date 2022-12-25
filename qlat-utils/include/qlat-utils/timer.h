@@ -51,12 +51,12 @@
 
 #define TIMER(FNAME)                 \
   static std::string fname = FNAME;  \
-  static qlat::Timer timer(fname); \
+  static qlat::Timer timer(fname, true); \
   qlat::TimerCtrl timerctrl(timer);
 
 #define TIMER_VERBOSE(FNAME)         \
   static std::string fname = FNAME;  \
-  static qlat::Timer timer(fname); \
+  static qlat::Timer timer(fname, true); \
   qlat::TimerCtrl timerctrl(timer, true);
 
 #define TIMER_FLOPS(FNAME)                  \
@@ -590,7 +590,7 @@ struct API Timer {
   void init()
   {
     cname = "Timer";
-    is_using_total_flops = true;
+    is_using_total_flops = false;
     get_start_time();
     initialize_papi();
     info_index = -1;

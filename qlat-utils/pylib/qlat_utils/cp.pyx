@@ -36,6 +36,34 @@ def timer_verbose(func):
         return ret
     return qtimer_func
 
+cdef acc_timer_flops(cp.Timer& qtimer, long long flops):
+    qtimer.flops += flops
+
+def timer_flops(func):
+    fname = "py:" + func.__name__
+    cdef cp.Timer qtimer = cp.Timer(fname)
+    @functools.wraps(func)
+    def qtimer_func(*args, **kwargs):
+        qtimer.start()
+        flops, ret = func(*args, **kwargs)
+        acc_timer_flops(qtimer, flops)
+        qtimer.stop()
+        return ret
+    return qtimer_func
+
+def timer_verbose_flops(func):
+    fname = "py:" + func.__name__
+    cdef cp.Timer qtimer = cp.Timer(fname)
+    @functools.wraps(func)
+    def qtimer_func(*args, **kwargs):
+        cdef cp.bool is_verbose = True
+        qtimer.start(is_verbose)
+        flops, ret = func(*args, **kwargs)
+        acc_timer_flops(qtimer, flops)
+        qtimer.stop(is_verbose)
+        return ret
+    return qtimer_func
+
 ### -------------------------------------------------------------------
 
 cdef class Coordinate:
