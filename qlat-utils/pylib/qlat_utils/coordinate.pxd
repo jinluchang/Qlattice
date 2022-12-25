@@ -1,4 +1,4 @@
-from qlat_utils.rng_state cimport *
+from .rng_state cimport *
 
 cdef extern from "qlat-utils/core.h" namespace "qlat":
 

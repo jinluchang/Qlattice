@@ -28,6 +28,7 @@ math = cpp.find_library('m')
 deps = [ omp, py3.dependency().as_system(), zlib, math, ]
 
 subdir('include')
+subdir('lib')
 subdir('pylib')
 
 c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls bin/*', check: true)

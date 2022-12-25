@@ -42,9 +42,15 @@ math = cpp.find_library('m')
 qlat_include = run_command(py3.path(), '-c', 'import qlat as q ; print("\\n".join(q.get_include_list()))', check: true).stdout().strip().split('\n')
 message('qlat include', qlat_include)
 
+qlat_lib = run_command(py3.path(), '-c', 'import qlat as q ; print("\\n".join(q.get_lib_list()))', check: true).stdout().strip().split('\n')
+message('qlat lib', qlat_lib)
+
 qlat = declare_dependency(
   include_directories: include_directories(qlat_include),
-  dependencies: [ omp, fftw_all, mpic, zlib, math, ],
+  dependencies: [
+    cpp.find_library('qlat', dirs: qlat_lib),
+    cpp.find_library('qlat-utils', dirs: qlat_lib),
+    omp, fftw_all, mpic, zlib, math, ],
   )
 
 deps = [ qlat, ]

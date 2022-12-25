@@ -7,13 +7,11 @@ foreach f : qlat_utils_pysources
   copy += fs.copyfile(f)
 endforeach
 
-c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.cpp', check: true)
-cppsources = files(c.stdout().strip().split('\n'))
-
 cplib = py3.extension_module('cp',
-  files('cp.pyx') + cppsources,
+  files('cp.pyx') + clib,
   dependencies: deps,
   include_directories: incdir,
+  link_with: clib,
   install: true,
   subdir: 'qlat_utils',
   # gnu_symbol_visibility: 'default',

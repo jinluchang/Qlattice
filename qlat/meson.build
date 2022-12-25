@@ -47,9 +47,14 @@ math = cpp.find_library('m')
 qlat_utils_include = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\n".join(q.get_include_list()))', check: true).stdout().strip().split('\n')
 message('qlat_utils include', qlat_utils_include)
 
+qlat_utils_lib = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\n".join(q.get_lib_list()))', check: true).stdout().strip().split('\n')
+message('qlat_utils lib', qlat_utils_lib)
+
 qlat_utils = declare_dependency(
   include_directories:  include_directories(qlat_utils_include),
-  dependencies: [ py3.dependency(), omp, zlib, math, ],
+  dependencies: [
+    cpp.find_library('qlat-utils', dirs: qlat_utils_lib),
+    py3.dependency(), omp, zlib, math, ],
   )
 
 deps = [ qlat_utils, fftw_all, mpic, ]
@@ -60,7 +65,7 @@ if not cpp.check_header('Eigen/Eigen')
 endif
 
 subdir('include')
-
+subdir('lib')
 subdir('pylib')
 
 c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls bin/*', check: true)

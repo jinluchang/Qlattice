@@ -1,4 +1,4 @@
-from qlat_ext.everything cimport *
+from .everything cimport *
 from qlat.everything cimport *
 
 cdef void hello_world_c():

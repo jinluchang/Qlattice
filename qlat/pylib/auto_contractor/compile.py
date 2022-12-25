@@ -803,7 +803,7 @@ class CExprCodeGenPy:
         elif x.otype == "G":
             assert x.s1 == "auto" and x.s2 == "auto"
             assert x.tag in [0, 1, 2, 3, 5]
-            return f"get_gamma_matrix({x.tag})", "V_G"
+            return f"cp.get_gamma_matrix({x.tag})", "V_G"
         elif x.otype == "Tr":
             if len(x.ops) == 0:
                 assert False
@@ -811,17 +811,17 @@ class CExprCodeGenPy:
                 c, t = self.gen_expr(x.ops[0])
                 assert t == "V_S"
                 self.total_sloppy_flops += 22
-                return f"mat_sc_trace({c})", "V_Tr"
+                return f"cp.mat_tr({c})", "V_Tr"
             else:
                 c1, t1 = self.gen_expr_prod_list(x.ops[:-1])
                 c2, t2 = self.gen_expr(x.ops[-1])
                 if t1 == "V_S" and t2 == "V_S":
                     self.total_sloppy_flops += 1150
-                    return f"mat_sc_sc_trace({c1}, {c2})", "V_Tr"
+                    return f"cp.mat_tr({c1}, {c2})", "V_Tr"
                 elif t1 == "V_S" and t2 == "V_G":
-                    return f"mat_sc_s_trace({c1}, {c2})", "V_Tr"
+                    return f"cp.mat_tr({c1}, {c2})", "V_Tr"
                 elif t1 == "V_G" and t2 == "V_S":
-                    return f"mat_s_sc_trace({c1}, {c2})", "V_Tr"
+                    return f"cp.mat_tr({c1}, {c2})", "V_Tr"
                 else:
                     assert False
         elif x.otype == "Var":
@@ -838,24 +838,24 @@ class CExprCodeGenPy:
             return ct1
         elif t1 == "V_S" and t2 == "V_S":
             self.total_sloppy_flops += 13536
-            return f"mat_mul_sc_sc({c1}, {c2})", "V_S"
+            return f"{c1} * {c2}", "V_S"
         elif t1 == "V_S" and t2 == "V_G":
             self.total_sloppy_flops += 4320
-            return f"mat_mul_sc_s({c1}, {c2})", "V_S"
+            return f"{c1} * {c2}", "V_S"
         elif t1 == "V_G" and t2 == "V_S":
             self.total_sloppy_flops += 4320
-            return f"mat_mul_s_sc({c1}, {c2})", "V_S"
+            return f"{c1} * {c2}", "V_S"
         elif t1 == "V_G" and t2 == "V_G":
             self.total_sloppy_flops += 480
-            return f"mat_mul_s_s({c1}, {c2})", "V_G"
+            return f"{c1} * {c2}", "V_G"
         elif t1 == "V_G" and t2 == "V_a":
-            return f"mat_mul_a_s({c2}, {c1})", "V_G"
+            return f"{c1} * {c2}", "V_G"
         elif t1 == "V_a" and t2 == "V_G":
-            return f"mat_mul_a_s({c1}, {c2})", "V_G"
+            return f"{c1} * {c2}", "V_G"
         elif t1 == "V_S" and t2 == "V_a":
-            return f"mat_mul_a_sc({c2}, {c1})", "V_S"
+            return f"{c1} * {c2}", "V_S"
         elif t1 == "V_a" and t2 == "V_S":
-            return f"mat_mul_a_sc({c1}, {c2})", "V_S"
+            return f"{c1} * {c2}", "V_S"
         elif t1 == "V_a" and t2 == "V_a":
             return f"{c1} * {c2}", "V_a"
         elif t1 == "V_Tr" and t2 == "V_Tr":
@@ -1003,7 +1003,10 @@ class CExprCodeGenPy:
             append(f"cdef cp.Complex {name} = factors[{idx}]")
         append(f"# set props")
         for idx, (name, value,) in enumerate(cexpr.variables_prop):
-            append(f"{name} = props[{idx}]")
+            append(f"py_{name} = props[{idx}]")
+            append(f"cdef long py_cdata_{name} = py_{name}.cdata")
+            append(f"cdef cp.WilsonMatrix* p_{name} = <cp.WilsonMatrix*>py_cdata_{name}")
+            append(f"cdef cp.WilsonMatrix {name} = p_{name}[0]")
         append(f"# compute products")
         for name, value in cexpr.variables_prod:
             assert name.startswith("V_prod_")
@@ -1011,7 +1014,12 @@ class CExprCodeGenPy:
             assert isinstance(x, list)
             c, t = self.gen_expr_prod_list(x)
             assert t == get_var_name_type(name)
-            append(f"{name} = {c}")
+            if t == "V_G":
+                append(f"cdef cp.SpinMatrix {name} = {c}")
+            elif t == "V_S":
+                append(f"cdef cp.WilsonMatrix {name} = {c}")
+            else:
+                assert False
         append(f"# compute traces")
         for name, value in cexpr.variables_tr:
             assert name.startswith("V_tr_")
