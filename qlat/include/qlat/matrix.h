@@ -432,8 +432,25 @@ struct API SpinMatrixConstantsT {
   API static const SpinMatrixT<T>& get_unit() { return get_instance().unit; }
   API static const SpinMatrixT<T>& get_gamma(int mu)
   {
-    qassert(0 <= mu && mu < 4);
-    return get_instance().gammas[mu];
+    if (0 <= mu and mu < 4) {
+      const SpinMatrix& gamma_mu = get_instance().gammas[mu];
+      return gamma_mu;
+    } else {
+      qassert(mu == 5);
+      const SpinMatrix& gamma5 = get_instance().gamma5;
+      return gamma5;
+    }
+  }
+  API static const SpinMatrixT<T>& get_cps_gamma(int mu)
+  {
+    if (0 <= mu and mu < 4) {
+      const SpinMatrix& gamma_mu = get_instance().cps_gammas[mu];
+      return gamma_mu;
+    } else {
+      qassert(mu == 5);
+      const SpinMatrix& gamma5 = get_instance().gamma5;
+      return gamma5;
+    }
   }
   API static const array<SpinMatrixT<T>, 4>& get_gammas()
   {
@@ -478,6 +495,12 @@ struct API SpinMatrixConstantsT {
 inline const box_acc<SpinMatrixConstantsT<> >& get_spin_matrix_constants()
 {
   return SpinMatrixConstantsT<>::get_instance_box();
+}
+
+inline const SpinMatrixT<>& get_gamma_matrix(const int mu)
+// CPS's convention gamma matrices
+{
+  return SpinMatrixConstantsT<>::get_cps_gamma(mu);
 }
 
 template <class T>
