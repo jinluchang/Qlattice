@@ -27,6 +27,11 @@ math = cpp.find_library('m')
 
 deps = [ omp, py3.dependency().as_system(), zlib, math, ]
 
+if not cpp.check_header('Eigen/Eigen')
+  eigen = dependency('eigen3').as_system()
+  deps += [ eigen, ]
+endif
+
 subdir('include')
 subdir('lib')
 subdir('pylib')
