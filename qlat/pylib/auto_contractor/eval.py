@@ -88,13 +88,6 @@ py_mod = import('python')
 py3 = py_mod.find_installation('python3')
 message(py3.path())
 message(py3.get_install_dir())
-if get_option('use_cxx')
-  message('use_cxx=true (use CXX compiler without additional MPI options.)')
-  mpic = dependency('', required: false)
-else
-  message('use_cxx=false (use meson\\'s automatic MPI detection.)')
-  mpic = dependency('mpi', language: 'cpp').as_system()
-endif
 omp = dependency('openmp').as_system()
 zlib = dependency('zlib').as_system()
 fftw = dependency('fftw3').as_system()
@@ -103,36 +96,27 @@ message('fftw libdir', fftw.get_variable('libdir'))
 message('fftwf libdir', fftwf.get_variable('libdir'))
 fftw_all = [ fftw, fftwf, ]
 math = cpp.find_library('m')
-qlat_include = run_command(py3.path(), '-c', 'import qlat as q ; print("\\\\n".join(q.get_include_list()))', check: true).stdout().strip().split('\\n')
-message('qlat include', qlat_include)
-qlat_lib = run_command(py3.path(), '-c', 'import qlat as q ; print("\\\\n".join(q.get_lib_list()))', check: true).stdout().strip().split('\\n')
-message('qlat lib', qlat_lib)
-qlat = declare_dependency(
-  include_directories: include_directories(qlat_include),
+qlat_utils_include = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\\\n".join(q.get_include_list()))', check: true).stdout().strip().split('\\n')
+message('qlat_utils include', qlat_utils_include)
+qlat_utils_lib = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\\\n".join(q.get_lib_list()))', check: true).stdout().strip().split('\\n')
+message('qlat_utils lib', qlat_utils_lib)
+qlat_utils = declare_dependency(
+  include_directories:  include_directories(qlat_utils_include),
   dependencies: [
-    cpp.find_library('qlat', dirs: qlat_lib),
-    cpp.find_library('qlat-utils', dirs: qlat_lib),
-    omp, fftw_all, mpic, zlib, math, ],
+    cpp.find_library('qlat-utils', dirs: qlat_utils_lib),
+    py3.dependency(), omp, zlib, math, ],
   )
-deps = [ qlat, ]
+deps = [ qlat_utils, fftw_all, ]
 if not cpp.check_header('Eigen/Eigen')
   eigen = dependency('eigen3').as_system()
   deps += [ eigen, ]
 endif
 incdir = []
-qlat_lib = run_command(py3.path(), '-c', 'import qlat as q ; print("\\\\n".join(q.get_lib_list()))', check: true).stdout().strip().split('\\n')
 codelib = py3.extension_module('code',
   files('code.pyx'),
   dependencies: deps,
   include_directories: incdir,
   install: false,
-  )
-"""
-
-meson_options_content = """\
-option(
-  'use_cxx', type: 'boolean', value: false,
-  description: 'If true, will not using meson\\'s automatic MPI detection. Otherwise, will use the CXX environmental variable to provide MPI implementation.'
   )
 """
 
@@ -165,7 +149,6 @@ def cache_compiled_cexpr(calc_cexpr, path):
         content_optimized = display_cexpr(cexpr_optimized)
         q.qtouch_info(path + "/cexpr.optimized.txt", content_optimized)
         q.qtouch_info(path + "/meson.build", meson_build_content)
-        q.qtouch_info(path + "/meson_options.txt", meson_options_content)
         compile_cexpr_meson_setup()
         compile_cexpr_meson_compile()
         data = dict()

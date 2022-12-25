@@ -779,7 +779,7 @@ class CExprCodeGenPy:
     def code_gen(self):
         lines = self.lines
         lines.append(f"from auto_contractor.runtime import *")
-        lines.append(f"cimport qlat.everything as cp")
+        lines.append(f"cimport qlat_utils.everything as cp")
         self.sep()
         self.cexpr_function()
         self.sep()

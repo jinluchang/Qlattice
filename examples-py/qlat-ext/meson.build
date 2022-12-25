@@ -20,11 +20,14 @@ py3 = py_mod.find_installation('python3')
 message(py3.path())
 message(py3.get_install_dir())
 
-if get_option('use_cxx')
-  message('use_cxx=true (use CXX compiler without additional MPI options.)')
+cxx = run_command('bash', '-c', 'echo "$CXX"', check: true).stdout().strip()
+mpicxx = run_command('bash', '-c', 'echo "$MPICXX"', check: true).stdout().strip()
+
+if cxx != '' and mpicxx == cxx
+  message(f'cxx=\'@cxx@\' (use CXX compiler without additional MPI options.)')
   mpic = dependency('', required: false)
 else
-  message('use_cxx=false (use meson\'s automatic MPI detection.)')
+  message(f'cxx=\'@cxx@\' mpicxx=\'@mpicxx@\' (use meson\'s automatic MPI detection.)')
   mpic = dependency('mpi', language: 'cpp').as_system()
 endif
 

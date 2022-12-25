@@ -15,6 +15,20 @@ name=qlat-examples-py
 
     rsync -a --delete "$wd"/examples-py "$build"/
 
+    if [ -n "$QLAT_MPICXX" ] ; then
+        export CXX="$QLAT_MPICXX"
+        export MPICXX="$QLAT_MPICXX"
+    fi
+    if [ -n "$QLAT_CXXFLAGS" ] ; then
+        export CXXFLAGS="$QLAT_CXXFLAGS"
+    fi
+    if [ -n "$QLAT_LDFLAGS" ] ; then
+        export LDFLAGS="$QLAT_LDFLAGS"
+    fi
+    if [ -n "$QLAT_LIBS" ] ; then
+        export LIBS="$QLAT_LIBS"
+    fi
+
     time q_verbose=1 make -C "$build"/examples-py run || true
 
     cd "$wd"
