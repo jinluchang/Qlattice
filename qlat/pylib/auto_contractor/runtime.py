@@ -30,7 +30,7 @@ from qlat_utils import \
         rel_mod, rel_mod_sym, c_rel_mod_sqr
 
 from qlat import \
-        timer, acc_timer_flops
+        timer, timer_flops
 
 from numpy import \
         array

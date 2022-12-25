@@ -6,6 +6,7 @@ from qlat_utils.c import verbose_level
 from qlat_utils.c import get_actual_start_time, get_start_time, get_time
 from qlat_utils.c import flush
 from qlat_utils.c import timer, timer_verbose
+from qlat_utils.c import timer_flops, timer_verbose_flops
 from qlat_utils.c import timer_display
 
 import functools
