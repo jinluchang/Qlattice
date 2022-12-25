@@ -6,19 +6,19 @@ cdef extern from "qlat/matrix.h" namespace "qlat":
         SpinMatrix()
         const SpinMatrix& operator=(const SpinMatrix& m)
 
-    const SpinMatrix& operator*(const Complex& a, const SpinMatrix& m)
-    const SpinMatrix& operator*(const SpinMatrix& m, const Complex& a)
-    const SpinMatrix& operator*(const SpinMatrix& m1, const SpinMatrix& m2)
+    const SpinMatrix operator*(const Complex& a, const SpinMatrix& m)
+    const SpinMatrix operator*(const SpinMatrix& m, const Complex& a)
+    const SpinMatrix operator*(const SpinMatrix& m1, const SpinMatrix& m2)
 
     cdef cppclass WilsonMatrix:
         WilsonMatrix()
         const WilsonMatrix& operator=(const WilsonMatrix& m)
 
-    const WilsonMatrix& operator*(const Complex& a, const WilsonMatrix& m)
-    const WilsonMatrix& operator*(const WilsonMatrix& m, const Complex& a)
-    const WilsonMatrix& operator*(const WilsonMatrix& m1, const WilsonMatrix& m2)
-    const WilsonMatrix& operator*(const SpinMatrix& m1, const WilsonMatrix& m2)
-    const WilsonMatrix& operator*(const WilsonMatrix& m1, const SpinMatrix& m2)
+    const WilsonMatrix operator*(const Complex& a, const WilsonMatrix& m)
+    const WilsonMatrix operator*(const WilsonMatrix& m, const Complex& a)
+    const WilsonMatrix operator*(const WilsonMatrix& m1, const WilsonMatrix& m2)
+    const WilsonMatrix operator*(const SpinMatrix& m1, const WilsonMatrix& m2)
+    const WilsonMatrix operator*(const WilsonMatrix& m1, const SpinMatrix& m2)
 
     const SpinMatrix& get_gamma_matrix(const int mu)
 

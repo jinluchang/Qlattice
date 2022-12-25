@@ -8,11 +8,10 @@ foreach f : qlat_utils_pysources
 endforeach
 
 cplib = py3.extension_module('cp',
-  files('cp.pyx') + clib,
+  files('cp.pyx'),
   dependencies: deps,
   include_directories: incdir,
   link_with: clib,
   install: true,
   subdir: 'qlat_utils',
-  # gnu_symbol_visibility: 'default',
   )
