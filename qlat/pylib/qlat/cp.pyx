@@ -1,7 +1,5 @@
 # cython: c_string_type=unicode, c_string_encoding=utf8
 
-from . cimport everything as cp
-
 def qremove_info(path):
     return cp.qremove_info(path)
 
