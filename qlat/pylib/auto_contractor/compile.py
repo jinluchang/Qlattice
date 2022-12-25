@@ -230,31 +230,34 @@ def find_common_subexpr_in_tr(variables_tr):
             assert x == op
             subexpr_count[op_repr] = (c + count_added, x)
         else:
-            subexpr_count[op_repr] = (1, x)
+            subexpr_count[op_repr] = (count_added, x)
+    def find_op_pair(x):
+        if len(x) < 2:
+            return None
+        for i, op in enumerate(x):
+            factor = 1
+            if len(x) > 2:
+                factor = 2
+            op_type = get_op_type(op)
+            if op_type in [ "V_S", "V_G", "S", "G", ]:
+                op1 = x[(i+1) % len(x)]
+                op1_type = get_op_type(op1)
+                if op1_type in [ "V_S", "V_G", "S", "G", ]:
+                    prod = [op, op1]
+                    if op_type in [ "V_G", "G", ] and op1_type in [ "V_G", "G", ]:
+                        add(prod, 1.02 * factor)
+                    elif op_type in [ "V_G", "G", ] or op1_type in [ "V_G", "G", ]:
+                        add(prod, 1.01 * factor)
+                    elif op_type in [ "V_S", "S", ] and op1_type in [ "V_S", "S", ]:
+                        add(prod, 1 * factor)
+                    else:
+                        assert False
     def find(x):
         if isinstance(x, list):
-            # need to represent the product of the list of operators
             for op in x:
                 find(op)
-            if len(x) < 2:
-                return None
-            for i, op in enumerate(x):
-                op_type = get_op_type(op)
-                if op_type in [ "V_S", "V_G", "S", "G", ]:
-                    op1 = x[(i+1) % len(x)]
-                    op1_type = get_op_type(op1)
-                    if op1_type in [ "V_S", "V_G", "S", "G", ]:
-                        prod = [op, op1]
-                        if op_type in [ "V_G", "G", ] and op1_type in [ "V_G", "G", ]:
-                            add(prod, 1.02)
-                        elif op_type in [ "V_G", "G", ] or op1_type in [ "V_G", "G", ]:
-                            add(prod, 1.01)
-                        elif op_type in [ "V_S", "S", ] and op1_type in [ "V_S", "S", ]:
-                            add(prod, 1)
-                        else:
-                            assert False
         elif isinstance(x, Op) and x.otype == "Tr" and len(x.ops) >= 2:
-            find(x.ops)
+            find_op_pair(x.ops)
         elif isinstance(x, Term):
             find(x.c_ops)
         elif isinstance(x, Expr):
@@ -262,7 +265,7 @@ def find_common_subexpr_in_tr(variables_tr):
                 find(t)
     for name, tr in variables_tr:
         find(tr)
-    max_num_repeat = 1
+    max_num_repeat = 1.5
     best_match = None
     for num_repeat, op in subexpr_count.values():
         if num_repeat > max_num_repeat:
