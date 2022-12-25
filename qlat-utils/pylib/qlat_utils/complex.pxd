@@ -1,3 +1,4 @@
 cimport libcpp.complex
 
-ctypedef libcpp.complex.complex[double] Complex
+ctypedef double complex Complex
+# ctypedef libcpp.complex.complex[double] Complex

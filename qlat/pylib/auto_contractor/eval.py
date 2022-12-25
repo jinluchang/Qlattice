@@ -33,6 +33,7 @@ import math
 import importlib
 import time
 import os
+import subprocess
 
 def load_prop(x):
     if isinstance(x, tuple) and len(x) == 2:
@@ -69,16 +70,76 @@ def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_ama_and_sloppy = F
     assert cexpr.function is not None
     return cexpr.function["cexpr_function"](positions_dict = positions_dict, get_prop = get_prop, is_ama_and_sloppy = is_ama_and_sloppy)
 
+meson_build_content = """\
+project('qlat-auto-contractor-cexpr', 'cpp', 'cython',
+  version: '1.0',
+  license: 'GPL-3.0-or-later',
+  default_options: [
+    'warning_level=3',
+    'cpp_std=c++14',
+    'libdir=lib',
+    'optimization=2',
+    'debug=false',
+    'cython_language=cpp',
+    ])
+add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
+cpp = meson.get_compiler('cpp')
+py_mod = import('python')
+py3 = py_mod.find_installation('python3')
+message(py3.path())
+message(py3.get_install_dir())
+if get_option('use_cxx')
+  message('use_cxx=true (use CXX compiler without additional MPI options.)')
+  mpic = dependency('', required: false)
+else
+  message('use_cxx=false (use meson\\'s automatic MPI detection.)')
+  mpic = dependency('mpi', language: 'cpp').as_system()
+endif
+omp = dependency('openmp').as_system()
+zlib = dependency('zlib').as_system()
+fftw = dependency('fftw3').as_system()
+fftwf = dependency('fftw3f').as_system()
+message('fftw libdir', fftw.get_variable('libdir'))
+message('fftwf libdir', fftwf.get_variable('libdir'))
+fftw_all = [ fftw, fftwf, ]
+math = cpp.find_library('m')
+qlat_include = run_command(py3.path(), '-c', 'import qlat as q ; print("\\\\n".join(q.get_include_list()))', check: true).stdout().strip().split('\\n')
+message('qlat include', qlat_include)
+qlat = declare_dependency(
+  include_directories: include_directories(qlat_include),
+  dependencies: [ omp, fftw_all, mpic, zlib, math, ],
+  )
+deps = [ qlat, ]
+if not cpp.check_header('Eigen/Eigen')
+  eigen = dependency('eigen3').as_system()
+  deps += [ eigen, ]
+endif
+incdir = []
+codelib = py3.extension_module('code',
+  files('code.pyx'),
+  dependencies: deps,
+  include_directories: incdir,
+  install: false,
+  )
+"""
+
+meson_options_content = """\
+option(
+  'use_cxx', type: 'boolean', value: false,
+  description: 'If true, will not using meson\\'s automatic MPI detection. Otherwise, will use the CXX environmental variable to provide MPI implementation.'
+  )
+"""
+
 @q.timer
-def cache_compiled_cexpr(calc_cexpr, fn_base):
+def cache_compiled_cexpr(calc_cexpr, path):
     # Obtain: cexpr = calc_cexpr().
     # Save cexpr object in pickle format for future reuse.
     # Generate python code and save for future reuse
     # Load the python module and assign function and total_sloppy_flops
     # Return fully loaded cexpr
     # interface function
-    fn_pickle = fn_base + ".pickle"
-    fn_py = fn_base + ".py"
+    fn_pickle = path + "/data.pickle"
+    fn_py = path + "/code.pyx"
     def calc_compile_cexpr():
         cexpr_original = calc_cexpr()
         cexpr_optimized = copy.deepcopy(cexpr_original)
@@ -91,9 +152,13 @@ def cache_compiled_cexpr(calc_cexpr, fn_base):
         q.save_pickle_obj(data, fn_pickle)
         q.qtouch_info(fn_py, code_py)
         content_original = display_cexpr(cexpr_original)
-        q.qtouch_info(fn_base + ".original.txt", content_original)
+        q.qtouch_info(path + "/cexpr.original.txt", content_original)
         content_optimized = display_cexpr(cexpr_optimized)
-        q.qtouch_info(fn_base + ".optimized.txt", content_optimized)
+        q.qtouch_info(path + "/cexpr.optimized.txt", content_optimized)
+        q.qtouch_info(path + "/meson.build", meson_build_content)
+        q.qtouch_info(path + "/meson_options.txt", meson_options_content)
+        subprocess.run(["meson", "setup", "build"], cwd = path)
+        subprocess.run(["meson", "compile", "-C", "build"], cwd = path)
         return cexpr_optimized
     if q.get_id_node() == 0 and not q.does_file_exist(fn_pickle):
         calc_compile_cexpr()
@@ -105,7 +170,8 @@ def cache_compiled_cexpr(calc_cexpr, fn_base):
     while not q.does_file_exist(fn_py):
         q.displayln(3, f"cache_compiled_cexpr: Node {q.get_id_node()}: waiting for '{fn_py}'.")
         time.sleep(0.1)
-    module = importlib.import_module(fn_base.replace("/", "."))
+    # module = importlib.import_module((path + "/code").replace("/", "."))
+    module = importlib.import_module((path + "/build/code").replace("/", "."))
     cexpr.function = {
             # cexpr_function(positions_dict, get_prop, is_ama_and_sloppy = False) => val as 1-D np.array
             "cexpr_function" : module.cexpr_function,
