@@ -1,0 +1,61 @@
+CHECK: # < (i dbar g5 s)  * (sbar  gmu (1-g5) d)(sbar  gmu (1-g5) d) * (i dbar g5 s) >  exprs[0]
+CHECK: # < (i dbar g5 u)  * (ubar  gmu (1-g5) d)(ubar  gmu (1-g5) d) * (i dbar g5 u) >  exprs[1]
+CHECK: # < (i ubar g5 u') * (dbar  gmu (1-g5) u)(u'bar gmu (1-g5) s) * (i sbar g5 d) >  exprs[2]
+CHECK: # < (i ubar g5 u') * (u'bar gmu (1-g5) u)(dbar  gmu (1-g5) s) * (i sbar g5 d) >  exprs[3]
+CHECK: -9.3998417433E+02-1.3083505641E+03j 2.7936003916E+03+5.2238546898E+02j -1.1133217844E+02-8.1902065450E+02j
+CHECK: 7.7205353751E+03+2.6792781276E+03j 3.2314344270E+03+6.2720772962E+03j 2.1991697134E+03+3.0030036709E+03j
+CHECK: # < (1/2) * ( pi+(t_1)^dag * (ubar g3 u)(x_1) * pi+(t_2) + (-1) * pi-(t_1)^dag * (ubar g3 u)(x_1) * pi-(t_2) ) >  exprs[0]
+CHECK: # < (1/2) * ( K+(t_1)^dag * (ubar g3 u)(x_1) * K+(t_2) + (-1) * K-(t_1)^dag * (ubar g3 u)(x_1) * K-(t_2) ) >  exprs[1]
+CHECK: # < (1/2) * ( K-(t_1)^dag * (sbar g3 s)(x_1) * K-(t_2) + (-1) * K+(t_1)^dag * (sbar g3 s)(x_1) * K+(t_2) ) >  exprs[2]
+CHECK: # < (1/2) * ( pi+(t_1p)^dag * (ubar g3 u)(x_1) * pi+(t_2p) + (-1) * pi-(t_1p)^dag * (ubar g3 u)(x_1) * pi-(t_2p) ) >  exprs[3]
+CHECK: # < (1/2) * ( K+(t_1p)^dag * (ubar g3 u)(x_1) * K+(t_2p) + (-1) * K-(t_1p)^dag * (ubar g3 u)(x_1) * K-(t_2p) ) >  exprs[4]
+CHECK: # < (1/2) * ( K-(t_1p)^dag * (sbar g3 s)(x_1) * K-(t_2p) + (-1) * K+(t_1p)^dag * (sbar g3 s)(x_1) * K+(t_2p) ) >  exprs[5]
+CHECK: -8.7450085087E+00-1.1382098821E+02j 1.1168687087E+02+1.2463973247E+02j 5.8627288513E+01-1.7198279799E+02j
+CHECK: -1.2344283543E+02+3.1764394201E+01j 8.4841979670E+02+1.5231017094E+02j 4.1444389314E+02-2.0273155314E+02j
+CHECK: # < pi0 j_mu j_mu pi0 >  exprs[0]
+CHECK: # < pi+ j_mu j_mu pi+ >  exprs[1]
+CHECK: # < K0 j_mu j_mu K0 >  exprs[2]
+CHECK: # < K+ j_mu j_mu K+ >  exprs[3]
+CHECK: # < j_mu j_mu >  exprs[4]
+CHECK: -4.2998267463E+02-9.9520492735E+01j -4.6392932870E+02-1.1101323925E+02j 4.4937014776E+02-3.1735996555E+02j
+CHECK: -3.0424340322E+03-3.9905277690E+02j -3.9275076089E+01+3.2370565700E+02j 2.6096759440E+03+3.4775235005E+03j
+CHECK: # < x[a] x[b] pi0 j_a j_b pi0 >  exprs[0]
+CHECK: # < x[a] x[b] pi+ j_a j_b pi+ >  exprs[1]
+CHECK: # < x[a] x[b] K0 j_a j_b K0 >  exprs[2]
+CHECK: # < x[a] x[b] K+ j_a j_b K+ >  exprs[3]
+CHECK: # < x[a] x[b] j_a j_b >  exprs[4]
+CHECK: -6.4327944793E+02-1.2062281680E+02j -1.4808038910E+02+1.9303430790E+02j 2.7522672841E+02-5.9368770226E+02j
+CHECK: -1.4715798850E+03-8.0303185314E+03j -2.4932809291E+03+1.8218807123E+03j 2.3470847445E+03+3.0325593812E+03j
+CHECK: # < < pi0 j_mu j_mu pi0 > >  exprs[0]
+CHECK: # < < pi0 j_mu j_mu pi0 > > (Type2,Type3)  exprs[1]
+CHECK: # < < pi0 j_mu j_mu pi0 > > (Type1)  exprs[2]
+CHECK: # < < pi0 j_mu j_mu pi0 > > (Type2)  exprs[3]
+CHECK: # < < pi0 j_mu j_mu pi0 > > (Type3)  exprs[4]
+CHECK: # < < pi0 j_mu j_mu pi0 > > (Type4)  exprs[5]
+CHECK: # < < pi+ j_mu j_mu pi+ > >  exprs[6]
+CHECK: # < < pi+ j_mu j_mu pi+ > > (Type2,Type3)  exprs[7]
+CHECK: # < < pi+ j_mu j_mu pi+ > > (Type1)  exprs[8]
+CHECK: # < < pi+ j_mu j_mu pi+ > > (Type2)  exprs[9]
+CHECK: # < < pi+ j_mu j_mu pi+ > > (Type3)  exprs[10]
+CHECK: # < < pi+ j_mu j_mu pi+ > > (Type4)  exprs[11]
+CHECK: # < < K0 j_mu j_mu K0 > >  exprs[12]
+CHECK: # < < K0 j_mu j_mu K0 > > (Type2,Type3)  exprs[13]
+CHECK: # < < K0 j_mu j_mu K0 > > (Type1)  exprs[14]
+CHECK: # < < K0 j_mu j_mu K0 > > (Type2)  exprs[15]
+CHECK: # < < K0 j_mu j_mu K0 > > (Type3)  exprs[16]
+CHECK: # < < K0 j_mu j_mu K0 > > (Type4)  exprs[17]
+CHECK: # < < K+ j_mu j_mu K+ > >  exprs[18]
+CHECK: # < < K+ j_mu j_mu K+ > > (Type2,Type3)  exprs[19]
+CHECK: # < < K+ j_mu j_mu K+ > > (Type1)  exprs[20]
+CHECK: # < < K+ j_mu j_mu K+ > > (Type2)  exprs[21]
+CHECK: # < < K+ j_mu j_mu K+ > > (Type3)  exprs[22]
+CHECK: # < < K+ j_mu j_mu K+ > > (Type4)  exprs[23]
+CHECK: # < < j_mu j_mu > >  exprs[24]
+CHECK: # < < j_mu j_mu > > (Type2,Type3)  exprs[25]
+CHECK: # < < j_mu j_mu > > (Type1)  exprs[26]
+CHECK: # < < j_mu j_mu > > (Type2)  exprs[27]
+CHECK: # < < j_mu j_mu > > (Type3)  exprs[28]
+CHECK: # < < j_mu j_mu > > (Type4)  exprs[29]
+CHECK: 2.2643611390E+03+7.6344635574E+02j 6.0698410437E+02-9.8644702006E+01j -6.1523950081E+02+2.4160141343E+03j
+CHECK: -5.4193449082E+03+4.0474944071E+03j -4.6149369114E+03+1.3917018795E+03j -4.7757847436E+02+1.8297928889E+03j
+CHECK: finished successfully.

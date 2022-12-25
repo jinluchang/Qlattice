@@ -15,6 +15,7 @@ tests = \
 		hmc-pure-gauge.log \
 		qcd-utils.log \
 		auto-cexprs.log \
+		auto-cexprs-more.log \
 		auto-cexprs-kpipi.log \
 		free-invert.log \
 		hmc-pions.log
