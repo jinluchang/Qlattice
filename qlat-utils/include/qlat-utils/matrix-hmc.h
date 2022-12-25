@@ -1,6 +1,8 @@
 #pragma once
 
-#include <qlat/matrix.h>
+#include <qlat-utils/matrix.h>
+#include <qlat-utils/rng-state.h>
+#include <qlat-utils/qutils-vec.h>
 
 namespace qlat
 {  //

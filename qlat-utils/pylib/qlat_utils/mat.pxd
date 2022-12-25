@@ -1,6 +1,6 @@
 from qlat_utils.complex cimport *
 
-cdef extern from "qlat/matrix.h" namespace "qlat":
+cdef extern from "qlat-utils/matrix.h" namespace "qlat":
 
     cdef cppclass SpinMatrix:
         SpinMatrix()
@@ -22,7 +22,7 @@ cdef extern from "qlat/matrix.h" namespace "qlat":
 
     const SpinMatrix& get_gamma_matrix(const int mu)
 
-cdef extern from "qlat/lib/mat.h" namespace "qlat":
+cdef extern from "qlat-utils/lib/mat.h" namespace "qlat":
 
     void set_zero(SpinMatrix& m)
     void set_zero(WilsonMatrix& m)

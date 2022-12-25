@@ -26,7 +26,7 @@ name=qlat
     option=
     if [ -n "$QLAT_MPICXX" ] ; then
         export CXX="$QLAT_MPICXX"
-        export MPICXX=false
+        export MPICXX="$QLAT_MPICXX"
         option="-Duse_cxx=true"
     fi
     if [ -n "$QLAT_CXXFLAGS" ] ; then

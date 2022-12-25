@@ -1,5 +1,5 @@
-#include <qlat/lib/mat.h>
-#include <qlat/matrix.h>
+#include <qlat-utils/lib/mat.h>
+#include <qlat-utils/matrix.h>
 
 namespace qlat
 {  //

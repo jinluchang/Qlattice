@@ -20,7 +20,6 @@ name=qlat-utils
 
     if [ -n "$QLAT_CXX" ] ; then
         export CXX="$QLAT_CXX"
-        export MPICXX=false
     fi
     if [ -n "$QLAT_CXXFLAGS" ] ; then
         export CXXFLAGS="$QLAT_CXXFLAGS"

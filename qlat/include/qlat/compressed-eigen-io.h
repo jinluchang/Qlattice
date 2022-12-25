@@ -23,9 +23,9 @@
 #include <qlat/field-serial-io.h>
 #include <qlat/field-utils.h>
 #include <qlat/field.h>
-#include <qlat/matrix.h>
+#include <qlat-utils/matrix.h>
+#include <qlat-utils/mvector.h>
 #include <qlat/mpi.h>
-#include <qlat/mvector.h>
 #include <qlat/qcd-gauge-transformation.h>
 #include <qlat/qcd-smear.h>
 #include <qlat/qcd-topology.h>

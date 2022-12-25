@@ -3,8 +3,8 @@
 #include <qlat/setup.h>
 #include <qlat/field-serial-io.h>
 #include <qlat/field.h>
-#include <qlat/matrix-hmc.h>
-#include <qlat/matrix.h>
+#include <qlat-utils/matrix-hmc.h>
+#include <qlat-utils/matrix.h>
 
 #ifndef QLAT_FFTW_OFF
 #include <qlat/field-fft.h>

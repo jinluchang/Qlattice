@@ -20,33 +20,11 @@
 
 #include <qlat-utils/config.h>
 
-#include <qlat-utils/show.h>
-#include <qlat-utils/qacc.h>
-#include <qlat-utils/assert.h>
-#include <qlat-utils/timer.h>
-#include <qlat-utils/qacc-func.h>
-#include <qlat-utils/complex.h>
-#include <qlat-utils/array.h>
-#include <qlat-utils/vector.h>
-
-#include <unistd.h>
-
 namespace qlat
-{  //
-
-const double PI = 3.141592653589793;
-
-template <class T>
-qacc T sqr(const T& x)
 {
-  return x * x;
-}
 
-inline void warn(const std::string& str = "")
-{
-  if (str != "") {
-    displayln_info(ssprintf("WARNING: %s", str.c_str()));
-  }
-}
+constexpr int DIMN = 4;
+
+constexpr int NUM_COLOR = 3;
 
 }  // namespace qlat

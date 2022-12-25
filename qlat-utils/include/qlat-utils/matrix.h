@@ -1,7 +1,7 @@
 #pragma once
 
-#include <qlat/core.h>
-#include <qlat/mvector.h>
+#include <qlat-utils/mat-vec.h>
+#include <qlat-utils/vector.h>
 
 #include <cmath>
 

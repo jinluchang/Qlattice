@@ -17,6 +17,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <qlat-utils/show.h>
+#include <qlat-utils/timer.h>
 #include <qlat-utils/qacc.h>
 
 #define MK_ERR_MSG(tag, str)                                             \

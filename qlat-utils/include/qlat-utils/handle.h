@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qlat-utils/qacc.h>
+#include <qlat-utils/array.h>
 
 namespace qlat
 {  //

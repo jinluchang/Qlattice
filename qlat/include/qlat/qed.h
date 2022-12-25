@@ -2,7 +2,7 @@
 
 #include <qlat/field-fft.h>
 #include <qlat/field.h>
-#include <qlat/matrix.h>
+#include <qlat-utils/matrix.h>
 
 #include <cmath>
 

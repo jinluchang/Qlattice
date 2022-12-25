@@ -1,4 +1,4 @@
-#include <qlat/core.h>
+#include <qlat-utils/matrix.h>
 
 namespace qlat
 {  //

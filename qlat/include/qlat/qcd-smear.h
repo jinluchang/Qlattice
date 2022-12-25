@@ -1,6 +1,6 @@
 #pragma once
 
-#include <qlat/matrix.h>
+#include <qlat-utils/matrix.h>
 #include <qlat/qcd-utils.h>
 #include <qlat/qcd.h>
 

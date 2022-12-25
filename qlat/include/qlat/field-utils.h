@@ -4,7 +4,7 @@
 #include <qlat/coordinate-d.h>
 #include <qlat/field-shuffle.h>
 #include <qlat/field.h>
-#include <qlat/matrix.h>
+#include <qlat-utils/matrix.h>
 
 namespace qlat
 {  //

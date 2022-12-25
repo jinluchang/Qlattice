@@ -1,16 +1,18 @@
 #pragma once
 
+#include <qlat-utils/core.h>
+
+#include <qlat-utils/mvector.h>
+
+#include <qlat-utils/matrix.h>
+
+#include <qlat-utils/matrix-hmc.h>
+
 #include <qlat/core.h>
 
 #include <qlat/setup.h>
 
 #include <qlat/utils-coordinate.h>
-
-#include <qlat/mvector.h>
-
-#include <qlat/matrix.h>
-
-#include <qlat/matrix-hmc.h>
 
 #include <qlat/mpi.h>
 
