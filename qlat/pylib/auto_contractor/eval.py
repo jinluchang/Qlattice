@@ -145,17 +145,20 @@ def cache_compiled_cexpr(calc_cexpr, path):
     # Return fully loaded cexpr
     # interface function
     fn_pickle = path + "/data.pickle"
-    fn_py = path + "/code.pyx"
+    fn_code = path + "/build/code.so"
+    @q.timer
+    def compile_cexpr_meson_setup():
+        subprocess.run(["meson", "setup", "build"], cwd = path)
+    @q.timer
+    def compile_cexpr_meson_compile():
+        subprocess.run(["meson", "compile", "-C", "build"], cwd = path)
+    @q.timer
     def calc_compile_cexpr():
         cexpr_original = calc_cexpr()
         cexpr_optimized = copy.deepcopy(cexpr_original)
         cexpr_optimized.optimize()
         code_py = cexpr_code_gen_py(cexpr_optimized)
-        data = dict()
-        data["cexpr_optimized"] = cexpr_optimized
-        data["cexpr_original"] = cexpr_original
-        data["code_py"] = code_py
-        q.save_pickle_obj(data, fn_pickle)
+        fn_py = path + "/code.pyx"
         q.qtouch_info(fn_py, code_py)
         content_original = display_cexpr(cexpr_original)
         q.qtouch_info(path + "/cexpr.original.txt", content_original)
@@ -163,8 +166,13 @@ def cache_compiled_cexpr(calc_cexpr, path):
         q.qtouch_info(path + "/cexpr.optimized.txt", content_optimized)
         q.qtouch_info(path + "/meson.build", meson_build_content)
         q.qtouch_info(path + "/meson_options.txt", meson_options_content)
-        subprocess.run(["meson", "setup", "build"], cwd = path)
-        subprocess.run(["meson", "compile", "-C", "build"], cwd = path)
+        compile_cexpr_meson_setup()
+        compile_cexpr_meson_compile()
+        data = dict()
+        data["cexpr_optimized"] = cexpr_optimized
+        data["cexpr_original"] = cexpr_original
+        data["code_py"] = code_py
+        q.save_pickle_obj(data, fn_pickle)
         return cexpr_optimized
     if q.get_id_node() == 0 and not q.does_file_exist(fn_pickle):
         calc_compile_cexpr()
@@ -173,10 +181,6 @@ def cache_compiled_cexpr(calc_cexpr, path):
         q.displayln(3, f"cache_compiled_cexpr: Node {q.get_id_node()}: waiting for '{fn_pickle}'.")
         time.sleep(0.1)
     cexpr = q.load_pickle_obj(fn_pickle)["cexpr_optimized"]
-    while not q.does_file_exist(fn_py):
-        q.displayln(3, f"cache_compiled_cexpr: Node {q.get_id_node()}: waiting for '{fn_py}'.")
-        time.sleep(0.1)
-    # module = importlib.import_module((path + "/code").replace("/", "."))
     module = importlib.import_module((path + "/build/code").replace("/", "."))
     cexpr.function = {
             # cexpr_function(positions_dict, get_prop, is_ama_and_sloppy = False) => val as 1-D np.array
