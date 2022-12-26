@@ -96,9 +96,9 @@ message('fftw libdir', fftw.get_variable('libdir'))
 message('fftwf libdir', fftwf.get_variable('libdir'))
 fftw_all = [ fftw, fftwf, ]
 math = cpp.find_library('m')
-qlat_utils_include = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\\\n".join(q.get_include_list()))', check: true).stdout().strip().split('\\n')
+qlat_utils_include = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\\\n".join(q.get_include_list()))', env: environment({'q_verbose': '-1'}), check: true).stdout().strip().split('\\n')
 message('qlat_utils include', qlat_utils_include)
-qlat_utils_lib = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\\\n".join(q.get_lib_list()))', check: true).stdout().strip().split('\\n')
+qlat_utils_lib = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\\\n".join(q.get_lib_list()))', env: environment({'q_verbose': '-1'}), check: true).stdout().strip().split('\\n')
 message('qlat_utils lib', qlat_utils_lib)
 qlat_utils = declare_dependency(
   include_directories:  include_directories(qlat_utils_include),

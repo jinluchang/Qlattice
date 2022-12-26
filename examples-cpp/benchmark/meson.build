@@ -13,11 +13,14 @@ add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
 
 cpp = meson.get_compiler('cpp')
 
-if get_option('use_cxx')
-  message('use_cxx=true (use CXX compiler without additional MPI options.)')
+cxx = run_command('bash', '-c', 'echo "$CXX"', check: true).stdout().strip()
+mpicxx = run_command('bash', '-c', 'echo "$MPICXX"', check: true).stdout().strip()
+
+if cxx != '' and mpicxx == cxx
+  message(f'cxx=\'@cxx@\' (use CXX compiler without additional MPI options.)')
   mpic = dependency('', required: false)
 else
-  message('use_cxx=false (use meson\'s automatic MPI detection.)')
+  message(f'cxx=\'@cxx@\' mpicxx=\'@mpicxx@\' (use meson\'s automatic MPI detection.)')
   mpic = dependency('mpi', language: 'cpp').as_system()
 endif
 
@@ -31,7 +34,7 @@ message('fftwf libdir', fftwf.get_variable('libdir'))
 
 math = cpp.find_library('m')
 
-qlat_include = run_command('qlat-include', check: true).stdout().strip().split('\n')
+qlat_include = run_command('qlat-include', env: environment(), check: true).stdout().strip().split('\n')
 message('qlat include', qlat_include)
 
 qlat = declare_dependency(

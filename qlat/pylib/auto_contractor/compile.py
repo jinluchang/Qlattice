@@ -806,7 +806,7 @@ class CExprCodeGenPy:
         elif x.otype == "G":
             assert x.s1 == "auto" and x.s2 == "auto"
             assert x.tag in [0, 1, 2, 3, 5]
-            return f"cp.get_gamma_matrix({x.tag})", "V_G"
+            return f"cp.gamma_matrix_{x.tag}", "V_G"
         elif x.otype == "Tr":
             if len(x.ops) == 0:
                 assert False

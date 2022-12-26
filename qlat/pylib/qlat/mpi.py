@@ -50,7 +50,7 @@ def glb_sum(x):
     elif isinstance(x, tuple):
         return tuple([ glb_sum(x_i) for x_i in x ])
     else:
-        # should not change x
+        # possible types: q.LatData
         return x.glb_sum()
 
 @timer_verbose

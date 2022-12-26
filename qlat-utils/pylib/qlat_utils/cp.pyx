@@ -34,9 +34,6 @@ def timer_verbose(func):
         return ret
     return qtimer_func
 
-cdef acc_timer_flops(cp.Timer& qtimer, long long flops):
-    qtimer.flops += flops
-
 def timer_flops(func):
     fname = "py:" + func.__name__
     cdef cp.Timer qtimer = cp.Timer(fname)
@@ -44,7 +41,7 @@ def timer_flops(func):
     def qtimer_func(*args, **kwargs):
         qtimer.start()
         flops, ret = func(*args, **kwargs)
-        acc_timer_flops(qtimer, flops)
+        qtimer.flops += flops
         qtimer.stop()
         return ret
     return qtimer_func
@@ -57,7 +54,7 @@ def timer_verbose_flops(func):
         cdef cp.bool is_verbose = True
         qtimer.start(is_verbose)
         flops, ret = func(*args, **kwargs)
-        acc_timer_flops(qtimer, flops)
+        qtimer.flops += flops
         qtimer.stop(is_verbose)
         return ret
     return qtimer_func
@@ -100,6 +97,7 @@ cdef class Coordinate:
 cdef class RngState:
 
     cdef cp.RngState xx
+
     cdef readonly long cdata
 
     def __cinit__(self):
@@ -165,5 +163,31 @@ cdef class RngState:
     def select(self, list l):
         ri = self.rand_gen() % len(l)
         return l[ri]
+
+### -------------------------------------------------------------------
+
+cdef class WilsonMatrix:
+
+    cdef cp.WilsonMatrix xx
+
+    def __cinit__(self):
+        self.xx = cp.WilsonMatrix()
+
+### -------------------------------------------------------------------
+
+cdef class SpinMatrix:
+
+    cdef cp.SpinMatrix xx
+
+    def __cinit__(self):
+        self.xx = cp.SpinMatrix()
+
+### -------------------------------------------------------------------
+
+gamma_matrix_0 = cp.get_gamma_matrix(0)
+gamma_matrix_1 = cp.get_gamma_matrix(1)
+gamma_matrix_2 = cp.get_gamma_matrix(2)
+gamma_matrix_3 = cp.get_gamma_matrix(3)
+gamma_matrix_5 = cp.get_gamma_matrix(5)
 
 ### -------------------------------------------------------------------
