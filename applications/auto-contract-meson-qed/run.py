@@ -41,8 +41,6 @@ def get_cexpr_meson_corr():
                 tr(gamma_5*S_l(t_2,t_1)*gamma_5*S_s(t_1,t_2)), # term_Type1_0003
                 ]
         cexpr = contract_simplify_compile(*terms, is_isospin_symmetric_limit = True)
-        q.displayln_info(display_cexpr(cexpr))
-        cexpr.collect_op()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, "cache/auto_contract_cexpr/meson_corr_cexpr")
 
@@ -270,8 +268,6 @@ def get_cexpr_meson_f_corr():
                 tr(gamma_t*gamma_5*S_s(x_2,t_1)*gamma_5*S_l(t_1,x_2)), # term_Type1_0003
                 ]
         cexpr = contract_simplify_compile(*terms, is_isospin_symmetric_limit = True)
-        q.displayln_info(display_cexpr(cexpr))
-        cexpr.collect_op()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, "cache/auto_contract_cexpr/meson_f_corr_cexpr")
 
@@ -450,8 +446,6 @@ def get_cexpr_meson_m():
                 tr(gamma_5*S_l(t_2,t_1)*gamma_5*S_s(t_1,x_1)*S_s(x_1,t_2)), # term_Type1_0006
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
-        q.displayln_info(display_cexpr(cexpr))
-        cexpr.collect_op()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, "cache/auto_contract_cexpr/meson_m_cexpr")
 
@@ -531,8 +525,6 @@ def get_cexpr_meson_jt():
                 tr(gamma_t*S_s(x_1,t_2p)*gamma_5*S_l(t_2p,t_1p)*gamma_5*S_s(t_1p,x_1)), # term_Type2_0006
                 ]
         cexpr = contract_simplify_compile(*terms, is_isospin_symmetric_limit = True)
-        q.displayln_info(display_cexpr(cexpr))
-        cexpr.collect_op()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, "cache/auto_contract_cexpr/meson_jt_cexpr")
 
@@ -646,8 +638,6 @@ def get_cexpr_meson_jj():
                 tr(gamma_5*S_l(t_2,t_1)*gamma_5*S_s(t_1,t_2)), # term_Type1_0003
                 ]
         cexpr = contract_simplify_compile(*terms, is_isospin_symmetric_limit = True)
-        q.displayln_info(display_cexpr(cexpr))
-        cexpr.collect_op()
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, "cache/auto_contract_cexpr/meson_jj_cexpr")
 
