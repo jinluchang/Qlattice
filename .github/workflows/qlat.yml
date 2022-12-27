@@ -117,14 +117,14 @@ jobs:
         export num_proc=2
         ./scripts/c-lime.sh
         ./scripts/grid.avx2.sh
-    - name: Build GPT
-      run: |
-        export num_proc=2
-        ./scripts/gpt.sh
     - name: Install Qlat-Grid
       run: |
         source ~/qlat-build/default/setenv.sh
         pip3 install --user -v --no-build-isolation ./qlat-grid
+    - name: Build GPT
+      run: |
+        export num_proc=2
+        ./scripts/gpt.sh
     - name: Testing pylib qlat
       run: |
         export num_proc=2
