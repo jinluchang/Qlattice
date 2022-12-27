@@ -21,9 +21,13 @@
 
 from auto_contractor.compile import *
 from auto_contractor.ama import *
-from auto_contractor.eval_sc_qlat import *
 
-from qlat_utils import rel_mod, rel_mod_sym, c_rel_mod_sqr
+from qlat_utils import \
+        rel_mod, rel_mod_sym, c_rel_mod_sqr
+
+from qlat_utils.cp import \
+        as_wilson_matrix, as_wilson_matrix_g5_herm, \
+        as_spin_matrix_from_numpy, as_wilson_matrix_from_numpy
 
 import numpy as np
 import qlat as q
@@ -36,12 +40,10 @@ import os
 import subprocess
 
 def load_prop(x):
-    if isinstance(x, tuple) and len(x) == 2:
-        if x[0] == "g5_herm":
-            return ama_apply1(g5_herm, ama_apply1(as_mspincolor, x[1]))
-        else:
-            assert False
-    return ama_apply1(as_mspincolor, x)
+    if isinstance(x, tuple):
+        assert len(x) == 2 and x[0] == "g5_herm"
+        return ama_apply1(as_wilson_matrix_g5_herm(x[1]))
+    return ama_apply1(as_wilson_matrix, x)
 
 @q.timer
 def get_cexpr_names(cexpr):
@@ -178,13 +180,13 @@ def cache_compiled_cexpr(calc_cexpr, path):
 
 def make_rand_spin_color_matrix(rng_state):
     rs = rng_state
-    return as_mspincolor(np.array(
+    return as_wilson_matrix_from_numpy(np.array(
         [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(144) ],
         dtype = complex).reshape(12, 12))
 
 def make_rand_spin_matrix(rng_state):
     rs = rng_state
-    return as_mspin(np.array(
+    return as_spin_matrix_from_numpy(np.array(
         [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(16) ],
         dtype = complex).reshape(4, 4))
 

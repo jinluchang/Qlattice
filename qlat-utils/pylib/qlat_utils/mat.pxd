@@ -5,6 +5,7 @@ cdef extern from "qlat-utils/matrix.h" namespace "qlat":
     cdef cppclass SpinMatrix:
         SpinMatrix()
         const SpinMatrix& operator=(const SpinMatrix& m)
+        Complex* p
 
     const SpinMatrix operator*(const Complex& a, const SpinMatrix& m)
     const SpinMatrix operator*(const SpinMatrix& m, const Complex& a)
@@ -13,6 +14,7 @@ cdef extern from "qlat-utils/matrix.h" namespace "qlat":
     cdef cppclass WilsonMatrix:
         WilsonMatrix()
         const WilsonMatrix& operator=(const WilsonMatrix& m)
+        Complex* p
 
     const WilsonMatrix operator*(const Complex& a, const WilsonMatrix& m)
     const WilsonMatrix operator*(const WilsonMatrix& m, const Complex& a)

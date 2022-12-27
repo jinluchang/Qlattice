@@ -1,2 +1,1 @@
-from .cpd import *
-from .cp import *
+from qlat_utils.cp cimport *

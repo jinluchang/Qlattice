@@ -1,19 +1,20 @@
 # cython: c_string_type=unicode, c_string_encoding=utf8
 
+from . cimport everything as cc
 import functools
 
 ### -------------------------------------------------------------------
 
 def flush():
-    cp.flush()
+    cc.flush()
 
 def timer_display(str tag = ""):
-    cp.Timer.display(tag)
-    cp.flush()
+    cc.Timer.display(tag)
+    cc.flush()
 
 def timer(func):
     fname = "py:" + func.__name__
-    cdef cp.Timer qtimer = cp.Timer(fname)
+    cdef cc.Timer qtimer = cc.Timer(fname)
     @functools.wraps(func)
     def qtimer_func(*args, **kwargs):
         qtimer.start()
@@ -24,10 +25,10 @@ def timer(func):
 
 def timer_verbose(func):
     fname = "py:" + func.__name__
-    cdef cp.Timer qtimer = cp.Timer(fname)
+    cdef cc.Timer qtimer = cc.Timer(fname)
     @functools.wraps(func)
     def qtimer_func(*args, **kwargs):
-        cdef cp.bool is_verbose = True
+        cdef cc.bool is_verbose = True
         qtimer.start(is_verbose)
         ret = func(*args, **kwargs)
         qtimer.stop(is_verbose)
@@ -36,7 +37,7 @@ def timer_verbose(func):
 
 def timer_flops(func):
     fname = "py:" + func.__name__
-    cdef cp.Timer qtimer = cp.Timer(fname)
+    cdef cc.Timer qtimer = cc.Timer(fname)
     @functools.wraps(func)
     def qtimer_func(*args, **kwargs):
         qtimer.start()
@@ -48,10 +49,10 @@ def timer_flops(func):
 
 def timer_verbose_flops(func):
     fname = "py:" + func.__name__
-    cdef cp.Timer qtimer = cp.Timer(fname)
+    cdef cc.Timer qtimer = cc.Timer(fname)
     @functools.wraps(func)
     def qtimer_func(*args, **kwargs):
-        cdef cp.bool is_verbose = True
+        cdef cc.bool is_verbose = True
         qtimer.start(is_verbose)
         flops, ret = func(*args, **kwargs)
         qtimer.flops += flops
@@ -61,23 +62,28 @@ def timer_verbose_flops(func):
 
 ### -------------------------------------------------------------------
 
+cdef class Buffer2D:
+
+    def __cinit__(self, object obj = None):
+        self.obj = obj
+
+### -------------------------------------------------------------------
+
 cdef class Coordinate:
 
-    cdef cp.Coordinate xx
-
     def __cinit__(self):
-        self.xx = cp.Coordinate()
+        self.xx = cc.Coordinate()
 
     def __init__(self, list x = None):
         if x is not None:
             assert len(x) == 4
-            self.xx = cp.Coordinate(x[0], x[1], x[2], x[3])
+            self.xx = cc.Coordinate(x[0], x[1], x[2], x[3])
 
     def __imatmul__(self, Coordinate v1):
         self.xx = v1.xx
         return self
 
-    cpdef Coordinate copy(self, cp.bool is_copying_data = True):
+    def copy(self, cc.bool is_copying_data = True):
         cdef Coordinate x = Coordinate()
         if is_copying_data:
             x.xx = self.xx
@@ -96,20 +102,16 @@ cdef class Coordinate:
 
 cdef class RngState:
 
-    cdef cp.RngState xx
-
-    cdef readonly long cdata
-
     def __cinit__(self):
-        self.xx = cp.RngState()
+        self.xx = cc.RngState()
         self.cdata = <long>&(self.xx)
 
     def __init__(self, x = None, y = None):
-        cdef cp.string seed
+        cdef cc.string seed
         if x is None:
             assert y is None
             # make a new rng
-            self.xx = cp.RngState()
+            self.xx = cc.RngState()
         elif isinstance(x, RngState):
             if y is None:
                 # make a copy of x
@@ -117,18 +119,18 @@ cdef class RngState:
             else:
                 # split into a new rng
                 seed = str(y)
-                self.xx = cp.RngState((<RngState>x).xx, seed)
+                self.xx = cc.RngState((<RngState>x).xx, seed)
         else:
             assert y is None
             # seed a new rng
             seed = str(x)
-            self.xx = cp.RngState(seed)
+            self.xx = cc.RngState(seed)
 
     def __imatmul__(self, RngState v1):
         self.xx = v1.xx
         return self
 
-    cpdef RngState copy(self, cp.bool is_copying_data = True):
+    def copy(self, cc.bool is_copying_data = True):
         cdef RngState x = RngState()
         if is_copying_data:
             x.xx = self.xx
@@ -140,24 +142,24 @@ cdef class RngState:
     def __deepcopy__(self, memo):
         return self.copy()
 
-    cpdef RngState split(self, const cp.string& seed):
+    def split(self, const cc.string& seed):
         cdef RngState x = RngState()
         x.xx = self.xx.split(seed)
         return x
 
-    cpdef cp.uint64_t rand_gen(self):
-        return cp.rand_gen(self.xx)
+    def rand_gen(self):
+        return cc.rand_gen(self.xx)
 
-    cpdef u_rand_gen(self, double upper = 1.0, double lower = 0.0):
-        return cp.u_rand_gen(self.xx, upper, lower)
+    def u_rand_gen(self, double upper = 1.0, double lower = 0.0):
+        return cc.u_rand_gen(self.xx, upper, lower)
 
-    cpdef g_rand_gen(self, double center = 0.0, double sigma = 1.0):
-        return cp.g_rand_gen(self.xx, center, sigma)
+    def g_rand_gen(self, double center = 0.0, double sigma = 1.0):
+        return cc.g_rand_gen(self.xx, center, sigma)
 
-    cpdef c_rand_gen(self, Coordinate size):
+    def c_rand_gen(self, Coordinate size):
         # size can be total_site of the lattice
         cdef Coordinate x = Coordinate()
-        x.xx = cp.c_rand_gen(self.xx, size.xx)
+        x.xx = cc.c_rand_gen(self.xx, size.xx)
         return x
 
     def select(self, list l):
@@ -168,26 +170,140 @@ cdef class RngState:
 
 cdef class WilsonMatrix:
 
-    cdef cp.WilsonMatrix xx
-
     def __cinit__(self):
-        self.xx = cp.WilsonMatrix()
+        self.xx = cc.WilsonMatrix()
+        self.cdata = <long>&(self.xx)
+
+    def __imatmul__(self, WilsonMatrix v1):
+        self.xx = v1.xx
+        return self
+
+    def copy(self, cc.bool is_copying_data = True):
+        cdef WilsonMatrix x = WilsonMatrix()
+        if is_copying_data:
+            x.xx = self.xx
+        return x
+
+    def __copy__(self):
+        return self.copy()
+
+    def __deepcopy__(self, memo):
+        return self.copy()
+
+    def set_zero(self):
+        cc.set_zero(self.xx)
+
+    def __getbuffer__(self, Py_buffer *buffer, int flags):
+        cdef Py_ssize_t itemsize = sizeof(cc.Complex)
+        cdef Buffer2D buf = Buffer2D(self)
+        buf.shape[0] = 12
+        buf.shape[1] = 12
+        buf.strides[1] = itemsize
+        buf.strides[0] = buf.strides[1] * buf.shape[1]
+        buffer.buf = <char*>&(self.xx.p)
+        buffer.format = 'Zd'
+        buffer.internal = NULL
+        buffer.itemsize = itemsize
+        buffer.len = buf.shape[0] * buf.shape[1]
+        buffer.ndim = 2
+        buffer.obj = buf
+        buffer.readonly = 0
+        buffer.shape = buf.shape
+        buffer.strides = buf.strides
+        buffer.suboffsets = NULL
+
+    def __releasebuffer__(self, Py_buffer *buffer):
+        pass
+
+    def g5_herm(self):
+        self.xx = cc.g5_herm(self.xx)
 
 ### -------------------------------------------------------------------
 
 cdef class SpinMatrix:
 
-    cdef cp.SpinMatrix xx
-
     def __cinit__(self):
-        self.xx = cp.SpinMatrix()
+        self.xx = cc.SpinMatrix()
+        self.cdata = <long>&(self.xx)
+
+    def __imatmul__(self, SpinMatrix v1):
+        self.xx = v1.xx
+        return self
+
+    def copy(self, cc.bool is_copying_data = True):
+        cdef SpinMatrix x = SpinMatrix()
+        if is_copying_data:
+            x.xx = self.xx
+        return x
+
+    def __copy__(self):
+        return self.copy()
+
+    def __deepcopy__(self, memo):
+        return self.copy()
+
+    def set_zero(self):
+        cc.set_zero(self.xx)
+
+    def __getbuffer__(self, Py_buffer *buffer, int flags):
+        cdef Py_ssize_t itemsize = sizeof(cc.Complex)
+        cdef Buffer2D buf = Buffer2D(self)
+        buf.shape[0] = 4
+        buf.shape[1] = 4
+        buf.strides[1] = itemsize
+        buf.strides[0] = buf.strides[1] * buf.shape[1]
+        buffer.buf = <char*>&(self.xx.p)
+        buffer.format = 'Zd'
+        buffer.internal = NULL
+        buffer.itemsize = itemsize
+        buffer.len = buf.shape[0] * buf.shape[1]
+        buffer.ndim = 2
+        buffer.obj = buf
+        buffer.readonly = 0
+        buffer.shape = buf.shape
+        buffer.strides = buf.strides
+        buffer.suboffsets = NULL
+
+    def __releasebuffer__(self, Py_buffer *buffer):
+        pass
 
 ### -------------------------------------------------------------------
 
-gamma_matrix_0 = cp.get_gamma_matrix(0)
-gamma_matrix_1 = cp.get_gamma_matrix(1)
-gamma_matrix_2 = cp.get_gamma_matrix(2)
-gamma_matrix_3 = cp.get_gamma_matrix(3)
-gamma_matrix_5 = cp.get_gamma_matrix(5)
+gamma_matrix_0 = cc.get_gamma_matrix(0)
+gamma_matrix_1 = cc.get_gamma_matrix(1)
+gamma_matrix_2 = cc.get_gamma_matrix(2)
+gamma_matrix_3 = cc.get_gamma_matrix(3)
+gamma_matrix_5 = cc.get_gamma_matrix(5)
+
+### -------------------------------------------------------------------
+
+def as_wilson_matrix(x):
+    cdef WilsonMatrix wm
+    if isinstance(x, WilsonMatrix):
+        return x
+    elif x == 0:
+        wm = WilsonMatrix()
+        cc.set_zero(wm.xx)
+        return wm
+
+def as_wilson_matrix_g5_herm(x):
+    cdef WilsonMatrix wm = WilsonMatrix()
+    if isinstance(x, WilsonMatrix):
+        wm.xx = cc.g5_herm((<WilsonMatrix>x).xx)
+    elif x == 0:
+        cc.set_zero(wm.xx)
+    return wm
+
+def as_wilson_matrix_from_numpy(cc.Complex[:, :] x):
+    cdef WilsonMatrix wm = WilsonMatrix()
+    cdef cc.Complex[:, :] view = wm
+    view[:, :] = x[:, :]
+    return wm
+
+def as_spin_matrix_from_numpy(cc.Complex[:, :] x):
+    cdef SpinMatrix sm = SpinMatrix()
+    cdef cc.Complex[:, :] view = sm
+    view[:, :] = x[:, :]
+    return sm
 
 ### -------------------------------------------------------------------

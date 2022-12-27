@@ -1,6 +1,6 @@
 import qlat_utils.c as cu
 
-from qlat_utils.c import Coordinate, RngState
+from qlat_utils.c import Coordinate, RngState, WilsonMatrix, SpinMatrix
 
 from qlat_utils.timer import *
 

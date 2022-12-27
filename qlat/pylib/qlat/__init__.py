@@ -51,3 +51,5 @@ from qlat.mat import *
 import qlat.field_double
 
 from qlat.get_include_dir import *
+
+del qlat.c

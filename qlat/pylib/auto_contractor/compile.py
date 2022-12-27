@@ -779,7 +779,9 @@ class CExprCodeGenPy:
     def code_gen(self):
         lines = self.lines
         lines.append(f"from auto_contractor.runtime import *")
-        lines.append(f"cimport qlat_utils.everything as cp")
+        lines.append(f"cimport qlat_utils.everything as cc")
+        lines.append(f"cimport qlat_utils.cp as cp")
+        lines.append(f"cimport numpy as np")
         self.sep()
         self.cexpr_function()
         self.sep()
@@ -814,17 +816,17 @@ class CExprCodeGenPy:
                 c, t = self.gen_expr(x.ops[0])
                 assert t == "V_S"
                 self.total_sloppy_flops += 22
-                return f"cp.mat_tr({c})", "V_Tr"
+                return f"cc.mat_tr({c})", "V_Tr"
             else:
                 c1, t1 = self.gen_expr_prod_list(x.ops[:-1])
                 c2, t2 = self.gen_expr(x.ops[-1])
                 if t1 == "V_S" and t2 == "V_S":
                     self.total_sloppy_flops += 1150
-                    return f"cp.mat_tr({c1}, {c2})", "V_Tr"
+                    return f"cc.mat_tr({c1}, {c2})", "V_Tr"
                 elif t1 == "V_S" and t2 == "V_G":
-                    return f"cp.mat_tr({c1}, {c2})", "V_Tr"
+                    return f"cc.mat_tr({c1}, {c2})", "V_Tr"
                 elif t1 == "V_G" and t2 == "V_S":
-                    return f"cp.mat_tr({c1}, {c2})", "V_Tr"
+                    return f"cc.mat_tr({c1}, {c2})", "V_Tr"
                 else:
                     assert False
         elif x.otype == "Var":
@@ -965,7 +967,7 @@ class CExprCodeGenPy:
             assert x.otype == "Expr"
             c, t = self.gen_expr(x)
             assert t == "V_a"
-            append(f"cdef cp.Complex {name} = {c}")
+            append(f"cdef cc.Complex {name} = {c}")
         append(f"# set factors for return")
         append(f"factors = [")
         self.indent += 4
@@ -1005,13 +1007,10 @@ class CExprCodeGenPy:
         self.indent += 4
         append(f"# set factors")
         for idx, (name, value,) in enumerate(cexpr.variables_factor):
-            append(f"cdef cp.Complex {name} = factors[{idx}]")
+            append(f"cdef cc.Complex {name} = factors[{idx}]")
         append(f"# set props")
         for idx, (name, value,) in enumerate(cexpr.variables_prop):
-            append(f"py_{name} = props[{idx}]")
-            append(f"cdef long py_cdata_{name} = py_{name}.cdata")
-            append(f"cdef cp.WilsonMatrix* p_{name} = <cp.WilsonMatrix*>py_cdata_{name}")
-            append(f"cdef cp.WilsonMatrix {name} = p_{name}[0]")
+            append(f"cdef cc.WilsonMatrix {name} = (<cp.WilsonMatrix>props[{idx}]).xx")
         append(f"# compute products")
         for name, value in cexpr.variables_prod:
             assert name.startswith("V_prod_")
@@ -1020,9 +1019,9 @@ class CExprCodeGenPy:
             c, t = self.gen_expr_prod_list(x)
             assert t == get_var_name_type(name)
             if t == "V_G":
-                append(f"cdef cp.SpinMatrix {name} = {c}")
+                append(f"cdef cc.SpinMatrix {name} = {c}")
             elif t == "V_S":
-                append(f"cdef cp.WilsonMatrix {name} = {c}")
+                append(f"cdef cc.WilsonMatrix {name} = {c}")
             else:
                 assert False
         append(f"# compute traces")
@@ -1033,7 +1032,7 @@ class CExprCodeGenPy:
             assert x.otype == "Tr"
             c, t = self.gen_expr(x)
             assert t == "V_Tr"
-            append(f"cdef cp.Complex {name} = {c}")
+            append(f"cdef cc.Complex {name} = {c}")
         append(f"# set terms")
         for name, term in cexpr.named_terms:
             x = term
@@ -1042,7 +1041,7 @@ class CExprCodeGenPy:
             else:
                 c_ops = [ x.coef, ] + x.c_ops
             c, t = self.gen_expr_prod_list(c_ops)
-            append(f"cdef cp.Complex {name} = {c}")
+            append(f"cdef cc.Complex {name} = {c}")
         append(f"# set exprs")
         def show_coef_term(coef, tname):
             coef = ea.compile_py(coef)
@@ -1053,12 +1052,12 @@ class CExprCodeGenPy:
         for idx_expr, (name, expr,) in enumerate(cexpr.named_exprs):
             name = name.replace("\n", "  ")
             append(f"# expr_{idx_expr} name='{name}' ")
-            append(f"cdef cp.Complex expr_{idx_expr} = 0")
+            append(f"cdef cc.Complex expr_{idx_expr} = 0")
             for coef, tname in expr:
                 s = show_coef_term(coef, tname)
                 append(f"expr_{idx_expr} += {s}")
         append(f"# set results array for return")
-        append(f"results = array([")
+        append(f"results = numpy.array([")
         self.indent += 4
         for idx_expr, (name, expr,) in enumerate(cexpr.named_exprs):
             name = name.replace("\n", "  ")

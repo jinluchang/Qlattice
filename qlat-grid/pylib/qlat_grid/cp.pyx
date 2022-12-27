@@ -1,4 +1,4 @@
-from . cimport cpd as cp
+from . cimport everything as c
 
 def end_with_grid(is_preserving_cache = False):
-    cp.grid_end(is_preserving_cache)
+    c.grid_end(is_preserving_cache)
