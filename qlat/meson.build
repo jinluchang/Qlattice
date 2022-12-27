@@ -47,10 +47,10 @@ fftw_all = [ fftw, fftwf, ]
 
 math = cpp.find_library('m')
 
-qlat_utils_include = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\n".join(q.get_include_list()))', env: environment(), check: true).stdout().strip().split('\n')
+qlat_utils_include = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\n".join(q.get_include_list()))', env: environment({'q_verbose': '-1'}), check: true).stdout().strip().split('\n')
 message('qlat_utils include', qlat_utils_include)
 
-qlat_utils_lib = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\n".join(q.get_lib_list()))', env: environment(), check: true).stdout().strip().split('\n')
+qlat_utils_lib = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\n".join(q.get_lib_list()))', env: environment({'q_verbose': '-1'}), check: true).stdout().strip().split('\n')
 message('qlat_utils lib', qlat_utils_lib)
 
 qlat_utils = declare_dependency(

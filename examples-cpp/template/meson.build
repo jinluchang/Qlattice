@@ -34,7 +34,7 @@ message('fftwf libdir', fftwf.get_variable('libdir'))
 
 math = cpp.find_library('m')
 
-qlat_include = run_command('qlat-include', env: environment(), check: true).stdout().strip().split('\n')
+qlat_include = run_command('qlat-include', env: environment({'q_verbose': '-1'}), check: true).stdout().strip().split('\n')
 message('qlat include', qlat_include)
 
 qlat = declare_dependency(
