@@ -830,7 +830,10 @@ class CExprCodeGenPy:
                 else:
                     assert False
         elif x.otype == "Var":
-            return f"{x.name}", get_var_name_type(x.name)
+            if x.name.startswith("V_S_"):
+                return f"p_{x.name}[0]", get_var_name_type(x.name)
+            else:
+                return f"{x.name}", get_var_name_type(x.name)
 
     def gen_expr_prod(self, ct1, ct2):
         c1, t1 = ct1
@@ -1008,7 +1011,7 @@ class CExprCodeGenPy:
             append(f"cdef cc.Complex {name} = factors[{idx}]")
         append(f"# set props")
         for idx, (name, value,) in enumerate(cexpr.variables_prop):
-            append(f"cdef cc.WilsonMatrix {name} = (<cp.WilsonMatrix>props[{idx}]).xx")
+            append(f"cdef cc.WilsonMatrix* p_{name} = &(<cp.WilsonMatrix>props[{idx}]).xx")
         append(f"# compute products")
         for name, value in cexpr.variables_prod:
             assert name.startswith("V_prod_")
