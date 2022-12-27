@@ -121,6 +121,12 @@ numpy = declare_dependency(
   dependencies: [ py3.dependency(), ],
   ).as_system()
 
+if cpp.check_header('Grid/Eigen/Eigen', dependencies: grid)
+  eigen = dependency('', required: false)
+else
+  error('Cannot find Eigen headers provided by Grid.')
+endif
+
 qlat_include = run_command(py3.path(), '-c', 'import qlat as q ; print("\\n".join(q.get_include_list()))', env: environment({'q_verbose': '-1'}), check: true).stdout().strip().split('\n')
 message('qlat include', qlat_include)
 
@@ -133,15 +139,10 @@ qlat = declare_dependency(
     py3.dependency().as_system(),
     cpp.find_library('qlat', dirs: qlat_lib),
     cpp.find_library('qlat-utils', dirs: qlat_lib),
-    numpy, omp, fftw_all, zlib, math, ],
+    numpy, eigen, omp, fftw_all, zlib, math, ],
   )
 
 deps = [ qlat, grid, ]
-
-if not cpp.check_header('Eigen/Eigen')
-  eigen = dependency('eigen3').as_system()
-  deps += [ eigen, ]
-endif
 
 subdir('include')
 

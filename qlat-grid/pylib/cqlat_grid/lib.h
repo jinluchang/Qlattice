@@ -7,8 +7,8 @@
 #define PY_PKG_NAME cqlat_grid
 
 #define PY_SSIZE_T_CLEAN
+#include <qlat-grid/qlat-grid.h>
 #include <Python.h>
-#include <qlat/grid.h>
 #include <qlat-utils/show.h>
 #include <qlat/py_convert.h>
 

@@ -1,4 +1,4 @@
-from . cimport everything as c
+from . cimport everything as cc
 
 def end_with_grid(is_preserving_cache = False):
-    c.grid_end(is_preserving_cache)
+    cc.grid_end(is_preserving_cache)

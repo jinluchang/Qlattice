@@ -33,12 +33,13 @@ numpy = declare_dependency(
   dependencies: [ py3.dependency(), ],
   ).as_system()
 
-deps = [ py3.dependency().as_system(), numpy, omp, zlib, math, ]
-
-if not cpp.check_header('Eigen/Eigen')
+if cpp.check_header('Eigen/Eigen')
+  eigen = dependency('', required: false)
+else
   eigen = dependency('eigen3').as_system()
-  deps += [ eigen, ]
 endif
+
+deps = [ py3.dependency().as_system(), numpy, eigen, omp, zlib, math, ]
 
 subdir('include')
 subdir('lib')
