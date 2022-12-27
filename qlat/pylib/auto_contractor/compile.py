@@ -959,23 +959,21 @@ class CExprCodeGenPy:
         append(f"size = positions_dict.get('size')")
         for position_var in cexpr.positions:
             append(f"{position_var}_type, {position_var} = positions_dict['{position_var}']")
-        append(f"# get factor")
-        for name, value in cexpr.variables_factor:
+        append(f"# declare factors")
+        append(f"cdef np.ndarray[np.complex128_t] factors")
+        append(f"factors = numpy.zeros({len(cexpr.variables_factor)}, dtype = numpy.complex128)")
+        append(f"cdef cc.Complex[:] factors_view = factors")
+        append(f"# set factors")
+        for idx, (name, value,) in enumerate(cexpr.variables_factor):
             assert name.startswith("V_factor_")
             x = value
             assert isinstance(x, ea.Factor)
             assert x.otype == "Expr"
             c, t = self.gen_expr(x)
             assert t == "V_a"
-            append(f"cdef cc.Complex {name} = {c}")
-        append(f"# set factors for return")
-        append(f"factors = [")
-        self.indent += 4
-        for name, value in cexpr.variables_factor:
-            append(f"{name},")
-        append(f"]")
-        self.indent -= 4
-        # return
+            append(f"# {name}")
+            append(f"factors_view[{idx}] = {c}")
+        append(f"# return factors")
         append(f"return factors")
         self.indent -= 4
 
@@ -1003,7 +1001,7 @@ class CExprCodeGenPy:
         append = self.append
         cexpr = self.cexpr
         append(f"@timer_flops")
-        append(f"def cexpr_function_eval_with_props(factors, props):")
+        append(f"def cexpr_function_eval_with_props(cc.Complex[:] factors, list props):")
         self.indent += 4
         append(f"# set factors")
         for idx, (name, value,) in enumerate(cexpr.variables_factor):
@@ -1042,6 +1040,10 @@ class CExprCodeGenPy:
                 c_ops = [ x.coef, ] + x.c_ops
             c, t = self.gen_expr_prod_list(c_ops)
             append(f"cdef cc.Complex {name} = {c}")
+        append(f"# declare exprs")
+        append(f"cdef np.ndarray[np.complex128_t] exprs")
+        append(f"exprs = numpy.zeros({len(cexpr.named_exprs)}, dtype = numpy.complex128)")
+        append(f"cdef cc.Complex[:] exprs_view = exprs")
         append(f"# set exprs")
         def show_coef_term(coef, tname):
             coef = ea.compile_py(coef)
@@ -1049,26 +1051,19 @@ class CExprCodeGenPy:
                 return f"{tname}"
             else:
                 return f"({coef}) * {tname}"
-        for idx_expr, (name, expr,) in enumerate(cexpr.named_exprs):
+        append(f"cdef cc.Complex expr")
+        for idx, (name, expr,) in enumerate(cexpr.named_exprs):
             name = name.replace("\n", "  ")
-            append(f"# expr_{idx_expr} name='{name}' ")
-            append(f"cdef cc.Complex expr_{idx_expr} = 0")
+            append(f"# {idx} name='{name}' ")
+            append(f"expr = 0")
             for coef, tname in expr:
                 s = show_coef_term(coef, tname)
-                append(f"expr_{idx_expr} += {s}")
-        append(f"# set results array for return")
-        append(f"results = numpy.array([")
-        self.indent += 4
-        for idx_expr, (name, expr,) in enumerate(cexpr.named_exprs):
-            name = name.replace("\n", "  ")
-            append(f"# {name} ")
-            append(f"expr_{idx_expr},")
-        append(f"])")
-        self.indent -= 4
+                append(f"expr += {s}")
+            append(f"exprs_view[{idx}] = expr")
         append(f"# set flops")
         append(f"total_flops = total_sloppy_flops")
         append(f"# return")
-        append(f"return total_flops, results")
+        append(f"return total_flops, exprs")
         self.indent -= 4
 
     def total_flops(self):
