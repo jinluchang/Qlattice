@@ -42,6 +42,14 @@ fftw_all = [ fftw, fftwf, ]
 
 math = cpp.find_library('m')
 
+numpy_include = run_command(py3.path(), '-c', 'import numpy as np ; print(np.get_include())', check: true).stdout().strip()
+message('numpy include', numpy_include)
+
+numpy = declare_dependency(
+  include_directories:  include_directories(numpy_include),
+  dependencies: [ py3.dependency(), ],
+  )
+
 qlat_include = run_command(py3.path(), '-c', 'import qlat as q ; print("\\n".join(q.get_include_list()))', check: true).stdout().strip().split('\n')
 message('qlat include', qlat_include)
 
@@ -51,9 +59,10 @@ message('qlat lib', qlat_lib)
 qlat = declare_dependency(
   include_directories: include_directories(qlat_include),
   dependencies: [
+    py3.dependency().as_system(),
     cpp.find_library('qlat', dirs: qlat_lib),
     cpp.find_library('qlat-utils', dirs: qlat_lib),
-    omp, fftw_all, mpic, zlib, math, ],
+    numpy, omp, fftw_all, mpic, zlib, math, ],
   )
 
 deps = [ qlat, ]

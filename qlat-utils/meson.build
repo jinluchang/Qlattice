@@ -25,7 +25,15 @@ omp = dependency('openmp').as_system()
 zlib = dependency('zlib').as_system()
 math = cpp.find_library('m')
 
-deps = [ omp, py3.dependency().as_system(), zlib, math, ]
+numpy_include = run_command(py3.path(), '-c', 'import numpy as np ; print(np.get_include())', check: true).stdout().strip()
+message('numpy include', numpy_include)
+
+numpy = declare_dependency(
+  include_directories:  include_directories(numpy_include),
+  dependencies: [ py3.dependency(), ],
+  ).as_system()
+
+deps = [ py3.dependency().as_system(), numpy, omp, zlib, math, ]
 
 if not cpp.check_header('Eigen/Eigen')
   eigen = dependency('eigen3').as_system()

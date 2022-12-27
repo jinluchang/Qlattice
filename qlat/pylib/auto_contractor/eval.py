@@ -98,6 +98,12 @@ message('fftw libdir', fftw.get_variable('libdir'))
 message('fftwf libdir', fftwf.get_variable('libdir'))
 fftw_all = [ fftw, fftwf, ]
 math = cpp.find_library('m')
+numpy_include = run_command(py3.path(), '-c', 'import numpy as np ; print(np.get_include())', check: true).stdout().strip()
+message('numpy include', numpy_include)
+numpy = declare_dependency(
+  include_directories:  include_directories(numpy_include),
+  dependencies: [ py3.dependency(), ],
+  ).as_system()
 qlat_utils_include = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\\\n".join(q.get_include_list()))', env: environment({'q_verbose': '-1'}), check: true).stdout().strip().split('\\n')
 message('qlat_utils include', qlat_utils_include)
 qlat_utils_lib = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\\\n".join(q.get_lib_list()))', env: environment({'q_verbose': '-1'}), check: true).stdout().strip().split('\\n')
@@ -105,8 +111,9 @@ message('qlat_utils lib', qlat_utils_lib)
 qlat_utils = declare_dependency(
   include_directories:  include_directories(qlat_utils_include),
   dependencies: [
+    py3.dependency().as_system(),
     cpp.find_library('qlat-utils', dirs: qlat_utils_lib),
-    py3.dependency(), omp, zlib, math, ],
+    numpy, omp, zlib, math, ],
   )
 deps = [ qlat_utils, fftw_all, ]
 if not cpp.check_header('Eigen/Eigen')
