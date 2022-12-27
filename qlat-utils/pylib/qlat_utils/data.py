@@ -413,8 +413,8 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func
         blocked_jk_idx_list = [ jk_blocking_func(idx) for idx in jk_idx_list[:] ]
     assert len(blocked_jk_idx_list[1:]) == n
     for i in range(n_rand_sample):
-        rsi = rs.split(i)
-        r = [ rsi.split(idx).g_rand_gen() for idx in blocked_jk_idx_list[1:] ]
+        rsi = rs.split(str(i))
+        r = [ rsi.split(str(idx)).g_rand_gen() for idx in blocked_jk_idx_list[1:] ]
         rjk_list.append(avg + sum([ r[j] * jk_diff[j] for j in range(n) ]))
     return rjk_list
 
@@ -427,7 +427,7 @@ def rjk_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state):
     assert n_rand_sample >= 0
     assert isinstance(rng_state, RngState)
     rjk_list = [ val, ]
-    rs = rng_state.split(rs_tag)
+    rs = rng_state.split(str(rs_tag))
     for i in range(n_rand_sample):
         r = rs.g_rand_gen()
         rjk_list.append(val + r * err)
