@@ -8,12 +8,78 @@ import functools
 def flush():
     cc.flush()
 
+### -------------------------------------------------------------------
+
+def get_id_node():
+    return cc.get_id_node()
+
+def get_num_node():
+    return cc.get_num_node()
+
+def verbose_level(level = None):
+    if level is None:
+        return cc.verbose_level()
+    cdef long* p_ret = &cc.verbose_level()
+    p_ret[0] = level
+    assert cc.verbose_level() == level
+    return level
+
+def get_time():
+    return cc.get_time()
+
+def get_start_time(time = None):
+    if time is None:
+        return cc.get_start_time()
+    cdef double* p_ret = &cc.get_start_time()
+    p_ret[0] = time
+    assert cc.get_start_time() == time
+    return time
+
+def get_actual_start_time(time = None):
+    if time is None:
+        return cc.get_actual_start_time()
+    cdef double* p_ret = &cc.get_actual_start_time()
+    p_ret[0] = time
+    assert cc.get_actual_start_time() == time
+    return time
+
+def get_total_time():
+    return cc.get_total_time()
+
+def get_actual_total_time():
+    return cc.get_actual_total_time()
+
+### -------------------------------------------------------------------
+
 def timer_display(str tag = ""):
     cc.Timer.display(tag)
     cc.flush()
 
+def timer_autodisplay():
+    cc.Timer.autodisplay()
+    cc.flush()
+
+def timer_display_stack():
+    cc.Timer.display_stack()
+    cc.flush()
+
+def timer_display_stack_always():
+    cc.Timer.display_stack_always()
+    cc.flush()
+
+def timer_reset(long max_call_times_for_always_show_info = -1):
+    cc.Timer.reset(max_call_times_for_always_show_info)
+
+def timer_fork(long max_call_times_for_always_show_info = -1):
+    cc.Timer.fork(max_call_times_for_always_show_info)
+
+def timer_merge():
+    cc.Timer.merge()
+
+### -------------------------------------------------------------------
+
 def timer(func):
-    fname = "py:" + func.__name__
+    cdef cc.string fname = "py:" + func.__name__
     cdef cc.Timer qtimer = cc.Timer(fname)
     @functools.wraps(func)
     def qtimer_func(*args, **kwargs):
@@ -24,7 +90,7 @@ def timer(func):
     return qtimer_func
 
 def timer_verbose(func):
-    fname = "py:" + func.__name__
+    cdef cc.string fname = "py:" + func.__name__
     cdef cc.Timer qtimer = cc.Timer(fname)
     @functools.wraps(func)
     def qtimer_func(*args, **kwargs):
@@ -36,7 +102,7 @@ def timer_verbose(func):
     return qtimer_func
 
 def timer_flops(func):
-    fname = "py:" + func.__name__
+    cdef cc.string fname = "py:" + func.__name__
     cdef cc.Timer qtimer = cc.Timer(fname)
     @functools.wraps(func)
     def qtimer_func(*args, **kwargs):
@@ -48,7 +114,7 @@ def timer_flops(func):
     return qtimer_func
 
 def timer_verbose_flops(func):
-    fname = "py:" + func.__name__
+    cdef cc.string fname = "py:" + func.__name__
     cdef cc.Timer qtimer = cc.Timer(fname)
     @functools.wraps(func)
     def qtimer_func(*args, **kwargs):
@@ -59,6 +125,32 @@ def timer_verbose_flops(func):
         qtimer.stop(is_verbose)
         return ret
     return qtimer_func
+
+### -------------------------------------------------------------------
+
+cdef class Timer:
+
+    def __cinit__(self, const cc.string& fname, cc.bool is_verbose = False):
+        self.xx = cc.Timer(fname)
+
+    def start(self):
+        self.xx.start(self.is_verbose)
+
+    def stop(self):
+        self.xx.stop(self.is_verbose)
+
+### -------------------------------------------------------------------
+
+cdef class TimerNone:
+
+    def __cinit__(self):
+        pass
+
+    def start(self):
+        pass
+
+    def stop(self):
+        pass
 
 ### -------------------------------------------------------------------
 

@@ -20,10 +20,10 @@
 #include <qlat-utils/timer.h>
 #include <qlat-utils/qacc.h>
 
-#define MK_ERR_MSG(tag, str)                                             \
-  qlat::ssprintf("%s: %s from '%s' line %d. (id_node=%d thread_num=%d)", \
-                 qlat::get_c_str(tag), qlat::get_c_str(str), __FILE__,   \
-                 __LINE__, qlat::get_id_node(), qlat::get_thread_num())
+#define MK_ERR_MSG(tag, str)                                            \
+  qlat::ssprintf("%s: %s from '%s' line %d. (id_node=%d id_thread=%d)", \
+                 qlat::get_c_str(tag), qlat::get_c_str(str), __FILE__,  \
+                 __LINE__, qlat::get_id_node(), qlat::get_id_thread())
 
 #define qqwarn(str)                             \
   {                                             \

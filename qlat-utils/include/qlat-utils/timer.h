@@ -94,6 +94,7 @@ inline double get_actual_total_time()
 }
 
 API inline double& get_start_time()
+// will be reset by Timer::reset()
 {
   static double time = get_actual_start_time();
   return time;
@@ -125,7 +126,16 @@ inline int get_id_node()
   return get_id_node_internal();
 }
 
-inline int get_thread_num()
+inline int get_num_thread()
+{
+#ifdef _OPENMP
+  return omp_get_max_threads();
+#else
+  return 1;
+#endif
+}
+
+inline int get_id_thread()
 {
 #ifdef _OPENMP
   return omp_get_thread_num();
@@ -148,14 +158,14 @@ inline int get_id_node_in_shuffle()
 
 inline void display_info(const std::string& str, FILE* fp = NULL)
 {
-  if (0 == get_id_node() && 0 == get_thread_num()) {
+  if (0 == get_id_node() && 0 == get_id_thread()) {
     display(str, fp);
   }
 }
 
 inline void displayln_info(const std::string& str, FILE* fp = NULL)
 {
-  if (0 == get_id_node() && 0 == get_thread_num()) {
+  if (0 == get_id_node() && 0 == get_id_thread()) {
     displayln(str, fp);
   }
 }
@@ -176,14 +186,14 @@ inline void displayln(const long minimum_verbose_level, const std::string& str)
 
 inline void display_info(const long minimum_verbose_level, const std::string& str)
 {
-  if (0 == get_id_node() && 0 == get_thread_num()) {
+  if (0 == get_id_node() && 0 == get_id_thread()) {
     display(minimum_verbose_level, str);
   }
 }
 
 inline void displayln_info(const long minimum_verbose_level, const std::string& str)
 {
-  if (0 == get_id_node() && 0 == get_thread_num()) {
+  if (0 == get_id_node() && 0 == get_id_thread()) {
     displayln(minimum_verbose_level, str);
   }
 }
@@ -398,7 +408,7 @@ struct API TimerInfo {
   }
   void show_avg(const std::string& info, const int fname_len) const
   {
-    if (0 == get_id_node() && 0 == get_thread_num()) {
+    if (0 == get_id_node() && 0 == get_id_thread()) {
       show_avg_always(info, fname_len);
     }
   }
@@ -761,6 +771,7 @@ struct API Timer {
   }
   //
   API static void display_stack_always()
+  // display on any process or thread
   {
     displayln("display_stack start");
     const std::vector<TimerInfo>& tdb = get_timer_database();
@@ -773,8 +784,9 @@ struct API Timer {
     displayln("display_stack end");
   }
   API static void display_stack()
+  // only display if id_node == 0 and thread_num == 0
   {
-    if (0 == get_id_node() && 0 == get_thread_num()) {
+    if (0 == get_id_node() && 0 == get_id_thread()) {
       display_stack_always();
     }
   }
@@ -805,7 +817,7 @@ struct API TimerCtrl {
   }
   void init(Timer& timer, bool verbose_ = false)
   {
-    if (get_thread_num() != 0) return;
+    if (get_id_thread() != 0) return;
     ptimer = &timer;
     verbose = verbose_;
     ptimer->start(verbose);
