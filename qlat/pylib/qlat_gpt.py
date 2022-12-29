@@ -334,8 +334,8 @@ class InverterGPT(q.Inverter):
         self.inverter = inverter
         self.timer = qtimer
         self.gpt_timer = gpt_qtimer
-        assert isinstance(self.timer, q.Timer)
-        assert isinstance(self.gpt_timer, q.Timer)
+        assert isinstance(self.timer, (q.Timer, q.TimerNone,))
+        assert isinstance(self.gpt_timer, (q.Timer, q.TimerNone,))
 
     def __mul__(self, prop_src):
         assert isinstance(prop_src, q.Prop) or isinstance(prop_src, q.FermionField4d) or isinstance(prop_src, list)

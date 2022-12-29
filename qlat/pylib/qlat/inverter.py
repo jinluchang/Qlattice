@@ -29,7 +29,7 @@ class InverterDwfFreeField(Inverter):
         assert isinstance(self.mass, float)
         assert isinstance(self.m5, float)
         assert isinstance(self.momtwist, list)
-        assert isinstance(self.timer, Timer)
+        assert isinstance(self.timer, (Timer, TimerNone,))
 
     def __mul__(self, prop_src):
         # prop_src: prop or [ prop, ... ]
@@ -51,6 +51,7 @@ class InverterDomainWall(Inverter):
     def __init__(self, *, gf, fa, qtimer = TimerNone()):
         self.cdata = c.mk_inverter_domain_wall(gf, fa)
         self.timer = qtimer
+        assert isinstance(self.timer, (Timer, TimerNone,))
 
     def __del__(self):
         assert isinstance(self.cdata, int)
@@ -101,7 +102,7 @@ class InverterGaugeTransform(Inverter):
         self.timer = qtimer
         assert isinstance(self.inverter, Inverter)
         assert isinstance(self.gt, GaugeTransform)
-        assert isinstance(self.timer, Timer)
+        assert isinstance(self.timer, (Timer, TimerNone,))
         self.gt_inv = self.gt.inv()
 
     def __mul__(self, prop_src):
