@@ -105,6 +105,14 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/qlat-packages.sh
+    - name: Testing pylib qlat
+      run: |
+        export num_proc=2
+        ./scripts/qlat-examples-py.sh
+    - name: Testing qlat
+      run: |
+        export num_proc=2
+        ./scripts/qlat-examples-cpp.sh
     - name: Build Grid
       run: |
         export num_proc=2
@@ -114,17 +122,6 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/qlat-packages.sh
-    - name: Setup testing environments
-      run: |
-        ./scripts/setenv.default.sh
-    - name: Testing pylib qlat
-      run: |
-        export num_proc=2
-        ./scripts/qlat-examples-py.sh
-    - name: Testing qlat
-      run: |
-        export num_proc=2
-        ./scripts/qlat-examples-cpp.sh
     - name: Build GPT
       run: |
         export num_proc=2
@@ -309,6 +306,14 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/qlat-packages.sh
+    - name: Testing pylib qlat
+      run: |
+        export num_proc=3
+        ./scripts/qlat-examples-py.sh
+    - name: Testing qlat
+      run: |
+        export num_proc=3
+        ./scripts/qlat-examples-cpp.sh
     - name: Build Grid
       run: |
         export num_proc=3
@@ -318,14 +323,6 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/qlat-packages.sh
-    - name: Testing pylib qlat
-      run: |
-        export num_proc=3
-        ./scripts/qlat-examples-py.sh
-    - name: Testing qlat
-      run: |
-        export num_proc=3
-        ./scripts/qlat-examples-cpp.sh
     - name: Build GPT
       run: |
         export num_proc=3
