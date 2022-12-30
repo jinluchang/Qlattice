@@ -26,7 +26,7 @@ jobs:
         cat /proc/cpuinfo
     - name: Install Python packages
       run: |
-        pip3 install --user psutil sympy numpy scipy meson ninja cython build
+        pip3 install --user psutil sympy numpy scipy meson ninja cython
     - name: Display Python version
       run: |
         python3 -c "import sys; print(sys.version)"
@@ -80,7 +80,7 @@ jobs:
         cat /proc/cpuinfo
     - name: Install Python packages
       run: |
-        pip3 install --user psutil sympy numpy scipy meson ninja cython build
+        pip3 install --user psutil sympy numpy scipy meson ninja cython build meson-python
     - name: Display Python version
       run: |
         python3 -c "import sys; print(sys.version)"
@@ -149,7 +149,7 @@ jobs:
         cat /proc/cpuinfo
     - name: Install Python packages
       run: |
-        pip3 install --user psutil sympy numpy scipy meson ninja cython build
+        pip3 install --user psutil sympy numpy scipy meson ninja cython
     - name: Display Python version
       run: |
         python3 -c "import sys; print(sys.version)"
