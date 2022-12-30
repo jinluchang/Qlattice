@@ -337,8 +337,14 @@ def plot_view(
         dts = None,
         cmds = None,
         lines = None,
+        *,
+        is_verbose = False,
+        display_width = None,
         ):
     return plot_save(
             fn = fn, dts = dts, cmds = cmds, lines = lines,
-            is_run_make = True, is_display = True,
+            is_run_make = True,
+            is_verbose = is_verbose,
+            is_display = True,
+            display_width = display_width,
             )
