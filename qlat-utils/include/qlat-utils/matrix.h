@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qlat-utils/mat-vec.h>
+#include <qlat-utils/mvector.h>
 #include <qlat-utils/vector.h>
 
 #include <cmath>

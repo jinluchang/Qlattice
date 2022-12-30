@@ -81,7 +81,7 @@ def timer_merge():
 ### -------------------------------------------------------------------
 
 def timer(func):
-    cdef cc.string fname = "py:" + func.__name__
+    cdef cc.std_string fname = "py:" + func.__name__
     cdef cc.Timer qtimer = cc.Timer(fname)
     @functools.wraps(func)
     def qtimer_func(*args, **kwargs):
@@ -92,7 +92,7 @@ def timer(func):
     return qtimer_func
 
 def timer_verbose(func):
-    cdef cc.string fname = "py:" + func.__name__
+    cdef cc.std_string fname = "py:" + func.__name__
     cdef cc.Timer qtimer = cc.Timer(fname)
     @functools.wraps(func)
     def qtimer_func(*args, **kwargs):
@@ -104,7 +104,7 @@ def timer_verbose(func):
     return qtimer_func
 
 def timer_flops(func):
-    cdef cc.string fname = "py:" + func.__name__
+    cdef cc.std_string fname = "py:" + func.__name__
     cdef cc.Timer qtimer = cc.Timer(fname)
     @functools.wraps(func)
     def qtimer_func(*args, **kwargs):
@@ -116,7 +116,7 @@ def timer_flops(func):
     return qtimer_func
 
 def timer_verbose_flops(func):
-    cdef cc.string fname = "py:" + func.__name__
+    cdef cc.std_string fname = "py:" + func.__name__
     cdef cc.Timer qtimer = cc.Timer(fname)
     @functools.wraps(func)
     def qtimer_func(*args, **kwargs):
@@ -132,7 +132,7 @@ def timer_verbose_flops(func):
 
 cdef class Timer:
 
-    def __cinit__(self, const cc.string& fname, cc.bool is_verbose = False):
+    def __cinit__(self, const cc.std_string& fname, cc.bool is_verbose = False):
         self.xx = cc.Timer(fname)
 
     def start(self):
@@ -220,7 +220,7 @@ cdef class RngState:
         self.cdata = <long>&(self.xx)
 
     def __init__(self, x = None, y = None):
-        cdef cc.string seed
+        cdef cc.std_string seed
         if x is None:
             assert y is None
             # make a new rng
@@ -255,7 +255,7 @@ cdef class RngState:
     def __deepcopy__(self, memo):
         return self.copy()
 
-    def split(self, const cc.string& seed):
+    def split(self, const cc.std_string& seed):
         cdef RngState x = RngState()
         x.xx = self.xx.split(seed)
         return x
@@ -308,7 +308,6 @@ cdef class WilsonMatrix:
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         if flags & PyBUF_F_CONTIGUOUS:
-            buffer.obj = NULL
             raise BufferError("get_buff SpinMatrix PyBUF_F_CONTIGUOUS")
         cdef Buffer buf = Buffer(self, 2, sizeof(cc.Complex))
         cdef Py_ssize_t* shape = &buf.shape_strides[0]
@@ -366,7 +365,6 @@ cdef class SpinMatrix:
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         if flags & PyBUF_F_CONTIGUOUS:
-            buffer.obj = NULL
             raise BufferError("get_buff SpinMatrix PyBUF_F_CONTIGUOUS")
         cdef Buffer buf = Buffer(self, 2, sizeof(cc.Complex))
         cdef Py_ssize_t* shape = &buf.shape_strides[0]
