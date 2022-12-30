@@ -1,6 +1,8 @@
 # cython: c_string_type=unicode, c_string_encoding=utf8
 
 from . cimport everything as cc
+from cpython cimport Py_buffer
+from cpython.buffer cimport PyBUF_FORMAT, PyBUF_F_CONTIGUOUS
 import functools
 
 ### -------------------------------------------------------------------
@@ -305,6 +307,9 @@ cdef class WilsonMatrix:
         cc.set_zero(self.xx)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
+        if flags & PyBUF_F_CONTIGUOUS:
+            buffer.obj = NULL
+            raise BufferError("get_buff SpinMatrix PyBUF_F_CONTIGUOUS")
         cdef Buffer buf = Buffer(self, 2, sizeof(cc.Complex))
         cdef Py_ssize_t* shape = &buf.shape_strides[0]
         cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
@@ -312,7 +317,10 @@ cdef class WilsonMatrix:
         shape[1] = 12
         buf.set_strides()
         buffer.buf = <char*>&(self.xx.p)
-        buffer.format = 'Zd'
+        if flags & PyBUF_FORMAT:
+            buffer.format = 'Zd'
+        else:
+            buffer.format = NULL
         buffer.internal = NULL
         buffer.itemsize = buf.itemsize
         buffer.len = buf.get_len()
@@ -357,6 +365,9 @@ cdef class SpinMatrix:
         cc.set_zero(self.xx)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
+        if flags & PyBUF_F_CONTIGUOUS:
+            buffer.obj = NULL
+            raise BufferError("get_buff SpinMatrix PyBUF_F_CONTIGUOUS")
         cdef Buffer buf = Buffer(self, 2, sizeof(cc.Complex))
         cdef Py_ssize_t* shape = &buf.shape_strides[0]
         cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
@@ -364,7 +375,10 @@ cdef class SpinMatrix:
         shape[1] = 4
         buf.set_strides()
         buffer.buf = <char*>&(self.xx.p)
-        buffer.format = 'Zd'
+        if flags & PyBUF_FORMAT:
+            buffer.format = 'Zd'
+        else:
+            buffer.format = NULL
         buffer.internal = NULL
         buffer.itemsize = buf.itemsize
         buffer.len = buf.get_len()
