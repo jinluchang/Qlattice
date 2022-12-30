@@ -6,24 +6,28 @@ name=python-packages
 
 {
 
-echo "!!!! build $name !!!!"
+    time {
 
-find ~/.cache/pip/wheels -type f || true
+    echo "!!!! build $name !!!!"
 
-# rm -rfv ~/.cache/pip/wheels || true
+    find ~/.cache/pip/wheels -type f || true
 
-opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
+    # rm -rfv ~/.cache/pip/wheels || true
 
-time pip3 install $opts psutil
-time pip3 install $opts sympy
-time pip3 install $opts cython
-time pip3 install $opts pythran
-time pip3 install $opts pybind11
-time pip3 install $opts numpy
-time pip3 install $opts scipy
+    opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
-echo "!!!! $name build !!!!"
+    time pip3 install $opts psutil
+    time pip3 install $opts sympy
+    time pip3 install $opts cython
+    time pip3 install $opts pythran
+    time pip3 install $opts pybind11
+    time pip3 install $opts numpy
+    time pip3 install $opts scipy
 
-rm -rf $temp_dir || true
+    echo "!!!! $name build !!!!"
+
+    rm -rf $temp_dir || true
+
+}
 
 } 2>&1 | tee $prefix/log.$name.txt

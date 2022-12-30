@@ -18,22 +18,15 @@ name=qlat-packages
 
     cd "$build"
 
-    opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
+    opts="--verbose --no-index --no-cache-dir -f $distfiles/python-packages -f $build"
 
     python3 -m build -ns -o "$build" "$wd"/qlat-utils
-
-    pip3 install $opts -f "$build" qlat-utils
-
+    pip3 install $opts qlat-utils
     python3 -m build -ns -o "$build" "$wd"/qlat
-
-    pip3 install $opts -f "$build" qlat
-
+    pip3 install $opts qlat
     if grid-config --prefix >/dev/null 2>&1 ; then
-
         python3 -m build -ns -o "$build" "$wd"/qlat-grid
-
-        pip3 install $opts -f "$build" qlat-grid
-
+        pip3 install $opts qlat-grid
     fi
 
     echo "!!!! $name build !!!!"
