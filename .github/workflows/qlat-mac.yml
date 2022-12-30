@@ -97,6 +97,7 @@ jobs:
         ./scripts/setenv.default.sh
         ./scripts/fftw.sh
         ./scripts/fftwf.sh
+        ./scripts/qlat-packages.sh
     - name: Build Grid
       run: |
         export num_proc=3

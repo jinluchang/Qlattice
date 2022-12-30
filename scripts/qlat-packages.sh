@@ -21,7 +21,7 @@ name=qlat-packages
     # opts="--verbose --no-index --no-cache-dir -f $distfiles/python-packages -f $build"
     opts="--verbose --no-cache-dir -f $build"
 
-    pip3 uninstall -y qlat-utils qlat qlat-grid
+    pip3 uninstall -y qlat-utils qlat qlat-grid || true
 
     python3 -m build -ns -o "$build" "$wd"/qlat-utils
     pip3 install $opts qlat-utils

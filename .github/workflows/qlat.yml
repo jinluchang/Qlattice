@@ -93,6 +93,7 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/setenv.default.sh
+        ./scripts/qlat-packages.sh
     - name: Build Grid
       run: |
         export num_proc=2
