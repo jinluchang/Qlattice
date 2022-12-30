@@ -101,14 +101,18 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/setenv.default.sh
+    - name: Install Qlattice
+      run: |
+        export num_proc=2
         ./scripts/qlat-packages.sh
     - name: Build Grid
       run: |
         export num_proc=2
         ./scripts/c-lime.sh
         ./scripts/grid.avx2.sh
-    - name: Install Qlattice
+    - name: Install Qlat-Grid
       run: |
+        export num_proc=2
         ./scripts/qlat-packages.sh
     - name: Setup testing environments
       run: |
@@ -301,13 +305,18 @@ jobs:
         ./scripts/fftw.sh
         ./scripts/fftwf.sh
         ./scripts/qlat-packages.sh
+    - name: Install Qlattice
+      run: |
+        export num_proc=3
+        ./scripts/qlat-packages.sh
     - name: Build Grid
       run: |
         export num_proc=3
         ./scripts/c-lime.sh
         ./scripts/grid.gen16.sh
-    - name: Install Qlattice
+    - name: Install Qlat-Grid
       run: |
+        export num_proc=3
         ./scripts/qlat-packages.sh
     - name: Testing pylib qlat
       run: |
