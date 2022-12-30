@@ -89,6 +89,10 @@ jobs:
     - name: Download dependencies
       run: |
         ./scripts/download-core.sh
+    - name: Build dependencies
+      run: |
+        export num_proc=2
+        ./scripts/setenv.default.sh
     - name: Build Grid
       run: |
         export num_proc=2
