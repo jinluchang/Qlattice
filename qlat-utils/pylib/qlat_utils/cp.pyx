@@ -154,10 +154,29 @@ cdef class TimerNone:
 
 ### -------------------------------------------------------------------
 
-cdef class Buffer2D:
+cdef class Buffer:
 
-    def __cinit__(self, object obj = None):
+    def __cinit__(self, object obj = None, int ndim = 1, int itemsize = 1):
         self.obj = obj
+        self.ndim = ndim
+        self.itemsize = itemsize
+        self.shape_strides.resize(ndim * 2)
+
+    cdef Py_ssize_t get_len(self):
+        cdef int i
+        cdef Py_ssize_t ret = 1
+        for i in range(self.ndim):
+            ret *= self.shape_strides[i]
+        return ret
+
+    cdef void set_strides(self):
+        cdef Py_ssize_t* shapes = &self.shape_strides[0]
+        cdef Py_ssize_t* strides = &self.shape_strides[self.ndim]
+        cdef int i
+        cdef Py_ssize_t stride = self.itemsize
+        for i in range(self.ndim - 1, -1, -1):
+            strides[i] = stride
+            stride *= shapes[i]
 
 ### -------------------------------------------------------------------
 
@@ -286,22 +305,22 @@ cdef class WilsonMatrix:
         cc.set_zero(self.xx)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
-        cdef Py_ssize_t itemsize = sizeof(cc.Complex)
-        cdef Buffer2D buf = Buffer2D(self)
-        buf.shape[0] = 12
-        buf.shape[1] = 12
-        buf.strides[1] = itemsize
-        buf.strides[0] = buf.strides[1] * buf.shape[1]
+        cdef Buffer buf = Buffer(self, 2, sizeof(cc.Complex))
+        cdef Py_ssize_t* shape = &buf.shape_strides[0]
+        cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
+        shape[0] = 12
+        shape[1] = 12
+        buf.set_strides()
         buffer.buf = <char*>&(self.xx.p)
         buffer.format = 'Zd'
         buffer.internal = NULL
-        buffer.itemsize = itemsize
-        buffer.len = buf.shape[0] * buf.shape[1]
-        buffer.ndim = 2
+        buffer.itemsize = buf.itemsize
+        buffer.len = buf.get_len()
+        buffer.ndim = buf.ndim
         buffer.obj = buf
         buffer.readonly = 0
-        buffer.shape = buf.shape
-        buffer.strides = buf.strides
+        buffer.shape = shape
+        buffer.strides = strides
         buffer.suboffsets = NULL
 
     def __releasebuffer__(self, Py_buffer *buffer):
@@ -338,22 +357,22 @@ cdef class SpinMatrix:
         cc.set_zero(self.xx)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
-        cdef Py_ssize_t itemsize = sizeof(cc.Complex)
-        cdef Buffer2D buf = Buffer2D(self)
-        buf.shape[0] = 4
-        buf.shape[1] = 4
-        buf.strides[1] = itemsize
-        buf.strides[0] = buf.strides[1] * buf.shape[1]
+        cdef Buffer buf = Buffer(self, 2, sizeof(cc.Complex))
+        cdef Py_ssize_t* shape = &buf.shape_strides[0]
+        cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
+        shape[0] = 4
+        shape[1] = 4
+        buf.set_strides()
         buffer.buf = <char*>&(self.xx.p)
         buffer.format = 'Zd'
         buffer.internal = NULL
-        buffer.itemsize = itemsize
-        buffer.len = buf.shape[0] * buf.shape[1]
-        buffer.ndim = 2
+        buffer.itemsize = buf.itemsize
+        buffer.len = buf.get_len()
+        buffer.ndim = buf.ndim
         buffer.obj = buf
         buffer.readonly = 0
-        buffer.shape = buf.shape
-        buffer.strides = buf.strides
+        buffer.shape = shape
+        buffer.strides = strides
         buffer.suboffsets = NULL
 
     def __releasebuffer__(self, Py_buffer *buffer):

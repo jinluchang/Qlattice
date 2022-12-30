@@ -10,13 +10,19 @@ cdef class TimerNone:
 
     pass
 
-cdef class Buffer2D:
-
-    cdef Py_ssize_t shape[2]
-
-    cdef Py_ssize_t strides[2]
+cdef class Buffer:
 
     cdef object obj
+
+    cdef int ndim
+
+    cdef Py_ssize_t itemsize
+
+    cdef cqlat_utils.std_vector[Py_ssize_t] shape_strides # shape.size() == 2 * ndim
+
+    cdef Py_ssize_t get_len(self)
+
+    cdef void set_strides(self)
 
 cdef class Coordinate:
 
