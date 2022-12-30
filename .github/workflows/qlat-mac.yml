@@ -79,10 +79,18 @@ jobs:
         type pip3
         export
         sysctl -a
+    - name: Install Python packages
+      run: |
+        pip3 install --user psutil sympy numpy scipy meson ninja cython
     - name: Display Python version
       run: |
         python3 -c "import sys; print(sys.version)"
         python3 -c "import sys; print(sys.path)"
+        python3 -c "import numpy as np ; np.show_config()"
+        type meson
+        meson --version
+        type ninja
+        ninja --version
     - name: Install Brew packages
       run: |
         # brew update
