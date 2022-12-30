@@ -214,7 +214,7 @@ def mk_pyplot_folder(path = None):
     return path
 
 def display_img(fn, *, width = None):
-    from IPython.display import HTML, display
+    from IPython.display import HTML, Image, display
     displayln_info(0, f"display_img: fn='{fn}'")
     show_width = ""
     if width is not None:
