@@ -79,18 +79,10 @@ jobs:
         type pip3
         export
         sysctl -a
-    - name: Install Python packages
-      run: |
-        pip3 install --user psutil sympy numpy scipy meson ninja meson-python wheel cython
     - name: Display Python version
       run: |
         python3 -c "import sys; print(sys.version)"
         python3 -c "import sys; print(sys.path)"
-        python3 -c "import numpy as np ; np.show_config()"
-        type meson
-        meson --version
-        type ninja
-        ninja --version
     - name: Install Brew packages
       run: |
         # brew update
@@ -103,13 +95,16 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/setenv.default.sh
-        ./scripts/fftw_mpi.sh
-        ./scripts/fftwf_mpi.sh
+        ./scripts/fftw.sh
+        ./scripts/fftwf.sh
+    - name: Build Grid
+      run: |
+        export num_proc=3
+        ./scripts/c-lime.sh
+        ./scripts/grid.gen16.sh
     - name: Install Qlattice
       run: |
-        source ~/qlat-build/default/setenv.sh
-        pip3 install --user -v --no-build-isolation ./qlat-utils
-        pip3 install --user -v --no-build-isolation ./qlat
+        ./scripts/qlat-packages.sh
     - name: Testing pylib qlat
       run: |
         export num_proc=3
@@ -118,15 +113,6 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/qlat-examples-cpp.sh
-    - name: Build Grid
-      run: |
-        export num_proc=3
-        ./scripts/c-lime.sh
-        ./scripts/grid.gen16.sh
-    - name: Install Qlat-Grid
-      run: |
-        source ~/qlat-build/default/setenv.sh
-        pip3 install --user -v --no-build-isolation ./qlat-grid
     - name: Build GPT
       run: |
         export num_proc=3
@@ -179,9 +165,8 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/setenv.default.sh
-        ./scripts/fftw_mpi.sh
-        ./scripts/fftwf_mpi.sh
-        ./scripts/eigen.sh
+        ./scripts/fftw.sh
+        ./scripts/fftwf.sh
     - name: Build Grid
       run: |
         export num_proc=3
