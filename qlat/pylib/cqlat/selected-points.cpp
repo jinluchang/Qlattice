@@ -271,9 +271,10 @@ EXPORT(free_spfield, {
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
     return NULL;
   }
+  const std::string ctype = py_get_ctype(p_field);
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, free_spfield_ctype, pf.ctype, pf);
+  FIELD_DISPATCH(p_ret, free_spfield_ctype, ctype, pf);
   return p_ret;
 })
 
@@ -284,11 +285,12 @@ EXPORT(set_spfield, {
   if (!PyArg_ParseTuple(args, "OO", &p_spfield_new, &p_spfield)) {
     return NULL;
   }
+  const std::string ctype = py_get_ctype(p_spfield);
+  qassert(ctype == py_get_ctype(p_spfield_new));
   PyField pf_new = py_convert_field(p_spfield_new);
   PyField pf = py_convert_field(p_spfield);
-  qassert(pf_new.ctype == pf.ctype);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_spfield_ctype, pf.ctype, pf_new, pf);
+  FIELD_DISPATCH(p_ret, set_spfield_ctype, ctype, pf_new, pf);
   return p_ret;
 })
 
@@ -299,12 +301,13 @@ EXPORT(set_spfield_field, {
   if (!PyArg_ParseTuple(args, "OO", &p_spfield, &p_field)) {
     return NULL;
   }
+  const std::string ctype = py_get_ctype(p_field);
+  qassert(ctype == py_get_ctype(p_spfield_new));
   PyField pspf = py_convert_field(p_spfield);
   const PointSelection& psel = py_convert_type<PointSelection>(p_spfield, "psel");
   PyField pf = py_convert_field(p_field);
-  qassert(pspf.ctype == pf.ctype);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_spfield_field_ctype, pf.ctype, pspf, pf, psel);
+  FIELD_DISPATCH(p_ret, set_spfield_field_ctype, ctype, pspf, pf, psel);
   return p_ret;
 })
 
@@ -315,13 +318,14 @@ EXPORT(set_spfield_sfield, {
   if (!PyArg_ParseTuple(args, "OO", &p_spfield, &p_sfield)) {
     return NULL;
   }
+  const std::string ctype = py_get_ctype(p_sfield);
+  qassert(ctype == py_get_ctype(p_spfield));
   PyField pspf = py_convert_field(p_spfield);
   const PointSelection& psel = py_convert_type<PointSelection>(p_spfield, "psel");
   PyField psf = py_convert_field(p_sfield);
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_sfield, "fsel");
-  qassert(pspf.ctype == psf.ctype);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_spfield_sfield_ctype, psf.ctype, pspf, psf, psel, fsel);
+  FIELD_DISPATCH(p_ret, set_spfield_sfield_ctype, ctype, pspf, psf, psel, fsel);
   return p_ret;
 })
 
@@ -332,12 +336,13 @@ EXPORT(set_field_spfield, {
   if (!PyArg_ParseTuple(args, "OO", &p_field, &p_spfield)) {
     return NULL;
   }
+  const std::string ctype = py_get_ctype(p_field);
+  qassert(ctype == py_get_ctype(p_spfield));
   PyField pf = py_convert_field(p_field);
   PyField pspf = py_convert_field(p_spfield);
   const PointSelection& psel = py_convert_type<PointSelection>(p_spfield, "psel");
-  qassert(pspf.ctype == pf.ctype);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_field_spfield_ctype, pf.ctype, pf, pspf, psel);
+  FIELD_DISPATCH(p_ret, set_field_spfield_ctype, ctype, pf, pspf, psel);
   return p_ret;
 })
 
@@ -364,11 +369,12 @@ EXPORT(set_add_spfield, {
   if (!PyArg_ParseTuple(args, "OO", &p_field_new, &p_field)) {
     return NULL;
   }
+  const std::string ctype = py_get_ctype(p_field);
+  qassert(ctype == py_get_ctype(p_field_new));
   PyField pf_new = py_convert_field(p_field_new);
   PyField pf = py_convert_field(p_field);
-  qassert(pf_new.ctype == pf.ctype);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_add_spfield_ctype, pf.ctype, pf_new, pf);
+  FIELD_DISPATCH(p_ret, set_add_spfield_ctype, ctype, pf_new, pf);
   return p_ret;
 })
 
@@ -379,11 +385,12 @@ EXPORT(set_sub_spfield, {
   if (!PyArg_ParseTuple(args, "OO", &p_field_new, &p_field)) {
     return NULL;
   }
+  const std::string ctype = py_get_ctype(p_field);
+  qassert(ctype == py_get_ctype(p_field_new));
   PyField pf_new = py_convert_field(p_field_new);
   PyField pf = py_convert_field(p_field);
-  qassert(pf_new.ctype == pf.ctype);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_sub_spfield_ctype, pf.ctype, pf_new, pf);
+  FIELD_DISPATCH(p_ret, set_sub_spfield_ctype, ctype, pf_new, pf);
   return p_ret;
 })
 
@@ -394,9 +401,10 @@ EXPORT(set_mul_double_spfield, {
   if (!PyArg_ParseTuple(args, "Od", &p_field, &factor)) {
     return NULL;
   }
+  const std::string ctype = py_get_ctype(p_field);
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_mul_spfield_ctype, pf.ctype, pf, factor);
+  FIELD_DISPATCH(p_ret, set_mul_spfield_ctype, ctype, pf, factor);
   return p_ret;
 })
 
@@ -406,9 +414,10 @@ EXPORT(set_zero_spfield, {
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
     return NULL;
   }
+  const std::string ctype = py_get_ctype(p_field);
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_zero_spfield_ctype, pf.ctype, pf);
+  FIELD_DISPATCH(p_ret, set_zero_spfield_ctype, ctype, pf);
   return p_ret;
 })
 
@@ -433,9 +442,10 @@ EXPORT(get_n_points_spfield, {
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
     return NULL;
   }
+  const std::string ctype = py_get_ctype(p_field);
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, get_n_points_spfield_ctype, pf.ctype, pf);
+  FIELD_DISPATCH(p_ret, get_n_points_spfield_ctype, ctype, pf);
   return p_ret;
 })
 
@@ -445,9 +455,10 @@ EXPORT(get_multiplicity_spfield, {
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
     return NULL;
   }
+  const std::string ctype = py_get_ctype(p_field);
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, get_multiplicity_spfield_ctype, pf.ctype, pf);
+  FIELD_DISPATCH(p_ret, get_multiplicity_spfield_ctype, ctype, pf);
   return p_ret;
 })
 
@@ -457,9 +468,10 @@ EXPORT(qnorm_spfield, {
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
     return NULL;
   }
+  const std::string ctype = py_get_ctype(p_field);
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, qnorm_spfield_ctype, pf.ctype, pf);
+  FIELD_DISPATCH(p_ret, qnorm_spfield_ctype, ctype, pf);
   return p_ret;
 })
 
@@ -563,11 +575,12 @@ EXPORT(save_complex_spfield, {
   if (!PyArg_ParseTuple(args, "OO", &p_field, &p_path)) {
     return NULL;
   }
+  const std::string ctype = py_get_ctype(p_field);
   PyField pf = py_convert_field(p_field);
   std::string path;
   py_convert(path, p_path);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, save_complex_spfield_ctype, pf.ctype, pf, path);
+  FIELD_DISPATCH(p_ret, save_complex_spfield_ctype, ctype, pf, path);
   return p_ret;
 })
 
@@ -578,11 +591,12 @@ EXPORT(load_complex_spfield, {
   if (!PyArg_ParseTuple(args, "OO", &p_field, &p_path)) {
     return NULL;
   }
+  const std::string ctype = py_get_ctype(p_field);
   PyField pf = py_convert_field(p_field);
   std::string path;
   py_convert(path, p_path);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, load_complex_spfield_ctype, pf.ctype, pf, path);
+  FIELD_DISPATCH(p_ret, load_complex_spfield_ctype, ctype, pf, path);
   return p_ret;
 })
 
@@ -593,10 +607,11 @@ EXPORT(lat_data_from_complex_spfield, {
   if (!PyArg_ParseTuple(args, "OO", &p_ld, &p_field)) {
     return NULL;
   }
+  const std::string ctype = py_get_ctype(p_field);
   PyField pf = py_convert_field(p_field);
   LatData& ld = py_convert_type<LatData>(p_ld);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, lat_data_from_complex_spfield_ctype, pf.ctype, ld, pf);
+  FIELD_DISPATCH(p_ret, lat_data_from_complex_spfield_ctype, ctype, ld, pf);
   return p_ret;
 })
 
@@ -607,9 +622,10 @@ EXPORT(complex_spfield_from_lat_data, {
   if (!PyArg_ParseTuple(args, "OO", &p_field, &p_ld)) {
     return NULL;
   }
+  const std::string ctype = py_get_ctype(p_field);
   PyField pf = py_convert_field(p_field);
   const LatData& ld = py_convert_type<LatData>(p_ld);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, complex_spfield_from_lat_data_ctype, pf.ctype, pf, ld);
+  FIELD_DISPATCH(p_ret, complex_spfield_from_lat_data_ctype, ctype, pf, ld);
   return p_ret;
 })
