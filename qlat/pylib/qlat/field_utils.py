@@ -25,6 +25,8 @@ def refresh_expanded_1(field):
 
 class FieldExpandCommPlan:
 
+    # self.cdata
+
     def __init__(self):
         self.cdata = c.mk_field_expand_comm_plan()
 
@@ -52,7 +54,7 @@ class FieldExpandCommPlan:
 ###
 
 def make_field_expand_comm_plan(comm_marks):
-    # comm_marks is of type Field("int8_t")
+    # comm_marks is of type Field("Int8t")
     cp = FieldExpandCommPlan()
     c.make_field_expand_comm_plan(cp, comm_marks)
     return cp
@@ -116,15 +118,15 @@ def mk_fft(is_forward, *, is_only_spatial = False, is_normalizing = False, mode_
 @timer
 def qnorm_field(f):
     if isinstance(f, Field):
-        f_n = Field("double")
+        f_n = Field("Double")
         c.qnorm_field_field(f_n, f)
     elif isinstance(f, SelectedField):
         fsel = f.fsel
-        f_n = SelectedField("double", fsel)
+        f_n = SelectedField("Double", fsel)
         c.qnorm_field_sfield(f_n, f)
     elif isinstance(f, SelectedPoints):
         psel = f.psel
-        f_n = SelectedPoints("double", psel)
+        f_n = SelectedPoints("Double", psel)
         c.qnorm_field_spfield(f_n, f)
     else:
         displayln_info("qnorm_field:", type(f))
@@ -134,18 +136,18 @@ def qnorm_field(f):
 @timer
 def sqrt_double_field(f):
     if isinstance(f, Field):
-        assert f.ctype == "double"
-        f_ret = Field("double")
+        assert f.ctype == "Double"
+        f_ret = Field("Double")
         c.set_sqrt_double_field(f_ret, f)
     elif isinstance(f, SelectedField):
-        assert f.ctype == "double"
+        assert f.ctype == "Double"
         fsel = f.fsel
-        f_ret = SelectedField("double", fsel)
+        f_ret = SelectedField("Double", fsel)
         c.set_sqrt_double_sfield(f_ret, f)
     elif isinstance(f, SelectedPoints):
-        assert f.ctype == "double"
+        assert f.ctype == "Double"
         psel = f.psel
-        f_ret = SelectedPoints("double", psel)
+        f_ret = SelectedPoints("Double", psel)
         c.set_sqrt_double_spfield(f_ret, f)
     else:
         displayln_info("sqrt_double_field:", type(f))

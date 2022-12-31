@@ -11,7 +11,7 @@ import qlat as q
 
 class Field_fft:
     def __init__(self, geo, mult=1):
-        self.field = q.Field("double", geo, mult)
+        self.field = q.Field("Double", geo, mult)
         self.field_ft = q.Field("Complex", geo, mult)
         self.updated = True
         self.updated_ft = True
@@ -170,10 +170,10 @@ class HMC:
         self.field_predicted.set_unit()
         
         # Create a field to store the masses used for Fourier acceleration
-        self.masses = q.Field("double",geo,mult)
+        self.masses = q.Field("Double",geo,mult)
         # Create a field to store the estimated optimal Fourier accleration
         # masses before lower bounds are applied
-        self.masses_est = q.Field("double",geo,mult)
+        self.masses_est = q.Field("Double",geo,mult)
         
         if(fresh_start):
             self.masses.set_unit()
@@ -190,16 +190,16 @@ class HMC:
         
         # Fields to store everything we need to do linear regression to
         # determine what HMC masses to use for Fourier acceleration
-        self.field_av = q.Field("double",geo,geo.multiplicity())
-        self.force_av = q.Field("double",geo,geo.multiplicity())
-        self.field_sq_av = q.Field("double",geo,geo.multiplicity())
-        self.force_mod_av = q.Field("double",geo,geo.multiplicity())
-        self.field_mod_av = q.Field("double",geo,geo.multiplicity())
-        self.field_force_cor = q.Field("double",geo,geo.multiplicity())
+        self.field_av = q.Field("Double",geo,geo.multiplicity())
+        self.force_av = q.Field("Double",geo,geo.multiplicity())
+        self.field_sq_av = q.Field("Double",geo,geo.multiplicity())
+        self.force_mod_av = q.Field("Double",geo,geo.multiplicity())
+        self.field_mod_av = q.Field("Double",geo,geo.multiplicity())
+        self.field_force_cor = q.Field("Double",geo,geo.multiplicity())
         self.divisor = 0
-        self.mask = q.Field("double",geo,geo.multiplicity())
-        self.aux1 = q.Field("double",geo,geo.multiplicity())
-        self.aux2 = q.Field("double",geo,geo.multiplicity())
+        self.mask = q.Field("Double",geo,geo.multiplicity())
+        self.aux1 = q.Field("Double",geo,geo.multiplicity())
+        self.aux2 = q.Field("Double",geo,geo.multiplicity())
         self.reset_fit_variables()
     
     @q.timer_verbose
@@ -449,7 +449,7 @@ class HMC:
     def sm_evolve(self, field_init, momentum, fg_dt, dt):
         # Evolve the momentum field according to the given action using the  
         # force gradient algorithm
-        field = q.Field("double",field_init.geo(),self.mult)
+        field = q.Field("Double",field_init.geo(),self.mult)
         field @= field_init.get_field()
         force = Field_fft(field_init.geo(), self.mult)
         force.hmc_set_force(self.action, field)
@@ -589,12 +589,12 @@ def main():
     # Create the geometry for the axial current field
     geo_cur = q.Geometry(total_site, 3)
     # This field will store the calculated axial currents
-    axial_current = q.Field("double",geo_cur)
+    axial_current = q.Field("Double",geo_cur)
     #
     hm_field = Field_fft(hmc.field.geo(),4)
     hm_field_pred = Field_fft(hmc.field.geo(),4)
     #
-    polar_field = q.Field("double",hmc.field.geo())
+    polar_field = q.Field("Double",hmc.field.geo())
     
     for traj in range(1,n_traj+1):
         # Run the HMC algorithm to update the field configuration

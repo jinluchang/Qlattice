@@ -9,3 +9,15 @@ ctypedef double complex Complex
 
 ctypedef float complex ComplexF
 # ctypedef libcpp.complex.complex[float] Complex
+
+ctypedef double Double
+
+ctypedef float Float
+
+ctypedef long Long
+
+ctypedef int64_t Int64t
+
+ctypedef int8_t Int8t
+
+ctypedef char Char

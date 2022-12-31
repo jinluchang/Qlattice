@@ -1,9 +1,5 @@
 from . cimport everything as cqlat_utils
 
-cdef class Types:
-
-    pass
-
 cdef class Timer:
 
     cdef cqlat_utils.Timer xx

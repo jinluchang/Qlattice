@@ -226,7 +226,7 @@ class SelectedField:
         return self.save_64(path, *args)
 
     def save_float_from_double(self, path, *args):
-        ff = SelectedField("float", self.fsel)
+        ff = SelectedField("Float", self.fsel)
         ff.float_from_double(self)
         from qlat.fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
@@ -249,7 +249,7 @@ class SelectedField:
         return self.load_64(path, *args)
 
     def load_double_from_float(self, path, *args):
-        ff = SelectedField("float", self.fsel)
+        ff = SelectedField("Float", self.fsel)
         ret = ff.load_direct(path, *args)
         if ret > 0:
             from qlat.fields_io import ShuffledFieldsReader
@@ -262,13 +262,13 @@ class SelectedField:
 
     def float_from_double(self, f):
         assert isinstance(f, SelectedField)
-        assert self.ctype == "float"
+        assert self.ctype == "Float"
         self.fsel = f.fsel
         c.convert_float_from_double_sfield(self, f)
 
     def double_from_float(self, ff):
         assert isinstance(ff, SelectedField)
-        assert ff.ctype == "float"
+        assert ff.ctype == "Float"
         self.fsel = ff.fsel
         c.convert_double_from_float_sfield(self, ff)
 

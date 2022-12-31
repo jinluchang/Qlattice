@@ -20,17 +20,17 @@
       (p_ret) = fname<Complex>(__VA_ARGS__);                            \
     } else if ("ComplexF" == (ctype)) {                                 \
       (p_ret) = fname<ComplexF>(__VA_ARGS__);                           \
-    } else if ("double" == (ctype)) {                                   \
+    } else if ("Double" == (ctype)) {                                   \
       (p_ret) = fname<double>(__VA_ARGS__);                             \
-    } else if ("float" == (ctype)) {                                    \
+    } else if ("Float" == (ctype)) {                                    \
       (p_ret) = fname<float>(__VA_ARGS__);                              \
-    } else if ("long" == (ctype)) {                                     \
+    } else if ("Long" == (ctype)) {                                     \
       (p_ret) = fname<long>(__VA_ARGS__);                               \
-    } else if ("int64_t" == (ctype)) {                                  \
+    } else if ("Int64t" == (ctype)) {                                  \
       (p_ret) = fname<int64_t>(__VA_ARGS__);                            \
-    } else if ("char" == (ctype)) {                                     \
+    } else if ("Char" == (ctype)) {                                     \
       (p_ret) = fname<char>(__VA_ARGS__);                               \
-    } else if ("int8_t" == (ctype)) {                                   \
+    } else if ("Int8t" == (ctype)) {                                   \
       (p_ret) = fname<int8_t>(__VA_ARGS__);                             \
     } else {                                                            \
       qerr(qlat::ssprintf("%s %s='%s' does not exist.", #fname, #ctype, \

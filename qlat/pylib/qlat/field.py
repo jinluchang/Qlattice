@@ -22,17 +22,18 @@ field_ctypes_double = [
         "SpinMatrix",
         "WilsonVector",
         "Complex",
-        "double",
+        "Double",
         ]
 
 field_ctypes_float = [
         "ComplexF",
-        "float",
+        "Float",
         ]
 
 field_ctypes_long = [
-        "long",
-        "int64_t",
+        "Long",
+        "Int64t",
+        "Int8t",
         ]
 
 class Field:
@@ -188,7 +189,7 @@ class Field:
 
     def multiply_double(self, factor):
         assert isinstance(factor, Field)
-        assert factor.ctype == "double"
+        assert factor.ctype == "Double"
         c.multiply_double_field(self,factor)
 
     def qnorm(self):
@@ -268,7 +269,7 @@ class Field:
         return self.save_64(path, *args)
 
     def save_float_from_double(self, path, *args):
-        ff = Field("float")
+        ff = Field("Float")
         ff.float_from_double(self)
         from qlat.fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
@@ -291,7 +292,7 @@ class Field:
         return self.load_64(path, *args)
 
     def load_double_from_float(self, path, *args):
-        ff = Field("float")
+        ff = Field("Float")
         ret = ff.load_direct(path, *args)
         if ret > 0:
             from qlat.fields_io import ShuffledFieldsReader
@@ -304,12 +305,12 @@ class Field:
 
     def float_from_double(self, f):
         assert isinstance(f, Field)
-        assert self.ctype == "float"
+        assert self.ctype == "Float"
         c.convert_float_from_double_field(self, f)
 
     def double_from_float(self, ff):
         assert isinstance(ff, Field)
-        assert ff.ctype == "float"
+        assert ff.ctype == "Float"
         c.convert_double_from_float_field(self, ff)
 
     def to_from_endianness(self, tag):
