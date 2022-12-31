@@ -1,6 +1,6 @@
 from qlat_utils.cp cimport *
 
-cdef class Type:
+cdef class ElemType:
 
     pass
 
