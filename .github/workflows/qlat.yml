@@ -171,6 +171,7 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/setenv.default.sh
+        ./scripts/eigen.sh
     - name: Build Grid
       run: |
         export num_proc=2
@@ -375,6 +376,7 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/setenv.default.sh
+        ./scripts/eigen.sh
         ./scripts/fftw.sh
         ./scripts/fftwf.sh
     - name: Build Grid
