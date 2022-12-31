@@ -302,7 +302,7 @@ EXPORT(set_spfield_field, {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_field);
-  qassert(ctype == py_get_ctype(p_spfield_new));
+  qassert(ctype == py_get_ctype(p_spfield));
   PyField pspf = py_convert_field(p_spfield);
   const PointSelection& psel = py_convert_type<PointSelection>(p_spfield, "psel");
   PyField pf = py_convert_field(p_field);
