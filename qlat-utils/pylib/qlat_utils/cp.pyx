@@ -7,6 +7,24 @@ import functools
 
 ### -------------------------------------------------------------------
 
+cdef class Type:
+
+    name = "Type"
+
+cdef class TypeComplex(Type):
+
+    name = "Complex"
+
+cdef class TypeDouble(Type):
+
+    name = "double"
+
+cdef class TypeFloat(Type):
+
+    name = "float"
+
+### -------------------------------------------------------------------
+
 def flush():
     cc.flush()
 
