@@ -1,3 +1,4 @@
+from qlat_utils import *
 import qlat.c as c
 
 import os
@@ -6,7 +7,6 @@ import pickle
 from qlat.c import check_time_limit, check_stop
 from qlat.c import get_time_limit, get_default_budget
 
-from qlat_utils import *
 
 from qlat.mpi import *
 

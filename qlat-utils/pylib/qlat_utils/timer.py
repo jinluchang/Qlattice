@@ -1,4 +1,4 @@
-import qlat_utils.c as cu
+import qlat_utils.c as c
 
 from qlat_utils.c import flush
 

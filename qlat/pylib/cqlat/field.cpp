@@ -202,7 +202,7 @@ EXPORT(mk_field, {
   if (!PyArg_ParseTuple(args, "O|Oi", &p_ctype, &p_geo, &multiplicity)) {
     return NULL;
   }
-  const std::string ctype = py_convert_data<std::string>(p_ctype);
+  const std::string ctype = py_convert_data<std::string>(p_ctype, "name");
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, mk_field_ctype, ctype, p_geo, multiplicity);
   return p_ret;

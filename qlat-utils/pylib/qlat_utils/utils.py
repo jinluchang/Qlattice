@@ -1,4 +1,4 @@
-import qlat_utils.c as cu
+import qlat_utils.c as c
 
 from qlat_utils.cache import *
 from qlat_utils.rng_state import *
@@ -34,7 +34,7 @@ def random_permute(l, rs):
     # Return a new permuted list.
     assert isinstance(l, list)
     assert isinstance(rs, RngState)
-    return cu.random_permute(l, rs)
+    return c.random_permute(l, rs)
 
 def show_memory_usage():
     try:
@@ -46,7 +46,7 @@ def show_memory_usage():
         displayln_info(f"show_memory_usage: no psutil.")
 
 def displayln_malloc_stats():
-    return cu.displayln_malloc_stats()
+    return c.displayln_malloc_stats()
 
 def displayln_info_malloc_stats():
     if get_id_node() == 0:

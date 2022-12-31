@@ -1,4 +1,4 @@
-import qlat_utils.c as cu
+import qlat_utils.c as c
 
 from qlat_utils.c import get_qar_multi_vol_max_size
 from qlat_utils.c import does_regular_file_exist_qar
@@ -10,19 +10,19 @@ from qlat_utils.timer import *
 
 @timer
 def qar_create(path_qar, path_folder, *, is_remove_folder_after = False):
-    return cu.qar_create(path_qar, path_folder, is_remove_folder_after)
+    return c.qar_create(path_qar, path_folder, is_remove_folder_after)
 
 @timer
 def qar_extract(path_qar, path_folder, *, is_remove_qar_after = False):
-    return cu.qar_extract(path_qar, path_folder, is_remove_qar_after)
+    return c.qar_extract(path_qar, path_folder, is_remove_qar_after)
 
 @timer
 def qcopy_file(path_src, path_dst):
-    return cu.qcopy_file(path_src, path_dst)
+    return c.qcopy_file(path_src, path_dst)
 
 @timer
 def list_qar(path_qar):
-    return cu.list_qar(path_qar)
+    return c.list_qar(path_qar)
 
 def does_regular_file_exist_qar_sync_node(path):
     if get_num_node() != 1:

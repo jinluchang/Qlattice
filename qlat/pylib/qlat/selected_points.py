@@ -1,6 +1,5 @@
-import qlat.c as c
-
 from qlat_utils import *
+import qlat.c as c
 
 from qlat.geometry import *
 from qlat.field_selection import *

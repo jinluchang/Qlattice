@@ -1,4 +1,4 @@
-import qlat_utils.c as cu
+import qlat_utils.c as c
 
 import os
 import pickle
@@ -50,41 +50,41 @@ def mk_file_dirs_info(path):
 def qtouch(path, content = None):
     # mk_file_dirs(path)
     if content is None:
-        return cu.qtouch(path)
+        return c.qtouch(path)
     else:
-        return cu.qtouch(path, content)
+        return c.qtouch(path, content)
 
 def qtouch_info(path, content = None):
     # mk_file_dirs_info(path)
     if content is None:
-        return cu.qtouch_info(path)
+        return c.qtouch_info(path)
     else:
-        return cu.qtouch_info(path, content)
+        return c.qtouch_info(path, content)
 
 def qappend(path, content = None):
     # mk_file_dirs(path)
     if content is None:
-        return cu.qappend(path)
+        return c.qappend(path)
     else:
-        return cu.qappend(path, content)
+        return c.qappend(path, content)
 
 def qappend_info(path, content = None):
     # mk_file_dirs_info(path)
     if content is None:
-        return cu.qappend_info(path)
+        return c.qappend_info(path)
     else:
-        return cu.qappend_info(path, content)
+        return c.qappend_info(path, content)
 
 @timer
 def compute_crc32(path):
-    return cu.compute_crc32(path)
+    return c.compute_crc32(path)
 
 def qload_datatable(path, is_par = False):
-    return cu.qload_datatable(path, is_par)
+    return c.qload_datatable(path, is_par)
 
 @timer
 def check_all_files_crc32_info(path):
-    return cu.check_all_files_crc32_info(path)
+    return c.check_all_files_crc32_info(path)
 
 @timer
 def save_pickle_obj(obj, path):

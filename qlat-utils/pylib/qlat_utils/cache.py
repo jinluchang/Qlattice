@@ -1,6 +1,6 @@
 from qlat_utils.timer import *
 
-import qlat_utils.c as cu
+import qlat_utils.c as c
 
 # Usage:
 # cache_x = q.mk_cache("xx")
@@ -77,9 +77,9 @@ def rm_cache(*keys, ca = cache):
     ca.pop(key)
 
 def get_all_caches_info():
-    return cu.get_all_caches_info()
+    return c.get_all_caches_info()
 
 def clear_all_caches():
     # clean python level cache and then C++ level cache
     clean_cache()
-    cu.clear_all_caches()
+    c.clear_all_caches()

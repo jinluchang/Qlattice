@@ -1,6 +1,5 @@
-import qlat.c as c
-
 from qlat_utils import *
+import qlat.c as c
 
 from qlat.propagator import *
 from qlat.fermion_action import *

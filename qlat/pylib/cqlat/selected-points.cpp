@@ -244,7 +244,7 @@ EXPORT(mk_spfield, {
   if (!PyArg_ParseTuple(args, "O", &p_ctype)) {
     return NULL;
   }
-  const std::string ctype = py_convert_data<std::string>(p_ctype);
+  const std::string ctype = py_convert_data<std::string>(p_ctype, "name");
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, mk_spfield_ctype, ctype, 0);
   return p_ret;
@@ -258,8 +258,7 @@ EXPORT(mk_spfield_psel, {
   if (!PyArg_ParseTuple(args, "OOi", &p_ctype, &p_psel, &multiplicity)) {
     return NULL;
   }
-  std::string ctype;
-  py_convert(ctype, p_ctype);
+  const std::string ctype = py_convert_data<std::string>(p_ctype, "name");
   const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, mk_spfield_psel_ctype, ctype, psel, multiplicity);

@@ -1,9 +1,7 @@
+from qlat_utils import *
 import qlat.c as c
-
 from qlat.c import get_size_node, get_coor_node
 from qlat.c import sync_node
-
-from qlat_utils import *
 
 import numpy as np
 
