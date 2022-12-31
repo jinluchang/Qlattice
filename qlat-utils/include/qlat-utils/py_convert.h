@@ -31,31 +31,31 @@ inline bool check_ctype_name<ComplexF>(const std::string& ctype)
 template <>
 inline bool check_ctype_name<double>(const std::string& ctype)
 {
-  return "double" == ctype;
+  return "Double" == ctype;
 }
 
 template <>
 inline bool check_ctype_name<float>(const std::string& ctype)
 {
-  return "float" == ctype;
+  return "Float" == ctype;
 }
 
 template <>
 inline bool check_ctype_name<int64_t>(const std::string& ctype)
 {
-  return "int64_t" == ctype or "long" == ctype;
+  return "Int64t" == ctype or "Long" == ctype;
 }
 
 template <>
 inline bool check_ctype_name<char>(const std::string& ctype)
 {
-  return "char" == ctype;
+  return "Char" == ctype;
 }
 
 template <>
 inline bool check_ctype_name<int8_t>(const std::string& ctype)
 {
-  return "int8_t" == ctype;
+  return "Int8t" == ctype;
 }
 
 inline void py_convert(PyObject*& out, PyObject* in) { out = in; }
