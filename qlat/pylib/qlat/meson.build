@@ -1,6 +1,6 @@
-c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.py', check: true)
+c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.py | grep -v "_template\."', check: true)
 pysources = files(c.stdout().strip().split('\n'))
-c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.pxd | grep -v "cp_type_template.pxd\|cp.pxd"', check: true)
+c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.pxd | grep -v "_template\."', check: true)
 pxd_sources = files(c.stdout().strip().split('\n'))
 py3.install_sources(pysources + pxd_sources, subdir: 'qlat')
 
@@ -29,16 +29,13 @@ type_info_list = [
   [ 'Int8t', 'int8t', ],
   [ 'Char', 'char', ],
   ]
-
 cp_type_gen = files('cp_type_gen.sh')
-
-cp_gen = files('cp_gen.sh')
 
 cp_type_pxd_list = []
 cp_type_pyx_list = []
-
 cp_type_pxd_fn_list = []
 cp_type_pyx_fn_list = []
+cp_type_name_list = []
 
 foreach ti: type_info_list
   name = ti[0]
@@ -60,11 +57,14 @@ foreach ti: type_info_list
   cp_type_pyx_list += cp_type_pyx
   cp_type_pxd_fn_list += f'cp_type_@fn@_pxd.pxi'
   cp_type_pyx_fn_list += f'cp_type_@fn@_pyx.pxi'
+  cp_type_name_list += name
 endforeach
+
+cp_gen = files('cp_gen.sh')
 
 cp_pxd = custom_target(f'cp_pxd',
   output: 'cp.pxd',
-  input: 'cp.pxd',
+  input: 'cp_template.pxd',
   command: [ cp_gen, '@INPUT@', '@OUTPUT@', ] + cp_type_pxd_fn_list,
   depends: cp_type_pxd_list,
   install: true,
@@ -73,7 +73,7 @@ cp_pxd = custom_target(f'cp_pxd',
 
 cp_pyx = custom_target(f'cp_pyx',
   output: 'cp.pyx',
-  input: 'cp.pyx',
+  input: 'cp_template.pyx',
   command: [ cp_gen, '@INPUT@', '@OUTPUT@', ] + cp_type_pyx_fn_list,
   depends: cp_type_pyx_list + cp_pxd + copy_pxd,
   install: false,
@@ -86,4 +86,14 @@ cplib = py3.extension_module('cp',
   link_with: clib,
   install: true,
   subdir: 'qlat',
+  )
+
+elem_type_gen = files('elem_type_gen.sh')
+
+elem_type = custom_target(f'elem_type_py',
+  output: 'elem_type.py',
+  input: 'elem_type_template.py',
+  command: [ elem_type_gen, '@INPUT@', '@OUTPUT@', ] + cp_type_name_list,
+  install: true,
+  install_dir: py3.get_install_dir() / 'qlat',
   )

@@ -1,6 +1,8 @@
 from qlat_utils import *
 import qlat.c as c
 
+from qlat.elem_type import *
+
 from qlat.mpi import *
 
 from qlat.geometry import *
