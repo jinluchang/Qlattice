@@ -431,16 +431,4 @@ def as_wilson_matrix_g5_herm(x):
         cc.set_zero(wm.xx)
     return wm
 
-def as_wilson_matrix_from_numpy(cc.Complex[:, :] x):
-    cdef WilsonMatrix wm = WilsonMatrix()
-    cdef cc.Complex[:, :] view = wm
-    view[:, :] = x[:, :]
-    return wm
-
-def as_spin_matrix_from_numpy(cc.Complex[:, :] x):
-    cdef SpinMatrix sm = SpinMatrix()
-    cdef cc.Complex[:, :] view = sm
-    view[:, :] = x[:, :]
-    return sm
-
 ### -------------------------------------------------------------------

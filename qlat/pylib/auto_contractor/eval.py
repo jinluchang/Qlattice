@@ -26,8 +26,7 @@ from qlat_utils import \
         rel_mod, rel_mod_sym, c_rel_mod_sqr
 
 from qlat_utils.cp import \
-        as_wilson_matrix, as_wilson_matrix_g5_herm, \
-        as_spin_matrix_from_numpy, as_wilson_matrix_from_numpy
+        as_wilson_matrix, as_wilson_matrix_g5_herm
 
 import numpy as np
 import qlat as q
@@ -187,15 +186,21 @@ def cache_compiled_cexpr(calc_cexpr, path):
 
 def make_rand_spin_color_matrix(rng_state):
     rs = rng_state
-    return as_wilson_matrix_from_numpy(np.array(
-        [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(144) ],
-        dtype = complex).reshape(12, 12))
+    wm = q.WilsonMatrix()
+    wm_arr = np.asarray(wm)
+    wm_arr[:] = np.array(
+            [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(144) ],
+            dtype = complex).reshape(12, 12)
+    return wm
 
 def make_rand_spin_matrix(rng_state):
     rs = rng_state
-    return as_spin_matrix_from_numpy(np.array(
-        [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(16) ],
-        dtype = complex).reshape(4, 4))
+    sm = q.SpinMatrix()
+    sm_arr = np.asarray(sm)
+    sm_arr[:] = np.array(
+            [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(16) ],
+            dtype = complex).reshape(4, 4)
+    return sm
 
 def benchmark_show_check(check):
     return " ".join([ f"{v:.10E}" for v in check ])
