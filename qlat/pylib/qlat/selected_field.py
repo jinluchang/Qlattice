@@ -8,8 +8,8 @@ from qlat.utils_io import *
 
 class SelectedField:
 
-    # self.ctype
     # self.cdata
+    # self.ctype
     # self.fsel
 
     def __init__(self, ctype, fsel, multiplicity = None):

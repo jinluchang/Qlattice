@@ -8,9 +8,9 @@ from qlat.field import *
 
 class SelectedPoints:
 
+    # self.cdata
     # self.ctype
     # self.psel
-    # self.cdata
 
     def __init__(self, ctype, psel, multiplicity = None):
         assert isinstance(ctype, str)

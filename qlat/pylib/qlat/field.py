@@ -37,8 +37,8 @@ field_ctypes_long = [
 
 class Field:
 
-    # self.ctype
     # self.cdata
+    # self.ctype
 
     def __init__(self, ctype, geo = None, multiplicity = None):
         assert isinstance(ctype, str)
