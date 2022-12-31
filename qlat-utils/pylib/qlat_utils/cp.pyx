@@ -2,7 +2,7 @@
 
 from . cimport everything as cc
 from cpython cimport Py_buffer
-from cpython.buffer cimport PyBUF_FORMAT, PyBUF_F_CONTIGUOUS
+from cpython.buffer cimport PyBUF_FORMAT
 import functools
 
 ### -------------------------------------------------------------------
@@ -325,8 +325,6 @@ cdef class WilsonMatrix:
         cc.set_zero(self.xx)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
-        if flags & PyBUF_F_CONTIGUOUS:
-            raise BufferError("get_buff SpinMatrix PyBUF_F_CONTIGUOUS")
         cdef Buffer buf = Buffer(self, 2, sizeof(cc.Complex))
         cdef Py_ssize_t* shape = &buf.shape_strides[0]
         cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
@@ -382,8 +380,6 @@ cdef class SpinMatrix:
         cc.set_zero(self.xx)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
-        if flags & PyBUF_F_CONTIGUOUS:
-            raise BufferError("get_buff SpinMatrix PyBUF_F_CONTIGUOUS")
         cdef Buffer buf = Buffer(self, 2, sizeof(cc.Complex))
         cdef Py_ssize_t* shape = &buf.shape_strides[0]
         cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
