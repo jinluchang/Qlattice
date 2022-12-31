@@ -394,16 +394,16 @@ EXPORT(assign_as_field, {
   if (ctype == "Complex") {
     Field<Complex>& f = py_convert_type_field<Complex>(p_field);
     FIELD_DISPATCH(p_ret, assign_as_field_ctype, ctype1, f, p_field1);
-  } else if (ctype == "double") {
+  } else if (ctype == "Double") {
     Field<double>& f = py_convert_type_field<double>(p_field);
     FIELD_DISPATCH(p_ret, assign_as_field_ctype, ctype1, f, p_field1);
   } else if (ctype == "ComplexF") {
     Field<ComplexF>& f = py_convert_type_field<ComplexF>(p_field);
     FIELD_DISPATCH(p_ret, assign_as_field_ctype, ctype1, f, p_field1);
-  } else if (ctype == "float") {
+  } else if (ctype == "Float") {
     Field<float>& f = py_convert_type_field<float>(p_field);
     FIELD_DISPATCH(p_ret, assign_as_field_ctype, ctype1, f, p_field1);
-  } else if (ctype == "char") {
+  } else if (ctype == "Char") {
     Field<char>& f = py_convert_type_field<char>(p_field);
     FIELD_DISPATCH(p_ret, assign_as_field_ctype, ctype1, f, p_field1);
   } else {
@@ -426,16 +426,16 @@ EXPORT(assign_from_field, {
   if (ctype1 == "Complex") {
     const Field<Complex>& f1 = py_convert_type_field<Complex>(p_field1);
     FIELD_DISPATCH(p_ret, assign_from_field_ctype, ctype, p_field, f1);
-  } else if (ctype1 == "double") {
+  } else if (ctype1 == "Double") {
     const Field<double>& f1 = py_convert_type_field<double>(p_field1);
     FIELD_DISPATCH(p_ret, assign_from_field_ctype, ctype, p_field, f1);
   } else if (ctype1 == "ComplexF") {
     const Field<ComplexF>& f1 = py_convert_type_field<ComplexF>(p_field1);
     FIELD_DISPATCH(p_ret, assign_from_field_ctype, ctype, p_field, f1);
-  } else if (ctype1 == "float") {
+  } else if (ctype1 == "Float") {
     const Field<float>& f1 = py_convert_type_field<float>(p_field1);
     FIELD_DISPATCH(p_ret, assign_from_field_ctype, ctype, p_field, f1);
-  } else if (ctype1 == "char") {
+  } else if (ctype1 == "Char") {
     const Field<char>& f1 = py_convert_type_field<char>(p_field1);
     FIELD_DISPATCH(p_ret, assign_from_field_ctype, ctype, p_field, f1);
   } else {
