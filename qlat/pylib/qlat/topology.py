@@ -7,7 +7,7 @@ from pprint import pformat
 
 def gf_topology_field_clf(gf : GaugeField):
     geo = gf.geo()
-    topf = Field("Double", geo, 1)
+    topf = Field(c.ElemTypeDouble, geo, 1)
     c.gf_topology_field_clf(topf, gf)
     return topf
 
@@ -17,7 +17,7 @@ def gf_topology_clf(gf : GaugeField):
 
 def gf_topology_field(gf : GaugeField):
     geo = gf.geo()
-    topf = Field("Double", geo, 1)
+    topf = Field(c.ElemTypeDouble, geo, 1)
     c.gf_topology_field(topf, gf)
     return topf
 
@@ -27,7 +27,7 @@ def gf_topology(gf : GaugeField):
 
 def gf_topology_terms_field(gf : GaugeField):
     geo = gf.geo()
-    topf = Field("Double", geo, 5)
+    topf = Field(c.ElemTypeDouble, geo, 5)
     c.gf_topology_terms_field(topf, gf)
     return topf
 

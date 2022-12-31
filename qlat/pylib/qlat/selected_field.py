@@ -13,7 +13,7 @@ class SelectedField:
     # self.fsel
 
     def __init__(self, ctype, fsel, multiplicity = None):
-        assert isinstance(ctype, str)
+        assert issubclass(ctype, c.ElemType)
         assert fsel is None or isinstance(fsel, FieldSelection)
         self.ctype = ctype
         self.fsel = fsel
@@ -29,7 +29,7 @@ class SelectedField:
 
     def __imatmul__(self, f1):
         # won't change self.fsel
-        assert f1.ctype == self.ctype
+        assert f1.ctype is self.ctype
         if isinstance(f1, SelectedField):
             # two fsel do not need to match
             if self.fsel is f1.fsel:
@@ -59,7 +59,7 @@ class SelectedField:
 
     def swap(self, x):
         assert isinstance(x, SelectedField)
-        assert x.ctype == self.ctype
+        assert x.ctype is self.ctype
         assert x.fsel is self.fsel
         cdata = x.cdata
         x.cdata = self.cdata
@@ -81,13 +81,13 @@ class SelectedField:
 
     def __iadd__(self, f1):
         assert isinstance(f1, SelectedField)
-        assert f1.ctype == self.ctype
+        assert f1.ctype is self.ctype
         c.set_add_sfield(self, f1)
         return self
 
     def __isub__(self, f1):
         assert isinstance(f1, SelectedField)
-        assert f1.ctype == self.ctype
+        assert f1.ctype is self.ctype
         c.set_sub_sfield(self, f1)
         return self
 
@@ -226,7 +226,7 @@ class SelectedField:
         return self.save_64(path, *args)
 
     def save_float_from_double(self, path, *args):
-        ff = SelectedField("Float", self.fsel)
+        ff = SelectedField(c.ElemTypeFloat, self.fsel)
         ff.float_from_double(self)
         from qlat.fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
@@ -249,7 +249,7 @@ class SelectedField:
         return self.load_64(path, *args)
 
     def load_double_from_float(self, path, *args):
-        ff = SelectedField("Float", self.fsel)
+        ff = SelectedField(c.ElemTypeFloat, self.fsel)
         ret = ff.load_direct(path, *args)
         if ret > 0:
             from qlat.fields_io import ShuffledFieldsReader
@@ -262,13 +262,13 @@ class SelectedField:
 
     def float_from_double(self, f):
         assert isinstance(f, SelectedField)
-        assert self.ctype == "Float"
+        assert self.ctype == c.ElemTypeFloat
         self.fsel = f.fsel
         c.convert_float_from_double_sfield(self, f)
 
     def double_from_float(self, ff):
         assert isinstance(ff, SelectedField)
-        assert ff.ctype == "Float"
+        assert ff.ctype == c.ElemTypeFloat
         self.fsel = ff.fsel
         c.convert_double_from_float_sfield(self, ff)
 

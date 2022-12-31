@@ -54,7 +54,7 @@ class FieldExpandCommPlan:
 ###
 
 def make_field_expand_comm_plan(comm_marks):
-    # comm_marks is of type Field("Int8t")
+    # comm_marks is of type Field(c.ElemTypeInt8t)
     cp = FieldExpandCommPlan()
     c.make_field_expand_comm_plan(cp, comm_marks)
     return cp
@@ -62,7 +62,7 @@ def make_field_expand_comm_plan(comm_marks):
 def mk_phase_field(geo: Geometry, lmom):
     # lmom is in lattice momentum unit
     # exp(i * 2*pi/L * lmom \cdot xg )
-    f = Field("Complex", geo, 1)
+    f = Field(c.ElemTypeComplex, geo, 1)
     c.set_phase_field(f, lmom)
     return f
 
@@ -118,15 +118,15 @@ def mk_fft(is_forward, *, is_only_spatial = False, is_normalizing = False, mode_
 @timer
 def qnorm_field(f):
     if isinstance(f, Field):
-        f_n = Field("Double")
+        f_n = Field(c.ElemTypeDouble)
         c.qnorm_field_field(f_n, f)
     elif isinstance(f, SelectedField):
         fsel = f.fsel
-        f_n = SelectedField("Double", fsel)
+        f_n = SelectedField(c.ElemTypeDouble, fsel)
         c.qnorm_field_sfield(f_n, f)
     elif isinstance(f, SelectedPoints):
         psel = f.psel
-        f_n = SelectedPoints("Double", psel)
+        f_n = SelectedPoints(c.ElemTypeDouble, psel)
         c.qnorm_field_spfield(f_n, f)
     else:
         displayln_info("qnorm_field:", type(f))
@@ -136,18 +136,18 @@ def qnorm_field(f):
 @timer
 def sqrt_double_field(f):
     if isinstance(f, Field):
-        assert f.ctype == "Double"
-        f_ret = Field("Double")
+        assert f.ctype is c.ElemTypeDouble
+        f_ret = Field(c.ElemTypeDouble)
         c.set_sqrt_double_field(f_ret, f)
     elif isinstance(f, SelectedField):
-        assert f.ctype == "Double"
+        assert f.ctype == c.ElemTypeDouble
         fsel = f.fsel
-        f_ret = SelectedField("Double", fsel)
+        f_ret = SelectedField(c.ElemTypeDouble, fsel)
         c.set_sqrt_double_sfield(f_ret, f)
     elif isinstance(f, SelectedPoints):
-        assert f.ctype == "Double"
+        assert f.ctype == c.ElemTypeDouble
         psel = f.psel
-        f_ret = SelectedPoints("Double", psel)
+        f_ret = SelectedPoints(c.ElemTypeDouble, psel)
         c.set_sqrt_double_spfield(f_ret, f)
     else:
         displayln_info("sqrt_double_field:", type(f))

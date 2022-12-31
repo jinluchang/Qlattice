@@ -13,7 +13,7 @@ class SelectedPoints:
     # self.psel
 
     def __init__(self, ctype, psel, multiplicity = None):
-        assert isinstance(ctype, str)
+        assert issubclass(ctype, c.ElemType)
         assert isinstance(psel, PointSelection)
         self.ctype = ctype
         self.psel = psel
@@ -30,7 +30,7 @@ class SelectedPoints:
     def __imatmul__(self, f1):
         # won't change self.psel
         from qlat.selected_field import SelectedField
-        assert f1.ctype == self.ctype
+        assert f1.ctype is self.ctype
         if isinstance(f1, SelectedPoints):
             # two psel must be the same object
             if self.psel is f1.psel:
@@ -60,7 +60,7 @@ class SelectedPoints:
 
     def swap(self, x):
         assert isinstance(x, SelectedPoints)
-        assert x.ctype == self.ctype
+        assert x.ctype is self.ctype
         assert x.psel is self.psel
         cdata = x.cdata
         x.cdata = self.cdata
@@ -73,12 +73,12 @@ class SelectedPoints:
         return c.get_multiplicity_spfield(self)
 
     def __iadd__(self, f1):
-        assert isinstance(f1, SelectedPoints) and f1.ctype == self.ctype
+        assert isinstance(f1, SelectedPoints) and f1.ctype is self.ctype
         c.set_add_spfield(self, f1)
         return self
 
     def __isub__(self, f1):
-        assert isinstance(f1, SelectedPoints) and f1.ctype == self.ctype
+        assert isinstance(f1, SelectedPoints) and f1.ctype is self.ctype
         c.set_sub_spfield(self, f1)
         return self
 

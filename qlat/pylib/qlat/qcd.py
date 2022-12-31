@@ -9,7 +9,7 @@ from qlat.utils_io import *
 class GaugeField(Field):
 
     def __init__(self, geo = None, *, ctype = None, multiplicity = None):
-        Field.__init__(self, "ColorMatrix", geo, 4)
+        Field.__init__(self, c.ElemTypeColorMatrix, geo, 4)
 
     def copy(self, is_copying_data = True):
         f = GaugeField()
@@ -49,7 +49,7 @@ class GaugeField(Field):
 class GaugeTransform(Field):
 
     def __init__(self, geo = None, *, ctype = None, multiplicity = None):
-        Field.__init__(self, "ColorMatrix", geo, 1)
+        Field.__init__(self, c.ElemTypeColorMatrix, geo, 1)
 
     def copy(self, is_copying_data = True):
         f = GaugeTransform()
@@ -128,7 +128,7 @@ def gf_avg_link_trace(gf):
     return c.gf_avg_link_trace(gf)
 
 def gf_wilson_line_no_comm(wlf, m, gf_ext, path, path_n = None):
-    # wlf = Field("ColorMatrix", geo)
+    # wlf = Field(c.ElemTypeColorMatrix, geo)
     # will only modify the m'th component
     # e.g. path = [ mu, mu, nu, -mu-1, -mu-1, ]
     # e.g. path = [ mu, nu, -mu-1, ], path_n = [ 2, 1, 2, ]
@@ -144,7 +144,7 @@ def gf_wilson_lines_no_comm(gf_ext, path_list):
     # return wlf
     multiplicity = len(path_list)
     geo = geo_reform(gf_ext.geo(), multiplicity)
-    wlf = Field("ColorMatrix", geo)
+    wlf = Field(c.ElemTypeColorMatrix, geo)
     for m, p in enumerate(path_list):
         if isinstance(p, tuple) and len(p) == 2:
             path, path_n = p
@@ -161,7 +161,7 @@ def gf_avg_wilson_loop_normalized_tr(gf, l, t):
     return c.gf_avg_wilson_loop_normalized_tr(gf, l, t)
 
 def set_g_rand_color_matrix_field(fc, rng, sigma, n_steps = 1):
-    assert isinstance(fc, Field) and fc.ctype == "ColorMatrix"
+    assert isinstance(fc, Field) and fc.ctype is c.ElemTypeColorMatrix
     assert isinstance(rng, RngState)
     return c.set_g_rand_color_matrix_field(fc, rng, sigma, n_steps)
 

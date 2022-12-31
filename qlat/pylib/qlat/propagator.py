@@ -11,7 +11,7 @@ from qlat.mat import *
 class Prop(Field):
 
     def __init__(self, geo = None, *, ctype = None, multiplicity = None):
-        Field.__init__(self, "WilsonMatrix", geo, 1)
+        Field.__init__(self, c.ElemTypeWilsonMatrix, geo, 1)
 
     def copy(self, is_copying_data = True):
         f = Prop()
@@ -44,7 +44,7 @@ class Prop(Field):
 class SelProp(SelectedField):
 
     def __init__(self, fsel, *, ctype = None, multiplicity = None):
-        SelectedField.__init__(self, "WilsonMatrix", fsel, 1)
+        SelectedField.__init__(self, c.ElemTypeWilsonMatrix, fsel, 1)
 
     def copy(self, is_copying_data = True):
         f = SelProp(self.fsel)
@@ -77,7 +77,7 @@ class SelProp(SelectedField):
 class PselProp(SelectedPoints):
 
     def __init__(self, psel, *, ctype = None, multiplicity = None):
-        SelectedPoints.__init__(self, "WilsonMatrix", psel, 1)
+        SelectedPoints.__init__(self, c.ElemTypeWilsonMatrix, psel, 1)
 
     def copy(self, is_copying_data = True):
         f = PselProp(self.psel)
@@ -114,11 +114,11 @@ def mk_wall_src(geo, tslice, lmom = None):
 
 @timer
 def mk_rand_u1_src(sel, rs):
-    # return (prop_src, fu1,) where prop_src = Prop() and fu1 = Field("Complex")
+    # return (prop_src, fu1,) where prop_src = Prop() and fu1 = Field(c.ElemTypeComplex)
     # fu1 stores the random u1 numbers (fu1.multiplicity() == 1)
     # sel can be psel or fsel
     prop_src = Prop()
-    fu1 = Field("Complex")
+    fu1 = Field(c.ElemTypeComplex)
     if isinstance(sel, FieldSelection):
         fsel = sel
         c.set_rand_u1_src_fsel(prop_src, fu1, fsel, rs)
@@ -134,7 +134,7 @@ def mk_rand_u1_src(sel, rs):
 @timer
 def get_rand_u1_sol(prop_sol, fu1, sel):
     assert isinstance(prop_sol, Prop)
-    assert isinstance(fu1, Field) and fu1.ctype == "Complex"
+    assert isinstance(fu1, Field) and fu1.ctype == c.ElemTypeComplex
     if isinstance(sel, FieldSelection):
         fsel = sel
         s_prop = SelProp(fsel)
@@ -203,7 +203,7 @@ def flip_tpbc_with_tslice(prop, tslice_flip_tpbc):
 @timer
 def free_scalar_invert_mom_cfield(f, mass):
     assert isinstance(f, Field)
-    assert f.ctype == "Complex"
+    assert f.ctype == c.ElemTypeComplex
     c.free_scalar_invert_mom_cfield(f, mass)
 
 @timer
@@ -218,7 +218,7 @@ def free_scalar_invert_cfield(src, mass):
 class FermionField4d(Field):
 
     def __init__(self, geo = None, *, ctype = None, multiplicity = None):
-        Field.__init__(self, "WilsonVector", geo, 1)
+        Field.__init__(self, c.ElemTypeWilsonVector, geo, 1)
 
     def copy(self, is_copying_data = True):
         f = FermionField4d()

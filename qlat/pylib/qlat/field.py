@@ -268,7 +268,7 @@ class Field:
         return self.save_64(path, *args)
 
     def save_float_from_double(self, path, *args):
-        ff = Field("Float")
+        ff = Field(c.ElemTypeFloat)
         ff.float_from_double(self)
         from qlat.fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
@@ -291,7 +291,7 @@ class Field:
         return self.load_64(path, *args)
 
     def load_double_from_float(self, path, *args):
-        ff = Field("Float")
+        ff = Field(c.ElemTypeFloat)
         ret = ff.load_direct(path, *args)
         if ret > 0:
             from qlat.fields_io import ShuffledFieldsReader
