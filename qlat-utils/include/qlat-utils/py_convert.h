@@ -218,6 +218,7 @@ template <class T>
 T py_convert_data(PyObject* in, const std::string& attr)
 // interface
 // py_convert_data<std::string>(in, "ctype")
+// py_convert_data<long>(in, "cdata")
 {
   PyObject* p_obj = PyObject_GetAttrString(in, attr.c_str());
   T x = py_convert_data<T>(p_obj);
@@ -258,10 +259,7 @@ T& py_convert_type(PyObject* in)
 // py_convert_type<GaugeField>(in);
 // py_convert_type<CommMarks>(in);
 {
-  PyObject* p_cdata = PyObject_GetAttrString(in, "cdata");
-  T* out;
-  py_convert((long&)out, p_cdata);
-  Py_DECREF(p_cdata);
+  T* out = (T*)py_convert_data<long>(in, "cdata");
   return *out;
 }
 

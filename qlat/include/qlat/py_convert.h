@@ -115,12 +115,8 @@ struct PyField {
 inline void py_convert(PyField& out, PyObject* in)
 // deprecated
 {
-  PyObject* p_ctype = PyObject_GetAttrString(in, "ctype");
-  PyObject* p_cdata = PyObject_GetAttrString(in, "cdata");
-  py_convert(out.ctype, p_ctype);
-  py_convert((long&)out.cdata, p_cdata);
-  Py_DECREF(p_ctype);
-  Py_DECREF(p_cdata);
+  out.ctype = py_get_ctype(in);
+  out.cdata = (void*)py_convert_data<long>(in, "cdata");
 }
 
 inline PyField py_convert_field(PyObject* in)
