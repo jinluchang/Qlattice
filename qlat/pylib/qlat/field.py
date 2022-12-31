@@ -7,33 +7,32 @@ from qlat.utils_io import *
 import numpy as np
 
 field_ctypes_complex = [
-        "ColorMatrix",
-        "WilsonMatrix",
-        "NonRelWilsonMatrix",
-        "SpinMatrix",
-        "WilsonVector",
-        "Complex",
+        c.ElemTypeColorMatrix,
+        c.ElemTypeWilsonMatrix,
+        c.ElemTypeNonRelWilsonMatrix,
+        c.ElemTypeSpinMatrix,
+        c.ElemTypeWilsonVector,
+        c.ElemTypeComplex,
         ]
 
 field_ctypes_double = [
-        "ColorMatrix",
-        "WilsonMatrix",
-        "NonRelWilsonMatrix",
-        "SpinMatrix",
-        "WilsonVector",
-        "Complex",
-        "Double",
+        c.ElemTypeColorMatrix,
+        c.ElemTypeWilsonMatrix,
+        c.ElemTypeNonRelWilsonMatrix,
+        c.ElemTypeSpinMatrix,
+        c.ElemTypeWilsonVector,
+        c.ElemTypeComplex,
+        c.ElemTypeDouble,
         ]
 
 field_ctypes_float = [
-        "ComplexF",
-        "Float",
+        c.ElemTypeComplexF,
+        c.ElemTypeFloat,
         ]
 
 field_ctypes_long = [
-        "Long",
-        "Int64t",
-        "Int8t",
+        c.ElemTypeLong,
+        c.ElemTypeInt64t,
         ]
 
 class Field:
@@ -42,7 +41,7 @@ class Field:
     # self.ctype
 
     def __init__(self, ctype, geo = None, multiplicity = None):
-        assert isinstance(ctype, str)
+        assert issubclass(ctype, c.ElemType)
         self.ctype = ctype
         if geo is None:
             self.cdata = c.mk_field(ctype)
@@ -61,7 +60,7 @@ class Field:
     def __imatmul__(self, f1):
         # f1 can be Field, SelectedField, SelectedPoints
         # field geo does not change if already initialized
-        assert f1.ctype == self.ctype
+        assert f1.ctype is self.ctype
         if isinstance(f1, Field):
             c.set_field(self, f1)
         else:
@@ -89,7 +88,7 @@ class Field:
 
     def swap(self, x):
         assert isinstance(x, Field)
-        assert x.ctype == self.ctype
+        assert x.ctype is self.ctype
         cdata = x.cdata
         x.cdata = self.cdata
         self.cdata = cdata
@@ -114,7 +113,7 @@ class Field:
     def __iadd__(self, f1):
         # f1 can be Field, SelectedField, SelectedPoints
         if isinstance(f1, Field):
-            assert f1.ctype == self.ctype
+            assert f1.ctype is self.ctype
             c.set_add_field(self, f1)
         else:
             from qlat.selected_field import SelectedField
@@ -122,7 +121,7 @@ class Field:
             if isinstance(f1, SelectedField):
                 c.acc_field_sfield(self, f1)
             elif isinstance(f1, SelectedPoints):
-                assert f1.ctype == self.ctype
+                assert f1.ctype is self.ctype
                 c.acc_field_spfield(self, f1)
             else:
                 raise Exception(f"Field += type mismatch {type(self)} {type(f1)}")
@@ -131,18 +130,18 @@ class Field:
     def __isub__(self, f1):
         # f1 can be Field, SelectedField, SelectedPoints
         if isinstance(f1, Field):
-            assert f1.ctype == self.ctype
+            assert f1.ctype is self.ctype
             c.set_sub_field(self, f1)
         else:
             from qlat.selected_field import SelectedField
             from qlat.selected_points import SelectedPoints
             if isinstance(f1, SelectedField):
-                assert f1.ctype == self.ctype
+                assert f1.ctype is self.ctype
                 f1n = f1.copy()
                 f1n *= -1
                 c.acc_field_sfield(self, f1n)
             elif isinstance(f1, SelectedPoints):
-                assert f1.ctype == self.ctype
+                assert f1.ctype is self.ctype
                 f1n = f1.copy()
                 f1n *= -1
                 c.acc_field_spfield(self, f1n)
@@ -158,7 +157,7 @@ class Field:
         elif isinstance(factor, complex):
             c.set_mul_complex_field(self, factor)
         elif isinstance(factor, Field):
-            assert factor.ctype == "Complex"
+            assert factor.ctype is c.ElemTypeComplex
             assert factor.multiplicity() == 1
             c.set_mul_cfield_field(self, factor)
         else:
@@ -189,7 +188,7 @@ class Field:
 
     def multiply_double(self, factor):
         assert isinstance(factor, Field)
-        assert factor.ctype == "Double"
+        assert factor.ctype is c.ElemTypeDouble
         c.multiply_double_field(self,factor)
 
     def qnorm(self):
@@ -305,19 +304,19 @@ class Field:
 
     def float_from_double(self, f):
         assert isinstance(f, Field)
-        assert self.ctype == "Float"
+        assert self.ctype is c.ElemTypeFloat
         c.convert_float_from_double_field(self, f)
 
     def double_from_float(self, ff):
         assert isinstance(ff, Field)
-        assert ff.ctype == "Float"
+        assert ff.ctype is c.ElemTypeFloat
         c.convert_double_from_float_field(self, ff)
 
     def to_from_endianness(self, tag):
         assert isinstance(tag, str)
         c.to_from_endianness_field(self, tag)
 
-    def as_field(self, ctype = "Complex"):
+    def as_field(self, ctype = c.ElemTypeComplex):
 		# return new Field(ctype) with the same content
         f = Field(ctype)
         c.assign_as_field(f, self)
@@ -438,14 +437,14 @@ def split_fields(fs, f):
         if not isinstance(fs[i], Field):
             fs[i] = Field(ctype)
         else:
-            assert fs[i].ctype == ctype
+            assert fs[i].ctype is ctype
     c.split_fields_field(fs, f)
 
 def merge_fields(f, fs):
     nf = len(fs)
     assert nf >= 1
     assert isinstance(f, Field)
-    assert f.ctype == fs[0].ctype
+    assert f.ctype is fs[0].ctype
     c.merge_fields_field(f, fs)
 
 def merge_fields_ms(f, fms):
@@ -454,7 +453,7 @@ def merge_fields_ms(f, fms):
     multiplicity = len(fms)
     assert multiplicity >= 1
     assert isinstance(f, Field)
-    assert f.ctype == fms[0][0].ctype
+    assert f.ctype is fms[0][0].ctype
     fs, ms = zip(*fms)
     c.merge_fields_ms_field(f, fs, ms)
 
@@ -469,7 +468,7 @@ def mk_merged_fields_ms(fms):
         assert isinstance(fms[m][1], int)
     ctype = fms[0][0].ctype
     for m in range(multiplicity):
-        assert ctype == fms[m][0].ctype
+        assert ctype is fms[m][0].ctype
     f = Field(ctype)
     merge_fields_ms(f, fms)
     return f

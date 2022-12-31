@@ -225,10 +225,21 @@ T py_convert_data(PyObject* in, const std::string& attr)
   return x;
 }
 
-inline std::string py_get_ctype(PyObject* in)
+template <class T>
+T py_convert_data(PyObject* in, const std::string& attr, const std::string& attr1)
 // interface
 {
-  return py_convert_data<std::string>(in, "ctype");
+  PyObject* p_obj = PyObject_GetAttrString(in, attr.c_str());
+  T x = py_convert_data<T>(p_obj, attr1);
+  Py_DECREF(p_obj);
+  return x;
+}
+
+inline std::string py_get_ctype(PyObject* in)
+// interface
+// py_convert_data<std::string>(in, "ctype", "name")
+{
+  return py_convert_data<std::string>(in, "ctype", "name");
 }
 
 template <class T>
