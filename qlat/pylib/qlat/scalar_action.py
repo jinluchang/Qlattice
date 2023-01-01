@@ -80,13 +80,13 @@ class ScalarAction:
         assert isinstance(masses, FieldBase)
         assert isinstance(rs, RngState)
         return c.hmc_set_rand_momentum_scalar_action(self, sm_complex, masses, rs)
-    
+
     def hmc_predict_field(self, field_ft, momentum_ft, masses, vev_sigma):
         assert isinstance(field_ft, FieldBase)
         assert isinstance(momentum_ft, FieldBase)
         assert isinstance(masses, FieldBase)
         return c.hmc_predict_field_scalar_action(self, field_ft, momentum_ft, masses, vev_sigma)
-    
+
     def get_polar_field(self, polar_field, field):
         assert isinstance(polar_field, FieldBase)
         assert isinstance(field, FieldBase)

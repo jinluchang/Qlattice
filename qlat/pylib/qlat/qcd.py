@@ -8,7 +8,7 @@ from qlat.utils_io import *
 class GaugeField(FieldColorMatrix):
 
     def __init__(self, geo = None):
-        super().__init__(self, geo, 4)
+        super().__init__(geo, 4)
 
     def copy(self, is_copying_data = True):
         f = GaugeField()
@@ -48,7 +48,7 @@ class GaugeField(FieldColorMatrix):
 class GaugeTransform(FieldColorMatrix):
 
     def __init__(self, geo = None):
-        super.__init__(self, geo, 1)
+        super().__init__(geo, 1)
 
     def copy(self, is_copying_data = True):
         f = GaugeTransform()

@@ -185,7 +185,7 @@ cdef class Buffer:
 cdef class Coordinate:
 
     def __cinit__(self):
-        self.xx = cc.Coordinate()
+        pass
 
     def __init__(self, list x = None):
         if x is not None:
@@ -216,7 +216,6 @@ cdef class Coordinate:
 cdef class RngState:
 
     def __cinit__(self):
-        self.xx = cc.RngState()
         self.cdata = <long>&(self.xx)
 
     def __init__(self, x = None, y = None):
@@ -284,7 +283,6 @@ cdef class RngState:
 cdef class WilsonMatrix:
 
     def __cinit__(self):
-        self.xx = cc.WilsonMatrix()
         self.cdata = <long>&(self.xx)
 
     def __imatmul__(self, WilsonMatrix v1):
@@ -339,7 +337,6 @@ cdef class WilsonMatrix:
 cdef class SpinMatrix:
 
     def __cinit__(self):
-        self.xx = cc.SpinMatrix()
         self.cdata = <long>&(self.xx)
 
     def __imatmul__(self, SpinMatrix v1):

@@ -10,7 +10,7 @@ from qlat.mat import *
 class Prop(FieldWilsonMatrix):
 
     def __init__(self, geo = None):
-        super.__init__(self, geo, 1)
+        super().__init__(geo, 1)
 
     def copy(self, is_copying_data = True):
         f = Prop()
@@ -217,7 +217,7 @@ def free_scalar_invert_cfield(src, mass):
 class FermionField4d(FieldWilsonVector):
 
     def __init__(self, geo = None):
-        super().__init__(self, geo, 1)
+        super().__init__(geo, 1)
 
     def copy(self, is_copying_data = True):
         f = FermionField4d()

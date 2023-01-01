@@ -187,7 +187,7 @@ field_ctypes_long = [
 
 field_type_dict = {}
 
-def Field(ElemType ctype, geo = None, multiplicity = None):
+def Field(type ctype, geo = None, multiplicity = None):
     assert ctype in field_type_dict
     FieldType = field_type_dict[ctype]
     field = FieldType(geo, multiplicity)
@@ -217,7 +217,7 @@ cdef class FieldBase:
         return self
 
     def copy(self, is_copying_data = True):
-        f = type(self)(self.ctype)
+        f = type(self)()
         if is_copying_data:
             f @= self
         return f
@@ -306,12 +306,15 @@ cdef class FieldBase:
             assert False
         return self
 
+    @q.timer
     def set_zero(self):
         c.set_zero_field(self)
 
+    @q.timer
     def set_unit(self, coef = 1.0):
         c.set_unit_field(self, coef)
 
+    @q.timer
     def set_rand(self, rng, upper = 1.0, lower = 0.0):
         assert isinstance(rng, RngState)
         if self.ctype in field_ctypes_double:
@@ -321,6 +324,7 @@ cdef class FieldBase:
         else:
             assert False
 
+    @q.timer
     def set_rand_g(self, rng, center = 0.0, sigma = 1.0):
         assert isinstance(rng, RngState)
         if self.ctype in field_ctypes_double:
@@ -410,7 +414,7 @@ cdef class FieldBase:
         return self.save_64(path, *args)
 
     def save_float_from_double(self, path, *args):
-        ff = Field(ElemTypeFloat)
+        ff = FieldFloat()
         ff.float_from_double(self)
         from qlat.fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
@@ -433,7 +437,7 @@ cdef class FieldBase:
         return self.load_64(path, *args)
 
     def load_double_from_float(self, path, *args):
-        ff = Field(ElemTypeFloat)
+        ff = FieldFloat()
         ret = ff.load_direct(path, *args)
         if ret > 0:
             from qlat.fields_io import ShuffledFieldsReader
@@ -575,7 +579,7 @@ def split_fields(fs, f):
     assert nf >= 1
     ctype = f.ctype
     for i in range(nf):
-        if not isinstance(fs[i], Field):
+        if not isinstance(fs[i], FieldBase):
             fs[i] = Field(ctype)
         else:
             assert fs[i].ctype is ctype
@@ -584,7 +588,7 @@ def split_fields(fs, f):
 def merge_fields(f, fs):
     nf = len(fs)
     assert nf >= 1
-    assert isinstance(f, Field)
+    assert isinstance(f, FieldBase)
     assert f.ctype is fs[0].ctype
     c.merge_fields_field(f, fs)
 
@@ -593,7 +597,7 @@ def merge_fields_ms(f, fms):
     # f.get_elem(x, m) = fms[m][0].get_elem(x, fms[m][1])
     multiplicity = len(fms)
     assert multiplicity >= 1
-    assert isinstance(f, Field)
+    assert isinstance(f, FieldBase)
     assert f.ctype is fms[0][0].ctype
     fs, ms = zip(*fms)
     c.merge_fields_ms_field(f, fs, ms)
@@ -605,7 +609,7 @@ def mk_merged_fields_ms(fms):
     multiplicity = len(fms)
     assert multiplicity >= 1
     for m in range(multiplicity):
-        assert isinstance(fms[m][0], Field)
+        assert isinstance(fms[m][0], FieldBase)
         assert isinstance(fms[m][1], int)
     ctype = fms[0][0].ctype
     for m in range(multiplicity):

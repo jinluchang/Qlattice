@@ -9,7 +9,6 @@ cdef class FieldTYPENAME(FieldBase):
     ctype = ElemTypeTYPENAME
 
     def __cinit__(self):
-        self.xx = cc.Field[cc.TYPENAME]()
         self.cdata = <long>&(self.xx)
 
     def __init__(self, geo = None, multiplicity = None):

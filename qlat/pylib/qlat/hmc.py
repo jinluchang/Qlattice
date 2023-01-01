@@ -9,7 +9,7 @@ from qlat.elem_type import *
 class GaugeMomentum(FieldColorMatrix):
 
     def __init__(self, geo = None):
-        super().__init__(self, geo, 4)
+        super().__init__(geo, 4)
 
     def set_rand(self, rng, sigma = 1.0):
         set_rand_gauge_momentum(self, sigma, rng)
