@@ -24,16 +24,16 @@ def end_with_gpt():
     q.end()
 
 def mk_qlat_gpt_copy_plan_key(ctype, total_site, multiplicity, tag):
-    return ctype + "," + str(list(total_site)) + "," + str(multiplicity) + "," + tag
+    return ctype.name + "," + str(list(total_site)) + "," + str(multiplicity) + "," + tag
 
 def mk_gpt_field(ctype, geo):
-    if ctype == "ColorMatrix":
+    if ctype is q.ElemTypeColorMatrix:
         return g.mcolor(mk_grid(geo))
-    elif ctype == "WilsonMatrix":
+    elif ctype == q.ElemTypeWilsonMatrix:
         return g.mspincolor(mk_grid(geo))
-    elif ctype == "WilsonVector":
+    elif ctype == q.ElemTypeWilsonVector:
         return g.vspincolor(mk_grid(geo))
-    elif ctype == "Complex":
+    elif ctype == q.ElemTypeComplex:
         return g.complex(mk_grid(geo))
     else:
         raise Exception("make_gpt_field")
@@ -94,7 +94,7 @@ def get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag):
 @q.timer
 def qlat_from_gpt_gauge_field(gpt_gf):
     assert len(gpt_gf) == 4
-    ctype = "ColorMatrix"
+    ctype = q.ElemTypeColorMatrix
     total_site = gpt_gf[0].grid.fdimensions
     multiplicity = 1
     tag = "qlat_from_gpt"
@@ -112,7 +112,7 @@ def qlat_from_gpt_gauge_field(gpt_gf):
 def gpt_from_qlat_gauge_field(gf):
     assert isinstance(gf, q.GaugeField)
     geo = gf.geo()
-    ctype = "ColorMatrix"
+    ctype = q.ElemTypeColorMatrix
     total_site = geo.total_site()
     multiplicity = 1
     tag = "gpt_from_qlat"
@@ -130,7 +130,7 @@ def gpt_from_qlat_gauge_field(gf):
 
 @q.timer
 def qlat_from_gpt_gauge_transform(gpt_gt):
-    ctype = "ColorMatrix"
+    ctype = q.ElemTypeColorMatrix
     total_site = gpt_gt.grid.fdimensions
     multiplicity = 1
     tag = "qlat_from_gpt"
@@ -144,7 +144,7 @@ def qlat_from_gpt_gauge_transform(gpt_gt):
 def gpt_from_qlat_gauge_transform(gt):
     assert isinstance(gt, q.GaugeTransform)
     geo = gt.geo()
-    ctype = "ColorMatrix"
+    ctype = q.ElemTypeColorMatrix
     total_site = geo.total_site()
     multiplicity = 1
     tag = "gpt_from_qlat"
@@ -156,7 +156,7 @@ def gpt_from_qlat_gauge_transform(gt):
 
 @q.timer
 def qlat_from_gpt_prop(gpt_prop):
-    ctype = "WilsonMatrix"
+    ctype = q.ElemTypeWilsonMatrix
     total_site = gpt_prop.grid.fdimensions
     multiplicity = 1
     tag = "qlat_from_gpt"
@@ -171,7 +171,7 @@ def qlat_from_gpt_prop(gpt_prop):
 def gpt_from_qlat_prop(prop_wm):
     assert isinstance(prop_wm, q.Prop)
     geo = prop_wm.geo()
-    ctype = "WilsonMatrix"
+    ctype = q.ElemTypeWilsonMatrix
     total_site = geo.total_site()
     multiplicity = 1
     tag = "gpt_from_qlat"
@@ -184,7 +184,7 @@ def gpt_from_qlat_prop(prop_wm):
 
 @q.timer
 def qlat_from_gpt_ff4d(gpt_ff):
-    ctype = "WilsonVector"
+    ctype = q.ElemTypeWilsonVector
     total_site = gpt_ff.grid.fdimensions
     multiplicity = 1
     tag = "qlat_from_gpt"
@@ -198,7 +198,7 @@ def qlat_from_gpt_ff4d(gpt_ff):
 def gpt_from_qlat_ff4d(ff):
     assert isinstance(ff, q.FermionField4d)
     geo = ff.geo()
-    ctype = "WilsonVector"
+    ctype = q.ElemTypeWilsonVector
     total_site = geo.total_site()
     multiplicity = 1
     tag = "gpt_from_qlat"
@@ -212,7 +212,7 @@ def gpt_from_qlat_ff4d(ff):
 def qlat_from_gpt_complex(gpt_fcs):
     assert isinstance(gpt_fcs, list)
     assert len(gpt_fcs) >= 1
-    ctype = "Complex"
+    ctype = q.ElemTypeComplex
     total_site = gpt_fcs[0].grid.fdimensions
     multiplicity = 1
     tag = "qlat_from_gpt"
@@ -232,8 +232,8 @@ def qlat_from_gpt_complex(gpt_fcs):
 def gpt_from_qlat_complex(fc):
     assert isinstance(fc, q.Field)
     geo = fc.geo()
-    ctype = "Complex"
-    assert fc.ctype == ctype
+    ctype = q.ElemTypeComplex
+    assert fc.ctype is ctype
     total_site = geo.total_site()
     multiplicity = 1
     tag = "gpt_from_qlat"
@@ -312,7 +312,7 @@ def gpt_from_qlat(obj):
         return gpt_from_qlat_gauge_field(obj)
     elif isinstance(obj, q.FermionField4d):
         return gpt_from_qlat_ff4d(obj)
-    elif isinstance(obj, q.Field) and obj.ctype == "Complex":
+    elif isinstance(obj, q.Field) and obj.ctype is q.ElemTypeComplex:
         return gpt_from_qlat_complex(obj)
     elif isinstance(obj, list):
         return [ gpt_from_qlat(p) for p in obj ]

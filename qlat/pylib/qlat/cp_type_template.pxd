@@ -4,4 +4,6 @@ cdef class ElemTypeTYPENAME(ElemType):
 
 cdef class FieldTYPENAME(Field):
 
-    pass
+    cdef cqlat.Field[cqlat.TYPENAME] xx
+
+    cdef readonly long cdata
