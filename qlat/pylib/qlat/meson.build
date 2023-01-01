@@ -44,6 +44,7 @@ foreach ti: type_info_list
     output: f'cp_type_@fn@_pxd.pxi',
     input: 'cp_type_template.pxd',
     command: [ cp_type_gen, f'@name@', '@INPUT@', '@OUTPUT@', ],
+    depend_files: cp_type_gen,
     install: true,
     install_dir: py3.get_install_dir() / 'qlat',
     )
@@ -51,6 +52,7 @@ foreach ti: type_info_list
     output: f'cp_type_@fn@_pyx.pxi',
     input: 'cp_type_template.pyx',
     command: [ cp_type_gen, f'@name@', '@INPUT@', '@OUTPUT@', ],
+    depend_files: cp_type_gen,
     install: false,
     )
   cp_type_pxd_list += cp_type_pxd
@@ -67,6 +69,7 @@ cp_pxd = custom_target(f'cp_pxd',
   input: 'cp_template.pxd',
   command: [ cp_gen, '@INPUT@', '@OUTPUT@', ] + cp_type_pxd_fn_list,
   depends: cp_type_pxd_list,
+  depend_files: cp_gen,
   install: true,
   install_dir: py3.get_install_dir() / 'qlat',
   )
@@ -76,6 +79,7 @@ cp_pyx = custom_target(f'cp_pyx',
   input: 'cp_template.pyx',
   command: [ cp_gen, '@INPUT@', '@OUTPUT@', ] + cp_type_pyx_fn_list,
   depends: cp_type_pyx_list + cp_pxd + copy_pxd,
+  depend_files: cp_gen,
   install: false,
   )
 
@@ -94,6 +98,7 @@ elem_type = custom_target(f'elem_type_py',
   output: 'elem_type.py',
   input: 'elem_type_template.py',
   command: [ elem_type_gen, '@INPUT@', '@OUTPUT@', ] + cp_type_name_list,
+  depend_files: elem_type_gen,
   install: true,
   install_dir: py3.get_install_dir() / 'qlat',
   )
