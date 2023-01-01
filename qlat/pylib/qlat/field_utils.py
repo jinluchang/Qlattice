@@ -10,7 +10,7 @@ def field_expanded(f, expansion_left, expansion_right):
     geo = f.geo()
     multiplicity = geo.multiplicity()
     geo_e = geo_reform(geo, multiplicity, expansion_left, expansion_right)
-    f_e = type(f)(ctype = f.ctype, geo = geo_e)
+    f_e = type(f)(geo = geo_e)
     f_e @= f
     return f_e
 

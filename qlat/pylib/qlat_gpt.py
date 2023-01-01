@@ -100,7 +100,7 @@ def qlat_from_gpt_gauge_field(gpt_gf):
     tag = "qlat_from_gpt"
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
     geo = q.Geometry(total_site, 1)
-    fs = [ q.Field(ctype, geo) for i in range(4)]
+    fs = [ q.FieldColorMatrix(geo) for i in range(4)]
     assert len(fs) == 4
     for i in range(4):
         plan(fs[i].mview(), gpt_gf[i])
@@ -219,21 +219,20 @@ def qlat_from_gpt_complex(gpt_fcs):
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
     geo = q.Geometry(total_site, 1)
     n = len(gpt_fcs)
-    fs = [ q.Field(ctype, geo) for i in range(n) ]
+    fs = [ q.FieldComplex(geo) for i in range(n) ]
     for i in range(n):
         plan(fs[i].mview(), gpt_fcs[i])
     if n == 1:
         return fs[0]
-    ff = q.Field(ctype, q.Geometry(total_site, n))
+    ff = q.FieldComplex(q.Geometry(total_site, n))
     q.merge_fields(ff, fs)
     return ff
 
 @q.timer
 def gpt_from_qlat_complex(fc):
-    assert isinstance(fc, q.Field)
+    assert isinstance(fc, q.FieldComplex)
     geo = fc.geo()
     ctype = q.ElemTypeComplex
-    assert fc.ctype is ctype
     total_site = geo.total_site()
     multiplicity = 1
     tag = "gpt_from_qlat"
@@ -312,7 +311,7 @@ def gpt_from_qlat(obj):
         return gpt_from_qlat_gauge_field(obj)
     elif isinstance(obj, q.FermionField4d):
         return gpt_from_qlat_ff4d(obj)
-    elif isinstance(obj, q.Field) and obj.ctype is q.ElemTypeComplex:
+    elif isinstance(obj, q.FieldComplex):
         return gpt_from_qlat_complex(obj)
     elif isinstance(obj, list):
         return [ gpt_from_qlat(p) for p in obj ]
