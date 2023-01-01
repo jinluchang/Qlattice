@@ -181,14 +181,11 @@ cdef class ElemTypeLong(ElemType):
     name = "Long"
     @staticmethod
     cdef char* buffer_format():
-        if sizeof(cc.Long) == 8:
-            cdef char* fmt = 'q'
-            return fmt
-        elif sizeof(cc.Long) == 4:
-            cdef char* fmt = 'l'
-            return fmt
-        else:
-            assert False
+        cdef char* fmt = 'q'
+        if not sizeof(cc.Long) == 8:
+            assert sizeof(cc.Long) == 4
+            fmt = 'l'
+        return fmt
     @staticmethod
     cdef Py_ssize_t buffer_itemsize():
         return sizeof(cc.Long)
