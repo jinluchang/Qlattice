@@ -18,17 +18,17 @@ cdef class ElemType:
 cdef class ElemTypeColorMatrix(ElemType):
     name = "ColorMatrix"
     @staticmethod
-    cdef char* buffer_format():
+    cdef char* format():
         cdef char* fmt = 'Zd'
         return fmt
     @staticmethod
-    cdef Py_ssize_t buffer_itemsize():
+    cdef Py_ssize_t itemsize():
         return sizeof(cc.Complex)
     @staticmethod
-    cdef int buffer_ndim():
+    cdef int ndim():
         return 2
     @staticmethod
-    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+    cdef cc.std_vector[Py_ssize_t] shape():
         return cc.std_vector[Py_ssize_t](2, 3)
     @staticmethod
     cdef Py_ssize_t size():
@@ -36,17 +36,17 @@ cdef class ElemTypeColorMatrix(ElemType):
 cdef class ElemTypeWilsonMatrix(ElemType):
     name = "WilsonMatrix"
     @staticmethod
-    cdef char* buffer_format():
+    cdef char* format():
         cdef char* fmt = 'Zd'
         return fmt
     @staticmethod
-    cdef Py_ssize_t buffer_itemsize():
+    cdef Py_ssize_t itemsize():
         return sizeof(cc.Complex)
     @staticmethod
-    cdef int buffer_ndim():
+    cdef int ndim():
         return 2
     @staticmethod
-    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+    cdef cc.std_vector[Py_ssize_t] shape():
         return cc.std_vector[Py_ssize_t](2, 12)
     @staticmethod
     cdef Py_ssize_t size():
@@ -54,17 +54,17 @@ cdef class ElemTypeWilsonMatrix(ElemType):
 cdef class ElemTypeNonRelWilsonMatrix(ElemType):
     name = "NonRelWilsonMatrix"
     @staticmethod
-    cdef char* buffer_format():
+    cdef char* format():
         cdef char* fmt = 'Zd'
         return fmt
     @staticmethod
-    cdef Py_ssize_t buffer_itemsize():
+    cdef Py_ssize_t itemsize():
         return sizeof(cc.Complex)
     @staticmethod
-    cdef int buffer_ndim():
+    cdef int ndim():
         return 2
     @staticmethod
-    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+    cdef cc.std_vector[Py_ssize_t] shape():
         return cc.std_vector[Py_ssize_t](2, 6)
     @staticmethod
     cdef Py_ssize_t size():
@@ -72,17 +72,17 @@ cdef class ElemTypeNonRelWilsonMatrix(ElemType):
 cdef class ElemTypeSpinMatrix(ElemType):
     name = "SpinMatrix"
     @staticmethod
-    cdef char* buffer_format():
+    cdef char* format():
         cdef char* fmt = 'Zd'
         return fmt
     @staticmethod
-    cdef Py_ssize_t buffer_itemsize():
+    cdef Py_ssize_t itemsize():
         return sizeof(cc.Complex)
     @staticmethod
-    cdef int buffer_ndim():
+    cdef int ndim():
         return 2
     @staticmethod
-    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+    cdef cc.std_vector[Py_ssize_t] shape():
         return cc.std_vector[Py_ssize_t](2, 4)
     @staticmethod
     cdef Py_ssize_t size():
@@ -90,17 +90,17 @@ cdef class ElemTypeSpinMatrix(ElemType):
 cdef class ElemTypeWilsonVector(ElemType):
     name = "WilsonVector"
     @staticmethod
-    cdef char* buffer_format():
+    cdef char* format():
         cdef char* fmt = 'Zd'
         return fmt
     @staticmethod
-    cdef Py_ssize_t buffer_itemsize():
+    cdef Py_ssize_t itemsize():
         return sizeof(cc.Complex)
     @staticmethod
-    cdef int buffer_ndim():
+    cdef int ndim():
         return 1
     @staticmethod
-    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+    cdef cc.std_vector[Py_ssize_t] shape():
         return cc.std_vector[Py_ssize_t](1, 12)
     @staticmethod
     cdef Py_ssize_t size():
@@ -108,17 +108,17 @@ cdef class ElemTypeWilsonVector(ElemType):
 cdef class ElemTypeComplex(ElemType):
     name = "Complex"
     @staticmethod
-    cdef char* buffer_format():
+    cdef char* format():
         cdef char* fmt = 'Zd'
         return fmt
     @staticmethod
-    cdef Py_ssize_t buffer_itemsize():
+    cdef Py_ssize_t itemsize():
         return sizeof(cc.Complex)
     @staticmethod
-    cdef int buffer_ndim():
+    cdef int ndim():
         return 0
     @staticmethod
-    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+    cdef cc.std_vector[Py_ssize_t] shape():
         return cc.std_vector[Py_ssize_t]()
     @staticmethod
     cdef Py_ssize_t size():
@@ -126,17 +126,17 @@ cdef class ElemTypeComplex(ElemType):
 cdef class ElemTypeComplexF(ElemType):
     name = "ComplexF"
     @staticmethod
-    cdef char* buffer_format():
+    cdef char* format():
         cdef char* fmt = 'Zf'
         return fmt
     @staticmethod
-    cdef Py_ssize_t buffer_itemsize():
+    cdef Py_ssize_t itemsize():
         return sizeof(cc.ComplexF)
     @staticmethod
-    cdef int buffer_ndim():
+    cdef int ndim():
         return 0
     @staticmethod
-    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+    cdef cc.std_vector[Py_ssize_t] shape():
         return cc.std_vector[Py_ssize_t]()
     @staticmethod
     cdef Py_ssize_t size():
@@ -144,17 +144,17 @@ cdef class ElemTypeComplexF(ElemType):
 cdef class ElemTypeDouble(ElemType):
     name = "Double"
     @staticmethod
-    cdef char* buffer_format():
+    cdef char* format():
         cdef char* fmt = 'd'
         return fmt
     @staticmethod
-    cdef Py_ssize_t buffer_itemsize():
+    cdef Py_ssize_t itemsize():
         return sizeof(cc.Double)
     @staticmethod
-    cdef int buffer_ndim():
+    cdef int ndim():
         return 0
     @staticmethod
-    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+    cdef cc.std_vector[Py_ssize_t] shape():
         return cc.std_vector[Py_ssize_t]()
     @staticmethod
     cdef Py_ssize_t size():
@@ -162,17 +162,17 @@ cdef class ElemTypeDouble(ElemType):
 cdef class ElemTypeFloat(ElemType):
     name = "Float"
     @staticmethod
-    cdef char* buffer_format():
+    cdef char* format():
         cdef char* fmt = 'f'
         return fmt
     @staticmethod
-    cdef Py_ssize_t buffer_itemsize():
+    cdef Py_ssize_t itemsize():
         return sizeof(cc.Float)
     @staticmethod
-    cdef int buffer_ndim():
+    cdef int ndim():
         return 0
     @staticmethod
-    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+    cdef cc.std_vector[Py_ssize_t] shape():
         return cc.std_vector[Py_ssize_t]()
     @staticmethod
     cdef Py_ssize_t size():
@@ -180,20 +180,20 @@ cdef class ElemTypeFloat(ElemType):
 cdef class ElemTypeLong(ElemType):
     name = "Long"
     @staticmethod
-    cdef char* buffer_format():
+    cdef char* format():
         cdef char* fmt = 'q'
         if not sizeof(cc.Long) == 8:
             assert sizeof(cc.Long) == 4
             fmt = 'l'
         return fmt
     @staticmethod
-    cdef Py_ssize_t buffer_itemsize():
+    cdef Py_ssize_t itemsize():
         return sizeof(cc.Long)
     @staticmethod
-    cdef int buffer_ndim():
+    cdef int ndim():
         return 0
     @staticmethod
-    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+    cdef cc.std_vector[Py_ssize_t] shape():
         return cc.std_vector[Py_ssize_t]()
     @staticmethod
     cdef Py_ssize_t size():
@@ -201,17 +201,17 @@ cdef class ElemTypeLong(ElemType):
 cdef class ElemTypeInt64t(ElemType):
     name = "Int64t"
     @staticmethod
-    cdef char* buffer_format():
+    cdef char* format():
         cdef char* fmt = 'q'
         return fmt
     @staticmethod
-    cdef Py_ssize_t buffer_itemsize():
+    cdef Py_ssize_t itemsize():
         return sizeof(cc.Int64t)
     @staticmethod
-    cdef int buffer_ndim():
+    cdef int ndim():
         return 0
     @staticmethod
-    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+    cdef cc.std_vector[Py_ssize_t] shape():
         return cc.std_vector[Py_ssize_t]()
     @staticmethod
     cdef Py_ssize_t size():
@@ -219,17 +219,17 @@ cdef class ElemTypeInt64t(ElemType):
 cdef class ElemTypeInt8t(ElemType):
     name = "Int8t"
     @staticmethod
-    cdef char* buffer_format():
+    cdef char* format():
         cdef char* fmt = 'b'
         return fmt
     @staticmethod
-    cdef Py_ssize_t buffer_itemsize():
+    cdef Py_ssize_t itemsize():
         return sizeof(cc.Int8t)
     @staticmethod
-    cdef int buffer_ndim():
+    cdef int ndim():
         return 0
     @staticmethod
-    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+    cdef cc.std_vector[Py_ssize_t] shape():
         return cc.std_vector[Py_ssize_t]()
     @staticmethod
     cdef Py_ssize_t size():
@@ -237,17 +237,17 @@ cdef class ElemTypeInt8t(ElemType):
 cdef class ElemTypeChar(ElemType):
     name = "Char"
     @staticmethod
-    cdef char* buffer_format():
+    cdef char* format():
         cdef char* fmt = 'c'
         return fmt
     @staticmethod
-    cdef Py_ssize_t buffer_itemsize():
+    cdef Py_ssize_t itemsize():
         return sizeof(cc.Char)
     @staticmethod
-    cdef int buffer_ndim():
+    cdef int ndim():
         return 0
     @staticmethod
-    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+    cdef cc.std_vector[Py_ssize_t] shape():
         return cc.std_vector[Py_ssize_t]()
     @staticmethod
     cdef Py_ssize_t size():
@@ -551,15 +551,19 @@ cdef class WilsonMatrix:
         cc.set_zero(self.xx)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
-        cdef Buffer buf = Buffer(self, 2, sizeof(cc.Complex))
+        ctypedef ET = ElemTypeWilsonMatrix
+        cdef Buffer buf = Buffer(self, ET.ndim(), ET.itemsize())
         cdef Py_ssize_t* shape = &buf.shape_strides[0]
         cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
-        shape[0] = 12
-        shape[1] = 12
+        cdef cc.std_vector[Py_ssize_t] vec = ET.shape()
+        assert vec.size() == buf.ndim
+        cdef int i
+        for i in range(buf.ndim):
+            shape[i] = vec[i]
         buf.set_strides()
         buffer.buf = <char*>&(self.xx.p)
         if flags & PyBUF_FORMAT:
-            buffer.format = 'Zd'
+            buffer.format = ET.format()
         else:
             buffer.format = NULL
         buffer.internal = NULL
@@ -605,15 +609,19 @@ cdef class SpinMatrix:
         cc.set_zero(self.xx)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
-        cdef Buffer buf = Buffer(self, 2, sizeof(cc.Complex))
+        ctypedef ET = ElemTypeWilsonMatrix
+        cdef Buffer buf = Buffer(self, ET.ndim(), ET.itemsize())
         cdef Py_ssize_t* shape = &buf.shape_strides[0]
         cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
-        shape[0] = 4
-        shape[1] = 4
+        cdef cc.std_vector[Py_ssize_t] vec = ET.shape()
+        assert vec.size() == buf.ndim
+        cdef int i
+        for i in range(buf.ndim):
+            shape[i] = vec[i]
         buf.set_strides()
         buffer.buf = <char*>&(self.xx.p)
         if flags & PyBUF_FORMAT:
-            buffer.format = 'Zd'
+            buffer.format = ET.format()
         else:
             buffer.format = NULL
         buffer.internal = NULL
