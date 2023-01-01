@@ -13,6 +13,8 @@ cdef class ElemTypeColorMatrix(ElemType):
     cdef int buffer_ndim()
     @staticmethod
     cdef cqlat_utils.std_vector[Py_ssize_t] buffer_shape()
+    @staticmethod
+    cdef Py_ssize_t size()
 cdef class ElemTypeWilsonMatrix(ElemType):
     @staticmethod
     cdef char* buffer_format()
@@ -22,6 +24,8 @@ cdef class ElemTypeWilsonMatrix(ElemType):
     cdef int buffer_ndim()
     @staticmethod
     cdef cqlat_utils.std_vector[Py_ssize_t] buffer_shape()
+    @staticmethod
+    cdef Py_ssize_t size()
 cdef class ElemTypeNonRelWilsonMatrix(ElemType):
     @staticmethod
     cdef char* buffer_format()
@@ -31,6 +35,8 @@ cdef class ElemTypeNonRelWilsonMatrix(ElemType):
     cdef int buffer_ndim()
     @staticmethod
     cdef cqlat_utils.std_vector[Py_ssize_t] buffer_shape()
+    @staticmethod
+    cdef Py_ssize_t size()
 cdef class ElemTypeSpinMatrix(ElemType):
     @staticmethod
     cdef char* buffer_format()
@@ -40,6 +46,8 @@ cdef class ElemTypeSpinMatrix(ElemType):
     cdef int buffer_ndim()
     @staticmethod
     cdef cqlat_utils.std_vector[Py_ssize_t] buffer_shape()
+    @staticmethod
+    cdef Py_ssize_t size()
 cdef class ElemTypeWilsonVector(ElemType):
     @staticmethod
     cdef char* buffer_format()
@@ -49,6 +57,8 @@ cdef class ElemTypeWilsonVector(ElemType):
     cdef int buffer_ndim()
     @staticmethod
     cdef cqlat_utils.std_vector[Py_ssize_t] buffer_shape()
+    @staticmethod
+    cdef Py_ssize_t size()
 cdef class ElemTypeComplex(ElemType):
     @staticmethod
     cdef char* buffer_format()
@@ -58,6 +68,8 @@ cdef class ElemTypeComplex(ElemType):
     cdef int buffer_ndim()
     @staticmethod
     cdef cqlat_utils.std_vector[Py_ssize_t] buffer_shape()
+    @staticmethod
+    cdef Py_ssize_t size()
 cdef class ElemTypeComplexF(ElemType):
     @staticmethod
     cdef char* buffer_format()
@@ -67,6 +79,8 @@ cdef class ElemTypeComplexF(ElemType):
     cdef int buffer_ndim()
     @staticmethod
     cdef cqlat_utils.std_vector[Py_ssize_t] buffer_shape()
+    @staticmethod
+    cdef Py_ssize_t size()
 cdef class ElemTypeDouble(ElemType):
     @staticmethod
     cdef char* buffer_format()
@@ -76,6 +90,8 @@ cdef class ElemTypeDouble(ElemType):
     cdef int buffer_ndim()
     @staticmethod
     cdef cqlat_utils.std_vector[Py_ssize_t] buffer_shape()
+    @staticmethod
+    cdef Py_ssize_t size()
 cdef class ElemTypeFloat(ElemType):
     @staticmethod
     cdef char* buffer_format()
@@ -85,6 +101,8 @@ cdef class ElemTypeFloat(ElemType):
     cdef int buffer_ndim()
     @staticmethod
     cdef cqlat_utils.std_vector[Py_ssize_t] buffer_shape()
+    @staticmethod
+    cdef Py_ssize_t size()
 cdef class ElemTypeLong(ElemType):
     @staticmethod
     cdef char* buffer_format()
@@ -94,6 +112,8 @@ cdef class ElemTypeLong(ElemType):
     cdef int buffer_ndim()
     @staticmethod
     cdef cqlat_utils.std_vector[Py_ssize_t] buffer_shape()
+    @staticmethod
+    cdef Py_ssize_t size()
 cdef class ElemTypeInt64t(ElemType):
     @staticmethod
     cdef char* buffer_format()
@@ -103,6 +123,8 @@ cdef class ElemTypeInt64t(ElemType):
     cdef int buffer_ndim()
     @staticmethod
     cdef cqlat_utils.std_vector[Py_ssize_t] buffer_shape()
+    @staticmethod
+    cdef Py_ssize_t size()
 cdef class ElemTypeInt8t(ElemType):
     @staticmethod
     cdef char* buffer_format()
@@ -112,6 +134,8 @@ cdef class ElemTypeInt8t(ElemType):
     cdef int buffer_ndim()
     @staticmethod
     cdef cqlat_utils.std_vector[Py_ssize_t] buffer_shape()
+    @staticmethod
+    cdef Py_ssize_t size()
 cdef class ElemTypeChar(ElemType):
     @staticmethod
     cdef char* buffer_format()
@@ -121,6 +145,8 @@ cdef class ElemTypeChar(ElemType):
     cdef int buffer_ndim()
     @staticmethod
     cdef cqlat_utils.std_vector[Py_ssize_t] buffer_shape()
+    @staticmethod
+    cdef Py_ssize_t size()
 
 ### -------------------------------------------------------------------
 

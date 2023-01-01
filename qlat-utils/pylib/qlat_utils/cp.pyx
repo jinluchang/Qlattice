@@ -30,6 +30,9 @@ cdef class ElemTypeColorMatrix(ElemType):
     @staticmethod
     cdef cc.std_vector[Py_ssize_t] buffer_shape():
         return cc.std_vector[Py_ssize_t](2, 3)
+    @staticmethod
+    cdef Py_ssize_t size():
+        return sizeof(cc.ColorMatrix)
 cdef class ElemTypeWilsonMatrix(ElemType):
     name = "WilsonMatrix"
     @staticmethod
@@ -45,6 +48,9 @@ cdef class ElemTypeWilsonMatrix(ElemType):
     @staticmethod
     cdef cc.std_vector[Py_ssize_t] buffer_shape():
         return cc.std_vector[Py_ssize_t](2, 12)
+    @staticmethod
+    cdef Py_ssize_t size():
+        return sizeof(cc.WilsonMatrix)
 cdef class ElemTypeNonRelWilsonMatrix(ElemType):
     name = "NonRelWilsonMatrix"
     @staticmethod
@@ -60,6 +66,9 @@ cdef class ElemTypeNonRelWilsonMatrix(ElemType):
     @staticmethod
     cdef cc.std_vector[Py_ssize_t] buffer_shape():
         return cc.std_vector[Py_ssize_t](2, 6)
+    @staticmethod
+    cdef Py_ssize_t size():
+        return sizeof(cc.NonRelWilsonMatrix)
 cdef class ElemTypeSpinMatrix(ElemType):
     name = "SpinMatrix"
     @staticmethod
@@ -75,6 +84,9 @@ cdef class ElemTypeSpinMatrix(ElemType):
     @staticmethod
     cdef cc.std_vector[Py_ssize_t] buffer_shape():
         return cc.std_vector[Py_ssize_t](2, 4)
+    @staticmethod
+    cdef Py_ssize_t size():
+        return sizeof(cc.SpinMatrix)
 cdef class ElemTypeWilsonVector(ElemType):
     name = "WilsonVector"
     @staticmethod
@@ -90,6 +102,9 @@ cdef class ElemTypeWilsonVector(ElemType):
     @staticmethod
     cdef cc.std_vector[Py_ssize_t] buffer_shape():
         return cc.std_vector[Py_ssize_t](1, 12)
+    @staticmethod
+    cdef Py_ssize_t size():
+        return sizeof(cc.WilsonVector)
 cdef class ElemTypeComplex(ElemType):
     name = "Complex"
     @staticmethod
@@ -105,6 +120,9 @@ cdef class ElemTypeComplex(ElemType):
     @staticmethod
     cdef cc.std_vector[Py_ssize_t] buffer_shape():
         return cc.std_vector[Py_ssize_t]()
+    @staticmethod
+    cdef Py_ssize_t size():
+        return sizeof(cc.Complex)
 cdef class ElemTypeComplexF(ElemType):
     name = "ComplexF"
     @staticmethod
@@ -120,6 +138,9 @@ cdef class ElemTypeComplexF(ElemType):
     @staticmethod
     cdef cc.std_vector[Py_ssize_t] buffer_shape():
         return cc.std_vector[Py_ssize_t]()
+    @staticmethod
+    cdef Py_ssize_t size():
+        return sizeof(cc.ComplexF)
 cdef class ElemTypeDouble(ElemType):
     name = "Double"
     @staticmethod
@@ -135,6 +156,9 @@ cdef class ElemTypeDouble(ElemType):
     @staticmethod
     cdef cc.std_vector[Py_ssize_t] buffer_shape():
         return cc.std_vector[Py_ssize_t]()
+    @staticmethod
+    cdef Py_ssize_t size():
+        return sizeof(cc.Double)
 cdef class ElemTypeFloat(ElemType):
     name = "Float"
     @staticmethod
@@ -150,12 +174,21 @@ cdef class ElemTypeFloat(ElemType):
     @staticmethod
     cdef cc.std_vector[Py_ssize_t] buffer_shape():
         return cc.std_vector[Py_ssize_t]()
+    @staticmethod
+    cdef Py_ssize_t size():
+        return sizeof(cc.Float)
 cdef class ElemTypeLong(ElemType):
     name = "Long"
     @staticmethod
     cdef char* buffer_format():
-        cdef char* fmt = 'q'
-        return fmt
+        if sizeof(cc.Long) == 8:
+            cdef char* fmt = 'q'
+            return fmt
+        elif sizeof(cc.Long) == 4:
+            cdef char* fmt = 'l'
+            return fmt
+        else:
+            assert False
     @staticmethod
     cdef Py_ssize_t buffer_itemsize():
         return sizeof(cc.Long)
@@ -165,6 +198,9 @@ cdef class ElemTypeLong(ElemType):
     @staticmethod
     cdef cc.std_vector[Py_ssize_t] buffer_shape():
         return cc.std_vector[Py_ssize_t]()
+    @staticmethod
+    cdef Py_ssize_t size():
+        return sizeof(cc.Long)
 cdef class ElemTypeInt64t(ElemType):
     name = "Int64t"
     @staticmethod
@@ -180,6 +216,9 @@ cdef class ElemTypeInt64t(ElemType):
     @staticmethod
     cdef cc.std_vector[Py_ssize_t] buffer_shape():
         return cc.std_vector[Py_ssize_t]()
+    @staticmethod
+    cdef Py_ssize_t size():
+        return sizeof(cc.Int64t)
 cdef class ElemTypeInt8t(ElemType):
     name = "Int8t"
     @staticmethod
@@ -195,6 +234,9 @@ cdef class ElemTypeInt8t(ElemType):
     @staticmethod
     cdef cc.std_vector[Py_ssize_t] buffer_shape():
         return cc.std_vector[Py_ssize_t]()
+    @staticmethod
+    cdef Py_ssize_t size():
+        return sizeof(cc.Int8t)
 cdef class ElemTypeChar(ElemType):
     name = "Char"
     @staticmethod
@@ -210,6 +252,9 @@ cdef class ElemTypeChar(ElemType):
     @staticmethod
     cdef cc.std_vector[Py_ssize_t] buffer_shape():
         return cc.std_vector[Py_ssize_t]()
+    @staticmethod
+    cdef Py_ssize_t size():
+        return sizeof(cc.Char)
 
 ### -------------------------------------------------------------------
 
