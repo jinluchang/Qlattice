@@ -113,7 +113,7 @@ struct API Geometry {
   }
   //
   qacc void init() { memset((void*)this, 0, sizeof(Geometry)); }
-  void init(const Coordinate total_site, const int multiplicity_)
+  void init(const Coordinate& total_site, const int multiplicity_)
   {
     if (!initialized) {
       init();
@@ -283,6 +283,8 @@ struct API Geometry {
     }
     return eo == 0 or eo_from_coordinate(x) == eo;
   }
+  //
+  qacc Coordinate local_site() const { return node_site; }
   //
   qacc long local_volume() const
   {

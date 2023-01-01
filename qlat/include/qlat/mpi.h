@@ -4,6 +4,7 @@
 #include <qlat/utils-coordinate.h>
 
 #include <qlat-utils/cache.h>
+#include <qlat-utils/lat-io.h>
 
 #ifndef QLAT_NO_MALLOPT
 #include <malloc.h>
