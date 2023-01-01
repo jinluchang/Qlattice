@@ -4,11 +4,12 @@ import qlat.c as c
 from qlat.field import *
 from qlat.qcd import *
 from qlat.gauge_action import *
+from qlat.elem_type import *
 
-class GaugeMomentum(Field):
+class GaugeMomentum(FieldColorMatrix):
 
-    def __init__(self, geo = None, *, ctype = None, multiplicity = None):
-        Field.__init__(self, c.ElemTypeColorMatrix, geo, 4)
+    def __init__(self, geo = None):
+        super().__init__(self, geo, 4)
 
     def set_rand(self, rng, sigma = 1.0):
         set_rand_gauge_momentum(self, sigma, rng)

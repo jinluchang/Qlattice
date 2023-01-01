@@ -4,6 +4,7 @@ cdef extern from "qlat/geometry.h" namespace "qlat":
 
     cdef cppclass Geometry:
         Geometry()
+        const Geometry& operator=(const Geometry& geo)
         void init()
         void init(Coordinate& total_site, int multiplicity)
         Coordinate total_site()
@@ -19,3 +20,4 @@ cdef extern from "qlat/geometry.h" namespace "qlat":
     Geometry geo_reform(const Geometry& geo, int multiplicity, int thick)
     Geometry geo_reform(const Geometry& geo, int multiplicity,
                         const Coordinate& expansion_left, const Coordinate& expansion_right)
+    Geometry geo_eo(const Geometry& geo, int eo)

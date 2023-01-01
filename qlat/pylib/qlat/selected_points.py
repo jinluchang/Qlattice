@@ -39,7 +39,7 @@ class SelectedPoints:
         elif isinstance(f1, SelectedField):
             # only assign available points
             c.set_spfield_sfield(self, f1)
-        elif isinstance(f1, Field):
+        elif isinstance(f1, FieldBase):
             c.set_spfield_field(self, f1)
         else:
             raise Exception("SelectedPoints @= type mismatch")
@@ -190,7 +190,7 @@ def set_selected_points(sp, f):
     # deprecated use @=
     from qlat.selected_field import SelectedField
     assert isinstance(sp, SelectedPoints)
-    if isinstance(f, Field):
+    if isinstance(f, FieldBase):
         c.set_spfield_field(sp, f)
     elif isinstance(f, SelectedField):
         c.set_spfield_sfield(sp, f)

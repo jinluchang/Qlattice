@@ -36,7 +36,7 @@ class SelectedField:
                 c.set_sfield(self, f1)
             else:
                 c.set_sfield_sfield(self, f1)
-        elif isinstance(f1, Field):
+        elif isinstance(f1, FieldBase):
             c.set_sfield_field(self, f1)
         elif isinstance(f1, SelectedPoints):
             # psel may not have to be subset of fsel
@@ -305,7 +305,7 @@ def set_selected_field(sf, f):
     # deprecated use @=
     displayln_info("set_selected_field: deprecated")
     assert isinstance(sf, SelectedField)
-    if isinstance(f, Field):
+    if isinstance(f, FieldBase):
         c.set_sfield_field(sf, f)
     elif isinstance(f, SelectedField):
         c.set_sfield_sfield(sf, f)

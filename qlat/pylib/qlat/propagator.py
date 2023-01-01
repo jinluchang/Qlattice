@@ -7,10 +7,10 @@ from qlat.selected_field import *
 from qlat.selected_points import *
 from qlat.mat import *
 
-class Prop(Field):
+class Prop(FieldWilsonMatrix):
 
-    def __init__(self, geo = None, *, ctype = None, multiplicity = None):
-        Field.__init__(self, c.ElemTypeWilsonMatrix, geo, 1)
+    def __init__(self, geo = None):
+        super.__init__(self, geo, 1)
 
     def copy(self, is_copying_data = True):
         f = Prop()
@@ -133,7 +133,7 @@ def mk_rand_u1_src(sel, rs):
 @timer
 def get_rand_u1_sol(prop_sol, fu1, sel):
     assert isinstance(prop_sol, Prop)
-    assert isinstance(fu1, Field) and fu1.ctype == c.ElemTypeComplex
+    assert isinstance(fu1, FieldBase) and fu1.ctype == c.ElemTypeComplex
     if isinstance(sel, FieldSelection):
         fsel = sel
         s_prop = SelProp(fsel)
@@ -201,7 +201,7 @@ def flip_tpbc_with_tslice(prop, tslice_flip_tpbc):
 
 @timer
 def free_scalar_invert_mom_cfield(f, mass):
-    assert isinstance(f, Field)
+    assert isinstance(f, FieldBase)
     assert f.ctype == c.ElemTypeComplex
     c.free_scalar_invert_mom_cfield(f, mass)
 
@@ -214,10 +214,10 @@ def free_scalar_invert_cfield(src, mass):
     sol = fft_b * f
     return sol
 
-class FermionField4d(Field):
+class FermionField4d(FieldWilsonVector):
 
-    def __init__(self, geo = None, *, ctype = None, multiplicity = None):
-        Field.__init__(self, c.ElemTypeWilsonVector, geo, 1)
+    def __init__(self, geo = None):
+        super().__init__(self, geo, 1)
 
     def copy(self, is_copying_data = True):
         f = FermionField4d()

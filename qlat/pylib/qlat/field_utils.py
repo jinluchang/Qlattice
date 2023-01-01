@@ -75,11 +75,11 @@ class FastFourierTransform:
         self.mode_fft = mode_fft
 
     def __mul__(self, fields):
-        if isinstance(fields, Field):
+        if isinstance(fields, FieldBase):
             return (self * [ fields, ])[0]
         assert isinstance(fields, list)
         for f in fields:
-            assert isinstance(f, Field)
+            assert isinstance(f, FieldBase)
         fields = [ f.copy() for f in fields ]
         fft_dirs, fft_is_forwards = zip(*self.fft_infos)
         c.fft_fields(fields, fft_dirs, fft_is_forwards, self.mode_fft)
@@ -117,7 +117,7 @@ def mk_fft(is_forward, *, is_only_spatial = False, is_normalizing = False, mode_
 
 @timer
 def qnorm_field(f):
-    if isinstance(f, Field):
+    if isinstance(f, FieldBase):
         f_n = Field(c.ElemTypeDouble)
         c.qnorm_field_field(f_n, f)
     elif isinstance(f, SelectedField):
@@ -135,7 +135,7 @@ def qnorm_field(f):
 
 @timer
 def sqrt_double_field(f):
-    if isinstance(f, Field):
+    if isinstance(f, FieldBase):
         assert f.ctype is c.ElemTypeDouble
         f_ret = Field(c.ElemTypeDouble)
         c.set_sqrt_double_field(f_ret, f)
