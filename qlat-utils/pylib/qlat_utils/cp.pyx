@@ -551,11 +551,11 @@ cdef class WilsonMatrix:
         cc.set_zero(self.xx)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
-        ctypedef ET = ElemTypeWilsonMatrix
-        cdef Buffer buf = Buffer(self, ET.ndim(), ET.itemsize())
+        cdef Buffer buf = Buffer(self, ElemTypeWilsonMatrix.ndim(), ElemTypeWilsonMatrix.itemsize())
+        cdef cc.std_vector[Py_ssize_t] vec = ElemTypeWilsonMatrix.shape()
+        cdef char* fmt = ElemTypeWilsonMatrix.format()
         cdef Py_ssize_t* shape = &buf.shape_strides[0]
         cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
-        cdef cc.std_vector[Py_ssize_t] vec = ET.shape()
         assert vec.size() == buf.ndim
         cdef int i
         for i in range(buf.ndim):
@@ -563,7 +563,7 @@ cdef class WilsonMatrix:
         buf.set_strides()
         buffer.buf = <char*>&(self.xx.p)
         if flags & PyBUF_FORMAT:
-            buffer.format = ET.format()
+            buffer.format = fmt
         else:
             buffer.format = NULL
         buffer.internal = NULL
@@ -609,11 +609,11 @@ cdef class SpinMatrix:
         cc.set_zero(self.xx)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
-        ctypedef ET = ElemTypeWilsonMatrix
-        cdef Buffer buf = Buffer(self, ET.ndim(), ET.itemsize())
+        cdef Buffer buf = Buffer(self, ElemTypeSpinMatrix.ndim(), ElemTypeSpinMatrix.itemsize())
+        cdef cc.std_vector[Py_ssize_t] vec = ElemTypeSpinMatrix.shape()
+        cdef char* fmt = ElemTypeWilsonMatrix.format()
         cdef Py_ssize_t* shape = &buf.shape_strides[0]
         cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
-        cdef cc.std_vector[Py_ssize_t] vec = ET.shape()
         assert vec.size() == buf.ndim
         cdef int i
         for i in range(buf.ndim):
@@ -621,7 +621,7 @@ cdef class SpinMatrix:
         buf.set_strides()
         buffer.buf = <char*>&(self.xx.p)
         if flags & PyBUF_FORMAT:
-            buffer.format = ET.format()
+            buffer.format = fmt
         else:
             buffer.format = NULL
         buffer.internal = NULL
