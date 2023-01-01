@@ -7,8 +7,235 @@ import functools
 
 ### -------------------------------------------------------------------
 
-def flush():
-    cc.flush()
+cdef class ElemType:
+
+    name = ""
+
+### -------------------------------------------------------------------
+
+# ColorMatrix WilsonMatrix NonRelWilsonMatrix SpinMatrix WilsonVector Complex ComplexF Double Float Long Int64t Int8t Char
+
+cdef class ElemTypeColorMatrix(ElemType):
+    name = "ColorMatrix"
+    @staticmethod
+    cdef char* buffer_format():
+        cdef char* fmt = 'Zd'
+        return fmt
+    @staticmethod
+    cdef Py_ssize_t buffer_itemsize():
+        return sizeof(cc.Complex)
+    @staticmethod
+    cdef int buffer_ndim():
+        return 2
+    @staticmethod
+    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+        return cc.std_vector[Py_ssize_t](2, 3)
+cdef class ElemTypeWilsonMatrix(ElemType):
+    name = "WilsonMatrix"
+    @staticmethod
+    cdef char* buffer_format():
+        cdef char* fmt = 'Zd'
+        return fmt
+    @staticmethod
+    cdef Py_ssize_t buffer_itemsize():
+        return sizeof(cc.Complex)
+    @staticmethod
+    cdef int buffer_ndim():
+        return 2
+    @staticmethod
+    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+        return cc.std_vector[Py_ssize_t](2, 12)
+cdef class ElemTypeNonRelWilsonMatrix(ElemType):
+    name = "NonRelWilsonMatrix"
+    @staticmethod
+    cdef char* buffer_format():
+        cdef char* fmt = 'Zd'
+        return fmt
+    @staticmethod
+    cdef Py_ssize_t buffer_itemsize():
+        return sizeof(cc.Complex)
+    @staticmethod
+    cdef int buffer_ndim():
+        return 2
+    @staticmethod
+    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+        return cc.std_vector[Py_ssize_t](2, 6)
+cdef class ElemTypeSpinMatrix(ElemType):
+    name = "SpinMatrix"
+    @staticmethod
+    cdef char* buffer_format():
+        cdef char* fmt = 'Zd'
+        return fmt
+    @staticmethod
+    cdef Py_ssize_t buffer_itemsize():
+        return sizeof(cc.Complex)
+    @staticmethod
+    cdef int buffer_ndim():
+        return 2
+    @staticmethod
+    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+        return cc.std_vector[Py_ssize_t](2, 4)
+cdef class ElemTypeWilsonVector(ElemType):
+    name = "WilsonVector"
+    @staticmethod
+    cdef char* buffer_format():
+        cdef char* fmt = 'Zd'
+        return fmt
+    @staticmethod
+    cdef Py_ssize_t buffer_itemsize():
+        return sizeof(cc.Complex)
+    @staticmethod
+    cdef int buffer_ndim():
+        return 1
+    @staticmethod
+    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+        return cc.std_vector[Py_ssize_t](1, 12)
+cdef class ElemTypeComplex(ElemType):
+    name = "Complex"
+    @staticmethod
+    cdef char* buffer_format():
+        cdef char* fmt = 'Zd'
+        return fmt
+    @staticmethod
+    cdef Py_ssize_t buffer_itemsize():
+        return sizeof(cc.Complex)
+    @staticmethod
+    cdef int buffer_ndim():
+        return 0
+    @staticmethod
+    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+        return cc.std_vector[Py_ssize_t]()
+cdef class ElemTypeComplexF(ElemType):
+    name = "ComplexF"
+    @staticmethod
+    cdef char* buffer_format():
+        cdef char* fmt = 'Zf'
+        return fmt
+    @staticmethod
+    cdef Py_ssize_t buffer_itemsize():
+        return sizeof(cc.ComplexF)
+    @staticmethod
+    cdef int buffer_ndim():
+        return 0
+    @staticmethod
+    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+        return cc.std_vector[Py_ssize_t]()
+cdef class ElemTypeDouble(ElemType):
+    name = "Double"
+    @staticmethod
+    cdef char* buffer_format():
+        cdef char* fmt = 'd'
+        return fmt
+    @staticmethod
+    cdef Py_ssize_t buffer_itemsize():
+        return sizeof(cc.Double)
+    @staticmethod
+    cdef int buffer_ndim():
+        return 0
+    @staticmethod
+    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+        return cc.std_vector[Py_ssize_t]()
+cdef class ElemTypeFloat(ElemType):
+    name = "Float"
+    @staticmethod
+    cdef char* buffer_format():
+        cdef char* fmt = 'f'
+        return fmt
+    @staticmethod
+    cdef Py_ssize_t buffer_itemsize():
+        return sizeof(cc.Float)
+    @staticmethod
+    cdef int buffer_ndim():
+        return 0
+    @staticmethod
+    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+        return cc.std_vector[Py_ssize_t]()
+cdef class ElemTypeLong(ElemType):
+    name = "Long"
+    @staticmethod
+    cdef char* buffer_format():
+        cdef char* fmt = 'q'
+        return fmt
+    @staticmethod
+    cdef Py_ssize_t buffer_itemsize():
+        return sizeof(cc.Long)
+    @staticmethod
+    cdef int buffer_ndim():
+        return 0
+    @staticmethod
+    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+        return cc.std_vector[Py_ssize_t]()
+cdef class ElemTypeInt64t(ElemType):
+    name = "Int64t"
+    @staticmethod
+    cdef char* buffer_format():
+        cdef char* fmt = 'q'
+        return fmt
+    @staticmethod
+    cdef Py_ssize_t buffer_itemsize():
+        return sizeof(cc.Int64t)
+    @staticmethod
+    cdef int buffer_ndim():
+        return 0
+    @staticmethod
+    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+        return cc.std_vector[Py_ssize_t]()
+cdef class ElemTypeInt8t(ElemType):
+    name = "Int8t"
+    @staticmethod
+    cdef char* buffer_format():
+        cdef char* fmt = 'b'
+        return fmt
+    @staticmethod
+    cdef Py_ssize_t buffer_itemsize():
+        return sizeof(cc.Int8t)
+    @staticmethod
+    cdef int buffer_ndim():
+        return 0
+    @staticmethod
+    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+        return cc.std_vector[Py_ssize_t]()
+cdef class ElemTypeChar(ElemType):
+    name = "Char"
+    @staticmethod
+    cdef char* buffer_format():
+        cdef char* fmt = 'c'
+        return fmt
+    @staticmethod
+    cdef Py_ssize_t buffer_itemsize():
+        return sizeof(cc.Char)
+    @staticmethod
+    cdef int buffer_ndim():
+        return 0
+    @staticmethod
+    cdef cc.std_vector[Py_ssize_t] buffer_shape():
+        return cc.std_vector[Py_ssize_t]()
+
+### -------------------------------------------------------------------
+
+cdef class Timer:
+
+    def __cinit__(self, const cc.std_string& fname, cc.bool is_verbose = False):
+        self.xx = cc.Timer(fname)
+
+    def start(self):
+        self.xx.start(self.is_verbose)
+
+    def stop(self):
+        self.xx.stop(self.is_verbose)
+
+### -------------------------------------------------------------------
+
+cdef class TimerNone:
+
+    def __cinit__(self):
+        pass
+
+    def start(self):
+        pass
+
+    def stop(self):
+        pass
 
 ### -------------------------------------------------------------------
 
@@ -78,6 +305,9 @@ def timer_fork(long max_call_times_for_always_show_info = -1):
 def timer_merge():
     cc.Timer.merge()
 
+def flush():
+    cc.flush()
+
 ### -------------------------------------------------------------------
 
 def timer(func):
@@ -127,32 +357,6 @@ def timer_verbose_flops(func):
         qtimer.stop(is_verbose)
         return ret
     return qtimer_func
-
-### -------------------------------------------------------------------
-
-cdef class Timer:
-
-    def __cinit__(self, const cc.std_string& fname, cc.bool is_verbose = False):
-        self.xx = cc.Timer(fname)
-
-    def start(self):
-        self.xx.start(self.is_verbose)
-
-    def stop(self):
-        self.xx.stop(self.is_verbose)
-
-### -------------------------------------------------------------------
-
-cdef class TimerNone:
-
-    def __cinit__(self):
-        pass
-
-    def start(self):
-        pass
-
-    def stop(self):
-        pass
 
 ### -------------------------------------------------------------------
 

@@ -2,6 +2,21 @@ import qlat_utils.c as c
 
 from qlat_utils.c import Coordinate, RngState, WilsonMatrix, SpinMatrix
 
+from qlat_utils.c import \
+        ElemTypeColorMatrix, \
+        ElemTypeWilsonMatrix, \
+        ElemTypeNonRelWilsonMatrix, \
+        ElemTypeSpinMatrix, \
+        ElemTypeWilsonVector, \
+        ElemTypeComplex, \
+        ElemTypeComplexF, \
+        ElemTypeDouble, \
+        ElemTypeFloat, \
+        ElemTypeLong, \
+        ElemTypeInt64t, \
+        ElemTypeInt8t, \
+        ElemTypeChar
+
 from qlat_utils.timer import *
 
 from qlat_utils.cache import *

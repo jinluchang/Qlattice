@@ -1,7 +1,3 @@
-cdef class ElemTypeTYPENAME(ElemType):
-
-    name = "TYPENAME"
-
 ### -------------------------------------------------------------------
 
 cdef class FieldTYPENAME(FieldBase):
