@@ -13,6 +13,8 @@ cdef class PointSelection:
 
     cdef readonly long cdata
 
+    cdef readonly Geometry geo
+
 cdef class FieldSelection:
 
     cdef cqlat.FieldSelection xx

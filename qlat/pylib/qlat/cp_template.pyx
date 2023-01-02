@@ -601,12 +601,11 @@ def mk_merged_fields_ms(fms):
 
 cdef class PointSelection:
 
-    # self.geo
-
     def __cinit__(self):
         self.cdata = <long>&(self.xx)
+        self.geo = None
 
-    def __init__(self, coordinate_list = None, geo = None):
+    def __init__(self, coordinate_list = None, Geometry geo = None):
         cdef long n_points
         cdef long i
         self.geo = geo

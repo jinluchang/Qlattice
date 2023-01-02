@@ -74,9 +74,8 @@ def get_psel_tslice(total_site, *, t_dir = 3):
     assert isinstance(total_site, list)
     param_tuple = (tuple(total_site), t_dir,)
     if param_tuple not in cache_point_selection:
-        psel = PointSelection()
+        psel = PointSelection(None, Geometry(total_site))
         c.set_tslice_psel(psel, total_site[t_dir], t_dir)
-        psel.geo = Geometry(total_site)
         cache_point_selection[param_tuple] = psel
     return cache_point_selection[param_tuple]
 
