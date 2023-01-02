@@ -428,14 +428,11 @@ cdef class FieldBase:
             self.double_from_float(ff)
         return ret
 
-    def float_from_double(self, f):
-        assert isinstance(f, FieldBase)
-        assert self.ctype is ElemTypeFloat
+    def float_from_double(self, FieldBase f):
+        assert isinstance(self, FieldFloat)
         c.convert_float_from_double_field(self, f)
 
-    def double_from_float(self, ff):
-        assert isinstance(ff, FieldBase)
-        assert ff.ctype is ElemTypeFloat
+    def double_from_float(self, FieldFloat ff):
         c.convert_double_from_float_field(self, ff)
 
     def to_from_endianness(self, tag):
@@ -1009,8 +1006,8 @@ cdef class SelectedFieldBase:
             self.double_from_float(ff)
         return ret
 
-    def float_from_double(self, f):
-        assert isinstance(f, SelectedFieldFloat)
+    def float_from_double(self, SelectedFieldBase f):
+        assert isinstance(self, SelectedFieldFloat)
         assert self.fsel is f.fsel
         c.convert_float_from_double_sfield(self, f)
 

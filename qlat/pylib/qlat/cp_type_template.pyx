@@ -80,7 +80,7 @@ cdef class SelectedFieldTYPENAME(SelectedFieldBase):
     def __cinit__(self):
         self.cdata = <long>&(self.xx)
 
-    def __init__(self, FieldSelection fsel, int multiplicity):
+    def __init__(self, FieldSelection fsel, int multiplicity = 0):
         self.fsel = fsel
         if multiplicity > 0:
             self.xx.init(self.fsel.xx, multiplicity)
