@@ -181,7 +181,7 @@ field_ctypes_long = [
 
 field_type_dict = {}
 
-def Field(type ctype, geo = None, multiplicity = None):
+def Field(type ctype, geo = None, multiplicity = 0):
     assert ctype in field_type_dict
     FieldType = field_type_dict[ctype]
     field = FieldType(geo, multiplicity)
