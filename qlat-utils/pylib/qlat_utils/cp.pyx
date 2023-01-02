@@ -552,16 +552,16 @@ cdef class WilsonMatrix:
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         cdef Buffer buf = Buffer(self, ElemTypeWilsonMatrix.ndim(), ElemTypeWilsonMatrix.itemsize())
-        cdef cc.std_vector[Py_ssize_t] vec = ElemTypeWilsonMatrix.shape()
         cdef char* fmt = ElemTypeWilsonMatrix.format()
+        cdef cc.std_vector[Py_ssize_t] vec = ElemTypeWilsonMatrix.shape()
+        assert vec.size() == buf.ndim
         cdef Py_ssize_t* shape = &buf.shape_strides[0]
         cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
-        assert vec.size() == buf.ndim
         cdef int i
         for i in range(buf.ndim):
             shape[i] = vec[i]
         buf.set_strides()
-        buffer.buf = <char*>&(self.xx.p)
+        buffer.buf = <char*>(self.xx.data())
         if flags & PyBUF_FORMAT:
             buffer.format = fmt
         else:
@@ -610,16 +610,16 @@ cdef class SpinMatrix:
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         cdef Buffer buf = Buffer(self, ElemTypeSpinMatrix.ndim(), ElemTypeSpinMatrix.itemsize())
-        cdef cc.std_vector[Py_ssize_t] vec = ElemTypeSpinMatrix.shape()
         cdef char* fmt = ElemTypeWilsonMatrix.format()
+        cdef cc.std_vector[Py_ssize_t] vec = ElemTypeSpinMatrix.shape()
+        assert vec.size() == buf.ndim
         cdef Py_ssize_t* shape = &buf.shape_strides[0]
         cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
-        assert vec.size() == buf.ndim
         cdef int i
         for i in range(buf.ndim):
             shape[i] = vec[i]
         buf.set_strides()
-        buffer.buf = <char*>&(self.xx.p)
+        buffer.buf = <char*>(self.xx.data())
         if flags & PyBUF_FORMAT:
             buffer.format = fmt
         else:

@@ -2,6 +2,7 @@
 
 #include <qlat-utils/qacc.h>
 #include <qlat-utils/array.h>
+#include <qlat-utils/assert.h>
 
 namespace qlat
 {  //

@@ -24,6 +24,7 @@
 #include <qlat-utils/eigen.h>
 #include <qlat-utils/complex.h>
 #include <qlat-utils/qcd-setting.h>
+#include <qlat-utils/handle.h>
 
 namespace qlat
 {
@@ -31,6 +32,9 @@ namespace qlat
 template <int DIMN, class T>
 struct API ALIGN MatrixT {
   T p[DIMN * DIMN];
+  //
+  qacc T* data() { return p; }
+  qacc const T* data() const { return p; }
   //
   // convert to double array
   qacc double* d() { return (double*)p; }
@@ -142,6 +146,9 @@ template <int DIMN, class T>
 struct API ALIGN MvectorT {
   T p[DIMN];
   //
+  qacc T* data() { return p; }
+  qacc const T* data() const { return p; }
+  //
   // convert to double array
   qacc double* d() { return (double*)p; }
   qacc const double* d() const { return (const double*)p; }
@@ -223,6 +230,20 @@ struct API SpinVectorT : MvectorT<4, ComplexT<T> > {
 using WilsonVector = WilsonVectorT<>;
 
 using SpinVector = SpinVectorT<>;
+
+// --------------------
+
+template <int DIMN, class T>
+qacc Vector<T> get_data(const MatrixT<DIMN, T>& m)
+{
+  return Vector<T>(m.p, DIMN * DIMN);
+}
+
+template <int DIMN, class T>
+qacc Vector<T> get_data(const MvectorT<DIMN, T>& m)
+{
+  return Vector<T>(m.p, DIMN);
+}
 
 // --------------------
 

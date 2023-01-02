@@ -605,6 +605,15 @@ struct API Field {
     return *this;
   }
   //
+  qacc Geometry& get_geo()
+  {
+    return geo();
+  }
+  qacc const Geometry& get_geo() const
+  {
+    return geo();
+  }
+  //
   qacc M& get_elem_offset(const long offset)
   {
     qassert(0 <= offset && offset < (long)field.size());

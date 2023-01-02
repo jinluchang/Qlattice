@@ -1,16 +1,17 @@
 from qlat_utils.complex cimport *
+from qlat_utils.vector cimport *
 
 cdef extern from "qlat-utils/matrix.h" namespace "qlat":
 
     cdef cppclass ColorMatrix:
         ColorMatrix()
         const ColorMatrix& operator=(const ColorMatrix& m)
-        Complex* p
+        Complex* data()
 
     cdef cppclass SpinMatrix:
         SpinMatrix()
         const SpinMatrix& operator=(const SpinMatrix& m)
-        Complex* p
+        Complex* data()
 
     const SpinMatrix operator*(const Complex& a, const SpinMatrix& m)
     const SpinMatrix operator*(const SpinMatrix& m, const Complex& a)
@@ -21,7 +22,7 @@ cdef extern from "qlat-utils/matrix.h" namespace "qlat":
     cdef cppclass WilsonMatrix:
         WilsonMatrix()
         const WilsonMatrix& operator=(const WilsonMatrix& m)
-        Complex* p
+        Complex* data()
 
     const WilsonMatrix operator*(const Complex& a, const WilsonMatrix& m)
     const WilsonMatrix operator*(const WilsonMatrix& m, const Complex& a)
@@ -32,17 +33,26 @@ cdef extern from "qlat-utils/matrix.h" namespace "qlat":
     cdef cppclass NonRelWilsonMatrix:
         NonRelWilsonMatrix()
         const NonRelWilsonMatrix& operator=(const NonRelWilsonMatrix& m)
-        Complex* p
+        Complex* data()
 
     cdef cppclass WilsonVector:
         WilsonVector()
         const WilsonVector& operator=(const WilsonVector& m)
-        Complex* p
+        Complex* data()
 
 cdef extern from "qlat-utils/lib/mat.h" namespace "qlat":
 
+    void set_zero(ColorMatrix& m)
     void set_zero(SpinMatrix& m)
     void set_zero(WilsonMatrix& m)
+    void set_zero(NonRelWilsonMatrix& m)
+    void set_zero(WilsonVector& m)
+
+    Vector[Complex] get_data(const ColorMatrix& x)
+    Vector[Complex] get_data(const SpinMatrix& x)
+    Vector[Complex] get_data(const WilsonMatrix& x)
+    Vector[Complex] get_data(const NonRelWilsonMatrix& x)
+    Vector[Complex] get_data(const WilsonVector& x)
 
     Complex mat_tr(const SpinMatrix& m)
     Complex mat_tr(const WilsonMatrix& m)
