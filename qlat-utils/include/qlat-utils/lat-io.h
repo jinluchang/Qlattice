@@ -4,6 +4,7 @@
 #include <qlat-utils/crc32.h>
 #include <qlat-utils/qutils-io.h>
 #include <qlat-utils/qutils.h>
+#include <qlat-utils/qutils-vec.h>
 #include <qlat-utils/show.h>
 #include <qlat-utils/qar.h>
 #include <qlat-utils/qar-cache.h>
@@ -76,6 +77,8 @@ inline void lat_data_alloc(LatData& ld)
 {
   ld.res.resize(lat_data_size(ld.info));
 }
+
+inline Vector<double> get_data(const LatData& ld) { return get_data(ld.res); }
 
 inline std::string show(const LatDim& dim)
 {

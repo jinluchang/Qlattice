@@ -184,6 +184,12 @@ cdef class RngState:
 
     cdef readonly long cdata
 
+cdef class LatData:
+
+    cdef cqlat_utils.LatData xx
+
+    cdef readonly long cdata
+
 cdef class WilsonMatrix:
 
     cdef cqlat_utils.WilsonMatrix xx

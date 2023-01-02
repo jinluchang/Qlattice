@@ -6,3 +6,4 @@ from .rng_state cimport *
 from .coordinate cimport *
 from .mat cimport *
 from .elem_type cimport *
+from .lat_io cimport *
