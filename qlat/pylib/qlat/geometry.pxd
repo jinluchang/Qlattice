@@ -3,6 +3,7 @@ from qlat_utils.everything cimport *
 cdef extern from "qlat/geometry.h" namespace "qlat":
 
     cdef cppclass Geometry:
+        int multiplicity
         Geometry()
         const Geometry& operator=(const Geometry& geo)
         void init()

@@ -14,8 +14,11 @@ cdef class FieldTYPENAME(FieldBase):
             assert geo is None
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
-        cdef cc.Coordinate local_site = self.xx.get_geo().local_site()
-        cdef int ndim = 4 + ElemTypeTYPENAME.ndim()
+        cdef Geometry* p_geo = &self.xx.get_geo()
+        cdef cc.Coordinate local_site = p_geo[0].local_site()
+        cdef int multiplicity = p_geo[0].multiplicity
+        cdef cc.Vector[cc.TYPENAME] fvec = cc.get_data(self.xx)
+        cdef int ndim = 5 + ElemTypeTYPENAME.ndim()
         cdef char* fmt = ElemTypeTYPENAME.format()
         cdef Buffer buf = Buffer(self, ndim, ElemTypeTYPENAME.itemsize())
         cdef cc.std_vector[Py_ssize_t] vec = ElemTypeTYPENAME.shape()
@@ -24,10 +27,11 @@ cdef class FieldTYPENAME(FieldBase):
         cdef int i
         for i in range(4):
             shape[i] = local_site[i]
+        shape[4] = multiplicity
         for i in range(buf.ndim):
-            shape[4 + i] = vec[i]
+            shape[5 + i] = vec[i]
         buf.set_strides()
-        buffer.buf = <char*>(cc.get_data(self.xx).data())
+        buffer.buf = <char*>(fvec.data())
         if flags & PyBUF_FORMAT:
             buffer.format = fmt
         else:
@@ -41,6 +45,7 @@ cdef class FieldTYPENAME(FieldBase):
         buffer.shape = shape
         buffer.strides = strides
         buffer.suboffsets = NULL
+        assert buffer.len == fvec.size()
 
     def __imatmul__(self, f1):
         # f1 can be Field, SelectedField, SelectedPoints
@@ -70,6 +75,22 @@ cdef class FieldTYPENAME(FieldBase):
 
 ### -------------------------------------------------------------------
 
+cdef class SelectedFieldTYPENAME(SelectedFieldBase):
+
+    ctype = ElemTypeTYPENAME
+
+### -------------------------------------------------------------------
+
+cdef class SelectedPointsTYPENAME(SelectedPointsBase):
+
+    ctype = ElemTypeTYPENAME
+
+### -------------------------------------------------------------------
+
 field_type_dict[ElemTypeTYPENAME] = FieldTYPENAME
+
+selected_field_type_dict[ElemTypeTYPENAME] = SelectedFieldTYPENAME
+
+selected_points_type_dict[ElemTypeTYPENAME] = SelectedPointsTYPENAME
 
 ### -------------------------------------------------------------------

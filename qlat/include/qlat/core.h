@@ -915,6 +915,15 @@ struct API SelectedField {
   //
   SelectedField() { init(); }
   //
+  qacc Geometry& get_geo()
+  {
+    return geo();
+  }
+  qacc const Geometry& get_geo() const
+  {
+    return geo();
+  }
+  //
   qacc M& get_elem(const long idx)
   {
     qassert(1 == geo().multiplicity);

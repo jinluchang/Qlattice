@@ -584,13 +584,13 @@ def mk_merged_fields_ms(fms):
 
 ### -------------------------------------------------------------------
 
-cdef class SelectedField:
+cdef class SelectedFieldBase:
 
     ctype = ElemType
 
 ### -------------------------------------------------------------------
 
-cdef class SelectedPoints:
+cdef class SelectedPointsBase:
 
     ctype = ElemType
 

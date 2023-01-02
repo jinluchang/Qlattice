@@ -11,10 +11,10 @@ cdef class FieldBase:
 
     pass
 
-cdef class SelectedField:
+cdef class SelectedFieldBase:
 
     pass
 
-cdef class SelectedPoints:
+cdef class SelectedPointsBase:
 
     pass
