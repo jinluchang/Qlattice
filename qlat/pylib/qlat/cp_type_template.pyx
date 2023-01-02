@@ -82,7 +82,7 @@ cdef class SelectedFieldTYPENAME(SelectedFieldBase):
 
     def __init__(self, FieldSelection fsel, int multiplicity = 0):
         self.fsel = fsel
-        if multiplicity > 0:
+        if multiplicity > 0 and self.fsel is not None:
             self.xx.init(self.fsel.xx, multiplicity)
 
     def swap(self, SelectedFieldTYPENAME f1):
@@ -100,7 +100,7 @@ cdef class SelectedPointsTYPENAME(SelectedPointsBase):
 
     def __init__(self, PointSelection psel, int multiplicity = 0):
         self.psel = psel
-        if multiplicity > 0:
+        if multiplicity > 0 and self.psel is not None:
             self.xx.init(self.psel.xx, multiplicity)
 
     def swap(self, SelectedPointsTYPENAME f1):
