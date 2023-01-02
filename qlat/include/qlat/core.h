@@ -504,34 +504,7 @@ struct API Field {
     geo.init();
     field.init();
   }
-  void init(const Geometry& geo_)
-  // only initialize if uninitilized
-  // if initialized already, then check for matching geo (including
-  // multiplicity)
-  // can have different geo expansion
-  {
-    if (!initialized) {
-      TIMER("Field::init(geo)");
-      init();
-      geo.set(geo_);
-      field.resize(geo().local_volume_expanded() * geo().multiplicity);
-      if (1 == get_field_init()) {
-        set_zero(*this);
-      } else if (2 == get_field_init()) {
-        set_u_rand_float(*this, RngState(show(get_time())));
-      } else {
-        qassert(0 == get_field_init());
-      }
-      initialized = true;
-    } else {
-      if (not is_matching_geo_included(geo_, geo())) {
-        displayln("old geo = " + show(geo()));
-        displayln("new geo = " + show(geo_));
-        qassert(false);
-      }
-    }
-  }
-  void init(const Geometry& geo_, const int multiplicity_)
+  void init(const Geometry& geo_, const int multiplicity_ = 0)
   // only initialize if uninitilized
   // if initialized already, then check for matching geo (including
   // multiplicity)
@@ -540,7 +513,11 @@ struct API Field {
     if (!initialized) {
       TIMER("Field::init(geo,mult)");
       init();
-      geo.set(geo_remult(geo_, multiplicity_));
+      if (multiplicity_ == 0) {
+        geo.set(geo_);
+      } else {
+        geo.set(geo_remult(geo_, multiplicity_));
+      }
       field.resize(geo().local_volume_expanded() * geo().multiplicity);
       if (1 == get_field_init()) {
         set_zero(*this);
@@ -551,10 +528,13 @@ struct API Field {
       }
       initialized = true;
     } else {
-      if (not is_matching_geo_included(geo_remult(geo_, multiplicity_),
-                                       geo())) {
+      Geometry geo_new = geo_;
+      if (multiplicity_ != 0) {
+        geo_new.remult(multiplicity_);
+      }
+      if (not is_matching_geo_included(geo_new, geo())) {
         displayln("old geo = " + show(geo()));
-        displayln("new geo = " + show(geo_remult(geo_, multiplicity_)));
+        displayln("new geo = " + show(geo_new));
         qassert(false);
       }
     }

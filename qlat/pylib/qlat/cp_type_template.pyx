@@ -7,15 +7,11 @@ cdef class FieldTYPENAME(FieldBase):
     def __cinit__(self):
         self.cdata = <long>&(self.xx)
 
-    def __init__(self, geo = None, multiplicity = None):
-        if geo is None:
-            return
-        assert isinstance(geo, Geometry)
-        if multiplicity is None:
-            self.xx.init((<Geometry>geo).xx)
+    def __init__(self, Geometry geo = None, int multiplicity = 0):
+        if isinstance(geo, Geometry):
+            self.xx.init(geo.xx, multiplicity)
         else:
-            assert isinstance(multiplicity, int)
-            self.xx.init((<Geometry>geo).xx, <int>multiplicity)
+            assert geo is None
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         cdef cc.Coordinate local_site = self.xx.get_geo().local_site()
@@ -50,7 +46,7 @@ cdef class FieldTYPENAME(FieldBase):
         # f1 can be Field, SelectedField, SelectedPoints
         # field geo does not change if already initialized
         if isinstance(f1, FieldTYPENAME):
-            self.xx = f1.xx
+            self.xx = (<FieldTYPENAME>f1).xx
         else:
             assert f1.ctype is self.ctype
             from qlat.selected_field import SelectedField
