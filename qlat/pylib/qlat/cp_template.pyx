@@ -193,41 +193,11 @@ cdef class FieldBase:
 
     ctype = ElemType
 
-    def __imatmul__(self, f1):
-        # f1 can be Field, SelectedField, SelectedPoints
-        # field geo does not change if already initialized
-        assert f1.ctype is self.ctype
-        if isinstance(f1, FieldBase):
-            c.set_field(self, f1)
-        else:
-            from qlat.selected_field import SelectedField
-            from qlat.selected_points import SelectedPoints
-            if isinstance(f1, SelectedField):
-                c.set_field_sfield(self, f1)
-            elif isinstance(f1, SelectedPoints):
-                c.set_field_spfield(self, f1)
-            else:
-                raise Exception(f"Field @= type mismatch {type(self)} {type(f1)}")
-        return self
-
-    def copy(self, is_copying_data = True):
-        f = type(self)()
-        if is_copying_data:
-            f @= self
-        return f
-
     def __copy__(self):
         return self.copy()
 
     def __deepcopy__(self, memo):
         return self.copy()
-
-    def swap(self, x):
-        assert isinstance(x, FieldBase)
-        assert x.ctype is self.ctype
-        cdata = x.cdata
-        x.cdata = self.cdata
-        self.cdata = cdata
 
     def total_site(self):
         return c.get_total_site_field(self)
