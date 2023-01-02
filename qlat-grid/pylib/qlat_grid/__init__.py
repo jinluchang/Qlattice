@@ -5,4 +5,4 @@ from qlat_grid.prop import *
 
 from qlat_grid.get_include_dir import *
 
-del qlat_grid.c
+del c

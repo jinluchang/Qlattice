@@ -37,4 +37,4 @@ from qlat_utils.parallel import *
 
 from qlat_utils.get_include_dir import *
 
-del qlat_utils.c
+del c

@@ -63,6 +63,10 @@ message('qlat_utils include', qlat_utils_include)
 qlat_utils_lib = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\n".join(q.get_lib_list()))', env: environment({'q_verbose': '-1'}), check: true).stdout().strip().split('\n')
 message('qlat_utils lib', qlat_utils_lib)
 
+qlat_utils_pxd = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\n".join(q.get_pxd_list()))', env: environment({'q_verbose': '-1'}), check: true).stdout().strip().split('\n')
+message('qlat_utils pxd', qlat_utils_pxd)
+qlat_utils_pxd = files(qlat_utils_pxd)
+
 qlat_utils = declare_dependency(
   include_directories:  include_directories(qlat_utils_include),
   dependencies: [

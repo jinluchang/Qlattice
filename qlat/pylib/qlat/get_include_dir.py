@@ -1,18 +1,27 @@
 import os
-import qlat.field
-import qlat_utils as qu
+from . import c
+from qlat_utils import qls, get_dir_list as q_get_dir_list
 
 def get_qlat_dir():
-    return os.path.dirname(qlat.field.__file__)
+    return os.path.dirname(c.__file__)
 
 def get_qlat_include():
     return os.path.join(get_qlat_dir(), 'include')
 
 def get_dir_list():
-    return [ get_qlat_dir(), ] + qu.get_dir_list()
+    return [ get_qlat_dir(), ] + q_get_dir_list()
 
 def get_include_list():
     return [ os.path.join(p, 'include') for p in get_dir_list() ]
 
 def get_lib_list():
     return [ os.path.join(p, 'lib') for p in get_dir_list() ]
+
+def get_pxd_list():
+    l = []
+    for d in get_dir_list():
+        fn_list = qls(d)
+        for fn in fn_list:
+            if fn.endswith(".pxd"):
+                l.append(fn)
+    return l
