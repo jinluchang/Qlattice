@@ -4,14 +4,11 @@ cdef class FieldTYPENAME(FieldBase):
 
     ctype = ElemTypeTYPENAME
 
-    def __cinit__(self):
+    def __cinit__(self, Geometry geo = None, int multiplicity = 0):
         self.cdata = <long>&(self.xx)
-
-    def __init__(self, Geometry geo = None, int multiplicity = 0):
-        if isinstance(geo, Geometry):
-            self.xx.init(geo.xx, multiplicity)
-        else:
-            assert geo is None
+        if geo is None:
+            return
+        self.xx.init(geo.xx, multiplicity)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         cdef const cc.Geometry* p_geo = &self.xx.get_geo()
