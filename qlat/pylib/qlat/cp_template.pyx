@@ -787,7 +787,7 @@ cdef class SelectedFieldBase:
     def __imatmul__(self, f1):
         # won't change self.fsel
         assert f1.ctype is self.ctype
-        if isinstance(f1, SelectedField):
+        if isinstance(f1, SelectedFieldBase):
             # two fsel do not need to match
             if self.fsel is f1.fsel:
                 c.set_sfield(self, f1)
@@ -795,7 +795,7 @@ cdef class SelectedFieldBase:
                 c.set_sfield_sfield(self, f1)
         elif isinstance(f1, FieldBase):
             c.set_sfield_field(self, f1)
-        elif isinstance(f1, SelectedPoints):
+        elif isinstance(f1, SelectedPointsBase):
             # psel may not have to be subset of fsel
             c.set_sfield_spfield(self, f1)
         else:
@@ -829,13 +829,13 @@ cdef class SelectedFieldBase:
         return geo
 
     def __iadd__(self, f1):
-        assert isinstance(f1, SelectedField)
+        assert isinstance(f1, SelectedFieldBase)
         assert f1.ctype is self.ctype
         c.set_add_sfield(self, f1)
         return self
 
     def __isub__(self, f1):
-        assert isinstance(f1, SelectedField)
+        assert isinstance(f1, SelectedFieldBase)
         assert f1.ctype is self.ctype
         c.set_sub_sfield(self, f1)
         return self
@@ -1010,13 +1010,13 @@ cdef class SelectedFieldBase:
         return ret
 
     def float_from_double(self, f):
-        assert isinstance(f, SelectedField)
+        assert isinstance(f, SelectedFieldBase)
         assert self.ctype == c.ElemTypeFloat
         self.fsel = f.fsel
         c.convert_float_from_double_sfield(self, f)
 
     def double_from_float(self, ff):
-        assert isinstance(ff, SelectedField)
+        assert isinstance(ff, SelectedFieldBase)
         assert ff.ctype == c.ElemTypeFloat
         self.fsel = ff.fsel
         c.convert_double_from_float_sfield(self, ff)
@@ -1057,13 +1057,13 @@ cdef class SelectedPointsBase:
         # won't change self.psel
         from qlat.selected_field import SelectedField
         assert f1.ctype is self.ctype
-        if isinstance(f1, SelectedPoints):
+        if isinstance(f1, SelectedPointsBase):
             # two psel must be the same object
             if self.psel is f1.psel:
                 c.set_spfield(self, f1)
             else:
                 raise Exception("SelectedPoints @= psel not match")
-        elif isinstance(f1, SelectedField):
+        elif isinstance(f1, SelectedFieldBase):
             # only assign available points
             c.set_spfield_sfield(self, f1)
         elif isinstance(f1, FieldBase):
@@ -1091,12 +1091,12 @@ cdef class SelectedPointsBase:
         return c.get_multiplicity_spfield(self)
 
     def __iadd__(self, f1):
-        assert isinstance(f1, SelectedPoints) and f1.ctype is self.ctype
+        assert isinstance(f1, SelectedPointsBase) and f1.ctype is self.ctype
         c.set_add_spfield(self, f1)
         return self
 
     def __isub__(self, f1):
-        assert isinstance(f1, SelectedPoints) and f1.ctype is self.ctype
+        assert isinstance(f1, SelectedPointsBase) and f1.ctype is self.ctype
         c.set_sub_spfield(self, f1)
         return self
 
