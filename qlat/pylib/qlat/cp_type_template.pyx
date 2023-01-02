@@ -86,6 +86,10 @@ cdef class SelectedFieldTYPENAME(SelectedFieldBase):
         if multiplicity > 0:
             self.xx.init(self.fsel.xx, multiplicity)
 
+    def swap(self, SelectedFieldTYPENAME f1):
+        assert f1.fsel is self.fsel
+        cc.qswap(f1.xx, self.xx)
+
 ### -------------------------------------------------------------------
 
 cdef class SelectedPointsTYPENAME(SelectedPointsBase):
@@ -99,6 +103,10 @@ cdef class SelectedPointsTYPENAME(SelectedPointsBase):
         self.psel = psel
         if multiplicity > 0:
             self.xx.init(self.psel.xx, multiplicity)
+
+    def swap(self, SelectedPointsTYPENAME f1):
+        assert f1.psel is self.psel
+        cc.qswap(f1.xx, self.xx)
 
 ### -------------------------------------------------------------------
 

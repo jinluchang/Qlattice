@@ -42,7 +42,7 @@ class ShuffledFieldsWriter:
         assert isinstance(fn, str)
         if isinstance(obj, FieldBase):
             return c.write_sfw_field(self, fn, obj)
-        elif isinstance(obj, SelectedField):
+        elif isinstance(obj, SelectedFieldBase):
             return c.write_sfw_sfield(self, fn, obj, self.get_cache_sbs(obj.fsel))
         else:
             raise Exception("ShuffledFieldsWriter.save")
@@ -91,7 +91,7 @@ class ShuffledFieldsReader:
         assert isinstance(fn, str)
         if isinstance(obj, FieldBase):
             return c.read_sfr_field(self, fn, obj)
-        elif isinstance(obj, SelectedField):
+        elif isinstance(obj, SelectedFieldBase):
             fsel = obj.fsel
             if fsel is None:
                 obj.fsel = FieldSelection()

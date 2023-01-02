@@ -40,10 +40,10 @@ class Prop(FieldWilsonMatrix):
 
 ###
 
-class SelProp(SelectedField):
+class SelProp(SelectedFieldWilsonMatrix):
 
-    def __init__(self, fsel, *, ctype = None, multiplicity = None):
-        SelectedField.__init__(self, c.ElemTypeWilsonMatrix, fsel, 1)
+    def __init__(self, fsel):
+        super().__init__(fsel, 1)
 
     def copy(self, is_copying_data = True):
         f = SelProp(self.fsel)
@@ -73,10 +73,10 @@ class SelProp(SelectedField):
 
 ###
 
-class PselProp(SelectedPoints):
+class PselProp(SelectedPointsWilsonMatrix):
 
-    def __init__(self, psel, *, ctype = None, multiplicity = None):
-        SelectedPoints.__init__(self, c.ElemTypeWilsonMatrix, psel, 1)
+    def __init__(self, psel):
+        super().__init__(psel, 1)
 
     def copy(self, is_copying_data = True):
         f = PselProp(self.psel)
