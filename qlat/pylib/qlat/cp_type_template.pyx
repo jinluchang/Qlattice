@@ -79,13 +79,11 @@ cdef class SelectedFieldTYPENAME(SelectedFieldBase):
 
     ctype = ElemTypeTYPENAME
 
-    def __cinit__(self):
+    def __cinit__(self, FieldSelection fsel, int multiplicity):
         self.cdata = <long>&(self.xx)
-
-    def __init__(self, FieldSelection fsel, int multiplicity = 0):
         self.fsel = fsel
         if multiplicity > 0:
-            self.xx.init((<FieldSelection>self.fsel).xx, multiplicity)
+            self.xx.init(self.fsel.xx, multiplicity)
 
 ### -------------------------------------------------------------------
 
@@ -93,13 +91,11 @@ cdef class SelectedPointsTYPENAME(SelectedPointsBase):
 
     ctype = ElemTypeTYPENAME
 
-    def __cinit__(self):
+    def __cinit__(self, PointSelection psel, int multiplicity = 0):
         self.cdata = <long>&(self.xx)
-
-    def __init__(self, PointSelection psel, int multiplicity = 0):
         self.psel = psel
         if multiplicity > 0:
-            self.xx.init((<PointSelection>self.psel).xx, multiplicity)
+            self.xx.init(self.psel.xx, multiplicity)
 
 ### -------------------------------------------------------------------
 

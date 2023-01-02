@@ -10,8 +10,12 @@ cdef class SelectedFieldTYPENAME(SelectedFieldBase):
 
     cdef readonly long cdata
 
+    cdef FieldSelection fsel
+
 cdef class SelectedPointsTYPENAME(SelectedPointsBase):
 
     cdef cqlat.SelectedPoints[cqlat.TYPENAME] xx
 
     cdef readonly long cdata
+
+    cdef PointSelection psel
