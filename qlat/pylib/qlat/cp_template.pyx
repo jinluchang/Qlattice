@@ -1,5 +1,6 @@
 # cython: c_string_type=unicode, c_string_encoding=utf8
 
+from qlat_utils.cp cimport *
 from . cimport everything as cc
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT

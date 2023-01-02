@@ -1,4 +1,3 @@
-from qlat_utils.cp cimport *
 from . cimport everything as cqlat
 
 cdef class Geometry:
