@@ -302,7 +302,6 @@ jobs:
         ./scripts/setenv.default.sh
         ./scripts/fftw.sh
         ./scripts/fftwf.sh
-        ./scripts/qlat-packages.sh
     - name: Install Qlattice
       run: |
         export num_proc=3
