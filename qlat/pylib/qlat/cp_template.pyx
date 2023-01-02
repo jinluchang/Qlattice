@@ -240,9 +240,9 @@ cdef class FieldBase:
         else:
             from qlat.selected_field import SelectedField
             from qlat.selected_points import SelectedPoints
-            if isinstance(f1, SelectedField):
+            if isinstance(f1, SelectedFieldBase):
                 c.acc_field_sfield(self, f1)
-            elif isinstance(f1, SelectedPoints):
+            elif isinstance(f1, SelectedPointsBase):
                 assert f1.ctype is self.ctype
                 c.acc_field_spfield(self, f1)
             else:
@@ -257,12 +257,12 @@ cdef class FieldBase:
         else:
             from qlat.selected_field import SelectedField
             from qlat.selected_points import SelectedPoints
-            if isinstance(f1, SelectedField):
+            if isinstance(f1, SelectedFieldBase):
                 assert f1.ctype is self.ctype
                 f1n = f1.copy()
                 f1n *= -1
                 c.acc_field_sfield(self, f1n)
-            elif isinstance(f1, SelectedPoints):
+            elif isinstance(f1, SelectedPointsBase):
                 assert f1.ctype is self.ctype
                 f1n = f1.copy()
                 f1n *= -1

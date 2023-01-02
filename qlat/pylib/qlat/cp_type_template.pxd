@@ -10,7 +10,7 @@ cdef class SelectedFieldTYPENAME(SelectedFieldBase):
 
     cdef readonly long cdata
 
-    cdef FieldSelection fsel
+    cdef readonly FieldSelection fsel
 
 cdef class SelectedPointsTYPENAME(SelectedPointsBase):
 
@@ -18,4 +18,4 @@ cdef class SelectedPointsTYPENAME(SelectedPointsBase):
 
     cdef readonly long cdata
 
-    cdef PointSelection psel
+    cdef readonly PointSelection psel
