@@ -975,7 +975,7 @@ cdef class SelectedFieldBase:
         return self.save_64(path, *args)
 
     def save_float_from_double(self, path, *args):
-        ff = SelectedField(ElemTypeFloat, self.fsel)
+        ff = SelectedFieldFloat(self.fsel)
         ff.float_from_double(self)
         from qlat.fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
