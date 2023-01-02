@@ -52,12 +52,11 @@ cdef class FieldTYPENAME(FieldBase):
         if isinstance(f1, FieldTYPENAME):
             self.xx = (<FieldTYPENAME>f1).xx
         else:
-            assert f1.ctype is self.ctype
             from qlat.selected_field import SelectedField
             from qlat.selected_points import SelectedPoints
-            if isinstance(f1, SelectedField):
+            if isinstance(f1, SelectedFieldTYPENAME):
                 c.set_field_sfield(self, f1)
-            elif isinstance(f1, SelectedPoints):
+            elif isinstance(f1, SelectedPointsTYPENAME):
                 c.set_field_spfield(self, f1)
             else:
                 raise Exception(f"Field @= type mismatch {type(self)} {type(f1)}")
