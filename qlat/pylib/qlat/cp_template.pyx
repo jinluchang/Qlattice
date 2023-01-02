@@ -975,7 +975,7 @@ cdef class SelectedFieldBase:
         return self.save_64(path, *args)
 
     def save_float_from_double(self, path, *args):
-        ff = SelectedField(c.ElemTypeFloat, self.fsel)
+        ff = SelectedField(ElemTypeFloat, self.fsel)
         ff.float_from_double(self)
         from qlat.fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
@@ -998,7 +998,7 @@ cdef class SelectedFieldBase:
         return self.load_64(path, *args)
 
     def load_double_from_float(self, path, *args):
-        ff = SelectedField(c.ElemTypeFloat, self.fsel)
+        ff = SelectedField(ElemTypeFloat, self.fsel)
         ret = ff.load_direct(path, *args)
         if ret > 0:
             from qlat.fields_io import ShuffledFieldsReader
@@ -1011,13 +1011,13 @@ cdef class SelectedFieldBase:
 
     def float_from_double(self, f):
         assert isinstance(f, SelectedFieldBase)
-        assert self.ctype == c.ElemTypeFloat
+        assert self.ctype == ElemTypeFloat
         self.fsel = f.fsel
         c.convert_float_from_double_sfield(self, f)
 
     def double_from_float(self, ff):
         assert isinstance(ff, SelectedFieldBase)
-        assert ff.ctype == c.ElemTypeFloat
+        assert ff.ctype == ElemTypeFloat
         self.fsel = ff.fsel
         c.convert_double_from_float_sfield(self, ff)
 
