@@ -7,6 +7,18 @@ cdef class Geometry:
 
     cdef readonly long cdata
 
+cdef class PointSelection:
+
+    cdef cqlat.PointSelection xx
+
+    cdef readonly long cdata
+
+cdef class FieldSelection:
+
+    cdef cqlat.FieldSelection xx
+
+    cdef readonly long cdata
+
 cdef class FieldBase:
 
     pass

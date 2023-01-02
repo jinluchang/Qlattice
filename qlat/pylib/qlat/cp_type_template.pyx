@@ -14,7 +14,7 @@ cdef class FieldTYPENAME(FieldBase):
             assert geo is None
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
-        cdef Geometry* p_geo = &self.xx.get_geo()
+        cdef const cc.Geometry* p_geo = &self.xx.get_geo()
         cdef cc.Coordinate local_site = p_geo[0].local_site()
         cdef int multiplicity = p_geo[0].multiplicity
         cdef cc.Vector[cc.TYPENAME] fvec = cc.get_data(self.xx)
@@ -79,11 +79,27 @@ cdef class SelectedFieldTYPENAME(SelectedFieldBase):
 
     ctype = ElemTypeTYPENAME
 
+    def __cinit__(self):
+        self.cdata = <long>&(self.xx)
+
+    def __init__(self, FieldSelection fsel, int multiplicity = 0):
+        self.fsel = fsel
+        if multiplicity > 0:
+            self.xx.init((<FieldSelection>self.fsel).xx, multiplicity)
+
 ### -------------------------------------------------------------------
 
 cdef class SelectedPointsTYPENAME(SelectedPointsBase):
 
     ctype = ElemTypeTYPENAME
+
+    def __cinit__(self):
+        self.cdata = <long>&(self.xx)
+
+    def __init__(self, PointSelection psel, int multiplicity = 0):
+        self.psel = psel
+        if multiplicity > 0:
+            self.xx.init((<PointSelection>self.psel).xx, multiplicity)
 
 ### -------------------------------------------------------------------
 

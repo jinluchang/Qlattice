@@ -585,14 +585,7 @@ struct API Field {
     return *this;
   }
   //
-  qacc Geometry& get_geo()
-  {
-    return geo();
-  }
-  qacc const Geometry& get_geo() const
-  {
-    return geo();
-  }
+  qacc const Geometry& get_geo() const { return geo(); }
   //
   qacc M& get_elem_offset(const long offset)
   {
@@ -867,6 +860,8 @@ struct API FieldSelection {
   }
   //
   FieldSelection() { init(); }
+  //
+  qacc const Geometry& get_geo() const { return f_rank.geo(); }
 };
 
 // --------------------
@@ -915,14 +910,7 @@ struct API SelectedField {
   //
   SelectedField() { init(); }
   //
-  qacc Geometry& get_geo()
-  {
-    return geo();
-  }
-  qacc const Geometry& get_geo() const
-  {
-    return geo();
-  }
+  qacc const Geometry& get_geo() const { return geo(); }
   //
   qacc M& get_elem(const long idx)
   {

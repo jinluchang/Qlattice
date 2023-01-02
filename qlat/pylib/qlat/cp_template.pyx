@@ -25,9 +25,8 @@ cdef class Geometry:
             else:
                 c.set_geo_total_site(self, total_site, multiplicity)
 
-    def __imatmul__(self, v1):
-        assert isinstance(v1, Geometry)
-        c.set_geo(self, v1)
+    def __imatmul__(self, Geometry v1):
+        self.xx = v1.xx
         return self
 
     def copy(self, is_copying_data = True):
@@ -181,10 +180,26 @@ field_ctypes_long = [
 
 field_type_dict = {}
 
-def Field(type ctype, geo = None, multiplicity = 0):
+selected_field_type_dict = {}
+
+selected_points_type_dict = {}
+
+def Field(type ctype, Geometry geo = None, int multiplicity = 0):
     assert ctype in field_type_dict
     FieldType = field_type_dict[ctype]
     field = FieldType(geo, multiplicity)
+    return field
+
+def SelectedField(type ctype, FieldSelection fsel, int multiplicity = 0):
+    assert ctype in field_type_dict
+    FieldType = selected_field_type_dict[ctype]
+    field = FieldType(fsel, multiplicity)
+    return field
+
+def SelectedPoints(type ctype, PointSelection psel, int multiplicity = 0):
+    assert ctype in field_type_dict
+    FieldType = selected_points_type_dict[ctype]
+    field = FieldType(psel, multiplicity)
     return field
 
 ### -------------------------------------------------------------------
@@ -581,6 +596,187 @@ def mk_merged_fields_ms(fms):
     f = Field(ctype)
     merge_fields_ms(f, fms)
     return f
+
+### -------------------------------------------------------------------
+
+cdef class PointSelection:
+
+    # self.geo
+
+    def __cinit__(self):
+        self.cdata = <long>&(self.xx)
+
+    def __init__(self, coordinate_list = None, geo = None):
+        cdef long n_points
+        cdef long i
+        self.geo = geo
+        if coordinate_list is None:
+            return
+        n_points = len(coordinate_list)
+        self.xx = cc.PointSelection(n_points)
+        for i in range(n_points):
+            c = coordinate_list[i]
+            if not isinstance(c, Coordinate):
+                c = Coordinate(c)
+            self.xx[i] = (<Coordinate>c).xx
+
+    def __imatmul__(self, PointSelection v1):
+        self.geo = v1.geo
+        self.xx = v1.xx
+        return self
+
+    def copy(self):
+        x = PointSelection()
+        x @= self
+        return x
+
+    def __copy__(self):
+        return self.copy()
+
+    def __deepcopy__(self, memo):
+        return self.copy()
+
+    def set_rand(self, rs, total_site, n_points):
+        c.set_rand_psel(self, rs, total_site, n_points)
+        self.geo = Geometry(total_site)
+
+    def save(self, path):
+        c.save_psel(self, path)
+
+    def load(self, path, geo = None):
+        c.load_psel(self, path)
+        self.geo = geo
+
+    def n_points(self):
+        return c.get_n_points_psel(self)
+
+    def to_list(self):
+        return c.mk_list_psel(self)
+
+    def from_list(self, coordinate_list, geo = None):
+        c.set_list_psel(self, coordinate_list)
+        self.geo = geo
+        return self
+
+    def coordinate_from_idx(self, idx):
+        return c.get_coordinate_from_idx_psel(self, idx)
+
+### -------------------------------------------------------------------
+
+cdef class FieldSelection:
+
+    def __cinit__(self):
+        self.cdata = <long>&(self.xx)
+
+    def __init__(self, total_site = None, n_per_tslice = -1, rs = None, psel = None):
+        if total_site is not None:
+            assert isinstance(rs, RngState)
+            assert isinstance(n_per_tslice, int)
+            c.set_rand_fsel(self, rs, total_site, n_per_tslice)
+            if psel is not None:
+                c.add_psel_fsel(self, psel)
+            self.update()
+            self.update(n_per_tslice)
+
+    def __imatmul__(self, FieldSelection v1):
+        self.xx = v1.xx
+        return self
+
+    def copy(self):
+        x = FieldSelection()
+        x @= self
+        return x
+
+    def __copy__(self):
+        return self.copy()
+
+    def __deepcopy__(self, memo):
+        return self.copy()
+
+    def set_uniform(self, total_site, val = 0):
+        # default (val = 0) select every sites
+        # val = -1 deselection everything
+        c.set_uniform_fsel(self, total_site, val)
+
+    def set_rand(self, rs, total_site, n_per_tslice):
+        assert isinstance(rs, RngState)
+        assert isinstance(n_per_tslice, int)
+        c.set_rand_fsel(self, rs, total_site, n_per_tslice)
+        self.update()
+        self.update(n_per_tslice)
+
+    def add_psel(self, psel, rank_psel = 1024 * 1024 * 1024 * 1024 * 1024):
+        # Add psel points to the selection, with the rank specified as rank_psel.
+        # If the point is already selected with lower rank, the rank is unchanged.
+        c.add_psel_fsel(self, psel, rank_psel)
+        self.update()
+
+    def update(self, n_per_tslice = -1):
+        # if n_per_tslice < 0: only update various indices
+        # if n_per_tslice >= 0: only update parameters (n_per_tslice and prob)
+        c.update_fsel(self, n_per_tslice)
+
+    def select_rank_range(self, rank_start = 0, rank_stop = -1):
+        # return new fsel with selected points that
+        # rank_start <= rank and (rank < rank_stop or rank_stop == -1)
+        # Does NOT change the n_per_tslice parameter for the new fsel
+        fsel = FieldSelection()
+        c.select_rank_range_fsel(fsel, self, rank_start, rank_stop)
+        fsel.update()
+        fsel.update(self.n_per_tslice())
+        return fsel
+
+    def select_t_range(self, rank_start = 0, rank_stop = -1):
+        # return new fsel with selected points that
+        # t_start <= t and (t < t_stop or t_stop == -1)
+        # rank_start <= rank < rank_stop (rank_stop = -1 implies unlimited)
+        # Does NOT change the n_per_tslice parameter for the new fsel
+        fsel = FieldSelection()
+        c.select_rank_range_fsel(fsel, self, rank_start, rank_stop)
+        fsel.update()
+        fsel.update(self.n_per_tslice())
+        return fsel
+
+    def to_psel(self):
+        psel = PointSelection(None, self.geo())
+        c.set_psel_fsel(psel, self)
+        return psel
+
+    def to_psel_local(self):
+        psel = PointSelection(None, self.geo())
+        c.set_psel_fsel_local(psel, self)
+        return psel
+
+    def save(self, path):
+        return c.save_fsel(self, path)
+
+    def load(self, path, n_per_tslice):
+        return c.load_fsel(self, path, n_per_tslice)
+
+    def geo(self):
+        geo = Geometry((0, 0, 0, 0))
+        c.set_geo_fsel(geo, self)
+        return geo
+
+    def total_site(self):
+        return c.get_total_site_fsel(self)
+
+    def n_elems(self):
+        return c.get_n_elems_fsel(self)
+
+    def n_per_tslice(self):
+        return c.get_n_per_tslice_fsel(self)
+
+    def prob(self):
+        # return fsel.prob
+        # n_per_tslice / spatial_volume
+        return c.get_prob_fsel(self)
+
+    def idx_from_coordinate(self, xg):
+        return c.get_idx_from_coordinate_fsel(self, xg)
+
+    def coordinate_from_idx(self, idx):
+        return c.get_coordinate_from_idx_fsel(self, idx)
 
 ### -------------------------------------------------------------------
 

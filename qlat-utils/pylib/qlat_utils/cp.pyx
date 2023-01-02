@@ -433,10 +433,14 @@ cdef class Coordinate:
     def __cinit__(self):
         pass
 
-    def __init__(self, list x = None):
-        if x is not None:
+    def __init__(self, x = None):
+        if isinstance(x, Coordinate):
+            self.xx = (<Coordinate>x).xx
+        elif isinstance(x, list):
             assert len(x) == 4
             self.xx = cc.Coordinate(x[0], x[1], x[2], x[3])
+        else:
+            assert x is None
 
     def __imatmul__(self, Coordinate v1):
         self.xx = v1.xx
