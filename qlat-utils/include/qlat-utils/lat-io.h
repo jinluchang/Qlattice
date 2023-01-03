@@ -224,10 +224,7 @@ inline void LatData::save(QFile& qfile) const
           res.size(), qfile);
 }
 
-inline void clear(LatData& ld)
-{
-  ld.init();
-}
+inline void clear(LatData& ld) { ld.init(); }
 
 inline LatDim lat_dim_number(const std::string& name, const long start,
                              const long end, const long inc = 1)
