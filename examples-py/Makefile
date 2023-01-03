@@ -8,6 +8,7 @@ tests = \
 		make-sample-gauge-field.log \
 		qar.log \
 		lat-io.log \
+		lat-io-test1.log \
 		field-utils.log \
 		field-selection.log \
 		selected-field.log \

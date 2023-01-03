@@ -1,1 +1,1 @@
-from qlat_utils.c import Coordinate, RngState
+from qlat_utils.c import Coordinate, RngState, get_double_sig

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import qlat as q
+import numpy as np
 import os
 
 q.begin()
@@ -8,55 +9,68 @@ q.begin()
 q.qremove_all_info("results")
 q.qmkdir_info("results")
 
-ld = q.LatData()
+rs = q.RngState("test")
 
-dim_sizes = [ 2, 4, 3, ]
+info_list = [
+        [ "dim1", 4, ],
+        [ "dim2 name", 3, ],
+        [ "dim3", 2, [ "u", "d", ], ],
+        [ "dim4", 5, ],
+        ]
 
-ld.set_dim_sizes(dim_sizes)
-ld.set_dim_name(0, "index0", [ "u", "d" ])
-ld.set_dim_name(1, "index1")
-ld.set_dim_name(2, "index2")
+ld = q.mk_lat_data(info_list)
 
-ld.set_zero()
+q.displayln_info(f"CHECK: v1 {ld.info()} {ld.is_complex()} {q.get_double_sig(ld, rs.copy()):.13E}")
 
-q.displayln_info(f"CHECK: ld: ndim {ld.ndim()}")
-q.displayln_info(f"CHECK: ld: dim_sizes {ld.dim_sizes()}")
-for dim in range(ld.ndim()):
-    q.displayln_info(f"CHECK: ld: dim_name {dim} {ld.dim_name(dim)} {ld.dim_indices(dim)}")
+ld.save("results/v1.lat")
 
-for i0 in range(dim_sizes[0]):
-    for i1 in range(dim_sizes[1]):
-        for i2 in range(dim_sizes[2]):
-            ld[(i0, i1, i2,)] = [ 1e6 + i0 * 1e4 + i1 * 1e2 + i2 ]
+ld = load_lat_data("results/v1.lat")
 
-q.displayln_info("ld:")
-q.displayln_info(ld.show())
-q.displayln_info(f"CHECK: qnorm = {ld.qnorm()}")
+q.displayln_info(f"CHECK: v2 {ld.info()} {ld.is_complex()} {q.get_double_sig(ld, rs.copy()):.13E}")
 
-ld[(0, 1,)] = [ i * 3 + i * 1j for i in range(3) ]
+rs.copy().g_rand_fill(np.asarray(ld))
 
-q.displayln_info("CHECK: ", ld[(0,)])
-q.displayln_info("CHECK: ", ld[(1, 2,)])
+q.displayln_info(f"CHECK: v3 {ld.info()} {ld.is_complex()} {q.get_double_sig(ld, rs.copy()):.13E}")
 
-ld.save("results/test.lat")
+q.displayln_info(str(ld))
 
-ld = q.LatData()
-ld.load("results/test.lat")
-q.displayln_info("CHECK: ", ld[(1, 3,)])
+ld.save("results/v3.lat")
+ld = load_lat_data("results/v3.lat")
 
-ld1 = ld.copy()
-ld1 += ld1
-ld1 *= 0.5
-ld1 -= ld
-q.displayln_info(ld1.show())
-q.displayln_info(f"CHECK: qnorm = {ld1.qnorm()}")
+q.displayln_info(f"CHECK: v4 {ld.info()} {ld.is_complex()} {q.get_double_sig(ld, rs.copy()):.13E}")
 
-q.displayln_info(ld.to_list())
+rs.copy().g_rand_fill(np.asarray(ld).ravel())
 
-ld1.from_list(ld.to_list())
+q.displayln_info(f"CHECK: v5 {ld.info()} {ld.is_complex()} {q.get_double_sig(ld, rs.copy()):.13E}")
 
-q.displayln_info(ld1.show())
-q.displayln_info(f"CHECK: qnorm = {ld1.qnorm()}")
+ld = q.mk_lat_data(info_list, is_complex = False)
+
+q.displayln_info(f"CHECK: v6 {ld.info()} {ld.is_complex()} {q.get_double_sig(ld, rs.copy()):.13E}")
+
+ld.save("results/v6.lat")
+ld = load_lat_data("results/v6.lat")
+
+q.displayln_info(f"CHECK: v7 {ld.info()} {ld.is_complex()} {q.get_double_sig(ld, rs.copy()):.13E}")
+
+rs.copy().g_rand_fill(np.asarray(ld))
+
+q.displayln_info(f"CHECK: v8 {ld.info()} {ld.is_complex()} {q.get_double_sig(ld, rs.copy()):.13E}")
+
+ld.save("results/v8.lat")
+ld = load_lat_data("results/v8.lat")
+
+q.displayln_info(f"CHECK: v9 {ld.info()} {ld.is_complex()} {q.get_double_sig(ld, rs.copy()):.13E}")
+
+info_list = []
+
+ld = q.mk_lat_data(info_list, is_complex = False)
+
+q.displayln_info(f"CHECK: v10 {ld.info()} {ld.is_complex()} {q.get_double_sig(ld, rs.copy()):.13E}")
+
+ld.save("results/v10.lat")
+ld = load_lat_data("results/v10.lat")
+
+q.displayln_info(f"CHECK: v11 {ld.info()} {ld.is_complex()} {q.get_double_sig(ld, rs.copy()):.13E}")
 
 q.check_all_files_crc32_info("results")
 

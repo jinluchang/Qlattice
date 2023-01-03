@@ -574,12 +574,14 @@ cdef class RngState:
 
 ### -------------------------------------------------------------------
 
+@timer
 def get_double_sig(x, RngState rs):
+    # get a signature of data viewed as a collection of double numbers
     if isinstance(x, LatData):
-        arr = rs.np.asarray(x).ravel()
+        arr = np.asarray(x).ravel()
         arr_rand = np.zeros(arr.shape, arr.dtype)
         rs.u_rand_fill(arr_rand, 1.0, -1.0)
-        return np.sum(arr, arr_rand)
+        return np.sum(arr * arr_rand)
     else:
         displayln_info("get_double_sig", type(x))
         assert False
