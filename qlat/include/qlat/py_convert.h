@@ -12,6 +12,8 @@
       (p_ret) = fname<WilsonMatrix>(__VA_ARGS__);                       \
     } else if ("NonRelWilsonMatrix" == (ctype)) {                       \
       (p_ret) = fname<NonRelWilsonMatrix>(__VA_ARGS__);                 \
+    } else if ("IsospinMatrix" == (ctype)) {                            \
+      (p_ret) = fname<IsospinMatrix>(__VA_ARGS__);                      \
     } else if ("SpinMatrix" == (ctype)) {                               \
       (p_ret) = fname<SpinMatrix>(__VA_ARGS__);                         \
     } else if ("WilsonVector" == (ctype)) {                             \
@@ -26,11 +28,11 @@
       (p_ret) = fname<float>(__VA_ARGS__);                              \
     } else if ("Long" == (ctype)) {                                     \
       (p_ret) = fname<long>(__VA_ARGS__);                               \
-    } else if ("Int64t" == (ctype)) {                                  \
+    } else if ("Int64t" == (ctype)) {                                   \
       (p_ret) = fname<int64_t>(__VA_ARGS__);                            \
     } else if ("Char" == (ctype)) {                                     \
       (p_ret) = fname<char>(__VA_ARGS__);                               \
-    } else if ("Int8t" == (ctype)) {                                   \
+    } else if ("Int8t" == (ctype)) {                                    \
       (p_ret) = fname<int8_t>(__VA_ARGS__);                             \
     } else {                                                            \
       qerr(qlat::ssprintf("%s %s='%s' does not exist.", #fname, #ctype, \
@@ -58,6 +60,12 @@ template <>
 inline bool check_ctype_name<NonRelWilsonMatrix>(const std::string& ctype)
 {
   return "NonRelWilsonMatrix" == ctype;
+}
+
+template <>
+inline bool check_ctype_name<IsospinMatrix>(const std::string& ctype)
+{
+  return "IsospinMatrix" == ctype;
 }
 
 template <>
@@ -214,6 +222,10 @@ inline PyObject* py_convert(const WilsonMatrix& x) {
 }
 
 inline PyObject* py_convert(const NonRelWilsonMatrix& x) {
+  return py_convert(get_data_complex(get_data_one_elem(x)));
+}
+
+inline PyObject* py_convert(const IsospinMatrix& x) {
   return py_convert(get_data_complex(get_data_one_elem(x)));
 }
 

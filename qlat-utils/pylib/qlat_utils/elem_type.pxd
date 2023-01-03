@@ -5,6 +5,7 @@ cdef fused ElemType:
     ColorMatrix
     WilsonMatrix 
     NonRelWilsonMatrix
+    IsospinMatrix
     SpinMatrix
     WilsonVector
     Complex

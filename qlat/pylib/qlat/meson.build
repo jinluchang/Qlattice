@@ -18,6 +18,7 @@ type_info_list = [
   [ 'ColorMatrix', 'color_matrix', ],
   [ 'WilsonMatrix', 'wilson_matrix', ],
   [ 'NonRelWilsonMatrix', 'non_rel_wilson_matrix', ],
+  [ 'IsospinMatrix', 'isospin_matrix', ],
   [ 'SpinMatrix', 'spin_matrix', ],
   [ 'WilsonVector', 'wilson_vector', ],
   [ 'Complex', 'complex', ],

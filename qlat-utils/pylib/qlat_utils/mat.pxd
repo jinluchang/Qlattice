@@ -34,6 +34,11 @@ cdef extern from "qlat-utils/matrix.h" namespace "qlat":
         const NonRelWilsonMatrix& operator=(const NonRelWilsonMatrix& m)
         Complex* data()
 
+    cdef cppclass IsospinMatrix:
+        IsospinMatrix()
+        const IsospinMatrix& operator=(const IsospinMatrix& m)
+        Complex* data()
+
     cdef cppclass WilsonVector:
         WilsonVector()
         const WilsonVector& operator=(const WilsonVector& m)
@@ -45,12 +50,14 @@ cdef extern from "qlat-utils/lib/mat.h" namespace "qlat":
     void set_zero(SpinMatrix& x)
     void set_zero(WilsonMatrix& x)
     void set_zero(NonRelWilsonMatrix& x)
+    void set_zero(IsospinMatrix& x)
     void set_zero(WilsonVector& x)
 
     Vector[Complex] get_data(const ColorMatrix& x)
     Vector[Complex] get_data(const SpinMatrix& x)
     Vector[Complex] get_data(const WilsonMatrix& x)
     Vector[Complex] get_data(const NonRelWilsonMatrix& x)
+    Vector[Complex] get_data(const IsospinMatrix& x)
     Vector[Complex] get_data(const WilsonVector& x)
 
     Complex mat_tr(const SpinMatrix& m)

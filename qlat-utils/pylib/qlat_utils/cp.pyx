@@ -73,6 +73,24 @@ cdef class ElemTypeNonRelWilsonMatrix(ElemType):
     @staticmethod
     cdef Py_ssize_t size():
         return sizeof(cc.NonRelWilsonMatrix)
+cdef class ElemTypeIsospinMatrix(ElemType):
+    name = "IsospinMatrix"
+    @staticmethod
+    cdef char* format():
+        cdef char* fmt = 'Zd'
+        return fmt
+    @staticmethod
+    cdef Py_ssize_t itemsize():
+        return sizeof(cc.Complex)
+    @staticmethod
+    cdef int ndim():
+        return 2
+    @staticmethod
+    cdef cc.std_vector[Py_ssize_t] shape():
+        return cc.std_vector[Py_ssize_t](2, 2)
+    @staticmethod
+    cdef Py_ssize_t size():
+        return sizeof(cc.IsospinMatrix)
 cdef class ElemTypeSpinMatrix(ElemType):
     name = "SpinMatrix"
     @staticmethod

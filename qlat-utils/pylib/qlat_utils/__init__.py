@@ -6,6 +6,7 @@ from qlat_utils.c import \
         ElemTypeColorMatrix, \
         ElemTypeWilsonMatrix, \
         ElemTypeNonRelWilsonMatrix, \
+        ElemTypeIsospinMatrix, \
         ElemTypeSpinMatrix, \
         ElemTypeWilsonVector, \
         ElemTypeComplex, \

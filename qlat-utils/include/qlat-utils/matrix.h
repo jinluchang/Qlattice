@@ -333,6 +333,18 @@ struct API NonRelWilsonMatrixT : MatrixT<2 * NUM_COLOR, ComplexT<T> > {
 };
 
 template <class T = Real>
+struct API IsospinMatrixT : MatrixT<2, ComplexT<T> > {
+  qacc IsospinMatrixT() {}
+  qacc IsospinMatrixT(const MatrixT<2, ComplexT<T> >& m) { *this = m; }
+  //
+  qacc const IsospinMatrixT& operator=(const MatrixT<2, ComplexT<T> >& m)
+  {
+    *this = (const IsospinMatrixT&)m;
+    return *this;
+  }
+};
+
+template <class T = Real>
 struct API SpinMatrixConstantsT {
   SpinMatrixT<T> unit;
   array<SpinMatrixT<T>, 4>
@@ -688,6 +700,8 @@ qacc void convert_wm_from_mspincolor(WilsonMatrixT<T>& wm,
 #ifndef QLAT_NO_DEFAULT_TYPE
 
 typedef NonRelWilsonMatrixT<> NonRelWilsonMatrix;
+
+typedef IsospinMatrixT<> IsospinMatrix;
 
 typedef SpinMatrixConstantsT<> SpinMatrixConstants;
 
