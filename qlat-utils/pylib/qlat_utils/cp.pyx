@@ -704,11 +704,16 @@ cdef class LatData:
         # only set LatData shape if it is initially empty
         # otherwise only set data and ignore shape completely
         # dim_names should be a list of names for each dimension
+        cdef int ndim = val.ndim
+        cdef int dim
+        cdef list shape = [ val.shape[dim] for dim in range(ndim) ]
         if self.ndim() == 0:
+            self.set_dim_sizes(shape, is_complex = is_complex)
             if dim_names is None:
                 dim_names = [ n for n in "ijklmnopqrstuvwxyz" ]
-            self.set_dim_sizes(list(val.shape), is_complex = is_complex)
-            for dim, (dummy_size, name,) in enumerate(zip(val.shape, dim_names)):
+            assert ndim <= len(dim_names)
+            for dim in range(ndim):
+                name = dim_names[dim]
                 self.set_dim_name(dim, name)
         np.asarray(self).ravel()[:] = val.ravel()[:]
         return self
