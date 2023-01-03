@@ -3,8 +3,9 @@
 from . cimport everything as cc
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
-import cqlat_utils as c
+cimport numpy
 
+import cqlat_utils as c
 import numpy as np
 import functools
 
@@ -595,6 +596,15 @@ cdef class LatData:
     def load_node(self, const cc.std_string& path):
         self.xx.load(path)
 
+    def save(self, const cc.std_string& path):
+        if cc.get_id_node() == 0:
+            self.save_node(path)
+
+    def load(self, const cc.std_string& path):
+        if cc.get_id_node() == 0:
+            self.load_node(path)
+        self.bcast()
+
     def bcast(self):
         if get_num_node() != 1:
             import cqlat as c
@@ -611,60 +621,11 @@ cdef class LatData:
         ld = self.copy()
         return ld.glb_sum_in_place()
 
-    def save(self, path):
-        if cc.get_id_node() == 0:
-            self.save_node(path)
-
-    def load(self, path):
-        if cc.get_id_node() == 0:
-            self.load_node(path)
-        self.bcast()
-
     def __str__(self):
         return cc.show(self.xx)
 
     def show(self):
         return str(self)
-
-    def __iadd__(self, ld1):
-        assert isinstance(ld1, LatData)
-        c.set_add_lat_data(self, ld1)
-        return self
-
-    def __isub__(self, ld1):
-        assert isinstance(ld1, LatData)
-        c.set_sub_lat_data(self, ld1)
-        return self
-
-    def __imul__(self, factor):
-        assert isinstance(factor, float)
-        c.set_mul_double_lat_data(self, factor)
-        return self
-
-    def __add__(self, ld1):
-        ld = self.copy()
-        ld += ld1
-        return ld
-
-    def __sub__(self, ld1):
-        ld = self.copy()
-        ld -= ld1
-        return ld
-
-    def __mul__(self, factor):
-        ld = self.copy()
-        ld *= factor
-        return ld
-
-    __rmul__ = __mul__
-
-    def __neg__(self):
-        ld = self.copy()
-        ld *= -1
-        return ld
-
-    def __pos__(self):
-        return self
 
     def set_zero(self):
         cc.set_zero(self.xx)
@@ -721,7 +682,9 @@ cdef class LatData:
         cdef int size
         cdef int i
         self.xx.info[dim].name = name
-        if indices is not None:
+        if indices is None:
+            self.xx.info[dim].indices.resize(0)
+        else:
             indices = [ str(idx).replace("\n", "  ") for idx in indices ]
             size = len(indices)
             self.xx.info[dim].indices.resize(size)
@@ -734,53 +697,31 @@ cdef class LatData:
         cdef int i
         return [ self.xx.info[i].name for i in range(ndim) ]
 
-    def to_list(self):
-        is_always_double = False
-        return c.peek_lat_data(self, [], is_always_double)
-
-    def from_list(self, val):
-        if self.ndim() == 0:
-            self.set_dim_sizes([len(val)])
-            self.set_dim_name(0, "i")
-        is_always_double = False
-        c.poke_lat_data(self, [], val, is_always_double)
-        return self
-
     def to_numpy(self):
-        is_always_double = False
-        v = np.array(c.peek_lat_data(self, [], is_always_double))
-        return v.reshape(self.dim_sizes())
+        return np.asarray(self).copy()
 
-    def from_numpy(self, val, dim_names = None):
+    def from_numpy(self, numpy.ndarray val, list dim_names = None, *, cc.bool is_complex = True):
         # only set LatData shape if it is initially empty
         # otherwise only set data and ignore shape completely
         # dim_names should be a list of names for each dimension
         if self.ndim() == 0:
             if dim_names is None:
-                dim_names = "ijklmnopqrstuvwxyz"
-            self.set_dim_sizes(list(val.shape))
-            for dim, (dummy_size, name) in enumerate(zip(val.shape, dim_names)):
+                dim_names = [ n for n in "ijklmnopqrstuvwxyz" ]
+            self.set_dim_sizes(list(val.shape), is_complex = is_complex)
+            for dim, (dummy_size, name,) in enumerate(zip(val.shape, dim_names)):
                 self.set_dim_name(dim, name)
-        is_always_double = False
-        c.poke_lat_data(self, [], list(val.flatten()), is_always_double)
+        np.asarray(self).ravel()[:] = val.ravel()[:]
         return self
 
-    def __setitem__(self, idx, val):
-        # use list with correct length as val
-        # idx should be tuple or list of int
-        if isinstance(idx, int):
-            idx = [ idx, ]
-        if isinstance(val, np.ndarray):
-            val = val.flatten()
-        c.poke_lat_data(self, idx, list(val))
+    def to_list(self):
+        return np.asarray(self).ravel().tolist()
 
-    def __getitem__(self, idx):
-        # return a new list every call
-        # idx should be tuple or list of int
-        if isinstance(idx, int):
-            idx = [ idx, ]
-        shape = self.dim_sizes()[len(idx):]
-        return np.array(c.peek_lat_data(self, idx)).reshape(shape)
+    def from_list(self, list val):
+        if self.ndim() == 0:
+            self.set_dim_sizes([ len(val), ])
+            self.set_dim_name(0, "i")
+        np.asarray(self).ravel()[:] = np.array(val)
+        return self
 
     def __getstate__(self):
         is_complex = self.is_complex()
@@ -832,6 +773,63 @@ cdef class LatData:
             else:
                 raise Exception(f"LatData setinfo info_list={info_list}")
         self.set_zero()
+
+    def __iadd__(self, ld1):
+        assert isinstance(ld1, LatData)
+        c.set_add_lat_data(self, ld1)
+        return self
+
+    def __isub__(self, ld1):
+        assert isinstance(ld1, LatData)
+        c.set_sub_lat_data(self, ld1)
+        return self
+
+    def __imul__(self, factor):
+        assert isinstance(factor, float)
+        c.set_mul_double_lat_data(self, factor)
+        return self
+
+    def __add__(self, ld1):
+        ld = self.copy()
+        ld += ld1
+        return ld
+
+    def __sub__(self, ld1):
+        ld = self.copy()
+        ld -= ld1
+        return ld
+
+    def __mul__(self, factor):
+        ld = self.copy()
+        ld *= factor
+        return ld
+
+    __rmul__ = __mul__
+
+    def __neg__(self):
+        ld = self.copy()
+        ld *= -1
+        return ld
+
+    def __pos__(self):
+        return self
+
+    def __setitem__(self, idx, val):
+        # use list with correct length as val
+        # idx should be tuple or list of int
+        if isinstance(idx, int):
+            idx = [ idx, ]
+        if isinstance(val, np.ndarray):
+            val = val.flatten()
+        c.poke_lat_data(self, idx, list(val))
+
+    def __getitem__(self, idx):
+        # return a new list every call
+        # idx should be tuple or list of int
+        if isinstance(idx, int):
+            idx = [ idx, ]
+        shape = self.dim_sizes()[len(idx):]
+        return np.array(c.peek_lat_data(self, idx)).reshape(shape)
 
 ### -------------------------------------------------------------------
 
