@@ -41,6 +41,9 @@ struct API LatData {
   //
   LatData(){};
   //
+  bool is_complex() const;
+  int ndim() const;
+  //
   void load(QFile& qfile);
   void load(const std::string& fn)
   {
@@ -61,7 +64,7 @@ struct API LatData {
 
 inline bool is_initialized(const LatData& ld) { return ld.res.size() > 0; }
 
-inline long lat_data_size(const LatInfo& info, const int level = 0)
+inline long lat_info_size(const LatInfo& info, const int level = 0)
 {
   if (info.size() == 0) {
     return 0;
@@ -73,9 +76,14 @@ inline long lat_data_size(const LatInfo& info, const int level = 0)
   return total;
 }
 
+inline long lat_data_size(const LatData& ld, const int level = 0)
+{
+  return lat_info_size(ld.info, level);
+}
+
 inline void lat_data_alloc(LatData& ld)
 {
-  ld.res.resize(lat_data_size(ld.info));
+  ld.res.resize(lat_data_size(ld));
 }
 
 inline Vector<double> get_data(const LatData& ld) { return get_data(ld.res); }
@@ -167,7 +175,7 @@ inline void LatData::load(QFile& qfile)
   qassert(crc_str.compare(0, crc_prop.size(), crc_prop) == 0);
   const crc32_t crc = read_crc32(std::string(crc_str, crc_prop.size()));
   lat_data_alloc(*this);
-  qassert((long)res.size() == lat_data_size(info));
+  qassert((long)res.size() == lat_info_size(info));
   qassert((long)res.size() * (long)sizeof(double) == read_long(infos[2]));
   const long fread_res_len =
       qfread(res.data(), sizeof(double), res.size(), qfile);
@@ -231,15 +239,14 @@ inline LatDim lat_dim_number(const std::string& name, const long start,
   return dim;
 }
 
-template <unsigned long N>
-LatDim lat_dim_string(const std::string& name,
-                      const array<std::string, N>& is)
+template <class VecS>
+LatDim lat_dim_string(const std::string& name, const VecS& indices)
 {
   LatDim dim;
   dim.name = name;
-  dim.size = N;
-  for (int i = 0; i < (int)N; ++i) {
-    dim.indices.push_back(is[i]);
+  dim.size = indices.size();
+  for (int i = 0; i < dim.size; ++i) {
+    dim.indices.push_back(indices[i]);
   }
   return dim;
 }
@@ -282,7 +289,7 @@ inline long lat_dim_idx(const LatDim& dim, const long& idx)
 }
 
 template <class VecS>
-long lat_data_offset(const LatInfo& info, const VecS& idx)
+long lat_info_offset(const LatInfo& info, const VecS& idx)
 // will return offset at the level the idx specify
 // VecS can be std::vector<std::string> or std::vector<long>
 // or can be array of certain length
@@ -296,20 +303,40 @@ long lat_data_offset(const LatInfo& info, const VecS& idx)
   return ret;
 }
 
+template <class VecS>
+long lat_data_offset(const LatData& ld, const VecS& idx)
+// will return offset at the level the idx specify
+// VecS can be std::vector<std::string> or std::vector<long>
+// or can be array of certain length
+{
+  return lat_info_offset(ld.info, idx);
+}
+
 inline bool is_lat_info_complex(const LatInfo& info)
 {
   if ((long)info.size() < 1) {
     return false;
   }
   const LatDim& dim = info.back();
-  if (dim.name != "re-im" or dim.size != 2) {
-    return false;
-  } else if (dim.indices.size() != 2) {
-    return false;
-  } else if (dim.indices[0] != "re" or dim.indices[1] != "im") {
+  if (dim.name != "re-im") {
     return false;
   } else {
+    qassert(dim.size == 2);
+    qassert(dim.indices.size() == 2);
+    qassert(dim.indices[0] == "re");
+    qassert(dim.indices[1] == "im");
     return true;
+  }
+}
+
+inline bool LatData::is_complex() const { return is_lat_info_complex(info); }
+
+inline int LatData::ndim() const
+{
+  if (is_lat_info_complex(info)) {
+    return info.size() - 1;
+  } else {
+    return info.size();
   }
 }
 
@@ -349,8 +376,8 @@ inline bool is_matching(const LatData& ld1, const LatData& ld2)
 template <class VecS>
 Vector<double> lat_data_get(LatData& ld, const VecS& idx)
 {
-  const long offset = lat_data_offset(ld.info, idx);
-  const long size = lat_data_size(ld.info, idx.size());
+  const long offset = lat_data_offset(ld, idx);
+  const long size = lat_data_size(ld, idx.size());
   qassert(offset * size + size <= (long)ld.res.size());
   Vector<double> ret(&ld.res[offset * size], size);
   return ret;
@@ -361,8 +388,8 @@ Vector<double> lat_data_get_const(const LatData& ld, const VecS& idx)
 // Be cautious about the const property
 // 改不改靠自觉
 {
-  const long offset = lat_data_offset(ld.info, idx);
-  const long size = lat_data_size(ld.info, idx.size());
+  const long offset = lat_data_offset(ld, idx);
+  const long size = lat_data_size(ld, idx.size());
   qassert(offset * size + size <= (long)ld.res.size());
   Vector<double> ret(&ld.res[offset * size], size);
   return ret;
@@ -373,8 +400,8 @@ Vector<Complex> lat_data_complex_get(LatData& ld, const VecS& idx)
 {
   qassert(is_lat_info_complex(ld.info));
   qassert((long)idx.size() < (long)ld.info.size());
-  const long offset = lat_data_offset(ld.info, idx);
-  const long size = lat_data_size(ld.info, idx.size());
+  const long offset = lat_data_offset(ld, idx);
+  const long size = lat_data_size(ld, idx.size());
   qassert(size % 2 == 0);
   qassert(offset * size + size <= (long)ld.res.size());
   Vector<Complex> ret((Complex*)&ld.res[offset * size], size / 2);
@@ -388,8 +415,8 @@ Vector<Complex> lat_data_complex_get_const(const LatData& ld, const VecS& idx)
 {
   qassert(is_lat_info_complex(ld.info));
   qassert((long)idx.size() < (long)ld.info.size());
-  const long offset = lat_data_offset(ld.info, idx);
-  const long size = lat_data_size(ld.info, idx.size());
+  const long offset = lat_data_offset(ld, idx);
+  const long size = lat_data_size(ld, idx.size());
   qassert(size % 2 == 0);
   qassert(offset * size + size <= (long)ld.res.size());
   Vector<Complex> ret((Complex*)&ld.res[offset * size], size / 2);
@@ -535,7 +562,7 @@ inline std::string show_double(const LatData& ld)
   }
   out << ssprintf("%24s\n", "VALUE");
   std::vector<long> idx(info.size(), 0);
-  for (long k = 0; k < lat_data_size(info); ++k) {
+  for (long k = 0; k < lat_data_size(ld); ++k) {
     for (int a = 0; a < (int)info.size(); ++a) {
       out << ssprintf("%12s ", idx_name(info[a], idx[a]).c_str());
     }
@@ -566,7 +593,7 @@ inline std::string show_complex(const LatData& ld)
   }
   out << ssprintf("%24s %24s\n", "RE-VALUE", "IM-VALUE");
   std::vector<long> idx((int)info.size() - 1, 0);
-  for (long k = 0; k < lat_data_size(info) / 2; ++k) {
+  for (long k = 0; k < lat_data_size(ld) / 2; ++k) {
     for (int a = 0; a < (int)info.size() - 1; ++a) {
       out << ssprintf("%12s ", idx_name(info[a], idx[a]).c_str());
     }
@@ -602,12 +629,12 @@ inline void print(const LatData& ld)
   const LatInfo& info = ld.info;
   display(ssprintf("%s", show(info).c_str()));
   std::vector<long> idx(info.size(), 0);
-  for (long k = 0; k < lat_data_size(info); ++k) {
+  for (long k = 0; k < lat_data_size(ld); ++k) {
     for (int a = 0; a < (int)info.size(); ++a) {
       display(ssprintf("%s[%8s] ", info[a].name.c_str(),
                        idx_name(info[a], idx[a]).c_str()));
     }
-    display(ssprintf("%24.17E\n", ld.res[lat_data_offset(info, idx)]));
+    display(ssprintf("%24.17E\n", ld.res[lat_data_offset(ld, idx)]));
     idx[info.size() - 1] += 1;
     for (int a = info.size() - 1; a > 0; --a) {
       if (idx[a] == info[a].size) {

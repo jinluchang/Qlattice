@@ -577,19 +577,19 @@ cdef class LatData:
         return ld.glb_sum_in_place()
 
     def save(self, path):
-        if get_id_node() == 0:
+        if cc.get_id_node() == 0:
             self.save_node(path)
 
     def load(self, path):
-        if get_id_node() == 0:
+        if cc.get_id_node() == 0:
             self.load_node(path)
         self.bcast()
 
     def __str__(self):
-        return self.show()
+        return cc.show(self.xx)
 
     def show(self):
-        return c.show_lat_data(self)
+        return str(self)
 
     def __iadd__(self, ld1):
         assert isinstance(ld1, LatData)
@@ -632,78 +632,101 @@ cdef class LatData:
         return self
 
     def set_zero(self):
-        return c.set_zero_lat_data(self)
+        cc.set_zero(self.xx)
 
     def qnorm(self):
-        return c.qnorm_lat_data(self)
+        return cc.qnorm(self.xx)
 
-    def is_match(self, ld1):
+    def is_match(self, LatData ld1):
         # ld.info needs to be exactly equal
-        return c.is_matching_lat_data(self, ld1)
+        return cc.is_matching(self.xx, ld1.xx)
 
     def is_complex(self):
-        return c.is_complex_lat_data(self)
+        return self.xx.is_complex()
 
-    def ndim(self, *, is_complex = True):
-        is_always_double = not is_complex
-        return c.get_ndim_lat_data(self, is_always_double)
+    def ndim(self):
+        return self.xx.ndim()
 
-    def dim_sizes(self, *, is_complex = True):
-        is_always_double = not is_complex
-        return c.get_dim_sizes_lat_data(self, is_always_double)
+    def dim_name(self, int dim):
+        assert 0 <= dim
+        assert dim < self.xx.info.size()
+        return self.xx.info[dim].name
 
-    def dim_name(self, dim):
-        return c.get_dim_name_lat_data(self, dim)
+    def dim_size(self, int dim):
+        assert 0 <= dim
+        assert dim < self.xx.info.size()
+        return self.xx.info[dim].size
 
-    def dim_size(self, dim):
-        return c.get_dim_size_lat_data(self, dim)
+    def dim_indices(self, int dim):
+        assert 0 <= dim
+        assert dim < self.xx.info.size()
+        return self.xx.info[dim].indices
 
-    def dim_indices(self, dim):
-        return c.get_dim_indices_lat_data(self, dim)
+    def dim_sizes(self):
+        cdef int ndim = self.xx.ndim()
+        cdef int i
+        return [ self.xx.info[i].size for i in range(ndim) ]
 
-    def set_dim_sizes(self, dim_sizes, *, is_complex = True):
-        return c.set_dim_sizes_lat_data(self, dim_sizes, is_complex)
+    def set_dim_sizes(self, list dim_sizes, *, cc.bool is_complex = True):
+        cdef int ndim = len(dim_sizes)
+        cdef int ndim_real = ndim
+        cdef int i
+        if is_complex:
+            ndim_real += 1
+        self.xx.info.resize(ndim_real)
+        for i in range(ndim):
+            self.xx.info[i].size = dim_sizes[i]
+        if is_complex:
+            self.xx.info[ndim] = cc.lat_dim_re_im()
+        cc.lat_data_alloc(self.xx)
 
-    def set_dim_name(self, dim, name, indices = None):
-        if indices is None:
-            indices = []
-        else:
+    def set_dim_name(self, int dim, const cc.std_string& name, list indices = None):
+        assert 0 <= dim
+        assert dim < self.xx.info.size()
+        cdef int size
+        cdef int i
+        self.xx.info[dim].name = name
+        if indices is not None:
             indices = [ str(idx).replace("\n", "  ") for idx in indices ]
-        return c.set_dim_name_lat_data(self, dim, name, indices)
+            size = len(indices)
+            self.xx.info[dim].indices.resize(size)
+            for i in range(size):
+                self.xx.info[dim].indices[i] = indices[i]
 
-    def dim_names(self, *, is_complex = True):
+    def dim_names(self):
         # by default, return list can be used as the input argument for ld.from_numpy
-        ndim = self.ndim(is_complex = is_complex)
-        return [ self.dim_name(dim) for dim in range(ndim) ]
+        cdef int ndim = self.xx.ndim()
+        cdef int i
+        return [ self.xx.info[i].name for i in range(ndim) ]
 
-    def to_list(self, *, is_complex = True):
-        is_always_double = not is_complex
+    def to_list(self):
+        is_always_double = False
         return c.peek_lat_data(self, [], is_always_double)
 
-    def from_list(self, val, *, is_complex = True):
+    def from_list(self, val):
         if self.ndim() == 0:
-            self.set_dim_sizes([len(val)], is_complex = is_complex)
+            self.set_dim_sizes([len(val)])
             self.set_dim_name(0, "i")
-        is_always_double = not is_complex
+        is_always_double = False
         c.poke_lat_data(self, [], val, is_always_double)
         return self
 
-    def to_numpy(self, *, is_complex = True):
-        is_always_double = not is_complex
+    def to_numpy(self):
+        is_always_double = False
         v = np.array(c.peek_lat_data(self, [], is_always_double))
-        return v.reshape(self.dim_sizes(is_complex = is_complex))
+        return v.reshape(self.dim_sizes())
 
-    def from_numpy(self, val, dim_names = None, *, is_complex = True):
+    def from_numpy(self, val, dim_names = None):
         # only set LatData shape if it is initially empty
         # otherwise only set data and ignore shape completely
         # dim_names should be a list of names for each dimension
         if self.ndim() == 0:
             if dim_names is None:
                 dim_names = "ijklmnopqrstuvwxyz"
-            self.set_dim_sizes(list(val.shape), is_complex = is_complex)
+            self.set_dim_sizes(list(val.shape))
             for dim, (dummy_size, name) in enumerate(zip(val.shape, dim_names)):
                 self.set_dim_name(dim, name)
-        is_always_double = not is_complex
+        is_always_double = False
         c.poke_lat_data(self, [], list(val.flatten()), is_always_double)
         return self
 
@@ -737,16 +760,16 @@ cdef class LatData:
     def __setstate__(self, state):
         [ is_complex, dim_sizes, dim_names, dim_indices, data_list ] = state
         self.__init__()
-        self.set_dim_sizes(dim_sizes, is_complex = is_complex)
+        self.set_dim_sizes(dim_sizes)
         ndim = len(dim_sizes)
         for dim in range(ndim):
             self.set_dim_name(dim, dim_names[dim], dim_indices[dim])
         self.from_list(data_list)
 
-    def info(self, dim = None, *, is_complex = True):
+    def info(self, dim = None):
         # by default, return list can be used as the input argument for ld.set_info or mk_lat_data
         if dim is None:
-            ndim = self.ndim(is_complex = is_complex)
+            ndim = self.ndim()
             return [ self.info(i) for i in range(ndim) ]
         else:
             dim_name = self.dim_name(dim)
@@ -754,14 +777,14 @@ cdef class LatData:
             dim_indices = self.dim_indices(dim)
             return [ dim_name, dim_size, dim_indices, ]
 
-    def set_info(self, info_list, *, is_complex = True):
+    def set_info(self, info_list):
         # info_list format:
         # [ [ dim_name, dim_size, dim_indices, ], ... ]
         # dim_indices can be optional
         for info in info_list:
             assert len(info) >= 2
         dim_sizes = [ info[1] for info in info_list ]
-        self.set_dim_sizes(dim_sizes, is_complex = is_complex)
+        self.set_dim_sizes(dim_sizes)
         ndim = len(dim_sizes)
         for dim in range(ndim):
             info = info_list[dim]
@@ -772,7 +795,7 @@ cdef class LatData:
                 dim_name, dummy_dim_size, dim_indices = info
                 self.set_dim_name(dim, dim_name, dim_indices)
             else:
-                raise Exception(f"LatData setinfo info_list={info_list} is_complex={is_complex}")
+                raise Exception(f"LatData setinfo info_list={info_list}")
         self.set_zero()
 
 ### -------------------------------------------------------------------

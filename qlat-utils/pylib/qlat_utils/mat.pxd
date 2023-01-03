@@ -1,5 +1,4 @@
-from qlat_utils.complex cimport *
-from qlat_utils.vector cimport *
+from qlat_utils.lat_io cimport *
 
 cdef extern from "qlat-utils/matrix.h" namespace "qlat":
 
@@ -42,11 +41,11 @@ cdef extern from "qlat-utils/matrix.h" namespace "qlat":
 
 cdef extern from "qlat-utils/lib/mat.h" namespace "qlat":
 
-    void set_zero(ColorMatrix& m)
-    void set_zero(SpinMatrix& m)
-    void set_zero(WilsonMatrix& m)
-    void set_zero(NonRelWilsonMatrix& m)
-    void set_zero(WilsonVector& m)
+    void set_zero(ColorMatrix& x)
+    void set_zero(SpinMatrix& x)
+    void set_zero(WilsonMatrix& x)
+    void set_zero(NonRelWilsonMatrix& x)
+    void set_zero(WilsonVector& x)
 
     Vector[Complex] get_data(const ColorMatrix& x)
     Vector[Complex] get_data(const SpinMatrix& x)
