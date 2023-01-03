@@ -583,8 +583,7 @@ def get_double_sig(x, RngState rs):
         rs.u_rand_fill(arr_rand, 1.0, -1.0)
         return np.sum(arr * arr_rand)
     else:
-        displayln_info("get_double_sig", type(x))
-        assert False
+        return None
 
 ### -------------------------------------------------------------------
 
