@@ -13,6 +13,7 @@ cdef extern from "qlat/field-utils.h" namespace "qlat":
         const Geometry& get_geo()
 
     Vector[T] get_data[T](const Field[T]& x)
+    void set_zero[T](Field[T]& x)
     void qswap[T](Field[T]& x, Field[T]& y)
 
 cdef extern from "qlat/selected-field-io.h" namespace "qlat":
@@ -28,6 +29,7 @@ cdef extern from "qlat/selected-field-io.h" namespace "qlat":
         Coordinate& operator[](long i)
 
     cdef cppclass SelectedField[T]:
+        long n_elems;
         SelectedField()
         void init()
         void init(const Geometry& geo, const long n_elems, const int multiplicity)
@@ -36,11 +38,12 @@ cdef extern from "qlat/selected-field-io.h" namespace "qlat":
         const Geometry& get_geo()
 
     Vector[T] get_data[T](const SelectedField[T]& x)
+    void set_zero[T](SelectedField[T]& x)
     void qswap[T](SelectedField[T]& x, SelectedField[T]& y)
 
     cdef cppclass SelectedPoints[T]:
         int multiplicity
-        long n_point
+        long n_points
         SelectedPoints()
         void init()
         void init(const long n_points, const int multiplicity)
@@ -48,4 +51,5 @@ cdef extern from "qlat/selected-field-io.h" namespace "qlat":
         const SelectedPoints[T]& operator=(const SelectedPoints[T]& field)
 
     Vector[T] get_data[T](const SelectedPoints[T]& x)
+    void set_zero[T](SelectedPoints[T]& x)
     void qswap[T](SelectedPoints[T]& x, SelectedPoints[T]& y)

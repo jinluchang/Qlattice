@@ -287,10 +287,6 @@ cdef class FieldBase:
         return self
 
     @q.timer
-    def set_zero(self):
-        c.set_zero_field(self)
-
-    @q.timer
     def set_unit(self, coef = 1.0):
         c.set_unit_field(self, coef)
 
@@ -781,30 +777,6 @@ cdef class SelectedFieldBase:
 
     ctype = ElemType
 
-    def __imatmul__(self, f1):
-        # won't change self.fsel
-        assert f1.ctype is self.ctype
-        if isinstance(f1, SelectedFieldBase):
-            # two fsel do not need to match
-            if self.fsel is f1.fsel:
-                c.set_sfield(self, f1)
-            else:
-                c.set_sfield_sfield(self, f1)
-        elif isinstance(f1, FieldBase):
-            c.set_sfield_field(self, f1)
-        elif isinstance(f1, SelectedPointsBase):
-            # psel may not have to be subset of fsel
-            c.set_sfield_spfield(self, f1)
-        else:
-            assert False
-        return self
-
-    def copy(self, is_copying_data = True):
-        f = SelectedField(self.ctype, self.fsel)
-        if is_copying_data:
-            f @= self
-        return f
-
     def __copy__(self):
         return self.copy()
 
@@ -841,9 +813,6 @@ cdef class SelectedFieldBase:
         assert isinstance(factor, float)
         c.set_mul_double_sfield(self, factor)
         return self
-
-    def set_zero(self):
-        c.set_zero_sfield(self)
 
     def set_rand(self, rng, upper = 1.0, lower = 0.0):
         assert isinstance(rng, RngState)
@@ -1047,31 +1016,6 @@ cdef class SelectedPointsBase:
 
     ctype = ElemType
 
-    def __imatmul__(self, f1):
-        # won't change self.psel
-        from qlat.selected_field import SelectedField
-        assert f1.ctype is self.ctype
-        if isinstance(f1, SelectedPointsBase):
-            # two psel must be the same object
-            if self.psel is f1.psel:
-                c.set_spfield(self, f1)
-            else:
-                raise Exception("SelectedPoints @= psel not match")
-        elif isinstance(f1, SelectedFieldBase):
-            # only assign available points
-            c.set_spfield_sfield(self, f1)
-        elif isinstance(f1, FieldBase):
-            c.set_spfield_field(self, f1)
-        else:
-            raise Exception("SelectedPoints @= type mismatch")
-        return self
-
-    def copy(self, is_copying_data = True):
-        f = SelectedPoints(self.ctype, self.psel)
-        if is_copying_data:
-            f @= self
-        return f
-
     def __copy__(self):
         return self.copy()
 
@@ -1098,9 +1042,6 @@ cdef class SelectedPointsBase:
         assert isinstance(factor, float)
         c.set_mul_double_spfield(self, factor)
         return self
-
-    def set_zero(self):
-        c.set_zero_spfield(self)
 
     def qnorm(self):
         return c.qnorm_spfield(self)
