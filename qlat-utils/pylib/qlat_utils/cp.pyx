@@ -747,9 +747,9 @@ cdef class LatData:
     def to_list(self):
         return np.asarray(self).ravel().tolist()
 
-    def from_list(self, list val):
+    def from_list(self, list val, *, cc.bool is_complex = True):
         if self.ndim() == 0:
-            self.set_dim_sizes([ len(val), ])
+            self.set_dim_sizes([ len(val), ], is_complex = is_complex)
             self.set_dim_name(0, "i")
         np.asarray(self).ravel()[:] = np.array(val)
         return self
@@ -767,7 +767,7 @@ cdef class LatData:
     def __setstate__(self, state):
         [ is_complex, dim_sizes, dim_names, dim_indices, data_list ] = state
         self.__init__()
-        self.set_dim_sizes(dim_sizes)
+        self.set_dim_sizes(dim_sizes, is_complex = is_complex)
         ndim = len(dim_sizes)
         for dim in range(ndim):
             self.set_dim_name(dim, dim_names[dim], dim_indices[dim])
@@ -784,14 +784,14 @@ cdef class LatData:
             dim_indices = self.dim_indices(dim)
             return [ dim_name, dim_size, dim_indices, ]
 
-    def set_info(self, info_list):
+    def set_info(self, list info_list, *, cc.bool is_complex = True):
         # info_list format:
         # [ [ dim_name, dim_size, dim_indices, ], ... ]
         # dim_indices can be optional
         for info in info_list:
             assert len(info) >= 2
         dim_sizes = [ info[1] for info in info_list ]
-        self.set_dim_sizes(dim_sizes)
+        self.set_dim_sizes(dim_sizes, is_complex = is_complex)
         ndim = len(dim_sizes)
         for dim in range(ndim):
             info = info_list[dim]
@@ -861,6 +861,21 @@ cdef class LatData:
             idx = [ idx, ]
         shape = self.dim_sizes()[len(idx):]
         return np.array(c.peek_lat_data(self, idx)).reshape(shape)
+
+### -------------------------------------------------------------------
+
+def mk_lat_data(list info_list, *, cc.bool is_complex = True):
+    # info_list format:
+    # [ [ dim_name, dim_size, dim_indices, ], ... ]
+    # dim_indices can be optional
+    ld = LatData()
+    ld.set_info(info_list, is_complex = is_complex)
+    return ld
+
+def load_lat_data(const cc.std_string& path):
+    ld = LatData()
+    ld.load(path)
+    return ld
 
 ### -------------------------------------------------------------------
 
