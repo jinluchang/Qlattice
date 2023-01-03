@@ -259,6 +259,20 @@ cdef class ElemTypeChar(ElemType):
 
 ### -------------------------------------------------------------------
 
+def displayln(level, *args):
+    # interpret the first argument as verbose level if it is int
+    if isinstance(level, int):
+        if level <= verbose_level():
+            print(*args, flush=True)
+    else:
+        print(level, *args, flush=True)
+
+def displayln_info(*args):
+    if cc.get_id_node() == 0:
+        displayln(*args)
+
+### -------------------------------------------------------------------
+
 cdef class Timer:
 
     def __cinit__(self, const cc.std_string& fname, cc.bool is_verbose = False):
@@ -632,13 +646,13 @@ cdef class LatData:
         self.bcast()
 
     def bcast(self):
-        if get_num_node() != 1:
+        if cc.get_num_node() != 1:
             import cqlat as c
             c.bcast_lat_data(self)
         return self
 
     def glb_sum_in_place(self):
-        if get_num_node() != 1:
+        if cc.get_num_node() != 1:
             import cqlat as c
             c.glb_sum_lat_data(self)
         return self

@@ -16,13 +16,4 @@ from qlat_utils.c import timer_flops, timer_verbose_flops
 
 from qlat_utils.c import Timer, TimerNone
 
-def displayln(level, *args):
-    if isinstance(level, int):
-        if level <= verbose_level():
-            print(*args, flush=True)
-    else:
-        print(level, *args, flush=True)
-
-def displayln_info(*args):
-    if get_id_node() == 0:
-        displayln(*args)
+from qlat_utils.c import displayln, displayln_info
