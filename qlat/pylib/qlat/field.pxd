@@ -26,6 +26,7 @@ cdef extern from "qlat/selected-field-io.h" namespace "qlat":
         PointSelection()
         PointSelection(const long n_points)
         long size()
+        Coordinate* data()
         Coordinate& operator[](long i)
 
     cdef cppclass SelectedField[T]:

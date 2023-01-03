@@ -13,6 +13,7 @@ set -e
 ./scripts/mpfr.sh
 ./scripts/mpc.sh
 ./scripts/gcc.sh
+./scripts/isl.sh
 ./scripts/binutils.sh
 ./scripts/perl.sh
 ./scripts/openssl.sh

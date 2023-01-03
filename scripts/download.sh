@@ -32,6 +32,8 @@ aget "https://tukaani.org/xz/xz-5.2.7.tar.gz"
 
 aget "https://zlib.net/zlib-1.2.13.tar.gz"
 
+aget "https://github.com/facebook/zstd/releases/download/v1.5.2/zstd-1.5.2.tar.gz"
+
 aget "https://ftp.gnu.org/gnu/tar/tar-1.34.tar.gz"
 
 aget "https://ftp.gnu.org/gnu/binutils/binutils-2.38.tar.xz"
@@ -45,6 +47,8 @@ aget "https://ftp.gnu.org/gnu/gmp/gmp-6.2.1.tar.xz"
 aget "https://ftp.gnu.org/gnu/mpfr/mpfr-4.1.1.tar.xz"
 
 aget "https://ftp.gnu.org/gnu/mpc/mpc-1.2.1.tar.gz"
+
+aget "https://gcc.gnu.org/pub/gcc/infrastructure/isl-0.24.tar.bz2"
 
 aget "https://ftp.gnu.org/gnu/gcc/gcc-12.2.0/gcc-12.2.0.tar.xz"
 

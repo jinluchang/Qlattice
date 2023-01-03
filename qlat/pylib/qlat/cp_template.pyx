@@ -613,6 +613,34 @@ cdef class PointSelection:
                 c = Coordinate(c)
             self.xx[i] = (<Coordinate>c).xx
 
+    def __getbuffer__(self, Py_buffer *buffer, int flags):
+        cdef long n_points = self.xx.size()
+        cdef int ndim = 2
+        cdef char* fmt = "i"
+        cdef Buffer buf = Buffer(self, ndim, sizeof(cc.Int32t))
+        cdef Py_ssize_t* shape = &buf.shape_strides[0]
+        cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
+        shape[0] = n_points
+        shape[1] = 4
+        buf.set_strides()
+        buffer.buf = <char*>(self.xx.data())
+        if flags & PyBUF_FORMAT:
+            buffer.format = fmt
+        else:
+            buffer.format = NULL
+        buffer.internal = NULL
+        buffer.itemsize = buf.itemsize
+        buffer.len = buf.get_len()
+        buffer.ndim = buf.ndim
+        buffer.obj = buf
+        buffer.readonly = 0
+        buffer.shape = shape
+        buffer.strides = strides
+        buffer.suboffsets = NULL
+
+    def __releasebuffer__(self, Py_buffer *buffer):
+        pass
+
     def __imatmul__(self, PointSelection v1):
         self.geo = v1.geo
         self.xx = v1.xx
