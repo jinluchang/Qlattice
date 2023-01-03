@@ -39,7 +39,15 @@ struct API LatData {
   LatInfo info;
   std::vector<double> res;
   //
-  LatData(){};
+  LatData() { init(); };
+  //
+  void init()
+  {
+    clear(info);
+    clear(res);
+    res.resize(1);
+    res[0] = 0.0;
+  }
   //
   void load(QFile& qfile);
   void load(const std::string& fn)
@@ -68,9 +76,6 @@ inline bool is_initialized(const LatData& ld) { return ld.res.size() > 0; }
 
 inline long lat_info_size(const LatInfo& info, const int level = 0)
 {
-  if (info.size() == 0) {
-    return 0;
-  }
   long total = 1;
   for (int i = level; i < (int)info.size(); ++i) {
     total *= info[i].size;
@@ -221,8 +226,7 @@ inline void LatData::save(QFile& qfile) const
 
 inline void clear(LatData& ld)
 {
-  clear(ld.info);
-  clear(ld.res);
+  ld.init();
 }
 
 inline LatDim lat_dim_number(const std::string& name, const long start,

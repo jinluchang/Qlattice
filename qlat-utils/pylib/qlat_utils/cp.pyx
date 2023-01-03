@@ -547,9 +547,9 @@ cdef class RngState:
         return l[ri]
 
     def u_rand_fill(self, arr, double upper = 1.0, double lower = 0.0):
-        arr = arr.view(np.float64)
-        assert arr.base is not None
         arr = arr.ravel()
+        assert arr.base is not None
+        arr = arr.view(np.float64)
         assert arr.base is not None
         return self.u_rand_fill_double(arr, upper, lower)
 
@@ -560,9 +560,9 @@ cdef class RngState:
             arr[i] = cc.u_rand_gen(self.xx, upper, lower)
 
     def g_rand_fill(self, arr, double center = 0.0, double sigma = 1.0):
-        arr = arr.view(np.float64)
-        assert arr.base is not None
         arr = arr.ravel()
+        assert arr.base is not None
+        arr = arr.view(np.float64)
         assert arr.base is not None
         return self.g_rand_fill_double(arr, center, sigma)
 
