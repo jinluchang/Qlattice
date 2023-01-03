@@ -41,9 +41,6 @@ struct API LatData {
   //
   LatData(){};
   //
-  bool is_complex() const;
-  int ndim() const;
-  //
   void load(QFile& qfile);
   void load(const std::string& fn)
   {
@@ -60,6 +57,11 @@ struct API LatData {
     qfclose(qfile);
     qrename(fn + ".partial", fn);
   };
+  //
+  bool is_complex() const;
+  int ndim() const;
+  double* data() { return res.data(); }
+  const double* data() const { return res.data(); }
 };
 
 inline bool is_initialized(const LatData& ld) { return ld.res.size() > 0; }

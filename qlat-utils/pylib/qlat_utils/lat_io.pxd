@@ -21,11 +21,12 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
         LatInfo info
         std_vector[double] res
         LatData()
-        bool is_complex()
-        int ndim()
+        const LatData& operator=(const LatData& ld)
         void load(const std_string& fn)
         void save(const std_string& fn)
-        const LatData& operator=(const LatData& ld)
+        bool is_complex()
+        int ndim()
+        double* data()
 
     bool is_matching(const LatData& ld1, const LatData& ld2)
     long lat_data_size(LatData& ld)

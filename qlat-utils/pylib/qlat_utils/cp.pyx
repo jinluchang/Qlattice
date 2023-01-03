@@ -542,10 +542,10 @@ cdef class LatData:
         self.xx = v1.xx
         return self
 
-    def copy(self, is_copying_data = True):
+    def copy(self, cc.bool is_copying_data = True):
         x = LatData()
         if is_copying_data:
-            x @= self
+            x.xx = self.xx
         return x
 
     def __copy__(self):
@@ -553,6 +553,41 @@ cdef class LatData:
 
     def __deepcopy__(self, memo):
         return self.copy()
+
+    def __getbuffer__(self, Py_buffer *buffer, int flags):
+        cdef cc.bool is_complex = self.xx.is_complex()
+        cdef char* fmt
+        cdef int itemsize
+        if is_complex:
+            fmt = 'Zd'
+            itemsize = sizeof(cc.Complex)
+        else:
+            fmt = 'd'
+            itemsize = sizeof(cc.Double)
+        cdef Buffer buf = Buffer(self, self.xx.ndim(), itemsize)
+        cdef Py_ssize_t* shape = &buf.shape_strides[0]
+        cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
+        cdef int i
+        for i in range(buf.ndim):
+            shape[i] = self.xx.info[i].size
+        buf.set_strides()
+        buffer.buf = <char*>(self.xx.data())
+        if flags & PyBUF_FORMAT:
+            buffer.format = fmt
+        else:
+            buffer.format = NULL
+        buffer.internal = NULL
+        buffer.itemsize = buf.itemsize
+        buffer.len = buf.get_len()
+        buffer.ndim = buf.ndim
+        buffer.obj = buf
+        buffer.readonly = 0
+        buffer.shape = shape
+        buffer.strides = strides
+        buffer.suboffsets = NULL
+
+    def __releasebuffer__(self, Py_buffer *buffer):
+        pass
 
     def save_node(self, const cc.std_string& path):
         self.xx.save(path)
