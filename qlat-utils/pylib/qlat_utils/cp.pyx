@@ -532,6 +532,32 @@ cdef class RngState:
         ri = self.rand_gen() % len(l)
         return l[ri]
 
+    def u_rand_fill(self, arr, double upper = 1.0, double lower = 0.0):
+        arr = arr.view(np.float64)
+        assert arr.base is not None
+        arr = arr.ravel()
+        assert arr.base is not None
+        return self.u_rand_fill_double(arr, upper, lower)
+
+    def u_rand_fill_double(self, double[:] arr, double upper = 1.0, double lower = 0.0):
+        cdef long size = arr.size
+        cdef long i
+        for i in range(size):
+            arr[i] = cc.u_rand_gen(self.xx, upper, lower)
+
+    def g_rand_fill(self, arr, double center = 0.0, double sigma = 1.0):
+        arr = arr.view(np.float64)
+        assert arr.base is not None
+        arr = arr.ravel()
+        assert arr.base is not None
+        return self.g_rand_fill_double(arr, center, sigma)
+
+    def g_rand_fill_double(self, double[:] arr, double center = 0.0, double sigma = 1.0):
+        cdef long size = arr.size
+        cdef long i
+        for i in range(size):
+            arr[i] = cc.g_rand_gen(self.xx, center, sigma)
+
 ### -------------------------------------------------------------------
 
 cdef class LatData:
