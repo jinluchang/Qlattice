@@ -12,8 +12,8 @@ set -e
 ./scripts/gmp.sh
 ./scripts/mpfr.sh
 ./scripts/mpc.sh
-./scripts/gcc.sh
 ./scripts/isl.sh
+./scripts/gcc.sh
 ./scripts/binutils.sh
 ./scripts/perl.sh
 ./scripts/openssl.sh
