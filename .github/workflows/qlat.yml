@@ -133,6 +133,9 @@ jobs:
     - name: Check error
       run: |
         ! git diff | grep '^[+-]CHECK: '
+    - uses: actions/upload-artifact@v3
+      with:
+        path: $HOME/qlat-build/default/qlat-packages/*.tar.gz
 
   build_qlat_gpt_ubuntu:
     runs-on: ubuntu-latest
