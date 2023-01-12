@@ -38,7 +38,7 @@ jobs:
         ninja --version
     - name: Install Ubuntu packages
       run: |
-        # sudo apt-get update
+        sudo apt-get update
         sudo apt-get install -y libgsl-dev zlib1g-dev libssl-dev libeigen3-dev libopenmpi-dev libfftw3-dev libmpfr-dev libhdf5-mpi-dev libhdf5-dev
     - name: Download dependencies
       run: |
@@ -92,7 +92,7 @@ jobs:
         ninja --version
     - name: Install Ubuntu packages
       run: |
-        # sudo apt-get update
+        sudo apt-get update
         sudo apt-get install -y libgsl-dev zlib1g-dev libssl-dev libeigen3-dev libopenmpi-dev libfftw3-dev libmpfr-dev libhdf5-mpi-dev libhdf5-dev patchelf
     - name: Download dependencies
       run: |
@@ -135,7 +135,7 @@ jobs:
         ! git diff | grep '^[+-]CHECK: '
     - uses: actions/upload-artifact@v3
       with:
-        path: $HOME/qlat-build/default/qlat-packages/*.tar.gz
+        path: /home/runner/qlat-build/default/qlat-packages/*.tar.gz
 
   build_qlat_gpt_ubuntu:
     runs-on: ubuntu-latest
@@ -165,7 +165,7 @@ jobs:
         ninja --version
     - name: Install Ubuntu packages
       run: |
-        # sudo apt-get update
+        sudo apt-get update
         sudo apt-get install -y libgsl-dev zlib1g-dev libssl-dev libeigen3-dev libopenmpi-dev libfftw3-dev libmpfr-dev libhdf5-mpi-dev libhdf5-dev
     - name: Download dependencies
       run: |
@@ -238,7 +238,7 @@ jobs:
         ninja --version
     - name: Install Brew packages
       run: |
-        # brew update
+        brew update
         brew install gsl zlib openssl@3 llvm open-mpi mpfr autoconf automake flock findutils eigen fftw hdf5-mpi
         # brew upgrade
     - name: Download dependencies
@@ -293,7 +293,7 @@ jobs:
         ninja --version
     - name: Install Brew packages
       run: |
-        # brew update
+        brew update
         brew install gsl zlib openssl@3 llvm open-mpi mpfr autoconf automake flock findutils eigen hdf5-mpi patchelf
         # brew upgrade
     - name: Download dependencies
@@ -368,7 +368,7 @@ jobs:
         ninja --version
     - name: Install Brew packages
       run: |
-        # brew update
+        brew update
         brew install gsl zlib openssl@3 llvm open-mpi mpfr autoconf automake flock findutils eigen hdf5-mpi
         # brew upgrade
     - name: Download dependencies
@@ -413,3 +413,63 @@ jobs:
     - name: Check error
       run: |
         ! git diff | grep '^[+-]CHECK: '
+
+#  build_wheels:
+#    name: Build wheels on ${{ matrix.os }}
+#    runs-on: ${{ matrix.os }}
+#    strategy:
+#      matrix:
+#        os: [ ubuntu-latest, macos-latest, ]
+#    steps:
+#      - uses: actions/checkout@v3
+#      - name: Set up QEMU
+#        if: runner.os == 'Linux'
+#        uses: docker/setup-qemu-action@v2
+#        with:
+#          platforms: all
+#      - name: Build wheels qlat-utils
+#        uses: pypa/cibuildwheel@v2.11.3
+#        with:
+#          package-dir: qlat-utils
+#          output-dir: wheelhouse
+#      - name: Build wheels qlat
+#        uses: pypa/cibuildwheel@v2.11.3
+#        with:
+#          package-dir: qlat
+#          output-dir: wheelhouse
+#
+#  make_sdist:
+#    name: Make SDist
+#    runs-on: ubuntu-latest
+#    steps:
+#    - uses: actions/checkout@v3
+#    - name: Install Ubuntu packages
+#      run: |
+#        sudo apt-get update
+#        sudo apt-get install -y libgsl-dev zlib1g-dev libssl-dev libeigen3-dev libopenmpi-dev libfftw3-mpi-dev libfftw3-dev libmpfr-dev libhdf5-mpi-dev libhdf5-dev patchelf
+#    - name: Build sdist for qlat-utils
+#      run: |
+#        ( cd qlat-utils ; pipx run build --sdist )
+#    - name: Build sdist for qlat
+#      run: |
+#        ( cd qlat ; pipx run build --sdist )
+#    - name: Download dependencies
+#      run: |
+#        ./scripts/download-core.sh
+#    - name: Build Grid
+#      run: |
+#        export num_proc=2
+#        ./scripts/setenv.default.sh
+#        ./scripts/c-lime.sh
+#        ./scripts/grid.avx2.sh
+#    - name: Build sdist for qlat-grid
+#      run: |
+#        source ~/qlat-build/default/setenv.sh
+#        ( cd qlat-grid ; pipx run build --sdist )
+#    - name: Collecting sdist
+#      run: |
+#        mkdir -p dist
+#        mv ./qlat*/dist/*.tar.gz ./dist
+#    - uses: actions/upload-artifact@v3
+#      with:
+#        path: ./dist/*.tar.gz
