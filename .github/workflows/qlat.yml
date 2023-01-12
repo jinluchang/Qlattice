@@ -238,7 +238,7 @@ jobs:
         ninja --version
     - name: Install Brew packages
       run: |
-        brew update
+        # brew update
         brew install gsl zlib openssl@3 llvm open-mpi mpfr autoconf automake flock findutils eigen fftw hdf5-mpi
         # brew upgrade
     - name: Download dependencies
@@ -293,7 +293,7 @@ jobs:
         ninja --version
     - name: Install Brew packages
       run: |
-        brew update
+        # brew update
         brew install gsl zlib openssl@3 llvm open-mpi mpfr autoconf automake flock findutils eigen hdf5-mpi patchelf
         # brew upgrade
     - name: Download dependencies
@@ -368,7 +368,7 @@ jobs:
         ninja --version
     - name: Install Brew packages
       run: |
-        brew update
+        # brew update
         brew install gsl zlib openssl@3 llvm open-mpi mpfr autoconf automake flock findutils eigen hdf5-mpi
         # brew upgrade
     - name: Download dependencies
