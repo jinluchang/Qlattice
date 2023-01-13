@@ -182,8 +182,8 @@ class HMC:
             self.masses.set_unit()
             self.load_field()
         else:
-            self.load_field()
             self.load_masses()
+            self.load_field()
 
         # Create an auxiliary field to store the field as it evolves
         self.f0 = Field_fft(self.field.geo(), self.mult)
@@ -300,6 +300,9 @@ class HMC:
         self.init_length+=self.traj-1
         if(not filename==""):
             self.field.load(filename)
+            # If a field is loaded, avoid running any trajectories 
+            # without a metropolis accept/reject step
+            self.init_length = 0
         else:
             self.field.set_unit()
 
@@ -514,14 +517,14 @@ def histogram_bin(val,midpoint,n):
             j = j*2 + 1
     return int((j-1)/2.0)
 
-def update_phi_sq_dist(elems,vev_sigma,norm_factor):
+def update_phi_sq_dist(elems,phi_sq_av,norm_factor):
     phi_sq = 0.0
     for elem in elems:
         phi_sq+=elem**2
-    phi_sq_dist[histogram_bin(phi_sq,np.abs(vev_sigma)*50,6)]+=1.0/norm_factor
+    phi_sq_dist[histogram_bin(phi_sq,2*phi_sq_av,6)]+=1.0/norm_factor
 
-def update_phi_i_dist(phi,vev_sigma,norm_factor):
-    phi_i_dist[histogram_bin(np.abs(phi),np.abs(vev_sigma)*50,6)]+=1.0/norm_factor
+def update_phi_i_dist(phi,phi_av,norm_factor):
+    phi_i_dist[histogram_bin(np.abs(phi),2*phi_av,6)]+=1.0/norm_factor
 
 def update_theta_dist(elems,norm_factor):
     phi_sq = 0.0
@@ -540,6 +543,8 @@ def save_observables():
                     "hm_timeslices": hm_timeslices,
                     "ax_cur_timeslices": ax_cur_timeslices,
                     "polar_timeslices": polar_timeslices,
+                    "psq_dist_center": psq_dist_center,
+                    "phi_dist_center": phi_dist_center,
                     "phi_sq_dist": phi_sq_dist,
                     "phi_i_dist": phi_i_dist,
                     "theta_dist": theta_dist,
@@ -565,9 +570,6 @@ def load_observables():
             hm_timeslices.extend(data["hm_timeslices"])
             ax_cur_timeslices.extend(data["ax_cur_timeslices"])
             polar_timeslices.extend(data["polar_timeslices"])
-            phi_sq_dist.extend(data["phi_sq_dist"])
-            phi_i_dist.extend(data["phi_i_dist"])
-            theta_dist.extend(data["theta_dist"])
             psq_pred_list.extend(data["psq_pred_list"])
             phi_pred_list.extend(data["phi_pred_list"])
             timeslices_pred.extend(data["timeslices_pred"])
@@ -576,6 +578,12 @@ def load_observables():
             fields.extend(data["fields"])
             momentums.extend(data["momentums"])
             fields_pred.extend(data["field_pred"])
+            #
+            psq_dist_center = data["psq_dist_center"]
+            phi_dist_center = data["phi_dist_center"]
+            phi_sq_dist = [phi_sq_dist[i] + data["phi_sq_dist"][i] for i in range(len(phi_sq_dist))]
+            phi_i_dist = [phi_i_dist[i] + data["phi_i_dist"][i] for i in range(len(phi_i_dist))]
+            theta_dist = [theta_dist[i] + data["theta_dist"][i] for i in range(len(theta_dist))]
 
 @q.timer_verbose
 def main():
@@ -660,18 +668,20 @@ def main():
             hm_timeslices_pred.append(hm_tslices_pred.to_numpy())
             polar_timeslices.append(polar_tslices.to_numpy())
         if traj>hmc.init_length+hmc.num_blocks*hmc.block_length+hmc.final_block_length:
+            if not psq_dist_center:
+                psq_dist_center = psq
+                phi_dist_center = (phi[1]+phi[2]+phi[3])/3.0
             field = hmc.field.get_field()
-            norm_factor = hmc.V*(n_traj+1-hmc.init_length-hmc.num_blocks*hmc.block_length-hmc.final_block_length)
             for x in range(hmc.total_site[0]):
                 for y in range(hmc.total_site[1]):
                     for z in range(hmc.total_site[2]):
                         for t in range(hmc.total_site[3]):
                             elems = field.get_elems([x,y,z,t])
-                            update_phi_sq_dist(elems,hmc.vev,norm_factor)
-                            update_phi_i_dist(elems[1],hmc.vev,norm_factor)
-                            update_phi_i_dist(elems[2],hmc.vev,norm_factor)
-                            update_phi_i_dist(elems[3],hmc.vev,norm_factor)
-                            update_theta_dist(elems,norm_factor)
+                            update_phi_sq_dist(elems,psq_dist_center,hmc.V)
+                            update_phi_i_dist(elems[1],phi_dist_center,hmc.V)
+                            update_phi_i_dist(elems[2],phi_dist_center,hmc.V)
+                            update_phi_i_dist(elems[3],phi_dist_center,hmc.V)
+                            update_theta_dist(elems,hmc.V)
         if traj%50 == 0:
             hmc.save_field()
             save_observables()
@@ -707,6 +717,8 @@ fields=[]
 forces=[]
 fields_pred=[]
 momentums=[]
+psq_dist_center = 0
+phi_dist_center = 0
 phi_sq_dist=[0.0]*64
 phi_i_dist=[0.0]*64
 theta_dist=[0.0]*64
@@ -735,7 +747,7 @@ alpha = 0.1
 recalculate_masses = False
 fresh_start = False
 
-version = "1-6"
+version = "1-7"
 date = datetime.datetime.now().date()
 
 for i in range(1,len(sys.argv),2):
@@ -770,7 +782,9 @@ size_node_list = [
         [1, 1, 1, 4],
         [1, 2, 2, 2],
         [2, 2, 2, 2],
-        [2, 2, 2, 4]]
+        [2, 2, 2, 4],
+        [2, 2, 2, 8],
+        [2, 4, 4, 4]]
 
 q.begin(sys.argv, size_node_list)
 
