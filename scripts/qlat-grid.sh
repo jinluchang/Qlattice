@@ -2,7 +2,7 @@
 
 ./scripts/qlat.sh
 
-. scripts/conf.sh
+. scripts/res/conf.sh
 
 name=qlat-grid
 

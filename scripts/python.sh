@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. scripts/conf.sh
+. scripts/res/conf.sh
 
 name=Python
 

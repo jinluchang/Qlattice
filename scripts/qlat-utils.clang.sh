@@ -2,7 +2,7 @@
 
 export USE_COMPILER=clang
 
-. scripts/conf.sh
+. scripts/res/conf.sh
 
 name=qlat-utils
 

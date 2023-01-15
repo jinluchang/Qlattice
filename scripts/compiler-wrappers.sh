@@ -4,13 +4,7 @@
 # 1) select compiler based on availability
 # 2) support --wrapper-remove-arg=XXX option to remove unwanted flags
 
-. scripts/conf.sh
-
-name=compiler-wrappers
-
-{
-
-echo "!!!! build $name !!!!"
+. scripts/res/conf.sh
 
 mkdir -p "$prefix/bin"
 
@@ -173,7 +167,3 @@ else
 fi
 EOF
 chmod +x "$prefix/bin/MPICXX.sh"
-
-echo "!!!! $name build !!!!"
-
-} 2>&1 | tee $prefix/log.$name.txt
