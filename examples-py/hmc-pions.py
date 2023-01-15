@@ -668,6 +668,7 @@ def main():
             hm_timeslices_pred.append(hm_tslices_pred.to_numpy())
             polar_timeslices.append(polar_tslices.to_numpy())
         if traj>hmc.init_length+hmc.num_blocks*hmc.block_length+hmc.final_block_length:
+            global psq_dist_center
             if not psq_dist_center:
                 psq_dist_center = psq
                 phi_dist_center = (phi[1]+phi[2]+phi[3])/3.0
