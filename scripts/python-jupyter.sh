@@ -16,6 +16,7 @@ find ~/.cache/pip/wheels -type f || true
 
 time pip3 install notebook
 time pip3 install jupyterlab
+time pip3 install jupyterhub
 time pip3 install matplotlib
 time pip3 install lz4
 
