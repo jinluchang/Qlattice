@@ -27,7 +27,7 @@ fi
 
 scripts/clean-prefix.sh
 
-. scripts/conf.sh
+. scripts/res/conf.sh
 
 mkdir -p "$prefix"
 touch "$prefix"/build-target="$target".txt
