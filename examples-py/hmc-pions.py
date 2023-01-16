@@ -123,7 +123,7 @@ class Field_fft:
                 [field_ft.get_elem([0,0,0,0],1),field_ft.get_elem([1,0,0,0],1),field_ft.get_elem([0,2,0,0],1),field_ft.get_elem([3,0,0,0],1)]]
 
 class HMC:
-    def __init__(self, m_sq, lmbd, alpha, total_site, mult, steps, mass_force_coef, recalculate_masses, fresh_start):
+    def __init__(self, m_sq, lmbd, alpha, total_site, mult, steps, mass_force_coef, recalculate_masses, fresh_start, block_sizes):
         self.m_sq = m_sq
         self.lmbd = lmbd
         self.alpha = alpha
@@ -139,11 +139,11 @@ class HMC:
 
         # The number of trajectories to calculate before taking measurements
         self.start_measurements = 0
-        self.init_length = 20
-        self.block_init_length = 20
-        self.block_length = 95
-        self.num_blocks = 4
-        self.final_block_length = 200
+        self.init_length = block_sizes[0]
+        self.block_init_length = block_sizes[1]
+        self.block_length = block_sizes[2]
+        self.num_blocks = block_sizes[3]
+        self.final_block_length = block_sizes[4]
         # A variable to store the estimated vacuum expectation value of sigma
         self.vev = 0
         self.vevs=[self.vev]
@@ -521,15 +521,18 @@ def update_phi_sq_dist(elems,phi_sq_av,norm_factor):
     phi_sq = 0.0
     for elem in elems:
         phi_sq+=elem**2
+    global phi_sq_dist
     phi_sq_dist[histogram_bin(phi_sq,2*phi_sq_av,6)]+=1.0/norm_factor
 
 def update_phi_i_dist(phi,phi_av,norm_factor):
+    global phi_i_dist
     phi_i_dist[histogram_bin(np.abs(phi),2*phi_av,6)]+=1.0/norm_factor
 
 def update_theta_dist(elems,norm_factor):
     phi_sq = 0.0
     for elem in elems:
         phi_sq+=elem**2
+    global theta_dist
     for elem in elems[1:]:
         theta_dist[histogram_bin(np.pi/2+np.arccos(elems[0]/phi_sq**0.5),np.pi/2,6)]+=1.0/norm_factor
 
@@ -579,6 +582,7 @@ def load_observables():
             momentums.extend(data["momentums"])
             fields_pred.extend(data["field_pred"])
             #
+            global psq_dist_center, phi_dist_center, phi_sq_dist, phi_i_dist, theta_dist
             psq_dist_center = data["psq_dist_center"]
             phi_dist_center = data["phi_dist_center"]
             phi_sq_dist = [phi_sq_dist[i] + data["phi_sq_dist"][i] for i in range(len(phi_sq_dist))]
@@ -592,7 +596,7 @@ def main():
     load_observables()
     print(len(psq_list))
 
-    hmc = HMC(m_sq,lmbd,alpha,total_site,mult,steps,mass_force_coef,recalculate_masses,fresh_start)
+    hmc = HMC(m_sq,lmbd,alpha,total_site,mult,steps,mass_force_coef,recalculate_masses,fresh_start,[init_length,block_init_length,block_length,num_blocks,final_block_length])
 
     # Create the geometry for the axial current field
     geo_cur = q.Geometry(total_site, 3)
@@ -668,7 +672,7 @@ def main():
             hm_timeslices_pred.append(hm_tslices_pred.to_numpy())
             polar_timeslices.append(polar_tslices.to_numpy())
         if traj>hmc.init_length+hmc.num_blocks*hmc.block_length+hmc.final_block_length:
-            global psq_dist_center
+            global psq_dist_center, phi_dist_center
             if not psq_dist_center:
                 psq_dist_center = psq
                 phi_dist_center = (phi[1]+phi[2]+phi[3])/3.0
@@ -738,6 +742,12 @@ steps = 20
 # on Fourier acceleration masses
 mass_force_coef = 1000.0
 
+init_length = 20
+block_init_length = 20
+block_length = 95
+num_blocks = 4
+final_block_length = 200
+
 # Use action for a Euclidean scalar field. The Lagrangian will be:
 # (1/2)*[sum i]|dphi_i|^2 + (1/2)*m_sq*[sum i]|phi_i|^2
 #     + (1/24)*lmbd*([sum i]|phi_i|^2)^2
@@ -751,7 +761,7 @@ fresh_start = False
 version = "1-7"
 date = datetime.datetime.now().date()
 
-for i in range(1,len(sys.argv),2):
+for i in range(1,len(sys.argv)):
     try:
         if(sys.argv[i]=="-d"):
             a = sys.argv[i+1].split("x")
@@ -774,8 +784,18 @@ for i in range(1,len(sys.argv),2):
             recalculate_masses = True
         elif(sys.argv[i]=="-R"):
             fresh_start = True
+        elif(sys.argv[i]=="-i"):
+            init_length = int(sys.argv[i+1])
+        elif(sys.argv[i]=="-I"):
+            block_init_length = int(sys.argv[i+1])
+        elif(sys.argv[i]=="-b"):
+            block_length = int(sys.argv[i+1])
+        elif(sys.argv[i]=="-N"):
+            num_blocks = int(sys.argv[i+1])
+        elif(sys.argv[i]=="-B"):
+            final_block_length = int(sys.argv[i+1])
     except:
-        raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -m for mass squared, -l for lambda, -a for alpha, -s for the number of steps in a trajectory, -f for the factor by which to scale down the force when setting a lower limit for Fourier acceleration masses, -r to force recalculating the masses, and -R to force recalculating the masses and the initial field. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1 -f 100.0")
+        raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -m for mass squared, -l for lambda, -a for alpha, -s for the number of steps in a trajectory, -f for the factor by which to scale down the force when setting a lower limit for Fourier acceleration masses, -r to force recalculating the masses, -R to force recalculating the masses and the initial field, -i for the number of trajectories to do at the beginning without a Metropolis step, -I for the number of trajectories to omit from the start of each HMC mass estimation block, -b for the number of trajectories in one HMC mass estimation block, -N for the number of HMC mass estimation blocks (excluding the final block), and -B for the number of trajectories in the final mass estimation block. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1 -f 100.0")
 
 size_node_list = [
         [1, 1, 1, 1],
