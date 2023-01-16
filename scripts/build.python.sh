@@ -2,7 +2,7 @@
 
 # Need to have gcc, openssl, zlib, gsl, openblas, perl, ffi installed beforehand.
 
-# Ubuntu packages: libgsl-dev zlib1g-dev libssl-dev libmpfr-dev gcc perl libopenblas-dev libffi-dev
+# Ubuntu packages: libgsl-dev zlib1g-dev libssl-dev libmpfr-dev gcc perl libopenblas-dev libffi-dev libsqlite3-dev
 
 set -e
 
