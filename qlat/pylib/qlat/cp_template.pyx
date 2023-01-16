@@ -17,14 +17,10 @@ cdef class Geometry:
         self.xx = cc.Geometry()
         self.cdata = <long>&(self.xx)
 
-    def __init__(self, total_site = None, multiplicity = None):
+    def __init__(self, total_site = None, int multiplicity = 1):
         # if total_site is None: create geo uninitialized
         # elif multiplicity is None: create geo with multiplicity = 1
-        if total_site is not None:
-            if multiplicity is None:
-                c.set_geo_total_site(self, total_site)
-            else:
-                c.set_geo_total_site(self, total_site, multiplicity)
+        self.xx.init(Coordinate(total_site).xx, multiplicity)
 
     def __imatmul__(self, Geometry v1):
         self.xx = v1.xx
