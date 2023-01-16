@@ -14,6 +14,7 @@ set -e
 ./scripts/python-meson.sh
 ./scripts/python-meson-py.sh
 ./scripts/python-packages.sh
+./scripts/python-jupyter.sh
 
 ./scripts/cuba.sh
 ./scripts/eigen.sh
@@ -29,7 +30,5 @@ set -e
 ./scripts/qlat-grid.sh
 
 ./scripts/qlat-examples-py-gpt.sh
-
-./scripts/python-jupyter.sh
 
 } 2>&1 | tee $prefix/log.build.txt
