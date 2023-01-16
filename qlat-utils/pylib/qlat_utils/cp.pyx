@@ -494,6 +494,9 @@ cdef class Coordinate:
     def __deepcopy__(self, memo):
         return self.copy()
 
+    def __repr__(self):
+        return f"Coordinate({self.list()})"
+
     def list(self):
         return [ self.xx[0], self.xx[1], self.xx[2], self.xx[3], ]
 
