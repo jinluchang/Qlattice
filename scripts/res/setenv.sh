@@ -131,16 +131,9 @@ fi
 
 add-to-colon-list PATH "$HOME/.local/bin"
 add-to-colon-list PATH "$prefix/bin"
-for v in "$prefix"/lib/python3/qlat-packages ; do
-    if [ -d "$v" ] ; then
-        add-to-colon-list PYTHONPATH "$v"
-    fi
-done
-for v in "$prefix"/lib/python3/qlat-packages/*/include ; do
-    if [ -d "$v" ] ; then
-        add-to-colon-list CPATH "$v"
-    fi
-done
+if [ -d "$prefix"/lib/python3/qlat-packages ] ; then
+    add-to-colon-list PYTHONPATH "$v"
+fi
 add-to-colon-list PYTHONPATH "$prefix/gpt/lib"
 add-to-colon-list PYTHONPATH "$prefix/gpt/lib/cgpt/build"
 add-to-colon-list LD_RUN_PATH "$prefix/lib"
