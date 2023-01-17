@@ -131,12 +131,12 @@ fi
 
 add-to-colon-list PATH "$HOME/.local/bin"
 add-to-colon-list PATH "$prefix/bin"
-for v in "$prefix"/lib/python3*/*-packages ; do
+for v in "$prefix"/lib/python3/qlat-packages ; do
     if [ -d "$v" ] ; then
         add-to-colon-list PYTHONPATH "$v"
     fi
 done
-for v in "$prefix"/lib/python3*/*-packages/*/include ; do
+for v in "$prefix"/lib/python3/qlat-packages/*/include ; do
     if [ -d "$v" ] ; then
         add-to-colon-list CPATH "$v"
     fi
