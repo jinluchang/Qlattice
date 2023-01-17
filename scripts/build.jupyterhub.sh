@@ -19,7 +19,7 @@ set -e
 ./scripts/cuba.sh
 ./scripts/eigen.sh
 
-./scripts/qlat.sh
+./scripts/qlat-packages.sh
 
 ./scripts/qlat-examples-py.sh
 ./scripts/qlat-examples-cpp.sh
@@ -27,7 +27,8 @@ set -e
 ./scripts/c-lime.sh
 ./scripts/grid.avx2.sh
 ./scripts/gpt.sh
-./scripts/qlat-grid.sh
+
+./scripts/qlat-packages.sh
 
 ./scripts/qlat-examples-py-gpt.sh
 
