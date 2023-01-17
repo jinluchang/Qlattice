@@ -132,7 +132,7 @@ fi
 add-to-colon-list PATH "$HOME/.local/bin"
 add-to-colon-list PATH "$prefix/bin"
 if [ -d "$prefix"/lib/python3/qlat-packages ] ; then
-    add-to-colon-list PYTHONPATH "$v"
+    add-to-colon-list PYTHONPATH "$prefix"/lib/python3/qlat-packages
 fi
 add-to-colon-list PYTHONPATH "$prefix/gpt/lib"
 add-to-colon-list PYTHONPATH "$prefix/gpt/lib/cgpt/build"
