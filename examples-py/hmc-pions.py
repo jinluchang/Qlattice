@@ -506,7 +506,7 @@ def phi_squared(field,action):
     phi_sq = action.sum_sq(field) # Returns sum of field^2/2
     phi_sq = q.glb_sum(phi_sq) # Sums over all nodes
     geo = field.geo()
-    return phi_sq/geo.total_volume()/geo.multiplicity()
+    return phi_sq/geo.total_volume()
 
 def histogram_bin(val,midpoint,n):
     j = 1
@@ -607,6 +607,10 @@ def main():
     hm_field_pred = Field_fft(hmc.field.geo(),4)
     #
     polar_field = q.Field(q.ElemTypeDouble,hmc.field.geo())
+    #
+    auxc = q.Field(q.ElemTypeComplex,hmc.field.geo())
+    auxd = q.Field(q.ElemTypeDouble,hmc.field.geo())
+
 
     for traj in range(1,n_traj+1):
         # Run the HMC algorithm to update the field configuration
@@ -675,7 +679,11 @@ def main():
             global psq_dist_center, phi_dist_center
             if not psq_dist_center:
                 psq_dist_center = psq
-                phi_dist_center = (phi[1]+phi[2]+phi[3])/3.0
+                q.field_double.set_complex_from_double(auxc, hmc.field.get_field())
+                q.field_double.set_abs_from_complex(auxd, auxc)
+                field_sum_abs = auxd.glb_sum()
+                phi_abs=[field_sum_abs[i]/hmc.field.V for i in range(mult)]
+                phi_dist_center = (phi_abs[1]+phi_abs[2]+phi_abs[3])/3.0
             field = hmc.field.get_field()
             for x in range(hmc.total_site[0]):
                 for y in range(hmc.total_site[1]):
@@ -683,9 +691,9 @@ def main():
                         for t in range(hmc.total_site[3]):
                             elems = field.get_elems([x,y,z,t])
                             update_phi_sq_dist(elems,psq_dist_center,hmc.V)
-                            update_phi_i_dist(elems[1],phi_dist_center,hmc.V)
-                            update_phi_i_dist(elems[2],phi_dist_center,hmc.V)
-                            update_phi_i_dist(elems[3],phi_dist_center,hmc.V)
+                            update_phi_i_dist(np.abs(elems[1]),phi_dist_center,hmc.V)
+                            update_phi_i_dist(np.abs(elems[2]),phi_dist_center,hmc.V)
+                            update_phi_i_dist(np.abs(elems[3]),phi_dist_center,hmc.V)
                             update_theta_dist(elems,hmc.V)
         if traj%50 == 0:
             hmc.save_field()
