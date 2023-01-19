@@ -534,7 +534,7 @@ def update_theta_dist(elems,norm_factor):
         phi_sq+=elem**2
     global theta_dist
     for elem in elems[1:]:
-        theta_dist[histogram_bin(np.pi/2+np.arccos(elems[0]/phi_sq**0.5),np.pi/2,6)]+=1.0/norm_factor
+        theta_dist[histogram_bin(np.arccos(elems[0]/phi_sq**0.5),np.pi/2,6)]+=1.0/norm_factor
 
 def save_observables():
     with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{date}_{version}.bin", "wb") as output:
