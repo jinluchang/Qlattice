@@ -522,11 +522,11 @@ def update_phi_sq_dist(elems,phi_sq_av,norm_factor):
     for elem in elems:
         phi_sq+=elem**2
     global phi_sq_dist
-    phi_sq_dist[histogram_bin(phi_sq,2*phi_sq_av,6)]+=1.0/norm_factor
+    phi_sq_dist[histogram_bin(phi_sq,phi_sq_av,6)]+=1.0/norm_factor
 
 def update_phi_i_dist(phi,phi_av,norm_factor):
     global phi_i_dist
-    phi_i_dist[histogram_bin(np.abs(phi),2*phi_av,6)]+=1.0/norm_factor
+    phi_i_dist[histogram_bin(np.abs(phi),phi_av,6)]+=1.0/norm_factor
 
 def update_theta_dist(elems,norm_factor):
     phi_sq = 0.0
@@ -695,7 +695,7 @@ def main():
                             update_phi_i_dist(np.abs(elems[2]),phi_dist_center,hmc.V)
                             update_phi_i_dist(np.abs(elems[3]),phi_dist_center,hmc.V)
                             update_theta_dist(elems,hmc.V)
-        if traj%50 == 0:
+        if traj%save_frequency == 0:
             hmc.save_field()
             save_observables()
 
@@ -756,6 +756,8 @@ block_length = 95
 num_blocks = 4
 final_block_length = 200
 
+save_frequency = 50
+
 # Use action for a Euclidean scalar field. The Lagrangian will be:
 # (1/2)*[sum i]|dphi_i|^2 + (1/2)*m_sq*[sum i]|phi_i|^2
 #     + (1/24)*lmbd*([sum i]|phi_i|^2)^2
@@ -802,8 +804,10 @@ for i in range(1,len(sys.argv)):
             num_blocks = int(sys.argv[i+1])
         elif(sys.argv[i]=="-B"):
             final_block_length = int(sys.argv[i+1])
+        elif(sys.argv[i]=="-S"):
+            save_frequency = int(sys.argv[i+1])
     except:
-        raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -m for mass squared, -l for lambda, -a for alpha, -s for the number of steps in a trajectory, -f for the factor by which to scale down the force when setting a lower limit for Fourier acceleration masses, -r to force recalculating the masses, -R to force recalculating the masses and the initial field, -i for the number of trajectories to do at the beginning without a Metropolis step, -I for the number of trajectories to omit from the start of each HMC mass estimation block, -b for the number of trajectories in one HMC mass estimation block, -N for the number of HMC mass estimation blocks (excluding the final block), and -B for the number of trajectories in the final mass estimation block. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1 -f 100.0")
+        raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -m for mass squared, -l for lambda, -a for alpha, -s for the number of steps in a trajectory, -f for the factor by which to scale down the force when setting a lower limit for Fourier acceleration masses, -r to force recalculating the masses, -R to force recalculating the masses and the initial field, -i for the number of trajectories to do at the beginning without a Metropolis step, -I for the number of trajectories to omit from the start of each HMC mass estimation block, -b for the number of trajectories in one HMC mass estimation block, -N for the number of HMC mass estimation blocks (excluding the final block), -B for the number of trajectories in the final mass estimation block, and -S for the number of trajectories between each save. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1 -f 100.0")
 
 size_node_list = [
         [1, 1, 1, 1],
