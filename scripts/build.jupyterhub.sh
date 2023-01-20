@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Ubuntu packages: libgsl-dev zlib1g-dev libssl-dev libeigen3-dev libopenmpi-dev libfftw3-dev libfftw3-mpi-dev libhdf5-dev libhdf5-mpi-dev  libmpfr-dev ninja-build libsqlite3-dev
+# Ubuntu packages: libgsl-dev zlib1g-dev libssl-dev libeigen3-dev libopenmpi-dev libfftw3-dev libfftw3-mpi-dev libhdf5-dev libhdf5-mpi-dev  libmpfr-dev ninja-build libsqlite3-dev libgdbm-dev liblzma-dev libbz2-dev uuid-dev tk-dev libgeos-dev
 
 set -e
 
