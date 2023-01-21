@@ -224,7 +224,11 @@ def display_img(fn, *, width = None):
       is_in_colab = True
     except:
       is_in_colab = False
-    if not is_in_colab:
+    is_fn_showable = True
+    if fn.startswith('/'):
+        is_fn_showable = False
+    is_using_html = is_fn_showable and not is_in_colab
+    if is_using_html:
         display(HTML(data = f"<img src='{fn}' {show_width} />"))
     else:
         display(Image(filename = fn, width = width))
