@@ -266,7 +266,7 @@ def plot_save(
                 "set xlabel '$x$'",
                 "set ylabel '$y$'",
                 ]
-        displayln_info(0, f"cmds={cmds}")
+        displayln_info(f"cmds={cmds}")
     if dts is None:
         x = np.arange(31) * (6 / 30) - 3
         y = np.cos(x)
