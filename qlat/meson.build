@@ -14,8 +14,6 @@ add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
 
 cpp = meson.get_compiler('cpp')
 
-fs = import('fs')
-
 py_mod = import('python')
 py3 = py_mod.find_installation('python3')
 message(py3.path())
@@ -67,6 +65,10 @@ qlat_utils_pxd = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("
 message('qlat_utils pxd', qlat_utils_pxd)
 qlat_utils_pxd = files(qlat_utils_pxd)
 
+qlat_utils_header = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\n".join(q.get_header_list()))', env: environment({'q_verbose': '-1'}), check: true).stdout().strip().split('\n')
+message('qlat_utils header', qlat_utils_header)
+qlat_utils_header = files(qlat_utils_header)
+
 qlat_utils = declare_dependency(
   include_directories:  include_directories(qlat_utils_include),
   dependencies: [
@@ -81,6 +83,6 @@ subdir('include')
 subdir('lib')
 subdir('pylib')
 
-c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls bin/*', check: true)
-scripts = files(c.stdout().strip().split('\n'))
-install_data(scripts, install_dir: get_option('bindir'), install_mode: 'rwxr-xr-x')
+script_fns = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls bin/*', check: true).stdout().strip().split('\n')
+script_files = files(script_fns)
+install_data(script_files, install_dir: get_option('bindir'), install_mode: 'rwxr-xr-x')

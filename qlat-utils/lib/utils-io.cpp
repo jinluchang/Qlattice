@@ -1,3 +1,4 @@
+#include <qlat-utils/lib/utils-io.h>
 #include <qlat-utils/qar-cache.h>
 
 namespace qlat

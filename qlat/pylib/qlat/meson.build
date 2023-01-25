@@ -1,17 +1,39 @@
-c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.py | grep -v "_template\."', check: true)
-pysources = files(c.stdout().strip().split('\n'))
-c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.pxd | grep -v "_template\."', check: true)
-pxd_sources = files(c.stdout().strip().split('\n'))
-py3.install_sources(pysources + pxd_sources, subdir: 'qlat')
+py_fns = run_command(
+  'bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.py | grep -v "_template\."',
+  check: true,
+  ).stdout().strip().split('\n')
+py_files = files(py_fns)
 
-copy = []
-foreach f: pysources
-  copy += fs.copyfile(f)
+pxd_fns = run_command(
+  'bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.pxd | grep -v "_template\."',
+  check: true,
+  ).stdout().strip().split('\n')
+pxd_files = files(pxd_fns)
+
+py3.install_sources(py_files + pxd_files, subdir: 'qlat')
+
+pxd_tgts = []
+foreach i: range(pxd_fns.length())
+  fn = pxd_fns[i]
+  file = pxd_files[i]
+  pxd_tgts += custom_target(fn,
+    output: fn,
+    input: file,
+    command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
+    install: false,
+    )
 endforeach
 
-copy_pxd = []
-foreach f: pxd_sources
-  copy_pxd += fs.copyfile(f)
+py_tgts = []
+foreach i: range(py_fns.length())
+  fn = py_fns[i]
+  file = py_files[i]
+  py_tgts += custom_target(fn,
+    output: fn,
+    input: file,
+    command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
+    install: false,
+    )
 endforeach
 
 type_info_list = [
@@ -79,8 +101,8 @@ cp_pyx = custom_target(f'cp_pyx',
   output: 'cp.pyx',
   input: 'cp_template.pyx',
   command: [ cp_gen, '@INPUT@', '@OUTPUT@', ] + cp_type_pyx_fn_list,
-  depends: cp_type_pyx_list + cp_pxd,
-  depend_files: cp_gen + pxd_sources + qlat_utils_pxd,
+  depends: cp_type_pyx_list + cp_pxd + py_tgts + pxd_tgts,
+  depend_files: cp_gen + all_header_files + qlat_utils_pxd + qlat_utils_header,
   install: false,
   )
 

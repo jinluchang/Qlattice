@@ -1,10 +1,13 @@
 # Need to update `exports.h` by running `bash update.sh` manually.
 
-c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.cpp', check: true)
-cpp_sources = files(c.stdout().strip().split('\n'))
+cpp_fns = run_command(
+  'bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.cpp',
+  check: true,
+  ).stdout().strip().split('\n')
+cpp_files = files(cpp_fns)
 
 py3.extension_module('cqlat_utils',
-  cpp_sources + config,
+  cpp_files + config_file,
   dependencies: deps,
   include_directories: incdir,
   install: true,

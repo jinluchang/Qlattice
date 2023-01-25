@@ -14,8 +14,6 @@ add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
 
 cpp = meson.get_compiler('cpp')
 
-fs = import('fs')
-
 py_mod = import('python')
 py3 = py_mod.find_installation('python3')
 message(py3.path())

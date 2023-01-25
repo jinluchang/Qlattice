@@ -16,11 +16,16 @@ else
   error('Cannot find endian.h header file.')
 endif
 
-config = configure_file(output: 'config.h', configuration: conf_data)
-py3.install_sources(config, subdir: 'qlat_utils/include/qlat-utils')
+config_file = configure_file(output: 'config.h', configuration: conf_data)
+py3.install_sources(config_file, subdir: 'qlat_utils/include/qlat-utils')
 
-c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.h | grep -v "^config.h$"', check: true)
-cpp_headers = files(c.stdout().strip().split('\n'))
-py3.install_sources(cpp_headers, subdir: 'qlat_utils/include/qlat-utils')
+header_fns = run_command(
+  'bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.h | grep -v "^config.h$"',
+  check: true,
+  ).stdout().strip().split('\n')
+header_files = files(header_fns)
+py3.install_sources(header_files, subdir: 'qlat_utils/include/qlat-utils')
 
 subdir('lib')
+
+all_header_files = header_files + config_file + lib_header_files

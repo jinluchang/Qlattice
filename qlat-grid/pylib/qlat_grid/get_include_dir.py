@@ -1,6 +1,6 @@
 import os
 from . import c
-from qlat import qls, get_dir_list as q_get_dir_list
+from qlat import qls, qls_all, get_dir_list as q_get_dir_list
 
 def get_qlat_grid_dir():
     return os.path.dirname(c.__file__)
@@ -23,5 +23,14 @@ def get_pxd_list():
         fn_list = qls(d)
         for fn in fn_list:
             if fn.endswith(".pxd"):
+                l.append(fn)
+    return l
+
+def get_header_list():
+    l = []
+    for d in get_include_list():
+        fn_list = qls_all(d)
+        for fn in fn_list:
+            if fn.endswith(".h"):
                 l.append(fn)
     return l

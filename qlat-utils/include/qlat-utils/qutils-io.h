@@ -245,11 +245,11 @@ inline std::vector<std::string> qls_all_aux(
       if (is_folder_before_files) {
         all_contents.push_back(path_i);
         vector_append(all_contents,
-                      qls_all_aux(path_i, is_folder_before_files));
+                      qls_all_aux(path_i, is_folder_before_files, is_sort));
       } else {
         // default behavior
         vector_append(all_contents,
-                      qls_all_aux(path_i, is_folder_before_files));
+                      qls_all_aux(path_i, is_folder_before_files, is_sort));
         all_contents.push_back(path_i);
       }
     }
