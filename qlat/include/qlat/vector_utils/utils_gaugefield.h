@@ -7,6 +7,7 @@
 #pragma once
 
 #include "general_funs.h"
+#include <qlat/qcd-topology.h>
 
 //////TODO
 

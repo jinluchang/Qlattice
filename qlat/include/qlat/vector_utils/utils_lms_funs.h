@@ -44,6 +44,7 @@ struct lms_para{
 
   int mom_cut;
   int save_zero_corr;
+  int save_full_vec;
 
   std::string name_mom_vecs;
   std::string name_zero_vecs;
@@ -101,6 +102,7 @@ struct lms_para{
     name_zero_vecs   = std::string("NONE");
     name_zero        = std::string("NONE");
     save_zero_corr   = 1;
+    save_full_vec    = 0;////1 if all grid source vec need to be saved
 
     INFO = std::string("NONE");
     INFOA.resize(0);
@@ -114,7 +116,7 @@ struct lms_para{
       off_L[0], off_L[1], off_L[2], off_L[3] );
 
     int save_vecs = 0; if(name_mom_vecs != std::string("NONE")){save_vecs = 1;}
-    print0("  mode sm %1d, src %5d %.3f, sink %5d %.3f , save_low %2d, mom_cut %5d , saveV %1d \n", 
+    print0("eigen mode sm %1d, src %5d %.3f, sink %5d %.3f , save_low %2d, mom_cut %5d , saveV %1d \n", 
       mode_eig_sm, src_smear_iter, src_smear_kappa, sink_smear_iter, sink_smear_kappa, do_all_low, mom_cut, save_vecs);
     //print0("  mom vecs %s \n" ,name_mom_vecs);
     //print0("  zero vecs %s \n",name_zero_vecs);
@@ -243,6 +245,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   const int GPU = 1;const bool rotate = false;
   const int nmass = massL.size();
   const size_t vol = size_t(fd.nx) * fd.ny * fd.nz * fd.nt;
+  const size_t Vol = geo.local_volume();
 
   Coordinate Lat;for(int i=0;i<4;i++){Lat[i] = fd.nv[i];}
   Coordinate pos;Coordinate off_L;
@@ -342,6 +345,9 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     }
   }
 
+  long nZero = 1;////number of saved zeros
+  if(srcI.save_full_vec == 1){nZero = 1 + Nlms;}
+
   char key_T[1000], dimN[1000];
   sprintf(key_T, "%d", 1);sprintf(dimN , "src");
 
@@ -377,8 +383,13 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
 
   POS_CUR = std::string("");write_pos_to_string(POS_CUR, pos);POS_LIST += POS_CUR;
   if(savezero){
-    resZero.resize(resTa.size());
-    cpy_data_thread(resZero.data(), resTa.data(), resTa.size(), 1, true, -1.0*Nlms);
+    resZero.resize(resTa.size() * nZero);resZero.set_zero();
+    if(srcI.save_full_vec == 0){
+      cpy_data_thread(&resZero[0*resTa.size()], resTa.data(), resTa.size(), 1, true, -1.0*Nlms);
+    }
+    if(srcI.save_full_vec == 1){
+      cpy_data_thread(&resZero[0*resTa.size()], resTa.data(), resTa.size(), 1, true, +1.0);
+    }
   }
   if(saveFFT){
     TIMER("saveFFT");
@@ -430,7 +441,14 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     prop_to_vec(Eprop, resTa, fd);
     if(save_zero_corr){vec_corrE(resTa.data(), EresA, fd, nvecs, 0);}
 
-    if(savezero){resZero += resTa;}
+    if(savezero){
+    if(srcI.save_full_vec == 0){
+      cpy_data_thread(&resZero[0*resTa.size()], resTa.data(), resTa.size(), 1, true, +1.0);
+    }
+    if(srcI.save_full_vec == 1){
+      cpy_data_thread(&resZero[(gi+1)*resTa.size()], resTa.data(), resTa.size(), 1, true, +1.0);
+    }
+    }
     if(saveFFT){
       TIMER("saveFFT");
       fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
@@ -451,15 +469,18 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   if(savezero){
     TIMER("lms savezero");
     ////std::vector<qlat::FieldM<Ty, 1> > Vzero_data;
-    if(int(Vzero_data.size() ) != 32*nmass){
-      Vzero_data.resize(32*nmass);
-      for(unsigned int iv=0;iv<Vzero_data.size();iv++){
+    qassert(resZero.size() == nZero*32*nmass*Vol);
+    const long nvec = resZero.size()/Vol;
+    print0("=====vec %d \n", int(nvec));
+    if(long(Vzero_data.size() ) != nvec){
+      Vzero_data.resize(0);Vzero_data.resize(nvec);
+      for(long iv=0;iv<nvec;iv++){
         if(!Vzero_data[iv].initialized){Vzero_data[iv].init(geo);}
       }
     }
-    for(unsigned int iv=0;iv<Vzero_data.size();iv++){
+    for(long iv=0;iv<nvec;iv++){
       Ty* resP = (Ty*) qlat::get_data(Vzero_data[iv]).data();
-      cpy_data_thread(resP, &resZero[iv*geo.local_volume()], geo.local_volume(), 1, true);
+      cpy_data_thread(resP, &resZero[iv*Vol], geo.local_volume(), 1, true);
     }
     save_qlat_noises(srcI.name_zero_vecs.c_str(), Vzero_data, true, POS_LIST);
   }

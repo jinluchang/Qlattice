@@ -385,6 +385,7 @@ struct inputpara{
   int icfg_end;
   int icfg_jump;
   int save_prop;
+  int anti_peri;
 
   int bini, ncut0, ncut1;
 
@@ -658,6 +659,7 @@ struct inputpara{
 
     if(find_para(std::string("nini"),nini)==0)nini  = 0;
     if(find_para(std::string("nvec"),nvec)==0)nvec  = 0;
+    if(find_para(std::string("anti_peri"),anti_peri)==0)anti_peri  = 0;
     if(find_para(std::string("write_mode"),write_mode)==0)write_mode  = 0;
     if(find_para(std::string("mode_dis"),mode_dis)==0)mode_dis  = 0;
     if(find_para(std::string("split_save"),split_save)==0)split_save  = 0;

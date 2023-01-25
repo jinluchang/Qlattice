@@ -603,7 +603,7 @@ void meson_vectorEV(EigenTy& prop1, EigenTy& prop2, qlat::vector_gpu<Ty > &res
 
 template<typename Td, typename Ta>
 void meson_corrE(std::vector<Propagator4dT<Td > > &pV1, std::vector<Propagator4dT<Td >> &pV2,  ga_M &ga1, ga_M &ga2,
-  qlat::vector_acc<Ta > &res, qlat::fft_desc_basic &fd,int clear=1,const Coordinate& mom = Coordinate(),int mode_GPU = 0){
+  qlat::vector_acc<Ta > &res, qlat::fft_desc_basic &fd,int clear=1,const Coordinate& mom = Coordinate()){
   ///int NTt  = fd.Nv[3];
   ///LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   int nmass = pV1.size();
@@ -612,16 +612,7 @@ void meson_corrE(std::vector<Propagator4dT<Td > > &pV1, std::vector<Propagator4d
   qlat::vector_acc<Ta > resE;
   ini_resE(resE,nmass,fd);
 
-  if(mode_GPU == 0){
-    std::vector<qlat::vector_acc<Ta > > prop1;
-    std::vector<qlat::vector_acc<Ta > > prop2;
-    copy_prop4d_to_propE(prop1, pV1, fd);
-    copy_prop4d_to_propE(prop2, pV2, fd);
-    ////copy_propE(pV1,prop1, fd);
-    ////copy_propE(pV2,prop2, fd);
-    meson_vectorE(prop1,prop2,ga1,ga2,resE,fd,1);
-  }
-  if(mode_GPU == 1){meson_vectorE(pV1,pV2,ga1,ga2,resE,fd,1);}
+  meson_vectorE(pV1,pV2,ga1,ga2,resE,fd,1);
 
   vec_corrE(resE,res,fd, clear, mom);
 }
@@ -637,6 +628,26 @@ void meson_corrE(std::vector<qpropT > &prop1, std::vector<qpropT > &prop2,  ga_M
   meson_vectorE(prop1,prop2,ga1,ga2,resE,1);
   vec_corrE(resE, res, fd, clear, mom);
 }
+
+template<typename Td>
+void print_pion(std::vector<Propagator4dT<Td > > &prop1, std::vector<Propagator4dT<Td > > &prop2, const std::string& tag=std::string(""), double factor = 1.0){
+  ga_matrices_cps   ga_cps;
+  const qlat::Geometry &geo = prop1[0].geo();
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+
+  qlat::vector_acc<qlat::ComplexT<Td > > resC;
+
+  meson_corrE(prop1, prop2, ga_cps.ga[0][0], ga_cps.ga[0][0], resC, fd);
+
+  int nv = resC.size()/fd.nt;
+  for(int iv=0;iv<nv;iv++)
+  for(int t=0;t<fd.nt;t++)
+  {
+    qlat::ComplexT<Td > v = resC[iv*fd.nt + t] * qlat::ComplexT<Td >(factor, 0.0);
+    print0("%s iv %d, t %d, v %.6e %.6e \n", tag.c_str(), iv, t, v.real(), v.imag());
+  }
+}
+
 
 //template <typename Ta>
 //void meson_corr_write(Propagator4dT<Ta > &propVa, Propagator4dT<Ta > &propVb, int pos, std::vector<double > &write, int offw, const Geometry &geo, int a=0, int b=0, int c=0 , int d=0){

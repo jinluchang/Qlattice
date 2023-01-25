@@ -24,6 +24,15 @@ int main(int argc, char* argv[])
 
   int prop_type = 1;
   in.find_para(std::string("prop_type"), prop_type);
+  std::string out_vec_sink  = std::string("NONE");
+  std::string out_vec_mom   = std::string("NONE");
+  in.find_para(std::string("out_vec_sink"), out_vec_sink);
+  in.find_para(std::string("out_vec_mom"), out_vec_mom);
+
+  int prop_smear_inv_factor = 1; ////1, if use modified factors within inverstion ; 0 --> normal factors
+  in.find_para(std::string("prop_smear_inv_factor"), prop_smear_inv_factor);
+  int save_full_vec = 0;
+  in.find_para(std::string("save_full_vec"), save_full_vec);
 
   int icfg  = in.icfg;
 
@@ -51,6 +60,7 @@ int main(int argc, char* argv[])
     char rbc_conf[500];
     sprintf(rbc_conf,in.Link_name.c_str(), icfg);
     load_gwu_link(rbc_conf, gf);
+    if(in.anti_peri == 1){twist_boundary_at_boundary(gf, -0.5, 3);}
     /////set_left_expanded_gauge_field(gfD, gf);
   }
   /////========load links
@@ -106,17 +116,17 @@ int main(int argc, char* argv[])
   }
   
   /////===load noise and prop
-  char names[450],namep[500];
+  char names[450],namep[500], names_vec[450], names_mom[450];
   std::vector<qprop > FpropV;FpropV.resize(nmass);
   Propagator4dT<Ftype > tmp;tmp.init(geo);
   lms_para<Complexq > srcI;/////buffers and parameters for lms
   print_time();
   for(int si = 0; si < in.nsource; si++)
   {
-    if(in.output_vec != std::string("NONE") and ckpoint == 1){
+    if(out_vec_sink != std::string("NONE") and ckpoint == 1){
       const size_t vol = size_t(fd.nx) * fd.ny * fd.nz * fd.nt;
       int flag_do_job = 0;
-      sprintf(names, in.output_vec.c_str(), icfg, si);
+      sprintf(names, out_vec_sink.c_str(), icfg, si);
       sprintf(namep, "%s.pt.zero.vec", names);
       if(get_file_size_MPI(namep) > vol * 32 * nmass * 8){ 
         flag_do_job += 1;
@@ -149,16 +159,27 @@ int main(int argc, char* argv[])
 
       if(prop_type == 0){load_gwu_prop( namep, tmp);}
       if(prop_type == 1){load_qlat_prop(namep, tmp);}
+
+      if(src_width < 0 and prop_smear_inv_factor == 0){
+        const Complexq sm_factor = std::pow( 1.0 * (-1.0*src_width), 3);
+        prop4D_factor(tmp, sm_factor);
+      }
+
       prop4d_to_qprop(FpropV[im], tmp);
-      double sum = check_sum_prop(FpropV[im]);
-      print0("===checksum %s %.8e \n", namep, sum);
+      ////double sum = check_sum_prop(FpropV[im]);
+      ////print0("===checksum %s %.8e \n", namep, sum);
     }
     /////===load noise and prop
 
-    bool save_vecs_lms = false;
-    if(in.output_vec != std::string("NONE")){
-      sprintf(names, in.output_vec.c_str(), icfg, si);
-      save_vecs_lms = true;
+    bool save_vecs_vec = false;
+    bool save_vecs_mom = false;
+    if(out_vec_sink != std::string("NONE")){
+      sprintf(names_vec, out_vec_sink.c_str(), icfg, si);
+      save_vecs_vec = true;
+    }
+    if(out_vec_mom != std::string("NONE")){
+      sprintf(names_mom, out_vec_mom.c_str(), icfg, si);
+      save_vecs_mom = true;
     }
 
     srcI.init();
@@ -170,11 +191,15 @@ int main(int argc, char* argv[])
     srcI.INFOA.push_back(INFO_Mass);
     srcI.mom_cut = in.mom_cut;
     srcI.ckpoint = ckpoint;
-    if(save_vecs_lms){
-      sprintf(namep, "%s.pt", names);
-      srcI.name_mom_vecs = std::string(namep);
-      sprintf(namep, "%s.pt.zero.vec", names);
+    srcI.save_full_vec = save_full_vec;
+    if(save_vecs_vec){
+      sprintf(namep, "%s.pt.zero.vec", names_vec);
       srcI.name_zero_vecs = std::string(namep);
+    }
+
+    if(save_vecs_mom){
+      sprintf(namep, "%s.pt", names_mom);
+      srcI.name_mom_vecs = std::string(namep);
     }
 
     if(in.output == std::string("NONE")){
@@ -199,11 +224,14 @@ int main(int argc, char* argv[])
       //diff_prop(prop4dS, prop4d);
       }
 
-      if(save_vecs_lms){
-        sprintf(namep, "%s.sm", names);
-        srcI.name_mom_vecs  = std::string(namep); 
-        sprintf(namep, "%s.sm.zero.vec", names);
+      if(save_vecs_vec){
+        sprintf(namep, "%s.sm.zero.vec", names_vec);
         srcI.name_zero_vecs = std::string(namep);
+      }
+
+      if(save_vecs_mom){
+        sprintf(namep, "%s.sm", names_mom);
+        srcI.name_mom_vecs = std::string(namep);
       }
 
       point_corr(noi, FpropV, massL, ei, fd, res, srcI, mdat, 1);

@@ -934,6 +934,13 @@ void noise_to_propT(qpropT& prop, qnoiT& noi){
 
 }
 
+template <class Td>
+void prop4D_factor(Propagator4dT<Td>& prop, const qlat::ComplexT<Td >& factor)
+{
+  const size_t Nvol = size_t(prop.geo().local_volume()) * 12 * 12;
+  qlat::ComplexT<Td >* src = (qlat::ComplexT<Td >*) qlat::get_data(prop).data();
+  cpy_data_threadC(src, src, Nvol, 1, true, factor);
+}
 
 
 }

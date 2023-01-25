@@ -9,6 +9,8 @@
 #include <qlat/qcd.h>
 #include "utils_float_type.h"
 
+#define QLAT_COPY_LIMIT 1e-20
+
 namespace qlat{
 
 #ifdef QLAT_USE_ACC
@@ -96,8 +98,8 @@ void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, b
   (void)dummy;
   if(GPU != 0 and GPU != 1){qassert(false);}
   bool do_copy = true;
-  if(qlat::qnorm(ADD) <  1e-13){do_copy = true ;}
-  if(qlat::qnorm(ADD) >= 1e-13){do_copy = false;}
+  if(qlat::qnorm(ADD) <  QLAT_COPY_LIMIT){do_copy = true ;}
+  if(qlat::qnorm(ADD) >= QLAT_COPY_LIMIT){do_copy = false;}
 
   #ifdef QLAT_USE_ACC
   if(GPU == 1){
@@ -141,7 +143,7 @@ void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, b
 template <typename T0, typename T1,  typename TInt, typename Tadd>
 void cpy_data_threadT(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, bool dummy, const Tadd ADD)
 {
-  if((void*) Pres == (void*) Psrc){return ;}////return if points are the same
+  if((void*) Pres == (void*) Psrc and qlat::qnorm(ADD) <  QLAT_COPY_LIMIT){return ;}////return if points are the same
   TIMERA("cpy_data_thread");
   ////if(Pres == Psrc){return ;}
   ////0--> host to host, 1 device to device
@@ -152,7 +154,7 @@ void cpy_data_threadT(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, bool d
   //////===from host to device
   if(GPU ==  2){
   /////qassert(sizeof(T0) == sizeof(T1));
-  if(sizeof(T0) == sizeof(T1) and qlat::qnorm(ADD) <  1e-13){
+  if(sizeof(T0) == sizeof(T1) and qlat::qnorm(ADD) <  QLAT_COPY_LIMIT){
     gpuErrchk(cudaMemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), cudaMemcpyHostToDevice));
     if(dummy)qacc_barrier(dummy);
   }else{
@@ -167,7 +169,7 @@ void cpy_data_threadT(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, bool d
   //////===from device to host
   if(GPU ==  3){
   ////qassert(sizeof(T0) == sizeof(T1));
-  if(sizeof(T0) == sizeof(T1) and qlat::qnorm(ADD) <  1e-13){
+  if(sizeof(T0) == sizeof(T1) and qlat::qnorm(ADD) <  QLAT_COPY_LIMIT){
     gpuErrchk(cudaMemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), cudaMemcpyDeviceToHost));
     if(dummy)qacc_barrier(dummy);
   }else{
@@ -231,5 +233,7 @@ void untouch_GPU(Ty* Mres , long long Msize)
 }
 
 }
+
+#undef QLAT_COPY_LIMIT
 
 #endif

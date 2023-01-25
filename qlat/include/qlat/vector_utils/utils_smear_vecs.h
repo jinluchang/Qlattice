@@ -856,16 +856,23 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
 }
 
 template <class T, int bfac, int civ>
-void smear_kernel_sort(T* src, const double width, const int step, smear_fun<T >& smf)
+void smear_kernel_sort(T* src, const double width_in, const int step, smear_fun<T >& smf)
 {
+  ////width < 0, then additional normalization
   if(step >= 0){
-    const double norm   = (1 - 3.0*width*width/(2*step));
+    double sm_factor = 1.0;
+    double width = width_in;
+    if(step > 0 and width < 0){
+      width = -1.0 * width;
+      sm_factor = std::pow( std::pow( 1.0 * width, 3), 1.0/step );
+    }
+    const double norm   = (1 - 3.0*width*width/(2*step)) * sm_factor;
     gauss_smear_kernel<T, bfac, civ>(src, width, step, norm, smf);
   }
 
   if(step ==-1){
     if(smf.smear_in_time_dir == true){abort_r("Box smearing not supported for t smearings \n");}
-    smear_propagator_box<T, bfac, civ>(src,int(width + 0.001), smf);
+    smear_propagator_box<T, bfac, civ>(src,int(width_in + 0.001), smf);
   }
 }
 
@@ -983,7 +990,7 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
     if(step >= 0){
     Tfloat = step*n_avg*vGb*Fcount;
     }else{
-    Tfloat = c0*d0*2*int(width)*vGb*Fcount;
+    Tfloat = c0*d0*2*int(qlat::qnorm(width))*vGb*Fcount;
     }
   }
   timer.flops += Tfloat;

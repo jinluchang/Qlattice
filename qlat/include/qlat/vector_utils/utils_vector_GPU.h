@@ -125,37 +125,13 @@ struct vector_gpu{
   
     cpy_data_thread(p, src, n, mode_cpu, true);
 
-    //bool tem_GPU =  GPU;
-    //if(GPU_set == -1){tem_GPU = true  ;}
-    //if(GPU_set == 0 ){tem_GPU = false ;}
-    //if(GPU_set == 1 ){tem_GPU = true  ;}
-    //resize(Ndata, tem_GPU);
-  
-    //int mode_cpu = 0;
-    //if(GPU == false){mode_cpu =  3;} // device to host
-    //if(GPU == true ){mode_cpu =  1;} // device to device
-    //cpy_data_thread(p, &vp[0], n, mode_cpu, true);
   }
 
   template <class T >
   void copy_from(const vector_gpu<T >& vp, int GPU_set = -1)
   {
     copy_from(vp.p, vp.n, GPU_set, int(vp.GPU));
-    //bool tem_GPU =  GPU;
-    //if(GPU_set == -1){tem_GPU = vp.GPU;}
-    //if(GPU_set == 0 ){tem_GPU = false ;}
-    //if(GPU_set == 1 ){tem_GPU = true  ;}
-    //resize(vp.size(), tem_GPU);
-  
-    //int mode_cpu = 0;
-    //if(vp.GPU == false and GPU == false){mode_cpu =  0;}
-    //if(vp.GPU == true  and GPU == true ){mode_cpu =  1;}
-    //if(vp.GPU == false and GPU == true ){mode_cpu =  2;} // host to device
-    //if(vp.GPU == true  and GPU == false){mode_cpu =  3;} // device to host
-  
-    //cpy_data_thread(p, vp.p, n, mode_cpu, true);
   }
-
 
   template <class T >
   void copy_from(const std::vector<T >& vp, int GPU_set = -1)
@@ -163,16 +139,6 @@ struct vector_gpu{
     int GPU_mem = 0;
     if(GPU_set == -1){GPU_mem = 1;}else{GPU_mem = GPU_set;}
     copy_from(&vp[0], vp.size(), GPU_mem, 0);
-    //bool tem_GPU =  GPU;
-    ////////if(GPU_set == -1){tem_GPU = true  ;}
-    //if(GPU_set == 0 ){tem_GPU = false ;}
-    //if(GPU_set == 1 ){tem_GPU = true  ;}
-    //resize(vp.size(), tem_GPU);
-  
-    //int mode_cpu = 0;
-    //if(GPU == false){mode_cpu =  0;}
-    //if(GPU == true ){mode_cpu =  2;} // host to device
-    //cpy_data_thread(p, &vp[0], n, mode_cpu, true);
   }
 
 
@@ -183,52 +149,8 @@ struct vector_gpu{
     if(GPU_set == -1){GPU_mem = 1;}else{GPU_mem = GPU_set;}
     T* src = (T*) qlat::get_data(vp).data();
     copy_from(src, vp.size(), GPU_mem, GPU_ori);
-    //bool tem_GPU =  true;
-    //if(GPU_set == -1){tem_GPU = GPU  ;}
-    //if(GPU_set == 0 ){tem_GPU = false ;}
-    //if(GPU_set == 1 ){tem_GPU = true  ;}
-    //resize(vp.size(), tem_GPU);
-  
-    //int mode_cpu = 0;
-    //if(GPU_ori == 0 and GPU == false){mode_cpu =  0;}
-    //if(GPU_ori == 1 and GPU == true ){mode_cpu =  1;}
-    //if(GPU_ori == 0 and GPU == true ){mode_cpu =  2;} // host to device
-    //if(GPU_ori == 1 and GPU == false){mode_cpu =  3;} // device to host
-    //T* src = (T*) qlat::get_data(vp).data();
-    //cpy_data_thread(p, src, n, mode_cpu, true);
+
   }
-
-  //////
-  //template <class T >
-  //void copy_from_GPU(const T* vp, size_t Ndata, int GPU_set = -1)
-  //{
-  //  bool tem_GPU =  GPU;
-  //  if(GPU_set == -1){tem_GPU = true  ;}
-  //  if(GPU_set == 0 ){tem_GPU = false ;}
-  //  if(GPU_set == 1 ){tem_GPU = true  ;}
-  //  resize(Ndata, tem_GPU);
-  //
-  //  int mode_cpu = 0;
-  //  if(GPU == false){mode_cpu =  3;} // device to host
-  //  if(GPU == true ){mode_cpu =  1;} // device to device
-  //  cpy_data_thread(p, &vp[0], n, mode_cpu, true);
-  //}
-
-  //template <class T >
-  //void copy_from_CPU(const T* vp, size_t Ndata, int GPU_set = -1)
-  //{
-  //  bool tem_GPU =  GPU;
-  //  if(GPU_set == -1){tem_GPU = true  ;}
-  //  if(GPU_set == 0 ){tem_GPU = false ;}
-  //  if(GPU_set == 1 ){tem_GPU = true  ;}
-  //  resize(Ndata, tem_GPU);
-  //
-  //  int mode_cpu = 0;
-  //  if(GPU == false){mode_cpu =  0;} // host to host
-  //  if(GPU == true ){mode_cpu =  2;} // host to device
-  //  cpy_data_thread(p, &vp[0], n, mode_cpu, true);
-  //}
-
 
   template <class T >
   void copy_to(T* res, int GPU_ori = -1)
@@ -252,13 +174,6 @@ struct vector_gpu{
     if(GPU_set == 1 ){tem_GPU = true  ;}
     vp.resize(size(), tem_GPU);
     copy_to(vp.p, GPU_set);
-  
-    //int mode_cpu = 0;
-    //if(GPU == false and vp.GPU == false){mode_cpu =  0;}
-    //if(GPU == true  and vp.GPU == true ){mode_cpu =  1;}
-    //if(GPU == true  and vp.GPU == false){mode_cpu =  3;} // device to host
-    //if(GPU == false and vp.GPU == true ){mode_cpu =  2;} // host to device
-    //cpy_data_thread(vp.p, p, n, mode_cpu, true);
   }
 
   inline Ty norm()
@@ -276,6 +191,24 @@ struct vector_gpu{
     if(GPU == false){reduce_cpu(res, tmp.data(), n, 1);}
     glb_sum(tmp[0]);
     return tmp[0];
+  }
+
+  template <class T >
+  void swap(std::vector<T >& vp)
+  {
+    Ty*  p_tmp   = vp.p;
+    size_t n_tmp = vp.n;
+    bool GPU_tmp = vp.GPU;
+
+    ////copy to vp
+    vp.p = p;
+    vp.n = n;
+    vp.GPU = GPU;
+
+    ////copy to self
+    p = p_tmp;
+    n = p_tmp;
+    GPU = p_tmp;
   }
 
   template <class T >
