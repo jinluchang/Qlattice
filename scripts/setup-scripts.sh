@@ -11,6 +11,7 @@ echo "!!!! build $name !!!!"
 mkdir -p "$prefix/bin"
 
 cp -rpv scripts/res/organize-colon-list.py "$prefix"/bin/
+cp -rpv scripts/res/python-scripts-path.py "$prefix"/bin/
 
 ./scripts/compiler-wrappers.sh
 

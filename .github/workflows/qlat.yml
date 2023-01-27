@@ -12,10 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Set PATH
-      run: |
-        echo "$HOME/bin" >> $GITHUB_PATH
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
     - name: Show info
       run: |
         whoami
@@ -63,10 +59,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Set PATH
-      run: |
-        echo "$HOME/bin" >> $GITHUB_PATH
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
     - name: Show info
       run: |
         whoami
@@ -139,10 +131,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Set PATH
-      run: |
-        echo "$HOME/bin" >> $GITHUB_PATH
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
     - name: Show info
       run: |
         whoami
@@ -216,10 +204,6 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Set PATH
-      run: |
-        echo "$HOME/bin" >> $GITHUB_PATH
-        echo "$HOME/Library/Python/3.11/bin" >> $GITHUB_PATH
     - name: Show info
       run: |
         whoami
@@ -268,10 +252,6 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Set PATH
-      run: |
-        echo "$HOME/bin" >> $GITHUB_PATH
-        echo "$HOME/Library/Python/3.11/bin" >> $GITHUB_PATH
     - name: Show info
       run: |
         whoami
@@ -344,10 +324,6 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Set PATH
-      run: |
-        echo "$HOME/bin" >> $GITHUB_PATH
-        echo "$HOME/Library/Python/3.11/bin" >> $GITHUB_PATH
     - name: Show info
       run: |
         whoami

@@ -94,14 +94,10 @@ if [ -z ${q_num_threads+x} ] ; then
     export q_num_threads=2
 fi
 
-for v in \
-    "$HOME/.local/bin" \
-    "$prefix/bin" \
-    ; do
-    if [ -d "$v" ] ; then
-        export PATH="$v":"$PATH"
-    fi
-done
+export PATH="$prefix/bin":"$PATH"
+if which python-scripts-path.py >/dev/null 2>&1 ; then
+    export PATH="$(python-scripts-path.py)":"$PATH"
+fi
 
 for v in \
     "$prefix"/lib/python3/qlat-packages \
