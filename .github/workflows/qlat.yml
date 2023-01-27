@@ -28,10 +28,9 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y meson cython3 patchelf ninja-build python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev libhdf5-mpi-dev libhdf5-dev
-        sudo apt-get install -y clang libomp-dev
     - name: Install Python packages
       run: |
-        pip3 install --user psutil sympy numpy scipy meson ninja cython
+        pip3 install --user meson
     - name: Display Python version
       run: |
         python3 -c "import sys; print(sys.version)"
@@ -79,9 +78,14 @@ jobs:
         type pip3
         export
         cat /proc/cpuinfo
+    - name: Install Ubuntu packages
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y meson cython3 patchelf ninja-build python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev libhdf5-mpi-dev libhdf5-dev
     - name: Install Python packages
       run: |
-        pip3 install --user psutil sympy numpy scipy meson ninja cython build meson-python wheel
+        pip3 install --user meson
+        pip3 install --user build meson-python wheel
     - name: Display Python version
       run: |
         python3 -c "import sys; print(sys.version)"
@@ -91,11 +95,6 @@ jobs:
         meson --version
         type ninja
         ninja --version
-    - name: Install Ubuntu packages
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y meson cython3 patchelf ninja-build python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev libhdf5-mpi-dev libhdf5-dev
-        sudo apt-get install -y clang libomp-dev
     - name: Download dependencies
       run: |
         ./scripts/download-core.sh
@@ -153,9 +152,14 @@ jobs:
         pwd
         export
         cat /proc/cpuinfo
+    - name: Install Ubuntu packages
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y meson cython3 patchelf ninja-build python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev libhdf5-mpi-dev libhdf5-dev
+        sudo apt-get install -y clang libomp-dev
     - name: Install Python packages
       run: |
-        pip3 install --user psutil sympy numpy scipy meson ninja cython
+        pip3 install --user meson
     - name: Display Python version
       run: |
         python3 -c "import sys; print(sys.version)"
@@ -165,11 +169,6 @@ jobs:
         meson --version
         type ninja
         ninja --version
-    - name: Install Ubuntu packages
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y meson cython3 patchelf ninja-build python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev libhdf5-mpi-dev libhdf5-dev
-        sudo apt-get install -y clang libomp-dev
     - name: Download dependencies
       run: |
         ./scripts/download-core.sh
@@ -239,7 +238,7 @@ jobs:
         # brew upgrade
     - name: Install Python packages
       run: |
-        pip3 install --user psutil sympy numpy scipy meson ninja cython
+        pip3 install --user psutil sympy
     - name: Display Python version
       run: |
         python3 -c "import sys; print(sys.version)"
@@ -294,7 +293,8 @@ jobs:
         # brew upgrade
     - name: Install Python packages
       run: |
-        pip3 install --user psutil sympy numpy scipy meson ninja cython build meson-python wheel
+        pip3 install --user psutil sympy
+        pip3 install --user build meson-python wheel
     - name: Display Python version
       run: |
         python3 -c "import sys; print(sys.version)"
@@ -369,7 +369,7 @@ jobs:
         # brew upgrade
     - name: Install Python packages
       run: |
-        pip3 install --user psutil sympy numpy scipy meson ninja cython build
+        pip3 install --user psutil sympy
     - name: Display Python version
       run: |
         python3 -c "import sys; print(sys.version)"
