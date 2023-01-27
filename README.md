@@ -6,7 +6,25 @@ A simple lattice QCD library.
 
 ### Install on Ubuntu
 
-`$ sudo apt-get install -y meson cython3 ninja-build python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev libhdf5-mpi-dev libhdf5-dev`
+`$ sudo apt-get install -y meson cython3 patchelf ninja-build python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev libhdf5-mpi-dev libhdf5-dev`
+
+`$ export prefix=DEST_DIRECTORY`
+
+#### Qlattice only
+
+`$ ./build.sh`
+
+#### Qlattice and Grid/GPT
+
+`$ ./scripts/download-core.sh`
+
+`$ ./build.sh default-gpt`
+
+### Install on Mac
+
+`$ brew install meson cython ninja numpy scipy patchelf llvm open-mpi eigen gsl zlib openssl@3 mpfr autoconf automake flock findutils hdf5-mpi`
+
+`$ pip3 install --user psutil sympy numpy scipy meson ninja cython`
 
 `$ export prefix=DEST_DIRECTORY`
 

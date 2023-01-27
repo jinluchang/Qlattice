@@ -8,15 +8,18 @@ export QLAT_PREFIX="$prefix"
 if [ "$(uname)" == "Darwin" ]; then
     echo "Setting for Mac OS X"
     export q_num_mp_processes=0
-    export PATH="/usr/local/opt/openssl@3/bin":"$PATH"
-    export PATH="/usr/local/opt/llvm/bin":"$PATH"
-    export PATH="/usr/local/opt/findutils/libexec/gnubin":"$PATH"
-    export LD_RUN_PATH="/usr/local/opt/llvm/lib/c++":"$LD_RUN_PATH"
-    export LIBRARY_PATH="/usr/local/opt/openssl@3/lib":"$LIBRARY_PATH"
-    export LIBRARY_PATH="/usr/local/opt/llvm/lib/c++":"$LIBRARY_PATH"
-    export LIBRARY_PATH="/usr/local/opt/llvm/lib":"$LIBRARY_PATH"
-    export CPATH="/usr/local/opt/openssl@3/include":"$CPATH"
-    export CPATH="/usr/local/opt/llvm/include":"$CPATH"
+    if which brew >/dev/null 2>&1 ; then
+        echo "Setting for brew in Mac OS X"
+        export PATH="$(brew --prefix)/openssl@3/bin":"$PATH"
+        export PATH="$(brew --prefix)/llvm/bin":"$PATH"
+        export PATH="$(brew --prefix)/findutils/libexec/gnubin":"$PATH"
+        export LD_RUN_PATH="$(brew --prefix)/llvm/lib/c++":"$LD_RUN_PATH"
+        export LIBRARY_PATH="$(brew --prefix)/openssl@3/lib":"$LIBRARY_PATH"
+        export LIBRARY_PATH="$(brew --prefix)/llvm/lib/c++":"$LIBRARY_PATH"
+        export LIBRARY_PATH="$(brew --prefix)/llvm/lib":"$LIBRARY_PATH"
+        export CPATH="$(brew --prefix)/openssl@3/include":"$CPATH"
+        export CPATH="$(brew --prefix)/llvm/include":"$CPATH"
+    fi
     if [ -z ${USE_COMPILER+x} ] ; then
         export USE_COMPILER=clang
     fi
@@ -91,23 +94,53 @@ if [ -z ${q_num_threads+x} ] ; then
     export q_num_threads=2
 fi
 
-export PATH="$HOME/.local/bin":"$PATH"
-export PATH="$prefix/bin":"$PATH"
-if [ -d "$prefix"/lib/python3/qlat-packages ] ; then
-    export PYTHONPATH="$prefix"/lib/python3/qlat-packages:"$PYTHONPATH"
-fi
-export PYTHONPATH="$prefix/gpt/lib":"$PYTHONPATH"
-export PYTHONPATH="$prefix/gpt/lib/cgpt/build":"$PYTHONPATH"
-export LD_RUN_PATH="$prefix/lib":"$LD_RUN_PATH"
-export LD_RUN_PATH="$prefix/lib64":"$LD_RUN_PATH"
-export LD_LIBRARY_PATH="$prefix/lib":"$LD_LIBRARY_PATH"
-export LD_LIBRARY_PATH="$prefix/lib64":"$LD_LIBRARY_PATH"
-export LIBRARY_PATH="$prefix/lib":"$LIBRARY_PATH"
-export LIBRARY_PATH="$prefix/lib64":"$LIBRARY_PATH"
-export C_INCLUDE_PATH="$prefix/include":"$C_INCLUDE_PATH"
-export CPLUS_INCLUDE_PATH="$prefix/include":"$CPLUS_INCLUDE_PATH"
-export PKG_CONFIG_PATH="$prefix/lib/pkgconfig":"$PKG_CONFIG_PATH"
-export PKG_CONFIG_PATH="$prefix/lib64/pkgconfig":"$PKG_CONFIG_PATH"
+for v in \
+    "$HOME/.local/bin"
+    "$prefix/bin" \
+    ; do
+    if [ -d "$v" ] ; then
+        export PATH="$v":"$PATH"
+    fi
+done
+
+for v in \
+    "$prefix"/lib/python3/qlat-packages \
+    "$prefix/gpt/lib" \
+    "$prefix/gpt/lib/cgpt/build" \
+    ; do
+    if [ -d "$v" ] ; then
+        export PYTHONPATH="$v":"$PYTHONPATH"
+    fi
+done
+
+for v in \
+    "$prefix/lib"
+    "$prefix/lib64"
+    ; do
+    if [ -d "$v" ] ; then
+        export LD_RUN_PATH="$v":"$LD_RUN_PATH"
+        export LD_LIBRARY_PATH="$v":"$LD_LIBRARY_PATH"
+        export LIBRARY_PATH="$v":"$LIBRARY_PATH"
+    fi
+done
+
+for v in \
+    "$prefix/include"
+    ; do
+    if [ -d "$v" ] ; then
+        export C_INCLUDE_PATH="$v":"$C_INCLUDE_PATH"
+        export CPLUS_INCLUDE_PATH="$v":"$CPLUS_INCLUDE_PATH"
+    fi
+done
+
+for v in \
+    "$prefix/lib/pkgconfig"
+    "$prefix/lib64/pkgconfig"
+    ; do
+    if [ -d "$v" ] ; then
+        export PKG_CONFIG_PATH="$v":"$PKG_CONFIG_PATH"
+    fi
+done
 
 if which organize-colon-list.py >/dev/null 2>&1 ; then
     export PATH="$(organize-colon-list.py "$PATH")"
