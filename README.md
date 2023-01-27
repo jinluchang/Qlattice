@@ -4,6 +4,24 @@ A simple lattice QCD library.
 
 ## Installation:
 
+### Install on Ubuntu
+
+`$ sudo apt-get install -y meson cython3 ninja-build python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev libhdf5-mpi-dev libhdf5-dev`
+
+`$ export prefix=DEST_DIRECTORY`
+
+#### Qlattice only
+
+`$ ./build.sh`
+
+#### Qlattice and Grid/GPT
+
+`$ ./scripts/download-core.sh`
+
+`$ ./build.sh default-gpt`
+
+### General instructions
+
 The library itself is only composed of header files located in the `qlat` directory.
 
 The major dependencies can be downloaded with

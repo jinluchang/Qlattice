@@ -10,8 +10,6 @@ set -e
 
 ./scripts/setenv.default.sh
 
-./scripts/cuba.sh
-./scripts/eigen.sh
 ./scripts/ninja-script.sh
 
 ./scripts/qlat.sh
