@@ -215,7 +215,7 @@ jobs:
     - name: Install Brew packages
       run: |
         # brew update
-        brew install ninja patchelf llvm open-mpi eigen gsl zlib openssl@3 mpfr autoconf automake flock findutils hdf5-mpi
+        brew install ninja patchelf llvm open-mpi eigen fftw gsl zlib openssl@3 mpfr autoconf automake flock findutils hdf5-mpi
         # brew upgrade
     - name: Install Python packages
       run: |

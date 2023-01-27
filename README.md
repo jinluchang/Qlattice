@@ -24,9 +24,9 @@ A simple lattice QCD library.
 
 ### Install on Mac
 
-`$ brew install meson cython ninja numpy scipy patchelf llvm open-mpi eigen gsl zlib openssl@3 mpfr autoconf automake flock findutils hdf5-mpi`
+`$ brew install ninja patchelf llvm open-mpi eigen fftw gsl zlib openssl@3 mpfr autoconf automake flock findutils hdf5-mpi`
 
-`$ pip3 install --user psutil sympy`
+`$ pip3 install --user meson cython psutil sympy numpy scipy`
 
 `$ export prefix=DEST_DIRECTORY`
 
