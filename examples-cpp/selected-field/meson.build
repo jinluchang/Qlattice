@@ -11,6 +11,9 @@ project('qlat-cpp', 'cpp',
 
 add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
 
+py_mod = import('python')
+py3 = py_mod.find_installation('python3')
+
 cpp = meson.get_compiler('cpp')
 
 cxx = run_command('bash', '-c', 'echo "$CXX"', check: true).stdout().strip()
@@ -34,7 +37,10 @@ message('fftwf libdir', fftwf.get_variable('libdir'))
 
 math = cpp.find_library('m')
 
-qlat_include = run_command('qlat-include', env: environment({'q_verbose': '-1'}), check: true).stdout().strip().split('\n')
+qlat_include = run_command(py3.path(), '-c', 'import qlat as q ; print("\\n".join(q.get_include_list()))',
+  env: environment({'q_verbose': '-1'}),
+  check: true).stdout().strip().split('\n')
+
 message('qlat include', qlat_include)
 
 qlat = declare_dependency(

@@ -14,8 +14,6 @@ add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
 
 cpp = meson.get_compiler('cpp')
 
-fs = import('fs')
-
 py_mod = import('python')
 py3 = py_mod.find_installation('python3')
 message(py3.path())
@@ -113,7 +111,8 @@ fftw_all = [ fftw, fftwf, ]
 
 math = cpp.find_library('m')
 
-numpy_include = run_command(py3.path(), '-c', 'import numpy as np ; print(np.get_include())', check: true).stdout().strip()
+numpy_include = run_command(py3.path(), '-c', 'import numpy as np ; print(np.get_include())',
+  check: true).stdout().strip()
 message('numpy include', numpy_include)
 
 numpy = declare_dependency(
@@ -127,11 +126,27 @@ else
   error('Cannot find Eigen headers provided by Grid.')
 endif
 
-qlat_include = run_command(py3.path(), '-c', 'import qlat as q ; print("\\n".join(q.get_include_list()))', env: environment({'q_verbose': '-1'}), check: true).stdout().strip().split('\n')
+qlat_include = run_command(py3.path(), '-c', 'import qlat as q ; print("\\n".join(q.get_include_list()))',
+  env: environment({'q_verbose': '-1'}),
+  check: true).stdout().strip().split('\n')
 message('qlat include', qlat_include)
 
-qlat_lib = run_command(py3.path(), '-c', 'import qlat as q ; print("\\n".join(q.get_lib_list()))', env: environment({'q_verbose': '-1'}), check: true).stdout().strip().split('\n')
+qlat_lib = run_command(py3.path(), '-c', 'import qlat as q ; print("\\n".join(q.get_lib_list()))',
+  env: environment({'q_verbose': '-1'}),
+  check: true).stdout().strip().split('\n')
 message('qlat lib', qlat_lib)
+
+qlat_pxd = run_command(py3.path(), '-c', 'import qlat as q ; print("\\n".join(q.get_pxd_list()))',
+  env: environment({'q_verbose': '-1'}),
+  check: true).stdout().strip().split('\n')
+message('qlat pxd', qlat_pxd)
+qlat_pxd = files(qlat_pxd)
+
+qlat_header = run_command(py3.path(), '-c', 'import qlat as q ; print("\\n".join(q.get_header_list()))',
+  env: environment({'q_verbose': '-1'}),
+  check: true).stdout().strip().split('\n')
+message('qlat header', qlat_header)
+qlat_header = files(qlat_header)
 
 qlat = declare_dependency(
   include_directories: include_directories(qlat_include),
