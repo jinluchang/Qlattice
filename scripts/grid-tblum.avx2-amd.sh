@@ -6,40 +6,53 @@ name=Grid-tblum
 
 {
 
-echo "!!!! build $name !!!!"
+    time {
 
-mkdir -p "$prefix"/$name || true
+    echo "!!!! build $name !!!!"
 
-rsync -av --delete $distfiles/$name/ "$prefix"/$name/
+    mkdir -p "$prefix"/$name || true
 
-cd "$prefix/$name"
+    rsync -av --delete $distfiles/$name/ "$prefix"/$name/
 
-INITDIR="$(pwd)"
-rm -rfv "${INITDIR}/Eigen/Eigen/unsupported"
-rm -rfv "${INITDIR}/Grid/Eigen"
-ln -vs "${INITDIR}/Eigen/Eigen" "${INITDIR}/Grid/Eigen"
-ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
+    cd "$prefix/$name"
 
-export CXXFLAGS="$CXXFLAGS --wrapper-remove-arg=-xcore-avx2 -DUSE_QLATTICE"
+    INITDIR="$(pwd)"
+    rm -rfv "${INITDIR}/Eigen/Eigen/unsupported"
+    rm -rfv "${INITDIR}/Grid/Eigen"
+    ln -vs "${INITDIR}/Eigen/Eigen" "${INITDIR}/Grid/Eigen"
+    ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
 
-mkdir build
-cd build
-../configure \
-    --enable-simd=AVX2 \
-    --enable-alloc-align=4k \
-    --enable-comms=mpi-auto \
-    --enable-gparity=no \
-    --with-lime="$prefix" \
-    --with-fftw="$prefix" \
-    --with-hdf5="$prefix" \
-    --prefix="$prefix/grid-tblum"
+    export CXXFLAGS="$CXXFLAGS --wrapper-remove-arg=-xcore-avx2 -DUSE_QLATTICE"
 
-make -j$num_proc
-make install
+    if which qlat-include >/dev/null 2>&1 ; then
+        for v in $(qlat-include) ; do
+            export CPATH="$v":"$CPATH"
+        done
+        if which organize-colon-list.py >/dev/null 2>&1 ; then
+            export CPATH="$(organize-colon-list.py "$CPATH")"
+        fi
+    fi
 
-cd $wd
-echo "!!!! $name build !!!!"
+    mkdir build
+    cd build
+    ../configure \
+        --enable-simd=AVX2 \
+        --enable-alloc-align=4k \
+        --enable-comms=mpi-auto \
+        --enable-gparity=no \
+        --with-lime="$prefix" \
+        --with-fftw="$prefix" \
+        --with-hdf5="$prefix" \
+        --prefix="$prefix/grid-tblum"
 
-rm -rf $temp_dir || true
+    make -j$num_proc
+    make install
+
+    cd $wd
+    echo "!!!! $name build !!!!"
+
+    rm -rf $temp_dir || true
+
+}
 
 } 2>&1 | tee $prefix/log.$name.txt

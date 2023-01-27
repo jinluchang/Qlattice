@@ -3,6 +3,8 @@
 import sys
 
 def organize(str_colon_separated_list):
+    if str_colon_separated_list.endswith(':'):
+        str_colon_separated_list = str_colon_separated_list[:-1]
     l = str_colon_separated_list.split(':')
     l_new = []
     for v in l:

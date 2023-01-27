@@ -24,6 +24,15 @@ name=Grid-tblum
 
     export CXXFLAGS="$CXXFLAGS -DUSE_QLATTICE"
 
+    if which qlat-include >/dev/null 2>&1 ; then
+        for v in $(qlat-include) ; do
+            export CPATH="$v":"$CPATH"
+        done
+        if which organize-colon-list.py >/dev/null 2>&1 ; then
+            export CPATH="$(organize-colon-list.py "$CPATH")"
+        fi
+    fi
+
     mkdir build
     cd build
     ../configure \

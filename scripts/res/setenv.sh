@@ -5,56 +5,18 @@ echo "num_proc=$num_proc"
 
 export QLAT_PREFIX="$prefix"
 
-add-to-colon-list () {
-    local name="$1"
-    local new_value="$2"
-    local value="${!name}"
-    local v
-    if [ -z "$value" ] ; then
-        export "$name"="$new_value"
-    else
-        IFS=':' read -a vs <<< "$value"
-        local value=''
-        for v in "${vs[@]}" ; do
-            if [ "$new_value" != "$v" ] ; then
-                value+=:"$v"
-            fi
-        done
-        export "$name"="$new_value""$value"
-    fi
-}
-
-organize-colon-list() {
-    local name="$1"
-    local value="${!name}"
-    local v
-    if [ -n "$value" ] ; then
-        IFS=':' read -a vs <<< "$value"
-        value=''
-        for v in "${vs[@]}" ; do
-            value="$v":"$value"
-        done
-        value="${value%:}"
-        IFS=':' read -a vs <<< "$value"
-        export "$name"=""
-        for v in "${vs[@]}" ; do
-            add-to-colon-list "$name" "$v"
-        done
-    fi
-}
-
 if [ "$(uname)" == "Darwin" ]; then
     echo "Setting for Mac OS X"
     export q_num_mp_processes=0
-    add-to-colon-list PATH "/usr/local/opt/openssl@3/bin"
-    add-to-colon-list PATH "/usr/local/opt/llvm/bin"
-    add-to-colon-list PATH "/usr/local/opt/findutils/libexec/gnubin"
-    add-to-colon-list LD_RUN_PATH "/usr/local/opt/llvm/lib/c++"
-    add-to-colon-list LIBRARY_PATH "/usr/local/opt/openssl@3/lib"
-    add-to-colon-list LIBRARY_PATH "/usr/local/opt/llvm/lib/c++"
-    add-to-colon-list LIBRARY_PATH "/usr/local/opt/llvm/lib"
-    add-to-colon-list CPATH "/usr/local/opt/openssl@3/include"
-    add-to-colon-list CPATH "/usr/local/opt/llvm/include"
+    export PATH="/usr/local/opt/openssl@3/bin":"$PATH"
+    export PATH="/usr/local/opt/llvm/bin":"$PATH"
+    export PATH="/usr/local/opt/findutils/libexec/gnubin":"$PATH"
+    export LD_RUN_PATH="/usr/local/opt/llvm/lib/c++":"$LD_RUN_PATH"
+    export LIBRARY_PATH="/usr/local/opt/openssl@3/lib":"$LIBRARY_PATH"
+    export LIBRARY_PATH="/usr/local/opt/llvm/lib/c++":"$LIBRARY_PATH"
+    export LIBRARY_PATH="/usr/local/opt/llvm/lib":"$LIBRARY_PATH"
+    export CPATH="/usr/local/opt/openssl@3/include":"$CPATH"
+    export CPATH="/usr/local/opt/llvm/include":"$CPATH"
     if [ -z ${USE_COMPILER+x} ] ; then
         export USE_COMPILER=clang
     fi
@@ -129,33 +91,35 @@ if [ -z ${q_num_threads+x} ] ; then
     export q_num_threads=2
 fi
 
-add-to-colon-list PATH "$HOME/.local/bin"
-add-to-colon-list PATH "$prefix/bin"
+export PATH="$HOME/.local/bin":"$PATH"
+export PATH="$prefix/bin":"$PATH"
 if [ -d "$prefix"/lib/python3/qlat-packages ] ; then
-    add-to-colon-list PYTHONPATH "$prefix"/lib/python3/qlat-packages
+    export PYTHONPATH="$prefix"/lib/python3/qlat-packages:"$PYTHONPATH"
 fi
-add-to-colon-list PYTHONPATH "$prefix/gpt/lib"
-add-to-colon-list PYTHONPATH "$prefix/gpt/lib/cgpt/build"
-add-to-colon-list LD_RUN_PATH "$prefix/lib"
-add-to-colon-list LD_RUN_PATH "$prefix/lib64"
-add-to-colon-list LD_LIBRARY_PATH "$prefix/lib"
-add-to-colon-list LD_LIBRARY_PATH "$prefix/lib64"
-add-to-colon-list LIBRARY_PATH "$prefix/lib"
-add-to-colon-list LIBRARY_PATH "$prefix/lib64"
-add-to-colon-list C_INCLUDE_PATH "$prefix/include"
-add-to-colon-list CPLUS_INCLUDE_PATH "$prefix/include"
-add-to-colon-list PKG_CONFIG_PATH "$prefix/lib/pkgconfig"
-add-to-colon-list PKG_CONFIG_PATH "$prefix/lib64/pkgconfig"
+export PYTHONPATH="$prefix/gpt/lib":"$PYTHONPATH"
+export PYTHONPATH="$prefix/gpt/lib/cgpt/build":"$PYTHONPATH"
+export LD_RUN_PATH="$prefix/lib":"$LD_RUN_PATH"
+export LD_RUN_PATH="$prefix/lib64":"$LD_RUN_PATH"
+export LD_LIBRARY_PATH="$prefix/lib":"$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="$prefix/lib64":"$LD_LIBRARY_PATH"
+export LIBRARY_PATH="$prefix/lib":"$LIBRARY_PATH"
+export LIBRARY_PATH="$prefix/lib64":"$LIBRARY_PATH"
+export C_INCLUDE_PATH="$prefix/include":"$C_INCLUDE_PATH"
+export CPLUS_INCLUDE_PATH="$prefix/include":"$CPLUS_INCLUDE_PATH"
+export PKG_CONFIG_PATH="$prefix/lib/pkgconfig":"$PKG_CONFIG_PATH"
+export PKG_CONFIG_PATH="$prefix/lib64/pkgconfig":"$PKG_CONFIG_PATH"
 
-organize-colon-list PATH
-organize-colon-list PYTHONPATH
-organize-colon-list LD_RUN_PATH
-organize-colon-list LD_LIBRARY_PATH
-organize-colon-list LIBRARY_PATH
-organize-colon-list CPATH
-organize-colon-list C_INCLUDE_PATH
-organize-colon-list CPLUS_INCLUDE_PATH
-organize-colon-list PKG_CONFIG_PATH
+if which organize-colon-list.py >/dev/null 2>&1 ; then
+    export PATH="$(organize-colon-list.py "$PATH")"
+    export PYTHONPATH="$(organize-colon-list.py "$PYTHONPATH")"
+    export LD_RUN_PATH="$(organize-colon-list.py "$LD_RUN_PATH")"
+    export LD_LIBRARY_PATH="$(organize-colon-list.py "$LD_LIBRARY_PATH")"
+    export LIBRARY_PATH="$(organize-colon-list.py "$LIBRARY_PATH")"
+    export CPATH="$(organize-colon-list.py "$CPATH")"
+    export C_INCLUDE_PATH="$(organize-colon-list.py "$C_INCLUDE_PATH")"
+    export CPLUS_INCLUDE_PATH="$(organize-colon-list.py "$CPLUS_INCLUDE_PATH")"
+    export PKG_CONFIG_PATH="$(organize-colon-list.py "$PKG_CONFIG_PATH")"
+fi
 
 echo
 for v in \
