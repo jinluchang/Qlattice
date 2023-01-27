@@ -10,15 +10,15 @@ if [ "$(uname)" == "Darwin" ]; then
     export q_num_mp_processes=0
     if which brew >/dev/null 2>&1 ; then
         echo "Setting for brew in Mac OS X with prefix: $(brew --prefix)"
-        export PATH="$(brew --prefix)/openssl@3/bin":"$PATH"
-        export PATH="$(brew --prefix)/llvm/bin":"$PATH"
-        export PATH="$(brew --prefix)/findutils/libexec/gnubin":"$PATH"
-        export LD_RUN_PATH="$(brew --prefix)/llvm/lib/c++":"$LD_RUN_PATH"
-        export LIBRARY_PATH="$(brew --prefix)/openssl@3/lib":"$LIBRARY_PATH"
-        export LIBRARY_PATH="$(brew --prefix)/llvm/lib/c++":"$LIBRARY_PATH"
-        export LIBRARY_PATH="$(brew --prefix)/llvm/lib":"$LIBRARY_PATH"
-        export CPATH="$(brew --prefix)/openssl@3/include":"$CPATH"
-        export CPATH="$(brew --prefix)/llvm/include":"$CPATH"
+        export PATH="$(brew --prefix)/opt/openssl@3/bin":"$PATH"
+        export PATH="$(brew --prefix)/opt/llvm/bin":"$PATH"
+        export PATH="$(brew --prefix)/opt/findutils/libexec/gnubin":"$PATH"
+        export LD_RUN_PATH="$(brew --prefix)/opt/llvm/lib/c++":"$LD_RUN_PATH"
+        export LIBRARY_PATH="$(brew --prefix)/opt/openssl@3/lib":"$LIBRARY_PATH"
+        export LIBRARY_PATH="$(brew --prefix)/opt/llvm/lib/c++":"$LIBRARY_PATH"
+        export LIBRARY_PATH="$(brew --prefix)/opt/llvm/lib":"$LIBRARY_PATH"
+        export CPATH="$(brew --prefix)/opt/openssl@3/include":"$CPATH"
+        export CPATH="$(brew --prefix)/opt/llvm/include":"$CPATH"
     fi
     if [ -z ${USE_COMPILER+x} ] ; then
         export USE_COMPILER=clang
