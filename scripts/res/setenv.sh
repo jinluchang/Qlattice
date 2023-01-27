@@ -95,7 +95,7 @@ if [ -z ${q_num_threads+x} ] ; then
 fi
 
 for v in \
-    "$HOME/.local/bin"
+    "$HOME/.local/bin" \
     "$prefix/bin" \
     ; do
     if [ -d "$v" ] ; then
@@ -114,8 +114,8 @@ for v in \
 done
 
 for v in \
-    "$prefix/lib"
-    "$prefix/lib64"
+    "$prefix/lib" \
+    "$prefix/lib64" \
     ; do
     if [ -d "$v" ] ; then
         export LD_RUN_PATH="$v":"$LD_RUN_PATH"
@@ -125,7 +125,7 @@ for v in \
 done
 
 for v in \
-    "$prefix/include"
+    "$prefix/include" \
     ; do
     if [ -d "$v" ] ; then
         export C_INCLUDE_PATH="$v":"$C_INCLUDE_PATH"
@@ -134,8 +134,8 @@ for v in \
 done
 
 for v in \
-    "$prefix/lib/pkgconfig"
-    "$prefix/lib64/pkgconfig"
+    "$prefix/lib/pkgconfig" \
+    "$prefix/lib64/pkgconfig" \
     ; do
     if [ -d "$v" ] ; then
         export PKG_CONFIG_PATH="$v":"$PKG_CONFIG_PATH"
