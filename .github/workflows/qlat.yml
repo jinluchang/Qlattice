@@ -32,8 +32,7 @@ jobs:
         python3 -c "import sys; print(sys.version)"
         python3 -c "import sys; print(sys.path)"
         python3 -c "import numpy as np ; np.show_config()"
-        type meson
-        meson --version
+        python3 -c 'import sys ; from mesonbuild import mesonmain; sys.exit(mesonmain.main())' --version
         type ninja
         ninja --version
     - name: Build dependencies
@@ -80,8 +79,7 @@ jobs:
         python3 -c "import sys; print(sys.version)"
         python3 -c "import sys; print(sys.path)"
         python3 -c "import numpy as np ; np.show_config()"
-        type meson
-        meson --version
+        python3 -c 'import sys ; from mesonbuild import mesonmain; sys.exit(mesonmain.main())' --version
         type ninja
         ninja --version
     - name: Download dependencies
@@ -150,8 +148,7 @@ jobs:
         python3 -c "import sys; print(sys.version)"
         python3 -c "import sys; print(sys.path)"
         python3 -c "import numpy as np ; np.show_config()"
-        type meson
-        meson --version
+        python3 -c 'import sys ; from mesonbuild import mesonmain; sys.exit(mesonmain.main())' --version
         type ninja
         ninja --version
     - name: Download dependencies
@@ -225,8 +222,7 @@ jobs:
         python3 -c "import sys; print(sys.version)"
         python3 -c "import sys; print(sys.path)"
         python3 -c "import numpy as np ; np.show_config()"
-        type meson
-        meson --version
+        python3 -c 'import sys ; from mesonbuild import mesonmain; sys.exit(mesonmain.main())' --version
         type ninja
         ninja --version
     - name: Build dependencies
@@ -274,8 +270,7 @@ jobs:
         python3 -c "import sys; print(sys.version)"
         python3 -c "import sys; print(sys.path)"
         python3 -c "import numpy as np ; np.show_config()"
-        type meson
-        meson --version
+        python3 -c 'import sys ; from mesonbuild import mesonmain; sys.exit(mesonmain.main())' --version
         type ninja
         ninja --version
     - name: Download dependencies
@@ -345,8 +340,7 @@ jobs:
         python3 -c "import sys; print(sys.version)"
         python3 -c "import sys; print(sys.path)"
         python3 -c "import numpy as np ; np.show_config()"
-        type meson
-        meson --version
+        python3 -c 'import sys ; from mesonbuild import mesonmain; sys.exit(mesonmain.main())' --version
         type ninja
         ninja --version
     - name: Download dependencies
