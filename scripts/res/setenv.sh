@@ -9,7 +9,7 @@ if [ "$(uname)" == "Darwin" ]; then
     echo "Setting for Mac OS X"
     export q_num_mp_processes=0
     if which brew >/dev/null 2>&1 ; then
-        echo "Setting for brew in Mac OS X"
+        echo "Setting for brew in Mac OS X with prefix: $(brew --prefix)"
         export PATH="$(brew --prefix)/openssl@3/bin":"$PATH"
         export PATH="$(brew --prefix)/llvm/bin":"$PATH"
         export PATH="$(brew --prefix)/findutils/libexec/gnubin":"$PATH"

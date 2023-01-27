@@ -231,11 +231,11 @@ jobs:
     - name: Install Brew packages
       run: |
         # brew update
-        brew install meson cython ninja numpy scipy patchelf llvm open-mpi eigen gsl zlib openssl@3 mpfr autoconf automake flock findutils hdf5-mpi
+        brew install ninja patchelf llvm open-mpi eigen gsl zlib openssl@3 mpfr autoconf automake flock findutils hdf5-mpi
         # brew upgrade
     - name: Install Python packages
       run: |
-        pip3 install --user psutil sympy
+        pip3 install --user meson cython psutil sympy numpy scipy
     - name: Display Python version
       run: |
         python3 -c "import sys; print(sys.version)"
@@ -283,11 +283,11 @@ jobs:
     - name: Install Brew packages
       run: |
         # brew update
-        brew install meson cython ninja numpy scipy patchelf llvm open-mpi eigen gsl zlib openssl@3 mpfr autoconf automake flock findutils hdf5-mpi
+        brew install ninja patchelf llvm open-mpi eigen gsl zlib openssl@3 mpfr autoconf automake flock findutils hdf5-mpi
         # brew upgrade
     - name: Install Python packages
       run: |
-        pip3 install --user psutil sympy
+        pip3 install --user meson cython psutil sympy numpy scipy
         pip3 install --user build meson-python wheel
     - name: Display Python version
       run: |
@@ -359,11 +359,11 @@ jobs:
     - name: Install Brew packages
       run: |
         # brew update
-        brew install meson cython ninja numpy scipy patchelf llvm open-mpi eigen gsl zlib openssl@3 mpfr autoconf automake flock findutils hdf5-mpi
+        brew install ninja patchelf llvm open-mpi eigen gsl zlib openssl@3 mpfr autoconf automake flock findutils hdf5-mpi
         # brew upgrade
     - name: Install Python packages
       run: |
-        pip3 install --user psutil sympy
+        pip3 install --user meson cython psutil sympy numpy scipy
     - name: Display Python version
       run: |
         python3 -c "import sys; print(sys.version)"
