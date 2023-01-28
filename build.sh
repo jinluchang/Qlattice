@@ -18,11 +18,9 @@ fi
 
 echo "target is $target"
 
-if [ -f "scripts/build.$target.sh" ] ; then
-    :
-else
+if ! [ -f "scripts/build.$target.sh" ] ; then
     echo "No 'scripts/build.$target.sh' to build '$target'."
-    exit
+    exit 1
 fi
 
 scripts/clean-prefix.sh

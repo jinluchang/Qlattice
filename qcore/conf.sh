@@ -5,22 +5,31 @@
 # source qcore/conf.sh
 
 # $prefix controls the installation directory
+# $wd will be set to the current directory which should be the root directory of the repository
 
-for i in "$@" ; do
-    if [ -f "$prefix/$i"/setenv.sh ] ; then
-        echo "Loading:" "$prefix/$i"/setenv.sh
-        source "$prefix/$i"/setenv.sh
-        echo "Loaded: " "$prefix/$i"/setenv.sh
+set -e
+
+export wd="$(pwd)"
+
+if ! [ -f "$wd/qcore/conf.sh" -a -f "$wd/qcore/set-prefix.sh" ] ; then
+    echo "Need to run the scripts in the root directory of the repository."
+    echo "Currently, wd='$wd'"
+    return 1
+fi
+
+for v in "$@" ; do
+    if [ -f "$prefix/$v"/setenv.sh ] ; then
+        echo "Loading:" "$prefix/$v"/setenv.sh
+        source "$prefix/$v"/setenv.sh
+        echo "Loaded: " "$prefix/$v"/setenv.sh
     fi
 done
+unset v
 
 if which python3 >/dev/null 2>&1 ; then
     qcore/bin/show-env.py
 fi
 
-set -e
-
-wd="$(pwd)"
 distfiles="$wd/distfiles"
 
 if [ -z "$temp_dir" ] ; then

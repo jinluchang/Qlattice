@@ -8,7 +8,9 @@ source qcore/set-prefix.sh
 
     echo "!!!! build $name !!!!"
 
-    qcore/bin/mk-setenv-dir.py
+    source qcore/conf.sh
+
+    "$wd"/qcore/bin/mk-setenv-dir.sh
 
     echo "!!!! $name build !!!!"
 

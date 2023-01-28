@@ -2,7 +2,7 @@
 
 import sys
 
-if not sys.version_info.major == 3 and sys.version_info.minor >= 6:
+if not (sys.version_info.major == 3 and sys.version_info.minor >= 6):
     print(sys.argv)
     print("You are using not supported Python {}.{}.".format(sys.version_info.major, sys.version_info.minor))
     sys.exit(1)
@@ -57,7 +57,6 @@ fi
 """
 
 l.append(organize_env_path)
-
 
 with open(setenv_fn, mode = "w") as f:
     f.write("\n".join(l))

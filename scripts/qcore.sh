@@ -16,7 +16,7 @@ source qcore/set-prefix.sh $name
 
     cp -rpv qcore/setenv.sh "$prefix"/
 
-    qcore/bin/mk-setenv.py --keep
+    "$wd"/qcore/bin/mk-setenv.sh --keep
 
     echo "!!!! $name build !!!!"
 

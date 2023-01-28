@@ -27,7 +27,7 @@ source qcore/set-prefix.sh $name
 
     cd "$wd"
 
-    mk-setenv.py
+    mk-setenv.sh
 
     echo "!!!! $name build !!!!"
 
