@@ -184,6 +184,7 @@ jobs:
       run: |
         ! git diff | grep '^[+-]CHECK: '
     - name: Build more packages Grid-paboyle
+      run: |
         export num_proc=2
         USE_COMPILER=clang ./scripts/grid-paboyle.avx2.sh
         [ -e $HOME/qlat-build/default/grid-paboyle/lib/libGrid.a ]
@@ -394,6 +395,7 @@ jobs:
       run: |
         ! git diff | grep '^[+-]CHECK: '
     - name: Build more packages Grid-paboyle
+      run: |
         export num_proc=2
         USE_COMPILER=clang ./scripts/grid-paboyle.gen16.sh
         [ -e $HOME/qlat-build/default/grid-paboyle/lib/libGrid.a ]
