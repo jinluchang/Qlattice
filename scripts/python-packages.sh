@@ -10,6 +10,18 @@ name=python-packages
 
     echo "!!!! build $name !!!!"
 
+    if [ -z ${NPY_BLAS_ORDER+x} ] ; then
+        export NPY_BLAS_ORDER=openblas
+    fi
+
+    if [ -z ${NPY_LAPACK_ORDER+x} ] ; then
+        export NPY_LAPACK_ORDER=openblas
+    fi
+
+    if [ -z ${NPY_NUM_BUILD_JOBS+x} ] ; then
+        export NPY_NUM_BUILD_JOBS=$num_proc
+    fi
+
     find ~/.cache/pip/wheels -type f || true
 
     # rm -rfv ~/.cache/pip/wheels || true

@@ -74,18 +74,6 @@ if [ -z ${QLAT_MPICXX+x} ] ; then
     export QLAT_MPICXX=MPICXX.sh
 fi
 
-if [ -z ${NPY_BLAS_ORDER+x} ] ; then
-    export NPY_BLAS_ORDER=openblas
-fi
-
-if [ -z ${NPY_LAPACK_ORDER+x} ] ; then
-    export NPY_LAPACK_ORDER=openblas
-fi
-
-if [ -z ${NPY_NUM_BUILD_JOBS+x} ] ; then
-    export NPY_NUM_BUILD_JOBS=$num_proc
-fi
-
 if [ -z ${NINJA_NUM_JOBS+x} ] ; then
     export NINJA_NUM_JOBS=$num_proc
 fi
@@ -152,7 +140,7 @@ fi
 
 echo
 for v in \
-    PATH PYTHONPATH NPY_BLAS_ORDER NPY_NUM_BUILD_JOBS NPY_LAPACK_ORDER \
+    PATH PYTHONPATH \
     LD_PRELOAD LD_RUN_PATH LD_LIBRARY_PATH LIBRARY_PATH CPATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH PKG_CONFIG_PATH \
     CC CXX CFLAGS CXXFLAGS LDFLAGS LIBS MPICC MPICXX \
     QLAT_PREFIX QLAT_CXX QLAT_MPICXX QLAT_CXXFLAGS QLAT_LDFLAGS QLAT_LIBS \
