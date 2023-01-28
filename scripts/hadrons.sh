@@ -21,9 +21,11 @@ name=Hadrons
     cd build
 
     ../configure \
-        --with-grid="$prefix/grid-paboyle"
+        --with-grid="$prefix/grid-paboyle" \
+        --prefix="$prefix/hadrons" \
 
     make -j "$num_proc"
+    make install
 
     cd $wd
     echo "!!!! $name build !!!!"

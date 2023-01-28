@@ -180,22 +180,38 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/qlat-examples-cpp.sh
+    - name: Check error
+      run: |
+        ! git diff | grep '^[+-]CHECK: '
+    - name: Build more packages Grid-paboyle
+        export num_proc=2
+        USE_COMPILER=clang ./scripts/grid-paboyle.avx2.sh
+        [ -e $HOME/qlat-build/default/grid-paboyle/lib/libGrid.a ]
+        [ -e $HOME/qlat-build/default/grid-paboyle/bin/grid-config ]
+        [ -e $HOME/qlat-build/default/grid-paboyle/bin/Mobius2p1fEOFA ]
+        [ -e $HOME/qlat-build/default/grid-paboyle/bin/Benchmark_dwf ]
+        [ -e $HOME/qlat-build/default/grid-paboyle/bin/Benchmark_dwf_fp32 ]
+    - name: Build more packages Hadrons
+      run: |
+        export num_proc=2
+        USE_COMPILER=clang ./scripts/hadrons.sh
+        [ -e $HOME/qlat-build/default/hadrons/lib/libHadrons.a ]
+        [ -e $HOME/qlat-build/default/hadrons/bin/hadrons-config ]
+        [ -e $HOME/qlat-build/default/hadrons/bin/HadronsXmlRun ]
+        [ -e $HOME/qlat-build/default/hadrons/bin/HadronsContractor ]
     - name: Build more packages Grid-tblum
       run: |
         export num_proc=2
         USE_COMPILER=clang ./scripts/grid-tblum.avx2.sh
-    - name: Build more packages Hadrons-tblum
-      run: |
-        export num_proc=2
-        USE_COMPILER=clang ./scripts/hadrons-tblum.sh
-    - name: Check error
-      run: |
-        ! git diff | grep '^[+-]CHECK: '
         [ -e $HOME/qlat-build/default/grid-tblum/lib/libGrid.a ]
         [ -e $HOME/qlat-build/default/grid-tblum/bin/grid-config ]
         [ -e $HOME/qlat-build/default/grid-tblum/bin/Mobius2p1fEOFA ]
         [ -e $HOME/qlat-build/default/grid-tblum/bin/Benchmark_dwf ]
         [ -e $HOME/qlat-build/default/grid-tblum/bin/Benchmark_dwf_fp32 ]
+    - name: Build more packages Hadrons-tblum
+      run: |
+        export num_proc=2
+        USE_COMPILER=clang ./scripts/hadrons-tblum.sh
 
   build_qlat_mac:
     runs-on: macos-latest
@@ -374,22 +390,38 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/qlat-examples-cpp.sh
-    - name: Build more packages Grid-tblum
-      run: |
-        export num_proc=3
-        ./scripts/grid-tblum.gen16.sh
-    - name: Build more packages Hadrons-tblum
-      run: |
-        export num_proc=3
-        ./scripts/hadrons-tblum.sh
     - name: Check error
       run: |
         ! git diff | grep '^[+-]CHECK: '
+    - name: Build more packages Grid-paboyle
+        export num_proc=2
+        USE_COMPILER=clang ./scripts/grid-paboyle.gen16.sh
+        [ -e $HOME/qlat-build/default/grid-paboyle/lib/libGrid.a ]
+        [ -e $HOME/qlat-build/default/grid-paboyle/bin/grid-config ]
+        [ -e $HOME/qlat-build/default/grid-paboyle/bin/Mobius2p1fEOFA ]
+        [ -e $HOME/qlat-build/default/grid-paboyle/bin/Benchmark_dwf ]
+        [ -e $HOME/qlat-build/default/grid-paboyle/bin/Benchmark_dwf_fp32 ]
+    - name: Build more packages Hadrons
+      run: |
+        export num_proc=2
+        USE_COMPILER=clang ./scripts/hadrons.sh
+        [ -e $HOME/qlat-build/default/hadrons/lib/libHadrons.a ]
+        [ -e $HOME/qlat-build/default/hadrons/bin/hadrons-config ]
+        [ -e $HOME/qlat-build/default/hadrons/bin/HadronsXmlRun ]
+        [ -e $HOME/qlat-build/default/hadrons/bin/HadronsContractor ]
+    - name: Build more packages Grid-tblum
+      run: |
+        export num_proc=2
+        USE_COMPILER=clang ./scripts/grid-tblum.gen16.sh
         [ -e $HOME/qlat-build/default/grid-tblum/lib/libGrid.a ]
         [ -e $HOME/qlat-build/default/grid-tblum/bin/grid-config ]
         [ -e $HOME/qlat-build/default/grid-tblum/bin/Mobius2p1fEOFA ]
         [ -e $HOME/qlat-build/default/grid-tblum/bin/Benchmark_dwf ]
         [ -e $HOME/qlat-build/default/grid-tblum/bin/Benchmark_dwf_fp32 ]
+    - name: Build more packages Hadrons-tblum
+      run: |
+        export num_proc=2
+        USE_COMPILER=clang ./scripts/hadrons-tblum.sh
 
 #  build_wheels:
 #    name: Build wheels on ${{ matrix.os }}

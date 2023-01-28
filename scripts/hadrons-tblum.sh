@@ -30,9 +30,11 @@ name=Hadrons-tblum
     cd build
 
     ../configure \
-        --with-grid="$prefix/grid-tblum"
+        --with-grid="$prefix/grid-tblum" \
+        --prefix="$prefix/hadrons-tblum"
 
     make -j "$num_proc"
+    make install
 
     cd $wd
     echo "!!!! $name build !!!!"
