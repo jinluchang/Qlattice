@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 
-import os
 import sys
+
+if not sys.version_info.major == 3 and sys.version_info.minor >= 6:
+    print(sys.argv)
+    print("You are using not supported Python {}.{}.".format(sys.version_info.major, sys.version_info.minor))
+    sys.exit(1)
+
+import os
 
 def set_env(env, val):
     return f'export {env}="$setenv_prefix"/"{val}":"${env}"'
@@ -78,7 +84,7 @@ if os.path.isdir(lib_python_dir):
 l.append(f'unset setenv_prefix')
 
 organize_env_path = f"""
-if which organize-env-path.py >/dev/null 2>&1 ; then
+if which python3 >/dev/null 2>&1 && which organize-env-path.py >/dev/null 2>&1 ; then
     source <(organize-env-path.py)
 fi
 """
