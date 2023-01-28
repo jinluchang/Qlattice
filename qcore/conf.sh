@@ -6,6 +6,16 @@
 
 # $prefix controls the installation directory
 
+for i in "$@" ; do
+    if [ -f "$prefix/$i"/setenv.sh ] ; then
+        echo "Loading:" "$prefix/$i"/setenv.sh
+        source "$prefix/$i"/setenv.sh
+        echo "Loaded: " "$prefix/$i"/setenv.sh
+    fi
+done
+
+qcore/bin/show-env.py
+
 set -e
 
 wd="$(pwd)"

@@ -2,31 +2,27 @@
 
 ./scripts/qlat-utils.sh
 
-. scripts/res/conf.sh
-
 name=qlat
 
-{
+source qcore/set-prefix.sh $name
 
-    time {
+{ time {
 
     echo "!!!! build $name !!!!"
+
+    source qcore/conf.sh ..
 
     build="$prefix/build-qlat"
     mkdir -p "$build"
 
     cd "$build"
 
-    rm -rfv "$prefix"/lib/python3*/*-packages/cqlat.*
-    rm -rfv "$prefix"/lib/python3*/*-packages/qlat
-    rm -rfv "$prefix"/lib/python3*/*-packages/qlat_gpt.py
-    rm -rfv "$prefix"/lib/python3*/*-packages/rbc_ukqcd*
-    rm -rfv "$prefix"/lib/python3*/*-packages/auto_contractor*
+    rm -rfv "$prefix"/lib/python3
 
     if [ -n "$QLAT_MPICXX" ] ; then
-        export CXX="$QLAT_MPICXX"
         export MPICXX="$QLAT_MPICXX"
     fi
+    export CXX="$MPICXX"
     if [ -n "$QLAT_CXXFLAGS" ] ; then
         export CXXFLAGS="$QLAT_CXXFLAGS"
     fi
@@ -39,18 +35,21 @@ name=qlat
 
     touch "$wd"/qlat/meson.build
 
-    prefix_python="$prefix/lib/python3/qlat-packages"
+    prefix_python="$prefix/lib/python3"
 
     meson setup "$wd/qlat" \
         -Dpython.platlibdir="$prefix_python" -Dpython.purelibdir="$prefix_python" \
         --prefix="$prefix"
-    meson compile -j$num_proc
+
+    time meson compile -j$num_proc
     meson install
+
+    cd "$wd"
+
+    mk-setenv.py
 
     echo "!!!! $name build !!!!"
 
-    rm -rf $temp_dir || true
+    rm -rf "$temp_dir" || true
 
-}
-
-} 2>&1 | tee $prefix/log.$name.txt
+} } 2>&1 | tee $prefix/log.$name.txt

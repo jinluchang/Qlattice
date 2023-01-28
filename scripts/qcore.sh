@@ -1,18 +1,22 @@
 #!/bin/bash
 
-source qcore/set-prefix.sh qcore
-
 name=qcore
+
+source qcore/set-prefix.sh $name
 
 { time {
 
     echo "!!!! build $name !!!!"
 
-    source qcore/conf.sh
+    source qcore/conf.sh ..
 
     mkdir -p "$prefix/bin"
 
     cp -rpv qcore/bin/* "$prefix"/bin/
+
+    cp -rpv qcore/setenv.sh "$prefix"/
+
+    qcore/bin/mk-setenv.py --keep
 
     echo "!!!! $name build !!!!"
 

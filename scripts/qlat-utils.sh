@@ -1,22 +1,21 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
-
 name=qlat-utils
 
-{
+source qcore/set-prefix.sh $name
 
-    time {
+{ time {
 
     echo "!!!! build $name !!!!"
+
+    source qcore/conf.sh ..
 
     build="$prefix/build-qlat-utils"
     mkdir -p "$build"
 
     cd "$build"
 
-    rm -rfv "$prefix"/lib/python3*/*-packages/cqlat_utils.*
-    rm -rfv "$prefix"/lib/python3*/*-packages/qlat_utils
+    rm -rfv "$prefix"/lib/python3
 
     if [ -n "$QLAT_CXX" ] ; then
         export CXX="$QLAT_CXX"
@@ -33,18 +32,21 @@ name=qlat-utils
 
     touch "$wd"/qlat-utils/meson.build
 
-    prefix_python="$prefix/lib/python3/qlat-packages"
+    prefix_python="$prefix/lib/python3"
 
     meson setup "$wd/qlat-utils" \
         -Dpython.platlibdir="$prefix_python" -Dpython.purelibdir="$prefix_python" \
         --prefix="$prefix"
+
     time meson compile -j$num_proc
     meson install
 
+    cd "$wd"
+
+    mk-setenv.py
+
     echo "!!!! $name build !!!!"
 
-    rm -rf $temp_dir || true
+    rm -rf "$temp_dir" || true
 
-}
-
-} 2>&1 | tee $prefix/log.$name.txt
+} } 2>&1 | tee $prefix/log.$name.txt

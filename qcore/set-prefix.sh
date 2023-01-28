@@ -24,3 +24,5 @@ if [ -z "$subdir" ] ; then
 else
     export prefix="$prefix"/"$subdir"
 fi
+
+mkdir -p "$prefix"

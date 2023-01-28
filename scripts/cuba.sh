@@ -1,31 +1,36 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
-
 name=Cuba
 
-{
+source qcore/set-prefix.sh $name
 
-echo "!!!! build $name !!!!"
+{ time {
 
-rm -rf $src_dir
-mkdir -p $src_dir
-cd $src_dir
-tar xzf $distfiles/$name-*.tar.*
+    echo "!!!! build $name !!!!"
 
-export CFLAGS="$CFLAGS -fPIC"
-export CXXFLAGS="$CXXFLAGS -fPIC"
+    source qcore/conf.sh ..
 
-cd $name-*
-./configure \
-    --build="$(arch)" \
-    --prefix=$prefix
-make
-make install
+    mkdir -p $src_dir
+    cd $src_dir
+    tar xzf $distfiles/$name-*.tar.*
 
-cd $wd
-echo "!!!! $name build !!!!"
+    export CFLAGS="$CFLAGS -fPIC"
+    export CXXFLAGS="$CXXFLAGS -fPIC"
 
-rm -rf $temp_dir || true
+    cd $name-*
+    ./configure \
+        --build="$(arch)" \
+        --prefix=$prefix
 
-} 2>&1 | tee $prefix/log.$name.txt
+    make -j$num_proc
+    make install
+
+    cd "$wd"
+
+    mk-setenv.py
+
+    echo "!!!! $name build !!!!"
+
+    rm -rf "$temp_dir" || true
+
+} } 2>&1 | tee $prefix/log.$name.txt

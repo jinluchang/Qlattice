@@ -3,9 +3,11 @@
 import os
 
 def organize_colon_list(str_colon_separated_list):
-    if str_colon_separated_list.endswith(':'):
-        str_colon_separated_list = str_colon_separated_list[:-1]
     l = str_colon_separated_list.split(':')
+    if not l:
+        return []
+    elif l[-1] == "":
+        l.pop()
     l_new = []
     for v in l:
         if v not in l_new:
@@ -14,13 +16,17 @@ def organize_colon_list(str_colon_separated_list):
 
 def set_env(env):
     val = os.getenv(env)
+    if val is None:
+        return None
     val = organize_colon_list(val)
     return f"export {env}='{val}'"
 
 def set_env_list(env_list):
     l = []
     for env in env_list:
-        l.append(set_env(env))
+        v = set_env(env)
+        if v is not None:
+            l.append(v)
     return "\n".join(l)
 
 all_env_list = [

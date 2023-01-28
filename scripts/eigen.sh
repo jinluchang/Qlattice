@@ -1,34 +1,27 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
-
 name=eigen
 
-{
+source qcore/set-prefix.sh $name
 
-echo "!!!! build $name !!!!"
+{ time {
 
-rm -rf $src_dir
-mkdir -p $src_dir
-cd $src_dir
-tar xjf $distfiles/$name-*
+    echo "!!!! build $name !!!!"
 
-rm -rf $build_dir
-mkdir -p $build_dir
-cd $build_dir
+    source qcore/conf.sh ..
 
-# cmake \
-#  -DCMAKE_INSTALL_PREFIX=$prefix \
-#  $src_dir/$name-*
-# make -j$num_proc
-# make install
+    mkdir -p "$src_dir"
+    cd "$src_dir"
+    tar xjf "$distfiles/$name"-*
 
-rsync -av --delete $src_dir/$name-*/{Eigen,signature_of_eigen3_matrix_library,unsupported} $prefix/include/
+    rsync -av --delete "$src_dir/$name"-*/{Eigen,signature_of_eigen3_matrix_library,unsupported} "$prefix"/include/
 
-cd $wd
+    cd "$wd"
 
-echo "!!!! $name build !!!!"
+    mk-setenv.py
 
-rm -rf $temp_dir || true
+    echo "!!!! $name build !!!!"
 
-} 2>&1 | tee $prefix/log.$name.txt
+    rm -rf "$temp_dir" || true
+
+} } 2>&1 | tee "$prefix/log.$name.txt"

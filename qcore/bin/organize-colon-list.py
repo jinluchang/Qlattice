@@ -3,9 +3,11 @@
 import sys
 
 def organize_colon_list(str_colon_separated_list):
-    if str_colon_separated_list.endswith(':'):
-        str_colon_separated_list = str_colon_separated_list[:-1]
     l = str_colon_separated_list.split(':')
+    if not l:
+        return []
+    elif l[-1] == "":
+        l.pop()
     l_new = []
     for v in l:
         if v not in l_new:

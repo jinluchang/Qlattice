@@ -1,26 +1,33 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
-
 name=clean-prefix
-echo "!!!! build $name !!!!"
 
-if [ -e "$prefix" ] ; then
-    echo "$prefix already exist, continue to build will erase all its contents."
-    echo "Use ./scripts/qlat.sh to build Qlat only."
-    echo "Ctrl-C to stop."
-    for i in {10..0} ; do
-        echo -n "$i "
-        sleep 1;
-    done
-    echo
-    prefix_tmp=$(mktemp -d $prefix.tmp.XXXXX)
-    mv $prefix $prefix_tmp
-    rm -rf $prefix_tmp || true
-fi
+source qcore/set-prefix.sh
 
-mkdir -p $prefix || true
+{ time {
 
-echo "!!!! $name build !!!!"
+    echo "!!!! build $name !!!!"
 
-rm -rf $temp_dir || true
+    source qcore/conf.sh
+
+    rmdir "$prefix" || true
+
+    if [ -e "$prefix" ] ; then
+        echo "$prefix already exist, continue to build will erase all its contents."
+        echo "Use ./scripts/qlat.sh to build Qlat only."
+        echo "Ctrl-C to stop."
+        for i in {10..0} ; do
+            echo -n "$i "
+            sleep 1;
+        done
+        echo
+        prefix_tmp=$(mktemp -d $prefix.tmp.XXXXX)
+        mv "$prefix" "$prefix_tmp"
+        rm -rf "$prefix_tmp" || true
+    fi
+
+    mkdir -p "$prefix"
+
+    echo "!!!! $name build !!!!"
+
+} }

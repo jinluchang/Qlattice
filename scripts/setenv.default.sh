@@ -1,29 +1,15 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
+name=setenv.default.sh
 
-name=setenv
+source qcore/set-prefix.sh
 
-mkdir -p "$prefix"
+{ time {
 
-{
+    echo "!!!! build $name !!!!"
 
-echo "!!!! build $name !!!!"
+    qcore/bin/mk-setenv-dir.py
 
-cat - scripts/res/setenv.sh >"$prefix/setenv.sh" << EOF
-echo "Sourcing '$prefix/setenv.sh'"
-export prefix="$prefix"
-if [ -z "\$num_proc" ] ; then
-    num_proc=2
-fi
-EOF
+    echo "!!!! $name build !!!!"
 
-./scripts/setup-scripts.sh
-
-. "$prefix/setenv.sh" >"$prefix/log.setenv.txt" 2>&1
-
-echo "!!!! $name build !!!!"
-
-rm -rf $temp_dir || true
-
-} 2>&1 | tee $prefix/log.$name-build.txt
+} } 2>&1 | tee $prefix/log.$name.txt

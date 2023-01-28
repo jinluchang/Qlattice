@@ -1,14 +1,16 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
+./scripts/update-sources.sh
 
 name=dist-update-hash
 
-{
+source qcore/set-prefix.sh $name
 
-    ./scripts/update-sources.sh
+{ time {
 
-    (
+    echo "!!!! build $name !!!!"
+
+    source qcore/conf.sh
 
     distfiles="$wd/distfiles"
 
@@ -32,6 +34,5 @@ name=dist-update-hash
 
     cat sha256sums.txt
 
-)
+} } 2>&1 | tee $prefix/log.$name.txt
 
-} 2>&1 | tee $prefix/log.$name.txt
