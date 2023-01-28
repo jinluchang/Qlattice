@@ -46,6 +46,30 @@ else
     git clone https://github.com/jinluchang/gpt.git
 fi
 
+if [ -d Grid-paboyle ] ; then
+    ( cd Grid-paboyle ; git pull )
+else
+    git clone https://github.com/paboyle/Grid.git Grid-paboyle
+fi
+
+if [ -e Grid-paboyle/configure ] ; then
+    echo "Grid bootstrapped."
+else
+    ( cd Grid-paboyle ; git clean -f ; ./bootstrap.sh )
+fi
+
+if [ -d Hadrons ] ; then
+    ( cd Hadrons ; git pull )
+else
+    git clone https://github.com/aportelli/Hadrons.git Hadrons
+fi
+
+if [ -e Hadrons/configure ] ; then
+    echo "Hadrons bootstrapped."
+else
+    ( cd Hadrons ; git clean -f ; ./bootstrap.sh )
+fi
+
 if [ -d Grid-tblum ] ; then
     ( cd Grid-tblum ; git pull )
 else
