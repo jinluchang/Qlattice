@@ -46,7 +46,7 @@ cp_pyx = custom_target(f'cp_pyx',
   )
 
 cplib = py3.extension_module('cp',
-  files('cp.pyx'),
+  cp_pyx,
   dependencies: deps,
   include_directories: incdir,
   install: true,

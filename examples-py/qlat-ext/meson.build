@@ -49,6 +49,12 @@ numpy = declare_dependency(
   dependencies: [ py3.dependency(), ],
   )
 
+if cpp.check_header('Eigen/Eigen')
+  eigen = dependency('', required: false)
+else
+  eigen = dependency('eigen3').as_system()
+endif
+
 qlat_include = run_command(py3.path(), '-c', 'import qlat as q ; print("\\n".join(q.get_include_list()))',
   env: environment({'q_verbose': '-1'}),
   check: true).stdout().strip().split('\n')
@@ -77,23 +83,17 @@ qlat = declare_dependency(
     py3.dependency().as_system(),
     cpp.find_library('qlat', dirs: qlat_lib),
     cpp.find_library('qlat-utils', dirs: qlat_lib),
-    numpy, eigen, omp, fftw_all, zlib, math, ],
+    numpy, eigen, omp, fftw_all, mpic, zlib, math, ],
   )
 
 deps = [ qlat, ]
 
-if not cpp.check_header('Eigen/Eigen')
-  eigen = dependency('eigen3').as_system()
-  deps += [ eigen, ]
-endif
-
 envdata = environment(
   [
-    'PYTHONPATH=' + run_command('bash', '-c', 'echo "$PYTHONPATH"', check: true).stdout().strip(),
     'q_verbose=2',
     'OMP_NUM_THREADS=2',
     ],
-  method: 'prepend')
+  method: 'set')
 
 envdata.prepend('PYTHONPATH', meson.current_build_dir())
 
