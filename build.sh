@@ -27,9 +27,8 @@ fi
 
 scripts/clean-prefix.sh
 
-. scripts/res/conf.sh
+source qcore/set-prefix.sh
 
-mkdir -p "$prefix"
 touch "$prefix"/build-target="$target".txt
 
 scripts/dist-update-hash.sh

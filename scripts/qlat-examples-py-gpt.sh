@@ -1,34 +1,29 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
+name=qlat-examples-py-gpt
 
-name=qlat-examples-py
+source qcore/set-prefix.sh $name
 
-{
-
-    time {
+{ time {
 
     echo "!!!! build $name !!!!"
 
-    build="$prefix/qlat-examples"
-    mkdir -p "$build"
+    source qcore/conf.sh ..
 
-    rsync -a --delete "$wd"/examples-py "$build"/
+    rsync -a --delete "$wd"/examples-py "$prefix"/
 
-    time q_verbose=1 make -C "$build"/examples-py run-gpt || true
+    time q_verbose=1 make -C "$prefix"/examples-py run-gpt || true
 
     cd "$wd"
 
     for log in examples-py/*.log ; do
-        echo diff "$build/$log" "$log"
-        diff "$build/$log" "$log" || cat "$build/$log".full || true
-        cp -rpv "$build/$log" "$log" || true
+        echo diff "$prefix/$log" "$log"
+        diff "$prefix/$log" "$log" || cat "$prefix/$log".full || true
+        cp -rpv "$prefix/$log" "$log" || true
     done
 
     echo "!!!! $name build !!!!"
 
-    rm -rf $temp_dir || true
+    rm -rf "$temp_dir" || true
 
-}
-
-} 2>&1 | tee $prefix/log.$name.txt
+} } 2>&1 | tee $prefix/log.$name.txt

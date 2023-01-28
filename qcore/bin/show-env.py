@@ -70,5 +70,7 @@ all_env_var_list = [
         ]
 
 if __name__ == "__main__":
+    print("---------------------------------------------------------------------")
     print(show_env_var_list(all_env_var_list))
     print(show_env_list(all_env_list))
+    print("---------------------------------------------------------------------")

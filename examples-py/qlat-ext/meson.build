@@ -14,7 +14,6 @@ add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
 
 cpp = meson.get_compiler('cpp')
 
-fs = import('fs')
 py_mod = import('python')
 py3 = py_mod.find_installation('python3')
 message(py3.path())
@@ -50,11 +49,27 @@ numpy = declare_dependency(
   dependencies: [ py3.dependency(), ],
   )
 
-qlat_include = run_command(py3.path(), '-c', 'import qlat as q ; print("\\n".join(q.get_include_list()))', env: environment({'q_verbose': '-1'}), check: true).stdout().strip().split('\n')
+qlat_include = run_command(py3.path(), '-c', 'import qlat as q ; print("\\n".join(q.get_include_list()))',
+  env: environment({'q_verbose': '-1'}),
+  check: true).stdout().strip().split('\n')
 message('qlat include', qlat_include)
 
-qlat_lib = run_command(py3.path(), '-c', 'import qlat as q ; print("\\n".join(q.get_lib_list()))', env: environment({'q_verbose': '-1'}), check: true).stdout().strip().split('\n')
+qlat_lib = run_command(py3.path(), '-c', 'import qlat as q ; print("\\n".join(q.get_lib_list()))',
+  env: environment({'q_verbose': '-1'}),
+  check: true).stdout().strip().split('\n')
 message('qlat lib', qlat_lib)
+
+qlat_pxd = run_command(py3.path(), '-c', 'import qlat as q ; print("\\n".join(q.get_pxd_list()))',
+  env: environment({'q_verbose': '-1'}),
+  check: true).stdout().strip().split('\n')
+message('qlat pxd', qlat_pxd)
+qlat_pxd = files(qlat_pxd)
+
+qlat_header = run_command(py3.path(), '-c', 'import qlat as q ; print("\\n".join(q.get_header_list()))',
+  env: environment({'q_verbose': '-1'}),
+  check: true).stdout().strip().split('\n')
+message('qlat header', qlat_header)
+qlat_header = files(qlat_header)
 
 qlat = declare_dependency(
   include_directories: include_directories(qlat_include),
@@ -62,7 +77,7 @@ qlat = declare_dependency(
     py3.dependency().as_system(),
     cpp.find_library('qlat', dirs: qlat_lib),
     cpp.find_library('qlat-utils', dirs: qlat_lib),
-    numpy, omp, fftw_all, mpic, zlib, math, ],
+    numpy, eigen, omp, fftw_all, zlib, math, ],
   )
 
 deps = [ qlat, ]
@@ -85,9 +100,14 @@ envdata.prepend('PYTHONPATH', meson.current_build_dir())
 subdir('include')
 subdir('qlat_ext')
 
-run_py = fs.copyfile(files('run.py'))
+run_py = custom_target('run.py',
+  output: 'run.py',
+  input: files('run.py'),
+  command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
+  install: false,
+  )
 
 run_target('run',
-  command: [ 'bash', '-c', 'cd "$MESON_SUBDIR" ; ./run.py', ],
-  depends: copy + [ cplib, run_py, ],
+  command: [ 'bash', '-c', 'cd "$MESON_BUILD_ROOT" ; ./run.py', ],
+  depends: [ cplib, run_py, ],
   env: envdata)

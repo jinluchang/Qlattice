@@ -10,6 +10,8 @@ set -e
 
 ./scripts/setenv.default.sh
 
+./scripts/qcore.sh
+
 ./scripts/ninja-script.sh
 
 ./scripts/qlat.sh
