@@ -38,6 +38,12 @@ l.append("#!/bin/bash")
 
 l.append("")
 
+l.append("func() {")
+l.append("")
+l.append("local setenv_prefix")
+l.append("local v")
+l.append("")
+
 l.append(f'setenv_prefix="{prefix}"')
 
 if l_init:
@@ -81,10 +87,14 @@ if os.path.isdir(lib_python_dir):
     l.append(set_env("PYTHONPATH", "lib/python3"))
     l.append("")
 
-l.append(f'unset setenv_prefix')
+l.append("")
+l.append("}")
+l.append("")
+l.append("func")
+l.append("")
 
 organize_env_path = f"""
-if which python3 >/dev/null 2>&1 && which organize-env-path.py >/dev/null 2>&1 ; then
+if python-check-version.py >/dev/null 2>&1 && which organize-env-path.py >/dev/null 2>&1 ; then
     source <(organize-env-path.py)
 fi
 """

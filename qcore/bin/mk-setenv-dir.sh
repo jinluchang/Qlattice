@@ -20,6 +20,11 @@ echo "Python mk-setenv-dir.py scripts failed. Fallback to bash version."
 cat >"$prefix"/setenv-new.sh <<EOF
 #!/bin/bash
 
+func() {
+
+local setenv_prefix
+local v
+
 setenv_prefix="$prefix"
 
 EOF
@@ -30,21 +35,23 @@ if [ "--keep" = "$1" ] ; then
     echo "# ------------------------------------------------" >>"$prefix"/setenv-new.sh
 fi
 
-cat >"$prefix"/setenv-new.sh <<EOF
+cat >>"$prefix"/setenv-new.sh <<EOF
 
+echo "Loading: \$setenv_prefix"
 for v in "\$setenv_prefix"/*/setenv.sh ; do
     if [ -f "\$v" ] ; then
         echo "Loading:" "\$v"
         source "\$v"
-        echo "Loaded: " "\$v"
     fi
 done
-unset v
+echo "Loaded:  \$setenv_prefix"
 
-unset setenv_prefix
+}
 
-if which organize-env-path.sh >/dev/null 2>&1 ; then
-    source <(organize-env-path.sh)
+func
+
+if python-check-version.py >/dev/null 2>&1 && which organize-env-path.py >/dev/null 2>&1 ; then
+    source <(organize-env-path.py)
 fi
 EOF
 

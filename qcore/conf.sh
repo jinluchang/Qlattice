@@ -17,6 +17,10 @@ if ! [ -f "$wd/qcore/conf.sh" -a -f "$wd/qcore/set-prefix.sh" ] ; then
     return 1
 fi
 
+func() {
+
+local v
+
 for v in "$@" ; do
     if [ -f "$prefix/$v"/setenv.sh ] ; then
         echo "Loading:" "$prefix/$v"/setenv.sh
@@ -24,7 +28,10 @@ for v in "$@" ; do
         echo "Loaded: " "$prefix/$v"/setenv.sh
     fi
 done
-unset v
+
+}
+
+func
 
 if which python3 >/dev/null 2>&1 ; then
     qcore/bin/show-env.py
