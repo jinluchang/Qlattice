@@ -1,20 +1,18 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
+name=Grid-clehner
 
-name=Grid
+source qcore/set-prefix.sh $name
 
-{
-
-    time {
-
+{ time {
     echo "!!!! build $name !!!!"
+    source qcore/conf.sh ..
 
     mkdir -p "$prefix"/$name || true
 
-    rsync -av --delete $distfiles/$name-lehner/ "$prefix"/$name/
+    rsync -av --delete "$distfiles/$name/" "$prefix"/src/
 
-    cd "$prefix/$name"
+    cd "$prefix/src"
 
     INITDIR="$(pwd)"
     rm -rfv "${INITDIR}/Eigen/Eigen/unsupported"
@@ -22,7 +20,7 @@ name=Grid
     ln -vs "${INITDIR}/Eigen/Eigen" "${INITDIR}/Grid/Eigen"
     ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
 
-    export CXXFLAGS="$CXXFLAGS -fPIC"
+    export CXXFLAGS="$CXXFLAGS -fPIC -w -Wno-psabi"
 
     mkdir build
     cd build
@@ -33,18 +31,12 @@ name=Grid
         --enable-shm=shmget \
         --enable-shmpath=/dev/hugepages \
         --enable-gparity=no \
-        --with-lime="$prefix" \
-        --with-fftw="$prefix" \
         --prefix="$prefix"
 
     make -j$num_proc
     make install
 
-    cd $wd
+    mk-setenv.sh
     echo "!!!! $name build !!!!"
-
     rm -rf $temp_dir || true
-
-}
-
-} 2>&1 | tee $prefix/log.$name.txt
+} } 2>&1 | tee $prefix/log.$name.txt
