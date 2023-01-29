@@ -1,6 +1,6 @@
 #!/bin/bash
 
-name=gsl
+name=tmux
 
 source qcore/set-prefix.sh $name
 

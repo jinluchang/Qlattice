@@ -90,6 +90,12 @@ aget "https://prdownloads.sourceforge.net/tcl/tcl8.6.13-src.tar.gz"
 
 aget "https://prdownloads.sourceforge.net/tcl/tk8.6.13-src.tar.gz"
 
+aget "https://ftp.gnu.org/pub/gnu/ncurses/ncurses-6.4.tar.gz"
+
+aget "https://github.com/libevent/libevent/releases/download/release-2.1.12-stable/libevent-2.1.12-stable.tar.gz"
+
+aget "https://github.com/tmux/tmux/releases/download/3.3/tmux-3.3.tar.gz"
+
 (
 mkdir -p python-packages
 cd python-packages

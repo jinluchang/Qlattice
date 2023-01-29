@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+
+{
+
+./scripts/setenv.default.sh
+./scripts/qcore.sh
+
+./scripts/ncurses.sh
+./scripts/libevent.sh
+
+./scripts/tmux.sh
+
+} 2>&1 | tee $prefix/log.build.txt

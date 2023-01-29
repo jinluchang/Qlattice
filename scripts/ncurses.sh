@@ -1,6 +1,6 @@
 #!/bin/bash
 
-name=gsl
+name=ncurses
 
 source qcore/set-prefix.sh $name
 
@@ -18,7 +18,8 @@ source qcore/set-prefix.sh $name
     cd $build_dir
 
     $src_dir/$name-*/configure \
-        --prefix="$prefix"
+        --with-shared \
+        --prefix=$prefix
 
     make -j$num_proc
     make install
