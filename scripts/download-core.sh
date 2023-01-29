@@ -28,34 +28,34 @@ aget "http://www.fftw.org/fftw-3.3.10.tar.gz"
 
 dget "c-lime.tar.gz" "https://github.com/usqcd-software/c-lime/tarball/master"
 
-if [ -d Grid-lehner ] ; then
-    ( cd Grid-lehner ; git pull https://github.com/jinluchang/Grid.git )
+if [ -d Grid ] ; then
+    ( cd Grid ; git pull )
 else
-    git clone https://github.com/jinluchang/Grid.git Grid-lehner
+    git clone https://github.com/paboyle/Grid.git Grid
 fi
 
-if [ -e Grid-lehner/configure ] ; then
-    echo "Grid-lehner bootstrapped."
+if [ -e Grid/configure ] ; then
+    echo "Grid bootstrapped."
 else
-    ( cd Grid-lehner ; git clean -f ; ./bootstrap.sh ; ls -l Eigen )
+    ( cd Grid ; git clean -f ; ./bootstrap.sh ; ls -l Eigen )
+fi
+
+if [ -d Grid-clehner ] ; then
+    ( cd Grid-clehner ; git pull https://github.com/jinluchang/Grid.git )
+else
+    git clone https://github.com/jinluchang/Grid.git Grid-clehner
+fi
+
+if [ -e Grid-clehner/configure ] ; then
+    echo "Grid-clehner bootstrapped."
+else
+    ( cd Grid-clehner ; git clean -f ; ./bootstrap.sh ; ls -l Eigen )
 fi
 
 if [ -d gpt ] ; then
     ( cd gpt ; git pull https://github.com/jinluchang/gpt.git )
 else
     git clone https://github.com/jinluchang/gpt.git
-fi
-
-if [ -d Grid-paboyle ] ; then
-    ( cd Grid-paboyle ; git pull )
-else
-    git clone https://github.com/paboyle/Grid.git Grid-paboyle
-fi
-
-if [ -e Grid-paboyle/configure ] ; then
-    echo "Grid bootstrapped."
-else
-    ( cd Grid-paboyle ; git clean -f ; ./bootstrap.sh )
 fi
 
 if [ -d Hadrons ] ; then
@@ -79,7 +79,7 @@ fi
 if [ -e Grid-tblum/configure ] ; then
     echo "Grid-tblum bootstrapped."
 else
-    ( cd Grid-tblum ; git clean -f ; ./bootstrap.sh )
+    ( cd Grid-tblum ; git clean -f ; ./bootstrap.sh ; ls -l Eigen )
 fi
 
 if [ -d Hadrons-tblum ] ; then
