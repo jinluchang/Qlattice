@@ -31,7 +31,7 @@ source qcore/set-prefix.sh $name
         --enable-alloc-align=4k \
         --enable-comms=mpi-auto \
         --enable-gparity=no \
-        --prefix="$prefix/grid-paboyle"
+        --prefix="$prefix"
 
     make -j$num_proc
     make install
