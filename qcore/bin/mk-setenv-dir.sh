@@ -42,6 +42,7 @@ if ! [ "--nr" = "\$1" ] ; then
         if [ -f "\$v" ] ; then
             echo "Loading:" "\$v"
             source "\$v"
+            echo "Loaded: " "\$v"
         fi
     done
 fi
