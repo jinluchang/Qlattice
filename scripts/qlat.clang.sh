@@ -19,7 +19,7 @@ source qcore/set-prefix.sh $name
 
     cd "$build"
 
-    rm -rfv "$prefix"/lib/python3
+    rm -rfv "$prefix"/lib
 
     if [ -n "$QLAT_MPICXX" ] ; then
         export MPICXX="$QLAT_MPICXX"

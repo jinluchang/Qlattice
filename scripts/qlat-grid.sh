@@ -15,7 +15,7 @@ source qcore/set-prefix.sh $name
 
     cd "$build"
 
-    rm -rfv "$prefix"/lib/python3
+    rm -rfv "$prefix"/lib
 
     export CXX="$(grid-config --cxx)"
     # export CXX_LD="$(grid-config --cxxld)"
