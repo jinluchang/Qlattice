@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
+source qcore/conf.sh
 
 mkdir -p "$distfiles"
 
@@ -117,28 +117,28 @@ aget "https://files.pythonhosted.org/packages/a8/e7/1440b0d19054a5616e9e5beeaa22
 aget "https://files.pythonhosted.org/packages/4e/be/8139f127b4db2f79c8b117c80af56a3078cc4824b5b94250c7f81a70e03b/wheel-0.37.0.tar.gz"
 )
 
-if [ -d Grid-paboyle ] ; then
-    ( cd Grid-paboyle ; git pull )
+if [ -d Grid ] ; then
+    ( cd Grid ; git pull )
 else
-    git clone https://github.com/paboyle/Grid.git Grid-paboyle
+    git clone https://github.com/paboyle/Grid.git Grid
 fi
 
-if [ -e Grid-paboyle/configure ] ; then
+if [ -e Grid/configure ] ; then
     echo "Grid bootstrapped."
 else
-    ( cd Grid-paboyle ; git clean -f ; ./bootstrap.sh )
+    ( cd Grid ; git clean -f ; ./bootstrap.sh ; ls -l Eigen )
 fi
 
-if [ -d Grid-lehner ] ; then
-    ( cd Grid-lehner ; git pull https://github.com/jinluchang/Grid.git )
+if [ -d Grid-clehner ] ; then
+    ( cd Grid-clehner ; git pull https://github.com/jinluchang/Grid.git )
 else
-    git clone https://github.com/jinluchang/Grid.git Grid-lehner
+    git clone https://github.com/jinluchang/Grid.git Grid-clehner
 fi
 
-if [ -e Grid-lehner/configure ] ; then
-    echo "Grid-lehner bootstrapped."
+if [ -e Grid-clehner/configure ] ; then
+    echo "Grid-clehner bootstrapped."
 else
-    ( cd Grid-lehner ; git clean -f ; ./bootstrap.sh ; ls -l Eigen )
+    ( cd Grid-clehner ; git clean -f ; ./bootstrap.sh ; ls -l Eigen )
 fi
 
 if [ -d gpt ] ; then
@@ -168,7 +168,7 @@ fi
 if [ -e Grid-tblum/configure ] ; then
     echo "Grid-tblum bootstrapped."
 else
-    ( cd Grid-tblum ; git clean -f ; ./bootstrap.sh )
+    ( cd Grid-tblum ; git clean -f ; ./bootstrap.sh ; ls -l Eigen )
 fi
 
 if [ -d Hadrons-tblum ] ; then

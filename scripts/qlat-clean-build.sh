@@ -1,17 +1,21 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
-
 name=qlat-clean-build
 
-{
+source qcore/set-prefix.sh
 
-echo "!!!! build $name !!!!"
+{ time {
 
-rm -rfv "$prefix/build-qlat"*
+    echo "!!!! build $name !!!!"
 
-echo "!!!! $name build !!!!"
+    source qcore/conf.sh
 
-rm -rf $temp_dir || true
+    rm -rfv "$prefix/qlat-utils/build"*
+    rm -rfv "$prefix/qlat/build"*
+    rm -rfv "$prefix/qlat-grid/build"*
 
-} 2>&1 | tee $prefix/log.$name.txt
+    echo "!!!! $name build !!!!"
+
+    rm -rf "$temp_dir" || true
+
+} } 2>&1 | tee $prefix/log.$name.txt

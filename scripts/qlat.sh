@@ -12,7 +12,7 @@ source qcore/set-prefix.sh $name
 
     source qcore/conf.sh ..
 
-    build="$prefix/build-qlat"
+    build="$prefix/build"
     mkdir -p "$build"
 
     cd "$build"

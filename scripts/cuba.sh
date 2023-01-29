@@ -22,7 +22,7 @@ source qcore/set-prefix.sh $name
         --build="$(arch)" \
         --prefix=$prefix
 
-    make -j$num_proc
+    make # do not support parallel build
     make install
 
     cd "$wd"

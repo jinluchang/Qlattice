@@ -31,7 +31,7 @@ done
 
 }
 
-func
+func "$@"
 
 if which python3 >/dev/null 2>&1 ; then
     qcore/bin/show-env.py

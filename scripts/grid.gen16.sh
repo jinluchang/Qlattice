@@ -2,7 +2,7 @@
 
 . scripts/res/conf.sh
 
-name=Grid
+name=Grid-paboyle
 
 {
 
@@ -12,7 +12,7 @@ name=Grid
 
     mkdir -p "$prefix"/$name || true
 
-    rsync -av --delete $distfiles/$name-lehner/ "$prefix"/$name/
+    rsync -av --delete $distfiles/$name/ "$prefix"/$name/
 
     cd "$prefix/$name"
 
@@ -34,7 +34,7 @@ name=Grid
         --enable-gparity=no \
         --with-lime="$prefix" \
         --with-fftw="$prefix" \
-        --prefix="$prefix"
+        --prefix="$prefix/grid-paboyle"
 
     make -j$num_proc
     make install
