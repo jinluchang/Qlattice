@@ -183,4 +183,4 @@ else
     ( cd Hadrons-tblum ; git clean -f ; ./bootstrap.sh )
 fi
 
-cd $wd
+cd "$wd"

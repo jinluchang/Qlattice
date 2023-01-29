@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
+source qcore/conf.sh
 
 mkdir -p "$distfiles"
 
