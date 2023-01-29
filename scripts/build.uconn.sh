@@ -37,9 +37,12 @@ set -e
 
 ./scripts/c-lime.sh
 ./scripts/hdf5.sh
-./scripts/grid.avx512.sh
-./scripts/gpt.sh
+./scripts/gmp.sh
+./scripts/mpfr.sh
+./scripts/grid-clehner.avx512.sh
 ./scripts/qlat-grid.sh
+
+./scripts/gpt.sh
 
 ./scripts/qlat-examples-py-gpt.sh
 
