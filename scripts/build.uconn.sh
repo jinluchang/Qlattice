@@ -27,8 +27,8 @@ set -e
 ./scripts/python-meson-py.sh
 ./scripts/python-packages.sh
 
-./scripts/fftw_mpi.sh
-./scripts/fftwf_mpi.sh
+./scripts/fftw.sh
+./scripts/fftwf.sh
 
 ./scripts/qlat.sh
 
