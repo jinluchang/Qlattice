@@ -205,6 +205,7 @@ jobs:
         export num_proc=2
         USE_COMPILER=clang ./scripts/hadrons-tblum.sh
     - name: Check error for Build more packages
+      run: |
         [ -e $HOME/qlat-build/default/Grid/lib/libGrid.a ]
         [ -e $HOME/qlat-build/default/Grid/bin/grid-config ]
         [ -e $HOME/qlat-build/default/Grid/bin/Mobius2p1fEOFA ]
@@ -424,6 +425,7 @@ jobs:
         export num_proc=3
         USE_COMPILER=clang ./scripts/hadrons-tblum.sh
     - name: Check error for Build more packages
+      run: |
         [ -e $HOME/qlat-build/default/Grid/lib/libGrid.a ]
         [ -e $HOME/qlat-build/default/Grid/bin/grid-config ]
         [ -e $HOME/qlat-build/default/Grid/bin/Mobius2p1fEOFA ]
