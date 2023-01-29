@@ -1,0 +1,17 @@
+#!/bin/bash
+
+qecho() {
+    if [ "-v" = "$1" ] ; then
+        echo "PWD: '$PWD'"
+        shift
+    fi
+    echo -n "'$1'"
+    shift
+    local i=
+    for i in "$@" ; do
+        echo -n " '$i'"
+    done
+    echo
+}
+
+qecho "$@"

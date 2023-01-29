@@ -8,7 +8,7 @@ source qcore/set-prefix.sh $name
     echo "!!!! build $name !!!!"
     source qcore/conf.sh ..
 
-    rsync -a --delete "$wd"/examples-py "$prefix"/
+    debug rsync -a --delete "$wd"/examples-py "$prefix"/
 
     if [ -n "$QLAT_MPICXX" ] ; then
         export MPICXX="$QLAT_MPICXX"

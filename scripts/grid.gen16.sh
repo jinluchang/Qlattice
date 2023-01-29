@@ -10,7 +10,7 @@ source qcore/set-prefix.sh $name
 
     mkdir -p "$prefix"/src || true
 
-    rsync -av --delete $distfiles/$name/ "$prefix"/src
+    debug rsync -a --delete $distfiles/$name/ "$prefix"/src
 
     cd "$prefix/src"
 
