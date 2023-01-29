@@ -17,11 +17,11 @@ source qcore/set-prefix.sh $name
     mkdir -p $build_dir || true
     cd $build_dir
 
-    if [ -f "$prefix/lib64/libffi.a" ] ; then
-        export LDFLAGS="-L$prefix/lib64"
+    if [ -f "$prefix/../libffi/lib64/libffi.a" ] ; then
+        export LDFLAGS="-L$prefix/../libffi/lib64"
         export LIBS="-lffi"
-    elif [ -f "$prefix/lib/libffi.a" ] ; then
-        export LDFLAGS="-L$prefix/lib"
+    elif [ -f "$prefix/../libffi/lib/libffi.a" ] ; then
+        export LDFLAGS="-L$prefix/../libffi/lib"
         export LIBS="-lffi"
     fi
 
