@@ -95,7 +95,7 @@ l.append("")
 
 organize_env_path = f"""
 if python-check-version.py >/dev/null 2>&1 && which organize-env-path.py >/dev/null 2>&1 ; then
-    source <(organize-env-path.py)
+    eval "$(organize-env-path.py)"
 fi
 """
 
