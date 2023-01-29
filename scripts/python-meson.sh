@@ -16,6 +16,7 @@ source qcore/set-prefix.sh $name
     time pip3 install $opts meson
     time pip3 install $opts ninja
 
+    mk-setenv.sh
     echo "!!!! $name build !!!!"
     rm -rf $temp_dir || true
 } } 2>&1 | tee $prefix/log.$name.txt

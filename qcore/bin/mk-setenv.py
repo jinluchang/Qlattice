@@ -90,14 +90,6 @@ for lib_python_dir in lib_python_dir_list:
         l.append(set_env("PYTHONPATH", lib_python_dir.removeprefix(prefix + "/")))
         l.append("")
 
-if os.path.isdir(lib_python_dist_dir):
-    l.append(set_env("PYTHONPATH", "lib/python3/dist-packages"))
-    l.append("")
-
-if os.path.isdir(lib_python_site_dir):
-    l.append(set_env("PYTHONPATH", "lib/python3/site-packages"))
-    l.append("")
-
 l.append("}")
 l.append("")
 l.append("func")

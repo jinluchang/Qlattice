@@ -23,6 +23,7 @@ source qcore/set-prefix.sh $name
     time pip3 install $opts scikit-build
     time pip3 install $opts meson-python
 
+    mk-setenv.sh
     echo "!!!! $name build !!!!"
     rm -rf $temp_dir || true
 } } 2>&1 | tee $prefix/log.$name.txt
