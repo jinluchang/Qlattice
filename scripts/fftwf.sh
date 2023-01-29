@@ -17,7 +17,7 @@ source qcore/set-prefix.sh "$name"
     cd $src_dir
     tar xzf $distfiles/$pkgname-*.tar.gz
 
-    cd $name-*
+    cd $pkgname-*
 
     export CFLAGS="$CFLAGS -fPIC"
     export CXXFLAGS="$CXXFLAGS -fPIC"
@@ -40,4 +40,4 @@ source qcore/set-prefix.sh "$name"
 
     rm -rf $temp_dir || true
 
-} } 2>&1 | tee "$prefix/log.$name-float.txt"
+} } 2>&1 | tee "$prefix/log.$name.txt"
