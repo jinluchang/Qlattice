@@ -192,28 +192,28 @@ jobs:
       run: |
         export num_proc=2
         USE_COMPILER=clang ./scripts/grid.avx2.sh
-        [ -e $HOME/qlat-build/default/grid/lib/libGrid.a ]
-        [ -e $HOME/qlat-build/default/grid/bin/grid-config ]
-        [ -e $HOME/qlat-build/default/grid/bin/Mobius2p1fEOFA ]
-        [ -e $HOME/qlat-build/default/grid/bin/Benchmark_dwf ]
-        [ -e $HOME/qlat-build/default/grid/bin/Benchmark_dwf_fp32 ]
+        [ -e $HOME/qlat-build/default/Grid/lib/libGrid.a ]
+        [ -e $HOME/qlat-build/default/Grid/bin/grid-config ]
+        [ -e $HOME/qlat-build/default/Grid/bin/Mobius2p1fEOFA ]
+        [ -e $HOME/qlat-build/default/Grid/bin/Benchmark_dwf ]
+        [ -e $HOME/qlat-build/default/Grid/bin/Benchmark_dwf_fp32 ]
     - name: Build more packages Hadrons
       run: |
         export num_proc=2
         USE_COMPILER=clang ./scripts/hadrons.sh
-        [ -e $HOME/qlat-build/default/hadrons/lib/libHadrons.a ]
-        [ -e $HOME/qlat-build/default/hadrons/bin/hadrons-config ]
-        [ -e $HOME/qlat-build/default/hadrons/bin/HadronsXmlRun ]
-        [ -e $HOME/qlat-build/default/hadrons/bin/HadronsContractor ]
+        [ -e $HOME/qlat-build/default/Hadrons/lib/libHadrons.a ]
+        [ -e $HOME/qlat-build/default/Hadrons/bin/hadrons-config ]
+        [ -e $HOME/qlat-build/default/Hadrons/bin/HadronsXmlRun ]
+        [ -e $HOME/qlat-build/default/Hadrons/bin/HadronsContractor ]
     - name: Build more packages Grid-tblum
       run: |
         export num_proc=2
         USE_COMPILER=clang ./scripts/grid-tblum.avx2.sh
-        [ -e $HOME/qlat-build/default/grid-tblum/lib/libGrid.a ]
-        [ -e $HOME/qlat-build/default/grid-tblum/bin/grid-config ]
-        [ -e $HOME/qlat-build/default/grid-tblum/bin/Mobius2p1fEOFA ]
-        [ -e $HOME/qlat-build/default/grid-tblum/bin/Benchmark_dwf ]
-        [ -e $HOME/qlat-build/default/grid-tblum/bin/Benchmark_dwf_fp32 ]
+        [ -e $HOME/qlat-build/default/Grid-tblum/lib/libGrid.a ]
+        [ -e $HOME/qlat-build/default/Grid-tblum/bin/grid-config ]
+        [ -e $HOME/qlat-build/default/Grid-tblum/bin/Mobius2p1fEOFA ]
+        [ -e $HOME/qlat-build/default/Grid-tblum/bin/Benchmark_dwf ]
+        [ -e $HOME/qlat-build/default/Grid-tblum/bin/Benchmark_dwf_fp32 ]
     - name: Build more packages Hadrons-tblum
       run: |
         export num_proc=2
@@ -406,28 +406,28 @@ jobs:
       run: |
         export num_proc=2
         USE_COMPILER=clang ./scripts/grid.gen16.sh
-        [ -e $HOME/qlat-build/default/grid/lib/libGrid.a ]
-        [ -e $HOME/qlat-build/default/grid/bin/grid-config ]
-        [ -e $HOME/qlat-build/default/grid/bin/Mobius2p1fEOFA ]
-        [ -e $HOME/qlat-build/default/grid/bin/Benchmark_dwf ]
-        [ -e $HOME/qlat-build/default/grid/bin/Benchmark_dwf_fp32 ]
+        [ -e $HOME/qlat-build/default/Grid/lib/libGrid.a ]
+        [ -e $HOME/qlat-build/default/Grid/bin/grid-config ]
+        [ -e $HOME/qlat-build/default/Grid/bin/Mobius2p1fEOFA ]
+        [ -e $HOME/qlat-build/default/Grid/bin/Benchmark_dwf ]
+        [ -e $HOME/qlat-build/default/Grid/bin/Benchmark_dwf_fp32 ]
     - name: Build more packages Hadrons
       run: |
         export num_proc=2
         USE_COMPILER=clang ./scripts/hadrons.sh
-        [ -e $HOME/qlat-build/default/hadrons/lib/libHadrons.a ]
-        [ -e $HOME/qlat-build/default/hadrons/bin/hadrons-config ]
-        [ -e $HOME/qlat-build/default/hadrons/bin/HadronsXmlRun ]
-        [ -e $HOME/qlat-build/default/hadrons/bin/HadronsContractor ]
+        [ -e $HOME/qlat-build/default/Hadrons/lib/libHadrons.a ]
+        [ -e $HOME/qlat-build/default/Hadrons/bin/hadrons-config ]
+        [ -e $HOME/qlat-build/default/Hadrons/bin/HadronsXmlRun ]
+        [ -e $HOME/qlat-build/default/Hadrons/bin/HadronsContractor ]
     - name: Build more packages Grid-tblum
       run: |
         export num_proc=2
         USE_COMPILER=clang ./scripts/grid-tblum.gen16.sh
-        [ -e $HOME/qlat-build/default/grid-tblum/lib/libGrid.a ]
-        [ -e $HOME/qlat-build/default/grid-tblum/bin/grid-config ]
-        [ -e $HOME/qlat-build/default/grid-tblum/bin/Mobius2p1fEOFA ]
-        [ -e $HOME/qlat-build/default/grid-tblum/bin/Benchmark_dwf ]
-        [ -e $HOME/qlat-build/default/grid-tblum/bin/Benchmark_dwf_fp32 ]
+        [ -e $HOME/qlat-build/default/Grid-tblum/lib/libGrid.a ]
+        [ -e $HOME/qlat-build/default/Grid-tblum/bin/grid-config ]
+        [ -e $HOME/qlat-build/default/Grid-tblum/bin/Mobius2p1fEOFA ]
+        [ -e $HOME/qlat-build/default/Grid-tblum/bin/Benchmark_dwf ]
+        [ -e $HOME/qlat-build/default/Grid-tblum/bin/Benchmark_dwf_fp32 ]
     - name: Build more packages Hadrons-tblum
       run: |
         export num_proc=2
