@@ -1,20 +1,20 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
+name=Grid-clehner
 
-name=Grid
+source qcore/set-prefix.sh $name
 
-{
-
-    time {
+{ time {
 
     echo "!!!! build $name !!!!"
 
-    mkdir -p "$prefix"/$name || true
+    source qcore/conf.sh ..
 
-    rsync -av --delete $distfiles/$name-lehner/ "$prefix"/$name/
+    mkdir -p "$prefix"/src || true
 
-    cd "$prefix/$name"
+    rsync -av --delete "$distfiles/$name/" "$prefix"/src/
+
+    cd "$prefix/src"
 
     INITDIR="$(pwd)"
     rm -rfv "${INITDIR}/Eigen/Eigen/unsupported"
@@ -31,18 +31,20 @@ name=Grid
         --enable-alloc-align=4k \
         --enable-comms=mpi-auto \
         --enable-gparity=no \
-        --with-lime="$prefix" \
-        --with-fftw="$prefix" \
+        --with-lime \
+        --with-fftw \
+        --with-hdf5 \
         --prefix="$prefix"
 
     make -j$num_proc
     make install
 
-    cd $wd
+    cd "$wd"
+
+    mk-setenv.sh
+
     echo "!!!! $name build !!!!"
 
-    rm -rf $temp_dir || true
+    rm -rf "$temp_dir" || true
 
-}
-
-} 2>&1 | tee $prefix/log.$name.txt
+} } 2>&1 | tee "$prefix/log.$name.txt"

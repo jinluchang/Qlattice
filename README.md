@@ -6,7 +6,7 @@ A simple lattice QCD library.
 
 ### Install on Ubuntu
 
-`$ sudo apt-get install -y cython3 patchelf ninja-build python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev libhdf5-mpi-dev libhdf5-dev`
+`$ sudo apt-get install -y cython3 patchelf ninja-build python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev libhdf5-mpi-dev libhdf5-dev hdf5-tools`
 
 `$ pip3 install --user meson`
 

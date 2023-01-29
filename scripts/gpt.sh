@@ -1,20 +1,18 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
-
 name=gpt
 
-{
+source qcore/set-prefix.sh $name
 
-    time {
+{ time {
 
     echo "!!!! build $name !!!!"
 
     mkdir -p "$prefix"/$name || true
 
-    rsync -av --delete $distfiles/$name/ "$prefix"/$name/
+    rsync -av --delete $distfiles/$name/ "$prefix"/src/
 
-    cd "$prefix/$name"
+    cd "$prefix/src"
 
     cd lib/cgpt
 
@@ -29,13 +27,14 @@ name=gpt
 
     ./clean
 
-    ./make "$prefix"/Grid/build "$num_proc"
+    ./make "$prefix"/../Grid-clehner/src/build "$num_proc"
 
-    cd $wd
+    cd "$wd"
+
+    mk-setenv.sh
+
     echo "!!!! $name build !!!!"
 
     rm -rf $temp_dir || true
 
-}
-
-} 2>&1 | tee $prefix/log.$name.txt
+} } 2>&1 | tee $prefix/log.$name.txt

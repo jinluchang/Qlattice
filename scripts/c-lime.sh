@@ -1,37 +1,43 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
-
 name=c-lime
 
-{
+source qcore/set-prefix.sh $name
 
-echo "!!!! build $name !!!!"
+{ time {
 
-rm -rf $src_dir || true
-mkdir -p $src_dir || true
-cd $src_dir
-tar xzf $distfiles/$name.tar.gz
+    echo "!!!! build $name !!!!"
 
-cd *"$name"*
-./autogen.sh
-cd ..
+    source qcore/conf.sh ..
 
-rm -rf $build_dir || true
-mkdir -p $build_dir || true
-cd $build_dir
+    rm -rf $src_dir || true
+    mkdir -p $src_dir || true
+    cd $src_dir
+    tar xzf $distfiles/$name.tar.gz
 
-export CFLAGS="$CFLAGS -fPIC"
-export CXXFLAGS="$CXXFLAGS -fPIC"
+    cd *"$name"*
+    ./autogen.sh
+    cd ..
 
-"$src_dir"/*"$name"*/configure \
-    --prefix="$prefix"
+    rm -rf $build_dir || true
+    mkdir -p $build_dir || true
+    cd $build_dir
 
-make -j$num_proc
-make install
+    export CFLAGS="$CFLAGS -fPIC"
+    export CXXFLAGS="$CXXFLAGS -fPIC"
 
-cd $wd
-echo "!!!! $name build !!!!"
+    "$src_dir"/*"$name"*/configure \
+        --prefix="$prefix"
 
-rm -rf $temp_dir || true
-} 2>&1 | tee $prefix/log.$name.txt
+    make -j$num_proc
+    make install
+
+    cd "$wd"
+
+    mk-setenv.sh
+
+    echo "!!!! $name build !!!!"
+
+    rm -rf "$temp_dir" || true
+
+} } 2>&1 | tee $prefix/log.$name.txt

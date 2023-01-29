@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# need to have gcc, mpi installed beforehand.
-
 set -e
 
 {

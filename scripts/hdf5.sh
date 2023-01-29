@@ -1,31 +1,37 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
-
 name=hdf5
 
-{
+source qcore/set-prefix.sh $name
 
-echo "!!!! build $name !!!!"
+{ time {
 
-rm -rf $src_dir || true
-mkdir -p $src_dir || true
-cd $src_dir
-tar xjf $distfiles/$name-*
+    echo "!!!! build $name !!!!"
 
-rm -rf $build_dir || true
-mkdir -p $build_dir || true
-cd $build_dir
+    source qcore/conf.sh ..
 
-$src_dir/$name-*/configure \
-    --prefix=$prefix \
-    --enable-cxx
-make -j$num_proc
-make install
+    rm -rf $src_dir || true
+    mkdir -p $src_dir || true
+    cd $src_dir
+    tar xjf $distfiles/$name-*
 
-cd $wd
-echo "!!!! $name build !!!!"
+    rm -rf $build_dir || true
+    mkdir -p $build_dir || true
+    cd $build_dir
 
-rm -rf $temp_dir || true
+    $src_dir/$name-*/configure \
+        --prefix=$prefix \
+        --enable-cxx
 
-} 2>&1 | tee $prefix/log.$name.txt
+    make -j$num_proc
+    make install
+
+    cd "$wd"
+
+    mk-setenv.sh
+
+    echo "!!!! $name build !!!!"
+
+    rm -rf "$temp_dir" || true
+
+} } 2>&1 | tee $prefix/log.$name.txt

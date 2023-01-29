@@ -1,35 +1,43 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
+name=fftwf
 
-name=fftw
+pkgname=fftw
 
-{
+source qcore/set-prefix.sh "$name"
 
-echo "!!!! build $name !!!!"
+{ time {
 
-rm -rf $src_dir || true
-mkdir -p $src_dir || true
-cd $src_dir
-tar xzf $distfiles/$name-*.tar.gz
+    echo "!!!! build $name !!!!"
 
-cd $name-*
+    source qcore/conf.sh ..
 
-export CFLAGS="$CFLAGS -fPIC"
-export CXXFLAGS="$CXXFLAGS -fPIC"
+    rm -rf $src_dir || true
+    mkdir -p $src_dir || true
+    cd $src_dir
+    tar xzf $distfiles/$pkgname-*.tar.gz
 
-./configure \
-    --prefix=$prefix \
-    --enable-float \
-    --enable-shared
-#     --enable-openmp
+    cd $name-*
 
-make -j$num_proc
-make install
+    export CFLAGS="$CFLAGS -fPIC"
+    export CXXFLAGS="$CXXFLAGS -fPIC"
 
-cd $wd
-echo "!!!! $name build !!!!"
+    ./configure \
+        --prefix=$prefix \
+        --enable-float \
+        --enable-shared
 
-rm -rf $temp_dir || true
+    #     --enable-openmp
 
-} 2>&1 | tee $prefix/log.$name-float.txt
+    make -j$num_proc
+    make install
+
+    cd "$wd"
+
+    mk-setenv.sh
+
+    echo "!!!! $name build !!!!"
+
+    rm -rf $temp_dir || true
+
+} } 2>&1 | tee "$prefix/log.$name-float.txt"
