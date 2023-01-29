@@ -29,7 +29,6 @@ set -e
 ./scripts/python-packages.sh
 
 ./scripts/fftw.sh
-./scripts/fftwf.sh
 
 ./scripts/qlat.sh
 

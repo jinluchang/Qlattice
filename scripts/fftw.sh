@@ -23,7 +23,15 @@ source qcore/set-prefix.sh $name
         --prefix=$prefix \
         --enable-shared
 
-    #     --enable-openmp
+    make -j$num_proc
+    make install
+
+    make clean
+
+    ./configure \
+        --prefix=$prefix \
+        --enable-float \
+        --enable-shared
 
     make -j$num_proc
     make install

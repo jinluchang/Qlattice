@@ -16,7 +16,13 @@ source qcore/set-prefix.sh $name
     mkdir -p $build_dir || true
     cd $build_dir
 
+    opts=""
+    if [ -n "$(find-library.py libgmp.a)" ] ; then
+        opts+=" --with-gmp=$(find-library.py libgmp.a)"
+    fi
+
     $src_dir/$name-*/configure \
+        $opts \
         --prefix=$prefix
 
     make -j$num_proc

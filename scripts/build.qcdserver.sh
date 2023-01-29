@@ -36,7 +36,6 @@ set -e
 ./scripts/openmpi.sh
 
 ./scripts/fftw_mpi.sh
-./scripts/fftwf_mpi.sh
 ./scripts/cuba.sh
 ./scripts/eigen.sh
 ./scripts/qlat.sh

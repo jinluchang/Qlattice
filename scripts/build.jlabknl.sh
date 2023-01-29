@@ -34,7 +34,6 @@ set -e
 ./scripts/eigen.sh
 
 ./scripts/fftw_mpi.sh
-./scripts/fftwf_mpi.sh
 
 ./scripts/qlat.sh
 

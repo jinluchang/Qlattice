@@ -17,8 +17,23 @@ source qcore/set-prefix.sh $name
     mkdir -p $build_dir || true
     cd $build_dir
 
-    $src_dir/$name-*/configure \
+    opts=""
+    if [ -n "$(find-library.py libgmp.a)" ] ; then
+        opts+=" --with-gmp=$(find-library.py libgmp.a)"
+    fi
+    if [ -n "$(find-library.py libmpfr.a)" ] ; then
+        opts+=" --with-mpfr=$(find-library.py libmpfr.a)"
+    fi
+    if [ -n "$(find-library.py libmpc.a)" ] ; then
+        opts+=" --with-mpc=$(find-library.py libmpc.a)"
+    fi
+    if [ -n "$(find-library.py libisl.a)" ] ; then
+        opts+=" --with-isl=$(find-library.py libisl.a)"
+    fi
+
+    debug $src_dir/$name-*/configure \
         --prefix=$prefix \
+        $opts \
         --disable-multilib
 
     make -j$num_proc

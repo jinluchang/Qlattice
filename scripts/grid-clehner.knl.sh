@@ -22,15 +22,36 @@ source qcore/set-prefix.sh $name
 
     export CXXFLAGS="$CXXFLAGS -fPIC -w -Wno-psabi"
 
+    opts=""
+    if [ -n "$(find-library.py libgmp.a)" ] ; then
+        opts+=" --with-gmp=$(find-library.py libgmp.a)"
+    fi
+    if [ -n "$(find-library.py libmpfr.a)" ] ; then
+        opts+=" --with-mpfr=$(find-library.py libmpfr.a)"
+    fi
+    if [ -n "$(find-library.py libfftw3.a)" ] ; then
+        opts+=" --with-fftw=$(find-library.py libfftw3.a)"
+    fi
+    if [ -n "$(find-library.py liblime.a)" ] ; then
+        opts+=" --with-lime=$(find-library.py liblime.a)"
+    fi
+    if [ -n "$(find-library.py libcrypto.a)" ] ; then
+        opts+=" --with-openssl=$(find-library.py libcrypto.a)"
+    fi
+    if [ -n "$(find-library.py libhdf5_hl_cpp.a)" ] ; then
+        opts+=" --with-hdf5=$(find-library.py libhdf5_hl_cpp.a)"
+    fi
+
     mkdir build
     cd build
-    ../configure \
+    debug ../configure \
         --enable-simd=KNL \
         --enable-alloc-align=4k \
         --enable-comms=mpi-auto \
         --enable-shm=shmget \
         --enable-shmpath=/dev/hugepages \
         --enable-gparity=no \
+        $opts \
         --prefix="$prefix"
 
     make -j$num_proc

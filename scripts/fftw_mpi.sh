@@ -27,6 +27,17 @@ source qcore/set-prefix.sh $name
     make -j$num_proc
     make install
 
+    make clean
+
+    ./configure \
+        --prefix=$prefix \
+        --enable-float \
+        --enable-mpi \
+        --enable-shared
+
+    make -j$num_proc
+    make install
+
     mk-setenv.sh
     echo "!!!! $name build !!!!"
     rm -rf $temp_dir || true
