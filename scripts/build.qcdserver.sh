@@ -20,6 +20,9 @@ set -e
 ./scripts/openssl.sh
 ./scripts/libffi.sh
 ./scripts/zlib.sh
+./scripts/bzip2.sh
+./scripts/tcl.sh
+./scripts/tk.sh
 ./scripts/openblas.sh
 ./scripts/python.sh
 ./scripts/python-pip.sh
