@@ -63,9 +63,7 @@ foreach f : grid_ldflags + grid_libs
       grid_lib_names += v
     endif
   else
-    if f not in grid_link_args
-      grid_link_args += f
-    endif
+    grid_link_args += f
   endif
 endforeach
 
