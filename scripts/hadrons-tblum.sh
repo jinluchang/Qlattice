@@ -1,28 +1,25 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
-
 name=Hadrons-tblum
 
-{
+source qcore/set-prefix.sh $name
 
-    time {
+{ time {
 
     echo "!!!! build $name !!!!"
 
-    mkdir -p "$prefix"/$name || true
+    source qcore/conf.sh ..
 
-    rsync -av --delete $distfiles/$name/ "$prefix"/$name/
+    mkdir -p "$prefix"/src || true
 
-    cd "$prefix/$name"
+    rsync -av --delete $distfiles/$name/ "$prefix"/src
+
+    cd "$prefix/src"
 
     if which qlat-include >/dev/null 2>&1 ; then
         for v in $(qlat-include) ; do
             export CPATH="$v":"$CPATH"
         done
-        if which organize-colon-list.py >/dev/null 2>&1 ; then
-            export CPATH="$(organize-colon-list.py "$CPATH")"
-        fi
     fi
 
     mkdir build
@@ -30,17 +27,18 @@ name=Hadrons-tblum
     cd build
 
     ../configure \
-        --with-grid="$prefix/grid-tblum" \
-        --prefix="$prefix/hadrons-tblum"
+        --with-grid="$prefix/../Grid-tblum" \
+        --prefix="$prefix"
 
     make -j "$num_proc"
     make install
 
-    cd $wd
+    cd "$wd"
+
+    mk-setenv.sh
+
     echo "!!!! $name build !!!!"
 
     rm -rf $temp_dir || true
 
-}
-
-} 2>&1 | tee $prefix/log.$name.txt
+} } 2>&1 | tee $prefix/log.$name.txt

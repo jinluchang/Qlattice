@@ -1,37 +1,38 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
-
 name=Hadrons
 
-{
+source qcore/set-prefix.sh $name
 
-    time {
+{ time {
 
     echo "!!!! build $name !!!!"
 
-    mkdir -p "$prefix"/$name || true
+    source qcore/conf.sh ..
 
-    rsync -av --delete $distfiles/$name/ "$prefix"/$name/
+    mkdir -p "$prefix"/src || true
 
-    cd "$prefix/$name"
+    rsync -av --delete $distfiles/$name/ "$prefix"/src
+
+    cd "$prefix/src"
 
     mkdir build
 
     cd build
 
     ../configure \
-        --with-grid="$prefix/grid-paboyle" \
-        --prefix="$prefix/hadrons" \
+        --with-grid="$prefix/../Grid" \
+        --prefix="$prefix" \
 
     make -j "$num_proc"
     make install
 
     cd $wd
+
+    mk-setenv.sh
+
     echo "!!!! $name build !!!!"
 
     rm -rf $temp_dir || true
 
-}
-
-} 2>&1 | tee $prefix/log.$name.txt
+} } 2>&1 | tee $prefix/log.$name.txt
