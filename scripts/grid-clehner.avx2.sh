@@ -22,7 +22,7 @@ source qcore/set-prefix.sh $name
     ln -vs "${INITDIR}/Eigen/Eigen" "${INITDIR}/Grid/Eigen"
     ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
 
-    export CXXFLAGS="$CXXFLAGS -fPIC"
+    export CXXFLAGS="$CXXFLAGS -w -fPIC"
 
     mkdir build
     cd build
@@ -31,9 +31,6 @@ source qcore/set-prefix.sh $name
         --enable-alloc-align=4k \
         --enable-comms=mpi-auto \
         --enable-gparity=no \
-        --with-lime \
-        --with-fftw \
-        --with-hdf5 \
         --prefix="$prefix"
 
     make -j$num_proc

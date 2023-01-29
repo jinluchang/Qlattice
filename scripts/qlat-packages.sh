@@ -1,18 +1,18 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
-
 name=qlat-packages
 
-{
+source qcore/set-prefix.sh $name
 
-    time {
+{ time {
 
     echo "!!!! build $name !!!!"
 
+    source qcore/conf.sh ..
+
     find ~/.cache/pip/wheels -type f || true
 
-    build="$prefix/qlat-packages"
+    build="$prefix/packages"
     rm -rfv "$build" || true
     mkdir -p "$build"
 
@@ -32,9 +32,14 @@ name=qlat-packages
         pip3 install $opts qlat-grid
     fi
 
+    cd "$wd"
+
+    mk-setenv.sh
+
     echo "!!!! $name build !!!!"
 
-    rm -rf $temp_dir || true
+
+    rm -rf "$temp_dir" || true
 
 }
 

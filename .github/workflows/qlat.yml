@@ -105,7 +105,7 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/c-lime.sh
-        ./scripts/grid.avx2.sh
+        ./scripts/grid-clehner.avx2.sh
     - name: Install Qlat-Grid
       run: |
         export num_proc=2
@@ -163,7 +163,7 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/c-lime.sh
-        ./scripts/grid.avx2.sh
+        ./scripts/grid-clehner.avx2.sh
     - name: Build GPT
       run: |
         export num_proc=2
@@ -186,7 +186,7 @@ jobs:
     - name: Build more packages Grid-paboyle
       run: |
         export num_proc=2
-        USE_COMPILER=clang ./scripts/grid-paboyle.avx2.sh
+        USE_COMPILER=clang ./scripts/grid.avx2.sh
         [ -e $HOME/qlat-build/default/grid-paboyle/lib/libGrid.a ]
         [ -e $HOME/qlat-build/default/grid-paboyle/bin/grid-config ]
         [ -e $HOME/qlat-build/default/grid-paboyle/bin/Mobius2p1fEOFA ]
@@ -315,7 +315,7 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/c-lime.sh
-        ./scripts/grid.gen16.sh
+        ./scripts/grid-clehner.gen16.sh
     - name: Install Qlat-Grid
       run: |
         export num_proc=3

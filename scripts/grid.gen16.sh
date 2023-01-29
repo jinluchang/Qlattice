@@ -1,20 +1,20 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
+name=Grid
 
-name=Grid-paboyle
+source qcore/set-prefix.sh $name
 
-{
-
-    time {
+{ time {
 
     echo "!!!! build $name !!!!"
 
-    mkdir -p "$prefix"/$name || true
+    source qcore/conf.sh ..
 
-    rsync -av --delete $distfiles/$name/ "$prefix"/$name/
+    mkdir -p "$prefix"/src || true
 
-    cd "$prefix/$name"
+    rsync -av --delete $distfiles/$name/ "$prefix"/src
+
+    cd "$prefix/src"
 
     INITDIR="$(pwd)"
     rm -rfv "${INITDIR}/Eigen/Eigen/unsupported"
@@ -22,7 +22,7 @@ name=Grid-paboyle
     ln -vs "${INITDIR}/Eigen/Eigen" "${INITDIR}/Grid/Eigen"
     ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
 
-    export CXXFLAGS="$CXXFLAGS -fPIC"
+    export CXXFLAGS="$CXXFLAGS -w -fPIC"
 
     mkdir build
     cd build
@@ -32,18 +32,17 @@ name=Grid-paboyle
         --enable-alloc-align=4k \
         --enable-comms=mpi-auto \
         --enable-gparity=no \
-        --with-lime="$prefix" \
-        --with-fftw="$prefix" \
         --prefix="$prefix/grid-paboyle"
 
     make -j$num_proc
     make install
 
-    cd $wd
+    cd "$wd"
+
+    mk-setenv.sh
+
     echo "!!!! $name build !!!!"
 
-    rm -rf $temp_dir || true
+    rm -rf "$temp_dir" || true
 
-}
-
-} 2>&1 | tee $prefix/log.$name.txt
+} } 2>&1 | tee $prefix/log.$name.txt
