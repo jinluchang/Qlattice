@@ -1,34 +1,32 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
-
 name=lapack
 
-{
+source qcore/set-prefix.sh $name
 
-echo "!!!! build $name !!!!"
+{ time {
+    echo "!!!! build $name !!!!"
+    source qcore/conf.sh ..
 
-rm -rf $src_dir
-mkdir -p $src_dir
-cd $src_dir
-tar xaf $distfiles/$name-*
+    rm -rf $src_dir
+    mkdir -p $src_dir
+    cd $src_dir
+    tar xaf $distfiles/$name-*
 
-rm -rf $build_dir || true
-mkdir -p $build_dir || true
-cd $build_dir
+    rm -rf $build_dir || true
+    mkdir -p $build_dir || true
+    cd $build_dir
 
-cmake $src_dir/$name-* \
-  -DCMAKE_INSTALL_PREFIX=$prefix \
-  -DLAPACKE=ON \
-  -DLAPACKE_WITH_TMG=ON \
-  .
-make -j$num_proc
-make install
+    cmake $src_dir/$name-* \
+        -DCMAKE_INSTALL_PREFIX=$prefix \
+        -DLAPACKE=ON \
+        -DLAPACKE_WITH_TMG=ON \
+        .
 
-cd $wd
+    make -j$num_proc
+    make install
 
-echo "!!!! $name build !!!!"
-
-rm -rf $temp_dir || true
-
-} 2>&1 | tee $prefix/log.$name.txt
+    mk-setenv.sh
+    echo "!!!! $name build !!!!"
+    rm -rf $temp_dir || true
+} } 2>&1 | tee $prefix/log.$name.txt

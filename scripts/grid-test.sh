@@ -1,18 +1,14 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
-
 name=grid-test
 
-{
+source qcore/set-prefix.sh $name
 
-    time {
-
+{ time {
     echo "!!!! build $name !!!!"
+    source qcore/conf.sh ..
 
-    build="$prefix/test-grid"
-    mkdir -p "$build"
-    cd "$build"
+    cd "$prefix"
 
     # grid_options="--dslash-asm --shm-hugepages --shm 4050"
     # grid_options="--dslash-asm"
@@ -20,13 +16,8 @@ name=grid-test
 
     geo_options="--grid 16.16.16.16 --mpi 1.1.1.1"
 
-    OMP_NUM_THREADS=4 $prefix/Grid/build/benchmarks/Benchmark_dwf_fp32 $grid_options $geo_options
+    OMP_NUM_THREADS=4 $prefix/../Grid-clehner/bin/Benchmark_dwf_fp32 $grid_options $geo_options
 
-    cd $wd
     echo "!!!! $name build !!!!"
-
     rm -rf $temp_dir || true
-
-}
-
-} 2>&1 | tee $prefix/log.$name.txt
+} } 2>&1 | tee $prefix/log.$name.txt
