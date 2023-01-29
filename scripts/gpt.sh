@@ -29,6 +29,10 @@ source qcore/set-prefix.sh $name
 
     ./make "$prefix"/../Grid-clehner/src/build "$num_proc"
 
+    mkdir -p "$prefix"/lib/python3/dist-packages
+    ln -s "$prefix"/src/lib/gpt "$prefix"/lib/python3/dist-packages/gpt
+    ln -s "$prefix"/src/lib/cgpt/build/cgpt.so "$prefix"/lib/python3/dist-packages/cgpt.so
+
     mk-setenv.sh
     echo "!!!! $name build !!!!"
     rm -rf $temp_dir || true
