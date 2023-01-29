@@ -9,6 +9,7 @@ set -e
 {
 
 ./scripts/setenv.uconn.sh
+./scripts/qcore.sh
 
 ./scripts/gsl.sh
 ./scripts/cuba.sh

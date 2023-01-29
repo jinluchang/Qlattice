@@ -5,6 +5,7 @@ set -e
 {
 
 ./scripts/setenv.default.sh
+./scripts/qcore.sh
 
 ./scripts/xz.sh
 ./scripts/tar.sh
