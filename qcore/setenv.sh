@@ -53,7 +53,7 @@ if [ -z "${OMP_NUM_THREADS+x}" ] ; then
     export OMP_NUM_THREADS=2
 fi
 
-export PATH="$prefix/bin":"$PATH"
+export PATH="$setenv_prefix/bin":"$PATH"
 
 if which python-scripts-path.py >/dev/null 2>&1 ; then
     export PATH="$(python-scripts-path.py)":"$PATH"
