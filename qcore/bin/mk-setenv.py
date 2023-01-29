@@ -23,6 +23,8 @@ lib64_dir = os.path.join(prefix, "lib64")
 lib_pkg_config_dir = os.path.join(prefix, "lib/pkgconfig")
 lib64_pkg_config_dir = os.path.join(prefix, "lib64/pkgconfig")
 lib_python_dir = os.path.join(prefix, "lib/python3")
+lib_python_dist_dir = os.path.join(prefix, "lib/python3/dist-packages")
+lib_python_site_dir = os.path.join(prefix, "lib/python3/site-packages")
 
 setenv_fn = os.path.join(prefix, "setenv.sh")
 
@@ -87,11 +89,17 @@ if os.path.isdir(lib_python_dir):
     l.append(set_env("PYTHONPATH", "lib/python3"))
     l.append("")
 
-l.append("")
+if os.path.isdir(lib_python_dist_dir):
+    l.append(set_env("PYTHONPATH", "lib/python3/dist-packages"))
+    l.append("")
+
+if os.path.isdir(lib_python_site_dir):
+    l.append(set_env("PYTHONPATH", "lib/python3/site-packages"))
+    l.append("")
+
 l.append("}")
 l.append("")
 l.append("func")
-l.append("")
 
 organize_env_path = f"""
 if python-check-version.py >/dev/null 2>&1 && which organize-env-path.py >/dev/null 2>&1 ; then

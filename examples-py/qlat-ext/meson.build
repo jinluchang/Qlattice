@@ -88,15 +88,6 @@ qlat = declare_dependency(
 
 deps = [ qlat, ]
 
-envdata = environment(
-  [
-    'q_verbose=2',
-    'OMP_NUM_THREADS=2',
-    ],
-  method: 'set')
-
-envdata.prepend('PYTHONPATH', meson.current_build_dir())
-
 subdir('include')
 subdir('qlat_ext')
 
@@ -104,10 +95,6 @@ run_py = custom_target('run.py',
   output: 'run.py',
   input: files('run.py'),
   command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
-  install: false,
+  install: true,
+  install_dir: 'bin',
   )
-
-run_target('run',
-  command: [ 'bash', '-c', 'cd "$MESON_BUILD_ROOT" ; ./run.py', ],
-  depends: [ cplib, run_py, ],
-  env: envdata)

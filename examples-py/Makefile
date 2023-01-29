@@ -51,13 +51,14 @@ update-sources:
 	-mv -v "$@".new "$@"
 
 qlat-ext.log: qlat-ext/meson.build
-	-meson setup qlat-ext-build qlat-ext
+	-meson setup qlat-ext-build qlat-ext --prefix=$$PWD/qlat-ext-install
 	-meson compile -C qlat-ext-build -j2
-	-meson compile -C qlat-ext-build run >"$@".full 2>&1
+	-meson install -C qlat-ext-build
+	-PYTHONPATH="$$PWD/qlat-ext-install/lib/python3/dist-packages:$$PYTHONPATH" qlat-ext-install/bin/run.py >"$@".full 2>&1
 	-grep "CHECK: " "$@".full >"$@".new
 	-if diff "$@".new "$@" ; then echo passed ; else cat "$@".full ; fi
 	-mv -v "$@".new "$@"
 
 clean:
 	-rm -v *.log.full
-	-rm -rf results output_data cache qlat-ext-build
+	-rm -rf results output_data cache qlat-ext-build qlat-ext-install

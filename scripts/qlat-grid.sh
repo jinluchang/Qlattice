@@ -22,10 +22,7 @@ source qcore/set-prefix.sh $name
 
     touch "$wd"/qlat-grid/meson.build
 
-    prefix_python="$prefix/lib/python3"
-
     meson setup "$wd/qlat-grid" \
-        -Dpython.platlibdir="$prefix_python" -Dpython.purelibdir="$prefix_python" \
         --prefix="$prefix"
 
     time meson compile -j$num_proc
