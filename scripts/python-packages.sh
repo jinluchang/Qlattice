@@ -6,7 +6,7 @@ source qcore/set-prefix.sh $name
 
 { time {
     echo "!!!! build $name !!!!"
-    source qcore/conf.sh .
+    source qcore/conf.sh ..
 
     if [ -z ${NPY_BLAS_ORDER+x} ] ; then
         export NPY_BLAS_ORDER=openblas

@@ -2,11 +2,11 @@
 
 name=python-pip
 
-source qcore/set-prefix.sh
+source qcore/set-prefix.sh $name
 
 { time {
     echo "!!!! build $name !!!!"
-    source qcore/conf.sh .
+    source qcore/conf.sh ..
 
     find ~/.cache/pip/wheels -type f || true
     rm -rfv ~/.cache/pip/wheels || true
