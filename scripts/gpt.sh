@@ -27,7 +27,7 @@ source qcore/set-prefix.sh $name
 
     ./clean
 
-    ./make "$prefix"/../Grid-clehner/src/build "$num_proc"
+    ./make %grid-config "$num_proc"
 
     rm -rfv "$prefix"/lib
     mkdir -p "$prefix"/lib/python3/dist-packages
