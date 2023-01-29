@@ -18,8 +18,8 @@ jobs:
         pwd
         type python3
         type pip3
-        export
-        cat /proc/cpuinfo
+        qcore/bin/organize-env-path.py
+        qcore/bin/show-env.py
     - name: Install Ubuntu packages
       run: |
         sudo apt-get update
@@ -65,8 +65,8 @@ jobs:
         pwd
         type python3
         type pip3
-        export
-        cat /proc/cpuinfo
+        qcore/bin/organize-env-path.py
+        qcore/bin/show-env.py
     - name: Install Ubuntu packages
       run: |
         sudo apt-get update
@@ -135,8 +135,10 @@ jobs:
       run: |
         whoami
         pwd
-        export
-        cat /proc/cpuinfo
+        type python3
+        type pip3
+        qcore/bin/organize-env-path.py
+        qcore/bin/show-env.py
     - name: Install Ubuntu packages
       run: |
         sudo apt-get update
@@ -227,8 +229,8 @@ jobs:
         pwd
         type python3
         type pip3
-        export
-        sysctl -a
+        qcore/bin/organize-env-path.py
+        qcore/bin/show-env.py
     - name: Install Brew packages
       run: |
         # brew update
@@ -275,8 +277,8 @@ jobs:
         pwd
         type python3
         type pip3
-        export
-        sysctl -a
+        qcore/bin/organize-env-path.py
+        qcore/bin/show-env.py
     - name: Install Brew packages
       run: |
         # brew update
@@ -347,8 +349,8 @@ jobs:
         pwd
         type python3
         type pip3
-        export
-        sysctl -a
+        qcore/bin/organize-env-path.py
+        qcore/bin/show-env.py
     - name: Install Brew packages
       run: |
         # brew update
