@@ -7,6 +7,7 @@ set -e
 {
 
 ./scripts/setenv.default.sh
+./scripts/qcore.sh
 
 ./scripts/python.sh
 ./scripts/python-pip.sh
@@ -25,7 +26,7 @@ set -e
 ./scripts/qlat-examples-cpp.sh
 
 ./scripts/c-lime.sh
-./scripts/grid.avx2.sh
+./scripts/grid-clehner.avx2.sh
 ./scripts/gpt.sh
 
 ./scripts/qlat-packages.sh

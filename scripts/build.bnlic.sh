@@ -5,9 +5,9 @@ set -e
 {
 
 ./scripts/setenv.bnlic.sh
+./scripts/qcore.sh
 
 ./scripts/tar.sh
-
 ./scripts/zlib.sh
 ./scripts/openssl.sh
 ./scripts/libffi.sh
@@ -33,7 +33,7 @@ set -e
 
 ./scripts/c-lime.sh
 ./scripts/hdf5.sh
-./scripts/grid.avx2.sh
+./scripts/grid-clehner.avx2.sh
 ./scripts/gpt.sh
 ./scripts/qlat-grid.sh
 

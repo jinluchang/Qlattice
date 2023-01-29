@@ -5,9 +5,9 @@ set -e
 {
 
 ./scripts/setenv.bnlknl.sh
+./scripts/qcore.sh
 
 ./scripts/tar.sh
-
 ./scripts/zlib.sh
 ./scripts/xz.sh
 ./scripts/gsl.sh
@@ -45,7 +45,7 @@ set -e
 ./scripts/automake.sh
 ./scripts/c-lime.sh
 ./scripts/hdf5.sh
-./scripts/grid.knl.sh
+./scripts/grid-clehner.knl.sh
 ./scripts/gpt.sh
 ./scripts/qlat-grid.sh
 
