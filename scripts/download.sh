@@ -30,6 +30,8 @@ dget "lapack-3.10.1.tar.gz" "https://github.com/Reference-LAPACK/lapack/archive/
 
 aget "https://tukaani.org/xz/xz-5.2.7.tar.gz"
 
+aget "https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz"
+
 aget "https://zlib.net/zlib-1.2.13.tar.gz"
 
 aget "https://github.com/facebook/zstd/releases/download/v1.5.2/zstd-1.5.2.tar.gz"
@@ -78,11 +80,15 @@ aget "https://github.com/libffi/libffi/releases/download/v3.4.4/libffi-3.4.4.tar
 
 aget "https://github.com/skvadrik/re2c/releases/download/2.2/re2c-2.2.tar.xz"
 
-aget "https://gigenet.dl.sourceforge.net/project/gnuplot/gnuplot/5.4.5/gnuplot-5.4.5.tar.gz"
+aget "https://sourceforge.net/projects/tclap/files/tclap-1.2.5.tar.gz"
 
-aget "https://cytranet.dl.sourceforge.net/project/tclap/tclap-1.2.5.tar.gz"
+aget "https://sourceforge.net/projects/gnuplot/files/gnuplot/5.4.5/gnuplot-5.4.5.tar.gz"
 
 aget "https://github.com/xianyi/OpenBLAS/releases/download/v0.3.21/OpenBLAS-0.3.21.tar.gz"
+
+aget "https://prdownloads.sourceforge.net/tcl/tcl8.6.13-src.tar.gz"
+
+aget "https://prdownloads.sourceforge.net/tcl/tk8.6.13-src.tar.gz"
 
 (
 mkdir -p python-packages
