@@ -192,11 +192,11 @@ jobs:
       run: |
         export num_proc=2
         USE_COMPILER=clang ./scripts/grid.avx2.sh
-        [ -e $HOME/qlat-build/default/grid-paboyle/lib/libGrid.a ]
-        [ -e $HOME/qlat-build/default/grid-paboyle/bin/grid-config ]
-        [ -e $HOME/qlat-build/default/grid-paboyle/bin/Mobius2p1fEOFA ]
-        [ -e $HOME/qlat-build/default/grid-paboyle/bin/Benchmark_dwf ]
-        [ -e $HOME/qlat-build/default/grid-paboyle/bin/Benchmark_dwf_fp32 ]
+        [ -e $HOME/qlat-build/default/grid/lib/libGrid.a ]
+        [ -e $HOME/qlat-build/default/grid/bin/grid-config ]
+        [ -e $HOME/qlat-build/default/grid/bin/Mobius2p1fEOFA ]
+        [ -e $HOME/qlat-build/default/grid/bin/Benchmark_dwf ]
+        [ -e $HOME/qlat-build/default/grid/bin/Benchmark_dwf_fp32 ]
     - name: Build more packages Hadrons
       run: |
         export num_proc=2
@@ -382,7 +382,7 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/c-lime.sh
-        ./scripts/grid.gen16.sh
+        ./scripts/grid-clehner.gen16.sh
     - name: Build GPT
       run: |
         export num_proc=3
@@ -405,12 +405,12 @@ jobs:
     - name: Build more packages Grid-paboyle
       run: |
         export num_proc=2
-        USE_COMPILER=clang ./scripts/grid-paboyle.gen16.sh
-        [ -e $HOME/qlat-build/default/grid-paboyle/lib/libGrid.a ]
-        [ -e $HOME/qlat-build/default/grid-paboyle/bin/grid-config ]
-        [ -e $HOME/qlat-build/default/grid-paboyle/bin/Mobius2p1fEOFA ]
-        [ -e $HOME/qlat-build/default/grid-paboyle/bin/Benchmark_dwf ]
-        [ -e $HOME/qlat-build/default/grid-paboyle/bin/Benchmark_dwf_fp32 ]
+        USE_COMPILER=clang ./scripts/grid.gen16.sh
+        [ -e $HOME/qlat-build/default/grid/lib/libGrid.a ]
+        [ -e $HOME/qlat-build/default/grid/bin/grid-config ]
+        [ -e $HOME/qlat-build/default/grid/bin/Mobius2p1fEOFA ]
+        [ -e $HOME/qlat-build/default/grid/bin/Benchmark_dwf ]
+        [ -e $HOME/qlat-build/default/grid/bin/Benchmark_dwf_fp32 ]
     - name: Build more packages Hadrons
       run: |
         export num_proc=2
