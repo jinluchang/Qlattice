@@ -8,6 +8,7 @@ if not (sys.version_info.major == 3 and sys.version_info.minor >= 6):
     sys.exit(1)
 
 import os
+import glob
 
 def set_env(env, val):
     return f'export {env}="$setenv_prefix"/"{val}":"${env}"'
@@ -22,9 +23,7 @@ lib_dir = os.path.join(prefix, "lib")
 lib64_dir = os.path.join(prefix, "lib64")
 lib_pkg_config_dir = os.path.join(prefix, "lib/pkgconfig")
 lib64_pkg_config_dir = os.path.join(prefix, "lib64/pkgconfig")
-lib_python_dir = os.path.join(prefix, "lib/python3")
-lib_python_dist_dir = os.path.join(prefix, "lib/python3/dist-packages")
-lib_python_site_dir = os.path.join(prefix, "lib/python3/site-packages")
+lib_python_dir_list = glob.glob(f"{prefix}/lib*/python3*") + glob.glob(f"{prefix}/lib*/python3*/*-packages")
 
 setenv_fn = os.path.join(prefix, "setenv.sh")
 
@@ -85,9 +84,11 @@ if os.path.isdir(lib64_pkg_config_dir):
     l.append(set_env("PKG_CONFIG_PATH", "lib64/pkgconfig"))
     l.append("")
 
-if os.path.isdir(lib_python_dir):
-    l.append(set_env("PYTHONPATH", "lib/python3"))
-    l.append("")
+for lib_python_dir in lib_python_dir_list:
+    assert lib_python_dir.startswith(prefix + "/lib")
+    if os.path.isdir(lib_python_dir):
+        l.append(set_env("PYTHONPATH", lib_python_dir.removeprefix(prefix + "/")))
+        l.append("")
 
 if os.path.isdir(lib_python_dist_dir):
     l.append(set_env("PYTHONPATH", "lib/python3/dist-packages"))

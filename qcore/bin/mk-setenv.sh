@@ -71,9 +71,8 @@ for v in \
     fi
 done
 for v in \
-    "\$setenv_prefix/lib/python3" \
-    "\$setenv_prefix/lib/python3/dist-packages" \
-    "\$setenv_prefix/lib/python3/site-packages" \
+    "\$setenv_prefix/lib/python3"* \
+    "\$setenv_prefix/lib/python3"*/*-packages \
     ; do
     if [ -d "\$v" ] ; then
         export PYTHONPATH="\$v":"\$PYTHONPATH"
