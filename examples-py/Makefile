@@ -51,7 +51,7 @@ update-sources:
 	-mv -v "$@".new "$@"
 
 qlat-ext.log: qlat-ext/meson.build
-	-meson setup qlat-ext-build qlat-ext --prefix=$$PWD/qlat-ext-install
+	-meson setup qlat-ext-build qlat-ext --prefix=$$PWD/qlat-ext-install -Dpython.platlibdir=$$PWD/qlat-ext-install/lib/python3/dist-packages -Dpython.purelibdir=$$PWD/qlat-ext-install/lib/python3/dist-packages
 	-meson compile -C qlat-ext-build -j2
 	-meson install -C qlat-ext-build
 	-PYTHONPATH="$$PWD/qlat-ext-install/lib/python3/dist-packages:$$PYTHONPATH" qlat-ext-install/bin/run.py >"$@".full 2>&1
