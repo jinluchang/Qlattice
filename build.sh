@@ -25,7 +25,7 @@ fi
 
 scripts/clean-prefix.sh
 
-source qcore/set-prefix.sh
+source qcore/set-prefix.sh ""
 
 touch "$prefix"/build-target="$target".txt
 
