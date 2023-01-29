@@ -1,18 +1,15 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
+name=setenv-jlabknl
 
-name=setenv
+source qcore/set-prefix.sh
 
-mkdir -p "$prefix"
+{ time {
+    echo "!!!! build $name !!!!"
+    source qcore/conf.sh
 
-{
-
-echo "!!!! build $name !!!!"
-
-cat - scripts/res/setenv.sh >"$prefix/setenv.sh" << EOF
-echo "Sourcing '$prefix/setenv.sh'"
-export prefix="$prefix"
+#
+cat >"$prefix/setenv.sh" <<EOF
 if [ -z "\$num_proc" ] ; then
     num_proc=16
 fi
@@ -28,12 +25,7 @@ if [ -z "\$USE_COMPILER" ] ; then
 fi
 EOF
 
-./scripts/setup-scripts.sh
-
-. "$prefix/setenv.sh" >"$prefix/log.setenv.txt" 2>&1
-
-echo "!!!! $name build !!!!"
-
-rm -rf $temp_dir || true
-
-} 2>&1 | tee $prefix/log.$name-build.txt
+    #
+    "$wd"/qcore/bin/mk-setenv-dir.sh --keep
+    echo "!!!! $name build !!!!"
+} } 2>&1 | tee $prefix/log.$name.txt

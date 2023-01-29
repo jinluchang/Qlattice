@@ -5,9 +5,7 @@ name=setenv-uconn
 source qcore/set-prefix.sh
 
 { time {
-
     echo "!!!! build $name !!!!"
-
     source qcore/conf.sh
 
 #
@@ -22,9 +20,6 @@ module list
 EOF
 
     #
-
     "$wd"/qcore/bin/mk-setenv-dir.sh --keep
-
     echo "!!!! $name build !!!!"
-
 } } 2>&1 | tee $prefix/log.$name.txt

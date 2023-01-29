@@ -1,20 +1,18 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
-
 name=Grid-tblum
 
-{
+source qcore/set-prefix.sh $name
 
-    time {
-
+{ time {
     echo "!!!! build $name !!!!"
+    source qcore/conf.sh ..
 
-    mkdir -p "$prefix"/$name || true
+    mkdir -p "$prefix"/src || true
 
-    rsync -avr --delete $distfiles/$name/ "$prefix"/$name/
+    rsync -av --delete $distfiles/$name/ "$prefix"/src
 
-    cd "$prefix/$name"
+    cd "$prefix/src"
 
     INITDIR="$(pwd)"
     rm -rfv "${INITDIR}/Eigen/Eigen/unsupported"
@@ -43,19 +41,12 @@ name=Grid-tblum
         --enable-shm=shmget \
         --enable-shmpath=/dev/hugepages \
         --enable-gparity=no \
-        --with-lime="$prefix" \
-        --with-hdf5="$prefix" \
-        --with-fftw="$prefix" \
-        --prefix="$prefix/grid-tblum"
+        --prefix="$prefix"
 
     make -j$num_proc
     make install
 
-    cd $wd
+    mk-setenv.sh
     echo "!!!! $name build !!!!"
-
     rm -rf $temp_dir || true
-
-}
-
-} 2>&1 | tee $prefix/log.$name.txt
+} } 2>&1 | tee $prefix/log.$name.txt
