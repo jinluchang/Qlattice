@@ -1,14 +1,12 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
-
 name=llvm-project
 
-{
+source qcore/set-prefix.sh $name
 
-    time {
-
+{ time {
     echo "!!!! build $name !!!!"
+    source qcore/conf.sh ..
 
     mkdir -p $src_dir
     cd $src_dir
@@ -32,11 +30,7 @@ name=llvm-project
     ninja
     ninja install
 
-    cd $wd
+    mk-setenv.sh
     echo "!!!! $name build !!!!"
-
     rm -rf $temp_dir || true
-
-}
-
-} 2>&1 | tee $prefix/log.$name-all.txt
+} } 2>&1 | tee $prefix/log.$name-all.txt
