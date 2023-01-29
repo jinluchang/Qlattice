@@ -1,14 +1,12 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
-
 name=ninja
 
-{
+source qcore/set-prefix.sh $name
 
-    time {
-
+{ time {
     echo "!!!! build $name !!!!"
+    source qcore/conf.sh ..
 
     rm -rf $src_dir || true
     mkdir -p $src_dir || true
@@ -22,11 +20,7 @@ name=ninja
     mkdir -p $prefix/bin
     cp -pv ninja $prefix/bin/ninja-backend
 
-    cd $wd
+    mk-setenv.sh
     echo "!!!! $name build !!!!"
-
     rm -rf $temp_dir || true
-
-}
-
-} 2>&1 | tee $prefix/log.$name.txt
+} } 2>&1 | tee $prefix/log.$name.txt

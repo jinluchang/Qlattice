@@ -1,14 +1,12 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
-
 name=python-packages
 
-{
+source qcore/set-prefix.sh $name
 
-    time {
-
+{ time {
     echo "!!!! build $name !!!!"
+    source qcore/conf.sh .
 
     if [ -z ${NPY_BLAS_ORDER+x} ] ; then
         export NPY_BLAS_ORDER=openblas
@@ -23,8 +21,7 @@ name=python-packages
     fi
 
     find ~/.cache/pip/wheels -type f || true
-
-    # rm -rfv ~/.cache/pip/wheels || true
+    rm -rfv ~/.cache/pip/wheels || true
 
     opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
@@ -37,9 +34,5 @@ name=python-packages
     time pip3 install $opts scipy
 
     echo "!!!! $name build !!!!"
-
     rm -rf $temp_dir || true
-
-}
-
-} 2>&1 | tee $prefix/log.$name.txt
+} } 2>&1 | tee $prefix/log.$name.txt

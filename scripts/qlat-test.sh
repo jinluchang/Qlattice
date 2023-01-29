@@ -1,26 +1,17 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
-
 name=qlat-test
 
-{
+source qcore/set-prefix.sh $name
 
-    time {
-
+{ time {
     echo "!!!! build $name !!!!"
+    source qcore/conf.sh ..
 
-    build="$prefix/test-qlat"
-    mkdir -p "$build"
-    cd "$build"
+    cd "$prefix"
 
     OMP_NUM_THREADS=4 $wd/examples-py/hmc-pure-gauge.py
 
-    cd $wd
     echo "!!!! $name build !!!!"
-
     rm -rf $temp_dir || true
-
-}
-
-} 2>&1 | tee $prefix/log.$name.txt
+} } 2>&1 | tee $prefix/log.$name.txt

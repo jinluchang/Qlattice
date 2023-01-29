@@ -1,24 +1,21 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
-
 name=python-meson
 
-{
+source qcore/set-prefix.sh
 
-echo "!!!! build $name !!!!"
+{ time {
+    echo "!!!! build $name !!!!"
+    source qcore/conf.sh .
 
-find ~/.cache/pip/wheels -type f || true
+    find ~/.cache/pip/wheels -type f || true
+    rm -rfv ~/.cache/pip/wheels || true
 
-# rm -rfv ~/.cache/pip/wheels || true
+    opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
-opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
+    time pip3 install $opts meson
+    time pip3 install $opts ninja
 
-time pip3 install $opts meson
-time pip3 install $opts ninja
-
-echo "!!!! $name build !!!!"
-
-rm -rf $temp_dir || true
-
-} 2>&1 | tee $prefix/log.$name.txt
+    echo "!!!! $name build !!!!"
+    rm -rf $temp_dir || true
+} } 2>&1 | tee $prefix/log.$name.txt

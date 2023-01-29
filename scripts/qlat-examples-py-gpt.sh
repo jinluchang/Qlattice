@@ -5,9 +5,7 @@ name=qlat-examples-py-gpt
 source qcore/set-prefix.sh $name
 
 { time {
-
     echo "!!!! build $name !!!!"
-
     source qcore/conf.sh ..
 
     rsync -a --delete "$wd"/examples-py "$prefix"/
@@ -23,7 +21,5 @@ source qcore/set-prefix.sh $name
     done
 
     echo "!!!! $name build !!!!"
-
     rm -rf "$temp_dir" || true
-
 } } 2>&1 | tee $prefix/log.$name.txt

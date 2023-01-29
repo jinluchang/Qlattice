@@ -5,9 +5,7 @@ name=ninja-script
 source qcore/set-prefix.sh $name
 
 { time {
-
     echo "!!!! build $name !!!!"
-
     source qcore/conf.sh ..
 
     rm -rf "$prefix"/bin
@@ -38,7 +36,8 @@ source qcore/set-prefix.sh $name
 
     echo "ninja_path=$ninja_path"
 
-    cat - >"$prefix/bin/ninja" << EOF
+#
+cat - >"$prefix/bin/ninja" << EOF
 #!/bin/bash
 
 # Need to limit the number of JOBS by ninja
@@ -51,16 +50,13 @@ else
     "$ninja_path" -j"\$NINJA_NUM_JOBS" "\$@"
 fi
 EOF
+
+    #
     chmod +x "$prefix/bin/ninja"
 
     cat "$prefix/bin/ninja"
 
-    cd "$wd"
-
     mk-setenv.py
-
     echo "!!!! $name build !!!!"
-
     rm -rf $temp_dir || true
-
 } } 2>&1 | tee $prefix/log.$name.txt

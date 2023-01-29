@@ -1,26 +1,23 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
-
 name=python-pip
 
-{
+source qcore/set-prefix.sh
 
-echo "!!!! build $name !!!!"
+{ time {
+    echo "!!!! build $name !!!!"
+    source qcore/conf.sh .
 
-find ~/.cache/pip/wheels -type f || true
+    find ~/.cache/pip/wheels -type f || true
+    rm -rfv ~/.cache/pip/wheels || true
 
-# rm -rfv ~/.cache/pip/wheels || true
+    opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
-opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
+    time pip3 install $opts wheel
+    time pip3 uninstall setuptools -y
+    time pip3 install $opts setuptools
+    time pip3 install $opts --upgrade pip
 
-time pip3 install $opts wheel
-time pip3 uninstall setuptools -y
-time pip3 install $opts setuptools
-time pip3 install $opts --upgrade pip
-
-echo "!!!! $name build !!!!"
-
-rm -rf $temp_dir || true
-
-} 2>&1 | tee $prefix/log.$name.txt
+    echo "!!!! $name build !!!!"
+    rm -rf $temp_dir || true
+} } 2>&1 | tee $prefix/log.$name.txt

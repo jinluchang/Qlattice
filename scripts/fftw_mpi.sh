@@ -1,36 +1,33 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
+name=fftw_mpi
+pkgname=fftw
 
-name=fftw
+source qcore/set-prefix.sh $name
 
-{
+{ time {
+    echo "!!!! build $name !!!!"
+    source qcore/conf.sh ..
 
-echo "!!!! build $name !!!!"
+    rm -rf $src_dir || true
+    mkdir -p $src_dir || true
+    cd $src_dir
+    tar xzf $distfiles/$pkgname-*.tar.gz
 
-rm -rf $src_dir || true
-mkdir -p $src_dir || true
-cd $src_dir
-tar xzf $distfiles/$name-*.tar.gz
+    cd $pkgname-*
 
-cd $name-*
+    export CFLAGS="$CFLAGS -fPIC"
+    export CXXFLAGS="$CXXFLAGS -fPIC"
 
-export CFLAGS="$CFLAGS -fPIC"
-export CXXFLAGS="$CXXFLAGS -fPIC"
+    ./configure \
+        --prefix=$prefix \
+        --enable-mpi \
+        --enable-shared
 
-./configure \
-    --prefix=$prefix \
-    --enable-mpi \
-    --enable-shared
-#    MPICC=cc \
-#     --enable-openmp
+    make -j$num_proc
+    make install
 
-make -j$num_proc
-make install
-
-cd $wd
-echo "!!!! $name build !!!!"
-
-rm -rf $temp_dir || true
-
-} 2>&1 | tee $prefix/log.$name-mpi.txt
+    mk-setenv.sh
+    echo "!!!! $name build !!!!"
+    rm -rf $temp_dir || true
+} } 2>&1 | tee $prefix/log.$name.txt
