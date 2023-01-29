@@ -21,11 +21,9 @@ bin_dir = os.path.join(prefix, "bin")
 
 include_dir = os.path.join(prefix, "include")
 
-if glob.glob(f"{prefix}/lib/*.a") + glob.glob(f"{prefix}/lib/*.la") + glob.glob(f"{prefix}/lib/*.so*"):
-    lib_dir = os.path.join(prefix, "lib")
+lib_dir = os.path.join(prefix, "lib")
 
-if glob.glob(f"{prefix}/lib64/*.a") + glob.glob(f"{prefix}/lib64/*.la") + glob.glob(f"{prefix}/lib64/*.so*"):
-    lib64_dir = os.path.join(prefix, "lib64")
+lib64_dir = os.path.join(prefix, "lib64")
 
 lib_pkg_config_dir = os.path.join(prefix, "lib/pkgconfig")
 
@@ -72,13 +70,13 @@ if os.path.isdir(include_dir):
     l.append(set_env("CPLUS_INCLUDE_PATH", "include"))
     l.append("")
 
-if os.path.isdir(lib_dir):
+if glob.glob(f"{lib_dir}/*.a") + glob.glob(f"{lib_dir}/*.la") + glob.glob(f"{lib_dir}/*.so*"):
     l.append(set_env("LD_RUN_PATH", "lib"))
     l.append(set_env("LD_LIBRARY_PATH", "lib"))
     l.append(set_env("LIBRARY_PATH", "lib"))
     l.append("")
 
-if os.path.isdir(lib64_dir):
+if glob.glob(f"{lib64_dir}/*.a") + glob.glob(f"{lib64_dir}/*.la") + glob.glob(f"{lib64_dir}/*.so*"):
     l.append(set_env("LD_RUN_PATH", "lib64"))
     l.append(set_env("LD_LIBRARY_PATH", "lib64"))
     l.append(set_env("LIBRARY_PATH", "lib64"))
