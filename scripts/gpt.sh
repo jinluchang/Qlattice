@@ -5,10 +5,10 @@ name=gpt
 source qcore/set-prefix.sh $name
 
 { time {
-
     echo "!!!! build $name !!!!"
+    source qcore/conf.sh ..
 
-    mkdir -p "$prefix"/$name || true
+    mkdir -p "$prefix"/src || true
 
     rsync -av --delete $distfiles/$name/ "$prefix"/src/
 
@@ -29,12 +29,7 @@ source qcore/set-prefix.sh $name
 
     ./make "$prefix"/../Grid-clehner/src/build "$num_proc"
 
-    cd "$wd"
-
     mk-setenv.sh
-
     echo "!!!! $name build !!!!"
-
     rm -rf $temp_dir || true
-
 } } 2>&1 | tee $prefix/log.$name.txt
