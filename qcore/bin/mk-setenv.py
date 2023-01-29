@@ -18,12 +18,20 @@ prefix = os.getenv("prefix")
 assert prefix[:-1] != '/'
 
 bin_dir = os.path.join(prefix, "bin")
+
 include_dir = os.path.join(prefix, "include")
-lib_dir = os.path.join(prefix, "lib")
-lib64_dir = os.path.join(prefix, "lib64")
+
+if glob.glob(f"{prefix}/lib/*.a") + glob.glob(f"{prefix}/lib/*.la") + glob.glob(f"{prefix}/lib/*.so*"):
+    lib_dir = os.path.join(prefix, "lib")
+
+if glob.glob(f"{prefix}/lib64/*.a") + glob.glob(f"{prefix}/lib64/*.la") + glob.glob(f"{prefix}/lib64/*.so*"):
+    lib64_dir = os.path.join(prefix, "lib64")
+
 lib_pkg_config_dir = os.path.join(prefix, "lib/pkgconfig")
+
 lib64_pkg_config_dir = os.path.join(prefix, "lib64/pkgconfig")
-lib_python_dir_list = glob.glob(f"{prefix}/lib*/python3*") + glob.glob(f"{prefix}/lib*/python3*/*-packages")
+
+lib_python_dir_list = glob.glob(f"{prefix}/lib*/python3*/*-packages")
 
 setenv_fn = os.path.join(prefix, "setenv.sh")
 
