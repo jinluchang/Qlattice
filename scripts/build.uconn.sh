@@ -40,7 +40,7 @@ set -e
 ./scripts/hdf5.sh
 ./scripts/gmp.sh
 ./scripts/mpfr.sh
-./scripts/grid-clehner.avx512.sh
+./scripts/grid-clehner.avx2.sh
 ./scripts/qlat-grid.sh
 
 ./scripts/gpt.sh
