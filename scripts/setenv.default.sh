@@ -1,6 +1,6 @@
 #!/bin/bash
 
-name=setenv.default.sh
+name=setenv-default
 
 source qcore/set-prefix.sh
 

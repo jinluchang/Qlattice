@@ -1,6 +1,6 @@
 #!/bin/bash
 
-name=setenv.uconn.sh
+name=setenv-uconn
 
 source qcore/set-prefix.sh
 
