@@ -40,6 +40,22 @@ A simple lattice QCD library.
 
 `$ ./build.sh default-gpt`
 
+### Install on UCONN HPC
+
+First, download dependencies downloaded to the `distfiles` directory.
+
+`$ ./scripts/download.sh`
+
+Note you may need to download on your local computer and copy the data to the server.
+
+The default build and installation directory is `$HOME/qlat-build/default`. If a different directory is needed:
+
+`$ export prefix=DEST_DIRECTORY`
+
+Run the build script:
+
+`$ ./build.sh uconn`
+
 ### General instructions
 
 The library itself is only composed of header files located in the `qlat` directory.
@@ -88,36 +104,6 @@ It is also possible to build `Grid` and `gpt`. For examples:
 
 It may be convenient to create a symbolic link `$HOME/qlat-build/default`, which points to the actual directory `DEST_DIRECTORY`. The `prefix` environment variable can be empty if the symbolic link is created.
 
-### Install on UCONN HPC
-
-First, download dependencies downloaded to the `distfiles` directory.
-
-`$ ./scripts/download.sh`
-
-Note you may need to download on your local computer and copy the data to the server.
-
-The default build and installation directory is `$HOME/qlat-build/default`. If a different directory is needed:
-
-`$ export prefix=DEST_DIRECTORY`
-
-Run the build script:
-
-`$ ./scripts/build.uconn.run.sh`
-
-The script will submit a job to build everything needed.
-
-You can also use the following command to obtain an interactive session on a computing node:
-
-`$ fisbatch -n 2 -p generalsky`
-
-Then run
-
-`$ ./build.sh uconn`
-
-Exit the interactive session after build is finished.
-
-`$ exit`
-
 ## Install on new machines
 
 If there is no existing `./scripts/build.TARGET.sh` for the machine. You may need to create a new one. Also, you may need to create a `./scripts/setenv.TARGET.sh` script.
@@ -142,9 +128,7 @@ Once `python3` is available, the compiler wrappers will support the `--wrapper-r
 
 ## Usage:
 
-A sample `Makefile` is provided which can compile and run a simple program using the library. The `Makefile` assumes that the library and all its dependencies are installed in their default locations.
-
-There are also example programs provided in the examples directory. Once the library is completed installed, one can run the following command to compile and run all the examples:
+There are example programs provided in the examples directory. Once the library is completed installed, one can run the following command to compile and run all the examples:
 
 `./scripts/qlat-examples-cpp.sh`
 `./scripts/qlat-examples-py-gpt.sh`
