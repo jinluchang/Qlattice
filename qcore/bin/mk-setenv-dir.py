@@ -42,13 +42,15 @@ if l_init:
     l.append("# -------------------------------------------------------------------")
 
 recursive = f"""
-for v in "$setenv_prefix"/*/setenv.sh ; do
-    if [ -f "$v" ] ; then
-        echo "Loading:" "$v"
-        source "$v"
-        echo "Loaded: " "$v"
-    fi
-done
+if ! [ "--nr" = "$1" ] ; then
+    for v in "$setenv_prefix"/*/setenv.sh ; do
+        if [ -f "$v" ] ; then
+            echo "Loading:" "$v"
+            source "$v"
+            echo "Loaded: " "$v"
+        fi
+    done
+fi
 """
 
 l.append(recursive)
@@ -56,7 +58,7 @@ l.append(recursive)
 l.append("")
 l.append("}")
 l.append("")
-l.append("func")
+l.append("func \"$@\"")
 
 organize_env_path = f"""
 if python-check-version.py >/dev/null 2>&1 && which organize-env-path.py >/dev/null 2>&1 ; then

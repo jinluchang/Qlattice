@@ -37,18 +37,18 @@ fi
 
 cat >>"$prefix"/setenv-new.sh <<EOF
 
-echo "Loading: \$setenv_prefix"
-for v in "\$setenv_prefix"/*/setenv.sh ; do
-    if [ -f "\$v" ] ; then
-        echo "Loading:" "\$v"
-        source "\$v"
-    fi
-done
-echo "Loaded:  \$setenv_prefix"
+if ! [ "--nr" = "\$1" ] ; then
+    for v in "\$setenv_prefix"/*/setenv.sh ; do
+        if [ -f "\$v" ] ; then
+            echo "Loading:" "\$v"
+            source "\$v"
+        fi
+    done
+fi
 
 }
 
-func
+func "\$@"
 
 if python-check-version.py >/dev/null 2>&1 && which organize-env-path.py >/dev/null 2>&1 ; then
     eval "\$(organize-env-path.py)"
