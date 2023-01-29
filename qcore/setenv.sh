@@ -55,6 +55,6 @@ fi
 
 export PATH="$setenv_prefix/bin":"$PATH"
 
-if which python-scripts-path.py >/dev/null 2>&1 ; then
+if python-check-version.py >/dev/null 2>&1 && which python-scripts-path.py >/dev/null 2>&1 ; then
     export PATH="$(python-scripts-path.py)":"$PATH"
 fi
