@@ -39,6 +39,7 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/setenv.default.sh
+        ./scripts/qcore.sh
     - name: Build Qlattice
       run: |
         export num_proc=2
@@ -89,6 +90,7 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/setenv.default.sh
+        ./scripts/qcore.sh
     - name: Install Qlattice
       run: |
         export num_proc=2
@@ -158,6 +160,7 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/setenv.default.sh
+        ./scripts/qcore.sh
         ./scripts/eigen.sh
     - name: Build Grid
       run: |
@@ -246,6 +249,7 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/setenv.default.sh
+        ./scripts/qcore.sh
     - name: Build Qlattice
       run: |
         export num_proc=3
@@ -297,6 +301,7 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/setenv.default.sh
+        ./scripts/qcore.sh
         ./scripts/fftw.sh
         ./scripts/fftwf.sh
     - name: Install Qlattice
@@ -367,6 +372,7 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/setenv.default.sh
+        ./scripts/qcore.sh
         ./scripts/eigen.sh
         ./scripts/fftw.sh
         ./scripts/fftwf.sh
@@ -471,6 +477,7 @@ jobs:
 #      run: |
 #        export num_proc=2
 #        ./scripts/setenv.default.sh
+#        ./scripts/qcore.sh
 #        ./scripts/c-lime.sh
 #        ./scripts/grid.avx2.sh
 #    - name: Build sdist for qlat-grid
