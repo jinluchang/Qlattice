@@ -1,39 +1,30 @@
 #!/bin/bash
 
-. scripts/res/conf.sh
+name=setenv.uconn.sh
 
-name=setenv
+source qcore/set-prefix.sh
 
-mkdir -p "$prefix"
+{ time {
 
-{
+    echo "!!!! build $name !!!!"
 
-echo "!!!! build $name !!!!"
+    source qcore/conf.sh
 
-cat - scripts/res/setenv.sh >"$prefix/setenv.sh" << EOF
-echo "Sourcing '$prefix/setenv.sh'"
-export prefix="$prefix"
+#
+cat >"$prefix/setenv.sh" <<EOF
 if [ -z "\$num_proc" ] ; then
-    num_proc=4
+    export num_proc=8
 fi
 source /etc/profile
 module purge
-module add modules
-module add pre-module
-module add post-module
-module add vim/8.1
-module add git/2.27.0
-module add gcc/9.2.0
-module add mpi/openmpi/4.0.3
+module add openmpi/4.1.4
 module list
 EOF
 
-./scripts/setup-scripts.sh
+    #
 
-. "$prefix/setenv.sh" >"$prefix/log.setenv.txt" 2>&1
+    "$wd"/qcore/bin/mk-setenv-dir.sh --keep
 
-echo "!!!! $name build !!!!"
+    echo "!!!! $name build !!!!"
 
-rm -rf $temp_dir || true
-
-} 2>&1 | tee $prefix/log.$name-build.txt
+} } 2>&1 | tee $prefix/log.$name.txt
