@@ -8,9 +8,7 @@ source qcore/set-prefix.sh $name
     echo "!!!! build $name !!!!"
     source qcore/conf.sh ..
 
-    mkdir -p "$prefix/bin"
-
-    cp -rpv qcore/bin/* "$prefix"/bin/
+    time-run rsync -av --delete qcore/bin "$prefix"/
 
     cp -rpv qcore/setenv.sh "$prefix"/
 
