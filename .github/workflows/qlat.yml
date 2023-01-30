@@ -311,7 +311,6 @@ jobs:
         ./scripts/setenv.default.sh
         ./scripts/qcore.sh
         ./scripts/fftw.sh
-        ./scripts/fftwf.sh
     - name: Install Qlattice
       run: |
         export num_proc=3
@@ -383,7 +382,6 @@ jobs:
         ./scripts/qcore.sh
         ./scripts/eigen.sh
         ./scripts/fftw.sh
-        ./scripts/fftwf.sh
     - name: Build Grid-clehner
       run: |
         export num_proc=3
