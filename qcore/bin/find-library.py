@@ -32,9 +32,9 @@ def find_library(*lib_list):
         for lib in lib_list:
             if glob.glob(f"{p}/{lib}*"):
                 if p.endswith("/lib"):
-                    return p.removesuffix('/lib')
+                    return p[:-len('/lib')]
                 elif p.endswith("/lib64"):
-                    return p.removesuffix('/lib64')
+                    return p[:-len('/lib64')]
     return ""
 
 if __name__ == "__main__":

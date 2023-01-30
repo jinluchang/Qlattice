@@ -17,11 +17,11 @@ source qcore/set-prefix.sh $name
     cd $build_dir
 
     opts=""
-    if [ -n "$(find-library.py libgmp.a)" ] ; then
-        opts+=" --with-gmp=$(find-library.py libgmp.a)"
+    if [ -n "$(find-library.sh libgmp.a)" ] ; then
+        opts+=" --with-gmp=$(find-library.sh libgmp.a)"
     fi
-    if [ -n "$(find-library.py libmpfr.a)" ] ; then
-        opts+=" --with-mpfr=$(find-library.py libmpfr.a)"
+    if [ -n "$(find-library.sh libmpfr.a)" ] ; then
+        opts+=" --with-mpfr=$(find-library.sh libmpfr.a)"
     fi
 
     time-run $src_dir/$name-*/configure \

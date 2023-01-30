@@ -21,28 +21,28 @@ source qcore/set-prefix.sh $name
     export CXXFLAGS="$CXXFLAGS -DUSE_QLATTICE"
 
     opts=""
-    if [ -n "$(find-library.py libgmp.a)" ] ; then
-        opts+=" --with-gmp=$(find-library.py libgmp.a)"
+    if [ -n "$(find-library.sh libgmp.a)" ] ; then
+        opts+=" --with-gmp=$(find-library.sh libgmp.a)"
     fi
-    if [ -n "$(find-library.py libmpfr.a)" ] ; then
-        opts+=" --with-mpfr=$(find-library.py libmpfr.a)"
+    if [ -n "$(find-library.sh libmpfr.a)" ] ; then
+        opts+=" --with-mpfr=$(find-library.sh libmpfr.a)"
     fi
-    if [ -n "$(find-library.py libfftw3.a)" ] ; then
-        opts+=" --with-fftw=$(find-library.py libfftw3.a)"
+    if [ -n "$(find-library.sh libfftw3.a)" ] ; then
+        opts+=" --with-fftw=$(find-library.sh libfftw3.a)"
     fi
-    if [ -n "$(find-library.py liblime.a)" ] ; then
-        opts+=" --with-lime=$(find-library.py liblime.a)"
+    if [ -n "$(find-library.sh liblime.a)" ] ; then
+        opts+=" --with-lime=$(find-library.sh liblime.a)"
     fi
-    if [ -n "$(find-library.py libcrypto.a)" ] ; then
-        opts+=" --with-openssl=$(find-library.py libcrypto.a)"
+    if [ -n "$(find-library.sh libcrypto.a)" ] ; then
+        opts+=" --with-openssl=$(find-library.sh libcrypto.a)"
     fi
-    if [ -n "$(find-library.py libhdf5_hl_cpp.a)" ] ; then
-        opts+=" --with-hdf5=$(find-library.py libhdf5_hl_cpp.a)"
+    if [ -n "$(find-library.sh libhdf5_hl_cpp.a)" ] ; then
+        opts+=" --with-hdf5=$(find-library.sh libhdf5_hl_cpp.a)"
     fi
 
-    if [ -n "$(find-library.py libz.a)" ] ; then
-        LDFLAGS+=" -L$(find-library.py libz.a)/lib"
-        CXXFLAGS+=" -I$(find-library.py libz.a)/include"
+    if [ -n "$(find-library.sh libz.a)" ] ; then
+        LDFLAGS+=" -L$(find-library.sh libz.a)/lib"
+        CXXFLAGS+=" -I$(find-library.sh libz.a)/include"
         export LDFLAGS
         export CXXFLAGS
     fi
