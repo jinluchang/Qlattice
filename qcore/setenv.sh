@@ -25,6 +25,8 @@ if [ -z "${num_proc+x}" ] ; then
     export num_proc=2
 fi
 
+export NINJA_NUM_JOBS="$num_proc"
+
 if [ -z "${USE_COMPILER+x}" ] ; then
     export USE_COMPILER=gcc
 fi
@@ -43,10 +45,6 @@ fi
 
 if [ -z "${MPICXX+x}" ] ; then
     export MPICXX=MPICXX.sh
-fi
-
-if [ -z "${NINJA_NUM_JOBS+x}" ] ; then
-    export NINJA_NUM_JOBS="$num_proc"
 fi
 
 if [ -z "${OMP_NUM_THREADS+x}" ] ; then
