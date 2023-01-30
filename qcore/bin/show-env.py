@@ -27,8 +27,8 @@ def show_env(env):
     l = get_colon_list(val)
     if not l:
         return f"{env} = []"
-    l_str = "'\n    '".join(l)
-    return f"{env} = [\n    '{l_str}'\n    ]"
+    l_str = "',\n    '".join(l)
+    return f"{env} = [\n    '{l_str}',\n    ]"
 
 def show_env_list(env_list):
     l = []
