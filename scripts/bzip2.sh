@@ -14,8 +14,8 @@ source qcore/set-prefix.sh $name
     time-run tar xaf $distfiles/$name-*
 
     cd $src_dir/$name-*
-    make -j$num_proc CC="$CC -fPIC"
-    make install PREFIX="$prefix"
+    time-run make -j$num_proc CC="$CC -fPIC"
+    time-run make install PREFIX="$prefix"
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"

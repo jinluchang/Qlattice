@@ -24,10 +24,10 @@ source qcore/set-prefix.sh $name
         --enable-mpi \
         --enable-shared
 
-    make -j$num_proc
-    make install
+    time-run make -j$num_proc
+    time-run make install
 
-    make clean
+    time-run make clean
 
     time-run ./configure \
         --prefix=$prefix \
@@ -35,8 +35,8 @@ source qcore/set-prefix.sh $name
         --enable-mpi \
         --enable-shared
 
-    make -j$num_proc
-    make install
+    time-run make -j$num_proc
+    time-run make install
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"

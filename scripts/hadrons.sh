@@ -24,8 +24,8 @@ source qcore/set-prefix.sh $name
         --with-grid="$(find-library.py libGrid.a)" \
         --prefix="$prefix" \
 
-    make -j "$num_proc"
-    make install
+    time-run make -j "$num_proc"
+    time-run make install
 
     cd $wd
 

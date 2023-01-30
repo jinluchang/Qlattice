@@ -20,8 +20,8 @@ source qcore/set-prefix.sh $name
         --build="$(arch)" \
         --prefix=$prefix
 
-    make # do not support parallel build
-    make install
+    time-run make # do not support parallel build
+    time-run make install
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"

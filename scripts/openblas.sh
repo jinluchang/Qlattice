@@ -15,8 +15,8 @@ source qcore/set-prefix.sh $name
 
     cd $src_dir/$name-*
 
-    make MAKE_NB_JOBS=$num_proc
-    make install PREFIX=$prefix
+    time-run make MAKE_NB_JOBS=$num_proc
+    time-run make install PREFIX=$prefix
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"

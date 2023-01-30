@@ -18,8 +18,8 @@ source qcore/set-prefix.sh $name
         -des \
         -Dprefix=$prefix
 
-    make -j$num_proc
-    make install
+    time-run make -j$num_proc
+    time-run make install
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"

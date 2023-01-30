@@ -23,7 +23,7 @@ source qcore/set-prefix.sh $name
         --prefix=$prefix
 
     time-run meson compile -C $build_dir
-    meson install
+    time-run meson install
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"

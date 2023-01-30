@@ -25,9 +25,9 @@ source qcore/set-prefix.sh $name
     echo "COLOR(3)" >> lib/spin_color.h
     echo "SPIN_COLOR(4,3)" >> lib/spin_color.h
 
-    ./clean
+    time-run ./clean
 
-    ./make %grid-config "$num_proc"
+    time-run ./make %grid-config "$num_proc"
 
     rm -rfv "$prefix"/lib
     mkdir -pv "$prefix"/lib/python3/dist-packages

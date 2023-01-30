@@ -36,8 +36,8 @@ source qcore/set-prefix.sh $name
         $opts \
         --disable-multilib
 
-    make -j$num_proc
-    make install
+    time-run make -j$num_proc
+    time-run make install
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"

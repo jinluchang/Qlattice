@@ -23,18 +23,18 @@ source qcore/set-prefix.sh $name
         --prefix=$prefix \
         --enable-shared
 
-    make -j$num_proc
-    make install
+    time-run make -j$num_proc
+    time-run make install
 
-    make clean
+    time-run make clean
 
     time-run ./configure \
         --prefix=$prefix \
         --enable-float \
         --enable-shared
 
-    make -j$num_proc
-    make install
+    time-run make -j$num_proc
+    time-run make install
 
     cd "$wd"
 

@@ -24,7 +24,7 @@ source qcore/set-prefix.sh $name
         export LIBS="$QLAT_LIBS"
     fi
 
-    time-run q_verbose=1 make -C "$prefix"/examples-py run || true
+    q_verbose=1 time-run make -C "$prefix"/examples-py run || true
 
     cd "$wd"
 

@@ -17,14 +17,14 @@ source qcore/set-prefix.sh $name
     mkdir -p $build_dir || true
     cd $build_dir
 
-    cmake $src_dir/$name-* \
+    time-run cmake $src_dir/$name-* \
         -DCMAKE_INSTALL_PREFIX=$prefix \
         -DLAPACKE=ON \
         -DLAPACKE_WITH_TMG=ON \
         .
 
-    make -j$num_proc
-    make install
+    time-run make -j$num_proc
+    time-run make install
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"
