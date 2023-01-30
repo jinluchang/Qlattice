@@ -9,10 +9,8 @@ source qcore/set-prefix.sh $name
     source qcore/conf.sh ..
 
     mkdir -p "$src_dir" || true
-
-    time-run rsync -a --delete $distfiles/$name/ "$src_dir"
-
-    cd "$src_dir"
+    time-run rsync -a --delete "$distfiles/$name" "$src_dir"
+    cd "$src_dir/$name"
 
     cd lib/cgpt
 
@@ -30,9 +28,16 @@ source qcore/set-prefix.sh $name
     time-run ./make %grid-config "$num_proc"
 
     rm -rfv "$prefix"/lib
+    rm -rfv "$prefix"/src
     mkdir -pv "$prefix"/lib/python3/dist-packages
-    time-run rsync -a --delete "$prefix"/src/lib/gpt "$prefix"/lib/python3/dist-packages/
-    time-run rsync -a --delete "$prefix"/src/lib/cgpt/build/cgpt.so "$prefix"/lib/python3/dist-packages/
+    mkdir -pv "$prefix"/src
+    time-run rsync -a --delete "$src_dir/$name"/lib/gpt "$prefix"/lib/python3/dist-packages/
+    time-run rsync -a --delete "$src_dir/$name"/lib/cgpt/build/cgpt.so "$prefix"/lib/python3/dist-packages/
+    time-run rsync -a --delete "$src_dir/$name"/tests "$prefix"/src/
+    time-run rsync -a --delete "$src_dir/$name"/applications "$prefix"/src/
+    time-run rsync -a --delete "$src_dir/$name"/benchmarks "$prefix"/src/
+    time-run rsync -a --delete "$src_dir/$name"/documentation "$prefix"/src/
+    time-run rsync -a --delete "$src_dir/$name"/docker "$prefix"/src/
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"
