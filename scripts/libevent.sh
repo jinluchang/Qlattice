@@ -18,6 +18,7 @@ source qcore/set-prefix.sh $name
     cd $build_dir
 
     time-run $src_dir/$name-*/configure \
+        --disable-openssl \
         --prefix=$prefix
 
     time-run make -j$num_proc
