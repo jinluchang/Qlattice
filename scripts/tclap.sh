@@ -11,11 +11,11 @@ source qcore/set-prefix.sh $name
     rm -rf $src_dir || true
     mkdir -p $src_dir || true
     cd $src_dir
-    debug tar xaf $distfiles/$name-*
+    time-run tar xaf $distfiles/$name-*
 
     cd $src_dir/$name-*
 
-    debug ./configure \
+    time-run ./configure \
         --prefix=$prefix
 
     make -j$num_proc

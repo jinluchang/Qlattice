@@ -11,7 +11,7 @@ source qcore/set-prefix.sh $name
     rm -rf $src_dir
     mkdir -p $src_dir
     cd $src_dir
-    debug tar xaf $distfiles/$name-*
+    time-run tar xaf $distfiles/$name-*
 
     rm -rf $build_dir || true
     mkdir -p $build_dir || true

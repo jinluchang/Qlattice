@@ -8,9 +8,9 @@ source qcore/set-prefix.sh $name
     echo "!!!! build $name !!!!"
     source qcore/conf.sh ..
 
-    debug rsync -a --delete "$wd"/examples-py "$prefix"/
+    time-run rsync -a --delete "$wd"/examples-py "$prefix"/
 
-    time q_verbose=1 make -C "$prefix"/examples-py run-gpt || true
+    time-run q_verbose=1 make -C "$prefix"/examples-py run-gpt || true
 
     cd "$wd"
 

@@ -10,13 +10,13 @@ source qcore/set-prefix.sh $name
 
     mkdir -p $src_dir
     cd $src_dir
-    debug tar xzf $distfiles/$name-*.tar.*
+    time-run tar xzf $distfiles/$name-*.tar.*
 
     export CFLAGS="$CFLAGS -fPIC"
     export CXXFLAGS="$CXXFLAGS -fPIC"
 
     cd $name-*
-    debug ./configure \
+    time-run ./configure \
         --build="$(arch)" \
         --prefix=$prefix
 

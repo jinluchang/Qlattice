@@ -11,7 +11,7 @@ source qcore/set-prefix.sh $name
     rm -rf $src_dir || true
     mkdir -p $src_dir || true
     cd $src_dir
-    debug tar xaf $distfiles/$name-*
+    time-run tar xaf $distfiles/$name-*
 
     rm -rf $build_dir || true
     mkdir -p $build_dir || true
@@ -25,7 +25,7 @@ source qcore/set-prefix.sh $name
         export LIBS="-lffi"
     fi
 
-    debug $src_dir/$name-*/configure \
+    time-run $src_dir/$name-*/configure \
         --prefix=$prefix
 
     make -j$num_proc

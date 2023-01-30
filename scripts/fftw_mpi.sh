@@ -12,14 +12,14 @@ source qcore/set-prefix.sh $name
     rm -rf $src_dir || true
     mkdir -p $src_dir || true
     cd $src_dir
-    debug tar xzf $distfiles/$pkgname-*.tar.gz
+    time-run tar xzf $distfiles/$pkgname-*.tar.gz
 
     cd $pkgname-*
 
     export CFLAGS="$CFLAGS -fPIC"
     export CXXFLAGS="$CXXFLAGS -fPIC"
 
-    debug ./configure \
+    time-run ./configure \
         --prefix=$prefix \
         --enable-mpi \
         --enable-shared
@@ -29,7 +29,7 @@ source qcore/set-prefix.sh $name
 
     make clean
 
-    debug ./configure \
+    time-run ./configure \
         --prefix=$prefix \
         --enable-float \
         --enable-mpi \

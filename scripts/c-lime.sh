@@ -13,7 +13,7 @@ source qcore/set-prefix.sh $name
     rm -rf $src_dir || true
     mkdir -p $src_dir || true
     cd $src_dir
-    debug tar xzf $distfiles/$name.tar.gz
+    time-run tar xzf $distfiles/$name.tar.gz
 
     cd *"$name"*
     ./autogen.sh
@@ -26,7 +26,7 @@ source qcore/set-prefix.sh $name
     export CFLAGS="$CFLAGS -fPIC"
     export CXXFLAGS="$CXXFLAGS -fPIC"
 
-    debug "$src_dir"/*"$name"*/configure \
+    time-run "$src_dir"/*"$name"*/configure \
         --prefix="$prefix"
 
     make -j$num_proc

@@ -8,7 +8,7 @@ source qcore/set-prefix.sh $name
     echo "!!!! build $name !!!!"
     source qcore/conf.sh ..
 
-    debug rsync -a --delete "$wd"/examples-py "$prefix"/
+    time-run rsync -a --delete "$wd"/examples-py "$prefix"/
 
     if [ -n "$QLAT_MPICXX" ] ; then
         export MPICXX="$QLAT_MPICXX"
@@ -24,7 +24,7 @@ source qcore/set-prefix.sh $name
         export LIBS="$QLAT_LIBS"
     fi
 
-    time q_verbose=1 make -C "$prefix"/examples-py run || true
+    time-run q_verbose=1 make -C "$prefix"/examples-py run || true
 
     cd "$wd"
 

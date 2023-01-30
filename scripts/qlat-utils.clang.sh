@@ -32,10 +32,10 @@ source qcore/set-prefix.sh $name
 
     touch "$wd"/qlat-utils/meson.build
 
-    meson setup "$wd/qlat-utils" \
+    time-run meson setup "$wd/qlat-utils" \
         --prefix="$prefix"
 
-    time meson compile -j$num_proc
+    time-run meson compile -j$num_proc
     meson install
 
     mk-setenv.sh

@@ -13,15 +13,15 @@ source qcore/set-prefix.sh $name
 
     opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
-    time pip3 install $opts flit_core
-    time pip3 install $opts tomli
-    time pip3 install $opts packaging
-    time pip3 install $opts pep517
-    time pip3 install $opts build
-    time pip3 install $opts pyproject-metadata
-    time pip3 install $opts setuptools_scm
-    time pip3 install $opts scikit-build
-    time pip3 install $opts meson-python
+    time-run pip3 install $opts flit_core
+    time-run pip3 install $opts tomli
+    time-run pip3 install $opts packaging
+    time-run pip3 install $opts pep517
+    time-run pip3 install $opts build
+    time-run pip3 install $opts pyproject-metadata
+    time-run pip3 install $opts setuptools_scm
+    time-run pip3 install $opts scikit-build
+    time-run pip3 install $opts meson-python
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"

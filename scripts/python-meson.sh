@@ -13,8 +13,8 @@ source qcore/set-prefix.sh $name
 
     opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
-    time pip3 install $opts meson
-    time pip3 install $opts ninja
+    time-run pip3 install $opts meson
+    time-run pip3 install $opts ninja
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"

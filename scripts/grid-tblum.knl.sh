@@ -10,7 +10,7 @@ source qcore/set-prefix.sh $name
 
     mkdir -p "$prefix"/src || true
 
-    debug rsync -a --delete $distfiles/$name/ "$prefix"/src
+    time-run rsync -a --delete $distfiles/$name/ "$prefix"/src
 
     cd "$prefix/src"
 
@@ -60,7 +60,7 @@ source qcore/set-prefix.sh $name
 
     mkdir build
     cd build
-    debug ../configure \
+    time-run ../configure \
         --enable-simd=KNL \
         --enable-alloc-align=4k \
         --enable-comms=mpi-auto \

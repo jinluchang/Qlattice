@@ -10,12 +10,12 @@ source qcore/set-prefix.sh $name
 
     mkdir -p $src_dir
     cd $src_dir
-    debug tar xaf $distfiles/$name-*.xz
+    time-run tar xaf $distfiles/$name-*.xz
 
     cd $name-*
     mkdir -p build
 
-    debug cmake \
+    time-run cmake \
         -S llvm -B build -G Ninja \
         -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;openmp;lld" \
         -DLLVM_ENABLE_RUNTIMES="libc;libcxx;libcxxabi;libunwind" \

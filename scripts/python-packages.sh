@@ -25,13 +25,13 @@ source qcore/set-prefix.sh $name
 
     opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
-    time pip3 install $opts psutil
-    time pip3 install $opts sympy
-    time pip3 install $opts cython
-    time pip3 install $opts pythran
-    time pip3 install $opts pybind11
-    time pip3 install $opts numpy
-    time pip3 install $opts scipy
+    time-run pip3 install $opts psutil
+    time-run pip3 install $opts sympy
+    time-run pip3 install $opts cython
+    time-run pip3 install $opts pythran
+    time-run pip3 install $opts pybind11
+    time-run pip3 install $opts numpy
+    time-run pip3 install $opts scipy
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"

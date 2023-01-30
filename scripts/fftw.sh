@@ -13,13 +13,13 @@ source qcore/set-prefix.sh $name
     rm -rf $src_dir || true
     mkdir -p $src_dir || true
     cd $src_dir
-    debug tar xzf $distfiles/$name-*.tar.gz
+    time-run tar xzf $distfiles/$name-*.tar.gz
 
     cd $name-*
     export CFLAGS="$CFLAGS -fPIC"
     export CXXFLAGS="$CXXFLAGS -fPIC"
 
-    debug ./configure \
+    time-run ./configure \
         --prefix=$prefix \
         --enable-shared
 
@@ -28,7 +28,7 @@ source qcore/set-prefix.sh $name
 
     make clean
 
-    debug ./configure \
+    time-run ./configure \
         --prefix=$prefix \
         --enable-float \
         --enable-shared

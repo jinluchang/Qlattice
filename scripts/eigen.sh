@@ -10,9 +10,9 @@ source qcore/set-prefix.sh $name
 
     mkdir -p "$src_dir"
     cd "$src_dir"
-    debug tar xjf "$distfiles/$name"-*
+    time-run tar xjf "$distfiles/$name"-*
 
-    debug rsync -a --delete "$src_dir/$name"-*/{Eigen,signature_of_eigen3_matrix_library,unsupported} "$prefix"/include/
+    time-run rsync -a --delete "$src_dir/$name"-*/{Eigen,signature_of_eigen3_matrix_library,unsupported} "$prefix"/include/
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"

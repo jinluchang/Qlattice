@@ -27,10 +27,10 @@ source qcore/set-prefix.sh $name
 
     touch "$wd"/qlat-grid/meson.build
 
-    meson setup "$wd/qlat-grid" \
+    time-run meson setup "$wd/qlat-grid" \
         --prefix="$prefix"
 
-    time meson compile -j$num_proc
+    time-run meson compile -j$num_proc
     meson install
 
     mk-setenv.sh

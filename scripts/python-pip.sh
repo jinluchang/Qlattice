@@ -13,10 +13,10 @@ source qcore/set-prefix.sh $name
 
     opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
-    time pip3 install $opts wheel
-    time pip3 uninstall setuptools -y
-    time pip3 install $opts setuptools
-    time pip3 install $opts --upgrade pip
+    time-run pip3 install $opts wheel
+    time-run pip3 uninstall setuptools -y
+    time-run pip3 install $opts setuptools
+    time-run pip3 install $opts --upgrade pip
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"
