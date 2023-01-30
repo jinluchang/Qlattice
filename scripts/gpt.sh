@@ -30,9 +30,9 @@ source qcore/set-prefix.sh $name
     ./make %grid-config "$num_proc"
 
     rm -rfv "$prefix"/lib
-    mkdir -p "$prefix"/lib/python3/dist-packages
-    ln -s "$prefix"/src/lib/gpt "$prefix"/lib/python3/dist-packages/gpt
-    ln -s "$prefix"/src/lib/cgpt/build/cgpt.so "$prefix"/lib/python3/dist-packages/cgpt.so
+    mkdir -pv "$prefix"/lib/python3/dist-packages
+    ln -sv "$prefix"/src/lib/gpt "$prefix"/lib/python3/dist-packages/gpt
+    ln -sv "$prefix"/src/lib/cgpt/build/cgpt.so "$prefix"/lib/python3/dist-packages/cgpt.so
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"
