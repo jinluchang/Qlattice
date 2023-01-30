@@ -11,11 +11,11 @@ if [ gcc = "$USE_COMPILER" ] ; then
 elif [ intel = "$USE_COMPILER" ] ; then
     $run icc "$@"
 elif [ clang = "$USE_COMPILER" ] ; then
-    $run clang --gcc-toolchain="$(dirname $(dirname $(which gcc)))" "$@"
+    $run clang "$@"
 elif which icc >/dev/null 2>&1 ; then
     $run icc "$@"
 elif which clang >/dev/null 2>&1 ; then
-    $run clang --gcc-toolchain="$(dirname $(dirname $(which gcc)))" "$@"
+    $run clang "$@"
 else
     $run gcc "$@"
 fi
