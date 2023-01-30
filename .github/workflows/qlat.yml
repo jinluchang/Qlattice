@@ -190,19 +190,28 @@ jobs:
         ! git diff | grep '^[+-]CHECK: '
     - name: Build more packages Grid
       run: |
+        source ~/qlat-build/default/setenv.sh
         export num_proc=2
+        export prefix=~/qlat-build/hadrons
+        ./scripts/setenv.default.sh
         USE_COMPILER=clang ./scripts/grid.avx2.sh
     - name: Build more packages Hadrons
       run: |
+        source ~/qlat-build/default/setenv.sh
         export num_proc=2
+        export prefix=~/qlat-build/hadrons
         USE_COMPILER=clang ./scripts/hadrons.sh
     - name: Build more packages Grid-tblum
       run: |
+        source ~/qlat-build/default/setenv.sh
         export num_proc=2
+        export prefix=~/qlat-build/tblum
+        ./scripts/setenv.default.sh
         USE_COMPILER=clang ./scripts/grid-tblum.avx2.sh
     - name: Build more packages Hadrons-tblum
       run: |
         export num_proc=2
+        export prefix=~/qlat-build/tblum
         USE_COMPILER=clang ./scripts/hadrons-tblum.sh
     - name: Check error for Build more packages
       run: |
@@ -408,19 +417,28 @@ jobs:
         ! git diff | grep '^[+-]CHECK: '
     - name: Build more packages Grid
       run: |
+        source ~/qlat-build/default/setenv.sh
         export num_proc=3
+        export prefix=~/qlat-build/hadrons
+        ./scripts/setenv.default.sh
         USE_COMPILER=clang ./scripts/grid.gen16.sh
     - name: Build more packages Hadrons
       run: |
+        source ~/qlat-build/default/setenv.sh
         export num_proc=3
+        export prefix=~/qlat-build/hadrons
         USE_COMPILER=clang ./scripts/hadrons.sh
     - name: Build more packages Grid-tblum
       run: |
+        source ~/qlat-build/default/setenv.sh
         export num_proc=3
+        export prefix=~/qlat-build/tblum
+        ./scripts/setenv.default.sh
         USE_COMPILER=clang ./scripts/grid-tblum.gen16.sh
     - name: Build more packages Hadrons-tblum
       run: |
         export num_proc=3
+        export prefix=~/qlat-build/tblum
         USE_COMPILER=clang ./scripts/hadrons-tblum.sh
     - name: Check error for Build more packages
       run: |
