@@ -20,6 +20,9 @@ source qcore/set-prefix.sh $name
     if [ -n "$(find-library.py libgmp.a)" ] ; then
         opts+=" --with-gmp=$(find-library.py libgmp.a)"
     fi
+    if [ -n "$(find-library.py libmpfr.a)" ] ; then
+        opts+=" --with-mpfr=$(find-library.py libmpfr.a)"
+    fi
 
     debug $src_dir/$name-*/configure \
         $opts \
