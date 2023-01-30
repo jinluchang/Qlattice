@@ -27,7 +27,7 @@ source qcore/set-prefix.sh $name
     cd build
 
     debug ../configure \
-        --with-grid="$prefix/../Grid-tblum" \
+        --with-grid="$(find-library.py libGrid.a)" \
         --prefix="$prefix"
 
     make -j "$num_proc"
