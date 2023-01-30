@@ -17,7 +17,7 @@ source qcore/set-prefix.sh $name
     mkdir -p $build_dir || true
     cd $build_dir
 
-    "$src_dir/$name"*/unix/configure \
+    debug "$src_dir/$name"*/unix/configure \
         --prefix=$prefix
 
     make -j$num_proc

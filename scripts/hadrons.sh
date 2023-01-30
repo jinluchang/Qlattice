@@ -20,7 +20,7 @@ source qcore/set-prefix.sh $name
 
     cd build
 
-    ../configure \
+    debug ../configure \
         --with-grid="$prefix/../Grid" \
         --prefix="$prefix" \
 

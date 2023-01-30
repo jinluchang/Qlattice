@@ -19,7 +19,7 @@ source qcore/set-prefix.sh $name
     export CFLAGS="$CFLAGS -fPIC"
     export CXXFLAGS="$CXXFLAGS -fPIC"
 
-    ./configure \
+    debug ./configure \
         --prefix=$prefix \
         --enable-mpi \
         --enable-shared
@@ -29,7 +29,7 @@ source qcore/set-prefix.sh $name
 
     make clean
 
-    ./configure \
+    debug ./configure \
         --prefix=$prefix \
         --enable-float \
         --enable-mpi \

@@ -25,7 +25,7 @@ source qcore/set-prefix.sh $name
         export LIBS="-lffi"
     fi
 
-    $src_dir/$name-*/configure \
+    debug $src_dir/$name-*/configure \
         --prefix=$prefix
 
     make -j$num_proc

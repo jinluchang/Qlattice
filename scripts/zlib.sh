@@ -19,7 +19,7 @@ source qcore/set-prefix.sh $name
 
     CFLAGS="-O3 -fPIC"
 
-    $src_dir/$name-*/configure \
+    debug $src_dir/$name-*/configure \
         --prefix=$prefix
 
     make -j$num_proc

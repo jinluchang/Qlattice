@@ -26,7 +26,7 @@ source qcore/set-prefix.sh $name
 
     cd build
 
-    ../configure \
+    debug ../configure \
         --with-grid="$prefix/../Grid-tblum" \
         --prefix="$prefix"
 

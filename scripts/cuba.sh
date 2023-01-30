@@ -16,7 +16,7 @@ source qcore/set-prefix.sh $name
     export CXXFLAGS="$CXXFLAGS -fPIC"
 
     cd $name-*
-    ./configure \
+    debug ./configure \
         --build="$(arch)" \
         --prefix=$prefix
 

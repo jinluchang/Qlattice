@@ -21,7 +21,7 @@ source qcore/set-prefix.sh $name
         opts+=" --with-gmp=$(find-library.py libgmp.a)"
     fi
 
-    $src_dir/$name-*/configure \
+    debug $src_dir/$name-*/configure \
         $opts \
         --prefix=$prefix
 
