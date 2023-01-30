@@ -16,7 +16,7 @@ source qcore/set-prefix.sh $name
     time-run tar xzf $distfiles/$name.tar.gz
 
     cd *"$name"*
-    ./autogen.sh
+    time-run ./autogen.sh
     cd ..
 
     rm -rf $build_dir || true
