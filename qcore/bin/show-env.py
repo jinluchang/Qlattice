@@ -77,6 +77,7 @@ all_env_var_list = [
         "LDFLAGS",
         "LIBS",
         "LD_PRELOAD",
+        "NINJA_NUM_JOBS",
         ]
 
 if __name__ == "__main__":
