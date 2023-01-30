@@ -9,6 +9,8 @@
 
 set -e
 
+date
+
 export wd="$(pwd)"
 
 if ! [ -f "$wd/qcore/conf.sh" -a -f "$wd/qcore/set-prefix.sh" ] ; then
