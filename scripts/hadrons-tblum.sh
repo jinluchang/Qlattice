@@ -5,16 +5,12 @@ name=Hadrons-tblum
 source qcore/set-prefix.sh $name
 
 { time {
-
     echo "!!!! build $name !!!!"
-
     source qcore/conf.sh ..
 
-    mkdir -p "$prefix"/src || true
-
-    time-run rsync -a --delete $distfiles/$name/ "$prefix"/src
-
-    cd "$prefix/src"
+    mkdir -p "$src_dir" || true
+    time-run rsync -a --delete $distfiles/$name "$src_dir"/
+    cd "$src_dir/$name"
 
     if which qlat-include >/dev/null 2>&1 ; then
         for v in $(qlat-include) ; do
@@ -23,9 +19,7 @@ source qcore/set-prefix.sh $name
     fi
 
     mkdir build
-
     cd build
-
     time-run ../configure \
         --with-grid="$(find-library.py libGrid.a)" \
         --prefix="$prefix"
@@ -33,12 +27,7 @@ source qcore/set-prefix.sh $name
     time-run make -j "$num_proc"
     time-run make install
 
-    cd "$wd"
-
     mk-setenv.sh
-
     echo "!!!! $name build !!!!"
-
     rm -rf $temp_dir || true
-
 } } 2>&1 | tee $prefix/log.$name.txt
