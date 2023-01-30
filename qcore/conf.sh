@@ -35,8 +35,8 @@ done
 
 func "$@"
 
-if which python3 >/dev/null 2>&1 ; then
-    qcore/bin/show-env.py
+if "$wd"/qcore/bin/python-check-version.py >/dev/null 2>&1 ; then
+    "$wd"/qcore/bin/show-env.py
 fi
 
 distfiles="$wd/distfiles"

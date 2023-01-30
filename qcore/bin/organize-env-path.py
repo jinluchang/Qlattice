@@ -8,24 +8,38 @@ if not (sys.version_info.major == 3 and sys.version_info.minor >= 6):
     sys.exit(1)
 
 import os
+import sysconfig
 
-def organize_colon_list(str_colon_separated_list):
+def get_colon_list(str_colon_separated_list):
     l = str_colon_separated_list.split(':')
     if not l:
         return []
     elif l[-1] == "":
         l.pop()
+    return l
+
+def unique_list(l):
     l_new = []
     for v in l:
         if v not in l_new:
             l_new.append(v)
-    return ':'.join(l_new)
+    return l_new
+
+def organize_colon_list(str_colon_separated_list):
+    return ':'.join(unique_list(get_colon_list(str_colon_separated_list)))
 
 def set_env(env):
     val = os.getenv(env)
     if val is None:
         return None
-    val = organize_colon_list(val)
+    if env == "PATH":
+        l = get_colon_list(val)
+        user_scripts_path = sysconfig.get_path('scripts', f'{os.name}_user')
+        if user_scripts_path not in l:
+            l = [ user_scripts_path, ] + l
+        val = ':'.join(unique_list(l))
+    else:
+        val = organize_colon_list(val)
     return f"export {env}='{val}'"
 
 def set_env_list(env_list):
