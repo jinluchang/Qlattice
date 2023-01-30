@@ -16,7 +16,9 @@ source qcore/set-prefix.sh $name
 
     geo_options="--grid 16.16.16.16 --mpi 1.1.1.1"
 
-    OMP_NUM_THREADS=4 $prefix/../Grid-clehner/bin/Benchmark_dwf_fp32 $grid_options $geo_options
+    grid_prefix="$(grid-config --prefix)"
+
+    OMP_NUM_THREADS=4 $grid_prefix/bin/Benchmark_dwf_fp32 $grid_options $geo_options
 
     echo "!!!! $name build !!!!"
     rm -rf $temp_dir || true
