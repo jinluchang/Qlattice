@@ -8,11 +8,11 @@ source qcore/set-prefix.sh $name
     echo "!!!! build $name !!!!"
     source qcore/conf.sh ..
 
-    mkdir -p "$prefix"/src || true
+    mkdir -p "$src_dir" || true
 
-    time-run rsync -a --delete $distfiles/$name/ "$prefix"/src/
+    time-run rsync -a --delete $distfiles/$name/ "$src_dir"
 
-    cd "$prefix/src"
+    cd "$src_dir"
 
     cd lib/cgpt
 
@@ -31,8 +31,8 @@ source qcore/set-prefix.sh $name
 
     rm -rfv "$prefix"/lib
     mkdir -pv "$prefix"/lib/python3/dist-packages
-    ln -sv "$prefix"/src/lib/gpt "$prefix"/lib/python3/dist-packages/gpt
-    ln -sv "$prefix"/src/lib/cgpt/build/cgpt.so "$prefix"/lib/python3/dist-packages/cgpt.so
+    time-run rsync -a --delete "$prefix"/src/lib/gpt "$prefix"/lib/python3/dist-packages/
+    time-run rsync -a --delete "$prefix"/src/lib/cgpt/build/cgpt.so "$prefix"/lib/python3/dist-packages/
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"

@@ -8,11 +8,9 @@ source qcore/set-prefix.sh $name
     echo "!!!! build $name !!!!"
     source qcore/conf.sh ..
 
-    mkdir -p "$prefix"/$name || true
-
-    time-run rsync -a --delete "$distfiles/$name/" "$prefix"/src/
-
-    cd "$prefix/src"
+    mkdir -p "$src_dir" || true
+    time-run rsync -a --delete $distfiles/$name "$src_dir"/
+    cd "$src_dir/$name"
 
     INITDIR="$(pwd)"
     rm -rfv "${INITDIR}/Eigen/Eigen/unsupported"
