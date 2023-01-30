@@ -11,7 +11,7 @@ source qcore/set-prefix.sh $name
     rm -rf $src_dir
     mkdir -p $src_dir
     cd $src_dir
-    tar xaf $distfiles/$name-*.tar.*
+    debug tar xaf $distfiles/$name-*.tar.*
 
     cd $name-*
     ./Configure \

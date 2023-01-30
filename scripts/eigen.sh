@@ -10,7 +10,7 @@ source qcore/set-prefix.sh $name
 
     mkdir -p "$src_dir"
     cd "$src_dir"
-    tar xjf "$distfiles/$name"-*
+    debug tar xjf "$distfiles/$name"-*
 
     debug rsync -a --delete "$src_dir/$name"-*/{Eigen,signature_of_eigen3_matrix_library,unsupported} "$prefix"/include/
 

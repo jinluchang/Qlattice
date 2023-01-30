@@ -10,7 +10,7 @@ source qcore/set-prefix.sh $name
 
     mkdir -p $src_dir
     cd $src_dir
-    tar xzf $distfiles/$name-*.tar.*
+    debug tar xzf $distfiles/$name-*.tar.*
 
     export CFLAGS="$CFLAGS -fPIC"
     export CXXFLAGS="$CXXFLAGS -fPIC"

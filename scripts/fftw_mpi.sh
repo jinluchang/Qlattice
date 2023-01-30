@@ -12,7 +12,7 @@ source qcore/set-prefix.sh $name
     rm -rf $src_dir || true
     mkdir -p $src_dir || true
     cd $src_dir
-    tar xzf $distfiles/$pkgname-*.tar.gz
+    debug tar xzf $distfiles/$pkgname-*.tar.gz
 
     cd $pkgname-*
 

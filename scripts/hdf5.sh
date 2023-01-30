@@ -13,7 +13,7 @@ source qcore/set-prefix.sh $name
     rm -rf $src_dir || true
     mkdir -p $src_dir || true
     cd $src_dir
-    tar xjf $distfiles/$name-*
+    debug tar xjf $distfiles/$name-*
 
     rm -rf $build_dir || true
     mkdir -p $build_dir || true

@@ -10,7 +10,7 @@ source qcore/set-prefix.sh $name
 
     mkdir -p $src_dir
     cd $src_dir
-    tar xaf $distfiles/$name-*.xz
+    debug tar xaf $distfiles/$name-*.xz
 
     cd $name-*
     mkdir -p build

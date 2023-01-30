@@ -13,7 +13,7 @@ source qcore/set-prefix.sh $name
     rm -rf $src_dir || true
     mkdir -p $src_dir || true
     cd $src_dir
-    tar xzf $distfiles/$name-*.tar.gz
+    debug tar xzf $distfiles/$name-*.tar.gz
 
     cd $name-*
     export CFLAGS="$CFLAGS -fPIC"
