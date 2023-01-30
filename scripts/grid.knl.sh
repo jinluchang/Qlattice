@@ -1,6 +1,6 @@
 #!/bin/bash
 
-name=Grid-clehner
+name=Grid
 
 source qcore/set-prefix.sh $name
 
