@@ -9,7 +9,17 @@ if python-check-version.py >/dev/null 2>&1 && find-library.py "$@" ; then
     exit 0
 fi
 
-# TODO
+# Fall back to the bash version (only deal with 1 argument case)
 
-echo ""
-exit 1
+libname="$1"
+
+value="$LIBRARY_PATH"
+if [ -n "$value" ] ; then
+    IFS=':' read -a vs <<< "$value"
+    for v in "${vs[@]}" ; do
+        if [ -f "$v"/"$libname"* ] ; then
+            echo "$(dirname "$v")"
+            exit 0
+        fi
+    done
+fi
