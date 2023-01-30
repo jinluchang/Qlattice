@@ -19,6 +19,8 @@ source qcore/set-prefix.sh $name
         -S llvm -B build -G Ninja \
         -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;openmp;lld" \
         -DLLVM_ENABLE_RUNTIMES="libc;libcxx;libcxxabi;libunwind" \
+        -DCMAKE_C_COMPILER="$(which gcc)" \
+        -DCMAKE_CXX_COMPILER="$(which g++)" \
         -DCMAKE_INSTALL_PREFIX="$prefix" \
         -DCMAKE_PREFIX_PATH="$prefix" \
         -DCMAKE_BUILD_TYPE=Release \

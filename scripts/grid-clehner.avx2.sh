@@ -42,6 +42,13 @@ source qcore/set-prefix.sh $name
         opts+=" --with-hdf5=$(find-library.py libhdf5_hl_cpp.a)"
     fi
 
+    if [ -n "$(find-library.py libz.a)" ] ; then
+        LDFLAGS+=" -L$(find-library.py libz.a)/lib"
+        CXXFLAGS+=" -I$(find-library.py libz.a)/include"
+        export LDFLAGS
+        export CXXFLAGS
+    fi
+
     mkdir build
     cd build
     debug ../configure \
