@@ -21,6 +21,7 @@ source qcore/set-prefix.sh $name
         -DLLVM_ENABLE_RUNTIMES="libc;libcxx;libcxxabi;libunwind" \
         -DCMAKE_C_COMPILER="$(which gcc)" \
         -DCMAKE_CXX_COMPILER="$(which g++)" \
+        -DGCC_INSTALL_PREFIX="$(dirname $(dirname $(which g++)))" \
         -DCMAKE_INSTALL_PREFIX="$prefix" \
         -DCMAKE_PREFIX_PATH="$prefix" \
         -DCMAKE_BUILD_TYPE=Release \
