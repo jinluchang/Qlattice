@@ -18,7 +18,7 @@ source qcore/set-prefix.sh $name
     ln -vs "${INITDIR}/Eigen/Eigen" "${INITDIR}/Grid/Eigen"
     ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
 
-    export CXXFLAGS="$CXXFLAGS -DUSE_QLATTICE"
+    export CXXFLAGS="$CXXFLAGS -DUSE_QLATTICE -w -Wno-psabi"
 
     opts=""
     if [ -n "$(find-library.sh libgmp.a)" ] ; then
@@ -51,20 +51,16 @@ source qcore/set-prefix.sh $name
         for v in $(qlat-include) ; do
             export CPATH="$v":"$CPATH"
         done
-        if which organize-colon-list.py >/dev/null 2>&1 ; then
-            export CPATH="$(organize-colon-list.py "$CPATH")"
-        fi
     fi
 
     mkdir build
     cd build
     time-run ../configure \
         --enable-simd=KNL \
-        --enable-alloc-align=4k \
-        --enable-comms=mpi-auto \
-        --enable-mkl \
         --enable-shm=shmget \
         --enable-shmpath=/dev/hugepages \
+        --enable-alloc-align=4k \
+        --enable-comms=mpi-auto \
         --enable-gparity=no \
         $opts \
         --prefix="$prefix"
@@ -74,5 +70,5 @@ source qcore/set-prefix.sh $name
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"
-    rm -rf $temp_dir || true
-} } 2>&1 | tee $prefix/log.$name.txt
+    rm -rf "$temp_dir" || true
+} } 2>&1 | tee "$prefix/log.$name.txt"
