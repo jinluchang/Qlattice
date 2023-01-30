@@ -93,7 +93,7 @@ if os.path.isdir(lib64_pkg_config_dir):
 for lib_python_dir in lib_python_dir_list:
     assert lib_python_dir.startswith(prefix + "/lib")
     if os.path.isdir(lib_python_dir):
-        l.append(set_env("PYTHONPATH", lib_python_dir.removeprefix(prefix + "/")))
+        l.append(set_env("PYTHONPATH", lib_python_dir[len(prefix + "/"):]))
         l.append("")
 
 l.append("}")
