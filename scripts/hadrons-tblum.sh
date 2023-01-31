@@ -18,6 +18,8 @@ source qcore/set-prefix.sh $name
         done
     fi
 
+    export CXXFLAGS="-DHADRONS_DEFAULT_LANCZOS_NBASIS=4000 $CXXFLAGS"
+
     mkdir build
     cd build
     time-run ../configure \

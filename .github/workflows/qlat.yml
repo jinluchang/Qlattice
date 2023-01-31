@@ -210,6 +210,7 @@ jobs:
         USE_COMPILER=clang ./scripts/grid-tblum.avx2.sh
     - name: Build more packages Hadrons-tblum
       run: |
+        source ~/qlat-build/default/setenv.sh
         export num_proc=2
         export prefix=~/qlat-build/tblum
         USE_COMPILER=clang ./scripts/hadrons-tblum.sh
@@ -437,6 +438,7 @@ jobs:
         USE_COMPILER=clang ./scripts/grid-tblum.gen16.sh
     - name: Build more packages Hadrons-tblum
       run: |
+        source ~/qlat-build/default/setenv.sh
         export num_proc=3
         export prefix=~/qlat-build/tblum
         USE_COMPILER=clang ./scripts/hadrons-tblum.sh
