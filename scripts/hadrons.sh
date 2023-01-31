@@ -15,7 +15,7 @@ source qcore/set-prefix.sh $name
     mkdir build
     cd build
     time-run ../configure \
-        --with-grid="$(find-library.sh libGrid.a)" \
+        --with-grid="$(grid-config --prefix)" \
         --prefix="$prefix" \
 
     time-run make -j "$num_proc"
