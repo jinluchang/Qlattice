@@ -91,6 +91,11 @@ jobs:
         export num_proc=2
         ./scripts/setenv.default.sh
         ./scripts/qcore.sh
+    - name: Build Grid-clehner
+      run: |
+        export num_proc=2
+        ./scripts/c-lime.sh
+        ./scripts/grid-clehner.avx2.sh
     - name: Install Qlattice
       run: |
         export num_proc=2
@@ -103,15 +108,6 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/qlat-examples-cpp.sh
-    - name: Build Grid-clehner
-      run: |
-        export num_proc=2
-        ./scripts/c-lime.sh
-        ./scripts/grid-clehner.avx2.sh
-    - name: Install Qlat-Grid
-      run: |
-        export num_proc=2
-        ./scripts/qlat-packages.sh
     - name: Build GPT
       run: |
         export num_proc=2
@@ -125,7 +121,7 @@ jobs:
         ! git diff | grep '^[+-]CHECK: '
     - uses: actions/upload-artifact@v3
       with:
-        path: /home/runner/qlat-build/default/qlat-packages/*.tar.gz
+        path: /home/runner/qlat-build/default/qlat-packages/packages/*.tar.gz
 
   build_qlat_gpt_ubuntu:
     runs-on: ubuntu-latest
@@ -321,6 +317,11 @@ jobs:
         ./scripts/setenv.default.sh
         ./scripts/qcore.sh
         ./scripts/fftw.sh
+    - name: Build Grid-clehner
+      run: |
+        export num_proc=3
+        ./scripts/c-lime.sh
+        ./scripts/grid-clehner.gen16.sh
     - name: Install Qlattice
       run: |
         export num_proc=3
@@ -333,15 +334,6 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/qlat-examples-cpp.sh
-    - name: Build Grid-clehner
-      run: |
-        export num_proc=3
-        ./scripts/c-lime.sh
-        ./scripts/grid-clehner.gen16.sh
-    - name: Install Qlat-Grid
-      run: |
-        export num_proc=3
-        ./scripts/qlat-packages.sh
     - name: Build GPT
       run: |
         export num_proc=3

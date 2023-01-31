@@ -26,6 +26,8 @@ aget "https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.bz2"
 
 aget "http://www.fftw.org/fftw-3.3.10.tar.gz"
 
+aget "https://feynarts.de/cuba/Cuba-4.2.2.tar.gz"
+
 dget "c-lime.tar.gz" "https://github.com/usqcd-software/c-lime/tarball/master"
 
 if [ -d Grid ] ; then

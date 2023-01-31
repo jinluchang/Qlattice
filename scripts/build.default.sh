@@ -7,6 +7,7 @@ set -e
 ./scripts/setenv.default.sh
 ./scripts/qcore.sh
 
+./scripts/cuba.sh
 ./scripts/ninja-script.sh
 
 ./scripts/qlat-grid.sh
