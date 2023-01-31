@@ -18,4 +18,4 @@ source qcore/set-prefix.sh $name
     mk-setenv.sh
     echo "!!!! $name build !!!!"
     rm -rf $temp_dir || true
-} } |& tee $prefix/log.$name.txt
+} } 2>&1 | tee $prefix/log.$name.txt
