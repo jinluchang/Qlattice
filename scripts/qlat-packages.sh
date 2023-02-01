@@ -9,7 +9,7 @@ source qcore/set-prefix.sh $name
     source qcore/conf.sh ..
 
     time-run find ~/.cache/pip/wheels -type f || true
-    time-run rm -rfv ~/.cache/pip/wheels || true
+    # time-run rm -rfv ~/.cache/pip/wheels || true
 
     build="$prefix/packages"
     time-run rm -rfv "$build" || true

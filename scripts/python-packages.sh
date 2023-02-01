@@ -21,7 +21,7 @@ source qcore/set-prefix.sh $name
     fi
 
     find ~/.cache/pip/wheels -type f || true
-    rm -rfv ~/.cache/pip/wheels || true
+    # rm -rfv ~/.cache/pip/wheels || true
 
     opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
