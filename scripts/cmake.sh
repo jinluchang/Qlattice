@@ -14,7 +14,7 @@ source qcore/set-prefix.sh $name
     time-run tar xaf $distfiles/$name-*.tar.*
 
     cd $name-*
-    ./bootstrap \
+    time-run ./bootstrap \
         --prefix=$prefix \
         --parallel=$num_proc \
         -- \
