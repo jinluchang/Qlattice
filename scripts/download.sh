@@ -52,7 +52,7 @@ aget "https://ftp.gnu.org/gnu/mpc/mpc-1.2.1.tar.gz"
 
 aget "https://gcc.gnu.org/pub/gcc/infrastructure/isl-0.24.tar.bz2"
 
-aget "https://ftp.gnu.org/gnu/gcc/gcc-12.2.0/gcc-12.2.0.tar.xz"
+aget "https://ftp.gnu.org/gnu/gcc/gcc-11.3.0/gcc-11.3.0.tar.xz"
 
 aget "https://ftp.gnu.org/gnu/gsl/gsl-2.7.1.tar.gz"
 
