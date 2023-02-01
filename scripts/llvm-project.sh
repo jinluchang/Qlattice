@@ -17,8 +17,8 @@ source qcore/set-prefix.sh $name
 
     time-run cmake \
         -S llvm -B build -G Ninja \
-        -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;openmp;lld" \
-        -DLLVM_ENABLE_RUNTIMES="libc;libcxx;libcxxabi;libunwind" \
+        -DLLVM_ENABLE_PROJECTS="clang;openmp;lld" \
+        -DLLVM_ENABLE_RUNTIMES="" \
         -DCMAKE_C_COMPILER="$(which gcc)" \
         -DCMAKE_CXX_COMPILER="$(which g++)" \
         -DGCC_INSTALL_PREFIX="$(dirname $(dirname $(which g++)))" \
