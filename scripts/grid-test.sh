@@ -18,7 +18,7 @@ source qcore/set-prefix.sh $name
 
     grid_prefix="$(grid-config --prefix)"
 
-    OMP_NUM_THREADS=4 $grid_prefix/bin/Benchmark_dwf_fp32 $grid_options $geo_options
+    OMP_NUM_THREADS=4 time-run $grid_prefix/bin/Benchmark_dwf_fp32 $grid_options $geo_options
 
     echo "!!!! $name build !!!!"
     rm -rf $temp_dir || true

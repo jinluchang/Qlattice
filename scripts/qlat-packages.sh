@@ -8,11 +8,11 @@ source qcore/set-prefix.sh $name
     echo "!!!! build $name !!!!"
     source qcore/conf.sh ..
 
-    find ~/.cache/pip/wheels -type f || true
-    rm -rfv ~/.cache/pip/wheels || true
+    time-run find ~/.cache/pip/wheels -type f || true
+    time-run rm -rfv ~/.cache/pip/wheels || true
 
     build="$prefix/packages"
-    rm -rfv "$build" || true
+    time-run rm -rfv "$build" || true
     mkdir -p "$build"
 
     cd "$build"
@@ -20,15 +20,15 @@ source qcore/set-prefix.sh $name
     # opts="--verbose --no-index --no-cache-dir -f $distfiles/python-packages -f $build"
     opts="--verbose -f $build"
 
-    pip3 uninstall -y qlat-utils qlat qlat-grid || true
+    time-run pip3 uninstall -y qlat-utils qlat qlat-grid || true
 
-    python3 -m build -ns -o "$build" "$wd"/qlat-utils
-    pip3 install $opts qlat-utils
-    python3 -m build -ns -o "$build" "$wd"/qlat
-    pip3 install $opts qlat
+    time-run python3 -m build -ns -o "$build" "$wd"/qlat-utils
+    time-run pip3 install $opts qlat-utils
+    time-run python3 -m build -ns -o "$build" "$wd"/qlat
+    time-run pip3 install $opts qlat
     if grid-config --prefix >/dev/null 2>&1 ; then
-        python3 -m build -ns -o "$build" "$wd"/qlat-grid
-        pip3 install $opts qlat-grid
+        time-run python3 -m build -ns -o "$build" "$wd"/qlat-grid
+        time-run pip3 install $opts qlat-grid
     fi
 
     echo "!!!! $name build !!!!"

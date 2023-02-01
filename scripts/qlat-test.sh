@@ -10,7 +10,7 @@ source qcore/set-prefix.sh $name
 
     cd "$prefix"
 
-    OMP_NUM_THREADS=4 $wd/examples-py/hmc-pure-gauge.py
+    OMP_NUM_THREADS=4 time-run $wd/examples-py/hmc-pure-gauge.py
 
     echo "!!!! $name build !!!!"
     rm -rf $temp_dir || true
