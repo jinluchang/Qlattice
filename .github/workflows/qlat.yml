@@ -226,10 +226,10 @@ jobs:
         [ -e $HOME/qlat-build/tblum/Grid-tblum/bin/Mobius2p1fEOFA ]
         [ -e $HOME/qlat-build/tblum/Grid-tblum/bin/Benchmark_dwf ]
         [ -e $HOME/qlat-build/tblum/Grid-tblum/bin/Benchmark_dwf_fp32 ]
-        # [ -e $HOME/qlat-build/tblum/Hadrons-tblum/lib/libHadrons.a ]
-        # [ -e $HOME/qlat-build/tblum/Hadrons-tblum/bin/hadrons-config ]
-        # [ -e $HOME/qlat-build/tblum/Hadrons-tblum/bin/HadronsXmlRun ]
-        # [ -e $HOME/qlat-build/tblum/Hadrons-tblum/bin/HadronsContractor ]
+        [ -e $HOME/qlat-build/tblum/Hadrons-tblum/lib/libHadrons.a ]
+        [ -e $HOME/qlat-build/tblum/Hadrons-tblum/bin/hadrons-config ]
+        [ -e $HOME/qlat-build/tblum/Hadrons-tblum/bin/HadronsXmlRun ]
+        [ -e $HOME/qlat-build/tblum/Hadrons-tblum/bin/HadronsContractor ]
 
   build_qlat_mac:
     runs-on: macos-latest
@@ -450,10 +450,10 @@ jobs:
         [ -e $HOME/qlat-build/tblum/Grid-tblum/bin/Mobius2p1fEOFA ]
         [ -e $HOME/qlat-build/tblum/Grid-tblum/bin/Benchmark_dwf ]
         [ -e $HOME/qlat-build/tblum/Grid-tblum/bin/Benchmark_dwf_fp32 ]
-        # [ -e $HOME/qlat-build/tblum/Hadrons-tblum/lib/libHadrons.a ]
-        # [ -e $HOME/qlat-build/tblum/Hadrons-tblum/bin/hadrons-config ]
-        # [ -e $HOME/qlat-build/tblum/Hadrons-tblum/bin/HadronsXmlRun ]
-        # [ -e $HOME/qlat-build/tblum/Hadrons-tblum/bin/HadronsContractor ]
+        [ -e $HOME/qlat-build/tblum/Hadrons-tblum/lib/libHadrons.a ]
+        [ -e $HOME/qlat-build/tblum/Hadrons-tblum/bin/hadrons-config ]
+        [ -e $HOME/qlat-build/tblum/Hadrons-tblum/bin/HadronsXmlRun ]
+        [ -e $HOME/qlat-build/tblum/Hadrons-tblum/bin/HadronsContractor ]
 
 
 #  build_wheels:
