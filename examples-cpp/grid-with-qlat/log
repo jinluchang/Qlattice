@@ -31,28 +31,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 Current Grid git commit hash=458c943987eec3282b001f276c9bc91fd482ff02: (HEAD -> feature/gpt, origin/feature/gpt, origin/HEAD) clean
 
-Grid : Message : ================================================ 
-Grid : Message : MPI is initialised and logging filters activated 
-Grid : Message : ================================================ 
-Grid : Message : Requested 1073741824 byte stencil comms buffers 
-Grid : Message : MemoryManager::Init() setting up
-Grid : Message : MemoryManager::Init() cache pool for recent allocations: SMALL 8 LARGE 2
-Grid : Message : MemoryManager::Init() Unified memory space
 grid_begin: rm returns 256
 qlat::begin(): MPI Initialized. num_node = 2
 grid_begin: rm returns 256
-Grid : Message : 0.665070 s : 	Full Dimensions    : [4 4 4 8]
-Grid : Message : 0.665081 s : 	SIMD layout        : [1 1 2 2]
-Grid : Message : 0.665083 s : 	Global Dimensions  : [4 4 4 8]
-Grid : Message : 0.665084 s : 	Local Dimensions   : [4 4 4 4]
-Grid : Message : 0.665085 s : 	Reduced Dimensions : [4 4 2 2]
-Grid : Message : 0.665086 s : 	Outer strides      : [1 4 16 32]
-Grid : Message : 0.665087 s : 	Inner strides      : [1 1 1 2]
-Grid : Message : 0.665088 s : 	iSites             : 4
-Grid : Message : 0.665089 s : 	oSites             : 64
-Grid : Message : 0.665090 s : 	lSites             : 256
-Grid : Message : 0.665091 s : 	gSites             : 512
-Grid : Message : 0.665092 s : 	Nd                 : 4
 GridThreads::GridThreads() = 2
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 2
@@ -66,8 +47,8 @@ qlat::begin(): GeometryNode =
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
 q_timer_max_func_name_len=50 (default)
-q_mk_id_node_in_shuffle_seed='' (default)
 GridThreads::GridThreads() = 2
+q_mk_id_node_in_shuffle_seed='' (default)
 clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
