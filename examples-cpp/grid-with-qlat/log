@@ -1,0 +1,90 @@
+SharedMemoryMpi:  World communicator of size 2
+SharedMemoryMpi:  Node  communicator of size 1
+SharedMemoryMpi: SharedMemoryAllocate 1073741824 MMAP anonymous implementation 
+
+__|__|__|__|__|__|__|__|__|__|__|__|__|__|__
+__|__|__|__|__|__|__|__|__|__|__|__|__|__|__
+__|_ |  |  |  |  |  |  |  |  |  |  |  | _|__
+__|_                                    _|__
+__|_   GGGG    RRRR    III    DDDD      _|__
+__|_  G        R   R    I     D   D     _|__
+__|_  G        R   R    I     D    D    _|__
+__|_  G  GG    RRRR     I     D    D    _|__
+__|_  G   G    R  R     I     D   D     _|__
+__|_   GGGG    R   R   III    DDDD      _|__
+__|_                                    _|__
+__|__|__|__|__|__|__|__|__|__|__|__|__|__|__
+__|__|__|__|__|__|__|__|__|__|__|__|__|__|__
+  |  |  |  |  |  |  |  |  |  |  |  |  |  |  
+
+
+Copyright (C) 2015 Peter Boyle, Azusa Yamaguchi, Guido Cossu, Antonin Portelli and other authors
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+Current Grid git commit hash=458c943987eec3282b001f276c9bc91fd482ff02: (HEAD -> feature/gpt, origin/feature/gpt, origin/HEAD) clean
+
+Grid : Message : ================================================ 
+Grid : Message : MPI is initialised and logging filters activated 
+Grid : Message : ================================================ 
+Grid : Message : Requested 1073741824 byte stencil comms buffers 
+Grid : Message : MemoryManager::Init() setting up
+Grid : Message : MemoryManager::Init() cache pool for recent allocations: SMALL 8 LARGE 2
+Grid : Message : MemoryManager::Init() Unified memory space
+grid_begin: rm returns 256
+qlat::begin(): MPI Initialized. num_node = 2
+grid_begin: rm returns 256
+Grid : Message : 0.665070 s : 	Full Dimensions    : [4 4 4 8]
+Grid : Message : 0.665081 s : 	SIMD layout        : [1 1 2 2]
+Grid : Message : 0.665083 s : 	Global Dimensions  : [4 4 4 8]
+Grid : Message : 0.665084 s : 	Local Dimensions   : [4 4 4 4]
+Grid : Message : 0.665085 s : 	Reduced Dimensions : [4 4 2 2]
+Grid : Message : 0.665086 s : 	Outer strides      : [1 4 16 32]
+Grid : Message : 0.665087 s : 	Inner strides      : [1 1 1 2]
+Grid : Message : 0.665088 s : 	iSites             : 4
+Grid : Message : 0.665089 s : 	oSites             : 64
+Grid : Message : 0.665090 s : 	lSites             : 256
+Grid : Message : 0.665091 s : 	gSites             : 512
+Grid : Message : 0.665092 s : 	Nd                 : 4
+GridThreads::GridThreads() = 2
+qlat::begin_comm(comm,size_node): get_comm_list().push_back()
+qlat::begin_comm(comm,size_node): get_comm_list().size() = 2
+qlat::begin(): q_num_threads = 2
+q_verbose=10
+q_malloc_mmap_threshold='' (default)
+qlat::begin(): GeometryNode =
+{ initialized = true
+, num_node    = 2
+, id_node     = 0
+, size_node   = 1x1x1x2
+, coor_node   = 0x0x0x0 }
+q_timer_max_func_name_len=50 (default)
+q_mk_id_node_in_shuffle_seed='' (default)
+GridThreads::GridThreads() = 2
+clear_mem_cache: 0 bytes (0.000 GB) freed.
+q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10 (default)
+q_field_init='fast' (default)
+set q_field_init=fast.
+q_mem_cache_max_size=512 (default)
+q_mem_cache_acc_max_size=512 (default)
+Cache: 'CommPlanCache': 0 / 32 [16] to add
+plaq : -5.40326217624385874E-03
+Cache: 'CommPlanCache': 1 / 32 [16] to add
+spatial plaq : -1.24665686857814498E-02
+trace:  1.23949530600750910E-01
+CHECK: finished successfully.
+Cache: 'CommPlanCache': 2 / 32 [16] clear
+clear_mem_cache: 556544 bytes (0.001 GB) freed.
+qlat::end(): get_comm_list().pop_back()
+qlat::end(): get_comm_list().size() = 1.
+qlat::end(): Switch to old comm (foreign).
+qlat::end(): MPI_Comm_free ended comm.
+grid_end: rm returns 256

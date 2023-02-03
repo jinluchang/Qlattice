@@ -111,6 +111,33 @@ inline void grid_end(const bool is_preserving_cache = false)
   displayln_info(ssprintf("grid_end: rm returns %d", ret));
 }
 
+inline void grid_convert(Grid::LatticeGaugeField& ggf, const GaugeField& gf)
+{
+  TIMER_VERBOSE("grid_convert(ggf,gf)");
+  using namespace Grid;
+  const Geometry& geo = gf.geo();
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Grid::Coordinate coor = grid_convert(xl);
+    const Vector<ColorMatrix> ms = gf.get_elems_const(xl);
+    LorentzColourMatrix gms;
+    array<Complex, sizeof(LorentzColourMatrix) / sizeof(Complex)>& fs =
+        (array<Complex, sizeof(LorentzColourMatrix) / sizeof(Complex)>&)gms;
+    array<Complex, sizeof(LorentzColourMatrix) / sizeof(Complex)>& ds =
+        *((array<Complex, sizeof(LorentzColourMatrix) / sizeof(Complex)>*)
+              ms.data());
+    qassert(sizeof(LorentzColourMatrix) ==
+            ms.data_size() / sizeof(Complex) * sizeof(Complex));
+    qassert((long)fs.size() * (long)sizeof(Complex) == ms.data_size());
+    qassert(fs.size() == ds.size());
+    for (int i = 0; i < (int)fs.size(); ++i) {
+      fs[i] = ds[i];
+    }
+    pokeLocalSite(gms, ggf, coor);
+  }
+}
+
 inline void grid_convert(Grid::LatticeGaugeFieldF& ggf, const GaugeField& gf)
 {
   TIMER_VERBOSE("grid_convert(ggf,gf)");
@@ -123,11 +150,10 @@ inline void grid_convert(Grid::LatticeGaugeFieldF& ggf, const GaugeField& gf)
     const Vector<ColorMatrix> ms = gf.get_elems_const(xl);
     LorentzColourMatrixF gms;
     array<ComplexF, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>& fs =
-        (array<ComplexF, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>&)
-            gms;
+        (array<ComplexF, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>&)gms;
     array<Complex, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>& ds =
-        *((array<Complex, sizeof(LorentzColourMatrixF) /
-                                    sizeof(ComplexF)>*)ms.data());
+        *((array<Complex, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>*)
+              ms.data());
     qassert(sizeof(LorentzColourMatrixF) ==
             ms.data_size() / sizeof(Complex) * sizeof(ComplexF));
     qassert((long)fs.size() * (long)sizeof(Complex) == ms.data_size());

@@ -18,13 +18,21 @@ tests = qlat-vector-utils \
 		dslash-tests \
 		propagators
 
+tests_grid = grid-with-qlat
+
 all: run
+
+all-grid: run-grid
 
 compile: $(patsubst %, %.compile, $(tests))
 
 run: $(patsubst %, %.run, $(tests))
 
-clean: $(patsubst %, %.clean, $(tests))
+compile-grid: $(patsubst %, %.compile, $(tests_grid))
+
+run-grid: $(patsubst %, %.run, $(tests_grid))
+
+clean: $(patsubst %, %.clean, $(tests) $(tests_grid))
 
 compile-proj:
 	-meson setup build
