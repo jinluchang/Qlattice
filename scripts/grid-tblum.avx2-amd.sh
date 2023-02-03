@@ -41,15 +41,13 @@ source qcore/set-prefix.sh $name
     fi
 
     if [ -n "$(find-library.sh libz.a)" ] ; then
-        LDFLAGS+=" -L$(find-library.sh libz.a)/lib"
-        CXXFLAGS+=" -I$(find-library.sh libz.a)/include"
-        export LDFLAGS
-        export CXXFLAGS
+        export LDFLAGS="$LDFLAGS -L$(find-library.sh libz.a)/lib"
+        export CXXFLAGS="$CXXFLAGS -I$(find-library.sh libz.a)/include"
     fi
 
     if which qlat-include >/dev/null 2>&1 ; then
         for v in $(qlat-include) ; do
-            export CPATH="$v":"$CPATH"
+            export CXXFLAGS="$CXXFLAGS -I$v"
         done
     fi
 
