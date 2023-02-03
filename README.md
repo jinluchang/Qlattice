@@ -12,6 +12,8 @@ A simple lattice QCD library.
 
 `$ export prefix=DEST_DIRECTORY`
 
+If `prefix` environmental variable is not set, the default location will be `$HOME/qlat-build/default`.
+
 #### Qlattice only
 
 `$ ./build.sh`
@@ -21,6 +23,12 @@ A simple lattice QCD library.
 `$ ./scripts/download-core.sh`
 
 `$ ./build.sh default-gpt`
+
+### Use the library
+
+The environment variables needed to use the library can be set with the following command:
+
+`$ source DEST_DIRECTORY/setenv.sh`
 
 ### Install on Mac
 
@@ -34,11 +42,15 @@ A simple lattice QCD library.
 
 `$ ./build.sh`
 
+`$ source DEST_DIRECTORY/setenv.sh`
+
 #### Qlattice and Grid/GPT
 
 `$ ./scripts/download-core.sh`
 
 `$ ./build.sh default-gpt`
+
+`$ source DEST_DIRECTORY/setenv.sh`
 
 ### Install on UCONN HPC
 
@@ -55,6 +67,8 @@ The default build and installation directory is `$HOME/qlat-build/default`. If a
 Run the build script:
 
 `$ ./build.sh uconn`
+
+`$ source DEST_DIRECTORY/setenv.sh`
 
 ### General instructions
 
@@ -98,7 +112,9 @@ After the first complete install, one can re-install individual components by ru
 
 It is also possible to build `Grid` and `gpt`. For examples:
 
-`$ ./scripts/grid.avx2.sh`
+`$ ./scripts/c-lime.sh`
+
+`$ ./scripts/grid-clehner.avx2.sh`
 
 `$ ./scripts/gpt.sh`
 
