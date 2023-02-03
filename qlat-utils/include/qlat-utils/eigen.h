@@ -33,7 +33,7 @@
 
 // -------------------------------------------------------------------------------------
 
-#ifdef QLAT_GRID
+#ifdef QLAT_USE_GRID_EIGEN
 
 #include <Grid/Eigen/Eigen>
 

@@ -16,6 +16,10 @@ else
   error('Cannot find endian.h header file.')
 endif
 
+if cpp.check_header('Grid/Eigen/Eigen')
+  conf_data.set('QLAT_USE_GRID_EIGEN', true)
+endif
+
 config_file = configure_file(output: 'config.h', configuration: conf_data)
 py3.install_sources(config_file, subdir: 'qlat_utils/include/qlat-utils')
 

@@ -24,9 +24,9 @@ qlat_numpy = declare_dependency(
   dependencies: [ qlat_py3.dependency(), ],
   ).as_system()
 
-if qlat_cpp.check_header('Eigen/Eigen')
+if qlat_cpp.check_header('Grid/Eigen/Eigen')
   qlat_eigen = dependency('', required: false)
-elif qlat_cpp.check_header('Grid/Eigen/Eigen')
+elif qlat_cpp.check_header('Eigen/Eigen')
   qlat_eigen = dependency('', required: false)
 else
   qlat_eigen = dependency('eigen3').as_system()

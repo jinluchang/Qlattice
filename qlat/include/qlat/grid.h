@@ -1,6 +1,5 @@
 #pragma once
 
-
 #ifdef NO_GRID
 
 #include <qlat/qlat.h>
@@ -24,6 +23,8 @@ void grid_end() { end(); }
 #else
 
 #define QLAT_GRID
+
+#define QLAT_USE_GRID_EIGEN
 
 #include <Grid/Grid.h>
 #include <qlat/qlat.h>
