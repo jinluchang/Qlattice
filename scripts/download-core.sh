@@ -87,7 +87,7 @@ fi
 if [ -d Hadrons-tblum ] ; then
     ( cd Hadrons-tblum ; git pull )
 else
-    git clone https://github.com/tblum2/Hadrons.git Hadrons-tblum
+    git clone https://github.com/jinluchang/Hadrons.git Hadrons-tblum
 fi
 
 if [ -e Hadrons-tblum/configure ] ; then
