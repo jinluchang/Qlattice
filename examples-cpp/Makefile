@@ -13,6 +13,7 @@ tests = qlat-vector-utils \
 		fields-io \
 		simple-1 \
 		hmc \
+		flowed-hmc \
 		heatbath \
 		template \
 		dslash-tests \
