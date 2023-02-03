@@ -197,8 +197,8 @@ struct vector_gpu{
   void swap(std::vector<T >& vp)
   {
     Ty*  p_tmp   = vp.p;
-    size_t n_tmp = vp.n;
-    bool GPU_tmp = vp.GPU;
+    // size_t n_tmp = vp.n;
+    // bool GPU_tmp = vp.GPU;
 
     ////copy to vp
     vp.p = p;

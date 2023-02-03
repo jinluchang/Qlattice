@@ -23,7 +23,7 @@ jobs:
     - name: Install Ubuntu packages
       run: |
         sudo apt-get update
-        sudo apt-get install -y cython3 patchelf ninja-build python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev libhdf5-mpi-dev libhdf5-dev
+        sudo apt-get install -y cython3 patchelf ninja-build python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev
     - name: Install Python packages
       run: |
         pip3 install --user meson
@@ -70,7 +70,7 @@ jobs:
     - name: Install Ubuntu packages
       run: |
         sudo apt-get update
-        sudo apt-get install -y cython3 patchelf ninja-build python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev libhdf5-mpi-dev libhdf5-dev
+        sudo apt-get install -y cython3 patchelf ninja-build python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev
     - name: Install Python packages
       run: |
         pip3 install --user meson
@@ -95,6 +95,7 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/c-lime.sh
+        ./scripts/hdf5.sh
         ./scripts/grid-clehner.avx2.sh
     - name: Build GPT
       run: |
@@ -142,7 +143,7 @@ jobs:
     - name: Install Ubuntu packages
       run: |
         sudo apt-get update
-        sudo apt-get install -y cython3 patchelf ninja-build python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev libhdf5-mpi-dev libhdf5-dev
+        sudo apt-get install -y cython3 patchelf ninja-build python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev
         sudo apt-get install -y clang libomp-dev
     - name: Install Python packages
       run: |
@@ -168,6 +169,7 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/c-lime.sh
+        ./scripts/hdf5.sh
         ./scripts/grid-clehner.avx2.sh
     - name: Build GPT
       run: |
@@ -258,7 +260,7 @@ jobs:
     - name: Install Brew packages
       run: |
         # brew update
-        brew install ninja patchelf llvm open-mpi eigen fftw gsl zlib openssl@3 mpfr autoconf automake flock findutils hdf5-mpi
+        brew install ninja patchelf llvm open-mpi eigen fftw gsl zlib openssl@3 mpfr autoconf automake flock findutils
         # brew upgrade
     - name: Install Python packages
       run: |
@@ -306,7 +308,7 @@ jobs:
     - name: Install Brew packages
       run: |
         # brew update
-        brew install ninja patchelf llvm open-mpi eigen gsl zlib openssl@3 mpfr autoconf automake flock findutils hdf5-mpi
+        brew install ninja patchelf llvm open-mpi eigen gsl zlib openssl@3 mpfr autoconf automake flock findutils
         # brew upgrade
     - name: Install Python packages
       run: |
@@ -333,6 +335,7 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/c-lime.sh
+        ./scripts/hdf5.sh
         ./scripts/grid-clehner.gen16.sh
     - name: Build GPT
       run: |
@@ -377,7 +380,7 @@ jobs:
     - name: Install Brew packages
       run: |
         # brew update
-        brew install ninja patchelf llvm open-mpi eigen gsl zlib openssl@3 mpfr autoconf automake flock findutils hdf5-mpi
+        brew install ninja patchelf llvm open-mpi eigen gsl zlib openssl@3 mpfr autoconf automake flock findutils
         # brew upgrade
     - name: Install Python packages
       run: |
@@ -404,6 +407,7 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/c-lime.sh
+        ./scripts/hdf5.sh
         ./scripts/grid-clehner.gen16.sh
     - name: Build GPT
       run: |
@@ -512,7 +516,7 @@ jobs:
 #    - name: Install Ubuntu packages
 #      run: |
 #        sudo apt-get update
-#        sudo apt-get install -y libgsl-dev zlib1g-dev libssl-dev libeigen3-dev libopenmpi-dev libfftw3-mpi-dev libfftw3-dev libmpfr-dev libhdf5-mpi-dev libhdf5-dev patchelf
+#        sudo apt-get install -y libgsl-dev zlib1g-dev libssl-dev libeigen3-dev libopenmpi-dev libfftw3-mpi-dev libfftw3-dev libmpfr-dev
 #    - name: Build sdist for qlat-utils
 #      run: |
 #        ( cd qlat-utils ; pipx run build --sdist )
