@@ -1,5 +1,5 @@
 project('qlat', 'cpp', 'cython',
-  version: '0.22',
+  version: '0.23',
   license: 'GPL-3.0-or-later',
   default_options: [
     'warning_level=3',
@@ -11,6 +11,8 @@ project('qlat', 'cpp', 'cython',
     ])
 
 add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
+
+subdir('depend-qlat-utils')
 
 cpp = meson.get_compiler('cpp')
 
@@ -30,62 +32,13 @@ else
   mpic = dependency('mpi', language: 'cpp').as_system()
 endif
 
-omp = dependency('openmp').as_system()
-zlib = dependency('zlib').as_system()
-
 fftw = dependency('fftw3').as_system()
 fftwf = dependency('fftw3f').as_system()
 message('fftw libdir', fftw.get_variable('libdir'))
 message('fftwf libdir', fftwf.get_variable('libdir'))
 fftw_all = [ fftw, fftwf, ]
 
-math = cpp.find_library('m')
-
-numpy_include = run_command(py3.path(), '-c', 'import numpy as np ; print(np.get_include())', check: true).stdout().strip()
-message('numpy include', numpy_include)
-
-numpy = declare_dependency(
-  include_directories:  include_directories(numpy_include),
-  dependencies: [ py3.dependency(), ],
-  ).as_system()
-
-if cpp.check_header('Eigen/Eigen')
-  eigen = dependency('', required: false)
-else
-  eigen = dependency('eigen3').as_system()
-endif
-
-qlat_utils_include = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\n".join(q.get_include_list()))',
-  env: environment({'q_verbose': '-1'}),
-  check: true).stdout().strip().split('\n')
-message('qlat_utils include', qlat_utils_include)
-
-qlat_utils_lib = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\n".join(q.get_lib_list()))',
-  env: environment({'q_verbose': '-1'}),
-  check: true).stdout().strip().split('\n')
-message('qlat_utils lib', qlat_utils_lib)
-
-qlat_utils_pxd = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\n".join(q.get_pxd_list()))',
-  env: environment({'q_verbose': '-1'}),
-  check: true).stdout().strip().split('\n')
-message('qlat_utils pxd', qlat_utils_pxd)
-qlat_utils_pxd = files(qlat_utils_pxd)
-
-qlat_utils_header = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\n".join(q.get_header_list()))',
-  env: environment({'q_verbose': '-1'}),
-  check: true).stdout().strip().split('\n')
-message('qlat_utils header', qlat_utils_header)
-qlat_utils_header = files(qlat_utils_header)
-
-qlat_utils = declare_dependency(
-  include_directories:  include_directories(qlat_utils_include),
-  dependencies: [
-    py3.dependency().as_system(),
-    cpp.find_library('qlat-utils', dirs: qlat_utils_lib),
-    numpy, eigen, omp, zlib, math, ],
-  )
-
-deps = [ qlat_utils, fftw_all, mpic, ]
+deps = [ qlat_utils, mpic, fftw_all, ]
 
 subdir('include')
 subdir('lib')
