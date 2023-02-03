@@ -24,6 +24,14 @@ aget() {
 
 dget "c-lime.tar.gz" "https://github.com/usqcd-software/c-lime/tarball/master"
 
+aget "https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.bz2"
+
+aget "http://www.fftw.org/fftw-3.3.10.tar.gz"
+
+aget "https://feynarts.de/cuba/Cuba-4.2.2.tar.gz"
+
+aget "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.7/src/hdf5-1.10.7.tar.bz2"
+
 dget "ninja-1.11.1.tar.gz" "https://github.com/ninja-build/ninja/archive/refs/tags/v1.11.1.tar.gz"
 
 dget "lapack-3.10.1.tar.gz" "https://github.com/Reference-LAPACK/lapack/archive/refs/tags/v3.10.1.tar.gz"
@@ -56,15 +64,7 @@ aget "https://ftp.gnu.org/gnu/gcc/gcc-11.3.0/gcc-11.3.0.tar.xz"
 
 aget "https://ftp.gnu.org/gnu/gsl/gsl-2.7.1.tar.gz"
 
-aget "http://www.fftw.org/fftw-3.3.10.tar.gz"
-
-aget "https://feynarts.de/cuba/Cuba-4.2.2.tar.gz"
-
-aget "https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.bz2"
-
 aget "https://github.com/Kitware/CMake/releases/download/v3.24.3/cmake-3.24.3.tar.gz"
-
-aget "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.7/src/hdf5-1.10.7.tar.bz2"
 
 aget "https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.4.tar.bz2"
 
