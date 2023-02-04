@@ -91,11 +91,11 @@ jobs:
         export num_proc=2
         ./scripts/setenv.default.sh
         ./scripts/qcore.sh
+        ./scripts/c-lime.sh
+        ./scripts/hdf5.sh
     - name: Build Grid-clehner
       run: |
         export num_proc=2
-        ./scripts/c-lime.sh
-        ./scripts/hdf5.sh
         ./scripts/grid-clehner.avx2.sh
     - name: Build GPT
       run: |
@@ -165,11 +165,11 @@ jobs:
         ./scripts/setenv.default.sh
         ./scripts/qcore.sh
         ./scripts/eigen.sh
+        ./scripts/c-lime.sh
+        ./scripts/hdf5.sh
     - name: Build Grid-clehner
       run: |
         export num_proc=2
-        ./scripts/c-lime.sh
-        ./scripts/hdf5.sh
         ./scripts/grid-clehner.avx2.sh
     - name: Build GPT
       run: |
@@ -331,11 +331,11 @@ jobs:
         ./scripts/setenv.default.sh
         ./scripts/qcore.sh
         ./scripts/fftw.sh
+        ./scripts/c-lime.sh
+        ./scripts/hdf5.sh
     - name: Build Grid-clehner
       run: |
         export num_proc=3
-        ./scripts/c-lime.sh
-        ./scripts/hdf5.sh
         ./scripts/grid-clehner.gen16.sh
     - name: Build GPT
       run: |
@@ -403,11 +403,11 @@ jobs:
         ./scripts/qcore.sh
         ./scripts/eigen.sh
         ./scripts/fftw.sh
+        ./scripts/c-lime.sh
+        ./scripts/hdf5.sh
     - name: Build Grid-clehner
       run: |
         export num_proc=3
-        ./scripts/c-lime.sh
-        ./scripts/hdf5.sh
         ./scripts/grid-clehner.gen16.sh
     - name: Build GPT
       run: |
