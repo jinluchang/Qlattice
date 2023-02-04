@@ -1,6 +1,7 @@
 SharedMemoryMpi:  World communicator of size 2
 SharedMemoryMpi:  Node  communicator of size 1
 SharedMemoryMpi: SharedMemoryAllocate 1073741824 MMAP anonymous implementation 
+grid_begin: rm returns 256
 
 __|__|__|__|__|__|__|__|__|__|__|__|__|__|__
 __|__|__|__|__|__|__|__|__|__|__|__|__|__|__
@@ -29,11 +30,11 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-Current Grid git commit hash=458c943987eec3282b001f276c9bc91fd482ff02: (HEAD -> feature/gpt, origin/feature/gpt, origin/HEAD) clean
+Current Grid git commit hash=458c943987eec3282b001f276c9bc91fd482ff02: (HEAD, origin/feature/gpt, origin/HEAD, feature/gpt) clean
 
 grid_begin: rm returns 256
 qlat::begin(): MPI Initialized. num_node = 2
-grid_begin: rm returns 256
+GridThreads::GridThreads() = 2
 GridThreads::GridThreads() = 2
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 2
@@ -47,7 +48,6 @@ qlat::begin(): GeometryNode =
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
 q_timer_max_func_name_len=50 (default)
-GridThreads::GridThreads() = 2
 q_mk_id_node_in_shuffle_seed='' (default)
 clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
@@ -59,7 +59,7 @@ q_mem_cache_acc_max_size=512 (default)
 Cache: 'CommPlanCache': 0 / 32 [16] to add
 plaq : -5.40326217624385874E-03
 Cache: 'CommPlanCache': 1 / 32 [16] to add
-spatial plaq : -1.24665686857814498E-02
+spatial plaq : -1.24665686857814463E-02
 trace:  1.23949530600750910E-01
 CHECK: finished successfully.
 Cache: 'CommPlanCache': 2 / 32 [16] clear
