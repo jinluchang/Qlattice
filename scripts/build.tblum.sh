@@ -19,6 +19,6 @@ export USE_COMPILER=clang
 ./scripts/hdf5.sh
 ./scripts/grid-tblum.avx2.sh
 ./scripts/hadrons-tblum.sh
-./scripts/gpt.sh
+# ./scripts/gpt.sh
 
 } 2>&1 | tee $prefix/log.build.txt

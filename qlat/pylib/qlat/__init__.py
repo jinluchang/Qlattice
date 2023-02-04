@@ -31,6 +31,8 @@ from qlat.scalar_action import *
 
 from qlat.hmc import *
 
+from qlat.fthmc import *
+
 from qlat.hmc_stats import *
 
 from qlat.contract_pion import *

@@ -1,0 +1,7 @@
+CHECK: traj=1 ; plaq_avg=3.44323279742200E-01
+CHECK: wilson_loop 3.45110923140443E-01
+CHECK: traj=2 ; plaq_avg=4.73255908840162E-01
+CHECK: wilson_loop 4.73337791055573E-01
+CHECK: traj=3 ; plaq_avg=5.29292252150346E-01
+CHECK: wilson_loop 5.27186576197175E-01
+CHECK: finished successfully.

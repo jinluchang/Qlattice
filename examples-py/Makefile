@@ -14,6 +14,7 @@ tests = \
 		selected-field.log \
 		fields-io.log \
 		hmc-pure-gauge.log \
+		hmc-pure-gauge-flowed.log \
 		qcd-utils.log \
 		auto-cexprs.log \
 		auto-cexprs-more.log \
