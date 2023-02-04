@@ -14,11 +14,11 @@ source qcore/set-prefix.sh $name
 
     if which qlat-include >/dev/null 2>&1 ; then
         for v in $(qlat-include) ; do
-            export CPATH="$v":"$CPATH"
+            export CXXFLAGS="$CXXFLAGS -I$v"
         done
     fi
 
-    export CXXFLAGS="-DHADRONS_DEFAULT_LANCZOS_NBASIS=4000 $CXXFLAGS"
+    export CXXFLAGS="$CXXFLAGS -DHADRONS_DEFAULT_LANCZOS_NBASIS=4000"
 
     mkdir build
     cd build

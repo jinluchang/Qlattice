@@ -18,7 +18,7 @@ source qcore/set-prefix.sh $name
     ln -vs "${INITDIR}/Eigen/Eigen" "${INITDIR}/Grid/Eigen"
     ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
 
-    export CXXFLAGS="$CXXFLAGS -fPIC -DUSE_QLATTICE -w -Wno-psabi"
+    export CXXFLAGS="$CXXFLAGS -fPIC -DUSE_QLATTICE -w -Wno-psabi -DHADRONS_DEFAULT_LANCZOS_NBASIS=4000"
 
     opts=""
     if [ -n "$(find-library.sh libgmp.a)" ] ; then

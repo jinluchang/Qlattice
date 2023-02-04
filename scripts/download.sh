@@ -36,7 +36,7 @@ dget "ninja-1.11.1.tar.gz" "https://github.com/ninja-build/ninja/archive/refs/ta
 
 dget "lapack-3.10.1.tar.gz" "https://github.com/Reference-LAPACK/lapack/archive/refs/tags/v3.10.1.tar.gz"
 
-aget "https://tukaani.org/xz/xz-5.2.7.tar.gz"
+aget "https://tukaani.org/xz/xz-5.4.1.tar.gz"
 
 aget "https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz"
 

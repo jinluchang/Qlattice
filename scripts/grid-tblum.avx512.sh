@@ -18,7 +18,7 @@ source qcore/set-prefix.sh $name
     ln -vs "${INITDIR}/Eigen/Eigen" "${INITDIR}/Grid/Eigen"
     ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
 
-    export CXXFLAGS="$CXXFLAGS -fPIC -DUSE_QLATTICE -w -Wno-psabi -DHADRONS_DEFAULT_LANCZOS_NBASIS=4000"
+    export CXXFLAGS="$CXXFLAGS -fPIC -DUSE_QLATTICE -w -Wno-psabi -std=c++11 -fpermissive -DHADRONS_DEFAULT_LANCZOS_NBASIS=4000"
 
     opts=""
     if [ -n "$(find-library.sh libgmp.a)" ] ; then
@@ -54,9 +54,7 @@ source qcore/set-prefix.sh $name
     mkdir build
     cd build
     time-run ../configure \
-        --enable-simd=KNL \
-        --enable-shm=shmget \
-        --enable-shmpath=/dev/hugepages \
+        --enable-simd=AVX512 \
         --enable-alloc-align=4k \
         --enable-comms=mpi-auto \
         --enable-gparity=no \
