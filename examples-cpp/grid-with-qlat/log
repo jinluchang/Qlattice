@@ -1,7 +1,6 @@
 SharedMemoryMpi:  World communicator of size 2
 SharedMemoryMpi:  Node  communicator of size 1
 SharedMemoryMpi: SharedMemoryAllocate 1073741824 MMAP anonymous implementation 
-grid_begin: rm returns 256
 
 __|__|__|__|__|__|__|__|__|__|__|__|__|__|__
 __|__|__|__|__|__|__|__|__|__|__|__|__|__|__
@@ -34,6 +33,7 @@ Current Grid git commit hash=458c943987eec3282b001f276c9bc91fd482ff02: (HEAD, or
 
 grid_begin: rm returns 256
 qlat::begin(): MPI Initialized. num_node = 2
+grid_begin: rm returns 256
 GridThreads::GridThreads() = 2
 GridThreads::GridThreads() = 2
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()

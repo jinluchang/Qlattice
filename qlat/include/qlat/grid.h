@@ -81,7 +81,6 @@ inline void grid_begin(
   using namespace Grid;
   const int ret = system("rm /dev/shm/Grid* >/dev/null 2>&1");
   Grid_init(argc, argv);
-  displayln_info(ssprintf("grid_begin: rm returns %d", ret));
   const int num_node = init_mpi(argc, argv);
   Coordinate size_node;
   for (int i = 0; i < (int)size_node_list.size(); ++i) {
@@ -97,11 +96,12 @@ inline void grid_begin(
       grid_convert(size_node * 4), GridDefaultSimd(Nd, vComplexF::Nsimd()),
       grid_convert(size_node));
   UGrid->show_decomposition();
-  displayln_info(
-      ssprintf("GridThreads::GridThreads() = %d", GridThread::GetThreads()));
   const int id_node = id_node_from_grid(UGrid);
   delete UGrid;
   begin(id_node, size_node);
+  displayln_info(ssprintf("grid_begin: rm returns %d", ret));
+  displayln_info(
+      ssprintf("GridThreads::GridThreads() = %d", GridThread::GetThreads()));
 }
 
 inline void grid_end(const bool is_preserving_cache = false)
