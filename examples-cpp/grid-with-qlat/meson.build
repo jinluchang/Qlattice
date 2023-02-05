@@ -30,11 +30,13 @@ deps = [ qlat, grid, ]
 c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.cpp', check: true)
 cpp_sources = c.stdout().strip().split('\n')
 
-executable('qlat.x',
+qlat_x = executable('qlat.x',
   cpp_sources,
   dependencies: deps,
   install: true,
   )
 
 run_target('run',
-  command: 'run.sh')
+  command: 'run.sh',
+  depends: [ qlat_x, ],
+  )

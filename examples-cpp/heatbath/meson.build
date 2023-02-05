@@ -11,10 +11,7 @@ project('qlat-cpp', 'cpp',
 
 add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
 
-py_mod = import('python')
-py3 = py_mod.find_installation('python3')
-
-cpp = meson.get_compiler('cpp')
+subdir('depend-qlat')
 
 cxx = run_command('bash', '-c', 'echo "$CXX"', check: true).stdout().strip()
 mpicxx = run_command('bash', '-c', 'echo "$MPICXX"', check: true).stdout().strip()
@@ -27,42 +24,17 @@ else
   mpic = dependency('mpi', language: 'cpp').as_system()
 endif
 
-omp = dependency('openmp').as_system()
-zlib = dependency('zlib').as_system()
+deps = [ mpic, qlat, ]
 
-fftw = dependency('fftw3').as_system()
-fftwf = dependency('fftw3f').as_system()
-message('fftw libdir', fftw.get_variable('libdir'))
-message('fftwf libdir', fftwf.get_variable('libdir'))
+cpp_sources = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.cpp', check: true).stdout().strip().split('\n')
 
-math = cpp.find_library('m')
-
-qlat_include = run_command(py3.path(), '-c', 'import qlat as q ; print("\\n".join(q.get_include_list()))',
-  env: environment({'q_verbose': '-1'}),
-  check: true).stdout().strip().split('\n')
-
-message('qlat include', qlat_include)
-
-qlat = declare_dependency(
-  include_directories: include_directories(qlat_include),
-  dependencies: [ omp, fftw, fftwf, mpic, zlib, math, ],
-  )
-
-deps = [ qlat, ]
-
-if not cpp.check_header('Eigen/Eigen')
-  eigen = dependency('eigen3').as_system()
-  deps += [ eigen, ]
-endif
-
-c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.cpp', check: true)
-cpp_sources = c.stdout().strip().split('\n')
-
-executable('qlat.x',
+qlat_x = executable('qlat.x',
   cpp_sources,
   dependencies: deps,
   install: true,
   )
 
 run_target('run',
-  command: 'run.sh')
+  command: 'run.sh',
+  depends: [ qlat_x, ],
+  )
