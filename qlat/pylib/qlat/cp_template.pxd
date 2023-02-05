@@ -22,12 +22,22 @@ cdef class FieldSelection:
 
 cdef class FieldBase:
 
-    pass
+    cdef readonly long cdata
+
+    cdef readonly int view_count
 
 cdef class SelectedFieldBase:
 
-    pass
+    cdef readonly long cdata
+
+    cdef readonly int view_count
+
+    cdef public FieldSelection fsel
 
 cdef class SelectedPointsBase:
 
-    pass
+    cdef readonly long cdata
+
+    cdef readonly int view_count
+
+    cdef public PointSelection psel
