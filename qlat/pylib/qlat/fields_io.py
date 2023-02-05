@@ -94,6 +94,8 @@ class ShuffledFieldsReader:
         elif isinstance(obj, SelectedFieldBase):
             fsel = obj.fsel
             if fsel is None:
+                if obj.view_count > 0:
+                    raise ValueError("can't re-init while being viewed")
                 obj.fsel = FieldSelection()
                 return c.read_sfr_sfield(self, fn, None, obj, obj.fsel)
             else:

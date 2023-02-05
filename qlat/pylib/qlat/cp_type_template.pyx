@@ -6,10 +6,13 @@ cdef class FieldTYPENAME(FieldBase):
 
     def __cinit__(self):
         self.cdata = <long>&(self.xx)
+        self.view_count = 0
 
     def __init__(self, Geometry geo = None, int multiplicity = 0):
         if geo is None:
             return
+        if self.view_count > 0:
+            raise ValueError("can't re-init while being viewed")
         self.xx.init(geo.xx, multiplicity)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
@@ -45,9 +48,10 @@ cdef class FieldTYPENAME(FieldBase):
         buffer.strides = strides
         buffer.suboffsets = NULL
         assert buffer.len == fvec.size()
+        self.view_count += 1
 
     def __releasebuffer__(self, Py_buffer *buffer):
-        pass
+        self.view_count -= 1
 
     def __imatmul__(self, f1):
         # f1 can be Field, SelectedField, SelectedPoints
@@ -84,10 +88,13 @@ cdef class SelectedFieldTYPENAME(SelectedFieldBase):
 
     def __cinit__(self):
         self.cdata = <long>&(self.xx)
+        self.view_count = 0
 
     def __init__(self, FieldSelection fsel, int multiplicity = 0):
         self.fsel = fsel
         if multiplicity > 0 and self.fsel is not None:
+            if self.view_count > 0:
+                raise ValueError("can't re-init while being viewed")
             self.xx.init(self.fsel.xx, multiplicity)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
@@ -121,9 +128,10 @@ cdef class SelectedFieldTYPENAME(SelectedFieldBase):
         buffer.strides = strides
         buffer.suboffsets = NULL
         assert buffer.len == fvec.size()
+        self.view_count += 1
 
     def __releasebuffer__(self, Py_buffer *buffer):
-        pass
+        self.view_count -= 1
 
     def __imatmul__(self, f1):
         # won't change self.fsel
@@ -165,10 +173,13 @@ cdef class SelectedPointsTYPENAME(SelectedPointsBase):
 
     def __cinit__(self):
         self.cdata = <long>&(self.xx)
+        self.view_count = 0
 
     def __init__(self, PointSelection psel, int multiplicity = 0):
         self.psel = psel
         if multiplicity > 0 and self.psel is not None:
+            if self.view_count > 0:
+                raise ValueError("can't re-init while being viewed")
             self.xx.init(self.psel.xx, multiplicity)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
@@ -202,9 +213,10 @@ cdef class SelectedPointsTYPENAME(SelectedPointsBase):
         buffer.strides = strides
         buffer.suboffsets = NULL
         assert buffer.len == fvec.size()
+        self.view_count += 1
 
     def __releasebuffer__(self, Py_buffer *buffer):
-        pass
+        self.view_count -= 1
 
     def __imatmul__(self, f1):
         # won't change self.psel
