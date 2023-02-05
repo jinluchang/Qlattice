@@ -31,11 +31,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 Current Grid git commit hash=458c943987eec3282b001f276c9bc91fd482ff02: (HEAD, origin/feature/gpt, origin/HEAD, feature/gpt) clean
 
-grid_begin: rm returns 256
 qlat::begin(): MPI Initialized. num_node = 2
-grid_begin: rm returns 256
-GridThreads::GridThreads() = 2
-GridThreads::GridThreads() = 2
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 2
 qlat::begin(): q_num_threads = 2
@@ -50,6 +46,8 @@ qlat::begin(): GeometryNode =
 q_timer_max_func_name_len=50 (default)
 q_mk_id_node_in_shuffle_seed='' (default)
 clear_mem_cache: 0 bytes (0.000 GB) freed.
+grid_begin: rm returns 256
+GridThreads::GridThreads() = 2
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
 q_field_init='fast' (default)
