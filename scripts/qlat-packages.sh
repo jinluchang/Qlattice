@@ -18,7 +18,7 @@ source qcore/set-prefix.sh $name
     cd "$build"
 
     # opts="--verbose --no-index --no-cache-dir -f $distfiles/python-packages -f $build"
-    opts="--verbose -f $build"
+    opts="--user --verbose --force-reinstall -f $build"
 
     time-run pip3 uninstall -y qlat-utils qlat qlat-grid || true
 
