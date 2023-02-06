@@ -13,7 +13,7 @@ EXPORT(save_prop_float, {
   const Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
   const std::string path = py_convert_data<std::string>(p_path);
   const std::string path_dir = dirname(path);
-  qmkdir_p(path_dir);
+  qmkdir_p_info(path_dir);
   const Geometry& geo = prop.geo();
   const Coordinate total_site = geo.total_site();
   const Coordinate size_node = geo.geon.size_node;

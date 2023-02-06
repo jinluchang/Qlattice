@@ -199,6 +199,28 @@ inline int qmkdir_p(const std::string& path_,
   return 0;
 }
 
+inline int qmkdir_info(const std::string& path,
+                       const mode_t mode = default_dir_mode())
+{
+  TIMER("qmkdir_info");
+  if (0 == get_id_node()) {
+    return qmkdir(path, mode);
+  } else {
+    return 0;
+  }
+}
+
+inline int qmkdir_p_info(const std::string& path,
+                         const mode_t mode = default_dir_mode())
+{
+  TIMER("qmkdir_info");
+  if (0 == get_id_node()) {
+    return qmkdir_p(path, mode);
+  } else {
+    return 0;
+  }
+}
+
 inline std::vector<std::string> qls_aux(const std::string& path,
                                         const bool is_sort = true)
 {
@@ -322,6 +344,17 @@ inline int qrename(const std::string& old_path, const std::string& new_path)
   return rename(old_path.c_str(), new_path.c_str());
 }
 
+inline int qrename_info(const std::string& old_path,
+                        const std::string& new_path)
+{
+  TIMER("qrename_info");
+  if (0 == get_id_node()) {
+    return qrename(old_path, new_path);
+  } else {
+    return 0;
+  }
+}
+
 inline void switch_monitor_file(const std::string& path)
 {
   qfclose(get_monitor_file());
@@ -422,17 +455,6 @@ long qread_data(const Vector<M>& v, FILE* fp)
   return sizeof(M) * std::fread((void*)v.p, sizeof(M), v.n, fp);
 }
 
-inline int qmkdir_info(const std::string& path,
-                       const mode_t mode = default_dir_mode())
-{
-  TIMER("qmkdir_info");
-  if (0 == get_id_node()) {
-    return qmkdir(path, mode);
-  } else {
-    return 0;
-  }
-}
-
 inline void switch_monitor_file_info(const std::string& path)
 {
   if (0 == get_id_node()) {
@@ -463,17 +485,6 @@ inline int qfclose_info(FILE*& file)
 {
   TIMER("qfclose_info");
   return qfclose(file);
-}
-
-inline int qrename_info(const std::string& old_path,
-                        const std::string& new_path)
-{
-  TIMER("qrename_info");
-  if (0 == get_id_node()) {
-    return qrename(old_path, new_path);
-  } else {
-    return 0;
-  }
 }
 
 }  // namespace qlat

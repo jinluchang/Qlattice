@@ -3,6 +3,8 @@ import qlat_utils.c as c
 from qlat_utils.cache import *
 from qlat_utils.rng_state import *
 
+from qlat_utils.c import random_permute, displayln_malloc_stats
+
 import math
 import sys
 import os
@@ -28,16 +30,6 @@ def get_arg(option, default = None):
             else:
                 return argv[i + 1]
     return default
-
-def random_permute(l, rs):
-    # Do not change ``l''.
-    # Return a new permuted list.
-    assert isinstance(l, list)
-    assert isinstance(rs, RngState)
-    return c.random_permute(l, rs)
-
-def displayln_malloc_stats():
-    return c.displayln_malloc_stats()
 
 def show_memory_usage():
     try:

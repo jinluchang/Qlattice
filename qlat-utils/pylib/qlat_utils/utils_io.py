@@ -3,8 +3,7 @@ import qlat_utils.c as c
 import os
 import pickle
 
-from qlat_utils.c import qremove
-from qlat_utils.c import qremove_all
+from qlat_utils.c import qremove, qremove_all
 from qlat_utils.c import qmkdir, qmkdir_info
 from qlat_utils.c import does_file_exist
 from qlat_utils.c import is_directory
@@ -12,6 +11,9 @@ from qlat_utils.c import is_regular_file
 from qlat_utils.c import qrename, qrename_info
 from qlat_utils.c import qls
 from qlat_utils.c import qls_all
+from qlat_utils.c import compute_crc32
+from qlat_utils.c import qload_datatable
+from qlat_utils.c import check_all_files_crc32_info
 
 from qlat_utils.qar import *
 
@@ -74,17 +76,6 @@ def qappend_info(path, content = None):
         return c.qappend_info(path)
     else:
         return c.qappend_info(path, content)
-
-@timer
-def compute_crc32(path):
-    return c.compute_crc32(path)
-
-def qload_datatable(path, is_par = False):
-    return c.qload_datatable(path, is_par)
-
-@timer
-def check_all_files_crc32_info(path):
-    return c.check_all_files_crc32_info(path)
 
 @timer
 def save_pickle_obj(obj, path):

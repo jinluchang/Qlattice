@@ -2,18 +2,16 @@
 
 #pragma once
 
-#include <cstring>
-
+#include <qlat-utils/qutils-vec.h>
+#include <qlat-utils/qutils.h>
+#include <qlat-utils/show.h>
+#include <qlat-utils/types.h>
 #include <zlib.h>
 
-#include <qlat-utils/show.h>
-#include <qlat-utils/qutils.h>
-#include <qlat-utils/qutils-vec.h>
+#include <cstring>
 
 namespace qlat
 {  //
-
-typedef uint32_t crc32_t;
 
 // inline crc32_t crc32(const crc32_t initial, const void* data, const long len)
 // {

@@ -1,8 +1,9 @@
 #pragma once
 
-#include <qlat-utils/qar.h>
 #include <qlat-utils/cache.h>
 #include <qlat-utils/crc32.h>
+#include <qlat-utils/qar.h>
+#include <qlat-utils/types.h>
 
 namespace qlat
 {  //
@@ -598,8 +599,6 @@ inline int qappend(const std::string& path, const std::string& content)
 }
 
 // -------------------
-
-typedef std::vector<std::vector<double> > DataTable;
 
 inline DataTable qload_datatable(QFile& qfile)
 {

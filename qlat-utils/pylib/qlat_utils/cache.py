@@ -2,6 +2,8 @@ from qlat_utils.timer import *
 
 import qlat_utils.c as c
 
+from qlat_utils.c import get_all_caches_info
+
 # Usage:
 # cache_x = q.mk_cache("xx")
 # q.clean_cache(cache_x)
@@ -79,6 +81,7 @@ def rm_cache(*keys, ca = cache):
 def get_all_caches_info():
     return c.get_all_caches_info()
 
+@timer
 def clear_all_caches():
     # clean python level cache and then C++ level cache
     clean_cache()

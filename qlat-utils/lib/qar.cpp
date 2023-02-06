@@ -40,16 +40,4 @@ std::vector<std::string> cc_list_qar(const std::string& path)
 
 std::string cc_qcat(const std::string& path) { return qcat(path); }
 
-int cc_qtouch(const std::string& path) { return qtouch(path); }
-
-int cc_qtouch(const std::string& path, const std::string& content)
-{
-  return qtouch(path, content);
-}
-
-int cc_qappend(const std::string& path, const std::string& content)
-{
-  return qappend(path, content);
-}
-
 }  // namespace qlat

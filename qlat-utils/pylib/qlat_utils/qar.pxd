@@ -21,9 +21,3 @@ cdef extern from "qlat-utils/lib/qar.h" namespace "qlat":
     std_vector[std_string] cc_list_qar(const std_string& path)
 
     std_string cc_qcat(const std_string& path)
-
-    int cc_qtouch(const std_string& path)
-
-    int cc_qtouch(const std_string& path, const std_string& content)
-
-    int cc_qappend(const std_string& path, const std_string& content)
