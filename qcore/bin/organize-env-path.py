@@ -9,6 +9,7 @@ if not (sys.version_info.major == 3 and sys.version_info.minor >= 6):
 
 import os
 import sysconfig
+import site
 
 def get_colon_list(str_colon_separated_list):
     l = str_colon_separated_list.split(':')
@@ -38,6 +39,14 @@ def set_env(env):
         if user_scripts_path not in l:
             l = [ user_scripts_path, ] + l
         val = ':'.join(unique_list(l))
+    elif env == "PYTHONPATH":
+        l = get_colon_list(val)
+        l_site = site.getsitepackages()
+        l_new = []
+        for v in l:
+            if v not in l_site:
+                l_new.append(v)
+        val = ':'.join(unique_list(l_new))
     else:
         val = organize_colon_list(val)
     return f"export {env}='{val}'"
