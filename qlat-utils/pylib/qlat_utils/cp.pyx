@@ -479,6 +479,31 @@ def list_qar(const cc.std_string& path_qar):
 
 ### -------------------------------------------------------------------
 
+def random_permute(list l, RngState rs):
+    cdef long size = len(l)
+    cdef cc.std_vector[cc.PyObject*] vec
+    vec.resize(size)
+    cdef long i = 0
+    for i in range(size):
+        vec[i] = <cc.PyObject*>l[i]
+    cc.random_permute(vec, rs.xx)
+    cdef list l_new = []
+    for i in range(size):
+        l_new.append(<object>vec[i])
+    return l_new
+
+def get_all_caches_info():
+    cdef list l = cc.get_all_caches_info()
+    return [ str(v) for v in l ]
+
+def clear_all_caches():
+    cc.clear_all_caches()
+
+def displayln_malloc_stats():
+    cc.displayln_malloc_stats()
+
+### -------------------------------------------------------------------
+
 cdef class Buffer:
 
     def __cinit__(self, object obj = None, int ndim = 1, int itemsize = 1):

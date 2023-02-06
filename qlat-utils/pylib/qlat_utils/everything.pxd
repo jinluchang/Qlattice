@@ -8,3 +8,4 @@ from .elem_type cimport *
 from .lat_io cimport *
 from .mat cimport *
 from .qar cimport *
+from .utils cimport *

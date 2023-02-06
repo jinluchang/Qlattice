@@ -36,6 +36,9 @@ def random_permute(l, rs):
     assert isinstance(rs, RngState)
     return c.random_permute(l, rs)
 
+def displayln_malloc_stats():
+    return c.displayln_malloc_stats()
+
 def show_memory_usage():
     try:
         import psutil
@@ -44,9 +47,6 @@ def show_memory_usage():
         # displayln_info_malloc_stats()
     except:
         displayln_info(f"show_memory_usage: no psutil.")
-
-def displayln_malloc_stats():
-    return c.displayln_malloc_stats()
 
 def displayln_info_malloc_stats():
     if get_id_node() == 0:
