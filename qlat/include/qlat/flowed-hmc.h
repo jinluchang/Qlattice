@@ -345,6 +345,7 @@ qacc void set_xg_nu_from_mask_mu_yg_m_srect_nu_neq_mu(
     const int mask, const int mu, const Coordinate& yg, const int m,
     const int flow_type)
 {
+  (void)mask_yl;
   qassert(flow_type == 2);
   qassert(nu_size <= m and m < nu_size + 3 * 4);
   const int k = (m - nu_size) / 4;
