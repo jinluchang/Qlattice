@@ -5,24 +5,12 @@ from qlat_utils.c import does_regular_file_exist_qar
 from qlat_utils.c import does_file_exist_qar
 from qlat_utils.c import qcat
 from qlat_utils.c import qcat_bytes
+from qlat_utils.c import qar_create
+from qlat_utils.c import qar_extract
+from qlat_utils.c import qcopy_file
+from qlat_utils.c import list_qar
 
 from qlat_utils.timer import *
-
-@timer
-def qar_create(path_qar, path_folder, *, is_remove_folder_after = False):
-    return c.qar_create(path_qar, path_folder, is_remove_folder_after)
-
-@timer
-def qar_extract(path_qar, path_folder, *, is_remove_qar_after = False):
-    return c.qar_extract(path_qar, path_folder, is_remove_qar_after)
-
-@timer
-def qcopy_file(path_src, path_dst):
-    return c.qcopy_file(path_src, path_dst)
-
-@timer
-def list_qar(path_qar):
-    return c.list_qar(path_qar)
 
 def does_regular_file_exist_qar_sync_node(path):
     if get_num_node() != 1:
