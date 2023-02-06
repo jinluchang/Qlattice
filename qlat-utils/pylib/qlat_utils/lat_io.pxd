@@ -28,6 +28,13 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
         int ndim()
         double* data()
 
+    LatData operator*(const Complex& a, const LatData& ld)
+    LatData operator*(const double a, const LatData& ld)
+    LatData operator*(const LatData& ld, const Complex& a)
+    LatData operator*(const LatData& ld, const double a)
+    LatData operator+(const LatData& ld1, const LatData& ld2)
+    LatData operator-(const LatData& ld1, const LatData& ld2)
+
     bool is_matching(const LatData& ld1, const LatData& ld2)
     long lat_data_size(LatData& ld)
     void lat_data_alloc(LatData& ld)

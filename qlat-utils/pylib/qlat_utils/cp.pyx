@@ -597,7 +597,7 @@ cdef class RngState:
 
 @timer
 def get_double_sig(x, RngState rs):
-    # get a signature of data viewed as a collection of double numbers
+    """get a signature of data viewed as a collection of double numbers"""
     if isinstance(x, LatData):
         arr = np.asarray(x).ravel()
         arr_rand = np.zeros(arr.shape, arr.dtype)
@@ -618,7 +618,7 @@ cdef class LatData:
         return self
 
     def copy(self, cc.bool is_copying_data = True):
-        x = LatData()
+        cdef LatData x = type(self)()
         if is_copying_data:
             x.xx = self.xx
         return x
@@ -853,41 +853,58 @@ cdef class LatData:
                 raise Exception(f"LatData setinfo info_list={info_list}")
         self.set_zero()
 
-    def __iadd__(self, ld1):
-        assert isinstance(ld1, LatData)
-        c.set_add_lat_data(self, ld1)
+    def __iadd__(self, LatData ld1):
+        self.xx = self.xx + ld1.xx
         return self
 
-    def __isub__(self, ld1):
-        assert isinstance(ld1, LatData)
-        c.set_sub_lat_data(self, ld1)
+    def __isub__(self, LatData ld1):
+        self.xx = self.xx - ld1.xx
         return self
 
     def __imul__(self, factor):
-        assert isinstance(factor, float)
-        c.set_mul_double_lat_data(self, factor)
+        cdef cc.Double f
+        cdef cc.Complex c
+        if isinstance(factor, float):
+            f = factor
+            self.xx = self.xx * f
+        elif isinstance(factor, complex):
+            c = factor
+            self.xx = self.xx * c
+        else:
+            assert False
         return self
 
-    def __add__(self, ld1):
-        ld = self.copy()
-        ld += ld1
+    def __add__(LatData ld1, LatData ld2):
+        cdef LatData ld = type(ld1)()
+        ld.xx = ld1.xx + ld2.xx
         return ld
 
-    def __sub__(self, ld1):
-        ld = self.copy()
-        ld -= ld1
+    def __sub__(LatData ld1, LatData ld2):
+        cdef LatData ld = type(ld1)()
+        ld.xx = ld1.xx - ld2.xx
         return ld
 
-    def __mul__(self, factor):
-        ld = self.copy()
-        ld *= factor
-        return ld
-
-    __rmul__ = __mul__
+    def __mul__(ld, factor):
+        if isinstance(factor, LatData):
+            ld, factor = factor, ld
+        assert isinstance(ld, LatData)
+        cdef LatData ld1 = type(ld)()
+        cdef LatData ld0 = ld
+        cdef cc.Double f
+        cdef cc.Complex c
+        if isinstance(factor, float):
+            f = factor
+            ld1.xx = ld0.xx * f
+        elif isinstance(factor, complex):
+            c = factor
+            ld1.xx = ld0.xx * c
+        else:
+            assert False
+        return ld1
 
     def __neg__(self):
-        ld = self.copy()
-        ld *= -1
+        cdef LatData ld = type(self)()
+        ld.xx = ld.xx - self.xx
         return ld
 
     def __pos__(self):
@@ -896,19 +913,12 @@ cdef class LatData:
     def __setitem__(self, idx, val):
         # use list with correct length as val
         # idx should be tuple or list of int
-        if isinstance(idx, int):
-            idx = [ idx, ]
-        if isinstance(val, np.ndarray):
-            val = val.flatten()
-        c.poke_lat_data(self, idx, list(val))
+        np.asarray(self)[idx] = val
 
     def __getitem__(self, idx):
         # return a new list every call
         # idx should be tuple or list of int
-        if isinstance(idx, int):
-            idx = [ idx, ]
-        shape = self.dim_sizes()[len(idx):]
-        return np.array(c.peek_lat_data(self, idx)).reshape(shape)
+        return np.asarray(self)[idx]
 
 ### -------------------------------------------------------------------
 

@@ -526,8 +526,11 @@ inline const LatData& operator+=(LatData& ld, const LatData& ld1)
 inline const LatData& operator-=(LatData& ld, const LatData& ld1)
 {
   if (not is_initialized(ld)) {
-    ld = ld1;
-    ld *= -1.0;
+    ld.info = ld1.info;
+    lat_data_alloc(ld);
+    for (long i = 0; i < (long)ld.res.size(); ++i) {
+      ld.res[i] = -ld1.res[i];
+    }
   } else {
     qassert(is_matching(ld, ld1));
     for (long i = 0; i < (long)ld.res.size(); ++i) {
@@ -548,6 +551,13 @@ inline LatData operator-(const LatData& ld, const LatData& ld1)
 {
   LatData ret = ld;
   ret -= ld1;
+  return ret;
+}
+
+inline LatData operator-(const LatData& ld)
+{
+  LatData ret;
+  ret -= ld;
   return ret;
 }
 
