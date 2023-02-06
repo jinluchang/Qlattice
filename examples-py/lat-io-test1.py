@@ -27,7 +27,7 @@ for dim in range(ld.ndim()):
 for i0 in range(dim_sizes[0]):
     for i1 in range(dim_sizes[1]):
         for i2 in range(dim_sizes[2]):
-            ld[(i0, i1, i2,)] = [ 1e6 + i0 * 1e4 + i1 * 1e2 + i2 ]
+            ld[(i0, i1, i2,)] = 1e6 + i0 * 1e4 + i1 * 1e2 + i2
 
 q.displayln_info("ld:")
 q.displayln_info(ld.show())
