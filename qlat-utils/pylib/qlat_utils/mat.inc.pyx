@@ -135,5 +135,3 @@ def as_wilson_matrix_g5_herm(x):
     elif x == 0:
         cc.set_zero(wm.xx)
     return wm
-
-

@@ -71,3 +71,21 @@ cplib = py3.extension_module('cp',
   install: true,
   subdir: 'qlat_utils',
   )
+
+cpa_pyx = custom_target(f'cpa_pyx',
+  output: 'cpa.pyx',
+  input: 'cpa.pyx',
+  command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
+  depends : py_tgts + pxd_tgts + pxi_tgts,
+  depend_files: all_header_files,
+  install: false,
+  )
+
+cpalib = py3.extension_module('cpa',
+  cpa_pyx,
+  dependencies: deps,
+  include_directories: incdir,
+  link_with: clib,
+  install: true,
+  subdir: 'qlat_utils',
+  )
