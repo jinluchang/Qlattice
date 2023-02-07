@@ -21,6 +21,8 @@ elif [ ! "$(uname)" == "Linux" ]; then
     echo "Setting for $(uname) as if it is a Linux"
 fi
 
+export LC_ALL="C"
+
 if [ -z "${num_proc+x}" ] ; then
     export num_proc=2
 fi
