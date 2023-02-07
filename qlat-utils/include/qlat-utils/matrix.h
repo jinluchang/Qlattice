@@ -10,6 +10,12 @@ namespace qlat
 {  //
 
 template <int DIMN, class T>
+qacc Vector<T> get_data(const MatrixT<DIMN, T>& m)
+{
+  return Vector<T>(m.p, DIMN * DIMN);
+}
+
+template <int DIMN, class T>
 qacc MatrixT<DIMN, T> operator+(const MatrixT<DIMN, T>& x,
                                 const MatrixT<DIMN, T>& y)
 {
@@ -317,34 +323,6 @@ qacc T matrix_determinant(const MatrixT<DIMN, T>& x)
 }
 
 template <class T = Real>
-struct API NonRelWilsonMatrixT : MatrixT<2 * NUM_COLOR, ComplexT<T> > {
-  qacc NonRelWilsonMatrixT() {}
-  qacc NonRelWilsonMatrixT(const MatrixT<2 * NUM_COLOR, ComplexT<T> >& m)
-  {
-    *this = m;
-  }
-  //
-  qacc const NonRelWilsonMatrixT& operator=(
-      const MatrixT<2 * NUM_COLOR, ComplexT<T> >& m)
-  {
-    *this = (const NonRelWilsonMatrixT&)m;
-    return *this;
-  }
-};
-
-template <class T = Real>
-struct API IsospinMatrixT : MatrixT<2, ComplexT<T> > {
-  qacc IsospinMatrixT() {}
-  qacc IsospinMatrixT(const MatrixT<2, ComplexT<T> >& m) { *this = m; }
-  //
-  qacc const IsospinMatrixT& operator=(const MatrixT<2, ComplexT<T> >& m)
-  {
-    *this = (const IsospinMatrixT&)m;
-    return *this;
-  }
-};
-
-template <class T = Real>
 struct API SpinMatrixConstantsT {
   SpinMatrixT<T> unit;
   array<SpinMatrixT<T>, 4>
@@ -508,12 +486,6 @@ struct API SpinMatrixConstantsT {
 inline const box_acc<SpinMatrixConstantsT<> >& get_spin_matrix_constants()
 {
   return SpinMatrixConstantsT<>::get_instance_box();
-}
-
-inline const SpinMatrixT<>& get_gamma_matrix(const int mu)
-// CPS's convention gamma matrices
-{
-  return SpinMatrixConstantsT<>::get_cps_gamma(mu);
 }
 
 template <class T>
@@ -698,10 +670,6 @@ qacc void convert_wm_from_mspincolor(WilsonMatrixT<T>& wm,
 }
 
 #ifndef QLAT_NO_DEFAULT_TYPE
-
-typedef NonRelWilsonMatrixT<> NonRelWilsonMatrix;
-
-typedef IsospinMatrixT<> IsospinMatrix;
 
 typedef SpinMatrixConstantsT<> SpinMatrixConstants;
 

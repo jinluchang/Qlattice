@@ -8,6 +8,12 @@ namespace qlat
 {  //
 
 template <int DIMN, class T>
+qacc Vector<T> get_data(const MvectorT<DIMN, T>& m)
+{
+  return Vector<T>(m.p, DIMN);
+}
+
+template <int DIMN, class T>
 qacc MvectorT<DIMN, T> operator+(const MvectorT<DIMN, T>& x,
                                  const MvectorT<DIMN, T>& y)
 {

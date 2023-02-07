@@ -134,11 +134,43 @@ struct API SpinMatrixT : MatrixT<4, ComplexT<T> > {
   }
 };
 
+template <class T = Real>
+struct API NonRelWilsonMatrixT : MatrixT<2 * NUM_COLOR, ComplexT<T> > {
+  qacc NonRelWilsonMatrixT() {}
+  qacc NonRelWilsonMatrixT(const MatrixT<2 * NUM_COLOR, ComplexT<T> >& m)
+  {
+    *this = m;
+  }
+  //
+  qacc const NonRelWilsonMatrixT& operator=(
+      const MatrixT<2 * NUM_COLOR, ComplexT<T> >& m)
+  {
+    *this = (const NonRelWilsonMatrixT&)m;
+    return *this;
+  }
+};
+
+template <class T = Real>
+struct API IsospinMatrixT : MatrixT<2, ComplexT<T> > {
+  qacc IsospinMatrixT() {}
+  qacc IsospinMatrixT(const MatrixT<2, ComplexT<T> >& m) { *this = m; }
+  //
+  qacc const IsospinMatrixT& operator=(const MatrixT<2, ComplexT<T> >& m)
+  {
+    *this = (const IsospinMatrixT&)m;
+    return *this;
+  }
+};
+
 using ColorMatrix = ColorMatrixT<>;
 
 using WilsonMatrix = WilsonMatrixT<>;
 
 using SpinMatrix = SpinMatrixT<>;
+
+using NonRelWilsonMatrix = NonRelWilsonMatrixT<>;
+
+using IsospinMatrix = IsospinMatrixT<>;
 
 // --------------------
 
@@ -230,20 +262,6 @@ struct API SpinVectorT : MvectorT<4, ComplexT<T> > {
 using WilsonVector = WilsonVectorT<>;
 
 using SpinVector = SpinVectorT<>;
-
-// --------------------
-
-template <int DIMN, class T>
-qacc Vector<T> get_data(const MatrixT<DIMN, T>& m)
-{
-  return Vector<T>(m.p, DIMN * DIMN);
-}
-
-template <int DIMN, class T>
-qacc Vector<T> get_data(const MvectorT<DIMN, T>& m)
-{
-  return Vector<T>(m.p, DIMN);
-}
 
 // --------------------
 

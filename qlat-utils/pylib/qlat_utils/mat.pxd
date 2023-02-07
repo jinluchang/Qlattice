@@ -1,6 +1,6 @@
 from qlat_utils.lat_io cimport *
 
-cdef extern from "qlat-utils/matrix.h" namespace "qlat":
+cdef extern from "qlat-utils/mat-vec.h" namespace "qlat":
 
     cdef cppclass ColorMatrix:
         ColorMatrix()
@@ -12,22 +12,10 @@ cdef extern from "qlat-utils/matrix.h" namespace "qlat":
         const SpinMatrix& operator=(const SpinMatrix& m)
         Complex* data()
 
-    SpinMatrix operator*(const Complex& a, const SpinMatrix& m)
-    SpinMatrix operator*(const SpinMatrix& m, const Complex& a)
-    SpinMatrix operator*(const SpinMatrix& m1, const SpinMatrix& m2)
-
-    const SpinMatrix& get_gamma_matrix(const int mu)
-
     cdef cppclass WilsonMatrix:
         WilsonMatrix()
         const WilsonMatrix& operator=(const WilsonMatrix& m)
         Complex* data()
-
-    WilsonMatrix operator*(const Complex& a, const WilsonMatrix& m)
-    WilsonMatrix operator*(const WilsonMatrix& m, const Complex& a)
-    WilsonMatrix operator*(const WilsonMatrix& m1, const WilsonMatrix& m2)
-    WilsonMatrix operator*(const SpinMatrix& m1, const WilsonMatrix& m2)
-    WilsonMatrix operator*(const WilsonMatrix& m1, const SpinMatrix& m2)
 
     cdef cppclass NonRelWilsonMatrix:
         NonRelWilsonMatrix()
@@ -67,4 +55,16 @@ cdef extern from "qlat-utils/lib/mat.h" namespace "qlat":
     Complex mat_tr(const SpinMatrix& m1, const WilsonMatrix& m2)
     Complex mat_tr(const SpinMatrix& m1, const SpinMatrix& m2)
 
+    const SpinMatrix& get_gamma_matrix(const int mu)
+
     WilsonMatrix g5_herm(const WilsonMatrix& m)
+
+    SpinMatrix operator*(const Complex& a, const SpinMatrix& m)
+    SpinMatrix operator*(const SpinMatrix& m, const Complex& a)
+    SpinMatrix operator*(const SpinMatrix& m1, const SpinMatrix& m2)
+
+    WilsonMatrix operator*(const Complex& a, const WilsonMatrix& m)
+    WilsonMatrix operator*(const WilsonMatrix& m, const Complex& a)
+    WilsonMatrix operator*(const WilsonMatrix& m1, const WilsonMatrix& m2)
+    WilsonMatrix operator*(const SpinMatrix& m1, const WilsonMatrix& m2)
+    WilsonMatrix operator*(const WilsonMatrix& m1, const SpinMatrix& m2)

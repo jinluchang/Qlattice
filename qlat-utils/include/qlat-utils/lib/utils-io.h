@@ -1,3 +1,5 @@
+#pragma once
+
 #include <qlat-utils/types.h>
 
 #include <string>

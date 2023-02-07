@@ -10,19 +10,13 @@ pxd_fns = run_command(
   ).stdout().strip().split('\n')
 pxd_files = files(pxd_fns)
 
-py3.install_sources(py_files + pxd_files, subdir: 'qlat_utils')
+pxi_fns = run_command(
+  'bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.inc.pyx | grep -v "_template\."',
+  check: true,
+  ).stdout().strip().split('\n')
+pxi_files = files(pxi_fns)
 
-pxd_tgts = []
-foreach i: range(pxd_fns.length())
-  fn = pxd_fns[i]
-  file = pxd_files[i]
-  pxd_tgts += custom_target(fn,
-    output: fn,
-    input: file,
-    command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
-    install: false,
-    )
-endforeach
+py3.install_sources(py_files + pxd_files, subdir: 'qlat_utils')
 
 py_tgts = []
 foreach i: range(py_fns.length())
@@ -36,11 +30,35 @@ foreach i: range(py_fns.length())
     )
 endforeach
 
+pxd_tgts = []
+foreach i: range(pxd_fns.length())
+  fn = pxd_fns[i]
+  file = pxd_files[i]
+  pxd_tgts += custom_target(fn,
+    output: fn,
+    input: file,
+    command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
+    install: false,
+    )
+endforeach
+
+pxi_tgts = []
+foreach i: range(pxi_fns.length())
+  fn = pxi_fns[i]
+  file = pxi_files[i]
+  pxi_tgts += custom_target(fn,
+    output: fn,
+    input: file,
+    command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
+    install: false,
+    )
+endforeach
+
 cp_pyx = custom_target(f'cp_pyx',
   output: 'cp.pyx',
   input: 'cp.pyx',
   command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
-  depends : py_tgts + pxd_tgts,
+  depends : py_tgts + pxd_tgts + pxi_tgts,
   depend_files: all_header_files,
   install: false,
   )

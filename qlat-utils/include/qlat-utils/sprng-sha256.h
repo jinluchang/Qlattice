@@ -54,16 +54,16 @@ struct SprngSha256 {
     q.generate(seq.begin(), seq.end());
     reset(rs);
     for (size_t i = 0; i < seq.size(); ++i) {
-      splitRngState(rs, rs, seq[i]);
+      split_rng_state(rs, rs, seq[i]);
     }
   }
   //
-  result_type operator()() { return randGen(rs); }
+  result_type operator()() { return rand_gen(rs); }
   //
   void discard(unsigned long long z)
   {
     for (unsigned long long i = 0; i < z; ++i) {
-      randGen(rs);
+      rand_gen(rs);
     }
   }
 };

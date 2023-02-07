@@ -1,9 +1,27 @@
-#include <qlat-utils/matrix.h>
+#pragma once
+
+#include <qlat-utils/mat-vec.h>
 
 namespace qlat
 {  //
 
+const SpinMatrixT<>& get_gamma_matrix(const int mu);
+
 WilsonMatrix g5_herm(const WilsonMatrix& m);
+
+void set_zero(ColorMatrix& x);
+void set_zero(SpinMatrix& x);
+void set_zero(WilsonMatrix& x);
+void set_zero(NonRelWilsonMatrix& x);
+void set_zero(IsospinMatrix& x);
+void set_zero(WilsonVector& x);
+
+Vector<Complex> get_data(const ColorMatrix& x);
+Vector<Complex> get_data(const SpinMatrix& x);
+Vector<Complex> get_data(const WilsonMatrix& x);
+Vector<Complex> get_data(const NonRelWilsonMatrix& x);
+Vector<Complex> get_data(const IsospinMatrix& x);
+Vector<Complex> get_data(const WilsonVector& x);
 
 Complex mat_tr(const WilsonMatrix& m);
 Complex mat_tr(const SpinMatrix& m);
