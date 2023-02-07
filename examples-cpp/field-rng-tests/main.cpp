@@ -28,8 +28,8 @@ void test1()
   const int type = 1;
   const int traj = 1;
   RngState rs(seed);
-  splitRngState(rs, rs, type);
-  splitRngState(rs, rs, traj);
+  split_rng_state(rs, rs, type);
+  split_rng_state(rs, rs, traj);
   RngField rf;
   rf.init(geo, rs);
   FieldM<Complex, 1> af;

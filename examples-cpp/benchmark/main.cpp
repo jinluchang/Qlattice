@@ -31,7 +31,7 @@ void test_gf_fft()
   // Coordinate total_site(48, 48, 48, 96);
   // Coordinate total_site(16, 16, 16, 32);
   Coordinate total_site(4, 4, 4, 8);
-  RngState rs(getGlobalRngState(), "test_fft");
+  RngState rs(get_global_rng_state(), "test_fft");
   Geometry geo;
   geo.init(total_site, 1);
   GaugeField gf;
@@ -45,7 +45,7 @@ void test_gf_fft()
       ColorMatrix& cm = v[m];
       for (int i = 0; i < NUM_COLOR; ++i) {
         for (int j = 0; j < NUM_COLOR; ++j) {
-          cm(i, j) = Complex(gRandGen(rsi), gRandGen(rsi));
+          cm(i, j) = Complex(g_rand_gen(rsi), g_rand_gen(rsi));
         }
       }
     }
@@ -67,7 +67,7 @@ void test_fft()
   // Coordinate total_site(32, 32, 32, 64);
   // Coordinate total_site(16, 16, 16, 32);
   Coordinate total_site(4, 4, 4, 8);
-  RngState rs(getGlobalRngState(), "test_fft");
+  RngState rs(get_global_rng_state(), "test_fft");
   Geometry geo;
   geo.init(total_site, 1);
   FieldM<Complex, N> f, ff;
@@ -78,7 +78,7 @@ void test_fft()
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<Complex> v = f.get_elems(xl);
     for (int m = 0; m < v.size(); ++m) {
-      v[m] = Complex(gRandGen(rsi), gRandGen(rsi));
+      v[m] = Complex(g_rand_gen(rsi), g_rand_gen(rsi));
     }
   }
   ff = f;
