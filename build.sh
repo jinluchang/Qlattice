@@ -27,7 +27,7 @@ scripts/clean-prefix.sh
 
 source qcore/set-prefix.sh ""
 
-touch "$prefix"/build-target="$target".txt
+export >"$prefix"/build-target="$target".txt
 
 scripts/dist-update-hash.sh
 scripts/build."$target".sh
