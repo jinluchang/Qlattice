@@ -39,6 +39,8 @@ if "$wd"/qcore/bin/python-check-version.py >/dev/null 2>&1 ; then
     "$wd"/qcore/bin/show-env.py
 fi
 
+export
+
 distfiles="$wd/distfiles"
 
 if [ -z "$temp_dir" ] ; then
