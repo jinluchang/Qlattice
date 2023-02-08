@@ -46,6 +46,7 @@ source qcore/set-prefix.sh $name
     fi
 
     if which qlat-config >/dev/null 2>&1 ; then
+        export LIBS="$LIBS $(qlat-config --libs)"
         export LDFLAGS="$LDFLAGS $(qlat-config --ldflags)"
         export CXXFLAGS="$CXXFLAGS $(qlat-config --cxxflags)"
     fi
