@@ -9,6 +9,7 @@ Usage: qlat-utils-config options
 options can be:
     --cxxflags
     --ldflags
+    --libs
 """.strip()
 
 if len(sys.argv) < 2:
@@ -22,6 +23,7 @@ for arg in sys.argv[1:]:
         output_args += [ f"-I{path}" for path in q.get_include_list() ]
     elif arg == "--ldflags":
         output_args += [ f"-L{path}" for path in q.get_lib_list() ]
+    elif arg == "--libs":
         output_args += [ "-lqlat-utils", ]
 
 print(" ".join(output_args))
