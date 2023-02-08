@@ -830,6 +830,7 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
     #ifdef QLAT_USE_ACC
     if(smf.dirL==3){gauss_smear_global4<T, bfac, civ, 3><<< dimGrid, dimBlock >>>(prop, prop_buf, gf, bw, norm, Nvol, Pdir1);}
     if(smf.dirL==4){gauss_smear_global4<T, bfac, civ, 4><<< dimGrid, dimBlock >>>(prop, prop_buf, gf, bw, norm, Nvol, Pdir1);}
+    qacc_barrier(dummy);
     #else
 
     const int dir_max = 4;
