@@ -19,9 +19,9 @@ output_args = []
 
 for arg in sys.argv[1:]:
     if arg == "--cxxflags":
-        output_args += [ f"-I'{path}'" for path in q.get_include_list() ]
+        output_args += [ f"-I{path}" for path in q.get_include_list() ]
     elif arg == "--ldflags":
-        output_args += [ f"-L'{path}'" for path in q.get_lib_list() ]
+        output_args += [ f"-L{path}" for path in q.get_lib_list() ]
         output_args += [ "-lqlat", "-lqlat-utils", ]
 
 print(" ".join(output_args))
