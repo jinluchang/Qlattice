@@ -1,3 +1,9 @@
+"""
+Will also be loaded by ``import qlat as q``.\n
+Usage::\n
+    import qlat_utils as q
+"""
+
 import qlat_utils.c as c
 
 from qlat_utils.c import Coordinate, RngState, WilsonMatrix, SpinMatrix

@@ -101,7 +101,7 @@ cp_pyx = custom_target(f'cp_pyx',
   output: 'cp.pyx',
   input: 'cp_template.pyx',
   command: [ cp_gen, '@INPUT@', '@OUTPUT@', ] + cp_type_pyx_fn_list,
-  depends: cp_type_pyx_list + cp_pxd + py_tgts + pxd_tgts,
+  depends: cp_type_pyx_list + cp_pxd + pxd_tgts,
   depend_files: cp_gen + all_header_files + qlat_utils_pxd + qlat_utils_header,
   install: false,
   )

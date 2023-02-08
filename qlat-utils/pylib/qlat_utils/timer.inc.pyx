@@ -107,6 +107,12 @@ def timer_merge():
 ### -------------------------------------------------------------------
 
 def timer(func):
+    """
+    Usage::\n
+        @q.timer
+        def function(args):
+            pass
+    """
     cdef cc.std_string fname = "py:" + func.__name__
     cdef cc.Timer qtimer = cc.Timer(fname)
     @functools.wraps(func)
