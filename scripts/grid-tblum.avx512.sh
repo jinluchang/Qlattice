@@ -45,10 +45,9 @@ source qcore/set-prefix.sh $name
         export CXXFLAGS="$CXXFLAGS -I$(find-library.sh libz.a)/include"
     fi
 
-    if which qlat-include >/dev/null 2>&1 ; then
-        for v in $(qlat-include) ; do
-            export CXXFLAGS="$CXXFLAGS -I$v"
-        done
+    if which qlat-config >/dev/null 2>&1 ; then
+        export LDFLAGS="$LDFLAGS $(qlat-config --ldflags)"
+        export CXXFLAGS="$CXXFLAGS $(qlat-config --cxxflags)"
     fi
 
     mkdir build
