@@ -455,6 +455,7 @@ struct SmearPlanKey {
   bool smear_in_time_dir;
   int bfac;
   int civ;
+  int dup;
   DATA_TYPE prec;
 };
 
@@ -474,6 +475,10 @@ inline bool operator<(const SmearPlanKey& x, const SmearPlanKey& y)
 
   if(x.prec < y.prec ){return true;}
   if(y.prec < x.prec ){return false;}
+
+  if(x.dup < y.dup ){return true;}
+  if(y.dup < x.dup ){return false;}
+
   return false;
 }
 
@@ -585,7 +590,7 @@ inline const smear_fun_copy& get_smear_plan(const SmearPlanKey& skey)
 }
 
 template<typename Ty, int bfac, int civ>
-inline SmearPlanKey get_smear_plan_key(const Geometry& geo, const bool smear_in_time_dir)
+inline SmearPlanKey get_smear_plan_key(const Geometry& geo, const bool smear_in_time_dir, int dup = -1)
 {
   SmearPlanKey skey;
   //skey.geo  = geo.total_site();
@@ -594,6 +599,7 @@ inline SmearPlanKey get_smear_plan_key(const Geometry& geo, const bool smear_in_
   skey.civ  = civ;
   skey.smear_in_time_dir = smear_in_time_dir;
   skey.prec = get_data_type<Ty >();
+  skey.dup  = dup;
   return skey;
 }
 /////smear plan buffer related
@@ -837,8 +843,16 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
         for(int bi=0;bi<bfac;bi++){
           Eigen::Matrix<T, 3, 3, Eigen::ColMajor>&     lE = *((Eigen::Matrix<T, 3, 3, Eigen::ColMajor>*) lp);
           Eigen::Matrix<T, civ, 3, Eigen::ColMajor>& wmE = *((Eigen::Matrix<T, civ, 3, Eigen::ColMajor>*)  &buf[bi*3*civ]);
+
+          //Eigen::Matrix<T, civ, 3, Eigen::ColMajor>&  pE = *((Eigen::Matrix<T, civ, 3, Eigen::ColMajor>*) &wm1p[bi*3*civ]);
+          //wmE += ( pE * lE);
+
+          if(civ != 1){
           Eigen::Matrix<T, civ, 3, Eigen::ColMajor>&  pE = *((Eigen::Matrix<T, civ, 3, Eigen::ColMajor>*) &wm1p[bi*3*civ]);
-          wmE += ( pE * lE);////avoid mix of Col and Row when civ == 1
+          wmE += ( pE * lE);}
+          if(civ == 1){
+          Eigen::Matrix<T, civ, 3, Eigen::RowMajor>&  pE = *((Eigen::Matrix<T, civ, 3, Eigen::RowMajor>*) &wm1p[bi*3*civ]);
+          wmE += ( pE * lE);}////avoid mix of Col and Row when civ == 1
         }
       }
       T* wmp = &prop[index*nsites];
@@ -968,11 +982,10 @@ void rotate_prop(Propagator4dT<T>& prop, int dir = 0)
   });
 }
 
-
 ////Td is double or float
 template <class Ty, int c0,int d0, class Td>
 void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
-                      const double width, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1)
+                      const double width, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1, const int dup = -1)
 {
   TIMER_FLOPS("smear propagator");
   long long Tfloat = 0;
@@ -1002,7 +1015,7 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
   //Ty* src = (Ty*) qlat::get_data(prop).data();
   /////rotate_prop(prop, 0);
 
-  SmearPlanKey skey = get_smear_plan_key<Ty, c0, d0>(geo, smear_in_time_dir);
+  SmearPlanKey skey = get_smear_plan_key<Ty, c0, d0>(geo, smear_in_time_dir, dup);
   const smear_fun_copy& smf_copy = get_smear_plan(skey);
   smear_fun<Ty >& smf = *((smear_fun<Ty >*) (smf_copy.smfP));
   smf.gauge_setup(gf, mom);
@@ -1013,17 +1026,38 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
   long Nvol_pre = geo.local_volume();
   bool reorder = false;
   int groupP = (d0+smf.NVmpi-1)/smf.NVmpi;
-  if(smf.NVmpi <= d0 and smf.NVmpi != 1 and (d0%smf.NVmpi == 0) and smear_in_time_dir == false and mode == 1){reorder = true;}
+
+  ////check on parameters for smearings
+  bool ini_check = false;
+  ////why do I need d0%smf.NVmpi == 0 previously
+  //if(smf.NVmpi <= d0 or smf.NVmpi != 1 and (d0%smf.NVmpi == 0))
+
+  ////do this check only on GPU, CPU set it by hand
+  #ifdef QLAT_USE_ACC
+  if(smf.NVmpi <= d0 or smf.NVmpi != 1)
+  {
+    ini_check = true;
+  }
+  #endif
+  std::string val = get_env(std::string("q_smear_do_rotate"));
+  if(val != ""){ini_check = stringtonum(val);}
+  if(ini_check){
+    if(smf.NVmpi == 1){ini_check = false;};
+    qassert(groupP * smf.NVmpi >= d0);
+  }
+
+  if(ini_check and smear_in_time_dir == false and mode == 1){reorder = true;}
+  int Nprop = smf.NVmpi * c0*3 * groupP;
+
   if(reorder ){
-    int Nprop = smf.NVmpi * c0*3 * groupP;
     /////print0("====Vec setup, NVmpi %d, groupP %d \n", smf.NVmpi, groupP);
     smf.init_distribute();
     smf.prop.resize(    Nvol_pre * Nprop );
     smf.prop_buf.resize(Nvol_pre * Nprop );
     qassert(!smear_in_time_dir);
 
-    Ty* res = smf.prop.data();
-    cpy_data_thread(res, src, smf.prop.size(), 1);
+    Ty* res = smf.prop.data();smf.prop.set_zero();
+    copy_buffers_vecs(res, src, smf.NVmpi*groupP, d0, d0, Nvol_pre*c0*3, 1);
     smf.mv_idx.dojob(res, res, 1, smf.NVmpi, Nvol_pre*c0*3, 1,   groupP, true);
     {TIMERC("Vec prop");smf.vec_rot->reorder(res, smf.prop_buf.data(), 1, c0*3*groupP ,   0);}
     src = smf.prop.data();
@@ -1037,14 +1071,20 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
     Ty* res = smf.prop.data();
     {TIMERC("Vec prop");smf.vec_rot->reorder(res, smf.prop_buf.data(), 1, c0*3*groupP , 100);}
     smf.mv_idx.dojob(res, res, 1, smf.NVmpi, Nvol_pre*c0*3, 0,  groupP , true);
-    cpy_data_thread(prop, smf.prop.data(), smf.prop.size(), 1);
+    ////cpy_data_thread(prop, smf.prop.data(), smf.prop.size(), 1);
+    copy_buffers_vecs(prop, smf.prop.data(), d0, smf.NVmpi*groupP, d0, Nvol_pre*c0*3, 1);
   }
   /////rotate_prop(prop, 1);
+
+  #if PRINT_TIMER>3
+  print0("====Vec setup, c0 %d, d0 %d, NVmpi %d, groupP %d , reorder %d \n", c0 , d0, smf.NVmpi, groupP, int(reorder));
+  #endif
+
 }
 
 template <class Ty, class Td>
 void smear_propagator_gwu_convension(qpropT& prop, const GaugeFieldT<Td >& gf,
-                      const double width, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1)
+                      const double width, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1, const int dup = -1)
 {
   if (0 == step) {return;}
   const long Nvol = prop.geo().local_volume();
@@ -1062,7 +1102,7 @@ void smear_propagator_gwu_convension(qpropT& prop, const GaugeFieldT<Td >& gf,
     }
   });
 
-  smear_propagator_gwu_convension_inner<Ty, 1, 12*4, Td>(src, gf, width, step, mom, smear_in_time_dir, mode);
+  smear_propagator_gwu_convension_inner<Ty, 1, 12*4, Td>(src, gf, width, step, mom, smear_in_time_dir, mode, dup);
 
   qacc_for(isp, Nvol, {
     ALIGN Ty buf[12*12];
@@ -1078,7 +1118,7 @@ void smear_propagator_gwu_convension(qpropT& prop, const GaugeFieldT<Td >& gf,
 
 template <class Ty, class Td>
 void smear_propagator_gwu_convension(qlat::FieldM<ComplexT<Ty> , 12>& prop, const GaugeFieldT<Td >& gf,
-                      const double width, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1)
+                      const double width, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1, const int dup = -1)
 {
   if (0 == step) {return;}
   ComplexT<Ty>* src = (ComplexT<Ty>*) qlat::get_data(prop).data();
@@ -1092,7 +1132,7 @@ void smear_propagator_gwu_convension(qlat::FieldM<ComplexT<Ty> , 12>& prop, cons
     }
   });
 
-  smear_propagator_gwu_convension_inner<ComplexT<Ty>, 1, 4, Td>(src, gf, width, step, mom, smear_in_time_dir, mode);
+  smear_propagator_gwu_convension_inner<ComplexT<Ty>, 1, 4, Td>(src, gf, width, step, mom, smear_in_time_dir, mode, dup);
   qacc_for(isp, prop.geo().local_volume(), {
     ALIGN ComplexT<Ty> buf[12];
     for(int i=0;i<12;i++){buf[i] = src[isp*12 + i];}
@@ -1107,24 +1147,24 @@ void smear_propagator_gwu_convension(qlat::FieldM<ComplexT<Ty> , 12>& prop, cons
 
 template <class Ty, class Td>
 void smear_propagator_gwu_convension(Propagator4dT<Ty>& prop, const GaugeFieldT<Td >& gf,
-                      const double width, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1)
+                      const double width, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1, const int dup = -1)
 {
   if (0 == step) {return;}
   rotate_prop(prop, 0);
   ComplexT<Ty>* src = (ComplexT<Ty>*) qlat::get_data(prop).data();
-  smear_propagator_gwu_convension_inner<ComplexT<Ty>, 1, 12*4, Td>(src, gf, width, step, mom, smear_in_time_dir, mode);
+  smear_propagator_gwu_convension_inner<ComplexT<Ty>, 1, 12*4, Td>(src, gf, width, step, mom, smear_in_time_dir, mode, dup);
   rotate_prop(prop, 1);
 }
 
 template <class T, class Td>
 void smear_propagator_qlat_convension(Propagator4dT<T>& prop, const GaugeFieldT<Td >& gf,
-                      const double coef, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1)
+                      const double coef, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1, const int dup = -1)
 {
   if(coef <= 0){return ;}
   double width = 0.0;
   if(step <  0){width = coef;}////box smearings
   if(step >= 0){width = std::sqrt(coef*2*step/(3.0));}////gauss smearings
-  smear_propagator_gwu_convension(prop, gf, width, step, mom, smear_in_time_dir, mode);
+  smear_propagator_gwu_convension(prop, gf, width, step, mom, smear_in_time_dir, mode, dup);
 }
 
 

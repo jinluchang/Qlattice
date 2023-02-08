@@ -458,7 +458,9 @@ struct inputpara{
 
   int eig_poly_deg;
   double eig_amin;
+  double eig_amax;
   double eig_err;
+  double eig_qr_tol;
 
   int nsource;
   int read_noi;
@@ -689,6 +691,8 @@ struct inputpara{
     if(find_para(std::string("eig_err"),eig_err)==0)eig_err  = 0;
     if(find_para(std::string("eig_poly_deg"),eig_poly_deg)==0)eig_poly_deg  = 0;
     if(find_para(std::string("eig_amin"),eig_amin)==0)eig_amin  = 0;
+    if(find_para(std::string("eig_amax"),eig_amax)==0)eig_amax  = 0;
+    if(find_para(std::string("eig_qr_tol"),eig_qr_tol)==0)eig_qr_tol  = 0.1;
 
     if(find_para(std::string("Propname"),Propname)==0)Propname  = std::string("NONE");
     if(find_para(std::string("Srcname"),Srcname)==0)Srcname  = std::string("NONE");

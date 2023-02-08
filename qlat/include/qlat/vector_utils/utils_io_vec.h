@@ -1455,6 +1455,73 @@ void load_gwu_link(std::string &filename,GaugeFieldT<Td> &gf){
   load_gwu_link(tem,gf);
 }
 
+template<typename Ty>
+void load_gwu_noies(const char *filename,std::vector<qlat::FieldM<Ty, 1> > &noises,bool read=true){
+
+  if(sizeof(Ty) != 2*sizeof(double ) and sizeof(Ty) != 2*sizeof(float )){abort_r("Cannot understand the input format! \n");}
+  if(noises.size() == 0 and read == false){return ;}
+  if(noises.size() == 0 and read == true){abort_r("Initialize your vectors");}
+
+  const long Nnoi = noises.size();
+
+  qassert(noises[0].initialized);
+  io_vec& io_use = get_io_vec_plan(noises[0].geo());
+
+  FILE* file;
+  if(read==true )file = io_use.io_read(filename,"rb");
+  if(read==false)file = io_use.io_read(filename,"wb");
+  size_t noden = io_use.noden;
+  size_t Fsize = io_use.Nmpi*(noden*2)*sizeof(float);
+
+  std::vector<double > prop_noi;
+  prop_noi.resize(noden*2);
+  move_index mv_civ;
+
+  for(long iv=0;iv<Nnoi;iv++)
+  {
+    qlat::FieldM<Ty, 1>& noi = noises[iv];
+    if(read==true){
+      if(iv == 0){
+        size_t sizen = get_file_size_MPI(filename);
+        if(sizen != Nnoi*2*Fsize){abort_r("noise size wrong! \n");}
+      }
+      qlat::Geometry geo = io_use.geop;geo.multiplicity=1;
+      noi.init(geo);
+    }
+    if(read==false){
+      std::complex<double> *src = (std::complex<double>*) &prop_noi[0];
+      Ty* res = (Ty*) qlat::get_data(noi).data();
+      #pragma omp parallel for
+      for(size_t isp=0;isp<noden;isp++){
+        src[isp] = std::complex<double>(res[isp].real(),res[isp].imag());
+      }
+      mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 1,sizeof(double), false);
+    }
+
+    read_kentucky_vector(file,(char*) &prop_noi[0], 2,io_use, true, sizeof(double), false, 1,read);
+
+    /////Copy noise vectors
+    if(read==true){
+      //reorder_civ((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(double));
+      //io_use.mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(double), false);
+      mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(double), false);
+      std::complex<double> *src = (std::complex<double>*) &prop_noi[0];
+      Ty* res = (Ty*) qlat::get_data(noi).data();
+      #pragma omp parallel for
+      for(size_t isp=0;isp<noden;isp++){
+        res[isp]= Ty(src[isp].real(),src[isp].imag());
+      }
+    }
+  }
+
+  io_use.io_close(file);
+}
+
+template<typename Ty>
+void save_gwu_noies(const char *filename,std::vector<qlat::FieldM<Ty,1>> &noi){
+  load_gwu_noies(filename,noi,false);
+}
+
 
 template<typename Ty>
 void load_gwu_noi(const char *filename,qlat::FieldM<Ty,1> &noi,bool read=true){

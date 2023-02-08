@@ -232,6 +232,33 @@ void untouch_GPU(Ty* Mres , long long Msize)
   #endif
 }
 
+////Vol * N0 for res <== Vol * N1 for src
+////N0 >= N1
+template<typename Ty>
+void copy_buffers_vecs(Ty *res, Ty *src,long N0, long N1, long Ncopy, size_t Vol, int GPU = 1)
+{
+  int GPU_set = GPU;
+  #ifndef QLAT_USE_ACC
+  GPU_set = 0;
+  #endif
+  qassert(Ncopy <= N0 );
+  qassert(Ncopy <= N1 );
+  if(N0 == N1 and Ncopy == N0){cpy_data_thread(res, src, Vol * N0, GPU_set, false);}
+  else{
+    #pragma omp parallel for
+    for(size_t isp=0;isp<Vol;isp++){
+      if(GPU_set==0){memcpy(&res[isp*N0+0], &src[isp*N1+0], Ncopy*sizeof(Ty));}
+      #ifdef QLAT_USE_ACC
+      if(GPU_set==1){cudaMemcpyAsync(&res[isp*N0+0], &src[isp*N1+0], Ncopy*sizeof(Ty), cudaMemcpyDeviceToDevice);}
+      if(GPU_set==2){cudaMemcpyAsync(&res[isp*N0+0], &src[isp*N1+0], Ncopy*sizeof(Ty), cudaMemcpyHostToDevice);}
+      if(GPU_set==3){cudaMemcpyAsync(&res[isp*N0+0], &src[isp*N1+0], Ncopy*sizeof(Ty), cudaMemcpyDeviceToHost);}
+      #endif
+    }
+  }
+  qacc_barrier(dummy);
+}
+
+
 }
 
 #undef QLAT_COPY_LIMIT

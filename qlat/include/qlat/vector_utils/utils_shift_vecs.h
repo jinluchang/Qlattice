@@ -69,7 +69,16 @@ struct shift_vec{
   int gbfac;int gd0;
   bool Conj;bool src_gauge;
 
-  shift_vec(fft_desc_basic &fds, bool GPU_set = true);
+
+  void init(fft_desc_basic &fds, bool GPU_set = true);
+
+  shift_vec(){
+    civ = 0;
+  }
+  shift_vec(fft_desc_basic &fds, bool GPU_set = true)
+  {init(fds, GPU_set);}
+
+
   void print_info();
   ~shift_vec();
 
@@ -112,7 +121,7 @@ struct shift_vec{
 
 };
 
-shift_vec::shift_vec(fft_desc_basic &fds, bool GPU_set)
+void shift_vec::init(fft_desc_basic &fds, bool GPU_set)
 {
   TIMERB("Construct shift_vec");
   (void)GPU_set;
@@ -411,6 +420,7 @@ __global__ void multiply_gauge_global(Ty* a, Ty* b, const int dir_gauge, const i
 
     offB[tid] = 0;
     for(int ic=0;ic<3;ic++){offB[tid] += ls[threadIdx.y*3 + ic] * ds[ic*gs + threadIdx.x];}
+    __syncthreads();
   }
 }
 #endif

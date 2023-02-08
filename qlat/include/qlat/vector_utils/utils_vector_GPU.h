@@ -197,8 +197,8 @@ struct vector_gpu{
   void swap(std::vector<T >& vp)
   {
     Ty*  p_tmp   = vp.p;
-    // size_t n_tmp = vp.n;
-    // bool GPU_tmp = vp.GPU;
+    size_t n_tmp = vp.n;
+    bool GPU_tmp = vp.GPU;
 
     ////copy to vp
     vp.p = p;
@@ -207,8 +207,8 @@ struct vector_gpu{
 
     ////copy to self
     p = p_tmp;
-    n = p_tmp;
-    GPU = p_tmp;
+    n = n_tmp;
+    GPU = GPU_tmp;
   }
 
   template <class T >

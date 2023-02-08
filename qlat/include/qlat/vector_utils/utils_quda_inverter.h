@@ -201,7 +201,7 @@ struct quda_inverter {
   void setup_clover(const double clover_csw);
   void setup_stagger();
 
-  void setup_eigen(const double mass, const int num_eigensys, const double err = 1e-12, const int eig_poly_deg=100, const double eig_amin = 0.1, const bool compute=true, const int nkr=-1);
+  void setup_eigen(const double mass, const int num_eigensys, const double err = 1e-12, const int eig_poly_deg=100, const double eig_amin = 0.1, const bool compute=true, const int nkr=-1, const double eig_amax = 0.0, const double qr_tol = 0.1);
   void update_eigen_mass(const double mass, bool force = false);
 
   void setup_inc_eigencg(const int n_ev, const int n_kr, const int n_conv, const int df_grid, const double tol, const double inc_tol, const double tol_restart, const int restart_n, const int pipeline, const int inv_type = 1);
@@ -1602,7 +1602,7 @@ void quda_inverter::setup_inc_eigencg(const int n_ev, const int n_kr, const int 
 
 }
 
-void quda_inverter::setup_eigen(const double mass, const int num_eigensys, const double err, const int eig_poly_deg, const double eig_amin, const bool compute, const int nkr)
+void quda_inverter::setup_eigen(const double mass, const int num_eigensys, const double err, const int eig_poly_deg, const double eig_amin, const bool compute, const int nkr, const double eig_amax, const double qr_tol)
 {
   TIMER("setup_eigen");
   /////may need settings
@@ -1614,7 +1614,8 @@ void quda_inverter::setup_eigen(const double mass, const int num_eigensys, const
   int eig_n_kr = nkr;
   if(nkr <= 0){eig_n_kr = 2*nvec;}
   double eig_tol    = err;
-  double eig_qr_tol = err*0.1;
+  //double eig_qr_tol = err*0.1;
+  double eig_qr_tol = err*qr_tol;
   int eig_batched_rotate = 0; // If unchanged, will be set to maximum
   int eig_check_interval = 10;
   int eig_max_restarts = 10000;
@@ -1622,7 +1623,7 @@ void quda_inverter::setup_eigen(const double mass, const int num_eigensys, const
   bool eig_use_poly_acc = true;
   ///int eig_poly_deg = 100;
   ///double eig_amin = 0.1;
-  double eig_amax = 0.0; // If zero is passed to the solver, an estimate will be computed
+  ///double eig_amax = 0.0; // If zero is passed to the solver, an estimate will be computed
 
   ////preconditionor for the inverter
 
