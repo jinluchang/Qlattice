@@ -543,6 +543,8 @@ def save_observables():
                     "psq_list": psq_list,
                     "phi_list": phi_list,
                     "timeslices": timeslices,
+                    "timeslices_m": timeslices_m,
+                    "kinematic_ms": kinematic_ms,
                     "hm_timeslices": hm_timeslices,
                     "ax_cur_timeslices": ax_cur_timeslices,
                     "polar_timeslices": polar_timeslices,
@@ -565,11 +567,14 @@ def load_observables():
     if len(glob.glob(filename)):
         with open(filename,"rb") as input:
             data = pickle.load(input)
+            if(data["kinematic_ms"]!=kinematic_ms):
+                raise Exception("Combining data with different kinematic factors")
             trajs.extend(data["trajs"])
             accept_rates.extend(data["accept_rates"])
             psq_list.extend(data["psq_list"])
             phi_list.extend(data["phi_list"])
             timeslices.extend(data["timeslices"])
+            timeslices_m.extend(data["timeslices_m"])
             hm_timeslices.extend(data["hm_timeslices"])
             ax_cur_timeslices.extend(data["ax_cur_timeslices"])
             polar_timeslices.extend(data["polar_timeslices"])
@@ -595,9 +600,9 @@ def main():
     # same day), then load that file first
     load_observables()
     print(len(psq_list))
-
+    
     hmc = HMC(m_sq,lmbd,alpha,total_site,mult,steps,mass_force_coef,recalculate_masses,fresh_start,[init_length,block_init_length,block_length,num_blocks,final_block_length])
-
+    
     # Create the geometry for the axial current field
     geo_cur = q.Geometry(total_site, 3)
     # This field will store the calculated axial currents
@@ -610,8 +615,13 @@ def main():
     #
     auxc = q.Field(q.ElemTypeComplex,hmc.field.geo())
     auxd = q.Field(q.ElemTypeDouble,hmc.field.geo())
-
-
+    
+    # Create fields to project out momentum states
+    mom_factors = []
+    geo_m = q.Geometry(total_site, 1)
+    for m in kinematic_ms:
+        mom_factors.append(q.mk_phase_field(geo_m, m))
+    
     for traj in range(1,n_traj+1):
         # Run the HMC algorithm to update the field configuration
         trajs.append(hmc.traj)
@@ -643,6 +653,12 @@ def main():
 
         tslices = hmc.field.get_field().glb_sum_tslice()
         #
+        tslices_m = []
+        for m in mom_factors:
+            q.field_double.set_complex_from_double(auxc, hmc.field.get_field())
+            auxc*=m
+            tslices_m.append(auxc.glb_sum_tslice().to_numpy())
+        #
         hm_field.set_field_ft(hmc.field.get_field_ft())
         hm_field.remove_low_modes()
         hm_tslices = hm_field.get_field().glb_sum_tslice()
@@ -667,6 +683,7 @@ def main():
             psq_list.append(psq)
             phi_list.append(phi)
             timeslices.append(tslices.to_numpy())
+            timeslices_m.append(tslices_m)
             ax_cur_timeslices.append(tslices_ax_cur.to_numpy())
             psq_pred_list.append(psq_predicted)
             phi_pred_list.append(phi_predicted)
@@ -726,15 +743,35 @@ ax_cur_timeslices_pred=[]
 polar_timeslices=[]
 # Save the acceptance rates
 accept_rates=[]
+#
 fields=[]
 forces=[]
 fields_pred=[]
 momentums=[]
+#
 psq_dist_center = 0
 phi_dist_center = 0
 phi_sq_dist=[0.0]*64
 phi_i_dist=[0.0]*64
 theta_dist=[0.0]*64
+#
+kinematic_ms = [[1,0,0,0],
+                [0,1,0,0],
+                [0,0,1,0],
+                [1,1,0,0],
+                [1,0,1,0],
+                [0,1,1,0],
+                [1,1,1,0],
+                [-1,1,1,0],
+                [1,-1,1,0],
+                [1,1,-1,0],
+                [2,0,0,0],
+                [0,2,0,0],
+                [0,0,2,0],
+                [3,0,0,0],
+                [0,3,0,0],
+                [0,0,3,0]]
+timeslices_m = []
 
 # The lattice dimensions
 total_site = [4,4,4,8]
@@ -768,7 +805,7 @@ alpha = 0.1
 recalculate_masses = False
 fresh_start = False
 
-version = "1-7"
+version = "1-9"
 date = datetime.datetime.now().date()
 
 for i in range(1,len(sys.argv)):
