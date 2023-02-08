@@ -12,12 +12,6 @@ source qcore/set-prefix.sh $name
     time-run rsync -a --delete $distfiles/$name "$src_dir"/
     cd "$src_dir/$name"
 
-    if which qlat-include >/dev/null 2>&1 ; then
-        for v in $(qlat-include) ; do
-            export CXXFLAGS="$CXXFLAGS -I$v"
-        done
-    fi
-
     export CXXFLAGS="$CXXFLAGS -DHADRONS_DEFAULT_LANCZOS_NBASIS=4000"
 
     mkdir build
