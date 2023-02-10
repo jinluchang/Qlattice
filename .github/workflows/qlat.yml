@@ -63,7 +63,7 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: qlat-docs
-        path: /home/runner/qlat-build/default/qlat-docs/share/docs
+        path: /home/runner/qlat-build/default/qlat-docs/share/doc
 
   build_pip_ubuntu:
     runs-on: ubuntu-latest
