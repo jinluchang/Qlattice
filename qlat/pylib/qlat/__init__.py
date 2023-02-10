@@ -1,3 +1,10 @@
+"""
+Qlattice main package.\n
+Usage::\n
+    import qlat as q\n
+Will also load ``qlat_utils``.
+"""
+
 from qlat_utils import *
 import qlat.c as c
 

@@ -1,7 +1,8 @@
 """
-Will also be loaded by ``import qlat as q``.\n
+Qlattice utility package\n
 Usage::\n
-    import qlat_utils as q
+    import qlat_utils as q\n
+Will also be loaded by ``import qlat as q`` together with other ``qlat`` functions.
 """
 
 import qlat_utils.c as c

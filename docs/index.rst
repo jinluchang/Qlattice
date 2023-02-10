@@ -3,14 +3,31 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Qlattice's documentation!
-====================================
+Qlattice
+========
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 1
 
-   api
+   contents/latio-format.md
+   contents/qar-format.md
+
+
+API
+===
+
+.. autosummary::
+   :toctree: generated
+ 
+   qlat_utils
+   qlat_utils.verbose_level
+   qlat_utils.timer
+   qlat_utils.timer_verbose
+   qlat_utils.timer_flops
+   qlat_utils.timer_verbose_flops
+ 
+   qlat
+
 
 Indices and tables
 ==================

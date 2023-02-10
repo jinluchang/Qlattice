@@ -1,6 +1,8 @@
 # QAR format
 
-Source code located in `qutils/qar.h`
+Source code located in `qlat-utils/include/qlat-utils/qar.h`
+
+Example file is located in `docs/contents/qar-sample.qar`.
 
 File format is
 
@@ -95,9 +97,7 @@ Usage: qar xr path1.qar path2.qar ...
        Remove qar files after folder extracted
 ```
 
-
 ```
-
 Usage: qar-glimpse path1.qar path2.qar ... path1 path2 ...
 ```
 

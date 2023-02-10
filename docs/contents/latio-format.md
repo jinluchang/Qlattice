@@ -1,8 +1,8 @@
 # LAT-IO format
 
-Source code located in `qutils/lat-io.h`
+Source code located in `qlat-utils/include/qlat-utils/lat-io.h`
 
-Example code is `examples/latio/main.C`
+Example code is `examples-cpp/latio/main.cpp` and `examples-py/lat-io.py`.
 
 File format is
 

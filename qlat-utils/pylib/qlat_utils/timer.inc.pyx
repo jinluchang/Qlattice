@@ -45,6 +45,13 @@ def get_num_node():
     return cc.get_num_node()
 
 def verbose_level(level = None):
+    """
+    Return or set the current verbosity level as integer.\n
+    Usage::\n
+        verbose_level(level) # set the verbosity level
+        verbose_level() # return the current verbosity level
+    Default verbose_level() depends on the ``q_verbose`` environment variable. If unset, the default is ``0``.
+    """
     if level is None:
         return cc.verbose_level()
     cdef long* p_ret = &cc.verbose_level()
@@ -108,10 +115,11 @@ def timer_merge():
 
 def timer(func):
     """
+    Timing functions.\n
     Usage::\n
         @q.timer
         def function(args):
-            pass
+            ...
     """
     cdef cc.std_string fname = "py:" + func.__name__
     cdef cc.Timer qtimer = cc.Timer(fname)
@@ -124,6 +132,13 @@ def timer(func):
     return qtimer_func
 
 def timer_verbose(func):
+    """
+    Timing functions. Always show output if ``verbose_level() > 0``\n
+    Usage::\n
+        @q.timer_verbose
+        def function(args):
+            ...
+    """
     cdef cc.std_string fname = "py:" + func.__name__
     cdef cc.Timer qtimer = cc.Timer(fname)
     @functools.wraps(func)
@@ -136,6 +151,15 @@ def timer_verbose(func):
     return qtimer_func
 
 def timer_flops(func):
+    """
+    Timing functions with flops.\n
+    Usage::\n
+        @q.timer_flops
+        def function(args):
+            ...
+            return flops, ret
+    Modified function will only return ``ret`` in above example.
+    """
     cdef cc.std_string fname = "py:" + func.__name__
     cdef cc.Timer qtimer = cc.Timer(fname)
     @functools.wraps(func)
@@ -148,6 +172,15 @@ def timer_flops(func):
     return qtimer_func
 
 def timer_verbose_flops(func):
+    """
+    Timing functions with flops. Always show output if ``verbose_level() > 0``\n
+    Usage::\n
+        @q.timer_flops
+        def function(args):
+            ...
+            return flops, ret
+    Modified function will only return ``ret`` in above example.
+    """
     cdef cc.std_string fname = "py:" + func.__name__
     cdef cc.Timer qtimer = cc.Timer(fname)
     @functools.wraps(func)

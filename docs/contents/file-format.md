@@ -95,4 +95,4 @@ END_HEADER
 
 Data is stored in the same order as the field format but only for the selected sites.
 
-Example on how to read/write the selected field is ``examples/selected-field/main.C``.
+Example on how to read/write the sparse field is ``examples-cpp/selected-field/main.cpp``.
