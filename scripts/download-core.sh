@@ -45,9 +45,9 @@ else
 fi
 
 if [ -d Grid-clehner ] ; then
-    ( cd Grid-clehner ; git pull https://github.com/jinluchang/Grid.git )
+    ( cd Grid-clehner ; git pull )
 else
-    git clone https://github.com/jinluchang/Grid.git Grid-clehner
+    git clone https://github.com/lehner/Grid.git Grid-clehner
 fi
 
 if [ -e Grid-clehner/configure ] ; then
@@ -57,9 +57,9 @@ else
 fi
 
 if [ -d gpt ] ; then
-    ( cd gpt ; git pull https://github.com/jinluchang/gpt.git )
+    ( cd gpt ; git pull )
 else
-    git clone https://github.com/jinluchang/gpt.git
+    git clone https://github.com/lehner/gpt.git
 fi
 
 if [ -d Hadrons ] ; then
@@ -89,7 +89,7 @@ fi
 if [ -d Hadrons-tblum ] ; then
     ( cd Hadrons-tblum ; git pull )
 else
-    git clone https://github.com/jinluchang/Hadrons.git Hadrons-tblum
+    git clone https://github.com/tblum2/Hadrons.git Hadrons-tblum
 fi
 
 if [ -e Hadrons-tblum/configure ] ; then
