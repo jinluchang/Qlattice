@@ -15,7 +15,8 @@ source qcore/set-prefix.sh $name
 
     rm -rfv generated _build
 
-    make html latexpdf
+    make html || true
+    make latexpdf || true
 
     mkdir -p "$prefix"/share/doc/qlat
 
