@@ -9,7 +9,9 @@ target= \
 		mk-psrc-prop \
 		mk-smear-prop \
 		mk-topo \
-		mk-selected-data
+		mk-selected-data \
+		auto-contract-meson-corr \
+		auto-contract-meson-decay
 
 src_path=~/Qlattice-cc/applications
 

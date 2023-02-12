@@ -14,6 +14,8 @@ cdef class PointSelection:
 
     cdef readonly Geometry geo
 
+    cdef readonly int view_count
+
 cdef class FieldSelection:
 
     cdef cqlat.FieldSelection xx

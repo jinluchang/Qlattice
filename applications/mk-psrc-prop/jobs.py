@@ -229,7 +229,6 @@ def mk_rand_psel(job_tag, traj):
     n_points = get_n_points_psel(job_tag, traj)
     psel = q.PointSelection()
     psel.set_rand(rs, total_site, n_points)
-    psel.geo = q.Geometry(total_site)
     return psel
 
 @q.timer_verbose
@@ -248,10 +247,9 @@ def run_psel(job_tag, traj):
     def load_psel():
         path_psel = get_load_path(tfn)
         assert path_psel is not None
-        psel = q.PointSelection()
-        psel.load(path_psel)
         total_site = rup.get_total_site(job_tag)
-        psel.geo = q.Geometry(total_site)
+        psel = q.PointSelection()
+        psel.load(path_psel, q.Geometry(total_site))
         return psel
     return q.lazy_call(load_psel)
 
@@ -394,10 +392,9 @@ def run_psel_smear(job_tag, traj):
     def load_psel():
         path_psel = get_load_path(tfn)
         assert path_psel is not None
-        psel = q.PointSelection()
-        psel.load(path_psel)
         total_site = rup.get_total_site(job_tag)
-        psel.geo = q.Geometry(total_site)
+        psel = q.PointSelection()
+        psel.load(path_psel, q.Geometry(total_site))
         return psel
     return q.lazy_call(load_psel)
 

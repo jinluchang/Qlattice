@@ -603,6 +603,8 @@ cdef class PointSelection:
         self.geo = geo
         if coordinate_list is None:
             return
+        if self.view_count > 0:
+            raise ValueError("can't re-init while being viewed")
         n_points = len(coordinate_list)
         self.xx = cc.PointSelection(n_points)
         for i in range(n_points):
@@ -635,9 +637,10 @@ cdef class PointSelection:
         buffer.shape = shape
         buffer.strides = strides
         buffer.suboffsets = NULL
+        self.view_count += 1
 
     def __releasebuffer__(self, Py_buffer *buffer):
-        pass
+        self.view_count -= 1
 
     def __imatmul__(self, PointSelection v1):
         self.geo = v1.geo
@@ -656,13 +659,17 @@ cdef class PointSelection:
         return self.copy()
 
     def set_rand(self, rs, total_site, n_points):
+        if self.view_count > 0:
+            raise ValueError("can't re-init while being viewed")
         c.set_rand_psel(self, rs, total_site, n_points)
         self.geo = Geometry(total_site)
 
     def save(self, path):
         c.save_psel(self, path)
 
-    def load(self, path, geo = None):
+    def load(self, path, geo):
+        if self.view_count > 0:
+            raise ValueError("can't re-init while being viewed")
         c.load_psel(self, path)
         self.geo = geo
 
@@ -673,6 +680,8 @@ cdef class PointSelection:
         return c.mk_list_psel(self)
 
     def from_list(self, coordinate_list, geo = None):
+        if self.view_count > 0:
+            raise ValueError("can't re-init while being viewed")
         c.set_list_psel(self, coordinate_list)
         self.geo = geo
         return self

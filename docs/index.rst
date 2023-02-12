@@ -25,9 +25,26 @@ API
    qlat_utils.timer_verbose
    qlat_utils.timer_flops
    qlat_utils.timer_verbose_flops
+   qlat_utils.Coordinate
+   qlat_utils.RngState
+   qlat_utils.LatData
+   qlat_utils.Cache
+   qlat_utils.WilsonMatrix
+   qlat_utils.SpinMatrix
  
    qlat
+   qlat.Geometry
 
+   qlat.Field
+   qlat.FieldBase
+
+   qlat.FieldSelection
+   qlat.SelectedField
+   qlat.SelectedFieldBase
+
+   qlat.PointSelection
+   qlat.SelectedPoints
+   qlat.SelectedPointsBase
 
 Indices and tables
 ==================

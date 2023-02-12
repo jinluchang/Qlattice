@@ -947,7 +947,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     n_pairs = n_points * (n_points - 1) // 2 + n_points
     #
     threshold = rup.dict_params[job_tag]["meson_jwjj_threshold"]
-    u_rand_prob = q.SelectedField("double", fsel, 1)
+    u_rand_prob = q.SelectedField(q.ElemTypeDouble, fsel, 1)
     u_rand_prob.set_rand(q.RngState(f"auto_contract_meson_jwjj,{job_tag},{traj}"), 1.0, 0.0)
     fn_meson_corr = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"
     if get_load_path(fn_meson_corr) is None:
@@ -1292,6 +1292,7 @@ q.begin(sys.argv, size_node_list)
 
 # ADJUST ME
 test()
+get_all_cexpr()
 
 # ADJUST ME
 job_tags = [

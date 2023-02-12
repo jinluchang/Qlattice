@@ -1,13 +1,13 @@
 def flush():
     cc.flush()
 
-def qtouch(const cc.std_string& path, content):
+def qtouch(const cc.std_string& path, content = None):
     if content is None:
         return cc.cc_qtouch(path)
     else:
         return cc.cc_qtouch(path, content)
 
-def qtouch_info(const cc.std_string& path, content):
+def qtouch_info(const cc.std_string& path, content = None):
     if content is None:
         return cc.cc_qtouch_info(path)
     else:
