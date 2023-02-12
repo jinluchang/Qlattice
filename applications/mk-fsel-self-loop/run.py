@@ -34,7 +34,7 @@ def compute_prop_rand_u1_type_acc(*, sfw, job_tag, traj, gf, eig, fsel, idx_rand
     q.check_stop()
     q.check_time_limit()
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig)
-    rs = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_u1(rand_u1)").split(idx_rand_u1)
+    rs = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_u1(rand_u1)").split(str(idx_rand_u1))
     s_prop = q.mk_rand_u1_prop(inv, fsel, rs)
     s_prop.save_float_from_double(sfw, tag)
     sfw.flush()
@@ -60,7 +60,7 @@ def compute_prop_rand_u1(*, job_tag, traj, inv_type, gf, path_s, fsel, eig = Non
     prob1 = rup.dict_params[job_tag]["prob_acc_1_rand_u1"]
     prob2 = rup.dict_params[job_tag]["prob_acc_2_rand_u1"]
     for idx_rand_u1 in range(n_rand_u1_fsel):
-        r = rs.split(idx_rand_u1).u_rand_gen()
+        r = rs.split(str(idx_rand_u1)).u_rand_gen()
         inv_acc = 0
         assert 0 <= r and r <= 1
         comp(idx_rand_u1, inv_acc)
