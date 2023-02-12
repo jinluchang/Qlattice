@@ -18,7 +18,7 @@ psel = q.PointSelection([[0,0,0,0], [0,1,2,0]])
 psel.save("results/psel.txt")
 
 psel = q.PointSelection()
-psel.load("results/psel.txt")
+psel.load("results/psel.txt", geo)
 
 q.displayln_info("CHECK: psel.to_list() =", psel.to_list())
 
