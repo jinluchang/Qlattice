@@ -494,3 +494,21 @@ def run_eig_strange(job_tag, traj, get_gf):
         return get_eig
 
 # ----------
+
+@q.timer_verbose
+def run_r_list(job_tag):
+    fn = f"{job_tag}/r_list/r_list.lat"
+    r_list = get_r_list(job_tag)
+    ld = q.mk_lat_data([
+        [ "r_idx", len(r_list), ],
+        ])
+    ld.from_numpy(np.array(r_list))
+    if get_load_path(fn) is not None:
+        ld_load = load_lat_data(get_load_path(fn))
+        assert ld.is_match(ld_load)
+        ld_diff = ld - ld_load
+        assert ld_diff.qnorm() < 1e-20
+        return
+    ld.save(get_save_path(fn))
+
+# ----------
