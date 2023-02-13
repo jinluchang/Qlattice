@@ -4,6 +4,10 @@
 # "$wd"/qcore/bin/mk-setenv-dir.sh
 # "$wd"/qcore/bin/mk-setenv-dir.sh --keep
 
+if [ -z "$wd" ] ; then
+    export wd="$PWD"
+fi
+
 if ! [ -f "$wd/qcore/conf.sh" -a -f "$wd/qcore/set-prefix.sh" ] ; then
     echo "Need to set 'wd' to be the root directory of the repository."
     echo "Currently, wd='$wd'"
@@ -17,6 +21,8 @@ fi
 
 echo "Python mk-setenv-dir.py scripts failed. Fallback to bash version."
 
+setenv_path="$(basename "$prefix")"
+
 cat >"$prefix"/setenv-new.sh <<EOF
 #!/bin/bash
 
@@ -26,6 +32,8 @@ local setenv_prefix
 local v
 
 setenv_prefix="$prefix"
+
+export SETENV_PATH="$setenv_path:\$SETENV_PATH"
 
 EOF
 

@@ -41,7 +41,7 @@ organize-colon-list() {
 func() {
     local name
     local value
-    for name in PATH PYTHONPATH LD_RUN_PATH LD_LIBRARY_PATH LIBRARY_PATH CPATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH PKG_CONFIG_PATH ; do
+    for name in SETENV_PATH PATH PYTHONPATH LD_RUN_PATH LD_LIBRARY_PATH LIBRARY_PATH CPATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH PKG_CONFIG_PATH ; do
         organize-colon-list "$name"
         value="${!name}"
         echo "export $name=\"$value\""

@@ -10,6 +10,7 @@ if not (sys.version_info.major == 3 and sys.version_info.minor >= 6):
 import os
 
 prefix = os.getenv("prefix")
+setenv_path = os.path.basename(prefix)
 
 assert prefix[:-1] != '/'
 
@@ -34,6 +35,8 @@ l.append("local v")
 l.append("")
 
 l.append(f'setenv_prefix="{prefix}"')
+
+l.append(f'export SETENV_PATH="{setenv_path}:$SETENV_PATH"')
 
 if l_init:
     l.append("")

@@ -93,12 +93,19 @@ cdef class RngState:
 
 @timer
 def get_double_sig(x, RngState rs):
-    """get a signature of data viewed as a collection of double numbers"""
+    """
+    Return a signature (a float number) of data viewed as a collection of double numbers\n
+    Only depends on the value of the data, not the structure.
+    """
     if isinstance(x, LatData):
         arr = np.asarray(x).ravel()
         arr_rand = np.zeros(arr.shape, arr.dtype)
         rs.u_rand_fill(arr_rand, 1.0, -1.0)
         return np.sum(arr * arr_rand)
+    elif isinstance(x, np.ndarray):
+        arr = x.ravel()
+        arr_rand = np.zeros(arr.shape, arr.dtype)
+        rs.u_rand_fill(arr_rand, 1.0, -1.0)
+        return np.sum(arr * arr_rand)
     else:
         return None
-

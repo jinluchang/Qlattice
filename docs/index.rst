@@ -36,6 +36,7 @@ API
    qlat_utils.Coordinate
 
    qlat_utils.RngState
+   qlat_utils.get_double_sig
 
    qlat_utils.LatData
 

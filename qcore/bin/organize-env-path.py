@@ -60,6 +60,7 @@ def set_env_list(env_list):
     return "\n".join(l)
 
 all_env_list = [
+        "SETENV_PATH",
         "PATH",
         "PYTHONPATH",
         "LD_RUN_PATH",
