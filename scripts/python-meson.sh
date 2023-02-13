@@ -11,7 +11,7 @@ source qcore/set-prefix.sh $name
     find ~/.cache/pip/wheels -type f || true
     # rm -rfv ~/.cache/pip/wheels || true
 
-    opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
+    opts="--verbose --upgrade --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
     time-run pip3 install $opts meson
     time-run pip3 install $opts ninja

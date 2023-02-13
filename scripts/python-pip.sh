@@ -11,12 +11,12 @@ source qcore/set-prefix.sh $name
     find ~/.cache/pip/wheels -type f || true
     # rm -rfv ~/.cache/pip/wheels || true
 
-    opts="--verbose --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
+    opts="--verbose --upgrade --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
     time-run pip3 install $opts wheel
     time-run pip3 uninstall setuptools -y
     time-run pip3 install $opts setuptools
-    time-run pip3 install $opts --upgrade pip
+    time-run pip3 install $opts pip
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"

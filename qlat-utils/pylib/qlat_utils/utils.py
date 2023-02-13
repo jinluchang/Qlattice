@@ -107,10 +107,17 @@ def phat_sqr(q, size):
     assert l == len(q)
     return 4 * sum([ sqr(math.sin(math.pi * (q[i] % size[i]) / size[i])) for i in range(l) ])
 
+def get_r_limit(total_site):
+    """
+    Return the limit for spatial ``r`` as float.\n
+    :params total_site: must be Coordinate type
+    """
+    return math.sqrt(sum([ (l / 2)**2 for l in total_site.list()[:3] ]))
+
 def mk_r_sq_list_3d(r_sq_limit):
     r_limit = int(math.sqrt(r_sq_limit))
     r_sq_set = set()
-    for x in range(0, r_limit):
+    for x in range(0, r_limit + 1):
         for y in range(0, x + 1):
             for z in range(0, y + 1):
                 r_sq = x**2 + y**2 + z**2
@@ -144,7 +151,7 @@ def mk_r_list(r_limit, *, r_all_limit = 24.0, r_scaling_factor = 5.0, dimension 
     if r_list:
         r_second_start = min(r_second_start, r_list[-1])
     r_second_start_idx = int(r_second_start * r_scaling_factor + 1.5)
-    r_second_stop_idx = int(r_limit * r_scaling_factor + 1.5)
+    r_second_stop_idx = math.ceil(r_limit * r_scaling_factor + 1.5)
     for i in range(r_second_start_idx, r_second_stop_idx):
         r = i / r_scaling_factor
         r_list.append(r)

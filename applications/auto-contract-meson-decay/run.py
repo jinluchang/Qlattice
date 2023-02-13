@@ -38,27 +38,42 @@ load_path_list[:] = [
 # ----
 
 def get_r_sq(x_rel):
-    return q.c_sqr(x_rel)
+    """
+    get spatial distance square as int
+    """
+    return sum([ x * x for x in x_rel[:3] ])
 
-def r_scaling_factor():
-    return 5.0
+@functools.cache
+def get_r_list(job_tag):
+    total_site = q.Coordinate(rup.dict_params[job_tag]["total_site"])
+    r_limit = q.get_r_limit(total_site)
+    # r_list = q.mk_r_list(r_limit, r_all_limit=24.0, r_scaling_factor=5.0)
+    r_list = q.mk_r_list(r_limit, r_all_limit=0.0, r_scaling_factor=5.0)
+    return r_list
 
-def get_r(x_rel):
-    fac = r_scaling_factor()
-    return fac * math.sqrt(q.c_sqr(x_rel))
+@functools.cache
+def get_r_sq_interp_idx_coef_list(job_tag):
+    """
+    Return [ (r_idx_low, r_idx_high, coef_low, coef_high,), ... ] indexed by r_sq
+    """
+    r_list = get_r_list(job_tag)
+    return q.mk_r_sq_interp_idx_coef_list(r_list)
 
-def get_r_limit(total_site):
-    return math.ceil(get_r([ (l + 1) // 2 for l in total_site ])) + 1
-
-def get_interp_idx_coef(x, limit = None):
-    # return x_idx_low, x_idx_high, coef_low, coef_high
-    x_idx_low = math.floor(x)
-    x_idx_high = x_idx_low + 1
-    if limit is not None:
-        assert x_idx_high < limit
-    coef_low = x_idx_high - x
-    coef_high = x - x_idx_low
-    return x_idx_low, x_idx_high, coef_low, coef_high
+@q.timer_verbose
+def run_r_list(job_tag):
+    fn = f"{job_tag}/r_list/r_list.lat"
+    r_list = get_r_list(job_tag)
+    ld = q.mk_lat_data([
+        [ "r_idx", len(r_list), ],
+        ])
+    ld.from_numpy(np.array(r_list))
+    if get_load_path(fn) is not None:
+        ld_load = load_lat_data(get_load_path(fn))
+        assert ld.is_match(ld_load)
+        ld_diff = ld - ld_load
+        assert ld_diff.qnorm() < 1e-20
+        return
+    ld.save(get_save_path(fn))
 
 # ----
 
@@ -812,7 +827,7 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
         return
     cexpr = get_cexpr_meson_jj()
     expr_names = get_cexpr_names(cexpr)
-    total_site = rup.get_total_site(job_tag)
+    total_site = q.Coordinate(rup.get_total_site(job_tag))
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
@@ -820,7 +835,8 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     tsep = rup.dict_params[job_tag]["meson_tensor_tsep"]
     geo = q.Geometry(total_site, 1)
     t_size = total_site[3]
-    r_limit = get_r_limit(total_site[0:3])
+    r_list = get_r_list(job_tag)
+    r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
     def load_data():
         for idx, xg_src in enumerate(xg_psel_list):
             xg_src = tuple(xg_src.tolist())
@@ -838,21 +854,21 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
                         "x_1" : ("point", xg_src,),
                         "t_2" : ("wall", t_2),
                         "t_1" : ("wall", t_1),
-                        "size" : total_site,
+                        "size" : total_site.list(),
                         }
                 t = x_rel_t % t_size
-                r = get_r(x_rel[0:3])
-                yield pd, t, r
+                r_sq = get_r_sq(x_rel)
+                yield pd, t, r_sq
     @q.timer
     def feval(args):
-        pd, t, r = args
+        pd, t, r_sq = args
         val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
-        return val, t, r
+        return val, t, r_sq
     def sum_function(val_list):
-        counts = np.zeros((t_size, r_limit,), dtype = complex)
-        values = np.zeros((t_size, r_limit, len(expr_names),), dtype = complex)
-        for val, t, r in val_list:
-            r_idx_low, r_idx_high, coef_low, coef_high = get_interp_idx_coef(r, r_limit)
+        counts = np.zeros((t_size, len(r_list),), dtype = complex)
+        values = np.zeros((t_size, len(r_list), len(expr_names),), dtype = complex)
+        for val, t, r_sq in val_list:
+            r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
             counts[t, r_idx_low] += coef_low
             counts[t, r_idx_high] += coef_high
             values[t, r_idx_low] += coef_low * val
@@ -868,11 +884,11 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     res_sum *= 1.0 / (len(xg_psel_list) * fsel.prob())
     ld_count = q.mk_lat_data([
         [ "t", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
-        [ "r", r_limit, [ f"{r / r_scaling_factor():.2f}" for r in range(r_limit) ], ],
+        [ "r", len(r_list), [ f"{r:.5f}" for r in r_list ], ],
         ])
     ld_sum = q.mk_lat_data([
         [ "t", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
-        [ "r", r_limit, [ f"{r / r_scaling_factor():.2f}" for r in range(r_limit) ], ],
+        [ "r", len(r_list), [ f"{r:.5f}" for r in r_list ], ],
         [ "expr_name", len(expr_names), expr_names, ],
         ])
     ld_count.from_numpy(res_count)
@@ -936,7 +952,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
         return
     cexpr = get_cexpr_meson_jwjj()
     expr_names = get_cexpr_names(cexpr)
-    total_site = rup.get_total_site(job_tag)
+    total_site = q.Coordinate(rup.get_total_site(job_tag))
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
@@ -944,7 +960,8 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     tsep = rup.dict_params[job_tag]["meson_tensor_tsep"]
     geo = q.Geometry(total_site, 1)
     t_size = total_site[3]
-    r_limit = get_r_limit(total_site[0:3])
+    r_list = get_r_list(job_tag)
+    r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
     n_elems = len(xg_fsel_list)
     n_points = len(xg_psel_list)
     n_pairs = n_points * (n_points - 1) // 2 + n_points
@@ -1113,26 +1130,26 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
                 "x_2" : ("point", xg2_src,),
                 "t_1" : ("wall", t_1,),
                 "t_2" : ("wall", t_2,),
-                "size" : total_site,
+                "size" : total_site.list(),
                 }
         t1 = xg1_xg_t
         t2 = xg2_xg_t
         x_rel = [ q.rel_mod(xg2_src[mu] - xg1_src[mu], total_site[mu]) for mu in range(4) ]
-        r = get_r(x_rel[0:3])
+        r_sq = get_r_sq(x_rel)
         val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
-        return weight, val, t1, t2, r
+        return weight, val, t1, t2, r_sq
     def sum_function(val_list):
         n_total = 0
         n_selected = 0
-        counts = np.zeros((t_size, t_size, r_limit,), dtype = complex)
-        values = np.zeros((t_size, t_size, r_limit, len(expr_names),), dtype = complex)
+        counts = np.zeros((t_size, t_size, len(r_list),), dtype = complex)
+        values = np.zeros((t_size, t_size, len(r_list), len(expr_names),), dtype = complex)
         for val in val_list:
             n_total += 1
             if val is None:
                 continue
             n_selected += 1
-            weight, val, t1, t2, r = val
-            r_idx_low, r_idx_high, coef_low, coef_high = get_interp_idx_coef(r, r_limit)
+            weight, val, t1, t2, r_sq = val
+            r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
             counts[t1, t2, r_idx_low] += coef_low * weight
             counts[t1, t2, r_idx_high] += coef_high * weight
             values[t1, t2, r_idx_low] += coef_low * weight * val
@@ -1153,12 +1170,12 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     ld_count = q.mk_lat_data([
         [ "t1", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
         [ "t2", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
-        [ "r", r_limit, [ f"{r / r_scaling_factor():.2f}" for r in range(r_limit) ], ],
+        [ "r", len(r_list), [ f"{r:.5f}" for r in r_list ], ],
         ])
     ld_sum = q.mk_lat_data([
         [ "t1", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
         [ "t2", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
-        [ "r", r_limit, [ f"{r / r_scaling_factor():.2f}" for r in range(r_limit) ], ],
+        [ "r", len(r_list), [ f"{r:.5f}" for r in r_list ], ],
         [ "expr_name", len(expr_names), expr_names, ],
         ])
     ld_count.from_numpy(res_count)
@@ -1230,6 +1247,8 @@ def run_job(job_tag, traj):
                 ],
             )
     #
+    run_r_list(job_tag)
+    #
     fn_checkpoint = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
     if get_load_path(fn_checkpoint) is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
@@ -1275,7 +1294,7 @@ def test():
     q.qremove_all_info("cache")
     # get_all_cexpr()
     run_job("test-4nt8", 1000)
-    # run_job("test-4nt16", 1000)
+    run_job("test-4nt16", 1000)
     # run_job("16IH2", 1000)
 
 size_node_list = [

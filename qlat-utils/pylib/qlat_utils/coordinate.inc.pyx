@@ -42,3 +42,14 @@ cdef class Coordinate:
         Return the square sum of all the components as ``long``.
         """
         return cc.sqr(self.xx)
+
+    def __getitem__(self, int key):
+        assert 0 <= key
+        assert key < 4
+        return self.xx[key]
+
+    def __setitem__(self, int key, int val):
+        assert 0 <= key
+        assert key < 4
+        cdef int* p_val = &self.xx[key]
+        p_val[0] = val
