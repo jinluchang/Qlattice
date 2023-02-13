@@ -20,18 +20,29 @@ API
    :toctree: generated
  
    qlat_utils
+
    qlat_utils.verbose_level
+
    qlat_utils.timer
    qlat_utils.timer_verbose
    qlat_utils.timer_flops
    qlat_utils.timer_verbose_flops
+
+   qlat_utils.mk_r_sq_list
+   qlat_utils.mk_r_list
+
    qlat_utils.Coordinate
+
    qlat_utils.RngState
+
    qlat_utils.LatData
+
    qlat_utils.Cache
+
    qlat_utils.WilsonMatrix
+
    qlat_utils.SpinMatrix
- 
+
    qlat
    qlat.Geometry
 

@@ -106,3 +106,46 @@ def phat_sqr(q, size):
     l = len(size)
     assert l == len(q)
     return 4 * sum([ sqr(math.sin(math.pi * (q[i] % size[i]) / size[i])) for i in range(l) ])
+
+def mk_r_sq_list_3d(r_sq_limit):
+    r_limit = int(math.sqrt(r_sq_limit))
+    r_sq_set = set()
+    for x in range(0, r_limit):
+        for y in range(0, x + 1):
+            for z in range(0, y + 1):
+                r_sq = x**2 + y**2 + z**2
+                if r_sq > r_sq_limit:
+                    continue
+                r_sq_set.add(r_sq)
+    return sorted(list(r_sq_set))
+
+def mk_r_sq_list(r_sq_limit, dimension = '3D'):
+    if dimension == '4D':
+        # Lagrange's four-square theorem
+        # https://en.wikipedia.org/wiki/Lagrange%27s_four-square_theorem
+        return list(range(0, r_sq_limit))
+    elif dimension == '3D':
+        return mk_r_sq_list_3d(r_sq_limit)
+    else:
+        raise Exception(f"mk_r_sq_list: dimension='{dimension}' not recognized.")
+
+def mk_r_list(r_limit, *, r_all_limit = 24.0, r_scaling_factor = 5.0, dimension = '3D'):
+    """
+    Make a list of `r` values from `0` up to `r_limit`.\n
+    Parameters
+    ----------
+    r_limit: the limit for the generated `r` list.
+    r_scaling_factor: After `r_all_limit`, include `r` with integer values divide `r_scaling_factor`
+    r_all_limit: include all possible `r` values up to (include) this limit.
+    dimension: '3D' or '4D'
+    """
+    r_list = [ math.sqrt(r_sq) for r_sq in mk_r_sq_list(int(r_all_limit**2 + 0.5)) ]
+    r_second_start = r_all_limit
+    if r_list:
+        r_second_start = min(r_second_start, r_list[-1])
+    r_second_start_idx = int(r_second_start * r_scaling_factor + 1.5)
+    r_second_stop_idx = int(r_limit * r_scaling_factor + 1.5)
+    for i in range(r_second_start_idx, r_second_stop_idx):
+        r = i / r_scaling_factor
+        r_list.append(r)
+    return r_list
