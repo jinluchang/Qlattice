@@ -37,6 +37,9 @@ load_path_list[:] = [
 
 # ----
 
+def get_r_sq(x_rel):
+    return q.c_sqr(x_rel)
+
 def r_scaling_factor():
     return 5.0
 

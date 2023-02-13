@@ -17,6 +17,8 @@ cdef extern from "qlat-utils/coordinate.h" namespace "qlat":
 
     Coordinate c_rand_gen(RngState& rs, const Coordinate& size)
 
+    long sqr(const Coordinate& xg)
+
     cdef cppclass CoordinateD:
         CoordinateD()
         CoordinateD(const Coordinate& x)

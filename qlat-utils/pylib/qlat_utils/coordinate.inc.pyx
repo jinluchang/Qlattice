@@ -32,4 +32,13 @@ cdef class Coordinate:
         return f"Coordinate({self.list()})"
 
     def list(self):
+        """
+        Return a list composed of the 4 components of the coordinate.
+        """
         return [ self.xx[0], self.xx[1], self.xx[2], self.xx[3], ]
+
+    def sqr(self):
+        """
+        Return the square sum of all the components as ``long``.
+        """
+        return cc.sqr(self.xx)

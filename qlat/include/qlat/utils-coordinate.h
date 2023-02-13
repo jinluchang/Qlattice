@@ -2,8 +2,8 @@
 
 #pragma once
 
+#include <qlat-utils/coordinate.h>
 #include <qlat/coordinate-d.h>
-#include <qlat/coordinate.h>
 
 namespace qlat
 {  //
