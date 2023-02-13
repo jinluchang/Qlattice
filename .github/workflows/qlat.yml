@@ -9,6 +9,8 @@ on:
 jobs:
 
   build_qlat_ubuntu:
+    environment:
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     environment:
       url: ${{ steps.deployment.outputs.page_url }}
