@@ -107,6 +107,12 @@ def phat_sqr(q, size):
     assert l == len(q)
     return 4 * sum([ sqr(math.sin(math.pi * (q[i] % size[i]) / size[i])) for i in range(l) ])
 
+def get_r_sq(x_rel):
+    """
+    get spatial distance square as int
+    """
+    return sum([ x * x for x in x_rel[:3] ])
+
 def get_r_limit(total_site):
     """
     Return the limit for spatial ``r`` as float.\n

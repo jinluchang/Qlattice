@@ -1,6 +1,8 @@
 import qlat as q
 import rbc_ukqcd_params as rup
 
+import numpy as np
+
 import pprint
 import functools
 import os
@@ -494,6 +496,22 @@ def run_eig_strange(job_tag, traj, get_gf):
         return get_eig
 
 # ----------
+
+@functools.cache
+def get_r_list(job_tag):
+    total_site = q.Coordinate(rup.dict_params[job_tag]["total_site"])
+    r_limit = q.get_r_limit(total_site)
+    r_list = q.mk_r_list(r_limit, r_all_limit=28.0, r_scaling_factor=5.0)
+    # r_list = q.mk_r_list(r_limit, r_all_limit=0.0, r_scaling_factor=5.0) # old choice
+    return r_list
+
+@functools.cache
+def get_r_sq_interp_idx_coef_list(job_tag):
+    """
+    Return [ (r_idx_low, r_idx_high, coef_low, coef_high,), ... ] indexed by r_sq
+    """
+    r_list = get_r_list(job_tag)
+    return q.mk_r_sq_interp_idx_coef_list(r_list)
 
 @q.timer_verbose
 def run_r_list(job_tag):

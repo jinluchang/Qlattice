@@ -37,30 +37,6 @@ load_path_list[:] = [
 
 # ----
 
-def get_r_sq(x_rel):
-    """
-    get spatial distance square as int
-    """
-    return sum([ x * x for x in x_rel[:3] ])
-
-@functools.cache
-def get_r_list(job_tag):
-    total_site = q.Coordinate(rup.dict_params[job_tag]["total_site"])
-    r_limit = q.get_r_limit(total_site)
-    r_list = q.mk_r_list(r_limit, r_all_limit=28.0, r_scaling_factor=5.0)
-    # r_list = q.mk_r_list(r_limit, r_all_limit=0.0, r_scaling_factor=5.0) # old choice
-    return r_list
-
-@functools.cache
-def get_r_sq_interp_idx_coef_list(job_tag):
-    """
-    Return [ (r_idx_low, r_idx_high, coef_low, coef_high,), ... ] indexed by r_sq
-    """
-    r_list = get_r_list(job_tag)
-    return q.mk_r_sq_interp_idx_coef_list(r_list)
-
-# ----
-
 @q.timer
 def get_cexpr_meson_corr():
     fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_corr"
@@ -841,7 +817,7 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
                         "size" : total_site.list(),
                         }
                 t = x_rel_t % t_size
-                r_sq = get_r_sq(x_rel)
+                r_sq = q.get_r_sq(x_rel)
                 yield pd, t, r_sq
     @q.timer
     def feval(args):
@@ -1119,7 +1095,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
         t1 = xg1_xg_t
         t2 = xg2_xg_t
         x_rel = [ q.rel_mod(xg2_src[mu] - xg1_src[mu], total_site[mu]) for mu in range(4) ]
-        r_sq = get_r_sq(x_rel)
+        r_sq = q.get_r_sq(x_rel)
         val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
         return weight, val, t1, t2, r_sq
     def sum_function(val_list):
