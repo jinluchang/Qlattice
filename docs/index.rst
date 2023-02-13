@@ -30,6 +30,8 @@ API
 
    qlat_utils.mk_r_sq_list
    qlat_utils.mk_r_list
+   qlat_utils.mk_interp_tuple
+   qlat_utils.mk_r_sq_interp_idx_coef_list
 
    qlat_utils.Coordinate
 

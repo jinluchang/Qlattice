@@ -139,7 +139,7 @@ def mk_r_list(r_limit, *, r_all_limit = 24.0, r_scaling_factor = 5.0, dimension 
     r_all_limit: include all possible `r` values up to (include) this limit.
     dimension: '3D' or '4D'
     """
-    r_list = [ math.sqrt(r_sq) for r_sq in mk_r_sq_list(int(r_all_limit**2 + 0.5)) ]
+    r_list = [ math.sqrt(r_sq) for r_sq in mk_r_sq_list(int(min(r_limit, r_all_limit)**2 + 0.5)) ]
     r_second_start = r_all_limit
     if r_list:
         r_second_start = min(r_second_start, r_list[-1])
@@ -149,3 +149,45 @@ def mk_r_list(r_limit, *, r_all_limit = 24.0, r_scaling_factor = 5.0, dimension 
         r = i / r_scaling_factor
         r_list.append(r)
     return r_list
+
+def mk_interp_tuple(x, x0, x1, x_idx):
+    """
+    Returns `(x_idx_low, x_idx_high, coef_low, coef_high,)`\n
+    `x_idx` corresponds to `x0`
+    `x_idx + 1` corresponds to `x1`
+    """
+    assert x0 <= x and x <= x1
+    x_idx_low = x_idx
+    x_idx_high = x_idx_low + 1
+    x_interval = x1 - x0
+    coef_low = (x1 - x) / x_interval
+    coef_high = (x - x0) / x_interval
+    return (x_idx_low, x_idx_high, coef_low, coef_high,)
+
+def mk_r_sq_interp_idx_coef_list(r_list):
+    """
+    Return a list of tuples:\n
+    ``r_sq_interp_idx_coef_list = [ (r_idx_low, r_idx_high, coef_low, coef_high,), ... ]``
+    where:
+    ``r_sq_interp_idx_coef_list[r_sq] = (r_idx_low, r_idx_high, coef_low, coef_high,)``
+    `r_sq` ranges from `0` to `int(r_list[-1]**2 + 1.5)`
+    """
+    r_list_len = len(r_list)
+    assert r_list_len >= 2
+    assert r_list[0] == 0.0
+    r_sq_list = list(range(0, int(r_list[-1]**2 + 1.5)))
+    r_idx = 0
+    r_sq_interp_idx_coef_list = []
+    for r_sq in r_sq_list:
+        r = math.sqrt(r_sq)
+        while True:
+            if r_idx + 1 >= r_list_len:
+                r_sq_interp_idx_coef_list.append((r_idx, r_idx, 1.0, 0.0,))
+                break
+            r0 = r_list[r_idx]
+            r1 = r_list[r_idx + 1]
+            if r0 <= r and r < r1:
+                r_sq_interp_idx_coef_list.append(mk_interp_tuple(r, r0, r1, r_idx))
+                break
+            r_idx += 1
+    return r_sq_interp_idx_coef_list

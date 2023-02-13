@@ -1,4 +1,4 @@
-# cython: c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
 from qlat_utils.all cimport *
 from . cimport everything as cc
