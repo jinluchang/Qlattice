@@ -17,6 +17,7 @@ source qcore/set-prefix.sh $name
     time-run pip3 install $opts tomli
     time-run pip3 install $opts packaging
     time-run pip3 install $opts pep517
+    time-run pip3 install $opts pyproject_hooks
     time-run pip3 install $opts build
     time-run pip3 install $opts pyproject-metadata
     time-run pip3 install $opts setuptools_scm
