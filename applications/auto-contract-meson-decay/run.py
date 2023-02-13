@@ -47,8 +47,8 @@ def get_r_sq(x_rel):
 def get_r_list(job_tag):
     total_site = q.Coordinate(rup.dict_params[job_tag]["total_site"])
     r_limit = q.get_r_limit(total_site)
-    # r_list = q.mk_r_list(r_limit, r_all_limit=24.0, r_scaling_factor=5.0)
-    r_list = q.mk_r_list(r_limit, r_all_limit=0.0, r_scaling_factor=5.0)
+    r_list = q.mk_r_list(r_limit, r_all_limit=28.0, r_scaling_factor=5.0)
+    # r_list = q.mk_r_list(r_limit, r_all_limit=0.0, r_scaling_factor=5.0) # old choice
     return r_list
 
 @functools.cache

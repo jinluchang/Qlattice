@@ -136,7 +136,7 @@ def mk_r_sq_list(r_sq_limit, dimension = '3D'):
     else:
         raise Exception(f"mk_r_sq_list: dimension='{dimension}' not recognized.")
 
-def mk_r_list(r_limit, *, r_all_limit = 24.0, r_scaling_factor = 5.0, dimension = '3D'):
+def mk_r_list(r_limit, *, r_all_limit = 28.0, r_scaling_factor = 5.0, dimension = '3D'):
     """
     Make a list of `r` values from `0` up to `r_limit`.\n
     Parameters
