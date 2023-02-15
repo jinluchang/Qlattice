@@ -522,7 +522,7 @@ def run_r_list(job_tag):
         ])
     ld.from_numpy(np.array(r_list))
     if get_load_path(fn) is not None:
-        ld_load = load_lat_data(get_load_path(fn))
+        ld_load = q.load_lat_data(get_load_path(fn))
         assert ld.is_match(ld_load)
         ld_diff = ld - ld_load
         assert ld_diff.qnorm() < 1e-20
