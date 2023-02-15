@@ -1,5 +1,10 @@
 def displayln(level, *args):
-    # interpret the first argument as verbose level if it is int
+    """
+    Print all the arguments and then print a newline.
+    Interpret the first argument as verbose level if it is ``int``.
+    Only print if ``level <= verbose_level()``.
+    If the first argument is not integer, will always print all the arguments.
+    """
     if isinstance(level, int):
         if level <= verbose_level():
             print(*args, flush=True)
@@ -7,6 +12,9 @@ def displayln(level, *args):
         print(level, *args, flush=True)
 
 def displayln_info(*args):
+    """
+    Same as ``displayln`` but only print if ``get_id_node() == 0``.
+    """
     if cc.get_id_node() == 0:
         displayln(*args)
 
@@ -39,9 +47,17 @@ cdef class TimerNone:
 ### -------------------------------------------------------------------
 
 def get_id_node():
+    """
+    Return the node (MPI process) id as ``int``.
+    Also works without initializing MPI, in which case will always return 0.
+    """
     return cc.get_id_node()
 
 def get_num_node():
+    """
+    Return number of nodes (MPI processes) as ``int``.
+    Also works without initializing MPI, in which case will always return 1.
+    """
     return cc.get_num_node()
 
 def verbose_level(level = None):
@@ -60,9 +76,15 @@ def verbose_level(level = None):
     return level
 
 def get_time():
+    """
+    Return current time in seconds since epoch.
+    """
     return cc.get_time()
 
 def get_start_time(time = None):
+    """
+    Return start time in seconds since epoch. Does reset by ``timer_reset``
+    """
     if time is None:
         return cc.get_start_time()
     cdef double* p_ret = &cc.get_start_time()
@@ -71,6 +93,9 @@ def get_start_time(time = None):
     return time
 
 def get_actual_start_time(time = None):
+    """
+    Return start time in seconds since epoch. Does not reset by ``timer_reset``
+    """
     if time is None:
         return cc.get_actual_start_time()
     cdef double* p_ret = &cc.get_actual_start_time()
@@ -79,9 +104,15 @@ def get_actual_start_time(time = None):
     return time
 
 def get_total_time():
+    """
+    Return total time in seconds. Does reset by ``timer_reset``
+    """
     return cc.get_total_time()
 
 def get_actual_total_time():
+    """
+    Return total time in seconds. Does not reset by ``timer_reset``
+    """
     return cc.get_actual_total_time()
 
 ### -------------------------------------------------------------------
@@ -103,6 +134,10 @@ def timer_display_stack_always():
     cc.flush()
 
 def timer_reset(long max_call_times_for_always_show_info = -1):
+    """
+    Reset all timers, ``get_total_time``, ``get_start_time``.
+    But does not reset ``get_actual_start_time`` or ``get_actual_total_time``
+    """
     cc.Timer.reset(max_call_times_for_always_show_info)
 
 def timer_fork(long max_call_times_for_always_show_info = -1):

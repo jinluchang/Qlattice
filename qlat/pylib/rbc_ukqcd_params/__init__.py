@@ -1,3 +1,7 @@
+"""
+Qlattice package to store parameters of RBC-UKQCD configurations.
+"""
+
 dict_params = {}
 
 import rbc_ukqcd_params.p_test

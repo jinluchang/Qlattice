@@ -58,16 +58,17 @@ def eval_cexpr_eval(cexpr : CExpr, *, positions_dict, props):
     return cexpr.function["cexpr_function_eval"](positions_dict, props)
 
 def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_ama_and_sloppy = False):
-    # return 1 dimensional np.array
-    # cexpr can be cexpr object or can be a compiled function
-    # xg = positions_dict[position]
-    # mat_mspincolor = get_prop(flavor, xg_snk, xg_src)
-    # e.g. ("point-snk", [ 1, 2, 3, 4, ]) = positions_dict["x_1"]
-    # e.g. flavor = "l"
-    # e.g. xg_snk = ("point-snk", [ 1, 2, 3, 4, ])
-    # if is_ama_and_sloppy: return (val_ama, val_sloppy,)
-    # if not is_ama_and_sloppy: return val_ama
-    # interface function
+    """
+    return 1 dimensional np.array
+    cexpr can be cexpr object or can be a compiled function
+    xg = positions_dict[position]
+    mat_mspincolor = get_prop(flavor, xg_snk, xg_src)
+    e.g. ("point-snk", [ 1, 2, 3, 4, ]) = positions_dict["x_1"]
+    e.g. flavor = "l"
+    e.g. xg_snk = ("point-snk", [ 1, 2, 3, 4, ])
+    if is_ama_and_sloppy: return (val_ama, val_sloppy,)
+    if not is_ama_and_sloppy: return val_ama
+    """
     assert cexpr.function is not None
     return cexpr.function["cexpr_function"](positions_dict = positions_dict, get_prop = get_prop, is_ama_and_sloppy = is_ama_and_sloppy)
 
@@ -130,12 +131,13 @@ codelib = py3.extension_module('code',
 
 @q.timer
 def cache_compiled_cexpr(calc_cexpr, path):
-    # Obtain: cexpr = calc_cexpr().
-    # Save cexpr object in pickle format for future reuse.
-    # Generate python code and save for future reuse
-    # Load the python module and assign function and total_sloppy_flops
-    # Return fully loaded cexpr
-    # interface function
+    """
+    Return fully loaded ``cexpr = calc_cexpr()`` and cache the results\n
+    Save cexpr object in pickle format for future reuse.
+    Generate python code and save for future reuse.
+    Load the python module and assign ``cexpr.function`` and ``cexpr.total_sloppy_flops``.
+    Return fully loaded ``cexpr``.
+    """
     fn_pickle = path + "/data.pickle"
     fn_code = path + "/build/code.so"
     @q.timer
