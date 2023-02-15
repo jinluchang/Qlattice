@@ -10,7 +10,10 @@ mpi_options=--bind-to none
 
 run:
 	. ~/qlat-build/default/setenv.sh ; q_verbose=6 q_num_threads=2 q_num_mp_processes=2 mpirun --np 4 --oversubscribe $(mpi_options) ./run.py |& tee log.txt
-	find results -type f | sort | xargs -d '\n' md5sum > md5sum.txt
+	-grep '^CHECK: ' log.txt > log.check.txt.new
+	-diff log.check.txt.new log.check.txt
+	-find results -type f | sort | xargs -d '\n' md5sum > md5sum.txt.new
+	-diff md5sum.txt.new md5sum.txt
 
 diff:
 	for fn in * */* ; do if [ -f $(src_path)/$$fn ] ; then echo $$fn ; diff $(src_path)/$$fn $$fn ; fi ; done

@@ -8,6 +8,7 @@ import os
 import time
 import importlib
 import sys
+import inspect
 
 from jobs import *
 from load_data import *
@@ -101,8 +102,12 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
         [ "t_sep", total_site[3], ],
         ])
     ld.from_numpy(res_sum)
-    # q.displayln_info(ld.show())
     ld.save(get_save_path(fn))
+    sig_msg_list = [
+            f"CHECK: {inspect.stack()[0].function}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
+            ]
+    for msg in sig_msg_list:
+        q.displayln_info(msg)
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
@@ -153,8 +158,12 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
         [ "t_sep", total_site[3], ],
         ])
     ld.from_numpy(res_sum)
-    # q.displayln_info(ld.show())
     ld.save(get_save_path(fn))
+    sig_msg_list = [
+            f"CHECK: {inspect.stack()[0].function}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
+            ]
+    for msg in sig_msg_list:
+        q.displayln_info(msg)
 
 @q.timer_verbose
 def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
@@ -208,8 +217,12 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
         [ "t_sep", total_site[3], ],
         ])
     ld.from_numpy(res_sum)
-    # q.displayln_info(ld.show())
     ld.save(get_save_path(fn))
+    sig_msg_list = [
+            f"CHECK: {inspect.stack()[0].function}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
+            ]
+    for msg in sig_msg_list:
+        q.displayln_info(msg)
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
@@ -264,8 +277,12 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
         [ "t_sep", total_site[3], ],
         ])
     ld.from_numpy(res_sum)
-    # q.displayln_info(ld.show())
     ld.save(get_save_path(fn))
+    sig_msg_list = [
+            f"CHECK: {inspect.stack()[0].function}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
+            ]
+    for msg in sig_msg_list:
+        q.displayln_info(msg)
 
 # ----
 
@@ -332,8 +349,12 @@ def auto_contract_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel):
         [ "t_sep", total_site[3], ],
         ])
     ld.from_numpy(res_sum)
-    # q.displayln_info(ld.show())
     ld.save(get_save_path(fn))
+    sig_msg_list = [
+            f"CHECK: {inspect.stack()[0].function}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
+            ]
+    for msg in sig_msg_list:
+        q.displayln_info(msg)
 
 @q.timer_verbose
 def auto_contract_meson_f_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
@@ -387,8 +408,12 @@ def auto_contract_meson_f_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
         [ "t_sep", total_site[3], ],
         ])
     ld.from_numpy(res_sum)
-    # q.displayln_info(ld.show())
     ld.save(get_save_path(fn))
+    sig_msg_list = [
+            f"CHECK: {inspect.stack()[0].function}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
+            ]
+    for msg in sig_msg_list:
+        q.displayln_info(msg)
 
 @q.timer_verbose
 def auto_contract_meson_f_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
@@ -443,8 +468,12 @@ def auto_contract_meson_f_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
         [ "t_sep", total_site[3], ],
         ])
     ld.from_numpy(res_sum)
-    # q.displayln_info(ld.show())
     ld.save(get_save_path(fn))
+    sig_msg_list = [
+            f"CHECK: {inspect.stack()[0].function}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
+            ]
+    for msg in sig_msg_list:
+        q.displayln_info(msg)
 
 # ----
 
@@ -526,8 +555,12 @@ def auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel):
         [ "expr_name", len(expr_names), expr_names, ],
         ])
     ld_sum.from_numpy(res_sum)
-    # q.displayln_info(ld_sum.show())
     ld_sum.save(get_save_path(fn))
+    sig_msg_list = [
+            f"CHECK: {inspect.stack()[0].function}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.14E}",
+            ]
+    for msg in sig_msg_list:
+        q.displayln_info(msg)
 
 # ----
 
@@ -607,8 +640,13 @@ def auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
         [ "expr_name", len(expr_names), expr_names, ],
         ])
     ld_sum.from_numpy(res_sum)
-    # q.displayln_info(ld_sum.show())
     ld_sum.save(get_save_path(fn))
+    sig_msg_list = [
+            f"CHECK: {inspect.stack()[0].function}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.14E}",
+            ]
+    for msg in sig_msg_list:
+        q.displayln_info(msg)
+
 
 # ----
 
@@ -855,8 +893,13 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     ld_sum.from_numpy(res_sum)
     ld_count.save(get_save_path(fn_counts))
     ld_sum.save(get_save_path(fn))
-    # q.displayln_info(ld_count.show())
-    # q.displayln_info(ld_sum.show())
+    sig_msg_list = [
+            f"CHECK: {inspect.stack()[0].function}: ld_count sig: {q.get_double_sig(ld_count, q.RngState()):.14E}",
+            f"CHECK: {inspect.stack()[0].function}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.14E}",
+            ]
+    for msg in sig_msg_list:
+        q.displayln_info(msg)
+
 
 # ----
 
@@ -1142,8 +1185,12 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     ld_sum.from_numpy(res_sum)
     ld_count.save(get_save_path(fn_counts))
     ld_sum.save(get_save_path(fn))
-    # q.displayln_info(ld_count.show())
-    # q.displayln_info(ld_sum.show())
+    sig_msg_list = [
+            f"CHECK: {inspect.stack()[0].function}: ld_count sig: {q.get_double_sig(ld_count, q.RngState()):.14E}",
+            f"CHECK: {inspect.stack()[0].function}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.14E}",
+            ]
+    for msg in sig_msg_list:
+        q.displayln_info(msg)
 
 ### ------
 
@@ -1311,5 +1358,7 @@ for job_tag in job_tags:
         run_job(job_tag, traj)
 
 q.timer_display()
+
+q.displayln_info("CHECK: finished successfully.")
 
 q.end()
