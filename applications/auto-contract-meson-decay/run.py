@@ -1106,18 +1106,17 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
                 if idx2 > idx1:
                     continue
                 idx_pair += 1
-                q.displayln_info(1, f"auto_contract_meson_jwjj: {idx_pair}/{n_pairs} {xg1_src} {xg2_src}")
                 yield idx1, idx2
     @q.timer
     def feval(args):
         idx1, idx2 = args
+        xg1_src = tuple(xg_psel_list[idx1])
+        xg2_src = tuple(xg_psel_list[idx2])
+        xg1_src_t = xg1_src[3]
+        xg2_src_t = xg2_src[3]
         results = []
         for idx_snk in range(n_elems):
             xg_snk = tuple(xg_fsel_list[idx_snk])
-            xg1_src = tuple(xg_psel_list[idx1])
-            xg2_src = tuple(xg_psel_list[idx2])
-            xg1_src_t = xg1_src[3]
-            xg2_src_t = xg2_src[3]
             xg_t = xg_snk[3]
             xg1_xg_t = q.rel_mod(xg1_src_t - xg_t, t_size)
             xg2_xg_t = q.rel_mod(xg2_src_t - xg_t, t_size)
@@ -1142,29 +1141,32 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
             r_sq = q.get_r_sq(x_rel)
             val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
             results.append((weight, val, t1, t2, r_sq,))
-        return results
+        return idx1, idx2, results
     def sum_function(val_list):
         n_total = 0
         n_selected = 0
+        idx_pair = 0
         counts = np.zeros((t_size, t_size, len(r_list),), dtype = complex)
         values = np.zeros((t_size, t_size, len(r_list), len(expr_names),), dtype = complex)
-        for val in val_list:
+        for idx1, idx2, results in val_list:
+            idx_pair += 1
             n_total += n_elems
-            for weight, val, t1, t2, r_sq in val:
+            xg1_src = tuple(xg_psel_list[idx1])
+            xg2_src = tuple(xg_psel_list[idx2])
+            for weight, val, t1, t2, r_sq in results:
                 n_selected += 1
                 r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
                 counts[t1, t2, r_idx_low] += coef_low * weight
                 counts[t1, t2, r_idx_high] += coef_high * weight
                 values[t1, t2, r_idx_low] += coef_low * weight * val
                 values[t1, t2, r_idx_high] += coef_high * weight * val
-                if n_selected % 100 == 0:
-                    q.displayln_info(1, f"auto_contract_meson_jwjj: n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
-        q.displayln_info(1, f"auto_contract_meson_jwjj: Final: n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
+            q.displayln_info(1, f"{inspect.stack()[1].function}: {idx_pair}/{n_pairs} {xg1_src} {xg2_src} {len(results)}/{n_elems} n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
+        q.displayln_info(1, f"{inspect.stack()[1].function}: Final: n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
         return counts, values
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum(
             q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 1))
-    q.displayln_info("timer_display for auto_contract_meson_jj")
+    q.displayln_info("{inspect.stack()[0].function}: timer_display")
     q.timer_display()
     q.timer_merge()
     total_volume = geo.total_volume()
