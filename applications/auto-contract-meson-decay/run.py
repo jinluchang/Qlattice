@@ -1160,8 +1160,8 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
                 counts[t1, t2, r_idx_high] += coef_high * weight
                 values[t1, t2, r_idx_low] += coef_low * weight * val
                 values[t1, t2, r_idx_high] += coef_high * weight * val
-            q.displayln_info(1, f"{inspect.stack()[1].function}: {idx_pair}/{n_pairs} {xg1_src} {xg2_src} {len(results)}/{n_elems} n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
-        q.displayln_info(1, f"{inspect.stack()[1].function}: Final: n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
+            q.displayln_info(1, f"{inspect.stack()[2].function}: {idx_pair}/{n_pairs} {xg1_src} {xg2_src} {len(results)}/{n_elems} n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
+        q.displayln_info(1, f"{inspect.stack()[2].function}: Final: n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
         return counts, values
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum(
