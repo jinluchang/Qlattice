@@ -28,7 +28,7 @@ The environment variables needed to use the library can be set with the followin
 
 ## Install on Mac
 
-`$ brew install ninja patchelf llvm open-mpi eigen fftw gsl zlib openssl@3 mpfr autoconf automake flock findutils`
+`$ brew install ninja patchelf llvm open-mpi eigen fftw gsl zlib openssl@3 mpfr autoconf automake flock findutils pkg-config`
 
 `$ pip3 install --user meson cython psutil sympy numpy scipy`
 

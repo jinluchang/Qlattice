@@ -197,7 +197,6 @@ jobs:
         export num_proc=2
         ./scripts/setenv.default.sh
         ./scripts/qcore.sh
-        ./scripts/eigen.sh
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
     - name: Build Grid-clehner
@@ -293,7 +292,7 @@ jobs:
     - name: Install Brew packages
       run: |
         # brew update
-        brew install ninja patchelf llvm open-mpi eigen fftw gsl zlib openssl@3 mpfr autoconf automake flock findutils
+        brew install ninja patchelf llvm open-mpi eigen fftw gsl zlib openssl@3 mpfr autoconf automake flock findutils pkg-config
         # brew upgrade
     - name: Install Python packages
       run: |
@@ -341,7 +340,7 @@ jobs:
     - name: Install Brew packages
       run: |
         # brew update
-        brew install ninja patchelf llvm open-mpi eigen gsl zlib openssl@3 mpfr autoconf automake flock findutils
+        brew install ninja patchelf llvm open-mpi eigen fftw gsl zlib openssl@3 mpfr autoconf automake flock findutils pkg-config
         # brew upgrade
     - name: Install Python packages
       run: |
@@ -413,7 +412,7 @@ jobs:
     - name: Install Brew packages
       run: |
         # brew update
-        brew install ninja patchelf llvm open-mpi eigen gsl zlib openssl@3 mpfr autoconf automake flock findutils
+        brew install ninja patchelf llvm open-mpi eigen fftw gsl zlib openssl@3 mpfr autoconf automake flock findutils pkg-config
         # brew upgrade
     - name: Install Python packages
       run: |
@@ -434,7 +433,6 @@ jobs:
         export num_proc=3
         ./scripts/setenv.default.sh
         ./scripts/qcore.sh
-        ./scripts/eigen.sh
         ./scripts/fftw.sh
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
