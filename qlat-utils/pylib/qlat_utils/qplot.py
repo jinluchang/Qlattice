@@ -247,10 +247,12 @@ def plot_save(
         is_verbose = False,
         display_width = None,
         ):
-    # fn is full name of the plot or None
-    # dts is dict_datatable, e.g. { "table.txt" : [ [ 0, 1, ], [ 1, 2, ], ], }
-    # cmds is plot_cmds, e.g. [ "set key rm", "set size 1.0, 1.0 ", ]
-    # lines is plot_lines, e.g. [ "plot", "x", ]
+    """
+    fn is full name of the plot or None
+    dts is dict_datatable, e.g. { "table.txt" : [ [ 0, 1, ], [ 1, 2, ], ], }
+    cmds is plot_cmds, e.g. [ "set key rm", "set size 1.0, 1.0 ", ]
+    lines is plot_lines, e.g. [ "plot", "x", ]
+    """
     target = fn
     target_fn = None
     path = None
