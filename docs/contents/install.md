@@ -1,0 +1,150 @@
+# Installation:
+
+## Install on Ubuntu
+
+`$ sudo apt-get install -y cython3 patchelf ninja-build python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev`
+
+`$ pip3 install --user meson`
+
+`$ export prefix=DEST_DIRECTORY`
+
+If `prefix` environmental variable is not set, the default location will be `$HOME/qlat-build/default`.
+
+### Qlattice only
+
+`$ ./build.sh`
+
+### Qlattice and Grid/GPT
+
+`$ ./scripts/download-core.sh`
+
+`$ ./build.sh default-gpt`
+
+### Use the library
+
+The environment variables needed to use the library can be set with the following command:
+
+`$ source DEST_DIRECTORY/setenv.sh`
+
+## Install on Mac
+
+`$ brew install ninja patchelf llvm open-mpi eigen fftw gsl zlib openssl@3 mpfr autoconf automake flock findutils`
+
+`$ pip3 install --user meson cython psutil sympy numpy scipy`
+
+`$ export prefix=DEST_DIRECTORY`
+
+### Qlattice only
+
+`$ ./build.sh`
+
+`$ source DEST_DIRECTORY/setenv.sh`
+
+### Qlattice and Grid/GPT
+
+`$ ./scripts/download-core.sh`
+
+`$ ./build.sh default-gpt`
+
+`$ source DEST_DIRECTORY/setenv.sh`
+
+### Install on UCONN HPC
+
+First, download dependencies downloaded to the `distfiles` directory.
+
+`$ ./scripts/download.sh`
+
+Note you may need to download on your local computer and copy the data to the server.
+
+The default build and installation directory is `$HOME/qlat-build/default`. If a different directory is needed:
+
+`$ export prefix=DEST_DIRECTORY`
+
+Run the build script:
+
+`$ ./build.sh uconn`
+
+`$ source DEST_DIRECTORY/setenv.sh`
+
+## General instructions
+
+The library itself is only composed of header files located in the `qlat` directory.
+
+The major dependencies can be downloaded with
+
+`$ ./scripts/download.sh`
+
+These dependencies will be downloaded to the `distfiles` directory.
+
+There are scripts in the `scripts` directory used to install the dependencies.
+
+To install, we first set the `prefix` environment variable to specify the target directory.
+
+`$ export prefix=DEST_DIRECTORY`
+
+If `$prefix` is not set, the default value in `conf.sh` is used, which is `$HOME/qlat-build/default`.
+
+The `build.sh` will install everything into the `$prefix` directory by running all the scripts in the `scripts` directory. For example, the following command will install everything into `DEST_DIRECTORY`.
+
+`$ ./build.sh`
+
+On some systems, one may need to specify the system type:
+
+`$ ./build.sh TARGET`
+
+`TARGET` can be `default`, `default-gpt`, `uconn`, `qcdserver`, `bnlknl`, `summit`, ... This script will call `./scripts/build.TARGET.sh` to perform relevant builds.
+
+The environment variables needed to use the library can be set with the following command:
+
+`$ source DEST_DIRECTORY/setenv.sh`
+
+There are few different scripts to build the `Grid` library. Choose one best suit the machine (or create a custom one).
+
+After the first complete install, one can re-install individual components by running the specific script. For example, to just re-install the `Qlattice` header files and python library:
+
+`$ ./scripts/qlat-utils.sh`
+
+`$ ./scripts/qlat.sh`
+
+It is also possible to build `Grid` and `gpt`. For examples:
+
+`$ ./scripts/c-lime.sh`
+
+`$ ./scripts/grid-clehner.avx2.sh`
+
+`$ ./scripts/gpt.sh`
+
+It may be convenient to create a symbolic link `$HOME/qlat-build/default`, which points to the actual directory `DEST_DIRECTORY`. The `prefix` environment variable can be empty if the symbolic link is created.
+
+## Install on new machines
+
+If there is no existing `./scripts/build.TARGET.sh` for the machine. You may need to create a new one. Also, you may need to create a `./scripts/setenv.TARGET.sh` script.
+
+The purpose of the `./scripts/setenv.TARGET.sh` is to create the `DEST_DIRECTORY/setenv.sh` scripts, which can be sourced to set the environmental variables. The `DEST_DIRECTORY/setenv.sh` scripts will be sourced automatically in all the other installation scripts (e.g. `./scripts/qlat.sh`).
+
+The `./scripts/qcore.sh` script will create the following wrappers:
+
+`DEST_DIRECTORY/qcore/bin/CC.sh`
+
+`DEST_DIRECTORY/qcore/bin/CXX.sh`
+
+`DEST_DIRECTORY/qcore/bin/MPICC.sh`
+
+`DEST_DIRECTORY/qcore/bin/MPICXX.sh`
+
+These wrappers will simply try to call the appropriate corresponding compiler.
+
+The environment variables, `CC`, `CXX`, `MPICC`, `MPICXX`, affect most installation scripts in `./scripts`. If these environment variables are empty, then the default `setenv.sh` will use `qcore/setenv.sh` to set them to use the wrappers created by `./scripts/qcore.sh`. This behavior can be overridden by setting these environment variables to the desired non-empty value in `./scripts/setenv.TARGET.sh` or `./scripts/build.TARGET.sh`.
+
+Once `python3` is available, the compiler wrappers will support the `--wrapper-remove-arg=` option. One can set `CFLAGS` and/or `CXXFLAGS` with this option to remove some unwanted flags generated by the configure script.
+
+## Usage:
+
+There are example programs provided in the examples directory. Once the library is completed installed, one can run the following command to compile and run all the examples:
+
+```
+./scripts/qlat-examples-cpp.sh
+./scripts/qlat-examples-py.sh
+./scripts/qlat-examples-cpp-grid.sh
+./scripts/qlat-examples-py-gpt.sh
+```

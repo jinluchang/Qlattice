@@ -9,12 +9,19 @@ Qlattice
 .. toctree::
    :maxdepth: 1
 
+   contents/install.md
+
    file-format.rst
+
+   contents/env-vars.md
+
    qlat-utils.rst
    qlat.rst
-   rbc-ukqcd-params.rst
    auto-contractor.rst
 
+   contents/cpp-structure.md
+
+   rbc-ukqcd-params.rst
 
 Indices and tables
 ==================

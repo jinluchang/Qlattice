@@ -1,4 +1,7 @@
 def get_qar_multi_vol_max_size(size = None):
+    """
+    Parameter controls the size of a single `qar` file in number of bytes. Note, `qar` never splits a single file into multiple `qar` volume.
+    """
     cdef long* p_size
     if size is not None:
         assert isinstance(size, int)
@@ -13,9 +16,11 @@ def does_file_exist_qar(const cc.std_string& path):
     return cc.cc_does_file_exist_qar(path)
 
 def qcat(const cc.std_string& path):
+    """Return contents of file as `str`"""
     return <str>cc.cc_qcat(path)
 
 def qcat_bytes(const cc.std_string& path):
+    """Return contents of file as `bytes`"""
     return <bytes>cc.cc_qcat(path)
 
 @timer
