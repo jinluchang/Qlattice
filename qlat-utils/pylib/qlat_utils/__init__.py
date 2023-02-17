@@ -7,9 +7,16 @@ Will also be loaded by ``import qlat as q`` together with other ``qlat`` functio
 
 import qlat_utils.c as c
 
-from qlat_utils.c import Coordinate, RngState, WilsonMatrix, SpinMatrix
+from qlat_utils.c import \
+        Coordinate, \
+        RngState, \
+        WilsonMatrix, \
+        SpinMatrix, \
+        as_wilson_matrix, \
+        as_wilson_matrix_g5_herm
 
 from qlat_utils.c import \
+        ElemType, \
         ElemTypeColorMatrix, \
         ElemTypeWilsonMatrix, \
         ElemTypeNonRelWilsonMatrix, \

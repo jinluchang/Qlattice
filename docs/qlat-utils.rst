@@ -65,8 +65,9 @@ QAR and IO
    qar_create_info
    qar_extract_info
    get_qar_multi_vol_max_size
-   qcopy_file_info
+   qcat
    qcat_bytes
+   qcopy_file_info
    does_file_exist
    does_file_exist_qar
    does_regular_file_exist_qar
@@ -95,16 +96,45 @@ Utilities for data analysis
 .. autosummary::
    :toctree: generated
 
+   Cache
+
    mk_r_sq_list
    mk_r_list
    mk_interp_tuple
    mk_r_sq_interp_idx_coef_list
 
-   Cache
-
 Matrix for QCD
 --------------
 
-   WilsonMatrix
+.. autosummary::
+   :toctree: generated
 
+   WilsonMatrix
    SpinMatrix
+
+   as_wilson_matrix
+   as_wilson_matrix_g5_herm
+
+
+ElemType
+--------
+
+.. autosummary::
+   :toctree: generated
+
+   ElemType
+   ElemTypeChar
+   ElemTypeInt8t
+   ElemTypeInt64t
+   ElemTypeLong
+   ElemTypeDouble
+   ElemTypeFloat
+   ElemTypeComplex
+   ElemTypeComplexF
+
+   ElemTypeSpinMatrix
+   ElemTypeWilsonMatrix
+   ElemTypeColorMatrix
+   ElemTypeIsospinMatrix
+   ElemTypeNonRelWilsonMatrix
+   ElemTypeWilsonVector
