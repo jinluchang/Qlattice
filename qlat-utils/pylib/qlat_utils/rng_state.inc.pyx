@@ -45,6 +45,7 @@ cdef class RngState:
         return x
 
     def rand_gen(self):
+        """Generate a uniformly distributed random integer ranges from 0 up to 2**64 - 1"""
         return cc.rand_gen(self.xx)
 
     def u_rand_gen(self, double upper = 1.0, double lower = 0.0):
@@ -54,7 +55,7 @@ cdef class RngState:
         return cc.g_rand_gen(self.xx, center, sigma)
 
     def c_rand_gen(self, Coordinate size):
-        # size can be total_site of the lattice
+        """``size`` can be ``total_site`` of the lattice"""
         cdef Coordinate x = Coordinate()
         x.xx = cc.c_rand_gen(self.xx, size.xx)
         return x
@@ -64,6 +65,9 @@ cdef class RngState:
         return l[ri]
 
     def u_rand_fill(self, arr, double upper = 1.0, double lower = 0.0):
+        """
+        Fill ``arr`` (of type ``np.ndarray``) with uniform random numbers.
+        """
         arr = arr.ravel()
         assert arr.base is not None
         arr = arr.view(np.float64)
@@ -77,6 +81,9 @@ cdef class RngState:
             arr[i] = cc.u_rand_gen(self.xx, upper, lower)
 
     def g_rand_fill(self, arr, double center = 0.0, double sigma = 1.0):
+        """
+        Fill ``arr`` (of type ``np.ndarray``) with Gaussian random numbers.
+        """
         arr = arr.ravel()
         assert arr.base is not None
         arr = arr.view(np.float64)

@@ -583,7 +583,10 @@ def get_cexpr_meson_m():
                 mk_m("s", "x") + "sbar_s(0)",
                 ]
         exprs = [ m * mm for mm in mm_list for m in m_list ]
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
+        cexpr = contract_simplify_compile(
+                *exprs,
+                is_isospin_symmetric_limit = True,
+                diagram_type_dict = diagram_type_dict)
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
@@ -812,7 +815,10 @@ def get_cexpr_meson_jj():
         #
         exprs = exprs_self_energy + exprs_decay1 + exprs_decay2 + exprs_decay_m
         assert len(exprs) == 132
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
+        cexpr = contract_simplify_compile(
+                *exprs,
+                is_isospin_symmetric_limit = True,
+                diagram_type_dict = diagram_type_dict)
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
@@ -942,7 +948,10 @@ def get_cexpr_meson_jwjj():
         assert len(jm_list) == 4
         exprs = [ jj * jm for jm in jm_list for jj in jj_list ]
         assert len(exprs) == 8
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
+        cexpr = contract_simplify_compile(
+                *exprs,
+                is_isospin_symmetric_limit = True,
+                diagram_type_dict = diagram_type_dict)
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 

@@ -391,13 +391,15 @@ def mk_jk_blocking_func(block_size = 1, block_size_dict = None):
     return f
 
 def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func = None):
-    """return rjk_list
+    """
+    return rjk_list
     len(rjk_list) == 1 + n_rand_sample
     distribution of rjk_list should be similar as the distribution of avg
     r_{i,j} ~ N(0, 1)
     avg = jk_avg(jk_list)
     len(jk_list) = n + 1
-    rjk_list[i] = avg + \\sum_{j=1}^{n} r_{i,j} (jk_list[j] - avg)"""
+    rjk_list[i] = avg + \\sum_{j=1}^{n} r_{i,j} (jk_list[j] - avg)
+    """
     assert jk_idx_list[0] == "avg"
     assert isinstance(n_rand_sample, int)
     assert n_rand_sample >= 0
@@ -419,11 +421,13 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func
     return rjk_list
 
 def rjk_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state):
-    """return rjk_list
+    """
+    return rjk_list
     n = n_rand_sample
     len(rjk_list) == 1 + n
     rjk_list[i] = val + err * r[i] for i in 1..n
-    where r[i] ~ N(0, 1)"""
+    where r[i] ~ N(0, 1)
+    """
     assert n_rand_sample >= 0
     assert isinstance(rng_state, RngState)
     rjk_list = [ val, ]
@@ -467,19 +471,10 @@ default_g_jk_kwargs["jk_blocking_func"] = None  # for jk_type = "rjk"
 @use_kwargs(default_g_jk_kwargs)
 @timer
 def g_jk(data_list, *, eps, **_kwargs):
+    """
+    Perform initial Jackknife for the initial data set.\n
+    """
     return jackknife(data_list, eps)
-
-@use_kwargs(default_g_jk_kwargs)
-def g_jk_blocking_func(idx, *, jk_blocking_func, **_kwargs):
-    if jk_blocking_func is None:
-        return idx
-    else:
-        return jk_blocking_func(idx)
-
-@use_kwargs(default_g_jk_kwargs)
-def g_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state, *, jk_type, **_kwargs):
-    assert jk_type == "rjk"
-    return rjk_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state)
 
 @use_kwargs(default_g_jk_kwargs)
 @timer
@@ -491,7 +486,17 @@ def g_rejk(jk_list, jk_idx_list, *,
         rng_state,
         jk_blocking_func,
         **_kwargs,):
-    # jk_type in [ "rjk", "super", ]
+    """
+    Perform (randomized) Super-Jackknife for the Jackknife data set.
+    :jk_list: usually the Jackknife data set obtained with ``g_jk(data_list)``.
+    :jk_idx_list: should be list of indices that names the ``jk_list``.
+    :jk_type: [ "rjk", "super", ]``\n
+    :returns: (randomized) Super-Jackknife data set.
+    Note that::\n
+        len(jk_list) == len(jk_idx_list
+        jk_idx_list[0] == "avg"
+    Example
+    """
     if jk_type == "super":
         if jk_blocking_func is None:
             displayln_info("g_rejk: jk_type={jk_type} does not support jk_blocking_func={jk_blocking_func}")
@@ -505,13 +510,33 @@ def g_rejk(jk_list, jk_idx_list, *,
         assert False
     return None
 
+@use_kwargs(default_g_jk_kwargs)
+def g_mk_jk_val(rs_tag, val, err, *, jk_type, n_rand_sample, rng_state, **_kwargs):
+    """
+    Create a jackknife sample with random numbers based on central value ``val`` and error ``err``.\n
+    Need::\n
+        default_g_jk_kwargs["jk_type"] = "rjk"
+        default_g_jk_kwargs["n_rand_sample"] = n_rand_sample
+        # e.g. n_rand_sample = 1024
+        default_g_jk_kwargs["rng_state"] = rng_state
+        # e.g. rng_state = RngState("rejk")
+    """
+    assert jk_type == "rjk"
+    return rjk_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state)
+
 def g_jk_avg(jk_list):
+    """
+    Return ``avg`` of the ``jk_list``.
+    """
     if isinstance(jk_list, (int, float, complex)):
         return jk_list
     return jk_avg(jk_list)
 
 @use_kwargs(default_g_jk_kwargs)
 def g_jk_err(jk_list, *, eps, jk_type, **_kwargs):
+    """
+    Return ``err`` of the ``jk_list``.
+    """
     if isinstance(jk_list, (int, float, complex)):
         return 0
     if jk_type == "super":
@@ -523,10 +548,16 @@ def g_jk_err(jk_list, *, eps, jk_type, **_kwargs):
     return None
 
 def g_jk_avg_err(jk_list, **kwargs):
+    """
+    Return ``(avg, err,)`` of the ``jk_list``.
+    """
     return g_jk_avg(jk_list), g_jk_err(jk_list, **kwargs)
 
 @use_kwargs(default_g_jk_kwargs)
 def g_jk_size(**kwargs):
+    """
+    Return number of samples for the (randomized) Super-Jackknife data set.
+    """
     jk_type = kwargs["jk_type"]
     all_jk_idx = kwargs["all_jk_idx"]
     get_all_jk_idx = kwargs["get_all_jk_idx"]
@@ -542,3 +573,13 @@ def g_jk_size(**kwargs):
     else:
         assert False
     return None
+
+@use_kwargs(default_g_jk_kwargs)
+def g_jk_blocking_func(idx, *, jk_blocking_func, **_kwargs):
+    """
+    Return ``jk_blocking_func(idx)``.
+    """
+    if jk_blocking_func is None:
+        return idx
+    else:
+        return jk_blocking_func(idx)

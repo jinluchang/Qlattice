@@ -71,6 +71,9 @@ def unitarize(x):
     x.unitarize()
 
 def rel_mod(x, size):
+    """
+    Return ``x % size`` or ``x % size - size``
+    """
     x = x % size
     assert x >= 0
     if 2 * x >= size:
@@ -79,6 +82,9 @@ def rel_mod(x, size):
         return x
 
 def rel_mod_sym(x, size):
+    """
+    Return ``x % size`` or ``x % size - size`` or ``0``
+    """
     x = x % size
     assert x >= 0
     if 2 * x > size:

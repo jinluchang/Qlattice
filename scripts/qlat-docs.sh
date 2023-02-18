@@ -13,12 +13,13 @@ source qcore/set-prefix.sh $name
 
     cd "$build_dir"
 
-    rm -rfv generated _build
+    mkdir -p "$prefix"/share/doc/qlat
 
     time-run make html || true
-    time-run make latexpdf || true
 
-    mkdir -p "$prefix"/share/doc/qlat
+    time-run rsync -a --delete "$build_dir"/_build/ "$prefix"/share/doc/qlat
+
+    time-run make latexpdf || true
 
     time-run rsync -a --delete "$build_dir"/_build/ "$prefix"/share/doc/qlat
 

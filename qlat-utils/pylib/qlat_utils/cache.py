@@ -4,15 +4,6 @@ import qlat_utils.c as c
 
 from qlat_utils.c import get_all_caches_info
 
-# Usage:
-# cache_x = q.mk_cache("xx")
-# q.clean_cache(cache_x)
-# cache_x[key] = value
-# val = cache_x[key]
-# key in cache_x
-# val = cache_x.get(key)
-# val = cache_x.pop(key, None)
-
 class Cache(dict):
 
     def __init__(self, *keys):
@@ -41,6 +32,9 @@ def show_cache_keys(keys):
 
 @timer
 def clean_cache(ca = cache):
+    """
+    Remove values of cache, but keep all the structures
+    """
     info_str = show_cache_keys(ca.keys)
     items = list(ca.items())
     displayln_info(0, f"clean_cache: cache{info_str}: len={len(items)}")
@@ -52,7 +46,9 @@ def clean_cache(ca = cache):
             ca.pop(key)
 
 def mk_cache(*keys, ca = cache):
-    # if not exist, otherwise return existing elements
+    """
+    make cache if it does not exist, otherwise return existing elements
+    """
     assert keys
     for key in keys:
         if key in ca:
@@ -65,7 +61,9 @@ def mk_cache(*keys, ca = cache):
 
 @timer
 def rm_cache(*keys, ca = cache):
-    # if exist
+    """
+    remove cache if it exist
+    """
     assert keys
     for key in keys[-1]:
         if key not in ca:
@@ -83,6 +81,8 @@ def get_all_caches_info():
 
 @timer
 def clear_all_caches():
-    # clean python level cache and then C++ level cache
+    """
+    clean python level cache and then C++ level cache
+    """
     clean_cache()
     c.clear_all_caches()

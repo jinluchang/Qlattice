@@ -98,7 +98,9 @@ cdef class LatData:
         return cc.qnorm(self.xx)
 
     def is_match(self, LatData ld1):
-        # ld.info needs to be exactly equal
+        """
+        ld.info needs to be exactly equal
+        """
         return cc.is_matching(self.xx, ld1.xx)
 
     def is_complex(self):
@@ -156,7 +158,9 @@ cdef class LatData:
                 self.xx.info[dim].indices[i] = indices[i]
 
     def dim_names(self):
-        # by default, return list can be used as the input argument for ld.from_numpy
+        """
+        by default, return list can be used as the input argument for ld.from_numpy
+        """
         cdef int ndim = self.xx.ndim()
         cdef int i
         return [ self.xx.info[i].name for i in range(ndim) ]
@@ -165,9 +169,11 @@ cdef class LatData:
         return np.asarray(self).copy()
 
     def from_numpy(self, numpy.ndarray val, list dim_names = None, *, cc.bool is_complex = True):
-        # only set LatData shape if it is initially empty
-        # otherwise only set data and ignore shape completely
-        # dim_names should be a list of names for each dimension
+        """
+        only set LatData shape if it is initially empty
+        otherwise only set data and ignore shape completely
+        dim_names should be a list of names for each dimension
+        """
         cdef int ndim = val.ndim
         cdef int dim
         cdef list shape = [ val.shape[dim] for dim in range(ndim) ]
@@ -212,7 +218,9 @@ cdef class LatData:
         self.from_list(data_list)
 
     def info(self, dim = None):
-        # by default, return list can be used as the input argument for ld.set_info or mk_lat_data
+        """
+        by default, return list can be used as the input argument for ld.set_info or mk_lat_data
+        """
         if dim is None:
             ndim = self.ndim()
             return [ self.info(i) for i in range(ndim) ]
@@ -223,9 +231,11 @@ cdef class LatData:
             return [ dim_name, dim_size, dim_indices, ]
 
     def set_info(self, list info_list, *, cc.bool is_complex = True):
-        # info_list format:
-        # [ [ dim_name, dim_size, dim_indices, ], ... ]
-        # dim_indices can be optional
+        """
+        ``info_list`` format::\n
+            [ [ dim_name, dim_size, dim_indices, ], ... ]
+        dim_indices can be optional
+        """
         for info in info_list:
             assert len(info) >= 2
         dim_sizes = [ info[1] for info in info_list ]
@@ -301,26 +311,33 @@ cdef class LatData:
         return self
 
     def __setitem__(self, idx, val):
-        # use list with correct length as val
-        # idx should be tuple or list of int
+        """
+        Implemented in terms of ``np.asarray``
+        """
         np.asarray(self)[idx] = val
 
     def __getitem__(self, idx):
-        # return a new list every call
-        # idx should be tuple or list of int
+        """
+        Implemented in terms of ``np.asarray``
+        """
         return np.asarray(self)[idx]
 
 ### -------------------------------------------------------------------
 
 def mk_lat_data(list info_list, *, cc.bool is_complex = True):
-    # info_list format:
-    # [ [ dim_name, dim_size, dim_indices, ], ... ]
-    # dim_indices can be optional
+    """
+    ``info_list`` format::\n
+        [ [ dim_name, dim_size, dim_indices, ], ... ]
+    dim_indices can be optional
+    """
     ld = LatData()
     ld.set_info(info_list, is_complex = is_complex)
     return ld
 
 def load_lat_data(const cc.std_string& path):
+    """
+    Load ``lat_data`` from file ``path``.
+    """
     ld = LatData()
     ld.load(path)
     return ld
