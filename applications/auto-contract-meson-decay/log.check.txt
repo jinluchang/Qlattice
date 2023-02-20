@@ -1,8 +1,8 @@
 CHECK: auto_contract_meson_corr_psnk: ld sig: -1.96151195996805E+01-2.42068255068578E+00j
 CHECK: auto_contract_meson_jwjj: ld_count sig: 4.60839743545097E-01+9.00087968253700E-01j
-CHECK: auto_contract_meson_jwjj: ld_sum sig: 2.97948182896862E-03-1.67352595740541E-03j
+CHECK: auto_contract_meson_jwjj: ld_sum sig: -9.44243753465223E-02-4.17448482610589E-02j
 CHECK: auto_contract_meson_jj: ld_count sig: -6.37687409929113E+01-1.01816890359991E+01j
-CHECK: auto_contract_meson_jj: ld_sum sig: 4.05369213934059E+02-2.20398347936046E+02j
+CHECK: auto_contract_meson_jj: ld_sum sig: 1.96346539140290E+02-2.63391584636273E+02j
 CHECK: auto_contract_meson_jt: ld_sum sig: -1.11626966831140E+02+1.01792245292286E+02j
 CHECK: auto_contract_meson_m: ld_sum sig: -7.00237504523309E+00-1.63356467971979E+01j
 CHECK: auto_contract_meson_corr: ld sig: -7.83697356273122E+04-1.09211937627985E+04j
@@ -13,9 +13,9 @@ CHECK: auto_contract_meson_f_corr_psrc: ld sig: -5.63215929678760E-01+2.56579058
 CHECK: auto_contract_meson_f_corr_psnk_psrc: ld sig: -9.14974594736725E-05+3.11554982229031E-04j
 CHECK: auto_contract_meson_corr_psnk: ld sig: -2.21984826931648E+01-1.11398334686004E+01j
 CHECK: auto_contract_meson_jwjj: ld_count sig: -1.33269044376247E+02-1.03008347845717E+02j
-CHECK: auto_contract_meson_jwjj: ld_sum sig: -1.32768441039574E-01-6.99070413333117E-02j
+CHECK: auto_contract_meson_jwjj: ld_sum sig: -5.30198840078993E-01+5.59586586693326E-01j
 CHECK: auto_contract_meson_jj: ld_count sig: -4.96915779068312E+01+1.55816327331081E+01j
-CHECK: auto_contract_meson_jj: ld_sum sig: -1.05451799547708E+02-1.19069856284979E+01j
+CHECK: auto_contract_meson_jj: ld_sum sig: -7.29193700349297E+01+5.76416705180707E+01j
 CHECK: auto_contract_meson_jt: ld_sum sig: -4.15640737758618E+01+4.67227267211993E+01j
 CHECK: auto_contract_meson_m: ld_sum sig: -2.32515385225262E+01-5.49300241793375E+01j
 CHECK: auto_contract_meson_corr: ld sig: -8.63901475069579E+04-4.50174887092303E+04j
