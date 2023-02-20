@@ -98,6 +98,9 @@ Coordinate
    rel_mod
    rel_mod_sym
 
+   rel_mod_arr
+   rel_mod_sym_arr
+
    Coordinate
    Coordinate.list
    Coordinate.sqr

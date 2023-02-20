@@ -8,6 +8,7 @@ from qlat_utils.c import random_permute, displayln_malloc_stats
 import math
 import sys
 import os
+import numpy as np
 
 def getenv(*names, default = None):
     assert len(names) > 0
@@ -94,6 +95,30 @@ def rel_mod_sym(x, size):
     else:
         assert 2 * x == size
         return 0
+
+def rel_mod_arr(x, size):
+    """
+    Return ``x % size`` or ``x % size - size`` where ``x`` and ``size`` are np.array of same shape
+    """
+    assert x.shape == size.shape
+    ans = x % size
+    assert np.all(ans >= 0)
+    mask = 2 * ans >= size
+    ans[mask] = ans[mask] - size[mask]
+    return ans
+
+def rel_mod_sym_arr(x, size):
+    """
+    Return ``x % size`` or ``x % size - size`` or ``0`` where ``x`` and ``size`` are np.array of same shape
+    """
+    assert x.shape == size.shape
+    ans = x % size
+    assert np.all(ans >= 0)
+    mask1 = 2 * ans > size
+    mask2 = 2 * ans == size
+    ans[mask1] = ans[mask1] - size[mask1]
+    ans[mask2] = 0
+    return ans
 
 def c_sqr(x):
     return sum([ sqr(v) for v in x ])

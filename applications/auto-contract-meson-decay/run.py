@@ -1061,7 +1061,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     threshold = rup.dict_params[job_tag]["meson_jwjj_threshold"]
     u_rand_prob = q.SelectedField(q.ElemTypeDouble, fsel, 1)
     u_rand_prob.set_rand(q.RngState(f"auto_contract_meson_jwjj,{job_tag},{traj}"), 1.0, 0.0)
-    u_rand_prob_arr = np.asarray(u_rand_prob)
+    u_rand_prob_arr = np.asarray(u_rand_prob).ravel()
     fn_meson_corr = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"
     if get_load_path(fn_meson_corr) is None:
         q.displayln_info("auto_contract_meson_jwjj: '{fn_meson_corr}' does not exist. Skipping.")
@@ -1129,8 +1129,8 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
         flavor_l = 0
         flavor_s = 1
         xg_snk_t = xg_fsel_list[idx_snk, 3]
-        corr1 = abs(meson_corr_arr[0, (xg_snk_t - t_1) % t_size])
-        corr2 = abs(meson_corr_arr[0, (xg_snk_t - t_2) % t_size])
+        corr1 = np.abs(meson_corr_arr[0, (xg_snk_t - t_1) % t_size])
+        corr2 = np.abs(meson_corr_arr[0, (xg_snk_t - t_2) % t_size])
         p1t1 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_1, idx1]
         p2t1 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_1, idx2]
         wt1 = wsrc_psnk_prop_norm_sqrt[flavor_l, t_1, idx_snk]
@@ -1144,22 +1144,22 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
         value += 2 * (p1t1 * p2t1 / corr1 + p1t2 * p2t2 / corr2) * (wp1 * wp2)
         value += 5 * (p1t1 * wt1 / corr1 + p1t2 * wt2 / corr2) * (p1p2 * wp2)
         value += 5 * (p2t1 * wt1 / corr1 + p2t2 * wt2 / corr2) * (p1p2 * wp1)
-        value = value.item()
-        assert value > 0
+        assert np.all(value > 0)
         return value
     @q.timer
     def get_weight(idx_snk, idx1, idx2, t_1, t_2):
         # return weight for this point (1 / prob or zero)
+        idx_snk = np.asarray(idx_snk).ravel()
         est = get_estimate(idx_snk, idx1, idx2, t_1, t_2)
+        assert est.shape == idx_snk.shape
         prob = est / threshold
-        # q.displayln_info(5, f"get_weight: {prob} {est} {threshold}")
-        if prob >= 1:
-            return 1
-        rand = u_rand_prob_arr[idx_snk].item()
-        if rand < prob:
-            return 1.0 / prob
-        else:
-            return 0
+        assert prob.shape == idx_snk.shape
+        rand = u_rand_prob_arr[idx_snk]
+        assert rand.shape == idx_snk.shape
+        weight = 1.0 / prob
+        weight[prob >= 1] = 1.0
+        weight[rand >= prob] = 0.0
+        return weight
     #
     def load_data():
         idx_pair = 0
@@ -1178,19 +1178,26 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
         xg2_src = tuple(xg_psel_list[idx2])
         xg1_src_t = xg1_src[3]
         xg2_src_t = xg2_src[3]
+        x_rel = [ q.rel_mod(xg2_src[mu] - xg1_src[mu], total_site[mu]) for mu in range(4) ]
+        r_sq = q.get_r_sq(x_rel)
+        idx_snk_arr = np.arange(n_elems)
+        xg_t_arr = xg_fsel_list[idx_snk_arr, 3]
+        t_size_arr = np.broadcast_to(t_size, xg_t_arr.shape)
+        xg1_xg_t_arr = q.rel_mod_arr(xg1_src_t - xg_t_arr, t_size_arr)
+        xg2_xg_t_arr = q.rel_mod_arr(xg2_src_t - xg_t_arr, t_size_arr)
+        t_1_arr = (np.minimum(0, np.minimum(xg1_xg_t_arr, xg2_xg_t_arr)) + xg_t_arr - tsep) % t_size
+        t_2_arr = (np.maximum(0, np.maximum(xg1_xg_t_arr, xg2_xg_t_arr)) + xg_t_arr + tsep) % t_size
+        weight_arr = get_weight(idx_snk_arr, idx1, idx2, t_1_arr, t_2_arr)
+        weight_arr[np.abs(xg2_xg_t_arr - xg1_xg_t_arr) >= t_size_arr // 2] = 0.0
         results = []
-        for idx_snk in range(n_elems):
+        for idx_snk in idx_snk_arr[weight_arr > 0]:
+            weight = weight_arr[idx_snk]
             xg_snk = tuple(xg_fsel_list[idx_snk])
-            xg_t = xg_snk[3]
-            xg1_xg_t = q.rel_mod(xg1_src_t - xg_t, t_size)
-            xg2_xg_t = q.rel_mod(xg2_src_t - xg_t, t_size)
-            if abs(xg2_xg_t - xg1_xg_t) >= t_size // 2:
-                continue
-            t_1 = (min(0, xg1_xg_t, xg2_xg_t) + xg_t - tsep) % total_site[3]
-            t_2 = (max(0, xg1_xg_t, xg2_xg_t) + xg_t + tsep) % total_site[3]
-            weight = get_weight(idx_snk, idx1, idx2, t_1, t_2)
-            if weight == 0:
-                continue
+            xg_t = xg_t_arr[idx_snk]
+            xg1_xg_t = xg1_xg_t_arr[idx_snk]
+            xg2_xg_t = xg2_xg_t_arr[idx_snk]
+            t_1 = t_1_arr[idx_snk]
+            t_2 = t_2_arr[idx_snk]
             pd = {
                     "w" : ("point-snk", xg_snk,),
                     "x_1" : ("point", xg1_src,),
@@ -1201,8 +1208,6 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
                     }
             t1 = xg1_xg_t
             t2 = xg2_xg_t
-            x_rel = [ q.rel_mod(xg2_src[mu] - xg1_src[mu], total_site[mu]) for mu in range(4) ]
-            r_sq = q.get_r_sq(x_rel)
             val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
             results.append((weight, val, t1, t2, r_sq,))
         return idx1, idx2, results
@@ -1364,7 +1369,7 @@ def test():
     q.qremove_info("results")
     assert not q.does_file_exist_sync_node("results")
     q.qremove_all_info("locks")
-    q.qremove_all_info("cache")
+    # q.qremove_all_info("cache")
     # get_all_cexpr()
     run_job("test-4nt8", 1000)
     run_job("test-4nt16", 1000)
