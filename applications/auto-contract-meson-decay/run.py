@@ -1061,17 +1061,13 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     threshold = rup.dict_params[job_tag]["meson_jwjj_threshold"]
     u_rand_prob = q.SelectedField(q.ElemTypeDouble, fsel, 1)
     u_rand_prob.set_rand(q.RngState(f"auto_contract_meson_jwjj,{job_tag},{traj}"), 1.0, 0.0)
+    u_rand_prob_arr = np.asarray(u_rand_prob)
     fn_meson_corr = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"
     if get_load_path(fn_meson_corr) is None:
         q.displayln_info("auto_contract_meson_jwjj: '{fn_meson_corr}' does not exist. Skipping.")
         return
     ld_meson_corr = q.load_lat_data(get_load_path(fn_meson_corr))
-    arr_meson_corr = ld_meson_corr.to_numpy()
-    def get_corr(t_op, t_meson, meson_type):
-        # meson_type = 0 (for pion)
-        # meson_type = 1 (for kaon)
-        t = (t_op - t_meson) % t_size
-        return abs(arr_meson_corr[meson_type, t].item())
+    meson_corr_arr = ld_meson_corr.to_numpy()
     def get_prop_norm_sqrt(*args):
         is_sloppy = True
         return abs(ama_extract(get_prop(*args, is_norm_sqrt = True), is_sloppy = is_sloppy))
@@ -1132,45 +1128,24 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     def get_estimate(idx_snk, idx1, idx2, t_1, t_2):
         flavor_l = 0
         flavor_s = 1
-        xg_snk = tuple(xg_fsel_list[idx_snk])
-        # xg1_src = tuple(xg_psel_list[idx1])
-        # xg2_src = tuple(xg_psel_list[idx2])
-        corr1 = get_corr(xg_snk[3], t_1, 0)
-        # corr1s = get_corr(xg_snk[3], t_1, 1)
-        corr2 = get_corr(xg_snk[3], t_2, 0)
-        # corr2s = get_corr(xg_snk[3], t_2, 1)
-        p1t1 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_1, idx1].item()
-        p2t1 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_1, idx2].item()
-        wt1 = wsrc_psnk_prop_norm_sqrt[flavor_l, t_1, idx_snk].item()
-        wt2 = wsrc_psnk_prop_norm_sqrt[flavor_l, t_2, idx_snk].item()
-        p1t2 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_2, idx1].item()
-        p2t2 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_2, idx2].item()
-        p1p2 = psrc_psrc_prop_norm_sqrt[flavor_l, idx1, idx2].item()
-        wp1 = psrc_psnk_prop_norm_sqrt[flavor_l, idx1, idx_snk].item()
-        wp2 = psrc_psnk_prop_norm_sqrt[flavor_l, idx2, idx_snk].item()
-        # p1t1s = wsrc_psrc_prop_norm_sqrt[flavor_s, t_1, idx1].item()
-        # p2t1s = get_prop_norm_sqrt(flavor_s, idx2, t_1)
-        # p1t2s = get_prop_norm_sqrt(flavor_s, idx1, t_2)
-        # p2t2s = get_prop_norm_sqrt(flavor_s, idx2, t_2)
-        # wt1s = get_prop_norm_sqrt(flavor_s, idx_snk, t_1)
-        # wt2s = get_prop_norm_sqrt(flavor_s, idx_snk, t_2)
-        # wp1s = get_prop_norm_sqrt(flavor_s, idx1, idx_snk)
-        # wp2s = get_prop_norm_sqrt(flavor_s, idx2, idx_snk)
-        # p1p2s = get_prop_norm_sqrt(flavor_s, idx1, idx2)
-        values = [
-                2 * (p1t1 * p2t1 / corr1 + p1t2 * p2t2 / corr2) * (wp1 * wp2),
-                # 2 * (p1t1s * p2t1 / corr1s + p1t2s * p2t2 / corr2s) * (wp1s * wp2),
-                # 2 * (p1t1 * p2t1s / corr1s + p1t2 * p2t2s / corr2s) * (wp1 * wp2s),
-                5 * (p1t1 * wt1 / corr1 + p1t2 * wt2 / corr2) * (p1p2 * wp2),
-                # 4 * (p1t1 * wt1s / corr1s + p1t2 * wt2s / corr2s) * (p1p2 * wp2),
-                # 1 * (p1t1s * wt1 / corr1s + p1t2s * wt2 / corr2s) * (p1p2s * wp2s),
-                5 * (p2t1 * wt1 / corr1 + p2t2 * wt2 / corr2) * (p1p2 * wp1),
-                # 4 * (p2t1 * wt1s / corr1s + p2t2 * wt2s / corr2s) * (p1p2 * wp1),
-                # 1 * (p2t1s * wt1 / corr1s + p2t2s * wt2 / corr2s) * (p1p2s * wp1s),
-                ]
-        value = sum(values)
+        xg_snk_t = xg_fsel_list[idx_snk, 3]
+        corr1 = abs(meson_corr_arr[0, (xg_snk_t - t_1) % t_size])
+        corr2 = abs(meson_corr_arr[0, (xg_snk_t - t_2) % t_size])
+        p1t1 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_1, idx1]
+        p2t1 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_1, idx2]
+        wt1 = wsrc_psnk_prop_norm_sqrt[flavor_l, t_1, idx_snk]
+        wt2 = wsrc_psnk_prop_norm_sqrt[flavor_l, t_2, idx_snk]
+        p1t2 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_2, idx1]
+        p2t2 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_2, idx2]
+        p1p2 = psrc_psrc_prop_norm_sqrt[flavor_l, idx1, idx2]
+        wp1 = psrc_psnk_prop_norm_sqrt[flavor_l, idx1, idx_snk]
+        wp2 = psrc_psnk_prop_norm_sqrt[flavor_l, idx2, idx_snk]
+        value = 0
+        value += 2 * (p1t1 * p2t1 / corr1 + p1t2 * p2t2 / corr2) * (wp1 * wp2)
+        value += 5 * (p1t1 * wt1 / corr1 + p1t2 * wt2 / corr2) * (p1p2 * wp2)
+        value += 5 * (p2t1 * wt1 / corr1 + p2t2 * wt2 / corr2) * (p1p2 * wp1)
+        value = value.item()
         assert value > 0
-        # q.displayln_info(6, f"get_estimate: {value} {values}")
         return value
     @q.timer
     def get_weight(idx_snk, idx1, idx2, t_1, t_2):
@@ -1180,7 +1155,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
         # q.displayln_info(5, f"get_weight: {prob} {est} {threshold}")
         if prob >= 1:
             return 1
-        rand = u_rand_prob.get_elem(idx_snk).item()
+        rand = u_rand_prob_arr[idx_snk].item()
         if rand < prob:
             return 1.0 / prob
         else:

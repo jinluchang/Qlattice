@@ -2,6 +2,7 @@
 
 import qlat as q
 import os
+import numpy as np
 
 q.begin()
 
@@ -17,6 +18,10 @@ prop = q.Prop(geo)
 prop.set_rand(rs.split("prop-1"))
 
 q.displayln_info(f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm()}")
+
+prop_arr = np.asarray(prop)
+q.displayln_info(f"CHECK: prop_arr.dtype = {prop_arr.dtype}")
+q.displayln_info(f"CHECK: prop_arr.shape = {prop_arr.shape}")
 
 prop.save_double("results/prop-double.field")
 prop = q.Prop()
@@ -47,6 +52,10 @@ sp_prop @= prop
 
 q.displayln_info("CHECK: sp_prop", sp_prop.qnorm())
 
+sp_prop_arr = np.asarray(sp_prop)
+q.displayln_info(f"CHECK: sp_prop_arr.dtype = {sp_prop_arr.dtype}")
+q.displayln_info(f"CHECK: sp_prop_arr.shape = {sp_prop_arr.shape}")
+
 sp_prop.save("results/prop.lat")
 sp_prop1 = q.PselProp(psel)
 sp_prop1.load("results/prop.lat")
@@ -69,6 +78,10 @@ s_prop1.load_double("results/prop.sfield")
 s_prop1 -= s_prop
 
 q.displayln_info("CHECK: s_prop", s_prop.qnorm(), s_prop1.qnorm())
+
+s_prop_arr = np.asarray(s_prop)
+q.displayln_info(f"CHECK: s_prop_arr.dtype = {s_prop_arr.dtype}")
+q.displayln_info(f"CHECK: s_prop_arr.shape = {s_prop_arr.shape}")
 
 prop1 = q.SelProp(fselc)
 prop1 @= prop

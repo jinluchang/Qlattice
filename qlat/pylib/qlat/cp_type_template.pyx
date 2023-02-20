@@ -30,7 +30,7 @@ cdef class FieldTYPENAME(FieldBase):
         for i in range(4):
             shape[i] = local_site[i]
         shape[4] = multiplicity
-        for i in range(buf.ndim):
+        for i in range(ElemTypeTYPENAME.ndim()):
             shape[5 + i] = vec[i]
         buf.set_strides()
         buffer.buf = <char*>(fvec.data())
@@ -47,7 +47,7 @@ cdef class FieldTYPENAME(FieldBase):
         buffer.shape = shape
         buffer.strides = strides
         buffer.suboffsets = NULL
-        assert buffer.len == fvec.size()
+        assert buffer.len * buffer.itemsize == fvec.size() * ElemTypeTYPENAME.size()
         self.view_count += 1
 
     def __releasebuffer__(self, Py_buffer *buffer):
@@ -110,7 +110,7 @@ cdef class SelectedFieldTYPENAME(SelectedFieldBase):
         cdef int i
         shape[0] = n_elems
         shape[1] = multiplicity
-        for i in range(buf.ndim):
+        for i in range(ElemTypeTYPENAME.ndim()):
             shape[2 + i] = vec[i]
         buf.set_strides()
         buffer.buf = <char*>(fvec.data())
@@ -127,7 +127,7 @@ cdef class SelectedFieldTYPENAME(SelectedFieldBase):
         buffer.shape = shape
         buffer.strides = strides
         buffer.suboffsets = NULL
-        assert buffer.len == fvec.size()
+        assert buffer.len * buffer.itemsize == fvec.size() * ElemTypeTYPENAME.size()
         self.view_count += 1
 
     def __releasebuffer__(self, Py_buffer *buffer):
@@ -195,7 +195,7 @@ cdef class SelectedPointsTYPENAME(SelectedPointsBase):
         cdef int i
         shape[0] = n_points
         shape[1] = multiplicity
-        for i in range(buf.ndim):
+        for i in range(ElemTypeTYPENAME.ndim()):
             shape[2 + i] = vec[i]
         buf.set_strides()
         buffer.buf = <char*>(fvec.data())
@@ -212,7 +212,7 @@ cdef class SelectedPointsTYPENAME(SelectedPointsBase):
         buffer.shape = shape
         buffer.strides = strides
         buffer.suboffsets = NULL
-        assert buffer.len == fvec.size()
+        assert buffer.len * buffer.itemsize == fvec.size() * ElemTypeTYPENAME.size()
         self.view_count += 1
 
     def __releasebuffer__(self, Py_buffer *buffer):
