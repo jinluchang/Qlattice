@@ -880,10 +880,10 @@ def get_cexpr_meson_jj():
         jj_d_list = [
                 sum([
                     q.epsilon_tensor(mu, nu, rho)
-                    * mk_fac(f"rel_mod_sym(x_1[{mu}] - x_2[{mu}], size[{mu}])")
-                    * mk_j_mu("x_1", nu) * mk_j_mu("x_2", rho)
+                    * mk_fac(f"rel_mod_sym(x_2[{mu}] - x_1[{mu}], size[{mu}])")
+                    * mk_j_mu("x_2", nu) * mk_j_mu("x_1", rho)
                     for mu in range(3) for nu in range(3) for rho in range(3) ])
-                + "e(i,j,k) * -x[i] * j_j(0) * j_k(x)",
+                + "e(i,j,k) * x[i] * j_j(x) * j_k(0)",
                 ]
         assert len(jj_d_list) == 1
         pi0d_list = [
