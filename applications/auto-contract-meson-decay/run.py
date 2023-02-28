@@ -535,33 +535,33 @@ def get_cexpr_meson_jj():
         diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))] = None
         diagram_type_dict[((('t_2', 'x_1'), 1), (('x_1', 't_2'), 1), (('x_2', 'x_2'), 1))] = None
         jj_list = [
-                (sum([ mk_j_mu("x_2", mu) * mk_j_mu("x_1", mu) for mu in range(4) ])
-                 + "j_mu(x) * j_mu(0)"),
+                sum([ mk_j_mu("x_2", mu) * mk_j_mu("x_1", mu) for mu in range(4) ])
+                + "j_mu(x) * j_mu(0)",
                 #
-                (mk_j_mu("x_2", 3) * mk_j_mu("x_1", 3)
-                 + "j_t(x) * j_t(0)"),
+                mk_j_mu("x_2", 3) * mk_j_mu("x_1", 3)
+                + "j_t(x) * j_t(0)",
                 #
-                (sum([ mk_j_mu("x_2", mu) * mk_j_mu("x_1", mu) for mu in range(3) ])
-                 + "j_i(x) * j_i(0)"),
+                sum([ mk_j_mu("x_2", mu) * mk_j_mu("x_1", mu) for mu in range(3) ])
+                + "j_i(x) * j_i(0)",
                 #
-                (sum([
+                sum([
                     mk_fac(f"rel_mod_sym(x_2[{mu}] - x_1[{mu}], size[{mu}])")
                     * mk_fac(f"rel_mod_sym(x_2[{nu}] - x_1[{nu}], size[{nu}])")
                     * mk_j_mu("x_2", mu) * mk_j_mu("x_1", nu)
                     for mu in range(3) for nu in range(3) ])
-                 + "x[i] * x[j] * j_i(x) * j_j(0)"),
+                + "x[i] * x[j] * j_i(x) * j_j(0)",
                 #
-                (sum([
+                sum([
                     mk_fac(f"rel_mod_sym(x_2[{mu}] - x_1[{mu}], size[{mu}])")
                     * mk_j_mu("x_2", mu) * mk_j_mu("x_1", 3)
                     for mu in range(3) ])
-                 + "x[i] * j_i(x) * j_t(0)"),
+                + "x[i] * j_i(x) * j_t(0)",
                 #
-                (sum([
+                sum([
                     mk_fac(f"rel_mod_sym(x_1[{mu}] - x_2[{mu}], size[{mu}])")
                     * mk_j_mu("x_1", mu) * mk_j_mu("x_2", 3)
                     for mu in range(3) ])
-                 + "-x[i] * j_i(-x) * j_t(0)"),
+                + "-x[i] * j_i(-x) * j_t(0)",
                 ]
         assert len(jj_list) == 6
         m2_list = [
