@@ -110,11 +110,11 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
         return val, t
     def sum_function(val_list):
         counts = np.zeros(total_site[3], dtype = complex)
-        values = np.zeros((len(expr_names), total_site[3],), dtype = complex)
+        values = np.zeros((total_site[3], len(expr_names),), dtype = complex)
         for val, t in val_list:
             counts[t] += 1
-            values[:, t] += val
-        return counts, values
+            values[t] += val
+        return counts, values.transpose(1, 0)
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum(
             q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 16))
@@ -168,11 +168,11 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
         return val, t
     def sum_function(val_list):
         counts = np.zeros(total_site[3], dtype = complex)
-        values = np.zeros((len(expr_names), total_site[3],), dtype = complex)
+        values = np.zeros((total_site[3], len(expr_names),), dtype = complex)
         for val, t in val_list:
             counts[t] += 1
-            values[:, t] += val
-        return counts, values
+            values[t] += val
+        return counts, values.transpose(1, 0)
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum(
             q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 16))
@@ -229,11 +229,11 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
         return val, t
     def sum_function(val_list):
         counts = np.zeros(total_site[3], dtype = complex)
-        values = np.zeros((len(expr_names), total_site[3],), dtype = complex)
+        values = np.zeros((total_site[3], len(expr_names),), dtype = complex)
         for val, t in val_list:
             counts[t] += 1
-            values[:, t] += val
-        return counts, values
+            values[t] += val
+        return counts, values.transpose(1, 0)
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum(
             q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 16))
@@ -298,14 +298,14 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
         return res_list
     def sum_function(val_list):
         counts = np.zeros((total_site[3], len(r_list),), dtype = complex)
-        values = np.zeros((len(expr_names), total_site[3], len(r_list),), dtype = complex)
+        values = np.zeros((total_site[3], len(r_list), len(expr_names),), dtype = complex)
         for res_list in val_list:
             for val, t, r_idx_low, r_idx_high, coef_low, coef_high in res_list:
                 counts[t, r_idx_low] += coef_low
                 counts[t, r_idx_high] += coef_high
-                values[:, t, r_idx_low] += coef_low * val
-                values[:, t, r_idx_high] += coef_high * val
-        return counts, values
+                values[t, r_idx_low] += coef_low * val
+                values[t, r_idx_high] += coef_high * val
+        return counts, values.transpose(2, 0, 1)
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum(
             q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 1))
@@ -764,42 +764,45 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
         for idx, xg_src in enumerate(xg_psel_list):
             xg_src = tuple(xg_src.tolist())
             q.displayln_info(f"auto_contract_meson_jj: {idx+1}/{len(xg_psel_list)} {xg_src}")
-            for xg_snk in xg_fsel_list:
-                xg_snk = tuple(xg_snk.tolist())
-                x_rel = [ q.rel_mod(xg_snk[mu] - xg_src[mu], total_site[mu]) for mu in range(4) ]
-                x_rel_t = x_rel[3]
-                x_2_t = xg_src[3]
-                x_1_t = x_2_t + x_rel_t
-                t_2 = (max(x_1_t, x_2_t) + tsep) % total_site[3]
-                t_1 = (min(x_1_t, x_2_t) - tsep) % total_site[3]
-                pd = {
-                        "x_2" : ("point-snk", xg_snk,),
-                        "x_1" : ("point", xg_src,),
-                        "t_2" : ("wall", t_2),
-                        "t_1" : ("wall", t_1),
-                        "size" : total_site.list(),
-                        }
-                t = x_rel_t % t_size
-                r_sq = q.get_r_sq(x_rel)
-                yield pd, t, r_sq
+            yield xg_src
     @q.timer
     def feval(args):
-        pd, t, r_sq = args
-        val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
-        return val, t, r_sq
+        xg_src = args
+        res_list = []
+        for xg_snk in xg_fsel_list:
+            xg_snk = tuple(xg_snk.tolist())
+            x_rel = [ q.rel_mod(xg_snk[mu] - xg_src[mu], total_site[mu]) for mu in range(4) ]
+            r_sq = q.get_r_sq(x_rel)
+            r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
+            x_rel_t = x_rel[3]
+            x_2_t = xg_src[3]
+            x_1_t = x_2_t + x_rel_t
+            t_2 = (max(x_1_t, x_2_t) + tsep) % total_site[3]
+            t_1 = (min(x_1_t, x_2_t) - tsep) % total_site[3]
+            pd = {
+                    "x_2" : ("point-snk", xg_snk,),
+                    "x_1" : ("point", xg_src,),
+                    "t_2" : ("wall", t_2),
+                    "t_1" : ("wall", t_1),
+                    "size" : total_site.list(),
+                    }
+            t = x_rel_t % t_size
+            val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
+            res_list.append((val, t, r_idx_low, r_idx_high, coef_low, coef_high,))
+        return res_list
     def sum_function(val_list):
         counts = np.zeros((t_size, len(r_list),), dtype = complex)
-        values = np.zeros((len(expr_names), t_size, len(r_list),), dtype = complex)
-        for val, t, r_sq in val_list:
-            r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
-            counts[t, r_idx_low] += coef_low
-            counts[t, r_idx_high] += coef_high
-            values[:, t, r_idx_low] += coef_low * val
-            values[:, t, r_idx_high] += coef_high * val
-        return counts, values
+        values = np.zeros((t_size, len(r_list), len(expr_names),), dtype = complex)
+        for res_list in val_list:
+            for val, t, r_idx_low, r_idx_high, coef_low, coef_high in res_list:
+                counts[t, r_idx_low] += coef_low
+                counts[t, r_idx_high] += coef_high
+                values[t, r_idx_low] += coef_low * val
+                values[t, r_idx_high] += coef_high * val
+        return counts, values.transpose(2, 0, 1)
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum(
-            q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 16))
+            q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 1))
     q.displayln_info("timer_display for auto_contract_meson_jj")
     q.timer_display()
     q.timer_merge()
@@ -1048,29 +1051,30 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
             t1 = xg1_xg_t
             t2 = xg2_xg_t
             val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
-            results.append((weight, val, t1, t2, r_sq,))
+            r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
+            results.append((weight, val, t1, t2, r_idx_low, r_idx_high, coef_low, coef_high,))
         return idx1, idx2, results
     def sum_function(val_list):
         n_total = 0
         n_selected = 0
         idx_pair = 0
         counts = np.zeros((t_size, t_size, len(r_list),), dtype = complex)
-        values = np.zeros((len(expr_names), t_size, t_size, len(r_list),), dtype = complex)
+        values = np.zeros((t_size, t_size, len(r_list), len(expr_names),), dtype = complex)
         for idx1, idx2, results in val_list:
             idx_pair += 1
             n_total += n_elems
             xg1_src = tuple(xg_psel_list[idx1])
             xg2_src = tuple(xg_psel_list[idx2])
-            for weight, val, t1, t2, r_sq in results:
+            for weight, val, t1, t2, r_idx_low, r_idx_high, coef_low, coef_high in results:
                 n_selected += 1
-                r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
                 counts[t1, t2, r_idx_low] += coef_low * weight
                 counts[t1, t2, r_idx_high] += coef_high * weight
-                values[:, t1, t2, r_idx_low] += coef_low * weight * val
-                values[:, t1, t2, r_idx_high] += coef_high * weight * val
-            q.displayln_info(1, f"{fname}: {idx_pair}/{n_pairs} {xg1_src} {xg2_src} {len(results)}/{n_elems} n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
+                values[t1, t2, r_idx_low] += coef_low * weight * val
+                values[t1, t2, r_idx_high] += coef_high * weight * val
+            if idx_pair % (n_pairs // 1000 + 100) == 0:
+                q.displayln_info(1, f"{fname}: {idx_pair}/{n_pairs} {xg1_src} {xg2_src} {len(results)}/{n_elems} n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
         q.displayln_info(1, f"{fname}: Final: n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
-        return counts, values
+        return counts, values.transpose(3, 0, 1, 2)
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum(
             q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 1))
