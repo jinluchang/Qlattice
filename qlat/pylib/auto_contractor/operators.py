@@ -63,6 +63,24 @@ def new_color_index():
     color_index_counter += 1
     return f"a_c_{color_index_counter}"
 
+def show_dagger(is_dagger):
+    if not is_dagger:
+        return ""
+    else:
+        return "^dag"
+
+def show_parity(parity):
+    if parity is None:
+        return ""
+    elif parity == "even":
+        return ",e"
+    elif parity == "odd":
+        return ",o"
+    else:
+        return parity
+
+###################
+
 def mk_scalar(f1 : str, f2 : str, p : str, is_dagger = False):
     s = new_spin_index()
     c = new_color_index()
@@ -108,18 +126,16 @@ def mk_vec5_mu(f1 : str, f2 : str, p : str, mu, is_dagger = False):
             return Qb(f2, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f1, p, s3, c) + f"({f2}bar g{mu} {f1})({p})"
 
 def mk_meson(f1 : str, f2 : str, p : str, is_dagger = False):
-    # mk_meson("u", "d", p) => i ubar g5 d
-    # mk_meson("u", "d", p, True) => i dbar g5 u
+    """
+    mk_meson("u", "d", p) => i ubar g5 d
+    mk_meson("u", "d", p, True) => i dbar g5 u
+    """
     if not is_dagger:
         return sympy.I * mk_scalar5(f1, f2, p, is_dagger) + f"(i {f1}bar g5 {f2})({p})"
     else:
         return -sympy.I * mk_scalar5(f1, f2, p, is_dagger) + f"(i {f2}bar g5 {f1})({p})"
 
-def show_dagger(is_dagger):
-    if not is_dagger:
-        return ""
-    else:
-        return "^dag"
+###################
 
 def mk_pi_0(p : str, is_dagger = False):
     return 1 / sympy.sqrt(2) * (mk_meson("u", "u", p, is_dagger) - mk_meson("d", "d", p, is_dagger)) + f"pi0({p}){show_dagger(is_dagger)}"
@@ -151,6 +167,11 @@ def mk_k_0(p : str, is_dagger = False):
 def mk_k_0_bar(p : str, is_dagger = False):
     return -mk_meson("s", "d", p, is_dagger) + f"K0b({p}){show_dagger(is_dagger)}"
 
+def mk_sigma(p : str, is_dagger = False):
+    s = new_spin_index()
+    c = new_color_index()
+    return 1 / sympy.sqrt(2) * (Qb("u", p, s, c) * Qv("u", p, s, c) + Qb("d", p, s, c) * Qv("d", p, s, c)) + f"sigma({p})"
+
 def mk_kappa_p(p : str, is_dagger = False):
     return mk_scalar("u", "s", p, is_dagger) + f"kappa+({p}){show_dagger(is_dagger)}"
 
@@ -163,20 +184,13 @@ def mk_kappa_0(p : str, is_dagger = False):
 def mk_kappa_0_bar(p : str, is_dagger = False):
     return mk_scalar("s", "u", p, is_dagger) + f"kappa0bar({p}){show_dagger(is_dagger)}"
 
-def mk_j5pi_mu(p : str, mu, is_dagger = False):
-    return mk_vec5_mu("d", "u", p, mu, is_dagger) + f"j5pi_mu({p},{mu}){show_dagger(is_dagger)}"
+def mk_k_0_star_mu(p : str, mu, is_dagger = False):
+    return mk_vec_mu("d", "s", p, mu, is_dagger)
 
-def mk_j5k_mu(p : str, mu, is_dagger = False):
-    return mk_vec5_mu("s", "u", p, mu, is_dagger) + f"j5k_mu({p},{mu}){show_dagger(is_dagger)}"
+def mk_k_0_star_bar_mu(p : str, mu, is_dagger = False):
+    return mk_vec_mu("s", "d", p, mu, is_dagger)
 
-def mk_j5km_mu(p : str, mu, is_dagger = False):
-    return -mk_vec5_mu("u", "s", p, mu, is_dagger) + f"j5km_mu({p},{mu}){show_dagger(is_dagger)}"
-
-def mk_jpi_mu(p : str, mu, is_dagger = False):
-    return mk_vec_mu("d", "u", p, mu, is_dagger) + f"jpi_mu({p},{mu}){show_dagger(is_dagger)}"
-
-def mk_jk_mu(p : str, mu, is_dagger = False):
-    return mk_vec_mu("s", "u", p, mu, is_dagger) + f"jk_mu({p},{mu}){show_dagger(is_dagger)}"
+###################
 
 def mk_pipi_i22(p1 : str, p2 : str, is_dagger = False):
     return mk_pi_p(p1, is_dagger) * mk_pi_p(p2, is_dagger) + f"pipi_I22({p1},{p2}){show_dagger(is_dagger)}"
@@ -212,12 +226,6 @@ def mk_pipi_i0(p1 : str, p2 : str, is_dagger = False):
             + mk_pi_m(p1, is_dagger) * mk_pi_p(p2, is_dagger)
             + mk_pi_p(p1, is_dagger) * mk_pi_m(p2, is_dagger)
             ) + f"pipi_I0({p1},{p2}){show_dagger(is_dagger)}"
-
-def mk_k_0_star_mu(p : str, mu, is_dagger = False):
-    return mk_vec_mu("d", "s", p, mu, is_dagger)
-
-def mk_k_0_star_bar_mu(p : str, mu, is_dagger = False):
-    return mk_vec_mu("s", "d", p, mu, is_dagger)
 
 def mk_kk_i11(p1 : str, p2 : str, is_dagger = False, *, is_sym = False):
     if is_sym:
@@ -313,10 +321,25 @@ def mk_kpi_p2_i3halves(p1 : str, p2: str, is_dagger = False, *, is_sym = False):
     else:
         return mk_k_p(p1, is_dagger) * mk_pi_p(p2, is_dagger) + f"Kpi_++_I3halves({p1},{p2}){show_dagger(is_dagger)}"
 
-def mk_sigma(p : str, is_dagger = False):
-    s = new_spin_index()
-    c = new_color_index()
-    return 1 / sympy.sqrt(2) * (Qb("u", p, s, c) * Qv("u", p, s, c) + Qb("d", p, s, c) * Qv("d", p, s, c)) + f"sigma({p})"
+###################
+
+def mk_m(f : str, p : str, is_dagger = False):
+    return mk_scalar(f, f, p, is_dagger) + f"{f}bar{f}({p}){show_dagger(is_dagger)}"
+
+def mk_j5pi_mu(p : str, mu, is_dagger = False):
+    return mk_vec5_mu("d", "u", p, mu, is_dagger) + f"j5pi_mu({p},{mu}){show_dagger(is_dagger)}"
+
+def mk_j5k_mu(p : str, mu, is_dagger = False):
+    return mk_vec5_mu("s", "u", p, mu, is_dagger) + f"j5k_mu({p},{mu}){show_dagger(is_dagger)}"
+
+def mk_j5km_mu(p : str, mu, is_dagger = False):
+    return -mk_vec5_mu("u", "s", p, mu, is_dagger) + f"j5km_mu({p},{mu}){show_dagger(is_dagger)}"
+
+def mk_jpi_mu(p : str, mu, is_dagger = False):
+    return mk_vec_mu("d", "u", p, mu, is_dagger) + f"jpi_mu({p},{mu}){show_dagger(is_dagger)}"
+
+def mk_jk_mu(p : str, mu, is_dagger = False):
+    return mk_vec_mu("s", "u", p, mu, is_dagger) + f"jk_mu({p},{mu}){show_dagger(is_dagger)}"
 
 def mk_j_mu(p : str, mu, is_dagger = False):
     return sympy.simplify(1)*2/3 * mk_vec_mu("u", "u", p, mu, is_dagger) \
@@ -324,28 +347,37 @@ def mk_j_mu(p : str, mu, is_dagger = False):
             - sympy.simplify(1)*1/3 * mk_vec_mu("s", "s", p, mu, is_dagger) \
             + f"j_mu({p},{mu}){show_dagger(is_dagger)}"
 
-def mk_m(f : str, p : str, is_dagger = False):
-    return mk_scalar(f, f, p, is_dagger) + f"{f}bar{f}({p}){show_dagger(is_dagger)}"
-
 def mk_jl_mu(p : str, mu, is_dagger = False):
-    # jl = sqrt(2)/6 * (j0 + 3 * j10) if no s quark
+    """
+    jl = sqrt(2)/6 * (j0 + 3 * j10) if no s quark
+    """
     return sympy.simplify(1)*2/3 * mk_vec_mu("u", "u", p, mu, is_dagger) - sympy.simplify(1)*1/3 * mk_vec_mu("d", "d", p, mu, is_dagger) + f"jl_mu({p},{mu}){show_dagger(is_dagger)}"
 
 def mk_j0_mu(p : str, mu, is_dagger = False):
-    # I=0 Gparity -
+    """
+    I=0 Gparity -
+    """
     return sympy.simplify(1)*1/sympy.sqrt(2) * (mk_vec_mu("u", "u", p, mu, is_dagger) + mk_vec_mu("d", "d", p, mu, is_dagger)) + f"j0_mu({p},{mu}){show_dagger(is_dagger)}"
 
 def mk_j10_mu(p : str, mu, is_dagger = False):
-    # I=1 Gparity +
+    """
+    I=1 Gparity +
+    """
     return sympy.simplify(1)*1/sympy.sqrt(2) * (mk_vec_mu("u", "u", p, mu, is_dagger) - mk_vec_mu("d", "d", p, mu, is_dagger)) + f"j10_mu({p},{mu}){show_dagger(is_dagger)}"
 
 def mk_j11_mu(p : str, mu, is_dagger = False):
-    # I=1 Gparity +
+    """
+    I=1 Gparity +
+    """
     return mk_vec_mu("u", "d", p, mu, is_dagger) + f"j11_mu({p},{mu}){show_dagger(is_dagger)}"
 
 def mk_j1n1_mu(p : str, mu, is_dagger = False):
-    # I=1 Gparity +
+    """
+    I=1 Gparity +
+    """
     return -mk_vec_mu("d", "u", p, mu, is_dagger) + f"j1n1_mu({p},{mu}){show_dagger(is_dagger)}"
+
+###################
 
 def mk_4qOp_VV(f1 : str, f2 : str, f3 : str, f4 : str, p, is_scalar = False, parity = None, is_dagger = False):
     if parity == "odd":
@@ -471,16 +503,6 @@ def mk_4qOp_LR_cmix(f1,f2,f3,f4,p,is_scalar = False, parity = None, is_dagger = 
     assert not is_scalar
     return -2 * mk_4qOp_RL(f1,f4,f3,f2,p,True,parity,is_dagger)
 
-def show_parity(parity):
-    if parity is None:
-        return ""
-    elif parity == "even":
-        return ",e"
-    elif parity == "odd":
-        return ",o"
-    else:
-        return parity
-
 def mk_Qsub(p, parity = None, is_dagger = False):
     if parity is None:
         expr = mk_Qsub(p, "even", is_dagger) + mk_Qsub(p, "odd", is_dagger)
@@ -568,6 +590,8 @@ def mk_Q10(p, parity = None, is_dagger = False):
     jump_sc_indices()
     return expr + f"Q10({p}{show_parity(parity)}{show_dagger(is_dagger)})"
 
+###################
+
 # 3-flavor operators in (8,1) representation
 # mk_Q1_b81
 # mk_Q2_b81
@@ -635,6 +659,8 @@ def mk_Q7_b81(p, parity = None, is_dagger = False):
 
 def mk_Q8_b81(p, parity = None, is_dagger = False):
     return mk_4qOp_LR_cmix("s","d","c","c",p,False,parity,is_dagger) + f"Q8_b81({p}{show_parity(parity)}{show_dagger(is_dagger)})"
+
+###################
 
 def test():
     print("test")

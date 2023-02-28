@@ -54,10 +54,24 @@ def get_cexpr_meson_corr():
     fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_corr"
     def calc_cexpr():
         diagram_type_dict = dict()
-        diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1))] = 'Type1'
+        diagram_type_dict[((('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1))] = 'Type1'
+        diagram_type_dict[((('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
         exprs = [
-                mk_pi_p("t_2", True) * mk_pi_p("t_1") + f"pi+^dag(t_sep) * pi+(0)",
-                mk_k_p("t_2", True) * mk_k_p("t_1") + f"K+^dag(t_sep) * K+(0)",
+                mk_pi_p("x_2", True)    * mk_pi_p("x_1")             + f"pi+^dag(0) * pi+(-tsep)",
+                mk_k_p("x_2", True)     * mk_k_p("x_1")              + f"K+^dag(0) * K+(-tsep)",
+                mk_sw5("x_2")           * mk_pi_p("x_1")             + f"sw5(0) * pi+(-tsep)",
+                mk_sw5("x_2")           * mk_k_p("x_1")              + f"sw5(0) * K+(-tsep)",
+                mk_sw5("x_2")           * mk_j5pi_mu("x_1", 3, True) + f"sw5(0) * j5pi_t^dag(-tsep)",
+                mk_sw5("x_2")           * mk_j5k_mu("x_1", 3, True)  + f"sw5(0) * j5k_t^dag(-tsep)",
+                mk_jw_a_mu("x_2", 3)    * mk_pi_p("x_1")             + f"jw_a_t(0) * pi+(-tsep)",
+                mk_jw_a_mu("x_2", 3)    * mk_k_p("x_1")              + f"jw_a_t(0) * K+(-tsep)",
+                mk_jw_a_mu("x_2", 3)    * mk_j5pi_mu("x_1", 3, True) + f"jw_a_t(0) * j5pi_t^dag(-tsep)",
+                mk_jw_a_mu("x_2", 3)    * mk_j5k_mu("x_1", 3, True)  + f"jw_a_t(0) * j5k_t^dag(-tsep)",
+                mk_a0_p("x_2", True)    * mk_a0_p("x_1")             + f"a0+^dag(0) * a0+(-tsep)",
+                mk_kappa_p("x_2", True) * mk_kappa_p("x_1")          + f"kappa+^dag(0) * kappa+(-tsep)",
+                mk_j_mu("x_2", 3)       * mk_j_mu("x_1", 3)          + f"j_t(0) * j_t(-tsep)",
+                sum([ mk_j_mu("x_2", mu) * mk_j_mu("x_1", mu) for mu in range(4) ])
+                                                                     + f"j_mu(0) * j_mu(-tsep)",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
         return cexpr
@@ -65,6 +79,7 @@ def get_cexpr_meson_corr():
 
 @q.timer_verbose
 def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
+    fname = inspect.stack()[0].function
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr.lat"
     if get_load_path(fn) is not None:
         return
@@ -83,8 +98,8 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
         for t_src, t_snk in t_t_list:
             t = (t_snk - t_src) % total_site[3]
             pd = {
-                    "t_2" : ("wall", t_snk,),
-                    "t_1" : ("wall", t_src,),
+                    "x_2" : ("wall", t_snk,),
+                    "x_1" : ("wall", t_src,),
                     "size" : total_site,
                     }
             yield pd, t
@@ -116,13 +131,14 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
     sig_msg_list = [
-            f"CHECK: {inspect.stack()[0].function}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
+            f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
             ]
     for msg in sig_msg_list:
         q.displayln_info(msg)
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
+    fname = inspect.stack()[0].function
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"
     if get_load_path(fn) is not None:
         return
@@ -140,8 +156,8 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
                 xg_snk = tuple(xg_snk.tolist())
                 t = (xg_snk[3] - t_src) % total_site[3]
                 pd = {
-                        "t_2" : ("point-snk", xg_snk,),
-                        "t_1" : ("wall", t_src,),
+                        "x_2" : ("point-snk", xg_snk,),
+                        "x_1" : ("wall", t_src,),
                         "size" : total_site,
                         }
                 yield pd, t
@@ -173,13 +189,14 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
     sig_msg_list = [
-            f"CHECK: {inspect.stack()[0].function}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
+            f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
             ]
     for msg in sig_msg_list:
         q.displayln_info(msg)
 
 @q.timer_verbose
 def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
+    fname = inspect.stack()[0].function
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psrc.lat"
     if get_load_path(fn) is not None:
         return
@@ -200,8 +217,8 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
         for xg_src, t_snk in x_t_list:
             t = (xg_src[3] - t_snk) % total_site[3]
             pd = {
-                    "t_2" : ("point", xg_src,),
-                    "t_1" : ("wall", t_snk,),
+                    "x_2" : ("point", xg_src,),
+                    "x_1" : ("wall", t_snk,),
                     "size" : total_site,
                     }
             yield pd, t
@@ -233,13 +250,14 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
     sig_msg_list = [
-            f"CHECK: {inspect.stack()[0].function}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
+            f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
             ]
     for msg in sig_msg_list:
         q.displayln_info(msg)
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
+    fname = inspect.stack()[0].function
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk_psrc.lat"
     if get_load_path(fn) is not None:
         return
@@ -261,9 +279,9 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
                 xg_snk = tuple(xg_snk.tolist())
                 t = (xg_snk[3] - xg_src[3]) % total_site[3]
                 pd = {
-                        "t_2" : ("point-snk", xg_snk,),
-                        "t_1" : ("point", xg_src,),
-                        "size" : total_site,
+                        "x_2": ("point-snk", xg_snk,),
+                        "x_1": ("point", xg_src,),
+                        "size": total_site,
                         }
                 yield pd, t
     @q.timer
@@ -294,201 +312,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
     sig_msg_list = [
-            f"CHECK: {inspect.stack()[0].function}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
-            ]
-    for msg in sig_msg_list:
-        q.displayln_info(msg)
-
-# ----
-
-@q.timer
-def get_cexpr_meson_f_corr():
-    fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_f_corr"
-    def calc_cexpr():
-        diagram_type_dict = dict()
-        diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 't_1'), 1))] = 'Type1'
-        exprs = [
-                mk_jw_a_mu("x_1", 3) * mk_pi_p("t_1") + "jw_a_t(0) * pi+(-tsep)",
-                mk_jw_a_mu("x_1", 3) * mk_k_p("t_1") + "jw_a_t(0) * K+(-tsep)",
-                ]
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
-        return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base)
-
-@q.timer_verbose
-def auto_contract_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_f_corr.lat"
-    if get_load_path(fn) is not None:
-        return
-    cexpr = get_cexpr_meson_f_corr()
-    expr_names = get_cexpr_names(cexpr)
-    total_site = rup.get_total_site(job_tag)
-    t_size = total_site[3]
-    fsel, fselc = get_fsel()
-    xg_fsel_list = np.array(fsel.to_psel_local().to_list())
-    geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
-    def load_data():
-        for t_src in range(total_site[3]):
-            for xg_snk in xg_fsel_list:
-                xg_snk = tuple(xg_snk.tolist())
-                t = (xg_snk[3] - t_src) % total_site[3]
-                pd = {
-                        "x_1" : ("point-snk", xg_snk,),
-                        "t_1" : ("wall", t_src,),
-                        "size" : total_site,
-                        }
-                yield pd, t
-    @q.timer
-    def feval(args):
-        pd, t = args
-        val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
-        return val, t
-    def sum_function(val_list):
-        counts = np.zeros(total_site[3], dtype = complex)
-        values = np.zeros((len(expr_names), total_site[3],), dtype = complex)
-        for val, t in val_list:
-            counts[t] += 1
-            values[:, t] += val
-        return counts, values
-    q.timer_fork(0)
-    res_count, res_sum = q.glb_sum(
-            q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 16))
-    q.displayln_info("timer_display for auto_contract_meson_f_corr")
-    q.timer_display()
-    q.timer_merge()
-    res_count *= 1.0 / (total_volume * fsel.prob())
-    res_sum *= 1.0 / (total_volume * fsel.prob())
-    assert q.qnorm(res_count - 1.0) < 1e-10
-    ld = q.mk_lat_data([
-        [ "expr_name", len(expr_names), expr_names, ],
-        [ "t_sep", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
-        ])
-    ld.from_numpy(res_sum)
-    ld.save(get_save_path(fn))
-    sig_msg_list = [
-            f"CHECK: {inspect.stack()[0].function}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
-            ]
-    for msg in sig_msg_list:
-        q.displayln_info(msg)
-
-@q.timer_verbose
-def auto_contract_meson_f_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_f_corr_psrc.lat"
-    if get_load_path(fn) is not None:
-        return
-    cexpr = get_cexpr_meson_f_corr()
-    expr_names = get_cexpr_names(cexpr)
-    total_site = rup.get_total_site(job_tag)
-    t_size = total_site[3]
-    psel = get_psel()
-    fsel, fselc = get_fsel()
-    xg_fsel_list = np.array(fsel.to_psel_local().to_list())
-    xg_psel_list = np.array(psel.to_list())
-    geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
-    def load_data():
-        x_t_list = get_mpi_chunk(
-                [ (tuple(xg_src.tolist()), t_snk,) for t_snk in range(total_site[3]) for xg_src in xg_psel_list ],
-                rng_state = q.RngState("get_mpi_chunk"))
-        for xg_src, t_snk in x_t_list:
-            t = (xg_src[3] - t_snk) % total_site[3]
-            pd = {
-                    "x_1" : ("point", xg_src,),
-                    "t_1" : ("wall", t_snk,),
-                    "size" : total_site,
-                    }
-            yield pd, t
-    @q.timer
-    def feval(args):
-        pd, t = args
-        val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
-        return val, t
-    def sum_function(val_list):
-        counts = np.zeros(total_site[3], dtype = complex)
-        values = np.zeros((len(expr_names), total_site[3],), dtype = complex)
-        for val, t in val_list:
-            counts[t] += 1
-            values[:, t] += val
-        return counts, values
-    q.timer_fork(0)
-    res_count, res_sum = q.glb_sum(
-            q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 16))
-    q.displayln_info("timer_display for auto_contract_meson_f_corr_psrc")
-    q.timer_display()
-    q.timer_merge()
-    res_count *= 1.0 / len(xg_psel_list)
-    res_sum *= 1.0 / len(xg_psel_list)
-    assert q.qnorm(res_count - 1.0) < 1e-10
-    ld = q.mk_lat_data([
-        [ "expr_name", len(expr_names), expr_names, ],
-        [ "t_sep", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
-        ])
-    ld.from_numpy(res_sum)
-    ld.save(get_save_path(fn))
-    sig_msg_list = [
-            f"CHECK: {inspect.stack()[0].function}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
-            ]
-    for msg in sig_msg_list:
-        q.displayln_info(msg)
-
-@q.timer_verbose
-def auto_contract_meson_f_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_f_corr_psnk_psrc.lat"
-    if get_load_path(fn) is not None:
-        return
-    cexpr = get_cexpr_meson_f_corr()
-    expr_names = get_cexpr_names(cexpr)
-    total_site = rup.get_total_site(job_tag)
-    t_size = total_site[3]
-    psel = get_psel()
-    fsel, fselc = get_fsel()
-    xg_fsel_list = np.array(fsel.to_psel_local().to_list())
-    xg_psel_list = np.array(psel.to_list())
-    geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
-    def load_data():
-        for idx, xg_src in enumerate(xg_psel_list):
-            xg_src = tuple(xg_src.tolist())
-            q.displayln_info(f"auto_contract_meson_f_corr_psnk_psrc: {idx+1}/{len(xg_psel_list)} {xg_src}")
-            for xg_snk in xg_fsel_list:
-                xg_snk = tuple(xg_snk.tolist())
-                t = (xg_snk[3] - xg_src[3]) % total_site[3]
-                pd = {
-                        "x_1" : ("point-snk", xg_snk,),
-                        "t_1" : ("point", xg_src,),
-                        "size" : total_site,
-                        }
-                yield pd, t
-    @q.timer
-    def feval(args):
-        pd, t = args
-        val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
-        return val, t
-    def sum_function(val_list):
-        counts = np.zeros(total_site[3], dtype = complex)
-        values = np.zeros((len(expr_names), total_site[3],), dtype = complex)
-        for val, t in val_list:
-            counts[t] += 1
-            values[:, t] += val
-        return counts, values
-    q.timer_fork(0)
-    res_count, res_sum = q.glb_sum(
-            q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 16))
-    q.displayln_info("timer_display for auto_contract_meson_f_corr_psnk_psrc")
-    q.timer_display()
-    q.timer_merge()
-    res_count *= 1.0 / (len(xg_psel_list) * total_volume * fsel.prob() / total_site[3])
-    res_sum *= 1.0 / (len(xg_psel_list) * total_volume * fsel.prob() / total_site[3])
-    assert q.qnorm(res_count - 1.0) < 1e-10
-    ld = q.mk_lat_data([
-        [ "expr_name", len(expr_names), expr_names, ],
-        [ "t_sep", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
-        ])
-    ld.from_numpy(res_sum)
-    ld.save(get_save_path(fn))
-    sig_msg_list = [
-            f"CHECK: {inspect.stack()[0].function}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
+            f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
             ]
     for msg in sig_msg_list:
         q.displayln_info(msg)
@@ -528,6 +352,7 @@ def get_cexpr_meson_jt():
 
 @q.timer_verbose
 def auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel):
+    fname = inspect.stack()[0].function
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_jt.lat"
     if get_load_path(fn) is not None:
         return
@@ -586,7 +411,7 @@ def auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel):
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
     sig_msg_list = [
-            f"CHECK: {inspect.stack()[0].function}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.14E}",
+            f"CHECK: {fname}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.14E}",
             ]
     for msg in sig_msg_list:
         q.displayln_info(msg)
@@ -621,6 +446,7 @@ def get_cexpr_meson_m():
 
 @q.timer_verbose
 def auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
+    fname = inspect.stack()[0].function
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_m.lat"
     if get_load_path(fn) is not None:
         return
@@ -675,7 +501,7 @@ def auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
     sig_msg_list = [
-            f"CHECK: {inspect.stack()[0].function}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.14E}",
+            f"CHECK: {fname}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.14E}",
             ]
     for msg in sig_msg_list:
         q.displayln_info(msg)
@@ -905,6 +731,7 @@ def get_cexpr_meson_jj():
 
 @q.timer_verbose
 def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
+    fname = inspect.stack()[0].function
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_jj.lat"
     fn_counts = f"{job_tag}/auto-contract/traj-{traj}/meson_jj_counts.lat"
     if get_load_path(fn) is not None:
@@ -981,8 +808,8 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     ld_count.save(get_save_path(fn_counts))
     ld_sum.save(get_save_path(fn))
     sig_msg_list = [
-            f"CHECK: {inspect.stack()[0].function}: ld_count sig: {q.get_double_sig(ld_count, q.RngState()):.14E}",
-            f"CHECK: {inspect.stack()[0].function}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.14E}",
+            f"CHECK: {fname}: ld_count sig: {q.get_double_sig(ld_count, q.RngState()):.14E}",
+            f"CHECK: {fname}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.14E}",
             ]
     for msg in sig_msg_list:
         q.displayln_info(msg)
@@ -1037,6 +864,7 @@ def get_cexpr_meson_jwjj():
 
 @q.timer_verbose
 def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
+    fname = inspect.stack()[0].function
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_jwjj.lat"
     fn_counts = f"{job_tag}/auto-contract/traj-{traj}/meson_jwjj_counts.lat"
     if get_load_path(fn) is not None:
@@ -1064,7 +892,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     u_rand_prob_arr = np.asarray(u_rand_prob).ravel()
     fn_meson_corr = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"
     if get_load_path(fn_meson_corr) is None:
-        q.displayln_info("auto_contract_meson_jwjj: '{fn_meson_corr}' does not exist. Skipping.")
+        q.displayln_info("{fname}: '{fn_meson_corr}' does not exist. Skipping.")
         return
     ld_meson_corr = q.load_lat_data(get_load_path(fn_meson_corr))
     meson_corr_arr = ld_meson_corr.to_numpy()
@@ -1229,13 +1057,13 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
                 counts[t1, t2, r_idx_high] += coef_high * weight
                 values[:, t1, t2, r_idx_low] += coef_low * weight * val
                 values[:, t1, t2, r_idx_high] += coef_high * weight * val
-            q.displayln_info(1, f"{inspect.stack()[2].function}: {idx_pair}/{n_pairs} {xg1_src} {xg2_src} {len(results)}/{n_elems} n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
-        q.displayln_info(1, f"{inspect.stack()[2].function}: Final: n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
+            q.displayln_info(1, f"{fname}: {idx_pair}/{n_pairs} {xg1_src} {xg2_src} {len(results)}/{n_elems} n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
+        q.displayln_info(1, f"{fname}: Final: n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
         return counts, values
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum(
             q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 1))
-    q.displayln_info("{inspect.stack()[0].function}: timer_display")
+    q.displayln_info("{fname}: timer_display")
     q.timer_display()
     q.timer_merge()
     total_volume = geo.total_volume()
@@ -1257,8 +1085,8 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     ld_count.save(get_save_path(fn_counts))
     ld_sum.save(get_save_path(fn))
     sig_msg_list = [
-            f"CHECK: {inspect.stack()[0].function}: ld_count sig: {q.get_double_sig(ld_count, q.RngState()):.14E}",
-            f"CHECK: {inspect.stack()[0].function}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.14E}",
+            f"CHECK: {fname}: ld_count sig: {q.get_double_sig(ld_count, q.RngState()):.14E}",
+            f"CHECK: {fname}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.14E}",
             ]
     for msg in sig_msg_list:
         q.displayln_info(msg)
@@ -1341,9 +1169,6 @@ def run_job(job_tag, traj):
             auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
-            auto_contract_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel)
-            auto_contract_meson_f_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
-            auto_contract_meson_f_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
             #
             q.qtouch_info(get_save_path(fn_checkpoint))
             q.release_lock()
@@ -1356,7 +1181,6 @@ def run_job(job_tag, traj):
 
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
-    benchmark_eval_cexpr(get_cexpr_meson_f_corr())
     benchmark_eval_cexpr(get_cexpr_meson_m())
     benchmark_eval_cexpr(get_cexpr_meson_jt())
     benchmark_eval_cexpr(get_cexpr_meson_jj())
