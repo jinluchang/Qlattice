@@ -594,6 +594,33 @@ def get_cexpr_meson_jj():
         exprs_self_energy = [ op * mm for mm in mm_list for op in op_list ]
         assert len(exprs_self_energy) == 60
         #
+        op_l_ope_list = [
+                sum([ mk_vec_mu("d", "d", "x_2", mu) * mk_vec_mu("d", "d", "x_1", mu) for mu in range(4) ])
+                + "jd_mu(x) * jd_mu(0)",
+                mk_vec_mu("d", "d", "x_2", 3) * mk_vec_mu("d", "d", "x_1", 3)
+                + "jd_t(x) * jd_t(0)",
+                ]
+        assert len(op_l_ope_list) == 2
+        op_s_ope_list = [
+                sum([ mk_vec_mu("s", "s", "x_2", mu) * mk_vec_mu("s", "s", "x_1", mu) for mu in range(4) ])
+                + "js_mu(x) * js_mu(0)",
+                mk_vec_mu("s", "s", "x_2", 3) * mk_vec_mu("s", "s", "x_1", 3)
+                + "js_t(x) * js_t(0)",
+                ]
+        assert len(op_s_ope_list) == 2
+        mm_l_ope_list = [
+                mk_sym(1)/2 * (mk_pi_p("t_2", True) * mk_pi_p("t_1") + mk_pi_m("t_2", True) * mk_pi_m("t_1"))
+                + "pi+^dag(x[t]+tsep) * pi+(-tsep)",
+                ]
+        assert len(mm_l_ope_list) == 1
+        mm_s_ope_list = [
+                mk_sym(1)/2 * (mk_k_p("t_2", True) * mk_k_p("t_1") + mk_k_m("t_2", True) * mk_k_m("t_1"))
+                + "K+^dag(x[t]+tsep) * K+(-tsep)",
+                ]
+        assert len(mm_s_ope_list) == 1
+        exprs_ope = [ op * mm for mm in mm_l_ope_list for op in op_l_ope_list ] + [ op * mm for mm in mm_s_ope_list for op in op_s_ope_list ]
+        assert len(exprs_ope) == 4
+        #
         jwj_list = [
                 mk_jw_a_mu("x_1", 3) * mk_j_mu("x_2", 3)
                 + "jw_a_t(0) * j_t(x)",
@@ -731,8 +758,8 @@ def get_cexpr_meson_jj():
         exprs_pi0_decay = [ jj_d * pi0d for pi0d in pi0d_list for jj_d in jj_d_list ]
         assert len(exprs_pi0_decay) == 2
         #
-        exprs = exprs_self_energy + exprs_decay1 + exprs_decay2 + exprs_decay_m + exprs_pi0_decay
-        assert len(exprs) == 174
+        exprs = exprs_self_energy + exprs_ope + exprs_decay1 + exprs_decay2 + exprs_decay_m + exprs_pi0_decay
+        assert len(exprs) == 178
         cexpr = contract_simplify_compile(
                 *exprs,
                 is_isospin_symmetric_limit = True,
