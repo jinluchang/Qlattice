@@ -271,43 +271,54 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
     xg_psel_list = np.array(psel.to_list())
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
+    r_list = get_r_list(job_tag)
+    r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
     def load_data():
         for idx, xg_src in enumerate(xg_psel_list):
             xg_src = tuple(xg_src.tolist())
             q.displayln_info(f"auto_contract_meson_corr_psnk_psrc: {idx+1}/{len(xg_psel_list)} {xg_src}")
-            for xg_snk in xg_fsel_list:
-                xg_snk = tuple(xg_snk.tolist())
-                t = (xg_snk[3] - xg_src[3]) % total_site[3]
-                pd = {
-                        "x_2": ("point-snk", xg_snk,),
-                        "x_1": ("point", xg_src,),
-                        "size": total_site,
-                        }
-                yield pd, t
+            yield xg_src
     @q.timer
     def feval(args):
-        pd, t = args
-        val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
-        return val, t
+        xg_src = args
+        res_list = []
+        for xg_snk in xg_fsel_list:
+            xg_snk = tuple(xg_snk.tolist())
+            x_rel = [ q.rel_mod(xg_snk[mu] - xg_src[mu], total_site[mu]) for mu in range(4) ]
+            r_sq = q.get_r_sq(x_rel)
+            r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
+            t = (xg_snk[3] - xg_src[3]) % total_site[3]
+            pd = {
+                    "x_2": ("point-snk", xg_snk,),
+                    "x_1": ("point", xg_src,),
+                    "size": total_site,
+                    }
+            val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
+            res_list.append((val, t, r_idx_low, r_idx_high, coef_low, coef_high))
+        return res_list
     def sum_function(val_list):
-        counts = np.zeros(total_site[3], dtype = complex)
-        values = np.zeros((len(expr_names), total_site[3],), dtype = complex)
-        for val, t in val_list:
-            counts[t] += 1
-            values[:, t] += val
+        counts = np.zeros((total_site[3], len(r_list),), dtype = complex)
+        values = np.zeros((len(expr_names), total_site[3], len(r_list),), dtype = complex)
+        for res_list in val_list:
+            for val, t, r_idx_low, r_idx_high, coef_low, coef_high in res_list:
+                counts[t, r_idx_low] += coef_low
+                counts[t, r_idx_high] += coef_high
+                values[:, t, r_idx_low] += coef_low * val
+                values[:, t, r_idx_high] += coef_high * val
         return counts, values
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum(
-            q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 16))
+            q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 1))
     q.displayln_info("timer_display for auto_contract_meson_corr_psnk_psrc")
     q.timer_display()
     q.timer_merge()
     res_count *= 1.0 / (len(xg_psel_list) * total_volume * fsel.prob() / total_site[3])
     res_sum *= 1.0 / (len(xg_psel_list) * total_volume * fsel.prob() / total_site[3])
-    assert q.qnorm(res_count - 1.0) < 1e-10
+    assert q.qnorm(res_count.sum(1) - 1.0) < 1e-10
     ld = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
         [ "t_sep", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
+        [ "r", len(r_list), [ f"{r:.5f}" for r in r_list ], ],
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
