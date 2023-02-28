@@ -1217,9 +1217,8 @@ def run_job(job_tag, traj):
             q.displayln_info("timer_display for runjob")
             q.timer_display()
             q.timer_merge()
-    #
-    q.clean_cache()
-    q.clear_all_caches()
+            #
+            q.clean_cache()
 
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
@@ -1294,6 +1293,7 @@ for job_tag in job_tags:
     for traj in rup.dict_params[job_tag]["trajs"]:
         run_job(job_tag, traj)
 
+q.clear_all_caches()
 q.timer_display()
 
 q.displayln_info("CHECK: finished successfully.")
