@@ -20,8 +20,6 @@ source qcore/set-prefix.sh $name
 
     cd "$build"
 
-    rm -rfv "$prefix"/lib
-
     export CXX="$(grid-config --cxx)"
     # export CXX_LD="$(grid-config --cxxld)"
 
@@ -31,6 +29,8 @@ source qcore/set-prefix.sh $name
         --prefix="$prefix"
 
     time-run meson compile -j$num_proc
+
+    rm -rfv "$prefix"/lib
     time-run meson install
 
     mk-setenv.sh

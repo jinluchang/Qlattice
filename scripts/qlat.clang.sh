@@ -19,8 +19,6 @@ source qcore/set-prefix.sh $name
 
     cd "$build"
 
-    rm -rfv "$prefix"/lib
-
     if [ -n "$QLAT_MPICXX" ] ; then
         export MPICXX="$QLAT_MPICXX"
     fi
@@ -41,6 +39,8 @@ source qcore/set-prefix.sh $name
         --prefix="$prefix"
 
     time-run meson compile -j$num_proc
+
+    rm -rfv "$prefix"/lib
     time-run meson install
 
     cd "$wd"
