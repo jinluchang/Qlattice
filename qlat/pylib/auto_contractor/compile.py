@@ -508,9 +508,11 @@ def get_term_diagram_type_info(term):
     return min_type_info
 
 def filter_diagram_type(expr, diagram_type_dict = None, included_types = None):
-    # drop diagrams with diagram_type_dict[diagram_type] == None
-    # if included_types is not None:
-    #     only keep diagrams with diagram_type that diagram_type in included_types.
+    """
+    drop diagrams with diagram_type_dict[diagram_type] == None
+    if included_types is not None:
+        only keep diagrams with diagram_type that diagram_type in included_types.
+    """
     if diagram_type_dict is None:
         return expr
     new_terms = []
@@ -530,10 +532,12 @@ def filter_diagram_type(expr, diagram_type_dict = None, included_types = None):
     return Expr(new_terms, expr.description + included_types_tag)
 
 def mk_cexpr(*exprs, diagram_type_dict = None):
-    # exprs already finished wick contraction,
-    # otherwise use contract_simplify_compile(*exprs, is_isospin_symmetric_limit, diagram_type_dict)
-    # !!!if diagram_type_dict[diagram_type] == None: this diagram_type should have already be dropped!!!
-    # interface function
+    """
+    exprs already finished wick contraction,
+    otherwise use contract_simplify_compile(*exprs, is_isospin_symmetric_limit, diagram_type_dict)
+    !!!if diagram_type_dict[diagram_type] == None: this diagram_type should have already be dropped!!!
+    interface function
+    """
     if diagram_type_dict is None:
         diagram_type_dict = dict()
     descriptions = [ expr.show() for expr in exprs ]
@@ -625,7 +629,7 @@ def contract_simplify(*exprs, is_isospin_symmetric_limit = True, diagram_type_di
 @q.timer
 def compile_expr(*exprs, diagram_type_dict = None):
     """
-    # interface function
+    interface function
     """
     exprs = copy.deepcopy(exprs)
     cexpr = mk_cexpr(*exprs, diagram_type_dict = diagram_type_dict)
