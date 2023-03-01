@@ -499,7 +499,7 @@ def g_rejk(jk_list, jk_idx_list, *,
     """
     if jk_type == "super":
         if jk_blocking_func is not None:
-            displayln_info("g_rejk: jk_type={jk_type} does not support jk_blocking_func={jk_blocking_func}")
+            displayln_info(f"g_rejk: jk_type={jk_type} does not support jk_blocking_func={jk_blocking_func}")
         if all_jk_idx is None:
             assert get_all_jk_idx is not None
             all_jk_idx = get_all_jk_idx()
