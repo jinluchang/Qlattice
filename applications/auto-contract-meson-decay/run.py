@@ -276,7 +276,6 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
     def load_data():
         for idx, xg_src in enumerate(xg_psel_list):
             xg_src = tuple(xg_src.tolist())
-            q.displayln_info(f"auto_contract_meson_corr_psnk_psrc: {idx+1}/{len(xg_psel_list)} {xg_src}")
             yield xg_src
     @q.timer
     def feval(args):
@@ -299,12 +298,13 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
     def sum_function(val_list):
         counts = np.zeros((total_site[3], len(r_list),), dtype = complex)
         values = np.zeros((total_site[3], len(r_list), len(expr_names),), dtype = complex)
-        for res_list in val_list:
+        for idx, res_list in enumerate(val_list):
             for val, t, r_idx_low, r_idx_high, coef_low, coef_high in res_list:
                 counts[t, r_idx_low] += coef_low
                 counts[t, r_idx_high] += coef_high
                 values[t, r_idx_low] += coef_low * val
                 values[t, r_idx_high] += coef_high * val
+            q.displayln_info(f"{fname}: {idx+1}/{len(xg_psel_list)}")
         return counts, values.transpose(2, 0, 1)
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum(
@@ -790,7 +790,6 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     def load_data():
         for idx, xg_src in enumerate(xg_psel_list):
             xg_src = tuple(xg_src.tolist())
-            q.displayln_info(f"auto_contract_meson_jj: {idx+1}/{len(xg_psel_list)} {xg_src}")
             yield xg_src
     @q.timer
     def feval(args):
@@ -820,12 +819,13 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     def sum_function(val_list):
         counts = np.zeros((t_size, len(r_list),), dtype = complex)
         values = np.zeros((t_size, len(r_list), len(expr_names),), dtype = complex)
-        for res_list in val_list:
+        for idx, res_list in enumerate(val_list):
             for val, t, r_idx_low, r_idx_high, coef_low, coef_high in res_list:
                 counts[t, r_idx_low] += coef_low
                 counts[t, r_idx_high] += coef_high
                 values[t, r_idx_low] += coef_low * val
                 values[t, r_idx_high] += coef_high * val
+            q.displayln_info(f"{fname}: {idx+1}/{len(xg_psel_list)}")
         return counts, values.transpose(2, 0, 1)
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum(
