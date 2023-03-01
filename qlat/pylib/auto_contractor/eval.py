@@ -322,8 +322,10 @@ def sqrt_component_array(arr):
     return np.array([ sqrt_component(x) for x in arr ])
 
 def get_mpi_chunk(total_list, *, rng_state = None):
-    # rng_state has to be the same on all the nodes
-    # e.g. rng_state = q.RngState("get_mpi_chunk")
+    """
+    rng_state has to be the same on all the nodes
+    e.g. rng_state = q.RngState("get_mpi_chunk")
+    """
     total = len(total_list)
     id_worker = q.get_id_node()
     num_worker = q.get_num_node()

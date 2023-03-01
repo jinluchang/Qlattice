@@ -19,6 +19,8 @@ Evaluation
 
    load_prop
 
+   get_mpi_chunk
+
 Operators
 ---------
 

@@ -94,7 +94,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     def load_data():
         t_t_list = get_mpi_chunk(
                 [ (t_src, t_snk,) for t_snk in range(total_site[3]) for t_src in range(total_site[3]) ],
-                rng_state = q.RngState("get_mpi_chunk"))
+                rng_state = None)
         for t_src, t_snk in t_t_list:
             t = (t_snk - t_src) % total_site[3]
             pd = {
@@ -213,7 +213,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
     def load_data():
         x_t_list = get_mpi_chunk(
                 [ (tuple(xg_src.tolist()), t_snk,) for t_snk in range(total_site[3]) for xg_src in xg_psel_list ],
-                rng_state = q.RngState("get_mpi_chunk"))
+                rng_state = None)
         for xg_src, t_snk in x_t_list:
             t = (xg_src[3] - t_snk) % total_site[3]
             pd = {
