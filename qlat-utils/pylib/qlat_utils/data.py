@@ -493,12 +493,12 @@ def g_rejk(jk_list, jk_idx_list, *,
     :jk_type: [ "rjk", "super", ]``\n
     :returns: (randomized) Super-Jackknife data set.
     Note that::\n
-        len(jk_list) == len(jk_idx_list
+        len(jk_list) == len(jk_idx_list)
         jk_idx_list[0] == "avg"
     Example
     """
     if jk_type == "super":
-        if jk_blocking_func is None:
+        if jk_blocking_func is not None:
             displayln_info("g_rejk: jk_type={jk_type} does not support jk_blocking_func={jk_blocking_func}")
         if all_jk_idx is None:
             assert get_all_jk_idx is not None

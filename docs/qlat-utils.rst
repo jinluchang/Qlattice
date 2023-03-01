@@ -217,6 +217,40 @@ Example code that uses the randomized Super-Jackknife method::
     print(avg)
     print(err)
 
+Example code that uses the conventional Super-Jackknife method::
+
+    import qlat_utils as q
+    import numpy as np
+
+    def get_all_jk_idx():
+        all_job_tag = [ 'test1', 'test2', ]
+        jk_idx_list = [ 'avg', ]
+        for job_tag in all_job_tag:
+            trajs = get_trajs(job_tag)
+            for traj in trajs:
+                jk_idx_list.append((job_tag, traj,))
+        return jk_idx_list
+
+    q.default_g_jk_kwargs["get_all_jk_idx"] = get_all_jk_idx
+    q.default_g_jk_kwargs["jk_type"] = "super"
+
+    def get_trajs(job_tag):
+        return list(range(25))
+
+    rs = q.RngState("seed")
+    job_tag = "test1"
+    trajs = list(range(25))
+
+    data_list = np.zeros((len(trajs), 5,)) # can be list or np.array
+    rs.g_rand_fill(data_list)
+    jk_list = q.g_jk(data_list)
+    jk_idx_list = [ "avg", ] + [ (job_tag, traj) for traj in trajs ]
+    jk_list = q.g_rejk(jk_list, jk_idx_list)
+    avg, err = q.g_jk_avg_err(jk_list)
+
+    print(avg)
+    print(err)
+
 Plotting
 ^^^^^^^^
 
