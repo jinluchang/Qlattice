@@ -1,5 +1,5 @@
 auto_contractor
----------------
+===============
 
 .. automodule:: auto_contractor
    :members:

@@ -7,7 +7,7 @@ Qlattice
 ========
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    contents/install.md
 
