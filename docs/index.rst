@@ -16,7 +16,9 @@ Qlattice
    contents/env-vars.md
 
    qlat-utils.rst
+
    qlat.rst
+
    auto-contractor.rst
 
    contents/cpp-structure.md
