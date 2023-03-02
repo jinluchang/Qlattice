@@ -64,9 +64,9 @@ API inline int& qacc_num_threads()
                                           Iterator iter2) mutable {     \
       {__VA_ARGS__};                                                    \
     };                                                                  \
-    const int nt = qlat::qacc_num_threads();                            \
-    dim3 cu_threads(nt, 1, 1);                                          \
-    dim3 cu_blocks((num1 + nt - 1) / nt, num2, 1);                      \
+    const int nt_AVOID_para = qlat::qacc_num_threads();                 \
+    dim3 cu_threads(nt_AVOID_para, 1, 1);                               \
+    dim3 cu_blocks((num1 + nt_AVOID_para - 1) / nt_AVOID_para, num2, 1);\
     cudaError err = cudaGetLastError();                                 \
     if (cudaSuccess != err) {                                           \
       qlat::displayln(                                                  \
