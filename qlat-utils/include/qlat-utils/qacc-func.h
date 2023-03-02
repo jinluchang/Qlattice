@@ -76,7 +76,7 @@ API inline int& qacc_num_threads()
           cudaGetErrorString(CUDA_LAST_ERROR_OBJECT), __FILE__, __LINE__)); \
       qassert(false);                                                       \
     }                                                                       \
-    qlambda_apply<<<CUDA_BLOCKS_DIM3, CUDA_THREADS_DIM3> > >(               \
+    qlambda_apply<<<CUDA_BLOCKS_DIM3, CUDA_THREADS_DIM3>>>(                 \
         num1, num2, QACC_FOR_LOOP_LAMBDA);                                  \
   }
 
