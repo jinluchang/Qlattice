@@ -320,7 +320,7 @@ class HMC:
                 date = i.split("-")
                 if(len(date)==3 and len(date[0])==4 and len(date[1])==2 and len(date[2])==2):
                     try:
-                        datenos.append(float(date[0])+float(date[1])/12.0+float(date[2])/31.0)
+                        datenos.append(float(date[0])+float(date[1])/12.0+float(date[2])/365.25)
                         break
                     except ValueError:
                         pass
