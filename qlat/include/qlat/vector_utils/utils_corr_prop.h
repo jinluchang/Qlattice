@@ -346,7 +346,7 @@ void get_src_phase(Ty& phase, const qlat::vector_acc<int >& nv,
 }
 
 template<typename Ty>
-void vec_corrE(Ty* srcE, qlat::vector_acc<Ty >& res,qlat::fft_desc_basic &fd,const int nvec,const int clear=0,const Coordinate& mom = Coordinate(), const Ty& src_phase = 1.0){
+void vec_corrE(Ty* srcE, qlat::vector_acc<Ty >& res,qlat::fft_desc_basic &fd,const int nvec,const int clear=0,const Coordinate& mom = Coordinate(), const Ty& src_phase = 1.0, const int t0 = 0){
   TIMER("Reduce vec_corrE");
   int NTt  = fd.Nv[3];
   LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
@@ -412,7 +412,7 @@ void vec_corrE(Ty* srcE, qlat::vector_acc<Ty >& res,qlat::fft_desc_basic &fd,con
   qacc_for(mti, Ntotal, {
     long mi  = mti/NTt;
     long  ti = mti%NTt;
-    s1[mi*nt + t_rank + ti ] = s0[mi*NTt + ti] * src_phase;
+    s1[mi*nt + (t_rank + ti + nt - t0)%nt ] = s0[mi*NTt + ti] * src_phase;
   });
 
   //////sum_all_size((Ftype*) (RES.data()), 2*RES.size(), 1);
@@ -944,6 +944,28 @@ void prop4D_factor(Propagator4dT<Td>& prop, const qlat::ComplexT<Td >& factor)
   })
   ////if(qlat::qnorm(factor) >= QLAT_COPY_LIMIT){cpy_data_threadC(src, src, Nvol, 1, true, factor);}
   ////else{;}
+}
+
+
+
+template <class Ty, int civ>
+void copy_FieldM(std::vector<qlat::FieldM<Ty, civ> >& res, const std::vector<qlat::FieldM<Ty, civ> >& src)
+{
+  if(src.size() == 0){res.resize(0); return;}
+  const int Nv = src.size();
+  for(int iv=0;iv<Nv;iv++){qassert(src[iv].initialized);}
+  if(res.size() != Nv){res.resize(Nv);}
+
+  const Geometry& geo = src[0].geo();
+  const size_t Nvol = size_t(geo.local_volume()) * civ;
+  for(int iv=0;iv<Nv;iv++)
+  {
+    res[iv].init(geo);
+    Ty* resP = (Ty*) qlat::get_data(res[iv]).data();
+    Ty* srcP = (Ty*) qlat::get_data(src[iv]).data();
+    cpy_data_thread(resP, srcP, Nvol, 1, false);
+  }
+  qacc_barrier(dummy);
 }
 
 

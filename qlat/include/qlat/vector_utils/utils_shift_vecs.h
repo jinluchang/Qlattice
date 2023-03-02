@@ -113,6 +113,10 @@ struct shift_vec{
 
   void set_gauge(void* gauge_, int gbfac_, int gd0_, bool Conj_=false, bool src_gauge_ = false)
   {gauge = gauge_;gbfac = gbfac_;gd0 = gd0_;Conj = Conj_;src_gauge = src_gauge_;}
+
+  void set_bfacs(int gbfac_, int gd0_, bool Conj_=false, bool src_gauge_ = false)
+  {qassert(gauge!=NULL);gbfac = gbfac_;gd0 = gd0_;Conj = Conj_;src_gauge = src_gauge_;}
+
   template<typename Ty, bool Conj_>
   void mult_gauge(void* pt, int dir_or);
 

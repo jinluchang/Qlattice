@@ -368,7 +368,7 @@ void vector_to_Coordinate(qlat::vector_acc<int >& nv, Coordinate& pos, int dir =
   if(dir == 0){for(int i=0;i<4;i++){nv[i]  = pos[i];}}
 }
 
-void get_grid_psel(PointSelection& psel, Coordinate& nv, Coordinate& grid, int t0 = -1, int seed = 123)
+inline void get_grid_psel(PointSelection& psel, Coordinate& nv, Coordinate& grid, int t0 = -1, int seed = 123, const int even = -1)
 {
   /////put seed to all the same as rank 0
   if(qlat::get_id_node() != 0){seed = 0;}
@@ -384,6 +384,20 @@ void get_grid_psel(PointSelection& psel, Coordinate& nv, Coordinate& grid, int t
   Coordinate ini;
   for(int i=0;i<4;i++){ini[i] = int(qlat::u_rand_gen(rs)*(nv[i]/grid[i]));}
   if(t0 != -1){ini[3] = t0;}
+  if(even != -1){
+    //// even = (z*2+y)*2+x;
+    int v[3];
+    v[2] =  even/4;
+    v[1] = (even%4)/2;
+    v[0] =  even%2;
+    for(int si=0;si<3;si++)
+    {
+      qassert((nv[si]/grid[si]) % 2 == 0);////stagger 8 eo requirements
+      if(ini[si]%2 != v[si]){
+        ini[si] = (ini[si] + 1 ) % (nv[si]/grid[si]);
+      }
+    }
+  }
 
   psel.resize(0);
 
@@ -591,6 +605,39 @@ void vec_apply_cut(qlat::vector_gpu<Ty >& res, const Coordinate& sp, const doubl
   });
 
 }
+
+template <class Ty, int civ>
+void get_point_color_src(std::vector<qlat::FieldM<Ty , civ> >& srcL, 
+  const PointSelection& grids, const std::vector<Ty >& phases)
+{
+  TIMER("get_point_color_src");
+  qassert(srcL.size() == civ);
+  qassert(srcL[0].initialized);
+  const qlat::Geometry& geo = srcL[0].geo();
+  const long V_local = geo.local_volume();
+
+  std::vector<Ty* > srcP;srcP.resize(srcL.size());
+  for(int ic=0;ic<srcL.size();ic++){
+    qassert(srcL[ic].initialized);
+    srcP[ic] = (Ty*) qlat::get_data(srcL[ic]).data();
+    zero_Ty(srcP[ic], V_local*civ, 0);
+  }
+
+  const fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+  qassert(grids.size() == phases.size());
+  for(unsigned int gi=0;gi<grids.size();gi++){
+    const Coordinate& sp = grids[gi];
+    if(fd.coordinate_g_is_local(sp)){
+      LInt isp = fd.index_l_from_g_coordinate(sp);
+      for(int c=0;c<civ;c++){
+        srcP[c][isp*civ + c] = phases[gi];
+      }
+    }
+  }
+
+}
+
+
 
 }
 

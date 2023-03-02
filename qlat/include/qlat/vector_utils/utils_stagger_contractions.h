@@ -16,6 +16,46 @@
 
 namespace qlat{
 
+template<typename Ty , typename Td>
+struct stag_inv_buf{
+
+  qlat::vector_acc<Ty > resC;
+  std::vector<std::vector< colorFT> > bufV;
+  qlat::vector_gpu<Ty > tmp;
+  std::vector<qlat::vector_gpu<Ty >  > propE;
+  std::vector<qlat::vector_gpu<Ty >  > propV;
+  std::vector<qlat::vector_gpu<Ty >  > propB;
+  std::vector< qlat::vector_gpu<Ty > > propS;
+  std::vector<qlat::vector_gpu<Ty >  > prop_shift;
+  qlat::vector_gpu<Ty > buf_vec;
+
+  std::vector< GaugeFieldT<Td >   > gfL;
+
+  qlat::FieldM<char, 1> eo;
+
+  inline void free_buf(){
+    resC.resize(0);
+
+    for(unsigned int i=0;i<bufV.size();i++)
+    {
+      bufV[i].resize(0);
+    }
+    bufV.resize(0);
+    tmp.resize(0);
+    propE.resize(0);
+    propV.resize(0);
+    propB.resize(0);
+    propS.resize(0);
+    prop_shift.resize(0);
+    gfL.resize(0);
+    buf_vec.resize(0);
+  }
+
+  inline void init(){
+    free_buf();
+  }
+};
+
 ////tr[cf cf^\dagger]
 template <class Ty>
 void cf_simple_pion(std::vector<colorFT >& cf0, std::vector<colorFT >& cf1, EigenV &corr, qlat::fft_desc_basic &fd,int clear=1, bool print=false, double factor = 1.0)
@@ -24,7 +64,7 @@ void cf_simple_pion(std::vector<colorFT >& cf0, std::vector<colorFT >& cf1, Eige
   qassert(cf0.size() == 3);qassert(cf1.size() == 3);
   int  NTt  = fd.Nv[3];
   ////LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
-  Geometry& geo = cf0[0].geo();
+  const Geometry& geo = cf0[0].geo();
 
   EigenV resV;ini_resE(resV, 1, fd);
   if(resV.size()%NTt !=0 or resV.size()==0){print0("Size of res wrong. \n");qassert(false);}
@@ -52,6 +92,7 @@ void cf_simple_pion(std::vector<colorFT >& cf0, std::vector<colorFT >& cf1, Eige
   }
 
 }
+
 
 }
 

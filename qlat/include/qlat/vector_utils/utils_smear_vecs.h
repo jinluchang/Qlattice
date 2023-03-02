@@ -915,6 +915,9 @@ void smear_kernel(T* src, const double width, const int step, smear_fun<T >& smf
   smear_macros(  11,  4);
   smear_macros(  12,  4);
 
+  smear_macros(   9,  3);
+  smear_macros(   9,  2);
+
   ///////macros for inner color 3 and all outter prop
   smear_macros(   1,  1);
   smear_macros(   2,  1);
@@ -933,6 +936,7 @@ void smear_kernel(T* src, const double width, const int step, smear_fun<T >& smf
   smear_macros(  48,  1);
 
   smear_macros(   1, 48);
+  smear_macros(   1, 27);
   smear_macros(   1, 24);
   smear_macros(   1, 18);
   smear_macros(   1, 16);
@@ -1077,9 +1081,9 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
   }
   /////rotate_prop(prop, 1);
 
-  #if PRINT_TIMER>3
-  print0("====Vec setup, c0 %d, d0 %d, NVmpi %d, groupP %d , reorder %d \n", c0 , d0, smf.NVmpi, groupP, int(reorder));
-  #endif
+  //#if PRINT_TIMER>3
+  //print0("====Vec setup, c0 %d, d0 %d, NVmpi %d, groupP %d , reorder %d \n", c0 , d0, smf.NVmpi, groupP, int(reorder));
+  //#endif
 
 }
 

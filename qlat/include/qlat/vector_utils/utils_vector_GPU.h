@@ -192,6 +192,12 @@ struct vector_gpu{
     glb_sum(tmp[0]);
     return tmp[0];
   }
+  
+  inline void print_norm()
+  {
+    Ty normC = norm();
+    print0("==norm %.8e \n", normC.real());
+  }
 
   template <class T >
   void swap(std::vector<T >& vp)

@@ -65,7 +65,7 @@ struct lms_para{
 
   /////initial with src noise
 
-  void free_buf(){
+  inline void free_buf(){
     EresH.resize(0);
     EresL.resize(0);
     EresA.resize(0);

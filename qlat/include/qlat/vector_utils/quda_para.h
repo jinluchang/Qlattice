@@ -437,18 +437,11 @@ void quda_ff_to_Ffield4d(qlat::FermionField4dT<Td>& ff, T1* quda_ff)
 }
 
 template <class Ty, class T1>
-void qlat_cf_to_quda_cf(T1*  quda_cf, colorFT& qlat_cf, int dir = 1)
+void qlat_cf_to_quda_cf(T1*  quda_cf, Ty* src, const Geometry& geo, int Dim, int dir = 1)
 {
   TIMER("qlat_cf_to_quda_cf(qlat_cf, quda_cf)");
-  qassert(qlat_cf.initialized);
-  const Geometry& geo = qlat_cf.geo();
   long V = geo.local_volume();
   long Vh = V / 2;
-  qassert(geo.multiplicity == 3);
-  const long Dim = geo.multiplicity;
-
-  Ty* src = (Ty*) qlat::get_data(qlat_cf).data();
-  //
   #pragma omp parallel for
   for (long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {
     const Coordinate xl = geo.coordinate_from_index(qlat_idx_4d);
@@ -460,7 +453,26 @@ void qlat_cf_to_quda_cf(T1*  quda_cf, colorFT& qlat_cf, int dir = 1)
       if(dir == 0){src[qlat_idx_4d*Dim + dc] = quda_cf[quda_idx*Dim + dc];}
     }
   }
+}
 
+template <class Ty, class T1>
+void quda_cf_to_qlat_cf(Ty* qlat_cf, T1* quda_cf, const Geometry& geo, int Dim)
+{
+  qlat_cf_to_quda_cf(quda_cf, qlat_cf, geo, Dim, 0);
+}
+
+template <class Ty, class T1>
+void qlat_cf_to_quda_cf(T1*  quda_cf, colorFT& qlat_cf, int dir = 1)
+{
+  qassert(qlat_cf.initialized);
+  const Geometry& geo = qlat_cf.geo();
+  long V = geo.local_volume();
+  long Vh = V / 2;
+  qassert(geo.multiplicity == 3);
+  const long Dim = geo.multiplicity;
+
+  Ty* src = (Ty*) qlat::get_data(qlat_cf).data();
+  qlat_cf_to_quda_cf(quda_cf, src, geo, Dim, dir);
 }
 
 template <class Ty, class T1>
@@ -469,7 +481,45 @@ void quda_cf_to_qlat_cf(colorFT& qlat_cf, T1* quda_cf)
   qlat_cf_to_quda_cf(quda_cf, qlat_cf, 0);
 }
 
+template <class Ty>
+void copy_color_prop(qlat::vector_gpu<Ty >& res, std::vector<colorFT >& src, int dir = 1)
+{
+  qassert(src.size() == 3);
+  qlat::vector_acc<Ty* > srcP;srcP.resize(3);
+  for(int ic=0;ic<3;ic++){
+    qassert(src[ic].initialized);
+    srcP[ic] = (Ty*) qlat::get_data(src[ic]).data();
+  }
 
+  const qlat::Geometry& geo = src[0].geo();
+  const long V = geo.local_volume();
+  qassert(res.size() == V*9);
+  Ty* resP = res.data();
+
+  if(dir == 1){
+  qacc_for(isp, V, {
+    for(int c0=0;c0<3;c0++)
+    for(int c1=0;c1<3;c1++)
+    {
+      resP[isp*9 + c1*3 + c0 ] = srcP[c0][isp*3 + c1];
+    }
+  });}
+
+  if(dir == 0){
+  qacc_for(isp, V, {
+    for(int c0=0;c0<3;c0++)
+    for(int c1=0;c1<3;c1++)
+    {
+      srcP[c0][isp*3 + c1] = resP[isp*9 + c1*3 + c0];
+    }
+  });}
+}
+
+template <class Ty>
+void copy_to_color_prop(std::vector<colorFT >& res, qlat::vector_gpu<Ty >& src)
+{
+  copy_color_prop(src, res, 0);
+}
 
 
 

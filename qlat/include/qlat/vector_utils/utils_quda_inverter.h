@@ -201,7 +201,7 @@ struct quda_inverter {
   void setup_clover(const double clover_csw);
   void setup_stagger();
 
-  void setup_eigen(const double mass, const int num_eigensys, const double err = 1e-12, const int eig_poly_deg=100, const double eig_amin = 0.1, const bool compute=true, const int nkr=-1, const double eig_amax = 0.0, const double qr_tol = 0.1);
+  void setup_eigen(const double mass, const int num_eigensys, const double err = 1e-12, const int eig_poly_deg=100, const double eig_amin = 0.1, const bool compute=true, const int nkr=-1, const double eig_amax = 0.0, const double qr_tol = 0.1, const int eig_check_interval = 10, const int eig_max_restarts = 100000, const int eig_batched_rotate = 0);
   void update_eigen_mass(const double mass, bool force = false);
 
   void setup_inc_eigencg(const int n_ev, const int n_kr, const int n_conv, const int df_grid, const double tol, const double inc_tol, const double tol_restart, const int restart_n, const int pipeline, const int inv_type = 1);
@@ -1362,12 +1362,25 @@ void quda_inverter::setup_inv_mass(const double mass)
   int verbos = 0;
   std::string val = qlat::get_env(std::string("qlat_quda_verbos"));
   if(val != ""){verbos = stringtonum(val);}
+  if(verbos == -1)
+  {
+    inv_param.verbosity   = QUDA_SILENT;
+    setVerbosity(QUDA_SILENT);
+  }
+
   if(verbos == 0)
   {
     inv_param.verbosity   = QUDA_SUMMARIZE;
   }
-  else{
+  if(verbos == 1)
+  {
     setVerbosity(QUDA_VERBOSE);
+    inv_param.verbosity   = QUDA_VERBOSE;
+  }
+
+  if(verbos == 2)
+  {
+    setVerbosity(QUDA_DEBUG_VERBOSE);
     inv_param.verbosity   = QUDA_VERBOSE;
   }
 
@@ -1602,7 +1615,7 @@ void quda_inverter::setup_inc_eigencg(const int n_ev, const int n_kr, const int 
 
 }
 
-void quda_inverter::setup_eigen(const double mass, const int num_eigensys, const double err, const int eig_poly_deg, const double eig_amin, const bool compute, const int nkr, const double eig_amax, const double qr_tol)
+void quda_inverter::setup_eigen(const double mass, const int num_eigensys, const double err, const int eig_poly_deg, const double eig_amin, const bool compute, const int nkr, const double eig_amax, const double qr_tol, const int eig_check_interval, const int eig_max_restarts, const int eig_batched_rotate )
 {
   TIMER("setup_eigen");
   /////may need settings
@@ -1616,9 +1629,9 @@ void quda_inverter::setup_eigen(const double mass, const int num_eigensys, const
   double eig_tol    = err;
   //double eig_qr_tol = err*0.1;
   double eig_qr_tol = err*qr_tol;
-  int eig_batched_rotate = 0; // If unchanged, will be set to maximum
-  int eig_check_interval = 10;
-  int eig_max_restarts = 10000;
+  //int eig_batched_rotate = 0; // If unchanged, will be set to maximum
+  ////int eig_check_interval = eig_check_interval;
+  ///int eig_max_restarts = 10000;
   bool eig_use_eigen_qr = true;
   bool eig_use_poly_acc = true;
   ///int eig_poly_deg = 100;
@@ -1641,6 +1654,7 @@ void quda_inverter::setup_eigen(const double mass, const int num_eigensys, const
   //inv_param.clover_cuda_prec_sloppy       = QUDA_DOUBLE_PRECISION;
 
   setup_inv_param_prec(0);
+  //setup_inv_param_prec(10);
   setup_mat_mass(mass);
   alloc_csfield_cpu();
   alloc_csfield_gpu();
@@ -1687,6 +1701,9 @@ void quda_inverter::setup_eigen(const double mass, const int num_eigensys, const
   eig_param.batched_rotate = eig_batched_rotate;
 
   eig_param.require_convergence = QUDA_BOOLEAN_TRUE;
+  //if(eig_max_restarts < 10000){
+  //  eig_param.require_convergence = QUDA_BOOLEAN_FALSE;
+  //}
   eig_param.check_interval = eig_check_interval;
   eig_param.max_restarts = eig_max_restarts;
 
@@ -1780,9 +1797,9 @@ void quda_inverter::setup_eigen(const double mass, const int num_eigensys, const
     //}
 
     eig_solveK = quda::EigenSolver::create(&eig_param, *mat_E, profileEigensolve);
+    (*eig_solveK)(kSpace, evalsK);
 
     ////eig_solve->printEigensolverSetup();
-    (*eig_solveK)(kSpace, evalsK);
     //eig_solve->computeEvals(*mat, kSpace, evals, eig_param.n_conv);
     ////printf("===Deflation size n_ev_deflate %d, n_conv %d \n", eig_param->n_ev_deflate, eig_param->n_conv );
     //eig_solve->orthoCheck(kSpace, eig_param.n_ev_deflate);
@@ -2555,6 +2572,11 @@ void quda_inverter::do_inv(void* res, void* src, const double mass, const double
   //}
 
   gettimeofday(&tm1, NULL);double time0 = tm1.tv_sec - tm0.tv_sec;time0 += (tm1.tv_usec - tm0.tv_usec)/1000000.0;
+
+  int verbos = 0;
+  std::string val = qlat::get_env(std::string("qlat_quda_verbos"));
+  if(val != ""){verbos = stringtonum(val);}
+  if(verbos != -1)
   if(quda::comm_rank_global() == 0)printfQuda("Done: %8d iter / %.6f secs = %.3f Gflops, Cost %.3f Gflops, %.6f secs \n",
           inv_param.iter, inv_param.secs, inv_param.gflops / inv_param.secs, inv_param.gflops, time0);
   inv_time   = time0;
@@ -2572,15 +2594,14 @@ quda_inverter::~quda_inverter()
 }
 
 template<typename Ty>
-void get_staggered_prop(quda_inverter& qinv, qlat::FieldM<Ty, 3>& src, qlat::FieldM<Ty, 3>& prop
-    , const double mass, const double err, const int niter, int low_only = 0, const int prec_type = 0)
+void get_staggered_prop(quda_inverter& qinv, Ty* src, Ty* prop, const Geometry& geo, 
+    const double mass, const double err, const int niter, int low_only = 0, const int prec_type = 0)
 {
   TIMER("QUDA inversions");
   if(qinv.fermion_type == 0)qinv.setup_inv_mass(mass);
   if(qinv.fermion_type == 1)qinv.setup_mat_mass(mass);
-  ///Ty* quda_src = (Ty*) qinv.csrc->V();
-  ///Ty* quda_res = (Ty*) qinv.cres->V();
-  qlat_cf_to_quda_cf((qlat::Complex*) qinv.csrc->V(), src);
+  const int Dim = 3;
+  qlat_cf_to_quda_cf((qlat::Complex*) qinv.csrc->V(), src, geo, Dim);
 
   //Ty norm = norm_FieldM(prop);
   //print0("normp %.3e %.3e \n", norm.real(), norm.imag());
@@ -2613,15 +2634,61 @@ void get_staggered_prop(quda_inverter& qinv, qlat::FieldM<Ty, 3>& src, qlat::Fie
     (*qinv.cres) = (*qinv.gres);
   }
 
-  if(!prop.initialized){prop.init(src.geo());} ////allocate mem for prop
-  quda_cf_to_qlat_cf(prop, (qlat::Complex*) qinv.cres->V());
+  quda_cf_to_qlat_cf(prop, (qlat::Complex*) qinv.cres->V(), geo, Dim);
 
+}
+
+
+template<typename Ty>
+void get_staggered_prop(quda_inverter& qinv, qlat::FieldM<Ty, 3>& src, qlat::FieldM<Ty, 3>& prop
+    , const double mass, const double err, const int niter, int low_only = 0, const int prec_type = 0)
+{
+  Ty* srcP = (Ty*) qlat::get_data(src).data();
+
+  const Geometry& geo = src.geo();
+  if(!prop.initialized){prop.init(geo);} ////allocate mem for prop
+  Ty* propP = (Ty*) qlat::get_data(prop).data();
+
+  get_staggered_prop(qinv, srcP, propP, geo, mass, err, niter, low_only, prec_type);
   //   norm = norm_FieldM(prop);
   //print0("normp %.3e %.3e \n", norm.real(), norm.imag());
 }
 
+template<typename Ty>
+void get_staggered_prop(quda_inverter& qinv, std::vector<qlat::FieldM<Ty, 3> >& srcL, std::vector<qlat::FieldM<Ty, 3> >& propL
+    , const double mass, const double err, const int niter, int low_only = 0, const int prec_type = 0)
+{
+  const int Ninv = srcL.size();
+  if(Ninv <= 0){propL.resize(0);return ;}
+  for(int iv=0;iv<Ninv;iv++)
+  {
+    get_staggered_prop(qinv,srcL[iv], propL[iv], mass, err, niter, low_only, prec_type);
+  }
+}
+
+template<typename Ty>
+void get_staggered_prop(quda_inverter& qinv, qlat::vector_gpu<Ty >& src, qlat::vector_gpu<Ty >& prop, const Geometry& geo,
+    const double mass, const double err, const int niter, int low_only = 0, const int prec_type = 0)
+{
+  const size_t Vl = qinv.V * 3;
+  qassert(src.size() % Vl == 0);
+  prop.resize(src.size());
+  const int Ninv = src.size() / Vl;
+  if(Ninv <= 0){prop.resize(0);return ;}
+
+  std::vector<colorFT > srcP;srcP.resize(3);
+  for(int i=0;i<3;i++){srcP[i].init(geo);}
+  qassert(Ninv == 3);
+  //for(int iv=0;iv<Ninv;iv++)
+  {
+    copy_to_color_prop(srcP, src);
+    get_staggered_prop(qinv, srcP, srcP,  mass, err, niter, low_only, prec_type);
+    copy_color_prop(prop, srcP);
+  }
+}
 
 }  // namespace qlat
 
 #endif
+
 

@@ -459,6 +459,9 @@ struct inputpara{
   int eig_poly_deg;
   double eig_amin;
   double eig_amax;
+  int eig_check_interval;
+  int eig_max_restarts;
+  int eig_batched_rotate;
   double eig_err;
   double eig_qr_tol;
 
@@ -692,6 +695,9 @@ struct inputpara{
     if(find_para(std::string("eig_poly_deg"),eig_poly_deg)==0)eig_poly_deg  = 0;
     if(find_para(std::string("eig_amin"),eig_amin)==0)eig_amin  = 0;
     if(find_para(std::string("eig_amax"),eig_amax)==0)eig_amax  = 0;
+    if(find_para(std::string("eig_check_interval"),eig_check_interval)==0)eig_check_interval = 10;
+    if(find_para(std::string("eig_max_restarts"),eig_max_restarts )==0)eig_max_restarts = 100000;
+    if(find_para(std::string("eig_batched_rotate"),eig_batched_rotate )==0)eig_batched_rotate = 0;
     if(find_para(std::string("eig_qr_tol"),eig_qr_tol)==0)eig_qr_tol  = 0.1;
 
     if(find_para(std::string("Propname"),Propname)==0)Propname  = std::string("NONE");
@@ -1337,8 +1343,9 @@ struct corr_dat
       print0("key_T size wrong!\n");MPI_Barrier(get_comm());
       fflush(stdout);qassert(false);}
 
+    const size_t Npre = dat.size();
     if(!small_size){
-      buf.resize(dat.size());
+      buf.resize(Npre * sizeof(Ty));
       cpy_data_thread((Ty*) buf.data(), (Ty*) dat.data(), dat.size(), 0);
     }
 
@@ -1348,8 +1355,8 @@ struct corr_dat
 
     if(!small_size){
       dat.resize(total);
-      cpy_data_thread((Ty*) dat.data(), (Ty*) buf.data(), buf.size(), 0);
-      zero_Ty((Ty*) &dat[buf.size()], total - buf.size(), 0);
+      cpy_data_thread((Ty*) dat.data(), (Ty*) buf.data(), Npre, 0);
+      zero_Ty((Ty*) &dat[Npre], total - Npre, 0);
     }
 
   }
@@ -1359,17 +1366,14 @@ struct corr_dat
     TIMER("write_corr");
     ///if(size > total){abort_r("Write size too larg. \n");}
     long cur = 0;
-    Ty* wdat = NULL;
     if(!small_size){
       cur = get_off();
-      wdat = &dat[cur];
     }
     if(small_size){
       for(unsigned long i=0;i<crc32_size.size();i++)
       {
         cur += crc32_size[i] / write_bsize;
       }
-      wdat = &dat[0];
     }
     size_t double_size = size;
 
@@ -1391,6 +1395,10 @@ struct corr_dat
         }
       }
     }
+
+    Ty* wdat = NULL;
+    if(!small_size){wdat = &dat[cur];}
+    if( small_size){wdat = &dat[0]  ;}
 
     qassert(mode_copy == 0 or mode_copy == 3);
     if( is_double){cpy_data_thread(wdat, (double*) src, double_size, mode_copy);}
