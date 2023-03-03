@@ -15,6 +15,8 @@ Message
    displayln
    displayln_info
 
+   get_fname
+
 Timer
 -----
 

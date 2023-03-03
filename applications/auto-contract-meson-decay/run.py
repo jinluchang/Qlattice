@@ -8,7 +8,6 @@ import os
 import time
 import importlib
 import sys
-import inspect
 
 from jobs import *
 from load_data import *
@@ -79,7 +78,7 @@ def get_cexpr_meson_corr():
 
 @q.timer_verbose
 def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
-    fname = inspect.stack()[0].function
+    fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr.lat"
     if get_load_path(fn) is not None:
         return
@@ -138,7 +137,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
-    fname = inspect.stack()[0].function
+    fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"
     if get_load_path(fn) is not None:
         return
@@ -196,7 +195,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
 
 @q.timer_verbose
 def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
-    fname = inspect.stack()[0].function
+    fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psrc.lat"
     if get_load_path(fn) is not None:
         return
@@ -257,7 +256,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
-    fname = inspect.stack()[0].function
+    fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk_psrc.lat"
     if get_load_path(fn) is not None:
         return
@@ -363,7 +362,7 @@ def get_cexpr_meson_jt():
 
 @q.timer_verbose
 def auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel):
-    fname = inspect.stack()[0].function
+    fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_jt.lat"
     if get_load_path(fn) is not None:
         return
@@ -457,7 +456,7 @@ def get_cexpr_meson_m():
 
 @q.timer_verbose
 def auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
-    fname = inspect.stack()[0].function
+    fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_m.lat"
     if get_load_path(fn) is not None:
         return
@@ -769,7 +768,7 @@ def get_cexpr_meson_jj():
 
 @q.timer_verbose
 def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
-    fname = inspect.stack()[0].function
+    fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_jj.lat"
     fn_counts = f"{job_tag}/auto-contract/traj-{traj}/meson_jj_counts.lat"
     if get_load_path(fn) is not None:
@@ -905,7 +904,7 @@ def get_cexpr_meson_jwjj():
 
 @q.timer_verbose
 def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
-    fname = inspect.stack()[0].function
+    fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_jwjj.lat"
     fn_counts = f"{job_tag}/auto-contract/traj-{traj}/meson_jwjj_counts.lat"
     if get_load_path(fn) is not None:

@@ -9,6 +9,7 @@ import math
 import sys
 import os
 import numpy as np
+import inspect
 
 def getenv(*names, default = None):
     assert len(names) > 0
@@ -55,6 +56,13 @@ def lazy_call(f, *args, **kwargs):
             is_thunk = False
         return ret
     return get
+
+def get_fname():
+    """
+    Return the function name of the current function ``fname``
+    """
+    fname = inspect.stack()[1].function
+    return fname
 
 def sqr(x):
     return x * x
