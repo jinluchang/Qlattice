@@ -223,7 +223,10 @@ Example code that uses the conventional Super-Jackknife method::
 
     import qlat_utils as q
     import numpy as np
+    import functools
 
+    q.default_g_jk_kwargs["jk_type"] = "super"
+    @functools.cache
     def get_all_jk_idx():
         all_job_tag = [ 'test1', 'test2', ]
         jk_idx_list = [ 'avg', ]
@@ -232,9 +235,7 @@ Example code that uses the conventional Super-Jackknife method::
             for traj in trajs:
                 jk_idx_list.append((job_tag, traj,))
         return jk_idx_list
-
     q.default_g_jk_kwargs["get_all_jk_idx"] = get_all_jk_idx
-    q.default_g_jk_kwargs["jk_type"] = "super"
 
     def get_trajs(job_tag):
         return list(range(25))
