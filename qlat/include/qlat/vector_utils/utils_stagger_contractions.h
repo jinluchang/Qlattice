@@ -33,6 +33,9 @@ struct stag_inv_buf{
 
   qlat::FieldM<char, 1> eo;
 
+  std::vector<qlat::vector_gpu<Ty > > propS_cpu;
+  std::vector<int > prop_load;
+
   inline void free_buf(){
     resC.resize(0);
 
@@ -49,6 +52,8 @@ struct stag_inv_buf{
     prop_shift.resize(0);
     gfL.resize(0);
     buf_vec.resize(0);
+    propS_cpu.resize(0);
+    prop_load.resize(0);
   }
 
   inline void init(){

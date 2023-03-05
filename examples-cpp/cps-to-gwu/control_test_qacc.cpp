@@ -19,28 +19,41 @@ int main(int argc, char* argv[])
   size_node_list.push_back(Coordinate(4, 8, 8, 16));
 
   begin(&argc, &argv, size_node_list);
-
-  int nx,ny,nz,nt;
-  nx = 24;
-  ny = 24;
-  nz = 24;
-  nt = 48;
-
-  Coordinate total_site = Coordinate(nx, ny, nz, nt);
-  Geometry geo;
-  geo.init(total_site, 1); 
-
-  qlat::vector_acc<Complex > src;src.resize(nt);
-  qacc_for(isp , nt, {
-    src[isp] += 1;
-  });
-  for(int isp=0;isp<src.size();isp++)
   {
-    qlat::displayln_info(qlat::ssprintf("t %5d %.8e \n", isp, src[isp].real()));
+  #ifdef QLAT_USE_ACC
+  int num_node;MPI_Comm_size(get_comm(), &num_node);
+  int id_node;MPI_Comm_rank(get_comm(), &id_node);
+
+  int num_gpus = 0; 
+  cudaGetDeviceCount(&num_gpus);
+  ////cudaDeviceReset();
+  cudaSetDevice(id_node % num_gpus);
+  int gpu_id = -1;  
+  cudaGetDevice(&gpu_id);
+  //printf("CPU node %d (of %d) uses CUDA device %d\n", id_node, num_node, gpu_id);
+  fflush(stdout);
+  MPI_Barrier(get_comm());
+  #endif
   }
 
+  long na = 64;
 
-
+  qlat::vector_acc<Complex > src;src.resize(na);
+  qlat::vector_acc<Complex > s0;s0.resize(na);
+  qlat::vector_acc<Complex > s1;s1.resize(na);
+  Complex* k = (Complex*) qlat::get_data(src).data();
+  qacc_barrier(dummy);
+  qacc_for(isp , na, {
+    //src[isp] = src[isp] + 1;
+    k[isp] = Complex(1.0, 0.0);
+    s1[isp] = isp;
+    s0[isp] = s1[isp] * s1[isp];
+  });
+  qacc_barrier(dummy);
+  for(int isp=0;isp<src.size();isp++)
+  {
+    qlat::displayln_info(qlat::ssprintf("t %5d %.8e ", isp, s0[isp].real()));
+  }
 
   qlat::Timer::display();
   qlat::end();

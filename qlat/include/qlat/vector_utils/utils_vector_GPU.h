@@ -62,6 +62,11 @@ struct vector_gpu{
     resize(n_set, GPU_tem);
   }
 
+  void resizeL(const size_t n_set)
+  {
+    if(n < n_set){resize(n_set);}
+  }
+
   inline size_t size() const{return n;}
   inline Ty* data(){return p;}
   inline const Ty* data() const { return p; }
@@ -156,7 +161,7 @@ struct vector_gpu{
   void copy_to(T* res, int GPU_ori = -1)
   {
     int mode_cpu = 0;
-    int GPU_set = 0;if(GPU_ori == -1){GPU_set  =  1;}
+    int GPU_set = GPU_ori;if(GPU_ori == -1){GPU_set  =  1;}
     if(GPU == false and GPU_set == 0){mode_cpu =  0;} // host to host
     if(GPU == true  and GPU_set == 1){mode_cpu =  1;} // device to device
     if(GPU == true  and GPU_set == 0){mode_cpu =  3;} // device to host
@@ -335,6 +340,21 @@ inline void safe_free_vector_gpu_plan(const VectorGPUKey& gkey, const bool zero 
     }
     if(zero){buf.resize(0);}
   }
+}
+
+template <typename Ty >
+inline vector_gpu<Ty >& get_vector_gpu_plan(size_t vol, std::string& info, const int GPU)
+{
+  VectorGPUKey gkey(vol, info, GPU);
+  vector_gpu<Ty >& buf = get_vector_gpu_plan<Ty >(gkey);
+  return buf;
+}
+
+template <typename Ty >
+inline void safe_free_vector_gpu_plan(std::string& info, const int GPU, const bool zero = false)
+{
+  VectorGPUKey gkey(1, info, GPU);
+  safe_free_vector_gpu_plan<Ty >(gkey, zero);
 }
 
 }

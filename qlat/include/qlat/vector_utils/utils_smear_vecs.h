@@ -138,9 +138,13 @@ struct smear_fun{
 
   qlat::vector_gpu<Ty > send_buffer;
   qlat::vector_gpu<Ty > recv_buffer;
-  qlat::vector_gpu<Ty > gauge;
-  qlat::vector_gpu<Ty > prop;
-  qlat::vector_gpu<Ty > prop_buf;
+  //qlat::vector_gpu<Ty > gauge_buf;
+  std::string prop_name;
+  std::string prop_buf_name;
+  std::string gauge_buf_name_base;
+  std::string gauge_buf_name;
+  //qlat::vector_gpu<Ty > prop;
+  //qlat::vector_gpu<Ty > prop_buf;
   std::vector<qlat::vector_gpu<Ty > > vL;
 
   bool  gauge_setup_flag;
@@ -168,6 +172,10 @@ struct smear_fun{
     NVmpi = 0;
     groupP = 0;
 
+    prop_name     = std::string("Smear_prop");
+    prop_buf_name = std::string("Smear_prop_buf");
+    gauge_buf_name_base = std::string("Gauge_buf_name");
+
     gauge_check = NULL;
     gauge_checksum = 0;
     gauge_setup_flag = false;
@@ -192,7 +200,9 @@ struct smear_fun{
     if(Nv.size() == 0){qassert(false);}
     if(Nvol == 0){qassert(false);}
     if(Nvol_ext == 0){qassert(false);}
-    if(gauge.size() == 0){qassert(false);}
+    const int GPU = 1;
+    qlat::vector_gpu<Ty >& gauge_buf = get_vector_gpu_plan<Ty >(0, gauge_buf_name, GPU);
+    if(gauge_buf.size() == 0){qassert(false);}
     if(gauge_check == NULL){qassert(false);}
     ////if(gauge_checksum == 0){qassert(false);}
     if(map_bufV.size() == 0){qassert(false);}
@@ -284,18 +294,20 @@ struct smear_fun{
     check_setup();
     //groupP = (bfac+NVmpi-1)/NVmpi;
     //print0("====Vec setup, NVmpi %d, groupP %d \n", NVmpi, groupP);
+    const int GPU = 1;
+    qlat::vector_gpu<Ty >& gauge_buf = get_vector_gpu_plan<Ty >(0, gauge_buf_name, GPU);
 
     vec_rot = new Vec_redistribute(fd);
     /////update gf to each MPI core
-    qlat::vector_gpu<Ty > gfT;gfT.resize(NVmpi*gauge.size());
-    qlat::vector_gpu<Ty > gfT_buf;gfT_buf.resize(NVmpi*gauge.size());
+    qlat::vector_gpu<Ty > gfT;gfT.resize(NVmpi*gauge_buf.size());
+    qlat::vector_gpu<Ty > gfT_buf;gfT_buf.resize(NVmpi*gauge_buf.size());
     const int dir_max = 4;
-    const size_t Ndata = gauge.size();
+    const size_t Ndata = gauge_buf.size();
 
-    for(long vi=0;vi<NVmpi;vi++){cpy_data_thread(&(gfT.data()[vi*Ndata]), gauge.data(), Ndata);}
+    for(long vi=0;vi<NVmpi;vi++){cpy_data_thread(&(gfT.data()[vi*Ndata]), gauge_buf.data(), Ndata);}
 
     vec_rot->reorder(gfT.data(), gfT_buf.data(), 1, (dir_max*2)*9 ,   0);
-    gauge.copy_from(gfT);
+    gauge_buf.copy_from(gfT);
 
     Nvol     = Nv[3] * nv[2]*nv[1]*nv[0];
     Nvol_ext = Nv[3] * nv[2]*nv[1]*nv[0];
@@ -398,7 +410,7 @@ struct smear_fun{
   //void gauge_setup(qlat::vector_gpu<T >& gfE, const GaugeFieldT<Tg >& gf,
   //           const qlat::vector_acc<qlat::Complex >& momF = qlat::vector_acc<qlat::Complex >(), bool force_update = false);
   template <class Td>
-  void gauge_setup(const GaugeFieldT<Td >& gf, const CoordinateD& mom_, bool force_update = false)
+  void gauge_setup(const GaugeFieldT<Td >& gf, const CoordinateD& mom_, const int force_update = 0)
   {
     qlat::vector_acc<qlat::Complex > momF(8);
     for (int i = 0; i < 8; ++i) {
@@ -407,26 +419,48 @@ struct smear_fun{
       momF[i] = std::polar(1.0, -phase);
     }
 
+    const int GPU = 1;
+    qlat::vector_gpu<Ty >& gauge_buf = get_vector_gpu_plan<Ty >(0, gauge_buf_name, GPU);
+
     bool update = false;
     if(gauge_setup_flag == false){ update = true;}
-    if(force_update){ update = true;}
-    if(gauge.size() == 0){  update = true;}
+    if(force_update == 1){ update = true;}
+    if(gauge_buf.size() == 0){  update = true;}
     if(gauge_check != (void*) qlat::get_data(gf).data()){update = true;}
     if(mom_factors.size() != 8){update = true;}
     else{for(int i=0;i<momF.size();i++){if(momF[i]!=mom_factors[i]){update = true;}}}
 
-    crc32_t tmp_gauge_checksum = quick_checksum((Td*) qlat::get_data(gf).data(), qlat::get_data_size(gf) / sizeof(Td) );
-    if(gauge_checksum != tmp_gauge_checksum ){update = true;}
+    ////for_update == -1; do not check gauge sum
+    if(force_update == 0){
+      crc32_t tmp_gauge_checksum = quick_checksum((Td*) qlat::get_data(gf).data(), qlat::get_data_size(gf) / sizeof(Td) );
+      if(gauge_checksum != tmp_gauge_checksum ){update = true;}
+    }
 
     if(update){
       TIMERA("gauge setup");
+      crc32_t tmp_gauge_checksum = quick_checksum((Td*) qlat::get_data(gf).data(), qlat::get_data_size(gf) / sizeof(Td));
+
+      ///clear previous cache
+      {
+        qlat::vector_gpu<Ty >& gauge_buf = get_vector_gpu_plan<Ty >(0, gauge_buf_name, GPU);
+        gauge_buf.resize(0);
+      }
+
+      ////rename gauge_buf_name
+      //std::sscanf(gauge_buf_name.c_str(), "%s_%X", gauge_buf_name_base.c_str(), &tmp_gauge_checksum);
+      std::string tem = "NONE";
+      std::sscanf(tem.c_str(), "%X", &tmp_gauge_checksum);
+      gauge_buf_name = gauge_buf_name + std::string("_") + tem ;
+      qlat::vector_gpu<Ty >& gauge_buf = get_vector_gpu_plan<Ty >(0, gauge_buf_name, GPU);
+
       qassert(geo.total_site() == gf.geo().total_site());
-      gauge.resize(2*4* gf.geo().local_volume() * 9);
+      size_t gVol = 2*4* gf.geo().local_volume() * 9;
+      gauge_buf.resizeL(gVol);
       mom_factors = momF;
-      extend_links_to_vecs(gauge.data(), gf, momF);
+      extend_links_to_vecs(gauge_buf.data(), gf, momF);
       gauge_setup_flag = true;
       gauge_check = (void*) qlat::get_data(gf).data();
-      gauge_checksum = quick_checksum((Td*) qlat::get_data(gf).data(), qlat::get_data_size(gf) / sizeof(Td));
+      gauge_checksum = tmp_gauge_checksum;
       ///Need to redistribute when copied
       fft_copy = 0 ;
     }
@@ -434,15 +468,29 @@ struct smear_fun{
 
   void clear_mem(){
     #ifdef __CLEAR_SMEAR_MEM__
-    prop.resize(0);
-    prop_buf.resize(0);
+    const int GPU = 1;
+    safe_free_vector_gpu_plan(prop_name, GPU);
+    safe_free_vector_gpu_plan(prop_buf_name, GPU);
     for(int i=0;i<vL.size();i++){vL[i].resize(0);}
     mv_idx.free_mem();
     #endif
   }
 
+  void clear_buf_mem(){
+    const int GPU = 1;
+    ////clear gauges and need to reload
+    qlat::vector_gpu<Ty >& gauge_buf = get_vector_gpu_plan<Ty >(0, gauge_buf_name, GPU);
+    gauge_buf.resize(0);
+
+    qlat::vector_gpu<Ty >& propK    = get_vector_gpu_plan<Ty >(0, prop_name, GPU);
+    qlat::vector_gpu<Ty >& prop_bufK= get_vector_gpu_plan<Ty >(0, prop_buf_name, GPU);
+    propK.resize(0);
+    prop_bufK.resize(0);
+  }
+
   ~smear_fun(){
     clear_mem();
+    clear_buf_mem();
     if(vec_rot != NULL){delete vec_rot; vec_rot = NULL;}
   }
 
@@ -723,11 +771,14 @@ void smear_propagator_box(T* src, const int Bsize, smear_fun<T >& smf){
   const int dir_limit = 3;
   /////std::vector<int > nv,Nv,mv;geo_to_nv(geo, nv, Nv, mv);
 
+  const int GPU = 1;
+  qlat::vector_gpu<T >& gauge_buf = get_vector_gpu_plan<T >(0, smf.gauge_buf_name, GPU);
+
   //qlat::vector_gpu<T > gfE; 
   //extend_links_to_vecs(gfE, gf);
   ////fft_desc_basic fd(geo);
   shift_vec svec(smf.fd_new, true);
-  svec.set_gauge(smf.gauge.data(), bfac, civ);
+  svec.set_gauge(gauge_buf.data(), bfac, civ);
   //rotate_prop(prop,0);
 
   size_t Ndata = size_t(Nvol) * nsites;
@@ -788,14 +839,18 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
   unsigned long Nvol = smf.Nvol;
   const int nsites = bfac*3*civ;
 
+  const int GPU = 1;
+  qlat::vector_gpu<T >& gauge_buf = get_vector_gpu_plan<T >(0, smf.gauge_buf_name, GPU);
+  qlat::vector_gpu<T >& prop_bufK= get_vector_gpu_plan<T >(0, smf.prop_buf_name, GPU);
+
   smf.check_setup();
-  T* gf = (T*) smf.gauge.data();
+  const T* gf = (T*) gauge_buf.data();
 
   T* prop     = NULL;
   T* prop_buf = NULL;
+
   ////int dirL = 3;
   #ifdef QLAT_USE_ACC
-  const int GPU = 1;
   int nt  = 3*3*9;
   if(bfac*civ <= 12){ nt =         32;}
   if(bfac*civ <=  6){ nt = 3*bfac*civ;}
@@ -803,18 +858,30 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
   dim3 dimBlock(nt, 1, 1);
   long sn = Nvol;
   dim3 dimGrid( sn, 1, 1);
+
+  qlat::vector_gpu<T >& propK    = get_vector_gpu_plan<T >(0, smf.prop_name, GPU);
   if(smf.fft_copy==0){
-    smf.prop.resize(    smf.Nvol * bfac * 3* civ );
-    smf.prop_buf.resize(smf.Nvol_ext * bfac * 3* civ );
+    //smf.prop.resize(    smf.Nvol * bfac * 3* civ );
+    //smf.prop_buf.resize(smf.Nvol_ext * bfac * 3* civ );
+    //size_t psize      = smf.Nvol * bfac * 3* civ;
+    //size_t pbuf_size  = smf.Nvol_ext * bfac * 3* civ;
+    //if(propK.size() < psize){propK.resize(psize);}
+    //if(prop_bufK.size() < pbuf_size){prop_bufK.resize(pbuf_size);}
+    propK.resizeL(smf.Nvol * bfac * 3* civ);
+    prop_bufK.resizeL(smf.Nvol_ext * bfac * 3* civ);
   }
-  prop = smf.prop.data();
-  prop_buf = smf.prop_buf.data();
-  if(smf.fft_copy==0){cpy_data_thread(prop, src, smf.prop.size());}
+  //prop = smf.prop.data();prop_buf = smf.prop_buf.data();
+  prop = propK.data();prop_buf = prop_bufK.data();
+  if(smf.fft_copy==0){cpy_data_thread(prop, src, propK.size());}
   #else
-  const int GPU = 0;
-  if(smf.fft_copy==0){smf.prop_buf.resize(smf.Nvol_ext * bfac * 3* civ );}
+  if(smf.fft_copy==0){
+    size_t pbuf_size  = smf.Nvol_ext * bfac * 3* civ;
+    if(prop_bufK.size() < pbuf_size){prop_bufK.resize(pbuf_size);}
+    ////smf.prop_buf.resize(smf.Nvol_ext * bfac * 3* civ );
+  }
   prop = src;
-  prop_buf = smf.prop_buf.data();
+  //prop_buf = smf.prop_buf.data();
+  prop_buf = prop_bufK.data();
   #endif
 
   long* Pdir1 = (long*) qlat::get_data(smf.map_bufD).data();
@@ -865,7 +932,7 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
   }
 
   #ifdef QLAT_USE_ACC
-  if(smf.fft_copy==0){cpy_data_thread(src, prop, smf.prop.size());}
+  if(smf.fft_copy==0){cpy_data_thread(src, prop, propK.size());}
   #endif
   smf.clear_mem();
 }
@@ -990,7 +1057,7 @@ void rotate_prop(Propagator4dT<T>& prop, int dir = 0)
 ////Td is double or float
 template <class Ty, int c0,int d0, class Td>
 void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
-                      const double width, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1, const int dup = -1)
+                      const double width, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1, const int dup = -1, const int force_update = 0)
 {
   TIMER_FLOPS("smear propagator");
   long long Tfloat = 0;
@@ -1023,7 +1090,7 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
   SmearPlanKey skey = get_smear_plan_key<Ty, c0, d0>(geo, smear_in_time_dir, dup);
   const smear_fun_copy& smf_copy = get_smear_plan(skey);
   smear_fun<Ty >& smf = *((smear_fun<Ty >*) (smf_copy.smfP));
-  smf.gauge_setup(gf, mom);
+  smf.gauge_setup(gf, mom, force_update );
 
   ////fft_desc_basic fd(geo);
   ////Vec_redistribute vec_large(fd);
@@ -1054,18 +1121,27 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
   if(ini_check and smear_in_time_dir == false and mode == 1){reorder = true;}
   int Nprop = smf.NVmpi * c0*3 * groupP;
 
+  const int GPU = 1;
+  qlat::vector_gpu<Ty >& propK    = get_vector_gpu_plan<Ty >(0, smf.prop_name, GPU);
+  qlat::vector_gpu<Ty >& prop_bufK= get_vector_gpu_plan<Ty >(0, smf.prop_buf_name, GPU);
+
   if(reorder ){
     /////print0("====Vec setup, NVmpi %d, groupP %d \n", smf.NVmpi, groupP);
     smf.init_distribute();
-    smf.prop.resize(    Nvol_pre * Nprop );
-    smf.prop_buf.resize(Nvol_pre * Nprop );
+    //smf.prop.resize(    Nvol_pre * Nprop );
+    //smf.prop_buf.resize(Nvol_pre * Nprop );
+    size_t psize = Nvol_pre * Nprop;
+    //if(propK.size() < psize){propK.resize(psize);}
+    //if(prop_bufK.size() < psize){prop_bufK.resize(psize);}
+    propK.resizeL(psize);
+    prop_bufK.resizeL(psize);
     qassert(!smear_in_time_dir);
 
-    Ty* res = smf.prop.data();smf.prop.set_zero();
+    Ty* res = propK.data();propK.set_zero();
     copy_buffers_vecs(res, src, smf.NVmpi*groupP, d0, d0, Nvol_pre*c0*3, 1);
     smf.mv_idx.dojob(res, res, 1, smf.NVmpi, Nvol_pre*c0*3, 1,   groupP, true);
-    {TIMERC("Vec prop");smf.vec_rot->reorder(res, smf.prop_buf.data(), 1, c0*3*groupP ,   0);}
-    src = smf.prop.data();
+    {TIMERC("Vec prop");smf.vec_rot->reorder(res, prop_bufK.data(), 1, c0*3*groupP ,   0);}
+    src = propK.data();
   }
 
   ////print0("===Case %d %d \n", c0, grouP);
@@ -1073,11 +1149,11 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
   if(!reorder)smear_kernel(src, width, step, smf,  c0, d0);
 
   if(reorder ){
-    Ty* res = smf.prop.data();
-    {TIMERC("Vec prop");smf.vec_rot->reorder(res, smf.prop_buf.data(), 1, c0*3*groupP , 100);}
+    Ty* res = propK.data();
+    {TIMERC("Vec prop");smf.vec_rot->reorder(res, prop_bufK.data(), 1, c0*3*groupP , 100);}
     smf.mv_idx.dojob(res, res, 1, smf.NVmpi, Nvol_pre*c0*3, 0,  groupP , true);
     ////cpy_data_thread(prop, smf.prop.data(), smf.prop.size(), 1);
-    copy_buffers_vecs(prop, smf.prop.data(), d0, smf.NVmpi*groupP, d0, Nvol_pre*c0*3, 1);
+    copy_buffers_vecs(prop, propK.data(), d0, smf.NVmpi*groupP, d0, Nvol_pre*c0*3, 1);
   }
   /////rotate_prop(prop, 1);
 

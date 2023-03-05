@@ -63,6 +63,7 @@ inline void quda_begin(int mpi_layout[4], bool t = false)
   for (int d = 0; d < 4; d++) {
     qassert(comm_coord(d) == get_coor_node()[d]);
   }
+  cudaDeviceSetCacheConfig(cudaFuncCachePreferNone );
 }
 
 inline void quda_end()
@@ -352,6 +353,7 @@ void applyGaugeFieldScaling_long(Ty *gauge, long Vh, QudaGaugeParam *param, Quda
 
       long indexe = ((0 * Vh + i)*4 + d)*9 ;
       for (int j = 0; j < 9; j++) { gauge[indexe + j] *= sign; }
+      //if(i1 == 1 and i2 == 1 and i3 == 1 and i4 == 1){print0("==even  %d \n", int(sign));}
     }
     // odd
     #pragma omp parallel for
@@ -377,6 +379,7 @@ void applyGaugeFieldScaling_long(Ty *gauge, long Vh, QudaGaugeParam *param, Quda
       long indexo = ((1 * Vh + i)*4 + d)*9 ;
       ////for (int j = 0; j < 18; j++) { gauge[d][(Vh + i) * gauge_site_size + j] *= sign; }
       for (int j = 0; j < 9; j++) { gauge[indexo + j] *= sign; }
+      //if(i1 == 1 and i2 == 1 and i3 == 1 and i4 == 0){print0("==odd  %d \n", int(sign));}
     }
   }
 
