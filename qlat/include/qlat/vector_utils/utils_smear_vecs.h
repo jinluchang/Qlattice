@@ -450,7 +450,7 @@ struct smear_fun{
       //std::sscanf(gauge_buf_name.c_str(), "%s_%X", gauge_buf_name_base.c_str(), &tmp_gauge_checksum);
       std::string tem = "NONE";
       std::sscanf(tem.c_str(), "%X", &tmp_gauge_checksum);
-      gauge_buf_name = gauge_buf_name + std::string("_") + tem ;
+      gauge_buf_name = gauge_buf_name_base + std::string("_") + tem ;
       qlat::vector_gpu<Ty >& gauge_buf = get_vector_gpu_plan<Ty >(0, gauge_buf_name, GPU);
 
       qassert(geo.total_site() == gf.geo().total_site());
