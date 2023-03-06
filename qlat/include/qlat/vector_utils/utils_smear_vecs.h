@@ -841,7 +841,6 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
   const int GPU = 1;
   qlat::vector_gpu<T >& gauge_buf = get_vector_gpu_plan<T >(0, smf.gauge_buf_name, GPU);
   qlat::vector_gpu<T >& prop_bufK = get_vector_gpu_plan<T >(0, smf.prop_buf_name, GPU);
-  size_t Ndata = smf.Nvol * bfac * 3* civ;
 
   smf.check_setup();
   const T* gf = (T*) gauge_buf.data();
@@ -860,6 +859,7 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
   dim3 dimGrid( sn, 1, 1);
 
   qlat::vector_gpu<T >& propK    = get_vector_gpu_plan<T >(0, smf.prop_name, GPU);
+  size_t Ndata = smf.Nvol * bfac * 3* civ;
   if(smf.fft_copy==0){
     //smf.prop.resize(    smf.Nvol * bfac * 3* civ );
     //smf.prop_buf.resize(smf.Nvol_ext * bfac * 3* civ );
@@ -875,7 +875,7 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
   if(smf.fft_copy==0){cpy_data_thread(prop, src, Ndata);}
   #else
   if(smf.fft_copy==0){
-    propK.resizeL(smf.Nvol_ext * bfac * 3* civ);
+    prop_bufK.resizeL(smf.Nvol_ext * bfac * 3* civ);
     ////smf.prop_buf.resize(smf.Nvol_ext * bfac * 3* civ );
   }
   prop = src;
