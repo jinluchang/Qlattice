@@ -353,7 +353,7 @@ inline vector_gpu<Ty >& get_vector_gpu_plan(size_t vol, std::string& info, const
 template <typename Ty >
 inline void safe_free_vector_gpu_plan(std::string& info, const int GPU, const bool zero = false)
 {
-  VectorGPUKey gkey(1, info, GPU);
+  VectorGPUKey gkey(0, info, GPU);
   safe_free_vector_gpu_plan<Ty >(gkey, zero);
 }
 

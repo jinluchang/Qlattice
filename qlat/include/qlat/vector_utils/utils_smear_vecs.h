@@ -454,8 +454,7 @@ struct smear_fun{
       qlat::vector_gpu<Ty >& gauge_buf = get_vector_gpu_plan<Ty >(0, gauge_buf_name, GPU);
 
       qassert(geo.total_site() == gf.geo().total_site());
-      size_t gVol = 2*4* gf.geo().local_volume() * 9;
-      gauge_buf.resizeL(gVol);
+      gauge_buf.resizeL(2*4* gf.geo().local_volume() * 9);
       mom_factors = momF;
       extend_links_to_vecs(gauge_buf.data(), gf, momF);
       gauge_setup_flag = true;
@@ -469,8 +468,8 @@ struct smear_fun{
   void clear_mem(){
     #ifdef __CLEAR_SMEAR_MEM__
     const int GPU = 1;
-    safe_free_vector_gpu_plan(prop_name, GPU);
-    safe_free_vector_gpu_plan(prop_buf_name, GPU);
+    safe_free_vector_gpu_plan<Ty >(prop_name, GPU);
+    safe_free_vector_gpu_plan<Ty >(prop_buf_name, GPU);
     for(int i=0;i<vL.size();i++){vL[i].resize(0);}
     mv_idx.free_mem();
     #endif
@@ -841,7 +840,8 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
 
   const int GPU = 1;
   qlat::vector_gpu<T >& gauge_buf = get_vector_gpu_plan<T >(0, smf.gauge_buf_name, GPU);
-  qlat::vector_gpu<T >& prop_bufK= get_vector_gpu_plan<T >(0, smf.prop_buf_name, GPU);
+  qlat::vector_gpu<T >& prop_bufK = get_vector_gpu_plan<T >(0, smf.prop_buf_name, GPU);
+  size_t Ndata = smf.Nvol * bfac * 3* civ;
 
   smf.check_setup();
   const T* gf = (T*) gauge_buf.data();
@@ -872,11 +872,10 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
   }
   //prop = smf.prop.data();prop_buf = smf.prop_buf.data();
   prop = propK.data();prop_buf = prop_bufK.data();
-  if(smf.fft_copy==0){cpy_data_thread(prop, src, propK.size());}
+  if(smf.fft_copy==0){cpy_data_thread(prop, src, Ndata);}
   #else
   if(smf.fft_copy==0){
-    size_t pbuf_size  = smf.Nvol_ext * bfac * 3* civ;
-    if(prop_bufK.size() < pbuf_size){prop_bufK.resize(pbuf_size);}
+    propK.resizeL(smf.Nvol_ext * bfac * 3* civ);
     ////smf.prop_buf.resize(smf.Nvol_ext * bfac * 3* civ );
   }
   prop = src;
@@ -932,7 +931,7 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
   }
 
   #ifdef QLAT_USE_ACC
-  if(smf.fft_copy==0){cpy_data_thread(src, prop, propK.size());}
+  if(smf.fft_copy==0){cpy_data_thread(src, prop, Ndata);}
   #endif
   smf.clear_mem();
 }
