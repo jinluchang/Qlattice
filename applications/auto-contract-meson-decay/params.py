@@ -3,7 +3,7 @@ from rbc_ukqcd_params import dict_params
 tag = "trajs"
 dict_params["test-4nt8"][tag] = list(range(1000, 1400, 100))
 dict_params["test-4nt16"][tag] = list(range(1000, 1400, 100))
-dict_params["48I"][tag] = list(range(500, 3000, 5))
+dict_params["48I"][tag] = [ 2175, 2165, ] + list(range(500, 3000, 5))
 dict_params["64I"][tag] = list(range(500, 6000, 10))
 dict_params["24D"][tag] = list(range(5100, 1000, -10))
 dict_params["32D"][tag] = list(range(500, 3000, 10))
@@ -238,5 +238,5 @@ dict_params["24IH2"][tag] = 1
 dict_params["24IH3"][tag] = 1
 dict_params["32IH1"][tag] = 1
 dict_params["32IH2"][tag] = 1
-dict_params["48I"][tag] = 1
+dict_params["48I"][tag] = 0.1
 dict_params["64I"][tag] = 1
