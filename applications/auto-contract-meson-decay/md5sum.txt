@@ -1,8 +1,8 @@
 d41d8cd98f00b204e9800998ecf8427e  results/test-4nt16/auto-contract/traj-1000/checkpoint.txt
-247b10a16184a0f45eb8a3337ac9f00b  results/test-4nt16/auto-contract/traj-1000/meson_corr.lat
-1b34bc31363b887be694ab16ccd9a44e  results/test-4nt16/auto-contract/traj-1000/meson_corr_psnk.lat
-f81e607f7725d745313d04051eafbd68  results/test-4nt16/auto-contract/traj-1000/meson_corr_psnk_psrc.lat
-9f44c30188cd73b4ca60d25aad4a6b8e  results/test-4nt16/auto-contract/traj-1000/meson_corr_psrc.lat
+0e31a865a7cdba8064d7876ae3022855  results/test-4nt16/auto-contract/traj-1000/meson_corr.lat
+f7afc5ed3cf3544e8975070ec705c064  results/test-4nt16/auto-contract/traj-1000/meson_corr_psnk.lat
+aa039ae33f477e03b4c815a90191fceb  results/test-4nt16/auto-contract/traj-1000/meson_corr_psnk_psrc.lat
+982acdc9f5cdda74522652baf74f79ce  results/test-4nt16/auto-contract/traj-1000/meson_corr_psrc.lat
 851eb155a162073b173e656422447b57  results/test-4nt16/auto-contract/traj-1000/meson_jj_counts.lat
 22904f1b09866b52c6fa08540a48aae7  results/test-4nt16/auto-contract/traj-1000/meson_jj.lat
 fe779f5e321add03b1034122d7ffd40a  results/test-4nt16/auto-contract/traj-1000/meson_jt.lat
@@ -11,10 +11,10 @@ dc8cd53d5040877de4c36e2aa2539e57  results/test-4nt16/auto-contract/traj-1000/mes
 2bd82c0e480377db81ceffdfad82de23  results/test-4nt16/auto-contract/traj-1000/meson_m.lat
 cae1b50f7830c9dd28d1d91a034cc6d5  results/test-4nt16/r_list/r_list.lat
 d41d8cd98f00b204e9800998ecf8427e  results/test-4nt8/auto-contract/traj-1000/checkpoint.txt
-ba97f870ddc42685fe3c8c1c5efe4475  results/test-4nt8/auto-contract/traj-1000/meson_corr.lat
-636f1c9b6ff98359ca25b7433f1714cb  results/test-4nt8/auto-contract/traj-1000/meson_corr_psnk.lat
-2a733384ecf8ad7c15b3d9e006923842  results/test-4nt8/auto-contract/traj-1000/meson_corr_psnk_psrc.lat
-3020841f372a92a8d90c8a05335bb9c2  results/test-4nt8/auto-contract/traj-1000/meson_corr_psrc.lat
+9b6db43379c9868436417943d83fa116  results/test-4nt8/auto-contract/traj-1000/meson_corr.lat
+910ad4623ec8317b1bc06124307149fc  results/test-4nt8/auto-contract/traj-1000/meson_corr_psnk.lat
+a870eed4650f382c6a3a4c9fc011939e  results/test-4nt8/auto-contract/traj-1000/meson_corr_psnk_psrc.lat
+51f600699e551389755466e335e9998f  results/test-4nt8/auto-contract/traj-1000/meson_corr_psrc.lat
 95bbf32093ce52658c95c2ef30bb5e60  results/test-4nt8/auto-contract/traj-1000/meson_jj_counts.lat
 641d95e4470022699fcd5809bdfaa7f5  results/test-4nt8/auto-contract/traj-1000/meson_jj.lat
 35f27f07ead16712fec8db6c76533210  results/test-4nt8/auto-contract/traj-1000/meson_jt.lat
