@@ -1285,7 +1285,7 @@ q.check_time_limit()
 
 for job_tag in job_tags:
     if job_tag == "48I":
-        if q.get_num_node() != 4 * 32:
+        if q.get_num_node() != 4 * 64:
             continue
     elif job_tag == "64I":
         if q.get_num_node() != 4 * 64:
