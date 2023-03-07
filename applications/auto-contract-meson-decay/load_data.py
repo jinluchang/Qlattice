@@ -432,8 +432,10 @@ def load_prop_wsrc_psel(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
         spw_prop.load(get_load_path(fn_spw))
         cache_psel_ts[f"{tag} ; wsrc_wsnk ; psel_ts"] = spw_prop
         # ADJUST ME
-        if job_tag == "48I" and flavor == "s":
+        is_mira_data = False
+        if job_tag == "48I" and flavor == "s" and is_mira_data:
             # 48I strange quark wsrc boundary condition is anti-periodic, different from other 48I props
+            # only need this for the MIRA data set (new summit data set have consistent boundary condition).
             q.displayln_info(f"flip_tpbc_with_tslice {job_tag} {flavor} {tag} ; wsrc ; psel")
             q.flip_tpbc_with_tslice(cache_psel[f"{tag} ; wsrc ; psel"], tslice)
             q.displayln_info(f"flip_tpbc_with_tslice {job_tag} {flavor} {tag} ; wsrc_wsnk ; psel_ts")
