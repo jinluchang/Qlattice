@@ -5,7 +5,7 @@ EXPORT(mk_flow_info, {
   using namespace qlat;
   FlowInfo* pfi = new FlowInfo();
   return py_convert((void*)pfi);
-});
+})
 
 EXPORT(free_flow_info, {
   using namespace qlat;
@@ -16,7 +16,7 @@ EXPORT(free_flow_info, {
   FlowInfo& fi = py_convert_type<FlowInfo>(p_fi);
   delete &fi;
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(show_flow_info, {
   using namespace qlat;
@@ -26,7 +26,7 @@ EXPORT(show_flow_info, {
   }
   const FlowInfo& fi = py_convert_type<FlowInfo>(p_fi);
   return py_convert(show(fi));
-});
+})
 
 EXPORT(add_flow_flow_info, {
   using namespace qlat;
@@ -42,7 +42,7 @@ EXPORT(add_flow_flow_info, {
   FlowInfo& fi = py_convert_type<FlowInfo>(p_fi);
   fi.v.push_back(FlowStepInfo(eo, mu, epsilon, flow_size));
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(add_rand_order_flow2_flow_info, {
   using namespace qlat;
@@ -57,7 +57,7 @@ EXPORT(add_rand_order_flow2_flow_info, {
   const RngState& rs = py_convert_type<RngState>(p_rs);
   vector_append(fi.v, mk_flow_info_step(rs, epsilon, epsilon2).v);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(add_rand_order_flow_flow_info, {
   using namespace qlat;
@@ -71,7 +71,7 @@ EXPORT(add_rand_order_flow_flow_info, {
   const RngState& rs = py_convert_type<RngState>(p_rs);
   vector_append(fi.v, mk_flow_info_step(rs, epsilon).v);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(gf_flow, {
   using namespace qlat;
@@ -86,7 +86,7 @@ EXPORT(gf_flow, {
   const FlowInfo& fi = py_convert_type<FlowInfo>(p_fi);
   gf_flow(gf, gf0, fi);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(gf_flow_inv, {
   using namespace qlat;
@@ -101,7 +101,7 @@ EXPORT(gf_flow_inv, {
   const FlowInfo& fi = py_convert_type<FlowInfo>(p_fi);
   gf_flow_inv(gf, gf1, fi);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(gf_hamilton_flowed_node, {
   using namespace qlat;
@@ -116,7 +116,7 @@ EXPORT(gf_hamilton_flowed_node, {
   const FlowInfo& fi = py_convert_type<FlowInfo>(p_fi);
   const double ret = gf_hamilton_flowed_node(gf0, ga, fi);
   return py_convert(ret);
-});
+})
 
 EXPORT(set_gm_force_flowed, {
   using namespace qlat;
@@ -133,7 +133,7 @@ EXPORT(set_gm_force_flowed, {
   const FlowInfo& fi = py_convert_type<FlowInfo>(p_fi);
   set_gm_force_flowed(gm_force, gf0, ga, fi);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_gm_force_flowed_no_det, {
   using namespace qlat;
@@ -152,4 +152,4 @@ EXPORT(set_gm_force_flowed_no_det, {
   const FlowInfo& fi = py_convert_type<FlowInfo>(p_fi);
   set_gm_force_flowed_no_det(gm_force, gm_force_pre, gf0, fi);
   Py_RETURN_NONE;
-});
+})
