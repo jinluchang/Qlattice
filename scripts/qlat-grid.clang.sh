@@ -23,7 +23,9 @@ source qcore/set-prefix.sh $name
     touch "$wd"/qlat-grid/meson.build
 
     time-run meson setup "$wd/qlat-grid" \
-        --prefix="$prefix"
+        --prefix="$prefix" \
+        -Dpython.platlibdir="$prefix/lib/python3/qlat-packages" \
+        -Dpython.purelibdir="$prefix/lib/python3/qlat-packages"
 
     time-run meson compile -j$num_proc
 
