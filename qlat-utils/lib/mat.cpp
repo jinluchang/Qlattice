@@ -1,4 +1,4 @@
-#include <qlat-utils/lib/mat.h>
+#include <qlat-utils/mat.h>
 #include <qlat-utils/matrix.h>
 #include <qlat-utils/vector.h>
 

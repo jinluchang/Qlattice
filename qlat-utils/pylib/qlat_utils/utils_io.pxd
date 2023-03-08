@@ -8,7 +8,7 @@ ctypedef uint32_t crc32_t
 
 ctypedef std_vector[std_vector[double]] DataTable
 
-cdef extern from "qlat-utils/lib/utils-io.h" namespace "qlat":
+cdef extern from "qlat-utils/qutils-io.h" namespace "qlat":
 
     void flush()
 

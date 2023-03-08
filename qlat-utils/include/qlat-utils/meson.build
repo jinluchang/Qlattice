@@ -30,6 +30,4 @@ header_fns = run_command(
 header_files = files(header_fns)
 py3.install_sources(header_files, subdir: 'qlat_utils/include/qlat-utils')
 
-subdir('lib')
-
-all_header_files = header_files + config_file + lib_header_files
+all_header_files = header_files + config_file

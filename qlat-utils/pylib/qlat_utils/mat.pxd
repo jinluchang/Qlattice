@@ -32,7 +32,7 @@ cdef extern from "qlat-utils/mat-vec.h" namespace "qlat":
         const WilsonVector& operator=(const WilsonVector& m)
         Complex* data()
 
-cdef extern from "qlat-utils/lib/mat.h" namespace "qlat":
+cdef extern from "qlat-utils/mat.h" namespace "qlat":
 
     void set_zero(ColorMatrix& x)
     void set_zero(SpinMatrix& x)

@@ -44,6 +44,8 @@ int qmkdir_info(const std::string& path,
 int qmkdir_p_info(const std::string& path,
                   const mode_t mode = default_dir_mode());
 
+void flush();
+
 // --------------------------
 
 inline bool qtruncate(const std::string& evilFile)

@@ -2,7 +2,7 @@ from libcpp cimport bool
 from libcpp.string cimport string as std_string
 from libcpp.vector cimport vector as std_vector
 
-cdef extern from "qlat-utils/lib/qar.h" namespace "qlat":
+cdef extern from "qlat-utils/qar.h" namespace "qlat":
 
     bool does_regular_file_exist_qar(const std_string& path)
 

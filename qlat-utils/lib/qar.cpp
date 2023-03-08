@@ -1,5 +1,4 @@
 #include <qlat-utils/qar-cache.h>
-#include <qlat-utils/lib/qar.h>
 
 namespace qlat
 {  //
