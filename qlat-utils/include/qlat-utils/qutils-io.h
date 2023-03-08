@@ -1,42 +1,50 @@
 #pragma once
 
+#include <qlat-utils/env.h>
 #include <qlat-utils/qutils-vec.h>
 #include <qlat-utils/qutils.h>
 #include <qlat-utils/timer.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-#include <dirent.h>
 #include <fstream>
 #include <iostream>
 
 namespace qlat
 {  //
 
-inline bool does_file_exist(const std::string& fn)
-{
-  TIMER("does_file_exist")
-  struct stat sb;
-  return 0 == stat(fn.c_str(), &sb);
-}
+int qrename(const std::string& old_path, const std::string& new_path);
 
-inline bool is_directory(const std::string& fn)
-{
-  struct stat sb;
-  if (0 != stat(fn.c_str(), &sb)) {
-    return false;
-  }
-  return S_ISDIR(sb.st_mode);
-}
+int qrename_info(const std::string& old_path, const std::string& new_path);
 
-inline bool is_regular_file(const std::string& fn)
-{
-  struct stat sb;
-  if (0 != stat(fn.c_str(), &sb)) {
-    return false;
-  }
-  return S_ISREG(sb.st_mode);
-}
+std::vector<std::string> qls(const std::string& path,
+                             const bool is_sort = true);
+
+std::vector<std::string> qls_all(const std::string& path,
+                                 const bool is_folder_before_files = false,
+                                 const bool is_sort = true);
+
+bool does_file_exist(const std::string& fn);
+
+bool is_directory(const std::string& fn);
+
+bool is_regular_file(const std::string& fn);
+
+int qremove(const std::string& path);
+
+int qremove_all(const std::string& path);
+
+int qmkdir(const std::string& path, const mode_t mode = default_dir_mode());
+
+int qmkdir_p(const std::string& path_, const mode_t mode = default_dir_mode());
+
+int qmkdir_info(const std::string& path,
+                const mode_t mode = default_dir_mode());
+
+int qmkdir_p_info(const std::string& path,
+                  const mode_t mode = default_dir_mode());
+
+// --------------------------
 
 inline bool qtruncate(const std::string& evilFile)
 {
@@ -54,13 +62,6 @@ inline bool qtruncate(const std::string& path, const long offset)
 {
   const int ret = truncate(path.c_str(), offset);
   return ret == 0;
-}
-
-API inline mode_t& default_dir_mode()
-// qlat parameter
-{
-  static mode_t mode = 0775;
-  return mode;
 }
 
 inline int ssleep(const double seconds)
@@ -156,71 +157,6 @@ inline std::string basename(const std::string& fn)
   return std::string();
 }
 
-inline int qmkdir(const std::string& path,
-                  const mode_t mode = default_dir_mode())
-{
-  TIMER("qmkdir");
-  mkdir(path.c_str(), mode);
-  return check_dir(path, mode);
-}
-
-inline int qmkdir_p(const std::string& path_,
-                    const mode_t mode = default_dir_mode())
-// return 0 if successful
-{
-  TIMER("qmkdir_p");
-  std::string path = remove_trailing_slashes(path_);
-  if (is_directory(path)) {
-    return 0;
-  }
-  std::vector<std::string> paths;
-  while (true) {
-    if (0 == mkdir(path.c_str(), mode)) {
-      break;
-    } else {
-      paths.push_back(path);
-      path = dirname(path);
-      if (does_file_exist(path)) {
-        // qwarn(fname + ssprintf(": '%s' failed.", path_.c_str()));
-        break;
-      }
-    }
-  }
-  for (long i = paths.size() - 1; i >= 0; i -= 1) {
-    if (not(0 == mkdir(paths[i].c_str(), mode))) {
-      // qwarn(fname + ssprintf(": '%s' failed.", path_.c_str()));
-      continue;
-    }
-  }
-  if (not is_directory(path)) {
-    qwarn(fname + ssprintf(": '%s' failed.", path_.c_str()));
-    return 1;
-  }
-  return 0;
-}
-
-inline int qmkdir_info(const std::string& path,
-                       const mode_t mode = default_dir_mode())
-{
-  TIMER("qmkdir_info");
-  if (0 == get_id_node()) {
-    return qmkdir(path, mode);
-  } else {
-    return 0;
-  }
-}
-
-inline int qmkdir_p_info(const std::string& path,
-                         const mode_t mode = default_dir_mode())
-{
-  TIMER("qmkdir_info");
-  if (0 == get_id_node()) {
-    return qmkdir_p(path, mode);
-  } else {
-    return 0;
-  }
-}
-
 inline std::vector<std::string> qls_aux(const std::string& path,
                                         const bool is_sort = true)
 {
@@ -241,12 +177,6 @@ inline std::vector<std::string> qls_aux(const std::string& path,
     std::sort(contents.begin(), contents.end());
   }
   return contents;
-}
-
-inline std::vector<std::string> qls(const std::string& path,
-                                    const bool is_sort = true)
-{
-  return qls_aux(remove_trailing_slashes(path), is_sort);
 }
 
 inline std::vector<std::string> qls_all_aux(
@@ -279,21 +209,6 @@ inline std::vector<std::string> qls_all_aux(
   return all_contents;
 }
 
-inline std::vector<std::string> qls_all(
-    const std::string& path, const bool is_folder_before_files = false,
-    const bool is_sort = true)
-// list files before its folder
-{
-  return qls_all_aux(remove_trailing_slashes(path), is_folder_before_files,
-                     is_sort);
-}
-
-inline int qremove(const std::string& path)
-{
-  displayln(0, ssprintf("qremove: '%s'", path.c_str()));
-  return std::remove(path.c_str());
-}
-
 inline int qremove_all_aux(const std::string& path)
 {
   if (not is_directory(path)) {
@@ -306,11 +221,6 @@ inline int qremove_all_aux(const std::string& path)
     }
     return ret + qremove(path);
   }
-}
-
-inline int qremove_all(const std::string& path)
-{
-  return qremove_all_aux(remove_trailing_slashes(path));
 }
 
 inline FILE* qopen(const std::string& path, const std::string& mode)
@@ -334,25 +244,6 @@ inline int qfclose(FILE*& file)
     return std::fclose(tmp_file);
   }
   return 0;
-}
-
-inline int qrename(const std::string& old_path, const std::string& new_path)
-{
-  TIMER("qrename");
-  displayln(0,
-            ssprintf("qrename: '%s' '%s'", old_path.c_str(), new_path.c_str()));
-  return rename(old_path.c_str(), new_path.c_str());
-}
-
-inline int qrename_info(const std::string& old_path,
-                        const std::string& new_path)
-{
-  TIMER("qrename_info");
-  if (0 == get_id_node()) {
-    return qrename(old_path, new_path);
-  } else {
-    return 0;
-  }
 }
 
 inline void switch_monitor_file(const std::string& path)
