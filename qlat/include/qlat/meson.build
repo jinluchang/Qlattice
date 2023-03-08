@@ -20,6 +20,5 @@ py3.install_sources(header_files, subdir: 'qlat/include/qlat')
 py3.install_sources('qlat-setup.h', subdir: 'qlat/include')
 
 subdir('vector_utils')
-subdir('lib')
 
-all_header_files = header_files + config_file + vector_utils_header_files + lib_header_files
+all_header_files = header_files + config_file + vector_utils_header_files
