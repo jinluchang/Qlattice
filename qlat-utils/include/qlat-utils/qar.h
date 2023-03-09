@@ -42,7 +42,10 @@ struct API QFile {
   }
   //
   void init() { p = nullptr; }
-  void init(const std::weak_ptr<QFileInternal>& wp) { p = std::shared_ptr<QFileInternal>(wp); }
+  void init(const std::weak_ptr<QFileInternal>& wp)
+  {
+    p = std::shared_ptr<QFileInternal>(wp);
+  }
   void init(const std::string& path, const std::string& mode);
   void init(const QFile& qfile, const long q_offset_start,
             const long q_offset_end);
@@ -91,8 +94,8 @@ struct QFileInternal {
   std::string mode;  // can be "r", "a", "w"
   FILE* fp;
   //
-  QFile parent;  // If parent.null(), then this QFileInternal own the fp pointer and
-                 // will be responsible for close it.
+  QFile parent;  // If parent.null(), then this QFileInternal own the fp pointer
+                 // and will be responsible for close it.
   long number_of_child;  // Can close the FILE only when number_of_child == 0.
   //
   bool is_eof;  // the eof state of QFileInternal.
@@ -104,8 +107,8 @@ struct QFileInternal {
   // location indicated by pos first.
   //
   long offset_start;  // start offset of fp for QFileInternal
-  long offset_end;    // end offset of fp for QFileInternal (-1 if not limit, useful
-                      // when writing)
+  long offset_end;    // end offset of fp for QFileInternal (-1 if not limit,
+                    // useful when writing)
   //
   QFileInternal()
   {
@@ -162,8 +165,8 @@ struct QFileInternal {
         1, ssprintf("QFile: open '%s' with '%s'.", path.c_str(), mode.c_str()));
     fp = qopen(path, mode);
     if (fp == NULL) {
-      qwarn(
-          ssprintf("QFile: open '%s' with '%s' failed.", path.c_str(), mode.c_str()));
+      qwarn(ssprintf("QFile: open '%s' with '%s' failed.", path.c_str(),
+                     mode.c_str()));
     } else {
       pos = ftell(fp);
     }
@@ -171,7 +174,8 @@ struct QFileInternal {
     offset_start = 0;
     offset_end = -1;
   }
-  void init(const QFile& qfile, const long q_offset_start, const long q_offset_end)
+  void init(const QFile& qfile, const long q_offset_start,
+            const long q_offset_end)
   // Become a child of qfile.
   // NOTE: q_offset_start and q_offset_end are relative offset for qfile not the
   // absolute offset for qfile.fp .
@@ -328,7 +332,8 @@ inline int qfseek(const QFile& qfile, const long q_offset, const int whence)
     const long offset = qfile.p->offset_start + q_offset;
     ret = fseek(qfile.get_fp(), offset, SEEK_SET);
   } else if (SEEK_CUR == whence) {
-    ret = fseek(qfile.get_fp(), qfile.p->offset_start + qfile.p->pos + q_offset, SEEK_SET);
+    ret = fseek(qfile.get_fp(), qfile.p->offset_start + qfile.p->pos + q_offset,
+                SEEK_SET);
   } else if (SEEK_END == whence) {
     if (qfile.p->offset_end == -1) {
       ret = fseek(qfile.get_fp(), q_offset, SEEK_END);
@@ -429,46 +434,7 @@ inline int qfscanf(const QFile& qfile, const char* fmt, ...)
   return qvfscanf(qfile, fmt, args);
 }
 
-inline std::string qgetline(const QFile& qfile)
-// interface function
-// read an entire line including the final '\n' char.
-{
-  qassert(not qfile.null());
-  const int code = qfseek(qfile, qfile.p->pos, SEEK_SET);
-  qassert(code == 0);
-  char* lineptr = NULL;
-  size_t n = 0;
-  const long size = getline(&lineptr, &n, qfile.get_fp());
-  qfile.p->is_eof = feof(qfile.get_fp()) != 0;
-  if (size > 0) {
-    std::string ret;
-    const long pos = ftell(qfile.get_fp()) - qfile.p->offset_start;
-    if (pos < 0) {
-      qerr(
-          ssprintf("qgetline: '%s' initial_pos='%ld' final_pos='%ld' "
-                   "getline_size='%ld'.",
-                   qfile.path().c_str(), qfile.p->pos, pos, size));
-    }
-    qassert(pos >= 0);
-    if (qfile.p->offset_end != -1 and
-        qfile.p->offset_start + pos > qfile.p->offset_end) {
-      qfseek(qfile, 0, SEEK_END);
-      qfile.p->is_eof = true;
-      const long size_truncate =
-          size - (qfile.p->offset_start + pos - qfile.p->offset_end);
-      qassert(size_truncate >= 0);
-      ret = std::string(lineptr, size_truncate);
-    } else {
-      qfile.p->pos = pos;
-      ret = std::string(lineptr, size);
-    }
-    std::free(lineptr);
-    return ret;
-  } else {
-    std::free(lineptr);
-    return std::string();
-  }
-}
+std::string qgetline(const QFile& qfile);
 
 inline std::vector<std::string> qgetlines(const QFile& qfile)
 // interface function
@@ -515,7 +481,8 @@ inline long qwrite_data(const std::string& line, const QFile& qfile)
   return qwrite_data(get_data(line), qfile);
 }
 
-inline long qwrite_data(const std::vector<std::string>& lines, const QFile& qfile)
+inline long qwrite_data(const std::vector<std::string>& lines,
+                        const QFile& qfile)
 // interface function
 {
   qassert(not qfile.null());
@@ -627,10 +594,7 @@ struct API QarFile {
   {
     init(path, mode);
   }
-  QarFile(const QFile& qfile)
-  {
-    init(qfile);
-  }
+  QarFile(const QFile& qfile) { init(qfile); }
   //
   void init() { p = nullptr; }
   void init(const std::string& path, const std::string& mode)
@@ -778,7 +742,8 @@ inline bool read_qar_segment_info(QarFileInternal& qar, QarSegmentInfo& qsinfo)
     qar.is_read_through = true;
     return false;
   }
-  const std::vector<long> len_vec = read_longs(header.substr(header_prefix.size()));
+  const std::vector<long> len_vec =
+      read_longs(header.substr(header_prefix.size()));
   if (len_vec.size() != 3) {
     qwarn(ssprintf("read_tag: fn='%s' pos=%ld.", qar.qfile.p->path.c_str(),
                    qftell(qar.qfile)));
@@ -803,7 +768,8 @@ inline bool read_qar_segment_info(QarFileInternal& qar, QarSegmentInfo& qsinfo)
   return true;
 }
 
-inline void read_fn(const QarFile& qar, std::string& fn, const QarSegmentInfo& qsinfo)
+inline void read_fn(const QarFile& qar, std::string& fn,
+                    const QarSegmentInfo& qsinfo)
 // interface function
 {
   qassert(not qar.null());
@@ -1061,7 +1027,8 @@ inline int truncate_qar_file(const std::string& path,
 // interface function
 // return nonzero if failed.
 // return 0 if truncated successfully.
-// if fns_keep is empty, the resulting qar file should have and only have qar_header.
+// if fns_keep is empty, the resulting qar file should have and only have
+// qar_header.
 {
   TIMER_VERBOSE("truncate_qar_file");
   QarFile qar(path, "r");
@@ -1105,7 +1072,8 @@ inline int truncate_qar_file(const std::string& path,
   return 0;
 }
 
-inline std::vector<std::string> properly_truncate_qar_file(const std::string& path)
+inline std::vector<std::string> properly_truncate_qar_file(
+    const std::string& path)
 // interface function
 // The resulting qar file should at least have qar_header.
 // Should call this function before append.

@@ -90,6 +90,47 @@ QFile qfopen(const std::string& path, const std::string& mode)
   return QFile();
 }
 
+std::string qgetline(const QFile& qfile)
+// interface function
+// read an entire line including the final '\n' char.
+{
+  qassert(not qfile.null());
+  const int code = qfseek(qfile, qfile.p->pos, SEEK_SET);
+  qassert(code == 0);
+  char* lineptr = NULL;
+  size_t n = 0;
+  const long size = getline(&lineptr, &n, qfile.get_fp());
+  qfile.p->is_eof = feof(qfile.get_fp()) != 0;
+  if (size > 0) {
+    std::string ret;
+    const long pos = ftell(qfile.get_fp()) - qfile.p->offset_start;
+    if (pos < 0) {
+      qerr(
+          ssprintf("qgetline: '%s' initial_pos='%ld' final_pos='%ld' "
+                   "getline_size='%ld'.",
+                   qfile.path().c_str(), qfile.p->pos, pos, size));
+    }
+    qassert(pos >= 0);
+    if (qfile.p->offset_end != -1 and
+        qfile.p->offset_start + pos > qfile.p->offset_end) {
+      qfseek(qfile, 0, SEEK_END);
+      qfile.p->is_eof = true;
+      const long size_truncate =
+          size - (qfile.p->offset_start + pos - qfile.p->offset_end);
+      qassert(size_truncate >= 0);
+      ret = std::string(lineptr, size_truncate);
+    } else {
+      qfile.p->pos = pos;
+      ret = std::string(lineptr, size);
+    }
+    std::free(lineptr);
+    return ret;
+  } else {
+    std::free(lineptr);
+    return std::string();
+  }
+}
+
 std::vector<std::string> list(const QarFileMultiVol& qar)
 // interface function
 {
