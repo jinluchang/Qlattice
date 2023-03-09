@@ -845,19 +845,23 @@ inline void get_qfile_of_data(const QarFile& qar, QFile& qfile,
 inline void register_file(const QarFile& qar, const std::string& fn,
                           const QarSegmentInfo& qsinfo)
 {
-  qar.p->fn_list.push_back(fn);
-  qar.p->qsinfo_map[fn] = qsinfo;
-  std::string dir = dirname(fn);
-  while (dir != ".") {
-    if (has(qar.p->directories, dir)) {
-      break;
-    } else {
-      qar.p->directories.insert(dir);
-      dir = dirname(dir);
+  if (not has(qar.p->qsinfo_map, fn)) {
+    qar.p->fn_list.push_back(fn);
+    qar.p->qsinfo_map[fn] = qsinfo;
+    std::string dir = dirname(fn);
+    while (dir != ".") {
+      if (has(qar.p->directories, dir)) {
+        break;
+      } else {
+        qar.p->directories.insert(dir);
+        dir = dirname(dir);
+      }
     }
-  }
-  if (qar.p->max_offset < qsinfo.offset_end) {
-    qar.p->max_offset = qsinfo.offset_end;
+    if (qar.p->max_offset < qsinfo.offset_end) {
+      qar.p->max_offset = qsinfo.offset_end;
+    }
+  } else {
+    qassert(qar.p->qsinfo_map[fn].offset == qsinfo.offset);
   }
 }
 
@@ -874,11 +878,7 @@ inline bool read_next(const QarFile& qar, std::string& fn, QFile& qfile)
     return false;
   }
   read_fn(qar, fn, qsinfo);
-  if (not has(qar.p->qsinfo_map, fn)) {
-    register_file(qar, fn, qsinfo);
-  } else {
-    qassert(qar.p->qsinfo_map[fn].offset == qsinfo.offset);
-  }
+  register_file(qar, fn, qsinfo);
   get_qfile_of_data(qar, qfile, qsinfo);
   const int code = qfseek(qar.qfile(), qsinfo.offset_end, SEEK_SET);
   qassert(code == 0);
