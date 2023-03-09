@@ -18,8 +18,10 @@ cdef class Geometry:
         self.cdata = <long>&(self.xx)
 
     def __init__(self, total_site = None, int multiplicity = 1):
-        # if total_site is None: create geo uninitialized
-        # elif multiplicity is None: create geo with multiplicity = 1
+        """
+        if total_site is None: create geo uninitialized
+        elif multiplicity is None: create geo with multiplicity = 1
+        """
         self.xx.init(Coordinate(total_site).xx, multiplicity)
 
     def __imatmul__(self, Geometry v1):
@@ -102,11 +104,15 @@ cdef class Geometry:
         return c.is_local_geo(self, xl)
 
     def is_local_xg(self, xg):
-        # return a global coordinate is inside the local volume or not
+        """
+        return a global coordinate is inside the local volume or not
+        """
         return c.is_local_xg_geo(self, xg)
 
     def xg_list(self):
-        # return xg for all local sites
+        """
+        return xg for all local sites
+        """
         return c.get_xg_list(self)
 
 ### -------------------------------------------------------------------
@@ -231,7 +237,9 @@ cdef class FieldBase:
         return c.get_mview_field(self)
 
     def __iadd__(self, f1):
-        # f1 can be Field, SelectedField, SelectedPoints
+        """
+        f1 can be Field, SelectedField, SelectedPoints
+        """
         if isinstance(f1, FieldBase):
             assert f1.ctype is self.ctype
             c.set_add_field(self, f1)
@@ -248,7 +256,9 @@ cdef class FieldBase:
         return self
 
     def __isub__(self, f1):
-        # f1 can be Field, SelectedField, SelectedPoints
+        """
+        f1 can be Field, SelectedField, SelectedPoints
+        """
         if isinstance(f1, FieldBase):
             assert f1.ctype is self.ctype
             c.set_sub_field(self, f1)
@@ -271,7 +281,9 @@ cdef class FieldBase:
         return self
 
     def __imul__(self, factor):
-		# factor can be float, complex, FieldM<Complex,1>
+        """
+		factor can be float, complex, FieldM<Complex,1>
+        """
         if isinstance(factor, float):
             c.set_mul_double_field(self, factor)
         elif isinstance(factor, complex):
@@ -318,7 +330,9 @@ cdef class FieldBase:
         return c.crc32_field(self)
 
     def sparse(self, sel):
-        # deprecated
+        """
+        deprecated
+        """
         q.displayln_info("Field.sparse: deprecated")
         from qlat.field_selection import PointSelection, FieldSelection
         if isinstance(sel, PointSelection):
@@ -337,11 +351,13 @@ cdef class FieldBase:
             raise Exception("Field.sparse")
 
     def save_direct(self, path, *args):
-        # save Field directly (without any conversion of endianness or precision)
-        # possible way to call:
-        # f.save_direct(path)
-        # f.save_direct(path, new_size_node)
-        # f.save_direct(sfw, fn)
+        """
+        save Field directly (without any conversion of endianness or precision)
+        possible way to call:
+        f.save_direct(path)
+        f.save_direct(path, new_size_node)
+        f.save_direct(sfw, fn)
+        """
         from qlat.fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
             if len(args) == 0:
@@ -359,10 +375,12 @@ cdef class FieldBase:
         return n_bytes
 
     def load_direct(self, path, *args):
-        # load Field directly (without any conversion of endianness or precision)
-        # possible way to call:
-        # f.load(path)
-        # f.load(sfr, fn)
+        """
+        load Field directly (without any conversion of endianness or precision)
+        possible way to call:
+        f.load(path)
+        f.load(sfr, fn)
+        """
         from qlat.fields_io import ShuffledFieldsReader
         if isinstance(path, str):
             n_bytes = c.load_field(self, path)
@@ -434,32 +452,42 @@ cdef class FieldBase:
         c.to_from_endianness_field(self, tag)
 
     def as_field(self, ctype = ElemTypeComplex):
-		# return new Field(ctype) with the same content
+        """
+		return new Field(ctype) with the same content
+        """
         f = Field(ctype)
         c.assign_as_field(f, self)
         return f
 
     def from_field(self, f):
-		# assign from f with the same content but possibly different type
+        """
+		assign from f with the same content but possibly different type
+        """
         c.assign_from_field(self, f)
         return f
 
     def get_elems(self, index):
-        # index can also be xg
-        # get_elems is collective operation when xg is coordinate
-        # get_elems will be specific to a single process if xg is index
+        """
+        index can also be xg
+        get_elems is collective operation when xg is coordinate
+        get_elems will be specific to a single process if xg is index
+        """
         return np.array(c.get_elems_field(self, index))
 
     def get_elem(self, index, m = None):
-        # index can also be xg
+        """
+        index can also be xg
+        """
         if m is None:
             return np.array(c.get_elem_field(self, index))
         else:
             return np.array(c.get_elem_field(self, index, m))
 
     def set_elems(self, index, val):
-        # index can also be xg
-        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        """
+        index can also be xg
+        val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        """
         if isinstance(val, bytes):
             return c.set_elems_field(self, index, val)
         elif isinstance(val, np.ndarray):
@@ -468,8 +496,10 @@ cdef class FieldBase:
             assert False
 
     def set_elem(self, index, m, val):
-        # index can also be xg
-        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        """
+        index can also be xg
+        val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        """
         if isinstance(val, bytes):
             return c.set_elem_field(self, index, m, val)
         elif isinstance(val, np.ndarray):
@@ -478,8 +508,10 @@ cdef class FieldBase:
             assert False
 
     def __getitem__(self, i):
-        # i can be (index, m,) or index
-        # index can also be xg
+        """
+        i can be (index, m,) or index
+        index can also be xg
+        """
         if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], (int, list, tuple,)):
             index, m = i
             return self.get_elem(index, m)
@@ -491,9 +523,11 @@ cdef class FieldBase:
             return None
 
     def __setitem__(self, i, val):
-        # i can be (index, m,) or index
-        # index can also be xg
-        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        """
+        i can be (index, m,) or index
+        index can also be xg
+        val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        """
         if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], (int, list, tuple,)):
             index, m = i
             self.set_elem(index, m, val)
@@ -504,18 +538,24 @@ cdef class FieldBase:
             assert False
 
     def xg_list(self):
-        # return xg for all local sites
+        """
+        return xg for all local sites
+        """
         return self.geo().xg_list()
 
     def field_shift(self, shift):
-        # return new shifted Field
-        # shift is the coordinate to shift the field
+        """
+        return new shifted Field
+        shift is the coordinate to shift the field
+        """
         f1 = self.copy(is_copying_data = False)
         c.field_shift_field(f1, self, shift)
         return f1
 
     def reflect(self):
-        # reflect the field, return None
+        """
+        reflect the field, return None
+        """
         return c.reflect_field(self)
 
     def glb_sum(self):
@@ -528,7 +568,9 @@ cdef class FieldBase:
             return None
 
     def glb_sum_tslice(self, *, t_dir = 3):
-        # return SelectedPoints(self.ctype, get_psel_tslice(self.total_site(), t_dir = t_dir))
+        """
+        return SelectedPoints(self.ctype, get_psel_tslice(self.total_site(), t_dir = t_dir))
+        """
         from qlat.field_selection import get_psel_tslice
         from qlat.selected_points import SelectedPoints
         psel = get_psel_tslice(self.total_site(), t_dir = t_dir)
@@ -564,8 +606,10 @@ def merge_fields(f, fs):
     c.merge_fields_field(f, fs)
 
 def merge_fields_ms(f, fms):
-    # fms = [ (f0, m0,), (f1, m1,), ... ]
-    # f.get_elem(x, m) = fms[m][0].get_elem(x, fms[m][1])
+    """
+    fms = [ (f0, m0,), (f1, m1,), ... ]
+    f.get_elem(x, m) = fms[m][0].get_elem(x, fms[m][1])
+    """
     multiplicity = len(fms)
     assert multiplicity >= 1
     assert isinstance(f, FieldBase)
@@ -574,9 +618,11 @@ def merge_fields_ms(f, fms):
     c.merge_fields_ms_field(f, fs, ms)
 
 def mk_merged_fields_ms(fms):
-    # fms = [ (f0, m0,), (f1, m1,), ... ]
-    # f.get_elem(x, m) = fms[m][0].get_elem(x, fms[m][1])
-    # return f
+    """
+    fms = [ (f0, m0,), (f1, m1,), ... ]
+    f.get_elem(x, m) = fms[m][0].get_elem(x, fms[m][1])
+    return f
+    """
     multiplicity = len(fms)
     assert multiplicity >= 1
     for m in range(multiplicity):
