@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qlat/field.h>
+#include <qlat/field-utils.h>
 #include <qlat/selected-points.h>
 
 namespace qlat

@@ -713,6 +713,22 @@ struct API FieldM : Field<M> {
   FieldM<M, multiplicity>() { init(); }
 };
 
+template <class M>
+void set_zero(Field<M>& f)
+{
+  TIMER("set_zero(Field)");
+  set_zero(f.field);
+}
+
+template <class M>
+void set_unit(Field<M>& f, const Complex& coef = 1.0)
+{
+  TIMER("set_unit(Field)");
+  for (long offset = 0; offset < f.field.size(); ++offset) {
+    set_unit(f.get_elem_offset(offset), coef);
+  }
+}
+
 // --------------------
 
 template <class T = Real>
