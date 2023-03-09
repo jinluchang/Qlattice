@@ -57,17 +57,17 @@ inline std::string qar_file_multi_vol_suffix(const long i)
   return "";
 }
 
-struct API QarFileMultiVol : std::vector<QarFile> {
+struct API QarFile : std::vector<QarFileVol> {
   // Only for reading
-  QarFileMultiVol() { init(); }
-  QarFileMultiVol(const std::string& path_qar, const std::string& mode)
+  QarFile() { init(); }
+  QarFile(const std::string& path_qar, const std::string& mode)
   {
     init(path_qar, mode);
   }
   //
   void init()
   {
-    std::vector<QarFile>& v = *this;
+    std::vector<QarFileVol>& v = *this;
     qlat::clear(v);
   }
   void init(const std::string& path_qar, const std::string& mode)
@@ -96,25 +96,25 @@ struct API QarFileMultiVol : std::vector<QarFile> {
   bool null() const { return size() == 0; }
 };
 
-std::vector<std::string> list(const QarFileMultiVol& qar);
+std::vector<std::string> list(const QarFile& qar);
 
-bool has_regular_file(const QarFileMultiVol& qar, const std::string& fn);
+bool has_regular_file(const QarFile& qar, const std::string& fn);
 
-bool has(const QarFileMultiVol& qar, const std::string& fn);
+bool has(const QarFile& qar, const std::string& fn);
 
-bool read(const QarFileMultiVol& qar, const std::string& fn, QFile& qfile_in);
+bool read(const QarFile& qar, const std::string& fn, QFile& qfile_in);
 
 // -------------------
 
-API inline Cache<std::string, QarFileMultiVol>& get_qar_read_cache()
+API inline Cache<std::string, QarFile>& get_qar_read_cache()
 // key should be the path prefix of the contents of the qar file.
 // Note: key should end with '/'.
 {
-  static Cache<std::string, QarFileMultiVol> cache("QarReadCache", 64, 1);
+  static Cache<std::string, QarFile> cache("QarReadCache", 64, 1);
   return cache;
 }
 
-inline std::string mk_new_qar_read_cache_key(const QarFileMultiVol& qar,
+inline std::string mk_new_qar_read_cache_key(const QarFile& qar,
                                              const std::string& key,
                                              const std::string& path)
 // (1) Find the first new qar file in qar that match the prefix of path and
@@ -123,7 +123,7 @@ inline std::string mk_new_qar_read_cache_key(const QarFileMultiVol& qar,
 // (3) If path exists in the qar, return the new key of the new qar.
 // (4) If not found, repeat the procedure for the new qar.
 {
-  Cache<std::string, QarFileMultiVol>& cache = get_qar_read_cache();
+  Cache<std::string, QarFile>& cache = get_qar_read_cache();
   std::string path_dir = remove_trailing_slashes(path);
   const std::string pathd = path_dir + "/";
   while (true) {
@@ -133,7 +133,7 @@ inline std::string mk_new_qar_read_cache_key(const QarFileMultiVol& qar,
     if (has_regular_file(qar, path_dir + ".qar")) {
       const std::string key_new = path_dir + "/";
       qassert(pathd.substr(0, key_new.size()) == key_new);
-      QarFileMultiVol& qar_new = cache[key + key_new];
+      QarFile& qar_new = cache[key + key_new];
       if (qar_new.null()) {
         qar_new.init(key + path_dir + ".qar", "r");
       }
@@ -159,7 +159,7 @@ inline std::string mk_new_qar_read_cache_key(const std::string& path)
 // (4) If not found, find qar within qar recursively, return the key of the
 // closest qar.
 {
-  Cache<std::string, QarFileMultiVol>& cache = get_qar_read_cache();
+  Cache<std::string, QarFile>& cache = get_qar_read_cache();
   std::string path_dir = remove_trailing_slashes(path);
   const std::string pathd = path_dir + "/";
   while (true) {
@@ -170,7 +170,7 @@ inline std::string mk_new_qar_read_cache_key(const std::string& path)
       const std::string key = path_dir + "/";
       qassert(pathd.substr(0, key.size()) == key);
       qassert(not cache.has(key));
-      QarFileMultiVol& qar = cache[key];
+      QarFile& qar = cache[key];
       qar.init(path_dir + ".qar", "r");
       qassert(not qar.null());
       const std::string path_new = pathd.substr(key.size());
@@ -201,11 +201,11 @@ inline std::string get_qar_read_cache_key(const std::string& path)
 // path: path exist.
 {
   TIMER("get_qar_read_cache_key");
-  Cache<std::string, QarFileMultiVol>& cache = get_qar_read_cache();
+  Cache<std::string, QarFile>& cache = get_qar_read_cache();
   for (auto it = cache.m.cbegin(); it != cache.m.cend(); ++it) {
     const std::string& key = it->first;
     if (key == path.substr(0, key.size())) {
-      const QarFileMultiVol& qar = cache[key];
+      const QarFile& qar = cache[key];
       const std::string path_new = path.substr(key.size());
       if (has(qar, path_new)) {
         return key;

@@ -3,7 +3,7 @@
 namespace qlat
 {  //
 
-void register_file(const QarFile& qar, const std::string& fn,
+void register_file(const QarFileVol& qar, const std::string& fn,
                    const QarSegmentInfo& qsinfo)
 {
   if (not has(qar.p->qsinfo_map, fn)) {
@@ -39,7 +39,7 @@ bool does_regular_file_exist_qar(const std::string& path)
   }
   qassert(key == path.substr(0, key.size()));
   const std::string fn = path.substr(key.size());
-  QarFileMultiVol& qar = get_qar_read_cache()[key];
+  QarFile& qar = get_qar_read_cache()[key];
   return has_regular_file(qar, fn);
 }
 
@@ -55,7 +55,7 @@ bool does_file_exist_qar(const std::string& path)
   }
   qassert(key == path.substr(0, key.size()));
   const std::string fn = path.substr(key.size());
-  QarFileMultiVol& qar = get_qar_read_cache()[key];
+  QarFile& qar = get_qar_read_cache()[key];
   return has(qar, fn);
 }
 
@@ -75,7 +75,7 @@ QFile qfopen(const std::string& path, const std::string& mode)
     } else {
       qassert(key == path.substr(0, key.size()));
       const std::string fn = path.substr(key.size());
-      QarFileMultiVol& qar = get_qar_read_cache()[key];
+      QarFile& qar = get_qar_read_cache()[key];
       QFile qfile;
       read(qar, fn, qfile);
       return qfile;
@@ -131,7 +131,7 @@ std::string qgetline(const QFile& qfile)
   }
 }
 
-std::vector<std::string> list(const QarFileMultiVol& qar)
+std::vector<std::string> list(const QarFile& qar)
 // interface function
 {
   if (qar.null()) {
@@ -139,7 +139,7 @@ std::vector<std::string> list(const QarFileMultiVol& qar)
   }
   std::vector<std::string> fn_list;
   for (unsigned long i = 0; i < qar.size(); ++i) {
-    const QarFile& qar_v = qar[i];
+    const QarFileVol& qar_v = qar[i];
     qassert(not qar_v.null());
     qassert(qar_v.mode() == "r");
     vector_append(fn_list, list(qar_v));
@@ -147,7 +147,7 @@ std::vector<std::string> list(const QarFileMultiVol& qar)
   return fn_list;
 }
 
-void save_qar_index(const QarFileMultiVol& qar, const std::string& fn)
+void save_qar_index(const QarFile& qar, const std::string& fn)
 // interface function
 {
   if (qar.null()) {
@@ -155,7 +155,7 @@ void save_qar_index(const QarFileMultiVol& qar, const std::string& fn)
   }
   std::vector<std::string> lines;
   for (long i = 0; i < (long)qar.size(); ++i) {
-    const QarFile& qar_v = qar[i];
+    const QarFileVol& qar_v = qar[i];
     qassert(not qar_v.null());
     qassert(qar_v.mode() == "r");
     read_through(qar_v);
@@ -165,7 +165,7 @@ void save_qar_index(const QarFileMultiVol& qar, const std::string& fn)
     for (long j = 0; j < (long)fn_list.size(); ++j) {
       const std::string& fn = fn_list[j];
       const QarSegmentInfo& qsinfo = qsinfo_map.at(fn);
-      qassert(qsinfo.fn_len == fn.size());
+      qassert(qsinfo.fn_len == (long)fn.size());
       const std::string line1 =
           ssprintf("QAR-FILE %ld %ld %ld\n", i, j, fn.size());
       const std::string line2 = fn + "\n";
@@ -181,7 +181,7 @@ void save_qar_index(const QarFileMultiVol& qar, const std::string& fn)
   qtouch(fn, lines);
 }
 
-void save_qar_index_info(const QarFileMultiVol& qar, const std::string& fn)
+void save_qar_index_info(const QarFile& qar, const std::string& fn)
 {
   if (0 == get_id_node()) {
     save_qar_index(qar, fn);
@@ -251,7 +251,7 @@ int qar_create(const std::string& path_qar, const std::string& path_folder_,
   long num_vol;
   {
     long iv = 0;
-    QarFile qar;
+    QarFileVol qar;
     for (long i = 0; i < (long)reg_files.size(); ++i) {
       const std::string path = reg_files[i];
       const std::string fn = path.substr(path_prefix_len);
@@ -320,7 +320,7 @@ int qar_extract(const std::string& path_qar, const std::string& path_folder_,
                            path_qar.c_str(), path_folder.c_str()));
     return 3;
   }
-  QarFileMultiVol qar(path_qar, "r");
+  QarFile qar(path_qar, "r");
   const std::vector<std::string> contents = list(qar);
   std::set<std::string> dirs;
   qmkdir_p(path_folder + ".acc");
@@ -387,15 +387,15 @@ int qcopy_file(const std::string& path_src, const std::string& path_dst)
 std::vector<std::string> list_qar(const std::string& path)
 {
   TIMER_VERBOSE("list_qar");
-  QarFileMultiVol qar(path, "r");
+  QarFile qar(path, "r");
   return list(qar);
 }
 
-bool has_regular_file(const QarFileMultiVol& qar, const std::string& fn)
+bool has_regular_file(const QarFile& qar, const std::string& fn)
 // interface function
 {
   for (unsigned long i = 0; i < qar.size(); ++i) {
-    const QarFile& qar_v = qar[i];
+    const QarFileVol& qar_v = qar[i];
     qassert(not qar_v.null());
     qassert(qar_v.mode() == "r");
     if (has_regular_file(qar_v, fn)) {
@@ -405,11 +405,11 @@ bool has_regular_file(const QarFileMultiVol& qar, const std::string& fn)
   return false;
 }
 
-bool has(const QarFileMultiVol& qar, const std::string& fn)
+bool has(const QarFile& qar, const std::string& fn)
 // interface function
 {
   for (unsigned long i = 0; i < qar.size(); ++i) {
-    const QarFile& qar_v = qar[i];
+    const QarFileVol& qar_v = qar[i];
     qassert(not qar_v.null());
     qassert(qar_v.mode() == "r");
     if (has(qar_v, fn)) {
@@ -419,11 +419,11 @@ bool has(const QarFileMultiVol& qar, const std::string& fn)
   return false;
 }
 
-bool read(const QarFileMultiVol& qar, const std::string& fn, QFile& qfile_in)
+bool read(const QarFile& qar, const std::string& fn, QFile& qfile_in)
 // interface function
 {
   for (unsigned long i = 0; i < qar.size(); ++i) {
-    const QarFile& qar_v = qar[i];
+    const QarFileVol& qar_v = qar[i];
     qassert(not qar_v.null());
     qassert(qar_v.mode() == "r");
     if (read(qar_v, fn, qfile_in)) {
