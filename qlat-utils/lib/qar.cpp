@@ -147,6 +147,47 @@ std::vector<std::string> list(const QarFileMultiVol& qar)
   return fn_list;
 }
 
+void save_qar_index(const QarFileMultiVol& qar, const std::string& fn)
+// interface function
+{
+  if (qar.null()) {
+    return;
+  }
+  std::vector<std::string> lines;
+  for (long i = 0; i < (long)qar.size(); ++i) {
+    const QarFile& qar_v = qar[i];
+    qassert(not qar_v.null());
+    qassert(qar_v.mode() == "r");
+    read_through(qar_v);
+    const std::vector<std::string>& fn_list = qar_v.p->fn_list;
+    const std::map<std::string, QarSegmentInfo> qsinfo_map =
+        qar_v.p->qsinfo_map;
+    for (long j = 0; j < (long)fn_list.size(); ++j) {
+      const std::string& fn = fn_list[j];
+      const QarSegmentInfo& qsinfo = qsinfo_map.at(fn);
+      qassert(qsinfo.fn_len == fn.size());
+      const std::string line1 =
+          ssprintf("QAR-FILE %ld %ld %ld\n", i, j, fn.size());
+      const std::string line2 = fn + "\n";
+      const std::string line3 = ssprintf(
+          "%ld %ld %ld %ld %ld %ld %ld %ld\n", qsinfo.offset, qsinfo.offset_fn,
+          qsinfo.offset_info, qsinfo.offset_data, qsinfo.offset_end,
+          qsinfo.fn_len, qsinfo.info_len, qsinfo.data_len);
+      lines.push_back(line1);
+      lines.push_back(line2);
+      lines.push_back(line3);
+    }
+  }
+  qtouch(fn, lines);
+}
+
+void save_qar_index_info(const QarFileMultiVol& qar, const std::string& fn)
+{
+  if (0 == get_id_node()) {
+    save_qar_index(qar, fn);
+  }
+}
+
 std::string qcat(const std::string& path)
 {
   TIMER("qcat");

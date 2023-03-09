@@ -40,6 +40,24 @@ int qtouch(const std::string& path, const std::string& content)
   return qrename(path + ".partial", path);
 }
 
+int qtouch(const std::string& path, const std::vector<std::string>& content)
+{
+  TIMER("qtouch");
+  QFile qfile = qfopen(path + ".partial", "w");
+  if (qfile.null()) {
+    return 1;
+  }
+  long total_bytes = 0;
+  long total_bytes_expect = 0;
+  for (long i = 0; i < (long)content.size(); ++i) {
+    total_bytes_expect += content[i].size();
+    total_bytes += qwrite_data(content[i], qfile);
+  }
+  qassert(total_bytes == total_bytes_expect);
+  qfclose(qfile);
+  return qrename(path + ".partial", path);
+}
+
 int qappend(const std::string& path, const std::string& content)
 {
   TIMER("qappend");

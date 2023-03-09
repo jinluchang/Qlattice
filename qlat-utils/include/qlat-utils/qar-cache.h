@@ -33,6 +33,8 @@ int qtouch(const std::string& path);
 
 int qtouch(const std::string& path, const std::string& content);
 
+int qtouch(const std::string& path, const std::vector<std::string>& content);
+
 int qappend(const std::string& path, const std::string& content);
 
 crc32_t compute_crc32(const std::string& path);
