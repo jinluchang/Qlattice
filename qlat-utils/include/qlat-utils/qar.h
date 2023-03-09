@@ -742,6 +742,9 @@ inline const std::string& QarFile::mode() const { return p->mode(); }
 
 inline const QFile& QarFile::qfile() const { return p->qfile; }
 
+void register_file(const QarFile& qar, const std::string& fn,
+                   const QarSegmentInfo& qsinfo);
+
 inline bool read_qar_segment_info(QarFileInternal& qar, QarSegmentInfo& qsinfo)
 // Initial pos: beginning of the segment, just before FILE-HEADER.
 // Final pos: at the end of the segment, at the beginning of the next segment.
@@ -840,29 +843,6 @@ inline void get_qfile_of_data(const QarFile& qar, QFile& qfile,
   qfile.init(qar.qfile(), qsinfo.offset_data,
              qsinfo.offset_data + qsinfo.data_len);
   qassert(not qfile.null());
-}
-
-inline void register_file(const QarFile& qar, const std::string& fn,
-                          const QarSegmentInfo& qsinfo)
-{
-  if (not has(qar.p->qsinfo_map, fn)) {
-    qar.p->fn_list.push_back(fn);
-    qar.p->qsinfo_map[fn] = qsinfo;
-    std::string dir = dirname(fn);
-    while (dir != ".") {
-      if (has(qar.p->directories, dir)) {
-        break;
-      } else {
-        qar.p->directories.insert(dir);
-        dir = dirname(dir);
-      }
-    }
-    if (qar.p->max_offset < qsinfo.offset_end) {
-      qar.p->max_offset = qsinfo.offset_end;
-    }
-  } else {
-    qassert(qar.p->qsinfo_map[fn].offset == qsinfo.offset);
-  }
 }
 
 inline bool read_next(const QarFile& qar, std::string& fn, QFile& qfile)

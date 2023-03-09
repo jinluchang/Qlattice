@@ -3,6 +3,29 @@
 namespace qlat
 {  //
 
+void register_file(const QarFile& qar, const std::string& fn,
+                   const QarSegmentInfo& qsinfo)
+{
+  if (not has(qar.p->qsinfo_map, fn)) {
+    qar.p->fn_list.push_back(fn);
+    qar.p->qsinfo_map[fn] = qsinfo;
+    std::string dir = dirname(fn);
+    while (dir != ".") {
+      if (has(qar.p->directories, dir)) {
+        break;
+      } else {
+        qar.p->directories.insert(dir);
+        dir = dirname(dir);
+      }
+    }
+    if (qar.p->max_offset < qsinfo.offset_end) {
+      qar.p->max_offset = qsinfo.offset_end;
+    }
+  } else {
+    qassert(qar.p->qsinfo_map[fn].offset == qsinfo.offset);
+  }
+}
+
 bool does_regular_file_exist_qar(const std::string& path)
 // interface function
 // Note: should only check file, not directory.
