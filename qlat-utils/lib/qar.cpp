@@ -190,6 +190,8 @@ void save_qar_index_info(const QarFile& qar, const std::string& fn)
 
 void parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
 {
+  (void)qar;
+  (void)qar_index_content;
 }
 
 std::string qcat(const std::string& path)
