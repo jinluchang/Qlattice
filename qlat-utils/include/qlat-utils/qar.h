@@ -797,9 +797,6 @@ inline bool read_qar_segment_info(QarFileInternal& qar, QarSegmentInfo& qsinfo)
     qar.is_read_through = true;
     return false;
   }
-  if (qar.max_offset < qsinfo.offset_end) {
-    qar.max_offset = qsinfo.offset_end;
-  }
   return true;
 }
 
@@ -845,9 +842,11 @@ inline void get_qfile_of_data(const QarFile& qar, QFile& qfile,
   qassert(not qfile.null());
 }
 
-inline void register_file(const QarFile& qar, const std::string& fn)
+inline void register_file(const QarFile& qar, const std::string& fn,
+                          const QarSegmentInfo& qsinfo)
 {
   qar.p->fn_list.push_back(fn);
+  qar.p->qsinfo_map[fn] = qsinfo;
   std::string dir = dirname(fn);
   while (dir != ".") {
     if (has(qar.p->directories, dir)) {
@@ -856,6 +855,9 @@ inline void register_file(const QarFile& qar, const std::string& fn)
       qar.p->directories.insert(dir);
       dir = dirname(dir);
     }
+  }
+  if (qar.p->max_offset < qsinfo.offset_end) {
+    qar.p->max_offset = qsinfo.offset_end;
   }
 }
 
@@ -873,8 +875,7 @@ inline bool read_next(const QarFile& qar, std::string& fn, QFile& qfile)
   }
   read_fn(qar, fn, qsinfo);
   if (not has(qar.p->qsinfo_map, fn)) {
-    register_file(qar, fn);
-    qar.p->qsinfo_map[fn] = qsinfo;
+    register_file(qar, fn, qsinfo);
   } else {
     qassert(qar.p->qsinfo_map[fn].offset == qsinfo.offset);
   }
