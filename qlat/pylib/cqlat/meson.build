@@ -8,6 +8,7 @@ lib = py3.extension_module('cqlat',
   cpp_files + config_file,
   dependencies: deps,
   include_directories: incdir,
+  link_with: clib,
   install: true,
   # gnu_symbol_visibility: 'default',
   )
