@@ -8,7 +8,6 @@ import glob
 
 import qlat as q
 
-
 class Field_fft:
     def __init__(self, geo, mult=1):
         self.field = q.Field(q.ElemTypeDouble, geo, mult)
@@ -123,7 +122,7 @@ class Field_fft:
                 [field_ft.get_elem([0,0,0,0],1),field_ft.get_elem([1,0,0,0],1),field_ft.get_elem([0,2,0,0],1),field_ft.get_elem([3,0,0,0],1)]]
 
 class HMC:
-    def __init__(self, m_sq, lmbd, alpha, total_site, mult, steps, mass_force_coef, recalculate_masses, fresh_start, block_sizes):
+    def __init__(self, m_sq, lmbd, alpha, total_site, mult, steps, mass_force_coef, recalculate_masses, fresh_start, block_sizes, version, date):
         self.m_sq = m_sq
         self.lmbd = lmbd
         self.alpha = alpha
@@ -136,9 +135,9 @@ class HMC:
 
         self.fileid = f"{self.total_site[0]}x{self.total_site[3]}_msq_{self.m_sq}_lmbd_{self.lmbd}_alph_{self.alpha}_{date}_{version}"
         self.fileidwc = f"{self.total_site[0]}x{self.total_site[3]}_msq_{self.m_sq}_lmbd_{self.lmbd}_alph_{self.alpha}_*_{version}"
+        self.fileidwc_no_version = f"{self.total_site[0]}x{self.total_site[3]}_msq_{self.m_sq}_lmbd_{self.lmbd}_alph_{self.alpha}_*"
 
         # The number of trajectories to calculate before taking measurements
-        self.start_measurements = 0
         self.init_length = block_sizes[0]
         self.block_init_length = block_sizes[1]
         self.block_length = block_sizes[2]
@@ -148,6 +147,7 @@ class HMC:
         self.vev = 0
         self.vevs=[self.vev]
         self.vev_est = 0
+        self.accept_prob = 0.0
 
         self.traj = 1
         self.estimate_masses = True
@@ -163,6 +163,7 @@ class HMC:
 
         # Create the scalar field and set all field values to 1
         self.field = Field_fft(geo,mult)
+        self.init_momentum = Field_fft(geo,mult)
 
         # Create a field to store field configurations predicted based on
         # the initial momenta (with the assumption of harmonic evolution)
@@ -296,7 +297,7 @@ class HMC:
             self.masses.set_unit()
 
     def load_field(self):
-        filename, self.traj = self.find_latest_traj(f"output_data/fields/hmc_pions_traj_*_{self.fileidwc}.field")
+        filename, self.traj = self.find_latest_traj(f"output_data/fields/hmc_pions_traj_*_{self.fileidwc_no_version}.field")
         self.init_length+=self.traj-1
         if(not filename==""):
             self.field.load(filename)
@@ -365,25 +366,19 @@ class HMC:
         # point because of the momentum-dependent mass term used for Fourier
         # acceleration
         momentum.set_rand_momentum(self.action, self.masses, rs.split("set_rand_momentum"))
-        momentums.append(momentum.get_representatives_ft())
+        self.init_momentum.set_field(momentum.get_field())
 
         # Predicts the field value at the end of the trajectory based on the
         # assumption that the evolution is a perfect harmonic oscillator
         self.field_predicted.hmc_predict_field(self.action, momentum, self.masses, self.vev)
-
-        fields_pred.append(self.field_predicted.get_representatives_ft())
-
+        
         # Evolve the field over time md_time using the given momenta and
         # the Hamiltonian appropriate for the given action
         delta_h = self.run_hmc_evolve(self.f0, momentum, rs)
 
         # Decide whether to accept or reject the field update using the
         # metropolis algorithm
-        flag, accept_prob = self.metropolis_accept(delta_h, self.traj, rs.split("metropolis_accept"))
-
-        accept_rates.append(accept_prob)
-
-        fields.append(self.f0.get_representatives_ft())
+        flag, self.accept_prob = self.metropolis_accept(delta_h, self.traj, rs.split("metropolis_accept"))
 
         # If the field update is accepted or we are within the first few
         # trajectories, save the field update
@@ -427,7 +422,7 @@ class HMC:
             self.sm_evolve(field, momentum, 4.0 * ttheta / dt, 0.5 * dt)
             field.hmc_evolve(self.action, momentum, self.masses, (1.0 - 2.0 * lam) * dt)
             force = self.sm_evolve(field, momentum, 4.0 * ttheta / dt, 0.5 * dt)
-            if i < steps - 1:
+            if i < self.steps - 1:
                 field.hmc_evolve(self.action, momentum, self.masses, 2.0 * lam * dt)
             else:
                 field.hmc_evolve(self.action, momentum, self.masses, lam * dt)
@@ -501,350 +496,333 @@ class HMC:
         q.displayln_info([masses.get_elem([0,0,0,0],0),masses.get_elem([1,0,0,0],0),masses.get_elem([4,0,0,0],0)])
         q.displayln_info([masses.get_elem([0,0,0,0],1),masses.get_elem([1,0,0,0],1),masses.get_elem([4,0,0,0],1)])
 
-def phi_squared(field,action):
-    # Calculate the average value of phi^2
-    phi_sq = action.sum_sq(field) # Returns sum of field^2/2
-    phi_sq = q.glb_sum(phi_sq) # Sums over all nodes
-    geo = field.geo()
-    return phi_sq/geo.total_volume()
-
-def histogram_bin(val,midpoint,n):
-    j = 1
-    for i in range(n):
-        if(val<j*midpoint/2**i):
-            j = j*2 - 1
-        else:
-            j = j*2 + 1
-    return int((j-1)/2.0)
-
-def update_phi_sq_dist(elems,phi_sq_av,norm_factor):
-    phi_sq = 0.0
-    for elem in elems:
-        phi_sq+=elem**2
-    global phi_sq_dist
-    phi_sq_dist[histogram_bin(phi_sq,phi_sq_av,6)]+=1.0/norm_factor
-
-def update_phi_i_dist(phi,phi_av,norm_factor):
-    global phi_i_dist
-    phi_i_dist[histogram_bin(np.abs(phi),phi_av,6)]+=1.0/norm_factor
-
-def update_theta_dist(elems,norm_factor):
-    phi_sq = 0.0
-    for elem in elems:
-        phi_sq+=elem**2
-    global theta_dist
-    for elem in elems[1:]:
-        theta_dist[histogram_bin(np.arccos(elems[0]/phi_sq**0.5),np.pi/2,6)]+=1.0/norm_factor
-
-def save_observables():
-    with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{date}_{version}.bin", "wb") as output:
-        pickle.dump({"trajs": trajs,
-                    "accept_rates": accept_rates,
-                    "psq_list": psq_list,
-                    "phi_list": phi_list,
-                    "timeslices": timeslices,
-                    "timeslices_m": timeslices_m,
-                    "kinematic_ms": kinematic_ms,
-                    "hm_timeslices": hm_timeslices,
-                    "ax_cur_timeslices": ax_cur_timeslices,
-                    "polar_timeslices": polar_timeslices,
-                    "psq_dist_center": psq_dist_center,
-                    "phi_dist_center": phi_dist_center,
-                    "phi_sq_dist": phi_sq_dist,
-                    "phi_i_dist": phi_i_dist,
-                    "theta_dist": theta_dist,
-                    "psq_pred_list": psq_pred_list,
-                    "phi_pred_list": phi_pred_list,
-                    "timeslices_pred": timeslices_pred,
-                    "hm_timeslices_pred": hm_timeslices_pred,
-                    "ax_cur_timeslices_pred": ax_cur_timeslices_pred,
-                    "fields": fields,
-                    "momentums": momentums,
-                    "field_pred": fields_pred},output)
-
-def load_observables():
-    filename = f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{date}_{version}.bin"
-    if len(glob.glob(filename)):
-        with open(filename,"rb") as input:
-            data = pickle.load(input)
-            if(data["kinematic_ms"]!=kinematic_ms):
-                raise Exception("Combining data with different kinematic factors")
-            trajs.extend(data["trajs"])
-            accept_rates.extend(data["accept_rates"])
-            psq_list.extend(data["psq_list"])
-            phi_list.extend(data["phi_list"])
-            timeslices.extend(data["timeslices"])
-            timeslices_m.extend(data["timeslices_m"])
-            hm_timeslices.extend(data["hm_timeslices"])
-            ax_cur_timeslices.extend(data["ax_cur_timeslices"])
-            polar_timeslices.extend(data["polar_timeslices"])
-            psq_pred_list.extend(data["psq_pred_list"])
-            phi_pred_list.extend(data["phi_pred_list"])
-            timeslices_pred.extend(data["timeslices_pred"])
-            hm_timeslices_pred.extend(data["hm_timeslices_pred"])
-            ax_cur_timeslices_pred.extend(data["ax_cur_timeslices_pred"])
-            fields.extend(data["fields"])
-            momentums.extend(data["momentums"])
-            fields_pred.extend(data["field_pred"])
-            #
-            global psq_dist_center, phi_dist_center, phi_sq_dist, phi_i_dist, theta_dist
-            psq_dist_center = data["psq_dist_center"]
-            phi_dist_center = data["phi_dist_center"]
-            phi_sq_dist = [phi_sq_dist[i] + data["phi_sq_dist"][i] for i in range(len(phi_sq_dist))]
-            phi_i_dist = [phi_i_dist[i] + data["phi_i_dist"][i] for i in range(len(phi_i_dist))]
-            theta_dist = [theta_dist[i] + data["theta_dist"][i] for i in range(len(theta_dist))]
-
-@q.timer_verbose
-def main():
-    # If observables have been saved from a previous calculation (on the
-    # same day), then load that file first
-    load_observables()
-    print(len(psq_list))
+class Measurements:
+    def __init__(self, total_site, field_geo, save_file):
+        self.save_file = save_file
+        # Stores the trajectory number for debugging purposes
+        self.trajs = []
+        # Save the acceptance rates
+        self.accept_rates=[]
+        # Stores the average phi^2 for each trajectory
+        self.psq_list=[]
+        self.psq_pred_list=[]
+        # Stores the average values of each phi_i for each trajectory
+        self.phi_list=[]
+        self.phi_pred_list=[]
+        # Stores the timeslice sums of each phi_i for each trajectory
+        self.timeslices=[]
+        self.timeslices_pred=[]
+        # Stores timeslices sums calculated using only high modes
+        self.hm_timeslices=[]
+        self.hm_timeslices_pred=[]
+        # Stores the timeslice sums of the time component of each of the three
+        # axial currents for each trajectory
+        self.ax_cur_timeslices=[]
+        self.ax_cur_timeslices_pred=[]
+        # Stores the timeslice sums of the polar-coordinate fields
+        self.polar_timeslices=[]
+        #
+        self.kinematic_ms = [[1,0,0,0],
+                            [0,1,0,0],
+                            [0,0,1,0],
+                            [1,1,0,0],
+                            [1,0,1,0],
+                            [0,1,1,0],
+                            [1,1,1,0],
+                            [-1,1,1,0],
+                            [1,-1,1,0],
+                            [1,1,-1,0],
+                            [2,0,0,0],
+                            [0,2,0,0],
+                            [0,0,2,0],
+                            [3,0,0,0],
+                            [0,3,0,0],
+                            [0,0,3,0]]
+        self.timeslices_m = []
+        #
+        self.fields=[]
+        self.forces=[]
+        self.fields_pred=[]
+        self.momentums=[]
+        #
+        self.psq_dist_center = 0
+        self.phi_dist_center = 0
+        self.phi_sq_dist=[0.0]*64
+        self.phi_i_dist=[0.0]*64
+        self.theta_dist=[0.0]*64
+        #
+        # Create fields to store only the high modes
+        self.hm_field = Field_fft(field_geo,4)
+        # Create a field to store the "spherical" version of the field
+        self.polar_field = q.Field(q.ElemTypeDouble,field_geo)
+        # Auxillary fields for use in calculations
+        self.auxc = q.Field(q.ElemTypeComplex,field_geo)
+        self.auxd = q.Field(q.ElemTypeDouble,field_geo)
+        # Create the geometry for the axial current field
+        geo_cur = q.Geometry(total_site, 3)
+        # This field will store the calculated axial currents
+        self.axial_current = q.Field(q.ElemTypeDouble,geo_cur)
+        # Create fields to project out momentum states
+        self.mom_factors = []
+        geo_m = q.Geometry(total_site, 1)
+        for m in self.kinematic_ms:
+            self.mom_factors.append(q.mk_phase_field(geo_m, m))
     
-    hmc = HMC(m_sq,lmbd,alpha,total_site,mult,steps,mass_force_coef,recalculate_masses,fresh_start,[init_length,block_init_length,block_length,num_blocks,final_block_length])
-    
-    # Create the geometry for the axial current field
-    geo_cur = q.Geometry(total_site, 3)
-    # This field will store the calculated axial currents
-    axial_current = q.Field(q.ElemTypeDouble,geo_cur)
-    #
-    hm_field = Field_fft(hmc.field.geo(),4)
-    hm_field_pred = Field_fft(hmc.field.geo(),4)
-    #
-    polar_field = q.Field(q.ElemTypeDouble,hmc.field.geo())
-    #
-    auxc = q.Field(q.ElemTypeComplex,hmc.field.geo())
-    auxd = q.Field(q.ElemTypeDouble,hmc.field.geo())
-    
-    # Create fields to project out momentum states
-    mom_factors = []
-    geo_m = q.Geometry(total_site, 1)
-    for m in kinematic_ms:
-        mom_factors.append(q.mk_phase_field(geo_m, m))
-    
-    for traj in range(1,n_traj+1):
-        # Run the HMC algorithm to update the field configuration
-        trajs.append(hmc.traj)
-        hmc.run_traj()
-
-        # Calculate the expectation values of phi and phi^2
-        q.displayln_info("Average phi^2:")
-        psq = phi_squared(hmc.field.get_field(), hmc.action)
-        q.displayln_info(psq)
-        q.displayln_info("Average phi^2 predicted:")
-        psq_predicted = phi_squared(hmc.field_predicted.get_field(), hmc.action)
-        q.displayln_info(psq_predicted)
-
-        q.displayln_info("Average phi:")
+    def measure(self, hmc):
+        self.trajs.append(hmc.traj)
+        self.accept_rates.append(hmc.accept_prob)
+        
+        # Calculate the expectation values of phi^2
+        self.psq_list.append(self.calc_psq(hmc.field.get_field(), hmc.action))
+        self.psq_pred_list.append(self.calc_psq(hmc.field_predicted.get_field(), hmc.action))
+        # Calculate the expectation value of phi
         field_sum = hmc.field.get_field().glb_sum()
-        phi=[field_sum[i]/hmc.field.V for i in range(mult)]
-        q.displayln_info([hmc.field.get_field().get_elem([4,0,0,0],0),hmc.field.get_field().get_elem([4,0,0,0],1),hmc.field.get_field().get_elem([4,0,0,0],2),hmc.field.get_field().get_elem([4,0,0,0],3)])
-        #q.displayln_info(phi)
+        self.phi_list.append([field_sum[i]/hmc.field.V for i in range(hmc.mult)])
         field_sum = hmc.field_predicted.get_field().glb_sum()
-        phi_predicted=[field_sum[i]/hmc.field.V for i in range(mult)]
-
-        #q.displayln_info("Analytic masses (free case):")
-        #ms=[calc_mass([0,0,0,0]),calc_mass([1,0,0,0]),calc_mass([2,0,0,0]),calc_mass([3,0,0,0]),calc_mass([4,0,0,0]),calc_mass([5,0,0,0])]
-        #q.displayln_info(ms)
-
-        hmc.display_masses("Masses:", hmc.masses)
-        q.displayln_info("vev: ")
-        q.displayln_info(hmc.vev)
-
-        tslices = hmc.field.get_field().glb_sum_tslice()
+        self.phi_pred_list.append([field_sum[i]/hmc.field.V for i in range(hmc.mult)])
+        #
+        self.momentums.append(hmc.init_momentum.get_representatives_ft())
+        self.fields_pred.append(hmc.field_predicted.get_representatives_ft())
+        self.fields.append(hmc.f0.get_representatives_ft())
+        #
+        self.timeslices.append(hmc.field.get_field().glb_sum_tslice().to_numpy())
+        self.timeslices_pred.append(hmc.field_predicted.get_field().glb_sum_tslice().to_numpy())
+        #
+        self.hm_field.set_field_ft(hmc.field.get_field_ft())
+        self.hm_field.remove_low_modes()
+        self.hm_timeslices.append(self.hm_field.get_field().glb_sum_tslice().to_numpy())
+        #
+        self.hm_field.set_field_ft(hmc.field_predicted.get_field_ft())
+        self.hm_field.remove_low_modes()
+        self.hm_timeslices_pred.append(self.hm_field.get_field().glb_sum_tslice().to_numpy())
+        #
+        hmc.action.get_polar_field(self.polar_field, hmc.field.get_field())
+        self.polar_timeslices.append(self.polar_field.glb_sum_tslice().to_numpy())
         #
         tslices_m = []
-        for m in mom_factors:
-            q.field_double.set_complex_from_double(auxc, hmc.field.get_field())
-            auxc*=m
-            tslices_m.append(auxc.glb_sum_tslice().to_numpy())
-        #
-        hm_field.set_field_ft(hmc.field.get_field_ft())
-        hm_field.remove_low_modes()
-        hm_tslices = hm_field.get_field().glb_sum_tslice()
-        #
-        tslices_predicted = hmc.field_predicted.get_field().glb_sum_tslice()
-        #
-        hm_field_pred.set_field_ft(hmc.field_predicted.get_field_ft())
-        hm_field_pred.remove_low_modes()
-        hm_tslices_pred = hm_field_pred.get_field().glb_sum_tslice()
-        #
-        hmc.action.get_polar_field(polar_field, hmc.field.get_field())
-        polar_tslices = polar_field.glb_sum_tslice()
-
+        for m in self.mom_factors:
+            q.field_double.set_complex_from_double(self.auxc, hmc.field.get_field())
+            self.auxc*=m
+            tslices_m.append(self.auxc.glb_sum_tslice().to_numpy())
+        self.timeslices_m.append(tslices_m)
+        
         # Calculate the axial current of the current field configuration
         # and save it in axial_current
-        hmc.action.axial_current_node(axial_current, hmc.field.get_field())
-        tslices_ax_cur = axial_current.glb_sum_tslice()
-        hmc.action.axial_current_node(axial_current, hmc.field_predicted.get_field())
-        tslices_ax_cur_predicted = axial_current.glb_sum_tslice()
-
-        if traj>hmc.start_measurements:
-            psq_list.append(psq)
-            phi_list.append(phi)
-            timeslices.append(tslices.to_numpy())
-            timeslices_m.append(tslices_m)
-            ax_cur_timeslices.append(tslices_ax_cur.to_numpy())
-            psq_pred_list.append(psq_predicted)
-            phi_pred_list.append(phi_predicted)
-            timeslices_pred.append(tslices_predicted.to_numpy())
-            ax_cur_timeslices_pred.append(tslices_ax_cur_predicted.to_numpy())
-            hm_timeslices.append(hm_tslices.to_numpy())
-            hm_timeslices_pred.append(hm_tslices_pred.to_numpy())
-            polar_timeslices.append(polar_tslices.to_numpy())
-        if traj>hmc.init_length+hmc.num_blocks*hmc.block_length+hmc.final_block_length:
-            global psq_dist_center, phi_dist_center
-            if not psq_dist_center:
-                psq_dist_center = psq
-                q.field_double.set_complex_from_double(auxc, hmc.field.get_field())
-                q.field_double.set_abs_from_complex(auxd, auxc)
-                field_sum_abs = auxd.glb_sum()
-                phi_abs=[field_sum_abs[i]/hmc.field.V for i in range(mult)]
-                phi_dist_center = (phi_abs[1]+phi_abs[2]+phi_abs[3])/3.0
+        hmc.action.axial_current_node(self.axial_current, hmc.field.get_field())
+        self.ax_cur_timeslices.append(self.axial_current.glb_sum_tslice().to_numpy())
+        hmc.action.axial_current_node(self.axial_current, hmc.field_predicted.get_field())
+        self.ax_cur_timeslices_pred.append(self.axial_current.glb_sum_tslice().to_numpy())
+        
+        # Update lists that give histograms of phi, phi^2, and theta distributions
+        if hmc.traj>hmc.init_length+hmc.num_blocks*hmc.block_length+hmc.final_block_length:
             field = hmc.field.get_field()
+            if not self.psq_dist_center:
+                self.psq_dist_center = self.psq_list[-1]
+                q.field_double.set_complex_from_double(self.auxc, field)
+                q.field_double.set_abs_from_complex(self.auxd, self.auxc)
+                field_sum_abs = self.auxd.glb_sum()
+                phi_abs=[field_sum_abs[i]/hmc.field.V for i in range(hmc.mult)]
+                self.phi_dist_center = (phi_abs[1]+phi_abs[2]+phi_abs[3])/3.0
             for x in range(hmc.total_site[0]):
                 for y in range(hmc.total_site[1]):
                     for z in range(hmc.total_site[2]):
                         for t in range(hmc.total_site[3]):
                             elems = field.get_elems([x,y,z,t])
-                            update_phi_sq_dist(elems,psq_dist_center,hmc.V)
-                            update_phi_i_dist(np.abs(elems[1]),phi_dist_center,hmc.V)
-                            update_phi_i_dist(np.abs(elems[2]),phi_dist_center,hmc.V)
-                            update_phi_i_dist(np.abs(elems[3]),phi_dist_center,hmc.V)
-                            update_theta_dist(elems,hmc.V)
-        if traj%save_frequency == 0:
+                            self.update_phi_sq_dist(elems,hmc.V)
+                            self.update_phi_i_dist(np.abs(elems[1]),hmc.V)
+                            self.update_phi_i_dist(np.abs(elems[2]),hmc.V)
+                            self.update_phi_i_dist(np.abs(elems[3]),hmc.V)
+                            self.update_theta_dist(elems,hmc.V)
+    
+    def display_measurements(self):
+        q.displayln_info("Average phi:")
+        q.displayln_info(self.phi_list[-1])
+        q.displayln_info("Average phi^2:")
+        q.displayln_info(self.psq_list[-1])
+        q.displayln_info("Average phi^2 predicted:")
+        q.displayln_info(self.psq_pred_list[-1])
+    
+    def calc_psq(self,field,action):
+        # Calculate the average value of phi^2
+        phi_sq = action.sum_sq(field) # Returns sum of field^2/2
+        phi_sq = q.glb_sum(phi_sq) # Sums over all nodes
+        geo = field.geo()
+        return phi_sq/geo.total_volume()
+        
+    def histogram_bin(self,val,midpoint,n):
+        j = 1
+        for i in range(n):
+            if(val<j*midpoint/2**i):
+                j = j*2 - 1
+            else:
+                j = j*2 + 1
+        return int((j-1)/2.0)
+
+    def update_phi_sq_dist(self,elems,norm_factor):
+        phi_sq = 0.0
+        for elem in elems:
+            phi_sq+=elem**2
+        self.phi_sq_dist[self.histogram_bin(phi_sq,self.psq_dist_center,6)]+=1.0/norm_factor
+
+    def update_phi_i_dist(self,phi,norm_factor):
+        self.phi_i_dist[self.histogram_bin(np.abs(phi),self.phi_dist_center,6)]+=1.0/norm_factor
+
+    def update_theta_dist(self,elems,norm_factor):
+        phi_sq = 0.0
+        for elem in elems:
+            phi_sq+=elem**2
+        for elem in elems[1:]:
+            self.theta_dist[self.histogram_bin(np.arccos(elems[0]/phi_sq**0.5),np.pi/2,6)]+=1.0/norm_factor
+    
+    def save(self):
+        with open(self.save_file, "wb") as output:
+            pickle.dump({"trajs": self.trajs,
+                        "accept_rates": self.accept_rates,
+                        "psq_list": self.psq_list,
+                        "phi_list": self.phi_list,
+                        "timeslices": self.timeslices,
+                        "timeslices_m": self.timeslices_m,
+                        "kinematic_ms": self.kinematic_ms,
+                        "hm_timeslices": self.hm_timeslices,
+                        "ax_cur_timeslices": self.ax_cur_timeslices,
+                        "polar_timeslices": self.polar_timeslices,
+                        "psq_dist_center": self.psq_dist_center,
+                        "phi_dist_center": self.phi_dist_center,
+                        "phi_sq_dist": self.phi_sq_dist,
+                        "phi_i_dist": self.phi_i_dist,
+                        "theta_dist": self.theta_dist,
+                        "psq_pred_list": self.psq_pred_list,
+                        "phi_pred_list": self.phi_pred_list,
+                        "timeslices_pred": self.timeslices_pred,
+                        "hm_timeslices_pred": self.hm_timeslices_pred,
+                        "ax_cur_timeslices_pred": self.ax_cur_timeslices_pred,
+                        "fields": self.fields,
+                        "momentums": self.momentums,
+                        "field_pred": self.fields_pred},output)
+    
+    def load(self):
+        if len(glob.glob(self.save_file)):
+            with open(self.save_file,"rb") as input:
+                data = pickle.load(input)
+                if(data["kinematic_ms"]!=self.kinematic_ms):
+                    raise Exception("Combining data with different kinematic factors")
+                self.trajs.extend(data["trajs"])
+                self.accept_rates.extend(data["accept_rates"])
+                self.psq_list.extend(data["psq_list"])
+                self.phi_list.extend(data["phi_list"])
+                self.timeslices.extend(data["timeslices"])
+                self.timeslices_m.extend(data["timeslices_m"])
+                self.hm_timeslices.extend(data["hm_timeslices"])
+                self.ax_cur_timeslices.extend(data["ax_cur_timeslices"])
+                self.polar_timeslices.extend(data["polar_timeslices"])
+                self.psq_pred_list.extend(data["psq_pred_list"])
+                self.phi_pred_list.extend(data["phi_pred_list"])
+                self.timeslices_pred.extend(data["timeslices_pred"])
+                self.hm_timeslices_pred.extend(data["hm_timeslices_pred"])
+                self.ax_cur_timeslices_pred.extend(data["ax_cur_timeslices_pred"])
+                self.fields.extend(data["fields"])
+                self.momentums.extend(data["momentums"])
+                self.fields_pred.extend(data["field_pred"])
+                #
+                self.psq_dist_center = data["psq_dist_center"]
+                self.phi_dist_center = data["phi_dist_center"]
+                self.phi_sq_dist = [self.phi_sq_dist[i] + data["phi_sq_dist"][i] for i in range(len(self.phi_sq_dist))]
+                self.phi_i_dist = [self.phi_i_dist[i] + data["phi_i_dist"][i] for i in range(len(self.phi_i_dist))]
+                self.theta_dist = [self.theta_dist[i] + data["theta_dist"][i] for i in range(len(self.theta_dist))]
+
+@q.timer_verbose
+def main():
+    # The lattice dimensions
+    total_site = [4,4,4,8]
+    # The multiplicity of the scalar field
+    mult = 4
+    # Use action for a Euclidean scalar field. The Lagrangian will be:
+    # (1/2)*[sum i]|dphi_i|^2 + (1/2)*m_sq*[sum i]|phi_i|^2
+    #     + (1/24)*lmbd*([sum i]|phi_i|^2)^2
+    m_sq = -8.
+    lmbd = 32.0
+    alpha = 0.1
+    # The number of trajectories to calculate
+    n_traj = 1000
+    #
+    version = "1-9"
+    date = datetime.datetime.now().date()
+    # The number of steps to take in a single trajectory
+    steps = 20
+    # The factor by which to scale down the force when setting a lower limit
+    # on Fourier acceleration masses
+    mass_force_coef = 1000.0
+    #
+    init_length = 20
+    block_init_length = 20
+    block_length = 95
+    num_blocks = 4
+    final_block_length = 200
+    recalculate_masses = False
+    fresh_start = False
+
+    for i in range(1,len(sys.argv)):
+        try:
+            if(sys.argv[i]=="-d"):
+                a = sys.argv[i+1].split("x")
+                total_site = [int(a[j]) for j in range(4)]
+            elif(sys.argv[i]=="-n"):
+                mult = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-t"):
+                n_traj = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-m"):
+                m_sq = float(sys.argv[i+1])
+            elif(sys.argv[i]=="-l"):
+                lmbd = float(sys.argv[i+1])
+            elif(sys.argv[i]=="-a"):
+                alpha = float(sys.argv[i+1])
+            elif(sys.argv[i]=="-s"):
+                steps = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-f"):
+                mass_force_coef = float(sys.argv[i+1])
+            elif(sys.argv[i]=="-r"):
+                recalculate_masses = True
+            elif(sys.argv[i]=="-R"):
+                fresh_start = True
+            elif(sys.argv[i]=="-i"):
+                init_length = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-I"):
+                block_init_length = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-b"):
+                block_length = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-N"):
+                num_blocks = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-B"):
+                final_block_length = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-S"):
+                save_frequency = int(sys.argv[i+1])
+        except:
+            raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -m for mass squared, -l for lambda, -a for alpha, -s for the number of steps in a trajectory, -f for the factor by which to scale down the force when setting a lower limit for Fourier acceleration masses, -r to force recalculating the masses, -R to force recalculating the masses and the initial field, -i for the number of trajectories to do at the beginning without a Metropolis step, -I for the number of trajectories to omit from the start of each HMC mass estimation block, -b for the number of trajectories in one HMC mass estimation block, -N for the number of HMC mass estimation blocks (excluding the final block), -B for the number of trajectories in the final mass estimation block, and -S for the number of trajectories between each save. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1 -f 100.0")
+    
+    hmc = HMC(m_sq,lmbd,alpha,total_site,mult,steps,mass_force_coef,recalculate_masses,fresh_start,[init_length,block_init_length,block_length,num_blocks,final_block_length],version,date)
+    measurements = Measurements(total_site, hmc.field.geo(), f"output_data/measurements_{hmc.fileid}.bin")
+    
+    # If observables have been saved from a previous calculation (on the
+    # same day), then load that file first
+    measurements.load()
+    
+    save_frequency = 50
+    while hmc.traj <= n_traj:
+        # Run the HMC algorithm to update the field configuration
+        hmc.run_traj()
+        hmc.display_masses("Masses:", hmc.masses)
+        q.displayln_info("vev: ")
+        q.displayln_info(hmc.vev)
+        measurements.measure(hmc)
+        
+        if hmc.traj%save_frequency == 0:
             hmc.save_field()
-            save_observables()
+            measurements.save()
 
     # Saves the final field configuration so that the next run can be
     # started where this one left off
     hmc.save_field()
-    save_observables()
-
-# Stores the trajectory number for debugging purposes
-trajs = []
-# Stores the average phi^2 for each trajectory
-psq_list=[]
-psq_pred_list=[]
-# Stores the average values of each phi_i for each trajectory
-phi_list=[]
-phi_pred_list=[]
-# Stores the timeslice sums of each phi_i for each trajectory
-timeslices=[]
-timeslices_pred=[]
-# Stores timeslices sums calculated using only high modes
-hm_timeslices=[]
-hm_timeslices_pred=[]
-# Stores the timeslice sums of the time component of each of the three
-# axial currents for each trajectory
-ax_cur_timeslices=[]
-ax_cur_timeslices_pred=[]
-# Stores the timeslice sums of the polar-coordinate fields
-polar_timeslices=[]
-# Save the acceptance rates
-accept_rates=[]
-#
-fields=[]
-forces=[]
-fields_pred=[]
-momentums=[]
-#
-psq_dist_center = 0
-phi_dist_center = 0
-phi_sq_dist=[0.0]*64
-phi_i_dist=[0.0]*64
-theta_dist=[0.0]*64
-#
-kinematic_ms = [[1,0,0,0],
-                [0,1,0,0],
-                [0,0,1,0],
-                [1,1,0,0],
-                [1,0,1,0],
-                [0,1,1,0],
-                [1,1,1,0],
-                [-1,1,1,0],
-                [1,-1,1,0],
-                [1,1,-1,0],
-                [2,0,0,0],
-                [0,2,0,0],
-                [0,0,2,0],
-                [3,0,0,0],
-                [0,3,0,0],
-                [0,0,3,0]]
-timeslices_m = []
-
-# The lattice dimensions
-total_site = [4,4,4,8]
-
-# The multiplicity of the scalar field
-mult = 4
-
-# The number of trajectories to calculate
-n_traj = 1000
-# The number of steps to take in a single trajectory
-steps = 20
-# The factor by which to scale down the force when setting a lower limit
-# on Fourier acceleration masses
-mass_force_coef = 1000.0
-
-init_length = 20
-block_init_length = 20
-block_length = 95
-num_blocks = 4
-final_block_length = 200
-
-save_frequency = 50
-
-# Use action for a Euclidean scalar field. The Lagrangian will be:
-# (1/2)*[sum i]|dphi_i|^2 + (1/2)*m_sq*[sum i]|phi_i|^2
-#     + (1/24)*lmbd*([sum i]|phi_i|^2)^2
-m_sq = -8.
-lmbd = 32.0
-alpha = 0.1
-
-recalculate_masses = False
-fresh_start = False
-
-version = "1-9"
-date = datetime.datetime.now().date()
-
-for i in range(1,len(sys.argv)):
-    try:
-        if(sys.argv[i]=="-d"):
-            a = sys.argv[i+1].split("x")
-            total_site = [int(a[j]) for j in range(4)]
-        elif(sys.argv[i]=="-n"):
-            mult = int(sys.argv[i+1])
-        elif(sys.argv[i]=="-t"):
-            n_traj = int(sys.argv[i+1])
-        elif(sys.argv[i]=="-m"):
-            m_sq = float(sys.argv[i+1])
-        elif(sys.argv[i]=="-l"):
-            lmbd = float(sys.argv[i+1])
-        elif(sys.argv[i]=="-a"):
-            alpha = float(sys.argv[i+1])
-        elif(sys.argv[i]=="-s"):
-            steps = int(sys.argv[i+1])
-        elif(sys.argv[i]=="-f"):
-            mass_force_coef = float(sys.argv[i+1])
-        elif(sys.argv[i]=="-r"):
-            recalculate_masses = True
-        elif(sys.argv[i]=="-R"):
-            fresh_start = True
-        elif(sys.argv[i]=="-i"):
-            init_length = int(sys.argv[i+1])
-        elif(sys.argv[i]=="-I"):
-            block_init_length = int(sys.argv[i+1])
-        elif(sys.argv[i]=="-b"):
-            block_length = int(sys.argv[i+1])
-        elif(sys.argv[i]=="-N"):
-            num_blocks = int(sys.argv[i+1])
-        elif(sys.argv[i]=="-B"):
-            final_block_length = int(sys.argv[i+1])
-        elif(sys.argv[i]=="-S"):
-            save_frequency = int(sys.argv[i+1])
-    except:
-        raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -m for mass squared, -l for lambda, -a for alpha, -s for the number of steps in a trajectory, -f for the factor by which to scale down the force when setting a lower limit for Fourier acceleration masses, -r to force recalculating the masses, -R to force recalculating the masses and the initial field, -i for the number of trajectories to do at the beginning without a Metropolis step, -I for the number of trajectories to omit from the start of each HMC mass estimation block, -b for the number of trajectories in one HMC mass estimation block, -N for the number of HMC mass estimation blocks (excluding the final block), -B for the number of trajectories in the final mass estimation block, and -S for the number of trajectories between each save. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1 -f 100.0")
+    measurements.save()
 
 size_node_list = [
         [1, 1, 1, 1],
