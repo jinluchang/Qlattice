@@ -115,3 +115,46 @@ Can store some metadata information about the file. The default is simply empty.
 ```
 [FILE-HEADER size] + 1 + [FILE-NAME size] + 1 + [FILE-INFO size] + 1 + [FILE-DATA size] + 2
 ```
+
+### Example
+
+ˋˋˋ
+#!/usr/bin/env qar-glimpse
+
+QAR-FILE 13 0 20
+filename1.txt
+
+Contents for file1.
+
+
+QAR-FILE 13 0 20
+filename2.txt
+
+Contents for file2.
+
+
+QAR-FILE 13 0 20
+filename3.txt
+
+Contents for file3.
+
+
+QAR-FILE 18 0 21
+folder1/file-a.txt
+
+Contents for file-a.
+
+
+QAR-FILE 18 0 21
+folder2/file-b.txt
+
+Contents for file-b.
+
+
+QAR-FILE 18 0 21
+folder2/file-c.txt
+
+Contents for file-c.
+
+
+ˋˋˋ
