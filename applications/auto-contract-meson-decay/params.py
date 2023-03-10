@@ -238,5 +238,5 @@ dict_params["24IH2"][tag] = 1
 dict_params["24IH3"][tag] = 1
 dict_params["32IH1"][tag] = 1
 dict_params["32IH2"][tag] = 1
-dict_params["48I"][tag] = 0.0003
+dict_params["48I"][tag] = 0.003
 dict_params["64I"][tag] = 1
