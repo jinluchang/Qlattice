@@ -521,9 +521,14 @@ int qar_extract(const std::string& path_qar, const std::string& path_folder_,
   qrename(path_folder + ".acc", path_folder);
   if (is_remove_qar_after) {
     qassert(is_directory(path_folder));
+    if (does_file_exist(path_qar + ".idx")) {
+      qremove(path_qar + ".idx");
+    }
     for (long iv = 0; iv < num_vol; ++iv) {
       const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
-      qremove(path_qar_v);
+      if (does_file_exist(path_qar_v)) {
+        qremove(path_qar_v);
+      }
     }
   }
   return 0;
