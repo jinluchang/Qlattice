@@ -306,6 +306,13 @@ std::string qcat_sync_node(const std::string& path)
   return ret;
 }
 
+void load_qar_index_sync_node(const QarFile& qar, const std::string& fn)
+// interface function
+{
+  const std::string qar_index_content = qcat_sync_node(fn);
+  parse_qar_index(qar, qar_index_content);
+}
+
 DataTable qload_datatable_sync_node(const std::string& path, const bool is_par)
 {
   TIMER_VERBOSE("qload_datatable_sync_node");

@@ -147,9 +147,8 @@ std::vector<std::string> list(const QarFile& qar)
   return fn_list;
 }
 
-
-
 void save_qar_index(const QarFile& qar, const std::string& fn)
+// interface function
 {
   if (qar.null()) {
     return;
@@ -194,6 +193,10 @@ void save_qar_index_info(const QarFile& qar, const std::string& fn)
 void parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
 // interface function
 {
+  if (qar.null()) {
+    qwarn("parse_qar_index: qar is null.");
+    return;
+  }
   const long header_len = qar_idx_header.size();
   if (0 != qar_index_content.compare(0, header_len, qar_idx_header)) {
     qwarn("parse_qar_index: not qar-idx file format.");
@@ -333,6 +336,13 @@ void parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
     qassert(i < (long)qar.size());
     register_file(qar[i], fn, qsinfo);
   }
+}
+
+void load_qar_index(const QarFile& qar, const std::string& fn)
+// interface function
+{
+  const std::string qar_index_content = qcat(fn);
+  parse_qar_index(qar, qar_index_content);
 }
 
 std::string qcat(const std::string& path)

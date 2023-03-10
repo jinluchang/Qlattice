@@ -109,6 +109,8 @@ int qcopy_file_info(const std::string& path_src, const std::string& path_dst);
 
 std::string qcat_sync_node(const std::string& path);
 
+void load_qar_index_sync_node(const QarFile& qar, const std::string& fn);
+
 DataTable qload_datatable_sync_node(const std::string& path, const bool is_par = false);
 
 LatData lat_data_load_info(const std::string& path);
