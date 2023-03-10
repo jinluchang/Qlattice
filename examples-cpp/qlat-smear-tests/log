@@ -40,10 +40,18 @@ plaq (2,1,0,0)x1 :  4.42771899709962824E+01
 Cache: 'VectorGPUKey': 0 / 16 [8] to add
 Cache: 'CommPlanCache': 4 / 32 [16] to add
 Cache: 'SmearPlanKeyCache': 0 / 16 [8] to add
+Cache: 'VectorGPUKey': 0 / 16 [8] to add
+Cache: 'VectorGPUKey': 1 / 16 [8] to add
+Cache: 'VectorGPUKey': 2 / 16 [8] to add
+Cache: 'VectorGPUKey': 3 / 16 [8] to add
 CHECK: Consistency: orig qnorm: 1.4866278514E+05 ; smear qnorm 2.2139079478E+03 ; new smear qnorm: 2.2139079478E+03
 CHECK: finished successfully.
+Cache: 'VectorGPUKey': 4 / 16 [8] clear
 Cache: 'VectorGPUKey': 1 / 16 [8] clear
 Cache: 'SmearPlanKeyCache': 1 / 16 [8] clear
+Cache: 'VectorGPUKey': 0 / 16 [8] to add
+Cache: 'VectorGPUKey': 1 / 16 [8] to add
+Cache: 'VectorGPUKey': 2 / 16 [8] to add
 Cache: 'CommPlanCache': 5 / 32 [16] clear
 clear_mem_cache: 2893824 bytes (0.003 GB) freed.
 qlat::end(): get_comm_list().pop_back()
