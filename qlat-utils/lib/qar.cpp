@@ -178,6 +178,7 @@ void save_qar_index(const QarFile& qar, const std::string& fn)
       lines.push_back(line1);
       lines.push_back(line2);
       lines.push_back(line3);
+      lines.push_back("\n");
     }
   }
   qtouch(fn, lines);
@@ -336,6 +337,11 @@ void parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
       return;
     }
     if (not parse_end(cur3, line3)) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    // line4:
+    if (not parse_literal(cur, qar_index_content, '\n')) {
       qwarn("parse_qar_index: not qar-idx file format.");
       return;
     }
