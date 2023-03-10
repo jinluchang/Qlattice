@@ -132,6 +132,10 @@ inline LatDim read_lat_dim(const std::string& str)
     qassert(false);
   } else {
     while (parse_char(c, cur, str)) {
+      if (c == '\n') {
+        qassert(cur == (long)str.size());
+        break;
+      }
       qassert(c == ' ');
       std::string index;
       if (!parse_string(index, cur, str)) {
