@@ -208,7 +208,7 @@ inline bool parse_literal(long& cur, const std::string& data, const char c_match
 inline bool parse_literal(long& cur, const std::string& data, const std::string& literal)
 {
   assert(cur <= (long)data.size());
-  if (not data.compare(cur, literal.size(), literal)) {
+  if (0 != data.compare(cur, literal.size(), literal)) {
     return false;
   }
   cur += literal.size();
@@ -254,13 +254,20 @@ inline bool parse_line(std::string& str, long& cur, const std::string& data)
 // include ending '\n' (if data has it)
 {
   assert(cur <= (long)data.size());
+  const long initial = cur;
   if ((long)data.size() <= cur) {
     str = "";
+    assert(cur == initial);
     return false;
   }
   const long start = cur;
   char c;
   while (parse_char_not(c, cur, data, '\n')) {
+  }
+  if (not parse_literal(cur, data, '\n')) {
+    str = "";
+    cur = initial;
+    return false;
   }
   str = std::string(data, start, cur - start);
   return true;
@@ -404,7 +411,7 @@ inline std::string info_get_prop(const std::vector<std::string>& lines,
                                  const std::string& prop)
 {
   for (size_t i = 0; i < lines.size(); ++i) {
-    if (lines[i].compare(0, prop.size(), prop) == 0) {
+    if (0 == lines[i].compare(0, prop.size(), prop)) {
       return std::string(lines[i], prop.size());
     }
   }

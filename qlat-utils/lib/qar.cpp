@@ -221,11 +221,9 @@ void parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
       return;
     }
     if (not parse_literal(cur1, line1, "QAR-FILE-IDX ")) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
-    }
-    if (not parse_literal(cur1, line1, ' ')) {
-      qwarn("parse_qar_index: not qar-idx file format.");
+      qwarn(ssprintf(
+          "parse_qar_index: not qar-idx file format. cur1=%ld line1='%s'.", cur1,
+          line1.c_str()));
       return;
     }
     if (not parse_long(i, cur1, line1)) {
@@ -240,12 +238,18 @@ void parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
       qwarn("parse_qar_index: not qar-idx file format.");
       return;
     }
+    if (not parse_literal(cur1, line1, ' ')) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
     if (not parse_long(fn_len, cur1, line1)) {
       qwarn("parse_qar_index: not qar-idx file format.");
       return;
     }
     if (not parse_literal(cur1, line1, '\n')) {
-      qwarn("parse_qar_index: not qar-idx file format.");
+      qwarn(ssprintf(
+          "parse_qar_index: not qar-idx file format. cur1=%ld line1='%s'.",
+          cur1, line1.c_str()));
       return;
     }
     if (not parse_end(cur1, line1)) {
@@ -370,6 +374,7 @@ std::string qcat(const std::string& path)
 void qar_build_index(const std::string& path_qar)
 {
   TIMER_VERBOSE("qar_build_index");
+  displayln(fname + ssprintf(": '%s'.", path_qar.c_str()));
   QarFile qar(path_qar, "r");
   save_qar_index(qar, path_qar + ".idx");
   qar.close();
