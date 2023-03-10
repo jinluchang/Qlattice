@@ -147,13 +147,15 @@ std::vector<std::string> list(const QarFile& qar)
   return fn_list;
 }
 
+
+
 void save_qar_index(const QarFile& qar, const std::string& fn)
-// interface function
 {
   if (qar.null()) {
     return;
   }
   std::vector<std::string> lines;
+  lines.push_back(qar_idx_header);
   for (long i = 0; i < (long)qar.size(); ++i) {
     const QarFileVol& qar_v = qar[i];
     qassert(not qar_v.null());
@@ -167,7 +169,7 @@ void save_qar_index(const QarFile& qar, const std::string& fn)
       const QarSegmentInfo& qsinfo = qsinfo_map.at(fn);
       qassert(qsinfo.fn_len == (long)fn.size());
       const std::string line1 =
-          ssprintf("QAR-FILE %ld %ld %ld\n", i, j, fn.size());
+          ssprintf("QAR-FILE-IDX %ld %ld %ld\n", i, j, fn.size());
       const std::string line2 = fn + "\n";
       const std::string line3 = ssprintf(
           "%ld %ld %ld %ld %ld %ld %ld %ld\n", qsinfo.offset, qsinfo.offset_fn,
@@ -182,6 +184,7 @@ void save_qar_index(const QarFile& qar, const std::string& fn)
 }
 
 void save_qar_index_info(const QarFile& qar, const std::string& fn)
+// interface function
 {
   if (0 == get_id_node()) {
     save_qar_index(qar, fn);
@@ -189,9 +192,147 @@ void save_qar_index_info(const QarFile& qar, const std::string& fn)
 }
 
 void parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
+// interface function
 {
-  (void)qar;
-  (void)qar_index_content;
+  const long header_len = qar_idx_header.size();
+  if (0 != qar_index_content.compare(0, header_len, qar_idx_header)) {
+    qwarn("parse_qar_index: not qar-idx file format.");
+    return;
+  }
+  long cur = header_len;
+  while (cur < (long)qar_index_content.size()) {
+    long i, j, fn_len;
+    std::string fn;
+    QarSegmentInfo qsinfo;
+    long cur1 = 0;
+    long cur3 = 0;
+    std::string line1;
+    std::string line3;
+    // line1: QAR-FILE-IDX i j fn_len
+    if (not parse_line(line1, cur, qar_index_content)) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_literal(cur1, line1, "QAR-FILE-IDX ")) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_literal(cur1, line1, ' ')) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_long(i, cur1, line1)) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_literal(cur1, line1, ' ')) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_long(j, cur1, line1)) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_long(fn_len, cur1, line1)) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_literal(cur1, line1, '\n')) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_end(cur1, line1)) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    // line2: fn
+    if (not parse_len(fn, cur, qar_index_content, fn_len)) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_literal(cur, qar_index_content, '\n')) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    // line3: offset offset_fn offset_info offset_data offset_end fn_len
+    // info_len data_len
+    if (not parse_line(line3, cur, qar_index_content)) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_long(qsinfo.offset, cur3, line3)) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_literal(cur3, line3, ' ')) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_long(qsinfo.offset_fn, cur3, line3)) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_literal(cur3, line3, ' ')) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_long(qsinfo.offset_info, cur3, line3)) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_literal(cur3, line3, ' ')) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_long(qsinfo.offset_data, cur3, line3)) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_literal(cur3, line3, ' ')) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_long(qsinfo.offset_end, cur3, line3)) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_literal(cur3, line3, ' ')) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_long(qsinfo.fn_len, cur3, line3)) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_literal(cur3, line3, ' ')) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_long(qsinfo.info_len, cur3, line3)) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_literal(cur3, line3, ' ')) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_long(qsinfo.data_len, cur3, line3)) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_literal(cur3, line3, '\n')) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    if (not parse_end(cur3, line3)) {
+      qwarn("parse_qar_index: not qar-idx file format.");
+      return;
+    }
+    // register_file
+    qassert(0 <= i);
+    qassert(i < (long)qar.size());
+    register_file(qar[i], fn, qsinfo);
+  }
 }
 
 std::string qcat(const std::string& path)

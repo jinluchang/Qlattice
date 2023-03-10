@@ -569,6 +569,8 @@ inline long write_from_qfile(const QFile& qfile_out, const QFile& qfile_in)
 
 const std::string qar_header = "#!/usr/bin/env qar-glimpse\n\n";
 
+const std::string qar_idx_header = "#!/usr/bin/env qar-idx-glimpse\n\n";
+
 struct QarSegmentInfo {
   long offset;
   long offset_fn;

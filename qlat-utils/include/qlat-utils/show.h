@@ -138,65 +138,163 @@ inline bool is_space(const char c)
   return c == ' ' || c == '\n' || c == '\r' || c == '\t';
 }
 
+inline bool parse_end(long& cur, const std::string& data)
+{
+  assert(cur <= (long)data.size());
+  return cur == (long)data.size();
+}
+
 inline bool parse_char(char& c, long& cur, const std::string& data)
 {
+  assert(cur <= (long)data.size());
   if ((long)data.size() <= cur) {
     c = 0;
     return false;
-  } else {
-    c = data[cur];
-    cur += 1;
+  }
+  c = data[cur];
+  cur += 1;
+  return true;
+}
+
+inline bool parse_char_not(char& c, long& cur, const std::string& data, const char c_match)
+{
+  if (not parse_char(c, cur, data)) {
+    return false;
+  }
+  if (c != c_match) {
     return true;
   }
+  cur -= 1;
+  return false;
+}
+
+inline bool parse_char_space(char& c, long& cur, const std::string& data)
+{
+  if (not parse_char(c, cur, data)) {
+    return false;
+  }
+  if (is_space(c)) {
+    return true;
+  }
+  cur -= 1;
+  return false;
+}
+
+inline bool parse_char_not_space(char& c, long& cur, const std::string& data)
+{
+  if (not parse_char(c, cur, data)) {
+    return false;
+  }
+  if (not is_space(c)) {
+    return true;
+  }
+  cur -= 1;
+  return false;
+}
+
+inline bool parse_literal(long& cur, const std::string& data, const char c_match)
+{
+  char c;
+  if (not parse_char(c, cur, data)) {
+    return false;
+  }
+  if (c == c_match) {
+    return true;
+  }
+  cur -= 1;
+  return false;
+}
+
+inline bool parse_literal(long& cur, const std::string& data, const std::string& literal)
+{
+  assert(cur <= (long)data.size());
+  if (not data.compare(cur, literal.size(), literal)) {
+    return false;
+  }
+  cur += literal.size();
+  return true;
+}
+
+inline bool parse_len(std::string& str, long& cur, const std::string& data, const long& len)
+// not including the '"' char
+{
+  assert(cur <= (long)data.size());
+  if (cur + len > (long)data.size()) {
+    return false;
+  }
+  str = data.substr(cur, len);
+  cur += len;
+  return true;
 }
 
 inline bool parse_string(std::string& str, long& cur, const std::string& data)
+// not including the '"' char
 {
+  assert(cur <= (long)data.size());
+  const long initial = cur;
   char c;
-  if (!parse_char(c, cur, data) or c != '"') {
+  if (not parse_literal(cur, data, '"')) {
     str = "";
+    assert(cur == initial);
     return false;
-  } else {
-    const long start = cur;
-    while (parse_char(c, cur, data) and c != '"') {
-    }
-    str = std::string(data, start, cur - start - 1);
-    return data[cur - 1] == '"' && cur > start;
   }
+  const long start = cur;
+  while (parse_char_not(c, cur, data, '"')) {
+  }
+  if (not parse_literal(cur, data, '"')) {
+    str = "";
+    cur = initial;
+    return false;
+  }
+  str = std::string(data, start, cur - start - 1);
+  return true;
 }
 
 inline bool parse_line(std::string& str, long& cur, const std::string& data)
+// include ending '\n' (if data has it)
 {
+  assert(cur <= (long)data.size());
   if ((long)data.size() <= cur) {
     str = "";
     return false;
-  } else {
-    const long start = cur;
-    char c;
-    while (parse_char(c, cur, data) and c != '\n') {
-    }
-    str = std::string(data, start, cur - start);
-    return true;
   }
+  const long start = cur;
+  char c;
+  while (parse_char_not(c, cur, data, '\n')) {
+  }
+  str = std::string(data, start, cur - start);
+  return true;
 }
 
 inline bool parse_word(std::string& str, long& cur, const std::string& data)
+// not include initial spaces and do not parse space after it
 {
+  assert(cur <= (long)data.size());
+  const long initial = cur;
   if ((long)data.size() <= cur) {
     str = "";
+    assert(cur == initial);
     return false;
-  } else {
-    const long start = cur;
-    char c;
-    while (parse_char(c, cur, data) and is_space(c)) {
-    }
-    str = std::string(data, start, cur - start);
-    return true;
   }
+  char c;
+  while (parse_char_space(c, cur, data)) {
+  }
+  const long start = cur;
+  while (parse_char_not_space(c, cur, data)) {
+  }
+  if (cur <= start) {
+    str = "";
+    cur = initial;
+    return false;
+  }
+  str = std::string(data, start, cur - start);
+  return true;
 }
 
 inline bool parse_long(long& num, long& cur, const std::string& data)
 {
+  assert(cur <= (long)data.size());
+  const long initial = cur;
   const long start = cur;
   char c;
   while (parse_char(c, cur, data)) {
@@ -207,16 +305,18 @@ inline bool parse_long(long& num, long& cur, const std::string& data)
   }
   if (cur <= start) {
     num = 0;
+    cur = initial;
     return false;
-  } else {
-    const std::string str = std::string(data, start, cur - start);
-    num = read_long(str);
-    return true;
   }
+  const std::string str = std::string(data, start, cur - start);
+  num = read_long(str);
+  return true;
 }
 
 inline bool parse_double(double& num, long& cur, const std::string& data)
 {
+  assert(cur <= (long)data.size());
+  const long initial = cur;
   const long start = cur;
   char c;
   while (parse_char(c, cur, data)) {
@@ -228,12 +328,12 @@ inline bool parse_double(double& num, long& cur, const std::string& data)
   }
   if (cur <= start) {
     num = 0;
+    cur = initial;
     return false;
-  } else {
-    const std::string str = std::string(data, start, cur - start);
-    num = read_double(str);
-    return true;
   }
+  const std::string str = std::string(data, start, cur - start);
+  num = read_double(str);
+  return true;
 }
 
 inline std::vector<std::string> split_into_lines(const std::string& str)
