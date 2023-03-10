@@ -120,7 +120,7 @@ Can store some metadata information about the file. The default is simply empty.
 
 ### Example
 
-ˋˋˋ
+```
 #!/usr/bin/env qar-glimpse
 
 QAR-FILE 13 0 20
@@ -159,4 +159,4 @@ folder2/file-c.txt
 Contents for file-c.
 
 
-ˋˋˋ
+```
