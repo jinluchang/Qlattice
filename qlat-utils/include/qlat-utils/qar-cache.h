@@ -17,6 +17,8 @@ QFile qfopen(const std::string& path, const std::string& mode);
 
 std::string qcat(const std::string& path);
 
+void qar_build_index(const std::string& path_qar);
+
 int qar_create(const std::string& path_qar, const std::string& path_folder_,
                const bool is_remove_folder_after = false);
 
@@ -43,6 +45,18 @@ std::vector<std::pair<std::string, crc32_t> > check_all_files_crc32(
     const std::string& path);
 
 void check_all_files_crc32_info(const std::string& path);
+
+// -------------------
+
+struct API QarFile;
+
+void save_qar_index(const QarFile& qar, const std::string& fn);
+
+void save_qar_index_info(const QarFile& qar, const std::string& fn);
+
+void parse_qar_index(const QarFile& qar, const std::string& qar_index_content);
+
+void load_qar_index(const QarFile& qar, const std::string& fn);
 
 // -------------------
 
@@ -86,6 +100,7 @@ struct API QarFile : std::vector<QarFileVol> {
           break;
         }
       }
+      load_qar_index(*this, path_qar + ".idx");
     } else {
       qassert(false);
     }

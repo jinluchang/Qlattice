@@ -309,6 +309,7 @@ std::string qcat_sync_node(const std::string& path)
 void load_qar_index_sync_node(const QarFile& qar, const std::string& fn)
 // interface function
 {
+  TIMER_VERBOSE("load_qar_index_sync_node");
   const std::string qar_index_content = qcat_sync_node(fn);
   parse_qar_index(qar, qar_index_content);
 }

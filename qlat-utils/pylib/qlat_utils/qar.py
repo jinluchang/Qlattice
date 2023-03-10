@@ -37,6 +37,14 @@ def qcat_bytes_sync_node(path):
     return qcat_bytes(path)
 
 @timer
+def qar_build_index_info(path_qar, path_folder, *, is_remove_folder_after = False):
+    """
+    create "path_qar.idx" file
+    """
+    if get_id_node() == 0:
+        qar_build_index(path_qar)
+
+@timer
 def qar_create_info(path_qar, path_folder, *, is_remove_folder_after = False):
     if get_num_node() != 1:
         import cqlat as c

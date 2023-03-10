@@ -24,6 +24,13 @@ def qcat_bytes(const cc.std_string& path):
     return <bytes>cc.qcat(path)
 
 @timer
+def qar_build_index(const cc.std_string& path_qar):
+    """
+    create "path_qar.idx" file
+    """
+    cc.qar_build_index(path_qar)
+
+@timer
 def qar_create(const cc.std_string& path_qar, const cc.std_string& path_folder,
                *, const cc.bool is_remove_folder_after = False):
     return cc.qar_create(path_qar, path_folder, is_remove_folder_after)

@@ -153,6 +153,7 @@ void save_qar_index(const QarFile& qar, const std::string& fn)
   if (qar.null()) {
     return;
   }
+  TIMER("save_qar_index");
   std::vector<std::string> lines;
   lines.push_back(qar_idx_header);
   for (long i = 0; i < (long)qar.size(); ++i) {
@@ -195,6 +196,9 @@ void parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
 {
   if (qar.null()) {
     qwarn("parse_qar_index: qar is null.");
+    return;
+  }
+  if (qar_index_content == "") {
     return;
   }
   const long header_len = qar_idx_header.size();
@@ -341,6 +345,7 @@ void parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
 void load_qar_index(const QarFile& qar, const std::string& fn)
 // interface function
 {
+  TIMER_VERBOSE("load_qar_index");
   const std::string qar_index_content = qcat(fn);
   parse_qar_index(qar, qar_index_content);
 }
@@ -360,6 +365,14 @@ std::string qcat(const std::string& path)
   qassert(length == length_actual);
   qfclose(qfile);
   return ret;
+}
+
+void qar_build_index(const std::string& path_qar)
+{
+  TIMER_VERBOSE("qar_build_index");
+  QarFile qar(path_qar, "r");
+  save_qar_index(qar, path_qar + ".idx");
+  qar.close();
 }
 
 int qar_create(const std::string& path_qar, const std::string& path_folder_,
@@ -441,6 +454,7 @@ int qar_create(const std::string& path_qar, const std::string& path_folder_,
     const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
     qrename(path_qar_v + ".acc", path_qar_v);
   }
+  qar_build_index(path_qar);
   if (is_remove_folder_after) {
     for (long iv = 0; iv < num_vol; ++iv) {
       const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
