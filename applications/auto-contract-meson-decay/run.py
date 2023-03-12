@@ -56,7 +56,7 @@ def get_cexpr_meson_corr():
         diagram_type_dict[((('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1))] = 'Type1'
         diagram_type_dict[((('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
         exprs = [
-                mk_sym(1) + f"1",
+                mk_fac(1) + f"1",
                 mk_pi_p("x_2", True)    * mk_pi_p("x_1")             + f"pi+^dag(0) * pi+(-tsep)",
                 mk_k_p("x_2", True)     * mk_k_p("x_1")              + f"K+^dag(0) * K+(-tsep)",
                 mk_sw5("x_2")           * mk_pi_p("x_1")             + f"sw5(0) * pi+(-tsep)",
@@ -113,21 +113,18 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
         val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
         return val, t
     def sum_function(val_list):
-        counts = np.zeros(total_site[3], dtype = complex)
         values = np.zeros((total_site[3], len(expr_names),), dtype = complex)
         for val, t in val_list:
-            counts[t] += 1
             values[t] += val
-        return counts, values.transpose(1, 0)
+        return values.transpose(1, 0)
     q.timer_fork(0)
-    res_count, res_sum = q.glb_sum(
+    res_sum = q.glb_sum(
             q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 16))
     q.displayln_info("timer_display for auto_contract_meson_corr")
     q.timer_display()
     q.timer_merge()
-    res_count *= 1.0 / total_site[3]
     res_sum *= 1.0 / total_site[3]
-    assert q.qnorm(res_count - 1.0) < 1e-10
+    assert q.qnorm(res_sum[0] - 1.0) < 1e-10
     ld = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
         [ "t_sep", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
@@ -344,7 +341,6 @@ def get_cexpr_meson_jt():
         diagram_type_dict[((('t_1p', 't_2p'), 1), (('t_2p', 'x'), 1), (('x', 't_1p'), 1))] = 'Type2'
         diagram_type_dict[((('t_1p', 't_2p'), 1), (('t_2p', 't_1p'), 1), (('x', 'x'), 1))] = None
         mm_list = [
-                mk_expr(1) + f"1",
                 mk_pi_p("t_2", True) * mk_pi_p("t_1") + "pi+^dag(+tsep) * pi+(-tsep)",
                 mk_k_p("t_2", True) * mk_k_p("t_1") + "K+^dag(+tsep) * K+(-tsep)",
                 mk_pi_p("t_2p", True) * mk_pi_p("t_1p") + "pi+^dag(T/2+tsep) * pi+(T/2-tsep)",
@@ -355,6 +351,7 @@ def get_cexpr_meson_jt():
                 mk_vec_mu("s", "s", "x", 3) + "sbar_gt_s(0)",
                 ]
         exprs = [
+                mk_expr(1) + f"1",
                 op_list[0] * mm_list[0],
                 op_list[0] * mm_list[1],
                 -op_list[1] * mm_list[1],
@@ -452,7 +449,8 @@ def get_cexpr_meson_m():
                 mk_m("d", "x") + "dbar_d(0)",
                 mk_m("s", "x") + "sbar_s(0)",
                 ]
-        exprs = [ m * mm for mm in mm_list for m in m_list ]
+        exprs = [ mk_expr(1) + f"1", ]
+        exprs += [ m * mm for mm in mm_list for m in m_list ]
         cexpr = contract_simplify_compile(
                 *exprs,
                 is_isospin_symmetric_limit = True,
@@ -763,8 +761,9 @@ def get_cexpr_meson_jj():
         exprs_pi0_decay = [ jj_d * pi0d for pi0d in pi0d_list for jj_d in jj_d_list ]
         assert len(exprs_pi0_decay) == 2
         #
-        exprs = exprs_self_energy + exprs_ope + exprs_decay1 + exprs_decay2 + exprs_decay_m + exprs_pi0_decay
-        assert len(exprs) == 178
+        exprs = [ mk_expr(1) + f"1", ]
+        exprs += exprs_self_energy + exprs_ope + exprs_decay1 + exprs_decay2 + exprs_decay_m + exprs_pi0_decay
+        assert len(exprs) == 179
         cexpr = contract_simplify_compile(
                 *exprs,
                 is_isospin_symmetric_limit = True,
@@ -899,8 +898,9 @@ def get_cexpr_meson_jwjj():
                 mk_sw5("w") * mk_k_p("t_2") + "sw5(0) * K+(tsep)",
                 ]
         assert len(jm_list) == 8
-        exprs = [ jj * jm for jm in jm_list for jj in jj_list ]
-        assert len(exprs) == 16
+        exprs = [ mk_expr(1) + f"1", ]
+        exprs += [ jj * jm for jm in jm_list for jj in jj_list ]
+        assert len(exprs) == 17
         cexpr = contract_simplify_compile(
                 *exprs,
                 is_isospin_symmetric_limit = True,
