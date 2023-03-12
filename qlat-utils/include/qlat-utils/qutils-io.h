@@ -46,6 +46,10 @@ int qmkdir_p_info(const std::string& path,
 
 void flush();
 
+std::string dirname(const std::string& fn);
+
+std::string basename(const std::string& fn);
+
 // --------------------------
 
 inline bool qtruncate(const std::string& evilFile)
@@ -96,68 +100,6 @@ inline std::string remove_trailing_slashes(const std::string& fn)
   return std::string(fn, 0, cur + 1);
 }
 
-inline std::string dirname(const std::string& fn)
-// try to follow libgen.h version see man 3 dirname
-{
-  long cur = fn.size() - 1;
-  // remove trailing '/'
-  while (cur > 0 and fn[cur] == '/') {
-    cur -= 1;
-  }
-  if (cur < 0) {
-    return ".";
-  } else if (cur == 0) {
-    if (fn[cur] == '/') {
-      return "/";
-    } else {
-      return ".";
-    }
-  } else {
-    // remove last component
-    while (cur >= 0 and fn[cur] != '/') {
-      cur -= 1;
-    }
-    if (cur < 0) {
-      return ".";
-    } else {
-      // remove trailing '/'
-      while (cur > 0 and fn[cur] == '/') {
-        cur -= 1;
-      }
-      return std::string(fn, 0, cur + 1);
-    }
-  }
-  qassert(false);
-  return std::string();
-}
-
-inline std::string basename(const std::string& fn)
-// try to follow libgen.h version see man 3 basename
-{
-  long cur = fn.size() - 1;
-  // remove trailing '/'
-  while (cur > 0 and fn[cur] == '/') {
-    cur -= 1;
-  }
-  if (cur < 0) {
-    return "";
-  } else if (cur == 0) {
-    if (fn[cur] == '/') {
-      return "/";
-    } else {
-      return std::string(fn, 0, cur + 1);
-    }
-  } else {
-    const long pos_stop = cur + 1;
-    // skip last component
-    while (cur >= 0 and fn[cur] != '/') {
-      cur -= 1;
-    }
-    return std::string(fn, cur + 1, pos_stop);
-  }
-  qassert(false);
-  return std::string();
-}
 
 inline std::vector<std::string> qls_aux(const std::string& path,
                                         const bool is_sort = true)

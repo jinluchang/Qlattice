@@ -1,4 +1,3 @@
-#include <qlat-utils/qar-cache.h>
 #include <qlat-utils/qutils-io.h>
 
 namespace qlat
@@ -6,99 +5,67 @@ namespace qlat
 
 void flush() { fflush(get_output_file()); }
 
-DataTable qload_datatable(const std::string& path, const bool is_par)
+std::string dirname(const std::string& fn)
+// try to follow libgen.h version see man 3 dirname
 {
-  if (is_par) {
-    return qload_datatable_par(path);
+  long cur = fn.size() - 1;
+  // remove trailing '/'
+  while (cur > 0 and fn[cur] == '/') {
+    cur -= 1;
+  }
+  if (cur < 0) {
+    return ".";
+  } else if (cur == 0) {
+    if (fn[cur] == '/') {
+      return "/";
+    } else {
+      return ".";
+    }
   } else {
-    return qload_datatable_serial(path);
+    // remove last component
+    while (cur >= 0 and fn[cur] != '/') {
+      cur -= 1;
+    }
+    if (cur < 0) {
+      return ".";
+    } else {
+      // remove trailing '/'
+      while (cur > 0 and fn[cur] == '/') {
+        cur -= 1;
+      }
+      return std::string(fn, 0, cur + 1);
+    }
   }
+  qassert(false);
+  return std::string();
 }
 
-int qtouch(const std::string& path)
-// return 0 if success
+std::string basename(const std::string& fn)
+// try to follow libgen.h version see man 3 basename
 {
-  TIMER("qtouch");
-  QFile qfile = qfopen(path, "w");
-  if (qfile.null()) {
-    return 1;
+  long cur = fn.size() - 1;
+  // remove trailing '/'
+  while (cur > 0 and fn[cur] == '/') {
+    cur -= 1;
   }
-  qfclose(qfile);
-  return 0;
-}
-
-int qtouch(const std::string& path, const std::string& content)
-{
-  TIMER("qtouch");
-  QFile qfile = qfopen(path + ".partial", "w");
-  if (qfile.null()) {
-    return 1;
+  if (cur < 0) {
+    return "";
+  } else if (cur == 0) {
+    if (fn[cur] == '/') {
+      return "/";
+    } else {
+      return std::string(fn, 0, cur + 1);
+    }
+  } else {
+    const long pos_stop = cur + 1;
+    // skip last component
+    while (cur >= 0 and fn[cur] != '/') {
+      cur -= 1;
+    }
+    return std::string(fn, cur + 1, pos_stop);
   }
-  const long total_bytes = qwrite_data(content, qfile);
-  qassert(total_bytes == long(content.size()));
-  qfclose(qfile);
-  return qrename(path + ".partial", path);
-}
-
-int qtouch(const std::string& path, const std::vector<std::string>& content)
-{
-  TIMER("qtouch");
-  QFile qfile = qfopen(path + ".partial", "w");
-  if (qfile.null()) {
-    return 1;
-  }
-  long total_bytes = 0;
-  long total_bytes_expect = 0;
-  for (long i = 0; i < (long)content.size(); ++i) {
-    total_bytes_expect += content[i].size();
-    total_bytes += qwrite_data(content[i], qfile);
-  }
-  qassert(total_bytes == total_bytes_expect);
-  qfclose(qfile);
-  return qrename(path + ".partial", path);
-}
-
-int qappend(const std::string& path, const std::string& content)
-{
-  TIMER("qappend");
-  QFile qfile = qfopen(path, "a");
-  if (qfile.null()) {
-    return 1;
-  }
-  const long total_bytes = qwrite_data(content, qfile);
-  qassert(total_bytes == long(content.size()));
-  qfclose(qfile);
-  return 0;
-}
-
-crc32_t compute_crc32(const std::string& path)
-{
-  QFile qfile = qfopen(path, "r");
-  const crc32_t ret = compute_crc32(qfile);
-  qfclose(qfile);
-  return ret;
-}
-
-std::vector<std::pair<std::string, crc32_t> > check_all_files_crc32(
-    const std::string& path)
-{
-  TIMER_VERBOSE("check_all_files_crc32");
-  std::vector<std::pair<std::string, crc32_t> > ret;
-  check_all_files_crc32_aux(ret, remove_trailing_slashes(path));
-  return ret;
-}
-
-void check_all_files_crc32_info(const std::string& path)
-// interface function
-{
-  TIMER_VERBOSE("check_all_files_crc32_info");
-  if (0 == get_id_node()) {
-    displayln(fname + ssprintf(": start checking path='%s'", path.c_str()));
-    std::vector<std::pair<std::string, crc32_t> > fcrcs;
-    fcrcs = check_all_files_crc32(path);
-    displayln(fname + ssprintf(": summary for path='%s'", path.c_str()));
-    display(show_files_crc32(fcrcs));
-  }
+  qassert(false);
+  return std::string();
 }
 
 int qrename(const std::string& old_path, const std::string& new_path)
