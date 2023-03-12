@@ -21,6 +21,9 @@ Evaluation
 
    get_mpi_chunk
 
+   mk_sym
+   mk_fac
+
 Operators
 ---------
 

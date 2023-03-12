@@ -29,9 +29,15 @@ except:
     import expr_arithmetic as ea
 
 def mk_sym(x):
+    """
+    make a sympy simplified value
+    """
     return sympy.simplify(x)
 
 def mk_fac(x):
+    """
+    make an Expr obj (can be sympy expression)
+    """
     return mk_expr(ea.mk_expr(x))
 
 class Op:
