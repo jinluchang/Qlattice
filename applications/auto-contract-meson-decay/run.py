@@ -72,10 +72,10 @@ def get_cexpr_meson_corr():
                 mk_j_mu("x_2", 3)       * mk_j_mu("x_1", 3)          + f"j_t(0) * j_t(-tsep)",
                 sum([ mk_j_mu("x_2", mu) * mk_j_mu("x_1", mu) for mu in range(4) ])
                 + f"j_mu(0) * j_mu(-tsep)",
-                sum([ mk_j5pi_mu("x_2", mu) * mk_j5pi_mu("x_1", mu, True) for mu in range(4) ])
-                + f"j5pi_mu(0) * j5pi_mu^dag(-tsep)",
-                sum([ mk_j5k_mu("x_2", mu) * mk_j5k_mu("x_1", mu, True) for mu in range(4) ])
-                + f"j5k_mu(0) * j5k_mu^dag(-tsep)",
+                sum([ mk_jw_a_mu("x_2", mu) * mk_j5pi_mu("x_1", mu, True) for mu in range(4) ])
+                + f"jw_a_mu(0) * j5pi_mu^dag(-tsep)",
+                sum([ mk_jw_a_mu("x_2", mu) * mk_j5k_mu("x_1", mu, True) for mu in range(4) ])
+                + f"jw_a_mu(0) * j5k_mu^dag(-tsep)",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
         return cexpr
