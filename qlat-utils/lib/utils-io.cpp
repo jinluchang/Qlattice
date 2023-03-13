@@ -68,6 +68,19 @@ std::string basename(const std::string& fn)
   return std::string();
 }
 
+std::string remove_trailing_slashes(const std::string& fn)
+// remove trailing slashes (but won't remove the first slash)
+// e.g.
+// remove_trailing_slashes("/home/") = "/home"
+// remove_trailing_slashes("//") = "/"
+{
+  long cur = fn.size() - 1;
+  while (cur > 0 and fn[cur] == '/') {
+    cur -= 1;
+  }
+  return std::string(fn, 0, cur + 1);
+}
+
 int qrename(const std::string& old_path, const std::string& new_path)
 {
   TIMER("qrename");
@@ -123,6 +136,55 @@ bool is_regular_file(const std::string& fn)
     return false;
   }
   return S_ISREG(sb.st_mode);
+}
+
+bool is_directory_cache(const std::string& dir_)
+// Check the existence of directory from the root directory of dir
+// Cache all intermediate results
+{
+  TIMER("is_directory_cache");
+  const std::string dir = remove_trailing_slashes(dir_) + "/";
+  Cache<std::string, bool> cache = get_is_directory_cache();
+  for (long cur = 0; cur < dir.size(); ++cur) {
+    if (dir[cur] != '/') {
+      continue;
+    }
+    const std::string subdir = dir.substr(0, cur + 1);
+    bool b;
+    if (cache.has(substr)) {
+      b = cache[subdir]
+    } else {
+      b = is_directory(subdir);
+      cache[subdir] = b;
+    }
+    if (not b) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool is_regular_file_cache(const std::string& fn)
+{
+  TIMER("is_regular_file_cache");
+  const std::string dir = dirname(fn);
+  if (not is_directory_cache(dir)) {
+    return false;
+  }
+  return is_regular_file(fn);
+}
+
+bool does_file_exist_cache(const std::string& fn)
+{
+  TIMER("does_file_exist_cache");
+  if (fn.size() > 0 and fn.back() == '/') {
+    return is_directory_cache(fn);
+  }
+  const std::string dir = dirname(fn);
+  if (not is_directory_cache(dir)) {
+    return false;
+  }
+  return does_file_exist(fn);
 }
 
 int qremove(const std::string& path)

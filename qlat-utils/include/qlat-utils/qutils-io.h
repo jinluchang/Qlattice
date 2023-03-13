@@ -4,6 +4,7 @@
 #include <qlat-utils/qutils-vec.h>
 #include <qlat-utils/qutils.h>
 #include <qlat-utils/timer.h>
+#include <qlat-utils/cache.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -12,6 +13,12 @@
 
 namespace qlat
 {  //
+
+std::string dirname(const std::string& fn);
+
+std::string basename(const std::string& fn);
+
+std::string remove_trailing_slashes(const std::string& fn);
 
 int qrename(const std::string& old_path, const std::string& new_path);
 
@@ -46,9 +53,20 @@ int qmkdir_p_info(const std::string& path,
 
 void flush();
 
-std::string dirname(const std::string& fn);
+// --------------------------
 
-std::string basename(const std::string& fn);
+API inline Cache<std::string, bool>& get_is_directory_cache()
+// Note: key should end with '/'.
+{
+  static Cache<std::string, QarFile> cache("IsDirectoryCache", 1024, 128);
+  return cache;
+}
+
+bool is_directory_cache(const std::string& dir_);
+
+bool is_regular_file_cache(const std::string& fn);
+
+bool does_file_exist_cache(const std::string& fn);
 
 // --------------------------
 
@@ -86,20 +104,6 @@ inline int check_dir(const std::string& path,
   }
   return ret;
 }
-
-inline std::string remove_trailing_slashes(const std::string& fn)
-// remove trailing slashes (but won't remove the first slash)
-// e.g.
-// remove_trailing_slashes("/home/") = "/home"
-// remove_trailing_slashes("//") = "/"
-{
-  long cur = fn.size() - 1;
-  while (cur > 0 and fn[cur] == '/') {
-    cur -= 1;
-  }
-  return std::string(fn, 0, cur + 1);
-}
-
 
 inline std::vector<std::string> qls_aux(const std::string& path,
                                         const bool is_sort = true)
