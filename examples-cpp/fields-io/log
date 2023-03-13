@@ -35,6 +35,9 @@ QFile: open 'huge-data/t0/fsel.field.partial' with 'a'.
 QFile: close 'huge-data/t0/fsel.field.partial' with 'a'.
 qrename: 'huge-data/t0/fsel.field.partial' 'huge-data/t0/fsel.field'
 demo: read selection 'fsel' from disk as a field
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
 read_field: fn='huge-data/t0/fsel.field'.
 QFile: open 'huge-data/t0/fsel.field' with 'r'.
 QFile: close 'huge-data/t0/fsel.field' with 'r'.
@@ -153,6 +156,7 @@ QFile: close 'huge-data/t0/demo.lfs/14/0000000028' with 'w'.
 QFile: close 'huge-data/t0/demo.lfs/14/0000000029' with 'w'.
 QFile: close 'huge-data/t0/demo.lfs/15/0000000030' with 'w'.
 QFile: close 'huge-data/t0/demo.lfs/15/0000000031' with 'w'.
+Cache: 'IsDirectoryCache': 3 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/geon-info.txt' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/geon-info.txt' with 'r'.
 FieldsWriter: open 'huge-data/t0/demo.lfs'.
@@ -252,36 +256,52 @@ Cache: 'ShuffledFieldsReaderCache': 0 / 4 [1] to add
 QFile: open 'huge-data/t0/demo.lfs/geon-info.txt' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/geon-info.txt' with 'r'.
 FieldsReader: open 'huge-data/t0/demo.lfs'.
+Cache: 'IsDirectoryCache': 4 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/00/0000000000' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/00/0000000001' with 'r'.
+Cache: 'IsDirectoryCache': 5 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/01/0000000002' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/01/0000000003' with 'r'.
+Cache: 'IsDirectoryCache': 6 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/02/0000000004' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/02/0000000005' with 'r'.
+Cache: 'IsDirectoryCache': 7 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/03/0000000006' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/03/0000000007' with 'r'.
+Cache: 'IsDirectoryCache': 8 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/04/0000000008' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/04/0000000009' with 'r'.
+Cache: 'IsDirectoryCache': 9 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/05/0000000010' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/05/0000000011' with 'r'.
+Cache: 'IsDirectoryCache': 10 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/06/0000000012' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/06/0000000013' with 'r'.
+Cache: 'IsDirectoryCache': 11 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/07/0000000014' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/07/0000000015' with 'r'.
+Cache: 'IsDirectoryCache': 12 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/08/0000000016' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/08/0000000017' with 'r'.
+Cache: 'IsDirectoryCache': 13 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/09/0000000018' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/09/0000000019' with 'r'.
+Cache: 'IsDirectoryCache': 14 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/10/0000000020' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/10/0000000021' with 'r'.
+Cache: 'IsDirectoryCache': 15 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/11/0000000022' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/11/0000000023' with 'r'.
+Cache: 'IsDirectoryCache': 16 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/12/0000000024' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/12/0000000025' with 'r'.
+Cache: 'IsDirectoryCache': 17 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/13/0000000026' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/13/0000000027' with 'r'.
+Cache: 'IsDirectoryCache': 18 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/14/0000000028' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/14/0000000029' with 'r'.
+Cache: 'IsDirectoryCache': 19 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/15/0000000030' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/15/0000000031' with 'r'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t0/demo.lfs'.
@@ -687,96 +707,112 @@ QFile: close 'huge-data/t0/demo.lfs/15/0000000030' with 'r'.
 QFile: open 'huge-data/t0/demo.lfs/15/0000000031' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/15/0000000031' with 'r'.
 271CE449  fn='huge-data/t0/demo.lfs/15/0000000031'
+Cache: 'IsDirectoryCache': 20 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/16/0000000032' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/16/0000000032' with 'r'.
 5CB71CC7  fn='huge-data/t0/demo.lfs/16/0000000032'
 QFile: open 'huge-data/t0/demo.lfs/16/0000000033' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/16/0000000033' with 'r'.
 CE00CBC3  fn='huge-data/t0/demo.lfs/16/0000000033'
+Cache: 'IsDirectoryCache': 21 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/17/0000000034' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/17/0000000034' with 'r'.
 8884C930  fn='huge-data/t0/demo.lfs/17/0000000034'
 QFile: open 'huge-data/t0/demo.lfs/17/0000000035' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/17/0000000035' with 'r'.
 23C1A30B  fn='huge-data/t0/demo.lfs/17/0000000035'
+Cache: 'IsDirectoryCache': 22 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/18/0000000036' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/18/0000000036' with 'r'.
 7E3C1EDA  fn='huge-data/t0/demo.lfs/18/0000000036'
 QFile: open 'huge-data/t0/demo.lfs/18/0000000037' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/18/0000000037' with 'r'.
 F258685E  fn='huge-data/t0/demo.lfs/18/0000000037'
+Cache: 'IsDirectoryCache': 23 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/19/0000000038' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/19/0000000038' with 'r'.
 73949E0D  fn='huge-data/t0/demo.lfs/19/0000000038'
 QFile: open 'huge-data/t0/demo.lfs/19/0000000039' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/19/0000000039' with 'r'.
 60A9D7B8  fn='huge-data/t0/demo.lfs/19/0000000039'
+Cache: 'IsDirectoryCache': 24 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/20/0000000040' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/20/0000000040' with 'r'.
 188E9403  fn='huge-data/t0/demo.lfs/20/0000000040'
 QFile: open 'huge-data/t0/demo.lfs/20/0000000041' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/20/0000000041' with 'r'.
 3D78F5F7  fn='huge-data/t0/demo.lfs/20/0000000041'
+Cache: 'IsDirectoryCache': 25 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/21/0000000042' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/21/0000000042' with 'r'.
 10C86A18  fn='huge-data/t0/demo.lfs/21/0000000042'
 QFile: open 'huge-data/t0/demo.lfs/21/0000000043' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/21/0000000043' with 'r'.
 0B74A1FD  fn='huge-data/t0/demo.lfs/21/0000000043'
+Cache: 'IsDirectoryCache': 26 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/22/0000000044' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/22/0000000044' with 'r'.
 4936F72F  fn='huge-data/t0/demo.lfs/22/0000000044'
 QFile: open 'huge-data/t0/demo.lfs/22/0000000045' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/22/0000000045' with 'r'.
 C750595E  fn='huge-data/t0/demo.lfs/22/0000000045'
+Cache: 'IsDirectoryCache': 27 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/23/0000000046' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/23/0000000046' with 'r'.
 06C6854D  fn='huge-data/t0/demo.lfs/23/0000000046'
 QFile: open 'huge-data/t0/demo.lfs/23/0000000047' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/23/0000000047' with 'r'.
 24221CE0  fn='huge-data/t0/demo.lfs/23/0000000047'
+Cache: 'IsDirectoryCache': 28 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/24/0000000048' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/24/0000000048' with 'r'.
 79C117FF  fn='huge-data/t0/demo.lfs/24/0000000048'
 QFile: open 'huge-data/t0/demo.lfs/24/0000000049' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/24/0000000049' with 'r'.
 47EFCB77  fn='huge-data/t0/demo.lfs/24/0000000049'
+Cache: 'IsDirectoryCache': 29 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/25/0000000050' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/25/0000000050' with 'r'.
 25BC50F5  fn='huge-data/t0/demo.lfs/25/0000000050'
 QFile: open 'huge-data/t0/demo.lfs/25/0000000051' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/25/0000000051' with 'r'.
 26E4BC8D  fn='huge-data/t0/demo.lfs/25/0000000051'
+Cache: 'IsDirectoryCache': 30 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/26/0000000052' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/26/0000000052' with 'r'.
 352AABAC  fn='huge-data/t0/demo.lfs/26/0000000052'
 QFile: open 'huge-data/t0/demo.lfs/26/0000000053' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/26/0000000053' with 'r'.
 F21397AD  fn='huge-data/t0/demo.lfs/26/0000000053'
+Cache: 'IsDirectoryCache': 31 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/27/0000000054' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/27/0000000054' with 'r'.
 624FD523  fn='huge-data/t0/demo.lfs/27/0000000054'
 QFile: open 'huge-data/t0/demo.lfs/27/0000000055' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/27/0000000055' with 'r'.
 F4DABAED  fn='huge-data/t0/demo.lfs/27/0000000055'
+Cache: 'IsDirectoryCache': 32 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/28/0000000056' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/28/0000000056' with 'r'.
 7855AF24  fn='huge-data/t0/demo.lfs/28/0000000056'
 QFile: open 'huge-data/t0/demo.lfs/28/0000000057' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/28/0000000057' with 'r'.
 B0BB289A  fn='huge-data/t0/demo.lfs/28/0000000057'
+Cache: 'IsDirectoryCache': 33 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/29/0000000058' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/29/0000000058' with 'r'.
 B7B48AC1  fn='huge-data/t0/demo.lfs/29/0000000058'
 QFile: open 'huge-data/t0/demo.lfs/29/0000000059' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/29/0000000059' with 'r'.
 AFB46F81  fn='huge-data/t0/demo.lfs/29/0000000059'
+Cache: 'IsDirectoryCache': 34 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/30/0000000060' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/30/0000000060' with 'r'.
 97DB9422  fn='huge-data/t0/demo.lfs/30/0000000060'
 QFile: open 'huge-data/t0/demo.lfs/30/0000000061' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/30/0000000061' with 'r'.
 FF7A1888  fn='huge-data/t0/demo.lfs/30/0000000061'
+Cache: 'IsDirectoryCache': 35 / 1024 [128] to add
 QFile: open 'huge-data/t0/demo.lfs/31/0000000062' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/31/0000000062' with 'r'.
 79E82458  fn='huge-data/t0/demo.lfs/31/0000000062'
@@ -803,6 +839,8 @@ QFile: open 'huge-data/t1/fsel.field.partial' with 'a'.
 QFile: close 'huge-data/t1/fsel.field.partial' with 'a'.
 qrename: 'huge-data/t1/fsel.field.partial' 'huge-data/t1/fsel.field'
 demo: read selection 'fsel' from disk as a field
+Cache: 'IsDirectoryCache': 36 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 37 / 1024 [128] to add
 read_field: fn='huge-data/t1/fsel.field'.
 QFile: open 'huge-data/t1/fsel.field' with 'r'.
 QFile: close 'huge-data/t1/fsel.field' with 'r'.
@@ -910,6 +948,7 @@ QFile: close 'huge-data/t1/demo.lfs/14/0000000028' with 'w'.
 QFile: close 'huge-data/t1/demo.lfs/14/0000000029' with 'w'.
 QFile: close 'huge-data/t1/demo.lfs/15/0000000030' with 'w'.
 QFile: close 'huge-data/t1/demo.lfs/15/0000000031' with 'w'.
+Cache: 'IsDirectoryCache': 38 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/geon-info.txt' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/geon-info.txt' with 'r'.
 FieldsWriter: open 'huge-data/t1/demo.lfs'.
@@ -1009,36 +1048,52 @@ Cache: 'ShuffledFieldsReaderCache': 1 / 4 [1] to add
 QFile: open 'huge-data/t1/demo.lfs/geon-info.txt' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/geon-info.txt' with 'r'.
 FieldsReader: open 'huge-data/t1/demo.lfs'.
+Cache: 'IsDirectoryCache': 39 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/00/0000000000' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/00/0000000001' with 'r'.
+Cache: 'IsDirectoryCache': 40 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/01/0000000002' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/01/0000000003' with 'r'.
+Cache: 'IsDirectoryCache': 41 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/02/0000000004' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/02/0000000005' with 'r'.
+Cache: 'IsDirectoryCache': 42 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/03/0000000006' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/03/0000000007' with 'r'.
+Cache: 'IsDirectoryCache': 43 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/04/0000000008' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/04/0000000009' with 'r'.
+Cache: 'IsDirectoryCache': 44 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/05/0000000010' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/05/0000000011' with 'r'.
+Cache: 'IsDirectoryCache': 45 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/06/0000000012' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/06/0000000013' with 'r'.
+Cache: 'IsDirectoryCache': 46 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/07/0000000014' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/07/0000000015' with 'r'.
+Cache: 'IsDirectoryCache': 47 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/08/0000000016' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/08/0000000017' with 'r'.
+Cache: 'IsDirectoryCache': 48 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/09/0000000018' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/09/0000000019' with 'r'.
+Cache: 'IsDirectoryCache': 49 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/10/0000000020' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/10/0000000021' with 'r'.
+Cache: 'IsDirectoryCache': 50 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/11/0000000022' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/11/0000000023' with 'r'.
+Cache: 'IsDirectoryCache': 51 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/12/0000000024' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/12/0000000025' with 'r'.
+Cache: 'IsDirectoryCache': 52 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/13/0000000026' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/13/0000000027' with 'r'.
+Cache: 'IsDirectoryCache': 53 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/14/0000000028' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/14/0000000029' with 'r'.
+Cache: 'IsDirectoryCache': 54 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/15/0000000030' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/15/0000000031' with 'r'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t1/demo.lfs'.
@@ -1444,96 +1499,112 @@ QFile: close 'huge-data/t1/demo.lfs/15/0000000030' with 'r'.
 QFile: open 'huge-data/t1/demo.lfs/15/0000000031' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/15/0000000031' with 'r'.
 7FFDA264  fn='huge-data/t1/demo.lfs/15/0000000031'
+Cache: 'IsDirectoryCache': 55 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/16/0000000032' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/16/0000000032' with 'r'.
 E8EC2EAE  fn='huge-data/t1/demo.lfs/16/0000000032'
 QFile: open 'huge-data/t1/demo.lfs/16/0000000033' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/16/0000000033' with 'r'.
 87EDB132  fn='huge-data/t1/demo.lfs/16/0000000033'
+Cache: 'IsDirectoryCache': 56 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/17/0000000034' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/17/0000000034' with 'r'.
 829032D4  fn='huge-data/t1/demo.lfs/17/0000000034'
 QFile: open 'huge-data/t1/demo.lfs/17/0000000035' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/17/0000000035' with 'r'.
 131707F8  fn='huge-data/t1/demo.lfs/17/0000000035'
+Cache: 'IsDirectoryCache': 57 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/18/0000000036' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/18/0000000036' with 'r'.
 772CC22C  fn='huge-data/t1/demo.lfs/18/0000000036'
 QFile: open 'huge-data/t1/demo.lfs/18/0000000037' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/18/0000000037' with 'r'.
 B955AD00  fn='huge-data/t1/demo.lfs/18/0000000037'
+Cache: 'IsDirectoryCache': 58 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/19/0000000038' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/19/0000000038' with 'r'.
 73949E0D  fn='huge-data/t1/demo.lfs/19/0000000038'
 QFile: open 'huge-data/t1/demo.lfs/19/0000000039' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/19/0000000039' with 'r'.
 0DEE2251  fn='huge-data/t1/demo.lfs/19/0000000039'
+Cache: 'IsDirectoryCache': 59 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/20/0000000040' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/20/0000000040' with 'r'.
 017970F5  fn='huge-data/t1/demo.lfs/20/0000000040'
 QFile: open 'huge-data/t1/demo.lfs/20/0000000041' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/20/0000000041' with 'r'.
 CE82E0EA  fn='huge-data/t1/demo.lfs/20/0000000041'
+Cache: 'IsDirectoryCache': 60 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/21/0000000042' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/21/0000000042' with 'r'.
 8986CDF0  fn='huge-data/t1/demo.lfs/21/0000000042'
 QFile: open 'huge-data/t1/demo.lfs/21/0000000043' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/21/0000000043' with 'r'.
 86D0FCEC  fn='huge-data/t1/demo.lfs/21/0000000043'
+Cache: 'IsDirectoryCache': 61 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/22/0000000044' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/22/0000000044' with 'r'.
 9AACBA49  fn='huge-data/t1/demo.lfs/22/0000000044'
 QFile: open 'huge-data/t1/demo.lfs/22/0000000045' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/22/0000000045' with 'r'.
 C750595E  fn='huge-data/t1/demo.lfs/22/0000000045'
+Cache: 'IsDirectoryCache': 62 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/23/0000000046' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/23/0000000046' with 'r'.
 973E554D  fn='huge-data/t1/demo.lfs/23/0000000046'
 QFile: open 'huge-data/t1/demo.lfs/23/0000000047' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/23/0000000047' with 'r'.
 30626390  fn='huge-data/t1/demo.lfs/23/0000000047'
+Cache: 'IsDirectoryCache': 63 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/24/0000000048' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/24/0000000048' with 'r'.
 79C117FF  fn='huge-data/t1/demo.lfs/24/0000000048'
 QFile: open 'huge-data/t1/demo.lfs/24/0000000049' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/24/0000000049' with 'r'.
 19DD1FA2  fn='huge-data/t1/demo.lfs/24/0000000049'
+Cache: 'IsDirectoryCache': 64 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/25/0000000050' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/25/0000000050' with 'r'.
 CA934D0D  fn='huge-data/t1/demo.lfs/25/0000000050'
 QFile: open 'huge-data/t1/demo.lfs/25/0000000051' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/25/0000000051' with 'r'.
 525A32B4  fn='huge-data/t1/demo.lfs/25/0000000051'
+Cache: 'IsDirectoryCache': 65 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/26/0000000052' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/26/0000000052' with 'r'.
 6FF5518A  fn='huge-data/t1/demo.lfs/26/0000000052'
 QFile: open 'huge-data/t1/demo.lfs/26/0000000053' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/26/0000000053' with 'r'.
 4CCEC02D  fn='huge-data/t1/demo.lfs/26/0000000053'
+Cache: 'IsDirectoryCache': 66 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/27/0000000054' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/27/0000000054' with 'r'.
 F5AE644B  fn='huge-data/t1/demo.lfs/27/0000000054'
 QFile: open 'huge-data/t1/demo.lfs/27/0000000055' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/27/0000000055' with 'r'.
 2625150D  fn='huge-data/t1/demo.lfs/27/0000000055'
+Cache: 'IsDirectoryCache': 67 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/28/0000000056' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/28/0000000056' with 'r'.
 42EDF019  fn='huge-data/t1/demo.lfs/28/0000000056'
 QFile: open 'huge-data/t1/demo.lfs/28/0000000057' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/28/0000000057' with 'r'.
 767CEDBA  fn='huge-data/t1/demo.lfs/28/0000000057'
+Cache: 'IsDirectoryCache': 68 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/29/0000000058' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/29/0000000058' with 'r'.
 2EB51601  fn='huge-data/t1/demo.lfs/29/0000000058'
 QFile: open 'huge-data/t1/demo.lfs/29/0000000059' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/29/0000000059' with 'r'.
 D6F6485F  fn='huge-data/t1/demo.lfs/29/0000000059'
+Cache: 'IsDirectoryCache': 69 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/30/0000000060' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/30/0000000060' with 'r'.
 97DB9422  fn='huge-data/t1/demo.lfs/30/0000000060'
 QFile: open 'huge-data/t1/demo.lfs/30/0000000061' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/30/0000000061' with 'r'.
 39CEA293  fn='huge-data/t1/demo.lfs/30/0000000061'
+Cache: 'IsDirectoryCache': 70 / 1024 [128] to add
 QFile: open 'huge-data/t1/demo.lfs/31/0000000062' with 'r'.
 QFile: close 'huge-data/t1/demo.lfs/31/0000000062' with 'r'.
 79E82458  fn='huge-data/t1/demo.lfs/31/0000000062'
@@ -1560,6 +1631,8 @@ QFile: open 'huge-data/t2/fsel.field.partial' with 'a'.
 QFile: close 'huge-data/t2/fsel.field.partial' with 'a'.
 qrename: 'huge-data/t2/fsel.field.partial' 'huge-data/t2/fsel.field'
 demo: read selection 'fsel' from disk as a field
+Cache: 'IsDirectoryCache': 71 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 72 / 1024 [128] to add
 read_field: fn='huge-data/t2/fsel.field'.
 QFile: open 'huge-data/t2/fsel.field' with 'r'.
 QFile: close 'huge-data/t2/fsel.field' with 'r'.
@@ -1667,6 +1740,7 @@ QFile: close 'huge-data/t2/demo.lfs/14/0000000028' with 'w'.
 QFile: close 'huge-data/t2/demo.lfs/14/0000000029' with 'w'.
 QFile: close 'huge-data/t2/demo.lfs/15/0000000030' with 'w'.
 QFile: close 'huge-data/t2/demo.lfs/15/0000000031' with 'w'.
+Cache: 'IsDirectoryCache': 73 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/geon-info.txt' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/geon-info.txt' with 'r'.
 FieldsWriter: open 'huge-data/t2/demo.lfs'.
@@ -1766,36 +1840,52 @@ Cache: 'ShuffledFieldsReaderCache': 2 / 4 [1] to add
 QFile: open 'huge-data/t2/demo.lfs/geon-info.txt' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/geon-info.txt' with 'r'.
 FieldsReader: open 'huge-data/t2/demo.lfs'.
+Cache: 'IsDirectoryCache': 74 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/00/0000000000' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/00/0000000001' with 'r'.
+Cache: 'IsDirectoryCache': 75 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/01/0000000002' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/01/0000000003' with 'r'.
+Cache: 'IsDirectoryCache': 76 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/02/0000000004' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/02/0000000005' with 'r'.
+Cache: 'IsDirectoryCache': 77 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/03/0000000006' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/03/0000000007' with 'r'.
+Cache: 'IsDirectoryCache': 78 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/04/0000000008' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/04/0000000009' with 'r'.
+Cache: 'IsDirectoryCache': 79 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/05/0000000010' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/05/0000000011' with 'r'.
+Cache: 'IsDirectoryCache': 80 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/06/0000000012' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/06/0000000013' with 'r'.
+Cache: 'IsDirectoryCache': 81 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/07/0000000014' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/07/0000000015' with 'r'.
+Cache: 'IsDirectoryCache': 82 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/08/0000000016' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/08/0000000017' with 'r'.
+Cache: 'IsDirectoryCache': 83 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/09/0000000018' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/09/0000000019' with 'r'.
+Cache: 'IsDirectoryCache': 84 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/10/0000000020' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/10/0000000021' with 'r'.
+Cache: 'IsDirectoryCache': 85 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/11/0000000022' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/11/0000000023' with 'r'.
+Cache: 'IsDirectoryCache': 86 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/12/0000000024' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/12/0000000025' with 'r'.
+Cache: 'IsDirectoryCache': 87 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/13/0000000026' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/13/0000000027' with 'r'.
+Cache: 'IsDirectoryCache': 88 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/14/0000000028' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/14/0000000029' with 'r'.
+Cache: 'IsDirectoryCache': 89 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/15/0000000030' with 'r'.
 QFile: open 'huge-data/t2/demo.lfs/15/0000000031' with 'r'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t2/demo.lfs'.
@@ -2201,96 +2291,112 @@ C9557551  fn='huge-data/t2/demo.lfs/15/0000000030'
 QFile: open 'huge-data/t2/demo.lfs/15/0000000031' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/15/0000000031' with 'r'.
 FA24B93A  fn='huge-data/t2/demo.lfs/15/0000000031'
+Cache: 'IsDirectoryCache': 90 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/16/0000000032' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/16/0000000032' with 'r'.
 E8EC2EAE  fn='huge-data/t2/demo.lfs/16/0000000032'
 QFile: open 'huge-data/t2/demo.lfs/16/0000000033' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/16/0000000033' with 'r'.
 87EDB132  fn='huge-data/t2/demo.lfs/16/0000000033'
+Cache: 'IsDirectoryCache': 91 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/17/0000000034' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/17/0000000034' with 'r'.
 829032D4  fn='huge-data/t2/demo.lfs/17/0000000034'
 QFile: open 'huge-data/t2/demo.lfs/17/0000000035' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/17/0000000035' with 'r'.
 131707F8  fn='huge-data/t2/demo.lfs/17/0000000035'
+Cache: 'IsDirectoryCache': 92 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/18/0000000036' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/18/0000000036' with 'r'.
 F17F387A  fn='huge-data/t2/demo.lfs/18/0000000036'
 QFile: open 'huge-data/t2/demo.lfs/18/0000000037' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/18/0000000037' with 'r'.
 F67015E3  fn='huge-data/t2/demo.lfs/18/0000000037'
+Cache: 'IsDirectoryCache': 93 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/19/0000000038' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/19/0000000038' with 'r'.
 71BEA8E1  fn='huge-data/t2/demo.lfs/19/0000000038'
 QFile: open 'huge-data/t2/demo.lfs/19/0000000039' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/19/0000000039' with 'r'.
 0DEE2251  fn='huge-data/t2/demo.lfs/19/0000000039'
+Cache: 'IsDirectoryCache': 94 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/20/0000000040' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/20/0000000040' with 'r'.
 017970F5  fn='huge-data/t2/demo.lfs/20/0000000040'
 QFile: open 'huge-data/t2/demo.lfs/20/0000000041' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/20/0000000041' with 'r'.
 88BB2417  fn='huge-data/t2/demo.lfs/20/0000000041'
+Cache: 'IsDirectoryCache': 95 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/21/0000000042' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/21/0000000042' with 'r'.
 8986CDF0  fn='huge-data/t2/demo.lfs/21/0000000042'
 QFile: open 'huge-data/t2/demo.lfs/21/0000000043' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/21/0000000043' with 'r'.
 86D0FCEC  fn='huge-data/t2/demo.lfs/21/0000000043'
+Cache: 'IsDirectoryCache': 96 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/22/0000000044' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/22/0000000044' with 'r'.
 9AACBA49  fn='huge-data/t2/demo.lfs/22/0000000044'
 QFile: open 'huge-data/t2/demo.lfs/22/0000000045' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/22/0000000045' with 'r'.
 E1E25A1D  fn='huge-data/t2/demo.lfs/22/0000000045'
+Cache: 'IsDirectoryCache': 97 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/23/0000000046' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/23/0000000046' with 'r'.
 973E554D  fn='huge-data/t2/demo.lfs/23/0000000046'
 QFile: open 'huge-data/t2/demo.lfs/23/0000000047' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/23/0000000047' with 'r'.
 30626390  fn='huge-data/t2/demo.lfs/23/0000000047'
+Cache: 'IsDirectoryCache': 98 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/24/0000000048' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/24/0000000048' with 'r'.
 79C117FF  fn='huge-data/t2/demo.lfs/24/0000000048'
 QFile: open 'huge-data/t2/demo.lfs/24/0000000049' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/24/0000000049' with 'r'.
 19DD1FA2  fn='huge-data/t2/demo.lfs/24/0000000049'
+Cache: 'IsDirectoryCache': 99 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/25/0000000050' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/25/0000000050' with 'r'.
 CA934D0D  fn='huge-data/t2/demo.lfs/25/0000000050'
 QFile: open 'huge-data/t2/demo.lfs/25/0000000051' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/25/0000000051' with 'r'.
 525A32B4  fn='huge-data/t2/demo.lfs/25/0000000051'
+Cache: 'IsDirectoryCache': 100 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/26/0000000052' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/26/0000000052' with 'r'.
 6FF5518A  fn='huge-data/t2/demo.lfs/26/0000000052'
 QFile: open 'huge-data/t2/demo.lfs/26/0000000053' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/26/0000000053' with 'r'.
 BA55DF88  fn='huge-data/t2/demo.lfs/26/0000000053'
+Cache: 'IsDirectoryCache': 101 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/27/0000000054' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/27/0000000054' with 'r'.
 FBC09573  fn='huge-data/t2/demo.lfs/27/0000000054'
 QFile: open 'huge-data/t2/demo.lfs/27/0000000055' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/27/0000000055' with 'r'.
 2625150D  fn='huge-data/t2/demo.lfs/27/0000000055'
+Cache: 'IsDirectoryCache': 102 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/28/0000000056' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/28/0000000056' with 'r'.
 42EDF019  fn='huge-data/t2/demo.lfs/28/0000000056'
 QFile: open 'huge-data/t2/demo.lfs/28/0000000057' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/28/0000000057' with 'r'.
 767CEDBA  fn='huge-data/t2/demo.lfs/28/0000000057'
+Cache: 'IsDirectoryCache': 103 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/29/0000000058' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/29/0000000058' with 'r'.
 2EB51601  fn='huge-data/t2/demo.lfs/29/0000000058'
 QFile: open 'huge-data/t2/demo.lfs/29/0000000059' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/29/0000000059' with 'r'.
 9F303A8C  fn='huge-data/t2/demo.lfs/29/0000000059'
+Cache: 'IsDirectoryCache': 104 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/30/0000000060' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/30/0000000060' with 'r'.
 63409610  fn='huge-data/t2/demo.lfs/30/0000000060'
 QFile: open 'huge-data/t2/demo.lfs/30/0000000061' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/30/0000000061' with 'r'.
 39CEA293  fn='huge-data/t2/demo.lfs/30/0000000061'
+Cache: 'IsDirectoryCache': 105 / 1024 [128] to add
 QFile: open 'huge-data/t2/demo.lfs/31/0000000062' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/31/0000000062' with 'r'.
 79E82458  fn='huge-data/t2/demo.lfs/31/0000000062'
@@ -2402,6 +2508,7 @@ QFile: close 'huge-data/t0/demo.lfs/14/0000000029' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/15/0000000030' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/15/0000000031' with 'r'.
 Cache: 'ShufflePlanCache': 2 / 16 [8] clear
+Cache: 'IsDirectoryCache': 106 / 1024 [128] clear
 clear_mem_cache: 442880 bytes (0.000 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.

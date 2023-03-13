@@ -49,6 +49,10 @@ qrename: 'results/test-4nt8/results=1000/f-rank.field.partial.partial' 'results/
 QFile: open 'results/test-4nt8/results=1000/f-rank.field.partial' with 'a'.
 QFile: close 'results/test-4nt8/results=1000/f-rank.field.partial' with 'a'.
 qrename: 'results/test-4nt8/results=1000/f-rank.field.partial' 'results/test-4nt8/results=1000/f-rank.field'
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 3 / 1024 [128] to add
 read_field: fn='results/test-4nt8/results=1000/f-rank.field'.
 QFile: open 'results/test-4nt8/results=1000/f-rank.field' with 'r'.
 QFile: close 'results/test-4nt8/results=1000/f-rank.field' with 'r'.
@@ -241,6 +245,8 @@ qrename: 'results/test-4nt8/results=1010/f-rank.field.partial.partial' 'results/
 QFile: open 'results/test-4nt8/results=1010/f-rank.field.partial' with 'a'.
 QFile: close 'results/test-4nt8/results=1010/f-rank.field.partial' with 'a'.
 qrename: 'results/test-4nt8/results=1010/f-rank.field.partial' 'results/test-4nt8/results=1010/f-rank.field'
+Cache: 'IsDirectoryCache': 4 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 5 / 1024 [128] to add
 read_field: fn='results/test-4nt8/results=1010/f-rank.field'.
 QFile: open 'results/test-4nt8/results=1010/f-rank.field' with 'r'.
 QFile: close 'results/test-4nt8/results=1010/f-rank.field' with 'r'.
@@ -417,6 +423,9 @@ qrename: 'results/free-4nt8/results=1000/f-rank.field.partial.partial' 'results/
 QFile: open 'results/free-4nt8/results=1000/f-rank.field.partial' with 'a'.
 QFile: close 'results/free-4nt8/results=1000/f-rank.field.partial' with 'a'.
 qrename: 'results/free-4nt8/results=1000/f-rank.field.partial' 'results/free-4nt8/results=1000/f-rank.field'
+Cache: 'IsDirectoryCache': 6 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 7 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 8 / 1024 [128] to add
 read_field: fn='results/free-4nt8/results=1000/f-rank.field'.
 QFile: open 'results/free-4nt8/results=1000/f-rank.field' with 'r'.
 QFile: close 'results/free-4nt8/results=1000/f-rank.field' with 'r'.
@@ -592,6 +601,8 @@ qrename: 'results/free-4nt8/results=1010/f-rank.field.partial.partial' 'results/
 QFile: open 'results/free-4nt8/results=1010/f-rank.field.partial' with 'a'.
 QFile: close 'results/free-4nt8/results=1010/f-rank.field.partial' with 'a'.
 qrename: 'results/free-4nt8/results=1010/f-rank.field.partial' 'results/free-4nt8/results=1010/f-rank.field'
+Cache: 'IsDirectoryCache': 9 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 10 / 1024 [128] to add
 read_field: fn='results/free-4nt8/results=1010/f-rank.field'.
 QFile: open 'results/free-4nt8/results=1010/f-rank.field' with 'r'.
 QFile: close 'results/free-4nt8/results=1010/f-rank.field' with 'r'.
@@ -752,6 +763,7 @@ program finished successfully for 'free-4nt8'.
 CHECK: finished successfully.
 Cache: 'CommPlanCache': 7 / 32 [16] clear
 Cache: 'ShufflePlanCache': 2 / 16 [8] clear
+Cache: 'IsDirectoryCache': 11 / 1024 [128] clear
 clear_mem_cache: 8399616 bytes (0.008 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.

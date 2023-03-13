@@ -45,6 +45,7 @@ QFile: open 'results/ckpoint.0.partial' with 'a'.
 QFile: close 'results/ckpoint.0.partial' with 'a'.
 qrename: 'results/ckpoint.0.partial' 'results/ckpoint.0'
 load_gauge_field: 'results/ckpoint.0'.
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
 QFile: open 'results/ckpoint.0' with 'r'.
 QFile: close 'results/ckpoint.0' with 'r'.
 q_read_par_limit=16 (default)
@@ -61,6 +62,7 @@ INFO: gf_avg_plaq =  9.48400361131393366E-01
 CHECK: finished successfully.
 Cache: 'CommPlanCache': 2 / 32 [16] clear
 Cache: 'ShufflePlanCache': 1 / 16 [8] clear
+Cache: 'IsDirectoryCache': 1 / 1024 [128] clear
 clear_mem_cache: 789760 bytes (0.001 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
