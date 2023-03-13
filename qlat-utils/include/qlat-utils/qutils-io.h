@@ -58,9 +58,11 @@ void flush();
 API inline Cache<std::string, bool>& get_is_directory_cache()
 // Note: key should end with '/'.
 {
-  static Cache<std::string, QarFile> cache("IsDirectoryCache", 1024, 128);
+  static Cache<std::string, bool> cache("IsDirectoryCache", 1024, 128);
   return cache;
 }
+
+inline void clear_is_directory_cache() { get_is_directory_cache().clear(); }
 
 bool is_directory_cache(const std::string& dir_);
 

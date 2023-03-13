@@ -172,9 +172,9 @@ struct API Cache : CacheBase {
   //
   void clear()
   {
-    TIMER_VERBOSE("Cache::clear");
     idx = 0;
     if (m.size() > 0) {
+      TIMER_VERBOSE("Cache::clear");
       displayln_info(0, show_info() + " clear");
       m.clear();
     }

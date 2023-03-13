@@ -144,15 +144,15 @@ bool is_directory_cache(const std::string& dir_)
 {
   TIMER("is_directory_cache");
   const std::string dir = remove_trailing_slashes(dir_) + "/";
-  Cache<std::string, bool> cache = get_is_directory_cache();
-  for (long cur = 0; cur < dir.size(); ++cur) {
+  Cache<std::string, bool>& cache = get_is_directory_cache();
+  for (long cur = 0; cur < (long)dir.size(); ++cur) {
     if (dir[cur] != '/') {
       continue;
     }
     const std::string subdir = dir.substr(0, cur + 1);
     bool b;
-    if (cache.has(substr)) {
-      b = cache[subdir]
+    if (cache.has(subdir)) {
+      b = cache[subdir];
     } else {
       b = is_directory(subdir);
       cache[subdir] = b;

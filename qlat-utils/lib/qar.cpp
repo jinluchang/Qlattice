@@ -712,9 +712,9 @@ std::string get_qar_read_cache_key(const std::string& path)
 // return empty string if no cached key is found.
 // Note: key should end with '/'.
 // Steps:
-// (1) Search in Cache. If found matching key, try to find within this qar file
+// (1) Check if path exists with does_file_exist_cache. If exists, return path.
+// (2) If not found, search in Qar Cache. If found matching key, try to find within this qar file
 // recursively. Return the key of the closest match.
-// (2) If not found, check if path exists. If exists, return path.
 // (3) If does not exist, try to find qar file yet to be in cache recursively.
 // Return values:
 // valid key: valid key for a qar found. (qar may not actually contain path).
@@ -722,6 +722,9 @@ std::string get_qar_read_cache_key(const std::string& path)
 // path: path exist.
 {
   TIMER("get_qar_read_cache_key");
+  if (does_file_exist_cache(path)) {
+    return path;
+  }
   Cache<std::string, QarFile>& cache = get_qar_read_cache();
   for (auto it = cache.m.cbegin(); it != cache.m.cend(); ++it) {
     const std::string& key = it->first;
@@ -734,9 +737,6 @@ std::string get_qar_read_cache_key(const std::string& path)
         return mk_new_qar_read_cache_key(qar, key, path_new);
       }
     }
-  }
-  if (does_file_exist(path)) {
-    return path;
   }
   return mk_new_qar_read_cache_key(path);
 }
