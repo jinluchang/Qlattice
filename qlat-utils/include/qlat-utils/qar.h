@@ -164,6 +164,10 @@ struct QFileInternal {
     mode = mode_;
     displayln_info(
         1, ssprintf("QFile: open '%s' with '%s'.", path.c_str(), mode.c_str()));
+    if (mode == "r" and (not is_regular_file(path))) {
+      qwarn(ssprintf("QFile: open '%s' with '%s' not regular file.",
+                     path.c_str(), mode.c_str()));
+    }
     fp = qopen(path, mode);
     if (fp == NULL) {
       qwarn(ssprintf("QFile: open '%s' with '%s' failed.", path.c_str(),
