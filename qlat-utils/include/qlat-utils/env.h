@@ -22,4 +22,12 @@ API inline mode_t& default_dir_mode()
   return mode;
 }
 
+API inline long& write_from_qfile_chunk_size()
+// qlat parameter
+// size in bytes
+{
+  static long size = 512 * 1024;
+  return size;
+}
+
 }  // namespace qlat
