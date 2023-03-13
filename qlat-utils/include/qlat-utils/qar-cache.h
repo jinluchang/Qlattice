@@ -27,6 +27,8 @@ int qar_extract(const std::string& path_qar, const std::string& path_folder_,
 
 int qcopy_file(const std::string& path_src, const std::string& path_dst);
 
+std::string mk_key_from_qar_path(const std::string& path);
+
 std::vector<std::string> list_qar(const std::string& path);
 
 DataTable qload_datatable_serial(QFile& qfile);

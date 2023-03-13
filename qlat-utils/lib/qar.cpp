@@ -1102,11 +1102,36 @@ int qcopy_file(const std::string& path_src, const std::string& path_dst)
   return 0;
 }
 
+std::string mk_key_from_qar_path(const std::string& path)
+{
+  if (path.size() <= 4) {
+    return "";
+  }
+  if (0 != path.compare(path.size() - 4, 4, ".qar")) {
+    return "";
+  }
+  const std::string key = path.substr(0, path.size() - 4) + "/";
+  return key;
+}
+
 std::vector<std::string> list_qar(const std::string& path)
 {
-  TIMER_VERBOSE("list_qar");
-  QarFile qar(path, "r");
-  return list(qar);
+  if (not does_file_exist_qar(path)) {
+    std::vector<std::string> ret;
+    return ret;
+  }
+  const std::string key = mk_key_from_qar_path(path);
+  if (key != "") {
+    Cache<std::string, QarFile>& cache = get_qar_read_cache();
+    QarFile& qar = cache[key];
+    if (qar.null()) {
+      qar.init(path, "r");
+    }
+    return list(qar);
+  } else {
+    QarFile qar(path, "r");
+    return list(qar);
+  }
 }
 
 bool has_regular_file(const QarFile& qar, const std::string& fn)
