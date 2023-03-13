@@ -9,6 +9,7 @@ from qlat_utils.c import qar_create
 from qlat_utils.c import qar_extract
 from qlat_utils.c import qcopy_file
 from qlat_utils.c import list_qar
+from qlat_utils.c import qar_build_index
 
 from qlat_utils.timer import *
 
@@ -37,7 +38,7 @@ def qcat_bytes_sync_node(path):
     return qcat_bytes(path)
 
 @timer
-def qar_build_index_info(path_qar, path_folder, *, is_remove_folder_after = False):
+def qar_build_index_info(path_qar):
     """
     create "path_qar.idx" file
     """

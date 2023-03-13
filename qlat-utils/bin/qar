@@ -57,7 +57,7 @@ if action == "list":
 elif action == "build-idx":
     assert len(sys.argv) == 3
     path_qar = sys.argv[2]
-    q.qar_build_index(path_qar)
+    q.qar_build_index_info(path_qar)
 elif action == "create":
     assert len(sys.argv) == 4
     path_qar = sys.argv[2]
@@ -95,7 +95,7 @@ elif action == "lr":
         idx = show_list_qar(path_qar, idx, is_recursive = True)
 elif action == "b":
     for path_qar in sys.argv[2:]:
-        q.qar_build_index(path_qar)
+        q.qar_build_index_info(path_qar)
 elif action in [ "c", "cr" ]:
     path_list = sys.argv[2:]
     for path in path_list:
