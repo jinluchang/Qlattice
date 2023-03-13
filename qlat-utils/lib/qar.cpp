@@ -91,8 +91,7 @@ QFile qfopen(const std::string& path, const std::string& mode)
       qassert(key == path.substr(0, key.size()));
       const std::string fn = path.substr(key.size());
       QarFile& qar = get_qar_read_cache()[key];
-      QFile qfile;
-      read(qar, fn, qfile);
+      QFile qfile = read(qar, fn);
       return qfile;
     }
   } else if (mode == "w" or mode == "a") {
@@ -530,9 +529,8 @@ int qar_extract(const std::string& path_qar, const std::string& path_folder_,
       qassert(code == 0);
       dirs.insert(dn);
     }
-    QFile qfile_in;
-    const bool b = read(qar, fn, qfile_in);
-    qassert(b);
+    QFile qfile_in = read(qar, fn);
+    qassert(not qfile_in.null());
     QFile qfile_out(path_folder + ".acc/" + fn, "w");
     qassert(not qfile_out.null());
     timer.flops += write_from_qfile(qfile_out, qfile_in);
@@ -621,18 +619,20 @@ bool has(const QarFile& qar, const std::string& fn)
   return false;
 }
 
-bool read(const QarFile& qar, const std::string& fn, QFile& qfile_in)
+QFile read(const QarFile& qar, const std::string& fn)
 // interface function
 {
+  QFile qfile_in;
   for (unsigned long i = 0; i < qar.size(); ++i) {
     const QarFileVol& qar_v = qar[i];
     qassert(not qar_v.null());
     qassert(qar_v.mode() == "r");
-    if (read(qar_v, fn, qfile_in)) {
-      return true;
+    qfile_in = read(qar_v, fn);
+    if (not qfile_in.null()) {
+      return qfile_in;
     }
   }
-  return false;
+  return qfile_in;
 }
 
 std::string mk_new_qar_read_cache_key(const QarFile& qar,

@@ -770,8 +770,7 @@ inline bool read_qar_segment_info(QarFileVolInternal& qar, QarSegmentInfo& qsinf
   return true;
 }
 
-inline void read_fn(const QarFileVol& qar, std::string& fn,
-                    const QarSegmentInfo& qsinfo)
+inline std::string read_fn(const QarFileVol& qar, const QarSegmentInfo& qsinfo)
 // interface function
 {
   qassert(not qar.null());
@@ -782,7 +781,9 @@ inline void read_fn(const QarFileVol& qar, std::string& fn,
   if (1 != qfread(data.data(), qsinfo.fn_len, 1, qar.qfile())) {
     qassert(false);
   }
+  std::string fn;
   fn = std::string(data.data(), qsinfo.fn_len);
+  return fn;
 }
 
 inline void read_info(const QarFileVol& qar, std::string& info,
@@ -800,7 +801,7 @@ inline void read_info(const QarFileVol& qar, std::string& info,
   info = std::string(data.data(), qsinfo.info_len);
 }
 
-inline void get_qfile_of_data(const QarFileVol& qar, QFile& qfile,
+inline QFile get_qfile_of_data(const QarFileVol& qar,
                               const QarSegmentInfo& qsinfo)
 // interface function
 // set qfile to be a qfile containing the data specified by qsinfo.
@@ -808,29 +809,31 @@ inline void get_qfile_of_data(const QarFileVol& qar, QFile& qfile,
 {
   qassert(not qar.null());
   qassert(qar.mode() == "r");
-  qfile.init(qar.qfile(), qsinfo.offset_data,
-             qsinfo.offset_data + qsinfo.data_len);
+  QFile qfile(qar.qfile(), qsinfo.offset_data,
+              qsinfo.offset_data + qsinfo.data_len);
   qassert(not qfile.null());
+  return qfile;
 }
 
-inline bool read_next(const QarFileVol& qar, std::string& fn, QFile& qfile)
+inline QFile read_next(const QarFileVol& qar, std::string& fn)
 // interface function
 // Initial pos of qar should be at the beginning of a segment.
 {
   qassert(not qar.null());
   qassert(qar.mode() == "r");
-  fn = std::string();
-  qfile.init();
   QarSegmentInfo qsinfo;
   if (not read_qar_segment_info(*qar.p, qsinfo)) {
-    return false;
+    fn = std::string();
+    return QFile();
   }
-  read_fn(qar, fn, qsinfo);
+  fn = read_fn(qar, qsinfo);
   register_file(qar, fn, qsinfo);
-  get_qfile_of_data(qar, qfile, qsinfo);
+  QFile qfile = get_qfile_of_data(qar, qsinfo);
   const int code = qfseek(qar.qfile(), qsinfo.offset_end, SEEK_SET);
-  qassert(code == 0);
-  return true;
+  if (code != 0) {
+    qfile.init();
+  }
+  return qfile;
 }
 
 inline void read_through(const QarFileVol& qar)
@@ -843,42 +846,42 @@ inline void read_through(const QarFileVol& qar)
   std::string fn;
   const int code = qfseek(qar.qfile(), qar.p->max_offset, SEEK_SET);
   qassert(code == 0);
-  QFile qfile;
   while (true) {
-    const bool b = read_next(qar, fn, qfile);
-    if (not b) {
+    const QFile qfile = read_next(qar, fn);
+    if (qfile.null()) {
       break;
     }
   }
 }
 
-inline bool read(const QarFileVol& qar, const std::string& fn, QFile& qfile_in)
+inline QFile read(const QarFileVol& qar, const std::string& fn)
 // interface function
 {
   qassert(not qar.null());
   qassert(qar.mode() == "r");
   qassert(fn != "");
-  qfile_in.init();
+  QFile qfile_in;
   if (has(qar.p->qsinfo_map, fn)) {
     const QarSegmentInfo& qsinfo = qar.p->qsinfo_map[fn];
-    get_qfile_of_data(qar, qfile_in, qsinfo);
-    return true;
+    qfile_in = get_qfile_of_data(qar, qsinfo);
+    return qfile_in;
   }
   if (qar.p->is_read_through) {
-    return false;
+    return qfile_in;
   }
   const int code = qfseek(qar.qfile(), qar.p->max_offset, SEEK_SET);
   qassert(code == 0);
   std::string fn_read;
   while (true) {
-    const bool b = read_next(qar, fn_read, qfile_in);
-    if (not b) {
-      return false;
+    qfile_in = read_next(qar, fn_read);
+    if (qfile_in.null()) {
+      return qfile_in;
     }
     if (fn == fn_read) {
-      return true;
+      return qfile_in;
     }
   }
+  return qfile_in;
 }
 
 inline bool has_regular_file(const QarFileVol& qar, const std::string& fn)
@@ -888,8 +891,8 @@ inline bool has_regular_file(const QarFileVol& qar, const std::string& fn)
   if (qar.p->is_read_through) {
     return has(qar.p->qsinfo_map, fn);
   }
-  QFile qfile;
-  return read(qar, fn, qfile);
+  QFile qfile = read(qar, fn);
+  return not qfile.null();
 }
 
 inline bool has(const QarFileVol& qar, const std::string& fn)

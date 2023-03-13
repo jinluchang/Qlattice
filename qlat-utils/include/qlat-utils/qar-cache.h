@@ -127,7 +127,7 @@ bool has_regular_file(const QarFile& qar, const std::string& fn);
 
 bool has(const QarFile& qar, const std::string& fn);
 
-bool read(const QarFile& qar, const std::string& fn, QFile& qfile_in);
+QFile read(const QarFile& qar, const std::string& fn);
 
 // -------------------
 
