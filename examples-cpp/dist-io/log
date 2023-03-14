@@ -68,6 +68,7 @@ QFile: close 'huge-data/gauge_field_rgf-0.1/checksums.txt' with 'r'.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 Cache: 'ShufflePlanCache': 0 / 16 [8] to add
+Cache: 'IsDirectoryCache': 3 / 1024 [128] clear
 QFile: open 'huge-data/gauge_field_rgf-0.1_2.partial/geo-info.txt' with 'w'.
 QFile: close 'huge-data/gauge_field_rgf-0.1_2.partial/geo-info.txt' with 'w'.
 QFile: open 'huge-data/gauge_field_rgf-0.1_2.partial/00/0000000000' with 'w'.
@@ -94,15 +95,17 @@ QFile: open 'huge-data/gauge_field_rgf-0.1_f.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field_rgf-0.1_f.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field_rgf-0.1_f.partial' 'huge-data/gauge_field_rgf-0.1_f'
 dist_read_field: fn='huge-data/gauge_field_rgf-0.1_f'.
-Cache: 'IsDirectoryCache': 3 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field_rgf-0.1_f/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field_rgf-0.1_f/geo-info.txt' with 'r'.
-Cache: 'IsDirectoryCache': 4 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field_rgf-0.1_f/00/0000000000' with 'r'.
 QFile: close 'huge-data/gauge_field_rgf-0.1_f/00/0000000000' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         1179648
 QFile: open 'huge-data/gauge_field_rgf-0.1_f/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field_rgf-0.1_f/checksums.txt' with 'r'.
+Cache: 'IsDirectoryCache': 3 / 1024 [128] clear
 QFile: open 'huge-data/gauge_field_rgf-0.1_f_2.partial/geo-info.txt' with 'w'.
 QFile: close 'huge-data/gauge_field_rgf-0.1_f_2.partial/geo-info.txt' with 'w'.
 QFile: open 'huge-data/gauge_field_rgf-0.1_f_2.partial/00/0000000000' with 'w'.
@@ -238,10 +241,11 @@ QFile: open 'huge-data/gauge_field ; 1x1x1x1.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 1x1x1x1.partial' 'huge-data/gauge_field ; 1x1x1x1'
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x1'.
-Cache: 'IsDirectoryCache': 5 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x1x1x1/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1/geo-info.txt' with 'r'.
-Cache: 'IsDirectoryCache': 6 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x1x1x1/00/0000000000' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1/00/0000000000' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         2359296
@@ -256,6 +260,7 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 2x2x2x2'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+Cache: 'IsDirectoryCache': 3 / 1024 [128] clear
 QFile: open 'huge-data/gauge_field ; 2x2x2x2.partial/geo-info.txt' with 'w'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2.partial/geo-info.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 2x2x2x2.partial/00/0000000000' with 'w'.
@@ -274,20 +279,21 @@ QFile: open 'huge-data/gauge_field ; 2x2x2x2.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 2x2x2x2.partial' 'huge-data/gauge_field ; 2x2x2x2'
 dist_read_field: fn='huge-data/gauge_field ; 2x2x2x2'.
-Cache: 'IsDirectoryCache': 7 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 2x2x2x2/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2/geo-info.txt' with 'r'.
-Cache: 'IsDirectoryCache': 8 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 2x2x2x2/00/0000000000' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2/00/0000000000' with 'r'.
-Cache: 'IsDirectoryCache': 9 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 3 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 2x2x2x2/02/0000000002' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2/02/0000000002' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
-Cache: 'IsDirectoryCache': 10 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 4 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 2x2x2x2/01/0000000001' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2/01/0000000001' with 'r'.
-Cache: 'IsDirectoryCache': 11 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 5 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 2x2x2x2/03/0000000003' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2/03/0000000003' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
@@ -302,6 +308,7 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x8'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+Cache: 'IsDirectoryCache': 6 / 1024 [128] clear
 QFile: open 'huge-data/gauge_field ; 1x1x1x8.partial/geo-info.txt' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8.partial/geo-info.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 1x1x1x8.partial/00/0000000000' with 'w'.
@@ -315,13 +322,14 @@ QFile: open 'huge-data/gauge_field ; 1x1x1x8.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 1x1x1x8.partial' 'huge-data/gauge_field ; 1x1x1x8'
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x8'.
-Cache: 'IsDirectoryCache': 12 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x1x1x8/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8/geo-info.txt' with 'r'.
-Cache: 'IsDirectoryCache': 13 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x1x1x8/00/0000000000' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8/00/0000000000' with 'r'.
-Cache: 'IsDirectoryCache': 14 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 3 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x1x1x8/01/0000000001' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8/01/0000000001' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
@@ -336,6 +344,7 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 1x2x4x2'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x2x4x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+Cache: 'IsDirectoryCache': 4 / 1024 [128] clear
 QFile: open 'huge-data/gauge_field ; 1x2x4x2.partial/geo-info.txt' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2.partial/geo-info.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 1x2x4x2.partial/00/0000000000' with 'w'.
@@ -354,20 +363,21 @@ QFile: open 'huge-data/gauge_field ; 1x2x4x2.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 1x2x4x2.partial' 'huge-data/gauge_field ; 1x2x4x2'
 dist_read_field: fn='huge-data/gauge_field ; 1x2x4x2'.
-Cache: 'IsDirectoryCache': 15 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x2x4x2/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2/geo-info.txt' with 'r'.
-Cache: 'IsDirectoryCache': 16 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x2x4x2/00/0000000000' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2/00/0000000000' with 'r'.
-Cache: 'IsDirectoryCache': 17 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 3 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x2x4x2/02/0000000002' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2/02/0000000002' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
-Cache: 'IsDirectoryCache': 18 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 4 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x2x4x2/01/0000000001' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2/01/0000000001' with 'r'.
-Cache: 'IsDirectoryCache': 19 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 5 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x2x4x2/03/0000000003' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2/03/0000000003' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
@@ -382,6 +392,7 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 2x2x1x1'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+Cache: 'IsDirectoryCache': 6 / 1024 [128] clear
 QFile: open 'huge-data/gauge_field ; 2x2x1x1.partial/geo-info.txt' with 'w'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1.partial/geo-info.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 2x2x1x1.partial/00/0000000000' with 'w'.
@@ -393,10 +404,11 @@ QFile: open 'huge-data/gauge_field ; 2x2x1x1.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 2x2x1x1.partial' 'huge-data/gauge_field ; 2x2x1x1'
 dist_read_field: fn='huge-data/gauge_field ; 2x2x1x1'.
-Cache: 'IsDirectoryCache': 20 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 2x2x1x1/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1/geo-info.txt' with 'r'.
-Cache: 'IsDirectoryCache': 21 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 2x2x1x1/00/0000000000' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1/00/0000000000' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         2359296
@@ -411,6 +423,7 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 4x4x4x4'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 4x4x4x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+Cache: 'IsDirectoryCache': 3 / 1024 [128] clear
 QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/geo-info.txt' with 'w'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/geo-info.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/00/0000000000' with 'w'.
@@ -579,13 +592,14 @@ QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 4x4x4x4.partial' 'huge-data/gauge_field ; 4x4x4x4'
 dist_read_field: fn='huge-data/gauge_field ; 4x4x4x4'.
-Cache: 'IsDirectoryCache': 22 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4/geo-info.txt' with 'r'.
-Cache: 'IsDirectoryCache': 23 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4/00/0000000000' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4/00/0000000000' with 'r'.
-Cache: 'IsDirectoryCache': 24 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 3 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4/04/0000000032' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4/04/0000000032' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           73728
@@ -624,10 +638,10 @@ QFile: close 'huge-data/gauge_field ; 4x4x4x4/00/0000000007' with 'r'.
 QFile: open 'huge-data/gauge_field ; 4x4x4x4/04/0000000039' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4/04/0000000039' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    8 /   32 ; total_ops =         64 ; total_bytes =          589824
-Cache: 'IsDirectoryCache': 25 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 4 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4/01/0000000008' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4/01/0000000008' with 'r'.
-Cache: 'IsDirectoryCache': 26 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 5 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4/05/0000000040' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4/05/0000000040' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    9 /   32 ; total_ops =         72 ; total_bytes =          663552
@@ -666,10 +680,10 @@ QFile: close 'huge-data/gauge_field ; 4x4x4x4/01/0000000015' with 'r'.
 QFile: open 'huge-data/gauge_field ; 4x4x4x4/05/0000000047' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4/05/0000000047' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   16 /   32 ; total_ops =        128 ; total_bytes =         1179648
-Cache: 'IsDirectoryCache': 27 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 6 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4/02/0000000016' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4/02/0000000016' with 'r'.
-Cache: 'IsDirectoryCache': 28 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 7 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4/06/0000000048' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4/06/0000000048' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   17 /   32 ; total_ops =        136 ; total_bytes =         1253376
@@ -708,10 +722,10 @@ QFile: close 'huge-data/gauge_field ; 4x4x4x4/02/0000000023' with 'r'.
 QFile: open 'huge-data/gauge_field ; 4x4x4x4/06/0000000055' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4/06/0000000055' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   24 /   32 ; total_ops =        192 ; total_bytes =         1769472
-Cache: 'IsDirectoryCache': 29 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 8 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4/03/0000000024' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4/03/0000000024' with 'r'.
-Cache: 'IsDirectoryCache': 30 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 9 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4/07/0000000056' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4/07/0000000056' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   25 /   32 ; total_ops =        200 ; total_bytes =         1843200
@@ -761,6 +775,7 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x1_2'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+Cache: 'IsDirectoryCache': 10 / 1024 [128] clear
 QFile: open 'huge-data/gauge_field ; 1x1x1x1_2.partial/geo-info.txt' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1_2.partial/geo-info.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 1x1x1x1_2.partial/00/0000000000' with 'w'.
@@ -772,10 +787,11 @@ QFile: open 'huge-data/gauge_field ; 1x1x1x1_2.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1_2.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 1x1x1x1_2.partial' 'huge-data/gauge_field ; 1x1x1x1_2'
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x1_2'.
-Cache: 'IsDirectoryCache': 31 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x1x1x1_2/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1_2/geo-info.txt' with 'r'.
-Cache: 'IsDirectoryCache': 32 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x1x1x1_2/00/0000000000' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1_2/00/0000000000' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         2359296
@@ -790,6 +806,7 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 2x2x2x2_2'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+Cache: 'IsDirectoryCache': 3 / 1024 [128] clear
 QFile: open 'huge-data/gauge_field ; 2x2x2x2_2.partial/geo-info.txt' with 'w'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2_2.partial/geo-info.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 2x2x2x2_2.partial/00/0000000000' with 'w'.
@@ -808,20 +825,21 @@ QFile: open 'huge-data/gauge_field ; 2x2x2x2_2.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2_2.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 2x2x2x2_2.partial' 'huge-data/gauge_field ; 2x2x2x2_2'
 dist_read_field: fn='huge-data/gauge_field ; 2x2x2x2_2'.
-Cache: 'IsDirectoryCache': 33 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 2x2x2x2_2/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2_2/geo-info.txt' with 'r'.
-Cache: 'IsDirectoryCache': 34 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 2x2x2x2_2/00/0000000000' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2_2/00/0000000000' with 'r'.
-Cache: 'IsDirectoryCache': 35 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 3 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 2x2x2x2_2/02/0000000002' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2_2/02/0000000002' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
-Cache: 'IsDirectoryCache': 36 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 4 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 2x2x2x2_2/01/0000000001' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2_2/01/0000000001' with 'r'.
-Cache: 'IsDirectoryCache': 37 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 5 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 2x2x2x2_2/03/0000000003' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2_2/03/0000000003' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
@@ -836,6 +854,7 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x8_2'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+Cache: 'IsDirectoryCache': 6 / 1024 [128] clear
 QFile: open 'huge-data/gauge_field ; 1x1x1x8_2.partial/geo-info.txt' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8_2.partial/geo-info.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 1x1x1x8_2.partial/00/0000000000' with 'w'.
@@ -849,13 +868,14 @@ QFile: open 'huge-data/gauge_field ; 1x1x1x8_2.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8_2.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 1x1x1x8_2.partial' 'huge-data/gauge_field ; 1x1x1x8_2'
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x8_2'.
-Cache: 'IsDirectoryCache': 38 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x1x1x8_2/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8_2/geo-info.txt' with 'r'.
-Cache: 'IsDirectoryCache': 39 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x1x1x8_2/00/0000000000' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8_2/00/0000000000' with 'r'.
-Cache: 'IsDirectoryCache': 40 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 3 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x1x1x8_2/01/0000000001' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8_2/01/0000000001' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
@@ -870,6 +890,7 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 1x2x4x2_2'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x2x4x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+Cache: 'IsDirectoryCache': 4 / 1024 [128] clear
 QFile: open 'huge-data/gauge_field ; 1x2x4x2_2.partial/geo-info.txt' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2_2.partial/geo-info.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 1x2x4x2_2.partial/00/0000000000' with 'w'.
@@ -888,20 +909,21 @@ QFile: open 'huge-data/gauge_field ; 1x2x4x2_2.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2_2.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 1x2x4x2_2.partial' 'huge-data/gauge_field ; 1x2x4x2_2'
 dist_read_field: fn='huge-data/gauge_field ; 1x2x4x2_2'.
-Cache: 'IsDirectoryCache': 41 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x2x4x2_2/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2_2/geo-info.txt' with 'r'.
-Cache: 'IsDirectoryCache': 42 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x2x4x2_2/00/0000000000' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2_2/00/0000000000' with 'r'.
-Cache: 'IsDirectoryCache': 43 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 3 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x2x4x2_2/02/0000000002' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2_2/02/0000000002' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
-Cache: 'IsDirectoryCache': 44 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 4 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x2x4x2_2/01/0000000001' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2_2/01/0000000001' with 'r'.
-Cache: 'IsDirectoryCache': 45 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 5 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x2x4x2_2/03/0000000003' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2_2/03/0000000003' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
@@ -916,6 +938,7 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 2x2x1x1_2'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+Cache: 'IsDirectoryCache': 6 / 1024 [128] clear
 QFile: open 'huge-data/gauge_field ; 2x2x1x1_2.partial/geo-info.txt' with 'w'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1_2.partial/geo-info.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 2x2x1x1_2.partial/00/0000000000' with 'w'.
@@ -927,10 +950,11 @@ QFile: open 'huge-data/gauge_field ; 2x2x1x1_2.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1_2.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 2x2x1x1_2.partial' 'huge-data/gauge_field ; 2x2x1x1_2'
 dist_read_field: fn='huge-data/gauge_field ; 2x2x1x1_2'.
-Cache: 'IsDirectoryCache': 46 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 2x2x1x1_2/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1_2/geo-info.txt' with 'r'.
-Cache: 'IsDirectoryCache': 47 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 2x2x1x1_2/00/0000000000' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1_2/00/0000000000' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         2359296
@@ -945,6 +969,7 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 4x4x4x4_2'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 4x4x4x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+Cache: 'IsDirectoryCache': 3 / 1024 [128] clear
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/geo-info.txt' with 'w'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/geo-info.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/00/0000000000' with 'w'.
@@ -1113,13 +1138,14 @@ QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 4x4x4x4_2.partial' 'huge-data/gauge_field ; 4x4x4x4_2'
 dist_read_field: fn='huge-data/gauge_field ; 4x4x4x4_2'.
-Cache: 'IsDirectoryCache': 48 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/geo-info.txt' with 'r'.
-Cache: 'IsDirectoryCache': 49 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/00/0000000000' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/00/0000000000' with 'r'.
-Cache: 'IsDirectoryCache': 50 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 3 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/04/0000000032' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/04/0000000032' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           73728
@@ -1158,10 +1184,10 @@ QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/00/0000000007' with 'r'.
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/04/0000000039' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/04/0000000039' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    8 /   32 ; total_ops =         64 ; total_bytes =          589824
-Cache: 'IsDirectoryCache': 51 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 4 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/01/0000000008' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/01/0000000008' with 'r'.
-Cache: 'IsDirectoryCache': 52 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 5 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/05/0000000040' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/05/0000000040' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    9 /   32 ; total_ops =         72 ; total_bytes =          663552
@@ -1200,10 +1226,10 @@ QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/01/0000000015' with 'r'.
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/05/0000000047' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/05/0000000047' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   16 /   32 ; total_ops =        128 ; total_bytes =         1179648
-Cache: 'IsDirectoryCache': 53 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 6 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/02/0000000016' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/02/0000000016' with 'r'.
-Cache: 'IsDirectoryCache': 54 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 7 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/06/0000000048' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/06/0000000048' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   17 /   32 ; total_ops =        136 ; total_bytes =         1253376
@@ -1242,10 +1268,10 @@ QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/02/0000000023' with 'r'.
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/06/0000000055' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/06/0000000055' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   24 /   32 ; total_ops =        192 ; total_bytes =         1769472
-Cache: 'IsDirectoryCache': 55 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 8 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/03/0000000024' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/03/0000000024' with 'r'.
-Cache: 'IsDirectoryCache': 56 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 9 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/07/0000000056' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/07/0000000056' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   25 /   32 ; total_ops =        200 ; total_bytes =         1843200
@@ -1295,6 +1321,7 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x1_f'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
+Cache: 'IsDirectoryCache': 10 / 1024 [128] clear
 QFile: open 'huge-data/gauge_field ; 1x1x1x1_f.partial/geo-info.txt' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1_f.partial/geo-info.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 1x1x1x1_f.partial/00/0000000000' with 'w'.
@@ -1306,10 +1333,11 @@ QFile: open 'huge-data/gauge_field ; 1x1x1x1_f.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1_f.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 1x1x1x1_f.partial' 'huge-data/gauge_field ; 1x1x1x1_f'
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x1_f'.
-Cache: 'IsDirectoryCache': 57 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x1x1x1_f/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1_f/geo-info.txt' with 'r'.
-Cache: 'IsDirectoryCache': 58 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x1x1x1_f/00/0000000000' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1_f/00/0000000000' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         1179648
@@ -1324,6 +1352,7 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 373D0A62
 dist_write_field: fn='huge-data/gauge_field ; 2x2x2x2_f'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x2 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
+Cache: 'IsDirectoryCache': 3 / 1024 [128] clear
 QFile: open 'huge-data/gauge_field ; 2x2x2x2_f.partial/geo-info.txt' with 'w'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2_f.partial/geo-info.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 2x2x2x2_f.partial/00/0000000000' with 'w'.
@@ -1342,20 +1371,21 @@ QFile: open 'huge-data/gauge_field ; 2x2x2x2_f.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2_f.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 2x2x2x2_f.partial' 'huge-data/gauge_field ; 2x2x2x2_f'
 dist_read_field: fn='huge-data/gauge_field ; 2x2x2x2_f'.
-Cache: 'IsDirectoryCache': 59 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 2x2x2x2_f/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2_f/geo-info.txt' with 'r'.
-Cache: 'IsDirectoryCache': 60 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 2x2x2x2_f/00/0000000000' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2_f/00/0000000000' with 'r'.
-Cache: 'IsDirectoryCache': 61 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 3 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 2x2x2x2_f/02/0000000002' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2_f/02/0000000002' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =          589824
-Cache: 'IsDirectoryCache': 62 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 4 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 2x2x2x2_f/01/0000000001' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2_f/01/0000000001' with 'r'.
-Cache: 'IsDirectoryCache': 63 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 5 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 2x2x2x2_f/03/0000000003' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2_f/03/0000000003' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         1179648
@@ -1370,6 +1400,7 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 373D0A62
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x8_f'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
+Cache: 'IsDirectoryCache': 6 / 1024 [128] clear
 QFile: open 'huge-data/gauge_field ; 1x1x1x8_f.partial/geo-info.txt' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8_f.partial/geo-info.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 1x1x1x8_f.partial/00/0000000000' with 'w'.
@@ -1383,13 +1414,14 @@ QFile: open 'huge-data/gauge_field ; 1x1x1x8_f.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8_f.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 1x1x1x8_f.partial' 'huge-data/gauge_field ; 1x1x1x8_f'
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x8_f'.
-Cache: 'IsDirectoryCache': 64 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x1x1x8_f/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8_f/geo-info.txt' with 'r'.
-Cache: 'IsDirectoryCache': 65 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x1x1x8_f/00/0000000000' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8_f/00/0000000000' with 'r'.
-Cache: 'IsDirectoryCache': 66 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 3 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x1x1x8_f/01/0000000001' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8_f/01/0000000001' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         1179648
@@ -1404,6 +1436,7 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 373D0A62
 dist_write_field: fn='huge-data/gauge_field ; 1x2x4x2_f'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x2x4x2 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
+Cache: 'IsDirectoryCache': 4 / 1024 [128] clear
 QFile: open 'huge-data/gauge_field ; 1x2x4x2_f.partial/geo-info.txt' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2_f.partial/geo-info.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 1x2x4x2_f.partial/00/0000000000' with 'w'.
@@ -1422,20 +1455,21 @@ QFile: open 'huge-data/gauge_field ; 1x2x4x2_f.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2_f.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 1x2x4x2_f.partial' 'huge-data/gauge_field ; 1x2x4x2_f'
 dist_read_field: fn='huge-data/gauge_field ; 1x2x4x2_f'.
-Cache: 'IsDirectoryCache': 67 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x2x4x2_f/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2_f/geo-info.txt' with 'r'.
-Cache: 'IsDirectoryCache': 68 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x2x4x2_f/00/0000000000' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2_f/00/0000000000' with 'r'.
-Cache: 'IsDirectoryCache': 69 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 3 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x2x4x2_f/02/0000000002' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2_f/02/0000000002' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =          589824
-Cache: 'IsDirectoryCache': 70 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 4 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x2x4x2_f/01/0000000001' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2_f/01/0000000001' with 'r'.
-Cache: 'IsDirectoryCache': 71 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 5 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 1x2x4x2_f/03/0000000003' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2_f/03/0000000003' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         1179648
@@ -1450,6 +1484,7 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 373D0A62
 dist_write_field: fn='huge-data/gauge_field ; 2x2x1x1_f'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x1x1 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
+Cache: 'IsDirectoryCache': 6 / 1024 [128] clear
 QFile: open 'huge-data/gauge_field ; 2x2x1x1_f.partial/geo-info.txt' with 'w'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1_f.partial/geo-info.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 2x2x1x1_f.partial/00/0000000000' with 'w'.
@@ -1461,10 +1496,11 @@ QFile: open 'huge-data/gauge_field ; 2x2x1x1_f.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1_f.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 2x2x1x1_f.partial' 'huge-data/gauge_field ; 2x2x1x1_f'
 dist_read_field: fn='huge-data/gauge_field ; 2x2x1x1_f'.
-Cache: 'IsDirectoryCache': 72 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 2x2x1x1_f/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1_f/geo-info.txt' with 'r'.
-Cache: 'IsDirectoryCache': 73 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 2x2x1x1_f/00/0000000000' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1_f/00/0000000000' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         1179648
@@ -1479,6 +1515,7 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 373D0A62
 dist_write_field: fn='huge-data/gauge_field ; 4x4x4x4_f'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 4x4x4x4 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
+Cache: 'IsDirectoryCache': 3 / 1024 [128] clear
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/geo-info.txt' with 'w'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/geo-info.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/00/0000000000' with 'w'.
@@ -1647,13 +1684,14 @@ QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 4x4x4x4_f.partial' 'huge-data/gauge_field ; 4x4x4x4_f'
 dist_read_field: fn='huge-data/gauge_field ; 4x4x4x4_f'.
-Cache: 'IsDirectoryCache': 74 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/geo-info.txt' with 'r'.
-Cache: 'IsDirectoryCache': 75 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/00/0000000000' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/00/0000000000' with 'r'.
-Cache: 'IsDirectoryCache': 76 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 3 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/04/0000000032' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/04/0000000032' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           36864
@@ -1692,10 +1730,10 @@ QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/00/0000000007' with 'r'.
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/04/0000000039' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/04/0000000039' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    8 /   32 ; total_ops =         64 ; total_bytes =          294912
-Cache: 'IsDirectoryCache': 77 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 4 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/01/0000000008' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/01/0000000008' with 'r'.
-Cache: 'IsDirectoryCache': 78 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 5 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/05/0000000040' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/05/0000000040' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    9 /   32 ; total_ops =         72 ; total_bytes =          331776
@@ -1734,10 +1772,10 @@ QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/01/0000000015' with 'r'.
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/05/0000000047' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/05/0000000047' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   16 /   32 ; total_ops =        128 ; total_bytes =          589824
-Cache: 'IsDirectoryCache': 79 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 6 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/02/0000000016' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/02/0000000016' with 'r'.
-Cache: 'IsDirectoryCache': 80 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 7 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/06/0000000048' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/06/0000000048' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   17 /   32 ; total_ops =        136 ; total_bytes =          626688
@@ -1776,10 +1814,10 @@ QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/02/0000000023' with 'r'.
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/06/0000000055' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/06/0000000055' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   24 /   32 ; total_ops =        192 ; total_bytes =          884736
-Cache: 'IsDirectoryCache': 81 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 8 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/03/0000000024' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/03/0000000024' with 'r'.
-Cache: 'IsDirectoryCache': 82 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 9 / 1024 [128] to add
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/07/0000000056' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/07/0000000056' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   25 /   32 ; total_ops =        200 ; total_bytes =          921600
@@ -1826,6 +1864,7 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 373D0A62
 write_field: fn='huge-data/rgf-0.1.field.conf.0000000000'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+Cache: 'IsDirectoryCache': 10 / 1024 [128] clear
 QFile: open 'huge-data/rgf-0.1.field.conf.0000000000.partial.partial' with 'w'.
 QFile: close 'huge-data/rgf-0.1.field.conf.0000000000.partial.partial' with 'w'.
 qrename: 'huge-data/rgf-0.1.field.conf.0000000000.partial.partial' 'huge-data/rgf-0.1.field.conf.0000000000.partial'
@@ -1833,7 +1872,8 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576
 QFile: open 'huge-data/rgf-0.1.field.conf.0000000000.partial' with 'a'.
 QFile: close 'huge-data/rgf-0.1.field.conf.0000000000.partial' with 'a'.
 qrename: 'huge-data/rgf-0.1.field.conf.0000000000.partial' 'huge-data/rgf-0.1.field.conf.0000000000'
-Cache: 'IsDirectoryCache': 83 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
 read_field: fn='huge-data/rgf-0.1.field.conf.0000000000'.
 QFile: open 'huge-data/rgf-0.1.field.conf.0000000000' with 'r'.
 QFile: close 'huge-data/rgf-0.1.field.conf.0000000000' with 'r'.
@@ -1855,6 +1895,7 @@ dist_crc32 = EFF53CA0
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = 000E8458
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 384 ; total_size: 0.001 GB)
+Cache: 'IsDirectoryCache': 2 / 1024 [128] clear
 QFile: open 'huge-data/rgf-0.1.gf.conf.0000000000.partial.partial' with 'w'.
 QFile: close 'huge-data/rgf-0.1.gf.conf.0000000000.partial.partial' with 'w'.
 qrename: 'huge-data/rgf-0.1.gf.conf.0000000000.partial.partial' 'huge-data/rgf-0.1.gf.conf.0000000000.partial'
@@ -1863,6 +1904,7 @@ QFile: open 'huge-data/rgf-0.1.gf.conf.0000000000.partial' with 'a'.
 QFile: close 'huge-data/rgf-0.1.gf.conf.0000000000.partial' with 'a'.
 qrename: 'huge-data/rgf-0.1.gf.conf.0000000000.partial' 'huge-data/rgf-0.1.gf.conf.0000000000'
 load_gauge_field: 'huge-data/rgf-0.1.gf.conf.0000000000'.
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
 QFile: open 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
 QFile: close 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
 QFile: open 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
@@ -2068,7 +2110,7 @@ FftComplexFieldPlan::end(): free a plan.
 FftComplexFieldPlan::end(): free a plan.
 FftComplexFieldPlan::end(): free a plan.
 Cache: 'ShufflePlanCache': 8 / 16 [8] clear
-Cache: 'IsDirectoryCache': 84 / 1024 [128] clear
+Cache: 'IsDirectoryCache': 1 / 1024 [128] clear
 clear_mem_cache: 19945984 bytes (0.019 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.

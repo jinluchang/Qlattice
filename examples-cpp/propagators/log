@@ -129,6 +129,7 @@ cg_with_f: final iter=  60 sqrt(qnorm_r/qnorm_in)=9.178E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=60 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 9.112725E-09 from 1.000000E+00
 write_field: fn='results/test-4nt8/results=1000/psrc-prop-0.field'.
+Cache: 'IsDirectoryCache': 4 / 1024 [128] clear
 QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.field.partial.partial' with 'w'.
 QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.field.partial.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1000/psrc-prop-0.field.partial.partial' 'results/test-4nt8/results=1000/psrc-prop-0.field.partial'
@@ -245,8 +246,10 @@ qrename: 'results/test-4nt8/results=1010/f-rank.field.partial.partial' 'results/
 QFile: open 'results/test-4nt8/results=1010/f-rank.field.partial' with 'a'.
 QFile: close 'results/test-4nt8/results=1010/f-rank.field.partial' with 'a'.
 qrename: 'results/test-4nt8/results=1010/f-rank.field.partial' 'results/test-4nt8/results=1010/f-rank.field'
-Cache: 'IsDirectoryCache': 4 / 1024 [128] to add
-Cache: 'IsDirectoryCache': 5 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 3 / 1024 [128] to add
 read_field: fn='results/test-4nt8/results=1010/f-rank.field'.
 QFile: open 'results/test-4nt8/results=1010/f-rank.field' with 'r'.
 QFile: close 'results/test-4nt8/results=1010/f-rank.field' with 'r'.
@@ -316,6 +319,7 @@ cg_with_f: final iter=  57 sqrt(qnorm_r/qnorm_in)=7.844E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=57 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 7.403972E-09 from 1.000000E+00
 write_field: fn='results/test-4nt8/results=1010/psrc-prop-0.field'.
+Cache: 'IsDirectoryCache': 4 / 1024 [128] clear
 QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.field.partial.partial' with 'w'.
 QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.field.partial.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1010/psrc-prop-0.field.partial.partial' 'results/test-4nt8/results=1010/psrc-prop-0.field.partial'
@@ -423,9 +427,10 @@ qrename: 'results/free-4nt8/results=1000/f-rank.field.partial.partial' 'results/
 QFile: open 'results/free-4nt8/results=1000/f-rank.field.partial' with 'a'.
 QFile: close 'results/free-4nt8/results=1000/f-rank.field.partial' with 'a'.
 qrename: 'results/free-4nt8/results=1000/f-rank.field.partial' 'results/free-4nt8/results=1000/f-rank.field'
-Cache: 'IsDirectoryCache': 6 / 1024 [128] to add
-Cache: 'IsDirectoryCache': 7 / 1024 [128] to add
-Cache: 'IsDirectoryCache': 8 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 3 / 1024 [128] to add
 read_field: fn='results/free-4nt8/results=1000/f-rank.field'.
 QFile: open 'results/free-4nt8/results=1000/f-rank.field' with 'r'.
 QFile: close 'results/free-4nt8/results=1000/f-rank.field' with 'r'.
@@ -495,6 +500,7 @@ cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.845E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 3.759165E-09 from 1.000000E+00
 write_field: fn='results/free-4nt8/results=1000/psrc-prop-0.field'.
+Cache: 'IsDirectoryCache': 4 / 1024 [128] clear
 QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.field.partial.partial' with 'w'.
 QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.field.partial.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1000/psrc-prop-0.field.partial.partial' 'results/free-4nt8/results=1000/psrc-prop-0.field.partial'
@@ -601,8 +607,10 @@ qrename: 'results/free-4nt8/results=1010/f-rank.field.partial.partial' 'results/
 QFile: open 'results/free-4nt8/results=1010/f-rank.field.partial' with 'a'.
 QFile: close 'results/free-4nt8/results=1010/f-rank.field.partial' with 'a'.
 qrename: 'results/free-4nt8/results=1010/f-rank.field.partial' 'results/free-4nt8/results=1010/f-rank.field'
-Cache: 'IsDirectoryCache': 9 / 1024 [128] to add
-Cache: 'IsDirectoryCache': 10 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 0 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 1 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 2 / 1024 [128] to add
+Cache: 'IsDirectoryCache': 3 / 1024 [128] to add
 read_field: fn='results/free-4nt8/results=1010/f-rank.field'.
 QFile: open 'results/free-4nt8/results=1010/f-rank.field' with 'r'.
 QFile: close 'results/free-4nt8/results=1010/f-rank.field' with 'r'.
@@ -672,6 +680,7 @@ cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.845E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 3.759165E-09 from 1.000000E+00
 write_field: fn='results/free-4nt8/results=1010/psrc-prop-0.field'.
+Cache: 'IsDirectoryCache': 4 / 1024 [128] clear
 QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.field.partial.partial' with 'w'.
 QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.field.partial.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1010/psrc-prop-0.field.partial.partial' 'results/free-4nt8/results=1010/psrc-prop-0.field.partial'
@@ -763,7 +772,6 @@ program finished successfully for 'free-4nt8'.
 CHECK: finished successfully.
 Cache: 'CommPlanCache': 7 / 32 [16] clear
 Cache: 'ShufflePlanCache': 2 / 16 [8] clear
-Cache: 'IsDirectoryCache': 11 / 1024 [128] clear
 clear_mem_cache: 8399616 bytes (0.008 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
