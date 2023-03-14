@@ -3,6 +3,74 @@
 namespace qlat
 {  //
 
+std::vector<std::string> qls_aux(const std::string& path,
+                                 const bool is_sort = true)
+{
+  std::vector<std::string> contents;
+  DIR* dir = opendir(path.c_str());
+  if (dir == NULL) {
+    return contents;
+  }
+  struct dirent* d;
+  while ((d = readdir(dir)) != NULL) {
+    if (!strcmp(d->d_name, ".") || !strcmp(d->d_name, "..")) {
+      continue;
+    }
+    contents.push_back(path + "/" + d->d_name);
+  }
+  closedir(dir);
+  if (is_sort) {
+    std::sort(contents.begin(), contents.end());
+  }
+  return contents;
+}
+
+std::vector<std::string> qls_all_aux(const std::string& path,
+                                     const bool is_folder_before_files = false,
+                                     const bool is_sort = true)
+// list all files and folder in path (not including it self)
+{
+  std::vector<std::string> all_contents;
+  if (not is_directory(path)) {
+    return all_contents;
+  }
+  const std::vector<std::string> contents = qls_aux(path, is_sort);
+  for (long i = 0; i < (long)contents.size(); ++i) {
+    const std::string& path_i = contents[i];
+    if (not is_directory(path_i)) {
+      all_contents.push_back(path_i);
+    } else {
+      if (is_folder_before_files) {
+        all_contents.push_back(path_i);
+        vector_append(all_contents,
+                      qls_all_aux(path_i, is_folder_before_files, is_sort));
+      } else {
+        // default behavior
+        vector_append(all_contents,
+                      qls_all_aux(path_i, is_folder_before_files, is_sort));
+        all_contents.push_back(path_i);
+      }
+    }
+  }
+  return all_contents;
+}
+
+int qremove_all_aux(const std::string& path)
+{
+  if (not is_directory(path)) {
+    return qremove(path);
+  } else {
+    int ret = 0;
+    const std::vector<std::string> paths = qls_aux(path);
+    for (long i = 0; i < (long)paths.size(); ++i) {
+      ret += qremove_all_aux(paths[i]);
+    }
+    return ret + qremove(path);
+  }
+}
+
+// --------------------------------
+
 void flush() { fflush(get_output_file()); }
 
 std::string dirname(const std::string& fn)
@@ -195,12 +263,14 @@ int qremove(const std::string& path)
 
 int qremove_all(const std::string& path)
 {
+  clear_is_directory_cache();
   return qremove_all_aux(remove_trailing_slashes(path));
 }
 
 int qmkdir(const std::string& path, const mode_t mode)
 {
   TIMER("qmkdir");
+  clear_is_directory_cache();
   mkdir(path.c_str(), mode);
   return check_dir(path, mode);
 }
@@ -209,6 +279,7 @@ int qmkdir_p(const std::string& path_, const mode_t mode)
 // return 0 if successful
 {
   TIMER("qmkdir_p");
+  clear_is_directory_cache();
   std::string path = remove_trailing_slashes(path_);
   if (is_directory(path)) {
     return 0;
@@ -242,6 +313,7 @@ int qmkdir_p(const std::string& path_, const mode_t mode)
 int qmkdir_info(const std::string& path, const mode_t mode)
 {
   TIMER("qmkdir_info");
+  clear_is_directory_cache();
   if (0 == get_id_node()) {
     return qmkdir(path, mode);
   } else {
@@ -252,6 +324,7 @@ int qmkdir_info(const std::string& path, const mode_t mode)
 int qmkdir_p_info(const std::string& path, const mode_t mode)
 {
   TIMER("qmkdir_info");
+  clear_is_directory_cache();
   if (0 == get_id_node()) {
     return qmkdir_p(path, mode);
   } else {

@@ -9,7 +9,7 @@ static void check_all_files_crc32_aux(
   if (not is_directory(path)) {
     acc.push_back(check_file_crc32(path));
   } else {
-    const std::vector<std::string> paths = qls_aux(path);
+    const std::vector<std::string> paths = qls(path);
     for (long i = 0; i < (long)paths.size(); ++i) {
       check_all_files_crc32_aux(acc, paths[i]);
     }

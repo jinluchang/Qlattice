@@ -38,6 +38,16 @@ cdef extern from "qlat-utils/qutils-io.h" namespace "qlat":
 
     bool is_regular_file(const std_string& fn);
 
+    bool does_file_exist(const std_string& fn);
+
+    void clear_is_directory_cache();
+
+    bool is_directory_cache(const std_string& dir_);
+
+    bool is_regular_file_cache(const std_string& fn);
+
+    bool does_file_exist_cache(const std_string& fn);
+
     int qremove(const std_string& path);
 
     int qremove_all(const std_string& path);
@@ -49,8 +59,6 @@ cdef extern from "qlat-utils/qutils-io.h" namespace "qlat":
     int qmkdir_info(const std_string& path);
 
     int qmkdir_p_info(const std_string& path);
-
-    bool does_file_exist(const std_string& fn);
 
     crc32_t compute_crc32(const std_string& path);
 

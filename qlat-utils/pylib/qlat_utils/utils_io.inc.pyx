@@ -43,14 +43,26 @@ def qmkdir_p(const cc.std_string& path):
 def qmkdir_p_info(const cc.std_string& path):
     return cc.qmkdir_p_info(path)
 
-def does_file_exist(const cc.std_string& path):
-    return cc.does_file_exist(path)
-
 def is_directory(const cc.std_string& path):
     return cc.is_directory(path)
 
 def is_regular_file(const cc.std_string& path):
     return cc.is_regular_file(path)
+
+def does_file_exist(const cc.std_string& path):
+    return cc.does_file_exist(path)
+
+def clear_is_directory_cache():
+    return cc.clear_is_directory_cache()
+
+def is_directory_cache(const cc.std_string& path):
+    return cc.is_directory_cache(path)
+
+def is_regular_file_cache(const cc.std_string& path):
+    return cc.is_regular_file_cache(path)
+
+def does_file_exist_cache(const cc.std_string& path):
+    return cc.does_file_exist_cache(path)
 
 def qls(const cc.std_string& path,
         const cc.bool is_sort = True):
