@@ -907,7 +907,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     u_rand_prob_arr = np.asarray(u_rand_prob).ravel()
     fn_meson_corr = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"
     if get_load_path(fn_meson_corr) is None:
-        q.displayln_info("{fname}: '{fn_meson_corr}' does not exist. Skipping.")
+        q.displayln_info(f"{fname}: '{fn_meson_corr}' does not exist. Skipping.")
         return
     ld_meson_corr = q.load_lat_data(get_load_path(fn_meson_corr))
     meson_corr_arr = ld_meson_corr.to_numpy()
