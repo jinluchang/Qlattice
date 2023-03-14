@@ -43,7 +43,7 @@ template <class M, class N>
 const SelectedPoints<M>& qcast_const(const SelectedPoints<N>& x)
 // IMPORTANT: will modify the multiplicity of x, need to cast back after finish.
 {
-  return qcast((SelectedPoints<N>&)x);
+  return qcast<M, N>((SelectedPoints<N>&)x);
 }
 
 template <class M>

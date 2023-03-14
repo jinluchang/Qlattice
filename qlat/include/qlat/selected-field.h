@@ -298,7 +298,7 @@ template <class M, class N>
 const SelectedField<M>& qcast_const(const SelectedField<N>& x)
 // IMPORTANT: will modify the multiplicity of x, need to cast back after finish.
 {
-  return qcast((SelectedField<N>&)x);
+  return qcast<M, N>((SelectedField<N>&)x);
 }
 
 template <class M>
