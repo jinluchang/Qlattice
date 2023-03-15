@@ -9,13 +9,13 @@ def show_list_qar(path_qar, idx = 0, is_recursive = True, drop_prefix = ""):
     assert path_qar[-4:] == ".qar"
     fns = q.list_qar(path_qar)
     for i, fn in enumerate(fns):
-        pfn = path_qar[:-4] + "/" + fn
-        assert pfn.startswith(drop_prefix)
-        pfn = pfn[len(drop_prefix):]
+        pfn_full = path_qar[:-4] + "/" + fn
+        assert pfn_full.startswith(drop_prefix)
+        pfn = pfn_full[len(drop_prefix):]
         q.displayln_info(f"{idx:8} '{path_qar}' {i:8} '{pfn}'")
         idx += 1
         if is_recursive and fn[-4:] == ".qar":
-            idx = show_list_qar(path_qar[:-4] + "/" + fn, idx, is_recursive = is_recursive, drop_prefix = drop_prefix)
+            idx = show_list_qar(pfn_full, idx, is_recursive = is_recursive, drop_prefix = drop_prefix)
     return idx
 
 if len(sys.argv) < 2:

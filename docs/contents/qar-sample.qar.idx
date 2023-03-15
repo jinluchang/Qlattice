@@ -1,0 +1,26 @@
+#!/usr/bin/env qar-idx-glimpse
+
+QAR-FILE-IDX 0 0 13
+filename1.txt
+28 45 59 60 82 13 0 20
+
+QAR-FILE-IDX 0 1 13
+filename2.txt
+82 99 113 114 136 13 0 20
+
+QAR-FILE-IDX 0 2 13
+filename3.txt
+136 153 167 168 190 13 0 20
+
+QAR-FILE-IDX 0 3 18
+folder1/file-a.txt
+190 207 226 227 250 18 0 21
+
+QAR-FILE-IDX 0 4 18
+folder2/file-b.txt
+250 267 286 287 310 18 0 21
+
+QAR-FILE-IDX 0 5 18
+folder2/file-c.txt
+310 327 346 347 370 18 0 21
+
