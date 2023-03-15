@@ -972,8 +972,8 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
         flavor_l = 0
         flavor_s = 1
         xg_snk_t = xg_fsel_list[idx_snk, 3]
-        corr1 = np.abs(meson_corr_arr[0, (xg_snk_t - t_1) % t_size])
-        corr2 = np.abs(meson_corr_arr[0, (xg_snk_t - t_2) % t_size])
+        corr1 = np.abs(meson_corr_arr[1, (xg_snk_t - t_1) % t_size])
+        corr2 = np.abs(meson_corr_arr[1, (xg_snk_t - t_2) % t_size])
         p1t1 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_1, idx1]
         p2t1 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_1, idx2]
         wt1 = wsrc_psnk_prop_norm_sqrt[flavor_l, t_1, idx_snk]
