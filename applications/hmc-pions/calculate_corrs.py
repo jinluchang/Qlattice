@@ -247,7 +247,7 @@ class Correlators():
     
     def save(self):
         date = datetime.datetime.now().date()
-        with open(f"measurements_{self.Nx}x{self.Nt}_msq_{self.msq}_lmbd_{self.lmbd}_alph_{self.alpha}_{date}_corrs.bin", "wb") as file:
+        with open(f"output_data/corrs/corrs_{self.Nx}x{self.Nt}_msq_{self.msq}_lmbd_{self.lmbd}_alph_{self.alpha}_{date}_corrs.bin", "wb") as file:
             pickle.dump([self.loaded_files,
                          self.done,
                          self.vev,
@@ -256,7 +256,7 @@ class Correlators():
                          self.corr_avgs], file)
     
     def load(self, date):
-        with open(f"measurements_{self.Nx}x{self.Nt}_msq_{self.msq}_lmbd_{self.lmbd}_alph_{self.alpha}_{date}_corrs.bin","rb") as file:
+        with open(f"output_data/corrs/corrsmeasurements_{self.Nx}x{self.Nt}_msq_{self.msq}_lmbd_{self.lmbd}_alph_{self.alpha}_{date}_corrs.bin","rb") as file:
             data = pickle.load(file)
             for f in data[0]:
                 self.load_data("-","-",f)
