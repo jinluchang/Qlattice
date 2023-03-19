@@ -20,7 +20,6 @@
 #include <qlat/field-fft.h>
 #include <qlat/field-rng.h>
 #include <qlat/field-serial-io.h>
-#include <qlat/field-utils.h>
 #include <qlat/field.h>
 #include <qlat-utils/matrix.h>
 #include <qlat-utils/mvector.h>

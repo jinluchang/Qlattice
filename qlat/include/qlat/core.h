@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qlat/config.h>
+#include <qlat/env.h>
 
 #include <qlat-utils/core.h>
 #include <qlat-utils/mat.h>
@@ -41,7 +42,7 @@ struct API GeometryNode {
   }
 };
 
-std::string show(const qlat::GeometryNode& geon);
+std::string show(const GeometryNode& geon);
 
 qacc bool operator==(const GeometryNode& geon1, const GeometryNode& geon2)
 {
@@ -426,15 +427,6 @@ qacc bool is_matching_geo_included(const Geometry& geo1, const Geometry& geo2)
 }
 
 // --------------------
-
-int get_field_init_from_env();
-
-API inline int& get_field_init()
-// qlat parameter
-{
-  static int t = get_field_init_from_env();
-  return t;
-}
 
 template <class M>
 struct API Field {

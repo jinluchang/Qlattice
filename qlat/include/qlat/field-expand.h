@@ -3,9 +3,8 @@
 #pragma once
 
 #include <qlat/setup.h>
-#include <qlat/field-utils.h>
+#include <qlat/field.h>
 #include <qlat/mpi.h>
-
 
 #include <map>
 #include <set>

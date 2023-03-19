@@ -1,7 +1,6 @@
 #pragma once
 
 #include <qlat/field.h>
-#include <qlat/field-utils.h>
 #include <qlat/selected-points.h>
 
 namespace qlat
@@ -63,15 +62,14 @@ inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
 inline void select_rank_range(FieldM<int64_t, 1>& f_rank,
                               const long rank_start = 0,
                               const long rank_stop = -1)
-// keep rank info if rank_start <= rank and (rank < rank_stop or rank_stop == -1)
-// otherwise rank = -1
-// default parameter does not change selection
-// but will erase the rank information for points not selected (rank = -1)
+// keep rank info if rank_start <= rank and (rank < rank_stop or rank_stop ==
+// -1) otherwise rank = -1 default parameter does not change selection but will
+// erase the rank information for points not selected (rank = -1)
 {
   TIMER_VERBOSE("select_rank_range");
   const Geometry& geo = f_rank.geo();
   qassert(geo.is_only_local);
-  //const Coordinate total_site = geo.total_site();
+  // const Coordinate total_site = geo.total_site();
   qacc_for(index, geo.local_volume(), {
     int64_t& rank = f_rank.get_elem(index);
     if (not(rank_start <= rank and (rank < rank_stop or rank_stop == -1))) {
@@ -90,7 +88,7 @@ inline void select_t_range(FieldM<int64_t, 1>& f_rank, const long t_start = 0,
   TIMER_VERBOSE("select_t_range");
   const Geometry& geo = f_rank.geo();
   qassert(geo.is_only_local);
-  //const Coordinate total_site = geo.total_site();
+  // const Coordinate total_site = geo.total_site();
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
@@ -240,7 +238,7 @@ inline PointSelection psel_from_fsel(const FieldSelection& fsel)
   long n_elems = fsel.n_elems;
   long total_n_elems = n_elems;
   glb_sum(total_n_elems);
-  //const int num_node = geo.geon.num_node;
+  // const int num_node = geo.geon.num_node;
   const int id_node = geo.geon.id_node;
   vector<long> vec(geo.geon.num_node, 0);
   all_gather(get_data(vec), get_data_one_elem(n_elems));
@@ -270,7 +268,7 @@ inline PointSelection psel_from_fsel_local(const FieldSelection& fsel)
 {
   TIMER("psel_from_fsel_local")
   const Geometry& geo = fsel.f_rank.geo();
-  //const Coordinate total_site = geo.total_site();
+  // const Coordinate total_site = geo.total_site();
   long n_elems = fsel.n_elems;
   PointSelection psel(n_elems);
   qthread_for(idx, (long)psel.size(), {
@@ -649,8 +647,7 @@ void acc_field(Field<M>& f, const SelectedField<M>& sf,
 
 template <class M>
 std::vector<M> field_sum_tslice(const SelectedField<M>& sf,
-                                const FieldSelection& fsel,
-                                const int t_dir = 3)
+                                const FieldSelection& fsel, const int t_dir = 3)
 // length = t_size * multiplicity
 {
   TIMER("field_sum_tslice");
@@ -801,4 +798,3 @@ void set_field_selected_slow(Field<M>& f, const SelectedField<M>& sf,
 }
 
 }  // namespace qlat
-

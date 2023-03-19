@@ -20,8 +20,6 @@
 
 #include <qlat/field.h>
 
-#include <qlat/field-utils.h>
-
 #ifndef QLAT_FFTW_OFF
 #include <qlat/field-fft.h>
 #endif
