@@ -105,20 +105,6 @@ struct API Geometry {
   }
   //
   qacc void init() { memset((void*)this, 0, sizeof(Geometry)); }
-  void init(const Coordinate& total_site, const int multiplicity_)
-  {
-    if (!initialized) {
-      init();
-      geon = get_geometry_node();
-      multiplicity = multiplicity_;
-      for (int i = 0; i < DIMN; ++i) {
-        qassert(0 == total_site[i] % geon.size_node[i]);
-        node_site[i] = total_site[i] / geon.size_node[i];
-      }
-      reset_node_site_expanded();
-      initialized = true;
-    }
-  }
   qacc void init(const GeometryNode& geon_, const Coordinate& node_site_,
                  const int multiplicity_)
   {
@@ -131,6 +117,7 @@ struct API Geometry {
       initialized = true;
     }
   }
+  void init(const Coordinate& total_site, const int multiplicity_);
   //
   qacc void remult(const int multiplicity_) { multiplicity = multiplicity_; }
   //
@@ -321,26 +308,26 @@ struct API Geometry {
   //
   ///////////////////////////////////////////////////////////////////
   //
-  Coordinate global_size() const
-  {
-    warn("use total_site()");
-    return total_site();
-  }
-  //
-  long recordFromCoordinate(const Coordinate& x) const
-  {
-    Coordinate xe = x;
-    xe = xe + expansion_left;
-    return qlat::index_from_coordinate(xe, node_site_expanded);
-  }
-  //
-  Coordinate coordinateFromRecord(long record) const
-  // 0 <= offset < local_volume_expanded() * multiplicity
-  {
-    Coordinate x = qlat::coordinate_from_index(record, node_site_expanded);
-    x = x - expansion_left;
-    return x;
-  }
+  // Coordinate global_size() const
+  // {
+  //   warn("use total_site()");
+  //   return total_site();
+  // }
+  // //
+  // long recordFromCoordinate(const Coordinate& x) const
+  // {
+  //   Coordinate xe = x;
+  //   xe = xe + expansion_left;
+  //   return qlat::index_from_coordinate(xe, node_site_expanded);
+  // }
+  // //
+  // Coordinate coordinateFromRecord(long record) const
+  // // 0 <= offset < local_volume_expanded() * multiplicity
+  // {
+  //   Coordinate x = qlat::coordinate_from_index(record, node_site_expanded);
+  //   x = x - expansion_left;
+  //   return x;
+  // }
 };
 
 std::string show(const qlat::Geometry& geo);
@@ -874,7 +861,7 @@ struct API FieldSelection {
   vector_acc<int64_t> ranks;  // rank of the selected points
   vector_acc<long> indices;   // local indices of selected points
   //
-  void init()
+  void init();
   //
   FieldSelection() { init(); }
   //

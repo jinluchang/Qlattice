@@ -28,8 +28,6 @@
 
 #include <qlat/field-rng.h>
 
-#include <qlat/field-comm.h>
-
 #include <qlat/selected-field.h>
 
 #include <qlat/field-shuffle.h>
@@ -61,8 +59,6 @@
 #ifndef QLAT_FFTW_OFF
 
 #include <qlat/qcd-gauge-transformation.h>
-
-#include <qlat/qcd-gauge-transformation-boundary.h>
 
 #include <qlat/qcd-smear.h>
 

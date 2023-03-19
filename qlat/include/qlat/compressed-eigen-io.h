@@ -15,7 +15,6 @@
 #include <qlat-utils/cache.h>
 #include <qlat/setup.h>
 #include <qlat/fermion-action.h>
-#include <qlat/field-comm.h>
 #include <qlat/field-dist-io.h>
 #include <qlat/field-expand.h>
 #include <qlat/field-fft.h>
