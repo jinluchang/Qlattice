@@ -430,23 +430,7 @@ qacc bool is_matching_geo_included(const Geometry& geo1, const Geometry& geo2)
 
 // --------------------
 
-inline int get_field_init_from_env()
-{
-  std::string tag = get_env_default("q_field_init", "fast");
-  if (tag == "fast") {
-    displayln_info("set q_field_init=fast.");
-    return 0;  // do not do anything
-  } else if (tag == "zero") {
-    displayln_info("set q_field_init=zero.");
-    return 1;  // set_zero
-  } else if (tag == "random") {
-    displayln_info("set q_field_init=random.");
-    return 2;  // set rand
-  } else {
-    qassert(false);
-    return -1;
-  }
-}
+int get_field_init_from_env();
 
 API inline int& get_field_init()
 // qlat parameter
@@ -762,38 +746,9 @@ struct API SelectedPoints {
   vector_acc<M> points;  // global quantity, same on each node
   // points.size() == n_points * multiplicity if initialized = true
   //
-  void init()
-  {
-    initialized = false;
-    multiplicity = 0;
-    n_points = 0;
-    points.init();
-  }
-  void init(const long n_points_, const int multiplicity_)
-  {
-    if (initialized) {
-      qassert(multiplicity_ == multiplicity);
-      qassert(n_points_ == n_points);
-      qassert((long)points.size() == n_points * multiplicity);
-    } else {
-      init();
-      initialized = true;
-      multiplicity = multiplicity_;
-      n_points = n_points_;
-      points.resize(n_points * multiplicity);
-      if (1 == get_field_init()) {
-        set_zero(*this);
-      } else if (2 == get_field_init()) {
-        set_u_rand_float(get_data(points), RngState(show(get_time())));
-      } else {
-        qassert(0 == get_field_init());
-      }
-    }
-  }
-  void init(const PointSelection& psel, const int multiplicity)
-  {
-    init(psel.size(), multiplicity);
-  }
+  void init();
+  void init(const long n_points_, const int multiplicity_);
+  void init(const PointSelection& psel, const int multiplicity);
   //
   SelectedPoints() { init(); }
   //
@@ -830,6 +785,44 @@ struct API SelectedPoints {
     return Vector<M>(&points[idx * multiplicity], multiplicity);
   }
 };
+
+template <class M>
+void SelectedPoints<M>::init()
+{
+  initialized = false;
+  multiplicity = 0;
+  n_points = 0;
+  points.init();
+}
+
+template <class M>
+void SelectedPoints<M>::init(const long n_points_, const int multiplicity_)
+{
+  if (initialized) {
+    qassert(multiplicity_ == multiplicity);
+    qassert(n_points_ == n_points);
+    qassert((long)points.size() == n_points * multiplicity);
+  } else {
+    init();
+    initialized = true;
+    multiplicity = multiplicity_;
+    n_points = n_points_;
+    points.resize(n_points * multiplicity);
+    if (1 == get_field_init()) {
+      set_zero(*this);
+    } else if (2 == get_field_init()) {
+      set_u_rand_float(get_data(points), RngState(show(get_time())));
+    } else {
+      qassert(0 == get_field_init());
+    }
+  }
+}
+
+template <class M>
+void SelectedPoints<M>::init(const PointSelection& psel, const int multiplicity)
+{
+  init(psel.size(), multiplicity);
+}
 
 template <class M>
 Vector<M> get_data(const SelectedPoints<M>& sp)
@@ -880,37 +873,9 @@ struct API SelectedField {
   box_acc<Geometry> geo;
   vector_acc<M> field;  // field.size() == n_elems * multiplicity
   //
-  void init()
-  {
-    initialized = false;
-    geo.init();
-    field.init();
-  }
-  void init(const Geometry& geo_, const long n_elems_, const int multiplicity)
-  {
-    if (initialized) {
-      qassert(geo() == geo_remult(geo_, multiplicity));
-      qassert(n_elems == n_elems_);
-      qassert((long)field.size() == n_elems * multiplicity);
-    } else {
-      init();
-      initialized = true;
-      geo.set(geo_remult(geo_, multiplicity));
-      n_elems = n_elems_;
-      field.resize(n_elems * multiplicity);
-      if (1 == get_field_init()) {
-        set_zero(*this);
-      } else if (2 == get_field_init()) {
-        set_u_rand_float(get_data(field), RngState(show(get_time())));
-      } else {
-        qassert(0 == get_field_init());
-      }
-    }
-  }
-  void init(const FieldSelection& fsel, const int multiplicity)
-  {
-    init(fsel.f_rank.geo(), fsel.n_elems, multiplicity);
-  }
+  void init();
+  void init(const Geometry& geo_, const long n_elems_, const int multiplicity);
+  void init(const FieldSelection& fsel, const int multiplicity);
   //
   SelectedField() { init(); }
   //
@@ -952,6 +917,44 @@ struct API SelectedField {
     return Vector<M>(&field[idx * multiplicity], multiplicity);
   }
 };
+
+template <class M>
+void SelectedField<M>::init()
+{
+  initialized = false;
+  geo.init();
+  field.init();
+}
+
+template <class M>
+void SelectedField<M>::init(const Geometry& geo_, const long n_elems_,
+                            const int multiplicity)
+{
+  if (initialized) {
+    qassert(geo() == geo_remult(geo_, multiplicity));
+    qassert(n_elems == n_elems_);
+    qassert((long)field.size() == n_elems * multiplicity);
+  } else {
+    init();
+    initialized = true;
+    geo.set(geo_remult(geo_, multiplicity));
+    n_elems = n_elems_;
+    field.resize(n_elems * multiplicity);
+    if (1 == get_field_init()) {
+      set_zero(*this);
+    } else if (2 == get_field_init()) {
+      set_u_rand_float(get_data(field), RngState(show(get_time())));
+    } else {
+      qassert(0 == get_field_init());
+    }
+  }
+}
+
+template <class M>
+void SelectedField<M>::init(const FieldSelection& fsel, const int multiplicity)
+{
+  init(fsel.f_rank.geo(), fsel.n_elems, multiplicity);
+}
 
 template <class M>
 Vector<M> get_data(const SelectedField<M>& sf)
@@ -1040,6 +1043,8 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
   QLAT_EXTERN template void set_zero<TYPENAME>(Field<TYPENAME> & f);          \
   QLAT_EXTERN template void set_zero<TYPENAME>(SelectedField<TYPENAME> & f);  \
   QLAT_EXTERN template void set_zero<TYPENAME>(SelectedPoints<TYPENAME> & f); \
+  QLAT_EXTERN template void set_unit<TYPENAME>(Field<TYPENAME> & f,           \
+                                               const Complex& coef);          \
   QLAT_EXTERN template void set_u_rand_double<TYPENAME>(                      \
       Field<TYPENAME> & f, const RngState& rs, const double upper,            \
       const double lower);                                                    \
@@ -1051,6 +1056,7 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
       const double sigma);
 
 #define QLAT_EXTERN_CLASS                             \
+  QLAT_EXTERN template class std::vector<Coordinate>; \
   QLAT_EXTERN template class FieldM<ColorMatrix, 4>;  \
   QLAT_EXTERN template class FieldM<ColorMatrix, 1>;  \
   QLAT_EXTERN template class FieldM<WilsonMatrix, 1>; \
