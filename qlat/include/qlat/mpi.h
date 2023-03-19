@@ -10,9 +10,7 @@
 #include <malloc.h>
 #endif
 
-#ifdef USE_MULTI_NODE
 #include <mpi.h>
-#endif
 
 namespace qlat
 {  //
@@ -274,21 +272,16 @@ int get_data_dir(Vector<M> recv, const Vector<M>& send, const int dir)
   qassert(recv.size() == send.size());
   const long size = recv.size() * sizeof(M);
   timer.flops += size;
-#ifdef USE_MULTI_NODE
   const int self_ID = get_id_node();
   const int idf = (self_ID + 1 - 2 * dir + get_num_node()) % get_num_node();
   const int idt = (self_ID - 1 + 2 * dir + get_num_node()) % get_num_node();
-  ;
+  //
   MPI_Request req;
   MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, mpi_tag, get_comm(), &req);
   const int ret = MPI_Recv(recv.data(), size, MPI_BYTE, idf, mpi_tag,
                            get_comm(), MPI_STATUS_IGNORE);
   MPI_Wait(&req, MPI_STATUS_IGNORE);
   return ret;
-#else
-  memcpy(recv.data(), send.data(), size);
-  return 0;
-#endif
 }
 
 template <class M>
@@ -302,7 +295,6 @@ int get_data_dir_mu(Vector<M> recv, const Vector<M>& send, const int dir,
   qassert(recv.size() == send.size());
   const long size = recv.size() * sizeof(M);
   timer.flops += size;
-#ifdef USE_MULTI_NODE
   const GeometryNodeNeighbor& geonb = get_geometry_node_neighbor();
   const int idf = geonb.dest[dir][mu];
   const int idt = geonb.dest[1 - dir][mu];
@@ -312,10 +304,6 @@ int get_data_dir_mu(Vector<M> recv, const Vector<M>& send, const int dir,
                            get_comm(), MPI_STATUS_IGNORE);
   MPI_Wait(&req, MPI_STATUS_IGNORE);
   return ret;
-#else
-  memcpy(recv.data(), send.data(), size);
-  return 0;
-#endif
 }
 
 template <class M>
@@ -333,25 +321,15 @@ int get_data_minus_mu(Vector<M> recv, const Vector<M>& send, const int mu)
 inline int glb_sum(Vector<double> recv, const Vector<double>& send)
 {
   qassert(recv.size() == send.size());
-#ifdef USE_MULTI_NODE
   return MPI_Allreduce((double*)send.data(), recv.data(), recv.size(),
                        MPI_DOUBLE, MPI_SUM, get_comm());
-#else
-  memmove(recv.data(), send.data(), recv.size() * sizeof(double));
-  return 0;
-#endif
 }
 
 inline int glb_sum(Vector<float> recv, const Vector<float>& send)
 {
   qassert(recv.size() == send.size());
-#ifdef USE_MULTI_NODE
   return MPI_Allreduce((float*)send.data(), recv.data(), recv.size(), MPI_FLOAT,
                        MPI_SUM, get_comm());
-#else
-  memmove(recv.data(), send.data(), recv.size() * sizeof(float));
-  return 0;
-#endif
 }
 
 inline int glb_sum(Vector<Complex> recv, const Vector<Complex>& send)
@@ -369,25 +347,15 @@ inline int glb_sum(Vector<ComplexF> recv, const Vector<ComplexF>& send)
 inline int glb_sum(Vector<long> recv, const Vector<long>& send)
 {
   qassert(recv.size() == send.size());
-#ifdef USE_MULTI_NODE
   return MPI_Allreduce((long*)send.data(), recv.data(), recv.size(), MPI_LONG,
                        MPI_SUM, get_comm());
-#else
-  memmove(recv.data(), send.data(), recv.size() * sizeof(long));
-  return 0;
-#endif
 }
 
 inline int glb_sum(Vector<char> recv, const Vector<char>& send)
 {
   qassert(recv.size() == send.size());
-#ifdef USE_MULTI_NODE
   return MPI_Allreduce((char*)send.data(), (char*)recv.data(), recv.size(),
                        MPI_BYTE, MPI_BXOR, get_comm());
-#else
-  memmove(recv.data(), send.data(), recv.data_size());
-  return 0;
-#endif
 }
 
 inline int glb_sum(Vector<double> vec)
@@ -527,24 +495,17 @@ template <class M>
 void all_gather(Vector<M> recv, const Vector<M>& send)
 {
   qassert(recv.size() == send.size() * get_num_node());
-#ifdef USE_MULTI_NODE
   MPI_Allgather((void*)send.data(), send.data_size(), MPI_BYTE,
                 (void*)recv.data(), send.data_size(), MPI_BYTE, get_comm());
-#else
-  const long sendsize = send.size() * sizeof(M);
-  memmove(recv, send, sendsize);
-#endif
 }
 
 template <class M>
 void bcast(Vector<M> recv, const int root = 0)
 {
-#ifdef USE_MULTI_NODE
   if (1 == get_num_node()) {
     return;
   }
   MPI_Bcast((void*)recv.data(), recv.data_size(), MPI_BYTE, root, get_comm());
-#endif
 }
 
 inline void bcast(int& x, const int root = 0)
@@ -575,7 +536,6 @@ inline void bcast(Coordinate& x, const int root = 0)
 template <class M>
 void bcast(std::vector<M>& recv, const int root = 0)
 {
-#ifdef USE_MULTI_NODE
   if (1 == get_num_node()) {
     return;
   }
@@ -583,12 +543,10 @@ void bcast(std::vector<M>& recv, const int root = 0)
   bcast(get_data(size), root);
   recv.resize(size);
   bcast(get_data(recv), root);
-#endif
 }
 
 inline void bcast(std::string& recv, const int root = 0)
 {
-#ifdef USE_MULTI_NODE
   if (1 == get_num_node()) {
     return;
   }
@@ -596,12 +554,10 @@ inline void bcast(std::string& recv, const int root = 0)
   bcast(get_data(size), root);
   recv.resize(size);
   bcast(get_data(recv), root);
-#endif
 }
 
 inline void bcast(std::vector<std::string>& recv, const int root = 0)
 {
-#ifdef USE_MULTI_NODE
   if (1 == get_num_node()) {
     return;
   }
@@ -611,12 +567,10 @@ inline void bcast(std::vector<std::string>& recv, const int root = 0)
   for (long i = 0; i < size; ++i) {
     bcast(recv[i], root);
   }
-#endif
 }
 
 inline void bcast(LatData& ld, const int root = 0)
 {
-#ifdef USE_MULTI_NODE
   if (1 == get_num_node()) {
     return;
   }
@@ -630,13 +584,11 @@ inline void bcast(LatData& ld, const int root = 0)
     lat_data_alloc(ld);
   }
   bcast(get_data(ld.res), root);
-#endif
 }
 
 template <class M>
 void bcast(std::vector<std::vector<M> >& datatable, const int root = 0)
 {
-#ifdef USE_MULTI_NODE
   if (1 == get_num_node()) {
     return;
   }
@@ -660,7 +612,6 @@ void bcast(std::vector<std::vector<M> >& datatable, const int root = 0)
   if (get_id_node() != root) {
     datatable = vector_split(data, row_sizes);
   }
-#endif
 }
 
 inline void sync_node()

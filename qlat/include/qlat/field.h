@@ -1,10 +1,8 @@
 #pragma once
 
-#include <qlat/setup.h>
-#include <qlat/geometry.h>
+#include <qlat/core.h>
 #include <qlat/mpi.h>
-
-#include <qlat-utils/vector.h>
+#include <qlat/geometry.h>
 
 #include <ctime>
 #include <fstream>

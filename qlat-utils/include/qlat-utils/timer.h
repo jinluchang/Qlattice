@@ -41,14 +41,6 @@
 #include <omp.h>
 #endif
 
-// #if defined USE_MPI || defined USE_QMP
-// #define USE_MULTI_NODE
-// #endif
-// 
-// #ifdef USE_MULTI_NODE
-// #include <mpi.h>
-// #endif
-
 #define TIMER(FNAME)                 \
   static std::string fname = FNAME;  \
   static qlat::Timer timer(fname, true); \

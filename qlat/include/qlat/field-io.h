@@ -141,9 +141,7 @@ uint32_t fieldChecksumSum32(const Field<M> &f)
   for (long i = 0; i < size; ++i) {
     sum += data[i];
   }
-#ifdef USE_MULTI_NODE
   glb_sum(sum);
-#endif
   uint32_t cs = sum;
   displayln_info("qlat::" + fname + "(): " + ssprintf("check sum = %x", cs));
   return cs;

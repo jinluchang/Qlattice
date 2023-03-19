@@ -1,16 +1,13 @@
 #pragma once
 
 #include <qlat/config.h>
-#include <qlat/qlat-extern.h>
 
 #include <qlat-utils/core.h>
+#include <qlat-utils/mat.h>
+#include <qlat-utils/matrix-hmc.h>
 #include <qlat-utils/qutils-vec.h>
 #include <qlat-utils/coordinate.h>
 #include <qlat-utils/mat-vec.h>
-
-#ifndef USE_SINGLE_NODE
-#define USE_MULTI_NODE
-#endif
 
 namespace qlat
 {  //
@@ -1030,6 +1027,21 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
 
 // --------------------
 
+#define QLAT_CALL_WITH_TYPES(FUNC) \
+  FUNC(ColorMatrix)                \
+  FUNC(WilsonMatrix)               \
+  FUNC(NonRelWilsonMatrix)         \
+  FUNC(IsospinMatrix)              \
+  FUNC(SpinMatrix)                 \
+  FUNC(WilsonVector)               \
+  FUNC(ComplexD)                   \
+  FUNC(ComplexF)                   \
+  FUNC(double)                     \
+  FUNC(float)                      \
+  FUNC(int64_t)                    \
+  FUNC(char)                       \
+  FUNC(int8_t)
+
 #ifdef QLAT_INSTANTIATE_CORE
 #define QLAT_EXTERN
 #else
@@ -1056,7 +1068,6 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
       const double sigma);
 
 #define QLAT_EXTERN_CLASS                             \
-  QLAT_EXTERN template class std::vector<Coordinate>; \
   QLAT_EXTERN template class FieldM<ColorMatrix, 4>;  \
   QLAT_EXTERN template class FieldM<ColorMatrix, 1>;  \
   QLAT_EXTERN template class FieldM<WilsonMatrix, 1>; \
