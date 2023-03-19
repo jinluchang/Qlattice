@@ -875,15 +875,6 @@ struct API FieldSelection {
   vector_acc<long> indices;   // local indices of selected points
   //
   void init()
-  {
-    f_rank.init();
-    n_per_tslice = 0;
-    prob = 0.0;
-    f_local_idx.init();
-    n_elems = 0;
-    ranks.init();
-    indices.init();
-  }
   //
   FieldSelection() { init(); }
   //
@@ -1049,26 +1040,43 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
 
 // --------------------
 
-#define QLAT_EXTERN_TEMPLATE(TYPENAME)                              \
-  QLAT_EXTERN template class Field<TYPENAME>;                       \
-  QLAT_EXTERN template class SelectedField<TYPENAME>;               \
-  QLAT_EXTERN template class SelectedPoints<TYPENAME>;              \
-  QLAT_EXTERN template void set_u_rand_double<TYPENAME>(            \
-      Field<TYPENAME> & f, const RngState& rs, const double upper,  \
-      const double lower);                                          \
-  QLAT_EXTERN template void set_u_rand_float<TYPENAME>(             \
-      Field<TYPENAME> & f, const RngState& rs, const double upper,  \
-      const double lower);                                          \
-  QLAT_EXTERN template void set_g_rand_double<TYPENAME>(            \
-      Field<TYPENAME> & f, const RngState& rs, const double center, \
+#ifdef QLAT_INSTANTIATE_CORE
+#define QLAT_EXTERN
+#else
+#define QLAT_EXTERN extern
+#endif
+
+#define QLAT_EXTERN_TEMPLATE(TYPENAME)                                        \
+  QLAT_EXTERN template class Field<TYPENAME>;                                 \
+  QLAT_EXTERN template class SelectedField<TYPENAME>;                         \
+  QLAT_EXTERN template class SelectedPoints<TYPENAME>;                        \
+  QLAT_EXTERN template void set_zero<TYPENAME>(Field<TYPENAME> & f);          \
+  QLAT_EXTERN template void set_zero<TYPENAME>(SelectedField<TYPENAME> & f);  \
+  QLAT_EXTERN template void set_zero<TYPENAME>(SelectedPoints<TYPENAME> & f); \
+  QLAT_EXTERN template void set_u_rand_double<TYPENAME>(                      \
+      Field<TYPENAME> & f, const RngState& rs, const double upper,            \
+      const double lower);                                                    \
+  QLAT_EXTERN template void set_u_rand_float<TYPENAME>(                       \
+      Field<TYPENAME> & f, const RngState& rs, const double upper,            \
+      const double lower);                                                    \
+  QLAT_EXTERN template void set_g_rand_double<TYPENAME>(                      \
+      Field<TYPENAME> & f, const RngState& rs, const double center,           \
       const double sigma);
 
-#ifndef QLAT_NO_EXTERN
+#define QLAT_EXTERN_CLASS                             \
+  QLAT_EXTERN template class FieldM<ColorMatrix, 4>;  \
+  QLAT_EXTERN template class FieldM<ColorMatrix, 1>;  \
+  QLAT_EXTERN template class FieldM<WilsonMatrix, 1>; \
+  QLAT_EXTERN template class FieldM<WilsonVector, 1>;
 
-#define QLAT_EXTERN extern
+QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 
-QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE)
+QLAT_EXTERN_CLASS;
 
-#endif
+#undef QLAT_EXTERN
+#undef QLAT_EXTERN_TEMPLATE
+#undef QLAT_EXTERN_CLASS
+
+// --------------------
 
 }  // namespace qlat

@@ -1,4 +1,4 @@
-#define QLAT_NO_EXTERN
+#define QLAT_INSTANTIATE_CORE
 
 #include <qlat/core.h>
 
@@ -31,8 +31,15 @@ std::string show(const qlat::Geometry& geo)
   return s;
 }
 
-#define QLAT_EXTERN
-
-QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE)
+void FieldSelection::init()
+{
+  f_rank.init();
+  n_per_tslice = 0;
+  prob = 0.0;
+  f_local_idx.init();
+  n_elems = 0;
+  ranks.init();
+  indices.init();
+}
 
 }  // namespace qlat
