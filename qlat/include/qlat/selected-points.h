@@ -68,19 +68,6 @@ void qswap(SelectedPoints<M>& f1, SelectedPoints<M>& f2)
 }
 
 template <class M>
-Vector<M> get_data(const SelectedPoints<M>& sp)
-{
-  return get_data(sp.points);
-}
-
-template <class M>
-void set_zero(SelectedPoints<M>& sp)
-{
-  TIMER("set_zero(SelectedPoints)");
-  set_zero(get_data(sp));
-}
-
-template <class M>
 const SelectedPoints<M>& operator+=(SelectedPoints<M>& f,
                                     const SelectedPoints<M>& f1)
 {

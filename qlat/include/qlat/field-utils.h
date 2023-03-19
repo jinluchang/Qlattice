@@ -596,63 +596,6 @@ void qnorm_field(FieldM<double, 1>& f, const Field<M>& f1)
 }
 
 template <class M>
-void set_u_rand_double(Field<M>& f, const RngState& rs,
-                       const double upper = 1.0, const double lower = -1.0)
-{
-  TIMER("set_u_rand_double");
-  const Geometry& geo = f.geo();
-  qacc_for(index, geo.local_volume(), {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const long gindex = geo.g_index_from_g_coordinate(xg);
-    RngState rsi = rs.newtype(gindex);
-    Vector<M> v = f.get_elems(xl);
-    Vector<double> dv((double*)v.data(), v.data_size() / sizeof(double));
-    for (int m = 0; m < dv.size(); ++m) {
-      dv[m] = u_rand_gen(rsi, upper, lower);
-    }
-  });
-}
-
-template <class M>
-void set_u_rand_float(Field<M>& f, const RngState& rs, const double upper = 1.0,
-                      const double lower = -1.0)
-{
-  TIMER("set_u_rand_float");
-  const Geometry& geo = f.geo();
-  qacc_for(index, geo.local_volume(), {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const long gindex = geo.g_index_from_g_coordinate(xg);
-    RngState rsi = rs.newtype(gindex);
-    Vector<M> v = f.get_elems(xl);
-    Vector<float> dv((float*)v.data(), v.data_size() / sizeof(float));
-    for (int m = 0; m < dv.size(); ++m) {
-      dv[m] = u_rand_gen(rsi, upper, lower);
-    }
-  });
-}
-
-template <class M>
-void set_g_rand_double(Field<M>& f, const RngState& rs,
-                       const double center = 0.0, const double sigma = 1.0)
-{
-  TIMER("set_g_rand_double");
-  const Geometry& geo = f.geo();
-  qacc_for(index, geo.local_volume(), {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const long gindex = geo.g_index_from_g_coordinate(xg);
-    RngState rsi = rs.newtype(gindex);
-    Vector<M> v = f.get_elems(xl);
-    Vector<double> dv((double*)v.data(), v.data_size() / sizeof(double));
-    for (int m = 0; m < dv.size(); ++m) {
-      dv[m] = g_rand_gen(rsi, center, sigma);
-    }
-  });
-}
-
-template <class M>
 inline void set_checkers_double(Field<M>& f)
 {
   TIMER("set_checkers");

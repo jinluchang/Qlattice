@@ -327,19 +327,6 @@ void qswap(SelectedField<M>& f1, SelectedField<M>& f2)
 }
 
 template <class M>
-Vector<M> get_data(const SelectedField<M>& sf)
-{
-  return get_data(sf.field);
-}
-
-template <class M>
-void set_zero(SelectedField<M>& sf)
-{
-  TIMER("set_zero(SelectedField)");
-  set_zero(get_data(sf));
-}
-
-template <class M>
 double qnorm(const SelectedField<M>& sf)
 {
   double s = qnorm(sf.field);

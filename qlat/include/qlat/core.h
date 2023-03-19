@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qlat/config.h>
+#include <qlat/qlat-extern.h>
 
 #include <qlat-utils/core.h>
 #include <qlat-utils/qutils-vec.h>
@@ -43,16 +44,7 @@ struct API GeometryNode {
   }
 };
 
-inline std::string show(const qlat::GeometryNode& geon)
-{
-  std::string s;
-  s += ssprintf("{ initialized = %s\n", show(geon.initialized).c_str());
-  s += ssprintf(", num_node    = %d\n", geon.num_node);
-  s += ssprintf(", id_node     = %d\n", geon.id_node);
-  s += ssprintf(", size_node   = %s\n", show(geon.size_node).c_str());
-  s += ssprintf(", coor_node   = %s }", show(geon.coor_node).c_str());
-  return s;
-}
+std::string show(const qlat::GeometryNode& geon);
 
 qacc bool operator==(const GeometryNode& geon1, const GeometryNode& geon2)
 {
@@ -313,12 +305,6 @@ struct API Geometry {
   //
   qacc Coordinate total_site() const { return node_site * geon.size_node; }
   //
-  Coordinate global_size() const
-  {
-    warn("use total_site()");
-    return total_site();
-  }
-  //
   qacc long total_volume() const { return local_volume() * geon.num_node; }
   //
   qacc Coordinate coordinate_g_from_l(const Coordinate& xl) const
@@ -334,6 +320,12 @@ struct API Geometry {
   }
   //
   ///////////////////////////////////////////////////////////////////
+  //
+  Coordinate global_size() const
+  {
+    warn("use total_site()");
+    return total_site();
+  }
   //
   long recordFromCoordinate(const Coordinate& x) const
   {
@@ -351,20 +343,7 @@ struct API Geometry {
   }
 };
 
-inline std::string show(const qlat::Geometry& geo)
-{
-  std::string s;
-  s += ssprintf("{ initialized   = %s\n", show(geo.initialized).c_str());
-  s += ssprintf(", eo            = %s\n", show(geo.eo).c_str());
-  s += ssprintf(", geon          =\n%s\n", show(geo.geon).c_str());
-  s += ssprintf(", multiplicity  = %s\n", show(geo.multiplicity).c_str());
-  s += ssprintf(", node_site     = %s\n", show(geo.node_site).c_str());
-  s += ssprintf(", expan_left    = %s\n", show(geo.expansion_left).c_str());
-  s += ssprintf(", expan_right   = %s\n", show(geo.expansion_right).c_str());
-  s += ssprintf(", node_site_exp = %s\n", show(geo.node_site_expanded).c_str());
-  s += ssprintf(", is_only_local = %s }", show(geo.is_only_local).c_str());
-  return s;
-}
+std::string show(const qlat::Geometry& geo);
 
 qacc bool operator==(const Geometry& geo1, const Geometry& geo2)
 {
@@ -498,92 +477,15 @@ struct API Field {
   box_acc<Geometry> geo;
   vector_acc<M> field;
   //
-  void init()
-  {
-    initialized = false;
-    geo.init();
-    field.init();
-  }
-  void init(const Geometry& geo_, const int multiplicity_ = 0)
-  // only initialize if uninitilized
-  // if initialized already, then check for matching geo (including
-  // multiplicity)
-  // can have different geo expansion
-  {
-    if (!initialized) {
-      TIMER("Field::init(geo,mult)");
-      init();
-      if (multiplicity_ == 0) {
-        geo.set(geo_);
-      } else {
-        geo.set(geo_remult(geo_, multiplicity_));
-      }
-      field.resize(geo().local_volume_expanded() * geo().multiplicity);
-      if (1 == get_field_init()) {
-        set_zero(*this);
-      } else if (2 == get_field_init()) {
-        set_u_rand_float(*this, RngState(show(get_time())));
-      } else {
-        qassert(0 == get_field_init());
-      }
-      initialized = true;
-    } else {
-      Geometry geo_new = geo_;
-      if (multiplicity_ != 0) {
-        geo_new.remult(multiplicity_);
-      }
-      if (not is_matching_geo_included(geo_new, geo())) {
-        displayln("old geo = " + show(geo()));
-        displayln("new geo = " + show(geo_new));
-        qassert(false);
-      }
-    }
-  }
-  void init(const Field<M>& f)
-  // initialize to be identical to f if uninitilized
-  // otherwise use assignment operator
-  {
-    if (!initialized) {
-      TIMER("Field::init(f)");
-      initialized = f.initialized;
-      geo = f.geo;
-      field = f.field;
-    } else {
-      (*this) = f;
-    }
-  }
+  void init();
+  void init(const Geometry& geo_, const int multiplicity_ = 0);
+  void init(const Field<M>& f);
   //
   Field() { init(); }
   Field(const Field<M>&) = default;
   Field(Field<M>&&) noexcept = default;
   //
-  const Field<M>& operator=(const Field<M>& f)
-  // skip if same object
-  // otherwise:
-  // 1. assert f is initialized
-  // 2. init with geo_resize(f.geo())
-  // 3. copy content
-  {
-    if (this == &f) {
-      return *this;
-    }
-    TIMER_FLOPS("Field::operator=");
-    qassert(f.initialized);
-    init(geo_resize(f.geo()));
-    const Geometry& geo_v = geo();
-    const int multiplicity = geo_v.multiplicity;
-    Field<M>& f0 = *this;
-    qacc_for(index, geo_v.local_volume(), {
-      const Coordinate xl = geo_v.coordinate_from_index(index);
-      const Vector<M> v = f.get_elems_const(xl);
-      Vector<M> v0 = f0.get_elems(xl);
-      for (int m = 0; m < multiplicity; ++m) {
-        v0[m] = v[m];
-      }
-    });
-    timer.flops += get_data(f0).data_size();
-    return *this;
-  }
+  const Field<M>& operator=(const Field<M>& f);
   //
   qacc const Geometry& get_geo() const { return geo(); }
   //
@@ -714,6 +616,95 @@ struct API FieldM : Field<M> {
 };
 
 template <class M>
+void Field<M>::init()
+{
+  initialized = false;
+  geo.init();
+  field.init();
+}
+
+template <class M>
+void Field<M>::init(const Geometry& geo_, const int multiplicity_)
+// only initialize if uninitilized
+// if initialized already, then check for matching geo (including
+// multiplicity)
+// can have different geo expansion
+{
+  if (!initialized) {
+    TIMER("Field::init(geo,mult)");
+    init();
+    if (multiplicity_ == 0) {
+      geo.set(geo_);
+    } else {
+      geo.set(geo_remult(geo_, multiplicity_));
+    }
+    field.resize(geo().local_volume_expanded() * geo().multiplicity);
+    if (1 == get_field_init()) {
+      set_zero(*this);
+    } else if (2 == get_field_init()) {
+      set_u_rand_float(*this, RngState(show(get_time())));
+    } else {
+      qassert(0 == get_field_init());
+    }
+    initialized = true;
+  } else {
+    Geometry geo_new = geo_;
+    if (multiplicity_ != 0) {
+      geo_new.remult(multiplicity_);
+    }
+    if (not is_matching_geo_included(geo_new, geo())) {
+      displayln("old geo = " + show(geo()));
+      displayln("new geo = " + show(geo_new));
+      qassert(false);
+    }
+  }
+}
+
+template <class M>
+void Field<M>::init(const Field<M>& f)
+// initialize to be identical to f if uninitilized
+// otherwise use assignment operator
+{
+  if (!initialized) {
+    TIMER("Field::init(f)");
+    initialized = f.initialized;
+    geo = f.geo;
+    field = f.field;
+  } else {
+    (*this) = f;
+  }
+}
+
+template <class M>
+const Field<M>& Field<M>::operator=(const Field<M>& f)
+// skip if same object
+// otherwise:
+// 1. assert f is initialized
+// 2. init with geo_resize(f.geo())
+// 3. copy content
+{
+  if (this == &f) {
+    return *this;
+  }
+  TIMER_FLOPS("Field::operator=");
+  qassert(f.initialized);
+  init(geo_resize(f.geo()));
+  const Geometry& geo_v = geo();
+  const int multiplicity = geo_v.multiplicity;
+  Field<M>& f0 = *this;
+  qacc_for(index, geo_v.local_volume(), {
+    const Coordinate xl = geo_v.coordinate_from_index(index);
+    const Vector<M> v = f.get_elems_const(xl);
+    Vector<M> v0 = f0.get_elems(xl);
+    for (int m = 0; m < multiplicity; ++m) {
+      v0[m] = v[m];
+    }
+  });
+  timer.flops += get_data(f0).data_size();
+  return *this;
+}
+
+template <class M>
 void set_zero(Field<M>& f)
 {
   TIMER("set_zero(Field)");
@@ -727,6 +718,12 @@ void set_unit(Field<M>& f, const Complex& coef = 1.0)
   for (long offset = 0; offset < f.field.size(); ++offset) {
     set_unit(f.get_elem_offset(offset), coef);
   }
+}
+
+template <class M>
+qacc Vector<M> get_data(const Field<M>& f)
+{
+  return get_data(f.field);
 }
 
 // --------------------
@@ -847,6 +844,19 @@ struct API SelectedPoints {
   }
 };
 
+template <class M>
+Vector<M> get_data(const SelectedPoints<M>& sp)
+{
+  return get_data(sp.points);
+}
+
+template <class M>
+void set_zero(SelectedPoints<M>& sp)
+{
+  TIMER("set_zero(SelectedPoints)");
+  set_zero(get_data(sp));
+}
+
 // --------------------
 
 struct API FieldSelection {
@@ -964,5 +974,101 @@ struct API SelectedField {
     return Vector<M>(&field[idx * multiplicity], multiplicity);
   }
 };
+
+template <class M>
+Vector<M> get_data(const SelectedField<M>& sf)
+{
+  return get_data(sf.field);
+}
+
+template <class M>
+void set_zero(SelectedField<M>& sf)
+{
+  TIMER("set_zero(SelectedField)");
+  set_zero(get_data(sf));
+}
+
+// --------------------
+
+template <class M>
+void set_u_rand_float(Field<M>& f, const RngState& rs, const double upper = 1.0,
+                      const double lower = -1.0)
+{
+  TIMER("set_u_rand_float");
+  const Geometry& geo = f.geo();
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const long gindex = geo.g_index_from_g_coordinate(xg);
+    RngState rsi = rs.newtype(gindex);
+    Vector<M> v = f.get_elems(xl);
+    Vector<float> dv((float*)v.data(), v.data_size() / sizeof(float));
+    for (int m = 0; m < dv.size(); ++m) {
+      dv[m] = u_rand_gen(rsi, upper, lower);
+    }
+  });
+}
+
+template <class M>
+void set_u_rand_double(Field<M>& f, const RngState& rs,
+                       const double upper = 1.0, const double lower = -1.0)
+{
+  TIMER("set_u_rand_double");
+  const Geometry& geo = f.geo();
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const long gindex = geo.g_index_from_g_coordinate(xg);
+    RngState rsi = rs.newtype(gindex);
+    Vector<M> v = f.get_elems(xl);
+    Vector<double> dv((double*)v.data(), v.data_size() / sizeof(double));
+    for (int m = 0; m < dv.size(); ++m) {
+      dv[m] = u_rand_gen(rsi, upper, lower);
+    }
+  });
+}
+
+template <class M>
+void set_g_rand_double(Field<M>& f, const RngState& rs,
+                       const double center = 0.0, const double sigma = 1.0)
+{
+  TIMER("set_g_rand_double");
+  const Geometry& geo = f.geo();
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const long gindex = geo.g_index_from_g_coordinate(xg);
+    RngState rsi = rs.newtype(gindex);
+    Vector<M> v = f.get_elems(xl);
+    Vector<double> dv((double*)v.data(), v.data_size() / sizeof(double));
+    for (int m = 0; m < dv.size(); ++m) {
+      dv[m] = g_rand_gen(rsi, center, sigma);
+    }
+  });
+}
+
+// --------------------
+
+#define QLAT_EXTERN_TEMPLATE(TYPENAME)                              \
+  QLAT_EXTERN template class Field<TYPENAME>;                       \
+  QLAT_EXTERN template class SelectedField<TYPENAME>;               \
+  QLAT_EXTERN template class SelectedPoints<TYPENAME>;              \
+  QLAT_EXTERN template void set_u_rand_double<TYPENAME>(            \
+      Field<TYPENAME> & f, const RngState& rs, const double upper,  \
+      const double lower);                                          \
+  QLAT_EXTERN template void set_u_rand_float<TYPENAME>(             \
+      Field<TYPENAME> & f, const RngState& rs, const double upper,  \
+      const double lower);                                          \
+  QLAT_EXTERN template void set_g_rand_double<TYPENAME>(            \
+      Field<TYPENAME> & f, const RngState& rs, const double center, \
+      const double sigma);
+
+#ifndef QLAT_NO_EXTERN
+
+#define QLAT_EXTERN extern
+
+QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE)
+
+#endif
 
 }  // namespace qlat

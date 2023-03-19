@@ -39,12 +39,6 @@ bool is_initialized(const Field<M>& f)
 }
 
 template <class M>
-qacc Vector<M> get_data(const Field<M>& f)
-{
-  return get_data(f.field);
-}
-
-template <class M>
 const Field<M>& operator+=(Field<M>& f, const Field<M>& f1)
 {
   TIMER("field_operator+=");

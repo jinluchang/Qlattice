@@ -298,20 +298,20 @@ long save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
   TIMER_VERBOSE_FLOPS("save_gauge_field");
   qassert(is_initialized(gf));
   const Geometry& geo = gf.geo();
-  FieldM<array<Complex, 6>, 4> gft;
+  FieldM<Complex, 4 * 6> gft;
   gft.init(geo);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ColorMatrixT<T> > v = gf.get_elems_const(xl);
-    Vector<array<Complex, 6> > vt = gft.get_elems(xl);
+    Vector<Complex> vt = gft.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
-      vt[m][0] = v[m](0, 0);
-      vt[m][1] = v[m](0, 1);
-      vt[m][2] = v[m](0, 2);
-      vt[m][3] = v[m](1, 0);
-      vt[m][4] = v[m](1, 1);
-      vt[m][5] = v[m](1, 2);
+      vt[6 * m + 0] = v[m](0, 0);
+      vt[6 * m + 1] = v[m](0, 1);
+      vt[6 * m + 2] = v[m](0, 2);
+      vt[6 * m + 3] = v[m](1, 0);
+      vt[6 * m + 4] = v[m](1, 1);
+      vt[6 * m + 5] = v[m](1, 2);
     }
   }
   GaugeFieldInfo gfi = gfi_;
@@ -410,7 +410,7 @@ inline long load_gauge_field_cps3x3(GaugeFieldT<T>& gf,
   displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
   qassert(is_initialized(gf));
   const Geometry& geo = gf.geo();
-  FieldM<array<Complex, 9>, 4> gft;
+  FieldM<Complex, 4 * 9> gft;
   gft.init(geo);
   const long file_size = serial_read_field_par(
       gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
@@ -420,7 +420,7 @@ inline long load_gauge_field_cps3x3(GaugeFieldT<T>& gf,
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    Vector<array<Complex, 9> > vt = gft.get_elems(xl);
+    Vector<Complex> vt = gft.get_elems(xl);
     to_from_big_endian_64(get_data(vt));
     Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
@@ -441,7 +441,7 @@ inline long load_gauge_field_milc(GaugeFieldT<T>& gf,
   displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
   qassert(is_initialized(gf));
   const Geometry& geo = gf.geo();
-  FieldM<array<ComplexF, 9>, 4> gft;
+  FieldM<ComplexF, 4 * 9> gft;
   gft.init(geo);
   // ADJUST ME
   long file_size = 0;
@@ -456,20 +456,20 @@ inline long load_gauge_field_milc(GaugeFieldT<T>& gf,
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate xl = geo.coordinate_from_index(index);
-    Vector<array<ComplexF, 9> > vt = gft.get_elems(xl);
+    Vector<ComplexF> vt = gft.get_elems(xl);
     to_from_big_endian_32((char*)vt.data(), vt.data_size());
     Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       // assign_truncate(v[m], vt[m]);
-      v[m](0, 0) = vt[m][0 * 3 + 0];
-      v[m](0, 1) = vt[m][0 * 3 + 1];
-      v[m](0, 2) = vt[m][0 * 3 + 2];
-      v[m](1, 0) = vt[m][1 * 3 + 0];
-      v[m](1, 1) = vt[m][1 * 3 + 1];
-      v[m](1, 2) = vt[m][1 * 3 + 2];
-      v[m](2, 0) = vt[m][2 * 3 + 0];
-      v[m](2, 1) = vt[m][2 * 3 + 1];
-      v[m](2, 2) = vt[m][2 * 3 + 2];
+      v[m](0, 0) = vt[9 * m + 0 * 3 + 0];
+      v[m](0, 1) = vt[9 * m + 0 * 3 + 1];
+      v[m](0, 2) = vt[9 * m + 0 * 3 + 2];
+      v[m](1, 0) = vt[9 * m + 1 * 3 + 0];
+      v[m](1, 1) = vt[9 * m + 1 * 3 + 1];
+      v[m](1, 2) = vt[9 * m + 1 * 3 + 2];
+      v[m](2, 0) = vt[9 * m + 2 * 3 + 0];
+      v[m](2, 1) = vt[9 * m + 2 * 3 + 1];
+      v[m](2, 2) = vt[9 * m + 2 * 3 + 2];
       unitarize(v[m]);
     }
   }
