@@ -72,32 +72,32 @@ Complex mat_tr(const SpinMatrix& m1, const SpinMatrix& m2)
 
 SpinMatrix operator*(const SpinMatrix& m1, const SpinMatrix& m2)
 {
-  return operator*<4, Complex >(m1, m2);
+  return operator*<4, Complex>(m1, m2);
 }
 
 SpinMatrix operator*(const Complex& a, const SpinMatrix& m)
 {
-  return operator*<4, Complex >(a, m);
+  return operator*<4, Complex>(a, m);
 }
 
 SpinMatrix operator*(const SpinMatrix& m, const Complex& a)
 {
-  return operator*<4, Complex >(m, a);
+  return operator*<4, Complex>(m, a);
 }
 
 WilsonMatrix operator*(const WilsonMatrix& m1, const WilsonMatrix& m2)
 {
-  return operator*<12, Complex >(m1, m2);
+  return operator*<12, Complex>(m1, m2);
 }
 
 WilsonMatrix operator*(const Complex& a, const WilsonMatrix& m)
 {
-  return operator*<12, Complex >(a, m);
+  return operator*<12, Complex>(a, m);
 }
 
 WilsonMatrix operator*(const WilsonMatrix& m, const Complex& a)
 {
-  return operator*<12, Complex >(m, a);
+  return operator*<12, Complex>(m, a);
 }
 
 WilsonMatrix operator*(const SpinMatrix& m1, const WilsonMatrix& m2)
@@ -108,6 +108,26 @@ WilsonMatrix operator*(const SpinMatrix& m1, const WilsonMatrix& m2)
 WilsonMatrix operator*(const WilsonMatrix& m1, const SpinMatrix& m2)
 {
   return operator*<Real>(m1, m2);
+}
+
+ColorMatrix matrix_adjoint(const ColorMatrix& m)
+{
+  return matrix_adjoint<3, Complex>(m);
+}
+
+SpinMatrix matrix_adjoint(const SpinMatrix& m)
+{
+  return matrix_adjoint<4, Complex>(m);
+}
+
+WilsonMatrix matrix_adjoint(const WilsonMatrix& m)
+{
+  return matrix_adjoint<12, Complex>(m);
+}
+
+IsospinMatrix matrix_adjoint(const IsospinMatrix& m)
+{
+  return matrix_adjoint<2, Complex>(m);
 }
 
 }  // namespace qlat

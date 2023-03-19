@@ -40,4 +40,9 @@ WilsonMatrix operator*(const WilsonMatrix& m, const Complex& a);
 WilsonMatrix operator*(const SpinMatrix& m1, const WilsonMatrix& m2);
 WilsonMatrix operator*(const WilsonMatrix& m1, const SpinMatrix& m2);
 
+ColorMatrix matrix_adjoint(const ColorMatrix& m);
+SpinMatrix matrix_adjoint(const SpinMatrix& m);
+WilsonMatrix matrix_adjoint(const WilsonMatrix& m);
+IsospinMatrix matrix_adjoint(const IsospinMatrix& m);
+
 }  // namespace qlat
