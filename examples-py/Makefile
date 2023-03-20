@@ -14,13 +14,13 @@ tests = \
 		selected-field.log \
 		fields-io.log \
 		hmc-pure-gauge.log \
+		hmc-pions.log \
 		hmc-pure-gauge-flowed.log \
 		qcd-utils.log \
 		auto-cexprs.log \
 		auto-cexprs-more.log \
 		auto-cexprs-kpipi.log \
-		free-invert.log \
-		hmc-pions.log
+		free-invert.log
 
 tests_gpt = \
 			grid-qlat-io-test.log \
