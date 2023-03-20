@@ -176,19 +176,21 @@ class Correlators():
         if(f"{name}{m}corrs" in self.done):
             return
         if(m==""):
-            self.corrs[name]=[]
+            corrs=[]
             for i in range(len(tslices1)):
-                self.corrs[name].append([self.correlator(tslices1[i],tslices2[i],dt) for dt in range(self.Nt)])
-            self.corr_avgs[name] = np.mean(self.corrs[name],axis=0)
+                corrs.append([self.correlator(tslices1[i],tslices2[i],dt) for dt in range(self.Nt)])
+            self.corr_avgs[name] = np.mean(corrs,axis=0)
+            self.corrs[name] = get_jackknife_blocks(corrs)
         else:
-            self.corrs[name][m]=[]
+            corrs=[]
             try:
                 for i in range(len(tslices1)):
-                    self.corrs[name][m].append([self.correlator(tslices1[i][m],tslices2[i][m],dt) for dt in range(self.Nt)])
+                    corrs.append([self.correlator(tslices1[i][m],tslices2[i][m],dt) for dt in range(self.Nt)])
             except:
                 for i in range(len(tslices1)):
-                    self.corrs[name][m].append([self.correlator(tslices1[i][m],tslices2[i],dt) for dt in range(self.Nt)])
-            self.corr_avgs[name][m] = np.mean(self.corrs[name][m],axis=0)
+                    corrs.append([self.correlator(tslices1[i][m],tslices2[i],dt) for dt in range(self.Nt)])
+            self.corr_avgs[name][m] = np.mean(corrs,axis=0)
+            self.corrs[name][m] = get_jackknife_blocks(corrs)
         self.done.append(f"{name}{m}corrs")
     
     def calc_corrs_m(self, name, tslices1, tslices2):
@@ -282,7 +284,7 @@ def main():
     version = "1-9"
     #
     cutoff = 500
-    block_size = 100
+    block_size = 10
 
     for i in range(1,len(sys.argv)):
         try:
