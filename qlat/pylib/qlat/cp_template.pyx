@@ -290,7 +290,6 @@ cdef class FieldBase:
             c.set_mul_complex_field(self, factor)
         elif isinstance(factor, FieldBase):
             assert factor.ctype in [ ElemTypeComplex, ElemTypeDouble, ]
-            assert factor.multiplicity() == 1
             c.set_mul_cfield_field(self, factor)
         else:
             assert False

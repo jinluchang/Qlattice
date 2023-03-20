@@ -97,34 +97,54 @@ const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
 }
 
 template <class M>
-const Field<M>& operator*=(Field<M>& f, const FieldM<double, 1>& f_factor)
+const Field<M>& operator*=(Field<M>& f, const Field<double>& f_factor)
 {
   TIMER("field_operator*=(F,FD)");
   qassert(is_matching_geo(f.geo(), f_factor.geo()));
   const Geometry& geo = f.geo();
+  const int multiplicity_f = f_factor.geo().multiplicity;
+  qassert(multiplicity_f == 1 or multiplicity_f == geo.multiplicity);
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> v = f.get_elems(xl);
-    const double fac = f_factor.get_elem(xl);
-    for (int m = 0; m < geo.multiplicity; ++m) {
-      v[m] *= fac;
+    if (multiplicity_f == 1) {
+      const double fac = f_factor.get_elem(xl);
+      for (int m = 0; m < geo.multiplicity; ++m) {
+        v[m] *= fac;
+      }
+    } else {
+      qassert(multiplicity_f == geo.multiplicity);
+      Vector<double> fac = f_factor.get_elems_const(xl);
+      for (int m = 0; m < geo.multiplicity; ++m) {
+        v[m] *= fac[m];
+      }
     }
   });
   return f;
 }
 
 template <class M>
-const Field<M>& operator*=(Field<M>& f, const FieldM<Complex, 1>& f_factor)
+const Field<M>& operator*=(Field<M>& f, const Field<Complex>& f_factor)
 {
   TIMER("field_operator*=(F,FC)");
   qassert(is_matching_geo(f.geo(), f_factor.geo()));
   const Geometry& geo = f.geo();
+  const int multiplicity_f = f_factor.geo().multiplicity;
+  qassert(multiplicity_f == 1 or multiplicity_f == geo.multiplicity);
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> v = f.get_elems(xl);
-    const Complex& fac = f_factor.get_elem(xl);
-    for (int m = 0; m < geo.multiplicity; ++m) {
-      v[m] *= fac;
+    if (multiplicity_f == 1) {
+      const Complex fac = f_factor.get_elem(xl);
+      for (int m = 0; m < geo.multiplicity; ++m) {
+        v[m] *= fac;
+      }
+    } else {
+      qassert(multiplicity_f == geo.multiplicity);
+      const Vector<Complex> fac = f_factor.get_elems_const(xl);
+      for (int m = 0; m < geo.multiplicity; ++m) {
+        v[m] *= fac[m];
+      }
     }
   });
   return f;
@@ -759,10 +779,10 @@ void qnorm_field(FieldM<double, 1>& f, const Field<M>& f1)
       <TYPENAME>(Field<TYPENAME>& f, const Field<TYPENAME>& f1);             \
                                                                              \
   QLAT_EXTERN template const Field<TYPENAME>& operator*=(                    \
-      Field<TYPENAME>& f, const FieldM<double, 1>& f_factor);                \
+      Field<TYPENAME>& f, const Field<double>& f_factor);                    \
                                                                              \
   QLAT_EXTERN template const Field<TYPENAME>& operator*=(                    \
-      Field<TYPENAME>& f, const FieldM<Complex, 1>& f_factor);               \
+      Field<TYPENAME>& f, const Field<Complex>& f_factor);                   \
                                                                              \
   QLAT_EXTERN template const Field<TYPENAME>& operator*=                     \
       <TYPENAME>(Field<TYPENAME>& f, const double factor);                   \

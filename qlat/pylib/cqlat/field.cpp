@@ -72,7 +72,7 @@ PyObject* set_mul_field_ctype(PyObject* p_field, const Complex& factor)
 }
 
 template <class M>
-PyObject* set_mul_field_ctype(PyObject* p_field, const FieldM<Complex, 1>& f_factor)
+PyObject* set_mul_field_ctype(PyObject* p_field, const Field<Complex>& f_factor)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
   f *= f_factor;
@@ -80,7 +80,7 @@ PyObject* set_mul_field_ctype(PyObject* p_field, const FieldM<Complex, 1>& f_fac
 }
 
 template <class M>
-PyObject* set_mul_field_ctype(PyObject* p_field, const FieldM<double, 1>& f_factor)
+PyObject* set_mul_field_ctype(PyObject* p_field, const Field<double>& f_factor)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
   f *= f_factor;
@@ -298,12 +298,10 @@ EXPORT(set_mul_cfield_field, {
   const std::string ctype_c = py_get_ctype(p_cfield);
   PyObject* p_ret = NULL;
   if (ctype_c == "Complex") {
-    FieldM<Complex, 1>& f_factor = py_convert_type_field<Complex, 1>(p_cfield);
-    qassert(f_factor.geo().multiplicity == 1);
+    Field<Complex>& f_factor = py_convert_type_field<Complex>(p_cfield);
     FIELD_DISPATCH(p_ret, set_mul_field_ctype, ctype, p_field, f_factor);
   } else if (ctype_c == "double") {
-    FieldM<double, 1>& f_factor = py_convert_type_field<double, 1>(p_cfield);
-    qassert(f_factor.geo().multiplicity == 1);
+    Field<double>& f_factor = py_convert_type_field<double>(p_cfield);
     FIELD_DISPATCH(p_ret, set_mul_field_ctype, ctype, p_field, f_factor);
   } else {
     qassert(false);
