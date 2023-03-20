@@ -1020,18 +1020,18 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
 // --------------------
 
 #define QLAT_CALL_WITH_TYPES(FUNC) \
-  FUNC(ColorMatrix)                \
-  FUNC(WilsonMatrix)               \
-  FUNC(NonRelWilsonMatrix)         \
-  FUNC(IsospinMatrix)              \
-  FUNC(SpinMatrix)                 \
-  FUNC(WilsonVector)               \
-  FUNC(ComplexD)                   \
-  FUNC(ComplexF)                   \
-  FUNC(double)                     \
-  FUNC(float)                      \
-  FUNC(int64_t)                    \
-  FUNC(char)                       \
+  FUNC(ColorMatrix);               \
+  FUNC(WilsonMatrix);              \
+  FUNC(NonRelWilsonMatrix);        \
+  FUNC(IsospinMatrix);             \
+  FUNC(SpinMatrix);                \
+  FUNC(WilsonVector);              \
+  FUNC(ComplexD);                  \
+  FUNC(ComplexF);                  \
+  FUNC(double);                    \
+  FUNC(float);                     \
+  FUNC(int64_t);                   \
+  FUNC(char);                      \
   FUNC(int8_t)
 
 #ifdef QLAT_INSTANTIATE_CORE
@@ -1067,7 +1067,7 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
                                                                               \
   QLAT_EXTERN template void set_g_rand_double<TYPENAME>(                      \
       Field<TYPENAME> & f, const RngState& rs, const double center,           \
-      const double sigma);
+      const double sigma)
 
 #define QLAT_EXTERN_CLASS                             \
                                                       \
@@ -1077,7 +1077,7 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
                                                       \
   QLAT_EXTERN template class FieldM<WilsonMatrix, 1>; \
                                                       \
-  QLAT_EXTERN template class FieldM<WilsonVector, 1>;
+  QLAT_EXTERN template class FieldM<WilsonVector, 1>
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 

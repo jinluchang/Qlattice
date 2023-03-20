@@ -869,7 +869,7 @@ void qnorm_field(FieldM<double, 1>& f, const Field<M>& f1)
                                                   const Coordinate& shift);    \
                                                                                \
   QLAT_EXTERN template void qnorm_field<TYPENAME>(FieldM<double, 1> & f,       \
-                                                  const Field<TYPENAME>& f1);
+                                                  const Field<TYPENAME>& f1)
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 

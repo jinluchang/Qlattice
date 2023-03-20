@@ -175,21 +175,6 @@ void fft_complex_fields(std::vector<Handle<Field<M> > >& vec,
 
 // --------------------
 
-#define QLAT_CALL_WITH_TYPES(FUNC) \
-  FUNC(ColorMatrix)                \
-  FUNC(WilsonMatrix)               \
-  FUNC(NonRelWilsonMatrix)         \
-  FUNC(IsospinMatrix)              \
-  FUNC(SpinMatrix)                 \
-  FUNC(WilsonVector)               \
-  FUNC(ComplexD)                   \
-  FUNC(ComplexF)                   \
-  FUNC(double)                     \
-  FUNC(float)                      \
-  FUNC(int64_t)                    \
-  FUNC(char)                       \
-  FUNC(int8_t)
-
 #ifdef QLAT_INSTANTIATE_FIELD_FFT
 #define QLAT_EXTERN
 #else
@@ -214,7 +199,7 @@ void fft_complex_fields(std::vector<Handle<Field<M> > >& vec,
   QLAT_EXTERN template void fft_complex_fields<TYPENAME>(                    \
       std::vector<Handle<Field<TYPENAME> > > & vec,                          \
       const std::vector<int>& fft_dirs,                                      \
-      const std::vector<bool>& fft_is_forwards, int mode_fft);
+      const std::vector<bool>& fft_is_forwards, int mode_fft)
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 

@@ -188,7 +188,7 @@ void refresh_expanded_1(Field<M>& f)
       Field<TYPENAME>& f, const SetMarksField& set_marks_field,     \
       const std::string& tag);                                      \
                                                                     \
-  QLAT_EXTERN template void refresh_expanded_1(Field<TYPENAME>& f);
+  QLAT_EXTERN template void refresh_expanded_1(Field<TYPENAME>& f)
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 
