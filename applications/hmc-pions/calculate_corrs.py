@@ -50,7 +50,7 @@ class Correlators():
         self.date = date
         self.day = day
         if(filename==None):
-            filename = f"sigma_pion_corrs_{self.Nx}x{self.Nt}_msq_{self.msq}_lmbd_{self.lmbd}_alph_{self.alpha}_{date}-{day}_{self.version}.bin"
+            filename = f"output_data/*sigma_pion_corrs_{self.Nx}x{self.Nt}_msq_{self.msq}_lmbd_{self.lmbd}_alph_{self.alpha}_{date}-{day}_{self.version}.bin"
         print(f"Loading {filename}")
         self.loaded_files.append(filename)
         with open(filename,"rb") as input:
@@ -86,12 +86,12 @@ class Correlators():
         return datenos
     
     def load_latest_data(self):
-        files = glob.glob(f"sigma_pion_corrs_{self.Nx}x{self.Nt}_msq_{self.msq}_lmbd_{self.lmbd}_alph_{self.alpha}_*_{self.version}.bin")
+        files = glob.glob(f"output_data/*_{self.Nx}x{self.Nt}_msq_{self.msq}_lmbd_{self.lmbd}_alph_{self.alpha}_*_{self.version}.bin")
         datenos = self.find_latest_date(files)
         self.load_data("-", "-", files[datenos.index(max(datenos))])
     
     def load_all_data(self):
-        files = glob.glob(f"sigma_pion_corrs_{self.Nx}x{self.Nt}_msq_{self.msq}_lmbd_{self.lmbd}_alph_{self.alpha}_*_{self.version}.bin")
+        files = glob.glob(f"output_data/*_{self.Nx}x{self.Nt}_msq_{self.msq}_lmbd_{self.lmbd}_alph_{self.alpha}_*_{self.version}.bin")
         datenos = self.find_latest_date(files)
         files = sorted(files, key=lambda f: datenos[files.index(f)])
         for f in files:
@@ -256,7 +256,7 @@ class Correlators():
                          self.corr_avgs], file)
     
     def load(self, date):
-        with open(f"output_data/corrs/corrsmeasurements_{self.Nx}x{self.Nt}_msq_{self.msq}_lmbd_{self.lmbd}_alph_{self.alpha}_{date}_corrs.bin","rb") as file:
+        with open(f"output_data/corrs/corrs_{self.Nx}x{self.Nt}_msq_{self.msq}_lmbd_{self.lmbd}_alph_{self.alpha}_{date}_corrs.bin","rb") as file:
             data = pickle.load(file)
             for f in data[0]:
                 self.load_data("-","-",f)
@@ -296,13 +296,14 @@ def main():
             elif(sys.argv[i]=="-a"):
                 alpha = float(sys.argv[i+1])
             elif(sys.argv[i]=="-c"):
-                cutoff = float(sys.argv[i+1])
+                cutoff = int(sys.argv[i+1])
             elif(sys.argv[i]=="-b"):
-                block_size = float(sys.argv[i+1])
+                block_size = int(sys.argv[i+1])
         except:
             raise Exception("Invalid arguments")
     
     corrs = Correlators(total_site[0], total_site[3], m_sq, lmbd, alpha, version, cutoff, block_size)
+    print("Loading data...")
     corrs.load_all_data()
     print("pipi corrs==============================")
     corrs.calc_pipi_corrs()
@@ -322,3 +323,6 @@ def main():
     print("pipim s corrs==============================")
     corrs.calc_pipim_s_corrs()
     corrs.save()
+
+print("Hello")
+main()
