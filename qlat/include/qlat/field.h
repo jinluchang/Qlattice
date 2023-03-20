@@ -770,65 +770,106 @@ void qnorm_field(FieldM<double, 1>& f, const Field<M>& f1)
 #define QLAT_EXTERN extern
 #endif
 
-#define QLAT_EXTERN_TEMPLATE(TYPENAME)                                       \
-                                                                             \
-  QLAT_EXTERN template const Field<TYPENAME>& operator+=                     \
-      <TYPENAME>(Field<TYPENAME>& f, const Field<TYPENAME>& f1);             \
-                                                                             \
-  QLAT_EXTERN template const Field<TYPENAME>& operator-=                     \
-      <TYPENAME>(Field<TYPENAME>& f, const Field<TYPENAME>& f1);             \
-                                                                             \
-  QLAT_EXTERN template const Field<TYPENAME>& operator*=(                    \
-      Field<TYPENAME>& f, const Field<double>& f_factor);                    \
-                                                                             \
-  QLAT_EXTERN template const Field<TYPENAME>& operator*=(                    \
-      Field<TYPENAME>& f, const Field<Complex>& f_factor);                   \
-                                                                             \
-  QLAT_EXTERN template const Field<TYPENAME>& operator*=                     \
-      <TYPENAME>(Field<TYPENAME>& f, const double factor);                   \
-                                                                             \
-  QLAT_EXTERN template const Field<TYPENAME>& operator*=                     \
-      <TYPENAME>(Field<TYPENAME>& f, const Complex& factor);                 \
-                                                                             \
-  QLAT_EXTERN template double qnorm<TYPENAME>(const Field<TYPENAME>& f);     \
-                                                                             \
-  QLAT_EXTERN template double qnorm_double<TYPENAME>(                        \
-      const Field<TYPENAME>& f1, const Field<TYPENAME>& f2);                 \
-                                                                             \
-  QLAT_EXTERN template void qswap<TYPENAME>(Field<TYPENAME> & f1,            \
-                                            Field<TYPENAME> & f2);           \
-                                                                             \
-  QLAT_EXTERN template std::vector<TYPENAME> field_sum<TYPENAME>(            \
-      const Field<TYPENAME>& f);                                             \
-                                                                             \
-  QLAT_EXTERN template std::vector<TYPENAME> field_sum_tslice<TYPENAME>(     \
-      const Field<TYPENAME>& f, const int t_dir);                            \
-                                                                             \
-  QLAT_EXTERN template std::vector<TYPENAME> field_glb_sum_double<TYPENAME>( \
-      const Field<TYPENAME>& f);                                             \
-                                                                             \
-  QLAT_EXTERN template std::vector<TYPENAME> field_glb_sum_long<TYPENAME>(   \
-      const Field<TYPENAME>& f);                                             \
-                                                                             \
-  QLAT_EXTERN template std::vector<std::vector<TYPENAME> >                   \
-  field_glb_sum_tslice_double<TYPENAME>(const Field<TYPENAME>& f,            \
-                                        const int t_dir);                    \
-                                                                             \
-  QLAT_EXTERN template std::vector<std::vector<TYPENAME> >                   \
-  field_glb_sum_tslice_long<TYPENAME>(const Field<TYPENAME>& f,              \
-                                      const int t_dir);                      \
-                                                                             \
-  QLAT_EXTERN template std::vector<TYPENAME> field_project_mom<TYPENAME>(    \
-      const Field<TYPENAME>& f, const CoordinateD& mom);                     \
-                                                                             \
-  QLAT_EXTERN template std::vector<TYPENAME> field_get_elems<TYPENAME>(      \
-      const Field<TYPENAME>& f, const Coordinate& xg);                       \
-                                                                             \
-  QLAT_EXTERN template TYPENAME field_get_elem<TYPENAME>(                    \
-      const Field<TYPENAME>& f, const Coordinate& xg, const int m);          \
-                                                                             \
-  QLAT_EXTERN template TYPENAME field_get_elem<TYPENAME>(                    \
-      const Field<TYPENAME>& f, const Coordinate& xg);
+#define QLAT_EXTERN_TEMPLATE(TYPENAME)                                         \
+                                                                               \
+  QLAT_EXTERN template const Field<TYPENAME>& operator+=                       \
+      <TYPENAME>(Field<TYPENAME>& f, const Field<TYPENAME>& f1);               \
+                                                                               \
+  QLAT_EXTERN template const Field<TYPENAME>& operator-=                       \
+      <TYPENAME>(Field<TYPENAME>& f, const Field<TYPENAME>& f1);               \
+                                                                               \
+  QLAT_EXTERN template const Field<TYPENAME>& operator*=(                      \
+      Field<TYPENAME>& f, const Field<double>& f_factor);                      \
+                                                                               \
+  QLAT_EXTERN template const Field<TYPENAME>& operator*=(                      \
+      Field<TYPENAME>& f, const Field<Complex>& f_factor);                     \
+                                                                               \
+  QLAT_EXTERN template const Field<TYPENAME>& operator*=                       \
+      <TYPENAME>(Field<TYPENAME>& f, const double factor);                     \
+                                                                               \
+  QLAT_EXTERN template const Field<TYPENAME>& operator*=                       \
+      <TYPENAME>(Field<TYPENAME>& f, const Complex& factor);                   \
+                                                                               \
+  QLAT_EXTERN template double qnorm<TYPENAME>(const Field<TYPENAME>& f);       \
+                                                                               \
+  QLAT_EXTERN template double qnorm_double<TYPENAME>(                          \
+      const Field<TYPENAME>& f1, const Field<TYPENAME>& f2);                   \
+                                                                               \
+  QLAT_EXTERN template void qswap<TYPENAME>(Field<TYPENAME> & f1,              \
+                                            Field<TYPENAME> & f2);             \
+                                                                               \
+  QLAT_EXTERN template std::vector<TYPENAME> field_sum<TYPENAME>(              \
+      const Field<TYPENAME>& f);                                               \
+                                                                               \
+  QLAT_EXTERN template std::vector<TYPENAME> field_sum_tslice<TYPENAME>(       \
+      const Field<TYPENAME>& f, const int t_dir);                              \
+                                                                               \
+  QLAT_EXTERN template std::vector<TYPENAME> field_glb_sum_double<TYPENAME>(   \
+      const Field<TYPENAME>& f);                                               \
+                                                                               \
+  QLAT_EXTERN template std::vector<TYPENAME> field_glb_sum_long<TYPENAME>(     \
+      const Field<TYPENAME>& f);                                               \
+                                                                               \
+  QLAT_EXTERN template std::vector<std::vector<TYPENAME> >                     \
+  field_glb_sum_tslice_double<TYPENAME>(const Field<TYPENAME>& f,              \
+                                        const int t_dir);                      \
+                                                                               \
+  QLAT_EXTERN template std::vector<std::vector<TYPENAME> >                     \
+  field_glb_sum_tslice_long<TYPENAME>(const Field<TYPENAME>& f,                \
+                                      const int t_dir);                        \
+                                                                               \
+  QLAT_EXTERN template std::vector<TYPENAME> field_project_mom<TYPENAME>(      \
+      const Field<TYPENAME>& f, const CoordinateD& mom);                       \
+                                                                               \
+  QLAT_EXTERN template std::vector<TYPENAME> field_get_elems<TYPENAME>(        \
+      const Field<TYPENAME>& f, const Coordinate& xg);                         \
+                                                                               \
+  QLAT_EXTERN template TYPENAME field_get_elem<TYPENAME>(                      \
+      const Field<TYPENAME>& f, const Coordinate& xg, const int m);            \
+                                                                               \
+  QLAT_EXTERN template TYPENAME field_get_elem<TYPENAME>(                      \
+      const Field<TYPENAME>& f, const Coordinate& xg);                         \
+                                                                               \
+  QLAT_EXTERN template void field_set_elems<TYPENAME>(                         \
+      Field<TYPENAME> & f, const Coordinate& xg, const Vector<TYPENAME> val);  \
+                                                                               \
+  QLAT_EXTERN template void field_set_elem<TYPENAME>(                          \
+      Field<TYPENAME> & f, const Coordinate& xg, const int m,                  \
+      const TYPENAME& val);                                                    \
+                                                                               \
+  QLAT_EXTERN template void field_set_elem<TYPENAME>(                          \
+      Field<TYPENAME> & f, const Coordinate& xg, const TYPENAME& val);         \
+                                                                               \
+  QLAT_EXTERN template void split_fields<TYPENAME>(                            \
+      std::vector<Handle<Field<TYPENAME> > > & vec, const Field<TYPENAME>& f); \
+                                                                               \
+  QLAT_EXTERN template void merge_fields<TYPENAME>(                            \
+      Field<TYPENAME> & f,                                                     \
+      const std::vector<ConstHandle<Field<TYPENAME> > >& vec);                 \
+                                                                               \
+  QLAT_EXTERN template void merge_fields_ms<TYPENAME>(                         \
+      Field<TYPENAME> & f,                                                     \
+      const std::vector<ConstHandle<Field<TYPENAME> > >& vec,                  \
+      const std::vector<int> m_vec);                                           \
+                                                                               \
+  QLAT_EXTERN template void field_shift_dir<TYPENAME>(                         \
+      Field<TYPENAME> & f, const Field<TYPENAME>& f1, const int dir,           \
+      const int shift);                                                        \
+                                                                               \
+  QLAT_EXTERN template void field_shift_steps<TYPENAME>(                       \
+      Field<TYPENAME> & f, const Field<TYPENAME>& f1,                          \
+      const Coordinate& shift);                                                \
+                                                                               \
+  QLAT_EXTERN template void field_shift_direct<TYPENAME>(                      \
+      Field<TYPENAME> & f, const Field<TYPENAME>& f1,                          \
+      const Coordinate& shift);                                                \
+                                                                               \
+  QLAT_EXTERN template void field_shift<TYPENAME>(Field<TYPENAME> & f,         \
+                                                  const Field<TYPENAME>& f1,   \
+                                                  const Coordinate& shift);    \
+                                                                               \
+  QLAT_EXTERN template void qnorm_field<TYPENAME>(FieldM<double, 1> & f,       \
+                                                  const Field<TYPENAME>& f1);
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 

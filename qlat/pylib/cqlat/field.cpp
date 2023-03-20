@@ -300,7 +300,7 @@ EXPORT(set_mul_cfield_field, {
   if (ctype_c == "Complex") {
     Field<Complex>& f_factor = py_convert_type_field<Complex>(p_cfield);
     FIELD_DISPATCH(p_ret, set_mul_field_ctype, ctype, p_field, f_factor);
-  } else if (ctype_c == "double") {
+  } else if (ctype_c == "Double") {
     Field<double>& f_factor = py_convert_type_field<double>(p_cfield);
     FIELD_DISPATCH(p_ret, set_mul_field_ctype, ctype, p_field, f_factor);
   } else {
