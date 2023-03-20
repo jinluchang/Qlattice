@@ -11,8 +11,124 @@
 #include <cstdlib>
 #include "utils_float_type.h"
 
+namespace quda
+{
+
+void massRescale(ColorSpinorField &b, QudaInvertParam &param, bool for_multishift)
+{
+  double kappa5 = (0.5/(5.0 + param.m5));
+  double kappa = (param.dslash_type == QUDA_DOMAIN_WALL_DSLASH || param.dslash_type == QUDA_DOMAIN_WALL_4D_DSLASH
+                  || param.dslash_type == QUDA_MOBIUS_DWF_DSLASH || param.dslash_type == QUDA_MOBIUS_DWF_EOFA_DSLASH) ?
+    kappa5 :
+    param.kappa;
+
+  logQuda(QUDA_DEBUG_VERBOSE, "Mass rescale: Kappa is: %g\n", kappa);
+  logQuda(QUDA_DEBUG_VERBOSE, "Mass rescale: mass normalization: %d\n", param.mass_normalization);
+  logQuda(QUDA_DEBUG_VERBOSE, "Mass rescale: norm of source in = %g\n", blas::norm2(b));
+
+  // staggered dslash uses mass normalization internally
+  if (param.dslash_type == QUDA_ASQTAD_DSLASH || param.dslash_type == QUDA_STAGGERED_DSLASH) {
+    switch (param.solution_type) {
+      case QUDA_MAT_SOLUTION:
+      case QUDA_MATPC_SOLUTION:
+        if (param.mass_normalization == QUDA_KAPPA_NORMALIZATION) blas::ax(2.0*param.mass, b);
+        break;
+      case QUDA_MATDAG_MAT_SOLUTION:
+      case QUDA_MATPCDAG_MATPC_SOLUTION:
+        if (param.mass_normalization == QUDA_KAPPA_NORMALIZATION) blas::ax(4.0*param.mass*param.mass, b);
+        break;
+      default:
+        errorQuda("Not implemented");
+    }
+    return;
+  }
+
+  // multiply the source to compensate for normalization of the Dirac operator, if necessary
+  // you are responsible for restoring what's in param.offset
+  switch (param.solution_type) {
+    case QUDA_MAT_SOLUTION:
+      if (param.mass_normalization == QUDA_MASS_NORMALIZATION ||
+          param.mass_normalization == QUDA_ASYMMETRIC_MASS_NORMALIZATION) {
+        blas::ax(2.0*kappa, b);
+        if (for_multishift)
+          for (int i = 0; i < param.num_offset; i++) param.offset[i] *= 2.0 * kappa;
+      }
+      break;
+    case QUDA_MATDAG_MAT_SOLUTION:
+      if (param.mass_normalization == QUDA_MASS_NORMALIZATION ||
+          param.mass_normalization == QUDA_ASYMMETRIC_MASS_NORMALIZATION) {
+        blas::ax(4.0*kappa*kappa, b);
+        if (for_multishift)
+          for (int i = 0; i < param.num_offset; i++) param.offset[i] *= 4.0 * kappa * kappa;
+      }
+      break;
+    case QUDA_MATPC_SOLUTION:
+      if (param.mass_normalization == QUDA_MASS_NORMALIZATION) {
+        blas::ax(4.0*kappa*kappa, b);
+        if (for_multishift)
+          for (int i = 0; i < param.num_offset; i++) param.offset[i] *= 4.0 * kappa * kappa;
+      } else if (param.mass_normalization == QUDA_ASYMMETRIC_MASS_NORMALIZATION) {
+        blas::ax(2.0*kappa, b);
+        if (for_multishift)
+          for (int i = 0; i < param.num_offset; i++) param.offset[i] *= 2.0 * kappa;
+      }
+      break;
+    case QUDA_MATPCDAG_MATPC_SOLUTION:
+      if (param.mass_normalization == QUDA_MASS_NORMALIZATION) {
+        blas::ax(16.0*std::pow(kappa,4), b);
+        if (for_multishift)
+          for (int i = 0; i < param.num_offset; i++) param.offset[i] *= 16.0 * std::pow(kappa, 4);
+      } else if (param.mass_normalization == QUDA_ASYMMETRIC_MASS_NORMALIZATION) {
+        blas::ax(4.0*kappa*kappa, b);
+        if (for_multishift)
+          for (int i = 0; i < param.num_offset; i++) param.offset[i] *= 4.0 * kappa * kappa;
+      }
+      break;
+    default:
+      errorQuda("Solution type %d not supported", param.solution_type);
+  }
+
+  logQuda(QUDA_DEBUG_VERBOSE, "Mass rescale: norm of source out = %g\n", blas::norm2(b));
+}
+
+}
+
 namespace qlat
 {  //
+
+void begin_Qlat_with_quda(bool t = false)
+{
+  qlat::Coordinate nodeD;int dims[4];int coords[4];
+  for(int d=0;d<4;d++){
+    nodeD[d] = quda::comm_dim(d);dims[d] = quda::comm_dim(d);
+    coords[d] = quda::comm_coord(d);
+  }
+
+  int rank = 0;
+  if(t == true ){
+    rank = coords[0];
+    for (int i = 1; i <= 3; i++) {
+      rank = dims[i] * rank + coords[i];
+    }
+  }
+  if(t == false){
+    rank = coords[3];
+    for (int i = 2; i >= 0; i--) {
+      rank = dims[i] * rank + coords[i];
+    }
+  }
+
+  ////printf("rank %d, nodeD, %d %d %d %d \n", id_node, nodeD[0], nodeD[1], nodeD[2], nodeD[3]);
+  qlat::begin(rank, nodeD);
+  //printf("rank %d check %d, ", quda::comm_rank(), qlat::get_id_node());
+  /////qassert(quda::comm_rank() == qlat::get_id_node());
+
+  for (int d = 0; d < 4; d++) {
+    qassert(quda::comm_coord(d) == qlat::get_coor_node()[d]);
+    //printf("%d  %d, ", quda::comm_coord(d),  qlat::get_coor_node()[d]);
+  }
+  //printf("\n");
+}
 
 static int mpi_rank_from_coords_x(const int* coords, void* fdata)
 {
@@ -38,11 +154,28 @@ static int mpi_rank_from_coords_t(const int* coords, void* fdata)
   return rank;
 }
 //
-inline void quda_begin(int mpi_layout[4], bool t = false)
+inline void quda_begin(int mpi_layout[4])
 {
   using namespace quda;
   // The following sets the MPI comm stuff.
-  if (t) {
+  MPI_Comm comm = get_comm();
+  //qudaSetCommHandle((void*) &comm);
+  setMPICommHandleQuda((void*) &comm);
+  ////default t = false, x running the fast
+
+  int t = 0;
+  //Coordinate node =  get_size_node();
+  //Coordinate cor  = qlat::get_coor_node();
+  //Coordinate max  =  Coordinate(0,0,0, node[3]-1);
+  //if(cor == max)
+  //{ 
+  //  if(qlat::get_id_node() == cor[3]){
+  //    t = 1;
+  //  }
+  //}
+  //sum_all_size(&t, 1, 0);
+
+  if (t >= 1) {
     initCommsGridQuda(4, mpi_layout, mpi_rank_from_coords_t,
                       reinterpret_cast<void*>(mpi_layout));
   } else {
@@ -470,7 +603,7 @@ void qlat_cf_to_quda_cf(T1*  quda_cf, colorFT& qlat_cf, int dir = 1)
   qassert(qlat_cf.initialized);
   const Geometry& geo = qlat_cf.geo();
   long V = geo.local_volume();
-  long Vh = V / 2;
+  //long Vh = V / 2;
   qassert(geo.multiplicity == 3);
   const long Dim = geo.multiplicity;
 
@@ -525,7 +658,99 @@ void copy_to_color_prop(std::vector<colorFT >& res, qlat::vector_gpu<Ty >& src)
 }
 
 
+inline void get_index_mappings(qlat::vector_acc<long >& map, const Geometry& geo)
+{
+  const long V = geo.local_volume();
+  const long Vh = V / 2;
+
+  if(map.size() == V){return ;}
+  else{map.resize(V);}
+  qacc_for(qlat_idx_4d, V , {
+    const Coordinate xl = geo.coordinate_from_index(qlat_idx_4d);
+    const int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
+    const long quda_idx = eo * Vh + qlat_idx_4d / 2;
+    map[qlat_idx_4d] = quda_idx;
+  });
+}
+
+/////GPU order with color to be outside even odd
+template <class T1, class Ty, int dir>
+void qlat_cf_to_quda_cfT(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector_acc<long >& map_)
+{
+  TIMER("qlat_cf_to_quda_cf");
+  const long V = geo.local_volume();
+  long Vh = V / 2;
+  if(map_.size() != V){get_index_mappings(map_, geo);}
+  qlat::vector_acc<long >& map = map_;
+  qacc_for(qlat_idx_4d, V, {
+    const long quda_idx = map[qlat_idx_4d];
+    const long eo = quda_idx / Vh;
+    const long qi = quda_idx % Vh;
+    for(int dc = 0; dc < Dim; dc++)
+    {
+      //if(dir == 1){quda_cf[ quda_idx*Dim + dc] = src[qlat_idx_4d*Dim + dc];}
+      //if(dir == 0){src[qlat_idx_4d*Dim + dc] = quda_cf[quda_idx*Dim + dc];}
+      if(dir == 1){quda_cf[(eo*Dim + dc)*Vh + qi] = src[qlat_idx_4d*Dim + dc];}
+      if(dir == 0){src[qlat_idx_4d*Dim + dc] = quda_cf[(eo*Dim + dc)*Vh + qi];}
+    }
+  });
+}
+
+template <class T1, class Ty>
+void qlat_cf_to_quda_cf(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector_acc<long >& map)
+{
+  qlat_cf_to_quda_cfT<T1, Ty, 1>(quda_cf, src, Dim, geo, map);
+}
+
+template <class T1, class Ty>
+void quda_cf_to_qlat_cf(Ty* res, T1*  quda_cf, const int Dim, const Geometry& geo, qlat::vector_acc<long >& map)
+{
+  qlat_cf_to_quda_cfT<T1, Ty, 0>(quda_cf, res, Dim, geo, map);
+}
+
+template <class Ty, int dir>
+void qlat_cf_to_quda_cfT(quda::ColorSpinorField& x, Ty* src, const Geometry& geo, qlat::vector_acc<long >& map)
+{
+  //quda::ColorSpinorParam cs_tmp(x);
+  /////ColorSpinorField& x
+  const long V = geo.local_volume();
+  const int Ndata = x.Nspin() * x.Ncolor();//Ncolor()
+  const size_t Vl = size_t(V) * Ndata;
+  const size_t Vb = Vl * sizeof(float) * 2;
+  qassert( x.TotalBytes() % Vb == 0);
+  if(x.IsComposite()){
+    const int dim = (x.CompositeDim());
+    qassert( x.TotalBytes() / Vb == dim or x.TotalBytes() / Vb == dim*2);
+    for(int di=0;di<dim;di++)
+    {
+      if(x.TotalBytes() / Vb == dim*2)
+      qlat_cf_to_quda_cfT<qlat::ComplexT<double>, Ty, dir>((qlat::ComplexT<double>* ) x.Component(di).V(), &src[di*Vl], Ndata, geo, map);
+      if(x.TotalBytes() / Vb == dim  )
+      qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) x.Component(di).V(), &src[di*Vl], Ndata, geo, map);
+    }
+  }else{
+    qassert( x.TotalBytes() / Vb == 1 or x.TotalBytes() / Vb == 2);
+    if(x.TotalBytes() / Vb == 2)
+    qlat_cf_to_quda_cfT<qlat::ComplexT<double>, Ty, dir>((qlat::ComplexT<double>* ) x.V(), src, Ndata, geo, map);
+    if(x.TotalBytes() / Vb == 1  )
+    qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) x.V(), src, Ndata, geo, map);
+  }
+}
+
+template <class Ty>
+void qlat_cf_to_quda_cf(quda::ColorSpinorField& x, Ty* src, const Geometry& geo, qlat::vector_acc<long >& map)
+{
+  qlat_cf_to_quda_cfT<Ty, 1>(x, src, geo, map);
+}
+
+template <class Ty>
+void quda_cf_to_qlat_cf(Ty* src, quda::ColorSpinorField& x, const Geometry& geo, qlat::vector_acc<long >& map)
+{
+  qlat_cf_to_quda_cfT<Ty, 0>(x, src, geo, map);
+}
+
 
 }  // namespace qlat
 
 #endif
+

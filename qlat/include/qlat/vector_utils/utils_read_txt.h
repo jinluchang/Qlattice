@@ -583,7 +583,7 @@ struct inputpara{
   }
 
 
-  void read_geo(Geometry& geo)
+  void read_geo(const Geometry& geo)
   {
     std::vector<int > nv(4);
     for(int i=0;i<4;i++){nv[i] = geo.node_site[i] * geo.geon.size_node[i];}

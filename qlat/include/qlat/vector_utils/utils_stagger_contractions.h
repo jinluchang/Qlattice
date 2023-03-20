@@ -19,7 +19,6 @@ namespace qlat{
 template<typename Ty , typename Td>
 struct stag_inv_buf{
 
-  qlat::vector_acc<Ty > resC;
   std::vector<std::vector< colorFT> > bufV;
   qlat::vector_gpu<Ty > tmp;
   std::vector<qlat::vector_gpu<Ty >  > propE;
@@ -33,11 +32,14 @@ struct stag_inv_buf{
 
   qlat::FieldM<char, 1> eo;
 
+  //qlat::vector_gpu<Ty > prop_src_gpu;
+  int prop_load_src;
   std::vector<qlat::vector_gpu<Ty > > propS_cpu;
+  std::vector<qlat::vector_gpu<Ty > > propS_smear;
   std::vector<int > prop_load;
+  std::vector<int > prop_load_smear;
 
   inline void free_buf(){
-    resC.resize(0);
 
     for(unsigned int i=0;i<bufV.size();i++)
     {
@@ -54,6 +56,7 @@ struct stag_inv_buf{
     buf_vec.resize(0);
     propS_cpu.resize(0);
     prop_load.resize(0);
+    ///prop_src_gpu.resize(0);
   }
 
   inline void init(){
@@ -98,9 +101,59 @@ void cf_simple_pion(std::vector<colorFT >& cf0, std::vector<colorFT >& cf1, Eige
 
 }
 
-
+inline void qlat_map_eo_site(qlat::FieldM<char, 1>& eo, const Geometry& geo)
+{
+  if(eo.initialized)if(eo.geo() == geo){return ;}
+  eo.init(geo);
+  char* res = (char*) qlat::get_data(eo).data();
+  ////only bool is not write thread safe
+  qacc_for(isp, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(isp);
+    int site_eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
+    res[isp] = site_eo;
+  });
 }
 
+/////src and res can be tthe same pointer
+template <class Ty, int civ>
+void apply_eo_sign(Ty* sP, Ty* rP, qlat::FieldM<char, 1>& eo, const char dir = 1)
+{
+  TIMER("apply_eo_sign");
+  const Geometry& geo = eo.geo();
+  qassert(eo.initialized);
+  char* eP = (char*) qlat::get_data(eo).data();
+  ///////DATA_TYPE typenum = get_data_type<Ty >();
+  qacc_for(isp, geo.local_volume(), {
+    qlat::Complex sign = qlat::Complex(-1.0 * dir *(eP[isp]*2 - 1), 0);
+    for(int ic=0;ic<civ;ic++){rP[isp*civ+ic] = sign * sP[isp*civ+ic];}
+  });
+}
+
+/////src and res can be tthe same pointer
+template <class Ty, int civ>
+void apply_eo_sign(qlat::FieldM<Ty , civ>& src, qlat::FieldM<Ty , civ>& res, qlat::FieldM<char, 1>& eo, const char dir = 1)
+{
+  TIMER("apply_eo_sign");
+  if(!src.initialized or !res.initialized){abort_r("src should be initialized with geo!\n");}
+  const Geometry& geo = src.geo();
+  if(!eo.initialized){qlat_map_eo_site(eo, geo);}
+  Ty*   sP = (Ty*  ) qlat::get_data(src).data();
+  Ty*   rP = (Ty*  ) qlat::get_data(res).data();
+  apply_eo_sign<Ty, civ>(sP, rP, eo, dir);
+}
+
+template <class Ty, int civ>
+void apply_eo_sign(std::vector<qlat::FieldM<Ty , civ> >& src, std::vector<qlat::FieldM<Ty , civ> >& res, qlat::FieldM<char, 1>& eo)
+{
+  qassert(src.size() == res.size());
+  for(unsigned int si = 0; si<src.size(); si++){
+    apply_eo_sign<Ty, civ>(src[si], res[si], eo);
+  }
+}
+
+
+
+}
 
 #endif
 

@@ -300,7 +300,7 @@ void clear_qv(qlat::vector_acc<Ty > &G, bool dummy = true)
 }
 
 template<typename Ty>
-inline crc32_t quick_checksum(Ty* buf, size_t Nsize, const long Nsum = 8, const long hits = 16)
+inline crc32_t quick_checksum(Ty* buf, size_t Nsize, const long Nsum =11, const long hits = 13)
 {
   TIMERA("quick_checksum");
   crc32_t sum = 0;

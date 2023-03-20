@@ -368,13 +368,13 @@ void vector_to_Coordinate(qlat::vector_acc<int >& nv, Coordinate& pos, int dir =
   if(dir == 0){for(int i=0;i<4;i++){nv[i]  = pos[i];}}
 }
 
-inline void get_grid_psel(PointSelection& psel, Coordinate& nv, Coordinate& grid, int t0 = -1, int seed = 123, const int even = -1)
+inline void get_grid_psel(PointSelection& psel, const Coordinate& nv, const Coordinate& grid, qlat::RngState& rs, int t0 = -1, const int even = -1, const Coordinate& ini_ = Coordinate(-1,-1,-1,-1))
 {
   /////put seed to all the same as rank 0
-  if(qlat::get_id_node() != 0){seed = 0;}
-  sum_all_size(&seed, 1 );
+  //if(qlat::get_id_node() != 0){seed = 0;}
+  //sum_all_size(&seed, 1 );
+  //qlat::RngState rs(seed);
 
-  qlat::RngState rs(seed);
   long total = 1;
   for(int i=0;i<4;i++){
    if(nv[i] < 0 or grid[i] < 0 or nv[i]%grid[i] != 0){print0("Grid offset wrong nv[i] %d, grid[i] %d !\n", nv[i], grid[i]);}
@@ -382,7 +382,10 @@ inline void get_grid_psel(PointSelection& psel, Coordinate& nv, Coordinate& grid
   }
 
   Coordinate ini;
-  for(int i=0;i<4;i++){ini[i] = int(qlat::u_rand_gen(rs)*(nv[i]/grid[i]));}
+  if(ini_ != Coordinate(-1,-1,-1,-1)){ini = ini_;}
+  else{
+    for(int i=0;i<4;i++){ini[i] = int(qlat::u_rand_gen(rs)*(nv[i]/grid[i]));}
+  }
   if(t0 != -1){ini[3] = t0;}
   if(even != -1){
     //// even = (z*2+y)*2+x;
@@ -410,7 +413,7 @@ inline void get_grid_psel(PointSelection& psel, Coordinate& nv, Coordinate& grid
     Coordinate ci;
     ci[0] = xi;  ci[1] = yi; ci[2] = zi; ci[3] = ti;
 
-    for(int i=0;i<4;i++){xg[i] = ini[i] + ci[i]*(nv[i]/grid[i]);}
+    for(int i=0;i<4;i++){xg[i] = (ini[i] + ci[i]*(nv[i]/grid[i])) % (nv[i]);}
 
     psel.push_back(xg);
   }

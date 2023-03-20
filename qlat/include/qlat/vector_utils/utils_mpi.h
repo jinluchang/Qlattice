@@ -107,7 +107,7 @@ void bcast_all_size(Ty *src, long size, int root, int GPU=0, MPI_Comm* commp=NUL
 
 
 template<typename Ty>
-void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, MPI_Comm* commp=NULL)
+void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, const MPI_Comm* commp=NULL)
 {
   TIMER("global sum sum_all_size");
   if(size == 0){return ;}
@@ -168,7 +168,7 @@ void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, MPI_Comm* commp=NULL)
 }
 
 template<typename Ty>
-void sum_all_size(Ty *src,long size, int GPU=0, MPI_Comm* commp=NULL)
+void sum_all_size(Ty *src,long size, int GPU=0, const MPI_Comm* commp=NULL)
 {
   sum_all_size(src,src,size, GPU, commp);
 }
@@ -191,7 +191,7 @@ inline void fflush_MPI(){
 //////"INT_MAX"
 //////offset by number of char
 template<typename Iy0, typename Iy1>
-void MPI_Alltoallv_Send_Recv(char* src, Iy0* send, Iy1* spls, char* res, Iy0* recv, Iy1* rpls, MPI_Comm& comm)
+void MPI_Alltoallv_Send_Recv(char* src, Iy0* send, Iy1* spls, char* res, Iy0* recv, Iy1* rpls, const MPI_Comm& comm)
 {
   int num_node;MPI_Comm_size(comm, &num_node);
   int id_node;MPI_Comm_rank(comm, &id_node);
@@ -221,7 +221,7 @@ void MPI_Alltoallv_Send_Recv(char* src, Iy0* send, Iy1* spls, char* res, Iy0* re
 }
 
 template<typename Ty>
-void MPI_Alltoallv_mode(Ty* src0, int* send, int* spls, Ty* res0, int* recv, int* rpls, MPI_Comm& comm, int mode=0, int GPU = 0)
+void MPI_Alltoallv_mode(Ty* src0, int* send, int* spls, Ty* res0, int* recv, int* rpls, const MPI_Comm& comm, int mode=0, int GPU = 0)
 {
   (void)GPU;
   Ty* src = NULL;Ty* res = NULL;
@@ -401,6 +401,95 @@ void sum_value_mpi(Ty& num)
   sum_all_size(&nvalue, 1);
   if(nvalue != 0){buf = buf/nvalue;}
   num = buf;
+}
+
+inline int get_mpi_id_node_close()
+{
+  int globalRank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &globalRank);
+  //qassert(globalRank == get_id_node());
+  // node local comm
+  MPI_Comm nodeComm;
+  MPI_Comm_split_type(MPI_COMM_WORLD, MPI_COMM_TYPE_SHARED, globalRank,
+                      MPI_INFO_NULL, &nodeComm);
+
+  // id within the node
+  int localRank;
+  MPI_Comm_rank(nodeComm, &localRank);
+  //if (0 == get_id_node()) {
+  //  qassert(localRank == 0);
+  //}
+  //return 0;
+  // number of process in this node
+  int localSize;
+  MPI_Comm_size(nodeComm, &localSize);
+  // comm across node (each node select one process with the same local rank)
+  MPI_Comm masterComm;
+  MPI_Comm_split(MPI_COMM_WORLD, localRank, globalRank, &masterComm);
+  // id across node
+  int masterRank;
+  MPI_Comm_rank(masterComm, &masterRank);
+  // size of each master comm
+  int masterSize;
+  MPI_Comm_size(masterComm, &masterSize);
+  // calculate number of node
+  long num_of_node = masterSize;
+  MPI_Bcast(&num_of_node, 1, MPI_LONG, 0, nodeComm);
+  // calculate id of node (master rank of the 0 local rank process)
+  long id_of_node = masterRank;
+  MPI_Bcast(&id_of_node, 1, MPI_LONG, 0, nodeComm);
+  qassert(id_of_node < num_of_node);
+  // calculate number of processes for each node
+  std::vector<long> n0(num_of_node, 0);
+  std::vector<long> n1(num_of_node, 0);
+  n0[id_of_node] = 1;
+  /////glb_sum(get_data(num_process_for_each_node));
+  /////MPI_Allreduce(get_data(num_process_for_each_node), get_data(num_process_for_each_node), )
+
+  //if(commp == NULL){MPI_Allreduce(tem_src,tem_res, size * fac, curr, MPI_SUM, get_comm());}
+  MPI_Allreduce(&n0[0], &n1[0], num_of_node, MPI_LONG, MPI_SUM, MPI_COMM_WORLD);
+  ////printf("id_of_node %5d, total %5d \n", int(id_of_node), int(n1[id_of_node]));
+
+  int id_node_local = localRank;
+  for (long i = 0; i < id_of_node; ++i) {
+    id_node_local += n1[i];
+  }
+
+  //// calculate the number of master comm (the maximum in num_process_for_each_node)
+  //long num_of_master_comm = 0;
+  //for (long i = 0; i < (long)num_process_for_each_node.size(); ++i) {
+  //  if (num_process_for_each_node[i] > num_of_master_comm) {
+  //    num_of_master_comm = num_process_for_each_node[i];
+  //  }
+  //}
+  //// calculate the id of the master comm (same as local rank)
+  //long id_of_master_comm = localRank;
+  //qassert(id_of_master_comm < num_of_master_comm);
+  //// calculate number of processes for each masterComm
+  //std::vector<long> num_process_for_each_master_comm(num_of_master_comm, 0);
+  //num_process_for_each_master_comm[id_of_master_comm] = 1;
+  //glb_sum(get_data(num_process_for_each_master_comm));
+  //qassert(num_process_for_each_master_comm[id_of_master_comm] == masterSize);
+  //// calculate id_node_in_shuffle
+  // calculate the list of id_node for each id_node_in_shuffle
+  //std::vector<long> list_long(get_num_node(), 0);
+  //list_long[id_node_in_shuffle] = get_id_node();
+  //glb_sum(get_data(list_long));
+  //std::vector<int> list(get_num_node(), 0);
+  //for (long i = 0; i < get_num_node(); ++i) {
+  //  list[i] = list_long[i];
+  //}
+  //// checking
+  //qassert(list[0] == 0);
+  //for (long i = 0; i < get_num_node(); ++i) {
+  //  qassert(0 <= list[i]);
+  //  qassert(list[i] < get_num_node());
+  //  for (long j = 0; j < i; ++j) {
+  //    qassert(list[i] != list[j]);
+  //  }
+  //}
+  //return list;
+  return id_node_local;
 }
 
 

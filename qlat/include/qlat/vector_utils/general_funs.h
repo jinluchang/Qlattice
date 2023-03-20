@@ -477,6 +477,7 @@ inline void random_Ty(Ty* a, long N0,int GPU=0, int seed = 0, const int mode = 0
         }
       }
     });
+    ////qacc_for(isp, N0, {a[isp] = a[isp] * (std::cos(isp) /N0);});
     return ;
   }
   #endif
@@ -797,16 +798,22 @@ inline void begin_Lat(int* argc, char** argv[], inputpara& in, int read_Lat = 0)
       {printf("Wrong input layout\n");abort_r();}
     }
     else{
-      if(in.mode_dis >= 0 and in.mode_dis < 2){spreadT = guess_nodeL(n_node, Lat, 0);}
-      if(in.mode_dis >= 2 and in.mode_dis < 4){spreadT = guess_nodeL(n_node, Lat, 1);}
+      if(in.mode_dis%10 >= 0 and in.mode_dis%10 < 2){spreadT = guess_nodeL(n_node, Lat, 0);}
+      if(in.mode_dis%10 >= 2 and in.mode_dis%10 < 4){spreadT = guess_nodeL(n_node, Lat, 1);}
+      ////if(in.mode_dis >= 10 and in.mode_dis < 12){spreadT = guess_nodeL(n_node, Lat, 1);}
     }
     ///3D begin
     ////begin_comm(MPI_COMM_WORLD , spreadT);
 
     ///4D begin
     int id_node, n;
+    int old_id;MPI_Comm_rank(MPI_COMM_WORLD, &old_id);
     MPI_Comm_size(MPI_COMM_WORLD, &n);
-    MPI_Comm_rank(MPI_COMM_WORLD, &id_node);
+    if(in.mode_dis <  10){MPI_Comm_rank(MPI_COMM_WORLD, &id_node);}
+    if(in.mode_dis >= 10){
+      id_node = get_mpi_id_node_close();
+    }
+      ///abort_r();
     int t =  id_node/(spreadT[0]*spreadT[1]*spreadT[2]);
     int z = (id_node/(spreadT[0]*spreadT[1]))%(spreadT[2]);
     int y = (id_node/(spreadT[0]))%(spreadT[1]);
@@ -815,6 +822,7 @@ inline void begin_Lat(int* argc, char** argv[], inputpara& in, int read_Lat = 0)
     int new_id = ((x*spreadT[1] + y)*spreadT[2] + z)*spreadT[3] + t;
     if(in.mode_dis % 2 == 0)begin(id_node, spreadT);
     if(in.mode_dis % 2 == 1)begin(new_id, spreadT);
+    ////printf("new id %5d, old id %5d\n", get_id_node(), old_id);
   }
 
   if(read_Lat == -1)

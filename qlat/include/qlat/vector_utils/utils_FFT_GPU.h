@@ -542,7 +542,7 @@ struct fft_schedule{
     flag_mem_set = true;
   }
 
-  void print_info()
+  inline void print_info()
   {
     print0("==Jobs dim %d, ", dim);
     for(int di=0;di<dim;di++){print0("%d ", dimN[di]);}
@@ -665,7 +665,7 @@ struct fft_schedule{
     }
   }
 
-  void clear_mem(){
+  inline void clear_mem(){
     if(flag_mem_set == false){return;}
     default_MPI = -1;enable_MPI = -1;
     
