@@ -289,7 +289,7 @@ cdef class FieldBase:
         elif isinstance(factor, complex):
             c.set_mul_complex_field(self, factor)
         elif isinstance(factor, FieldBase):
-            assert factor.ctype is ElemTypeComplex
+            assert factor.ctype in [ ElemTypeComplex, ElemTypeDouble, ]
             assert factor.multiplicity() == 1
             c.set_mul_cfield_field(self, factor)
         else:
@@ -317,11 +317,6 @@ cdef class FieldBase:
             c.set_g_rand_double_field(self, rng, center, sigma)
         else:
             assert False
-
-    def multiply_double(self, factor):
-        assert isinstance(factor, FieldBase)
-        assert factor.ctype is ElemTypeDouble
-        c.multiply_double_field(self,factor)
 
     def qnorm(self):
         return c.qnorm_field(self)

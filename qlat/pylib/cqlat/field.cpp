@@ -80,6 +80,14 @@ PyObject* set_mul_field_ctype(PyObject* p_field, const FieldM<Complex, 1>& f_fac
 }
 
 template <class M>
+PyObject* set_mul_field_ctype(PyObject* p_field, const FieldM<double, 1>& f_factor)
+{
+  Field<M>& f = py_convert_type_field<M>(p_field);
+  f *= f_factor;
+  Py_RETURN_NONE;
+}
+
+template <class M>
 PyObject* set_zero_field_ctype(PyObject* p_field)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
@@ -119,15 +127,6 @@ PyObject* set_g_rand_double_field_ctype(PyObject* p_field, const RngState& rs,
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
   set_g_rand_double(f, rs, center, sigma);
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* multiply_double_field_ctype(PyObject* p_sf, PyObject* p_factor)
-{
-  Field<M>& sf = py_convert_type_field<M>(p_sf);
-  Field<double>& factor = py_convert_type_field<double>(p_factor);
-  multiply_double(sf, factor);
   Py_RETURN_NONE;
 }
 
@@ -296,10 +295,19 @@ EXPORT(set_mul_cfield_field, {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_field);
-  FieldM<Complex, 1>& f_factor = py_convert_type_field<Complex, 1>(p_cfield);
-  qassert(f_factor.geo().multiplicity == 1);
+  const std::string ctype_c = py_get_ctype(p_cfield);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_mul_field_ctype, ctype, p_field, f_factor);
+  if (ctype_c == "Complex") {
+    FieldM<Complex, 1>& f_factor = py_convert_type_field<Complex, 1>(p_cfield);
+    qassert(f_factor.geo().multiplicity == 1);
+    FIELD_DISPATCH(p_ret, set_mul_field_ctype, ctype, p_field, f_factor);
+  } else if (ctype_c == "double") {
+    FieldM<double, 1>& f_factor = py_convert_type_field<double, 1>(p_cfield);
+    qassert(f_factor.geo().multiplicity == 1);
+    FIELD_DISPATCH(p_ret, set_mul_field_ctype, ctype, p_field, f_factor);
+  } else {
+    qassert(false);
+  }
   return p_ret;
 })
 
@@ -376,19 +384,6 @@ EXPORT(set_g_rand_double_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_g_rand_double_field_ctype, ctype, p_field, rng,
                  center, sigma);
-  return p_ret;
-})
-
-EXPORT(multiply_double_field, {
-  using namespace qlat;
-  PyObject* p_sf = NULL;
-  PyObject* p_factor = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_sf, &p_factor)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_sf);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, multiply_double_field_ctype, ctype, p_sf, p_factor);
   return p_ret;
 })
 

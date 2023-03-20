@@ -42,3 +42,9 @@ def less_than_double(field, sf2, mask):
 def invert_double(field):
     assert field.ctype == c.ElemTypeDouble
     c.invert_double_field(field)
+
+def multiply_double(field, factor):
+    assert isinstance(field, FieldBase)
+    assert isinstance(factor, FieldBase)
+    assert factor.ctype is c.ElemTypeDouble
+    c.multiply_double_field(field, factor)

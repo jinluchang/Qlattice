@@ -1,5 +1,7 @@
 #include "lib.h"
 
+#include <qlat/field-double.h>
+
 namespace qlat
 {  //
 
@@ -55,6 +57,15 @@ PyObject* less_than_double_field_ctype(PyObject* p_sf1, PyObject* p_sf2, PyObjec
   Field<double>& sf2 = py_convert_type_field<double>(p_sf2);
   Field<double>& mask = py_convert_type_field<double>(p_mask);
   less_than_double(sf1, sf2, mask);
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* multiply_double_field_ctype(PyObject* p_sf, PyObject* p_factor)
+{
+  Field<M>& sf = py_convert_type_field<M>(p_sf);
+  Field<double>& factor = py_convert_type_field<double>(p_factor);
+  multiply_double(sf, factor);
   Py_RETURN_NONE;
 }
 
@@ -144,6 +155,19 @@ EXPORT(less_than_double_field, {
   const std::string ctype = py_get_ctype(p_sf1);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, less_than_double_field_ctype, ctype, p_sf1, p_sf2, p_mask);
+  return p_ret;
+})
+
+EXPORT(multiply_double_field, {
+  using namespace qlat;
+  PyObject* p_sf = NULL;
+  PyObject* p_factor = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_sf, &p_factor)) {
+    return NULL;
+  }
+  const std::string ctype = py_get_ctype(p_sf);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, multiply_double_field_ctype, ctype, p_sf, p_factor);
   return p_ret;
 })
 

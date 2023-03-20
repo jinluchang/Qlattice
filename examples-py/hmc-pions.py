@@ -245,10 +245,10 @@ class HMC:
     def update_masses_w_fit(self):
         # Estimate the masses we should use in order to evolve each field
         # mode by half of its period
-        self.force_av.multiply_double(self.field_av)
+        self.force_av *= self.field_av
         self.force_av*=1/self.divisor
         self.field_force_cor-=self.force_av
-        self.field_av.multiply_double(self.field_av)
+        self.field_av *= self.field_av
         self.field_av*=1/self.divisor
         self.field_sq_av-=self.field_av
         q.field_double.set_ratio_double(self.masses,self.field_force_cor,self.field_sq_av)
@@ -269,10 +269,10 @@ class HMC:
     def choose_larger(self, field1, field2):
         # TODO: Make a more efficient, safer way to do it
         q.field_double.less_than_double(field1, field2, self.mask)
-        field2.multiply_double(self.mask)
+        field2 *= self.mask
         self.aux1.set_unit()
         q.field_double.less_than_double(self.mask, self.aux1, self.mask)
-        field1.multiply_double(self.mask)
+        field1 *= self.mask
         field1+=field2
 
     def update_masses_w_safe_fit(self):
@@ -437,9 +437,9 @@ class HMC:
                 self.field_av+=self.aux1
                 q.field_double.set_double_from_complex(self.aux2,force.get_field_ft())
                 self.force_av+=self.aux2
-                self.aux2.multiply_double(self.aux1)
+                self.aux2 *= self.aux1
                 self.field_force_cor+=self.aux2
-                self.aux1.multiply_double(self.aux1)
+                self.aux1 *= self.aux1
                 self.field_sq_av+=self.aux1
                 self.divisor+=1
 
