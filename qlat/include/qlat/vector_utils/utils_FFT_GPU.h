@@ -891,7 +891,7 @@ inline FFTGPUPlanKey get_fft_gpu_plan_key(std::vector<qlat::FieldM<Ty, civ> >& s
   return fkey;
 }
 
-bool check_fft_mode(const int nfft, const Geometry& geo, const bool fft4d)
+inline bool check_fft_mode(const int nfft, const Geometry& geo, const bool fft4d)
 {
   bool use_qlat = false;
   std::vector<int > nv, Nv, mv;

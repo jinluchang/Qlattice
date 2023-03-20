@@ -1,7 +1,5 @@
 #include "lib.h"
 
-#include <qlat/vector_utils/utils_FFT_GPU.h>
-
 namespace qlat
 {  //
 
@@ -167,56 +165,17 @@ PyObject* glb_sum_tslice_long_field_ctype(PyObject* p_spfield,
 }
 
 template <class M>
-PyObject* fft_fields_ctype(const std::vector<PyObject*> p_field_vec,
-                           const std::vector<int> fft_dirs,
-                           const std::vector<bool> fft_is_forwards, int mode_fft = 1)
+PyObject* fft_fields_ctype(const std::vector<PyObject*>& p_field_vec,
+                           const std::vector<int>& fft_dirs,
+                           const std::vector<bool>& fft_is_forwards,
+                           int mode_fft = 1)
 {
   const long n_field = p_field_vec.size();
   std::vector<Handle<Field<M> > > vec(n_field);
   for (long i = 0; i < n_field; ++i) {
     vec[i].init(py_convert_type_field<M>(p_field_vec[i]));
   }
-  int use_plan = 0;
-  bool fft_direction = false;
-  bool ft4D = false;
-  if (mode_fft == 1) {
-    ////check 3D
-    if (fft_dirs.size() == 3 and fft_dirs[0] == 0 and fft_dirs[1] == 1 and
-        fft_dirs[2] == 2) {
-      if (fft_is_forwards[0] == fft_is_forwards[1] and
-          fft_is_forwards[0] == fft_is_forwards[2]) {
-        use_plan = 1;
-        fft_direction = fft_is_forwards[0];
-        ft4D = false;
-      }
-    }
-    ////check 4D
-    if (fft_dirs.size() == 4 and fft_dirs[0] == 0 and fft_dirs[1] == 1 and
-        fft_dirs[2] == 2 and fft_dirs[3] == 3) {
-      if (fft_is_forwards[0] == fft_is_forwards[1] and
-          fft_is_forwards[0] == fft_is_forwards[2])
-        if (fft_is_forwards[0] == fft_is_forwards[3]) {
-          use_plan = 1;
-          fft_direction = fft_is_forwards[0];
-          ft4D = true;
-        }
-    }
-  }
-  if (use_plan == 0) {
-    for (long i = 0; i < n_field; ++i) {
-      Field<M> ft;
-      for (long k = 0; k < (long)fft_dirs.size(); ++k) {
-        ft = vec[i]();
-        const int fft_dir = fft_dirs[k];
-        const bool is_forward = fft_is_forwards[k];
-        fft_complex_field_dir(vec[i](), ft, fft_dir, is_forward);
-      }
-    }
-  } else if (use_plan == 1) {
-    fft_fieldM(vec, fft_direction, ft4D);
-  } else {
-    qassert(false);
-  }
+  fft_complex_fields(vec, fft_dirs, fft_is_forwards, mode_fft);
   Py_RETURN_NONE;
 }
 
