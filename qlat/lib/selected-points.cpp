@@ -1,3 +1,5 @@
+#define QLAT_INSTANTIATE_SELECTED_POINTS
+
 #include <qlat/selected-points.h>
 
 namespace qlat
