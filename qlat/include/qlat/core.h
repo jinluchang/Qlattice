@@ -1034,6 +1034,36 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
   FUNC(char);                      \
   FUNC(int8_t)
 
+#define QLAT_CALL_WITH_TYPES_1(FUNC, TYPENAME) \
+  FUNC(ColorMatrix, TYPENAME);                 \
+  FUNC(WilsonMatrix, TYPENAME);                \
+  FUNC(NonRelWilsonMatrix, TYPENAME);          \
+  FUNC(IsospinMatrix, TYPENAME);               \
+  FUNC(SpinMatrix, TYPENAME);                  \
+  FUNC(WilsonVector, TYPENAME);                \
+  FUNC(ComplexD, TYPENAME);                    \
+  FUNC(ComplexF, TYPENAME);                    \
+  FUNC(double, TYPENAME);                      \
+  FUNC(float, TYPENAME);                       \
+  FUNC(int64_t, TYPENAME);                     \
+  FUNC(char, TYPENAME);                        \
+  FUNC(int8_t, TYPENAME)
+
+#define QLAT_CALL_WITH_TYPES_2(FUNC)                \
+  QLAT_CALL_WITH_TYPES_1(FUNC, ColorMatrix);        \
+  QLAT_CALL_WITH_TYPES_1(FUNC, WilsonMatrix);       \
+  QLAT_CALL_WITH_TYPES_1(FUNC, NonRelWilsonMatrix); \
+  QLAT_CALL_WITH_TYPES_1(FUNC, IsospinMatrix);      \
+  QLAT_CALL_WITH_TYPES_1(FUNC, SpinMatrix);         \
+  QLAT_CALL_WITH_TYPES_1(FUNC, WilsonVector);       \
+  QLAT_CALL_WITH_TYPES_1(FUNC, ComplexD);           \
+  QLAT_CALL_WITH_TYPES_1(FUNC, ComplexF);           \
+  QLAT_CALL_WITH_TYPES_1(FUNC, double);             \
+  QLAT_CALL_WITH_TYPES_1(FUNC, float);              \
+  QLAT_CALL_WITH_TYPES_1(FUNC, int64_t);            \
+  QLAT_CALL_WITH_TYPES_1(FUNC, char);               \
+  QLAT_CALL_WITH_TYPES_1(FUNC, int8_t)
+
 #ifdef QLAT_INSTANTIATE_CORE
 #define QLAT_EXTERN
 #else
