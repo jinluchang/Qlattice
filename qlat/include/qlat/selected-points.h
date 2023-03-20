@@ -5,8 +5,6 @@
 namespace qlat
 {  //
 
-typedef std::vector<Coordinate> PointSelection;
-
 PointSelection mk_tslice_point_selection(const int t_size, const int t_dir = 3);
 
 PointSelection mk_tslice_point_selection(const Coordinate& total_site,

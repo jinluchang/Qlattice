@@ -189,6 +189,141 @@ inline long read_field_selection(FieldSelection& fsel, const std::string& path,
   return total_bytes;
 }
 
+inline std::string make_selected_field_header(const Geometry& geo,
+                                              const long n_per_tslice,
+                                              const int sizeof_M,
+                                              const crc32_t crc32)
+{
+  const Coordinate total_site = geo.total_site();
+  std::ostringstream out;
+  // const std::string todo = "NOT yet implemented";
+  out << "BEGIN_SELECTED_FIELD_HEADER" << std::endl;
+  out << "selected_field_version = 1.0" << std::endl;
+  out << "total_site[0] = " << total_site[0] << std::endl;
+  out << "total_site[1] = " << total_site[1] << std::endl;
+  out << "total_site[2] = " << total_site[2] << std::endl;
+  out << "total_site[3] = " << total_site[3] << std::endl;
+  out << "n_per_tslice = " << n_per_tslice << std::endl;
+  out << "multiplicity = " << geo.multiplicity << std::endl;
+  out << "sizeof(M) = " << sizeof_M << std::endl;
+  out << ssprintf("selected_field_crc32 = %08X", crc32) << std::endl;
+  out << "END_HEADER" << std::endl;
+  return out.str();
+}
+
+inline long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
+                                   long& n_per_tslice, int& sizeof_M,
+                                   crc32_t& crc, const std::string& path)
+{
+  TIMER("read_selected_geo_info");
+  long pos = 0;
+  if (get_id_node() == 0) {
+    QFile fp = qfopen(path, "r");
+    if (not fp.null()) {
+      const std::string header = "BEGIN_SELECTED_FIELD_HEADER\n";
+      std::vector<char> check_line(header.size(), 0);
+      if (1 == qfread(check_line.data(), header.size(), 1, fp)) {
+        if (std::string(check_line.data(), check_line.size()) == header) {
+          std::vector<std::string> infos;
+          infos.push_back(header);
+          while (infos.back() != "END_HEADER\n" && infos.back() != "") {
+            infos.push_back(qgetline(fp));
+          }
+          for (int m = 0; m < 4; ++m) {
+            reads(total_site[m],
+                  info_get_prop(infos, ssprintf("total_site[%d] = ", m)));
+          }
+          reads(multiplicity, info_get_prop(infos, "multiplicity = "));
+          reads(n_per_tslice, info_get_prop(infos, "n_per_tslice = "));
+          reads(sizeof_M, info_get_prop(infos, "sizeof(M) = "));
+          crc = read_crc32(info_get_prop(infos, "selected_field_crc32 = "));
+        }
+      }
+      pos = qftell(fp);
+    }
+    qfclose(fp);
+  }
+  bcast(get_data_one_elem(pos));
+  bcast(get_data_one_elem(total_site));
+  bcast(get_data_one_elem(multiplicity));
+  bcast(get_data_one_elem(n_per_tslice));
+  bcast(get_data_one_elem(sizeof_M));
+  bcast(get_data_one_elem(crc));
+  return pos;
+}
+
+inline bool is_selected_field(const std::string& path)
+{
+  TIMER("is_selected_field");
+  long nfile = 0;
+  if (get_id_node() == 0) {
+    QFile fp = qfopen(path, "r");
+    if (not fp.null()) {
+      const std::string header = "BEGIN_SELECTED_FIELD_HEADER\n";
+      std::vector<char> check_line(header.size(), 0);
+      if (1 == qfread(check_line.data(), header.size(), 1, fp)) {
+        if (std::string(check_line.data(), check_line.size()) == header) {
+          nfile = 1;
+        }
+      }
+    }
+    qfclose(fp);
+  }
+  bcast(get_data(nfile));
+  return nfile > 0;
+}
+
+template <class M, class N>
+void convert_field_float_from_double(SelectedField<N>& ff,
+                                     const SelectedField<M>& f)
+// interface_function
+{
+  TIMER("convert_field_float_from_double(sf)");
+  qassert(f.geo().is_only_local);
+  qassert(sizeof(M) % sizeof(double) == 0);
+  qassert(sizeof(N) % sizeof(float) == 0);
+  qassert(f.geo().multiplicity * sizeof(M) / 2 % sizeof(N) == 0);
+  const int multiplicity = f.geo().multiplicity * sizeof(M) / 2 / sizeof(N);
+  const Geometry geo = geo_remult(f.geo(), multiplicity);
+  const long n_elems = f.n_elems;
+  ff.init(geo, n_elems, multiplicity);
+  const Vector<M> fdata = get_data(f);
+  const Vector<double> fd((double*)fdata.data(),
+                          fdata.data_size() / sizeof(double));
+  Vector<N> ffdata = get_data(ff);
+  Vector<float> ffd((float*)ffdata.data(), ffdata.data_size() / sizeof(float));
+  qassert(ffd.size() == fd.size());
+  qacc_for(i, ffd.size(), {
+    ffd[i] = fd[i];
+  });
+}
+
+template <class M, class N>
+void convert_field_double_from_float(SelectedField<N>& ff,
+                                     const SelectedField<M>& f)
+// interface_function
+{
+  TIMER("convert_field_double_from_float(sf)");
+  qassert(f.geo().is_only_local);
+  qassert(sizeof(M) % sizeof(float) == 0);
+  qassert(sizeof(N) % sizeof(double) == 0);
+  qassert(f.geo().multiplicity * sizeof(M) * 2 % sizeof(N) == 0);
+  const int multiplicity = f.geo().multiplicity * sizeof(M) * 2 / sizeof(N);
+  const Geometry geo = geo_remult(f.geo(), multiplicity);
+  const long n_elems = f.n_elems;
+  ff.init(geo, n_elems, multiplicity);
+  const Vector<M> fdata = get_data(f);
+  const Vector<float> fd((float*)fdata.data(),
+                         fdata.data_size() / sizeof(float));
+  Vector<N> ffdata = get_data(ff);
+  Vector<double> ffd((double*)ffdata.data(),
+                     ffdata.data_size() / sizeof(double));
+  qassert(ffd.size() == fd.size());
+  qacc_for(i, ffd.size(), {
+    ffd[i] = fd[i];
+  });
+}
+
 template <class M>
 crc32_t field_crc32(const SelectedField<M>& sf, const FieldSelection& fsel,
                     const Coordinate& new_size_node_ = Coordinate())
@@ -220,28 +355,6 @@ crc32_t field_crc32(const SelectedField<M>& sf, const FieldSelection& fsel,
   }
   glb_sum_byte(crc);
   return crc;
-}
-
-inline std::string make_selected_field_header(const Geometry& geo,
-                                              const long n_per_tslice,
-                                              const int sizeof_M,
-                                              const crc32_t crc32)
-{
-  const Coordinate total_site = geo.total_site();
-  std::ostringstream out;
-  // const std::string todo = "NOT yet implemented";
-  out << "BEGIN_SELECTED_FIELD_HEADER" << std::endl;
-  out << "selected_field_version = 1.0" << std::endl;
-  out << "total_site[0] = " << total_site[0] << std::endl;
-  out << "total_site[1] = " << total_site[1] << std::endl;
-  out << "total_site[2] = " << total_site[2] << std::endl;
-  out << "total_site[3] = " << total_site[3] << std::endl;
-  out << "n_per_tslice = " << n_per_tslice << std::endl;
-  out << "multiplicity = " << geo.multiplicity << std::endl;
-  out << "sizeof(M) = " << sizeof_M << std::endl;
-  out << ssprintf("selected_field_crc32 = %08X", crc32) << std::endl;
-  out << "END_HEADER" << std::endl;
-  return out.str();
 }
 
 template <class M>
@@ -337,47 +450,6 @@ long write_selected_field(const SelectedField<M>& sf, const std::string& path,
       fsel.n_per_tslice * total_site[3] * geo.multiplicity * sizeof(M);
   timer.flops += total_bytes;
   return total_bytes;
-}
-
-inline long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
-                                   long& n_per_tslice, int& sizeof_M,
-                                   crc32_t& crc, const std::string& path)
-{
-  TIMER("read_selected_geo_info");
-  long pos = 0;
-  if (get_id_node() == 0) {
-    QFile fp = qfopen(path, "r");
-    if (not fp.null()) {
-      const std::string header = "BEGIN_SELECTED_FIELD_HEADER\n";
-      std::vector<char> check_line(header.size(), 0);
-      if (1 == qfread(check_line.data(), header.size(), 1, fp)) {
-        if (std::string(check_line.data(), check_line.size()) == header) {
-          std::vector<std::string> infos;
-          infos.push_back(header);
-          while (infos.back() != "END_HEADER\n" && infos.back() != "") {
-            infos.push_back(qgetline(fp));
-          }
-          for (int m = 0; m < 4; ++m) {
-            reads(total_site[m],
-                  info_get_prop(infos, ssprintf("total_site[%d] = ", m)));
-          }
-          reads(multiplicity, info_get_prop(infos, "multiplicity = "));
-          reads(n_per_tslice, info_get_prop(infos, "n_per_tslice = "));
-          reads(sizeof_M, info_get_prop(infos, "sizeof(M) = "));
-          crc = read_crc32(info_get_prop(infos, "selected_field_crc32 = "));
-        }
-      }
-      pos = qftell(fp);
-    }
-    qfclose(fp);
-  }
-  bcast(get_data_one_elem(pos));
-  bcast(get_data_one_elem(total_site));
-  bcast(get_data_one_elem(multiplicity));
-  bcast(get_data_one_elem(n_per_tslice));
-  bcast(get_data_one_elem(sizeof_M));
-  bcast(get_data_one_elem(crc));
-  return pos;
 }
 
 template <class M>
@@ -540,57 +612,6 @@ long read_selected_field_double(SelectedField<M>& sf, const std::string& path,
   }
 }
 
-template <class M, class N>
-void convert_field_float_from_double(SelectedField<N>& ff,
-                                     const SelectedField<M>& f)
-// interface_function
-{
-  TIMER("convert_field_float_from_double(sf)");
-  qassert(f.geo().is_only_local);
-  qassert(sizeof(M) % sizeof(double) == 0);
-  qassert(sizeof(N) % sizeof(float) == 0);
-  qassert(f.geo().multiplicity * sizeof(M) / 2 % sizeof(N) == 0);
-  const int multiplicity = f.geo().multiplicity * sizeof(M) / 2 / sizeof(N);
-  const Geometry geo = geo_remult(f.geo(), multiplicity);
-  const long n_elems = f.n_elems;
-  ff.init(geo, n_elems, multiplicity);
-  const Vector<M> fdata = get_data(f);
-  const Vector<double> fd((double*)fdata.data(),
-                          fdata.data_size() / sizeof(double));
-  Vector<N> ffdata = get_data(ff);
-  Vector<float> ffd((float*)ffdata.data(), ffdata.data_size() / sizeof(float));
-  qassert(ffd.size() == fd.size());
-  qacc_for(i, ffd.size(), {
-    ffd[i] = fd[i];
-  });
-}
-
-template <class M, class N>
-void convert_field_double_from_float(SelectedField<N>& ff,
-                                     const SelectedField<M>& f)
-// interface_function
-{
-  TIMER("convert_field_double_from_float(sf)");
-  qassert(f.geo().is_only_local);
-  qassert(sizeof(M) % sizeof(float) == 0);
-  qassert(sizeof(N) % sizeof(double) == 0);
-  qassert(f.geo().multiplicity * sizeof(M) * 2 % sizeof(N) == 0);
-  const int multiplicity = f.geo().multiplicity * sizeof(M) * 2 / sizeof(N);
-  const Geometry geo = geo_remult(f.geo(), multiplicity);
-  const long n_elems = f.n_elems;
-  ff.init(geo, n_elems, multiplicity);
-  const Vector<M> fdata = get_data(f);
-  const Vector<float> fd((float*)fdata.data(),
-                         fdata.data_size() / sizeof(float));
-  Vector<N> ffdata = get_data(ff);
-  Vector<double> ffd((double*)ffdata.data(),
-                     ffdata.data_size() / sizeof(double));
-  qassert(ffd.size() == fd.size());
-  qacc_for(i, ffd.size(), {
-    ffd[i] = fd[i];
-  });
-}
-
 template <class M>
 long write_selected_field_float_from_double(
     const SelectedField<M>& f, const std::string& path,
@@ -621,27 +642,6 @@ long read_selected_field_double_from_float(
     timer.flops += total_bytes;
     return total_bytes;
   }
-}
-
-inline bool is_selected_field(const std::string& path)
-{
-  TIMER("is_selected_field");
-  long nfile = 0;
-  if (get_id_node() == 0) {
-    QFile fp = qfopen(path, "r");
-    if (not fp.null()) {
-      const std::string header = "BEGIN_SELECTED_FIELD_HEADER\n";
-      std::vector<char> check_line(header.size(), 0);
-      if (1 == qfread(check_line.data(), header.size(), 1, fp)) {
-        if (std::string(check_line.data(), check_line.size()) == header) {
-          nfile = 1;
-        }
-      }
-    }
-    qfclose(fp);
-  }
-  bcast(get_data(nfile));
-  return nfile > 0;
 }
 
 template <class M>
