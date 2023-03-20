@@ -527,7 +527,11 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   fn = std::string(fnv.data(), tag_len - 1);
   //
   if (has(fr.offsets_map, fn)) {
-    qassert(fr.offsets_map[fn] == offset_initial);
+    if (fr.offsets_map[fn] != offset_initial) {
+      displayln(ssprintf("fn='%s' appeared twice! %ld %ld", fn.c_str(),
+                         fr.offsets_map[fn], offset_initial));
+      qassert(false);
+    }
   } else {
     fr.fn_list.push_back(fn);
     fr.offsets_map[fn] = offset_initial;
