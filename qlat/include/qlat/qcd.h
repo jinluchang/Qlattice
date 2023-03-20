@@ -6,10 +6,6 @@
 #include <qlat-utils/matrix-hmc.h>
 #include <qlat-utils/matrix.h>
 
-#ifndef QLAT_FFTW_OFF
-#include <qlat/field-fft.h>
-#endif
-
 #include <qlat/field-expand.h>
 #include <qlat/fields-io.h>
 

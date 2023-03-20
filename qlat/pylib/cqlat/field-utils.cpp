@@ -1,4 +1,5 @@
 #include "lib.h"
+
 #include <qlat/vector_utils/utils_FFT_GPU.h>
 
 namespace qlat

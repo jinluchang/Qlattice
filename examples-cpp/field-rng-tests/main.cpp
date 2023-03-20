@@ -30,8 +30,6 @@ void test1()
   RngState rs(seed);
   split_rng_state(rs, rs, type);
   split_rng_state(rs, rs, traj);
-  RngField rf;
-  rf.init(geo, rs);
   FieldM<Complex, 1> af;
   FieldM<double, 1> sumf;
   FieldM<double, 1> sigma2f;
@@ -49,11 +47,13 @@ void test1()
     set_zero(sumf);
     set_zero(sigma2f);
     for (long index = 0; index < geo.local_volume(); ++index) {
-      Coordinate x = geo.coordinate_from_index(index);
+      const Coordinate xl = geo.coordinate_from_index(index);
+      const Coordinate xg = geo.coordinate_g_from_l(xl);
+      const long gindex = geo.g_index_from_g_coordinate(xg);
       Coordinate xh;
-      coordinateHalf(xh, x);
-      RngState& rs = rf.get_elem(x);
-      af.get_elem(xh) += polar(1.0, u_rand_gen(rs, PI, -PI));
+      coordinateHalf(xh, xl);
+      RngState rs0 = rs.split(ssprintf("%ld %ld", gindex, traj));
+      af.get_elem(xh) += polar(1.0, u_rand_gen(rs0, PI, -PI));
     }
     for (long index = 0; index < geoHalf.local_volume(); ++index) {
       Coordinate x = geoHalf.coordinate_from_index(index);

@@ -18,7 +18,6 @@
 #include <qlat/field-dist-io.h>
 #include <qlat/field-expand.h>
 #include <qlat/field-fft.h>
-#include <qlat/field-rng.h>
 #include <qlat/field-serial-io.h>
 #include <qlat/field.h>
 #include <qlat-utils/matrix.h>

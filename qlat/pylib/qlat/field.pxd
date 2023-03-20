@@ -1,7 +1,7 @@
 from qlat_utils.everything cimport *
 from .geometry cimport *
 
-cdef extern from "qlat/field-utils.h" namespace "qlat":
+cdef extern from "qlat/field.h" namespace "qlat":
 
     cdef cppclass Field[T]:
         Field()

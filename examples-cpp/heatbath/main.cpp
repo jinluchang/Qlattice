@@ -1,4 +1,5 @@
 #include <qlat/qlat.h>
+#include <qlat/field-rng.h>
 
 #include "qlat-setup.h"
 

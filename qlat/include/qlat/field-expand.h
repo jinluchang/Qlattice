@@ -2,9 +2,7 @@
 
 #pragma once
 
-#include <qlat/setup.h>
 #include <qlat/field.h>
-#include <qlat/mpi.h>
 
 #include <map>
 #include <set>
@@ -202,8 +200,8 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
     }
   }
   //
-  vector<long> src_id_node_count(
-      get_num_node(), 0);  // number of total send pkgs for each node
+  vector<long> src_id_node_count(get_num_node(),
+                                 0);  // number of total send pkgs for each node
   {
     long count = 0;
     for (std::map<int, std::vector<long> >::const_iterator it =
@@ -235,7 +233,7 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
       for (int i = 0; i < (int)ret.send_msg_infos.size(); ++i) {
         CommMsgInfo& cmi = ret.send_msg_infos[i];
         mpi_irecv(&cmi, sizeof(CommMsgInfo), MPI_BYTE, MPI_ANY_SOURCE, mpi_tag,
-                 get_comm(), reqs);
+                  get_comm(), reqs);
       }
       int k = 0;
       for (std::map<int, std::vector<long> >::const_iterator it =
