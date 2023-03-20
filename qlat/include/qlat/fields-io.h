@@ -528,9 +528,10 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   //
   if (has(fr.offsets_map, fn)) {
     if (fr.offsets_map[fn] != offset_initial) {
-      displayln(ssprintf("fn='%s' appeared twice! %ld %ld", fn.c_str(),
-                         fr.offsets_map[fn], offset_initial));
-      qassert(false);
+      qwarn(ssprintf("fn='%s' appeared twice! %ld %ld", fn.c_str(),
+                     fr.offsets_map[fn], offset_initial));
+      fr.is_read_through = true;
+      return false;
     }
   } else {
     fr.fn_list.push_back(fn);
