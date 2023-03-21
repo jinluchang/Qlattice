@@ -69,16 +69,6 @@ long write_field_selection(const FieldSelection& fsel, const std::string& path);
 long read_field_selection(FieldSelection& fsel, const std::string& path,
                           const long n_per_tslice);
 
-std::string make_selected_field_header(const Geometry& geo,
-                                       const long n_per_tslice,
-                                       const int sizeof_M, const crc32_t crc32);
-
-long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
-                            long& n_per_tslice, int& sizeof_M, crc32_t& crc,
-                            const std::string& path);
-
-bool is_selected_field(const std::string& path);
-
 // ---------------------------------------
 
 template <class M, class N>
@@ -575,62 +565,6 @@ void convert_field_double_from_float(SelectedField<N>& ff,
   qacc_for(i, ffd.size(), {
     ffd[i] = fd[i];
   });
-}
-
-// old code
-
-template <class M>
-void set_selected_field_slow(SelectedField<M>& sf, const Field<M>& f,
-                             const FieldSelection& fsel)
-{
-  TIMER("set_selected_field_slow");
-  qassert(f.geo().is_only_local);
-  qassert(fsel.f_local_idx.geo().is_only_local);
-  qassert(geo_remult(f.geo()) == fsel.f_local_idx.geo());
-  const Geometry& geo = f.geo();
-  const int multiplicity = geo.multiplicity;
-  sf.init(fsel, multiplicity);
-  const FieldM<long, 1>& f_local_idx = fsel.f_local_idx;
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
-    const long idx = f_local_idx.get_elems_const(index)[0];
-    if (idx >= 0) {
-      qassert(idx < fsel.n_elems);
-      const long offset = idx * multiplicity;
-      const Vector<M> fv = f.get_elems_const(index);
-      for (int m = 0; m < multiplicity; ++m) {
-        sf.field[offset + m] = fv[m];
-      }
-    }
-  }
-}
-
-template <class M>
-void set_field_selected_slow(Field<M>& f, const SelectedField<M>& sf,
-                             const FieldSelection& fsel)
-{
-  TIMER("set_field_selected_slow");
-  qassert(sf.geo().is_only_local);
-  qassert(fsel.f_local_idx.geo().is_only_local);
-  qassert(geo_remult(sf.geo()) == fsel.f_local_idx.geo());
-  const Geometry& geo = sf.geo();
-  f.init();
-  f.init(sf.geo());
-  set_zero(f);
-  const int multiplicity = geo.multiplicity;
-  const FieldM<long, 1>& f_local_idx = fsel.f_local_idx;
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
-    const long idx = f_local_idx.get_elems_const(index)[0];
-    if (idx >= 0) {
-      qassert(idx < fsel.n_elems);
-      const long offset = idx * multiplicity;
-      Vector<M> fv = f.get_elems(index);
-      for (int m = 0; m < multiplicity; ++m) {
-        fv[m] = sf.field[offset + m];
-      }
-    }
-  }
 }
 
 }  // namespace qlat

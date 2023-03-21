@@ -6,6 +6,18 @@
 namespace qlat
 {  //
 
+std::string make_selected_field_header(const Geometry& geo,
+                                       const long n_per_tslice,
+                                       const int sizeof_M, const crc32_t crc32);
+
+long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
+                            long& n_per_tslice, int& sizeof_M, crc32_t& crc,
+                            const std::string& path);
+
+bool is_selected_field(const std::string& path);
+
+// ---------------------------------------
+
 template <class M>
 crc32_t field_crc32(const SelectedField<M>& sf, const FieldSelection& fsel,
                     const Coordinate& new_size_node_ = Coordinate())
