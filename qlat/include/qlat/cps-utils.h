@@ -205,8 +205,7 @@ inline bool notnan(const GridComm<M>& gc)
   return true;
 }
 
-class Coordinate
-{
+struct Coordinate {
  public:
   int x[4];
   //
