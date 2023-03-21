@@ -21,15 +21,13 @@
 // File format should be compatible with Christoph Lehner's file format.
 
 #include <errno.h>
+#include <qlat-utils/qar-cache.h>
 #include <qlat/field-dist-io.h>
 #include <qlat/selected-field.h>
 #include <qlat/selected-points.h>
-#include <qlat-utils/qar-cache.h>
 
 namespace qlat
 {  //
-
-void close_all_shuffled_fields_writer();
 
 // ---------------------------------------------------
 
@@ -124,11 +122,7 @@ std::vector<char> bitset_decompress(const std::vector<char>& data,
 BitSet mk_bitset_from_field_rank(const FieldM<int64_t, 1>& f_rank,
                                  const int64_t n_per_tslice = -1);
 
-void fields_writer_dirs_geon_info(const GeometryNode& geon,
-                                  const std::string& path,
-                                  const mode_t mode = default_dir_mode());
-
-Coordinate shuffled_fields_reader_size_node_info(const std::string& path);
+// ---------------------------------------------------
 
 struct API FieldsWriter {
   //
@@ -169,6 +163,12 @@ struct API FieldsReader {
   //
   void close() { qfclose(qfile); }
 };
+
+void fields_writer_dirs_geon_info(const GeometryNode& geon,
+                                  const std::string& path,
+                                  const mode_t mode = default_dir_mode());
+
+Coordinate shuffled_fields_reader_size_node_info(const std::string& path);
 
 void mkfile(FieldsReader& fr);
 
@@ -224,6 +224,8 @@ long read(FieldsReader& fr, const std::string& fn, Coordinate& total_site,
 long check_file(FieldsReader& fr, const std::string& fn);
 
 int flush(FieldsWriter& fw);
+
+// -----------------
 
 template <class M>
 long write(FieldsWriter& fw, const std::string& fn, const Field<M>& field)
@@ -486,6 +488,8 @@ API inline ShuffledFieldsWriterMap& get_all_shuffled_fields_writer()
 void add_shuffled_fields_writer(ShuffledFieldsWriter& sfw);
 
 void remove_shuffled_fields_writer(ShuffledFieldsWriter& sfw);
+
+void close_all_shuffled_fields_writer();
 
 typedef Cache<std::string, ShuffledFieldsReader> ShuffledFieldsReaderCache;
 
@@ -939,5 +943,129 @@ long read_field_double_from_float(SelectedField<M>& sf, const std::string& path,
 std::vector<std::string> list_fields(const std::string& path);
 
 bool does_file_exist_sync_node(const std::string& path, const std::string& fn);
+
+// --------------------
+
+#ifdef QLAT_INSTANTIATE_FIELDS_IO
+#define QLAT_EXTERN
+#else
+#define QLAT_EXTERN extern
+#endif
+
+#define QLAT_EXTERN_TEMPLATE(TYPENAME)                                         \
+                                                                               \
+  QLAT_EXTERN template std::vector<char> BitSet::compress(                     \
+      const Vector<TYPENAME>& src) const;                                      \
+                                                                               \
+  QLAT_EXTERN template std::vector<char> BitSet::compress_selected(            \
+      const Vector<TYPENAME>& src) const;                                      \
+                                                                               \
+  QLAT_EXTERN template long write(FieldsWriter& fw, const std::string& fn,     \
+                                  const Field<TYPENAME>& field);               \
+                                                                               \
+  QLAT_EXTERN template long write(FieldsWriter& fw, const std::string& fn,     \
+                                  const SelectedField<TYPENAME>& sf,           \
+                                  const BitSet& bs);                           \
+                                                                               \
+  QLAT_EXTERN template void set_field_from_data(                               \
+      Field<TYPENAME>& field, const GeometryNode& geon,                        \
+      const Coordinate& total_site, const std::vector<char>& data,             \
+      const bool is_sparse_field);                                             \
+                                                                               \
+  QLAT_EXTERN template void set_field_from_data(                               \
+      SelectedField<TYPENAME>& sf, FieldM<int64_t, 1>& f_rank,                 \
+      const std::vector<char>& data);                                          \
+                                                                               \
+  QLAT_EXTERN template void set_field_from_data(SelectedField<TYPENAME>& sf,   \
+                                                const std::vector<char>& data, \
+                                                const FieldSelection& fsel);   \
+                                                                               \
+  QLAT_EXTERN template long read(FieldsReader& fr, const std::string& fn,      \
+                                 Field<TYPENAME>& field);                      \
+                                                                               \
+  QLAT_EXTERN template long read(FieldsReader& fr, const std::string& fn,      \
+                                 SelectedField<TYPENAME>& sf,                  \
+                                 FieldM<int64_t, 1>& f_rank);                  \
+                                                                               \
+  QLAT_EXTERN template long read(FieldsReader& fr, const std::string& fn,      \
+                                 const FieldSelection& fsel,                   \
+                                 SelectedField<TYPENAME>& sf);                 \
+                                                                               \
+  QLAT_EXTERN template long write(ShuffledFieldsWriter& sfw,                   \
+                                  const std::string& fn,                       \
+                                  const Field<TYPENAME>& field);               \
+                                                                               \
+  QLAT_EXTERN template long write(                                             \
+      ShuffledFieldsWriter& sfw, const std::string& fn,                        \
+      const SelectedField<TYPENAME>& sf, const ShuffledBitSet& sbs);           \
+                                                                               \
+  QLAT_EXTERN template long write(                                             \
+      ShuffledFieldsWriter& sfw, const std::string& fn,                        \
+      const Field<TYPENAME>& field, const ShuffledBitSet& sbs);                \
+                                                                               \
+  QLAT_EXTERN template void set_field_info_from_fields(                        \
+      Coordinate& total_site, int& multiplicity,                               \
+      std::vector<Field<TYPENAME> >& fs, const ShuffledFieldsReader& sfr);     \
+                                                                               \
+  QLAT_EXTERN template void set_field_info_from_fields(                        \
+      Coordinate& total_site, int& multiplicity,                               \
+      std::vector<SelectedField<TYPENAME> >& sfs,                              \
+      const ShuffledFieldsReader& sfr);                                        \
+                                                                               \
+  QLAT_EXTERN template long read(ShuffledFieldsReader& sfr,                    \
+                                 const std::string& fn,                        \
+                                 Field<TYPENAME>& field);                      \
+                                                                               \
+  QLAT_EXTERN template long read(                                              \
+      ShuffledFieldsReader& sfr, const std::string& fn,                        \
+      SelectedField<TYPENAME>& sf, FieldSelection& fsel);                      \
+                                                                               \
+  QLAT_EXTERN template long read(                                              \
+      ShuffledFieldsReader& sfr, const std::string& fn,                        \
+      const ShuffledBitSet& sbs, SelectedField<TYPENAME>& sf);                 \
+                                                                               \
+  QLAT_EXTERN template long write_float_from_double(                           \
+      ShuffledFieldsWriter& sfw, const std::string& fn,                        \
+      const Field<TYPENAME>& field);                                           \
+                                                                               \
+  QLAT_EXTERN template long write_float_from_double(                           \
+      ShuffledFieldsWriter& sfw, const std::string& fn,                        \
+      const SelectedField<TYPENAME>& sf, const ShuffledBitSet& sbs);           \
+                                                                               \
+  QLAT_EXTERN template long write_float_from_double(                           \
+      ShuffledFieldsWriter& sfw, const std::string& fn,                        \
+      const Field<TYPENAME>& field, const ShuffledBitSet& sbs);                \
+                                                                               \
+  QLAT_EXTERN template long read_double_from_float(ShuffledFieldsReader& sfr,  \
+                                                   const std::string& fn,      \
+                                                   Field<TYPENAME>& field);    \
+                                                                               \
+  QLAT_EXTERN template long read_double_from_float(                            \
+      ShuffledFieldsReader& sfr, const std::string& fn,                        \
+      SelectedField<TYPENAME>& sf, FieldSelection& fsel);                      \
+                                                                               \
+  QLAT_EXTERN template long read_double_from_float(                            \
+      ShuffledFieldsReader& sfr, const std::string& fn,                        \
+      const ShuffledBitSet& sbs, SelectedField<TYPENAME>& sf);                 \
+                                                                               \
+  QLAT_EXTERN template long read_field(                                        \
+      Field<TYPENAME>& field, const std::string& path, const std::string& fn); \
+                                                                               \
+  QLAT_EXTERN template long read_field(                                        \
+      SelectedField<TYPENAME>& sf, const std::string& path,                    \
+      const std::string& fn, const ShuffledBitSet& sbs);                       \
+                                                                               \
+  QLAT_EXTERN template long read_field_double_from_float(                      \
+      Field<TYPENAME>& field, const std::string& path, const std::string& fn); \
+                                                                               \
+  QLAT_EXTERN template long read_field_double_from_float(                      \
+      SelectedField<TYPENAME>& sf, const std::string& path,                    \
+      const std::string& fn, const ShuffledBitSet& sbs)
+
+QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
+
+#undef QLAT_EXTERN
+#undef QLAT_EXTERN_TEMPLATE
+#undef QLAT_EXTERN_CLASS
 
 }  // namespace qlat

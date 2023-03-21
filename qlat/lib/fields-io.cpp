@@ -1,3 +1,5 @@
+#define QLAT_INSTANTIATE_FIELDS_IO
+
 #include <qlat/fields-io.h>
 
 namespace qlat

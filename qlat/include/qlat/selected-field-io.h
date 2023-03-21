@@ -6,57 +6,6 @@
 namespace qlat
 {  //
 
-template <class M, class N>
-void convert_field_float_from_double(SelectedField<N>& ff,
-                                     const SelectedField<M>& f)
-// interface_function
-{
-  TIMER("convert_field_float_from_double(sf)");
-  qassert(f.geo().is_only_local);
-  qassert(sizeof(M) % sizeof(double) == 0);
-  qassert(sizeof(N) % sizeof(float) == 0);
-  qassert(f.geo().multiplicity * sizeof(M) / 2 % sizeof(N) == 0);
-  const int multiplicity = f.geo().multiplicity * sizeof(M) / 2 / sizeof(N);
-  const Geometry geo = geo_remult(f.geo(), multiplicity);
-  const long n_elems = f.n_elems;
-  ff.init(geo, n_elems, multiplicity);
-  const Vector<M> fdata = get_data(f);
-  const Vector<double> fd((double*)fdata.data(),
-                          fdata.data_size() / sizeof(double));
-  Vector<N> ffdata = get_data(ff);
-  Vector<float> ffd((float*)ffdata.data(), ffdata.data_size() / sizeof(float));
-  qassert(ffd.size() == fd.size());
-  qacc_for(i, ffd.size(), {
-    ffd[i] = fd[i];
-  });
-}
-
-template <class M, class N>
-void convert_field_double_from_float(SelectedField<N>& ff,
-                                     const SelectedField<M>& f)
-// interface_function
-{
-  TIMER("convert_field_double_from_float(sf)");
-  qassert(f.geo().is_only_local);
-  qassert(sizeof(M) % sizeof(float) == 0);
-  qassert(sizeof(N) % sizeof(double) == 0);
-  qassert(f.geo().multiplicity * sizeof(M) * 2 % sizeof(N) == 0);
-  const int multiplicity = f.geo().multiplicity * sizeof(M) * 2 / sizeof(N);
-  const Geometry geo = geo_remult(f.geo(), multiplicity);
-  const long n_elems = f.n_elems;
-  ff.init(geo, n_elems, multiplicity);
-  const Vector<M> fdata = get_data(f);
-  const Vector<float> fd((float*)fdata.data(),
-                         fdata.data_size() / sizeof(float));
-  Vector<N> ffdata = get_data(ff);
-  Vector<double> ffd((double*)ffdata.data(),
-                     ffdata.data_size() / sizeof(double));
-  qassert(ffd.size() == fd.size());
-  qacc_for(i, ffd.size(), {
-    ffd[i] = fd[i];
-  });
-}
-
 template <class M>
 crc32_t field_crc32(const SelectedField<M>& sf, const FieldSelection& fsel,
                     const Coordinate& new_size_node_ = Coordinate())
