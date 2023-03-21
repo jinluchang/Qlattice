@@ -29,6 +29,10 @@
 namespace qlat
 {  //
 
+void close_all_shuffled_fields_writer();
+
+// ---------------------------------------------------
+
 struct API BitSet {
   std::vector<unsigned char> bytes;
   size_t N; // number of uncompressed elements

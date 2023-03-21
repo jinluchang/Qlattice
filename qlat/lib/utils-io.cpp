@@ -60,22 +60,6 @@ bool obtain_lock(const std::string& path)
   }
 }
 
-void close_all_shuffled_fields_writer()
-// Force close all the ShuffledFieldsWriter.
-// Only call this when quitting the program (e.g. in qquit(msg)).
-{
-  TIMER_VERBOSE("close_all_shuffled_fields_writer");
-  ShuffledFieldsWriterMap& sfwm = get_all_shuffled_fields_writer();
-  std::vector<Handle<ShuffledFieldsWriter> > sfwv;
-  for (auto it = sfwm.begin(); it != sfwm.end(); ++it) {
-    sfwv.push_back(it->second);
-  }
-  for (long i = 0; i < (long)sfwv.size(); ++i) {
-    sfwv[i]().close();
-  }
-  qassert(sfwm.size() == 0);
-}
-
 void qquit(const std::string& msg)
 // everything needed for gracefully quit and then quit.
 {
@@ -335,5 +319,105 @@ LatData lat_data_load_info(const std::string& path)
   bcast(ld);
   return ld;
 }
+
+void check_sigterm()
+{
+  if (is_sigterm_received() > 0) {
+    qquit("because sigterm received.");
+  }
+}
+
+bool check_status()
+{
+  TIMER_VERBOSE("check_status");
+  displayln_info(fname + ssprintf(": ( get_actual_total_time() + "
+                                  "get_default_budget() ) / get_time_limit() "
+                                  "= ( %.2lf + %.2lf ) / %.2lf hours.",
+                                  get_actual_total_time() / 3600.0,
+                                  get_default_budget() / 3600.0,
+                                  get_time_limit() / 3600.0));
+  if (get_default_budget() + get_actual_total_time() > get_time_limit()) {
+    displayln_info(fname + ssprintf(": too little time left."));
+    return true;
+  }
+  if (is_sigterm_received() > 0) {
+    displayln_info(fname + ssprintf(": sigterm received."));
+    return true;
+  }
+  if (does_file_exist_sync_node("stop.txt")) {
+    displayln_info(fname + ssprintf(": File 'stop.txt' detected."));
+    return true;
+  }
+  return false;
+}
+
+bool obtain_lock_all_node(const std::string& path)
+{
+  TIMER_VERBOSE("obtain_lock_all_node");
+  const std::string path_time = path + "/time.txt";
+  const double expiration_time = get_actual_start_time() + get_time_limit();
+  displayln_info(fname +
+                 ssprintf(": Trying to obtain lock '%s'.", path.c_str()));
+  qassert(get_lock_location() == "");
+  if (0 == mkdir_lock_all_node(path)) {
+    qtouch(path_time, show(expiration_time) + "\n");
+    get_lock_location() = path;
+    displayln_info(fname + ssprintf(": Lock obtained '%s'.", path.c_str()));
+    return true;
+  } else if (does_file_exist(path_time)) {
+    long ret = 0;
+    double time;
+    reads(time, qcat(path_time));
+    if (get_time() - time > 0.0 && 0 == qremove(path_time)) {
+      ret = 1;
+      qtouch(path_time, show(expiration_time) + "\n");
+    }
+    if (ret > 0) {
+      get_lock_location() = path;
+      displayln_info(
+          fname +
+          ssprintf(": Lock obtained '%s' (old lock expired).", path.c_str()));
+      return true;
+    } else {
+      displayln_info(fname +
+                     ssprintf(": Failed to obtain '%s'.", path.c_str()));
+      return false;
+    }
+  } else {
+    displayln_info(fname +
+                   ssprintf(": Failed to obtain '%s' (no creation time info).",
+                            path.c_str()));
+    return false;
+  }
+}
+
+void release_lock_all_node()
+{
+  TIMER_VERBOSE("release_lock_all_node");
+  std::string& path = get_lock_location();
+  const std::string path_time = path + "/time.txt";
+  displayln_info(fname + ssprintf(": Release lock '%s'", path.c_str()));
+  if (path != "") {
+    qremove(path_time);
+    rmdir_lock_all_node(path);
+    path = "";
+  }
+}
+
+// double& get_lock_expiration_time_limit()
+// // obsolete
+// {
+//   displayln_info(
+//       "WARNING: do not use this function. get_lock_expiration_time_limit");
+//   return get_time_limit();
+// }
+// 
+// void set_lock_expiration_time_limit()
+// // obsolete
+// {
+//   TIMER_VERBOSE("set_lock_expiration_time_limit");
+//   displayln_info(
+//       "WARNING: do not use this function. set_lock_expiration_time_limit");
+// }
 
 }  // namespace qlat
