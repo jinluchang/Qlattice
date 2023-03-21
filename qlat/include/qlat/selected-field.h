@@ -31,11 +31,22 @@ void update_field_selection(FieldSelection& fsel);
 
 void update_field_selection(FieldSelection& fsel, const long n_per_tslice_);
 
+void set_grid_field_selection(FieldSelection& fsel,
+                              const Coordinate& total_site,
+                              const long n_per_tslice, const RngState& rs);
+
 void set_field_selection(FieldSelection& fsel, const FieldM<int64_t, 1>& f_rank,
                          const long n_per_tslice_ = 0,
                          const bool is_limit_on_rank = false);
 
 void set_field_selection(FieldSelection& fsel, const Coordinate& total_site);
+
+void set_field_selection(FieldSelection& fsel, const Coordinate& total_site,
+                         const long n_per_tslice, const RngState& rs);
+
+void set_field_selection(FieldSelection& fsel, const Coordinate& total_site,
+                         const long n_per_tslice, const RngState& rs,
+                         const PointSelection& psel);
 
 bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2);
 
@@ -44,6 +55,31 @@ PointSelection psel_from_fsel(const FieldSelection& fsel);
 PointSelection psel_from_fsel_local(const FieldSelection& fsel);
 
 void set_selected_gindex(SelectedField<long>& sfgi, const FieldSelection& fsel);
+
+void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
+                             const Coordinate& total_site,
+                             const long n_per_tslice_, const RngState& rs);
+
+void mk_field_selection(FieldM<int64_t, 1>& f_rank,
+                        const Coordinate& total_site, const long n_per_tslice,
+                        const RngState& rs);
+
+long write_field_selection(const FieldSelection& fsel, const std::string& path);
+
+long read_field_selection(FieldSelection& fsel, const std::string& path,
+                          const long n_per_tslice);
+
+std::string make_selected_field_header(const Geometry& geo,
+                                       const long n_per_tslice,
+                                       const int sizeof_M, const crc32_t crc32);
+
+long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
+                            long& n_per_tslice, int& sizeof_M, crc32_t& crc,
+                            const std::string& path);
+
+bool is_selected_field(const std::string& path);
+
+// ---------------------------------------
 
 template <class M, class N>
 SelectedField<M>& qcast(SelectedField<N>& x)
