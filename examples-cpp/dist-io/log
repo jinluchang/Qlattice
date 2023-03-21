@@ -2099,6 +2099,8 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = 83E8BA4C after reflect twice
 CHECK: finished successfully.
+Cache: 'ShufflePlanCache': 8 / 16 [8] clear
+Cache: 'CommPlanCache': 2 / 32 [16] clear
 Cache: 'FftComplexFieldPlanCache': 8 / 32 [16] clear
 FftComplexFieldPlan::end(): free a plan.
 FftComplexFieldPlan::end(): free a plan.
@@ -2108,8 +2110,6 @@ FftComplexFieldPlan::end(): free a plan.
 FftComplexFieldPlan::end(): free a plan.
 FftComplexFieldPlan::end(): free a plan.
 FftComplexFieldPlan::end(): free a plan.
-Cache: 'CommPlanCache': 2 / 32 [16] clear
-Cache: 'ShufflePlanCache': 8 / 16 [8] clear
 Cache: 'IsDirectoryCache': 1 / 1024 [128] clear
 clear_mem_cache: 19945984 bytes (0.019 GB) freed.
 qlat::end(): get_comm_list().pop_back()
