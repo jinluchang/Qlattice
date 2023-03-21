@@ -1,6 +1,6 @@
 #pragma once
 
-#include <qlat/setup.h>
+#include <qlat/core.h>
 
 namespace qlat
 {  //

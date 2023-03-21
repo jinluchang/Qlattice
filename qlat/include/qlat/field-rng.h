@@ -1,6 +1,5 @@
 #pragma once
 
-#include <qlat/setup.h>
 #include <qlat/field.h>
 
 namespace qlat

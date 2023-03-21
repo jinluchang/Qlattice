@@ -34,6 +34,5 @@
 #include <qlat/selected-field-io.h>
 #include <qlat/selected-field.h>
 #include <qlat/selected-points.h>
-#include <qlat/setup.h>
 #include <qlat/utils-coordinate.h>
 #include <qlat/utils-io.h>

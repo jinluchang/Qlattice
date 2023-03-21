@@ -1,12 +1,10 @@
 #pragma once
 
-#include <qlat/setup.h>
-#include <qlat/field-serial-io.h>
-#include <qlat/field.h>
 #include <qlat-utils/matrix-hmc.h>
 #include <qlat-utils/matrix.h>
-
 #include <qlat/field-expand.h>
+#include <qlat/field-serial-io.h>
+#include <qlat/field.h>
 #include <qlat/fields-io.h>
 
 #include <cmath>

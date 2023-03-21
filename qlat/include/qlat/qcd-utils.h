@@ -1,6 +1,5 @@
 #pragma once
 
-#include <qlat/setup.h>
 #include <qlat/coordinate-d.h>
 #include <qlat/qcd.h>
 

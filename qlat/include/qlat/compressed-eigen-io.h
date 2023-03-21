@@ -13,15 +13,15 @@
  */
 
 #include <qlat-utils/cache.h>
-#include <qlat/setup.h>
+#include <qlat-utils/matrix.h>
+#include <qlat-utils/mvector.h>
+#include <qlat/core.h>
 #include <qlat/fermion-action.h>
 #include <qlat/field-dist-io.h>
 #include <qlat/field-expand.h>
 #include <qlat/field-fft.h>
 #include <qlat/field-serial-io.h>
 #include <qlat/field.h>
-#include <qlat-utils/matrix.h>
-#include <qlat-utils/mvector.h>
 #include <qlat/mpi.h>
 #include <qlat/qcd-gauge-transformation.h>
 #include <qlat/qcd-smear.h>

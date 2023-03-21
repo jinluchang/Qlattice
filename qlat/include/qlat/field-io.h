@@ -1,13 +1,11 @@
 #pragma once
 
-#include <qlat/setup.h>
+#include <qlat/core.h>
 #include <qlat/geometry.h>
 #include <qlat/mpi.h>
-
-
 #include <stdio.h>
-#include <ctime>
 
+#include <ctime>
 #include <fstream>
 #include <iostream>
 

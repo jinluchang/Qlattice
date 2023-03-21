@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include <qlat/setup.h>
 #include <qlat/field-shuffle.h>
 #include <qlat/utils-io.h>
 

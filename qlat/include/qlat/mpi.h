@@ -1,10 +1,9 @@
 #pragma once
 
-#include <qlat/setup.h>
-#include <qlat/utils-coordinate.h>
-
 #include <qlat-utils/cache.h>
 #include <qlat-utils/lat-io.h>
+#include <qlat/core.h>
+#include <qlat/utils-coordinate.h>
 
 #ifndef QLAT_NO_MALLOPT
 #include <malloc.h>
