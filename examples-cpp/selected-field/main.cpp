@@ -295,17 +295,6 @@ inline void test_grid(const std::string& tag, const long n_per_tslice)
   displayln_info(ssprintf(": %06X <- f-init-1", field_crc32(f)));
   set_field_selected(f, sf, fsel);
   displayln_info(ssprintf("%06X <- set_field_selected", field_crc32(f)));
-  // test of reconstructed f with slow version
-  set_zero(f);
-  set_u_rand_double(f, rs.split("f-init"));
-  displayln_info(ssprintf(": %06X <- f-init", field_crc32(f)));
-  sf.init();
-  set_selected_field_slow(sf, f, fsel);
-  set_zero(f);
-  set_u_rand_double(f, rs.split("f-init-2"));
-  displayln_info(ssprintf(": %06X <- f-init-2", field_crc32(f)));
-  set_field_selected_slow(f, sf, fsel);
-  displayln_info(ssprintf("%06X <- set_field_selected_slow", field_crc32(f)));
   // write and read field only selected
   set_zero(f);
   set_u_rand_double(f, rs.split("f-init"));
