@@ -273,8 +273,10 @@ def avg_err(data_list, eps = 1, *, block_size = 1):
     return (avg, err,)
 
 def jackknife(data_list, eps = 1):
-    """Return jk[i] = avg + \\frac{eps}{N} \\sum_{i=1}^N (v[i] - avg)
-    normal jackknife uses eps = 1, scale the fluctuation by eps"""
+    """
+    Return jk[i] = avg + \\frac{eps}{N} (v[i] - avg)
+    normal jackknife uses eps = 1, scale the fluctuation by eps
+    """
     data_list_real = [ d for d in data_list if d is not None ]
     n = len(data_list_real)
     fac = eps / n

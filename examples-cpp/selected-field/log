@@ -182,12 +182,6 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 32 
 : 67F565CB <- f-init-1
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 9B5AE427 <- set_field_selected
-shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-: 8B5110BA <- f-init
-shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-: A9CE10A1 <- f-init-2
-shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-9B5AE427 <- set_field_selected_slow
 write_field: fn='huge-data/16/free-4nt8-init.field'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 Cache: 'IsDirectoryCache': 3 / 1024 [128] clear
@@ -478,12 +472,6 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 32 
 : 67F565CB <- f-init-1
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 8B5110BA <- set_field_selected
-shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-: 8B5110BA <- f-init
-shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-: A9CE10A1 <- f-init-2
-shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-8B5110BA <- set_field_selected_slow
 write_field: fn='huge-data/all/free-4nt8-init.field'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 Cache: 'IsDirectoryCache': 3 / 1024 [128] clear
@@ -774,12 +762,6 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 32 
 : 67F565CB <- f-init-1
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 C8EB73C4 <- set_field_selected
-shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-: 8B5110BA <- f-init
-shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-: A9CE10A1 <- f-init-2
-shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-C8EB73C4 <- set_field_selected_slow
 write_field: fn='huge-data/grid-16/free-4nt8-init.field'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 Cache: 'IsDirectoryCache': 3 / 1024 [128] clear
