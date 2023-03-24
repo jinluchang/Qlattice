@@ -48,7 +48,7 @@ The environment variables needed to use the library can be set with the followin
 
 `$ source DEST_DIRECTORY/setenv.sh`
 
-### Install on UCONN HPC
+## Install on UCONN HPC
 
 First, download dependencies downloaded to the `distfiles` directory.
 

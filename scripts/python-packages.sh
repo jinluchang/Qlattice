@@ -8,6 +8,10 @@ source qcore/set-prefix.sh $name
     echo "!!!! build $name !!!!"
     source qcore/conf.sh ..
 
+    if [ -z ${OPENBLAS+x} ] ; then
+        export OPENBLAS="$(pkg-config openblas --variable=libdir)"
+    fi
+
     if [ -z ${NPY_BLAS_ORDER+x} ] ; then
         export NPY_BLAS_ORDER=openblas
     fi
@@ -22,6 +26,11 @@ source qcore/set-prefix.sh $name
 
     find ~/.cache/pip/wheels -type f || true
     # rm -rfv ~/.cache/pip/wheels || true
+
+    echo OPENBLAS="$OPENBLAS"
+    echo NPY_BLAS_ORDER="$NPY_BLAS_ORDER"
+    echo NPY_LAPACK_ORDER="$NPY_LAPACK_ORDER"
+    echo NPY_NUM_BUILD_JOBS="$NPY_NUM_BUILD_JOBS"
 
     opts="--verbose --upgrade --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
