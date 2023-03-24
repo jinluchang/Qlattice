@@ -21,6 +21,7 @@ set -e
 ./scripts/openssl.sh
 ./scripts/libffi.sh
 ./scripts/openblas.sh
+./scripts/hdf5.sh
 ./scripts/python.sh
 ./scripts/python-pip.sh
 ./scripts/re2c.sh
@@ -43,7 +44,6 @@ set -e
 ./scripts/autoconf.sh
 ./scripts/automake.sh
 ./scripts/c-lime.sh
-./scripts/hdf5.sh
 ./scripts/grid-clehner.knl.sh
 ./scripts/gpt.sh
 ./scripts/qlat-grid.sh

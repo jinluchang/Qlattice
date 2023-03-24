@@ -24,6 +24,10 @@ source qcore/set-prefix.sh $name
         export NPY_NUM_BUILD_JOBS=$num_proc
     fi
 
+    if [ -z ${HDF5_DIR+x} ] ; then
+        export HDF5_DIR="$(find-library.sh libhdf5)"
+    fi
+
     find ~/.cache/pip/wheels -type f || true
     # rm -rfv ~/.cache/pip/wheels || true
 
@@ -41,6 +45,7 @@ source qcore/set-prefix.sh $name
     time-run pip3 install $opts pybind11
     time-run pip3 install $opts numpy
     time-run pip3 install $opts scipy
+    time-run pip3 install $opts h5py
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"

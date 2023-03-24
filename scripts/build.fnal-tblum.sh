@@ -21,7 +21,8 @@ export CXX=g++
 ./scripts/perl.sh
 ./scripts/openssl.sh
 ./scripts/libffi.sh
-./scripts/zlib.sh
+./scripts/openblas.sh
+./scripts/hdf5.sh
 ./scripts/python.sh
 ./scripts/python-packages.sh
 ./scripts/re2c.sh
@@ -38,7 +39,6 @@ export CXX=
 ./scripts/autoconf.sh
 ./scripts/automake.sh
 ./scripts/c-lime.sh
-./scripts/hdf5.sh
 ./scripts/qlat-header.sh
 
 export CC=CC.sh

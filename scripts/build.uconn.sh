@@ -19,6 +19,7 @@ set -e
 ./scripts/openssl.sh
 ./scripts/libffi.sh
 ./scripts/openblas.sh
+./scripts/hdf5.sh
 ./scripts/python.sh
 ./scripts/python-pip.sh
 ./scripts/re2c.sh
@@ -36,7 +37,6 @@ set -e
 ./scripts/qlat-examples-cpp.sh
 
 ./scripts/c-lime.sh
-./scripts/hdf5.sh
 ./scripts/gmp.sh
 ./scripts/mpfr.sh
 ./scripts/grid-clehner.avx2.sh
