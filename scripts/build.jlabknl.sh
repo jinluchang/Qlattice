@@ -34,7 +34,7 @@ set -e
 ./scripts/cuba.sh
 ./scripts/eigen.sh
 
-./scripts/fftw_mpi.sh
+./scripts/fftw.sh
 
 ./scripts/qlat.sh
 

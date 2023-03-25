@@ -33,9 +33,6 @@ set -e
 
 ./scripts/qlat.sh
 
-./scripts/qlat-examples-py.sh
-./scripts/qlat-examples-cpp.sh
-
 ./scripts/c-lime.sh
 ./scripts/gmp.sh
 ./scripts/mpfr.sh
@@ -44,6 +41,9 @@ set -e
 
 ./scripts/gpt.sh
 
+./scripts/qlat-examples-py.sh
+./scripts/qlat-examples-cpp.sh
 ./scripts/qlat-examples-py-gpt.sh
+./scripts/qlat-examples-cpp-grid.sh
 
 } 2>&1 | tee $prefix/log.build.txt

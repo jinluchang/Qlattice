@@ -36,13 +36,10 @@ set -e
 
 ./scripts/openmpi.sh
 
-./scripts/fftw_mpi.sh
+./scripts/fftw.sh
 ./scripts/cuba.sh
 ./scripts/eigen.sh
 ./scripts/qlat.sh
-
-./scripts/qlat-examples-py.sh
-./scripts/qlat-examples-cpp.sh
 
 ./scripts/autoconf.sh
 ./scripts/automake.sh
@@ -51,7 +48,10 @@ set -e
 ./scripts/gpt.sh
 ./scripts/qlat-grid.sh
 
+./scripts/qlat-examples-py.sh
+./scripts/qlat-examples-cpp.sh
 ./scripts/qlat-examples-py-gpt.sh
+./scripts/qlat-examples-cpp-grid.sh
 
 ./scripts/gnuplot.sh
 ./scripts/python-jupyter.sh

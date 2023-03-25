@@ -22,20 +22,20 @@ set -e
 ./scripts/python-meson-py.sh
 ./scripts/python-packages.sh
 
-./scripts/fftw_mpi.sh
+./scripts/fftw.sh
 ./scripts/cuba.sh
 ./scripts/eigen.sh
 
 ./scripts/qlat.sh
-
-./scripts/qlat-examples-py.sh
-./scripts/qlat-examples-cpp.sh
 
 ./scripts/c-lime.sh
 ./scripts/grid-clehner.avx2.sh
 ./scripts/gpt.sh
 ./scripts/qlat-grid.sh
 
+./scripts/qlat-examples-py.sh
+./scripts/qlat-examples-cpp.sh
 ./scripts/qlat-examples-py-gpt.sh
+./scripts/qlat-examples-cpp-grid.sh
 
 } 2>&1 | tee $prefix/log.build.txt
