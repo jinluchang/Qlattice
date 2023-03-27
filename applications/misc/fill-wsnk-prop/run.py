@@ -181,7 +181,7 @@ size_node_list = [
         [1, 1, 1, 8],
         ]
 
-q.begin(sys.argv, size_node_list)
+q.begin_with_mpi(size_node_list)
 
 q.check_time_limit()
 
@@ -192,4 +192,4 @@ for job_tag in job_tags:
             continue
         run_job(job_tag, traj)
 
-q.end()
+q.end_with_mpi()

@@ -2,7 +2,7 @@
 
 ## Install on Ubuntu
 
-`$ sudo apt-get install -y cython3 patchelf ninja-build python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev`
+`$ sudo apt-get install -y cython3 patchelf ninja-build python3-mpi4py python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev`
 
 `$ pip3 install --user meson`
 
@@ -30,7 +30,7 @@ The environment variables needed to use the library can be set with the followin
 
 `$ brew install ninja patchelf llvm open-mpi eigen fftw gsl zlib openssl@3 mpfr autoconf automake flock findutils pkg-config`
 
-`$ pip3 install --user meson cython psutil sympy numpy scipy`
+`$ pip3 install --user meson cython psutil sympy numpy scipy mpi4py`
 
 `$ export prefix=DEST_DIRECTORY`
 

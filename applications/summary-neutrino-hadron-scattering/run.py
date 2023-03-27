@@ -168,7 +168,7 @@ size_node_list = [
     [1, 1, 1, 16],
     ]
 
-q.begin(sys.argv, size_node_list)
+q.begin_with_mpi(size_node_list)
 
 q.qmkdir_info("locks")
 q.qmkdir_info("results")
@@ -180,4 +180,4 @@ for job_tag in job_tags:
 
 q.timer_display()
 
-q.end()
+q.end_with_mpi()

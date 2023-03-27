@@ -1215,7 +1215,7 @@ size_node_list = [
         [8, 8, 8, 1],
         ]
 
-q.begin(sys.argv, size_node_list)
+q.begin_with_mpi(size_node_list)
 
 # ADJUST ME
 test()
@@ -1260,4 +1260,4 @@ q.timer_display()
 
 q.displayln_info("CHECK: finished successfully.")
 
-q.end()
+q.end_with_mpi()

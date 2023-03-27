@@ -565,7 +565,7 @@ size_node_list = [
         [8, 8, 8, 1],
         ]
 
-q.begin()
+q.begin_with_mpi()
 
 # ADJUST ME
 #q.qremove_all_info("cache")
@@ -589,4 +589,4 @@ for job_tag in job_tags:
     for traj in rup.dict_params[job_tag]["trajs"]:
         run_job(job_tag, traj)
 
-q.end()
+q.end_mpi()

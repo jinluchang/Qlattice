@@ -72,7 +72,7 @@ size_node_list = [
     [2, 2, 2, 2],
     [2, 2, 2, 4]]
 
-q.begin(sys.argv, size_node_list)
+q.begin_with_mpi(size_node_list)
 
 q.setup_log_idx()
 q.setup()
@@ -89,4 +89,4 @@ for job_tag in job_tags:
 
 q.timer_display()
 
-q.end()
+q.end_with_mpi()
