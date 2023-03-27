@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Ubuntu packages: libgsl-dev zlib1g-dev libssl-dev libeigen3-dev libopenmpi-dev libfftw3-dev libfftw3-mpi-dev libhdf5-dev libhdf5-mpi-dev  libmpfr-dev ninja-build libsqlite3-dev libgdbm-dev liblzma-dev libbz2-dev uuid-dev tk-dev libgeos-dev texlive-metapost libopenblas-dev
+# Ubuntu packages: libgsl-dev zlib1g-dev libssl-dev libeigen3-dev libopenmpi-dev libfftw3-dev libfftw3-mpi-dev libmpfr-dev ninja-build libsqlite3-dev libgdbm-dev liblzma-dev libbz2-dev uuid-dev tk-dev libgeos-dev texlive-metapost libopenblas-dev
 
 set -e
 
@@ -8,6 +8,8 @@ set -e
 
 ./scripts/setenv.default.sh
 ./scripts/qcore.sh
+
+./scripts/hdf5.sh
 
 ./scripts/python.sh
 ./scripts/python-pip.sh
