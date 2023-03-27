@@ -1,4 +1,5 @@
 cimport libcpp.complex
+from libcpp cimport bool
 from libc.stdint cimport uint64_t
 from libc.stdint cimport int64_t
 from libc.stdint cimport uint32_t

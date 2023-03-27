@@ -1,6 +1,6 @@
 #include "lib.h"
 
-EXPORT(begin, {
+EXPORT(cbegin, {
   // id_node, size_node, color = 0
   // sys.argv, node_size_list = []
   using namespace qlat;
@@ -51,7 +51,7 @@ EXPORT(begin, {
   Py_RETURN_NONE;
 })
 
-EXPORT(end, {
+EXPORT(cend, {
   using namespace qlat;
   bool is_preserving_cache = false;
   if (!PyArg_ParseTuple(args, "|b", &is_preserving_cache)) {
