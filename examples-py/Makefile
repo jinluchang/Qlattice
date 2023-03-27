@@ -46,7 +46,7 @@ update-sources:
 
 %.log: %.py
 	-rm -rf results output_data cache
-	-time ( q_verbose=1 mpirun --np 2 ./"$<" --mpi 1.1.1.2 --mpi_split 1.1.1.1 --mpi 1.1.2 --mpi_split 1.1.1 >"$@".full 2>&1 )
+	-time ( q_verbose=1 mpiexec -n 2 ./"$<" --mpi 1.1.1.2 --mpi_split 1.1.1.1 --mpi 1.1.2 --mpi_split 1.1.1 >"$@".full 2>&1 )
 	-grep "CHECK: " "$@".full >"$@".new
 	-if diff "$@".new "$@" ; then echo passed ; else cat "$@".full ; fi
 	-mv -v "$@".new "$@"
