@@ -18,7 +18,7 @@ def begin_with_gpt():
     size_node = grid.mpi
     coor_node = grid.processor_coor
     id_node = q.index_from_coordinate(coor_node, size_node)
-    q.begin(id_node, size_node)
+    q.begin(id_node, q.Coordinate(size_node))
 
 def end_with_gpt():
     q.end()
