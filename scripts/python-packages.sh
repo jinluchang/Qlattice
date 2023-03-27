@@ -38,6 +38,7 @@ source qcore/set-prefix.sh $name
 
     opts="--verbose --upgrade --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
+    time-run pip3 install $opts mpi4py
     time-run pip3 install $opts psutil
     time-run pip3 install $opts sympy
     time-run pip3 install $opts cython
