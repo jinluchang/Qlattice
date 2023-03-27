@@ -181,7 +181,7 @@ size_node_list = [
         (2, 2, 2, 2),
         (2, 2, 2, 4)]
 
-q.begin(sys.argv, size_node_list)
+q.begin_with_mpi(size_node_list)
 
 show_machine()
 
@@ -193,4 +193,4 @@ q.timer_display()
 
 q.displayln_info(f"CHECK: finished successfully.")
 
-q.end()
+q.end_with_mpi()

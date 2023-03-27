@@ -2,10 +2,10 @@
 
 import qlat as q
 
-q.begin()
+q.begin_with_mpi()
 
 q.show_machine()
 
 q.displayln_info(f"CHECK: finished successfully.")
 
-q.end()
+q.end_with_mpi()

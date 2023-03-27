@@ -4,7 +4,7 @@ import qlat as q
 import os
 import numpy as np
 
-q.begin()
+q.begin_with_mpi()
 
 q.qremove_all_info("results")
 q.qmkdir_info("results")
@@ -142,4 +142,4 @@ q.timer_display()
 
 q.displayln_info(f"CHECK: finished successfully.")
 
-q.end()
+q.end_with_mpi()
