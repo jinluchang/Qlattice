@@ -286,7 +286,7 @@ def jackknife(data_list, eps = 1):
         if data is None:
             jks.append(avg)
         else:
-            jks.append(avg + fac * (data - avg))
+            jks.append(avg - fac * (data - avg))
     return jks
 
 def fsqr(data):
