@@ -875,7 +875,7 @@ QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 
 #define QLAT_EXTERN_TEMPLATE_2(TYPENAME1, TYPENAME2)    \
   QLAT_EXTERN template void assign(Field<TYPENAME1>& f, \
-                                   const Field<TYPENAME2>& f1);
+                                   const Field<TYPENAME2>& f1)
 
 QLAT_CALL_WITH_TYPES_2(QLAT_EXTERN_TEMPLATE_2);
 
