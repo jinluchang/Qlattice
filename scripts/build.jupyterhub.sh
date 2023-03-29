@@ -22,7 +22,7 @@ set -e
 ./scripts/cuba.sh
 ./scripts/eigen.sh
 
-( source qcore/set-prefix.sh . ; source qcore/conf.sh . ; pip3 install -v qlat )
+( source qcore/set-prefix.sh ; source qcore/conf.sh . ; pip3 install -v qlat )
 
 ./scripts/qlat-examples-py.sh
 ./scripts/qlat-examples-cpp.sh
@@ -31,7 +31,7 @@ set -e
 ./scripts/grid-clehner.avx2.sh
 ./scripts/gpt.sh
 
-( source qcore/set-prefix.sh . ; source qcore/conf.sh . ; pip3 install -v qlat-grid )
+( source qcore/set-prefix.sh ; source qcore/conf.sh . ; pip3 install -v qlat-grid )
 
 ./scripts/qlat-examples-py-gpt.sh
 

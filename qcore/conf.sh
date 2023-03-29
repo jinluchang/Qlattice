@@ -2,7 +2,10 @@
 
 # Usage:
 # source qcore/set-prefix.sh subdir
-# source qcore/conf.sh
+# source qcore/conf.sh ..
+
+# source qcore/set-prefix.sh
+# source qcore/conf.sh .
 
 # $prefix controls the installation directory
 # $wd will be set to the current directory which should be the root directory of the repository
