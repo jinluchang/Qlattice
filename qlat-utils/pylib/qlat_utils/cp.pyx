@@ -8,10 +8,10 @@ cimport numpy
 import numpy as np
 import functools
 
+include "timer.inc.pyx"
+
 include "elem_type.inc.pyx"
 
 include "buffer.inc.pyx"
-
-include "timer.inc.pyx"
 
 include "mat.inc.pyx"

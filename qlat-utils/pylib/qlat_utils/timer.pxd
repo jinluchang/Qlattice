@@ -7,6 +7,7 @@ cdef extern from "qlat-utils/timer.h" namespace "qlat":
     int get_num_node()
 
     long& verbose_level()
+    long get_verbose_level()
 
     double get_time()
     double& get_start_time()

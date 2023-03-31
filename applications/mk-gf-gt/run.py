@@ -15,8 +15,24 @@ from jobs import *
 
 load_path_list[:] = [
         "results",
+        "qcddata",
+        "qcddata-1",
+        "qcddata-2",
+        "qcddata-3",
+        "qcddata-4",
+        "qcddata-5",
         "../qcddata",
+        "../qcddata-1",
+        "../qcddata-2",
+        "../qcddata-3",
+        "../qcddata-4",
+        "../qcddata-5",
         os.path.join(os.getenv("HOME"), "qcddata"),
+        os.path.join(os.getenv("HOME"), "qcddata-1"),
+        os.path.join(os.getenv("HOME"), "qcddata-2"),
+        os.path.join(os.getenv("HOME"), "qcddata-3"),
+        os.path.join(os.getenv("HOME"), "qcddata-4"),
+        os.path.join(os.getenv("HOME"), "qcddata-5"),
         ]
 
 @q.timer_verbose

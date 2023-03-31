@@ -549,6 +549,24 @@ void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
   get_comm_internal() = get_comm_list().back().comm;
   set_global_geon(get_comm_list().back().size_node);
   sync_node();
+  displayln_info("=============================================================");
+  displayln_info("");
+  displayln_info("                       Qlattice                              ");
+  displayln_info("");
+  displayln_info("             Copyright (C) 2023 Luchang Jin                  ");
+  displayln_info("");
+  displayln_info(
+      "This program is free software; you can redistribute it and/or modify\n"
+      "it under the terms of the GNU General Public License as published by\n"
+      "the Free Software Foundation; either version 3 of the License, or\n"
+      "(at your option) any later version.\n"
+      "\n"
+      "This program is distributed in the hope that it will be useful,\n"
+      "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+      "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+      "GNU General Public License for more details.");
+  displayln_info("");
+  displayln_info("=============================================================");
   displayln_info(ssprintf(
       "qlat::begin_comm(comm,size_node): get_comm_list().push_back()"));
   displayln_info(

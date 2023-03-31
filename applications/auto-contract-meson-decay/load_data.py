@@ -665,7 +665,13 @@ def load_prop_rand_u1_fsel(job_tag, traj, flavor, *, psel, fsel, fselc):
 ### -------
 
 @q.timer_verbose
-def run_get_prop(job_tag, traj, *, get_gt, get_psel, get_fsel, get_psel_smear, get_wi, prop_types = None):
+def run_get_prop(job_tag, traj, *,
+                 get_gt,
+                 get_psel,
+                 get_fsel,
+                 get_wi,
+                 get_psel_smear,
+                 prop_types = None):
     if prop_types is None:
         # load psel before fsel if possible
         # load strange quark before light quark if possible

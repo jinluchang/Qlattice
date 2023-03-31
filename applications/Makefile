@@ -3,12 +3,12 @@ SHELL=/bin/bash
 target= \
 		mk-gf-gt \
 		mk-sel \
+		mk-topo \
 		mk-lanc \
 		mk-wsrc-prop \
 		mk-fsel-self-loop \
 		mk-psrc-prop \
 		mk-smear-prop \
-		mk-topo \
 		mk-selected-data \
 		auto-contract-meson-corr \
 		auto-contract-meson-decay

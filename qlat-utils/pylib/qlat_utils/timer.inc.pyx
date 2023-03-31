@@ -1,3 +1,25 @@
+def verbose_level(level = None):
+    """
+    Return or set the current verbosity level as integer.\n
+    Usage::\n
+        verbose_level(level) # set the verbosity level
+        verbose_level("default") # set the verbosity level to be the default value.
+        verbose_level() # return the current verbosity level
+    Default verbose_level() depends on the ``q_verbose`` environment variable. If unset, the default is ``-1``.
+    """
+    if level is None:
+        return cc.verbose_level()
+    if level == "default":
+        level = cc.get_verbose_level()
+    cdef long* p_ret = &cc.verbose_level()
+    p_ret[0] = level
+    assert cc.verbose_level() == level
+    return level
+
+verbose_level(-1)
+
+### -------------------------------------------------------------------
+
 def displayln(level, *args):
     """
     Print all the arguments and then print a newline.
@@ -59,21 +81,6 @@ def get_num_node():
     Also works without initializing MPI, in which case will always return 1.
     """
     return cc.get_num_node()
-
-def verbose_level(level = None):
-    """
-    Return or set the current verbosity level as integer.\n
-    Usage::\n
-        verbose_level(level) # set the verbosity level
-        verbose_level() # return the current verbosity level
-    Default verbose_level() depends on the ``q_verbose`` environment variable. If unset, the default is ``0``.
-    """
-    if level is None:
-        return cc.verbose_level()
-    cdef long* p_ret = &cc.verbose_level()
-    p_ret[0] = level
-    assert cc.verbose_level() == level
-    return level
 
 def get_time():
     """

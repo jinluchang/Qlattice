@@ -6,6 +6,9 @@ Will also load ``qlat_utils``.
 """
 
 from qlat_utils import *
+
+verbose_level(-1)
+
 import qlat.c as c
 
 from qlat.elem_type import *
@@ -61,5 +64,7 @@ from qlat.mat import *
 import qlat.field_double
 
 from qlat.get_include_dir import *
+
+verbose_level("default")
 
 del c
