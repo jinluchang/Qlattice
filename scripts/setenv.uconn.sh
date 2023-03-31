@@ -15,6 +15,7 @@ if [ -z "\$num_proc" ] ; then
 fi
 source /etc/profile
 module purge
+module add gcc/11.3.0
 module add openmpi/4.1.4
 module list
 EOF

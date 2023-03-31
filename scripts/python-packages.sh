@@ -42,9 +42,9 @@ source qcore/set-prefix.sh $name
     time-run pip3 install $opts psutil
     time-run pip3 install $opts sympy
     time-run pip3 install $opts cython
-    time-run pip3 install $opts pythran
     time-run pip3 install $opts pybind11
     time-run pip3 install $opts numpy
+    time-run pip3 install $opts pythran
     time-run pip3 install $opts scipy
     time-run pip3 install $opts h5py
 
