@@ -71,7 +71,8 @@ def run_gf(job_tag, traj):
             )
     if path_gf is None:
         if job_tag[:5] == "test-":
-            gf = rup.mk_sample_gauge_field(job_tag, f"{traj}")
+            total_site = rup.get_total_site(job_tag)
+            gf = rup.mk_sample_gauge_field_v2(total_site, f"{traj}")
             path_gf = get_save_path(f"{job_tag}/configs/ckpoint_lat.{traj}")
             gf.save(path_gf)
         else:

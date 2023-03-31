@@ -60,7 +60,7 @@ def metropolis_accept(delta_h, traj, rs):
     displayln_info(f"metropolis_accept: flag={flag:d} with accept_prob={accept_prob * 100.0:.1f}% delta_h={delta_h:.16f} traj={traj}")
     return flag, accept_prob
 
-@timer_verbose
+@timer
 def gm_evolve_fg_pure_gauge(gm, gf_init, ga, fg_dt, dt):
     geo = gf_init.geo()
     gf = GaugeField(geo)
@@ -88,7 +88,7 @@ def run_hmc_evolve_pure_gauge(gm, gf, ga, rs, n_steps, md_time = 1.0):
             gf_evolve(gf, gm, 2.0 * lam * dt);
         else:
             gf_evolve(gf, gm, lam * dt);
-    unitarize(gf)
+    gf.unitarize()
     delta_h = gm_hamilton_node(gm) + gf_hamilton_node(gf, ga) - energy;
     delta_h = glb_sum(delta_h)
     return delta_h

@@ -18,6 +18,21 @@ def mk_sample_gauge_field(job_tag, fn):
     return gf
 
 @q.timer_verbose
+def mk_sample_gauge_field_v2(total_site, tag):
+    rs = q.RngState(f"seed {total_site} {tag}").split("mk_sample_gauge_field")
+    geo = q.Geometry(total_site, 1)
+    gf = q.GaugeField(geo)
+    gf.set_rand(rs.split("gf.set_rand"), sigma = 0.25, n_step = 16)
+    gf.unitarize()
+    beta = 6.0
+    ga = q.GaugeAction(beta)
+    for traj in range(500):
+        q.run_hmc_pure_gauge(gf, ga, traj, rs.split("run_hmc_pure_gauge"),
+                             n_steps = 6, is_always_accept = True)
+    gf.unitarize()
+    return gf
+
+@q.timer_verbose
 def load_config(job_tag : str, fn : str):
     if not q.does_file_exist_qar_sync_node(fn):
         raise Exception(f"load_config '{fn}' does not exist.")
