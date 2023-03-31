@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Need to run on computing node for UCONN HPC
-# You can use within interactive session obtained by the following command:
-# fisbatch -n 2 -p generalsky
-
 set -e
 
 {
