@@ -6,6 +6,8 @@ from qlat.qcd import *
 from qlat.gauge_action import *
 from qlat.elem_type import *
 
+import math
+
 class GaugeMomentum(FieldColorMatrix):
 
     def __init__(self, geo = None):
@@ -48,7 +50,7 @@ def metropolis_accept(delta_h, traj, rs):
             accept_prob = 1.0
             flag_d = 1.0
         else:
-            accept_prob = m.exp(-delta_h)
+            accept_prob = math.exp(-delta_h)
             rand_num = rs.u_rand_gen(1.0, 0.0)
             if rand_num <= accept_prob:
                 flag_d = 1.0
@@ -74,8 +76,8 @@ def gm_evolve_fg_pure_gauge(gm, gf_init, ga, fg_dt, dt):
 def run_hmc_evolve_pure_gauge(gm, gf, ga, rs, n_steps, md_time = 1.0):
     energy = gm_hamilton_node(gm) + gf_hamilton_node(gf, ga)
     dt = md_time / n_steps
-    lam = 0.5 * (1.0 - 1.0 / m.sqrt(3.0));
-    theta = (2.0 - m.sqrt(3.0)) / 48.0;
+    lam = 0.5 * (1.0 - 1.0 / math.sqrt(3.0));
+    theta = (2.0 - math.sqrt(3.0)) / 48.0;
     ttheta = theta * dt * dt * dt;
     gf_evolve(gf, gm, lam * dt)
     for i in range(n_steps):
