@@ -196,6 +196,7 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/setenv.default.sh
+        ./scripts/dist-update-hash.sh
         ./scripts/qcore.sh
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
@@ -432,6 +433,7 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/setenv.default.sh
+        ./scripts/dist-update-hash.sh
         ./scripts/qcore.sh
         ./scripts/fftw.sh
         ./scripts/c-lime.sh
