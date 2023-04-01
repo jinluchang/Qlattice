@@ -145,9 +145,9 @@ else
 fi
 
 if [ -d Grid-clehner ] ; then
-    ( cd Grid-clehner ; git pull https://github.com/jinluchang/Grid.git )
+    ( cd Grid-clehner ; git pull https://github.com/jinluchang/Grid-clehner.git )
 else
-    git clone https://github.com/jinluchang/Grid.git Grid-clehner
+    git clone https://github.com/jinluchang/Grid-clehner.git Grid-clehner
 fi
 
 if [ -e Grid-clehner/configure ] ; then
