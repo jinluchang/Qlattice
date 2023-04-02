@@ -259,7 +259,7 @@ jobs:
         USE_COMPILER=clang ./scripts/hadrons-tblum.sh
     - name: Check error for Build more packages
       run: |
-        for path in $HOME/qlat-build/{{hadrons/Grid,tblum/Grid-tblum}/{lib/libGrid.a,bin/{grid-config,Mobius2p1fEOFA,Benchmark_dwf,Benchmark_dwf_fp32}},{hadrons/Hadrons,tblum/Hadrons-tblum}/{lib/libHadrons.a,bin/{hadrons-config,HadronsXmlRun,HadronsContractor}}} ; do if [ -e "$path" ] ; then echo "Build '$path' successfully." ; else echo "Failed to build '$path'." ; fi
+        for path in $HOME/qlat-build/{{hadrons/Grid,tblum/Grid-tblum}/{lib/libGrid.a,bin/{grid-config,Mobius2p1fEOFA,Benchmark_dwf,Benchmark_dwf_fp32}},{hadrons/Hadrons,tblum/Hadrons-tblum}/{lib/libHadrons.a,bin/{hadrons-config,HadronsXmlRun,HadronsContractor}}} ; do if [ -e "$path" ] ; then echo "Build '$path' successfully." ; else echo "Failed to build '$path'." ; fi ; done
 
   build_qlat_mac:
     runs-on: macos-latest
@@ -480,7 +480,7 @@ jobs:
         USE_COMPILER=clang ./scripts/hadrons-tblum.sh
     - name: Check error for Build more packages
       run: |
-        for path in $HOME/qlat-build/{{hadrons/Grid,tblum/Grid-tblum}/{lib/libGrid.a,bin/{grid-config,Mobius2p1fEOFA,Benchmark_dwf,Benchmark_dwf_fp32}},{hadrons/Hadrons,tblum/Hadrons-tblum}/{lib/libHadrons.a,bin/{hadrons-config,HadronsXmlRun,HadronsContractor}}} ; do if [ -e "$path" ] ; then echo "Build '$path' successfully." ; else echo "Failed to build '$path'." ; fi
+        for path in $HOME/qlat-build/{{hadrons/Grid,tblum/Grid-tblum}/{lib/libGrid.a,bin/{grid-config,Mobius2p1fEOFA,Benchmark_dwf,Benchmark_dwf_fp32}},{hadrons/Hadrons,tblum/Hadrons-tblum}/{lib/libHadrons.a,bin/{hadrons-config,HadronsXmlRun,HadronsContractor}}} ; do if [ -e "$path" ] ; then echo "Build '$path' successfully." ; else echo "Failed to build '$path'." ; fi ; done
 
 
 #  build_wheels:
