@@ -1,4 +1,4 @@
-#    Qlattice (https://github.com/waterret/qlattice)
+#    Qlattice (https://github.com/jinluchang/qlattice)
 #
 #    Copyright (C) 2021
 #
@@ -19,7 +19,26 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# operators definition follows Eq.(103,122) in PHYS. REV. D 101, 014506 (2020)
+
+"""
+
+Operators for pi and K follows Eq.(103,122) of the following reference
+
+@article{Christ:2019sah,
+    author = "Christ, Norman H. and Kelly, Christopher and Zhang, Daiqian",
+    title = "{Lattice simulations with G-parity Boundary Conditions}",
+    eprint = "1908.08640",
+    archivePrefix = "arXiv",
+    primaryClass = "hep-lat",
+    doi = "10.1103/PhysRevD.101.014506",
+    journal = "Phys. Rev. D",
+    volume = "101",
+    number = "1",
+    pages = "014506",
+    year = "2020"
+}
+
+"""
 
 from auto_contractor.wick import *
 from auto_contractor.compile import *
@@ -82,6 +101,9 @@ def show_parity(parity):
 ###################
 
 def mk_scalar(f1 : str, f2 : str, p : str, is_dagger = False):
+    """
+    q1bar q2
+    """
     s = new_spin_index()
     c = new_color_index()
     if not is_dagger:
@@ -90,6 +112,9 @@ def mk_scalar(f1 : str, f2 : str, p : str, is_dagger = False):
         return Qb(f2, p, s, c) * Qv(f1, p, s, c)
 
 def mk_scalar5(f1 : str, f2 : str, p : str, is_dagger = False):
+    """
+    q1bar g5 q2
+    """
     s1 = new_spin_index()
     s2 = new_spin_index()
     c = new_color_index()
@@ -99,6 +124,9 @@ def mk_scalar5(f1 : str, f2 : str, p : str, is_dagger = False):
         return -Qb(f2, p, s1, c) * G(5, s1, s2) * Qv(f1, p, s2, c) + f"(-{f2}bar g5 {f1})({p})"
 
 def mk_vec_mu(f1 : str, f2 : str, p : str, mu, is_dagger = False):
+    """
+    q1bar gmu q2
+    """
     s1 = new_spin_index()
     s2 = new_spin_index()
     c = new_color_index()
@@ -112,6 +140,9 @@ def mk_vec_mu(f1 : str, f2 : str, p : str, mu, is_dagger = False):
             return Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c) + f"({f2}bar g{mu} {f1})({p})"
 
 def mk_vec5_mu(f1 : str, f2 : str, p : str, mu, is_dagger = False):
+    """
+    q1bar gmu g5 q2
+    """
     s1 = new_spin_index()
     s2 = new_spin_index()
     s3 = new_spin_index()
@@ -127,8 +158,7 @@ def mk_vec5_mu(f1 : str, f2 : str, p : str, mu, is_dagger = False):
 
 def mk_meson(f1 : str, f2 : str, p : str, is_dagger = False):
     """
-    mk_meson("u", "d", p) => i ubar g5 d
-    mk_meson("u", "d", p, True) => i dbar g5 u
+    i q1bar g5 q2  #dag: i q2bar g5 q1
     """
     if not is_dagger:
         return sympy.I * mk_scalar5(f1, f2, p, is_dagger) + f"(i {f1}bar g5 {f2})({p})"
@@ -138,56 +168,107 @@ def mk_meson(f1 : str, f2 : str, p : str, is_dagger = False):
 ###################
 
 def mk_pi_0(p : str, is_dagger = False):
+    """
+    i/sqrt(2) * (ubar g5 u - dbar g5 d)  #dag: same
+    """
     return 1 / sympy.sqrt(2) * (mk_meson("u", "u", p, is_dagger) - mk_meson("d", "d", p, is_dagger)) + f"pi0({p}){show_dagger(is_dagger)}"
 
 def mk_pi_p(p : str, is_dagger = False):
+    """
+    i ubar g5 d  #dag: i dbar g5 u
+    """
     return mk_meson("u", "d", p, is_dagger) + f"pi+({p}){show_dagger(is_dagger)}"
 
 def mk_pi_m(p : str, is_dagger = False):
+    """
+    -i dbar g5 u  #dag: -i ubar g5 d
+    """
     return -mk_meson("d", "u", p, is_dagger) + f"pi-({p}){show_dagger(is_dagger)}"
 
 def mk_a0_0(p : str, is_dagger = False):
+    """
+    1/sqrt(2) * (ubar u - dbar d)
+    """
     return 1 / sympy.sqrt(2) * (mk_scalar("u", "u", p, is_dagger) - mk_scalar("d", "d", p, is_dagger)) + f"a0_0({p}){show_dagger(is_dagger)}"
 
 def mk_a0_p(p : str, is_dagger = False):
+    """
+    ubar d
+    """
     return mk_scalar("u", "d", p, is_dagger) + f"a0_+({p}){show_dagger(is_dagger)}"
 
 def mk_a0_m(p : str, is_dagger = False):
+    """
+    dbar u
+    """
     return mk_scalar("d", "u", p, is_dagger) + f"a0_-({p}){show_dagger(is_dagger)}"
 
 def mk_k_p(p : str, is_dagger = False):
+    """
+    i ubar g5 s  #dag:  i sbar g5 u
+    """
     return mk_meson("u", "s", p, is_dagger) + f"K+({p}){show_dagger(is_dagger)}"
 
 def mk_k_m(p : str, is_dagger = False):
+    """
+    -i sbar g5 u  #dag: -i ubar g5 s
+    """
     return -mk_meson("s", "u", p, is_dagger) + f"K-({p}){show_dagger(is_dagger)}"
 
 def mk_k_0(p : str, is_dagger = False):
+    """
+    i dbar g5 s  #dag: i sbar g5 d
+    """
     return mk_meson("d", "s", p, is_dagger) + f"K0({p}){show_dagger(is_dagger)}"
 
 def mk_k_0_bar(p : str, is_dagger = False):
+    """
+    -i sbar g5 d  #dag: -i dbar g5 s
+    """
     return -mk_meson("s", "d", p, is_dagger) + f"K0b({p}){show_dagger(is_dagger)}"
 
 def mk_sigma(p : str, is_dagger = False):
+    """
+    1/sqrt(2) * (ubar u + dbar d)
+    """
     s = new_spin_index()
     c = new_color_index()
     return 1 / sympy.sqrt(2) * (Qb("u", p, s, c) * Qv("u", p, s, c) + Qb("d", p, s, c) * Qv("d", p, s, c)) + f"sigma({p})"
 
 def mk_kappa_p(p : str, is_dagger = False):
+    """
+    ubar s
+    """
     return mk_scalar("u", "s", p, is_dagger) + f"kappa+({p}){show_dagger(is_dagger)}"
 
 def mk_kappa_m(p : str, is_dagger = False):
+    """
+    sbar u
+    """
     return mk_scalar("s", "u", p, is_dagger) + f"kappa-({p}){show_dagger(is_dagger)}"
 
 def mk_kappa_0(p : str, is_dagger = False):
+    """
+    dbar s
+    """
     return mk_scalar("d", "s", p, is_dagger) + f"kappa0({p}){show_dagger(is_dagger)}"
 
 def mk_kappa_0_bar(p : str, is_dagger = False):
+    """
+    sbar u
+    """
     return mk_scalar("s", "u", p, is_dagger) + f"kappa0bar({p}){show_dagger(is_dagger)}"
 
 def mk_k_0_star_mu(p : str, mu, is_dagger = False):
+    """
+    dbar gmu s
+    """
     return mk_vec_mu("d", "s", p, mu, is_dagger)
 
 def mk_k_0_star_bar_mu(p : str, mu, is_dagger = False):
+    """
+    sbar gmu d
+    """
     return mk_vec_mu("s", "d", p, mu, is_dagger)
 
 ###################
