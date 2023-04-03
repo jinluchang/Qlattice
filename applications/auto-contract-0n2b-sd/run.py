@@ -512,6 +512,7 @@ def get_cexpr_meson_0n2b_sd():
     fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_0n2b_sd"
     def calc_cexpr():
         diagram_type_dict = dict()
+        diagram_type_dict[((('t_1', 'x'), 1), (('t_2', 'x'), 1), (('x', 't_1'), 1), (('x', 't_2'), 1))] = 'Type1'
         pi_mm = mk_pi_p("t_2", True) * mk_pi_m("t_1") + "pi+^dag(+tsep) * pi-(-tsep)"
         k_mm = mk_k_p("t_2", True) * mk_k_m("t_1") + "K+^dag(+tsep) * K-(-tsep)"
         pi_op_list = mk_0n2b_sd_op_list("x", "u", "d")
@@ -709,7 +710,7 @@ q.begin_with_mpi(size_node_list)
 
 # ADJUST ME
 # test()
-# get_all_cexpr()
+get_all_cexpr()
 
 # ADJUST ME
 job_tags = [
@@ -720,11 +721,11 @@ job_tags = [
         # "24IH2",
         # "24IH3",
         # "64I",
-        # "48I",
+        "24D",
+        "48I",
         # "32D",
         # "32Dfine",
         # "24DH",
-        # "24D",
         # "16IH2",
         # "32IfineH",
         # "32IcoarseH1",
@@ -733,14 +734,12 @@ job_tags = [
 q.check_time_limit()
 
 for job_tag in job_tags:
-    if job_tag == "48I":
-        if q.get_num_node() != 4 * 64:
+    if job_tag.startswith("test-"):
+        if q.get_num_node() > 4:
             continue
-    elif job_tag == "64I":
-        if q.get_num_node() != 4 * 64:
+    else:
+        if q.get_num_node() <= 4:
             continue
-    elif q.get_num_node() > 4 * 16:
-        continue
     q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
     for traj in rup.dict_params[job_tag]["trajs"]:
         run_job(job_tag, traj)
