@@ -15,6 +15,10 @@ run:
 	-find results -type f | sort | xargs -d '\n' md5sum > md5sum.txt.new
 	-diff md5sum.txt.new md5sum.txt
 
+update-check:
+	-mv -v md5sum.txt.new md5sum.txt
+	-mv -v log.check.txt.new log.check.txt
+
 diff:
 	for fn in * */* ; do if [ -f $(src_path)/$$fn ] ; then echo $$fn ; diff $(src_path)/$$fn $$fn ; fi ; done
 

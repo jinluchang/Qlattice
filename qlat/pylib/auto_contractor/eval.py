@@ -326,14 +326,10 @@ def get_mpi_chunk(total_list, *, rng_state = None):
     rng_state has to be the same on all the nodes
     e.g. rng_state = q.RngState("get_mpi_chunk")
     """
-    total = len(total_list)
-    id_worker = q.get_id_node()
-    num_worker = q.get_num_node()
-    size_max = (total - 1) // num_worker + 1;
-    start = min(id_worker * size_max, total);
-    stop = min(start + size_max, total);
-    # size = stop - start;
-    if rng_state is not None:
-        assert isinstance(rng_state, q.RngState)
-        total_list = q.random_permute(total_list, rng_state)
-    return total_list[start:stop]
+    chunk_number = q.get_num_node()
+    chunk_id = q.get_id_node()
+    chunk_list = q.get_chunk_list(total_list, chunk_number = chunk_number, rng_state = rng_state)
+    if chunk_id < len(chunk_list):
+        return chunk_list[chunk_id]
+    else:
+        return []

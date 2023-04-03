@@ -170,6 +170,11 @@ ElemType
 Data analysis
 -------------
 
+.. autosummary::
+   :toctree: generated
+
+   get_chunk_list
+
 Spatial distance list
 ^^^^^^^^^^^^^^^^^^^^^
 

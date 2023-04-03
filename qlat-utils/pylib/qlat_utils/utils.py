@@ -79,6 +79,36 @@ def show(x):
 def unitarize(x):
     x.unitarize()
 
+def get_chunk_list(total_list, *, chunk_size = None, chunk_number = None, rng_state = None):
+    """
+    Split ``total_list`` into ``chunk_number`` chunks or chunks with ``chunk_size``.
+    One of ``chunk_size`` and ``chunk_number`` should not be ``None``.\n
+    Returns a list of chunks.
+    Number of chunks is less or equal to ``chunk_number``.
+    Chunk sizes are less or equal to ``chunk_size``.
+    """
+    assert chunk_size is None or chunk_number is None
+    assert chunk_size is not None or chunk_number is not None
+    chunk_list = []
+    if rng_state is not None:
+        assert isinstance(rng_state, q.RngState)
+        total_list = q.random_permute(total_list, rng_state)
+    total = len(total_list)
+    if chunk_size is not None:
+        assert isinstance(chunk_size, int)
+        assert chunk_size >= 1
+        chunk_number = (total - 1) // chunk_size + 1
+    elif chunk_number is not None:
+        assert isinstance(chunk_number, int)
+        assert chunk_number >= 1
+        chunk_size = (total - 1) // chunk_number + 1
+    for i in range(chunk_number):
+        start = min(i * chunk_size, total);
+        stop = min(start + chunk_size, total);
+        if stop > start:
+            chunk_list.append(total_list[start:stop])
+    return chunk_list
+
 def rel_mod(x, size):
     """
     Return ``x % size`` or ``x % size - size``
