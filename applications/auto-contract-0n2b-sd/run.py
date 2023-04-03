@@ -549,10 +549,12 @@ def auto_contract_meson_0n2b(job_tag, traj, get_prop, get_psel, get_fsel):
         for tsep1_idx, tsep1 in enumerate(tsep_list):
             for tsep2_idx, tsep2 in enumerate(tsep_list):
                 for xg_snk_list in xg_fsel_list_chunk_list:
-                    yield tsep1_idx, tsep2_idx, tsep1, tsep2, xg_snk_list
+                    yield tsep1_idx, tsep2_idx, xg_snk_list
     @q.timer
     def feval(args):
-        tsep1_idx, tsep2_idx, tsep1, tsep2, xg_snk_list = args
+        tsep1_idx, tsep2_idx, xg_snk_list = args
+        tsep1 = tsep_list[tsep1_idx]
+        tsep2 = tsep_list[tsep2_idx]
         val = 0
         for xg_snk in xg_snk_list:
             xg_snk = tuple(xg_snk.tolist())
@@ -566,11 +568,18 @@ def auto_contract_meson_0n2b(job_tag, traj, get_prop, get_psel, get_fsel):
                     "size" : total_site,
                     }
             val = val + eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
-        return tsep1_idx, tsep2_idx, val
+        return tsep1_idx, tsep2_idx, val, len(xg_snk_list)
     def sum_function(val_list):
         values = np.zeros((len(tsep_list), len(tsep_list), len(expr_names),), dtype = complex)
-        for tsep1_idx, tsep2_idx, val in val_list:
+        total_eval = 0
+        total_eval_print = 0
+        total_eval_print_step = len(xg_fsel_list)
+        for tsep1_idx, tsep2_idx, val, n_eval in val_list:
             values[tsep1_idx, tsep2_idx] += val
+            total_eval += n_eval
+            if total_eval >= total_eval_print:
+                q.displayln_info(f"{fname}: tsep_idx={tsep1_idx},{tsep2_idx}/{len(tsep_list)} total_eval={total_eval}/{len(xg_fsel_list) * len(tsep_list)**2}")
+                total_eval_print += total_eval_print_step
         return values.transpose(2, 0, 1)
     q.timer_fork(0)
     res_sum = q.glb_sum(
