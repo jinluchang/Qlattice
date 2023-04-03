@@ -677,6 +677,7 @@ def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
     benchmark_eval_cexpr(get_cexpr_meson_m())
     benchmark_eval_cexpr(get_cexpr_meson_jt())
+    benchmark_eval_cexpr(get_cexpr_meson_0n2b_sd())
 
 def test():
     # ADJUST ME
