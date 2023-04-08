@@ -3,6 +3,7 @@ import pickle
 import glob
 import datetime
 import sys
+import jackknife
 
 class Correlators():
     def __init__(self, Nx, Nt, msq, lmbd, alpha, version, cutoff, block_size):
@@ -50,7 +51,7 @@ class Correlators():
         self.date = date
         self.day = day
         if(filename==None):
-            filename = f"output_data/*sigma_pion_corrs_{self.Nx}x{self.Nt}_msq_{self.msq}_lmbd_{self.lmbd}_alph_{self.alpha}_{date}-{day}_{self.version}.bin"
+            filename = f"output_data/sigma_pion_corrs_{self.Nx}x{self.Nt}_msq_{self.msq}_lmbd_{self.lmbd}_alph_{self.alpha}_{date}-{day}_{self.version}.bin"
         print(f"Loading {filename}")
         self.loaded_files.append(filename)
         with open(filename,"rb") as input:
@@ -98,26 +99,10 @@ class Correlators():
             self.load_data("-", "-", f)
     
     def get_jackknife_blocks(self, data, f=lambda x:x):
-        N = int(len(data)/self.block_size)
-        data_mean = np.mean(data,axis=0)*N*self.block_size
-        block_avgs = []
-        for i in range(N):
-            block_av=np.copy(data_mean)
-            for j in range(self.block_size):
-                block_av -= data[i*self.block_size+j]
-            block_av /= (N-1)*self.block_size
-            block_avgs.append(f(block_av))
-        return block_avgs
+        return jackknife.get_jackknife_blocks(data, self.block_size, f)
     
     def get_errors_from_blocks(self, est_value, blocks):
-        N = len(blocks)
-        err = 0
-        bias = 0
-        for i in range(N):
-            err = np.add(err, (N-1)/N*np.power(np.subtract(est_value,blocks[i]),2))
-            bias = np.add(bias,np.divide(blocks[i],N))
-        err = np.power(err,0.5)
-        return [np.add(est_value,np.multiply(N-1,np.subtract(est_value,bias))), err]
+        return jackknife.get_errors_from_blocks(est_value, blocks)
     
     def apply_to_timeslices(self, ts, f):
         return [[f(ts[i][t]) for t in range(len(self.timeslices[0]))] 
@@ -149,8 +134,9 @@ class Correlators():
     
     def calc_vev_m(self, name, values):
         M = len(values[0])
-        self.vev[name] = [0.0]*M
-        self.vev_err[name] = [0.0]*M
+        if(not (name in self.vev)):
+            self.vev[name] = [0.0]*M
+            self.vev_err[name] = [0.0]*M
         values = np.array(values)
         for m in range(M):
             self.calc_vev(name, values[:,m], m)
@@ -164,7 +150,7 @@ class Correlators():
     
     def calc_psqm_vev(self):
         self.calc_vev_m("psqm", self.apply_to_obs_m(np.array(self.timeslices_m),
-            lambda ts: np.mean((ts[:,1]+ts[:,2]+ts[:,3])*np.conj(ts[:,1]+ts[:,2]+ts[:,3]))/3/self.Vx/self.Nt))
+            lambda ts: np.mean((ts[:,1]+ts[:,2]+ts[:,3])*np.conj(ts[:,1]+ts[:,2]+ts[:,3]))/3.0/self.Vx/self.Nt))
     
     def correlator(self,tslices1,tslices2,delta_t):
         rtn = 0
@@ -178,6 +164,7 @@ class Correlators():
         if(m==""):
             corrs=[]
             for i in range(len(tslices1)):
+                print(i)
                 corrs.append([self.correlator(tslices1[i],tslices2[i],dt) for dt in range(self.Nt)])
             self.corr_avgs[name] = np.mean(corrs,axis=0)
             self.corrs[name] = self.get_jackknife_blocks(corrs)
@@ -219,6 +206,12 @@ class Correlators():
         sigma_ts = self.apply_to_timeslices(self.timeslices,
             lambda ts: ts[0] - self.vev["sigma"]*self.Vx)
         self.calc_corrs("pipi_s", pipi_ts, sigma_ts)
+    
+    def calc_pipi_pipi_corrs(self):
+        self.calc_psq_vev()
+        pipi_ts = self.apply_to_timeslices(self.timeslices,
+            lambda ts: (ts[1]+ts[2]+ts[3])**2/3 - self.vev["psq"]*self.Vx)
+        self.calc_corrs("pipi_pipi", pipi_ts, pipi_ts)
     
     def calc_pipim_corrs(self):
         pion_ts_m = self.apply_to_timeslices_m(self.timeslices_m,
@@ -313,6 +306,12 @@ def main():
     print("ss corrs==============================")
     corrs.calc_ss_corrs()
     corrs.save()
+    print("pipi pipi corrs==============================")
+    corrs.calc_pipi_pipi_corrs()
+    corrs.save()
+    print("pipi s corrs==============================")
+    corrs.calc_pipi_s_corrs()
+    corrs.save()
     print("pipim corrs==============================")
     corrs.calc_pipim_corrs()
     corrs.save()
@@ -326,5 +325,6 @@ def main():
     corrs.calc_pipim_s_corrs()
     corrs.save()
 
-print("Hello")
-main()
+if __name__ == '__main__':
+    print("Hello")
+    main()
