@@ -1,5 +1,6 @@
 import qlat_utils.c as c
 
+from qlat_utils.timer import *
 from qlat_utils.cache import *
 from qlat_utils.rng_state import *
 
@@ -57,6 +58,7 @@ def lazy_call(f, *args, **kwargs):
         return ret
     return get
 
+@timer
 def get_fname():
     """
     Return the function name of the current function ``fname``
