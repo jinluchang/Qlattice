@@ -276,7 +276,7 @@ jobs:
     - name: Install Brew packages
       run: |
         # brew update
-        brew install ninja patchelf llvm open-mpi eigen fftw gsl zlib openssl@3 mpfr autoconf automake flock findutils pkg-config
+        brew install ninja patchelf llvm open-mpi eigen fftw gsl zlib openssl@3 mpfr autoconf automake flock findutils pkg-config coreutils
         # brew upgrade
     - name: Install Python packages
       run: |
@@ -324,7 +324,7 @@ jobs:
     - name: Install Brew packages
       run: |
         # brew update
-        brew install ninja patchelf llvm open-mpi eigen fftw gsl zlib openssl@3 mpfr autoconf automake flock findutils pkg-config
+        brew install ninja patchelf llvm open-mpi eigen fftw gsl zlib openssl@3 mpfr autoconf automake flock findutils pkg-config coreutils
         # brew upgrade
     - name: Install Python packages
       run: |
