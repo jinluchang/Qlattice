@@ -134,7 +134,7 @@ class Correlators():
     
     def calc_vev_m(self, name, values):
         M = len(values[0])
-        if(len(self.vev[name])==0):
+        if((not name in self.vev) or len(self.vev[name])==0):
             self.vev[name] = [0.0]*M
             self.vev_err[name] = [0.0]*M
         values = np.array(values)
@@ -182,7 +182,7 @@ class Correlators():
     
     def calc_corrs_m(self, name, tslices1, tslices2):
         M = len(tslices1[0])
-        if(len(self.corrs[name])==0):
+        if((not name in self.corrs) or len(self.corrs[name])==0):
             self.corrs[name] = [0.0]*M
             self.corr_avgs[name] = [0.0]*M
         for m in range(M):
