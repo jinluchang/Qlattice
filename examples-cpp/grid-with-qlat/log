@@ -32,11 +32,11 @@ GNU General Public License for more details.
 Current Grid git commit hash=458c943987eec3282b001f276c9bc91fd482ff02: (HEAD, origin/feature/gpt, origin/HEAD, feature/gpt) clean
 
 qlat::begin(): MPI Initialized. num_node = 2
-=============================================================
+===========================================================================
 
-                       Qlattice                              
+                                  Qlattice
 
-             Copyright (C) 2023 Luchang Jin                  
+                   Copyright (C) 2023 Luchang Jin
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
-=============================================================
+===========================================================================
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 2
 qlat::begin(): q_num_threads = 2
