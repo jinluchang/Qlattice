@@ -49,7 +49,7 @@ cplib = py3.extension_module('cp',
   files('cp.pyx'),
   dependencies: deps,
   include_directories: incdir,
+  link_with: clib,
   install: true,
   subdir: 'qlat_grid',
-  # gnu_symbol_visibility: 'default',
   )

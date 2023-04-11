@@ -23,6 +23,7 @@ message(py3.get_install_dir())
 deps = [ qlat, grid, ]
 
 subdir('include')
+subdir('lib')
 subdir('pylib')
 
 c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls bin/*', check: true)

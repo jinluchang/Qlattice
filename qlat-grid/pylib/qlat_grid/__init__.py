@@ -1,3 +1,5 @@
+from qlat import *
+
 import qlat_grid.c as c
 
 from qlat_grid.init import *

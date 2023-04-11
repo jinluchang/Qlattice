@@ -60,8 +60,8 @@ def begin_with_mpi(size_node_list = None):
         raise Exception("begin_with_mpi: size_node_list not match num_node")
     c.begin(id_node, size_node)
 
-def end_with_mpi():
-    c.end()
+def end_with_mpi(is_preserving_cache = False):
+    c.end(is_preserving_cache)
     from mpi4py import MPI
     MPI.Finalize()
 

@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
-import qlat_grid as qgi
-import qlat as q
+import qlat_grid as q
 
-qgi.begin_with_grid()
+q.begin_with_grid()
 
 rs = q.RngState()
 
@@ -25,9 +24,9 @@ prop.set_rand(rs)
 
 q.qremove_all_info(f"results")
 
-qgi.save_prop_float(prop, f"results/prop.grid.field")
+q.save_prop_float(prop, f"results/prop.grid.field")
 
-qgi.load_prop_float(prop1, f"results/prop.grid.field")
+q.load_prop_float(prop1, f"results/prop.grid.field")
 
 prop1 -= prop
 
@@ -39,4 +38,4 @@ q.timer_display()
 
 q.displayln_info(f"CHECK: finished successfully.")
 
-qgi.end_with_grid()
+q.end_with_grid()

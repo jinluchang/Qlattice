@@ -15,7 +15,7 @@ def begin(int id_node, Coordinate size_node, int color = 0):
     cc.begin(id_node, size_node.xx, color)
 
 def end(cc.bool is_preserving_cache = False):
-    if is_preserving_cache:
+    if not is_preserving_cache:
         q.clean_cache()
     cc.end(is_preserving_cache)
 
