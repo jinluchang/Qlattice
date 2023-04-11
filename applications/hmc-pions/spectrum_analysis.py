@@ -59,5 +59,8 @@ class Spectrum():
         matrix = np.zeros((len(self.matrix),len(self.matrix[0])))
         for i in range(len(self.matrix)):
             for j in range(len(self.matrix[0])):
-                matrix[i][j] = np.mean(self.corrs[self.matrix[i][j]], axis=0)[t]
+                if(self.matrix[i][j]=="0"):
+                    matrix[i][j] = 0
+                else:
+                    matrix[i][j] = np.mean(self.corrs[self.matrix[i][j]], axis=0)[t]
         return matrix

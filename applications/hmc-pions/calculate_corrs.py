@@ -134,7 +134,7 @@ class Correlators():
     
     def calc_vev_m(self, name, values):
         M = len(values[0])
-        if(not (name in self.vev)):
+        if(len(self.vev[name])==0):
             self.vev[name] = [0.0]*M
             self.vev_err[name] = [0.0]*M
         values = np.array(values)
@@ -146,11 +146,11 @@ class Correlators():
     
     def calc_psq_vev(self):
         self.calc_vev("psq", self.apply_to_obs(np.array(self.timeslices),
-            lambda ts: np.mean((ts[:,1]+ts[:,2]+ts[:,3])**2)/3.0/self.Vx/self.Nt))
+            lambda ts: np.mean((ts[:,1]+ts[:,2]+ts[:,3])**2)/3.0/self.Vx))
     
     def calc_psqm_vev(self):
         self.calc_vev_m("psqm", self.apply_to_obs_m(np.array(self.timeslices_m),
-            lambda ts: np.mean((ts[:,1]+ts[:,2]+ts[:,3])*np.conj(ts[:,1]+ts[:,2]+ts[:,3]))/3.0/self.Vx/self.Nt))
+            lambda ts: np.mean((ts[:,1]+ts[:,2]+ts[:,3])*np.conj(ts[:,1]+ts[:,2]+ts[:,3]))/3.0/self.Vx))
     
     def correlator(self,tslices1,tslices2,delta_t):
         rtn = 0
@@ -182,8 +182,9 @@ class Correlators():
     
     def calc_corrs_m(self, name, tslices1, tslices2):
         M = len(tslices1[0])
-        self.corrs[name] = [0.0]*M
-        self.corr_avgs[name] = [0.0]*M
+        if(len(self.corrs[name])==0):
+            self.corrs[name] = [0.0]*M
+            self.corr_avgs[name] = [0.0]*M
         for m in range(M):
             self.calc_corrs(name, tslices1, tslices2, m)
     
