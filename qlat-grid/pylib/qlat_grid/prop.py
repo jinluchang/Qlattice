@@ -1,4 +1,4 @@
-import qlat_grid.c as cg
+from . import c as cg
 
 import qlat as q
 
