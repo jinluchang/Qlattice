@@ -34,6 +34,16 @@ q.displayln_info(f"diff ratio {q.qnorm(prop1) / q.qnorm(prop)}")
 
 assert q.qnorm(prop1) / q.qnorm(prop) < 1e-15
 
+q.save_prop_double(prop, f"results/prop-d.grid.field")
+
+q.load_prop_double(prop1, f"results/prop-d.grid.field")
+
+prop1 -= prop
+
+q.displayln_info(f"CHECK: diff ratio with double {q.qnorm(prop1) / q.qnorm(prop)}")
+
+assert q.qnorm(prop1) == 0
+
 q.timer_display()
 
 q.displayln_info(f"CHECK: finished successfully.")

@@ -33,8 +33,20 @@ def save_prop_float(prop, path):
     cdef FieldWilsonMatrix field_wm = prop
     cc.save_prop_float(field_wm.xx, path)
 
+def save_prop_double(prop, path):
+    assert isinstance(prop, q.Prop)
+    assert isinstance(path, str)
+    cdef FieldWilsonMatrix field_wm = prop
+    cc.save_prop_double(field_wm.xx, path)
+
 def load_prop_float(prop, path):
     assert isinstance(prop, q.Prop)
     assert isinstance(path, str)
     cdef FieldWilsonMatrix field_wm = prop
     cc.load_prop_float(field_wm.xx, path)
+
+def load_prop_double(prop, path):
+    assert isinstance(prop, q.Prop)
+    assert isinstance(path, str)
+    cdef FieldWilsonMatrix field_wm = prop
+    cc.load_prop_double(field_wm.xx, path)
