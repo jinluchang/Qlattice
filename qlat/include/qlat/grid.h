@@ -186,6 +186,26 @@ inline void grid_convert(Grid::LatticePropagatorF& gprop, const Field<WilsonMatr
   })
 }
 
+inline void grid_convert(Grid::LatticePropagatorD& gprop, const Field<WilsonMatrix>& prop)
+{
+  TIMER_VERBOSE("grid_convert(gprop,prop)");
+  using namespace Grid;
+  const Geometry& geo = prop.geo();
+  qassert(geo.multiplicity == 1);
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Grid::Coordinate coor = grid_convert(xl);
+    const WilsonMatrix& wm = prop.get_elem(xl);
+    WilsonMatrix msc;
+    convert_mspincolor_from_wm(msc, wm);
+    array<ComplexD, sizeof(WilsonMatrix) / sizeof(Complex)> fs;
+    for (int k = 0; k < (int)fs.size(); ++k) {
+      fs[k] = msc.p[k];
+    }
+    pokeLocalSite(fs, gprop, coor);
+  })
+}
+
 inline void grid_convert(Field<WilsonMatrix>& prop, const Grid::LatticePropagatorF& gprop)
 {
   TIMER_VERBOSE("grid_convert(prop,gprop)");
@@ -196,6 +216,26 @@ inline void grid_convert(Field<WilsonMatrix>& prop, const Grid::LatticePropagato
     const Coordinate xl = geo.coordinate_from_index(index);
     Grid::Coordinate coor = grid_convert(xl);
     array<ComplexF, sizeof(WilsonMatrix) / sizeof(Complex)> fs;
+    peekLocalSite(fs, gprop, coor);
+    WilsonMatrix msc;
+    for (int k = 0; k < (int)fs.size(); ++k) {
+      msc.p[k] = fs[k];
+    }
+    WilsonMatrix& wm = prop.get_elem(xl);
+    convert_wm_from_mspincolor(wm, msc);
+  })
+}
+
+inline void grid_convert(Field<WilsonMatrix>& prop, const Grid::LatticePropagatorD& gprop)
+{
+  TIMER_VERBOSE("grid_convert(prop,gprop)");
+  using namespace Grid;
+  const Geometry& geo = prop.geo();
+  qassert(geo.multiplicity == 1);
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Grid::Coordinate coor = grid_convert(xl);
+    array<ComplexD, sizeof(WilsonMatrix) / sizeof(Complex)> fs;
     peekLocalSite(fs, gprop, coor);
     WilsonMatrix msc;
     for (int k = 0; k < (int)fs.size(); ++k) {
