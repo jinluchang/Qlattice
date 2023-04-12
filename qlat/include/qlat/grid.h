@@ -166,11 +166,12 @@ inline void grid_convert(Grid::LatticeGaugeFieldF& ggf, const GaugeField& gf)
   }
 }
 
-inline void grid_convert(Grid::LatticePropagatorF& gprop, const Propagator4d& prop)
+inline void grid_convert(Grid::LatticePropagatorF& gprop, const Field<WilsonMatrix>& prop)
 {
   TIMER_VERBOSE("grid_convert(gprop,prop)");
   using namespace Grid;
   const Geometry& geo = prop.geo();
+  qassert(geo.multiplicity == 1);
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Grid::Coordinate coor = grid_convert(xl);
@@ -185,11 +186,12 @@ inline void grid_convert(Grid::LatticePropagatorF& gprop, const Propagator4d& pr
   })
 }
 
-inline void grid_convert(Propagator4d& prop, const Grid::LatticePropagatorF& gprop)
+inline void grid_convert(Field<WilsonMatrix>& prop, const Grid::LatticePropagatorF& gprop)
 {
   TIMER_VERBOSE("grid_convert(prop,gprop)");
   using namespace Grid;
   const Geometry& geo = prop.geo();
+  qassert(geo.multiplicity == 1);
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Grid::Coordinate coor = grid_convert(xl);

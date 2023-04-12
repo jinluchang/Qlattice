@@ -1229,7 +1229,7 @@ q.begin_with_mpi(size_node_list)
 
 # ADJUST ME
 # test()
-# get_all_cexpr()
+get_all_cexpr()
 
 # ADJUST ME
 job_tags = [
@@ -1240,11 +1240,11 @@ job_tags = [
         # "24IH2",
         # "24IH3",
         # "64I",
-        # "48I",
+        "48I",
         # "32D",
         # "32Dfine",
         # "24DH",
-        # "24D",
+        "24D",
         # "16IH2",
         # "32IfineH",
         # "32IcoarseH1",
@@ -1253,14 +1253,12 @@ job_tags = [
 q.check_time_limit()
 
 for job_tag in job_tags:
-    if job_tag == "48I":
-        if q.get_num_node() != 4 * 64:
+    if job_tag.startswith("test-"):
+        if q.get_num_node() > 4:
             continue
-    elif job_tag == "64I":
-        if q.get_num_node() != 4 * 64:
+    else:
+        if q.get_num_node() <= 4:
             continue
-    elif q.get_num_node() > 4 * 16:
-        continue
     q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
     for traj in rup.dict_params[job_tag]["trajs"]:
         run_job(job_tag, traj)

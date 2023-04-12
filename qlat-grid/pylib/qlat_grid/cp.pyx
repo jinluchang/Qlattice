@@ -26,3 +26,15 @@ def end_with_grid(is_preserving_cache = False):
     if not is_preserving_cache:
         q.clean_cache()
     cc.end_with_grid(is_preserving_cache)
+
+def save_prop_float(prop, path):
+    assert isinstance(prop, q.Prop)
+    assert isinstance(path, str)
+    cdef FieldWilsonMatrix field_wm = prop
+    cc.save_prop_float(field_wm.xx, path)
+
+def load_prop_float(prop, path):
+    assert isinstance(prop, q.Prop)
+    assert isinstance(path, str)
+    cdef FieldWilsonMatrix field_wm = prop
+    cc.load_prop_float(field_wm.xx, path)
