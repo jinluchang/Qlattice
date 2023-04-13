@@ -224,6 +224,16 @@ class Correlators():
             lambda ts: ts[0])
         self.calc_corrs_m("ssm", sigma_ts_m, np.conj(sigma_ts_m))
     
+    def calc_pipim_pipi_corrs(self):
+        self.calc_psq_vev()
+        self.calc_psqm_vev()
+        pipim_ts = self.apply_to_timeslices_m(np.array(self.timeslices_m),
+            lambda ts: (ts[1]+ts[2]+ts[3])*np.conj(ts[1]+ts[2]+ts[3])/3)
+        pipim_ts -= np.array(self.vev["psqm"])[None,:,None]*self.Vx
+        pipi_ts = self.apply_to_timeslices(self.timeslices,
+            lambda ts: (ts[1]+ts[2]+ts[3])**2/3 - self.vev["psq"]*self.Vx)
+        self.calc_corrs_m("pipim_pipi", pipim_ts, pipi_ts)
+    
     def calc_pipim_pipim_corrs(self):
         self.calc_psqm_vev()
         pipim_ts = self.apply_to_timeslices_m(np.array(self.timeslices_m),
@@ -319,6 +329,9 @@ def main():
     print("ssm corrs==============================")
     corrs.calc_ssm_corrs()
     corrs.save()
+    print("pipim pipi corrs==============================")
+    corrs.calc_pipim_pipi_corrs()
+    corrs.save()  
     print("pipim pipim corrs==============================")
     corrs.calc_pipim_pipim_corrs()
     corrs.save()  
