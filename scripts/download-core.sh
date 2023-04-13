@@ -22,7 +22,7 @@ aget() {
     dget "$name" "$url"
 }
 
-dget "c-lime.tar.gz" "https://github.com/usqcd-software/c-lime/tarball/master"
+aget "http://usqcd-software.github.io/downloads/c-lime/lime-1.3.2.tar.gz"
 
 aget "https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.bz2"
 
