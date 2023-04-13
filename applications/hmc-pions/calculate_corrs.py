@@ -167,7 +167,7 @@ class Correlators():
                 print(i)
                 corrs.append([self.correlator(tslices1[i],tslices2[i],dt) for dt in range(self.Nt)])
             self.corr_avgs[name] = np.mean(corrs,axis=0)
-            self.corrs[name] = self.get_jackknife_blocks(corrs)
+            self.corrs[name] = corrs #self.get_jackknife_blocks(corrs)
         else:
             corrs=[]
             try:
@@ -177,7 +177,7 @@ class Correlators():
                 for i in range(len(tslices1)):
                     corrs.append([self.correlator(tslices1[i][m],tslices2[i],dt) for dt in range(self.Nt)])
             self.corr_avgs[name][m] = np.mean(corrs,axis=0)
-            self.corrs[name][m] = self.get_jackknife_blocks(corrs)
+            self.corrs[name][m] = corrs #self.get_jackknife_blocks(corrs)
         self.done.append(f"{name}{m}corrs")
     
     def calc_corrs_m(self, name, tslices1, tslices2):
