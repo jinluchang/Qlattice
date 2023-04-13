@@ -1,4 +1,5 @@
 import numpy as np
+import scipy as sp
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import jackknife
@@ -39,11 +40,11 @@ class Spectrum():
             return
         blocks = jackknife.get_jackknife_blocks(self.corrs[name], self.block_size, self.find_E_from_fit)
         [[self.energies[name], self.A[name]],[self.energy_errors[name],A_err]] = jackknife.get_errors_from_blocks(self.find_E_from_fit(np.mean(self.corrs[name],axis=0)), blocks)
-        print(f"Pion mass is {self.energies[name]}/a +- {self.energy_errors[name]}/a")
+        print(f"{name} energy is {self.energies[name]}/a +- {self.energy_errors[name]}/a")
     
     def plot_corrs(self, name):
-        blocks = jackknife.get_jackknife_blocks(self.corrs[name], self.block_size)
-        corr_avgs, corr_errs = jackknife.get_errors_from_blocks(np.mean(self.corrs[name], axis=0), blocks)
+        #blocks = jackknife.get_jackknife_blocks(self.corrs[name], self.block_size)
+        corr_avgs, corr_errs = jackknife.get_errors_from_blocks(np.mean(self.corrs[name], axis=0), self.corrs[name])
         plt.errorbar(range(len(corr_avgs)), corr_avgs, yerr=corr_errs, label=f"{name} Correlators")
     
     def plot_fit(self, name):
@@ -54,13 +55,48 @@ class Spectrum():
     
     def use_matrix(self, matrix):
         self.matrix = matrix
-    
-    def get_matrix_elems(self, t):
+        
+    def get_fit_matrix_elems(self, t):
         matrix = np.zeros((len(self.matrix),len(self.matrix[0])))
         for i in range(len(self.matrix)):
             for j in range(len(self.matrix[0])):
                 if(self.matrix[i][j]=="0"):
                     matrix[i][j] = 0
                 else:
-                    matrix[i][j] = np.mean(self.corrs[self.matrix[i][j]], axis=0)[t]
+                    self.get_energy(self.matrix[i][j])
+                    matrix[i][j] = self.cosh_model([t], self.A[self.matrix[i][j]], self.energies[self.matrix[i][j]])[0]
         return matrix
+    
+    def get_matrix_elems(self, t, matrix, corrs):
+        elems = np.zeros((len(matrix),len(matrix[0])))
+        for i in range(len(matrix)):
+            for j in range(len(matrix[0])):
+                if(matrix[i][j]=="0"):
+                    elems[i][j] = 0
+                else:
+                    elems[i][j] = corrs[matrix[i][j]][t]
+        return elems
+    
+    def get_spectrum_from_corrs(self, t, matrix, corrs):
+        T1=self.get_matrix_elems(t,matrix,corrs)
+        T2=self.get_matrix_elems(t+1,matrix,corrs)
+        w,v = sp.linalg.eigh(T1,T2)
+        return np.log(w)
+    
+    def get_spectrum(self, t):
+        names = list(self.corrs)
+        N = len(self.corrs[names[0]])
+        corrs = []
+        for i in range(N):
+            j=0
+            corrs.append([])
+            for name in names:
+                corrs[i].append(self.corrs[name][i])
+                j+=1
+        matrix=[]
+        for i in range(len(self.matrix)):
+            matrix.append([])
+            for j in range(len(self.matrix[0])):
+                matrix[i].append(names.index(self.matrix[i][j]))
+        blocks = jackknife.get_jackknife_blocks(corrs, self.block_size, lambda x: self.get_spectrum_from_corrs(t,matrix,x))
+        return jackknife.get_errors_from_blocks(self.get_spectrum_from_corrs(t,matrix,np.mean(corrs,axis=0)), blocks)
