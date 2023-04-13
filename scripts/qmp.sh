@@ -1,6 +1,6 @@
 #!/bin/bash
 
-name=lime
+name=qmp
 
 source qcore/set-prefix.sh $name
 
@@ -23,9 +23,12 @@ source qcore/set-prefix.sh $name
     export CXXFLAGS="$CXXFLAGS -fPIC"
 
     time-run "$src_dir"/*"$name"*/configure \
-        --prefix="$prefix"
+        --with-qmp-comms-type=mpi \
+        --prefix="$prefix" \
+        CXX=$MPICXX CC=$MPICC
 
     time-run make -j$num_proc
+    # time-run make check
     time-run make install
 
     cd "$wd"

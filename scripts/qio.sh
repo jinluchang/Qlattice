@@ -1,6 +1,6 @@
 #!/bin/bash
 
-name=lime
+name=qio
 
 source qcore/set-prefix.sh $name
 
@@ -19,13 +19,18 @@ source qcore/set-prefix.sh $name
     mkdir -p $build_dir || true
     cd $build_dir
 
-    export CFLAGS="$CFLAGS -fPIC"
+    export CFLAGS="$CFLAGS -O2 -fPIC"
     export CXXFLAGS="$CXXFLAGS -fPIC"
 
     time-run "$src_dir"/*"$name"*/configure \
-        --prefix="$prefix"
+        --prefix="$prefix" \
+        --with-qmp \
+        --build=none \
+        --enable-largefile \
+        CXX=$MPICXX CC=$MPICC
 
     time-run make -j$num_proc
+    # time-run make check
     time-run make install
 
     cd "$wd"
