@@ -1,6 +1,9 @@
 #!/bin/bash
 
 # Usage:
+
+# source qcore/conf.sh
+
 # source qcore/set-prefix.sh subdir
 # source qcore/conf.sh ..
 
