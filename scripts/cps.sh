@@ -8,9 +8,8 @@ source qcore/set-prefix.sh $name
     echo "!!!! build $name !!!!"
     source qcore/conf.sh ..
 
-    mkdir -p "$src_dir" || true
-    time-run rsync -a --delete $distfiles/$name "$src_dir"/
-    cd "$src_dir/$name"
+    mkdir -p "$prefix" || true
+    time-run rsync -a --delete $distfiles/$name "$prefix"/
 
     export CXXFLAGS="$CXXFLAGS -fPIC -w -Wno-psabi"
 
@@ -31,12 +30,12 @@ source qcore/set-prefix.sh $name
         opts+=" --enable-qio=$(find-library.sh libqio.a)"
     fi
 
-    if [ -n "$(find-library.sh libtirpc.a)" ] ; then
-        LDFLAGS+=" -L$(find-library.sh libtirpc.a)/lib -ltirpc"
-        CFLAGS+=" -I$(find-library.sh libtirpc.a)/include/tirpc"
-        export LDFLAGS
-        export CFLAGS
-    fi
+    # if [ -n "$(find-library.sh libtirpc.a)" ] ; then
+    #     LDFLAGS+=" -L$(find-library.sh libtirpc.a)/lib -ltirpc"
+    #     CFLAGS+=" -I$(find-library.sh libtirpc.a)/include/tirpc"
+    #     export LDFLAGS
+    #     export CFLAGS
+    # fi
     if [ -n "$(find-library.sh libz.a)" ] ; then
         LDFLAGS+=" -L$(find-library.sh libz.a)/lib"
         CFLAGS+=" -I$(find-library.sh libz.a)/include"
@@ -44,14 +43,26 @@ source qcore/set-prefix.sh $name
         export CFLAGS
     fi
 
-    mkdir build
-    cd build
-    time-run ../cps_pp/configure \
+    export CC=MPICC.sh
+    export CXX=MPICXX.sh
+
+    rm -rfv "$prefix/build"
+    mkdir -p "$prefix/build"
+    cd "$prefix/build"
+    time-run "$prefix/$name"/cps_pp/configure \
         $opts \
         --prefix="$prefix"
 
     time-run make -j$num_proc
-    time-run make install
+
+    rm -rfv "$prefix/include"
+    rm -rfv "$prefix/lib"
+    mkdir -p "$prefix/include"
+    mkdir -p "$prefix/lib"
+    cp -rpv "$prefix/$name/cps_pp/include/"* "$prefix/include/"
+    cp -rpv "$prefix/build/"*.h "$prefix/include/"
+    cp -rpv "$prefix/build/include/"* "$prefix/include/"
+    cp -rpv "$prefix/build/libcps.a" "$prefix/lib/"
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"
