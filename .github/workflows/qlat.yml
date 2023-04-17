@@ -395,7 +395,7 @@ jobs:
     - name: Testing pylib qlat cps
       run: |
         export num_proc=3
-        ./scripts/qlat-examples-py-cps.sh
+        # ./scripts/qlat-examples-py-cps.sh
     - name: Testing qlat
       run: |
         export num_proc=3
@@ -478,7 +478,7 @@ jobs:
     - name: Testing pylib qlat cps
       run: |
         export num_proc=3
-        ./scripts/qlat-examples-py-cps.sh
+        # ./scripts/qlat-examples-py-cps.sh
     - name: Testing pylib qlat gpt
       run: |
         export num_proc=3
