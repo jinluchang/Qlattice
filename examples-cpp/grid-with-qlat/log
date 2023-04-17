@@ -29,7 +29,7 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-Current Grid git commit hash=458c943987eec3282b001f276c9bc91fd482ff02: (HEAD, origin/feature/gpt, origin/HEAD, feature/gpt) clean
+Current Grid git commit hash=458c943987eec3282b001f276c9bc91fd482ff02: (HEAD -> feature/gpt, origin/feature/gpt, origin/HEAD) clean
 
 qlat::begin(): MPI Initialized. num_node = 2
 ===========================================================================

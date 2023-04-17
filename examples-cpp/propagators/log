@@ -31,8 +31,8 @@ q_mk_id_node_in_shuffle_seed='' (default)
 clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
-display_geometry_node : id_node =     0 ; coor_node = 0x0x0x0 ; id_node_in_shuffle =     0 ; hostname = qcdserver16
-display_geometry_node : id_node =     1 ; coor_node = 0x0x0x1 ; id_node_in_shuffle =     1 ; hostname = qcdserver16
+display_geometry_node : id_node =     0 ; coor_node = 0x0x0x0 ; id_node_in_shuffle =     0 ; hostname = lattice.jinluchang.cn
+display_geometry_node : id_node =     1 ; coor_node = 0x0x0x1 ; id_node_in_shuffle =     1 ; hostname = lattice.jinluchang.cn
 q_time_limit=43200 (default)
 get_time_limit()=12.000000 hours
 q_budget=900 (default)
@@ -79,7 +79,7 @@ Cache: 'CommPlanCache': 1 / 32 [16] to add
 plaq :  6.83965231794668060E-01
 Cache: 'CommPlanCache': 2 / 32 [16] to add
 spatial plaq :  6.83106449306319696E-01
-trace:  9.28858590458645356E-02
+trace:  9.28858590458645217E-02
 Cache: 'CommPlanCache': 3 / 32 [16] to add
 Cache: 'CommPlanCache': 4 / 32 [16] to add
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
@@ -223,22 +223,22 @@ ndim: 2
 "re-im"[2]: "re" "im"
 tsep[       0] re-im[      re]  1.47634809100660014E-01
 tsep[       0] re-im[      im]  0.00000000000000000E+00
-tsep[       1] re-im[      re]  3.87490999804722333E-02
+tsep[       1] re-im[      re]  3.87490999804722402E-02
 tsep[       1] re-im[      im]  0.00000000000000000E+00
-tsep[       2] re-im[      re]  5.56246974927907065E-03
+tsep[       2] re-im[      re]  5.56246974927907152E-03
 tsep[       2] re-im[      im]  0.00000000000000000E+00
 tsep[       3] re-im[      re]  9.49765136830366141E-04
 tsep[       3] re-im[      im]  0.00000000000000000E+00
-tsep[       4] re-im[      re]  2.87343896924612181E-04
+tsep[       4] re-im[      re]  2.87343896924612127E-04
 tsep[       4] re-im[      im]  0.00000000000000000E+00
-tsep[       5] re-im[      re]  7.96206308258371343E-04
+tsep[       5] re-im[      re]  7.96206308258371235E-04
 tsep[       5] re-im[      im]  0.00000000000000000E+00
 tsep[       6] re-im[      re]  4.96156795369941030E-03
 tsep[       6] re-im[      im]  0.00000000000000000E+00
-tsep[       7] re-im[      re]  4.09021726415146128E-02
+tsep[       7] re-im[      re]  4.09021726415145989E-02
 tsep[       7] re-im[      im]  0.00000000000000000E+00
-prop qnorm =  2.39843434767638641E-01
-prop[0] qnorm =  2.46214937797465739E-04
+prop qnorm =  2.39843434767638614E-01
+prop[0] qnorm =  2.46214937797465685E-04
 QFile: open 'results/test-4nt8/results=1000/checkpoint.txt' with 'w'.
 QFile: close 'results/test-4nt8/results=1000/checkpoint.txt' with 'w'.
 release_lock: Release lock 'results/test-4nt8/results=1000-lock'

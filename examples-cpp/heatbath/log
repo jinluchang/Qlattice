@@ -57,19 +57,19 @@ CHECK:      1.0917131353640E-01
  (n-traj-used 1)
  (n-block-1048576
   (phi2  0.109171313536395 0.000000000000000)
-  (m_eff nan nan)
+  (m_eff -nan nan)
   (v_eff 4.158654861714481 0.000000000000000))
  (n-block-128
   (phi2  0.109171313536395 0.000000000000000)
-  (m_eff nan nan)
+  (m_eff -nan nan)
   (v_eff 4.158654861714481 0.000000000000000))
  (n-block-64
   (phi2  0.109171313536395 0.000000000000000)
-  (m_eff nan nan)
+  (m_eff -nan nan)
   (v_eff 4.158654861714481 0.000000000000000))
  (n-block-32
   (phi2  0.109171313536395 0.000000000000000)
-  (m_eff nan nan)
+  (m_eff -nan nan)
   (v_eff 4.158654861714481 0.000000000000000)))
 q_timer_mini_auto_display=300 (default)
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
@@ -81,20 +81,20 @@ CHECK:      1.4193086585739E-01
  (n-traj-used 2)
  (n-block-1048576
   (phi2  0.125551089696894 0.023164501594813)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.125551089696894 0.023164501594813)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.125551089696894 0.023164501594813)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.125551089696894 0.023164501594813)
-  (m_eff nan nan)
-  (v_eff nan nan)))
+  (m_eff -nan nan)
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 CHECK:      1.5041039764363E-01
 ((total-site (8 8 8 32))
@@ -138,19 +138,19 @@ CHECK:      1.0920860758891E-01
  (n-traj-used 1)
  (n-block-1048576
   (phi2  0.109208607588914 0.000000000000000)
-  (m_eff nan nan)
+  (m_eff -nan nan)
   (v_eff 4.025465815603584 0.000000000000000))
  (n-block-128
   (phi2  0.109208607588914 0.000000000000000)
-  (m_eff nan nan)
+  (m_eff -nan nan)
   (v_eff 4.025465815603584 0.000000000000000))
  (n-block-64
   (phi2  0.109208607588914 0.000000000000000)
-  (m_eff nan nan)
+  (m_eff -nan nan)
   (v_eff 4.025465815603584 0.000000000000000))
  (n-block-32
   (phi2  0.109208607588914 0.000000000000000)
-  (m_eff nan nan)
+  (m_eff -nan nan)
   (v_eff 4.025465815603584 0.000000000000000)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 CHECK:      1.4213422779189E-01
@@ -161,20 +161,20 @@ CHECK:      1.4213422779189E-01
  (n-traj-used 2)
  (n-block-1048576
   (phi2  0.125671417690402 0.023281929320297)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.125671417690402 0.023281929320297)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.125671417690402 0.023281929320297)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.125671417690402 0.023281929320297)
-  (m_eff nan nan)
-  (v_eff nan nan)))
+  (m_eff -nan nan)
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 CHECK:      1.4998532942557E-01
 ((total-site (8 8 8 32))
@@ -241,20 +241,20 @@ CHECK:      1.4183779085617E-01
  (n-traj-used 2)
  (n-block-1048576
   (phi2  0.125412066186030 0.023229482600312)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.125412066186030 0.023229482600312)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.125412066186030 0.023229482600312)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.125412066186030 0.023229482600312)
-  (m_eff nan nan)
-  (v_eff nan nan)))
+  (m_eff -nan nan)
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 CHECK:      1.4934438880861E-01
 ((total-site (8 8 8 32))
@@ -264,20 +264,20 @@ CHECK:      1.4934438880861E-01
  (n-traj-used 2)
  (n-block-1048576
   (phi2  0.145591089832390 0.005307966315817)
-  (m_eff 0.926123144615655 0.031238983690884)
-  (v_eff nan nan))
+  (m_eff 0.926123144615654 0.031238983690884)
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.145591089832390 0.005307966315817)
-  (m_eff 0.926123144615655 0.031238983690884)
-  (v_eff nan nan))
+  (m_eff 0.926123144615654 0.031238983690884)
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.145591089832390 0.005307966315817)
-  (m_eff 0.926123144615655 0.031238983690884)
-  (v_eff nan nan))
+  (m_eff 0.926123144615654 0.031238983690884)
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.145591089832390 0.005307966315817)
-  (m_eff 0.926123144615655 0.031238983690884)
-  (v_eff nan nan)))
+  (m_eff 0.926123144615654 0.031238983690884)
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 QFile: open 'results/total_site=8x8x8x32/lambda=0.1000000000/mass_sqr=0.0100000000.txt.partial' with 'w'.
 QFile: close 'results/total_site=8x8x8x32/lambda=0.1000000000/mass_sqr=0.0100000000.txt.partial' with 'w'.
@@ -299,20 +299,20 @@ CHECK:      1.0948635673042E-01
  (n-traj-used 1)
  (n-block-1048576
   (phi2  0.109486356730421 0.000000000000000)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.109486356730421 0.000000000000000)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.109486356730421 0.000000000000000)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.109486356730421 0.000000000000000)
-  (m_eff nan nan)
-  (v_eff nan nan)))
+  (m_eff -nan nan)
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 CHECK:      1.3874875552922E-01
 ((total-site (16 16 16 64))
@@ -322,20 +322,20 @@ CHECK:      1.3874875552922E-01
  (n-traj-used 2)
  (n-block-1048576
   (phi2  0.124117556129823 0.020691640624419)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.124117556129823 0.020691640624419)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.124117556129823 0.020691640624419)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.124117556129823 0.020691640624419)
-  (m_eff nan nan)
-  (v_eff nan nan)))
+  (m_eff -nan nan)
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 CHECK:      1.4733931304921E-01
 ((total-site (16 16 16 64))
@@ -345,19 +345,19 @@ CHECK:      1.4733931304921E-01
  (n-traj-used 2)
  (n-block-1048576
   (phi2  0.143044034289219 0.006074441476557)
-  (m_eff nan nan)
+  (m_eff -nan nan)
   (v_eff -0.496068998401075 0.395353405334769))
  (n-block-128
   (phi2  0.143044034289219 0.006074441476557)
-  (m_eff nan nan)
+  (m_eff -nan nan)
   (v_eff -0.496068998401075 0.395353405334769))
  (n-block-64
   (phi2  0.143044034289219 0.006074441476557)
-  (m_eff nan nan)
+  (m_eff -nan nan)
   (v_eff -0.496068998401075 0.395353405334769))
  (n-block-32
   (phi2  0.143044034289219 0.006074441476557)
-  (m_eff nan nan)
+  (m_eff -nan nan)
   (v_eff -0.496068998401075 0.395353405334769)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 QFile: open 'results/total_site=16x16x16x64/lambda=0.1000000000/mass_sqr=0.0100000000.txt.partial' with 'w'.
@@ -379,20 +379,20 @@ CHECK:      1.1097751845632E-01
  (n-traj-used 1)
  (n-block-1048576
   (phi2  0.110977518456321 0.000000000000000)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.110977518456321 0.000000000000000)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.110977518456321 0.000000000000000)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.110977518456321 0.000000000000000)
-  (m_eff nan nan)
-  (v_eff nan nan)))
+  (m_eff -nan nan)
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 CHECK:      1.4064985777237E-01
 ((total-site (16 16 16 64))
@@ -403,19 +403,19 @@ CHECK:      1.4064985777237E-01
  (n-block-1048576
   (phi2  0.125813688114344 0.020981512344044)
   (m_eff 0.081511271879626 nan)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.125813688114344 0.020981512344044)
   (m_eff 0.081511271879626 nan)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.125813688114344 0.020981512344044)
   (m_eff 0.081511271879626 nan)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.125813688114344 0.020981512344044)
   (m_eff 0.081511271879626 nan)
-  (v_eff nan nan)))
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 CHECK:      1.4919171955549E-01
 ((total-site (16 16 16 64))
@@ -425,19 +425,19 @@ CHECK:      1.4919171955549E-01
  (n-traj-used 2)
  (n-block-1048576
   (phi2  0.144920788663927 0.006040008390802)
-  (m_eff 0.782532082326965 0.899685745353966)
+  (m_eff 0.782532082326964 0.899685745353964)
   (v_eff -1.802470997067627 nan))
  (n-block-128
   (phi2  0.144920788663927 0.006040008390802)
-  (m_eff 0.782532082326965 0.899685745353966)
+  (m_eff 0.782532082326964 0.899685745353964)
   (v_eff -1.802470997067627 nan))
  (n-block-64
   (phi2  0.144920788663927 0.006040008390802)
-  (m_eff 0.782532082326965 0.899685745353966)
+  (m_eff 0.782532082326964 0.899685745353964)
   (v_eff -1.802470997067627 nan))
  (n-block-32
   (phi2  0.144920788663927 0.006040008390802)
-  (m_eff 0.782532082326965 0.899685745353966)
+  (m_eff 0.782532082326964 0.899685745353964)
   (v_eff -1.802470997067627 nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 QFile: open 'results/total_site=16x16x16x64/lambda=0.5000000000/mass_sqr=-0.1000000000.txt.partial' with 'w'.
@@ -461,19 +461,19 @@ CHECK:      1.1812496995277E-01
  (n-block-1048576
   (phi2  0.118124969952768 0.000000000000000)
   (m_eff 0.899951437145340 0.000000000000000)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.118124969952768 0.000000000000000)
   (m_eff 0.899951437145340 0.000000000000000)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.118124969952768 0.000000000000000)
   (m_eff 0.899951437145340 0.000000000000000)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.118124969952768 0.000000000000000)
   (m_eff 0.899951437145340 0.000000000000000)
-  (v_eff nan nan)))
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 CHECK:      1.4873812726572E-01
 ((total-site (4 4 4 256))
@@ -484,19 +484,19 @@ CHECK:      1.4873812726572E-01
  (n-block-1048576
   (phi2  0.133431548609242 0.021646771129515)
   (m_eff -0.079689590421833 1.008680293889267)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.133431548609242 0.021646771129515)
   (m_eff -0.079689590421833 1.008680293889267)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.133431548609242 0.021646771129515)
   (m_eff -0.079689590421833 1.008680293889267)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.133431548609242 0.021646771129515)
   (m_eff -0.079689590421833 1.008680293889267)
-  (v_eff nan nan)))
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 CHECK:      1.5541298704917E-01
 ((total-site (4 4 4 256))
@@ -506,20 +506,20 @@ CHECK:      1.5541298704917E-01
  (n-traj-used 2)
  (n-block-1048576
   (phi2  0.152075557157444 0.004719838616353)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.152075557157444 0.004719838616353)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.152075557157444 0.004719838616353)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.152075557157444 0.004719838616353)
-  (m_eff nan nan)
-  (v_eff nan nan)))
+  (m_eff -nan nan)
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 QFile: open 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8600000000.txt.partial' with 'w'.
 QFile: close 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8600000000.txt.partial' with 'w'.
@@ -540,20 +540,20 @@ CHECK:      1.1773435821030E-01
  (n-traj-used 1)
  (n-block-1048576
   (phi2  0.117734358210301 0.000000000000000)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.117734358210301 0.000000000000000)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.117734358210301 0.000000000000000)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.117734358210301 0.000000000000000)
-  (m_eff nan nan)
-  (v_eff nan nan)))
+  (m_eff -nan nan)
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 CHECK:      1.4846363621239E-01
 ((total-site (4 4 4 256))
@@ -563,20 +563,20 @@ CHECK:      1.4846363621239E-01
  (n-traj-used 2)
  (n-block-1048576
   (phi2  0.133098997211344 0.021728880856243)
-  (m_eff 0.788091169121646 nan)
-  (v_eff nan nan))
+  (m_eff 0.788091169121645 nan)
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.133098997211344 0.021728880856243)
-  (m_eff 0.788091169121646 nan)
-  (v_eff nan nan))
+  (m_eff 0.788091169121645 nan)
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.133098997211344 0.021728880856243)
-  (m_eff 0.788091169121646 nan)
-  (v_eff nan nan))
+  (m_eff 0.788091169121645 nan)
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.133098997211344 0.021728880856243)
-  (m_eff 0.788091169121646 nan)
-  (v_eff nan nan)))
+  (m_eff 0.788091169121645 nan)
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 CHECK:      1.5407533682060E-01
 ((total-site (4 4 4 256))
@@ -586,20 +586,20 @@ CHECK:      1.5407533682060E-01
  (n-traj-used 2)
  (n-block-1048576
   (phi2  0.151269486516492 0.003968071554053)
-  (m_eff -0.024144983403709 0.833167865026937)
-  (v_eff nan nan))
+  (m_eff -0.024144983403709 0.833167865026936)
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.151269486516492 0.003968071554053)
-  (m_eff -0.024144983403709 0.833167865026937)
-  (v_eff nan nan))
+  (m_eff -0.024144983403709 0.833167865026936)
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.151269486516492 0.003968071554053)
-  (m_eff -0.024144983403709 0.833167865026937)
-  (v_eff nan nan))
+  (m_eff -0.024144983403709 0.833167865026936)
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.151269486516492 0.003968071554053)
-  (m_eff -0.024144983403709 0.833167865026937)
-  (v_eff nan nan)))
+  (m_eff -0.024144983403709 0.833167865026936)
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 QFile: open 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8200000000.txt.partial' with 'w'.
 QFile: close 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8200000000.txt.partial' with 'w'.
@@ -621,19 +621,19 @@ CHECK:      1.2008083172371E-01
  (n-block-1048576
   (phi2  0.120080831723712 0.000000000000000)
   (m_eff 0.763901937413273 0.000000000000000)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.120080831723712 0.000000000000000)
   (m_eff 0.763901937413273 0.000000000000000)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.120080831723712 0.000000000000000)
   (m_eff 0.763901937413273 0.000000000000000)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.120080831723712 0.000000000000000)
   (m_eff 0.763901937413273 0.000000000000000)
-  (v_eff nan nan)))
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 CHECK:      1.4915015140571E-01
 ((total-site (4 4 4 256))
@@ -644,19 +644,19 @@ CHECK:      1.4915015140571E-01
  (n-block-1048576
   (phi2  0.134615491564711 0.020555113071620)
   (m_eff -0.636818775105573 nan)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.134615491564711 0.020555113071620)
   (m_eff -0.636818775105573 nan)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.134615491564711 0.020555113071620)
   (m_eff -0.636818775105573 nan)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.134615491564711 0.020555113071620)
   (m_eff -0.636818775105573 nan)
-  (v_eff nan nan)))
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 CHECK:      1.5732367758023E-01
 ((total-site (4 4 4 256))
@@ -666,20 +666,20 @@ CHECK:      1.5732367758023E-01
  (n-traj-used 2)
  (n-block-1048576
   (phi2  0.153236914492971 0.005779555784211)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.153236914492971 0.005779555784211)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.153236914492971 0.005779555784211)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.153236914492971 0.005779555784211)
-  (m_eff nan nan)
-  (v_eff nan nan)))
+  (m_eff -nan nan)
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 QFile: open 'results/total_site=4x4x4x256/lambda=32.0000000000/mass_sqr=-2.3600000000.txt.partial' with 'w'.
 QFile: close 'results/total_site=4x4x4x256/lambda=32.0000000000/mass_sqr=-2.3600000000.txt.partial' with 'w'.
@@ -701,19 +701,19 @@ CHECK:      1.1953946179076E-01
  (n-block-1048576
   (phi2  0.119539461790761 0.000000000000000)
   (m_eff 0.563988683736082 0.000000000000000)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.119539461790761 0.000000000000000)
   (m_eff 0.563988683736082 0.000000000000000)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.119539461790761 0.000000000000000)
   (m_eff 0.563988683736082 0.000000000000000)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.119539461790761 0.000000000000000)
   (m_eff 0.563988683736082 0.000000000000000)
-  (v_eff nan nan)))
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 CHECK:      1.4798415376717E-01
 ((total-site (4 4 4 256))
@@ -724,19 +724,19 @@ CHECK:      1.4798415376717E-01
  (n-block-1048576
   (phi2  0.133761807778967 0.020113434585283)
   (m_eff -0.744393811277497 nan)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.133761807778967 0.020113434585283)
   (m_eff -0.744393811277497 nan)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.133761807778967 0.020113434585283)
   (m_eff -0.744393811277497 nan)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.133761807778967 0.020113434585283)
   (m_eff -0.744393811277497 nan)
-  (v_eff nan nan)))
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 CHECK:      1.5698247308821E-01
 ((total-site (4 4 4 256))
@@ -746,20 +746,20 @@ CHECK:      1.5698247308821E-01
  (n-traj-used 2)
  (n-block-1048576
   (phi2  0.152483313427691 0.006362772611187)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.152483313427691 0.006362772611187)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.152483313427691 0.006362772611187)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.152483313427691 0.006362772611187)
-  (m_eff nan nan)
-  (v_eff nan nan)))
+  (m_eff -nan nan)
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 QFile: open 'results/total_site=4x4x4x256/lambda=32.0000000000/mass_sqr=-2.3200000000.txt.partial' with 'w'.
 QFile: close 'results/total_site=4x4x4x256/lambda=32.0000000000/mass_sqr=-2.3200000000.txt.partial' with 'w'.
@@ -782,19 +782,19 @@ CHECK:      1.1671943448065E-01
  (n-block-1048576
   (phi2  0.116719434480648 0.000000000000000)
   (m_eff 0.984204996381497 0.000000000000000)
-  (v_eff -1.989955085883349 0.000000000000000))
+  (v_eff -1.989955085883348 0.000000000000000))
  (n-block-128
   (phi2  0.116719434480648 0.000000000000000)
   (m_eff 0.984204996381497 0.000000000000000)
-  (v_eff -1.989955085883349 0.000000000000000))
+  (v_eff -1.989955085883348 0.000000000000000))
  (n-block-64
   (phi2  0.116719434480648 0.000000000000000)
   (m_eff 0.984204996381497 0.000000000000000)
-  (v_eff -1.989955085883349 0.000000000000000))
+  (v_eff -1.989955085883348 0.000000000000000))
  (n-block-32
   (phi2  0.116719434480648 0.000000000000000)
   (m_eff 0.984204996381497 0.000000000000000)
-  (v_eff -1.989955085883349 0.000000000000000)))
+  (v_eff -1.989955085883348 0.000000000000000)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 CHECK:      1.4344742808224E-01
 ((total-site (8 8 8 512))
@@ -805,19 +805,19 @@ CHECK:      1.4344742808224E-01
  (n-block-1048576
   (phi2  0.130083431281442 0.018899545523193)
   (m_eff 0.105225327309703 0.971423688477417)
-  (v_eff -0.251599337347001 1.975268109231208))
+  (v_eff -0.251599337347001 1.975268109231205))
  (n-block-128
   (phi2  0.130083431281442 0.018899545523193)
   (m_eff 0.105225327309703 0.971423688477417)
-  (v_eff -0.251599337347001 1.975268109231208))
+  (v_eff -0.251599337347001 1.975268109231205))
  (n-block-64
   (phi2  0.130083431281442 0.018899545523193)
   (m_eff 0.105225327309703 0.971423688477417)
-  (v_eff -0.251599337347001 1.975268109231208))
+  (v_eff -0.251599337347001 1.975268109231205))
  (n-block-32
   (phi2  0.130083431281442 0.018899545523193)
   (m_eff 0.105225327309703 0.971423688477417)
-  (v_eff -0.251599337347001 1.975268109231208)))
+  (v_eff -0.251599337347001 1.975268109231205)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 CHECK:      1.5031790764418E-01
 ((total-site (8 8 8 512))
@@ -827,20 +827,20 @@ CHECK:      1.5031790764418E-01
  (n-traj-used 2)
  (n-block-1048576
   (phi2  0.146882667863205 0.004858162688251)
-  (m_eff nan nan)
-  (v_eff -1.630650117654987 1.704354914189870))
+  (m_eff -nan nan)
+  (v_eff -1.630650117654989 1.704354914189872))
  (n-block-128
   (phi2  0.146882667863205 0.004858162688251)
-  (m_eff nan nan)
-  (v_eff -1.630650117654987 1.704354914189870))
+  (m_eff -nan nan)
+  (v_eff -1.630650117654989 1.704354914189872))
  (n-block-64
   (phi2  0.146882667863205 0.004858162688251)
-  (m_eff nan nan)
-  (v_eff -1.630650117654987 1.704354914189870))
+  (m_eff -nan nan)
+  (v_eff -1.630650117654989 1.704354914189872))
  (n-block-32
   (phi2  0.146882667863205 0.004858162688251)
-  (m_eff nan nan)
-  (v_eff -1.630650117654987 1.704354914189870)))
+  (m_eff -nan nan)
+  (v_eff -1.630650117654989 1.704354914189872)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 QFile: open 'results/total_site=8x8x8x512/lambda=24.0000000000/mass_sqr=-1.6900000000.txt.partial' with 'w'.
 QFile: close 'results/total_site=8x8x8x512/lambda=24.0000000000/mass_sqr=-1.6900000000.txt.partial' with 'w'.
@@ -884,20 +884,20 @@ CHECK:      1.4322641767787E-01
  (n-traj-used 2)
  (n-block-1048576
   (phi2  0.129879198463591 0.018875818432804)
-  (m_eff 0.032686927955927 1.292963686067206)
-  (v_eff -0.062270956309588 2.623238251121995))
+  (m_eff 0.032686927955927 1.292963686067207)
+  (v_eff -0.062270956309588 2.623238251121998))
  (n-block-128
   (phi2  0.129879198463591 0.018875818432804)
-  (m_eff 0.032686927955927 1.292963686067206)
-  (v_eff -0.062270956309588 2.623238251121995))
+  (m_eff 0.032686927955927 1.292963686067207)
+  (v_eff -0.062270956309588 2.623238251121998))
  (n-block-64
   (phi2  0.129879198463591 0.018875818432804)
-  (m_eff 0.032686927955927 1.292963686067206)
-  (v_eff -0.062270956309588 2.623238251121995))
+  (m_eff 0.032686927955927 1.292963686067207)
+  (v_eff -0.062270956309588 2.623238251121998))
  (n-block-32
   (phi2  0.129879198463591 0.018875818432804)
-  (m_eff 0.032686927955927 1.292963686067206)
-  (v_eff -0.062270956309588 2.623238251121995)))
+  (m_eff 0.032686927955927 1.292963686067207)
+  (v_eff -0.062270956309588 2.623238251121998)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 CHECK:      1.4989714444181E-01
 ((total-site (8 8 8 512))
@@ -907,20 +907,20 @@ CHECK:      1.4989714444181E-01
  (n-traj-used 2)
  (n-block-1048576
   (phi2  0.146561781059843 0.004716916130224)
-  (m_eff nan nan)
-  (v_eff 0.106711698567964 2.013043952996427))
+  (m_eff -nan nan)
+  (v_eff 0.106711698567964 2.013043952996428))
  (n-block-128
   (phi2  0.146561781059843 0.004716916130224)
-  (m_eff nan nan)
-  (v_eff 0.106711698567964 2.013043952996427))
+  (m_eff -nan nan)
+  (v_eff 0.106711698567964 2.013043952996428))
  (n-block-64
   (phi2  0.146561781059843 0.004716916130224)
-  (m_eff nan nan)
-  (v_eff 0.106711698567964 2.013043952996427))
+  (m_eff -nan nan)
+  (v_eff 0.106711698567964 2.013043952996428))
  (n-block-32
   (phi2  0.146561781059843 0.004716916130224)
-  (m_eff nan nan)
-  (v_eff 0.106711698567964 2.013043952996427)))
+  (m_eff -nan nan)
+  (v_eff 0.106711698567964 2.013043952996428)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 QFile: open 'results/total_site=8x8x8x512/lambda=24.0000000000/mass_sqr=-1.6800000000.txt.partial' with 'w'.
 QFile: close 'results/total_site=8x8x8x512/lambda=24.0000000000/mass_sqr=-1.6800000000.txt.partial' with 'w'.
@@ -941,19 +941,19 @@ CHECK:      1.1803195178809E-01
  (n-traj-used 1)
  (n-block-1048576
   (phi2  0.118031951788094 0.000000000000000)
-  (m_eff 0.721107387784530 0.000000000000000)
+  (m_eff 0.721107387784531 0.000000000000000)
   (v_eff -1.463186232394261 0.000000000000000))
  (n-block-128
   (phi2  0.118031951788094 0.000000000000000)
-  (m_eff 0.721107387784530 0.000000000000000)
+  (m_eff 0.721107387784531 0.000000000000000)
   (v_eff -1.463186232394261 0.000000000000000))
  (n-block-64
   (phi2  0.118031951788094 0.000000000000000)
-  (m_eff 0.721107387784530 0.000000000000000)
+  (m_eff 0.721107387784531 0.000000000000000)
   (v_eff -1.463186232394261 0.000000000000000))
  (n-block-32
   (phi2  0.118031951788094 0.000000000000000)
-  (m_eff 0.721107387784530 0.000000000000000)
+  (m_eff 0.721107387784531 0.000000000000000)
   (v_eff -1.463186232394261 0.000000000000000)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 CHECK:      1.4395742475589E-01
@@ -965,19 +965,19 @@ CHECK:      1.4395742475589E-01
  (n-block-1048576
   (phi2  0.130994688271991 0.018332077740996)
   (m_eff 0.411489400988410 nan)
-  (v_eff -0.737107634111535 0.646325950824101))
+  (v_eff -0.737107634111535 0.646325950824102))
  (n-block-128
   (phi2  0.130994688271991 0.018332077740996)
   (m_eff 0.411489400988410 nan)
-  (v_eff -0.737107634111535 0.646325950824101))
+  (v_eff -0.737107634111535 0.646325950824102))
  (n-block-64
   (phi2  0.130994688271991 0.018332077740996)
   (m_eff 0.411489400988410 nan)
-  (v_eff -0.737107634111535 0.646325950824101))
+  (v_eff -0.737107634111535 0.646325950824102))
  (n-block-32
   (phi2  0.130994688271991 0.018332077740996)
   (m_eff 0.411489400988410 nan)
-  (v_eff -0.737107634111535 0.646325950824101)))
+  (v_eff -0.737107634111535 0.646325950824102)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 CHECK:      1.5043083665645E-01
 ((total-site (8 8 8 512))
@@ -988,19 +988,19 @@ CHECK:      1.5043083665645E-01
  (n-block-1048576
   (phi2  0.147194130706170 0.004577393452302)
   (m_eff 0.117975470651396 nan)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.147194130706170 0.004577393452302)
   (m_eff 0.117975470651396 nan)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.147194130706170 0.004577393452302)
   (m_eff 0.117975470651396 nan)
-  (v_eff nan nan))
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.147194130706170 0.004577393452302)
   (m_eff 0.117975470651396 nan)
-  (v_eff nan nan)))
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 QFile: open 'results/total_site=8x8x8x512/lambda=32.0000000000/mass_sqr=-2.1800000000.txt.partial' with 'w'.
 QFile: close 'results/total_site=8x8x8x512/lambda=32.0000000000/mass_sqr=-2.1800000000.txt.partial' with 'w'.
@@ -1067,20 +1067,20 @@ CHECK:      1.5036852697163E-01
  (n-traj-used 2)
  (n-block-1048576
   (phi2  0.147066425241148 0.004669877051578)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-128
   (phi2  0.147066425241148 0.004669877051578)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-64
   (phi2  0.147066425241148 0.004669877051578)
-  (m_eff nan nan)
-  (v_eff nan nan))
+  (m_eff -nan nan)
+  (v_eff -nan nan))
  (n-block-32
   (phi2  0.147066425241148 0.004669877051578)
-  (m_eff nan nan)
-  (v_eff nan nan)))
+  (m_eff -nan nan)
+  (v_eff -nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 QFile: open 'results/total_site=8x8x8x512/lambda=32.0000000000/mass_sqr=-2.1700000000.txt.partial' with 'w'.
 QFile: close 'results/total_site=8x8x8x512/lambda=32.0000000000/mass_sqr=-2.1700000000.txt.partial' with 'w'.
