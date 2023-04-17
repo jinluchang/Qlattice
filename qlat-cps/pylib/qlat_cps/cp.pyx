@@ -14,3 +14,27 @@ def end_with_cps(is_preserving_cache = False):
     if not is_preserving_cache:
         q.clean_cache()
     cc.end_with_cps(is_preserving_cache)
+
+def save_cps_prop_float(prop, path):
+    assert isinstance(prop, q.Prop)
+    assert isinstance(path, str)
+    cdef FieldWilsonMatrix field_wm = prop
+    cc.save_cps_prop_float(field_wm.xx, path)
+
+def save_cps_prop_double(prop, path):
+    assert isinstance(prop, q.Prop)
+    assert isinstance(path, str)
+    cdef FieldWilsonMatrix field_wm = prop
+    cc.save_cps_prop_double(field_wm.xx, path)
+
+def load_cps_prop_float(prop, path):
+    assert isinstance(prop, q.Prop)
+    assert isinstance(path, str)
+    cdef FieldWilsonMatrix field_wm = prop
+    cc.load_cps_prop_float(field_wm.xx, path)
+
+def load_cps_prop_double(prop, path):
+    assert isinstance(prop, q.Prop)
+    assert isinstance(path, str)
+    cdef FieldWilsonMatrix field_wm = prop
+    cc.load_cps_prop_double(field_wm.xx, path)

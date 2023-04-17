@@ -10,4 +10,12 @@ void begin_with_cps(const std::vector<std::string>& sargs,
 
 void end_with_cps(const bool is_preserving_cache = false);
 
+void save_cps_prop_float(const Field<WilsonMatrix>& prop, const std::string& path);
+
+void save_cps_prop_double(const Field<WilsonMatrix>& prop, const std::string& path);
+
+void load_cps_prop_float(Field<WilsonMatrix>& prop, const std::string& path);
+
+void load_cps_prop_double(Field<WilsonMatrix>& prop, const std::string& path);
+
 }  // namespace qlat

@@ -84,6 +84,8 @@ inline void cps_end(const bool is_preserving_cache = false)
 {
   end(is_preserving_cache);
   cps::End();
+  // Currently CPS does not call destroy_qmp() in End(), so call it explicitly now.
+  cps::QMPSCU::destroy_qmp();
 }
 
 template <class M, class N>

@@ -551,7 +551,7 @@ void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
   sync_node();
   displayln_info("===========================================================================");
   displayln_info("");
-  displayln_info("                                  Qlattice");
+  displayln_info("                              Qlattice");
   displayln_info("");
   displayln_info("                   Copyright (C) 2023 Luchang Jin");
   displayln_info("");

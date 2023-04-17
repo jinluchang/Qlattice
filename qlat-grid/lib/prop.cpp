@@ -3,9 +3,9 @@
 namespace qlat
 {  //
 
-void save_prop_float(const Field<WilsonMatrix>& prop, const std::string& path)
+void save_grid_prop_float(const Field<WilsonMatrix>& prop, const std::string& path)
 {
-  TIMER_VERBOSE("save_prop_float");
+  TIMER_VERBOSE("save_grid_prop_float");
   const std::string path_dir = dirname(path);
   qmkdir_p_info(path_dir);
   const Geometry& geo = prop.geo();
@@ -26,9 +26,9 @@ void save_prop_float(const Field<WilsonMatrix>& prop, const std::string& path)
   qrename(path + ".partial", path);
 }
 
-void load_prop_float(Field<WilsonMatrix>& prop, const std::string& path)
+void load_grid_prop_float(Field<WilsonMatrix>& prop, const std::string& path)
 {
-  TIMER_VERBOSE("load_prop_float");
+  TIMER_VERBOSE("load_grid_prop_float");
   // p_prop need to have correct geometry
   if (not does_file_exist_sync_node(path)) {
     // if file does not exist, clear the prop obj
@@ -54,9 +54,9 @@ void load_prop_float(Field<WilsonMatrix>& prop, const std::string& path)
   grid_convert((Propagator4d&)prop, gprop);
 }
 
-void save_prop_double(const Field<WilsonMatrix>& prop, const std::string& path)
+void save_grid_prop_double(const Field<WilsonMatrix>& prop, const std::string& path)
 {
-  TIMER_VERBOSE("save_prop_double");
+  TIMER_VERBOSE("save_grid_prop_double");
   const std::string path_dir = dirname(path);
   qmkdir_p_info(path_dir);
   const Geometry& geo = prop.geo();
@@ -77,9 +77,9 @@ void save_prop_double(const Field<WilsonMatrix>& prop, const std::string& path)
   qrename(path + ".partial", path);
 }
 
-void load_prop_double(Field<WilsonMatrix>& prop, const std::string& path)
+void load_grid_prop_double(Field<WilsonMatrix>& prop, const std::string& path)
 {
-  TIMER_VERBOSE("load_prop_double");
+  TIMER_VERBOSE("load_grid_prop_double");
   // p_prop need to have correct geometry
   if (not does_file_exist_sync_node(path)) {
     // if file does not exist, clear the prop obj

@@ -1,0 +1,2 @@
+CHECK: diff ratio with double 0.0
+CHECK: finished successfully.

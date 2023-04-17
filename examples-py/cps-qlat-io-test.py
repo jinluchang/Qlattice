@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-import qlat_grid as q
-
-q.begin_with_grid()
-
-rs = q.RngState()
+import qlat_cps as q
 
 total_site = [ 8, 8, 8, 16, ]
+
+q.begin_with_cps(total_site)
+
+rs = q.RngState()
 
 geo = q.Geometry(total_site, 1)
 
@@ -24,9 +24,9 @@ prop.set_rand(rs)
 
 q.qremove_all_info(f"results")
 
-q.save_grid_prop_float(prop, f"results/prop.grid.field")
+q.save_cps_prop_float(prop, f"results/prop.cps.field")
 
-q.load_grid_prop_float(prop1, f"results/prop.grid.field")
+q.load_cps_prop_float(prop1, f"results/prop.cps.field")
 
 prop1 -= prop
 
@@ -34,9 +34,9 @@ q.displayln_info(f"diff ratio {q.qnorm(prop1) / q.qnorm(prop)}")
 
 assert q.qnorm(prop1) / q.qnorm(prop) < 1e-15
 
-q.save_grid_prop_double(prop, f"results/prop-d.grid.field")
+q.save_cps_prop_double(prop, f"results/prop-d.cps.field")
 
-q.load_grid_prop_double(prop1, f"results/prop-d.grid.field")
+q.load_cps_prop_double(prop1, f"results/prop-d.cps.field")
 
 prop1 -= prop
 
@@ -48,4 +48,4 @@ q.timer_display()
 
 q.displayln_info(f"CHECK: finished successfully.")
 
-q.end_with_grid()
+q.end_with_cps()

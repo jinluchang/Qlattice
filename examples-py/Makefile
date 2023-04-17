@@ -34,19 +34,24 @@ tests_gpt = \
 			gpt-qlat-rbc-ukqcd-invert.log \
 			gpt-qlat-madwf.log
 
-all: run run-gpt
+tests_cps = \
+			cps-qlat-io-test.log
+
+all: run run-gpt run-cps
 
 run: update-sources $(tests) qlat-ext.log
 
 run-gpt: update-sources $(tests_gpt)
 
+run-cps: update-sources $(tests_cps)
+
 update-sources:
-	-for i in $(tests) $(tests_gpt) ; do touch "$${i%.log}.py" ; done
+	-for i in $(tests) $(tests_gpt) $(tests_cps) ; do touch "$${i%.log}.py" ; done
 	-touch qlat-ext/meson.build
 
 %.log: %.py
 	-rm -rf results output_data cache
-	-time ( q_verbose=1 mpiexec -n 2 ./"$<" --mpi 1.1.1.2 --mpi_split 1.1.1.1 --mpi 1.1.2 --mpi_split 1.1.1 >"$@".full 2>&1 )
+	-time ( q_verbose=1 mpiexec -n 2 ./"$<" -qmp-geom 1 1 1 2 --mpi 1.1.1.2 --mpi_split 1.1.1.1 --mpi 1.1.2 --mpi_split 1.1.1 >"$@".full 2>&1 )
 	-grep "CHECK: " "$@".full >"$@".new
 	-if diff "$@".new "$@" ; then echo passed ; else cat "$@".full ; fi
 	-mv -v "$@".new "$@"

@@ -6,3 +6,11 @@ cdef extern from "qlat-cps/qlat-cps.h" namespace "qlat":
                         const Coordinate& total_site)
 
     void end_with_cps(const bool is_preserving_cache)
+
+    void save_cps_prop_float(const Field[WilsonMatrix]& prop, const std_string& path)
+
+    void save_cps_prop_double(const Field[WilsonMatrix]& prop, const std_string& path)
+
+    void load_cps_prop_float(Field[WilsonMatrix]& prop, const std_string& path)
+
+    void load_cps_prop_double(Field[WilsonMatrix]& prop, const std_string& path)
