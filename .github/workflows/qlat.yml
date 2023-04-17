@@ -126,6 +126,7 @@ jobs:
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
     - name: Build CPS
+        export num_proc=2
         ./scripts/qmp.sh
         ./scripts/qio.sh
         ./scripts/cps.sh
@@ -145,6 +146,10 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/qlat-examples-py.sh
+    - name: Testing pylib qlat cps
+      run: |
+        export num_proc=2
+        ./scripts/qlat-examples-py-cps.sh
     - name: Testing qlat
       run: |
         export num_proc=2
@@ -204,6 +209,11 @@ jobs:
         ./scripts/qcore.sh
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
+    - name: Build CPS
+        export num_proc=2
+        ./scripts/qmp.sh
+        ./scripts/qio.sh
+        ./scripts/cps.sh
     - name: Build Grid-clehner
       run: |
         export num_proc=2
@@ -216,10 +226,15 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/qlat-grid.sh
+        ./scripts/qlat-cps.sh
     - name: Testing pylib qlat
       run: |
         export num_proc=2
         ./scripts/qlat-examples-py.sh
+    - name: Testing pylib qlat cps
+      run: |
+        export num_proc=2
+        ./scripts/qlat-examples-py-cps.sh
     - name: Testing pylib qlat gpt
       run: |
         export num_proc=2
@@ -353,6 +368,11 @@ jobs:
         ./scripts/fftw.sh
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
+    - name: Build CPS
+        export num_proc=2
+        ./scripts/qmp.sh
+        ./scripts/qio.sh
+        ./scripts/cps.sh
     - name: Build Grid-clehner
       run: |
         export num_proc=3
@@ -369,6 +389,10 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/qlat-examples-py.sh
+    - name: Testing pylib qlat cps
+      run: |
+        export num_proc=3
+        ./scripts/qlat-examples-py-cps.sh
     - name: Testing qlat
       run: |
         export num_proc=3
@@ -425,6 +449,11 @@ jobs:
         ./scripts/fftw.sh
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
+    - name: Build CPS
+        export num_proc=2
+        ./scripts/qmp.sh
+        ./scripts/qio.sh
+        ./scripts/cps.sh
     - name: Build Grid-clehner
       run: |
         export num_proc=3
@@ -437,10 +466,15 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/qlat-grid.sh
+        ./scripts/qlat-cps.sh
     - name: Testing pylib qlat
       run: |
         export num_proc=3
         ./scripts/qlat-examples-py.sh
+    - name: Testing pylib qlat cps
+      run: |
+        export num_proc=3
+        ./scripts/qlat-examples-py-cps.sh
     - name: Testing pylib qlat gpt
       run: |
         export num_proc=3
