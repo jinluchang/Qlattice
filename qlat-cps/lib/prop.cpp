@@ -1,9 +1,12 @@
 #include <qlat-cps/qlat-cps.h>
 
+#include <util/qio_readPropagator.h>
+
 namespace qlat
 {  //
 
-void save_cps_prop_float(const Field<WilsonMatrix>& prop, const std::string& path)
+void save_cps_prop_float(const Field<WilsonMatrix>& prop,
+                         const std::string& path)
 {
   TIMER_VERBOSE("save_cps_prop_float");
   const std::string path_dir = dirname(path);
@@ -34,7 +37,8 @@ void load_cps_prop_float(Field<WilsonMatrix>& prop, const std::string& path)
   read_field(prop, path);
 }
 
-void save_cps_prop_double(const Field<WilsonMatrix>& prop, const std::string& path)
+void save_cps_prop_double(const Field<WilsonMatrix>& prop,
+                          const std::string& path)
 {
   TIMER_VERBOSE("save_cps_prop_double");
   const std::string path_dir = dirname(path);
@@ -62,6 +66,7 @@ void load_cps_prop_double(Field<WilsonMatrix>& prop, const std::string& path)
   qassert(geo.multiplicity == 1);
   const Coordinate total_site = geo.total_site();
   const Coordinate size_node = geo.geon.size_node;
+  // cps::qio_readPropagator();
   read_field(prop, path);
 }
 

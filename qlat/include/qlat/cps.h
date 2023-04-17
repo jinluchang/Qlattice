@@ -68,13 +68,15 @@ inline void set_do_arg(cps::DoArg& do_arg, const Coordinate& total_site)
   do_arg.gfix_chkb = 1;
 }
 
-inline void cps_begin(int* argc, char** argv[], const Coordinate& total_site)
+inline void cps_begin(int* argc, char** argv[], const Coordinate& total_site, const bool is_initialize_rng = false)
 {
   cps::Start(argc, argv);
   cps::DoArg do_arg;
   set_do_arg(do_arg, total_site);
   cps::GJP.Initialize(do_arg);
-  cps::LRG.Initialize();
+  if (is_initialize_rng) {
+    cps::LRG.Initialize();
+  }
   Coordinate size_node(cps::SizeX(), cps::SizeY(), cps::SizeZ(), cps::SizeT());
   begin(cps::UniqueID(), size_node);
   sync_node();
