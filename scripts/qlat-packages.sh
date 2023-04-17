@@ -30,6 +30,10 @@ source qcore/set-prefix.sh $name
         time-run python3 -m build -ns -o "$build" "$wd"/qlat-grid
         time-run pip3 install $opts qlat-grid
     fi
+    if [ -n "$(find-library.sh libcps.a)" ] ; then
+        time-run python3 -m build -ns -o "$build" "$wd"/qlat-cps
+        time-run pip3 install $opts qlat-cps
+    fi
 
     echo "!!!! $name build !!!!"
     rm -rf "$temp_dir" || true

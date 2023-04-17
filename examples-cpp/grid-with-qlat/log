@@ -34,7 +34,7 @@ Current Grid git commit hash=458c943987eec3282b001f276c9bc91fd482ff02: (HEAD -> 
 qlat::begin(): MPI Initialized. num_node = 2
 ===========================================================================
 
-                                  Qlattice
+                              Qlattice
 
                    Copyright (C) 2023 Luchang Jin
 
