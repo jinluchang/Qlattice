@@ -126,6 +126,7 @@ jobs:
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
     - name: Build CPS
+      run: |
         export num_proc=2
         ./scripts/qmp.sh
         ./scripts/qio.sh
@@ -210,6 +211,7 @@ jobs:
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
     - name: Build CPS
+      run: |
         export num_proc=2
         ./scripts/qmp.sh
         ./scripts/qio.sh
@@ -369,6 +371,7 @@ jobs:
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
     - name: Build CPS
+      run: |
         export num_proc=2
         ./scripts/qmp.sh
         ./scripts/qio.sh
@@ -450,6 +453,7 @@ jobs:
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
     - name: Build CPS
+      run: |
         export num_proc=2
         ./scripts/qmp.sh
         ./scripts/qio.sh
