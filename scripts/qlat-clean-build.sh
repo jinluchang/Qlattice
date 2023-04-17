@@ -11,6 +11,7 @@ source qcore/set-prefix.sh $name
     rm -rfv "$prefix/../qlat-utils/build"
     rm -rfv "$prefix/../qlat/build"
     rm -rfv "$prefix/../qlat-grid/build"
+    rm -rfv "$prefix/../qlat-cps/build"
 
     echo "!!!! $name build !!!!"
     rm -rf "$temp_dir" || true

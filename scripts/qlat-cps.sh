@@ -1,8 +1,8 @@
 #!/bin/bash
 
-./scripts/qlat-utils.sh
+./scripts/qlat.sh
 
-name=qlat
+name=qlat-cps
 
 source qcore/set-prefix.sh $name
 
@@ -29,9 +29,9 @@ source qcore/set-prefix.sh $name
         export LIBS="$QLAT_LIBS"
     fi
 
-    touch "$wd"/qlat/meson.build
+    touch "$wd"/qlat-cps/meson.build
 
-    time-run meson setup "$wd/qlat" \
+    time-run meson setup "$wd/qlat-cps" \
         --prefix="$prefix" \
         -Dpython.platlibdir="$prefix/lib/python3/qlat-packages" \
         -Dpython.purelibdir="$prefix/lib/python3/qlat-packages"

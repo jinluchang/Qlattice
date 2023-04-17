@@ -32,6 +32,7 @@ source qcore/set-prefix.sh $name
 
     time-run meson compile -j$num_proc
 
+    rm -rfv "$prefix"/bin
     rm -rfv "$prefix"/lib
     time-run meson install
 

@@ -12,6 +12,7 @@ source qcore/set-prefix.sh $name
     time-run rsync -a --delete $distfiles/$name "$prefix"/
 
     export CXXFLAGS="$CXXFLAGS -fPIC -w -Wno-psabi"
+    export CFLAGS="$CFLAGS -fPIC -w -Wno-psabi"
 
     opts=""
     if [ -n "$(find-library.sh libgmp.a)" ] ; then
@@ -30,12 +31,6 @@ source qcore/set-prefix.sh $name
         opts+=" --enable-qio=$(find-library.sh libqio.a)"
     fi
 
-    # if [ -n "$(find-library.sh libtirpc.a)" ] ; then
-    #     LDFLAGS+=" -L$(find-library.sh libtirpc.a)/lib -ltirpc"
-    #     CFLAGS+=" -I$(find-library.sh libtirpc.a)/include/tirpc"
-    #     export LDFLAGS
-    #     export CFLAGS
-    # fi
     if [ -n "$(find-library.sh libz.a)" ] ; then
         LDFLAGS+=" -L$(find-library.sh libz.a)/lib"
         CFLAGS+=" -I$(find-library.sh libz.a)/include"
