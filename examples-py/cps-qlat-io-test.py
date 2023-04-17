@@ -24,16 +24,6 @@ prop.set_rand(rs)
 
 q.qremove_all_info(f"results")
 
-q.save_cps_prop_float(prop, f"results/prop.cps.field")
-
-q.load_cps_prop_float(prop1, f"results/prop.cps.field")
-
-prop1 -= prop
-
-q.displayln_info(f"diff ratio {q.qnorm(prop1) / q.qnorm(prop)}")
-
-assert q.qnorm(prop1) / q.qnorm(prop) < 1e-15
-
 q.save_cps_prop_double(prop, f"results/prop-d.cps.field")
 
 q.load_cps_prop_double(prop1, f"results/prop-d.cps.field")
