@@ -13,6 +13,7 @@ source qcore/set-prefix.sh $name
 
     opts="--verbose --upgrade --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
+    time-run pip3 install $opts flit_core
     time-run pip3 install $opts wheel
     time-run pip3 uninstall setuptools -y
     time-run pip3 install $opts setuptools
