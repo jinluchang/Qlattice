@@ -41,7 +41,9 @@ inline std::string vssprintf(const char* fmt, va_list args)
 {
   char* cstr;
   int ret = vasprintf(&cstr, fmt, args);
-  assert(ret >= 0);
+  if (ret < 0) {
+    assert(false);
+  }
   const std::string str = std::string(cstr);
   std::free(cstr);
   return str;

@@ -105,6 +105,7 @@ qacc long long& operator*=(long long& x, const Complex& factor)
   (void)x;
   (void)factor;
   assert(false);
+  return x;
 }
 
 qacc long& operator*=(long& x, const Complex& factor)
@@ -112,6 +113,7 @@ qacc long& operator*=(long& x, const Complex& factor)
   (void)x;
   (void)factor;
   assert(false);
+  return x;
 }
 
 qacc double& operator*=(double& x, const Complex& factor)
@@ -119,20 +121,23 @@ qacc double& operator*=(double& x, const Complex& factor)
   (void)x;
   (void)factor;
   assert(false);
+  return x;
 }
 
 qacc float& operator*=(float& x, const Complex& factor)
 {
   (void)x;
   (void)factor;
- assert(false);
+  assert(false);
+  return x;
 }
 
 qacc char& operator*=(char& x, const Complex& factor)
 {
   (void)x;
   (void)factor;
- assert(false);
+  assert(false);
+  return x;
 }
 
 qacc int8_t& operator*=(int8_t& x, const Complex& factor)
@@ -140,6 +145,7 @@ qacc int8_t& operator*=(int8_t& x, const Complex& factor)
   (void)x;
   (void)factor;
   assert(false);
+  return x;
 }
 
 template <class M>
