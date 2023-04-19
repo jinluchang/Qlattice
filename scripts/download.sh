@@ -102,6 +102,7 @@ aget "https://files.pythonhosted.org/packages/4a/1b/059a68158bf65c857cfd6b80aed0
 aget "https://files.pythonhosted.org/packages/0a/70/1500f05bddb16d795b29fac42954b3c8764c82367b8326c10f038471ae7f/Cython-0.29.34.tar.gz"
 aget "https://files.pythonhosted.org/packages/c5/40/7cf58e6230f0e76699f011c6d293dd47755997709a303a4e644823f3a753/h5py-3.7.0.tar.gz"
 aget "https://files.pythonhosted.org/packages/bc/f2/749af7fd0e7703ddca6cea525ab40f26c3ca6cbe6c23658441c6f9705860/mpi4py-3.1.4.tar.gz"
+aget "https://files.pythonhosted.org/packages/2f/3c/97749f46774cf2ccff1c2956de5dfa084f151fe03bb20ebe628a1bba2cea/hatchling-1.14.0.tar.gz"
 )
 
 cd "$wd"
