@@ -25,17 +25,11 @@ set -e
 ( source qcore/set-prefix.sh ; source qcore/conf.sh . ; pip3 install -v qlat-utils )
 ( source qcore/set-prefix.sh ; source qcore/conf.sh . ; pip3 install -v qlat )
 
-./scripts/qlat-examples-py.sh
-./scripts/qlat-examples-cpp.sh
-
 ./scripts/c-lime.sh
 ./scripts/grid-clehner.avx2.sh
 ./scripts/gpt.sh
 
 ( source qcore/set-prefix.sh ; source qcore/conf.sh . ; pip3 install -v qlat-grid )
-
-./scripts/qlat-examples-cpp-grid.sh
-./scripts/qlat-examples-py-gpt.sh
 
 ./scripts/qmp.sh
 ./scripts/qio.sh
@@ -43,6 +37,10 @@ set -e
 
 ( source qcore/set-prefix.sh ; source qcore/conf.sh . ; pip3 install -v qlat-cps )
 
+./scripts/qlat-examples-py.sh
+./scripts/qlat-examples-cpp.sh
+./scripts/qlat-examples-py-gpt.sh
 ./scripts/qlat-examples-py-cps.sh
+./scripts/qlat-examples-cpp-grid.sh
 
 } 2>&1 | tee $prefix/log.build.txt
