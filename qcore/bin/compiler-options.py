@@ -17,9 +17,11 @@ def process_remove_arg(argv):
         if arg[:name_len] == name:
             args_to_remove.append(arg)
             args_to_remove.append(arg[name_len:])
-    for x in args_to_remove:
-        while x in argv:
-            argv.remove(x)
+    argv_new = []
+    for arg in argv:
+        if arg not in args_to_remove:
+            argv_new.append(arg)
+    return argv_new
 
 argv = sys.argv.copy()
 process_remove_arg(argv)
