@@ -36,6 +36,7 @@ set -e
 
 ./scripts/fftw.sh
 
+./scripts/qlat-utils.sh
 ./scripts/qlat.sh
 
 ./scripts/autoconf.sh
@@ -44,5 +45,10 @@ set -e
 ./scripts/grid-clehner.knl.sh
 ./scripts/gpt.sh
 ./scripts/qlat-grid.sh
+
+./scripts/qmp.sh
+./scripts/qio.sh
+./scripts/cps.sh
+./scripts/qlat-cps.sh
 
 } 2>&1 | tee $prefix/log.build.txt

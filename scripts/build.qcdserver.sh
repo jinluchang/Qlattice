@@ -39,6 +39,8 @@ set -e
 ./scripts/fftw.sh
 ./scripts/cuba.sh
 ./scripts/eigen.sh
+
+./scripts/qlat-utils.sh
 ./scripts/qlat.sh
 
 ./scripts/autoconf.sh
@@ -46,11 +48,19 @@ set -e
 ./scripts/c-lime.sh
 ./scripts/grid-clehner.avx2.sh
 ./scripts/gpt.sh
+
 ./scripts/qlat-grid.sh
+
+./scripts/qmp.sh
+./scripts/qio.sh
+./scripts/cps.sh
+
+./scripts/qlat-cps.sh
 
 ./scripts/qlat-examples-py.sh
 ./scripts/qlat-examples-cpp.sh
 ./scripts/qlat-examples-py-gpt.sh
+./scripts/qlat-examples-py-cps.sh
 ./scripts/qlat-examples-cpp-grid.sh
 
 ./scripts/gnuplot.sh

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-./scripts/qlat-utils.sh
-
 name=qlat
 
 source qcore/set-prefix.sh $name

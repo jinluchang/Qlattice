@@ -11,6 +11,7 @@ set -e
 ./scripts/eigen.sh
 ./scripts/ninja-script.sh
 
+./scripts/qlat-utils.sh
 ./scripts/qlat.sh
 
 ./scripts/c-lime.sh

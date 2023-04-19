@@ -9,6 +9,8 @@ set -e
 
 ./scripts/ninja-script.sh
 
+./scripts/qlat-utils.sh
+./scripts/qlat.sh
 ./scripts/qlat-grid.sh
 
 } 2>&1 | tee $prefix/log.build.txt

@@ -45,6 +45,7 @@ jobs:
     - name: Build Qlattice
       run: |
         export num_proc=2
+        ./scripts/qlat-utils.sh
         ./scripts/qlat.sh
     - name: Build Qlattice documentation
       run: |
@@ -227,6 +228,8 @@ jobs:
     - name: Build Qlattice
       run: |
         export num_proc=2
+        ./scripts/qlat-utils.sh
+        ./scripts/qlat.sh
         ./scripts/qlat-grid.sh
         ./scripts/qlat-cps.sh
     - name: Testing pylib qlat
@@ -318,6 +321,7 @@ jobs:
     - name: Build Qlattice
       run: |
         export num_proc=3
+        ./scripts/qlat-utils.sh
         ./scripts/qlat.sh
     - name: Testing pylib qlat
       run: |
@@ -469,6 +473,8 @@ jobs:
     - name: Build Qlattice
       run: |
         export num_proc=3
+        ./scripts/qlat-utils.sh
+        ./scripts/qlat.sh
         ./scripts/qlat-grid.sh
         ./scripts/qlat-cps.sh
     - name: Testing pylib qlat

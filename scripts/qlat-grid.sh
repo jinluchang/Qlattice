@@ -1,7 +1,5 @@
 #!/bin/bash
 
-./scripts/qlat.sh
-
 name=qlat-grid
 
 source qcore/set-prefix.sh $name
@@ -11,7 +9,7 @@ source qcore/set-prefix.sh $name
     source qcore/conf.sh ..
 
     if ! which grid-config >/dev/null 2>&1 ; then
-        echo "qlat-grid: Cannot find grid-config. Stop."
+        echo "qlat-grid: Cannot find 'grid-config'. Stop."
         exit 1
     fi
 

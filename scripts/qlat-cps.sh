@@ -1,7 +1,5 @@
 #!/bin/bash
 
-./scripts/qlat.sh
-
 name=qlat-cps
 
 source qcore/set-prefix.sh $name
@@ -14,6 +12,11 @@ source qcore/set-prefix.sh $name
     mkdir -p "$build"
 
     cd "$build"
+
+    if [ -z "$(find-library.sh libcps.a)" ] ; then
+        echo "qlat-cps: Cannot find 'libcps.a'. Stop."
+        exit 1
+    fi
 
     if [ -n "$QLAT_MPICXX" ] ; then
         export MPICXX="$QLAT_MPICXX"
