@@ -42,12 +42,15 @@ jobs:
         export num_proc=2
         ./scripts/setenv.default.sh
         ./scripts/qcore.sh
-    - name: Build Qlattice
+    - name: Build qlat-utils
       run: |
         export num_proc=2
         ./scripts/qlat-utils.sh
+    - name: Build qlat
+      run: |
+        export num_proc=2
         ./scripts/qlat.sh
-    - name: Build Qlattice documentation
+    - name: Build qlat-docs
       run: |
         export num_proc=2
         ./scripts/qlat-docs.sh
@@ -225,12 +228,21 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/gpt.sh
-    - name: Build Qlattice
+    - name: Build qlat-utils
       run: |
         export num_proc=2
         ./scripts/qlat-utils.sh
+    - name: Build qlat
+      run: |
+        export num_proc=2
         ./scripts/qlat.sh
+    - name: Build qlat-grid
+      run: |
+        export num_proc=2
         ./scripts/qlat-grid.sh
+    - name: Build qlat-cps
+      run: |
+        export num_proc=2
         ./scripts/qlat-cps.sh
     - name: Testing pylib qlat
       run: |
@@ -318,10 +330,13 @@ jobs:
         export num_proc=3
         ./scripts/setenv.default.sh
         ./scripts/qcore.sh
-    - name: Build Qlattice
+    - name: Build qlat-utils
       run: |
         export num_proc=3
         ./scripts/qlat-utils.sh
+    - name: Build qlat
+      run: |
+        export num_proc=3
         ./scripts/qlat.sh
     - name: Testing pylib qlat
       run: |
@@ -470,12 +485,21 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/gpt.sh
-    - name: Build Qlattice
+    - name: Build qlat-utils
       run: |
         export num_proc=3
         ./scripts/qlat-utils.sh
+    - name: Build qlat
+      run: |
+        export num_proc=3
         ./scripts/qlat.sh
+    - name: Build qlat-grid
+      run: |
+        export num_proc=3
         ./scripts/qlat-grid.sh
+    - name: Build qlat-cps
+      run: |
+        export num_proc=3
         ./scripts/qlat-cps.sh
     - name: Testing pylib qlat
       run: |
