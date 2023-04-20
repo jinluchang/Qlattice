@@ -26,8 +26,8 @@ void grid_end() { end(); }
 
 #define QLAT_USE_GRID_EIGEN
 
-#include <Grid/Grid.h>
 #include <qlat/qlat.h>
+#include <Grid/Grid.h>
 
 #include <cstdlib>
 

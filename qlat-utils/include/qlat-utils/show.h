@@ -18,12 +18,14 @@
 
 #pragma once
 
+#undef NDEBUG
+
+#include <cassert>
 #include <cstdarg>
-#include <cstdio>
 #include <cstdint>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <cassert>
 #include <sstream>
 #include <string>
 #include <vector>

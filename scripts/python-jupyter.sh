@@ -23,6 +23,8 @@ source qcore/set-prefix.sh $name
     time-run pip3 install $opts seaborn
     time-run pip3 install $opts matplotlib
     time-run pip3 install $opts lz4
+    time-run pip3 install $opts pycuda
+    time-run pip3 install $opts pytools
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"
