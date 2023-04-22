@@ -26,7 +26,7 @@ source qcore/set-prefix.sh $name
 
     q_verbose=1 time-run make -C "$prefix"/examples-cpp compile-grid -j$num_proc || true
 
-    q_verbose=1 time-run make -C "$prefix"/examples-cpp run-grid || true
+    q_verbose=1 time-run make -C "$prefix"/examples-cpp run-grid -j$num_test || true
 
     cd "$wd"
 

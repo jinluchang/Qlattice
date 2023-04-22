@@ -10,7 +10,7 @@ source qcore/set-prefix.sh $name
 
     time-run rsync -a --delete "$wd"/examples-py "$prefix"/
 
-    q_verbose=1 time-run make -C "$prefix"/examples-py run-cps || true
+    q_verbose=1 time-run make -C "$prefix"/examples-py run-cps -j "$num_test" || true
 
     cd "$wd"
 
