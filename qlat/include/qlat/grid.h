@@ -79,7 +79,7 @@ inline void grid_begin(
     const std::vector<Coordinate>& size_node_list = std::vector<Coordinate>())
 {
   using namespace Grid;
-  const int ret = system("rm /dev/shm/Grid* >/dev/null 2>&1");
+  // const int ret = system("rm /dev/shm/Grid* >/dev/null 2>&1");
   Grid_init(argc, argv);
   const int num_node = init_mpi(argc, argv);
   Coordinate size_node;
@@ -99,7 +99,7 @@ inline void grid_begin(
   const int id_node = id_node_from_grid(UGrid);
   delete UGrid;
   begin(id_node, size_node);
-  displayln_info(ssprintf("grid_begin: rm returns %d", ret));
+  // displayln_info(ssprintf("grid_begin: rm returns %d", ret));
   displayln_info(
       ssprintf("GridThreads::GridThreads() = %d", GridThread::GetThreads()));
 }
@@ -108,8 +108,8 @@ inline void grid_end(const bool is_preserving_cache = false)
 {
   end(is_preserving_cache);
   Grid::Grid_finalize();
-  const int ret = system("rm /dev/shm/Grid* >/dev/null 2>&1");
-  displayln_info(ssprintf("grid_end: rm returns %d", ret));
+  // const int ret = system("rm /dev/shm/Grid* >/dev/null 2>&1");
+  // displayln_info(ssprintf("grid_end: rm returns %d", ret));
 }
 
 inline void grid_convert(Grid::LatticeGaugeField& ggf, const GaugeField& gf)
