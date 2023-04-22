@@ -72,10 +72,9 @@ API inline int& qacc_num_threads()
                           num2, 1);                                         \
     cudaError CUDA_LAST_ERROR_OBJECT = cudaGetLastError();                  \
     if (cudaSuccess != CUDA_LAST_ERROR_OBJECT) {                            \
-      qlat::displayln(qlat::ssprintf(                                       \
-          "qacc_for: Cuda error %s from '%s' Line %d.",                     \
-          cudaGetErrorString(CUDA_LAST_ERROR_OBJECT), __FILE__, __LINE__)); \
-      qassert(false);                                                       \
+      qerr(qlat::ssprintf("qacc_for: Cuda error %s from '%s' Line %d.",     \
+                          cudaGetErrorString(CUDA_LAST_ERROR_OBJECT),       \
+                          __FILE__, __LINE__));                             \
     }                                                                       \
     qlambda_apply<<<CUDA_BLOCKS_DIM3, CUDA_THREADS_DIM3>>>(                 \
         num1, num2, QACC_FOR_LOOP_LAMBDA);                                  \

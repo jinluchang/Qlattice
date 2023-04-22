@@ -206,6 +206,7 @@ inline void clf_topology_field(FieldM<double, 1>& topf,
   topf.init(geo);
   qassert(is_matching_geo(topf.geo(), geo));
   qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = clf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     topf.get_elem(xl) = clf_topology_density(clf, xl);
   });

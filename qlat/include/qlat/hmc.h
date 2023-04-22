@@ -66,6 +66,7 @@ inline double gm_hamilton_node(const GaugeMomentum& gm)
   FieldM<double, 1> fd;
   fd.init(geo);
   qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = fd.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ColorMatrix> gm_v = gm.get_elems_const(xl);
     double s = 0.0;
@@ -276,6 +277,7 @@ inline void set_gm_force_no_comm(GaugeMomentum& gm_force, const GaugeField& gf,
   const Geometry geo = geo_resize(gf.geo());
   gm_force.init(geo);
   qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = gm_force.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> gm_force_v = gm_force.get_elems(xl);
     qassert(gm_force_v.size() == 4);

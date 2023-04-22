@@ -1,9 +1,9 @@
 CHECK: geo.show() = Geometry([4, 4, 4, 8], 1)
-CHECK: prop.crc32() = 4021037301 ; prop.qnorm() = 49304.10827466952
+CHECK: prop.crc32() = 4021037301 ; prop.qnorm() = 4.930410827467E+04
 CHECK: prop_arr.dtype = complex128
 CHECK: prop_arr.shape = (4, 4, 4, 4, 1, 12, 12)
-CHECK: prop.crc32() = 4021037301 ; prop.qnorm() = 49304.10827466952
-CHECK: prop.crc32() = 3862544378 ; prop.qnorm() = 49304.10827993393
+CHECK: prop.crc32() = 4021037301 ; prop.qnorm() = 4.930410827467E+04
+CHECK: prop.crc32() = 3862544378 ; prop.qnorm() = 4.930410827993E+04
 CHECK: sp_prop 197.78615635070122
 CHECK: sp_prop_arr.dtype = complex128
 CHECK: sp_prop_arr.shape = (2, 1, 12, 12)
@@ -12,9 +12,9 @@ CHECK: sp_prop 197.78615635070122 0.0 lat_data conversion
 CHECK: s_prop 12391.820997493403 0.0
 CHECK: s_prop_arr.dtype = complex128
 CHECK: s_prop_arr.shape = (64, 1, 12, 12)
-CHECK: prop1 12589.607153844107
-CHECK: sp_prop1 197.78615635070122 0.0
-CHECK: s_prop1 12391.820997493403 0.0
+CHECK: prop1 1.258960715384E+04
+CHECK: sp_prop1 1.977862E+02 0.000000000000E+00
+CHECK: s_prop1 1.239182E+04 0.000000000000E+00
 CHECK: prop : 4021037301
 CHECK: prop_msc : 2846833498
 CHECK: prop_wm : 4021037301

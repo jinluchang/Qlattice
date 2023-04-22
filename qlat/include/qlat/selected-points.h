@@ -183,7 +183,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
   const long n_points = psel.size();
   sp.init(psel, geo.multiplicity);
   set_zero(sp.points);
-  qacc_for(idx, n_points, {
+  qthread_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {

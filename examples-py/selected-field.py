@@ -17,7 +17,7 @@ rs = q.RngState("seed")
 prop = q.Prop(geo)
 prop.set_rand(rs.split("prop-1"))
 
-q.displayln_info(f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm()}")
+q.displayln_info(f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm():.12E}")
 
 prop_arr = np.asarray(prop)
 q.displayln_info(f"CHECK: prop_arr.dtype = {prop_arr.dtype}")
@@ -27,13 +27,13 @@ prop.save_double("results/prop-double.field")
 prop = q.Prop()
 prop.load_double("results/prop-double.field")
 
-q.displayln_info(f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm()}")
+q.displayln_info(f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm():.12E}")
 
 prop.save_float_from_double("results/prop-float.field")
 prop = q.Prop()
 prop.load_double_from_float("results/prop-float.field")
 
-q.displayln_info(f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm()}")
+q.displayln_info(f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm():.12E}")
 
 psel = q.PointSelection([
     [ 0, 0, 0, 0, ],
@@ -86,19 +86,19 @@ q.displayln_info(f"CHECK: s_prop_arr.shape = {s_prop_arr.shape}")
 prop1 = q.SelProp(fselc)
 prop1 @= prop
 
-q.displayln_info("CHECK: prop1", prop1.qnorm())
+q.displayln_info(f"CHECK: prop1 {prop1.qnorm():.12E}")
 
 sp_prop1 = q.PselProp(psel)
 sp_prop1 @= prop1
 sp_prop1 -= sp_prop
 
-q.displayln_info("CHECK: sp_prop1", sp_prop.qnorm(), sp_prop1.qnorm())
+q.displayln_info(f"CHECK: sp_prop1 {sp_prop.qnorm():12E} {sp_prop1.qnorm():.12E}")
 
 s_prop1 = q.SelProp(fsel)
 s_prop1 @= prop1
 s_prop1 -= s_prop
 
-q.displayln_info("CHECK: s_prop1", s_prop.qnorm(), s_prop1.qnorm())
+q.displayln_info(f"CHECK: s_prop1 {s_prop.qnorm():12E} {s_prop1.qnorm():.12E}")
 
 prop = q.Prop(geo)
 prop.set_rand(rs.split("prop-1"))

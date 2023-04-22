@@ -34,7 +34,7 @@ source qcore/set-prefix.sh $name
         -Dpython.platlibdir="$prefix/lib/python3/qlat-packages" \
         -Dpython.purelibdir="$prefix/lib/python3/qlat-packages"
 
-    time-run meson compile -j$num_proc
+    # time-run meson compile -j$num_proc
 
     rm -rfv "$prefix"/bin
     rm -rfv "$prefix"/lib

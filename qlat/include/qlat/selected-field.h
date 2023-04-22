@@ -502,7 +502,7 @@ void set_u_rand_double(SelectedField<M>& sf, const FieldSelection& fsel,
   qassert(geo.is_only_local);
   qassert(fsel.f_local_idx.geo().is_only_local);
   qassert(geo_remult(geo) == fsel.f_local_idx.geo());
-  qacc_for(idx, fsel.n_elems, {
+  qthread_for(idx, fsel.n_elems, {
     const long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);

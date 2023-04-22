@@ -87,10 +87,11 @@ struct API Vector {
   {
     if (not(0 <= i && i < n)) {
 #ifndef QLAT_IN_ACC
-      displayln(
+      qerr(
           ssprintf("ERROR: expect: 0 <= i && i < n but: i=%d n=%d sizeof(M)=%d",
                    i, n, sizeof(M)));
 #endif
+      printf("%ld %ld %ld", i, n, sizeof(M));
       qassert(false);
     }
     return p[i];
@@ -99,10 +100,11 @@ struct API Vector {
   {
     if (not(0 <= i && i < n)) {
 #ifndef QLAT_IN_ACC
-      displayln(
+      qerr(
           ssprintf("ERROR: expect: 0 <= i && i < n but: i=%d n=%d sizeof(M)=%d",
                    i, n, sizeof(M)));
 #endif
+      printf("%ld %ld %ld", i, n, sizeof(M));
       qassert(false);
     }
     return p[i];

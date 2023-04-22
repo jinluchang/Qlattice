@@ -58,8 +58,7 @@ double gf_avg_plaq_no_comm(const GaugeFieldT<T>& gf)
               v[m1] * vms[m1][m2] * matrix_adjoint(v[m2] * vms[m2][m1]);
           avg_plaq += matrix_trace(cm).real() / NUM_COLOR;
           if (std::isnan(avg_plaq)) {
-            fdisplayln(stdout, ssprintf("WARNING: isnan in gf_avg_plaq"));
-            qassert(false);
+            qerr(ssprintf("WARNING: isnan in gf_avg_plaq"));
           }
         }
       }
@@ -371,7 +370,7 @@ long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
     }
   }
   gf.init(geo);
-  qacc_for(index, geo.local_volume(), {
+  qthread_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<Complex> vt = gft.get_elems(xl);
     Vector<ColorMatrixT<T> > v = gf.get_elems(xl);

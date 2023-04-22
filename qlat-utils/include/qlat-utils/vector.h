@@ -172,17 +172,14 @@ inline void* alloc_mem(const long min_size, const bool is_acc = false)
     if (is_acc) {
       cudaError err = cudaGetLastError();
       if (cudaSuccess != err) {
-        displayln(fname + ssprintf(": Cuda error %s before cudaMallocManaged.",
-                                   cudaGetErrorString(err)));
-        qassert(err == cudaSuccess);
+        qerr(fname + ssprintf(": Cuda error '%s' before cudaMallocManaged.",
+                              cudaGetErrorString(err)));
       }
       err = cudaMallocManaged(&ptr, size);
       if (cudaSuccess != err) {
-        displayln(fname +
-                  ssprintf(": Cuda error %s, min_size=%ld, size=%ld, ptr=%lX.",
-                           cudaGetErrorString(err), min_size, size, ptr));
-        usleep((useconds_t)(10.0 * 1.0e6));
-        qassert(err == cudaSuccess);
+        qerr(fname +
+             ssprintf(": Cuda error '%s', min_size=%ld, size=%ld, ptr=%lX.",
+                      cudaGetErrorString(err), min_size, size, ptr));
       }
     } else {
       ptr = alloc_mem_alloc_no_acc(size);

@@ -1,16 +1,16 @@
 CHECK: total_site = [4, 4, 4, 8]
 CHECK: geo = Geometry([4, 4, 4, 8], 1)
-CHECK: prop.crc32() = 507772097 ; prop.qnorm() = 4.911437494021384E+04
-CHECK: sc_prop.qnorm() = 1.370909456760295E+04
-CHECK: sc_prop1.qnorm() = 0.000000000000000E+00
-CHECK: s_prop.qnorm() = 1.225845863305308E+04
-CHECK: s_prop1.qnorm() = 0.000000000000000E+00
-CHECK: s_prop2.qnorm() = 0.000000000000000E+00
-CHECK: sp_prop.qnorm() = 1.545465159186052E+03
-CHECK: sp_prop1.qnorm() = 0.000000000000000E+00
-CHECK: prop_norm.qnorm() = 4.911437494021383E+04
-CHECK: s_prop_norm.qnorm() = 1.225845863305308E+04
-CHECK: s_prop_norm1.qnorm() = 0.000000000000000E+00
-CHECK: sp_prop_norm.qnorm() = 1.545465159186052E+03
-CHECK: sp_prop_norm1.qnorm() = 0.000000000000000E+00
+CHECK: prop.crc32() = 507772097 ; prop.qnorm() = 4.9114374940214E+04
+CHECK: sc_prop.qnorm() = 1.3709094567603E+04
+CHECK: sc_prop1.qnorm() = 0.0000000000000E+00
+CHECK: s_prop.qnorm() = 1.2258458633053E+04
+CHECK: s_prop1.qnorm() = 0.0000000000000E+00
+CHECK: s_prop2.qnorm() = 0.0000000000000E+00
+CHECK: sp_prop.qnorm() = 1.5454651591861E+03
+CHECK: sp_prop1.qnorm() = 0.0000000000000E+00
+CHECK: prop_norm.qnorm() = 4.9114374940214E+04
+CHECK: s_prop_norm.qnorm() = 1.2258458633053E+04
+CHECK: s_prop_norm1.qnorm() = 0.0000000000000E+00
+CHECK: sp_prop_norm.qnorm() = 1.5454651591861E+03
+CHECK: sp_prop_norm1.qnorm() = 0.0000000000000E+00
 CHECK: finished successfully.

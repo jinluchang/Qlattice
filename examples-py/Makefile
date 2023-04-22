@@ -3,6 +3,7 @@ SHELL=/bin/bash
 all: run
 
 tests = \
+		auto-cexprs.log \
 		qlat-id-node.log \
 		set-rand.log \
 		make-sample-gauge-field.log \
@@ -17,7 +18,6 @@ tests = \
 		hmc-pions.log \
 		hmc-pure-gauge-flowed.log \
 		qcd-utils.log \
-		auto-cexprs.log \
 		auto-cexprs-more.log \
 		auto-cexprs-kpipi.log \
 		free-invert.log
@@ -49,22 +49,22 @@ update-sources:
 	-for i in $(tests) $(tests_gpt) $(tests_cps) ; do touch "$${i%.log}.py" ; done
 	-touch qlat-ext/meson.build
 
-%.log: %.py
-	-rm -rf results output_data cache
-	-time ( q_verbose=1 mpiexec $(MPI_OPTIONS) -n 2 ./"$<" -qmp-geom 1 1 1 2 --mpi 1.1.1.2 --mpi_split 1.1.1.1 --mpi 1.1.2 --mpi_split 1.1.1 >"$@".full 2>&1 )
-	-grep "CHECK: " "$@".full >"$@".new
-	-if diff "$@".new "$@" ; then echo passed ; else cat "$@".full ; fi
-	-mv -v "$@".new "$@"
+%.log: %.py update-sources
+	-rm -rfv "$<".p
+	-mkdir -p "$<".p
+	-time ( cd "$<".p ; cp ../"$<" . ; q_verbose=1 mpiexec $(MPI_OPTIONS) -n 2 ./"$<" -qmp-geom 1 1 1 2 --mpi 1.1.1.2 --mpi_split 1.1.1.1 --mpi 1.1.2 --mpi_split 1.1.1 >"$@".full 2>&1 ; grep "CHECK: " "$@".full >"$@" )
+	-if diff "$<".p/"$@" "$@" ; then echo passed ; else cat "$<".p/"$@".full ; false ; fi
+	-mv -v "$<".p/"$@" "$@"
 
-qlat-ext.log: qlat-ext/meson.build
-	-meson setup qlat-ext-build qlat-ext --prefix=$$PWD/qlat-ext-install -Dpython.platlibdir=$$PWD/qlat-ext-install/lib/python3/dist-packages -Dpython.purelibdir=$$PWD/qlat-ext-install/lib/python3/dist-packages
-	-meson compile -C qlat-ext-build -j2
-	-meson install -C qlat-ext-build
-	-PYTHONPATH="$$PWD/qlat-ext-install/lib/python3/dist-packages:$$PYTHONPATH" qlat-ext-install/bin/run.py >"$@".full 2>&1
-	-grep "CHECK: " "$@".full >"$@".new
-	-if diff "$@".new "$@" ; then echo passed ; else cat "$@".full ; fi
-	-mv -v "$@".new "$@"
+qlat-ext.log: qlat-ext/meson.build update-sources
+	-rm -rfv qlat-ext.p
+	-mkdir -p qlat-ext.p
+	-time meson setup qlat-ext.p/qlat-ext-build qlat-ext --prefix="$$PWD"/qlat-ext.p/qlat-ext-install -Dpython.platlibdir="$$PWD"/qlat-ext.p/qlat-ext-install/lib/python3/dist-packages -Dpython.purelibdir="$$PWD"/qlat-ext.p/qlat-ext-install/lib/python3/dist-packages
+	-time meson compile -C qlat-ext.p/qlat-ext-build -j$(num_proc)
+	-time meson install -C qlat-ext.p/qlat-ext-build
+	-time ( cd qlat-ext.p ; PYTHONPATH="$$PWD/qlat-ext-install/lib/python3/dist-packages:$$PYTHONPATH" qlat-ext-install/bin/run.py >"$@".full 2>&1 ; grep "CHECK: " "$@".full >"$@".new )
+	-if diff "$<".p/"$@" "$@" ; then echo passed ; else cat "$<".p/"$@".full ; false ; fi
+	-mv -v "$<".p/"$@" "$@"
 
 clean:
-	-rm -v *.log.full
-	-rm -rf results output_data cache qlat-ext-build qlat-ext-install
+	-rm -rfv *.p

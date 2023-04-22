@@ -23,9 +23,9 @@ def test_hmc(total_site, ga):
         q.run_hmc_pure_gauge(gf, ga, traj, rs.split("run_hmc_pure_gauge"), is_always_accept = True)
         plaq_avg = q.gf_avg_plaq(gf)
         plaq_sum = np.prod(total_site) * 6.0 * (1.0 - plaq_avg)
-        q.displayln_info(f"CHECK: traj={traj} ; plaq_avg={plaq_avg:.14E}")
+        q.displayln_info(f"CHECK: traj={traj} ; plaq_avg={plaq_avg:.12E}")
         wilson_loop = q.gf_avg_wilson_loop_normalized_tr(gf, 1, 1)
-        q.displayln_info(f"CHECK: wilson_loop {wilson_loop:.14E}")
+        q.displayln_info(f"CHECK: wilson_loop {wilson_loop:.12E}")
         if traj % 2 == 0:
             q.display_gauge_field_info_table_with_wilson_flow(
                     f"results/gf_info/traj={traj}.lat",

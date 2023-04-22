@@ -35,28 +35,13 @@ namespace qlat
 {  //
 
 template <class T>
-void caxpy_single(std::complex<T>* res, const std::complex<T>& ca,
-                  const std::complex<T>* x, const std::complex<T>* y,
-                  const int c_size)
+void caxpy_single(ComplexT<T>* res, const ComplexT<T>& ca, const ComplexT<T>* x,
+                  const ComplexT<T>* y, const int c_size)
 {
   for (int i = 0; i < c_size; i++) {
     res[i] = ca * x[i] + y[i];
   }
 }
-
-#ifdef QLAT_USE_ACC
-
-template <class T>
-void caxpy_single(thrust::complex<T>* res, const thrust::complex<T>& ca,
-                  const thrust::complex<T>* x, const thrust::complex<T>* y,
-                  const int c_size)
-{
-  for (int i = 0; i < c_size; i++) {
-    res[i] = ca * x[i] + y[i];
-  }
-}
-
-#endif
 
 inline void read_floats(Vector<float> out, const Vector<uint8_t> fp_data)
 {

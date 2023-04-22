@@ -805,10 +805,12 @@ qacc array<ColorMatrix, 2> d_uc_mat_srect_site_no_comm(
   }
   if (n_step == 0) {
 #ifndef QLAT_USE_ACC
-    displayln(ssprintf("xl=%s ; mu=%d ; yl=%s ; nu=%d", show(xl).c_str(), mu,
-                       show(yl).c_str(), nu));
-#endif
+    qerr(ssprintf("xl=%s ; mu=%d ; yl=%s ; nu=%d", show(xl).c_str(), mu,
+                  show(yl).c_str(), nu));
+#else
+    printf("mu=%d ; nu=%d", mu, nu);
     qassert(false);
+#endif
   }
   ColorMatrix d_c_d_s_pre, d_c_d_s_u, d_c_d_s_post;
   if (1 == n_step) {

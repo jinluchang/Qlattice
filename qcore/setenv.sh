@@ -27,6 +27,10 @@ if [ -z "${num_proc+x}" ] ; then
     export num_proc=2
 fi
 
+if [ -z "${num_test+x}" ] ; then
+    export num_test=1
+fi
+
 export NINJA_NUM_JOBS="$num_proc"
 
 if [ -z "${USE_COMPILER+x}" ] ; then
