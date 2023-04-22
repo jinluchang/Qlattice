@@ -38,12 +38,12 @@ PyObject* read_sfr_sfield_ctype(ShuffledFieldsReader& sfr,
 {
   SelectedField<M>& sf = py_convert_type_sfield<M>(p_sfield);
   if (p_sbs != Py_None) {
-    qassert(p_fsel == NULL)
+    qassert(p_fsel == NULL);
     const ShuffledBitSet& sbs = py_convert_type<ShuffledBitSet>(p_sbs);
     const long ret = read(sfr, fn, sbs, sf);
     return py_convert(ret);
   } else {
-    qassert(p_fsel != NULL)
+    qassert(p_fsel != NULL);
     FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
     const long ret = read(sfr, fn, sf, fsel);
     return py_convert(ret);

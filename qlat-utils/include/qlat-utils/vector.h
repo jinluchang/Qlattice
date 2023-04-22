@@ -3,6 +3,7 @@
 #include <qlat-utils/config.h>
 #include <qlat-utils/handle.h>
 #include <qlat-utils/qutils.h>
+#include <unistd.h>
 
 #include <cstdlib>
 #include <cstring>
@@ -97,9 +98,10 @@ struct API MemCache {
       if (is_acc) {
         cudaError err = cudaFree(ptr);
         if (cudaSuccess != err) {
-          displayln(fname + ssprintf(": Cuda error %s after cudaFree.",
-                                     cudaGetErrorString(err)));
-          qassert(err == cudaSuccess);
+          if (cudaErrorCudartUnloading != err) {
+            qerr(fname + ssprintf(": Cuda error '%s' (%d) after cudaFree.",
+                                  cudaGetErrorString(err), err));
+          }
         }
       } else {
         free(ptr);

@@ -25,6 +25,8 @@ if ! [ -f "$wd/qcore/conf.sh" -a -f "$wd/qcore/set-prefix.sh" ] ; then
     return 1
 fi
 
+export LC_ALL="C"
+
 func() {
 
 local v
