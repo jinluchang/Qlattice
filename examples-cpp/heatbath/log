@@ -1,5 +1,5 @@
 qlat::begin(): MPI Initialized. num_node = 4
-===========================================================================
+======================================================================
 
                               Qlattice
 
@@ -15,17 +15,17 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
-===========================================================================
-qlat::begin_comm(comm,size_node): get_comm_list().push_back()
-qlat::begin_comm(comm,size_node): get_comm_list().size() = 1
+======================================================================
 qlat::begin(): q_num_threads = 2
-q_malloc_mmap_threshold='' (default)
 qlat::begin(): GeometryNode =
 { initialized = true
 , num_node    = 4
 , id_node     = 0
 , size_node   = 1x1x1x4
 , coor_node   = 0x0x0x0 }
+qlat::begin_comm(comm,size_node): get_comm_list().push_back()
+qlat::begin_comm(comm,size_node): get_comm_list().size() = 1
+q_malloc_mmap_threshold='' (default)
 q_timer_max_func_name_len=50 (default)
 q_mk_id_node_in_shuffle_seed='' (default)
 clear_mem_cache: 0 bytes (0.000 GB) freed.

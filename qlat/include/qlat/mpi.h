@@ -230,6 +230,8 @@ void set_global_geon(const Coordinate& size_node);
 
 void set_cuda_device();
 
+void display_qlat_banner();
+
 void initialize_qlat_comm();
 
 void begin_comm(const MPI_Comm comm, const Coordinate& size_node);

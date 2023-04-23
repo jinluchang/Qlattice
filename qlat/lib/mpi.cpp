@@ -578,7 +578,7 @@ void set_cuda_device()
 #endif
 }
 
-void initialize_qlat_comm()
+void display_qlat_banner()
 {
   displayln_info(
       "======================================================================");
@@ -600,32 +600,42 @@ void initialize_qlat_comm()
   displayln_info("");
   displayln_info(
       "======================================================================");
-  if (get_env("OMP_NUM_THREADS") == "") {
-    const long num_threads = get_env_long_default("q_num_threads", 2);
-    omp_set_num_threads(num_threads);
+}
+
+void initialize_qlat_comm(const long begin_count)
+{
+  if (begin_count == 1) {
+    display_qlat_banner();
+    if (get_env("OMP_NUM_THREADS") == "") {
+      const long num_threads = get_env_long_default("q_num_threads", 2);
+      omp_set_num_threads(num_threads);
+    }
+    displayln_info("qlat::begin(): q_num_threads = " +
+                   show(omp_get_max_threads()));
+    const GeometryNode& geon = get_geometry_node();
+    displayln_info("qlat::begin(): GeometryNode =\n" + show(geon));
   }
-  displayln_info("qlat::begin(): q_num_threads = " +
-                 show(omp_get_max_threads()));
-  fflush(get_output_file());
-  sync_node();
-  const GeometryNode& geon = get_geometry_node();
-  displayln_info("qlat::begin(): GeometryNode =\n" + show(geon));
-  fflush(get_output_file());
-  sync_node();
+  displayln_info(ssprintf(
+      "qlat::begin_comm(comm,size_node): get_comm_list().push_back()"));
+  displayln_info(
+      ssprintf("qlat::begin_comm(comm,size_node): get_comm_list().size() = %d",
+               (int)get_comm_list().size()));
+  if (begin_count == 1) {
+    set_cuda_device();
+    displayln_info(ssprintf("Timer::get_timer_database().size() = %ld",
+                            Timer::get_timer_database().size()));
+    displayln_info(ssprintf("Timer::get_timer_stack().size() = %ld",
+                            Timer::get_timer_stack().size()));
 #ifndef QLAT_NO_MALLOPT
-  std::string q_malloc_mmap_threshold =
-      get_env_default("q_malloc_mmap_threshold", "");
-  if (q_malloc_mmap_threshold != "") {
-    mallopt(M_MMAP_THRESHOLD, read_long(q_malloc_mmap_threshold));
-  }
+    std::string q_malloc_mmap_threshold =
+        get_env_default("q_malloc_mmap_threshold", "");
+    if (q_malloc_mmap_threshold != "") {
+      mallopt(M_MMAP_THRESHOLD, read_long(q_malloc_mmap_threshold));
+    }
 #endif
-  displayln_info(ssprintf("Timer::get_timer_database().size() = %ld",
-                          Timer::get_timer_database().size()));
-  displayln_info(ssprintf("Timer::get_timer_stack().size() = %ld",
-                          Timer::get_timer_stack().size()));
-  set_cuda_device();
-  fflush(get_output_file());
-  sync_node();
+    fflush(get_output_file());
+    sync_node();
+  }
 }
 
 void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
@@ -639,13 +649,8 @@ void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
   set_global_geon(get_comm_list().back().size_node);
   sync_node();
   if (begin_count == 1) {
-    initialize_qlat_comm();
+    initialize_qlat_comm(begin_count);
   }
-  displayln_info(ssprintf(
-      "qlat::begin_comm(comm,size_node): get_comm_list().push_back()"));
-  displayln_info(
-      ssprintf("qlat::begin_comm(comm,size_node): get_comm_list().size() = %d",
-               (int)get_comm_list().size()));
   get_id_node_list_for_shuffle() = mk_id_node_list_for_shuffle();
   get_id_node_in_shuffle_list() = mk_id_node_in_shuffle_list();
   get_id_node_in_shuffle_internal() =

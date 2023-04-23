@@ -1499,7 +1499,7 @@ inline long cg_with_f(
   displayln_info(
       fname +
       ssprintf(
-          ": start max_num_iter=%4ld        sqrt(qnorm_in)=%.3E stop_rsd=%.3E ",
+          ": start max_num_iter=%4ld        sqrt(qnorm_in)=%.3E stop_rsd=%.3E",
           max_num_iter, sqrt(qnorm_in), stop_rsd));
   double qnorm_r = qnorm(r);
   for (long iter = 1; iter <= max_num_iter; ++iter) {
