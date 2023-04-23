@@ -471,27 +471,25 @@ int get_id_node_from_id_node_in_shuffle(const int id_node_in_shuffle,
   }
 }
 
-void set_node_rank_size(int& node_rank, int& node_size)
-// Rank and size of the node (processes running on the same node)
+void set_node_rank_size(int& localRank, int& localSize)
 {
-  // Rank and size of the world (all processes)
-  int world_rank, world_size;
-  // Get the rank of the current process in the world
-  MPI_Comm_rank(get_comm(), &world_rank);
-  // Get the total number of processes in the world
-  MPI_Comm_size(get_comm(), &world_size);
-  //
-  // Communicator for processes running on the same node
-  MPI_Comm node_comm;
-  // Use color to create separate communicators for each node
-  int color = world_rank / node_size;
-  // Split the world communicator into node communicators
-  MPI_Comm_split(get_comm(), color, world_rank, &node_comm);
-  //
-  // Get the rank of the current process within the node
-  MPI_Comm_rank(node_comm, &node_rank);
-  // Get the total number of processes within the node
-  MPI_Comm_size(node_comm, &node_size);
+  // global id
+  int globalRank;
+  MPI_Comm_rank(get_comm(), &globalRank);
+  qassert(globalRank == get_id_node());
+  // node local comm
+  MPI_Comm nodeComm;
+  MPI_Comm_split_type(get_comm(), MPI_COMM_TYPE_SHARED, globalRank,
+                      MPI_INFO_NULL, &nodeComm);
+  // id within the node
+  // int localRank;
+  MPI_Comm_rank(nodeComm, &localRank);
+  if (0 == get_id_node()) {
+    qassert(localRank == 0);
+  }
+  // number of process in this node
+  // int localSize;
+  MPI_Comm_size(nodeComm, &localSize);
 }
 
 std::string get_hostname()
@@ -567,13 +565,15 @@ void set_global_geon(const Coordinate& size_node)
 void set_cuda_device()
 {
 #ifdef __NVCC__
-  int node_rank = 0;
-  int node_size = 0;
-  set_node_rank_size(node_rank, node_size);
+  TIMER_VERBOSE("set_cuda_device");
+  int local_rank = 0;
+  int local_size = 0;
+  set_node_rank_size(local_rank, local_size);
   int num_devices = 0;
   cudaGetDeviceCount(&num_devices);
   if (num_devices > 0) {
-    cudaSetDevice(node_rank % num_devices);
+    displayln_info(fname + ssprintf(": num_devices=%d", num_devices));
+    cudaSetDevice(local_rank % num_devices);
   }
 #endif
 }
