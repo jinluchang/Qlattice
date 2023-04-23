@@ -214,6 +214,8 @@ int get_id_node_from_id_node_in_shuffle(const int id_node_in_shuffle,
                                         const int new_num_node,
                                         const int num_node);
 
+void set_node_rank_size(int& node_rank, int& node_size);
+
 std::string get_hostname();
 
 void display_geometry_node();
@@ -225,6 +227,10 @@ bool is_MPI_initialized();
 int init_mpi(int* argc, char** argv[]);
 
 void set_global_geon(const Coordinate& size_node);
+
+void set_cuda_device();
+
+void initialize_qlat_comm();
 
 void begin_comm(const MPI_Comm comm, const Coordinate& size_node);
 

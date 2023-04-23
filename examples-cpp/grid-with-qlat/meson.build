@@ -27,7 +27,7 @@ subdir('depend-grid')
 
 deps = [ qlat, grid, ]
 
-c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.cpp', check: true)
+c = run_command('bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.cpp', check: true)
 cpp_sources = c.stdout().strip().split('\n')
 
 qlat_x = executable('qlat.x',

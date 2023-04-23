@@ -18,7 +18,7 @@ endif
 
 if cpp.check_header('Eigen/Eigen', dependencies: deps)
   conf_data.set('QLAT_USE_GRID_EIGEN', false)
-if cpp.check_header('Grid/Eigen/Eigen', dependencies: deps)
+elif cpp.check_header('Grid/Eigen/Eigen', dependencies: deps)
   conf_data.set('QLAT_USE_GRID_EIGEN', true)
 endif
 
@@ -26,7 +26,7 @@ config_file = configure_file(output: 'config.h', configuration: conf_data)
 py3.install_sources(config_file, subdir: 'qlat_utils/include/qlat-utils')
 
 header_fns = run_command(
-  'bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.h | grep -v "^config.h$"',
+  'bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.h | grep -v "^config.h$"',
   check: true,
   ).stdout().strip().split('\n')
 header_files = files(header_fns)

@@ -1,4 +1,4 @@
-c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.cpp', check: true)
+c = run_command('bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.cpp', check: true)
 cppsources = files(c.stdout().strip().split('\n'))
 py3.install_sources(cppsources, subdir: 'qlat_utils/lib')
 

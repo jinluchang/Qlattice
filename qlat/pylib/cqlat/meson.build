@@ -1,6 +1,6 @@
 # Need to update `exports.h` by running `bash update.sh` manually.
 
-cpp_fns = run_command('bash', '-c', 'ls "$MESON_SUBDIR" ; ls *.cpp',
+cpp_fns = run_command('bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.cpp',
   check: true).stdout().strip().split('\n')
 cpp_files = files(cpp_fns)
 

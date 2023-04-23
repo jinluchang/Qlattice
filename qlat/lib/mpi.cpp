@@ -471,6 +471,29 @@ int get_id_node_from_id_node_in_shuffle(const int id_node_in_shuffle,
   }
 }
 
+void set_node_rank_size(int& node_rank, int& node_size)
+// Rank and size of the node (processes running on the same node)
+{
+  // Rank and size of the world (all processes)
+  int world_rank, world_size;
+  // Get the rank of the current process in the world
+  MPI_Comm_rank(get_comm(), &world_rank);
+  // Get the total number of processes in the world
+  MPI_Comm_size(get_comm(), &world_size);
+  //
+  // Communicator for processes running on the same node
+  MPI_Comm node_comm;
+  // Use color to create separate communicators for each node
+  int color = world_rank / node_size;
+  // Split the world communicator into node communicators
+  MPI_Comm_split(get_comm(), color, world_rank, &node_comm);
+  //
+  // Get the rank of the current process within the node
+  MPI_Comm_rank(node_comm, &node_rank);
+  // Get the total number of processes within the node
+  MPI_Comm_size(node_comm, &node_size);
+}
+
 std::string get_hostname()
 {
   char name[MPI_MAX_PROCESSOR_NAME];
@@ -541,15 +564,24 @@ void set_global_geon(const Coordinate& size_node)
   qassert(geon.num_node == num_node);
 }
 
-void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
-// begin Qlat with existing comm (assuming MPI already initialized)
+void set_cuda_device()
 {
-  get_comm_list().push_back(
-      Q_Comm(comm, size_node, RngState("sync_node:" + show(size_node))));
-  get_comm_internal() = get_comm_list().back().comm;
-  set_global_geon(get_comm_list().back().size_node);
-  sync_node();
-  displayln_info("===========================================================================");
+#ifdef __NVCC__
+  int node_rank = 0;
+  int node_size = 0;
+  set_node_rank_size(node_rank, node_size);
+  int num_devices = 0;
+  cudaGetDeviceCount(&num_devices);
+  if (num_devices > 0) {
+    cudaSetDevice(node_rank % num_devices);
+  }
+#endif
+}
+
+void initialize_qlat_comm()
+{
+  displayln_info(
+      "======================================================================");
   displayln_info("");
   displayln_info("                              Qlattice");
   displayln_info("");
@@ -566,19 +598,20 @@ void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
       "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
       "GNU General Public License for more details.");
   displayln_info("");
-  displayln_info("===========================================================================");
-  displayln_info(ssprintf(
-      "qlat::begin_comm(comm,size_node): get_comm_list().push_back()"));
   displayln_info(
-      ssprintf("qlat::begin_comm(comm,size_node): get_comm_list().size() = %d",
-               (int)get_comm_list().size()));
-  const GeometryNode& geon = get_geometry_node();
+      "======================================================================");
   if (get_env("OMP_NUM_THREADS") == "") {
     const long num_threads = get_env_long_default("q_num_threads", 2);
     omp_set_num_threads(num_threads);
   }
   displayln_info("qlat::begin(): q_num_threads = " +
                  show(omp_get_max_threads()));
+  fflush(get_output_file());
+  sync_node();
+  const GeometryNode& geon = get_geometry_node();
+  displayln_info("qlat::begin(): GeometryNode =\n" + show(geon));
+  fflush(get_output_file());
+  sync_node();
 #ifndef QLAT_NO_MALLOPT
   std::string q_malloc_mmap_threshold =
       get_env_default("q_malloc_mmap_threshold", "");
@@ -586,12 +619,33 @@ void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
     mallopt(M_MMAP_THRESHOLD, read_long(q_malloc_mmap_threshold));
   }
 #endif
-  displayln_info("qlat::begin(): GeometryNode =\n" + show(geon));
-  fflush(get_output_file());
   displayln_info(ssprintf("Timer::get_timer_database().size() = %ld",
                           Timer::get_timer_database().size()));
   displayln_info(ssprintf("Timer::get_timer_stack().size() = %ld",
                           Timer::get_timer_stack().size()));
+  set_cuda_device();
+  fflush(get_output_file());
+  sync_node();
+}
+
+void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
+// begin Qlat with existing comm (assuming MPI already initialized)
+{
+  static long begin_count = 0;
+  begin_count += 1;
+  get_comm_list().push_back(
+      Q_Comm(comm, size_node, RngState("sync_node:" + show(size_node))));
+  get_comm_internal() = get_comm_list().back().comm;
+  set_global_geon(get_comm_list().back().size_node);
+  sync_node();
+  if (begin_count == 1) {
+    initialize_qlat_comm();
+  }
+  displayln_info(ssprintf(
+      "qlat::begin_comm(comm,size_node): get_comm_list().push_back()"));
+  displayln_info(
+      ssprintf("qlat::begin_comm(comm,size_node): get_comm_list().size() = %d",
+               (int)get_comm_list().size()));
   get_id_node_list_for_shuffle() = mk_id_node_list_for_shuffle();
   get_id_node_in_shuffle_list() = mk_id_node_in_shuffle_list();
   get_id_node_in_shuffle_internal() =

@@ -26,7 +26,7 @@ endif
 
 deps = [ mpic, qlat, ]
 
-cpp_sources = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.cpp', check: true).stdout().strip().split('\n')
+cpp_sources = run_command('bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.cpp', check: true).stdout().strip().split('\n')
 
 qlat_x = executable('qlat.x',
   cpp_sources,

@@ -12,7 +12,7 @@ config_file = configure_file(output: 'config.h', configuration: conf_data)
 
 py3.install_sources(config_file, subdir: 'qlat/include/qlat')
 
-header_fns = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.h | grep -v "^config.h$"',
+header_fns = run_command('bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.h | grep -v "^config.h$"',
   check: true).stdout().strip().split('\n')
 header_files = files(header_fns)
 py3.install_sources(header_files, subdir: 'qlat/include/qlat')

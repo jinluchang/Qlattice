@@ -1,11 +1,11 @@
 py_fns = run_command(
-  'bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.py | grep -v "_template\."',
+  'bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.py | grep -v "_template\."',
   check: true,
   ).stdout().strip().split('\n')
 py_files = files(py_fns)
 
 pxd_fns = run_command(
-  'bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.pxd | grep -v "_template\."',
+  'bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.pxd | grep -v "_template\."',
   check: true,
   ).stdout().strip().split('\n')
 pxd_files = files(pxd_fns)

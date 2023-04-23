@@ -1,3 +1,3 @@
-c = run_command('bash', '-c', 'cd "$MESON_SUBDIR" ; ls *.py', check: true)
+c = run_command('bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.py', check: true)
 pysources = files(c.stdout().strip().split('\n'))
 py3.install_sources(pysources, subdir: 'auto_contractor')
