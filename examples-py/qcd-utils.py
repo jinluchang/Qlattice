@@ -41,6 +41,7 @@ gf_f = gf.copy()
 flow_time = 1.0
 t = 0
 
+@q.timer_verbose
 def measure():
     gf_f.show_info()
     topo_clf = q.gf_topology_clf(gf_f)
@@ -55,6 +56,7 @@ def measure():
     q.displayln_info(f"[ {topo_terms_str},\n]")
     q.displayln_info("\n".join(t_sum))
 
+@q.timer_verbose
 def wilson_flow_force(gf, c1 = 0.0):
     ga = q.GaugeAction(3.0, c1)
     gm_force = q.GaugeMomentum()

@@ -30,7 +30,7 @@ aget "http://usqcd-software.github.io/downloads/qio/qio-3.0.0.tar.gz"
 
 aget "https://downloads.sourceforge.net/libtirpc/libtirpc-1.3.3.tar.bz2"
 
-aget "https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.bz2"
+aget "https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.bz2"
 
 aget "http://www.fftw.org/fftw-3.3.10.tar.gz"
 

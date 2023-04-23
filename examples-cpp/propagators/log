@@ -273,7 +273,7 @@ QFile: open 'results/test-4nt8/results=1010/f-rank.field' with 'r'.
 QFile: close 'results/test-4nt8/results=1010/f-rank.field' with 'r'.
 plaq :  6.81609579399775845E-01
 spatial plaq :  6.89426876328337768E-01
-trace:  9.43528341124005437E-02
+trace:  9.43528341124005299E-02
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.292E-01 stop_rsd=1.000E-08 
 cg_with_f: final iter=  57 sqrt(qnorm_r/qnorm_in)=8.023E-09 stop_rsd=1.000E-08

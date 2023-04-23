@@ -58,6 +58,7 @@ inline void gf_clover_leaf_field_no_comm(CloverLeafField& clf,
   clf.init(geo);
   qassert(is_matching_geo_mult(clf.geo(), geo));
   qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = clf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = clf.get_elems(xl);
     v[0] = gf_clover_leaf_no_comm(gf1, xl, 0, 1);
@@ -79,6 +80,7 @@ inline void gf_clover_leaf_field_m_n_no_comm(CloverLeafField& clf,
   clf.init(geo);
   qassert(is_matching_geo_mult(clf.geo(), geo));
   qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = clf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = clf.get_elems(xl);
     v[0] = gf_clover_leaf_m_n_no_comm(gf1, xl, 0, m, 1, n);
@@ -180,6 +182,7 @@ inline void clf_plaq_action_field(FieldM<double, 1>& paf,
   paf.init(geo);
   qassert(is_matching_geo(paf.geo(), geo));
   qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = paf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     paf.get_elem(xl) = clf_plaq_action_density(clf, xl);
   });
@@ -193,6 +196,7 @@ inline void clf_spatial_plaq_action_field(FieldM<double, 1>& spaf,
   spaf.init(geo);
   qassert(is_matching_geo(spaf.geo(), geo));
   qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = spaf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     spaf.get_elem(xl) = clf_spatial_plaq_action_density(clf, xl);
   });

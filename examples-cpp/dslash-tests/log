@@ -40,9 +40,9 @@ plaq :  1.00000000000000000E+00
 Cache: 'CommPlanCache': 1 / 32 [16] to add
 spatial plaq :  1.00000000000000000E+00
 trace:  1.00000000000000000E+00
-plaq :  9.48525556759219013E-01
+plaq :  9.48525556759218680E-01
 spatial plaq :  9.48399549357766269E-01
-trace:  9.86912011041233161E-01
+trace:  9.86912011041233939E-01
 Cache: 'CommPlanCache': 2 / 32 [16] to add
 Cache: 'CommPlanCache': 3 / 32 [16] to add
 plaq 1x1 :  9.48651564160671756E-01
@@ -101,9 +101,9 @@ qnorm(diff after qnormalization) = 5.922959E-32
 plaq :  1.00000000000000000E+00
 spatial plaq :  1.00000000000000000E+00
 trace:  1.00000000000000000E+00
-plaq :  9.48013133008751896E-01
+plaq :  9.48013133008751452E-01
 spatial plaq :  9.48361111693226455E-01
-trace:  9.86668447688210826E-01
+trace:  9.86668447688210715E-01
 plaq 1x1 :  9.47665154324277004E-01
 plaq 1x2 :  9.22564303303687772E-01
 plaq 2x1 :  9.23198723801185062E-01
@@ -326,7 +326,7 @@ invert_with_cg(5d,5d,inv,cg): checking 4.363147E-09 from 3.803129E+03
 invert diff qnorm = 1.903705E-17
 CHECK: finished successfully.
 Cache: 'CommPlanCache': 7 / 32 [16] clear
-clear_mem_cache: 12471040 bytes (0.012 GB) freed.
+clear_mem_cache: 12473088 bytes (0.012 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

@@ -96,10 +96,10 @@ QFile: open 'huge-data/gauge_field_rgf-0.1_2.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field_rgf-0.1_2.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field_rgf-0.1_2.partial' 'huge-data/gauge_field_rgf-0.1_2'
 Cache: 'CommPlanCache': 0 / 32 [16] to add
-plaq :  9.47925703162884936E-01
+plaq :  9.47925703162884270E-01
 Cache: 'CommPlanCache': 1 / 32 [16] to add
 spatial plaq :  9.47619593969194485E-01
-trace:  9.86703685472810621E-01
+trace:  9.86703685472811176E-01
 QFile: open 'huge-data/gauge_field_rgf-0.1_f.partial/geo-info.txt' with 'w'.
 QFile: close 'huge-data/gauge_field_rgf-0.1_f.partial/geo-info.txt' with 'w'.
 QFile: open 'huge-data/gauge_field_rgf-0.1_f.partial/00/0000000000' with 'w'.
@@ -132,12 +132,12 @@ QFile: close 'huge-data/gauge_field_rgf-0.1_f_2.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field_rgf-0.1_f_2.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field_rgf-0.1_f_2.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field_rgf-0.1_f_2.partial' 'huge-data/gauge_field_rgf-0.1_f_2'
-plaq :  9.47925703323386659E-01
+plaq :  9.47925703323386326E-01
 spatial plaq :  9.47619594236182916E-01
-trace:  9.86703685516355677E-01
-plaq :  9.47925703162884936E-01
+trace:  9.86703685516355566E-01
+plaq :  9.47925703162884270E-01
 spatial plaq :  9.47619593969194485E-01
-trace:  9.86703685472810621E-01
+trace:  9.86703685472811176E-01
 dist_crc32 = F9A4D0A6
 make_shuffle_plan_generic: num_send_packs =         32
 make_shuffle_plan_generic: num_recv_packs =         32

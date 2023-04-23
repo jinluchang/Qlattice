@@ -69,12 +69,12 @@ QFile: open 'results/ckpoint.0' with 'r'.
 QFile: close 'results/ckpoint.0' with 'r'.
 shuffle_field_back(f,fs,sp): 1x1x1x4 -> 1x1x2x2 (total_site: 4x4x4x8 ; site_size: 384 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 384 ; total_size: 0.000 GB)
-plaq :  9.48400361131393366E-01
+plaq :  9.48400361131393477E-01
 spatial plaq :  9.48253412870626700E-01
-trace:  9.86826590890407918E-01
+trace:  9.86826590890408140E-01
 INFO: gf_trace_sum =  6.06306257443066715E+03
 INFO: gf_trace_avg =  9.86826590890408029E-01
-INFO: gf_avg_plaq =  9.48400361131393366E-01
+INFO: gf_avg_plaq =  9.48400361131393477E-01
 CHECK: finished successfully.
 Cache: 'CommPlanCache': 2 / 32 [16] clear
 Cache: 'ShufflePlanCache': 1 / 16 [8] clear

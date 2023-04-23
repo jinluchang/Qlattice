@@ -348,7 +348,7 @@ qremove: 'results/free-4nt8/results=1010-lock/time.txt'
 program finished successfully for 'free-4nt8'.
 CHECK: finished successfully.
 Cache: 'CommPlanCache': 6 / 32 [16] clear
-clear_mem_cache: 12416512 bytes (0.012 GB) freed.
+clear_mem_cache: 12418560 bytes (0.012 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

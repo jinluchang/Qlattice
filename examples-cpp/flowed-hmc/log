@@ -954,7 +954,7 @@ gf_flow_inv gf_diff:  2.60504833015916785E-28 /  6.14400000000000000E+03
     2  6.10016405047523858E+00
     3  7.02782444960604824E+00
     4  1.16581671523469801E+01
-run_hmc: U_0: traj=2 ; plaq_avg= 1.70181539601513609E-01 ; plaq_sum= 2.54920231034415019E+03 .
+run_hmc: U_0: traj=2 ; plaq_avg= 1.70181539601513665E-01 ; plaq_sum= 2.54920231034415019E+03 .
 # norm_idx gm_force_magnitude
     0  5.27827725570423834E+00
     1  5.56606213039415287E+00
@@ -1743,7 +1743,7 @@ fi.v[15]: mask=1, mu=2, epsilon=-0.0100, flow_size=2.
     2  5.99999187228886477E+00
     3  7.00212181988195059E+00
     4  1.20766884624209254E+01
-run_hmc: U_0: traj=3 ; plaq_avg= 1.93221999619980989E-01 ; plaq_sum= 2.47842201716741829E+03 .
+run_hmc: U_0: traj=3 ; plaq_avg= 1.93221999619981044E-01 ; plaq_sum= 2.47842201716741783E+03 .
 metropolis_accept: accept flag = 1 with prob accept = 100.0% deltaH = -0.2240835420325311 traj = 3
 run_hmc: update gf (traj=3).
 CHECK: test_hmc: traj=3 ; plaq_avg=     5.2929225215035E-01 ; plaq_sum=     1.4460142013941E+03.

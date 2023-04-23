@@ -1105,7 +1105,7 @@ CHECK: test_hmc: traj=3 ; plaq_avg=     7.1361488012100E-01 ; plaq_sum=     8.79
     4  1.11703271769847365E+01
 metropolis_accept: accept flag = 1 with prob accept = 69.9% deltaH = 0.3585174500440189 traj = 4
 run_hmc: update gf (traj=4).
-CHECK: test_hmc: traj=4 ; plaq_avg=     6.7194711260295E-01 ; plaq_sum=     1.0077784700837E+03.
+CHECK: test_hmc: traj=4 ; plaq_avg=     6.7194711260295E-01 ; plaq_sum=     1.0077784700838E+03.
     0  1.96831732438232243E+00  3.92439926383498339E+00  3.96450524153751649E-02  6.45578592049415141E-05
 gf_wilson_flow: t =  2.00000000000000004E-02 ; E =  1.67312585481513842E+00 ; t^2 E =  6.69250341926055426E-04.
 gf_wilson_flow: t =  4.00000000000000008E-02 ; E =  1.54957254494734809E+00 ; t^2 E =  2.47931607191575684E-03.

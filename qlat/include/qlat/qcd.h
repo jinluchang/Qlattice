@@ -36,41 +36,36 @@ double gf_avg_plaq_no_comm(const GaugeFieldT<T>& gf)
 // assume proper communication is done
 {
   TIMER("gf_avg_plaq_no_comm");
-  const Geometry& geo = gf.geo();
-  std::vector<double> sums(omp_get_max_threads(), 0.0);
-#pragma omp parallel
-  {
-    double sum_avg_plaq = 0.0;
-#pragma omp for
-    for (long index = 0; index < geo.local_volume(); ++index) {
-      Coordinate xl = geo.coordinate_from_index(index);
-      const Vector<ColorMatrixT<T> > v = gf.get_elems_const(xl);
-      array<Vector<ColorMatrixT<T> >, DIMN> vms;
-      for (int m = 0; m < DIMN; ++m) {
-        xl[m] += 1;
-        vms[m] = gf.get_elems_const(xl);
-        xl[m] -= 1;
-      }
-      double avg_plaq = 0.0;
-      for (int m1 = 1; m1 < DIMN; ++m1) {
-        for (int m2 = 0; m2 < m1; ++m2) {
-          ColorMatrixT<T> cm =
-              v[m1] * vms[m1][m2] * matrix_adjoint(v[m2] * vms[m2][m1]);
-          avg_plaq += matrix_trace(cm).real() / NUM_COLOR;
-          if (std::isnan(avg_plaq)) {
-            qerr(ssprintf("WARNING: isnan in gf_avg_plaq"));
-          }
+  const Geometry geo = geo_reform(gf.geo());
+  FieldM<double, 1> cf;
+  cf.init(geo);
+  qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = cf.geo();
+    Coordinate xl = geo.coordinate_from_index(index);
+    const Vector<ColorMatrixT<T>> v = gf.get_elems_const(xl);
+    array<Vector<ColorMatrixT<T>>, DIMN> vms;
+    for (int m = 0; m < DIMN; ++m) {
+      xl[m] += 1;
+      vms[m] = gf.get_elems_const(xl);
+      xl[m] -= 1;
+    }
+    double sum = 0.0;
+    for (int m1 = 1; m1 < DIMN; ++m1) {
+      for (int m2 = 0; m2 < m1; ++m2) {
+        ColorMatrixT<T> cm =
+            v[m1] * vms[m1][m2] * matrix_adjoint(v[m2] * vms[m2][m1]);
+        sum += matrix_trace(cm).real() / NUM_COLOR;
+        if (std::isnan(sum)) {
+          qerr(ssprintf("WARNING: isnan in gf_avg_plaq"));
         }
       }
-      avg_plaq /= DIMN * (DIMN - 1) / 2;
-      sum_avg_plaq += avg_plaq;
     }
-    sums[omp_get_thread_num()] = sum_avg_plaq;
-  }
-  double sum = 0.0;
-  for (size_t i = 0; i < sums.size(); ++i) {
-    sum += sums[i];
-  }
+    sum /= DIMN * (DIMN - 1) / 2;
+    cf.get_elem(index) = sum;
+  });
+  const std::vector<double> sum_vec = field_sum(cf);
+  qassert(sum_vec.size() == 1);
+  double sum = sum_vec[0];
   glb_sum(sum);
   sum /= geo.total_volume();
   return sum;
@@ -149,27 +144,22 @@ double gf_avg_link_trace(const GaugeFieldT<T>& gf)
 {
   TIMER("gf_avg_link_trace");
   const Geometry& geo = gf.geo();
-  std::vector<double> sums(omp_get_max_threads(), 0.0);
-#pragma omp parallel
-  {
-    double sum_avg_link_trace = 0.0;
-#pragma omp for
-    for (long index = 0; index < geo.local_volume(); ++index) {
-      Coordinate xl = geo.coordinate_from_index(index);
-      const Vector<ColorMatrixT<T> > v = gf.get_elems_const(xl);
-      double avg_link_trace = 0.0;
-      for (int m = 0; m < DIMN; ++m) {
-        avg_link_trace += matrix_trace(v[m]).real() / NUM_COLOR;
-      }
-      avg_link_trace /= DIMN;
-      sum_avg_link_trace += avg_link_trace;
+  FieldM<double, 1> cf;
+  cf.init(geo);
+  qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = cf.geo();
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Vector<ColorMatrixT<T>> v = gf.get_elems_const(xl);
+    double sum = 0;
+    for (int m = 0; m < v.size(); ++m) {
+      sum += matrix_trace(v[m]).real() / NUM_COLOR;
     }
-    sums[omp_get_thread_num()] = sum_avg_link_trace;
-  }
-  double sum = 0.0;
-  for (size_t i = 0; i < sums.size(); ++i) {
-    sum += sums[i];
-  }
+    sum /= v.size();
+    cf.get_elem(index) = sum;
+  });
+  const std::vector<double> sum_vec = field_sum(cf);
+  qassert(sum_vec.size() == 1);
+  double sum = sum_vec[0];
   glb_sum(sum);
   sum /= geo.total_volume();
   return sum;
