@@ -16,6 +16,8 @@ else
   error('Cannot find endian.h header file.')
 endif
 
+if cpp.check_header('Eigen/Eigen', dependencies: deps)
+  conf_data.set('QLAT_USE_GRID_EIGEN', false)
 if cpp.check_header('Grid/Eigen/Eigen', dependencies: deps)
   conf_data.set('QLAT_USE_GRID_EIGEN', true)
 endif

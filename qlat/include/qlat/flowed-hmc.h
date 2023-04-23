@@ -118,7 +118,7 @@ inline FlowInfo mk_flow_info_step(const RngState& rs, const double epsilon)
 inline FlowInfo mk_flow_info_step(const RngState& rs, const double epsilon,
                                   const double epsilon2)
 {
-  std::vector<std::vector<FlowStepInfo> > fi1s(4), fi2s(4);
+  std::vector<std::vector<FlowStepInfo>> fi1s(4), fi2s(4);
   if (epsilon != 0.0) {
     fi1s[3].push_back(FlowStepInfo(2, 3, epsilon));
     fi1s[3].push_back(FlowStepInfo(1, 3, epsilon));
@@ -239,8 +239,8 @@ qacc int multiplicity_flow_hmc(const bool is_same_mask_as_flow,
 inline const vector_acc<long>& get_flowed_hmc_indices_mask_flow_size(
     const Geometry& geo, const int mask, const int flow_size)
 {
-  static Cache<std::string, vector_acc<long> > cache("flowed_hmc_indices_cache", 8,
-                                                 2);
+  static Cache<std::string, vector_acc<long>> cache("flowed_hmc_indices_cache",
+                                                    8, 2);
   const std::string key =
       ssprintf("%s-%d-%d", show(geo.node_site).c_str(), mask, flow_size);
   vector_acc<long>& vec = cache[key];
@@ -876,7 +876,7 @@ qacc array<ColorMatrix, 2> d_uc_mat_site_no_comm(
 }
 
 inline void set_d_uc_mat_plaq_mask_mu_no_comm(
-    Field<array<ColorMatrix, 2> >& ducf, const FieldM<ColorMatrix, 1>& cf,
+    Field<array<ColorMatrix, 2>>& ducf, const FieldM<ColorMatrix, 1>& cf,
     const GaugeField& gf_ext, const int mask, const int mu, const int flow_size)
 // ducf does NOT need to be initialized.
 // It will be initialized with no expansion
@@ -899,7 +899,7 @@ inline void set_d_uc_mat_plaq_mask_mu_no_comm(
     const Coordinate yl = geo.coordinate_from_index(index);
     const Coordinate yg = geo.coordinate_g_from_l(yl);
     const int mask_yl = mask_from_coordinate(yg, flow_size);
-    Vector<array<ColorMatrix, 2> > ducfv = ducf.get_elems(yl);
+    Vector<array<ColorMatrix, 2>> ducfv = ducf.get_elems(yl);
     for (int m = 0; m < multiplicity_flow_hmc(mask_yl == mask, flow_size);
          ++m) {
       Coordinate xl;
@@ -930,7 +930,7 @@ qacc AdjointColorMatrix n_mat_plaq_site_no_comm(
 }
 
 inline void set_n_mat_plaq_mask_mu_no_comm(
-    Field<AdjointColorMatrix>& nf, const Field<array<ColorMatrix, 2> >& ducf,
+    Field<AdjointColorMatrix>& nf, const Field<array<ColorMatrix, 2>>& ducf,
     const int mask, const int flow_size)
 // nf does NOT need to be initialized.
 // It will be initialized with ducf geometry.
@@ -946,7 +946,7 @@ inline void set_n_mat_plaq_mask_mu_no_comm(
     const Coordinate yl = geo.coordinate_from_index(index);
     const Coordinate yg = geo.coordinate_g_from_l(yl);
     const int mask_yl = mask_from_coordinate(yg, flow_size);
-    const Vector<array<ColorMatrix, 2> > ducfv = ducf.get_elems_const(yl);
+    const Vector<array<ColorMatrix, 2>> ducfv = ducf.get_elems_const(yl);
     Vector<AdjointColorMatrix> nfv = nf.get_elems(yl);
     for (int m = 0; m < multiplicity_flow_hmc(mask_yl == mask, flow_size);
          ++m) {
@@ -1247,7 +1247,7 @@ inline void set_gm_force_from_flow_det_no_comm(
     const FieldM<array<double, 8>, 1>& f_e2_dj_x_n_mp_inv_ext,
     const FieldM<AdjointColorMatrix, 1>& f_n_e_mp_inv_j_x_ext,
     const Field<AdjointColorMatrix>& nf,
-    const Field<array<ColorMatrix, 2> >& ducf, const int mask, const int mu,
+    const Field<array<ColorMatrix, 2>>& ducf, const int mask, const int mu,
     const int flow_size)
 // See set_xl_nu_from_mask_mu_yl_m
 // mask: flow 1:odd / 2:even site
@@ -1273,7 +1273,7 @@ inline void set_gm_force_from_flow_det_no_comm(
     const int mask_yl = mask_from_coordinate(yg, flow_size);
     const array<ColorMatrix, 8>& ts = cmcs().ts;
     const Vector<AdjointColorMatrix> nfv = nf.get_elems_const(yl);
-    const Vector<array<ColorMatrix, 2> > ducfv = ducf.get_elems_const(yl);
+    const Vector<array<ColorMatrix, 2>> ducfv = ducf.get_elems_const(yl);
     Vector<ColorMatrix> gm_f_v = gm_force_det.get_elems(yl);
     set_zero(gm_f_v);
     for (int m = 0; m < multiplicity_flow_hmc(mask == mask_yl, flow_size);
@@ -1425,7 +1425,7 @@ inline void set_gm_force_propagated_from_flow_step(
   // To propagate force
   FieldM<ColorMatrix, 1> cf;
   set_flow_staple_mask_mu_no_comm(cf, gf0_ext, fsi.mask, fsi.mu, fsi.flow_size);
-  Field<array<ColorMatrix, 2> > ducf;
+  Field<array<ColorMatrix, 2>> ducf;
   set_d_uc_mat_plaq_mask_mu_no_comm(ducf, cf, gf0_ext, fsi.mask, fsi.mu,
                                     fsi.flow_size);
   Field<AdjointColorMatrix> nf;
@@ -1472,7 +1472,7 @@ inline void set_gm_force_propagated_and_gm_force_det_from_flow_step(
   // To propagate force
   FieldM<ColorMatrix, 1> cf;
   set_flow_staple_mask_mu_no_comm(cf, gf0_ext, fsi.mask, fsi.mu, fsi.flow_size);
-  Field<array<ColorMatrix, 2> > ducf;
+  Field<array<ColorMatrix, 2>> ducf;
   set_d_uc_mat_plaq_mask_mu_no_comm(ducf, cf, gf0_ext, fsi.mask, fsi.mu,
                                     fsi.flow_size);
   Field<AdjointColorMatrix> nf;
