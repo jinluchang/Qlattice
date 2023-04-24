@@ -29,10 +29,10 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-Current Grid git commit hash=458c943987eec3282b001f276c9bc91fd482ff02: (HEAD -> feature/gpt, origin/feature/gpt, origin/HEAD) clean
+Current Grid git commit hash=5f75735dab3fcad328aeb0d92f9e5dcffd0aec53: (HEAD -> feature/gpt, origin/feature/gpt, origin/HEAD) clean
 
 qlat::begin(): MPI Initialized. num_node = 2
-===========================================================================
+======================================================================
 
                               Qlattice
 
@@ -48,21 +48,20 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
-===========================================================================
-qlat::begin_comm(comm,size_node): get_comm_list().push_back()
-qlat::begin_comm(comm,size_node): get_comm_list().size() = 2
+======================================================================
 qlat::begin(): q_num_threads = 2
-q_malloc_mmap_threshold='' (default)
 qlat::begin(): GeometryNode =
 { initialized = true
 , num_node    = 2
 , id_node     = 0
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
+qlat::begin_comm(comm,size_node): get_comm_list().push_back()
+qlat::begin_comm(comm,size_node): get_comm_list().size() = 2
+q_malloc_mmap_threshold='' (default)
 q_timer_max_func_name_len=50 (default)
 q_mk_id_node_in_shuffle_seed='' (default)
 clear_mem_cache: 0 bytes (0.000 GB) freed.
-grid_begin: rm returns 256
 GridThreads::GridThreads() = 2
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
@@ -71,15 +70,14 @@ set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 Cache: 'CommPlanCache': 0 / 32 [16] to add
-plaq : -5.40326217624385787E-03
+plaq : -5.40326217624385700E-03
 Cache: 'CommPlanCache': 1 / 32 [16] to add
 spatial plaq : -1.24665686857814463E-02
-trace:  1.23949530600750923E-01
+trace:  1.23949530600750854E-01
 CHECK: finished successfully.
 Cache: 'CommPlanCache': 2 / 32 [16] clear
-clear_mem_cache: 556544 bytes (0.001 GB) freed.
+clear_mem_cache: 558592 bytes (0.001 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 1.
 qlat::end(): Switch to old comm (foreign).
 qlat::end(): MPI_Comm_free ended comm.
-grid_end: rm returns 256

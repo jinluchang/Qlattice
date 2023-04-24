@@ -16,8 +16,8 @@ source qcore/set-prefix.sh $name
 
     for log in examples-py/*.log ; do
         echo diff "$prefix/$log" "$log"
-        diff "$prefix/$log" "$log" || cat "$prefix/$log".full || true
-        cp -rpv "$prefix/$log" "$log" || true
+        diff "$prefix/$log" "$log" | grep 'CHECK: ' && ( cat "$prefix/$log" || true )
+        diff "$prefix/$log" "$log" >/dev/null 2>&1 || ( cp -rpv "$prefix/$log" "$log".new || true )
     done
 
     echo "!!!! $name build !!!!"
