@@ -46,14 +46,13 @@ set -e
 ./scripts/autoconf.sh
 ./scripts/automake.sh
 ./scripts/c-lime.sh
+./scripts/qmp.sh
+./scripts/qio.sh
+./scripts/cps.sh
 ./scripts/grid-clehner.avx2.sh
 ./scripts/gpt.sh
 
 ./scripts/qlat-grid.sh
-
-./scripts/qmp.sh
-./scripts/qio.sh
-./scripts/cps.sh
 
 ./scripts/qlat-cps.sh
 
