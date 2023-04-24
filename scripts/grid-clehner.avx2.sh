@@ -15,8 +15,18 @@ source qcore/set-prefix.sh $name
     INITDIR="$(pwd)"
     rm -rfv "${INITDIR}/Eigen/Eigen/unsupported"
     rm -rfv "${INITDIR}/Grid/Eigen"
-    ln -vs "${INITDIR}/Eigen/Eigen" "${INITDIR}/Grid/Eigen"
-    ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
+    if [ -n "$(find-header.sh Eigen/Eigen)" ] ; then
+        eigen_path="$(find-header.sh Eigen/Eigen)"
+        rsync -av --delete "$eigen_path/include/Eigen/" ${INITDIR}/Grid/Eigen/
+        rsync -av --delete "$eigen_path/include/unsupported/Eigen/" ${INITDIR}/Grid/Eigen/unsupported/
+        cd ${INITDIR}/Grid
+        echo 'eigen_files =\' > ${INITDIR}/Grid/Eigen.inc
+        find -L Eigen -type f -print | sed 's/^/  /;$q;s/$/ \\/' >> ${INITDIR}/Grid/Eigen.inc
+        cd ${INITDIR}
+    else
+        ln -vs "${INITDIR}/Eigen/Eigen" "${INITDIR}/Grid/Eigen"
+        ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
+    fi
 
     export CXXFLAGS="$CXXFLAGS -fPIC -w -Wno-psabi"
 
