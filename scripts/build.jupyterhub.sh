@@ -27,12 +27,11 @@ rm -rfv ~/.cache/pip
 ./scripts/qlat-packages.sh
 
 ./scripts/c-lime.sh
-./scripts/grid-clehner.avx2.sh
-./scripts/gpt.sh
-
 ./scripts/qmp.sh
 ./scripts/qio.sh
 ./scripts/cps.sh
+./scripts/grid-clehner.avx2.sh
+./scripts/gpt.sh
 
 ./scripts/qlat-packages.sh
 
