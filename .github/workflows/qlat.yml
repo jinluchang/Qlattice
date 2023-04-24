@@ -127,6 +127,7 @@ jobs:
         export num_proc=2
         ./scripts/setenv.default.sh
         ./scripts/qcore.sh
+        ./scripts/eigen.sh
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
     - name: Build CPS
@@ -212,6 +213,7 @@ jobs:
         ./scripts/setenv.default.sh
         ./scripts/dist-update-hash.sh
         ./scripts/qcore.sh
+        ./scripts/eigen.sh
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
     - name: Build CPS
@@ -386,6 +388,7 @@ jobs:
         export num_proc=3
         ./scripts/setenv.default.sh
         ./scripts/qcore.sh
+        ./scripts/eigen.sh
         ./scripts/fftw.sh
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
@@ -468,6 +471,7 @@ jobs:
         ./scripts/setenv.default.sh
         ./scripts/dist-update-hash.sh
         ./scripts/qcore.sh
+        ./scripts/eigen.sh
         ./scripts/fftw.sh
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
