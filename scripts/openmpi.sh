@@ -17,8 +17,16 @@ source qcore/set-prefix.sh $name
     mkdir -p $build_dir || true
     cd $build_dir
 
+    opts=""
+    if [ -n "$NVCC_ARCH" ] ; then
+        NVCC_PATH=$(which nvcc)
+        CUDA_ROOT=${NVCC_PATH%/bin/nvcc}
+        opts+=" --with-cuda=${CUDA_ROOT}"
+    fi
+
     time-run $src_dir/$name-*/configure \
         --prefix=$prefix \
+        $opts \
         --with-hwloc=internal
 
     time-run make -j$num_proc
