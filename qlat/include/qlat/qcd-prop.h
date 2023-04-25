@@ -242,7 +242,7 @@ inline void set_wall_src_fermion_field(FermionField4d& ff, const int tslice,
       for (int i = 0; i < DIMN; ++i) {
         phase += mom[i] * xg[i];
       }
-      ff.get_elem(xl)(cs) = std::polar(1.0, phase);
+      ff.get_elem(xl)(cs) = qpolar(1.0, phase);
     }
   }
 }
@@ -299,7 +299,7 @@ inline void set_rand_u1_src_psel(Propagator4d& prop, FieldM<Complex, 1>& fu1,
       const long gindex = index_from_coordinate(xg, total_site);
       RngState rst = rs.newtype(gindex);
       const double phase = u_rand_gen(rst, PI, -PI);
-      const Complex u1 = std::polar(1.0, phase);
+      const Complex u1 = qpolar(1.0, phase);
       set_unit(prop.get_elem(xl), u1);
       fu1.get_elem(xl) = u1;
     }
@@ -341,7 +341,7 @@ inline void set_rand_u1_src_fsel(Propagator4d& prop, FieldM<Complex, 1>& fu1,
     const long gindex = index_from_coordinate(xg, total_site);
     RngState rst = rs.newtype(gindex);
     const double phase = u_rand_gen(rst, PI, -PI);
-    const Complex u1 = std::polar(1.0, phase);
+    const Complex u1 = qpolar(1.0, phase);
     set_unit(prop.get_elem(xl), u1);
     fu1.get_elem(xl) = u1;
   });
@@ -379,7 +379,7 @@ inline void set_mom_src_fermion_field(FermionField4d& ff,
     for (int i = 0; i < DIMN; ++i) {
       phase += mom[i] * xg[i];
     }
-    ff.get_elem(xl)(cs) = std::polar(1.0, phase);
+    ff.get_elem(xl)(cs) = qpolar(1.0, phase);
   }
 }
 
@@ -650,7 +650,7 @@ inline void set_tslice_mom_src_fermion_field(FermionField4d& ff,
       for (int i = 0; i < DIMN; ++i) {
         phase += mom[i] * xg[i];
       }
-      ff.get_elem(xl)(cs) = std::polar(1.0, phase);
+      ff.get_elem(xl)(cs) = qpolar(1.0, phase);
     }
   }
 }
@@ -705,7 +705,7 @@ inline void set_volume_src_fermion_field(FermionField4d& ff,
     for (int i = 0; i < DIMN; ++i) {
       phase += mom[i] * xg[i];
     }
-    ff.get_elem(xl)(cs) = std::polar(1.0, phase);
+    ff.get_elem(xl)(cs) = qpolar(1.0, phase);
   }
 }
 

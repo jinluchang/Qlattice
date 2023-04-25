@@ -367,7 +367,7 @@ std::vector<M> field_project_mom(const Field<M>& f, const CoordinateD& mom)
     for (int k = 0; k < DIMN; ++k) {
       phase += mom[k] * xg[k];
     }
-    const Complex factor = std::polar(1.0, -phase);
+    const Complex factor = qpolar(1.0, -phase);
     const Vector<M> v = f.get_elems_const(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       M x = v[m];

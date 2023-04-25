@@ -572,7 +572,9 @@ void set_cuda_device()
   int num_devices = 0;
   cudaGetDeviceCount(&num_devices);
   if (num_devices > 0) {
-    displayln_info(fname + ssprintf(": num_devices=%d", num_devices));
+    displayln_info(fname +
+                   ssprintf(": num_devices=%d (local_rank=%d local_size=%d)",
+                            num_devices, local_rank, local_size));
     cudaSetDevice(local_rank % num_devices);
   }
 #endif

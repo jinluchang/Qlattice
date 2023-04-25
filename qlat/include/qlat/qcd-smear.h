@@ -315,7 +315,7 @@ void smear_propagator(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
   for (int i = 0; i < 8; ++i) {
     const int dir = i - 4;
     const double phase = dir >= 0 ? mom[dir] : -mom[-dir - 1];
-    mom_factors()[i] = std::polar(coef / n_avg, -phase);
+    mom_factors()[i] = qpolar(coef / n_avg, -phase);
   }
   Propagator4dT<T> prop1;
   prop1.init(geo1);

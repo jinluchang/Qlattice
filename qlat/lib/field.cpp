@@ -12,13 +12,14 @@ void set_mom_phase_field(FieldM<Complex, 1>& f, const CoordinateD& mom)
   TIMER("set_mom_phase_field");
   const Geometry& geo = f.geo();
   qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = f.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     double phase = 0;
     for (int k = 0; k < DIMN; ++k) {
       phase += mom[k] * xg[k];
     }
-    f.get_elem(xl) = std::polar(1.0, phase);
+    f.get_elem(xl) = qpolar(1.0, phase);
   });
 }
 

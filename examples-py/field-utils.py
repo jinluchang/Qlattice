@@ -17,7 +17,7 @@ q.begin_with_mpi(size_node_list)
 q.qremove_all_info("results")
 q.qmkdir_info("results")
 
-total_site = [4, 4, 4, 8]
+total_site = [ 4, 4, 4, 8, ]
 geo = q.Geometry(total_site, 1)
 q.displayln_info("CHECK: geo.show() =", geo.show())
 rs = q.RngState("seed")
@@ -79,7 +79,7 @@ for t_dir in range(4):
     for t in range(total_site[t_dir]):
         gf_sum -= gf_sum_tslice.get_elems(t)
     q.displayln_info(f"t_dir={t_dir} qnorm diff", f"{q.qnorm(gf_sum):.14E}")
-    assert q.qnorm(gf_sum) <= 1e-24
+    assert q.qnorm(gf_sum) <= 1e-23 * q.qnorm(gf_sum_initial)
 
 f = gf.as_field(q.ElemTypeComplex)
 

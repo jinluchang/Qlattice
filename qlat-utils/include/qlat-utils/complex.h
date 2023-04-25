@@ -22,15 +22,21 @@ template <class T = Real>
 using ComplexT = thrust::complex<T>;
 
 template <class T>
-qacc thrust::complex<T> qconj(const thrust::complex<T>& x)
+qacc ComplexT<T> qconj(const ComplexT<T>& x)
 {
   return thrust::conj(x);
 }
 
 template <class T>
-qacc double qnorm(const thrust::complex<T>& x)
+qacc T qnorm(const ComplexT<T>& x)
 {
   return thrust::norm(x);
+}
+
+template <class T>
+qacc ComplexT<T> qpolar(const T& r, const T& theta = T())
+{
+  return thrust::polar(r, theta);
 }
 
 #else
@@ -39,15 +45,21 @@ template <class T = Real>
 using ComplexT = std::complex<T>;
 
 template <class T>
-std::complex<T> qconj(const std::complex<T>& x)
+ComplexT<T> qconj(const ComplexT<T>& x)
 {
   return std::conj(x);
 }
 
 template <class T>
-double qnorm(const std::complex<T>& x)
+T qnorm(const ComplexT<T>& x)
 {
   return std::norm(x);
+}
+
+template <class T>
+qacc ComplexT<T> qpolar(const T& r, const T& theta = T())
+{
+  return std::polar(r, theta);
 }
 
 #endif

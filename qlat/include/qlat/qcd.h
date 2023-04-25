@@ -472,7 +472,7 @@ void twist_boundary_at_boundary(GaugeFieldT<T>& gf, double lmom, int mu)
     Coordinate xg = geo.coordinate_g_from_l(xl);
     if (xg[mu] == len - 1) {
       ColorMatrixT<T>& mat = gf.get_elem(xl, mu);
-      mat *= ComplexT<T>(std::polar(1.0, amp));
+      mat *= ComplexT<T>(qpolar(1.0, amp));
     }
   }
 }
