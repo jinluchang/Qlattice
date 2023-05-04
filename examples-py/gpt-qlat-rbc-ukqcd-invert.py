@@ -32,7 +32,7 @@ srcs = []
 for i in range(2):
     p = q.Prop(geo)
     p.set_rand(rs.split(f"prop-src {i}"))
-    q.displayln_info(f"CHECK: prop src {i} qnorm = {p.qnorm()} crc32 = {p.crc32()}")
+    q.displayln_info(f"CHECK: prop src {i} qnorm = {p.qnorm():.12E} crc32 = {p.crc32()}")
     srcs.append(p)
 
 sols = inv * srcs
