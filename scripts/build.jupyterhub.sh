@@ -12,6 +12,7 @@ rm -rfv ~/.cache/pip
 ./scripts/qcore.sh
 
 ./scripts/hdf5.sh
+./scripts/openmpi.sh
 
 ./scripts/python.sh
 ./scripts/python-pip.sh
