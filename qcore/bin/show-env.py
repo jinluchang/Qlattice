@@ -80,6 +80,7 @@ all_env_var_list = [
         "LIBS",
         "LD_PRELOAD",
         "NINJA_NUM_JOBS",
+        "OMP_NUM_THREADS",
         ]
 
 if __name__ == "__main__":
