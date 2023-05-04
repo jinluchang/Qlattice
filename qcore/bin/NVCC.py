@@ -195,6 +195,7 @@ class NvccCmdLine:
             "-D_FILE_OFFSET_BITS=64",
             "-Wl,--allow-shlib-undefined",
             "-Wl,--as-needed",
+            "-Wl,--no-undefined",
             "-fvisibility=hidden",
             "-fvisibility-inlines-hidden",
             ])
