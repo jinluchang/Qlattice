@@ -69,8 +69,12 @@ struct ScalarAction {
     FieldM<double, 1> fd;
     fd.init(geo_r);
     // Loops over every lattice point in the current node
+    const int multiplicity = geo.multiplicity;
+    ScalarAction& sa = *this;
     qacc_for(index, geo_r.local_volume(), {
-      fd.get_elem(index) = action_point(sf,geo.multiplicity,geo_r.coordinate_from_index(index));
+      const Geometry& geo = sf.geo();
+      const Coordinate xl = geo.coordinate_from_index(index);
+      fd.get_elem(index) = sa.action_point(sf, multiplicity, xl);
     });
     // Sums over the contributions to the total action from each point
     // (this cannot be done in the previous loops because the previous
@@ -117,6 +121,7 @@ struct ScalarAction {
     const Geometry geo = field_ft.geo();
     //masses.init(geo);
     qacc_for(index, geo.local_volume(), {
+      const Geometry& geo = field_ft.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
       const long gindex = geo.g_index_from_g_coordinate(xg);
@@ -124,14 +129,13 @@ struct ScalarAction {
       int M = masses_v.size();
       qassert(M == geo.multiplicity);
       for (int m = 0; m < M; ++m) {
-		Complex fld = field_ft.get_elem(xl,m);
-		Complex frc = force_ft.get_elem(xl,m);
+        Complex fld = field_ft.get_elem(xl, m);
+        Complex frc = force_ft.get_elem(xl, m);
         if(gindex==0 && m==0){
           masses_v[m] = 4/(PI*PI)*std::pow((frc.real()*frc.real()+frc.imag()*frc.imag())/((fld.real()-phi0)*(fld.real()-phi0)+fld.imag()*fld.imag()), 0.5);
-	    }
-	    else {
+        } else {
           masses_v[m] = 4/(PI*PI)*std::pow((frc.real()*frc.real()+frc.imag()*frc.imag())/(fld.real()*fld.real()+fld.imag()*fld.imag()), 0.5);
-		}
+        }
       }
     });
   }
@@ -141,6 +145,7 @@ struct ScalarAction {
     TIMER("ScalarAction.to_mass_factor");
     const Geometry geo = sin_domega.geo();
     qacc_for(index, geo.local_volume(), {
+      const Geometry& geo = sin_domega.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
       Vector<double> v = sin_domega.get_elems(xl);
       for (int m = 0; m < v.size(); ++m) {
@@ -172,7 +177,8 @@ struct ScalarAction {
     fd.init(geo_r);
     // long V = geo.total_volume();
     qacc_for(index, geo_r.local_volume(), {
-      Coordinate xl = geo_r.coordinate_from_index(index);
+      const Geometry& geo = sm_complex.geo();
+      Coordinate xl = geo.coordinate_from_index(index);
       double s=0;
       for (int m = 0; m < geo.multiplicity; ++m) {
         Complex c = sm_complex.get_elem(xl,m);
@@ -184,7 +190,7 @@ struct ScalarAction {
     // (this cannot be done in the previous loops because the previous
     // loop runs in parallel)
     double sum = 0.0;
-    for (long index = 0; index < geo_r.local_volume(); ++index) {
+    for (long index = 0; index < geo.local_volume(); ++index) {
       sum += fd.get_elem(index);
     }
     return sum;
@@ -195,7 +201,9 @@ struct ScalarAction {
     TIMER("ScalarAction.hmc_set_sm_force_no_comm");
     const Geometry geo = sf.geo();
     //sm_force.init(geo);
+    ScalarAction& sa = *this;
     qacc_for(index, geo.local_volume(), {
+      const Geometry& geo = sf.geo();
       Coordinate xl = geo.coordinate_from_index(index);
       Vector<double> sm_force_v = sm_force.get_elems(xl);
       int M = sm_force_v.size();
@@ -206,8 +214,8 @@ struct ScalarAction {
       }
       for (int m = 0; m < M; ++m) {
         sm_force_v[m] =
-            (2 * 4 + m_sq + lmbd / 6 * sum_mult_sq) * sf.get_elem(xl, m);
-        if (m == 0) sm_force_v[m] += alpha;
+            (2 * 4 + sa.m_sq + sa.lmbd / 6 * sum_mult_sq) * sf.get_elem(xl, m);
+        if (m == 0) sm_force_v[m] += sa.alpha;
         for (int dir = 0; dir < 4; ++dir) {
           xl[dir] += 1;
           sm_force_v[m] -= sf.get_elem(xl, m);
@@ -250,6 +258,7 @@ struct ScalarAction {
     //fft_complex_field(sm_complex,true);
     //sm_complex*=1/rt_V;
     qacc_for(index, geo.local_volume(), {
+      const Geometry& geo = sf_complex.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
       Vector<Complex> sf_v = sf_complex.get_elems(xl);
       const Vector<Complex> sm_v = sm_complex.get_elems_const(xl);
@@ -270,6 +279,7 @@ struct ScalarAction {
     // const Geometry geo_r = geo_reform(geo, geo.multiplicity-1);
     //axial_current.init(geo_r);
     qacc_for(index, geo.local_volume(), {
+      const Geometry& geo = sf.geo();
       Coordinate xl = geo.coordinate_from_index(index);
       Vector<double> ac_v = axial_current.get_elems(xl);
       int M = ac_v.size();
@@ -300,6 +310,7 @@ struct ScalarAction {
     FieldM<double, 1> fd;
     fd.init(geo_r);
     qacc_for(index, geo_r.local_volume(), {
+      const Geometry& geo = f.geo();
       Coordinate xl = geo_r.coordinate_from_index(index);
       double s=0;
       for (int m = 0; m < geo.multiplicity; ++m) {
@@ -358,6 +369,7 @@ struct ScalarAction {
     TIMER("hmc_predict_field");
     const Geometry& geo = momentum_ft.geo();
     qacc_for(index, geo.local_volume(), {
+      const Geometry& geo = momentum_ft.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
       const long gindex = geo.g_index_from_g_coordinate(xg);
@@ -387,6 +399,7 @@ struct ScalarAction {
     const Geometry geo = sf.geo();
     qassert(geo.multiplicity == 4);
     qacc_for(index, geo.local_volume(), {
+      const Geometry& geo = sf.geo();
       Coordinate xl = geo.coordinate_from_index(index);
       Vector<double> pf_v = polar_fields.get_elems(xl);
       qassert(pf_v.size()==4);
