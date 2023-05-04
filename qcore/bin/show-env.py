@@ -69,6 +69,7 @@ all_env_var_list = [
         "prefix",
         "num_proc",
         "USE_COMPILER",
+        "NVCC_ARCH",
         "CC",
         "CXX",
         "MPICC",
