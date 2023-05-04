@@ -138,7 +138,7 @@ inline void test_hmc(const Coordinate& total_site, const GaugeAction& ga)
     const double plaq_avg = gf_avg_plaq(gf);
     const double plaq_sum = product(total_site) * 6 * (1.0 - plaq_avg);
     displayln_info("CHECK: " + fname +
-                   ssprintf(": traj=%d ; plaq_avg=%24.13E ; plaq_sum=%24.13E.",
+                   ssprintf(": traj=%d ; plaq_avg=%24.12E ; plaq_sum=%24.12E.",
                             traj, plaq_avg, plaq_sum));
     //
     if (traj % 2 == 0) {
