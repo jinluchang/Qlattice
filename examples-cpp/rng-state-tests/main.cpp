@@ -75,7 +75,7 @@ void test3()
         u_rand_gen(rs);
       }
       for (int i = 0; i < Ntake; i++) {
-        a += polar(1.0, u_rand_gen(rs, PI, -PI));
+        a += qpolar(1.0, u_rand_gen(rs, PI, -PI));
       }
     }
     sum += qnorm(a);
@@ -106,7 +106,7 @@ void test4()
         u_rand_gen(rsi);
       }
       for (int i = 0; i < Ntake; i++) {
-        a += polar(1.0, u_rand_gen(rsi, PI, -PI));
+        a += qpolar(1.0, u_rand_gen(rsi, PI, -PI));
       }
     }
     sum += qnorm(a);

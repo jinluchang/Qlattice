@@ -374,6 +374,7 @@ def call(argv):
     log.log(f"{' '.join([ repr(arg) for arg in argv ])}")
     log.log(f"status={status}")
     if status != 0:
+        print(f"pwd={os.getcwd()}")
         print(f"sys.argv={sys.argv}")
         print(f"argv={argv}")
         print(f"status={status}")

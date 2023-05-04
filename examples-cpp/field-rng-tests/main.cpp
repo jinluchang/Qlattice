@@ -53,7 +53,7 @@ void test1()
       Coordinate xh;
       coordinateHalf(xh, xl);
       RngState rs0 = rs.split(ssprintf("%ld %ld", gindex, traj));
-      af.get_elem(xh) += polar(1.0, u_rand_gen(rs0, PI, -PI));
+      af.get_elem(xh) += qpolar(1.0, u_rand_gen(rs0, PI, -PI));
     }
     for (long index = 0; index < geoHalf.local_volume(); ++index) {
       Coordinate x = geoHalf.coordinate_from_index(index);

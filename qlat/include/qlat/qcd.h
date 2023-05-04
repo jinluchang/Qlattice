@@ -360,7 +360,8 @@ long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
     }
   }
   gf.init(geo);
-  qthread_for(index, geo.local_volume(), {
+  qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = gf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<Complex> vt = gft.get_elems(xl);
     Vector<ColorMatrixT<T> > v = gf.get_elems(xl);

@@ -159,7 +159,7 @@ inline void demo(const std::string& tag, const Coordinate& total_site,
       const crc32_t crc_4 = field_crc32(rf);
       displayln_info(fname +
                      ssprintf(": compute crc32=%08X.", crc_4));
-      qassert(crc_4 == crc_2)
+      qassert(crc_4 == crc_2);
       //
       displayln_info(fname + ssprintf(": read from disk 'sf.field'"));
       //
@@ -168,49 +168,49 @@ inline void demo(const std::string& tag, const Coordinate& total_site,
       const crc32_t crc_5 = field_crc32(rf);
       displayln_info(fname +
                      ssprintf(": compute crc32=%08X.", crc_5));
-      qassert(crc_5 == crc_3)
+      qassert(crc_5 == crc_3);
       //
       rf.init();
       read(sfr, "f.sfield", rf);
       const crc32_t crc_6 = field_crc32(rf);
       displayln_info(fname +
                      ssprintf(": compute crc32=%08X.", crc_6));
-      qassert(crc_6 == crc_3)
+      qassert(crc_6 == crc_3);
       //
       rf.init();
       read(sfr, "sf.sfield", rf);
       const crc32_t crc_7 = field_crc32(rf);
       displayln_info(fname +
                      ssprintf(": compute crc32=%08X.", crc_7));
-      qassert(crc_7 == crc_3)
+      qassert(crc_7 == crc_3);
       //
       rf.init();
       read(sfr, "fa.field", rf);
       const crc32_t crc_8 = field_crc32(rf);
       displayln_info(fname +
                      ssprintf(": compute crc32=%08X.", crc_4));
-      qassert(crc_8 == crc_2)
+      qassert(crc_8 == crc_2);
       //
       rf.init();
       read(sfr, "sfa.field", rf);
       const crc32_t crc_9 = field_crc32(rf);
       displayln_info(fname +
                      ssprintf(": compute crc32=%08X.", crc_5));
-      qassert(crc_9 == crc_3)
+      qassert(crc_9 == crc_3);
       //
       rf.init();
       read(sfr, "fa.sfield", rf);
       const crc32_t crc_10 = field_crc32(rf);
       displayln_info(fname +
                      ssprintf(": compute crc32=%08X.", crc_6));
-      qassert(crc_10 == crc_3)
+      qassert(crc_10 == crc_3);
       //
       rf.init();
       read(sfr, "sfa.sfield", rf);
       const crc32_t crc_11 = field_crc32(rf);
       displayln_info(fname +
                      ssprintf(": compute crc32=%08X.", crc_7));
-      qassert(crc_11 == crc_3)
+      qassert(crc_11 == crc_3);
     }
   }
   check_all_files_crc32("huge-data/" + tag);
