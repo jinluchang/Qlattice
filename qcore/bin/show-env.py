@@ -68,6 +68,7 @@ all_env_list = [
 all_env_var_list = [
         "prefix",
         "num_proc",
+        "num_test",
         "USE_COMPILER",
         "NVCC_ARCH",
         "CC",

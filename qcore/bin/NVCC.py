@@ -21,6 +21,7 @@ class LogCmd:
         self.log_prefix = f"{time_sec:30.10f}: "
         self.log_file = open(log_path, 'a')
         self.log("Start.")
+        self.log(f"pwd='{os.getcwd()}'")
 
     def __del__(self):
         self.log("End.")

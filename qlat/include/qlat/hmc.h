@@ -83,16 +83,16 @@ inline double gm_hamilton_node(const GaugeMomentum& gm)
   return sum;
 }
 
-inline double gf_re_tr_plaq_no_comm(const GaugeField& gf, const Coordinate& xl,
-                                    const int mu, const int nu)
+qacc double gf_re_tr_plaq_no_comm(const GaugeField& gf, const Coordinate& xl,
+                                  const int mu, const int nu)
 {
   const ColorMatrix m =
       gf_wilson_line_no_comm(gf, xl, make_array<int>(mu, nu, -mu - 1, -nu - 1));
   return matrix_trace(m).real();
 }
 
-inline double gf_re_tr_rect_no_comm(const GaugeField& gf, const Coordinate& xl,
-                                    const int mu, const int nu)
+qacc double gf_re_tr_rect_no_comm(const GaugeField& gf, const Coordinate& xl,
+                                  const int mu, const int nu)
 {
   const ColorMatrix m = gf_wilson_line_no_comm(
       gf, xl, make_array<int>(mu, mu, nu, -mu - 1, -mu - 1, -nu - 1));
@@ -107,6 +107,7 @@ inline double gf_sum_re_tr_plaq_node_no_comm(const GaugeField& gf)
   FieldM<double, 1> fd;
   fd.init(geo);
   qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = gf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     double s = 0.0;
     for (int mu = 0; mu < 3; ++mu) {
@@ -131,6 +132,7 @@ inline double gf_sum_re_tr_rect_node_no_comm(const GaugeField& gf)
   FieldM<double, 1> fd;
   fd.init(geo);
   qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = gf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     double s = 0.0;
     for (int mu = 0; mu < 3; ++mu) {
@@ -194,8 +196,8 @@ inline void gf_evolve(GaugeField& gf, const GaugeMomentum& gm,
 //  U(t+dt) = exp(i dt H) U(t)
 {
   TIMER("gf_evolve");
-  const Geometry& geo = gf.geo();
-  qacc_for(index, geo.local_volume(), {
+  qacc_for(index, gf.geo().local_volume(), {
+    const Geometry& geo = gf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> gf_v = gf.get_elems(xl);
     const Vector<ColorMatrix> gm_v = gm.get_elems_const(xl);

@@ -582,6 +582,7 @@ void set_cuda_device()
 
 void display_qlat_banner()
 {
+  qset_line_buf(get_output_file());
   displayln_info(
       "======================================================================");
   displayln_info("");
