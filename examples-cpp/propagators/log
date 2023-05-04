@@ -25,12 +25,12 @@ qlat::begin(): GeometryNode =
 , coor_node   = 0x0x0x0 }
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 1
-q_malloc_mmap_threshold='' (default)
-q_timer_max_func_name_len=50 (default)
-q_mk_id_node_in_shuffle_seed='' (default)
-clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
+q_timer_max_func_name_len=50 (default)
+q_malloc_mmap_threshold='' (default)
+q_mk_id_node_in_shuffle_seed='' (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
 display_geometry_node : id_node =     0 ; coor_node = 0x0x0x0 ; id_node_in_shuffle =     0 ; hostname = lattice01.phys.uconn.edu
 display_geometry_node : id_node =     1 ; coor_node = 0x0x0x1 ; id_node_in_shuffle =     1 ; hostname = lattice01.phys.uconn.edu
 q_time_limit=43200 (default)

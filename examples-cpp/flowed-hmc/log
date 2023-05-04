@@ -25,11 +25,12 @@ qlat::begin(): GeometryNode =
 , coor_node   = 0x0x0x0 }
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 1
-q_malloc_mmap_threshold='' (default)
+q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10 (default)
 q_timer_max_func_name_len=50 (default)
+q_malloc_mmap_threshold='' (default)
 q_mk_id_node_in_shuffle_seed='' (default)
 clear_mem_cache: 0 bytes (0.000 GB) freed.
-q_timer_mini_auto_show=1 (default)
 q_time_limit=43200 (default)
 get_time_limit()=12.000000 hours
 q_budget=900 (default)
@@ -38,7 +39,6 @@ q_read_par_limit=16 (default)
 dist_read_par_limit()=16
 q_write_par_limit=16 (default)
 dist_write_par_limit()=16
-q_timer_max_always_show=10 (default)
 q_field_init='fast' (default)
 set q_field_init=fast.
 fi.v[0]: mask=2, mu=3, epsilon=0.1000, flow_size=1.
@@ -238,7 +238,7 @@ run_hmc_evolve_flowed reversed delta_diff:  1.81898940354585648E-12 /  7.2900239
 run_hmc_evolve_flowed reversed gf_diff:  8.60255732108548259E-27 /  6.14400000000000000E+03
 metropolis_accept: accept flag = 1 with prob accept = 48.2% deltaH = 0.7290023990790360 traj = 1
 run_hmc: update gf (traj=1).
-CHECK: test_hmc: traj=1 ; plaq_avg=     3.4432327974220E-01 ; plaq_sum=     2.0142388846320E+03.
+CHECK: test_hmc: traj=1 ; plaq_avg=      3.443232797422E-01 ; plaq_sum=      2.014238884632E+03.
 Cache: 'CommPlanCache': 25 / 32 [16] to add
     0  3.93406032154680307E+00  1.56060532874675566E+01 -2.23440040003396317E-01  1.58237998021909510E-04
 Cache: 'CommPlanCache': 26 / 32 [16] to add
@@ -1031,7 +1031,7 @@ run_hmc_evolve_flowed reversed delta_diff:  0.00000000000000000E+00 / -4.3993578
 run_hmc_evolve_flowed reversed gf_diff:  4.96113240866734288E-27 /  6.14400000000000000E+03
 metropolis_accept: accept flag = 1 with prob accept = 100.0% deltaH = -0.4399357814472751 traj = 2
 run_hmc: update gf (traj=2).
-CHECK: test_hmc: traj=2 ; plaq_avg=     4.7325590884016E-01 ; plaq_sum=     1.6181578480430E+03.
+CHECK: test_hmc: traj=2 ; plaq_avg=      4.732559088402E-01 ; plaq_sum=      1.618157848043E+03.
     0  3.16046454695902934E+00  1.00983005271083037E+01 -4.50150384475301313E-01  1.41782275057839968E-04
 gf_wilson_flow: t =  1.00000000000000002E-02 ; E =  2.66784864272417632E+00 ; t^2 E =  2.66784864272417630E-04.
 gf_wilson_flow: t =  2.00000000000000004E-02 ; E =  2.67119715799976243E+00 ; t^2 E =  1.06847886319990509E-03.
@@ -1746,7 +1746,7 @@ fi.v[15]: mask=1, mu=2, epsilon=-0.0100, flow_size=2.
 run_hmc: U_0: traj=3 ; plaq_avg= 1.93221999619981044E-01 ; plaq_sum= 2.47842201716741783E+03 .
 metropolis_accept: accept flag = 1 with prob accept = 100.0% deltaH = -0.2240835420325311 traj = 3
 run_hmc: update gf (traj=3).
-CHECK: test_hmc: traj=3 ; plaq_avg=     5.2929225215035E-01 ; plaq_sum=     1.4460142013941E+03.
+CHECK: test_hmc: traj=3 ; plaq_avg=      5.292922521503E-01 ; plaq_sum=      1.446014201394E+03.
     0  2.82424648709792692E+00  8.06271971008903954E+00  4.21408937287757968E-01  1.44236950755420904E-04
 gf_wilson_flow: t =  1.00000000000000002E-02 ; E =  2.57429881854795406E+00 ; t^2 E =  2.57429881854795396E-04.
 gf_wilson_flow: t =  2.00000000000000004E-02 ; E =  2.56216478166733141E+00 ; t^2 E =  1.02486591266693272E-03.

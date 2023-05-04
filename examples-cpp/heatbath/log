@@ -25,11 +25,12 @@ qlat::begin(): GeometryNode =
 , coor_node   = 0x0x0x0 }
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 1
-q_malloc_mmap_threshold='' (default)
+q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10 (default)
 q_timer_max_func_name_len=50 (default)
+q_malloc_mmap_threshold='' (default)
 q_mk_id_node_in_shuffle_seed='' (default)
 clear_mem_cache: 0 bytes (0.000 GB) freed.
-q_timer_mini_auto_show=1 (default)
 q_time_limit=43200 (default)
 get_time_limit()=12.000000 hours
 q_budget=900 (default)
@@ -38,7 +39,6 @@ q_read_par_limit=16 (default)
 dist_read_par_limit()=16
 q_write_par_limit=16 (default)
 dist_write_par_limit()=16
-q_timer_max_always_show=10 (default)
 obtain_lock: Trying to obtain lock 'results/total_site=8x8x8x32/lambda=0.0000000000/mass_sqr=0.0100000000.txt-lock'.
 QFile: open 'results/total_site=8x8x8x32/lambda=0.0000000000/mass_sqr=0.0100000000.txt-lock/time.txt.partial' with 'w'.
 QFile: close 'results/total_site=8x8x8x32/lambda=0.0000000000/mass_sqr=0.0100000000.txt-lock/time.txt.partial' with 'w'.

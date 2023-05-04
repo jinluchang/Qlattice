@@ -25,13 +25,13 @@ qlat::begin(): GeometryNode =
 , coor_node   = 0x0x0x0 }
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 1
-q_malloc_mmap_threshold='' (default)
+q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10 (default)
 q_timer_max_func_name_len=50 (default)
+q_malloc_mmap_threshold='' (default)
 q_mk_id_node_in_shuffle_seed='' (default)
 clear_mem_cache: 0 bytes (0.000 GB) freed.
 sizeof RngState = 96
-q_timer_mini_auto_show=1 (default)
-q_timer_max_always_show=10 (default)
 expected: -0.231435
 -0.231915
 expected: 0.682689

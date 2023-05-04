@@ -1004,7 +1004,7 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
 {
   TIMER("set_g_rand_double");
   const Geometry& geo = f.geo();
-  qacc_for(index, geo.local_volume(), {
+  qthread_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const long gindex = geo.g_index_from_g_coordinate(xg);
