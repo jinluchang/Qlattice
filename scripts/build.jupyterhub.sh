@@ -11,8 +11,8 @@ rm -rfv ~/.cache/pip
 ./scripts/setenv.default.sh
 ./scripts/qcore.sh
 
-./scripts/hdf5.sh
 ./scripts/openmpi.sh
+./scripts/hdf5.sh
 
 ./scripts/python.sh
 ./scripts/python-pip.sh

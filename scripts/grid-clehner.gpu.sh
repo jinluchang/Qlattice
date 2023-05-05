@@ -32,7 +32,7 @@ source qcore/set-prefix.sh $name
     export CXX=nvcc
     export CFLAGS=
     export CXXFLAGS="-Xcompiler -fPIC -ccbin MPICXX.sh -arch=$NVCC_ARCH -std=c++14 -w"
-    export LDFLAGS="-Xcompiler -fopenmp"
+    export LDFLAGS="-Xcompiler -fopenmp -ccbin MPICXX.sh"
     export LIBS=
     export MPICXX=
     export MPICC=

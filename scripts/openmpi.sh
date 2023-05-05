@@ -18,7 +18,7 @@ source qcore/set-prefix.sh $name
     cd $build_dir
 
     opts=""
-    if [ -n "$NVCC_ARCH" ] ; then
+    if which nvcc >/dev/null 2>&1 ; then
         NVCC_PATH=$(which nvcc)
         CUDA_ROOT=${NVCC_PATH%/bin/nvcc}
         opts+=" --with-cuda=${CUDA_ROOT}"
