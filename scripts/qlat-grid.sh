@@ -21,6 +21,20 @@ source qcore/set-prefix.sh $name
     export CXX="$(grid-config --cxx)"
     # export CXX_LD="$(grid-config --cxxld)"
 
+    if [ -n "$QLAT_MPICXX" ] ; then
+        export MPICXX="$QLAT_MPICXX"
+        export CXX="$MPICXX"
+    fi
+    if [ -n "$QLAT_CXXFLAGS" ] ; then
+        export CXXFLAGS="$QLAT_CXXFLAGS"
+    fi
+    if [ -n "$QLAT_LDFLAGS" ] ; then
+        export LDFLAGS="$QLAT_LDFLAGS"
+    fi
+    if [ -n "$QLAT_LIBS" ] ; then
+        export LIBS="$QLAT_LIBS"
+    fi
+
     touch "$wd"/qlat-grid/meson.build
 
     time-run meson setup "$wd/qlat-grid" \

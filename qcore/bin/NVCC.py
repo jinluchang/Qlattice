@@ -225,11 +225,25 @@ class NvccCmdLine:
             "-Winvalid-pch",
             "-Wextra",
             "-Wpedantic",
+            "-Xcompiler",
+            "-MD",
+            ])
+        opt1_pool = set([
+            "-ccbin",
+            "-MQ",
+            "-MF",
             ])
         argv_new = []
+        n_arg = 0
         for arg in self.argv:
-            if arg in opt_pool:
+            if n_arg > 0:
                 self.omit_flags.append(arg)
+                n_arg -= 1
+            elif arg in opt_pool:
+                self.omit_flags.append(arg)
+            elif arg in opt1_pool:
+                self.omit_flags.append(arg)
+                n_arg = 1
             else:
                 argv_new.append(arg)
         self.argv = argv_new
@@ -259,10 +273,10 @@ class NvccCmdLine:
         self.parse_cc_only_flags()
         self.parse_compile_link()
         self.parse_output()
+        self.parse_omit_flags()
         self.parse_common_flags()
         self.parse_nv_flags()
         self.parse_cc_flags()
-        self.parse_omit_flags()
         self.parse_wl_group_flags()
 
     def prepare_cc_flags(self):

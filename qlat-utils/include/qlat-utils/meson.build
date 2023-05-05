@@ -16,10 +16,10 @@ else
   error('Cannot find endian.h header file.')
 endif
 
-if cpp.check_header('Eigen/Eigen', dependencies: deps)
-  conf_data.set('QLAT_USE_GRID_EIGEN', false)
-elif cpp.check_header('Grid/Eigen/Eigen', dependencies: deps)
+if cpp.check_header('Grid/Eigen/Eigen', dependencies: deps)
   conf_data.set('QLAT_USE_GRID_EIGEN', true)
+elif cpp.check_header('Eigen/Eigen', dependencies: deps)
+  conf_data.set('QLAT_USE_GRID_EIGEN', false)
 endif
 
 config_file = configure_file(output: 'config.h', configuration: conf_data)
