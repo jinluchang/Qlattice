@@ -52,7 +52,7 @@ update-sources:
 %.log: %.py update-sources
 	-rm -rfv "$<".p
 	-mkdir -p "$<".p
-	-time ( cd "$<".p ; cp ../"$<" . ; q_verbose=1 mpiexec $(MPI_OPTIONS) -n 2 ./"$<" -qmp-geom 1 1 1 2 --mpi 1.1.1.2 --mpi_split 1.1.1.1 --mpi 1.1.2 --mpi_split 1.1.1 >log.full.txt 2>&1 ; grep "CHECK: " log.full.txt >log.txt )
+	-time ( cd "$<".p ; cp ../"$<" . ; q_verbose=1 mpiexec -n 2 $(MPI_OPTIONS) ./"$<" -qmp-geom 1 1 1 2 --mpi 1.1.1.2 --mpi_split 1.1.1.1 --mpi 1.1.2 --mpi_split 1.1.1 >log.full.txt 2>&1 ; grep "CHECK: " log.full.txt >log.txt )
 	-if diff "$<".p/log.txt "$@" ; then echo passed ; else cat "$<".p/log.full.txt ; false ; fi
 	-mv -v "$<".p/log.txt "$@"
 
