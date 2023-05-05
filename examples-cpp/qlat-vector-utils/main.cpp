@@ -17,23 +17,23 @@ void simple_tests()
   geo.init(total_site, 1);
 
   {
-    vector_gpu<char > buf; buf.resize(500);
+    vector_gpu<char > buf; buf.resize(500, false);
     buf[0] = 0;
     displayln_info(ssprintf("CHECK: vector gpu: OK") );
   }
 
   {
-    VectorGPUKey gkey(100*sizeof(qlat::Complex), std::string("test_buf"), true);
-    vector_gpu<char >& buf = get_vector_gpu_plan<char >(gkey);
+    VectorGPUKey gkey(100*sizeof(qlat::Complex), std::string("test_buf"), false);
+    vector_gpu<qlat::Complex>& buf = get_vector_gpu_plan<qlat::Complex >(gkey);
     buf[0] = 0;
-    buf[100*sizeof(qlat::Complex)-1] = 1;
+    buf[100-1] = 1;
     displayln_info(ssprintf("CHECK: vector gpu buf: OK") );
   }
 
   {
     TIMER_VERBOSE("test-move-index");
     move_index mv_idx;
-    qlat::vector<qlat::Complex > buf;buf.resize(800);
+    qlat::vector_acc<qlat::Complex > buf;buf.resize(800);
     mv_idx.dojob(buf.data(), buf.data(), 2, 50, 4, 1,   2, true);
     displayln_info(ssprintf("CHECK: move index: OK") );
   }
@@ -96,19 +96,24 @@ void simple_tests()
 
     qlat::vector_gpu<qlat::Complex > gfT;gfT.resize(NVmpi*Nsize);
     qlat::vector_gpu<qlat::Complex > gfT_buf;gfT_buf.resize(NVmpi*Nsize);
-    for(long vi=0;vi<NVmpi;vi++){cpy_data_thread(&(gfT.data()[vi*Nsize]), gauge.data(), Nsize);}
+    for(long vi=0;vi<NVmpi;vi++){cpy_data_thread(&(gfT.data()[vi*Nsize]), gauge.data(), Nsize, 1);}
 
-    Vec_redistribute vec_rot(fd);
+    Vec_redistribute vec_rot(fd, true);
     vec_rot.reorder(gfT.data(), gfT_buf.data(), 1, 9 ,   0);
 
     double gnorm = gauge.norm().real();
     double rnorm = gfT.norm().real();
     qlat::vector_gpu<qlat::Complex > diff;diff.resize(Nsize);
+    Complex* p1 = gfT.p;
+    Complex* p2 = gauge.p;
+    Complex* p3 = diff.p;
     qacc_for(isp, Nsize, {
-      diff[isp] = qnorm(gfT[isp] - gauge[isp]);
+      p3[isp] = qnorm(p1[isp] - p2[isp]);
     });
-    displayln_info(ssprintf("CHECK: Consistency: orig qnorm: %.10E ; rotate qnorm %.10E, diff qnorm %.10E",
-                            gnorm, rnorm/gnorm, diff.norm().real()));
+    displayln_info(
+        ssprintf("CHECK: Consistency: orig qnorm: %.10E ; rotate qnorm %.10E, "
+                 "diff qnorm %.10E",
+                 gnorm, rnorm / gnorm, diff.norm().real()));
   }
 
 }

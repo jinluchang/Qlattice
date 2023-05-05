@@ -67,12 +67,12 @@ struct vector_gpu{
     if(n < n_set){resize(n_set);}
   }
 
-  inline size_t size() const{return n;}
-  inline Ty* data(){return p;}
-  inline const Ty* data() const { return p; }
+  qacc size_t size() const{return n;}
+  qacc Ty* data(){return p;}
+  qacc const Ty* data() const { return p; }
 
-  inline const Ty& operator[](const size_t i) const { return p[i]; }
-  inline Ty& operator[](const size_t i) { return p[i]; }
+  qacc const Ty& operator[](const size_t i) const { return p[i]; }
+  qacc Ty& operator[](const size_t i) { return p[i]; }
 
   void set_zero(bool dummy = true)
   {
