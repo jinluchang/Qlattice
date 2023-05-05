@@ -623,7 +623,10 @@ void initialize_qlat_comm(const long begin_count)
       ssprintf("qlat::begin_comm(comm,size_node): get_comm_list().size() = %d",
                (int)get_comm_list().size()));
   if (begin_count == 1) {
-    set_cuda_device();
+    // Do not set cuda device
+    // Rely on the environment variable
+    // Can use the bind-gpu.sh scripts
+    // set_cuda_device();
     qset_line_buf(get_output_file());
     displayln_info(ssprintf("Timer::get_timer_database().size() = %ld",
                             Timer::get_timer_database().size()));
