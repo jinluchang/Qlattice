@@ -24,6 +24,8 @@ void grid_end() { end(); }
 
 #define QLAT_GRID
 
+#undef NDEBUG
+
 #include <Grid/Grid.h>
 #include <qlat/qlat.h>
 

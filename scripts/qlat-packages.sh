@@ -27,13 +27,13 @@ source qcore/set-prefix.sh $name
     time-run pip3 install $opts qlat-utils
     time-run python3 -m build -ns -o "$build" "$wd"/qlat
     time-run pip3 install $opts qlat
-    if grid-config --prefix >/dev/null 2>&1 ; then
-        time-run python3 -m build -ns -o "$build" "$wd"/qlat-grid
-        time-run pip3 install $opts qlat-grid
-    fi
     if [ -n "$(find-library.sh libcps.a)" ] ; then
         time-run python3 -m build -ns -o "$build" "$wd"/qlat-cps
         time-run pip3 install $opts qlat-cps
+    fi
+    if grid-config --prefix >/dev/null 2>&1 ; then
+        time-run python3 -m build -ns -o "$build" "$wd"/qlat-grid
+        time-run pip3 install $opts qlat-grid
     fi
 
     echo "!!!! $name build !!!!"
