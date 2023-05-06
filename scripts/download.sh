@@ -38,7 +38,7 @@ aget "https://ftp.gnu.org/gnu/gsl/gsl-2.7.1.tar.gz"
 
 aget "https://github.com/Kitware/CMake/releases/download/v3.24.3/cmake-3.24.3.tar.gz"
 
-aget "https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.4.tar.bz2"
+aget "https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.5.tar.bz2"
 
 aget "https://github.com/llvm/llvm-project/releases/download/llvmorg-15.0.6/llvm-project-15.0.6.src.tar.xz"
 
@@ -56,7 +56,7 @@ aget "https://sourceforge.net/projects/tclap/files/tclap-1.2.5.tar.gz"
 
 aget "https://sourceforge.net/projects/gnuplot/files/gnuplot/5.4.5/gnuplot-5.4.5.tar.gz"
 
-aget "https://github.com/xianyi/OpenBLAS/releases/download/v0.3.21/OpenBLAS-0.3.21.tar.gz"
+aget "https://github.com/xianyi/OpenBLAS/releases/download/v0.3.23/OpenBLAS-0.3.23.tar.gz"
 
 aget "https://prdownloads.sourceforge.net/tcl/tcl8.6.13-src.tar.gz"
 
@@ -66,7 +66,7 @@ aget "https://ftp.gnu.org/pub/gnu/ncurses/ncurses-6.4.tar.gz"
 
 aget "https://github.com/libevent/libevent/releases/download/release-2.1.12-stable/libevent-2.1.12-stable.tar.gz"
 
-aget "https://github.com/tmux/tmux/releases/download/3.3/tmux-3.3.tar.gz"
+aget "https://github.com/tmux/tmux/releases/download/3.3a/tmux-3.3a.tar.gz"
 
 (
 mkdir -p python-packages
@@ -75,30 +75,30 @@ dget "ninja-1.0.tar.gz" "https://github.com/jinluchang/Ninja-dummy/archive/refs/
 aget "https://files.pythonhosted.org/packages/fa/ee/74ff76da0ab649eec7581233daeb43d8aa35383d8f75317b2ab3b80c922f/pip-23.1.2.tar.gz"
 aget "https://files.pythonhosted.org/packages/4d/19/e11fcc88288f68ae48e3aa9cf5a6fd092a88e629cb723465666c44d487a0/pep517-0.13.0.tar.gz"
 aget "https://files.pythonhosted.org/packages/bb/f9/a526ea001ecadd48d90ed7a61038b5ba732136d76b60357d23dc37521c58/pybind11-2.10.4.tar.gz"
-aget "https://files.pythonhosted.org/packages/95/ba/7384cb4db4ed474d4582944053549e02ec25da630810e4a23454bc9fa617/mpmath-1.2.1.tar.gz"
+aget "https://files.pythonhosted.org/packages/e0/47/dd32fa426cc72114383ac549964eecb20ecfd886d1e5ccf5340b55b02f57/mpmath-1.3.0.tar.gz"
 aget "https://files.pythonhosted.org/packages/d6/0f/96b7309212a926c1448366e9ce69b081ea79d63265bde33f11cc9cfc2c07/psutil-5.9.5.tar.gz"
 aget "https://files.pythonhosted.org/packages/c0/3f/d7af728f075fb08564c5949a9c95e44352e23dee646869fa104a3b2060a3/tomli-2.0.1.tar.gz"
 aget "https://files.pythonhosted.org/packages/48/a3/0bd844c54ae8141642088b7ae09dd38fec2ec7faa9b7d25bb6a23c1f266f/gast-0.5.3.tar.gz"
 aget "https://files.pythonhosted.org/packages/38/af/b0e6a9eba989870fd26e10889446d1bec2e6d5be0a1bae2dc4dcda9ce199/pyproject-metadata-0.7.1.tar.gz"
 aget "https://files.pythonhosted.org/packages/14/e7/50cbac38f77eca8efd39516be6651fdb9f3c4c0fab8cf2cf05f612578737/beniget-0.4.1.tar.gz"
 aget "https://files.pythonhosted.org/packages/b9/6c/7c6658d258d7971c5eb0d9b69fa9265879ec9a9158031206d47800ae2213/packaging-23.1.tar.gz"
-aget "https://files.pythonhosted.org/packages/e3/a7/8f4e456ef0adac43f452efc2d0e4b242ab831297f1bac60ac815d37eb9cf/typing_extensions-4.4.0.tar.gz"
+aget "https://files.pythonhosted.org/packages/d3/20/06270dac7316220643c32ae61694e451c98f8caf4c8eab3aa80a2bedf0df/typing_extensions-4.5.0.tar.gz"
 aget "https://files.pythonhosted.org/packages/71/22/207523d16464c40a0310d2d4d8926daffa00ac1f5b1576170a32db749636/pyparsing-3.0.9.tar.gz"
 aget "https://files.pythonhosted.org/packages/4b/89/eaa3a3587ebf8bed93e45aa79be8c2af77d50790d15b53f6dfc85b57f398/distro-1.8.0.tar.gz"
 aget "https://files.pythonhosted.org/packages/10/e5/be08751d07b30889af130cec20955c987a74380a10058e6e8856e4010afc/flit_core-3.8.0.tar.gz"
 aget "https://files.pythonhosted.org/packages/e5/69/882ee5c9d017149285cab114ebeab373308ef0f874fcdac9beb90e0ac4da/ply-3.11.tar.gz"
 aget "https://files.pythonhosted.org/packages/b8/d9/25b5beccb6f9bd69f7a27e32a48112329509160cb6681cde4b9464104f7b/meson-1.1.0.tar.gz"
-aget "https://files.pythonhosted.org/packages/51/d3/bc8450723bc987ea51a1bd6f6a43a60641406597ee4f12228d416709685d/meson_python-0.13.0.tar.gz"
+aget "https://files.pythonhosted.org/packages/fb/54/9551a0810f3f95f761c31d902d3706b7bfe67253e81b33c0994b2c0f9b3b/meson_python-0.13.1.tar.gz"
 aget "https://files.pythonhosted.org/packages/84/a9/2bf119f3f9cff1f376f924e39cfae18dec92a1514784046d185731301281/scipy-1.10.1.tar.gz"
 aget "https://files.pythonhosted.org/packages/5a/36/4667b08bc45131fe655a27b1a112c1730f3244343c53a338f44d730bd6ba/sympy-1.11.1.tar.gz"
 aget "https://files.pythonhosted.org/packages/25/c1/374304b8407d3818f7025457b7366c8e07768377ce12edfe2aa58aa0f64c/pyproject_hooks-1.0.0.tar.gz"
 aget "https://files.pythonhosted.org/packages/de/1c/fb62f81952f0e74c3fbf411261d1adbdd2d615c89a24b42d0fe44eb4bcf3/build-0.10.0.tar.gz"
-aget "https://files.pythonhosted.org/packages/4a/64/5b8351d86cbf2257fbff39b70da9e261e684e594661333e99b43e07e2a93/scikit_build-0.17.1-py3-none-any.whl"
+aget "https://files.pythonhosted.org/packages/d2/a3/01d72e506afcf919c191de587c3f77ee7355b0b28951eb1fbc2753bc9d77/scikit_build-0.17.3-py3-none-any.whl"
 aget "https://files.pythonhosted.org/packages/98/12/2c1e579bb968759fc512391473340d0661b1a8c96a59fb7c65b02eec1321/setuptools_scm-7.1.0.tar.gz"
 aget "https://files.pythonhosted.org/packages/a8/e7/1440b0d19054a5616e9e5beeaa22f68485aa9de20d187f04e52880b7ae7a/setuptools-59.2.0.tar.gz"
 aget "https://files.pythonhosted.org/packages/fc/ef/0335f7217dd1e8096a9e8383e1d472aa14717878ffe07c4772e68b6e8735/wheel-0.40.0.tar.gz"
-aget "https://files.pythonhosted.org/packages/e4/a9/6704bb5e1d1d778d3a6ee1278a8d8134f0db160e09d52863a24edb58eab5/numpy-1.24.2.tar.gz"
-aget "https://files.pythonhosted.org/packages/4a/1b/059a68158bf65c857cfd6b80aed06a8fd35f2582cf548fb96f0b519b0d2b/pythran-0.12.1.tar.gz"
+aget "https://files.pythonhosted.org/packages/2c/d4/590ae7df5044465cc9fa2db152ae12468694d62d952b1528ecff328ef7fc/numpy-1.24.3.tar.gz"
+aget "https://files.pythonhosted.org/packages/8d/d8/b27e8dc3f3a03dcd317d40d9df0ae07ebbd85444585973ceba07716934d0/pythran-0.13.1.tar.gz"
 aget "https://files.pythonhosted.org/packages/0a/70/1500f05bddb16d795b29fac42954b3c8764c82367b8326c10f038471ae7f/Cython-0.29.34.tar.gz"
 aget "https://files.pythonhosted.org/packages/c5/40/7cf58e6230f0e76699f011c6d293dd47755997709a303a4e644823f3a753/h5py-3.7.0.tar.gz"
 aget "https://files.pythonhosted.org/packages/bc/f2/749af7fd0e7703ddca6cea525ab40f26c3ca6cbe6c23658441c6f9705860/mpi4py-3.1.4.tar.gz"
