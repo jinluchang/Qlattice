@@ -235,8 +235,8 @@ test_fft: total_site=4x4x4x8 N=1 fft-y
 test_fft: 1
 test_fft: total_site=4x4x4x8 N=1 fft-z
 test_fft: total_site=4x4x4x8 N=1 fft-t
-test_fft: qnorm(f) =  1.05627194390385807E+03 ; qnorm(diff) =  2.14021855920970765E-27
-test_fft: crc32 of fft(f) = CD848ECF.
+test_fft: qnorm(f) =  1.05627194390385830E+03 ; qnorm(diff) =  2.16036208318370357E-27
+test_fft: crc32 of fft(f) = 0BFDB1.
 test_fft: 2
 Cache: 'FftComplexFieldPlanCache': 16 / 32 [16] to add
 FftComplexFieldPlan::init: malloc 8192
@@ -341,8 +341,8 @@ test_fft: total_site=4x4x4x8 N=2 fft-y
 test_fft: 2
 test_fft: total_site=4x4x4x8 N=2 fft-z
 test_fft: total_site=4x4x4x8 N=2 fft-t
-test_fft: qnorm(f) =  2.09739836163311566E+03 ; qnorm(diff) =  4.15965173742424356E-27
-test_fft: crc32 of fft(f) = 1D46B508.
+test_fft: qnorm(f) =  2.09739836163311611E+03 ; qnorm(diff) =  4.22960938975693396E-27
+test_fft: crc32 of fft(f) = 921ED721.
 test_fft: 4
 Cache: 'FftComplexFieldPlanCache': 24 / 32 [16] to add
 FftComplexFieldPlan::init: malloc 16384
@@ -447,8 +447,8 @@ test_fft: total_site=4x4x4x8 N=4 fft-y
 test_fft: 4
 test_fft: total_site=4x4x4x8 N=4 fft-z
 test_fft: total_site=4x4x4x8 N=4 fft-t
-test_fft: qnorm(f) =  4.18423078221696505E+03 ; qnorm(diff) =  8.11795707316016696E-27
-test_fft: crc32 of fft(f) = FCC922CE.
+test_fft: qnorm(f) =  4.18423078221696505E+03 ; qnorm(diff) =  8.21961010065317498E-27
+test_fft: crc32 of fft(f) = 2C010AF0.
 test_fft: 8
 Cache: 'FftComplexFieldPlanCache': 32 / 32 [16] before gc
 FftComplexFieldPlan::end(): free a plan.
@@ -572,8 +572,8 @@ test_fft: total_site=4x4x4x8 N=8 fft-y
 test_fft: 8
 test_fft: total_site=4x4x4x8 N=8 fft-z
 test_fft: total_site=4x4x4x8 N=8 fft-t
-test_fft: qnorm(f) =  8.37968263117070819E+03 ; qnorm(diff) =  1.60995065006332442E-26
-test_fft: crc32 of fft(f) = 1D27557F.
+test_fft: qnorm(f) =  8.37968263117070819E+03 ; qnorm(diff) =  1.56296229832979199E-26
+test_fft: crc32 of fft(f) = 85C5B0E5.
 test_fft: 12
 Cache: 'FftComplexFieldPlanCache': 23 / 32 [16] to add
 FftComplexFieldPlan::init: malloc 49152
@@ -678,8 +678,8 @@ test_fft: total_site=4x4x4x8 N=12 fft-y
 test_fft: 12
 test_fft: total_site=4x4x4x8 N=12 fft-z
 test_fft: total_site=4x4x4x8 N=12 fft-t
-test_fft: qnorm(f) =  1.23570639216967884E+04 ; qnorm(diff) =  2.33355093420031866E-26
-test_fft: crc32 of fft(f) = E3FE564A.
+test_fft: qnorm(f) =  1.23570639216967902E+04 ; qnorm(diff) =  2.35357865456463428E-26
+test_fft: crc32 of fft(f) = 2B1D91A9.
 test_fft: 16
 Cache: 'FftComplexFieldPlanCache': 31 / 32 [16] to add
 FftComplexFieldPlan::init: malloc 65536
@@ -803,8 +803,8 @@ test_fft: total_site=4x4x4x8 N=16 fft-y
 test_fft: 16
 test_fft: total_site=4x4x4x8 N=16 fft-z
 test_fft: total_site=4x4x4x8 N=16 fft-t
-test_fft: qnorm(f) =  1.64211353499753750E+04 ; qnorm(diff) =  3.03411963678545155E-26
-test_fft: crc32 of fft(f) = 71E8BD7F.
+test_fft: qnorm(f) =  1.64211353499753714E+04 ; qnorm(diff) =  3.07179212183601676E-26
+test_fft: crc32 of fft(f) = C7D3E23B.
 test_fft: 20
 Cache: 'FftComplexFieldPlanCache': 22 / 32 [16] to add
 FftComplexFieldPlan::init: malloc 81920
@@ -909,8 +909,8 @@ test_fft: total_site=4x4x4x8 N=20 fft-y
 test_fft: 20
 test_fft: total_site=4x4x4x8 N=20 fft-z
 test_fft: total_site=4x4x4x8 N=20 fft-t
-test_fft: qnorm(f) =  2.05017369565699737E+04 ; qnorm(diff) =  3.76109345533485931E-26
-test_fft: crc32 of fft(f) = 78D880F9.
+test_fft: qnorm(f) =  2.05017369565699773E+04 ; qnorm(diff) =  3.87404988844950997E-26
+test_fft: crc32 of fft(f) = 2AC8EC83.
 test_fft: 32
 Cache: 'FftComplexFieldPlanCache': 30 / 32 [16] to add
 FftComplexFieldPlan::init: malloc 131072
@@ -1034,8 +1034,8 @@ test_fft: total_site=4x4x4x8 N=32 fft-y
 test_fft: 32
 test_fft: total_site=4x4x4x8 N=32 fft-z
 test_fft: total_site=4x4x4x8 N=32 fft-t
-test_fft: qnorm(f) =  3.27996466397265031E+04 ; qnorm(diff) =  6.08748993688450343E-26
-test_fft: crc32 of fft(f) = 1DFEA50B.
+test_fft: qnorm(f) =  3.27996466397264958E+04 ; qnorm(diff) =  6.17241338249199851E-26
+test_fft: crc32 of fft(f) = D0DF0F2A.
 CHECK: finished successfully.
 Cache: 'FftComplexFieldPlanCache': 21 / 32 [16] clear
 FftComplexFieldPlan::end(): free a plan.

@@ -2031,7 +2031,7 @@ make_shuffle_plan_fft: total num_send_msgs  =          8
 make_shuffle_plan_fft: total num_recv_msgs  =          8
 make_shuffle_plan_fft: global_comm_size =       4096
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = A044C55F after fft forward
+crc32 = 39F638E7 after fft forward
 qnorm =  2.01326591999999672E+08 after fft forward
 Cache: 'FftComplexFieldPlanCache': 4 / 32 [16] to add
 FftComplexFieldPlan::init: malloc 589824
@@ -2082,14 +2082,14 @@ make_shuffle_plan_fft: total num_send_msgs  =          8
 make_shuffle_plan_fft: total num_recv_msgs  =          8
 make_shuffle_plan_fft: global_comm_size =       4096
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = FF6D836F after fft backward
+crc32 = BC559B1B after fft backward
 qnorm =  8.24633720832000000E+11 after fft backward
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = FA76410A after rescale
+crc32 = B94E597E after rescale
 qnorm =  4.91520000000000000E+04 after rescale
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 03C1F0E6 after subtract
-qnorm =  1.87593008336667639E-27 after subtract
+crc32 = 17AC73EB after subtract
+qnorm =  1.88932257880873034E-27 after subtract
 make_shuffle_plan_generic: num_send_packs =         32
 make_shuffle_plan_generic: num_recv_packs =       1024
 make_shuffle_plan_generic: num_send_msgs  =          4
