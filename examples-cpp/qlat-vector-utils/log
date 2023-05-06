@@ -46,7 +46,7 @@ q_field_init='fast' (default)
 set q_field_init=fast.
 Cache: 'CommPlanCache': 0 / 32 [16] to add
 CHECK: Consistency: orig qnorm: 1.4779959966E+05 ; shift qnorm 2.9676067457E+05 2.9413680135E+05 2.9563028072E+05 2.9462902098E+05
-CHECK: Consistency: orig qnorm: 2.3063102124E+03 ; rotate qnorm 2.0000000000E+00, diff qnorm 4.7886420210E+02
+CHECK: Consistency: orig qnorm: 2.3041961101E+03 ; rotate qnorm 2.0000000000E+00, diff qnorm 9.6406114409E+03
 CHECK: finished successfully.
 Cache: 'VectorGPUKey': 1 / 16 [8] clear
 Cache: 'VectorGPUKey': 2 / 16 [8] clear
