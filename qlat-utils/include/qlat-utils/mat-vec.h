@@ -29,6 +29,26 @@
 namespace qlat
 {
 
+template <class T>
+struct CommaLoader {
+  Vector<T> m;
+  int i;
+  //
+  CommaLoader(Vector<T> m_, int i_)
+  {
+    m = m_;
+    i = i_;
+  }
+  //
+  CommaLoader operator,(const T& x)
+  {
+    m[i] = x;
+    return CommaLoader(m, i + 1);
+  }
+};
+
+// --------------------
+
 template <int DIMN, class T>
 struct API ALIGN MatrixT {
   T p[DIMN * DIMN];
@@ -39,16 +59,6 @@ struct API ALIGN MatrixT {
   // convert to double array
   qacc double* d() { return (double*)p; }
   qacc const double* d() const { return (const double*)p; }
-  //
-  // convert to Eigen MatrixT
-  qacc Eigen::Matrix<T, DIMN, DIMN, Eigen::RowMajor>& em()
-  {
-    return *((Eigen::Matrix<T, DIMN, DIMN, Eigen::RowMajor>*)this);
-  }
-  qacc const Eigen::Matrix<T, DIMN, DIMN, Eigen::RowMajor>& em() const
-  {
-    return *((Eigen::Matrix<T, DIMN, DIMN, Eigen::RowMajor>*)this);
-  }
   //
   qacc T& operator()(int i, int j)
   {
@@ -91,6 +101,13 @@ struct API ALIGN MatrixT {
   {
     *this = *this / x;
     return *this;
+  }
+  //
+  CommaLoader<T> operator<<(const T& x)
+  {
+    Vector<T> m(p, DIMN * DIMN);
+    m[0] = x;
+    return CommaLoader<T>(m, 1);
   }
 };
 
@@ -218,6 +235,13 @@ struct API ALIGN MvectorT {
   {
     *this = *this / x;
     return *this;
+  }
+  //
+  CommaLoader<T> operator<<(const T& x)
+  {
+    Vector<T> m(p, DIMN);
+    m[0] = x;
+    return CommaLoader<T>(m, 1);
   }
 };
 

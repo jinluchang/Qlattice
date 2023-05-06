@@ -390,33 +390,33 @@ struct API SpinMatrixConstantsT {
   {
     ComplexD ii(0.0, 1.0);
     // TIMER_VERBOSE("SpinMatrixConstants::init()");
-    unit.em() << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1;
+    unit << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1;
     // gamma_x
-    gammas[0].em() << 0, 0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, -1, 0, 0, 0;
+    gammas[0] << 0, 0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, -1, 0, 0, 0;
     // gamma_y
-    gammas[1].em() << 0, 0, 0, (ComplexT<T>)-ii, 0, 0, (ComplexT<T>)ii, 0, 0, (ComplexT<T>)ii, 0, 0, (ComplexT<T>)-ii,
-        0, 0, 0;
+    gammas[1] << 0, 0, 0, (ComplexT<T>)-ii, 0, 0, (ComplexT<T>)ii, 0, 0,
+        (ComplexT<T>)ii, 0, 0, (ComplexT<T>)-ii, 0, 0, 0;
     // gamma_z
-    gammas[2].em() << 0, 0, 1, 0, 0, 0, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0;
+    gammas[2] << 0, 0, 1, 0, 0, 0, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0;
     gammas[0] *= (ComplexT<T>)(-ii);
     gammas[1] *= (ComplexT<T>)(-ii);
     gammas[2] *= (ComplexT<T>)(-ii);
     // gamma_t
-    gammas[3].em() << 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0;
+    gammas[3] << 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0;
     //
     cps_gammas[0] = -gammas[0];
     cps_gammas[1] = gammas[1];
     cps_gammas[2] = -gammas[2];
     cps_gammas[3] = gammas[3];
     // gamma_5 = gamma_x * gamma_y * gamma_z * gamma_t;
-    gamma5.em() << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1;
+    gamma5 << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1;
     // Sigma_x
-    cap_sigmas[0].em() << 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0;
+    cap_sigmas[0] << 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0;
     // Sigma_y
-    cap_sigmas[1].em() << 0, (ComplexT<T>)-ii, 0, 0, (ComplexT<T>)ii, 0, 0, 0, 0, 0, 0, (ComplexT<T>)-ii, 0,
-        0, (ComplexT<T>)ii, 0;
+    cap_sigmas[1] << 0, (ComplexT<T>)-ii, 0, 0, (ComplexT<T>)ii, 0, 0, 0, 0, 0,
+        0, (ComplexT<T>)-ii, 0, 0, (ComplexT<T>)ii, 0;
     // Sigma_z
-    cap_sigmas[2].em() << 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1;
+    cap_sigmas[2] << 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1;
     //
     cps_cap_sigmas[0] = -cap_sigmas[0];
     cps_cap_sigmas[1] = cap_sigmas[1];
@@ -458,10 +458,10 @@ struct API SpinMatrixConstantsT {
     }
   }
   //
-  API static const box_acc<SpinMatrixConstantsT<T> >& get_instance_box()
+  API static const box_acc<SpinMatrixConstantsT<T>>& get_instance_box()
   {
-    static box_acc<SpinMatrixConstantsT<T> > smcs =
-        box_acc<SpinMatrixConstantsT<T> >(SpinMatrixConstantsT<T>());
+    static box_acc<SpinMatrixConstantsT<T>> smcs =
+        box_acc<SpinMatrixConstantsT<T>>(SpinMatrixConstantsT<T>());
     return smcs;
   }
   //
