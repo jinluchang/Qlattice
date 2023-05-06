@@ -76,8 +76,8 @@ Cache: 'CommPlanCache': 0 / 32 [16] to add
 Cache: 'CommPlanCache': 1 / 32 [16] to add
 plaq :  6.83965231794668282E-01
 Cache: 'CommPlanCache': 2 / 32 [16] to add
-spatial plaq :  6.83106449306319696E-01
-trace:  9.28858590458645078E-02
+spatial plaq :  6.83106449306319807E-01
+trace:  9.28858590458644939E-02
 Cache: 'CommPlanCache': 3 / 32 [16] to add
 Cache: 'CommPlanCache': 4 / 32 [16] to add
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
@@ -219,23 +219,23 @@ qrename: 'results/test-4nt8/results=1000/pion-corr.txt.partial' 'results/test-4n
 ndim: 2
 "tsep"[8]:
 "re-im"[2]: "re" "im"
-tsep[       0] re-im[      re]  1.47634809100659986E-01
+tsep[       0] re-im[      re]  1.47634809100660014E-01
 tsep[       0] re-im[      im]  0.00000000000000000E+00
-tsep[       1] re-im[      re]  3.87490999804722472E-02
+tsep[       1] re-im[      re]  3.87490999804722402E-02
 tsep[       1] re-im[      im]  0.00000000000000000E+00
-tsep[       2] re-im[      re]  5.56246974927907326E-03
+tsep[       2] re-im[      re]  5.56246974927906892E-03
 tsep[       2] re-im[      im]  0.00000000000000000E+00
-tsep[       3] re-im[      re]  9.49765136830366900E-04
+tsep[       3] re-im[      re]  9.49765136830366141E-04
 tsep[       3] re-im[      im]  0.00000000000000000E+00
-tsep[       4] re-im[      re]  2.87343896924612506E-04
+tsep[       4] re-im[      re]  2.87343896924612343E-04
 tsep[       4] re-im[      im]  0.00000000000000000E+00
-tsep[       5] re-im[      re]  7.96206308258371668E-04
+tsep[       5] re-im[      re]  7.96206308258371560E-04
 tsep[       5] re-im[      im]  0.00000000000000000E+00
-tsep[       6] re-im[      re]  4.96156795369941204E-03
+tsep[       6] re-im[      re]  4.96156795369941377E-03
 tsep[       6] re-im[      im]  0.00000000000000000E+00
-tsep[       7] re-im[      re]  4.09021726415145989E-02
+tsep[       7] re-im[      re]  4.09021726415146336E-02
 tsep[       7] re-im[      im]  0.00000000000000000E+00
-prop qnorm =  2.39843434767638586E-01
+prop qnorm =  2.39843434767638669E-01
 prop[0] qnorm =  2.46214937797465793E-04
 QFile: open 'results/test-4nt8/results=1000/checkpoint.txt' with 'w'.
 QFile: close 'results/test-4nt8/results=1000/checkpoint.txt' with 'w'.
@@ -271,7 +271,7 @@ QFile: open 'results/test-4nt8/results=1010/f-rank.field' with 'r'.
 QFile: close 'results/test-4nt8/results=1010/f-rank.field' with 'r'.
 plaq :  6.81609579399776067E-01
 spatial plaq :  6.89426876328337879E-01
-trace:  9.43528341124005576E-02
+trace:  9.43528341124005299E-02
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.292E-01 stop_rsd=1.000E-08
 cg_with_f: final iter=  57 sqrt(qnorm_r/qnorm_in)=8.023E-09 stop_rsd=1.000E-08
@@ -399,24 +399,24 @@ qrename: 'results/test-4nt8/results=1010/pion-corr.txt.partial' 'results/test-4n
 ndim: 2
 "tsep"[8]:
 "re-im"[2]: "re" "im"
-tsep[       0] re-im[      re]  1.57113900933963879E-01
+tsep[       0] re-im[      re]  1.57113900933963851E-01
 tsep[       0] re-im[      im]  0.00000000000000000E+00
-tsep[       1] re-im[      re]  3.61583874949638895E-02
+tsep[       1] re-im[      re]  3.61583874949638825E-02
 tsep[       1] re-im[      im]  0.00000000000000000E+00
-tsep[       2] re-im[      re]  4.41843055043518451E-03
+tsep[       2] re-im[      re]  4.41843055043518711E-03
 tsep[       2] re-im[      im]  0.00000000000000000E+00
-tsep[       3] re-im[      re]  7.70025457255655459E-04
+tsep[       3] re-im[      re]  7.70025457255655568E-04
 tsep[       3] re-im[      im]  0.00000000000000000E+00
-tsep[       4] re-im[      re]  2.52584511765734478E-04
+tsep[       4] re-im[      re]  2.52584511765734532E-04
 tsep[       4] re-im[      im]  0.00000000000000000E+00
-tsep[       5] re-im[      re]  7.52980471850345136E-04
+tsep[       5] re-im[      re]  7.52980471850345245E-04
 tsep[       5] re-im[      im]  0.00000000000000000E+00
-tsep[       6] re-im[      re]  5.12845259838600777E-03
+tsep[       6] re-im[      re]  5.12845259838600603E-03
 tsep[       6] re-im[      im]  0.00000000000000000E+00
-tsep[       7] re-im[      re]  4.40040912693444378E-02
+tsep[       7] re-im[      re]  4.40040912693444308E-02
 tsep[       7] re-im[      im]  0.00000000000000000E+00
-prop qnorm =  2.48598853287965132E-01
-prop[0] qnorm =  3.58372799883653538E-04
+prop qnorm =  2.48598853287965105E-01
+prop[0] qnorm =  3.58372799883653484E-04
 QFile: open 'results/test-4nt8/results=1010/checkpoint.txt' with 'w'.
 QFile: close 'results/test-4nt8/results=1010/checkpoint.txt' with 'w'.
 release_lock: Release lock 'results/test-4nt8/results=1010-lock'
@@ -472,17 +472,17 @@ invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.145E-01 stop_rsd=1.000E-08
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.845E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): checking 3.759166E-09 from 1.000000E+00
+invert_with_cg(5d,5d,inv,cg): checking 3.759165E-09 from 1.000000E+00
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.145E-01 stop_rsd=1.000E-08
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.845E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): checking 3.759166E-09 from 1.000000E+00
+invert_with_cg(5d,5d,inv,cg): checking 3.759165E-09 from 1.000000E+00
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.145E-01 stop_rsd=1.000E-08
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.845E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): checking 3.759166E-09 from 1.000000E+00
+invert_with_cg(5d,5d,inv,cg): checking 3.759165E-09 from 1.000000E+00
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.145E-01 stop_rsd=1.000E-08
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.845E-09 stop_rsd=1.000E-08
@@ -580,24 +580,24 @@ qrename: 'results/free-4nt8/results=1000/pion-corr.txt.partial' 'results/free-4n
 ndim: 2
 "tsep"[8]:
 "re-im"[2]: "re" "im"
-tsep[       0] re-im[      re]  4.77591858462204033E-01
+tsep[       0] re-im[      re]  4.77591858462201979E-01
 tsep[       0] re-im[      im]  0.00000000000000000E+00
-tsep[       1] re-im[      re]  3.85018818852285949E-01
+tsep[       1] re-im[      re]  3.85018818852285893E-01
 tsep[       1] re-im[      im]  0.00000000000000000E+00
-tsep[       2] re-im[      re]  3.06959408127858990E-01
+tsep[       2] re-im[      re]  3.06959408127859157E-01
 tsep[       2] re-im[      im]  0.00000000000000000E+00
 tsep[       3] re-im[      re]  2.83030918008284560E-01
 tsep[       3] re-im[      im]  0.00000000000000000E+00
-tsep[       4] re-im[      re]  2.76520261700638426E-01
+tsep[       4] re-im[      re]  2.76520261700638481E-01
 tsep[       4] re-im[      im]  0.00000000000000000E+00
-tsep[       5] re-im[      re]  2.83030918008284615E-01
+tsep[       5] re-im[      re]  2.83030918008284560E-01
 tsep[       5] re-im[      im]  0.00000000000000000E+00
-tsep[       6] re-im[      re]  3.06959408127858935E-01
+tsep[       6] re-im[      re]  3.06959408127859157E-01
 tsep[       6] re-im[      im]  0.00000000000000000E+00
-tsep[       7] re-im[      re]  3.85018818852286282E-01
+tsep[       7] re-im[      re]  3.85018818852286060E-01
 tsep[       7] re-im[      im]  0.00000000000000000E+00
-prop qnorm =  2.70413041013970235E+00
-prop[0] qnorm =  6.13619597510967930E-03
+prop qnorm =  2.70413041013969968E+00
+prop[0] qnorm =  6.13619597511000196E-03
 QFile: open 'results/free-4nt8/results=1000/checkpoint.txt' with 'w'.
 QFile: close 'results/free-4nt8/results=1000/checkpoint.txt' with 'w'.
 release_lock: Release lock 'results/free-4nt8/results=1000-lock'
@@ -652,17 +652,17 @@ invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.145E-01 stop_rsd=1.000E-08
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.845E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): checking 3.759166E-09 from 1.000000E+00
+invert_with_cg(5d,5d,inv,cg): checking 3.759165E-09 from 1.000000E+00
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.145E-01 stop_rsd=1.000E-08
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.845E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): checking 3.759166E-09 from 1.000000E+00
+invert_with_cg(5d,5d,inv,cg): checking 3.759165E-09 from 1.000000E+00
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.145E-01 stop_rsd=1.000E-08
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.845E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): checking 3.759166E-09 from 1.000000E+00
+invert_with_cg(5d,5d,inv,cg): checking 3.759165E-09 from 1.000000E+00
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.145E-01 stop_rsd=1.000E-08
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.845E-09 stop_rsd=1.000E-08
@@ -760,24 +760,24 @@ qrename: 'results/free-4nt8/results=1010/pion-corr.txt.partial' 'results/free-4n
 ndim: 2
 "tsep"[8]:
 "re-im"[2]: "re" "im"
-tsep[       0] re-im[      re]  4.77591858462204033E-01
+tsep[       0] re-im[      re]  4.77591858462201979E-01
 tsep[       0] re-im[      im]  0.00000000000000000E+00
-tsep[       1] re-im[      re]  3.85018818852285949E-01
+tsep[       1] re-im[      re]  3.85018818852285893E-01
 tsep[       1] re-im[      im]  0.00000000000000000E+00
-tsep[       2] re-im[      re]  3.06959408127858990E-01
+tsep[       2] re-im[      re]  3.06959408127859157E-01
 tsep[       2] re-im[      im]  0.00000000000000000E+00
 tsep[       3] re-im[      re]  2.83030918008284560E-01
 tsep[       3] re-im[      im]  0.00000000000000000E+00
-tsep[       4] re-im[      re]  2.76520261700638426E-01
+tsep[       4] re-im[      re]  2.76520261700638481E-01
 tsep[       4] re-im[      im]  0.00000000000000000E+00
-tsep[       5] re-im[      re]  2.83030918008284615E-01
+tsep[       5] re-im[      re]  2.83030918008284560E-01
 tsep[       5] re-im[      im]  0.00000000000000000E+00
-tsep[       6] re-im[      re]  3.06959408127858935E-01
+tsep[       6] re-im[      re]  3.06959408127859157E-01
 tsep[       6] re-im[      im]  0.00000000000000000E+00
-tsep[       7] re-im[      re]  3.85018818852286282E-01
+tsep[       7] re-im[      re]  3.85018818852286060E-01
 tsep[       7] re-im[      im]  0.00000000000000000E+00
-prop qnorm =  2.70413041013970235E+00
-prop[0] qnorm =  6.13619597510967930E-03
+prop qnorm =  2.70413041013969968E+00
+prop[0] qnorm =  6.13619597511000196E-03
 QFile: open 'results/free-4nt8/results=1010/checkpoint.txt' with 'w'.
 QFile: close 'results/free-4nt8/results=1010/checkpoint.txt' with 'w'.
 release_lock: Release lock 'results/free-4nt8/results=1010-lock'
