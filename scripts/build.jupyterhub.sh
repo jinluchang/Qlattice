@@ -13,6 +13,10 @@ rm -rfv ~/.cache/pip
 
 ./scripts/openmpi.sh
 ./scripts/hdf5.sh
+./scripts/openblas.sh
+./scripts/fftw.sh
+./scripts/cuba.sh
+./scripts/eigen.sh
 
 ./scripts/python.sh
 ./scripts/python-pip.sh
@@ -21,9 +25,6 @@ rm -rfv ~/.cache/pip
 ./scripts/python-meson-py.sh
 ./scripts/python-packages.sh
 ./scripts/python-jupyter.sh
-
-./scripts/cuba.sh
-./scripts/eigen.sh
 
 ./scripts/qlat-packages.sh
 
