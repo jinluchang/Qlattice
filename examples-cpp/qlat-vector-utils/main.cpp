@@ -91,8 +91,12 @@ void simple_tests()
     const long NVmpi = fd.mz*fd.my*fd.mx;
     const long Nsize = fd.Nx* fd.Ny* fd.Nz* fd.Nt * 9;
 
-    qlat::vector_gpu<qlat::Complex > gauge;gauge.resize(Nsize);
-    random_Ty(gauge.data(), gauge.size(), 1, int(qlat::u_rand_gen(rs) * 100) );
+    qlat::vector_gpu<qlat::Complex > gauge;
+    {
+      qlat::vector_gpu<qlat::Complex > gauge_cpu;gauge_cpu.resize(Nsize, 0);
+      random_Ty(gauge_cpu.data(), gauge_cpu.size(), 1, int(qlat::u_rand_gen(rs) * 100) );
+      gauge.copy_from(gauge_cpu, true);
+    }
 
     qlat::vector_gpu<qlat::Complex > gfT;gfT.resize(NVmpi*Nsize);
     qlat::vector_gpu<qlat::Complex > gfT_buf;gfT_buf.resize(NVmpi*Nsize);
