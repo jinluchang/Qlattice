@@ -175,8 +175,8 @@ void lblShowMuonPartPointSrc(const qlat::Geometry& geo, const int tsnk,
   qlat::DisplayInfo(cname, fname.c_str(), "xg1 = %s ; xg2 = %s ; xg3 = %s .\n",
                     qlat::show(xg1).c_str(), qlat::show(xg2).c_str(),
                     qlat::show(xg3).c_str());
-  qlat::DisplayInfo(cname, fname.c_str(), "mu1 = %d ; mu2 = %d ; mu3 = %d .\n", mu1,
-                    mu2, mu3);
+  qlat::DisplayInfo(cname, fname.c_str(), "mu1 = %d ; mu2 = %d ; mu3 = %d .\n",
+                    mu1, mu2, mu3);
   qlat::SpinMatrix muonline = lblMuonPartPointSrc(
       geo, tsnk, tsrc, xg1, mu1, xg2, mu2, xg3, mu3, mass, momtwist);
   muonline = projPositiveState(muonline);
@@ -199,12 +199,15 @@ void lblShowMuonPartPointSrc(const qlat::Geometry& geo, const int tsnk,
           linearFit(muonline,
                     projPositiveState(qlat::SpinMatrixConstants::get_unit())))
           .c_str());
-  qlat::DisplayInfo(cname, fname.c_str(), "linearFit[0] * 1e9 = %10.2f\n",
-                    1e9 * linearFit(muonline, bs[0]).real());
-  qlat::DisplayInfo(cname, fname.c_str(), "linearFit[1] * 1e9 = %10.2f\n",
-                    1e9 * linearFit(muonline, bs[1]).real());
-  qlat::DisplayInfo(cname, fname.c_str(), "linearFit[2] * 1e9 = %10.2f\n",
-                    1e9 * linearFit(muonline, bs[2]).real());
+  qlat::displayln_info("CHECK: " + fname +
+                       qlat::ssprintf(": linearFit[0] * 1e9 = %10.6f",
+                                      1e9 * linearFit(muonline, bs[0]).real()));
+  qlat::displayln_info("CHECK: " + fname +
+                       qlat::ssprintf(": linearFit[1] * 1e9 = %10.6f",
+                                      1e9 * linearFit(muonline, bs[1]).real()));
+  qlat::displayln_info("CHECK: " + fname +
+                       qlat::ssprintf(": linearFit[2] * 1e9 = %10.6f",
+                                      1e9 * linearFit(muonline, bs[2]).real()));
 }
 
 void lblMuonPart()
