@@ -18,7 +18,9 @@ qacc MvectorT<DIMN, T> operator+(const MvectorT<DIMN, T>& x,
                                  const MvectorT<DIMN, T>& y)
 {
   MvectorT<DIMN, T> ret;
-  ret.em() = x.em() + y.em();
+  for (int i = 0; i < DIMN; ++i) {
+    ret.p[i] = x.p[i] + y.p[i];
+  }
   return ret;
 }
 
@@ -27,7 +29,9 @@ qacc MvectorT<DIMN, T> operator-(const MvectorT<DIMN, T>& x,
                                  const MvectorT<DIMN, T>& y)
 {
   MvectorT<DIMN, T> ret;
-  ret.em() = x.em() - y.em();
+  for (int i = 0; i < DIMN; ++i) {
+    ret.p[i] = x.p[i] - y.p[i];
+  }
   return ret;
 }
 
@@ -35,7 +39,9 @@ template <int DIMN, class T>
 qacc MvectorT<DIMN, T> operator-(const MvectorT<DIMN, T>& x)
 {
   MvectorT<DIMN, T> ret;
-  ret.em() = -x.em();
+  for (int i = 0; i < DIMN; ++i) {
+    ret.p[i] = -x.p[i];
+  }
   return ret;
 }
 
@@ -43,7 +49,9 @@ template <int DIMN, class T>
 qacc MvectorT<DIMN, T> operator*(const T& x, const MvectorT<DIMN, T>& y)
 {
   MvectorT<DIMN, T> ret;
-  ret.em() = x * y.em();
+  for (int i = 0; i < DIMN; ++i) {
+    ret.p[i] = x * y.p[i];
+  }
   return ret;
 }
 
@@ -51,7 +59,9 @@ template <int DIMN, class T>
 qacc MvectorT<DIMN, T> operator*(const MvectorT<DIMN, T>& x, const T& y)
 {
   MvectorT<DIMN, T> ret;
-  ret.em() = x.em() * y;
+  for (int i = 0; i < DIMN; ++i) {
+    ret.p[i] = x.p[i] * y;
+  }
   return ret;
 }
 
@@ -59,14 +69,19 @@ template <int DIMN, class T>
 qacc MvectorT<DIMN, T> operator/(const MvectorT<DIMN, T>& x, const T& y)
 {
   MvectorT<DIMN, T> ret;
-  ret.em() = x.em() / y;
+  for (int i = 0; i < DIMN; ++i) {
+    ret.p[i] = x.p[i] / y;
+  }
   return ret;
 }
 
 template <int DIMN, class T>
-qacc Complex dot_product(const MvectorT<DIMN, T>& x, const MvectorT<DIMN, T>& y)
+qacc ComplexD dot_product(const MvectorT<DIMN, T>& x, const MvectorT<DIMN, T>& y)
 {
-  const Complex ret = x.em().adjoint() * y.em();
+  ComplexD ret = 0.0;
+  for (int i = 0; i < DIMN; ++i) {
+    ret += qconj(x.p[i]) * y.p[i];
+  }
   return ret;
 }
 
@@ -80,21 +95,27 @@ template <int DIMN, class T>
 qacc void set_unit(MvectorT<DIMN, T>& m, const Complex& coef = 1.0)
 {
   for (int i = 0; i < DIMN; ++i) {
-    m(i) = coef;
+    m.p[i] = coef;
   }
 }
 
 template <int DIMN, class T>
-qacc double qnorm(const MvectorT<DIMN, T>& m)
+qacc RealD qnorm(const MvectorT<DIMN, T>& m)
 {
-  return m.em().squaredNorm();
+  RealD ret = 0.0;
+  for (int i = 0; i < DIMN; ++i) {
+    ret += qnorm(m.p[i]);
+  }
+  return ret;
 }
 
 template <int DIMN, class T>
 qacc MvectorT<DIMN, T> vector_conjugate(const MvectorT<DIMN, T>& x)
 {
   MvectorT<DIMN, T> ret;
-  ret.em() = x.em().conjugate();
+  for (int i = 0; i < DIMN; ++i) {
+    ret.p[i] = qconj(x.p[i]);
+  }
   return ret;
 }
 
@@ -102,7 +123,11 @@ template <int DIMN, class T>
 std::string show(const MvectorT<DIMN, T>& m)
 {
   std::ostringstream out;
-  out << m.em();
+  out << "[ ";
+  for (int i = 0; i < DIMN; ++i) {
+    out << m.p[i] << ", ";
+  }
+  out << "]";
   return out.str();
 }
 
