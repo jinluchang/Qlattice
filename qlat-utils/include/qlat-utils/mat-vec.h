@@ -185,16 +185,6 @@ struct API ALIGN MvectorT {
   qacc double* d() { return (double*)p; }
   qacc const double* d() const { return (const double*)p; }
   //
-  // convert to Eigen Matrix
-  qacc Eigen::Matrix<T, DIMN, 1>& em()
-  {
-    return *((Eigen::Matrix<T, DIMN, 1>*)this);
-  }
-  qacc const Eigen::Matrix<T, DIMN, 1>& em() const
-  {
-    return *((Eigen::Matrix<T, DIMN, 1>*)this);
-  }
-  //
   qacc T& operator()(int i)
   {
     qassert(0 <= i && i < DIMN);
