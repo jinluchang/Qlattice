@@ -221,6 +221,10 @@ inline void* aligned_alloc_no_acc(const size_t min_size)
 #define gpuMalloc(bres,bsize, Ty) {bres = (Ty *)aligned_alloc_no_acc(bsize*sizeof(Ty));}
 #endif
 
+#define qGPU_for(iter, num, GPU, ...) \
+  if(GPU == true){qacc_for(iter, num, {__VA_ARGS__});} \
+  else{qthread_for(iter, num, {__VA_ARGS__});}
+
 inline void free_buf(void* buf, bool GPU){
   if(buf != NULL){if(GPU){gpuFree(buf);}else{free(buf);}}
   buf = NULL;

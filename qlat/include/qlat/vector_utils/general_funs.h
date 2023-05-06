@@ -267,6 +267,13 @@ struct move_index
 
 };
 
+inline void clear_move_index_mem(){
+  VectorGPUKey gkey0(0, std::string("move_index_buf"), false);
+  VectorGPUKey gkey1(0, std::string("move_index_buf"),  true);
+  safe_free_vector_gpu_plan<char >(gkey0, true);
+  safe_free_vector_gpu_plan<char >(gkey1, true);
+}
+
 
 inline void set_GPU(){
   #ifdef QLAT_USE_ACC
@@ -461,34 +468,20 @@ inline void random_Ty(Ty* a, long N0,int GPU=0, int seed = 0, const int mode = 0
 {
   (void)GPU;
   if(N0 == 0)return;
-  qlat::RngState rs(qlat::get_id_node() + 1 + seed);
+  qlat::RngState rs(qlat::get_id_node() + 1 + seed );
 
   double ini = qlat::u_rand_gen(rs);
-  #ifdef QLAT_USE_ACC
-  if(GPU == 1){
-    long bfac = long(std::sqrt(N0));
-    long Nuse = long(N0/bfac + 1);
-    qacc_for(isp, Nuse,{
-      for(long i=0;i<bfac;i++){
-        size_t off = isp*bfac + i;
-        if(off < size_t(N0)){
-          if(mode==0){a[off] = Ty(std::cos((ini+isp)*0.5) , (5.0/(isp+1))*ini*0.1);}
-          if(mode==1){a[off] = Ty(std::cos((ini+isp)*0.5) , std::sin(5.0*(isp+1))*ini*0.1);}
-        }
+  long bfac = long(std::sqrt(N0));
+  long Nuse = long(N0/bfac + 1);
+  qGPU_for(isp, Nuse, GPU, {
+    for(long i=0;i<bfac;i++){
+      size_t off = isp*bfac + i;
+      if(off < size_t(N0)){
+        if(mode==0){a[off] = Ty(std::cos((ini+isp)*0.5) , (5.0/(isp+1))*ini*0.1);}
+        if(mode==1){a[off] = Ty(std::cos((ini+isp)*0.5) , std::sin(5.0*(isp+1))*ini*0.1);}
       }
-    });
-    ////qacc_for(isp, N0, {a[isp] = a[isp] * (std::cos(isp) /N0);});
-    return ;
-  }
-  #endif
-
-  #pragma omp parallel for
-  for(size_t isp=0;isp< size_t(N0);isp++)
-  {
-     if(mode==0){a[isp] = Ty(std::cos((ini+isp)*0.5) , (5.0/(isp+1))*ini*0.1);}
-     if(mode==1){a[isp] = Ty(std::cos((ini+isp)*0.5) , sin(5.0*(isp+1))*ini*0.1);}
-  }
-
+    }
+  });
 }
 
 template<typename Ty>
