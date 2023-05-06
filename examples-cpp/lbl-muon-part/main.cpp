@@ -157,8 +157,15 @@ void lblMagneticMomentSpinMatrix(qlat::Array<qlat::SpinMatrix, 3> bs,
 
 qlat::Complex linearFit(const qlat::SpinMatrix& x, const qlat::SpinMatrix& base)
 {
-  return (Eigen::conj(base.em().array()) * x.em().array()).sum() /
-         (Eigen::conj(base.em().array()) * base.em().array()).sum();
+  using namespace qlat;
+  const int size = 4 * 4;
+  Complex s1 = 0.0;
+  Complex s2 = 0.0;
+  for (int i = 0; i < size; ++i) {
+    s1 += qconj(base.data()[i]) * x.data()[i];
+    s2 += qconj(base.data()[i]) * base.data()[i];
+  }
+  return s1 / s2;
 }
 
 void lblShowMuonPartPointSrc(const qlat::Geometry& geo, const int tsnk,
@@ -208,6 +215,13 @@ void lblShowMuonPartPointSrc(const qlat::Geometry& geo, const int tsnk,
   qlat::displayln_info("CHECK: " + fname +
                        qlat::ssprintf(": linearFit[2] * 1e9 = %10.6f",
                                       1e9 * linearFit(muonline, bs[2]).real()));
+  qlat::displayln_info(
+      "CHECK: " + fname +
+      qlat::ssprintf(
+          ": linearFitUni * 1e9 = %10.6f",
+          1e9 * linearFit(muonline, projPositiveState(
+                                        qlat::SpinMatrixConstants::get_unit()))
+                    .imag()));
 }
 
 void lblMuonPart()

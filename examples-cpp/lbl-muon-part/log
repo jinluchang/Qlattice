@@ -327,13 +327,14 @@ Main::lblShowMuonPartPointSrc : muonline =
   (3.37724e-09,1.8606e-07)  (2.14546e-07,1.79398e-06)   (3.37724e-09,1.8606e-07)  (2.14546e-07,1.79398e-06)
 (-2.14546e-07,1.79398e-06)  (3.37724e-09,-1.8606e-07) (-2.14546e-07,1.79398e-06)  (3.37724e-09,-1.8606e-07)
   (3.37724e-09,1.8606e-07)  (2.14546e-07,1.79398e-06)   (3.37724e-09,1.8606e-07)  (2.14546e-07,1.79398e-06)
-Main::lblShowMuonPartPointSrc : linearFit[0] = ( 1.37086836249465635E-09 + -2.21555274194855751E-21 j)
-Main::lblShowMuonPartPointSrc : linearFit[1] = ( 7.55243410429599375E-08 + -2.44983763142995349E-21 j)
-Main::lblShowMuonPartPointSrc : linearFit[2] = (-8.70871880210449286E-08 + -1.11649901956462740E-21 j)
-Main::lblShowMuonPartPointSrc : linearFitUni = (-3.59989002583077644E-21 +  3.58796201793973600E-06 j)
+Main::lblShowMuonPartPointSrc : linearFit[0] = ( 1.37086836249465656E-09 + -2.21555274194855788E-21 j)
+Main::lblShowMuonPartPointSrc : linearFit[1] = ( 7.55243410429599375E-08 + -2.44983763142995386E-21 j)
+Main::lblShowMuonPartPointSrc : linearFit[2] = (-8.70871880210449418E-08 + -1.11649901956462758E-21 j)
+Main::lblShowMuonPartPointSrc : linearFitUni = (-3.59989002583077644E-21 +  3.58796201793973558E-06 j)
 CHECK: lblShowMuonPartPointSrc: linearFit[0] * 1e9 =   1.370868
 CHECK: lblShowMuonPartPointSrc: linearFit[1] * 1e9 =  75.524341
 CHECK: lblShowMuonPartPointSrc: linearFit[2] * 1e9 = -87.087188
+CHECK: lblShowMuonPartPointSrc: linearFitUni * 1e9 = 3587.962018
 CHECK: finished successfully.
 Cache: 'FftComplexFieldPlanCache': 16 / 32 [16] clear
 FftComplexFieldPlan::end(): free a plan.
