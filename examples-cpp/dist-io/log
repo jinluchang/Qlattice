@@ -99,7 +99,7 @@ Cache: 'CommPlanCache': 0 / 32 [16] to add
 plaq :  9.47925703162884270E-01
 Cache: 'CommPlanCache': 1 / 32 [16] to add
 spatial plaq :  9.47619593969194485E-01
-trace:  9.86703685472811176E-01
+trace:  9.86703685472811287E-01
 QFile: open 'huge-data/gauge_field_rgf-0.1_f.partial/geo-info.txt' with 'w'.
 QFile: close 'huge-data/gauge_field_rgf-0.1_f.partial/geo-info.txt' with 'w'.
 QFile: open 'huge-data/gauge_field_rgf-0.1_f.partial/00/0000000000' with 'w'.
@@ -137,8 +137,8 @@ spatial plaq :  9.47619594236182916E-01
 trace:  9.86703685516355566E-01
 plaq :  9.47925703162884270E-01
 spatial plaq :  9.47619593969194485E-01
-trace:  9.86703685472811176E-01
-dist_crc32 = F9A4D0A6
+trace:  9.86703685472811287E-01
+dist_crc32 = 2E2C79FD
 make_shuffle_plan_generic: num_send_packs =         32
 make_shuffle_plan_generic: num_recv_packs =         32
 make_shuffle_plan_generic: num_send_msgs  =          2
@@ -150,7 +150,7 @@ make_shuffle_plan_generic: total num_recv_msgs  =          8
 make_shuffle_plan_generic: global_comm_size =       4096
 Cache: 'ShufflePlanCache': 1 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
+crc32 = 95CBBD8F
 make_shuffle_plan_generic: num_send_packs =         32
 make_shuffle_plan_generic: num_recv_packs =        128
 make_shuffle_plan_generic: num_send_msgs  =          1
@@ -163,9 +163,9 @@ make_shuffle_plan_generic: global_comm_size =       4096
 Cache: 'ShufflePlanCache': 2 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 1x1x1x1 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-dist_crc32 = F9A4D0A6
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
+crc32 = 95CBBD8F
 make_shuffle_plan_generic: num_send_packs =         32
 make_shuffle_plan_generic: num_recv_packs =        256
 make_shuffle_plan_generic: num_send_msgs  =          1
@@ -178,9 +178,9 @@ make_shuffle_plan_generic: global_comm_size =       4096
 Cache: 'ShufflePlanCache': 3 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 2x2x2x2 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-dist_crc32 = F9A4D0A6
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
+crc32 = 95CBBD8F
 make_shuffle_plan_generic: num_send_packs =         32
 make_shuffle_plan_generic: num_recv_packs =         32
 make_shuffle_plan_generic: num_send_msgs  =          2
@@ -193,9 +193,9 @@ make_shuffle_plan_generic: global_comm_size =       4096
 Cache: 'ShufflePlanCache': 4 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-dist_crc32 = F9A4D0A6
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
+crc32 = 95CBBD8F
 make_shuffle_plan_generic: num_send_packs =         32
 make_shuffle_plan_generic: num_recv_packs =         32
 make_shuffle_plan_generic: num_send_msgs  =          1
@@ -208,9 +208,9 @@ make_shuffle_plan_generic: global_comm_size =       4096
 Cache: 'ShufflePlanCache': 5 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x2x4x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 1x2x4x2 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-dist_crc32 = F9A4D0A6
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
+crc32 = 95CBBD8F
 make_shuffle_plan_generic: num_send_packs =        256
 make_shuffle_plan_generic: num_recv_packs =         32
 make_shuffle_plan_generic: num_send_msgs  =          4
@@ -223,9 +223,9 @@ make_shuffle_plan_generic: global_comm_size =       4096
 Cache: 'ShufflePlanCache': 6 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 2x2x1x1 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-dist_crc32 = F9A4D0A6
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
+crc32 = 95CBBD8F
 make_shuffle_plan_generic: num_send_packs =         32
 make_shuffle_plan_generic: num_recv_packs =        512
 make_shuffle_plan_generic: num_send_msgs  =          2
@@ -238,12 +238,12 @@ make_shuffle_plan_generic: global_comm_size =       4096
 Cache: 'ShufflePlanCache': 7 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x1x2x2 -> 4x4x4x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 4x4x4x4 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-dist_crc32 = F9A4D0A6
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
-dist_crc32 = F9A4D0A6
+crc32 = 95CBBD8F
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
+crc32 = 95CBBD8F
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x1'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 QFile: open 'huge-data/gauge_field ; 1x1x1x1.partial/geo-info.txt' with 'w'.
@@ -268,12 +268,12 @@ dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; to
 QFile: open 'huge-data/gauge_field ; 1x1x1x1/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 1x1x1x1 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-dist_crc32 = F9A4D0A6
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
-dist_crc32 = F9A4D0A6
+crc32 = 95CBBD8F
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
+crc32 = 95CBBD8F
 dist_write_field: fn='huge-data/gauge_field ; 2x2x2x2'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 Cache: 'IsDirectoryCache': 3 / 1024 [128] clear
@@ -316,12 +316,12 @@ dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; to
 QFile: open 'huge-data/gauge_field ; 2x2x2x2/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 2x2x2x2 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-dist_crc32 = F9A4D0A6
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
-dist_crc32 = F9A4D0A6
+crc32 = 95CBBD8F
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
+crc32 = 95CBBD8F
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x8'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 Cache: 'IsDirectoryCache': 6 / 1024 [128] clear
@@ -352,12 +352,12 @@ dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; to
 QFile: open 'huge-data/gauge_field ; 1x1x1x8/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-dist_crc32 = F9A4D0A6
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
-dist_crc32 = F9A4D0A6
+crc32 = 95CBBD8F
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
+crc32 = 95CBBD8F
 dist_write_field: fn='huge-data/gauge_field ; 1x2x4x2'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x2x4x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 Cache: 'IsDirectoryCache': 4 / 1024 [128] clear
@@ -400,12 +400,12 @@ dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; to
 QFile: open 'huge-data/gauge_field ; 1x2x4x2/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 1x2x4x2 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-dist_crc32 = F9A4D0A6
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
-dist_crc32 = F9A4D0A6
+crc32 = 95CBBD8F
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
+crc32 = 95CBBD8F
 dist_write_field: fn='huge-data/gauge_field ; 2x2x1x1'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 Cache: 'IsDirectoryCache': 6 / 1024 [128] clear
@@ -431,12 +431,12 @@ dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; to
 QFile: open 'huge-data/gauge_field ; 2x2x1x1/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 2x2x1x1 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-dist_crc32 = F9A4D0A6
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
-dist_crc32 = F9A4D0A6
+crc32 = 95CBBD8F
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
+crc32 = 95CBBD8F
 dist_write_field: fn='huge-data/gauge_field ; 4x4x4x4'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 4x4x4x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 Cache: 'IsDirectoryCache': 3 / 1024 [128] clear
@@ -783,12 +783,12 @@ dist_read_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; to
 QFile: open 'huge-data/gauge_field ; 4x4x4x4/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 4x4x4x4 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-dist_crc32 = F9A4D0A6
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
-dist_crc32 = F9A4D0A6
+crc32 = 95CBBD8F
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
+crc32 = 95CBBD8F
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x1_2'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 Cache: 'IsDirectoryCache': 10 / 1024 [128] clear
@@ -814,12 +814,12 @@ dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; to
 QFile: open 'huge-data/gauge_field ; 1x1x1x1_2/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1_2/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 1x1x1x1 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-dist_crc32 = F9A4D0A6
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
-dist_crc32 = F9A4D0A6
+crc32 = 95CBBD8F
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
+crc32 = 95CBBD8F
 dist_write_field: fn='huge-data/gauge_field ; 2x2x2x2_2'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 Cache: 'IsDirectoryCache': 3 / 1024 [128] clear
@@ -862,12 +862,12 @@ dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; to
 QFile: open 'huge-data/gauge_field ; 2x2x2x2_2/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2_2/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 2x2x2x2 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-dist_crc32 = F9A4D0A6
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
-dist_crc32 = F9A4D0A6
+crc32 = 95CBBD8F
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
+crc32 = 95CBBD8F
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x8_2'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 Cache: 'IsDirectoryCache': 6 / 1024 [128] clear
@@ -898,12 +898,12 @@ dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; to
 QFile: open 'huge-data/gauge_field ; 1x1x1x8_2/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8_2/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-dist_crc32 = F9A4D0A6
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
-dist_crc32 = F9A4D0A6
+crc32 = 95CBBD8F
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
+crc32 = 95CBBD8F
 dist_write_field: fn='huge-data/gauge_field ; 1x2x4x2_2'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x2x4x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 Cache: 'IsDirectoryCache': 4 / 1024 [128] clear
@@ -946,12 +946,12 @@ dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; to
 QFile: open 'huge-data/gauge_field ; 1x2x4x2_2/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2_2/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 1x2x4x2 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-dist_crc32 = F9A4D0A6
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
-dist_crc32 = F9A4D0A6
+crc32 = 95CBBD8F
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
+crc32 = 95CBBD8F
 dist_write_field: fn='huge-data/gauge_field ; 2x2x1x1_2'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 Cache: 'IsDirectoryCache': 6 / 1024 [128] clear
@@ -977,12 +977,12 @@ dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; to
 QFile: open 'huge-data/gauge_field ; 2x2x1x1_2/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1_2/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 2x2x1x1 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-dist_crc32 = F9A4D0A6
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
-dist_crc32 = F9A4D0A6
+crc32 = 95CBBD8F
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
+crc32 = 95CBBD8F
 dist_write_field: fn='huge-data/gauge_field ; 4x4x4x4_2'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 4x4x4x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 Cache: 'IsDirectoryCache': 3 / 1024 [128] clear
@@ -1329,12 +1329,12 @@ dist_read_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; to
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 4x4x4x4 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-dist_crc32 = F9A4D0A6
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
-dist_crc32 = F9A4D0A6
+crc32 = 95CBBD8F
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
+crc32 = 95CBBD8F
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x1_f'.
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
 Cache: 'IsDirectoryCache': 10 / 1024 [128] clear
@@ -1897,9 +1897,9 @@ QFile: open 'huge-data/rgf-0.1.field.conf.0000000000' with 'r'.
 QFile: close 'huge-data/rgf-0.1.field.conf.0000000000' with 'r'.
 shuffle_field_back(f,fs,sp): 1x1x1x4 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-dist_crc32 = F9A4D0A6
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
+crc32 = 95CBBD8F
 read_field: fn='huge-data/rgf-0.1.field.conf.0000000000'.
 QFile: open 'huge-data/rgf-0.1.field.conf.0000000000' with 'r'.
 QFile: close 'huge-data/rgf-0.1.field.conf.0000000000' with 'r'.
@@ -1907,9 +1907,9 @@ QFile: open 'huge-data/rgf-0.1.field.conf.0000000000' with 'r'.
 QFile: close 'huge-data/rgf-0.1.field.conf.0000000000' with 'r'.
 shuffle_field_back(f,fs,sp): 1x1x1x4 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-dist_crc32 = F9A4D0A6
+dist_crc32 = 2E2C79FD
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 7D9FBBC1
+crc32 = 95CBBD8F
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 384 ; total_size: 0.001 GB)
 Cache: 'IsDirectoryCache': 2 / 1024 [128] clear
 QFile: open 'huge-data/rgf-0.1.gf.conf.0000000000.partial.partial' with 'w'.
@@ -1927,9 +1927,9 @@ QFile: open 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
 QFile: close 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
 shuffle_field_back(f,fs,sp): 1x1x1x4 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 384 ; total_size: 0.001 GB)
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 384 ; total_size: 0.001 GB)
-dist_crc32 = 565AACB0
+dist_crc32 = 90382F75
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 8997087A
+crc32 = D0417FB6
 load_gauge_field: 'huge-data/rgf-0.1.gf.conf.0000000000'.
 QFile: open 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
 QFile: close 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
@@ -1937,51 +1937,51 @@ QFile: open 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
 QFile: close 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
 shuffle_field_back(f,fs,sp): 1x1x1x4 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 384 ; total_size: 0.001 GB)
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 384 ; total_size: 0.001 GB)
-dist_crc32 = 565AACB0
+dist_crc32 = 90382F75
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 8997087A
+crc32 = D0417FB6
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 30F0D9EF
+crc32 = 9D807494
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 1x1x1x1 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 30F0D9EF with shuffle_field and shuffle_field_back
+crc32 = 9D807494 with shuffle_field and shuffle_field_back
 shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 2x2x2x2 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 30F0D9EF with shuffle_field and shuffle_field_back
+crc32 = 9D807494 with shuffle_field and shuffle_field_back
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 30F0D9EF with shuffle_field and shuffle_field_back
+crc32 = 9D807494 with shuffle_field and shuffle_field_back
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x2x4x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 1x2x4x2 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 30F0D9EF with shuffle_field and shuffle_field_back
+crc32 = 9D807494 with shuffle_field and shuffle_field_back
 shuffle_field(fs,f,sp): 1x1x2x2 -> 2x2x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 2x2x1x1 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 30F0D9EF with shuffle_field and shuffle_field_back
+crc32 = 9D807494 with shuffle_field and shuffle_field_back
 shuffle_field(fs,f,sp): 1x1x2x2 -> 4x4x4x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 4x4x4x4 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 30F0D9EF with shuffle_field and shuffle_field_back
+crc32 = 9D807494 with shuffle_field and shuffle_field_back
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 8BE275BE after shift 12x34x45x12
+crc32 = 8EFAE811 after shift 12x34x45x12
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 30F0D9EF after shift -12x-34x-45x-12
+crc32 = 9D807494 after shift -12x-34x-45x-12
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 175CD9DB after shift 12x-34x-45x12
+crc32 = 513F49F9 after shift 12x-34x-45x12
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 30F0D9EF after shift -12x34x45x-12
+crc32 = 9D807494 after shift -12x34x45x-12
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 30F0D9EF after shift 0x0x0x0
+crc32 = 9D807494 after shift 0x0x0x0
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 30F0D9EF after shift 0x0x0x0
+crc32 = 9D807494 after shift 0x0x0x0
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 5FE806E8 after shift 1x1x1x1
+crc32 = 05840AAE after shift 1x1x1x1
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 30F0D9EF after shift -1x-1x-1x-1
+crc32 = 9D807494 after shift -1x-1x-1x-1
 Cache: 'FftComplexFieldPlanCache': 0 / 32 [16] to add
 FftComplexFieldPlan::init: malloc 589824
 FftComplexFieldPlan::init: free 589824
@@ -2031,7 +2031,7 @@ make_shuffle_plan_fft: total num_send_msgs  =          8
 make_shuffle_plan_fft: total num_recv_msgs  =          8
 make_shuffle_plan_fft: global_comm_size =       4096
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 39F638E7 after fft forward
+crc32 = 86C23D31 after fft forward
 qnorm =  2.01326591999999672E+08 after fft forward
 Cache: 'FftComplexFieldPlanCache': 4 / 32 [16] to add
 FftComplexFieldPlan::init: malloc 589824
@@ -2082,14 +2082,14 @@ make_shuffle_plan_fft: total num_send_msgs  =          8
 make_shuffle_plan_fft: total num_recv_msgs  =          8
 make_shuffle_plan_fft: global_comm_size =       4096
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = BC559B1B after fft backward
+crc32 = 21CCF57C after fft backward
 qnorm =  8.24633720832000000E+11 after fft backward
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = B94E597E after rescale
+crc32 = 24D73719 after rescale
 qnorm =  4.91520000000000000E+04 after rescale
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 17AC73EB after subtract
-qnorm =  1.88932257880873034E-27 after subtract
+crc32 = 1D74D752 after subtract
+qnorm =  1.93240206240773133E-27 after subtract
 make_shuffle_plan_generic: num_send_packs =         32
 make_shuffle_plan_generic: num_recv_packs =       1024
 make_shuffle_plan_generic: num_send_msgs  =          4
@@ -2101,7 +2101,7 @@ make_shuffle_plan_generic: total num_recv_msgs  =         16
 make_shuffle_plan_generic: global_comm_size =       4096
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = C3C5F91E after reflect
+crc32 = 0FBF91DA after reflect
 make_shuffle_plan_generic: num_send_packs =         32
 make_shuffle_plan_generic: num_recv_packs =       1024
 make_shuffle_plan_generic: num_send_msgs  =          4
@@ -2113,7 +2113,7 @@ make_shuffle_plan_generic: total num_recv_msgs  =         16
 make_shuffle_plan_generic: global_comm_size =       4096
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-crc32 = 30F0D9EF after reflect twice
+crc32 = 9D807494 after reflect twice
 CHECK: finished successfully.
 Cache: 'ShufflePlanCache': 8 / 16 [8] clear
 Cache: 'CommPlanCache': 2 / 32 [16] clear

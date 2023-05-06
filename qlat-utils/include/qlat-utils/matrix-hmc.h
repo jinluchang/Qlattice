@@ -7,14 +7,70 @@
 namespace qlat
 {  //
 
+template <class T, int N>
+void normalize_array_real(Array<T, N> p)
+//------------------------------------------------------------------
+// Few routines that are needed by the Unitarize routine
+//------------------------------------------------------------------
+{
+  RealD norm = 0;
+  for (int i = 0; i < N; i++) {
+    norm += p[i] * p[i];
+  }
+  if (not(norm == 1.0)) {
+    norm = 1.0 / sqrt(norm);
+    for (int i = 0; i < N; i++) {
+      p[i] *= norm;
+    }
+  }
+}
+
+template <class T, int N>
+void normalize_array_complex(Array<ComplexT<T>, N> p)
+//------------------------------------------------------------------
+// Few routines that are needed by the Unitarize routine
+//------------------------------------------------------------------
+{
+  Array<T, N * 2> p_r((T*)p.data());
+  normalize_array_real(p_r);
+}
+
+template <class T, int N>
+void orthogonalize_array_complex(Array<T, N> p2, const Array<T, N> p1)
+//	v2' = v2 - v1 * (v1^*, v2)
+// 	then	(v1^*, v2') = 0
+{
+  ComplexD c = 0.0;
+  for (int i = 0; i < N; ++i) {
+    c += qconj(p1[i]) * p2[i];
+  }
+  if (not(c == 0.0)) {
+    for (int i = 0; i < N; ++i) {
+      p2[i] -= c * p1[i];
+    }
+  }
+}
+
+template <class T>
+void cross_product_conj(Array<T, 3> v3, const Array<T, 3> v1,
+                        const Array<T, 3> v2)
+// v3 = ( v1 x v2 )^*
+{
+  v3[0] = qconj(v1[1] * v2[2] - v1[2] * v2[1]);
+  v3[1] = qconj(v1[2] * v2[0] - v1[0] * v2[2]);
+  v3[2] = qconj(v1[0] * v2[1] - v1[1] * v2[0]);
+}
+
 template <class T>
 qacc void unitarize(ColorMatrixT<T>& cm)
 {
-  cm.em().row(0).normalize();
-  cm.em().row(2) =
-      cm.em().row(1) - cm.em().row(0).dot(cm.em().row(1)) * cm.em().row(0);
-  cm.em().row(1) = cm.em().row(2).normalized();
-  cm.em().row(2) = cm.em().row(0).cross(cm.em().row(1));
+  Array<ComplexT<T>, 3> p1(cm.data());
+  Array<ComplexT<T>, 3> p2(cm.data() + 3);
+  Array<ComplexT<T>, 3> p3(cm.data() + 6);
+  normalize_array_complex(p1);
+  orthogonalize_array_complex(p2, p1);
+  normalize_array_complex(p2);
+  cross_product_conj(p3, p1, p2);
 }
 
 qacc ColorMatrixT<> make_anti_hermitian_matrix(const array<double, 8>& basis)

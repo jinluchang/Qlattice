@@ -275,13 +275,13 @@ qacc void matrix_lubksb(MvectorT<DIMN, T>& b, const MatrixT<DIMN, T>& a,
   }
 }
 
-template <int DIMN, class T>
-MatrixT<DIMN, T> matrix_inverse_eigen(const MatrixT<DIMN, T>& x)
-{
-  MatrixT<DIMN, T> ret;
-  ret.em() = x.em().inverse();
-  return ret;
-}
+// template <int DIMN, class T>
+// MatrixT<DIMN, T> matrix_inverse_eigen(const MatrixT<DIMN, T>& x)
+// {
+//   MatrixT<DIMN, T> ret;
+//   ret.em() = x.em().inverse();
+//   return ret;
+// }
 
 template <int DIMN, class T>
 qacc MatrixT<DIMN, T> matrix_inverse(const MatrixT<DIMN, T>& x)
@@ -303,11 +303,11 @@ qacc MatrixT<DIMN, T> matrix_inverse(const MatrixT<DIMN, T>& x)
   return ret;
 }
 
-template <int DIMN, class T>
-T matrix_determinant_eigen(const MatrixT<DIMN, T>& x)
-{
-  return x.em().determinant();
-}
+// template <int DIMN, class T>
+// T matrix_determinant_eigen(const MatrixT<DIMN, T>& x)
+// {
+//   return x.em().determinant();
+// }
 
 template <int DIMN, class T>
 qacc T matrix_determinant(const MatrixT<DIMN, T>& x)

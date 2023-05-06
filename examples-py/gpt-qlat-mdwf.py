@@ -29,7 +29,7 @@ mobius_params = {
 
 gpt_gf = qg.gpt_from_qlat(gf)
 
-q.displayln_info(f"CHECK: g.qcd.gauge.plaquette = {g.qcd.gauge.plaquette(gpt_gf):.17f}")
+q.displayln_info(f"CHECK: g.qcd.gauge.plaquette = {g.qcd.gauge.plaquette(gpt_gf):.14f}")
 
 gf1 = qg.qlat_from_gpt(gpt_gf)
 
