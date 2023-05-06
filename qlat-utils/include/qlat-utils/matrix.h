@@ -20,7 +20,9 @@ qacc MatrixT<DIMN, T> operator+(const MatrixT<DIMN, T>& x,
                                 const MatrixT<DIMN, T>& y)
 {
   MatrixT<DIMN, T> ret;
-  ret.em() = x.em() + y.em();
+  for (int i = 0; i < DIMN * DIMN; ++i) {
+    ret.p[i] = x.p[i] + y.p[i];
+  }
   return ret;
 }
 
@@ -29,7 +31,9 @@ qacc MatrixT<DIMN, T> operator-(const MatrixT<DIMN, T>& x,
                                 const MatrixT<DIMN, T>& y)
 {
   MatrixT<DIMN, T> ret;
-  ret.em() = x.em() - y.em();
+  for (int i = 0; i < DIMN * DIMN; ++i) {
+    ret.p[i] = x.p[i] - y.p[i];
+  }
   return ret;
 }
 
@@ -37,7 +41,9 @@ template <int DIMN, class T>
 qacc MatrixT<DIMN, T> operator-(const MatrixT<DIMN, T>& x)
 {
   MatrixT<DIMN, T> ret;
-  ret.em() = -x.em();
+  for (int i = 0; i < DIMN * DIMN; ++i) {
+    ret.p[i] = -x.p[i];
+  }
   return ret;
 }
 
@@ -46,7 +52,18 @@ qacc MatrixT<DIMN, T> operator*(const MatrixT<DIMN, T>& x,
                                 const MatrixT<DIMN, T>& y)
 {
   MatrixT<DIMN, T> ret;
-  ret.em() = x.em() * y.em();
+  MatrixT<DIMN, T> yt = matrix_transpose(y);
+  for (int i = 0; i < DIMN; ++i) {
+    const int id = i * DIMN;
+    for (int j = 0; j < DIMN; ++j) {
+      const int jd = j * DIMN;
+      T s = 0.0;
+      for (int k = 0; k < DIMN; ++k) {
+        s += x.p[id + k] * yt.p[jd + k];
+      }
+      ret.p[id + j] = s;
+    }
+  }
   return ret;
 }
 
@@ -54,7 +71,9 @@ template <int DIMN, class T>
 qacc MatrixT<DIMN, T> operator*(const double x, const MatrixT<DIMN, T>& y)
 {
   MatrixT<DIMN, T> ret;
-  ret.em() = x * y.em();
+  for (int i = 0; i < DIMN * DIMN; ++i) {
+    ret.p[i] = x * y.p[i];
+  }
   return ret;
 }
 
@@ -62,23 +81,29 @@ template <int DIMN, class T>
 qacc MatrixT<DIMN, T> operator*(const MatrixT<DIMN, T>& x, const double y)
 {
   MatrixT<DIMN, T> ret;
-  ret.em() = x.em() * y;
+  for (int i = 0; i < DIMN * DIMN; ++i) {
+    ret.p[i] = x.p[i] * y;
+  }
   return ret;
 }
 
 template <int DIMN, class T>
-qacc MatrixT<DIMN, T> operator*(const Complex& x, const MatrixT<DIMN, T>& y)
+qacc MatrixT<DIMN, T> operator*(const ComplexD& x, const MatrixT<DIMN, T>& y)
 {
   MatrixT<DIMN, T> ret;
-  ret.em() = x * y.em();
+  for (int i = 0; i < DIMN * DIMN; ++i) {
+    ret.p[i] = x * y.p[i];
+  }
   return ret;
 }
 
 template <int DIMN, class T>
-qacc MatrixT<DIMN, T> operator*(const MatrixT<DIMN, T>& x, const Complex& y)
+qacc MatrixT<DIMN, T> operator*(const MatrixT<DIMN, T>& x, const ComplexD& y)
 {
   MatrixT<DIMN, T> ret;
-  ret.em() = x.em() * y;
+  for (int i = 0; i < DIMN * DIMN; ++i) {
+    ret.p[i] = x.p[i] * y;
+  }
   return ret;
 }
 
@@ -86,7 +111,9 @@ template <int DIMN, class T>
 qacc MatrixT<DIMN, T> operator/(const MatrixT<DIMN, T>& x, const T& y)
 {
   MatrixT<DIMN, T> ret;
-  ret.em() = x.em() / y;
+  for (int i = 0; i < DIMN * DIMN; ++i) {
+    ret.p[i] = x.p[i] / y;
+  }
   return ret;
 }
 
@@ -95,7 +122,14 @@ qacc MvectorT<DIMN, T> operator*(const MatrixT<DIMN, T>& x,
                                  const MvectorT<DIMN, T>& y)
 {
   MvectorT<DIMN, T> ret;
-  ret.em() = x.em() * y.em();
+  for (int i = 0; i < DIMN; ++i) {
+    const int id = i * DIMN;
+    T s = 0.0;
+    for (int j = 0; j < DIMN; ++j) {
+      s += x.p[id + j] * y.p[j];
+    }
+    ret.p[i] = s;
+  }
   return ret;
 }
 
@@ -106,7 +140,7 @@ qacc void set_zero(MatrixT<DIMN, T>& m)
 }
 
 template <int DIMN>
-qacc void set_unit(MatrixT<DIMN, float>& m, const Complex& coef = 1.0)
+qacc void set_unit(MatrixT<DIMN, RealF>& m, const ComplexD& coef = 1.0)
 {
   set_zero(m);
   for (int i = 0; i < DIMN; ++i) {
@@ -115,7 +149,7 @@ qacc void set_unit(MatrixT<DIMN, float>& m, const Complex& coef = 1.0)
 }
 
 template <int DIMN>
-qacc void set_unit(MatrixT<DIMN, double>& m, const Complex& coef = 1.0)
+qacc void set_unit(MatrixT<DIMN, RealD>& m, const ComplexD& coef = 1.0)
 {
   set_zero(m);
   for (int i = 0; i < DIMN; ++i) {
@@ -124,7 +158,7 @@ qacc void set_unit(MatrixT<DIMN, double>& m, const Complex& coef = 1.0)
 }
 
 template <int DIMN, class T>
-qacc void set_unit(MatrixT<DIMN, T>& m, const Complex& coef = 1.0)
+qacc void set_unit(MatrixT<DIMN, T>& m, const ComplexD& coef = 1.0)
 {
   set_zero(m);
   for (int i = 0; i < DIMN; ++i) {
@@ -133,28 +167,50 @@ qacc void set_unit(MatrixT<DIMN, T>& m, const Complex& coef = 1.0)
 }
 
 template <int DIMN, class T>
-qacc double qnorm(const MatrixT<DIMN, T>& m)
+qacc RealD qnorm(const MatrixT<DIMN, T>& m)
 {
-  return m.em().squaredNorm();
+  RealD s = 0.0;
+  for (int i = 0; i < DIMN * DIMN; ++i) {
+    s += qnorm(m.p[i]);
+  }
+  return s;
 }
 
 template <int DIMN, class T>
-qacc Complex matrix_trace(const MatrixT<DIMN, T>& x)
+qacc ComplexD matrix_trace(const MatrixT<DIMN, T>& x)
 {
-  return x.em().trace();
+  ComplexD s = 0.0;
+  for (int i = 0; i < DIMN; ++i) {
+    s += x.p[i * DIMN + i];
+  }
+  return s;
 }
 
 template <int DIMN, class T>
-qacc Complex matrix_trace(const MatrixT<DIMN, T>& x, const MatrixT<DIMN, T>& y)
+qacc ComplexD matrix_trace(const MatrixT<DIMN, T>& x, const MatrixT<DIMN, T>& y)
 {
-  return (x.em() * y.em()).trace();
+  MatrixT<DIMN, T> yt = matrix_transpose(y);
+  ComplexD s = 0.0;
+  for (int i = 0; i < DIMN; ++i) {
+    const int id = i * DIMN;
+    for (int j = 0; j < DIMN; ++j) {
+      s += x.p[id + j] * yt.p[id + j];
+    }
+  }
+  return s;
 }
 
 template <int DIMN, class T>
 qacc MatrixT<DIMN, T> matrix_adjoint(const MatrixT<DIMN, T>& x)
 {
   MatrixT<DIMN, T> ret;
-  ret.em() = x.em().adjoint();
+  for (int i = 0; i < DIMN; ++i) {
+    const int id = i * DIMN;
+    for (int j = 0; j < DIMN; ++j) {
+      const int jd = j * DIMN;
+      ret.p[jd + i] = qconj(x.p[id + j]);
+    }
+  }
   return ret;
 }
 
@@ -162,7 +218,13 @@ template <int DIMN, class T>
 qacc MatrixT<DIMN, T> matrix_transpose(const MatrixT<DIMN, T>& x)
 {
   MatrixT<DIMN, T> ret;
-  ret.em() = x.em().transpose();
+  for (int i = 0; i < DIMN; ++i) {
+    const int id = i * DIMN;
+    for (int j = 0; j < DIMN; ++j) {
+      const int jd = j * DIMN;
+      ret.p[jd + i] = x.p[id + j];
+    }
+  }
   return ret;
 }
 
@@ -170,7 +232,9 @@ template <int DIMN, class T>
 qacc MatrixT<DIMN, T> matrix_conjugate(const MatrixT<DIMN, T>& x)
 {
   MatrixT<DIMN, T> ret;
-  ret.em() = x.em().conjugate();
+  for (int i = 0; i < DIMN * DIMN; ++i) {
+    ret.p[i] = qconj(x.p[i]);
+  }
   return ret;
 }
 
@@ -338,7 +402,7 @@ struct API SpinMatrixConstantsT {
   //
   qacc void init()
   {
-    Complex ii(0.0, 1.0);
+    ComplexD ii(0.0, 1.0);
     // TIMER_VERBOSE("SpinMatrixConstants::init()");
     unit.em() << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1;
     // gamma_x
@@ -579,9 +643,9 @@ qacc WilsonMatrixT<T> operator*(const WilsonMatrixT<T>& m,
 }
 
 template <class T>
-qacc Complex matrix_trace(const SpinMatrixT<T>& sm, const WilsonMatrixT<T>& m)
+qacc ComplexD matrix_trace(const SpinMatrixT<T>& sm, const WilsonMatrixT<T>& m)
 {
-  Complex ret = 0;
+  ComplexD ret = 0;
   for (int s1 = 0; s1 < 4; ++s1) {
     for (int s3 = 0; s3 < 4; ++s3) {
       if (sm(s1, s3) == 0.0) {
@@ -596,7 +660,7 @@ qacc Complex matrix_trace(const SpinMatrixT<T>& sm, const WilsonMatrixT<T>& m)
 }
 
 template <class T>
-qacc Complex matrix_trace(const WilsonMatrixT<T>& m, const SpinMatrixT<T>& sm)
+qacc ComplexD matrix_trace(const WilsonMatrixT<T>& m, const SpinMatrixT<T>& sm)
 {
   return matrix_trace(sm, m);
 }
@@ -885,7 +949,16 @@ template <int DIMN, class T>
 std::string show(const MatrixT<DIMN, T>& m)
 {
   std::ostringstream out;
-  out << m.em();
+  out << "[ ";
+  for (int i = 0; i < DIMN; ++i) {
+    const int id = i * DIMN;
+    out << "[ ";
+    for (int j = 0; j < DIMN; ++j) {
+      out << m.p[id + j] << ", ";
+    }
+    out << "], ";
+  }
+  out << "]";
   return out.str();
 }
 

@@ -79,7 +79,13 @@ qacc void set_unit(ComplexF& x, const Complex& coef = 1.0) { x = coef; }
 
 // -------------------
 
-qacc double qnorm(const double& x) { return x * x; }
+qacc double qnorm(const char x) { return x * x; }
+
+qacc double qnorm(const int8_t x) { return x * x; }
+
+qacc double qnorm(const long x) { return x * x; }
+
+qacc double qnorm(const long long x) { return x * x; }
 
 qacc double qnorm(const double& x, const double& y) { return x * y; }
 

@@ -17,6 +17,14 @@ using RealF = float;
 
 using Real = RealD;  // default Real type
 
+qacc RealD qnorm(const RealD& x) { return x * x; }
+
+qacc RealF qnorm(const RealF& x) { return x * x; }
+
+qacc RealD qconj(const RealD& x) { return x; }
+
+qacc RealF qconj(const RealF& x) { return x; }
+
 #ifdef QLAT_USE_ACC
 
 template <class T = Real>
