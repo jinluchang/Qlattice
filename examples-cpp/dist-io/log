@@ -1930,6 +1930,7 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 384
 dist_crc32 = 9DC3C190
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = FE47D0F4
+diff norm 0.00000E+00
 load_gauge_field: 'huge-data/rgf-0.1.gf.conf.0000000000'.
 QFile: open 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
 QFile: close 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
@@ -1940,6 +1941,7 @@ shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 384
 dist_crc32 = 9DC3C190
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = FE47D0F4
+diff norm 0.00000E+00
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = A0C61299
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)

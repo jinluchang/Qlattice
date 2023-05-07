@@ -70,7 +70,7 @@ set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 Cache: 'CommPlanCache': 0 / 32 [16] to add
-plaq : -5.40326217624385700E-03
+plaq : -5.40326217624385614E-03
 Cache: 'CommPlanCache': 1 / 32 [16] to add
 spatial plaq : -1.24665686857814428E-02
 trace:  1.23949530600750854E-01
