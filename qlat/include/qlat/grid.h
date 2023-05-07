@@ -173,6 +173,7 @@ inline void grid_convert(Grid::LatticePropagatorF& gprop, const Field<WilsonMatr
   const Geometry& geo = prop.geo();
   qassert(geo.multiplicity == 1);
   qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = prop.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Grid::Coordinate coor = grid_convert(xl);
     const WilsonMatrix& wm = prop.get_elem(xl);
@@ -193,6 +194,7 @@ inline void grid_convert(Grid::LatticePropagatorD& gprop, const Field<WilsonMatr
   const Geometry& geo = prop.geo();
   qassert(geo.multiplicity == 1);
   qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = prop.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Grid::Coordinate coor = grid_convert(xl);
     const WilsonMatrix& wm = prop.get_elem(xl);
@@ -213,6 +215,7 @@ inline void grid_convert(Field<WilsonMatrix>& prop, const Grid::LatticePropagato
   const Geometry& geo = prop.geo();
   qassert(geo.multiplicity == 1);
   qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = prop.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Grid::Coordinate coor = grid_convert(xl);
     array<ComplexF, sizeof(WilsonMatrix) / sizeof(Complex)> fs;
@@ -233,6 +236,7 @@ inline void grid_convert(Field<WilsonMatrix>& prop, const Grid::LatticePropagato
   const Geometry& geo = prop.geo();
   qassert(geo.multiplicity == 1);
   qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = prop.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Grid::Coordinate coor = grid_convert(xl);
     array<ComplexD, sizeof(WilsonMatrix) / sizeof(Complex)> fs;

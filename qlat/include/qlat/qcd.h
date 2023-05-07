@@ -25,7 +25,7 @@ void unitarize(Field<ColorMatrixT<T> >& gf)
   qacc_for(index, geo.local_volume(), {
     const Geometry& geo = gf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
-    Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
+    Vector<ColorMatrixT<T>> v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       unitarize(v[m]);
     }
@@ -322,7 +322,7 @@ long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
   read_gauge_field_header(gfi, path);
   const bool is_two_row = gfi.datatype == "4D_SU3_GAUGE";
   const bool is_three_row = gfi.datatype == "4D_SU3_GAUGE_3x3";
-  const int n_complex_su3 = is_two_row ? 6 : ( is_three_row ? 9 : 0);
+  const int n_complex_su3 = is_two_row ? 6 : (is_three_row ? 9 : 0);
   if (n_complex_su3 == 0) {
     displayln(fname + ssprintf(": gfi.datatype '%s' id_node=%d.",
                                gfi.datatype.c_str(), get_id_node()));
@@ -352,7 +352,8 @@ long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
   } else {
     qassert(false);
   }
-  crc32_t simple_checksum = field_simple_checksum(gft); // after endianness conversion
+  crc32_t simple_checksum =
+      field_simple_checksum(gft);  // after endianness conversion
   if (simple_checksum != gfi.simple_checksum) {
     if (get_id_node() == 0) {
       qwarn(fname +
@@ -365,7 +366,7 @@ long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
     const Geometry& geo = gf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<Complex> vt = gft.get_elems(xl);
-    Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
+    Vector<ColorMatrixT<T>> v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       v[m](0, 0) = vt[m * n_complex_su3 + 0];
       v[m](0, 1) = vt[m * n_complex_su3 + 1];

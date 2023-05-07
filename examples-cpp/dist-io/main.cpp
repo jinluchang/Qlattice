@@ -155,7 +155,7 @@ inline void test_io()
   std::vector<Coordinate> new_size_nodes = get_new_size_node_list();
   for (size_t i = 0; i < new_size_nodes.size(); ++i) {
     const Coordinate& new_size_node = new_size_nodes[i];
-    std::vector<Field<ColorMatrix> > gfs;
+    std::vector<Field<ColorMatrix>> gfs;
     shuffle_field(gfs, gf, new_size_node);
     for (size_t k = 0; k < gfs.size(); ++k) {
       Field<ColorMatrix>& gfk = gfs[k];
@@ -237,12 +237,18 @@ inline void test_io()
   load_gauge_field(gf, ssprintf("huge-data/rgf-0.1.gf.conf.%010d", 0));
   displayln_info(ssprintf("dist_crc32 = %08X", field_dist_crc32(gf)));
   displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
-  qassert(ucrc == field_dist_crc32(gf));
+  const crc32_t ucrc1 = field_dist_crc32(gf);
+  gf -= ugf;
+  displayln_info(ssprintf("diff norm %.5E", qnorm(gf)));
+  qassert(ucrc == ucrc1);
   set_unit(gf);
   load_gauge_field(gf, ssprintf("huge-data/rgf-0.1.gf.conf.%010d", 0));
   displayln_info(ssprintf("dist_crc32 = %08X", field_dist_crc32(gf)));
   displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
-  qassert(ucrc == field_dist_crc32(gf));
+  const crc32_t ucrc2 = field_dist_crc32(gf);
+  gf -= ugf;
+  displayln_info(ssprintf("diff norm %.5E", qnorm(gf)));
+  qassert(ucrc == ucrc2);
 }
 
 int main(int argc, char* argv[])
