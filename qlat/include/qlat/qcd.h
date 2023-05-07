@@ -23,6 +23,7 @@ void unitarize(Field<ColorMatrixT<T> >& gf)
   TIMER_VERBOSE("unitarize(gf)");
   const Geometry& geo = gf.geo();
   qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = gf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {

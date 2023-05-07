@@ -649,10 +649,10 @@ const Field<M>& Field<M>::operator=(const Field<M>& f)
   TIMER_FLOPS("Field::operator=");
   qassert(f.initialized);
   init(geo_resize(f.geo()));
-  const Geometry& geo_v = geo();
-  const int multiplicity = geo_v.multiplicity;
+  const int multiplicity = geo().multiplicity;
   Field<M>& f0 = *this;
-  qacc_for(index, geo_v.local_volume(), {
+  qacc_for(index, geo().local_volume(), {
+    const Geometry& geo_v = f0.geo();
     const Coordinate xl = geo_v.coordinate_from_index(index);
     const Vector<M> v = f.get_elems_const(xl);
     Vector<M> v0 = f0.get_elems(xl);
