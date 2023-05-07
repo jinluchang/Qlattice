@@ -1,12 +1,23 @@
 #pragma once
 
+#include <qlat-utils/config.h>
 #include <qlat-utils/qacc.h>
 #include <qlat-utils/show.h>
+
 #include <complex>
 
 #ifdef QLAT_USE_ACC
 #include <thrust/complex.h>
 #endif
+
+#if defined QLAT_NO_ALIGNED_ALLOC
+#define QLAT_ALIGNED_BYTES 1
+#else
+#define QLAT_ALIGNED_BYTES 16 // should divide all matrix sizes (which can convert with GPT).
+#endif
+
+#define ALIGN __attribute__((aligned(QLAT_ALIGNED_BYTES)))
+// #define ALIGN alignas(QLAT_ALIGNED_BYTES)
 
 namespace qlat
 {  //

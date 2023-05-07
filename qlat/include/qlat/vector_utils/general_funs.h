@@ -21,6 +21,8 @@
 #include "utils_vector_GPU.h"
 #include "utils_mpi.h"
 
+#include <qlat-utils/eigen.h>
+
 namespace qlat
 {
 
