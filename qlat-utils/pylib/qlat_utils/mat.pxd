@@ -57,6 +57,8 @@ cdef extern from "qlat-utils/mat.h" namespace "qlat":
 
     const SpinMatrix& get_gamma_matrix(const int mu)
 
+    void benchmark_matrix_functions(const long count)
+
     WilsonMatrix g5_herm(const WilsonMatrix& m)
 
     SpinMatrix operator*(const Complex& a, const SpinMatrix& m)

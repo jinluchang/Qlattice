@@ -9,6 +9,8 @@ namespace qlat
 
 const SpinMatrixT<>& get_gamma_matrix(const int mu);
 
+void benchmark_matrix_functions(const long count = 128);
+
 qacc WilsonMatrix g5_herm(const WilsonMatrix& m)
 {
   const box_acc<SpinMatrixConstants>& smc = get_spin_matrix_constants();

@@ -119,6 +119,11 @@ gamma_matrix_5 = cc.get_gamma_matrix(5)
 
 ### -------------------------------------------------------------------
 
+def benchmark_matrix_functions(int count):
+    cc.benchmark_matrix_functions(count)
+
+### -------------------------------------------------------------------
+
 def as_wilson_matrix(x):
     cdef WilsonMatrix wm
     if isinstance(x, WilsonMatrix):

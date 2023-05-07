@@ -8,6 +8,7 @@ tests = \
 		auto-cexprs-kpipi.log \
 		qlat-id-node.log \
 		set-rand.log \
+		benchmark-matrix-functions.log \
 		make-sample-gauge-field.log \
 		qar.log \
 		lat-io.log \

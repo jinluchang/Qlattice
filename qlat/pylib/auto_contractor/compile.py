@@ -775,8 +775,8 @@ class CExprCodeGenPy:
 
     # flops per complex multiplication: 6
     # flops per matrix multiplication: 6 M N L + 2 M L (N-1) ==> 13536 (sc * sc), 4320 (sc * s), 480 (s * s)
-    # flops per trace 2 (M-1) ==> 22
-    # flops per trace2 6 M N + 2 (M N - 1) ==> 1150
+    # flops per trace 2 (M-1) ==> 22 (sc)
+    # flops per trace2 6 M N + 2 (M N - 1) ==> 1150 (sc, sc)
 
     def __init__(self, cexpr):
         self.cexpr = cexpr

@@ -13,7 +13,8 @@ from qlat_utils.c import \
         WilsonMatrix, \
         SpinMatrix, \
         as_wilson_matrix, \
-        as_wilson_matrix_g5_herm
+        as_wilson_matrix_g5_herm, \
+        benchmark_matrix_functions
 
 from qlat_utils.c import \
         ElemType, \
