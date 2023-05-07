@@ -172,7 +172,8 @@ inline void grid_convert(Grid::LatticePropagatorF& gprop, const Field<WilsonMatr
   using namespace Grid;
   const Geometry& geo = prop.geo();
   qassert(geo.multiplicity == 1);
-  qacc_for(index, geo.local_volume(), {
+  autoView(gprop_v, gprop, CpuWrite);
+  qthread_for(index, geo.local_volume(), {
     const Geometry& geo = prop.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Grid::Coordinate coor = grid_convert(xl);
@@ -183,7 +184,7 @@ inline void grid_convert(Grid::LatticePropagatorF& gprop, const Field<WilsonMatr
     for (int k = 0; k < (int)fs.size(); ++k) {
       fs[k] = msc.p[k];
     }
-    pokeLocalSite(fs, gprop, coor);
+    pokeLocalSite(fs, gprop_v, coor);
   })
 }
 
@@ -193,7 +194,8 @@ inline void grid_convert(Grid::LatticePropagatorD& gprop, const Field<WilsonMatr
   using namespace Grid;
   const Geometry& geo = prop.geo();
   qassert(geo.multiplicity == 1);
-  qacc_for(index, geo.local_volume(), {
+  autoView(gprop_v, gprop, CpuWrite);
+  qthread_for(index, geo.local_volume(), {
     const Geometry& geo = prop.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Grid::Coordinate coor = grid_convert(xl);
@@ -204,7 +206,7 @@ inline void grid_convert(Grid::LatticePropagatorD& gprop, const Field<WilsonMatr
     for (int k = 0; k < (int)fs.size(); ++k) {
       fs[k] = msc.p[k];
     }
-    pokeLocalSite(fs, gprop, coor);
+    pokeLocalSite(fs, gprop_v, coor);
   })
 }
 
@@ -214,12 +216,13 @@ inline void grid_convert(Field<WilsonMatrix>& prop, const Grid::LatticePropagato
   using namespace Grid;
   const Geometry& geo = prop.geo();
   qassert(geo.multiplicity == 1);
-  qacc_for(index, geo.local_volume(), {
+  autoView(gprop_v, gprop, CpuRead);
+  qthread_for(index, geo.local_volume(), {
     const Geometry& geo = prop.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Grid::Coordinate coor = grid_convert(xl);
     array<ComplexF, sizeof(WilsonMatrix) / sizeof(Complex)> fs;
-    peekLocalSite(fs, gprop, coor);
+    peekLocalSite(fs, gprop_v, coor);
     WilsonMatrix msc;
     for (int k = 0; k < (int)fs.size(); ++k) {
       msc.p[k] = fs[k];
@@ -235,12 +238,13 @@ inline void grid_convert(Field<WilsonMatrix>& prop, const Grid::LatticePropagato
   using namespace Grid;
   const Geometry& geo = prop.geo();
   qassert(geo.multiplicity == 1);
-  qacc_for(index, geo.local_volume(), {
+  autoView(gprop_v, gprop, CpuRead);
+  qthread_for(index, geo.local_volume(), {
     const Geometry& geo = prop.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Grid::Coordinate coor = grid_convert(xl);
     array<ComplexD, sizeof(WilsonMatrix) / sizeof(Complex)> fs;
-    peekLocalSite(fs, gprop, coor);
+    peekLocalSite(fs, gprop_v, coor);
     WilsonMatrix msc;
     for (int k = 0; k < (int)fs.size(); ++k) {
       msc.p[k] = fs[k];
