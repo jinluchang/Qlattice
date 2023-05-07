@@ -4,7 +4,7 @@ set -e
 
 {
 
-./scripts/setenv.default.sh
+./scripts/setenv.gpu.sh
 ./scripts/qcore.sh
 
 ./scripts/cuba.sh
