@@ -181,7 +181,7 @@ qacc ComplexD matrix_trace(const MatrixT<DIMN, T>& x)
 {
   ComplexD s = 0.0;
   for (int i = 0; i < DIMN; ++i) {
-    s += x.p[i * DIMN + i];
+    s += x.p[i * (DIMN + 1)];
   }
   return s;
 }
@@ -548,9 +548,12 @@ qacc WilsonMatrixT<T> operator*(const ColorMatrixT<T>& cm,
     for (int s2 = 0; s2 < 4; ++s2) {
       for (int c1 = 0; c1 < NUM_COLOR; ++c1) {
         for (int c2 = 0; c2 < NUM_COLOR; ++c2) {
+          const int s1_s2_c2 =
+              s1 * (NUM_COLOR * 4 * NUM_COLOR) + s2 * NUM_COLOR + c2;
           for (int c3 = 0; c3 < NUM_COLOR; ++c3) {
-            ret(s1 * NUM_COLOR + c1, s2 * NUM_COLOR + c2) +=
-                cm(c1, c3) * m(s1 * NUM_COLOR + c3, s2 * NUM_COLOR + c2);
+            ret.p[s1_s2_c2 + c1 * (4 * NUM_COLOR)] +=
+                cm.p[c1 * NUM_COLOR + c3] *
+                m.p[s1_s2_c2 + c3 * (4 * NUM_COLOR)];
           }
         }
       }
@@ -569,9 +572,11 @@ qacc WilsonMatrixT<T> operator*(const WilsonMatrixT<T>& m,
     for (int s2 = 0; s2 < 4; ++s2) {
       for (int c1 = 0; c1 < NUM_COLOR; ++c1) {
         for (int c2 = 0; c2 < NUM_COLOR; ++c2) {
+          const int s1_c1_s2 =
+              (s1 * NUM_COLOR + c1) * (4 * NUM_COLOR) + s2 * NUM_COLOR;
           for (int c3 = 0; c3 < NUM_COLOR; ++c3) {
-            ret(s1 * NUM_COLOR + c1, s2 * NUM_COLOR + c2) +=
-                m(s1 * NUM_COLOR + c1, s2 * NUM_COLOR + c3) * cm(c3, c2);
+            ret.p[s1_c1_s2 + c2] +=
+                m.p[s1_c1_s2 + c3] * cm.p[c3 * NUM_COLOR + c2];
           }
         }
       }
@@ -588,14 +593,18 @@ qacc WilsonMatrixT<T> operator*(const SpinMatrixT<T>& sm,
   set_zero(ret);
   for (int s1 = 0; s1 < 4; ++s1) {
     for (int s3 = 0; s3 < 4; ++s3) {
-      if (sm(s1, s3) == 0.0) {
+      const ComplexT<T>& sm_s1_s3 = sm.p[s1 * 4 + s3];
+      if (sm_s1_s3 == 0.0) {
         continue;
       }
       for (int s2 = 0; s2 < 4; ++s2) {
         for (int c1 = 0; c1 < NUM_COLOR; ++c1) {
+          const int s1_c1_s2 =
+              (s1 * NUM_COLOR + c1) * (4 * NUM_COLOR) + s2 * NUM_COLOR;
+          const int s3_c1_s2 =
+              (s3 * NUM_COLOR + c1) * (4 * NUM_COLOR) + s2 * NUM_COLOR;
           for (int c2 = 0; c2 < NUM_COLOR; ++c2) {
-            ret(s1 * NUM_COLOR + c1, s2 * NUM_COLOR + c2) +=
-                sm(s1, s3) * m(s3 * NUM_COLOR + c1, s2 * NUM_COLOR + c2);
+            ret.p[s1_c1_s2 + c2] += sm_s1_s3 * m.p[s3_c1_s2 + c2];
           }
         }
       }
@@ -612,14 +621,18 @@ qacc WilsonMatrixT<T> operator*(const WilsonMatrixT<T>& m,
   set_zero(ret);
   for (int s1 = 0; s1 < 4; ++s1) {
     for (int s3 = 0; s3 < 4; ++s3) {
-      if (sm(s3, s1) == 0.0) {
+      const ComplexT<T>& sm_s3_s1 = sm.p[s3 * 4 + s1];
+      if (sm_s3_s1 == 0.0) {
         continue;
       }
       for (int s2 = 0; s2 < 4; ++s2) {
-        for (int c1 = 0; c1 < NUM_COLOR; ++c1) {
-          for (int c2 = 0; c2 < NUM_COLOR; ++c2) {
-            ret(s2 * NUM_COLOR + c2, s1 * NUM_COLOR + c1) +=
-                m(s2 * NUM_COLOR + c2, s3 * NUM_COLOR + c1) * sm(s3, s1);
+        for (int c2 = 0; c2 < NUM_COLOR; ++c2) {
+          const int s2_c2_s1 =
+              (s2 * NUM_COLOR + c2) * (4 * NUM_COLOR) + s1 * NUM_COLOR;
+          const int s2_c2_s3 =
+              (s2 * NUM_COLOR + c2) * (4 * NUM_COLOR) + s3 * NUM_COLOR;
+          for (int c1 = 0; c1 < NUM_COLOR; ++c1) {
+            ret.p[s2_c2_s1 + c1] += m.p[s2_c2_s3 + c1] * sm_s3_s1;
           }
         }
       }
@@ -634,11 +647,13 @@ qacc ComplexD matrix_trace(const SpinMatrixT<T>& sm, const WilsonMatrixT<T>& m)
   ComplexD ret = 0;
   for (int s1 = 0; s1 < 4; ++s1) {
     for (int s3 = 0; s3 < 4; ++s3) {
-      if (sm(s1, s3) == 0.0) {
+      const ComplexT<T>& sm_s1_s3 = sm.p[s1 * 4 + s3];
+      if (sm_s1_s3 == 0.0) {
         continue;
       }
+      const int s3_s1 = s3 * (NUM_COLOR * 4 * NUM_COLOR) + s1 * NUM_COLOR;
       for (int c1 = 0; c1 < NUM_COLOR; ++c1) {
-        ret += sm(s1, s3) * m(s3 * NUM_COLOR + c1, s1 * NUM_COLOR + c1);
+        ret += sm_s1_s3 * m.p[s3_s1 + c1 * (4 * NUM_COLOR + 1)];
       }
     }
   }
@@ -660,7 +675,8 @@ qacc WilsonVectorT<T> operator*(const ColorMatrixT<T>& cm,
   for (int s1 = 0; s1 < 4; ++s1) {
     for (int c1 = 0; c1 < NUM_COLOR; ++c1) {
       for (int c2 = 0; c2 < NUM_COLOR; ++c2) {
-        ret(s1 * NUM_COLOR + c1) += cm(c1, c2) * m(s1 * NUM_COLOR + c2);
+        ret.p[s1 * NUM_COLOR + c1] +=
+            cm.p[c1 * NUM_COLOR + c2] * m.p[s1 * NUM_COLOR + c2];
       }
     }
   }
@@ -675,11 +691,13 @@ qacc WilsonVectorT<T> operator*(const SpinMatrixT<T>& sm,
   set_zero(ret);
   for (int s1 = 0; s1 < 4; ++s1) {
     for (int s2 = 0; s2 < 4; ++s2) {
-      if (sm(s1, s2) == 0.0) {
+      const ComplexT<T>& sm_s1_s2 = sm.p[s1 * 4 + s2];
+      if (sm_s1_s2 == 0.0) {
         continue;
       }
       for (int c1 = 0; c1 < NUM_COLOR; ++c1) {
-        ret(s1 * NUM_COLOR + c1) += sm(s1, s2) * m(s2 * NUM_COLOR + c1);
+        ret.p[s1 * NUM_COLOR + c1] +=
+            sm.p[s1 * 4 + s2] * m.p[s2 * NUM_COLOR + c1];
       }
     }
   }

@@ -4,6 +4,8 @@ all: run
 
 tests = \
 		auto-cexprs.log \
+		auto-cexprs-more.log \
+		auto-cexprs-kpipi.log \
 		qlat-id-node.log \
 		set-rand.log \
 		make-sample-gauge-field.log \
@@ -18,8 +20,6 @@ tests = \
 		hmc-pions.log \
 		hmc-pure-gauge-flowed.log \
 		qcd-utils.log \
-		auto-cexprs-more.log \
-		auto-cexprs-kpipi.log \
 		free-invert.log
 
 tests_gpt = \
