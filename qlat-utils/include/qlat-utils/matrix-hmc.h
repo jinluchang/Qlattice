@@ -8,7 +8,7 @@ namespace qlat
 {  //
 
 template <class T, int N>
-void normalize_array_real(Array<T, N> p)
+qacc void normalize_array_real(Array<T, N> p)
 //------------------------------------------------------------------
 // Few routines that are needed by the Unitarize routine
 //------------------------------------------------------------------
@@ -26,7 +26,7 @@ void normalize_array_real(Array<T, N> p)
 }
 
 template <class T, int N>
-void normalize_array_complex(Array<ComplexT<T>, N> p)
+qacc void normalize_array_complex(Array<ComplexT<T>, N> p)
 //------------------------------------------------------------------
 // Few routines that are needed by the Unitarize routine
 //------------------------------------------------------------------
@@ -36,7 +36,7 @@ void normalize_array_complex(Array<ComplexT<T>, N> p)
 }
 
 template <class T, int N>
-void orthogonalize_array_complex(Array<T, N> p2, const Array<T, N> p1)
+qacc void orthogonalize_array_complex(Array<T, N> p2, const Array<T, N> p1)
 //	v2' = v2 - v1 * (v1^*, v2)
 // 	then	(v1^*, v2') = 0
 {
@@ -52,7 +52,7 @@ void orthogonalize_array_complex(Array<T, N> p2, const Array<T, N> p1)
 }
 
 template <class T>
-void cross_product_conj(Array<T, 3> v3, const Array<T, 3> v1,
+qacc void cross_product_conj(Array<T, 3> v3, const Array<T, 3> v1,
                         const Array<T, 3> v2)
 // v3 = ( v1 x v2 )^*
 {
