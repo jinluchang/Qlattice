@@ -25,6 +25,8 @@ source qcore/set-prefix.sh $name
     time-run pip3 install $opts lz4
     time-run pip3 install $opts pycuda
     time-run pip3 install $opts pytools
+    time-run pip3 install $opts Sphinx
+    time-run pip3 install $opts myst-parser
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"

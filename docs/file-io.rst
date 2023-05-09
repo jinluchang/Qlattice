@@ -1,5 +1,5 @@
-File formats
-------------
+File IO
+-------
 
 .. toctree::
    :maxdepth: 1

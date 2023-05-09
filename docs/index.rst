@@ -11,7 +11,7 @@ Qlattice
 
    contents/install.md
 
-   file-format.rst
+   file-io.rst
 
    contents/env-vars.md
 
