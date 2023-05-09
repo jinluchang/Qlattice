@@ -57,40 +57,6 @@ The ``8`` 32-bit unsigned integers are merged into ``4`` 64-bit unsigned integer
 
 Relevant source files: ``qlat-utils/include/qlat-utils/rng-state.h`` and ``qlat-utils/lib/rng-state.cpp``
 
-QAR and IO
-----------
-
-.. autosummary::
-   :toctree: generated
-
-   list_qar
-   qar_create_info
-   qar_extract_info
-   get_qar_multi_vol_max_size
-   qcat
-   qcat_bytes
-   qcopy_file_info
-   does_file_exist
-   does_file_exist_qar
-   does_regular_file_exist_qar
-
-LatData
--------
-
-Multi-dimension array data structure for IO.
-
-.. autosummary::
-   :recursive:
-   :toctree: generated
-
-   LatData
-   LatData.info
-   LatData.set_info
-   LatData.to_numpy
-   LatData.from_numpy
-   mk_lat_data
-   load_lat_data
-
 Coordinate
 ----------
 

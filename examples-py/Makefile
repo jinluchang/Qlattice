@@ -13,6 +13,7 @@ tests = \
 		qar.log \
 		lat-io.log \
 		lat-io-test1.log \
+		lat-io-test2.log \
 		field-utils.log \
 		field-selection.log \
 		selected-field.log \
