@@ -1,17 +1,16 @@
 File IO
 -------
 
-.. toctree::
-   :maxdepth: 1
-
-   contents/latio-format.md
-   contents/qar-format.md
-
 .. module:: qlat_utils
 .. module:: qlat
 
-QAR and general IO
-^^^^^^^^^^^^^^^^^^
+QAR
+^^^
+
+.. toctree::
+   :maxdepth: 1
+
+   contents/qar-format.md
 
 .. autosummary::
    :toctree: generated
@@ -34,6 +33,8 @@ Multi-dimension array data structure for IO.
 
 .. toctree::
    :maxdepth: 1
+
+   contents/latio-format.md
 
 .. autosummary::
    :recursive:
