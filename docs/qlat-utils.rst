@@ -167,100 +167,23 @@ Jackknife method
    g_jk_size
    g_jk_blocking_func
 
-Example code that uses the randomized Super-Jackknife method::
+Example for the random Super-Jackknife method: ``examples-py/jackknife-random.py``
 
-    import qlat_utils as q
-    import numpy as np
+.. literalinclude:: ../examples-py/jackknife-random.py
 
-    q.default_g_jk_kwargs["jk_type"] = "rjk"
-    q.default_g_jk_kwargs["n_rand_sample"] = 1024
-    q.default_g_jk_kwargs["rng_state"] = q.RngState("rejk")
+Example for the conventional Super-Jackknife method:: ``examples-py/jackknife-super.py``
 
-    rs = q.RngState("seed")
-    job_tag = "test"
-    trajs = range(25)
-
-    data_list = np.zeros((len(trajs), 5,)) # can be list or np.array
-    rs.g_rand_fill(data_list)
-    jk_list = q.g_jk(data_list)
-    jk_idx_list = [ "avg", ] + [ (job_tag, traj) for traj in trajs ]
-    jk_list = q.g_rejk(jk_list, jk_idx_list)
-    avg, err = q.g_jk_avg_err(jk_list)
-
-    print(avg)
-    print(err)
-
-Example code that uses the conventional Super-Jackknife method::
-
-    import qlat_utils as q
-    import numpy as np
-    import functools
-
-    q.default_g_jk_kwargs["jk_type"] = "super"
-    @functools.cache
-    def get_all_jk_idx():
-        all_job_tag = [ 'test1', 'test2', ]
-        jk_idx_list = [ 'avg', ]
-        for job_tag in all_job_tag:
-            trajs = get_trajs(job_tag)
-            for traj in trajs:
-                jk_idx_list.append((job_tag, traj,))
-        return jk_idx_list
-    q.default_g_jk_kwargs["get_all_jk_idx"] = get_all_jk_idx
-
-    def get_trajs(job_tag):
-        return list(range(25))
-
-    rs = q.RngState("seed")
-    job_tag = "test1"
-    trajs = list(range(25))
-
-    data_list = np.zeros((len(trajs), 5,)) # can be list or np.array
-    rs.g_rand_fill(data_list)
-    jk_list = q.g_jk(data_list)
-    jk_idx_list = [ "avg", ] + [ (job_tag, traj) for traj in trajs ]
-    jk_list = q.g_rejk(jk_list, jk_idx_list)
-    avg, err = q.g_jk_avg_err(jk_list)
-
-    print(avg)
-    print(err)
+.. literalinclude:: ../examples-py/jackknife-super.py
 
 Plotting
 ^^^^^^^^
-
-Example code to make a plot::
-
-    import numpy as np
-    import qlat as q
-
-    q.qplot.plot_save_display_width = 500
-
-    x = np.arange(31) * (6 / 30) - 3
-    y = np.cos(x)
-    yerr = 0.1 / (1 + x**2)
-    dts = {
-        "table.txt": q.azip(x, y, yerr),
-    }
-
-    q.plot_view(
-        fn = None,
-        dts = dts,
-        cmds = [
-            "set size 0.8, 1.0",
-            "set key tm",
-            "set xlabel '$x$'",
-            "set ylabel '$y$'",
-        ],
-        lines = [
-            "plot [-3:3] [-1.5:1.5]",
-            "0 not",
-            "sin(x) w l t '$y = \\sin(x)$'",
-            "'table.txt' w yerrorb t '$y = \\cos(x)$'",
-        ],
-    )
 
 .. autosummary::
    :toctree: generated
 
    plot_save
    plot_view
+
+Example code to make a plot: ``examples-py/qplot.py``
+
+.. literalinclude:: ../examples-py/qplot.py
