@@ -251,7 +251,7 @@ T& py_convert_type(PyObject* in)
 // py_convert_type<Geometry>(in);
 // py_convert_type<LatData>(in);
 // py_convert_type<RngState>(in);
-// py_convert_type<PointSelection>(in);
+// py_convert_type<PointsSelection>(in);
 // py_convert_type<CommPlan>(in);
 // py_convert_type<FieldSelection>(in);
 // specifications:
@@ -266,7 +266,7 @@ T& py_convert_type(PyObject* in)
 template <class T>
 T& py_convert_type(PyObject* in, const std::string& attr)
 // interface
-// py_convert_type<PointSelection>(in, "psel")
+// py_convert_type<PointsSelection>(in, "psel")
 // py_convert_type<FieldSelection>(in, "fsel")
 // py_convert_type<Geometry>(in, "geo")
 {

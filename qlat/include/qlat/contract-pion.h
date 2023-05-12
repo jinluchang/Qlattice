@@ -34,7 +34,7 @@ inline LatData contract_pion(const Propagator4d& prop, const int tslice_src)
 }
 
 inline LatData contract_pion(const PselProp& prop, const int tslice_src,
-                             const Geometry& geo, const PointSelection& psel)
+                             const Geometry& geo, const PointsSelection& psel)
 {
   TIMER_VERBOSE("contract_pion(ps_prop,tsrc,geo,psel)");
   const long n_points = prop.n_points;

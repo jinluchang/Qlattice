@@ -101,7 +101,7 @@ struct momentum_dat{
   std::string file_name;
   std::vector<std::string > fn_list;
 
-  ////PointSelection pconf;
+  ////PointsSelection pconf;
   FieldSelection fsel;
   FieldSelection fsel_1;
   ////write_float_from_double(sfw, tag, sf, sbs);
@@ -324,14 +324,14 @@ struct momentum_dat{
     //});
     //sum_all_size(pconf_vec.data(), pconf_vec.size(), 0);
 
-    //PointSelection pconf;
+    //PointsSelection pconf;
     //pconf.resize(Nmpi * Mvol);
     //qthread_for(ai , Nmpi * Mvol , {
     //  int* src = &pconf_vec[ai * 4 + 0];
     //  for(unsigned int i = 0; i < 4 ; i++){pconf[ai][i] = src[i];}
     //});
 
-    PointSelection pconf;pconf.resize(Mvol);
+    PointsSelection pconf;pconf.resize(Mvol);
     if(Mvol != 0)
     qthread_for(ai , Mvol , {
       const long isp = mapA[ai];

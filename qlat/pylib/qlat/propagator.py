@@ -25,7 +25,7 @@ class Prop(FieldWilsonMatrix):
 
     def sparse(self, sel):
         # deprecated
-        if isinstance(sel, PointSelection):
+        if isinstance(sel, PointsSelection):
             psel = sel
             sp = PselProp(psel)
             set_selected_points(sp, self)
@@ -58,7 +58,7 @@ class SelProp(SelectedFieldWilsonMatrix):
 
     def sparse(self, sel):
         # deprecated
-        if isinstance(sel, PointSelection):
+        if isinstance(sel, PointsSelection):
             psel = sel
             sp = PselProp(psel)
             set_selected_points(sp, self)
@@ -121,7 +121,7 @@ def mk_rand_u1_src(sel, rs):
     if isinstance(sel, FieldSelection):
         fsel = sel
         c.set_rand_u1_src_fsel(prop_src, fu1, fsel, rs)
-    elif isinstance(sel, PointSelection):
+    elif isinstance(sel, PointsSelection):
         psel = sel
         geo = psel.geo
         assert isinstance(geo, Geometry)
@@ -139,7 +139,7 @@ def get_rand_u1_sol(prop_sol, fu1, sel):
         s_prop = SelProp(fsel)
         c.set_rand_u1_sol_fsel(s_prop, prop_sol, fu1, fsel)
         return s_prop
-    elif isinstance(sel, PointSelection):
+    elif isinstance(sel, PointsSelection):
         psel = sel
         sp_prop = PselProp(psel)
         c.set_rand_u1_sol_psel(sp_prop, prop_sol, fu1, psel)

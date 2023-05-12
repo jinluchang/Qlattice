@@ -6,9 +6,9 @@ EXPORT(mk_psel, {
   if (!PyArg_ParseTuple(args, "|O", &p_coordinate_list)) {
     return NULL;
   }
-  PointSelection* ppsel = new PointSelection();
+  PointsSelection* ppsel = new PointsSelection();
   if (NULL != p_coordinate_list) {
-    PointSelection& psel = *ppsel;
+    PointsSelection& psel = *ppsel;
     py_convert(psel, p_coordinate_list);
   }
   return py_convert((void*)ppsel);
@@ -16,12 +16,12 @@ EXPORT(mk_psel, {
 
 EXPORT(free_psel, {
   using namespace qlat;
-  return free_obj<PointSelection>(args);
+  return free_obj<PointsSelection>(args);
 })
 
 EXPORT(set_psel, {
   using namespace qlat;
-  return set_obj<PointSelection>(args);
+  return set_obj<PointsSelection>(args);
 })
 
 EXPORT(load_psel, {
@@ -31,7 +31,7 @@ EXPORT(load_psel, {
   if (!PyArg_ParseTuple(args, "OO", &p_psel, &p_path)) {
     return NULL;
   }
-  PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  PointsSelection& psel = py_convert_type<PointsSelection>(p_psel);
   std::string path;
   py_convert(path, p_path);
   psel = load_point_selection_info(path);
@@ -45,7 +45,7 @@ EXPORT(save_psel, {
   if (!PyArg_ParseTuple(args, "OO", &p_psel, &p_path)) {
     return NULL;
   }
-  const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  const PointsSelection& psel = py_convert_type<PointsSelection>(p_psel);
   std::string path;
   py_convert(path, p_path);
   save_point_selection_info(psel, path);
@@ -58,7 +58,7 @@ EXPORT(get_n_points_psel, {
   if (!PyArg_ParseTuple(args, "O", &p_psel)) {
     return NULL;
   }
-  const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  const PointsSelection& psel = py_convert_type<PointsSelection>(p_psel);
   const long n_points = psel.size();
   return py_convert(n_points);
 })
@@ -69,7 +69,7 @@ EXPORT(mk_list_psel, {
   if (!PyArg_ParseTuple(args, "O", &p_psel)) {
     return NULL;
   }
-  const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  const PointsSelection& psel = py_convert_type<PointsSelection>(p_psel);
   return py_convert(psel);
 })
 
@@ -80,7 +80,7 @@ EXPORT(set_list_psel, {
   if (!PyArg_ParseTuple(args, "OO", &p_psel, &p_coordinate_list)) {
     return NULL;
   }
-  PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  PointsSelection& psel = py_convert_type<PointsSelection>(p_psel);
   py_convert(psel, p_coordinate_list);
   Py_RETURN_NONE;
 })
@@ -94,7 +94,7 @@ EXPORT(set_rand_psel, {
   if (!PyArg_ParseTuple(args, "OOOl", &p_psel, &p_rng, &p_total_site, &n_points)) {
     return NULL;
   }
-  PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  PointsSelection& psel = py_convert_type<PointsSelection>(p_psel);
   const RngState& rs = py_convert_type<RngState>(p_rng);
   Coordinate total_site;
   py_convert(total_site, p_total_site);
@@ -110,7 +110,7 @@ EXPORT(set_tslice_psel, {
   if (!PyArg_ParseTuple(args, "Ol|i", &p_psel, &t_size, &t_dir)) {
     return NULL;
   }
-  PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  PointsSelection& psel = py_convert_type<PointsSelection>(p_psel);
   psel = mk_tslice_point_selection(t_size, t_dir);
   Py_RETURN_NONE;
 })
@@ -123,7 +123,7 @@ EXPORT(get_coordinate_from_idx_psel, {
   if (!PyArg_ParseTuple(args, "Ol", &p_psel, &idx)) {
     return NULL;
   }
-  const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  const PointsSelection& psel = py_convert_type<PointsSelection>(p_psel);
   return py_convert(psel[idx]);
 })
 
@@ -214,7 +214,7 @@ EXPORT(add_psel_fsel, {
     return NULL;
   }
   FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
-  PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  PointsSelection& psel = py_convert_type<PointsSelection>(p_psel);
   add_field_selection(fsel.f_rank, psel, rank_psel);
   Py_RETURN_NONE;
 })
@@ -290,7 +290,7 @@ EXPORT(set_psel_fsel, {
   if (!PyArg_ParseTuple(args, "OO", &p_psel, &p_fsel)) {
     return NULL;
   }
-  PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  PointsSelection& psel = py_convert_type<PointsSelection>(p_psel);
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   psel = psel_from_fsel(fsel);
   Py_RETURN_NONE;
@@ -303,7 +303,7 @@ EXPORT(set_psel_fsel_local, {
   if (!PyArg_ParseTuple(args, "OO", &p_psel, &p_fsel)) {
     return NULL;
   }
-  PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  PointsSelection& psel = py_convert_type<PointsSelection>(p_psel);
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   psel = psel_from_fsel_local(fsel);
   Py_RETURN_NONE;

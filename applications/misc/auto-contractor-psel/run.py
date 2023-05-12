@@ -368,7 +368,7 @@ def get_strange_psrc_psel(pi):
     for idx, xg, inv_type, inv_acc in pi:
         if inv_type == 1 and inv_acc == 0:
             coordinate_list.append(xg)
-    return q.PointSelection(coordinate_list)
+    return q.PointsSelection(coordinate_list)
 
 def rel_mod(x, size):
     x = (x + 2 * size) % size

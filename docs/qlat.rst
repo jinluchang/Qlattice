@@ -19,6 +19,6 @@ qlat
    SelectedField
    SelectedFieldBase
 
-   PointSelection
+   PointsSelection
    SelectedPoints
    SelectedPointsBase

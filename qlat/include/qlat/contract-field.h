@@ -194,7 +194,7 @@ inline void contract_meson_vv_unshifted_acc_x(
 inline void contract_meson_vv_unshifted(
     std::vector<SelectedField<Complex> >& sfs, const WallSrcProps& wsp1,
     const WallSrcProps& wsp2, const SelProp& prop3_x_y, const Coordinate& xg_y,
-    const long xg_y_psel_idx, const int tsep, const PointSelection& psel,
+    const long xg_y_psel_idx, const int tsep, const PointsSelection& psel,
     const FieldSelection& fsel)
 // fsel.prob is NOT accounted.
 {
@@ -243,7 +243,7 @@ inline void contract_meson_vv_acc(
     FieldM<Complex, 8 * 8>& decay, FieldM<Complex, 8 * 8>& fission,
     const WallSrcProps& wsp1, const WallSrcProps& wsp2,
     const SelProp& prop3_x_y, const Coordinate& xg_y, const long xg_y_psel_idx,
-    const int tsep, const PointSelection& psel, const FieldSelection& fsel,
+    const int tsep, const PointsSelection& psel, const FieldSelection& fsel,
     const ShiftShufflePlan& ssp)
 // xg_y = psel[xg_y_psel_idx] is the point src location for prop3_x_y
 // ssp = make_shift_shuffle_plan(fsel, -xg_y);
@@ -409,7 +409,7 @@ inline void contract_meson_vv_meson_unshifted(
     std::vector<SelectedField<Complex> >& meson_vv_meson,
     const WallSrcProps& wsp1, const WallSrcProps& wsp2,
     const WallSrcProps& wsp3, const SelProp& prop4_x_y, const Coordinate& xg_y,
-    const long xg_y_psel_idx, const int tsep, const PointSelection& psel,
+    const long xg_y_psel_idx, const int tsep, const PointsSelection& psel,
     const FieldSelection& fsel)
 // fsel.prob is NOT accounted.
 {
@@ -460,7 +460,7 @@ inline void contract_meson_vv_meson_acc(
     FieldM<Complex, 8 * 8>& forward, FieldM<Complex, 8 * 8>& backward,
     const WallSrcProps& wsp1, const WallSrcProps& wsp2,
     const WallSrcProps& wsp3, const SelProp& prop4_x_y, const Coordinate& xg_y,
-    const long xg_y_psel_idx, const int tsep, const PointSelection& psel,
+    const long xg_y_psel_idx, const int tsep, const PointsSelection& psel,
     const FieldSelection& fsel, const ShiftShufflePlan& ssp)
 // xg_y = psel[xg_y_psel_idx] is the point src location for prop3_x_y
 // ssp = make_shift_shuffle_plan(fsel, -xg_y);

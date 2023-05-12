@@ -101,6 +101,16 @@ FieldBase
    FieldBase.as_field
    FieldBase.from_field
 
+FieldSelection
+^^^^^^^^^^^^^^
+
+.. autosummary::
+   :recursive:
+   :toctree: generated
+
+   FieldSelection
+
+
 SelectedFieldBase
 ^^^^^^^^^^^^^^^^^
 
@@ -123,6 +133,15 @@ SelectedFieldBase
    SelectedFieldBase.to_from_endianness
    SelectedFieldBase.as_field
    SelectedFieldBase.from_field
+
+PointsSelection
+^^^^^^^^^^^^^^
+
+.. autosummary::
+   :recursive:
+   :toctree: generated
+
+   PointsSelection
 
 SelectedPointsBase
 ^^^^^^^^^^^^^^^^^

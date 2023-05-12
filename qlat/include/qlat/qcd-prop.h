@@ -282,7 +282,7 @@ inline void set_wall_src_propagator(Propagator4d& prop, const Inverter& inv,
 }
 
 inline void set_rand_u1_src_psel(Propagator4d& prop, FieldM<Complex, 1>& fu1,
-                                 const PointSelection& psel,
+                                 const PointsSelection& psel,
                                  const Geometry& geo_, const RngState& rs)
 {
   TIMER_VERBOSE("set_rand_u1_src_psel");
@@ -309,7 +309,7 @@ inline void set_rand_u1_src_psel(Propagator4d& prop, FieldM<Complex, 1>& fu1,
 inline void set_rand_u1_sol_psel(SelectedPoints<WilsonMatrix>& sp_prop,
                                  const Propagator4d& prop,
                                  const FieldM<Complex, 1>& fu1,
-                                 const PointSelection& psel)
+                                 const PointsSelection& psel)
 // calculate self loop at psel locations
 {
   TIMER_VERBOSE("set_rand_u1_sol_psel")
@@ -583,7 +583,7 @@ inline void set_t_range_flip_tpbc_with_tslice(int& t_start, int& t_stop,
 }
 
 inline void flip_tpbc_with_tslice(SelectedPoints<WilsonMatrix>& ps_prop,
-                                  const PointSelection& psel,
+                                  const PointsSelection& psel,
                                   const int tslice_flip_tpbc, const int t_size)
 {
   if (tslice_flip_tpbc < 0) {

@@ -999,7 +999,7 @@ def run_prop(job_tag, traj, get_gf, get_gt, get_eig):
             [ get_load_path(f"prop-wsrc-{inv_type}/{job_tag}/traj={traj}") for inv_type in [0, 1, 2,] ]
     if all(map(lambda x : x is not None, path_prop_list)):
         total_site = ru.get_total_site(job_tag)
-        psel = q.PointSelection(get_all_points(total_site))
+        psel = q.PointsSelection(get_all_points(total_site))
         psel_pos_dict = dict([ (tuple(pos), i) for i, pos in enumerate(psel.to_list()) ])
         load_prop_wsrc_all(job_tag, traj, "l",
                 f"prop-wsrc-0/{job_tag}/traj={traj}",

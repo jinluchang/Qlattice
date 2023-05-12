@@ -211,7 +211,7 @@ def SelectedField(type ctype, FieldSelection fsel, int multiplicity = 0):
     field = FieldType(fsel, multiplicity)
     return field
 
-def SelectedPoints(type ctype, PointSelection psel, int multiplicity = 0):
+def SelectedPoints(type ctype, PointsSelection psel, int multiplicity = 0):
     assert ctype in field_type_dict
     FieldType = selected_points_type_dict[ctype]
     field = FieldType(psel, multiplicity)
@@ -338,8 +338,8 @@ cdef class FieldBase:
         deprecated
         """
         q.displayln_info("Field.sparse: deprecated")
-        from qlat.field_selection import PointSelection, FieldSelection
-        if isinstance(sel, PointSelection):
+        from qlat.field_selection import PointsSelection, FieldSelection
+        if isinstance(sel, PointsSelection):
             from qlat.selected_points import SelectedPoints, set_selected_points
             psel = sel
             sp = SelectedPoints(self.ctype, psel)
@@ -677,7 +677,7 @@ def mk_merged_fields_ms(fms):
 
 ### -------------------------------------------------------------------
 
-cdef class PointSelection:
+cdef class PointsSelection:
 
     def __cinit__(self):
         self.cdata = <long>&(self.xx)
@@ -692,7 +692,7 @@ cdef class PointSelection:
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
         n_points = len(coordinate_list)
-        self.xx = cc.PointSelection(n_points)
+        self.xx = cc.PointsSelection(n_points)
         for i in range(n_points):
             c = coordinate_list[i]
             if not isinstance(c, Coordinate):
@@ -728,13 +728,13 @@ cdef class PointSelection:
     def __releasebuffer__(self, Py_buffer *buffer):
         self.view_count -= 1
 
-    def __imatmul__(self, PointSelection v1):
+    def __imatmul__(self, PointsSelection v1):
         self.geo = v1.geo
         self.xx = v1.xx
         return self
 
     def copy(self):
-        x = PointSelection()
+        x = PointsSelection()
         x @= self
         return x
 
@@ -852,12 +852,12 @@ cdef class FieldSelection:
         return fsel
 
     def to_psel(self):
-        psel = PointSelection(None, self.geo())
+        psel = PointsSelection(None, self.geo())
         c.set_psel_fsel(psel, self)
         return psel
 
     def to_psel_local(self):
-        psel = PointSelection(None, self.geo())
+        psel = PointsSelection(None, self.geo())
         c.set_psel_fsel_local(psel, self)
         return psel
 
@@ -1001,7 +1001,7 @@ cdef class SelectedFieldBase:
         deprecated
         """
         q.displayln_info("SelectedField.sparse: deprecated")
-        if isinstance(sel, PointSelection):
+        if isinstance(sel, PointsSelection):
             from qlat.selected_points import SelectedPoints, set_selected_points
             psel = sel
             sp = SelectedPoints(self.ctype, psel)
@@ -1144,7 +1144,9 @@ cdef class SelectedFieldBase:
         return f1
 
     def glb_sum_tslice(self, *, t_dir = 3):
-        # return SelectedPoints(self.ctype, get_psel_tslice(self.total_site(), t_dir = t_dir))
+        """
+        return SelectedPoints(self.ctype, get_psel_tslice(self.total_site(), t_dir = t_dir))
+        """
         from qlat.selected_points import SelectedPoints, get_psel_tslice
         psel = get_psel_tslice(self.total_site(), t_dir = t_dir)
         sp = SelectedPoints(self.ctype, psel)

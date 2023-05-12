@@ -6,7 +6,7 @@
 namespace qlat
 {  //
 
-void add_field_selection(FieldM<int64_t, 1>& f_rank, const PointSelection& psel,
+void add_field_selection(FieldM<int64_t, 1>& f_rank, const PointsSelection& psel,
                          const long rank_psel = 1024L * 1024L * 1024L * 1024L *
                                                 1024L);
 
@@ -46,13 +46,13 @@ void set_field_selection(FieldSelection& fsel, const Coordinate& total_site,
 
 void set_field_selection(FieldSelection& fsel, const Coordinate& total_site,
                          const long n_per_tslice, const RngState& rs,
-                         const PointSelection& psel);
+                         const PointsSelection& psel);
 
 bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2);
 
-PointSelection psel_from_fsel(const FieldSelection& fsel);
+PointsSelection psel_from_fsel(const FieldSelection& fsel);
 
-PointSelection psel_from_fsel_local(const FieldSelection& fsel);
+PointsSelection psel_from_fsel_local(const FieldSelection& fsel);
 
 void set_selected_gindex(SelectedField<long>& sfgi, const FieldSelection& fsel);
 
@@ -257,7 +257,7 @@ void set_selected_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
 
 template <class M>
 void set_selected_field(SelectedField<M>& sf, const SelectedPoints<M>& sp,
-                        const FieldSelection& fsel, const PointSelection& psel)
+                        const FieldSelection& fsel, const PointsSelection& psel)
 // Does not clear sf's original value if not assigned
 {
   TIMER("set_selected_field(sf,sp,fsel,psel)");
@@ -287,7 +287,7 @@ void set_selected_field(SelectedField<M>& sf, const SelectedPoints<M>& sp,
 
 template <class M>
 void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
-                         const PointSelection& psel, const FieldSelection& fsel)
+                         const PointsSelection& psel, const FieldSelection& fsel)
 // only assign available points
 {
   TIMER("set_selected_points(sp,sf,psel,fsel)");
@@ -342,7 +342,7 @@ void set_field_selected(Field<M>& f, const SelectedField<M>& sf,
 
 template <class M>
 bool is_consistent(const SelectedPoints<M>& sp, const SelectedField<M>& sf,
-                   const PointSelection& psel, const FieldSelection& fsel)
+                   const PointsSelection& psel, const FieldSelection& fsel)
 {
   TIMER("is_consistent(sp,sf)");
   qassert(is_consistent(sp, psel));

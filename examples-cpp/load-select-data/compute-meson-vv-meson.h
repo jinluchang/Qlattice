@@ -49,7 +49,7 @@ inline void compute_meson_vv_meson_type(const std::string& job_tag,
     return;
   }
   TIMER_VERBOSE("compute_meson_vv_meson_type");
-  const PointSelection& psel = get_point_selection(job_tag, traj);
+  const PointsSelection& psel = get_point_selection(job_tag, traj);
   const long n_points = psel.size();
   const FieldSelection& fsel = get_field_selection(job_tag, traj);
   const int tsep = tsep_op_wall_src(job_tag);

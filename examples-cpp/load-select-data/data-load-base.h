@@ -30,7 +30,7 @@ inline bool get_does_file_exist(const std::string& fn)
   return cache[key];
 }
 
-typedef Cache<std::string, PointSelection> PointSelectionCache;
+typedef Cache<std::string, PointsSelection> PointsSelectionCache;
 
 typedef Cache<std::string, FieldSelection> FieldSelectionCache;
 
@@ -54,9 +54,9 @@ typedef std::map<std::string, std::vector<PointInfo> > PointInfoMap;
 
 typedef Cache<std::string, PointInfoMap> PointInfoMapCache;
 
-inline PointSelectionCache& get_point_selection_cache()
+inline PointsSelectionCache& get_point_selection_cache()
 {
-  static PointSelectionCache cache("PointSelectionCache", 8, 2);
+  static PointsSelectionCache cache("PointsSelectionCache", 8, 2);
   return cache;
 }
 
@@ -120,11 +120,11 @@ inline PointInfoMapCache& get_point_info_map_cache()
   return cache;
 }
 
-inline const PointSelection& get_point_selection(const std::string& job_tag,
+inline const PointsSelection& get_point_selection(const std::string& job_tag,
                                                  const int traj)
 {
   const std::string key = ssprintf("%s,%d,psel", job_tag.c_str(), traj);
-  PointSelectionCache& cache = get_point_selection_cache();
+  PointsSelectionCache& cache = get_point_selection_cache();
   if (not cache.has(key)) {
     TIMER_VERBOSE("get_point_selection");
     const std::string fn_point_selection =
@@ -163,7 +163,7 @@ inline const ShuffledBitSet& get_shuffled_bit_set(const std::string& job_tag,
   if (not cache.has(key)) {
     TIMER_VERBOSE("get_shuffled_bit_set");
     const FieldSelection& fsel = get_field_selection(job_tag, traj);
-    const PointSelection& psel = get_point_selection(job_tag, traj);
+    const PointsSelection& psel = get_point_selection(job_tag, traj);
     FieldSelection fselc;
     fselc.f_rank = fsel.f_rank;
     add_field_selection(fselc.f_rank, psel);
@@ -284,7 +284,7 @@ inline void display_fields_wsrc(const std::string& job_tag, const int traj,
 
 inline long load_prop(PselProp& ps_prop, SelProp& s_prop,
                       const std::string& path, const std::string& fn,
-                      const PointSelection& psel, const FieldSelection& fsel)
+                      const PointsSelection& psel, const FieldSelection& fsel)
 {
   TIMER_VERBOSE("load_prop(ps_prop,s_prop,path,fn,psel,fsel)");
   displayln_info(
@@ -301,7 +301,7 @@ inline long load_prop(PselProp& ps_prop, SelProp& s_prop,
 
 inline long load_prop(PselProp& ps_prop, SelProp& s_prop,
                       const std::string& path, const std::string& fn,
-                      const PointSelection& psel, const FieldSelection& fsel,
+                      const PointsSelection& psel, const FieldSelection& fsel,
                       const ShuffledBitSet& sbs)
 {
   TIMER_VERBOSE("load_prop(ps_prop,s_prop,path,fn,psel,fsel,sbs)");
@@ -380,7 +380,7 @@ inline const SelProp& get_prop_psrc(const std::string& job_tag, const int traj,
     SelProp& s_prop = s_cache[key];
     const std::string path = get_prop_psrc_path(job_tag, traj, type);
     const std::string fn = get_psrc_tag(xg, type, accuracy);
-    const PointSelection& psel = get_point_selection(job_tag, traj);
+    const PointsSelection& psel = get_point_selection(job_tag, traj);
     const FieldSelection& fsel = get_field_selection(job_tag, traj);
     const ShuffledBitSet& sbs = get_shuffled_bit_set(job_tag, traj, path);
     load_prop(ps_prop, s_prop, path, fn, psel, fsel, sbs);
@@ -434,7 +434,7 @@ inline const SelProp& get_prop_wsrc(const std::string& job_tag, const int traj,
     SelProp& s_prop = s_cache[key];
     const std::string path = get_prop_wsrc_path(job_tag, traj, type);
     const std::string fn = get_wsrc_tag(tslice, type, accuracy);
-    const PointSelection& psel = get_point_selection(job_tag, traj);
+    const PointsSelection& psel = get_point_selection(job_tag, traj);
     const FieldSelection& fsel = get_field_selection(job_tag, traj);
     const ShuffledBitSet& sbs = get_shuffled_bit_set(job_tag, traj, path);
     load_prop(ps_prop, s_prop, path, fn, psel, fsel, sbs);
@@ -491,7 +491,7 @@ inline const SelProp& get_prop_psrc_exact(const std::string& job_tag,
     SelProp& s_prop = s_cache[key];
     const std::string path = get_prop_psrc_exact_path(job_tag, traj);
     const std::string fn = get_psrc_tag(xg, type, accuracy);
-    const PointSelection& psel = get_point_selection(job_tag, traj);
+    const PointsSelection& psel = get_point_selection(job_tag, traj);
     const FieldSelection& fsel = get_field_selection(job_tag, traj);
     const ShuffledBitSet& sbs = get_shuffled_bit_set(job_tag, traj, path);
     load_prop(ps_prop, s_prop, path, fn, psel, fsel, sbs);

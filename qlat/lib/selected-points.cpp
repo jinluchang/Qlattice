@@ -5,9 +5,9 @@
 namespace qlat
 {  //
 
-PointSelection mk_tslice_point_selection(const int t_size, const int t_dir)
+PointsSelection mk_tslice_point_selection(const int t_size, const int t_dir)
 {
-  PointSelection psel;
+  PointsSelection psel;
   psel.resize(t_size);
   qassert(0 <= t_dir and t_dir < 4);
   qthread_for(idx, t_size, {
@@ -17,24 +17,24 @@ PointSelection mk_tslice_point_selection(const int t_size, const int t_dir)
   return psel;
 }
 
-PointSelection mk_tslice_point_selection(const Coordinate& total_site,
+PointsSelection mk_tslice_point_selection(const Coordinate& total_site,
                                          const int t_dir)
 {
   return mk_tslice_point_selection(total_site[t_dir], t_dir);
 }
 
-PointSelection mk_random_point_selection(const Coordinate& total_site,
+PointsSelection mk_random_point_selection(const Coordinate& total_site,
                                          const long num, const RngState& rs,
                                          const long pool_factor)
 // same rs for all node for uniform result
 {
   TIMER_VERBOSE("mk_random_point_selection");
   if (num == 0) {
-    PointSelection psel;
+    PointsSelection psel;
     return psel;
   }
   qassert(num > 0);
-  PointSelection psel_pool(pool_factor * num);
+  PointsSelection psel_pool(pool_factor * num);
 #pragma omp parallel for
   for (long i = 0; i < (long)psel_pool.size(); ++i) {
     RngState rsi = rs.split(i);
@@ -44,7 +44,7 @@ PointSelection mk_random_point_selection(const Coordinate& total_site,
     }
     psel_pool[i] = xg;
   }
-  PointSelection psel(num, Coordinate(-1, -1, -1, -1));
+  PointsSelection psel(num, Coordinate(-1, -1, -1, -1));
   long idx = 0;
   for (long i = 0; i < (long)psel.size(); ++i) {
     while (idx < (long)psel_pool.size()) {
@@ -74,7 +74,7 @@ PointSelection mk_random_point_selection(const Coordinate& total_site,
   }
 }
 
-void save_point_selection(const PointSelection& psel, const std::string& path)
+void save_point_selection(const PointsSelection& psel, const std::string& path)
 {
   TIMER_VERBOSE("save_point_selection");
   QFile qfile = qfopen(path + ".partial", "w");
@@ -87,7 +87,7 @@ void save_point_selection(const PointSelection& psel, const std::string& path)
   qrename(path + ".partial", path);
 }
 
-void save_point_selection_info(const PointSelection& psel,
+void save_point_selection_info(const PointsSelection& psel,
                                const std::string& path)
 {
   TIMER_VERBOSE("save_point_selection_info");
@@ -96,14 +96,14 @@ void save_point_selection_info(const PointSelection& psel,
   }
 }
 
-PointSelection load_point_selection(const std::string& path)
+PointsSelection load_point_selection(const std::string& path)
 {
   TIMER_VERBOSE("load_point_selection");
   const std::vector<std::string> lines = qgetlines(path);
   qassert(lines.size() > 0);
   const long len = read_long(lines[0]);
   qassert(len + 1 <= (long)lines.size());
-  PointSelection psel;
+  PointsSelection psel;
   for (long k = 1; k < len + 1; ++k) {
     const std::vector<std::string> strs = split_line_with_spaces(lines[k]);
     if (strs.size() >= 5) {
@@ -119,10 +119,10 @@ PointSelection load_point_selection(const std::string& path)
   return psel;
 }
 
-PointSelection load_point_selection_info(const std::string& path)
+PointsSelection load_point_selection_info(const std::string& path)
 {
   TIMER_VERBOSE("load_point_selection_info");
-  PointSelection psel;
+  PointsSelection psel;
   if (0 == get_id_node()) {
     psel = load_point_selection(path);
   }

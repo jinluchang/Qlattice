@@ -194,7 +194,7 @@ def mk_rand_psel(job_tag, traj):
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_psel")
     total_site = ru.get_total_site(job_tag)
     n_points = get_n_points(job_tag, traj, 0, 0)
-    psel = q.PointSelection()
+    psel = q.PointsSelection()
     psel.set_rand(rs, total_site, n_points)
     return psel
 
@@ -214,7 +214,7 @@ def run_psel(job_tag, traj):
     def load_psel():
         path_psel = get_load_path(tfn)
         assert path_psel is not None
-        psel = q.PointSelection()
+        psel = q.PointsSelection()
         psel.load(path_psel)
         return psel
     return q.lazy_call(load_psel)

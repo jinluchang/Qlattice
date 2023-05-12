@@ -22,9 +22,9 @@ cdef extern from "qlat/selected-field-io.h" namespace "qlat":
         FieldSelection()
         const Geometry& get_geo()
 
-    cdef cppclass PointSelection:
-        PointSelection()
-        PointSelection(const long n_points)
+    cdef cppclass PointsSelection:
+        PointsSelection()
+        PointsSelection(const long n_points)
         long size()
         Coordinate* data()
         Coordinate& operator[](long i)
@@ -48,7 +48,7 @@ cdef extern from "qlat/selected-field-io.h" namespace "qlat":
         SelectedPoints()
         void init()
         void init(const long n_points, const int multiplicity)
-        void init(const PointSelection& psel, const int multiplicity)
+        void init(const PointsSelection& psel, const int multiplicity)
         const SelectedPoints[T]& operator=(const SelectedPoints[T]& field)
 
     Vector[T] get_data[T](const SelectedPoints[T]& x)

@@ -247,7 +247,7 @@ EXPORT(apply_gt_psprop, {
   const GaugeTransform& gt = py_convert_type<GaugeTransform>(p_gt);
   const SelectedPoints<WilsonMatrix>& prop0 =
       py_convert_type<SelectedPoints<WilsonMatrix> >(p_prop0);
-  const PointSelection& psel = py_convert_type<PointSelection>(p_prop0, "psel");
+  const PointsSelection& psel = py_convert_type<PointsSelection>(p_prop0, "psel");
   prop_apply_gauge_transformation(prop, prop0, gt, psel);
   Py_RETURN_NONE;
 })

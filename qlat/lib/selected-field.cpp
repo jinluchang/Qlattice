@@ -6,7 +6,7 @@
 namespace qlat
 {  //
 
-void add_field_selection(FieldM<int64_t, 1>& f_rank, const PointSelection& psel,
+void add_field_selection(FieldM<int64_t, 1>& f_rank, const PointsSelection& psel,
                          const long rank_psel)
 // interface function
 // add psel points to f_rank. (only lower rank if already selected)
@@ -221,7 +221,7 @@ void set_field_selection(FieldSelection& fsel, const Coordinate& total_site,
 
 void set_field_selection(FieldSelection& fsel, const Coordinate& total_site,
                          const long n_per_tslice, const RngState& rs,
-                         const PointSelection& psel)
+                         const PointsSelection& psel)
 {
   TIMER_VERBOSE("set_field_selection(fsel,total_site,n_per_tslice,rs,psel)");
   fsel.init();
@@ -251,7 +251,7 @@ bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2)
   return is_same;
 }
 
-PointSelection psel_from_fsel(const FieldSelection& fsel)
+PointsSelection psel_from_fsel(const FieldSelection& fsel)
 {
   TIMER("psel_from_fsel")
   const Geometry& geo = fsel.f_rank.geo();
@@ -277,7 +277,7 @@ PointSelection psel_from_fsel(const FieldSelection& fsel)
     vec_gindex[idx_offset + idx] = gindex;
   });
   glb_sum(get_data(vec_gindex));
-  PointSelection psel(total_n_elems);
+  PointsSelection psel(total_n_elems);
   qthread_for(idx, (long)psel.size(), {
     long gindex = vec_gindex[idx];
     psel[idx] = coordinate_from_index(gindex, total_site);
@@ -285,13 +285,13 @@ PointSelection psel_from_fsel(const FieldSelection& fsel)
   return psel;
 }
 
-PointSelection psel_from_fsel_local(const FieldSelection& fsel)
+PointsSelection psel_from_fsel_local(const FieldSelection& fsel)
 {
   TIMER("psel_from_fsel_local")
   const Geometry& geo = fsel.f_rank.geo();
   // const Coordinate total_site = geo.total_site();
   long n_elems = fsel.n_elems;
-  PointSelection psel(n_elems);
+  PointsSelection psel(n_elems);
   qthread_for(idx, (long)psel.size(), {
     const long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);

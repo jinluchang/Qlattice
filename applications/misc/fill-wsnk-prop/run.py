@@ -89,7 +89,7 @@ def run_psel(job_tag, traj):
     else:
         @q.timer_verbose
         def load_psel():
-            psel = q.PointSelection()
+            psel = q.PointsSelection()
             psel.load(path_psel)
             return psel
         return q.lazy_call(load_psel)

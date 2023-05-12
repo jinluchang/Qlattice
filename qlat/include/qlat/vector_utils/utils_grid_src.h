@@ -258,7 +258,7 @@ inline Coordinate get_grid_off(long j0, const Coordinate& off_L, const Coordinat
 }
 
 /////get positions by spatial and time setups
-inline void grid_list_posT(std::vector<PointSelection > &LMS_points, const Coordinate& off_L, const Coordinate& pos, const int combineT, const Coordinate& Lat)
+inline void grid_list_posT(std::vector<PointsSelection > &LMS_points, const Coordinate& off_L, const Coordinate& pos, const int combineT, const Coordinate& Lat)
 {
   TIMERA("===grid_list_posT===")
   qlat::vector_acc<long > Nfull;
@@ -273,12 +273,12 @@ inline void grid_list_posT(std::vector<PointSelection > &LMS_points, const Coord
       for(int it = 0; it < off_L[3]; it++){
         cur_off = cur_pos;
         cur_off[3] += ((Lat[3]/(off_L[3]))*it)%Lat[3]; ////need be careful not to exceed boundaries
-        PointSelection lms_res;lms_res.push_back(cur_off);
+        PointsSelection lms_res;lms_res.push_back(cur_off);
         LMS_points.push_back(lms_res);
       }
     }
     if(combineT == 1){
-      PointSelection lms_res;
+      PointsSelection lms_res;
       for(int it = 0; it < off_L[3]; it++){
         cur_off = cur_pos;
         cur_off[3] += ((Lat[3]/(off_L[3]))*it)%Lat[3];
@@ -295,7 +295,7 @@ inline void grid_list_posT(std::vector<PointSelection > &LMS_points, const Coord
 //////assume res have been cleared
 //////asuume res on GPU
 template<typename Ty>
-void write_grid_point_to_src(Ty* res, const qnoiT& src, const PointSelection& posL, int b_size, qlat::fft_desc_basic& fd)
+void write_grid_point_to_src(Ty* res, const qnoiT& src, const PointsSelection& posL, int b_size, qlat::fft_desc_basic& fd)
 {
   TIMERA("===write_grid_point_to_src===")
   /////if(pos.size() != 4){abort_r("dimension of positions wrong!\n ");}
@@ -342,11 +342,11 @@ void write_grid_point_to_src(Ty* res, const qnoiT& src, const PointSelection& po
 template<typename Ty>
 void write_grid_point_to_src(Ty* res, const qnoiT& src, const Coordinate& pos, int b_size, qlat::fft_desc_basic& fd)
 {
-  PointSelection posL;posL.resize(1);posL[0] = pos;
+  PointsSelection posL;posL.resize(1);posL[0] = pos;
   write_grid_point_to_src(res, src, posL, b_size, fd);
 }
 
-void print_psel(PointSelection& psel)
+void print_psel(PointsSelection& psel)
 {
   for(unsigned long i=0;i<psel.size();i++){
     Coordinate& xg0 = psel[i];
@@ -354,7 +354,7 @@ void print_psel(PointSelection& psel)
   }
 }
 
-void add_psel(PointSelection& p0, const PointSelection& p1)
+void add_psel(PointsSelection& p0, const PointsSelection& p1)
 {
   for(unsigned int i=0;i<p1.size();i++){p0.push_back(p1[i]);}
 }
@@ -368,7 +368,7 @@ void vector_to_Coordinate(qlat::vector_acc<int >& nv, Coordinate& pos, int dir =
   if(dir == 0){for(int i=0;i<4;i++){nv[i]  = pos[i];}}
 }
 
-inline void get_grid_psel(PointSelection& psel, const Coordinate& nv, const Coordinate& grid, qlat::RngState& rs, int t0 = -1, const int even = -1, const Coordinate& ini_ = Coordinate(-1,-1,-1,-1))
+inline void get_grid_psel(PointsSelection& psel, const Coordinate& nv, const Coordinate& grid, qlat::RngState& rs, int t0 = -1, const int even = -1, const Coordinate& ini_ = Coordinate(-1,-1,-1,-1))
 {
   /////put seed to all the same as rank 0
   //if(qlat::get_id_node() != 0){seed = 0;}
@@ -422,7 +422,7 @@ inline void get_grid_psel(PointSelection& psel, const Coordinate& nv, const Coor
 }
 
 template <typename Ty>
-void get_noises_Coordinate(const qlat::FieldM<Ty, 1>& noise, PointSelection& psel, int printv = 0)
+void get_noises_Coordinate(const qlat::FieldM<Ty, 1>& noise, PointsSelection& psel, int printv = 0)
 {
   const qlat::Geometry& geo = noise.geo();
   qlat::vector_acc<int > nv,Nv,mv;
@@ -430,7 +430,7 @@ void get_noises_Coordinate(const qlat::FieldM<Ty, 1>& noise, PointSelection& pse
   //int nx,ny,nz,nt;
   LInt Nsite = Nv[0]*Nv[1]*Nv[2]*Nv[3];
 
-  ////PointSelection local_tem;
+  ////PointsSelection local_tem;
   std::vector<int > grid_pos;const int DIM = 4;
 
   for(LInt isp=0; isp< Nsite; isp++)
@@ -611,7 +611,7 @@ void vec_apply_cut(qlat::vector_gpu<Ty >& res, const Coordinate& sp, const doubl
 
 template <class Ty, int civ>
 void get_point_color_src(std::vector<qlat::FieldM<Ty , civ> >& srcL, 
-  const PointSelection& grids, const std::vector<Ty >& phases)
+  const PointsSelection& grids, const std::vector<Ty >& phases)
 {
   TIMER("get_point_color_src");
   qassert(srcL.size() == civ);

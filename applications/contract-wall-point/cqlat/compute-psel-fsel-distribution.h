@@ -35,7 +35,7 @@ inline void compute_psel_fsel_distribution_type(const std::string& job_tag,
     return;
   }
   TIMER_VERBOSE("compute_psel_fsel_distribution_type");
-  const PointSelection& psel = get_point_selection(job_tag, traj);
+  const PointsSelection& psel = get_point_selection(job_tag, traj);
   const long n_points = psel.size();
   const FieldSelection& fsel = get_field_selection(job_tag, traj);
   FieldM<Complex, 1> pos;

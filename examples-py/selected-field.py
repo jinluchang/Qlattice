@@ -35,7 +35,7 @@ prop.load_double_from_float("results/prop-float.field")
 
 q.displayln_info(f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm():.12E}")
 
-psel = q.PointSelection([
+psel = q.PointsSelection([
     [ 0, 0, 0, 0, ],
     [ 0, 1, 2, 0, ],
     ],

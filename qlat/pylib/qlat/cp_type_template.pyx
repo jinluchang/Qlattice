@@ -175,7 +175,7 @@ cdef class SelectedPointsTYPENAME(SelectedPointsBase):
         self.cdata = <long>&(self.xx)
         self.view_count = 0
 
-    def __init__(self, PointSelection psel, int multiplicity = 0):
+    def __init__(self, PointsSelection psel, int multiplicity = 0):
         self.psel = psel
         if multiplicity > 0 and self.psel is not None:
             if self.view_count > 0:

@@ -12,7 +12,7 @@ PyObject* mk_spfield_ctype(int dummy)
 }
 
 template <class M>
-PyObject* mk_spfield_psel_ctype(const PointSelection& psel, const int multiplicity)
+PyObject* mk_spfield_psel_ctype(const PointsSelection& psel, const int multiplicity)
 {
   SelectedPoints<M>* pspfield = new SelectedPoints<M>();
   SelectedPoints<M>& spfield = *pspfield;
@@ -39,7 +39,7 @@ PyObject* set_spfield_ctype(PyField& pf_new, PyField& pf)
 
 template <class M>
 PyObject* set_spfield_field_ctype(PyField& pspf, PyField& pf,
-                                 const PointSelection& psel)
+                                 const PointsSelection& psel)
 {
   SelectedPoints<M>& sp = *(SelectedPoints<M>*)pspf.cdata;
   const Field<M>& f = *(Field<M>*)pf.cdata;
@@ -49,7 +49,7 @@ PyObject* set_spfield_field_ctype(PyField& pspf, PyField& pf,
 
 template <class M>
 PyObject* set_spfield_sfield_ctype(PyField& pspf, PyField& psf,
-                                   const PointSelection& psel,
+                                   const PointsSelection& psel,
                                    const FieldSelection& fsel)
 {
   SelectedPoints<M>& sp = *(SelectedPoints<M>*)pspf.cdata;
@@ -60,7 +60,7 @@ PyObject* set_spfield_sfield_ctype(PyField& pspf, PyField& psf,
 
 template <class M>
 PyObject* set_field_spfield_ctype(PyField& pf, PyField& pspf,
-                                  const PointSelection& psel)
+                                  const PointsSelection& psel)
 {
   Field<M>& f = *(Field<M>*)pf.cdata;
   const SelectedPoints<M>& sp = *(SelectedPoints<M>*)pspf.cdata;
@@ -71,7 +71,7 @@ PyObject* set_field_spfield_ctype(PyField& pf, PyField& pspf,
 template <class M>
 PyObject* set_sfield_spfield_ctype(PyObject* p_sfield, PyObject* p_spfield,
                                    const FieldSelection& fsel,
-                                   const PointSelection& psel)
+                                   const PointsSelection& psel)
 {
   SelectedField<M>& sf = py_convert_type_sfield<M>(p_sfield);
   const SelectedPoints<M>& sp = py_convert_type_spoints<M>(p_spfield);
@@ -123,7 +123,7 @@ PyObject* set_zero_spfield_ctype(PyField& pf)
 
 template <class M>
 PyObject* acc_field_spfield_ctype(PyObject* p_field, PyObject* p_spfield,
-                                  const PointSelection& psel)
+                                  const PointsSelection& psel)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
   const SelectedPoints<M>& sp = py_convert_type_spoints<M>(p_spfield);
@@ -259,7 +259,7 @@ EXPORT(mk_spfield_psel, {
     return NULL;
   }
   const std::string ctype = py_convert_data<std::string>(p_ctype, "name");
-  const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  const PointsSelection& psel = py_convert_type<PointsSelection>(p_psel);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, mk_spfield_psel_ctype, ctype, psel, multiplicity);
   return p_ret;
@@ -304,7 +304,7 @@ EXPORT(set_spfield_field, {
   const std::string ctype = py_get_ctype(p_field);
   qassert(ctype == py_get_ctype(p_spfield));
   PyField pspf = py_convert_field(p_spfield);
-  const PointSelection& psel = py_convert_type<PointSelection>(p_spfield, "psel");
+  const PointsSelection& psel = py_convert_type<PointsSelection>(p_spfield, "psel");
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_spfield_field_ctype, ctype, pspf, pf, psel);
@@ -321,7 +321,7 @@ EXPORT(set_spfield_sfield, {
   const std::string ctype = py_get_ctype(p_sfield);
   qassert(ctype == py_get_ctype(p_spfield));
   PyField pspf = py_convert_field(p_spfield);
-  const PointSelection& psel = py_convert_type<PointSelection>(p_spfield, "psel");
+  const PointsSelection& psel = py_convert_type<PointsSelection>(p_spfield, "psel");
   PyField psf = py_convert_field(p_sfield);
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_sfield, "fsel");
   PyObject* p_ret = NULL;
@@ -340,7 +340,7 @@ EXPORT(set_field_spfield, {
   qassert(ctype == py_get_ctype(p_spfield));
   PyField pf = py_convert_field(p_field);
   PyField pspf = py_convert_field(p_spfield);
-  const PointSelection& psel = py_convert_type<PointSelection>(p_spfield, "psel");
+  const PointsSelection& psel = py_convert_type<PointsSelection>(p_spfield, "psel");
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_field_spfield_ctype, ctype, pf, pspf, psel);
   return p_ret;
@@ -356,7 +356,7 @@ EXPORT(set_sfield_spfield, {
   const std::string ctype = py_get_ctype(p_spfield);
   qassert(ctype == py_get_ctype(p_sfield));
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_sfield, "fsel");
-  const PointSelection& psel = py_convert_type<PointSelection>(p_spfield, "psel");
+  const PointsSelection& psel = py_convert_type<PointsSelection>(p_spfield, "psel");
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_sfield_spfield_ctype, ctype, p_sfield, p_spfield, fsel, psel);
   return p_ret;
@@ -430,7 +430,7 @@ EXPORT(acc_field_spfield, {
   }
   const std::string ctype = py_get_ctype(p_spfield);
   qassert(ctype == py_get_ctype(p_field));
-  const PointSelection& psel = py_convert_type<PointSelection>(p_spfield, "psel");
+  const PointsSelection& psel = py_convert_type<PointsSelection>(p_spfield, "psel");
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, acc_field_spfield_ctype, ctype, p_field, p_spfield, psel);
   return p_ret;

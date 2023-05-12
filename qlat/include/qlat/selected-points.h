@@ -5,23 +5,23 @@
 namespace qlat
 {  //
 
-PointSelection mk_tslice_point_selection(const int t_size, const int t_dir = 3);
+PointsSelection mk_tslice_point_selection(const int t_size, const int t_dir = 3);
 
-PointSelection mk_tslice_point_selection(const Coordinate& total_site,
+PointsSelection mk_tslice_point_selection(const Coordinate& total_site,
                                          const int t_dir = 3);
 
-PointSelection mk_random_point_selection(const Coordinate& total_site,
+PointsSelection mk_random_point_selection(const Coordinate& total_site,
                                          const long num, const RngState& rs,
                                          const long pool_factor = 2);
 
-void save_point_selection(const PointSelection& psel, const std::string& path);
+void save_point_selection(const PointsSelection& psel, const std::string& path);
 
-void save_point_selection_info(const PointSelection& psel,
+void save_point_selection_info(const PointsSelection& psel,
                                const std::string& path);
 
-PointSelection load_point_selection(const std::string& path);
+PointsSelection load_point_selection(const std::string& path);
 
-PointSelection load_point_selection_info(const std::string& path);
+PointsSelection load_point_selection_info(const std::string& path);
 
 // -----------------------
 
@@ -51,7 +51,7 @@ bool is_initialized(const SelectedPoints<M>& sp)
 }
 
 template <class M>
-bool is_consistent(const SelectedPoints<M>& sp, const PointSelection& psel)
+bool is_consistent(const SelectedPoints<M>& sp, const PointsSelection& psel)
 {
   return sp.initialized and sp.n_points == (long)psel.size();
 }
@@ -132,7 +132,7 @@ const SelectedPoints<M>& operator*=(SelectedPoints<M>& f, const Complex factor)
 }
 
 template <class M>
-void only_keep_selected_points(Field<M>& f, const PointSelection& psel)
+void only_keep_selected_points(Field<M>& f, const PointsSelection& psel)
 {
   TIMER("only_keep_selected_points");
   const Geometry& geo = f.geo();
@@ -175,7 +175,7 @@ void qnorm_field(SelectedPoints<double>& sp, const SelectedPoints<M>& sp1)
 
 template <class M>
 void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
-                         const PointSelection& psel)
+                         const PointsSelection& psel)
 {
   TIMER("set_selected_points(sp,f,psel)");
   const Geometry& geo = f.geo();
@@ -199,7 +199,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
 
 template <class M>
 void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
-                        const Geometry& geo_, const PointSelection& psel)
+                        const Geometry& geo_, const PointsSelection& psel)
 {
   TIMER("set_field_selected");
   const Geometry geo = geo_reform(geo_, sp.multiplicity, 0);
@@ -225,7 +225,7 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
 
 template <class M>
 void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
-                        const PointSelection& psel)
+                        const PointsSelection& psel)
 // deprecated
 {
   TIMER("set_field_selected");
@@ -249,7 +249,7 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
 
 template <class M>
 void acc_field(Field<M>& f, const SelectedPoints<M>& sp, const Geometry& geo_,
-               const PointSelection& psel)
+               const PointsSelection& psel)
 {
   TIMER("acc_field");
   const Geometry geo = geo_reform(geo_, sp.multiplicity, 0);
@@ -397,7 +397,7 @@ void load_selected_points_complex(SelectedPoints<M>& sp,
       <TYPENAME>(SelectedPoints<TYPENAME>& f, const Complex factor);         \
                                                                              \
   QLAT_EXTERN template void only_keep_selected_points<TYPENAME>(             \
-      Field<TYPENAME> & f, const PointSelection& psel);                      \
+      Field<TYPENAME> & f, const PointsSelection& psel);                      \
                                                                              \
   QLAT_EXTERN template double qnorm<TYPENAME>(                               \
       const SelectedPoints<TYPENAME>& sp);                                   \
@@ -407,19 +407,19 @@ void load_selected_points_complex(SelectedPoints<M>& sp,
                                                                              \
   QLAT_EXTERN template void set_selected_points<TYPENAME>(                   \
       SelectedPoints<TYPENAME> & sp, const Field<TYPENAME>& f,               \
-      const PointSelection& psel);                                           \
+      const PointsSelection& psel);                                           \
                                                                              \
   QLAT_EXTERN template void set_field_selected<TYPENAME>(                    \
       Field<TYPENAME> & f, const SelectedPoints<TYPENAME>& sp,               \
-      const Geometry& geo_, const PointSelection& psel);                     \
+      const Geometry& geo_, const PointsSelection& psel);                     \
                                                                              \
   QLAT_EXTERN template void set_field_selected<TYPENAME>(                    \
       Field<TYPENAME> & f, const SelectedPoints<TYPENAME>& sp,               \
-      const PointSelection& psel);                                           \
+      const PointsSelection& psel);                                           \
                                                                              \
   QLAT_EXTERN template void acc_field<TYPENAME>(                             \
       Field<TYPENAME> & f, const SelectedPoints<TYPENAME>& sp,               \
-      const Geometry& geo_, const PointSelection& psel);                     \
+      const Geometry& geo_, const PointsSelection& psel);                     \
                                                                              \
   QLAT_EXTERN template void field_glb_sum_tslice_double<TYPENAME>(           \
       SelectedPoints<TYPENAME> & sp, const Field<TYPENAME>& f,               \

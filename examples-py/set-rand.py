@@ -31,7 +31,7 @@ prop.set_rand(rs_prop, 1.0, 0.0)
 q.displayln_info(f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm():.13E}")
 
 n_points = 16
-psel = q.PointSelection()
+psel = q.PointsSelection()
 psel.set_rand(rs.split("psel"), total_site, n_points)
 
 n_per_tslice = 16

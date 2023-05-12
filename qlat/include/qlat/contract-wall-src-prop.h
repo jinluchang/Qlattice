@@ -138,7 +138,7 @@ inline void refresh_prob(WallSrcProps& wsp, const Coordinate& total_site,
 }
 
 inline void refresh_prop_with_gt(WallSrcProps& wsp, const GaugeTransform& gt,
-                                 const PointSelection& psel,
+                                 const PointsSelection& psel,
                                  const FieldSelection& fsel)
 // need refresh_wall_snk_prop before this func
 {
@@ -175,7 +175,7 @@ inline void refresh_prop_with_gt(WallSrcProps& wsp, const GaugeTransform& gt,
 }
 
 inline void refresh_wsp(WallSrcProps& wsp, const int num_exact,
-                        const GaugeTransform& gt, const PointSelection& psel,
+                        const GaugeTransform& gt, const PointsSelection& psel,
                         const FieldSelection& fsel)
 // interface function
 {

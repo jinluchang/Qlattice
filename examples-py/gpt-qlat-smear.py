@@ -31,7 +31,7 @@ fsel_smear = q.FieldSelection(total_site, n_per_tslice_smear, rs)
 psel_smear = fsel_smear.to_psel()
 
 n_points = 256
-psel = q.PointSelection()
+psel = q.PointsSelection()
 psel.set_rand(rs, total_site, n_points)
 
 n_per_tslice = 16

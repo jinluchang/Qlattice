@@ -6,9 +6,9 @@ cdef class Geometry:
 
     cdef readonly long cdata
 
-cdef class PointSelection:
+cdef class PointsSelection:
 
-    cdef cqlat.PointSelection xx
+    cdef cqlat.PointsSelection xx
 
     cdef readonly long cdata
 
@@ -42,4 +42,4 @@ cdef class SelectedPointsBase:
 
     cdef readonly int view_count
 
-    cdef public PointSelection psel
+    cdef public PointsSelection psel

@@ -305,7 +305,7 @@ inline void test_selected_points(const std::string& tag, const long n_points)
   Geometry geo;
   geo.init(total_site, 1);
   const RngState rs = RngState("test_selected_points").split(tag);
-  PointSelection psel;
+  PointsSelection psel;
   {
     const RngState rs_psel = rs.split("psel");
     for (int i = 0; i < n_points; ++i) {
@@ -321,7 +321,7 @@ inline void test_selected_points(const std::string& tag, const long n_points)
   qmkdir_info("huge-data");
   qmkdir_info("huge-data/" + tag);
   save_point_selection_info(psel, "huge-data/" + tag + "/point-selection.txt");
-  const PointSelection psel_load =
+  const PointsSelection psel_load =
       load_point_selection_info("huge-data/" + tag + "/point-selection.txt");
   qassert(psel == psel_load);
   //
@@ -381,7 +381,7 @@ inline void test_shift(const std::string& tag, const long n_per_tslice, const lo
   set_u_rand_double(f, rs.split("f-init"));
   displayln_info(fname + ssprintf(": f crc32 = %08X", field_crc32(f)));
   SelectedField<Complex> sf;
-  const PointSelection psel =
+  const PointsSelection psel =
       mk_random_point_selection(total_site, n_points, rs.split("psel"));
   FieldSelection fsel;
   set_field_selection(fsel, total_site, n_per_tslice, rs.split("fsel"), psel);

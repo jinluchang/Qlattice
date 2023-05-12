@@ -184,7 +184,7 @@ inline void prop_apply_gauge_transformation(
 inline void prop_apply_gauge_transformation(
     SelectedPoints<WilsonMatrix>& prop,
     const SelectedPoints<WilsonMatrix>& prop0, const GaugeTransform& gt,
-    const PointSelection& psel)
+    const PointsSelection& psel)
 {
   TIMER("prop_apply_gauge_transformation");
   const Geometry& geo = gt.geo();

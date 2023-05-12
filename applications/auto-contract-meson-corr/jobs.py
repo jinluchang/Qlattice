@@ -230,7 +230,7 @@ def mk_rand_psel(job_tag, traj):
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_psel")
     total_site = rup.get_total_site(job_tag)
     n_points = get_n_points_psel(job_tag, traj)
-    psel = q.PointSelection()
+    psel = q.PointsSelection()
     psel.set_rand(rs, total_site, n_points)
     return psel
 
@@ -251,7 +251,7 @@ def run_psel(job_tag, traj):
         path_psel = get_load_path(tfn)
         assert path_psel is not None
         total_site = rup.get_total_site(job_tag)
-        psel = q.PointSelection()
+        psel = q.PointsSelection()
         psel.load(path_psel, q.Geometry(total_site))
         return psel
     return q.lazy_call(load_psel)
@@ -396,7 +396,7 @@ def run_psel_smear(job_tag, traj):
         path_psel = get_load_path(tfn)
         assert path_psel is not None
         total_site = rup.get_total_site(job_tag)
-        psel = q.PointSelection()
+        psel = q.PointsSelection()
         psel.load(path_psel, q.Geometry(total_site))
         return psel
     return q.lazy_call(load_psel)

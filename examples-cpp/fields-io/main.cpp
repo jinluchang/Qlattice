@@ -48,7 +48,7 @@ inline void demo(const std::string& tag, const Coordinate& total_site,
   //
   displayln_info(fname + ssprintf(": random select %d points on entire lattice",
                                   n_random_points));
-  const PointSelection psel =
+  const PointsSelection psel =
       mk_random_point_selection(total_site, n_random_points, rs.split("psel"));
   //
   displayln_info(fname + ssprintf(": random select points on each time slice"));

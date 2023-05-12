@@ -720,7 +720,7 @@ using FermionField5d = FermionField5dT<>;
 
 // --------------------
 
-using PointSelection = std::vector<Coordinate>;
+using PointsSelection = std::vector<Coordinate>;
 
 // --------------------
 
@@ -737,7 +737,7 @@ struct API SelectedPoints {
   //
   void init();
   void init(const long n_points_, const int multiplicity_);
-  void init(const PointSelection& psel, const int multiplicity);
+  void init(const PointsSelection& psel, const int multiplicity);
   //
   SelectedPoints() { init(); }
   //
@@ -808,7 +808,7 @@ void SelectedPoints<M>::init(const long n_points_, const int multiplicity_)
 }
 
 template <class M>
-void SelectedPoints<M>::init(const PointSelection& psel, const int multiplicity)
+void SelectedPoints<M>::init(const PointsSelection& psel, const int multiplicity)
 {
   init(psel.size(), multiplicity);
 }

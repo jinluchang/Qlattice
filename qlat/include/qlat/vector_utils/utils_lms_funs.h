@@ -249,7 +249,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
 
   Coordinate Lat;for(int i=0;i<4;i++){Lat[i] = fd.nv[i];}
   Coordinate pos;Coordinate off_L;
-  std::vector<PointSelection > Ngrid;
+  std::vector<PointsSelection > Ngrid;
   check_noise_pos(src, pos, off_L);
   grid_list_posT(Ngrid, off_L, pos, srcI.combineT, Lat);
   for(unsigned int ic=0;ic<Ngrid.size();ic++)
