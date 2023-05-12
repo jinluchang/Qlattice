@@ -3,7 +3,7 @@
 import qlat as q
 
 import qlat_gpt as qg
-import rbc_ukqcd as ru
+import qlat_scripts.v1.rbc_ukqcd as ru
 import subprocess
 
 qg.begin_with_gpt()

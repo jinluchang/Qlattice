@@ -1,8 +1,5 @@
-subdir('cqlat')
-subdir('qlat')
-subdir('auto_contractor')
-subdir('qlat_scripts')
+subdir('rbc_ukqcd_params')
 
 c = run_command('bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.py', check: true)
 pysources = files(c.stdout().strip().split('\n'))
-py3.install_sources(pysources)
+py3.install_sources(pysources, subdir: 'qlat_scripts/v1')
