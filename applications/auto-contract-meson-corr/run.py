@@ -7,9 +7,9 @@ import math
 import os
 import sys
 
-from jobs import *
-from load_data import *
-from params import *
+from qlat_scripts.v1.jobs import *
+from qlat_scripts.v1.load_data import *
+from qlat_scripts.v1.params import *
 
 # ----
 

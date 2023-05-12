@@ -5,13 +5,13 @@
 import qlat as q
 import gpt as g
 import qlat_gpt as qg
-import rbc_ukqcd as ru
-import rbc_ukqcd_params as rup
+import qlat_scripts.v1.rbc_ukqcd as ru
+import qlat_scripts.v1.rbc_ukqcd_params as rup
 import pprint
 
 import os
 
-from jobs import *
+from qlat_scripts.v1.jobs import *
 
 load_path_list[:] = [
         "results",

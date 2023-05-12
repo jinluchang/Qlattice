@@ -3,9 +3,9 @@
 # Need --mpi X.X.X.X --mpi X.X.X runtime option
 
 import qlat_gpt as qg
-import rbc_ukqcd as ru
+import qlat_scripts.v1.rbc_ukqcd as ru
 
-from jobs import *
+from qlat_scripts.v1.jobs import *
 
 load_path_list[:] = [
         "results",
