@@ -61,6 +61,7 @@ def get_cexpr_meson_corr():
 
 @q.timer_verbose
 def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
+    fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr.lat"
     if get_load_path(fn) is not None:
         return
@@ -100,6 +101,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     ld.from_numpy(res_sum)
     q.displayln_info(ld.show())
     ld.save(get_save_path(fn))
+    q.displayln_info(f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}")
 
 ### ------
 

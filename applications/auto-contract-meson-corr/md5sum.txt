@@ -1,0 +1,2 @@
+d41d8cd98f00b204e9800998ecf8427e  results/test-4nt8/auto-contract/traj-1000/checkpoint.txt
+4eb483b7d13f6bf69330ffd744c21517  results/test-4nt8/auto-contract/traj-1000/meson_corr.lat

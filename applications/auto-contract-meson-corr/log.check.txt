@@ -1,0 +1,1 @@
+CHECK: auto_contract_meson_corr: ld sig: 4.58220982079860E+03+1.99805298856158E+04j
