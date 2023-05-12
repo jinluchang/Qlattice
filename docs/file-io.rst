@@ -53,3 +53,90 @@ Multi-dimension array data structure for IO.
 Example: ``examples-py/lat-io.py``
 
 .. literalinclude:: ../examples-py/lat-io.py
+
+Gauge Field
+^^^^^^^^^^^
+
+.. autosummary::
+   :recursive:
+   :toctree: generated
+
+   GaugeField
+   GaugeField.save
+   GaugeField.load
+
+Gauge Transform
+^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :recursive:
+   :toctree: generated
+
+   GaugeTransform
+   GaugeTransform.save
+   GaugeTransform.load
+   GaugeTransform.save_cps
+   GaugeTransform.load_cps
+
+FieldBase
+^^^^^^^^^
+
+.. autosummary::
+   :recursive:
+   :toctree: generated
+
+   Field
+   FieldBase
+   FieldBase.save_direct
+   FieldBase.load_direct
+   FieldBase.save_64
+   FieldBase.load_64
+   FieldBase.save_double
+   FieldBase.load_double
+   FieldBase.save_float_from_double
+   FieldBase.load_double_from_float
+   FieldBase.float_from_double
+   FieldBase.double_from_float
+   FieldBase.to_from_endianness
+   FieldBase.as_field
+   FieldBase.from_field
+
+SelectedFieldBase
+^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :recursive:
+   :toctree: generated
+
+   SelectedField
+   SelectedFieldBase
+   SelectedFieldBase.save_direct
+   SelectedFieldBase.load_direct
+   SelectedFieldBase.save_64
+   SelectedFieldBase.load_64
+   SelectedFieldBase.save_double
+   SelectedFieldBase.load_double
+   SelectedFieldBase.save_float_from_double
+   SelectedFieldBase.load_double_from_float
+   SelectedFieldBase.float_from_double
+   SelectedFieldBase.double_from_float
+   SelectedFieldBase.to_from_endianness
+   SelectedFieldBase.as_field
+   SelectedFieldBase.from_field
+
+SelectedPointsBase
+^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :recursive:
+   :toctree: generated
+
+   SelectedPoints
+   SelectedPointsBase
+   SelectedPointsBase.save
+   SelectedPointsBase.load
+   SelectedPointsBase.save_complex
+   SelectedPointsBase.load_complex
+   SelectedPointsBase.to_numpy
+   SelectedPointsBase.from_numpy
+

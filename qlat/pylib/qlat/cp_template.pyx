@@ -356,6 +356,7 @@ cdef class FieldBase:
 
     def save_direct(self, path, *args):
         """
+        Generic save for Field object
         save Field directly (without any conversion of endianness or precision)
         possible way to call:
         f.save_direct(path)
@@ -380,10 +381,11 @@ cdef class FieldBase:
 
     def load_direct(self, path, *args):
         """
+        Generic load for Field object
         load Field directly (without any conversion of endianness or precision)
         possible way to call:
-        f.load(path)
-        f.load(sfr, fn)
+        f.load_direct(path)
+        f.load_direct(sfr, fn)
         """
         from qlat.fields_io import ShuffledFieldsReader
         if isinstance(path, str):
@@ -398,6 +400,10 @@ cdef class FieldBase:
         return n_bytes
 
     def save_64(self, path, *args):
+        """
+        Generic save for 64-bit size element Field object
+        save 64-bit Field (do conversion of endianness)
+        """
         f = self.copy()
         from qlat.fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
@@ -407,9 +413,17 @@ cdef class FieldBase:
         return f.save_direct(path, *args)
 
     def save_double(self, path, *args):
+        """
+        Generic save for double element Field object
+        save double Field as double (do conversion of endianness)
+        """
         return self.save_64(path, *args)
 
     def save_float_from_double(self, path, *args):
+        """
+        Generic save for double element Field object
+        save double Field as float (do conversion of endianness and precision)
+        """
         ff = FieldFloat()
         ff.float_from_double(self)
         from qlat.fields_io import ShuffledFieldsWriter
@@ -420,6 +434,10 @@ cdef class FieldBase:
         return ff.save_direct(path, *args)
 
     def load_64(self, path, *args):
+        """
+        Generic load for 64-bit size element Field object
+        load 64-bit Field (do conversion of endianness)
+        """
         ret = self.load_direct(path, *args)
         if ret > 0:
             from qlat.fields_io import ShuffledFieldsReader
@@ -430,9 +448,17 @@ cdef class FieldBase:
         return ret
 
     def load_double(self, path, *args):
+        """
+        Generic load for double Field object
+        load double Field (do conversion of endianness)
+        """
         return self.load_64(path, *args)
 
     def load_double_from_float(self, path, *args):
+        """
+        Generic load for double Field object
+        load double Field from float(do conversion of endianness or precision)
+        """
         ff = FieldFloat()
         ret = ff.load_direct(path, *args)
         if ret > 0:
@@ -445,13 +471,23 @@ cdef class FieldBase:
         return ret
 
     def float_from_double(self, FieldBase f):
+        """
+        self needs to be FieldFloat
+        """
         assert isinstance(self, FieldFloat)
         c.convert_float_from_double_field(self, f)
 
     def double_from_float(self, FieldFloat ff):
+        """
+        self can be any FieldBase subtype but need to be actually contains double precision numbers
+        """
         c.convert_double_from_float_field(self, ff)
 
     def to_from_endianness(self, tag):
+        """
+        Convert between the native endianness and the endianness specified by ``tag``
+        tag can be ``"big_32", "big_64", "little_32", "little_64"``
+        """
         assert isinstance(tag, str)
         c.to_from_endianness_field(self, tag)
 
@@ -961,7 +997,9 @@ cdef class SelectedFieldBase:
             assert False
 
     def sparse(self, sel):
-        # deprecated
+        """
+        deprecated
+        """
         q.displayln_info("SelectedField.sparse: deprecated")
         if isinstance(sel, PointSelection):
             from qlat.selected_points import SelectedPoints, set_selected_points
@@ -979,10 +1017,12 @@ cdef class SelectedFieldBase:
             raise Exception("Field.sparse")
 
     def save_direct(self, path, *args):
-        # possible way to call:
-        # f.save_direct(path)
-        # f.save_direct(path, new_size_node)
-        # f.save_direct(sfw, fn)
+        """
+        Generic save for SelectedField object
+        possible way to call:
+        f.save_direct(path) # has some limitations
+        f.save_direct(sfw, fn)
+        """
         from qlat.fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
             assert len(args) == 0
@@ -997,10 +1037,13 @@ cdef class SelectedFieldBase:
         return n_bytes
 
     def load_direct(self, path, *args):
-        # possible way to call:
-        # f.load_direct(path)
-        # f.load_direct(sfr, fn)
-        # if self.fsel is None, self.fsel will be set during f.load_direct(sfr, fn)
+        """
+        Generic load for SelectedField object
+        possible way to call:
+        f.load_direct(path) # has some limitations
+        f.load_direct(sfr, fn)
+        if self.fsel is None, self.fsel will be set during f.load_direct(sfr, fn)
+        """
         from qlat.fields_io import ShuffledFieldsReader
         if isinstance(path, str):
             n_bytes = c.load_sfield(self, path)
@@ -1014,6 +1057,9 @@ cdef class SelectedFieldBase:
         return n_bytes
 
     def save_64(self, path, *args):
+        """
+        Generic save for SelectedField object with conversion
+        """
         f = self.copy()
         from qlat.fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
@@ -1023,9 +1069,15 @@ cdef class SelectedFieldBase:
         return f.save_direct(path, *args)
 
     def save_double(self, path, *args):
+        """
+        Generic save for SelectedField object with conversion
+        """
         return self.save_64(path, *args)
 
     def save_float_from_double(self, path, *args):
+        """
+        Generic save for SelectedField object with conversion
+        """
         ff = SelectedFieldFloat(self.fsel)
         ff.float_from_double(self)
         from qlat.fields_io import ShuffledFieldsWriter
@@ -1036,6 +1088,9 @@ cdef class SelectedFieldBase:
         return ff.save_direct(path, *args)
 
     def load_64(self, path, *args):
+        """
+        Generic load for SelectedField object with conversion
+        """
         ret = self.load_direct(path, *args)
         if ret > 0:
             from qlat.fields_io import ShuffledFieldsReader
@@ -1046,9 +1101,15 @@ cdef class SelectedFieldBase:
         return ret
 
     def load_double(self, path, *args):
+        """
+        Generic load for SelectedField object with conversion
+        """
         return self.load_64(path, *args)
 
     def load_double_from_float(self, path, *args):
+        """
+        Generic load for SelectedField object with conversion
+        """
         ff = SelectedField(ElemTypeFloat, self.fsel)
         ret = ff.load_direct(path, *args)
         if ret > 0:
@@ -1210,16 +1271,16 @@ cdef class SelectedPointsBase:
         c.complex_spfield_from_lat_data(self, ld)
 
     def to_numpy(self):
-        n_points = self.n_points()
-        return np.array([ self.get_elems(idx) for idx in range(n_points) ])
+        return np.asarray(self).copy()
 
     def from_numpy(self, arr):
-        # need to be already initialized with ctype and psel
-        # arr.shape[0] == n_points
+        """
+        need to be already initialized with ctype and psel
+        arr.shape[0] == n_points
+        """
         n_points = self.n_points()
         assert arr.shape[0] == n_points
-        for idx in range(n_points):
-            self.set_elems(idx, arr[idx])
+        np.asarray(self).ravel()[:] = arr.ravel()
 
 ### -------------------------------------------------------------------
 

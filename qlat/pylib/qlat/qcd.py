@@ -18,10 +18,16 @@ class GaugeField(FieldColorMatrix):
 
     @timer
     def save(self, path):
+        """
+        Save with the standard NERSC format
+        """
         return c.save_gauge_field(self, path)
 
     @timer
     def load(self, path):
+        """
+        Load with the standard NERSC format
+        """
         return c.load_gauge_field(self, path)
 
     def set_rand(self, rng, sigma = 0.5, n_step = 1):
@@ -58,18 +64,30 @@ class GaugeTransform(FieldColorMatrix):
 
     @timer
     def save(self, path):
+        """
+        Save as double precision with the generic Field format ``save_double``
+        """
         return c.save_double(self, path)
 
     @timer
     def load(self, path):
+        """
+        Load as double precision with the generic Field format ``load_double``
+        """
         return c.load_double(self, path)
 
     @timer
     def save_cps(self, path):
+        """
+        Save with the format used in CPS
+        """
         return c.save_gauge_transform_cps(self, path)
 
     @timer
     def load_cps(self, path):
+        """
+        Load with the format used in CPS
+        """
         return c.load_gauge_transform_cps(self, path)
 
     def set_rand(self, rng, sigma = 0.5, n_step = 1):
