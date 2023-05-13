@@ -131,8 +131,7 @@ SelectedFieldBase
    SelectedFieldBase.float_from_double
    SelectedFieldBase.double_from_float
    SelectedFieldBase.to_from_endianness
-   SelectedFieldBase.as_field
-   SelectedFieldBase.from_field
+
 
 PointsSelection
 ^^^^^^^^^^^^^^
