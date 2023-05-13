@@ -13,7 +13,7 @@ qlat
    FieldBase
 
    merge_fields_ms
-   mk_merge_fields_ms
+   mk_merged_fields_ms
 
    FieldSelection
    SelectedField
