@@ -119,7 +119,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
     sig_msg_list = [
-            f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
+            f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.10E}",
             ]
     for msg in sig_msg_list:
         q.displayln_info(msg)
@@ -174,7 +174,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
     sig_msg_list = [
-            f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
+            f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.10E}",
             ]
     for msg in sig_msg_list:
         q.displayln_info(msg)
@@ -233,7 +233,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
     sig_msg_list = [
-            f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
+            f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.10E}",
             ]
     for msg in sig_msg_list:
         q.displayln_info(msg)
@@ -304,7 +304,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
     sig_msg_list = [
-            f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.14E}",
+            f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.10E}",
             ]
     for msg in sig_msg_list:
         q.displayln_info(msg)
@@ -401,7 +401,7 @@ def auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel):
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
     sig_msg_list = [
-            f"CHECK: {fname}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.14E}",
+            f"CHECK: {fname}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.10E}",
             ]
     for msg in sig_msg_list:
         q.displayln_info(msg)
@@ -490,7 +490,7 @@ def auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
     sig_msg_list = [
-            f"CHECK: {fname}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.14E}",
+            f"CHECK: {fname}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.10E}",
             ]
     for msg in sig_msg_list:
         q.displayln_info(msg)
@@ -816,7 +816,7 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
     sig_msg_list = [
-            f"CHECK: {fname}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.14E}",
+            f"CHECK: {fname}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.10E}",
             ]
     for msg in sig_msg_list:
         q.displayln_info(msg)
@@ -1081,7 +1081,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
     sig_msg_list = [
-            f"CHECK: {fname}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.14E}",
+            f"CHECK: {fname}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.10E}",
             ]
     for msg in sig_msg_list:
         q.displayln_info(msg)

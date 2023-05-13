@@ -134,7 +134,7 @@ SelectedFieldBase
 
 
 PointsSelection
-^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^
 
 .. autosummary::
    :recursive:
@@ -143,7 +143,7 @@ PointsSelection
    PointsSelection
 
 SelectedPointsBase
-^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
 
 .. autosummary::
    :recursive:
