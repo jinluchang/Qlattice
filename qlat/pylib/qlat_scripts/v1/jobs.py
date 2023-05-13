@@ -425,7 +425,7 @@ def run_gf_ape(job_tag, get_gf):
 def compute_eig(gf, job_tag, inv_type = 0, inv_acc = 0, *, path = None):
     # return a function ``get_eig''
     # ``get_eig()'' return the ``eig''
-    import rbc_ukqcd as ru
+    from . import rbc_ukqcd as ru
     load_eig = ru.load_eig_lazy(get_load_path(path), job_tag)
     if load_eig is not None:
         return load_eig
@@ -441,7 +441,7 @@ def compute_eig(gf, job_tag, inv_type = 0, inv_acc = 0, *, path = None):
 
 @q.timer
 def test_eig(gf, eig, job_tag, inv_type):
-    import rbc_ukqcd as ru
+    from . import rbc_ukqcd as ru
     geo = gf.geo()
     src = q.FermionField4d(geo)
     q.displayln_info(f"src norm {src.qnorm()}")
@@ -461,7 +461,7 @@ def test_eig(gf, eig, job_tag, inv_type):
 def run_eig(job_tag, traj, get_gf):
     if None in [ get_gf, ]:
         return None
-    import rbc_ukqcd as ru
+    from . import rbc_ukqcd as ru
     get_eig = ru.load_eig_lazy(get_load_path(f"{job_tag}/eig/traj-{traj}"), job_tag)
     if get_eig is None and get_gf is not None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig"):
@@ -484,7 +484,7 @@ def run_eig_strange(job_tag, traj, get_gf):
         if get_load_path(fn) is None:
             q.qtouch_info(get_save_path(fn))
         return lambda : None
-    import rbc_ukqcd as ru
+    from . import rbc_ukqcd as ru
     get_eig = ru.load_eig_lazy(get_load_path(f"{job_tag}/eig-strange/traj-{traj}"), job_tag)
     if get_eig is None and get_gf is not None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig-strange"):
