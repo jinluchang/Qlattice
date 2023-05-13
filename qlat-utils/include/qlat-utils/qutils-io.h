@@ -95,17 +95,7 @@ inline int ssleep(const double seconds)
   return usleep((useconds_t)(seconds * 1.0e6));
 }
 
-inline int check_dir(const std::string& path,
-                     const mode_t mode = default_dir_mode())
-{
-  TIMER("check_dir");
-  int ret = 0;
-  while (!does_file_exist(path)) {
-    ret = mkdir(path.c_str(), mode);
-    ssleep(0.001);
-  }
-  return ret;
-}
+int check_dir(const std::string& path, const mode_t mode = default_dir_mode());
 
 inline FILE* qopen(const std::string& path, const std::string& mode)
 {

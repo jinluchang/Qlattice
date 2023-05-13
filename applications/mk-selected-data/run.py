@@ -6,6 +6,7 @@ import qlat_gpt as qg
 import qlat_scripts.v1.rbc_ukqcd as ru
 
 from qlat_scripts.v1.jobs import *
+from qlat_scripts.v1.gen_data import *
 
 load_path_list[:] = [
         "results",

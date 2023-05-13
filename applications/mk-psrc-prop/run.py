@@ -6,6 +6,7 @@ import qlat_gpt as qg
 import qlat_scripts.v1.rbc_ukqcd as ru
 
 from qlat_scripts.v1.jobs import *
+from qlat_scripts.v1.gen_data import *
 
 load_path_list[:] = [
         "results",
@@ -34,92 +35,6 @@ load_path_list[:] = [
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-sel/results"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-lanc/results"),
         ]
-
-@q.timer_verbose
-def compute_prop(inv, xg_src, *, job_tag, sfw, tag, path_sp, psel, fsel, fselc, gt):
-    fn_sp = os.path.join(path_sp, f"{tag}.lat")
-    fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
-    total_site = ru.get_total_site(job_tag)
-    geo = q.Geometry(total_site, 1)
-    src = q.mk_point_src(geo, xg_src)
-    sol = inv * src
-    s_sol = q.SelProp(fselc)
-    s_sol @= sol
-    s_sol.save_float_from_double(sfw, tag)
-    sp_sol = q.PselProp(psel)
-    sp_sol @= s_sol
-    sp_sol.save(get_save_path(fn_sp))
-    sfw.flush()
-    sol_gt = gt * sol
-    sol_ws = sol_gt.glb_sum_tslice()
-    sol_ws.save(get_save_path(fn_spw))
-
-@q.timer
-def compute_prop_psrc(job_tag, xg_src, inv_type, inv_acc, *,
-        idx, gf, gt, sfw, path_sp, psel, fsel, fselc, eig, finished_tags):
-    xg = xg_src
-    xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
-    tag = f"xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
-    if tag in finished_tags:
-        return None
-    q.check_stop()
-    q.check_time_limit()
-    q.displayln_info(f"compute_prop_psrc: {job_tag} idx={idx} tag='{tag}'")
-    inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig)
-    compute_prop(inv, xg_src, job_tag = job_tag, sfw = sfw, tag = tag, path_sp = path_sp,
-            psel = psel, fsel = fsel, fselc = fselc, gt = gt)
-
-@q.timer_verbose
-def compute_prop_psrc_all(job_tag, traj, *,
-        inv_type, gf, gt, psel, fsel, fselc, eig):
-    inv_type_names = [ "light", "strange", ]
-    inv_type_name = inv_type_names[inv_type]
-    path_s = f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}"
-    path_sp = f"{job_tag}/psel-prop-psrc-{inv_type_name}/traj-{traj}"
-    finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
-    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 8, ])
-    def comp(idx, xg_src, inv_acc):
-        compute_prop_psrc(job_tag, xg_src, inv_type, inv_acc,
-                idx = idx, gf = gf, gt = gt, sfw = sfw, path_sp = path_sp,
-                psel = psel, fsel = fsel, fselc = fselc,
-                eig = eig, finished_tags = finished_tags)
-    prob1 = rup.dict_params[job_tag]["prob_acc_1_psrc"]
-    prob2 = rup.dict_params[job_tag]["prob_acc_2_psrc"]
-    rs = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_psrc_all(ama)")
-    for idx, xg_src in enumerate(psel.to_list()):
-        r = rs.split(f"{tuple(xg_src)}").u_rand_gen()
-        assert 0 <= r and r <= 1
-        comp(idx, xg_src, inv_acc = 0)
-        if r <= prob1:
-            comp(idx, xg_src, inv_acc = 1)
-        if r <= prob2:
-            comp(idx, xg_src, inv_acc = 2)
-    q.clean_cache(q.cache_inv)
-    sfw.close()
-    q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint.txt")))
-    q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
-    q.qar_create_info(get_save_path(path_sp + ".qar"), get_save_path(path_sp), is_remove_folder_after = True)
-    q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after = True)
-
-@q.timer
-def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel, get_fsel):
-    if None in [ get_gf, get_gt, get_psel, get_fsel, ]:
-        return
-    if inv_type == 0 and get_eig is None:
-        return
-    inv_type_names = [ "light", "strange", ]
-    inv_type_name = inv_type_names[inv_type]
-    if get_load_path(f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}/geon-info.txt") is not None:
-        return
-    if q.obtain_lock(f"locks/{job_tag}-{traj}-psrc-{inv_type_name}"):
-        gf = get_gf()
-        gt = get_gt()
-        eig = get_eig()
-        fsel, fselc = get_fsel()
-        psel = get_psel()
-        compute_prop_psrc_all(job_tag, traj, inv_type = inv_type,
-                gf = gf, gt = gt, psel = psel, fsel = fsel, fselc = fselc, eig = eig)
-        q.release_lock()
 
 @q.timer
 def run_job(job_tag, traj):

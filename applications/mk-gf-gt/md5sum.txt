@@ -1,0 +1,16 @@
+1a2d96e1713488546546832c3867ce0b  results/test-4nt16/configs/ckpoint_lat.1000
+44eddc85e8c25e6bade258d4d40830cd  results/test-4nt16/configs/ckpoint_lat.1100
+ee41802b57fdb44be027dcbb917611ee  results/test-4nt16/configs/ckpoint_lat.1200
+fadf8a5149654ca9eb56b094786089f5  results/test-4nt16/configs/ckpoint_lat.1300
+df29fda08f8a3b273a15e6c36f3b37c6  results/test-4nt16/gauge-transform/traj-1000.field
+68b8d872915add750d0637a7c5f3c152  results/test-4nt16/gauge-transform/traj-1100.field
+9419f4cef99b83cdcefadd7ec5ae7391  results/test-4nt16/gauge-transform/traj-1200.field
+eca1e76e0ea922e29d9cea069e5273f7  results/test-4nt16/gauge-transform/traj-1300.field
+d0acc3176d2c1d32155f62e4cf1d870d  results/test-4nt8/configs/ckpoint_lat.1000
+781e8bdc5565246ffed8630c5fb4e278  results/test-4nt8/configs/ckpoint_lat.1100
+9c31d35a525601be585b4986f62be31a  results/test-4nt8/configs/ckpoint_lat.1200
+22fe7ef1d982d51864765ff307ca1ac9  results/test-4nt8/configs/ckpoint_lat.1300
+bf75861a61cdaa66605fb7b03e0801a3  results/test-4nt8/gauge-transform/traj-1000.field
+3d67956ca8582afbf7dd226665765c04  results/test-4nt8/gauge-transform/traj-1100.field
+5425672e0d9813c841312af6e137f1cb  results/test-4nt8/gauge-transform/traj-1200.field
+2c11f997ebcd9010e96c7e33e785f44f  results/test-4nt8/gauge-transform/traj-1300.field

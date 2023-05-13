@@ -267,6 +267,20 @@ int qremove_all(const std::string& path)
   return qremove_all_aux(remove_trailing_slashes(path));
 }
 
+int check_dir(const std::string& path, const mode_t mode)
+{
+  TIMER("check_dir");
+  int ret = 0;
+  for (int i = 0; i < 1024; ++i) {
+    if (does_file_exist(path)) {
+      break;
+    }
+    ret = mkdir(path.c_str(), mode);
+    ssleep(0.001);
+  }
+  return ret;
+}
+
 int qmkdir(const std::string& path, const mode_t mode)
 {
   TIMER("qmkdir");

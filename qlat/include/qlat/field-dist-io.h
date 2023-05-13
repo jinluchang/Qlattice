@@ -52,7 +52,7 @@ inline int dist_mkdir(const std::string& path, const int num_node,
                       const mode_t mode = default_dir_mode())
 {
   int ret = 0;
-  qmkdir(path, mode);
+  qmkdir_p(path, mode);
   for (int i = 0; i < std::min(num_node, DATA_READ_WRITE_NUMBER_OF_DIRECTORIES);
        ++i) {
     const std::string dir = path + ssprintf("/%02d", i);
