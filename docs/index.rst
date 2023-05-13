@@ -23,7 +23,7 @@ Qlattice
 
    contents/cpp-structure.md
 
-   rbc-ukqcd-params.rst
+
 
 Indices and tables
 ==================
