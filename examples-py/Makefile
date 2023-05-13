@@ -37,7 +37,8 @@ tests_gpt = \
 			gpt-qlat-free-invert.log \
 			gpt-qlat-lanc.log \
 			gpt-qlat-rbc-ukqcd-invert.log \
-			gpt-qlat-madwf.log
+			gpt-qlat-madwf.log \
+			gpt-qlat-data-gen-auto.log
 
 tests_cps = \
 			cps-qlat-io-test.log

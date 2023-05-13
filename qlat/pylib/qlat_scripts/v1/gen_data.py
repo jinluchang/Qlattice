@@ -2,6 +2,7 @@ import qlat_gpt as qg
 
 from . import rbc_ukqcd as ru
 from . import rbc_ukqcd_params as rup
+from .rbc_ukqcd_params import dict_params
 from .jobs import *
 
 @q.timer_verbose
@@ -264,7 +265,7 @@ def run_prop_rand_u1(job_tag, traj, *, inv_type, get_gf, get_fsel, get_eig = Non
 # -----------------------------------------------------------------------------
 
 @q.timer_verbose
-def compute_prop_3(inv, xg_src, *, tag, sfw, path_sp, psel, fsel, fselc, gt, psel_smear, smear):
+def compute_prop_3(inv, src_smear, *, tag, sfw, path_sp, psel, fsel, fselc, gt, psel_smear, smear):
     fn_sp = os.path.join(path_sp, f"{tag}.lat")
     fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
     fn_sps = os.path.join(path_sp, f"{tag} ; smear-snk.lat")

@@ -11,6 +11,7 @@ import sys
 
 from qlat_scripts.v1.jobs import *
 from qlat_scripts.v1.load_data import *
+from qlat_scripts.v1.gen_data import *
 from qlat_scripts.v1.params import *
 
 # ----
@@ -1122,6 +1123,7 @@ def run_job(job_tag, traj):
     #
     get_gf = run_gf(job_tag, traj_gf)
     get_gt = run_gt(job_tag, traj_gf, get_gf)
+    get_gf_ape = run_gf_ape(job_tag, get_gf)
     #
     get_psel = run_psel(job_tag, traj)
     get_fsel = run_fsel(job_tag, traj, get_psel)
@@ -1135,8 +1137,6 @@ def run_job(job_tag, traj):
         run_prop_rand_u1(job_tag, traj, inv_type = 0, get_gf = get_gf, get_fsel = get_fsel, get_eig = get_eig)
         run_prop_psrc(job_tag, traj, inv_type = 0, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt, get_psel = get_psel, get_fsel = get_fsel)
         run_prop_smear(job_tag, traj, inv_type = 0, get_gf = get_gf, get_gf_ape = get_gf_ape, get_eig = get_eig, get_gt = get_gt, get_psel = get_psel, get_fsel = get_fsel, get_psel_smear = get_psel_smear)
-
-
     #
     def run_with_eig_strange():
         get_eig_strange = run_eig_strange(job_tag, traj_gf, get_gf)
@@ -1213,7 +1213,7 @@ size_node_list = [
         [8, 8, 8, 1],
         ]
 
-q.begin_with_mpi(size_node_list)
+qg.begin_with_gpt()
 
 get_all_cexpr()
 
@@ -1235,4 +1235,4 @@ q.timer_display()
 
 q.displayln_info("CHECK: finished successfully.")
 
-q.end_with_mpi()
+qg.end_with_gpt()
