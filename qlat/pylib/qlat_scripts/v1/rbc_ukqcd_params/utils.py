@@ -1,4 +1,4 @@
-import rbc_ukqcd_params as rup
+from .. import rbc_ukqcd_params as rup
 
 import qlat as q
 
