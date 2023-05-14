@@ -9,7 +9,7 @@ mpi_options=--bind-to none -mca btl_openib_allow_ib true
 mpi_options=--bind-to none
 
 run:
-	. ~/qlat-build/default/setenv.sh ; q_verbose=6 q_num_threads=2 q_num_mp_processes=2 mpirun --np 4 --oversubscribe $(mpi_options) ./run.py |& tee log.txt
+	q_verbose=6 q_num_threads=2 q_num_mp_processes=2 mpiexec -n 4 --oversubscribe $(mpi_options) ./run.py |& tee log.txt
 	-grep '^CHECK: ' log.txt > log.check.txt.new
 	-diff log.check.txt.new log.check.txt
 	-find results -type f | sort | xargs -d '\n' md5sum > md5sum.txt.new
