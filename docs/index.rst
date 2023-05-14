@@ -21,8 +21,9 @@ Qlattice
 
    auto-contractor.rst
 
-   contents/cpp-structure.md
+   qlat-scripts-v1.rst
 
+   contents/cpp-structure.md
 
 
 Indices and tables

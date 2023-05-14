@@ -1,5 +1,3 @@
-import qlat_gpt as qg
-
 from . import rbc_ukqcd as ru
 from . import rbc_ukqcd_params as rup
 from .rbc_ukqcd_params import dict_params

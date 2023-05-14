@@ -9,10 +9,9 @@ import time
 import importlib
 import sys
 
-from qlat_scripts.v1.jobs import *
-from qlat_scripts.v1.load_data import *
-from qlat_scripts.v1.gen_data import *
-from qlat_scripts.v1.params import *
+import qlat_gpt as qg
+
+from qlat_scripts.v1 import *
 
 # ----
 
@@ -1213,24 +1212,29 @@ size_node_list = [
         [8, 8, 8, 1],
         ]
 
+set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step", value = 2)
+set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step", value = 8)
+set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj", value = 1)
+set_param("test-4nt8", "trajs", value = [ 1000, ])
+
 qg.begin_with_gpt()
 
-get_all_cexpr()
+q.qremove_all_info("results")
 
 job_tags = [
         "test-4nt8",
         ]
 
-dict_params["test-4nt8"]["trajs"] = [ 1000, ]
-
 q.check_time_limit()
 
+get_all_cexpr()
+
 for job_tag in job_tags:
-    q.displayln_info(pprint.pformat(dict_params[job_tag]))
-    for traj in dict_params[job_tag]["trajs"]:
+    q.displayln_info(pprint.pformat(get_param(job_tag)))
+    q.displayln_info("CHECK: ", get_param(job_tag))
+    for traj in get_param(job_tag, "trajs"):
         run_job(job_tag, traj)
 
-q.clear_all_caches()
 q.timer_display()
 
 q.displayln_info("CHECK: finished successfully.")

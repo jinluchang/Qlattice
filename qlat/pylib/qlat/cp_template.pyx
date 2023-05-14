@@ -808,8 +808,10 @@ cdef class FieldSelection:
         return self.copy()
 
     def set_uniform(self, total_site, val = 0):
-        # default (val = 0) select every sites
-        # val = -1 deselection everything
+        """
+        default (val = 0) select every sites
+        val = -1 deselection everything
+        """
         c.set_uniform_fsel(self, total_site, val)
 
     def set_rand(self, rs, total_site, n_per_tslice):
@@ -820,20 +822,26 @@ cdef class FieldSelection:
         self.update(n_per_tslice)
 
     def add_psel(self, psel, rank_psel = 1024 * 1024 * 1024 * 1024 * 1024):
-        # Add psel points to the selection, with the rank specified as rank_psel.
-        # If the point is already selected with lower rank, the rank is unchanged.
+        """
+        Add psel points to the selection, with the rank specified as rank_psel.
+        If the point is already selected with lower rank, the rank is unchanged.
+        """
         c.add_psel_fsel(self, psel, rank_psel)
         self.update()
 
     def update(self, n_per_tslice = -1):
-        # if n_per_tslice < 0: only update various indices
-        # if n_per_tslice >= 0: only update parameters (n_per_tslice and prob)
+        """
+        if n_per_tslice < 0: only update various indices
+        if n_per_tslice >= 0: only update parameters (n_per_tslice and prob)
+        """
         c.update_fsel(self, n_per_tslice)
 
     def select_rank_range(self, rank_start = 0, rank_stop = -1):
-        # return new fsel with selected points that
-        # rank_start <= rank and (rank < rank_stop or rank_stop == -1)
-        # Does NOT change the n_per_tslice parameter for the new fsel
+        """
+        return new fsel with selected points that
+        rank_start <= rank and (rank < rank_stop or rank_stop == -1)
+        Does NOT change the n_per_tslice parameter for the new fsel
+        """
         fsel = FieldSelection()
         c.select_rank_range_fsel(fsel, self, rank_start, rank_stop)
         fsel.update()
@@ -841,10 +849,12 @@ cdef class FieldSelection:
         return fsel
 
     def select_t_range(self, rank_start = 0, rank_stop = -1):
-        # return new fsel with selected points that
-        # t_start <= t and (t < t_stop or t_stop == -1)
-        # rank_start <= rank < rank_stop (rank_stop = -1 implies unlimited)
-        # Does NOT change the n_per_tslice parameter for the new fsel
+        """
+        return new fsel with selected points that
+        t_start <= t and (t < t_stop or t_stop == -1)
+        rank_start <= rank < rank_stop (rank_stop = -1 implies unlimited)
+        Does NOT change the n_per_tslice parameter for the new fsel
+        """
         fsel = FieldSelection()
         c.select_rank_range_fsel(fsel, self, rank_start, rank_stop)
         fsel.update()
@@ -882,8 +892,10 @@ cdef class FieldSelection:
         return c.get_n_per_tslice_fsel(self)
 
     def prob(self):
-        # return fsel.prob
-        # n_per_tslice / spatial_volume
+        """
+        return fsel.prob
+        n_per_tslice / spatial_volume
+        """
         return c.get_prob_fsel(self)
 
     def idx_from_coordinate(self, xg):

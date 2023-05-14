@@ -81,6 +81,8 @@ Gauge Transform
 FieldBase
 ^^^^^^^^^
 
+Support ``np.asarray(f)``.
+
 .. autosummary::
    :recursive:
    :toctree: generated
@@ -109,10 +111,16 @@ FieldSelection
    :toctree: generated
 
    FieldSelection
+   FieldSelection.save
+   FieldSelection.load
+   FieldSelection.to_psel
+   FieldSelection.to_psel_local
 
 
 SelectedFieldBase
 ^^^^^^^^^^^^^^^^^
+
+Support ``np.asarray(sf)``.
 
 .. autosummary::
    :recursive:
@@ -136,14 +144,22 @@ SelectedFieldBase
 PointsSelection
 ^^^^^^^^^^^^^^^
 
+Support ``np.asarray(psel)``.
+
 .. autosummary::
    :recursive:
    :toctree: generated
 
    PointsSelection
+   PointsSelection.save
+   PointsSelection.load
+   PointsSelection.to_list
+   PointsSelection.from_list
 
 SelectedPointsBase
 ^^^^^^^^^^^^^^^^^^
+
+Support ``np.asarray(sp)``.
 
 .. autosummary::
    :recursive:

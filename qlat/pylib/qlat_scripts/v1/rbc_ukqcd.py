@@ -1,13 +1,11 @@
-import qlat_gpt as qg
 import qlat as q
-import gpt as g
 import gc
 import os
 import pprint
 
 from . import rbc_ukqcd_params as rup
 from .rbc_ukqcd_params import get_total_site
-from .rbc_ukqcd_params import mk_sample_gauge_field, load_config, load_config_lazy
+from .rbc_ukqcd_params import load_config, load_config_lazy
 
 def get_fermion_params(job_tag, inv_type, inv_acc):
     return rup.dict_params[job_tag]["fermion_params"][inv_type][inv_acc]
@@ -26,6 +24,8 @@ def get_clanc_params(job_tag, inv_type, inv_acc = 0):
 
 @q.timer_verbose
 def mk_eig(gf, job_tag, inv_type, inv_acc = 0):
+    import qlat_gpt as qg
+    import gpt as g
     qtimer = q.Timer(f"py:mk_eig({job_tag},{inv_type},{inv_acc})", True)
     qtimer.start()
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
@@ -60,6 +60,8 @@ def mk_eig(gf, job_tag, inv_type, inv_acc = 0):
 
 @q.timer_verbose
 def mk_ceig(gf, job_tag, inv_type, inv_acc = 0):
+    import qlat_gpt as qg
+    import gpt as g
     qtimer = q.Timer(f"py:mk_ceig({job_tag},{inv_type},{inv_acc})", True)
     qtimer.start()
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
@@ -130,6 +132,8 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc = 0):
 
 @q.timer_verbose
 def get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc = 0):
+    import qlat_gpt as qg
+    import gpt as g
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     parity = g.odd
     params = get_lanc_params(job_tag, inv_type, inv_acc)
@@ -157,6 +161,7 @@ def get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc = 0):
 
 @q.timer_verbose
 def save_ceig(path, eig, job_tag, inv_type = 0, inv_acc = 0):
+    import gpt as g
     if path is None:
         return
     save_params = get_clanc_params(job_tag, inv_type, inv_acc)["save_params"]
@@ -170,6 +175,8 @@ def save_ceig(path, eig, job_tag, inv_type = 0, inv_acc = 0):
 def load_eig_lazy(path, job_tag, inv_type = 0, inv_acc = 0):
     # return ``None'' or a function ``load_eig''
     # ``load_eig()'' return the ``eig''
+    import qlat_gpt as qg
+    import gpt as g
     if path is None:
         q.displayln_info(f"load_eig_lazy: path is '{path}'")
         return None
@@ -220,6 +227,8 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
         eig = None,
         eps = 1e-8,
         qtimer = True):
+    import qlat_gpt as qg
+    import gpt as g
     if mpi_split is None:
         mpi_split = g.default.get_ivec("--mpi_split", None, 4)
         if mpi_split is not None:

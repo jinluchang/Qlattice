@@ -5,39 +5,11 @@
 import qlat as q
 import gpt as g
 import qlat_gpt as qg
-import qlat_scripts.v1.rbc_ukqcd as ru
-import qlat_scripts.v1.rbc_ukqcd_params as rup
+
+from qlat_scripts.v1 import *
+
 import pprint
-
 import os
-
-def get_save_path(fn):
-    return os.path.join("results", fn)
-
-def get_load_path(fn):
-    if fn is None:
-        return None
-    path_list = [ "results" ]
-    for path in path_list:
-        p = os.path.join(path, fn)
-        if q.does_file_exist_sync_node(p):
-            return p
-    return None
-
-@q.timer
-def compute_eig(gf, job_tag, inv_type = 0, inv_acc = 0, *, path = None):
-    # return a function ``get_eig''
-    # ``get_eig()'' return the ``eig''
-    load_eig = ru.load_eig_lazy(get_load_path(path), job_tag)
-    if load_eig is not None:
-        return load_eig
-    # evec, evals = ru.mk_eig(gf, job_tag, inv_type, inv_acc)
-    basis, cevec, smoothed_evals = ru.mk_ceig(gf, job_tag, inv_type, inv_acc)
-    eig = [ basis, cevec, smoothed_evals ]
-    ru.save_ceig(get_save_path(path), eig, job_tag, inv_type, inv_acc);
-    def get_eig():
-        return eig
-    return get_eig
 
 @q.timer
 def test_eig(gf, eig, job_tag, inv_type):
@@ -56,7 +28,22 @@ def test_eig(gf, eig, job_tag, inv_type):
         q.displayln_info(f"CHECK: sol diff norm {sol.qnorm():.2E} inv_acc={inv_acc} without eig")
 
 @q.timer
-def run(job_tag, traj):
+def run_job(job_tag, traj):
+    fns_produce = [
+            f"{job_tag}/eig/traj-{traj}/metadata.txt",
+            ]
+    fns_need = [
+            # (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
+            ]
+    if not check_job(job_tag, traj, fns_produce, fns_need):
+        return
+    #
+    traj_gf = traj
+    if job_tag[:5] == "test-":
+        # ADJUST ME
+        traj_gf = 1000
+        #
+
     q.check_stop()
     q.check_time_limit()
     #
@@ -68,32 +55,32 @@ def run(job_tag, traj):
     geo = q.Geometry(total_site, 1)
     q.displayln_info("CHECK: geo.show() =", geo.show())
     #
-    path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
-    if path_gf is None:
-        if job_tag[:5] == "test-":
-            gf = ru.mk_sample_gauge_field(job_tag, f"{traj}")
-            q.qmkdir_info(get_save_path(f"configs"))
-            q.qmkdir_info(get_save_path(f"configs/{job_tag}"))
-            path_gf = get_save_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
-            # gf.save(path_gf)
-            qg.save_gauge_field(gf, path_gf)
-        else:
-            assert False
-    gf = ru.load_config(job_tag, path_gf)
-    gf.show_info()
+    get_gf = run_gf(job_tag, traj_gf)
+    get_gf().show_info()
     #
-    get_eig = compute_eig(gf, job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
-    test_eig(gf, get_eig(), job_tag, inv_type = 0)
+    get_eig = run_eig(job_tag, traj_gf, get_gf)
+    test_eig(get_gf(), get_eig(), job_tag, inv_type = 0)
+
+set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step", value = 2)
+set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step", value = 8)
+set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj", value = 1)
+set_param("test-4nt8", "trajs", value = [ 1000, ])
 
 qg.begin_with_gpt()
 
 q.qremove_all_info("results")
 
-job_tag = "test-4nt16"
-traj = 1000
-q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
-q.displayln_info("CHECK: ", rup.dict_params[job_tag])
-run(job_tag, traj)
+job_tags = [
+        "test-4nt8",
+        ]
+
+q.check_time_limit()
+
+for job_tag in job_tags:
+    q.displayln_info(pprint.pformat(get_param(job_tag)))
+    q.displayln_info("CHECK: ", get_param(job_tag))
+    for traj in get_param(job_tag, "trajs"):
+        run_job(job_tag, traj)
 
 q.timer_display()
 

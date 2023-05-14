@@ -73,18 +73,18 @@ def gm_evolve_fg_pure_gauge(gm, gf_init, ga, fg_dt, dt):
     gm += gm_force
 
 @timer_verbose
-def run_hmc_evolve_pure_gauge(gm, gf, ga, rs, n_steps, md_time = 1.0):
+def run_hmc_evolve_pure_gauge(gm, gf, ga, rs, n_step, md_time = 1.0):
     energy = gm_hamilton_node(gm) + gf_hamilton_node(gf, ga)
-    dt = md_time / n_steps
+    dt = md_time / n_step
     lam = 0.5 * (1.0 - 1.0 / math.sqrt(3.0));
     theta = (2.0 - math.sqrt(3.0)) / 48.0;
     ttheta = theta * dt * dt * dt;
     gf_evolve(gf, gm, lam * dt)
-    for i in range(n_steps):
+    for i in range(n_step):
         gm_evolve_fg_pure_gauge(gm, gf, ga, 4.0 * ttheta / dt, 0.5 * dt);
         gf_evolve(gf, gm, (1.0 - 2.0 * lam) * dt);
         gm_evolve_fg_pure_gauge(gm, gf, ga, 4.0 * ttheta / dt, 0.5 * dt);
-        if i < n_steps - 1:
+        if i < n_step - 1:
             gf_evolve(gf, gm, 2.0 * lam * dt);
         else:
             gf_evolve(gf, gm, lam * dt);
@@ -94,7 +94,7 @@ def run_hmc_evolve_pure_gauge(gm, gf, ga, rs, n_steps, md_time = 1.0):
     return delta_h
 
 @timer_verbose
-def run_hmc_pure_gauge(gf, ga, traj, rs, *, is_reverse_test = False, n_steps = 6, md_time = 1.0, is_always_accept = False):
+def run_hmc_pure_gauge(gf, ga, traj, rs, *, is_reverse_test = False, n_step = 6, md_time = 1.0, is_always_accept = False):
     fname = get_fname()
     rs = rs.split(f"{traj}")
     geo = gf.geo()
@@ -102,13 +102,13 @@ def run_hmc_pure_gauge(gf, ga, traj, rs, *, is_reverse_test = False, n_steps = 6
     gf0 @= gf
     gm = GaugeMomentum(geo)
     gm.set_rand(rs.split("set_rand_gauge_momentum"), 1.0)
-    delta_h = run_hmc_evolve_pure_gauge(gm, gf0, ga, rs, n_steps, md_time)
+    delta_h = run_hmc_evolve_pure_gauge(gm, gf0, ga, rs, n_step, md_time)
     if is_reverse_test:
         gm_r = GaugeMomentum(geo)
         gm_r @= gm
         gf0_r = GaugeField(geo)
         gf0_r @= gf0
-        delta_h_rev = run_hmc_evolve_pure_gauge(gm_r, gf0_r, ga, rs, n_steps, -md_time)
+        delta_h_rev = run_hmc_evolve_pure_gauge(gm_r, gf0_r, ga, rs, n_step, -md_time)
         gf0_r -= gf;
         displayln_info(f"{fname}: reversed delta_diff: {delta_h + delta_h_rev} / {delta_h}")
         displayln_info(f"{fname}: reversed gf_diff: {qnorm(gf0_r)} / {qnorm(gf0)}")

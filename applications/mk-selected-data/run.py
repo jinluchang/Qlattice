@@ -310,9 +310,9 @@ rup.dict_params["48I"]["n_points"] = [
         [ 1024, 64, 16, ],
         ]
 
-rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
-rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
-rup.dict_params["test-4nt8"]["fermion_params"][2][2]["Ls"] = 10
+# rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
+# rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
+# rup.dict_params["test-4nt8"]["fermion_params"][2][2]["Ls"] = 10
 
 # rup.dict_params["test-4nt16"]["fermion_params"][0][2]["Ls"] = 10
 # rup.dict_params["test-4nt16"]["fermion_params"][1][2]["Ls"] = 10
