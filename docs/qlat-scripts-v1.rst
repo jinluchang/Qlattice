@@ -9,6 +9,8 @@ qlat_scripts.v1
    get_param
    set_param
 
+   mk_sample_gauge_field_v3
+
    get_save_path
    get_load_path
 

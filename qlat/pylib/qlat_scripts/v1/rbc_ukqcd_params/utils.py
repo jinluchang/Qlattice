@@ -58,8 +58,20 @@ def mk_sample_gauge_field_v2(total_site, tag):
 
 @q.timer_verbose
 def mk_sample_gauge_field_v3(job_tag, fn):
+    """
+    depends on
+    total_site = get_param(job_tag, "total_site")
+    rand_n_step = get_param(job_tag, "mk_sample_gauge_field", "rand_n_step", default = 16)
+    rand_sigma = get_param(job_tag, "mk_sample_gauge_field", "rand_sigma", default = 0.25)
+    flow_n_step = get_param(job_tag, "mk_sample_gauge_field", "flow_n_step", default = 4)
+    flow_size = get_param(job_tag, "mk_sample_gauge_field", "flow_size", default = 0.05)
+    hmc_n_traj = get_param(job_tag, "mk_sample_gauge_field", "hmc_n_traj", default = 500)
+    hmc_beta = get_param(job_tag, "mk_sample_gauge_field", "hmc_beta", default = 6.0)
+    hmc_n_step = get_param(job_tag, "mk_sample_gauge_field", "hmc_n_step", default = 6)
+    hmc_is_always_accept = get_param(job_tag, "mk_sample_gauge_field", "hmc_is_always_accept", default = True)
+    """
     rs = q.RngState(f"seed {job_tag} {fn}").split("mk_sample_gauge_field")
-    total_site = get_total_site(job_tag)
+    total_site = get_param(job_tag, "total_site")
     rand_n_step = get_param(job_tag, "mk_sample_gauge_field", "rand_n_step", default = 16)
     rand_sigma = get_param(job_tag, "mk_sample_gauge_field", "rand_sigma", default = 0.25)
     flow_n_step = get_param(job_tag, "mk_sample_gauge_field", "flow_n_step", default = 4)
