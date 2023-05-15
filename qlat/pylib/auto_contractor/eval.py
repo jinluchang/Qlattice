@@ -174,6 +174,7 @@ def cache_compiled_cexpr(calc_cexpr, path):
         q.displayln(3, f"cache_compiled_cexpr: Node {q.get_id_node()}: waiting for '{fn_pickle}'.")
         time.sleep(0.1)
     cexpr = q.load_pickle_obj(fn_pickle)["cexpr_optimized"]
+    # Note that the module will not be reloaded if it has been loaded before!!!
     module = importlib.import_module((path + "/build/code").replace("/", "."))
     cexpr.function = {
             # cexpr_function(positions_dict, get_prop, is_ama_and_sloppy = False) => val as 1-D np.array

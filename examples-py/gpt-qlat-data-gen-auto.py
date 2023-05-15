@@ -302,11 +302,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    sig_msg_list = [
-            f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.5E}",
-            ]
-    for msg in sig_msg_list:
-        q.displayln_info(msg)
+    q.displayln_info(f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.5E}")
 
 # ----
 
