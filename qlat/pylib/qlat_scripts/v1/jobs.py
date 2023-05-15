@@ -444,10 +444,10 @@ def test_eig(gf, eig, job_tag, inv_type):
     from . import rbc_ukqcd as ru
     geo = gf.geo()
     src = q.FermionField4d(geo)
-    q.displayln_info(f"src norm {src.qnorm()}")
-    src.set_rand(q.RngState("test_eig:{id(inv)}"))
+    src.set_rand(q.RngState("test_eig:src.set_rand"))
+    q.displayln_info(f"src norm {src.qnorm():.10E}")
     sol_ref = ru.get_inv(gf, job_tag, inv_type, inv_acc = 2, eig = eig, eps = 1e-10, mpi_split = False, qtimer = False) * src
-    q.displayln_info(f"sol_ref norm {sol_ref.qnorm()} with eig")
+    q.displayln_info(f"sol_ref norm {sol_ref.qnorm():.10E} with eig")
     for inv_acc in [ 0, 1, 2, ]:
         sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig, mpi_split = False, qtimer = False) * src
         sol -= sol_ref

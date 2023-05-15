@@ -55,6 +55,7 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/qlat-docs.sh
+        [ -f /home/runner/qlat-build/default/qlat-docs/share/doc/qlat/html/index.html ]
     - name: Testing pylib qlat
       run: |
         ./scripts/qlat-examples-py.sh
@@ -62,6 +63,9 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/qlat-examples-cpp.sh
+    - name: Check log diff
+      run: |
+        ./scripts/qlat-examples-diff-new-logs.sh
     - name: Check error
       run: |
         ./scripts/qlat-examples-update-logs.sh
@@ -171,6 +175,9 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/qlat-examples-py-gpt.sh
+    - name: Check log diff
+      run: |
+        ./scripts/qlat-examples-diff-new-logs.sh
     - name: Check error
       run: |
         ./scripts/qlat-examples-update-logs.sh
@@ -271,6 +278,9 @@ jobs:
       run: |
         export num_proc=2
         ./scripts/qlat-examples-cpp-grid.sh
+    - name: Check log diff
+      run: |
+        ./scripts/qlat-examples-diff-new-logs.sh
     - name: Check error
       run: |
         ./scripts/qlat-examples-update-logs.sh
@@ -353,6 +363,9 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/qlat-examples-cpp.sh
+    - name: Check log diff
+      run: |
+        ./scripts/qlat-examples-diff-new-logs.sh
     - name: Check error
       run: |
         ./scripts/qlat-examples-update-logs.sh
@@ -437,6 +450,9 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/qlat-examples-py-gpt.sh
+    - name: Check log diff
+      run: |
+        ./scripts/qlat-examples-diff-new-logs.sh
     - name: Check error
       run: |
         ./scripts/qlat-examples-update-logs.sh
@@ -533,6 +549,9 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/qlat-examples-cpp-grid.sh
+    - name: Check log diff
+      run: |
+        ./scripts/qlat-examples-diff-new-logs.sh
     - name: Check error
       run: |
         ./scripts/qlat-examples-update-logs.sh
