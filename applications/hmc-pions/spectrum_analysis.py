@@ -43,8 +43,8 @@ class Spectrum():
         print(f"{name} energy is {self.energies[name]}/a +- {self.energy_errors[name]}/a")
     
     def plot_corrs(self, name):
-        #blocks = jackknife.get_jackknife_blocks(self.corrs[name], self.block_size)
-        corr_avgs, corr_errs = jackknife.get_errors_from_blocks(np.mean(self.corrs[name], axis=0), self.corrs[name])
+        blocks = jackknife.get_jackknife_blocks(self.corrs[name], self.block_size)
+        corr_avgs, corr_errs = jackknife.get_errors_from_blocks(np.mean(self.corrs[name], axis=0), blocks)
         plt.errorbar(range(len(corr_avgs)), corr_avgs, yerr=corr_errs, label=f"{name} Correlators")
     
     def plot_fit(self, name):
