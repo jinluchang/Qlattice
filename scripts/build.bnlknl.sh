@@ -41,6 +41,7 @@ set -e
 
 ./scripts/autoconf.sh
 ./scripts/automake.sh
+
 ./scripts/c-lime.sh
 ./scripts/grid-clehner.knl.sh
 ./scripts/gpt.sh

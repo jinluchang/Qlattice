@@ -180,7 +180,9 @@ def is_zero(x):
         assert False
 
 def mk_expr(x):
-    # interface function
+    """
+    interface function
+    """
     if isinstance(x, Expr):
         return x
     elif isinstance(x, Term):

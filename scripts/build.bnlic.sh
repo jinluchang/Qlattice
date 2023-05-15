@@ -29,6 +29,9 @@ set -e
 ./scripts/qlat-utils.sh
 ./scripts/qlat.sh
 
+./scripts/automake.sh
+./scripts/autoconf.sh
+
 ./scripts/c-lime.sh
 ./scripts/grid-clehner.avx2.sh
 ./scripts/gpt.sh

@@ -762,21 +762,25 @@ def display_cexpr(cexpr : CExpr):
 
 @q.timer_verbose
 def cexpr_code_gen_py(cexpr : CExpr):
-    # return a string
-    # interface function
+    """
+    return a string
+    interface function
+    """
     return CExprCodeGenPy(cexpr).code_gen()
 
 class CExprCodeGenPy:
 
-    # self.cexpr
-    # self.lines
-    # self.indent
-    # self.total_sloppy_flops
-
-    # flops per complex multiplication: 6
-    # flops per matrix multiplication: 6 M N L + 2 M L (N-1) ==> 13536 (sc * sc), 4320 (sc * s), 480 (s * s)
-    # flops per trace 2 (M-1) ==> 22 (sc)
-    # flops per trace2 6 M N + 2 (M N - 1) ==> 1150 (sc, sc)
+    """
+    self.cexpr
+    self.lines
+    self.indent
+    self.total_sloppy_flops
+    #
+    flops per complex multiplication: 6
+    flops per matrix multiplication: 6 M N L + 2 M L (N-1) ==> 13536 (sc * sc), 4320 (sc * s), 480 (s * s)
+    flops per trace 2 (M-1) ==> 22 (sc)
+    flops per trace2 6 M N + 2 (M N - 1) ==> 1150 (sc, sc)
+    """
 
     def __init__(self, cexpr):
         self.cexpr = cexpr
@@ -805,7 +809,9 @@ class CExprCodeGenPy:
         return "\n".join(lines)
 
     def gen_expr(self, x):
-        # return code_str, type_str
+        """
+        return code_str, type_str
+        """
         if isinstance(x, (int, float, complex)):
             return f"{x}", "V_a"
         elif isinstance(x, (ea.Expr, ea.Factor)):
