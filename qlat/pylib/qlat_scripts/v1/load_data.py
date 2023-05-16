@@ -174,8 +174,10 @@ def f_get_elem_wm(field, pos_snk):
     return field.get_elem_wm(pos_snk)
 
 def mk_get_elem_wm(field, pos_dict = None):
-    # return get function
-    # get(pos_snk) ==> ama_prop
+    """
+    return get function
+    get(pos_snk) ==> ama_prop
+    """
     if pos_dict is None:
         if not isinstance(field, AmaVal):
             def get(pos_snk):
@@ -210,8 +212,10 @@ def mk_field_norm_sqrt(field):
     return q.sqrt_double_field(q.qnorm_field(field))
 
 def mk_get_elem_norm(field, pos_dict = None):
-    # return get function
-    # get(pos_snk) ==> ama_prop_norm_sqrt
+    """
+    return get function
+    get(pos_snk) ==> ama_prop_norm_sqrt
+    """
     field_norm_sqrt = ama_apply1(mk_field_norm_sqrt, field)
     if pos_dict is None:
         if not isinstance(field_norm_sqrt, AmaVal):
@@ -337,11 +341,13 @@ def populate_prop_idx_cache_rand_u1_fsel(job_tag, traj, flavor, total_site, psel
 
 @q.timer
 def get_prop_lookup_snk_src(prop_lookup_cache, flavor, p_snk, p_src):
-    # p_snk and p_src should be.
-    # e.g. p_src = ("point", xg,)
-    # e.g. p_snk = ("point-snk", xg,)
-    # e.g. p_src = ("wall", t,)
-    # xg should be tuple of 4 int.
+    """
+    p_snk and p_src should be.
+    e.g. p_src = ("point", xg,)
+    e.g. p_snk = ("point-snk", xg,)
+    e.g. p_src = ("wall", t,)
+    xg should be tuple of 4 int.
+    """
     assert isinstance(p_snk, tuple) and isinstance(p_src, tuple)
     type_snk, pos_snk = p_snk
     type_src, pos_src = p_src
@@ -363,12 +369,14 @@ def get_prop_lookup_snk_src(prop_lookup_cache, flavor, p_snk, p_src):
 
 @q.timer
 def get_prop_norm_lookup_snk_src(prop_norm_lookup_cache, flavor, p_snk, p_src):
-    # return norm_sqrt
-    # p_snk and p_src should be.
-    # e.g. p_src = ("point", xg,)
-    # e.g. p_snk = ("point-snk", xg,)
-    # e.g. p_src = ("wall", t,)
-    # xg should be tuple of 4 int.
+    """
+    return norm_sqrt
+    p_snk and p_src should be.
+    e.g. p_src = ("point", xg,)
+    e.g. p_snk = ("point-snk", xg,)
+    e.g. p_src = ("wall", t,)
+    xg should be tuple of 4 int.
+    """
     assert isinstance(p_snk, tuple) and isinstance(p_src, tuple)
     type_snk, pos_snk = p_snk
     type_src, pos_src = p_src
@@ -397,9 +405,11 @@ def check_cache_assign(cache, key, val):
 
 @q.timer
 def load_prop_wsrc_psel(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
-    # cache_psel[f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; wsrc ; psel"]
-    # cache_psel_ts[f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; wsrc_wsnk ; psel_ts"]
-    # cache_prob[f"type={inv_type} ; accuracy={inv_acc} ; wsrc ; prob"]
+    """
+    cache_psel[f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; wsrc ; psel"]
+    cache_psel_ts[f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; wsrc_wsnk ; psel_ts"]
+    cache_prob[f"type={inv_type} ; accuracy={inv_acc} ; wsrc ; prob"]
+    """
     cache_psel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel")
     cache_psel_ts = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel_ts")
     cache_prob = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"prob")
@@ -450,11 +460,13 @@ def load_prop_wsrc_psel(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
 
 @q.timer
 def load_prop_wsrc_fsel(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
-    # need to load psel first
-    # cache_fselc[f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; wsrc ; fselc"]
-    # cache_psel[f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; wsrc ; psel"]
-    # cache_psel_ts[f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; wsrc_wsnk ; psel_ts"]
-    # cache_prob[f"type={inv_type} ; accuracy={inv_acc} ; wsrc ; prob"]
+    """
+    need to load psel first
+    cache_fselc[f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; wsrc ; fselc"]
+    cache_psel[f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; wsrc ; psel"]
+    cache_psel_ts[f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; wsrc_wsnk ; psel_ts"]
+    cache_prob[f"type={inv_type} ; accuracy={inv_acc} ; wsrc ; prob"]
+    """
     cache_fselc = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"fselc")
     cache_psel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel")
     cache_psel_ts = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel_ts")
@@ -505,10 +517,12 @@ def load_prop_wsrc_fsel(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
 
 @q.timer
 def load_prop_psrc_psel(job_tag, traj, flavor, *, psel, fsel, fselc):
-    # cache_fselc[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc} ; psrc ; fselc"]
-    # cache_psel[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc} ; psrc ; psel"]
-    # cache_psel_ts[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc} ; psrc_wsnk ; psel_ts"]
-    # cache_prob[f"type={inv_type} ; accuracy={inv_acc} ; psrc ; prob"]
+    """
+    cache_fselc[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc} ; psrc ; fselc"]
+    cache_psel[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc} ; psrc ; psel"]
+    cache_psel_ts[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc} ; psrc_wsnk ; psel_ts"]
+    cache_prob[f"type={inv_type} ; accuracy={inv_acc} ; psrc ; prob"]
+    """
     cache_fselc = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"fselc")
     cache_psel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel")
     cache_psel_ts = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel_ts")
@@ -556,11 +570,13 @@ def load_prop_psrc_psel(job_tag, traj, flavor, *, psel, fsel, fselc):
 
 @q.timer
 def load_prop_psrc_fsel(job_tag, traj, flavor, *, psel, fsel, fselc):
-    # need to load psel first
-    # cache_fselc[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc} ; psrc ; fselc"]
-    # cache_psel[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc} ; psrc ; psel"]
-    # cache_psel_ts[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc} ; psrc_wsnk ; psel_ts"]
-    # cache_prob[f"type={inv_type} ; accuracy={inv_acc} ; psrc ; prob"]
+    """
+    need to load psel first
+    cache_fselc[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc} ; psrc ; fselc"]
+    cache_psel[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc} ; psrc ; psel"]
+    cache_psel_ts[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc} ; psrc_wsnk ; psel_ts"]
+    cache_prob[f"type={inv_type} ; accuracy={inv_acc} ; psrc ; prob"]
+    """
     cache_fselc = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"fselc")
     cache_psel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel")
     cache_psel_ts = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel_ts")
@@ -607,7 +623,9 @@ def load_prop_psrc_fsel(job_tag, traj, flavor, *, psel, fsel, fselc):
 
 @q.timer
 def load_prop_rand_u1_fsel(job_tag, traj, flavor, *, psel, fsel, fselc):
-    # cache_fsel[f"type={inv_type} ; accuracy={inv_acc} ; rand_u1 ; fsel"]
+    """
+    cache_fsel[f"type={inv_type} ; accuracy={inv_acc} ; rand_u1 ; fsel"]
+    """
     cache_fsel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"fsel")
     total_site = rup.get_total_site(job_tag)
     if flavor in [ "l", "u", "d", ]:
