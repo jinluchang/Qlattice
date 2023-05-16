@@ -94,7 +94,7 @@ def azip(vec, *vecs):
     for size in size_list:
         if size < size_min:
             size_min = size
-    return np.array([ v[:size_min] for v in [ vec, ] + list(vecs) ]).transpose()
+    return np.array([ np.array(v[:size_min]).transpose() for v in [ vec, ] + list(vecs) ]).transpose()
 
 gnuplot_png_density = 500
 
