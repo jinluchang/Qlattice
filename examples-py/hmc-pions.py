@@ -346,7 +346,7 @@ class HMC:
         # Only update the trajectory number if the loaded field was produced
         # using the same version
         traj = max(trajnos)
-        if(fnmatch.fnmatch(trajnos.index(traj), f"output_data/fields/hmc_pions_traj_*_{self.fileidwc}.field")):
+        if(fnmatch.fnmatch(files[trajnos.index(traj)], f"output_data/fields/hmc_pions_traj_*_{self.fileidwc}.field")):
             traj_new = traj
         else:
             traj_new = 1
