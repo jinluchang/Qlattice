@@ -345,11 +345,12 @@ class HMC:
                         pass
         # Only update the trajectory number if the loaded field was produced
         # using the same version
+        traj = max(trajnos)
         if(fnmatch.fnmatch(trajnos.index(traj), f"output_data/fields/hmc_pions_traj_*_{self.fileidwc}.field")):
-            traj = max(trajnos)
+            traj_new = traj
         else:
-            traj = 1
-        return files[trajnos.index(traj)], traj
+            traj_new = 1
+        return files[trajnos.index(traj)], traj_new
 
     def run_hmc_w_mass_est(self):
         self.estimate_masses = True
