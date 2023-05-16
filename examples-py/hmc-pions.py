@@ -5,6 +5,7 @@ import numpy as np
 import pickle
 import datetime
 import glob
+import fnmatch
 
 import qlat as q
 
@@ -342,7 +343,12 @@ class HMC:
                         pass
                     except IndexError:
                         pass
-        traj = max(trajnos)
+        # Only update the trajectory number if the loaded field was produced
+        # using the same version
+        if(fnmatch.fnmatch(trajnos.index(traj), f"output_data/fields/hmc_pions_traj_*_{self.fileidwc}.field")):
+            traj = max(trajnos)
+        else:
+            traj = 1
         return files[trajnos.index(traj)], traj
 
     def run_hmc_w_mass_est(self):
