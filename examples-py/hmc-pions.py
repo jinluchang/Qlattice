@@ -47,18 +47,9 @@ class Field_fft:
 
     def set_rand_momentum(self, action, masses, rng_state):
         action.hmc_set_rand_momentum(self.field_ft, masses, rng_state)
-        # The zero modes should not be multiplied by 2^0.5, so they are 
-        # divided here
-        self.field_ft.set_elem([0,0,0,0],0,np.array([self.field_ft.get_elem([0,0,0,0],0)/2**0.5], dtype='c16').tobytes())
-        self.field_ft.set_elem([0,0,0,0],1,np.array([self.field_ft.get_elem([0,0,0,0],1)/2**0.5], dtype='c16').tobytes())
-        self.field_ft.set_elem([0,0,0,0],2,np.array([self.field_ft.get_elem([0,0,0,0],2)/2**0.5], dtype='c16').tobytes())
-        self.field_ft.set_elem([0,0,0,0],3,np.array([self.field_ft.get_elem([0,0,0,0],3)/2**0.5], dtype='c16').tobytes())
         # Performing the inverse Fourier transform this way projects
         # to real momenta
         q.field_double.set_double_from_complex(self.field,self.ifft*self.field_ft)
-        # Multiply all modes by 2^0.5 to make up for removing the 
-        # imaginary part
-        self.field *= 2**0.5
         self.updated_ft = False
         self.updated = True
 
@@ -753,7 +744,7 @@ def main():
     # The number of trajectories to calculate
     n_traj = 1000
     #
-    version = "2-0"
+    version = "3-0"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
     steps = 20
