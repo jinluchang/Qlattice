@@ -6,12 +6,13 @@ import functools
 
 q.begin_with_mpi()
 
+job_tags = [ 'test1', 'test2', ]
+
 q.default_g_jk_kwargs["jk_type"] = "super"
 @functools.cache
 def get_all_jk_idx():
-    all_job_tag = [ 'test1', 'test2', ]
     jk_idx_list = [ 'avg', ]
-    for job_tag in all_job_tag:
+    for job_tag in job_tags:
         trajs = get_trajs(job_tag)
         for traj in trajs:
             jk_idx_list.append((job_tag, traj,))

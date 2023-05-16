@@ -26,6 +26,16 @@ QAR
    does_file_exist_qar
    does_regular_file_exist_qar
 
+Pickle
+^^^^^^
+
+.. autosummary::
+   :toctree: generated
+
+   save_pickle_obj
+   load_pickle_obj
+   pickle_cache_call
+
 LatData
 ^^^^^^^
 
