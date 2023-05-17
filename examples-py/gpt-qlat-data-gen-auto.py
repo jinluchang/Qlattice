@@ -68,7 +68,7 @@ def get_cexpr_meson_corr():
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
 @q.timer_verbose
-def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
+def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel, get_fsel):
     fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr.lat"
     if get_load_path(fn) is not None:
@@ -77,6 +77,8 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     expr_names = get_cexpr_names(cexpr)
     total_site = dict_params[job_tag]["total_site"]
     t_size = total_site[3]
+    get_prop = get_get_prop()
+    psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
     geo = q.Geometry(total_site, 1)
@@ -102,11 +104,10 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
         values = np.zeros((total_site[3], len(expr_names),), dtype = complex)
         for val, t in val_list:
             values[t] += val
-        return values.transpose(1, 0)
+        return q.glb_sum(values.transpose(1, 0))
     q.timer_fork(0)
-    res_sum = q.glb_sum(
-            q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = auto_contractor_chunk_size))
-    q.displayln_info("timer_display for auto_contract_meson_corr")
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = auto_contractor_chunk_size))
+    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
     res_sum *= 1.0 / total_site[3]
@@ -117,14 +118,10 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    sig_msg_list = [
-            f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.5E}",
-            ]
-    for msg in sig_msg_list:
-        q.displayln_info(msg)
+    q.displayln_info(f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.5E}")
 
 @q.timer_verbose
-def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
+def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel, get_fsel):
     fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"
     if get_load_path(fn) is not None:
@@ -133,6 +130,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
     expr_names = get_cexpr_names(cexpr)
     total_site = q.Coordinate(dict_params[job_tag]["total_site"])
     t_size = total_site[3]
+    get_prop = get_get_prop()
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
     geo = q.Geometry(total_site, 1)
@@ -179,16 +177,16 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
         q.displayln_info(msg)
 
 @q.timer_verbose
-def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
+def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel, get_fsel):
     fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psrc.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
     expr_names = get_cexpr_names(cexpr)
-    total_site = rup.get_total_site(job_tag)
     total_site = q.Coordinate(dict_params[job_tag]["total_site"])
     t_size = total_site[3]
+    get_prop = get_get_prop()
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
@@ -238,17 +236,16 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
         q.displayln_info(msg)
 
 @q.timer_verbose
-def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
+def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel, get_fsel):
     fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk_psrc.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
     expr_names = get_cexpr_names(cexpr)
-    total_site = rup.get_total_site(job_tag)
-    total_site = dict_params[job_tag]["total_site"]
     total_site = q.Coordinate(dict_params[job_tag]["total_site"])
     t_size = total_site[3]
+    get_prop = get_get_prop()
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
@@ -339,7 +336,7 @@ def get_cexpr_meson_jt():
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
 @q.timer_verbose
-def auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel):
+def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel, get_fsel):
     fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_jt.lat"
     if get_load_path(fn) is not None:
@@ -348,6 +345,7 @@ def auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel):
     expr_names = get_cexpr_names(cexpr)
     total_site = q.Coordinate(dict_params[job_tag]["total_site"])
     t_size = total_site[3]
+    get_prop = get_get_prop()
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
@@ -431,16 +429,16 @@ def get_cexpr_meson_m():
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
 @q.timer_verbose
-def auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
+def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel, get_fsel):
     fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_m.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_m()
     expr_names = get_cexpr_names(cexpr)
-    total_site = rup.get_total_site(job_tag)
     total_site = q.Coordinate(dict_params[job_tag]["total_site"])
     t_size = total_site[3]
+    get_prop = get_get_prop()
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
@@ -742,7 +740,7 @@ def get_cexpr_meson_jj():
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
 @q.timer_verbose
-def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
+def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel, get_fsel):
     fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_jj.lat"
     if get_load_path(fn) is not None:
@@ -751,6 +749,7 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     expr_names = get_cexpr_names(cexpr)
     total_site = q.Coordinate(dict_params[job_tag]["total_site"])
     t_size = total_site[3]
+    get_prop = get_get_prop()
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = np.asarray(fsel.to_psel_local())
@@ -861,7 +860,7 @@ def get_cexpr_meson_jwjj():
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
 @q.timer_verbose
-def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
+def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel, get_fsel):
     fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_jwjj.lat"
     if get_load_path(fn) is not None:
@@ -870,6 +869,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     expr_names = get_cexpr_names(cexpr)
     total_site = q.Coordinate(dict_params[job_tag]["total_site"])
     t_size = total_site[3]
+    get_prop = get_get_prop()
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
@@ -1164,7 +1164,6 @@ def run_job(job_tag, traj):
     if get_load_path(fn_checkpoint) is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
             q.timer_fork()
-            get_prop = get_get_prop()
             # ADJUST ME
             auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel)
