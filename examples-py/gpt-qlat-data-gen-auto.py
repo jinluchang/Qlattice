@@ -19,8 +19,6 @@ load_path_list[:] = [
         "results",
         ]
 
-auto_contractor_chunk_size = 128
-
 # ----
 
 def mk_jw_v_mu(p, mu):
@@ -105,8 +103,9 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel, get_fsel):
         for val, t in val_list:
             values[t] += val
         return q.glb_sum(values.transpose(1, 0))
+    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default = 128)
     q.timer_fork(0)
-    res_sum = q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = auto_contractor_chunk_size))
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = auto_contractor_chunk_size)
     q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
@@ -156,6 +155,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel, get_fse
         for val, t in val_list:
             values[t] += val
         return values.transpose(1, 0)
+    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default = 128)
     q.timer_fork(0)
     res_sum = q.glb_sum(
             q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = auto_contractor_chunk_size))
@@ -215,6 +215,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel, get_fse
         for val, t in val_list:
             values[t] += val
         return values.transpose(1, 0)
+    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default = 128)
     q.timer_fork(0)
     res_sum = q.glb_sum(
             q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = auto_contractor_chunk_size))
@@ -380,6 +381,7 @@ def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel, get_fsel):
         for val in val_list:
             values += val
         return values
+    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default = 128)
     q.timer_fork(0)
     res_sum = q.glb_sum(
             q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = auto_contractor_chunk_size))
@@ -469,6 +471,7 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel, get_fsel):
         for val in val_list:
             values += val
         return values
+    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default = 128)
     q.timer_fork(0)
     res_sum = q.glb_sum(
             q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = auto_contractor_chunk_size))
@@ -1165,14 +1168,14 @@ def run_job(job_tag, traj):
         if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
             q.timer_fork()
             # ADJUST ME
-            auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel)
-            auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel)
-            auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel)
-            auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel)
-            auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel)
-            auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel)
-            auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
-            auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
+            auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel, get_fsel)
+            auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel, get_fsel)
+            auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel, get_fsel)
+            auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel, get_fsel)
+            auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel, get_fsel)
+            auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel, get_fsel)
+            auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel, get_fsel)
+            auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel, get_fsel)
             #
             q.qtouch_info(get_save_path(fn_checkpoint))
             q.release_lock()
