@@ -17,13 +17,21 @@ def call_pool_function(*args, **kwargs):
 def gc_collect():
     gc.collect()
 
+@timer
+def gc_freeze():
+    gc.freeze()
+
+@timer
+def gc_unfreeze():
+    gc.unfreeze()
+
 def process_initialization():
     verbose_level(-1)
     timer_reset(0)
-    # gc.unfreeze()
+    # gc_unfreeze()
     # clean_cache()
     # gc_collect()
-    # gc.freeze()
+    # gc_freeze()
     # clear_all_caches()
 
 def get_q_num_mp_processes():
@@ -56,11 +64,13 @@ def parallel_map(func, iterable,
         chunksize = 1,
         process_initialization = process_initialization,
         verbose = None):
-    # iterable = [ i1, i2, ... ]
-    # v1 = func(i1)
-    # v2 = func(i2)
-    # ...
-    # return [ v1, v2, ... ]
+    """
+    iterable = [ i1, i2, ... ]
+    v1 = func(i1)
+    v2 = func(i2)
+    ...
+    return [ v1, v2, ... ]
+    """
     #####
     if isinstance(func, int):
         # assuming it is called with parallel_map(n_proc, func, iterable, ...)
@@ -86,16 +96,21 @@ def parallel_map(func, iterable,
     try:
         pool_function = func
         gc_collect()
-        gc.freeze()
+        gc_freeze()
         with mp.Pool(n_proc, process_initialization, []) as p:
             if verbose > 0:
                 p.apply(show_memory_usage)
-            res = p.map(call_pool_function, iterable, chunksize = chunksize)
+            timer = Timer("parallel_map.p.map")
+            try:
+                timer.start()
+                res = p.map(call_pool_function, iterable, chunksize = chunksize)
+            finally:
+                timer.stop()
             if verbose > 0:
                 p.apply(show_memory_usage)
                 p.apply(timer_display)
     finally:
-        gc.unfreeze()
+        gc_unfreeze()
         gc_collect()
         pool_function = None
     return res
@@ -110,11 +125,13 @@ def parallel_map_sum(func, iterable,
         chunksize = 1,
         process_initialization = process_initialization,
         verbose = None):
-    # iterable = [ i1, i2, ... ]
-    # v1 = func(i1)
-    # v2 = func(i2)
-    # ...
-    # return sum_function([ v1, v2, ... ])
+    """
+    iterable = [ i1, i2, ... ]
+    v1 = func(i1)
+    v2 = func(i2)
+    ...
+    return sum_function([ v1, v2, ... ])
+    """
     #####
     if isinstance(func, int):
         # assuming it is called with parallel_map_sum(n_proc, func, iterable, ...)
@@ -143,20 +160,30 @@ def parallel_map_sum(func, iterable,
     try:
         pool_function = func
         gc_collect()
-        gc.freeze()
+        gc_freeze()
         with mp.Pool(n_proc, process_initialization, []) as p:
             if verbose > 0:
                 p.apply(show_memory_usage)
-            res = p.imap(call_pool_function, iterable, chunksize = chunksize)
-            if sum_start is None:
-                ret = sum_function(res)
-            else:
-                ret = sum_function(res, sum_start)
+            timer = Timer("parallel_map_sum.p.imap")
+            try:
+                timer.start()
+                res = p.imap(call_pool_function, iterable, chunksize = chunksize)
+            finally:
+                timer.stop()
+            timer = Timer("parallel_map_sum.sum_function")
+            try:
+                timer.start()
+                if sum_start is None:
+                    ret = sum_function(res)
+                else:
+                    ret = sum_function(res, sum_start)
+            finally:
+                timer.stop()
             if verbose > 0:
                 p.apply(show_memory_usage)
                 p.apply(timer_display)
     finally:
-        gc.unfreeze()
+        gc_unfreeze()
         gc_collect()
         pool_function = None
     return ret
