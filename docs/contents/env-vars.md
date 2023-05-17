@@ -82,7 +82,7 @@
 
   In unit of bytes.
 
-  Default is empty. It does not alter the system setting.
+  Default is empty. It does not alter the system setting. Suggested value is `8192`.
 
 - `q_mk_id_node_in_shuffle_seed`
 
