@@ -753,8 +753,8 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     t_size = total_site[3]
     psel = get_psel()
     fsel, fselc = get_fsel()
-    xg_fsel_list = np.array(fsel.to_psel_local().to_list())
-    xg_psel_list = np.array(psel.to_list())
+    xg_fsel_list = np.asarray(fsel.to_psel_local())
+    xg_psel_list = np.asarray(psel)
     tsep = dict_params[job_tag]["meson_tensor_tsep"]
     geo = q.Geometry(total_site, 1)
     r_list = get_r_list(job_tag)
@@ -782,7 +782,7 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
                     "x_1" : ("point", xg_src,),
                     "t_2" : ("wall", t_2),
                     "t_1" : ("wall", t_1),
-                    "size" : total_site.list(),
+                    "size" : total_site,
                     }
             t = x_rel_t % t_size
             val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
@@ -795,11 +795,10 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
                 values[t, r_idx_low] += coef_low * val
                 values[t, r_idx_high] += coef_high * val
             q.displayln_info(f"{fname}: {idx+1}/{len(xg_psel_list)}")
-        return values.transpose(2, 0, 1)
+        return q.glb_sum(values.transpose(2, 0, 1))
     q.timer_fork(0)
-    res_sum = q.glb_sum(
-            q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 1))
-    q.displayln_info("timer_display for auto_contract_meson_jj")
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 1)
+    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
     res_sum *= 1.0 / (len(xg_psel_list) * fsel.prob())
@@ -810,11 +809,7 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
         ])
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
-    sig_msg_list = [
-            f"CHECK: {fname}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.5E}",
-            ]
-    for msg in sig_msg_list:
-        q.displayln_info(msg)
+    q.displayln_info(f"CHECK: {fname}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.5E}")
 
 # ----
 
