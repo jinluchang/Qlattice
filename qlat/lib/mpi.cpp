@@ -1,3 +1,4 @@
+#include <qlat-utils/core.h>
 #include <qlat/mpi.h>
 
 namespace qlat
@@ -588,6 +589,8 @@ void display_qlat_banner()
   displayln_info("                              Qlattice");
   displayln_info("");
   displayln_info("                   Copyright (C) 2023 Luchang Jin");
+  displayln_info("");
+  displayln_info("                          " + get_qlat_version());
   displayln_info("");
   displayln_info(
       "This program is free software; you can redistribute it and/or modify\n"
