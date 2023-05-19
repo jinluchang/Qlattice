@@ -21,6 +21,8 @@ sed -i "s/^release = '.*'$/release = '$version'/" docs/conf.py
 
 sed -i "s/^  version: '.*',$/  version: '$version',/" qlat*/meson.build
 
+echo "Version info updated."
+
 )
 
 (
