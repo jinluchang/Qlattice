@@ -8,7 +8,7 @@ cd "$wd/qlat/pylib/cqlat"
 
 bash update.sh
 
-)
+) || echo "Run update.sh not successful."
 
 (
 
@@ -23,7 +23,7 @@ sed -i "s/^  version: '.*',$/  version: '$version',/" qlat*/meson.build
 
 echo "Version info updated."
 
-)
+) || echo "Update version not successful."
 
 (
 
@@ -48,4 +48,4 @@ done | sort >> sha256sums.txt
 
 cat sha256sums.txt
 
-)
+) || echo "Update sha256sums.txt not successful."
