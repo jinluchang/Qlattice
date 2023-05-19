@@ -3,6 +3,24 @@ from . import rbc_ukqcd_params as rup
 from .rbc_ukqcd_params import dict_params
 from .jobs import *
 
+# -----------------------------------------------------------------------------
+
+@q.timer
+def run_get_inverter(job_tag, traj, *, inv_type, get_gf, get_gt = None, get_eig = None):
+    if None in [ get_gf, ]:
+        return
+    if get_gt is None:
+        get_gt = lambda: None
+    if get_eig is None:
+        get_eig = lambda: None
+    gf = get_gf()
+    gt = get_gt()
+    eig = get_eig()
+    for inv_acc in [ 0, 1, 2, ]:
+        ru.get_inv(gf, job_tag, inv_type, inv_acc, gt = gt, eig = eig)
+
+# -----------------------------------------------------------------------------
+
 @q.timer_verbose
 def compute_prop_1(inv, src, *, tag, sfw, path_sp, psel, fsel, fselc):
     fn_sp = os.path.join(path_sp, f"{tag}.lat")
@@ -36,8 +54,12 @@ def compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc, *,
                           psel = psel, fsel = fsel, fselc = fselc)
 
 @q.timer_verbose
-def compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type, *,
-        path_s, path_sp, psel, fsel, fselc, eig):
+def compute_prop_wsrc_all(job_tag, traj, *,
+                          inv_type, gf, gt, wi, psel, fsel, fselc, eig):
+    inv_type_names = [ "light", "strange", ]
+    inv_type_name = inv_type_names[inv_type]
+    path_s = f"{job_tag}/prop-wsrc-{inv_type_name}/traj-{traj}"
+    path_sp = f"{job_tag}/psel-prop-wsrc-{inv_type_name}/traj-{traj}"
     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 4, ])
     for inv_acc in [ 2, 1 ]:
@@ -57,39 +79,27 @@ def compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type, *,
     # q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after = True)
 
 @q.timer
-def run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel, get_wi):
-    if None in [ get_gf, get_eig, get_gt, get_psel, get_fsel, ]:
+def run_prop_wsrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel, get_fsel, get_wi):
+    if None in [ get_gf, get_gt, get_psel, get_fsel, ]:
         return
-    if get_load_path(f"{job_tag}/prop-wsrc-light/traj-{traj}/geon-info.txt") is not None:
+    if get_eig is None:
+        if inv_type == 0:
+            return
+        get_eig = lambda: None
+    inv_type_names = [ "light", "strange", ]
+    inv_type_name = inv_type_names[inv_type]
+    if get_load_path(f"{job_tag}/prop-wsrc-{inv_type_name}/traj-{traj}/geon-info.txt") is not None:
         return
-    if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-light"):
+    if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-{inv_type_name}"):
         gf = get_gf()
         gt = get_gt()
         eig = get_eig()
         fsel, fselc = get_fsel()
+        psel = get_psel()
         wi = get_wi()
-        compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type = 0,
-                path_s = f"{job_tag}/prop-wsrc-light/traj-{traj}",
-                path_sp = f"{job_tag}/psel-prop-wsrc-light/traj-{traj}",
-                psel = get_psel(), fsel = fsel, fselc = fselc, eig = eig)
-        q.release_lock()
-
-@q.timer
-def run_prop_wsrc_strange(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel, get_wi):
-    if None in [ get_gf, get_eig, get_gt, get_psel, get_fsel, ]:
-        return
-    if get_load_path(f"{job_tag}/prop-wsrc-strange/traj-{traj}/geon-info.txt") is not None:
-        return
-    if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-strange"):
-        gf = get_gf()
-        gt = get_gt()
-        eig = get_eig()
-        fsel, fselc = get_fsel()
-        wi = get_wi()
-        compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type = 1,
-                path_s = f"{job_tag}/prop-wsrc-strange/traj-{traj}",
-                path_sp = f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}",
-                psel = get_psel(), fsel = fsel, fselc = fselc, eig = eig)
+        compute_prop_wsrc_all(job_tag, traj,
+                              inv_type = inv_type, gf = gf, gt = gt, wi = wi,
+                              psel = psel, fsel = fsel, fselc = fselc, eig = eig)
         q.release_lock()
 
 # -----------------------------------------------------------------------------
@@ -131,7 +141,7 @@ def compute_prop_psrc(job_tag, xg_src, inv_type, inv_acc, *,
 
 @q.timer_verbose
 def compute_prop_psrc_all(job_tag, traj, *,
-        inv_type, gf, gt, psel, fsel, fselc, eig):
+                          inv_type, gf, gt, psel, fsel, fselc, eig):
     inv_type_names = [ "light", "strange", ]
     inv_type_name = inv_type_names[inv_type]
     path_s = f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}"
@@ -165,8 +175,10 @@ def compute_prop_psrc_all(job_tag, traj, *,
 def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel, get_fsel):
     if None in [ get_gf, get_gt, get_psel, get_fsel, ]:
         return
-    if inv_type == 0 and get_eig is None:
-        return
+    if get_eig is None:
+        if inv_type == 0:
+            return
+        get_eig = lambda: None
     inv_type_names = [ "light", "strange", ]
     inv_type_name = inv_type_names[inv_type]
     if get_load_path(f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}/geon-info.txt") is not None:
@@ -177,8 +189,9 @@ def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel,
         eig = get_eig()
         fsel, fselc = get_fsel()
         psel = get_psel()
-        compute_prop_psrc_all(job_tag, traj, inv_type = inv_type,
-                gf = gf, gt = gt, psel = psel, fsel = fsel, fselc = fselc, eig = eig)
+        compute_prop_psrc_all(job_tag, traj,
+                              inv_type = inv_type, gf = gf, gt = gt,
+                              psel = psel, fsel = fsel, fselc = fselc, eig = eig)
         q.release_lock()
 
 # -----------------------------------------------------------------------------
@@ -237,8 +250,10 @@ def compute_prop_rand_u1(*, job_tag, traj, inv_type, gf, path_s, fsel, eig = Non
 def run_prop_rand_u1(job_tag, traj, *, inv_type, get_gf, get_fsel, get_eig = None):
     if None in [ get_gf, get_fsel, ]:
         return
-    if inv_type == 0 and get_eig is None:
-        return
+    if get_eig is None:
+        if inv_type == 0:
+            return
+        get_eig = lambda: None
     inv_type_names = [ "light", "strange", "charm", ]
     inv_type_name = inv_type_names[inv_type]
     path_s = f"{job_tag}/prop-rand-u1-{inv_type_name}/traj-{traj}"
@@ -247,10 +262,7 @@ def run_prop_rand_u1(job_tag, traj, *, inv_type, get_gf, get_fsel, get_eig = Non
     if q.obtain_lock(f"locks/{job_tag}-{traj}-rand-u1-{inv_type_name}"):
         gf = get_gf()
         fsel, fselc = get_fsel()
-        if get_eig is None:
-            eig = None
-        else:
-            eig = get_eig()
+        eig = get_eig()
         compute_prop_rand_u1(
                 job_tag = job_tag, traj = traj,
                 inv_type = inv_type,
@@ -345,8 +357,12 @@ def compute_prop_smear_all(job_tag, traj, *,
 
 @q.timer
 def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_gt, get_psel, get_fsel, get_psel_smear):
-    if None in [ get_gf, get_gt, get_gf_ape, get_eig, get_psel, get_fsel, ]:
+    if None in [ get_gf, get_gt, get_gf_ape, get_psel, get_fsel, ]:
         return
+    if get_eig is None:
+        if inv_type == 0:
+            return
+        get_eig = lambda: None
     inv_type_names = [ "light", "strange", ]
     inv_type_name = inv_type_names[inv_type]
     if get_load_path(f"{job_tag}/prop-smear-{inv_type_name}/traj-{traj}/geon-info.txt") is not None:

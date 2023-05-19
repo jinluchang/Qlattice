@@ -1126,14 +1126,18 @@ def run_job(job_tag, traj):
     #
     def run_with_eig():
         get_eig = run_eig(job_tag, traj_gf, get_gf)
-        run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel, get_wi)
+        run_get_inverter(job_tag, traj, inv_type = 0, get_gf = get_gf, get_eig = get_eig)
+        run_get_inverter(job_tag, traj, inv_type = 0, get_gf = get_gf, get_gt = get_gt, get_eig = get_eig)
+        run_prop_wsrc(job_tag, traj, inv_type = 0, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt, get_psel = get_psel, get_fsel = get_fsel, get_wi = get_wi)
         run_prop_rand_u1(job_tag, traj, inv_type = 0, get_gf = get_gf, get_fsel = get_fsel, get_eig = get_eig)
         run_prop_psrc(job_tag, traj, inv_type = 0, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt, get_psel = get_psel, get_fsel = get_fsel)
         run_prop_smear(job_tag, traj, inv_type = 0, get_gf = get_gf, get_gf_ape = get_gf_ape, get_eig = get_eig, get_gt = get_gt, get_psel = get_psel, get_fsel = get_fsel, get_psel_smear = get_psel_smear)
     #
     def run_with_eig_strange():
         get_eig_strange = run_eig_strange(job_tag, traj_gf, get_gf)
-        run_prop_wsrc_strange(job_tag, traj, get_gf, get_eig_strange, get_gt, get_psel, get_fsel, get_wi)
+        run_get_inverter(job_tag, traj, inv_type = 1, get_gf = get_gf, get_eig = get_eig_strange)
+        run_get_inverter(job_tag, traj, inv_type = 1, get_gf = get_gf, get_gt = get_gt, get_eig = get_eig_strange)
+        run_prop_wsrc(job_tag, traj, inv_type = 1, get_gf = get_gf, get_eig = get_eig_strange, get_gt = get_gt, get_psel = get_psel, get_fsel = get_fsel, get_wi = get_wi)
         run_prop_rand_u1(job_tag, traj, inv_type = 1, get_gf = get_gf, get_fsel = get_fsel, get_eig = get_eig_strange)
         run_prop_psrc(job_tag, traj, inv_type = 1, get_gf = get_gf, get_eig = get_eig_strange, get_gt = get_gt, get_psel = get_psel, get_fsel = get_fsel)
         run_prop_smear(job_tag, traj, inv_type = 1, get_gf = get_gf, get_gf_ape = get_gf_ape, get_eig = get_eig_strange, get_gt = get_gt, get_psel = get_psel, get_fsel = get_fsel, get_psel_smear = get_psel_smear)
@@ -1141,6 +1145,7 @@ def run_job(job_tag, traj):
     run_with_eig()
     run_with_eig_strange()
     #
+    run_get_inverter(job_tag, traj, inv_type = 2, get_gf = get_gf)
     run_prop_rand_u1(job_tag, traj, inv_type = 2, get_gf = get_gf, get_fsel = get_fsel)
     #
     get_get_prop = run_get_prop(job_tag, traj,
