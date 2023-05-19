@@ -129,6 +129,9 @@ jobs:
     - name: Download dependencies
       run: |
         ./scripts/download-core.sh
+    - name: Show versions for dependencies
+      run: |
+        ./scripts/update-sources.sh
     - name: Build dependencies
       run: |
         export num_proc=2
@@ -219,6 +222,9 @@ jobs:
     - name: Download dependencies
       run: |
         ./scripts/download-core.sh
+    - name: Show versions for dependencies
+      run: |
+        ./scripts/update-sources.sh
     - name: Build dependencies
       run: |
         export num_proc=2
@@ -403,6 +409,9 @@ jobs:
     - name: Download dependencies
       run: |
         ./scripts/download-core.sh
+    - name: Show versions for dependencies
+      run: |
+        ./scripts/update-sources.sh
     - name: Build dependencies
       run: |
         export num_proc=3
@@ -489,6 +498,9 @@ jobs:
     - name: Download dependencies
       run: |
         ./scripts/download-core.sh
+    - name: Show versions for dependencies
+      run: |
+        ./scripts/update-sources.sh
     - name: Build dependencies
       run: |
         export num_proc=3

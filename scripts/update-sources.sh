@@ -12,6 +12,19 @@ bash update.sh
 
 (
 
+version="$(cat VERSION)"
+version=${version#v}
+
+echo "Current version from file VERSION is: '$version'."
+
+sed -i "s/^release = '.*'$/release = '$version'/" docs/conf.py
+
+sed -i "s/^  version: '.*',$/  version: '$version',/" qlat*/meson.build
+
+)
+
+(
+
 mkdir -p "$distfiles"
 
 cd "$distfiles"

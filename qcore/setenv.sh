@@ -21,6 +21,11 @@ elif [ ! "$(uname)" == "Linux" ]; then
     echo "Setting for $(uname) as if it is a Linux"
 fi
 
+if [ -n "$NVCC_ARCH" ] ; then
+    echo "Setting use GPU."
+    export q_num_mp_processes=0
+fi
+
 export LC_ALL="C"
 
 if [ -z "${num_proc+x}" ] ; then
