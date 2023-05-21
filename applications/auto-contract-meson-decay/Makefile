@@ -5,11 +5,11 @@ src_path=~/Qlattice-cc/applications/auto-contract-meson-decay
 grid_options=--dslash-asm --shm-hugepages --shm 4050 --mpi_split 1.1.1.1 --grouped 4
 grid_options=--mpi_split 1.1.1.1 --mpi_split 1.1.1 --grouped 4
 
-mpi_options=--bind-to none -mca btl_openib_allow_ib true
 mpi_options=--bind-to none
+mpi_options=--oversubscribe --bind-to none bind-gpu.sh
 
 run:
-	q_verbose=6 q_num_threads=2 q_num_mp_processes=2 mpiexec -n 4 --oversubscribe $(mpi_options) ./run.py |& tee log.txt
+	q_verbose=6 OMP_NUM_THREADS=2 q_num_mp_processes=2 mpiexec -n 4 $(mpi_options) ./run.py $(grid_options) |& tee log.txt
 	-grep '^CHECK: ' log.txt > log.check.txt.new
 	-diff log.check.txt.new log.check.txt
 	-find results -type f | sort | xargs -d '\n' md5sum > md5sum.txt.new
