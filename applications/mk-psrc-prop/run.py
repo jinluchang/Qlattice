@@ -79,7 +79,6 @@ def run_job(job_tag, traj):
     def run_with_eig_strange():
         get_eig = run_eig_strange(job_tag, traj_gf, get_gf)
         run_get_inverter(job_tag, traj, inv_type = 1, get_gf = get_gf, get_eig = get_eig)
-        run_prop(inv_type = 1, get_eig = get_eig)
         run_prop_psrc(job_tag, traj, inv_type = 1, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt, get_psel = get_psel, get_fsel = get_fsel)
     #
     run_with_eig()
