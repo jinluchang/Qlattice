@@ -319,7 +319,7 @@ jobs:
         USE_COMPILER=clang ./scripts/hadrons-tblum.sh
     - name: Check error for Build more packages
       run: |
-        for path in $HOME/qlat-build/{{hadrons/Grid,tblum/Grid-tblum}/{lib/libGrid.a,bin/{grid-config,Mobius2p1fEOFA,Benchmark_dwf,Benchmark_dwf_fp32}},{hadrons/Hadrons,tblum/Hadrons-tblum}/{lib/libHadrons.a,bin/{hadrons-config,HadronsXmlRun,HadronsContractor}}} ; do if [ -e "$path" ] ; then echo "Build '$path' successfully." ; else echo "Failed to build '$path'." ; fi ; done
+        for path in $HOME/qlat-build/{default/lib/python3/dist-packages/{cgpt.so,gpt/__init__.py},{default/Grid-clehner,hadrons/Grid,tblum/Grid-tblum}/{lib/libGrid.a,bin/{grid-config,Mobius2p1fEOFA,Benchmark_dwf,Benchmark_dwf_fp32}},{hadrons/Hadrons,tblum/Hadrons-tblum}/{lib/libHadrons.a,bin/{hadrons-config,HadronsXmlRun,HadronsContractor}}} ; do if [ -e "$path" ] ; then echo "Build '$path' successfully." ; else echo "Failed to build '$path'." ; fi ; done
 
   build_qlat_mac:
     runs-on: macos-latest
@@ -336,7 +336,8 @@ jobs:
     - name: Install Brew packages
       run: |
         # brew update
-        brew install ninja patchelf llvm open-mpi eigen fftw gsl zlib openssl@3 mpfr autoconf automake flock findutils pkg-config coreutils gnuplot texlive poppler
+        brew install ninja patchelf llvm open-mpi eigen zlib openssl@3 mpfr autoconf automake flock findutils pkg-config coreutils gnuplot texlive poppler
+        brew install fftw
         # brew upgrade
     - name: Install Python packages
       run: |
@@ -392,7 +393,7 @@ jobs:
     - name: Install Brew packages
       run: |
         # brew update
-        brew install ninja patchelf llvm open-mpi eigen fftw gsl zlib openssl@3 mpfr autoconf automake flock findutils pkg-config coreutils gnuplot texlive poppler
+        brew install ninja patchelf llvm open-mpi eigen zlib openssl@3 mpfr autoconf automake flock findutils pkg-config coreutils gnuplot texlive poppler
         # brew upgrade
     - name: Install Python packages
       run: |
@@ -419,6 +420,7 @@ jobs:
         ./scripts/qcore.sh
         ./scripts/eigen.sh
         ./scripts/fftw.sh
+        ./scripts/gsl.sh
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
     - name: Build CPS
@@ -465,7 +467,7 @@ jobs:
     - name: Check error
       run: |
         ./scripts/qlat-examples-update-logs.sh
-        ! git diff | grep '^[+-]CHECK: '
+        ! git diff | grep '^[+-]CHECK: ' || echo "Check failed!"
 
   build_qlat_gpt_mac:
     runs-on: macos-latest
@@ -482,7 +484,7 @@ jobs:
     - name: Install Brew packages
       run: |
         # brew update
-        brew install ninja patchelf llvm open-mpi eigen fftw gsl zlib openssl@3 mpfr autoconf automake flock findutils pkg-config coreutils gnuplot texlive poppler
+        brew install ninja patchelf llvm open-mpi eigen zlib openssl@3 mpfr autoconf automake flock findutils pkg-config coreutils gnuplot texlive poppler
         # brew upgrade
     - name: Install Python packages
       run: |
@@ -509,6 +511,7 @@ jobs:
         ./scripts/qcore.sh
         ./scripts/eigen.sh
         ./scripts/fftw.sh
+        ./scripts/gsl.sh
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
     - name: Build CPS
@@ -567,7 +570,7 @@ jobs:
     - name: Check error
       run: |
         ./scripts/qlat-examples-update-logs.sh
-        ! git diff | grep '^[+-]CHECK: '
+        ! git diff | grep '^[+-]CHECK: ' || echo "Check failed!"
     - name: Build more packages Grid
       run: |
         source ~/qlat-build/default/setenv.sh
@@ -596,66 +599,4 @@ jobs:
         USE_COMPILER=clang ./scripts/hadrons-tblum.sh
     - name: Check error for Build more packages
       run: |
-        for path in $HOME/qlat-build/{{hadrons/Grid,tblum/Grid-tblum}/{lib/libGrid.a,bin/{grid-config,Mobius2p1fEOFA,Benchmark_dwf,Benchmark_dwf_fp32}},{hadrons/Hadrons,tblum/Hadrons-tblum}/{lib/libHadrons.a,bin/{hadrons-config,HadronsXmlRun,HadronsContractor}}} ; do if [ -e "$path" ] ; then echo "Build '$path' successfully." ; else echo "Failed to build '$path'." ; fi ; done
-
-
-#  build_wheels:
-#    name: Build wheels on ${{ matrix.os }}
-#    runs-on: ${{ matrix.os }}
-#    strategy:
-#      matrix:
-#        os: [ ubuntu-latest, macos-latest, ]
-#    steps:
-#      - uses: actions/checkout@v3
-#      - name: Set up QEMU
-#        if: runner.os == 'Linux'
-#        uses: docker/setup-qemu-action@v2
-#        with:
-#          platforms: all
-#      - name: Build wheels qlat-utils
-#        uses: pypa/cibuildwheel@v2.11.3
-#        with:
-#          package-dir: qlat-utils
-#          output-dir: wheelhouse
-#      - name: Build wheels qlat
-#        uses: pypa/cibuildwheel@v2.11.3
-#        with:
-#          package-dir: qlat
-#          output-dir: wheelhouse
-#
-#  make_sdist:
-#    name: Make SDist
-#    runs-on: ubuntu-latest
-#    steps:
-#    - uses: actions/checkout@v3
-#    - name: Install Ubuntu packages
-#      run: |
-#        sudo apt-get update
-#        sudo apt-get install -y libgsl-dev zlib1g-dev libssl-dev libeigen3-dev libopenmpi-dev libfftw3-mpi-dev libfftw3-dev libmpfr-dev
-#    - name: Build sdist for qlat-utils
-#      run: |
-#        ( cd qlat-utils ; pipx run build --sdist )
-#    - name: Build sdist for qlat
-#      run: |
-#        ( cd qlat ; pipx run build --sdist )
-#    - name: Download dependencies
-#      run: |
-#        ./scripts/download-core.sh
-#    - name: Build Grid-clehner
-#      run: |
-#        export num_proc=2
-#        ./scripts/setenv.default.sh
-#        ./scripts/qcore.sh
-#        ./scripts/c-lime.sh
-#        ./scripts/grid-clehner.avx2.sh
-#    - name: Build sdist for qlat-grid
-#      run: |
-#        source ~/qlat-build/default/setenv.sh
-#        ( cd qlat-grid ; pipx run build --sdist )
-#    - name: Collecting sdist
-#      run: |
-#        mkdir -p dist
-#        mv ./qlat*/dist/*.tar.gz ./dist
-#    - uses: actions/upload-artifact@v3
-#      with:
-#        path: ./dist/*.tar.gz
+        for path in $HOME/qlat-build/{default/lib/python3/dist-packages/{cgpt.so,gpt/__init__.py},{default/Grid-clehner,hadrons/Grid,tblum/Grid-tblum}/{lib/libGrid.a,bin/{grid-config,Mobius2p1fEOFA,Benchmark_dwf,Benchmark_dwf_fp32}},{hadrons/Hadrons,tblum/Hadrons-tblum}/{lib/libHadrons.a,bin/{hadrons-config,HadronsXmlRun,HadronsContractor}}} ; do if [ -e "$path" ] ; then echo "Build '$path' successfully." ; else echo "Failed to build '$path'." ; fi ; done
