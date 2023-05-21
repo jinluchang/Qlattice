@@ -79,26 +79,16 @@ def run_job(job_tag, traj):
     get_psel_smear = run_psel_smear(job_tag, traj)
     assert get_psel_smear is not None
     #
-    def run_prop(inv_type, get_eig):
-        run_prop_smear(job_tag, traj,
-                inv_type = inv_type,
-                get_gf = get_gf,
-                get_gf_ape = get_gf_ape,
-                get_eig = get_eig,
-                get_gt = get_gt,
-                get_psel = get_psel,
-                get_fsel = get_fsel,
-                get_psel_smear = get_psel_smear,
-                )
-    #
     def run_with_eig():
         get_eig = run_eig(job_tag, traj_gf, get_gf)
-        run_prop(inv_type = 0, get_eig = get_eig)
+        run_get_inverter(job_tag, traj, inv_type = 0, get_gf = get_gf, get_eig = get_eig)
+        run_prop_smear(job_tag, traj, inv_type = 0, get_gf = get_gf, get_gf_ape = get_gf_ape, get_eig = get_eig, get_gt = get_gt, get_psel = get_psel, get_fsel = get_fsel, get_psel_smear = get_psel_smear)
     #
     def run_with_eig_strange():
-        get_eig_strange = run_eig_strange(job_tag, traj_gf, get_gf)
-        # get_eig_strange = lambda : None
-        run_prop(inv_type = 1, get_eig = get_eig_strange)
+        get_eig = run_eig_strange(job_tag, traj_gf, get_gf)
+        # get_eig = None
+        run_get_inverter(job_tag, traj, inv_type = 1, get_gf = get_gf, get_eig = get_eig)
+        run_prop_smear(job_tag, traj, inv_type = 1, get_gf = get_gf, get_gf_ape = get_gf_ape, get_eig = get_eig, get_gt = get_gt, get_psel = get_psel, get_fsel = get_fsel, get_psel_smear = get_psel_smear)
     #
     run_with_eig()
     run_with_eig_strange()

@@ -269,13 +269,20 @@ def run_job(job_tag, traj):
     #
     def run_with_eig():
         get_eig = run_eig(job_tag, traj_gf, get_gf)
+        run_get_inverter(job_tag, traj, inv_type = 0, get_gf = get_gf, get_eig = get_eig)
+        run_get_inverter(job_tag, traj, inv_type = 0, get_gf = get_gf, get_gt = get_gt, get_eig = get_eig)
         run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel, get_wi)
         run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel, get_pi)
     #
-    run_with_eig()
+    def run_with_eig_strange():
+        get_eig = None
+        run_get_inverter(job_tag, traj, inv_type = 1, get_gf = get_gf, get_eig = get_eig)
+        run_get_inverter(job_tag, traj, inv_type = 1, get_gf = get_gf, get_gt = get_gt, get_eig = get_eig)
+        run_prop_wsrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel, get_wi)
+        run_prop_psrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel, get_pi)
     #
-    run_prop_wsrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel, get_wi)
-    run_prop_psrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel, get_pi)
+    run_with_eig()
+    run_with_eig_strange()
     #
     q.clean_cache()
     q.timer_display()
