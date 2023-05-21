@@ -7,9 +7,10 @@ grid_options=--mpi_split 1.1.1.1 --mpi_split 1.1.1 --grouped 4
 
 mpi_options=--bind-to none -mca btl_openib_allow_ib true
 mpi_options=--oversubscribe --bind-to none bind-gpu.sh
+mpi_options=$(MPI_OPTIONS)
 
 run:
-	q_verbose=6 OMP_NUM_THREADS=2 q_num_mp_processes=2 mpiexec -n 4 $(mpi_options) ./run.py $(grid_options) |& tee log.txt
+	q_verbose=6 OMP_NUM_THREADS=2 mpiexec -n 4 $(mpi_options) ./run.py $(grid_options) |& tee log.txt
 	-grep '^CHECK: ' log.txt > log.check.txt.new
 	-diff log.check.txt.new log.check.txt
 	-find results -type f | sort | xargs -d '\n' md5sum > md5sum.txt.new
