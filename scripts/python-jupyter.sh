@@ -28,6 +28,10 @@ source qcore/set-prefix.sh $name
     time-run pip3 install $opts pytools
     time-run pip3 install $opts Sphinx
     time-run pip3 install $opts myst-parser
+    time-run pip3 install $opts torch torchvision torchaudio
+    time-run pip3 install $opts ipywidgets
+    time-run pip3 install $opts transformers
+    time-run pip3 install $opts xformers
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"
