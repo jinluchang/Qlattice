@@ -31,7 +31,8 @@ load_path_list[:] = [
         "../qcddata-5",
         "../mk-gf-gt/results",
         "../mk-sel/results",
-        "../mk-selected-data/results",
+        "../mk-wsrc-prop/results",
+        "../mk-psrc-prop/results",
         os.path.join(os.getenv("HOME"), "qcddata"),
         os.path.join(os.getenv("HOME"), "qcddata-1"),
         os.path.join(os.getenv("HOME"), "qcddata-2"),
@@ -40,7 +41,8 @@ load_path_list[:] = [
         os.path.join(os.getenv("HOME"), "qcddata-5"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-gf-gt/results"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-sel/results"),
-        os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-selected-data/results"),
+        os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-wsrc-prop/results"),
+        os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-psrc-prop/results"),
         ]
 
 auto_contractor_chunk_size = 128
