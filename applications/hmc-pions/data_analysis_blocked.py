@@ -18,6 +18,7 @@ def autocorr(data):
 
 class LatticeData():
     def __init__(self, Nx, Nt, msq, lmbd, alpha, version, cutoff, block_size):
+        self.trajs=[]
         self.accept_rates=[]
         self.psq_list=[]
         self.phi_list=[]
@@ -140,6 +141,7 @@ class LatticeData():
         self.loaded_files.append(filename)
         with open(filename,"rb") as input:
             data = pickle.load(input)
+            self.trajs.extend(data["trajs"])
             self.accept_rates.extend(data["accept_rates"])
             self.psq_list.extend(data["psq_list"])
             self.phi_list.extend(data["phi_list"])
@@ -190,7 +192,36 @@ class LatticeData():
         files = sorted(files, key=lambda f: datenos[files.index(f)])
         for f in files:
             self.load_data("-", "-", f)
-     
+    
+    def cut_old_data(self):
+        # If data from an earlier version was accidently included, this finds the most 
+        # recent location where the trajectory count restarted
+        try:
+            start = next(i for i in reversed(range(len(self.trajs))) if self.trajs[i] == 2)
+        except StopIteration:
+            return
+        self.trajs=self.trajs[start:]
+        self.accept_rates=self.accept_rates[start:]
+        self.psq_list=self.psq_list[start:]
+        self.phi_list=self.phi_list[start:]
+        self.timeslices=self.timeslices[start:]
+        self.timeslices_m=self.timeslices_m[start:]
+        self.hm_timeslices=self.hm_timeslices[start:]
+        self.A_timeslices=self.A_timeslices[start:]
+        self.phi_sq_dist=self.phi_sq_dist[start:]
+        self.phi_i_dist=self.phi_i_dist[start:]
+        self.theta_dist=self.theta_dist[start:]
+        self.psq_pred_list=self.psq_pred_list[start:]
+        self.phi_pred_list=self.phi_pred_list[start:]
+        self.timeslices_pred=self.timeslices_pred[start:]
+        self.hm_timeslices_pred=self.hm_timeslices_pred[start:]
+        self.A_timeslices_pred=self.A_timeslices_pred[start:]
+        self.fields=self.fields[start:]
+        self.momentums=self.momentums[start:]
+        self.fields_pred=self.fields_pred[start:]
+        self.data_len = len(self.phi_list)
+        self.reset_calcs()
+    
     def plot_phi(self, zoom_win=300):
         # Plot an observable
         fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12,3))
