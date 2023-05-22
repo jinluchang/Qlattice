@@ -215,6 +215,8 @@ class NvccCmdLine:
             elif arg in opt1_pool:
                 self.cc_flags.append(arg)
                 n_arg = 1
+            elif arg.startswith("-Wl,-rpath"):
+                self.cc_flags.append(arg)
             else:
                 argv_new.append(arg)
         self.argv = argv_new

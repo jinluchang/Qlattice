@@ -117,8 +117,8 @@ inline void grid_convert(Grid::LatticeGaugeField& ggf, const GaugeField& gf)
   TIMER_VERBOSE("grid_convert(ggf,gf)");
   using namespace Grid;
   const Geometry& geo = gf.geo();
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  autoView(ggf_v, ggf, CpuWrite);
+  qthread_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Grid::Coordinate coor = grid_convert(xl);
     const Vector<ColorMatrix> ms = gf.get_elems_const(xl);
@@ -135,8 +135,8 @@ inline void grid_convert(Grid::LatticeGaugeField& ggf, const GaugeField& gf)
     for (int i = 0; i < (int)fs.size(); ++i) {
       fs[i] = ds[i];
     }
-    pokeLocalSite(gms, ggf, coor);
-  }
+    pokeLocalSite(gms, ggf_v, coor);
+  })
 }
 
 inline void grid_convert(Grid::LatticeGaugeFieldF& ggf, const GaugeField& gf)
@@ -144,8 +144,8 @@ inline void grid_convert(Grid::LatticeGaugeFieldF& ggf, const GaugeField& gf)
   TIMER_VERBOSE("grid_convert(ggf,gf)");
   using namespace Grid;
   const Geometry& geo = gf.geo();
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  autoView(ggf_v, ggf, CpuWrite);
+  qthread_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Grid::Coordinate coor = grid_convert(xl);
     const Vector<ColorMatrix> ms = gf.get_elems_const(xl);
@@ -162,8 +162,8 @@ inline void grid_convert(Grid::LatticeGaugeFieldF& ggf, const GaugeField& gf)
     for (int i = 0; i < (int)fs.size(); ++i) {
       fs[i] = ds[i];
     }
-    pokeLocalSite(gms, ggf, coor);
-  }
+    pokeLocalSite(gms, ggf_v, coor);
+  })
 }
 
 inline void grid_convert(Grid::LatticePropagatorF& gprop, const Field<WilsonMatrix>& prop)
@@ -260,15 +260,15 @@ inline void grid_convert(FermionField5d& ff, const Grid::LatticeFermionF& gff)
   TIMER_VERBOSE("grid_convert(ff,gff)");
   using namespace Grid;
   const Geometry& geo = ff.geo();
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  autoView(gff_v, gff, CpuRead);
+  qthread_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Grid::Coordinate coor = grid_convert(xl, 0);
     Vector<WilsonVector> wvs = ff.get_elems(xl);
     array<ComplexF, sizeof(WilsonVector) / sizeof(Complex)> fs;
     for (int m = 0; m < geo.multiplicity; ++m) {
       coor[0] = m;
-      peekLocalSite(fs, gff, coor);
+      peekLocalSite(fs, gff_v, coor);
       array<Complex, sizeof(WilsonVector) / sizeof(Complex)>& ds =
           (array<Complex, sizeof(WilsonVector) / sizeof(Complex)>&)
               wvs[m];
@@ -276,7 +276,7 @@ inline void grid_convert(FermionField5d& ff, const Grid::LatticeFermionF& gff)
         ds[k] = fs[k];
       }
     }
-  }
+  })
 }
 
 inline void grid_convert(Grid::LatticeFermionF& gff, const FermionField5d& ff)
@@ -284,8 +284,8 @@ inline void grid_convert(Grid::LatticeFermionF& gff, const FermionField5d& ff)
   TIMER_VERBOSE("grid_convert(gff,ff)");
   using namespace Grid;
   const Geometry& geo = ff.geo();
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  autoView(gff_v, gff, CpuWrite);
+  qthread_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Grid::Coordinate coor = grid_convert(xl, 0);
     const Vector<WilsonVector> wvs = ff.get_elems_const(xl);
@@ -298,9 +298,9 @@ inline void grid_convert(Grid::LatticeFermionF& gff, const FermionField5d& ff)
       for (int k = 0; k < (int)(sizeof(WilsonVector) / sizeof(Complex)); ++k) {
         fs[k] = ds[k];
       }
-      pokeLocalSite(fs, gff, coor);
+      pokeLocalSite(fs, gff_v, coor);
     }
-  }
+  })
 }
 
 struct InverterDomainWallGrid : InverterDomainWall {
