@@ -297,7 +297,9 @@ class HMC:
             self.masses.set_unit()
 
     def load_field(self):
-        filename, self.traj = self.find_latest_traj(f"output_data/fields/hmc_pions_traj_*_{self.fileidwc_no_version}.field")
+        filename, self.traj = self.find_latest_traj(f"output_data/fields/hmc_pions_traj_*_{self.fileidwc}.field")
+        if(filename==""):
+            filename, self.traj = self.find_latest_traj(f"output_data/fields/hmc_pions_traj_*_{self.fileidwc_no_version}.field")
         self.init_length+=self.traj-1
         if(not filename==""):
             self.field.load(filename)
@@ -751,7 +753,7 @@ def main():
     # The number of trajectories to calculate
     n_traj = 1000
     #
-    version = "3-0"
+    version = "3-1"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
     steps = 20
