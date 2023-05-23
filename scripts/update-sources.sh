@@ -21,6 +21,8 @@ sed -i "s/^release = '.*'$/release = '$version'/" docs/conf.py
 
 sed -i "s/^  version: '.*',$/  version: '$version',/" qlat*/meson.build
 
+sed -i "s/^    version=\".*\" # default version$/    version=\"v$version-current\" # default version/" qlat-utils/lib/version_gen.sh
+
 echo "Version info updated."
 
 ) || echo "Update version not successful."

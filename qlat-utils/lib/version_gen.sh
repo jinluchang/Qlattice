@@ -12,7 +12,7 @@ cd "$src_dir"
 if git describe --tags ; then
     version="$(git describe --tags)"
 else
-    version="unknown-version"
+    version="v0.35-current" # default version
 fi
 
 cd "$wd"

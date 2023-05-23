@@ -7,6 +7,7 @@ version = custom_target('version',
   input: files([ 'version_gen.sh', 'version.cpp', ]),
   command: [ 'bash', '@INPUT@', '@OUTPUT@', ],
   install: false,
+  build_always_stale: true,
   )
 
 clib = static_library('qlat-utils',
