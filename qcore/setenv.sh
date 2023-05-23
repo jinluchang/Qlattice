@@ -6,6 +6,7 @@ if [ "$(uname)" == "Darwin" ]; then
         export PATH="$(brew --prefix)/opt/openssl@3/bin":"$PATH"
         export PATH="$(brew --prefix)/opt/llvm/bin":"$PATH"
         export PATH="$(brew --prefix)/opt/findutils/libexec/gnubin":"$PATH"
+        export PATH="$(brew --prefix)/opt/coreutils/libexec/gnubin":"$PATH"
         export LD_RUN_PATH="$(brew --prefix)/opt/llvm/lib/c++":"$LD_RUN_PATH"
         export LIBRARY_PATH="$(brew --prefix)/opt/openssl@3/lib":"$LIBRARY_PATH"
         export LIBRARY_PATH="$(brew --prefix)/opt/llvm/lib/c++":"$LIBRARY_PATH"
