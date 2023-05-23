@@ -20,5 +20,6 @@ sync:
 	rsync -av --exclude=".*" $(src_path)/ ./
 
 clean:
-	-rm -rf locks cache __pycache__ log.txt *.new
+	-rm -rf locks __pycache__ log.txt *.new
+	-rm -rf cache
 	#-rm -rf results
