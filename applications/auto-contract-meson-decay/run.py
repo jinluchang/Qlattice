@@ -897,7 +897,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
         return
     cexpr = get_cexpr_meson_jwjj()
     expr_names = get_cexpr_names(cexpr)
-    total_site = q.Coordinate(rup.get_total_site(job_tag))
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     psel = get_psel()
     fsel, fselc = get_fsel()
@@ -910,6 +910,8 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     n_elems = len(xg_fsel_list)
     n_points = len(xg_psel_list)
     n_pairs = n_points * (n_points - 1) // 2 + n_points
+    total_site_arr = np.array(total_site.list())
+    total_site_arr = np.broadcast_to(total_site_arr, (n_elems, 4,))
     #
     threshold = get_param(job_tag, "meson_jwjj_threshold")
     u_rand_prob = q.SelectedField(q.ElemTypeDouble, fsel, 1)
@@ -978,21 +980,20 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
         q.parallel_map(lambda i: load_psrc_psnk_prop_norm_sqrt(flavor, i), range(n_points))
         for flavor in [ "l", "s", ]
         ], dtype = float)
-    def get_estimate(idx_snk, idx1, idx2, t_1, t_2):
+    def get_estimate(idx_w, idx_1, idx_2, xg_w_t, t_1, t_2):
         flavor_l = 0
         flavor_s = 1
-        xg_snk_t = xg_fsel_list[idx_snk, 3]
-        corr1 = np.abs(meson_corr_arr[1, (xg_snk_t - t_1) % t_size])
-        corr2 = np.abs(meson_corr_arr[1, (xg_snk_t - t_2) % t_size])
-        p1t1 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_1, idx1]
-        p2t1 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_1, idx2]
-        wt1 = wsrc_psnk_prop_norm_sqrt[flavor_l, t_1, idx_snk]
-        wt2 = wsrc_psnk_prop_norm_sqrt[flavor_l, t_2, idx_snk]
-        p1t2 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_2, idx1]
-        p2t2 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_2, idx2]
-        p1p2 = psrc_psrc_prop_norm_sqrt[flavor_l, idx1, idx2]
-        wp1 = psrc_psnk_prop_norm_sqrt[flavor_l, idx1, idx_snk]
-        wp2 = psrc_psnk_prop_norm_sqrt[flavor_l, idx2, idx_snk]
+        corr1 = np.abs(meson_corr_arr[1, (xg_w_t - t_1) % t_size])
+        corr2 = np.abs(meson_corr_arr[1, (xg_w_t - t_2) % t_size])
+        p1t1 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_1, idx_1]
+        p2t1 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_1, idx_2]
+        wt1 = wsrc_psnk_prop_norm_sqrt[flavor_l, t_1, idx_w]
+        wt2 = wsrc_psnk_prop_norm_sqrt[flavor_l, t_2, idx_w]
+        p1t2 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_2, idx_1]
+        p2t2 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_2, idx_2]
+        p1p2 = psrc_psrc_prop_norm_sqrt[flavor_l, idx_1, idx_2]
+        wp1 = psrc_psnk_prop_norm_sqrt[flavor_l, idx_1, idx_w]
+        wp2 = psrc_psnk_prop_norm_sqrt[flavor_l, idx_2, idx_w]
         value = 0
         value += 2 * (p1t1 * p2t1 / corr1 + p1t2 * p2t2 / corr2) * (wp1 * wp2)
         value += 5 * (p1t1 * wt1 / corr1 + p1t2 * wt2 / corr2) * (p1p2 * wp2)
@@ -1000,17 +1001,16 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
         assert np.all(value > 0)
         return value
     @q.timer
-    def get_weight(idx_snk, idx1, idx2, t_1, t_2):
+    def get_weight(idx_w, idx_1, idx_2, xg_w_t, t_1, t_2):
         """
-        return weight for point ``idx_snk`` (1 / prob or zero)
+        return weight for point ``idx_w`` (1 / prob or zero)
         """
-        idx_snk = np.asarray(idx_snk).ravel()
-        est = get_estimate(idx_snk, idx1, idx2, t_1, t_2)
-        assert est.shape == idx_snk.shape
+        est = get_estimate(idx_w, idx_1, idx_2, xg_w_t, t_1, t_2)
+        assert est.shape == idx_w.shape
         prob = est / threshold
-        assert prob.shape == idx_snk.shape
-        rand = u_rand_prob_arr[idx_snk]
-        assert rand.shape == idx_snk.shape
+        assert prob.shape == idx_w.shape
+        rand = u_rand_prob_arr[idx_w]
+        assert rand.shape == idx_w.shape
         weight = 1.0 / prob
         weight[prob >= 1] = 1.0
         weight[rand >= prob] = 0.0
@@ -1018,69 +1018,72 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     #
     def load_data():
         idx_pair = 0
-        for idx1 in range(n_points):
-            for idx2 in range(n_points):
-                if idx2 > idx1:
+        for idx_1 in range(n_points):
+            for idx_2 in range(n_points):
+                if idx_2 > idx_1:
                     continue
                 idx_pair += 1
-                yield idx1, idx2
+                yield idx_1, idx_2
     @q.timer
     def feval(args):
-        idx1, idx2 = args
-        xg1_src = tuple(xg_psel_list[idx1])
-        xg2_src = tuple(xg_psel_list[idx2])
-        xg1_src_t = xg1_src[3]
-        xg2_src_t = xg2_src[3]
-        x_rel = [ q.rel_mod(xg2_src[mu] - xg1_src[mu], total_site[mu]) for mu in range(4) ]
-        r_sq = q.get_r_sq(x_rel)
-        idx_snk_arr = np.arange(n_elems)
-        xg_t_arr = xg_fsel_list[idx_snk_arr, 3]
-        t_size_arr = np.broadcast_to(t_size, xg_t_arr.shape)
-        xg1_xg_t_arr = q.rel_mod_arr(xg1_src_t - xg_t_arr, t_size_arr)
-        xg2_xg_t_arr = q.rel_mod_arr(xg2_src_t - xg_t_arr, t_size_arr)
-        t_1_arr = (np.minimum(0, np.minimum(xg1_xg_t_arr, xg2_xg_t_arr)) + xg_t_arr - tsep) % t_size
-        t_2_arr = (np.maximum(0, np.maximum(xg1_xg_t_arr, xg2_xg_t_arr)) + xg_t_arr + tsep) % t_size
-        weight_arr = get_weight(idx_snk_arr, idx1, idx2, t_1_arr, t_2_arr)
-        weight_arr[np.abs(xg2_xg_t_arr - xg1_xg_t_arr) >= t_size_arr // 2] = 0.0
+        idx_1, idx_2 = args
+        idx_w_arr = np.arange(n_elems)
+        xg_1 = tuple(xg_psel_list[idx_1])
+        xg_2 = tuple(xg_psel_list[idx_2])
+        xg_1_arr = np.broadcast_to(np.array(xg_1), total_site_arr.shape)
+        xg_2_arr = np.broadcast_to(np.array(xg_2), total_site_arr.shape)
+        xg_w_arr = xg_fsel_list[idx_w_arr]
+        t_size_arr = total_site_arr[:, 3]
+        xg_1_t_arr = xg_1_arr[:, 3]
+        xg_2_t_arr = xg_2_arr[:, 3]
+        xg_w_t_arr = xg_w_arr[:, 3]
+        x_rel_arr = q.rel_mod_arr(xg_2_arr - xg_1_arr, total_site_arr)
+        r_sq_arr = q.sqr(x_rel_arr[:, :3]).sum(-1)
+        xg_1_xg_t_arr = q.rel_mod_arr(xg_1_t_arr - xg_w_t_arr, t_size_arr)
+        xg_2_xg_t_arr = q.rel_mod_arr(xg_2_t_arr - xg_w_t_arr, t_size_arr)
+        t_1_arr = (np.minimum(0, np.minimum(xg_1_xg_t_arr, xg_2_xg_t_arr)) + xg_w_t_arr - tsep) % t_size
+        t_2_arr = (np.maximum(0, np.maximum(xg_1_xg_t_arr, xg_2_xg_t_arr)) + xg_w_t_arr + tsep) % t_size
+        weight_arr = get_weight(idx_w_arr, idx_1, idx_2, xg_w_t_arr, t_1_arr, t_2_arr)
+        weight_arr[np.abs(xg_2_xg_t_arr - xg_1_xg_t_arr) >= t_size_arr // 2] = 0.0
         results = []
-        for idx_snk in idx_snk_arr[weight_arr > 0]:
-            weight = weight_arr[idx_snk]
-            xg_snk = tuple(xg_fsel_list[idx_snk])
-            xg_t = xg_t_arr[idx_snk]
-            xg1_xg_t = xg1_xg_t_arr[idx_snk]
-            xg2_xg_t = xg2_xg_t_arr[idx_snk]
-            t_1 = t_1_arr[idx_snk]
-            t_2 = t_2_arr[idx_snk]
+        for idx_w in idx_w_arr[weight_arr > 0]:
+            xg_w = tuple(xg_fsel_list[idx_w])
+            weight = weight_arr[idx_w]
+            r_sq = r_sq_arr[idx_w]
+            xg_1_xg_t = xg_1_xg_t_arr[idx_w]
+            xg_2_xg_t = xg_2_xg_t_arr[idx_w]
+            t_1 = t_1_arr[idx_w]
+            t_2 = t_2_arr[idx_w]
             pd = {
-                    "w" : ("point-snk", xg_snk,),
-                    "x_1" : ("point", xg1_src,),
-                    "x_2" : ("point", xg2_src,),
+                    "w" : ("point-snk", xg_w,),
+                    "x_1" : ("point", xg_1,),
+                    "x_2" : ("point", xg_2,),
                     "t_1" : ("wall", t_1,),
                     "t_2" : ("wall", t_2,),
                     "size" : total_site.list(),
                     }
-            t1 = xg1_xg_t
-            t2 = xg2_xg_t
+            t_1 = xg_1_xg_t
+            t_2 = xg_2_xg_t
             val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
             r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
-            results.append((weight, val, t1, t2, r_idx_low, r_idx_high, coef_low, coef_high,))
-        return idx1, idx2, results
+            results.append((weight, val, t_1, t_2, r_idx_low, r_idx_high, coef_low, coef_high,))
+        return idx_1, idx_2, results
     def sum_function(val_list):
         n_total = 0
         n_selected = 0
         idx_pair = 0
         values = np.zeros((t_size, t_size, len(r_list), len(expr_names),), dtype = complex)
-        for idx1, idx2, results in val_list:
+        for idx_1, idx_2, results in val_list:
             idx_pair += 1
             n_total += n_elems
-            xg1_src = tuple(xg_psel_list[idx1])
-            xg2_src = tuple(xg_psel_list[idx2])
-            for weight, val, t1, t2, r_idx_low, r_idx_high, coef_low, coef_high in results:
+            for weight, val, t_1, t_2, r_idx_low, r_idx_high, coef_low, coef_high in results:
                 n_selected += 1
-                values[t1, t2, r_idx_low] += coef_low * weight * val
-                values[t1, t2, r_idx_high] += coef_high * weight * val
+                values[t_1, t_2, r_idx_low] += coef_low * weight * val
+                values[t_1, t_2, r_idx_high] += coef_high * weight * val
             if idx_pair % (n_pairs // 1000 + 100) == 0:
-                q.displayln_info(1, f"{fname}: {idx_pair}/{n_pairs} {xg1_src} {xg2_src} {len(results)}/{n_elems} n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
+                xg_1_src = tuple(xg_psel_list[idx_1])
+                xg_2_src = tuple(xg_psel_list[idx_2])
+                q.displayln_info(1, f"{fname}: {idx_pair}/{n_pairs} {xg_1_src} {xg_2_src} {len(results)}/{n_elems} n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
         q.displayln_info(1, f"{fname}: Final: n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
         return q.glb_sum(values.transpose(3, 0, 1, 2))
     q.timer_fork(0)
@@ -1296,7 +1299,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_prop, get_psel, get_fsel):
         q.displayln_info(1, f"{fname}: Final: n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
         return q.glb_sum(values.transpose(3, 0, 1, 2))
     q.timer_fork(0)
-    res_sum = q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 1, n_proc = 0)
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 1)
     q.displayln_info("{fname}: timer_display")
     q.timer_display()
     q.timer_merge()
