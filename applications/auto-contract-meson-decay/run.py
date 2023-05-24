@@ -99,7 +99,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
         return
     cexpr = get_cexpr_meson_corr()
     expr_names = get_cexpr_names(cexpr)
-    total_site = rup.get_total_site(job_tag)
+    total_site = get_param(job_tag, "total_site")
     t_size = total_site[3]
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
@@ -155,7 +155,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
         return
     cexpr = get_cexpr_meson_corr()
     expr_names = get_cexpr_names(cexpr)
-    total_site = rup.get_total_site(job_tag)
+    total_site = get_param(job_tag, "total_site")
     t_size = total_site[3]
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
@@ -210,7 +210,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
         return
     cexpr = get_cexpr_meson_corr()
     expr_names = get_cexpr_names(cexpr)
-    total_site = rup.get_total_site(job_tag)
+    total_site = get_param(job_tag, "total_site")
     t_size = total_site[3]
     psel = get_psel()
     fsel, fselc = get_fsel()
@@ -268,7 +268,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
         return
     cexpr = get_cexpr_meson_corr()
     expr_names = get_cexpr_names(cexpr)
-    total_site = rup.get_total_site(job_tag)
+    total_site = get_param(job_tag, "total_site")
     t_size = total_site[3]
     psel = get_psel()
     fsel, fselc = get_fsel()
@@ -371,13 +371,13 @@ def auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel):
         return
     cexpr = get_cexpr_meson_jt()
     expr_names = get_cexpr_names(cexpr)
-    total_site = rup.get_total_site(job_tag)
+    total_site = get_param(job_tag, "total_site")
     t_size = total_site[3]
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
     xg_psel_list = np.array(psel.to_list())
-    tsep = rup.dict_params[job_tag]["meson_tensor_tsep"]
+    tsep = get_param(job_tag, "meson_tensor_tsep")
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
     def load_data():
@@ -463,13 +463,13 @@ def auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
         return
     cexpr = get_cexpr_meson_m()
     expr_names = get_cexpr_names(cexpr)
-    total_site = rup.get_total_site(job_tag)
+    total_site = get_param(job_tag, "total_site")
     t_size = total_site[3]
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
     xg_psel_list = np.array(psel.to_list())
-    tsep = rup.dict_params[job_tag]["meson_tensor_tsep"]
+    tsep = get_param(job_tag, "meson_tensor_tsep")
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
     def load_data():
@@ -773,13 +773,13 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
         return
     cexpr = get_cexpr_meson_jj()
     expr_names = get_cexpr_names(cexpr)
-    total_site = q.Coordinate(rup.get_total_site(job_tag))
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
     xg_psel_list = np.array(psel.to_list())
-    tsep = rup.dict_params[job_tag]["meson_tensor_tsep"]
+    tsep = get_param(job_tag, "meson_tensor_tsep")
     geo = q.Geometry(total_site, 1)
     r_list = get_r_list(job_tag)
     r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
@@ -903,7 +903,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
     xg_psel_list = np.array(psel.to_list())
-    tsep = rup.dict_params[job_tag]["meson_tensor_tsep"]
+    tsep = get_param(job_tag, "meson_tensor_tsep")
     geo = q.Geometry(total_site, 1)
     r_list = get_r_list(job_tag)
     r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
@@ -1123,7 +1123,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_prop, get_psel, get_fsel):
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
     xg_psel_list = np.array(psel.to_list())
-    tsep = rup.dict_params[job_tag]["meson_tensor_tsep"]
+    tsep = get_param(job_tag, "meson_tensor_tsep")
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
     r_list = get_r_list(job_tag)
@@ -1488,8 +1488,8 @@ for job_tag in job_tags:
     else:
         if q.get_num_node() <= 4:
             continue
-    q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
-    for traj in rup.dict_params[job_tag]["trajs"]:
+    q.displayln_info(pprint.pformat(get_param(job_tag)))
+    for traj in get_param(job_tag, "trajs"):
         run_job(job_tag, traj)
 
 q.clear_all_caches()
