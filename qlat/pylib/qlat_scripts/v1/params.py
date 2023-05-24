@@ -23,9 +23,8 @@ dict_params["32IH3"][tag] = list(range(1000, 10000, 10))
 tag = "n_points_psel"
 dict_params["test-4nt8"][tag] = 6
 dict_params["test-4nt16"][tag] = 32
-# ADJUST ME
-dict_params["48I"][tag] = 1024
-#
+dict_params["48I"][tag] = 2048 # Summit data 2022
+# dict_params["48I"][tag] = 1024 # Mira data 2020
 dict_params["64I"][tag] = 1024
 dict_params["24D"][tag] = 1024
 dict_params["32D"][tag] = 2048
