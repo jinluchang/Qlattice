@@ -333,9 +333,9 @@ def run_pi(job_tag, traj, get_psel):
 @q.timer
 def load_point_distribution(job_tag):
     """
-    return pd
+    return point_distribution
     where
-    pd[xg_rel] = probability of the relative coordinate of a point relative to a selected point equals to ``xg_rel``.
+    point_distribution[xg_rel] = probability of the relative coordinate of a point relative to a selected point equals to ``xg_rel``.
     xg_rel = (x, y, z, t,)
     x >= y >= z >= 0 and t >= 0
     n_points = get_n_points_psel(job_tag)
@@ -346,16 +346,16 @@ def load_point_distribution(job_tag):
     if path is None:
         return None
     dt = q.qload_datatable_sync_node(path, True)
-    pd = dict()
+    point_distribution = dict()
     for l in dt:
         x, y, z, t, prob = l
         x = int(x)
         y = int(y)
         z = int(z)
         t = int(t)
-        pd[(x, y, z, t,)] = prob * (n_points - 1) / n_points
-    pd[(0, 0, 0, 0,)] = 1.0 / n_points
-    return pd
+        point_distribution[(x, y, z, t,)] = prob * (n_points - 1) / n_points
+    point_distribution[(0, 0, 0, 0,)] = 1.0 / n_points
+    return point_distribution
 
 def classify_rel_coordinate(xg_rel_arrary, total_site_array):
     """
@@ -369,21 +369,21 @@ def classify_rel_coordinate(xg_rel_arrary, total_site_array):
     x, y, z = sorted([x, y, z])
     return (x, y, z, t,)
 
-def get_point_xrel_prob(xg_rel_arrary, total_site_array, pd, n_points):
+def get_point_xrel_prob(xg_rel_arrary, total_site_array, point_distribution, n_points):
     """
     xg_rel_arrary = np.array(xg_rel)
     total_site_array = np.array(total_site)
-    pd = load_point_distribution(job_tag)
+    point_distribution = load_point_distribution(job_tag)
     n_points = get_n_points_psel(job_tag)
     """
-    if pd is None:
+    if point_distribution is None:
         if np.all(xg_rel_arrary == 0):
             return 1.0 / n_points
         else:
             total_volume = np.prod(total_site_array)
             return (n_points - 1) / n_points / (total_volume - 1)
     xg_rel = classify_rel_coordinate(xg_rel_arrary, total_site_array)
-    prob = pd[xg_rel]
+    prob = point_distribution[xg_rel]
     return prob
 
 # ----------

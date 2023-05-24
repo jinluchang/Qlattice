@@ -1116,9 +1116,9 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_prop, get_psel, get_fsel):
     expr_names = get_cexpr_names(cexpr)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
-    pd = load_point_distribution(job_tag)
+    point_distribution = load_point_distribution(job_tag)
     n_points = get_n_points_psel(job_tag)
-    total_site_array = np.array(total_site)
+    total_site_array = np.array(total_site.list())
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
@@ -1129,7 +1129,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_prop, get_psel, get_fsel):
     r_list = get_r_list(job_tag)
     r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
     n_elems = len(xg_fsel_list)
-    n_points = len(xg_psel_list)
+    assert n_points == len(xg_psel_list)
     n_pairs = n_points * n_points
     total_site_arr = np.array(total_site.list())
     total_site_arr = np.broadcast_to(total_site_arr, (n_elems, 4,))
@@ -1250,8 +1250,8 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_prop, get_psel, get_fsel):
         xg_1 = tuple(xg_psel_list[idx_1])
         xg_w = tuple(xg_psel_list[idx_w])
         xg_rel_array = np.array(xg_1) - np.array(xg_w)
-        prob = get_point_xrel_prob(xg_rel_arrary, total_site_array, pd, n_points)
-        weight_base = total_volume / prob
+        prob = get_point_xrel_prob(xg_rel_array, total_site_array, point_distribution, n_points)
+        weight_base = 1.0 / prob / total_volume
         xg_1_arr = np.broadcast_to(np.array(xg_1), total_site_arr.shape)
         xg_2_arr = xg_fsel_list[idx_2_arr]
         xg_w_arr = np.broadcast_to(np.array(xg_w), total_site_arr.shape)
