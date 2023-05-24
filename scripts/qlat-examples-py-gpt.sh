@@ -10,6 +10,8 @@ source qcore/set-prefix.sh $name
 
     time-run rsync -a --delete "$wd"/examples-py "$prefix"/
 
+    export MPI_OPTIONS="--bind-to none $MPI_OPTIONS"
+
     q_verbose=1 time-run make -C "$prefix"/examples-py run-gpt -j "$num_test" || true
 
     cd "$wd"

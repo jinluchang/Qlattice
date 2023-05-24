@@ -24,6 +24,8 @@ source qcore/set-prefix.sh $name
         export LIBS="$QLAT_LIBS"
     fi
 
+    export MPI_OPTIONS="--bind-to none $MPI_OPTIONS"
+
     q_verbose=1 time-run make -C "$prefix"/examples-py run -j "$num_test" || true
 
     cd "$wd"
