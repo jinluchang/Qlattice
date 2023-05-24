@@ -1,5 +1,6 @@
 import qlat as q
 from . import rbc_ukqcd_params as rup
+from .rbc_ukqcd_params import set_param, get_param
 
 import numpy as np
 
@@ -167,7 +168,9 @@ def get_prob_exact_wsrc(job_tag):
 
 @q.timer
 def mk_rand_wall_src_info(job_tag, traj, inv_type):
-    # wi is a list of [ idx tslice inv_type inv_acc ]
+    """
+    wi is a list of [ idx tslice inv_type inv_acc ]
+    """
     params = rup.dict_params[job_tag]
     if "prob_exact_wsrc" not in params:
         return mk_rand_wall_src_info_n_exact(job_tag, traj, inv_type)
@@ -175,7 +178,9 @@ def mk_rand_wall_src_info(job_tag, traj, inv_type):
 
 @q.timer
 def save_wall_src_info(wi, path):
-    # wi is a list of  [ idx tslice inv_type inv_acc ]
+    """
+    wi is a list of  [ idx tslice inv_type inv_acc ]
+    """
     if 0 != q.get_id_node():
         return None
     lines = [ " ".join([ f"{v:5d}" for v in l ]) for l in wi ]
@@ -185,7 +190,9 @@ def save_wall_src_info(wi, path):
 @q.timer
 def load_wall_src_info(path):
     assert path is not None
-    # wi is a list of [ idx tslice inv_type inv_acc ]
+    """
+    wi is a list of [ idx tslice inv_type inv_acc ]
+    """
     dt = q.qload_datatable_sync_node(path, True)
     t = [ list(map(int, l)) for l in dt ]
     wi = [ [ l[0], l[1], l[2], l[3], ] for l in t ]
@@ -220,16 +227,16 @@ def run_wi(job_tag, traj):
 
 # ----------
 
-def get_n_points_psel(job_tag, traj):
+def get_n_points_psel(job_tag):
     assert job_tag in rup.dict_params
     assert "n_points_psel" in rup.dict_params[job_tag]
-    return rup.dict_params[job_tag]["n_points_psel"]
+    return get_param(job_tag, "n_points_psel")
 
 @q.timer
 def mk_rand_psel(job_tag, traj):
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_psel")
     total_site = rup.get_total_site(job_tag)
-    n_points = get_n_points_psel(job_tag, traj)
+    n_points = get_n_points_psel(job_tag)
     psel = q.PointsSelection()
     psel.set_rand(rs, total_site, n_points)
     return psel
@@ -253,6 +260,7 @@ def run_psel(job_tag, traj):
         total_site = rup.get_total_site(job_tag)
         psel = q.PointsSelection()
         psel.load(path_psel, q.Geometry(total_site))
+        assert psel.n_points() == get_n_points_psel(job_tag)
         return psel
     return q.lazy_call(load_psel)
 
@@ -319,6 +327,64 @@ def run_pi(job_tag, traj, get_psel):
         pi = load_point_src_info(path)
         return pi
     return q.lazy_call(load)
+
+# ----------
+
+@q.timer
+def load_point_distribution(job_tag):
+    """
+    return pd
+    where
+    pd[xg_rel] = probability of the relative coordinate of a point relative to a selected point equals to ``xg_rel``.
+    xg_rel = (x, y, z, t,)
+    x >= y >= z >= 0 and t >= 0
+    n_points = get_n_points_psel(job_tag)
+    """
+    n_points = get_n_points_psel(job_tag)
+    tfn = f"{job_tag}/point-distribution/point-distribution.txt"
+    path = get_load_path(tfn)
+    if path is None:
+        return None
+    dt = q.qload_datatable_sync_node(path, True)
+    pd = dict()
+    for l in dt:
+        x, y, z, t, prob = l
+        x = int(x)
+        y = int(y)
+        z = int(z)
+        t = int(t)
+        pd[(x, y, z, t,)] = prob * (n_points - 1) / n_points
+    pd[(0, 0, 0, 0,)] = 1.0 / n_points
+    return pd
+
+def classify_rel_coordinate(xg_rel_arrary, total_site_array):
+    """
+    xg_rel_arrary = np.array(xg_rel)
+    total_site_array = np.array(total_site)
+    """
+    total_site_half = total_site_array // 2
+    xg_rel_arrary = xg_rel_arrary % total_site_array
+    xg_rel_abs = total_site_half - abs(xg_rel_arrary - total_site_half)
+    x, y, z, t = xg_rel_abs
+    x, y, z = sorted([x, y, z])
+    return (x, y, z, t,)
+
+def get_point_xrel_prob(xg_rel_arrary, total_site_array, pd, n_points):
+    """
+    xg_rel_arrary = np.array(xg_rel)
+    total_site_array = np.array(total_site)
+    pd = load_point_distribution(job_tag)
+    n_points = get_n_points_psel(job_tag)
+    """
+    if pd is None:
+        if np.all(xg_rel_arrary == 0):
+            return 1.0 / n_points
+        else:
+            total_volume = np.prod(total_site_array)
+            return (n_points - 1) / n_points / (total_volume - 1)
+    xg_rel = classify_rel_coordinate(xg_rel_arrary, total_site_array)
+    prob = pd[xg_rel]
+    return prob
 
 # ----------
 

@@ -1116,12 +1116,16 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_prop, get_psel, get_fsel):
     expr_names = get_cexpr_names(cexpr)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
+    pd = load_point_distribution(job_tag)
+    n_points = get_n_points_psel(job_tag)
+    total_site_array = np.array(total_site)
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
     xg_psel_list = np.array(psel.to_list())
     tsep = rup.dict_params[job_tag]["meson_tensor_tsep"]
     geo = q.Geometry(total_site, 1)
+    total_volume = geo.total_volume()
     r_list = get_r_list(job_tag)
     r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
     n_elems = len(xg_fsel_list)
@@ -1245,6 +1249,9 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_prop, get_psel, get_fsel):
         idx_2_arr = np.arange(n_elems)
         xg_1 = tuple(xg_psel_list[idx_1])
         xg_w = tuple(xg_psel_list[idx_w])
+        xg_rel_array = np.array(xg_1) - np.array(xg_w)
+        prob = get_point_xrel_prob(xg_rel_arrary, total_site_array, pd, n_points)
+        weight_base = total_volume / prob
         xg_1_arr = np.broadcast_to(np.array(xg_1), total_site_arr.shape)
         xg_2_arr = xg_fsel_list[idx_2_arr]
         xg_w_arr = np.broadcast_to(np.array(xg_w), total_site_arr.shape)
@@ -1258,7 +1265,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_prop, get_psel, get_fsel):
         xg_2_xg_t_arr = q.rel_mod_arr(xg_2_t_arr - xg_w_t_arr, t_size_arr)
         t_1_arr = (np.minimum(0, np.minimum(xg_1_xg_t_arr, xg_2_xg_t_arr)) + xg_w_t_arr - tsep) % t_size
         t_2_arr = (np.maximum(0, np.maximum(xg_1_xg_t_arr, xg_2_xg_t_arr)) + xg_w_t_arr + tsep) % t_size
-        weight_arr = get_weight(idx_w, idx_1, idx_2_arr, xg_w_t_arr, t_1_arr, t_2_arr)
+        weight_arr = weight_base * get_weight(idx_w, idx_1, idx_2_arr, xg_w_t_arr, t_1_arr, t_2_arr)
         weight_arr[np.abs(xg_2_xg_t_arr - xg_1_xg_t_arr) >= t_size_arr // 2] = 0.0
         results = []
         for idx_2 in idx_2_arr[weight_arr > 0]:
@@ -1309,7 +1316,6 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_prop, get_psel, get_fsel):
     q.displayln_info("{fname}: timer_display")
     q.timer_display()
     q.timer_merge()
-    total_volume = geo.total_volume()
     res_sum *= 1.0 / (total_volume * fsel.prob() / t_size)
     ld_sum = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
