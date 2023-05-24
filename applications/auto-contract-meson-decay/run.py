@@ -1477,7 +1477,13 @@ q.check_time_limit()
 
 for job_tag in job_tags:
     if job_tag.startswith("test-"):
-        if q.get_num_node() > 4:
+        if q.get_num_node() > 8:
+            continue
+    elif job_tag == "24D":
+        if q.get_num_node() < 2 * 4 or q.get_num_node() > 8 * 4:
+            continue
+    elif job_tag == "48I":
+        if q.get_num_node() < 64 * 4 or q.get_num_node() > 128 * 4:
             continue
     else:
         if q.get_num_node() <= 4:
