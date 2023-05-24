@@ -24,7 +24,7 @@ source qcore/set-prefix.sh $name
         export LIBS="$QLAT_LIBS"
     fi
 
-    export MPI_OPTIONS="--bind-to none $MPI_OPTIONS"
+    export MPI_OPTIONS="--oversubscribe $MPI_OPTIONS"
 
     # q_verbose=1 time-run make -C "$prefix"/examples-cpp compile -j$num_proc || true
 
