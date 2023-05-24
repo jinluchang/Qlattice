@@ -22,8 +22,8 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
         std_vector[double] res
         LatData()
         const LatData& operator=(const LatData& ld)
-        void load(const std_string& fn)
-        void save(const std_string& fn)
+        void load(const std_string& fn) except +
+        void save(const std_string& fn) except +
         bool is_complex()
         int ndim()
         double* data()

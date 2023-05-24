@@ -66,9 +66,11 @@ jobs:
     - name: Check log diff
       run: |
         ./scripts/qlat-examples-diff-new-logs.sh
-    - name: Check error
+    - name: Update log
       run: |
         ./scripts/qlat-examples-update-logs.sh
+    - name: Check error
+      run: |
         ! git diff | grep '^[+-]CHECK: '
     - uses: actions/upload-artifact@v3
       with:
@@ -181,9 +183,11 @@ jobs:
     - name: Check log diff
       run: |
         ./scripts/qlat-examples-diff-new-logs.sh
-    - name: Check error
+    - name: Update log
       run: |
         ./scripts/qlat-examples-update-logs.sh
+    - name: Check error
+      run: |
         ! git diff | grep '^[+-]CHECK: '
     - uses: actions/upload-artifact@v3
       with:
@@ -287,9 +291,11 @@ jobs:
     - name: Check log diff
       run: |
         ./scripts/qlat-examples-diff-new-logs.sh
-    - name: Check error
+    - name: Update log
       run: |
         ./scripts/qlat-examples-update-logs.sh
+    - name: Check error
+      run: |
         ! git diff | grep '^[+-]CHECK: '
     - name: Build more packages Grid
       run: |
@@ -373,9 +379,11 @@ jobs:
     - name: Check log diff
       run: |
         ./scripts/qlat-examples-diff-new-logs.sh
-    - name: Check error
+    - name: Update log
       run: |
         ./scripts/qlat-examples-update-logs.sh
+    - name: Check error
+      run: |
         ! git diff | grep '^[+-]CHECK: '
 
   build_pip_mac:
@@ -464,9 +472,11 @@ jobs:
     - name: Check log diff
       run: |
         ./scripts/qlat-examples-diff-new-logs.sh
-    - name: Check error
+    - name: Update log
       run: |
         ./scripts/qlat-examples-update-logs.sh
+    - name: Check error
+      run: |
         ! git diff | grep '^[+-]CHECK: ' || echo "Check failed!"
 
   build_qlat_gpt_mac:
@@ -567,9 +577,11 @@ jobs:
     - name: Check log diff
       run: |
         ./scripts/qlat-examples-diff-new-logs.sh
-    - name: Check error
+    - name: Update log
       run: |
         ./scripts/qlat-examples-update-logs.sh
+    - name: Check error
+      run: |
         ! git diff | grep '^[+-]CHECK: ' || echo "Check failed!"
     - name: Build more packages Grid
       run: |

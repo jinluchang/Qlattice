@@ -67,15 +67,15 @@ LatDim read_lat_dim(const std::string& str)
   long cur = 0;
   char c;
   if (!parse_string(dim.name, cur, str)) {
-    qassert(false);
+    qerr("read_lat_dim: dim.name");
   } else if (!parse_char(c, cur, str) or c != '[') {
-    qassert(false);
+    qerr("read_lat_dim: [");
   } else if (!parse_long(dim.size, cur, str)) {
-    qassert(false);
+    qerr("read_lat_dim: long");
   } else if (!parse_char(c, cur, str) or c != ']') {
-    qassert(false);
+    qerr("read_lat_dim: ]");
   } else if (!parse_char(c, cur, str) or c != ':') {
-    qassert(false);
+    qerr("read_lat_dim: :");
   } else {
     while (parse_char(c, cur, str)) {
       if (c == '\n') {
@@ -85,7 +85,7 @@ LatDim read_lat_dim(const std::string& str)
       qassert(c == ' ');
       std::string index;
       if (!parse_string(index, cur, str)) {
-        qassert(false);
+        qerr("read_lat_dim: string");
       }
       dim.indices.push_back(index);
     }
@@ -142,10 +142,8 @@ void LatData::load(QFile& qfile)
   const crc32_t crc_computed =
       crc32_par(res.data(), res.size() * sizeof(double));
   if (crc != crc_computed) {
-    displayln(
-        ssprintf("ERROR: crc do not match: file=%08X computed=%08X path='%s'.",
-                 crc, crc_computed, qfile.path().c_str()));
-    qassert(false);
+    qerr(ssprintf("ERROR: crc do not match: file=%08X computed=%08X path='%s'.",
+                  crc, crc_computed, qfile.path().c_str()));
   }
   to_from_little_endian_64(res.data(), res.size() * sizeof(double));
 }
