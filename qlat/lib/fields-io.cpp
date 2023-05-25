@@ -185,7 +185,12 @@ void FieldsWriter::init(const std::string& path_, const GeometryNode& geon_,
     }
     displayln(0, "FieldsWriter: open '" + path + "'.");
     if (is_append and does_file_exist(path)) {
-      qassert(does_file_exist(path + "/geon-info.txt"));
+      if (not does_file_exist(path + "/geon-info.txt")) {
+        qwarn(
+            "FieldsWriter::init: " +
+            ssprintf("geon-info.txt does not exist! Will create again. path='%s'", path.c_str()));
+        fields_writer_dirs_geon_info(geon, path);
+      }
     } else {
       fields_writer_dirs_geon_info(geon, path);
     }

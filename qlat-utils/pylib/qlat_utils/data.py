@@ -349,7 +349,9 @@ def merge_jk_idx(*jk_idx_list):
     return [ "avg", ] + [ idx for jk_idx in jk_idx_list for idx in jk_idx[1:] ]
 
 def rejk_list(jk_list, jk_idx_list, all_jk_idx):
-    # super jackknife
+    """
+    super jackknife
+    """
     assert jk_idx_list[0] == "avg"
     assert all_jk_idx[0] == "avg"
     assert len(jk_idx_list) == len(jk_list)
