@@ -111,6 +111,11 @@ cdef class SpinMatrix:
 
 ### -------------------------------------------------------------------
 
+def get_gamma_matrix(int mu):
+    cdef SpinMatrix x = SpinMatrix()
+    x.xx = cc.get_gamma_matrix(mu)
+    return x
+
 gamma_matrix_0 = cc.get_gamma_matrix(0)
 gamma_matrix_1 = cc.get_gamma_matrix(1)
 gamma_matrix_2 = cc.get_gamma_matrix(2)
