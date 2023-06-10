@@ -14,7 +14,9 @@ If `temp_dir` environmental variable is not set (or empty), the default `TEMP_DI
 
 ```
 $ sudo apt-get install -y python3-full
-$ sudo apt-get install -y libopenmpi-dev ninja-build patchelf libeigen3-dev libgsl-dev zlib1g-dev libssl-dev libmpfr-dev
+$ sudo apt-get install -y libopenmpi-dev ninja-build patchelf
+$ sudo apt-get install -y libeigen3-dev libgsl-dev
+$ sudo apt-get install -y zlib1g-dev libssl-dev libmpfr-dev
 $ sudo apt-get install -y gnuplot texlive-metapost poppler-utils
 $ sudo apt-get install -y libfftw3-dev
 ```
@@ -37,8 +39,11 @@ $ source DEST_DIRECTORY/setenv.sh
 ## Install on Mac
 
 ```
-$ brew install llvm autoconf automake coreutils flock findutils pkg-config
-$ brew install open-mpi ninja patchelf eigen gsl zlib openssl@3 mpf
+$ brew install llvm autoconf automake
+$ brew install coreutils flock findutils pkg-config
+$ brew install open-mpi ninja patchelf
+$ brew install eigen gsl
+$ brew install zlib openssl@3 mpfr
 $ brew install gnuplot texlive poppler
 $ brew install fftw
 ```
@@ -173,9 +178,9 @@ $ source DEST_DIRECTORY/setenv.sh
 There are example programs provided in the examples directory. Once the library is completed installed, one can run the following command to compile and run all the examples:
 
 ```
-./scripts/qlat-examples-cpp.sh
-./scripts/qlat-examples-py.sh
-./scripts/qlat-examples-py-gpt.sh # require GPT
-./scripts/qlat-examples-py-cps.sh # require CPS and qlat-cps
-./scripts/qlat-examples-cpp-grid.sh # require Grid and qlat-grid
+$ ./scripts/qlat-examples-cpp.sh
+$ ./scripts/qlat-examples-py.sh
+$ ./scripts/qlat-examples-py-gpt.sh # require GPT
+$ ./scripts/qlat-examples-py-cps.sh # require CPS and qlat-cps
+$ ./scripts/qlat-examples-cpp-grid.sh # require Grid and qlat-grid
 ```
