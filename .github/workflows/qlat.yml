@@ -117,7 +117,7 @@ jobs:
     - name: Show versions for dependencies
       run: |
         ./scripts/update-sources.sh
-    - name: Build dependencies
+    - name: Build default-gpt
       run: |
         export num_proc=2
         ./build.sh default-gpt
@@ -371,7 +371,7 @@ jobs:
     - name: Show versions for dependencies
       run: |
         ./scripts/update-sources.sh
-    - name: Build dependencies
+    - name: Build default-gpt
       run: |
         export num_proc=3
         ./build.sh default-gpt
