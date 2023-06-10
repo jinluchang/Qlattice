@@ -130,36 +130,6 @@ jobs:
         python3 -c 'import sys ; from mesonbuild import mesonmain; sys.exit(mesonmain.main())' --version
         type ninja
         ninja --version
-    - name: Build CPS
-      run: |
-        export num_proc=2
-        ./scripts/qmp.sh
-        ./scripts/qio.sh
-        ./scripts/cps.sh
-    - name: Build Grid-clehner
-      run: |
-        export num_proc=2
-        ./scripts/grid-clehner.avx2.sh
-    - name: Build GPT
-      run: |
-        export num_proc=2
-        ./scripts/gpt.sh
-    - name: Build qlat-utils
-      run: |
-        export num_proc=2
-        ./scripts/qlat-utils.sh
-    - name: Build qlat
-      run: |
-        export num_proc=2
-        ./scripts/qlat.sh
-    - name: Build qlat-grid
-      run: |
-        export num_proc=2
-        ./scripts/qlat-grid.sh
-    - name: Build qlat-cps
-      run: |
-        export num_proc=2
-        ./scripts/qlat-cps.sh
     - name: Testing pylib qlat
       run: |
         export num_proc=2
