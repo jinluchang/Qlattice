@@ -319,14 +319,6 @@ jobs:
         python3 -c 'import sys ; from mesonbuild import mesonmain; sys.exit(mesonmain.main())' --version
         type ninja
         ninja --version
-    - name: Build qlat-utils
-      run: |
-        export num_proc=3
-        ./scripts/qlat-utils.sh
-    - name: Build qlat
-      run: |
-        export num_proc=3
-        ./scripts/qlat.sh
     - name: Testing pylib qlat
       run: |
         ./scripts/qlat-examples-py.sh
