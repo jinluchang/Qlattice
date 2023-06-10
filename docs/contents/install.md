@@ -2,51 +2,61 @@
 
 `$ export prefix=DEST_DIRECTORY`
 
-If `prefix` environmental variable is not set, the default location will be `$HOME/qlat-build/default`.
+If `prefix` environmental variable is not set (or empty), the default `DEST_DIRECTORY` is `$HOME/qlat-build/default`.
 
 Optionally, you can also specify a temp directory with:
 
 `$ export temp_dir=TEMP_DIRECTORY`
 
-An efficient choice for `TEMP_DIRECTORY` can be `/dev/shm/$(whoami)/temp`.
+If `temp_dir` environmental variable is not set (or empty), the default `TEMP_DIRECTORY` is `$prefix/temp`. An efficient choice for `TEMP_DIRECTORY` can be `/dev/shm/$(whoami)/temp`.
 
 ## Install on Ubuntu
 
-`$ sudo apt-get install -y python3-full`
-`$ sudo apt-get install -y libopenmpi-dev ninja-build patchelf libeigen3-dev libgsl-dev zlib1g-dev libssl-dev libmpfr-dev`
-`$ sudo apt-get install -y gnuplot texlive-metapost poppler-utils`
-`$ sudo apt-get install -y libfftw3-dev`
+```
+$ sudo apt-get install -y python3-full
+$ sudo apt-get install -y libopenmpi-dev ninja-build patchelf libeigen3-dev libgsl-dev zlib1g-dev libssl-dev libmpfr-dev
+$ sudo apt-get install -y gnuplot texlive-metapost poppler-utils
+$ sudo apt-get install -y libfftw3-dev
+```
 
 ### Qlattice only
 
-`$ ./build.sh`
+```
+$ ./build.sh
+$ source DEST_DIRECTORY/setenv.sh
+```
 
 ### Qlattice and Grid/GPT
 
-`$ ./scripts/download-core.sh`
-
-`$ ./build.sh default-gpt`
+```
+$ ./scripts/download-core.sh
+$ ./build.sh default-gpt
+$ source DEST_DIRECTORY/setenv.sh
+```
 
 ## Install on Mac
 
-`$ brew install llvm autoconf automake coreutils flock findutils pkg-config`
-`$ brew install open-mpi ninja patchelf eigen gsl zlib openssl@3 mpfr`
-`$ brew install gnuplot texlive poppler`
-`$ brew install fftw`
+```
+$ brew install llvm autoconf automake coreutils flock findutils pkg-config
+$ brew install open-mpi ninja patchelf eigen gsl zlib openssl@3 mpf
+$ brew install gnuplot texlive poppler
+$ brew install fftw
+```
 
 ### Qlattice only
 
-`$ ./build.sh`
-
-`$ source DEST_DIRECTORY/setenv.sh`
+```
+$ ./build.sh
+$ source DEST_DIRECTORY/setenv.sh
+```
 
 ### Qlattice and Grid/GPT
 
-`$ ./scripts/download-core.sh`
-
-`$ ./build.sh default-gpt`
-
-`$ source DEST_DIRECTORY/setenv.sh`
+```
+$ ./scripts/download-core.sh
+$ ./build.sh default-gpt
+$ source DEST_DIRECTORY/setenv.sh
+```
 
 ## Install on UCONN HPC
 
@@ -58,9 +68,10 @@ Note you may need to download on your local computer and copy the data to the se
 
 Run the build script:
 
-`$ ./build.sh uconn`
-
-`$ source DEST_DIRECTORY/setenv.sh`
+```
+$ ./build.sh uconn
+$ source DEST_DIRECTORY/setenv.sh
+```
 
 ## General instructions
 
@@ -68,7 +79,9 @@ The library itself is only composed of header files located in the `qlat` direct
 
 The major dependencies can be downloaded with
 
-`$ ./scripts/download.sh`
+```
+$ ./scripts/download.sh
+```
 
 These dependencies will be downloaded to the `distfiles` directory.
 
@@ -76,43 +89,55 @@ There are scripts in the `scripts` directory used to install the dependencies.
 
 To install, we first set the `prefix` environment variable to specify the target directory.
 
-`$ export prefix=DEST_DIRECTORY`
+```
+$ export prefix=DEST_DIRECTORY
+```
 
 If `$prefix` is not set, the default value in `conf.sh` is used, which is `$HOME/qlat-build/default`.
 
 The `build.sh` will install everything into the `$prefix` directory by running all the scripts in the `scripts` directory. For example, the following command will install everything into `DEST_DIRECTORY`.
 
-`$ ./build.sh`
+```
+$ ./build.sh
+```
 
 On some systems, one may need to specify the system type:
 
-`$ ./build.sh TARGET`
+```
+$ ./build.sh TARGET
+```
 
 `TARGET` can be `default`, `default-gpt`, `uconn`, `qcdserver`, `bnlknl`, `summit`, ... This script will call `./scripts/build.TARGET.sh` to perform relevant builds.
 
 The environment variables needed to use the library can be set with the following command:
 
-`$ source DEST_DIRECTORY/setenv.sh`
+```
+$ source DEST_DIRECTORY/setenv.sh
+```
 
 There are few different scripts to build the `Grid` library. Choose one best suit the machine (or create a custom one).
 
 After the first complete install, one can re-install individual components by running the specific script. For example, to just re-install the `Qlattice` header files and python library:
 
-`$ ./scripts/qlat-utils.sh`
-`$ ./scripts/qlat.sh`
+```
+$ ./scripts/qlat-utils.sh
+$ ./scripts/qlat.sh
+```
 
 It is also possible to build `CPS`, `Grid`, and `GPT`. For examples:
 
-`$ ./scripts/qmp.sh`
-`$ ./scripts/qio.sh`
-`$ ./scripts/cps.sh`
-`$ ./scripts/qlat-cps.sh`
+```
+$ ./scripts/qmp.sh
+$ ./scripts/qio.sh
+$ ./scripts/cps.sh
+$ ./scripts/qlat-cps.sh
 
-`$ ./scripts/c-lime.sh`
-`$ ./scripts/grid-clehner.avx2.sh`
-`$ ./scripts/qlat-grid.sh`
+$ ./scripts/c-lime.sh
+$ ./scripts/grid-clehner.avx2.sh
+$ ./scripts/qlat-grid.sh
 
-`$ ./scripts/gpt.sh`
+$ ./scripts/gpt.sh
+```
 
 It may be convenient to create a symbolic link `$HOME/qlat-build/default`, which points to the actual directory `DEST_DIRECTORY`. The `prefix` environment variable can be empty if the symbolic link is created.
 
@@ -124,13 +149,12 @@ The purpose of the `./scripts/setenv.TARGET.sh` is to create the `DEST_DIRECTORY
 
 The `./scripts/qcore.sh` script will create the following wrappers:
 
-`DEST_DIRECTORY/qcore/bin/CC.sh`
-
-`DEST_DIRECTORY/qcore/bin/CXX.sh`
-
-`DEST_DIRECTORY/qcore/bin/MPICC.sh`
-
-`DEST_DIRECTORY/qcore/bin/MPICXX.sh`
+```
+DEST_DIRECTORY/qcore/bin/CC.sh
+DEST_DIRECTORY/qcore/bin/CXX.sh
+DEST_DIRECTORY/qcore/bin/MPICC.sh
+DEST_DIRECTORY/qcore/bin/MPICXX.sh
+```
 
 These wrappers will simply try to call the appropriate corresponding compiler.
 
@@ -142,7 +166,9 @@ Once `python3` is available, the compiler wrappers will support the `--wrapper-r
 
 The environment variables needed to use the library can be set with the following command:
 
-`$ source DEST_DIRECTORY/setenv.sh`
+```
+$ source DEST_DIRECTORY/setenv.sh
+```
 
 There are example programs provided in the examples directory. Once the library is completed installed, one can run the following command to compile and run all the examples:
 
