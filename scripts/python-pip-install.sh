@@ -14,7 +14,14 @@ source qcore/set-prefix.sh $name
     time-run pip3 install -vU sympy
     time-run pip3 install -vU numpy
     time-run pip3 install -vU scipy
+
+    ( :
+    unset CC
+    unset CXX
+    unset MPICC
+    unset MPICXX
     time-run pip3 install -vvvU mpi4py
+    : )
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"
