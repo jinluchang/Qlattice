@@ -20,6 +20,9 @@ source qcore/set-prefix.sh $name
     unset CXX
     unset MPICC
     unset MPICXX
+    unset LD_RUN_PATH
+    unset LIBRARY_PATH
+    unset CPATH
     time-run pip3 install -vvvU mpi4py
     : )
 

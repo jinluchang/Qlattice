@@ -303,8 +303,7 @@ jobs:
         # brew update
         brew install llvm autoconf automake coreutils flock findutils pkg-config
         brew install open-mpi ninja patchelf eigen gsl zlib openssl@3 mpfr
-        pip3 install --user -vvvU mpi4py
-        brew install gnuplot texlive poppler
+        # brew install gnuplot texlive poppler
         brew install fftw
         # brew upgrade
     - name: Build default
