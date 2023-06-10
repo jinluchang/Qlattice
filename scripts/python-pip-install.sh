@@ -8,13 +8,13 @@ source qcore/set-prefix.sh $name
     echo "!!!! build $name !!!!"
     source qcore/conf.sh ..
 
-    time-run pip3 install -U meson
-    time-run pip3 install -U cython
-    time-run pip3 install -U psutil
-    time-run pip3 install -U sympy
-    time-run pip3 install -U numpy
-    time-run pip3 install -U scipy
-    time-run pip3 install -U mpi4py
+    time-run pip3 install -vU meson
+    time-run pip3 install -vvvU cython
+    time-run pip3 install -vU psutil
+    time-run pip3 install -vU sympy
+    time-run pip3 install -vU numpy
+    time-run pip3 install -vU scipy
+    time-run pip3 install -vvvU mpi4py
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"
