@@ -6,6 +6,8 @@ set -e
 
 ./scripts/setenv.gpu.sh
 ./scripts/qcore.sh
+./scripts/python-venv.sh
+./scripts/python-pip-install.sh
 
 ./scripts/cuba.sh
 ./scripts/eigen.sh

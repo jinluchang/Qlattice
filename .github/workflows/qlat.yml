@@ -23,34 +23,26 @@ jobs:
     - name: Install Ubuntu packages
       run: |
         sudo apt-get update
-        sudo apt-get install -y cython3 patchelf ninja-build python3-mpi4py python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev
-        sudo apt-get install -y latexmk texlive-latex-recommended texlive-latex-extra tex-gyre
+        sudo apt-get install -y python3-full
+        sudo apt-get install -y libopenmpi-dev ninja-build patchelf libeigen3-dev libgsl-dev zlib1g-dev libssl-dev libmpfr-dev
         sudo apt-get install -y gnuplot texlive-metapost poppler-utils
-    - name: Install Python packages
+        sudo apt-get install -y libfftw3-dev
+        #
+        sudo apt-get install -y latexmk texlive-latex-recommended texlive-latex-extra tex-gyre
+    - name: Build default
       run: |
-        pip3 install --user meson
-        pip3 install --user Sphinx myst-parser
-    - name: Display Python version
+        export num_proc=2
+        ./build.sh
+    - name: Show python venv
       run: |
+        source ~/qlat-build/default/setenv.sh
+        pip3 install Sphinx myst-parser
         python3 -c "import sys; print(sys.version)"
         python3 -c "import sys; print(sys.path)"
         python3 -c "import numpy as np ; np.show_config()"
         python3 -c 'import sys ; from mesonbuild import mesonmain; sys.exit(mesonmain.main())' --version
         type ninja
         ninja --version
-    - name: Build dependencies
-      run: |
-        export num_proc=2
-        ./scripts/setenv.default.sh
-        ./scripts/qcore.sh
-    - name: Build qlat-utils
-      run: |
-        export num_proc=2
-        ./scripts/qlat-utils.sh
-    - name: Build qlat
-      run: |
-        export num_proc=2
-        ./scripts/qlat.sh
     - name: Build qlat-docs
       run: |
         export num_proc=2
@@ -99,101 +91,6 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v1
 
-  build_pip_ubuntu:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Show info
-      run: |
-        whoami
-        pwd
-        type python3
-        type pip3
-        qcore/bin/organize-env-path.py
-        qcore/bin/show-env.py
-    - name: Install Ubuntu packages
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y cython3 patchelf ninja-build python3-mpi4py python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev
-        sudo apt-get install -y gnuplot texlive-metapost poppler-utils
-    - name: Install Python packages
-      run: |
-        pip3 install --user meson
-        pip3 install --user build meson-python wheel
-    - name: Display Python version
-      run: |
-        python3 -c "import sys; print(sys.version)"
-        python3 -c "import sys; print(sys.path)"
-        python3 -c "import numpy as np ; np.show_config()"
-        python3 -c 'import sys ; from mesonbuild import mesonmain; sys.exit(mesonmain.main())' --version
-        type ninja
-        ninja --version
-    - name: Download dependencies
-      run: |
-        ./scripts/download-core.sh
-    - name: Show versions for dependencies
-      run: |
-        ./scripts/update-sources.sh
-    - name: Build dependencies
-      run: |
-        export num_proc=2
-        ./scripts/setenv.default.sh
-        ./scripts/qcore.sh
-        ./scripts/eigen.sh
-        ./scripts/c-lime.sh
-        ./scripts/hdf5.sh
-    - name: Build CPS
-      run: |
-        export num_proc=2
-        ./scripts/qmp.sh
-        ./scripts/qio.sh
-        ./scripts/cps.sh
-    - name: Build Grid-clehner
-      run: |
-        export num_proc=2
-        ./scripts/grid-clehner.avx2.sh
-    - name: Build GPT
-      run: |
-        export num_proc=2
-        ./scripts/gpt.sh
-    - name: Install Qlattice
-      run: |
-        export num_proc=2
-        ./scripts/qlat-packages.sh
-    - name: Testing pylib qlat
-      run: |
-        export num_proc=2
-        ./scripts/qlat-examples-py.sh
-    - name: Testing pylib qlat cps
-      run: |
-        export num_proc=2
-        ./scripts/qlat-examples-py-cps.sh
-    - name: Testing qlat
-      run: |
-        export num_proc=2
-        ./scripts/qlat-examples-cpp.sh
-    - name: Testing qlat grid
-      run: |
-        export num_proc=2
-        ./scripts/qlat-examples-cpp-grid.sh
-    - name: Testing pylib qlat gpt
-      run: |
-        export num_proc=2
-        ./scripts/qlat-examples-py-gpt.sh
-    - name: Check log diff
-      run: |
-        ./scripts/qlat-examples-diff-new-logs.sh
-    - name: Update log
-      run: |
-        ./scripts/qlat-examples-update-logs.sh
-    - name: Check error
-      run: |
-        ! git diff | grep '^[+-]CHECK: '
-    - uses: actions/upload-artifact@v3
-      with:
-        name: qlat-packages
-        path: /home/runner/qlat-build/default/qlat-packages/packages/*.tar.gz
-
   build_qlat_gpt_ubuntu:
     runs-on: ubuntu-latest
     steps:
@@ -209,20 +106,11 @@ jobs:
     - name: Install Ubuntu packages
       run: |
         sudo apt-get update
-        sudo apt-get install -y cython3 patchelf ninja-build python3-mpi4py python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev
-        sudo apt-get install -y clang libomp-dev
+        sudo apt-get install -y python3-full
+        sudo apt-get install -y libopenmpi-dev ninja-build patchelf libeigen3-dev libgsl-dev zlib1g-dev libssl-dev libmpfr-dev
         sudo apt-get install -y gnuplot texlive-metapost poppler-utils
-    - name: Install Python packages
-      run: |
-        pip3 install --user meson
-    - name: Display Python version
-      run: |
-        python3 -c "import sys; print(sys.version)"
-        python3 -c "import sys; print(sys.path)"
-        python3 -c "import numpy as np ; np.show_config()"
-        python3 -c 'import sys ; from mesonbuild import mesonmain; sys.exit(mesonmain.main())' --version
-        type ninja
-        ninja --version
+        sudo apt-get install -y libfftw3-dev
+        sudo apt-get install -y clang libomp-dev
     - name: Download dependencies
       run: |
         ./scripts/download-core.sh
@@ -232,12 +120,16 @@ jobs:
     - name: Build dependencies
       run: |
         export num_proc=2
-        ./scripts/setenv.default.sh
-        ./scripts/dist-update-hash.sh
-        ./scripts/qcore.sh
-        ./scripts/eigen.sh
-        ./scripts/c-lime.sh
-        ./scripts/hdf5.sh
+        ./build.sh default-gpt
+    - name: Show python venv
+      run: |
+        source ~/qlat-build/default/setenv.sh
+        python3 -c "import sys; print(sys.version)"
+        python3 -c "import sys; print(sys.path)"
+        python3 -c "import numpy as np ; np.show_config()"
+        python3 -c 'import sys ; from mesonbuild import mesonmain; sys.exit(mesonmain.main())' --version
+        type ninja
+        ninja --version
     - name: Build CPS
       run: |
         export num_proc=2
@@ -327,6 +219,103 @@ jobs:
       run: |
         for path in $HOME/qlat-build/{default/gpt/lib/python3/dist-packages/{cgpt.so,gpt/__init__.py},{default/Grid-clehner,hadrons/Grid,tblum/Grid-tblum}/{lib/libGrid.a,bin/{grid-config,Mobius2p1fEOFA,Benchmark_dwf,Benchmark_dwf_fp32}},{hadrons/Hadrons,tblum/Hadrons-tblum}/{lib/libHadrons.a,bin/{hadrons-config,HadronsXmlRun,HadronsContractor}}} ; do if [ -e "$path" ] ; then echo "Build '$path' successfully." ; else echo "Failed to build '$path'." ; fi ; done
 
+  build_pip_ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Show info
+      run: |
+        whoami
+        pwd
+        type python3
+        type pip3
+        qcore/bin/organize-env-path.py
+        qcore/bin/show-env.py
+    - name: Install Ubuntu packages
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-full
+        sudo apt-get install -y libopenmpi-dev ninja-build patchelf libeigen3-dev libgsl-dev zlib1g-dev libssl-dev libmpfr-dev
+        sudo apt-get install -y gnuplot texlive-metapost poppler-utils
+        sudo apt-get install -y libfftw3-dev
+    - name: Download dependencies
+      run: |
+        ./scripts/download-core.sh
+    - name: Show versions for dependencies
+      run: |
+        ./scripts/update-sources.sh
+    - name: Build dependencies
+      run: |
+        export num_proc=2
+        ./scripts/setenv.default.sh
+        ./scripts/qcore.sh
+        ./scripts/eigen.sh
+        ./scripts/c-lime.sh
+        ./scripts/hdf5.sh
+    - name: Show python venv
+      run: |
+        ./scripts/python-venv.sh
+        source ~/qlat-build/default/setenv.sh
+        pip3 install meson
+        pip3 install build meson-python wheel
+        python3 -c "import sys; print(sys.version)"
+        python3 -c "import sys; print(sys.path)"
+        python3 -c "import numpy as np ; np.show_config()"
+        python3 -c 'import sys ; from mesonbuild import mesonmain; sys.exit(mesonmain.main())' --version
+        type ninja
+        ninja --version
+    - name: Build CPS
+      run: |
+        export num_proc=2
+        ./scripts/qmp.sh
+        ./scripts/qio.sh
+        ./scripts/cps.sh
+    - name: Build Grid-clehner
+      run: |
+        export num_proc=2
+        ./scripts/grid-clehner.avx2.sh
+    - name: Build GPT
+      run: |
+        export num_proc=2
+        ./scripts/gpt.sh
+    - name: Install Qlattice
+      run: |
+        export num_proc=2
+        ./scripts/qlat-packages.sh
+    - name: Testing pylib qlat
+      run: |
+        export num_proc=2
+        ./scripts/qlat-examples-py.sh
+    - name: Testing pylib qlat cps
+      run: |
+        export num_proc=2
+        ./scripts/qlat-examples-py-cps.sh
+    - name: Testing qlat
+      run: |
+        export num_proc=2
+        ./scripts/qlat-examples-cpp.sh
+    - name: Testing qlat grid
+      run: |
+        export num_proc=2
+        ./scripts/qlat-examples-cpp-grid.sh
+    - name: Testing pylib qlat gpt
+      run: |
+        export num_proc=2
+        ./scripts/qlat-examples-py-gpt.sh
+    - name: Check log diff
+      run: |
+        ./scripts/qlat-examples-diff-new-logs.sh
+    - name: Update log
+      run: |
+        ./scripts/qlat-examples-update-logs.sh
+    - name: Check error
+      run: |
+        ! git diff | grep '^[+-]CHECK: '
+    - uses: actions/upload-artifact@v3
+      with:
+        name: qlat-packages
+        path: /home/runner/qlat-build/default/qlat-packages/packages/*.tar.gz
+
   build_qlat_mac:
     runs-on: macos-latest
     steps:
@@ -342,25 +331,25 @@ jobs:
     - name: Install Brew packages
       run: |
         # brew update
-        brew install ninja patchelf llvm open-mpi eigen zlib openssl@3 mpfr autoconf automake flock findutils pkg-config coreutils gnuplot texlive poppler
+        brew install llvm autoconf automake coreutils flock findutils pkg-config
+        brew install open-mpi ninja patchelf eigen gsl zlib openssl@3 mpfr
+        brew install gnuplot texlive poppler
         brew install fftw
         # brew upgrade
-    - name: Install Python packages
+    - name: Build default
       run: |
-        pip3 install --user meson cython psutil sympy numpy scipy mpi4py
-    - name: Display Python version
+        export num_proc=3
+        ./build.sh
+    - name: Show python venv
       run: |
+        source ~/qlat-build/default/setenv.sh
+        pip3 install meson cython psutil sympy numpy scipy mpi4py
         python3 -c "import sys; print(sys.version)"
         python3 -c "import sys; print(sys.path)"
         python3 -c "import numpy as np ; np.show_config()"
         python3 -c 'import sys ; from mesonbuild import mesonmain; sys.exit(mesonmain.main())' --version
         type ninja
         ninja --version
-    - name: Build dependencies
-      run: |
-        export num_proc=3
-        ./scripts/setenv.default.sh
-        ./scripts/qcore.sh
     - name: Build qlat-utils
       run: |
         export num_proc=3
@@ -386,99 +375,6 @@ jobs:
       run: |
         ! git diff | grep '^[+-]CHECK: '
 
-  build_pip_mac:
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Show info
-      run: |
-        whoami
-        pwd
-        type python3
-        type pip3
-        qcore/bin/organize-env-path.py
-        qcore/bin/show-env.py
-    - name: Install Brew packages
-      run: |
-        # brew update
-        brew install ninja patchelf llvm open-mpi eigen zlib openssl@3 mpfr autoconf automake flock findutils pkg-config coreutils gnuplot texlive poppler
-        # brew upgrade
-    - name: Install Python packages
-      run: |
-        pip3 install --user meson cython psutil sympy numpy scipy mpi4py
-        pip3 install --user build meson-python wheel
-    - name: Display Python version
-      run: |
-        python3 -c "import sys; print(sys.version)"
-        python3 -c "import sys; print(sys.path)"
-        python3 -c "import numpy as np ; np.show_config()"
-        python3 -c 'import sys ; from mesonbuild import mesonmain; sys.exit(mesonmain.main())' --version
-        type ninja
-        ninja --version
-    - name: Download dependencies
-      run: |
-        ./scripts/download-core.sh
-    - name: Show versions for dependencies
-      run: |
-        ./scripts/update-sources.sh
-    - name: Build dependencies
-      run: |
-        export num_proc=3
-        ./scripts/setenv.default.sh
-        ./scripts/qcore.sh
-        ./scripts/eigen.sh
-        ./scripts/fftw.sh
-        ./scripts/gsl.sh
-        ./scripts/c-lime.sh
-        ./scripts/hdf5.sh
-    - name: Build CPS
-      run: |
-        export num_proc=2
-        ./scripts/qmp.sh
-        ./scripts/qio.sh
-        ./scripts/cps.sh
-    - name: Build Grid-clehner
-      run: |
-        export num_proc=3
-        ./scripts/grid-clehner.gen16.sh
-    - name: Build GPT
-      run: |
-        export num_proc=3
-        ./scripts/gpt.sh
-    - name: Install Qlattice
-      run: |
-        export num_proc=3
-        ./scripts/qlat-packages.sh
-    - name: Testing pylib qlat
-      run: |
-        export num_proc=3
-        ./scripts/qlat-examples-py.sh
-    - name: Testing pylib qlat cps
-      run: |
-        export num_proc=3
-        # ./scripts/qlat-examples-py-cps.sh
-    - name: Testing qlat
-      run: |
-        export num_proc=3
-        ./scripts/qlat-examples-cpp.sh
-    - name: Testing qlat grid
-      run: |
-        export num_proc=3
-        ./scripts/qlat-examples-cpp-grid.sh
-    - name: Testing pylib qlat gpt
-      run: |
-        export num_proc=3
-        ./scripts/qlat-examples-py-gpt.sh
-    - name: Check log diff
-      run: |
-        ./scripts/qlat-examples-diff-new-logs.sh
-    - name: Update log
-      run: |
-        ./scripts/qlat-examples-update-logs.sh
-    - name: Check error
-      run: |
-        ! git diff | grep '^[+-]CHECK: ' || echo "Check failed!"
-
   build_qlat_gpt_mac:
     runs-on: macos-latest
     steps:
@@ -494,19 +390,11 @@ jobs:
     - name: Install Brew packages
       run: |
         # brew update
-        brew install ninja patchelf llvm open-mpi eigen zlib openssl@3 mpfr autoconf automake flock findutils pkg-config coreutils gnuplot texlive poppler
+        brew install llvm autoconf automake coreutils flock findutils pkg-config
+        brew install open-mpi ninja patchelf eigen gsl zlib openssl@3 mpfr
+        brew install gnuplot texlive poppler
+        brew install fftw
         # brew upgrade
-    - name: Install Python packages
-      run: |
-        pip3 install --user meson cython psutil sympy numpy scipy mpi4py
-    - name: Display Python version
-      run: |
-        python3 -c "import sys; print(sys.version)"
-        python3 -c "import sys; print(sys.path)"
-        python3 -c "import numpy as np ; np.show_config()"
-        python3 -c 'import sys ; from mesonbuild import mesonmain; sys.exit(mesonmain.main())' --version
-        type ninja
-        ninja --version
     - name: Download dependencies
       run: |
         ./scripts/download-core.sh
@@ -516,44 +404,16 @@ jobs:
     - name: Build dependencies
       run: |
         export num_proc=3
-        ./scripts/setenv.default.sh
-        ./scripts/dist-update-hash.sh
-        ./scripts/qcore.sh
-        ./scripts/eigen.sh
-        ./scripts/fftw.sh
-        ./scripts/gsl.sh
-        ./scripts/c-lime.sh
-        ./scripts/hdf5.sh
-    - name: Build CPS
+        ./build.sh default-gpt
+    - name: Show python venv
       run: |
-        export num_proc=2
-        ./scripts/qmp.sh
-        ./scripts/qio.sh
-        ./scripts/cps.sh
-    - name: Build Grid-clehner
-      run: |
-        export num_proc=3
-        ./scripts/grid-clehner.gen16.sh
-    - name: Build GPT
-      run: |
-        export num_proc=3
-        ./scripts/gpt.sh
-    - name: Build qlat-utils
-      run: |
-        export num_proc=3
-        ./scripts/qlat-utils.sh
-    - name: Build qlat
-      run: |
-        export num_proc=3
-        ./scripts/qlat.sh
-    - name: Build qlat-grid
-      run: |
-        export num_proc=3
-        ./scripts/qlat-grid.sh
-    - name: Build qlat-cps
-      run: |
-        export num_proc=3
-        ./scripts/qlat-cps.sh
+        source ~/qlat-build/default/setenv.sh
+        python3 -c "import sys; print(sys.version)"
+        python3 -c "import sys; print(sys.path)"
+        python3 -c "import numpy as np ; np.show_config()"
+        python3 -c 'import sys ; from mesonbuild import mesonmain; sys.exit(mesonmain.main())' --version
+        type ninja
+        ninja --version
     - name: Testing pylib qlat
       run: |
         export num_proc=3
@@ -561,7 +421,7 @@ jobs:
     - name: Testing pylib qlat cps
       run: |
         export num_proc=3
-        # ./scripts/qlat-examples-py-cps.sh
+        # ./scripts/qlat-examples-py-cps.sh # CPS not working on Mac yet
     - name: Testing pylib qlat gpt
       run: |
         export num_proc=3
@@ -612,3 +472,99 @@ jobs:
     - name: Check error for Build more packages
       run: |
         for path in $HOME/qlat-build/{default/gpt/lib/python3/dist-packages/{cgpt.so,gpt/__init__.py},{default/Grid-clehner,hadrons/Grid,tblum/Grid-tblum}/{lib/libGrid.a,bin/{grid-config,Mobius2p1fEOFA,Benchmark_dwf,Benchmark_dwf_fp32}},{hadrons/Hadrons,tblum/Hadrons-tblum}/{lib/libHadrons.a,bin/{hadrons-config,HadronsXmlRun,HadronsContractor}}} ; do if [ -e "$path" ] ; then echo "Build '$path' successfully." ; else echo "Failed to build '$path'." ; fi ; done
+
+  build_pip_mac:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Show info
+      run: |
+        whoami
+        pwd
+        type python3
+        type pip3
+        qcore/bin/organize-env-path.py
+        qcore/bin/show-env.py
+    - name: Install Brew packages
+      run: |
+        # brew update
+        brew install llvm autoconf automake coreutils flock findutils pkg-config
+        brew install open-mpi ninja patchelf eigen gsl zlib openssl@3 mpfr
+        brew install gnuplot texlive poppler
+        brew install fftw
+        # brew upgrade
+    - name: Download dependencies
+      run: |
+        ./scripts/download-core.sh
+    - name: Show versions for dependencies
+      run: |
+        ./scripts/update-sources.sh
+    - name: Build dependencies
+      run: |
+        export num_proc=3
+        ./scripts/setenv.default.sh
+        ./scripts/qcore.sh
+        ./scripts/eigen.sh
+        ./scripts/fftw.sh
+        ./scripts/gsl.sh
+        ./scripts/c-lime.sh
+        ./scripts/hdf5.sh
+    - name: Show python venv
+      run: |
+        ./scripts/python-venv.sh
+        source ~/qlat-build/default/setenv.sh
+        pip3 install meson cython psutil sympy numpy scipy mpi4py
+        pip3 install build meson-python wheel
+        python3 -c "import sys; print(sys.version)"
+        python3 -c "import sys; print(sys.path)"
+        python3 -c "import numpy as np ; np.show_config()"
+        python3 -c 'import sys ; from mesonbuild import mesonmain; sys.exit(mesonmain.main())' --version
+        type ninja
+        ninja --version
+    - name: Build CPS
+      run: |
+        export num_proc=2
+        ./scripts/qmp.sh
+        ./scripts/qio.sh
+        ./scripts/cps.sh
+    - name: Build Grid-clehner
+      run: |
+        export num_proc=3
+        ./scripts/grid-clehner.gen16.sh
+    - name: Build GPT
+      run: |
+        export num_proc=3
+        ./scripts/gpt.sh
+    - name: Install Qlattice
+      run: |
+        export num_proc=3
+        ./scripts/qlat-packages.sh
+    - name: Testing pylib qlat
+      run: |
+        export num_proc=3
+        ./scripts/qlat-examples-py.sh
+    - name: Testing pylib qlat cps
+      run: |
+        export num_proc=3
+        # ./scripts/qlat-examples-py-cps.sh
+    - name: Testing qlat
+      run: |
+        export num_proc=3
+        ./scripts/qlat-examples-cpp.sh
+    - name: Testing qlat grid
+      run: |
+        export num_proc=3
+        ./scripts/qlat-examples-cpp-grid.sh
+    - name: Testing pylib qlat gpt
+      run: |
+        export num_proc=3
+        ./scripts/qlat-examples-py-gpt.sh
+    - name: Check log diff
+      run: |
+        ./scripts/qlat-examples-diff-new-logs.sh
+    - name: Update log
+      run: |
+        ./scripts/qlat-examples-update-logs.sh
+    - name: Check error
+      run: |
+        ! git diff | grep '^[+-]CHECK: ' || echo "Check failed!"

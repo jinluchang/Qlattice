@@ -6,9 +6,11 @@ set -e
 
 ./scripts/setenv.default.sh
 ./scripts/qcore.sh
+./scripts/python-venv.sh
+./scripts/python-pip-install.sh
 
-./scripts/ninja-script.sh
 ./scripts/eigen.sh
+./scripts/ninja-script.sh
 
 ./scripts/qlat-utils.sh
 ./scripts/qlat.sh

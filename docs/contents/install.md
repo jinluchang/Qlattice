@@ -12,9 +12,10 @@ An efficient choice for `TEMP_DIRECTORY` can be `/dev/shm/$(whoami)/temp`.
 
 ## Install on Ubuntu
 
-`$ sudo apt-get install -y cython3 patchelf ninja-build python3-mpi4py python3-sympy python3-numpy python3-scipy python3-psutil libeigen3-dev libgsl-dev libopenmpi-dev libfftw3-dev zlib1g-dev libssl-dev libmpfr-dev gnuplot texlive-metapost poppler-utils`
-
-`$ pip3 install --user meson`
+`$ sudo apt-get install -y python3-full`
+`$ sudo apt-get install -y libopenmpi-dev ninja-build patchelf libeigen3-dev libgsl-dev zlib1g-dev libssl-dev libmpfr-dev`
+`$ sudo apt-get install -y gnuplot texlive-metapost poppler-utils`
+`$ sudo apt-get install -y libfftw3-dev`
 
 ### Qlattice only
 
@@ -28,9 +29,10 @@ An efficient choice for `TEMP_DIRECTORY` can be `/dev/shm/$(whoami)/temp`.
 
 ## Install on Mac
 
-`$ brew install ninja patchelf llvm open-mpi eigen fftw gsl zlib openssl@3 mpfr autoconf automake flock findutils pkg-config coreutils`
-
-`$ pip3 install --user meson cython psutil sympy numpy scipy mpi4py`
+`$ brew install llvm autoconf automake coreutils flock findutils pkg-config`
+`$ brew install open-mpi ninja patchelf eigen gsl zlib openssl@3 mpfr`
+`$ brew install gnuplot texlive poppler`
+`$ brew install fftw`
 
 ### Qlattice only
 
@@ -97,22 +99,20 @@ There are few different scripts to build the `Grid` library. Choose one best sui
 After the first complete install, one can re-install individual components by running the specific script. For example, to just re-install the `Qlattice` header files and python library:
 
 `$ ./scripts/qlat-utils.sh`
-
 `$ ./scripts/qlat.sh`
 
 It is also possible to build `CPS`, `Grid`, and `GPT`. For examples:
 
-`$ ./scripts/c-lime.sh`
+`$ ./scripts/qmp.sh`
+`$ ./scripts/qio.sh`
+`$ ./scripts/cps.sh`
+`$ ./scripts/qlat-cps.sh`
 
+`$ ./scripts/c-lime.sh`
 `$ ./scripts/grid-clehner.avx2.sh`
+`$ ./scripts/qlat-grid.sh`
 
 `$ ./scripts/gpt.sh`
-
-`$ ./scripts/qmp.sh`
-
-`$ ./scripts/qio.sh`
-
-`$ ./scripts/cps.sh`
 
 It may be convenient to create a symbolic link `$HOME/qlat-build/default`, which points to the actual directory `DEST_DIRECTORY`. The `prefix` environment variable can be empty if the symbolic link is created.
 
@@ -148,8 +148,8 @@ There are example programs provided in the examples directory. Once the library 
 
 ```
 ./scripts/qlat-examples-cpp.sh
-./scripts/qlat-examples-cpp-grid.sh
 ./scripts/qlat-examples-py.sh
-./scripts/qlat-examples-py-gpt.sh
-./scripts/qlat-examples-py-cps.sh
+./scripts/qlat-examples-py-gpt.sh # require GPT
+./scripts/qlat-examples-py-cps.sh # require CPS and qlat-cps
+./scripts/qlat-examples-cpp-grid.sh # require Grid and qlat-grid
 ```
