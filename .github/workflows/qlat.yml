@@ -219,14 +219,14 @@ jobs:
         export num_proc=2
         ./scripts/setenv.default.sh
         ./scripts/qcore.sh
+        ./scripts/python-venv.sh
+        ./scripts/python-pip-install.sh
         ./scripts/eigen.sh
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
     - name: Show python venv
       run: |
-        ./scripts/python-venv.sh
         source ~/qlat-build/default/setenv.sh
-        pip3 install meson
         pip3 install build meson-python wheel
         python3 -c "import sys; print(sys.version)"
         python3 -c "import sys; print(sys.path)"
@@ -313,7 +313,6 @@ jobs:
     - name: Show python venv
       run: |
         source ~/qlat-build/default/setenv.sh
-        pip3 install meson cython psutil sympy numpy scipy mpi4py
         python3 -c "import sys; print(sys.version)"
         python3 -c "import sys; print(sys.path)"
         python3 -c "import numpy as np ; np.show_config()"
@@ -474,6 +473,8 @@ jobs:
         export num_proc=3
         ./scripts/setenv.default.sh
         ./scripts/qcore.sh
+        ./scripts/python-venv.sh
+        ./scripts/python-pip-install.sh
         ./scripts/eigen.sh
         ./scripts/fftw.sh
         ./scripts/gsl.sh
@@ -481,9 +482,7 @@ jobs:
         ./scripts/hdf5.sh
     - name: Show python venv
       run: |
-        ./scripts/python-venv.sh
         source ~/qlat-build/default/setenv.sh
-        pip3 install meson cython psutil sympy numpy scipy mpi4py
         pip3 install build meson-python wheel
         python3 -c "import sys; print(sys.version)"
         python3 -c "import sys; print(sys.path)"
