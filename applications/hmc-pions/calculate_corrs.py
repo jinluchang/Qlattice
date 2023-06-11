@@ -287,7 +287,7 @@ def main():
     lmbd = 32.0
     alpha = 0.1
     #
-    version = "1-9"
+    version = "3-1"
     #
     t_max = 32
     cutoff = 500
