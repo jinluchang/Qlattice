@@ -6,7 +6,7 @@ import sys
 import jackknife
 
 class Correlators():
-    def __init__(self, Nx, Nt, msq, lmbd, alpha, version, cutoff, block_size):
+    def __init__(self, Nx, Nt, msq, lmbd, alpha, version, t_max, cutoff, block_size):
         self.psq_list=[]
         self.phi_list=[]
         self.timeslices=[]
@@ -31,6 +31,8 @@ class Correlators():
         self.alpha = alpha
         # Version of the data generation code
         self.version = version
+        # The maximum time extent for which to save the correlators
+        self.t_max = t_max
         # The number of trajectories until thermalization
         self.cutoff = cutoff
         # The size of blocks to use for error estimation
@@ -165,17 +167,17 @@ class Correlators():
             corrs=[]
             for i in range(len(tslices1)):
                 print(i)
-                corrs.append([self.correlator(tslices1[i],tslices2[i],dt) for dt in range(self.Nt)])
+                corrs.append([self.correlator(tslices1[i],tslices2[i],dt) for dt in range(max_t)])
             self.corr_avgs[name] = np.mean(corrs,axis=0)
             self.corrs[name] = corrs #self.get_jackknife_blocks(corrs)
         else:
             corrs=[]
             try:
                 for i in range(len(tslices1)):
-                    corrs.append([self.correlator(tslices1[i][m],tslices2[i][m],dt) for dt in range(self.Nt)])
+                    corrs.append([self.correlator(tslices1[i][m],tslices2[i][m],dt) for dt in range(max_t)])
             except:
                 for i in range(len(tslices1)):
-                    corrs.append([self.correlator(tslices1[i][m],tslices2[i],dt) for dt in range(self.Nt)])
+                    corrs.append([self.correlator(tslices1[i][m],tslices2[i],dt) for dt in range(max_t)])
             self.corr_avgs[name][m] = np.mean(corrs,axis=0)
             self.corrs[name][m] = corrs #self.get_jackknife_blocks(corrs)
         self.done.append(f"{name}{m}corrs")
@@ -287,6 +289,7 @@ def main():
     #
     version = "1-9"
     #
+    t_max = 32
     cutoff = 500
     block_size = 10
 
@@ -305,10 +308,12 @@ def main():
                 cutoff = int(sys.argv[i+1])
             elif(sys.argv[i]=="-b"):
                 block_size = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-t"):
+                t_max = int(sys.argv[i+1])
         except:
             raise Exception("Invalid arguments")
     
-    corrs = Correlators(total_site[0], total_site[3], m_sq, lmbd, alpha, version, cutoff, block_size)
+    corrs = Correlators(total_site[0], total_site[3], m_sq, lmbd, alpha, version, t_max, cutoff, block_size)
     print("Loading data...")
     corrs.load_all_data()
     print("pipi corrs==============================")
