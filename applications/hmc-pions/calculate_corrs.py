@@ -167,17 +167,17 @@ class Correlators():
             corrs=[]
             for i in range(len(tslices1)):
                 print(i)
-                corrs.append([self.correlator(tslices1[i],tslices2[i],dt) for dt in range(max_t)])
+                corrs.append([self.correlator(tslices1[i],tslices2[i],dt) for dt in range(self.t_max)])
             self.corr_avgs[name] = np.mean(corrs,axis=0)
             self.corrs[name] = corrs #self.get_jackknife_blocks(corrs)
         else:
             corrs=[]
             try:
                 for i in range(len(tslices1)):
-                    corrs.append([self.correlator(tslices1[i][m],tslices2[i][m],dt) for dt in range(max_t)])
+                    corrs.append([self.correlator(tslices1[i][m],tslices2[i][m],dt) for dt in range(self.t_max)])
             except:
                 for i in range(len(tslices1)):
-                    corrs.append([self.correlator(tslices1[i][m],tslices2[i],dt) for dt in range(max_t)])
+                    corrs.append([self.correlator(tslices1[i][m],tslices2[i],dt) for dt in range(self.t_max)])
             self.corr_avgs[name][m] = np.mean(corrs,axis=0)
             self.corrs[name][m] = corrs #self.get_jackknife_blocks(corrs)
         self.done.append(f"{name}{m}corrs")
