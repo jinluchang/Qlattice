@@ -171,7 +171,7 @@ Example for the random Super-Jackknife method: ``examples-py/jackknife-random.py
 
 .. literalinclude:: ../examples-py/jackknife-random.py
 
-Example for the conventional Super-Jackknife method:: ``examples-py/jackknife-super.py``
+Example for the conventional Super-Jackknife method: ``examples-py/jackknife-super.py``
 
 .. literalinclude:: ../examples-py/jackknife-super.py
 

@@ -140,3 +140,22 @@ mk_Q7_b81
 mk_Q8_b81
 
 :math:`Q_a^{e/o} = A_a^{e/o} Q_0^{e/o} + M_{a,i} Q_i^{e/o} ( i = 1, ... ,4; a = 5, ... ,8 )`
+
+Examples
+--------
+
+Some examples: ``examples-py/auto-cexprs.py``
+
+.. literalinclude:: ../examples-py/auto-cexprs.py
+
+More examples: ``examples-py/auto-cexprs-more.py``
+
+.. literalinclude:: ../examples-py/auto-cexprs-more.py
+
+K->pipi example: ``examples-py/auto-cexprs-kpipi.py``
+
+.. literalinclude:: ../examples-py/auto-cexprs-kpipi.py
+
+A more complete example: ``examples-py/gpt-qlat-data-gen-auto.py``
+
+.. literalinclude:: ../examples-py/gpt-qlat-data-gen-auto.py
