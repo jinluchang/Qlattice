@@ -311,14 +311,9 @@ class Tr(Op):
         s = None
         c = None
         for op in ops + ops:
-            if op.otype in [ "S", "G", ]:
-                if s is not None:
-                    assert s == op.s1
-                s = op.s2
-            if op.otype in [ "S", "U", ]:
-                if c is not None:
-                    assert c == op.c1
-                c = op.c2
+            if not check_trace_sc(op, s, c):
+                raise Exception(f"ops={ops} tag={tag}")
+            update_trace_sc(op, s, c)
         if s is not None and c is not None:
             self.tag = "sc"
         elif s is not None:
@@ -399,6 +394,15 @@ def check_trace_op(ops : list, op : Op):
             return False
     return True
 
+def check_trace_sc(op, s, c):
+    if op.otype in [ "S", "G", ]:
+        if s is not None and s != op.s1:
+            return False
+    if op.otype in [ "S", "U", ]:
+        if c is not None and c != op.c1:
+            return False
+    return True
+
 def update_trace_sc(op, s, c):
     if op.otype in [ "S", "G", ]:
         s = op.s2
@@ -406,8 +410,10 @@ def update_trace_sc(op, s, c):
         c = op.c2
     return s, c
 
-def pick_trace_op(ops : list, s, c):
+def pick_trace_op(ops : list, masks : list, s, c):
     for i, op in enumerate(ops):
+        if masks[i]:
+            continue
         if op.otype in [ "S", "G", ]:
             if s is not None and s != op.s1:
                 continue
@@ -435,12 +441,14 @@ def find_trace(ops : list):
         tr_ops.append(op)
         s, c = update_trace_sc(op, s, c)
         while True:
-            p_op = pick_trace_op(ops, s, c)
+            p_op = pick_trace_op(ops, masks, s, c)
             if p_op is None:
-                break
-            i2, op2 = pick_trace_op(ops, s, c)
-            if masks[i2]:
-                return Tr(tr_ops), [op for i, op in enumerate(ops) if not masks[i] ]
+                for op2 in tr_ops:
+                    if not check_trace_sc(op2, s, c):
+                        break
+                    update_trace_sc(op2, s, c)
+                return Tr(tr_ops), [ op for i, op in enumerate(ops) if not masks[i] ]
+            i2, op2 = p_op
             masks[i2] = True
             tr_ops.append(op2)
             s, c = update_trace_sc(op2, s, c)
