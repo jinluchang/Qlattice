@@ -213,13 +213,15 @@ class S(Op):
 
 class G(Op):
 
-    # spin matrix
-
-    # self.tag
-    # self.s1
-    # self.s2
-
-    # tag = 0, 1, 2, 3, 5 for gamma matrices
+    """
+    spin matrix
+    #
+    self.tag
+    self.s1
+    self.s2
+    #
+    tag = 0, 1, 2, 3, 5 for gamma matrices
+    """
 
     def __init__(self, tag, s1 : str = "auto", s2 : str = "auto"):
         Op.__init__(self, "G")
@@ -241,24 +243,60 @@ class G(Op):
 
 ### ------
 
+class U(Op):
+
+    """
+    color matrix
+    #
+    self.tag
+    self.p
+    self.mu
+    self.c1
+    self.c2
+    """
+
+    def __init__(self, tag, p, mu, c1 : str = "auto", c2 : str = "auto"):
+        Op.__init__(self, "U")
+        self.tag = tag
+        self.p = p
+        self.mu = mu
+        self.c1 = c1
+        self.c2 = c2
+
+    def __repr__(self) -> str:
+        if self.c1 == "auto" and self.c2 == "auto":
+            return f"{self.otype}({self.tag!r},{self.p!r},{self.mu!r})"
+        else:
+            return f"{self.otype}({self.tag!r},{self.p!r},{self.mu!r},{self.c1!r},{self.c2!r})"
+
+    def list(self):
+        return [self.otype, self.tag, self.p, self.mu, self.c1, self.c2]
+
+    def __eq__(self, other) -> bool:
+        return self.list() == other.list()
+
+### ------
+
 def copy_op_index_auto(op : Op):
-    if op.otype not in ["S", "G"]:
+    if op.otype not in [ "S", "G", "U", ]:
         return op
     op = copy.copy(op)
-    if op.otype in ["S", "G"]:
+    if op.otype in [ "S", "G", ]:
         op.s1 = "auto"
         op.s2 = "auto"
-    if op.otype == "S":
+    if op.otype in [ "S", "U", ]:
         op.c1 = "auto"
         op.c2 = "auto"
     return op
 
 class Tr(Op):
 
-    # a collection of ops taking the trace
-
-    # self.ops
-    # self.tag
+    """
+    a collection of ops taking the trace
+    #
+    self.ops
+    self.tag
+    """
 
     def __init__(self, ops : list, tag = None):
         Op.__init__(self, "Tr")
@@ -269,15 +307,15 @@ class Tr(Op):
             return
         for op in ops:
             assert op.is_commute()
-            assert op.otype in ["S", "G",]
+            assert op.otype in [ "S", "G", "U", ]
         s = None
         c = None
         for op in ops + ops:
-            if op.otype in ["S", "G"]:
+            if op.otype in [ "S", "G", ]:
                 if s is not None:
                     assert s == op.s1
                 s = op.s2
-            if op.otype == "S":
+            if op.otype in [ "S", "U", ]:
                 if c is not None:
                     assert c == op.c1
                 c = op.c2
@@ -322,7 +360,7 @@ def check_trace_spin_index(ops : list, s : str):
     i1 = None
     i2 = None
     for i, op in enumerate(ops):
-        if op.otype in ["S", "G",]:
+        if op.otype in [ "S", "G", ]:
             if op.s1 == s:
                 i1 = i
                 count1 += 1
@@ -337,7 +375,7 @@ def check_trace_color_index(ops : list, c : str):
     i1 = None
     i2 = None
     for i, op in enumerate(ops):
-        if op.otype in ["S",]:
+        if op.otype in [ "S", "U", ]:
             if op.c1 == c:
                 i1 = i
                 count1 += 1
@@ -347,14 +385,14 @@ def check_trace_color_index(ops : list, c : str):
     return count1 == 1 and count2 == 1, i1, i2
 
 def check_trace_op(ops : list, op : Op):
-    if op.otype not in ["S", "G",]:
+    if op.otype not in [ "S", "G", "U", ]:
         return False
-    if op.otype in ["S", "G",]:
+    if op.otype in [ "S", "G", ]:
         if not check_trace_spin_index(ops, op.s1)[0]:
             return False
         if not check_trace_spin_index(ops, op.s2)[0]:
             return False
-    if op.otype in ["S",]:
+    if op.otype in [ "S", "U", ]:
         if not check_trace_color_index(ops, op.c1)[0]:
             return False
         if not check_trace_color_index(ops, op.c2)[0]:
@@ -362,18 +400,18 @@ def check_trace_op(ops : list, op : Op):
     return True
 
 def update_trace_sc(op, s, c):
-    if op.otype in ["S", "G",]:
+    if op.otype in [ "S", "G", ]:
         s = op.s2
-    if op.otype in ["S",]:
+    if op.otype in [ "S", "U", ]:
         c = op.c2
     return s, c
 
 def pick_trace_op(ops : list, s, c):
     for i, op in enumerate(ops):
-        if op.otype in ["S", "G",]:
+        if op.otype in [ "S", "G", ]:
             if s is not None and s != op.s1:
                 continue
-        if op.otype in ["S",]:
+        if op.otype in [ "S", "U", ]:
             if c is not None and c != op.c1:
                 continue
         if not check_trace_op(ops, op):
@@ -382,7 +420,9 @@ def pick_trace_op(ops : list, s, c):
     return None
 
 def find_trace(ops : list):
-    # return None or (Tr(tr_ops), remaining_ops,)
+    """
+    return None or (Tr(tr_ops), remaining_ops,)
+    """
     size = len(ops)
     for i, op in enumerate(ops):
         if not check_trace_op(ops, op):
@@ -417,9 +457,11 @@ def collect_traces(ops : list) -> list:
 
 class Term:
 
-    # self.coef
-    # self.c_ops
-    # self.a_ops
+    """
+    self.coef
+    self.c_ops
+    self.a_ops
+    """
 
     def __init__(self, c_ops, a_ops, coef = 1):
         self.coef = coef
@@ -792,8 +834,10 @@ def contract_term(term : Term) -> Expr:
 
 @q.timer
 def contract_expr(expr: Expr) -> Expr:
-    # interface function
-    # does not change expr
+    """
+    interface function
+    does not change expr
+    """
     all_terms = []
     for term in expr.terms:
         all_terms += contract_term(term).terms

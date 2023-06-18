@@ -46,7 +46,9 @@ class Var(Op):
 ### ----
 
 def get_var_name_type(x):
-    # types include: V_S (wilson matrix), V_G (spin matrix), V_Tr (AMA c-number), V_a (c-number)
+    """
+    types include: V_S (wilson matrix), V_G (spin matrix), V_U (color matrix), V_Tr (AMA c-number), V_a (c-number)
+    """
     if x.startswith("V_S_"):
         return "V_S"
     elif x.startswith("V_prod_GG_"):
@@ -57,20 +59,34 @@ def get_var_name_type(x):
         return "V_S"
     elif x.startswith("V_prod_SS_"):
         return "V_S"
+    elif x.startswith("V_prod_UU_"):
+        return "V_U"
+    elif x.startswith("V_prod_UG_"):
+        return "V_S"
+    elif x.startswith("V_prod_GU_"):
+        return "V_S"
+    elif x.startswith("V_prod_US_"):
+        return "V_S"
+    elif x.startswith("V_prod_SU_"):
+        return "V_S"
     elif x.startswith("V_tr_"):
         return "V_Tr"
     else:
         assert False
 
 def get_op_type(x):
-    # x should be an Op
-    # return a string which indicate the type of the op
+    """
+    x should be an Op
+    return a string which indicate the type of the op
+    """
     if not isinstance(x, Op):
         return None
     if x.otype == "S":
         return "S"
     elif x.otype == "G":
         return "G"
+    elif x.otype == "U":
+        return "U"
     elif x.otype == "Tr":
         return "Tr"
     elif x.otype == "Var":
@@ -221,7 +237,9 @@ def collect_tr_in_cexpr(named_terms):
     return variables_tr
 
 def find_common_subexpr_in_tr(variables_tr):
-    # return None or [ op, op1, ]
+    """
+    return None or [ op, op1, ]
+    """
     subexpr_count = {}
     def add(x, count_added):
         op_repr = repr(x)
@@ -239,14 +257,18 @@ def find_common_subexpr_in_tr(variables_tr):
             if len(x) > 2:
                 factor = 2
             op_type = get_op_type(op)
-            if op_type in [ "V_S", "V_G", "S", "G", ]:
+            if op_type in [ "V_S", "V_G", "V_U", "S", "G", "U", ]:
                 op1 = x[(i+1) % len(x)]
                 op1_type = get_op_type(op1)
-                if op1_type in [ "V_S", "V_G", "S", "G", ]:
+                if op1_type in [ "V_S", "V_G", "V_U", "S", "G", "U", ]:
                     prod = [op, op1]
                     if op_type in [ "V_G", "G", ] and op1_type in [ "V_G", "G", ]:
                         add(prod, 1.02 * factor)
+                    elif op_type in [ "V_U", "U", ] and op1_type in [ "V_U", "U", ]:
+                        add(prod, 1.02 * factor)
                     elif op_type in [ "V_G", "G", ] or op1_type in [ "V_G", "G", ]:
+                        add(prod, 1.01 * factor)
+                    elif op_type in [ "V_U", "U", ] or op1_type in [ "V_U", "U", ]:
                         add(prod, 1.01 * factor)
                     elif op_type in [ "V_S", "S", ] and op1_type in [ "V_S", "S", ]:
                         add(prod, 1 * factor)
@@ -285,10 +307,10 @@ def collect_common_subexpr_in_tr(variables_tr, op_common, var):
             if len(x) < 2:
                 return None
             for i, op in enumerate(x):
-                if isinstance(op, Op) and op.otype in ["Var", "S", "G",]:
+                if isinstance(op, Op) and op.otype in [ "Var", "S", "G", "U", ]:
                     i1 = (i+1) % len(x)
                     op1 = x[i1]
-                    if isinstance(op1, Op) and op1.otype in ["Var", "S", "G",]:
+                    if isinstance(op1, Op) and op1.otype in [ "Var", "S", "G", "U", ]:
                         prod = [op, op1]
                         if repr(prod) == op_repr:
                             x[i1] = None
@@ -323,17 +345,24 @@ def collect_common_subexpr_in_tr(variables_tr, op_common, var):
         remove_none(tr)
 
 def collect_subexpr_in_cexpr(variables_tr):
-    # collect common sub-expressions
-    # modify variables_tr in-place and return definitions as variables_prod
-    # variables_prod = [ (name, value,), ... ]
-    # possible (name, value,) includes
-    # ("V_prod_SG_0", [ op, op1, ],) where get_op_type(op) in [ "V_S", "S", ] and get_op_type(op1) in [ "V_G", "G", ]
+    """
+    collect common sub-expressions
+    modify variables_tr in-place and return definitions as variables_prod
+    variables_prod = [ (name, value,), ... ]
+    possible (name, value,) includes
+    ("V_prod_SG_0", [ op, op1, ],) where get_op_type(op) in [ "V_S", "S", ] and get_op_type(op1) in [ "V_G", "G", ]
+    """
     var_nameset = set()
     var_counter_dict = {}
     var_counter_dict["V_prod_GG_"] = 0
     var_counter_dict["V_prod_GS_"] = 0
     var_counter_dict["V_prod_SG_"] = 0
     var_counter_dict["V_prod_SS_"] = 0
+    var_counter_dict["V_prod_UU_"] = 0
+    var_counter_dict["V_prod_UG_"] = 0
+    var_counter_dict["V_prod_GU_"] = 0
+    var_counter_dict["V_prod_US_"] = 0
+    var_counter_dict["V_prod_SU_"] = 0
     variables_prod = []
     while True:
         subexpr = find_common_subexpr_in_tr(variables_tr)
@@ -342,8 +371,8 @@ def collect_subexpr_in_cexpr(variables_tr):
         [ op, op1, ] = subexpr
         op_type = get_op_type(op)
         op1_type = get_op_type(op1)
-        assert op_type in [ "V_S", "V_G", "S", "G", ]
-        assert op1_type in [ "V_S", "V_G", "S", "G", ]
+        assert op_type in [ "V_S", "V_G", "V_U", "S", "G", "U", ]
+        assert op1_type in [ "V_S", "V_G", "V_U", "S", "G", "U", ]
         if op_type in [ "V_G", "G", ] and op1_type in [ "V_G", "G", ]:
             name_prefix = "V_prod_GG_"
         elif op_type in [ "V_G", "G", ] and op1_type in [ "V_S", "S", ]:
@@ -352,6 +381,16 @@ def collect_subexpr_in_cexpr(variables_tr):
             name_prefix = "V_prod_SG_"
         elif op_type in [ "V_S", "S", ] and op1_type in [ "V_S", "S", ]:
             name_prefix = "V_prod_SS_"
+        elif op_type in [ "V_U", "U", ] and op1_type in [ "V_U", "U", ]:
+            name_prefix = "V_prod_UU_"
+        elif op_type in [ "V_U", "U", ] and op1_type in [ "V_G", "G", ]:
+            name_prefix = "V_prod_UG_"
+        elif op_type in [ "V_G", "G", ] and op1_type in [ "V_U", "U", ]:
+            name_prefix = "V_prod_GU_"
+        elif op_type in [ "V_U", "U", ] and op1_type in [ "V_S", "S", ]:
+            name_prefix = "V_prod_US_"
+        elif op_type in [ "V_S", "S", ] and op1_type in [ "V_U", "U", ]:
+            name_prefix = "V_prod_SU_"
         else:
             assert False
         while True:
@@ -367,19 +406,21 @@ def collect_subexpr_in_cexpr(variables_tr):
 
 class CExpr:
 
-    # self.diagram_types
-    # self.positions
-    # self.variables_prop
-    # self.variables_factor
-    # self.variables_prod
-    # self.variables_tr
-    # self.named_terms
-    # self.named_exprs
-    # self.function
+    """
+    self.diagram_types
+    self.positions
+    self.variables_prop
+    self.variables_factor
+    self.variables_prod
+    self.variables_tr
+    self.named_terms
+    self.named_exprs
+    self.function
     #
-    # self.named_terms[i] = (term_name, Term(c_ops, [], 1),)
-    # self.named_exprs[i] = (expr_name, [ (ea_coef, term_name,), ... ],)
-    # self.positions == sorted(list(self.positions))
+    self.named_terms[i] = (term_name, Term(c_ops, [], 1),)
+    self.named_exprs[i] = (expr_name, [ (ea_coef, term_name,), ... ],)
+    self.positions == sorted(list(self.positions))
+    """
 
     def __init__(self):
         self.diagram_types = []
@@ -394,16 +435,20 @@ class CExpr:
 
     @q.timer
     def optimize(self):
-        # interface function
+        """
+        interface function
+        """
         self.collect_op()
 
     @q.timer
     def collect_op(self):
-        # interface function
-        # Performing common sub-expression elimination
-        # Should be called after contract_simplify_compile(*exprs) or mk_cexpr(*exprs)
-        # The cexpr cannot be evaluated before collect_op!!!
-        # eval term factor
+        """
+        interface function
+        Performing common sub-expression elimination
+        Should be called after contract_simplify_compile(*exprs) or mk_cexpr(*exprs)
+        The cexpr cannot be evaluated before collect_op!!!
+        eval term factor
+        """
         for name, term in self.named_terms:
             assert term.coef == 1
             assert term.a_ops == []
@@ -660,6 +705,8 @@ def show_variable_value(value):
         return f"gamma_{tag}"
     elif isinstance(value, G):
         return f"gamma({value.tag})"
+    elif isinstance(value, U):
+        return f"U({value.tag},{value.p},{value.mu})"
     elif isinstance(value, S):
         return f"S_{value.f}({value.p1},{value.p2})"
     elif isinstance(value, Tr):
