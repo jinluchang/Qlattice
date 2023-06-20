@@ -1186,7 +1186,8 @@ class CExprCodeGenPy:
             assert x.otype == "Tr"
             c, t = self.gen_expr(x)
             assert t == "V_Tr"
-            append(f"cdef cc.Complex {name} = {c}")
+            append_cy(f"cdef cc.Complex {name} = {c}")
+            append_py(f"{name} = {c}")
         append(f"# set terms")
         for name, term in cexpr.named_terms:
             x = term
@@ -1195,7 +1196,8 @@ class CExprCodeGenPy:
             else:
                 c_ops = [ x.coef, ] + x.c_ops
             c, t = self.gen_expr_prod_list(c_ops)
-            append(f"cdef cc.Complex {name} = {c}")
+            append_cy(f"cdef cc.Complex {name} = {c}")
+            append_py(f"{name} = {c}")
         append(f"# declare exprs")
         append_cy(f"cdef numpy.ndarray[numpy.complex128_t] exprs")
         append(f"exprs = np.zeros({len(cexpr.named_exprs)}, dtype = np.complex128)")
