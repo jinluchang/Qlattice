@@ -857,7 +857,7 @@ class CExprCodeGenPy:
         append(f"from auto_contractor.runtime import *")
         append_cy(f"cimport qlat_utils.everything as cc")
         append_cy(f"cimport qlat_utils.cp as cp")
-        append_cy(f"cimport numpy as np")
+        append_cy(f"cimport numpy")
         self.sep()
         self.cexpr_function()
         self.sep()
@@ -900,22 +900,34 @@ class CExprCodeGenPy:
                 if self.is_cython:
                     return f"cc.mat_tr({c})", "V_Tr"
                 else:
-                    return f"mat_tr({c})", "V_Tr"
+                    return f"mat_tr_wm({c})", "V_Tr"
             else:
                 c1, t1 = self.gen_expr_prod_list(x.ops[:-1])
                 c2, t2 = self.gen_expr(x.ops[-1])
                 if t1 == "V_S" and t2 == "V_S":
                     self.total_sloppy_flops += 1150
-                    return f"cc.mat_tr({c1}, {c2})", "V_Tr"
+                    if self.is_cython:
+                        return f"cc.mat_tr({c1}, {c2})", "V_Tr"
+                    else:
+                        return f"mat_tr_wm_wm({c1}, {c2})", "V_Tr"
                 elif t1 == "V_S" and t2 == "V_G":
-                    return f"cc.mat_tr({c1}, {c2})", "V_Tr"
+                    if self.is_cython:
+                        return f"cc.mat_tr({c1}, {c2})", "V_Tr"
+                    else:
+                        return f"mat_tr_wm_sm({c1}, {c2})", "V_Tr"
                 elif t1 == "V_G" and t2 == "V_S":
-                    return f"cc.mat_tr({c1}, {c2})", "V_Tr"
+                    if self.is_cython:
+                        return f"cc.mat_tr({c1}, {c2})", "V_Tr"
+                    else:
+                        return f"mat_tr_sm_wm({c1}, {c2})", "V_Tr"
                 else:
                     assert False
         elif x.otype == "Var":
             if x.name.startswith("V_S_"):
-                return f"p_{x.name}[0]", get_var_name_type(x.name)
+                if self.is_cython:
+                    return f"p_{x.name}[0]", get_var_name_type(x.name)
+                else:
+                    return f"p_{x.name}", get_var_name_type(x.name)
             else:
                 return f"{x.name}", get_var_name_type(x.name)
 
@@ -930,24 +942,48 @@ class CExprCodeGenPy:
             return ct1
         elif t1 == "V_S" and t2 == "V_S":
             self.total_sloppy_flops += 13536
-            return f"{c1} * {c2}", "V_S"
+            if self.is_cython:
+                return f"{c1} * {c2}", "V_S"
+            else:
+                return f"mat_mul_wm_wm({c1}, {c2})", "V_S"
         elif t1 == "V_S" and t2 == "V_G":
             self.total_sloppy_flops += 4320
-            return f"{c1} * {c2}", "V_S"
+            if self.is_cython:
+                return f"{c1} * {c2}", "V_S"
+            else:
+                return f"mat_mul_wm_sm({c1}, {c2})", "V_S"
         elif t1 == "V_G" and t2 == "V_S":
             self.total_sloppy_flops += 4320
-            return f"{c1} * {c2}", "V_S"
+            if self.is_cython:
+                return f"{c1} * {c2}", "V_S"
+            else:
+                return f"mat_mul_wm_sm({c1}, {c2})", "V_S"
         elif t1 == "V_G" and t2 == "V_G":
             self.total_sloppy_flops += 480
-            return f"{c1} * {c2}", "V_G"
+            if self.is_cython:
+                return f"{c1} * {c2}", "V_G"
+            else:
+                return f"mat_mul_sm_sm({c1}, {c2})", "V_S"
         elif t1 == "V_G" and t2 == "V_a":
-            return f"{c1} * {c2}", "V_G"
+            if self.is_cython:
+                return f"{c1} * {c2}", "V_G"
+            else:
+                return f"mat_mul_a_sm({c2}, {c1})", "V_S"
         elif t1 == "V_a" and t2 == "V_G":
-            return f"{c1} * {c2}", "V_G"
+            if self.is_cython:
+                return f"{c1} * {c2}", "V_G"
+            else:
+                return f"mat_mul_a_sm({c1}, {c2})", "V_S"
         elif t1 == "V_S" and t2 == "V_a":
-            return f"{c1} * {c2}", "V_S"
+            if self.is_cython:
+                return f"{c1} * {c2}", "V_S"
+            else:
+                return f"mat_mul_a_wm({c2}, {c1})", "V_S"
         elif t1 == "V_a" and t2 == "V_S":
-            return f"{c1} * {c2}", "V_S"
+            if self.is_cython:
+                return f"{c1} * {c2}", "V_S"
+            else:
+                return f"mat_mul_a_wm({c1}, {c2})", "V_S"
         elif t1 == "V_a" and t2 == "V_a":
             return f"{c1} * {c2}", "V_a"
         elif t1 == "V_Tr" and t2 == "V_Tr":
@@ -1071,8 +1107,8 @@ class CExprCodeGenPy:
         for position_var in cexpr.positions:
             append(f"{position_var}_type, {position_var} = positions_dict['{position_var}']")
         append(f"# declare factors")
-        append_cy(f"cdef np.ndarray[np.complex128_t] factors")
-        append(f"factors = numpy.zeros({len(cexpr.variables_factor)}, dtype = numpy.complex128)")
+        append_cy(f"cdef numpy.ndarray[numpy.complex128_t] factors")
+        append(f"factors = np.zeros({len(cexpr.variables_factor)}, dtype = np.complex128)")
         append_cy(f"cdef cc.Complex[:] factors_view = factors")
         append(f"# set factors")
         for idx, (name, value,) in enumerate(cexpr.variables_factor):
@@ -1161,8 +1197,8 @@ class CExprCodeGenPy:
             c, t = self.gen_expr_prod_list(c_ops)
             append(f"cdef cc.Complex {name} = {c}")
         append(f"# declare exprs")
-        append_cy(f"cdef np.ndarray[np.complex128_t] exprs")
-        append(f"exprs = numpy.zeros({len(cexpr.named_exprs)}, dtype = numpy.complex128)")
+        append_cy(f"cdef numpy.ndarray[numpy.complex128_t] exprs")
+        append(f"exprs = np.zeros({len(cexpr.named_exprs)}, dtype = np.complex128)")
         append_cy(f"cdef cc.Complex[:] exprs_view = exprs")
         append_py(f"exprs_view = exprs")
         append(f"# set exprs")

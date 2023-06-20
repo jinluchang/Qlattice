@@ -131,6 +131,16 @@ def mat_tr_sm_sm(SpinMatrix v1, SpinMatrix v2):
 
 ### -------------------------------------------------------------------
 
+def mat_mul_a_wm(cc.Complex v1, WilsonMatrix v2):
+    cdef WilsonMatrix x = WilsonMatrix()
+    x.xx = v1 * v2.xx
+    return x
+
+def mat_mul_a_sm(cc.Complex v1, SpinMatrix v2):
+    cdef SpinMatrix x = SpinMatrix()
+    x.xx = v1 * v2.xx
+    return x
+
 def mat_mul_wm_wm(WilsonMatrix v1, WilsonMatrix v2):
     cdef WilsonMatrix x = WilsonMatrix()
     x.xx = v1.xx * v2.xx

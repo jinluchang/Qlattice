@@ -44,4 +44,4 @@ from qlat_utils.c import \
 from qlat import \
         timer, timer_flops
 
-import numpy
+import numpy as np
