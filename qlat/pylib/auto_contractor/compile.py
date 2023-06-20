@@ -839,13 +839,17 @@ class CExprCodeGenPy:
     flops per trace2 6 M N + 2 (M N - 1) ==> 1150 (sc, sc)
     """
 
-    def __init__(self, cexpr):
+    def __init__(self, cexpr, is_cython = True):
         self.cexpr = cexpr
+        self.is_cython = is_cython
         self.lines = []
         self.indent = 0
         self.total_sloppy_flops = 0
 
     def code_gen(self):
+        """
+        main function
+        """
         lines = self.lines
         lines.append(f"from auto_contractor.runtime import *")
         lines.append(f"cimport qlat_utils.everything as cc")
@@ -962,6 +966,24 @@ class CExprCodeGenPy:
             lines.append("")
         else:
             lines.append(self.indent * ' ' + line)
+
+    def py_append(self, line):
+        if self.is_cython:
+            return
+        lines = self.lines
+        if line == "":
+            lines.append("# Python only")
+        else:
+            lines.append(self.indent * ' ' + line + " # Python only")
+
+    def cy_append(self, line):
+        if not self.is_cython:
+            return
+        lines = self.lines
+        if line == "":
+            lines.append("# Cython")
+        else:
+            lines.append(self.indent * ' ' + line + " # Cython")
 
     def sep(self):
         append = self.append
