@@ -126,7 +126,9 @@ def collect_position_in_cexpr(named_terms):
     return positions
 
 def collect_factor_in_cexpr(named_exprs):
-    # collect the factors in all ea_coef
+    """
+    collect the factors in all ea_coef
+    """
     variables_factor = []
     var_counter = 0
     var_dataset = {} # var_dataset[factor_code] = factor_var
@@ -159,8 +161,10 @@ def collect_factor_in_cexpr(named_exprs):
     return variables_factor
 
 def collect_prop_in_cexpr(named_terms):
-    # collect the propagators
-    # modify the named_terms in-place and return the prop variable definitions as variables
+    """
+    collect the propagators
+    modify the named_terms in-place and return the prop variable definitions as variables
+    """
     variables_prop = []
     var_counter = 0
     var_dataset = {} # var_dataset[op_repr] = op_var
@@ -197,11 +201,13 @@ def collect_prop_in_cexpr(named_terms):
     return variables_prop
 
 def collect_tr_in_cexpr(named_terms):
-    # collect common traces
-    # modify named_terms in-place and return definitions as variables_tr
-    # variables_tr = [ (name, value,), ... ]
-    # possible (name, value,) includes
-    # ("V_tr_0", op,) where op.otype == "Tr"
+    """
+    collect common traces
+    modify named_terms in-place and return definitions as variables_tr
+    variables_tr = [ (name, value,), ... ]
+    possible (name, value,) includes
+    ("V_tr_0", op,) where op.otype == "Tr"
+    """
     var_nameset = set()
     variables_tr = []
     var_counter = 0
@@ -725,8 +731,10 @@ def show_variable_value(value):
         return f"{value}"
 
 def display_cexpr_raw(cexpr : CExpr):
-    # return a string
-    # interface function
+    """
+    return a string
+    interface function
+    """
     lines = []
     lines.append(f"Begin CExpr")
     if cexpr.diagram_types:
@@ -761,8 +769,10 @@ def display_cexpr_raw(cexpr : CExpr):
     return "\n".join(lines)
 
 def display_cexpr(cexpr : CExpr):
-    # return a string
-    # interface function
+    """
+    return a string
+    interface function
+    """
     lines = []
     lines.append(f"Begin CExpr")
     if cexpr.diagram_types:
