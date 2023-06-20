@@ -10,12 +10,24 @@ import qlat_utils.c as c
 from qlat_utils.c import \
         Coordinate, \
         RngState, \
-        WilsonMatrix, \
-        SpinMatrix, \
-        get_gamma_matrix, \
         as_wilson_matrix, \
         as_wilson_matrix_g5_herm, \
         benchmark_matrix_functions
+
+from qlat_utils.c import \
+        WilsonMatrix, \
+        SpinMatrix, \
+        get_gamma_matrix, \
+        mat_tr_sm, \
+        mat_tr_wm, \
+        mat_tr_wm_wm, \
+        mat_tr_wm_sm, \
+        mat_tr_sm_wm, \
+        mat_tr_sm_sm, \
+        mat_mul_wm_wm, \
+        mat_mul_wm_sm, \
+        mat_mul_sm_wm, \
+        mat_mul_sm_sm
 
 from qlat_utils.c import \
         ElemType, \

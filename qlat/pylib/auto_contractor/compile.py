@@ -851,10 +851,13 @@ class CExprCodeGenPy:
         main function
         """
         lines = self.lines
-        lines.append(f"from auto_contractor.runtime import *")
-        lines.append(f"cimport qlat_utils.everything as cc")
-        lines.append(f"cimport qlat_utils.cp as cp")
-        lines.append(f"cimport numpy as np")
+        append = self.append
+        append_cy = self.append_cy
+        append_py = self.append_py
+        append(f"from auto_contractor.runtime import *")
+        append_cy(f"cimport qlat_utils.everything as cc")
+        append_cy(f"cimport qlat_utils.cp as cp")
+        append_cy(f"cimport numpy as np")
         self.sep()
         self.cexpr_function()
         self.sep()
@@ -883,7 +886,10 @@ class CExprCodeGenPy:
         elif x.otype == "G":
             assert x.s1 == "auto" and x.s2 == "auto"
             assert x.tag in [0, 1, 2, 3, 5]
-            return f"cp.gamma_matrix_{x.tag}", "V_G"
+            if self.is_cython:
+                return f"cp.gamma_matrix_{x.tag}", "V_G"
+            else:
+                return f"get_gamma_matrix({x.tag})", "V_G"
         elif x.otype == "Tr":
             if len(x.ops) == 0:
                 assert False
@@ -891,7 +897,10 @@ class CExprCodeGenPy:
                 c, t = self.gen_expr(x.ops[0])
                 assert t == "V_S"
                 self.total_sloppy_flops += 22
-                return f"cc.mat_tr({c})", "V_Tr"
+                if self.is_cython:
+                    return f"cc.mat_tr({c})", "V_Tr"
+                else:
+                    return f"mat_tr({c})", "V_Tr"
             else:
                 c1, t1 = self.gen_expr_prod_list(x.ops[:-1])
                 c2, t2 = self.gen_expr(x.ops[-1])
@@ -967,7 +976,7 @@ class CExprCodeGenPy:
         else:
             lines.append(self.indent * ' ' + line)
 
-    def py_append(self, line):
+    def append_py(self, line):
         if self.is_cython:
             return
         lines = self.lines
@@ -976,7 +985,7 @@ class CExprCodeGenPy:
         else:
             lines.append(self.indent * ' ' + line + " # Python only")
 
-    def cy_append(self, line):
+    def append_cy(self, line):
         if not self.is_cython:
             return
         lines = self.lines
@@ -993,6 +1002,8 @@ class CExprCodeGenPy:
 
     def cexpr_function(self):
         append = self.append
+        append_cy = self.append_cy
+        append_py = self.append_py
         append(f"@timer")
         append(f"def cexpr_function(*, positions_dict, get_prop, is_ama_and_sloppy = False):")
         self.indent += 4
@@ -1015,6 +1026,8 @@ class CExprCodeGenPy:
 
     def cexpr_function_get_prop(self):
         append = self.append
+        append_cy = self.append_cy
+        append_py = self.append_py
         cexpr = self.cexpr
         append(f"@timer_flops")
         append(f"def cexpr_function_get_prop(positions_dict, get_prop):")
@@ -1047,6 +1060,8 @@ class CExprCodeGenPy:
 
     def cexpr_function_get_factor(self):
         append = self.append
+        append_cy = self.append_cy
+        append_py = self.append_py
         cexpr = self.cexpr
         append(f"@timer")
         append(f"def cexpr_function_get_factor(positions_dict):")
@@ -1056,9 +1071,9 @@ class CExprCodeGenPy:
         for position_var in cexpr.positions:
             append(f"{position_var}_type, {position_var} = positions_dict['{position_var}']")
         append(f"# declare factors")
-        append(f"cdef np.ndarray[np.complex128_t] factors")
+        append_cy(f"cdef np.ndarray[np.complex128_t] factors")
         append(f"factors = numpy.zeros({len(cexpr.variables_factor)}, dtype = numpy.complex128)")
-        append(f"cdef cc.Complex[:] factors_view = factors")
+        append_cy(f"cdef cc.Complex[:] factors_view = factors")
         append(f"# set factors")
         for idx, (name, value,) in enumerate(cexpr.variables_factor):
             assert name.startswith("V_factor_")
@@ -1075,6 +1090,8 @@ class CExprCodeGenPy:
 
     def cexpr_function_eval(self):
         append = self.append
+        append_cy = self.append_cy
+        append_py = self.append_py
         cexpr = self.cexpr
         append(f"@timer_flops")
         append(f"def cexpr_function_eval(positions_dict, props):")
@@ -1095,16 +1112,21 @@ class CExprCodeGenPy:
 
     def cexpr_function_eval_with_props(self):
         append = self.append
+        append_cy = self.append_cy
+        append_py = self.append_py
         cexpr = self.cexpr
         append(f"@timer_flops")
-        append(f"def cexpr_function_eval_with_props(cc.Complex[:] factors, list props):")
+        append_cy(f"def cexpr_function_eval_with_props(cc.Complex[:] factors, list props):")
+        append_py(f"def cexpr_function_eval_with_props(factors, props):")
         self.indent += 4
         append(f"# set factors")
         for idx, (name, value,) in enumerate(cexpr.variables_factor):
-            append(f"cdef cc.Complex {name} = factors[{idx}]")
+            append_cy(f"cdef cc.Complex {name} = factors[{idx}]")
+            append_py(f"{name} = factors[{idx}]")
         append(f"# set props")
         for idx, (name, value,) in enumerate(cexpr.variables_prop):
-            append(f"cdef cc.WilsonMatrix* p_{name} = &(<cp.WilsonMatrix>props[{idx}]).xx")
+            append_cy(f"cdef cc.WilsonMatrix* p_{name} = &(<cp.WilsonMatrix>props[{idx}]).xx")
+            append_py(f"p_{name} = props[{idx}]")
         append(f"# compute products")
         for name, value in cexpr.variables_prod:
             assert name.startswith("V_prod_")
@@ -1113,9 +1135,11 @@ class CExprCodeGenPy:
             c, t = self.gen_expr_prod_list(x)
             assert t == get_var_name_type(name)
             if t == "V_G":
-                append(f"cdef cc.SpinMatrix {name} = {c}")
+                append_cy(f"cdef cc.SpinMatrix {name} = {c}")
+                append_py(f"{name} = {c}")
             elif t == "V_S":
-                append(f"cdef cc.WilsonMatrix {name} = {c}")
+                append_cy(f"cdef cc.WilsonMatrix {name} = {c}")
+                append_py(f"{name} = {c}")
             else:
                 assert False
         append(f"# compute traces")
@@ -1137,9 +1161,10 @@ class CExprCodeGenPy:
             c, t = self.gen_expr_prod_list(c_ops)
             append(f"cdef cc.Complex {name} = {c}")
         append(f"# declare exprs")
-        append(f"cdef np.ndarray[np.complex128_t] exprs")
+        append_cy(f"cdef np.ndarray[np.complex128_t] exprs")
         append(f"exprs = numpy.zeros({len(cexpr.named_exprs)}, dtype = numpy.complex128)")
-        append(f"cdef cc.Complex[:] exprs_view = exprs")
+        append_cy(f"cdef cc.Complex[:] exprs_view = exprs")
+        append_py(f"exprs_view = exprs")
         append(f"# set exprs")
         def show_coef_term(coef, tname):
             coef = ea.compile_py(coef)
@@ -1147,7 +1172,7 @@ class CExprCodeGenPy:
                 return f"{tname}"
             else:
                 return f"({coef}) * {tname}"
-        append(f"cdef cc.Complex expr")
+        append_cy(f"cdef cc.Complex expr")
         for idx, (name, expr,) in enumerate(cexpr.named_exprs):
             name = name.replace("\n", "  ")
             append(f"# {idx} name='{name}' ")

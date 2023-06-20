@@ -26,6 +26,21 @@ from auto_contractor.eval import \
 from qlat_utils import \
         rel_mod, rel_mod_sym, c_rel_mod_sqr
 
+from qlat_utils.c import \
+        WilsonMatrix, \
+        SpinMatrix, \
+        get_gamma_matrix, \
+        mat_tr_sm, \
+        mat_tr_wm, \
+        mat_tr_wm_wm, \
+        mat_tr_wm_sm, \
+        mat_tr_sm_wm, \
+        mat_tr_sm_sm, \
+        mat_mul_wm_wm, \
+        mat_mul_wm_sm, \
+        mat_mul_sm_wm, \
+        mat_mul_sm_sm
+
 from qlat import \
         timer, timer_flops
 

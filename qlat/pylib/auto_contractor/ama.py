@@ -25,15 +25,17 @@ import qlat as q
 class AmaVal:
 
     def __init__(self, val = None, corrections = None):
-        # should have the following:
-        # self.val: sloppy value or None
-        # self.corrections: list [ (val, description_dict,), ... ]
-        # description_dict:
-        # { source_specification:
-        #   (accuracy_level_relative_to_the_basic_accuracy,
-        #    probability_of_having_this_accuracy,),
-        # }
-        # self.corrections should include the sloppy value and self.val is optional.
+        """
+        should have the following:
+        self.val: sloppy value or None
+        self.corrections: list [ (val, description_dict,), ... ]
+        description_dict:
+        { source_specification:
+          (accuracy_level_relative_to_the_basic_accuracy,
+           probability_of_having_this_accuracy,),
+        }
+        self.corrections should include the sloppy value and self.val is optional.
+        """
         self.val = val
         if corrections is None:
             self.corrections = []
@@ -59,11 +61,13 @@ class AmaVal:
 
 @q.timer
 def mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list):
-    # source_specification need to be unique for each propagator source to ensure proper AMA correction for final result
-    # e.g. source_specification = ("point", (12, 2, 3, 4,),)
-    # val is the sloppy result
-    # val == val_list[0]
-    # None value in val_list will be removed automatically
+    """
+    source_specification need to be unique for each propagator source to ensure proper AMA correction for final result
+    e.g. source_specification = ("point", (12, 2, 3, 4,),)
+    val is the sloppy result
+    val == val_list[0]
+    None value in val_list will be removed automatically
+    """
     assert len(val_list) == len(rel_acc_list)
     assert len(val_list) == len(prob_list)
     if val is not val_list[0]:
@@ -89,7 +93,9 @@ def ama_apply1(f, x):
         return AmaVal(None, ama_apply1_corrections(f, x))
 
 def ama_counts(x):
-    # counts how many times need to compute the val
+    """
+    counts how many times need to compute the val
+    """
     if not isinstance(x, AmaVal):
         return 1
     else:
