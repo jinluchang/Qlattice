@@ -7,7 +7,7 @@ from auto_contractor.eval import *
 
 import sys
 
-is_cython = False
+is_cython = True
 
 @q.timer
 def get_cexpr_zeros():

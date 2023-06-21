@@ -6,6 +6,9 @@ tests = \
 		auto-cexprs.log \
 		auto-cexprs-more.log \
 		auto-cexprs-kpipi.log \
+		auto-cexprs-cy.log \
+		auto-cexprs-more-cy.log \
+		auto-cexprs-kpipi-cy.log \
 		qlat-id-node.log \
 		set-rand.log \
 		benchmark-matrix-functions.log \

@@ -7,7 +7,7 @@ from auto_contractor.eval import *
 
 import sys
 
-is_cython = False
+is_cython = True
 
 def mk_bk_vv_aa(p : str):
     s = 0

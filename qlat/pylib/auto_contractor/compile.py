@@ -818,12 +818,12 @@ def display_cexpr(cexpr : CExpr):
     return "\n".join(lines)
 
 @q.timer_verbose
-def cexpr_code_gen_py(cexpr : CExpr):
+def cexpr_code_gen_py(cexpr : CExpr, is_cython = True):
     """
     return a string
     interface function
     """
-    return CExprCodeGenPy(cexpr).code_gen()
+    return CExprCodeGenPy(cexpr, is_cython).code_gen()
 
 class CExprCodeGenPy:
 
@@ -957,23 +957,23 @@ class CExprCodeGenPy:
             if self.is_cython:
                 return f"{c1} * {c2}", "V_S"
             else:
-                return f"mat_mul_wm_sm({c1}, {c2})", "V_S"
+                return f"mat_mul_sm_wm({c1}, {c2})", "V_S"
         elif t1 == "V_G" and t2 == "V_G":
             self.total_sloppy_flops += 480
             if self.is_cython:
                 return f"{c1} * {c2}", "V_G"
             else:
-                return f"mat_mul_sm_sm({c1}, {c2})", "V_S"
+                return f"mat_mul_sm_sm({c1}, {c2})", "V_G"
         elif t1 == "V_G" and t2 == "V_a":
             if self.is_cython:
                 return f"{c1} * {c2}", "V_G"
             else:
-                return f"mat_mul_a_sm({c2}, {c1})", "V_S"
+                return f"mat_mul_a_sm({c2}, {c1})", "V_G"
         elif t1 == "V_a" and t2 == "V_G":
             if self.is_cython:
                 return f"{c1} * {c2}", "V_G"
             else:
-                return f"mat_mul_a_sm({c1}, {c2})", "V_S"
+                return f"mat_mul_a_sm({c1}, {c2})", "V_G"
         elif t1 == "V_S" and t2 == "V_a":
             if self.is_cython:
                 return f"{c1} * {c2}", "V_S"
@@ -1110,6 +1110,7 @@ class CExprCodeGenPy:
         append_cy(f"cdef numpy.ndarray[numpy.complex128_t] factors")
         append(f"factors = np.zeros({len(cexpr.variables_factor)}, dtype = np.complex128)")
         append_cy(f"cdef cc.Complex[:] factors_view = factors")
+        append_py(f"factors_view = factors")
         append(f"# set factors")
         for idx, (name, value,) in enumerate(cexpr.variables_factor):
             assert name.startswith("V_factor_")

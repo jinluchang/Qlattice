@@ -130,14 +130,19 @@ codelib = py3.extension_module('code',
 """
 
 @q.timer
-def cache_compiled_cexpr(calc_cexpr, path):
+def cache_compiled_cexpr(calc_cexpr, path, *, is_cython = True):
     """
     Return fully loaded ``cexpr = calc_cexpr()`` and cache the results\n
     Save cexpr object in pickle format for future reuse.
     Generate python code and save for future reuse.
     Load the python module and assign ``cexpr.function`` and ``cexpr.total_sloppy_flops``.
     Return fully loaded ``cexpr``.
+    !!!Note that the module will not be reloaded if it has been loaded before!!!
     """
+    if is_cython:
+        path = path + "_cy"
+    else:
+        path = path + "_py"
     fn_pickle = path + "/data.pickle"
     fn_code = path + "/build/code.so"
     @q.timer
@@ -151,16 +156,20 @@ def cache_compiled_cexpr(calc_cexpr, path):
         cexpr_original = calc_cexpr()
         cexpr_optimized = copy.deepcopy(cexpr_original)
         cexpr_optimized.optimize()
-        code_py = cexpr_code_gen_py(cexpr_optimized)
-        fn_py = path + "/code.pyx"
+        code_py = cexpr_code_gen_py(cexpr_optimized, is_cython)
+        if is_cython:
+            fn_py = path + "/code.pyx"
+        else:
+            fn_py = path + "/code.py"
         q.qtouch_info(fn_py, code_py)
         content_original = display_cexpr(cexpr_original)
         q.qtouch_info(path + "/cexpr.original.txt", content_original)
         content_optimized = display_cexpr(cexpr_optimized)
         q.qtouch_info(path + "/cexpr.optimized.txt", content_optimized)
-        q.qtouch_info(path + "/meson.build", meson_build_content)
-        compile_cexpr_meson_setup()
-        compile_cexpr_meson_compile()
+        if is_cython:
+            q.qtouch_info(path + "/meson.build", meson_build_content)
+            compile_cexpr_meson_setup()
+            compile_cexpr_meson_compile()
         data = dict()
         data["cexpr_optimized"] = cexpr_optimized
         data["cexpr_original"] = cexpr_original
@@ -172,10 +181,12 @@ def cache_compiled_cexpr(calc_cexpr, path):
     q.sync_node()
     while not q.does_file_exist(fn_pickle):
         q.displayln(3, f"cache_compiled_cexpr: Node {q.get_id_node()}: waiting for '{fn_pickle}'.")
-        time.sleep(0.1)
+        time.sleep(0.5)
     cexpr = q.load_pickle_obj(fn_pickle)["cexpr_optimized"]
-    # Note that the module will not be reloaded if it has been loaded before!!!
-    module = importlib.import_module((path + "/build/code").replace("/", "."))
+    if is_cython:
+        module = importlib.import_module((path + "/build/code").replace("/", "."))
+    else:
+        module = importlib.import_module((path + "/code").replace("/", "."))
     cexpr.function = {
             # cexpr_function(positions_dict, get_prop, is_ama_and_sloppy = False) => val as 1-D np.array
             "cexpr_function" : module.cexpr_function,
