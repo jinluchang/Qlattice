@@ -51,6 +51,10 @@ def get_var_name_type(x):
     """
     if x.startswith("V_S_"):
         return "V_S"
+    elif x.startswith("V_U_"):
+        return "V_U"
+    elif x.startswith("V_tr_"):
+        return "V_Tr"
     elif x.startswith("V_prod_GG_"):
         return "V_G"
     elif x.startswith("V_prod_GS_"):
@@ -69,8 +73,6 @@ def get_var_name_type(x):
         return "V_S"
     elif x.startswith("V_prod_SU_"):
         return "V_S"
-    elif x.startswith("V_tr_"):
-        return "V_Tr"
     else:
         assert False
 
@@ -103,7 +105,9 @@ def add_positions(s, x):
             add_positions(s, op)
     elif isinstance(x, Op):
         if x.otype == "S":
-            s.update([x.p1, x.p2])
+            s.update([ x.p1, x.p2, ])
+        elif x.otype == "U":
+            s.update([ x.p, ])
         elif x.otype == "Tr":
             for op in x.ops:
                 add_positions(s, op)
@@ -199,6 +203,46 @@ def collect_prop_in_cexpr(named_terms):
         add_prop_variables(term)
         term.sort()
     return variables_prop
+
+def collect_color_matrix_in_cexpr(named_terms):
+    """
+    collect the color matrices
+    modify the named_terms in-place and return the color matrix variable definitions as variables
+    """
+    variables_color_matrix = []
+    var_counter = 0
+    var_dataset = {} # var_dataset[op_repr] = op_var
+    var_nameset = set()
+    def add_variables(x):
+        nonlocal var_counter
+        if isinstance(x, list):
+            for i, op in enumerate(x):
+                if op.otype in [ "U", ]:
+                    op_repr = repr(op)
+                    if op_repr in var_dataset:
+                        x[i] = var_dataset[op_repr]
+                    else:
+                        while True:
+                            name = f"V_U_{var_counter}"
+                            var_counter += 1
+                            if name not in var_nameset:
+                                break
+                        var_nameset.add(name)
+                        variables_color_matrix.append((name, op,))
+                        var = Var(name)
+                        x[i] = var
+                        var_dataset[op_repr] = var
+                elif op.otype == "Tr":
+                    add_variables(op.ops)
+        elif isinstance(x, Term):
+            add_variables(x.c_ops)
+        elif isinstance(x, Expr):
+            for t in x.terms:
+                add_variables(t)
+    for name, term in named_terms:
+        add_variables(term)
+        term.sort()
+    return variables_color_matrix
 
 def collect_tr_in_cexpr(named_terms):
     """
@@ -415,8 +459,9 @@ class CExpr:
     """
     self.diagram_types
     self.positions
-    self.variables_prop
     self.variables_factor
+    self.variables_prop
+    self.variables_color_matrix
     self.variables_prod
     self.variables_tr
     self.named_terms
@@ -433,6 +478,7 @@ class CExpr:
         self.positions = []
         self.variables_factor = []
         self.variables_prop = []
+        self.variables_color_matrix = []
         self.variables_prod = []
         self.variables_tr = []
         self.named_terms = []
@@ -461,8 +507,9 @@ class CExpr:
         checks = [
                 self.variables_factor == [],
                 self.variables_prop == [],
-                self.variables_tr == [],
+                self.variables_color_matrix == [],
                 self.variables_prod == [],
+                self.variables_tr == [],
                 ]
         if not all(checks):
             # likely collect_op is already performed
@@ -471,6 +518,8 @@ class CExpr:
         self.variables_factor = collect_factor_in_cexpr(self.named_exprs)
         # collect prop expr into variables
         self.variables_prop = collect_prop_in_cexpr(self.named_terms)
+        # collect color matrix expr into variables
+        self.variables_color_matrix = collect_color_matrix_in_cexpr(self.named_terms)
         # collect trace expr into variables
         self.variables_tr = collect_tr_in_cexpr(self.named_terms)
         # collect common prod into variables
@@ -478,7 +527,7 @@ class CExpr:
 
 ### ----
 
-def inc(type_dict, key):
+def increase_type_dict_count(type_dict, key):
     if key in type_dict:
         type_dict[key] += 1
     else:
@@ -521,7 +570,7 @@ def loop_term_ops(type_dict, ops):
     for op in ops:
         if op.otype == "S":
             # diagram type elem definition
-            inc(type_dict, (op.p1, op.p2,))
+            increase_type_dict_count(type_dict, (op.p1, op.p2,))
         elif op.otype == "Tr":
             loop_term_ops(type_dict, op.ops)
 
@@ -747,6 +796,10 @@ def display_cexpr_raw(cexpr : CExpr):
         lines.append(f"Variables prop:")
     for name, value in cexpr.variables_prop:
         lines.append(f"{name:>20} : {value}")
+    if cexpr.variables_color_matrix:
+        lines.append(f"Variables color matrix:")
+    for name, value in cexpr.variables_color_matrix:
+        lines.append(f"{name:>20} : {value}")
     if cexpr.variables_factor:
         lines.append(f"Variables factor:")
     for name, value in cexpr.variables_factor:
@@ -785,6 +838,10 @@ def display_cexpr(cexpr : CExpr):
     if cexpr.variables_prop:
         lines.append(f"Variables prop:")
     for name, value in cexpr.variables_prop:
+        lines.append(f"{name:>20} = {show_variable_value(value)}")
+    if cexpr.variables_color_matrix:
+        lines.append(f"Variables color matrix:")
+    for name, value in cexpr.variables_color_matrix:
         lines.append(f"{name:>20} = {show_variable_value(value)}")
     if cexpr.variables_factor:
         lines.append(f"Variables factor:")
@@ -882,6 +939,8 @@ class CExprCodeGenPy:
             return f"({ea.compile_py(x)})", "V_a"
         assert isinstance(x, Op)
         if x.otype == "S":
+            return f"get_prop('{x.f}', {x.p1}, {x.p2})", "V_S"
+        elif x.otype == "U":
             return f"get_prop('{x.f}', {x.p1}, {x.p2})", "V_S"
         elif x.otype == "G":
             assert x.s1 == "auto" and x.s2 == "auto"
@@ -1080,7 +1139,15 @@ class CExprCodeGenPy:
             c, t = self.gen_expr(x)
             assert t == "V_S"
             append(f"{name} = {c}")
-        append(f"# prop")
+        append(f"# get color matrix")
+        for name, value in cexpr.variables_color_matrix:
+            assert name.startswith("V_U_")
+            x = value
+            assert isinstance(x, Op)
+            assert x.otype == "U"
+            c, t = self.gen_expr(x)
+            assert t == "V_U"
+            append(f"{name} = {c}")
         append(f"# set props for return")
         append(f"props = [")
         self.indent += 4

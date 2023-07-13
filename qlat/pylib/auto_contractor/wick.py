@@ -42,7 +42,9 @@ def mk_fac(x):
 
 class Op:
 
-    # self.otype
+    """
+    self.otype
+    """
 
     def __init__(self, otype : str):
         self.otype = otype
@@ -120,7 +122,9 @@ class Qfield(Op):
 
 class Qv(Qfield):
 
-    # act as d / d Hb
+    """
+    act as d / d Hb
+    """
 
     def __init__(self, f, p, s, c):
         # interface function
@@ -130,7 +134,9 @@ class Qv(Qfield):
 
 class Qb(Qfield):
 
-    # act as d / d Hv
+    """
+    act as d / d Hv
+    """
 
     def __init__(self, f, p, s, c):
         # interface function
@@ -168,15 +174,17 @@ class HbS(Qfield):
 
 class S(Op):
 
-    # propagator
-
-    # self.f
-    # self.p1
-    # self.p2
-    # self.s1
-    # self.s2
-    # self.c1
-    # self.c2
+    """
+    propagator
+    #
+    self.f
+    self.p1
+    self.p2
+    self.s1
+    self.s2
+    self.c1
+    self.c2
+    """
 
     def __init__(self, flavor : str, p1 : str, p2 : str, s1 : str = "auto", s2 : str = "auto", c1 : str = "auto", c2 : str = "auto"):
         Op.__init__(self, "S")
