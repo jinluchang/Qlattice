@@ -107,7 +107,7 @@ def add_positions(s, x):
         if x.otype == "S":
             s.update([ x.p1, x.p2, ])
         elif x.otype == "U":
-            s.update([ x.p, ])
+            s.update([ x.p, x.mu, ])
         elif x.otype == "Tr":
             for op in x.ops:
                 add_positions(s, op)
@@ -316,6 +316,12 @@ def find_common_subexpr_in_tr(variables_tr):
                         add(prod, 1.02 * factor)
                     elif op_type in [ "V_U", "U", ] and op1_type in [ "V_U", "U", ]:
                         add(prod, 1.02 * factor)
+                    elif op_type in [ "V_U", "U", ] and op1_type in [ "V_G", "G", ]:
+                        # do not multiply U with G
+                        pass
+                    elif op_type in [ "V_G", "G", ] and op1_type in [ "V_U", "U", ]:
+                        # do not multiply U with G
+                        pass
                     elif op_type in [ "V_G", "G", ] or op1_type in [ "V_G", "G", ]:
                         add(prod, 1.01 * factor)
                     elif op_type in [ "V_U", "U", ] or op1_type in [ "V_U", "U", ]:
@@ -941,7 +947,7 @@ class CExprCodeGenPy:
         if x.otype == "S":
             return f"get_prop('{x.f}', {x.p1}, {x.p2})", "V_S"
         elif x.otype == "U":
-            return f"get_prop('{x.f}', {x.p1}, {x.p2})", "V_S"
+            return f"get_prop('U', '{x.tag}', {x.p}, {x.mu})", "V_U"
         elif x.otype == "G":
             assert x.s1 == "auto" and x.s2 == "auto"
             assert x.tag in [0, 1, 2, 3, 5]
@@ -979,6 +985,16 @@ class CExprCodeGenPy:
                         return f"cc.mat_tr({c1}, {c2})", "V_Tr"
                     else:
                         return f"mat_tr_sm_wm({c1}, {c2})", "V_Tr"
+                elif t1 == "V_S" and t2 == "V_U":
+                    if self.is_cython:
+                        return f"cc.mat_tr({c1}, {c2})", "V_Tr"
+                    else:
+                        return f"mat_tr_wm_cm({c1}, {c2})", "V_Tr"
+                elif t1 == "V_U" and t2 == "V_S":
+                    if self.is_cython:
+                        return f"cc.mat_tr({c1}, {c2})", "V_Tr"
+                    else:
+                        return f"mat_tr_cm_wm({c1}, {c2})", "V_Tr"
                 else:
                     assert False
         elif x.otype == "Var":

@@ -112,22 +112,28 @@ cdef class SpinMatrix:
 ### -------------------------------------------------------------------
 
 def mat_tr_sm(SpinMatrix v):
-    return cc.mat_tr(v.xx)
+    return cc.matrix_trace(v.xx)
 
 def mat_tr_wm(WilsonMatrix v):
-    return cc.mat_tr(v.xx)
+    return cc.matrix_trace(v.xx)
 
 def mat_tr_wm_wm(WilsonMatrix v1, WilsonMatrix v2):
-    return cc.mat_tr(v1.xx, v2.xx)
+    return cc.matrix_trace(v1.xx, v2.xx)
 
 def mat_tr_wm_sm(WilsonMatrix v1, SpinMatrix v2):
-    return cc.mat_tr(v1.xx, v2.xx)
+    return cc.matrix_trace(v1.xx, v2.xx)
 
 def mat_tr_sm_wm(SpinMatrix v1, WilsonMatrix v2):
-    return cc.mat_tr(v1.xx, v2.xx)
+    return cc.matrix_trace(v1.xx, v2.xx)
 
 def mat_tr_sm_sm(SpinMatrix v1, SpinMatrix v2):
-    return cc.mat_tr(v1.xx, v2.xx)
+    return cc.matrix_trace(v1.xx, v2.xx)
+
+def mat_tr_wm_cm(WilsonMatrix v1, ColorMatrix v2):
+    return cc.matrix_trace(v1.xx, v2.xx)
+
+def mat_tr_cm_wm(ColorMatrix v1, WilsonMatrix v2):
+    return cc.matrix_trace(v1.xx, v2.xx)
 
 ### -------------------------------------------------------------------
 

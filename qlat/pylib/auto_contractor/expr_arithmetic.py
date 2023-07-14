@@ -25,10 +25,12 @@ import sympy
 
 class Factor:
 
-    # self.code
-    # self.otype
+    """
+    self.code
+    self.otype
     #
-    # self.otype in [ "Expr", "Var", ]
+    self.otype in [ "Expr", "Var", ]
+    """
 
     def __init__(self, code, otype = None):
         self.code = code
@@ -49,8 +51,10 @@ class Factor:
 
 class Term:
 
-    # self.coef
-    # self.factors
+    """
+    self.coef
+    self.factors
+    """
 
     def __init__(self, factors, coef = 1):
         self.coef = coef
@@ -72,7 +76,9 @@ class Term:
 
 class Expr:
 
-    # self.terms
+    """
+    self.terms
+    """
 
     def __init__(self, terms):
         self.terms = terms
@@ -146,7 +152,9 @@ class Expr:
 ### ------
 
 def simplified(x):
-    # interface function
+    """
+    interface function
+    """
     x = copy.deepcopy(mk_expr(x))
     x.simplify()
     if not x.terms:
@@ -157,20 +165,26 @@ def simplified(x):
     return x
 
 def coef_simplified(x):
-    # interface function
+    """
+    interface function
+    """
     x = copy.deepcopy(mk_expr(x))
     x.simplify_coef()
     return x
 
 def compile_py(x):
-    # interface function
+    """
+    interface function
+    """
     if isinstance(x, (int, float, complex, sympy.Basic,)):
         return compile_py_complex(x)
     else:
         return mk_expr(x).compile_py()
 
 def is_zero(x):
-    # interface function
+    """
+    interface function
+    """
     if isinstance(x, (int, float, complex, sympy.Basic,)):
         return x == 0
     elif isinstance(x, Expr):

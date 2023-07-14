@@ -51,25 +51,6 @@ qacc Vector<Complex> get_data(const WilsonVector& x)
   return get_data<12, Complex>(x);
 }
 
-qacc Complex mat_tr(const WilsonMatrix& m) { return matrix_trace(m); }
-qacc Complex mat_tr(const SpinMatrix& m) { return matrix_trace(m); }
-qacc Complex mat_tr(const WilsonMatrix& m1, const WilsonMatrix& m2)
-{
-  return matrix_trace(m1, m2);
-}
-qacc Complex mat_tr(const WilsonMatrix& m1, const SpinMatrix& m2)
-{
-  return matrix_trace(m1, m2);
-}
-qacc Complex mat_tr(const SpinMatrix& m1, const WilsonMatrix& m2)
-{
-  return matrix_trace(m1, m2);
-}
-qacc Complex mat_tr(const SpinMatrix& m1, const SpinMatrix& m2)
-{
-  return matrix_trace(m1, m2);
-}
-
 qacc SpinMatrix operator*(const SpinMatrix& m1, const SpinMatrix& m2)
 {
   return operator*<4, Complex>(m1, m2);

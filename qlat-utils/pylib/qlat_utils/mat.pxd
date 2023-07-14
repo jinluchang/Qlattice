@@ -48,12 +48,14 @@ cdef extern from "qlat-utils/mat.h" namespace "qlat":
     Vector[Complex] get_data(const IsospinMatrix& x)
     Vector[Complex] get_data(const WilsonVector& x)
 
-    Complex mat_tr(const SpinMatrix& m)
-    Complex mat_tr(const WilsonMatrix& m)
-    Complex mat_tr(const WilsonMatrix& m1, const WilsonMatrix& m2)
-    Complex mat_tr(const WilsonMatrix& m1, const SpinMatrix& m2)
-    Complex mat_tr(const SpinMatrix& m1, const WilsonMatrix& m2)
-    Complex mat_tr(const SpinMatrix& m1, const SpinMatrix& m2)
+    Complex matrix_trace(const SpinMatrix& m)
+    Complex matrix_trace(const WilsonMatrix& m)
+    Complex matrix_trace(const WilsonMatrix& m1, const WilsonMatrix& m2)
+    Complex matrix_trace(const WilsonMatrix& m1, const SpinMatrix& m2)
+    Complex matrix_trace(const SpinMatrix& m1, const WilsonMatrix& m2)
+    Complex matrix_trace(const SpinMatrix& m1, const SpinMatrix& m2)
+    Complex matrix_trace(const WilsonMatrix& m1, const ColorMatrix& m2)
+    Complex matrix_trace(const ColorMatrix& m1, const WilsonMatrix& m2)
 
     const SpinMatrix& get_gamma_matrix(const int mu)
 

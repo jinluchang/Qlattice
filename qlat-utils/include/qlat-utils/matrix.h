@@ -667,6 +667,31 @@ qacc ComplexD matrix_trace(const WilsonMatrixT<T>& m, const SpinMatrixT<T>& sm)
 }
 
 template <class T>
+qacc ComplexD matrix_trace(const ColorMatrixT<T>& cm, const WilsonMatrixT<T>& m)
+{
+  ComplexD ret = 0;
+  for (int c1 = 0; c1 < NUM_COLOR; ++c1) {
+    for (int c3 = 0; c3 < NUM_COLOR; ++c3) {
+      const ComplexT<T>& cm_c1_c3 = cm.p[c1 * 3 + c3];
+      if (cm_c1_c3 == 0.0) {
+        continue;
+      }
+      const int c3_c1 = c3 * (4 * NUM_COLOR) + c1;
+      for (int s1 = 0; s1 < 4; ++s1) {
+        ret += cm_c1_c3 * m.p[c3_c1 + s1 * (NUM_COLOR * 4 * NUM_COLOR + NUM_COLOR)];
+      }
+    }
+  }
+  return ret;
+}
+
+template <class T>
+qacc ComplexD matrix_trace(const WilsonMatrixT<T>& m, const ColorMatrixT<T>& cm)
+{
+  return matrix_trace(cm, m);
+}
+
+template <class T>
 qacc WilsonVectorT<T> operator*(const ColorMatrixT<T>& cm,
                                 const WilsonVectorT<T>& m)
 {
