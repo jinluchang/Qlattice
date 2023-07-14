@@ -928,8 +928,6 @@ class CExprCodeGenPy:
         self.sep()
         self.cexpr_function_eval()
         self.sep()
-        self.cexpr_function_get_factor()
-        self.sep()
         self.cexpr_function_eval_with_props()
         self.sep()
         self.total_flops()
@@ -945,7 +943,7 @@ class CExprCodeGenPy:
             return f"({ea.compile_py(x)})", "V_a"
         assert isinstance(x, Op)
         if x.otype == "S":
-            return f"get_prop('{x.f}', {x.p1}, {x.p2})", "V_S"
+            return f"get_prop('{x.f}', {x.p1}_tv, {x.p2}_tv)", "V_S"
         elif x.otype == "U":
             return f"get_prop('U', '{x.tag}', {x.p}, {x.mu})", "V_U"
         elif x.otype == "G":
@@ -1145,9 +1143,9 @@ class CExprCodeGenPy:
         append(f"def cexpr_function(*, positions_dict, get_prop, is_ama_and_sloppy = False):")
         self.indent += 4
         append(f"# get_props")
-        append(f"props = cexpr_function_get_prop(positions_dict, get_prop)")
+        append(f"props, cms, factors = cexpr_function_get_prop(positions_dict, get_prop)")
         append(f"# eval")
-        append(f"ama_val = cexpr_function_eval(positions_dict, props)")
+        append(f"ama_val = cexpr_function_eval(positions_dict, props, cms, factors)")
         append(f"# extract sloppy val")
         append(f"val_sloppy = ama_extract(ama_val, is_sloppy = True)")
         append(f"# extract AMA val")
@@ -1170,8 +1168,10 @@ class CExprCodeGenPy:
         append(f"def cexpr_function_get_prop(positions_dict, get_prop):")
         self.indent += 4
         append(f"# set positions")
+        append(f"size = positions_dict.get('size')")
         for position_var in cexpr.positions:
-            append(f"{position_var} = positions_dict['{position_var}']")
+            append(f"{position_var}_tv = positions_dict['{position_var}']")
+            append(f"{position_var}_type, {position_var} = {position_var}_tv")
         append(f"# get prop")
         for name, value in cexpr.variables_prop:
             assert name.startswith("V_S_")
@@ -1197,24 +1197,13 @@ class CExprCodeGenPy:
             append(f"{name},")
         append(f"]")
         self.indent -= 4
-        append(f"# set flops")
-        append(f"total_flops = len(props) * 144 * 2 * 8")
-        append(f"# return")
-        append(f"return total_flops, props")
-        self.indent -= 4
-
-    def cexpr_function_get_factor(self):
-        append = self.append
-        append_cy = self.append_cy
-        append_py = self.append_py
-        cexpr = self.cexpr
-        append(f"@timer")
-        append(f"def cexpr_function_get_factor(positions_dict):")
+        append(f"# set color matrix for return")
+        append(f"cms = [")
         self.indent += 4
-        append(f"# set positions")
-        append(f"size = positions_dict.get('size')")
-        for position_var in cexpr.positions:
-            append(f"{position_var}_type, {position_var} = positions_dict['{position_var}']")
+        for name, value in cexpr.variables_color_matrix:
+            append(f"{name},")
+        append(f"]")
+        self.indent -= 4
         append(f"# declare factors")
         append_cy(f"cdef numpy.ndarray[numpy.complex128_t] factors")
         append(f"factors = np.zeros({len(cexpr.variables_factor)}, dtype = np.complex128)")
@@ -1230,8 +1219,10 @@ class CExprCodeGenPy:
             assert t == "V_a"
             append(f"# {name}")
             append(f"factors_view[{idx}] = {c}")
-        append(f"# return factors")
-        append(f"return factors")
+        append(f"# set flops")
+        append(f"total_flops = len(props) * 144 * 2 * 8 + len(cms) * 9 * 2 * 8 + len(factors) * 2 * 8")
+        append(f"# return")
+        append(f"return total_flops, (props, cms, factors,)")
         self.indent -= 4
 
     def cexpr_function_eval(self):
@@ -1240,16 +1231,14 @@ class CExprCodeGenPy:
         append_py = self.append_py
         cexpr = self.cexpr
         append(f"@timer_flops")
-        append(f"def cexpr_function_eval(positions_dict, props):")
+        append(f"def cexpr_function_eval(positions_dict, props, cms, factors):")
         self.indent += 4
         append(f"# load AMA props with proper format")
         append(f"props = [ load_prop(p) for p in props ]")
         append(f"# join the AMA props")
         append(f"ama_props = ama_list(*props)")
-        append(f"# get_factor")
-        append(f"factors = cexpr_function_get_factor(positions_dict)")
         append(f"# apply eval to the factors and AMA props")
-        append(f"ama_val = ama_apply2_r(cexpr_function_eval_with_props, factors, ama_props)")
+        append(f"ama_val = ama_apply1(lambda x_props: cexpr_function_eval_with_props(x_props, cms, factors), ama_props)")
         append(f"# set flops")
         append(f"total_flops = ama_counts(ama_val) * total_sloppy_flops")
         append(f"# return")
@@ -1262,17 +1251,21 @@ class CExprCodeGenPy:
         append_py = self.append_py
         cexpr = self.cexpr
         append(f"@timer_flops")
-        append_cy(f"def cexpr_function_eval_with_props(cc.Complex[:] factors, list props):")
-        append_py(f"def cexpr_function_eval_with_props(factors, props):")
+        append_cy(f"def cexpr_function_eval_with_props(list props, list cms, cc.Complex[:] factors):")
+        append_py(f"def cexpr_function_eval_with_props(props, cms, factors):")
         self.indent += 4
-        append(f"# set factors")
-        for idx, (name, value,) in enumerate(cexpr.variables_factor):
-            append_cy(f"cdef cc.Complex {name} = factors[{idx}]")
-            append_py(f"{name} = factors[{idx}]")
         append(f"# set props")
         for idx, (name, value,) in enumerate(cexpr.variables_prop):
             append_cy(f"cdef cc.WilsonMatrix* p_{name} = &(<cp.WilsonMatrix>props[{idx}]).xx")
             append_py(f"p_{name} = props[{idx}]")
+        append(f"# set cms")
+        for idx, (name, value,) in enumerate(cexpr.variables_color_matrix):
+            append_cy(f"cdef cc.ColorMatrix* p_{name} = &(<cp.ColorMatrix>cms[{idx}]).xx")
+            append_py(f"p_{name} = cms[{idx}]")
+        append(f"# set factors")
+        for idx, (name, value,) in enumerate(cexpr.variables_factor):
+            append_cy(f"cdef cc.Complex {name} = factors[{idx}]")
+            append_py(f"{name} = factors[{idx}]")
         append(f"# compute products")
         for name, value in cexpr.variables_prod:
             assert name.startswith("V_prod_")
