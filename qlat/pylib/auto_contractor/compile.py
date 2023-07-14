@@ -897,7 +897,7 @@ class CExprCodeGenPy:
     self.total_sloppy_flops
     #
     flops per complex multiplication: 6
-    flops per matrix multiplication: 6 M N L + 2 M L (N-1) ==> 13536 (sc * sc), 4320 (sc * s), 480 (s * s)
+    flops per matrix multiplication: 6 M N L + 2 M L (N-1) ==> 13536 (sc * sc), 4320 (sc * s), 480 (s * s), 3168 (sc * c), 198 (c * c)
     flops per trace 2 (M-1) ==> 22 (sc)
     flops per trace2 6 M N + 2 (M N - 1) ==> 1150 (sc, sc)
     """
@@ -1064,34 +1064,34 @@ class CExprCodeGenPy:
             else:
                 return f"mat_mul_a_sm({c1}, {c2})", "V_G"
         #
-        elif t1 == "V_S" and t2 == "V_G":
-            self.total_sloppy_flops += 4320
+        elif t1 == "V_S" and t2 == "V_U":
+            self.total_sloppy_flops += 3168
             if self.is_cython:
                 return f"{c1} * {c2}", "V_S"
             else:
-                return f"mat_mul_wm_sm({c1}, {c2})", "V_S"
-        elif t1 == "V_G" and t2 == "V_S":
-            self.total_sloppy_flops += 4320
+                return f"mat_mul_wm_cm({c1}, {c2})", "V_S"
+        elif t1 == "V_U" and t2 == "V_S":
+            self.total_sloppy_flops += 3168
             if self.is_cython:
                 return f"{c1} * {c2}", "V_S"
             else:
-                return f"mat_mul_sm_wm({c1}, {c2})", "V_S"
-        elif t1 == "V_G" and t2 == "V_G":
-            self.total_sloppy_flops += 480
+                return f"mat_mul_cm_wm({c1}, {c2})", "V_S"
+        elif t1 == "V_U" and t2 == "V_U":
+            self.total_sloppy_flops += 198
             if self.is_cython:
-                return f"{c1} * {c2}", "V_G"
+                return f"{c1} * {c2}", "V_U"
             else:
-                return f"mat_mul_sm_sm({c1}, {c2})", "V_G"
-        elif t1 == "V_G" and t2 == "V_a":
+                return f"mat_mul_cm_cm({c1}, {c2})", "V_U"
+        elif t1 == "V_U" and t2 == "V_a":
             if self.is_cython:
-                return f"{c1} * {c2}", "V_G"
+                return f"{c1} * {c2}", "V_U"
             else:
-                return f"mat_mul_a_sm({c2}, {c1})", "V_G"
-        elif t1 == "V_a" and t2 == "V_G":
+                return f"mat_mul_a_cm({c2}, {c1})", "V_U"
+        elif t1 == "V_a" and t2 == "V_U":
             if self.is_cython:
-                return f"{c1} * {c2}", "V_G"
+                return f"{c1} * {c2}", "V_U"
             else:
-                return f"mat_mul_a_sm({c1}, {c2})", "V_G"
+                return f"mat_mul_a_cm({c1}, {c2})", "V_U"
         #
         else:
             print(ct1, ct2)
