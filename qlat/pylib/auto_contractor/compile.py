@@ -47,14 +47,14 @@ class Var(Op):
 
 def get_var_name_type(x):
     """
-    types include: V_S (wilson matrix), V_G (spin matrix), V_U (color matrix), V_Tr (AMA c-number), V_a (c-number)
+    types include: V_S (wilson matrix), V_G (spin matrix), V_U (color matrix), V_a (c-number)
     """
     if x.startswith("V_S_"):
         return "V_S"
     elif x.startswith("V_U_"):
         return "V_U"
     elif x.startswith("V_tr_"):
-        return "V_Tr"
+        return "V_a"
     elif x.startswith("V_prod_GG_"):
         return "V_G"
     elif x.startswith("V_prod_GS_"):
@@ -963,38 +963,38 @@ class CExprCodeGenPy:
                 assert t == "V_S"
                 self.total_sloppy_flops += 22
                 if self.is_cython:
-                    return f"cc.mat_tr({c})", "V_Tr"
+                    return f"cc.mat_tr({c})", "V_a"
                 else:
-                    return f"mat_tr_wm({c})", "V_Tr"
+                    return f"mat_tr_wm({c})", "V_a"
             else:
                 c1, t1 = self.gen_expr_prod_list(x.ops[:-1])
                 c2, t2 = self.gen_expr(x.ops[-1])
                 if t1 == "V_S" and t2 == "V_S":
                     self.total_sloppy_flops += 1150
                     if self.is_cython:
-                        return f"cc.mat_tr({c1}, {c2})", "V_Tr"
+                        return f"cc.mat_tr({c1}, {c2})", "V_a"
                     else:
-                        return f"mat_tr_wm_wm({c1}, {c2})", "V_Tr"
+                        return f"mat_tr_wm_wm({c1}, {c2})", "V_a"
                 elif t1 == "V_S" and t2 == "V_G":
                     if self.is_cython:
-                        return f"cc.mat_tr({c1}, {c2})", "V_Tr"
+                        return f"cc.mat_tr({c1}, {c2})", "V_a"
                     else:
-                        return f"mat_tr_wm_sm({c1}, {c2})", "V_Tr"
+                        return f"mat_tr_wm_sm({c1}, {c2})", "V_a"
                 elif t1 == "V_G" and t2 == "V_S":
                     if self.is_cython:
-                        return f"cc.mat_tr({c1}, {c2})", "V_Tr"
+                        return f"cc.mat_tr({c1}, {c2})", "V_a"
                     else:
-                        return f"mat_tr_sm_wm({c1}, {c2})", "V_Tr"
+                        return f"mat_tr_sm_wm({c1}, {c2})", "V_a"
                 elif t1 == "V_S" and t2 == "V_U":
                     if self.is_cython:
-                        return f"cc.mat_tr({c1}, {c2})", "V_Tr"
+                        return f"cc.mat_tr({c1}, {c2})", "V_a"
                     else:
-                        return f"mat_tr_wm_cm({c1}, {c2})", "V_Tr"
+                        return f"mat_tr_wm_cm({c1}, {c2})", "V_a"
                 elif t1 == "V_U" and t2 == "V_S":
                     if self.is_cython:
-                        return f"cc.mat_tr({c1}, {c2})", "V_Tr"
+                        return f"cc.mat_tr({c1}, {c2})", "V_a"
                     else:
-                        return f"mat_tr_cm_wm({c1}, {c2})", "V_Tr"
+                        return f"mat_tr_cm_wm({c1}, {c2})", "V_a"
                 else:
                     assert False
         elif x.otype == "Var":
@@ -1021,6 +1021,20 @@ class CExprCodeGenPy:
                 return f"{c1} * {c2}", "V_S"
             else:
                 return f"mat_mul_wm_wm({c1}, {c2})", "V_S"
+        #
+        elif t1 == "V_S" and t2 == "V_a":
+            if self.is_cython:
+                return f"{c1} * {c2}", "V_S"
+            else:
+                return f"mat_mul_a_wm({c2}, {c1})", "V_S"
+        elif t1 == "V_a" and t2 == "V_S":
+            if self.is_cython:
+                return f"{c1} * {c2}", "V_S"
+            else:
+                return f"mat_mul_a_wm({c1}, {c2})", "V_S"
+        elif t1 == "V_a" and t2 == "V_a":
+            return f"{c1} * {c2}", "V_a"
+        #
         elif t1 == "V_S" and t2 == "V_G":
             self.total_sloppy_flops += 4320
             if self.is_cython:
@@ -1049,24 +1063,36 @@ class CExprCodeGenPy:
                 return f"{c1} * {c2}", "V_G"
             else:
                 return f"mat_mul_a_sm({c1}, {c2})", "V_G"
-        elif t1 == "V_S" and t2 == "V_a":
+        #
+        elif t1 == "V_S" and t2 == "V_G":
+            self.total_sloppy_flops += 4320
             if self.is_cython:
                 return f"{c1} * {c2}", "V_S"
             else:
-                return f"mat_mul_a_wm({c2}, {c1})", "V_S"
-        elif t1 == "V_a" and t2 == "V_S":
+                return f"mat_mul_wm_sm({c1}, {c2})", "V_S"
+        elif t1 == "V_G" and t2 == "V_S":
+            self.total_sloppy_flops += 4320
             if self.is_cython:
                 return f"{c1} * {c2}", "V_S"
             else:
-                return f"mat_mul_a_wm({c1}, {c2})", "V_S"
-        elif t1 == "V_a" and t2 == "V_a":
-            return f"{c1} * {c2}", "V_a"
-        elif t1 == "V_Tr" and t2 == "V_Tr":
-            return f"{c1} * {c2}", "V_Tr"
-        elif t1 == "V_a" and t2 == "V_Tr":
-            return f"{c2} * {c1}", "V_Tr"
-        elif t1 == "V_Tr" and t2 == "V_a":
-            return f"{c1} * {c2}", "V_Tr"
+                return f"mat_mul_sm_wm({c1}, {c2})", "V_S"
+        elif t1 == "V_G" and t2 == "V_G":
+            self.total_sloppy_flops += 480
+            if self.is_cython:
+                return f"{c1} * {c2}", "V_G"
+            else:
+                return f"mat_mul_sm_sm({c1}, {c2})", "V_G"
+        elif t1 == "V_G" and t2 == "V_a":
+            if self.is_cython:
+                return f"{c1} * {c2}", "V_G"
+            else:
+                return f"mat_mul_a_sm({c2}, {c1})", "V_G"
+        elif t1 == "V_a" and t2 == "V_G":
+            if self.is_cython:
+                return f"{c1} * {c2}", "V_G"
+            else:
+                return f"mat_mul_a_sm({c1}, {c2})", "V_G"
+        #
         else:
             print(ct1, ct2)
             assert False
@@ -1269,7 +1295,7 @@ class CExprCodeGenPy:
             assert isinstance(x, Op)
             assert x.otype == "Tr"
             c, t = self.gen_expr(x)
-            assert t == "V_Tr"
+            assert t == "V_a"
             append_cy(f"cdef cc.Complex {name} = {c}")
             append_py(f"{name} = {c}")
         append(f"# set terms")
