@@ -49,6 +49,7 @@ cdef extern from "qlat-utils/mat.h" namespace "qlat":
     Vector[Complex] get_data(const WilsonVector& x)
 
     Complex matrix_trace(const SpinMatrix& m)
+    Complex matrix_trace(const ColorMatrix& m)
     Complex matrix_trace(const WilsonMatrix& m)
     Complex matrix_trace(const WilsonMatrix& m1, const WilsonMatrix& m2)
     Complex matrix_trace(const WilsonMatrix& m1, const SpinMatrix& m2)
@@ -56,6 +57,7 @@ cdef extern from "qlat-utils/mat.h" namespace "qlat":
     Complex matrix_trace(const SpinMatrix& m1, const SpinMatrix& m2)
     Complex matrix_trace(const WilsonMatrix& m1, const ColorMatrix& m2)
     Complex matrix_trace(const ColorMatrix& m1, const WilsonMatrix& m2)
+    Complex matrix_trace(const ColorMatrix& m1, const ColorMatrix& m2)
 
     const SpinMatrix& get_gamma_matrix(const int mu)
 
@@ -67,8 +69,14 @@ cdef extern from "qlat-utils/mat.h" namespace "qlat":
     SpinMatrix operator*(const SpinMatrix& m, const Complex& a)
     SpinMatrix operator*(const SpinMatrix& m1, const SpinMatrix& m2)
 
+    ColorMatrix operator*(const Complex& a, const ColorMatrix& m)
+    ColorMatrix operator*(const ColorMatrix& m, const Complex& a)
+    ColorMatrix operator*(const ColorMatrix& m1, const ColorMatrix& m2)
+
     WilsonMatrix operator*(const Complex& a, const WilsonMatrix& m)
     WilsonMatrix operator*(const WilsonMatrix& m, const Complex& a)
     WilsonMatrix operator*(const WilsonMatrix& m1, const WilsonMatrix& m2)
     WilsonMatrix operator*(const SpinMatrix& m1, const WilsonMatrix& m2)
     WilsonMatrix operator*(const WilsonMatrix& m1, const SpinMatrix& m2)
+    WilsonMatrix operator*(const ColorMatrix& m1, const WilsonMatrix& m2)
+    WilsonMatrix operator*(const WilsonMatrix& m1, const ColorMatrix& m2)

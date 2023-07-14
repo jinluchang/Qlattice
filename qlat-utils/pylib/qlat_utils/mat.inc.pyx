@@ -111,6 +111,61 @@ cdef class SpinMatrix:
 
 ### -------------------------------------------------------------------
 
+cdef class ColorMatrix:
+
+    def __cinit__(self):
+        self.cdata = <long>&(self.xx)
+
+    def __imatmul__(self, ColorMatrix v1):
+        self.xx = v1.xx
+        return self
+
+    def copy(self, cc.bool is_copying_data = True):
+        cdef ColorMatrix x = ColorMatrix()
+        if is_copying_data:
+            x.xx = self.xx
+        return x
+
+    def __copy__(self):
+        return self.copy()
+
+    def __deepcopy__(self, memo):
+        return self.copy()
+
+    def set_zero(self):
+        cc.set_zero(self.xx)
+
+    def __getbuffer__(self, Py_buffer *buffer, int flags):
+        cdef Buffer buf = Buffer(self, ElemTypeColorMatrix.ndim(), ElemTypeColorMatrix.itemsize())
+        cdef char* fmt = ElemTypeWilsonMatrix.format()
+        cdef cc.std_vector[Py_ssize_t] vec = ElemTypeColorMatrix.shape()
+        assert vec.size() == buf.ndim
+        cdef Py_ssize_t* shape = &buf.shape_strides[0]
+        cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
+        cdef int i
+        for i in range(buf.ndim):
+            shape[i] = vec[i]
+        buf.set_strides()
+        buffer.buf = <char*>(self.xx.data())
+        if flags & PyBUF_FORMAT:
+            buffer.format = fmt
+        else:
+            buffer.format = NULL
+        buffer.internal = NULL
+        buffer.itemsize = buf.itemsize
+        buffer.len = buf.get_len()
+        buffer.ndim = buf.ndim
+        buffer.obj = buf
+        buffer.readonly = 0
+        buffer.shape = shape
+        buffer.strides = strides
+        buffer.suboffsets = NULL
+
+    def __releasebuffer__(self, Py_buffer *buffer):
+        pass
+
+### -------------------------------------------------------------------
+
 def mat_tr_sm(SpinMatrix v):
     return cc.matrix_trace(v.xx)
 
@@ -135,6 +190,9 @@ def mat_tr_wm_cm(WilsonMatrix v1, ColorMatrix v2):
 def mat_tr_cm_wm(ColorMatrix v1, WilsonMatrix v2):
     return cc.matrix_trace(v1.xx, v2.xx)
 
+def mat_tr_cm_cm(ColorMatrix v1, ColorMatrix v2):
+    return cc.matrix_trace(v1.xx, v2.xx)
+
 ### -------------------------------------------------------------------
 
 def mat_mul_a_wm(cc.Complex v1, WilsonMatrix v2):
@@ -147,7 +205,7 @@ def mat_mul_a_sm(cc.Complex v1, SpinMatrix v2):
     x.xx = v1 * v2.xx
     return x
 
-def mat_mul_a_cm(cc.Complex v1, SpinMatrix v2):
+def mat_mul_a_cm(cc.Complex v1, ColorMatrix v2):
     cdef ColorMatrix x = ColorMatrix()
     x.xx = v1 * v2.xx
     return x
@@ -167,8 +225,8 @@ def mat_mul_wm_sm(WilsonMatrix v1, SpinMatrix v2):
     x.xx = v1.xx * v2.xx
     return x
 
-def mat_mul_sm_sm(ColorMatrix v1, ColorMatrix v2):
-    cdef ColorMatrix x = ColorMatrix()
+def mat_mul_sm_sm(SpinMatrix v1, SpinMatrix v2):
+    cdef SpinMatrix x = SpinMatrix()
     x.xx = v1.xx * v2.xx
     return x
 

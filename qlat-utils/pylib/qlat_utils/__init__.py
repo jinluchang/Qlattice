@@ -5,7 +5,7 @@ Usage::\n
 Will also be loaded by ``import qlat as q`` together with other ``qlat`` functions.
 """
 
-import qlat_utils.c as c
+import qlat_utils.c
 
 from qlat_utils.c import \
         Coordinate, \
@@ -67,5 +67,3 @@ from qlat_utils.parallel import *
 from qlat_utils.get_include_dir import *
 
 verbose_level("default")
-
-del c

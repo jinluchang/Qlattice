@@ -196,6 +196,10 @@ cdef class SpinMatrix:
     cdef cqlat_utils.SpinMatrix xx
     cdef readonly long cdata
 
+cdef class ColorMatrix:
+    cdef cqlat_utils.ColorMatrix xx
+    cdef readonly long cdata
+
 cdef cqlat_utils.SpinMatrix gamma_matrix_0
 cdef cqlat_utils.SpinMatrix gamma_matrix_1
 cdef cqlat_utils.SpinMatrix gamma_matrix_2

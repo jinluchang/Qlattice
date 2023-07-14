@@ -963,7 +963,7 @@ class CExprCodeGenPy:
                 assert t == "V_S"
                 self.total_sloppy_flops += 22
                 if self.is_cython:
-                    return f"cc.mat_tr({c})", "V_a"
+                    return f"cc.matrix_trace({c})", "V_a"
                 else:
                     return f"mat_tr_wm({c})", "V_a"
             else:
@@ -972,27 +972,27 @@ class CExprCodeGenPy:
                 if t1 == "V_S" and t2 == "V_S":
                     self.total_sloppy_flops += 1150
                     if self.is_cython:
-                        return f"cc.mat_tr({c1}, {c2})", "V_a"
+                        return f"cc.matrix_trace({c1}, {c2})", "V_a"
                     else:
                         return f"mat_tr_wm_wm({c1}, {c2})", "V_a"
                 elif t1 == "V_S" and t2 == "V_G":
                     if self.is_cython:
-                        return f"cc.mat_tr({c1}, {c2})", "V_a"
+                        return f"cc.matrix_trace({c1}, {c2})", "V_a"
                     else:
                         return f"mat_tr_wm_sm({c1}, {c2})", "V_a"
                 elif t1 == "V_G" and t2 == "V_S":
                     if self.is_cython:
-                        return f"cc.mat_tr({c1}, {c2})", "V_a"
+                        return f"cc.matrix_trace({c1}, {c2})", "V_a"
                     else:
                         return f"mat_tr_sm_wm({c1}, {c2})", "V_a"
                 elif t1 == "V_S" and t2 == "V_U":
                     if self.is_cython:
-                        return f"cc.mat_tr({c1}, {c2})", "V_a"
+                        return f"cc.matrix_trace({c1}, {c2})", "V_a"
                     else:
                         return f"mat_tr_wm_cm({c1}, {c2})", "V_a"
                 elif t1 == "V_U" and t2 == "V_S":
                     if self.is_cython:
-                        return f"cc.mat_tr({c1}, {c2})", "V_a"
+                        return f"cc.matrix_trace({c1}, {c2})", "V_a"
                     else:
                         return f"mat_tr_cm_wm({c1}, {c2})", "V_a"
                 else:
