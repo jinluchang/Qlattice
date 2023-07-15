@@ -37,7 +37,7 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
 
     bool is_matching(const LatData& ld1, const LatData& ld2)
     long lat_data_size(LatData& ld)
-    void lat_data_alloc(LatData& ld)
+    void lat_data_alloc(LatData& ld) except +
 
     Vector[double] get_data(const LatData& x)
     void set_zero(LatData& x)
