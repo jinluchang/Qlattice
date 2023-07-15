@@ -9,7 +9,7 @@ source qcore/set-prefix.sh $name
     source qcore/conf.sh ..
 
     time-run pip3 install -vU meson
-    time-run pip3 install -vvvU cython
+    time-run pip3 install -vU cython
     time-run pip3 install -vU psutil
     time-run pip3 install -vU sympy
     time-run pip3 install -vU numpy
@@ -23,7 +23,7 @@ source qcore/set-prefix.sh $name
     unset LD_RUN_PATH
     unset LIBRARY_PATH
     unset CPATH
-    time-run pip3 install -vvvU mpi4py
+    time-run pip3 install -vU mpi4py
     : )
 
     mk-setenv.sh
