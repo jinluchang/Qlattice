@@ -158,7 +158,7 @@ jobs:
         ./scripts/qlat-examples-update-logs.sh
     - name: Check error
       run: |
-        ! git diff | grep '^[+-]CHECK: '
+        ! git diff | grep '^[+-]CHECK: ' # || echo "Check failed!"
     - name: Build more packages Grid
       run: |
         source ~/qlat-build/default/setenv.sh
@@ -280,7 +280,7 @@ jobs:
         ./scripts/qlat-examples-update-logs.sh
     - name: Check error
       run: |
-        ! git diff | grep '^[+-]CHECK: '
+        ! git diff | grep '^[+-]CHECK: ' # || echo "Check failed!"
     - uses: actions/upload-artifact@v3
       with:
         name: qlat-packages
@@ -403,7 +403,7 @@ jobs:
         ./scripts/qlat-examples-update-logs.sh
     - name: Check error
       run: |
-        ! git diff | grep '^[+-]CHECK: ' || echo "Check failed!"
+        ! git diff | grep '^[+-]CHECK: ' # || echo "Check failed!"
     - name: Build more packages Grid
       run: |
         source ~/qlat-build/default/setenv.sh
@@ -528,4 +528,4 @@ jobs:
         ./scripts/qlat-examples-update-logs.sh
     - name: Check error
       run: |
-        ! git diff | grep '^[+-]CHECK: ' || echo "Check failed!"
+        ! git diff | grep '^[+-]CHECK: ' # || echo "Check failed!"
