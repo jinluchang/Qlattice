@@ -101,8 +101,9 @@ cdef class RngState:
 @timer
 def get_double_sig(x, RngState rs):
     """
-    Return a signature (a float number) of data viewed as a collection of double numbers\n
-    Only depends on the value of the data, not the structure.
+    Return a signature (a floating point number, real or complex) of data viewed as a 1-D array of numbers.\n
+    Result only depends on the value of the data, not the structure.
+    ``x`` can be an instance of ``LatData`` or ``np.ndarray``.
     """
     if isinstance(x, LatData):
         arr = np.asarray(x).ravel()

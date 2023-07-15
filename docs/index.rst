@@ -25,7 +25,6 @@ Qlattice
 
    contents/cpp-structure.md
 
-
 Indices and tables
 ==================
 

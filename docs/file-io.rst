@@ -64,6 +64,38 @@ Example: ``examples-py/lat-io.py``
 
 .. literalinclude:: ../examples-py/lat-io.py
 
+C++ example: ``examples-cpp/latio/main.cpp``
+
+.. literalinclude:: ../examples-cpp/latio/main.cpp
+
+File format description
+.......................
+
+.. code::
+
+    FILE-HEADER
+    BINARY-DATA
+
+``FILE-HEADER`` example::
+
+    #!/usr/bin/env lat-io-glimpse
+    data_size
+    128
+    ndim: 3
+    "tsep"[4]: "0" "1" "2" "3"
+    "op"[2]: "0" "1"
+    "re-im"[2]: "re" "im"
+    crc32: 77A655DB
+    END_HEADER
+
+``BINARY-DATA`` description:
+
+Consist of the data stored in double precision (little endian) in sequential order as a standard C multidimensional array.
+
+C++ code: ``qlat-utils/include/qlat-utils/lat-io.h``
+
+.. literalinclude:: ../qlat-utils/include/qlat-utils/lat-io.h
+
 Gauge Field
 ^^^^^^^^^^^
 
@@ -126,7 +158,6 @@ FieldSelection
    FieldSelection.to_psel
    FieldSelection.to_psel_local
 
-
 SelectedFieldBase
 ^^^^^^^^^^^^^^^^^
 
@@ -149,7 +180,6 @@ Support ``np.asarray(sf)``.
    SelectedFieldBase.float_from_double
    SelectedFieldBase.double_from_float
    SelectedFieldBase.to_from_endianness
-
 
 PointsSelection
 ^^^^^^^^^^^^^^^
