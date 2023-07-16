@@ -272,9 +272,15 @@ def benchmark_eval_cexpr(cexpr : CExpr, *,
     #             prop = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop {flavor} {pos_snk_idx} {pos_src_idx}"))
     #             prop_ama = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop ama {flavor} {pos_snk_idx} {pos_src_idx}"))
     #             prop_dict[(flavor, pos_snk, pos_src,)] = mk_ama_val(prop, pos_src, [ prop, prop_ama, ], [ 0, 1, ], [ 1.0, 0.5, ])
+    position_idx_dict = {}
+    for pos_idx in range(n_pos):
+        pos = positions[pos_idx]
+        position_idx_dict[pos] = pos_idx
     #
     @functools.cache
     def mk_prop(flavor, pos_snk, pos_src):
+        pos_snk_idx = position_idx_dict[pos_snk]
+        pos_src_idx = position_idx_dict[pos_src]
         prop = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop {flavor} {pos_snk_idx} {pos_src_idx}"))
         prop_ama = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop ama {flavor} {pos_snk_idx} {pos_src_idx}"))
         ama_val = mk_ama_val(prop, pos_src, [ prop, prop_ama, ], [ 0, 1, ], [ 1.0, 0.5, ])
@@ -294,7 +300,7 @@ def benchmark_eval_cexpr(cexpr : CExpr, *,
             pos_snk, pos_src = args
             return ama_extract(mk_prop(flavor, pos_snk, pos_src), is_sloppy = True)
     @q.timer
-    def get_prop_ama(flavor, pos_snk, pos_src):
+    def get_prop_ama(ptype, *args):
         if ptype == "U":
             tag, p, mu = args
             return mk_prop_uu(tag, p, mu)
