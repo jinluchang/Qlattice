@@ -1,4 +1,5 @@
 from .rbc_ukqcd_params import dict_params
+from .rbc_ukqcd_params import set_param, get_param
 
 tag = "trajs"
 dict_params["test-4nt8"][tag] = list(range(1000, 1400, 100))
@@ -296,19 +297,19 @@ tag = "meson_jwjj_threshold"
 dict_params["test-4nt8"][tag] = 0.1
 dict_params["test-4nt16"][tag] = 0.5
 dict_params["24D"][tag] = 0.4
-dict_params["32D"][tag] = 1
-dict_params["32Dfine"][tag] = 1
-dict_params["24DH"][tag] = 1
-dict_params["16IH2"][tag] = 1
-dict_params["32IfineH"][tag] = 1
-dict_params["32IcoarseH1"][tag] = 1
-dict_params["24IH1"][tag] = 1
-dict_params["24IH2"][tag] = 1
-dict_params["24IH3"][tag] = 1
-dict_params["32IH1"][tag] = 1
-dict_params["32IH2"][tag] = 1
+dict_params["32D"][tag] = 0.1
+dict_params["32Dfine"][tag] = 0.1
+dict_params["24DH"][tag] = 0.1
+dict_params["16IH2"][tag] = 0.1
+dict_params["32IfineH"][tag] = 0.1
+dict_params["32IcoarseH1"][tag] = 0.1
+dict_params["24IH1"][tag] = 0.1
+dict_params["24IH2"][tag] = 0.1
+dict_params["24IH3"][tag] = 0.1
+dict_params["32IH1"][tag] = 0.1
+dict_params["32IH2"][tag] = 0.1
 dict_params["48I"][tag] = 0.01
-dict_params["64I"][tag] = 1
+dict_params["64I"][tag] = 0.01
 
 tag = "meson_tsep_list"
 dict_params["test-4nt8"][tag] = list(range(1, 8))
