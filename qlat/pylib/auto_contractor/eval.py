@@ -37,6 +37,7 @@ import importlib
 import time
 import os
 import subprocess
+import functools
 
 def load_prop(x):
     if isinstance(x, tuple):
@@ -216,6 +217,15 @@ def make_rand_spin_matrix(rng_state):
             dtype = complex).reshape(4, 4)
     return sm
 
+def make_rand_color_matrix(rng_state):
+    rs = rng_state
+    cm = q.ColorMatrix()
+    cm_arr = np.asarray(cm)
+    cm_arr[:] = np.array(
+            [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(9) ],
+            dtype = complex).reshape(3, 3)
+    return cm
+
 def benchmark_show_check(check):
     return " ".join([ f"{v:.10E}" for v in check ])
 
@@ -230,28 +240,13 @@ def benchmark_eval_cexpr(cexpr : CExpr, *,
     expr_names = get_cexpr_names(cexpr)
     n_expr = len(expr_names)
     n_pos = len(cexpr.positions)
-    prop_dict = {}
+    # prop_dict = {}
     size = q.Coordinate([ 8, 8, 8, 16, ])
     positions = [
             ("point", tuple(benchmark_rng_state.split(f"positions {pos_idx}").c_rand_gen(size).list()),)
             for pos_idx in range(n_pos)
             ]
-    set_flavors = set()
-    for name, value in cexpr.variables_prop:
-        assert name.startswith("V_S_")
-        x = value
-        assert isinstance(x, Op)
-        assert x.otype == "S"
-        flavor = x.f
-        set_flavors.add(flavor)
-    for flavor in set_flavors:
-        for pos_src_idx in range(n_pos):
-            pos_src = positions[pos_src_idx]
-            for pos_snk_idx in range(n_pos):
-                pos_snk = positions[pos_snk_idx]
-                prop = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop {flavor} {pos_snk_idx} {pos_src_idx}"))
-                prop_ama = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop ama {flavor} {pos_snk_idx} {pos_src_idx}"))
-                prop_dict[(flavor, pos_snk, pos_src,)] = mk_ama_val(prop, pos_src, [ prop, prop_ama, ], [ 0, 1, ], [ 1.0, 0.5, ])
+    #
     def mk_pos_dict(k):
         positions_dict = {}
         positions_dict["size"] = size.list()
@@ -261,9 +256,53 @@ def benchmark_eval_cexpr(cexpr : CExpr, *,
         return positions_dict
     positions_dict_list = [ mk_pos_dict(k) for k in range(benchmark_size) ]
     #
+    # set_flavors = set()
+    # for name, value in cexpr.variables_prop:
+    #     assert name.startswith("V_S_")
+    #     x = value
+    #     assert isinstance(x, Op)
+    #     assert x.otype == "S"
+    #     flavor = x.f
+    #     set_flavors.add(flavor)
+    # for flavor in set_flavors:
+    #     for pos_src_idx in range(n_pos):
+    #         pos_src = positions[pos_src_idx]
+    #         for pos_snk_idx in range(n_pos):
+    #             pos_snk = positions[pos_snk_idx]
+    #             prop = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop {flavor} {pos_snk_idx} {pos_src_idx}"))
+    #             prop_ama = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop ama {flavor} {pos_snk_idx} {pos_src_idx}"))
+    #             prop_dict[(flavor, pos_snk, pos_src,)] = mk_ama_val(prop, pos_src, [ prop, prop_ama, ], [ 0, 1, ], [ 1.0, 0.5, ])
+    #
+    @functools.cache
+    def mk_prop(flavor, pos_snk, pos_src):
+        prop = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop {flavor} {pos_snk_idx} {pos_src_idx}"))
+        prop_ama = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop ama {flavor} {pos_snk_idx} {pos_src_idx}"))
+        ama_val = mk_ama_val(prop, pos_src, [ prop, prop_ama, ], [ 0, 1, ], [ 1.0, 0.5, ])
+        return ama_val
+    @functools.cache
+    def mk_prop_uu(tag, p, mu):
+        uu = make_rand_color_matrix(benchmark_rng_state.split(f"prop U {tag} {p} {mu}"))
+        return uu
+    #
     @q.timer
-    def get_prop(flavor, pos_snk, pos_src):
-        return ama_extract(prop_dict[(flavor, pos_snk, pos_src)], is_sloppy = True)
+    def get_prop(ptype, *args):
+        if ptype == "U":
+            tag, p, mu = args
+            return mk_prop_uu(tag, p, mu)
+        else:
+            flavor = ptype
+            pos_snk, pos_src = args
+            return ama_extract(mk_prop(flavor, pos_snk, pos_src), is_sloppy = True)
+    @q.timer
+    def get_prop_ama(flavor, pos_snk, pos_src):
+        if ptype == "U":
+            tag, p, mu = args
+            return mk_prop_uu(tag, p, mu)
+        else:
+            flavor = ptype
+            pos_snk, pos_src = args
+            return mk_prop(flavor, pos_snk, pos_src)
+    #
     @q.timer_verbose
     def benchmark_eval_cexpr_run():
         res_list = []
@@ -273,9 +312,6 @@ def benchmark_eval_cexpr(cexpr : CExpr, *,
         res = np.array(res_list)
         assert res.shape == (benchmark_size, n_expr,)
         return res
-    @q.timer
-    def get_prop_ama(flavor, pos_snk, pos_src):
-        return prop_dict[(flavor, pos_snk, pos_src)]
     @q.timer_verbose
     def benchmark_eval_cexpr_run_with_ama():
         res_list = []
