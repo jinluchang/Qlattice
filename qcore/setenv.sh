@@ -31,11 +31,11 @@ fi
 
 export LC_ALL="C"
 
-if [ -z "${num_proc+x}" ] ; then
+if [ -z "${num_proc}" ] ; then
     export num_proc=2
 fi
 
-if [ -z "${num_test+x}" ] ; then
+if [ -z "${num_test}" ] ; then
     export num_test=1
 fi
 

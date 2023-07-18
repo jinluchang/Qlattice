@@ -10,6 +10,7 @@ tests = \
 		auto-cexprs-cy.log \
 		auto-cexprs-more-cy.log \
 		auto-cexprs-kpipi-cy.log \
+		auto-cexprs-uu-cy.log \
 		qlat-id-node.log \
 		set-rand.log \
 		benchmark-matrix-functions.log \
