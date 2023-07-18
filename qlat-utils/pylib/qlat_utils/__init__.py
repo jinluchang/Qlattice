@@ -17,6 +17,7 @@ from qlat_utils.c import \
 from qlat_utils.c import \
         WilsonMatrix, \
         SpinMatrix, \
+        ColorMatrix, \
         get_gamma_matrix, \
         mat_tr_sm, \
         mat_tr_wm, \

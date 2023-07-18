@@ -78,7 +78,7 @@ def get_var_name_type(x):
 
 def get_op_type(x):
     """
-    x should be an Op
+    ``x`` should be an Op
     return a string which indicate the type of the op
     """
     if not isinstance(x, Op):
@@ -98,6 +98,10 @@ def get_op_type(x):
     return None
 
 def add_positions(s, x):
+    """
+    ``s`` is set of str
+    ``x`` is expr/sub-expr
+    """
     if isinstance(x, Term):
         for op in x.c_ops:
             add_positions(s, op)
@@ -105,14 +109,21 @@ def add_positions(s, x):
             add_positions(s, op)
     elif isinstance(x, Op):
         if x.otype == "S":
-            s.update([ x.p1, x.p2, ])
+            if isinstance(x.p1, str):
+                s.add(x.p1)
+            if isinstance(x.p2, str):
+                s.add(x.p2)
         elif x.otype == "U":
-            s.update([ x.p, x.mu, ])
+            if isinstance(x.p, str):
+                s.add(x.p)
+            if isinstance(x.mu, str):
+                s.add(x.mu)
         elif x.otype == "Tr":
             for op in x.ops:
                 add_positions(s, op)
         elif x.otype == "Qfield":
-            s.add(x.p)
+            if isinstance(x.p, str):
+                s.add(x.p)
     elif isinstance(x, Expr):
         for t in x.terms:
             add_positions(s, t)
@@ -996,7 +1007,7 @@ class CExprCodeGenPy:
                 else:
                     assert False
         elif x.otype == "Var":
-            if x.name.startswith("V_S_"):
+            if x.name.startswith("V_S_") or x.name.startswith("V_U_"):
                 if self.is_cython:
                     return f"p_{x.name}[0]", get_var_name_type(x.name)
                 else:
