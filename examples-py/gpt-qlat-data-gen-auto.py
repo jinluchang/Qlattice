@@ -1149,6 +1149,7 @@ def run_job(job_tag, traj):
     run_prop_rand_u1(job_tag, traj, inv_type = 2, get_gf = get_gf, get_fsel = get_fsel)
     #
     get_get_prop = run_get_prop(job_tag, traj,
+            get_gf = get_gf,
             get_gt = get_gt,
             get_psel = get_psel,
             get_fsel = get_fsel,
@@ -1163,6 +1164,9 @@ def run_job(job_tag, traj):
                 "psrc psel l",
                 "psrc fsel s",
                 "psrc fsel l",
+                "rand_u1 fsel c",
+                "rand_u1 fsel s",
+                "rand_u1 fsel l",
                 ],
             )
     #
