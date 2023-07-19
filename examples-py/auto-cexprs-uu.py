@@ -9,23 +9,6 @@ import sys
 
 is_cython = False
 
-def mk_vec_uu_mu(f1, f2, p1, p2, mu, is_dagger = False):
-    """
-    q1bar gmu Umu q2
-    """
-    s1 = new_spin_index()
-    s2 = new_spin_index()
-    c1 = new_color_index()
-    c2 = new_color_index()
-    if not is_dagger:
-        return Qb(f1, p1, s1, c1) * G(mu, s1, s2) * U("gauge", p1, mu, c1, c2) * Qv(f2, p2, s2, c2) + f"{f1}bar({p1}) g{mu} U_{mu}({p1}) {f2}({p2})"
-    else:
-        if mu in [ 0, 1, 2, 5 ]:
-            return -Qb(f2, p2, s1, c1) * G(mu, s1, s2) * U("gauge-dagger", p1, mu) * Qv(f1, p1, s2, c2) + f"(-){f2}bar({p2}) g{mu} U^dag_{mu}({p1}) {f1}({p1})"
-        else:
-            assert mu in [ 3, ]
-            return Qb(f2, p2, s1, c1) * G(mu, s1, s2) * U("gauge-dagger", p1, mu) * Qv(f1, p1, s2, c2) + f"{f2}bar({p2}) g{mu} U^dag_{mu}({p1}) {f1}({p1})"
-
 @q.timer
 def get_cexpr_meson_uu_corr():
     fn_base = f"cache/auto_contract_cexpr/get_cexpr_meson_uu_corr"
