@@ -54,8 +54,10 @@ cdef class FieldTYPENAME(FieldBase):
         self.view_count -= 1
 
     def __imatmul__(self, f1):
-        # f1 can be Field, SelectedField, SelectedPoints
-        # field geo does not change if already initialized
+        """
+        f1 can be Field, SelectedField, SelectedPoints
+        field geo does not change if already initialized
+        """
         if isinstance(f1, FieldTYPENAME):
             self.xx = (<FieldTYPENAME>f1).xx
         elif isinstance(f1, SelectedFieldTYPENAME):
@@ -134,7 +136,9 @@ cdef class SelectedFieldTYPENAME(SelectedFieldBase):
         self.view_count -= 1
 
     def __imatmul__(self, f1):
-        # won't change self.fsel
+        """
+        won't change self.fsel
+        """
         if isinstance(f1, SelectedFieldTYPENAME):
             # two fsel do not need to match
             if self.fsel is f1.fsel:
@@ -219,7 +223,9 @@ cdef class SelectedPointsTYPENAME(SelectedPointsBase):
         self.view_count -= 1
 
     def __imatmul__(self, f1):
-        # won't change self.psel
+        """
+        won't change self.psel
+        """
         if isinstance(f1, SelectedPointsTYPENAME):
             # two psel must be the same object
             if self.psel is f1.psel:

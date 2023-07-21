@@ -681,6 +681,27 @@ def load_prop_rand_u1_fsel(job_tag, traj, flavor, *, psel, fsel, fselc):
 
 ### -------
 
+@q.timer
+def load_gauge(job_tag, traj, *, gf):
+    """
+    """
+    assert gf is not None
+    geo = q.geo_reform(gf.geo())
+    gf_dagger = q.GaugeField(geo)
+    gf_dagger @= gf
+    gf_dagger_arr = np.asarray(gf_dagger)
+    # print(gf_dagger_arr.shape)
+    gf_dagger_arr[:] = gf_dagger_arr.transpose((0, 1, 2, 3, 4, 6, 5,)).conj()
+    # gf_dagger.show_info()
+    expansion_left = q.Coordinate([ 2, 2, 2, 2, ])
+    expansion_right = q.Coordinate([ 1, 1, 1, 1, ])
+    gf_expand = q.field_expanded(gf, expansion_left, expansion_right)
+    gf_dagger_expand = q.field_expanded(gf_dagger, expansion_left, expansion_right)
+    # gf_dagger_expand.show_info()
+
+
+### -------
+
 @q.timer_verbose
 def run_get_prop(job_tag, traj, *,
                  get_gf = None,
@@ -695,7 +716,7 @@ def run_get_prop(job_tag, traj, *,
     if get_psel_smear is None:
         get_psel_smear = lambda: None
     if prop_types is None:
-        # load psel before fsel if possible
+        # load psel data before fsel data if possible
         # load strange quark before light quark if possible
         prop_types = [
                 "wsrc psel s",
