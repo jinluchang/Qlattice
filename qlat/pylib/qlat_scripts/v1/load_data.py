@@ -682,10 +682,11 @@ def load_prop_rand_u1_fsel(job_tag, traj, flavor, *, psel, fsel, fselc):
 ### -------
 
 @q.timer
-def load_gauge(job_tag, traj, *, gf):
+def load_gauge_original(job_tag, traj, *, gf):
     """
     """
     assert gf is not None
+    cache_gauge = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"gauge")
     geo = q.geo_reform(gf.geo())
     gf_dagger = q.GaugeField(geo)
     gf_dagger @= gf
@@ -697,8 +698,7 @@ def load_gauge(job_tag, traj, *, gf):
     expansion_right = q.Coordinate([ 1, 1, 1, 1, ])
     gf_expand = q.field_expanded(gf, expansion_left, expansion_right)
     gf_dagger_expand = q.field_expanded(gf_dagger, expansion_left, expansion_right)
-    # gf_dagger_expand.show_info()
-
+    gf_dagger_expand.show_info()
 
 ### -------
 
