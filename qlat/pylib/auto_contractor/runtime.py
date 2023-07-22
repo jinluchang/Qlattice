@@ -21,15 +21,17 @@
 
 from auto_contractor.eval import \
         load_prop, \
-        ama_apply, ama_apply1, ama_apply2, ama_apply2_r, ama_apply2_l, ama_list, ama_counts, ama_extract
+        ama_list, \
+        ama_apply1, \
+        ama_counts, \
+        ama_extract
 
 from qlat_utils import \
-        rel_mod, rel_mod_sym, c_rel_mod_sqr
+        rel_mod, \
+        rel_mod_sym, \
+        c_rel_mod_sqr
 
 from qlat_utils.c import \
-        WilsonMatrix, \
-        SpinMatrix, \
-        ColorMatrix, \
         get_gamma_matrix, \
         mat_tr_sm, \
         mat_tr_wm, \
@@ -49,6 +51,7 @@ from qlat_utils.c import \
         mat_mul_cm_cm
 
 from qlat import \
-        timer, timer_flops
+        timer, \
+        timer_flops
 
 import numpy as np
