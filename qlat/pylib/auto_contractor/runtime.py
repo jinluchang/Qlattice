@@ -26,7 +26,6 @@ from qlat import \
         timer_flops
 
 from auto_contractor.ama import \
-        load_prop, \
         ama_list, \
         ama_apply1, \
         ama_counts, \

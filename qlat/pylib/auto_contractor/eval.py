@@ -131,7 +131,7 @@ codelib = py3.extension_module('code',
 """
 
 @q.timer
-def cache_compiled_cexpr(calc_cexpr, path, *, is_cython = True):
+def cache_compiled_cexpr(calc_cexpr, path, *, is_cython = True, is_distillation = False):
     """
     Return fully loaded ``cexpr = calc_cexpr()`` and cache the results\n
     Save cexpr object in pickle format for future reuse.
@@ -157,7 +157,9 @@ def cache_compiled_cexpr(calc_cexpr, path, *, is_cython = True):
         cexpr_original = calc_cexpr()
         cexpr_optimized = copy.deepcopy(cexpr_original)
         cexpr_optimized.optimize()
-        code_py = cexpr_code_gen_py(cexpr_optimized, is_cython)
+        code_py = cexpr_code_gen_py(cexpr_optimized,
+                                    is_cython = is_cython,
+                                    is_distillation = is_distillation)
         if is_cython:
             fn_py = path + "/code.pyx"
         else:

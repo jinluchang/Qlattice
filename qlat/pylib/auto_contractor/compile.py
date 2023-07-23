@@ -897,7 +897,10 @@ def cexpr_code_gen_py(cexpr : CExpr, *, is_cython = True, is_distillation = Fals
     return a string
     interface function
     """
-    return CExprCodeGenPy(cexpr, is_cython, is_distillation).code_gen()
+    gen = CExprCodeGenPy(cexpr,
+                         is_cython = is_cython,
+                         is_distillation = is_distillation)
+    return gen.code_gen()
 
 class CExprCodeGenPy:
 

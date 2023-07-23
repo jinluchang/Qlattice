@@ -27,17 +27,17 @@ import qlat as q
 
 @q.timer
 def einsum_cache_path(subscripts, *operands, optimize = None):
-  """
-  Behave as ``np.einsum`` except will update ``optimize`` if it is an empty list
-  """
-  if optimize is None:
-    return np.einsum(subscripts, *operands)
-  if optimize == []:
-    a, b = np.einsum_path(subscripts, *operands, optimize = 'optimal')
-    optimize[:] = a
-    print(a)
-    print(b)
-  return np.einsum(subscripts, *operands, optimize = optimize)
+    """
+    Behave as ``np.einsum`` except will update ``optimize`` if it is an empty list
+    """
+    if optimize is None:
+        return np.einsum(subscripts, *operands)
+    if optimize == []:
+        a, b = np.einsum_path(subscripts, *operands, optimize = 'optimal')
+        optimize[:] = a
+        print(a)
+        print(b)
+    return np.einsum(subscripts, *operands, optimize = optimize)
 
 def as_wilson_matrix(x):
     if isinstance(x, np.ndarray):
@@ -48,15 +48,15 @@ def as_wilson_matrix(x):
 einsum_optimize_g5_herm = []
 
 def g5_herm(x):
-  """
-  corr[s1, s2, n1, n2]
-  return gamma_5 * corr^dagger * gamma_5
-  should equal to the original
-  corr
-  """
-  g5 = get_gamma_matrix(5)
-  corr_g5 = einsum_cache_path("ij,kjba,kl->ilab", g5, corr.conj(), g5, optimize = einsum_optimize_g5_herm)
-  return corr_g5
+    """
+    corr[s1, s2, n1, n2]
+    return gamma_5 * corr^dagger * gamma_5
+    should equal to the original
+    corr
+    """
+    g5 = get_gamma_matrix(5)
+    corr_g5 = einsum_cache_path("ij,kjba,kl->ilab", g5, corr.conj(), g5, optimize = einsum_optimize_g5_herm)
+    return corr_g5
 
 def as_wilson_matrix_g5_herm(x):
     if isinstance(x, np.ndarray):
@@ -76,7 +76,8 @@ def get_gamma_matrix(mu):
     arr = np.asarray(sm)
     return arr
 
-
+def mat_tr_sm(x):
+    ...
 
 
 
