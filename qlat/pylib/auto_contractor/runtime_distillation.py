@@ -37,10 +37,8 @@ from qlat_utils import \
         rel_mod_sym, \
         c_rel_mod_sqr
 
-from auto_contractor.eval import \
-        load_prop
-
-from qlat_utils.c import \
+from auto_contractor.distillation_mat_op import \
+        load_prop, \
         get_gamma_matrix, \
         mat_tr_sm, \
         mat_tr_wm, \

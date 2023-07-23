@@ -892,17 +892,19 @@ def display_cexpr(cexpr : CExpr):
     return "\n".join(lines)
 
 @q.timer_verbose
-def cexpr_code_gen_py(cexpr : CExpr, is_cython = True):
+def cexpr_code_gen_py(cexpr : CExpr, *, is_cython = True, is_distillation = False):
     """
     return a string
     interface function
     """
-    return CExprCodeGenPy(cexpr, is_cython).code_gen()
+    return CExprCodeGenPy(cexpr, is_cython, is_distillation).code_gen()
 
 class CExprCodeGenPy:
 
     """
     self.cexpr
+    self.is_cython
+    self.is_distillation
     self.lines
     self.indent
     self.total_sloppy_flops
@@ -913,12 +915,16 @@ class CExprCodeGenPy:
     flops per trace2 6 M N + 2 (M N - 1) ==> 1150 (sc, sc)
     """
 
-    def __init__(self, cexpr, is_cython = True):
+    def __init__(self, cexpr, *, is_cython = True, is_distillation = False):
         self.cexpr = cexpr
         self.is_cython = is_cython
+        self.is_distillation = is_distillation
         self.lines = []
         self.indent = 0
         self.total_sloppy_flops = 0
+        #
+        if self.is_distillation:
+            assert self.is_cython == False
 
     def code_gen(self):
         """
@@ -928,7 +934,10 @@ class CExprCodeGenPy:
         append = self.append
         append_cy = self.append_cy
         append_py = self.append_py
-        append(f"from auto_contractor.runtime import *")
+        if self.is_distillation:
+            append(f"from auto_contractor.runtime_distillation import *")
+        else:
+            append(f"from auto_contractor.runtime import *")
         append_cy(f"cimport qlat_utils.everything as cc")
         append_cy(f"cimport qlat_utils.cp as cp")
         append_cy(f"cimport numpy")
