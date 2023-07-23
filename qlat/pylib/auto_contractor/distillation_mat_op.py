@@ -47,7 +47,7 @@ def as_wilson_matrix(x):
 
 einsum_optimize_g5_herm = []
 
-def g5_herm(x):
+def wilson_matrix_g5_herm(x):
     """
     corr[s1, s2, n1, n2]
     return gamma_5 * corr^dagger * gamma_5
@@ -60,7 +60,7 @@ def g5_herm(x):
 
 def as_wilson_matrix_g5_herm(x):
     if isinstance(x, np.ndarray):
-        return g5_herm(x)
+        return wilson_matrix_g5_herm(x)
     elif x == 0:
         return 0
 
