@@ -40,6 +40,7 @@ from auto_contractor.distillation_mat_op import \
         load_prop, \
         get_gamma_matrix, \
         mat_tr_sm, \
+        mat_tr_cm, \
         mat_tr_wm, \
         mat_tr_wm_wm, \
         mat_tr_wm_sm, \

@@ -82,10 +82,21 @@ def mat_tr_sm(mat):
     v = einsum_cache_path("ii->", mat, optimize = einsum_optimize_mat_tr_sm)
     return v
 
+einsum_optimize_mat_tr_cm = []
+
+def mat_tr_cm(mat):
+    v = einsum_cache_path("ii->", mat, optimize = einsum_optimize_mat_tr_cm)
+    return v
+
 einsum_optimize_mat_tr_wm = []
 
 def mat_tr_wm(mat):
-    v = einsum_cache_path("iijj->", mat, optimize = einsum_optimize_mat_tr_wm)
+    v = einsum_cache_path("iiaa->", mat, optimize = einsum_optimize_mat_tr_wm)
     return v
 
+einsum_optimize_mat_tr_wm_wm = []
+
+def mat_tr_wm_wm(mat1, mat2):
+    v = einsum_cache_path("ijab,jiba->", mat1, mat2, optimize = einsum_optimize_mat_tr_wm_wm)
+    return v
 

@@ -42,6 +42,7 @@ from auto_contractor.eval import \
 from qlat_utils.c import \
         get_gamma_matrix, \
         mat_tr_sm, \
+        mat_tr_cm, \
         mat_tr_wm, \
         mat_tr_wm_wm, \
         mat_tr_wm_sm, \

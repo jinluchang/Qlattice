@@ -11,6 +11,7 @@ tests = \
 		auto-cexprs-more-cy.log \
 		auto-cexprs-kpipi-cy.log \
 		auto-cexprs-uu-cy.log \
+		distillation-mat-op.log \
 		qlat-id-node.log \
 		set-rand.log \
 		benchmark-matrix-functions.log \
