@@ -100,3 +100,75 @@ def mat_tr_wm_wm(mat1, mat2):
     v = einsum_cache_path("ijab,jiba->", mat1, mat2, optimize = einsum_optimize_mat_tr_wm_wm)
     return v
 
+einsum_optimize_mat_tr_wm_sm = []
+
+def mat_tr_wm_sm(mat1, mat2):
+    v = einsum_cache_path("ijaa,ji->", mat1, mat2, optimize = einsum_optimize_mat_tr_wm_sm)
+    return v
+
+def mat_tr_sm_wm(mat1, mat2):
+    return mat_tr_wm_sm(mat2, mat1)
+
+einsum_optimize_mat_tr_sm_sm = []
+
+def mat_tr_sm_sm(mat1, mat2):
+    v = einsum_cache_path("ij,ji->", mat1, mat2, optimize = einsum_optimize_mat_tr_sm_sm)
+    return v
+
+einsum_optimize_mat_tr_wm_cm = []
+
+def mat_tr_wm_cm(mat1, mat2):
+    v = einsum_cache_path("iiab,ba->", mat1, mat2, optimize = einsum_optimize_mat_tr_wm_cm)
+    return v
+
+def mat_tr_cm_wm(mat1, mat2):
+    return mat_tr_wm_cm(mat2, mat1)
+
+einsum_optimize_mat_tr_cm_cm = []
+
+def mat_tr_cm_cm(mat1, mat2):
+    v = einsum_cache_path("ab,ba->", mat1, mat2, optimize = einsum_optimize_mat_tr_cm_cm)
+    return v
+
+einsum_optimize_mat_mul_wm_wm = []
+
+def mat_mul_wm_wm(mat1, mat2):
+    v = einsum_cache_path("ijab,jkbc->ikac", mat1, mat2, optimize = einsum_optimize_mat_mul_wm_wm)
+    return v
+
+einsum_optimize_mat_mul_wm_sm = []
+
+def mat_mul_wm_sm(mat1, mat2):
+    v = einsum_cache_path("ijab,jk->ikab", mat1, mat2, optimize = einsum_optimize_mat_mul_wm_sm)
+    return v
+
+einsum_optimize_mat_mul_sm_wm = []
+
+def mat_mul_sm_wm(mat1, mat2):
+    v = einsum_cache_path("ij,jkab->ikab", mat1, mat2, optimize = einsum_optimize_mat_mul_sm_wm)
+    return v
+
+einsum_optimize_mat_mul_sm_sm = []
+
+def mat_mul_sm_sm(mat1, mat2):
+    v = einsum_cache_path("ij,jk->ik", mat1, mat2, optimize = einsum_optimize_mat_mul_sm_sm)
+    return v
+
+einsum_optimize_mat_mul_wm_cm = []
+
+def mat_mul_wm_cm(mat1, mat2):
+    v = einsum_cache_path("ijab,bc->ijac", mat1, mat2, optimize = einsum_optimize_mat_mul_wm_cm)
+    return v
+
+einsum_optimize_mat_mul_cm_wm = []
+
+def mat_mul_cm_wm(mat1, mat2):
+    v = einsum_cache_path("ab,ijbc->ijac", mat1, mat2, optimize = einsum_optimize_mat_mul_cm_wm)
+    return v
+
+einsum_optimize_mat_mul_cm_cm = []
+
+def mat_mul_cm_cm(mat1, mat2):
+    v = einsum_cache_path("ab,bc->ac", mat1, mat2, optimize = einsum_optimize_mat_mul_cm_cm)
+    return v
+
