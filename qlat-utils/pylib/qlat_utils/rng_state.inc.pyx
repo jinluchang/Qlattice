@@ -105,15 +105,14 @@ def get_double_sig(x, RngState rs):
     Result only depends on the value of the data, not the structure.
     ``x`` can be an instance of ``LatData`` or ``np.ndarray``.
     """
-    if isinstance(x, LatData):
-        arr = np.asarray(x).ravel()
-        arr_rand = np.zeros(arr.shape, arr.dtype)
-        rs.u_rand_fill(arr_rand, 1.0, -1.0)
-        return np.sum(arr * arr_rand)
-    elif isinstance(x, np.ndarray):
+    if isinstance(x, np.ndarray):
         arr = x.ravel()
         arr_rand = np.zeros(arr.shape, arr.dtype)
         rs.u_rand_fill(arr_rand, 1.0, -1.0)
         return np.sum(arr * arr_rand)
+    elif isinstance(x, LatData):
+        return get_double_sig(np.asarray(x), rs)
+    elif isinstance(x, (SpinMatrix, ColorMatrix, WilsonMatrix,)):
+        return get_double_sig(np.asarray(x), rs)
     else:
         return None

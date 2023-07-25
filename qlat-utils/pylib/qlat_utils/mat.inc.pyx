@@ -169,7 +169,7 @@ cdef class ColorMatrix:
 def mat_tr_sm(SpinMatrix v):
     return cc.matrix_trace(v.xx)
 
-def mat_tr_cm(SpinMatrix v):
+def mat_tr_cm(ColorMatrix v):
     return cc.matrix_trace(v.xx)
 
 def mat_tr_wm(WilsonMatrix v):
