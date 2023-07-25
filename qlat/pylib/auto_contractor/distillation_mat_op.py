@@ -35,8 +35,8 @@ def einsum_cache_path(subscripts, *operands, optimize = None):
     if optimize == []:
         a, b = np.einsum_path(subscripts, *operands, optimize = 'optimal')
         optimize[:] = a
-        print(a)
-        print(b)
+        q.displayln_info(a)
+        q.displayln_info(b)
     return np.einsum(subscripts, *operands, optimize = optimize)
 
 def as_wilson_matrix(x):
