@@ -8,7 +8,7 @@ q.qmkdir_info("results")
 
 nn_s = 4
 
-nn_c = 16
+nn_c = 3
 
 def make_rnd_sm(rs : q.RngState):
     x = np.zeros((nn_s, nn_s,), dtype = np.complex128)
@@ -21,8 +21,9 @@ def make_rnd_cm(rs : q.RngState):
     return x
 
 def make_rnd_wm(rs : q.RngState):
-    x = np.zeros((nn_s, nn_s, nn_c, nn_c,), dtype = np.complex128)
+    x = np.zeros((nn_s, nn_c, nn_s, nn_c,), dtype = np.complex128)
     rs.u_rand_fill(x, 1.0, -1.0)
+    x = x.transpose((0, 2, 1, 3,)).copy()
     return x
 
 sm1 = make_rnd_sm(q.RngState("seed-sm1"))
