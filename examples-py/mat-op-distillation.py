@@ -120,6 +120,10 @@ v1 = q.get_double_sig(mat_mul_cm_wm(cm1, wm1), q.RngState("seed-sig-mul"))
 q.displayln_info(f"CHECK: mat_mul_cm_wm: {v1:.10f}")
 assert abs(mat_tr_wm(mat_mul_cm_wm(cm1, wm1)) - mat_tr_cm_wm(cm1, wm1)) <= 1e-10
 
+v1 = q.get_double_sig(wilson_matrix_g5_herm(wm1), q.RngState("seed-sig-mul"))
+v2 = q.get_double_sig(wilson_matrix_g5_herm(wm2), q.RngState("seed-sig-mul"))
+q.displayln_info(f"CHECK: wilson_matrix_g5_herm: {v1:.10f} {v2:.10f}")
+
 q.check_all_files_crc32_info("results")
 q.timer_display()
 q.displayln_info(f"CHECK: finished successfully.")

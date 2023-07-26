@@ -55,7 +55,7 @@ def wilson_matrix_g5_herm(x):
     corr
     """
     g5 = get_gamma_matrix(5)
-    corr_g5 = einsum_cache_path("ij,kjba,kl->ilab", g5, x.conj(), g5, optimize = einsum_optimize_g5_herm)
+    corr_g5 = einsum_cache_path("ij,kbja,kl->ialb", g5, x.conj(), g5, optimize = einsum_optimize_g5_herm)
     return corr_g5
 
 def as_wilson_matrix_g5_herm(x):
