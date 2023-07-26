@@ -252,33 +252,10 @@ def benchmark_eval_cexpr(cexpr : CExpr, *,
         return positions_dict
     positions_dict_list = [ mk_pos_dict(k) for k in range(benchmark_size) ]
     #
-    # set_flavors = set()
-    # for name, value in cexpr.variables_prop:
-    #     assert name.startswith("V_S_")
-    #     x = value
-    #     assert isinstance(x, Op)
-    #     assert x.otype == "S"
-    #     flavor = x.f
-    #     set_flavors.add(flavor)
-    # for flavor in set_flavors:
-    #     for pos_src_idx in range(n_pos):
-    #         pos_src = positions[pos_src_idx]
-    #         for pos_snk_idx in range(n_pos):
-    #             pos_snk = positions[pos_snk_idx]
-    #             prop = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop {flavor} {pos_snk_idx} {pos_src_idx}"))
-    #             prop_ama = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop ama {flavor} {pos_snk_idx} {pos_src_idx}"))
-    #             prop_dict[(flavor, pos_snk, pos_src,)] = mk_ama_val(prop, pos_src, [ prop, prop_ama, ], [ 0, 1, ], [ 1.0, 0.5, ])
-    position_idx_dict = {}
-    for pos_idx in range(n_pos):
-        pos = positions[pos_idx]
-        position_idx_dict[pos] = pos_idx
-    #
     @functools.cache
     def mk_prop(flavor, pos_snk, pos_src):
-        pos_snk_idx = position_idx_dict[pos_snk]
-        pos_src_idx = position_idx_dict[pos_src]
-        prop = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop {flavor} {pos_snk_idx} {pos_src_idx}"))
-        prop_ama = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop ama {flavor} {pos_snk_idx} {pos_src_idx}"))
+        prop = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop {flavor} {pos_snk} {pos_src}"))
+        prop_ama = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop ama {flavor} {pos_snk} {pos_src}"))
         ama_val = mk_ama_val(prop, pos_src, [ prop, prop_ama, ], [ 0, 1, ], [ 1.0, 0.5, ])
         return ama_val
     @functools.cache
