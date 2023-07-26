@@ -180,10 +180,12 @@ def cache_compiled_cexpr(calc_cexpr, path, *, is_cython = True, is_distillation 
         q.displayln(3, f"cache_compiled_cexpr: Node {q.get_id_node()}: waiting for '{fn_pickle}'.")
         time.sleep(0.5)
     cexpr = q.load_pickle_obj(fn_pickle)["cexpr_optimized"]
+    q.displayln_info(1, f"cache_compiled_cexpr: Loading '{path}'.")
     if is_cython:
         module = importlib.import_module((path + "/build/code").replace("/", "."))
     else:
         module = importlib.import_module((path + "/code").replace("/", "."))
+    q.displayln_info(1, f"cache_compiled_cexpr: Loaded '{path}'.")
     cexpr.function = {
             # cexpr_function(positions_dict, get_prop, is_ama_and_sloppy = False) => val as 1-D np.array
             "cexpr_function" : module.cexpr_function,
