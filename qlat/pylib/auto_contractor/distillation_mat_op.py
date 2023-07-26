@@ -1,4 +1,4 @@
-#    Qlattice (https://github.com/waterret/qlattice)
+#    Qlattice (https://github.com/jinluchang/qlattice)
 #
 #    Copyright (C) 2022
 #
@@ -49,13 +49,13 @@ einsum_optimize_g5_herm = []
 
 def wilson_matrix_g5_herm(x):
     """
-    corr[s1, s2, n1, n2]
+    corr[s1, n1, s2, n2]
     return gamma_5 * corr^dagger * gamma_5
     should equal to the original
     corr
     """
     g5 = get_gamma_matrix(5)
-    corr_g5 = einsum_cache_path("ij,kjba,kl->ilab", g5, corr.conj(), g5, optimize = einsum_optimize_g5_herm)
+    corr_g5 = einsum_cache_path("ij,kjba,kl->ilab", g5, x.conj(), g5, optimize = einsum_optimize_g5_herm)
     return corr_g5
 
 def as_wilson_matrix_g5_herm(x):

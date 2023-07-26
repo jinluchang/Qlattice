@@ -277,6 +277,11 @@ def as_wilson_matrix(x):
         cc.set_zero(wm.xx)
         return wm
 
+def wilson_matrix_g5_herm(WilsonMatrix x):
+    cdef WilsonMatrix wm = WilsonMatrix()
+    wm.xx = cc.g5_herm(x.xx)
+    return wm
+
 def as_wilson_matrix_g5_herm(x):
     cdef WilsonMatrix wm = WilsonMatrix()
     if isinstance(x, WilsonMatrix):

@@ -1,4 +1,4 @@
-#    Qlattice (https://github.com/waterret/qlattice)
+#    Qlattice (https://github.com/jinluchang/qlattice)
 #
 #    Copyright (C) 2022
 #
@@ -25,7 +25,7 @@ from qlat import \
         timer, \
         timer_flops
 
-from auto_contractor.ama import \
+from qlat_utils.ama import \
         ama_list, \
         ama_apply1, \
         ama_counts, \
@@ -39,6 +39,7 @@ from qlat_utils import \
 from auto_contractor.distillation_mat_op import \
         load_prop, \
         get_gamma_matrix, \
+        wilson_matrix_g5_herm, \
         mat_tr_sm, \
         mat_tr_cm, \
         mat_tr_wm, \

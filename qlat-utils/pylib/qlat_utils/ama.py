@@ -1,9 +1,8 @@
-#    Qlattice (https://github.com/waterret/qlattice)
+#    Qlattice (https://github.com/jinluchang/qlattice)
 #
 #    Copyright (C) 2021
 #
 #    Author: Luchang Jin (ljin.luchang@gmail.com)
-#    Author: Masaaki Tomii
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -20,7 +19,7 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import copy
-import qlat as q
+from .timer import timer
 
 class AmaVal:
 
@@ -59,7 +58,7 @@ class AmaVal:
 
 ###
 
-@q.timer
+@timer
 def mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list):
     """
     source_specification need to be unique for each propagator source to ensure proper AMA correction for final result
@@ -80,7 +79,7 @@ def mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list):
         return val
     return AmaVal(val, corrections)
 
-@q.timer
+@timer
 def ama_apply1_corrections(f, x):
     assert isinstance(x, AmaVal)
     corrections = [ (f(v), d,) for v, d in x.corrections ]
@@ -114,7 +113,7 @@ def merge_description_dict(d1, d2):
         d[key] = d2[key]
     return d
 
-@q.timer
+@timer
 def ama_apply2_ama_val(f, x, y):
     assert isinstance(x, AmaVal)
     assert isinstance(y, AmaVal)
@@ -126,13 +125,13 @@ def ama_apply2_ama_val(f, x, y):
                 corrections.append((f(v_x, v_y), d,))
     return AmaVal(None, corrections)
 
-@q.timer
+@timer
 def ama_apply2_r_ama_val(f, x, y):
     assert isinstance(y, AmaVal)
     corrections = [ (f(x, v), d,) for v, d in y.corrections ]
     return AmaVal(None, corrections)
 
-@q.timer
+@timer
 def ama_apply2_l_ama_val(f, x, y):
     assert isinstance(x, AmaVal)
     corrections = [ (f(v, y), d,) for v, d in x.corrections ]
@@ -160,7 +159,7 @@ def ama_apply2(f, x, y):
     else:
         return ama_apply2_ama_val(f, x, y)
 
-@q.timer
+@timer
 def ama_list(*args):
     l = len(args)
     assert l >= 0
@@ -177,7 +176,7 @@ def ama_apply(f, *args):
         return f(*xs)
     return ama_apply1(f_list, res)
 
-@q.timer
+@timer
 def ama_extract_ama_val(x, *, is_sloppy = False):
     corrections = x.corrections
     assert isinstance(corrections, list)

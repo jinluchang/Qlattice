@@ -5,20 +5,21 @@ Usage::\n
 Will also be loaded by ``import qlat as q`` together with other ``qlat`` functions.
 """
 
-import qlat_utils.c
+from . import c
 
-from qlat_utils.c import \
+from .c import \
         Coordinate, \
         RngState, \
         as_wilson_matrix, \
         as_wilson_matrix_g5_herm, \
         benchmark_matrix_functions
 
-from qlat_utils.c import \
+from .c import \
         WilsonMatrix, \
         SpinMatrix, \
         ColorMatrix, \
         get_gamma_matrix, \
+        wilson_matrix_g5_herm, \
         mat_tr_sm, \
         mat_tr_wm, \
         mat_tr_wm_wm, \
@@ -30,7 +31,7 @@ from qlat_utils.c import \
         mat_mul_sm_wm, \
         mat_mul_sm_sm
 
-from qlat_utils.c import \
+from .c import \
         ElemType, \
         ElemTypeColorMatrix, \
         ElemTypeWilsonMatrix, \
@@ -47,24 +48,28 @@ from qlat_utils.c import \
         ElemTypeInt8t, \
         ElemTypeChar
 
-from qlat_utils.timer import *
+from .timer import *
 
-from qlat_utils.cache import *
+from .ama import *
 
-from qlat_utils.qar import *
+from .load_prop import *
 
-from qlat_utils.utils import *
+from .cache import *
 
-from qlat_utils.utils_io import *
+from .qar import *
 
-from qlat_utils.lat_io import *
+from .utils import *
 
-from qlat_utils.data import *
+from .utils_io import *
 
-from qlat_utils.qplot import *
+from .lat_io import *
 
-from qlat_utils.parallel import *
+from .data import *
 
-from qlat_utils.get_include_dir import *
+from .qplot import *
+
+from .parallel import *
+
+from .get_include_dir import *
 
 verbose_level("default")

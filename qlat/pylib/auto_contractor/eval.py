@@ -1,4 +1,4 @@
-#    Qlattice (https://github.com/waterret/qlattice)
+#    Qlattice (https://github.com/jinluchang/qlattice)
 #
 #    Copyright (C) 2021
 #
@@ -20,7 +20,7 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 from auto_contractor.compile import *
-from auto_contractor.ama import *
+from qlat_utils.ama import *
 
 from qlat_utils import \
         rel_mod, rel_mod_sym, c_rel_mod_sqr
@@ -38,12 +38,6 @@ import time
 import os
 import subprocess
 import functools
-
-def load_prop(x):
-    if isinstance(x, tuple):
-        assert len(x) == 2 and x[0] == "g5_herm"
-        return ama_apply1(as_wilson_matrix_g5_herm, x[1])
-    return ama_apply1(as_wilson_matrix, x)
 
 @q.timer
 def get_cexpr_names(cexpr):
