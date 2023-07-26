@@ -965,10 +965,15 @@ class CExprCodeGenPy:
         elif isinstance(x, (ea.Expr, ea.Factor)):
             return f"({ea.compile_py(x)})", "V_a"
         assert isinstance(x, Op)
+        def show_var_or_val(v):
+            if isinstance(v, str):
+                return f"{v}_tv"
+            else:
+                return f"{v}"
         if x.otype == "S":
-            return f"get_prop('{x.f}', {x.p1}_tv, {x.p2}_tv)", "V_S"
+            return f"get_prop('{x.f}', {show_var_or_val(x.p1)}, {show_var_or_val(x.p2)})", "V_S"
         elif x.otype == "U":
-            return f"get_prop('U', '{x.tag}', {x.p}, {x.mu})", "V_U"
+            return f"get_prop('U', '{x.tag}', {show_var_or_val(x.p)}, {show_var_or_val(x.mu)})", "V_U"
         elif x.otype == "G":
             assert x.s1 == "auto" and x.s2 == "auto"
             assert x.tag in [0, 1, 2, 3, 5]
