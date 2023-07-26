@@ -17,8 +17,6 @@ Evaluation
    eval_cexpr
    get_cexpr_names
 
-   load_prop
-
    get_mpi_chunk
 
    mk_sym

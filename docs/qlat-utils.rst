@@ -106,6 +106,27 @@ Matrix for QCD
 
    WilsonMatrix
    SpinMatrix
+   ColorMatrix
+
+   get_gamma_matrix
+   wilson_matrix_g5_herm
+   mat_tr_sm
+   mat_tr_cm
+   mat_tr_wm
+   mat_tr_wm_wm
+   mat_tr_wm_sm
+   mat_tr_sm_wm
+   mat_tr_sm_sm
+   mat_tr_wm_cm
+   mat_tr_cm_wm
+   mat_tr_cm_cm
+   mat_mul_wm_wm
+   mat_mul_wm_sm
+   mat_mul_sm_wm
+   mat_mul_sm_sm
+   mat_mul_wm_cm
+   mat_mul_cm_wm
+   mat_mul_cm_cm
 
    as_wilson_matrix
    as_wilson_matrix_g5_herm
