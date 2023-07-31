@@ -44,6 +44,8 @@ def as_wilson_matrix(x):
         return x
     elif x == 0:
         return 0
+    else:
+        raise Exception(f"as_wilson_matrix: {x}")
 
 einsum_optimize_g5_herm = []
 
@@ -63,12 +65,14 @@ def as_wilson_matrix_g5_herm(x):
         return wilson_matrix_g5_herm(x)
     elif x == 0:
         return 0
+    else:
+        raise Exception(f"as_wilson_matrix_g5_herm: {x}")
 
 def load_prop(x):
     if isinstance(x, tuple):
         assert len(x) == 2 and x[0] == "g5_herm"
-        return ama_apply1(as_wilson_matrix_g5_herm, x[1])
-    return ama_apply1(as_wilson_matrix, x)
+        return q.ama_apply1(as_wilson_matrix_g5_herm, x[1])
+    return q.ama_apply1(as_wilson_matrix, x)
 
 @functools.cache
 def get_gamma_matrix(mu):
