@@ -309,11 +309,11 @@ dict_params["24DH"][tag] = 0.02
 dict_params["16IH2"][tag] = 0.1
 dict_params["32IfineH"][tag] = 0.001
 dict_params["32IcoarseH1"][tag] = 0.1
-dict_params["24IH1"][tag] = 0.1
-dict_params["24IH2"][tag] = 0.1
-dict_params["24IH3"][tag] = 0.1
-dict_params["32IH1"][tag] = 0.1
-dict_params["32IH2"][tag] = 0.1
+dict_params["24IH1"][tag] = 0.01
+dict_params["24IH2"][tag] = 0.01
+dict_params["24IH3"][tag] = 0.01
+dict_params["32IH1"][tag] = 0.002
+dict_params["32IH2"][tag] = 0.002
 dict_params["48I"][tag] = 0.01
 dict_params["64I"][tag] = 0.01
 
