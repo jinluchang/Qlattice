@@ -80,9 +80,10 @@ def run_job(job_tag, traj):
     run_with_eig()
     #
     def run_with_eig_strange():
-        get_eig_strange = run_eig_strange(job_tag, traj_gf, get_gf)
-        run_get_inverter(job_tag, traj, inv_type = 1, get_gf = get_gf, get_eig = get_eig_strange)
-        run_prop_rand_u1(job_tag, traj, inv_type = 1, get_gf = get_gf, get_fsel = get_fsel, get_eig = get_eig_strange)
+        get_eig = run_eig_strange(job_tag, traj_gf, get_gf)
+        # get_eig = None
+        run_get_inverter(job_tag, traj, inv_type = 1, get_gf = get_gf, get_eig = get_eig)
+        run_prop_rand_u1(job_tag, traj, inv_type = 1, get_gf = get_gf, get_fsel = get_fsel, get_eig = get_eig)
     #
     run_with_eig_strange()
     #
