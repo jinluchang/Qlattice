@@ -61,7 +61,7 @@ def compute_prop_wsrc_all(job_tag, traj, *,
     path_s = f"{job_tag}/prop-wsrc-{inv_type_name}/traj-{traj}"
     path_sp = f"{job_tag}/psel-prop-wsrc-{inv_type_name}/traj-{traj}"
     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
-    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 4, ])
+    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 2, 2, 4, ])
     for inv_acc in [ 2, 1 ]:
         for p in wi:
             idx, tslice, inv_type_p, inv_acc_p = p
@@ -147,7 +147,7 @@ def compute_prop_psrc_all(job_tag, traj, *,
     path_s = f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}"
     path_sp = f"{job_tag}/psel-prop-psrc-{inv_type_name}/traj-{traj}"
     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
-    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 8, ])
+    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 2, 2, 4, ])
     def comp(idx, xg_src, inv_acc):
         compute_prop_psrc(job_tag, xg_src, inv_type, inv_acc,
                 idx = idx, gf = gf, gt = gt, sfw = sfw, path_sp = path_sp,
@@ -218,7 +218,7 @@ def compute_prop_rand_u1(*, job_tag, traj, inv_type, gf, path_s, fsel, eig = Non
     total_site = rup.dict_params[job_tag]["total_site"]
     geo = q.Geometry(total_site, 1)
     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
-    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 4, ])
+    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 2, 2, 4, ])
     def comp(idx_rand_u1, inv_acc):
         compute_prop_rand_u1_type_acc(
                 sfw = sfw,
@@ -330,7 +330,7 @@ def compute_prop_smear_all(job_tag, traj, *,
     path_s = f"{job_tag}/prop-smear-{inv_type_name}/traj-{traj}"
     path_sp = f"{job_tag}/psel-prop-smear-{inv_type_name}/traj-{traj}"
     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
-    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 4, ])
+    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 2, 2, 4, ])
     def comp(idx, xg_src, inv_acc):
         compute_prop_smear(job_tag, xg_src, inv_type, inv_acc,
                 idx = idx, gf = gf, gt = gt, sfw = sfw, path_sp = path_sp,

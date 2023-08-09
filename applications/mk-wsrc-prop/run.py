@@ -39,10 +39,10 @@ load_path_list[:] = [
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
-            f"{job_tag}/prop-wsrc-strange/traj-{traj}/geon-info.txt",
-            f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}/checkpoint.txt",
-            f"{job_tag}/prop-wsrc-light/traj-{traj}/geon-info.txt",
-            f"{job_tag}/psel-prop-wsrc-light/traj-{traj}/checkpoint.txt",
+            (f"{job_tag}/prop-wsrc-light/traj-{traj}.qar", f"{job_tag}/prop-wsrc-light/traj-{traj}/geon-info.txt",),
+            (f"{job_tag}/psel-prop-wsrc-light/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-light/traj-{traj}/checkpoint.txt",),
+            (f"{job_tag}/prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/prop-wsrc-strange/traj-{traj}/geon-info.txt",),
+            (f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}/checkpoint.txt",),
             ]
     fns_need = [
             (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
