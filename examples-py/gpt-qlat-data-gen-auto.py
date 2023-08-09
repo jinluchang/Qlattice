@@ -1150,11 +1150,13 @@ def run_job(job_tag, traj):
         run_prop_psrc(job_tag, traj, inv_type = 1, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt, get_psel = get_psel, get_fsel = get_fsel)
         run_prop_smear(job_tag, traj, inv_type = 1, get_gf = get_gf, get_gf_ape = get_gf_ape, get_eig = get_eig, get_gt = get_gt, get_psel = get_psel, get_fsel = get_fsel, get_psel_smear = get_psel_smear)
     #
-    run_with_eig()
-    run_with_eig_strange()
+    def run_charm():
+        run_get_inverter(job_tag, traj, inv_type = 2, get_gf = get_gf)
+        run_prop_rand_u1(job_tag, traj, inv_type = 2, get_gf = get_gf, get_fsel = get_fsel)
     #
-    run_get_inverter(job_tag, traj, inv_type = 2, get_gf = get_gf)
-    run_prop_rand_u1(job_tag, traj, inv_type = 2, get_gf = get_gf, get_fsel = get_fsel)
+    run_charm()
+    run_with_eig_strange()
+    run_with_eig()
     #
     get_get_prop = run_get_prop(job_tag, traj,
             get_gf = get_gf,
