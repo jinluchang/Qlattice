@@ -7,16 +7,7 @@ import numpy as np
 if len(sys.argv) == 1:
     q.displayln_info("Usage: topo-measure [ --source source_config ] [ --output output.pickle ]")
 
-size_node_list = [
-        [1, 1, 1, 1],
-        [1, 1, 1, 2],
-        [1, 1, 1, 4],
-        [1, 1, 1, 8],
-        [2, 2, 2, 2],
-        [2, 2, 2, 4],
-        ]
-
-q.begin_with_mpi(sys.argv, size_node_list)
+q.begin_with_mpi()
 
 p_source = q.get_arg("--source")
 p_output = q.get_arg("--output")
