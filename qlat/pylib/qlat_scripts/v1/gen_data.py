@@ -70,12 +70,11 @@ def compute_prop_wsrc_all(job_tag, traj, *,
                         idx = idx, sfw = sfw, path_sp = path_sp,
                         psel = psel, fsel = fsel, fselc = fselc, eig = eig,
                         finished_tags = finished_tags)
-        q.clean_cache(q.cache_inv)
     sfw.close()
     q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint.txt")))
     # q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint ; wsnk.txt")))
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
-    # q.qar_create_info(get_save_path(path_sp + ".qar"), get_save_path(path_sp), is_remove_folder_after = True)
+    q.qar_create_info(get_save_path(path_sp + ".qar"), get_save_path(path_sp), is_remove_folder_after = True)
     # q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after = True)
 
 @q.timer
@@ -164,12 +163,11 @@ def compute_prop_psrc_all(job_tag, traj, *,
             comp(idx, xg_src, inv_acc = 1)
         if r <= prob2:
             comp(idx, xg_src, inv_acc = 2)
-    q.clean_cache(q.cache_inv)
     sfw.close()
     q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint.txt")))
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
     q.qar_create_info(get_save_path(path_sp + ".qar"), get_save_path(path_sp), is_remove_folder_after = True)
-    q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after = True)
+    # q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after = True)
 
 @q.timer
 def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel, get_fsel):
@@ -241,10 +239,9 @@ def compute_prop_rand_u1(*, job_tag, traj, inv_type, gf, path_s, fsel, eig = Non
         inv_acc = 2
         if r <= prob2:
             comp(idx_rand_u1, inv_acc)
-    q.clean_cache(q.cache_inv)
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
-    q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after = True)
+    # q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after = True)
 
 @q.timer_verbose
 def run_prop_rand_u1(job_tag, traj, *, inv_type, get_gf, get_fsel, get_eig = None):
@@ -348,7 +345,6 @@ def compute_prop_smear_all(job_tag, traj, *,
             comp(idx, xg_src, inv_acc = 1)
         if r <= prob2:
             comp(idx, xg_src, inv_acc = 2)
-    q.clean_cache(q.cache_inv)
     sfw.close()
     q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint.txt")))
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
