@@ -9,11 +9,11 @@ if len(sys.argv) < 2:
     q.displayln_info("Usage: eigen-system-checksum path1 path2 ...")
     exit(1)
 
-q.begin()
+q.begin_with_mpi()
 
 for path in sys.argv[1:]:
     q.check_compressed_eigen_vectors(path)
 
 q.timer_display()
 
-q.end()
+q.end_with_mpi()

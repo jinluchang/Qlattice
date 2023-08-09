@@ -16,7 +16,7 @@ size_node_list = [
         [2, 2, 2, 4],
         ]
 
-q.begin(sys.argv, size_node_list)
+q.begin_with_mpi(sys.argv, size_node_list)
 
 p_source = q.get_arg("--source")
 p_output = q.get_arg("--output")
@@ -46,4 +46,4 @@ else:
 
 q.timer_display()
 
-q.end()
+q.end_with_mpi()
