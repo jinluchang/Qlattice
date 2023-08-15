@@ -316,7 +316,11 @@ const LatData& operator+=(LatData& ld, const LatData& ld1)
   if (not is_initialized(ld)) {
     ld = ld1;
   } else {
-    qassert(is_matching(ld, ld1));
+    if (not is_matching(ld, ld1)) {
+      displayln("operator+=(ld,ld1): ld.info:" + show(ld.info));
+      displayln("operator+=(ld,ld1): ld1.info:" + show(ld1.info));
+      qassert(false);
+    }
     for (long i = 0; i < (long)ld.res.size(); ++i) {
       ld.res[i] += ld1.res[i];
     }
@@ -333,7 +337,11 @@ const LatData& operator-=(LatData& ld, const LatData& ld1)
       ld.res[i] = -ld1.res[i];
     }
   } else {
-    qassert(is_matching(ld, ld1));
+    if (not is_matching(ld, ld1)) {
+      displayln("operator-=(ld,ld1): ld.info:" + show(ld.info));
+      displayln("operator-=(ld,ld1): ld1.info:" + show(ld1.info));
+      qassert(false);
+    }
     for (long i = 0; i < (long)ld.res.size(); ++i) {
       ld.res[i] -= ld1.res[i];
     }
