@@ -313,12 +313,12 @@ LatData operator*(const Complex& factor, const LatData& ld)
 
 const LatData& operator+=(LatData& ld, const LatData& ld1)
 {
-  if (not is_initialized(ld)) {
+  if (is_zero(ld)) {
     ld = ld1;
   } else {
     if (not is_matching(ld, ld1)) {
-      displayln("operator+=(ld,ld1): ld.info:" + show(ld.info));
-      displayln("operator+=(ld,ld1): ld1.info:" + show(ld1.info));
+      displayln("operator+=(ld,ld1): ld.info: " + show(ld.info));
+      displayln("operator+=(ld,ld1): ld1.info: " + show(ld1.info));
       qassert(false);
     }
     for (long i = 0; i < (long)ld.res.size(); ++i) {
@@ -330,7 +330,7 @@ const LatData& operator+=(LatData& ld, const LatData& ld1)
 
 const LatData& operator-=(LatData& ld, const LatData& ld1)
 {
-  if (not is_initialized(ld)) {
+  if (is_zero(ld)) {
     ld.info = ld1.info;
     lat_data_alloc(ld);
     for (long i = 0; i < (long)ld.res.size(); ++i) {
@@ -338,8 +338,8 @@ const LatData& operator-=(LatData& ld, const LatData& ld1)
     }
   } else {
     if (not is_matching(ld, ld1)) {
-      displayln("operator-=(ld,ld1): ld.info:" + show(ld.info));
-      displayln("operator-=(ld,ld1): ld1.info:" + show(ld1.info));
+      displayln("operator-=(ld,ld1): ld.info: " + show(ld.info));
+      displayln("operator-=(ld,ld1): ld1.info: " + show(ld1.info));
       qassert(false);
     }
     for (long i = 0; i < (long)ld.res.size(); ++i) {

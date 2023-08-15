@@ -100,6 +100,18 @@ inline int LatData::ndim() const
 
 inline bool is_initialized(const LatData& ld) { return ld.res.size() > 0; }
 
+inline bool is_zero(const LatData& ld)
+{
+  if (ld.info.size() > 0) {
+    return false;
+  }
+  if (ld.res.size() > 1) {
+    return false;
+  }
+  qassert(ld.res.size() == 1);
+  return ld.res[0] == 0.0;
+}
+
 inline long lat_info_size(const LatInfo& info, const int level = 0)
 {
   long total = 1;
