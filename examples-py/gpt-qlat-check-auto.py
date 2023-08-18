@@ -358,7 +358,7 @@ def compute_prop_wsrc_all_checker(job_tag, traj, *,
     path_s = f"{job_tag}/prop-wsrc-{inv_type_name}/traj-{traj}"
     path_sp = f"{job_tag}/psel-prop-wsrc-{inv_type_name}/traj-{traj}"
     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
-    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 2, 2, 2, ])
+    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 4, ])
     inv_acc = 2
     for idx, tslice in enumerate(range(total_site[3])):
         compute_prop_wsrc_checker(job_tag, tslice, inv_type, inv_acc = 2,
@@ -422,7 +422,7 @@ def compute_prop_psrc_all_checker(job_tag, traj, *,
     inv_type_name = inv_type_names[inv_type]
     path_s = f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}"
     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
-    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 2, 2, 2, ])
+    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 4, ])
     def comp(idx, xg_src, inv_acc):
         compute_prop_psrc_checker(job_tag, xg_src, inv_type, inv_acc,
                 idx = idx, gf = gf, gt = gt, sfw = sfw,
@@ -548,22 +548,23 @@ size_node_list = [
         [8, 8, 8, 1],
         ]
 
-set_param("test-4nt8", "trajs", value = [ 1000, 1010, ])
-set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step", value = 2)
-set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step", value = 8)
-set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj", value = 1)
-set_param("test-4nt8", "fermion_params", 0, 2, "Ls", value = 8)
-set_param("test-4nt8", "fermion_params", 1, 2, "Ls", value = 8)
-set_param("test-4nt8", "fermion_params", 2, 2, "Ls", value = 8)
-set_param("test-4nt8", "lanc_params", 0, 0, "cheby_params", value = { "low": 0.8, "high": 5.5, "order": 20, })
-set_param("test-4nt8", "lanc_params", 0, 0, "irl_params", value = { "Nstop": 1000, "Nk": 1200, "Nm": 1500, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
-set_param("test-4nt8", "clanc_params", 0, 0, "nbasis", value = 1000)
-set_param("test-4nt8", "clanc_params", 0, 0, "block", value = [ 4, 4, 4, 4, ])
-set_param("test-4nt8", "clanc_params", 0, 0, "cheby_params", value = { "low": 1.0, "high": 5.5, "order": 20, })
-set_param("test-4nt8", "clanc_params", 0, 0, "save_params", value = { "nsingle": 500, "mpi": [ 1, 2, 2, 2, ], })
-set_param("test-4nt8", "clanc_params", 0, 0, "irl_params", value = { "Nstop": 2000, "Nk": 2200, "Nm": 2500, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
-set_param("test-4nt8", "lanc_params", 1, 0, value = get_param("test-4nt8", "lanc_params", 0, 0))
-set_param("test-4nt8", "clanc_params", 1, 0, value = get_param("test-4nt8", "clanc_params", 0, 0))
+set_param("test-4nt8", "trajs", value=[ 1000, 1010, ])
+set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step", value=2)
+set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step", value=8)
+set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj", value=1)
+set_param("test-4nt8", "fermion_params", 0, 2, "Ls", value=8)
+set_param("test-4nt8", "fermion_params", 1, 2, "Ls", value=8)
+set_param("test-4nt8", "fermion_params", 2, 2, "Ls", value=8)
+set_param("test-4nt8", "lanc_params", 0, 0, "cheby_params", value={ "low": 0.8, "high": 5.5, "order": 20, })
+set_param("test-4nt8", "lanc_params", 0, 0, "irl_params", value={ "Nstop": 400, "Nk": 500, "Nm": 800, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
+set_param("test-4nt8", "clanc_params", 0, 0, "nbasis", value=400)
+set_param("test-4nt8", "clanc_params", 0, 0, "block", value=[ 4, 4, 2, 2, ])
+set_param("test-4nt8", "clanc_params", 0, 0, "cheby_params", value={ "low": 1.0, "high": 5.5, "order": 20, })
+set_param("test-4nt8", "clanc_params", 0, 0, "save_params", value={ "nsingle": 100, "mpi": [ 1, 1, 1, 4, ], })
+set_param("test-4nt8", "clanc_params", 0, 0, "irl_params", value={ "Nstop": 2000, "Nk": 2100, "Nm": 2500, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
+set_param("test-4nt8", "clanc_params", 1, 0, value=get_param("test-4nt8", "clanc_params", 0, 0))
+set_param("test-4nt8", "lanc_params", 1, 0, value=get_param("test-4nt8", "lanc_params", 0, 0))
+set_param("test-4nt8", "lanc_params", 1, 0, "fermion_params", value=get_param("test-4nt8", "fermion_params", 1, 0))
 
 qg.begin_with_gpt()
 

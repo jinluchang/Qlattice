@@ -2,7 +2,7 @@ from .. import rbc_ukqcd_params as rup
 
 def mk_test_l_t_list():
     lt_list = []
-    for l in [ 4, 8, 12, 16, 24, 32, 48, 64, 96, 128, ]:
+    for l in [ 2, 4, 8, 12, 16, 24, 32, 48, 64, 96, 128, ]:
         for t in [ 4, 8, 12, 16, 24, 32, 48, 64, 96, 128, 192, 256, ]:
             lt_list.append([l, t,])
     return lt_list

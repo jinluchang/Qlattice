@@ -40,6 +40,10 @@ std::vector<Geometry> make_dist_io_geos(const Coordinate& total_site,
                                         const Coordinate& new_size_node)
 {
   TIMER("make_dist_io_geos");
+  qassert(new_size_node[0] > 0);
+  qassert(new_size_node[1] > 0);
+  qassert(new_size_node[2] > 0);
+  qassert(new_size_node[3] > 0);
   const std::vector<GeometryNode> geons = make_dist_io_geons(new_size_node);
   std::vector<Geometry> ret;
   const Coordinate new_node_site = total_site / new_size_node;
