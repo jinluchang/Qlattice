@@ -21,28 +21,47 @@
 
 import qlat_utils as q
 import copy
+import io
+import tokenize
 import sympy
+
+def get_variables(s):
+    """
+    `s` is a string
+    return a list of variables contained in `s`
+    """
+    variables = []
+    g = tokenize.tokenize(io.BytesIO(s.encode('utf-8')).readline)  # tokenize the string
+    for toknum, tokval, _, _, _ in g:
+        if toknum == tokenize.NAME:
+            variables.append(tokval)
+    variables = sorted(list(set(variables)))
+    return variables
 
 class Factor:
 
     """
     self.code
     self.otype
+    self.variables
     #
     self.otype in [ "Expr", "Var", ]
     """
 
-    def __init__(self, code, otype = None):
+    def __init__(self, code, otype=None, variables=None):
         self.code = code
         self.otype = otype
+        self.variables = variables
         if self.otype is None:
             if code.isidentifier():
                 self.otype = "Var"
             else:
                 self.otype = "Expr"
+        if self.variables is None:
+            self.variables = get_variables(self.code)
 
     def __repr__(self) -> str:
-        return f"ea.Factor({self.code},{self.otype})"
+        return f"ea.Factor({self.code},{self.otype},{self.variables})"
 
     def compile_py(self) -> str:
         return f"{self.code}"
