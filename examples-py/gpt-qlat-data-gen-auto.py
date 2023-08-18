@@ -519,20 +519,20 @@ def get_cexpr_meson_jj():
                 + "j_i(x) * j_i(0)",
                 #
                 sum([
-                    mk_fac(f"rel_mod_sym(x_2[{mu}] - x_1[{mu}], size[{mu}])")
-                    * mk_fac(f"rel_mod_sym(x_2[{nu}] - x_1[{nu}], size[{nu}])")
+                    mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
+                    * mk_fac(f"rel_mod_sym(x_2[1][{nu}] - x_1[1][{nu}], size[{nu}])")
                     * mk_j_mu("x_2", mu) * mk_j_mu("x_1", nu)
                     for mu in range(3) for nu in range(3) ])
                 + "x[i] * x[j] * j_i(x) * j_j(0)",
                 #
                 sum([
-                    mk_fac(f"rel_mod_sym(x_2[{mu}] - x_1[{mu}], size[{mu}])")
+                    mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
                     * mk_j_mu("x_2", mu) * mk_j_mu("x_1", 3)
                     for mu in range(3) ])
                 + "x[i] * j_i(x) * j_t(0)",
                 #
                 sum([
-                    mk_fac(f"rel_mod_sym(x_1[{mu}] - x_2[{mu}], size[{mu}])")
+                    mk_fac(f"rel_mod_sym(x_1[1][{mu}] - x_2[1][{mu}], size[{mu}])")
                     * mk_j_mu("x_1", mu) * mk_j_mu("x_2", 3)
                     for mu in range(3) ])
                 + "-x[i] * j_i(-x) * j_t(0)",
@@ -608,33 +608,33 @@ def get_cexpr_meson_jj():
                 + "jw_a_i(0) * j_i(x)",
                 #
                 sum([
-                    mk_fac(f"rel_mod_sym(x_2[{mu}] - x_1[{mu}], size[{mu}])")
+                    mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
                     * mk_jw_a_mu("x_1", 3) * mk_j_mu("x_2", mu)
                     for mu in range(3) ])
                 + "x[i] * jw_a_t(0) * j_i(x)",
                 #
                 sum([
-                    mk_fac(f"rel_mod_sym(x_2[{mu}] - x_1[{mu}], size[{mu}])")
+                    mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
                     * mk_sw5("x_1") * mk_j_mu("x_2", mu)
                     for mu in range(3) ])
                 + "x[i] * sw5(0) * j_i(x)",
                 #
                 sum([
-                    mk_fac(f"rel_mod_sym(x_2[{mu}] - x_1[{mu}], size[{mu}])")
+                    mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
                     * mk_jw_a_mu("x_1", mu) * mk_j_mu("x_2", 3)
                     for mu in range(3) ])
                 + "x[i] * jw_a_i(0) * j_t(x)",
                 #
                 sum([
-                    mk_fac(f"rel_mod_sym(x_2[{mu}] - x_1[{mu}], size[{mu}])")
-                    * mk_fac(f"rel_mod_sym(x_2[{nu}] - x_1[{nu}], size[{nu}])")
+                    mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
+                    * mk_fac(f"rel_mod_sym(x_2[1][{nu}] - x_1[1][{nu}], size[{nu}])")
                     * mk_jw_a_mu("x_1", mu) * mk_j_mu("x_2", nu)
                     for mu in range(3) for nu in range(3) ])
                 + "x[i] * x[j] * jw_a_i(0) * j_j(x)",
                 #
                 sum([
                     q.epsilon_tensor(mu, nu, rho)
-                    * mk_fac(f"rel_mod_sym(x_2[{mu}] - x_1[{mu}], size[{mu}])")
+                    * mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
                     * mk_jw_v_mu("x_1", nu) * mk_j_mu("x_2", rho)
                     for mu in range(3) for nu in range(3) for rho in range(3) ])
                 + "e(i,j,k) * x[i] * jw_v_j(0) * j_k(x)",
@@ -653,33 +653,33 @@ def get_cexpr_meson_jj():
                 + "jw_a_i(0) * j_i(-x)",
                 #
                 sum([
-                    mk_fac(f"rel_mod_sym(x_1[{mu}] - x_2[{mu}], size[{mu}])")
+                    mk_fac(f"rel_mod_sym(x_1[1][{mu}] - x_2[1][{mu}], size[{mu}])")
                     * mk_jw_a_mu("x_2", 3) * mk_j_mu("x_1", mu)
                     for mu in range(3) ])
                 + "-x[i] * jw_a_t(0) * j_i(-x)",
                 #
                 sum([
-                    mk_fac(f"rel_mod_sym(x_1[{mu}] - x_2[{mu}], size[{mu}])")
+                    mk_fac(f"rel_mod_sym(x_1[1][{mu}] - x_2[1][{mu}], size[{mu}])")
                     * mk_sw5("x_2") * mk_j_mu("x_1", mu)
                     for mu in range(3) ])
                 + "-x[i] * sw5(0) * j_i(-x)",
                 #
                 sum([
-                    mk_fac(f"rel_mod_sym(x_1[{mu}] - x_2[{mu}], size[{mu}])")
+                    mk_fac(f"rel_mod_sym(x_1[1][{mu}] - x_2[1][{mu}], size[{mu}])")
                     * mk_jw_a_mu("x_2", mu) * mk_j_mu("x_1", 3)
                     for mu in range(3) ])
                 + "-x[i] * jw_a_i(0) * j_t(-x)",
                 #
                 sum([
-                    mk_fac(f"rel_mod_sym(x_1[{mu}] - x_2[{mu}], size[{mu}])")
-                    * mk_fac(f"rel_mod_sym(x_1[{nu}] - x_2[{nu}], size[{nu}])")
+                    mk_fac(f"rel_mod_sym(x_1[1][{mu}] - x_2[1][{mu}], size[{mu}])")
+                    * mk_fac(f"rel_mod_sym(x_1[1][{nu}] - x_2[1][{nu}], size[{nu}])")
                     * mk_jw_a_mu("x_2", mu) * mk_j_mu("x_1", nu)
                     for mu in range(3) for nu in range(3) ])
                 + "-x[i] * -x[j] * jw_a_i(0) * j_j(-x)",
                 #
                 sum([
                     q.epsilon_tensor(mu, nu, rho)
-                    * mk_fac(f"rel_mod_sym(x_1[{mu}] - x_2[{mu}], size[{mu}])")
+                    * mk_fac(f"rel_mod_sym(x_1[1][{mu}] - x_2[1][{mu}], size[{mu}])")
                     * mk_jw_v_mu("x_2", nu) * mk_j_mu("x_1", rho)
                     for mu in range(3) for nu in range(3) for rho in range(3) ])
                 + "e(i,j,k) * -x[i] * jw_v_j(0) * j_k(-x)",
@@ -718,7 +718,7 @@ def get_cexpr_meson_jj():
         jj_d_list = [
                 sum([
                     q.epsilon_tensor(mu, nu, rho)
-                    * mk_fac(f"rel_mod_sym(x_2[{mu}] - x_1[{mu}], size[{mu}])")
+                    * mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
                     * mk_j_mu("x_2", nu) * mk_j_mu("x_1", rho)
                     for mu in range(3) for nu in range(3) for rho in range(3) ])
                 + "e(i,j,k) * x[i] * j_j(x) * j_k(0)",

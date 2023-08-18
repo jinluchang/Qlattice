@@ -965,15 +965,10 @@ class CExprCodeGenPy:
         elif isinstance(x, (ea.Expr, ea.Factor)):
             return f"({ea.compile_py(x)})", "V_a"
         assert isinstance(x, Op)
-        def show_var_or_val(v):
-            if isinstance(v, str):
-                return f"{v}_tv"
-            else:
-                return f"{v}"
         if x.otype == "S":
-            return f"get_prop('{x.f}', {show_var_or_val(x.p1)}, {show_var_or_val(x.p2)})", "V_S"
+            return f"get_prop('{x.f}', {x.p1}, {x.p2})", "V_S"
         elif x.otype == "U":
-            return f"get_prop('U', '{x.tag}', {show_var_or_val(x.p)}, {show_var_or_val(x.mu)})", "V_U"
+            return f"get_prop('U', '{x.tag}', {x.p}, {x.mu})", "V_U"
         elif x.otype == "G":
             assert x.s1 == "auto" and x.s2 == "auto"
             assert x.tag in [0, 1, 2, 3, 5]
@@ -1198,8 +1193,7 @@ class CExprCodeGenPy:
         append(f"# set positions")
         append(f"size = positions_dict.get('size')")
         for position_var in cexpr.positions:
-            append(f"{position_var}_tv = positions_dict['{position_var}']")
-            append(f"{position_var}_type, {position_var} = {position_var}_tv")
+            append(f"{position_var} = positions_dict['{position_var}']")
         append(f"# get prop")
         for name, value in cexpr.variables_prop:
             assert name.startswith("V_S_")

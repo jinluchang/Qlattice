@@ -1,10 +1,10 @@
-import qlat_utils.c as c
+from . import c
 
-from qlat_utils.timer import *
-from qlat_utils.cache import *
-from qlat_utils.rng_state import *
+from .timer import *
+from .cache import *
+from .rng_state import *
 
-from qlat_utils.c import random_permute, displayln_malloc_stats
+from .c import random_permute, displayln_malloc_stats
 
 import math
 import sys

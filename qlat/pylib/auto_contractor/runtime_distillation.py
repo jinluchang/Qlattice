@@ -1,6 +1,6 @@
 #    Qlattice (https://github.com/jinluchang/qlattice)
 #
-#    Copyright (C) 2022
+#    Copyright (C) 2023
 #
 #    Author: Luchang Jin (ljin.luchang@gmail.com)
 #    Author: Masaaki Tomii

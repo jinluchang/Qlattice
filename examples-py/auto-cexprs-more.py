@@ -129,8 +129,8 @@ def get_cexpr_meson_jj_xx():
     fn_base = f"cache/auto_contract_cexpr/get_cexpr_meson_jj_xx"
     def calc_cexpr():
         jj_op = sum([
-            mk_fac(f"rel_mod_sym(x_1[{mu}]-x_2[{mu}],size[{mu}])")
-            * mk_fac(f"rel_mod_sym(x_1[{nu}]-x_2[{nu}],size[{nu}])")
+            mk_fac(f"rel_mod_sym(x_1[1][{mu}]-x_2[1][{mu}],size[{mu}])")
+            * mk_fac(f"rel_mod_sym(x_1[1][{nu}]-x_2[1][{nu}],size[{nu}])")
             * mk_j_mu("x_1", mu) * mk_j_mu("x_2", nu)
             for mu in range(3) for nu in range(3)
             ])
