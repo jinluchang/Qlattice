@@ -13,6 +13,8 @@ import qlat_gpt as qg
 
 from qlat_scripts.v1 import *
 
+is_cython = False
+
 # ----
 
 load_path_list[:] = [
@@ -63,7 +65,7 @@ def get_cexpr_meson_corr():
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base)
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
 @q.timer_verbose
 def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel, get_fsel):
@@ -334,7 +336,7 @@ def get_cexpr_meson_jt():
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base)
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
 @q.timer_verbose
 def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel, get_fsel):
@@ -428,7 +430,7 @@ def get_cexpr_meson_m():
                 is_isospin_symmetric_limit = True,
                 diagram_type_dict = diagram_type_dict)
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base)
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
 @q.timer_verbose
 def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel, get_fsel):
@@ -740,7 +742,7 @@ def get_cexpr_meson_jj():
                 is_isospin_symmetric_limit = True,
                 diagram_type_dict = diagram_type_dict)
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base)
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
 @q.timer_verbose
 def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel, get_fsel):
@@ -860,7 +862,7 @@ def get_cexpr_meson_jwjj():
                 is_isospin_symmetric_limit = True,
                 diagram_type_dict = diagram_type_dict)
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base)
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
 @q.timer_verbose
 def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel, get_fsel):
