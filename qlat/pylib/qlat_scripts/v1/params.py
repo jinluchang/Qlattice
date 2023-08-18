@@ -206,8 +206,6 @@ dict_params["32IH1"][tag] = 1/128
 dict_params["32IH2"][tag] = 1/128
 
 tag = "prop_smear_coef"
-dict_params["test-4nt8"][tag] = 0.9375
-dict_params["test-4nt16"][tag] = 0.9375
 dict_params["64I"][tag] = 0.9375
 dict_params["48I"][tag] = 0.9375
 dict_params["24D"][tag] = 0.9375
@@ -223,8 +221,6 @@ dict_params["32IH1"][tag] = 0.9375
 dict_params["32IH2"][tag] = 0.9375
 
 tag = "prop_smear_step"
-dict_params["test-4nt8"][tag] = 10
-dict_params["test-4nt16"][tag] = 10
 dict_params["24D"][tag] = 10
 dict_params["24DH"][tag] = 10
 dict_params["32Dfine"][tag] = 18
@@ -240,8 +236,6 @@ dict_params["32IH1"][tag] = 55
 dict_params["32IH2"][tag] = 55
 
 tag = "gf_ape_smear_coef"
-dict_params["test-4nt8"][tag] = 0.5
-dict_params["test-4nt16"][tag] = 0.5
 dict_params["48I"][tag] = 0.5
 dict_params["64I"][tag] = 0.5
 dict_params["24D"][tag] = 0.5
@@ -257,8 +251,6 @@ dict_params["32IH1"][tag] = 0.5
 dict_params["32IH2"][tag] = 0.5
 
 tag = "gf_ape_smear_step"
-dict_params["test-4nt8"][tag] = 30
-dict_params["test-4nt16"][tag] = 30
 dict_params["48I"][tag] = 30
 dict_params["64I"][tag] = 30
 dict_params["24D"][tag] = 30

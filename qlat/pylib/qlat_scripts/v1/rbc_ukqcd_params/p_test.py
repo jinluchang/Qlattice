@@ -66,7 +66,7 @@ def mk_lanc_params(job_tag, inv_type, inv_acc):
 def mk_clanc_params(job_tag, inv_type, inv_acc):
     assert inv_type in [ 0, 1, ]
     assert inv_acc == 0
-    block = [ 2, 2, 2, 2 ]
+    block = [ 2, 2, 2, 2, ]
     nbasis = 20
     if inv_type == 0:
         cheby_params = { "low": 0.20, "high": 5.5, "order": 50, }
@@ -112,5 +112,9 @@ def setup_params():
             dict_clanc_params = { 0: { 0: mk_clanc_params(job_tag, 0, 0), }, 1: { 0: mk_clanc_params(job_tag, 1, 0), }, }
         dict_params["lanc_params"] = dict_lanc_params
         dict_params["clanc_params"] = dict_clanc_params
+        dict_params["gf_ape_smear_coef"] = 0.5
+        dict_params["gf_ape_smear_step"] = 30
+        dict_params["prop_smear_coef"] = 0.9375
+        dict_params["prop_smear_step"] = 10
 
 setup_params()

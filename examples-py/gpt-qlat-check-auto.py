@@ -548,10 +548,22 @@ size_node_list = [
         [8, 8, 8, 1],
         ]
 
+set_param("test-4nt8", "trajs", value = [ 1000, 1010, ])
 set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step", value = 2)
 set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step", value = 8)
 set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj", value = 1)
-set_param("test-4nt8", "trajs", value = [ 1000, 1010, ])
+set_param("test-4nt8", "fermion_params", 0, 2, "Ls", value = 8)
+set_param("test-4nt8", "fermion_params", 1, 2, "Ls", value = 8)
+set_param("test-4nt8", "fermion_params", 2, 2, "Ls", value = 8)
+set_param("test-4nt8", "lanc_params", 0, 0, "cheby_params", value = { "low": 0.8, "high": 5.5, "order": 20, })
+set_param("test-4nt8", "lanc_params", 0, 0, "irl_params", value = { "Nstop": 1000, "Nk": 1200, "Nm": 1500, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
+set_param("test-4nt8", "clanc_params", 0, 0, "nbasis", value = 1000)
+set_param("test-4nt8", "clanc_params", 0, 0, "block", value = [ 4, 4, 4, 4, ])
+set_param("test-4nt8", "clanc_params", 0, 0, "cheby_params", value = { "low": 1.0, "high": 5.5, "order": 20, })
+set_param("test-4nt8", "clanc_params", 0, 0, "save_params", value = { "nsingle": 500, "mpi": [ 1, 2, 2, 2, ], })
+set_param("test-4nt8", "clanc_params", 0, 0, "irl_params", value = { "Nstop": 2000, "Nk": 2200, "Nm": 2500, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
+set_param("test-4nt8", "lanc_params", 1, 0, value = get_param("test-4nt8", "lanc_params", 0, 0))
+set_param("test-4nt8", "clanc_params", 1, 0, value = get_param("test-4nt8", "clanc_params", 0, 0))
 
 qg.begin_with_gpt()
 

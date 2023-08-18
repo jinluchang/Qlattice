@@ -37,7 +37,6 @@ tests = \
 tests_gpt = \
 			grid-qlat-io-test.log \
 			gpt-qlat-data-gen-auto.log \
-			gpt-qlat-check-auto.log \
 			gpt-qlat-convert.log \
 			gpt-qlat-sample-gauge-field.log \
 			gpt-qlat-smear.log \
