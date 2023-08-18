@@ -25,20 +25,16 @@ import sympy
 
 try:
     from . import expr_arithmetic as ea
+    from .expr_arithmetic import mk_sym
 except:
     import expr_arithmetic as ea
-
-def mk_sym(x):
-    """
-    make a sympy simplified value
-    """
-    return sympy.simplify(x)
+    from expr_arithmetic import mk_sym
 
 def mk_fac(x):
     """
     make an Expr obj (can be sympy expression)
     """
-    return mk_expr(ea.mk_expr(x))
+    return mk_expr(ea.mk_fac(x))
 
 class Op:
 

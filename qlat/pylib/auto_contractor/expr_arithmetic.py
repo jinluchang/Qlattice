@@ -263,6 +263,22 @@ def combine_terms_expr(expr : Expr) -> Expr:
         terms.append(term)
     return Expr(terms)
 
+### ------
+
+def mk_sym(x):
+    """
+    make a sympy simplified value
+    """
+    return sympy.simplify(x)
+
+def mk_fac(x):
+    """
+    make an Expr obj (can be sympy expression)
+    """
+    return mk_expr(x)
+
+### ------
+
 if __name__ == "__main__":
     a = mk_expr(1)
     b = mk_expr(2)
