@@ -1,6 +1,5 @@
 from . import rbc_ukqcd as ru
 from . import rbc_ukqcd_params as rup
-from .rbc_ukqcd_params import dict_params
 from .jobs import *
 
 # -----------------------------------------------------------------------------
@@ -132,7 +131,7 @@ def compute_prop_psrc(job_tag, xg_src, inv_type, inv_acc, *,
     q.check_time_limit()
     q.displayln_info(f"compute_prop_psrc: {job_tag} idx={idx} tag='{tag}'")
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig)
-    total_site = dict_params[job_tag]["total_site"]
+    total_site = get_param(job_tag, "total_site")
     geo = q.Geometry(total_site, 1)
     src = q.mk_point_src(geo, xg_src)
     prop = compute_prop_2(inv, src, tag = tag, sfw = sfw, path_sp = path_sp,
@@ -152,8 +151,8 @@ def compute_prop_psrc_all(job_tag, traj, *,
                 idx = idx, gf = gf, gt = gt, sfw = sfw, path_sp = path_sp,
                 psel = psel, fsel = fsel, fselc = fselc,
                 eig = eig, finished_tags = finished_tags)
-    prob1 = rup.dict_params[job_tag]["prob_acc_1_psrc"]
-    prob2 = rup.dict_params[job_tag]["prob_acc_2_psrc"]
+    prob1 = get_param(job_tag, "prob_acc_1_psrc")
+    prob2 = get_param(job_tag, "prob_acc_2_psrc")
     rs = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_psrc_all(ama)")
     for idx, xg_src in enumerate(psel.to_list()):
         r = rs.split(f"{tuple(xg_src)}").u_rand_gen()
@@ -212,8 +211,8 @@ def compute_prop_rand_u1_type_acc(*, sfw, job_tag, traj, gf, eig, fsel, idx_rand
 @q.timer_verbose
 def compute_prop_rand_u1(*, job_tag, traj, inv_type, gf, path_s, fsel, eig = None):
     # use fsel instead of fselc
-    n_rand_u1_fsel = rup.dict_params[job_tag]["n_rand_u1_fsel"]
-    total_site = rup.dict_params[job_tag]["total_site"]
+    n_rand_u1_fsel = get_param(job_tag, "n_rand_u1_fsel")
+    total_site = get_param(job_tag, "total_site")
     geo = q.Geometry(total_site, 1)
     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 2, 2, 4, ])
@@ -226,8 +225,8 @@ def compute_prop_rand_u1(*, job_tag, traj, inv_type, gf, path_s, fsel, eig = Non
                 inv_type = inv_type, inv_acc = inv_acc,
                 finished_tags = finished_tags,)
     rs = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_u1(ama)")
-    prob1 = rup.dict_params[job_tag]["prob_acc_1_rand_u1"]
-    prob2 = rup.dict_params[job_tag]["prob_acc_2_rand_u1"]
+    prob1 = get_param(job_tag, "prob_acc_1_rand_u1")
+    prob2 = get_param(job_tag, "prob_acc_2_rand_u1")
     for idx_rand_u1 in range(n_rand_u1_fsel):
         r = rs.split(str(idx_rand_u1)).u_rand_gen()
         inv_acc = 0
@@ -308,8 +307,8 @@ def compute_prop_smear(job_tag, xg_src, inv_type, inv_acc, *,
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig)
     total_site = ru.get_total_site(job_tag)
     geo = q.Geometry(total_site, 1)
-    coef = rup.dict_params[job_tag]["prop_smear_coef"]
-    step = rup.dict_params[job_tag]["prop_smear_step"]
+    coef = get_param(job_tag, "prop_smear_coef")
+    step = get_param(job_tag, "prop_smear_step")
     def smear(src):
         q.prop_smear(src, gf_ape, coef, step)
     src = q.mk_point_src(geo, xg_src)
@@ -334,8 +333,8 @@ def compute_prop_smear_all(job_tag, traj, *,
                 psel = psel, fsel = fsel, fselc = fselc,
                 psel_smear = psel_smear, gf_ape = gf_ape,
                 eig = eig, finished_tags = finished_tags)
-    prob1 = rup.dict_params[job_tag]["prob_acc_1_smear"]
-    prob2 = rup.dict_params[job_tag]["prob_acc_2_smear"]
+    prob1 = get_param(job_tag, "prob_acc_1_smear")
+    prob2 = get_param(job_tag, "prob_acc_2_smear")
     rs = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_smear_all(ama)")
     for idx, xg_src in enumerate(psel_smear.to_list()):
         r = rs.split(f"{tuple(xg_src)}").u_rand_gen()

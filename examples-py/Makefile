@@ -36,6 +36,8 @@ tests = \
 
 tests_gpt = \
 			grid-qlat-io-test.log \
+			gpt-qlat-data-gen-auto.log \
+			gpt-qlat-check-auto.log \
 			gpt-qlat-convert.log \
 			gpt-qlat-sample-gauge-field.log \
 			gpt-qlat-smear.log \
@@ -44,8 +46,7 @@ tests_gpt = \
 			gpt-qlat-free-invert.log \
 			gpt-qlat-lanc.log \
 			gpt-qlat-rbc-ukqcd-invert.log \
-			gpt-qlat-madwf.log \
-			gpt-qlat-data-gen-auto.log
+			gpt-qlat-madwf.log
 
 tests_cps = \
 			cps-qlat-io-test.log
