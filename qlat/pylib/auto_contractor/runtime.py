@@ -32,11 +32,6 @@ from qlat_utils.ama import \
         ama_extract
 
 from qlat_utils import \
-        rel_mod, \
-        rel_mod_sym, \
-        c_rel_mod_sqr
-
-from qlat_utils import \
         load_prop, \
         get_gamma_matrix, \
         wilson_matrix_g5_herm, \
@@ -58,3 +53,4 @@ from qlat_utils import \
         mat_mul_cm_wm, \
         mat_mul_cm_cm
 
+from . import auto_fac_funcs as aff

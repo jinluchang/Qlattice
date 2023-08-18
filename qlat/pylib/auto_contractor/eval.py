@@ -19,14 +19,13 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from auto_contractor.compile import *
+from .compile import *
 from qlat_utils.ama import *
-
-from qlat_utils import \
-        rel_mod, rel_mod_sym, c_rel_mod_sqr
 
 from qlat_utils.cp import \
         as_wilson_matrix, as_wilson_matrix_g5_herm
+
+from . import auto_fac_funcs as aff
 
 import numpy as np
 import qlat as q
@@ -237,9 +236,16 @@ def benchmark_eval_cexpr(cexpr : CExpr, *,
         benchmark_rng_state = q.RngState("benchmark_eval_cexpr")
     expr_names = get_cexpr_names(cexpr)
     n_expr = len(expr_names)
-    n_pos = len(cexpr.positions)
     # prop_dict = {}
     size = q.Coordinate([ 8, 8, 8, 16, ])
+    positions_vars = []
+    for pos in cexpr.positions:
+        if pos == "size":
+            continue
+        if pos in aff.auto_fac_funcs_list:
+            continue
+        positions_vars.append(pos)
+    n_pos = len(positions_vars)
     positions = [
             ("point", tuple(benchmark_rng_state.split(f"positions {pos_idx}").c_rand_gen(size).list()),)
             for pos_idx in range(n_pos)
@@ -249,7 +255,7 @@ def benchmark_eval_cexpr(cexpr : CExpr, *,
         positions_dict = {}
         positions_dict["size"] = size.list()
         idx_list = q.random_permute(list(range(n_pos)), benchmark_rng_state.split(f"pos_dict {k}"))
-        for pos, idx in zip(cexpr.positions, idx_list):
+        for pos, idx in zip(positions_vars, idx_list):
             positions_dict[pos] = positions[idx]
         return positions_dict
     positions_dict_list = [ mk_pos_dict(k) for k in range(benchmark_size) ]

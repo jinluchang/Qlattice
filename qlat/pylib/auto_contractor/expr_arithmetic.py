@@ -42,26 +42,26 @@ class Factor:
 
     """
     self.code
-    self.otype
     self.variables
+    self.otype
     #
     self.otype in [ "Expr", "Var", ]
     """
 
-    def __init__(self, code, otype=None, variables=None):
+    def __init__(self, code, variables=None, otype=None):
         self.code = code
         self.otype = otype
         self.variables = variables
+        if self.variables is None:
+            self.variables = get_variables(self.code)
         if self.otype is None:
             if code.isidentifier():
                 self.otype = "Var"
             else:
                 self.otype = "Expr"
-        if self.variables is None:
-            self.variables = get_variables(self.code)
 
     def __repr__(self) -> str:
-        return f"ea.Factor({self.code},{self.otype},{self.variables})"
+        return f"ea.Factor({self.code},{self.variables},{self.otype})"
 
     def compile_py(self) -> str:
         return f"{self.code}"

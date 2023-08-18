@@ -21,8 +21,10 @@
 
 try:
     from .wick import *
+    from . import auto_fac_funcs as aff
 except:
     from wick import *
+    import auto_fac_funcs as aff
 
 from itertools import permutations
 
@@ -103,6 +105,7 @@ def add_positions(s, x):
     ``x`` is expr/sub-expr
     """
     if isinstance(x, Term):
+        add_positions(s, x.coef)
         for op in x.c_ops:
             add_positions(s, op)
         for op in x.a_ops:
@@ -127,16 +130,28 @@ def add_positions(s, x):
     elif isinstance(x, Expr):
         for t in x.terms:
             add_positions(s, t)
+    elif isinstance(x, ea.Expr):
+        for t in x.terms:
+            add_positions(s, t)
+    elif isinstance(x, ea.Term):
+        for f in x.factors:
+            add_positions(s, f)
+    elif isinstance(x, ea.Factor):
+        for v in x.variables:
+            s.add(v)
 
 def get_positions(term):
     s = set()
     add_positions(s, term)
     return sorted(list(s))
 
-def collect_position_in_cexpr(named_terms):
+def collect_position_in_cexpr(named_terms, named_exprs):
     s = set()
     for name, term in named_terms:
         add_positions(s, term)
+    for name, expr_list in named_exprs:
+        for coef, term_name in expr_list:
+            add_positions(s, coef)
     positions = sorted(list(s))
     return positions
 
@@ -170,7 +185,7 @@ def collect_factor_in_cexpr(named_exprs):
                                     break
                             var_nameset.add(name)
                             variables_factor.append((name, f))
-                            var = ea.Factor(name)
+                            var = ea.Factor(name, f.variables)
                             x[i] = var
                             var_dataset[f.code] = var
     return variables_factor
@@ -709,7 +724,7 @@ def mk_cexpr(*exprs, diagram_type_dict = None):
             expr_list.append((coef, term_name,))
         named_exprs.append((f"# {descriptions[i]}\nexprs[{i}]", expr_list,))
     # positions
-    positions = collect_position_in_cexpr(named_terms)
+    positions = collect_position_in_cexpr(named_terms, named_exprs)
     # cexpr
     cexpr = CExpr()
     cexpr.diagram_types = diagram_types
@@ -1191,9 +1206,11 @@ class CExprCodeGenPy:
         append(f"def cexpr_function_get_prop(positions_dict, get_prop):")
         self.indent += 4
         append(f"# set positions")
-        append(f"size = positions_dict.get('size')")
         for position_var in cexpr.positions:
-            append(f"{position_var} = positions_dict['{position_var}']")
+            if position_var in aff.auto_fac_funcs_list:
+                append(f"{position_var} = aff.{position_var}")
+            else:
+                append(f"{position_var} = positions_dict['{position_var}']")
         append(f"# get prop")
         for name, value in cexpr.variables_prop:
             assert name.startswith("V_S_")
