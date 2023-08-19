@@ -806,7 +806,7 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
                     "x_1" : ("point", xg_src,),
                     "t_2" : ("wall", t_2),
                     "t_1" : ("wall", t_1),
-                    "size" : total_site.list(),
+                    "size" : total_site.to_list(),
                     }
             t = x_rel_t % t_size
             val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
@@ -910,7 +910,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     n_elems = len(xg_fsel_list)
     n_points = len(xg_psel_list)
     n_pairs = n_points * (n_points - 1) // 2 + n_points
-    total_site_arr = np.array(total_site.list())
+    total_site_arr = np.array(total_site.to_list())
     total_site_arr = np.broadcast_to(total_site_arr, (n_elems, 4,))
     #
     threshold = get_param(job_tag, "meson_jwjj_threshold")
@@ -1060,7 +1060,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
                     "x_2" : ("point", xg_2,),
                     "t_1" : ("wall", t_1,),
                     "t_2" : ("wall", t_2,),
-                    "size" : total_site.list(),
+                    "size" : total_site.to_list(),
                     }
             t_1 = xg_1_xg_t
             t_2 = xg_2_xg_t
@@ -1118,7 +1118,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_prop, get_psel, get_fsel):
     t_size = total_site[3]
     point_distribution = load_point_distribution(job_tag)
     n_points = get_n_points_psel(job_tag)
-    total_site_array = np.array(total_site.list())
+    total_site_array = np.array(total_site.to_list())
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
@@ -1131,7 +1131,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_prop, get_psel, get_fsel):
     n_elems = len(xg_fsel_list)
     assert n_points == len(xg_psel_list)
     n_pairs = n_points * n_points
-    total_site_arr = np.array(total_site.list())
+    total_site_arr = np.array(total_site.to_list())
     total_site_arr = np.broadcast_to(total_site_arr, (n_elems, 4,))
     #
     threshold = get_param(job_tag, "meson_jwjj_threshold")
@@ -1282,7 +1282,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_prop, get_psel, get_fsel):
                     "x_2" : ("point-snk", xg_2,),
                     "t_1" : ("wall", t_1,),
                     "t_2" : ("wall", t_2,),
-                    "size" : total_site.list(),
+                    "size" : total_site.to_list(),
                     }
             t_1 = xg_1_xg_t
             t_2 = xg_2_xg_t
