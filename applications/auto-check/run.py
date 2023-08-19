@@ -139,7 +139,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel, get_fse
         xg_snk = tuple(xg_snk.tolist())
         t = (xg_snk[3] - t_src) % total_site[3]
         pd = {
-                "x_2" : ("point-snk", xg_snk,),
+                "x_2" : ("point", xg_snk,),
                 "x_1" : ("wall", t_src,),
                 "size" : total_site,
                 }
@@ -265,7 +265,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel, ge
             r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
             t = (xg_snk[3] - xg_src[3]) % total_site[3]
             pd = {
-                    "x_2": ("point-snk", xg_snk,),
+                    "x_2": ("point", xg_snk,),
                     "x_1": ("point", xg_src,),
                     "size": total_site,
                     }
@@ -396,6 +396,8 @@ def run_prop_wsrc_checker(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt):
                                       inv_type = inv_type, gf = gf, gt = gt, eig = eig)
         q.release_lock()
 
+# ----
+
 @q.timer_verbose
 def compute_prop_2_checker(inv, src, *, tag, sfw):
     sol = inv * src
@@ -488,6 +490,38 @@ def load_prop_psrc(job_tag, traj, inv_type):
     cache["psnk-psrc"] = prop_list
 
 @q.timer_verbose
+def load_prop_wsrc(job_tag, traj, inv_type):
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    inv_type_names = [ "light", "strange", ]
+    inv_type_name = inv_type_names[inv_type]
+    inv_tag_list = [ "l", "s", ]
+    inv_tag = inv_tag_list[inv_type]
+    inv_acc = 2
+    path_s = f"{job_tag}/prop-wsrc-{inv_type_name}/traj-{traj}/geon-info.txt"
+    path_sp = f"{job_tag}/psel-prop-wsrc-{inv_type_name}/traj-{traj}/"
+    psel = get_all_points_psel(total_site)
+    psel_ts = q.get_psel_tslice(total_site)
+    prop_list = []
+    prop2_list = []
+    tslice_list = list(range(total_site[3]))
+    sfr = q.open_fields(get_load_path(path_s), "r")
+    for tslice in tslice_list:
+        tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
+        prop = q.Prop()
+        prop.load_double_from_float(sfr, tag)
+        sp_prop = q.PselProp(psel)
+        sp_prop @= prop
+        prop_list.append(sp_prop)
+        fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
+        sp_prop2 = q.PselProp(psel_ts)
+        sp_prop2.load(get_load_path(fn_sp))
+        prop2_list.append(sp_prop2)
+    sfr.close()
+    cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", inv_tag)
+    cache["psnk-wsrc"] = prop_list
+    cache["wsnk-wsrc"] = prop2_list
+
+@q.timer_verbose
 def run_get_prop_checker(job_tag, traj, *,
                          get_gf,
                          get_gt):
@@ -512,6 +546,8 @@ def run_get_prop_checker(job_tag, traj, *,
         #
         load_prop_psrc(job_tag, traj, inv_type = 0)
         load_prop_psrc(job_tag, traj, inv_type = 1)
+        load_prop_wsrc(job_tag, traj, inv_type = 0)
+        load_prop_wsrc(job_tag, traj, inv_type = 1)
         #
         prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")
         def get_prop(flavor, p_snk, p_src):
@@ -523,7 +559,19 @@ def run_get_prop_checker(job_tag, traj, *,
                 p_src_idx = p_src_xg.to_index(total_site)
                 p_snk_idx = p_snk_xg.to_index(total_site)
                 return prop_list[p_src_idx].get_elem_wm(p_snk_idx)
-            ...
+            elif p_snk_tag == "point" and p_src_tag == "wall":
+                prop_list = cache["psnk-wsrc"]
+                p_snk_idx = p_snk_xg.to_index(total_site)
+                return prop_list[p_src_xg].get_elem_wm(p_snk_idx)
+            elif p_snk_tag == "wall" and p_src_tag == "point":
+                prop_list = cache["psnk-wsrc"]
+                p_src_idx = p_src_xg.to_index(total_site)
+                return wilson_matrix_g5_herm(prop_list[p_snk_xg].get_elem_wm(p_src_idx))
+            elif p_snk_tag == "wall" and p_src_tag == "wall":
+                prop_list = cache["wsnk-wsrc"]
+                return prop_list[p_src_xg].get_elem_wm(p_snk_xg)
+            else:
+                raise Exception(f"get_prop: f={flavor} snk={p_snk} src={p_src}")
         #
         q.timer_display()
         q.timer_merge()

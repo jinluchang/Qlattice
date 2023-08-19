@@ -10,7 +10,7 @@ mpi_options=--oversubscribe --bind-to none bind-gpu.sh
 mpi_options=$(MPI_OPTIONS)
 
 run:
-	q_verbose=6 OMP_NUM_THREADS=4 mpiexec -n 2 $(mpi_options) ./run.py $(grid_options) |& tee log.txt
+	q_verbose=6 OMP_NUM_THREADS=2 mpiexec -n 2 $(mpi_options) ./run.py $(grid_options) |& tee log.txt
 	-grep '^CHECK: ' log.txt > log.check.txt.new
 	-diff log.check.txt.new log.check.txt
 	-find results -type f | sort | xargs -d '\n' md5sum > md5sum.txt.new

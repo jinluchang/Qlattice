@@ -1,6 +1,8 @@
 #!/bin/bash
 
-NGPU="$(nvidia-smi -L | wc -l)"
+if which nvidia-smi >/dev/null 2>&1 ; then
+    NGPU="$(nvidia-smi -L | wc -l)"
+fi
 
 if [ -z "$NGPU" ] ; then
     NGPU=1
