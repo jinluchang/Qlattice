@@ -68,7 +68,7 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel, get_fsel):
         return
     cexpr = get_cexpr_meson_corr()
     expr_names = get_cexpr_names(cexpr)
-    total_site = dict_params[job_tag]["total_site"]
+    total_site = get_param(job_tag, "total_site")
     t_size = total_site[3]
     get_prop = get_get_prop()
     psel = get_psel()
@@ -122,7 +122,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel, get_fse
         return
     cexpr = get_cexpr_meson_corr()
     expr_names = get_cexpr_names(cexpr)
-    total_site = q.Coordinate(dict_params[job_tag]["total_site"])
+    total_site = get_param(job_tag, "total_site")
     t_size = total_site[3]
     get_prop = get_get_prop()
     fsel, fselc = get_fsel()
@@ -179,7 +179,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel, get_fse
         return
     cexpr = get_cexpr_meson_corr()
     expr_names = get_cexpr_names(cexpr)
-    total_site = q.Coordinate(dict_params[job_tag]["total_site"])
+    total_site = get_param(job_tag, "total_site")
     t_size = total_site[3]
     get_prop = get_get_prop()
     psel = get_psel()
@@ -239,7 +239,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel, ge
         return
     cexpr = get_cexpr_meson_corr()
     expr_names = get_cexpr_names(cexpr)
-    total_site = q.Coordinate(dict_params[job_tag]["total_site"])
+    total_site = get_param(job_tag, "total_site")
     t_size = total_site[3]
     get_prop = get_get_prop()
     psel = get_psel()
@@ -299,6 +299,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel, ge
 
 # ----
 
+@q.timer
 def get_all_points(total_site):
     xg_list = []
     for t in range(total_site[3]):
@@ -308,6 +309,7 @@ def get_all_points(total_site):
                     xg_list.append([ x, y, z, t, ])
     return xg_list
 
+@q.timer
 def get_all_points_psel(total_site):
     geo = q.Geometry(total_site, 1)
     xg_list = get_all_points(total_site)
@@ -462,6 +464,60 @@ def run_prop_psrc_checker(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt):
 
 # ----
 
+def load_prop_psrc(prop_cache, inv_type, inv_acc, sfr):
+    inv_tag_list = [ "l", "s", ]
+    inv_tag = inv_tag_list[inv_type]
+    prop = q.Prop()
+    prop.load(sfr, tag)
+    prop_cache["psnk-psrc"][inv_tag]
+    return prop
+
+@q.timer_verbose
+def run_get_prop_checker(job_tag, traj, *,
+                         get_gf,
+                         get_gt):
+    @q.timer_verbose
+    def mk_get_prop():
+        q.timer_fork()
+        total_site = get_param(job_tag, "total_site")
+        gf = get_gf()
+        gt = get_gt()
+        #
+        prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")
+        prop_cache["psel_pos_dict"] = dict([ (tuple(pos), i) for i, pos in enumerate(psel.to_list()) ])
+        prop_cache["fsel_pos_dict"] = dict([ (tuple(pos), i) for i, pos in enumerate(fsel.to_psel_local().to_list()) ])
+        prop_cache["fselc_pos_dict"] = dict([ (tuple(pos), i) for i, pos in enumerate(fselc.to_psel_local().to_list()) ])
+        #
+        prop_load_dict = dict()
+        prop_load_dict["wsrc psel s"] = lambda: load_prop_wsrc_psel(job_tag, traj, "s", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
+        prop_load_dict["wsrc psel l"] = lambda: load_prop_wsrc_psel(job_tag, traj, "l", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
+        prop_load_dict["wsrc fsel s"] = lambda: load_prop_wsrc_fsel(job_tag, traj, "s", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
+        prop_load_dict["wsrc fsel l"] = lambda: load_prop_wsrc_fsel(job_tag, traj, "l", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
+        prop_load_dict["psrc psel s"] = lambda: load_prop_psrc_psel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
+        prop_load_dict["psrc psel l"] = lambda: load_prop_psrc_psel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
+        prop_load_dict["psrc fsel s"] = lambda: load_prop_psrc_fsel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
+        prop_load_dict["psrc fsel l"] = lambda: load_prop_psrc_fsel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
+        prop_load_dict["rand_u1 fsel c"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "c", psel = psel, fsel = fsel, fselc = fselc)
+        prop_load_dict["rand_u1 fsel s"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
+        prop_load_dict["rand_u1 fsel l"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
+        for pt in prop_types:
+            prop_load_dict[pt]()
+        #
+        # prop_lookup_cache[(pos_src, type_src, type_snk,)] ==> get_prop_pos_snk
+        # where get_prop_pos_snk(pos_snk) ==> ama_prop
+        prop_lookup_cache = q.mk_cache(f"prop_lookup_cache", f"{job_tag}", f"{traj}")
+        prop_norm_lookup_cache = q.mk_cache(f"prop_norm_lookup_cache", f"{job_tag}", f"{traj}")
+        q.timer_display()
+        q.timer_merge()
+        def get_prop(flavor, p_snk, p_src, *, is_norm_sqrt = False):
+            if is_norm_sqrt:
+                return get_prop_norm_lookup_snk_src(prop_norm_lookup_cache, flavor, p_snk, p_src)
+            elif flavor == "U":
+                ...
+            else:
+                return get_prop_lookup_snk_src(prop_lookup_cache, flavor, p_snk, p_src)
+        return get_prop
+    return q.lazy_call(mk_get_prop)
 
 # ----
 

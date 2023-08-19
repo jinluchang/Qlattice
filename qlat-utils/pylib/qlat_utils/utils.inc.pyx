@@ -1,6 +1,8 @@
 def random_permute(list l, RngState rs):
-    # Do not change ``l''.
-    # Return a new permuted list.
+    """
+    Do not change `l`.
+    Return a new permuted list.
+    """
     cdef long size = len(l)
     cdef cc.std_vector[cc.PyObject*] vec
     vec.resize(size)

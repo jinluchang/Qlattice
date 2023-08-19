@@ -53,3 +53,11 @@ cdef class Coordinate:
         assert key < 4
         cdef int* p_val = &self.xx[key]
         p_val[0] = val
+
+def coordinate_from_index(long index, Coordinate size):
+    cdef Coordinate x = Coordinate()
+    x.xx = cc.coordinate_from_index(index, size.xx)
+    return x
+
+def index_from_coordinate(Coordinate x, Coordinate size):
+    return cc.index_from_coordinate(x.xx, size.xx)

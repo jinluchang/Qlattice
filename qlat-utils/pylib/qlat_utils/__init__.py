@@ -9,6 +9,8 @@ from . import c
 
 from .c import \
         Coordinate, \
+        coordinate_from_index, \
+        index_from_coordinate, \
         RngState, \
         as_wilson_matrix, \
         as_wilson_matrix_g5_herm, \
