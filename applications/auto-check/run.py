@@ -408,7 +408,7 @@ def compute_prop_psrc_checker(job_tag, xg_src, inv_type, inv_acc, *,
                               idx, gf, gt, sfw, eig, finished_tags):
     xg = xg_src.to_list()
     xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
-    tag = f"xg={xg} ; type={inv_type} ; accuracy={inv_acc}"
+    tag = f"xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
     if tag in finished_tags:
         return None
     q.displayln_info(f"compute_prop_psrc: {job_tag} idx={idx} tag='{tag}'")
