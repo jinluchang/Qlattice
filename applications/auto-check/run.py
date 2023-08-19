@@ -61,40 +61,35 @@ def get_cexpr_meson_corr():
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
 @q.timer_verbose
-def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel, get_fsel):
+def auto_contract_meson_corr(job_tag, traj, get_get_prop):
     fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
     expr_names = get_cexpr_names(cexpr)
-    total_site = get_param(job_tag, "total_site")
-    t_size = total_site[3]
     get_prop = get_get_prop()
-    psel = get_psel()
-    fsel, fselc = get_fsel()
-    xg_fsel_list = np.array(fsel.to_psel_local().to_list())
-    geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    t_size = total_site[3]
     def load_data():
         t_t_list = get_mpi_chunk(
-                [ (t_src, t_snk,) for t_snk in range(total_site[3]) for t_src in range(total_site[3]) ],
+                [ (t_src, t_snk,) for t_snk in range(t_size) for t_src in range(t_size) ],
                 rng_state = None)
         for t_src, t_snk in t_t_list:
             yield t_src, t_snk
     @q.timer
     def feval(args):
         t_src, t_snk = args
-        t = (t_snk - t_src) % total_site[3]
+        t = (t_snk - t_src) % t_size
         pd = {
-                "x_2" : ("wall", t_snk,),
-                "x_1" : ("wall", t_src,),
-                "size" : total_site,
+                "x_2": ("wall", t_snk,),
+                "x_1": ("wall", t_src,),
+                "size": total_site,
                 }
         val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
         return val, t
     def sum_function(val_list):
-        values = np.zeros((total_site[3], len(expr_names),), dtype = complex)
+        values = np.zeros((t_size, len(expr_names),), dtype = complex)
         for val, t in val_list:
             values[t] += val
         return q.glb_sum(values.transpose(1, 0))
@@ -104,7 +99,7 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel, get_fsel):
     q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
-    res_sum *= 1.0 / total_site[3]
+    res_sum *= 1.0 / t_size
     assert q.qnorm(res_sum[0] - 1.0) < 1e-10
     ld = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
@@ -464,11 +459,14 @@ def run_prop_psrc_checker(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt):
 
 @q.timer_verbose
 def load_prop_psrc(job_tag, traj, inv_type):
+    inv_tag_list = [ "l", "s", ]
+    inv_tag = inv_tag_list[inv_type]
+    cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", inv_tag)
+    if "psnk-psrc" in cache:
+        return
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     inv_type_names = [ "light", "strange", ]
     inv_type_name = inv_type_names[inv_type]
-    inv_tag_list = [ "l", "s", ]
-    inv_tag = inv_tag_list[inv_type]
     inv_acc = 2
     path_s = f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}/geon-info.txt"
     psel = get_all_points_psel(total_site)
@@ -486,16 +484,18 @@ def load_prop_psrc(job_tag, traj, inv_type):
         sp_prop @= prop
         prop_list.append(sp_prop)
     sfr.close()
-    cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", inv_tag)
     cache["psnk-psrc"] = prop_list
 
 @q.timer_verbose
 def load_prop_wsrc(job_tag, traj, inv_type):
+    inv_tag_list = [ "l", "s", ]
+    inv_tag = inv_tag_list[inv_type]
+    cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", inv_tag)
+    if "psnk-wsrc" in cache and "wsnk-wsrc" in cache:
+        return
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     inv_type_names = [ "light", "strange", ]
     inv_type_name = inv_type_names[inv_type]
-    inv_tag_list = [ "l", "s", ]
-    inv_tag = inv_tag_list[inv_type]
     inv_acc = 2
     path_s = f"{job_tag}/prop-wsrc-{inv_type_name}/traj-{traj}/geon-info.txt"
     path_sp = f"{job_tag}/psel-prop-wsrc-{inv_type_name}/traj-{traj}/"
@@ -514,10 +514,9 @@ def load_prop_wsrc(job_tag, traj, inv_type):
         prop_list.append(sp_prop)
         fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
         sp_prop2 = q.PselProp(psel_ts)
-        sp_prop2.load(get_load_path(fn_sp))
+        sp_prop2.load(get_load_path(fn_spw))
         prop2_list.append(sp_prop2)
     sfr.close()
-    cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", inv_tag)
     cache["psnk-wsrc"] = prop_list
     cache["wsnk-wsrc"] = prop2_list
 
@@ -648,8 +647,7 @@ def run_job(job_tag, traj):
         if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
             q.timer_fork()
             # ADJUST ME
-            get_prop = get_get_prop()
-            # auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel, get_fsel)
+            auto_contract_meson_corr(job_tag, traj, get_get_prop)
             # auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel, get_fsel)
             # auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel, get_fsel)
             # auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel, get_fsel)
@@ -659,8 +657,7 @@ def run_job(job_tag, traj):
             q.displayln_info("timer_display for runjob")
             q.timer_display()
             q.timer_merge()
-            #
-            q.clean_cache()
+            # q.clean_cache()
 
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
