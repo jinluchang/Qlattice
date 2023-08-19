@@ -173,20 +173,22 @@ def save_ceig(path, eig, job_tag, inv_type = 0, inv_acc = 0):
 
 @q.timer_verbose
 def load_eig_lazy(path, job_tag, inv_type = 0, inv_acc = 0):
-    # return ``None'' or a function ``load_eig''
-    # ``load_eig()'' return the ``eig''
+    """
+    return ``None'' or a function ``load_eig''
+    ``load_eig()'' return the ``eig''
+    """
     import qlat_gpt as qg
     import gpt as g
     if path is None:
         q.displayln_info(f"load_eig_lazy: path is '{path}'")
         return None
-    if not q.does_file_exist_sync_node(os.path.join(path, "metadata.txt")):
+    if not q.does_file_exist_qar_sync_node(os.path.join(path, "metadata.txt")):
         q.displayln_info(f"load_eig_lazy: '{path}' has not metadata.")
         return None
-    if not q.does_file_exist_sync_node(os.path.join(path, "eigen-values.txt")):
+    if not q.does_file_exist_qar_sync_node(os.path.join(path, "eigen-values.txt")):
         q.displayln_info(f"load_eig_lazy: '{path}' has not eigen-values.")
         return None
-    if not q.does_file_exist_sync_node(os.path.join(path, "00/0000000000.compressed")):
+    if not q.does_file_exist_qar_sync_node(os.path.join(path, "00/0000000000.compressed")):
         q.displayln_info(f"load_eig_lazy: '{path}' has not data file '00/0000000000.compressed'.")
         return None
     #
