@@ -54,10 +54,17 @@ cdef class Coordinate:
         cdef int* p_val = &self.xx[key]
         p_val[0] = val
 
-def coordinate_from_index(long index, Coordinate size):
+def coordinate_from_index(long index, size):
     cdef Coordinate x = Coordinate()
-    x.xx = cc.coordinate_from_index(index, size.xx)
+    if isinstance(size, Coordinate):
+        x.xx = cc.coordinate_from_index(index, (<Coordinate>size).xx)
+    else:
+        x.xx = cc.coordinate_from_index(index, cc.Coordinate(size[0], size[1], size[2], size[3]))
     return x
 
-def index_from_coordinate(Coordinate x, Coordinate size):
-    return cc.index_from_coordinate(x.xx, size.xx)
+def index_from_coordinate(x, size):
+    if isinstance(x, Coordinate) and isinstance(size, Coordinate):
+        return cc.index_from_coordinate((<Coordinate>x).xx, (<Coordinate>size).xx)
+    else:
+        return cc.index_from_coordinate(cc.Coordinate(x[0], x[1], x[2], x[3]),
+                                        cc.Coordinate(size[0], size[1], size[2], size[3]))
