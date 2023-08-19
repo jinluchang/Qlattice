@@ -19,6 +19,12 @@ is_cython = False
 
 load_path_list[:] = [
         "results",
+        "qcddata",
+        "qcddata-1",
+        "qcddata-2",
+        "qcddata-3",
+        "qcddata-4",
+        "qcddata-5",
         ]
 
 # ----
@@ -535,19 +541,6 @@ def run_job(job_tag, traj):
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
 
-size_node_list = [
-        [1, 1, 1, 1],
-        [1, 1, 2, 1],
-        [1, 2, 2, 1],
-        [2, 2, 2, 1],
-        [2, 2, 4, 1],
-        [2, 4, 4, 1],
-        [4, 4, 4, 1],
-        [4, 4, 8, 1],
-        [4, 8, 8, 1],
-        [8, 8, 8, 1],
-        ]
-
 set_param("test-4nt8", "trajs", value=[ 1000, 1010, ])
 set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step", value=2)
 set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step", value=8)
@@ -572,6 +565,7 @@ q.qremove_all_info("results")
 
 job_tags = [
         "test-4nt8",
+        # "test-4nt64",
         ]
 
 q.check_time_limit()

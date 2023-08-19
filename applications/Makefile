@@ -12,7 +12,8 @@ target= \
 		mk-selected-data \
 		auto-contract-meson-corr \
 		auto-contract-meson-decay \
-		auto-contract-0n2b-sd
+		auto-contract-0n2b-sd \
+		auto-check
 
 src_path=~/Qlattice-cc/applications
 
