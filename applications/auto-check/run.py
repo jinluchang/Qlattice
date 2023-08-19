@@ -352,7 +352,7 @@ def compute_prop_wsrc_checker(job_tag, tslice, inv_type, inv_acc, *,
     q.check_time_limit()
     q.displayln_info(f"compute_prop_wsrc: idx={idx} tslice={tslice}", job_tag, inv_type, inv_acc)
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt = gt, eig = eig)
-    total_site = get_param(job_tag, "total_site")
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site, 1)
     src = q.mk_wall_src(geo, tslice)
     prop = compute_prop_1_checker(inv, src, tag = tag, sfw = sfw, path_sp = path_sp)
@@ -360,7 +360,7 @@ def compute_prop_wsrc_checker(job_tag, tslice, inv_type, inv_acc, *,
 @q.timer_verbose
 def compute_prop_wsrc_all_checker(job_tag, traj, *,
                                   inv_type, gf, gt, eig):
-    total_site = get_param(job_tag, "total_site")
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     inv_type_names = [ "light", "strange", ]
     inv_type_name = inv_type_names[inv_type]
     path_s = f"{job_tag}/prop-wsrc-{inv_type_name}/traj-{traj}"
@@ -417,7 +417,7 @@ def compute_prop_psrc_checker(job_tag, xg_src, inv_type, inv_acc, *,
     q.check_time_limit()
     q.displayln_info(f"compute_prop_psrc: {job_tag} idx={idx} tag='{tag}'")
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt = gt, eig = eig)
-    total_site = get_param(job_tag, "total_site")
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site, 1)
     src = q.mk_point_src(geo, xg)
     prop = compute_prop_2_checker(inv, src, tag = tag, sfw = sfw)
@@ -425,7 +425,7 @@ def compute_prop_psrc_checker(job_tag, xg_src, inv_type, inv_acc, *,
 @q.timer_verbose
 def compute_prop_psrc_all_checker(job_tag, traj, *,
                                   inv_type, gf, gt, eig):
-    total_site = get_param(job_tag, "total_site")
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     inv_type_names = [ "light", "strange", ]
     inv_type_name = inv_type_names[inv_type]
     path_s = f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}"
@@ -435,7 +435,7 @@ def compute_prop_psrc_all_checker(job_tag, traj, *,
         compute_prop_psrc_checker(job_tag, xg_src, inv_type, inv_acc,
                 idx = idx, gf = gf, gt = gt, sfw = sfw,
                 eig = eig, finished_tags = finished_tags)
-    for idx, xg_src in enumerate(get_all_points(q.Coordinate(total_site))):
+    for idx, xg_src in enumerate(get_all_points(total_site)):
         comp(idx, xg_src, inv_acc = 2)
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
@@ -465,18 +465,29 @@ def run_prop_psrc_checker(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt):
 # ----
 
 @q.timer_verbose
-def load_prop_psrc(prop_cache, inv_type, inv_acc, sfr):
-    total_site = get_param(job_tag, "total_site")
+def load_prop_psrc(job_tag, traj, inv_type):
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    inv_type_names = [ "light", "strange", ]
+    inv_type_name = inv_type_names[inv_type]
     inv_tag_list = [ "l", "s", ]
     inv_tag = inv_tag_list[inv_type]
-    # cache should be 
-    cache = prop_cache["psnk-psrc"][inv_tag]
+    inv_acc = 2
+    path_s = f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}"
     psel = get_all_points_psel(total_site)
-    xg_list = psel.to_list()
+    prop_list = []
+    xg_list = [ q.Coordinate(xg) for xg in psel.to_list() ]
+    sfr = q.open_fields(get_load_path(path_s), "r")
     for xg_src in xg_list:
-        tag = f"xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
+        xg_idx = xg_src.to_index(total_site)
+        tag = f"xg={xg_str.to_list()} ; type={inv_type} ; accuracy={inv_acc}"
         prop = q.Prop()
         prop.load_double_from_float(sfr, tag)
+        sp_prop = q.PselProp(psel)
+        sp_prop @= prop
+        prop_list.append(sp_prop)
+    sfr.close()
+    cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", inv_tag)
+    cache["psnk-psrc"] = prop_list
     return prop
 
 @q.timer_verbose
@@ -486,43 +497,27 @@ def run_get_prop_checker(job_tag, traj, *,
     @q.timer_verbose
     def mk_get_prop():
         q.timer_fork()
-        total_site = get_param(job_tag, "total_site")
+        total_site = q.Coordinate(get_param(job_tag, "total_site"))
         gf = get_gf()
         gt = get_gt()
         #
+        load_prop_psrc(job_tag, traj, inv_type = 0)
+        load_prop_psrc(job_tag, traj, inv_type = 1)
+        #
         prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")
-        prop_cache["psel_pos_dict"] = dict([ (tuple(pos), i) for i, pos in enumerate(psel.to_list()) ])
-        prop_cache["fsel_pos_dict"] = dict([ (tuple(pos), i) for i, pos in enumerate(fsel.to_psel_local().to_list()) ])
-        prop_cache["fselc_pos_dict"] = dict([ (tuple(pos), i) for i, pos in enumerate(fselc.to_psel_local().to_list()) ])
+        def get_prop(flavor, p_snk, p_src):
+            cache = prop_cache[flavor]
+            p_snk_tag, p_snk_xg = p_snk
+            p_src_tag, p_src_xg = p_src
+            if p_snk_tag == "point" and p_src_tag == "point":
+                prop_list = cache["psnk-psrc"]
+                p_src_idx = p_src_xg.to_index(total_site)
+                p_snk_idx = p_snk_xg.to_index(total_site)
+                return prop_list[p_src_idx].get_elem_wm(p_snk_idx)
+            ...
         #
-        prop_load_dict = dict()
-        prop_load_dict["wsrc psel s"] = lambda: load_prop_wsrc_psel(job_tag, traj, "s", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
-        prop_load_dict["wsrc psel l"] = lambda: load_prop_wsrc_psel(job_tag, traj, "l", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
-        prop_load_dict["wsrc fsel s"] = lambda: load_prop_wsrc_fsel(job_tag, traj, "s", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
-        prop_load_dict["wsrc fsel l"] = lambda: load_prop_wsrc_fsel(job_tag, traj, "l", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
-        prop_load_dict["psrc psel s"] = lambda: load_prop_psrc_psel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
-        prop_load_dict["psrc psel l"] = lambda: load_prop_psrc_psel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
-        prop_load_dict["psrc fsel s"] = lambda: load_prop_psrc_fsel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
-        prop_load_dict["psrc fsel l"] = lambda: load_prop_psrc_fsel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
-        prop_load_dict["rand_u1 fsel c"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "c", psel = psel, fsel = fsel, fselc = fselc)
-        prop_load_dict["rand_u1 fsel s"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
-        prop_load_dict["rand_u1 fsel l"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
-        for pt in prop_types:
-            prop_load_dict[pt]()
-        #
-        # prop_lookup_cache[(pos_src, type_src, type_snk,)] ==> get_prop_pos_snk
-        # where get_prop_pos_snk(pos_snk) ==> ama_prop
-        prop_lookup_cache = q.mk_cache(f"prop_lookup_cache", f"{job_tag}", f"{traj}")
-        prop_norm_lookup_cache = q.mk_cache(f"prop_norm_lookup_cache", f"{job_tag}", f"{traj}")
         q.timer_display()
         q.timer_merge()
-        def get_prop(flavor, p_snk, p_src, *, is_norm_sqrt = False):
-            if is_norm_sqrt:
-                return get_prop_norm_lookup_snk_src(prop_norm_lookup_cache, flavor, p_snk, p_src)
-            elif flavor == "U":
-                ...
-            else:
-                return get_prop_lookup_snk_src(prop_lookup_cache, flavor, p_snk, p_src)
         return get_prop
     return q.lazy_call(mk_get_prop)
 
@@ -582,12 +577,14 @@ def run_job(job_tag, traj):
     run_with_eig_strange()
     #
     run_r_list(job_tag)
+    get_get_prop = run_get_prop_checker(job_tag, traj, get_gf=get_gf, get_gt=get_gt)
     #
     fn_checkpoint = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
     if get_load_path(fn_checkpoint) is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
             q.timer_fork()
             # ADJUST ME
+            get_prop = get_get_prop()
             # auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel, get_fsel)
             # auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel, get_fsel)
             # auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel, get_fsel)
