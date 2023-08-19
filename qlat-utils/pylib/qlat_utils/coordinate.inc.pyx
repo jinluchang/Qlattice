@@ -31,7 +31,7 @@ cdef class Coordinate:
     def __repr__(self):
         return f"Coordinate({self.list()})"
 
-    def list(self):
+    def to_list(self):
         """
         Return a list composed of the 4 components of the coordinate.
         """
@@ -54,10 +54,10 @@ cdef class Coordinate:
         cdef int* p_val = &self.xx[key]
         p_val[0] = val
 
-    def from_index(long index, Coordinate size):
+    def from_index(self, long index, Coordinate size):
         self.xx = cc.coordinate_from_index(index, size.xx)
 
-    def to_index(Coordinate size):
+    def to_index(self, Coordinate size):
         return cc.index_from_coordinate(self.xx, size.xx)
 
 def coordinate_from_index(long index, size):

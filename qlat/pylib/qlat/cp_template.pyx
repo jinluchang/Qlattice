@@ -383,6 +383,7 @@ cdef class FieldBase:
         """
         Generic load for Field object
         load Field directly (without any conversion of endianness or precision)
+        Field geo and multiplicity will be determined during loading
         possible way to call:
         f.load_direct(path)
         f.load_direct(sfr, fn)

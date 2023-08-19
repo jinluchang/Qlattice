@@ -301,19 +301,19 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel, ge
 
 @q.timer
 def get_all_points(total_site):
+    n_points = total_site[0] * total_site[1] * total_site[2] * total_site[3]
     xg_list = []
-    for t in range(total_site[3]):
-        for z in range(total_site[2]):
-            for y in range(total_site[1]):
-                for x in range(total_site[0]):
-                    xg_list.append([ x, y, z, t, ])
+    for index in range(n_points):
+        xg = q.Coordinate()
+        xg.from_index(index, total_site)
+        xg_list.append(xg)
     return xg_list
 
 @q.timer
 def get_all_points_psel(total_site):
     geo = q.Geometry(total_site, 1)
     xg_list = get_all_points(total_site)
-    psel = q.PointSelection(xg_list, geo)
+    psel = q.PointSelection([ xg.to_list() for xg in xg_list ], geo)
     return psel
 
 # ----
@@ -408,9 +408,9 @@ def compute_prop_2_checker(inv, src, *, tag, sfw):
 @q.timer
 def compute_prop_psrc_checker(job_tag, xg_src, inv_type, inv_acc, *,
                               idx, gf, gt, sfw, eig, finished_tags):
-    xg = xg_src
+    xg = xg_src.to_list()
     xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
-    tag = f"xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
+    tag = f"xg={xg} ; type={inv_type} ; accuracy={inv_acc}"
     if tag in finished_tags:
         return None
     q.check_stop()
@@ -419,7 +419,7 @@ def compute_prop_psrc_checker(job_tag, xg_src, inv_type, inv_acc, *,
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt = gt, eig = eig)
     total_site = get_param(job_tag, "total_site")
     geo = q.Geometry(total_site, 1)
-    src = q.mk_point_src(geo, xg_src)
+    src = q.mk_point_src(geo, xg)
     prop = compute_prop_2_checker(inv, src, tag = tag, sfw = sfw)
 
 @q.timer_verbose
@@ -435,7 +435,7 @@ def compute_prop_psrc_all_checker(job_tag, traj, *,
         compute_prop_psrc_checker(job_tag, xg_src, inv_type, inv_acc,
                 idx = idx, gf = gf, gt = gt, sfw = sfw,
                 eig = eig, finished_tags = finished_tags)
-    for idx, xg_src in enumerate(get_all_points(total_site)):
+    for idx, xg_src in enumerate(get_all_points(q.Coordinate(total_site))):
         comp(idx, xg_src, inv_acc = 2)
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
@@ -464,12 +464,19 @@ def run_prop_psrc_checker(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt):
 
 # ----
 
+@q.timer_verbose
 def load_prop_psrc(prop_cache, inv_type, inv_acc, sfr):
+    total_site = get_param(job_tag, "total_site")
     inv_tag_list = [ "l", "s", ]
     inv_tag = inv_tag_list[inv_type]
-    prop = q.Prop()
-    prop.load(sfr, tag)
-    prop_cache["psnk-psrc"][inv_tag]
+    # cache should be 
+    cache = prop_cache["psnk-psrc"][inv_tag]
+    psel = get_all_points_psel(total_site)
+    xg_list = psel.to_list()
+    for xg_src in xg_list:
+        tag = f"xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
+        prop = q.Prop()
+        prop.load_double_from_float(sfr, tag)
     return prop
 
 @q.timer_verbose
