@@ -557,6 +557,8 @@ def run_job(job_tag, traj):
     #
     def run_with_eig():
         get_eig = run_eig(job_tag, traj_gf, get_gf)
+        if get_eig is None:
+            return
         run_get_inverter_checker(job_tag, traj, inv_type = 0, get_gf = get_gf, get_gt = get_gt, get_eig = get_eig)
         run_prop_psrc_checker(job_tag, traj, inv_type = 0, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt)
         run_prop_wsrc_checker(job_tag, traj, inv_type = 0, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt)
@@ -564,6 +566,8 @@ def run_job(job_tag, traj):
     #
     def run_with_eig_strange():
         get_eig = run_eig_strange(job_tag, traj_gf, get_gf)
+        if get_eig is None:
+            return
         run_get_inverter_checker(job_tag, traj, inv_type = 1, get_gf = get_gf, get_gt = get_gt, get_eig = get_eig)
         run_prop_psrc_checker(job_tag, traj, inv_type = 1, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt)
         run_prop_wsrc_checker(job_tag, traj, inv_type = 1, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt)
