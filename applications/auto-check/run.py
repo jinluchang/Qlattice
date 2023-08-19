@@ -484,7 +484,6 @@ def load_prop_psrc(job_tag, traj, inv_type):
     sfr.close()
     cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", inv_tag)
     cache["psnk-psrc"] = prop_list
-    return prop
 
 @q.timer_verbose
 def run_get_prop_checker(job_tag, traj, *,
