@@ -654,7 +654,7 @@ def run_job(job_tag, traj):
             # auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel, get_fsel)
             # auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel, get_fsel)
             #
-            q.qtouch_info(get_save_path(fn_checkpoint))
+            # q.qtouch_info(get_save_path(fn_checkpoint))
             q.release_lock()
             q.displayln_info("timer_display for runjob")
             q.timer_display()
