@@ -557,14 +557,14 @@ def run_job(job_tag, traj):
     #
     def run_with_eig():
         get_eig = run_eig(job_tag, traj_gf, get_gf)
-        run_get_inverter(job_tag, traj, inv_type = 0, get_gf = get_gf, get_gt = get_gt, get_eig = get_eig)
+        run_get_inverter_checker(job_tag, traj, inv_type = 0, get_gf = get_gf, get_gt = get_gt, get_eig = get_eig)
         run_prop_psrc_checker(job_tag, traj, inv_type = 0, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt)
         run_prop_wsrc_checker(job_tag, traj, inv_type = 0, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt)
         q.clean_cache(q.cache_inv)
     #
     def run_with_eig_strange():
         get_eig = run_eig_strange(job_tag, traj_gf, get_gf)
-        run_get_inverter(job_tag, traj, inv_type = 1, get_gf = get_gf, get_gt = get_gt, get_eig = get_eig)
+        run_get_inverter_checker(job_tag, traj, inv_type = 1, get_gf = get_gf, get_gt = get_gt, get_eig = get_eig)
         run_prop_psrc_checker(job_tag, traj, inv_type = 1, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt)
         run_prop_wsrc_checker(job_tag, traj, inv_type = 1, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt)
         q.clean_cache(q.cache_inv)
@@ -616,8 +616,6 @@ set_param("test-4nt8", "lanc_params", 1, 0, value=get_param("test-4nt8", "lanc_p
 set_param("test-4nt8", "lanc_params", 1, 0, "fermion_params", value=get_param("test-4nt8", "fermion_params", 1, 0).copy())
 
 qg.begin_with_gpt()
-
-q.qremove_all_info("results")
 
 job_tags = [
         "test-4nt8",
