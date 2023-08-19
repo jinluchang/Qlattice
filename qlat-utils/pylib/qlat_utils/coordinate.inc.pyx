@@ -29,7 +29,7 @@ cdef class Coordinate:
         return self.copy()
 
     def __repr__(self):
-        return f"Coordinate({self.list()})"
+        return f"Coordinate({self.to_list()})"
 
     def to_list(self):
         """
@@ -67,7 +67,7 @@ def coordinate_from_index(long index, size):
         return x
     else:
         x.xx = cc.coordinate_from_index(index, cc.Coordinate(size[0], size[1], size[2], size[3]))
-        return x.list()
+        return x.to_list()
 
 def index_from_coordinate(x, size):
     if isinstance(x, Coordinate) and isinstance(size, Coordinate):

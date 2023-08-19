@@ -189,7 +189,7 @@ def get_r_limit(total_site):
     Return the limit for spatial ``r`` as float.\n
     :params total_site: must be Coordinate type
     """
-    return math.sqrt(sum([ (l / 2)**2 for l in total_site.list()[:3] ]))
+    return math.sqrt(sum([ (l / 2)**2 for l in total_site.to_list()[:3] ]))
 
 def mk_r_sq_list_3d(r_sq_limit):
     r_limit = int(math.sqrt(r_sq_limit))

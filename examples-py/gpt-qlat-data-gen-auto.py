@@ -1033,7 +1033,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel, get_fsel):
                     "x_2" : ("point", xg2_src,),
                     "t_1" : ("wall", t_1,),
                     "t_2" : ("wall", t_2,),
-                    "size" : total_site.list(),
+                    "size" : total_site.to_list(),
                     }
             t1 = xg1_xg_t
             t2 = xg2_xg_t

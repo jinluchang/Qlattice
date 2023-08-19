@@ -247,13 +247,13 @@ def benchmark_eval_cexpr(cexpr : CExpr, *,
         positions_vars.append(pos)
     n_pos = len(positions_vars)
     positions = [
-            ("point", tuple(benchmark_rng_state.split(f"positions {pos_idx}").c_rand_gen(size).list()),)
+            ("point", tuple(benchmark_rng_state.split(f"positions {pos_idx}").c_rand_gen(size).to_list()),)
             for pos_idx in range(n_pos)
             ]
     #
     def mk_pos_dict(k):
         positions_dict = {}
-        positions_dict["size"] = size.list()
+        positions_dict["size"] = size.to_list()
         idx_list = q.random_permute(list(range(n_pos)), benchmark_rng_state.split(f"pos_dict {k}"))
         for pos, idx in zip(positions_vars, idx_list):
             positions_dict[pos] = positions[idx]

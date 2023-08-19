@@ -50,7 +50,7 @@ def begin_with_mpi(size_node_list = None):
     size_node_list = size_node_list + default_size_node_list
     size_node = None
     for size_node_check in size_node_list:
-        if prod(size_node_check.list()) == num_node:
+        if prod(size_node_check.to_list()) == num_node:
             size_node = size_node_check
             break
     if size_node is None:
