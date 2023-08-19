@@ -2,7 +2,4 @@ CHECK:  {'job_tag': 'test-4nt8', 'total_site': [4, 4, 4, 8], 'load_config_params
 CHECK: auto_contract_meson_corr: ld sig: -8.93184E+04-1.56280E+04j
 CHECK: auto_contract_meson_corr_psnk: ld sig: -2.48578E+01-4.94732E+00j
 CHECK: auto_contract_meson_corr_psnk_psrc: ld sig: -9.42930E-01+5.04441E-02j
-CHECK: auto_contract_meson_corr: ld sig: -8.93184E+04-1.56280E+04j
-CHECK: auto_contract_meson_corr_psnk: ld sig: -2.48578E+01-4.94732E+00j
-CHECK: auto_contract_meson_corr_psnk_psrc: ld sig: -9.42930E-01+5.04441E-02j
 CHECK: finished successfully.

@@ -4,3 +4,4 @@ from .jobs import *
 from .params import *
 from .load_data import *
 from .gen_data import *
+from .auto_check import *
