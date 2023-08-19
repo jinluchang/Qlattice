@@ -348,8 +348,6 @@ def compute_prop_wsrc_checker(job_tag, tslice, inv_type, inv_acc, *,
     tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
     if tag in finished_tags:
         return None
-    q.check_stop()
-    q.check_time_limit()
     q.displayln_info(f"compute_prop_wsrc: idx={idx} tslice={tslice}", job_tag, inv_type, inv_acc)
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt = gt, eig = eig)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
@@ -413,8 +411,6 @@ def compute_prop_psrc_checker(job_tag, xg_src, inv_type, inv_acc, *,
     tag = f"xg={xg} ; type={inv_type} ; accuracy={inv_acc}"
     if tag in finished_tags:
         return None
-    q.check_stop()
-    q.check_time_limit()
     q.displayln_info(f"compute_prop_psrc: {job_tag} idx={idx} tag='{tag}'")
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt = gt, eig = eig)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
