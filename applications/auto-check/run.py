@@ -475,7 +475,9 @@ def load_prop_psrc(job_tag, traj, inv_type):
     sfr = q.open_fields(get_load_path(path_s), "r")
     for xg_src in xg_list:
         xg_idx = xg_src.to_index(total_site)
-        tag = f"xg={xg_str.to_list()} ; type={inv_type} ; accuracy={inv_acc}"
+        xg = xg_src.to_list()
+        xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
+        tag = f"xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
         prop = q.Prop()
         prop.load_double_from_float(sfr, tag)
         sp_prop = q.PselProp(psel)
