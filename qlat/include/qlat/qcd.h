@@ -583,13 +583,15 @@ inline long save_gauge_transform_cps(
 {
   TIMER_VERBOSE_FLOPS("save_gauge_transform_cps");
   qassert(is_initialized(gt));
-  const Geometry& geo = gt.geo();
+  GaugeTransform gt1;
+  gt1 = gt;
+  const Geometry& geo = gt1.geo();
   GaugeTransformInfo info = info_;
   info.total_site = geo.total_site();
-  info.simple_checksum = field_simple_checksum(gt); // before to_from_big_endian_64
-  to_from_big_endian_64(get_data(gt));
+  info.simple_checksum = field_simple_checksum(gt1); // before to_from_big_endian_64
+  to_from_big_endian_64(get_data(gt1));
   qtouch_info(path + ".partial", make_gauge_transform_header(info));
-  const long file_size = serial_write_field(gt, path + ".partial");
+  const long file_size = serial_write_field(gt1, path + ".partial");
   qrename_info(path + ".partial", path);
   timer.flops += file_size;
   return file_size;
