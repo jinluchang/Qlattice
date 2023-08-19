@@ -489,6 +489,18 @@ def load_prop_psrc(job_tag, traj, inv_type):
 def run_get_prop_checker(job_tag, traj, *,
                          get_gf,
                          get_gt):
+    traj_gf = traj
+    fns_props = [
+            (f"{job_tag}/prop-psrc-light/traj-{traj_gf}.qar", f"{job_tag}/prop-psrc-light/traj-{traj_gf}/geon-info.txt",),
+            (f"{job_tag}/prop-psrc-strange/traj-{traj_gf}.qar", f"{job_tag}/prop-psrc-strange/traj-{traj_gf}/geon-info.txt",),
+            (f"{job_tag}/prop-wsrc-light/traj-{traj_gf}.qar", f"{job_tag}/prop-wsrc-light/traj-{traj_gf}/geon-info.txt",),
+            (f"{job_tag}/prop-wsrc-strange/traj-{traj_gf}.qar", f"{job_tag}/prop-wsrc-strange/traj-{traj_gf}/geon-info.txt",),
+            (f"{job_tag}/psel-prop-wsrc-light/traj-{traj_gf}.qar", f"{job_tag}/psel-prop-wsrc-light/traj-{traj_gf}/checkpoint.txt",),
+            (f"{job_tag}/psel-prop-wsrc-strange/traj-{traj_gf}.qar", f"{job_tag}/psel-prop-wsrc-strange/traj-{traj_gf}/checkpoint.txt",),
+            ]
+    for fn in fns_props:
+        if get_load_path(fn) is None:
+            return None
     @q.timer_verbose
     def mk_get_prop():
         q.timer_fork()
@@ -523,7 +535,16 @@ def run_job(job_tag, traj):
     #
     traj_gf = 1000 # fix gauge field in checking
     #
-    fns_produce = [
+    fns_props = [
+            (f"{job_tag}/prop-psrc-light/traj-{traj_gf}.qar", f"{job_tag}/prop-psrc-light/traj-{traj_gf}/geon-info.txt",),
+            (f"{job_tag}/prop-psrc-strange/traj-{traj_gf}.qar", f"{job_tag}/prop-psrc-strange/traj-{traj_gf}/geon-info.txt",),
+            (f"{job_tag}/prop-wsrc-light/traj-{traj_gf}.qar", f"{job_tag}/prop-wsrc-light/traj-{traj_gf}/geon-info.txt",),
+            (f"{job_tag}/prop-wsrc-strange/traj-{traj_gf}.qar", f"{job_tag}/prop-wsrc-strange/traj-{traj_gf}/geon-info.txt",),
+            (f"{job_tag}/psel-prop-wsrc-light/traj-{traj_gf}.qar", f"{job_tag}/psel-prop-wsrc-light/traj-{traj_gf}/checkpoint.txt",),
+            (f"{job_tag}/psel-prop-wsrc-strange/traj-{traj_gf}.qar", f"{job_tag}/psel-prop-wsrc-strange/traj-{traj_gf}/checkpoint.txt",),
+            ]
+    #
+    fns_produce = fns_props + [
             f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
             #
             (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
@@ -532,12 +553,6 @@ def run_job(job_tag, traj):
             #
             f"{job_tag}/eig/traj-{traj_gf}",
             f"{job_tag}/eig-strange/traj-{traj_gf}",
-            #
-            (f"{job_tag}/prop-psrc-light/traj-{traj_gf}.qar", f"{job_tag}/prop-psrc-light/traj-{traj_gf}/geon-info.txt",),
-            (f"{job_tag}/prop-psrc-strange/traj-{traj_gf}.qar", f"{job_tag}/prop-psrc-strange/traj-{traj_gf}/geon-info.txt",),
-            #
-            (f"{job_tag}/prop-wsrc-light/traj-{traj_gf}.qar", f"{job_tag}/prop-wsrc-light/traj-{traj_gf}/geon-info.txt",),
-            (f"{job_tag}/prop-wsrc-strange/traj-{traj_gf}.qar", f"{job_tag}/prop-wsrc-strange/traj-{traj_gf}/geon-info.txt",),
             ]
     fns_need = [
             # f"{job_tag}/gauge-transform/traj-{traj}.field",
@@ -558,28 +573,28 @@ def run_job(job_tag, traj):
         get_eig = run_eig(job_tag, traj_gf, get_gf)
         if get_eig is None:
             return
-        run_get_inverter_checker(job_tag, traj, inv_type = 0, get_gf = get_gf, get_gt = get_gt, get_eig = get_eig)
-        run_prop_psrc_checker(job_tag, traj, inv_type = 0, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt)
-        run_prop_wsrc_checker(job_tag, traj, inv_type = 0, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt)
+        run_get_inverter_checker(job_tag, traj_gf, inv_type = 0, get_gf = get_gf, get_gt = get_gt, get_eig = get_eig)
+        run_prop_psrc_checker(job_tag, traj_gf, inv_type = 0, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt)
+        run_prop_wsrc_checker(job_tag, traj_gf, inv_type = 0, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt)
         q.clean_cache(q.cache_inv)
     #
     def run_with_eig_strange():
         get_eig = run_eig_strange(job_tag, traj_gf, get_gf)
         if get_eig is None:
             return
-        run_get_inverter_checker(job_tag, traj, inv_type = 1, get_gf = get_gf, get_gt = get_gt, get_eig = get_eig)
-        run_prop_psrc_checker(job_tag, traj, inv_type = 1, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt)
-        run_prop_wsrc_checker(job_tag, traj, inv_type = 1, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt)
+        run_get_inverter_checker(job_tag, traj_gf, inv_type = 1, get_gf = get_gf, get_gt = get_gt, get_eig = get_eig)
+        run_prop_psrc_checker(job_tag, traj_gf, inv_type = 1, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt)
+        run_prop_wsrc_checker(job_tag, traj_gf, inv_type = 1, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt)
         q.clean_cache(q.cache_inv)
     #
     run_with_eig()
     run_with_eig_strange()
     #
     run_r_list(job_tag)
-    get_get_prop = run_get_prop_checker(job_tag, traj, get_gf=get_gf, get_gt=get_gt)
+    get_get_prop = run_get_prop_checker(job_tag, traj_gf, get_gf=get_gf, get_gt=get_gt)
     #
     fn_checkpoint = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
-    if get_load_path(fn_checkpoint) is None:
+    if get_load_path(fn_checkpoint) is None and get_get_prop is not None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
             q.timer_fork()
             # ADJUST ME
