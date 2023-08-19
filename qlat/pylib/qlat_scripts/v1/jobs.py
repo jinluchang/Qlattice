@@ -95,6 +95,7 @@ def run_gt(job_tag, traj, get_gf):
             gf = get_gf()
             import qlat_gpt as qg
             gt = qg.gauge_fix_coulomb(gf)
+            gt.save_cps(get_save_path(f"{job_tag}/gauge-transform/traj-{traj}.gfix"))
             gt.save_double(get_save_path(tfn))
             q.release_lock()
             return lambda : gt
