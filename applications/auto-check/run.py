@@ -313,7 +313,7 @@ def get_all_points(total_site):
 def get_all_points_psel(total_site):
     geo = q.Geometry(total_site, 1)
     xg_list = get_all_points(total_site)
-    psel = q.PointSelection([ xg.to_list() for xg in xg_list ], geo)
+    psel = q.PointsSelection([ xg.to_list() for xg in xg_list ], geo)
     return psel
 
 # ----
