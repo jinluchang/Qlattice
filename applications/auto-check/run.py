@@ -468,7 +468,7 @@ def load_prop_psrc(job_tag, traj, inv_type):
     inv_tag_list = [ "l", "s", ]
     inv_tag = inv_tag_list[inv_type]
     inv_acc = 2
-    path_s = f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}"
+    path_s = f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}/geon-info.txt"
     psel = get_all_points_psel(total_site)
     prop_list = []
     xg_list = [ q.Coordinate(xg) for xg in psel.to_list() ]
