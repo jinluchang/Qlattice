@@ -13,7 +13,13 @@ cdef extern from "qlat-utils/coordinate.h" namespace "qlat":
 
     Coordinate mod(const Coordinate& x, const Coordinate& size)
     Coordinate smod(const Coordinate& x, const Coordinate& size)
-    Coordinate middle_mod(const Coordinate& x, const Coordinate& size)
+    Coordinate middle_mod(const Coordinate& x, const Coordinate& y, const Coordinate& size)
+
+    Coordinate operator+(const Coordinate& x, const Coordinate& y)
+    Coordinate operator-(const Coordinate& x, const Coordinate& y)
+    Coordinate operator*(const Coordinate& x, const Coordinate& y)
+    Coordinate operator*(const Coordinate& x, const int y)
+    Coordinate operator*(const int x, const Coordinate& y)
 
     Coordinate c_rand_gen(RngState& rs, const Coordinate& size)
 

@@ -57,6 +57,12 @@ cdef class Coordinate:
         """
         return cc.sqr(self.xx)
 
+    def r_sqr(self):
+        """
+        get spatial distance square as int
+        """
+        return self.xx[0] * self.xx[0] + self.xx[1] * self.xx[1] + self.xx[2] * self.xx[2]
+
     def __getitem__(self, int key):
         assert 0 <= key
         assert key < 4
@@ -68,11 +74,75 @@ cdef class Coordinate:
         cdef int* p_val = &self.xx[key]
         p_val[0] = val
 
+    def __add__(Coordinate c1, Coordinate c2):
+        cdef Coordinate x = Coordinate()
+        x.xx = c1.xx + c2.xx
+        return x
+
+    def __sub__(Coordinate c1, Coordinate c2):
+        cdef Coordinate x = Coordinate()
+        x.xx = c1.xx - c2.xx
+        return x
+
+    def __mul__(c1, c2):
+        cdef Coordinate x = Coordinate()
+        if isinstance(c1, Coordinate) and isinstance(c2, int):
+            x.xx = (<Coordinate>c1).xx * (<int>c2)
+        elif isinstance(c1, int) and isinstance(c2, Coordinate):
+            x.xx = (<int>c1) * (<Coordinate>c2).xx
+        elif isinstance(c1, Coordinate) and isinstance(c2, Coordinate):
+            x.xx = (<Coordinate>c1).xx * (<Coordinate>c2).xx
+        else:
+            raise Exception(f"Coordinate.__mul__({c1},{c2})")
+        return x
+
+    def __neg__(self):
+        cdef Coordinate x = Coordinate()
+        x.xx = x.xx - self.xx
+        return x
+
+    def __pos__(self):
+        return self
+
     def from_index(self, long index, Coordinate size):
         self.xx = cc.coordinate_from_index(index, size.xx)
 
     def to_index(self, Coordinate size):
         return cc.index_from_coordinate(self.xx, size.xx)
+
+# ------
+
+def mod(Coordinate c, Coordinate size):
+    """
+    mod based on ``size``
+    return ``x``
+    ``0 <= x < size``
+    """
+    cdef Coordinate x = Coordinate()
+    x.xx = cc.mod(c.xx, size.xx)
+    return x
+
+def smod(Coordinate c, Coordinate size):
+    """
+    smod based on ``size``
+    return ``x``
+    ``-size/2 <= x < size/2``
+    """
+    cdef Coordinate x = Coordinate()
+    x.xx = cc.smod(c.xx, size.xx)
+    return x
+
+def middle_mod(Coordinate x, Coordinate y, Coordinate size):
+    """
+    return middle of x and y
+    xm = mod(x, size)
+    ym = mod(y, size)
+    if xm<=ym: return mod(xm + smod(ym - xm, size), size)
+    else: return mod(ym + smod(xm - ym, size), size)
+    """
+    cdef Coordinate ret = Coordinate()
+    ret.xx = cc.middle_mod(x.xx, y.xx, size.xx)
+    return ret
 
 def coordinate_from_index(long index, size):
     cdef Coordinate x = Coordinate()

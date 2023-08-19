@@ -9,6 +9,9 @@ from . import c
 
 from .c import \
         Coordinate, \
+        mod, \
+        smod, \
+        middle_mod, \
         coordinate_from_index, \
         index_from_coordinate, \
         RngState, \
