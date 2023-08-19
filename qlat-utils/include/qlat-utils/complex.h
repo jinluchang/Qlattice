@@ -19,27 +19,15 @@ constexpr int qlat_aligned_bytes(int size) { return 1; }
 #define QLAT_ALIGNED_BYTES 16 // should divide all matrix sizes (which can convert with GPT).
 constexpr int qlat_aligned_bytes(int size)
 {
-  int n = 1;
-  if (size % 2 != 0) {
-    n = 1;
-  } else if (size % 4 != 0) {
-    n = 2;
-  } else if (size % 8 != 0) {
-    n = 4;
-  } else if (size % 16 != 0) {
-    n = 8;
-  } else if (size % 32 != 0) {
-    n = 16;
-  } else if (size % 64 != 0) {
-    n = 32;
-  } else if (size % 128 != 0) {
-    n = 64;
-  } else if (size % 256 != 0) {
-    n = 128;
-  } else {
-    n = 256;
-  }
-  return n;
+  return (size % 2 != 0)     ? 1
+         : (size % 4 != 0)   ? 2
+         : (size % 8 != 0)   ? 4
+         : (size % 16 != 0)  ? 8
+         : (size % 32 != 0)  ? 16
+         : (size % 64 != 0)  ? 32
+         : (size % 128 != 0) ? 64
+         : (size % 256 != 0) ? 128
+                             : 256;
 }
 #define ALIGN(SIZE) __attribute__((aligned(qlat_aligned_bytes(SIZE))))
 // #define ALIGN(SIZE) alignas(SIZE)
