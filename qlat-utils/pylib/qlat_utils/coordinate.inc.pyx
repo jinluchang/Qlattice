@@ -37,6 +37,20 @@ cdef class Coordinate:
         """
         return [ self.xx[0], self.xx[1], self.xx[2], self.xx[3], ]
 
+    def from_list(self, list x):
+        """
+        set value based on a list composed of the 4 components of the coordinate.
+        """
+        assert isinstance(x, (list, tuple,))
+        assert len(x) == 4
+        self.xx = cc.Coordinate(x[0], x[1], x[2], x[3])
+
+    def __getstate__(self):
+        return self.to_list()
+
+    def __setstate__(self, state):
+        self.from_list(state)
+
     def sqr(self):
         """
         Return the square sum of all the components as ``long``.
