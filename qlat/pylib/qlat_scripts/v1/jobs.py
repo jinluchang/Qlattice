@@ -565,7 +565,7 @@ def run_eig_strange(job_tag, traj, get_gf):
 
 # ----------
 
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def get_r_list(job_tag):
     total_site = q.Coordinate(rup.dict_params[job_tag]["total_site"])
     r_limit = q.get_r_limit(total_site)
@@ -573,7 +573,7 @@ def get_r_list(job_tag):
     # r_list = q.mk_r_list(r_limit, r_all_limit=0.0, r_scaling_factor=5.0) # old choice
     return r_list
 
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def get_r_sq_interp_idx_coef_list(job_tag):
     """
     Return [ (r_idx_low, r_idx_high, coef_low, coef_high,), ... ] indexed by r_sq

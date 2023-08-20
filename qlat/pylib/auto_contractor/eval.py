@@ -260,13 +260,13 @@ def benchmark_eval_cexpr(cexpr : CExpr, *,
         return positions_dict
     positions_dict_list = [ mk_pos_dict(k) for k in range(benchmark_size) ]
     #
-    @functools.cache
+    @functools.lru_cache(maxsize=None)
     def mk_prop(flavor, pos_snk, pos_src):
         prop = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop {flavor} {pos_snk} {pos_src}"))
         prop_ama = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop ama {flavor} {pos_snk} {pos_src}"))
         ama_val = mk_ama_val(prop, pos_src, [ prop, prop_ama, ], [ 0, 1, ], [ 1.0, 0.5, ])
         return ama_val
-    @functools.cache
+    @functools.lru_cache(maxsize=None)
     def mk_prop_uu(tag, p, mu):
         uu = make_rand_color_matrix(benchmark_rng_state.split(f"prop U {tag} {p} {mu}"))
         return uu

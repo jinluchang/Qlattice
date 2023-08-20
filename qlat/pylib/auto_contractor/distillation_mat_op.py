@@ -74,7 +74,7 @@ def load_prop(x):
         return q.ama_apply1(as_wilson_matrix_g5_herm, x[1])
     return q.ama_apply1(as_wilson_matrix, x)
 
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def get_gamma_matrix(mu):
     sm = q.get_gamma_matrix(mu)
     arr = np.asarray(sm)
