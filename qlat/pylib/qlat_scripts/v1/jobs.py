@@ -495,8 +495,10 @@ def run_gf_ape(job_tag, get_gf):
 
 @q.timer
 def compute_eig(gf, job_tag, inv_type = 0, inv_acc = 0, *, path = None):
-    # return a function ``get_eig''
-    # ``get_eig()'' return the ``eig''
+    """
+    return a function ``get_eig''
+    ``get_eig()'' return the ``eig''
+    """
     from . import rbc_ukqcd as ru
     load_eig = ru.load_eig_lazy(get_load_path(path), job_tag)
     if load_eig is not None:
