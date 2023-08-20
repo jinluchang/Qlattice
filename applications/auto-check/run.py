@@ -226,7 +226,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop):
 @q.timer_verbose
 def auto_contract_meson_corr_psnk_psrc_rand(job_tag, traj, get_get_prop):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk_psrc.lat"
+    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk_psrc_rand.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
