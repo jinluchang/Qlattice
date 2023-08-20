@@ -36,7 +36,9 @@ def get_load_path(*fns):
 
 @q.timer_verbose
 def check_job(job_tag, traj, fns_produce, fns_need):
-    # return False if config is finished or unavailable
+    """
+    return False if config is finished or unavailable
+    """
     is_job_done = True
     for fn in fns_produce:
         if get_load_path(fn) is None:
@@ -72,10 +74,13 @@ def run_gf(job_tag, traj):
             )
     if path_gf is None:
         if job_tag[:5] == "test-":
+            if not q.obtain_lock(f"locks/{job_tag}-{traj}-gauge_field"):
+                return None
             total_site = rup.get_total_site(job_tag)
             gf = rup.mk_sample_gauge_field_v3(job_tag, f"{traj}")
             path_gf = get_save_path(f"{job_tag}/configs/ckpoint_lat.{traj}")
             gf.save(path_gf)
+            q.release_lock()
         else:
             @q.timer_verbose
             def load_gf():
