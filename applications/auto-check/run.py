@@ -146,7 +146,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop):
         for val, t in val_list:
             values[t] += val
         return q.glb_sum(values.transpose(1, 0))
-    chunk_size=get_param(job_tag, "measurement", "auto_contractor_chunk_size", default = 128)
+    chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default = 128)
     q.timer_fork(0)
     res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=chunk_size)
     q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
@@ -214,6 +214,74 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop):
     q.timer_merge()
     res_sum *= 1.0 / (total_volume * total_volume / t_size)
     assert q.qnorm(res_sum[0].sum(1) - 1.0) < 1e-10
+    ld = q.mk_lat_data([
+        [ "expr_name", len(expr_names), expr_names, ],
+        [ "t_sep", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
+        [ "r", len(r_list), [ f"{r:.5f}" for r in r_list ], ],
+        ])
+    ld.from_numpy(res_sum)
+    ld.save(get_save_path(fn))
+    q.displayln_info(f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.5E}")
+
+@q.timer_verbose
+def auto_contract_meson_corr_psnk_psrc_rand(job_tag, traj, get_get_prop):
+    fname = q.get_fname()
+    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk_psrc.lat"
+    if get_load_path(fn) is not None:
+        return
+    cexpr = get_cexpr_meson_corr()
+    expr_names = get_cexpr_names(cexpr)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    t_size = total_site[3]
+    geo = q.Geometry(total_site, 1)
+    total_volume = geo.total_volume()
+    get_prop = get_get_prop()
+    xg_list = get_all_points(total_site)
+    xg_local_list = [ q.Coordinate(xg) for xg in geo.xg_list() ]
+    r_list = get_r_list(job_tag)
+    r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
+    sample_num = get_param(job_tag, "measurement", "auto_contract_meson_corr_psnk_psrc_rand", "sample_num", default=128)
+    sample_size = get_param(job_tag, "measurement", "auto_contract_meson_corr_psnk_psrc_rand", "sample_size", default=128)
+    rs = q.RngState(f"{job_tag}-{traj}-{fname}")
+    mpi_chunk = get_mpi_chunk(list(range(sample_num)))
+    def load_data():
+        for idx in mpi_chunk:
+            yield idx
+    @q.timer
+    def feval(args):
+        idx = args
+        res_list = []
+        for idx2 in range(sample_size):
+            rsi = rs.split(f"{idx}-{idx2}")
+            xg_src = rsi.c_rand_gen(total_site)
+            xg_snk = rsi.c_rand_gen(total_site)
+            x_rel = q.smod(xg_snk - xg_src, total_site)
+            r_sq = x_rel.r_sqr()
+            r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
+            t = x_rel[3]
+            pd = {
+                    "x_2": ("point", xg_snk,),
+                    "x_1": ("point", xg_src,),
+                    "size": total_site,
+                    }
+            val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
+            res_list.append((val, t, r_idx_low, r_idx_high, coef_low, coef_high))
+        return res_list
+    def sum_function(val_list):
+        values = np.zeros((t_size, len(r_list), len(expr_names),), dtype = complex)
+        for idx, res_list in enumerate(val_list):
+            for val, t, r_idx_low, r_idx_high, coef_low, coef_high in res_list:
+                values[t, r_idx_low] += coef_low * val
+                values[t, r_idx_high] += coef_high * val
+            q.displayln_info(f"{fname}: {idx+1}/{len(mpi_chunk)}")
+        return q.glb_sum(values.transpose(2, 0, 1))
+    q.timer_fork(0)
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
+    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
+    q.timer_display()
+    q.timer_merge()
+    res_sum *= 1.0 / (sample_num * sample_size / t_size)
+    # assert q.qnorm(res_sum[0].sum(1) - 1.0) < 1e-10
     ld = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
         [ "t_sep", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
@@ -293,6 +361,7 @@ def run_job(job_tag, traj):
         if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
             q.timer_fork()
             # ADJUST ME
+            auto_contract_meson_corr_psnk_psrc_rand(job_tag, traj, get_get_prop)
             auto_contract_meson_corr(job_tag, traj_gf, get_get_prop)
             auto_contract_meson_corr_psnk(job_tag, traj_gf, get_get_prop)
             auto_contract_meson_corr_psnk_psrc(job_tag, traj_gf, get_get_prop)
@@ -307,7 +376,7 @@ def run_job(job_tag, traj):
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
 
-set_param("test-4nt8", "trajs", value=[ 1000, 1010, ])
+set_param("test-4nt8", "trajs", value=list(range(1000, 1010)))
 set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step", value=2)
 set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step", value=8)
 set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj", value=1)
