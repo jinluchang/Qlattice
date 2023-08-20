@@ -376,30 +376,27 @@ def run_job(job_tag, traj):
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
 
-set_param("test-4nt8", "trajs", value=list(range(1000, 1010)))
-set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step", value=2)
-set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step", value=8)
-set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj", value=1)
-set_param("test-4nt8", "fermion_params", 0, 2, "Ls", value=8)
-set_param("test-4nt8", "fermion_params", 1, 2, "Ls", value=8)
-set_param("test-4nt8", "fermion_params", 2, 2, "Ls", value=8)
-set_param("test-4nt8", "lanc_params", 0, 0, "cheby_params", value={ "low": 0.8, "high": 5.5, "order": 20, })
-set_param("test-4nt8", "lanc_params", 0, 0, "irl_params", value={ "Nstop": 1000, "Nk": 1100, "Nm": 1300, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
-set_param("test-4nt8", "clanc_params", 0, 0, "nbasis", value=1000)
-set_param("test-4nt8", "clanc_params", 0, 0, "block", value=[ 4, 4, 2, 1, ])
-set_param("test-4nt8", "clanc_params", 0, 0, "cheby_params", value={ "low": 0.8, "high": 5.5, "order": 20, })
-set_param("test-4nt8", "clanc_params", 0, 0, "save_params", value={ "nsingle": 100, "mpi": [ 1, 1, 1, 4, ], })
-set_param("test-4nt8", "clanc_params", 0, 0, "irl_params", value={ "Nstop": 1000, "Nk": 1100, "Nm": 1300, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
-set_param("test-4nt8", "clanc_params", 1, 0, value=get_param("test-4nt8", "clanc_params", 0, 0).copy())
-set_param("test-4nt8", "lanc_params", 1, 0, value=get_param("test-4nt8", "lanc_params", 0, 0).copy())
-set_param("test-4nt8", "lanc_params", 1, 0, "fermion_params", value=get_param("test-4nt8", "fermion_params", 1, 0).copy())
+set_param("test-4nt16", "trajs", value=list(range(1000, 1010)))
+set_param("test-4nt16", "mk_sample_gauge_field", "rand_n_step", value=2)
+set_param("test-4nt16", "mk_sample_gauge_field", "flow_n_step", value=8)
+set_param("test-4nt16", "mk_sample_gauge_field", "hmc_n_traj", value=1)
+set_param("test-4nt16", "lanc_params", 0, 0, "cheby_params", value={ "low": 0.45, "high": 5.5, "order": 20, })
+set_param("test-4nt16", "lanc_params", 0, 0, "irl_params", value={ "Nstop": 1000, "Nk": 1100, "Nm": 1300, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
+set_param("test-4nt16", "clanc_params", 0, 0, "nbasis", value=1000)
+set_param("test-4nt16", "clanc_params", 0, 0, "block", value=[ 4, 4, 2, 2, ])
+set_param("test-4nt16", "clanc_params", 0, 0, "cheby_params", value={ "low": 0.45, "high": 5.5, "order": 20, })
+set_param("test-4nt16", "clanc_params", 0, 0, "save_params", value={ "nsingle": 100, "mpi": [ 1, 1, 1, 4, ], })
+set_param("test-4nt16", "clanc_params", 0, 0, "irl_params", value={ "Nstop": 1000, "Nk": 1100, "Nm": 1300, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
+set_param("test-4nt16", "clanc_params", 1, 0, value=get_param("test-4nt16", "clanc_params", 0, 0).copy())
+set_param("test-4nt16", "lanc_params", 1, 0, value=get_param("test-4nt16", "lanc_params", 0, 0).copy())
+set_param("test-4nt16", "lanc_params", 1, 0, "fermion_params", value=get_param("test-4nt16", "fermion_params", 1, 0).copy())
 
 set_param("test-4nt64", "trajs", value=list(range(1000, 1010)))
-set_param("test-4nt64", "lanc_params", 0, 0, "cheby_params", value={ "low": 0.25, "high": 5.5, "order": 30, })
+set_param("test-4nt64", "lanc_params", 0, 0, "cheby_params", value={ "low": 0.22, "high": 5.5, "order": 30, })
 set_param("test-4nt64", "lanc_params", 0, 0, "irl_params", value={ "Nstop": 1000, "Nk": 1100, "Nm": 1300, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
 set_param("test-4nt64", "clanc_params", 0, 0, "nbasis", value=1000)
 set_param("test-4nt64", "clanc_params", 0, 0, "block", value=[ 4, 4, 2, 8, ])
-set_param("test-4nt64", "clanc_params", 0, 0, "cheby_params", value={ "low": 0.25, "high": 5.5, "order": 30, })
+set_param("test-4nt64", "clanc_params", 0, 0, "cheby_params", value={ "low": 0.22, "high": 5.5, "order": 30, })
 set_param("test-4nt64", "clanc_params", 0, 0, "save_params", value={ "nsingle": 100, "mpi": [ 1, 1, 1, 4, ], })
 set_param("test-4nt64", "clanc_params", 0, 0, "irl_params", value={ "Nstop": 1000, "Nk": 1100, "Nm": 1300, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
 set_param("test-4nt64", "clanc_params", 1, 0, value=get_param("test-4nt64", "clanc_params", 0, 0).copy())
@@ -409,7 +406,7 @@ set_param("test-4nt64", "lanc_params", 1, 0, "fermion_params", value=get_param("
 qg.begin_with_gpt()
 
 job_tags = [
-        "test-4nt8",
+        "test-4nt16",
         # "test-4nt64",
         ]
 
