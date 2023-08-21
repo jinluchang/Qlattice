@@ -302,7 +302,7 @@ def auto_contract_meson_corr_psnk_psrc_rand(job_tag, traj, get_get_prop):
 def wave_function(p1, p2, radius, size):
     p1_tag, c1 = p1
     p2_tag, c2 = p2
-    c12 = smod(c1 - c2, size)
+    c12 = q.smod(c1 - c2, size)
     c12_r_sqr = c12.r_sqr()
     dis = math.sqrt(c12_r_sqr)
     wf = math.exp(-dis / radius)
@@ -331,12 +331,12 @@ def mk_meson_wf(f1, f2, p1, p2, radius, mom, is_dagger=False):
     if not is_dagger:
         q1b = Qb(f1, p1, s1, c)
         q2v = Qv(f2, p2, s2, c)
-        mf = mk_fac(f"momentum_factor({p2},{mom},size)")
+        mf = mk_fac(f"momentum_factor({mom},{p2},size)")
         return sympy.I * wf * mf * q1b * g5 * q2v + f"(i {f1}bar g5 {f2})({p1},{p2})"
     else:
         q2b = Qb(f2, p2, s1, c)
         q1v = Qv(f1, p1, s2, c)
-        mf = mk_fac(f"momentum_factor({p2},-{mom},size)")
+        mf = mk_fac(f"momentum_factor(-{mom},{p2},size)")
         return sympy.I * wf * mf * q2b * g5 * q1v + f"(i {f2}bar g5 {f1})({p2},{p1},{radius},{mom})"
 
 def mk_scalar_meson_wf(f1, f2, p1, p2, radius, mom, is_dagger=False):
@@ -350,12 +350,12 @@ def mk_scalar_meson_wf(f1, f2, p1, p2, radius, mom, is_dagger=False):
     if not is_dagger:
         q1b = Qb(f1, p1, s, c)
         q2v = Qv(f2, p2, s, c)
-        mf = mk_fac(f"momentum_factor({p2},{mom},size)")
+        mf = mk_fac(f"momentum_factor({mom},{p2},size)")
         return wf * mf * q1b * q2v + f"({f1}bar {f2})({p1},{p2})"
     else:
         q2b = Qb(f2, p2, s, c)
         q1v = Qv(f1, p1, s, c)
-        mf = mk_fac(f"momentum_factor({p2},-{mom},size)")
+        mf = mk_fac(f"momentum_factor(-{mom},{p2},size)")
         return wf * mf * q2b * q1v + f"({f2}bar {f1})({p2},{p1},{radius},{mom})"
 
 def mk_pi_0_wf(p1, p2, mom, is_dagger=False):
