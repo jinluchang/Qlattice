@@ -504,7 +504,7 @@ def get_cexpr_meson_corr_wf():
         exprs = [ mk_fac(1) + f"1", ]
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (-mk_pi_m_wf("x_2", "y_2", -mom) * mk_pi_p_wf("x_1", "y_1", mom))
+                (-mk_pi_m_wf("y_2", "x_2", -mom) * mk_pi_p_wf("x_1", "y_1", mom))
                 )
         exprs += get_mom_avg_expr_list(
                 lambda mom:
@@ -512,7 +512,7 @@ def get_cexpr_meson_corr_wf():
                 )
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (-mk_kk_m_wf("x_2", "y_2", -mom) * mk_kk_p_wf("x_1", "y_1", mom))
+                (-mk_kk_m_wf("y_2", "x_2", -mom) * mk_kk_p_wf("x_1", "y_1", mom))
                 )
         exprs += get_mom_avg_expr_list(
                 lambda mom:
@@ -520,7 +520,7 @@ def get_cexpr_meson_corr_wf():
                 )
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (mk_sigma_wf("x_2", "y_2", -mom) * mk_sigma_wf("x_1", "y_1", mom))
+                (mk_sigma_wf("y_2", "x_2", -mom) * mk_sigma_wf("x_1", "y_1", mom))
                 )
         exprs += get_mom_avg_expr_list(
                 lambda mom:
