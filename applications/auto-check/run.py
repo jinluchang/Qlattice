@@ -492,8 +492,13 @@ def get_cexpr_meson_corr_wf():
             for mom_idx, mom_list in all_mom_list_dict.items():
                 expr = 0
                 fac = 1 / mk_sym(len(mom_list))
+                desp = ""
                 for mom in mom_list:
-                    expr += fac * f(mom)
+                    e = f(mom)
+                    if desp == "":
+                        desp = e.description
+                    expr += fac * e
+                expr = expr + desp
                 expr_list.append(expr)
             return expr_list
         exprs = [ mk_fac(1) + f"1", ]
@@ -544,8 +549,8 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
     get_prop = get_get_prop()
     xg_list = get_all_points(total_site)
     xg_local_list = [ q.Coordinate(xg) for xg in geo.xg_list() ]
-    sample_num = get_param(job_tag, "measurement", "auto_contract_meson_corr_wf", "sample_num", default=32)
-    sample_size = get_param(job_tag, "measurement", "auto_contract_meson_corr_wf", "sample_size", default=128 * 1024)
+    sample_num = get_param(job_tag, "measurement", "auto_contract_meson_corr_wf", "sample_num", default=128)
+    sample_size = get_param(job_tag, "measurement", "auto_contract_meson_corr_wf", "sample_size", default=32 * 1024)
     rs = q.RngState(f"{job_tag}-{traj}-{fname}")
     mpi_chunk = get_mpi_chunk(list(range(sample_num)))
     def load_data():
@@ -705,7 +710,7 @@ set_param("test-4nt16", "clanc_params", 1, 0, value=get_param("test-4nt16", "cla
 set_param("test-4nt16", "lanc_params", 1, 0, value=get_param("test-4nt16", "lanc_params", 0, 0).copy())
 set_param("test-4nt16", "lanc_params", 1, 0, "fermion_params", value=get_param("test-4nt16", "fermion_params", 1, 0).copy())
 
-set_param("test-4nt64", "trajs", value=list(range(1000, 1010)))
+set_param("test-4nt64", "trajs", value=list(range(1000, 1127)))
 set_param("test-4nt64", "lanc_params", 0, 0, "cheby_params", value={ "low": 0.22, "high": 5.5, "order": 30, })
 set_param("test-4nt64", "lanc_params", 0, 0, "irl_params", value={ "Nstop": 1000, "Nk": 1100, "Nm": 1300, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
 set_param("test-4nt64", "clanc_params", 0, 0, "nbasis", value=1000)
