@@ -8,6 +8,8 @@ import os
 import time
 import importlib
 import sys
+import math
+import cmath
 
 import qlat_gpt as qg
 
@@ -56,7 +58,11 @@ def get_cexpr_meson_corr():
                 sum([ mk_j5k_mu("x_2", mu) * mk_j5k_mu("x_1", mu, True) for mu in range(4) ])
                 + f"j5k_mu(0) * j5k_mu^dag(-tsep)",
                 ]
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
+        cexpr = contract_simplify_compile(
+                *exprs,
+                is_isospin_symmetric_limit=True,
+                diagram_type_dict=diagram_type_dict,
+                )
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
@@ -88,10 +94,10 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop):
                 "x_1": ("wall", t_src,),
                 "size": total_site,
                 }
-        val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
+        val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
         return val, t
     def sum_function(val_list):
-        values = np.zeros((t_size, len(expr_names),), dtype = complex)
+        values = np.zeros((t_size, len(expr_names),), dtype=complex)
         for val, t in val_list:
             values[t] += val
         return q.glb_sum(values.transpose(1, 0))
@@ -139,10 +145,10 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop):
                 "x_1" : ("wall", t_src,),
                 "size" : total_site,
                 }
-        val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
+        val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
         return val, t
     def sum_function(val_list):
-        values = np.zeros((t_size, len(expr_names),), dtype = complex)
+        values = np.zeros((t_size, len(expr_names),), dtype=complex)
         for val, t in val_list:
             values[t] += val
         return q.glb_sum(values.transpose(1, 0))
@@ -196,11 +202,11 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop):
                     "x_1": ("point", xg_src,),
                     "size": total_site,
                     }
-            val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
-            res_list.append((val, t, r_idx_low, r_idx_high, coef_low, coef_high))
+            val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
+            res_list.append((val, t, r_idx_low, r_idx_high, coef_low, coef_high,))
         return res_list
     def sum_function(val_list):
-        values = np.zeros((t_size, len(r_list), len(expr_names),), dtype = complex)
+        values = np.zeros((t_size, len(r_list), len(expr_names),), dtype=complex)
         for idx, res_list in enumerate(val_list):
             for val, t, r_idx_low, r_idx_high, coef_low, coef_high in res_list:
                 values[t, r_idx_low] += coef_low * val
@@ -264,11 +270,11 @@ def auto_contract_meson_corr_psnk_psrc_rand(job_tag, traj, get_get_prop):
                     "x_1": ("point", xg_src,),
                     "size": total_site,
                     }
-            val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
-            res_list.append((val, t, r_idx_low, r_idx_high, coef_low, coef_high))
+            val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
+            res_list.append((val, t, r_idx_low, r_idx_high, coef_low, coef_high,))
         return res_list
     def sum_function(val_list):
-        values = np.zeros((t_size, len(r_list), len(expr_names),), dtype = complex)
+        values = np.zeros((t_size, len(r_list), len(expr_names),), dtype=complex)
         for idx, res_list in enumerate(val_list):
             for val, t, r_idx_low, r_idx_high, coef_low, coef_high in res_list:
                 values[t, r_idx_low] += coef_low * val
@@ -286,6 +292,312 @@ def auto_contract_meson_corr_psnk_psrc_rand(job_tag, traj, get_get_prop):
         [ "expr_name", len(expr_names), expr_names, ],
         [ "t_sep", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
         [ "r", len(r_list), [ f"{r:.5f}" for r in r_list ], ],
+        ])
+    ld.from_numpy(res_sum)
+    ld.save(get_save_path(fn))
+    q.displayln_info(f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.5E}")
+
+# ----
+
+def wave_function(p1, p2, radius, size):
+    p1_tag, c1 = p1
+    p2_tag, c2 = p2
+    c12 = smod(c1 - c2, size)
+    c12_r_sqr = c12.r_sqr()
+    dis = math.sqrt(c12_r_sqr)
+    wf = math.exp(-dis / radius)
+    return wf
+
+def momentum_factor(mom, p, size, is_dagger=False):
+    p_tag, c = p
+    phase = mom[0] * c[0] / size[0] + mom[1] * c[1] / size[1] + mom[2] * c[2] / size[2]
+    phase = phase * 2.0 * math.pi
+    if not is_dagger:
+        mf = cmath.rect(1.0, phase)
+    else:
+        mf = cmath.rect(1.0, -phase)
+    return mf
+
+def mk_meson_wf(f1, f2, p1, p2, radius, mom, is_dagger=False):
+    """
+    i q1bar g5 q2 #dag: i q2bar g5 q1
+    return the actual dagger of the operator
+    """
+    s1 = new_spin_index()
+    s2 = new_spin_index()
+    c = new_color_index()
+    g5 = G(5, s1, s2)
+    wf = mk_fac(f"wave_function({p1},{p2},{radius},size)")
+    if not is_dagger:
+        q1b = Qb(f1, p1, s1, c)
+        q2v = Qv(f2, p2, s2, c)
+        mf = mk_fac(f"momentum_factor({p2},{mom},size)")
+        return sympy.I * wf * mf * q1b * g5 * q2v + f"(i {f1}bar g5 {f2})({p1},{p2})"
+    else:
+        q2b = Qb(f2, p2, s1, c)
+        q1v = Qv(f1, p1, s2, c)
+        mf = mk_fac(f"momentum_factor({p2},-{mom},size)")
+        return sympy.I * wf * mf * q2b * g5 * q1v + f"(i {f2}bar g5 {f1})({p2},{p1},{radius},{mom})"
+
+def mk_scalar_meson_wf(f1, f2, p1, p2, radius, mom, is_dagger=False):
+    """
+    i q1bar g5 q2 #dag: i q2bar g5 q1
+    return the actual dagger of the operator
+    """
+    s = new_spin_index()
+    c = new_color_index()
+    wf = mk_fac(f"wave_function({p1},{p2},{radius},size)")
+    if not is_dagger:
+        q1b = Qb(f1, p1, s, c)
+        q2v = Qv(f2, p2, s, c)
+        mf = mk_fac(f"momentum_factor({p2},{mom},size)")
+        return wf * mf * q1b * q2v + f"({f1}bar {f2})({p1},{p2})"
+    else:
+        q2b = Qb(f2, p2, s, c)
+        q1v = Qv(f1, p1, s, c)
+        mf = mk_fac(f"momentum_factor({p2},-{mom},size)")
+        return wf * mf * q2b * q1v + f"({f2}bar {f1})({p2},{p1},{radius},{mom})"
+
+def mk_pi_0_wf(p1, p2, mom, is_dagger=False):
+    """
+    i/sqrt(2) * (ubar g5 u - dbar g5 d)  #dag: same
+    """
+    radius = "r_pi"
+    return 1 / sympy.sqrt(2) * (
+            mk_meson_wf("u", "u", p1, p2, radius, mom, is_dagger)
+            - mk_meson_wf("d", "d", p1, p2, radius, mom, is_dagger)
+            ) + f"pi0({p1},{p2},{radius},{mom}){show_dagger(is_dagger)}"
+
+def mk_pi_p_wf(p1, p2, mom, is_dagger=False):
+    """
+    i ubar g5 d  #dag: i dbar g5 u
+    """
+    radius = "r_pi"
+    return (mk_meson_wf("u", "d", p1, p2, radius, mom, is_dagger)
+            + f"pi+({p1},{p2},{radius},{mom}){show_dagger(is_dagger)}")
+
+def mk_pi_m_wf(p1, p2, mom, is_dagger=False):
+    """
+    -i dbar g5 u  #dag: -i ubar g5 d
+    """
+    radius = "r_pi"
+    return (-mk_meson_wf("d", "u", p1, p2, radius, mom, is_dagger)
+            + f"pi-({p1},{p2},{radius},{mom}){show_dagger(is_dagger)}")
+
+def mk_sigma_wf(p1, p2, mom, is_dagger=False):
+    """
+    1/sqrt(2) * (ubar u + dbar d)
+    """
+    radius = "r_sigma"
+    return 1 / sympy.sqrt(2) * (
+            mk_scalar_meson_wf("u", "u", p1, p2, radius, mom, is_dagger)
+            + mk_scalar_meson_wf("d", "d", p1, p2, radius, mom, is_dagger)
+            ) + f"sigma({p1},{p2},{radius},{mom}){show_dagger(is_dagger)}"
+
+def mk_kk_p_wf(p1, p2, mom, is_dagger=False):
+    """
+    i ubar g5 s  #dag:  i sbar g5 u
+    """
+    radius = "r_kk"
+    return (mk_meson_wf("u", "s", p1, p2, radius, mom, is_dagger)
+            + f"K+({p1},{p2},{radius},{mom}){show_dagger(is_dagger)}")
+
+def mk_kk_m_wf(p1, p2, mom, is_dagger=False):
+    """
+    -i sbar g5 u  #dag: -i ubar g5 s
+    """
+    radius = "r_kk"
+    return (-mk_meson_wf("s", "u", p1, p2, radius, mom, is_dagger)
+            + f"K-({p1},{p2},{radius},{mom}){show_dagger(is_dagger)}")
+
+def mk_kk_0_wf(p1, p2, mom, is_dagger=False):
+    """
+    i dbar g5 s  #dag: i sbar g5 d
+    """
+    radius = "r_kk"
+    return (mk_meson_wf("d", "s", p1, p2, radius, mom, is_dagger)
+            + f"K0({p1},{p2},{radius},{mom}){show_dagger(is_dagger)}")
+
+def mk_kk_0_bar_wf(p1, p2, mom, is_dagger=False):
+    """
+    -i sbar g5 d  #dag: -i dbar g5 s
+    """
+    radius = "r_kk"
+    return (-mk_meson_wf("s", "d", p1, p2, radius, mom, is_dagger)
+            + f"K0b({p1},{p2},{radius},{mom}){show_dagger(is_dagger)}")
+
+# ----
+
+all_mom_list_dict = {
+        0: [
+            q.Coordinate([ 0, 0, 0, 0, ]),
+            ],
+        1: [
+            q.Coordinate([ 0, 0, 1, 0, ]),
+            q.Coordinate([ 0, 1, 0, 0, ]),
+            q.Coordinate([ 1, 0, 0, 0, ]),
+            q.Coordinate([ 0, 0, -1, 0, ]),
+            q.Coordinate([ 0, -1, 0, 0, ]),
+            q.Coordinate([ -1, 0, 0, 0, ]),
+            ],
+        2: [
+            q.Coordinate([ 0, 1, 1, 0, ]),
+            q.Coordinate([ 1, 0, 1, 0, ]),
+            q.Coordinate([ 1, 1, 0, 0, ]),
+            q.Coordinate([ 0, -1, 1, 0, ]),
+            q.Coordinate([ -1, 0, 1, 0, ]),
+            q.Coordinate([ -1, 1, 0, 0, ]),
+            q.Coordinate([ 0, 1, -1, 0, ]),
+            q.Coordinate([ 1, 0, -1, 0, ]),
+            q.Coordinate([ 1, -1, 0, 0, ]),
+            q.Coordinate([ 0, -1, -1, 0, ]),
+            q.Coordinate([ -1, 0, -1, 0, ]),
+            q.Coordinate([ -1, -1, 0, 0, ]),
+            ],
+        3: [
+            q.Coordinate([ 1, 1, 1, 0, ]),
+            q.Coordinate([ -1, 1, 1, 0, ]),
+            q.Coordinate([ 1, -1, 1, 0, ]),
+            q.Coordinate([ -1, -1, 1, 0, ]),
+            q.Coordinate([ 1, 1, -1, 0, ]),
+            q.Coordinate([ -1, 1, -1, 0, ]),
+            q.Coordinate([ 1, -1, -1, 0, ]),
+            q.Coordinate([ -1, -1, -1, 0, ]),
+            ],
+        4: [
+            q.Coordinate([ 0, 0, 2, 0, ]),
+            q.Coordinate([ 0, 2, 0, 0, ]),
+            q.Coordinate([ 2, 0, 0, 0, ]),
+            q.Coordinate([ 0, 0, -2, 0, ]),
+            q.Coordinate([ 0, -2, 0, 0, ]),
+            q.Coordinate([ -2, 0, 0, 0, ]),
+            ],
+        }
+
+def get_mom_list(mom_idx):
+    return all_mom_list_dict[mom_idx]
+
+# ----
+
+@q.timer
+def get_cexpr_meson_corr_wf():
+    fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_corr_wf"
+    def calc_cexpr():
+        diagram_type_dict = dict()
+        def get_mom_avg_expr_list(f):
+            """
+            f(mom) -> expr
+            """
+            expr_list = []
+            for mom_idx, mom_list in all_mom_list_dict.items():
+                expr = 0
+                fac = 1 / mk_sym(len(mom_list))
+                for mom in mom_list:
+                    expr += fac * f(mom)
+                expr_list.append(expr)
+            return expr_list
+        exprs = [ mk_fac(1) + f"1", ]
+        exprs += get_mom_avg_expr_list(
+                lambda mom:
+                (-mk_pi_m_wf("x_2", "y_2", -mom) * mk_pi_p_wf("x_1", "y_1", mom))
+                )
+        exprs += get_mom_avg_expr_list(
+                lambda mom:
+                (mk_pi_p_wf("x_2", "y_2", mom, True) * mk_pi_p_wf("x_1", "y_1", mom))
+                )
+        exprs += get_mom_avg_expr_list(
+                lambda mom:
+                (-mk_kk_m_wf("x_2", "y_2", -mom) * mk_kk_p_wf("x_1", "y_1", mom))
+                )
+        exprs += get_mom_avg_expr_list(
+                lambda mom:
+                (mk_kk_p_wf("x_2", "y_2", mom, True) * mk_kk_p_wf("x_1", "y_1", mom))
+                )
+        exprs += get_mom_avg_expr_list(
+                lambda mom:
+                (mk_sigma_wf("x_2", "y_2", -mom) * mk_sigma_wf("x_1", "y_1", mom))
+                )
+        exprs += get_mom_avg_expr_list(
+                lambda mom:
+                (mk_sigma_wf("x_2", "y_2", mom, True) * mk_sigma_wf("x_1", "y_1", mom))
+                )
+        cexpr = contract_simplify_compile(
+                *exprs,
+                is_isospin_symmetric_limit=True,
+                diagram_type_dict=diagram_type_dict,
+                )
+        return cexpr
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
+
+@q.timer_verbose
+def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
+    fname = q.get_fname()
+    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_wf.lat"
+    if get_load_path(fn) is not None:
+        return
+    cexpr = get_cexpr_meson_corr_wf()
+    expr_names = get_cexpr_names(cexpr)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    t_size = total_site[3]
+    geo = q.Geometry(total_site, 1)
+    total_volume = geo.total_volume()
+    get_prop = get_get_prop()
+    xg_list = get_all_points(total_site)
+    xg_local_list = [ q.Coordinate(xg) for xg in geo.xg_list() ]
+    sample_num = get_param(job_tag, "measurement", "auto_contract_meson_corr_wf", "sample_num", default=32)
+    sample_size = get_param(job_tag, "measurement", "auto_contract_meson_corr_wf", "sample_size", default=128 * 1024)
+    rs = q.RngState(f"{job_tag}-{traj}-{fname}")
+    mpi_chunk = get_mpi_chunk(list(range(sample_num)))
+    def load_data():
+        for idx in mpi_chunk:
+            yield idx
+    @q.timer
+    def feval(args):
+        idx = args
+        res_list = []
+        for idx2 in range(sample_size):
+            rsi = rs.split(f"{idx}-{idx2}")
+            x_1 = rsi.c_rand_gen(total_site)
+            x_2 = rsi.c_rand_gen(total_site)
+            y_1 = rsi.c_rand_gen(total_site)
+            y_1[3] = x_1[3]
+            y_2 = rsi.c_rand_gen(total_site)
+            y_2[3] = x_2[3]
+            x_2_1_rel = q.smod(x_2 - x_1, total_site)
+            t_sep = x_2_1_rel[3]
+            pd = {
+                    "x_2": ("point", x_2,),
+                    "y_2": ("point", y_2,),
+                    "x_1": ("point", x_1,),
+                    "y_1": ("point", y_1,),
+                    "size": total_site,
+                    "wave_function": wave_function,
+                    "momentum_factor": momentum_factor,
+                    "Coordinate": q.Coordinate,
+                    "r_pi": 1.5,
+                    "r_sigma": 1.5,
+                    "r_kk": 2.0,
+                    }
+            val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
+            res_list.append((val, t_sep,))
+        return res_list
+    def sum_function(val_list):
+        values = np.zeros((t_size, len(expr_names),), dtype=complex)
+        for idx, res_list in enumerate(val_list):
+            for val, t_sep, in res_list:
+                values[t_sep] += val
+            q.displayln_info(f"{fname}: {idx+1}/{len(mpi_chunk)}")
+        return q.glb_sum(values.transpose(1, 0,))
+    q.timer_fork(0)
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
+    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
+    q.timer_display()
+    q.timer_merge()
+    res_sum *= 1.0 / (sample_num * sample_size / t_size)
+    # assert q.qnorm(res_sum[0].sum(1) - 1.0) < 1e-10
+    ld = q.mk_lat_data([
+        [ "expr_name", len(expr_names), expr_names, ],
+        [ "t_sep", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
@@ -361,7 +673,9 @@ def run_job(job_tag, traj):
         if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
             q.timer_fork()
             # ADJUST ME
+            auto_contract_meson_corr_wf(job_tag, traj, get_get_prop)
             auto_contract_meson_corr_psnk_psrc_rand(job_tag, traj, get_get_prop)
+            #
             auto_contract_meson_corr(job_tag, traj_gf, get_get_prop)
             auto_contract_meson_corr_psnk(job_tag, traj_gf, get_get_prop)
             auto_contract_meson_corr_psnk_psrc(job_tag, traj_gf, get_get_prop)
