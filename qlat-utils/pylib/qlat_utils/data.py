@@ -213,13 +213,17 @@ class Data:
 ###
 
 def add_jk_idx(arr):
-    # arr: no jk index
-    # return: add trivial jk index in the LAST axis
+    """
+    arr: no jk index
+    return: add trivial jk index in the LAST axis
+    """
     return arr.reshape(arr.shape + (1,))
 
 def jk_transpose(arr):
-    # arr: jk index is the 0th axis
-    # return: jk index is the last axis
+    """
+    arr: jk index is the 0th axis
+    return: jk index is the last axis
+    """
     shape = arr.shape
     ndim = len(shape)
     if ndim <= 1:
@@ -228,7 +232,9 @@ def jk_transpose(arr):
     return arr.transpose(axes)
 
 def jk_transpose_back(arr):
-    # jk_transpose_back(jk_transpose(arr)) == arr
+    """
+    jk_transpose_back(jk_transpose(arr)) == arr
+    """
     shape = arr.shape
     ndim = len(shape)
     if ndim <= 1:
@@ -242,8 +248,10 @@ def average(data_list):
     return 1/n * v
 
 def block_data(data_list, block_size, is_overlapping = True):
-    # return the list of block averages
-    # the blocks may overlap if is_overlapping == True
+    """
+    return the list of block averages
+    the blocks may overlap if is_overlapping == True
+    """
     if block_size == 1:
         return data_list
     assert block_size >= 1
@@ -296,17 +304,16 @@ def fsqr(data):
         r = data.real
         i = data.imag
         return complex(r * r, i * i)
-    elif isinstance(data, np.ndarray):
+    elif isinstance(data, Data):
+        return Data(fsqr(data.val))
+    else:
+        # Assuming np.ndarray like object
         if data.dtype in [ np.float64, np.float128, np.int64, ]:
             return np.square(data)
         elif data.dtype in [ np.complex128, np.complex256, ]:
             return np.square(data.real) + 1j * np.square(data.imag)
         else:
             raise Exception(f"fsqr data={data} type not supported")
-    elif isinstance(data, Data):
-        return Data(fsqr(data.val))
-    else:
-        raise Exception(f"fsqr data={data} type not supported")
 
 def fsqrt(data):
     if isinstance(data, (float, np.float128, int,)):
@@ -315,25 +322,26 @@ def fsqrt(data):
         r = data.real
         i = data.imag
         return complex(math.sqrt(r), math.sqrt(i))
-    elif isinstance(data, np.ndarray):
+    elif isinstance(data, Data):
+        return Data(fsqrt(data.val))
+    else:
+        # Assuming np.ndarray like object
         if data.dtype in [ np.float64, np.float128, np.int64, ]:
             return np.sqrt(data)
         elif data.dtype in [ np.complex128, np.complex256, ]:
             return np.sqrt(data.real) + 1j * np.sqrt(data.imag)
         else:
             raise Exception(f"fsqr data={data} type not supported")
-    elif isinstance(data, Data):
-        return Data(fsqrt(data.val))
-    else:
-        raise Exception(f"fsqr {data} type not supported")
 
 def jk_avg(jk_list):
     return jk_list[0]
 
 def jk_err(jk_list, eps = 1, *, block_size = 1):
-    """Return \\frac{1}{eps} \\sqrt{ \\sum_{i=1}^N (jk[i] - jk_avg)^2 } when block_size=1
+    """
+    Return \\frac{1}{eps} \\sqrt{ \\sum_{i=1}^N (jk[i] - jk_avg)^2 } when block_size=1
     Note: len(jk_list) = N + 1
-    Same eps as the eps used in the 'jackknife' function"""
+    Same eps as the eps used in the 'jackknife' function
+    """
     avg = jk_avg(jk_list)
     blocks = block_data(jk_list[1:], block_size)
     diff_sqr = average([ fsqr(jk - avg) for jk in blocks ])
