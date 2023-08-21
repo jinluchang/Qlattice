@@ -503,6 +503,7 @@ def get_cexpr_meson_corr_wf():
                 expr_list.append(expr)
             return expr_list
         vol = mk_fac("size[0] * size[1] * size[2]") + "vol"
+        sqrt_vol = mk_fac("sqrt(size[0] * size[1] * size[2])") + "sqrt_vol"
         exprs = [ mk_fac(1) + f"1", ]
         exprs += get_mom_avg_expr_list(
                 lambda mom:
@@ -527,6 +528,22 @@ def get_cexpr_meson_corr_wf():
         exprs += get_mom_avg_expr_list(
                 lambda mom:
                 (vol * mk_sigma_wf("x_2", "y_2", mom, True) * mk_sigma_wf("x_1", "y_1", mom))
+                )
+        exprs += get_mom_avg_expr_list(
+                lambda mom:
+                (sqrt_vol * mk_sigma_wf("x_1", "y_1", mom))
+                )
+        exprs += get_mom_avg_expr_list(
+                lambda mom:
+                (sqrt_vol * mk_sigma_wf("x_1", "y_1", mom))
+                )
+        exprs += get_mom_avg_expr_list(
+                lambda mom:
+                (sqrt_vol * mk_sigma_wf("y_2", "x_2", -mom))
+                )
+        exprs += get_mom_avg_expr_list(
+                lambda mom:
+                (sqrt_vol * mk_sigma_wf("x_2", "y_2", mom, True))
                 )
         cexpr = contract_simplify_compile(
                 *exprs,
@@ -580,10 +597,11 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
                     "size": total_site,
                     "wave_function": wave_function,
                     "momentum_factor": momentum_factor,
-                    "Coordinate": q.Coordinate,
                     "r_pi": 1.5,
                     "r_sigma": 1.5,
                     "r_kk": 2.0,
+                    "Coordinate": q.Coordinate,
+                    "sqrt": math.sqrt,
                     }
             val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
             res_list.append((val, t_sep,))
@@ -712,7 +730,7 @@ set_param("test-4nt16", "clanc_params", 1, 0, value=get_param("test-4nt16", "cla
 set_param("test-4nt16", "lanc_params", 1, 0, value=get_param("test-4nt16", "lanc_params", 0, 0).copy())
 set_param("test-4nt16", "lanc_params", 1, 0, "fermion_params", value=get_param("test-4nt16", "fermion_params", 1, 0).copy())
 
-set_param("test-4nt64", "trajs", value=list(range(1000, 1127)))
+set_param("test-4nt64", "trajs", value=list(range(1000, 1128)))
 set_param("test-4nt64", "lanc_params", 0, 0, "cheby_params", value={ "low": 0.22, "high": 5.5, "order": 30, })
 set_param("test-4nt64", "lanc_params", 0, 0, "irl_params", value={ "Nstop": 1000, "Nk": 1100, "Nm": 1300, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
 set_param("test-4nt64", "clanc_params", 0, 0, "nbasis", value=1000)
