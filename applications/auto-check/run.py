@@ -305,7 +305,8 @@ def wave_function(p1, p2, radius, size):
     c12 = q.smod(c1 - c2, size)
     c12_r_sqr = c12.r_sqr()
     dis = math.sqrt(c12_r_sqr)
-    wf = math.exp(-dis / radius)
+    vol = size[0] * size[1] * size[2]
+    wf = vol * math.exp(-dis / radius)
     return wf
 
 def momentum_factor(mom, p, size, is_dagger=False):
@@ -501,30 +502,31 @@ def get_cexpr_meson_corr_wf():
                 expr = expr + desp
                 expr_list.append(expr)
             return expr_list
+        vol = mk_fac("size[0] * size[1] * size[2]") + "vol"
         exprs = [ mk_fac(1) + f"1", ]
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (-mk_pi_m_wf("y_2", "x_2", -mom) * mk_pi_p_wf("x_1", "y_1", mom))
+                (-vol * mk_pi_m_wf("y_2", "x_2", -mom) * mk_pi_p_wf("x_1", "y_1", mom))
                 )
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (mk_pi_p_wf("x_2", "y_2", mom, True) * mk_pi_p_wf("x_1", "y_1", mom))
+                (vol * mk_pi_p_wf("x_2", "y_2", mom, True) * mk_pi_p_wf("x_1", "y_1", mom))
                 )
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (-mk_kk_m_wf("y_2", "x_2", -mom) * mk_kk_p_wf("x_1", "y_1", mom))
+                (-vol * mk_kk_m_wf("y_2", "x_2", -mom) * mk_kk_p_wf("x_1", "y_1", mom))
                 )
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (mk_kk_p_wf("x_2", "y_2", mom, True) * mk_kk_p_wf("x_1", "y_1", mom))
+                (vol * mk_kk_p_wf("x_2", "y_2", mom, True) * mk_kk_p_wf("x_1", "y_1", mom))
                 )
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (mk_sigma_wf("y_2", "x_2", -mom) * mk_sigma_wf("x_1", "y_1", mom))
+                (vol * mk_sigma_wf("y_2", "x_2", -mom) * mk_sigma_wf("x_1", "y_1", mom))
                 )
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (mk_sigma_wf("x_2", "y_2", mom, True) * mk_sigma_wf("x_1", "y_1", mom))
+                (vol * mk_sigma_wf("x_2", "y_2", mom, True) * mk_sigma_wf("x_1", "y_1", mom))
                 )
         cexpr = contract_simplify_compile(
                 *exprs,
