@@ -306,7 +306,7 @@ def wave_function(p1, p2, radius, size):
     c12_r_sqr = c12.r_sqr()
     dis = math.sqrt(c12_r_sqr)
     vol = size[0] * size[1] * size[2]
-    wf = vol * math.exp(-dis / radius)
+    wf = vol**2 * math.exp(-dis / radius)
     return wf
 
 def momentum_factor(mom, p, size, is_dagger=False):
@@ -502,48 +502,46 @@ def get_cexpr_meson_corr_wf():
                 expr = expr + desp
                 expr_list.append(expr)
             return expr_list
-        vol = mk_fac("size[0] * size[1] * size[2]") + "vol"
-        sqrt_vol = mk_fac("sqrt(size[0] * size[1] * size[2])") + "sqrt_vol"
         exprs = [ mk_fac(1) + f"1", ]
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (-vol * mk_pi_m_wf("y_2", "x_2", -mom) * mk_pi_p_wf("x_1", "y_1", mom))
+                (-mk_pi_m_wf("y_2", "x_2", -mom) * mk_pi_p_wf("x_1", "y_1", mom))
                 )
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (vol * mk_pi_p_wf("x_2", "y_2", mom, True) * mk_pi_p_wf("x_1", "y_1", mom))
+                (mk_pi_p_wf("x_2", "y_2", mom, True) * mk_pi_p_wf("x_1", "y_1", mom))
                 )
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (-vol * mk_kk_m_wf("y_2", "x_2", -mom) * mk_kk_p_wf("x_1", "y_1", mom))
+                (-mk_kk_m_wf("y_2", "x_2", -mom) * mk_kk_p_wf("x_1", "y_1", mom))
                 )
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (vol * mk_kk_p_wf("x_2", "y_2", mom, True) * mk_kk_p_wf("x_1", "y_1", mom))
+                (mk_kk_p_wf("x_2", "y_2", mom, True) * mk_kk_p_wf("x_1", "y_1", mom))
                 )
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (vol * mk_sigma_wf("y_2", "x_2", -mom) * mk_sigma_wf("x_1", "y_1", mom))
+                (mk_sigma_wf("y_2", "x_2", -mom) * mk_sigma_wf("x_1", "y_1", mom))
                 )
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (vol * mk_sigma_wf("x_2", "y_2", mom, True) * mk_sigma_wf("x_1", "y_1", mom))
+                (mk_sigma_wf("x_2", "y_2", mom, True) * mk_sigma_wf("x_1", "y_1", mom))
                 )
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (sqrt_vol * mk_sigma_wf("x_1", "y_1", mom))
+                (mk_sigma_wf("x_1", "y_1", mom))
                 )
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (sqrt_vol * mk_sigma_wf("x_1", "y_1", mom))
+                (mk_sigma_wf("x_1", "y_1", mom))
                 )
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (sqrt_vol * mk_sigma_wf("y_2", "x_2", -mom))
+                (mk_sigma_wf("y_2", "x_2", -mom))
                 )
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (sqrt_vol * mk_sigma_wf("x_2", "y_2", mom, True))
+                (mk_sigma_wf("x_2", "y_2", mom, True))
                 )
         cexpr = contract_simplify_compile(
                 *exprs,
@@ -601,7 +599,6 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
                     "r_sigma": 1.5,
                     "r_kk": 2.0,
                     "Coordinate": q.Coordinate,
-                    "sqrt": math.sqrt,
                     }
             val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
             res_list.append((val, t_sep,))
