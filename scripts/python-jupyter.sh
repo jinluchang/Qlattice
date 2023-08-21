@@ -18,6 +18,7 @@ source qcore/set-prefix.sh $name
     time-run pip3 install $opts jupyterhub
     time-run pip3 install $opts virtualenv
     time-run pip3 install $opts pandas
+    time-run pip3 install $opts xarray
     time-run pip3 install $opts plotly
     time-run pip3 install $opts squarify
     time-run pip3 install $opts dash
