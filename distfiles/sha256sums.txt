@@ -47,8 +47,10 @@ ffd195bd567dbaffc3b98b23fd00aad0537680c9896171e44fe3ff79e28ac33d  mpfr-4.1.1.tar
 17858f2ebc623220d0120d1fa8d428d033dde749c4bc35b33d81a66ad7f93480  python-packages/mpi4py-3.1.4.tar.gz
 2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb  python-packages/pyparsing-3.0.9.tar.gz
 350b18f9673e63101dbbfcf774ee2f57c20ac4636d255741d76ca79016b1bd82  python-packages/Cython-3.0.0.tar.gz
+3fcf37884383c5da64846ab510190720027dca0768def34dd8dcb659dbe5cbf3  python-packages/h5py-3.7.0.tar.gz
 4bf75dcf628513badb7cc8a926414155ab3db3273f5f8c243092e7a2bdbdd5c9  python-packages/scikit_build-0.17.3-py3-none-any.whl
 5410638e4df39c54d957fc51ce03048acd8e6d60abc0f5107af51e5fb566eb3c  python-packages/psutil-5.9.5.tar.gz
+5ab283b9857211d61b53318b7c792cf68e798e765ee17c27ade9f6c924235731  python-packages/versioneer-0.29.tar.gz
 5cb5f4a79139d699607b3ef622a1dedafa84e115ab0024e0d9c044a9479ca7cb  python-packages/typing_extensions-4.5.0.tar.gz
 6c508345a771aad7d56ebff0e70628bf2b0ec7573762be9960214730de278f27  python-packages/setuptools_scm-7.1.0.tar.gz
 75554b3b8ad0553ce2f607627dad3d95c60c441189875b98e097528f8e23ac0c  python-packages/beniget-0.4.1.tar.gz
@@ -56,6 +58,7 @@ ffd195bd567dbaffc3b98b23fd00aad0537680c9896171e44fe3ff79e28ac33d  mpfr-4.1.1.tar
 80bc9de898acd36eb4b945afaaf7a2b4ca00189c51870d535e329761910cf8ea  python-packages/meson_python-0.13.2.tar.gz
 825c6d64202a731a4e49321edd1e9dfabf4be06802f1b8c8a3c00a3ebfc8cedf  python-packages/xarray-2023.8.0.tar.gz
 8aad08162f010e5425a7b254dd68d83311b430bb29f9252dce2eff3ba39497dd  python-packages/pythran-0.13.1.tar.gz
+8f679b83bd9c820082637beca1204124d5d2a786e4818da47ec8acefd0353b74  python-packages/poetry_core-1.7.0.tar.gz
 a392980d2b6cffa644431898be54b0045151319d1e7ec34f0cfed48767dd334f  python-packages/packaging-23.1.tar.gz
 ae69927c5c172be1add9203726d4b84cf3ebad1edcd5f71fcdc746e66e829f59  python-packages/pep517-0.13.0.tar.gz
 b1db3a153087549497ee52b1c938d2134e0338214fe14f7efd16fecd57b639f5  python-packages/meson-1.2.1.tar.gz
@@ -67,7 +70,7 @@ cfbea25820e653af9c7d1807f659ce0a0a9c64f2439421a7bba4f0983f532dea  python-package
 d1a37b8169239e063f34cf9546f66b9d35ec763d79e34f3ae3018b437e1f3094  python-packages/ninja-1.0.tar.gz
 d5b71264afdb5951d6704482aac78de887c80691c52b88a9ad195983ca2c9269  python-packages/build-0.10.0.tar.gz
 de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f  python-packages/tomli-2.0.1.tar.gz
-e604db6521c1e367c6bd7fad239c847f53cc46646f2d2651372d05ae5e95f817  python-packages/h5py-3.9.0.tar.gz
+deb4163ef11f75b520d822d9505c1f462761b4309b1bb713d08689759ea8b899  python-packages/pkgconfig-1.5.5.tar.gz
 ebf595c8dac3e0fdc4152c51878b498396ec7f30e7a914d6071e674d49420fb8  python-packages/sympy-1.12.tar.gz
 f271b298b97f5955d53fb12b72c1fb1948c22c1a6b70b315c54cedaca0264ef5  python-packages/pyproject_hooks-1.0.0.tar.gz
 fb0bd5435b3200c602b5bf61d2d43c2f13c02e29c1707567ae7fbc514eb9faf2  python-packages/pip-23.2.1.tar.gz
