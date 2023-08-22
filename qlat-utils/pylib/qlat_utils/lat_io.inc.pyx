@@ -119,10 +119,17 @@ cdef class LatData:
         assert dim < self.xx.info.size()
         return self.xx.info[dim].size
 
-    def dim_indices(self, int dim):
+    def dim_indices(self, int dim, cc.bool is_filling_default=False):
         assert 0 <= dim
         assert dim < self.xx.info.size()
-        return self.xx.info[dim].indices
+        cdef list indices = self.xx.info[dim].indices
+        if is_filling_default:
+            size = self.xx.info[dim].size
+            indices_size = len(indices)
+            if indices_size < size:
+                for i in range(indices_size, size):
+                    indices.append(f"{-i-1}")
+        return indices
 
     def dim_sizes(self):
         cdef int ndim = self.xx.ndim()
@@ -188,10 +195,20 @@ cdef class LatData:
         np.asarray(self).ravel()[:] = val.ravel()[:]
         return self
 
+    def to_xarray(self):
+        import xarray as xr
+        ndim = self.ndim()
+        coords = dict()
+        dim_names = self.dim_names()
+        for dim in range(ndim):
+            dim_name = dim_names[dim]
+            coords[dim_name] = self.dim_indices(dim, is_filling_default=True)
+        return xr.DataArray(np.asarray(self), coords=coords, dims=dim_names, name="LatData")
+
     def to_list(self):
         return np.asarray(self).ravel().tolist()
 
-    def from_list(self, list val, *, cc.bool is_complex = True):
+    def from_list(self, list val, *, cc.bool is_complex=True):
         if self.ndim() == 0:
             self.set_dim_sizes([ len(val), ], is_complex = is_complex)
             self.set_dim_name(0, "i")
