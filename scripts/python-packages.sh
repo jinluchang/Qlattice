@@ -46,6 +46,8 @@ source qcore/set-prefix.sh $name
     time-run pip3 install $opts numpy
     time-run pip3 install $opts pythran
     time-run pip3 install $opts scipy
+    time-run pip3 install $opts pandas
+    time-run pip3 install $opts xarray
     time-run pip3 install $opts h5py
 
     mk-setenv.sh

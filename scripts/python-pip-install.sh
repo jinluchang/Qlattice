@@ -14,6 +14,8 @@ source qcore/set-prefix.sh $name
     time-run pip3 install -vU sympy
     time-run pip3 install -vU numpy
     time-run pip3 install -vU scipy
+    time-run pip3 install -vU pandas
+    time-run pip3 install -vU xarray
 
     ( :
     unset CC
