@@ -643,8 +643,9 @@ def filter_diagram_type(expr, diagram_type_dict=None, included_types=None):
     """
     first: drop diagrams with diagram_type_dict[diagram_type] == None
     second:
-    if included_types is not None:
-        only keep diagrams with diagram_type that diagram_type in included_types.
+        if included_types is not None:
+            only keep diagrams with diagram_type that diagram_type in included_types.
+    ``included_types'' is a list of diagram_type_name
     """
     if diagram_type_dict is None:
         return expr
@@ -664,7 +665,7 @@ def filter_diagram_type(expr, diagram_type_dict=None, included_types=None):
         included_types_tag = " (" + ','.join(included_types) + ")"
     return Expr(new_terms, expr.description + included_types_tag)
 
-def mk_cexpr(*exprs, diagram_type_dict = None):
+def mk_cexpr(*exprs, diagram_type_dict=None):
     """
     exprs already finished wick contraction,
     otherwise use contract_simplify_compile(*exprs, is_isospin_symmetric_limit, diagram_type_dict)
@@ -735,7 +736,7 @@ def mk_cexpr(*exprs, diagram_type_dict = None):
     return cexpr
 
 @q.timer
-def contract_simplify(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = None):
+def contract_simplify(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=None):
     """
     exprs = [ expr, (expr, *included_types,), ... ]\n
     In case diagram_type_dict is not None, perform the following filter
@@ -754,8 +755,8 @@ def contract_simplify(*exprs, is_isospin_symmetric_limit = True, diagram_type_di
         expr = contract_expr(expr)
         expr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
         expr = filter_diagram_type(expr,
-                diagram_type_dict = diagram_type_dict,
-                included_types = included_types)
+                diagram_type_dict=diagram_type_dict,
+                included_types=included_types)
         return expr
     return q.parallel_map(func, exprs)
 
