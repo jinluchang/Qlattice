@@ -515,14 +515,14 @@ def mk_kkkk_i0_j0_wf(p11, p12, p21, p22, mom, is_dagger=False, *, is_sym=True):
         return 1 / sympy.sqrt(2) * (
                 mk_kkkk_i0_j0_wf(p11, p12, p21, p22, mom, is_dagger, is_sym=False)
                 + mk_kkkk_i0_j0_wf(p21, p22, p11, p12, mom, is_dagger, is_sym=False)
-                ) + f"KK_I0({p11},{p12},{p21},{p22},{mom},sym={sym}){show_dagger(is_dagger)}"
+                ) + f"KK_I0({p11},{p12},{p21},{p22},{mom},sym){show_dagger(is_dagger)}"
     def mk_op_mom(mom_kk):
         mom1 = mom_kk
         mom2 = -mom_kk
         return 1 / sympy.sqrt(2) * (
                 mk_kk_0_wf(p11, p12, mom1, is_dagger) * mk_kk_0_bar_wf(p21, p22, mom2, is_dagger)
                 + mk_kk_p_wf(p11, p12, mom1, is_dagger) * mk_kk_m_wf(p21, p22, mom2, is_dagger)
-                ) + f"KK_I0({p11},{p12},{p21},{p22},{mom}){show_dagger(is_dagger)}"
+                )
     mom_kk_list = get_mom_list(mom)
     n_op = 0
     expr = 0
@@ -763,11 +763,11 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
             rsi = rs.split(f"{idx}-{idx2}")
             t_sep = rsi.rand_gen() % t_sep_range
             x_1 = rsi.c_rand_gen(total_site)
-            x_1p = rsi.c_rand_gen(total_site)
             x_2 = rsi.c_rand_gen(total_site)
             x_3 = rsi.c_rand_gen(total_site)
             x_4 = rsi.c_rand_gen(total_site)
-            x_4p = rsi.c_rand_gen(total_site)
+            x_1p = x_1.copy()
+            x_4p = x_4.copy()
             x_1[3] = (x_2[3] - 3) % t_size
             x_1p[3] = (x_2[3] - 2) % t_size
             x_3[3] = (x_2[3] + t_sep) % t_size
@@ -781,6 +781,10 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
             y_3[3] = x_3[3]
             y_4 = rsi.c_rand_gen(total_site)
             y_4[3] = x_4[3]
+            y_1p = y_1.copy()
+            y_1p[3] = x_1p[3]
+            y_4p = y_4.copy()
+            y_4p[3] = x_4p[3]
             pd = {
                     "x_1p": ("point", x_1p,),
                     "y_1p": ("point", y_1p,),
