@@ -566,6 +566,9 @@ def increase_type_dict_count(type_dict, key):
         type_dict[key] = 1
 
 def drop_tag_last_subscript(tag):
+    """
+    coordinates with names that are same after dropping last subscript belong to the same permutation group
+    """
     return tag.rsplit("_", 1)[0]
 
 def mk_permuting_dicts(pos_list):
@@ -573,6 +576,9 @@ def mk_permuting_dicts(pos_list):
         yield dict(zip(pos_list, p_pos_list))
 
 def get_position_permutation_groups(term):
+    """
+    allow permutations within the same permutation group
+    """
     pos_list = get_positions(term)
     group_dict = dict()
     for pos in pos_list:
@@ -585,6 +591,10 @@ def get_position_permutation_groups(term):
     return group_dict.values()
 
 def mk_combined_permuting_dicts(term):
+    """
+    produce all possible permutations allowed by permuting within the permutation groups.
+    generator of dict, each dict is a map of original coordinate and the permuted coordinate.
+    """
     pos_list_list = list(get_position_permutation_groups(term))
     p_dicts_list = [ list(mk_permuting_dicts(pos_list)) for pos_list in pos_list_list ]
     def loop(level):
