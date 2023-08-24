@@ -600,6 +600,7 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
                             "sample_size", default=32 * 1024)
     t_sep_range = get_param(job_tag, "measurement", fname,
                             "t_sep_range", default=17)
+    t_sep_range = min(t_size, t_sep_range)
     rs = q.RngState(f"{job_tag}-{traj}-{fname}")
     mpi_chunk = get_mpi_chunk(list(range(sample_num)))
     def load_data():
@@ -731,6 +732,7 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
     mpi_chunk = get_mpi_chunk(list(range(sample_num)))
     t_sep_range = get_param(job_tag, "measurement", fname,
                             "t_sep_range", default=17)
+    t_sep_range = min(t_size, t_sep_range)
     def load_data():
         for idx in mpi_chunk:
             yield idx
@@ -924,6 +926,13 @@ set_param("test-4nt64", "clanc_params", 0, 0, "irl_params", value={ "Nstop": 100
 set_param("test-4nt64", "clanc_params", 1, 0, value=get_param("test-4nt64", "clanc_params", 0, 0).copy())
 set_param("test-4nt64", "lanc_params", 1, 0, value=get_param("test-4nt64", "lanc_params", 0, 0).copy())
 set_param("test-4nt64", "lanc_params", 1, 0, "fermion_params", value=get_param("test-4nt64", "fermion_params", 1, 0).copy())
+
+set_param("test-4nt16", "measurement", "auto_contract_meson_corr_wf", "sample_num", value=128)
+set_param("test-4nt16", "measurement", "auto_contract_meson_corr_wf", "sample_size", value=16)
+set_param("test-4nt16", "measurement", "auto_contract_meson_corr_wf", "t_sep_range", value=8)
+set_param("test-4nt16", "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "sample_num", value=128)
+set_param("test-4nt16", "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "sample_size", value=16)
+set_param("test-4nt16", "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "t_sep_range", value=8)
 
 qg.begin_with_gpt()
 
