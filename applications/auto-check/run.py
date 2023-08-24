@@ -663,7 +663,7 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
 def time_selector_8(p):
     p_tag, c = p
     t = c[3]
-    if c % 8 == 0:
+    if t % 8 == 0:
         return 8
     else:
         return 0
@@ -674,7 +674,7 @@ def get_cexpr_meson_meson_i0_j0_corr_wf():
     fn_base = f"cache/auto_contract_cexpr/{fname}"
     def calc_cexpr():
         diagram_type_dict = dict()
-        diagram_type_dict[()] = 'ADT00'
+        diagram_type_dict[()] = 'TypeV'
         diagram_type_dict[((('x1_1', 'x1_2'), 1),)] = 'TypeV'
         diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3', 'x1_4'), 1))] = 'TypeV'
         diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3p', 'x1_4p'), 1))] = 'TypeV'
@@ -683,24 +683,26 @@ def get_cexpr_meson_meson_i0_j0_corr_wf():
         diagram_type_dict[((('x2_1', 'x2_2'), 1), (('x2_3p', 'x2_4p'), 1))] = 'TypeV'
         diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x2_1', 'x2_2'), 1))] = 'TypeV'
         diagram_type_dict[((('x1_1', 'x2_1'), 1), (('x2_2', 'x1_2'), 1))] = 'TypeV'
-        diagram_type_dict[((('x1_1', 'x2_1'), 1), (('x2_2', 'x1_2'), 1), (('x2_3', 'x2_4'), 1))] = 'TypeR'
         diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x2_1', 'x2_2'), 1), (('x2_3', 'x2_4'), 1))] = 'TypeV'
-        diagram_type_dict[((('x1_1', 'x2_1'), 1), (('x2_2', 'x1_2'), 1), (('x2_3p', 'x2_4p'), 1))] = 'TypeR'
         diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x2_1', 'x2_2'), 1), (('x2_3p', 'x2_4p'), 1))] = 'TypeV'
         diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3', 'x1_4'), 1), (('x2_1', 'x2_2'), 1))] = 'TypeV'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3', 'x2_1'), 1), (('x2_2', 'x1_4'), 1))] = 'TypeR'
         diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3', 'x1_4'), 1), (('x2_1', 'x2_2'), 1), (('x2_3', 'x2_4'), 1))] = 'TypeV'
+        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3', 'x1_4'), 1), (('x2_1', 'x2_2'), 1), (('x2_3p', 'x2_4p'), 1))] = 'TypeV'
+        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3p', 'x1_4p'), 1), (('x2_1', 'x2_2'), 1))] = 'TypeV'
+        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3p', 'x1_4p'), 1), (('x2_1', 'x2_2'), 1), (('x2_3', 'x2_4'), 1))] = 'TypeV'
+        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3p', 'x1_4p'), 1), (('x2_1', 'x2_2'), 1), (('x2_3p', 'x2_4p'), 1))] = 'TypeV'
+        #
+        diagram_type_dict[((('x1_1', 'x2_1'), 1), (('x2_2', 'x1_2'), 1), (('x2_3', 'x2_4'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1', 'x2_1'), 1), (('x2_2', 'x1_2'), 1), (('x2_3p', 'x2_4p'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3', 'x2_1'), 1), (('x2_2', 'x1_4'), 1))] = 'TypeR'
         diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3', 'x2_1'), 1), (('x2_2', 'x1_4'), 1), (('x2_3', 'x2_4'), 1))] = 'TypeR'
-        diagram_type_dict[((('x1_1', 'x2_1'), 1), (('x1_2', 'x2_2'), 1), (('x2_3', 'x1_3'), 1), (('x2_4', 'x1_4'), 1))] = 'ADT17'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3', 'x1_4'), 1), (('x2_1', 'x2_2'), 1), (('x2_3p', 'x2_4p'), 1))] = 'ADT18'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3', 'x2_1'), 1), (('x2_2', 'x1_4'), 1), (('x2_3p', 'x2_4p'), 1))] = 'ADT19'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3p', 'x1_4p'), 1), (('x2_1', 'x2_2'), 1))] = 'ADT20'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3p', 'x2_1'), 1), (('x2_2', 'x1_4p'), 1))] = 'ADT21'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3p', 'x1_4p'), 1), (('x2_1', 'x2_2'), 1), (('x2_3', 'x2_4'), 1))] = 'ADT22'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3p', 'x2_1'), 1), (('x2_2', 'x1_4p'), 1), (('x2_3', 'x2_4'), 1))] = 'ADT23'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3p', 'x1_4p'), 1), (('x2_1', 'x2_2'), 1), (('x2_3p', 'x2_4p'), 1))] = 'ADT24'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3p', 'x2_1'), 1), (('x2_2', 'x1_4p'), 1), (('x2_3p', 'x2_4p'), 1))] = 'ADT25'
-        diagram_type_dict[((('x1_1', 'x2_1'), 1), (('x1_2', 'x2_2'), 1), (('x2_3p', 'x1_3p'), 1), (('x2_4p', 'x1_4p'), 1))] = 'ADT26'
+        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3', 'x2_1'), 1), (('x2_2', 'x1_4'), 1), (('x2_3p', 'x2_4p'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3p', 'x2_1'), 1), (('x2_2', 'x1_4p'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3p', 'x2_1'), 1), (('x2_2', 'x1_4p'), 1), (('x2_3', 'x2_4'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3p', 'x2_1'), 1), (('x2_2', 'x1_4p'), 1), (('x2_3p', 'x2_4p'), 1))] = 'TypeR'
+        #
+        diagram_type_dict[((('x1_1', 'x2_1'), 1), (('x1_2', 'x2_2'), 1), (('x2_3', 'x1_3'), 1), (('x2_4', 'x1_4'), 1))] = 'TypeD'
+        diagram_type_dict[((('x1_1', 'x2_1'), 1), (('x1_2', 'x2_2'), 1), (('x2_3p', 'x1_3p'), 1), (('x2_4p', 'x1_4p'), 1))] = 'TypeD'
         exprs = [ mk_fac(1) + f"1", ]
         mom0 = q.Coordinate([ 0, 0, 0, 0, ])
         src_op_list = [
@@ -728,6 +730,10 @@ def get_cexpr_meson_meson_i0_j0_corr_wf():
         for src_op in src_op_list:
             for snk_op in snk_op_list:
                 exprs.append(snk_op * src_op)
+                exprs.append((snk_op * src_op, "TypeD",))
+                exprs.append((snk_op * src_op, "TypeV",))
+                exprs.append((snk_op * src_op, "TypeR",))
+                exprs.append((mk_fac("time_selector_8(x1_1)") * snk_op * src_op, "TypeR",))
         cexpr = contract_simplify_compile(
                 *exprs,
                 is_isospin_symmetric_limit=True,
@@ -809,6 +815,7 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
                     "size": total_site,
                     "wave_function": wave_function,
                     "momentum_factor": momentum_factor,
+                    "time_selector_8": time_selector_8,
                     "r_pi": 1.5,
                     "r_sigma": 1.5,
                     "r_kk": 2.0,
