@@ -537,7 +537,8 @@ def mk_kkkk_i0_j0_wf(p11, p12, p21, p22, mom, is_dagger=False, *, is_sym=True):
 
 @q.timer
 def get_cexpr_meson_corr_wf():
-    fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_corr_wf"
+    fname = q.get_fname()
+    fn_base = f"cache/auto_contract_cexpr/{fname}"
     def calc_cexpr():
         diagram_type_dict = dict()
         def get_mom_avg_expr_list(f):
@@ -581,7 +582,7 @@ def get_cexpr_meson_corr_wf():
 @q.timer_verbose
 def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_wf.lat"
+    fn = f"{job_tag}/auto-contract/traj-{traj}/{fname}.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr_wf()
@@ -668,7 +669,8 @@ def time_selector_8(p):
 
 @q.timer
 def get_cexpr_meson_meson_i0_j0_corr_wf():
-    fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_meson_i0_j0_corr_wf"
+    fname = q.get_fname()
+    fn_base = f"cache/auto_contract_cexpr/{fname}"
     def calc_cexpr():
         diagram_type_dict = dict()
         exprs = [ mk_fac(1) + f"1", ]
@@ -709,7 +711,7 @@ def get_cexpr_meson_meson_i0_j0_corr_wf():
 @q.timer_verbose
 def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_meson_i0_j0_corr_wf.lat"
+    fn = f"{job_tag}/auto-contract/traj-{traj}/{fname}.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_meson_i0_j0_corr_wf()
@@ -722,9 +724,9 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
     xg_list = get_all_points(total_site)
     xg_local_list = [ q.Coordinate(xg) for xg in geo.xg_list() ]
     sample_num = get_param(job_tag, "measurement", fname,
-                           "sample_num", default=1024)
+                           "sample_num", default=512)
     sample_size = get_param(job_tag, "measurement", fname,
-                            "sample_size", default=1024)
+                            "sample_size", default=8 * 1024)
     rs = q.RngState(f"{job_tag}-{traj}-{fname}")
     mpi_chunk = get_mpi_chunk(list(range(sample_num)))
     t_sep_range = get_param(job_tag, "measurement", fname,
