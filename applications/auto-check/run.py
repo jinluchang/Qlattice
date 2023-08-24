@@ -779,7 +779,7 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
                     "x2_3p": ("point", x2_3p,),
                     "x2_4":  ("point", x2_4,),
                     "x2_4p": ("point", x2_4p,),
-                    "xize": total_site,
+                    "size": total_site,
                     "wave_function": wave_function,
                     "momentum_factor": momentum_factor,
                     "r_pi": 1.5,
