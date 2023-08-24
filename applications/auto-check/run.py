@@ -614,17 +614,17 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
             rsi = rs.split(f"{idx}-{idx2}")
             t_sep = rsi.rand_gen() % t_sep_range
             x1_1 = rsi.c_rand_gen(total_site)
-            x2_1 = rsi.c_rand_gen(total_site)
             x1_2 = rsi.c_rand_gen(total_site)
+            x2_1 = rsi.c_rand_gen(total_site)
             x2_2 = rsi.c_rand_gen(total_site)
             x2_1[3] = (x1_1[3] + t_sep) % t_size
             x1_2[3] = x1_1[3]
             x2_2[3] = x2_1[3]
             pd = {
-                    "x2_1": ("point", x2_1,),
-                    "x2_2": ("point", x2_2,),
                     "x1_1": ("point", x1_1,),
                     "x1_2": ("point", x1_2,),
+                    "x2_1": ("point", x2_1,),
+                    "x2_2": ("point", x2_2,),
                     "size": total_site,
                     "wave_function": wave_function,
                     "momentum_factor": momentum_factor,
@@ -963,10 +963,10 @@ set_param("test-4nt64", "lanc_params", 1, 0, "fermion_params", value=get_param("
 
 set_param("test-4nt16", "measurement", "auto_contract_meson_corr_wf", "sample_num", value=128)
 set_param("test-4nt16", "measurement", "auto_contract_meson_corr_wf", "sample_size", value=16)
-set_param("test-4nt16", "measurement", "auto_contract_meson_corr_wf", "t_sep_range", value=8)
+set_param("test-4nt16", "measurement", "auto_contract_meson_corr_wf", "t_sep_range", value=6)
 set_param("test-4nt16", "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "sample_num", value=128)
 set_param("test-4nt16", "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "sample_size", value=16)
-set_param("test-4nt16", "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "t_sep_range", value=8)
+set_param("test-4nt16", "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "t_sep_range", value=6)
 
 qg.begin_with_gpt()
 
