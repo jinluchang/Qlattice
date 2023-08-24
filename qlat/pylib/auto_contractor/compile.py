@@ -639,9 +639,10 @@ def get_term_diagram_type_info(term):
             min_type_info_repr = type_info_repr
     return min_type_info
 
-def filter_diagram_type(expr, diagram_type_dict = None, included_types = None):
+def filter_diagram_type(expr, diagram_type_dict=None, included_types=None):
     """
-    drop diagrams with diagram_type_dict[diagram_type] == None
+    first: drop diagrams with diagram_type_dict[diagram_type] == None
+    second:
     if included_types is not None:
         only keep diagrams with diagram_type that diagram_type in included_types.
     """

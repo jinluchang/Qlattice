@@ -299,6 +299,57 @@ def auto_contract_meson_corr_psnk_psrc_rand(job_tag, traj, get_get_prop):
 
 # ----
 
+all_mom_list_dict = {
+        0: [
+            q.Coordinate([ 0, 0, 0, 0, ]),
+            ],
+        1: [
+            q.Coordinate([ 0, 0, 1, 0, ]),
+            q.Coordinate([ 0, 1, 0, 0, ]),
+            q.Coordinate([ 1, 0, 0, 0, ]),
+            q.Coordinate([ 0, 0, -1, 0, ]),
+            q.Coordinate([ 0, -1, 0, 0, ]),
+            q.Coordinate([ -1, 0, 0, 0, ]),
+            ],
+        2: [
+            q.Coordinate([ 0, 1, 1, 0, ]),
+            q.Coordinate([ 1, 0, 1, 0, ]),
+            q.Coordinate([ 1, 1, 0, 0, ]),
+            q.Coordinate([ 0, -1, 1, 0, ]),
+            q.Coordinate([ -1, 0, 1, 0, ]),
+            q.Coordinate([ -1, 1, 0, 0, ]),
+            q.Coordinate([ 0, 1, -1, 0, ]),
+            q.Coordinate([ 1, 0, -1, 0, ]),
+            q.Coordinate([ 1, -1, 0, 0, ]),
+            q.Coordinate([ 0, -1, -1, 0, ]),
+            q.Coordinate([ -1, 0, -1, 0, ]),
+            q.Coordinate([ -1, -1, 0, 0, ]),
+            ],
+        3: [
+            q.Coordinate([ 1, 1, 1, 0, ]),
+            q.Coordinate([ -1, 1, 1, 0, ]),
+            q.Coordinate([ 1, -1, 1, 0, ]),
+            q.Coordinate([ -1, -1, 1, 0, ]),
+            q.Coordinate([ 1, 1, -1, 0, ]),
+            q.Coordinate([ -1, 1, -1, 0, ]),
+            q.Coordinate([ 1, -1, -1, 0, ]),
+            q.Coordinate([ -1, -1, -1, 0, ]),
+            ],
+        4: [
+            q.Coordinate([ 0, 0, 2, 0, ]),
+            q.Coordinate([ 0, 2, 0, 0, ]),
+            q.Coordinate([ 2, 0, 0, 0, ]),
+            q.Coordinate([ 0, 0, -2, 0, ]),
+            q.Coordinate([ 0, -2, 0, 0, ]),
+            q.Coordinate([ -2, 0, 0, 0, ]),
+            ],
+        }
+
+def get_mom_list(mom_idx):
+    return all_mom_list_dict[mom_idx]
+
+# ----
+
 def wave_function(p1, p2, radius, size):
     p1_tag, c1 = p1
     p2_tag, c2 = p2
@@ -358,6 +409,8 @@ def mk_scalar_meson_wf(f1, f2, p1, p2, radius, mom, is_dagger=False):
         q1v = Qv(f1, p1, s, c)
         mf = mk_fac(f"momentum_factor(-{mom},{p2},size)")
         return wf * mf * q2b * q1v + f"({f2}bar {f1})({p2},{p1},{radius},{mom})"
+
+# ----
 
 def mk_pi_0_wf(p1, p2, mom, is_dagger=False):
     """
@@ -429,54 +482,54 @@ def mk_kk_0_bar_wf(p1, p2, mom, is_dagger=False):
 
 # ----
 
-all_mom_list_dict = {
-        0: [
-            q.Coordinate([ 0, 0, 0, 0, ]),
-            ],
-        1: [
-            q.Coordinate([ 0, 0, 1, 0, ]),
-            q.Coordinate([ 0, 1, 0, 0, ]),
-            q.Coordinate([ 1, 0, 0, 0, ]),
-            q.Coordinate([ 0, 0, -1, 0, ]),
-            q.Coordinate([ 0, -1, 0, 0, ]),
-            q.Coordinate([ -1, 0, 0, 0, ]),
-            ],
-        2: [
-            q.Coordinate([ 0, 1, 1, 0, ]),
-            q.Coordinate([ 1, 0, 1, 0, ]),
-            q.Coordinate([ 1, 1, 0, 0, ]),
-            q.Coordinate([ 0, -1, 1, 0, ]),
-            q.Coordinate([ -1, 0, 1, 0, ]),
-            q.Coordinate([ -1, 1, 0, 0, ]),
-            q.Coordinate([ 0, 1, -1, 0, ]),
-            q.Coordinate([ 1, 0, -1, 0, ]),
-            q.Coordinate([ 1, -1, 0, 0, ]),
-            q.Coordinate([ 0, -1, -1, 0, ]),
-            q.Coordinate([ -1, 0, -1, 0, ]),
-            q.Coordinate([ -1, -1, 0, 0, ]),
-            ],
-        3: [
-            q.Coordinate([ 1, 1, 1, 0, ]),
-            q.Coordinate([ -1, 1, 1, 0, ]),
-            q.Coordinate([ 1, -1, 1, 0, ]),
-            q.Coordinate([ -1, -1, 1, 0, ]),
-            q.Coordinate([ 1, 1, -1, 0, ]),
-            q.Coordinate([ -1, 1, -1, 0, ]),
-            q.Coordinate([ 1, -1, -1, 0, ]),
-            q.Coordinate([ -1, -1, -1, 0, ]),
-            ],
-        4: [
-            q.Coordinate([ 0, 0, 2, 0, ]),
-            q.Coordinate([ 0, 2, 0, 0, ]),
-            q.Coordinate([ 2, 0, 0, 0, ]),
-            q.Coordinate([ 0, 0, -2, 0, ]),
-            q.Coordinate([ 0, -2, 0, 0, ]),
-            q.Coordinate([ -2, 0, 0, 0, ]),
-            ],
-        }
+def mk_pipi_i0_j0_wf(p11, p12, p21, p22, mom, is_dagger=False):
+    """
+    note that two pion may not at the same time slice
+    mom is for individual pion
+    total momentum is zero
+    """
+    def mk_op_mom(mom_pi):
+        mom1 = mom_pi
+        mom2 = -mom_pi
+        return 1 / sympy.sqrt(3) * (
+                - mk_pi_0_wf(p11, p12, mom1, is_dagger) * mk_pi_0_wf(p21, p22, mom2, is_dagger)
+                + mk_pi_m_wf(p11, p12, mom1, is_dagger) * mk_pi_p_wf(p21, p22, mom2, is_dagger)
+                + mk_pi_p_wf(p11, p12, mom1, is_dagger) * mk_pi_m_wf(p21, p22, mom2, is_dagger)
+                )
+    mom_pi_list = get_mom_list(mom)
+    n_op = 0
+    expr = 0
+    for mom_pi in mom_pi_list:
+        n_op += 1
+        expr = expr + mk_op_mom(mom_pi)
+    return 1 / sympy.sqrt(n_op) * expr + f"pipi_I0({p11},{p12},{p21},{p22},{mom}){show_dagger(is_dagger)}"
 
-def get_mom_list(mom_idx):
-    return all_mom_list_dict[mom_idx]
+def mk_kkkk_i0_j0_wf(p11, p12, p21, p22, mom, is_dagger=False, *, is_sym=True):
+    """
+    note that two kaon may not at the same time slice
+    symmetrization is used by default (different from the library version)
+    mom is for individual kaon
+    total momentum is zero
+    """
+    if is_sym:
+        return 1 / sympy.sqrt(2) * (
+                mk_kkkk_i0_j0_wf(p11, p12, p21, p22, mom, is_dagger, is_sym=False)
+                + mk_kkkk_i0_j0_wf(p21, p22, p11, p12, mom, is_dagger, is_sym=False)
+                ) + f"KK_I0({p11},{p12},{p21},{p22},{mom},sym={sym}){show_dagger(is_dagger)}"
+    def mk_op_mom(mom_kk):
+        mom1 = mom_kk
+        mom2 = -mom_kk
+        return 1 / sympy.sqrt(2) * (
+                mk_kk_0_wf(p11, p12, mom1, is_dagger) * mk_kk_0_bar_wf(p21, p22, mom2, is_dagger)
+                + mk_kk_p_wf(p11, p12, mom1, is_dagger) * mk_kk_m_wf(p21, p22, mom2, is_dagger)
+                ) + f"KK_I0({p11},{p12},{p21},{p22},{mom}){show_dagger(is_dagger)}"
+    mom_kk_list = get_mom_list(mom)
+    n_op = 0
+    expr = 0
+    for mom_kk in mom_kk_list:
+        n_op += 1
+        expr = expr + mk_op_mom(mom_kk)
+    return 1 / sympy.sqrt(n_op) * expr + f"KK_I0({p11},{p12},{p21},{p22},{mom}){show_dagger(is_dagger)}"
 
 # ----
 
@@ -627,6 +680,155 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
 
 # ----
 
+def time_selector_8(p):
+    p_tag, c = p
+    t = c[3]
+    if c % 8 == 0:
+        return 8
+    else:
+        return 0
+
+@q.timer
+def get_cexpr_meson_meson_i0_j0_corr_wf():
+    fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_meson_i0_j0_corr_wf"
+    def calc_cexpr():
+        diagram_type_dict = dict()
+        exprs = [ mk_fac(1) + f"1", ]
+        mom0 = q.Coordinate([ 0, 0, 0, 0, ])
+        src_op_list = [
+                mk_sigma_wf("x_2", "y_2", mom0),
+                mk_pipi_i0_j0_wf("x_1", "y_1", "x_2", "y_2", 0),
+                mk_pipi_i0_j0_wf("x_1", "y_1", "x_2", "y_2", 1),
+                mk_pipi_i0_j0_wf("x_1", "y_1", "x_2", "y_2", 2),
+                mk_pipi_i0_j0_wf("x_1", "y_1", "x_2", "y_2", 3),
+                mk_kkkk_i0_j0_wf("x_1p", "y_1p", "x_2", "y_2", 0),
+                mk_kkkk_i0_j0_wf("x_1p", "y_1p", "x_2", "y_2", 1),
+                ]
+        snk_op_list = [
+                mk_sigma_wf("x_3", "y_3", mom0),
+                mk_pipi_i0_j0_wf("x_3", "y_3", "x_4", "y_4", 0),
+                mk_pipi_i0_j0_wf("x_3", "y_3", "x_4", "y_4", 1),
+                mk_pipi_i0_j0_wf("x_3", "y_3", "x_4", "y_4", 2),
+                mk_pipi_i0_j0_wf("x_3", "y_3", "x_4", "y_4", 3),
+                mk_kkkk_i0_j0_wf("x_3", "y_3", "x_4p", "y_4p", 0),
+                mk_kkkk_i0_j0_wf("x_3", "y_3", "x_4p", "y_4p", 1),
+                ]
+        for src_op in src_op_list:
+            exprs.append(src_op)
+        for snk_op in snk_op_list:
+            exprs.append(snk_op)
+        for src_op in src_op_list:
+            for snk_op in snk_op_list:
+                exprs.append(snk_op * src_op)
+        cexpr = contract_simplify_compile(
+                *exprs,
+                is_isospin_symmetric_limit=True,
+                diagram_type_dict=diagram_type_dict,
+                )
+        return cexpr
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
+
+@q.timer_verbose
+def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
+    fname = q.get_fname()
+    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_meson_i0_j0_corr_wf.lat"
+    if get_load_path(fn) is not None:
+        return
+    cexpr = get_cexpr_meson_meson_i0_j0_corr_wf()
+    expr_names = get_cexpr_names(cexpr)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    t_size = total_site[3]
+    geo = q.Geometry(total_site, 1)
+    total_volume = geo.total_volume()
+    get_prop = get_get_prop()
+    xg_list = get_all_points(total_site)
+    xg_local_list = [ q.Coordinate(xg) for xg in geo.xg_list() ]
+    sample_num = get_param(job_tag, "measurement",
+                           "auto_contract_meson_meson_i0_j0_corr_wf", "sample_num",
+                           default=128)
+    sample_size = get_param(job_tag, "measurement",
+                            "auto_contract_meson_meson_i0_j0_corr_wf", "sample_size",
+                            default=32 * 1024)
+    rs = q.RngState(f"{job_tag}-{traj}-{fname}")
+    mpi_chunk = get_mpi_chunk(list(range(sample_num)))
+    t_sep_range = 17
+    def load_data():
+        for idx in mpi_chunk:
+            yield idx
+    @q.timer
+    def feval(args):
+        idx = args
+        res_list = []
+        for idx2 in range(sample_size):
+            rsi = rs.split(f"{idx}-{idx2}")
+            t_sep = rsi.rand_gen() % t_sep_range
+            x_1 = rsi.c_rand_gen(total_site)
+            x_1p = rsi.c_rand_gen(total_site)
+            x_2 = rsi.c_rand_gen(total_site)
+            x_3 = rsi.c_rand_gen(total_site)
+            x_4 = rsi.c_rand_gen(total_site)
+            x_4p = rsi.c_rand_gen(total_site)
+            x_1[3] = (x_2[3] - 3) % t_size
+            x_1p[3] = (x_2[3] - 2) % t_size
+            x_3[3] = (x_2[3] + t_sep) % t_size
+            x_4[3] = (x_3[3] + 3) % t_size
+            x_4p[3] = (x_3[3] + 2) % t_size
+            y_1 = rsi.c_rand_gen(total_site)
+            y_1[3] = x_1[3]
+            y_2 = rsi.c_rand_gen(total_site)
+            y_2[3] = x_2[3]
+            y_3 = rsi.c_rand_gen(total_site)
+            y_3[3] = x_3[3]
+            y_4 = rsi.c_rand_gen(total_site)
+            y_4[3] = x_4[3]
+            pd = {
+                    "x_1p": ("point", x_1p,),
+                    "y_1p": ("point", y_1p,),
+                    "x_4p": ("point", x_4p,),
+                    "y_4p": ("point", y_4p,),
+                    "x_4": ("point", x_4,),
+                    "y_4": ("point", y_4,),
+                    "x_3": ("point", x_3,),
+                    "y_3": ("point", y_3,),
+                    "x_2": ("point", x_2,),
+                    "y_2": ("point", y_2,),
+                    "x_1": ("point", x_1,),
+                    "y_1": ("point", y_1,),
+                    "size": total_site,
+                    "wave_function": wave_function,
+                    "momentum_factor": momentum_factor,
+                    "r_pi": 1.5,
+                    "r_sigma": 1.5,
+                    "r_kk": 2.0,
+                    "Coordinate": q.Coordinate,
+                    }
+            val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
+            res_list.append((val, t_sep,))
+        return res_list
+    def sum_function(val_list):
+        values = np.zeros((t_size, len(expr_names),), dtype=complex)
+        for idx, res_list in enumerate(val_list):
+            for val, t_sep, in res_list:
+                values[t_sep] += val
+            q.displayln_info(f"{fname}: {idx+1}/{len(mpi_chunk)}")
+        return q.glb_sum(values.transpose(1, 0,))
+    q.timer_fork(0)
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
+    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
+    q.timer_display()
+    q.timer_merge()
+    res_sum *= 1.0 / (sample_num * sample_size / t_sep_range)
+    # assert q.qnorm(res_sum[0].sum(1) - 1.0) < 1e-10
+    ld = q.mk_lat_data([
+        [ "expr_name", len(expr_names), expr_names, ],
+        [ "t_sep", t_sep_range, [ str(t) for t in range(t_sep_range) ], ],
+        ])
+    ld.from_numpy(res_sum)
+    ld.save(get_save_path(fn))
+    q.displayln_info(f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.5E}")
+
+# ----
+
 @q.timer_verbose
 def run_job(job_tag, traj):
     #
@@ -695,6 +897,7 @@ def run_job(job_tag, traj):
         if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
             q.timer_fork()
             # ADJUST ME
+            auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop)
             auto_contract_meson_corr_wf(job_tag, traj, get_get_prop)
             auto_contract_meson_corr_psnk_psrc_rand(job_tag, traj, get_get_prop)
             #
