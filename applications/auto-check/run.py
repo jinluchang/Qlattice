@@ -354,6 +354,7 @@ def wave_function(p1, p2, radius, size):
     p1_tag, c1 = p1
     p2_tag, c2 = p2
     c12 = q.smod(c1 - c2, size)
+    assert c12[3] == 0
     c12_r_sqr = c12.r_sqr()
     dis = math.sqrt(c12_r_sqr)
     vol = size[0] * size[1] * size[2]
@@ -362,6 +363,7 @@ def wave_function(p1, p2, radius, size):
 
 def momentum_factor(mom, p, size, is_dagger=False):
     p_tag, c = p
+    assert mom[3] == 0
     phase = mom[0] * c[0] / size[0] + mom[1] * c[1] / size[1] + mom[2] * c[2] / size[2]
     phase = phase * 2.0 * math.pi
     if not is_dagger:
@@ -558,43 +560,15 @@ def get_cexpr_meson_corr_wf():
         exprs = [ mk_fac(1) + f"1", ]
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (-mk_pi_m_wf("y_2", "x_2", -mom) * mk_pi_p_wf("x_1", "y_1", mom))
+                (-mk_pi_m_wf("x2_1", "x2_2", -mom) * mk_pi_p_wf("x1_1", "x1_2", mom))
                 )
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (mk_pi_p_wf("x_2", "y_2", mom, True) * mk_pi_p_wf("x_1", "y_1", mom))
+                (-mk_kk_m_wf("x2_1", "x2_2", -mom) * mk_kk_p_wf("x1_1", "x1_2", mom))
                 )
         exprs += get_mom_avg_expr_list(
                 lambda mom:
-                (-mk_kk_m_wf("y_2", "x_2", -mom) * mk_kk_p_wf("x_1", "y_1", mom))
-                )
-        exprs += get_mom_avg_expr_list(
-                lambda mom:
-                (mk_kk_p_wf("x_2", "y_2", mom, True) * mk_kk_p_wf("x_1", "y_1", mom))
-                )
-        exprs += get_mom_avg_expr_list(
-                lambda mom:
-                (mk_sigma_wf("y_2", "x_2", -mom) * mk_sigma_wf("x_1", "y_1", mom))
-                )
-        exprs += get_mom_avg_expr_list(
-                lambda mom:
-                (mk_sigma_wf("x_2", "y_2", mom, True) * mk_sigma_wf("x_1", "y_1", mom))
-                )
-        exprs += get_mom_avg_expr_list(
-                lambda mom:
-                (mk_sigma_wf("x_1", "y_1", mom))
-                )
-        exprs += get_mom_avg_expr_list(
-                lambda mom:
-                (mk_sigma_wf("x_1", "y_1", mom))
-                )
-        exprs += get_mom_avg_expr_list(
-                lambda mom:
-                (mk_sigma_wf("y_2", "x_2", -mom))
-                )
-        exprs += get_mom_avg_expr_list(
-                lambda mom:
-                (mk_sigma_wf("x_2", "y_2", mom, True))
+                (mk_sigma_wf("x2_1", "x2_2", -mom) * mk_sigma_wf("x1_1", "x1_2", mom))
                 )
         cexpr = contract_simplify_compile(
                 *exprs,
@@ -619,8 +593,12 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
     get_prop = get_get_prop()
     xg_list = get_all_points(total_site)
     xg_local_list = [ q.Coordinate(xg) for xg in geo.xg_list() ]
-    sample_num = get_param(job_tag, "measurement", "auto_contract_meson_corr_wf", "sample_num", default=128)
-    sample_size = get_param(job_tag, "measurement", "auto_contract_meson_corr_wf", "sample_size", default=32 * 1024)
+    sample_num = get_param(job_tag, "measurement", fname,
+                           "sample_num", default=128)
+    sample_size = get_param(job_tag, "measurement", fname,
+                            "sample_size", default=32 * 1024)
+    t_sep_range = get_param(job_tag, "measurement", fname,
+                            "t_sep_range", default=17)
     rs = q.RngState(f"{job_tag}-{traj}-{fname}")
     mpi_chunk = get_mpi_chunk(list(range(sample_num)))
     def load_data():
@@ -632,19 +610,19 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
         res_list = []
         for idx2 in range(sample_size):
             rsi = rs.split(f"{idx}-{idx2}")
-            x_1 = rsi.c_rand_gen(total_site)
-            x_2 = rsi.c_rand_gen(total_site)
-            y_1 = rsi.c_rand_gen(total_site)
-            y_1[3] = x_1[3]
-            y_2 = rsi.c_rand_gen(total_site)
-            y_2[3] = x_2[3]
-            x_2_1_rel = q.smod(x_2 - x_1, total_site)
-            t_sep = x_2_1_rel[3]
+            x1_1 = rsi.c_rand_gen(total_site)
+            x2_1 = rsi.c_rand_gen(total_site)
+            x1_2 = rsi.c_rand_gen(total_site)
+            x1_2[3] = x1_1[3]
+            x2_2 = rsi.c_rand_gen(total_site)
+            x2_2[3] = x2_1[3]
+            x2_x1_rel = q.smod(x2_1 - x1_1, total_site)
+            t_sep = x2_x1_rel[3]
             pd = {
-                    "x_2": ("point", x_2,),
-                    "y_2": ("point", y_2,),
-                    "x_1": ("point", x_1,),
-                    "y_1": ("point", y_1,),
+                    "x2_1": ("point", x2_1,),
+                    "x2_2": ("point", x2_2,),
+                    "x1_1": ("point", x1_1,),
+                    "x1_2": ("point", x1_2,),
                     "size": total_site,
                     "wave_function": wave_function,
                     "momentum_factor": momentum_factor,
@@ -657,7 +635,7 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
             res_list.append((val, t_sep,))
         return res_list
     def sum_function(val_list):
-        values = np.zeros((t_size, len(expr_names),), dtype=complex)
+        values = np.zeros((t_sep_range, len(expr_names),), dtype=complex)
         for idx, res_list in enumerate(val_list):
             for val, t_sep, in res_list:
                 values[t_sep] += val
@@ -668,11 +646,11 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
     q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
-    res_sum *= 1.0 / (sample_num * sample_size / t_size)
+    res_sum *= 1.0 / (sample_num * sample_size / t_sep_range)
     # assert q.qnorm(res_sum[0].sum(1) - 1.0) < 1e-10
     ld = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
-        [ "t_sep", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
+        [ "t_sep", t_sep_range, [ str(t) for t in range(t_sep_range) ], ],
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
@@ -696,22 +674,22 @@ def get_cexpr_meson_meson_i0_j0_corr_wf():
         exprs = [ mk_fac(1) + f"1", ]
         mom0 = q.Coordinate([ 0, 0, 0, 0, ])
         src_op_list = [
-                mk_sigma_wf("x_2", "y_2", mom0),
-                mk_pipi_i0_j0_wf("x_1", "y_1", "x_2", "y_2", 0),
-                mk_pipi_i0_j0_wf("x_1", "y_1", "x_2", "y_2", 1),
-                mk_pipi_i0_j0_wf("x_1", "y_1", "x_2", "y_2", 2),
-                mk_pipi_i0_j0_wf("x_1", "y_1", "x_2", "y_2", 3),
-                mk_kkkk_i0_j0_wf("x_1p", "y_1p", "x_2", "y_2", 0),
-                mk_kkkk_i0_j0_wf("x_1p", "y_1p", "x_2", "y_2", 1),
+                mk_sigma_wf("x1_1", "x1_2", mom0),
+                mk_pipi_i0_j0_wf("x1_1", "x1_2", "y1_1", "y1_2", 0),
+                mk_pipi_i0_j0_wf("x1_1", "x1_2", "y1_1", "y1_2", 1),
+                mk_pipi_i0_j0_wf("x1_1", "x1_2", "y1_1", "y1_2", 2),
+                mk_pipi_i0_j0_wf("x1_1", "x1_2", "y1_1", "y1_2", 3),
+                mk_kkkk_i0_j0_wf("x1_1", "x1_2", "y1_1p", "y1_2p", 0),
+                mk_kkkk_i0_j0_wf("x1_1", "x1_2", "y1_1p", "y1_2p", 1),
                 ]
         snk_op_list = [
-                mk_sigma_wf("x_3", "y_3", mom0),
-                mk_pipi_i0_j0_wf("x_3", "y_3", "x_4", "y_4", 0),
-                mk_pipi_i0_j0_wf("x_3", "y_3", "x_4", "y_4", 1),
-                mk_pipi_i0_j0_wf("x_3", "y_3", "x_4", "y_4", 2),
-                mk_pipi_i0_j0_wf("x_3", "y_3", "x_4", "y_4", 3),
-                mk_kkkk_i0_j0_wf("x_3", "y_3", "x_4p", "y_4p", 0),
-                mk_kkkk_i0_j0_wf("x_3", "y_3", "x_4p", "y_4p", 1),
+                mk_sigma_wf("x2_1", "x2_2", mom0),
+                mk_pipi_i0_j0_wf("x2_1", "x2_2", "y2_1", "y2_2", 0),
+                mk_pipi_i0_j0_wf("x2_1", "x2_2", "y2_1", "y2_2", 1),
+                mk_pipi_i0_j0_wf("x2_1", "x2_2", "y2_1", "y2_2", 2),
+                mk_pipi_i0_j0_wf("x2_1", "x2_2", "y2_1", "y2_2", 3),
+                mk_kkkk_i0_j0_wf("x2_1", "x2_2", "y2_1p", "y2_2p", 0),
+                mk_kkkk_i0_j0_wf("x2_1", "x2_2", "y2_1p", "y2_2p", 1),
                 ]
         for src_op in src_op_list:
             exprs.append(src_op)
@@ -743,15 +721,14 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
     get_prop = get_get_prop()
     xg_list = get_all_points(total_site)
     xg_local_list = [ q.Coordinate(xg) for xg in geo.xg_list() ]
-    sample_num = get_param(job_tag, "measurement",
-                           "auto_contract_meson_meson_i0_j0_corr_wf", "sample_num",
-                           default=1024)
-    sample_size = get_param(job_tag, "measurement",
-                            "auto_contract_meson_meson_i0_j0_corr_wf", "sample_size",
-                            default=1024)
+    sample_num = get_param(job_tag, "measurement", fname,
+                           "sample_num", default=1024)
+    sample_size = get_param(job_tag, "measurement", fname,
+                            "sample_size", default=1024)
     rs = q.RngState(f"{job_tag}-{traj}-{fname}")
     mpi_chunk = get_mpi_chunk(list(range(sample_num)))
-    t_sep_range = 17
+    t_sep_range = get_param(job_tag, "measurement", fname,
+                            "t_sep_range", default=17)
     def load_data():
         for idx in mpi_chunk:
             yield idx
@@ -762,42 +739,42 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
         for idx2 in range(sample_size):
             rsi = rs.split(f"{idx}-{idx2}")
             t_sep = rsi.rand_gen() % t_sep_range
-            x_1 = rsi.c_rand_gen(total_site)
-            x_2 = rsi.c_rand_gen(total_site)
-            x_3 = rsi.c_rand_gen(total_site)
-            x_4 = rsi.c_rand_gen(total_site)
-            x_1p = x_1.copy()
-            x_4p = x_4.copy()
-            x_1[3] = (x_2[3] - 3) % t_size
-            x_1p[3] = (x_2[3] - 2) % t_size
-            x_3[3] = (x_2[3] + t_sep) % t_size
-            x_4[3] = (x_3[3] + 3) % t_size
-            x_4p[3] = (x_3[3] + 2) % t_size
-            y_1 = rsi.c_rand_gen(total_site)
-            y_1[3] = x_1[3]
-            y_2 = rsi.c_rand_gen(total_site)
-            y_2[3] = x_2[3]
-            y_3 = rsi.c_rand_gen(total_site)
-            y_3[3] = x_3[3]
-            y_4 = rsi.c_rand_gen(total_site)
-            y_4[3] = x_4[3]
-            y_1p = y_1.copy()
-            y_1p[3] = x_1p[3]
-            y_4p = y_4.copy()
-            y_4p[3] = x_4p[3]
+            x1_1 = rsi.c_rand_gen(total_site)
+            y1_1 = rsi.c_rand_gen(total_site)
+            y1_1p = y1_1.copy()
+            x2_1 = rsi.c_rand_gen(total_site)
+            y2_1 = rsi.c_rand_gen(total_site)
+            y2_1p = y2_1.copy()
+            y1_1[3] = (x1_1[3] - 3) % t_size
+            y1_1p[3] = (x1_1[3] - 2) % t_size
+            x2_1[3] = (x1_1[3] + t_sep) % t_size
+            y2_1[3] = (x2_1[3] + 3) % t_size
+            y2_1p[3] = (x2_1[3] + 2) % t_size
+            x1_2 = rsi.c_rand_gen(total_site)
+            y1_2 = rsi.c_rand_gen(total_site)
+            y1_2p = y1_2.copy()
+            x2_2 = rsi.c_rand_gen(total_site)
+            y2_2 = rsi.c_rand_gen(total_site)
+            y2_2p = y2_2.copy()
+            x1_2[3] = x1_1[3]
+            y1_2[3] = y1_1[3]
+            y1_2p[3] = y1_1p[3]
+            x2_2[3] = x2_1[3]
+            y2_2[3] = y2_1[3]
+            y2_2p[3] = y2_1p[3]
             pd = {
-                    "x_1p": ("point", x_1p,),
-                    "y_1p": ("point", y_1p,),
-                    "x_4p": ("point", x_4p,),
-                    "y_4p": ("point", y_4p,),
-                    "x_4": ("point", x_4,),
-                    "y_4": ("point", y_4,),
-                    "x_3": ("point", x_3,),
-                    "y_3": ("point", y_3,),
-                    "x_2": ("point", x_2,),
-                    "y_2": ("point", y_2,),
-                    "x_1": ("point", x_1,),
-                    "y_1": ("point", y_1,),
+                    "x1_1": ("point", x1_1,),
+                    "y1_1": ("point", y1_1,),
+                    "y1_1p": ("point", y1_1p,),
+                    "x2_1": ("point", x2_1,),
+                    "y2_1": ("point", y2_1,),
+                    "y2_1p": ("point", y2_1p,),
+                    "x1_2": ("point", x1_2,),
+                    "y1_2": ("point", y1_2,),
+                    "y1_2p": ("point", y1_2p,),
+                    "x2_2": ("point", x2_2,),
+                    "y2_2": ("point", y2_2,),
+                    "y2_2p": ("point", y2_2p,),
                     "size": total_site,
                     "wave_function": wave_function,
                     "momentum_factor": momentum_factor,
