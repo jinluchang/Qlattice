@@ -745,10 +745,10 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
     xg_local_list = [ q.Coordinate(xg) for xg in geo.xg_list() ]
     sample_num = get_param(job_tag, "measurement",
                            "auto_contract_meson_meson_i0_j0_corr_wf", "sample_num",
-                           default=128)
+                           default=1024)
     sample_size = get_param(job_tag, "measurement",
                             "auto_contract_meson_meson_i0_j0_corr_wf", "sample_size",
-                            default=32 * 1024)
+                            default=1024)
     rs = q.RngState(f"{job_tag}-{traj}-{fname}")
     mpi_chunk = get_mpi_chunk(list(range(sample_num)))
     t_sep_range = 17
@@ -810,7 +810,7 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
             res_list.append((val, t_sep,))
         return res_list
     def sum_function(val_list):
-        values = np.zeros((t_size, len(expr_names),), dtype=complex)
+        values = np.zeros((t_sep_range, len(expr_names),), dtype=complex)
         for idx, res_list in enumerate(val_list):
             for val, t_sep, in res_list:
                 values[t_sep] += val
