@@ -612,14 +612,14 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
         res_list = []
         for idx2 in range(sample_size):
             rsi = rs.split(f"{idx}-{idx2}")
+            t_sep = rsi.rand_gen() % t_sep_range
             x1_1 = rsi.c_rand_gen(total_site)
             x2_1 = rsi.c_rand_gen(total_site)
             x1_2 = rsi.c_rand_gen(total_site)
-            x1_2[3] = x1_1[3]
             x2_2 = rsi.c_rand_gen(total_site)
+            x2_1[3] = (x1_1[3] + t_sep) % t_size
+            x1_2[3] = x1_1[3]
             x2_2[3] = x2_1[3]
-            x2_x1_rel = q.smod(x2_1 - x1_1, total_site)
-            t_sep = x2_x1_rel[3]
             pd = {
                     "x2_1": ("point", x2_1,),
                     "x2_2": ("point", x2_2,),
