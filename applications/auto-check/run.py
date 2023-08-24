@@ -677,21 +677,21 @@ def get_cexpr_meson_meson_i0_j0_corr_wf():
         mom0 = q.Coordinate([ 0, 0, 0, 0, ])
         src_op_list = [
                 mk_sigma_wf("x1_1", "x1_2", mom0),
-                mk_pipi_i0_j0_wf("x1_1", "x1_2", "y1_1", "y1_2", 0),
-                mk_pipi_i0_j0_wf("x1_1", "x1_2", "y1_1", "y1_2", 1),
-                mk_pipi_i0_j0_wf("x1_1", "x1_2", "y1_1", "y1_2", 2),
-                mk_pipi_i0_j0_wf("x1_1", "x1_2", "y1_1", "y1_2", 3),
-                mk_kkkk_i0_j0_wf("x1_1", "x1_2", "y1_1p", "y1_2p", 0),
-                mk_kkkk_i0_j0_wf("x1_1", "x1_2", "y1_1p", "y1_2p", 1),
+                mk_pipi_i0_j0_wf("x1_1", "x1_2", "x1_3",  "x1_4", 0),
+                mk_pipi_i0_j0_wf("x1_1", "x1_2", "x1_3",  "x1_4", 1),
+                mk_pipi_i0_j0_wf("x1_1", "x1_2", "x1_3",  "x1_4", 2),
+                mk_pipi_i0_j0_wf("x1_1", "x1_2", "x1_3",  "x1_4", 3),
+                mk_kkkk_i0_j0_wf("x1_1", "x1_2", "x1_3p", "x1_4p", 0),
+                mk_kkkk_i0_j0_wf("x1_1", "x1_2", "x1_3p", "x1_4p", 1),
                 ]
         snk_op_list = [
                 mk_sigma_wf("x2_1", "x2_2", mom0),
-                mk_pipi_i0_j0_wf("x2_1", "x2_2", "y2_1", "y2_2", 0),
-                mk_pipi_i0_j0_wf("x2_1", "x2_2", "y2_1", "y2_2", 1),
-                mk_pipi_i0_j0_wf("x2_1", "x2_2", "y2_1", "y2_2", 2),
-                mk_pipi_i0_j0_wf("x2_1", "x2_2", "y2_1", "y2_2", 3),
-                mk_kkkk_i0_j0_wf("x2_1", "x2_2", "y2_1p", "y2_2p", 0),
-                mk_kkkk_i0_j0_wf("x2_1", "x2_2", "y2_1p", "y2_2p", 1),
+                mk_pipi_i0_j0_wf("x2_1", "x2_2", "x2_3",  "x2_4", 0),
+                mk_pipi_i0_j0_wf("x2_1", "x2_2", "x2_3",  "x2_4", 1),
+                mk_pipi_i0_j0_wf("x2_1", "x2_2", "x2_3",  "x2_4", 2),
+                mk_pipi_i0_j0_wf("x2_1", "x2_2", "x2_3",  "x2_4", 3),
+                mk_kkkk_i0_j0_wf("x2_1", "x2_2", "x2_3p", "x2_4p", 0),
+                mk_kkkk_i0_j0_wf("x2_1", "x2_2", "x2_3p", "x2_4p", 1),
                 ]
         for src_op in src_op_list:
             exprs.append(src_op)
@@ -742,42 +742,42 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
             rsi = rs.split(f"{idx}-{idx2}")
             t_sep = rsi.rand_gen() % t_sep_range
             x1_1 = rsi.c_rand_gen(total_site)
-            y1_1 = rsi.c_rand_gen(total_site)
-            y1_1p = y1_1.copy()
-            x2_1 = rsi.c_rand_gen(total_site)
-            y2_1 = rsi.c_rand_gen(total_site)
-            y2_1p = y2_1.copy()
-            y1_1[3] = (x1_1[3] - 3) % t_size
-            y1_1p[3] = (x1_1[3] - 2) % t_size
-            x2_1[3] = (x1_1[3] + t_sep) % t_size
-            y2_1[3] = (x2_1[3] + 3) % t_size
-            y2_1p[3] = (x2_1[3] + 2) % t_size
             x1_2 = rsi.c_rand_gen(total_site)
-            y1_2 = rsi.c_rand_gen(total_site)
-            y1_2p = y1_2.copy()
+            x1_3 = rsi.c_rand_gen(total_site)
+            x1_4 = rsi.c_rand_gen(total_site)
+            x1_3p = x1_3.copy()
+            x1_4p = x1_4.copy()
+            x2_1 = rsi.c_rand_gen(total_site)
             x2_2 = rsi.c_rand_gen(total_site)
-            y2_2 = rsi.c_rand_gen(total_site)
-            y2_2p = y2_2.copy()
+            x2_3 = rsi.c_rand_gen(total_site)
+            x2_4 = rsi.c_rand_gen(total_site)
+            x2_3p = x2_3.copy()
+            x2_4p = x2_4.copy()
             x1_2[3] = x1_1[3]
-            y1_2[3] = y1_1[3]
-            y1_2p[3] = y1_1p[3]
+            x1_3[3] = (x1_1[3] - 3) % t_size
+            x1_3p[3] = (x1_1[3] - 2) % t_size
+            x1_4[3] = x1_3[3]
+            x1_4p[3] = x1_3p[3]
+            x2_1[3] = (x1_1[3] + t_sep) % t_size
             x2_2[3] = x2_1[3]
-            y2_2[3] = y2_1[3]
-            y2_2p[3] = y2_1p[3]
+            x2_3[3] = (x2_1[3] + 3) % t_size
+            x2_3p[3] = (x2_1[3] + 2) % t_size
+            x2_4[3] = x2_3[3]
+            x2_4p[3] = x2_3p[3]
             pd = {
-                    "x1_1": ("point", x1_1,),
-                    "y1_1": ("point", y1_1,),
-                    "y1_1p": ("point", y1_1p,),
-                    "x2_1": ("point", x2_1,),
-                    "y2_1": ("point", y2_1,),
-                    "y2_1p": ("point", y2_1p,),
-                    "x1_2": ("point", x1_2,),
-                    "y1_2": ("point", y1_2,),
-                    "y1_2p": ("point", y1_2p,),
-                    "x2_2": ("point", x2_2,),
-                    "y2_2": ("point", y2_2,),
-                    "y2_2p": ("point", y2_2p,),
-                    "size": total_site,
+                    "x1_1":  ("point", x1_1,),
+                    "x1_2":  ("point", x1_2,),
+                    "x1_3":  ("point", x1_3,),
+                    "x1_3p": ("point", x1_3p,),
+                    "x1_4":  ("point", x1_4,),
+                    "x1_4p": ("point", x1_4p,),
+                    "x2_1":  ("point", x2_1,),
+                    "x2_2":  ("point", x2_2,),
+                    "x2_3":  ("point", x2_3,),
+                    "x2_3p": ("point", x2_3p,),
+                    "x2_4":  ("point", x2_4,),
+                    "x2_4p": ("point", x2_4p,),
+                    "xize": total_site,
                     "wave_function": wave_function,
                     "momentum_factor": momentum_factor,
                     "r_pi": 1.5,
