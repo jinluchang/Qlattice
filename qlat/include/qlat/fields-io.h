@@ -74,7 +74,7 @@ struct API BitSet {
     return (bytes[idx / 8] & (1 << (idx % 8))) != 0;
   }
   //
-  void set_f_rank(FieldM<int64_t, 1>& f_rank, const int64_t rank = 0);
+  void set_f_rank(FieldM<int64_t, 1>& f_rank, const int64_t rank=0);
   //
   bool check_f_rank(const FieldM<int64_t, 1>& f_rank);
   //
@@ -120,7 +120,7 @@ std::vector<char> bitset_decompress(const std::vector<char>& data,
                                     const long local_volume);
 
 BitSet mk_bitset_from_field_rank(const FieldM<int64_t, 1>& f_rank,
-                                 const int64_t n_per_tslice = -1);
+                                 const int64_t n_per_tslice=-1);
 
 // ---------------------------------------------------
 
@@ -137,7 +137,7 @@ struct API FieldsWriter {
   //
   void init();
   void init(const std::string& path_, const GeometryNode& geon_,
-            const bool is_append = false);
+            const bool is_append=false);
   //
   void close() { qfclose(qfile); }
 };
@@ -166,7 +166,7 @@ struct API FieldsReader {
 
 void fields_writer_dirs_geon_info(const GeometryNode& geon,
                                   const std::string& path,
-                                  const mode_t mode = default_dir_mode());
+                                  const mode_t mode=default_dir_mode());
 
 Coordinate shuffled_fields_reader_size_node_info(const std::string& path);
 
@@ -200,7 +200,7 @@ void qfwrite_convert_endian(void* ptr, const size_t size, const size_t nmemb,
                             QFile& qfile, const bool is_little_endian);
 
 long write(FieldsWriter& fw, const std::string& fn, const Geometry& geo,
-           const Vector<char> data, const bool is_sparse_field = false);
+           const Vector<char> data, const bool is_sparse_field=false);
 
 long qfread_convert_endian(void* ptr, const size_t size, const size_t nmemb,
                            QFile& qfile, const bool is_little_endian);
@@ -440,7 +440,7 @@ struct API ShuffledFieldsWriter {
   ShuffledFieldsWriter() { init(); }
   ShuffledFieldsWriter(const std::string& path_,
                        const Coordinate& new_size_node_,
-                       const bool is_append = false)
+                       const bool is_append=false)
   // interface function
   {
     init(path_, new_size_node_, is_append);
@@ -450,7 +450,7 @@ struct API ShuffledFieldsWriter {
   //
   void init();
   void init(const std::string& path_, const Coordinate& new_size_node_,
-            const bool is_append = false);
+            const bool is_append=false);
   //
   void close();
 };
@@ -466,7 +466,7 @@ struct API ShuffledFieldsReader {
     init();
   }
   ShuffledFieldsReader(const std::string& path_,
-                       const Coordinate& new_size_node_ = Coordinate())
+                       const Coordinate& new_size_node_=Coordinate())
   // interface function
   {
     init(path_, new_size_node_);
@@ -474,7 +474,7 @@ struct API ShuffledFieldsReader {
   //
   void init();
   void init(const std::string& path_,
-            const Coordinate& new_size_node_ = Coordinate());
+            const Coordinate& new_size_node_=Coordinate());
 };
 
 typedef std::map<long, Handle<ShuffledFieldsWriter> > ShuffledFieldsWriterMap;
@@ -500,7 +500,7 @@ API inline ShuffledFieldsReaderCache& get_shuffled_fields_reader_cache()
 }
 
 ShuffledFieldsReader& get_shuffled_fields_reader(
-    const std::string& path, const Coordinate& new_size_node = Coordinate());
+    const std::string& path, const Coordinate& new_size_node=Coordinate());
 
 long flush(ShuffledFieldsWriter& sfw);
 
@@ -516,7 +516,7 @@ std::vector<std::string> list_fields(ShuffledFieldsReader& sfr);
 
 int truncate_fields_sync_node(const std::string& path,
                               const std::vector<std::string>& fns_keep,
-                              const Coordinate& new_size_node = Coordinate());
+                              const Coordinate& new_size_node=Coordinate());
 
 std::vector<std::string> properly_truncate_fields_sync_node(
     const std::string& path, const bool is_check_all = false,
