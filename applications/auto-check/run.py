@@ -595,9 +595,9 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
     xg_list = get_all_points(total_site)
     xg_local_list = [ q.Coordinate(xg) for xg in geo.xg_list() ]
     sample_num = get_param(job_tag, "measurement", fname,
-                           "sample_num", default=128)
+                           "sample_num", default=512)
     sample_size = get_param(job_tag, "measurement", fname,
-                            "sample_size", default=32 * 1024)
+                            "sample_size", default=8)
     t_sep_range = get_param(job_tag, "measurement", fname,
                             "t_sep_range", default=17)
     t_sep_range = min(t_size, t_sep_range)
@@ -607,40 +607,45 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
         for idx in mpi_chunk:
             yield idx
     @q.timer
+    def feval_single(idx, idx2, t_src, t_sep):
+        rsi = rs.split(f"{idx}-{idx2}-{t_src}-{t_sep}")
+        x1_1 = rsi.c_rand_gen(total_site)
+        x1_2 = rsi.c_rand_gen(total_site)
+        x2_1 = rsi.c_rand_gen(total_site)
+        x2_2 = rsi.c_rand_gen(total_site)
+        x1_1[3] = t_src
+        x2_1[3] = (x1_1[3] + t_sep) % t_size
+        x1_2[3] = x1_1[3]
+        x2_2[3] = x2_1[3]
+        pd = {
+                "x1_1": ("point", x1_1,),
+                "x1_2": ("point", x1_2,),
+                "x2_1": ("point", x2_1,),
+                "x2_2": ("point", x2_2,),
+                "size": total_site,
+                "wave_function": wave_function,
+                "momentum_factor": momentum_factor,
+                "r_pi": 1.5,
+                "r_sigma": 1.5,
+                "r_kk": 2.0,
+                "Coordinate": q.Coordinate,
+                }
+        val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
+        return val
+    @q.timer
     def feval(args):
         idx = args
-        res_list = []
+        values = np.zeros((t_sep_range, len(expr_names),), dtype=complex)
         for idx2 in range(sample_size):
-            rsi = rs.split(f"{idx}-{idx2}")
-            t_sep = rsi.rand_gen() % t_sep_range
-            x1_1 = rsi.c_rand_gen(total_site)
-            x1_2 = rsi.c_rand_gen(total_site)
-            x2_1 = rsi.c_rand_gen(total_site)
-            x2_2 = rsi.c_rand_gen(total_site)
-            x2_1[3] = (x1_1[3] + t_sep) % t_size
-            x1_2[3] = x1_1[3]
-            x2_2[3] = x2_1[3]
-            pd = {
-                    "x1_1": ("point", x1_1,),
-                    "x1_2": ("point", x1_2,),
-                    "x2_1": ("point", x2_1,),
-                    "x2_2": ("point", x2_2,),
-                    "size": total_site,
-                    "wave_function": wave_function,
-                    "momentum_factor": momentum_factor,
-                    "r_pi": 1.5,
-                    "r_sigma": 1.5,
-                    "r_kk": 2.0,
-                    "Coordinate": q.Coordinate,
-                    }
-            val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
-            res_list.append((val, t_sep,))
-        return res_list
+            for t_src in range(t_size):
+                for t_sep in range(t_sep_range):
+                    val = feval_single(idx, idx2, t_src, t_sep)
+                    values[t_sep] += val
+        return values
     def sum_function(val_list):
         values = np.zeros((t_sep_range, len(expr_names),), dtype=complex)
-        for idx, res_list in enumerate(val_list):
-            for val, t_sep, in res_list:
-                values[t_sep] += val
+        for idx, val in enumerate(val_list):
+            values += val
             q.displayln_info(f"{fname}: {idx+1}/{len(mpi_chunk)}")
         return q.glb_sum(values.transpose(1, 0,))
     q.timer_fork(0)
@@ -648,7 +653,7 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
     q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
-    res_sum *= 1.0 / (sample_num * sample_size / t_sep_range)
+    res_sum *= 1.0 / (sample_num * sample_size * t_size)
     # assert q.qnorm(res_sum[0].sum(1) - 1.0) < 1e-10
     ld = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
@@ -703,7 +708,6 @@ def get_cexpr_meson_meson_i0_j0_corr_wf():
         #
         diagram_type_dict[((('x1_1', 'x2_1'), 1), (('x1_2', 'x2_2'), 1), (('x2_3', 'x1_3'), 1), (('x2_4', 'x1_4'), 1))] = 'TypeD'
         diagram_type_dict[((('x1_1', 'x2_1'), 1), (('x1_2', 'x2_2'), 1), (('x2_3p', 'x1_3p'), 1), (('x2_4p', 'x1_4p'), 1))] = 'TypeD'
-        exprs = [ mk_fac(1) + f"1", ]
         mom0 = q.Coordinate([ 0, 0, 0, 0, ])
         src_op_list = [
                 mk_sigma_wf("x1_1", "x1_2", mom0),
@@ -723,6 +727,11 @@ def get_cexpr_meson_meson_i0_j0_corr_wf():
                 mk_kkkk_i0_j0_wf("x2_1", "x2_2", "x2_3p", "x2_4p", 0),
                 mk_kkkk_i0_j0_wf("x2_1", "x2_2", "x2_3p", "x2_4p", 1),
                 ]
+        t_sel = mk_fac("time_selector_8(x1_1)") + f"time_selector_8(x1_1)"
+        exprs = [
+                mk_fac(1) + f"1",
+                t_sel,
+                ]
         for src_op in src_op_list:
             exprs.append(src_op)
         for snk_op in snk_op_list:
@@ -733,7 +742,7 @@ def get_cexpr_meson_meson_i0_j0_corr_wf():
                 exprs.append((snk_op * src_op, "TypeD",))
                 exprs.append((snk_op * src_op, "TypeV",))
                 exprs.append((snk_op * src_op, "TypeR",))
-                exprs.append((mk_fac("time_selector_8(x1_1)") * snk_op * src_op, "TypeR",))
+                exprs.append((t_sel * snk_op * src_op, "TypeR",))
         cexpr = contract_simplify_compile(
                 *exprs,
                 is_isospin_symmetric_limit=True,
@@ -760,7 +769,7 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
     sample_num = get_param(job_tag, "measurement", fname,
                            "sample_num", default=512)
     sample_size = get_param(job_tag, "measurement", fname,
-                            "sample_size", default=8 * 1024)
+                            "sample_size", default=8)
     rs = q.RngState(f"{job_tag}-{traj}-{fname}")
     mpi_chunk = get_mpi_chunk(list(range(sample_num)))
     t_sep_range = get_param(job_tag, "measurement", fname,
@@ -770,65 +779,70 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
         for idx in mpi_chunk:
             yield idx
     @q.timer
+    def feval_single(idx, idx2, t_src, t_sep):
+        rsi = rs.split(f"{idx}-{idx2}-{t_src}-{t_sep}")
+        x1_1 = rsi.c_rand_gen(total_site)
+        x1_2 = rsi.c_rand_gen(total_site)
+        x1_3 = rsi.c_rand_gen(total_site)
+        x1_4 = rsi.c_rand_gen(total_site)
+        x1_3p = x1_3.copy()
+        x1_4p = x1_4.copy()
+        x2_1 = rsi.c_rand_gen(total_site)
+        x2_2 = rsi.c_rand_gen(total_site)
+        x2_3 = rsi.c_rand_gen(total_site)
+        x2_4 = rsi.c_rand_gen(total_site)
+        x2_3p = x2_3.copy()
+        x2_4p = x2_4.copy()
+        x1_1[3] = t_src
+        x1_2[3] = x1_1[3]
+        x1_3[3] = (x1_1[3] - 3) % t_size
+        x1_3p[3] = (x1_1[3] - 2) % t_size
+        x1_4[3] = x1_3[3]
+        x1_4p[3] = x1_3p[3]
+        x2_1[3] = (x1_1[3] + t_sep) % t_size
+        x2_2[3] = x2_1[3]
+        x2_3[3] = (x2_1[3] + 3) % t_size
+        x2_3p[3] = (x2_1[3] + 2) % t_size
+        x2_4[3] = x2_3[3]
+        x2_4p[3] = x2_3p[3]
+        pd = {
+                "x1_1":  ("point", x1_1,),
+                "x1_2":  ("point", x1_2,),
+                "x1_3":  ("point", x1_3,),
+                "x1_3p": ("point", x1_3p,),
+                "x1_4":  ("point", x1_4,),
+                "x1_4p": ("point", x1_4p,),
+                "x2_1":  ("point", x2_1,),
+                "x2_2":  ("point", x2_2,),
+                "x2_3":  ("point", x2_3,),
+                "x2_3p": ("point", x2_3p,),
+                "x2_4":  ("point", x2_4,),
+                "x2_4p": ("point", x2_4p,),
+                "size": total_site,
+                "wave_function": wave_function,
+                "momentum_factor": momentum_factor,
+                "time_selector_8": time_selector_8,
+                "r_pi": 1.5,
+                "r_sigma": 1.5,
+                "r_kk": 2.0,
+                "Coordinate": q.Coordinate,
+                }
+        val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
+        return val
+    @q.timer
     def feval(args):
         idx = args
-        res_list = []
+        values = np.zeros((t_sep_range, len(expr_names),), dtype=complex)
         for idx2 in range(sample_size):
-            rsi = rs.split(f"{idx}-{idx2}")
-            t_sep = rsi.rand_gen() % t_sep_range
-            x1_1 = rsi.c_rand_gen(total_site)
-            x1_2 = rsi.c_rand_gen(total_site)
-            x1_3 = rsi.c_rand_gen(total_site)
-            x1_4 = rsi.c_rand_gen(total_site)
-            x1_3p = x1_3.copy()
-            x1_4p = x1_4.copy()
-            x2_1 = rsi.c_rand_gen(total_site)
-            x2_2 = rsi.c_rand_gen(total_site)
-            x2_3 = rsi.c_rand_gen(total_site)
-            x2_4 = rsi.c_rand_gen(total_site)
-            x2_3p = x2_3.copy()
-            x2_4p = x2_4.copy()
-            x1_2[3] = x1_1[3]
-            x1_3[3] = (x1_1[3] - 3) % t_size
-            x1_3p[3] = (x1_1[3] - 2) % t_size
-            x1_4[3] = x1_3[3]
-            x1_4p[3] = x1_3p[3]
-            x2_1[3] = (x1_1[3] + t_sep) % t_size
-            x2_2[3] = x2_1[3]
-            x2_3[3] = (x2_1[3] + 3) % t_size
-            x2_3p[3] = (x2_1[3] + 2) % t_size
-            x2_4[3] = x2_3[3]
-            x2_4p[3] = x2_3p[3]
-            pd = {
-                    "x1_1":  ("point", x1_1,),
-                    "x1_2":  ("point", x1_2,),
-                    "x1_3":  ("point", x1_3,),
-                    "x1_3p": ("point", x1_3p,),
-                    "x1_4":  ("point", x1_4,),
-                    "x1_4p": ("point", x1_4p,),
-                    "x2_1":  ("point", x2_1,),
-                    "x2_2":  ("point", x2_2,),
-                    "x2_3":  ("point", x2_3,),
-                    "x2_3p": ("point", x2_3p,),
-                    "x2_4":  ("point", x2_4,),
-                    "x2_4p": ("point", x2_4p,),
-                    "size": total_site,
-                    "wave_function": wave_function,
-                    "momentum_factor": momentum_factor,
-                    "time_selector_8": time_selector_8,
-                    "r_pi": 1.5,
-                    "r_sigma": 1.5,
-                    "r_kk": 2.0,
-                    "Coordinate": q.Coordinate,
-                    }
-            val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
-            res_list.append((val, t_sep,))
-        return res_list
+            for t_src in range(t_size):
+                for t_sep in range(t_sep_range):
+                    val = feval_single(idx, idx2, t_src, t_sep)
+                    values[t_sep] += val
+        return values
     def sum_function(val_list):
         values = np.zeros((t_sep_range, len(expr_names),), dtype=complex)
-        for idx, res_list in enumerate(val_list):
-            for val, t_sep, in res_list:
-                values[t_sep] += val
+        for idx, val in enumerate(val_list):
+            values += val
             q.displayln_info(f"{fname}: {idx+1}/{len(mpi_chunk)}")
         return q.glb_sum(values.transpose(1, 0,))
     q.timer_fork(0)
@@ -836,7 +850,7 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
     q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
-    res_sum *= 1.0 / (sample_num * sample_size / t_sep_range)
+    res_sum *= 1.0 / (sample_num * sample_size * t_size)
     # assert q.qnorm(res_sum[0].sum(1) - 1.0) < 1e-10
     ld = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
@@ -961,11 +975,11 @@ set_param("test-4nt64", "clanc_params", 1, 0, value=get_param("test-4nt64", "cla
 set_param("test-4nt64", "lanc_params", 1, 0, value=get_param("test-4nt64", "lanc_params", 0, 0).copy())
 set_param("test-4nt64", "lanc_params", 1, 0, "fermion_params", value=get_param("test-4nt64", "fermion_params", 1, 0).copy())
 
-set_param("test-4nt16", "measurement", "auto_contract_meson_corr_wf", "sample_num", value=128)
-set_param("test-4nt16", "measurement", "auto_contract_meson_corr_wf", "sample_size", value=16)
+set_param("test-4nt16", "measurement", "auto_contract_meson_corr_wf", "sample_num", value=32)
+set_param("test-4nt16", "measurement", "auto_contract_meson_corr_wf", "sample_size", value=2)
 set_param("test-4nt16", "measurement", "auto_contract_meson_corr_wf", "t_sep_range", value=6)
-set_param("test-4nt16", "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "sample_num", value=128)
-set_param("test-4nt16", "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "sample_size", value=16)
+set_param("test-4nt16", "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "sample_num", value=32)
+set_param("test-4nt16", "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "sample_size", value=2)
 set_param("test-4nt16", "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "t_sep_range", value=6)
 
 qg.begin_with_gpt()
