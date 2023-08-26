@@ -281,6 +281,9 @@ def collect_factor_in_cexpr(named_exprs):
                     var = ea.Factor(name, variables=[], otype="Var")
                     t.factors.append(var)
                     var_dataset[code] = var
+    for name, expr in named_exprs:
+        for i, (ea_coef, term_name,) in enumerate(expr):
+            expr[i] = (ea.simplified(ea_coef), term_name,)
     return variables_factor
 
 @q.timer
