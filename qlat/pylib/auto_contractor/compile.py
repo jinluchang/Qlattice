@@ -248,7 +248,7 @@ def collect_factor_in_cexpr(named_exprs):
                             x[i] = var_dataset[f.code]
                         else:
                             while True:
-                                name = f"V_factor_{var_counter}"
+                                name = f"V_factor_{var_counter:08}"
                                 var_counter += 1
                                 if name not in var_nameset:
                                     break
@@ -271,7 +271,7 @@ def collect_factor_in_cexpr(named_exprs):
                     t.factors.append(var_dataset[code])
                 else:
                     while True:
-                        name = f"V_factor_coef_{var_counter}"
+                        name = f"V_factor_coef_{var_counter:08}"
                         var_counter += 1
                         if name not in var_nameset:
                             break

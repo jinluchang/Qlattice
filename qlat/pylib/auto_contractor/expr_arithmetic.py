@@ -91,7 +91,13 @@ class Term:
         self.coef = sympy.simplify(self.coef)
 
     def compile_py(self) -> str:
-        return '*'.join([ compile_py_complex(self.coef), ] + [ f"({f.compile_py()})" for f in self.factors ])
+        fs = [ f"({f.compile_py()})" for f in self.factors ]
+        if self.coef == 1:
+            if self.factors == []:
+                return "1"
+            else:
+                return '*'.join(fs)
+        return '*'.join([ compile_py_complex(self.coef), ] + fs)
 
 ### ------
 

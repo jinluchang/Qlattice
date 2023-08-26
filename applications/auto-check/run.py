@@ -963,7 +963,7 @@ set_param("test-4nt16", "clanc_params", 1, 0, value=get_param("test-4nt16", "cla
 set_param("test-4nt16", "lanc_params", 1, 0, value=get_param("test-4nt16", "lanc_params", 0, 0).copy())
 set_param("test-4nt16", "lanc_params", 1, 0, "fermion_params", value=get_param("test-4nt16", "fermion_params", 1, 0).copy())
 
-set_param("test-4nt64", "trajs", value=list(range(1000, 1128)))
+set_param("test-4nt64", "trajs", value=list(range(1000, 1512)))
 set_param("test-4nt64", "lanc_params", 0, 0, "cheby_params", value={ "low": 0.22, "high": 5.5, "order": 30, })
 set_param("test-4nt64", "lanc_params", 0, 0, "irl_params", value={ "Nstop": 1000, "Nk": 1100, "Nm": 1300, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
 set_param("test-4nt64", "clanc_params", 0, 0, "nbasis", value=1000)
