@@ -73,6 +73,8 @@ class Term:
     """
     self.coef
     self.factors
+    #
+    coef should be a number or a sympy expression
     """
 
     def __init__(self, factors, coef = 1):
@@ -154,7 +156,9 @@ class Expr:
 
     @q.timer
     def simplify(self) -> None:
-        # interface function
+        """
+        interface function
+        """
         self.sort()
         self.combine_terms()
         self.drop_zeros()
@@ -232,6 +236,9 @@ def mk_expr(x):
         assert False
 
 def compile_py_complex(x):
+    """
+    interface function
+    """
     v = complex(x)
     return f"{v}"
 

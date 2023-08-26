@@ -145,6 +145,7 @@ def get_positions(term):
     add_positions(s, term)
     return sorted(list(s))
 
+@q.timer
 def collect_position_in_cexpr(named_terms, named_exprs):
     s = set()
     for name, term in named_terms:
@@ -155,9 +156,77 @@ def collect_position_in_cexpr(named_terms, named_exprs):
     positions = sorted(list(s))
     return positions
 
+@q.timer
+def find_common_factors(named_exprs):
+    """
+    return None or [ ea_expr, op1, ]
+    """
+    subexpr_count = {}
+    def add(x, count_added):
+        op_repr = repr(x)
+        if op_repr in subexpr_count:
+            c, op = subexpr_count[op_repr]
+            assert x == op
+            subexpr_count[op_repr] = (c + count_added, x)
+        else:
+            subexpr_count[op_repr] = (count_added, x)
+    def find_op_pair(x):
+        if len(x) < 2:
+            return None
+        for i, op in enumerate(x):
+            factor = 1
+            if len(x) > 2:
+                factor = 2
+            op_type = get_op_type(op)
+            if op_type in [ "V_S", "V_G", "V_U", "S", "G", "U", ]:
+                op1 = x[(i+1) % len(x)]
+                op1_type = get_op_type(op1)
+                if op1_type in [ "V_S", "V_G", "V_U", "S", "G", "U", ]:
+                    prod = [op, op1]
+                    if op_type in [ "V_G", "G", ] and op1_type in [ "V_G", "G", ]:
+                        add(prod, 1.02 * factor)
+                    elif op_type in [ "V_U", "U", ] and op1_type in [ "V_U", "U", ]:
+                        add(prod, 1.02 * factor)
+                    elif op_type in [ "V_U", "U", ] and op1_type in [ "V_G", "G", ]:
+                        # do not multiply U with G
+                        pass
+                    elif op_type in [ "V_G", "G", ] and op1_type in [ "V_U", "U", ]:
+                        # do not multiply U with G
+                        pass
+                    elif op_type in [ "V_G", "G", ] or op1_type in [ "V_G", "G", ]:
+                        add(prod, 1.01 * factor)
+                    elif op_type in [ "V_U", "U", ] or op1_type in [ "V_U", "U", ]:
+                        add(prod, 1.01 * factor)
+                    elif op_type in [ "V_S", "S", ] and op1_type in [ "V_S", "S", ]:
+                        add(prod, 1 * factor)
+                    else:
+                        assert False
+    def find(x):
+        if isinstance(x, list):
+            for op in x:
+                find(op)
+        elif isinstance(x, Op) and x.otype == "Tr" and len(x.ops) >= 2:
+            find_op_pair(x.ops)
+        elif isinstance(x, Term):
+            find(x.c_ops)
+        elif isinstance(x, Expr):
+            for t in x.terms:
+                find(t)
+    for name, tr in variables_tr:
+        find(tr)
+    max_num_repeat = 1.5
+    best_match = None
+    for num_repeat, op in subexpr_count.values():
+        if num_repeat > max_num_repeat:
+            max_num_repeat = num_repeat
+            best_match = op
+    return best_match
+
+@q.timer
 def collect_factor_in_cexpr(named_exprs):
     """
     collect the factors in all ea_coef
+    collect common sub-expressions in ea_coef
     """
     variables_factor = []
     var_counter = 0
@@ -184,12 +253,37 @@ def collect_factor_in_cexpr(named_exprs):
                                 if name not in var_nameset:
                                     break
                             var_nameset.add(name)
-                            variables_factor.append((name, f))
+                            variables_factor.append((name, ea.mk_expr(f)))
                             var = ea.Factor(name, f.variables)
                             x[i] = var
                             var_dataset[f.code] = var
+    var_counter = 0
+    var_dataset = {} # var_dataset[factor_code] = factor_var
+    for name, expr in named_exprs:
+        for ea_coef, term_name in expr:
+            if not isinstance(ea_coef, ea.Expr):
+                continue
+            for t in ea_coef.terms:
+                x = t.coef
+                code = ea.compile_py_complex(x)
+                if code in var_dataset:
+                    t.coef = 1
+                    t.factors.append(var_dataset[code])
+                else:
+                    while True:
+                        name = f"V_factor_coef_{var_counter}"
+                        var_counter += 1
+                        if name not in var_nameset:
+                            break
+                    var_nameset.add(name)
+                    variables_factor.append((name, ea.mk_expr(t.coef)))
+                    t.coef = 1
+                    var = ea.Factor(name, variables=[], otype="Var")
+                    t.factors.append(var)
+                    var_dataset[code] = var
     return variables_factor
 
+@q.timer
 def collect_prop_in_cexpr(named_terms):
     """
     collect the propagators
@@ -230,6 +324,7 @@ def collect_prop_in_cexpr(named_terms):
         term.sort()
     return variables_prop
 
+@q.timer
 def collect_color_matrix_in_cexpr(named_terms):
     """
     collect the color matrices
@@ -270,6 +365,7 @@ def collect_color_matrix_in_cexpr(named_terms):
         term.sort()
     return variables_color_matrix
 
+@q.timer
 def collect_tr_in_cexpr(named_terms):
     """
     collect common traces
@@ -312,6 +408,7 @@ def collect_tr_in_cexpr(named_terms):
         term.sort()
     return variables_tr
 
+@q.timer
 def find_common_subexpr_in_tr(variables_tr):
     """
     return None or [ op, op1, ]
@@ -377,6 +474,7 @@ def find_common_subexpr_in_tr(variables_tr):
             best_match = op
     return best_match
 
+@q.timer
 def collect_common_subexpr_in_tr(variables_tr, op_common, var):
     op_repr = repr(op_common)
     def replace(x):
@@ -405,8 +503,10 @@ def collect_common_subexpr_in_tr(variables_tr, op_common, var):
             for t in x.terms:
                 replace(t)
     def remove_none(x):
-        # return a None removed x
-        # possibly modify in-place
+        """
+        return a None removed x
+        possibly modify in-place
+        """
         if isinstance(x, list):
             return [ remove_none(op) for op in x if op is not None ]
         elif isinstance(x, Op):
@@ -426,6 +526,7 @@ def collect_common_subexpr_in_tr(variables_tr, op_common, var):
         replace(tr)
         remove_none(tr)
 
+@q.timer
 def collect_subexpr_in_cexpr(variables_tr):
     """
     collect common sub-expressions
@@ -1264,8 +1365,7 @@ class CExprCodeGenPy:
         for idx, (name, value,) in enumerate(cexpr.variables_factor):
             assert name.startswith("V_factor_")
             x = value
-            assert isinstance(x, ea.Factor)
-            assert x.otype == "Expr"
+            assert isinstance(x, ea.Expr)
             c, t = self.gen_expr(x)
             assert t == "V_a"
             append(f"# {name}")
