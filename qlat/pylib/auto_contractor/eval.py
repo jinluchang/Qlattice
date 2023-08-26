@@ -147,6 +147,7 @@ def cache_compiled_cexpr(calc_cexpr, path, *, is_cython = True, is_distillation 
         subprocess.run(["meson", "compile", "-C", "build"], cwd = path)
     @q.timer
     def calc_compile_cexpr():
+        q.timer_fork()
         cexpr_original = calc_cexpr()
         cexpr_optimized = copy.deepcopy(cexpr_original)
         cexpr_optimized.optimize()
@@ -171,6 +172,8 @@ def cache_compiled_cexpr(calc_cexpr, path, *, is_cython = True, is_distillation 
         data["cexpr_original"] = cexpr_original
         data["code_py"] = code_py
         q.save_pickle_obj(data, fn_pickle)
+        q.timer_display()
+        q.timer_merge()
         return cexpr_optimized
     if q.get_id_node() == 0 and not q.does_file_exist(fn_pickle):
         calc_compile_cexpr()
