@@ -176,7 +176,7 @@ def find_common_prod_in_factors(named_exprs):
                     prod = (f.code, f1.code,)
                     count = subexpr_count.get(prod, 0)
                     subexpr_count[prod] = count + 1
-    max_num_repeat = 1
+    max_num_repeat = 0
     best_match = None
     for prod, num_repeat in subexpr_count.items():
         if num_repeat > max_num_repeat:
@@ -241,7 +241,7 @@ def find_common_sum_in_factors(named_exprs):
                 pair = (f.code, f1.code,)
                 count = subexpr_count.get(pair, 0)
                 subexpr_count[pair] = count + 1
-    max_num_repeat = 1
+    max_num_repeat = 0
     best_match = None
     for pair, num_repeat in subexpr_count.items():
         if num_repeat > max_num_repeat:
