@@ -228,13 +228,15 @@ def collect_factor_in_cexpr(named_exprs):
     collect the factors in all ea_coef
     collect common sub-expressions in ea_coef
     """
+    variables_factor_intermediate = []
     variables_factor = []
-    var_counter = 0
-    var_dataset = {} # var_dataset[factor_code] = factor_var
     var_nameset = set()
     for name, expr in named_exprs:
         for i, (ea_coef, term_name,) in enumerate(expr):
             expr[i] = (ea.mk_expr(ea.simplified(ea_coef)), term_name,)
+    # Add ea.Factor with otype "Expr" to variables_factor_intermediate
+    var_counter = 0
+    var_dataset = {} # var_dataset[factor_code] = factor_var
     for name, expr in named_exprs:
         for ea_coef, term_name in expr:
             assert isinstance(ea_coef, ea.Expr)
@@ -252,10 +254,11 @@ def collect_factor_in_cexpr(named_exprs):
                                 if name not in var_nameset:
                                     break
                             var_nameset.add(name)
-                            variables_factor.append((name, ea.mk_expr(f)))
+                            variables_factor_intermediate.append((name, ea.mk_expr(f)))
                             var = ea.Factor(name, f.variables)
                             x[i] = var
                             var_dataset[f.code] = var
+    # Add numerical coef to variables_factor_intermediate
     var_counter = 0
     var_dataset = {} # var_dataset[factor_code] = factor_var
     for name, expr in named_exprs:
@@ -276,7 +279,7 @@ def collect_factor_in_cexpr(named_exprs):
                         if name not in var_nameset:
                             break
                     var_nameset.add(name)
-                    variables_factor.append((name, ea.mk_expr(t.coef)))
+                    variables_factor_intermediate.append((name, ea.mk_expr(t.coef)))
                     t.coef = 1
                     var = ea.Factor(name, variables=[], otype="Var")
                     t.factors.append(var)
@@ -284,7 +287,30 @@ def collect_factor_in_cexpr(named_exprs):
     for name, expr in named_exprs:
         for i, (ea_coef, term_name,) in enumerate(expr):
             expr[i] = (ea.mk_expr(ea.simplified(ea_coef)), term_name,)
-    return variables_factor
+    # Add remaining variables in variables_factor_intermediate to variables_factor
+    var_counter = 0
+    var_dataset = {} # var_dataset[factor_code] = factor_var
+    for name, expr in named_exprs:
+        for ea_coef, term_name in expr:
+            assert isinstance(ea_coef, ea.Expr)
+            for t in ea_coef.terms:
+                x = t.factors
+                for i, f in enumerate(x):
+                    assert f.otype == "Var"
+                    if f.code in var_dataset:
+                        x[i] = var_dataset[f.code]
+                    else:
+                        while True:
+                            name = f"V_factor_final_{var_counter:08}"
+                            var_counter += 1
+                            if name not in var_nameset:
+                                break
+                        var_nameset.add(name)
+                        variables_factor.append((name, ea.mk_expr(f)))
+                        var = ea.Factor(name, variables=f.variables, otype=f.otype)
+                        x[i] = var
+                        var_dataset[f.code] = var
+    return variables_factor_intermediate, variables_factor
 
 @q.timer
 def collect_prop_in_cexpr(named_terms):
@@ -595,6 +621,7 @@ class CExpr:
     """
     self.diagram_types
     self.positions
+    self.variables_factor_intermediate
     self.variables_factor
     self.variables_prop
     self.variables_color_matrix
@@ -612,6 +639,7 @@ class CExpr:
     def __init__(self):
         self.diagram_types = []
         self.positions = []
+        self.variables_factor_intermediate = []
         self.variables_factor = []
         self.variables_prop = []
         self.variables_color_matrix = []
@@ -651,7 +679,7 @@ class CExpr:
             # likely collect_op is already performed
             return
         # collect ea_coef factors into variables
-        self.variables_factor = collect_factor_in_cexpr(self.named_exprs)
+        self.variables_factor_intermediate, self.variables_factor = collect_factor_in_cexpr(self.named_exprs)
         # collect prop expr into variables
         self.variables_prop = collect_prop_in_cexpr(self.named_terms)
         # collect color matrix expr into variables
@@ -948,6 +976,10 @@ def display_cexpr_raw(cexpr : CExpr):
         lines.append(f"Variables color matrix:")
     for name, value in cexpr.variables_color_matrix:
         lines.append(f"{name:>20} : {value}")
+    if cexpr.variables_factor_intermediate:
+        lines.append(f"Variables factor intermediate:")
+    for name, value in cexpr.variables_factor_intermediate:
+        lines.append(f"{name:>20} : {value}")
     if cexpr.variables_factor:
         lines.append(f"Variables factor:")
     for name, value in cexpr.variables_factor:
@@ -990,6 +1022,10 @@ def display_cexpr(cexpr : CExpr):
     if cexpr.variables_color_matrix:
         lines.append(f"Variables color matrix:")
     for name, value in cexpr.variables_color_matrix:
+        lines.append(f"{name:>20} = {show_variable_value(value)}")
+    if cexpr.variables_factor_intermediate:
+        lines.append(f"Variables factor intermediate:")
+    for name, value in cexpr.variables_factor_intermediate:
         lines.append(f"{name:>20} = {show_variable_value(value)}")
     if cexpr.variables_factor:
         lines.append(f"Variables factor:")
@@ -1359,6 +1395,15 @@ class CExprCodeGenPy:
             append(f"{name},")
         append(f"]")
         self.indent -= 4
+        append(f"# declare factors intermediate")
+        for idx, (name, value,) in enumerate(cexpr.variables_factor_intermediate):
+            assert name.startswith("V_factor_")
+            x = value
+            assert isinstance(x, ea.Expr)
+            c, t = self.gen_expr(x)
+            assert t == "V_a"
+            append(f"# {idx}")
+            append(f"{name} = {c}")
         append(f"# declare factors")
         append_cy(f"cdef numpy.ndarray[numpy.complex128_t] factors")
         append(f"factors = np.zeros({len(cexpr.variables_factor)}, dtype = np.complex128)")
