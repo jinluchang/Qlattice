@@ -1497,8 +1497,8 @@ class CExprCodeGenPy:
             assert x.otype == "S"
             c, t = self.gen_expr(x)
             assert t == "V_S"
-            append_cy(f"cdef WilsonMatrix {name} = {c}")
-            append_py(f"{name} = {c}")
+            # potentially be AMA prop (cannot use cdef in cython)
+            append(f"{name} = {c}")
         append(f"# get color matrix")
         for name, value in cexpr.variables_color_matrix:
             assert name.startswith("V_U_")
@@ -1507,7 +1507,7 @@ class CExprCodeGenPy:
             assert x.otype == "U"
             c, t = self.gen_expr(x)
             assert t == "V_U"
-            append_cy(f"cdef ColorMatrix {name} = {c}")
+            append_cy(f"cdef cp.ColorMatrix {name} = {c}")
             append_py(f"{name} = {c}")
         append(f"# set props for return")
         append(f"props = [")
@@ -1594,7 +1594,7 @@ class CExprCodeGenPy:
             append_py(f"p_{name} = cms[{idx}]")
         append(f"# set factors")
         for idx, (name, value,) in enumerate(cexpr.variables_factor):
-            append_cy(f"cdef cc.Complex {name} = factors_view[idx]")
+            append_cy(f"cdef cc.Complex {name} = factors_view[{idx}]")
             append_py(f"{name} = factors_view[{idx}]")
         append(f"# compute products")
         for name, value in cexpr.variables_prod:
