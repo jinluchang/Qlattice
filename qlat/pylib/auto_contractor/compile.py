@@ -1218,6 +1218,7 @@ class CExprCodeGenPy:
             append(f"from auto_contractor.runtime_distillation import *")
         else:
             append(f"from auto_contractor.runtime import *")
+        append_cy(f"import cython")
         append_cy(f"cimport qlat_utils.everything as cc")
         append_cy(f"cimport qlat_utils.cp as cp")
         append_cy(f"cimport numpy")
@@ -1481,6 +1482,8 @@ class CExprCodeGenPy:
         append_py = self.append_py
         cexpr = self.cexpr
         append(f"@timer_flops")
+        append_cy(f"@cython.boundscheck(False)")
+        append_cy(f"@cython.wraparound(False)")
         append(f"def cexpr_function_get_prop(positions_dict, get_prop):")
         self.indent += 4
         append(f"# set positions")
@@ -1581,6 +1584,8 @@ class CExprCodeGenPy:
         append_py = self.append_py
         cexpr = self.cexpr
         append(f"@timer_flops")
+        append_cy(f"@cython.boundscheck(False)")
+        append_cy(f"@cython.wraparound(False)")
         append_cy(f"def cexpr_function_eval_with_props(list props, list cms, cc.Complex[:] factors_view):")
         append_py(f"def cexpr_function_eval_with_props(props, cms, factors_view):")
         self.indent += 4
