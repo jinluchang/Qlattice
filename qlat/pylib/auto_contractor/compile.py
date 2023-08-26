@@ -1181,6 +1181,7 @@ class CExprCodeGenPy:
     self.cexpr
     self.is_cython
     self.is_distillation
+    self.var_dict_for_factors
     self.lines
     self.indent
     self.total_sloppy_flops
@@ -1195,12 +1196,15 @@ class CExprCodeGenPy:
         self.cexpr = cexpr
         self.is_cython = is_cython
         self.is_distillation = is_distillation
+        self.var_dict_for_factors = {}
         self.lines = []
         self.indent = 0
         self.total_sloppy_flops = 0
         #
         if self.is_distillation:
             assert self.is_cython == False
+        #
+        self.set_var_dict_for_factors();
 
     def code_gen(self):
         """
@@ -1229,6 +1233,17 @@ class CExprCodeGenPy:
         self.total_flops()
         return "\n".join(lines)
 
+    def set_var_dict_for_factors(self):
+        cexpr = self.cexpr
+        self.var_dict_for_factors = {}
+        var_dict_for_factors = self.var_dict_for_factors
+        for idx, (name, value,) in enumerate(cexpr.variables_factor_intermediate):
+            assert name.startswith("V_factor_")
+            var_dict_for_factors[name] = f"factors_intermediate_view[{idx}]"
+        for idx, (name, value,) in enumerate(cexpr.variables_factor):
+            assert name.startswith("V_factor_")
+            var_dict_for_factors[name] = f"factors_view[{idx}]"
+
     def gen_expr(self, x):
         """
         return code_str, type_str
@@ -1236,7 +1251,7 @@ class CExprCodeGenPy:
         if isinstance(x, (int, float, complex)):
             return f"{x}", "V_a"
         elif isinstance(x, (ea.Expr, ea.Factor)):
-            return f"({ea.compile_py(x)})", "V_a"
+            return f"({ea.compile_py(x, self.var_dict_for_factors)})", "V_a"
         assert isinstance(x, Op)
         if x.otype == "S":
             return f"get_prop('{x.f}', {x.p1}, {x.p2})", "V_S"
@@ -1501,18 +1516,23 @@ class CExprCodeGenPy:
             append(f"{name},")
         append(f"]")
         self.indent -= 4
-        append(f"# declare factors intermediate")
+        append(f"# declare intermediate factors")
+        append_cy(f"cdef numpy.ndarray[numpy.complex128_t] factors_intermediate")
+        append(f"factors_intermediate = np.zeros({len(cexpr.variables_factor_intermediate)}, dtype=np.complex128)")
+        append_cy(f"cdef cc.Complex[:] factors_intermediate_view = factors_intermediate")
+        append_py(f"factors_intermediate_view = factors_intermediate")
+        append(f"# set intermediate factors")
         for idx, (name, value,) in enumerate(cexpr.variables_factor_intermediate):
             assert name.startswith("V_factor_")
             x = value
             assert isinstance(x, ea.Expr)
             c, t = self.gen_expr(x)
             assert t == "V_a"
-            append(f"# {idx}")
-            append(f"{name} = {c}")
+            append(f"# {name}")
+            append(f"factors_intermediate_view[{idx}] = {c}")
         append(f"# declare factors")
         append_cy(f"cdef numpy.ndarray[numpy.complex128_t] factors")
-        append(f"factors = np.zeros({len(cexpr.variables_factor)}, dtype = np.complex128)")
+        append(f"factors = np.zeros({len(cexpr.variables_factor)}, dtype=np.complex128)")
         append_cy(f"cdef cc.Complex[:] factors_view = factors")
         append_py(f"factors_view = factors")
         append(f"# set factors")
@@ -1556,8 +1576,8 @@ class CExprCodeGenPy:
         append_py = self.append_py
         cexpr = self.cexpr
         append(f"@timer_flops")
-        append_cy(f"def cexpr_function_eval_with_props(list props, list cms, cc.Complex[:] factors):")
-        append_py(f"def cexpr_function_eval_with_props(props, cms, factors):")
+        append_cy(f"def cexpr_function_eval_with_props(list props, list cms, cc.Complex[:] factors_view):")
+        append_py(f"def cexpr_function_eval_with_props(props, cms, factors_view):")
         self.indent += 4
         append(f"# set props")
         for idx, (name, value,) in enumerate(cexpr.variables_prop):
@@ -1567,10 +1587,6 @@ class CExprCodeGenPy:
         for idx, (name, value,) in enumerate(cexpr.variables_color_matrix):
             append_cy(f"cdef cc.ColorMatrix* p_{name} = &(<cp.ColorMatrix>cms[{idx}]).xx")
             append_py(f"p_{name} = cms[{idx}]")
-        append(f"# set factors")
-        for idx, (name, value,) in enumerate(cexpr.variables_factor):
-            append_cy(f"cdef cc.Complex {name} = factors[{idx}]")
-            append_py(f"{name} = factors[{idx}]")
         append(f"# compute products")
         for name, value in cexpr.variables_prod:
             assert name.startswith("V_prod_")
@@ -1614,7 +1630,8 @@ class CExprCodeGenPy:
         append_py(f"exprs_view = exprs")
         append(f"# set exprs")
         def show_coef_term(coef, tname):
-            coef = ea.compile_py(coef)
+            coef, t = self.gen_expr(coef)
+            assert t == "V_a"
             if coef == "1":
                 return f"{tname}"
             else:

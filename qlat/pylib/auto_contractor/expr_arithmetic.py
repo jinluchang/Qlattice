@@ -63,8 +63,10 @@ class Factor:
     def __repr__(self) -> str:
         return f"ea.Factor({self.code},{self.variables},{self.otype})"
 
-    def compile_py(self) -> str:
-        return f"{self.code}"
+    def compile_py(self, var_dict=None) -> str:
+        if (var_dict is None) or (self.otype != "Var") or (self.code not in var_dict):
+            return f"{self.code}"
+        return var_dict[self.code]
 
 ### ------
 
@@ -90,8 +92,8 @@ class Term:
     def simplify_coef(self) -> None:
         self.coef = sympy.simplify(self.coef)
 
-    def compile_py(self) -> str:
-        fs = [ f"({f.compile_py()})" for f in self.factors ]
+    def compile_py(self, var_dict=None) -> str:
+        fs = [ f"({f.compile_py(var_dict)})" for f in self.factors ]
         if self.coef == 1:
             if self.factors == []:
                 return "1"
@@ -172,9 +174,9 @@ class Expr:
     def is_zero(self) -> bool:
         return not self.terms
 
-    def compile_py(self) -> str:
+    def compile_py(self, var_dict=None) -> str:
         if self.terms:
-            return '+'.join([ f"{t.compile_py()}" for t in self.terms ])
+            return '+'.join([ f"{t.compile_py(var_dict)}" for t in self.terms ])
         else:
             return '0'
 
@@ -201,14 +203,14 @@ def coef_simplified(x):
     x.simplify_coef()
     return x
 
-def compile_py(x):
+def compile_py(x, var_dict=None):
     """
     interface function
     """
     if isinstance(x, (int, float, complex, sympy.Basic,)):
         return compile_py_complex(x)
     else:
-        return mk_expr(x).compile_py()
+        return mk_expr(x).compile_py(var_dict)
 
 def is_zero(x):
     """
