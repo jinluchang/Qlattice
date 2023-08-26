@@ -234,11 +234,10 @@ def collect_factor_in_cexpr(named_exprs):
     var_nameset = set()
     for name, expr in named_exprs:
         for i, (ea_coef, term_name,) in enumerate(expr):
-            expr[i] = (ea.simplified(ea_coef), term_name,)
+            expr[i] = (ea.mk_expr(ea.simplified(ea_coef)), term_name,)
     for name, expr in named_exprs:
         for ea_coef, term_name in expr:
-            if not isinstance(ea_coef, ea.Expr):
-                continue
+            assert isinstance(ea_coef, ea.Expr)
             for t in ea_coef.terms:
                 x = t.factors
                 for i, f in enumerate(x):
@@ -261,10 +260,11 @@ def collect_factor_in_cexpr(named_exprs):
     var_dataset = {} # var_dataset[factor_code] = factor_var
     for name, expr in named_exprs:
         for ea_coef, term_name in expr:
-            if not isinstance(ea_coef, ea.Expr):
-                continue
+            assert isinstance(ea_coef, ea.Expr)
             for t in ea_coef.terms:
                 x = t.coef
+                if x == 1:
+                    continue
                 code = ea.compile_py_complex(x)
                 if code in var_dataset:
                     t.coef = 1
@@ -283,7 +283,7 @@ def collect_factor_in_cexpr(named_exprs):
                     var_dataset[code] = var
     for name, expr in named_exprs:
         for i, (ea_coef, term_name,) in enumerate(expr):
-            expr[i] = (ea.simplified(ea_coef), term_name,)
+            expr[i] = (ea.mk_expr(ea.simplified(ea_coef)), term_name,)
     return variables_factor
 
 @q.timer
