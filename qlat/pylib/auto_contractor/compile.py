@@ -159,9 +159,17 @@ def collect_position_in_cexpr(named_terms, named_exprs):
 @q.timer
 def find_common_factors(named_exprs):
     """
-    return None or [ ea_expr, op1, ]
+    return None or (var_name_1, var_name_2,)
     """
     subexpr_count = {}
+    for name, expr in named_exprs:
+        for ea_coef, term_name in expr:
+            assert isinstance(ea_coef, ea.Expr)
+            for t in ea_coef.terms:
+                x = t.factors
+                for i, f in enumerate(x):
+                    assert f.otype == "Var"
+    #
     def add(x, count_added):
         op_repr = repr(x)
         if op_repr in subexpr_count:
@@ -440,7 +448,7 @@ def collect_tr_in_cexpr(named_terms):
 @q.timer
 def find_common_subexpr_in_tr(variables_tr):
     """
-    return None or [ op, op1, ]
+    return None or (op, op1,)
     """
     subexpr_count = {}
     def add(x, count_added):
@@ -463,7 +471,7 @@ def find_common_subexpr_in_tr(variables_tr):
                 op1 = x[(i+1) % len(x)]
                 op1_type = get_op_type(op1)
                 if op1_type in [ "V_S", "V_G", "V_U", "S", "G", "U", ]:
-                    prod = [op, op1]
+                    prod = (op, op1,)
                     if op_type in [ "V_G", "G", ] and op1_type in [ "V_G", "G", ]:
                         add(prod, 1.02 * factor)
                     elif op_type in [ "V_U", "U", ] and op1_type in [ "V_U", "U", ]:
@@ -520,7 +528,7 @@ def collect_common_subexpr_in_tr(variables_tr, op_common, var):
                     i1 = (i+1) % len(x)
                     op1 = x[i1]
                     if isinstance(op1, Op) and op1.otype in [ "Var", "S", "G", "U", ]:
-                        prod = [op, op1]
+                        prod = (op, op1,)
                         if repr(prod) == op_repr:
                             x[i1] = None
                             x[i] = var
@@ -580,7 +588,7 @@ def collect_subexpr_in_cexpr(variables_tr):
         subexpr = find_common_subexpr_in_tr(variables_tr)
         if subexpr is None:
             break
-        [ op, op1, ] = subexpr
+        op, op1 = subexpr
         op_type = get_op_type(op)
         op1_type = get_op_type(op1)
         assert op_type in [ "V_S", "V_G", "V_U", "S", "G", "U", ]
@@ -669,6 +677,7 @@ class CExpr:
             assert term.coef == 1
             assert term.a_ops == []
         checks = [
+                self.variables_factor_intermediate == [],
                 self.variables_factor == [],
                 self.variables_prop == [],
                 self.variables_color_matrix == [],
@@ -1469,7 +1478,8 @@ class CExprCodeGenPy:
         for name, value in cexpr.variables_prod:
             assert name.startswith("V_prod_")
             x = value
-            assert isinstance(x, list)
+            assert isinstance(x, tuple)
+            assert len(x) == 2
             c, t = self.gen_expr_prod_list(x)
             assert t == get_var_name_type(name)
             if t == "V_G":
