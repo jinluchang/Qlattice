@@ -26,6 +26,7 @@ set -e
 ./scripts/python-meson-py.sh
 ./scripts/python-packages.sh
 
+./scripts/automake.sh
 ./scripts/gmp.sh
 ./scripts/mpfr.sh
 ./scripts/fftw.sh
