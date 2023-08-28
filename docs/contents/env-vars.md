@@ -4,7 +4,7 @@
 
   Program finish time in seconds since epoch.
 
-  Used when `check_time_limit()`.
+  Used when `check_time_limit()`. Possible setting can be: `export q_end_time="$(($(date +%s) + 12 * 60 * 60))"` for jobs run for at most 12 hours.
 
   Default is empty.
 
@@ -38,7 +38,7 @@
 
 - `q_num_threads`
 
-  Number of OpenMP threads (will be override by `OMP_NUM_THREADS`).
+  Number of OpenMP threads (will be override by `OMP_NUM_THREADS`). Suggested setting is `export OMP_NUM_THREADS=16` number should be adjusted by number of cores.
 
   Default is `2`.
 
@@ -50,7 +50,7 @@
 
 - `q_verbose`
 
-  Level of verbosity. Need to be more than `0` for the timing info to be shown automatically.
+  Level of verbosity. Need to be more than `0` for the timing info to be shown automatically. Suggested setting is: `export q_verbose=2`
 
   Default is `-1`.
 
@@ -82,7 +82,7 @@
 
   In unit of bytes.
 
-  Default is empty. It does not alter the system setting. Suggested value is `8192`.
+  Default is empty. It does not alter the system setting. Suggested setting is `export q_malloc_mmap_threshold=8192`.
 
 - `q_mk_id_node_in_shuffle_seed`
 
