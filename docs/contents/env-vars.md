@@ -18,7 +18,7 @@
 
 - `q_budget`
 
-  Default budget time in seconds.
+  Default budget time in seconds. Possible setting can be `export q_budget=$((1 * 60 * 60))`
 
   Used when `check_time_limit()`.
 
@@ -38,7 +38,7 @@
 
 - `q_num_threads`
 
-  Number of OpenMP threads (will be override by `OMP_NUM_THREADS`). Suggested setting is `export OMP_NUM_THREADS=16` number should be adjusted by number of cores.
+  Number of OpenMP threads (will be override by `OMP_NUM_THREADS`). Possible setting can be `export OMP_NUM_THREADS=16` number should be adjusted by number of cores.
 
   Default is `2`.
 
@@ -50,7 +50,7 @@
 
 - `q_verbose`
 
-  Level of verbosity. Need to be more than `0` for the timing info to be shown automatically. Suggested setting is: `export q_verbose=2`
+  Level of verbosity. Need to be more than `0` for the timing info to be shown automatically. Possible setting can be: `export q_verbose=2`
 
   Default is `-1`.
 
@@ -82,7 +82,7 @@
 
   In unit of bytes.
 
-  Default is empty. It does not alter the system setting. Suggested setting is `export q_malloc_mmap_threshold=8192`.
+  Default is empty. It does not alter the system setting. Possible setting can be `export q_malloc_mmap_threshold=8192`.
 
 - `q_mk_id_node_in_shuffle_seed`
 
