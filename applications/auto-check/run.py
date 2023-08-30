@@ -908,14 +908,14 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
     q.displayln_info(f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.5E}")
     ld_src_op = q.mk_lat_data([
         [ "expr_name", len(expr_names[idx_arr_of_src_op_only]), list(expr_names[idx_arr_of_src_op_only]), ],
-        [ "t_op", t_sep_range, [ str(t) for t in range(t_size) ], ],
+        [ "t_op", t_size, [ str(t) for t in range(t_size) ], ],
         ])
     ld_src_op.from_numpy(res_sum_src_op)
     ld_src_op.save(get_save_path(fn_src_op))
     q.displayln_info(f"CHECK: {fname}: ld_src_op sig: {q.get_double_sig(ld_src_op, q.RngState()):.5E}")
     ld_snk_op = q.mk_lat_data([
         [ "expr_name", len(expr_names[idx_arr_of_snk_op_only]), list(expr_names[idx_arr_of_snk_op_only]), ],
-        [ "t_op", t_sep_range, [ str(t) for t in range(t_size) ], ],
+        [ "t_op", t_size, [ str(t) for t in range(t_size) ], ],
         ])
     ld_snk_op.from_numpy(res_sum_snk_op)
     ld_snk_op.save(get_save_path(fn_snk_op))
