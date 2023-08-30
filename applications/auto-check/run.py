@@ -518,7 +518,7 @@ def mk_kkkk_i0_j0_wf(p11, p12, p21, p22, mom, is_dagger=False, *, is_sym=True):
         return 1 / sympy.sqrt(2) * (
                 mk_kkkk_i0_j0_wf(p11, p12, p21, p22, mom, is_dagger, is_sym=False)
                 + mk_kkkk_i0_j0_wf(p21, p22, p11, p12, mom, is_dagger, is_sym=False)
-                ) + f"KK_I0({p11},{p12},{p21},{p22},{mom},sym){show_dagger(is_dagger)}"
+                ) + f"KK_I0({p11},{p12},{p21},{p22},mom={mom},sym){show_dagger(is_dagger)}"
     def mk_op_mom(mom_kk):
         mom1 = mom_kk
         mom2 = -mom_kk
