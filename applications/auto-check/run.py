@@ -505,7 +505,7 @@ def mk_pipi_i0_j0_wf(p11, p12, p21, p22, mom, is_dagger=False):
     for mom_pi in mom_pi_list:
         n_op += 1
         expr = expr + mk_op_mom(mom_pi)
-    return 1 / sympy.sqrt(n_op) * expr + f"pipi_I0({p11},{p12},{p21},{p22},{mom}){show_dagger(is_dagger)}"
+    return 1 / sympy.sqrt(n_op) * expr + f"pipi_I0({p11},{p12},{p21},{p22},mom={mom}){show_dagger(is_dagger)}"
 
 def mk_kkkk_i0_j0_wf(p11, p12, p21, p22, mom, is_dagger=False, *, is_sym=True):
     """
@@ -532,7 +532,7 @@ def mk_kkkk_i0_j0_wf(p11, p12, p21, p22, mom, is_dagger=False, *, is_sym=True):
     for mom_kk in mom_kk_list:
         n_op += 1
         expr = expr + mk_op_mom(mom_kk)
-    return 1 / sympy.sqrt(n_op) * expr + f"KK_I0({p11},{p12},{p21},{p22},{mom}){show_dagger(is_dagger)}"
+    return 1 / sympy.sqrt(n_op) * expr + f"KK_I0({p11},{p12},{p21},{p22},mom={mom}){show_dagger(is_dagger)}"
 
 # ----
 
@@ -682,70 +682,93 @@ def get_cexpr_meson_meson_i0_j0_corr_wf():
         diagram_type_dict = dict()
         #
         diagram_type_dict[()] = 'TypeV'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1),)] = 'TypeV'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3', 'x1_4'), 1))] = 'TypeV'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3p', 'x1_4p'), 1))] = 'TypeV'
-        diagram_type_dict[((('x2_1', 'x2_2'), 1),)] = 'TypeV'
-        diagram_type_dict[((('x2_1', 'x2_2'), 1), (('x2_3', 'x2_4'), 1))] = 'TypeV'
-        diagram_type_dict[((('x2_1', 'x2_2'), 1), (('x2_3p', 'x2_4p'), 1))] = 'TypeV'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x2_1', 'x2_2'), 1))] = 'TypeV'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x2_1', 'x2_2'), 1), (('x2_3', 'x2_4'), 1))] = 'TypeV'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x2_1', 'x2_2'), 1), (('x2_3p', 'x2_4p'), 1))] = 'TypeV'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3', 'x1_4'), 1), (('x2_1', 'x2_2'), 1))] = 'TypeV'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3', 'x1_4'), 1), (('x2_1', 'x2_2'), 1), (('x2_3', 'x2_4'), 1))] = 'TypeV'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3', 'x1_4'), 1), (('x2_1', 'x2_2'), 1), (('x2_3p', 'x2_4p'), 1))] = 'TypeV'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3p', 'x1_4p'), 1), (('x2_1', 'x2_2'), 1))] = 'TypeV'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3p', 'x1_4p'), 1), (('x2_1', 'x2_2'), 1), (('x2_3', 'x2_4'), 1))] = 'TypeV'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3p', 'x1_4p'), 1), (('x2_1', 'x2_2'), 1), (('x2_3p', 'x2_4p'), 1))] = 'TypeV'
+        diagram_type_dict[((('x1_1_1', 'x1_1_2'), 1),)] = 'TypeV'
+        diagram_type_dict[((('x2_1_1', 'x2_1_2'), 1),)] = 'TypeV'
+        diagram_type_dict[((('x1_1_1', 'x1_2_3'), 1), (('x1_2_4', 'x1_1_2'), 1))] = 'TypeV'
+        diagram_type_dict[((('x1_1_1', 'x1_2_3p'), 1), (('x1_2_4p', 'x1_1_2'), 1))] = 'TypeV'
+        diagram_type_dict[((('x2_1_1', 'x2_2_3'), 1), (('x2_2_4', 'x2_1_2'), 1))] = 'TypeV'
+        diagram_type_dict[((('x2_1_1', 'x2_2_3p'), 1), (('x2_2_4p', 'x2_1_2'), 1))] = 'TypeV'
+        diagram_type_dict[((('x1_1_1', 'x1_1_2'), 1), (('x2_1_1', 'x2_1_2'), 1))] = 'TypeV'
+        diagram_type_dict[((('x1_1_1', 'x1_2_3p'), 1), (('x1_2_4p', 'x1_1_2'), 1), (('x2_1_1', 'x2_1_2'), 1))] = 'TypeV'
+        diagram_type_dict[((('x1_1_1', 'x1_1_2'), 1), (('x2_1_1', 'x2_2_3'), 1), (('x2_2_4', 'x2_1_2'), 1))] = 'TypeV'
+        diagram_type_dict[((('x1_1_1', 'x1_1_2'), 1), (('x2_1_1', 'x2_2_3p'), 1), (('x2_2_4p', 'x2_1_2'), 1))] = 'TypeV'
+        diagram_type_dict[((('x1_1_1', 'x1_2_3'), 1), (('x1_2_4', 'x1_1_2'), 1), (('x2_1_1', 'x2_1_2'), 1))] = 'TypeV'
+        diagram_type_dict[((('x1_1_1', 'x1_2_3'), 1), (('x1_2_4', 'x1_1_2'), 1), (('x2_1_1', 'x2_2_3'), 1), (('x2_2_4', 'x2_1_2'), 1))] = 'TypeV'
+        diagram_type_dict[((('x1_1_1', 'x1_2_3'), 1), (('x1_2_4', 'x1_1_2'), 1), (('x2_1_1', 'x2_2_3p'), 1), (('x2_2_4p', 'x2_1_2'), 1))] = 'TypeV'
+        diagram_type_dict[((('x1_1_1', 'x1_2_3p'), 1), (('x1_2_4p', 'x1_1_2'), 1), (('x2_1_1', 'x2_2_3'), 1), (('x2_2_4', 'x2_1_2'), 1))] = 'TypeV'
+        diagram_type_dict[((('x1_1_1', 'x1_2_3p'), 1), (('x1_2_4p', 'x1_1_2'), 1), (('x2_1_1', 'x2_2_3p'), 1), (('x2_2_4p', 'x2_1_2'), 1))] = 'TypeV'
         #
-        diagram_type_dict[((('x1_1', 'x2_1'), 1), (('x2_2', 'x1_2'), 1), (('x2_3', 'x2_4'), 1))] = 'TypeR'
-        diagram_type_dict[((('x1_1', 'x2_1'), 1), (('x2_2', 'x1_2'), 1), (('x2_3p', 'x2_4p'), 1))] = 'TypeR'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3', 'x2_1'), 1), (('x2_2', 'x1_4'), 1))] = 'TypeR'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3p', 'x2_1'), 1), (('x2_2', 'x1_4p'), 1))] = 'TypeR'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3', 'x2_1'), 1), (('x2_2', 'x1_4'), 1), (('x2_3', 'x2_4'), 1))] = 'TypeR'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3', 'x2_1'), 1), (('x2_2', 'x1_4'), 1), (('x2_3p', 'x2_4p'), 1))] = 'TypeR'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3p', 'x2_1'), 1), (('x2_2', 'x1_4p'), 1), (('x2_3', 'x2_4'), 1))] = 'TypeR'
-        diagram_type_dict[((('x1_1', 'x1_2'), 1), (('x1_3p', 'x2_1'), 1), (('x2_2', 'x1_4p'), 1), (('x2_3p', 'x2_4p'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x2_2_3'), 1), (('x2_1_1', 'x1_1_2'), 1), (('x2_2_4', 'x2_1_2'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x2_1_1'), 1), (('x2_1_2', 'x2_2_3'), 1), (('x2_2_4', 'x1_1_2'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x2_2_3p'), 1), (('x2_1_1', 'x1_1_2'), 1), (('x2_2_4p', 'x2_1_2'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x2_1_1'), 1), (('x2_1_2', 'x2_2_3p'), 1), (('x2_2_4p', 'x1_1_2'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x1_2_3'), 1), (('x1_2_4', 'x2_1_1'), 1), (('x2_1_2', 'x1_1_2'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x2_1_1'), 1), (('x1_2_3', 'x1_1_2'), 1), (('x2_1_2', 'x1_2_4'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x2_1_1'), 1), (('x1_2_3p', 'x1_1_2'), 1), (('x2_1_2', 'x1_2_4p'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x1_2_3p'), 1), (('x1_2_4p', 'x2_1_1'), 1), (('x2_1_2', 'x1_1_2'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x1_2_3'), 1), (('x1_2_4', 'x2_1_1'), 1), (('x2_1_2', 'x2_2_3'), 1), (('x2_2_4', 'x1_1_2'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x1_2_3'), 1), (('x1_2_4', 'x2_2_3'), 1), (('x2_1_1', 'x1_1_2'), 1), (('x2_2_4', 'x2_1_2'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x2_1_1'), 1), (('x1_2_3', 'x1_1_2'), 1), (('x2_1_2', 'x2_2_3'), 1), (('x2_2_4', 'x1_2_4'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x2_2_3'), 1), (('x1_2_3', 'x1_1_2'), 1), (('x2_1_1', 'x1_2_4'), 1), (('x2_2_4', 'x2_1_2'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x1_2_3'), 1), (('x1_2_4', 'x2_1_1'), 1), (('x2_1_2', 'x2_2_3p'), 1), (('x2_2_4p', 'x1_1_2'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x1_2_3'), 1), (('x1_2_4', 'x2_2_3p'), 1), (('x2_1_1', 'x1_1_2'), 1), (('x2_2_4p', 'x2_1_2'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x2_1_1'), 1), (('x1_2_3', 'x1_1_2'), 1), (('x2_1_2', 'x2_2_3p'), 1), (('x2_2_4p', 'x1_2_4'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x2_2_3p'), 1), (('x1_2_3', 'x1_1_2'), 1), (('x2_1_1', 'x1_2_4'), 1), (('x2_2_4p', 'x2_1_2'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x2_1_1'), 1), (('x1_2_3p', 'x1_1_2'), 1), (('x2_1_2', 'x2_2_3'), 1), (('x2_2_4', 'x1_2_4p'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x2_2_3'), 1), (('x1_2_3p', 'x1_1_2'), 1), (('x2_1_1', 'x1_2_4p'), 1), (('x2_2_4', 'x2_1_2'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x1_2_3p'), 1), (('x1_2_4p', 'x2_1_1'), 1), (('x2_1_2', 'x2_2_3'), 1), (('x2_2_4', 'x1_1_2'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x1_2_3p'), 1), (('x1_2_4p', 'x2_2_3'), 1), (('x2_1_1', 'x1_1_2'), 1), (('x2_2_4', 'x2_1_2'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x1_2_3p'), 1), (('x1_2_4p', 'x2_1_1'), 1), (('x2_1_2', 'x2_2_3p'), 1), (('x2_2_4p', 'x1_1_2'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x1_2_3p'), 1), (('x1_2_4p', 'x2_2_3p'), 1), (('x2_1_1', 'x1_1_2'), 1), (('x2_2_4p', 'x2_1_2'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x2_1_1'), 1), (('x1_2_3p', 'x1_1_2'), 1), (('x2_1_2', 'x2_2_3p'), 1), (('x2_2_4p', 'x1_2_4p'), 1))] = 'TypeR'
+        diagram_type_dict[((('x1_1_1', 'x2_2_3p'), 1), (('x1_2_3p', 'x1_1_2'), 1), (('x2_1_1', 'x1_2_4p'), 1), (('x2_2_4p', 'x2_1_2'), 1))] = 'TypeR'
         #
-        diagram_type_dict[((('x1_1', 'x2_1'), 1), (('x2_2', 'x1_2'), 1))] = 'TypeD'
-        diagram_type_dict[((('x1_1', 'x2_1'), 1), (('x1_2', 'x2_2'), 1), (('x2_3', 'x1_3'), 1), (('x2_4', 'x1_4'), 1))] = 'TypeD'
-        diagram_type_dict[((('x1_1', 'x2_1'), 1), (('x1_2', 'x2_2'), 1), (('x2_3p', 'x1_3p'), 1), (('x2_4p', 'x1_4p'), 1))] = 'TypeD'
+        diagram_type_dict[((('x1_1_1', 'x2_1_1'), 1), (('x1_2_3', 'x2_2_3'), 1), (('x2_1_2', 'x1_2_4'), 1), (('x2_2_4', 'x1_1_2'), 1))] = 'TypeC'
+        diagram_type_dict[((('x1_1_1', 'x2_2_3'), 1), (('x1_2_3', 'x2_1_1'), 1), (('x2_1_2', 'x1_1_2'), 1), (('x2_2_4', 'x1_2_4'), 1))] = 'TypeC'
+        #
+        diagram_type_dict[((('x1_1_1', 'x2_1_1'), 1), (('x2_1_2', 'x1_1_2'), 1))] = 'TypeD'
+        diagram_type_dict[((('x1_1_1', 'x2_1_1'), 1), (('x1_2_3', 'x2_2_3'), 1), (('x2_1_2', 'x1_1_2'), 1), (('x2_2_4', 'x1_2_4'), 1))] = 'TypeD'
+        diagram_type_dict[((('x1_1_1', 'x2_1_1'), 1), (('x1_2_3p', 'x2_2_3p'), 1), (('x2_1_2', 'x1_1_2'), 1), (('x2_2_4p', 'x1_2_4p'), 1))] = 'TypeD'
+        diagram_type_dict[((('x1_1_1', 'x2_2_3'), 1), (('x1_2_3', 'x2_1_1'), 1), (('x2_1_2', 'x1_2_4'), 1), (('x2_2_4', 'x1_1_2'), 1))] = 'TypeD'
+        diagram_type_dict[((('x1_1_1', 'x2_2_3p'), 1), (('x1_2_3p', 'x2_1_1'), 1), (('x2_1_2', 'x1_2_4p'), 1), (('x2_2_4p', 'x1_1_2'), 1))] = 'TypeD'
         #
         mom0 = q.Coordinate([ 0, 0, 0, 0, ])
         src_op_list = [
-                mk_sigma_wf("x1_1", "x1_2", mom0),
-                mk_pipi_i0_j0_wf("x1_1", "x1_2", "x1_3",  "x1_4", 0),
-                mk_pipi_i0_j0_wf("x1_1", "x1_2", "x1_3",  "x1_4", 1),
-                mk_pipi_i0_j0_wf("x1_1", "x1_2", "x1_3",  "x1_4", 2),
-                mk_pipi_i0_j0_wf("x1_1", "x1_2", "x1_3",  "x1_4", 3),
-                mk_kkkk_i0_j0_wf("x1_1", "x1_2", "x1_3p", "x1_4p", 0),
-                mk_kkkk_i0_j0_wf("x1_1", "x1_2", "x1_3p", "x1_4p", 1),
+                mk_sigma_wf("x1_1_1", "x1_1_2", mom0) + f"sigma(x1_1_1,x1_1_2)",
+                mk_pipi_i0_j0_wf("x1_1_1", "x1_1_2", "x1_2_3",  "x1_2_4", 0),
+                mk_pipi_i0_j0_wf("x1_1_1", "x1_1_2", "x1_2_3",  "x1_2_4", 1),
+                mk_pipi_i0_j0_wf("x1_1_1", "x1_1_2", "x1_2_3",  "x1_2_4", 2),
+                mk_pipi_i0_j0_wf("x1_1_1", "x1_1_2", "x1_2_3",  "x1_2_4", 3),
+                mk_kkkk_i0_j0_wf("x1_1_1", "x1_1_2", "x1_2_3p", "x1_2_4p", 0),
+                mk_kkkk_i0_j0_wf("x1_1_1", "x1_1_2", "x1_2_3p", "x1_2_4p", 1),
                 ]
         snk_op_list = [
-                mk_sigma_wf("x2_1", "x2_2", mom0),
-                mk_pipi_i0_j0_wf("x2_1", "x2_2", "x2_3",  "x2_4", 0),
-                mk_pipi_i0_j0_wf("x2_1", "x2_2", "x2_3",  "x2_4", 1),
-                mk_pipi_i0_j0_wf("x2_1", "x2_2", "x2_3",  "x2_4", 2),
-                mk_pipi_i0_j0_wf("x2_1", "x2_2", "x2_3",  "x2_4", 3),
-                mk_kkkk_i0_j0_wf("x2_1", "x2_2", "x2_3p", "x2_4p", 0),
-                mk_kkkk_i0_j0_wf("x2_1", "x2_2", "x2_3p", "x2_4p", 1),
+                mk_sigma_wf("x2_1_1", "x2_1_2", mom0) + f"sigma(x2_1_1,x2_1_2)",
+                mk_pipi_i0_j0_wf("x2_1_1", "x2_1_2", "x2_2_3",  "x2_2_4", 0),
+                mk_pipi_i0_j0_wf("x2_1_1", "x2_1_2", "x2_2_3",  "x2_2_4", 1),
+                mk_pipi_i0_j0_wf("x2_1_1", "x2_1_2", "x2_2_3",  "x2_2_4", 2),
+                mk_pipi_i0_j0_wf("x2_1_1", "x2_1_2", "x2_2_3",  "x2_2_4", 3),
+                mk_kkkk_i0_j0_wf("x2_1_1", "x2_1_2", "x2_2_3p", "x2_2_4p", 0),
+                mk_kkkk_i0_j0_wf("x2_1_1", "x2_1_2", "x2_2_3p", "x2_2_4p", 1),
                 ]
-        t_sel = mk_fac("time_selector_8(x1_1)") + f"time_selector_8(x1_1)"
+        t_sel = mk_fac("time_selector_8(x1_1_1)") + f"time_selector_8(x1_1_1)"
         exprs = [
                 mk_fac(1) + f"1",
                 t_sel,
                 ]
         for src_op in src_op_list:
-            exprs.append(src_op)
+            exprs.append((mk_fac(1) + f"src_op_only") * src_op)
         for snk_op in snk_op_list:
-            exprs.append(snk_op)
+            exprs.append((mk_fac(1) + f"snk_op_only") * snk_op)
         for src_op in src_op_list:
             for snk_op in snk_op_list:
                 exprs.append(snk_op * src_op)
-                exprs.append((snk_op * src_op, "TypeD",))
                 exprs.append((snk_op * src_op, "TypeV",))
                 exprs.append((snk_op * src_op, "TypeR",))
+                exprs.append((snk_op * src_op, "TypeC",))
+                exprs.append((snk_op * src_op, "TypeD",))
                 exprs.append((t_sel * snk_op * src_op, "TypeR",))
+                exprs.append((t_sel * snk_op * src_op, "TypeC",))
         cexpr = contract_simplify_compile(
                 *exprs,
                 is_isospin_symmetric_limit=True,
@@ -758,10 +781,14 @@ def get_cexpr_meson_meson_i0_j0_corr_wf():
 def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
     fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/{fname}.lat"
-    if get_load_path(fn) is not None:
+    fn_src_op = f"{job_tag}/auto-contract/traj-{traj}/{fname}_src_op_only.lat"
+    fn_snk_op = f"{job_tag}/auto-contract/traj-{traj}/{fname}_snk_op_only.lat"
+    if all([ get_load_path(f) is not None for f in [ fn, fn_src_op, fn_snk_op, ] ]):
         return
     cexpr = get_cexpr_meson_meson_i0_j0_corr_wf()
-    expr_names = get_cexpr_names(cexpr)
+    expr_names = np.array(get_cexpr_names(cexpr))
+    idx_arr_of_src_op_only = np.array([ 0, ] + [ idx for idx, name in enumerate(expr_names) if " src_op_only " in name ], int)
+    idx_arr_of_snk_op_only = np.array([ 0, ] + [ idx for idx, name in enumerate(expr_names) if " snk_op_only " in name ], int)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     geo = q.Geometry(total_site, 1)
@@ -784,43 +811,43 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
     @q.timer
     def feval_single(idx, idx2, t_src, t_sep):
         rsi = rs.split(f"{idx}-{idx2}-{t_src}-{t_sep}")
-        x1_1 = rsi.c_rand_gen(total_site)
-        x1_2 = rsi.c_rand_gen(total_site)
-        x1_3 = rsi.c_rand_gen(total_site)
-        x1_4 = rsi.c_rand_gen(total_site)
-        x1_3p = x1_3.copy()
-        x1_4p = x1_4.copy()
-        x2_1 = rsi.c_rand_gen(total_site)
-        x2_2 = rsi.c_rand_gen(total_site)
-        x2_3 = rsi.c_rand_gen(total_site)
-        x2_4 = rsi.c_rand_gen(total_site)
-        x2_3p = x2_3.copy()
-        x2_4p = x2_4.copy()
-        x1_1[3] = t_src
-        x1_2[3] = x1_1[3]
-        x1_3[3] = (x1_1[3] - 3) % t_size
-        x1_3p[3] = (x1_1[3] - 2) % t_size
-        x1_4[3] = x1_3[3]
-        x1_4p[3] = x1_3p[3]
-        x2_1[3] = (x1_1[3] + t_sep) % t_size
-        x2_2[3] = x2_1[3]
-        x2_3[3] = (x2_1[3] + 3) % t_size
-        x2_3p[3] = (x2_1[3] + 2) % t_size
-        x2_4[3] = x2_3[3]
-        x2_4p[3] = x2_3p[3]
+        x1_1_1 = rsi.c_rand_gen(total_site)
+        x1_1_2 = rsi.c_rand_gen(total_site)
+        x1_2_3 = rsi.c_rand_gen(total_site)
+        x1_2_4 = rsi.c_rand_gen(total_site)
+        x1_2_3p = x1_2_3.copy()
+        x1_2_4p = x1_2_4.copy()
+        x2_1_1 = rsi.c_rand_gen(total_site)
+        x2_1_2 = rsi.c_rand_gen(total_site)
+        x2_2_3 = rsi.c_rand_gen(total_site)
+        x2_2_4 = rsi.c_rand_gen(total_site)
+        x2_2_3p = x2_2_3.copy()
+        x2_2_4p = x2_2_4.copy()
+        x1_1_1[3] = t_src
+        x1_1_2[3] = x1_1_1[3]
+        x1_2_3[3] = (x1_1_1[3] - 3) % t_size
+        x1_2_3p[3] = (x1_1_1[3] - 2) % t_size
+        x1_2_4[3] = x1_2_3[3]
+        x1_2_4p[3] = x1_2_3p[3]
+        x2_1_1[3] = (x1_1_1[3] + t_sep) % t_size
+        x2_1_2[3] = x2_1_1[3]
+        x2_2_3[3] = (x2_1_1[3] + 3) % t_size
+        x2_2_3p[3] = (x2_1_1[3] + 2) % t_size
+        x2_2_4[3] = x2_2_3[3]
+        x2_2_4p[3] = x2_2_3p[3]
         pd = {
-                "x1_1":  ("point", x1_1,),
-                "x1_2":  ("point", x1_2,),
-                "x1_3":  ("point", x1_3,),
-                "x1_3p": ("point", x1_3p,),
-                "x1_4":  ("point", x1_4,),
-                "x1_4p": ("point", x1_4p,),
-                "x2_1":  ("point", x2_1,),
-                "x2_2":  ("point", x2_2,),
-                "x2_3":  ("point", x2_3,),
-                "x2_3p": ("point", x2_3p,),
-                "x2_4":  ("point", x2_4,),
-                "x2_4p": ("point", x2_4p,),
+                "x1_1_1":  ("point", x1_1_1,),
+                "x1_1_2":  ("point", x1_1_2,),
+                "x1_2_3":  ("point", x1_2_3,),
+                "x1_2_3p": ("point", x1_2_3p,),
+                "x1_2_4":  ("point", x1_2_4,),
+                "x1_2_4p": ("point", x1_2_4p,),
+                "x2_1_1":  ("point", x2_1_1,),
+                "x2_1_2":  ("point", x2_1_2,),
+                "x2_2_3":  ("point", x2_2_3,),
+                "x2_2_3p": ("point", x2_2_3p,),
+                "x2_2_4":  ("point", x2_2_4,),
+                "x2_2_4p": ("point", x2_2_4p,),
                 "size": total_site,
                 "wave_function": wave_function,
                 "momentum_factor": momentum_factor,
@@ -836,32 +863,63 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
     def feval(args):
         idx = args
         values = np.zeros((t_sep_range, len(expr_names),), dtype=complex)
+        values_src_op = np.zeros((t_size, len(expr_names[idx_arr_of_src_op_only]),), dtype=complex)
+        values_snk_op = np.zeros((t_size, len(expr_names[idx_arr_of_snk_op_only]),), dtype=complex)
         for idx2 in range(sample_size):
             for t_src in range(t_size):
                 for t_sep in range(t_sep_range):
+                    t_snk = (t_src + t_sep) % t_size
                     val = feval_single(idx, idx2, t_src, t_sep)
                     values[t_sep] += val
-        return values
+                    values_src_op[t_src] += val[idx_arr_of_src_op_only]
+                    values_snk_op[t_snk] += val[idx_arr_of_snk_op_only]
+        return values, values_src_op, values_snk_op,
     def sum_function(val_list):
         values = np.zeros((t_sep_range, len(expr_names),), dtype=complex)
-        for idx, val in enumerate(val_list):
+        values_src_op = np.zeros((t_size, len(expr_names[idx_arr_of_src_op_only]),), dtype=complex)
+        values_snk_op = np.zeros((t_size, len(expr_names[idx_arr_of_snk_op_only]),), dtype=complex)
+        for idx, (val, val_src_op, val_snk_op,) in enumerate(val_list):
             values += val
+            values_src_op += val_src_op
+            values_snk_op += val_snk_op
             q.displayln_info(f"{fname}: {idx+1}/{len(mpi_chunk)}")
-        return q.glb_sum(values.transpose(1, 0,))
+        return (
+                q.glb_sum(values.transpose(1, 0,)),
+                q.glb_sum(values_src_op.transpose(1, 0,)),
+                q.glb_sum(values_snk_op.transpose(1, 0,)),
+                )
     q.timer_fork(0)
-    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
+    res_sum, res_sum_src_op, res_sum_snk_op = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
     q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
     res_sum *= 1.0 / (sample_num * sample_size * t_size)
-    # assert q.qnorm(res_sum[0].sum(1) - 1.0) < 1e-10
+    res_sum_src_op *= 1.0 / (sample_num * sample_size * t_sep_range)
+    res_sum_snk_op *= 1.0 / (sample_num * sample_size * t_sep_range)
+    assert q.qnorm(res_sum[0] - 1.0) < 1e-10
+    assert q.qnorm(res_sum_src_op[0] - 1.0) < 1e-10
+    assert q.qnorm(res_sum_snk_op[0] - 1.0) < 1e-10
     ld = q.mk_lat_data([
-        [ "expr_name", len(expr_names), expr_names, ],
+        [ "expr_name", len(expr_names), list(expr_names), ],
         [ "t_sep", t_sep_range, [ str(t) for t in range(t_sep_range) ], ],
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
     q.displayln_info(f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.5E}")
+    ld_src_op = q.mk_lat_data([
+        [ "expr_name", len(expr_names[idx_arr_of_src_op_only]), list(expr_names[idx_arr_of_src_op_only]), ],
+        [ "t_op", t_sep_range, [ str(t) for t in range(t_size) ], ],
+        ])
+    ld_src_op.from_numpy(res_sum_src_op)
+    ld_src_op.save(get_save_path(fn_src_op))
+    q.displayln_info(f"CHECK: {fname}: ld_src_op sig: {q.get_double_sig(ld_src_op, q.RngState()):.5E}")
+    ld_snk_op = q.mk_lat_data([
+        [ "expr_name", len(expr_names[idx_arr_of_snk_op_only]), list(expr_names[idx_arr_of_snk_op_only]), ],
+        [ "t_op", t_sep_range, [ str(t) for t in range(t_size) ], ],
+        ])
+    ld_snk_op.from_numpy(res_sum_snk_op)
+    ld_snk_op.save(get_save_path(fn_snk_op))
+    q.displayln_info(f"CHECK: {fname}: ld_snk_op sig: {q.get_double_sig(ld_snk_op, q.RngState()):.5E}")
 
 # ----
 

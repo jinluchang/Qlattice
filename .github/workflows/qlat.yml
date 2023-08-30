@@ -23,7 +23,7 @@ jobs:
     - name: Install Ubuntu packages
       run: |
         sudo apt-get update
-        sudo apt-get install -y bzip2 autoconf unzip
+        sudo apt-get install -y git bzip2 autoconf unzip
         sudo apt-get install -y python3-full python3-dev
         sudo apt-get install -y libopenmpi-dev ninja-build patchelf libeigen3-dev libgsl-dev zlib1g-dev libssl-dev libmpfr-dev
         sudo apt-get install -y gnuplot texlive-metapost poppler-utils
@@ -107,7 +107,7 @@ jobs:
     - name: Install Ubuntu packages
       run: |
         sudo apt-get update
-        sudo apt-get install -y bzip2 autoconf unzip
+        sudo apt-get install -y git bzip2 autoconf unzip
         sudo apt-get install -y python3-full python3-dev
         sudo apt-get install -y libopenmpi-dev ninja-build patchelf libeigen3-dev libgsl-dev zlib1g-dev libssl-dev libmpfr-dev
         sudo apt-get install -y gnuplot texlive-metapost poppler-utils
@@ -206,7 +206,7 @@ jobs:
     - name: Install Ubuntu packages
       run: |
         sudo apt-get update
-        sudo apt-get install -y bzip2 autoconf unzip
+        sudo apt-get install -y git bzip2 autoconf unzip
         sudo apt-get install -y python3-full python3-dev
         sudo apt-get install -y libopenmpi-dev ninja-build patchelf libeigen3-dev libgsl-dev zlib1g-dev libssl-dev libmpfr-dev
         sudo apt-get install -y gnuplot texlive-metapost poppler-utils

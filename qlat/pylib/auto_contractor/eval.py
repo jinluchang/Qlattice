@@ -149,8 +149,12 @@ def cache_compiled_cexpr(calc_cexpr, path, *, is_cython = True, is_distillation 
     def calc_compile_cexpr():
         q.timer_fork()
         cexpr_original = calc_cexpr()
+        content_original = display_cexpr(cexpr_original)
+        q.qtouch_info(path + "/cexpr.original.txt", content_original)
         cexpr_optimized = copy.deepcopy(cexpr_original)
         cexpr_optimized.optimize()
+        content_optimized = display_cexpr(cexpr_optimized)
+        q.qtouch_info(path + "/cexpr.optimized.txt", content_optimized)
         code_py = cexpr_code_gen_py(cexpr_optimized,
                                     is_cython = is_cython,
                                     is_distillation = is_distillation)
@@ -159,10 +163,6 @@ def cache_compiled_cexpr(calc_cexpr, path, *, is_cython = True, is_distillation 
         else:
             fn_py = path + "/code.py"
         q.qtouch_info(fn_py, code_py)
-        content_original = display_cexpr(cexpr_original)
-        q.qtouch_info(path + "/cexpr.original.txt", content_original)
-        content_optimized = display_cexpr(cexpr_optimized)
-        q.qtouch_info(path + "/cexpr.optimized.txt", content_optimized)
         if is_cython:
             q.qtouch_info(path + "/meson.build", meson_build_content)
             compile_cexpr_meson_setup()
