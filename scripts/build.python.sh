@@ -2,7 +2,7 @@
 
 set -e
 
-# Ubuntu packages: libgsl-dev zlib1g-dev libssl-dev libopenmpi-dev ninja-build libsqlite3-dev libgdbm-dev liblzma-dev libbz2-dev uuid-dev tk-dev libgeos-dev libopenblas-dev node-configurable-http-proxy
+# Ubuntu packages: python3-full libgsl-dev zlib1g-dev libssl-dev libopenmpi-dev ninja-build libsqlite3-dev libgdbm-dev liblzma-dev libbz2-dev uuid-dev tk-dev libgeos-dev libopenblas-dev node-configurable-http-proxy
 
 {
 
