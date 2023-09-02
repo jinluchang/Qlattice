@@ -9,11 +9,6 @@ source qcore/set-prefix.sh $name
     source qcore/conf.sh ..
 
     time-run pip3 install -vU meson
-    time-run pip3 install -vU cython
-    time-run pip3 install -vU psutil
-    time-run pip3 install -vU sympy
-    time-run pip3 install -vU numpy
-    time-run pip3 install -vU scipy
 
     ( :
     unset CC
@@ -25,6 +20,16 @@ source qcore/set-prefix.sh $name
     unset CPATH
     time-run pip3 install -vU mpi4py
     : )
+
+    time-run pip3 install -vU psutil
+    time-run pip3 install -vU sympy
+    time-run pip3 install -vU cython
+    time-run pip3 install -vU pybind11
+    time-run pip3 install -vU numpy
+    time-run pip3 install -vU pythran
+    time-run pip3 install -vU scipy
+    time-run pip3 install -vU poetry_core
+    time-run pip3 install -vU pkgconfig
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"

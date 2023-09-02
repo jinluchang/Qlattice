@@ -46,7 +46,8 @@ source qcore/set-prefix.sh $name
     time-run pip3 install $opts numpy
     time-run pip3 install $opts pythran
     time-run pip3 install $opts scipy
-    time-run pip3 install $opts h5py
+    time-run pip3 install $opts poetry_core
+    time-run pip3 install $opts pkgconfig
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"

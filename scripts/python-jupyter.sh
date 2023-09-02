@@ -13,6 +13,7 @@ source qcore/set-prefix.sh $name
 
     opts="--verbose"
 
+    time-run pip3 install $opts h5py
     time-run pip3 install $opts pandas
     time-run pip3 install $opts xarray
     time-run pip3 install $opts matplotlib
