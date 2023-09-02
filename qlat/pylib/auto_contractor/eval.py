@@ -44,14 +44,20 @@ def get_cexpr_names(cexpr):
     return names
 
 def eval_cexpr_get_props(cexpr : CExpr, *, positions_dict, get_prop):
-    assert cexpr.function is not None
-    return cexpr.function["cexpr_function_get_prop"](positions_dict, get_prop)
+    """
+    Note:
+    cexpr_function_get_prop(positions_dict, get_prop) => (props, cms, factors,)
+    """
+    return cexpr["cexpr_function_get_prop"](positions_dict, get_prop)
 
-def eval_cexpr_eval(cexpr : CExpr, *, positions_dict, props):
-    assert cexpr.function is not None
-    return cexpr.function["cexpr_function_eval"](positions_dict, props)
+def eval_cexpr_eval(cexpr : CExpr, *, positions_dict, props, cms, factors):
+    """
+    Note:
+    cexpr_function_eval(positions_dict, props, cms, factors) => ama_val as AmaVal of 1-D np.array
+    """
+    return cexpr["cexpr_function_eval"](positions_dict, props, cms, factors)
 
-def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_ama_and_sloppy = False):
+def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_ama_and_sloppy=False):
     """
     return 1 dimensional np.array
     cexpr can be cexpr object or can be a compiled function
@@ -62,9 +68,10 @@ def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_ama_and_sloppy = F
     e.g. xg_snk = ("point-snk", [ 1, 2, 3, 4, ])
     if is_ama_and_sloppy: return (val_ama, val_sloppy,)
     if not is_ama_and_sloppy: return val_ama
+    Note:
+    cexpr_function(positions_dict, get_prop, is_ama_and_sloppy=False) => val as 1-D np.array
     """
-    assert cexpr.function is not None
-    return cexpr.function["cexpr_function"](positions_dict = positions_dict, get_prop = get_prop, is_ama_and_sloppy = is_ama_and_sloppy)
+    return cexpr["cexpr_function"](positions_dict, get_prop, is_ama_and_sloppy)
 
 meson_build_content = r"""project(
   'qlat-auto-contractor-cexpr', 'cpp', 'cython',
@@ -153,7 +160,13 @@ codelib = py3.extension_module('cexpr_code',
 """
 
 @q.timer
-def cache_compiled_cexpr(calc_cexpr, path, *, is_cython=True, is_distillation=False):
+def cache_compiled_cexpr(
+        calc_cexpr, path,
+        *,
+        is_cython=True,
+        is_distillation=False,
+        base_positions_dict=None,
+        ):
     """
     Return fully loaded ``cexpr = calc_cexpr()`` and cache the results\n
     Save cexpr object in pickle format for future reuse.
@@ -163,6 +176,8 @@ def cache_compiled_cexpr(calc_cexpr, path, *, is_cython=True, is_distillation=Fa
     !!!Note that the module will not be reloaded if it has been loaded before!!!
     """
     fname = q.get_fname()
+    if base_positions_dict is None:
+        base_positions_dict = {}
     if is_cython:
         path = path + "_cy"
     else:
@@ -230,15 +245,28 @@ def cache_compiled_cexpr(calc_cexpr, path, *, is_cython=True, is_distillation=Fa
     else:
         module = importlib.import_module((path + "/cexpr_code").replace("/", "."))
     q.displayln_info(1, f"{fname}: Loaded '{path}'.")
-    cexpr_all.function = {
-            # cexpr_function(positions_dict, get_prop, is_ama_and_sloppy=False) => val as 1-D np.array
-            "cexpr_function" : module.cexpr_function,
-            # cexpr_function_get_prop(positions_dict, get_prop) => (props, cms, factors,)
-            "cexpr_function_get_prop" : module.cexpr_function_get_prop,
-            # cexpr_function_eval(positions_dict, props, cms, factors) => ama_val as AmaVal of 1-D np.array
-            "cexpr_function_eval" : module.cexpr_function_eval,
-            }
-    cexpr_all.total_sloppy_flops = module.total_sloppy_flops
+    # cexpr_function(positions_dict, get_prop, is_ama_and_sloppy=False) => val as 1-D np.array
+    # cexpr_function_get_prop(positions_dict, get_prop) => (props, cms, factors,)
+    # cexpr_function_eval(positions_dict, props, cms, factors) => ama_val as AmaVal of 1-D np.array
+    cexpr_all["cexpr_function_bare"] = module.cexpr_function
+    cexpr_all["cexpr_function_get_prop_bare"] = module.cexpr_function_get_prop
+    cexpr_all["cexpr_function_eval_bare"] = module.cexpr_function_eval
+    if base_positions_dict == {}:
+        cexpr_function = module.cexpr_function
+        cexpr_function_get_prop = module.cexpr_function_get_prop
+        cexpr_function_eval = module.cexpr_function_eval
+    else:
+        def cexpr_function(positions_dict, get_prop, is_ama_and_sloppy=False):
+            return module.cexpr_function(base_positions_dict | positions_dict, get_prop, is_ama_and_sloppy)
+        def cexpr_function_get_prop(positions_dict, get_prop, is_ama_and_sloppy=False):
+            return module.cexpr_function_get_prop(base_positions_dict | positions_dict, get_prop)
+        def cexpr_function_eval(positions_dict, props, cms, factors):
+            return module.cexpr_function_eval(base_positions_dict | positions_dict, props, cms, factors)
+    cexpr_all["cexpr_function"] = cexpr_function
+    cexpr_all["cexpr_function_get_prop"] = cexpr_function_get_prop
+    cexpr_all["cexpr_function_eval"] = cexpr_function_eval
+    cexpr_all["base_positions_dict"] = base_positions_dict
+    cexpr_all["total_sloppy_flops"] = module.total_sloppy_flops
     return cexpr_all
 
 def make_rand_spin_color_matrix(rng_state):
@@ -272,11 +300,14 @@ def benchmark_show_check(check):
     return " ".join([ f"{v:.10E}" for v in check ])
 
 @q.timer
-def benchmark_eval_cexpr(cexpr : CExpr, *,
-        benchmark_size = 10,
-        benchmark_num = 10,
-        benchmark_num_ama = 2,
-        benchmark_rng_state = None):
+def benchmark_eval_cexpr(
+        cexpr : CExpr,
+        *,
+        benchmark_size=10,
+        benchmark_num=10,
+        benchmark_num_ama=2,
+        benchmark_rng_state=None,
+        ):
     if benchmark_rng_state is None:
         benchmark_rng_state = q.RngState("benchmark_eval_cexpr")
     expr_names = get_cexpr_names(cexpr)
@@ -324,7 +355,7 @@ def benchmark_eval_cexpr(cexpr : CExpr, *,
         else:
             flavor = ptype
             pos_snk, pos_src = args
-            return ama_extract(mk_prop(flavor, pos_snk, pos_src), is_sloppy = True)
+            return ama_extract(mk_prop(flavor, pos_snk, pos_src), is_sloppy=True)
     @q.timer
     def get_prop_ama(ptype, *args):
         if ptype == "U":
@@ -339,7 +370,7 @@ def benchmark_eval_cexpr(cexpr : CExpr, *,
     def benchmark_eval_cexpr_run():
         res_list = []
         for k in range(benchmark_size):
-            res = eval_cexpr(cexpr, positions_dict = positions_dict_list[k], get_prop = get_prop)
+            res = eval_cexpr(cexpr, positions_dict=positions_dict_list[k], get_prop=get_prop)
             res_list.append(res)
         res = np.array(res_list)
         assert res.shape == (benchmark_size, n_expr,)
@@ -348,9 +379,9 @@ def benchmark_eval_cexpr(cexpr : CExpr, *,
     def benchmark_eval_cexpr_run_with_ama():
         res_list = []
         for k in range(benchmark_size):
-            res1 = eval_cexpr(cexpr, positions_dict = positions_dict_list[k], get_prop = get_prop_ama)
-            res2 = eval_cexpr(cexpr, positions_dict = positions_dict_list[k], get_prop = get_prop)
-            res_ama, res_sloppy = eval_cexpr(cexpr, positions_dict = positions_dict_list[k], get_prop = get_prop_ama, is_ama_and_sloppy = True)
+            res1 = eval_cexpr(cexpr, positions_dict=positions_dict_list[k], get_prop=get_prop_ama)
+            res2 = eval_cexpr(cexpr, positions_dict=positions_dict_list[k], get_prop=get_prop)
+            res_ama, res_sloppy = eval_cexpr(cexpr, positions_dict=positions_dict_list[k], get_prop=get_prop_ama, is_ama_and_sloppy=True)
             assert q.qnorm(res1 - res_ama) == 0
             assert q.qnorm(res2 - res_sloppy) == 0
             res_list.append(res_ama)
