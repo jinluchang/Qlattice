@@ -88,7 +88,7 @@ def get_all_cexpr():
     for cexpr in cexprs:
         cexpr = cexpr()
         check, check_ama = benchmark_eval_cexpr(cexpr)
-        names = get_cexpr_names(cexpr)
+        names = get_expr_names(cexpr)
         for name in names:
             name_str = name.replace('\n', '  ')
             q.displayln_info(f"CHECK: {name_str}")

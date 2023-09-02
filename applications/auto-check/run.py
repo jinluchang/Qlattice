@@ -74,7 +74,7 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop):
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
-    expr_names = get_cexpr_names(cexpr)
+    expr_names = get_expr_names(cexpr)
     get_prop = get_get_prop()
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
@@ -125,7 +125,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop):
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
-    expr_names = get_cexpr_names(cexpr)
+    expr_names = get_expr_names(cexpr)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     geo = q.Geometry(total_site, 1)
@@ -176,7 +176,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop):
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
-    expr_names = get_cexpr_names(cexpr)
+    expr_names = get_expr_names(cexpr)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     geo = q.Geometry(total_site, 1)
@@ -237,7 +237,7 @@ def auto_contract_meson_corr_psnk_psrc_rand(job_tag, traj, get_get_prop):
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
-    expr_names = get_cexpr_names(cexpr)
+    expr_names = get_expr_names(cexpr)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     geo = q.Geometry(total_site, 1)
@@ -587,7 +587,7 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr_wf()
-    expr_names = get_cexpr_names(cexpr)
+    expr_names = get_expr_names(cexpr)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     geo = q.Geometry(total_site, 1)
@@ -786,7 +786,7 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
     if all([ get_load_path(f) is not None for f in [ fn, fn_src_op, fn_snk_op, ] ]):
         return
     cexpr = get_cexpr_meson_meson_i0_j0_corr_wf()
-    expr_names = np.array(get_cexpr_names(cexpr))
+    expr_names = np.array(get_expr_names(cexpr))
     idx_arr_of_src_op_only = np.array([ 0, ] + [ idx for idx, name in enumerate(expr_names) if " src_op_only " in name ], int)
     idx_arr_of_snk_op_only = np.array([ 0, ] + [ idx for idx, name in enumerate(expr_names) if " snk_op_only " in name ], int)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))

@@ -385,7 +385,7 @@ def auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_psel, get_
         return
     total_site = ru.get_total_site(job_tag)
     cexpr = get_cexpr_meson_corr()
-    names_expr = get_cexpr_names(cexpr)
+    names_expr = get_expr_names(cexpr)
     names_fac = [ "rest", ]
     ld = q.mk_lat_data([
         [ "name_fac", len(names_fac), names_fac, ],
@@ -429,7 +429,7 @@ def auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_
         return
     total_site = ru.get_total_site(job_tag)
     cexpr = get_cexpr_meson_corr()
-    names_expr = get_cexpr_names(cexpr)
+    names_expr = get_expr_names(cexpr)
     names_fac = [ "rest", ]
     ld = q.mk_lat_data([
         [ "name_fac", len(names_fac), names_fac, ],
@@ -474,7 +474,7 @@ def auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
         return
     total_site = ru.get_total_site(job_tag)
     cexpr = get_cexpr_meson_corr()
-    names_expr = get_cexpr_names(cexpr)
+    names_expr = get_expr_names(cexpr)
     names_fac = [ "rest", ]
     ld = q.mk_lat_data([
         [ "name_fac", len(names_fac), names_fac, ],
@@ -520,7 +520,7 @@ def auto_contractor_meson_corr_with_env_wsnk_wsrc(job_tag, traj, get_prop, get_p
         return
     total_site = ru.get_total_site(job_tag)
     cexpr = get_cexpr_meson_corr_with_env()
-    names_expr = get_cexpr_names(cexpr)
+    names_expr = get_expr_names(cexpr)
     names_fac = [ "rest", ]
     ld = q.mk_lat_data([
         [ "name_fac", len(names_fac), names_fac, ],
@@ -567,7 +567,7 @@ def auto_contractor_meson_corr_with_env_psnk_wsrc(job_tag, traj, get_prop, get_p
         return
     total_site = ru.get_total_site(job_tag)
     cexpr = get_cexpr_meson_corr_with_env()
-    names_expr = get_cexpr_names(cexpr)
+    names_expr = get_expr_names(cexpr)
     names_fac = [ "rest", ]
     ld = q.mk_lat_data([
         [ "name_fac", len(names_fac), names_fac, ],
@@ -615,7 +615,7 @@ def auto_contractor_meson_corr_with_env_psnk_psrc(job_tag, traj, get_prop, get_p
         return
     total_site = ru.get_total_site(job_tag)
     cexpr = get_cexpr_meson_corr_with_env()
-    names_expr = get_cexpr_names(cexpr)
+    names_expr = get_expr_names(cexpr)
     names_fac = [ "rest", ]
     ld = q.mk_lat_data([
         [ "name_fac", len(names_fac), names_fac, ],
@@ -663,7 +663,7 @@ def auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_vev()
-    names_expr = get_cexpr_names(cexpr)
+    names_expr = get_expr_names(cexpr)
     names_fac = [ "rest", ]
     ld = q.mk_lat_data([
         [ "name_fac", len(names_fac), names_fac, ],
@@ -698,7 +698,7 @@ def auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
 def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
     total_site = ru.get_total_site(job_tag)
     cexpr = get_cexpr_3f4f_matching()
-    names_expr = get_cexpr_names(cexpr)
+    names_expr = get_expr_names(cexpr)
     src_snk_seps = [8,10,12,14,16]
     tsep_src = -4
     tsep_snk = 4

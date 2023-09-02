@@ -71,7 +71,7 @@ def auto_contract_vev(job_tag, traj, get_prop, get_psel, get_fsel):
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_vev()
-    expr_names = get_cexpr_names(cexpr)
+    expr_names = get_expr_names(cexpr)
     fsel, fselc = get_fsel()
     xg_fsel_list = list(map(tuple, fsel.to_psel_local().to_list()))
     @q.timer
@@ -116,7 +116,7 @@ def auto_contract_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_f_corr()
-    expr_names = get_cexpr_names(cexpr)
+    expr_names = get_expr_names(cexpr)
     total_site = rup.get_total_site(job_tag)
     fsel, fselc = get_fsel()
     xg_fsel_list = list(map(tuple, fsel.to_psel_local().to_list()))
@@ -165,7 +165,7 @@ def auto_contract_hvp(job_tag, traj, get_prop, get_psel, get_fsel):
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_hvp()
-    expr_names = get_cexpr_names(cexpr)
+    expr_names = get_expr_names(cexpr)
     total_site = rup.get_total_site(job_tag)
     psel = get_psel()
     fsel, fselc = get_fsel()
@@ -204,7 +204,7 @@ def auto_contract_hvp_field(job_tag, traj, get_prop, get_psel, get_fsel):
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_hvp()
-    expr_names = get_cexpr_names(cexpr)
+    expr_names = get_expr_names(cexpr)
     total_site = rup.get_total_site(job_tag)
     psel = get_psel()
     fsel, fselc = get_fsel()
@@ -284,7 +284,7 @@ def auto_contract_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get_f
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_v_v_meson()
-    expr_names = get_cexpr_names(cexpr)
+    expr_names = get_expr_names(cexpr)
     total_site = rup.get_total_site(job_tag)
     psel = get_psel()
     fsel, fselc = get_fsel()
@@ -392,7 +392,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
-    expr_names = get_cexpr_names(cexpr)
+    expr_names = get_expr_names(cexpr)
     total_site = rup.get_total_site(job_tag)
     fsel, fselc = get_fsel()
     xg_fsel_list = list(map(tuple, fsel.to_psel_local().to_list()))
@@ -434,7 +434,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
-    expr_names = get_cexpr_names(cexpr)
+    expr_names = get_expr_names(cexpr)
     total_site = rup.get_total_site(job_tag)
     fsel, fselc = get_fsel()
     xg_fsel_list = list(map(tuple, fsel.to_psel_local().to_list()))
@@ -471,7 +471,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
-    expr_names = get_cexpr_names(cexpr)
+    expr_names = get_expr_names(cexpr)
     total_site = rup.get_total_site(job_tag)
     psel = get_psel()
     fsel, fselc = get_fsel()
@@ -516,7 +516,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
-    expr_names = get_cexpr_names(cexpr)
+    expr_names = get_expr_names(cexpr)
     total_site = rup.get_total_site(job_tag)
     psel = get_psel()
     fsel, fselc = get_fsel()

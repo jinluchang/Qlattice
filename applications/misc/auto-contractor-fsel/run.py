@@ -56,7 +56,7 @@ def auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_fsel, get_
         return
     total_site = rup.get_total_site(job_tag)
     cexpr = get_cexpr_meson_corr()
-    names_expr = get_cexpr_names(cexpr)
+    names_expr = get_expr_names(cexpr)
     names_fac = [ "rest", ]
     ld = q.mk_lat_data([
         [ "name_fac", len(names_fac), names_fac, ],
@@ -100,7 +100,7 @@ def auto_contractor_various_corr_wsnk_wsrc(job_tag, traj, get_prop, get_fsel, ge
         return
     total_site = rup.get_total_site(job_tag)
     cexpr = get_cexpr_various_corr()
-    names_expr = get_cexpr_names(cexpr)
+    names_expr = get_expr_names(cexpr)
     names_fac = [ "rest", ]
     ld = q.mk_lat_data([
         [ "name_fac", len(names_fac), names_fac, ],
@@ -179,7 +179,7 @@ def auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_fsel, get_
         return
     total_site = rup.get_total_site(job_tag)
     cexpr = get_cexpr_meson_corr()
-    names_expr = get_cexpr_names(cexpr)
+    names_expr = get_expr_names(cexpr)
     names_fac = [ "rest", ]
     ld = q.mk_lat_data([
         [ "name_fac", len(names_fac), names_fac, ],
@@ -224,7 +224,7 @@ def auto_contractor_vev(job_tag, traj, get_prop, get_fsel, get_pi, get_wi):
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_vev()
-    names_expr = get_cexpr_names(cexpr)
+    names_expr = get_expr_names(cexpr)
     names_fac = [ "rest", ]
     ld = q.mk_lat_data([
         [ "name_fac", len(names_fac), names_fac, ],
@@ -260,7 +260,7 @@ def auto_contractor_vev(job_tag, traj, get_prop, get_fsel, get_pi, get_wi):
 def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_fsel, get_pi, get_wi):
     total_site = rup.get_total_site(job_tag)
     cexpr = get_cexpr_3f4f_matching()
-    names_expr = get_cexpr_names(cexpr)
+    names_expr = get_expr_names(cexpr)
     src_snk_seps = [2,4,6,8]
     tsep_src2 = -2
     tsep_snk2 = 2
@@ -361,7 +361,7 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_fsel, get_pi, get
 def auto_contractor_3f4f_matching_tslice(job_tag, traj, get_prop, get_fsel, get_pi, get_wi):
     total_site = rup.get_total_site(job_tag)
     cexpr = get_cexpr_3f4f_matching()
-    names_expr = get_cexpr_names(cexpr)
+    names_expr = get_expr_names(cexpr)
     src_snk_seps = [2,4,6,8]
     tsep_src2 = -2
     tsep_snk2 = 2

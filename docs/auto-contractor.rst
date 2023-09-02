@@ -15,7 +15,7 @@ Evaluation
    contract_simplify_compile
    cache_compiled_cexpr
    eval_cexpr
-   get_cexpr_names
+   get_expr_names
 
    get_mpi_chunk
 

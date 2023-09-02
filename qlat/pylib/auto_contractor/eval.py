@@ -38,126 +38,41 @@ import os
 import subprocess
 import functools
 
-@q.timer
-def get_cexpr_names(cexpr):
-    names = [ name for name, expr in cexpr.named_exprs ]
-    return names
+class CCExpr:
 
-def eval_cexpr_get_props(cexpr : CExpr, *, positions_dict, get_prop):
     """
-    Note:
-    cexpr_function_get_prop(positions_dict, get_prop) => (props, cms, factors,)
+    self.cexpr_all
+    self.module
+    self.base_positions_dict
+    self.cexpr_function_bare
+    self.total_sloppy_flops
+    self.expr_names
+    self.positions
     """
-    return cexpr["cexpr_function_get_prop"](positions_dict, get_prop)
 
-def eval_cexpr_eval(cexpr : CExpr, *, positions_dict, props, cms, factors):
-    """
-    Note:
-    cexpr_function_eval(positions_dict, props, cms, factors) => ama_val as AmaVal of 1-D np.array
-    """
-    return cexpr["cexpr_function_eval"](positions_dict, props, cms, factors)
+    def __init__(self, cexpr_all, module, *, base_positions_dict=None):
+        self.cexpr_all = cexpr_all
+        self.module = module
+        if base_positions_dict is None:
+            base_positions_dict = {}
+        self.base_positions_dict = base_positions_dict
+        # module.cexpr_function(positions_dict, get_prop, is_ama_and_sloppy=False) => val as 1-D np.array
+        self.cexpr_function_bare = module.cexpr_function
+        self.total_sloppy_flops = module.total_sloppy_flops
+        cexpr = self.cexpr_all["cexpr_optimized"]
+        self.expr_names = [ name for name, expr in cexpr.named_exprs ]
+        self.positions = cexpr.positions
 
-def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_ama_and_sloppy=False):
-    """
-    return 1 dimensional np.array
-    cexpr can be cexpr object or can be a compiled function
-    xg = positions_dict[position]
-    mat_mspincolor = get_prop(flavor, xg_snk, xg_src)
-    e.g. ("point-snk", [ 1, 2, 3, 4, ]) = positions_dict["x_1"]
-    e.g. flavor = "l"
-    e.g. xg_snk = ("point-snk", [ 1, 2, 3, 4, ])
-    if is_ama_and_sloppy: return (val_ama, val_sloppy,)
-    if not is_ama_and_sloppy: return val_ama
-    Note:
-    cexpr_function(positions_dict, get_prop, is_ama_and_sloppy=False) => val as 1-D np.array
-    """
-    return cexpr["cexpr_function"](positions_dict, get_prop, is_ama_and_sloppy)
+    def get_expr_names(self):
+        return self.expr_names
 
-meson_build_content = r"""project(
-  'qlat-auto-contractor-cexpr', 'cpp', 'cython',
-  version: '1.0',
-  license: 'GPL-3.0-or-later',
-  default_options: [
-    'warning_level=3',
-    'cpp_std=c++14',
-    'libdir=lib',
-    'optimization=2',
-    'debug=false',
-    'cython_language=cpp',
-    ])
-#
-add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
-#
-qlat_utils_cpp = meson.get_compiler('cpp')
-#
-qlat_utils_py3 = import('python').find_installation('python3')
-message(qlat_utils_py3.path())
-message(qlat_utils_py3.get_install_dir())
-#
-qlat_utils_omp = dependency('openmp').as_system()
-qlat_utils_zlib = dependency('zlib').as_system()
-#
-qlat_utils_math = qlat_utils_cpp.find_library('m')
-#
-qlat_utils_numpy_include = run_command(qlat_utils_py3, '-c', 'import numpy as np ; print(np.get_include())',
-  check: true).stdout().strip()
-message('numpy include', qlat_utils_numpy_include)
-#
-qlat_utils_numpy = declare_dependency(
-  include_directories:  include_directories(qlat_utils_numpy_include),
-  dependencies: [ qlat_utils_py3.dependency(), ],
-  ).as_system()
-#
-if qlat_utils_cpp.check_header('Eigen/Eigen')
-  qlat_utils_eigen = dependency('', required: false)
-elif qlat_utils_cpp.check_header('Grid/Eigen/Eigen')
-  qlat_utils_eigen = dependency('', required: false)
-else
-  qlat_utils_eigen = dependency('eigen3').as_system()
-endif
-#
-qlat_utils_include = run_command(qlat_utils_py3, '-c', 'import qlat_utils as q ; print("\\n".join(q.get_include_list()))',
-  env: environment({'q_verbose': '-1'}),
-  check: true).stdout().strip().split('\n')
-message('qlat_utils include', qlat_utils_include)
-#
-qlat_utils_lib = run_command(qlat_utils_py3, '-c', 'import qlat_utils as q ; print("\\n".join(q.get_lib_list()))',
-  env: environment({'q_verbose': '-1'}),
-  check: true).stdout().strip().split('\n')
-message('qlat_utils lib', qlat_utils_lib)
-#
-qlat_utils_pxd = run_command(qlat_utils_py3, '-c', 'import qlat_utils as q ; print("\\n".join(q.get_pxd_list()))',
-  env: environment({'q_verbose': '-1'}),
-  check: true).stdout().strip().split('\n')
-message('qlat_utils pxd', qlat_utils_pxd)
-qlat_utils_pxd = files(qlat_utils_pxd)
-#
-qlat_utils_header = run_command(qlat_utils_py3, '-c', 'import qlat_utils as q ; print("\\n".join(q.get_header_list()))',
-  env: environment({'q_verbose': '-1'}),
-  check: true).stdout().strip().split('\n')
-message('qlat_utils header', qlat_utils_header)
-qlat_utils_header = files(qlat_utils_header)
-#
-qlat_utils = declare_dependency(
-  include_directories: include_directories(qlat_utils_include),
-  dependencies: [
-    qlat_utils_py3.dependency().as_system(),
-    qlat_utils_cpp.find_library('qlat-utils', dirs: qlat_utils_lib),
-    qlat_utils_numpy, qlat_utils_eigen, qlat_utils_omp, qlat_utils_zlib, qlat_utils_math, ],
-  )
-#
-py3 = import('python').find_installation('python3')
-#
-deps = [ qlat_utils, ]
-incdir = []
-#
-codelib = py3.extension_module('cexpr_code',
-  files('cexpr_code.pyx'),
-  dependencies: deps,
-  include_directories: incdir,
-  install: false,
-  )
-"""
+    def cexpr_function(self, positions_dict, get_prop, is_ama_and_sloppy=False):
+        assert self.cexpr_function_bare is not None
+        pd = self.base_positions_dict.copy()
+        pd.update(positions_dict)
+        return self.cexpr_function_bare(positions_dict=pd, get_prop=get_prop, is_ama_and_sloppy=is_ama_and_sloppy)
+
+# -----
 
 @q.timer
 def cache_compiled_cexpr(
@@ -168,16 +83,14 @@ def cache_compiled_cexpr(
         base_positions_dict=None,
         ):
     """
-    Return fully loaded ``cexpr = calc_cexpr()`` and cache the results\n
+    Return an ``CCExpr`` created from ``cexpr = calc_cexpr()`` and cache the results.\n
     Save cexpr object in pickle format for future reuse.
     Generate python code and save for future reuse.
-    Load the python module and assign ``cexpr.function`` and ``cexpr.total_sloppy_flops``.
-    Return fully loaded ``cexpr``.
+    Create CCExpr with loaded python/cython module.
+    Return fully loaded ``ccexpr``.
     !!!Note that the module will not be reloaded if it has been loaded before!!!
     """
     fname = q.get_fname()
-    if base_positions_dict is None:
-        base_positions_dict = {}
     if is_cython:
         path = path + "_cy"
     else:
@@ -225,8 +138,8 @@ def cache_compiled_cexpr(
             compile_cexpr_meson_setup()
             compile_cexpr_meson_compile()
         cexpr_all = dict()
-        cexpr_all["cexpr_optimized"] = cexpr_optimized
         cexpr_all["cexpr_original"] = cexpr_original
+        cexpr_all["cexpr_optimized"] = cexpr_optimized
         cexpr_all["code_py"] = code_py
         q.save_pickle_obj(cexpr_all, fn_pickle)
         q.timer_display()
@@ -238,70 +151,40 @@ def cache_compiled_cexpr(
     while not q.does_file_exist(fn_pickle):
         q.displayln(3, f"{fname}: Node {q.get_id_node()}: waiting for '{fn_pickle}'.")
         time.sleep(0.5)
-    cexpr_all = q.load_pickle_obj(fn_pickle)["cexpr_optimized"]
+    cexpr_all = q.load_pickle_obj(fn_pickle)
     q.displayln_info(1, f"{fname}: Loading '{path}'.")
     if is_cython:
         module = importlib.import_module((path + "/build/cexpr_code").replace("/", "."))
     else:
         module = importlib.import_module((path + "/cexpr_code").replace("/", "."))
     q.displayln_info(1, f"{fname}: Loaded '{path}'.")
-    # cexpr_function(positions_dict, get_prop, is_ama_and_sloppy=False) => val as 1-D np.array
-    # cexpr_function_get_prop(positions_dict, get_prop) => (props, cms, factors,)
-    # cexpr_function_eval(positions_dict, props, cms, factors) => ama_val as AmaVal of 1-D np.array
-    cexpr_all["cexpr_function_bare"] = module.cexpr_function
-    cexpr_all["cexpr_function_get_prop_bare"] = module.cexpr_function_get_prop
-    cexpr_all["cexpr_function_eval_bare"] = module.cexpr_function_eval
-    if base_positions_dict == {}:
-        cexpr_function = module.cexpr_function
-        cexpr_function_get_prop = module.cexpr_function_get_prop
-        cexpr_function_eval = module.cexpr_function_eval
-    else:
-        def cexpr_function(positions_dict, get_prop, is_ama_and_sloppy=False):
-            return module.cexpr_function(base_positions_dict | positions_dict, get_prop, is_ama_and_sloppy)
-        def cexpr_function_get_prop(positions_dict, get_prop, is_ama_and_sloppy=False):
-            return module.cexpr_function_get_prop(base_positions_dict | positions_dict, get_prop)
-        def cexpr_function_eval(positions_dict, props, cms, factors):
-            return module.cexpr_function_eval(base_positions_dict | positions_dict, props, cms, factors)
-    cexpr_all["cexpr_function"] = cexpr_function
-    cexpr_all["cexpr_function_get_prop"] = cexpr_function_get_prop
-    cexpr_all["cexpr_function_eval"] = cexpr_function_eval
-    cexpr_all["base_positions_dict"] = base_positions_dict
-    cexpr_all["total_sloppy_flops"] = module.total_sloppy_flops
-    return cexpr_all
+    ccexpr = CCExpr(cexpr_all, module, base_positions_dict=base_positions_dict)
+    return ccexpr
 
-def make_rand_spin_color_matrix(rng_state):
-    rs = rng_state
-    wm = q.WilsonMatrix()
-    wm_arr = np.asarray(wm)
-    wm_arr[:] = np.array(
-            [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(144) ],
-            dtype = complex).reshape(12, 12)
-    return wm
+@q.timer
+def get_expr_names(ccexpr : CCExpr):
+    return ccexpr.get_expr_names()
 
-def make_rand_spin_matrix(rng_state):
-    rs = rng_state
-    sm = q.SpinMatrix()
-    sm_arr = np.asarray(sm)
-    sm_arr[:] = np.array(
-            [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(16) ],
-            dtype = complex).reshape(4, 4)
-    return sm
-
-def make_rand_color_matrix(rng_state):
-    rs = rng_state
-    cm = q.ColorMatrix()
-    cm_arr = np.asarray(cm)
-    cm_arr[:] = np.array(
-            [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(9) ],
-            dtype = complex).reshape(3, 3)
-    return cm
-
-def benchmark_show_check(check):
-    return " ".join([ f"{v:.10E}" for v in check ])
+@q.timer
+def eval_cexpr(ccexpr : CCExpr, *, positions_dict, get_prop, is_ama_and_sloppy=False):
+    """
+    return 1 dimensional np.array
+    cexpr can be cexpr object or can be a compiled function
+    xg = positions_dict[position]
+    mat_mspincolor = get_prop(flavor, xg_snk, xg_src)
+    e.g. ("point-snk", [ 1, 2, 3, 4, ]) = positions_dict["x_1"]
+    e.g. flavor = "l"
+    e.g. xg_snk = ("point-snk", [ 1, 2, 3, 4, ])
+    if is_ama_and_sloppy: return (val_ama, val_sloppy,)
+    if not is_ama_and_sloppy: return val_ama
+    Note:
+    cexpr_function(positions_dict, get_prop, is_ama_and_sloppy=False) => val as 1-D np.array
+    """
+    return ccexpr.cexpr_function(positions_dict, get_prop, is_ama_and_sloppy)
 
 @q.timer
 def benchmark_eval_cexpr(
-        cexpr : CExpr,
+        cexpr : CCExpr,
         *,
         benchmark_size=10,
         benchmark_num=10,
@@ -310,7 +193,7 @@ def benchmark_eval_cexpr(
         ):
     if benchmark_rng_state is None:
         benchmark_rng_state = q.RngState("benchmark_eval_cexpr")
-    expr_names = get_cexpr_names(cexpr)
+    expr_names = get_expr_names(cexpr)
     n_expr = len(expr_names)
     # prop_dict = {}
     size = q.Coordinate([ 8, 8, 8, 16, ])
@@ -319,6 +202,8 @@ def benchmark_eval_cexpr(
         if pos == "size":
             continue
         if pos in aff.auto_fac_funcs_list:
+            continue
+        if pos in cexpr.base_positions_dict:
             continue
         positions_vars.append(pos)
     n_pos = len(positions_vars)
@@ -420,18 +305,6 @@ def benchmark_eval_cexpr(
     q.displayln_info(f"benchmark_eval_cexpr: {benchmark_show_check(check)} {benchmark_show_check(check_ama)}")
     return check, check_ama
 
-def sqr_component(x):
-    return x.real * x.real + 1j * x.imag * x.imag
-
-def sqrt_component(x):
-    return math.sqrt(x.real) + 1j * math.sqrt(x.imag)
-
-def sqr_component_array(arr):
-    return np.array([ sqr_component(x) for x in arr ])
-
-def sqrt_component_array(arr):
-    return np.array([ sqrt_component(x) for x in arr ])
-
 def get_mpi_chunk(total_list, *, rng_state = None):
     """
     rng_state has to be the same on all the nodes
@@ -444,3 +317,137 @@ def get_mpi_chunk(total_list, *, rng_state = None):
         return chunk_list[chunk_id]
     else:
         return []
+
+# -----------------------------------------
+
+def get_cexpr_names(ccexpr : CCExpr):
+    q.displayln_info("WARNING: get_expr_names: use get_expr_names instead.")
+    return get_expr_names(ccexpr)
+
+meson_build_content = r"""project(
+  'qlat-auto-contractor-cexpr', 'cpp', 'cython',
+  version: '1.0',
+  license: 'GPL-3.0-or-later',
+  default_options: [
+    'warning_level=3',
+    'cpp_std=c++14',
+    'libdir=lib',
+    'optimization=2',
+    'debug=false',
+    'cython_language=cpp',
+    ])
+#
+add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
+#
+qlat_utils_cpp = meson.get_compiler('cpp')
+#
+qlat_utils_py3 = import('python').find_installation('python3')
+message(qlat_utils_py3.path())
+message(qlat_utils_py3.get_install_dir())
+#
+qlat_utils_omp = dependency('openmp').as_system()
+qlat_utils_zlib = dependency('zlib').as_system()
+#
+qlat_utils_math = qlat_utils_cpp.find_library('m')
+#
+qlat_utils_numpy_include = run_command(qlat_utils_py3, '-c', 'import numpy as np ; print(np.get_include())',
+  check: true).stdout().strip()
+message('numpy include', qlat_utils_numpy_include)
+#
+qlat_utils_numpy = declare_dependency(
+  include_directories:  include_directories(qlat_utils_numpy_include),
+  dependencies: [ qlat_utils_py3.dependency(), ],
+  ).as_system()
+#
+if qlat_utils_cpp.check_header('Eigen/Eigen')
+  qlat_utils_eigen = dependency('', required: false)
+elif qlat_utils_cpp.check_header('Grid/Eigen/Eigen')
+  qlat_utils_eigen = dependency('', required: false)
+else
+  qlat_utils_eigen = dependency('eigen3').as_system()
+endif
+#
+qlat_utils_include = run_command(qlat_utils_py3, '-c', 'import qlat_utils as q ; print("\\n".join(q.get_include_list()))',
+  env: environment({'q_verbose': '-1'}),
+  check: true).stdout().strip().split('\n')
+message('qlat_utils include', qlat_utils_include)
+#
+qlat_utils_lib = run_command(qlat_utils_py3, '-c', 'import qlat_utils as q ; print("\\n".join(q.get_lib_list()))',
+  env: environment({'q_verbose': '-1'}),
+  check: true).stdout().strip().split('\n')
+message('qlat_utils lib', qlat_utils_lib)
+#
+qlat_utils_pxd = run_command(qlat_utils_py3, '-c', 'import qlat_utils as q ; print("\\n".join(q.get_pxd_list()))',
+  env: environment({'q_verbose': '-1'}),
+  check: true).stdout().strip().split('\n')
+message('qlat_utils pxd', qlat_utils_pxd)
+qlat_utils_pxd = files(qlat_utils_pxd)
+#
+qlat_utils_header = run_command(qlat_utils_py3, '-c', 'import qlat_utils as q ; print("\\n".join(q.get_header_list()))',
+  env: environment({'q_verbose': '-1'}),
+  check: true).stdout().strip().split('\n')
+message('qlat_utils header', qlat_utils_header)
+qlat_utils_header = files(qlat_utils_header)
+#
+qlat_utils = declare_dependency(
+  include_directories: include_directories(qlat_utils_include),
+  dependencies: [
+    qlat_utils_py3.dependency().as_system(),
+    qlat_utils_cpp.find_library('qlat-utils', dirs: qlat_utils_lib),
+    qlat_utils_numpy, qlat_utils_eigen, qlat_utils_omp, qlat_utils_zlib, qlat_utils_math, ],
+  )
+#
+py3 = import('python').find_installation('python3')
+#
+deps = [ qlat_utils, ]
+incdir = []
+#
+codelib = py3.extension_module('cexpr_code',
+  files('cexpr_code.pyx'),
+  dependencies: deps,
+  include_directories: incdir,
+  install: false,
+  )
+"""
+
+def make_rand_spin_color_matrix(rng_state):
+    rs = rng_state
+    wm = q.WilsonMatrix()
+    wm_arr = np.asarray(wm)
+    wm_arr[:] = np.array(
+            [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(144) ],
+            dtype = complex).reshape(12, 12)
+    return wm
+
+def make_rand_spin_matrix(rng_state):
+    rs = rng_state
+    sm = q.SpinMatrix()
+    sm_arr = np.asarray(sm)
+    sm_arr[:] = np.array(
+            [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(16) ],
+            dtype = complex).reshape(4, 4)
+    return sm
+
+def make_rand_color_matrix(rng_state):
+    rs = rng_state
+    cm = q.ColorMatrix()
+    cm_arr = np.asarray(cm)
+    cm_arr[:] = np.array(
+            [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(9) ],
+            dtype = complex).reshape(3, 3)
+    return cm
+
+def benchmark_show_check(check):
+    return " ".join([ f"{v:.10E}" for v in check ])
+
+def sqr_component(x):
+    return x.real * x.real + 1j * x.imag * x.imag
+
+def sqrt_component(x):
+    return math.sqrt(x.real) + 1j * math.sqrt(x.imag)
+
+def sqr_component_array(arr):
+    return np.array([ sqr_component(x) for x in arr ])
+
+def sqrt_component_array(arr):
+    return np.array([ sqrt_component(x) for x in arr ])

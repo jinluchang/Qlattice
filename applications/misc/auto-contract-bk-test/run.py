@@ -318,7 +318,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
-    expr_names = get_cexpr_names(cexpr)
+    expr_names = get_expr_names(cexpr)
     total_site = rup.get_total_site(job_tag)
     psel = get_psel()
     fsel, fselc = get_fsel()
@@ -372,7 +372,7 @@ def auto_contract_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_f_corr()
-    expr_names = get_cexpr_names(cexpr)
+    expr_names = get_expr_names(cexpr)
     total_site = rup.get_total_site(job_tag)
     psel = get_psel()
     fsel, fselc = get_fsel()
@@ -426,7 +426,7 @@ def auto_contract_meson_bk_bpi_corr(job_tag, traj, get_prop, get_psel, get_fsel)
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_bk_bpi_corr()
-    expr_names = get_cexpr_names(cexpr)
+    expr_names = get_expr_names(cexpr)
     total_site = rup.get_total_site(job_tag)
     psel = get_psel()
     fsel, fselc = get_fsel()
