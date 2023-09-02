@@ -1457,7 +1457,7 @@ class CExprCodeGenPy:
         append_cy = self.append_cy
         append_py = self.append_py
         append(f"@timer")
-        append(f"def cexpr_function(*, positions_dict, get_prop, is_ama_and_sloppy = False):")
+        append(f"def cexpr_function(*, positions_dict, get_prop, is_ama_and_sloppy=False):")
         self.indent += 4
         append(f"# get_props")
         append(f"props, cms, factors = cexpr_function_get_prop(positions_dict, get_prop)")

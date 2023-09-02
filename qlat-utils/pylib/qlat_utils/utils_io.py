@@ -88,28 +88,43 @@ def qappend_info(path, content = None):
         return c.qappend_info(path, content)
 
 @timer
-def save_pickle_obj(obj, path):
-    # only save from node 0
-    # mk_file_dirs_info(path)
-    if get_id_node() == 0:
+def save_pickle_obj(obj, path, *, is_sync_node=True):
+    """
+    only save from node 0 when is_sync_node
+    mk_file_dirs_info(path)
+    """
+    if not is_sync_node or get_id_node() == 0:
         qtouch(path, pickle.dumps(obj))
 
 @timer
-def load_pickle_obj(path, default_value = None):
-    # all the nodes read the same data
-    if does_file_exist_qar_sync_node(path):
+def load_pickle_obj(path, default_value=None, *, is_sync_node=True):
+    """
+    all the nodes read the same data
+    """
+    if is_sync_node:
+        b = does_file_exist_qar_sync_node(path)
+    else:
+        b = does_file_exist_qar(path)
+    if b:
         obj = pickle.loads(qcat_bytes_sync_node(path))
         return obj
     else:
         return default_value
 
 @timer
-def pickle_cache_call(func, path):
-    if not does_file_exist_qar_sync_node(path):
-        obj = func()
-        save_pickle_obj(obj, path)
+def pickle_cache_call(func, path, *, is_sync_node=True):
+    """
+    all the nodes compute or load the same data
+    """
+    if is_sync_node:
+        b = does_file_exist_qar_sync_node(path)
     else:
-        obj = load_pickle_obj(path)
+        b = does_file_exist_qar(path)
+    if not b:
+        obj = func()
+        save_pickle_obj(obj, path, is_sync_node=is_sync_node)
+    else:
+        obj = load_pickle_obj(path, is_sync_node=is_sync_node)
     return obj
 
 def qremove_info(path):

@@ -66,8 +66,8 @@ def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_ama_and_sloppy = F
     assert cexpr.function is not None
     return cexpr.function["cexpr_function"](positions_dict = positions_dict, get_prop = get_prop, is_ama_and_sloppy = is_ama_and_sloppy)
 
-meson_build_content = """\
-project('qlat-auto-contractor-cexpr', 'cpp', 'cython',
+meson_build_content = r"""project(
+  'qlat-auto-contractor-cexpr', 'cpp', 'cython',
   version: '1.0',
   license: 'GPL-3.0-or-later',
   default_options: [
@@ -78,45 +78,74 @@ project('qlat-auto-contractor-cexpr', 'cpp', 'cython',
     'debug=false',
     'cython_language=cpp',
     ])
+#
 add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
-cpp = meson.get_compiler('cpp')
-py_mod = import('python')
-py3 = py_mod.find_installation('python3')
-message(py3.path())
-message(py3.get_install_dir())
-omp = dependency('openmp').as_system()
-zlib = dependency('zlib').as_system()
-fftw = dependency('fftw3').as_system()
-fftwf = dependency('fftw3f').as_system()
-message('fftw libdir', fftw.get_variable('libdir'))
-message('fftwf libdir', fftwf.get_variable('libdir'))
-fftw_all = [ fftw, fftwf, ]
-math = cpp.find_library('m')
-numpy_include = run_command(py3.path(), '-c', 'import numpy as np ; print(np.get_include())', check: true).stdout().strip()
-message('numpy include', numpy_include)
-numpy = declare_dependency(
-  include_directories:  include_directories(numpy_include),
-  dependencies: [ py3.dependency(), ],
+#
+qlat_utils_cpp = meson.get_compiler('cpp')
+#
+qlat_utils_py3 = import('python').find_installation('python3')
+message(qlat_utils_py3.path())
+message(qlat_utils_py3.get_install_dir())
+#
+qlat_utils_omp = dependency('openmp').as_system()
+qlat_utils_zlib = dependency('zlib').as_system()
+#
+qlat_utils_math = qlat_utils_cpp.find_library('m')
+#
+qlat_utils_numpy_include = run_command(qlat_utils_py3, '-c', 'import numpy as np ; print(np.get_include())',
+  check: true).stdout().strip()
+message('numpy include', qlat_utils_numpy_include)
+#
+qlat_utils_numpy = declare_dependency(
+  include_directories:  include_directories(qlat_utils_numpy_include),
+  dependencies: [ qlat_utils_py3.dependency(), ],
   ).as_system()
-qlat_utils_include = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\\\n".join(q.get_include_list()))', env: environment({'q_verbose': '-1'}), check: true).stdout().strip().split('\\n')
-message('qlat_utils include', qlat_utils_include)
-qlat_utils_lib = run_command(py3.path(), '-c', 'import qlat_utils as q ; print("\\\\n".join(q.get_lib_list()))', env: environment({'q_verbose': '-1'}), check: true).stdout().strip().split('\\n')
-message('qlat_utils lib', qlat_utils_lib)
-qlat_utils = declare_dependency(
-  include_directories:  include_directories(qlat_utils_include),
-  dependencies: [
-    py3.dependency().as_system(),
-    cpp.find_library('qlat-utils', dirs: qlat_utils_lib),
-    numpy, omp, zlib, math, ],
-  )
-deps = [ qlat_utils, fftw_all, ]
-if not cpp.check_header('Eigen/Eigen')
-  eigen = dependency('eigen3').as_system()
-  deps += [ eigen, ]
+#
+if qlat_utils_cpp.check_header('Eigen/Eigen')
+  qlat_utils_eigen = dependency('', required: false)
+elif qlat_utils_cpp.check_header('Grid/Eigen/Eigen')
+  qlat_utils_eigen = dependency('', required: false)
+else
+  qlat_utils_eigen = dependency('eigen3').as_system()
 endif
+#
+qlat_utils_include = run_command(qlat_utils_py3, '-c', 'import qlat_utils as q ; print("\\n".join(q.get_include_list()))',
+  env: environment({'q_verbose': '-1'}),
+  check: true).stdout().strip().split('\n')
+message('qlat_utils include', qlat_utils_include)
+#
+qlat_utils_lib = run_command(qlat_utils_py3, '-c', 'import qlat_utils as q ; print("\\n".join(q.get_lib_list()))',
+  env: environment({'q_verbose': '-1'}),
+  check: true).stdout().strip().split('\n')
+message('qlat_utils lib', qlat_utils_lib)
+#
+qlat_utils_pxd = run_command(qlat_utils_py3, '-c', 'import qlat_utils as q ; print("\\n".join(q.get_pxd_list()))',
+  env: environment({'q_verbose': '-1'}),
+  check: true).stdout().strip().split('\n')
+message('qlat_utils pxd', qlat_utils_pxd)
+qlat_utils_pxd = files(qlat_utils_pxd)
+#
+qlat_utils_header = run_command(qlat_utils_py3, '-c', 'import qlat_utils as q ; print("\\n".join(q.get_header_list()))',
+  env: environment({'q_verbose': '-1'}),
+  check: true).stdout().strip().split('\n')
+message('qlat_utils header', qlat_utils_header)
+qlat_utils_header = files(qlat_utils_header)
+#
+qlat_utils = declare_dependency(
+  include_directories: include_directories(qlat_utils_include),
+  dependencies: [
+    qlat_utils_py3.dependency().as_system(),
+    qlat_utils_cpp.find_library('qlat-utils', dirs: qlat_utils_lib),
+    qlat_utils_numpy, qlat_utils_eigen, qlat_utils_omp, qlat_utils_zlib, qlat_utils_math, ],
+  )
+#
+py3 = import('python').find_installation('python3')
+#
+deps = [ qlat_utils, ]
 incdir = []
-codelib = py3.extension_module('code',
-  files('code.pyx'),
+#
+codelib = py3.extension_module('cexpr_code',
+  files('cexpr_code.pyx'),
   dependencies: deps,
   include_directories: incdir,
   install: false,
@@ -124,7 +153,7 @@ codelib = py3.extension_module('code',
 """
 
 @q.timer
-def cache_compiled_cexpr(calc_cexpr, path, *, is_cython = True, is_distillation = False):
+def cache_compiled_cexpr(calc_cexpr, path, *, is_cython=True, is_distillation=False):
     """
     Return fully loaded ``cexpr = calc_cexpr()`` and cache the results\n
     Save cexpr object in pickle format for future reuse.
@@ -133,12 +162,12 @@ def cache_compiled_cexpr(calc_cexpr, path, *, is_cython = True, is_distillation 
     Return fully loaded ``cexpr``.
     !!!Note that the module will not be reloaded if it has been loaded before!!!
     """
+    fname = q.get_fname()
     if is_cython:
         path = path + "_cy"
     else:
         path = path + "_py"
-    fn_pickle = path + "/data.pickle"
-    fn_code = path + "/build/code.so"
+    fn_pickle = path + "/cexpr_all.pickle"
     @q.timer
     def compile_cexpr_meson_setup():
         subprocess.run(["meson", "setup", "build"], cwd = path)
@@ -148,30 +177,43 @@ def cache_compiled_cexpr(calc_cexpr, path, *, is_cython = True, is_distillation 
     @q.timer
     def calc_compile_cexpr():
         q.timer_fork()
-        cexpr_original = calc_cexpr()
-        content_original = display_cexpr(cexpr_original)
-        q.qtouch_info(path + "/cexpr.original.txt", content_original)
-        cexpr_optimized = copy.deepcopy(cexpr_original)
-        cexpr_optimized.optimize()
-        content_optimized = display_cexpr(cexpr_optimized)
-        q.qtouch_info(path + "/cexpr.optimized.txt", content_optimized)
-        code_py = cexpr_code_gen_py(cexpr_optimized,
-                                    is_cython = is_cython,
-                                    is_distillation = is_distillation)
-        if is_cython:
-            fn_py = path + "/code.pyx"
-        else:
-            fn_py = path + "/code.py"
-        q.qtouch_info(fn_py, code_py)
+        def compile_cexpr():
+            cexpr_original = calc_cexpr()
+            content_original = display_cexpr(cexpr_original)
+            q.qtouch_info(path + "/cexpr_original.txt", content_original)
+            return cexpr_original
+        cexpr_original = q.pickle_cache_call(
+                compile_cexpr, path + "/cexpr_original.pickle", is_sync_node=False)
+        def optimize():
+            cexpr_optimized = copy.deepcopy(cexpr_original)
+            cexpr_optimized.optimize()
+            content_optimized = display_cexpr(cexpr_optimized)
+            q.qtouch_info(path + "/cexpr_optimized.txt", content_optimized)
+            return cexpr_optimized
+        cexpr_optimized = q.pickle_cache_call(
+                optimize, path + "/cexpr_optimized.pickle", is_sync_node=False)
+        def gen_code():
+            code_py = cexpr_code_gen_py(
+                    cexpr_optimized,
+                    is_cython = is_cython,
+                    is_distillation = is_distillation)
+            if is_cython:
+                fn_py = path + "/cexpr_code.pyx"
+            else:
+                fn_py = path + "/cexpr_code.py"
+            q.qtouch_info(fn_py, code_py)
+            return code_py
+        code_py = q.pickle_cache_call(
+                gen_code, path + f"/cexpr_code.pickle", is_sync_node=False)
         if is_cython:
             q.qtouch_info(path + "/meson.build", meson_build_content)
             compile_cexpr_meson_setup()
             compile_cexpr_meson_compile()
-        data = dict()
-        data["cexpr_optimized"] = cexpr_optimized
-        data["cexpr_original"] = cexpr_original
-        data["code_py"] = code_py
-        q.save_pickle_obj(data, fn_pickle)
+        cexpr_all = dict()
+        cexpr_all["cexpr_optimized"] = cexpr_optimized
+        cexpr_all["cexpr_original"] = cexpr_original
+        cexpr_all["code_py"] = code_py
+        q.save_pickle_obj(cexpr_all, fn_pickle)
         q.timer_display()
         q.timer_merge()
         return cexpr_optimized
@@ -179,25 +221,25 @@ def cache_compiled_cexpr(calc_cexpr, path, *, is_cython = True, is_distillation 
         calc_compile_cexpr()
     q.sync_node()
     while not q.does_file_exist(fn_pickle):
-        q.displayln(3, f"cache_compiled_cexpr: Node {q.get_id_node()}: waiting for '{fn_pickle}'.")
+        q.displayln(3, f"{fname}: Node {q.get_id_node()}: waiting for '{fn_pickle}'.")
         time.sleep(0.5)
-    cexpr = q.load_pickle_obj(fn_pickle)["cexpr_optimized"]
-    q.displayln_info(1, f"cache_compiled_cexpr: Loading '{path}'.")
+    cexpr_all = q.load_pickle_obj(fn_pickle)["cexpr_optimized"]
+    q.displayln_info(1, f"{fname}: Loading '{path}'.")
     if is_cython:
-        module = importlib.import_module((path + "/build/code").replace("/", "."))
+        module = importlib.import_module((path + "/build/cexpr_code").replace("/", "."))
     else:
-        module = importlib.import_module((path + "/code").replace("/", "."))
-    q.displayln_info(1, f"cache_compiled_cexpr: Loaded '{path}'.")
-    cexpr.function = {
-            # cexpr_function(positions_dict, get_prop, is_ama_and_sloppy = False) => val as 1-D np.array
+        module = importlib.import_module((path + "/cexpr_code").replace("/", "."))
+    q.displayln_info(1, f"{fname}: Loaded '{path}'.")
+    cexpr_all.function = {
+            # cexpr_function(positions_dict, get_prop, is_ama_and_sloppy=False) => val as 1-D np.array
             "cexpr_function" : module.cexpr_function,
-            # cexpr_function_get_prop(positions_dict, get_prop) => props
+            # cexpr_function_get_prop(positions_dict, get_prop) => (props, cms, factors,)
             "cexpr_function_get_prop" : module.cexpr_function_get_prop,
-            # cexpr_function_eval(positions_dict, props) => ama_val as AmaVal of 1-D np.array
+            # cexpr_function_eval(positions_dict, props, cms, factors) => ama_val as AmaVal of 1-D np.array
             "cexpr_function_eval" : module.cexpr_function_eval,
             }
-    cexpr.total_sloppy_flops = module.total_sloppy_flops
-    return cexpr
+    cexpr_all.total_sloppy_flops = module.total_sloppy_flops
+    return cexpr_all
 
 def make_rand_spin_color_matrix(rng_state):
     rs = rng_state
