@@ -578,7 +578,15 @@ def get_cexpr_meson_corr_wf():
                 diagram_type_dict=diagram_type_dict,
                 )
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
+    base_positions_dict = {
+            "wave_function": wave_function,
+            "momentum_factor": momentum_factor,
+            "r_pi": 1.5,
+            "r_sigma": 1.5,
+            "r_kk": 2.0,
+            "Coordinate": q.Coordinate,
+            }
+    return cache_compiled_cexpr(calc_cexpr, fn_base, base_positions_dict=base_positions_dict, is_cython=is_cython)
 
 @q.timer_verbose
 def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
@@ -624,12 +632,6 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
                 "x2_1": ("point", x2_1,),
                 "x2_2": ("point", x2_2,),
                 "size": total_site,
-                "wave_function": wave_function,
-                "momentum_factor": momentum_factor,
-                "r_pi": 1.5,
-                "r_sigma": 1.5,
-                "r_kk": 2.0,
-                "Coordinate": q.Coordinate,
                 }
         val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
         return val
@@ -775,7 +777,16 @@ def get_cexpr_meson_meson_i0_j0_corr_wf():
                 diagram_type_dict=diagram_type_dict,
                 )
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
+    base_positions_dict = {
+            "wave_function": wave_function,
+            "momentum_factor": momentum_factor,
+            "time_selector_8": time_selector_8,
+            "r_pi": 1.5,
+            "r_sigma": 1.5,
+            "r_kk": 2.0,
+            "Coordinate": q.Coordinate,
+            }
+    return cache_compiled_cexpr(calc_cexpr, fn_base, base_positions_dict=base_positions_dict, is_cython=is_cython)
 
 @q.timer_verbose
 def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
@@ -849,13 +860,6 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
                 "x2_2_4":  ("point", x2_2_4,),
                 "x2_2_4p": ("point", x2_2_4p,),
                 "size": total_site,
-                "wave_function": wave_function,
-                "momentum_factor": momentum_factor,
-                "time_selector_8": time_selector_8,
-                "r_pi": 1.5,
-                "r_sigma": 1.5,
-                "r_kk": 2.0,
-                "Coordinate": q.Coordinate,
                 }
         val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
         return val
@@ -1008,6 +1012,8 @@ def run_job(job_tag, traj):
 
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
+    benchmark_eval_cexpr(get_cexpr_meson_corr_wf())
+    benchmark_eval_cexpr(get_cexpr_meson_meson_i0_j0_corr_wf())
 
 set_param("test-4nt16", "trajs", value=list(range(1000, 1010)))
 set_param("test-4nt16", "mk_sample_gauge_field", "rand_n_step", value=2)

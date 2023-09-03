@@ -208,13 +208,13 @@ def benchmark_eval_cexpr(
         positions_vars.append(pos)
     n_pos = len(positions_vars)
     positions = [
-            ("point", tuple(benchmark_rng_state.split(f"positions {pos_idx}").c_rand_gen(size).to_list()),)
+            ("point", benchmark_rng_state.split(f"positions {pos_idx}").c_rand_gen(size),)
             for pos_idx in range(n_pos)
             ]
     #
     def mk_pos_dict(k):
         positions_dict = {}
-        positions_dict["size"] = size.to_list()
+        positions_dict["size"] = size
         idx_list = q.random_permute(list(range(n_pos)), benchmark_rng_state.split(f"pos_dict {k}"))
         for pos, idx in zip(positions_vars, idx_list):
             positions_dict[pos] = positions[idx]
@@ -232,23 +232,33 @@ def benchmark_eval_cexpr(
         uu = make_rand_color_matrix(benchmark_rng_state.split(f"prop U {tag} {p} {mu}"))
         return uu
     #
+    def convert_pos(p):
+        p_tag, p_val = p
+        return p_tag, tuple(p_val.to_list())
+    #
     @q.timer
     def get_prop(ptype, *args):
         if ptype == "U":
             tag, p, mu = args
+            p = convert_pos(p)
             return mk_prop_uu(tag, p, mu)
         else:
             flavor = ptype
             pos_snk, pos_src = args
+            pos_snk = convert_pos(pos_snk)
+            pos_src = convert_pos(pos_src)
             return ama_extract(mk_prop(flavor, pos_snk, pos_src), is_sloppy=True)
     @q.timer
     def get_prop_ama(ptype, *args):
         if ptype == "U":
             tag, p, mu = args
+            p = convert_pos(p)
             return mk_prop_uu(tag, p, mu)
         else:
             flavor = ptype
             pos_snk, pos_src = args
+            pos_snk = convert_pos(pos_snk)
+            pos_src = convert_pos(pos_src)
             return mk_prop(flavor, pos_snk, pos_src)
     #
     @q.timer_verbose
