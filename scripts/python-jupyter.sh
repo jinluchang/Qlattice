@@ -17,6 +17,8 @@ source qcore/set-prefix.sh $name
     time-run pip3 install $opts pandas
     time-run pip3 install $opts xarray
     time-run pip3 install $opts matplotlib
+    time-run pip3 install $opts vpython
+    time-run pip3 install $opts jupyterlab-vpython
     time-run pip3 install $opts plotly
     time-run pip3 install $opts seaborn
     time-run pip3 install $opts notebook
