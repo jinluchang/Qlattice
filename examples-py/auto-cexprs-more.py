@@ -55,9 +55,9 @@ def get_cexpr_meson_bk_bpi_corr():
                 mk_meson("u", "u'", "t_2") * mk_bkpi2_vv_aa("x") * mk_meson("s", "d", "t_1")
                 + "(i ubar g5 u') * (u'bar gmu (1-g5) u)(dbar  gmu (1-g5) s) * (i sbar g5 d)",
                 ]
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True)
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython = is_cython)
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
 @q.timer
 def get_cexpr_meson_jt_zv():
@@ -94,9 +94,9 @@ def get_cexpr_meson_jt_zv():
                     - mk_k_p("t_1p", True) * mk_vec_mu("s", "s", "x_1", 3) * mk_k_p("t_2p")
                     ),
                 ]
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython = is_cython)
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
 @q.timer
 def get_cexpr_meson_jj_mm():
@@ -120,9 +120,9 @@ def get_cexpr_meson_jj_mm():
                 jj_op
                 + f"j_mu j_mu",
                 ]
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True)
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython = is_cython)
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
 @q.timer
 def get_cexpr_meson_jj_xx():
@@ -148,9 +148,9 @@ def get_cexpr_meson_jj_xx():
                 jj_op
                 + f"x[a] x[b] j_a j_b",
                 ]
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True)
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython = is_cython)
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
 @q.timer
 def get_cexpr_meson_jj_mm_types():
@@ -183,7 +183,7 @@ def get_cexpr_meson_jj_mm_types():
                 jj_op
                 + f"j_mu j_mu",
                 ]
-        exprs = contract_simplify(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
+        exprs = contract_simplify(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
         typed_exprs = []
         for expr in exprs:
             typed_exprs.append(expr)
@@ -192,9 +192,9 @@ def get_cexpr_meson_jj_mm_types():
             typed_exprs.append((expr, 'Type2'))
             typed_exprs.append((expr, 'Type3'))
             typed_exprs.append((expr, 'Type4'))
-        cexpr = contract_simplify_compile(*typed_exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
+        cexpr = contract_simplify_compile(*typed_exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython = is_cython)
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
 def get_all_cexpr():
     cexprs = [
