@@ -12,6 +12,7 @@ source qcore/set-prefix.sh $name
 
     export MPI_OPTIONS="--oversubscribe $MPI_OPTIONS"
 
+    q_verbose=1 time-run make -C "$prefix"/examples-py update-sources || true
     q_verbose=1 time-run make -C "$prefix"/examples-py run-gpt -j "$num_test" || true
 
     cd "$wd"
