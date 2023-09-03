@@ -116,6 +116,9 @@ def add_positions(s, x):
                 s.add(x.p1)
             if isinstance(x.p2, str):
                 s.add(x.p2)
+        elif x.otype == "G":
+            if isinstance(x.tag, str):
+                s.add(x.tag)
         elif x.otype == "U":
             if isinstance(x.p, str):
                 s.add(x.p)
@@ -1263,9 +1266,12 @@ class CExprCodeGenPy:
             return f"get_prop('U', '{x.tag}', {x.p}, {x.mu})", "V_U"
         elif x.otype == "G":
             assert x.s1 == "auto" and x.s2 == "auto"
-            assert x.tag in [0, 1, 2, 3, 5]
+            assert x.tag in [ 0, 1, 2, 3, 5, ] or isinstance(x.tag, str)
             if self.is_cython:
-                return f"cp.gamma_matrix_{x.tag}", "V_G"
+                if x.tag in [ 0, 1, 2, 3, 5, ]:
+                    return f"cp.gamma_matrix_{x.tag}", "V_G"
+                else:
+                    return f"cc.get_gamma_matrix({x.tag})", "V_G"
             else:
                 return f"get_gamma_matrix({x.tag})", "V_G"
         elif x.otype == "Tr":
