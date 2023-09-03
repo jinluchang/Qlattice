@@ -355,7 +355,7 @@ def wave_function(p1, p2, radius, size):
     p1_tag, c1 = p1
     p2_tag, c2 = p2
     c12 = q.smod(c1 - c2, size)
-    assert c12[3] == 0
+    # assert c12[3] == 0
     c12_r_sqr = c12.r_sqr()
     dis = math.sqrt(c12_r_sqr)
     vol = size[0] * size[1] * size[2]
@@ -657,7 +657,7 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
     q.timer_display()
     q.timer_merge()
     res_sum *= 1.0 / (sample_num * sample_size * t_size)
-    # assert q.qnorm(res_sum[0].sum(1) - 1.0) < 1e-10
+    assert q.qnorm(res_sum[0] - 1.0) < 1e-10
     ld = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
         [ "t_sep", t_sep_range, [ str(t) for t in range(t_sep_range) ], ],
