@@ -41,6 +41,7 @@ def get_cexpr_kpipi():
                 vol * mk_Qsub("x", "even") + "Qs(e)",
                 ]
         exprs_ops = exprs_odd_ops + exprs_even_ops
+        # Not including diagrams with disconnected loops only connecting E&M currents
         exprs_j_jj = [
                 mk_fac(1) + f"1",
                 #
