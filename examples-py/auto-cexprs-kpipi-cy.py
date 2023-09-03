@@ -9,6 +9,78 @@ import sys
 
 is_cython = True
 
+def momentum_factor(mom, p, size, is_dagger=False):
+    p_tag, c = p
+    assert mom[3] == 0
+    phase = mom[0] * c[0] / size[0] + mom[1] * c[1] / size[1] + mom[2] * c[2] / size[2]
+    phase = phase * 2.0 * math.pi
+    if not is_dagger:
+        mf = cmath.rect(1.0, phase)
+    else:
+        mf = cmath.rect(1.0, -phase)
+    return mf
+
+all_mom_list_dict = {
+        0: [
+            q.Coordinate([ 0, 0, 0, 0, ]),
+            ],
+        1: [
+            q.Coordinate([ 0, 0, 1, 0, ]),
+            q.Coordinate([ 0, 1, 0, 0, ]),
+            q.Coordinate([ 1, 0, 0, 0, ]),
+            q.Coordinate([ 0, 0, -1, 0, ]),
+            q.Coordinate([ 0, -1, 0, 0, ]),
+            q.Coordinate([ -1, 0, 0, 0, ]),
+            ],
+        2: [
+            q.Coordinate([ 0, 1, 1, 0, ]),
+            q.Coordinate([ 1, 0, 1, 0, ]),
+            q.Coordinate([ 1, 1, 0, 0, ]),
+            q.Coordinate([ 0, -1, 1, 0, ]),
+            q.Coordinate([ -1, 0, 1, 0, ]),
+            q.Coordinate([ -1, 1, 0, 0, ]),
+            q.Coordinate([ 0, 1, -1, 0, ]),
+            q.Coordinate([ 1, 0, -1, 0, ]),
+            q.Coordinate([ 1, -1, 0, 0, ]),
+            q.Coordinate([ 0, -1, -1, 0, ]),
+            q.Coordinate([ -1, 0, -1, 0, ]),
+            q.Coordinate([ -1, -1, 0, 0, ]),
+            ],
+        3: [
+            q.Coordinate([ 1, 1, 1, 0, ]),
+            q.Coordinate([ -1, 1, 1, 0, ]),
+            q.Coordinate([ 1, -1, 1, 0, ]),
+            q.Coordinate([ -1, -1, 1, 0, ]),
+            q.Coordinate([ 1, 1, -1, 0, ]),
+            q.Coordinate([ -1, 1, -1, 0, ]),
+            q.Coordinate([ 1, -1, -1, 0, ]),
+            q.Coordinate([ -1, -1, -1, 0, ]),
+            ],
+        4: [
+            q.Coordinate([ 0, 0, 2, 0, ]),
+            q.Coordinate([ 0, 2, 0, 0, ]),
+            q.Coordinate([ 2, 0, 0, 0, ]),
+            q.Coordinate([ 0, 0, -2, 0, ]),
+            q.Coordinate([ 0, -2, 0, 0, ]),
+            q.Coordinate([ -2, 0, 0, 0, ]),
+            ],
+        }
+
+def mk_mom_fac_jj0(mom, p1, p2):
+    """
+    mom in [ 0, 1, 2, 3, 4, ]
+    """
+    mom_list = all_mom_list_dict[mom]
+    fac = 0
+    for mom in mom_list:
+        mom1 = mom
+        mom2 = -mom
+        fac1 = mk_fac(f"momentum_factor({mom1},{p1},size)")
+        fac2 = mk_fac(f"momentum_factor({mom2},{p2},size)")
+        fac = fac + fac1 * fac2
+    fac = 1 / sympy.sqrt(len(mom_list)) * fac
+    return fac + f"mom_fac_jj0(mom={mom})"
+
 @q.timer
 def get_cexpr_kpipi():
     fn_base = f"cache/auto_contract_cexpr/get_cexpr_kpipi"
@@ -45,8 +117,10 @@ def get_cexpr_kpipi():
                 vol * mk_k_0("x2") + "K0",
                 ]
         exprs_pipi = [
-                vol**2 * mk_pipi_i0("x1_1", "x1_2", True) + "pipi_I0",
-                vol**2 * mk_pipi_i20("x1_1", "x1_2", True) + "pipi_I2",
+                vol**2 * mk_mom_fac_jj0(0, "x1_1", "x1_2") * mk_pipi_i0("x1_1", "x1_2", True) + "pipi_I0",
+                vol**2 * mk_mom_fac_jj0(0, "x1_1", "x1_2") * mk_pipi_i20("x1_1", "x1_2", True) + "pipi_I2",
+                vol**2 * mk_mom_fac_jj0(1, "x1_1", "x1_2") * mk_pipi_i0("x1_1", "x1_2", True) + "pipi_I0_mom1",
+                vol**2 * mk_mom_fac_jj0(1, "x1_1", "x1_2") * mk_pipi_i20("x1_1", "x1_2", True) + "pipi_I2_mom1",
                 vol * mk_sigma("x1_1", True) + "sigma_1",
                 vol * mk_sigma("x1_2", True) + "sigma_2",
                 vol * mk_pi_0("x1_1", True) + "pi0_1",
@@ -77,9 +151,12 @@ def get_cexpr_kpipi():
         diagram_type_dict[((('x', 'x2'), 1), (('x1_2', 'x1_2'), 1), (('x2', 'x'), 1))] = "Type4"
         diagram_type_dict[((('x', 'x'), 1), (('x', 'x2'), 1), (('x2', 'x'), 1))] = "Type4"
         diagram_type_dict[((('x', 'x2'), 1), (('x2', 'x'), 1))] = "Type4"
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython = is_cython)
+    base_positions_dict = {}
+    base_positions_dict["momentum_factor"] = momentum_factor
+    base_positions_dict["Coordinate"] = q.Coordinate
+    return cache_compiled_cexpr(calc_cexpr, fn_base, base_positions_dict=base_positions_dict, is_cython=is_cython)
 
 def get_all_cexpr():
     cexprs = [
