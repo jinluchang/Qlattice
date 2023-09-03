@@ -734,7 +734,6 @@ class CExpr:
     self.variables_tr
     self.named_terms
     self.named_exprs
-    self.function
     #
     self.named_terms[i] = (term_name, Term(c_ops, [], 1),)
     self.named_exprs[i] = (expr_name, [ (ea_coef, term_name,), ... ],)
@@ -752,7 +751,6 @@ class CExpr:
         self.variables_tr = []
         self.named_terms = []
         self.named_exprs = []
-        self.function = None
 
     @q.timer
     def optimize(self):

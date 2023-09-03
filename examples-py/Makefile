@@ -6,6 +6,7 @@ tests = \
 		auto-cexprs.log \
 		auto-cexprs-more.log \
 		auto-cexprs-kpipi.log \
+		auto-cexprs-kpipi-qed.log \
 		auto-cexprs-uu.log \
 		auto-cexprs-cy.log \
 		auto-cexprs-more-cy.log \
@@ -62,14 +63,15 @@ update-sources:
 	-for i in $(tests) $(tests_gpt) $(tests_cps) ; do touch "$${i%.log}.py" ; done
 	-touch qlat-ext/meson.build
 
-%.log: %.py update-sources
+%.log: %.py
 	-rm -rfv "$<".p
 	-mkdir -p "$<".p
 	-time ( cd "$<".p ; cp ../"$<" . ; q_verbose=1 timeout -s KILL 30m mpiexec -n 2 $(MPI_OPTIONS) python3 -m mpi4py ./"$<" -qmp-geom 1 1 1 2 --mpi 1.1.1.2 --mpi_split 1.1.1.1 --mpi 1.1.2 --mpi_split 1.1.1 >log.full.txt 2>&1 ; grep "CHECK: " log.full.txt >log.txt )
 	-if diff "$<".p/log.txt "$@" ; then echo passed ; else cat "$<".p/log.full.txt ; false ; fi
 	-mv -v "$<".p/log.txt "$@"
 
-qlat-ext.log: qlat-ext/meson.build update-sources
+qlat-ext.log: qlat-ext/meson.build
+	-touch qlat-ext/meson.build
 	-rm -rfv qlat-ext.p
 	-mkdir -p qlat-ext.p
 	-time meson setup qlat-ext.p/qlat-ext-build qlat-ext --prefix="$$PWD"/qlat-ext.p/qlat-ext-install -Dpython.platlibdir="$$PWD"/qlat-ext.p/qlat-ext-install/lib/python3/dist-packages -Dpython.purelibdir="$$PWD"/qlat-ext.p/qlat-ext-install/lib/python3/dist-packages
