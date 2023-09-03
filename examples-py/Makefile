@@ -11,6 +11,7 @@ tests = \
 		auto-cexprs-cy.log \
 		auto-cexprs-more-cy.log \
 		auto-cexprs-kpipi-cy.log \
+		auto-cexprs-kpipi-qed-cy.log \
 		auto-cexprs-uu-cy.log \
 		mat-op-distillation.log \
 		mat-op-qcd.log \
