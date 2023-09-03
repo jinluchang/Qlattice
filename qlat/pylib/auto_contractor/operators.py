@@ -428,6 +428,18 @@ def mk_j_mu(p : str, mu, is_dagger = False):
             - sympy.simplify(1)*1/3 * mk_vec_mu("s", "s", p, mu, is_dagger) \
             + f"j_mu({p},{mu}){show_dagger(is_dagger)}"
 
+def mk_j_prime_mu(p : str, mu, is_dagger = False):
+    return sympy.simplify(1)*2/3 * mk_vec_mu("u'", "u'", p, mu, is_dagger) \
+            - sympy.simplify(1)*1/3 * mk_vec_mu("d'", "d'", p, mu, is_dagger) \
+            - sympy.simplify(1)*1/3 * mk_vec_mu("s'", "s'", p, mu, is_dagger) \
+            + f"j'_mu({p},{mu}){show_dagger(is_dagger)}"
+
+def mk_j_prime2_mu(p : str, mu, is_dagger = False):
+    return sympy.simplify(1)*2/3 * mk_vec_mu("u''", "u''", p, mu, is_dagger) \
+            - sympy.simplify(1)*1/3 * mk_vec_mu("d''", "d''", p, mu, is_dagger) \
+            - sympy.simplify(1)*1/3 * mk_vec_mu("s''", "s''", p, mu, is_dagger) \
+            + f"j''_mu({p},{mu}){show_dagger(is_dagger)}"
+
 def mk_jl_mu(p : str, mu, is_dagger = False):
     """
     jl = sqrt(2)/6 * (j0 + 3 * j10) if no s quark

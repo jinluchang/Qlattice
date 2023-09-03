@@ -1575,7 +1575,7 @@ class CExprCodeGenPy:
         append(f"# join the AMA props")
         append(f"ama_props = ama_list(*props)")
         append(f"# apply eval to the factors and AMA props")
-        append(f"ama_val = ama_apply1(lambda x_props: cexpr_function_eval_with_props(x_props, cms, factors), ama_props)")
+        append(f"ama_val = ama_apply1(lambda x_props: cexpr_function_eval_with_props(positions_dict, x_props, cms, factors), ama_props)")
         append(f"# set flops")
         append(f"total_flops = ama_counts(ama_val) * total_sloppy_flops")
         append(f"# return")
@@ -1590,9 +1590,15 @@ class CExprCodeGenPy:
         append(f"@timer_flops")
         append_cy(f"@cython.boundscheck(False)")
         append_cy(f"@cython.wraparound(False)")
-        append_cy(f"def cexpr_function_eval_with_props(list props, list cms, cc.Complex[:] factors_view):")
-        append_py(f"def cexpr_function_eval_with_props(props, cms, factors_view):")
+        append_cy(f"def cexpr_function_eval_with_props(dict positions_dict, list props, list cms, cc.Complex[:] factors_view):")
+        append_py(f"def cexpr_function_eval_with_props(positions_dict, props, cms, factors_view):")
         self.indent += 4
+        append(f"# set positions")
+        for position_var in cexpr.positions:
+            if position_var in aff.auto_fac_funcs_list:
+                append(f"{position_var} = aff.{position_var}")
+            else:
+                append(f"{position_var} = positions_dict['{position_var}']")
         append(f"# set props")
         for idx, (name, value,) in enumerate(cexpr.variables_prop):
             append_cy(f"cdef cc.WilsonMatrix* p_{name} = &(<cp.WilsonMatrix>props[{idx}]).xx")
