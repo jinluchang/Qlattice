@@ -63,6 +63,9 @@ class Factor:
     def __repr__(self) -> str:
         return f"ea.Factor({self.code},{self.variables},{self.otype})"
 
+    def __str__(self) -> str:
+        return self.compile_py()
+
     def compile_py(self, var_dict=None) -> str:
         if (var_dict is None) or (self.otype != "Var") or (self.code not in var_dict):
             return f"{self.code}"
@@ -85,6 +88,9 @@ class Term:
 
     def __repr__(self) -> str:
         return f"ea.Term({self.factors},{self.coef})"
+
+    def __str__(self) -> str:
+        return self.compile_py()
 
     def sort(self) -> None:
         self.factors.sort(key = repr)
@@ -114,6 +120,9 @@ class Expr:
 
     def __repr__(self) -> str:
         return f"ea.Expr({self.terms})"
+
+    def __str__(self) -> str:
+        return self.compile_py()
 
     def __add__(self, other):
         return Expr(self.terms + mk_expr(other).terms)

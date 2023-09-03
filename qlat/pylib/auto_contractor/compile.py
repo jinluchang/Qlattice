@@ -315,7 +315,7 @@ def collect_factor_in_cexpr(named_exprs):
                             x[i] = var_dataset[f.code]
                         else:
                             while True:
-                                name = f"V_factor_{var_counter:08}"
+                                name = f"V_factor_{var_counter}"
                                 var_counter += 1
                                 if name not in var_nameset:
                                     break
@@ -340,7 +340,7 @@ def collect_factor_in_cexpr(named_exprs):
                     t.factors.append(var_dataset[code])
                 else:
                     while True:
-                        name = f"V_factor_coef_{var_counter:08}"
+                        name = f"V_factor_coef_{var_counter}"
                         var_counter += 1
                         if name not in var_nameset:
                             break
@@ -365,7 +365,7 @@ def collect_factor_in_cexpr(named_exprs):
         var2 = ea.Factor(code2, variables=[], otype="Var")
         prod_expr = ea.mk_expr(var1) * ea.mk_expr(var2)
         while True:
-            name = f"V_factor_prod_{var_counter:08}"
+            name = f"V_factor_prod_{var_counter}"
             var_counter += 1
             if name not in var_nameset:
                 break
@@ -386,7 +386,7 @@ def collect_factor_in_cexpr(named_exprs):
         var2 = ea.Factor(code2, variables=[], otype="Var")
         pair_expr = ea.mk_expr(var1) + ea.mk_expr(var2)
         while True:
-            name = f"V_factor_sum_{var_counter:08}"
+            name = f"V_factor_sum_{var_counter}"
             var_counter += 1
             if name not in var_nameset:
                 break
@@ -409,7 +409,7 @@ def collect_factor_in_cexpr(named_exprs):
                         x[i] = var_dataset[f.code]
                     else:
                         while True:
-                            name = f"V_factor_final_{var_counter:08}"
+                            name = f"V_factor_final_{var_counter}"
                             var_counter += 1
                             if name not in var_nameset:
                                 break
@@ -937,7 +937,7 @@ def mk_cexpr(*exprs, diagram_type_dict=None):
                 continue
             diagram_type = get_term_diagram_type_info(term)
             if diagram_type not in diagram_type_dict:
-                diagram_type_name = f"ADT{diagram_type_counter:0>2}" # ADT is short for "auto diagram type"
+                diagram_type_name = f"ADT{diagram_type_counter}" # ADT is short for "auto diagram type"
                 diagram_type_counter += 1
                 diagram_type_dict[diagram_type] = diagram_type_name
             diagram_type_name = diagram_type_dict[diagram_type]
@@ -945,7 +945,7 @@ def mk_cexpr(*exprs, diagram_type_dict=None):
             assert diagram_type_name is not None
             term_name_counter = 0
             while True:
-                term_name = f"term_{diagram_type_name}_{term_name_counter:0>4}"
+                term_name = f"term_{diagram_type_name}_{term_name_counter}"
                 term_name_counter += 1
                 if term_name not in term_name_dict:
                     break
@@ -973,7 +973,7 @@ def mk_cexpr(*exprs, diagram_type_dict=None):
             term_name = term_dict[repr_term]
             typed_expr_list_dict[diagram_type_name].append((coef, term_name,))
             expr_list.append((coef, term_name,))
-        named_exprs.append((f"# {descriptions[i]}\nexprs[{i}]", expr_list,))
+        named_exprs.append((f"{descriptions[i]}  exprs[{i}]", expr_list,))
     # positions
     positions = collect_position_in_cexpr(named_terms, named_exprs)
     # cexpr
@@ -1038,7 +1038,7 @@ def show_variable_value(value):
         return "*".join(map(show_variable_value, value))
     elif isinstance(value, Var):
         return f"{value.name}"
-    elif isinstance(value, G) and value.tag in [0, 1, 2, 3, 5]:
+    elif isinstance(value, G) and value.tag in [ 0, 1, 2, 3, 5, ]:
         tag = { 0: "x", 1: "y", 2: "z", 3: "t", 5: "5", }[value.tag]
         return f"gamma_{tag}"
     elif isinstance(value, G):
@@ -1055,58 +1055,10 @@ def show_variable_value(value):
             return "*".join(map(show_variable_value, value.c_ops + value.a_ops))
         else:
             return "*".join(map(show_variable_value, [ f"({value.coef})", ] + value.c_ops + value.a_ops))
-    elif isinstance(value, tuple) and len(value) == 2 and isinstance(value[1], str):
-        return f"({value[0]})*{value[1]}"
-    elif isinstance(value, ea.Factor):
-        return f"({value.code})"
+    elif isinstance(value, tuple) and len(value) == 2:
+        return f"{show_variable_value(value[0])}*{show_variable_value(value[1])}"
     else:
         return f"{value}"
-
-def display_cexpr_raw(cexpr : CExpr):
-    """
-    return a string
-    interface function
-    """
-    lines = []
-    lines.append(f"Begin CExpr")
-    if cexpr.diagram_types:
-        lines.append(f"diagram_type_dict = dict()")
-        for name, diagram_type in cexpr.diagram_types:
-            lines.append(f"diagram_type_dict[{diagram_type}] = {name!r}")
-    if cexpr.positions:
-        lines.append(f"Positions: {cexpr.positions}")
-    if cexpr.variables_prop:
-        lines.append(f"Variables prop:")
-    for name, value in cexpr.variables_prop:
-        lines.append(f"{name:>20} : {value}")
-    if cexpr.variables_color_matrix:
-        lines.append(f"Variables color matrix:")
-    for name, value in cexpr.variables_color_matrix:
-        lines.append(f"{name:>20} : {value}")
-    if cexpr.variables_factor_intermediate:
-        lines.append(f"Variables factor intermediate:")
-    for name, value in cexpr.variables_factor_intermediate:
-        lines.append(f"{name:>20} : {value}")
-    if cexpr.variables_factor:
-        lines.append(f"Variables factor:")
-    for name, value in cexpr.variables_factor:
-        lines.append(f"{name:>20} : {value}")
-    if cexpr.variables_prod:
-        lines.append(f"Variables prod:")
-    for name, value in cexpr.variables_prod:
-        lines.append(f"{name:>20} : {value}")
-    if cexpr.variables_tr:
-        lines.append(f"Variables tr:")
-    for name, value in cexpr.variables_tr:
-        lines.append(f"{name:>20} : {value}")
-    lines.append(f"Named terms:")
-    for name, term in cexpr.named_terms:
-        lines.append(f"{name:>20} : {term}")
-    lines.append(f"Named exprs:")
-    for name, expr in cexpr.named_exprs:
-        lines.append(f"{name} :\n  {expr}")
-    lines.append(f"End CExpr")
-    return "\n".join(lines)
 
 def display_cexpr(cexpr : CExpr):
     """
@@ -1114,55 +1066,61 @@ def display_cexpr(cexpr : CExpr):
     interface function
     """
     lines = []
-    lines.append(f"Begin CExpr")
+    lines.append(f"# Begin CExpr")
     if cexpr.diagram_types:
         lines.append(f"diagram_type_dict = dict()")
         for name, diagram_type in cexpr.diagram_types:
             lines.append(f"diagram_type_dict[{diagram_type}] = {name!r}")
     if cexpr.positions:
         position_vars = ", ".join(cexpr.positions)
-        lines.append(f"Positions:\n{position_vars} = {cexpr.positions}")
+        lines.append(f"# Positions:")
+        lines.append(f"{position_vars} = {cexpr.positions}")
     if cexpr.variables_prop:
-        lines.append(f"Variables prop:")
+        lines.append(f"# Variables prop:")
     for name, value in cexpr.variables_prop:
-        lines.append(f"{name:>20} = {show_variable_value(value)}")
+        lines.append(f"{name:<30} = {show_variable_value(value)}")
     if cexpr.variables_color_matrix:
-        lines.append(f"Variables color matrix:")
+        lines.append(f"# Variables color matrix:")
     for name, value in cexpr.variables_color_matrix:
-        lines.append(f"{name:>20} = {show_variable_value(value)}")
+        lines.append(f"{name:<30} = {show_variable_value(value)}")
     if cexpr.variables_factor_intermediate:
-        lines.append(f"Variables factor intermediate:")
+        lines.append(f"# Variables factor intermediate:")
     for name, value in cexpr.variables_factor_intermediate:
-        lines.append(f"{name:>20} = {show_variable_value(value)}")
+        lines.append(f"{name:<30} = {show_variable_value(value)}")
     if cexpr.variables_factor:
-        lines.append(f"Variables factor:")
+        lines.append(f"# Variables factor:")
     for name, value in cexpr.variables_factor:
-        lines.append(f"{name:>20} = {show_variable_value(value)}")
+        lines.append(f"{name:<30} = {show_variable_value(value)}")
     if cexpr.variables_prod:
-        lines.append(f"Variables expr:")
+        lines.append(f"# Variables prod:")
     for name, value in cexpr.variables_prod:
-        lines.append(f"{name:>20} = {show_variable_value(value)}")
+        lines.append(f"{name:<30} = {show_variable_value(value)}")
     if cexpr.variables_tr:
-        lines.append(f"Variables tr:")
+        lines.append(f"# Variables tr:")
     for name, value in cexpr.variables_tr:
-        lines.append(f"{name:>20} = {show_variable_value(value)}")
-    lines.append(f"terms = [")
-    for name, term in cexpr.named_terms:
-        lines.append(f"  {show_variable_value(term)}, # {name}")
-    lines.append(f"]")
+        lines.append(f"{name:<30} = {show_variable_value(value)}")
+    if cexpr.diagram_types:
+        lines.append(f"# Diagram type coef:")
     for name, diagram_type in cexpr.diagram_types:
         if name is not None:
-            lines.append(f"coef_{name} = 1")
-    for idx, (name, term) in enumerate(cexpr.named_terms):
+            coef_name = f"coef_{name}"
+            lines.append(f"{coef_name:<30} = 1")
+    if cexpr.named_terms:
+        lines.append(f"# Named terms:")
+    for idx, (name, term,) in enumerate(cexpr.named_terms):
         name_type = "_".join([ "coef", ] + name.split("_")[1:-1])
-        lines.append(f"{name} = {name_type} * terms[{idx}]")
-    lines.append(f"exprs = [ None for i in range({len(cexpr.named_exprs)}) ]")
-    for name, expr, in cexpr.named_exprs:
-        s = "+".join(map(show_variable_value, expr))
-        if s == "":
-            s = 0
-        lines.append(f"{name} = {s}")
-    lines.append(f"End CExpr")
+        lines.append(f"{name:<30} = {name_type} * {show_variable_value(term)}")
+    lines.append(f"terms = [ 0 for i in range({len(cexpr.named_terms)}) ]")
+    for idx, (name, term,) in enumerate(cexpr.named_terms):
+        lines.append(f"terms[{idx}] = {name}")
+    if cexpr.named_exprs:
+        lines.append(f"# Named exprs:")
+    lines.append(f"exprs = [ 0 for i in range({len(cexpr.named_exprs)}) ]")
+    for idx, (name, expr,) in enumerate(cexpr.named_exprs):
+        lines.append(f"# {name}")
+        for e in expr:
+            lines.append(f"exprs[{idx}] += {show_variable_value(e)}")
+    lines.append(f"# End CExpr")
     return "\n".join(lines)
 
 @q.timer_verbose

@@ -292,7 +292,7 @@ def get_cexpr_vev():
         cexpr.collect_op()
         return cexpr
     cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/vev-cexpr.pickle")
-    q.displayln_info(display_cexpr_raw(cexpr))
+    q.displayln_info(display_cexpr(cexpr))
     return cexpr
 
 @q.timer
@@ -337,7 +337,7 @@ def auto_contractor_meson_corr(job_tag, traj, get_prop, num_trials):
     cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
     q.displayln_info(display_cexpr(cexpr))
     cexpr.collect_op()
-    q.displayln_info(display_cexpr_raw(cexpr))
+    q.displayln_info(display_cexpr(cexpr))
     rng_state = q.RngState("seed")
     def positions_dict_maker(idx):
         rs = rng_state.split(str(idx))
@@ -396,7 +396,7 @@ def get_cexpr_test_corr(vol):
         cexpr.collect_op()
         return cexpr
     cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/test_corr-cexpr.{vol}.pickle")
-    q.displayln_info(display_cexpr_raw(cexpr))
+    q.displayln_info(display_cexpr(cexpr))
     return cexpr
 
 @q.timer
@@ -463,7 +463,7 @@ def get_cexpr_pipi_corr(vol):
         cexpr.collect_op()
         return cexpr
     cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/pipi_corr-cexpr.{vol}.pickle")
-    q.displayln_info(display_cexpr_raw(cexpr))
+    q.displayln_info(display_cexpr(cexpr))
     return cexpr
 
 @q.timer
@@ -577,7 +577,7 @@ def get_cexpr_kpipi(vol):
         cexpr.collect_op()
         return cexpr
     cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/kpipi-cexpr.{vol}.pickle")
-    q.displayln_info(display_cexpr_raw(cexpr))
+    q.displayln_info(display_cexpr(cexpr))
     return cexpr
 
 @q.timer
@@ -683,7 +683,7 @@ def auto_contractor_kpipi_corr_81oprs(job_tag, traj, get_prop, num_trials):
     cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
     q.displayln_info(display_cexpr(cexpr))
     cexpr.collect_op()
-    q.displayln_info(display_cexpr_raw(cexpr))
+    q.displayln_info(display_cexpr(cexpr))
     rng_state = q.RngState("seed")
     def positions_dict_maker(idx):
         rs = rng_state.split(str(idx))
