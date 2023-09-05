@@ -22,11 +22,9 @@ source qcore/set-prefix.sh $name
     time-run pip3 install $opts plotly
     time-run pip3 install $opts seaborn
     time-run pip3 install $opts notebook
-    time-run pip3 install $opts jupyterlab
-    time-run pip3 install $opts jupyterhub
+    time-run pip3 install $opts dash
     time-run pip3 install $opts virtualenv
     time-run pip3 install $opts squarify
-    time-run pip3 install $opts dash
     time-run pip3 install $opts mathjax
     time-run pip3 install $opts lz4
     time-run pip3 install $opts pycuda
@@ -37,6 +35,8 @@ source qcore/set-prefix.sh $name
     time-run pip3 install $opts ipywidgets
     time-run pip3 install $opts transformers
     time-run pip3 install $opts xformers
+    time-run pip3 install $opts jupyterlab
+    time-run pip3 install $opts jupyterhub
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"
