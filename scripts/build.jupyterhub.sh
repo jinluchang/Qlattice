@@ -9,6 +9,7 @@ set -e
     ./scripts/qcore.sh
 
     ./scripts/openmpi.sh
+
     ./scripts/hdf5.sh
     ./scripts/openblas.sh
     ./scripts/fftw.sh
@@ -23,8 +24,6 @@ set -e
     ./scripts/python-meson-py.sh
     ./scripts/python-packages.sh
     ./scripts/python-jupyter.sh
-
-    ./scripts/qlat-packages.sh
 
     ./scripts/c-lime.sh
     ./scripts/qmp.sh
