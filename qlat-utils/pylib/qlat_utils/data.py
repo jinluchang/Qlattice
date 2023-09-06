@@ -12,8 +12,10 @@ fminv_gev = 0.197326979 # hbar * c / (1e-15 m * 1e9 electron charge * 1 volt)
 
 class use_kwargs:
 
-    # self.default_kwargs
-    # self.keys
+    """
+    self.default_kwargs
+    self.keys
+    """
 
     def __init__(self, default_kwargs, keys = None):
         self.default_kwargs = default_kwargs
@@ -83,7 +85,9 @@ def check_zero(x):
     return False
 
 def qnorm(x):
-    # qnorm(2) == 4
+    """
+    qnorm(2) == 4
+    """
     if isinstance(x, np.ndarray):
         return np.abs(np.vdot(x, x))
     elif isinstance(x, (int, float,)):
@@ -99,11 +103,13 @@ def qnorm(x):
 class Data:
 
     def __init__(self, val):
+        """
         # supported value types:
         # numeric
         # numpy.array
         # q.LatData
         # list
+        """
         if isinstance(val, Data):
             self.val = val.val
             assert not isinstance(self.val, Data)
