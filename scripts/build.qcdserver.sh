@@ -24,6 +24,9 @@ set -e
     ./scripts/tk.sh
     ./scripts/openblas.sh
     ./scripts/hdf5.sh
+
+    ./scripts/openmpi.sh
+
     ./scripts/python.sh
     ./scripts/python-pip.sh
     ./scripts/re2c.sh
@@ -32,8 +35,6 @@ set -e
     ./scripts/python-meson.sh
     ./scripts/python-meson-py.sh
     ./scripts/python-packages.sh
-
-    ./scripts/openmpi.sh
 
     ./scripts/fftw.sh
     ./scripts/cuba.sh
