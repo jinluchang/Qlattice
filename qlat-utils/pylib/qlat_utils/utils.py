@@ -63,8 +63,8 @@ def get_fname():
     """
     Return the function name of the current function ``fname``
     """
-    fname = inspect.stack()[1].function
-    return fname
+    f = inspect.currentframe().f_back
+    return f.f_code.co_name
 
 def sqr(x):
     return x * x
