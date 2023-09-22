@@ -12,7 +12,7 @@ aget "https://tukaani.org/xz/xz-5.4.1.tar.gz"
 
 aget "https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz"
 
-aget "https://zlib.net/zlib-1.2.13.tar.gz"
+aget "https://zlib.net/fossils/zlib-1.3.tar.gz"
 
 aget "https://github.com/facebook/zstd/releases/download/v1.5.2/zstd-1.5.2.tar.gz"
 
