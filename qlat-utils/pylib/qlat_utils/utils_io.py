@@ -100,13 +100,20 @@ def save_pickle_obj(obj, path, *, is_sync_node=True):
 def load_pickle_obj(path, default_value=None, *, is_sync_node=True):
     """
     all the nodes read the same data
+    if is_sync_node:
+        one node read and broadcast to other nodes
+    else:
+        all nodes individually read the data
     """
     if is_sync_node:
         b = does_file_exist_qar_sync_node(path)
     else:
         b = does_file_exist_qar(path)
     if b:
-        obj = pickle.loads(qcat_bytes_sync_node(path))
+        if is_sync_node:
+            obj = pickle.loads(qcat_bytes_sync_node(path))
+        else:
+            obj = pickle.loads(qcat_bytes(path))
         return obj
     else:
         return default_value
