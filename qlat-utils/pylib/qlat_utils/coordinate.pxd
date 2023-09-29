@@ -1,6 +1,6 @@
 from .rng_state cimport *
 
-cdef extern from "qlat-utils/coordinate.h" namespace "qlat":
+cdef extern from "qlat-utils/coordinate-d.h" namespace "qlat":
 
     cdef cppclass Coordinate:
         Coordinate()
@@ -30,3 +30,9 @@ cdef extern from "qlat-utils/coordinate.h" namespace "qlat":
         CoordinateD(const Coordinate& x)
         CoordinateD(double x, double y, double z, double t)
         double& operator[](unsigned long i)
+
+    CoordinateD operator+(const CoordinateD& x, const CoordinateD& y)
+    CoordinateD operator-(const CoordinateD& x, const CoordinateD& y)
+    CoordinateD operator*(const CoordinateD& x, const CoordinateD& y)
+    CoordinateD operator*(const CoordinateD& x, const double y)
+    CoordinateD operator*(const double x, const CoordinateD& y)

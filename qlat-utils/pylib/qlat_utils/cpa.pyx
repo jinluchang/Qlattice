@@ -23,3 +23,5 @@ include "qar.inc.pyx"
 include "utils_io.inc.pyx"
 
 include "coordinate.inc.pyx"
+
+include "coordinate_d.inc.pyx"

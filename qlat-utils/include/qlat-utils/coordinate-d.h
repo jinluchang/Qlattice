@@ -1,5 +1,7 @@
 #pragma once
 
+#include <qlat-utils/coordinate.h>
+
 #include <cmath>
 
 namespace qlat
