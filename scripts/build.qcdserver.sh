@@ -7,6 +7,8 @@ set -e
     ./scripts/qcore.sh
 
     ./scripts/xz.sh
+    ./scripts/zlib.sh
+    ./scripts/bzip2.sh
     ./scripts/tar.sh
     ./scripts/gsl.sh
     ./scripts/gmp.sh
@@ -17,16 +19,24 @@ set -e
     ./scripts/binutils.sh
     ./scripts/perl.sh
     ./scripts/openssl.sh
+    ./scripts/cmake.sh
     ./scripts/libffi.sh
-    ./scripts/zlib.sh
-    ./scripts/bzip2.sh
     ./scripts/tcl.sh
     ./scripts/tk.sh
-    ./scripts/openblas.sh
-    ./scripts/hdf5.sh
+    ./scripts/gnuplot.sh
+    ./scripts/ncurses.sh
+    ./scripts/libevent.sh
+    ./scripts/tmux.sh
 
     ./scripts/openmpi.sh
 
+    ./scripts/hdf5.sh
+    ./scripts/openblas.sh
+    ./scripts/fftw.sh
+    ./scripts/cuba.sh
+    ./scripts/eigen.sh
+
+    rm -rfv ~/.cache/pip
     ./scripts/python.sh
     ./scripts/python-pip.sh
     ./scripts/re2c.sh
@@ -35,13 +45,7 @@ set -e
     ./scripts/python-meson.sh
     ./scripts/python-meson-py.sh
     ./scripts/python-packages.sh
-
-    ./scripts/fftw.sh
-    ./scripts/cuba.sh
-    ./scripts/eigen.sh
-
-    ./scripts/qlat-utils.sh
-    ./scripts/qlat.sh
+    ./scripts/python-jupyter.sh
 
     ./scripts/autoconf.sh
     ./scripts/automake.sh
@@ -50,11 +54,10 @@ set -e
     ./scripts/qio.sh
     ./scripts/cps.sh
     ./scripts/grid-clehner.avx2.sh
+    ./scripts/hadrons.sh
     ./scripts/gpt.sh
 
-    ./scripts/qlat-grid.sh
-
-    ./scripts/qlat-cps.sh
+    ./scripts/qlat-packages.sh
 
     ./scripts/qlat-examples-py.sh
     ./scripts/qlat-examples-cpp.sh
@@ -62,10 +65,6 @@ set -e
     ./scripts/qlat-examples-py-cps.sh
     ./scripts/qlat-examples-cpp-grid.sh
 
-    ./scripts/gnuplot.sh
-    ./scripts/python-jupyter.sh
-
-    ./scripts/cmake.sh
     ./scripts/llvm-project.sh
 
     date
