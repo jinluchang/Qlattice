@@ -32,11 +32,12 @@ aget "https://downloads.sourceforge.net/libtirpc/libtirpc-1.3.3.tar.bz2"
 
 aget "https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.bz2"
 
-aget "http://www.fftw.org/fftw-3.3.10.tar.gz"
+aget "https://fftw.org/pub/fftw/fftw-3.3.10.tar.gz"
 
 aget "https://feynarts.de/cuba/Cuba-4.2.2.tar.gz"
 
-aget "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.7/src/hdf5-1.10.7.tar.bz2"
+# aget "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.7/src/hdf5-1.10.7.tar.bz2"
+aget "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.2/src/hdf5-1.14.2.tar.bz2"
 
 if [ -d Grid ] ; then
     ( cd Grid ; git pull )
