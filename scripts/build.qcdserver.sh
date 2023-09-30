@@ -54,7 +54,6 @@ set -e
     ./scripts/qio.sh
     ./scripts/cps.sh
     ./scripts/grid-clehner.avx2.sh
-    ./scripts/hadrons.sh
     ./scripts/gpt.sh
 
     ./scripts/qlat-packages.sh
@@ -65,6 +64,7 @@ set -e
     ./scripts/qlat-examples-py-cps.sh
     ./scripts/qlat-examples-cpp-grid.sh
 
+    ./scripts/hadrons.sh
     ./scripts/llvm-project.sh
 
     date

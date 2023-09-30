@@ -40,5 +40,7 @@ set -e
     ./scripts/qlat-examples-py-cps.sh
     ./scripts/qlat-examples-cpp-grid.sh
 
+    ./scripts/hadrons.sh
+
     date
 } 2>&1 | tee $prefix/log.build.txt
