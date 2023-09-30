@@ -15,7 +15,6 @@ source qcore/set-prefix.sh $name
 
     time-run pip3 install $opts flit_core
     time-run pip3 install $opts wheel
-    time-run pip3 uninstall setuptools -y
     time-run pip3 install $opts setuptools
     time-run pip3 install $opts pip
 
