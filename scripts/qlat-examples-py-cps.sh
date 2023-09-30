@@ -10,7 +10,7 @@ source qcore/set-prefix.sh $name
 
     time-run rsync -a --delete "$wd"/examples-py "$prefix"/
 
-    export MPI_OPTIONS="--oversubscribe $MPI_OPTIONS"
+    export mpi_options="--oversubscribe $mpi_options"
 
     q_verbose=1 time-run make -C "$prefix"/examples-py update-sources || true
     q_verbose=1 time-run make -C "$prefix"/examples-py run-cps -j "$num_test" || true
