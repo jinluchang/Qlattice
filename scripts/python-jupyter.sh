@@ -11,7 +11,7 @@ source qcore/set-prefix.sh $name
     find ~/.cache/pip/wheels -type f || true
     # rm -rfv ~/.cache/pip/wheels || true
 
-    opts="--verbose"
+    opts="--verbose --upgrade"
 
     time-run pip3 install $opts h5py
     time-run pip3 install $opts pandas
@@ -35,9 +35,9 @@ source qcore/set-prefix.sh $name
     time-run pip3 install $opts transformers
     time-run pip3 install $opts xformers
     time-run pip3 install $opts jupyterlab
-    time-run pip3 install $opts jupyterlab-vpython
     time-run pip3 install $opts jupyterlab-dash
     time-run pip3 install $opts jupyterhub
+    # time-run pip3 install $opts jupyterlab-vpython
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"
