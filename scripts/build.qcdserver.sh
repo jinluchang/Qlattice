@@ -16,6 +16,7 @@ set -e
     ./scripts/mpc.sh
     ./scripts/isl.sh
     ./scripts/gcc.sh
+    ./scripts/bison.sh
     ./scripts/binutils.sh
     ./scripts/perl.sh
     ./scripts/openssl.sh

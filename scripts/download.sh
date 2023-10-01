@@ -18,6 +18,8 @@ aget "https://github.com/facebook/zstd/releases/download/v1.5.5/zstd-1.5.5.tar.g
 
 aget "https://ftp.gnu.org/gnu/tar/tar-1.35.tar.gz"
 
+aget "https://ftp.gnu.org/gnu/bison/bison-3.8.2.tar.xz"
+
 aget "https://ftp.gnu.org/gnu/binutils/binutils-2.41.tar.xz"
 
 aget "https://ftp.gnu.org/gnu/autoconf/autoconf-2.71.tar.gz"
