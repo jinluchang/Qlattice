@@ -14,7 +14,7 @@ if [ -z "\$num_proc" ] ; then
     export num_proc=8
 fi
 module purge
-module load PrgEnv-amd
+module load PrgEnv-gnu
 module list
 if [ -z "\$USE_COMPILER" ] ; then
     export USE_COMPILER=gcc

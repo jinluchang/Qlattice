@@ -3,7 +3,7 @@
 set -e
 
 {
-    ./scripts/setenv.frontier.sh
+    ./scripts/setenv.frontier-cpu.sh
     ./scripts/qcore.sh
 
     ./scripts/gsl.sh
@@ -35,7 +35,7 @@ set -e
     ./scripts/qio.sh
     ./scripts/cps.sh
 
-    ./scripts/grid-clehner.frontier.sh
+    ./scripts/grid-clehner.avx2.sh
     ./scripts/gpt.sh
 
     ./scripts/qlat-utils.sh
