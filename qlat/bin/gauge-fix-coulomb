@@ -102,21 +102,21 @@ if gt is None:
     gt = load_gt_guess()
     gt = qg.gauge_fix_coulomb(
             gf,
-            gt = gt,
-            mpi_split = p_mpi_split,
-            maxiter_gd = p_maxiter_gd,
-            maxiter_cg = p_maxiter_cg,
-            maxcycle_cg = p_maxcycle_cg,
-            log_every = p_log_every,
-            eps = p_eps,
-            step = p_step,
-            step_gd = p_step_gd,
-            rng_seed = p_rng_seed,
+            gt=gt,
+            mpi_split=p_mpi_split,
+            maxiter_gd=p_maxiter_gd,
+            maxiter_cg=p_maxiter_cg,
+            maxcycle_cg=p_maxcycle_cg,
+            log_every=p_log_every,
+            eps=p_eps,
+            step=p_step,
+            step_gd=p_step_gd,
+            rng_seed=p_rng_seed,
             )
     save_gt_output(gt)
 else:
     # Only do checking
-    qg.check_gauge_fix_coulomb(gf, gt)
+    qg.check_gauge_fix_coulomb(gf, gt, eps=p_eps)
 
 q.timer_display()
 

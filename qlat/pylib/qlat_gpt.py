@@ -625,7 +625,7 @@ def gauge_fix_coulomb(
     return gt
 
 @q.timer
-def check_gauge_fix_coulomb(gf, gt, eps = 1e-12):
+def check_gauge_fix_coulomb(gf, gt, eps=1e-12):
     t_size = gf.geo().total_site()[3]
     V = gpt_from_qlat(gt)
     U = gpt_from_qlat(gf)
