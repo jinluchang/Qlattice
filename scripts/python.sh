@@ -18,14 +18,16 @@ source qcore/set-prefix.sh $name
     cd $build_dir
 
     if [ -f "$prefix/../libffi/lib64/libffi.a" ] ; then
-        export LDFLAGS="-L$prefix/../libffi/lib64"
-        export LIBS="-lffi"
+        export LDFLAGS="$LDFLAGS -L$prefix/../libffi/lib64"
+        export LIBS="$LIBS -lffi"
     elif [ -f "$prefix/../libffi/lib/libffi.a" ] ; then
-        export LDFLAGS="-L$prefix/../libffi/lib"
-        export LIBS="-lffi"
+        export LDFLAGS="$LDFLAGS -L$prefix/../libffi/lib"
+        export LIBS="$LIBS -lffi"
     fi
 
     time-run $src_dir/$name-*/configure \
+        --enable-optimizations --with-lto \
+        --enable-shared \
         --prefix=$prefix
 
     time-run make -j$num_proc
