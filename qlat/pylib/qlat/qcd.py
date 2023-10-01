@@ -67,14 +67,14 @@ class GaugeTransform(FieldColorMatrix):
         """
         Save as double precision with the generic Field format ``save_double``
         """
-        return c.save_double(self, path)
+        return self.save_double(path)
 
     @timer
     def load(self, path):
         """
         Load as double precision with the generic Field format ``load_double``
         """
-        return c.load_double(self, path)
+        return self.load_double(path)
 
     @timer
     def save_cps(self, path):
