@@ -68,7 +68,7 @@ def load_gt_guess():
 
 def load_gt_output():
     assert isinstance(p_output, str)
-    if not q.does_file_exist_sync_node(p_output):
+    if not q.does_file_exist_qar_sync_node(p_output):
         q.displayln_info(f"Output file '{p_output}' does not exist. Will do gauge fix.")
         return None
     q.displayln_info(f"Find '{p_output}'. Will only do checking.")
