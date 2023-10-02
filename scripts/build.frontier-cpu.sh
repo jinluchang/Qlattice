@@ -43,11 +43,5 @@ set -e
     ./scripts/qlat-grid.sh
     ./scripts/qlat-cps.sh
 
-    ./scripts/qlat-examples-py.sh
-    ./scripts/qlat-examples-cpp.sh
-    ./scripts/qlat-examples-py-gpt.sh
-    ./scripts/qlat-examples-py-cps.sh
-    ./scripts/qlat-examples-cpp-grid.sh
-
     date
 } 2>&1 | tee $prefix/log.build.txt
