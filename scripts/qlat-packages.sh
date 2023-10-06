@@ -9,7 +9,7 @@ source qcore/set-prefix.sh $name
     source qcore/conf.sh ..
 
     time-run find ~/.cache/pip/wheels -type f || true
-    # time-run rm -rfv ~/.cache/pip/wheels || true
+    time-run find ~/.cache/pip/wheels -type f -name 'qlat*.whl' -delete || true
 
     build="$prefix/packages"
     time-run rm -rfv "$build" || true
@@ -19,7 +19,7 @@ source qcore/set-prefix.sh $name
 
     # opts="--verbose --no-index --no-cache-dir -f $distfiles/python-packages -f $build"
     # opts="--user --verbose --force-reinstall -f $build"
-    opts="--verbose -f $build"
+    opts="--verbose -f $build --force-reinstall --config-settings compile-args=-j$num_proc"
 
     time-run pip3 uninstall -y qlat-utils qlat qlat-grid qlat-cps || true
 
