@@ -76,15 +76,16 @@ cdef class CoordinateD:
 
     def __mul__(c1, c2):
         cdef CoordinateD x = CoordinateD()
-        if isinstance(c1, CoordinateD) and isinstance(c2, (int, float,)):
+        if isinstance(c2, (int, float,)):
             x.xx = (<CoordinateD>c1).xx * (<double>c2)
-        elif isinstance(c1, (int, float,)) and isinstance(c2, CoordinateD):
-            x.xx = (<double>c1) * (<CoordinateD>c2).xx
-        elif isinstance(c1, CoordinateD) and isinstance(c2, CoordinateD):
+        elif isinstance(c2, CoordinateD):
             x.xx = (<CoordinateD>c1).xx * (<CoordinateD>c2).xx
         else:
             raise Exception(f"CoordinateD.__mul__({c1},{c2})")
         return x
+
+    def __rmul__(c1, c2):
+        return c1 * c2
 
     def __neg__(self):
         cdef CoordinateD x = CoordinateD()

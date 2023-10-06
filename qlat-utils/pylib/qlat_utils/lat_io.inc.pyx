@@ -302,8 +302,6 @@ cdef class LatData:
         return ld
 
     def __mul__(ld, factor):
-        if isinstance(factor, LatData):
-            ld, factor = factor, ld
         assert isinstance(ld, LatData)
         cdef LatData ld1 = type(ld)()
         cdef LatData ld0 = ld
@@ -318,6 +316,9 @@ cdef class LatData:
         else:
             assert False
         return ld1
+
+    def __rmul__(ld, factor):
+        return ld * factor
 
     def __neg__(self):
         cdef LatData ld = type(self)()
