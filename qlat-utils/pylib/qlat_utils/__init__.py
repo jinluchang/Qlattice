@@ -8,6 +8,7 @@ Will also be loaded by ``import qlat as q`` together with other ``qlat`` functio
 from . import c
 
 from .c import \
+        CoordinateD, \
         Coordinate, \
         mod, \
         smod, \
