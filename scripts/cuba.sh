@@ -22,6 +22,7 @@ source qcore/set-prefix.sh $name
 
     time-run make # do not support parallel build
     time-run make install
+    time-run cp -rpv demo-* $prefix/share
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"

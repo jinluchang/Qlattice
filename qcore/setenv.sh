@@ -65,4 +65,8 @@ if [ -z "${OMP_NUM_THREADS+x}" ] ; then
     export OMP_NUM_THREADS=2
 fi
 
+if [ -z "${CUBACORES+x}" ] ; then
+    export CUBACORES=0
+fi
+
 export PATH="$setenv_prefix/bin":"$PATH"
