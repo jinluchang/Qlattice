@@ -1,9 +1,8 @@
 import os
-from . import c
 from qlat import qls, qls_all, get_dir_list as q_get_dir_list
 
 def get_qlat_grid_dir():
-    return os.path.dirname(c.__file__)
+    return os.path.dirname(__file__)
 
 def get_qlat_grid_include():
     return os.path.join(get_qlat_grid_dir(), 'include')

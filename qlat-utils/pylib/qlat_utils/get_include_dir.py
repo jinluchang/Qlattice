@@ -1,9 +1,8 @@
 import os
-from . import c
 from .utils_io import qls, qls_all
 
 def get_qlat_utils_dir():
-    return os.path.dirname(c.__file__)
+    return os.path.dirname(__file__)
 
 def get_qlat_utils_include():
     return os.path.join(get_qlat_utils_dir(), 'include')

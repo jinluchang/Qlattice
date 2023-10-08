@@ -10,7 +10,7 @@ version = custom_target('version',
   build_always_stale: true,
   )
 
-clib = static_library('qlat-utils',
+clib = shared_library('qlat-utils',
   cppsources + version,
   dependencies: deps,
   include_directories: incdir,

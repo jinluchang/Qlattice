@@ -2,7 +2,7 @@ c = run_command('bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.cpp'
 cppsources = files(c.stdout().strip().split('\n'))
 py3.install_sources(cppsources, subdir: 'qlat/lib')
 
-clib = static_library('qlat',
+clib = shared_library('qlat',
   cppsources,
   dependencies: deps,
   include_directories: incdir,
