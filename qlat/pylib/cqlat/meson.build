@@ -10,5 +10,6 @@ lib = py3.extension_module('cqlat',
   include_directories: incdir,
   link_with: clib,
   install: true,
+  install_rpath: ':'.join(qlat_utils_lib + [ '$ORIGIN/lib', ]),
   # gnu_symbol_visibility: 'default',
   )

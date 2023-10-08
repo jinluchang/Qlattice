@@ -52,4 +52,5 @@ cplib = py3.extension_module('cp',
   install: true,
   subdir: 'qlat_ext',
   # gnu_symbol_visibility: 'default',
+  install_rpath: ':'.join(qlat_lib),
   )

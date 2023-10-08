@@ -8,4 +8,5 @@ clib = shared_library('qlat-grid',
   include_directories: incdir,
   install: true,
   install_dir: py3.get_install_dir() / 'qlat_grid/lib',
+  install_rpath: ':'.join(qlat_lib),
   )

@@ -85,6 +85,7 @@ cplib = py3.extension_module('cp',
   link_with: clib,
   install: true,
   subdir: 'qlat_utils',
+  install_rpath: '$ORIGIN/lib',
   )
 
 cpa_pyx = custom_target(f'cpa_pyx',
@@ -103,4 +104,5 @@ cpalib = py3.extension_module('cpa',
   link_with: clib,
   install: true,
   subdir: 'qlat_utils',
+  install_rpath: '$ORIGIN/lib',
   )

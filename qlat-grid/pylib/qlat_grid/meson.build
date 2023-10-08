@@ -52,4 +52,5 @@ cplib = py3.extension_module('cp',
   link_with: clib,
   install: true,
   subdir: 'qlat_grid',
+  install_rpath: ':'.join(qlat_lib + [ '$ORIGIN/lib', ]),
   )

@@ -128,6 +128,7 @@ cplib = py3.extension_module('cp',
   link_with: clib,
   install: true,
   subdir: 'qlat',
+  install_rpath: ':'.join(qlat_utils_lib + [ '$ORIGIN/lib', ]),
   )
 
 elem_type_gen = files('elem_type_gen.sh')
