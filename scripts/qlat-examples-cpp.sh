@@ -24,6 +24,10 @@ source qcore/set-prefix.sh $name
         export LIBS="$QLAT_LIBS"
     fi
 
+    qlat_utils_lib_dir="$(q_verbose=-1 python3 -c 'import qlat_utils as q ; print(q.get_qlat_utils_dir() + "/lib")')"
+    qlat_lib_dir="$(q_verbose=-1 python3 -c 'import qlat as q ; print(q.get_qlat_dir() + "/lib")')"
+    export LD_LIBRARY_PATH="$qlat_utils_lib_dir:$qlat_lib_dir:$LD_LIBRARY_PATH"
+
     export mpi_options="--oversubscribe $mpi_options"
 
     # q_verbose=1 time-run make -C "$prefix"/examples-cpp compile -j$num_proc || true
