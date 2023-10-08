@@ -1,6 +1,6 @@
 #!/bin/bash
 
-name=setenv-frontier
+name=setenv-frontier-cpu
 
 source qcore/set-prefix.sh
 
