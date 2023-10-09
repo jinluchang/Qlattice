@@ -230,7 +230,7 @@ jobs:
     - name: Show python venv
       run: |
         source ~/qlat-build/default/setenv.sh
-        pip3 install build meson-python wheel
+        pip3 install -vU pip build meson-python wheel
         python3 -c "import sys; print(sys.version)"
         python3 -c "import sys; print(sys.path)"
         python3 -c "import numpy as np ; np.show_config()"
@@ -478,7 +478,7 @@ jobs:
     - name: Show python venv
       run: |
         source ~/qlat-build/default/setenv.sh
-        pip3 install build meson-python wheel
+        pip3 install -vU pip build meson-python wheel
         python3 -c "import sys; print(sys.version)"
         python3 -c "import sys; print(sys.path)"
         python3 -c "import numpy as np ; np.show_config()"
