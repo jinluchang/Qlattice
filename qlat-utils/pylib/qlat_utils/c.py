@@ -2,7 +2,7 @@ import ctypes
 import sys
 import os
 flags = sys.getdlopenflags()
-sys.setdlopenflags(flags | ctypes.RTLD_GLOBAL)
+sys.setdlopenflags(flags | os.RTLD_GLOBAL)
 
 lib_path = os.path.join(os.path.dirname(__file__),
                         'lib/libqlat-utils.so')
