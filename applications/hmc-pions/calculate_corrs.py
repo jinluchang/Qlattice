@@ -144,15 +144,15 @@ class Correlators():
             self.calc_vev(name, values[:,m], m)
     
     def calc_sigma_vev(self):
-        self.calc_vev("sigma", self.apply_to_obs(self.phi_list, lambda x: x[0]))
+        self.calc_vev("sigma", self.apply_to_obs(self.phi_list, self.sigma_interp_no_vevsub))
     
-    def calc_psq_vev(self):
-        self.calc_vev("psq", self.apply_to_obs(np.array(self.timeslices),
-            lambda ts: np.mean((ts[:,1]+ts[:,2]+ts[:,3])**2)/3.0/self.Vx))
+    def calc_psq_I0_vev(self):
+        self.calc_vev("psq_I0", np.mean(self.apply_to_timeslices(np.array(self.timeslices),
+            lambda ts: self.pipi_I0_interp_no_vevsub(ts)/self.Vx), axis=1))
     
-    def calc_psqm_vev(self):
-        self.calc_vev_m("psqm", self.apply_to_obs_m(np.array(self.timeslices_m),
-            lambda ts: np.mean((ts[:,1]+ts[:,2]+ts[:,3])*np.conj(ts[:,1]+ts[:,2]+ts[:,3]))/3.0/self.Vx))
+    def calc_psqm_I0_vev(self):
+        self.calc_vev_m("psqm_I0", np.mean(self.apply_to_timeslices_m(np.array(self.timeslices_m),
+            lambda ts: self.pipi_I0_interp_no_vevsub(ts)/self.Vx), axis=2))
     
     def correlator(self,tslices1,tslices2,delta_t):
         rtn = 0
@@ -190,67 +190,102 @@ class Correlators():
         for m in range(M):
             self.calc_corrs(name, tslices1, tslices2, m)
     
+    def pion_interp(self, ts):
+        return (ts[1]+ts[2]+ts[3])/3**0.5
+    
+    def sigma_interp(self, ts):
+        return ts[0] - self.vev["sigma"]*self.Vx
+    
+    def sigma_interp_no_vevsub(self, ts):
+        return ts[0]
+    
+    def pipi_I0_interp_no_vevsub(self, ts):
+        return (-ts[1]*np.conj(ts[1])-ts[2]*np.conj(ts[2])-ts[3]*np.conj(ts[3]))/3**0.5
+    
+    def pipi_I0_interp(self, ts):
+        return (-ts[1]*np.conj(ts[1])-ts[2]*np.conj(ts[2])-ts[3]*np.conj(ts[3]))/3**0.5 - self.vev["psq_I0"]*self.Vx
+    
+    def pipi_I2_interp(self, ts):
+        return (-ts[1]*np.conj(ts[1])-ts[2]*np.conj(ts[2])+2*ts[3]*np.conj(ts[3]))/6**0.5
+    
     def calc_pipi_corrs(self):
         pion_ts = self.apply_to_timeslices(self.timeslices,
-            lambda ts: (ts[1]+ts[2]+ts[3])/3**0.5)
+            lambda ts: self.pion_interp(ts))
         self.calc_corrs("pipi", pion_ts, pion_ts)
     
     def calc_ss_corrs(self):
         self.calc_sigma_vev()
         sigma_ts = self.apply_to_timeslices(self.timeslices,
-            lambda ts: ts[0] - self.vev["sigma"]*self.Vx)
+            lambda ts: self.sigma_interp(ts))
         self.calc_corrs("ss", sigma_ts, sigma_ts)
     
     def calc_pipi_s_corrs(self):
         self.calc_sigma_vev()
-        self.calc_psq_vev()
+        self.calc_psq_I0_vev()
         pipi_ts = self.apply_to_timeslices(self.timeslices,
-            lambda ts: (ts[1]+ts[2]+ts[3])**2/3 - self.vev["psq"]*self.Vx)
+            lambda ts: self.pipi_I0_interp(ts))
         sigma_ts = self.apply_to_timeslices(self.timeslices,
-            lambda ts: ts[0] - self.vev["sigma"]*self.Vx)
+            lambda ts: self.sigma_interp(ts))
         self.calc_corrs("pipi_s", pipi_ts, sigma_ts)
     
-    def calc_pipi_pipi_corrs(self):
-        self.calc_psq_vev()
+    def calc_pipi_pipi_I0_corrs(self):
+        self.calc_psq_I0_vev()
         pipi_ts = self.apply_to_timeslices(self.timeslices,
-            lambda ts: (ts[1]+ts[2]+ts[3])**2/3 - self.vev["psq"]*self.Vx)
-        self.calc_corrs("pipi_pipi", pipi_ts, pipi_ts)
+            lambda ts: self.pipi_I0_interp(ts))
+        self.calc_corrs("pipi_pipi_I0", pipi_ts, pipi_ts)
+    
+    def calc_pipi_pipi_I2_corrs(self):
+        pipi_ts = self.apply_to_timeslices(self.timeslices,
+            lambda ts: self.pipi_I2_interp(ts))
+        self.calc_corrs("pipi_pipi_I2", pipi_ts, pipi_ts)
     
     def calc_pipim_corrs(self):
         pion_ts_m = self.apply_to_timeslices_m(self.timeslices_m,
-            lambda ts: (ts[1]+ts[2]+ts[3])/3**0.5)
+            lambda ts: self.pion_interp(ts))
         self.calc_corrs_m("pipim", pion_ts_m, np.conj(pion_ts_m))
     
     def calc_ssm_corrs(self):
         sigma_ts_m = self.apply_to_timeslices_m(self.timeslices_m,
-            lambda ts: ts[0])
+            lambda ts: self.sigma_interp_no_vevsub(ts))
         self.calc_corrs_m("ssm", sigma_ts_m, np.conj(sigma_ts_m))
     
-    def calc_pipim_pipi_corrs(self):
-        self.calc_psq_vev()
-        self.calc_psqm_vev()
+    def calc_pipim_pipi_I0_corrs(self):
+        self.calc_psq_I0_vev()
+        self.calc_psqm_I0_vev()
         pipim_ts = self.apply_to_timeslices_m(np.array(self.timeslices_m),
-            lambda ts: (ts[1]+ts[2]+ts[3])*np.conj(ts[1]+ts[2]+ts[3])/3)
-        pipim_ts -= np.array(self.vev["psqm"])[None,:,None]*self.Vx
+            lambda ts: self.pipi_I0_interp_no_vevsub(ts))
+        pipim_ts -= np.array(self.vev["psqm_I0"])[None,:,None]*self.Vx
         pipi_ts = self.apply_to_timeslices(self.timeslices,
-            lambda ts: (ts[1]+ts[2]+ts[3])**2/3 - self.vev["psq"]*self.Vx)
-        self.calc_corrs_m("pipim_pipi", pipim_ts, pipi_ts)
+            lambda ts: self.pipi_I0_interp(ts))
+        self.calc_corrs_m("pipim_pipi_I0", pipim_ts, pipi_ts)
     
-    def calc_pipim_pipim_corrs(self):
-        self.calc_psqm_vev()
+    def calc_pipim_pipi_I2_corrs(self):
         pipim_ts = self.apply_to_timeslices_m(np.array(self.timeslices_m),
-            lambda ts: (ts[1]+ts[2]+ts[3])*np.conj(ts[1]+ts[2]+ts[3])/3)
-        pipim_ts -= np.array(self.vev["psqm"])[None,:,None]*self.Vx
-        self.calc_corrs_m("pipim_pipim", pipim_ts, np.conj(pipim_ts))
+            lambda ts: self.pipi_I2_interp(ts))
+        pipi_ts = self.apply_to_timeslices(self.timeslices,
+            lambda ts: self.pipi_I2_interp(ts))
+        self.calc_corrs_m("pipim_pipi_I2", pipim_ts, pipi_ts)
+    
+    def calc_pipim_pipim_I0_corrs(self):
+        self.calc_psqm_I0_vev()
+        pipim_ts = self.apply_to_timeslices_m(np.array(self.timeslices_m),
+            lambda ts: self.pipi_I0_interp_no_vevsub(ts))
+        pipim_ts -= np.array(self.vev["psqm_I0"])[None,:,None]*self.Vx
+        self.calc_corrs_m("pipim_pipim_I0", pipim_ts, np.conj(pipim_ts))
+    
+    def calc_pipim_pipim_I2_corrs(self):
+        pipim_ts = self.apply_to_timeslices_m(np.array(self.timeslices_m),
+            lambda ts: self.pipi_I2_interp(ts))
+        self.calc_corrs_m("pipim_pipim_I2", pipim_ts, np.conj(pipim_ts))
     
     def calc_pipim_s_corrs(self):
         self.calc_sigma_vev()
-        self.calc_psqm_vev()
+        self.calc_psqm_I0_vev()
         pipim_ts = self.apply_to_timeslices_m(np.array(self.timeslices_m),
-            lambda ts: (ts[1]+ts[2]+ts[3])*np.conj(ts[1]+ts[2]+ts[3])/3)
-        pipim_ts -= np.array(self.vev["psqm"])[None,:,None]*self.Vx
+            lambda ts: self.pipi_I0_interp_no_vevsub(ts))
+        pipim_ts -= np.array(self.vev["psqm_I0"])[None,:,None]*self.Vx
         sigma_ts = self.apply_to_timeslices(self.timeslices,
-            lambda ts: ts[0] - self.vev["sigma"]*self.Vx)
+            lambda ts: self.sigma_interp(ts))
         self.calc_corrs_m("pipim_s", pipim_ts, sigma_ts)
     
     def save(self):
@@ -322,8 +357,11 @@ def main():
     print("ss corrs==============================")
     corrs.calc_ss_corrs()
     corrs.save()
-    print("pipi pipi corrs==============================")
-    corrs.calc_pipi_pipi_corrs()
+    print("pipi pipi I0 corrs==============================")
+    corrs.calc_pipi_pipi_I0_corrs()
+    corrs.save()
+    print("pipi pipi I2 corrs==============================")
+    corrs.calc_pipi_pipi_I2_corrs()
     corrs.save()
     print("pipi s corrs==============================")
     corrs.calc_pipi_s_corrs()
@@ -334,12 +372,18 @@ def main():
     print("ssm corrs==============================")
     corrs.calc_ssm_corrs()
     corrs.save()
-    print("pipim pipi corrs==============================")
-    corrs.calc_pipim_pipi_corrs()
-    corrs.save()  
-    print("pipim pipim corrs==============================")
-    corrs.calc_pipim_pipim_corrs()
-    corrs.save()  
+    print("pipim pipi I0 corrs==============================")
+    corrs.calc_pipim_pipi_I0_corrs()
+    corrs.save()
+    print("pipim pipi I2 corrs==============================")
+    corrs.calc_pipim_pipi_I2_corrs()
+    corrs.save()
+    print("pipim pipim I0 corrs==============================")
+    corrs.calc_pipim_pipim_I0_corrs()
+    corrs.save()
+    print("pipim pipim I2 corrs==============================")
+    corrs.calc_pipim_pipim_I2_corrs()
+    corrs.save()
     print("pipim s corrs==============================")
     corrs.calc_pipim_s_corrs()
     corrs.save()

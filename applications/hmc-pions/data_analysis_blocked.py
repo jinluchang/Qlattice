@@ -60,18 +60,21 @@ class LatticeData():
         self.cosh_model = lambda nt,A0,m : [A0*np.cosh((self.Nt/2.0-nt[i])*m)/np.cosh((self.Nt/2.0-1)*m) for i in range(len(nt))]
         # The model to use for calculating Fpi
         self.fpi_model = lambda nt,f_pi,m_pi : [-f_pi**2*m_pi*self.Vx*np.exp(-m_pi*self.Nt/2)*np.sinh((self.Nt/2-nt[i]+1/2)*m_pi)*(np.sinh((self.Nt/2-nt[i]-1/2)*m_pi)-np.sinh((self.Nt/2-nt[i]+0.5)*m_pi))/(self.alpha*np.cosh((self.Nt/2-nt[i])*m_pi)) for i in range(len(nt))]
+        self.fpi2_model = lambda nt,f_pi,m_pi : [-f_pi/self.alpha*(m_pi*self.Vx*np.exp(-m_pi*self.Nt/2))**0.5*(np.sinh((self.Nt/2.0-nt[i]-1/2)*m_pi)-np.sinh((self.Nt/2.0-nt[i]+1/2)*m_pi))/(np.cosh((self.Nt/2.0-nt[i])*m_pi))**0.5 for i in range(len(nt))]
         # Initial "done" variables
         self.reset_calcs()
     
     def reset_calcs(self):
         # These variables keep track of what's already been calculated
         self.sigma_vev_done = False
+        self.sigma_mass_eff_done = False
         self.pion_corrs_done = False
         self.sigma_corrs_done = False
         self.pion_mass_done = False
         self.sigma_mass_done = False
         self.A_corrs_done = False
         self.fpi_done = False
+        self.fpi2_done = False
         self.scan_pion_mass_done = False
         self.scan_phi0_done = False
         self.pipi_sigma_corrs_done = False
@@ -88,6 +91,8 @@ class LatticeData():
         #
         self.vev_sigma=0
         self.vev_sigma_err=0
+        self.sigma_mass_eff=0
+        self.sigma_mass_eff_err=0
         self.psq=0
         self.psq_err=0
         self.phisq_av=0
@@ -122,9 +127,13 @@ class LatticeData():
         self.A_corrs=0
         self.A_corr_avgs=0
         self.fpi=0
+        self.fpi2=0
         self.mpi_from_fpi=0
+        self.mpi_from_fpi2=0
         self.fpi_err=0
+        self.fpi2_err=0
         self.mpi_from_fpi_err=0
+        self.mpi_from_fpi2_err=0
         self.pion_masses=0
         self.pion_mass_errors=0
         self.k_pion_mass=0
@@ -269,7 +278,7 @@ class LatticeData():
         self.vev_sigma, self.vev_sigma_err = self.get_errors_from_blocks(np.mean(vev_sigma_blocks),vev_sigma_blocks)
         print(f"Vacuum Expectation Value of sigma = {self.vev_sigma} +- {self.vev_sigma_err}")
         self.sigma_vev_done = True
-        
+    
     def calc_phisq(self):
         psq_blocks = self.get_jackknife_blocks([self.psq_list[i] for i in range(self.cutoff,self.data_len)])
         self.psq, self.psq_err = self.get_errors_from_blocks(np.mean(psq_blocks),psq_blocks)
@@ -285,6 +294,15 @@ class LatticeData():
         self.phisq_av, self.phisq_av_err = self.get_errors_from_blocks(np.mean(corrs),phisq_blocks)
         print(f"Vacuum Expectation Value of phi_i^2 = {self.phisq_av} +- ?")
         self.phisq_done = True
+    
+    def calc_sigma_mass_eff(self):
+        if(self.sigma_mass_eff_done):
+            return
+        self.calc_sigma_corrs()
+        sigma_mass_eff_blocks = self.get_jackknife_blocks(self.s_corrs, lambda x : -np.log(x[1]/x[0]))
+        self.sigma_mass_eff, self.sigma_mass_eff_err = self.get_errors_from_blocks(np.mean(sigma_mass_eff_blocks),sigma_mass_eff_blocks)
+        print(f"Effective mass of sigma = {self.sigma_mass_eff} +- {self.sigma_mass_eff_err}")
+        self.sigma_mass_eff_done = True
     
     def calc_psqm_av(self):
         if(self.psqm_done):
@@ -475,7 +493,7 @@ class LatticeData():
         self.A_corr_avgs = np.mean(self.A_corrs,axis=0)
         self.A_corrs_done = True
     
-    def fpi_fit(self, A_corr_avgs, fit_range=[], fpi_guess=1.0, mpi_guess=0.2):
+    def fpi_fit(self, A_corr_avgs, fit_range=[], fpi_guess=0.2, mpi_guess=0.2):
         if(len(fit_range)==0):
             fit_range=[1,int(self.Nt)]
         nt = range(fit_range[0],fit_range[1])
@@ -492,6 +510,26 @@ class LatticeData():
         [[self.fpi, self.mpi_from_fpi],[self.fpi_err,self.mpi_from_fpi_err]] = self.get_errors_from_blocks(self.fpi_fit(self.A_corr_avgs), fpi_blocks)
         print(f"F_pi is {self.fpi}/a +- {self.fpi_err}/a")
         print(f"m_pi is {self.mpi_from_fpi}/a +- {self.mpi_from_fpi_err}/a")
+        self.fpi_done=True
+    
+    def fpi2_fit(self, pi_corr_avgs, fit_range=[], fpi_guess=0.2, mpi_guess=0.2):
+        if(len(fit_range)==0):
+            fit_range=[1,int(self.Nt)]
+        a = np.power(pi_corr_avgs[fit_range[0]:fit_range[1]], 0.5)
+        a = np.nan_to_num(a)
+        nt = range(fit_range[0],fit_range[1])
+        pi_opt, pi_cov = curve_fit(lambda nt, fpi, mpi : self.fpi2_model(nt,fpi,mpi), 
+                                   nt, a, p0=[fpi_guess, mpi_guess])
+        return pi_opt
+    
+    def calc_fpi2(self):
+        if(self.fpi2_done):
+            return
+        self.calc_pion_corrs()
+        fpi2_blocks = self.get_jackknife_blocks(self.pi_corrs, self.fpi2_fit)
+        [[self.fpi2, self.mpi_from_fpi2],[self.fpi2_err,self.mpi_from_fpi2_err]] = self.get_errors_from_blocks(self.fpi2_fit(self.pi_corr_avgs), fpi2_blocks)
+        print(f"F_pi (from pion correlators) is {self.fpi2}/a +- {self.fpi2_err}/a")
+        print(f"m_pi is {self.mpi_from_fpi2}/a +- {self.mpi_from_fpi2_err}/a")
         self.fpi_done=True
     
     def plot_pion_fit(self):
@@ -578,12 +616,14 @@ class LatticeData():
         with open(f"analysis_{self.Nx}x{self.Nt}_msq_{self.msq}_lmbd_{self.lmbd}_alph_{self.alpha}_{date}.bin", "wb") as file:
             pickle.dump([self.loaded_files,
                 self.sigma_vev_done,
+                self.sigma_mass_eff_done,
                 self.pion_corrs_done,
                 self.sigma_corrs_done,
                 self.pion_mass_done,
                 self.sigma_mass_done,
                 self.A_corrs_done,
                 self.fpi_done,
+                self.fpi2_done,
                 self.scan_pion_mass_done,
                 self.scan_phi0_done,
                 self.pipi_sigma_corrs_done,
@@ -595,6 +635,8 @@ class LatticeData():
                 self.psqm_done,
                 self.vev_sigma,
                 self.vev_sigma_err,
+                self.sigma_mass_eff,
+                self.sigma_mass_eff_err,
                 self.psq,
                 self.psq_err,
                 self.phisq_av,
@@ -632,6 +674,10 @@ class LatticeData():
                 self.mpi_from_fpi,
                 self.fpi_err,
                 self.mpi_from_fpi_err,
+                self.fpi2,
+                self.mpi_from_fpi2,
+                self.fpi2_err,
+                self.mpi_from_fpi2_err,
                 self.pion_masses,
                 self.pion_mass_errors,
                 self.k_pion_mass,
@@ -646,12 +692,14 @@ class LatticeData():
                 self.load_data("-","-",f)
             [self.loaded_files,
             self.sigma_vev_done,
+            self.sigma_mass_eff_done,
             self.pion_corrs_done,
             self.sigma_corrs_done,
             self.pion_mass_done,
             self.sigma_mass_done,
             self.A_corrs_done,
             self.fpi_done,
+            self.fpi2_done,
             self.scan_pion_mass_done,
             self.scan_phi0_done,
             self.pipi_sigma_corrs_done,
@@ -662,6 +710,8 @@ class LatticeData():
             self.psqm_done,
             self.vev_sigma,
             self.vev_sigma_err,
+            self.sigma_mass_eff,
+            self.sigma_mass_eff_err,
             self.psq,
             self.psq_err,
             self.phisq_av,
@@ -697,6 +747,10 @@ class LatticeData():
             self.mpi_from_fpi,
             self.fpi_err,
             self.mpi_from_fpi_err,
+            self.fpi2,
+            self.mpi_from_fpi2,
+            self.fpi2_err,
+            self.mpi_from_fpi2_err,
             self.pion_masses,
             self.pion_mass_errors,
             self.k_pion_mass,

@@ -22,7 +22,7 @@ class Spectrum():
     
     def find_E_from_fit(self, corr_avgs, fit_range=[], E_guess=None):
         if(len(fit_range)==0):
-            fit_range=[0,int(self.Nt)]
+            fit_range=[0,len(corr_avgs)]
         nt = range(fit_range[0],fit_range[1])
         A0_guess = corr_avgs[1]
         if(E_guess==None):
