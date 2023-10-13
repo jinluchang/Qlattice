@@ -26,12 +26,7 @@ source qcore/set-prefix.sh $name
     time-run make -j$num_proc
     time-run make install
 
-    cd "$wd"
-
     mk-setenv.sh
-
     echo "!!!! $name build !!!!"
-
     rm -rf "$temp_dir" || true
-
 } } 2>&1 | tee $prefix/log.$name.txt
