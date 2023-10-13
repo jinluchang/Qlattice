@@ -1,16 +1,51 @@
-init_fns = [ '__init__.py', ]
+init_fns = [
+  '__init__.py',
+  ]
 init_files = files(init_fns)
 
-py_fns = run_command(
-  'bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.py | grep -v "_template\." | grep -v "__init__.py"',
-  check: true,
-  ).stdout().strip().split('\n')
+py_fns = [
+  'contract_field.py',
+  'contract_hvp.py',
+  'contract_pion.py',
+  'coordinate.py',
+  'c.py',
+  'fermion_action.py',
+  'field_double.py',
+  'field.py',
+  'field_selection.py',
+  'fields_io.py',
+  'field_utils.py',
+  'fthmc.py',
+  'gauge_action.py',
+  'geometry.py',
+  'get_include_dir.py',
+  'hmc.py',
+  'hmc_stats.py',
+  'inverter.py',
+  '__main__.py',
+  'mat.py',
+  'mpi.py',
+  'propagator.py',
+  'qcd.py',
+  'scalar_action.py',
+  'selected_field.py',
+  'selected_points.py',
+  'smear.py',
+  'topology.py',
+  'utils_io.py',
+  'utils.py',
+  'wilson_flow.py',
+  ]
 py_files = files(py_fns)
 
-pxd_fns = run_command(
-  'bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.pxd | grep -v "_template\."',
-  check: true,
-  ).stdout().strip().split('\n')
+pxd_fns = [
+  'all.pxd',
+  'everything.pxd',
+  'field.pxd',
+  'geometry.pxd',
+  'mpi.pxd',
+  'utils_io.pxd',
+  ]
 pxd_files = files(pxd_fns)
 
 py3.install_sources(init_files + py_files + pxd_files, subdir: 'qlat')

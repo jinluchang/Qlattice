@@ -16,6 +16,15 @@ def get_include_list():
 def get_lib_list():
     return [ os.path.join(p, 'lib') for p in get_dir_list() ]
 
+def get_new_ld_library_path():
+    ld_lib_path = os.getenv('LD_LIBRARY_PATH')
+    path_list = ld_lib_path.split(':')
+    new_path_list = []
+    for p in get_lib_list() + path_list:
+        if p not in new_path_list:
+            new_path_list.append(p)
+    return ':'.join(new_path_list)
+
 def get_pxd_list():
     l = []
     for d in get_dir_list():

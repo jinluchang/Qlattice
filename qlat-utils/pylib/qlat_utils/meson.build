@@ -1,22 +1,59 @@
-init_fns = [ '__init__.py', ]
+init_fns = [
+  '__init__.py',
+  ]
 init_files = files(init_fns)
 
-py_fns = run_command(
-  'bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.py | grep -v "_template\." | grep -v "__init__.py"',
-  check: true,
-  ).stdout().strip().split('\n')
+py_fns = [
+  'ama.py',
+  'cache.py',
+  'c.py',
+  'data.py',
+  'get_include_dir.py',
+  'lat_io.py',
+  'load_prop.py',
+  '__main__.py',
+  'parallel.py',
+  'qar.py',
+  'qplot.py',
+  'rng_state.py',
+  'timer.py',
+  'utils_io.py',
+  'utils.py',
+  ]
 py_files = files(py_fns)
 
-pxd_fns = run_command(
-  'bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.pxd | grep -v "_template\."',
-  check: true,
-  ).stdout().strip().split('\n')
+pxd_fns = [
+  'all.pxd',
+  'complex.pxd',
+  'coordinate.pxd',
+  'cpa.pxd',
+  'cp.pxd',
+  'elem_type.pxd',
+  'everything.pxd',
+  'lat_io.pxd',
+  'mat.pxd',
+  'qar.pxd',
+  'rng_state.pxd',
+  'timer.pxd',
+  'utils_io.pxd',
+  'utils.pxd',
+  'vector.pxd',
+  ]
 pxd_files = files(pxd_fns)
 
-pxi_fns = run_command(
-  'bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.inc.pyx | grep -v "_template\."',
-  check: true,
-  ).stdout().strip().split('\n')
+pxi_fns = [
+  'buffer.inc.pyx',
+  'coordinate_d.inc.pyx',
+  'coordinate.inc.pyx',
+  'elem_type.inc.pyx',
+  'lat_io.inc.pyx',
+  'mat.inc.pyx',
+  'qar.inc.pyx',
+  'rng_state.inc.pyx',
+  'timer.inc.pyx',
+  'utils.inc.pyx',
+  'utils_io.inc.pyx',
+  ]
 pxi_files = files(pxi_fns)
 
 py3.install_sources(init_files + py_files + pxd_files, subdir: 'qlat_utils')
