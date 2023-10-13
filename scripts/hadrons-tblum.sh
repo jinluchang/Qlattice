@@ -15,7 +15,7 @@ source qcore/set-prefix.sh $name
     export CXXFLAGS="$CXXFLAGS -DHADRONS_DEFAULT_LANCZOS_NBASIS=4000"
 
     if python3 -m qlat >/dev/null 2>&1 ; then
-        export LD_LIBRARY_PATH="$(python3 -m qlat config --LD_LIBRARY_PATH)"
+        export LD_LIBRARY_PATH="$(python3 -m qlat qlat-config --LD_LIBRARY_PATH)"
     fi
 
     mkdir build

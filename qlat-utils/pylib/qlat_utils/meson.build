@@ -143,3 +143,5 @@ cpalib = py3.extension_module('cpa',
   subdir: 'qlat_utils',
   install_rpath: '$ORIGIN/lib',
   )
+
+subdir('scripts')

@@ -25,7 +25,7 @@ source qcore/set-prefix.sh $name
     fi
 
     qlat_grid_lib_dir="$(q_verbose=-1 python3 -c 'import qlat_grid as q ; print(q.get_qlat_grid_dir() + "/lib")')"
-    export LD_LIBRARY_PATH="$qlat_grid_lib_dir:$(python3 -m qlat config --LD_LIBRARY_PATH)"
+    export LD_LIBRARY_PATH="$qlat_grid_lib_dir:$(python3 -m qlat qlat-config --LD_LIBRARY_PATH)"
 
     export mpi_options="--oversubscribe $mpi_options"
 
