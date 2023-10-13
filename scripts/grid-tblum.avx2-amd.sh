@@ -55,10 +55,11 @@ source qcore/set-prefix.sh $name
         export CXXFLAGS="$CXXFLAGS -I$(find-library.sh libz.a)/include"
     fi
 
-    if which qlat-config >/dev/null 2>&1 ; then
-        export LIBS="$LIBS $(qlat-config --libs)"
-        export LDFLAGS="$LDFLAGS $(qlat-config --ldflags)"
-        export CXXFLAGS="$CXXFLAGS $(qlat-config --cxxflags)"
+    if python3 -m qlat >/dev/null 2>&1 ; then
+        export LIBS="$LIBS $(python3 -m qlat config --libs)"
+        export LDFLAGS="$LDFLAGS $(python3 -m qlat config --ldflags)"
+        export CXXFLAGS="$CXXFLAGS $(python3 -m qlat config --cxxflags)"
+        export LD_LIBRARY_PATH="$(python3 -m qlat config --LD_LIBRARY_PATH)"
     fi
 
     mkdir build
