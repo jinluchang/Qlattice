@@ -8,3 +8,5 @@ for fn in filenames:
     ld.load(fn)
     sys.stdout.write(f"# '{fn}'\n")
     sys.stdout.write(ld.show())
+
+exit()

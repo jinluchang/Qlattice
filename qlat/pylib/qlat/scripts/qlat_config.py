@@ -2,7 +2,7 @@ import sys
 
 usage_message = """
 Usage:
-    python3 -m qlat_utils qlat-utils-config [--cxxflags] [--ldflags] [--libs] [--LD_LIBRARY_PATH]
+    python3 -m qlat qlat-config [--cxxflags] [--ldflags] [--libs] [--LD_LIBRARY_PATH]
 """.strip()
 
 if len(sys.argv) < 2:
@@ -19,7 +19,7 @@ for arg in sys.argv[1:]:
     elif arg == "--ldflags":
         output_args += [ f"-L{path}" for path in get_lib_list() ]
     elif arg == "--libs":
-        output_args += [ "-lqlat-utils", ]
+        output_args += [ "-lqlat", "-lqlat-utils", ]
     elif arg == "--LD_LIBRARY_PATH":
         output_args = [ get_new_ld_library_path(), ]
 

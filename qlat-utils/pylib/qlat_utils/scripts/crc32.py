@@ -13,3 +13,5 @@ def crc32(fileName):
 
 for v in sys.argv[1:]:
     print(f"{crc32(v)} '{v}'")
+
+exit()

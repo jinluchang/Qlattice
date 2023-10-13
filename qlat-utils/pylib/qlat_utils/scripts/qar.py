@@ -141,3 +141,5 @@ else:
     assert False
 
 q.clear_all_caches()
+
+exit()

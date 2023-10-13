@@ -176,3 +176,5 @@ elem_type = custom_target(f'elem_type_py',
   install: true,
   install_dir: py3.get_install_dir() / 'qlat',
   )
+
+subdir('scripts')

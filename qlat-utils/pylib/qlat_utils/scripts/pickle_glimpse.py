@@ -9,3 +9,5 @@ for fn in filenames:
     sys.stdout.write(f"# '{fn}'\n")
     sys.stdout.write(pprint.pformat(obj))
     sys.stdout.write("\n")
+
+exit()

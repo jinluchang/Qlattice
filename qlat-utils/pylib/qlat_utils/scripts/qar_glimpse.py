@@ -32,3 +32,5 @@ for path in sys.argv[1:]:
         sys.stdout.buffer.write(content)
 
 q.clear_all_caches()
+
+exit()
