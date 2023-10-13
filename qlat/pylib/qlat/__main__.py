@@ -21,7 +21,7 @@ if action == "config":
         elif arg == "--ldflags":
             output_args += [ f"-L{path}" for path in get_lib_list() ]
         elif arg == "--libs":
-            output_args += [ "-lqlat-utils", ]
+            output_args += [ "-lqlat-utils", "-lqlat", ]
         elif arg == "--LD_LIBRARY_PATH":
             output_args = [ get_new_ld_library_path() ]
     print(" ".join(output_args))
