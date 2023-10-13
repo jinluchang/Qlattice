@@ -9,12 +9,12 @@ if len(sys.argv) < 2:
     print(usage_message)
     exit()
 
-output_args = []
 
 action = sys.argv[1]
 
 if action == "config":
     from .get_include_dir import get_include_list, get_lib_list, get_new_ld_library_path
+    output_args = []
     for arg in sys.argv[2:]:
         if arg == "--cxxflags":
             output_args += [ f"-I{path}" for path in get_include_list() ]
