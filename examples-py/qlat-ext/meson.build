@@ -34,7 +34,6 @@ subdir('depend-qlat')
 
 deps = [ mpic, qlat, ]
 
-subdir('include')
 subdir('qlat_ext')
 
 run_py = custom_target('run.py',

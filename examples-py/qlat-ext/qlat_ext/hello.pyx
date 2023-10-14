@@ -1,8 +1,7 @@
-from .everything cimport *
-from qlat.everything cimport *
+from . cimport everything as cc
 
 cdef void hello_world_c():
-    cdef Timer timer = Timer(b"hello_world")
+    cdef cc.Timer timer = cc.Timer(b"hello_world")
     timer.start()
     print("hello world")
     timer.stop()
@@ -12,3 +11,6 @@ def hello_world():
 
 def hello_cpy(x):
     print(f"hello {x}")
+
+def hello():
+    return cc.hello()

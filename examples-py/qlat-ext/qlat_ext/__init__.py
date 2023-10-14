@@ -1,3 +1,3 @@
-import qlat_ext.c as ce
-
 from qlat import *
+
+from qlat_ext.c import *

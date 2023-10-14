@@ -79,8 +79,8 @@ qlat-ext.log: qlat-ext/meson.build
 	-time meson compile -C qlat-ext.p/qlat-ext-build -j$(num_proc)
 	-time meson install -C qlat-ext.p/qlat-ext-build
 	-time ( cd qlat-ext.p ; PYTHONPATH="$$PWD/qlat-ext-install/lib/python3/dist-packages:$$PYTHONPATH" qlat-ext-install/bin/run.py >log.full.txt 2>&1 ; grep "CHECK: " log.full.txt >log.txt )
-	-if diff "$<".p/log.txt "$@" ; then echo passed ; else cat "$<".p/log.full.txt ; false ; fi
-	-mv -v "$<".p/log.txt "$@"
+	-if diff qlat-ext.p/log.txt "$@" ; then echo passed ; else cat qlat-ext.p/log.full.txt ; false ; fi
+	-mv -v qlat-ext.p/log.txt "$@"
 
 clean:
 	-rm -rfv *.p

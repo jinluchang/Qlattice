@@ -1,13 +1,16 @@
-py_fns = run_command(
-  'bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.py | grep -v "_template\."',
-  check: true,
-  ).stdout().strip().split('\n')
+subdir('include')
+
+py_fns = [
+  '__init__.py',
+  'c.py',
+  ]
 py_files = files(py_fns)
 
-pxd_fns = run_command(
-  'bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.pxd | grep -v "_template\."',
-  check: true,
-  ).stdout().strip().split('\n')
+pxd_fns = [
+  'hello.pxd',
+  'everything.pxd',
+  'all.pxd',
+  ]
 pxd_files = files(pxd_fns)
 
 py3.install_sources(py_files + pxd_files, subdir: 'qlat_ext')
@@ -37,15 +40,15 @@ foreach i: range(py_fns.length())
 endforeach
 
 cp_pyx = custom_target(f'cp_pyx',
-  output: 'cp.pyx',
-  input: 'cp.pyx',
+  output: 'hello.pyx',
+  input: 'hello.pyx',
   command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
   depends : py_tgts + pxd_tgts,
   depend_files: all_header_files + qlat_pxd + qlat_header,
   install: false,
   )
 
-cplib = py3.extension_module('cp',
+cplib = py3.extension_module('hello',
   cp_pyx,
   dependencies: deps,
   include_directories: incdir,
