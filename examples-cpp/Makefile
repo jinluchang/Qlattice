@@ -43,8 +43,10 @@ run-proj: compile-proj
 	-mkdir build
 	-touch build/log build/log.full
 	-time meson compile -C build run
-	-if diff build/log log | grep '^CHECK: ' ; then cat build/log.full ; else echo passed ; fi
-	-cat build/log | grep '^CHECK: ' >log
+	-cat build/log | grep '^CHECK: ' >build/log.check
+	-if diff build/log.check log ; then cat build/log.full ; else echo passed ; fi
+	-rm -rfv log
+	-cp build/log.check log
 	-cp build/log.full log.full
 
 clean-proj:
