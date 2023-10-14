@@ -15,7 +15,7 @@ assert os.path.isfile(lib_path)
 
 ctypes.CDLL(lib_path, mode=ctypes.RTLD_GLOBAL)
 
-from .cp import *
 from .cpa import *
+from .cp import *
 
 sys.setdlopenflags(flags)

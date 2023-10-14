@@ -2,10 +2,9 @@ subdir('include')
 subdir('lib')
 subdir('scripts')
 
-init_fns = [
+init_files = files(
   '__init__.py',
-  ]
-init_files = files(init_fns)
+  )
 
 py_fns = [
   'ama.py',
@@ -27,7 +26,7 @@ py_fns = [
 py_files = files(py_fns)
 
 pxd_fns = [
-  'all.pxd',
+  '__init__.pxd',
   'complex.pxd',
   'coordinate.pxd',
   'cpa.pxd',
@@ -63,15 +62,8 @@ pxi_files = files(pxi_fns)
 py3.install_sources(init_files + py_files + pxd_files, subdir: 'qlat_utils')
 
 init_tgts = []
-foreach i: range(init_fns.length())
-  fn = init_fns[i]
-  file = init_files[i]
-  init_tgts += custom_target(fn,
-    output: fn,
-    input: file,
-    command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
-    install: false,
-    )
+foreach f: init_files
+  init_tgts += fs.copyfile(f)
 endforeach
 
 py_tgts = []
@@ -110,40 +102,27 @@ foreach i: range(pxi_fns.length())
     )
 endforeach
 
-cp_pyx = custom_target(f'cp_pyx',
-  output: 'cp.pyx',
-  input: 'cp.pyx',
-  command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
-  depends : init_tgts + pxd_tgts + pxi_tgts,
-  depend_files: all_header_files,
-  install: false,
-  )
+pyx_name_list = [
+  'cp',
+  'cpa',
+  ]
 
-cplib = py3.extension_module('cp',
-  cp_pyx,
-  dependencies: deps,
-  include_directories: incdir,
-  link_with: clib,
-  install: true,
-  subdir: 'qlat_utils',
-  install_rpath: '$ORIGIN/lib',
-  )
-
-cpa_pyx = custom_target(f'cpa_pyx',
-  output: 'cpa.pyx',
-  input: 'cpa.pyx',
-  command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
-  depends : init_tgts + pxd_tgts + pxi_tgts,
-  depend_files: all_header_files,
-  install: false,
-  )
-
-cpalib = py3.extension_module('cpa',
-  cpa_pyx,
-  dependencies: deps,
-  include_directories: incdir,
-  link_with: clib,
-  install: true,
-  subdir: 'qlat_utils',
-  install_rpath: '$ORIGIN/lib',
-  )
+foreach pyx_name: pyx_name_list
+  pyx = custom_target(f'@pyx_name@_pyx',
+    output: f'@pyx_name@.pyx',
+    input: f'@pyx_name@.pyx',
+    command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
+    depends : init_tgts + pxd_tgts + pxi_tgts,
+    depend_files: all_header_files,
+    install: false,
+    )
+  lib = py3.extension_module(pyx_name,
+    pyx,
+    dependencies: deps,
+    include_directories: incdir,
+    link_with: clib,
+    install: true,
+    subdir: 'qlat_utils',
+    install_rpath: '$ORIGIN/lib',
+    )
+endforeach

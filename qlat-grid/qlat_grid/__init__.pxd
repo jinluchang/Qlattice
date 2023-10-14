@@ -1,4 +1,4 @@
 # all cython level import
 
-from qlat.all cimport *
+from qlat cimport *
 from .cp cimport *

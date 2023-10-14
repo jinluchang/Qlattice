@@ -43,7 +43,7 @@ py_fns = [
 py_files = files(py_fns)
 
 pxd_fns = [
-  'all.pxd',
+  '__init__.pxd',
   'everything.pxd',
   'field.pxd',
   'geometry.pxd',

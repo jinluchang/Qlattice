@@ -19,6 +19,8 @@ py3 = py_mod.find_installation('python3', pure: false)
 message(py3.path())
 message(py3.get_install_dir())
 
+fs = import('fs')
+
 omp = dependency('openmp').as_system()
 zlib = dependency('zlib').as_system()
 math = cpp.find_library('m')
