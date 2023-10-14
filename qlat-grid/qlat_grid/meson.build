@@ -1,3 +1,4 @@
+subdir('scripts')
 subdir('include')
 subdir('lib')
 
