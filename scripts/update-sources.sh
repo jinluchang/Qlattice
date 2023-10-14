@@ -4,7 +4,7 @@ source qcore/conf.sh
 
 (
 
-cd "$wd/qlat/pylib/cqlat"
+cd "$wd/qlat/cqlat"
 
 bash update.sh
 
@@ -21,7 +21,7 @@ sed -i "s/^release = '.*'$/release = '$version'/" docs/conf.py
 
 sed -i "s/^  version: '.*',$/  version: '$version',/" qlat*/meson.build
 
-sed -i "s/^    version=\".*\" # default version$/    version=\"v$version-current\" # default version/" qlat-utils/lib/version_gen.sh
+sed -i "s/^    version=\".*\" # default version$/    version=\"v$version-current\" # default version/" qlat-utils/qlat_utils/lib/version_gen.sh
 
 echo "Version info updated."
 
