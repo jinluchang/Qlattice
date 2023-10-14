@@ -1,6 +1,0 @@
-#!/usr/bin/env python3
-
-import qlat_cps as q
-
-for path in q.get_include_list():
-    print(path)

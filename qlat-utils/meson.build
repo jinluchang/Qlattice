@@ -41,9 +41,7 @@ endif
 
 deps = [ py3.dependency().as_system(), numpy, eigen, omp, zlib, math, ]
 
-subdir('include')
-subdir('lib')
-subdir('pylib')
+subdir('qlat_utils')
 
 c = run_command('bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls bin/*', check: true)
 scripts = files(c.stdout().strip().split('\n'))

@@ -1,3 +1,7 @@
+subdir('include')
+subdir('lib')
+subdir('scripts')
+
 init_fns = [
   '__init__.py',
   ]
@@ -143,5 +147,3 @@ cpalib = py3.extension_module('cpa',
   subdir: 'qlat_utils',
   install_rpath: '$ORIGIN/lib',
   )
-
-subdir('scripts')

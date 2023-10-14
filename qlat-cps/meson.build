@@ -33,10 +33,4 @@ subdir('depend-cps')
 
 deps = [ mpic, qlat, cps, ]
 
-subdir('include')
-subdir('lib')
-subdir('pylib')
-
-c = run_command('bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls bin/*', check: true)
-scripts = files(c.stdout().strip().split('\n'))
-install_data(scripts, install_dir: get_option('bindir'), install_mode: 'rwxr-xr-x')
+subdir('qlat_cps')

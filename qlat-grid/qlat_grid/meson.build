@@ -1,3 +1,6 @@
+subdir('include')
+subdir('lib')
+
 py_fns = run_command(
   'bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.py | grep -v "_template\."',
   check: true,
@@ -10,7 +13,7 @@ pxd_fns = run_command(
   ).stdout().strip().split('\n')
 pxd_files = files(pxd_fns)
 
-py3.install_sources(py_files + pxd_files, subdir: 'qlat_cps')
+py3.install_sources(py_files + pxd_files, subdir: 'qlat_grid')
 
 pxd_tgts = []
 foreach i: range(pxd_fns.length())
@@ -51,6 +54,6 @@ cplib = py3.extension_module('cp',
   include_directories: incdir,
   link_with: clib,
   install: true,
-  subdir: 'qlat_cps',
+  subdir: 'qlat_grid',
   install_rpath: ':'.join(qlat_lib + [ '$ORIGIN/lib', ]),
   )
