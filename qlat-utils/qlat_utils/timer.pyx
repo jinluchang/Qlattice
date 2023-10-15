@@ -4,6 +4,8 @@ from . cimport everything as cc
 
 import functools
 
+### -------------------------------------------------------------------
+
 def verbose_level(level = None):
     """
     Return or set the current verbosity level as integer.\n

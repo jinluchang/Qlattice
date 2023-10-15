@@ -13,7 +13,7 @@ from .load_prop import *
 
 from .cache import *
 
-from .qar import *
+from .qar_utils import *
 
 from .utils import *
 

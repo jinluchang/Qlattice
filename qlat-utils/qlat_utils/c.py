@@ -14,6 +14,8 @@ __all__ += [
 
 __all__ += [
         'RngState',
+        'get_double_sig',
+        'random_permute',
         ]
 
 __all__ += [
@@ -63,7 +65,6 @@ __all__ += [
         ]
 
 __all__ += [
-        'flush',
         'get_id_node',
         'get_num_node',
         'verbose_level',
@@ -89,6 +90,11 @@ __all__ += [
         'displayln_info',
         ]
 
+__all__ += [
+        'displayln_malloc_stats',
+        'flush',
+        ]
+
 # ----------------------------------
 
 import ctypes
@@ -108,8 +114,13 @@ assert os.path.isfile(lib_path)
 
 ctypes.CDLL(lib_path, mode=ctypes.RTLD_GLOBAL)
 
-from .cpa import *
-from .cp import *
+from .cutils import *
 from .timer import *
+from .types import *
+from .coordinate import *
+from .lat_data import *
+from .rng_state import *
+from .qar import *
+from .mat import *
 
 sys.setdlopenflags(flags)

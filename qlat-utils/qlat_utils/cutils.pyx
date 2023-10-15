@@ -1,3 +1,9 @@
+# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+
+from . cimport everything as cc
+
+### -------------------------------------------------------------------
+
 def flush():
     cc.flush()
 
@@ -84,3 +90,16 @@ def qload_datatable(const cc.std_string& path, const cc.bool is_par = False):
 def check_all_files_crc32_info(const cc.std_string& path):
     return cc.check_all_files_crc32_info(path)
 
+### -------------------------------------------------------------------
+
+def displayln_malloc_stats():
+    cc.displayln_malloc_stats()
+
+### -------------------------------------------------------------------
+
+def get_all_caches_info():
+    cdef list l = cc.get_all_caches_info()
+    return [ str(v) for v in l ]
+
+def clear_all_caches():
+    cc.clear_all_caches()

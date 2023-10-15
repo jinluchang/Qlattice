@@ -16,9 +16,8 @@ py_fns = [
   'load_prop.py',
   '__main__.py',
   'parallel.py',
-  'qar.py',
+  'qar_utils.py',
   'qplot.py',
-  'rng_state.py',
   'utils_io.py',
   'utils.py',
   ]
@@ -26,28 +25,20 @@ py_files = files(py_fns)
 
 pxd_fns = [
   '__init__.pxd',
-  'cpa.pxd',
   'everything.pxd',
   'timer.pxd',
   'types.pxd',
+  'mat.pxd',
+  'rng_state.pxd',
+  'coordinate.pxd',
+  'lat_data.pxd',
   ]
 pxd_files = files(pxd_fns)
-
-pxi_fns = [
-  'coordinate_d.inc.pyx',
-  'coordinate.inc.pyx',
-  'lat_io.inc.pyx',
-  'qar.inc.pyx',
-  'rng_state.inc.pyx',
-  'utils.inc.pyx',
-  'utils_io.inc.pyx',
-  ]
-pxi_files = files(pxi_fns)
 
 py3.install_sources(init_files + py_files + pxd_files, subdir: 'qlat_utils')
 
 pyx_dep_tgts = []
-foreach f: init_files + pxd_files + pxi_files
+foreach f: init_files + pxd_files
   pyx_dep_tgts += fs.copyfile(f)
 endforeach
 
@@ -59,7 +50,12 @@ endforeach
 pyx_name_list = [
   'timer',
   'types',
-  'cpa',
+  'cutils',
+  'rng_state',
+  'coordinate',
+  'lat_data',
+  'qar',
+  'mat',
   ]
 
 foreach pyx_name: pyx_name_list

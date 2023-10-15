@@ -1,8 +1,5 @@
-from . import c
-
 from .timer import *
 from .cache import *
-from .rng_state import *
 
 from .c import random_permute, displayln_malloc_stats
 

@@ -1,3 +1,11 @@
+# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+
+from . cimport everything as cc
+
+from .timer cimport *
+
+### ----------------------------------------------------------
+
 def get_qar_multi_vol_max_size(size = None):
     """
     Parameter controls the size of a single `qar` file in number of bytes. Note, `qar` never splits a single file into multiple `qar` volume.

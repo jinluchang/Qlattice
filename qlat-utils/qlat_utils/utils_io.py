@@ -3,23 +3,25 @@ import qlat_utils.c as c
 import os
 import pickle
 
-from qlat_utils.c import qremove, qremove_all
-from qlat_utils.c import qmkdir, qmkdir_info
-from qlat_utils.c import is_directory
-from qlat_utils.c import is_regular_file
-from qlat_utils.c import does_file_exist
-from qlat_utils.c import is_directory_cache
-from qlat_utils.c import is_regular_file_cache
-from qlat_utils.c import does_file_exist_cache
-from qlat_utils.c import clear_is_directory_cache
-from qlat_utils.c import qrename, qrename_info
-from qlat_utils.c import qls
-from qlat_utils.c import qls_all
-from qlat_utils.c import compute_crc32
-from qlat_utils.c import qload_datatable
-from qlat_utils.c import check_all_files_crc32_info
+from .c import qremove, qremove_all
+from .c import qmkdir, qmkdir_info
+from .c import is_directory
+from .c import is_regular_file
+from .c import does_file_exist
+from .c import is_directory_cache
+from .c import is_regular_file_cache
+from .c import does_file_exist_cache
+from .c import clear_is_directory_cache
+from .c import qrename, qrename_info
+from .c import qls
+from .c import qls_all
+from .c import compute_crc32
+from .c import qload_datatable
+from .c import check_all_files_crc32_info
 
-from qlat_utils.qar import *
+from .qar import *
+
+from .c import timer
 
 @timer
 def qmkdirs(path):

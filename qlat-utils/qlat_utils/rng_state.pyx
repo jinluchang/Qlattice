@@ -1,3 +1,19 @@
+# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+
+from . cimport everything as cc
+from cpython cimport Py_buffer
+from cpython.buffer cimport PyBUF_FORMAT
+cimport numpy
+
+import numpy as np
+import functools
+
+from .timer cimport *
+from .types cimport *
+from .mat cimport *
+from .coordinate cimport *
+from .lat_data cimport *
+
 cdef class RngState:
 
     def __cinit__(self):
@@ -116,3 +132,21 @@ def get_double_sig(x, RngState rs):
         return get_double_sig(np.asarray(x), rs)
     else:
         return None
+
+@timer
+def random_permute(list l, RngState rs):
+    """
+    Do not change `l`.
+    Return a new permuted list.
+    """
+    cdef long size = len(l)
+    cdef cc.std_vector[cc.PyObject*] vec
+    vec.resize(size)
+    cdef long i = 0
+    for i in range(size):
+        vec[i] = <cc.PyObject*>l[i]
+    cc.random_permute(vec, rs.xx)
+    cdef list l_new = []
+    for i in range(size):
+        l_new.append(<object>vec[i])
+    return l_new

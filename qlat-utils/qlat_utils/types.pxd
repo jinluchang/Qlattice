@@ -1,5 +1,15 @@
 from . cimport everything as cqlat_utils
 
+cdef class Buffer:
+    cdef object obj
+    cdef int ndim
+    cdef Py_ssize_t itemsize
+    cdef cqlat_utils.std_vector[Py_ssize_t] shape_strides # shape.size() == 2 * ndim
+    cdef Py_ssize_t get_len(self)
+    cdef void set_strides(self)
+
+### -------------------------------------------------------------------
+
 cdef class ElemType:
     pass
 
@@ -171,30 +181,4 @@ cdef class ElemTypeChar(ElemType):
     @staticmethod
     cdef Py_ssize_t size()
 
-### -------------------------------------------------------------------
 
-cdef class Buffer:
-    cdef object obj
-    cdef int ndim
-    cdef Py_ssize_t itemsize
-    cdef cqlat_utils.std_vector[Py_ssize_t] shape_strides # shape.size() == 2 * ndim
-    cdef Py_ssize_t get_len(self)
-    cdef void set_strides(self)
-
-cdef class WilsonMatrix:
-    cdef cqlat_utils.WilsonMatrix xx
-    cdef readonly long cdata
-
-cdef class SpinMatrix:
-    cdef cqlat_utils.SpinMatrix xx
-    cdef readonly long cdata
-
-cdef class ColorMatrix:
-    cdef cqlat_utils.ColorMatrix xx
-    cdef readonly long cdata
-
-cdef cqlat_utils.SpinMatrix gamma_matrix_0
-cdef cqlat_utils.SpinMatrix gamma_matrix_1
-cdef cqlat_utils.SpinMatrix gamma_matrix_2
-cdef cqlat_utils.SpinMatrix gamma_matrix_3
-cdef cqlat_utils.SpinMatrix gamma_matrix_5
