@@ -22,7 +22,7 @@
 from .compile import *
 from qlat_utils.ama import *
 
-from qlat_utils.cp import \
+from qlat_utils.c import \
         as_wilson_matrix, as_wilson_matrix_g5_herm
 
 from . import auto_fac_funcs as aff

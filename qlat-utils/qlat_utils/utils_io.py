@@ -19,9 +19,9 @@ from .c import compute_crc32
 from .c import qload_datatable
 from .c import check_all_files_crc32_info
 
-from .qar import *
+from .qar_utils import *
 
-from .c import timer
+from .c import *
 
 @timer
 def qmkdirs(path):
