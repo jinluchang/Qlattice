@@ -2,13 +2,13 @@
 
 name=qlat-packages
 
+./scripts/qlat-packages-uninstall.sh
+
 source qcore/set-prefix.sh $name
 
 { time {
     echo "!!!! build $name !!!!"
     source qcore/conf.sh ..
-
-    ./scripts/qlat-packages-uninstall.sh
 
     time-run find ~/.cache/pip/wheels -type f || true
     time-run find ~/.cache/pip/wheels -type f -name 'qlat*.whl' -delete || true
