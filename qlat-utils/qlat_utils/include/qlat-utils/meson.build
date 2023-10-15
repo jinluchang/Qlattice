@@ -25,10 +25,45 @@ endif
 config_file = configure_file(output: 'config.h', configuration: conf_data)
 py3.install_sources(config_file, subdir: 'qlat_utils/include/qlat-utils')
 
-header_fns = run_command(
-  'bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.h | grep -v "^config.h$"',
-  check: true,
-  ).stdout().strip().split('\n')
+header_fns = [
+  'array.h',
+  'assert.h',
+  'cache.h',
+  'compatible-endian.h',
+  'compatible-omp.h',
+  'complex.h',
+  'coordinate-d.h',
+  'coordinate.h',
+  'core.h',
+  'crc32.h',
+  'eigen.h',
+  'env.h',
+  'handle.h',
+  'lat-io.h',
+  'mat.h',
+  'matrix.h',
+  'matrix-hmc.h',
+  'mat-vec.h',
+  'mvector.h',
+  'py_convert.h',
+  'qacc-func.h',
+  'qacc.h',
+  'qar-cache.h',
+  'qar.h',
+  'qcd-setting.h',
+  'qutils-extra.h',
+  'qutils.h',
+  'qutils-io.h',
+  'qutils-vec.h',
+  'rng-state.h',
+  'sha256.h',
+  'show.h',
+  'sprng-sha256.h',
+  'timer.h',
+  'types.h',
+  'vector.h',
+  'version.h',
+  ]
 header_files = files(header_fns)
 py3.install_sources(header_files, subdir: 'qlat_utils/include/qlat-utils')
 

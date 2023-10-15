@@ -1,3 +1,3 @@
 from .timer cimport *
-from .cp cimport *
+from .types cimport *
 from .cpa cimport *

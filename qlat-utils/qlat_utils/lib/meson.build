@@ -1,5 +1,11 @@
-c = run_command('bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.cpp | grep -v version.cpp', check: true)
-cppsources = files(c.stdout().strip().split('\n'))
+cppsource_fns = [
+  'lat-io.cpp',
+  'mat.cpp',
+  'qar.cpp',
+  'rng-state.cpp',
+  'utils-io.cpp',
+  ]
+cppsources = files(cppsource_fns)
 py3.install_sources(cppsources, subdir: 'qlat_utils/lib')
 
 version = custom_target('version',

@@ -27,19 +27,16 @@ py_files = files(py_fns)
 pxd_fns = [
   '__init__.pxd',
   'cpa.pxd',
-  'cp.pxd',
   'everything.pxd',
   'timer.pxd',
+  'types.pxd',
   ]
 pxd_files = files(pxd_fns)
 
 pxi_fns = [
-  'buffer.inc.pyx',
   'coordinate_d.inc.pyx',
   'coordinate.inc.pyx',
-  'elem_type.inc.pyx',
   'lat_io.inc.pyx',
-  'mat.inc.pyx',
   'qar.inc.pyx',
   'rng_state.inc.pyx',
   'utils.inc.pyx',
@@ -92,7 +89,7 @@ endforeach
 
 pyx_name_list = [
   'timer',
-  'cp',
+  'types',
   'cpa',
   ]
 

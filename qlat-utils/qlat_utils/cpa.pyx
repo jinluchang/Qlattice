@@ -8,8 +8,8 @@ cimport numpy
 import numpy as np
 import functools
 
-from .cp cimport *
 from .timer cimport *
+from .types cimport *
 
 include "rng_state.inc.pyx"
 
