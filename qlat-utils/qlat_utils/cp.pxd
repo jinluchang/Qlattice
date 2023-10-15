@@ -173,13 +173,6 @@ cdef class ElemTypeChar(ElemType):
 
 ### -------------------------------------------------------------------
 
-cdef class Timer:
-    cdef cqlat_utils.Timer xx
-    cdef cqlat_utils.bool is_verbose
-
-cdef class TimerNone:
-    pass
-
 cdef class Buffer:
     cdef object obj
     cdef int ndim

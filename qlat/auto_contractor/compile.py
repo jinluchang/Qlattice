@@ -1179,7 +1179,8 @@ class CExprCodeGenPy:
             append(f"from auto_contractor.runtime import *")
         append_cy(f"import cython")
         append_cy(f"cimport qlat_utils.everything as cc")
-        append_cy(f"cimport qlat_utils.cp as cp")
+        append_cy(f"cimport qlat_utils as qu")
+        append_cy(f"cimport libcpp.complex")
         append_cy(f"cimport numpy")
         self.sep()
         self.cexpr_function()
@@ -1227,7 +1228,7 @@ class CExprCodeGenPy:
             assert x.tag in [ 0, 1, 2, 3, 5, ] or isinstance(x.tag, str)
             if self.is_cython:
                 if x.tag in [ 0, 1, 2, 3, 5, ]:
-                    return f"cp.gamma_matrix_{x.tag}", "V_G"
+                    return f"qu.gamma_matrix_{x.tag}", "V_G"
                 else:
                     return f"cc.get_gamma_matrix({x.tag})", "V_G"
             else:
@@ -1472,7 +1473,7 @@ class CExprCodeGenPy:
             assert x.otype == "U"
             c, t = self.gen_expr(x)
             assert t == "V_U"
-            append_cy(f"cdef cp.ColorMatrix {name} = {c}")
+            append_cy(f"cdef qu.ColorMatrix {name} = {c}")
             append_py(f"{name} = {c}")
         append(f"# set props for return")
         append(f"props = [")
@@ -1496,12 +1497,12 @@ class CExprCodeGenPy:
             c, t = self.gen_expr(x)
             assert t == "V_a"
             append(f"# {idx} {name}")
-            append_cy(f"cdef cc.Complex {name} = {c}")
+            append_cy(f"cdef cc.PyComplex {name} = {c}")
             append_py(f"{name} = {c}")
         append(f"# declare factors")
         append_cy(f"cdef numpy.ndarray[numpy.complex128_t] factors")
         append(f"factors = np.zeros({len(cexpr.variables_factor)}, dtype=np.complex128)")
-        append_cy(f"cdef cc.Complex[:] factors_view = factors")
+        append_cy(f"cdef cc.PyComplex[:] factors_view = factors")
         append_py(f"factors_view = factors")
         append(f"# set factors")
         for idx, (name, value,) in enumerate(cexpr.variables_factor):
@@ -1511,7 +1512,7 @@ class CExprCodeGenPy:
             c, t = self.gen_expr(x)
             assert t == "V_a"
             append(f"# {name}")
-            append_cy(f"cdef cc.Complex {name} = {c}")
+            append_cy(f"cdef cc.PyComplex {name} = {c}")
             append_py(f"{name} = {c}")
             append(f"factors_view[{idx}] = {name}")
         append(f"# set flops")
@@ -1548,7 +1549,7 @@ class CExprCodeGenPy:
         append(f"@timer_flops")
         append_cy(f"@cython.boundscheck(False)")
         append_cy(f"@cython.wraparound(False)")
-        append_cy(f"def cexpr_function_eval_with_props(dict positions_dict, list props, list cms, cc.Complex[:] factors_view):")
+        append_cy(f"def cexpr_function_eval_with_props(dict positions_dict, list props, list cms, cc.PyComplex[:] factors_view):")
         append_py(f"def cexpr_function_eval_with_props(positions_dict, props, cms, factors_view):")
         self.indent += 4
         append(f"# set positions")
@@ -1559,15 +1560,15 @@ class CExprCodeGenPy:
                 append(f"{position_var} = positions_dict['{position_var}']")
         append(f"# set props")
         for idx, (name, value,) in enumerate(cexpr.variables_prop):
-            append_cy(f"cdef cc.WilsonMatrix* p_{name} = &(<cp.WilsonMatrix>props[{idx}]).xx")
+            append_cy(f"cdef cc.WilsonMatrix* p_{name} = &(<qu.WilsonMatrix>props[{idx}]).xx")
             append_py(f"p_{name} = props[{idx}]")
         append(f"# set cms")
         for idx, (name, value,) in enumerate(cexpr.variables_color_matrix):
-            append_cy(f"cdef cc.ColorMatrix* p_{name} = &(<cp.ColorMatrix>cms[{idx}]).xx")
+            append_cy(f"cdef cc.ColorMatrix* p_{name} = &(<qu.ColorMatrix>cms[{idx}]).xx")
             append_py(f"p_{name} = cms[{idx}]")
         append(f"# set factors")
         for idx, (name, value,) in enumerate(cexpr.variables_factor):
-            append_cy(f"cdef cc.Complex {name} = factors_view[{idx}]")
+            append_cy(f"cdef cc.PyComplex {name} = factors_view[{idx}]")
             append_py(f"{name} = factors_view[{idx}]")
         append(f"# compute products")
         for name, value in cexpr.variables_prod:
@@ -1593,7 +1594,7 @@ class CExprCodeGenPy:
             assert x.otype == "Tr"
             c, t = self.gen_expr(x)
             assert t == "V_a"
-            append_cy(f"cdef cc.Complex {name} = {c}")
+            append_cy(f"cdef cc.PyComplex {name} = cc.py_complex_cast({c})")
             append_py(f"{name} = {c}")
         append(f"# set terms")
         for name, term in cexpr.named_terms:
@@ -1603,12 +1604,12 @@ class CExprCodeGenPy:
             else:
                 c_ops = [ x.coef, ] + x.c_ops
             c, t = self.gen_expr_prod_list(c_ops)
-            append_cy(f"cdef cc.Complex {name} = {c}")
+            append_cy(f"cdef cc.PyComplex {name} = {c}")
             append_py(f"{name} = {c}")
         append(f"# declare exprs")
         append_cy(f"cdef numpy.ndarray[numpy.complex128_t] exprs")
         append(f"exprs = np.zeros({len(cexpr.named_exprs)}, dtype = np.complex128)")
-        append_cy(f"cdef cc.Complex[:] exprs_view = exprs")
+        append_cy(f"cdef cc.PyComplex[:] exprs_view = exprs")
         append_py(f"exprs_view = exprs")
         append(f"# set exprs")
         def show_coef_term(coef, tname):
@@ -1618,7 +1619,7 @@ class CExprCodeGenPy:
                 return f"{tname}"
             else:
                 return f"({coef}) * {tname}"
-        append_cy(f"cdef cc.Complex expr")
+        append_cy(f"cdef cc.PyComplex expr")
         for idx, (name, expr,) in enumerate(cexpr.named_exprs):
             name = name.replace("\n", "  ")
             append(f"# {idx} name='{name}' ")

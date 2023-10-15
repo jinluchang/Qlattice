@@ -61,6 +61,20 @@ from .c import \
         ElemTypeInt8t, \
         ElemTypeChar
 
+from .c import \
+        flush, \
+        get_id_node, get_num_node, \
+        verbose_level, \
+        get_time, get_start_time, get_actual_start_time, \
+        get_total_time, get_actual_total_time, \
+        timer_display, timer_autodisplay, \
+        timer_display_stack, timer_display_stack_always, \
+        timer_reset, timer_fork, timer_merge, \
+        timer, timer_verbose, \
+        timer_flops, timer_verbose_flops, \
+        Timer, TimerNone, \
+        displayln, displayln_info
+
 from .timer import *
 
 from .ama import *

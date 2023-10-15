@@ -8,7 +8,7 @@ cimport numpy
 import numpy as np
 import functools
 
-include "timer.inc.pyx"
+from .timer cimport *
 
 include "elem_type.inc.pyx"
 

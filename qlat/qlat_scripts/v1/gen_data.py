@@ -371,7 +371,7 @@ def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_
         psel_smear = get_psel_smear()
         gf_ape = get_gf_ape()
         compute_prop_smear_all(job_tag, traj,
-                inv_type = inv_type, gf = gf, gf_ape = gf_ape, gt = gt, 
+                inv_type = inv_type, gf = gf, gf_ape = gf_ape, gt = gt,
                 psel = psel, fsel = fsel, fselc = fselc, eig = eig, psel_smear = psel_smear)
         q.release_lock()
 

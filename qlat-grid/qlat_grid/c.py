@@ -1,3 +1,5 @@
+from qlat.c import *
+
 import ctypes
 import sys
 import os

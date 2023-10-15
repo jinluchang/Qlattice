@@ -19,7 +19,6 @@ py_fns = [
   'qar.py',
   'qplot.py',
   'rng_state.py',
-  'timer.py',
   'utils_io.py',
   'utils.py',
   ]
@@ -27,20 +26,10 @@ py_files = files(py_fns)
 
 pxd_fns = [
   '__init__.pxd',
-  'complex.pxd',
-  'coordinate.pxd',
   'cpa.pxd',
   'cp.pxd',
-  'elem_type.pxd',
   'everything.pxd',
-  'lat_io.pxd',
-  'mat.pxd',
-  'qar.pxd',
-  'rng_state.pxd',
   'timer.pxd',
-  'utils_io.pxd',
-  'utils.pxd',
-  'vector.pxd',
   ]
 pxd_files = files(pxd_fns)
 
@@ -53,7 +42,6 @@ pxi_fns = [
   'mat.inc.pyx',
   'qar.inc.pyx',
   'rng_state.inc.pyx',
-  'timer.inc.pyx',
   'utils.inc.pyx',
   'utils_io.inc.pyx',
   ]
@@ -103,6 +91,7 @@ foreach i: range(pxi_fns.length())
 endforeach
 
 pyx_name_list = [
+  'timer',
   'cp',
   'cpa',
   ]

@@ -411,7 +411,7 @@ void release_lock_all_node()
 //       "WARNING: do not use this function. get_lock_expiration_time_limit");
 //   return get_time_limit();
 // }
-// 
+//
 // void set_lock_expiration_time_limit()
 // // obsolete
 // {

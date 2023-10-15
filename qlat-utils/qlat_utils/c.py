@@ -17,5 +17,6 @@ ctypes.CDLL(lib_path, mode=ctypes.RTLD_GLOBAL)
 
 from .cpa import *
 from .cp import *
+from .timer import *
 
 sys.setdlopenflags(flags)

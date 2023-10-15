@@ -28,7 +28,7 @@ struct ScalarAction {
     lmbd = lmbd_;
     alpha = alpha_;
   }
-  
+
   qacc double action_point(const Field<double>& sf, const int multiplicity, Coordinate xl)
   {
     // Returns the contribution to the total action from a single lattice
@@ -53,11 +53,11 @@ struct ScalarAction {
     }
     return dphi_sq/2.0 + m_sq*phi_sq/2.0 + lmbd*phi_sq*phi_sq/24.0 + alpha*phi_0;
   }
-    
+
   inline double action_node_no_comm(const Field<double>& sf)
   {
-	// Returns the total action of the portion of the lattice on the 
-	// current node (assuming the necessary communication has already 
+	// Returns the total action of the portion of the lattice on the
+	// current node (assuming the necessary communication has already
 	// been done)
     TIMER("ScalarAction.action_node_no_comm");
     const Geometry geo = sf.geo();
@@ -85,13 +85,13 @@ struct ScalarAction {
     }
     return sum;
   }
-  
+
   inline double action_node(const Field<double>& sf)
   {
-	// Return the total Euclidean action (on the current node) associated 
+	// Return the total Euclidean action (on the current node) associated
 	// with the given scalar field.
     TIMER("ScalarAction.action_node");
-    // Get the values of the field sites that lie just outside of the 
+    // Get the values of the field sites that lie just outside of the
     // current node. This is needed to compute the derivative term.
     const Coordinate expand_left(0, 0, 0, 0);
     const Coordinate expand_right(1, 1, 1, 1);
@@ -103,18 +103,18 @@ struct ScalarAction {
     // Calculate the energy of the scalar field
     return action_node_no_comm(sf_ext);
   }
-  
+
   qacc double hmc_mass_p(const Coordinate& L, const Coordinate& pg)
   {
-    // Returns the momentum-dependent mass factor for HMC Fourier 
+    // Returns the momentum-dependent mass factor for HMC Fourier
     // acceleration
     // TIMER("ScalarAction.hmc_mass_p");
     return 4/(PI*PI)*(m_sq + 8 - 2*(std::cos(2*PI*pg[0]/L[0]) +
-									std::cos(2*PI*pg[1]/L[1]) + 
-									std::cos(2*PI*pg[2]/L[2]) + 
+									std::cos(2*PI*pg[1]/L[1]) +
+									std::cos(2*PI*pg[2]/L[2]) +
 									std::cos(2*PI*pg[3]/L[3])));
   }
-  
+
   inline void hmc_estimate_mass(Field<double>& masses, const Field<Complex>& field_ft, const Field<Complex>& force_ft, const double phi0)
   {
     TIMER("ScalarAction.hmc_estimate_mass");
@@ -139,7 +139,7 @@ struct ScalarAction {
       }
     });
   }
-  
+
   inline void to_mass_factor(Field<double>& sin_domega)
   {
     TIMER("ScalarAction.to_mass_factor");
@@ -157,10 +157,10 @@ struct ScalarAction {
 
   inline double hmc_m_hamilton_node(const Field<Complex>& sm_complex, const Field<double>& masses)
   {
-    // Return the part of an HMC Hamiltonian due to the given momentum 
+    // Return the part of an HMC Hamiltonian due to the given momentum
     // field (on the current node).
     TIMER("ScalarAction.hmc_m_hamilton_node");
-    // Creates a complex copy of the real field so that we can compute 
+    // Creates a complex copy of the real field so that we can compute
     // the Fourier transform
     // static Field<Complex> sm_complex;
     // set_complex_from_double(sm_complex, sm);
@@ -171,7 +171,7 @@ struct ScalarAction {
     // Creates a geometry that is the same as the field geometry, except
     // with multiplicity 1
     const Geometry geo_r = geo_reform(geo);
-    // Creates a field to save the contribution to the sum 
+    // Creates a field to save the contribution to the sum
     // from each point
     FieldM<double, 1> fd;
     fd.init(geo_r);
@@ -195,7 +195,7 @@ struct ScalarAction {
     }
     return sum;
   }
-  
+
   inline void hmc_set_force_no_comm(Field<double>& sm_force, const Field<double>& sf)
   {
     TIMER("ScalarAction.hmc_set_sm_force_no_comm");
@@ -226,10 +226,10 @@ struct ScalarAction {
       }
     });
   }
-  
+
   inline void hmc_set_force(Field<double>&  sm_force, const Field<double>&  sf)
   {
-	// Calculate and set the HMC force field based on the given field 
+	// Calculate and set the HMC force field based on the given field
 	// configuration.
     TIMER("ScalarAction.hmc_set_sm_force");
     Coordinate expand_left(1, 1, 1, 1);
@@ -241,7 +241,7 @@ struct ScalarAction {
     refresh_expanded(sf_ext);
     hmc_set_force_no_comm(sm_force, sf_ext);
   }
-  
+
   inline void hmc_field_evolve(Field<Complex>& sf_complex, const Field<Complex>& sm_complex,
                                const Field<double>& masses, const double step_size)
   {
@@ -271,7 +271,7 @@ struct ScalarAction {
     //sf_complex*=1/rt_V;
     //set_double_from_complex(sf, sf_complex);
   }
-  
+
   inline void axial_current_node_no_comm(Field<double>&  axial_current, const Field<double>& sf)
   {
     TIMER("ScalarAction.axial_current_node_no_comm");
@@ -295,17 +295,17 @@ struct ScalarAction {
       }
     });
   }
-  
+
   inline double sum_sq(const Field<double>& f)
   {
-    // Returns the sum of f(x)^2 over lattice sites (on the current 
+    // Returns the sum of f(x)^2 over lattice sites (on the current
     // node) and multiplicity
     TIMER("field_sum_sq");
     const Geometry geo = f.geo();
     // Creates a geometry that is the same as the field geometry, except
     // with multiplicity 1
     const Geometry geo_r = geo_reform(geo);
-    // Creates a field to save the contribution to the sum of squares 
+    // Creates a field to save the contribution to the sum of squares
     // from each point
     FieldM<double, 1> fd;
     fd.init(geo_r);
@@ -328,10 +328,10 @@ struct ScalarAction {
     }
     return sum;
   }
-  
+
   inline void axial_current_node(Field<double>& axial_current, const Field<double>& sf)
   {
-	// Sets the axial_current field based on the provided field 
+	// Sets the axial_current field based on the provided field
 	// configuration sf. axial_current.get_elem(x,i) will give the time
 	// component of the ith axial current vector at position x-a/2.
     TIMER("ScalarAction.axial_current_node");
@@ -344,7 +344,7 @@ struct ScalarAction {
     refresh_expanded(sf_ext);
     axial_current_node_no_comm(axial_current, sf_ext);
   }
-  
+
   inline void hmc_set_rand_momentum(Field<Complex>& sm_complex, const Field<double>& masses, const RngState& rs)
   {
     TIMER("set_rand_momentum");
@@ -363,7 +363,7 @@ struct ScalarAction {
       }
     });
   }
-  
+
   inline void hmc_predict_field(Field<Complex>& field_ft, const Field<Complex>& momentum_ft, const Field<double>& masses, const double vev_sigma)
   {
     TIMER("hmc_predict_field");
@@ -393,7 +393,7 @@ struct ScalarAction {
 
   inline void get_polar_field(Field<double>& polar_fields, const Field<double>& sf)
   {
-	// Sets the fields corresponding to polar coordinates based on the 
+	// Sets the fields corresponding to polar coordinates based on the
     // provided cartesian field configuration sf.
     TIMER("ScalarAction.get_polar_field");
     const Geometry geo = sf.geo();
@@ -417,7 +417,7 @@ struct ScalarAction {
       pf_v[3] = phi*z/(pf_v[0]*std::sin(phi/pf_v[0]));
     });
   }
-   
+
 };
 
 }  // namespace qlat

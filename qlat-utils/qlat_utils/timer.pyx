@@ -1,3 +1,9 @@
+# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+
+from . cimport everything as cc
+
+import functools
+
 def verbose_level(level = None):
     """
     Return or set the current verbosity level as integer.\n
@@ -155,7 +161,27 @@ def timer_merge():
 
 ### -------------------------------------------------------------------
 
-def timer(func):
+def timer_builder(object func, cc.bool is_verbose, cc.bool is_flops) -> object:
+    cdef cc.std_string fname = "py:" + func.__name__
+    cdef cc.Timer qtimer = cc.Timer(fname)
+    if not is_flops:
+        @functools.wraps(func)
+        def qtimer_func(*args, **kwargs):
+            qtimer.start(is_verbose)
+            ret = func(*args, **kwargs)
+            qtimer.stop(is_verbose)
+            return ret
+    else:
+        @functools.wraps(func)
+        def qtimer_func(*args, **kwargs):
+            qtimer.start(is_verbose)
+            flops, ret = func(*args, **kwargs)
+            qtimer.flops += flops
+            qtimer.stop(is_verbose)
+            return ret
+    return qtimer_func
+
+cpdef object timer(object func):
     """
     Timing functions.\n
     Usage::\n
@@ -163,15 +189,7 @@ def timer(func):
         def function(args):
             ...
     """
-    cdef cc.std_string fname = "py:" + func.__name__
-    cdef cc.Timer qtimer = cc.Timer(fname)
-    @functools.wraps(func)
-    def qtimer_func(*args, **kwargs):
-        qtimer.start()
-        ret = func(*args, **kwargs)
-        qtimer.stop()
-        return ret
-    return qtimer_func
+    return timer_builder(func, False, False)
 
 def timer_verbose(func):
     """

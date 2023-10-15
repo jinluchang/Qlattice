@@ -35,6 +35,7 @@ import math
 import importlib
 import time
 import os
+import glob
 import subprocess
 import functools
 
@@ -102,6 +103,9 @@ def cache_compiled_cexpr(
     @q.timer
     def compile_cexpr_meson_compile():
         subprocess.run(["meson", "compile", "-C", "build"], cwd = path)
+        objs = glob.glob(f"{path}/build/cexpr_code.*.so")
+        if len(objs) != 1:
+            raise Exception(f"WARNING: compile_cexpr_meson_compile: {objs}")
     @q.timer
     def calc_compile_cexpr():
         q.timer_fork()

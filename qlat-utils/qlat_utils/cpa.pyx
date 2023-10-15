@@ -9,7 +9,7 @@ import numpy as np
 import functools
 
 from .cp cimport *
-from .cp import timer
+from .timer cimport *
 
 include "rng_state.inc.pyx"
 

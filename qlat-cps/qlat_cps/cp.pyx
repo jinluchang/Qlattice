@@ -1,6 +1,6 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
-from qlat.all cimport *
+from qlat cimport *
 from . cimport everything as cc
 
 import sys
