@@ -46,45 +46,14 @@ pxi_files = files(pxi_fns)
 
 py3.install_sources(init_files + py_files + pxd_files, subdir: 'qlat_utils')
 
-init_tgts = []
-foreach f: init_files
-  init_tgts += fs.copyfile(f)
+pyx_dep_tgts = []
+foreach f: init_files + pxd_files + pxi_files
+  pyx_dep_tgts += fs.copyfile(f)
 endforeach
 
 py_tgts = []
-foreach i: range(py_fns.length())
-  fn = py_fns[i]
-  file = py_files[i]
-  py_tgts += custom_target(fn,
-    output: fn,
-    input: file,
-    command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
-    install: false,
-    )
-endforeach
-
-pxd_tgts = []
-foreach i: range(pxd_fns.length())
-  fn = pxd_fns[i]
-  file = pxd_files[i]
-  pxd_tgts += custom_target(fn,
-    output: fn,
-    input: file,
-    command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
-    install: false,
-    )
-endforeach
-
-pxi_tgts = []
-foreach i: range(pxi_fns.length())
-  fn = pxi_fns[i]
-  file = pxi_files[i]
-  pxi_tgts += custom_target(fn,
-    output: fn,
-    input: file,
-    command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
-    install: false,
-    )
+foreach f: py_files
+  py_tgts += fs.copyfile(f)
 endforeach
 
 pyx_name_list = [
@@ -98,7 +67,7 @@ foreach pyx_name: pyx_name_list
     output: f'@pyx_name@.pyx',
     input: f'@pyx_name@.pyx',
     command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
-    depends : init_tgts + pxd_tgts + pxi_tgts,
+    depends : pyx_dep_tgts,
     depend_files: all_header_files,
     install: false,
     )
