@@ -13,6 +13,7 @@ source qcore/set-prefix.sh $name
 
     opts="--verbose --upgrade"
 
+    time-run pip3 install $opts pip || true
     time-run pip3 install $opts h5py || true
     time-run pip3 install $opts pandas || true
     time-run pip3 install $opts xarray || true
