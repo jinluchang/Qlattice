@@ -32,7 +32,7 @@ source qcore/set-prefix.sh $name
         export LIBS="$QLAT_LIBS"
     fi
 
-    touch "$wd"/qlat-cps/meson.build
+    # touch "$wd"/qlat-cps/meson.build
 
     time-run meson setup "$wd/qlat-cps" \
         --prefix="$prefix" \

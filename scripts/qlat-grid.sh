@@ -35,7 +35,7 @@ source qcore/set-prefix.sh $name
         export LIBS="$QLAT_LIBS"
     fi
 
-    touch "$wd"/qlat-grid/meson.build
+    # touch "$wd"/qlat-grid/meson.build
 
     time-run meson setup "$wd/qlat-grid" \
         --prefix="$prefix" \

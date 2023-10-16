@@ -394,13 +394,13 @@ message('qlat_utils lib', qlat_utils_lib)
 qlat_utils_pxd = run_command(qlat_utils_py3, '-c', 'import qlat_utils as q ; print("\\n".join(q.get_pxd_list()))',
   env: environment({'q_verbose': '-1'}),
   check: true).stdout().strip().split('\n')
-message('qlat_utils pxd', qlat_utils_pxd)
+# message('qlat_utils pxd', qlat_utils_pxd)
 qlat_utils_pxd = files(qlat_utils_pxd)
 #
 qlat_utils_header = run_command(qlat_utils_py3, '-c', 'import qlat_utils as q ; print("\\n".join(q.get_header_list()))',
   env: environment({'q_verbose': '-1'}),
   check: true).stdout().strip().split('\n')
-message('qlat_utils header', qlat_utils_header)
+# message('qlat_utils header', qlat_utils_header)
 qlat_utils_header = files(qlat_utils_header)
 #
 qlat_utils = declare_dependency(
@@ -411,7 +411,7 @@ qlat_utils = declare_dependency(
     qlat_utils_numpy, qlat_utils_eigen, qlat_utils_omp, qlat_utils_zlib, qlat_utils_math, ],
   )
 #
-py3 = import('python').find_installation('python3')
+py3 = import('python').find_installation('python3', pure: false)
 #
 deps = [ qlat_utils, ]
 incdir = []

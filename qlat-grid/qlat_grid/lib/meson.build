@@ -1,5 +1,7 @@
-c = run_command('bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.cpp', check: true)
-cppsources = files(c.stdout().strip().split('\n'))
+cppsources = files(
+  'init.cpp',
+  'prop.cpp',
+  )
 py3.install_sources(cppsources, subdir: 'qlat_grid/lib')
 
 clib = shared_library('qlat-grid',
