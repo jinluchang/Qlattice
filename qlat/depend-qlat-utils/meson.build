@@ -14,7 +14,7 @@ qlat_utils_numpy_include = run_command(qlat_utils_py3, '-c', 'import numpy as np
 message('numpy include', qlat_utils_numpy_include)
 
 qlat_utils_numpy = declare_dependency(
-  include_directories:  include_directories(qlat_utils_numpy_include),
+  include_directories: include_directories(qlat_utils_numpy_include),
   dependencies: [ qlat_utils_py3.dependency(), ],
   ).as_system()
 

@@ -67,7 +67,3 @@ header_files = files(
 py3.install_sources(header_files, subdir: 'qlat_utils/include/qlat-utils')
 
 all_header_files = header_files + config_file
-
-dep_headers = declare_dependency(
-  sources: all_header_files,
-  )

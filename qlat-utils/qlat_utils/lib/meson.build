@@ -1,13 +1,3 @@
-cppsource_fns = [
-  'lat-io.cpp',
-  'mat.cpp',
-  'qar.cpp',
-  'rng-state.cpp',
-  'utils-io.cpp',
-  ]
-cppsources = files(cppsource_fns)
-py3.install_sources(cppsources, subdir: 'qlat_utils/lib')
-
 version = custom_target('version',
   output: 'version.cpp',
   input: files([ 'version_gen.sh', 'version.cpp', ]),
@@ -15,9 +5,17 @@ version = custom_target('version',
   install: false,
   build_always_stale: true,
   )
+cppsources = version + files(
+  'lat-io.cpp',
+  'mat.cpp',
+  'qar.cpp',
+  'rng-state.cpp',
+  'utils-io.cpp',
+  )
+py3.install_sources(cppsources, subdir: 'qlat_utils/lib')
 
 clib = shared_library('qlat-utils',
-  cppsources + version,
+  cppsources,
   dependencies: deps,
   include_directories: incdir,
   install: true,

@@ -1,3 +1,31 @@
-c = run_command('bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.py', check: true)
-pysources = files(c.stdout().strip().split('\n'))
+pysources = files(
+  '__init__.py',
+  'p_16IH2.py',
+  'p_24DH.py',
+  'p_24D.py',
+  'p_24IH01.py',
+  'p_24IH02.py',
+  'p_24IH03.py',
+  'p_24IH04.py',
+  'p_24IH05.py',
+  'p_24IH1.py',
+  'p_24IH2.py',
+  'p_24IH3.py',
+  'p_24IH4.py',
+  'p_32Dfine.py',
+  'p_32D.py',
+  'p_32IcoarseH01.py',
+  'p_32IcoarseH02.py',
+  'p_32IcoarseH1.py',
+  'p_32IfineH.py',
+  'p_32IH01.py',
+  'p_32IH1.py',
+  'p_32IH2.py',
+  'p_32IH3.py',
+  'p_48I.py',
+  'p_64I.py',
+  'p_96I.py',
+  'p_test.py',
+  'utils.py',
+  )
 py3.install_sources(pysources, subdir: 'qlat_scripts/v1/rbc_ukqcd_params')

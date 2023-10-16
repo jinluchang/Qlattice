@@ -61,18 +61,6 @@ foreach i: range(init_fns.length())
     )
 endforeach
 
-py_tgts = []
-foreach i: range(py_fns.length())
-  fn = py_fns[i]
-  file = py_files[i]
-  py_tgts += custom_target(fn,
-    output: fn,
-    input: file,
-    command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
-    install: false,
-    )
-endforeach
-
 pxd_tgts = []
 foreach i: range(pxd_fns.length())
   fn = pxd_fns[i]
@@ -151,7 +139,7 @@ cp_pyx = custom_target(f'cp_pyx',
   input: 'cp_template.pyx',
   command: [ cp_gen, '@INPUT@', '@OUTPUT@', ] + cp_type_pyx_fn_list,
   depends: cp_type_pyx_list + cp_pxd + init_tgts + pxd_tgts,
-  depend_files: cp_gen + all_header_files + qlat_utils_pxd + qlat_utils_header,
+  depend_files: cp_gen + config_file,
   install: false,
   )
 

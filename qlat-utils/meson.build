@@ -44,15 +44,4 @@ endif
 deps = [ py3.dependency().as_system(), numpy, eigen, omp, zlib, math, ]
 
 subdir('qlat_utils')
-
-script_fns = [
-  'bin/crc32',
-  'bin/lat-io-diff',
-  'bin/lat-io-glimpse',
-  'bin/pickle-glimpse',
-  'bin/qar',
-  'bin/qar-glimpse',
-  'bin/qlat-utils-config',
-  ]
-scripts = files(script_fns)
-install_data(scripts, install_dir: get_option('bindir'), install_mode: 'rwxr-xr-x')
+subdir('bin')

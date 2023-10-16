@@ -1,8 +1,38 @@
 # Need to update `exports.h` by running `bash update.sh` manually.
 
-cpp_fns = run_command('bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls *.cpp',
-  check: true).stdout().strip().split('\n')
-cpp_files = files(cpp_fns)
+cpp_files = files(
+  'contraction-field.cpp',
+  'contraction-hvp.cpp',
+  'contraction-pion.cpp',
+  'coordinate.cpp',
+  'fermion-action.cpp',
+  'field.cpp',
+  'field-double.cpp',
+  'field-io.cpp',
+  'field-selection.cpp',
+  'fields-io.cpp',
+  'field-utils.cpp',
+  'fthmc.cpp',
+  'gauge-action.cpp',
+  'geometry.cpp',
+  'hmc.cpp',
+  'hmc-stats.cpp',
+  'init.cpp',
+  'inverter.cpp',
+  'lat-io.cpp',
+  'lib.cpp',
+  'mat.cpp',
+  'mpi.cpp',
+  'propagator.cpp',
+  'qcd.cpp',
+  'scalar-action.cpp',
+  'selected-field.cpp',
+  'selected-points.cpp',
+  'smear.cpp',
+  'topology.cpp',
+  'utils-io.cpp',
+  'wilson-flow.cpp',
+  )
 
 lib = py3.extension_module('cqlat',
   cpp_files + config_file,

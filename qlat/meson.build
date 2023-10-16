@@ -40,13 +40,10 @@ fftw_all = [ fftw, fftwf, ]
 
 deps = [ qlat_utils, mpic, fftw_all, ]
 
+py3.install_sources('qlat_gpt.py')
+
 subdir('qlat')
 subdir('cqlat')
 subdir('auto_contractor')
 subdir('qlat_scripts')
-
-py3.install_sources('qlat_gpt.py')
-
-script_fns = run_command('bash', '-c', 'cd "$MESON_SOURCE_ROOT/$MESON_SUBDIR" ; ls bin/*', check: true).stdout().strip().split('\n')
-script_files = files(script_fns)
-install_data(script_files, install_dir: get_option('bindir'), install_mode: 'rwxr-xr-x')
+subdir('bin')

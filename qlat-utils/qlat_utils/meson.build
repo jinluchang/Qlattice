@@ -46,7 +46,7 @@ pyx_name_list = [
 foreach pyx_name: pyx_name_list
   lib = py3.extension_module(pyx_name,
     f'@pyx_name@.pyx',
-    dependencies: deps + [ dep_headers, ],
+    dependencies: deps + [ config_file, ],
     include_directories: incdir,
     link_with: clib,
     install: true,
