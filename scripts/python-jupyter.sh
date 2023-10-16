@@ -14,16 +14,15 @@ source qcore/set-prefix.sh $name
     opts="--verbose --upgrade"
 
     time-run pip3 install $opts pip || true
+    time-run pip3 install $opts virtualenv || true
     time-run pip3 install $opts h5py || true
     time-run pip3 install $opts pandas || true
     time-run pip3 install $opts xarray || true
     time-run pip3 install $opts matplotlib || true
-    time-run pip3 install $opts vpython || true
     time-run pip3 install $opts plotly || true
     time-run pip3 install $opts seaborn || true
     time-run pip3 install $opts notebook || true
     time-run pip3 install $opts dash || true
-    time-run pip3 install $opts virtualenv || true
     time-run pip3 install $opts squarify || true
     time-run pip3 install $opts mathjax || true
     time-run pip3 install $opts lz4 || true
@@ -38,6 +37,7 @@ source qcore/set-prefix.sh $name
     time-run pip3 install $opts jupyterlab || true
     time-run pip3 install $opts jupyterlab-dash || true
     time-run pip3 install $opts jupyterhub || true
+    time-run pip3 install $opts vpython || true
     # time-run pip3 install $opts jupyterlab-vpython
 
     mk-setenv.sh
