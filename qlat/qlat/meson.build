@@ -27,7 +27,6 @@ py_fns = [
   'hmc_stats.py',
   'inverter.py',
   '__main__.py',
-  'mat.py',
   'mpi.py',
   'propagator.py',
   'qcd.py',

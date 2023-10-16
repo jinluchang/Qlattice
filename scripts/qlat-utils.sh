@@ -26,7 +26,7 @@ source qcore/set-prefix.sh $name
         export LIBS="$QLAT_LIBS"
     fi
 
-    touch "$wd"/qlat-utils/meson.build
+    # touch "$wd"/qlat-utils/meson.build
 
     time-run meson setup "$wd/qlat-utils" \
         --prefix="$prefix" \

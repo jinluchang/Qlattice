@@ -25,7 +25,7 @@ endif
 config_file = configure_file(output: 'config.h', configuration: conf_data)
 py3.install_sources(config_file, subdir: 'qlat_utils/include/qlat-utils')
 
-header_fns = [
+header_files = files(
   'array.h',
   'assert.h',
   'cache.h',
@@ -63,8 +63,11 @@ header_fns = [
   'types.h',
   'vector.h',
   'version.h',
-  ]
-header_files = files(header_fns)
+  )
 py3.install_sources(header_files, subdir: 'qlat_utils/include/qlat-utils')
 
 all_header_files = header_files + config_file
+
+dep_headers = declare_dependency(
+  sources: all_header_files,
+  )

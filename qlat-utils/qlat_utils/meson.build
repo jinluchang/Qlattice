@@ -2,11 +2,8 @@ subdir('include')
 subdir('lib')
 subdir('scripts')
 
-init_files = files(
+py_files = files(
   '__init__.py',
-  )
-
-py_fns = [
   'ama.py',
   'cache.py',
   'c.py',
@@ -20,10 +17,9 @@ py_fns = [
   'qplot.py',
   'utils_io.py',
   'utils.py',
-  ]
-py_files = files(py_fns)
+  )
 
-pxd_fns = [
+pxd_files = files(
   '__init__.pxd',
   'everything.pxd',
   'timer.pxd',
@@ -32,20 +28,9 @@ pxd_fns = [
   'rng_state.pxd',
   'coordinate.pxd',
   'lat_data.pxd',
-  ]
-pxd_files = files(pxd_fns)
+  )
 
-py3.install_sources(init_files + py_files + pxd_files, subdir: 'qlat_utils')
-
-pyx_dep_tgts = []
-foreach f: init_files + pxd_files
-  pyx_dep_tgts += fs.copyfile(f)
-endforeach
-
-py_tgts = []
-foreach f: py_files
-  py_tgts += fs.copyfile(f)
-endforeach
+py3.install_sources(py_files + pxd_files, subdir: 'qlat_utils')
 
 pyx_name_list = [
   'timer',
@@ -59,17 +44,9 @@ pyx_name_list = [
   ]
 
 foreach pyx_name: pyx_name_list
-  pyx = custom_target(f'@pyx_name@_pyx',
-    output: f'@pyx_name@.pyx',
-    input: f'@pyx_name@.pyx',
-    command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
-    depends : pyx_dep_tgts,
-    depend_files: all_header_files,
-    install: false,
-    )
   lib = py3.extension_module(pyx_name,
-    pyx,
-    dependencies: deps,
+    f'@pyx_name@.pyx',
+    dependencies: deps + [ dep_headers, ],
     include_directories: incdir,
     link_with: clib,
     install: true,
