@@ -24,7 +24,7 @@ source qcore/set-prefix.sh $name
         export LIBS="$QLAT_LIBS"
     fi
 
-    export LD_LIBRARY_PATH="$(python3 -m qlat-grid qlat-grid-config --LD_LIBRARY_PATH)"
+    export LD_LIBRARY_PATH="$(python3 -m qlat_grid qlat-grid-config --LD_LIBRARY_PATH)"
 
     export mpi_options="--oversubscribe $mpi_options"
 
