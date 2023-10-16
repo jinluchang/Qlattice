@@ -5,7 +5,7 @@ version = custom_target('version',
   install: false,
   build_always_stale: true,
   )
-cppsources = [ version, ] + files(
+cppsources = files(
   'lat-io.cpp',
   'mat.cpp',
   'qar.cpp',
@@ -15,7 +15,7 @@ cppsources = [ version, ] + files(
 py3.install_sources(cppsources, subdir: 'qlat_utils/lib')
 
 clib = shared_library('qlat-utils',
-  cppsources,
+  cppsources + version,
   dependencies: deps,
   include_directories: incdir,
   install: true,
