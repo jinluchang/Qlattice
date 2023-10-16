@@ -5,7 +5,7 @@ version = custom_target('version',
   install: false,
   build_always_stale: true,
   )
-cppsources = version + files(
+cppsources = [ version, ] + files(
   'lat-io.cpp',
   'mat.cpp',
   'qar.cpp',
