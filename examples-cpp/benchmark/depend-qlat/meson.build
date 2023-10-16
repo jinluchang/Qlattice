@@ -45,13 +45,13 @@ message('qlat lib', qlat_lib)
 qlat_pxd = run_command(qlat_py3, '-c', 'import qlat as q ; print("\\n".join(q.get_pxd_list()))',
   env: environment({'q_verbose': '-1'}),
   check: true).stdout().strip().split('\n')
-message('qlat pxd', qlat_pxd)
+# message('qlat pxd', qlat_pxd)
 qlat_pxd = files(qlat_pxd)
 
 qlat_header = run_command(qlat_py3, '-c', 'import qlat as q ; print("\\n".join(q.get_header_list()))',
   env: environment({'q_verbose': '-1'}),
   check: true).stdout().strip().split('\n')
-message('qlat header', qlat_header)
+# message('qlat header', qlat_header)
 qlat_header = files(qlat_header)
 
 qlat = declare_dependency(
