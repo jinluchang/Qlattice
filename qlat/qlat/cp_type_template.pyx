@@ -8,7 +8,7 @@ cdef class FieldTYPENAME(FieldBase):
         self.cdata = <long>&(self.xx)
         self.view_count = 0
 
-    def __init__(self, Geometry geo = None, int multiplicity = 0):
+    def __init__(self, Geometry geo=None, int multiplicity=0):
         if geo is None:
             return
         if self.view_count > 0:
@@ -71,7 +71,7 @@ cdef class FieldTYPENAME(FieldBase):
         return self
 
     @q.timer
-    def copy(self, is_copying_data = True):
+    def copy(self, is_copying_data=True):
         f = type(self)()
         if is_copying_data:
             (<FieldTYPENAME>f).xx = self.xx
@@ -94,7 +94,7 @@ cdef class SelectedFieldTYPENAME(SelectedFieldBase):
         self.cdata = <long>&(self.xx)
         self.view_count = 0
 
-    def __init__(self, FieldSelection fsel, int multiplicity = 0):
+    def __init__(self, FieldSelection fsel, int multiplicity=0):
         self.fsel = fsel
         if multiplicity > 0 and self.fsel is not None:
             if self.view_count > 0:
@@ -157,7 +157,7 @@ cdef class SelectedFieldTYPENAME(SelectedFieldBase):
         return self
 
     @q.timer
-    def copy(self, is_copying_data = True):
+    def copy(self, is_copying_data=True):
         f = type(self)(self.fsel)
         if is_copying_data:
             (<SelectedFieldTYPENAME>f).xx = self.xx
@@ -181,7 +181,7 @@ cdef class SelectedPointsTYPENAME(SelectedPointsBase):
         self.cdata = <long>&(self.xx)
         self.view_count = 0
 
-    def __init__(self, PointsSelection psel, int multiplicity = 0):
+    def __init__(self, PointsSelection psel, int multiplicity=0):
         self.psel = psel
         if multiplicity > 0 and self.psel is not None:
             if self.view_count > 0:
@@ -244,7 +244,7 @@ cdef class SelectedPointsTYPENAME(SelectedPointsBase):
         return self
 
     @q.timer
-    def copy(self, is_copying_data = True):
+    def copy(self, is_copying_data=True):
         f = type(self)(self.psel)
         if is_copying_data:
             (<SelectedPointsTYPENAME>f).xx = self.xx

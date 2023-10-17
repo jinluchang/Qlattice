@@ -764,6 +764,24 @@ void qnorm_field(FieldM<double, 1>& f, const Field<M>& f1)
 
 // --------------------
 
+inline void set_xg_field(FieldM<long, 4>& f, const Geometry& geo_)
+{
+  TIMER("set_xg_field(f,geo)");
+  const Geometry geo = geo_reform(geo_, 4);
+  f.init();
+  f.init(geo);
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    Vector<long> fv = f.get_elems(xl);
+    for (int mu = 0; mu < DIMN; ++mu) {
+      fv[mu] = xg[mu];
+    }
+  });
+}
+
+// --------------------
+
 #ifdef QLAT_INSTANTIATE_FIELD
 #define QLAT_EXTERN
 #else
