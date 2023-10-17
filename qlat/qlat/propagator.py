@@ -90,10 +90,10 @@ class PselProp(SelectedPointsWilsonMatrix):
 
 ###
 
-def set_point_src(prop_src, geo, xg, value = 1.0):
+def set_point_src(prop_src, geo, xg, value=1.0):
     c.set_point_src_prop(prop_src, geo, xg, value)
 
-def set_wall_src(prop_src, geo, tslice, lmom = None):
+def set_wall_src(prop_src, geo, tslice, lmom=None):
     if lmom is None:
         lmom = [ 0.0, 0.0, 0.0, 0.0, ]
     c.set_wall_src_prop(prop_src, geo, tslice, lmom)
@@ -112,9 +112,11 @@ def mk_wall_src(geo, tslice, lmom = None):
 
 @timer
 def mk_rand_u1_src(sel, rs):
-    # return (prop_src, fu1,) where prop_src = Prop() and fu1 = Field(c.ElemTypeComplex)
-    # fu1 stores the random u1 numbers (fu1.multiplicity() == 1)
-    # sel can be psel or fsel
+    """
+    return (prop_src, fu1,) where prop_src = Prop() and fu1 = Field(c.ElemTypeComplex)
+    fu1 stores the random u1 numbers (fu1.multiplicity() == 1)
+    sel can be psel or fsel
+    """
     prop_src = Prop()
     fu1 = Field(c.ElemTypeComplex)
     if isinstance(sel, FieldSelection):
@@ -148,9 +150,11 @@ def get_rand_u1_sol(prop_sol, fu1, sel):
 
 @timer_verbose
 def mk_rand_u1_prop(inv, sel, rs):
-    # interface function
-    # return s_prop
-    # sel can be psel or fsel
+    """
+    interface function
+    return s_prop
+    sel can be psel or fsel
+    """
     prop_src, fu1 = mk_rand_u1_src(sel, rs)
     prop_sol = inv * prop_src
     return get_rand_u1_sol(prop_sol, fu1, sel)
