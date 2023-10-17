@@ -11,10 +11,10 @@ import numpy as np
 
 ### -------------------------------------------------------------------
 
-def begin(int id_node, Coordinate size_node, int color = 0):
+def begin(int id_node, Coordinate size_node, int color=0):
     cc.begin(id_node, size_node.xx, color)
 
-def end(cc.bool is_preserving_cache = False):
+def end(cc.bool is_preserving_cache=False):
     if not is_preserving_cache:
         q.clean_cache()
     cc.end(is_preserving_cache)
@@ -27,7 +27,7 @@ cdef class Geometry:
         self.xx = cc.Geometry()
         self.cdata = <long>&(self.xx)
 
-    def __init__(self, total_site = None, int multiplicity = 1):
+    def __init__(self, total_site=None, int multiplicity=1):
         """
         if total_site is None: create geo uninitialized
         elif multiplicity is None: create geo with multiplicity = 1
@@ -38,7 +38,7 @@ cdef class Geometry:
         self.xx = v1.xx
         return self
 
-    def copy(self, is_copying_data = True):
+    def copy(self, is_copying_data=True):
         x = Geometry()
         if is_copying_data:
             x @= self
@@ -127,7 +127,7 @@ cdef class Geometry:
 
 ### -------------------------------------------------------------------
 
-def geo_reform(Geometry geo, int multiplicity = 1, expansion_left = None, expansion_right = None):
+def geo_reform(Geometry geo, int multiplicity=1, expansion_left=None, expansion_right=None):
     cdef Coordinate el, er
     if expansion_left is None:
         el = Coordinate()
@@ -153,7 +153,7 @@ def geo_reform(Geometry geo, int multiplicity = 1, expansion_left = None, expans
     geo_new.xx = cc.geo_reform(geo.xx, multiplicity, el.xx, er.xx)
     return geo_new
 
-def geo_eo(Geometry geo, int eo = 0):
+def geo_eo(Geometry geo, int eo=0):
     cdef Geometry geo_new = Geometry()
     geo_new.xx = cc.geo_eo(geo.xx, eo)
     return geo_new
@@ -199,19 +199,19 @@ selected_field_type_dict = {}
 
 selected_points_type_dict = {}
 
-def Field(type ctype, Geometry geo = None, int multiplicity = 0):
+def Field(type ctype, Geometry geo=None, int multiplicity=0):
     assert ctype in field_type_dict
     FieldType = field_type_dict[ctype]
     field = FieldType(geo, multiplicity)
     return field
 
-def SelectedField(type ctype, FieldSelection fsel, int multiplicity = 0):
+def SelectedField(type ctype, FieldSelection fsel, int multiplicity=0):
     assert ctype in field_type_dict
     FieldType = selected_field_type_dict[ctype]
     field = FieldType(fsel, multiplicity)
     return field
 
-def SelectedPoints(type ctype, PointsSelection psel, int multiplicity = 0):
+def SelectedPoints(type ctype, PointsSelection psel, int multiplicity=0):
     assert ctype in field_type_dict
     FieldType = selected_points_type_dict[ctype]
     field = FieldType(psel, multiplicity)
@@ -306,11 +306,11 @@ cdef class FieldBase:
         return self
 
     @q.timer
-    def set_unit(self, coef = 1.0):
+    def set_unit(self, coef=1.0):
         c.set_unit_field(self, coef)
 
     @q.timer
-    def set_rand(self, rng, upper = 1.0, lower = 0.0):
+    def set_rand(self, rng, upper=1.0, lower=0.0):
         assert isinstance(rng, RngState)
         if self.ctype in field_ctypes_double:
             c.set_u_rand_double_field(self, rng, upper, lower)
@@ -320,7 +320,7 @@ cdef class FieldBase:
             assert False
 
     @q.timer
-    def set_rand_g(self, rng, center = 0.0, sigma = 1.0):
+    def set_rand_g(self, rng, center=0.0, sigma=1.0):
         assert isinstance(rng, RngState)
         if self.ctype in field_ctypes_double:
             c.set_g_rand_double_field(self, rng, center, sigma)
@@ -492,7 +492,7 @@ cdef class FieldBase:
         assert isinstance(tag, str)
         c.to_from_endianness_field(self, tag)
 
-    def as_field(self, ctype = ElemTypeComplex):
+    def as_field(self, ctype=ElemTypeComplex):
         """
 		return new Field(ctype) with the same content
         """
@@ -515,7 +515,7 @@ cdef class FieldBase:
         """
         return np.array(c.get_elems_field(self, index))
 
-    def get_elem(self, index, m = None):
+    def get_elem(self, index, m=None):
         """
         index can also be xg
         """
@@ -527,7 +527,7 @@ cdef class FieldBase:
     def set_elems(self, index, val):
         """
         index can also be xg
-        val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
         """
         if isinstance(val, bytes):
             return c.set_elems_field(self, index, val)
@@ -539,7 +539,7 @@ cdef class FieldBase:
     def set_elem(self, index, m, val):
         """
         index can also be xg
-        val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
         """
         if isinstance(val, bytes):
             return c.set_elem_field(self, index, m, val)
@@ -567,7 +567,7 @@ cdef class FieldBase:
         """
         i can be (index, m,) or index
         index can also be xg
-        val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
         """
         if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], (int, list, tuple,)):
             index, m = i
@@ -589,7 +589,7 @@ cdef class FieldBase:
         return new shifted Field
         shift is the coordinate to shift the field
         """
-        f1 = self.copy(is_copying_data = False)
+        f1 = self.copy(is_copying_data=False)
         c.field_shift_field(f1, self, shift)
         return f1
 
@@ -608,13 +608,13 @@ cdef class FieldBase:
             assert False
             return None
 
-    def glb_sum_tslice(self, *, t_dir = 3):
+    def glb_sum_tslice(self, *, t_dir=3):
         """
-        return SelectedPoints(self.ctype, get_psel_tslice(self.total_site(), t_dir = t_dir))
+        return SelectedPoints(self.ctype, get_psel_tslice(self.total_site(), t_dir=t_dir))
         """
         from qlat.field_selection import get_psel_tslice
         from qlat.selected_points import SelectedPoints
-        psel = get_psel_tslice(self.total_site(), t_dir = t_dir)
+        psel = get_psel_tslice(self.total_site(), t_dir=t_dir)
         sp = SelectedPoints(self.ctype, psel)
         if self.ctype in field_ctypes_double:
             c.glb_sum_tslice_double_field(sp, self, t_dir)
@@ -684,7 +684,7 @@ cdef class PointsSelection:
         self.cdata = <long>&(self.xx)
         self.geo = None
 
-    def __init__(self, coordinate_list = None, Geometry geo = None):
+    def __init__(self, coordinate_list=None, Geometry geo=None):
         cdef long n_points
         cdef long i
         self.geo = geo
@@ -766,7 +766,7 @@ cdef class PointsSelection:
     def to_list(self):
         return c.mk_list_psel(self)
 
-    def from_list(self, coordinate_list, geo = None):
+    def from_list(self, coordinate_list, geo=None):
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
         c.set_list_psel(self, coordinate_list)
@@ -783,7 +783,7 @@ cdef class FieldSelection:
     def __cinit__(self):
         self.cdata = <long>&(self.xx)
 
-    def __init__(self, total_site = None, n_per_tslice = -1, rs = None, psel = None):
+    def __init__(self, total_site=None, n_per_tslice=-1, rs=None, psel=None):
         if total_site is not None:
             assert isinstance(rs, RngState)
             assert isinstance(n_per_tslice, int)
@@ -808,7 +808,7 @@ cdef class FieldSelection:
     def __deepcopy__(self, memo):
         return self.copy()
 
-    def set_uniform(self, total_site, val = 0):
+    def set_uniform(self, total_site, val=0):
         """
         default (val = 0) select every sites
         val = -1 deselection everything
@@ -822,7 +822,7 @@ cdef class FieldSelection:
         self.update()
         self.update(n_per_tslice)
 
-    def add_psel(self, psel, rank_psel = 1024 * 1024 * 1024 * 1024 * 1024):
+    def add_psel(self, psel, rank_psel=1024 * 1024 * 1024 * 1024 * 1024):
         """
         Add psel points to the selection, with the rank specified as rank_psel.
         If the point is already selected with lower rank, the rank is unchanged.
@@ -830,14 +830,14 @@ cdef class FieldSelection:
         c.add_psel_fsel(self, psel, rank_psel)
         self.update()
 
-    def update(self, n_per_tslice = -1):
+    def update(self, n_per_tslice=-1):
         """
         if n_per_tslice < 0: only update various indices
         if n_per_tslice >= 0: only update parameters (n_per_tslice and prob)
         """
         c.update_fsel(self, n_per_tslice)
 
-    def select_rank_range(self, rank_start = 0, rank_stop = -1):
+    def select_rank_range(self, rank_start=0, rank_stop=-1):
         """
         return new fsel with selected points that
         rank_start <= rank and (rank < rank_stop or rank_stop == -1)
@@ -849,7 +849,7 @@ cdef class FieldSelection:
         fsel.update(self.n_per_tslice())
         return fsel
 
-    def select_t_range(self, rank_start = 0, rank_stop = -1):
+    def select_t_range(self, rank_start=0, rank_stop=-1):
         """
         return new fsel with selected points that
         t_start <= t and (t < t_stop or t_stop == -1)
@@ -948,7 +948,7 @@ cdef class SelectedFieldBase:
         c.set_mul_double_sfield(self, factor)
         return self
 
-    def set_rand(self, rng, upper = 1.0, lower = 0.0):
+    def set_rand(self, rng, upper=1.0, lower=0.0):
         assert isinstance(rng, RngState)
         if self.ctype in field_ctypes_double:
             c.set_u_rand_double_sfield(self, rng, upper, lower)
@@ -961,14 +961,14 @@ cdef class SelectedFieldBase:
     def get_elems(self, idx):
         return np.array(c.get_elems_sfield(self, idx))
 
-    def get_elem(self, idx, m = None):
+    def get_elem(self, idx, m=None):
         if m is None:
             return np.array(c.get_elem_sfield(self, idx))
         else:
             return np.array(c.get_elem_sfield(self, idx, m))
 
     def set_elems(self, idx, val):
-        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
         if isinstance(val, bytes):
             return c.set_elems_sfield(self, idx, val)
         elif isinstance(val, np.ndarray):
@@ -977,7 +977,7 @@ cdef class SelectedFieldBase:
             assert False
 
     def set_elem(self, idx, m, val):
-        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
         if isinstance(val, bytes):
             return c.set_elem_sfield(self, idx, m, val)
         elif isinstance(val, np.ndarray):
@@ -999,7 +999,7 @@ cdef class SelectedFieldBase:
 
     def __setitem__(self, i, val):
         # i can be (idx, m,) or idx
-        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
         if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], int):
             idx, m = i
             self.set_elem(idx, m, val)
@@ -1147,21 +1147,23 @@ cdef class SelectedFieldBase:
         assert isinstance(tag, str)
         c.to_from_endianness_sfield(self, tag)
 
-    def field_shift(self, shift, is_reflect = False):
-        # return new shifted SelectedField
-        # shift is the coordinate to shift the field
-        # is_reflect determine whether to negate coordinate after shift
-        f1 = self.copy(is_copying_data = False)
+    def field_shift(self, shift, is_reflect=False):
+        """
+        return new shifted SelectedField
+        shift is the coordinate to shift the field
+        is_reflect determine whether to negate coordinate after shift
+        """
+        f1 = self.copy(is_copying_data=False)
         f1.fsel = FieldSelection()
         c.field_shift_sfield(f1, self, shift, is_reflect)
         return f1
 
-    def glb_sum_tslice(self, *, t_dir = 3):
+    def glb_sum_tslice(self, *, t_dir=3):
         """
-        return SelectedPoints(self.ctype, get_psel_tslice(self.total_site(), t_dir = t_dir))
+        return SelectedPoints(self.ctype, get_psel_tslice(self.total_site(), t_dir=t_dir))
         """
         from qlat.selected_points import SelectedPoints, get_psel_tslice
-        psel = get_psel_tslice(self.total_site(), t_dir = t_dir)
+        psel = get_psel_tslice(self.total_site(), t_dir=t_dir)
         sp = SelectedPoints(self.ctype, psel)
         if self.ctype in field_ctypes_double:
             c.glb_sum_tslice_double_sfield(sp, self, t_dir)
@@ -1210,14 +1212,14 @@ cdef class SelectedPointsBase:
     def get_elems(self, idx):
         return np.array(c.get_elems_spfield(self, idx))
 
-    def get_elem(self, idx, m = None):
+    def get_elem(self, idx, m=None):
         if m is None:
             return np.array(c.get_elem_spfield(self, idx))
         else:
             return np.array(c.get_elem_spfield(self, idx, m))
 
     def set_elems(self, idx, val):
-        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
         if isinstance(val, bytes):
             return c.set_elems_spfield(self, idx, val)
         elif isinstance(val, np.ndarray):
@@ -1226,7 +1228,7 @@ cdef class SelectedPointsBase:
             assert False
 
     def set_elem(self, idx, m, val):
-        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
         if isinstance(val, bytes):
             return c.set_elem_spfield(self, idx, m, val)
         elif isinstance(val, np.ndarray):
@@ -1248,7 +1250,7 @@ cdef class SelectedPointsBase:
 
     def __setitem__(self, i, val):
         # i can be (idx, m,) or idx
-        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
         if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], int):
             idx, m = i
             self.set_elem(idx, m, val)
