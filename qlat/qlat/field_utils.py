@@ -14,7 +14,7 @@ def field_expanded(f, expansion_left, expansion_right):
     f_e @= f
     return f_e
 
-def refresh_expanded(field, comm_plan = None):
+def refresh_expanded(field, comm_plan=None):
     if comm_plan is None:
         return c.refresh_expanded_field(field)
     else:
@@ -39,7 +39,7 @@ class FieldExpandCommPlan:
         c.set_field_expand_comm_plan(self, v1)
         return self
 
-    def copy(self, is_copying_data = True):
+    def copy(self, is_copying_data=True):
         x = FieldExpandCommPlan()
         if is_copying_data:
             x @= self
@@ -72,7 +72,7 @@ def mk_phase_field(geo: Geometry, lmom):
 
 class FastFourierTransform:
 
-    def __init__(self, fft_infos, *, is_normalizing = False, mode_fft = 1):
+    def __init__(self, fft_infos, *, is_normalizing=False, mode_fft=1):
         # fft_infos = [ ( fft_dir, is_forward, ), ... ]
         self.fft_infos = fft_infos
         self.is_normalizing = is_normalizing
@@ -107,7 +107,7 @@ def mk_fft(is_forward, *, is_only_spatial=False, is_normalizing=False, mode_fft=
                 (1, is_forward,),
                 (2, is_forward,),
                 ]
-        return FastFourierTransform(fft_infos, is_normalizing = is_normalizing, mode_fft=mode_fft)
+        return FastFourierTransform(fft_infos, is_normalizing=is_normalizing, mode_fft=mode_fft)
     else:
         fft_infos = [
                 (0, is_forward,),
@@ -115,7 +115,7 @@ def mk_fft(is_forward, *, is_only_spatial=False, is_normalizing=False, mode_fft=
                 (2, is_forward,),
                 (3, is_forward,),
                 ]
-        return FastFourierTransform(fft_infos, is_normalizing = is_normalizing, mode_fft=mode_fft)
+        return FastFourierTransform(fft_infos, is_normalizing=is_normalizing, mode_fft=mode_fft)
 
 ###
 
