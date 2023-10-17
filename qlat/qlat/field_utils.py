@@ -54,14 +54,18 @@ class FieldExpandCommPlan:
 ###
 
 def make_field_expand_comm_plan(comm_marks):
-    # comm_marks is of type Field(c.ElemTypeInt8t)
+    """
+    comm_marks is of type Field(c.ElemTypeInt8t)
+    """
     cp = FieldExpandCommPlan()
     c.make_field_expand_comm_plan(cp, comm_marks)
     return cp
 
 def mk_phase_field(geo: Geometry, lmom):
-    # lmom is in lattice momentum unit
-    # exp(i * 2*pi/L * lmom \cdot xg )
+    """
+    lmom is in lattice momentum unit
+    exp(i * 2*pi/L * lmom \cdot xg )
+    """
     f = Field(c.ElemTypeComplex, geo, 1)
     c.set_phase_field(f, lmom)
     return f
@@ -96,14 +100,14 @@ class FastFourierTransform:
 ###
 
 @timer
-def mk_fft(is_forward, *, is_only_spatial = False, is_normalizing = False, mode_fft = 1):
+def mk_fft(is_forward, *, is_only_spatial=False, is_normalizing=False, mode_fft=1):
     if is_only_spatial:
         fft_infos = [
                 (0, is_forward,),
                 (1, is_forward,),
                 (2, is_forward,),
                 ]
-        return FastFourierTransform(fft_infos, is_normalizing = is_normalizing, mode_fft = mode_fft)
+        return FastFourierTransform(fft_infos, is_normalizing = is_normalizing, mode_fft=mode_fft)
     else:
         fft_infos = [
                 (0, is_forward,),
@@ -111,7 +115,7 @@ def mk_fft(is_forward, *, is_only_spatial = False, is_normalizing = False, mode_
                 (2, is_forward,),
                 (3, is_forward,),
                 ]
-        return FastFourierTransform(fft_infos, is_normalizing = is_normalizing, mode_fft = mode_fft)
+        return FastFourierTransform(fft_infos, is_normalizing = is_normalizing, mode_fft=mode_fft)
 
 ###
 

@@ -11,13 +11,13 @@ class Prop(FieldWilsonMatrix):
     def __init__(self, geo = None):
         super().__init__(geo, 1)
 
-    def copy(self, is_copying_data = True):
+    def copy(self, is_copying_data=True):
         f = Prop()
         if is_copying_data:
             f @= self
         return f
 
-    def get_elem_wm(self, xg, m = 0):
+    def get_elem_wm(self, xg, m=0):
         wm = WilsonMatrix()
         c.get_elem_wm_prop(wm, self, xg, m)
         return wm
@@ -44,13 +44,13 @@ class SelProp(SelectedFieldWilsonMatrix):
     def __init__(self, fsel):
         super().__init__(fsel, 1)
 
-    def copy(self, is_copying_data = True):
+    def copy(self, is_copying_data=True):
         f = SelProp(self.fsel)
         if is_copying_data:
             f @= self
         return f
 
-    def get_elem_wm(self, idx, m = 0):
+    def get_elem_wm(self, idx, m=0):
         wm = WilsonMatrix()
         cdata = c.get_elem_wm_sprop(wm, self, idx, m)
         return wm
@@ -77,13 +77,13 @@ class PselProp(SelectedPointsWilsonMatrix):
     def __init__(self, psel):
         super().__init__(psel, 1)
 
-    def copy(self, is_copying_data = True):
+    def copy(self, is_copying_data=True):
         f = PselProp(self.psel)
         if is_copying_data:
             f @= self
         return f
 
-    def get_elem_wm(self, idx, m = 0):
+    def get_elem_wm(self, idx, m=0):
         wm = WilsonMatrix()
         c.get_elem_wm_psprop(wm, self, idx, m)
         return wm
@@ -98,12 +98,12 @@ def set_wall_src(prop_src, geo, tslice, lmom=None):
         lmom = [ 0.0, 0.0, 0.0, 0.0, ]
     c.set_wall_src_prop(prop_src, geo, tslice, lmom)
 
-def mk_point_src(geo, xg, value = 1.0):
+def mk_point_src(geo, xg, value=1.0):
     prop_src = Prop()
     set_point_src(prop_src, geo, xg, value)
     return prop_src
 
-def mk_wall_src(geo, tslice, lmom = None):
+def mk_wall_src(geo, tslice, lmom=None):
     if lmom is None:
         lmom = [ 0.0, 0.0, 0.0, 0.0, ]
     prop_src = Prop()
@@ -160,7 +160,7 @@ def mk_rand_u1_prop(inv, sel, rs):
     return get_rand_u1_sol(prop_sol, fu1, sel)
 
 @timer
-def free_invert(prop_src, mass, m5 = 1.0, momtwist = None):
+def free_invert(prop_src, mass, m5=1.0, momtwist=None):
     assert isinstance(prop_src, Prop)
     if momtwist is None:
         momtwist = [ 0.0, 0.0, 0.0, 0.0, ]
@@ -210,8 +210,8 @@ def free_scalar_invert_mom_cfield(f, mass):
 
 @timer
 def free_scalar_invert_cfield(src, mass):
-    fft_f = mk_fft(True, is_normalizing = True)
-    fft_b = mk_fft(False, is_normalizing = True)
+    fft_f = mk_fft(True, is_normalizing=True)
+    fft_b = mk_fft(False, is_normalizing=True)
     f = fft_f * src
     free_scalar_invert_mom_cfield(f, mass)
     sol = fft_b * f
@@ -219,10 +219,10 @@ def free_scalar_invert_cfield(src, mass):
 
 class FermionField4d(FieldWilsonVector):
 
-    def __init__(self, geo = None):
+    def __init__(self, geo=None):
         super().__init__(geo, 1)
 
-    def copy(self, is_copying_data = True):
+    def copy(self, is_copying_data=True):
         f = FermionField4d()
         if is_copying_data:
             f @= self
