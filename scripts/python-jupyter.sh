@@ -14,6 +14,19 @@ source qcore/set-prefix.sh $name
     opts="--verbose --upgrade"
 
     time-run pip3 install $opts pip || true
+
+    opts="--verbose"
+
+    time-run pip3 install $opts mpi4py || true
+    time-run pip3 install $opts psutil || true
+    time-run pip3 install $opts sympy || true
+    time-run pip3 install $opts cython || true
+    time-run pip3 install $opts pybind11 || true
+    time-run pip3 install $opts numpy || true
+    time-run pip3 install $opts pythran || true
+    time-run pip3 install $opts scipy || true
+    time-run pip3 install $opts poetry_core || true
+    time-run pip3 install $opts pkgconfig || true
     time-run pip3 install $opts virtualenv || true
     time-run pip3 install $opts h5py || true
     time-run pip3 install $opts pandas || true

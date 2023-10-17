@@ -13,16 +13,16 @@ source qcore/set-prefix.sh $name
 
     opts="--verbose --upgrade --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
-    time-run pip3 install $opts mpi4py
-    time-run pip3 install $opts psutil
-    time-run pip3 install $opts sympy
-    time-run pip3 install $opts cython
-    time-run pip3 install $opts pybind11
-    time-run pip3 install $opts numpy
-    time-run pip3 install $opts pythran
-    time-run pip3 install $opts scipy
-    time-run pip3 install $opts poetry_core
-    time-run pip3 install $opts pkgconfig
+    time-run pip3 install $opts mpi4py || true
+    time-run pip3 install $opts psutil || true
+    time-run pip3 install $opts sympy || true
+    time-run pip3 install $opts cython || true
+    time-run pip3 install $opts pybind11 || true
+    time-run pip3 install $opts numpy || true
+    time-run pip3 install $opts pythran || true
+    time-run pip3 install $opts scipy || true
+    time-run pip3 install $opts poetry_core || true
+    time-run pip3 install $opts pkgconfig || true
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"
