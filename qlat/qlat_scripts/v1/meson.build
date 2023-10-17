@@ -7,6 +7,7 @@ pysources = files(
   'jobs.py',
   'load_data.py',
   'params.py',
+  'params_meas.py',
   'rbc_ukqcd.py',
   )
 py3.install_sources(pysources, subdir: 'qlat_scripts/v1')
