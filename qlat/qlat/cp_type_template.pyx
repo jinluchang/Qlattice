@@ -27,8 +27,10 @@ cdef class FieldTYPENAME(FieldBase):
         cdef Py_ssize_t* shape = &buf.shape_strides[0]
         cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
         cdef int i
-        for i in range(4):
-            shape[i] = local_site[i]
+        shape[0] = local_site[3]
+        shape[1] = local_site[2]
+        shape[2] = local_site[1]
+        shape[3] = local_site[0]
         shape[4] = multiplicity
         for i in range(ElemTypeTYPENAME.ndim()):
             shape[5 + i] = vec[i]
