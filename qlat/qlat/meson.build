@@ -2,6 +2,8 @@ subdir('scripts')
 subdir('include')
 subdir('lib')
 
+tempita = files('tempita.py')
+
 init_fns = [
   '__init__.py',
   ]
@@ -12,7 +14,6 @@ py_fns = [
   'contract_hvp.py',
   'contract_pion.py',
   'coordinate.py',
-  'c.py',
   'fermion_action.py',
   'field_double.py',
   'field.py',
@@ -46,8 +47,6 @@ pxd_fns = [
   'everything.pxd',
   ]
 pxd_files = files(pxd_fns)
-
-py3.install_sources(init_files + py_files + pxd_files, subdir: 'qlat')
 
 init_tgts = []
 foreach i: range(init_fns.length())
@@ -134,13 +133,27 @@ cp_pxd = custom_target(f'cp_pxd',
   install_dir: py3.get_install_dir() / 'qlat',
   )
 
-cp_pyx = custom_target(f'cp_pyx',
-  output: 'cp.pyx',
+cp_pyx_in = custom_target(f'cp_pyx_in',
+  output: 'cp.pyx.in',
   input: 'cp_template.pyx',
   command: [ cp_gen, '@INPUT@', '@OUTPUT@', ] + cp_type_pyx_fn_list,
   depends: cp_type_pyx_list + cp_pxd + init_tgts + pxd_tgts,
   depend_files: cp_gen + config_file,
   install: false,
+  )
+
+cp_pyx = custom_target('cp.pyx',
+  input: cp_pyx_in,
+  output: 'cp.pyx',
+  command: [ py3, tempita, '@INPUT@', '@OUTPUT@', ]
+  )
+
+c_py = custom_target('c.py',
+  input: 'c.py.in',
+  output: 'c.py',
+  command: [ py3, tempita, '@INPUT@', '@OUTPUT@', ],
+  install: true,
+  install_dir: py3.get_install_dir() / 'qlat',
   )
 
 cplib = py3.extension_module('cp',
@@ -153,13 +166,4 @@ cplib = py3.extension_module('cp',
   install_rpath: ':'.join(qlat_utils_lib + [ '$ORIGIN/lib', ]),
   )
 
-elem_type_gen = files('elem_type_gen.sh')
-
-elem_type = custom_target(f'elem_type_py',
-  output: 'elem_type.py',
-  input: 'elem_type_template.py',
-  command: [ elem_type_gen, '@INPUT@', '@OUTPUT@', ] + cp_type_name_list,
-  depend_files: elem_type_gen,
-  install: true,
-  install_dir: py3.get_install_dir() / 'qlat',
-  )
+py3.install_sources(init_files + py_files + pxd_files, subdir: 'qlat')

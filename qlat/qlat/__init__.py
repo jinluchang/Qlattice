@@ -9,9 +9,7 @@ from qlat_utils import *
 
 verbose_level(-1)
 
-import qlat.c as c
-
-from qlat.elem_type import *
+from qlat.c import *
 
 from qlat.mpi import *
 

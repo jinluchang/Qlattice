@@ -1,9 +1,9 @@
 from qlat_utils import *
+from qlat.c import *
 import qlat.c as c
 
 from qlat.geometry import *
 from qlat.utils_io import *
-from qlat.elem_type import *
 import numpy as np
 
 from qlat.c import \

@@ -1,0 +1,60 @@
+import qlat_utils
+from qlat_utils.c import *
+
+### -------------------------------------------------------------------------
+
+__all__ = []
+
+__all__ += qlat_utils.c.__all__
+
+{{py:
+type_info_list = [
+    [ 'ColorMatrix', 'color_matrix', ],
+    [ 'WilsonMatrix', 'wilson_matrix', ],
+    [ 'NonRelWilsonMatrix', 'non_rel_wilson_matrix', ],
+    [ 'IsospinMatrix', 'isospin_matrix', ],
+    [ 'SpinMatrix', 'spin_matrix', ],
+    [ 'WilsonVector', 'wilson_vector', ],
+    [ 'Complex', 'complex', ],
+    [ 'ComplexF', 'complexf', ],
+    [ 'Double', 'double', ],
+    [ 'Float', 'float', ],
+    [ 'Long', 'long', ],
+    [ 'Int64t', 'int64t', ],
+    [ 'Int8t', 'int8t', ],
+    [ 'Char', 'char', ],
+    ]
+}}
+
+{{for name, fn in type_info_list}}
+
+__all__ += [
+        'Field{{name}}',
+        'SelectedField{{name}}',
+        'SelectedPoints{{name}}',
+        ]
+{{endfor}}
+
+### -------------------------------------------------------------------------
+
+import ctypes
+import sys
+import os
+flags = sys.getdlopenflags()
+sys.setdlopenflags(flags | os.RTLD_GLOBAL)
+
+lib_path = os.path.join(os.path.dirname(__file__),
+                        'lib/libqlat.so')
+
+if not os.path.isfile(lib_path):
+    lib_path = os.path.join(os.path.dirname(__file__),
+                            'lib/libqlat.dylib')
+
+assert os.path.isfile(lib_path)
+
+ctypes.CDLL(lib_path, mode=ctypes.RTLD_GLOBAL)
+
+from cqlat import *
+from .cp import *
+
+sys.setdlopenflags(flags)
