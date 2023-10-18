@@ -16,7 +16,7 @@ py_files = files(
   'fermion_action.py',
   'field_double.py',
   'field.py',
-  'field_selection.py',
+  'field_selection_utils.py',
   'fields_io.py',
   'field_utils.py',
   'fthmc.py',
@@ -43,11 +43,20 @@ pxd_files = files(
   '__init__.pxd',
   'everything.pxd',
   'geometry.pxd',
+  'field_selection.pxd',
   )
 
 foreach f: init_files + pxd_files
   fs.copyfile(f)
 endforeach
+
+c_py = custom_target('c.py',
+  input: 'c.py.in',
+  output: 'c.py',
+  command: [ py3, tempita, '@INPUT@', '@OUTPUT@', ],
+  install: true,
+  install_dir: py3.get_install_dir() / 'qlat',
+  )
 
 cp_pxd = custom_target('cp.pxd',
   input: 'cp.pxd.in',
@@ -64,14 +73,6 @@ cp_pyx = custom_target('cp.pyx',
   install: false,
   )
 
-c_py = custom_target('c.py',
-  input: 'c.py.in',
-  output: 'c.py',
-  command: [ py3, tempita, '@INPUT@', '@OUTPUT@', ],
-  install: true,
-  install_dir: py3.get_install_dir() / 'qlat',
-  )
-
 cplib = py3.extension_module('cp',
   cp_pyx,
   dependencies: deps,
@@ -86,11 +87,12 @@ py3.install_sources(init_files + py_files + pxd_files, subdir: 'qlat')
 
 name_pyx_list = [
   [ 'geometry', files('geometry.pyx'), ],
+  [ 'field_selection', files('field_selection.pyx'), ],
   ]
 
 foreach ii: name_pyx_list
   name = ii[0]
-  pyx = ii[1]
+  pyx = files(f'@name@.pyx')
   cpyx = fs.copyfile(pyx)
   lib = py3.extension_module(name,
     cpyx,

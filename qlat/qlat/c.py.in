@@ -62,5 +62,6 @@ ctypes.CDLL(lib_path, mode=ctypes.RTLD_GLOBAL)
 from cqlat import *
 from .cp import *
 from .geometry import *
+from .field_selection import *
 
 sys.setdlopenflags(flags)
