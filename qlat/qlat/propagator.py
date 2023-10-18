@@ -209,9 +209,9 @@ def free_scalar_invert_mom_cfield(f, mass):
     c.free_scalar_invert_mom_cfield(f, mass)
 
 @timer
-def free_scalar_invert_cfield(src, mass):
-    fft_f = mk_fft(is_forward=True, is_normalizing=True)
-    fft_b = mk_fft(is_forward=False, is_normalizing=True)
+def free_scalar_invert_cfield(src, mass, *, mode_fft=1):
+    fft_f = mk_fft(is_forward=True, is_normalizing=True, mode_fft=mode_fft)
+    fft_b = mk_fft(is_forward=False, is_normalizing=True, mode_fft=mode_fft)
     f = fft_f * src
     free_scalar_invert_mom_cfield(f, mass)
     sol = fft_b * f
