@@ -208,7 +208,7 @@ cdef class FieldBase:
         deprecated
         """
         q.displayln_info("Field.sparse: deprecated")
-        from qlat.field_selection import PointsSelection, FieldSelection
+        from qlat.field_selection_utils import PointsSelection, FieldSelection
         if isinstance(sel, PointsSelection):
             from qlat.selected_points import SelectedPoints, set_selected_points
             psel = sel
@@ -482,7 +482,7 @@ cdef class FieldBase:
         """
         return SelectedPoints(self.ctype, get_psel_tslice(self.total_site(), t_dir=t_dir))
         """
-        from qlat.field_selection import get_psel_tslice
+        from qlat.field_selection_utils import get_psel_tslice
         from qlat.selected_points import SelectedPoints
         psel = get_psel_tslice(self.total_site(), t_dir=t_dir)
         sp = SelectedPoints(self.ctype, psel)

@@ -3,7 +3,7 @@ import qlat.c as c
 
 from qlat.geometry import *
 from qlat.field import *
-from qlat.field_selection import *
+from qlat.field_selection_utils import *
 from qlat.utils_io import *
 
 from qlat.c import SelectedField, SelectedFieldBase
