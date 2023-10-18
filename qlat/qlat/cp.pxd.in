@@ -18,12 +18,7 @@ type_name_list = [
 }}
 
 from . cimport everything as cqlat
-
-cdef class Geometry:
-
-    cdef cqlat.Geometry xx
-
-    cdef readonly long cdata
+from .geometry cimport Geometry
 
 cdef class PointsSelection:
 

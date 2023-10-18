@@ -26,6 +26,12 @@ __all__ = []
 
 __all__ += qlat_utils.c.__all__
 
+__all__ += [
+        'Geometry',
+        'geo_reform',
+        'geo_eo',
+        ]
+
 {{for name in type_name_list}}
 __all__ += [
         'Field{{name}}',
@@ -55,5 +61,6 @@ ctypes.CDLL(lib_path, mode=ctypes.RTLD_GLOBAL)
 
 from cqlat import *
 from .cp import *
+from .geometry import *
 
 sys.setdlopenflags(flags)

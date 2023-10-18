@@ -9,7 +9,6 @@ import numpy as np
 import functools
 
 from .timer cimport *
-from .types cimport *
 from .mat cimport *
 from .coordinate cimport *
 from .lat_data cimport *

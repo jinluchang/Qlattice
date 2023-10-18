@@ -180,5 +180,3 @@ cdef class ElemTypeChar(ElemType):
     cdef cqlat_utils.std_vector[Py_ssize_t] shape()
     @staticmethod
     cdef Py_ssize_t size()
-
-
