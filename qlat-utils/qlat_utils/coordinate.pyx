@@ -107,6 +107,9 @@ cdef class Coordinate:
     def __pos__(self):
         return self
 
+    def __eq__(self, other):
+        return isinstance(other, Coordinate) and self.xx == (<Coordinate>other).xx
+
     def from_index(self, long index, Coordinate size):
         self.xx = cc.coordinate_from_index(index, size.xx)
 
@@ -261,5 +264,8 @@ cdef class CoordinateD:
 
     def __pos__(self):
         return self
+
+    def __eq__(self, other):
+        return isinstance(other, CoordinateD) and self.xx == (<CoordinateD>other).xx
 
 ### ------------------------------------------------

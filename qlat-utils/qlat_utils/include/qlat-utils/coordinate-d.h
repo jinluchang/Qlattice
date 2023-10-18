@@ -7,6 +7,17 @@
 namespace qlat
 {  //
 
+qacc bool operator==(const CoordinateD& c1, const CoordinateD& c2)
+{
+  return c1[0] == c2[0] and c1[1] == c2[1] and c1[2] == c2[2] and
+         c1[3] == c2[3];
+}
+
+qacc bool operator!=(const CoordinateD& c1, const CoordinateD& c2)
+{
+  return !(c1 == c2);
+}
+
 qacc CoordinateD operator+(const CoordinateD& c1, const CoordinateD& c2)
 {
   qassert(false == qisnan(c1));
