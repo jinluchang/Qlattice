@@ -4,12 +4,11 @@ subdir('lib')
 
 tempita = files('tempita.py')
 
-init_fns = [
+init_files = files(
   '__init__.py',
-  ]
-init_files = files(init_fns)
+  )
 
-py_fns = [
+py_files = files(
   'contract_field.py',
   'contract_hvp.py',
   'contract_pion.py',
@@ -39,113 +38,30 @@ py_fns = [
   'utils_io.py',
   'utils.py',
   'wilson_flow.py',
-  ]
-py_files = files(py_fns)
+  )
 
-pxd_fns = [
+pxd_files = files(
   '__init__.pxd',
   'everything.pxd',
-  ]
-pxd_files = files(pxd_fns)
+  )
 
-init_tgts = []
-foreach i: range(init_fns.length())
-  fn = init_fns[i]
-  file = init_files[i]
-  init_tgts += custom_target(fn,
-    output: fn,
-    input: file,
-    command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
-    install: false,
-    )
+foreach f: init_files + pxd_files
+  fs.copyfile(f)
 endforeach
 
-pxd_tgts = []
-foreach i: range(pxd_fns.length())
-  fn = pxd_fns[i]
-  file = pxd_files[i]
-  pxd_tgts += custom_target(fn,
-    output: fn,
-    input: file,
-    command: [ 'cp', '@INPUT@', '@OUTPUT@', ],
-    install: false,
-    )
-endforeach
-
-type_info_list = [
-  [ 'ColorMatrix', 'color_matrix', ],
-  [ 'WilsonMatrix', 'wilson_matrix', ],
-  [ 'NonRelWilsonMatrix', 'non_rel_wilson_matrix', ],
-  [ 'IsospinMatrix', 'isospin_matrix', ],
-  [ 'SpinMatrix', 'spin_matrix', ],
-  [ 'WilsonVector', 'wilson_vector', ],
-  [ 'Complex', 'complex', ],
-  [ 'ComplexF', 'complexf', ],
-  [ 'Double', 'double', ],
-  [ 'Float', 'float', ],
-  [ 'Long', 'long', ],
-  [ 'Int64t', 'int64t', ],
-  [ 'Int8t', 'int8t', ],
-  [ 'Char', 'char', ],
-  ]
-cp_type_gen = files('cp_type_gen.sh')
-
-cp_type_pxd_list = []
-cp_type_pyx_list = []
-cp_type_pxd_fn_list = []
-cp_type_pyx_fn_list = []
-cp_type_name_list = []
-
-foreach ti: type_info_list
-  name = ti[0]
-  fn = ti[1]
-  cp_type_pxd = custom_target(f'cp_type_@fn@_pxd',
-    output: f'cp_type_@fn@_pxd.pxi',
-    input: 'cp_type_template.pxd',
-    command: [ cp_type_gen, f'@name@', '@INPUT@', '@OUTPUT@', ],
-    depend_files: cp_type_gen,
-    install: true,
-    install_dir: py3.get_install_dir() / 'qlat',
-    )
-  cp_type_pyx = custom_target(f'cp_type_@fn@_pyx',
-    output: f'cp_type_@fn@_pyx.pxi',
-    input: 'cp_type_template.pyx',
-    command: [ cp_type_gen, f'@name@', '@INPUT@', '@OUTPUT@', ],
-    depend_files: cp_type_gen,
-    install: false,
-    )
-  cp_type_pxd_list += cp_type_pxd
-  cp_type_pyx_list += cp_type_pyx
-  cp_type_pxd_fn_list += f'cp_type_@fn@_pxd.pxi'
-  cp_type_pyx_fn_list += f'cp_type_@fn@_pyx.pxi'
-  cp_type_name_list += name
-endforeach
-
-cp_gen = files('cp_gen.sh')
-
-cp_pxd = custom_target(f'cp_pxd',
+cp_pxd = custom_target('cp.pxd',
+  input: 'cp.pxd.in',
   output: 'cp.pxd',
-  input: 'cp_template.pxd',
-  command: [ cp_gen, '@INPUT@', '@OUTPUT@', ] + cp_type_pxd_fn_list,
-  depends: cp_type_pxd_list,
-  depend_files: cp_gen,
+  command: [ py3, tempita, '@INPUT@', '@OUTPUT@', ],
   install: true,
   install_dir: py3.get_install_dir() / 'qlat',
   )
 
-cp_pyx_in = custom_target(f'cp_pyx_in',
-  output: 'cp.pyx.in',
-  input: 'cp_template.pyx',
-  command: [ cp_gen, '@INPUT@', '@OUTPUT@', ] + cp_type_pyx_fn_list,
-  depends: cp_type_pyx_list + cp_pxd + init_tgts + pxd_tgts,
-  depend_files: cp_gen + config_file,
-  install: false,
-  )
-
 cp_pyx = custom_target('cp.pyx',
-  input: cp_pyx_in,
+  input: 'cp.pyx.in',
   output: 'cp.pyx',
-  command: [ py3, tempita, '@INPUT@', '@OUTPUT@', ]
+  command: [ py3, tempita, '@INPUT@', '@OUTPUT@', ],
+  install: false,
   )
 
 c_py = custom_target('c.py',

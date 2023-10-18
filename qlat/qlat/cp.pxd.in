@@ -1,3 +1,22 @@
+{{py:
+type_name_list = [
+    'ColorMatrix',
+    'WilsonMatrix',
+    'NonRelWilsonMatrix',
+    'IsospinMatrix',
+    'SpinMatrix',
+    'WilsonVector',
+    'Complex',
+    'ComplexF',
+    'Double',
+    'Float',
+    'Long',
+    'Int64t',
+    'Int8t',
+    'Char',
+    ]
+}}
+
 from . cimport everything as cqlat
 
 cdef class Geometry:
@@ -43,3 +62,19 @@ cdef class SelectedPointsBase:
     cdef readonly int view_count
 
     cdef public PointsSelection psel
+
+{{for name in type_name_list}}
+
+cdef class Field{{name}}(FieldBase):
+
+    cdef cqlat.Field[cqlat.{{name}}] xx
+
+cdef class SelectedField{{name}}(SelectedFieldBase):
+
+    cdef cqlat.SelectedField[cqlat.{{name}}] xx
+
+cdef class SelectedPoints{{name}}(SelectedPointsBase):
+
+    cdef cqlat.SelectedPoints[cqlat.{{name}}] xx
+
+{{endfor}}
