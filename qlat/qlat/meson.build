@@ -47,6 +47,8 @@ pxd_files = files(
   'field_base.pxd',
   )
 
+py3.install_sources(init_files + py_files + pxd_files, subdir: 'qlat')
+
 foreach f: init_files + pxd_files
   fs.copyfile(f)
 endforeach
@@ -59,32 +61,35 @@ c_py = custom_target('c.py',
   install_dir: py3.get_install_dir() / 'qlat',
   )
 
-cp_pxd = custom_target('cp.pxd',
-  input: 'cp.pxd.in',
-  output: 'cp.pxd',
-  command: [ py3, tempita, '@INPUT@', '@OUTPUT@', ],
-  install: true,
-  install_dir: py3.get_install_dir() / 'qlat',
-  )
+name_pyx_in_list = [
+  'cp',
+  'field_types',
+  ]
 
-cp_pyx = custom_target('cp.pyx',
-  input: 'cp.pyx.in',
-  output: 'cp.pyx',
-  command: [ py3, tempita, '@INPUT@', '@OUTPUT@', ],
-  install: false,
-  )
-
-cplib = py3.extension_module('cp',
-  cp_pyx,
-  dependencies: deps,
-  include_directories: incdir,
-  link_with: clib,
-  install: true,
-  subdir: 'qlat',
-  install_rpath: ':'.join(qlat_utils_lib + [ '$ORIGIN/lib', ]),
-  )
-
-py3.install_sources(init_files + py_files + pxd_files, subdir: 'qlat')
+foreach name: name_pyx_in_list
+  cp_pxd = custom_target(f'@name@.pxd',
+    input: f'@name@.pxd.in',
+    output: f'@name@.pxd',
+    command: [ py3, tempita, '@INPUT@', '@OUTPUT@', ],
+    install: true,
+    install_dir: py3.get_install_dir() / 'qlat',
+    )
+  cp_pyx = custom_target(f'@name@.pyx',
+    input: f'@name@.pyx.in',
+    output: f'@name@.pyx',
+    command: [ py3, tempita, '@INPUT@', '@OUTPUT@', ],
+    install: false,
+    )
+  cplib = py3.extension_module(f'@name@',
+    cp_pyx,
+    dependencies: deps,
+    include_directories: incdir,
+    link_with: clib,
+    install: true,
+    subdir: 'qlat',
+    install_rpath: ':'.join(qlat_utils_lib + [ '$ORIGIN/lib', ]),
+    )
+endforeach
 
 name_pyx_list = [
   'geometry',
@@ -105,3 +110,4 @@ foreach name: name_pyx_list
     install_rpath: ':'.join(qlat_utils_lib + [ '$ORIGIN/lib', ]),
     )
 endforeach
+

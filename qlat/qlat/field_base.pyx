@@ -3,7 +3,8 @@
 from qlat_utils.all cimport *
 from . cimport everything as cc
 from .geometry cimport Geometry
-from .cp cimport FieldFloat, SelectedFieldFloat
+from .field_types cimport FieldFloat
+from .cp cimport SelectedFieldFloat
 
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
