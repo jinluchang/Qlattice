@@ -2,7 +2,7 @@
 
 from . cimport everything as cc
 
-from .timer cimport *
+from .timer import timer
 
 ### ----------------------------------------------------------
 

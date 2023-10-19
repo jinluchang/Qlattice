@@ -183,7 +183,7 @@ def timer_builder(object func, cc.bool is_verbose, cc.bool is_flops) -> object:
             return ret
     return qtimer_func
 
-cpdef object timer(object func):
+def timer(object func) -> object:
     """
     Timing functions.\n
     Usage::\n
@@ -201,16 +201,7 @@ def timer_verbose(func):
         def function(args):
             ...
     """
-    cdef cc.std_string fname = "py:" + func.__name__
-    cdef cc.Timer qtimer = cc.Timer(fname)
-    @functools.wraps(func)
-    def qtimer_func(*args, **kwargs):
-        cdef cc.bool is_verbose = True
-        qtimer.start(is_verbose)
-        ret = func(*args, **kwargs)
-        qtimer.stop(is_verbose)
-        return ret
-    return qtimer_func
+    return timer_builder(func, True, False)
 
 def timer_flops(func):
     """
@@ -222,16 +213,7 @@ def timer_flops(func):
             return flops, ret
     Modified function will only return ``ret`` in above example.
     """
-    cdef cc.std_string fname = "py:" + func.__name__
-    cdef cc.Timer qtimer = cc.Timer(fname)
-    @functools.wraps(func)
-    def qtimer_func(*args, **kwargs):
-        qtimer.start()
-        flops, ret = func(*args, **kwargs)
-        qtimer.flops += flops
-        qtimer.stop()
-        return ret
-    return qtimer_func
+    return timer_builder(func, False, True)
 
 def timer_verbose_flops(func):
     """
@@ -243,14 +225,4 @@ def timer_verbose_flops(func):
             return flops, ret
     Modified function will only return ``ret`` in above example.
     """
-    cdef cc.std_string fname = "py:" + func.__name__
-    cdef cc.Timer qtimer = cc.Timer(fname)
-    @functools.wraps(func)
-    def qtimer_func(*args, **kwargs):
-        cdef cc.bool is_verbose = True
-        qtimer.start(is_verbose)
-        flops, ret = func(*args, **kwargs)
-        qtimer.flops += flops
-        qtimer.stop(is_verbose)
-        return ret
-    return qtimer_func
+    return timer_builder(func, True, True)

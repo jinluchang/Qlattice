@@ -6,5 +6,3 @@ cdef class Timer:
 
 cdef class TimerNone:
     pass
-
-cpdef object timer(object func)

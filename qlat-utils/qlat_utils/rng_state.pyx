@@ -1,17 +1,19 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
 from . cimport everything as cc
+
+from .mat cimport *
+from .coordinate cimport *
+from .lat_data cimport *
+
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
 cimport numpy
 
+from .timer import timer
+
 import numpy as np
 import functools
-
-from .timer cimport *
-from .mat cimport *
-from .coordinate cimport *
-from .lat_data cimport *
 
 cdef class RngState:
 
