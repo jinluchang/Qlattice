@@ -18,30 +18,9 @@ type_name_list = [
 }}
 
 from . cimport everything as cqlat
-from .geometry cimport Geometry
-from .field_selection cimport PointsSelection, FieldSelection
-
-cdef class FieldBase:
-
-    cdef readonly long cdata
-
-    cdef readonly int view_count
-
-cdef class SelectedFieldBase:
-
-    cdef readonly long cdata
-
-    cdef readonly int view_count
-
-    cdef public FieldSelection fsel
-
-cdef class SelectedPointsBase:
-
-    cdef readonly long cdata
-
-    cdef readonly int view_count
-
-    cdef public PointsSelection psel
+from .geometry cimport *
+from .field_selection cimport *
+from .field_base cimport * 
 
 {{for name in type_name_list}}
 

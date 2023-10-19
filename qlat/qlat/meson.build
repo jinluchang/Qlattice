@@ -18,6 +18,7 @@ py_files = files(
   'field_selection_utils.py',
   'fields_io.py',
   'field_utils.py',
+  'field_type_dict.py',
   'fthmc.py',
   'gauge_action.py',
   'get_include_dir.py',
@@ -42,6 +43,7 @@ pxd_files = files(
   'everything.pxd',
   'geometry.pxd',
   'field_selection.pxd',
+  'field_base.pxd',
   )
 
 foreach f: init_files + pxd_files
@@ -84,12 +86,12 @@ cplib = py3.extension_module('cp',
 py3.install_sources(init_files + py_files + pxd_files, subdir: 'qlat')
 
 name_pyx_list = [
-  [ 'geometry', files('geometry.pyx'), ],
-  [ 'field_selection', files('field_selection.pyx'), ],
+  'geometry',
+  'field_selection',
+  'field_base',
   ]
 
-foreach ii: name_pyx_list
-  name = ii[0]
+foreach name: name_pyx_list
   pyx = files(f'@name@.pyx')
   cpyx = fs.copyfile(pyx)
   lib = py3.extension_module(name,
