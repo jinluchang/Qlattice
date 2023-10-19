@@ -1179,7 +1179,7 @@ class CExprCodeGenPy:
             append(f"from auto_contractor.runtime import *")
         append_cy(f"import cython")
         append_cy(f"cimport qlat_utils.everything as cc")
-        append_cy(f"cimport qlat_utils as qu")
+        append_cy(f"cimport qlat_utils.all as qu")
         append_cy(f"cimport libcpp.complex")
         append_cy(f"cimport numpy")
         self.sep()
