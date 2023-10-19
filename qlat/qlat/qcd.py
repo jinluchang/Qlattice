@@ -1,7 +1,6 @@
 from qlat_utils import *
 import qlat.c as c
 
-from qlat.field import *
 from qlat.field_utils import *
 from qlat.utils_io import *
 

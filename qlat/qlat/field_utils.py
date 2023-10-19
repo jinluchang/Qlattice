@@ -1,10 +1,25 @@
 import qlat.c as c
 
-from qlat.field import *
+from qlat_utils import *
+from qlat.c import *
 from qlat.selected_field import *
 from qlat.selected_points import *
+from qlat.utils_io import *
 
+import numpy as np
 import math
+
+from qlat.c import \
+        Field, \
+        FieldBase, \
+        field_ctypes_complex, \
+        field_ctypes_double, \
+        field_ctypes_float, \
+        field_ctypes_long, \
+        split_fields, \
+        merge_fields, \
+        merge_fields_ms, \
+        mk_merged_fields_ms
 
 def field_expanded(f, expansion_left, expansion_right):
     geo = f.geo()

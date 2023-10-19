@@ -2,7 +2,6 @@ from qlat_utils import *
 from qlat.c import *
 import qlat.c as c
 
-from qlat.field import *
 from qlat.qcd import *
 from qlat.gauge_action import *
 

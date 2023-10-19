@@ -15,11 +15,7 @@ from qlat.mpi import *
 
 from qlat.geometry import *
 
-from qlat.field import *
-
 from qlat.field_utils import *
-
-from qlat.utils import *
 
 from qlat.utils_io import *
 

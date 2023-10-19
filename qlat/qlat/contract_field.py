@@ -1,7 +1,6 @@
 from qlat_utils import *
 import qlat.c as c
 
-from qlat.field import *
 from qlat.propagator import *
 
 @timer

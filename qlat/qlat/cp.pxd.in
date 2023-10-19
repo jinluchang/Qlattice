@@ -18,8 +18,8 @@ type_name_list = [
 }}
 
 from . cimport everything as cqlat
-from .field_selection cimport PointsSelection, FieldSelection
 from .geometry cimport Geometry
+from .field_selection cimport PointsSelection, FieldSelection
 
 cdef class FieldBase:
 

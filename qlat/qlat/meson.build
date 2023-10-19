@@ -15,7 +15,6 @@ py_files = files(
   'coordinate.py',
   'fermion_action.py',
   'field_double.py',
-  'field.py',
   'field_selection_utils.py',
   'fields_io.py',
   'field_utils.py',
@@ -35,7 +34,6 @@ py_files = files(
   'smear.py',
   'topology.py',
   'utils_io.py',
-  'utils.py',
   'wilson_flow.py',
   )
 

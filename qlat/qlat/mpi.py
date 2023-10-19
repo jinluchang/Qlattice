@@ -108,6 +108,13 @@ def glb_sum(x):
         # possible types: q.LatData
         return x.glb_sum()
 
+def glb_sum_list(ret):
+    displayln_info("glb_sum_list: deprecated")
+    # deprecated (use glb_sum instead)
+    # ret = [ va, vb, ... ]
+    # return [ glb_sum(va), glb_sum(vb), ... ]
+    return glb_sum(ret)
+
 @timer_verbose
 def show_machine():
     displayln(f"id_node: {get_id_node():4} / {get_num_node()}"
