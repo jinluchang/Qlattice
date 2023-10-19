@@ -21,6 +21,7 @@ py_files = files(
 
 pxd_files = files(
   '__init__.pxd',
+  'all.pxd',
   'everything.pxd',
   'timer.pxd',
   'types.pxd',

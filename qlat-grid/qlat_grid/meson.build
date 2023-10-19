@@ -2,22 +2,21 @@ subdir('scripts')
 subdir('include')
 subdir('lib')
 
-py_fns = [
+py_files = files(
   'c.py',
   'get_include_dir.py',
   '__init__.py',
   'init.py',
   '__main__.py',
   'prop.py',
-  ]
-py_files = files(py_fns)
+  )
 
-pxd_fns = [
+pxd_files = files(
   '__init__.pxd',
+  'all.pxd',
   'cp.pxd',
   'everything.pxd',
-  ]
-pxd_files = files(pxd_fns)
+  )
 
 py3.install_sources(py_files + pxd_files, subdir: 'qlat_grid')
 

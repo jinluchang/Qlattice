@@ -40,6 +40,7 @@ py_files = files(
 
 pxd_files = files(
   '__init__.pxd',
+  'all.pxd',
   'everything.pxd',
   'geometry.pxd',
   'field_selection.pxd',

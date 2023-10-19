@@ -18,9 +18,7 @@ type_name_list = [
 }}
 
 from . cimport everything as cqlat
-from .geometry cimport *
-from .field_selection cimport *
-from .field_base cimport * 
+from .field_base cimport FieldBase, SelectedFieldBase, SelectedPointsBase
 
 {{for name in type_name_list}}
 

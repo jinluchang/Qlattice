@@ -19,10 +19,12 @@ type_name_list = [
     ]
 }}
 
-from qlat_utils cimport *
+from qlat_utils.all cimport *
 from . cimport everything as cc
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
+from .geometry cimport *
+from .field_selection cimport *
 
 import cqlat as c
 import qlat_utils as q
