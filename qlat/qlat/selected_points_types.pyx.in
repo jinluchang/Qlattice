@@ -25,20 +25,20 @@ from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
 from .geometry cimport *
 from .field_selection cimport *
+from .field_types cimport *
 from .selected_field_types cimport *
-from .selected_points_types cimport *
 
 import cqlat as c
 import qlat_utils as q
 import numpy as np
 
-from .field_type_dict import field_type_dict
+from .field_type_dict import selected_points_type_dict
 
 ### -------------------------------------------------------------------
 
 {{for name in type_name_list}}
 
-cdef class Field{{name}}(FieldBase):
+cdef class SelectedPoints{{name}}(SelectedPointsBase):
 
     ctype = ElemType{{name}}
 
@@ -46,32 +46,28 @@ cdef class Field{{name}}(FieldBase):
         self.cdata = <long>&(self.xx)
         self.view_count = 0
 
-    def __init__(self, Geometry geo=None, int multiplicity=0):
-        if geo is None:
-            return
-        if self.view_count > 0:
-            raise ValueError("can't re-init while being viewed")
-        self.xx.init(geo.xx, multiplicity)
+    def __init__(self, PointsSelection psel, int multiplicity=0):
+        self.psel = psel
+        if multiplicity > 0 and self.psel is not None:
+            if self.view_count > 0:
+                raise ValueError("can't re-init while being viewed")
+            self.xx.init(self.psel.xx, multiplicity)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
-        cdef const cc.Geometry* p_geo = &self.xx.get_geo()
-        cdef cc.Coordinate local_site = p_geo[0].local_site()
-        cdef int multiplicity = p_geo[0].multiplicity
+        cdef long n_points = self.xx.n_points
+        cdef int multiplicity = self.xx.multiplicity
         cdef cc.Vector[cc.{{name}}] fvec = cc.get_data(self.xx)
-        cdef int ndim = 5 + ElemType{{name}}.ndim()
+        cdef int ndim = 2 + ElemType{{name}}.ndim()
         cdef char* fmt = ElemType{{name}}.format()
         cdef Buffer buf = Buffer(self, ndim, ElemType{{name}}.itemsize())
         cdef cc.std_vector[Py_ssize_t] vec = ElemType{{name}}.shape()
         cdef Py_ssize_t* shape = &buf.shape_strides[0]
         cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
         cdef int i
-        shape[0] = local_site[3]
-        shape[1] = local_site[2]
-        shape[2] = local_site[1]
-        shape[3] = local_site[0]
-        shape[4] = multiplicity
+        shape[0] = n_points
+        shape[1] = multiplicity
         for i in range(ElemType{{name}}.ndim()):
-            shape[5 + i] = vec[i]
+            shape[2 + i] = vec[i]
         buf.set_strides()
         buffer.buf = <char*>(fvec.data())
         if flags & PyBUF_FORMAT:
@@ -95,34 +91,39 @@ cdef class Field{{name}}(FieldBase):
 
     def __imatmul__(self, f1):
         """
-        f1 can be Field, SelectedField, SelectedPoints
-        field geo does not change if already initialized
+        won't change self.psel
         """
-        if isinstance(f1, Field{{name}}):
-            self.xx = (<Field{{name}}>f1).xx
+        if isinstance(f1, SelectedPoints{{name}}):
+            # two psel must be the same object
+            if self.psel is f1.psel:
+                self.xx = (<SelectedPoints{{name}}>f1).xx
+            else:
+                raise Exception("SelectedPoints{{name}} @= psel mismatch")
         elif isinstance(f1, SelectedField{{name}}):
-            c.set_field_sfield(self, f1)
-        elif isinstance(f1, SelectedPoints{{name}}):
-            c.set_field_spfield(self, f1)
+            # only assign available points
+            c.set_spfield_sfield(self, f1)
+        elif isinstance(f1, Field{{name}}):
+            c.set_spfield_field(self, f1)
         else:
-            raise Exception(f"Field{{name}} @= type mismatch {type(self)} {type(f1)}")
+            raise Exception(f"SelectedPoints{{name}} @= type mismatch {type(self)} {type(f1)}")
         return self
 
     @q.timer
     def copy(self, is_copying_data=True):
-        f = type(self)()
+        f = type(self)(self.psel)
         if is_copying_data:
-            (<Field{{name}}>f).xx = self.xx
+            (<SelectedPoints{{name}}>f).xx = self.xx
         return f
 
     @q.timer
     def set_zero(self):
         cc.set_zero(self.xx)
 
-    def swap(self, Field{{name}} f1):
+    def swap(self, SelectedPoints{{name}} f1):
+        assert f1.psel is self.psel
         cc.qswap(f1.xx, self.xx)
 
-field_type_dict[ElemType{{name}}] = Field{{name}}
+selected_points_type_dict[ElemType{{name}}] = SelectedPoints{{name}}
 
 {{endfor}}
 

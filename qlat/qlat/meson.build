@@ -62,8 +62,9 @@ c_py = custom_target('c.py',
   )
 
 name_pyx_in_list = [
-  'cp',
   'field_types',
+  'selected_field_types',
+  'selected_points_types',
   ]
 
 foreach name: name_pyx_in_list

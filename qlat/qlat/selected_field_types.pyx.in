@@ -26,12 +26,13 @@ from cpython.buffer cimport PyBUF_FORMAT
 from .geometry cimport *
 from .field_selection cimport *
 from .field_types cimport *
+from .selected_points_types cimport *
 
 import cqlat as c
 import qlat_utils as q
 import numpy as np
 
-from .field_type_dict import selected_field_type_dict, selected_points_type_dict
+from .field_type_dict import selected_field_type_dict
 
 ### -------------------------------------------------------------------
 
@@ -123,95 +124,6 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         cc.qswap(f1.xx, self.xx)
 
 selected_field_type_dict[ElemType{{name}}] = SelectedField{{name}}
-
-### -------------------------------------------------------------------
-
-cdef class SelectedPoints{{name}}(SelectedPointsBase):
-
-    ctype = ElemType{{name}}
-
-    def __cinit__(self):
-        self.cdata = <long>&(self.xx)
-        self.view_count = 0
-
-    def __init__(self, PointsSelection psel, int multiplicity=0):
-        self.psel = psel
-        if multiplicity > 0 and self.psel is not None:
-            if self.view_count > 0:
-                raise ValueError("can't re-init while being viewed")
-            self.xx.init(self.psel.xx, multiplicity)
-
-    def __getbuffer__(self, Py_buffer *buffer, int flags):
-        cdef long n_points = self.xx.n_points
-        cdef int multiplicity = self.xx.multiplicity
-        cdef cc.Vector[cc.{{name}}] fvec = cc.get_data(self.xx)
-        cdef int ndim = 2 + ElemType{{name}}.ndim()
-        cdef char* fmt = ElemType{{name}}.format()
-        cdef Buffer buf = Buffer(self, ndim, ElemType{{name}}.itemsize())
-        cdef cc.std_vector[Py_ssize_t] vec = ElemType{{name}}.shape()
-        cdef Py_ssize_t* shape = &buf.shape_strides[0]
-        cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
-        cdef int i
-        shape[0] = n_points
-        shape[1] = multiplicity
-        for i in range(ElemType{{name}}.ndim()):
-            shape[2 + i] = vec[i]
-        buf.set_strides()
-        buffer.buf = <char*>(fvec.data())
-        if flags & PyBUF_FORMAT:
-            buffer.format = fmt
-        else:
-            buffer.format = NULL
-        buffer.internal = NULL
-        buffer.itemsize = buf.itemsize
-        buffer.len = buf.get_len()
-        buffer.ndim = buf.ndim
-        buffer.obj = buf
-        buffer.readonly = 0
-        buffer.shape = shape
-        buffer.strides = strides
-        buffer.suboffsets = NULL
-        assert buffer.len * buffer.itemsize == fvec.size() * ElemType{{name}}.size()
-        self.view_count += 1
-
-    def __releasebuffer__(self, Py_buffer *buffer):
-        self.view_count -= 1
-
-    def __imatmul__(self, f1):
-        """
-        won't change self.psel
-        """
-        if isinstance(f1, SelectedPoints{{name}}):
-            # two psel must be the same object
-            if self.psel is f1.psel:
-                self.xx = (<SelectedPoints{{name}}>f1).xx
-            else:
-                raise Exception("SelectedPoints{{name}} @= psel mismatch")
-        elif isinstance(f1, SelectedField{{name}}):
-            # only assign available points
-            c.set_spfield_sfield(self, f1)
-        elif isinstance(f1, Field{{name}}):
-            c.set_spfield_field(self, f1)
-        else:
-            raise Exception(f"SelectedPoints{{name}} @= type mismatch {type(self)} {type(f1)}")
-        return self
-
-    @q.timer
-    def copy(self, is_copying_data=True):
-        f = type(self)(self.psel)
-        if is_copying_data:
-            (<SelectedPoints{{name}}>f).xx = self.xx
-        return f
-
-    @q.timer
-    def set_zero(self):
-        cc.set_zero(self.xx)
-
-    def swap(self, SelectedPoints{{name}} f1):
-        assert f1.psel is self.psel
-        cc.qswap(f1.xx, self.xx)
-
-selected_points_type_dict[ElemType{{name}}] = SelectedPoints{{name}}
 
 {{endfor}}
 

@@ -1,0 +1,29 @@
+{{py:
+type_name_list = [
+    'ColorMatrix',
+    'WilsonMatrix',
+    'NonRelWilsonMatrix',
+    'IsospinMatrix',
+    'SpinMatrix',
+    'WilsonVector',
+    'Complex',
+    'ComplexF',
+    'Double',
+    'Float',
+    'Long',
+    'Int64t',
+    'Int8t',
+    'Char',
+    ]
+}}
+
+from . cimport everything as cqlat
+from .field_base cimport SelectedPointsBase
+
+{{for name in type_name_list}}
+
+cdef class SelectedPoints{{name}}(SelectedPointsBase):
+
+    cdef cqlat.SelectedPoints[cqlat.{{name}}] xx
+
+{{endfor}}
