@@ -19,6 +19,8 @@ from qlat.field_utils import *
 
 from qlat.utils_io import *
 
+from qlat.coordinate import *
+
 from qlat.qcd import *
 
 from qlat.wilson_flow import *
