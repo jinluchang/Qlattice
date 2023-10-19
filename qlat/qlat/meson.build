@@ -49,8 +49,9 @@ pxd_files = files(
 
 py3.install_sources(init_files + py_files + pxd_files, subdir: 'qlat')
 
+pxd_tgts = []
 foreach f: init_files + pxd_files
-  fs.copyfile(f)
+  pxd_tgts += fs.copyfile(f)
 endforeach
 
 c_py = custom_target('c.py',
@@ -75,6 +76,10 @@ foreach name: name_pyx_in_list
     install: true,
     install_dir: py3.get_install_dir() / 'qlat',
     )
+  pxd_tgts += cp_pxd
+endforeach
+
+foreach name: name_pyx_in_list
   cp_pyx = custom_target(f'@name@.pyx',
     input: f'@name@.pyx.in',
     output: f'@name@.pyx',
@@ -82,7 +87,7 @@ foreach name: name_pyx_in_list
     install: false,
     )
   cplib = py3.extension_module(f'@name@',
-    cp_pyx,
+    cp_pyx, pxd_tgts,
     dependencies: deps,
     include_directories: incdir,
     link_with: clib,
@@ -102,7 +107,7 @@ foreach name: name_pyx_list
   pyx = files(f'@name@.pyx')
   cpyx = fs.copyfile(pyx)
   lib = py3.extension_module(name,
-    cpyx,
+    cpyx, pxd_tgts,
     dependencies: deps,
     include_directories: incdir,
     link_with: clib,
@@ -111,4 +116,3 @@ foreach name: name_pyx_list
     install_rpath: ':'.join(qlat_utils_lib + [ '$ORIGIN/lib', ]),
     )
 endforeach
-
