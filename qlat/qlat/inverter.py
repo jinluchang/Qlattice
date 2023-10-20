@@ -1,9 +1,9 @@
 from qlat_utils import *
-import qlat.c as c
-
 from qlat.propagator import *
 from qlat.fermion_action import *
-from qlat.qcd import *
+
+from .c import *
+from . import c
 
 cache_inv = mk_cache("inv")
 

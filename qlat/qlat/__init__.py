@@ -17,8 +17,6 @@ from qlat.geometry import *
 
 from qlat.coordinate import *
 
-from qlat.qcd import *
-
 from qlat.wilson_flow import *
 
 from qlat.topology import *

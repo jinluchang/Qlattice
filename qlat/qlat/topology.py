@@ -1,7 +1,7 @@
-import qlat.c as c
+from .wilson_flow import *
 
-from qlat.qcd import *
-from qlat.wilson_flow import *
+from .c import *
+from . import c
 
 from pprint import pformat
 

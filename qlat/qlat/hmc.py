@@ -1,7 +1,6 @@
 from qlat_utils import *
 from .c import *
 
-from .qcd import *
 from .gauge_action import *
 from .mpi import *
 

@@ -1,6 +1,6 @@
-from .qcd import *
 from .propagator import *
 
+from .c import *
 from . import c
 
 def gf_ape_smear(gf: GaugeField, alpha: float, steps: int = 1):

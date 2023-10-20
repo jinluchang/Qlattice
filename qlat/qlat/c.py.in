@@ -85,6 +85,20 @@ __all__ += [
         'sqrt_double_field',
         ]
 
+__all__ += [
+        'GaugeField',
+        'GaugeTransform',
+        'gf_show_info',
+        'gf_avg_plaq',
+        'gf_avg_link_trace',
+        'gf_wilson_line_no_comm',
+        'gf_wilson_lines_no_comm',
+        'gf_avg_wilson_loop_normalized_tr',
+        'set_g_rand_color_matrix_field',
+        'gf_twist_boundary_at_boundary',
+        'mk_left_expanded_gauge_field',
+        ]
+
 ### -------------------------------------------------------------------------
 
 import ctypes
@@ -113,5 +127,6 @@ from .field_selection import *
 from .selected_field_types import *
 from .selected_points_types import *
 from .field_utils import *
+from .qcd import *
 
 sys.setdlopenflags(flags)

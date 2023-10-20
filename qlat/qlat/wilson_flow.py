@@ -1,7 +1,6 @@
-import qlat.c as c
-
-from qlat.qcd import *
 from qlat.hmc import *
+from .c import *
+from . import c
 
 def gf_energy_density(gf : GaugeField):
     return c.gf_energy_density(gf)
