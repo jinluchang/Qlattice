@@ -151,42 +151,42 @@ def qremove_all_info(path):
 def qmkdir_sync_node(path):
     clear_is_directory_cache()
     if get_num_node() != 1:
-        import cqlat as c
+        import qlat.c as c
         return c.qmkdir_sync_node(path)
     return qmkdir(path)
 
 def does_file_exist_sync_node(path):
     if get_num_node() != 1:
-        import cqlat as c
+        import qlat.c as c
         return c.does_file_exist_sync_node(path)
     return does_file_exist(path)
 
 def is_directory_sync_node(path):
     if get_num_node() != 1:
-        import cqlat as c
+        import qlat.c as c
         return c.is_directory_sync_node(path)
     return is_directory(path)
 
 def is_regular_file_sync_node(path):
     if get_num_node() != 1:
-        import cqlat as c
+        import qlat.c as c
         return c.is_regular_file_sync_node(path)
     return is_regular_file(path)
 
 def qls_sync_node(path):
     if get_num_node() != 1:
-        import cqlat as c
+        import qlat.c as c
         return c.qls_sync_node(path)
     return qls(path)
 
 def qls_all_sync_node(path):
     if get_num_node() != 1:
-        import cqlat as c
+        import qlat.c as c
         return c.qls_all_sync_node(path)
     return qls_all(path)
 
 def qload_datatable_sync_node(path, is_par = False):
     if get_num_node() != 1:
-        import cqlat as c
+        import qlat.c as c
         return c.qload_datatable_sync_node(path, is_par)
     return qload_datatable(path, is_par)

@@ -39,6 +39,9 @@ bool is_regular_file_sync_node(const std::string& fn);
 int qmkdir_sync_node(const std::string& path,
                      const mode_t mode = default_dir_mode());
 
+int qmkdir_p_sync_node(const std::string& path,
+                       const mode_t mode = default_dir_mode());
+
 int mkdir_lock(const std::string& path, const mode_t mode = default_dir_mode());
 
 int mkdir_lock_all_node(const std::string& path,

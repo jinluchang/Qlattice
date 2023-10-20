@@ -25,6 +25,8 @@ bool obtain_lock(const std::string& path)
   displayln_info(fname +
                  ssprintf(": Trying to obtain lock '%s'.", path.c_str()));
   qassert(get_lock_location() == "");
+  const std::string path_dir = dirname(path);
+  qmkdir_p(path_dir);
   if (0 == mkdir_lock(path)) {
     qtouch_info(path_time, show(expiration_time) + "\n");
     get_lock_location() = path;
@@ -163,6 +165,16 @@ int qmkdir_sync_node(const std::string& path, const mode_t mode)
   TIMER("qmkdir_sync_node");
   if (0 == get_id_node()) {
     qmkdir(path, mode);
+  }
+  sync_node();
+  return check_dir(path, mode);
+}
+
+int qmkdir_p_sync_node(const std::string& path, const mode_t mode)
+{
+  TIMER("qmkdir_p_sync_node");
+  if (0 == get_id_node()) {
+    qmkdir_p(path, mode);
   }
   sync_node();
   return check_dir(path, mode);

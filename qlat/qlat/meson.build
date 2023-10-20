@@ -32,7 +32,6 @@ py_files = files(
   'scalar_action.py',
   'smear.py',
   'topology.py',
-  'utils_io.py',
   'wilson_flow.py',
   )
 
@@ -99,6 +98,7 @@ name_pyx_list = [
   'geometry',
   'field_selection',
   'field_base',
+  'utils_io',
   ]
 
 foreach name: name_pyx_list

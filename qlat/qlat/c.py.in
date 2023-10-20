@@ -41,10 +41,19 @@ __all__ += [
 {{endfor}}
 
 __all__ += [
+        'Field',
+        'FieldBase',
         'SelectedField',
         'SelectedFieldBase',
         'SelectedPoints',
         'SelectedPointsBase',
+        ]
+
+__all__ += [
+        'check_time_limit',
+        'check_stop',
+        'release_lock',
+        'obtain_lock',
         ]
 
 ### -------------------------------------------------------------------------

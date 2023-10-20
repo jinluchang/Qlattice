@@ -212,14 +212,3 @@ EXPORT(check_stop, {
   }
   Py_RETURN_NONE;
 })
-
-EXPORT(qquit, {
-  using namespace qlat;
-  PyObject* p_msg = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_msg)) {
-    return NULL;
-  }
-  const std::string msg = py_convert_data<std::string>(p_msg);
-  qquit(msg);
-  Py_RETURN_NONE;
-})
