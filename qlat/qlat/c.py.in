@@ -76,7 +76,7 @@ __all__ += [
         'field_expanded',
         'refresh_expanded',
         'refresh_expanded_1',
-        'FieldExpandCommPlan',
+        'CommPlan',
         'make_field_expand_comm_plan',
         'mk_phase_field',
         'FastFourierTransform',

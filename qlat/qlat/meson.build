@@ -27,7 +27,6 @@ py_files = files(
   '__main__.py',
   'mpi.py',
   'propagator.py',
-  'qcd.py',
   'scalar_action.py',
   'smear.py',
   'topology.py',
@@ -41,6 +40,8 @@ pxd_files = files(
   'geometry.pxd',
   'field_selection.pxd',
   'field_base.pxd',
+  'field_utils.pxd',
+  'qcd.pxd',
   )
 
 py3.install_sources(init_files + py_files + pxd_files, subdir: 'qlat')
@@ -99,6 +100,7 @@ name_pyx_list = [
   'field_base',
   'field_utils',
   'utils_io',
+  'qcd',
   ]
 
 foreach name: name_pyx_list

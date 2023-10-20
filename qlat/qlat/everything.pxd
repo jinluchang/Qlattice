@@ -67,6 +67,11 @@ cdef extern from "qlat/field.h" namespace "qlat":
     void qswap[T](Field[T]& x, Field[T]& y) except +
     void set_xg_field(Field[long]& f, const Geometry& geo)
 
+cdef extern from "qlat/field-expand.h" namespace "qlat":
+
+    cdef cppclass CommPlan:
+        pass
+
 cdef extern from "qlat/selected-field-io.h" namespace "qlat":
 
     cdef cppclass FieldSelection:

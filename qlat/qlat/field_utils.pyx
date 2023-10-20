@@ -41,24 +41,17 @@ def refresh_expanded(field, comm_plan=None):
 def refresh_expanded_1(field):
     return c.refresh_expanded_1_field(field)
 
-class FieldExpandCommPlan:
+cdef class CommPlan:
 
-    # self.cdata
+    def __cinit__(self):
+        self.cdata = <long>&(self.xx)
 
-    def __init__(self):
-        self.cdata = c.mk_field_expand_comm_plan()
-
-    def __del__(self):
-        assert isinstance(self.cdata, int)
-        c.free_field_expand_comm_plan(self)
-
-    def __imatmul__(self, v1):
-        assert isinstance(v1, FieldExpandCommPlan)
-        c.set_field_expand_comm_plan(self, v1)
+    def __imatmul__(self, CommPlan v1):
+        self.xx = v1.xx
         return self
 
     def copy(self, is_copying_data=True):
-        x = FieldExpandCommPlan()
+        x = CommPlan()
         if is_copying_data:
             x @= self
         return x
@@ -75,7 +68,7 @@ def make_field_expand_comm_plan(comm_marks):
     """
     comm_marks is of type Field(ElemTypeInt8t)
     """
-    cp = FieldExpandCommPlan()
+    cp = CommPlan()
     c.make_field_expand_comm_plan(cp, comm_marks)
     return cp
 

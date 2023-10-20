@@ -1,8 +1,25 @@
-from qlat_utils import *
-from .c import *
-from . import c
+# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
-class GaugeField(FieldColorMatrix):
+from qlat_utils.all cimport *
+from . cimport everything as cc
+from .geometry cimport Geometry
+from .field_types cimport (
+        FieldColorMatrix,
+        )
+
+from cpython cimport Py_buffer
+from cpython.buffer cimport PyBUF_FORMAT
+
+import cqlat as c
+import qlat_utils as q
+import numpy as np
+
+from .field_utils import (
+        field_expanded,
+        refresh_expanded_1,
+        )
+
+cdef class GaugeField(FieldColorMatrix):
 
     def __init__(self, geo=None):
         super().__init__(geo, 4)
@@ -13,14 +30,14 @@ class GaugeField(FieldColorMatrix):
             f @= self
         return f
 
-    @timer
+    @q.timer
     def save(self, path):
         """
         Save with the standard NERSC format
         """
         return c.save_gauge_field(self, path)
 
-    @timer
+    @q.timer
     def load(self, path):
         """
         Load with the standard NERSC format
@@ -48,7 +65,7 @@ class GaugeField(FieldColorMatrix):
 
 ###
 
-class GaugeTransform(FieldColorMatrix):
+cdef class GaugeTransform(FieldColorMatrix):
 
     def __init__(self, geo=None):
         super().__init__(geo, 1)
@@ -59,28 +76,28 @@ class GaugeTransform(FieldColorMatrix):
             f @= self
         return f
 
-    @timer
+    @q.timer
     def save(self, path):
         """
         Save as double precision with the generic Field format ``save_double``
         """
         return self.save_double(path)
 
-    @timer
+    @q.timer
     def load(self, path):
         """
         Load as double precision with the generic Field format ``load_double``
         """
         return self.load_double(path)
 
-    @timer
+    @q.timer
     def save_cps(self, path):
         """
         Save with the format used in CPS
         """
         return c.save_gauge_transform_cps(self, path)
 
-    @timer
+    @q.timer
     def load_cps(self, path):
         """
         Load with the format used in CPS
@@ -128,10 +145,10 @@ class GaugeTransform(FieldColorMatrix):
 
 ###
 
-@timer_verbose
+@q.timer_verbose
 def gf_show_info(gf):
     assert isinstance(gf, GaugeField)
-    displayln_info(f"gf_show_info: plaq = {gf.plaq():.16F} ; link_trace = {gf.link_trace():.16F}.")
+    q.displayln_info(f"gf_show_info: plaq = {gf.plaq():.16F} ; link_trace = {gf.link_trace():.16F}.")
 
 def gf_avg_plaq(gf):
     assert isinstance(gf, GaugeField)
@@ -161,7 +178,7 @@ def gf_wilson_lines_no_comm(gf_ext, path_list):
     return wlf
     """
     multiplicity = len(path_list)
-    geo = geo_reform(gf_ext.geo(), multiplicity)
+    geo = q.geo_reform(gf_ext.geo(), multiplicity)
     wlf = FieldColorMatrix(geo)
     for m, p in enumerate(path_list):
         if isinstance(p, tuple) and len(p) == 2:
