@@ -1,23 +1,10 @@
-from . import c
-
 from qlat_utils import *
 from .c import *
-from .utils_io import *
 
 import numpy as np
 import math
 
-from qlat.c import \
-        Field, \
-        FieldBase, \
-        field_ctypes_complex, \
-        field_ctypes_double, \
-        field_ctypes_float, \
-        field_ctypes_long, \
-        split_fields, \
-        merge_fields, \
-        merge_fields_ms, \
-        mk_merged_fields_ms
+from . import c
 
 def field_expanded(f, expansion_left, expansion_right):
     geo = f.geo()
@@ -68,7 +55,7 @@ class FieldExpandCommPlan:
 
 def make_field_expand_comm_plan(comm_marks):
     """
-    comm_marks is of type Field(c.ElemTypeInt8t)
+    comm_marks is of type Field(ElemTypeInt8t)
     """
     cp = FieldExpandCommPlan()
     c.make_field_expand_comm_plan(cp, comm_marks)
@@ -79,7 +66,7 @@ def mk_phase_field(geo: Geometry, lmom):
     lmom is in lattice momentum unit
     exp(i * 2*pi/L * lmom \cdot xg )
     """
-    f = Field(c.ElemTypeComplex, geo, 1)
+    f = Field(ElemTypeComplex, geo, 1)
     c.set_phase_field(f, lmom)
     return f
 
@@ -135,15 +122,15 @@ def mk_fft(is_forward, *, is_only_spatial=False, is_normalizing=False, mode_fft=
 @timer
 def qnorm_field(f):
     if isinstance(f, FieldBase):
-        f_n = Field(c.ElemTypeDouble)
+        f_n = Field(ElemTypeDouble)
         c.qnorm_field_field(f_n, f)
     elif isinstance(f, SelectedFieldBase):
         fsel = f.fsel
-        f_n = SelectedField(c.ElemTypeDouble, fsel)
+        f_n = SelectedField(ElemTypeDouble, fsel)
         c.qnorm_field_sfield(f_n, f)
     elif isinstance(f, SelectedPointsBase):
         psel = f.psel
-        f_n = SelectedPoints(c.ElemTypeDouble, psel)
+        f_n = SelectedPoints(ElemTypeDouble, psel)
         c.qnorm_field_spfield(f_n, f)
     else:
         displayln_info("qnorm_field:", type(f))
@@ -153,18 +140,18 @@ def qnorm_field(f):
 @timer
 def sqrt_double_field(f):
     if isinstance(f, FieldBase):
-        assert f.ctype is c.ElemTypeDouble
-        f_ret = Field(c.ElemTypeDouble)
+        assert f.ctype is ElemTypeDouble
+        f_ret = Field(ElemTypeDouble)
         c.set_sqrt_double_field(f_ret, f)
     elif isinstance(f, SelectedFieldBase):
-        assert f.ctype == c.ElemTypeDouble
+        assert f.ctype == ElemTypeDouble
         fsel = f.fsel
-        f_ret = SelectedField(c.ElemTypeDouble, fsel)
+        f_ret = SelectedField(ElemTypeDouble, fsel)
         c.set_sqrt_double_sfield(f_ret, f)
     elif isinstance(f, SelectedPointsBase):
-        assert f.ctype == c.ElemTypeDouble
+        assert f.ctype == ElemTypeDouble
         psel = f.psel
-        f_ret = SelectedPoints(c.ElemTypeDouble, psel)
+        f_ret = SelectedPoints(ElemTypeDouble, psel)
         c.set_sqrt_double_spfield(f_ret, f)
     else:
         displayln_info("sqrt_double_field:", type(f))

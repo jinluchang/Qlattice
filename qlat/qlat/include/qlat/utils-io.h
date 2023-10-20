@@ -22,7 +22,7 @@ void release_lock();
 
 void qquit(const std::string& msg);
 
-void check_time_limit(const double budget = get_default_budget());
+void check_time_limit(const double budget = get_time_budget());
 
 void check_stop(const std::string& fn = "stop.txt");
 

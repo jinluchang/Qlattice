@@ -11,23 +11,6 @@ EXPORT(qmkdir_sync_node, {
   return py_convert(ret);
 })
 
-EXPORT(obtain_lock, {
-  using namespace qlat;
-  PyObject* p_path = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_path)) {
-    return NULL;
-  }
-  const std::string path = py_convert_data<std::string>(p_path);
-  const bool ret = obtain_lock(path);
-  return py_convert(ret);
-})
-
-EXPORT(release_lock, {
-  using namespace qlat;
-  release_lock();
-  Py_RETURN_NONE;
-})
-
 EXPORT(does_file_exist_sync_node, {
   using namespace qlat;
   PyObject* p_path = NULL;
@@ -181,34 +164,4 @@ EXPORT(qload_datatable_sync_node, {
   const std::string path = py_convert_data<std::string>(p_path);
   const DataTable dt = qload_datatable_sync_node(path, is_par);
   return py_convert(dt);
-})
-
-EXPORT(check_time_limit, {
-  using namespace qlat;
-  PyObject* p_budget = NULL;
-  if (!PyArg_ParseTuple(args, "|O", &p_budget)) {
-    return NULL;
-  }
-  if (NULL == p_budget) {
-    check_time_limit();
-  } else {
-    const double budget = py_convert_data<double>(p_budget);
-    check_time_limit(budget);
-  }
-  Py_RETURN_NONE;
-})
-
-EXPORT(check_stop, {
-  using namespace qlat;
-  PyObject* p_path = NULL;
-  if (!PyArg_ParseTuple(args, "|O", &p_path)) {
-    return NULL;
-  }
-  if (NULL == p_path) {
-    check_stop();
-  } else {
-    const std::string path = py_convert_data<std::string>(p_path);
-    check_stop(path);
-  }
-  Py_RETURN_NONE;
 })

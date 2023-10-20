@@ -1,9 +1,9 @@
 from qlat_utils import *
-import qlat.c as c
 
 from qlat.field_utils import *
 from qlat.field_selection_utils import *
-from qlat.utils_io import *
+
+import qlat.c as c
 
 cache_fields_io = mk_cache("fields_io")
 

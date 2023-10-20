@@ -18,6 +18,8 @@ long get_verbose_level_default();
 
 double get_time_limit_default();
 
+double get_time_budget_default();
+
 API inline long& get_verbose_level()
 // qlat parameter
 {
@@ -32,10 +34,10 @@ API inline double& get_time_limit()
   return limit;
 }
 
-API inline double& get_default_budget()
+API inline double& get_time_budget()
 // qlat parameter
 {
-  static double budget = get_env_double_default("q_budget", 15.0 * 60.0);
+  static double budget = get_time_budget_default();
   return budget;
 }
 

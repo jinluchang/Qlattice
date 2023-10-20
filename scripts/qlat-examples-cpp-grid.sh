@@ -37,7 +37,12 @@ source qcore/set-prefix.sh $name
     for log in examples-cpp/*/log ; do
         echo diff "$prefix/$log" "$log"
         diff "$prefix/$log" "$log" | grep 'CHECK: ' && ( echo "$log" ; cat "$prefix/$log" || true )
-        diff "$prefix/$log" "$log" >/dev/null 2>&1 || ( cp -rpv "$prefix/$log" "$log".new || true )
+        if diff "$prefix/$log" "$log" >/dev/null 2>&1 ; then
+            :
+        else
+            cp -rpv "$prefix/$log" "$log".new || true
+            cp -rpv "$prefix/$log.full" "$log".full.txt || true
+        fi
     done
 
     echo "!!!! $name build !!!!"

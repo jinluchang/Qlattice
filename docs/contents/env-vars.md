@@ -16,7 +16,7 @@
 
   Default is `43200`.
 
-- `q_budget`
+- `q_time_budget`
 
   Default budget time in seconds. Possible setting can be `export q_budget=$((1 * 60 * 60))`
 

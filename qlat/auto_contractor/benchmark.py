@@ -22,7 +22,6 @@
 from auto_contractor.eval import *
 
 import qlat as q
-import cqlat
 
 @q.timer
 def benchmark_function_1(f, arg, benchmark_size = 1000, benchmark_num = 10, total_flops = 0):

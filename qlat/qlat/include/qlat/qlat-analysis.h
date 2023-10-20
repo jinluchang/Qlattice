@@ -27,7 +27,7 @@ inline void setup_params()
   get_lock_expiration_time_limit() = 24.0 * 60.0 * 60.0;
   set_lock_expiration_time_limit();
   get_time_limit() = get_lock_expiration_time_limit();
-  get_default_budget() = 0;
+  get_time_budget() = 0;
   dist_write_par_limit() = 128;
   dist_read_par_limit() = 128;
   displayln_info(ssprintf("get_start_time()=%lf", get_start_time()));

@@ -141,7 +141,7 @@ def get_time_limit():
     """
     return cc.get_time_limit()
 
-def set_time_limit(time_limit):
+def set_time_limit(time_limit=None):
     """
     Set time limit of the program in seconds.
     Usage::\n
@@ -160,8 +160,15 @@ def get_remaining_time():
     """
     return cc.get_remaining_time()
 
-def get_default_budget():
-    return cc.get_default_budget()
+def get_time_budget():
+    return cc.get_time_budget()
+
+def set_time_budget(time_budget=None):
+    if time_budget is None:
+        time_budget = cc.get_time_budget_default()
+    cdef double* p_ret = &cc.get_time_budget()
+    p_ret[0] = time_budget
+    assert cc.get_time_budget() == time_budget
 
 ### -------------------------------------------------------------------
 

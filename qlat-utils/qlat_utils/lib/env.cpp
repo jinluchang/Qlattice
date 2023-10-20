@@ -81,4 +81,10 @@ double get_time_limit_default()
   }
 }
 
+double get_time_budget_default()
+{
+  double budget = get_env_double_default("q_time_budget", 15.0 * 60.0);
+  return budget;
+}
+
 }  // namespace qlat

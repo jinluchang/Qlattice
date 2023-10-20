@@ -851,11 +851,3 @@ cdef class SelectedPointsBase:
         np.asarray(self).ravel()[:] = arr.ravel()
 
 ### -------------------------------------------------------------------
-
-def qremove_info(path):
-    return cc.qremove_info(path)
-
-def qremove_all_info(path):
-    return cc.qremove_all_info(path)
-
-### -------------------------------------------------------------------

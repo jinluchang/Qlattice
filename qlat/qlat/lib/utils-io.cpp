@@ -343,12 +343,12 @@ bool check_status()
 {
   TIMER_VERBOSE("check_status");
   displayln_info(fname + ssprintf(": ( get_actual_total_time() + "
-                                  "get_default_budget() ) / get_time_limit() "
+                                  "get_time_budget() ) / get_time_limit() "
                                   "= ( %.2lf + %.2lf ) / %.2lf hours.",
                                   get_actual_total_time() / 3600.0,
-                                  get_default_budget() / 3600.0,
+                                  get_time_budget() / 3600.0,
                                   get_time_limit() / 3600.0));
-  if (get_default_budget() + get_actual_total_time() > get_time_limit()) {
+  if (get_time_budget() + get_actual_total_time() > get_time_limit()) {
     displayln_info(fname + ssprintf(": too little time left."));
     return true;
   }

@@ -137,7 +137,8 @@ cdef extern from "qlat-utils/env.h" namespace "qlat":
     long get_time_limit_default()
     long& get_verbose_level()
     long get_verbose_level_default()
-    double& get_default_budget()
+    double& get_time_budget()
+    double get_time_budget_default()
 
 cdef extern from "qlat-utils/timer.h" namespace "qlat":
 

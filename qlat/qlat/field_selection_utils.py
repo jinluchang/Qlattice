@@ -1,10 +1,8 @@
 from qlat_utils import *
-import qlat.c as c
 
-from qlat.geometry import *
-from qlat.utils_io import *
+from .c import *
 
-from qlat.c import PointsSelection, FieldSelection
+from . import c
 
 cache_point_selection = mk_cache("point_selection")
 

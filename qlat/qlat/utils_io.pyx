@@ -18,7 +18,21 @@ def obtain_lock(const cc.std_string& path):
 
 def qquit(const cc.std_string& msg):
     """
-    clean python cache and then call c.qquit(msg) (which clear all the C++ level cache and then quit)
+    clean python cache and then call cc.qquit(msg) (which clear all the C++ level cache and then quit)
     """
     q.clean_cache()
     return cc.qquit(msg)
+
+def check_time_limit(budget=None):
+    if budget is None:
+        budget = q.get_time_budget()
+    return cc.check_time_limit(budget)
+
+def check_stop(fn="stop.txt"):
+    return cc.check_stop(fn)
+
+def qremove_info(path):
+    return cc.qremove_info(path)
+
+def qremove_all_info(path):
+    return cc.qremove_all_info(path)

@@ -1,7 +1,6 @@
-import qlat.c as c
-
 from qlat.hmc import *
-from qlat.utils_io import *
+
+import qlat.c as c
 
 def get_gm_force_magnitudes(gm_force, n_elems):
     return c.get_gm_force_magnitudes(gm_force, n_elems)

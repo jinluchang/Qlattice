@@ -1,8 +1,9 @@
 from qlat_utils import *
-from . import c
 
 from .field_utils import *
 from .field_selection_utils import *
+
+from . import c
 
 class Prop(FieldWilsonMatrix):
 
@@ -81,12 +82,12 @@ def mk_wall_src(geo, tslice, lmom=None):
 @timer
 def mk_rand_u1_src(sel, rs):
     """
-    return (prop_src, fu1,) where prop_src = Prop() and fu1 = Field(c.ElemTypeComplex)
+    return (prop_src, fu1,) where prop_src = Prop() and fu1 = Field(ElemTypeComplex)
     fu1 stores the random u1 numbers (fu1.multiplicity() == 1)
     sel can be psel or fsel
     """
     prop_src = Prop()
-    fu1 = Field(c.ElemTypeComplex)
+    fu1 = Field(ElemTypeComplex)
     if isinstance(sel, FieldSelection):
         fsel = sel
         c.set_rand_u1_src_fsel(prop_src, fu1, fsel, rs)
@@ -102,7 +103,7 @@ def mk_rand_u1_src(sel, rs):
 @timer
 def get_rand_u1_sol(prop_sol, fu1, sel):
     assert isinstance(prop_sol, Prop)
-    assert isinstance(fu1, FieldBase) and fu1.ctype == c.ElemTypeComplex
+    assert isinstance(fu1, FieldBase) and fu1.ctype == ElemTypeComplex
     if isinstance(sel, FieldSelection):
         fsel = sel
         s_prop = SelProp(fsel)
@@ -173,7 +174,7 @@ def flip_tpbc_with_tslice(prop, tslice_flip_tpbc):
 @timer
 def free_scalar_invert_mom_cfield(f, mass):
     assert isinstance(f, FieldBase)
-    assert f.ctype == c.ElemTypeComplex
+    assert f.ctype == ElemTypeComplex
     c.free_scalar_invert_mom_cfield(f, mass)
 
 @timer

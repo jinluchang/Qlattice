@@ -1,8 +1,6 @@
 from qlat_utils import *
-from . import c
-
 from .field_utils import *
-from .utils_io import *
+from . import c
 
 class GaugeField(FieldColorMatrix):
 

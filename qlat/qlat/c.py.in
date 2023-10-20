@@ -18,13 +18,10 @@ type_name_list = [
 }}
 
 import qlat_utils
-from qlat_utils.c import *
 
 ### -------------------------------------------------------------------------
 
 __all__ = []
-
-__all__ += qlat_utils.c.__all__
 
 __all__ += [
         'Geometry',
@@ -47,13 +44,32 @@ __all__ += [
         'SelectedFieldBase',
         'SelectedPoints',
         'SelectedPointsBase',
+        'PointsSelection',
+        'FieldSelection',
         ]
 
 __all__ += [
-        'check_time_limit',
-        'check_stop',
+        'field_ctypes_complex',
+        'field_ctypes_double',
+        'field_ctypes_float',
+        'field_ctypes_long',
+        ]
+
+__all__ += [
+        'split_fields',
+        'merge_fields',
+        'merge_fields_ms',
+        'mk_merged_fields_ms',
+        ]
+
+__all__ += [
         'release_lock',
         'obtain_lock',
+        'qquit',
+        'check_time_limit',
+        'check_stop',
+        'qremove_info',
+        'qremove_all_info',
         ]
 
 ### -------------------------------------------------------------------------
@@ -76,6 +92,7 @@ assert os.path.isfile(lib_path)
 ctypes.CDLL(lib_path, mode=ctypes.RTLD_GLOBAL)
 
 from cqlat import *
+from .utils_io import *
 from .geometry import *
 from .field_base import *
 from .field_types import *

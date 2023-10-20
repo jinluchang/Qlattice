@@ -42,8 +42,8 @@ inline void setup()
   Timer::minimum_duration_for_show_info() = 1.0;
   displayln_info(
       ssprintf("get_time_limit()=%lf hours", get_time_limit() / 3600.0));
-  displayln_info(ssprintf("get_default_budget()=%lf hours",
-                          get_default_budget() / 3600.0));
+  displayln_info(ssprintf("get_time_budget()=%lf hours",
+                          get_time_budget() / 3600.0));
   displayln_info(ssprintf("dist_read_par_limit()=%d", dist_read_par_limit()));
   displayln_info(ssprintf("dist_write_par_limit()=%d", dist_write_par_limit()));
 }

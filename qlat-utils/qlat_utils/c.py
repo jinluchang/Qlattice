@@ -71,9 +71,16 @@ __all__ += [
         'set_verbose_level',
         'get_time',
         'get_start_time',
+        'set_start_time',
         'get_actual_start_time',
+        'set_actual_start_time',
         'get_total_time',
         'get_actual_total_time',
+        'get_time_limit',
+        'set_time_limit',
+        'get_remaining_time',
+        'get_time_budget',
+        'set_time_budget',
         'timer_display',
         'timer_autodisplay',
         'timer_display_stack',
@@ -115,8 +122,8 @@ assert os.path.isfile(lib_path)
 
 ctypes.CDLL(lib_path, mode=ctypes.RTLD_GLOBAL)
 
-from .cutils import *
 from .timer import *
+from .cutils import *
 from .types import *
 from .coordinate import *
 from .lat_data import *

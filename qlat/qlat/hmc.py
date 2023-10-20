@@ -1,9 +1,11 @@
 from qlat_utils import *
-from qlat.c import *
-import qlat.c as c
+from .c import *
 
-from qlat.qcd import *
-from qlat.gauge_action import *
+from .qcd import *
+from .gauge_action import *
+from .mpi import *
+
+from . import c
 
 import math
 

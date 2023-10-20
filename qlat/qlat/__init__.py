@@ -17,8 +17,6 @@ from qlat.geometry import *
 
 from qlat.field_utils import *
 
-from qlat.utils_io import *
-
 from qlat.coordinate import *
 
 from qlat.qcd import *
@@ -51,10 +49,8 @@ from qlat.fields_io import *
 
 from qlat.inverter import *
 
-import qlat.field_double
-
 from qlat.get_include_dir import *
 
-set_verbose_level()
+import qlat.field_double
 
-del c
+set_verbose_level()
