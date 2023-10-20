@@ -24,12 +24,6 @@ cdef class GaugeField(FieldColorMatrix):
     def __init__(self, geo=None):
         super().__init__(geo, 4)
 
-    def copy(self, is_copying_data=True):
-        f = GaugeField()
-        if is_copying_data:
-            f @= self
-        return f
-
     @q.timer
     def save(self, path):
         """
@@ -69,12 +63,6 @@ cdef class GaugeTransform(FieldColorMatrix):
 
     def __init__(self, geo=None):
         super().__init__(geo, 1)
-
-    def copy(self, is_copying_data=True):
-        f = GaugeTransform()
-        if is_copying_data:
-            f @= self
-        return f
 
     @q.timer
     def save(self, path):

@@ -259,22 +259,6 @@ PyObject* qnorm_field_field_ctype(FieldM<double, 1>& f, PyObject* p_field1)
 
 }  // namespace qlat
 
-EXPORT(mk_field_expand_comm_plan, {
-  using namespace qlat;
-  CommPlan* pcp = new CommPlan();
-  return py_convert((void*)pcp);
-})
-
-EXPORT(free_field_expand_comm_plan, {
-  using namespace qlat;
-  return free_obj<CommPlan>(args);
-})
-
-EXPORT(set_field_expand_comm_plan, {
-  using namespace qlat;
-  return set_obj<CommPlan>(args);
-})
-
 EXPORT(make_field_expand_comm_plan, {
   using namespace qlat;
   PyObject* p_comm_plan = NULL;

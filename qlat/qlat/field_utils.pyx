@@ -8,6 +8,9 @@ from .field_base cimport (
         SelectedFieldBase,
         SelectedPointsBase,
         )
+from .field_types cimport (
+        FieldInt8t,
+        )
 
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
@@ -41,6 +44,14 @@ def refresh_expanded(field, comm_plan=None):
 def refresh_expanded_1(field):
     return c.refresh_expanded_1_field(field)
 
+
+cdef class CommMarks(FieldInt8t):
+
+    def __init__(self, Geometry geo=None, int multiplicity=0):
+        super().__init__(geo, multiplicity)
+
+###
+
 cdef class CommPlan:
 
     def __cinit__(self):
@@ -51,7 +62,7 @@ cdef class CommPlan:
         return self
 
     def copy(self, is_copying_data=True):
-        x = CommPlan()
+        x = type(self)()
         if is_copying_data:
             x @= self
         return x
@@ -64,7 +75,7 @@ cdef class CommPlan:
 
 ###
 
-def make_field_expand_comm_plan(comm_marks):
+def make_field_expand_comm_plan(CommMarks comm_marks):
     """
     comm_marks is of type Field(ElemTypeInt8t)
     """
@@ -88,6 +99,9 @@ class FastFourierTransform:
         self.fft_infos = fft_infos
         self.is_normalizing = is_normalizing
         self.mode_fft = mode_fft
+
+    def copy(self):
+        return self.__copy__()
 
     def __mul__(self, fields):
         if isinstance(fields, FieldBase):
