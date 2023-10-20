@@ -1,7 +1,8 @@
 from qlat_utils import *
-import qlat.c as c
+from . import c
 
-from qlat.field_utils import *
+from .field_utils import *
+from .field_selection_utils import *
 
 class Prop(FieldWilsonMatrix):
 
@@ -18,21 +19,6 @@ class Prop(FieldWilsonMatrix):
         wm = WilsonMatrix()
         c.get_elem_wm_prop(wm, self, xg, m)
         return wm
-
-    def sparse(self, sel):
-        # deprecated
-        if isinstance(sel, PointsSelection):
-            psel = sel
-            sp = PselProp(psel)
-            set_selected_points(sp, self)
-            return sp
-        elif isinstance(sel, FieldSelection):
-            fsel = sel
-            sf = SelProp(fsel)
-            set_selected_field(sf, self)
-            return sf
-        else:
-            raise Exception("Prop.sparse")
 
 ###
 
@@ -51,21 +37,6 @@ class SelProp(SelectedFieldWilsonMatrix):
         wm = WilsonMatrix()
         cdata = c.get_elem_wm_sprop(wm, self, idx, m)
         return wm
-
-    def sparse(self, sel):
-        # deprecated
-        if isinstance(sel, PointsSelection):
-            psel = sel
-            sp = PselProp(psel)
-            set_selected_points(sp, self)
-            return sp
-        elif isinstance(sel, FieldSelection):
-            fsel = sel
-            sf = SelProp(fsel)
-            set_selected_field(sf, self)
-            return sf
-        else:
-            raise Exception("SelProp.sparse")
 
 ###
 

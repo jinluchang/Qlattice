@@ -1,10 +1,43 @@
 #pragma once
 
-#include <qlat-utils/timer.h>
 #include <dirent.h>
+#include <qlat-utils/show.h>
 
 namespace qlat
 {  //
+
+std::string get_env(const std::string& var_name);
+
+std::string get_env_default(const std::string& var_name, const std::string& x0);
+
+double get_env_double_default(const std::string& var_name, const double x0);
+
+long get_env_long_default(const std::string& var_name, const long x0);
+
+long get_verbose_level_default();
+
+double get_time_limit_default();
+
+API inline long& get_verbose_level()
+// qlat parameter
+{
+  static long level = get_verbose_level_default();
+  return level;
+}
+
+API inline double& get_time_limit()
+// qlat parameter
+{
+  static double limit = get_time_limit_default();
+  return limit;
+}
+
+API inline double& get_default_budget()
+// qlat parameter
+{
+  static double budget = get_env_double_default("q_budget", 15.0 * 60.0);
+  return budget;
+}
 
 API inline long& get_qar_multi_vol_max_size()
 // qlat parameter

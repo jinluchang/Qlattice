@@ -72,8 +72,6 @@ cdef class FieldBase:
             assert f1.ctype is self.ctype
             c.set_add_field(self, f1)
         else:
-            from qlat.selected_field import SelectedField
-            from qlat.selected_points import SelectedPoints
             if isinstance(f1, SelectedFieldBase):
                 c.acc_field_sfield(self, f1)
             elif isinstance(f1, SelectedPointsBase):
@@ -91,8 +89,6 @@ cdef class FieldBase:
             assert f1.ctype is self.ctype
             c.set_sub_field(self, f1)
         else:
-            from qlat.selected_field import SelectedField
-            from qlat.selected_points import SelectedPoints
             if isinstance(f1, SelectedFieldBase):
                 assert f1.ctype is self.ctype
                 f1n = f1.copy()
@@ -151,27 +147,6 @@ cdef class FieldBase:
     def crc32(self):
         return c.crc32_field(self)
 
-    def sparse(self, sel):
-        """
-        deprecated
-        """
-        q.displayln_info("Field.sparse: deprecated")
-        from qlat.field_selection_utils import PointsSelection, FieldSelection
-        if isinstance(sel, PointsSelection):
-            from qlat.selected_points import SelectedPoints, set_selected_points
-            psel = sel
-            sp = SelectedPoints(self.ctype, psel)
-            set_selected_points(sp, self)
-            return sp
-        elif isinstance(sel, FieldSelection):
-            from qlat.selected_field import SelectedField, set_selected_field
-            fsel = sel
-            sf = SelectedField(self.ctype, fsel)
-            set_selected_field(sf, self)
-            return sf
-        else:
-            raise Exception("Field.sparse")
-
     def save_direct(self, path, *args):
         """
         Generic save for Field object
@@ -224,7 +199,7 @@ cdef class FieldBase:
         save 64-bit Field (do conversion of endianness)
         """
         f = self.copy()
-        from qlat.fields_io import ShuffledFieldsWriter
+        from .fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
             f.to_from_endianness("big_64")
         elif isinstance(path, ShuffledFieldsWriter):
@@ -245,7 +220,7 @@ cdef class FieldBase:
         """
         ff = FieldFloat()
         ff.float_from_double(self)
-        from qlat.fields_io import ShuffledFieldsWriter
+        from .fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
             ff.to_from_endianness("big_32")
         elif isinstance(path, ShuffledFieldsWriter):
@@ -259,7 +234,7 @@ cdef class FieldBase:
         """
         ret = self.load_direct(path, *args)
         if ret > 0:
-            from qlat.fields_io import ShuffledFieldsReader
+            from .fields_io import ShuffledFieldsReader
             if isinstance(path, str):
                 self.to_from_endianness("big_64")
             elif isinstance(path, ShuffledFieldsReader):
@@ -281,7 +256,7 @@ cdef class FieldBase:
         ff = FieldFloat()
         ret = ff.load_direct(path, *args)
         if ret > 0:
-            from qlat.fields_io import ShuffledFieldsReader
+            from .fields_io import ShuffledFieldsReader
             if isinstance(path, str):
                 ff.to_from_endianness("big_32")
             elif isinstance(path, ShuffledFieldsReader):
@@ -430,8 +405,7 @@ cdef class FieldBase:
         """
         return SelectedPoints(self.ctype, get_psel_tslice(self.total_site(), t_dir=t_dir))
         """
-        from qlat.field_selection_utils import get_psel_tslice
-        from qlat.selected_points import SelectedPoints
+        from .field_selection_utils import get_psel_tslice
         psel = get_psel_tslice(self.total_site(), t_dir=t_dir)
         sp = SelectedPoints(self.ctype, psel)
         if self.ctype in field_ctypes_double:
@@ -557,7 +531,9 @@ cdef class SelectedFieldBase:
             return np.array(c.get_elem_sfield(self, idx, m))
 
     def set_elems(self, idx, val):
-        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
+        """
+        val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
+        """
         if isinstance(val, bytes):
             return c.set_elems_sfield(self, idx, val)
         elif isinstance(val, np.ndarray):
@@ -566,7 +542,9 @@ cdef class SelectedFieldBase:
             assert False
 
     def set_elem(self, idx, m, val):
-        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
+        """
+        val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
+        """
         if isinstance(val, bytes):
             return c.set_elem_sfield(self, idx, m, val)
         elif isinstance(val, np.ndarray):
@@ -575,7 +553,9 @@ cdef class SelectedFieldBase:
             assert False
 
     def __getitem__(self, i):
-        # i can be (idx, m,) or idx
+        """
+        i can be (idx, m,) or idx
+        """
         if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], int):
             idx, m = i
             return self.get_elem(idx, m)
@@ -587,8 +567,10 @@ cdef class SelectedFieldBase:
             return None
 
     def __setitem__(self, i, val):
-        # i can be (idx, m,) or idx
-        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
+        """
+        i can be (idx, m,) or idx
+        val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
+        """
         if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], int):
             idx, m = i
             self.set_elem(idx, m, val)
@@ -598,26 +580,6 @@ cdef class SelectedFieldBase:
         else:
             assert False
 
-    def sparse(self, sel):
-        """
-        deprecated
-        """
-        q.displayln_info("SelectedField.sparse: deprecated")
-        if isinstance(sel, PointsSelection):
-            from qlat.selected_points import SelectedPoints, set_selected_points
-            psel = sel
-            sp = SelectedPoints(self.ctype, psel)
-            set_selected_points(sp, self)
-            return sp
-        elif isinstance(sel, FieldSelection):
-            from qlat.selected_field import SelectedField, set_selected_field
-            fsel = sel
-            sf = SelectedField(self.ctype, fsel)
-            set_selected_field(sf, self)
-            return sf
-        else:
-            raise Exception("Field.sparse")
-
     def save_direct(self, path, *args):
         """
         Generic save for SelectedField object
@@ -625,7 +587,7 @@ cdef class SelectedFieldBase:
         f.save_direct(path) # has some limitations
         f.save_direct(sfw, fn)
         """
-        from qlat.fields_io import ShuffledFieldsWriter
+        from .fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
             assert len(args) == 0
             n_bytes = c.save_sfield(self, path)
@@ -646,7 +608,7 @@ cdef class SelectedFieldBase:
         f.load_direct(sfr, fn)
         if self.fsel is None, self.fsel will be set during f.load_direct(sfr, fn)
         """
-        from qlat.fields_io import ShuffledFieldsReader
+        from .fields_io import ShuffledFieldsReader
         if isinstance(path, str):
             n_bytes = c.load_sfield(self, path)
         elif isinstance(path, ShuffledFieldsReader):
@@ -663,7 +625,7 @@ cdef class SelectedFieldBase:
         Generic save for SelectedField object with conversion
         """
         f = self.copy()
-        from qlat.fields_io import ShuffledFieldsWriter
+        from .fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
             f.to_from_endianness("big_64")
         elif isinstance(path, ShuffledFieldsWriter):
@@ -682,7 +644,7 @@ cdef class SelectedFieldBase:
         """
         ff = SelectedFieldFloat(self.fsel)
         ff.float_from_double(self)
-        from qlat.fields_io import ShuffledFieldsWriter
+        from .fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
             ff.to_from_endianness("big_32")
         elif isinstance(path, ShuffledFieldsWriter):
@@ -695,7 +657,7 @@ cdef class SelectedFieldBase:
         """
         ret = self.load_direct(path, *args)
         if ret > 0:
-            from qlat.fields_io import ShuffledFieldsReader
+            from .fields_io import ShuffledFieldsReader
             if isinstance(path, str):
                 self.to_from_endianness("big_64")
             elif isinstance(path, ShuffledFieldsReader):
@@ -715,7 +677,7 @@ cdef class SelectedFieldBase:
         ff = SelectedField(ElemTypeFloat, self.fsel)
         ret = ff.load_direct(path, *args)
         if ret > 0:
-            from qlat.fields_io import ShuffledFieldsReader
+            from .fields_io import ShuffledFieldsReader
             if isinstance(path, str):
                 ff.to_from_endianness("big_32")
             elif isinstance(path, ShuffledFieldsReader):
@@ -751,7 +713,7 @@ cdef class SelectedFieldBase:
         """
         return SelectedPoints(self.ctype, get_psel_tslice(self.total_site(), t_dir=t_dir))
         """
-        from qlat.selected_points import SelectedPoints, get_psel_tslice
+        from qlat.field_selection_utils import get_psel_tslice
         psel = get_psel_tslice(self.total_site(), t_dir=t_dir)
         sp = SelectedPoints(self.ctype, psel)
         if self.ctype in field_ctypes_double:

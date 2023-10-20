@@ -4,18 +4,6 @@
 namespace qlat
 {  //
 
-double get_time_limit_default()
-{
-  const double time_limit_default = 12.0 * 3600.0;
-  if (get_env("q_end_time") == "") {
-    return get_env_double_default("q_time_limit", time_limit_default);
-  } else {
-    return get_env_double_default(
-               "q_end_time", get_actual_start_time() + time_limit_default) -
-           get_actual_start_time();
-  }
-}
-
 int get_field_init_from_env()
 {
   std::string tag = get_env_default("q_field_init", "fast");

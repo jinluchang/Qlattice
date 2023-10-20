@@ -16,11 +16,6 @@
 namespace qlat
 {  //
 
-inline double get_remaining_time()
-{
-  return get_time_limit() - get_actual_total_time();
-}
-
 bool obtain_lock(const std::string& path);
 
 void release_lock();

@@ -29,4 +29,4 @@ from .parallel import *
 
 from .get_include_dir import *
 
-verbose_level("default")
+set_verbose_level()

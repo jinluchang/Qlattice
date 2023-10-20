@@ -7,7 +7,7 @@ Will also load ``qlat_utils``.
 
 from qlat_utils import *
 
-verbose_level(-1)
+set_verbose_level(-1)
 
 from qlat.c import *
 
@@ -55,6 +55,6 @@ import qlat.field_double
 
 from qlat.get_include_dir import *
 
-verbose_level("default")
+set_verbose_level()
 
 del c

@@ -10,7 +10,8 @@ Message
 .. autosummary::
    :toctree: generated
  
-   verbose_level
+   get_verbose_level
+   set_verbose_level
 
    displayln
    displayln_info

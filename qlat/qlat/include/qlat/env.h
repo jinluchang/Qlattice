@@ -5,22 +5,6 @@
 namespace qlat
 {  //
 
-double get_time_limit_default();
-
-API inline double& get_time_limit()
-// qlat parameter
-{
-  static double limit = get_time_limit_default();
-  return limit;
-}
-
-API inline double& get_default_budget()
-// qlat parameter
-{
-  static double budget = get_env_double_default("q_budget", 15.0 * 60.0);
-  return budget;
-}
-
 int get_field_init_from_env();
 
 API inline int& get_field_init()

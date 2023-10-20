@@ -67,7 +67,8 @@ __all__ += [
 __all__ += [
         'get_id_node',
         'get_num_node',
-        'verbose_level',
+        'get_verbose_level',
+        'set_verbose_level',
         'get_time',
         'get_start_time',
         'get_actual_start_time',

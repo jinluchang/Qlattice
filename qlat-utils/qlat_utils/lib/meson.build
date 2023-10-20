@@ -6,11 +6,13 @@ version = custom_target('version',
   build_always_stale: true,
   )
 cppsources = files(
+  'env.cpp',
+  'timer.cpp',
   'lat-io.cpp',
   'mat.cpp',
   'qar.cpp',
+  'qutils-io.cpp',
   'rng-state.cpp',
-  'utils-io.cpp',
   )
 py3.install_sources(cppsources, subdir: 'qlat_utils/lib')
 

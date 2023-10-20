@@ -6,25 +6,29 @@ import functools
 
 ### -------------------------------------------------------------------
 
-def verbose_level(level = None):
+def get_verbose_level():
     """
-    Return or set the current verbosity level as integer.\n
+    Return the current verbosity level as integer.\n
     Usage::\n
-        verbose_level(level) # set the verbosity level
-        verbose_level("default") # set the verbosity level to be the default value.
-        verbose_level() # return the current verbosity level
-    Default verbose_level() depends on the ``q_verbose`` environment variable. If unset, the default is ``-1``.
+        get_verbose_level() # return the current verbosity level
+    Default get_verbose_level() depends on the ``q_verbose`` environment variable. If unset, the default is ``-1``.
+    """
+    return cc.get_verbose_level()
+
+def set_verbose_level(level=None):
+    """
+    Set the current verbosity level as integer.\n
+    Usage::\n
+        set_verbose_level() # set the verbosity level to be the default value.
+        set_verbose_level(level) # set the verbosity level
     """
     if level is None:
-        return cc.verbose_level()
-    if level == "default":
-        level = cc.get_verbose_level()
-    cdef long* p_ret = &cc.verbose_level()
+        level = cc.get_verbose_level_default()
+    cdef long* p_ret = &cc.get_verbose_level()
     p_ret[0] = level
-    assert cc.verbose_level() == level
-    return level
+    assert cc.get_verbose_level() == level
 
-verbose_level(-1)
+set_verbose_level(-1)
 
 ### -------------------------------------------------------------------
 
@@ -32,11 +36,11 @@ def displayln(level, *args):
     """
     Print all the arguments and then print a newline.
     Interpret the first argument as verbose level if it is ``int``.
-    Only print if ``level <= verbose_level()``.
+    Only print if ``level <= get_verbose_level()``.
     If the first argument is not integer, will always print all the arguments.
     """
     if isinstance(level, int):
-        if level <= verbose_level():
+        if level <= get_verbose_level():
             print(*args, flush=True)
     else:
         print(level, *args, flush=True)
@@ -195,7 +199,7 @@ def timer(object func) -> object:
 
 def timer_verbose(func):
     """
-    Timing functions. Always show output if ``verbose_level() > 0``\n
+    Timing functions. Always show output if ``get_verbose_level() > 0``\n
     Usage::\n
         @q.timer_verbose
         def function(args):
@@ -217,7 +221,7 @@ def timer_flops(func):
 
 def timer_verbose_flops(func):
     """
-    Timing functions with flops. Always show output if ``verbose_level() > 0``\n
+    Timing functions with flops. Always show output if ``get_verbose_level() > 0``\n
     Usage::\n
         @q.timer_flops
         def function(args):
