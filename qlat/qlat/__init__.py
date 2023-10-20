@@ -47,10 +47,6 @@ from qlat.contract_field import *
 
 from qlat.field_selection_utils import *
 
-from qlat.selected_field import *
-
-from qlat.selected_points import *
-
 from qlat.fields_io import *
 
 from qlat.inverter import *

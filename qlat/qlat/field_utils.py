@@ -1,10 +1,8 @@
-import qlat.c as c
+from . import c
 
 from qlat_utils import *
-from qlat.c import *
-from qlat.selected_field import *
-from qlat.selected_points import *
-from qlat.utils_io import *
+from .c import *
+from .utils_io import *
 
 import numpy as np
 import math
@@ -172,3 +170,29 @@ def sqrt_double_field(f):
         displayln_info("sqrt_double_field:", type(f))
         assert False
     return f_ret
+
+###
+
+@timer
+def set_selected_points(sp, f):
+    # deprecated use @=
+    from qlat.selected_field import SelectedField
+    assert isinstance(sp, SelectedPointsBase)
+    if isinstance(f, FieldBase):
+        c.set_spfield_field(sp, f)
+    elif isinstance(f, SelectedFieldBase):
+        c.set_spfield_sfield(sp, f)
+    else:
+        raise Exception("set_selected_points")
+
+@timer
+def set_selected_field(sf, f):
+    # deprecated use @=
+    displayln_info("set_selected_field: deprecated")
+    assert isinstance(sf, SelectedFieldBase)
+    if isinstance(f, FieldBase):
+        c.set_sfield_field(sf, f)
+    elif isinstance(f, SelectedFieldBase):
+        c.set_sfield_sfield(sf, f)
+    else:
+        raise Exception("set_selected_field")

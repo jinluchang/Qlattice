@@ -40,6 +40,13 @@ __all__ += [
         ]
 {{endfor}}
 
+__all__ += [
+        'SelectedField',
+        'SelectedFieldBase',
+        'SelectedPoints',
+        'SelectedPointsBase',
+        ]
+
 ### -------------------------------------------------------------------------
 
 import ctypes

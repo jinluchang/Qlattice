@@ -3,7 +3,6 @@ import qlat.c as c
 
 from qlat.field_utils import *
 from qlat.field_selection_utils import *
-from qlat.selected_field import *
 from qlat.utils_io import *
 
 cache_fields_io = mk_cache("fields_io")

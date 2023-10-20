@@ -1,15 +1,15 @@
 from qlat_utils import *
-import qlat.c as c
+from . import c
 
-from qlat.field_utils import *
-from qlat.utils_io import *
+from .field_utils import *
+from .utils_io import *
 
 class GaugeField(FieldColorMatrix):
 
-    def __init__(self, geo = None):
+    def __init__(self, geo=None):
         super().__init__(geo, 4)
 
-    def copy(self, is_copying_data = True):
+    def copy(self, is_copying_data=True):
         f = GaugeField()
         if is_copying_data:
             f @= self
@@ -29,7 +29,7 @@ class GaugeField(FieldColorMatrix):
         """
         return c.load_gauge_field(self, path)
 
-    def set_rand(self, rng, sigma = 0.5, n_step = 1):
+    def set_rand(self, rng, sigma=0.5, n_step=1):
         set_g_rand_color_matrix_field(self, rng, sigma, n_step)
 
     def unitarize(self):
@@ -41,7 +41,7 @@ class GaugeField(FieldColorMatrix):
     def link_trace(self):
         return gf_avg_link_trace(self)
 
-    def twist_boundary_at_boundary(self, lmom : float = -0.5, mu : int = 3):
+    def twist_boundary_at_boundary(self, lmom : float=-0.5, mu : int=3):
         # modify in place
         gf_twist_boundary_at_boundary(self, lmom, mu)
 
@@ -52,10 +52,10 @@ class GaugeField(FieldColorMatrix):
 
 class GaugeTransform(FieldColorMatrix):
 
-    def __init__(self, geo = None):
+    def __init__(self, geo=None):
         super().__init__(geo, 1)
 
-    def copy(self, is_copying_data = True):
+    def copy(self, is_copying_data=True):
         f = GaugeTransform()
         if is_copying_data:
             f @= self
@@ -89,7 +89,7 @@ class GaugeTransform(FieldColorMatrix):
         """
         return c.load_gauge_transform_cps(self, path)
 
-    def set_rand(self, rng, sigma = 0.5, n_step = 1):
+    def set_rand(self, rng, sigma=0.5, n_step=1):
         set_g_rand_color_matrix_field(self, rng, sigma, n_step)
 
     def unitarize(self):
@@ -143,21 +143,25 @@ def gf_avg_link_trace(gf):
     assert isinstance(gf, GaugeField)
     return c.gf_avg_link_trace(gf)
 
-def gf_wilson_line_no_comm(wlf, m, gf_ext, path, path_n = None):
-    # wlf = FieldColorMatrix(geo)
-    # will only modify the m'th component
-    # e.g. path = [ mu, mu, nu, -mu-1, -mu-1, ]
-    # e.g. path = [ mu, nu, -mu-1, ], path_n = [ 2, 1, 2, ]
+def gf_wilson_line_no_comm(wlf, m, gf_ext, path, path_n=None):
+    """
+    wlf = FieldColorMatrix(geo)
+    will only modify the m'th component
+    e.g. path = [ mu, mu, nu, -mu-1, -mu-1, ]
+    e.g. path = [ mu, nu, -mu-1, ], path_n = [ 2, 1, 2, ]
+    """
     if path_n is None:
         c.gf_wilson_line_no_comm(wlf, m, gf_ext, path)
     else:
         c.gf_wilson_line_no_comm(wlf, m, gf_ext, path, path_n)
 
 def gf_wilson_lines_no_comm(gf_ext, path_list):
-    # path_list = [ path_spec, ... ]
-    # e.g. path_spec = [ mu, mu, nu, -mu-1, -mu-1, ]
-    # e.g. path_spec = ([ mu, nu, -mu-1, ], [ 2, 1, 2, ],)
-    # return wlf
+    """
+    path_list = [ path_spec, ... ]
+    e.g. path_spec = [ mu, mu, nu, -mu-1, -mu-1, ]
+    e.g. path_spec = ([ mu, nu, -mu-1, ], [ 2, 1, 2, ],)
+    return wlf
+    """
     multiplicity = len(path_list)
     geo = geo_reform(gf_ext.geo(), multiplicity)
     wlf = FieldColorMatrix(geo)
@@ -176,13 +180,15 @@ def gf_avg_wilson_loop_normalized_tr(gf, l, t):
     assert isinstance(t, int)
     return c.gf_avg_wilson_loop_normalized_tr(gf, l, t)
 
-def set_g_rand_color_matrix_field(fc, rng, sigma, n_steps = 1):
+def set_g_rand_color_matrix_field(fc, rng, sigma, n_steps=1):
     assert isinstance(fc, FieldColorMatrix)
     assert isinstance(rng, RngState)
     return c.set_g_rand_color_matrix_field(fc, rng, sigma, n_steps)
 
-def gf_twist_boundary_at_boundary(gf : GaugeField, lmom : float = -0.5, mu : int = 3):
-    # modify gf in place
+def gf_twist_boundary_at_boundary(gf : GaugeField, lmom: float=-0.5, mu: int=3):
+    """
+    modify gf in place
+    """
     c.gf_twist_boundary_at_boundary(gf, lmom, mu)
 
 def mk_left_expanded_gauge_field(gf):

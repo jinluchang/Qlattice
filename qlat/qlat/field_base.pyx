@@ -13,7 +13,7 @@ import cqlat as c
 import qlat_utils as q
 import numpy as np
 
-from .field_type_dict import field_type_dict, selected_field_type_dict, selected_points_type_dict
+from .field_type_dict import *
 
 ### -------------------------------------------------------------------
 
@@ -34,39 +34,6 @@ def SelectedPoints(type ctype, PointsSelection psel, int multiplicity=0):
     FieldType = selected_points_type_dict[ctype]
     field = FieldType(psel, multiplicity)
     return field
-
-### -------------------------------------------------------------------
-
-field_ctypes_complex = [
-        ElemTypeColorMatrix,
-        ElemTypeWilsonMatrix,
-        ElemTypeNonRelWilsonMatrix,
-        ElemTypeIsospinMatrix,
-        ElemTypeSpinMatrix,
-        ElemTypeWilsonVector,
-        ElemTypeComplex,
-        ]
-
-field_ctypes_double = [
-        ElemTypeColorMatrix,
-        ElemTypeWilsonMatrix,
-        ElemTypeNonRelWilsonMatrix,
-        ElemTypeIsospinMatrix,
-        ElemTypeSpinMatrix,
-        ElemTypeWilsonVector,
-        ElemTypeComplex,
-        ElemTypeDouble,
-        ]
-
-field_ctypes_float = [
-        ElemTypeComplexF,
-        ElemTypeFloat,
-        ]
-
-field_ctypes_long = [
-        ElemTypeLong,
-        ElemTypeInt64t,
-        ]
 
 ### -------------------------------------------------------------------
 
@@ -900,13 +867,13 @@ cdef class SelectedPointsBase:
 
     def to_lat_data(self):
         assert self.ctype in field_ctypes_complex
-        ld = q.LatData()
+        ld = LatData()
         c.lat_data_from_complex_spfield(ld, self)
         return ld
 
     def from_lat_data(self, ld):
         assert self.ctype in field_ctypes_complex
-        assert isinstance(ld, q.LatData)
+        assert isinstance(ld, LatData)
         c.complex_spfield_from_lat_data(self, ld)
 
     def to_numpy(self):

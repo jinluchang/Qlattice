@@ -2,8 +2,6 @@ from qlat_utils import *
 import qlat.c as c
 
 from qlat.field_utils import *
-from qlat.selected_field import *
-from qlat.selected_points import *
 
 class Prop(FieldWilsonMatrix):
 

@@ -30,8 +30,6 @@ py_files = files(
   'propagator.py',
   'qcd.py',
   'scalar_action.py',
-  'selected_field.py',
-  'selected_points.py',
   'smear.py',
   'topology.py',
   'utils_io.py',
