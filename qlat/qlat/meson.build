@@ -26,7 +26,6 @@ py_files = files(
   'inverter.py',
   '__main__.py',
   'mpi.py',
-  'propagator.py',
   'scalar_action.py',
   'smear.py',
   'topology.py',
@@ -42,6 +41,7 @@ pxd_files = files(
   'field_base.pxd',
   'field_utils.pxd',
   'qcd.pxd',
+  'propagator.pxd',
   )
 
 py3.install_sources(init_files + py_files + pxd_files, subdir: 'qlat')
@@ -101,6 +101,7 @@ name_pyx_list = [
   'field_utils',
   'utils_io',
   'qcd',
+  'propagator',
   ]
 
 foreach name: name_pyx_list

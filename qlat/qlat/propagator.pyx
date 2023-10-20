@@ -1,14 +1,33 @@
-from qlat_utils import *
-from .field_selection_utils import *
-from .c import *
-from . import c
+# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
-class Prop(FieldWilsonMatrix):
+from qlat_utils.all cimport *
+from . cimport everything as cc
+from .geometry cimport Geometry
+from .field_types cimport (
+        FieldComplex,
+        )
+from .field_selection cimport (
+        FieldSelection,
+        PointsSelection,
+        )
 
-    def __init__(self, geo = None):
+from cpython cimport Py_buffer
+from cpython.buffer cimport PyBUF_FORMAT
+
+import cqlat as c
+import qlat_utils as q
+import numpy as np
+
+from .field_utils import (
+        mk_fft,
+        )
+
+cdef class Prop(FieldWilsonMatrix):
+
+    def __init__(self, Geometry geo=None):
         super().__init__(geo, 1)
 
-    def copy(self, is_copying_data=True):
+    def copy(self, cc.bool is_copying_data=True):
         f = Prop()
         if is_copying_data:
             f @= self
@@ -21,12 +40,12 @@ class Prop(FieldWilsonMatrix):
 
 ###
 
-class SelProp(SelectedFieldWilsonMatrix):
+cdef class SelProp(SelectedFieldWilsonMatrix):
 
     def __init__(self, fsel):
         super().__init__(fsel, 1)
 
-    def copy(self, is_copying_data=True):
+    def copy(self, cc.bool is_copying_data=True):
         f = SelProp(self.fsel)
         if is_copying_data:
             f @= self
@@ -39,12 +58,12 @@ class SelProp(SelectedFieldWilsonMatrix):
 
 ###
 
-class PselProp(SelectedPointsWilsonMatrix):
+cdef class PselProp(SelectedPointsWilsonMatrix):
 
     def __init__(self, psel):
         super().__init__(psel, 1)
 
-    def copy(self, is_copying_data=True):
+    def copy(self, cc.bool is_copying_data=True):
         f = PselProp(self.psel)
         if is_copying_data:
             f @= self
@@ -77,15 +96,15 @@ def mk_wall_src(geo, tslice, lmom=None):
     set_wall_src(prop_src, geo, tslice, lmom)
     return prop_src
 
-@timer
+@q.timer
 def mk_rand_u1_src(sel, rs):
     """
-    return (prop_src, fu1,) where prop_src = Prop() and fu1 = Field(ElemTypeComplex)
+    return (prop_src, fu1,) where prop_src = Prop() and fu1 = FieldComplex
     fu1 stores the random u1 numbers (fu1.multiplicity() == 1)
     sel can be psel or fsel
     """
     prop_src = Prop()
-    fu1 = Field(ElemTypeComplex)
+    fu1 = FieldComplex()
     if isinstance(sel, FieldSelection):
         fsel = sel
         c.set_rand_u1_src_fsel(prop_src, fu1, fsel, rs)
@@ -98,10 +117,10 @@ def mk_rand_u1_src(sel, rs):
         raise Exception(f"mk_rand_u1_src {type(sel)}")
     return (prop_src, fu1,)
 
-@timer
-def get_rand_u1_sol(prop_sol, fu1, sel):
+@q.timer
+def get_rand_u1_sol(Prop prop_sol, FieldComplex fu1, sel):
     assert isinstance(prop_sol, Prop)
-    assert isinstance(fu1, FieldBase) and fu1.ctype == ElemTypeComplex
+    assert isinstance(fu1, FieldComplex)
     if isinstance(sel, FieldSelection):
         fsel = sel
         s_prop = SelProp(fsel)
@@ -115,7 +134,7 @@ def get_rand_u1_sol(prop_sol, fu1, sel):
     else:
         raise Exception(f"get_rand_u1_sol {type(sel)}")
 
-@timer_verbose
+@q.timer_verbose
 def mk_rand_u1_prop(inv, sel, rs):
     """
     interface function
@@ -126,7 +145,7 @@ def mk_rand_u1_prop(inv, sel, rs):
     prop_sol = inv * prop_src
     return get_rand_u1_sol(prop_sol, fu1, sel)
 
-@timer
+@q.timer
 def free_invert(prop_src, mass, m5=1.0, momtwist=None):
     assert isinstance(prop_src, Prop)
     if momtwist is None:
@@ -159,7 +178,7 @@ def convert_wm_from_mspincolor(prop_msc):
         raise Exception("prop type match failed")
     return prop_wm
 
-@timer
+@q.timer
 def flip_tpbc_with_tslice(prop, tslice_flip_tpbc):
     if isinstance(prop, SelProp):
         c.flip_tpbc_with_tslice_s_prop(prop, tslice_flip_tpbc)
@@ -169,13 +188,12 @@ def flip_tpbc_with_tslice(prop, tslice_flip_tpbc):
         print(type(prop))
         assert False
 
-@timer
-def free_scalar_invert_mom_cfield(f, mass):
-    assert isinstance(f, FieldBase)
-    assert f.ctype == ElemTypeComplex
+@q.timer
+def free_scalar_invert_mom_cfield(FieldComplex f, mass):
+    assert isinstance(f, FieldComplex)
     c.free_scalar_invert_mom_cfield(f, mass)
 
-@timer
+@q.timer
 def free_scalar_invert_cfield(src, mass, *, mode_fft=1):
     fft_f = mk_fft(is_forward=True, is_normalizing=True, mode_fft=mode_fft)
     fft_b = mk_fft(is_forward=False, is_normalizing=True, mode_fft=mode_fft)
@@ -184,15 +202,9 @@ def free_scalar_invert_cfield(src, mass, *, mode_fft=1):
     sol = fft_b * f
     return sol
 
-class FermionField4d(FieldWilsonVector):
+cdef class FermionField4d(FieldWilsonVector):
 
-    def __init__(self, geo=None):
+    def __init__(self, Geometry geo=None):
         super().__init__(geo, 1)
-
-    def copy(self, is_copying_data=True):
-        f = FermionField4d()
-        if is_copying_data:
-            f @= self
-        return f
 
 ###

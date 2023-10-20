@@ -23,8 +23,6 @@ from qlat.topology import *
 
 from qlat.smear import *
 
-from qlat.propagator import *
-
 from qlat.gauge_action import *
 
 from qlat.scalar_action import *

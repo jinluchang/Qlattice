@@ -99,6 +99,26 @@ __all__ += [
         'mk_left_expanded_gauge_field',
         ]
 
+__all__ += [
+        'Prop',
+        'SelProp',
+        'PselProp',
+        'FermionField4d',
+        'set_point_src',
+        'set_wall_src',
+        'mk_point_src',
+        'mk_wall_src',
+        'mk_rand_u1_src',
+        'get_rand_u1_sol',
+        'mk_rand_u1_prop',
+        'free_invert',
+        'convert_mspincolor_from_wm',
+        'convert_wm_from_mspincolor',
+        'flip_tpbc_with_tslice',
+        'free_scalar_invert_mom_cfield',
+        'free_scalar_invert_cfield',
+        ]
+
 ### -------------------------------------------------------------------------
 
 import ctypes
@@ -128,5 +148,6 @@ from .selected_field_types import *
 from .selected_points_types import *
 from .field_utils import *
 from .qcd import *
+from .propagator import *
 
 sys.setdlopenflags(flags)
