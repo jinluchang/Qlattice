@@ -213,32 +213,6 @@ EXPORT(check_stop, {
   Py_RETURN_NONE;
 })
 
-EXPORT(get_time_limit, {
-  using namespace qlat;
-  PyObject* p_time_limit = NULL;
-  if (!PyArg_ParseTuple(args, "|O", &p_time_limit)) {
-    return NULL;
-  }
-  if (NULL != p_time_limit) {
-    const double time_limit = py_convert_data<double>(p_time_limit);
-    get_time_limit() = time_limit;
-  }
-  return py_convert(get_time_limit());
-})
-
-EXPORT(get_default_budget, {
-  using namespace qlat;
-  PyObject* p_budget = NULL;
-  if (!PyArg_ParseTuple(args, "|O", &p_budget)) {
-    return NULL;
-  }
-  if (NULL != p_budget) {
-    const double budget = py_convert_data<double>(p_budget);
-    get_default_budget() = budget;
-  }
-  return py_convert(get_default_budget());
-})
-
 EXPORT(qquit, {
   using namespace qlat;
   PyObject* p_msg = NULL;

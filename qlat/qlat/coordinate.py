@@ -24,5 +24,5 @@ def mk_epsilon_array():
 
 epsilon_array = mk_epsilon_array()
 
-def epsilon_tensor(i, j, k, l = 3):
+def epsilon_tensor(i, j, k, l=3):
     return epsilon_array[i, j, k, l].item()

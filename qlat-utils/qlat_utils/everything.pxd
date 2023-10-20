@@ -14,6 +14,8 @@ from libc.stdint cimport int8_t
 
 from cpython.ref cimport PyObject
 
+### --------------------------------------------------------
+
 ctypedef double complex PyComplex
 ctypedef float complex PyComplexF
 
@@ -50,6 +52,8 @@ ctypedef uint32_t crc32_t
 
 ctypedef std_vector[std_vector[double]] DataTable
 
+### --------------------------------------------------------
+
 cdef extern from "qlat-utils/mat-vec.h" namespace "qlat":
 
     cdef cppclass ColorMatrix:
@@ -76,22 +80,6 @@ cdef extern from "qlat-utils/mat-vec.h" namespace "qlat":
         WilsonVector()
         const WilsonVector& operator=(const WilsonVector& m)
         Complex* data()
-
-cdef fused ElemType:
-    ColorMatrix
-    WilsonMatrix
-    NonRelWilsonMatrix
-    IsospinMatrix
-    SpinMatrix
-    WilsonVector
-    Complex
-    ComplexF
-    Double
-    Float
-    Long
-    Int64t
-    Int8t
-    Char
 
 cdef extern from "qlat-utils/handle.h" namespace "qlat":
 
@@ -143,17 +131,24 @@ cdef extern from "qlat-utils/mat.h" namespace "qlat":
     WilsonMatrix operator*(const ColorMatrix& m1, const WilsonMatrix& m2)
     WilsonMatrix operator*(const WilsonMatrix& m1, const ColorMatrix& m2)
 
+cdef extern from "qlat-utils/env.h" namespace "qlat":
+
+    double& get_time_limit()
+    long get_time_limit_default()
+    long& get_verbose_level()
+    long get_verbose_level_default()
+    double& get_default_budget()
+
 cdef extern from "qlat-utils/timer.h" namespace "qlat":
 
     int get_id_node()
     int get_num_node()
-    long& get_verbose_level()
-    long get_verbose_level_default()
     double get_time()
     double& get_start_time()
     double& get_actual_start_time()
     double get_total_time()
     double get_actual_total_time()
+    double get_remaining_time()
     cdef cppclass Timer:
         long long flops
         Timer()
@@ -312,3 +307,23 @@ cdef extern from "qlat-utils/cache.h" namespace "qlat":
     std_vector[std_string] get_all_caches_info()
     void clear_all_caches()
     void displayln_malloc_stats()
+
+### --------------------------------------------------------
+
+cdef fused ElemType:
+    ColorMatrix
+    WilsonMatrix
+    NonRelWilsonMatrix
+    IsospinMatrix
+    SpinMatrix
+    WilsonVector
+    Complex
+    ComplexF
+    Double
+    Float
+    Long
+    Int64t
+    Int8t
+    Char
+
+### --------------------------------------------------------

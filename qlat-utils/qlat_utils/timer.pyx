@@ -100,27 +100,27 @@ def get_time():
     """
     return cc.get_time()
 
-def get_start_time(time = None):
+def get_start_time():
     """
     Return start time in seconds since epoch. Does reset by ``timer_reset``
     """
-    if time is None:
-        return cc.get_start_time()
+    return cc.get_start_time()
+
+def set_start_time(time):
     cdef double* p_ret = &cc.get_start_time()
     p_ret[0] = time
     assert cc.get_start_time() == time
-    return time
 
-def get_actual_start_time(time = None):
+def get_actual_start_time():
     """
     Return start time in seconds since epoch. Does not reset by ``timer_reset``
     """
-    if time is None:
-        return cc.get_actual_start_time()
+    return cc.get_actual_start_time()
+
+def set_actual_start_time(time):
     cdef double* p_ret = &cc.get_actual_start_time()
     p_ret[0] = time
     assert cc.get_actual_start_time() == time
-    return time
 
 def get_total_time():
     """
@@ -133,6 +133,35 @@ def get_actual_total_time():
     Return total time in seconds. Does not reset by ``timer_reset``
     """
     return cc.get_actual_total_time()
+
+def get_time_limit():
+    """
+    Return time limit of the program in seconds.
+    Used in check_time_limit, get_remaining_time
+    """
+    return cc.get_time_limit()
+
+def set_time_limit(time_limit):
+    """
+    Set time limit of the program in seconds.
+    Usage::\n
+        set_time_limit() # set to be the default value.
+        set_time_limit(time_limit) # set the time limit
+    """
+    if time_limit is None:
+        time_limit = cc.get_time_limit_default()
+    cdef double* p_ret = &cc.get_time_limit()
+    p_ret[0] = time_limit
+    assert cc.get_time_limit() == time_limit
+
+def get_remaining_time():
+    """
+    Return remaining time in seconds.
+    """
+    return cc.get_remaining_time()
+
+def get_default_budget():
+    return cc.get_default_budget()
 
 ### -------------------------------------------------------------------
 

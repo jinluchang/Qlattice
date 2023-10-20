@@ -5,7 +5,6 @@ import os
 import pickle
 
 from .c import check_time_limit, check_stop
-from .c import get_time_limit, get_default_budget
 
 from .mpi import *
 
@@ -22,6 +21,3 @@ def qquit(msg):
     """
     clean_cache()
     return c.qquit(msg)
-
-def get_remaining_time():
-    return get_time_limit() - get_actual_total_time()
