@@ -20,7 +20,7 @@ cdef class RngState:
     def __cinit__(self):
         self.cdata = <long>&(self.xx)
 
-    def __init__(self, x = None, y = None):
+    def __init__(self, x=None, y=None):
         cdef cc.std_string seed
         if x is None:
             assert y is None
@@ -44,7 +44,7 @@ cdef class RngState:
         self.xx = v1.xx
         return self
 
-    def copy(self, cc.bool is_copying_data = True):
+    def copy(self, cc.bool is_copying_data=True):
         cdef RngState x = RngState()
         if is_copying_data:
             x.xx = self.xx
@@ -65,10 +65,10 @@ cdef class RngState:
         """Generate a uniformly distributed random integer ranges from 0 up to 2**64 - 1"""
         return cc.rand_gen(self.xx)
 
-    def u_rand_gen(self, double upper = 1.0, double lower = 0.0):
+    def u_rand_gen(self, double upper=1.0, double lower=0.0):
         return cc.u_rand_gen(self.xx, upper, lower)
 
-    def g_rand_gen(self, double center = 0.0, double sigma = 1.0):
+    def g_rand_gen(self, double center=0.0, double sigma=1.0):
         return cc.g_rand_gen(self.xx, center, sigma)
 
     def c_rand_gen(self, Coordinate size):
@@ -81,7 +81,7 @@ cdef class RngState:
         ri = self.rand_gen() % len(l)
         return l[ri]
 
-    def u_rand_fill(self, arr, double upper = 1.0, double lower = 0.0):
+    def u_rand_fill(self, arr, double upper=1.0, double lower=0.0):
         """
         Fill ``arr`` (of type ``np.ndarray``) with uniform random numbers.
         """
@@ -91,13 +91,13 @@ cdef class RngState:
         assert arr.base is not None
         return self.u_rand_fill_double(arr, upper, lower)
 
-    def u_rand_fill_double(self, double[:] arr, double upper = 1.0, double lower = 0.0):
+    def u_rand_fill_double(self, double[:] arr, double upper=1.0, double lower=0.0):
         cdef long size = arr.size
         cdef long i
         for i in range(size):
             arr[i] = cc.u_rand_gen(self.xx, upper, lower)
 
-    def g_rand_fill(self, arr, double center = 0.0, double sigma = 1.0):
+    def g_rand_fill(self, arr, double center=0.0, double sigma=1.0):
         """
         Fill ``arr`` (of type ``np.ndarray``) with Gaussian random numbers.
         """
@@ -107,7 +107,7 @@ cdef class RngState:
         assert arr.base is not None
         return self.g_rand_fill_double(arr, center, sigma)
 
-    def g_rand_fill_double(self, double[:] arr, double center = 0.0, double sigma = 1.0):
+    def g_rand_fill_double(self, double[:] arr, double center=0.0, double sigma=1.0):
         cdef long size = arr.size
         cdef long i
         for i in range(size):

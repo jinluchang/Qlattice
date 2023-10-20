@@ -1,8 +1,6 @@
 from qlat_utils import *
-
-from .field_utils import *
 from .field_selection_utils import *
-
+from .c import *
 from . import c
 
 class Prop(FieldWilsonMatrix):

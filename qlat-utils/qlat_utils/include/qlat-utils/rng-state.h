@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <cstdint>
 
 namespace qlat
@@ -77,6 +78,20 @@ API inline RngState& get_global_rng_state()
 {
   static RngState rs;
   return rs;
+}
+
+template <class M>
+void random_permute(std::vector<M>& vec, const RngState& rs_)
+{
+  RngState rs = rs_;
+  const long size = (long)vec.size();
+  M tmp;
+  for (long k = 0; k < size; ++k) {
+    const long kk = rand_gen(rs) % (size - k);
+    tmp = vec[k];
+    vec[k] = vec[k + kk];
+    vec[k + kk] = tmp;
+  }
 }
 
 }  // namespace qlat

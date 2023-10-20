@@ -1,10 +1,28 @@
-from qlat_utils import *
-from .c import *
+# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+from qlat_utils.all cimport *
+from . cimport everything as cc
+from .geometry cimport Geometry
+from .field_base cimport (
+        FieldBase,
+        SelectedFieldBase,
+        SelectedPointsBase,
+        )
+
+from cpython cimport Py_buffer
+from cpython.buffer cimport PyBUF_FORMAT
+
+import cqlat as c
+import qlat_utils as q
 import numpy as np
 import math
 
-from . import c
+from .geometry import geo_reform
+from .field_base import (
+        Field,
+        SelectedField,
+        SelectedPoints,
+        )
 
 def field_expanded(f, expansion_left, expansion_right):
     geo = f.geo()
@@ -61,7 +79,7 @@ def make_field_expand_comm_plan(comm_marks):
     c.make_field_expand_comm_plan(cp, comm_marks)
     return cp
 
-def mk_phase_field(geo: Geometry, lmom):
+def mk_phase_field(Geometry geo, lmom):
     """
     lmom is in lattice momentum unit
     exp(i * 2*pi/L * lmom \cdot xg )
@@ -99,7 +117,7 @@ class FastFourierTransform:
 
 ###
 
-@timer
+@q.timer
 def mk_fft(is_forward, *, is_only_spatial=False, is_normalizing=False, mode_fft=1):
     if is_only_spatial:
         fft_infos = [
@@ -119,7 +137,7 @@ def mk_fft(is_forward, *, is_only_spatial=False, is_normalizing=False, mode_fft=
 
 ###
 
-@timer
+@q.timer
 def qnorm_field(f):
     if isinstance(f, FieldBase):
         f_n = Field(ElemTypeDouble)
@@ -133,11 +151,11 @@ def qnorm_field(f):
         f_n = SelectedPoints(ElemTypeDouble, psel)
         c.qnorm_field_spfield(f_n, f)
     else:
-        displayln_info("qnorm_field:", type(f))
+        q.displayln_info("qnorm_field:", type(f))
         assert False
     return f_n
 
-@timer
+@q.timer
 def sqrt_double_field(f):
     if isinstance(f, FieldBase):
         assert f.ctype is ElemTypeDouble
@@ -154,32 +172,8 @@ def sqrt_double_field(f):
         f_ret = SelectedPoints(ElemTypeDouble, psel)
         c.set_sqrt_double_spfield(f_ret, f)
     else:
-        displayln_info("sqrt_double_field:", type(f))
+        q.displayln_info("sqrt_double_field:", type(f))
         assert False
     return f_ret
 
 ###
-
-@timer
-def set_selected_points(sp, f):
-    # deprecated use @=
-    from qlat.selected_field import SelectedField
-    assert isinstance(sp, SelectedPointsBase)
-    if isinstance(f, FieldBase):
-        c.set_spfield_field(sp, f)
-    elif isinstance(f, SelectedFieldBase):
-        c.set_spfield_sfield(sp, f)
-    else:
-        raise Exception("set_selected_points")
-
-@timer
-def set_selected_field(sf, f):
-    # deprecated use @=
-    displayln_info("set_selected_field: deprecated")
-    assert isinstance(sf, SelectedFieldBase)
-    if isinstance(f, FieldBase):
-        c.set_sfield_field(sf, f)
-    elif isinstance(f, SelectedFieldBase):
-        c.set_sfield_sfield(sf, f)
-    else:
-        raise Exception("set_selected_field")

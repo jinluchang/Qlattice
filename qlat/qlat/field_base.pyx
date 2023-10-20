@@ -13,7 +13,16 @@ import cqlat as c
 import qlat_utils as q
 import numpy as np
 
-from .field_type_dict import *
+from .field_type_dict import (
+        field_type_dict,
+        selected_field_type_dict,
+        selected_points_type_dict,
+        field_ctypes_double,
+        field_ctypes_complex,
+        field_ctypes_double,
+        field_ctypes_float,
+        field_ctypes_long,
+        )
 
 ### -------------------------------------------------------------------
 

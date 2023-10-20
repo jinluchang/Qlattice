@@ -218,6 +218,7 @@ cdef extern from "qlat-utils/rng-state.h" namespace "qlat":
     uint64_t rand_gen(RngState& rs)
     double u_rand_gen(RngState& rs, const double upper, const double lower)
     double g_rand_gen(RngState& rs, const double center, const double sigma)
+    void random_permute[T](std_vector[T]& vec, const RngState& rs)
 
 cdef extern from "qlat-utils/coordinate-d.h" namespace "qlat":
 
@@ -304,7 +305,6 @@ cdef extern from "qlat-utils/qar-cache.h" namespace "qlat":
 
 cdef extern from "qlat-utils/cache.h" namespace "qlat":
 
-    void random_permute[T](std_vector[T]& vec, const RngState& rs)
     std_vector[std_string] get_all_caches_info()
     void clear_all_caches()
     void displayln_malloc_stats()

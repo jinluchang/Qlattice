@@ -1,4 +1,6 @@
-from qlat.field_utils import *
+from qlat_utils import *
+from .c import *
+from . import c
 
 def set_checkers(field):
     # no longer needed?

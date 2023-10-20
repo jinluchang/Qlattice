@@ -72,6 +72,19 @@ __all__ += [
         'qremove_all_info',
         ]
 
+__all__ += [
+        'field_expanded',
+        'refresh_expanded',
+        'refresh_expanded_1',
+        'FieldExpandCommPlan',
+        'make_field_expand_comm_plan',
+        'mk_phase_field',
+        'FastFourierTransform',
+        'mk_fft',
+        'qnorm_field',
+        'sqrt_double_field',
+        ]
+
 ### -------------------------------------------------------------------------
 
 import ctypes
@@ -99,5 +112,6 @@ from .field_types import *
 from .field_selection import *
 from .selected_field_types import *
 from .selected_points_types import *
+from .field_utils import *
 
 sys.setdlopenflags(flags)

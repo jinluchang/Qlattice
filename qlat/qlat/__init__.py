@@ -15,8 +15,6 @@ from qlat.mpi import *
 
 from qlat.geometry import *
 
-from qlat.field_utils import *
-
 from qlat.coordinate import *
 
 from qlat.qcd import *

@@ -1,6 +1,6 @@
-import qlat.c as c
-
-from qlat.field_utils import *
+from qlat_utils import *
+from .c import *
+from . import c
 
 class ScalarAction:
 

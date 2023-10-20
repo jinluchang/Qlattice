@@ -17,7 +17,6 @@ py_files = files(
   'field_double.py',
   'field_selection_utils.py',
   'fields_io.py',
-  'field_utils.py',
   'field_type_dict.py',
   'fthmc.py',
   'gauge_action.py',
@@ -98,6 +97,7 @@ name_pyx_list = [
   'geometry',
   'field_selection',
   'field_base',
+  'field_utils',
   'utils_io',
   ]
 

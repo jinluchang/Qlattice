@@ -530,20 +530,6 @@ qacc array<M, N> operator-(const array<M, N>& v1, const array<M, N>& v2)
 }
 
 template <class M>
-inline void random_permute(std::vector<M>& vec, const RngState& rs_)
-{
-  RngState rs = rs_;
-  const long size = (long)vec.size();
-  M tmp;
-  for (long k = 0; k < size; ++k) {
-    const long kk = rand_gen(rs) % (size - k);
-    tmp = vec[k];
-    vec[k] = vec[k + kk];
-    vec[k + kk] = tmp;
-  }
-}
-
-template <class M>
 void set_u_rand_double(Vector<M> v, const RngState& rs,
                        const double upper = 1.0, const double lower = -1.0)
 {
