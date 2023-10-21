@@ -68,6 +68,10 @@ cdef class GaugeTransform(FieldColorMatrix):
     def __init__(self, geo=None):
         super().__init__(geo, 1)
 
+    cdef cc.Handle[cc.GaugeTransform] xxx(self):
+        assert self.xx.get_geo().multiplicity == 1
+        return cc.Handle[cc.GaugeTransform](<cc.GaugeTransform&>self.xx)
+
     @q.timer
     def save(self, path):
         """

@@ -9,12 +9,12 @@ cdef class Prop(FieldWilsonMatrix):
 
 cdef class SelProp(SelectedFieldWilsonMatrix):
 
-    pass
+    cdef cqlat.Handle[cqlat.SelProp] xxx(self)
 
 cdef class PselProp(SelectedPointsWilsonMatrix):
 
-    pass
+    cdef cqlat.Handle[cqlat.PselProp] xxx(self)
 
 cdef class FermionField4d(FieldWilsonVector):
 
-    pass
+    cdef cqlat.Handle[cqlat.FermionField4d] xxx(self)

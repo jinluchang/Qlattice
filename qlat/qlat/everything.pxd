@@ -64,11 +64,15 @@ cdef extern from "qlat/field.h" namespace "qlat":
         const Geometry& get_geo()
     cdef cppclass GaugeField:
         pass
+    cdef cppclass GaugeTransform:
+        pass
     cdef cppclass Prop:
         pass
     cdef cppclass SelProp:
         pass
     cdef cppclass PselProp:
+        pass
+    cdef cppclass FermionField4d:
         pass
     Vector[T] get_data[T](const Field[T]& x)
     void set_zero[T](Field[T]& x)

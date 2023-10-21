@@ -88,7 +88,6 @@ cdef extern from "qlat-utils/handle.h" namespace "qlat":
         Handle(const T& obj)
         void init()
         void init(const T& obj)
-        T& operator()() except +
         T& val() except +
     cdef cppclass Vector[T]:
         Vector()

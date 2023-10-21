@@ -25,15 +25,15 @@ cdef class Prop(FieldWilsonMatrix):
     def __init__(self, Geometry geo=None):
         super().__init__(geo, 1)
 
+    cdef cc.Handle[cc.Prop] xxx(self):
+        assert self.xx.get_geo().multiplicity == 1
+        return cc.Handle[cc.Prop](<cc.Prop&>self.xx)
+
     def copy(self, cc.bool is_copying_data=True):
         f = Prop()
         if is_copying_data:
             f @= self
         return f
-
-    cdef cc.Handle[cc.Prop] xxx(self):
-        assert self.xx.get_geo().multiplicity == 1
-        return cc.Handle[cc.Prop](<cc.Prop&>self.xx)
 
     def get_elem_wm(self, xg, m=0):
         wm = WilsonMatrix()
@@ -46,6 +46,10 @@ cdef class SelProp(SelectedFieldWilsonMatrix):
 
     def __init__(self, fsel):
         super().__init__(fsel, 1)
+
+    cdef cc.Handle[cc.SelProp] xxx(self):
+        assert self.xx.get_geo().multiplicity == 1
+        return cc.Handle[cc.SelProp](<cc.SelProp&>self.xx)
 
     def copy(self, cc.bool is_copying_data=True):
         f = SelProp(self.fsel)
@@ -64,6 +68,10 @@ cdef class PselProp(SelectedPointsWilsonMatrix):
 
     def __init__(self, psel):
         super().__init__(psel, 1)
+
+    cdef cc.Handle[cc.PselProp] xxx(self):
+        assert self.xx.multiplicity == 1
+        return cc.Handle[cc.PselProp](<cc.PselProp&>self.xx)
 
     def copy(self, cc.bool is_copying_data=True):
         f = PselProp(self.psel)
@@ -208,5 +216,9 @@ cdef class FermionField4d(FieldWilsonVector):
 
     def __init__(self, Geometry geo=None):
         super().__init__(geo, 1)
+
+    cdef cc.Handle[cc.FermionField4d] xxx(self):
+        assert self.xx.get_geo().multiplicity == 1
+        return cc.Handle[cc.FermionField4d](<cc.FermionField4d&>self.xx)
 
 ###

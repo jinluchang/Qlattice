@@ -7,4 +7,4 @@ cdef class GaugeField(FieldColorMatrix):
 
 cdef class GaugeTransform(FieldColorMatrix):
 
-    pass
+    cdef cqlat.Handle[cqlat.GaugeTransform] xxx(self)
