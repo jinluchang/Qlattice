@@ -21,8 +21,6 @@ from qlat.wilson_flow import *
 
 from qlat.topology import *
 
-from qlat.smear import *
-
 from qlat.gauge_action import *
 
 from qlat.scalar_action import *

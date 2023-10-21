@@ -119,6 +119,13 @@ __all__ += [
         'free_scalar_invert_cfield',
         ]
 
+__all__ += [
+        'gf_ape_smear',
+        'gf_spatial_ape_smear',
+        'gf_hyp_smear',
+        'prop_smear',
+        ]
+
 ### -------------------------------------------------------------------------
 
 import ctypes
@@ -149,5 +156,6 @@ from .selected_points_types import *
 from .field_utils import *
 from .qcd import *
 from .propagator import *
+from .smear import *
 
 sys.setdlopenflags(flags)
