@@ -47,7 +47,7 @@ void simple_tests()
   set_left_expanded_gauge_field(gfs1, gfs);
   Propagator4d prop;
   prop.init(geo);
-  smear_propagator(prop, gfs1, 0.5, 10);
+  prop_smear(prop, gfs1, 0.5, 10);
   //
   {
     TIMER_VERBOSE("test-field_shift");

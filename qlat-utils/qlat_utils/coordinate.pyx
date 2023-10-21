@@ -5,20 +5,22 @@ cdef class Coordinate:
     def __cinit__(self):
         pass
 
-    def __init__(self, x = None):
-        if isinstance(x, Coordinate):
+    def __init__(self, x=None):
+        if x is None:
+            pass
+        elif isinstance(x, Coordinate):
             self.xx = (<Coordinate>x).xx
         elif isinstance(x, (list, tuple,)):
             assert len(x) == 4
             self.xx = cc.Coordinate(x[0], x[1], x[2], x[3])
         else:
-            assert x is None
+            raise Exception(f"Coordinate.__init__({x})")
 
     def __imatmul__(self, Coordinate v1):
         self.xx = v1.xx
         return self
 
-    def copy(self, cc.bool is_copying_data = True):
+    def copy(self, cc.bool is_copying_data=True):
         cdef Coordinate x = Coordinate()
         if is_copying_data:
             x.xx = self.xx
@@ -173,8 +175,10 @@ cdef class CoordinateD:
     def __cinit__(self):
         pass
 
-    def __init__(self, x = None):
-        if isinstance(x, CoordinateD):
+    def __init__(self, x=None):
+        if x is None:
+            pass
+        elif isinstance(x, CoordinateD):
             self.xx = (<CoordinateD>x).xx
         elif isinstance(x, Coordinate):
             self.xx = cc.CoordinateD((<Coordinate>x).xx)
@@ -182,7 +186,7 @@ cdef class CoordinateD:
             assert len(x) == 4
             self.xx = cc.CoordinateD(x[0], x[1], x[2], x[3])
         else:
-            assert x is None
+            raise Exception(f"CoordinateD.__init__({x})")
 
     def __imatmul__(self, CoordinateD v1):
         self.xx = v1.xx

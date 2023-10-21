@@ -9,6 +9,7 @@ cppsources = files(
   'mpi.cpp',
   'selected-field.cpp',
   'selected-points.cpp',
+  'smear.cpp',
   'utils-io.cpp',
   )
 py3.install_sources(cppsources, subdir: 'qlat/lib')

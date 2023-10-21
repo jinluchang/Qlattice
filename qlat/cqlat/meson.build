@@ -28,7 +28,6 @@ cpp_files = files(
   'scalar-action.cpp',
   'selected-field.cpp',
   'selected-points.cpp',
-  'smear.cpp',
   'topology.cpp',
   'utils-io.cpp',
   'wilson-flow.cpp',

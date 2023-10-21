@@ -191,9 +191,8 @@ void refresh_expanded_1(Field<M>& f)
   QLAT_EXTERN template void refresh_expanded_1(Field<TYPENAME>& f)
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
+#undef QLAT_EXTERN_TEMPLATE
 
 #undef QLAT_EXTERN
-#undef QLAT_EXTERN_TEMPLATE
-#undef QLAT_EXTERN_CLASS
 
 }  // namespace qlat

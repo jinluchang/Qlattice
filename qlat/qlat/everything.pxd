@@ -126,13 +126,17 @@ cdef extern from "qlat/qcd-smear.h" namespace "qlat":
                               const double alpha, const long steps) except +
     void gf_hyp_smear(GaugeField& gf, const GaugeField& gf0,
                       const double alpha1, const double alpha2, const double alpha3) except +
-    void smear_propagator(Prop& prop, const GaugeField& gf1,
-                          const double coef, const int step,
-                          const CoordinateD& mom,
-                          const bool smear_in_time_dir) except +
-    void smear_propagator_qlat_convension(Prop& prop, const GaugeField& gf1,
-                          const double coef, const int step,
-                          const CoordinateD& mom,
-                          const bool smear_in_time_dir) except +
+    void prop_smear(Prop& prop, const GaugeField& gf1,
+                    const double coef, const int step,
+                    const CoordinateD& mom,
+                    const bool smear_in_time_dir) except +
+
+cdef extern from "qlat/vector_utils/utils_smear_vecs.h" namespace "qlat":
+
+    void prop_smear_qlat_convension(Prop& prop, const GaugeField& gf1,
+                                    const double coef, const int step,
+                                    const CoordinateD& mom,
+                                    const bool smear_in_time_dir,
+                                    const int mode_smear) except +
 
 

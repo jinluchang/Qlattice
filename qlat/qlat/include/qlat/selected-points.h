@@ -443,9 +443,8 @@ void load_selected_points_complex(SelectedPoints<M>& sp,
       SelectedPoints<TYPENAME> & sp, const std::string& path)
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
+#undef QLAT_EXTERN_TEMPLATE
 
 #undef QLAT_EXTERN
-#undef QLAT_EXTERN_TEMPLATE
-#undef QLAT_EXTERN_CLASS
 
 }  // namespace qlat

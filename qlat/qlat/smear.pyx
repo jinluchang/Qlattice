@@ -17,17 +17,19 @@ def gf_spatial_ape_smear(GaugeField gf, double alpha, int steps=1):
     """
     used value: alpha = 0.5, steps = 30
     """
-    return c.gf_spatial_ape_smear(gf, gf, alpha, steps)
+    return cc.gf_spatial_ape_smear(gf.xxx().val(), gf.xxx().val(), alpha, steps)
+    # return c.gf_spatial_ape_smear(gf, gf, alpha, steps)
 
 def gf_hyp_smear(GaugeField gf, double alpha1, double alpha2, double alpha3):
     """
     values in paper is 0.75 0.6 0.3
     10.1103/PhysRevD.64.034504 Eq(4)
     """
-    return c.gf_hyp_smear(gf, gf, alpha1, alpha2, alpha3)
+    return cc.gf_hyp_smear(gf.xxx().val(), gf.xxx().val(), alpha1, alpha2, alpha3)
+    # return c.gf_hyp_smear(gf, gf, alpha1, alpha2, alpha3)
 
 def prop_smear(Prop prop, GaugeField gf1,
-               double coef, int step, mom=None,
+               double coef, int step, CoordinateD mom=None,
                cc.bool smear_in_time_dir=False,
                int mode_smear=1):
     """
@@ -40,5 +42,12 @@ def prop_smear(Prop prop, GaugeField gf1,
     mom = 0.5 * mom of the corresponding hadron
     """
     if mom is None:
-        mom = [ 0.0, 0.0, 0.0, 0.0, ]
-    return c.prop_smear(prop, gf1, coef, step, mom, smear_in_time_dir, mode_smear)
+        mom = CoordinateD()
+    if mode_smear == 0:
+        return cc.prop_smear(prop.xxx().p[0], gf1.xxx().p[0],
+                             coef, step, mom.xx, smear_in_time_dir)
+    elif mode_smear >= 1:
+        return cc.prop_smear_qlat_convension(prop.xxx().p[0], gf1.xxx().p[0],
+                                             coef, step, mom.xx, smear_in_time_dir, mode_smear)
+    else:
+        raise Exception(f"prop_smear(prop, gf1, coef={coef}, step={step}, mom={mom}, smear_in_time_dir={smear_in_time_dir}, mode_smear={mode_smear})")

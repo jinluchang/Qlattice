@@ -1115,6 +1115,9 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
       Field<TYPENAME> & f, const RngState& rs, const double center,           \
       const double sigma)
 
+QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
+#undef QLAT_EXTERN_TEMPLATE
+
 #define QLAT_EXTERN_CLASS                              \
                                                        \
   QLAT_EXTERN template struct FieldM<ColorMatrix, 4>;  \
@@ -1125,13 +1128,10 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
                                                        \
   QLAT_EXTERN template struct FieldM<WilsonVector, 1>
 
-QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
-
 QLAT_EXTERN_CLASS;
+#undef QLAT_EXTERN_CLASS
 
 #undef QLAT_EXTERN
-#undef QLAT_EXTERN_TEMPLATE
-#undef QLAT_EXTERN_CLASS
 
 // --------------------
 

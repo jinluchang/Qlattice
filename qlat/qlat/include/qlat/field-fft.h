@@ -202,8 +202,8 @@ void fft_complex_fields(std::vector<Handle<Field<M> > >& vec,
       const std::vector<bool>& fft_is_forwards, int mode_fft)
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
+#undef QLAT_EXTERN_TEMPLATE
 
 #undef QLAT_EXTERN
-#undef QLAT_EXTERN_TEMPLATE
 
 }  // namespace qlat

@@ -1253,19 +1253,39 @@ void smear_propagator_gwu_convension(Propagator4dT<Ty>& prop, const GaugeFieldT<
 }
 
 template <class T, class Td>
-void smear_propagator_qlat_convension(Propagator4dT<T>& prop, const GaugeFieldT<Td >& gf,
-                      const double coef, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1, const int dup = -1, const int force_update = 0)
+void prop_smear_qlat_convension(Propagator4dT<T>& prop,
+                                const GaugeFieldT<Td>& gf, const double coef,
+                                const int step,
+                                const CoordinateD& mom = CoordinateD(),
+                                const bool smear_in_time_dir = false,
+                                const int mode = 1, const int dup = -1,
+                                const int force_update = 0)
 {
-  if(coef <= 0){return ;}
+  if (coef <= 0) {
+    return;
+  }
   double width = 0.0;
-  if(step <  0){width = coef;}////box smearings
-  if(step >= 0){width = std::sqrt(coef*2*step/(3.0));}////gauss smearings
-  smear_propagator_gwu_convension(prop, gf, width, step, mom, smear_in_time_dir, mode, dup, force_update);
+  if (step < 0) {
+    width = coef;
+  }  ////box smearings
+  if (step >= 0) {
+    width = std::sqrt(coef * 2 * step / (3.0));
+  }  ////gauss smearings
+  smear_propagator_gwu_convension(prop, gf, width, step, mom, smear_in_time_dir,
+                                  mode, dup, force_update);
 }
 
+#ifdef QLAT_INSTANTIATE_SMEAR
+#define QLAT_EXTERN
+#else
+#define QLAT_EXTERN extern
+#endif
 
+QLAT_EXTERN template void prop_smear_qlat_convension<Real, Real>(
+    Propagator4d&, const GaugeField&, const double, const int,
+    const CoordinateD&, const bool, const int, const int, const int);
 
+#undef QLAT_EXTERN
 
 }
 #endif
-

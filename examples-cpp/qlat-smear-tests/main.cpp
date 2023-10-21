@@ -43,10 +43,10 @@ void simple_tests()
     for(int i=0;i<4;i++){mom[i] = 0.0;}
 
     const double coef =  3.0*width*width/(2*nsmear);
-    smear_propagator_qlat_convension(prop_vec, gf, coef, nsmear, mom, smear_in_time_dir);
+    prop_smear_qlat_convension(prop_vec, gf, coef, nsmear, mom, smear_in_time_dir);
 
     set_left_expanded_gauge_field(gf1, gf);
-    smear_propagator(    prop_qlat, gf1, coef , nsmear  , mom, smear_in_time_dir    );
+    prop_smear(prop_qlat, gf1, coef, nsmear, mom, smear_in_time_dir);
 
     ////prop_vec -= prop_qlat;
     displayln_info(ssprintf("CHECK: Consistency: orig qnorm: %.10E ; smear qnorm %.10E ; new smear qnorm: %.10E",

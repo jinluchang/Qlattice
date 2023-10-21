@@ -1063,9 +1063,8 @@ bool does_file_exist_sync_node(const std::string& path, const std::string& fn);
       const std::string& fn, const ShuffledBitSet& sbs)
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
+#undef QLAT_EXTERN_TEMPLATE
 
 #undef QLAT_EXTERN
-#undef QLAT_EXTERN_TEMPLATE
-#undef QLAT_EXTERN_CLASS
 
 }  // namespace qlat

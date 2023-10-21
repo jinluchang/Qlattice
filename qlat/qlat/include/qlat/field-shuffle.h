@@ -1158,9 +1158,8 @@ void field_shift(SelectedField<M>& sf, FieldSelection& fsel,
       const Coordinate& shift, const bool is_reflect = false)
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
+#undef QLAT_EXTERN_TEMPLATE
 
 #undef QLAT_EXTERN
-#undef QLAT_EXTERN_TEMPLATE
-#undef QLAT_EXTERN_CLASS
 
 }  // namespace qlat
