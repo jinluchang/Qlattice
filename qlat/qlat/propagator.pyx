@@ -18,9 +18,7 @@ import cqlat as c
 import qlat_utils as q
 import numpy as np
 
-from .field_utils import (
-        mk_fft,
-        )
+from .field_utils import mk_fft
 
 cdef class Prop(FieldWilsonMatrix):
 
@@ -32,6 +30,10 @@ cdef class Prop(FieldWilsonMatrix):
         if is_copying_data:
             f @= self
         return f
+
+    cdef cc.Handle[cc.Prop] xxx(self):
+        assert self.xx.get_geo().multiplicity == 1
+        return cc.Handle[cc.Prop](<cc.Prop&>self.xx)
 
     def get_elem_wm(self, xg, m=0):
         wm = WilsonMatrix()

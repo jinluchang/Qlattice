@@ -24,6 +24,10 @@ cdef class GaugeField(FieldColorMatrix):
     def __init__(self, geo=None):
         super().__init__(geo, 4)
 
+    cdef cc.Handle[cc.GaugeField] xxx(self):
+        assert self.xx.get_geo().multiplicity == 4
+        return cc.Handle[cc.GaugeField](<cc.GaugeField&>self.xx)
+
     @q.timer
     def save(self, path):
         """

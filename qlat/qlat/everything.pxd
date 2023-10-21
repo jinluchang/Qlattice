@@ -62,6 +62,14 @@ cdef extern from "qlat/field.h" namespace "qlat":
         void init(const Field[T]& field) except +
         const Field[T]& operator=(const Field[T]& field) except +
         const Geometry& get_geo()
+    cdef cppclass GaugeField:
+        pass
+    cdef cppclass Prop:
+        pass
+    cdef cppclass SelProp:
+        pass
+    cdef cppclass PselProp:
+        pass
     Vector[T] get_data[T](const Field[T]& x)
     void set_zero[T](Field[T]& x)
     void qswap[T](Field[T]& x, Field[T]& y) except +
@@ -101,7 +109,26 @@ cdef extern from "qlat/selected-field-io.h" namespace "qlat":
         const SelectedPoints[T]& operator=(const SelectedPoints[T]& field) except +
     Vector[T] get_data[T](const SelectedField[T]& x)
     void set_zero[T](SelectedField[T]& x)
-    void qswap[T](SelectedField[T]& x, SelectedField[T]& y)
+    void qswap[T](SelectedField[T]& x, SelectedField[T]& y) except +
     Vector[T] get_data[T](const SelectedPoints[T]& x)
     void set_zero[T](SelectedPoints[T]& x)
     void qswap[T](SelectedPoints[T]& x, SelectedPoints[T]& y) except +
+
+cdef extern from "qlat/qcd-smear.h" namespace "qlat":
+
+    void gf_ape_smear(GaugeField& gf, const GaugeField& gf0,
+                      const double alpha, const long steps) except +
+    void gf_spatial_ape_smear(GaugeField& gf, const GaugeField& gf0,
+                              const double alpha, const long steps) except +
+    void gf_hyp_smear(GaugeField& gf, const GaugeField& gf0,
+                      const double alpha1, const double alpha2, const double alpha3) except +
+    void smear_propagator(Prop& prop, const GaugeField& gf1,
+                          const double coef, const int step,
+                          const CoordinateD& mom,
+                          const bool smear_in_time_dir) except +
+    void smear_propagator_qlat_convension(Prop& prop, const GaugeField& gf1,
+                          const double coef, const int step,
+                          const CoordinateD& mom,
+                          const bool smear_in_time_dir) except +
+
+

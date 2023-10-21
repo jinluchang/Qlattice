@@ -24,6 +24,12 @@ struct API Handle {
     qassert(NULL != p);
     return *p;
   }
+  //
+  qacc M& val() const
+  {
+    qassert(NULL != p);
+    return *p;
+  }
 };
 
 template <class M>
@@ -40,6 +46,12 @@ struct API ConstHandle {
   qacc bool null() const { return p == NULL; }
   //
   qacc const M& operator()() const
+  {
+    qassert(NULL != p);
+    return *p;
+  }
+  //
+  qacc const M& val() const
   {
     qassert(NULL != p);
     return *p;

@@ -11,7 +11,7 @@ import qlat_utils as q
 import numpy as np
 
 def gf_ape_smear(GaugeField gf, double alpha, int steps=1):
-    return c.gf_ape_smear(gf, gf, alpha, steps)
+    return cc.gf_ape_smear(gf.xxx().val(), gf.xxx().val(), alpha, steps)
 
 def gf_spatial_ape_smear(GaugeField gf, double alpha, int steps=1):
     """

@@ -7,10 +7,6 @@
 namespace qlat
 {  //
 
-typedef SelectedField<WilsonMatrix> SelProp;
-
-typedef SelectedPoints<WilsonMatrix> PselProp;
-
 struct WallSrcProps {
   bool initialized;
   std::vector<SelProp> sloppy;

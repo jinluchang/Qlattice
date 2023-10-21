@@ -83,9 +83,17 @@ cdef extern from "qlat-utils/mat-vec.h" namespace "qlat":
 
 cdef extern from "qlat-utils/handle.h" namespace "qlat":
 
+    cdef cppclass Handle[T]:
+        Handle()
+        Handle(const T& obj)
+        void init()
+        void init(const T& obj)
+        T& operator()() except +
+        T& val() except +
     cdef cppclass Vector[T]:
         Vector()
         Vector(const T* p, const long n)
+        T& operator[](const long i)
         T* data()
         long size()
         long data_size()

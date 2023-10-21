@@ -1,10 +1,11 @@
+from . cimport everything as cqlat
 from .field_types cimport FieldWilsonMatrix, FieldWilsonVector
 from .selected_field_types cimport SelectedFieldWilsonMatrix
 from .selected_points_types cimport SelectedPointsWilsonMatrix
 
 cdef class Prop(FieldWilsonMatrix):
 
-    pass
+    cdef cqlat.Handle[cqlat.Prop] xxx(self)
 
 cdef class SelProp(SelectedFieldWilsonMatrix):
 

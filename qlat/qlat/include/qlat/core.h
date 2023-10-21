@@ -720,6 +720,14 @@ using FermionField5d = FermionField5dT<>;
 
 // --------------------
 
+inline GaugeField& gf_from_field(Field<ColorMatrix>& f)
+{
+  qassert(f.geo().multiplicity == 4);
+  return (GaugeField&)f;
+}
+
+// --------------------
+
 using PointsSelection = std::vector<Coordinate>;
 
 // --------------------
@@ -957,6 +965,14 @@ void set_zero(SelectedField<M>& sf)
   TIMER("set_zero(SelectedField)");
   set_zero(get_data(sf));
 }
+
+// --------------------
+
+using Prop = Propagator4d;
+
+using SelProp = SelectedField<WilsonMatrix>;
+
+using PselProp = SelectedPoints<WilsonMatrix>;
 
 // --------------------
 
