@@ -27,7 +27,6 @@ py_files = files(
   '__main__.py',
   'mpi.py',
   'scalar_action.py',
-  'smear.py',
   'topology.py',
   'wilson_flow.py',
   )
@@ -102,6 +101,7 @@ name_pyx_list = [
   'utils_io',
   'qcd',
   'propagator',
+  'smear',
   ]
 
 foreach name: name_pyx_list

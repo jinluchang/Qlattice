@@ -1,5 +1,4 @@
 from qlat_utils import *
-from qlat.propagator import *
 from qlat.fermion_action import *
 
 from .c import *
