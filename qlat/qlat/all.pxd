@@ -5,3 +5,6 @@ from .field_selection cimport *
 from .field_types cimport *
 from .selected_field_types cimport *
 from .selected_points_types cimport *
+from .qcd cimport *
+from .propagator cimport *
+from .field_utils cimport *

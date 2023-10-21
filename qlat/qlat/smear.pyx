@@ -3,18 +3,8 @@
 from qlat_utils.all cimport *
 from . cimport everything as cc
 from .geometry cimport Geometry
-from .field_types cimport (
-        FieldComplex,
-        )
-from .qcd cimport (
-        GaugeField
-        )
-from .propagator cimport (
-        Prop,
-        )
-
-from cpython cimport Py_buffer
-from cpython.buffer cimport PyBUF_FORMAT
+from .qcd cimport GaugeField
+from .propagator cimport Prop
 
 import cqlat as c
 import qlat_utils as q
