@@ -100,7 +100,15 @@ qacc void to_from_big_endian_64(void* str, const size_t len)
   }
 }
 
-qacc long long& operator*=(long long& x, const Complex& factor)
+qacc int8_t& operator*=(int8_t& x, const Complex& factor)
+{
+  (void)x;
+  (void)factor;
+  assert(false);
+  return x;
+}
+
+qacc int& operator*=(int& x, const Complex& factor)
 {
   (void)x;
   (void)factor;
@@ -109,6 +117,14 @@ qacc long long& operator*=(long long& x, const Complex& factor)
 }
 
 qacc long& operator*=(long& x, const Complex& factor)
+{
+  (void)x;
+  (void)factor;
+  assert(false);
+  return x;
+}
+
+qacc long long& operator*=(long long& x, const Complex& factor)
 {
   (void)x;
   (void)factor;
@@ -133,14 +149,6 @@ qacc float& operator*=(float& x, const Complex& factor)
 }
 
 qacc char& operator*=(char& x, const Complex& factor)
-{
-  (void)x;
-  (void)factor;
-  assert(false);
-  return x;
-}
-
-qacc int8_t& operator*=(int8_t& x, const Complex& factor)
 {
   (void)x;
   (void)factor;

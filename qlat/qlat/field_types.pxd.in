@@ -11,6 +11,7 @@ type_name_list = [
     'Double',
     'Float',
     'Long',
+    'Int',
     'Int64t',
     'Int8t',
     'Char',

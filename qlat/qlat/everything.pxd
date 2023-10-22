@@ -98,7 +98,7 @@ cdef extern from "qlat/field.h" namespace "qlat":
     Vector[T] get_data[T](const Field[T]& x)
     void set_zero[T](Field[T]& x)
     void qswap[T](Field[T]& x, Field[T]& y) except +
-    void set_xg_field(Field[long]& f, const Geometry& geo)
+    void set_xg_field(Field[int]& f, const Geometry& geo)
 
 cdef extern from "qlat/field-expand.h" namespace "qlat":
 

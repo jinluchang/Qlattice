@@ -40,6 +40,8 @@ ctypedef float Float
 
 ctypedef long Long
 
+ctypedef int Int
+
 ctypedef int64_t Int64t
 
 ctypedef int32_t Int32t

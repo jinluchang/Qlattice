@@ -34,7 +34,7 @@ cdef class Buffer:
 
 ### -------------------------------------------------------------------
 
-# ColorMatrix WilsonMatrix NonRelWilsonMatrix SpinMatrix WilsonVector Complex ComplexF Double Float Long Int64t Int8t Char
+# ColorMatrix WilsonMatrix NonRelWilsonMatrix SpinMatrix WilsonVector Complex ComplexF Double Float Long Int Int64t Int8t Char
 
 cdef class ElemType:
     name = ""
@@ -250,6 +250,28 @@ cdef class ElemTypeLong(ElemType):
     @staticmethod
     cdef Py_ssize_t size():
         return sizeof(cc.Long)
+
+cdef class ElemTypeInt(ElemType):
+    name = "Int"
+    @staticmethod
+    cdef char* format():
+        cdef char* fmt = 'l'
+        if not sizeof(cc.Int) == 4:
+            assert sizeof(cc.Int) == 8
+            fmt = 'q'
+        return fmt
+    @staticmethod
+    cdef Py_ssize_t itemsize():
+        return sizeof(cc.Int)
+    @staticmethod
+    cdef int ndim():
+        return 0
+    @staticmethod
+    cdef cc.std_vector[Py_ssize_t] shape():
+        return cc.std_vector[Py_ssize_t]()
+    @staticmethod
+    cdef Py_ssize_t size():
+        return sizeof(cc.Int)
 
 cdef class ElemTypeInt64t(ElemType):
     name = "Int64t"

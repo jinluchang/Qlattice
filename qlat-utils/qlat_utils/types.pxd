@@ -145,6 +145,18 @@ cdef class ElemTypeLong(ElemType):
     @staticmethod
     cdef Py_ssize_t size()
 
+cdef class ElemTypeInt(ElemType):
+    @staticmethod
+    cdef char* format()
+    @staticmethod
+    cdef Py_ssize_t itemsize()
+    @staticmethod
+    cdef int ndim()
+    @staticmethod
+    cdef cqlat_utils.std_vector[Py_ssize_t] shape()
+    @staticmethod
+    cdef Py_ssize_t size()
+
 cdef class ElemTypeInt64t(ElemType):
     @staticmethod
     cdef char* format()

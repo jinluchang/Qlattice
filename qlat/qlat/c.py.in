@@ -11,6 +11,7 @@ type_name_list = [
     'Double',
     'Float',
     'Long',
+    'Int',
     'Int64t',
     'Int8t',
     'Char',
@@ -44,6 +45,10 @@ __all__ += [
         'SelectedFieldBase',
         'SelectedPoints',
         'SelectedPointsBase',
+        ]
+
+__all__ += [
+        'mk_xg_field',
         'PointsSelection',
         'FieldSelection',
         ]

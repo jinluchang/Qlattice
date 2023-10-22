@@ -1187,6 +1187,7 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
   FUNC(double);                    \
   FUNC(float);                     \
   FUNC(int64_t);                   \
+  FUNC(int32_t);                   \
   FUNC(char);                      \
   FUNC(int8_t)
 
@@ -1202,6 +1203,7 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
   FUNC(double, TYPENAME);                      \
   FUNC(float, TYPENAME);                       \
   FUNC(int64_t, TYPENAME);                     \
+  FUNC(int32_t, TYPENAME);                     \
   FUNC(char, TYPENAME);                        \
   FUNC(int8_t, TYPENAME)
 
@@ -1217,6 +1219,7 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
   QLAT_CALL_WITH_TYPES_1(FUNC, double);             \
   QLAT_CALL_WITH_TYPES_1(FUNC, float);              \
   QLAT_CALL_WITH_TYPES_1(FUNC, int64_t);            \
+  QLAT_CALL_WITH_TYPES_1(FUNC, int32_t);            \
   QLAT_CALL_WITH_TYPES_1(FUNC, char);               \
   QLAT_CALL_WITH_TYPES_1(FUNC, int8_t)
 

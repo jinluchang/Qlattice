@@ -32,4 +32,19 @@ void set_phase_field(FieldM<Complex, 1>& f, const CoordinateD& lmom)
   set_mom_phase_field(f, mom);
 }
 
+void set_xg_field(Field<int>& f, const Geometry& geo_)
+{
+  TIMER("set_xg_field(f,geo)");
+  const Geometry geo = geo_reform(geo_, DIMN);
+  f.init(geo);
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    Vector<int> fv = f.get_elems(xl);
+    for (int mu = 0; mu < DIMN; ++mu) {
+      fv[mu] = xg[mu];
+    }
+  });
+}
+
 }  // namespace qlat

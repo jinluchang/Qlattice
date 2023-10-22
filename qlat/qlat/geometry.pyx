@@ -143,12 +143,6 @@ cdef class Geometry:
         """
         return c.get_xg_list(self)
 
-    def xg_list(self):
-        """
-        return xg for all local sites
-        """
-        return c.get_xg_list(self)
-
 ### -------------------------------------------------------------------
 
 def geo_reform(Geometry geo, int multiplicity=1, expansion_left=None, expansion_right=None):

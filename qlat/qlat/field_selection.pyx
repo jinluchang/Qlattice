@@ -5,6 +5,9 @@ from . cimport everything as cc
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
 
+from .geometry cimport *
+from .field_types cimport *
+
 import cqlat as c
 import qlat_utils as q
 import numpy as np
@@ -235,5 +238,13 @@ cdef class FieldSelection:
 
     def coordinate_from_idx(self, long idx):
         return c.get_coordinate_from_idx_fsel(self, idx)
+
+### -------------------------------------------------------------------
+
+@q.timer
+def mk_xg_field(Geometry geo):
+    cdef FieldInt f = FieldInt()
+    cc.set_xg_field(f.xx, geo.xx)
+    return f
 
 ### -------------------------------------------------------------------

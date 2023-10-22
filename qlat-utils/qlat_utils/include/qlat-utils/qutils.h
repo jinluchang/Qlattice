@@ -21,6 +21,8 @@ qacc void set_zero(char& x) { x = 0; }
 
 qacc void set_zero(int8_t& x) { x = 0; }
 
+qacc void set_zero(int& x) { x = 0; }
+
 qacc void set_zero(long& x) { x = 0; }
 
 qacc void set_zero(long long& x) { x = 0; }
@@ -57,6 +59,10 @@ qacc void set_unit(int8_t& x, const long& coef = 1) { x = coef; }
 
 qacc void set_unit(int8_t& x, const Complex& coef = 1) { x = coef.real(); }
 
+qacc void set_unit(int& x, const long& coef = 1) { x = coef; }
+
+qacc void set_unit(int& x, const Complex& coef) { x = coef.real(); }
+
 qacc void set_unit(long& x, const long& coef = 1) { x = coef; }
 
 qacc void set_unit(long& x, const Complex& coef) { x = coef.real(); }
@@ -82,6 +88,8 @@ qacc void set_unit(ComplexF& x, const Complex& coef = 1.0) { x = coef; }
 qacc double qnorm(const char x) { return x * x; }
 
 qacc double qnorm(const int8_t x) { return x * x; }
+
+qacc double qnorm(const int x) { return x * x; }
 
 qacc double qnorm(const long x) { return x * x; }
 
