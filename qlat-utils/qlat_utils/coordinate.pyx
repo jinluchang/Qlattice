@@ -1,5 +1,7 @@
 from . cimport everything as cc
 
+import numpy as np
+
 cdef class Coordinate:
 
     def __cinit__(self):
@@ -10,7 +12,10 @@ cdef class Coordinate:
             pass
         elif isinstance(x, Coordinate):
             self.xx = (<Coordinate>x).xx
-        elif isinstance(x, (list, tuple,)):
+        elif isinstance(x, np.ndarray):
+            assert x.shape == (4,)
+            self.xx = cc.Coordinate(x[0], x[1], x[2], x[3])
+        elif isinstance(x, (list, tuple)):
             assert len(x) == 4
             self.xx = cc.Coordinate(x[0], x[1], x[2], x[3])
         else:
@@ -182,6 +187,9 @@ cdef class CoordinateD:
             self.xx = (<CoordinateD>x).xx
         elif isinstance(x, Coordinate):
             self.xx = cc.CoordinateD((<Coordinate>x).xx)
+        elif isinstance(x, np.ndarray):
+            assert x.shape == (4,)
+            self.xx = cc.Coordinate(x[0], x[1], x[2], x[3])
         elif isinstance(x, (list, tuple,)):
             assert len(x) == 4
             self.xx = cc.CoordinateD(x[0], x[1], x[2], x[3])
