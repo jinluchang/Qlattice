@@ -233,10 +233,7 @@ cdef class ElemTypeLong(ElemType):
     name = "Long"
     @staticmethod
     cdef char* format():
-        cdef char* fmt = 'q'
-        if not sizeof(cc.Long) == 8:
-            assert sizeof(cc.Long) == 4
-            fmt = 'l'
+        cdef char* fmt = 'l'
         return fmt
     @staticmethod
     cdef Py_ssize_t itemsize():
@@ -255,10 +252,7 @@ cdef class ElemTypeInt(ElemType):
     name = "Int"
     @staticmethod
     cdef char* format():
-        cdef char* fmt = 'l'
-        if not sizeof(cc.Int) == 4:
-            assert sizeof(cc.Int) == 8
-            fmt = 'q'
+        cdef char* fmt = 'i'
         return fmt
     @staticmethod
     cdef Py_ssize_t itemsize():
