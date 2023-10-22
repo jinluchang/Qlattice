@@ -47,10 +47,10 @@ cdef void set_field_sp_sp_{{name}}(SelectedPoints{{name}} self, SelectedPoints{{
 
 cdef void set_field_sp_sf_{{name}}(SelectedPoints{{name}} self, SelectedField{{name}} other):
     # only assign available points
-    c.set_spfield_sfield(self, other)
+    cc.set_selected_points(self.xx, other.xx, self.psel.xx, other.fsel.xx)
 
 cdef void set_field_sp_f_{{name}}(SelectedPoints{{name}} self, Field{{name}} other):
-    c.set_spfield_field(self, other)
+    cc.set_selected_points(self.xx, other.xx, self.psel.xx)
 
 cdef class SelectedPoints{{name}}(SelectedPointsBase):
 
@@ -103,19 +103,18 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
     def __releasebuffer__(self, Py_buffer *buffer):
         self.view_count -= 1
 
-    @q.timer_verbose
     def __imatmul__(self, other):
         """
         won't change self.psel
         """
         if isinstance(other, SelectedPoints{{name}}):
             # two psel must be the same object
-            set_field_sp_sp_{{name}}(self, <SelectedPoints{{name}}>other)
+            set_field_sp_sp_{{name}}(self, other)
         elif isinstance(other, SelectedField{{name}}):
             # only assign available points
-            set_field_sp_sf_{{name}}(self, <SelectedField{{name}}>other)
+            set_field_sp_sf_{{name}}(self, other)
         elif isinstance(other, Field{{name}}):
-            set_field_sp_f_{{name}}(self, <Field{{name}}>other)
+            set_field_sp_f_{{name}}(self, other)
         else:
             raise Exception(f"SelectedPoints{{name}} @= type mismatch {type(self)} {type(other)}")
         return self

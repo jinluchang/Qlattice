@@ -173,6 +173,8 @@ void qnorm_field(SelectedPoints<double>& sp, const SelectedPoints<M>& sp1)
            { sp.get_elem(idx) = qnorm(sp1.get_elems_const(idx)); });
 }
 
+// -------------------------------------------
+
 template <class M>
 void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
                          const PointsSelection& psel)
@@ -199,7 +201,8 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
 
 template <class M>
 void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
-                        const Geometry& geo_, const PointsSelection& psel)
+                        const Geometry& geo_, const PointsSelection& psel,
+                        const bool is_keeping_data = true)
 {
   TIMER("set_field_selected");
   const Geometry geo = geo_reform(geo_, sp.multiplicity, 0);
@@ -208,7 +211,9 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
   qassert(n_points == (long)psel.size());
   f.init();
   f.init(geo);
-  set_zero(f);
+  if (is_keeping_data) {
+    set_zero(f);
+  }
 #pragma omp parallel for
   for (long idx = 0; idx < n_points; ++idx) {
     const Coordinate& xg = psel[idx];
@@ -223,29 +228,7 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
   }
 }
 
-template <class M>
-void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
-                        const PointsSelection& psel)
-// deprecated
-{
-  TIMER("set_field_selected");
-  const Geometry& geo = f.geo();
-  qassert(geo.multiplicity == sp.multiplicity);
-  const long n_points = sp.n_points;
-  qassert(n_points == (long)psel.size());
-#pragma omp parallel for
-  for (long idx = 0; idx < n_points; ++idx) {
-    const Coordinate& xg = psel[idx];
-    const Coordinate xl = geo.coordinate_l_from_g(xg);
-    if (geo.is_local(xl)) {
-      const Vector<M> spv = sp.get_elems_const(idx);
-      Vector<M> fv = f.get_elems(xl);
-      for (int m = 0; m < geo.multiplicity; ++m) {
-        fv[m] = spv[m];
-      }
-    }
-  }
-}
+// -------------------------------------------
 
 template <class M>
 void acc_field(Field<M>& f, const SelectedPoints<M>& sp, const Geometry& geo_,
@@ -397,7 +380,7 @@ void load_selected_points_complex(SelectedPoints<M>& sp,
       <TYPENAME>(SelectedPoints<TYPENAME>& f, const Complex factor);         \
                                                                              \
   QLAT_EXTERN template void only_keep_selected_points<TYPENAME>(             \
-      Field<TYPENAME> & f, const PointsSelection& psel);                      \
+      Field<TYPENAME> & f, const PointsSelection& psel);                     \
                                                                              \
   QLAT_EXTERN template double qnorm<TYPENAME>(                               \
       const SelectedPoints<TYPENAME>& sp);                                   \
@@ -407,19 +390,16 @@ void load_selected_points_complex(SelectedPoints<M>& sp,
                                                                              \
   QLAT_EXTERN template void set_selected_points<TYPENAME>(                   \
       SelectedPoints<TYPENAME> & sp, const Field<TYPENAME>& f,               \
-      const PointsSelection& psel);                                           \
+      const PointsSelection& psel);                                          \
                                                                              \
   QLAT_EXTERN template void set_field_selected<TYPENAME>(                    \
       Field<TYPENAME> & f, const SelectedPoints<TYPENAME>& sp,               \
-      const Geometry& geo_, const PointsSelection& psel);                     \
-                                                                             \
-  QLAT_EXTERN template void set_field_selected<TYPENAME>(                    \
-      Field<TYPENAME> & f, const SelectedPoints<TYPENAME>& sp,               \
-      const PointsSelection& psel);                                           \
+      const Geometry& geo_, const PointsSelection& psel,                     \
+      const bool is_keeping_data);                                           \
                                                                              \
   QLAT_EXTERN template void acc_field<TYPENAME>(                             \
       Field<TYPENAME> & f, const SelectedPoints<TYPENAME>& sp,               \
-      const Geometry& geo_, const PointsSelection& psel);                     \
+      const Geometry& geo_, const PointsSelection& psel);                    \
                                                                              \
   QLAT_EXTERN template void field_glb_sum_tslice_double<TYPENAME>(           \
       SelectedPoints<TYPENAME> & sp, const Field<TYPENAME>& f,               \

@@ -411,6 +411,7 @@ qacc bool is_matching_geo_mult(const Geometry& geo1, const Geometry& geo2)
 }
 
 qacc bool is_matching_geo_included(const Geometry& geo1, const Geometry& geo2)
+// return if geo1 is included in geo2
 {
   bool include = is_matching_geo_mult(geo1, geo2);
   for (int i = 0; i < 4; i++) {
@@ -590,9 +591,20 @@ void Field<M>::init(const Geometry& geo_, const int multiplicity_)
 // multiplicity)
 // can have different geo expansion
 {
-  if (!initialized) {
+  if (initialized) {
+    Geometry geo_new = geo_;
+    if (multiplicity_ != 0) {
+      geo_new.remult(multiplicity_);
+    }
+    if (not is_matching_geo_included(geo_new, geo())) {
+      displayln("old geo = " + show(geo()));
+      displayln("new geo = " + show(geo_new));
+      qassert(false);
+    }
+  } else {
     TIMER("Field::init(geo,mult)");
     init();
+    initialized = true;
     if (multiplicity_ == 0) {
       geo.set(geo_);
     } else {
@@ -606,17 +618,6 @@ void Field<M>::init(const Geometry& geo_, const int multiplicity_)
     } else {
       qassert(0 == get_field_init());
     }
-    initialized = true;
-  } else {
-    Geometry geo_new = geo_;
-    if (multiplicity_ != 0) {
-      geo_new.remult(multiplicity_);
-    }
-    if (not is_matching_geo_included(geo_new, geo())) {
-      displayln("old geo = " + show(geo()));
-      displayln("new geo = " + show(geo_new));
-      qassert(false);
-    }
   }
 }
 
@@ -625,13 +626,13 @@ void Field<M>::init(const Field<M>& f)
 // initialize to be identical to f if uninitilized
 // otherwise use assignment operator
 {
-  if (!initialized) {
+  if (initialized) {
+    (*this) = f;
+  } else {
     TIMER("Field::init(f)");
     initialized = f.initialized;
     geo = f.geo;
     field = f.field;
-  } else {
-    (*this) = f;
   }
 }
 
@@ -800,6 +801,7 @@ void SelectedPoints<M>::init(const long n_points_, const int multiplicity_)
     qassert(n_points_ == n_points);
     qassert((long)points.size() == n_points * multiplicity);
   } else {
+    TIMER("SelectedPoints::init(np,mult)")
     init();
     initialized = true;
     multiplicity = multiplicity_;
@@ -932,6 +934,7 @@ void SelectedField<M>::init(const Geometry& geo_, const long n_elems_,
     qassert(n_elems == n_elems_);
     qassert((long)field.size() == n_elems * multiplicity);
   } else {
+    TIMER("SelectedField::init(geo,n_elems,mult)")
     init();
     initialized = true;
     geo.set(geo_remult(geo_, multiplicity));

@@ -100,6 +100,10 @@ cdef extern from "qlat-utils/handle.h" namespace "qlat":
         long size()
         long data_size()
 
+cdef extern from "qlat-utils/qutils-vec.h" namespace "qlat":
+
+    void assign_direct[M, N](M& x, const N& y) except +
+
 cdef extern from "qlat-utils/mat.h" namespace "qlat":
 
     void set_zero(ColorMatrix& x)

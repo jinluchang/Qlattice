@@ -102,6 +102,7 @@ prop = q.Prop(geo)
 prop.set_rand(rs.split("prop-1"))
 s_prop = q.SelProp(fsel)
 s_prop @= prop
+prop.set_zero()
 prop @= s_prop
 
 sum_tslice1 = prop.glb_sum_tslice()

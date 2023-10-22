@@ -335,6 +335,12 @@ inline void from_big_endian_64(char* str, const size_t len)
   to_from_big_endian_64(str, len);
 }
 
+template <class M, class N>
+qacc void assign_direct(M& x, const N& y)
+{
+  x = y;
+}
+
 template <class M, int N>
 qacc void assign(array<M, N>& vec, const Array<M, N>& src)
 {

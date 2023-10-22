@@ -39,13 +39,13 @@ from .field_type_dict import field_type_dict
 {{for name in type_name_list}}
 
 cdef void set_field_f_sp_{{name}}(Field{{name}} self, SelectedPoints{{name}} other):
-    c.set_field_spfield(self, other)
+    cc.set_field_selected(self.xx, other.xx, other.psel.geo.xx, other.psel.xx)
 
 cdef void set_field_f_sf_{{name}}(Field{{name}} self, SelectedField{{name}} other):
-    c.set_field_sfield(self, other)
+    cc.set_field_selected(self.xx, other.xx, other.fsel.xx)
 
-cdef void set_field_f_f_{{name}}(Field{{name}} self, Field{{name}} other):
-    self.xx = other.xx
+def set_field_f_f_{{name}}(Field{{name}} self, Field{{name}} other):
+    cc.assign_direct(self.xx, other.xx)
 
 cdef class Field{{name}}(FieldBase):
 
@@ -102,7 +102,6 @@ cdef class Field{{name}}(FieldBase):
     def __releasebuffer__(self, Py_buffer *buffer):
         self.view_count -= 1
 
-    @q.timer_verbose
     def __imatmul__(self, other):
         """
         other can be Field, SelectedField, SelectedPoints

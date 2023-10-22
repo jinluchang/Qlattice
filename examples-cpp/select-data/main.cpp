@@ -349,7 +349,7 @@ inline void collect_prop_psrc_light(const std::string& job_tag, const int traj)
           const long total_bytes = read_selected_field_double_from_float(
               prop, old_path + ".sfield", fsel);
           qassert(total_bytes > 0);
-          set_field_selected(prop, sp, psel);
+          set_field_selected(prop, sp, prop.geo(), psel);
           write_float_from_double(sfw, psrc_tag, prop, sbs);
           sync_node();
           save_selected_points_complex(sp, fn_sp);
@@ -391,7 +391,7 @@ inline void collect_prop_psrc_light(const std::string& job_tag, const int traj)
           Propagator4d prop;
           const long total_bytes = read_double_from_float(sfr, tag, prop);
           qassert(total_bytes > 0);
-          set_field_selected(prop, sp, psel);
+          set_field_selected(prop, sp, prop.geo(), psel);
           write_float_from_double(sfw, psrc_tag, prop, sbs);
           sync_node();
           save_selected_points_complex(sp, fn_sp);
@@ -467,7 +467,7 @@ inline void collect_prop_psrc_strange(const std::string& job_tag,
           const long total_bytes = read_selected_field_double_from_float(
               prop, old_path + ".sfield", fsel);
           qassert(total_bytes > 0);
-          set_field_selected(prop, sp, psel);
+          set_field_selected(prop, sp, prop.geo(), psel);
           write_float_from_double(sfw, psrc_tag, prop, sbs);
           sync_node();
           save_selected_points_complex(sp, fn_sp);
@@ -528,7 +528,7 @@ inline void collect_prop_psrc_strange(const std::string& job_tag,
             total_bytes = read_double_from_float(sfr, tag, prop);
           }
           qassert(total_bytes > 0);
-          set_field_selected(prop, sp, psel);
+          set_field_selected(prop, sp, prop.geo(), psel);
           write_float_from_double(sfw, psrc_tag, prop, sbs);
           sync_node();
           save_selected_points_complex(sp, fn_sp);
@@ -606,7 +606,7 @@ inline void collect_prop_psrc_exact(const std::string& job_tag, const int traj)
           const long total_bytes = read_selected_field_double_from_float(
               prop, old_path + ".sfield", fsel);
           qassert(total_bytes > 0);
-          set_field_selected(prop, sp, psel);
+          set_field_selected(prop, sp, prop.geo(), psel);
           write_float_from_double(sfw, psrc_tag, prop, sbs);
           sync_node();
           save_selected_points_complex(sp, fn_sp);
@@ -659,7 +659,7 @@ inline void collect_prop_psrc_exact(const std::string& job_tag, const int traj)
             total_bytes = read_double_from_float(sfr_s, tag, prop);
           }
           qassert(total_bytes > 0);
-          set_field_selected(prop, sp, psel);
+          set_field_selected(prop, sp, prop.geo(), psel);
           write_float_from_double(sfw, psrc_tag, prop, sbs);
           sync_node();
           save_selected_points_complex(sp, fn_sp);
@@ -776,7 +776,7 @@ inline void collect_prop_wsrc_light(const std::string& job_tag, const int traj)
           const long total_bytes = read_selected_field_double_from_float(
               prop, old_path + ".sfield", fsel);
           qassert(total_bytes > 0);
-          set_field_selected(prop, sp, psel);
+          set_field_selected(prop, sp, prop.geo(), psel);
           write_float_from_double(sfw, wsrc_tag, prop, sbs);
           sync_node();
           save_selected_points_complex(sp, fn_sp);
@@ -818,7 +818,7 @@ inline void collect_prop_wsrc_light(const std::string& job_tag, const int traj)
           Propagator4d prop;
           const long total_bytes = read_double_from_float(sfr, tag, prop);
           qassert(total_bytes > 0);
-          set_field_selected(prop, sp, psel);
+          set_field_selected(prop, sp, prop.geo(), psel);
           write_float_from_double(sfw, wsrc_tag, prop, sbs);
           sync_node();
           save_selected_points_complex(sp, fn_sp);
@@ -899,7 +899,7 @@ inline void collect_prop_wsrc_strange(const std::string& job_tag,
           const long total_bytes = read_selected_field_double_from_float(
               prop, old_path + ".sfield", fsel);
           qassert(total_bytes > 0);
-          set_field_selected(prop, sp, psel);
+          set_field_selected(prop, sp, prop.geo(), psel);
           write_float_from_double(sfw, wsrc_tag, prop, sbs);
           sync_node();
           save_selected_points_complex(sp, fn_sp);
@@ -941,7 +941,7 @@ inline void collect_prop_wsrc_strange(const std::string& job_tag,
           Propagator4d prop;
           const long total_bytes = read_double_from_float(sfr, tag, prop);
           qassert(total_bytes > 0);
-          set_field_selected(prop, sp, psel);
+          set_field_selected(prop, sp, prop.geo(), psel);
           write_float_from_double(sfw, wsrc_tag, prop, sbs);
           sync_node();
           save_selected_points_complex(sp, fn_sp);

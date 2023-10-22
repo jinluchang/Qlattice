@@ -207,6 +207,8 @@ void only_keep_selected_points(Field<M>& f, const FieldSelection& fsel)
   }
 }
 
+// -------------------------------------------
+
 template <class M>
 void set_selected_field(SelectedField<M>& sf, const Field<M>& f,
                         const FieldSelection& fsel)
@@ -230,9 +232,12 @@ void set_selected_field(SelectedField<M>& sf, const Field<M>& f,
 
 template <class M>
 void set_selected_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
-                        const FieldSelection& fsel, const FieldSelection& fsel0)
-// Does not clear sf's original value if not assigned
+                        const FieldSelection& fsel, const FieldSelection& fsel0,
+                        const bool is_keeping_data = true)
 {
+  if (&sf == &sf0) {
+    return;
+  }
   TIMER("set_selected_field(sf,sf0,fsel,fsel0)");
   qassert(sf0.geo().is_only_local);
   qassert(fsel.f_local_idx.geo().is_only_local);
@@ -242,6 +247,9 @@ void set_selected_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
   const Geometry& geo = sf0.geo();
   const int multiplicity = geo.multiplicity;
   sf.init(fsel, multiplicity);
+  if (not is_keeping_data) {
+    set_zero(sf);
+  }
   qacc_for(idx, fsel.n_elems, {
     const long index = fsel.indices[idx];
     const long idx0 = fsel0.f_local_idx.get_elem(index);
@@ -257,8 +265,8 @@ void set_selected_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
 
 template <class M>
 void set_selected_field(SelectedField<M>& sf, const SelectedPoints<M>& sp,
-                        const FieldSelection& fsel, const PointsSelection& psel)
-// Does not clear sf's original value if not assigned
+                        const FieldSelection& fsel, const PointsSelection& psel,
+                        const bool is_keeping_data = true)
 {
   TIMER("set_selected_field(sf,sp,fsel,psel)");
   qassert(fsel.f_local_idx.geo().is_only_local);
@@ -268,6 +276,9 @@ void set_selected_field(SelectedField<M>& sf, const SelectedPoints<M>& sp,
   const Geometry& geo = fsel.f_rank.geo();
   const int multiplicity = sp.multiplicity;
   sf.init(fsel, multiplicity);
+  if (not is_keeping_data) {
+    set_zero(sf);
+  }
   qthread_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
@@ -287,15 +298,21 @@ void set_selected_field(SelectedField<M>& sf, const SelectedPoints<M>& sp,
 
 template <class M>
 void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
-                         const PointsSelection& psel, const FieldSelection& fsel)
+                         const PointsSelection& psel,
+                         const FieldSelection& fsel,
+                         const bool is_keeping_data = true)
 // only assign available points
 {
   TIMER("set_selected_points(sp,sf,psel,fsel)");
   const Geometry& geo = sf.geo();
   qassert(is_consistent(sf, fsel));
   const long n_points = psel.size();
-  sp.init(psel, geo.multiplicity);
-  set_zero(sp.points);
+  SelectedPoints<M> sp_tmp;
+  sp_tmp.init(psel, geo.multiplicity);
+  set_zero(sp_tmp);
+  SelectedPoints<int8_t> sp_count;
+  sp_count.init(psel, 1);
+  set_zero(sp_count);
   qthread_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
@@ -303,33 +320,50 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
       const long sf_idx = fsel.f_local_idx.get_elem(xl);
       if (sf_idx >= 0) {
         qassert(sf_idx < sf.n_elems);
+        sp_count.get_elem(idx) += 1;
+        Vector<M> spv = sp_tmp.get_elems(idx);
         const Vector<M> fv = sf.get_elems_const(sf_idx);
-        Vector<M> spv = sp.get_elems(idx);
         for (int m = 0; m < geo.multiplicity; ++m) {
           spv[m] = fv[m];
         }
       }
     }
   });
-  glb_sum_byte_vec(get_data(sp.points));
+  glb_sum_byte_vec(get_data(sp_tmp.points));
+  if (not is_keeping_data) {
+    sp = sp_tmp;
+    return;
+  }
+  glb_sum_byte_vec(get_data(sp_count.points));
+  qthread_for(idx, n_points, {
+    if (sp_count.get_elem(idx) > 0) {
+      Vector<M> spv = sp.get_elems(idx);
+      const Vector<M> spv_tmp = sp_tmp.get_elems_const(idx);
+      for (int m = 0; m < geo.multiplicity; ++m) {
+        spv[m] = spv_tmp[m];
+      }
+    }
+  });
 }
 
 template <class M>
 void set_field_selected(Field<M>& f, const SelectedField<M>& sf,
                         const FieldSelection& fsel,
-                        const bool is_keeping_data = false)
+                        const bool is_keeping_data = true)
 {
   TIMER("set_field_selected(f,sf,fsel)");
   qassert(sf.geo().is_only_local);
   qassert(fsel.f_local_idx.geo().is_only_local);
   qassert(geo_remult(sf.geo()) == fsel.f_local_idx.geo());
   const Geometry& geo = sf.geo();
-  if (not is_keeping_data) {
+  const int multiplicity = geo.multiplicity;
+  if (is_keeping_data) {
+    f.init(geo);
+  } else {
     f.init();
-    f.init(sf.geo());
+    f.init(geo);
     set_zero(f);
   }
-  const int multiplicity = geo.multiplicity;
   qacc_for(idx, fsel.n_elems, {
     const long index = fsel.indices[idx];
     Vector<M> fv = f.get_elems(index);
@@ -339,6 +373,8 @@ void set_field_selected(Field<M>& f, const SelectedField<M>& sf,
     }
   });
 }
+
+// -------------------------------------------
 
 template <class M>
 bool is_consistent(const SelectedPoints<M>& sp, const SelectedField<M>& sf,

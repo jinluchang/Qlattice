@@ -40,17 +40,17 @@ from .field_type_dict import selected_field_type_dict
 
 cdef void set_field_sf_sp_{{name}}(SelectedField{{name}} self, SelectedPoints{{name}} other):
     # psel may not have to be subset of fsel
-    c.set_sfield_spfield(self, other)
+    cc.set_selected_field(self.xx, other.xx, self.fsel.xx, other.psel.xx)
 
 cdef void set_field_sf_sf_{{name}}(SelectedField{{name}} self, SelectedField{{name}} other):
     # two fsel do not need to match
     if self.fsel is other.fsel:
-        self.xx = other.xx
+        cc.assign_direct(self.xx, other.xx)
     else:
-        c.set_sfield_sfield(self, other)
+        cc.set_selected_field(self.xx, other.xx, self.fsel.xx, other.fsel.xx)
 
 cdef void set_field_sf_f_{{name}}(SelectedField{{name}} self, Field{{name}} other):
-    c.set_sfield_field(self, other)
+    cc.set_selected_field(self.xx, other.xx, self.fsel.xx)
 
 cdef class SelectedField{{name}}(SelectedFieldBase):
 
@@ -103,7 +103,6 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
     def __releasebuffer__(self, Py_buffer *buffer):
         self.view_count -= 1
 
-    @q.timer_verbose
     def __imatmul__(self, other):
         """
         won't change self.fsel

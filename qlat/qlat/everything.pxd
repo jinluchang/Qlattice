@@ -60,7 +60,6 @@ cdef extern from "qlat/field.h" namespace "qlat":
         void init(const Geometry& geo) except +
         void init(const Geometry& geo, int multiplicity) except +
         void init(const Field[T]& field) except +
-        const Field[T]& operator=(const Field[T]& field) except +
         const Geometry& get_geo()
     cdef cppclass GaugeField:
         pass
@@ -84,7 +83,7 @@ cdef extern from "qlat/field-expand.h" namespace "qlat":
     cdef cppclass CommPlan:
         pass
 
-cdef extern from "qlat/selected-field-io.h" namespace "qlat":
+cdef extern from "qlat/core.h" namespace "qlat":
 
     cdef cppclass FieldSelection:
         FieldSelection()
@@ -117,6 +116,23 @@ cdef extern from "qlat/selected-field-io.h" namespace "qlat":
     Vector[T] get_data[T](const SelectedPoints[T]& x)
     void set_zero[T](SelectedPoints[T]& x)
     void qswap[T](SelectedPoints[T]& x, SelectedPoints[T]& y) except +
+
+cdef extern from "qlat/selected-field-io.h" namespace "qlat":
+
+    void set_selected_field[t](SelectedField[t]& sf, const Field[t]& f,
+                               const FieldSelection& fsel) except +
+    void set_selected_field[t](SelectedField[t]& sf, const SelectedField[t] sf0,
+                               const FieldSelection& fsel, const FieldSelection& fsel0) except +
+    void set_selected_field[t](SelectedField[t]& sf, const SelectedPoints[t] sp,
+                               const FieldSelection& fsel, const PointsSelection& psel) except +
+    void set_selected_points[t](SelectedPoints[t]& sp, const Field[t] sf,
+                                const PointsSelection& psel) except +
+    void set_selected_points[t](SelectedPoints[t]& sp, const SelectedField[t] sf,
+                                const PointsSelection& psel, const FieldSelection& fsel) except +
+    void set_field_selected[t](Field[t]& sf, const SelectedField[t]& f,
+                               const FieldSelection& fsel) except +
+    void set_field_selected[t](Field[t]& sf, const SelectedPoints[t]& f,
+                               const Geometry& geo, const PointsSelection& psel) except +
 
 cdef extern from "qlat/qcd-smear.h" namespace "qlat":
 
