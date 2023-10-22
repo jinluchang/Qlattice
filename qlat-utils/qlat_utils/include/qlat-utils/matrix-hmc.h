@@ -191,7 +191,7 @@ struct API AdjointColorMatrix : MatrixT<8, double> {
   qacc AdjointColorMatrix() {}
   qacc AdjointColorMatrix(const MatrixT<8, double>& m) { *this = m; }
   //
-  qacc const AdjointColorMatrix& operator=(const MatrixT<8, double>& m)
+  qacc AdjointColorMatrix& operator=(const MatrixT<8, double>& m)
   {
     *this = (const AdjointColorMatrix&)m;
     return *this;

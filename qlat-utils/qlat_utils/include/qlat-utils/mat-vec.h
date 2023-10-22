@@ -115,7 +115,7 @@ struct API ColorMatrixT : MatrixT<NUM_COLOR, ComplexT<T> > {
   qacc ColorMatrixT() {}
   qacc ColorMatrixT(const MatrixT<NUM_COLOR, ComplexT<T> >& m) { *this = m; }
   //
-  qacc const ColorMatrixT& operator=(const MatrixT<NUM_COLOR, ComplexT<T> >& m)
+  qacc ColorMatrixT& operator=(const MatrixT<NUM_COLOR, ComplexT<T>>& m)
   {
     *this = (const ColorMatrixT&)m;
     return *this;
@@ -130,8 +130,7 @@ struct API WilsonMatrixT : MatrixT<4 * NUM_COLOR, ComplexT<T> > {
     *this = m;
   }
   //
-  qacc const WilsonMatrixT& operator=(
-      const MatrixT<4 * NUM_COLOR, ComplexT<T> >& m)
+  qacc WilsonMatrixT& operator=(const MatrixT<4 * NUM_COLOR, ComplexT<T>>& m)
   {
     *this = (const WilsonMatrixT&)m;
     return *this;
@@ -143,7 +142,7 @@ struct API SpinMatrixT : MatrixT<4, ComplexT<T> > {
   qacc SpinMatrixT() {}
   qacc SpinMatrixT(const MatrixT<4, ComplexT<T> >& m) { *this = m; }
   //
-  qacc const SpinMatrixT& operator=(const MatrixT<4, ComplexT<T> >& m)
+  qacc SpinMatrixT& operator=(const MatrixT<4, ComplexT<T>>& m)
   {
     *this = (const SpinMatrixT&)m;
     return *this;
@@ -158,8 +157,8 @@ struct API NonRelWilsonMatrixT : MatrixT<2 * NUM_COLOR, ComplexT<T> > {
     *this = m;
   }
   //
-  qacc const NonRelWilsonMatrixT& operator=(
-      const MatrixT<2 * NUM_COLOR, ComplexT<T> >& m)
+  qacc NonRelWilsonMatrixT& operator=(
+      const MatrixT<2 * NUM_COLOR, ComplexT<T>>& m)
   {
     *this = (const NonRelWilsonMatrixT&)m;
     return *this;
@@ -171,7 +170,7 @@ struct API IsospinMatrixT : MatrixT<2, ComplexT<T> > {
   qacc IsospinMatrixT() {}
   qacc IsospinMatrixT(const MatrixT<2, ComplexT<T> >& m) { *this = m; }
   //
-  qacc const IsospinMatrixT& operator=(const MatrixT<2, ComplexT<T> >& m)
+  qacc IsospinMatrixT& operator=(const MatrixT<2, ComplexT<T>>& m)
   {
     *this = (const IsospinMatrixT&)m;
     return *this;
@@ -252,7 +251,7 @@ struct API WilsonVectorT : MvectorT<4 * NUM_COLOR, ComplexT<T> > {
     *this = m;
   }
   //
-  qacc const WilsonVectorT& operator=(
+  qacc WilsonVectorT& operator=(
       const MvectorT<4 * NUM_COLOR, ComplexT<T> >& m)
   {
     *this = (const WilsonVectorT&)m;
@@ -265,7 +264,7 @@ struct API SpinVectorT : MvectorT<4, ComplexT<T> > {
   qacc SpinVectorT() {}
   qacc SpinVectorT(const MvectorT<4, ComplexT<T> >& m) { *this = m; }
   //
-  qacc const SpinVectorT& operator=(const MvectorT<4, ComplexT<T> >& m)
+  qacc SpinVectorT& operator=(const MvectorT<4, ComplexT<T>>& m)
   {
     *this = (const SpinVectorT&)m;
     return *this;

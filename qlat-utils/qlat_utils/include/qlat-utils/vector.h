@@ -220,12 +220,14 @@ struct API vector {
   //
   vector()
   {
+    // TIMER("vector::vector()")
     qassert(v.p == NULL);
     is_copy = false;
     is_acc = false;
   }
   vector(const vector<M>& vp)
   {
+    // TIMER("vector::vector(&)")
 #ifndef QLAT_USE_ACC
     qassert(false);
 #endif
@@ -236,6 +238,7 @@ struct API vector {
   }
   vector(vector<M>&& vp) noexcept
   {
+    // TIMER("vector::vector(&&)")
     is_copy = vp.is_copy;
     is_acc = vp.is_acc;
     v = vp.v;
@@ -243,6 +246,7 @@ struct API vector {
   }
   vector(const long size)
   {
+    // TIMER("vector::vector(size)")
     qassert(v.p == NULL);
     is_copy = false;
     is_acc = false;
@@ -250,6 +254,7 @@ struct API vector {
   }
   vector(const long size, const M& x)
   {
+    // TIMER("vector::vector(size,x)")
     qassert(v.p == NULL);
     is_copy = false;
     is_acc = false;
@@ -257,6 +262,7 @@ struct API vector {
   }
   vector(const std::vector<M>& vp)
   {
+    // TIMER("vector::vector(std::vector&)")
     is_copy = false;
     is_acc = false;
     *this = vp;
@@ -264,6 +270,7 @@ struct API vector {
   //
   ~vector()
   {
+    // TIMER("vector::~vector()")
     if (not is_copy) {
       clear();
     }
@@ -363,8 +370,9 @@ struct API vector {
     }
   }
   //
-  const vector<M>& operator=(const vector<M>& vp)
+  vector<M>& operator=(const vector<M>& vp)
   {
+    // TIMER("vector::operator=(&)");
     qassert(not is_copy);
     clear();
     resize(vp.size());
@@ -373,8 +381,18 @@ struct API vector {
     }
     return *this;
   }
-  const vector<M>& operator=(const std::vector<M>& vp)
+  vector<M>& operator=(vector<M>&& vp) noexcept
   {
+    // TIMER("vector::operator=(&&)");
+    is_copy = vp.is_copy;
+    is_acc = vp.is_acc;
+    v = vp.v;
+    vp.is_copy = true;
+    return *this;
+  }
+  vector<M>& operator=(const std::vector<M>& vp)
+  {
+    // TIMER("vector::operator=(std::vector&)");
     qassert(not is_copy);
     clear();
     resize(vp.size());
@@ -402,36 +420,17 @@ struct API vector_acc : vector<M> {
   using vector<M>::is_copy;
   using vector<M>::is_acc;
   using vector<M>::resize;
-  using vector<M>::operator=;
   //
   vector_acc()
   {
+    // TIMER("vector_acc::vector_acc()");
     qassert(v.p == NULL);
     is_copy = false;
     is_acc = true;
   }
-  vector_acc(const long size)
+  vector_acc(const vector_acc<M>& vp)
   {
-    qassert(v.p == NULL);
-    is_copy = false;
-    is_acc = true;
-    resize(size);
-  }
-  vector_acc(const long size, const M& x)
-  {
-    qassert(v.p == NULL);
-    is_copy = false;
-    is_acc = true;
-    resize(size, x);
-  }
-  vector_acc(const std::vector<M>& vp)
-  {
-    is_copy = false;
-    is_acc = true;
-    *this = vp;
-  }
-  vector_acc(const vector<M>& vp)
-  {
+    // TIMER("vector_acc::vector_acc(&)");
 #ifndef QLAT_USE_ACC
     qassert(false);
 #endif
@@ -440,24 +439,67 @@ struct API vector_acc : vector<M> {
     is_acc = vp.is_acc;
     v = vp.v;
   }
-  vector_acc(vector<M>&& vp) noexcept
+  vector_acc(vector_acc<M>&& vp) noexcept
   {
-    qassert(vp.is_acc);
+    // TIMER("vector_acc::vector_acc(&&)")
+    // qassert(vp.is_acc);
     is_copy = vp.is_copy;
     is_acc = vp.is_acc;
     v = vp.v;
     vp.is_copy = true;
   }
-  ~vector_acc() {}
-  //
-  const vector_acc<M>& operator=(const vector<M>& vp)
+  vector_acc(const long size)
   {
-    this->vector<M>::operator=(vp);
+    // TIMER("vector_acc::vector_acc(size)");
+    qassert(v.p == NULL);
+    is_copy = false;
+    is_acc = true;
+    resize(size);
+  }
+  vector_acc(const long size, const M& x)
+  {
+    // TIMER("vector_acc::vector_acc(size,x)");
+    qassert(v.p == NULL);
+    is_copy = false;
+    is_acc = true;
+    resize(size, x);
+  }
+  vector_acc(const std::vector<M>& vp)
+  {
+    // TIMER("vector_acc::vector_acc(std::vector&)");
+    is_copy = false;
+    is_acc = true;
+    *this = vp;
+  }
+  //
+  vector_acc<M>& operator=(const vector_acc<M>& vp)
+  {
+    // TIMER("vector_acc::operator=(&)");
+    vector<M>::operator=(vp);
     return *this;
   }
-  const vector_acc<M>& operator=(const std::vector<M>& vp)
+  vector_acc<M>& operator=(const vector<M>& vp)
   {
-    this->vector<M>::operator=(vp);
+    // TIMER("vector_acc::operator=(&)");
+    vector<M>::operator=(vp);
+    return *this;
+  }
+  vector_acc<M>& operator=(vector_acc<M>&& vp) noexcept
+  {
+    // TIMER("vector_acc::operator=(&&)");
+    vector<M>::operator=(std::move(vp));
+    return *this;
+  }
+  vector_acc<M>& operator=(vector<M>&& vp) noexcept
+  {
+    // TIMER("vector_acc::operator=(&&)");
+    vector<M>::operator=(std::move(vp));
+    return *this;
+  }
+  vector_acc<M>& operator=(const std::vector<M>& vp)
+  {
+    // TIMER("vector_acc::operator=(std::vector&)");
+    vector<M>::operator=(vp);
     return *this;
   }
 };
@@ -510,12 +552,14 @@ struct API box {
   //
   box()
   {
+    // TIMER("box::box()");
     qassert(v.p == NULL);
     is_copy = false;
     is_acc = false;
   }
   box(const box<M>& vp)
   {
+    // TIMER("box::box(&)");
 #ifndef QLAT_USE_ACC
     qassert(false);
 #endif
@@ -526,6 +570,7 @@ struct API box {
   }
   box(box<M>&& vp) noexcept
   {
+    // TIMER("box::box(&&)");
     is_copy = vp.is_copy;
     is_acc = vp.is_acc;
     v = vp.v;
@@ -533,6 +578,7 @@ struct API box {
   }
   box(const M& x)
   {
+    // TIMER("box::box(x)");
     qassert(v.p == NULL);
     is_copy = false;
     is_acc = false;
@@ -541,6 +587,7 @@ struct API box {
   //
   ~box()
   {
+    // TIMER("box::~box()");
     if (not is_copy) {
       clear();
     }
@@ -602,10 +649,20 @@ struct API box {
     v() = x;
   }
   //
-  const box<M>& operator=(const box<M>& vp)
+  box<M>& operator=(const box<M>& vp)
   {
+    // TIMER("box::operator=(&)");
     qassert(not is_copy);
     set(vp());
+    return *this;
+  }
+  box<M>& operator=(box<M>&& vp) noexcept
+  {
+    // TIMER("box::operator=(&&)");
+    is_copy = vp.is_copy;
+    is_acc = vp.is_acc;
+    v = vp.v;
+    vp.is_copy = true;
     return *this;
   }
   //
@@ -630,24 +687,63 @@ struct API box_acc : box<M> {
   //
   box_acc()
   {
+    // TIMER("box_acc::box_acc()");
     qassert(v.p == NULL);
     is_copy = false;
     is_acc = true;
   }
+  box_acc(const box_acc<M>& vp)
+  {
+    // TIMER("box::box(&)");
+#ifndef QLAT_USE_ACC
+    qassert(false);
+#endif
+    is_copy = true;
+    qassert(vp.is_acc);
+    is_acc = vp.is_acc;
+    v = vp.v;
+  }
+  box_acc(box_acc<M>&& vp) noexcept
+  {
+    // TIMER("box_acc::box_acc(&&)");
+    // qassert(vp.is_acc);
+    is_copy = vp.is_copy;
+    is_acc = vp.is_acc;
+    v = vp.v;
+    vp.is_copy = true;
+  }
   box_acc(const M& x)
   {
+    // TIMER("box_acc::box_acc(x)");
     qassert(v.p == NULL);
     is_copy = false;
     is_acc = true;
     set(x);
   }
-  box_acc(box<M>&& vp) noexcept
+  //
+  box_acc<M>& operator=(const box_acc<M>& vp)
   {
-    qassert(vp.is_acc);
-    is_copy = vp.is_copy;
-    is_acc = vp.is_acc;
-    v = vp.v;
-    vp.is_copy = true;
+    // TIMER("box_acc::operator=(&)");
+    box<M>::operator=(vp);
+    return *this;
+  }
+  box_acc<M>& operator=(const box<M>& vp)
+  {
+    // TIMER("box_acc::operator=(&)");
+    box<M>::operator=(vp);
+    return *this;
+  }
+  box_acc<M>& operator=(box_acc<M>&& vp) noexcept
+  {
+    // TIMER("box_acc::operator=(&&)");
+    box<M>::operator=(std::move(vp));
+    return *this;
+  }
+  box_acc<M>& operator=(box<M>&& vp) noexcept
+  {
+    // TIMER("box_acc::operator=(&&)");
+    box<M>::operator=(std::move(vp));
+    return *this;
   }
 };
 

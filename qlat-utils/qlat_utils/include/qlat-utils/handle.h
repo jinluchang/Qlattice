@@ -129,7 +129,7 @@ struct API Vector {
   //
   qacc long data_size() const { return n * sizeof(M); }
   //
-  qacc const Vector<M>& operator=(const Vector<M>& v)
+  qacc Vector<M>& operator=(const Vector<M>& v)
   {
     n = v.n;
     p = v.p;
@@ -174,12 +174,12 @@ struct API Array {
   //
   qacc long data_size() const { return N * sizeof(M); }
   //
-  qacc const Array<M, N>& operator=(const Array<M, N>& v)
+  qacc Array<M, N>& operator=(const Array<M, N>& v)
   {
     p = v.p;
     return *this;
   }
-  qacc const Array<M, N>& operator=(const Vector<M>& v)
+  qacc Array<M, N>& operator=(const Vector<M>& v)
   {
     qassert(N == v.size());
     p = v.p;

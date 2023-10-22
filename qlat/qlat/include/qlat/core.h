@@ -447,7 +447,7 @@ struct API Field {
   Field(Field<M>&&) noexcept = default;
   //
   Field<M>& operator=(const Field<M>& f);
-  Field<M>& operator=(Field<M>&& f) noexcept = default;
+  Field<M>& operator=(Field<M>&&) noexcept = default;
   //
   qacc const Geometry& get_geo() const { return geo(); }
   //
@@ -581,9 +581,10 @@ struct API FieldM : Field<M> {
   FieldM<M, multiplicity>& operator=(const FieldM<M, multiplicity>& f)
   {
     qassert(f.geo().multiplicity == multiplicity);
-    return (FieldM<M, multiplicity>&)Field<M>::operator=(f);
+    Field<M>::operator=(f);
+    return *this;
   }
-  FieldM<M, multiplicity>& operator=(FieldM<M, multiplicity>&& f) noexcept =
+  FieldM<M, multiplicity>& operator=(FieldM<M, multiplicity>&&) noexcept =
       default;
 };
 
@@ -768,10 +769,10 @@ struct API SelectedPoints {
   void init(const PointsSelection& psel, const int multiplicity);
   //
   SelectedPoints() { init(); }
-  SelectedPoints(SelectedPoints&& x) noexcept;
+  SelectedPoints(SelectedPoints&&) noexcept;
   //
-  SelectedPoints<M>& operator=(const SelectedPoints<M>& x) = default;
-  SelectedPoints<M>& operator=(SelectedPoints<M>&& x) noexcept = default;
+  SelectedPoints<M>& operator=(const SelectedPoints<M>&) = default;
+  SelectedPoints<M>& operator=(SelectedPoints<M>&&) noexcept = default;
   //
   qacc M& get_elem(const long& idx)
   {
@@ -909,10 +910,10 @@ struct API SelectedField {
   void init(const FieldSelection& fsel, const int multiplicity);
   //
   SelectedField() { init(); }
-  SelectedField(SelectedField&& x) noexcept = default;
+  SelectedField(SelectedField&&) noexcept = default;
   //
-  SelectedField<M>& operator=(const SelectedField<M>& x) = default;
-  SelectedField<M>& operator=(SelectedField<M>&& x) noexcept = default;
+  SelectedField<M>& operator=(const SelectedField<M>&) = default;
+  SelectedField<M>& operator=(SelectedField<M>&&) noexcept = default;
   //
   qacc const Geometry& get_geo() const { return geo(); }
   //
