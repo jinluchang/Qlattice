@@ -193,46 +193,6 @@ PyObject* get_mview_field_ctype(PyObject* p_field)
 
 } // namespace qlat
 
-EXPORT(mk_field, {
-  using namespace qlat;
-  PyObject* p_ctype = NULL;
-  PyObject* p_geo = NULL;
-  int multiplicity = 0;
-  if (!PyArg_ParseTuple(args, "O|Oi", &p_ctype, &p_geo, &multiplicity)) {
-    return NULL;
-  }
-  const std::string ctype = py_convert_data<std::string>(p_ctype, "name");
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, mk_field_ctype, ctype, p_geo, multiplicity);
-  return p_ret;
-})
-
-EXPORT(free_field, {
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_field)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, free_field_ctype, ctype, p_field);
-  return p_ret;
-})
-
-EXPORT(set_field, {
-  using namespace qlat;
-  PyObject* p_field_new = NULL;
-  PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_field_new, &p_field)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  qassert(py_get_ctype(p_field_new) == ctype);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_field_ctype, ctype, p_field_new, p_field);
-  return p_ret;
-})
-
 EXPORT(set_add_field, {
   using namespace qlat;
   PyObject* p_field_new = NULL;
