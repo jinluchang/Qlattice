@@ -28,7 +28,6 @@ from .field_selection cimport *
 from .field_types cimport *
 from .selected_field_types cimport *
 
-import cqlat as c
 import qlat_utils as q
 import numpy as np
 
