@@ -38,6 +38,15 @@ from .field_type_dict import field_type_dict
 
 {{for name in type_name_list}}
 
+cdef void set_field_f_sp_{{name}}(Field{{name}} self, SelectedPoints{{name}} other):
+    c.set_field_spfield(self, other)
+
+cdef void set_field_f_sf_{{name}}(Field{{name}} self, SelectedField{{name}} other):
+    c.set_field_sfield(self, other)
+
+cdef void set_field_f_f_{{name}}(Field{{name}} self, Field{{name}} other):
+    self.xx = other.xx
+
 cdef class Field{{name}}(FieldBase):
 
     ctype = ElemType{{name}}
@@ -93,19 +102,20 @@ cdef class Field{{name}}(FieldBase):
     def __releasebuffer__(self, Py_buffer *buffer):
         self.view_count -= 1
 
-    def __imatmul__(self, f1):
+    @q.timer_verbose
+    def __imatmul__(self, other):
         """
-        f1 can be Field, SelectedField, SelectedPoints
+        other can be Field, SelectedField, SelectedPoints
         field geo does not change if already initialized
         """
-        if isinstance(f1, Field{{name}}):
-            self.xx = (<Field{{name}}>f1).xx
-        elif isinstance(f1, SelectedField{{name}}):
-            c.set_field_sfield(self, f1)
-        elif isinstance(f1, SelectedPoints{{name}}):
-            c.set_field_spfield(self, f1)
+        if isinstance(other, Field{{name}}):
+            set_field_f_f_{{name}}(self, <Field{{name}}>other)
+        elif isinstance(other, SelectedField{{name}}):
+            set_field_f_sf_{{name}}(self, <SelectedField{{name}}>other)
+        elif isinstance(other, SelectedPoints{{name}}):
+            set_field_f_sp_{{name}}(self, <SelectedPoints{{name}}>other)
         else:
-            raise Exception(f"Field{{name}} @= type mismatch {type(self)} {type(f1)}")
+            raise Exception(f"Field{{name}} @= type mismatch {type(self)} {type(other)}")
         return self
 
     @q.timer

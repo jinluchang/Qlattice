@@ -314,58 +314,6 @@ PyObject* set_u_rand_double_sfield_ctype(PyObject* p_field,
 
 }  // namespace qlat
 
-EXPORT(mk_sfield, {
-  using namespace qlat;
-  PyObject* p_ctype = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_ctype)) {
-    return NULL;
-  }
-  const std::string ctype = py_convert_data<std::string>(p_ctype, "name");
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, mk_sfield_ctype, ctype, 0);
-  return p_ret;
-})
-
-EXPORT(mk_sfield_fsel, {
-  using namespace qlat;
-  PyObject* p_ctype = NULL;
-  PyObject* p_fsel = NULL;
-  int multiplicity = 0;
-  if (!PyArg_ParseTuple(args, "OOi", &p_ctype, &p_fsel, &multiplicity)) {
-    return NULL;
-  }
-  const std::string ctype = py_convert_data<std::string>(p_ctype, "name");
-  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, mk_sfield_fsel_ctype, ctype, fsel, multiplicity);
-  return p_ret;
-})
-
-EXPORT(free_sfield, {
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_field)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, free_sfield_ctype, ctype, p_field);
-  return p_ret;
-})
-
-EXPORT(set_sfield, {
-  using namespace qlat;
-  PyObject* p_sfield_new = NULL;
-  PyObject* p_sfield = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_sfield_new, &p_sfield)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_sfield);
-  qassert(py_get_ctype(p_sfield_new) == ctype);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_sfield_ctype, ctype, p_sfield_new, p_sfield);
-  return p_ret;
-})
 
 EXPORT(set_sfield_field, {
   using namespace qlat;

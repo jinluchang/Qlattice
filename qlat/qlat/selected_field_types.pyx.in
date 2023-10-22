@@ -38,6 +38,20 @@ from .field_type_dict import selected_field_type_dict
 
 {{for name in type_name_list}}
 
+cdef void set_field_sf_sp_{{name}}(SelectedField{{name}} self, SelectedPoints{{name}} other):
+    # psel may not have to be subset of fsel
+    c.set_sfield_spfield(self, other)
+
+cdef void set_field_sf_sf_{{name}}(SelectedField{{name}} self, SelectedField{{name}} other):
+    # two fsel do not need to match
+    if self.fsel is other.fsel:
+        self.xx = other.xx
+    else:
+        c.set_sfield_sfield(self, other)
+
+cdef void set_field_sf_f_{{name}}(SelectedField{{name}} self, Field{{name}} other):
+    c.set_sfield_field(self, other)
+
 cdef class SelectedField{{name}}(SelectedFieldBase):
 
     ctype = ElemType{{name}}
@@ -89,23 +103,21 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
     def __releasebuffer__(self, Py_buffer *buffer):
         self.view_count -= 1
 
-    def __imatmul__(self, f1):
+    @q.timer_verbose
+    def __imatmul__(self, other):
         """
         won't change self.fsel
         """
-        if isinstance(f1, SelectedField{{name}}):
+        if isinstance(other, SelectedField{{name}}):
             # two fsel do not need to match
-            if self.fsel is f1.fsel:
-                self.xx = (<SelectedField{{name}}>f1).xx
-            else:
-                c.set_sfield_sfield(self, f1)
-        elif isinstance(f1, Field{{name}}):
-            c.set_sfield_field(self, f1)
-        elif isinstance(f1, SelectedPoints{{name}}):
+            set_field_sf_sf_{{name}}(self, <SelectedField{{name}}>other)
+        elif isinstance(other, Field{{name}}):
+            set_field_sf_f_{{name}}(self, <Field{{name}}>other)
+        elif isinstance(other, SelectedPoints{{name}}):
             # psel may not have to be subset of fsel
-            c.set_sfield_spfield(self, f1)
+            set_field_sf_sp_{{name}}(self, <SelectedPoints{{name}}>other)
         else:
-            raise Exception(f"SelectedField{{name}} @= type mismatch {type(self)} {type(f1)}")
+            raise Exception(f"SelectedField{{name}} @= type mismatch {type(self)} {type(other)}")
         return self
 
     @q.timer
