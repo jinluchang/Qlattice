@@ -442,6 +442,8 @@ struct API Field {
   void init(const Geometry& geo_, const int multiplicity_ = 0);
   void init(const Field<M>& f);
   //
+  void init_zero(const Geometry& geo_, const int multiplicity_ = 0);
+  //
   Field() { init(); }
   Field(const Field<M>&) = default;
   Field(Field<M>&&) noexcept = default;
@@ -598,7 +600,7 @@ void Field<M>::init()
 
 template <class M>
 void Field<M>::init(const Geometry& geo_, const int multiplicity_)
-// only initialize if uninitilized
+// only initialize if uninitialized
 // if initialized already, then check for matching geo (including
 // multiplicity)
 // can have different geo expansion
@@ -645,6 +647,38 @@ void Field<M>::init(const Field<M>& f)
     initialized = f.initialized;
     geo = f.geo;
     field = f.field;
+  }
+}
+
+template <class M>
+void Field<M>::init_zero(const Geometry& geo_, const int multiplicity_)
+// only initialize and zero the field if uninitialized
+// if initialized already, then check for matching geo (including
+// multiplicity)
+// can have different geo expansion (actual field needs to be larger)
+// if check failed, the program crash
+{
+  if (initialized) {
+    Geometry geo_new = geo_;
+    if (multiplicity_ != 0) {
+      geo_new.remult(multiplicity_);
+    }
+    if (not is_matching_geo_included(geo_new, geo())) {
+      displayln("old geo = " + show(geo()));
+      displayln("new geo = " + show(geo_new));
+      qassert(false);
+    }
+  } else {
+    TIMER("Field::init_zero(geo,mult)");
+    init();
+    initialized = true;
+    if (multiplicity_ == 0) {
+      geo.set(geo_);
+    } else {
+      geo.set(geo_remult(geo_, multiplicity_));
+    }
+    field.resize(geo().local_volume_expanded() * geo().multiplicity);
+    set_zero(*this);
   }
 }
 
@@ -768,6 +802,9 @@ struct API SelectedPoints {
   void init(const long n_points_, const int multiplicity_);
   void init(const PointsSelection& psel, const int multiplicity);
   //
+  void init_zero(const long n_points_, const int multiplicity_);
+  void init_zero(const PointsSelection& psel, const int multiplicity);
+  //
   SelectedPoints() { init(); }
   SelectedPoints(SelectedPoints&&) noexcept;
   //
@@ -848,6 +885,30 @@ void SelectedPoints<M>::init(const PointsSelection& psel, const int multiplicity
 }
 
 template <class M>
+void SelectedPoints<M>::init_zero(const long n_points_, const int multiplicity_)
+{
+  if (initialized) {
+    qassert(multiplicity_ == multiplicity);
+    qassert(n_points_ == n_points);
+    qassert((long)points.size() == n_points * multiplicity);
+  } else {
+    TIMER("SelectedPoints::init_zero(np,mult)")
+    init();
+    initialized = true;
+    multiplicity = multiplicity_;
+    n_points = n_points_;
+    points.resize(n_points * multiplicity);
+    set_zero(*this);
+  }
+}
+
+template <class M>
+void SelectedPoints<M>::init_zero(const PointsSelection& psel, const int multiplicity)
+{
+  init_zero(psel.size(), multiplicity);
+}
+
+template <class M>
 Vector<M> get_data(const SelectedPoints<M>& sp)
 {
   return get_data(sp.points);
@@ -908,6 +969,9 @@ struct API SelectedField {
   void init();
   void init(const Geometry& geo_, const long n_elems_, const int multiplicity);
   void init(const FieldSelection& fsel, const int multiplicity);
+  //
+  void init_zero(const Geometry& geo_, const long n_elems_, const int multiplicity);
+  void init_zero(const FieldSelection& fsel, const int multiplicity);
   //
   SelectedField() { init(); }
   SelectedField(SelectedField&&) noexcept = default;
@@ -991,6 +1055,32 @@ template <class M>
 void SelectedField<M>::init(const FieldSelection& fsel, const int multiplicity)
 {
   init(fsel.f_rank.geo(), fsel.n_elems, multiplicity);
+}
+
+template <class M>
+void SelectedField<M>::init_zero(const Geometry& geo_, const long n_elems_,
+                                 const int multiplicity)
+{
+  if (initialized) {
+    qassert(geo() == geo_remult(geo_, multiplicity));
+    qassert(n_elems == n_elems_);
+    qassert((long)field.size() == n_elems * multiplicity);
+  } else {
+    TIMER("SelectedField::init_zero(geo,n_elems,mult)")
+    init();
+    initialized = true;
+    geo.set(geo_remult(geo_, multiplicity));
+    n_elems = n_elems_;
+    field.resize(n_elems * multiplicity);
+    set_zero(*this);
+  }
+}
+
+template <class M>
+void SelectedField<M>::init_zero(const FieldSelection& fsel,
+                                 const int multiplicity)
+{
+  init_zero(fsel.f_rank.geo(), fsel.n_elems, multiplicity);
 }
 
 template <class M>

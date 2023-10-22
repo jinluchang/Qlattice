@@ -237,8 +237,10 @@ void set_selected_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
   qassert(geo_remult(sf0.geo()) == fsel.f_local_idx.geo());
   const Geometry& geo = sf0.geo();
   const int multiplicity = geo.multiplicity;
-  sf.init(fsel, multiplicity);
-  if (not is_keeping_data) {
+  if (is_keeping_data) {
+    sf.init_zero(fsel, multiplicity);
+  } else {
+    sf.init(fsel, multiplicity);
     set_zero(sf);
   }
   qacc_for(idx, fsel.n_elems, {
@@ -266,8 +268,10 @@ void set_selected_field(SelectedField<M>& sf, const SelectedPoints<M>& sp,
   qassert(n_points == (long)psel.size());
   const Geometry& geo = fsel.f_rank.geo();
   const int multiplicity = sp.multiplicity;
-  sf.init(fsel, multiplicity);
-  if (not is_keeping_data) {
+  if (is_keeping_data) {
+    sf.init_zero(fsel, multiplicity);
+  } else {
+    sf.init(fsel, multiplicity);
     set_zero(sf);
   }
   qthread_for(idx, n_points, {
@@ -321,20 +325,21 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
     }
   });
   glb_sum_byte_vec(get_data(sp_tmp.points));
-  if (not is_keeping_data) {
-    sp = sp_tmp;
-    return;
-  }
-  glb_sum_byte_vec(get_data(sp_count.points));
-  qthread_for(idx, n_points, {
-    if (sp_count.get_elem(idx) > 0) {
-      Vector<M> spv = sp.get_elems(idx);
-      const Vector<M> spv_tmp = sp_tmp.get_elems_const(idx);
-      for (int m = 0; m < geo.multiplicity; ++m) {
-        spv[m] = spv_tmp[m];
+  if (is_keeping_data) {
+    glb_sum_byte_vec(get_data(sp_count.points));
+    sp.init_zero(psel, geo.multiplicity);
+    qthread_for(idx, n_points, {
+      if (sp_count.get_elem(idx) > 0) {
+        Vector<M> spv = sp.get_elems(idx);
+        const Vector<M> spv_tmp = sp_tmp.get_elems_const(idx);
+        for (int m = 0; m < geo.multiplicity; ++m) {
+          spv[m] = spv_tmp[m];
+        }
       }
-    }
-  });
+    });
+  } else {
+    sp = sp_tmp;
+  }
 }
 
 template <class M>
@@ -349,9 +354,8 @@ void set_field_selected(Field<M>& f, const SelectedField<M>& sf,
   const Geometry& geo = sf.geo();
   const int multiplicity = geo.multiplicity;
   if (is_keeping_data) {
-    f.init(geo);
+    f.init_zero(geo);
   } else {
-    f.init();
     f.init(geo);
     set_zero(f);
   }

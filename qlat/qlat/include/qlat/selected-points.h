@@ -175,7 +175,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
   qassert(geo.is_only_local);
   const long n_points = psel.size();
   sp.init(psel, geo.multiplicity);
-  set_zero(sp.points);
+  set_zero(sp);  // has to set_zero for glb_sum_byte_vec
   qthread_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
@@ -200,13 +200,13 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
   qassert(geo.is_only_local);
   const long n_points = sp.n_points;
   qassert(n_points == (long)psel.size());
-  f.init();
-  f.init(geo);
   if (is_keeping_data) {
+    f.init_zero(geo);
+  } else {
+    f.init(geo);
     set_zero(f);
   }
-#pragma omp parallel for
-  for (long idx = 0; idx < n_points; ++idx) {
+  qthread_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {
@@ -216,7 +216,7 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
         fv[m] = spv[m];
       }
     }
-  }
+  });
 }
 
 // -------------------------------------------
