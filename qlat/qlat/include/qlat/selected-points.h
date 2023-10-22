@@ -57,15 +57,6 @@ bool is_consistent(const SelectedPoints<M>& sp, const PointsSelection& psel)
 }
 
 template <class M>
-void qswap(SelectedPoints<M>& f1, SelectedPoints<M>& f2)
-{
-  std::swap(f1.initialized, f2.initialized);
-  std::swap(f1.n_points, f2.n_points);
-  std::swap(f1.multiplicity, f2.multiplicity);
-  qswap(f1.points, f2.points);
-}
-
-template <class M>
 const SelectedPoints<M>& operator+=(SelectedPoints<M>& f,
                                     const SelectedPoints<M>& f1)
 {
@@ -363,9 +354,6 @@ void load_selected_points_complex(SelectedPoints<M>& sp,
 #endif
 
 #define QLAT_EXTERN_TEMPLATE(TYPENAME)                                       \
-                                                                             \
-  QLAT_EXTERN template void qswap<TYPENAME>(SelectedPoints<TYPENAME> & f1,   \
-                                            SelectedPoints<TYPENAME> & f2);  \
                                                                              \
   QLAT_EXTERN template const SelectedPoints<TYPENAME>& operator+=<TYPENAME>( \
       SelectedPoints<TYPENAME>& f, const SelectedPoints<TYPENAME>& f1);      \

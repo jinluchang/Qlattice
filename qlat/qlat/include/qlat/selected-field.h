@@ -107,15 +107,6 @@ bool is_consistent(const SelectedField<M>& sf, const FieldSelection& fsel)
 }
 
 template <class M>
-void qswap(SelectedField<M>& f1, SelectedField<M>& f2)
-{
-  std::swap(f1.initialized, f2.initialized);
-  std::swap(f1.n_elems, f2.n_elems);
-  qswap(f1.geo, f2.geo);
-  qswap(f1.field, f2.field);
-}
-
-template <class M>
 double qnorm(const SelectedField<M>& sf)
 {
   double s = qnorm(sf.field);

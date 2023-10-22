@@ -58,27 +58,21 @@ cdef extern from "qlat-utils/mat-vec.h" namespace "qlat":
 
     cdef cppclass ColorMatrix:
         ColorMatrix()
-        const ColorMatrix& operator=(const ColorMatrix& m)
         Complex* data()
     cdef cppclass SpinMatrix:
         SpinMatrix()
-        const SpinMatrix& operator=(const SpinMatrix& m)
         Complex* data()
     cdef cppclass WilsonMatrix:
         WilsonMatrix()
-        const WilsonMatrix& operator=(const WilsonMatrix& m)
         Complex* data()
     cdef cppclass NonRelWilsonMatrix:
         NonRelWilsonMatrix()
-        const NonRelWilsonMatrix& operator=(const NonRelWilsonMatrix& m)
         Complex* data()
     cdef cppclass IsospinMatrix:
         IsospinMatrix()
-        const IsospinMatrix& operator=(const IsospinMatrix& m)
         Complex* data()
     cdef cppclass WilsonVector:
         WilsonVector()
-        const WilsonVector& operator=(const WilsonVector& m)
         Complex* data()
 
 cdef extern from "qlat-utils/handle.h" namespace "qlat":
@@ -226,7 +220,6 @@ cdef extern from "qlat-utils/rng-state.h" namespace "qlat":
         RngState()
         RngState(const std_string& seed)
         RngState(const RngState& rs0, const std_string& sindex)
-        const RngState& operator=(const RngState& rs)
         RngState split(const std_string& sindex)
         RngState newtype(const unsigned long type)
     uint64_t rand_gen(RngState& rs)
@@ -278,7 +271,6 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
         LatInfo info
         std_vector[double] res
         LatData()
-        const LatData& operator=(const LatData& ld)
         void load(const std_string& fn) except +
         void save(const std_string& fn) except +
         bool is_complex()

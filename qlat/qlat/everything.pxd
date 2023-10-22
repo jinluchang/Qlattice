@@ -12,7 +12,6 @@ cdef extern from "qlat/geometry.h" namespace "qlat":
     cdef cppclass Geometry:
         int multiplicity
         Geometry()
-        const Geometry& operator=(const Geometry& geo) except +
         void init()
         void init(Coordinate& total_site, int multiplicity) except +
         Coordinate total_site()
@@ -100,7 +99,6 @@ cdef extern from "qlat/core.h" namespace "qlat":
         void init()
         void init(const Geometry& geo, const long n_elems, const int multiplicity) except +
         void init(const FieldSelection& fsel, const int multiplicity) except +
-        const SelectedField[T]& operator=(const SelectedField[T]& field) except +
         const Geometry& get_geo()
     cdef cppclass SelectedPoints[T]:
         int multiplicity
@@ -109,7 +107,6 @@ cdef extern from "qlat/core.h" namespace "qlat":
         void init()
         void init(const long n_points, const int multiplicity) except +
         void init(const PointsSelection& psel, const int multiplicity) except +
-        const SelectedPoints[T]& operator=(const SelectedPoints[T]& field) except +
     Vector[T] get_data[T](const SelectedField[T]& x)
     void set_zero[T](SelectedField[T]& x)
     void qswap[T](SelectedField[T]& x, SelectedField[T]& y) except +

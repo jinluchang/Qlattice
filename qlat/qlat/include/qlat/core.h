@@ -446,7 +446,8 @@ struct API Field {
   Field(const Field<M>&) = default;
   Field(Field<M>&&) noexcept = default;
   //
-  const Field<M>& operator=(const Field<M>& f);
+  Field<M>& operator=(const Field<M>& f);
+  Field<M>& operator=(Field<M>&& f) noexcept = default;
   //
   qacc const Geometry& get_geo() const { return geo(); }
   //
@@ -560,7 +561,7 @@ struct API Field {
 
 template <class M, int multiplicity>
 struct API FieldM : Field<M> {
-  using Field<M>::init;
+  void init() { Field<M>::init(); }
   void init(const Geometry& geo_) { Field<M>::init(geo_, multiplicity); }
   void init(const Geometry& geo_, const int multiplicity_)
   {
@@ -574,6 +575,16 @@ struct API FieldM : Field<M> {
   }
   //
   FieldM<M, multiplicity>() { init(); }
+  FieldM(const FieldM<M, multiplicity>&) = default;
+  FieldM(FieldM<M, multiplicity>&&) noexcept = default;
+  //
+  FieldM<M, multiplicity>& operator=(const FieldM<M, multiplicity>& f)
+  {
+    qassert(f.geo().multiplicity == multiplicity);
+    return (FieldM<M, multiplicity>&)Field<M>::operator=(f);
+  }
+  FieldM<M, multiplicity>& operator=(FieldM<M, multiplicity>&& f) noexcept =
+      default;
 };
 
 template <class M>
@@ -637,7 +648,7 @@ void Field<M>::init(const Field<M>& f)
 }
 
 template <class M>
-const Field<M>& Field<M>::operator=(const Field<M>& f)
+Field<M>& Field<M>::operator=(const Field<M>& f)
 // skip if same object
 // otherwise:
 // 1. assert f is initialized
@@ -685,6 +696,14 @@ template <class M>
 qacc Vector<M> get_data(const Field<M>& f)
 {
   return get_data(f.field);
+}
+
+template <class M>
+void qswap(Field<M>& f1, Field<M>& f2)
+{
+  std::swap(f1.initialized, f2.initialized);
+  qswap(f1.geo, f2.geo);
+  qswap(f1.field, f2.field);
 }
 
 // --------------------
@@ -749,6 +768,10 @@ struct API SelectedPoints {
   void init(const PointsSelection& psel, const int multiplicity);
   //
   SelectedPoints() { init(); }
+  SelectedPoints(SelectedPoints&& x) noexcept;
+  //
+  SelectedPoints<M>& operator=(const SelectedPoints<M>& x) = default;
+  SelectedPoints<M>& operator=(SelectedPoints<M>&& x) noexcept = default;
   //
   qacc M& get_elem(const long& idx)
   {
@@ -836,6 +859,15 @@ void set_zero(SelectedPoints<M>& sp)
   set_zero(get_data(sp));
 }
 
+template <class M>
+void qswap(SelectedPoints<M>& f1, SelectedPoints<M>& f2)
+{
+  std::swap(f1.initialized, f2.initialized);
+  std::swap(f1.n_points, f2.n_points);
+  std::swap(f1.multiplicity, f2.multiplicity);
+  qswap(f1.points, f2.points);
+}
+
 // --------------------
 
 struct API FieldSelection {
@@ -877,6 +909,10 @@ struct API SelectedField {
   void init(const FieldSelection& fsel, const int multiplicity);
   //
   SelectedField() { init(); }
+  SelectedField(SelectedField&& x) noexcept = default;
+  //
+  SelectedField<M>& operator=(const SelectedField<M>& x) = default;
+  SelectedField<M>& operator=(SelectedField<M>&& x) noexcept = default;
   //
   qacc const Geometry& get_geo() const { return geo(); }
   //
@@ -967,6 +1003,15 @@ void set_zero(SelectedField<M>& sf)
 {
   TIMER("set_zero(SelectedField)");
   set_zero(get_data(sf));
+}
+
+template <class M>
+void qswap(SelectedField<M>& f1, SelectedField<M>& f2)
+{
+  std::swap(f1.initialized, f2.initialized);
+  std::swap(f1.n_elems, f2.n_elems);
+  qswap(f1.geo, f2.geo);
+  qswap(f1.field, f2.field);
 }
 
 // --------------------
@@ -1105,6 +1150,15 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
                                                                               \
   QLAT_EXTERN template void set_unit<TYPENAME>(Field<TYPENAME> & f,           \
                                                const Complex& coef);          \
+                                                                              \
+  QLAT_EXTERN template void qswap<TYPENAME>(Field<TYPENAME> & f1,             \
+                                            Field<TYPENAME> & f2);            \
+                                                                              \
+  QLAT_EXTERN template void qswap<TYPENAME>(SelectedPoints<TYPENAME> & f1,    \
+                                            SelectedPoints<TYPENAME> & f2);   \
+                                                                              \
+  QLAT_EXTERN template void qswap<TYPENAME>(SelectedField<TYPENAME> & f1,     \
+                                            SelectedField<TYPENAME> & f2);    \
                                                                               \
   QLAT_EXTERN template void set_u_rand_double<TYPENAME>(                      \
       Field<TYPENAME> & f, const RngState& rs, const double upper,            \

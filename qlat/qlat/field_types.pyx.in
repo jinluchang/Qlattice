@@ -45,7 +45,8 @@ cdef void set_field_f_sf_{{name}}(Field{{name}} self, SelectedField{{name}} othe
     cc.set_field_selected(self.xx, other.xx, other.fsel.xx)
 
 def set_field_f_f_{{name}}(Field{{name}} self, Field{{name}} other):
-    cc.assign_direct(self.xx, other.xx)
+    # cc.assign_direct(self.xx, other.xx)
+    self.xx = other.xx
 
 cdef class Field{{name}}(FieldBase):
 

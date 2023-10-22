@@ -641,6 +641,14 @@ struct API box_acc : box<M> {
     is_acc = true;
     set(x);
   }
+  box_acc(box<M>&& vp) noexcept
+  {
+    qassert(vp.is_acc);
+    is_copy = vp.is_copy;
+    is_acc = vp.is_acc;
+    v = vp.v;
+    vp.is_copy = true;
+  }
 };
 
 template <class M>

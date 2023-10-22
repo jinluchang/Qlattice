@@ -226,14 +226,6 @@ qacc long get_data_size(const Field<M>& f)
   return f.geo().local_volume() * f.geo().multiplicity * sizeof(M);
 }
 
-template <class M>
-void qswap(Field<M>& f1, Field<M>& f2)
-{
-  std::swap(f1.initialized, f2.initialized);
-  qswap(f1.geo, f2.geo);
-  qswap(f1.field, f2.field);
-}
-
 // --------------------
 
 template <class M, class N>
@@ -812,9 +804,6 @@ inline void set_xg_field(FieldM<long, 4>& f, const Geometry& geo_)
                                                                                \
   QLAT_EXTERN template double qnorm_double<TYPENAME>(                          \
       const Field<TYPENAME>& f1, const Field<TYPENAME>& f2);                   \
-                                                                               \
-  QLAT_EXTERN template void qswap<TYPENAME>(Field<TYPENAME> & f1,              \
-                                            Field<TYPENAME> & f2);             \
                                                                                \
   QLAT_EXTERN template std::vector<TYPENAME> field_sum<TYPENAME>(              \
       const Field<TYPENAME>& f);                                               \
