@@ -44,8 +44,8 @@ cdef void set_field_f_sf_{{name}}(Field{{name}} self, SelectedField{{name}} othe
     cc.set_field_selected(self.xx, other.xx, other.fsel.xx)
 
 def set_field_f_f_{{name}}(Field{{name}} self, Field{{name}} other):
-    # cc.assign_direct(self.xx, other.xx)
-    self.xx = other.xx
+    cc.assign_direct(self.xx, other.xx)
+    # self.xx = other.xx
 
 cdef class Field{{name}}(FieldBase):
 
@@ -57,6 +57,7 @@ cdef class Field{{name}}(FieldBase):
 
     def __init__(self, Geometry geo=None, int multiplicity=0):
         if geo is None:
+            self.xx.init()
             return
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
@@ -118,10 +119,10 @@ cdef class Field{{name}}(FieldBase):
         return self
 
     @q.timer
-    def copy(self, is_copying_data=True):
+    def copy(self, cc.bool is_copying_data=True):
         f = type(self)()
         if is_copying_data:
-            (<Field{{name}}>f).xx = self.xx
+            f @= self
         return f
 
     @q.timer
@@ -130,6 +131,22 @@ cdef class Field{{name}}(FieldBase):
 
     def swap(self, Field{{name}} f1):
         cc.qswap(f1.xx, self.xx)
+
+    def total_site(self):
+        cdef Coordinate x = Coordinate()
+        cc.assign_direct(x.xx, self.xx.get_geo().total_site())
+        return x
+
+    def multiplicity(self):
+        return self.xx.get_geo().multiplicity
+
+    def sizeof_m(self):
+        return self.ctype.size()
+
+    def geo(self):
+        geo = Geometry()
+        cc.assign_direct(geo.xx, self.xx.get_geo())
+        return geo
 
 field_type_dict[ElemType{{name}}] = Field{{name}}
 

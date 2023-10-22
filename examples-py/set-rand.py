@@ -20,7 +20,7 @@ q.qmkdir_info("results")
 rs = q.RngState("seed")
 rs_prop = rs.split("prop")
 
-total_site = [ 4, 4, 4, 8, ]
+total_site = q.Coordinate([ 4, 4, 4, 8, ])
 geo = q.Geometry(total_site, 1)
 
 q.displayln_info(f"CHECK: total_site = {total_site}")

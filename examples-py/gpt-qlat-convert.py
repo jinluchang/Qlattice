@@ -36,7 +36,7 @@ def test_src(xg):
 qg.begin_with_gpt()
 
 rs = q.RngState("seed")
-total_site = [4, 4, 4, 8]
+total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site, 1)
 q.displayln_info("CHECK: geo.show() =", geo.show())
 

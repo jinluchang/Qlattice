@@ -46,7 +46,7 @@ def compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc, *,
     q.check_time_limit()
     q.displayln_info(f"compute_prop_wsrc: idx={idx} tslice={tslice}", job_tag, inv_type, inv_acc)
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt = gt, eig = eig)
-    total_site = ru.get_total_site(job_tag)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site, 1)
     src = q.mk_wall_src(geo, tslice)
     prop = compute_prop_1(inv, src, tag = tag, sfw = sfw, path_sp = path_sp,
@@ -131,7 +131,7 @@ def compute_prop_psrc(job_tag, xg_src, inv_type, inv_acc, *,
     q.check_time_limit()
     q.displayln_info(f"compute_prop_psrc: {job_tag} idx={idx} tag='{tag}'")
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig)
-    total_site = get_param(job_tag, "total_site")
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site, 1)
     src = q.mk_point_src(geo, xg_src)
     prop = compute_prop_2(inv, src, tag = tag, sfw = sfw, path_sp = path_sp,
@@ -212,7 +212,7 @@ def compute_prop_rand_u1_type_acc(*, sfw, job_tag, traj, gf, eig, fsel, idx_rand
 def compute_prop_rand_u1(*, job_tag, traj, inv_type, gf, path_s, fsel, eig = None):
     # use fsel instead of fselc
     n_rand_u1_fsel = get_param(job_tag, "n_rand_u1_fsel")
-    total_site = get_param(job_tag, "total_site")
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site, 1)
     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 2, 2, 4, ])
@@ -305,7 +305,7 @@ def compute_prop_smear(job_tag, xg_src, inv_type, inv_acc, *,
     q.check_time_limit()
     q.displayln_info(f"compute_prop_smear: {job_tag} idx={idx} tag='{tag}'")
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig)
-    total_site = ru.get_total_site(job_tag)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site, 1)
     coef = get_param(job_tag, "prop_smear_coef")
     step = get_param(job_tag, "prop_smear_step")

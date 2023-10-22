@@ -741,7 +741,7 @@ class Measurements:
 @q.timer_verbose
 def main():
     # The lattice dimensions
-    total_site = [4,4,4,8]
+    total_site = q.Coordinate([4,4,4,8])
     # The multiplicity of the scalar field
     mult = 4
     # Use action for a Euclidean scalar field. The Lagrangian will be:
@@ -773,7 +773,7 @@ def main():
         try:
             if(sys.argv[i]=="-d"):
                 a = sys.argv[i+1].split("x")
-                total_site = [int(a[j]) for j in range(4)]
+                total_site = q.Coordinate([int(a[j]) for j in range(4)])
             elif(sys.argv[i]=="-n"):
                 mult = int(sys.argv[i+1])
             elif(sys.argv[i]=="-t"):

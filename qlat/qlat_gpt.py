@@ -8,10 +8,10 @@ def mk_grid(geo = None):
     if geo is None:
         l_size = 32 * 9 * 5
         t_size = l_size * 2
-        total_site = [ l_size, l_size, l_size, t_size, ]
+        total_site = q.Coordinate([ l_size, l_size, l_size, t_size, ])
     else:
         total_site = geo.total_site()
-    return g.grid(total_site, g.double)
+    return g.grid(total_site.to_list(), g.double)
 
 def begin_with_gpt():
     grid = mk_grid()
@@ -24,7 +24,7 @@ def end_with_gpt():
     q.end()
 
 def mk_qlat_gpt_copy_plan_key(ctype, total_site, multiplicity, tag):
-    return ctype.name + "," + str(list(total_site)) + "," + str(multiplicity) + "," + tag
+    return ctype.name + "," + str(total_site.to_list()) + "," + str(multiplicity) + "," + tag
 
 def mk_gpt_field(ctype, geo):
     if ctype is q.ElemTypeColorMatrix:
@@ -95,7 +95,7 @@ def get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag):
 def qlat_from_gpt_gauge_field(gpt_gf):
     assert len(gpt_gf) == 4
     ctype = q.ElemTypeColorMatrix
-    total_site = gpt_gf[0].grid.fdimensions
+    total_site = q.Coordinate(gpt_gf[0].grid.fdimensions)
     multiplicity = 1
     tag = "qlat_from_gpt"
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
@@ -131,7 +131,7 @@ def gpt_from_qlat_gauge_field(gf):
 @q.timer
 def qlat_from_gpt_gauge_transform(gpt_gt):
     ctype = q.ElemTypeColorMatrix
-    total_site = gpt_gt.grid.fdimensions
+    total_site = q.Coordinate(gpt_gt.grid.fdimensions)
     multiplicity = 1
     tag = "qlat_from_gpt"
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
@@ -157,7 +157,7 @@ def gpt_from_qlat_gauge_transform(gt):
 @q.timer
 def qlat_from_gpt_prop(gpt_prop):
     ctype = q.ElemTypeWilsonMatrix
-    total_site = gpt_prop.grid.fdimensions
+    total_site = q.Coordinate(gpt_prop.grid.fdimensions)
     multiplicity = 1
     tag = "qlat_from_gpt"
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
@@ -185,7 +185,7 @@ def gpt_from_qlat_prop(prop_wm):
 @q.timer
 def qlat_from_gpt_ff4d(gpt_ff):
     ctype = q.ElemTypeWilsonVector
-    total_site = gpt_ff.grid.fdimensions
+    total_site = q.Coordinate(gpt_ff.grid.fdimensions)
     multiplicity = 1
     tag = "qlat_from_gpt"
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
@@ -213,7 +213,7 @@ def qlat_from_gpt_complex(gpt_fcs):
     assert isinstance(gpt_fcs, list)
     assert len(gpt_fcs) >= 1
     ctype = q.ElemTypeComplex
-    total_site = gpt_fcs[0].grid.fdimensions
+    total_site = q.Coordinate(gpt_fcs[0].grid.fdimensions)
     multiplicity = 1
     tag = "qlat_from_gpt"
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)

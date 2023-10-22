@@ -9,15 +9,38 @@ cdef extern from "qlat/mpi.h" namespace "qlat":
 
 cdef extern from "qlat/geometry.h" namespace "qlat":
 
+    cdef cppclass GeometryNode:
+        bool initialized
+        int num_node
+        int id_node
+        Coordinate size_node
+        Coordinate coor_node
+        GeometryNode()
+        void init()
+        void init(const int id_node, const Coordinate& size_node)
+
     cdef cppclass Geometry:
+        bool initialized
+        GeometryNode geon
+        int eo
         int multiplicity
+        Coordinate node_site
+        Coordinate expansion_left
+        Coordinate expansion_right
+        Coordinate node_site_expanded
+        bool is_only_local
         Geometry()
         void init()
         void init(Coordinate& total_site, int multiplicity) except +
         Coordinate total_site()
         Coordinate local_site()
-        Coordinate local_volume()
-        Coordinate total_volume()
+        long local_volume()
+        long total_volume()
+        bool is_local(const Coordinate& x)
+        long index_from_coordinate(const Coordinate& xl)
+        Coordinate coordinate_from_index(const long index)
+        Coordinate coordinate_g_from_l(const Coordinate& xl)
+        Coordinate coordinate_l_from_g(const Coordinate& xg)
     std_string show(const Geometry& geo) except +
     Geometry geo_resize(const Geometry& geo, int thick) except +
     Geometry geo_resize(const Geometry& geo,
@@ -80,7 +103,7 @@ cdef extern from "qlat/field.h" namespace "qlat":
 cdef extern from "qlat/field-expand.h" namespace "qlat":
 
     cdef cppclass CommPlan:
-        pass
+        CommPlan()
 
 cdef extern from "qlat/core.h" namespace "qlat":
 

@@ -75,7 +75,7 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel, get_fsel):
         return
     cexpr = get_cexpr_meson_corr()
     expr_names = get_expr_names(cexpr)
-    total_site = dict_params[job_tag]["total_site"]
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     get_prop = get_get_prop()
     psel = get_psel()
@@ -129,7 +129,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel, get_fse
         return
     cexpr = get_cexpr_meson_corr()
     expr_names = get_expr_names(cexpr)
-    total_site = q.Coordinate(dict_params[job_tag]["total_site"])
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     get_prop = get_get_prop()
     fsel, fselc = get_fsel()
@@ -186,7 +186,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel, get_fse
         return
     cexpr = get_cexpr_meson_corr()
     expr_names = get_expr_names(cexpr)
-    total_site = q.Coordinate(dict_params[job_tag]["total_site"])
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     get_prop = get_get_prop()
     psel = get_psel()
@@ -246,7 +246,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel, ge
         return
     cexpr = get_cexpr_meson_corr()
     expr_names = get_expr_names(cexpr)
-    total_site = q.Coordinate(dict_params[job_tag]["total_site"])
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     get_prop = get_get_prop()
     psel = get_psel()
@@ -346,7 +346,7 @@ def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel, get_fsel):
         return
     cexpr = get_cexpr_meson_jt()
     expr_names = get_expr_names(cexpr)
-    total_site = q.Coordinate(dict_params[job_tag]["total_site"])
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     get_prop = get_get_prop()
     psel = get_psel()
@@ -440,7 +440,7 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel, get_fsel):
         return
     cexpr = get_cexpr_meson_m()
     expr_names = get_expr_names(cexpr)
-    total_site = q.Coordinate(dict_params[job_tag]["total_site"])
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     get_prop = get_get_prop()
     psel = get_psel()
@@ -752,7 +752,7 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel, get_fsel):
         return
     cexpr = get_cexpr_meson_jj()
     expr_names = get_expr_names(cexpr)
-    total_site = q.Coordinate(dict_params[job_tag]["total_site"])
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     get_prop = get_get_prop()
     psel = get_psel()
@@ -872,7 +872,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel, get_fsel):
         return
     cexpr = get_cexpr_meson_jwjj()
     expr_names = get_expr_names(cexpr)
-    total_site = q.Coordinate(dict_params[job_tag]["total_site"])
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     get_prop = get_get_prop()
     psel = get_psel()

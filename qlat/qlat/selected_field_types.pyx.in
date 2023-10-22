@@ -44,8 +44,8 @@ cdef void set_field_sf_sp_{{name}}(SelectedField{{name}} self, SelectedPoints{{n
 cdef void set_field_sf_sf_{{name}}(SelectedField{{name}} self, SelectedField{{name}} other):
     # two fsel do not need to match
     if self.fsel is other.fsel:
-        # cc.assign_direct(self.xx, other.xx)
-        self.xx = other.xx
+        cc.assign_direct(self.xx, other.xx)
+        # self.xx = other.xx
     else:
         cc.set_selected_field(self.xx, other.xx, self.fsel.xx, other.fsel.xx)
 
@@ -66,6 +66,8 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
             if self.view_count > 0:
                 raise ValueError("can't re-init while being viewed")
             self.xx.init(self.fsel.xx, multiplicity)
+        else:
+            self.xx.init()
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         cdef long n_elems = self.xx.n_elems
@@ -120,10 +122,10 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         return self
 
     @q.timer
-    def copy(self, is_copying_data=True):
+    def copy(self, cc.bool is_copying_data=True):
         f = type(self)(self.fsel)
         if is_copying_data:
-            (<SelectedField{{name}}>f).xx = self.xx
+            f @= self
         return f
 
     @q.timer

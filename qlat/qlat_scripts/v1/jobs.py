@@ -76,7 +76,7 @@ def run_gf(job_tag, traj):
         if job_tag[:5] == "test-":
             if not q.obtain_lock(f"locks/{job_tag}-{traj}-gauge_field"):
                 return None
-            total_site = rup.get_total_site(job_tag)
+            total_site = q.Coordinate(get_param(job_tag, "total_site"))
             gf = rup.mk_sample_gauge_field_v3(job_tag, f"{traj}")
             path_gf = get_save_path(f"{job_tag}/configs/ckpoint_lat.{traj}")
             gf.save(path_gf)
@@ -129,7 +129,7 @@ def mk_rand_wall_src_info_n_exact(job_tag, traj, inv_type):
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_wall_src_info")
     inv_acc_s = 1
     inv_acc_e = 2
-    total_site = rup.get_total_site(job_tag)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     wi_s = [ [ t, inv_type, inv_acc_s, ] for t in range(t_size) ]
     mask = [ False, ] * t_size
@@ -152,7 +152,7 @@ def mk_rand_wall_src_info_prob(job_tag, traj, inv_type):
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_wall_src_info_prob")
     inv_acc_s = 1
     inv_acc_e = 2
-    total_site = rup.get_total_site(job_tag)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     wi_s = [ [ t, inv_type, inv_acc_s, ] for t in range(t_size) ]
     wi_e = []
@@ -169,7 +169,7 @@ def get_prob_exact_wsrc(job_tag):
     if "prob_exact_wsrc" in params:
         return params["prob_exact_wsrc"]
     n_exact = params["n_exact_wsrc"]
-    total_site = rup.get_total_site(job_tag)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     return 1 - (1 - 1 / total_site[3])**n_exact
 
 @q.timer
@@ -241,7 +241,7 @@ def get_n_points_psel(job_tag):
 @q.timer
 def mk_rand_psel(job_tag, traj):
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_psel")
-    total_site = rup.get_total_site(job_tag)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     n_points = get_n_points_psel(job_tag)
     psel = q.PointsSelection()
     psel.set_rand(rs, total_site, n_points)
@@ -263,7 +263,7 @@ def run_psel(job_tag, traj):
     def load_psel():
         path_psel = get_load_path(tfn)
         assert path_psel is not None
-        total_site = rup.get_total_site(job_tag)
+        total_site = q.Coordinate(get_param(job_tag, "total_site"))
         psel = q.PointsSelection()
         psel.load(path_psel, q.Geometry(total_site))
         assert psel.n_points() == get_n_points_psel(job_tag)
@@ -397,7 +397,7 @@ def get_point_xrel_prob(xg_rel_arrary, total_site_array, point_distribution, n_p
 @q.timer
 def mk_rand_fsel(job_tag, traj, n_per_tslice):
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_fsel")
-    total_site = rup.get_total_site(job_tag)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     fsel = q.FieldSelection()
     fsel.set_rand(rs, total_site, n_per_tslice)
     return fsel
@@ -414,7 +414,7 @@ def run_fsel(job_tag, traj, get_psel):
         return None
     tfn = f"{job_tag}/field-selection/traj-{traj}.field"
     path_fsel = get_load_path(tfn)
-    total_site = rup.get_total_site(job_tag)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     n_per_tslice = total_site[0] * total_site[1] * total_site[2] // 16
     if path_fsel is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-fsel"):
@@ -441,7 +441,7 @@ def run_fsel(job_tag, traj, get_psel):
 @q.timer
 def mk_rand_fsel_smear(job_tag, traj, n_per_tslice_smear):
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_fsel_smear")
-    total_site = rup.get_total_site(job_tag)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     fsel = q.FieldSelection()
     fsel.set_rand(rs, total_site, n_per_tslice_smear)
     return fsel
@@ -452,7 +452,7 @@ def run_psel_smear(job_tag, traj):
     # psel_smear should randomly select same number of point on each tslice
     tfn = f"{job_tag}/point-selection-smear/traj-{traj}.txt"
     path_psel = get_load_path(tfn)
-    total_site = rup.get_total_site(job_tag)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     if path_psel is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-psel-smear"):
             n_per_tslice_smear = rup.dict_params[job_tag]["n_per_tslice_smear"]
@@ -467,7 +467,7 @@ def run_psel_smear(job_tag, traj):
     def load_psel():
         path_psel = get_load_path(tfn)
         assert path_psel is not None
-        total_site = rup.get_total_site(job_tag)
+        total_site = q.Coordinate(get_param(job_tag, "total_site"))
         psel = q.PointsSelection()
         psel.load(path_psel, q.Geometry(total_site))
         return psel
@@ -574,7 +574,7 @@ def run_eig_strange(job_tag, traj, get_gf):
 
 @functools.lru_cache(maxsize=None)
 def get_r_list(job_tag):
-    total_site = q.Coordinate(rup.dict_params[job_tag]["total_site"])
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     r_limit = q.get_r_limit(total_site)
     r_list = q.mk_r_list(r_limit, r_all_limit=28.0, r_scaling_factor=5.0)
     # r_list = q.mk_r_list(r_limit, r_all_limit=0.0, r_scaling_factor=5.0) # old choice

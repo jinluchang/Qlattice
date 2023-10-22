@@ -8,6 +8,7 @@ for log in examples-py/*.log examples-cpp/*/log ; do
         diff "$log".new "$log" || true
         if diff "$log".new "$log" | grep 'CHECK: ' ; then
             cat "$log".full.txt || true
+            echo diff "$log".new "$log"
         fi
     fi
 done

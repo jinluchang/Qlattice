@@ -78,16 +78,16 @@ cdef class PointsSelection:
     def __deepcopy__(self, memo):
         return self.copy()
 
-    def set_rand(self, rs, total_site, n_points):
+    def set_rand(self, RngState rs, Coordinate total_site, long n_points):
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
-        c.set_rand_psel(self, rs, total_site, n_points)
+        c.set_rand_psel(self, rs, total_site.to_list(), n_points)
         self.geo = Geometry(total_site)
 
-    def save(self, path):
+    def save(self, str path):
         c.save_psel(self, path)
 
-    def load(self, path, geo):
+    def load(self, str path, Geometry geo):
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
         c.load_psel(self, path)
@@ -106,7 +106,7 @@ cdef class PointsSelection:
         self.geo = geo
         return self
 
-    def coordinate_from_idx(self, idx):
+    def coordinate_from_idx(self, long idx):
         return c.get_coordinate_from_idx_psel(self, idx)
 
 ### -------------------------------------------------------------------
@@ -116,11 +116,10 @@ cdef class FieldSelection:
     def __cinit__(self):
         self.cdata = <long>&(self.xx)
 
-    def __init__(self, total_site=None, n_per_tslice=-1, rs=None, psel=None):
+    def __init__(self, Coordinate total_site=None, long n_per_tslice=-1, RngState rs=None, PointsSelection psel=None):
         if total_site is not None:
-            assert isinstance(rs, RngState)
-            assert isinstance(n_per_tslice, int)
-            c.set_rand_fsel(self, rs, total_site, n_per_tslice)
+            assert rs is not None
+            c.set_rand_fsel(self, rs, total_site.to_list(), n_per_tslice)
             if psel is not None:
                 c.add_psel_fsel(self, psel)
             self.update()
@@ -141,21 +140,20 @@ cdef class FieldSelection:
     def __deepcopy__(self, memo):
         return self.copy()
 
-    def set_uniform(self, total_site, val=0):
+    def set_uniform(self, Coordinate total_site, val=0):
         """
         default (val = 0) select every sites
         val = -1 deselection everything
         """
-        c.set_uniform_fsel(self, total_site, val)
+        c.set_uniform_fsel(self, total_site.to_list(), val)
 
-    def set_rand(self, rs, total_site, n_per_tslice):
+    def set_rand(self, RngState rs, Coordinate total_site, long n_per_tslice):
         assert isinstance(rs, RngState)
-        assert isinstance(n_per_tslice, int)
-        c.set_rand_fsel(self, rs, total_site, n_per_tslice)
+        c.set_rand_fsel(self, rs, total_site.to_list(), n_per_tslice)
         self.update()
         self.update(n_per_tslice)
 
-    def add_psel(self, psel, rank_psel=1024 * 1024 * 1024 * 1024 * 1024):
+    def add_psel(self, PointsSelection psel, long rank_psel=1024 * 1024 * 1024 * 1024 * 1024):
         """
         Add psel points to the selection, with the rank specified as rank_psel.
         If the point is already selected with lower rank, the rank is unchanged.
@@ -163,14 +161,14 @@ cdef class FieldSelection:
         c.add_psel_fsel(self, psel, rank_psel)
         self.update()
 
-    def update(self, n_per_tslice=-1):
+    def update(self, long n_per_tslice=-1):
         """
         if n_per_tslice < 0: only update various indices
         if n_per_tslice >= 0: only update parameters (n_per_tslice and prob)
         """
         c.update_fsel(self, n_per_tslice)
 
-    def select_rank_range(self, rank_start=0, rank_stop=-1):
+    def select_rank_range(self, long rank_start=0, long rank_stop=-1):
         """
         return new fsel with selected points that
         rank_start <= rank and (rank < rank_stop or rank_stop == -1)
@@ -182,7 +180,7 @@ cdef class FieldSelection:
         fsel.update(self.n_per_tslice())
         return fsel
 
-    def select_t_range(self, rank_start=0, rank_stop=-1):
+    def select_t_range(self, long rank_start=0, long rank_stop=-1):
         """
         return new fsel with selected points that
         t_start <= t and (t < t_stop or t_stop == -1)
@@ -205,14 +203,14 @@ cdef class FieldSelection:
         c.set_psel_fsel_local(psel, self)
         return psel
 
-    def save(self, path):
+    def save(self, str path):
         return c.save_fsel(self, path)
 
-    def load(self, path, n_per_tslice):
+    def load(self, str path, long n_per_tslice):
         return c.load_fsel(self, path, n_per_tslice)
 
     def geo(self):
-        geo = Geometry((0, 0, 0, 0))
+        geo = Geometry()
         c.set_geo_fsel(geo, self)
         return geo
 
@@ -232,10 +230,10 @@ cdef class FieldSelection:
         """
         return c.get_prob_fsel(self)
 
-    def idx_from_coordinate(self, xg):
+    def idx_from_coordinate(self, Coordinate xg not None):
         return c.get_idx_from_coordinate_fsel(self, xg)
 
-    def coordinate_from_idx(self, idx):
+    def coordinate_from_idx(self, long idx):
         return c.get_coordinate_from_idx_fsel(self, idx)
 
 ### -------------------------------------------------------------------

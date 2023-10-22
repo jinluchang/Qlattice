@@ -146,27 +146,28 @@ struct API Geometry {
     init(total_site, multiplicity_);
   }
   //
-  qacc Coordinate mirror(const Coordinate& x) const
+  qacc Coordinate mirror(const Coordinate& xl) const
+  // avoid communicate in direction mu when geon.size_node[mu] == 1
   {
-    Coordinate ret = x;
+    Coordinate ret = xl;
     for (int mu = 0; mu < DIMN; ++mu) {
       if (geon.size_node[mu] == 1) {
-        ret[mu] = mod(x[mu], node_site[mu]);
+        ret[mu] = mod(xl[mu], node_site[mu]);
       }
     }
     return ret;
   }
   //
-  qacc long offset_from_coordinate(const Coordinate& x) const
+  qacc long offset_from_coordinate(const Coordinate& xl) const
   {
-    Coordinate xe = mirror(x);
+    Coordinate xe = mirror(xl);
     if (eo == 0) {
       xe = xe + expansion_left;
       return qlat::index_from_coordinate(xe, node_site_expanded) * multiplicity;
     } else {
       qassert(eo == 1 or eo == 2);
       qassert(node_site % 2 == Coordinate());
-      qassert(eo_from_coordinate(x) == eo);
+      qassert(eo_from_coordinate(xl) == eo);
       xe = xe + expansion_left;
       return qlat::index_from_coordinate(xe, node_site_expanded) / 2 *
              multiplicity;
@@ -176,36 +177,36 @@ struct API Geometry {
   qacc Coordinate coordinate_from_offset(const long offset) const
   // 0 <= offset < local_volume_expanded() * multiplicity
   {
-    Coordinate x;
+    Coordinate xl;
     if (eo == 0) {
-      x = qlat::coordinate_from_index(offset / multiplicity,
+      xl = qlat::coordinate_from_index(offset / multiplicity,
                                       node_site_expanded);
-      x = x - expansion_left;
+      xl = xl - expansion_left;
     } else {
       qassert(eo == 1 or eo == 2);
       qassert(node_site % 2 == Coordinate());
-      x = qlat::coordinate_from_index(offset / multiplicity * 2,
+      xl = qlat::coordinate_from_index(offset / multiplicity * 2,
                                       node_site_expanded);
-      x = x - expansion_left;
-      if (eo_from_coordinate(x) != eo) {
-        x = qlat::coordinate_from_index(offset / multiplicity * 2 + 1,
+      xl = xl - expansion_left;
+      if (eo_from_coordinate(xl) != eo) {
+        xl = qlat::coordinate_from_index(offset / multiplicity * 2 + 1,
                                         node_site_expanded);
-        x = x - expansion_left;
+        xl = xl - expansion_left;
       }
     }
-    return x;
+    return xl;
   }
   //
-  qacc long index_from_coordinate(const Coordinate& x) const
+  qacc long index_from_coordinate(const Coordinate& xl) const
   // 0 <= index < local_volume()
   {
-    const Coordinate xm = mirror(x);
+    const Coordinate xm = mirror(xl);
     if (eo == 0) {
       return qlat::index_from_coordinate(xm, node_site);
     } else {
       qassert(eo == 1 or eo == 2);
       qassert(node_site % 2 == Coordinate());
-      qassert(eo_from_coordinate(x) == eo);
+      qassert(eo_from_coordinate(xl) == eo);
       return qlat::index_from_coordinate(xm, node_site) / 2;
     }
   }
@@ -219,11 +220,11 @@ struct API Geometry {
     } else {
       qassert(eo == 1 or eo == 2);
       qassert(node_site % 2 == Coordinate());
-      Coordinate x = qlat::coordinate_from_index(index * 2, node_site);
-      if (eo_from_coordinate(x) != eo) {
-        x = qlat::coordinate_from_index(index * 2 + 1, node_site);
+      Coordinate xl = qlat::coordinate_from_index(index * 2, node_site);
+      if (eo_from_coordinate(xl) != eo) {
+        xl = qlat::coordinate_from_index(index * 2 + 1, node_site);
       }
-      return x;
+      return xl;
     }
   }
   //
@@ -238,30 +239,30 @@ struct API Geometry {
     return qlat::index_from_coordinate(mod(xg, ts), ts);
   }
   //
-  qacc bool is_on_node(const Coordinate& x) const
+  qacc bool is_on_node(const Coordinate& xl) const
   {
     for (int mu = 0; mu < DIMN; mu++) {
-      if (not((-expansion_left[mu] <= x[mu] and
-               x[mu] < node_site[mu] + expansion_right[mu]) or
+      if (not((-expansion_left[mu] <= xl[mu] and
+               xl[mu] < node_site[mu] + expansion_right[mu]) or
               geon.size_node[mu] == 1)) {
         return false;
       }
     }
-    return eo == 0 or eo_from_coordinate(x) == eo;
+    return eo == 0 or eo_from_coordinate(xl) == eo;
   }
   //
-  qacc bool is_local(const Coordinate& x) const
+  qacc bool is_local(const Coordinate& xl) const
   {
     for (int mu = 0; mu < DIMN; mu++) {
-      if (not((0 <= x[mu] and x[mu] < node_site[mu]) or
+      if (not((0 <= xl[mu] and xl[mu] < node_site[mu]) or
               geon.size_node[mu] == 1)) {
         return false;
       }
     }
-    return eo == 0 or eo_from_coordinate(x) == eo;
+    return eo == 0 or eo_from_coordinate(xl) == eo;
   }
   //
-  qacc Coordinate local_site() const { return node_site; }
+  qacc const Coordinate& local_site() const { return node_site; }
   //
   qacc long local_volume() const
   {

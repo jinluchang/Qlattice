@@ -40,8 +40,8 @@ from .field_type_dict import selected_points_type_dict
 cdef void set_field_sp_sp_{{name}}(SelectedPoints{{name}} self, SelectedPoints{{name}} other):
     # two psel must be the same object
     if self.psel is other.psel:
-        # cc.assign_direct(self.xx, other.xx)
-        self.xx = other.xx
+        cc.assign_direct(self.xx, other.xx)
+        # self.xx = other.xx
     else:
         raise Exception("SelectedPoints{{name}} @= psel mismatch")
 
@@ -120,10 +120,10 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         return self
 
     @q.timer
-    def copy(self, is_copying_data=True):
+    def copy(self, cc.bool is_copying_data=True):
         f = type(self)(self.psel)
         if is_copying_data:
-            (<SelectedPoints{{name}}>f).xx = self.xx
+            f @= self
         return f
 
     @q.timer

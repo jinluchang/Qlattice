@@ -2,7 +2,7 @@
 
 import qlat_cps as q
 
-total_site = [ 8, 8, 8, 16, ]
+total_site = q.Coordinate([ 8, 8, 8, 16, ])
 
 q.begin_with_cps(total_site)
 

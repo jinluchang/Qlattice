@@ -51,7 +51,7 @@ def run_job(job_tag, traj):
     q.qmkdir_info(get_save_path(f"eig"))
     q.qmkdir_info(get_save_path(f"eig/{job_tag}"))
     #
-    total_site = ru.get_total_site(job_tag)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site, 1)
     q.displayln_info("CHECK: geo.show() =", geo.show())
     #

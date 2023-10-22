@@ -1,4 +1,4 @@
-CHECK: total_site = [4, 4, 4, 8]
+CHECK: total_site = Coordinate([4, 4, 4, 8])
 CHECK: geo = Geometry([4, 4, 4, 8], 1)
 CHECK: prop.crc32() = 507772097 ; prop.qnorm() = 4.9114374940214E+04
 CHECK: sc_prop.qnorm() = 1.3709094567603E+04

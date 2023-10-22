@@ -27,15 +27,16 @@ cdef class Geometry:
         self.xx = cc.Geometry()
         self.cdata = <long>&(self.xx)
 
-    def __init__(self, total_site=None, int multiplicity=1):
+    def __init__(self, Coordinate total_site=None, int multiplicity=1):
         """
         if total_site is None: create geo uninitialized
         elif multiplicity is None: create geo with multiplicity = 1
         """
-        self.xx.init(Coordinate(total_site).xx, multiplicity)
+        if total_site is not None:
+            self.xx.init(Coordinate(total_site).xx, multiplicity)
 
     def __imatmul__(self, Geometry v1):
-        self.xx = v1.xx
+        cc.assign_direct(self.xx, v1.xx)
         return self
 
     def copy(self, is_copying_data=True):
@@ -51,40 +52,52 @@ cdef class Geometry:
         return self.copy()
 
     def total_site(self):
-        return c.get_total_site_geo(self)
+        cdef Coordinate x = Coordinate()
+        cc.assign_direct(x.xx, self.xx.total_site())
+        return x
 
     def total_volume(self):
-        return c.get_total_volume_geo(self)
+        return self.xx.total_volume()
 
     def local_site(self):
-        return c.get_node_site_geo(self)
+        cdef Coordinate x = Coordinate()
+        cc.assign_direct(x.xx, self.xx.local_site())
+        return x
 
     def local_volume(self):
-        return c.get_local_volume_geo(self)
+        return self.xx.local_volume()
 
     def multiplicity(self):
-        return c.get_multiplicity_geo(self)
+        return self.xx.multiplicity
 
     def eo(self):
-        return c.get_eo_geo(self)
+        return self.xx.eo
 
     def expansion_left(self):
-        return c.get_expansion_left_geo(self)
+        cdef Coordinate x = Coordinate()
+        cc.assign_direct(x.xx, self.xx.expansion_left)
+        return x
 
     def expansion_right(self):
-        return c.get_expansion_right_geo(self)
+        cdef Coordinate x = Coordinate()
+        cc.assign_direct(x.xx, self.xx.expansion_right)
+        return x
 
     def id_node(self):
-        return c.get_id_node_geo(self)
+        return self.xx.geon.id_node
 
     def num_node(self):
-        return c.get_num_node_geo(self)
+        return self.xx.geon.num_node
 
     def coor_node(self):
-        return c.get_coor_node_geo(self)
+        cdef Coordinate x = Coordinate()
+        cc.assign_direct(x.xx, self.xx.geon.coor_node)
+        return x
 
     def size_node(self):
-        return c.get_size_node_geo(self)
+        cdef Coordinate x = Coordinate()
+        cc.assign_direct(x.xx, self.xx.geon.size_node)
+        return x
 
     def __str__(self):
         return self.show()
@@ -93,31 +106,42 @@ cdef class Geometry:
         return self.show()
 
     def show(self):
-        total_site = self.total_site()
-        multiplicity = self.multiplicity()
-        expan_left = self.expansion_left()
-        expan_right = self.expansion_right()
-        eo = self.eo()
-        zero = [ 0, 0, 0, 0, ]
+        cdef Coordinate total_site = self.total_site()
+        cdef int multiplicity = self.multiplicity()
+        cdef Coordinate expan_left = self.expansion_left()
+        cdef Coordinate expan_right = self.expansion_right()
+        cdef int eo = self.eo()
+        cdef Coordinate zero = Coordinate()
         if expan_left == zero and expan_right == zero and eo == 0:
-            return f"Geometry({total_site}, {multiplicity})"
+            return f"Geometry({total_site.to_list()}, {multiplicity})"
         else:
-            return f"Geometry({total_site}, {multiplicity}, expan_left={expan_left}, expan_right={expan_right}, eo={eo})"
+            return f"Geometry({total_site.to_list()}, {multiplicity}, expan_left={expan_left.to_list()}, expan_right={expan_right.to_list()}, eo={eo})"
 
-    def coordinate_g_from_l(self, xl):
-        return c.coordinate_g_from_l_geo(self, xl)
+    def coordinate_g_from_l(self, Coordinate xl not None):
+        cdef Coordinate xg = Coordinate()
+        cc.assign_direct(xg.xx, self.xx.coordinate_g_from_l(xl.xx))
+        return xg
 
-    def coordinate_l_from_g(self, xg):
-        return c.coordinate_l_from_g_geo(self, xg)
+    def coordinate_l_from_g(self, Coordinate xg not None):
+        cdef Coordinate xl = Coordinate()
+        cc.assign_direct(xl.xx, self.xx.coordinate_l_from_g(xg.xx))
+        return xl
 
-    def is_local(self, xl):
-        return c.is_local_geo(self, xl)
+    def is_local(self, Coordinate xl not None):
+        return self.xx.is_local(xl.xx)
 
-    def is_local_xg(self, xg):
+    def is_local_xg(self, Coordinate xg not None):
         """
         return a global coordinate is inside the local volume or not
         """
-        return c.is_local_xg_geo(self, xg)
+        cdef cc.Coordinate xl_xx = self.xx.coordinate_l_from_g(xg.xx)
+        return self.xx.is_local(xl_xx)
+
+    def xg_list(self):
+        """
+        return xg for all local sites
+        """
+        return c.get_xg_list(self)
 
     def xg_list(self):
         """
@@ -155,7 +179,7 @@ def geo_reform(Geometry geo, int multiplicity=1, expansion_left=None, expansion_
 
 def geo_eo(Geometry geo, int eo=0):
     cdef Geometry geo_new = Geometry()
-    geo_new.xx = cc.geo_eo(geo.xx, eo)
+    cc.assign_direct(geo_new.xx, cc.geo_eo(geo.xx, eo))
     return geo_new
 
 ### -------------------------------------------------------------------

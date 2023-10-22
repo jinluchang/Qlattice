@@ -56,20 +56,6 @@ cdef class FieldBase:
     def __deepcopy__(self, memo):
         return self.copy()
 
-    def total_site(self):
-        return c.get_total_site_field(self)
-
-    def multiplicity(self):
-        return c.get_multiplicity_field(self)
-
-    def sizeof_m(self):
-        return c.get_sizeof_m_field(self)
-
-    def geo(self):
-        geo = Geometry((0, 0, 0, 0))
-        c.set_geo_field(geo, self)
-        return geo
-
     def mview(self):
         return c.get_mview_field(self)
 

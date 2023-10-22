@@ -3,7 +3,7 @@
 import qlat as q
 
 import qlat_gpt as qg
-import qlat_scripts.v1.rbc_ukqcd as ru
+from qlat_scripts.v1 import *
 import subprocess
 
 qg.begin_with_gpt()
@@ -14,7 +14,7 @@ traj = 1000
 q.qremove_all_info("results")
 q.qmkdir_info("results")
 
-total_site = ru.get_total_site(job_tag)
+total_site = q.Coordinate(get_param(job_tag, "total_site"))
 geo = q.Geometry(total_site, 1)
 q.displayln_info("CHECK: geo.show() =", geo.show())
 rs = q.RngState(f"seed-{job_tag}-{traj}")
@@ -48,7 +48,7 @@ gf_ape = q.mk_left_expanded_gauge_field(gf_ape)
 inv_type = 1
 inv_acc = 0
 
-inv = ru.mk_inverter(gf, job_tag, inv_type, inv_acc, n_grouped = q.get_num_node())
+inv = mk_inverter(gf, job_tag, inv_type, inv_acc, n_grouped = q.get_num_node())
 
 xg = psel_smear.to_list()[0]
 
