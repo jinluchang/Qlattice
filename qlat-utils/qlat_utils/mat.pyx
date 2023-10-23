@@ -33,32 +33,19 @@ cdef class WilsonMatrix:
         cc.set_zero(self.xx)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
-        cdef Buffer buf = Buffer(self, ElemTypeWilsonMatrix.ndim(), ElemTypeWilsonMatrix.itemsize())
-        cdef char* fmt = ElemTypeWilsonMatrix.format()
+        cdef int ndim = ElemTypeWilsonMatrix.ndim()
+        cdef Buffer buf = Buffer(self, ndim)
+        buf.format = ElemTypeWilsonMatrix.format()
+        buf.itemsize = ElemTypeWilsonMatrix.itemsize()
+        buf.buf = <char*>(self.xx.data())
         cdef cc.std_vector[Py_ssize_t] vec = ElemTypeWilsonMatrix.shape()
-        assert vec.size() == buf.ndim
-        cdef Py_ssize_t* shape = &buf.shape_strides[0]
-        cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
-        cdef int i
-        for i in range(buf.ndim):
-            shape[i] = vec[i]
-        buf.set_strides()
-        buffer.buf = <char*>(self.xx.data())
-        if flags & PyBUF_FORMAT:
-            buffer.format = fmt
-        else:
-            buffer.format = NULL
-        buffer.internal = NULL
-        buffer.itemsize = buf.itemsize
-        buffer.len = buf.get_len()
-        buffer.ndim = buf.ndim
-        buffer.obj = buf
-        buffer.readonly = 0
-        buffer.shape = shape
-        buffer.strides = strides
-        buffer.suboffsets = NULL
+        cdef int dim
+        for dim in range(ndim):
+            buf.set_dim_size(dim, vec[dim])
+        buf.update_strides_from_shape()
+        buf.set_buffer(buffer, flags)
 
-    def __releasebuffer__(self, Py_buffer *buffer):
+    def release_buffer(self, Buffer buf):
         pass
 
     def g5_herm(self):
@@ -91,32 +78,19 @@ cdef class SpinMatrix:
         cc.set_zero(self.xx)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
-        cdef Buffer buf = Buffer(self, ElemTypeSpinMatrix.ndim(), ElemTypeSpinMatrix.itemsize())
-        cdef char* fmt = ElemTypeWilsonMatrix.format()
+        cdef int ndim = ElemTypeSpinMatrix.ndim()
+        cdef Buffer buf = Buffer(self, ndim)
+        buf.format = ElemTypeSpinMatrix.format()
+        buf.itemsize = ElemTypeSpinMatrix.itemsize()
+        buf.buf = <char*>(self.xx.data())
         cdef cc.std_vector[Py_ssize_t] vec = ElemTypeSpinMatrix.shape()
-        assert vec.size() == buf.ndim
-        cdef Py_ssize_t* shape = &buf.shape_strides[0]
-        cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
-        cdef int i
-        for i in range(buf.ndim):
-            shape[i] = vec[i]
-        buf.set_strides()
-        buffer.buf = <char*>(self.xx.data())
-        if flags & PyBUF_FORMAT:
-            buffer.format = fmt
-        else:
-            buffer.format = NULL
-        buffer.internal = NULL
-        buffer.itemsize = buf.itemsize
-        buffer.len = buf.get_len()
-        buffer.ndim = buf.ndim
-        buffer.obj = buf
-        buffer.readonly = 0
-        buffer.shape = shape
-        buffer.strides = strides
-        buffer.suboffsets = NULL
+        cdef int dim
+        for dim in range(ndim):
+            buf.set_dim_size(dim, vec[dim])
+        buf.update_strides_from_shape()
+        buf.set_buffer(buffer, flags)
 
-    def __releasebuffer__(self, Py_buffer *buffer):
+    def release_buffer(self, Buffer buf):
         pass
 
 ### -------------------------------------------------------------------
@@ -146,32 +120,19 @@ cdef class ColorMatrix:
         cc.set_zero(self.xx)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
-        cdef Buffer buf = Buffer(self, ElemTypeColorMatrix.ndim(), ElemTypeColorMatrix.itemsize())
-        cdef char* fmt = ElemTypeWilsonMatrix.format()
+        cdef int ndim = ElemTypeColorMatrix.ndim()
+        cdef Buffer buf = Buffer(self, ndim)
+        buf.format = ElemTypeColorMatrix.format()
+        buf.itemsize = ElemTypeColorMatrix.itemsize()
+        buf.buf = <char*>(self.xx.data())
         cdef cc.std_vector[Py_ssize_t] vec = ElemTypeColorMatrix.shape()
-        assert vec.size() == buf.ndim
-        cdef Py_ssize_t* shape = &buf.shape_strides[0]
-        cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
-        cdef int i
-        for i in range(buf.ndim):
-            shape[i] = vec[i]
-        buf.set_strides()
-        buffer.buf = <char*>(self.xx.data())
-        if flags & PyBUF_FORMAT:
-            buffer.format = fmt
-        else:
-            buffer.format = NULL
-        buffer.internal = NULL
-        buffer.itemsize = buf.itemsize
-        buffer.len = buf.get_len()
-        buffer.ndim = buf.ndim
-        buffer.obj = buf
-        buffer.readonly = 0
-        buffer.shape = shape
-        buffer.strides = strides
-        buffer.suboffsets = NULL
+        cdef int dim
+        for dim in range(ndim):
+            buf.set_dim_size(dim, vec[dim])
+        buf.update_strides_from_shape()
+        buf.set_buffer(buffer, flags)
 
-    def __releasebuffer__(self, Py_buffer *buffer):
+    def release_buffer(self, Buffer buf):
         pass
 
 ### -------------------------------------------------------------------

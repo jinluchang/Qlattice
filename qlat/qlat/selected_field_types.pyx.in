@@ -85,7 +85,7 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         shape[1] = multiplicity
         for i in range(ElemType{{name}}.ndim()):
             shape[2 + i] = vec[i]
-        buf.set_strides()
+        buf.update_strides_from_shape()
         buffer.buf = <char*>(fvec.data())
         if flags & PyBUF_FORMAT:
             buffer.format = fmt
@@ -103,7 +103,8 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         assert buffer.len * buffer.itemsize == fvec.size() * ElemType{{name}}.size()
         self.view_count += 1
 
-    def __releasebuffer__(self, Py_buffer *buffer):
+    def release_buffer(self, Buffer buf):
+        assert buf.obj is self
         self.view_count -= 1
 
     def __imatmul__(self, other):

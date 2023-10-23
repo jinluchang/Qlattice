@@ -16,6 +16,7 @@ cdef class LatData:
 
     def __cinit__(self):
         self.cdata = <long>&(self.xx)
+        self.view_count = 0
 
     def __imatmul__(self, LatData v1):
         self.xx = v1.xx
@@ -34,44 +35,33 @@ cdef class LatData:
         return self.copy()
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
+        cdef int ndim = self.xx.ndim()
+        cdef Buffer buf = Buffer(self, ndim)
         cdef cc.bool is_complex = self.xx.is_complex()
-        cdef char* fmt
-        cdef int itemsize
         if is_complex:
-            fmt = 'Zd'
-            itemsize = sizeof(cc.Complex)
+            buf.format = 'Zd'
+            buf.itemsize = sizeof(cc.Complex)
         else:
-            fmt = 'd'
-            itemsize = sizeof(cc.Double)
-        cdef Buffer buf = Buffer(self, self.xx.ndim(), itemsize)
-        cdef Py_ssize_t* shape = &buf.shape_strides[0]
-        cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
-        cdef int i
-        for i in range(buf.ndim):
-            shape[i] = self.xx.info[i].size
-        buf.set_strides()
-        buffer.buf = <char*>(self.xx.data())
-        if flags & PyBUF_FORMAT:
-            buffer.format = fmt
-        else:
-            buffer.format = NULL
-        buffer.internal = NULL
-        buffer.itemsize = buf.itemsize
-        buffer.len = buf.get_len()
-        buffer.ndim = buf.ndim
-        buffer.obj = buf
-        buffer.readonly = 0
-        buffer.shape = shape
-        buffer.strides = strides
-        buffer.suboffsets = NULL
+            buf.format = 'd'
+            buf.itemsize = sizeof(cc.Double)
+        buf.buf = <char*>(self.xx.data())
+        cdef int dim
+        for dim in range(ndim):
+            buf.set_dim_size(dim, self.xx.info[dim].size)
+        buf.update_strides_from_shape()
+        buf.set_buffer(buffer, flags)
+        self.view_count += 1
 
-    def __releasebuffer__(self, Py_buffer *buffer):
-        pass
+    def release_buffer(self, Buffer buf):
+        assert buf.obj is self
+        self.view_count -= 1
 
     def save_node(self, const cc.std_string& path):
         self.xx.save(path)
 
     def load_node(self, const cc.std_string& path):
+        if self.view_count > 0:
+            raise ValueError("can't load while being viewed")
         self.xx.load(path)
 
     def save(self, const cc.std_string& path):
@@ -151,6 +141,8 @@ cdef class LatData:
         return [ self.xx.info[i].size for i in range(ndim) ]
 
     def set_dim_sizes(self, list dim_sizes, *, cc.bool is_complex = True):
+        if self.view_count > 0:
+            raise ValueError("can't change shape while being viewed")
         cdef int ndim = len(dim_sizes)
         cdef int ndim_real = ndim
         cdef int i
@@ -195,6 +187,8 @@ cdef class LatData:
         otherwise only set data and ignore shape completely
         dim_names should be a list of names for each dimension
         """
+        if self.view_count > 0:
+            raise ValueError("can't load while being viewed")
         cdef int ndim = val.ndim
         cdef int dim
         cdef list shape = [ val.shape[dim] for dim in range(ndim) ]
@@ -223,6 +217,8 @@ cdef class LatData:
         return np.asarray(self).ravel().tolist()
 
     def from_list(self, list val, *, cc.bool is_complex=True):
+        if self.view_count > 0:
+            raise ValueError("can't load while being viewed")
         if self.ndim() == 0:
             self.set_dim_sizes([ len(val), ], is_complex = is_complex)
             self.set_dim_name(0, "i")
@@ -230,6 +226,8 @@ cdef class LatData:
         return self
 
     def __getstate__(self):
+        if self.view_count > 0:
+            raise ValueError("can't load while being viewed")
         is_complex = self.is_complex()
         ndim = self.ndim()
         dim_sizes = self.dim_sizes()
@@ -267,6 +265,8 @@ cdef class LatData:
             [ [ dim_name, dim_size, dim_indices, ], ... ]
         dim_indices can be optional
         """
+        if self.view_count > 0:
+            raise ValueError("can't load while being viewed")
         for info in info_list:
             assert len(info) >= 2
         dim_sizes = [ info[1] for info in info_list ]

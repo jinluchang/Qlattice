@@ -19,6 +19,7 @@ cdef class PointsSelection:
     def __cinit__(self):
         self.cdata = <long>&(self.xx)
         self.geo = None
+        self.view_count = 0
 
     def __init__(self, coordinate_list=None, Geometry geo=None):
         cdef long n_points
@@ -40,12 +41,12 @@ cdef class PointsSelection:
         cdef long n_points = self.xx.size()
         cdef int ndim = 2
         cdef char* fmt = "i"
-        cdef Buffer buf = Buffer(self, ndim, sizeof(cc.Int32t))
+        cdef Buffer buf = Buffer(self, ndim, sizeof(cc.Int))
         cdef Py_ssize_t* shape = &buf.shape_strides[0]
         cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
         shape[0] = n_points
         shape[1] = 4
-        buf.set_strides()
+        buf.update_strides_from_shape()
         buffer.buf = <char*>(self.xx.data())
         if flags & PyBUF_FORMAT:
             buffer.format = fmt
@@ -62,7 +63,8 @@ cdef class PointsSelection:
         buffer.suboffsets = NULL
         self.view_count += 1
 
-    def __releasebuffer__(self, Py_buffer *buffer):
+    def release_buffer(self, Buffer buf):
+        assert buf.obj is self
         self.view_count -= 1
 
     def __imatmul__(self, PointsSelection v1):

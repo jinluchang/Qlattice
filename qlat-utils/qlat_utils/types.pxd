@@ -2,11 +2,15 @@ from . cimport everything as cqlat_utils
 
 cdef class Buffer:
     cdef object obj
+    cdef char* buf # data pointer
     cdef int ndim
+    cdef char* format
     cdef Py_ssize_t itemsize
     cdef cqlat_utils.std_vector[Py_ssize_t] shape_strides # shape.size() == 2 * ndim
     cdef Py_ssize_t get_len(self)
-    cdef void set_strides(self)
+    cdef void set_dim_size(self, int dim, Py_ssize_t size)
+    cdef void update_strides_from_shape(self)
+    cdef void set_buffer(self, Py_buffer *buffer, int flags)
 
 ### -------------------------------------------------------------------
 
