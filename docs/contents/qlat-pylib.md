@@ -30,7 +30,6 @@ class Geometry:
     def coordinate_l_from_g(self, xg):
     def is_local(self, xl):
     def is_local_xg(self, xg):
-    def xg_list(self):
 ```
 
 ```python
@@ -303,7 +302,6 @@ class Field:
     def __setitem__(self, i, val):
         # i can be (xg, m,) or xg
         # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
-    def xg_list(self):
     def field_shift(self, shift):
         # return new shifted Field
         # shift is the coordinate to shift the field

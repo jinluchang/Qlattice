@@ -366,12 +366,6 @@ cdef class FieldBase:
         else:
             assert False
 
-    def xg_list(self):
-        """
-        return xg for all local sites
-        """
-        return self.geo().xg_list()
-
     def field_shift(self, shift):
         """
         return new shifted Field

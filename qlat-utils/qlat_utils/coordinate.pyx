@@ -118,7 +118,7 @@ cdef class Coordinate:
         return isinstance(other, Coordinate) and self.xx == (<Coordinate>other).xx
 
     def from_index(self, long index, Coordinate size):
-        self.xx = cc.coordinate_from_index(index, size.xx)
+        cc.assign_direct(self.xx, cc.coordinate_from_index(index, size.xx))
 
     def to_index(self, Coordinate size):
         return cc.index_from_coordinate(self.xx, size.xx)

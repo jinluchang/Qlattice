@@ -152,14 +152,8 @@ cdef class Geometry:
         from .field_selection import mk_xg_field
         f_xg = mk_xg_field(self)
         xg_arr = np.asarray(f_xg)
-        cdef long total_volume = self.total_volume()
-        return xg_arr.reshape((total_volume, 4,))
-
-    def xg_list(self):
-        """
-        return xg for all local sites
-        """
-        return c.get_xg_list(self)
+        cdef long local_volume = self.local_volume()
+        return xg_arr.reshape((local_volume, 4,))
 
 ### -------------------------------------------------------------------
 
