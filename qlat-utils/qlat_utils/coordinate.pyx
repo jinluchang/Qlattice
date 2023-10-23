@@ -189,7 +189,7 @@ cdef class CoordinateD:
             self.xx = cc.CoordinateD((<Coordinate>x).xx)
         elif isinstance(x, np.ndarray):
             assert x.shape == (4,)
-            self.xx = cc.Coordinate(x[0], x[1], x[2], x[3])
+            self.xx = cc.CoordinateD(x[0], x[1], x[2], x[3])
         elif isinstance(x, (list, tuple,)):
             assert len(x) == 4
             self.xx = cc.CoordinateD(x[0], x[1], x[2], x[3])

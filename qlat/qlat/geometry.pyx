@@ -127,6 +127,14 @@ cdef class Geometry:
         cc.assign_direct(xl.xx, self.xx.coordinate_l_from_g(xg.xx))
         return xl
 
+    def index_from_coordinate(self, Coordinate xg not None):
+        return self.xx.index_from_coordinate(xg.xx)
+
+    def coordinate_from_index(self, long index):
+        cdef Coordinate xl = Coordinate()
+        cc.assign_direct(xl.xx, self.xx.coordinate_from_index(index))
+        return xl
+
     def is_local(self, Coordinate xl not None):
         return self.xx.is_local(xl.xx)
 
@@ -136,6 +144,16 @@ cdef class Geometry:
         """
         cdef cc.Coordinate xl_xx = self.xx.coordinate_l_from_g(xg.xx)
         return self.xx.is_local(xl_xx)
+
+    def xg_arr(self):
+        """
+        return xg for all local sites
+        """
+        from .field_selection import mk_xg_field
+        f_xg = mk_xg_field(self)
+        xg_arr = np.asarray(f_xg)
+        cdef long total_volume = self.total_volume()
+        return xg_arr.reshape((total_volume, 4,))
 
     def xg_list(self):
         """
