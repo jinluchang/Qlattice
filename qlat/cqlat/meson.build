@@ -14,7 +14,6 @@ cpp_files = files(
   'field-utils.cpp',
   'fthmc.cpp',
   'gauge-action.cpp',
-  'geometry.cpp',
   'hmc.cpp',
   'hmc-stats.cpp',
   'init.cpp',
