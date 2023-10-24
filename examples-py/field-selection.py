@@ -20,7 +20,7 @@ psel.save("results/psel.txt")
 psel = q.PointsSelection()
 psel.load("results/psel.txt", geo)
 
-q.displayln_info("CHECK: psel.to_list() =", psel.to_list())
+q.displayln_info("CHECK: psel.xg_arr().tolist() =", psel.xg_arr().tolist())
 
 n_per_tslice = 16
 

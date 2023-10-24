@@ -80,7 +80,7 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel, get_fsel):
     get_prop = get_get_prop()
     psel = get_psel()
     fsel, fselc = get_fsel()
-    xg_fsel_list = np.array(fsel.to_psel_local().to_list())
+    xg_fsel_list = np.asarray(fsel.to_psel_local())
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
     def load_data():
@@ -133,7 +133,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel, get_fse
     t_size = total_site[3]
     get_prop = get_get_prop()
     fsel, fselc = get_fsel()
-    xg_fsel_list = np.array(fsel.to_psel_local().to_list())
+    xg_fsel_list = np.asarray(fsel.to_psel_local())
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
     def load_data():
@@ -191,8 +191,8 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel, get_fse
     get_prop = get_get_prop()
     psel = get_psel()
     fsel, fselc = get_fsel()
-    xg_fsel_list = np.array(fsel.to_psel_local().to_list())
-    xg_psel_list = np.array(psel.to_list())
+    xg_fsel_list = np.asarray(fsel.to_psel_local())
+    xg_psel_list = np.asarray(psel)
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
     def load_data():
@@ -251,8 +251,8 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel, ge
     get_prop = get_get_prop()
     psel = get_psel()
     fsel, fselc = get_fsel()
-    xg_fsel_list = np.array(fsel.to_psel_local().to_list())
-    xg_psel_list = np.array(psel.to_list())
+    xg_fsel_list = np.asarray(fsel.to_psel_local())
+    xg_psel_list = np.asarray(psel)
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
     r_list = get_r_list(job_tag)
@@ -351,8 +351,8 @@ def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel, get_fsel):
     get_prop = get_get_prop()
     psel = get_psel()
     fsel, fselc = get_fsel()
-    xg_fsel_list = np.array(fsel.to_psel_local().to_list())
-    xg_psel_list = np.array(psel.to_list())
+    xg_fsel_list = np.asarray(fsel.to_psel_local())
+    xg_psel_list = np.asarray(psel)
     tsep = dict_params[job_tag]["meson_tensor_tsep"]
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
@@ -445,8 +445,8 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel, get_fsel):
     get_prop = get_get_prop()
     psel = get_psel()
     fsel, fselc = get_fsel()
-    xg_fsel_list = np.array(fsel.to_psel_local().to_list())
-    xg_psel_list = np.array(psel.to_list())
+    xg_fsel_list = np.asarray(fsel.to_psel_local())
+    xg_psel_list = np.asarray(psel)
     tsep = dict_params[job_tag]["meson_tensor_tsep"]
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
@@ -877,8 +877,8 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel, get_fsel):
     get_prop = get_get_prop()
     psel = get_psel()
     fsel, fselc = get_fsel()
-    xg_fsel_list = np.array(fsel.to_psel_local().to_list())
-    xg_psel_list = np.array(psel.to_list())
+    xg_fsel_list = np.asarray(fsel.to_psel_local())
+    xg_psel_list = np.asarray(psel)
     tsep = dict_params[job_tag]["meson_tensor_tsep"]
     geo = q.Geometry(total_site, 1)
     r_list = get_r_list(job_tag)
@@ -1033,7 +1033,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel, get_fsel):
                     "x_2" : ("point", xg2_src,),
                     "t_1" : ("wall", t_1,),
                     "t_2" : ("wall", t_2,),
-                    "size" : total_site.to_list(),
+                    "size" : total_site,
                     }
             t1 = xg1_xg_t
             t2 = xg2_xg_t

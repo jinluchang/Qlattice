@@ -114,6 +114,7 @@ cdef extern from "qlat/core.h" namespace "qlat":
         PointsSelection()
         PointsSelection(const long n_points) except +
         long size()
+        void resize(const long n_points)
         Coordinate* data()
         Coordinate& operator[](long i)
     cdef cppclass SelectedField[T]:
@@ -137,6 +138,14 @@ cdef extern from "qlat/core.h" namespace "qlat":
     void set_zero[T](SelectedPoints[T]& x)
     void qswap[T](SelectedPoints[T]& x, SelectedPoints[T]& y) except +
 
+cdef extern from "qlat/selected-points.h" namespace "qlat":
+
+    PointsSelection mk_random_point_selection(const Coordinate& total_site,
+                                              const long num, const RngState& rs)
+    void save_point_selection_info(const PointsSelection& psel,
+                                   const std_string& path)
+    PointsSelection load_point_selection_info(const std_string& path)
+
 cdef extern from "qlat/selected-field-io.h" namespace "qlat":
 
     void set_selected_field[t](SelectedField[t]& sf, const Field[t]& f,
@@ -153,6 +162,14 @@ cdef extern from "qlat/selected-field-io.h" namespace "qlat":
                                const FieldSelection& fsel) except +
     void set_field_selected[t](Field[t]& sf, const SelectedPoints[t]& f,
                                const Geometry& geo, const PointsSelection& psel) except +
+
+cdef extern from "qlat/qcd-prop.h" namespace "qlat":
+
+    void set_wall_src(Prop& prop, const Geometry& geo_input,
+                      const int tslice, const CoordinateD& lmom) except +
+
+    void set_point_src(Prop& prop, const Geometry& geo_input,
+                       const Coordinate& xg, const Complex& value)
 
 cdef extern from "qlat/qcd-smear.h" namespace "qlat":
 

@@ -38,7 +38,7 @@ cdef class Prop(FieldWilsonMatrix):
 
 cdef class SelProp(SelectedFieldWilsonMatrix):
 
-    def __init__(self, fsel):
+    def __init__(self, FieldSelection fsel):
         super().__init__(fsel, 1)
 
     cdef cc.Handle[cc.SelProp] xxx(self):
@@ -54,7 +54,7 @@ cdef class SelProp(SelectedFieldWilsonMatrix):
 
 cdef class PselProp(SelectedPointsWilsonMatrix):
 
-    def __init__(self, psel):
+    def __init__(self, PointsSelection psel):
         super().__init__(psel, 1)
 
     cdef cc.Handle[cc.PselProp] xxx(self):
@@ -68,23 +68,21 @@ cdef class PselProp(SelectedPointsWilsonMatrix):
 
 ###
 
-def set_point_src(prop_src, geo, xg, value=1.0):
-    c.set_point_src_prop(prop_src, geo, xg, value)
+def set_point_src(Prop prop_src not None, Geometry geo not None, Coordinate xg not None, cc.PyComplex value=1.0):
+    cc.set_point_src(prop_src.xxx().p[0], geo.xx, xg.xx, cc.complex_cast(value))
 
-def set_wall_src(prop_src, geo, tslice, lmom=None):
+def set_wall_src(Prop prop_src not None, Geometry geo not None, int tslice, CoordinateD lmom=None):
     if lmom is None:
-        lmom = [ 0.0, 0.0, 0.0, 0.0, ]
-    c.set_wall_src_prop(prop_src, geo, tslice, lmom)
+        lmom = q.CoordinateD()
+    cc.set_wall_src(prop_src.xxx().p[0], geo.xx, tslice, lmom.xx)
 
-def mk_point_src(geo, xg, value=1.0):
-    prop_src = Prop()
+def mk_point_src(Geometry geo not None, Coordinate xg not None, cc.PyComplex value=1.0):
+    cdef Prop prop_src = Prop(geo)
     set_point_src(prop_src, geo, xg, value)
     return prop_src
 
-def mk_wall_src(geo, tslice, lmom=None):
-    if lmom is None:
-        lmom = [ 0.0, 0.0, 0.0, 0.0, ]
-    prop_src = Prop()
+def mk_wall_src(Geometry geo not None, int tslice, CoordinateD lmom=None):
+    cdef Prop prop_src = Prop(geo)
     set_wall_src(prop_src, geo, tslice, lmom)
     return prop_src
 

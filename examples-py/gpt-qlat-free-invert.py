@@ -41,7 +41,7 @@ slv_5d = inv.preconditioned(pc.eo2_ne(), cg)
 slv_qm = qm.propagator(slv_5d)
 ginv = qg.InverterGPT(inverter = slv_qm, qtimer = q.Timer("py:InverterGPT"))
 
-src_p = q.mk_point_src(geo, [0, 0, 0, 0])
+src_p = q.mk_point_src(geo, q.Coordinate([0, 0, 0, 0]))
 
 src_r = q.Prop(geo)
 src_r.set_rand(rs.split("src_r"))

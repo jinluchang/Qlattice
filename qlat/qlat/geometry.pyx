@@ -147,10 +147,11 @@ cdef class Geometry:
     def xg_arr(self):
         """
         return xg for all local sites
+        shape = (geo.local_volume(), 4,)
         """
         from .field_selection import mk_xg_field
         f_xg = mk_xg_field(self)
-        xg_arr = np.asarray(f_xg)
+        xg_arr = np.asarray(f_xg, dtype=np.int32)
         cdef long local_volume = self.local_volume()
         return xg_arr.reshape((local_volume, 4,))
 

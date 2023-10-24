@@ -154,8 +154,8 @@ def compute_prop_psrc_all(job_tag, traj, *,
     prob1 = get_param(job_tag, "prob_acc_1_psrc")
     prob2 = get_param(job_tag, "prob_acc_2_psrc")
     rs = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_psrc_all(ama)")
-    for idx, xg_src in enumerate(psel.to_list()):
-        r = rs.split(f"{tuple(xg_src)}").u_rand_gen()
+    for idx, xg_src in enumerate(psel):
+        r = rs.split(f"{xg_src.to_tuple()}").u_rand_gen()
         assert 0 <= r and r <= 1
         comp(idx, xg_src, inv_acc = 0)
         if r <= prob1:
@@ -336,8 +336,8 @@ def compute_prop_smear_all(job_tag, traj, *,
     prob1 = get_param(job_tag, "prob_acc_1_smear")
     prob2 = get_param(job_tag, "prob_acc_2_smear")
     rs = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_smear_all(ama)")
-    for idx, xg_src in enumerate(psel_smear.to_list()):
-        r = rs.split(f"{tuple(xg_src)}").u_rand_gen()
+    for idx, xg_src in enumerate(psel_smear):
+        r = rs.split(f"{xg_src.to_tuple()}").u_rand_gen()
         assert 0 <= r and r <= 1
         comp(idx, xg_src, inv_acc = 0)
         if r <= prob1:

@@ -18,13 +18,13 @@ def test_gf(gf):
 
 @q.timer
 def test_src(xg):
-    q.displayln_info(f"CHECK: test_src: xg={xg}")
+    q.displayln_info(f"CHECK: test_src: xg={xg.to_list()}")
     #
     src_q = q.mk_point_src(geo, xg)
     #
     grid = qg.mk_grid(geo)
     g_src_gpt = g.mspincolor(grid)
-    g.create.point(g_src_gpt, xg)
+    g.create.point(g_src_gpt, xg.to_list())
     src_g = qg.qlat_from_gpt(g_src_gpt)
     #
     src_diff = src_q.copy()
@@ -47,10 +47,10 @@ gf.show_info()
 test_gf(gf)
 
 for i in range(16):
-    xg = [ rs.rand_gen() % total_site[0],
-            rs.rand_gen() % total_site[1],
-            rs.rand_gen() % total_site[2],
-            rs.rand_gen() % total_site[3] ]
+    xg = q.Coordinate([ rs.rand_gen() % total_site[0],
+                       rs.rand_gen() % total_site[1],
+                       rs.rand_gen() % total_site[2],
+                       rs.rand_gen() % total_site[3] ])
     test_src(xg)
 
 q.timer_display()

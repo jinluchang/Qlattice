@@ -50,9 +50,9 @@ inv_acc = 0
 
 inv = mk_inverter(gf, job_tag, inv_type, inv_acc, n_grouped = q.get_num_node())
 
-xg = psel_smear.to_list()[0]
+xg = psel_smear[0]
 
-tag = f"smear ; xg={tuple(xg)} ; type={inv_type} ; accuracy={inv_acc}"
+tag = f"smear ; xg={tuple(xg.to_list())} ; type={inv_type} ; accuracy={inv_acc}"
 
 q.displayln_info("CHECK: ", tag)
 src = q.mk_point_src(geo, xg)

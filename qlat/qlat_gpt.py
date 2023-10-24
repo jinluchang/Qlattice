@@ -15,8 +15,8 @@ def mk_grid(geo = None):
 
 def begin_with_gpt():
     grid = mk_grid()
-    size_node = grid.mpi
-    coor_node = grid.processor_coor
+    size_node = q.Coordinate(grid.mpi)
+    coor_node = q.Coordinate(grid.processor_coor)
     id_node = q.index_from_coordinate(coor_node, size_node)
     q.begin(id_node, q.Coordinate(size_node))
 

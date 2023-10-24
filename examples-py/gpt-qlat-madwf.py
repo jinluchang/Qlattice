@@ -117,7 +117,7 @@ inv_qm_split_sloppy = qg.InverterGPT(inverter = slv_qm_split_sloppy, qtimer = q.
 inv_qm_madwf = qg.InverterGPT(inverter = slv_qm_madwf, qtimer = q.Timer("py:slv_qm_madwf", True))
 
 def mk_src(geo):
-    src = q.mk_point_src(geo, [0, 0, 0, 0])
+    src = q.mk_point_src(geo, q.Coordinate([0, 0, 0, 0]))
     grid = qg.mk_grid(geo)
     g_src = g.mspincolor(grid)
     g.create.point(g_src, [0, 0, 0, 0])

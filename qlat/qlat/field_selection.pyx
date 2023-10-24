@@ -21,59 +21,38 @@ cdef class PointsSelection:
         self.geo = None
         self.view_count = 0
 
-    def __init__(self, coordinate_list=None, Geometry geo=None):
-        cdef long n_points
-        cdef long i
-        self.geo = geo
-        if coordinate_list is None:
-            return
-        if self.view_count > 0:
-            raise ValueError("can't re-init while being viewed")
-        n_points = len(coordinate_list)
-        self.xx = cc.PointsSelection(n_points)
-        for i in range(n_points):
-            c = coordinate_list[i]
-            if not isinstance(c, Coordinate):
-                c = Coordinate(c)
-            self.xx[i] = (<Coordinate>c).xx
+    def __init__(self, xg_arr=None, Geometry geo=None):
+        """
+        PointsSelection()
+        PointsSelection(n_points, geo)
+        PointsSelection(xg_arr, geo)
+        PointsSelection(xg_list, geo)
+        """
+        self.set_xg_arr(xg_arr, geo)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
-        cdef long n_points = self.xx.size()
         cdef int ndim = 2
-        cdef char* fmt = "i"
-        cdef Buffer buf = Buffer(self, ndim, sizeof(cc.Int))
-        cdef Py_ssize_t* shape = &buf.shape_strides[0]
-        cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
-        shape[0] = n_points
-        shape[1] = 4
+        cdef Buffer buf = Buffer(self, ndim)
+        buf.format = 'i'
+        buf.itemsize = sizeof(cc.Int)
+        buf.buf = <char*>(self.xx.data())
+        buf.set_dim_size(0, self.xx.size())
+        buf.set_dim_size(1, 4)
         buf.update_strides_from_shape()
-        buffer.buf = <char*>(self.xx.data())
-        if flags & PyBUF_FORMAT:
-            buffer.format = fmt
-        else:
-            buffer.format = NULL
-        buffer.internal = NULL
-        buffer.itemsize = buf.itemsize
-        buffer.len = buf.get_len()
-        buffer.ndim = buf.ndim
-        buffer.obj = buf
-        buffer.readonly = 0
-        buffer.shape = shape
-        buffer.strides = strides
-        buffer.suboffsets = NULL
+        buf.set_buffer(buffer, flags)
         self.view_count += 1
 
     def release_buffer(self, Buffer buf):
         assert buf.obj is self
         self.view_count -= 1
 
-    def __imatmul__(self, PointsSelection v1):
+    def __imatmul__(self, PointsSelection v1 not None):
         self.geo = v1.geo
-        self.xx = v1.xx
+        cc.assign_direct(self.xx, v1.xx)
         return self
 
     def copy(self):
-        x = PointsSelection()
+        x = type(self)()
         x @= self
         return x
 
@@ -83,36 +62,95 @@ cdef class PointsSelection:
     def __deepcopy__(self, memo):
         return self.copy()
 
-    def set_rand(self, RngState rs, Coordinate total_site, long n_points):
+    def set_rand(self, RngState rs not None, Coordinate total_site not None, long n_points):
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
-        c.set_rand_psel(self, rs, total_site.to_list(), n_points)
         self.geo = Geometry(total_site)
+        cc.assign_direct(self.xx, cc.mk_random_point_selection(total_site.xx, n_points, rs.xx))
 
-    def save(self, str path):
-        c.save_psel(self, path)
+    def save(self, const cc.std_string& path):
+        cc.save_point_selection_info(self.xx, path)
 
-    def load(self, str path, Geometry geo):
+    def load(self, const cc.std_string& path, Geometry geo):
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
-        c.load_psel(self, path)
         self.geo = geo
+        cc.assign_direct(self.xx, cc.load_point_selection_info(path))
 
     def n_points(self):
-        return c.get_n_points_psel(self)
+        return self.xx.size()
 
-    def to_list(self):
-        return c.mk_list_psel(self)
+    def set_n_points(self, const long n_points):
+        self.xx.resize(n_points)
 
-    def from_list(self, coordinate_list, geo=None):
+    def xg_arr(self):
+        """
+        return xg for all selected points
+        shape = (psel.n_points(), 4,)
+        """
+        return np.asarray(self, dtype=np.int32)
+
+    def set_xg_arr(self, xg_arr=None, Geometry geo=None):
+        """
+        psel.set_xg_arr()
+        psel.set_xg_arr(n_points, geo)
+        psel.set_xg_arr(xg_arr, geo)
+        psel.set_xg_arr(xg_list, geo)
+        """
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
-        c.set_list_psel(self, coordinate_list)
         self.geo = geo
-        return self
+        cdef long n_points
+        cdef long i
+        if xg_arr is None:
+            self.xx = cc.PointsSelection()
+        elif isinstance(xg_arr, int):
+            n_points = xg_arr
+            self.set_n_points(n_points)
+        elif isinstance(xg_arr, np.ndarray):
+            n_points = len(xg_arr)
+            self.xx = cc.PointsSelection(n_points)
+            assert xg_arr.shape == (n_points, 4,)
+            np.asarray(self, dtype=np.int32)[:] = xg_arr
+        elif isinstance(xg_arr, list):
+            n_points = len(xg_arr)
+            self.xx = cc.PointsSelection(n_points)
+            for i in range(n_points):
+                cc.assign_direct(self.xx[i], Coordinate(xg_arr[i]).xx)
+        else:
+            raise Exception(f"PointsSelection.set_xg_arr({xg_arr},{geo})")
 
-    def coordinate_from_idx(self, long idx):
-        return c.get_coordinate_from_idx_psel(self, idx)
+    def set_geo(self, Geometry geo):
+        self.geo = geo
+
+    def __getitem__(self, long idx):
+        cdef Coordinate xg = Coordinate()
+        cc.assign_direct(xg.xx, self.xx[idx])
+        return xg
+
+    def __setitem__(self, long idx, Coordinate xg not None):
+        cc.assign_direct(self.xx[idx], xg.xx)
+
+    def __iter__(self):
+        cdef long idx
+        cdef long n_points = self.n_points()
+        for idx in range(n_points):
+            yield self[idx]
+
+    def __len__(self):
+        return self.n_points()
+
+    # def coordinate_from_idx(self, long idx):
+    #     print("CHECK: WARNING: PointsSelection.coordinate_from_idx")
+    #     return self[idx]
+
+    # def to_list(self):
+    #     print("CHECK: WARNING: PointsSelection.to_list")
+    #     return [ self.coordinate_from_idx(idx).to_list() for idx in range(self.n_points()) ]
+
+    # def from_list(self, xg_arr=None, Geometry geo=None):
+    #     print("CHECK: WARNING: PointsSelection.from_list")
+    #     self.set_xg_arr(xg_arr, geo)
 
 ### -------------------------------------------------------------------
 

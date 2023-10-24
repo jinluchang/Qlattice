@@ -46,7 +46,7 @@ slv_qm = qm.propagator(slv_5d).grouped(4)
 inv_qm = qg.InverterGPT(inverter = slv_qm, qtimer = q.Timer("py:slv_qm", True))
 
 def mk_src(geo):
-    src = q.mk_point_src(geo, [0, 0, 0, 0])
+    src = q.mk_point_src(geo, q.Coordinate([0, 0, 0, 0]))
     grid = qg.mk_grid(geo)
     g_src = g.mspincolor(grid)
     g.create.point(g_src, [0, 0, 0, 0])

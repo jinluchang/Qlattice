@@ -22,7 +22,7 @@ qinv_free = q.InverterDwfFreeField(mass = fa.mass(), m5 = fa.m5(), qtimer = q.Ti
 
 qinv_dwf = q.InverterDomainWall(gf = gf, fa = fa, qtimer = q.Timer("py:InverterDomainWall"))
 
-src_p = q.mk_point_src(geo, [0, 0, 0, 0])
+src_p = q.mk_point_src(geo, q.Coordinate([0, 0, 0, 0]))
 
 src_r = q.Prop(geo)
 src_r.set_rand(rs.split("src_r"))

@@ -11,24 +11,24 @@ cdef class Coordinate:
         if x is None:
             pass
         elif isinstance(x, Coordinate):
-            self.xx = (<Coordinate>x).xx
+            cc.assign_direct(self.xx, (<Coordinate>x).xx)
         elif isinstance(x, np.ndarray):
             assert x.shape == (4,)
-            self.xx = cc.Coordinate(x[0], x[1], x[2], x[3])
+            cc.assign_direct(self.xx, cc.Coordinate(x[0], x[1], x[2], x[3]))
         elif isinstance(x, (list, tuple)):
             assert len(x) == 4
-            self.xx = cc.Coordinate(x[0], x[1], x[2], x[3])
+            cc.assign_direct(self.xx, cc.Coordinate(x[0], x[1], x[2], x[3]))
         else:
             raise Exception(f"Coordinate.__init__({x})")
 
     def __imatmul__(self, Coordinate v1):
-        self.xx = v1.xx
+        cc.assign_direct(self.xx, v1.xx)
         return self
 
     def copy(self, cc.bool is_copying_data=True):
         cdef Coordinate x = Coordinate()
         if is_copying_data:
-            x.xx = self.xx
+            cc.assign_direct(x.xx, self.xx)
         return x
 
     def __copy__(self):
@@ -40,13 +40,25 @@ cdef class Coordinate:
     def __repr__(self):
         return f"Coordinate({self.to_list()})"
 
+    def __iter__(self):
+        cdef int i
+        cdef int dim = 4
+        for i in range(dim):
+            yield self.xx[i]
+
     def to_list(self):
         """
         Return a list composed of the 4 components of the coordinate.
         """
         return [ self.xx[0], self.xx[1], self.xx[2], self.xx[3], ]
 
-    def from_list(self, list x):
+    def to_tuple(self):
+        """
+        Return a tuple composed of the 4 components of the coordinate.
+        """
+        return (self.xx[0], self.xx[1], self.xx[2], self.xx[3],)
+
+    def from_list(self, x):
         """
         set value based on a list composed of the 4 components of the coordinate.
         """
@@ -70,7 +82,8 @@ cdef class Coordinate:
         """
         get spatial distance square as int
         """
-        return self.xx[0] * self.xx[0] + self.xx[1] * self.xx[1] + self.xx[2] * self.xx[2]
+        cdef long r_sqr = self.xx[0] * self.xx[0] + self.xx[1] * self.xx[1] + self.xx[2] * self.xx[2]
+        return r_sqr
 
     def __getitem__(self, int key):
         assert 0 <= key
@@ -85,20 +98,20 @@ cdef class Coordinate:
 
     def __add__(Coordinate c1, Coordinate c2):
         cdef Coordinate x = Coordinate()
-        x.xx = c1.xx + c2.xx
+        cc.assign_direct(x.xx, c1.xx + c2.xx)
         return x
 
     def __sub__(Coordinate c1, Coordinate c2):
         cdef Coordinate x = Coordinate()
-        x.xx = c1.xx - c2.xx
+        cc.assign_direct(x.xx, c1.xx - c2.xx)
         return x
 
     def __mul__(c1, c2):
         cdef Coordinate x = Coordinate()
         if isinstance(c2, int):
-            x.xx = (<Coordinate>c1).xx * (<int>c2)
+            cc.assign_direct(x.xx, (<Coordinate>c1).xx * (<int>c2))
         elif isinstance(c2, Coordinate):
-            x.xx = (<Coordinate>c1).xx * (<Coordinate>c2).xx
+            cc.assign_direct(x.xx, (<Coordinate>c1).xx * (<Coordinate>c2).xx)
         else:
             raise Exception(f"Coordinate.__mul__({c1},{c2})")
         return x
@@ -106,9 +119,14 @@ cdef class Coordinate:
     def __rmul__(c1, c2):
         return c1 * c2
 
+    def __mod__(Coordinate c1, Coordinate c2):
+        cdef Coordinate x = Coordinate()
+        cc.assign_direct(x.xx, cc.mod(c1.xx, c2.xx))
+        return x
+
     def __neg__(self):
         cdef Coordinate x = Coordinate()
-        x.xx = x.xx - self.xx
+        cc.assign_direct(x.xx, x.xx - self.xx)
         return x
 
     def __pos__(self):
@@ -131,9 +149,7 @@ def mod(Coordinate c, Coordinate size):
     return ``x``
     ``0 <= x < size``
     """
-    cdef Coordinate x = Coordinate()
-    x.xx = cc.mod(c.xx, size.xx)
-    return x
+    return c % size
 
 def smod(Coordinate c, Coordinate size):
     """
@@ -142,7 +158,7 @@ def smod(Coordinate c, Coordinate size):
     ``-size/2 <= x < size/2``
     """
     cdef Coordinate x = Coordinate()
-    x.xx = cc.smod(c.xx, size.xx)
+    cc.assign_direct(x.xx, cc.smod(c.xx, size.xx))
     return x
 
 def middle_mod(Coordinate x, Coordinate y, Coordinate size):
@@ -154,24 +170,16 @@ def middle_mod(Coordinate x, Coordinate y, Coordinate size):
     else: return mod(ym + smod(xm - ym, size), size)
     """
     cdef Coordinate ret = Coordinate()
-    ret.xx = cc.middle_mod(x.xx, y.xx, size.xx)
+    cc.assign_direct(ret.xx, cc.middle_mod(x.xx, y.xx, size.xx))
     return ret
 
-def coordinate_from_index(long index, size):
+def coordinate_from_index(long index, Coordinate size not None):
     cdef Coordinate x = Coordinate()
-    if isinstance(size, Coordinate):
-        x.xx = cc.coordinate_from_index(index, (<Coordinate>size).xx)
-        return x
-    else:
-        x.xx = cc.coordinate_from_index(index, cc.Coordinate(size[0], size[1], size[2], size[3]))
-        return x.to_list()
+    cc.assign_direct(x.xx, cc.coordinate_from_index(index, (<Coordinate>size).xx))
+    return x
 
-def index_from_coordinate(x, size):
-    if isinstance(x, Coordinate) and isinstance(size, Coordinate):
-        return cc.index_from_coordinate((<Coordinate>x).xx, (<Coordinate>size).xx)
-    else:
-        return cc.index_from_coordinate(cc.Coordinate(x[0], x[1], x[2], x[3]),
-                                        cc.Coordinate(size[0], size[1], size[2], size[3]))
+def index_from_coordinate(Coordinate x not None, Coordinate size not None):
+    return cc.index_from_coordinate(x.xx, size.xx)
 
 # ------
 
@@ -215,11 +223,23 @@ cdef class CoordinateD:
     def __repr__(self):
         return f"CoordinateD({self.to_list()})"
 
+    def __iter__(self):
+        cdef int i
+        cdef int dim = 4
+        for i in range(dim):
+            yield self.xx[i]
+
     def to_list(self):
         """
         Return a list composed of the 4 components of the coordinate.
         """
         return [ self.xx[0], self.xx[1], self.xx[2], self.xx[3], ]
+
+    def to_tuple(self):
+        """
+        Return a tuple composed of the 4 components of the coordinate.
+        """
+        return (self.xx[0], self.xx[1], self.xx[2], self.xx[3],)
 
     def from_list(self, list x):
         """
