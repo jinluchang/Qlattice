@@ -140,18 +140,6 @@ cdef class PointsSelection:
     def __len__(self):
         return self.n_points()
 
-    # def coordinate_from_idx(self, long idx):
-    #     print("CHECK: WARNING: PointsSelection.coordinate_from_idx")
-    #     return self[idx]
-
-    # def to_list(self):
-    #     print("CHECK: WARNING: PointsSelection.to_list")
-    #     return [ self.coordinate_from_idx(idx).to_list() for idx in range(self.n_points()) ]
-
-    # def from_list(self, xg_arr=None, Geometry geo=None):
-    #     print("CHECK: WARNING: PointsSelection.from_list")
-    #     self.set_xg_arr(xg_arr, geo)
-
 ### -------------------------------------------------------------------
 
 cdef class FieldSelection:

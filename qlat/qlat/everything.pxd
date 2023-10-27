@@ -6,6 +6,20 @@ cdef extern from "qlat/mpi.h" namespace "qlat":
 
     int begin(const int id_node, const Coordinate& size_node, const int color) except +
     int end(const bool is_preserving_cache) except +
+    void sync_node() except +
+    void bcast(float& x, const int root) except +
+    void bcast(long& x, const int root) except +
+    void bcast(Complex& x, const int root) except +
+    void bcast(ComplexF& x, const int root) except +
+    void bcast(std_string& recv, const int root) except +
+    void bcast(Coordinate& x, const int root) except +
+    void bcast(LatData& ld, const int root) except +
+    void glb_sum(long& ld) except +
+    void glb_sum(float& ld) except +
+    void glb_sum(double& ld) except +
+    void glb_sum(Complex& ld) except +
+    void glb_sum(ComplexF& ld) except +
+    void glb_sum(LatData& ld) except +
 
 cdef extern from "qlat/geometry.h" namespace "qlat":
 
@@ -141,10 +155,14 @@ cdef extern from "qlat/core.h" namespace "qlat":
 cdef extern from "qlat/selected-points.h" namespace "qlat":
 
     PointsSelection mk_random_point_selection(const Coordinate& total_site,
-                                              const long num, const RngState& rs)
+                                              const long num, const RngState& rs) except +
     void save_point_selection_info(const PointsSelection& psel,
-                                   const std_string& path)
-    PointsSelection load_point_selection_info(const std_string& path)
+                                   const std_string& path) except +
+    PointsSelection load_point_selection_info(const std_string& path) except +
+    LatData lat_data_from_selected_points[M](const SelectedPoints[M]& sp) except +
+    void selected_points_from_lat_data[M](SelectedPoints[M]& sp, const LatData& ld) except +
+    void save_selected_points[M](const SelectedPoints[M]& sp, const std_string& path) except +
+    void load_selected_points[M](SelectedPoints[M]& sp, const std_string& path) except +
 
 cdef extern from "qlat/selected-field-io.h" namespace "qlat":
 

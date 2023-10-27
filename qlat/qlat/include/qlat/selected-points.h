@@ -310,27 +310,84 @@ void selected_points_from_lat_data_complex(SelectedPoints<M>& sp,
 }
 
 template <class M>
-void save_selected_points_complex(const SelectedPoints<M>& sp,
-                                  const std::string& path)
+LatData lat_data_from_selected_points_double(const SelectedPoints<M>& sp)
 {
-  TIMER_VERBOSE("save_selected_points_complex");
+  TIMER("lat_data_from_selected_points_double");
+  LatData ld;
+  ld.info.push_back(lat_dim_number("idx", 0, sp.n_points - 1));
+  ld.info.push_back(lat_dim_number("m", 0, sp.multiplicity - 1));
+  qassert(sizeof(M) >= sizeof(double));
+  ld.info.push_back(
+      lat_dim_number("v", 0, (long)(sizeof(M) / sizeof(double)) - 1));
+  lat_data_alloc(ld);
+  assign(get_data(ld.res), get_data(sp.points));
+  return ld;
+}
+
+template <class M>
+void selected_points_from_lat_data_double(SelectedPoints<M>& sp,
+                                          const LatData& ld)
+{
+  TIMER("selected_points_from_lat_data_double");
+  qassert(ld.info.size() == 4);
+  qassert(ld.info[0].name == "idx");
+  qassert(ld.info[1].name == "m");
+  qassert(ld.info[2].name == "v");
+  const long n_points = ld.info[0].size;
+  const long multiplicity = ld.info[1].size;
+  const long sizof_M_vs_sizeof_double = ld.info[2].size;
+  qassert(sizeof(M) == sizof_M_vs_sizeof_double * sizeof(double));
+  sp.init(n_points, multiplicity);
+  assign(get_data(sp.points), get_data(ld.res));
+}
+
+template <class M>
+LatData lat_data_from_selected_points(const SelectedPoints<M>& sp)
+{
+  TIMER("lat_data_from_selected_points");
+  if (is_composed_of_complex<M>()) {
+    return lat_data_from_selected_points_complex(sp);
+  } else if (is_composed_of_double<M>()) {
+    return lat_data_from_selected_points_double(sp);
+  } else {
+    qerr(fname + ssprintf(": get_type_name(M)=%s", get_type_name<M>().c_str()));
+    return LatData();
+  }
+}
+
+template <class M>
+void selected_points_from_lat_data(SelectedPoints<M>& sp, const LatData& ld)
+{
+  TIMER("selected_points_from_lat_data");
+  if (is_composed_of_complex<M>()) {
+    return selected_points_from_lat_data_complex(sp, ld);
+  } else if (is_composed_of_double<M>()) {
+    return selected_points_from_lat_data_double(sp, ld);
+  } else {
+    qerr(fname + ssprintf(": get_type_name(M)=%s", get_type_name<M>().c_str()));
+  }
+}
+
+template <class M>
+void save_selected_points(const SelectedPoints<M>& sp, const std::string& path)
+{
+  TIMER_VERBOSE("save_selected_points");
   if (get_id_node() == 0) {
-    const LatData ld = lat_data_from_selected_points_complex(sp);
+    const LatData ld = lat_data_from_selected_points(sp);
     ld.save(path);
   }
 }
 
 template <class M>
-void load_selected_points_complex(SelectedPoints<M>& sp,
-                                  const std::string& path)
+void load_selected_points(SelectedPoints<M>& sp, const std::string& path)
 {
-  TIMER_VERBOSE("load_selected_points_complex");
+  TIMER_VERBOSE("load_selected_points");
   long n_points = 0;
   long multiplicity = 0;
   if (get_id_node() == 0) {
     LatData ld;
     ld.load(path);
-    selected_points_from_lat_data_complex(sp, ld);
+    selected_points_from_lat_data(sp, ld);
     n_points = sp.n_points;
     multiplicity = sp.multiplicity;
   }
@@ -397,17 +454,16 @@ void load_selected_points_complex(SelectedPoints<M>& sp,
       SelectedPoints<TYPENAME> & sp, const Field<TYPENAME>& f,               \
       const int t_dir);                                                      \
                                                                              \
-  QLAT_EXTERN template LatData                                               \
-  lat_data_from_selected_points_complex<TYPENAME>(                           \
+  QLAT_EXTERN template LatData lat_data_from_selected_points<TYPENAME>(      \
       const SelectedPoints<TYPENAME>& sp);                                   \
                                                                              \
-  QLAT_EXTERN template void selected_points_from_lat_data_complex<TYPENAME>( \
+  QLAT_EXTERN template void selected_points_from_lat_data<TYPENAME>(         \
       SelectedPoints<TYPENAME> & sp, const LatData& ld);                     \
                                                                              \
-  QLAT_EXTERN template void save_selected_points_complex<TYPENAME>(          \
+  QLAT_EXTERN template void save_selected_points<TYPENAME>(                  \
       const SelectedPoints<TYPENAME>& sp, const std::string& path);          \
                                                                              \
-  QLAT_EXTERN template void load_selected_points_complex<TYPENAME>(          \
+  QLAT_EXTERN template void load_selected_points<TYPENAME>(                  \
       SelectedPoints<TYPENAME> & sp, const std::string& path)
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);

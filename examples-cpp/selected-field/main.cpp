@@ -339,9 +339,9 @@ inline void test_selected_points(const std::string& tag, const long n_points)
   //
   SelectedPoints<Complex> sp;
   set_selected_points(sp, f, psel);
-  save_selected_points_complex(sp, "huge-data/" + tag + "/f.lat");
+  save_selected_points(sp, "huge-data/" + tag + "/f.lat");
   SelectedPoints<Complex> sp2;
-  load_selected_points_complex(sp2, "huge-data/" + tag + "/f.lat");
+  load_selected_points(sp2, "huge-data/" + tag + "/f.lat");
   Field<Complex> f2;
   set_field_selected(f2, sp2, f.geo(), psel);
   const crc32_t crc2 = field_crc32(f2);

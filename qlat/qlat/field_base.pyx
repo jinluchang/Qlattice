@@ -777,7 +777,9 @@ cdef class SelectedPointsBase:
             assert False
 
     def __getitem__(self, i):
-        # i can be (idx, m,) or idx
+        """
+        i can be (idx, m,) or idx
+        """
         if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], int):
             idx, m = i
             return self.get_elem(idx, m)
@@ -789,8 +791,10 @@ cdef class SelectedPointsBase:
             return None
 
     def __setitem__(self, i, val):
-        # i can be (idx, m,) or idx
-        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
+        """
+        i can be (idx, m,) or idx
+        val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
+        """
         if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], int):
             idx, m = i
             self.set_elem(idx, m, val)
@@ -800,33 +804,6 @@ cdef class SelectedPointsBase:
         else:
             assert False
 
-    def save(self, path):
-        assert isinstance(path, str)
-        return self.save_complex(path)
-
-    def load(self, path):
-        assert isinstance(path, str)
-        return self.load_complex(path)
-
-    def save_complex(self, path):
-        assert isinstance(path, str)
-        return c.save_complex_spfield(self, path)
-
-    def load_complex(self, path):
-        assert isinstance(path, str)
-        return c.load_complex_spfield(self, path)
-
-    def to_lat_data(self):
-        assert self.ctype in field_ctypes_complex
-        ld = LatData()
-        c.lat_data_from_complex_spfield(ld, self)
-        return ld
-
-    def from_lat_data(self, ld):
-        assert self.ctype in field_ctypes_complex
-        assert isinstance(ld, LatData)
-        c.complex_spfield_from_lat_data(self, ld)
-
     def to_numpy(self):
         return np.asarray(self).copy()
 
@@ -835,8 +812,8 @@ cdef class SelectedPointsBase:
         need to be already initialized with ctype and psel
         arr.shape[0] == n_points
         """
-        n_points = self.n_points()
-        assert arr.shape[0] == n_points
-        np.asarray(self).ravel()[:] = arr.ravel()
+        v_arr = np.asarray(self)
+        assert arr.shape[0] == v_arr.shape[0]
+        v_arr.ravel()[:] = arr.ravel()
 
 ### -------------------------------------------------------------------
