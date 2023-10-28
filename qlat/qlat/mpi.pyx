@@ -47,9 +47,13 @@ def bcast_complex(cc.Complex x, int root=0):
     cc.bcast(x, root)
     return x
 
-def bcast_lat_data(LatData ld, int root=0):
+def bcast_lat_data_in_place(LatData ld, int root=0):
     cc.bcast(ld.xx, root)
     return ld
+
+def bcast_lat_data(LatData ld, int root=0):
+    cdef LatData ld1 = ld.copy()
+    return bcast_lat_data_in_place(ld1, root)
 
 ### -------------------------------------------------------------------
 
@@ -65,8 +69,12 @@ def glb_sum_complex(cc.Complex x):
     cc.glb_sum(x)
     return x
 
-def glb_sum_lat_data(LatData ld):
+def glb_sum_lat_data_in_place(LatData ld):
     cc.glb_sum(ld.xx)
     return ld
+
+def glb_sum_lat_data(LatData ld):
+    cdef LatData ld1 = ld.copy()
+    return glb_sum_lat_data_in_place(ld1)
 
 ### -------------------------------------------------------------------

@@ -76,13 +76,13 @@ cdef class LatData:
     def bcast(self):
         if cc.get_num_node() != 1:
             import qlat.c as c
-            c.bcast_lat_data(self)
+            c.bcast_lat_data_in_place(self)
         return self
 
     def glb_sum_in_place(self):
         if cc.get_num_node() != 1:
             import qlat.c as c
-            c.glb_sum_lat_data(self)
+            c.glb_sum_lat_data_in_place(self)
         return self
 
     def glb_sum(self):
