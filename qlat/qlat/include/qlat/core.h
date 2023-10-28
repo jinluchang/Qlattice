@@ -933,17 +933,16 @@ void qswap(SelectedPoints<M>& f1, SelectedPoints<M>& f2)
 
 // --------------------
 
+using FieldRank = FieldM<int64_t, 1>;
+
+using FieldIndex = FieldM<long, 1>;
+
 struct API FieldSelection {
-  FieldM<int64_t, 1>
-      f_rank;  // rank when the points being selected (-1 if not selected)
+  long n_elems;  // num points of this node
   //
-  long n_per_tslice;  // num points per time slice (not enforced and should work
-                      // properly if not true)
-  double prob;        // (double)n_per_tslice / (double)spatial_vol
+  FieldRank f_rank;  // rank when the points being selected (-1 if not selected)
   //
-  FieldM<long, 1>
-      f_local_idx;  // idx of points on this node (-1 if not selected)
-  long n_elems;     // num points of this node
+  FieldIndex f_local_idx;  // idx of points on this node (-1 if not selected)
   //
   vector_acc<int64_t> ranks;  // rank of the selected points
   vector_acc<long> indices;   // local indices of selected points
@@ -953,6 +952,11 @@ struct API FieldSelection {
   FieldSelection() { init(); }
   //
   qacc const Geometry& get_geo() const { return f_rank.geo(); }
+  //
+  long n_per_tslice;  // num points per time slice (not enforced and should work
+  // properly if not true)
+  //
+  double prob;  // (double)n_per_tslice / (double)spatial_vol
 };
 
 // --------------------

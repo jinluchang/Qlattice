@@ -25,12 +25,14 @@ def sync_node():
 
 def get_size_node():
     cdef Coordinate x = Coordinate()
-    cc.assign_direct(x.xx, cc.get_size_node())
+    # cc.assign_direct(x.xx, cc.get_size_node())
+    x.xx = cc.get_size_node()
     return x
 
 def get_coor_node():
     cdef Coordinate x = Coordinate()
-    cc.assign_direct(x.xx, cc.get_coor_node())
+    # cc.assign_direct(x.xx, cc.get_coor_node())
+    x.xx = cc.get_coor_node()
     return x
 
 ### -------------------------------------------------------------------

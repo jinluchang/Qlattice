@@ -90,6 +90,7 @@ cdef class PointsSelection:
         """
         return np.asarray(self, dtype=np.int32)
 
+    @q.timer
     def set_xg_arr(self, xg_arr=None, Geometry geo=None):
         """
         psel.set_xg_arr()
@@ -199,31 +200,6 @@ cdef class FieldSelection:
         """
         c.update_fsel(self, n_per_tslice)
 
-    def select_rank_range(self, long rank_start=0, long rank_stop=-1):
-        """
-        return new fsel with selected points that
-        rank_start <= rank and (rank < rank_stop or rank_stop == -1)
-        Does NOT change the n_per_tslice parameter for the new fsel
-        """
-        fsel = FieldSelection()
-        c.select_rank_range_fsel(fsel, self, rank_start, rank_stop)
-        fsel.update()
-        fsel.update(self.n_per_tslice())
-        return fsel
-
-    def select_t_range(self, long rank_start=0, long rank_stop=-1):
-        """
-        return new fsel with selected points that
-        t_start <= t and (t < t_stop or t_stop == -1)
-        rank_start <= rank < rank_stop (rank_stop = -1 implies unlimited)
-        Does NOT change the n_per_tslice parameter for the new fsel
-        """
-        fsel = FieldSelection()
-        c.select_rank_range_fsel(fsel, self, rank_start, rank_stop)
-        fsel.update()
-        fsel.update(self.n_per_tslice())
-        return fsel
-
     def to_psel(self):
         psel = PointsSelection(None, self.geo())
         c.set_psel_fsel(psel, self)
@@ -260,6 +236,31 @@ cdef class FieldSelection:
         n_per_tslice / spatial_volume
         """
         return c.get_prob_fsel(self)
+
+    def select_rank_range(self, long rank_start=0, long rank_stop=-1):
+        """
+        return new fsel with selected points that
+        rank_start <= rank and (rank < rank_stop or rank_stop == -1)
+        Does NOT change the n_per_tslice parameter for the new fsel
+        """
+        fsel = FieldSelection()
+        c.select_rank_range_fsel(fsel, self, rank_start, rank_stop)
+        fsel.update()
+        fsel.update(self.n_per_tslice())
+        return fsel
+
+    def select_t_range(self, long rank_start=0, long rank_stop=-1):
+        """
+        return new fsel with selected points that
+        t_start <= t and (t < t_stop or t_stop == -1)
+        rank_start <= rank < rank_stop (rank_stop = -1 implies unlimited)
+        Does NOT change the n_per_tslice parameter for the new fsel
+        """
+        fsel = FieldSelection()
+        c.select_rank_range_fsel(fsel, self, rank_start, rank_stop)
+        fsel.update()
+        fsel.update(self.n_per_tslice())
+        return fsel
 
     def idx_from_coordinate(self, Coordinate xg not None):
         return c.get_idx_from_coordinate_fsel(self, xg)

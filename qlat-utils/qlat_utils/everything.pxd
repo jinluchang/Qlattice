@@ -96,6 +96,29 @@ cdef extern from "qlat-utils/handle.h" namespace "qlat":
         long size()
         long data_size()
 
+cdef extern from "qlat-utils/vector.h" namespace "qlat":
+
+    cdef cppclass vector[T]:
+        bool is_copy
+        bool is_acc
+        Vector[T] v
+        vector()
+        void init()
+        void size()
+        T* data()
+        T& operator[](const long i) except +
+    cdef cppclass vector_acc[T](vector[T]):
+        vector_acc()
+    cdef cppclass box[T]:
+        bool is_copy
+        bool is_acc
+        Handle[T] v
+        box()
+        void init()
+        bool null() except +
+    cdef cppclass box_acc[T](box[T]):
+        box_acc()
+
 cdef extern from "qlat-utils/qutils-vec.h" namespace "qlat":
 
     void assign_direct[M, N](M& x, const N& y) except +

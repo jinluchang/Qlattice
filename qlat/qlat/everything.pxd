@@ -6,8 +6,8 @@ cdef extern from "qlat/mpi.h" namespace "qlat":
 
     int begin(const int id_node, const Coordinate& size_node, const int color) except +
     int end(const bool is_preserving_cache) except +
-    Coordinate get_size_node() except +
-    Coordinate get_coor_node() except +
+    const Coordinate& get_size_node() except +
+    const Coordinate& get_coor_node() except +
     void sync_node() except +
     void bcast(float& x, const int root) except +
     void bcast(long& x, const int root) except +
@@ -34,7 +34,6 @@ cdef extern from "qlat/geometry.h" namespace "qlat":
         GeometryNode()
         void init()
         void init(const int id_node, const Coordinate& size_node)
-
     cdef cppclass Geometry:
         bool initialized
         GeometryNode geon
@@ -90,7 +89,7 @@ cdef extern from "qlat/utils-io.h" namespace "qlat":
     std_string qcat_sync_node(const std_string& path) except +
     DataTable qload_datatable_sync_node(const std_string& path, const bool is_par) except +
 
-cdef extern from "qlat/field.h" namespace "qlat":
+cdef extern from "qlat/core.h" namespace "qlat":
 
     cdef cppclass Field[T]:
         Field()
@@ -99,32 +98,26 @@ cdef extern from "qlat/field.h" namespace "qlat":
         void init(const Geometry& geo, int multiplicity) except +
         void init(const Field[T]& field) except +
         const Geometry& get_geo()
-    cdef cppclass GaugeField:
+    cdef cppclass GaugeField(Field[ColorMatrix]):
         pass
-    cdef cppclass GaugeTransform:
+    cdef cppclass GaugeTransform(Field[ColorMatrix]):
         pass
-    cdef cppclass Prop:
+    cdef cppclass Prop(Field[WilsonMatrix]):
         pass
-    cdef cppclass SelProp:
+    cdef cppclass FermionField4d(Field[WilsonVector]):
         pass
-    cdef cppclass PselProp:
+    cdef cppclass FieldRank(Field[Int64t]):
         pass
-    cdef cppclass FermionField4d:
+    cdef cppclass FieldIndex(Field[Long]):
         pass
-    Vector[T] get_data[T](const Field[T]& x)
-    void set_zero[T](Field[T]& x)
-    void qswap[T](Field[T]& x, Field[T]& y) except +
-    void set_xg_field(Field[int]& f, const Geometry& geo)
-
-cdef extern from "qlat/field-expand.h" namespace "qlat":
-
-    cdef cppclass CommPlan:
-        CommPlan()
-
-cdef extern from "qlat/core.h" namespace "qlat":
-
     cdef cppclass FieldSelection:
+        long n_elems
+        FieldRank f_rank
+        FieldIndex f_local_idx
+        vector_acc[Int64t] ranks
+        vector_acc[long] indices
         FieldSelection()
+        void init()
         const Geometry& get_geo()
     cdef cppclass PointsSelection:
         PointsSelection()
@@ -147,12 +140,28 @@ cdef extern from "qlat/core.h" namespace "qlat":
         void init()
         void init(const long n_points, const int multiplicity) except +
         void init(const PointsSelection& psel, const int multiplicity) except +
+    Vector[T] get_data[T](const Field[T]& x)
+    void set_zero[T](Field[T]& x)
+    void qswap[T](Field[T]& x, Field[T]& y) except +
     Vector[T] get_data[T](const SelectedField[T]& x)
     void set_zero[T](SelectedField[T]& x)
     void qswap[T](SelectedField[T]& x, SelectedField[T]& y) except +
     Vector[T] get_data[T](const SelectedPoints[T]& x)
     void set_zero[T](SelectedPoints[T]& x)
     void qswap[T](SelectedPoints[T]& x, SelectedPoints[T]& y) except +
+    cdef cppclass SelProp(SelectedField[WilsonMatrix]):
+        pass
+    cdef cppclass PselProp(SelectedPoints[WilsonMatrix]):
+        pass
+
+cdef extern from "qlat/field.h" namespace "qlat":
+
+    void set_xg_field(Field[Int]& f, const Geometry& geo) except +
+
+cdef extern from "qlat/field-expand.h" namespace "qlat":
+
+    cdef cppclass CommPlan:
+        CommPlan()
 
 cdef extern from "qlat/selected-points.h" namespace "qlat":
 
@@ -211,5 +220,3 @@ cdef extern from "qlat/vector_utils/utils_smear_vecs.h" namespace "qlat":
                                     const CoordinateD& mom,
                                     const bool smear_in_time_dir,
                                     const int mode_smear) except +
-
-
