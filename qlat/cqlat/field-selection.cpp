@@ -1,21 +1,5 @@
 #include "lib.h"
 
-EXPORT(mk_fsel, {
-  using namespace qlat;
-  FieldSelection* pfsel = new FieldSelection();
-  return py_convert((void*)pfsel);
-})
-
-EXPORT(free_fsel, {
-  using namespace qlat;
-  return free_obj<FieldSelection>(args);
-})
-
-EXPORT(set_fsel, {
-  using namespace qlat;
-  return set_obj<FieldSelection>(args);
-})
-
 EXPORT(load_fsel, {
   using namespace qlat;
   PyObject* p_fsel = NULL;

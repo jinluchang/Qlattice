@@ -413,7 +413,7 @@ def load_prop_wsrc_psel(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
     cache_psel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel")
     cache_psel_ts = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel_ts")
     cache_prob = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"prob")
-    total_site = rup.get_total_site(job_tag)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     psel_ts = q.get_psel_tslice(total_site)
     if flavor in [ "l", "u", "d", ]:
         flavor_inv_type = 0
@@ -471,7 +471,7 @@ def load_prop_wsrc_fsel(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
     cache_psel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel")
     cache_psel_ts = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel_ts")
     cache_prob = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"prob")
-    total_site = rup.get_total_site(job_tag)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     psel_ts = q.get_psel_tslice(total_site)
     if flavor in [ "l", "u", "d", ]:
         flavor_inv_type = 0
@@ -527,7 +527,7 @@ def load_prop_psrc_psel(job_tag, traj, flavor, *, psel, fsel, fselc):
     cache_psel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel")
     cache_psel_ts = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel_ts")
     cache_prob = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"prob")
-    total_site = rup.get_total_site(job_tag)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     psel_ts = q.get_psel_tslice(total_site)
     if flavor in [ "l", "u", "d", ]:
         flavor_inv_type = 0
@@ -580,7 +580,7 @@ def load_prop_psrc_fsel(job_tag, traj, flavor, *, psel, fsel, fselc):
     cache_psel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel")
     cache_psel_ts = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel_ts")
     cache_prob = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"prob")
-    total_site = rup.get_total_site(job_tag)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     psel_ts = q.get_psel_tslice(total_site)
     if flavor in [ "l", "u", "d", ]:
         flavor_inv_type = 0
@@ -625,7 +625,7 @@ def load_prop_rand_u1_fsel(job_tag, traj, flavor, *, psel, fsel, fselc):
     cache_fsel[f"type={inv_type} ; accuracy={inv_acc} ; rand_u1 ; fsel"]
     """
     cache_fsel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"fsel")
-    total_site = rup.get_total_site(job_tag)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     if flavor in [ "l", "u", "d", ]:
         flavor_inv_type = 0
         flavor_tag = "light"
@@ -732,7 +732,7 @@ def run_get_prop(job_tag, traj, *,
     @q.timer_verbose
     def mk_get_prop():
         q.timer_fork()
-        total_site = rup.get_total_site(job_tag)
+        total_site = q.Coordinate(get_param(job_tag, "total_site"))
         wi = get_wi()
         gt = get_gt()
         psel = get_psel()

@@ -64,9 +64,11 @@ __all__ += [
         ]
 
 __all__ += [
-        'mk_xg_field',
         'PointsSelection',
         'FieldSelection',
+        'mk_xg_field',
+        'get_psel_tslice',
+        'is_matching_fsel',
         ]
 
 __all__ += [

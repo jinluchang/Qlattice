@@ -270,10 +270,29 @@ cdef class FieldSelection:
 
 ### -------------------------------------------------------------------
 
+cache_point_selection = q.mk_cache("point_selection")
+
 @q.timer
 def mk_xg_field(Geometry geo):
     cdef FieldInt f = FieldInt()
     cc.set_xg_field(f.xx, geo.xx)
     return f
+
+def get_psel_tslice(Coordinate total_site, *, int t_dir=3):
+    """
+    if t_dir = 3, then [ [0,0,0,0,], [0,0,0,1,], ..., [0,0,0,total_site[3]-1],]
+    if t_dir = 2, then [ [0,0,0,0,], [0,0,1,0,], ..., [0,0,total_site[2]-1],0,]
+    need total_site to set the psel.geo property
+    """
+    assert 0 <= t_dir and t_dir < 4
+    param_tuple = (total_site[0], total_site[1], total_site[2], total_site[3], t_dir,)
+    if param_tuple not in cache_point_selection:
+        psel = PointsSelection(None, Geometry(total_site))
+        cc.assign_direct(psel.xx, cc.mk_tslice_point_selection(total_site[t_dir], t_dir))
+        cache_point_selection[param_tuple] = psel
+    return cache_point_selection[param_tuple]
+
+def is_matching_fsel(FieldSelection fsel1, FieldSelection fsel2):
+    return cc.is_matching_fsel(fsel1.xx, fsel2.xx)
 
 ### -------------------------------------------------------------------

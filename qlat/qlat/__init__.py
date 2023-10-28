@@ -33,8 +33,6 @@ from .contract_pion import *
 
 from .contract_field import *
 
-from .field_selection_utils import *
-
 from .fields_io import *
 
 from .inverter import *

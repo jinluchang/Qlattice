@@ -15,7 +15,6 @@ py_files = files(
   'coordinate.py',
   'fermion_action.py',
   'field_double.py',
-  'field_selection_utils.py',
   'fields_io.py',
   'field_type_dict.py',
   'fthmc.py',

@@ -4,6 +4,7 @@ from qlat_utils.all cimport *
 from . cimport everything as cc
 from .geometry cimport Geometry
 from .field_types cimport FieldFloat
+from .field_selection cimport PointsSelection, FieldSelection
 from .selected_field_types cimport SelectedFieldFloat
 
 from cpython cimport Py_buffer
@@ -394,8 +395,8 @@ cdef class FieldBase:
         """
         return SelectedPoints(self.ctype, get_psel_tslice(self.total_site(), t_dir=t_dir))
         """
-        from .field_selection_utils import get_psel_tslice
-        psel = get_psel_tslice(self.total_site(), t_dir=t_dir)
+        from .c import get_psel_tslice
+        cdef PointsSelection psel = get_psel_tslice(self.total_site(), t_dir=t_dir)
         sp = SelectedPoints(self.ctype, psel)
         if self.ctype in field_ctypes_double:
             c.glb_sum_tslice_double_field(sp, self, t_dir)
@@ -468,20 +469,6 @@ cdef class SelectedFieldBase:
 
     def __deepcopy__(self, memo):
         return self.copy()
-
-    def n_elems(self):
-        return c.get_n_elems_sfield(self)
-
-    def total_site(self):
-        return c.get_total_site_sfield(self)
-
-    def multiplicity(self):
-        return c.get_multiplicity_sfield(self)
-
-    def geo(self):
-        geo = Geometry((0, 0, 0, 0))
-        c.set_geo_sfield(geo, self)
-        return geo
 
     def __iadd__(self, f1):
         assert isinstance(f1, SelectedFieldBase)
@@ -702,8 +689,8 @@ cdef class SelectedFieldBase:
         """
         return SelectedPoints(self.ctype, get_psel_tslice(self.total_site(), t_dir=t_dir))
         """
-        from qlat.field_selection_utils import get_psel_tslice
-        psel = get_psel_tslice(self.total_site(), t_dir=t_dir)
+        from .c import get_psel_tslice
+        cdef PointsSelection psel = get_psel_tslice(self.total_site(), t_dir=t_dir)
         sp = SelectedPoints(self.ctype, psel)
         if self.ctype in field_ctypes_double:
             c.glb_sum_tslice_double_sfield(sp, self, t_dir)

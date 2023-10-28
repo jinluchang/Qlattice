@@ -174,6 +174,11 @@ cdef extern from "qlat/selected-points.h" namespace "qlat":
     void selected_points_from_lat_data[M](SelectedPoints[M]& sp, const LatData& ld) except +
     void save_selected_points[M](const SelectedPoints[M]& sp, const std_string& path) except +
     void load_selected_points[M](SelectedPoints[M]& sp, const std_string& path) except +
+    PointsSelection mk_tslice_point_selection(const int t_size, const int t_dir) except +
+
+cdef extern from "qlat/selected-field.h" namespace "qlat":
+
+    bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2) except +
 
 cdef extern from "qlat/selected-field-io.h" namespace "qlat":
 

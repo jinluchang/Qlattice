@@ -8,7 +8,7 @@ namespace qlat
 PointsSelection mk_tslice_point_selection(const int t_size, const int t_dir = 3);
 
 PointsSelection mk_tslice_point_selection(const Coordinate& total_site,
-                                         const int t_dir = 3);
+                                          const int t_dir = 3);
 
 PointsSelection mk_random_point_selection(const Coordinate& total_site,
                                          const long num, const RngState& rs,
