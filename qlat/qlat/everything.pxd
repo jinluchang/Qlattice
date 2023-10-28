@@ -98,6 +98,11 @@ cdef extern from "qlat/core.h" namespace "qlat":
         void init(const Geometry& geo, int multiplicity) except +
         void init(const Field[T]& field) except +
         const Geometry& get_geo()
+        T& get_elem(const Coordinate& x, const int m) except +
+        T& get_elem(const Coordinate& x)
+        T& get_elem(const long index, const int m)
+        Vector[T] get_elems(const Coordinate& x)
+        Vector[T] get_elems(const long index)
     cdef cppclass GaugeField(Field[ColorMatrix]):
         pass
     cdef cppclass GaugeTransform(Field[ColorMatrix]):
@@ -115,7 +120,7 @@ cdef extern from "qlat/core.h" namespace "qlat":
         FieldRank f_rank
         FieldIndex f_local_idx
         vector_acc[Int64t] ranks
-        vector_acc[long] indices
+        vector_acc[Long] indices
         FieldSelection()
         void init()
         const Geometry& get_geo()
@@ -178,10 +183,6 @@ cdef extern from "qlat/selected-points.h" namespace "qlat":
 
 cdef extern from "qlat/selected-field.h" namespace "qlat":
 
-    bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2) except +
-
-cdef extern from "qlat/selected-field-io.h" namespace "qlat":
-
     void set_selected_field[t](SelectedField[t]& sf, const Field[t]& f,
                                const FieldSelection& fsel) except +
     void set_selected_field[t](SelectedField[t]& sf, const SelectedField[t] sf0,
@@ -196,6 +197,20 @@ cdef extern from "qlat/selected-field-io.h" namespace "qlat":
                                const FieldSelection& fsel) except +
     void set_field_selected[t](Field[t]& sf, const SelectedPoints[t]& f,
                                const Geometry& geo, const PointsSelection& psel) except +
+    bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2) except +
+
+cdef extern from "qlat/selected-field-io.h" namespace "qlat":
+
+    long write_field_selection(const FieldSelection& fsel, const std_string& path) except +
+    long read_field_selection(FieldSelection& fsel, const std_string& path, const long n_per_tslice) except +
+    bool is_selected_field(const std_string& path) except +
+    void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site, const Int64t val) except +
+    void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site, const long n_per_tslice, const RngState& rs) except +
+    void add_field_selection(FieldRank& f_rank, const PointsSelection& psel, const long rank_psel) except +
+    void update_field_selection(FieldSelection& fsel) except +
+    void update_field_selection(FieldSelection& fsel, const long n_per_tslice_) except +
+    PointsSelection psel_from_fsel(const FieldSelection& fsel)
+    PointsSelection psel_from_fsel_local(const FieldSelection& fsel)
 
 cdef extern from "qlat/qcd-prop.h" namespace "qlat":
 

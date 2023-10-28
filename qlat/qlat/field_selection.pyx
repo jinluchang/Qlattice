@@ -158,11 +158,11 @@ cdef class FieldSelection:
             self.update(n_per_tslice)
 
     def __imatmul__(self, FieldSelection v1):
-        self.xx = v1.xx
+        cc.assign_direct(self.xx, v1.xx)
         return self
 
     def copy(self):
-        x = FieldSelection()
+        x = type(self)()
         x @= self
         return x
 
@@ -210,11 +210,11 @@ cdef class FieldSelection:
         c.set_psel_fsel_local(psel, self)
         return psel
 
-    def save(self, str path):
-        return c.save_fsel(self, path)
+    def save(self, const cc.std_string& path):
+        return cc.write_field_selection(self.xx, path)
 
-    def load(self, str path, long n_per_tslice):
-        return c.load_fsel(self, path, n_per_tslice)
+    def load(self, const cc.std_string& path, long n_per_tslice):
+        return cc.read_field_selection(self.xx, path, n_per_tslice)
 
     def geo(self):
         geo = Geometry()
@@ -226,6 +226,14 @@ cdef class FieldSelection:
 
     def n_elems(self):
         return c.get_n_elems_fsel(self)
+
+    def idx_from_coordinate(self, Coordinate xg not None):
+        return c.get_idx_from_coordinate_fsel(self, xg)
+
+    def coordinate_from_idx(self, long idx):
+        return c.get_coordinate_from_idx_fsel(self, idx)
+
+    ##
 
     def n_per_tslice(self):
         return c.get_n_per_tslice_fsel(self)
@@ -261,12 +269,6 @@ cdef class FieldSelection:
         fsel.update()
         fsel.update(self.n_per_tslice())
         return fsel
-
-    def idx_from_coordinate(self, Coordinate xg not None):
-        return c.get_idx_from_coordinate_fsel(self, xg)
-
-    def coordinate_from_idx(self, long idx):
-        return c.get_coordinate_from_idx_fsel(self, idx)
 
 ### -------------------------------------------------------------------
 
