@@ -185,7 +185,13 @@ void bcast(long& x, const int root = 0);
 
 void bcast(uint32_t& x, const int root = 0);
 
+void bcast(float& x, const int root = 0);
+
 void bcast(double& x, const int root = 0);
+
+void bcast(Complex& x, const int root = 0);
+
+void bcast(ComplexF& x, const int root = 0);
 
 void bcast(Coordinate& x, const int root = 0);
 

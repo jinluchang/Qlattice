@@ -1,10 +1,3 @@
-import qlat.c as c
-
-from qlat.c import mod_coordinate
-from qlat.c import smod_coordinate
-
-from qlat_utils import index_from_coordinate, coordinate_from_index
-
 import numpy as np
 
 def mk_epsilon_array():

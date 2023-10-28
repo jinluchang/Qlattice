@@ -6,6 +6,8 @@ cdef extern from "qlat/mpi.h" namespace "qlat":
 
     int begin(const int id_node, const Coordinate& size_node, const int color) except +
     int end(const bool is_preserving_cache) except +
+    Coordinate get_size_node() except +
+    Coordinate get_coor_node() except +
     void sync_node() except +
     void bcast(float& x, const int root) except +
     void bcast(long& x, const int root) except +

@@ -219,17 +219,17 @@ void bcast(int& x, const int root) { bcast(get_data_one_elem(x), root); }
 
 void bcast(long& x, const int root) { bcast(get_data_one_elem(x), root); }
 
-void bcast(uint32_t& x, const int root)
-{
-  bcast(get_data_one_elem(x), root);
-}
+void bcast(uint32_t& x, const int root) { bcast(get_data_one_elem(x), root); }
+
+void bcast(float& x, const int root) { bcast(get_data_one_elem(x), root); }
 
 void bcast(double& x, const int root) { bcast(get_data_one_elem(x), root); }
 
-void bcast(Coordinate& x, const int root)
-{
-  bcast(get_data_one_elem(x), root);
-}
+void bcast(ComplexF& x, const int root) { bcast(get_data_one_elem(x), root); }
+
+void bcast(Complex& x, const int root) { bcast(get_data_one_elem(x), root); }
+
+void bcast(Coordinate& x, const int root) { bcast(get_data_one_elem(x), root); }
 
 void bcast(std::string& recv, const int root)
 {

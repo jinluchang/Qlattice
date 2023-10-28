@@ -9,40 +9,38 @@ from qlat_utils import *
 
 set_verbose_level(-1)
 
-from qlat.c import *
+from .c import *
 
-from qlat.mpi import *
+from .mpi_utils import *
 
-from qlat.geometry import *
+from .coordinate import *
 
-from qlat.coordinate import *
+from .wilson_flow import *
 
-from qlat.wilson_flow import *
+from .topology import *
 
-from qlat.topology import *
+from .gauge_action import *
 
-from qlat.gauge_action import *
+from .scalar_action import *
 
-from qlat.scalar_action import *
+from .hmc import *
 
-from qlat.hmc import *
+from .fthmc import *
 
-from qlat.fthmc import *
+from .hmc_stats import *
 
-from qlat.hmc_stats import *
+from .contract_pion import *
 
-from qlat.contract_pion import *
+from .contract_field import *
 
-from qlat.contract_field import *
+from .field_selection_utils import *
 
-from qlat.field_selection_utils import *
+from .fields_io import *
 
-from qlat.fields_io import *
+from .inverter import *
 
-from qlat.inverter import *
+from .get_include_dir import *
 
-from qlat.get_include_dir import *
-
-import qlat.field_double
+from . import field_double
 
 set_verbose_level()

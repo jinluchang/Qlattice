@@ -2,7 +2,7 @@ from qlat_utils import *
 from .c import *
 
 from .gauge_action import *
-from .mpi import *
+from .mpi_utils import *
 
 from . import c
 

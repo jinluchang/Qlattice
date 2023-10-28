@@ -25,7 +25,7 @@ py_files = files(
   'hmc_stats.py',
   'inverter.py',
   '__main__.py',
-  'mpi.py',
+  'mpi_utils.py',
   'scalar_action.py',
   'topology.py',
   'wilson_flow.py',
@@ -102,6 +102,7 @@ name_pyx_list = [
   'qcd',
   'propagator',
   'smear',
+  'mpi',
   ]
 
 foreach name: name_pyx_list
