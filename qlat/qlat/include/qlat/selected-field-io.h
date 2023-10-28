@@ -7,11 +7,10 @@ namespace qlat
 {  //
 
 std::string make_selected_field_header(const Geometry& geo,
-                                       const long n_per_tslice,
                                        const int sizeof_M, const crc32_t crc32);
 
 long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
-                            long& n_per_tslice, int& sizeof_M, crc32_t& crc,
+                            int& sizeof_M, crc32_t& crc,
                             const std::string& path);
 
 bool is_selected_field(const std::string& path);
@@ -61,7 +60,6 @@ long write_selected_field(const SelectedField<M>& sf, const std::string& path,
   const Geometry& geo = sf.geo();
   qassert(geo.is_only_local);
   qassert(fsel.f_rank.geo() == geo_remult(geo));
-  const Coordinate total_site = geo.total_site();
   const Coordinate new_size_node = new_size_node_ != Coordinate()
                                        ? new_size_node_
                                        : get_default_serial_new_size_node(geo);
@@ -70,27 +68,9 @@ long write_selected_field(const SelectedField<M>& sf, const std::string& path,
   qassert(new_size_node[2] == 1);
   std::vector<FieldSelection> fsels;
   const ShufflePlan sp = make_shuffle_plan(fsels, fsel, new_size_node);
-  std::vector<SelectedField<M> > sfs;
+  std::vector<SelectedField<M>> sfs;
   shuffle_field(sfs, sf, sp);
   qassert(fsels.size() == sfs.size());
-  long check_n_per_tslice = 0;
-  for (int i = 0; i < (int)sfs.size(); ++i) {
-    const Coordinate& node_site = sfs[i].geo().node_site;
-    qassert(node_site[0] == total_site[0]);
-    qassert(node_site[1] == total_site[1]);
-    qassert(node_site[2] == total_site[2]);
-    if (sfs[i].n_elems != node_site[3] * fsel.n_per_tslice) {
-      check_n_per_tslice += 1;
-    }
-  }
-  glb_sum(check_n_per_tslice);
-  if (check_n_per_tslice > 0) {
-    displayln_info(
-        fname +
-        ssprintf(
-            ": WARNING fsels.n_per_tslice=%d do not match with data. n_fail=%d",
-            fsel.n_per_tslice, check_n_per_tslice));
-  }
   const int new_num_node = product(new_size_node);
   crc32_t crc = 0;
   for (int i = 0; i < (int)sfs.size(); ++i) {
@@ -102,15 +82,15 @@ long write_selected_field(const SelectedField<M>& sf, const std::string& path,
   }
   glb_sum_byte(crc);
   if (get_force_field_write_sizeof_M() == 0) {
-    qtouch_info(path + ".partial", make_selected_field_header(
-                                       geo, fsel.n_per_tslice, sizeof(M), crc));
+    qtouch_info(path + ".partial",
+                make_selected_field_header(geo, sizeof(M), crc));
   } else {
     const int sizeof_M = get_force_field_write_sizeof_M();
     qassert((geo.multiplicity * sizeof(M)) % sizeof_M == 0);
     const int multiplicity = (geo.multiplicity * sizeof(M)) / sizeof_M;
     qtouch_info(path + ".partial",
                 make_selected_field_header(geo_remult(geo, multiplicity),
-                                           fsel.n_per_tslice, sizeof_M, crc));
+                                           sizeof_M, crc));
     get_force_field_write_sizeof_M() = 0;
   }
   const int mpi_tag = 8;
@@ -140,8 +120,8 @@ long write_selected_field(const SelectedField<M>& sf, const std::string& path,
     }
   }
   qrename_info(path + ".partial", path);
-  const long total_bytes =
-      fsel.n_per_tslice * total_site[3] * geo.multiplicity * sizeof(M);
+  long total_bytes = fsel.n_elems * geo.multiplicity * sizeof(M);
+  glb_sum(total_bytes);
   timer.flops += total_bytes;
   return total_bytes;
 }
@@ -156,17 +136,15 @@ long read_selected_field(SelectedField<M>& sf, const std::string& path,
   sf.init();
   Coordinate total_site;
   int multiplicity = 0;
-  long n_per_tslice = 0;
   int sizeof_M = 0;
   crc32_t crc_info = 0;
-  const long pos = read_selected_geo_info(
-      total_site, multiplicity, n_per_tslice, sizeof_M, crc_info, path);
+  const long pos = read_selected_geo_info(total_site, multiplicity, sizeof_M,
+                                          crc_info, path);
   if (total_site == Coordinate() or multiplicity == 0) {
     displayln_info(fname +
                    ssprintf(": fn='%s' can not be parsed.", path.c_str()));
     return 0;
   }
-  qassert(fsel.n_per_tslice == n_per_tslice);
   get_incorrect_field_read_sizeof_M() = 0;
   if (sizeof_M != sizeof(M)) {
     get_incorrect_field_read_sizeof_M() = sizeof_M;
@@ -190,44 +168,35 @@ long read_selected_field(SelectedField<M>& sf, const std::string& path,
   if (not is_no_shuffle(sp)) {
     qassert(fsels.size() == sp.geos_recv.size());
   }
-  std::vector<SelectedField<M> > sfs;
+  std::vector<SelectedField<M>> sfs;
   sfs.resize(fsels.size());
+  const int new_num_node = product(new_size_node);
+  std::vector<long> n_elems_vec(new_num_node, 0);
   for (size_t i = 0; i < sfs.size(); ++i) {
+    const int id_node = fsels[i].f_rank.geo().geon.id_node;
+    n_elems_vec[id_node] = fsels[i].n_elems;
     sfs[i].init(fsels[i], geo.multiplicity);
   }
-  long check_n_per_tslice = 0;
-  for (int i = 0; i < (int)sfs.size(); ++i) {
-    const Coordinate& node_site = sfs[i].geo().node_site;
-    qassert(node_site[0] == total_site[0]);
-    qassert(node_site[1] == total_site[1]);
-    qassert(node_site[2] == total_site[2]);
-    if (sfs[i].n_elems != node_site[3] * fsel.n_per_tslice) {
-      check_n_per_tslice += 1;
-    }
+  glb_sum_long_vec(get_data(n_elems_vec));
+  std::vector<long> data_offset_vec(new_num_node + 1, 0);
+  long total_bytes = 0;
+  for (int i = 0; i < new_num_node; ++i) {
+    data_offset_vec[i] = total_bytes;
+    total_bytes += n_elems_vec[i] * geo.multiplicity * sizeof(M);
   }
-  glb_sum(check_n_per_tslice);
-  if (check_n_per_tslice > 0) {
-    displayln_info(
-        fname +
-        ssprintf(
-            ": WARNING fsels.n_per_tslice=%d do not match with data. n_fail=%d",
-            fsel.n_per_tslice, check_n_per_tslice));
-  }
-  const int new_num_node = product(new_size_node);
+  data_offset_vec[new_num_node] = total_bytes;
   crc32_t crc = 0;
   if (sfs.size() > 0) {
     QFile fp = qfopen(path, "r");
     qassert(not fp.null());
-    qfseek(fp,
-           pos + sfs[0].geo().geon.id_node * get_data(sfs[0].field).data_size(),
-           SEEK_SET);
+    qfseek(fp, pos + data_offset_vec[sfs[0].geo().geon.id_node], SEEK_SET);
     for (int i = 0; i < (int)sfs.size(); ++i) {
       const int new_id_node = sfs[i].geo().geon.id_node;
       qassert(sfs[i].geo().geon.num_node == new_num_node);
       const Vector<M> v = get_data(sfs[i].field);
       qread_data(v, fp);
       crc ^= crc32_shift(crc32_par(v),
-                         (new_num_node - new_id_node - 1) * v.data_size());
+                         (total_bytes - data_offset_vec[new_id_node + 1]));
     }
     qfclose(fp);
   }
@@ -240,8 +209,6 @@ long read_selected_field(SelectedField<M>& sf, const std::string& path,
   }
   sf.init(fsel, geo.multiplicity);
   shuffle_field_back(sf, sfs, sp);
-  const long total_bytes =
-      fsel.n_per_tslice * total_site[3] * geo.multiplicity * sizeof(M);
   timer.flops += total_bytes;
   return total_bytes;
 }

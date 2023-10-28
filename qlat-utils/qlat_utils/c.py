@@ -5,9 +5,9 @@ __all__ = []
 __all__ += [
         'CoordinateD',
         'Coordinate',
-        'mod',
-        'smod',
-        'middle_mod',
+        'mod_coordinate',
+        'smod_coordinate',
+        'middle_mod_coordinate',
         'coordinate_from_index',
         'index_from_coordinate',
         ]

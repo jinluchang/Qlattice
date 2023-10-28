@@ -133,6 +133,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel, get_fse
     t_size = total_site[3]
     get_prop = get_get_prop()
     fsel, fselc = get_fsel()
+    fsel_prob = 1 / 16
     xg_fsel_list = np.asarray(fsel.to_psel_local())
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
@@ -164,7 +165,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel, get_fse
     q.displayln_info("timer_display for auto_contract_meson_corr_psnk")
     q.timer_display()
     q.timer_merge()
-    res_sum *= 1.0 / (total_volume * fsel.prob())
+    res_sum *= 1.0 / (total_volume * fsel_prob)
     assert q.qnorm(res_sum[0] - 1.0) < 1e-10
     ld = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
@@ -251,6 +252,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel, ge
     get_prop = get_get_prop()
     psel = get_psel()
     fsel, fselc = get_fsel()
+    fsel_prob = 1 / 16
     xg_fsel_list = np.asarray(fsel.to_psel_local())
     xg_psel_list = np.asarray(psel)
     geo = q.Geometry(total_site, 1)
@@ -293,7 +295,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel, ge
     q.displayln_info("timer_display for auto_contract_meson_corr_psnk_psrc")
     q.timer_display()
     q.timer_merge()
-    res_sum *= 1.0 / (len(xg_psel_list) * total_volume * fsel.prob() / total_site[3])
+    res_sum *= 1.0 / (len(xg_psel_list) * total_volume * fsel_prob / total_site[3])
     assert q.qnorm(res_sum[0].sum(1) - 1.0) < 1e-10
     ld = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
@@ -351,6 +353,7 @@ def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel, get_fsel):
     get_prop = get_get_prop()
     psel = get_psel()
     fsel, fselc = get_fsel()
+    fsel_prob = 1 / 16
     xg_fsel_list = np.asarray(fsel.to_psel_local())
     xg_psel_list = np.asarray(psel)
     tsep = dict_params[job_tag]["meson_tensor_tsep"]
@@ -390,7 +393,7 @@ def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel, get_fsel):
     q.displayln_info("timer_display for auto_contract_meson_jt")
     q.timer_display()
     q.timer_merge()
-    res_sum *= 1.0 / (total_volume * fsel.prob())
+    res_sum *= 1.0 / (total_volume * fsel_prob)
     assert q.qnorm(res_sum[0] - 1.0) < 1e-10
     ld_sum = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
@@ -445,6 +448,7 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel, get_fsel):
     get_prop = get_get_prop()
     psel = get_psel()
     fsel, fselc = get_fsel()
+    fsel_prob = 1 / 16
     xg_fsel_list = np.asarray(fsel.to_psel_local())
     xg_psel_list = np.asarray(psel)
     tsep = dict_params[job_tag]["meson_tensor_tsep"]
@@ -480,7 +484,7 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel, get_fsel):
     q.displayln_info("timer_display for auto_contract_meson_m")
     q.timer_display()
     q.timer_merge()
-    res_sum *= 1.0 / (total_volume * fsel.prob())
+    res_sum *= 1.0 / (total_volume * fsel_prob)
     assert q.qnorm(res_sum[0] - 1.0) < 1e-10
     ld_sum = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
@@ -757,6 +761,7 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel, get_fsel):
     get_prop = get_get_prop()
     psel = get_psel()
     fsel, fselc = get_fsel()
+    fsel_prob = 1 / 16
     xg_fsel_list = np.asarray(fsel.to_psel_local())
     xg_psel_list = np.asarray(psel)
     tsep = dict_params[job_tag]["meson_tensor_tsep"]
@@ -805,7 +810,7 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel, get_fsel):
     q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
-    res_sum *= 1.0 / (len(xg_psel_list) * fsel.prob())
+    res_sum *= 1.0 / (len(xg_psel_list) * fsel_prob)
     ld_sum = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
         [ "t", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
@@ -877,6 +882,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel, get_fsel):
     get_prop = get_get_prop()
     psel = get_psel()
     fsel, fselc = get_fsel()
+    fsel_prob = 1 / 16
     xg_fsel_list = np.asarray(fsel.to_psel_local())
     xg_psel_list = np.asarray(psel)
     tsep = dict_params[job_tag]["meson_tensor_tsep"]
@@ -1066,7 +1072,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel, get_fsel):
     q.timer_display()
     q.timer_merge()
     total_volume = geo.total_volume()
-    res_sum *= 1.0 / (total_volume * fsel.prob() / t_size)
+    res_sum *= 1.0 / (total_volume * fsel_prob / t_size)
     ld_sum = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
         [ "t1", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],

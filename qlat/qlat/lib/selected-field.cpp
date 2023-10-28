@@ -127,7 +127,6 @@ void set_n_per_tslice(FieldM<int64_t, 1>& f_rank, const long n_per_tslice)
 void update_field_selection(FieldSelection& fsel)
 // interface function
 // update fsel based only on f_rank
-// do not touch n_per_tslice and prob at all
 {
   TIMER_VERBOSE("update_field_selection");
   const Geometry& geo = fsel.f_rank.geo();
@@ -159,20 +158,6 @@ void update_field_selection(FieldSelection& fsel)
   }
 }
 
-void update_field_selection(FieldSelection& fsel, const long n_per_tslice_)
-// interface function
-// only adjust parameter, do not change contents
-{
-  const Geometry& geo = fsel.f_rank.geo();
-  qassert(geo.is_only_local);
-  const Coordinate total_site = geo.total_site();
-  const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
-  qassert(n_per_tslice_ == -1 or
-          (0 <= n_per_tslice_ and n_per_tslice_ <= spatial_vol));
-  fsel.n_per_tslice = n_per_tslice_ == -1 ? spatial_vol : n_per_tslice_;
-  fsel.prob = (double)fsel.n_per_tslice / (double)spatial_vol;
-}
-
 void set_grid_field_selection(FieldSelection& fsel,
                               const Coordinate& total_site,
                               const long n_per_tslice, const RngState& rs)
@@ -181,22 +166,15 @@ void set_grid_field_selection(FieldSelection& fsel,
   fsel.init();
   mk_grid_field_selection(fsel.f_rank, total_site, n_per_tslice, rs);
   update_field_selection(fsel);
-  update_field_selection(fsel, n_per_tslice);
 }
 
-void set_field_selection(FieldSelection& fsel, const FieldM<int64_t, 1>& f_rank,
-                         const long n_per_tslice_, const bool is_limit_on_rank)
-// call set_n_per_tslice if is_limit_on_rank = true
-// otherwise will strictly follow f_rank without constraint of n_per_tslice
+void set_field_selection(FieldSelection& fsel, const FieldM<int64_t, 1>& f_rank)
+// strictly follow f_rank on selection
 {
-  TIMER_VERBOSE("set_field_selection(fsel,f_rank,n_per_tslice)");
+  TIMER_VERBOSE("set_field_selection(fsel,f_rank)");
   fsel.init();
   fsel.f_rank = f_rank;
-  if (is_limit_on_rank) {
-    set_n_per_tslice(fsel.f_rank, n_per_tslice_);
-  }
   update_field_selection(fsel);
-  update_field_selection(fsel, n_per_tslice_);
 }
 
 void set_field_selection(FieldSelection& fsel, const Coordinate& total_site)
@@ -205,8 +183,7 @@ void set_field_selection(FieldSelection& fsel, const Coordinate& total_site)
   TIMER_VERBOSE("set_field_selection(fsel,total_site)");
   fsel.init();
   mk_field_selection(fsel.f_rank, total_site);
-  update_field_selection(fsel);
-  update_field_selection(fsel, -1);  // select all points
+  update_field_selection(fsel);  // select all points
 }
 
 void set_field_selection(FieldSelection& fsel, const Coordinate& total_site,
@@ -216,7 +193,6 @@ void set_field_selection(FieldSelection& fsel, const Coordinate& total_site,
   fsel.init();
   mk_field_selection(fsel.f_rank, total_site, n_per_tslice, rs);
   update_field_selection(fsel);
-  update_field_selection(fsel, n_per_tslice);
 }
 
 void set_field_selection(FieldSelection& fsel, const Coordinate& total_site,
@@ -228,7 +204,6 @@ void set_field_selection(FieldSelection& fsel, const Coordinate& total_site,
   mk_field_selection(fsel.f_rank, total_site, n_per_tslice, rs);
   add_field_selection(fsel.f_rank, psel);
   update_field_selection(fsel);
-  update_field_selection(fsel, n_per_tslice);
 }
 
 bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2)
@@ -446,21 +421,19 @@ long write_field_selection(const FieldSelection& fsel, const std::string& path)
   return write_field_64(fsel.f_rank, path);
 }
 
-long read_field_selection(FieldSelection& fsel, const std::string& path,
-                          const long n_per_tslice)
+long read_field_selection(FieldSelection& fsel, const std::string& path)
 {
   TIMER_VERBOSE("read_field_selection");
   fsel.init();
   FieldM<int64_t, 1> f_rank;
   const long total_bytes = read_field_64(f_rank, path);
   if (total_bytes > 0) {
-    set_field_selection(fsel, f_rank, n_per_tslice);
+    set_field_selection(fsel, f_rank);
   }
   return total_bytes;
 }
 
 std::string make_selected_field_header(const Geometry& geo,
-                                       const long n_per_tslice,
                                        const int sizeof_M, const crc32_t crc32)
 {
   const Coordinate total_site = geo.total_site();
@@ -472,7 +445,6 @@ std::string make_selected_field_header(const Geometry& geo,
   out << "total_site[1] = " << total_site[1] << std::endl;
   out << "total_site[2] = " << total_site[2] << std::endl;
   out << "total_site[3] = " << total_site[3] << std::endl;
-  out << "n_per_tslice = " << n_per_tslice << std::endl;
   out << "multiplicity = " << geo.multiplicity << std::endl;
   out << "sizeof(M) = " << sizeof_M << std::endl;
   out << ssprintf("selected_field_crc32 = %08X", crc32) << std::endl;
@@ -481,7 +453,7 @@ std::string make_selected_field_header(const Geometry& geo,
 }
 
 long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
-                            long& n_per_tslice, int& sizeof_M, crc32_t& crc,
+                            int& sizeof_M, crc32_t& crc,
                             const std::string& path)
 {
   TIMER("read_selected_geo_info");
@@ -503,7 +475,6 @@ long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
                   info_get_prop(infos, ssprintf("total_site[%d] = ", m)));
           }
           reads(multiplicity, info_get_prop(infos, "multiplicity = "));
-          reads(n_per_tslice, info_get_prop(infos, "n_per_tslice = "));
           reads(sizeof_M, info_get_prop(infos, "sizeof(M) = "));
           crc = read_crc32(info_get_prop(infos, "selected_field_crc32 = "));
         }
@@ -515,7 +486,6 @@ long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
   bcast(get_data_one_elem(pos));
   bcast(get_data_one_elem(total_site));
   bcast(get_data_one_elem(multiplicity));
-  bcast(get_data_one_elem(n_per_tslice));
   bcast(get_data_one_elem(sizeof_M));
   bcast(get_data_one_elem(crc));
   return pos;

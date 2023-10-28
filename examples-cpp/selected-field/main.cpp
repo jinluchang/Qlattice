@@ -50,7 +50,7 @@ inline void demo()
   //
   fsel.init();
   displayln_info(fname + ssprintf(": read selection 'fsel' from disk as a field"));
-  read_field_selection(fsel, "huge-data/fsel.field", n_per_tslice);
+  read_field_selection(fsel, "huge-data/fsel.field");
   //
   displayln_info(fname + ssprintf(": possible to only keep selected points non-zero for field 'f'."));
   displayln_info(fname + ssprintf(": (DOES NOT CHANGE THE SIZE IN MOMEORY)"));
@@ -159,7 +159,7 @@ inline void test(const std::string& tag, const long n_per_tslice)
   // test save and load fsel
   write_field_selection(fsel, "huge-data/" + tag + "/fsel.field");
   fsel.init();
-  read_field_selection(fsel, "huge-data/" + tag + "/fsel.field", n_per_tslice);
+  read_field_selection(fsel, "huge-data/" + tag + "/fsel.field");
   // test of partial f
   set_zero(f);
   set_u_rand_double(f, rs.split("f-init"));
@@ -266,7 +266,7 @@ inline void test_grid(const std::string& tag, const long n_per_tslice)
   // test save and load fsel
   write_field_selection(fsel, "huge-data/" + tag + "/fsel.field");
   fsel.init();
-  read_field_selection(fsel, "huge-data/" + tag + "/fsel.field", n_per_tslice);
+  read_field_selection(fsel, "huge-data/" + tag + "/fsel.field");
   // test of partial f
   set_zero(f);
   set_u_rand_double(f, rs.split("f-init"));

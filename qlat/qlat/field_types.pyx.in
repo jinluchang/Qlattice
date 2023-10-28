@@ -146,8 +146,9 @@ cdef class Field{{name}}(FieldBase):
         return self.ctype.size()
 
     def geo(self):
-        geo = Geometry()
-        cc.assign_direct(geo.xx, self.xx.get_geo())
+        cdef Geometry geo = Geometry()
+        # cc.assign_direct(geo.xx, self.xx.get_geo())
+        geo.xx = self.xx.get_geo()
         return geo
 
 field_type_dict[ElemType{{name}}] = Field{{name}}

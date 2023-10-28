@@ -143,7 +143,7 @@ cdef class Coordinate:
 
 # ------
 
-def mod(Coordinate c, Coordinate size):
+def mod_coordinate(Coordinate c, Coordinate size):
     """
     mod based on ``size``
     return ``x``
@@ -151,7 +151,7 @@ def mod(Coordinate c, Coordinate size):
     """
     return c % size
 
-def smod(Coordinate c, Coordinate size):
+def smod_coordinate(Coordinate c, Coordinate size):
     """
     smod based on ``size``
     return ``x``
@@ -161,7 +161,7 @@ def smod(Coordinate c, Coordinate size):
     cc.assign_direct(x.xx, cc.smod(c.xx, size.xx))
     return x
 
-def middle_mod(Coordinate x, Coordinate y, Coordinate size):
+def middle_mod_coordinate(Coordinate x, Coordinate y, Coordinate size):
     """
     return middle of x and y
     xm = mod(x, size)

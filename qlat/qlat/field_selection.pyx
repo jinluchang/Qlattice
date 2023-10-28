@@ -47,6 +47,8 @@ cdef class PointsSelection:
         self.view_count -= 1
 
     def __imatmul__(self, PointsSelection v1 not None):
+        if self.view_count > 0:
+            raise Exception("PointsSelection.__imatmul__: self.view_count>0")
         self.geo = v1.geo
         cc.assign_direct(self.xx, v1.xx)
         return self
@@ -151,11 +153,10 @@ cdef class FieldSelection:
     def __init__(self, Coordinate total_site=None, long n_per_tslice=-1, RngState rs=None, PointsSelection psel=None):
         if total_site is not None:
             assert rs is not None
-            c.set_rand_fsel(self, rs, total_site.to_list(), n_per_tslice)
+            self.set_rand(rs, total_site, n_per_tslice)
             if psel is not None:
-                c.add_psel_fsel(self, psel)
+                self.add_psel(psel)
             self.update()
-            self.update(n_per_tslice)
 
     def __imatmul__(self, FieldSelection v1):
         cc.assign_direct(self.xx, v1.xx)
@@ -177,98 +178,72 @@ cdef class FieldSelection:
         default (val = 0) select every sites
         val = -1 deselection everything
         """
-        c.set_uniform_fsel(self, total_site.to_list(), val)
+        cc.mk_field_selection(self.xx.f_rank, total_site.xx, val)
+        self.update()
 
     def set_rand(self, RngState rs, Coordinate total_site, long n_per_tslice):
-        assert isinstance(rs, RngState)
-        c.set_rand_fsel(self, rs, total_site.to_list(), n_per_tslice)
+        cc.mk_field_selection(self.xx.f_rank, total_site.xx, n_per_tslice, rs.xx)
         self.update()
-        self.update(n_per_tslice)
 
     def add_psel(self, PointsSelection psel, long rank_psel=1024 * 1024 * 1024 * 1024 * 1024):
         """
         Add psel points to the selection, with the rank specified as rank_psel.
         If the point is already selected with lower rank, the rank is unchanged.
         """
-        c.add_psel_fsel(self, psel, rank_psel)
+        cc.add_field_selection(self.xx.f_rank, psel.xx, rank_psel)
         self.update()
 
-    def update(self, long n_per_tslice=-1):
+    def update(self):
         """
-        if n_per_tslice < 0: only update various indices
-        if n_per_tslice >= 0: only update parameters (n_per_tslice and prob)
+        update various indices based on f_rank
         """
-        c.update_fsel(self, n_per_tslice)
+        cc.update_field_selection(self.xx)
 
     def to_psel(self):
-        psel = PointsSelection(None, self.geo())
-        c.set_psel_fsel(psel, self)
+        cdef PointsSelection psel = PointsSelection(None, self.geo())
+        cc.assign_direct(psel.xx, cc.psel_from_fsel(self.xx))
         return psel
 
     def to_psel_local(self):
-        psel = PointsSelection(None, self.geo())
-        c.set_psel_fsel_local(psel, self)
+        cdef PointsSelection psel = PointsSelection(None, self.geo())
+        cc.assign_direct(psel.xx, cc.psel_from_fsel_local(self.xx))
         return psel
 
     def save(self, const cc.std_string& path):
         return cc.write_field_selection(self.xx, path)
 
-    def load(self, const cc.std_string& path, long n_per_tslice):
-        return cc.read_field_selection(self.xx, path, n_per_tslice)
+    def load(self, const cc.std_string& path):
+        return cc.read_field_selection(self.xx, path)
 
     def geo(self):
-        geo = Geometry()
-        c.set_geo_fsel(geo, self)
+        cdef Geometry geo = Geometry()
+        geo.xx = self.xx.f_rank.get_geo()
         return geo
 
     def total_site(self):
-        return c.get_total_site_fsel(self)
+        cdef Coordinate total_site = Coordinate()
+        cc.assign_direct(total_site.xx, self.xx.f_rank.get_geo().total_site())
+        return total_site
 
     def n_elems(self):
-        return c.get_n_elems_fsel(self)
+        return self.xx.n_elems
+
+    def __getitem__(self, long idx):
+        cdef Coordinate xg = Coordinate()
+        cdef long index = self.xx.indices[idx]
+        cc.assign_direct(xg.xx, self.xx.f_local_idx.get_geo().coordinate_from_index(index))
+        return xg
 
     def idx_from_coordinate(self, Coordinate xg not None):
-        return c.get_idx_from_coordinate_fsel(self, xg)
+        cdef cc.Coordinate xl_xx = self.xx.f_local_idx.get_geo().coordinate_l_from_g(xg.xx)
+        cdef long idx = self.xx.f_local_idx.get_elem(xl_xx)
+        return idx
 
     def coordinate_from_idx(self, long idx):
-        return c.get_coordinate_from_idx_fsel(self, idx)
-
-    ##
-
-    def n_per_tslice(self):
-        return c.get_n_per_tslice_fsel(self)
-
-    def prob(self):
-        """
-        return fsel.prob
-        n_per_tslice / spatial_volume
-        """
-        return c.get_prob_fsel(self)
-
-    def select_rank_range(self, long rank_start=0, long rank_stop=-1):
-        """
-        return new fsel with selected points that
-        rank_start <= rank and (rank < rank_stop or rank_stop == -1)
-        Does NOT change the n_per_tslice parameter for the new fsel
-        """
-        fsel = FieldSelection()
-        c.select_rank_range_fsel(fsel, self, rank_start, rank_stop)
-        fsel.update()
-        fsel.update(self.n_per_tslice())
-        return fsel
-
-    def select_t_range(self, long rank_start=0, long rank_stop=-1):
-        """
-        return new fsel with selected points that
-        t_start <= t and (t < t_stop or t_stop == -1)
-        rank_start <= rank < rank_stop (rank_stop = -1 implies unlimited)
-        Does NOT change the n_per_tslice parameter for the new fsel
-        """
-        fsel = FieldSelection()
-        c.select_rank_range_fsel(fsel, self, rank_start, rank_stop)
-        fsel.update()
-        fsel.update(self.n_per_tslice())
-        return fsel
+        cdef Coordinate xg = Coordinate()
+        cdef long index = self.xx.indices[idx]
+        cc.assign_direct(xg.xx, self.xx.f_local_idx.get_geo().coordinate_from_index(index))
+        return xg
 
 ### -------------------------------------------------------------------
 

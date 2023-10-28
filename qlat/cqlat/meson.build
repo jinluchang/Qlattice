@@ -9,7 +9,6 @@ cpp_files = files(
   'field.cpp',
   'field-double.cpp',
   'field-io.cpp',
-  'field-selection.cpp',
   'fields-io.cpp',
   'field-utils.cpp',
   'fthmc.cpp',

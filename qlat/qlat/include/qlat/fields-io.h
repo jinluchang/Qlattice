@@ -119,8 +119,7 @@ std::vector<char> BitSet::compress_selected(const Vector<M>& src) const
 std::vector<char> bitset_decompress(const std::vector<char>& data,
                                     const long local_volume);
 
-BitSet mk_bitset_from_field_rank(const FieldM<int64_t, 1>& f_rank,
-                                 const int64_t n_per_tslice=-1);
+BitSet mk_bitset_from_field_rank(const FieldM<int64_t, 1>& f_rank);
 
 // ---------------------------------------------------
 
@@ -416,7 +415,6 @@ struct API ShuffledBitSet {
 };
 
 ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
-                                  const int64_t n_per_tslice,
                                   const Coordinate& new_size_node);
 
 ShuffledBitSet mk_shuffled_bitset(const FieldSelection& fsel,

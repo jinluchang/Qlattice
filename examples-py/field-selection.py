@@ -26,19 +26,21 @@ n_per_tslice = 16
 
 fsel = q.FieldSelection(geo.total_site(), n_per_tslice, rs)
 
-q.displayln_info("CHECK: fsel info =", fsel.geo().show(), fsel.n_per_tslice(), f"{fsel.prob():.14E}")
+prob = n_per_tslice * total_site[3] / geo.total_volume()
+
+q.displayln_info("CHECK: fsel info =", fsel.geo().show(), n_per_tslice, f"{prob:.14E}")
 
 fsel.save("results/fsel.field")
 
 fsel = q.FieldSelection()
-fsel.load("results/fsel.field", n_per_tslice)
+fsel.load("results/fsel.field")
 fsel.save("results/fsel-1.field")
 
-q.displayln_info("CHECK: fsel info =", fsel.geo().show(), fsel.n_per_tslice(), f"{fsel.prob():.14E}")
+q.displayln_info("CHECK: fsel info =", fsel.geo().show(), n_per_tslice, f"{prob:.14E}")
 
 fsel.add_psel(psel)
 
-q.displayln_info("CHECK: fsel info =", fsel.geo().show(), fsel.n_per_tslice(), f"{fsel.prob():.14E}")
+q.displayln_info("CHECK: fsel info =", fsel.geo().show(), n_per_tslice, f"{prob:.14E}")
 
 if q.get_id_node() == 0:
     q.displayln_info(os.listdir("results"))

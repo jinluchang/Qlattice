@@ -97,12 +97,13 @@ cdef extern from "qlat/core.h" namespace "qlat":
         void init(const Geometry& geo) except +
         void init(const Geometry& geo, int multiplicity) except +
         void init(const Field[T]& field) except +
-        const Geometry& get_geo()
+        const Geometry& get_geo() except +
+        T& get_elem(const Coordinate& x) except +
         T& get_elem(const Coordinate& x, const int m) except +
-        T& get_elem(const Coordinate& x)
-        T& get_elem(const long index, const int m)
-        Vector[T] get_elems(const Coordinate& x)
-        Vector[T] get_elems(const long index)
+        T& get_elem(const long index) except +
+        T& get_elem(const long index, const int m) except +
+        Vector[T] get_elems(const Coordinate& x) except +
+        Vector[T] get_elems(const long index) except +
     cdef cppclass GaugeField(Field[ColorMatrix]):
         pass
     cdef cppclass GaugeTransform(Field[ColorMatrix]):
@@ -202,13 +203,12 @@ cdef extern from "qlat/selected-field.h" namespace "qlat":
 cdef extern from "qlat/selected-field-io.h" namespace "qlat":
 
     long write_field_selection(const FieldSelection& fsel, const std_string& path) except +
-    long read_field_selection(FieldSelection& fsel, const std_string& path, const long n_per_tslice) except +
+    long read_field_selection(FieldSelection& fsel, const std_string& path) except +
     bool is_selected_field(const std_string& path) except +
     void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site, const Int64t val) except +
     void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site, const long n_per_tslice, const RngState& rs) except +
     void add_field_selection(FieldRank& f_rank, const PointsSelection& psel, const long rank_psel) except +
     void update_field_selection(FieldSelection& fsel) except +
-    void update_field_selection(FieldSelection& fsel, const long n_per_tslice_) except +
     PointsSelection psel_from_fsel(const FieldSelection& fsel)
     PointsSelection psel_from_fsel_local(const FieldSelection& fsel)
 

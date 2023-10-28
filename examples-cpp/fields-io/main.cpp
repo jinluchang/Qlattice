@@ -58,14 +58,13 @@ inline void demo(const std::string& tag, const Coordinate& total_site,
   mk_field_selection(fsel.f_rank, total_site, n_per_tslice, rs.split("demo"));
   add_field_selection(fsel.f_rank, psel);
   update_field_selection(fsel);
-  update_field_selection(fsel, n_per_tslice);
   //
   displayln_info(fname + ssprintf(": save selection 'fsel' to disk as a field"));
   write_field_selection(fsel, "huge-data/" + tag + "/fsel.field");
   //
   fsel.init();
   displayln_info(fname + ssprintf(": read selection 'fsel' from disk as a field"));
-  read_field_selection(fsel, "huge-data/" + tag + "/fsel.field", n_per_tslice);
+  read_field_selection(fsel, "huge-data/" + tag + "/fsel.field");
   //
   displayln_info(fname + ssprintf(": init field 'f'"));
   Field<Complex> f, sf, rf;

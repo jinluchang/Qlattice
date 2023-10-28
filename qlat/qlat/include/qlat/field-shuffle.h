@@ -698,7 +698,7 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
       f_ranks[local_geos_idx].get_elem(xl_s) = recv_buffer_rank[buffer_idx];
     }
     for (int i = 0; i < (int)fsels.size(); ++i) {
-      set_field_selection(fsels[i], f_ranks[i], fsel.n_per_tslice);
+      set_field_selection(fsels[i], f_ranks[i]);
     }
     long last_local_geos_idx = -1;
     vector<long> last_field_idx(sp.geos_recv.size(), 0);

@@ -35,9 +35,7 @@ void set_grid_field_selection(FieldSelection& fsel,
                               const Coordinate& total_site,
                               const long n_per_tslice, const RngState& rs);
 
-void set_field_selection(FieldSelection& fsel, const FieldM<int64_t, 1>& f_rank,
-                         const long n_per_tslice_ = 0,
-                         const bool is_limit_on_rank = false);
+void set_field_selection(FieldSelection& fsel, const FieldM<int64_t, 1>& f_rank);
 
 void set_field_selection(FieldSelection& fsel, const Coordinate& total_site);
 
@@ -66,8 +64,7 @@ void mk_field_selection(FieldM<int64_t, 1>& f_rank,
 
 long write_field_selection(const FieldSelection& fsel, const std::string& path);
 
-long read_field_selection(FieldSelection& fsel, const std::string& path,
-                          const long n_per_tslice);
+long read_field_selection(FieldSelection& fsel, const std::string& path);
 
 // ---------------------------------------
 

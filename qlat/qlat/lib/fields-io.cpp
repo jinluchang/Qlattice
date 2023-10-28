@@ -107,8 +107,7 @@ std::vector<char> bitset_decompress(const std::vector<char>& data,
   return ret;
 }
 
-BitSet mk_bitset_from_field_rank(const FieldM<int64_t, 1>& f_rank,
-                                 const int64_t n_per_tslice)
+BitSet mk_bitset_from_field_rank(const FieldM<int64_t, 1>& f_rank)
 {
   TIMER("mk_bitset_from_field_rank");
   const Geometry& geo = f_rank.geo();
@@ -116,7 +115,7 @@ BitSet mk_bitset_from_field_rank(const FieldM<int64_t, 1>& f_rank,
   qassert(geo.is_only_local);
   for (long index = 0; index < geo.local_volume(); ++index) {
     const int64_t rank = f_rank.get_elem(index);
-    if (0 <= rank and (rank < n_per_tslice or n_per_tslice == -1)) {
+    if (0 <= rank) {
       bs.set(index, true);
     } else {
       bs.set(index, false);
@@ -610,15 +609,13 @@ int flush(FieldsWriter& fw)
 }
 
 ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
-                                  const int64_t n_per_tslice,
                                   const Coordinate& new_size_node)
-// do not enforce n_per_tslice
 {
-  TIMER("mk_shuffled_bitset(f_rank,n_per_tslice,new_size_node)");
+  TIMER("mk_shuffled_bitset(f_rank,new_size_node)");
   std::vector<Field<int64_t> > fs_rank;
   shuffle_field(fs_rank, f_rank, new_size_node);
   ShuffledBitSet sbs;
-  set_field_selection(sbs.fsel, f_rank, n_per_tslice);
+  set_field_selection(sbs.fsel, f_rank);
   sbs.sp = make_shuffle_plan(sbs.fsels, sbs.fsel, new_size_node);
   sbs.vbs.resize(fs_rank.size());
   for (int i = 0; i < (int)fs_rank.size(); ++i) {
@@ -632,10 +629,9 @@ ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
 ShuffledBitSet mk_shuffled_bitset(const FieldSelection& fsel,
                                   const Coordinate& new_size_node)
 // interface function
-// do not enforce fsel.n_per_tslice
 {
   TIMER_VERBOSE("mk_shuffled_bitset(fsel,new_size_node)");
-  return mk_shuffled_bitset(fsel.f_rank, fsel.n_per_tslice, new_size_node);
+  return mk_shuffled_bitset(fsel.f_rank, new_size_node);
 }
 
 ShuffledBitSet mk_shuffled_bitset(const Coordinate& total_site,
@@ -645,7 +641,7 @@ ShuffledBitSet mk_shuffled_bitset(const Coordinate& total_site,
   TIMER("mk_shuffled_bitset");
   FieldM<int64_t, 1> f_rank;
   mk_field_selection(f_rank, total_site, xgs);
-  return mk_shuffled_bitset(f_rank, 0, new_size_node);
+  return mk_shuffled_bitset(f_rank, new_size_node);
 }
 
 ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
@@ -665,7 +661,7 @@ ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
       f_rank_combined.get_elem(xl) = spatial_vol + i;
     }
   }
-  return mk_shuffled_bitset(f_rank_combined, 0, new_size_node);
+  return mk_shuffled_bitset(f_rank_combined, new_size_node);
 }
 
 void ShuffledFieldsWriter::init()

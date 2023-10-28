@@ -430,7 +430,7 @@ def run_fsel(job_tag, traj, get_psel):
         path_fsel = get_load_path(tfn)
         assert path_fsel is not None
         fsel = q.FieldSelection()
-        total_size = fsel.load(path_fsel, n_per_tslice)
+        total_size = fsel.load(path_fsel)
         assert total_size > 0
         fselc = mk_fselc(fsel, get_psel())
         return fsel, fselc
