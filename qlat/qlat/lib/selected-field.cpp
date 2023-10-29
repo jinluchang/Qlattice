@@ -1,7 +1,6 @@
 #define QLAT_INSTANTIATE_SELECTED_FIELD
 
-#include <qlat/selected-field.h>
-#include <qlat/field-serial-io.h>
+#include <qlat/selected-field-io.h>
 
 namespace qlat
 {  //

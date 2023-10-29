@@ -246,31 +246,16 @@ void acc_field(Field<M>& f, const SelectedPoints<M>& sp, const Geometry& geo_,
 }
 
 template <class M>
-void field_glb_sum_tslice_double(SelectedPoints<M>& sp, const Field<M>& f,
-                                 const int t_dir = 3)
+void field_glb_sum_tslice(SelectedPoints<M>& sp, const Field<M>& f,
+                          const int t_dir = 3)
 {
-  TIMER("field_glb_sum_tslice_double(sp,f)");
+  TIMER("field_glb_sum_tslice(sp,f)");
   sp.init();
   const Geometry& geo = f.geo();
   const int t_size = geo.total_site()[t_dir];
   const int multiplicity = geo.multiplicity;
   std::vector<M> vec = field_sum_tslice(f, t_dir);
-  glb_sum_double_vec(get_data(vec));
-  sp.init(t_size, multiplicity);
-  sp.points = vec;
-}
-
-template <class M>
-void field_glb_sum_tslice_long(SelectedPoints<M>& sp, const Field<M>& f,
-                               const int t_dir = 3)
-{
-  TIMER("field_glb_sum_tslice_long(sp,f)");
-  sp.init();
-  const Geometry& geo = f.geo();
-  const int t_size = geo.total_site()[t_dir];
-  const int multiplicity = geo.multiplicity;
-  std::vector<M> vec = field_sum_tslice(f, t_dir);
-  glb_sum_long_vec(get_data(vec));
+  glb_sum_vec(get_data(vec));
   sp.init(t_size, multiplicity);
   sp.points = vec;
 }
@@ -446,11 +431,7 @@ void load_selected_points(SelectedPoints<M>& sp, const std::string& path)
       Field<TYPENAME> & f, const SelectedPoints<TYPENAME>& sp,               \
       const Geometry& geo_, const PointsSelection& psel);                    \
                                                                              \
-  QLAT_EXTERN template void field_glb_sum_tslice_double<TYPENAME>(           \
-      SelectedPoints<TYPENAME> & sp, const Field<TYPENAME>& f,               \
-      const int t_dir);                                                      \
-                                                                             \
-  QLAT_EXTERN template void field_glb_sum_tslice_long<TYPENAME>(             \
+  QLAT_EXTERN template void field_glb_sum_tslice<TYPENAME>(                  \
       SelectedPoints<TYPENAME> & sp, const Field<TYPENAME>& f,               \
       const int t_dir);                                                      \
                                                                              \

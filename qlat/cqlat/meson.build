@@ -4,7 +4,6 @@ cpp_files = files(
   'contraction-field.cpp',
   'contraction-hvp.cpp',
   'contraction-pion.cpp',
-  'coordinate.cpp',
   'fermion-action.cpp',
   'field.cpp',
   'field-double.cpp',

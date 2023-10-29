@@ -6,13 +6,13 @@ namespace qlat
 {  //
 
 template <class M>
-void acc_field(Field<M>& f, const Complex coef, const SelectedField<M>& sf,
+void acc_field(Field<M>& f, const SelectedField<M>& sf,
                const ShiftShufflePlan& ssp)
 {
   TIMER("acc_field(f,coef,sf,ssp)");
   SelectedField<M> sf_shifted;
   field_shift(sf_shifted, sf, ssp);
-  acc_field(f, coef, sf_shifted, ssp.fsel);
+  acc_field(f, sf_shifted, ssp.fsel);
 }
 
 inline void contract_psel_fsel_distribution_acc(FieldM<Complex, 1>& pos,
@@ -26,13 +26,12 @@ inline void contract_psel_fsel_distribution_acc(FieldM<Complex, 1>& pos,
   qassert(ssp.is_reflect == false);
   SelectedField<Complex> s_pos;
   s_pos.init(fsel, 1);
+  const Complex coef = 1.0 / get_fsel_prob(fsel);
 #pragma omp parallel for
   for (long idx = 0; idx < fsel.n_elems; ++idx) {
-    s_pos.get_elem(idx) = 1.0;
+    s_pos.get_elem(idx) = coef;
   }
-  qassert(fsel.prob == ssp.fsel.prob);
-  const Complex coef = 1.0 / fsel.prob;
-  acc_field(pos, coef, s_pos, ssp);
+  acc_field(pos, s_pos, ssp);
 }
 
 template <class M>
@@ -265,10 +264,11 @@ inline void contract_meson_vv_acc(
   qassert(sfs.size() == 2);
   SelectedField<Complex>& s_decay = sfs[0];
   SelectedField<Complex>& s_fission = sfs[1];
-  qassert(fsel.prob == ssp.fsel.prob);
-  const Complex coef = 1.0 / fsel.prob;
-  acc_field(decay, coef, s_decay, ssp);
-  acc_field(fission, coef, s_fission, ssp);
+  const Complex coef = 1.0 / get_fsel_prob(fsel);
+  s_decay *= coef;
+  s_fission *= coef;
+  acc_field(decay, s_decay, ssp);
+  acc_field(fission, s_fission, ssp);
 }
 
 // -----------------------------------------------------------------------------------
@@ -483,10 +483,11 @@ inline void contract_meson_vv_meson_acc(
   qassert(sfs.size() == 2);
   SelectedField<Complex>& s_forward = sfs[0];
   SelectedField<Complex>& s_backward = sfs[1];
-  qassert(fsel.prob == ssp.fsel.prob);
-  const Complex coef = 1.0 / fsel.prob;
-  acc_field(forward, coef, s_forward, ssp);
-  acc_field(backward, coef, s_backward, ssp);
+  const Complex coef = 1.0 / get_fsel_prob(fsel);
+  s_forward *= coef;
+  s_backward *= coef;
+  acc_field(forward, s_forward, ssp);
+  acc_field(backward, s_backward, ssp);
 }
 
 // -----------------------------------------------------------------------------------

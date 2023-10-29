@@ -406,4 +406,80 @@ qacc bool is_composed_of_double<NonRelWilsonMatrix>()
 
 // -------------------------------------------------------------------------
 
+template <class M>
+qacc bool is_composed_of_complex_f()
+{
+  return false;
+}
+
+template <>
+qacc bool is_composed_of_complex_f<ComplexF>()
+{
+  return true;
+}
+
+// -------------------------------------------------------------------------
+
+template <class M>
+qacc bool is_composed_of_float()
+{
+  return false;
+}
+
+template <>
+qacc bool is_composed_of_float<float>()
+{
+  return true;
+}
+
+template <>
+qacc bool is_composed_of_float<ComplexF>()
+{
+  return true;
+}
+
+// -------------------------------------------------------------------------
+
+template <class M>
+qacc bool is_composed_of_int64()
+{
+  return false;
+}
+
+template <>
+qacc bool is_composed_of_int64<int64_t>()
+{
+  return true;
+}
+
+// -------------------------------------------------------------------------
+
+template <class M>
+qacc bool is_composed_of_int32()
+{
+  return false;
+}
+
+template <>
+qacc bool is_composed_of_int32<int32_t>()
+{
+  return true;
+}
+
+// -------------------------------------------------------------------------
+
+template <class M>
+qacc bool is_composed_of_int8()
+{
+  return false;
+}
+
+template <>
+qacc bool is_composed_of_int8<int8_t>()
+{
+  return true;
+}
+
+// -------------------------------------------------------------------------
+
 }  // namespace qlat

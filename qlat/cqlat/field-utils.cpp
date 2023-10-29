@@ -150,7 +150,7 @@ PyObject* glb_sum_tslice_double_field_ctype(PyObject* p_spfield,
 {
   SelectedPoints<M>& sp = py_convert_type_spoints<M>(p_spfield);
   const Field<M>& f = py_convert_type_field<M>(p_field);
-  field_glb_sum_tslice_double(sp, f, t_dir);
+  field_glb_sum_tslice(sp, f, t_dir);
   Py_RETURN_NONE;
 }
 
@@ -160,7 +160,7 @@ PyObject* glb_sum_tslice_long_field_ctype(PyObject* p_spfield,
 {
   SelectedPoints<M>& sp = py_convert_type_spoints<M>(p_spfield);
   const Field<M>& f = py_convert_type_field<M>(p_field);
-  field_glb_sum_tslice_long(sp, f, t_dir);
+  field_glb_sum_tslice(sp, f, t_dir);
   Py_RETURN_NONE;
 }
 

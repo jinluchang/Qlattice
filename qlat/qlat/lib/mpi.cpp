@@ -124,10 +124,10 @@ int glb_sum(Vector<ComplexF> recv, const Vector<ComplexF>& send)
                  Vector<float>((float*)send.data(), send.size() * 2));
 }
 
-int glb_sum(Vector<long> recv, const Vector<long>& send)
+int glb_sum(Vector<int64_t> recv, const Vector<int64_t>& send)
 {
   qassert(recv.size() == send.size());
-  return MPI_Allreduce((long*)send.data(), recv.data(), recv.size(), MPI_LONG,
+  return MPI_Allreduce((int64_t*)send.data(), recv.data(), recv.size(), MPI_INT64_T,
                        MPI_SUM, get_comm());
 }
 
@@ -178,12 +178,12 @@ int glb_sum(Vector<ComplexF> vec)
   return glb_sum(vec, tmp);
 }
 
-int glb_sum(Vector<long> vec)
+int glb_sum(Vector<int64_t> vec)
 {
   if (1 == get_num_node()) {
     return 0;
   }
-  std::vector<long> tmp(vec.size());
+  std::vector<int64_t> tmp(vec.size());
   assign(tmp, vec);
   return glb_sum(vec, tmp);
 }
@@ -202,7 +202,7 @@ int glb_sum(double& x) { return glb_sum(Vector<double>(x)); }
 
 int glb_sum(float& x) { return glb_sum(Vector<float>(x)); }
 
-int glb_sum(long& x) { return glb_sum(Vector<long>(x)); }
+int glb_sum(int64_t& x) { return glb_sum(Vector<int64_t>(x)); }
 
 int glb_sum(Complex& c) { return glb_sum(Vector<double>((double*)&c, 2)); }
 
@@ -215,9 +215,9 @@ int glb_sum_lat_data(LatData& ld)
 
 int glb_sum(LatData& ld) { return glb_sum_lat_data(ld); }
 
-void bcast(int& x, const int root) { bcast(get_data_one_elem(x), root); }
+void bcast(int32_t& x, const int root) { bcast(get_data_one_elem(x), root); }
 
-void bcast(long& x, const int root) { bcast(get_data_one_elem(x), root); }
+void bcast(int64_t& x, const int root) { bcast(get_data_one_elem(x), root); }
 
 void bcast(uint32_t& x, const int root) { bcast(get_data_one_elem(x), root); }
 

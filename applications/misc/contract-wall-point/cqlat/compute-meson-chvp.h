@@ -121,7 +121,7 @@ inline void compute_meson_chvp_type(const std::string& job_tag, const int traj,
                                 tslice, n, j, type3, type4));
         SelectedField<Complex> s_chvp;
         contract_chvp_ama(s_chvp, job_tag, traj, xg_y, type3, type4);
-        acc_field(chvp_list[j], 1.0, s_chvp, ssp);
+        acc_field(chvp_list[j], s_chvp, ssp);
         chvp_count_list[j] += 1;
       }
     }

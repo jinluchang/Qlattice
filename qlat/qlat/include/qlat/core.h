@@ -952,11 +952,6 @@ struct API FieldSelection {
   FieldSelection() { init(); }
   //
   qacc const Geometry& get_geo() const { return f_rank.geo(); }
-  //
-  long n_per_tslice;  // num points per time slice (not enforced and should work
-  // properly if not true)
-  //
-  double prob;  // (double)n_per_tslice / (double)spatial_vol
 };
 
 // --------------------

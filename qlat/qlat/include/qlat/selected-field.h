@@ -396,32 +396,32 @@ bool is_consistent(const SelectedPoints<M>& sp, const SelectedField<M>& sf,
   return qnorm_diff == 0.0;
 }
 
-template <class M>
-void acc_field(Field<M>& f, const Complex& coef, const SelectedField<M>& sf,
-               const FieldSelection& fsel)
-// f can be empty
-{
-  TIMER("acc_field(f,coef,sf,fsel)");
-  const Geometry& geo = fsel.f_rank.geo();
-  const int multiplicity = sf.geo().multiplicity;
-  if (not is_initialized(f)) {
-    f.init(geo_remult(geo, multiplicity));
-    set_zero(f);
-  }
-  qassert(multiplicity == f.geo().multiplicity);
-  qassert(sf.n_elems == fsel.n_elems);
-  qacc_for(idx, fsel.n_elems, {
-    const long index = fsel.indices[idx];
-    const Coordinate xl = geo.coordinate_from_index(index);
-    Vector<M> fv = f.get_elems(xl);
-    const Vector<M> sfv = sf.get_elems_const(idx);
-    for (int m = 0; m < multiplicity; ++m) {
-      M x = sfv[m];
-      x *= coef;
-      fv[m] += x;
-    }
-  });
-}
+// template <class M>
+// void acc_field(Field<M>& f, const Complex& coef, const SelectedField<M>& sf,
+//                const FieldSelection& fsel)
+// // f can be empty
+// {
+//   TIMER("acc_field(f,coef,sf,fsel)");
+//   const Geometry& geo = fsel.f_rank.geo();
+//   const int multiplicity = sf.geo().multiplicity;
+//   if (not is_initialized(f)) {
+//     f.init(geo_remult(geo, multiplicity));
+//     set_zero(f);
+//   }
+//   qassert(multiplicity == f.geo().multiplicity);
+//   qassert(sf.n_elems == fsel.n_elems);
+//   qacc_for(idx, fsel.n_elems, {
+//     const long index = fsel.indices[idx];
+//     const Coordinate xl = geo.coordinate_from_index(index);
+//     Vector<M> fv = f.get_elems(xl);
+//     const Vector<M> sfv = sf.get_elems_const(idx);
+//     for (int m = 0; m < multiplicity; ++m) {
+//       M x = sfv[m];
+//       x *= coef;
+//       fv[m] += x;
+//     }
+//   });
+// }
 
 template <class M>
 void acc_field(Field<M>& f, const SelectedField<M>& sf,
@@ -475,34 +475,16 @@ std::vector<M> field_sum_tslice(const SelectedField<M>& sf,
 }
 
 template <class M>
-void field_glb_sum_tslice_double(SelectedPoints<M>& sp,
-                                 const SelectedField<M>& sf,
-                                 const FieldSelection& fsel,
-                                 const int t_dir = 3)
+void field_glb_sum_tslice(SelectedPoints<M>& sp, const SelectedField<M>& sf,
+                          const FieldSelection& fsel, const int t_dir = 3)
 {
-  TIMER("field_glb_sum_tslice_double(sp,sf,fsel)");
+  TIMER("field_glb_sum_tslice(sp,sf,fsel)");
   sp.init();
   const Geometry& geo = sf.geo();
   const int t_size = geo.total_site()[t_dir];
   const int multiplicity = geo.multiplicity;
   std::vector<M> vec = field_sum_tslice(sf, fsel, t_dir);
-  glb_sum_double_vec(get_data(vec));
-  sp.init(t_size, multiplicity);
-  sp.points = vec;
-}
-
-template <class M>
-void field_glb_sum_tslice_long(SelectedPoints<M>& sp,
-                               const SelectedField<M>& sf,
-                               const FieldSelection& fsel, const int t_dir = 3)
-{
-  TIMER("field_glb_sum_tslice_long(sp,sf,fsel)");
-  sp.init();
-  const Geometry& geo = sf.geo();
-  const int t_size = geo.total_site()[t_dir];
-  const int multiplicity = geo.multiplicity;
-  std::vector<M> vec = field_sum_tslice(sf, fsel, t_dir);
-  glb_sum_long_vec(get_data(vec));
+  glb_sum_vec(get_data(vec));
   sp.init(t_size, multiplicity);
   sp.points = vec;
 }

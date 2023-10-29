@@ -7,6 +7,15 @@
 namespace qlat
 {  //
 
+inline double get_fsel_prob(const FieldSelection& fsel)
+{
+  const Geometry& geo = fsel.f_rank.geo();
+  const long total_volume = geo.total_volume();
+  long n_elems = fsel.n_elems;
+  glb_sum(n_elems);
+  return n_elems / total_volume;
+}
+
 struct WallSrcProps {
   bool initialized;
   std::vector<SelProp> sloppy;
@@ -72,7 +81,7 @@ inline PselProp contract_wall_snk_prop(const SelProp& prop,
     }
   }
   glb_sum_double_vec(get_data(ret));
-  const double ratio = 1.0 / fsel.prob;
+  const double ratio = 1.0 / get_fsel_prob(fsel);
   ret *= ratio;
   return ret;
 }

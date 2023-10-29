@@ -149,7 +149,7 @@ int glb_sum(Vector<Complex> recv, const Vector<Complex>& send);
 
 int glb_sum(Vector<ComplexF> recv, const Vector<ComplexF>& send);
 
-int glb_sum(Vector<long> recv, const Vector<long>& send);
+int glb_sum(Vector<int64_t> recv, const Vector<int64_t>& send);
 
 int glb_sum(Vector<char> recv, const Vector<char>& send);
 
@@ -161,7 +161,7 @@ int glb_sum(Vector<Complex> vec);
 
 int glb_sum(Vector<ComplexF> vec);
 
-int glb_sum(Vector<long> vec);
+int glb_sum(Vector<int64_t> vec);
 
 int glb_sum(Vector<char> vec);
 
@@ -169,7 +169,7 @@ int glb_sum(double& x);
 
 int glb_sum(float& x);
 
-int glb_sum(long& x);
+int glb_sum(int64_t& x);
 
 int glb_sum(Complex& c);
 
@@ -179,9 +179,9 @@ int glb_sum_lat_data(LatData& ld);
 
 int glb_sum(LatData& ld);
 
-void bcast(int& x, const int root = 0);
+void bcast(int32_t& x, const int root = 0);
 
-void bcast(long& x, const int root = 0);
+void bcast(int64_t& x, const int root = 0);
 
 void bcast(uint32_t& x, const int root = 0);
 
@@ -392,9 +392,30 @@ int glb_sum_long_vec(Vector<M> x)
 }
 
 template <class M>
+int glb_sum_int64_vec(Vector<M> x)
+{
+  return glb_sum(Vector<int64_t>((int64_t*)x.data(), x.data_size() / sizeof(int64_t)));
+}
+
+template <class M>
 int glb_sum_byte_vec(Vector<M> x)
 {
   return glb_sum(Vector<char>((char*)x.data(), x.data_size()));
+}
+
+template <class M>
+int glb_sum_vec(Vector<M> x)
+{
+  if (is_composed_of_double<M>()) {
+    return glb_sum_double_vec(x);
+  } else if (is_composed_of_int64<M>()) {
+    return glb_sum_int64_vec(x);
+  } else if (is_composed_of_float<M>()) {
+    return glb_sum_float_vec(x);
+  } else {
+    qerr(ssprintf("glb_sum_vec get_type_name(M)='%s'",
+                  get_type_name<M>().c_str()));
+  }
 }
 
 template <class M>

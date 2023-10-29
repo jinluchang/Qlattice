@@ -49,8 +49,6 @@ std::string show(const qlat::Geometry& geo)
 void FieldSelection::init()
 {
   f_rank.init();
-  n_per_tslice = 0;
-  prob = 0.0;
   f_local_idx.init();
   n_elems = 0;
   ranks.init();

@@ -69,7 +69,7 @@ inline LatData contract_pion(const SelProp& prop, const int tslice_src,
     ldv[tsep] += val;
   }
   glb_sum_lat_data(ld);
-  ld *= 1.0 / fsel.prob;
+  ld *= 1.0 / get_fsel_prob(fsel);
   return ld;
 }
 
@@ -91,7 +91,7 @@ inline LatData contract_kaon(const SelProp& prop1, const SelProp& prop2,
     ldv[tsep] += val;
   }
   glb_sum_lat_data(ld);
-  ld *= 1.0 / fsel.prob;
+  ld *= 1.0 / get_fsel_prob(fsel);
   return ld;
 }
 
@@ -111,7 +111,7 @@ inline LatData contract_pion_wall_snk(const SelProp& prop, const int tslice_src,
     ldv[tsep] = qnorm(wm_ts.get_elem(t));
   }
   LatData ld_ps = contract_pion(prop, tslice_src, fsel);
-  ld_ps *= 1.0 - 1.0 / fsel.prob;
+  ld_ps *= 1.0 - 1.0 / get_fsel_prob(fsel);
   ld += ld_ps;
   return ld;
 }
@@ -137,7 +137,7 @@ inline LatData contract_kaon_wall_snk(const SelProp& prop1,
         matrix_trace(wm1_ts.get_elem(t), matrix_adjoint(wm2_ts.get_elem(t)));
   }
   LatData ld_ps = contract_kaon(prop1, prop2, tslice_src, fsel);
-  ld_ps *= 1.0 - 1.0 / fsel.prob;
+  ld_ps *= 1.0 - 1.0 / get_fsel_prob(fsel);
   ld += ld_ps;
   return ld;
 }
@@ -212,7 +212,7 @@ inline LatData contract_two_point_function(const SelProp& prop1,
       m_src_snk[k] += m_ts[tsep][k];
     }
   }
-  ld *= 1.0 / fsel.prob;
+  ld *= 1.0 / get_fsel_prob(fsel);
   return ld;
 }
 
@@ -261,7 +261,7 @@ inline LatData contract_two_point_wall_snk_function(
 {
   TIMER_VERBOSE("contract_two_point_wall_snk_function");
   LatData ld = ld_two_point_func;
-  ld *= 1.0 - 1.0 / fsel.prob;
+  ld *= 1.0 - 1.0 / get_fsel_prob(fsel);
   ld += ld_two_point_wall_snk_func;
   return ld;
 }
@@ -406,7 +406,7 @@ inline LatData contract_three_point_function(const SelProp& prop_a,
       v[op] = matrix_trace(wm_ts[t], gms[op]);
     }
   }
-  ld *= 1.0 / fsel.prob;
+  ld *= 1.0 / get_fsel_prob(fsel);
   return ld;
 }
 

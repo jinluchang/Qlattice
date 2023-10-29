@@ -62,7 +62,7 @@ inline void compute_chvp_type(const std::string& job_tag, const int traj,
       displayln_info(fname + ssprintf(":n=%ld types=%d-%d", n, type1, type2));
       SelectedField<Complex> s_chvp;
       contract_chvp_ama(s_chvp, job_tag, traj, xg_y, type1, type2);
-      acc_field(cache[tag], 1.0, s_chvp, ssp);
+      acc_field(cache[tag], s_chvp, ssp);
       counts[tag] += 1;
     }
   }
