@@ -1,7 +1,7 @@
 CHECK: geo.show() = Geometry([4, 4, 4, 8], 1)
 CHECK: prop.crc32() = 4021037301 ; prop.qnorm() = 4.930410827467E+04
 CHECK: prop_arr.dtype = complex128
-CHECK: prop_arr.shape = (4, 4, 4, 4, 1, 12, 12)
+CHECK: prop_arr.shape = (256, 1, 12, 12)
 CHECK: prop.crc32() = 4021037301 ; prop.qnorm() = 4.930410827467E+04
 CHECK: prop.crc32() = 3862544378 ; prop.qnorm() = 4.930410827993E+04
 CHECK: sp_prop 197.78615635070122

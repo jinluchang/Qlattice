@@ -69,36 +69,19 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
             self.xx.init(self.psel.xx, multiplicity)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
-        cdef long n_points = self.xx.n_points
-        cdef int multiplicity = self.xx.multiplicity
-        cdef cc.Vector[cc.{{name}}] fvec = cc.get_data(self.xx)
         cdef int ndim = 2 + ElemType{{name}}.ndim()
-        cdef char* fmt = ElemType{{name}}.format()
-        cdef Buffer buf = Buffer(self, ndim, ElemType{{name}}.itemsize())
+        cdef Buffer buf = Buffer(self, ndim)
+        buf.format = ElemType{{name}}.format()
+        buf.itemsize = ElemType{{name}}.itemsize()
+        buf.buf = <char*>(self.xx.points.data())
+        buf.set_dim_size(0, self.xx.n_points)
+        buf.set_dim_size(1, self.xx.multiplicity)
         cdef cc.std_vector[Py_ssize_t] vec = ElemType{{name}}.shape()
-        cdef Py_ssize_t* shape = &buf.shape_strides[0]
-        cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
-        cdef int i
-        shape[0] = n_points
-        shape[1] = multiplicity
-        for i in range(ElemType{{name}}.ndim()):
-            shape[2 + i] = vec[i]
+        cdef int dim
+        for dim in range(vec.size()):
+            buf.set_dim_size(2 + dim, vec[dim])
         buf.update_strides_from_shape()
-        buffer.buf = <char*>(fvec.data())
-        if flags & PyBUF_FORMAT:
-            buffer.format = fmt
-        else:
-            buffer.format = NULL
-        buffer.internal = NULL
-        buffer.itemsize = buf.itemsize
-        buffer.len = buf.get_len()
-        buffer.ndim = buf.ndim
-        buffer.obj = buf
-        buffer.readonly = 0
-        buffer.shape = shape
-        buffer.strides = strides
-        buffer.suboffsets = NULL
-        assert buffer.len * buffer.itemsize == fvec.size() * ElemType{{name}}.size()
+        buf.set_buffer(buffer, flags)
         self.view_count += 1
 
     def release_buffer(self, Buffer buf):
@@ -149,6 +132,36 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
 
     def from_lat_data(self, LatData ld not None):
         cc.selected_points_from_lat_data(self.xx, ld.xx)
+
+    def n_points(self):
+        return self.xx.n_points
+
+    def multiplicity(self):
+        return self.xx.multiplicity
+
+    def __iadd__(self, SelectedPoints{{name}} f):
+        cc.iadd_direct(self.xx, f.xx)
+        return self
+
+    def __isub__(self, SelectedPoints{{name}} f):
+        cc.isub_direct(self.xx, f.xx)
+        return self
+
+    def __imul__(self, f):
+        cdef double fd
+        cdef cc.Complex fc
+        if isinstance(f, float):
+            fd = f
+            cc.imul_direct(self.xx, fd)
+        elif isinstance(f, complex):
+            fc = f
+            cc.imul_direct(self.xx, fc)
+        else:
+            raise Exception(f"SelectedPoints.__imul__(self, f={f})")
+        return self
+
+    def qnorm(self):
+        return cc.qnorm(self.xx)
 
 selected_points_type_dict[ElemType{{name}}] = SelectedPoints{{name}}
 

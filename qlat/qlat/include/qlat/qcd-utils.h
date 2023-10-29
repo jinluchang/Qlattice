@@ -524,7 +524,7 @@ inline ColorMatrix gf_avg_wilson_line(const GaugeField& gf,
       wlf1 = wlf;
     }
   }
-  return field_glb_sum_double(wlf)[0] / (Complex)geo.total_volume();
+  return field_glb_sum(wlf)[0] / (Complex)geo.total_volume();
 }
 
 inline WilsonLinePath make_wilson_loop_path(const Coordinate& target_l,

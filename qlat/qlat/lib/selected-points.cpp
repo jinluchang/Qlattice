@@ -10,15 +10,16 @@ PointsSelection mk_tslice_point_selection(const int t_size, const int t_dir)
   PointsSelection psel;
   psel.resize(t_size);
   qassert(0 <= t_dir and t_dir < 4);
+  const Coordinate xg_all = Coordinate(-1, -1, -1, -1);
   qthread_for(idx, t_size, {
-    psel[idx] = Coordinate();
+    psel[idx] = xg_all;
     psel[idx][t_dir] = idx;
   });
   return psel;
 }
 
 PointsSelection mk_tslice_point_selection(const Coordinate& total_site,
-                                         const int t_dir)
+                                          const int t_dir)
 {
   return mk_tslice_point_selection(total_site[t_dir], t_dir);
 }

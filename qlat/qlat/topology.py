@@ -13,7 +13,7 @@ def gf_topology_field_clf(gf : GaugeField):
 
 @timer
 def gf_topology_clf(gf : GaugeField):
-    return gf_topology_field_clf(gf).glb_sum()[0]
+    return gf_topology_field_clf(gf).glb_sum()[:, :].item()
 
 def gf_topology_field(gf : GaugeField):
     geo = gf.geo()
@@ -23,7 +23,7 @@ def gf_topology_field(gf : GaugeField):
 
 @timer
 def gf_topology(gf : GaugeField):
-    return gf_topology_field(gf).glb_sum()[0]
+    return gf_topology_field(gf).glb_sum()[:, :].item()
 
 def gf_topology_terms_field(gf : GaugeField):
     geo = gf.geo()
@@ -33,16 +33,18 @@ def gf_topology_terms_field(gf : GaugeField):
 
 @timer
 def gf_topology_terms(gf : GaugeField):
-    return gf_topology_terms_field(gf).glb_sum()
+    return gf_topology_terms_field(gf).glb_sum()[0, :]
 
 @timer_verbose
-def smear_measure_topo(gf, smear_info_list = None, *, is_show_topo_terms = False):
-    # smear_info = [ [ step_size, n_step, c1 = 0.0, wilson_flow_integrator_type = "runge-kutta", ], ... ]
-    # c1 = 0.0 # Wilson
-    # c1 = -0.331 # Iwasaki
-    # c1 = -1.4008 # DBW2
-    # wilson_flow_integrator_type = "runge-kutta"
-    # wilson_flow_integrator_type = "euler"
+def smear_measure_topo(gf, smear_info_list=None, *, is_show_topo_terms=False):
+    """
+    smear_info = [ [ step_size, n_step, c1 = 0.0, wilson_flow_integrator_type = "runge-kutta", ], ... ]
+    c1 = 0.0 # Wilson
+    c1 = -0.331 # Iwasaki
+    c1 = -1.4008 # DBW2
+    wilson_flow_integrator_type = "runge-kutta"
+    wilson_flow_integrator_type = "euler"
+    """
     if smear_info_list is None:
         smear_info_list = [
                 [ 0.05, 20, 0.0, "euler", ],
@@ -69,11 +71,11 @@ def smear_measure_topo(gf, smear_info_list = None, *, is_show_topo_terms = False
         plaq = gf.plaq()
         energy_density = gf_energy_density(gf)
         topo_field_clf = gf_topology_field_clf(gf)
-        topo_clf = topo_field_clf.glb_sum().item()
+        topo_clf = topo_field_clf.glb_sum()[:, :].item()
         t_sum_clf = topo_field_clf.glb_sum_tslice()
         t_sum_clf = [ t_sum_clf.get_elem(t).item() for t in range(t_sum_clf.n_points()) ]
         topo_field = gf_topology_field(gf)
-        topo = topo_field.glb_sum().item()
+        topo = topo_field.glb_sum()[:, :].item()
         t_sum = topo_field.glb_sum_tslice()
         t_sum = [ t_sum.get_elem(t).item() for t in range(t_sum.n_points()) ]
         displayln_info(f"t={flow_time} topo_clf={topo_clf} topo={topo}")

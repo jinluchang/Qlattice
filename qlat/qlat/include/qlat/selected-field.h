@@ -112,8 +112,7 @@ double qnorm(const SelectedField<M>& sf)
 }
 
 template <class M>
-const SelectedField<M>& operator+=(SelectedField<M>& f,
-                                   const SelectedField<M>& f1)
+SelectedField<M>& operator+=(SelectedField<M>& f, const SelectedField<M>& f1)
 {
   TIMER("sel_field_operator+=");
   if (not f.initialized) {
@@ -131,8 +130,7 @@ const SelectedField<M>& operator+=(SelectedField<M>& f,
 }
 
 template <class M>
-const SelectedField<M>& operator-=(SelectedField<M>& f,
-                                   const SelectedField<M>& f1)
+SelectedField<M>& operator-=(SelectedField<M>& f, const SelectedField<M>& f1)
 {
   TIMER("sel_field_operator-=");
   if (not f.initialized) {
@@ -152,7 +150,7 @@ const SelectedField<M>& operator-=(SelectedField<M>& f,
 }
 
 template <class M>
-const SelectedField<M>& operator*=(SelectedField<M>& f, const double factor)
+SelectedField<M>& operator*=(SelectedField<M>& f, const double factor)
 {
   TIMER("sel_field_operator*=(F,D)");
   qassert(f.initialized);
@@ -164,7 +162,7 @@ const SelectedField<M>& operator*=(SelectedField<M>& f, const double factor)
 }
 
 template <class M>
-const SelectedField<M>& operator*=(SelectedField<M>& f, const Complex factor)
+SelectedField<M>& operator*=(SelectedField<M>& f, const Complex factor)
 {
   TIMER("sel_field_operator*=(F,C)");
   qassert(f.initialized);

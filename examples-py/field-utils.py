@@ -43,13 +43,13 @@ gf *= f_factor
 
 gf.show_info()
 
-q.displayln_info(gf.get_elems([0, 0, 0, 0,]))
-qnorm = q.qnorm(gf.get_elems([0, 0, 0, 0,]))
+q.displayln_info(gf.get_elems_xg(q.Coordinate([0, 0, 0, 0,]))[:])
+qnorm = q.qnorm(gf.get_elems_xg(q.Coordinate([0, 0, 0, 0,]))[:])
 q.displayln_info(f"CHECK: {qnorm:.14E}")
 
 gf_sum_initial = gf.glb_sum()
 
-gf_sum = gf_sum_initial.copy()
+gf_sum = gf_sum_initial.copy()[:]
 
 q.displayln_info(gf_sum)
 qnorm = q.qnorm(gf_sum)
@@ -58,7 +58,7 @@ q.displayln_info(f"CHECK: {qnorm:.14E}")
 gf_sum_tslice = gf.glb_sum_tslice()
 
 for t in range(total_site[3]):
-    gf_sum -= gf_sum_tslice.get_elems(t)
+    gf_sum -= gf_sum_tslice.get_elems(t)[:]
 
 q.displayln_info(q.qnorm(gf_sum))
 
@@ -75,9 +75,9 @@ for t_dir in range(4):
     q.displayln_info(f"CHECK: t_dir={t_dir} n_points={n_points} multiplicity={multiplicity} psel_list={psel_list}")
     qnorm = q.qnorm(gf_sum_tslice.to_numpy())
     q.displayln_info(f"CHECK: t_dir={t_dir} qnorm(gf_sum_tslice)={qnorm:.14E}")
-    gf_sum = gf_sum_initial.copy()
+    gf_sum = gf_sum_initial.copy()[:]
     for t in range(total_site[t_dir]):
-        gf_sum -= gf_sum_tslice.get_elems(t)
+        gf_sum -= gf_sum_tslice.get_elems(t)[:]
     q.displayln_info(f"t_dir={t_dir} qnorm diff", f"{q.qnorm(gf_sum):.14E}")
     assert q.qnorm(gf_sum) <= 1e-23 * q.qnorm(gf_sum_initial)
 

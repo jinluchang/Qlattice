@@ -80,6 +80,8 @@ if False:
         measure()
     gf_f.save("results/ckpoint.topo1.4nt8.lat")
 
+q.smear_measure_topo(gf)
+
 q.timer_display()
 
 q.displayln_info(f"CHECK: finished successfully.")

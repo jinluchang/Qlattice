@@ -341,6 +341,24 @@ qacc void assign_direct(M& x, const N& y)
   x = y;
 }
 
+template <class M, class N>
+qacc void iadd_direct(M& x, const N& y)
+{
+  x += y;
+}
+
+template <class M, class N>
+qacc void isub_direct(M& x, const N& y)
+{
+  x -= y;
+}
+
+template <class M, class N>
+qacc void imul_direct(M& x, const N& y)
+{
+  x *= y;
+}
+
 template <class M, int N>
 qacc void assign(array<M, N>& vec, const Array<M, N>& src)
 {

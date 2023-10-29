@@ -416,70 +416,70 @@ long read_selected_field_double_from_float(
 #define QLAT_EXTERN extern
 #endif
 
-#define QLAT_EXTERN_TEMPLATE(TYPENAME)                                      \
-                                                                            \
-  QLAT_EXTERN template const SelectedField<TYPENAME>& operator+=<TYPENAME>( \
-      SelectedField<TYPENAME>& f, const SelectedField<TYPENAME>& f1);       \
-                                                                            \
-  QLAT_EXTERN template const SelectedField<TYPENAME>& operator-=<TYPENAME>( \
-      SelectedField<TYPENAME>& f, const SelectedField<TYPENAME>& f1);       \
-                                                                            \
-  QLAT_EXTERN template const SelectedField<TYPENAME>& operator*=            \
-      <TYPENAME>(SelectedField<TYPENAME>& f, const double factor);          \
-                                                                            \
-  QLAT_EXTERN template const SelectedField<TYPENAME>& operator*=            \
-      <TYPENAME>(SelectedField<TYPENAME>& f, const Complex factor);         \
-                                                                            \
-  QLAT_EXTERN template void only_keep_selected_points<TYPENAME>(            \
-      Field<TYPENAME> & f, const FieldSelection& fsel);                     \
-                                                                            \
-  QLAT_EXTERN template double qnorm<TYPENAME>(                              \
-      const SelectedField<TYPENAME>& sp);                                   \
-                                                                            \
-  QLAT_EXTERN template void qnorm_field<TYPENAME>(                          \
-      SelectedField<double> & sp, const SelectedField<TYPENAME>& sp1);      \
-                                                                            \
-  QLAT_EXTERN template void set_selected_field<TYPENAME>(                   \
-      SelectedField<TYPENAME> & sf, const Field<TYPENAME>& f,               \
-      const FieldSelection& fsel);                                          \
-                                                                            \
-  QLAT_EXTERN template void set_selected_field<TYPENAME>(                   \
-      SelectedField<TYPENAME> & sf, const SelectedField<TYPENAME>& sf0,     \
-      const FieldSelection& fsel, const FieldSelection& fsel0,              \
-      const bool is_keeping_data);                                          \
-                                                                            \
-  QLAT_EXTERN template void set_selected_field<TYPENAME>(                   \
-      SelectedField<TYPENAME> & sf, const SelectedPoints<TYPENAME>& sp,     \
-      const FieldSelection& fsel, const PointsSelection& psel,              \
-      const bool is_keeping_data);                                          \
-                                                                            \
-  QLAT_EXTERN template void set_selected_points<TYPENAME>(                  \
-      SelectedPoints<TYPENAME> & sp, const SelectedField<TYPENAME>& sf,     \
-      const PointsSelection& psel, const FieldSelection& fsel,              \
-      const bool is_keeping_data);                                          \
-                                                                            \
-  QLAT_EXTERN template void set_field_selected<TYPENAME>(                   \
-      Field<TYPENAME> & f, const SelectedField<TYPENAME>& sf,               \
-      const FieldSelection& fsel, const bool is_keeping_data);              \
-                                                                            \
-  QLAT_EXTERN template void acc_field<TYPENAME>(                            \
-      Field<TYPENAME> & f, const SelectedField<TYPENAME>& sf,               \
-      const FieldSelection& fsel);                                          \
-                                                                            \
-  QLAT_EXTERN template void field_glb_sum_tslice<TYPENAME>(                 \
-      SelectedPoints<TYPENAME> & sp, const SelectedField<TYPENAME>& sf,     \
-      const FieldSelection& fsel, const int t_dir);                         \
-                                                                            \
-  QLAT_EXTERN template crc32_t field_crc32<TYPENAME>(                       \
-      const SelectedField<TYPENAME>& sf, const FieldSelection& fsel,        \
-      const Coordinate& new_size_node_);                                    \
-                                                                            \
-  QLAT_EXTERN template long write_selected_field<TYPENAME>(                 \
-      const SelectedField<TYPENAME>& sf, const std::string& path,           \
-      const FieldSelection& fsel, const Coordinate& new_size_node_);        \
-                                                                            \
-  QLAT_EXTERN template long read_selected_field<TYPENAME>(                  \
-      SelectedField<TYPENAME> & sf, const std::string& path,                \
+#define QLAT_EXTERN_TEMPLATE(TYPENAME)                                  \
+                                                                        \
+  QLAT_EXTERN template SelectedField<TYPENAME>& operator+=<TYPENAME>(   \
+      SelectedField<TYPENAME>& f, const SelectedField<TYPENAME>& f1);   \
+                                                                        \
+  QLAT_EXTERN template SelectedField<TYPENAME>& operator-=<TYPENAME>(   \
+      SelectedField<TYPENAME>& f, const SelectedField<TYPENAME>& f1);   \
+                                                                        \
+  QLAT_EXTERN template SelectedField<TYPENAME>& operator*=              \
+      <TYPENAME>(SelectedField<TYPENAME>& f, const double factor);      \
+                                                                        \
+  QLAT_EXTERN template SelectedField<TYPENAME>& operator*=              \
+      <TYPENAME>(SelectedField<TYPENAME>& f, const Complex factor);     \
+                                                                        \
+  QLAT_EXTERN template void only_keep_selected_points<TYPENAME>(        \
+      Field<TYPENAME> & f, const FieldSelection& fsel);                 \
+                                                                        \
+  QLAT_EXTERN template double qnorm<TYPENAME>(                          \
+      const SelectedField<TYPENAME>& sp);                               \
+                                                                        \
+  QLAT_EXTERN template void qnorm_field<TYPENAME>(                      \
+      SelectedField<double> & sp, const SelectedField<TYPENAME>& sp1);  \
+                                                                        \
+  QLAT_EXTERN template void set_selected_field<TYPENAME>(               \
+      SelectedField<TYPENAME> & sf, const Field<TYPENAME>& f,           \
+      const FieldSelection& fsel);                                      \
+                                                                        \
+  QLAT_EXTERN template void set_selected_field<TYPENAME>(               \
+      SelectedField<TYPENAME> & sf, const SelectedField<TYPENAME>& sf0, \
+      const FieldSelection& fsel, const FieldSelection& fsel0,          \
+      const bool is_keeping_data);                                      \
+                                                                        \
+  QLAT_EXTERN template void set_selected_field<TYPENAME>(               \
+      SelectedField<TYPENAME> & sf, const SelectedPoints<TYPENAME>& sp, \
+      const FieldSelection& fsel, const PointsSelection& psel,          \
+      const bool is_keeping_data);                                      \
+                                                                        \
+  QLAT_EXTERN template void set_selected_points<TYPENAME>(              \
+      SelectedPoints<TYPENAME> & sp, const SelectedField<TYPENAME>& sf, \
+      const PointsSelection& psel, const FieldSelection& fsel,          \
+      const bool is_keeping_data);                                      \
+                                                                        \
+  QLAT_EXTERN template void set_field_selected<TYPENAME>(               \
+      Field<TYPENAME> & f, const SelectedField<TYPENAME>& sf,           \
+      const FieldSelection& fsel, const bool is_keeping_data);          \
+                                                                        \
+  QLAT_EXTERN template void acc_field<TYPENAME>(                        \
+      Field<TYPENAME> & f, const SelectedField<TYPENAME>& sf,           \
+      const FieldSelection& fsel);                                      \
+                                                                        \
+  QLAT_EXTERN template void field_glb_sum_tslice<TYPENAME>(             \
+      SelectedPoints<TYPENAME> & sp, const SelectedField<TYPENAME>& sf, \
+      const FieldSelection& fsel, const int t_dir);                     \
+                                                                        \
+  QLAT_EXTERN template crc32_t field_crc32<TYPENAME>(                   \
+      const SelectedField<TYPENAME>& sf, const FieldSelection& fsel,    \
+      const Coordinate& new_size_node_);                                \
+                                                                        \
+  QLAT_EXTERN template long write_selected_field<TYPENAME>(             \
+      const SelectedField<TYPENAME>& sf, const std::string& path,       \
+      const FieldSelection& fsel, const Coordinate& new_size_node_);    \
+                                                                        \
+  QLAT_EXTERN template long read_selected_field<TYPENAME>(              \
+      SelectedField<TYPENAME> & sf, const std::string& path,            \
       const FieldSelection& fsel, const Coordinate& new_size_node_);
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);

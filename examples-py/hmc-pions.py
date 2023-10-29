@@ -81,7 +81,7 @@ class Field_fft:
 
     def vacuum_subtract(self, vev):
         self.get_field_ft()
-        self.field_ft.set_elem([0,0,0,0],0,np.array([self.field_ft.get_elem([0,0,0,0],0)-vev*self.V**0.5], dtype='c16').tobytes())
+        self.field_ft.set_elem_xg(q.Coordinate([0,0,0,0]),0,np.array([self.field_ft.get_elem_xg([0,0,0,0],0)-vev*self.V**0.5], dtype='c16'))
         self.updated = False
 
     def load(self, path):
@@ -113,13 +113,19 @@ class Field_fft:
         self.get_field_ft()
         for m in range(self.mult):
             for x in [[0,0,0,0],[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1],[total_site[0]-1,0,0,0],[0,total_site[1]-1,0,0],[0,0,total_site[2]-1,0],[0,0,0,total_site[3]-1]]:
-                self.field_ft.set_elem(x,m,np.array([0.0j], dtype='c16').tobytes())
+                self.field_ft.set_elem_xg(q.Coordinate(x),m,np.array([0.0j], dtype='c16'))
         self.updated = False
 
     def get_representatives_ft(self):
         field_ft = self.get_field_ft()
-        return [[field_ft.get_elem([0,0,0,0],0),field_ft.get_elem([1,0,0,0],0),field_ft.get_elem([0,2,0,0],0),field_ft.get_elem([3,0,0,0],0)],
-                [field_ft.get_elem([0,0,0,0],1),field_ft.get_elem([1,0,0,0],1),field_ft.get_elem([0,2,0,0],1),field_ft.get_elem([3,0,0,0],1)]]
+        return [[field_ft.get_elem_xg(q.Coordinate([0,0,0,0]),0)[:].item(),
+                 field_ft.get_elem_xg(q.Coordinate([1,0,0,0]),0)[:].item(),
+                 field_ft.get_elem_xg(q.Coordinate([0,2,0,0]),0)[:].item(),
+                 field_ft.get_elem_xg(q.Coordinate([3,0,0,0]),0)[:].item()],
+                [field_ft.get_elem_xg(q.Coordinate([0,0,0,0]),1)[:].item(),
+                 field_ft.get_elem_xg(q.Coordinate([1,0,0,0]),1)[:].item(),
+                 field_ft.get_elem_xg(q.Coordinate([0,2,0,0]),1)[:].item(),
+                 field_ft.get_elem_xg(q.Coordinate([3,0,0,0]),1)[:].item()]]
 
 class HMC:
     def __init__(self, m_sq, lmbd, alpha, total_site, mult, steps, mass_force_coef, recalculate_masses, fresh_start, block_sizes, version, date):
@@ -359,7 +365,7 @@ class HMC:
         # Keep using the same estimated masses for every trajectory
         # in this block
         self.run_hmc(self.rs.split("hmc-est-mass{}".format(self.traj)))
-        self.vevs.append(self.field.glb_sum()[0]/self.V)
+        self.vevs.append(self.field.glb_sum()[0, 0].item()/self.V)
 
     @q.timer_verbose
     def run_hmc(self, rs):
@@ -501,8 +507,12 @@ class HMC:
 
     def display_masses(self, msg, masses):
         q.displayln_info(msg)
-        q.displayln_info([masses.get_elem([0,0,0,0],0),masses.get_elem([1,0,0,0],0),masses.get_elem([4,0,0,0],0)])
-        q.displayln_info([masses.get_elem([0,0,0,0],1),masses.get_elem([1,0,0,0],1),masses.get_elem([4,0,0,0],1)])
+        q.displayln_info([masses.get_elem_xg(q.Coordinate([0,0,0,0]),0)[:].item(),
+                          masses.get_elem_xg(q.Coordinate([1,0,0,0]),0)[:].item(),
+                          masses.get_elem_xg(q.Coordinate([4,0,0,0]),0)[:].item()])
+        q.displayln_info([masses.get_elem_xg(q.Coordinate([0,0,0,0]),1)[:].item(),
+                          masses.get_elem_xg(q.Coordinate([1,0,0,0]),1)[:].item(),
+                          masses.get_elem_xg(q.Coordinate([4,0,0,0]),1)[:].item()])
 
 class Measurements:
     def __init__(self, total_site, field_geo, save_file):
@@ -584,9 +594,9 @@ class Measurements:
         self.psq_list.append(self.calc_psq(hmc.field.get_field(), hmc.action))
         self.psq_pred_list.append(self.calc_psq(hmc.field_predicted.get_field(), hmc.action))
         # Calculate the expectation value of phi
-        field_sum = hmc.field.get_field().glb_sum()
+        field_sum = hmc.field.get_field().glb_sum()[0]
         self.phi_list.append([field_sum[i]/hmc.field.V for i in range(hmc.mult)])
-        field_sum = hmc.field_predicted.get_field().glb_sum()
+        field_sum = hmc.field_predicted.get_field().glb_sum()[0]
         self.phi_pred_list.append([field_sum[i]/hmc.field.V for i in range(hmc.mult)])
         #
         self.momentums.append(hmc.init_momentum.get_representatives_ft())
@@ -628,14 +638,14 @@ class Measurements:
                 self.psq_dist_center = self.psq_list[-1]
                 q.field_double.set_complex_from_double(self.auxc, field)
                 q.field_double.set_abs_from_complex(self.auxd, self.auxc)
-                field_sum_abs = self.auxd.glb_sum()
+                field_sum_abs = self.auxd.glb_sum()[0]
                 phi_abs=[field_sum_abs[i]/hmc.field.V for i in range(hmc.mult)]
                 self.phi_dist_center = (phi_abs[1]+phi_abs[2]+phi_abs[3])/3.0
             for x in range(hmc.total_site[0]):
                 for y in range(hmc.total_site[1]):
                     for z in range(hmc.total_site[2]):
                         for t in range(hmc.total_site[3]):
-                            elems = field.get_elems([x,y,z,t])
+                            elems = field.get_elems_xg(q.Coordinate([x,y,z,t]))[0]
                             self.update_phi_sq_dist(elems,hmc.V)
                             self.update_phi_i_dist(np.abs(elems[1]),hmc.V)
                             self.update_phi_i_dist(np.abs(elems[2]),hmc.V)

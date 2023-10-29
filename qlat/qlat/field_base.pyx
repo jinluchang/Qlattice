@@ -296,76 +296,35 @@ cdef class FieldBase:
         c.assign_from_field(self, f)
         return f
 
-    def get_elems(self, index):
+    def __setitem__(self, idx, val):
         """
-        index can also be xg
-        get_elems is collective operation when xg is coordinate
-        get_elems will be specific to a single process if xg is index
+        Implemented in terms of ``np.asarray``
         """
-        return np.array(c.get_elems_field(self, index))
+        np.asarray(self)[idx] = val
 
-    def get_elem(self, index, m=None):
+    def __getitem__(self, idx):
         """
-        index can also be xg
+        Implemented in terms of ``np.asarray``
         """
-        if m is None:
-            return np.array(c.get_elem_field(self, index))
-        else:
-            return np.array(c.get_elem_field(self, index, m))
+        return np.asarray(self)[idx]
 
-    def set_elems(self, index, val):
-        """
-        index can also be xg
-        val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
-        """
-        if isinstance(val, bytes):
-            return c.set_elems_field(self, index, val)
-        elif isinstance(val, np.ndarray):
-            return self.set_elems(index, val.tobytes())
-        else:
-            assert False
+    def get_elems(self, idx):
+        return self[idx]
 
-    def set_elem(self, index, m, val):
-        """
-        index can also be xg
-        val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
-        """
-        if isinstance(val, bytes):
-            return c.set_elem_field(self, index, m, val)
-        elif isinstance(val, np.ndarray):
-            return self.set_elem(index, m, val.tobytes())
-        else:
-            assert False
+    def get_elem(self, idx, m = 0):
+        return self[idx, m]
 
-    def __getitem__(self, i):
+    def set_elems(self, idx, val):
         """
-        i can be (index, m,) or index
-        index can also be xg
+        val should be np.ndarray. e.g. np.array([1, 2, 3], dtype=complex)
         """
-        if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], (int, list, tuple,)):
-            index, m = i
-            return self.get_elem(index, m)
-        elif isinstance(i, (int, list, tuple)):
-            index = i
-            return self.get_elems(index)
-        else:
-            assert False
-            return None
+        self[idx] = val
 
-    def __setitem__(self, i, val):
+    def set_elem(self, idx, m, val):
         """
-        i can be (index, m,) or index
-        index can also be xg
-        val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
+        val should be np.ndarray. e.g. np.array([1, 2, 3], dtype=complex)
         """
-        if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], (int, list, tuple,)):
-            index, m = i
-            self.set_elem(index, m, val)
-        elif isinstance(i, (int, list, tuple)):
-            index = i
-            self.set_elems(index, val)
-        else:
-            assert False
+        self[idx, m] = val
 
     def field_shift(self, shift):
         """
@@ -381,32 +340,6 @@ cdef class FieldBase:
         reflect the field, return None
         """
         return c.reflect_field(self)
-
-    def glb_sum(self):
-        if self.ctype in field_ctypes_double:
-            return np.array(c.glb_sum_double_field(self))
-        elif self.ctype in field_ctypes_long:
-            return np.array(c.glb_sum_long_field(self))
-        else:
-            assert False
-            return None
-
-    def glb_sum_tslice(self, *, t_dir=3):
-        """
-        return SelectedPoints(self.ctype, get_psel_tslice(self.total_site(), t_dir=t_dir))
-        """
-        from .c import get_psel_tslice
-        cdef PointsSelection psel = get_psel_tslice(self.total_site(), t_dir=t_dir)
-        sp = SelectedPoints(self.ctype, psel)
-        if self.ctype in field_ctypes_double:
-            c.glb_sum_tslice_double_field(sp, self, t_dir)
-            return sp
-        elif self.ctype in field_ctypes_long:
-            c.glb_sum_tslice_long_field(sp, self, t_dir)
-            return sp
-        else:
-            assert False
-            return None
 
 ### -------------------------------------------------------------------
 
@@ -497,64 +430,35 @@ cdef class SelectedFieldBase:
     def qnorm(self):
         return c.qnorm_sfield(self)
 
-    def get_elems(self, idx):
-        return np.array(c.get_elems_sfield(self, idx))
+    def __setitem__(self, idx, val):
+        """
+        Implemented in terms of ``np.asarray``
+        """
+        np.asarray(self)[idx] = val
 
-    def get_elem(self, idx, m=None):
-        if m is None:
-            return np.array(c.get_elem_sfield(self, idx))
-        else:
-            return np.array(c.get_elem_sfield(self, idx, m))
+    def __getitem__(self, idx):
+        """
+        Implemented in terms of ``np.asarray``
+        """
+        return np.asarray(self)[idx]
+
+    def get_elems(self, idx):
+        return self[idx]
+
+    def get_elem(self, idx, m = 0):
+        return self[idx, m]
 
     def set_elems(self, idx, val):
         """
-        val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
+        val should be np.ndarray. e.g. np.array([1, 2, 3], dtype=complex)
         """
-        if isinstance(val, bytes):
-            return c.set_elems_sfield(self, idx, val)
-        elif isinstance(val, np.ndarray):
-            return self.set_elems(idx, val.tobytes())
-        else:
-            assert False
+        self[idx] = val
 
     def set_elem(self, idx, m, val):
         """
-        val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
+        val should be np.ndarray. e.g. np.array([1, 2, 3], dtype=complex)
         """
-        if isinstance(val, bytes):
-            return c.set_elem_sfield(self, idx, m, val)
-        elif isinstance(val, np.ndarray):
-            return self.set_elem(idx, m, val.tobytes())
-        else:
-            assert False
-
-    def __getitem__(self, i):
-        """
-        i can be (idx, m,) or idx
-        """
-        if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], int):
-            idx, m = i
-            return self.get_elem(idx, m)
-        elif isinstance(i, int):
-            idx = i
-            return self.get_elems(idx)
-        else:
-            assert False
-            return None
-
-    def __setitem__(self, i, val):
-        """
-        i can be (idx, m,) or idx
-        val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
-        """
-        if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], int):
-            idx, m = i
-            self.set_elem(idx, m, val)
-        elif isinstance(i, int):
-            idx = i
-            self.set_elems(idx, val)
-        else:
-            assert False
+        self[idx, m] = val
 
     def save_direct(self, path, *args):
         """
@@ -712,84 +616,35 @@ cdef class SelectedPointsBase:
     def __deepcopy__(self, memo):
         return self.copy()
 
-    def n_points(self):
-        return c.get_n_points_spfield(self)
+    def __setitem__(self, idx, val):
+        """
+        Implemented in terms of ``np.asarray``
+        """
+        np.asarray(self)[idx] = val
 
-    def multiplicity(self):
-        return c.get_multiplicity_spfield(self)
-
-    def __iadd__(self, f1):
-        assert isinstance(f1, SelectedPointsBase) and f1.ctype is self.ctype
-        c.set_add_spfield(self, f1)
-        return self
-
-    def __isub__(self, f1):
-        assert isinstance(f1, SelectedPointsBase) and f1.ctype is self.ctype
-        c.set_sub_spfield(self, f1)
-        return self
-
-    def __imul__(self, factor):
-        assert isinstance(factor, float)
-        c.set_mul_double_spfield(self, factor)
-        return self
-
-    def qnorm(self):
-        return c.qnorm_spfield(self)
+    def __getitem__(self, idx):
+        """
+        Implemented in terms of ``np.asarray``
+        """
+        return np.asarray(self)[idx]
 
     def get_elems(self, idx):
-        return np.array(c.get_elems_spfield(self, idx))
+        return self[idx]
 
-    def get_elem(self, idx, m=None):
-        if m is None:
-            return np.array(c.get_elem_spfield(self, idx))
-        else:
-            return np.array(c.get_elem_spfield(self, idx, m))
+    def get_elem(self, idx, m = 0):
+        return self[idx, m]
 
     def set_elems(self, idx, val):
-        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
-        if isinstance(val, bytes):
-            return c.set_elems_spfield(self, idx, val)
-        elif isinstance(val, np.ndarray):
-            return self.set_elems(idx, val.tobytes())
-        else:
-            assert False
+        """
+        val should be np.ndarray. e.g. np.array([1, 2, 3], dtype=complex)
+        """
+        self[idx] = val
 
     def set_elem(self, idx, m, val):
-        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
-        if isinstance(val, bytes):
-            return c.set_elem_spfield(self, idx, m, val)
-        elif isinstance(val, np.ndarray):
-            return self.set_elem(idx, m, val.tobytes())
-        else:
-            assert False
-
-    def __getitem__(self, i):
         """
-        i can be (idx, m,) or idx
+        val should be np.ndarray. e.g. np.array([1, 2, 3], dtype=complex)
         """
-        if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], int):
-            idx, m = i
-            return self.get_elem(idx, m)
-        elif isinstance(i, int):
-            idx = i
-            return self.get_elems(idx)
-        else:
-            assert False
-            return None
-
-    def __setitem__(self, i, val):
-        """
-        i can be (idx, m,) or idx
-        val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype=complex).tobytes()
-        """
-        if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], int):
-            idx, m = i
-            self.set_elem(idx, m, val)
-        elif isinstance(i, int):
-            idx = i
-            self.set_elems(idx, val)
-        else:
-            assert False
+        self[idx, m] = val
 
     def to_numpy(self):
         return np.asarray(self).copy()

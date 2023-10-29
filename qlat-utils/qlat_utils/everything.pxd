@@ -104,7 +104,7 @@ cdef extern from "qlat-utils/vector.h" namespace "qlat":
         Vector[T] v
         vector()
         void init()
-        void size()
+        long size()
         T* data()
         T& operator[](const long i) except +
     cdef cppclass vector_acc[T](vector[T]):
@@ -122,6 +122,9 @@ cdef extern from "qlat-utils/vector.h" namespace "qlat":
 cdef extern from "qlat-utils/qutils-vec.h" namespace "qlat":
 
     void assign_direct[M, N](M& x, const N& y) except +
+    void iadd_direct[M, N](M& x, const N& y) except +
+    void isub_direct[M, N](M& x, const N& y) except +
+    void imul_direct[M, N](M& x, const N& y) except +
 
 cdef extern from "qlat-utils/mat.h" namespace "qlat":
 

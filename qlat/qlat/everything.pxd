@@ -92,6 +92,7 @@ cdef extern from "qlat/utils-io.h" namespace "qlat":
 cdef extern from "qlat/core.h" namespace "qlat":
 
     cdef cppclass Field[T]:
+        vector_acc[T] field
         Field()
         void init()
         void init(const Geometry& geo) except +
@@ -134,6 +135,7 @@ cdef extern from "qlat/core.h" namespace "qlat":
         Coordinate& operator[](long i)
     cdef cppclass SelectedField[T]:
         long n_elems;
+        vector_acc[T] field
         SelectedField()
         void init()
         void init(const Geometry& geo, const long n_elems, const int multiplicity) except +
@@ -142,6 +144,7 @@ cdef extern from "qlat/core.h" namespace "qlat":
     cdef cppclass SelectedPoints[T]:
         int multiplicity
         long n_points
+        vector_acc[T] points
         SelectedPoints()
         void init()
         void init(const long n_points, const int multiplicity) except +
@@ -162,6 +165,7 @@ cdef extern from "qlat/core.h" namespace "qlat":
 
 cdef extern from "qlat/field.h" namespace "qlat":
 
+    double qnorm[M](const Field[M]& f) except +
     void set_xg_field(Field[Int]& f, const Geometry& geo) except +
 
 cdef extern from "qlat/field-expand.h" namespace "qlat":
@@ -171,6 +175,7 @@ cdef extern from "qlat/field-expand.h" namespace "qlat":
 
 cdef extern from "qlat/selected-points.h" namespace "qlat":
 
+    double qnorm[M](const SelectedPoints[M]& sp) except +
     PointsSelection mk_random_point_selection(const Coordinate& total_site,
                                               const long num, const RngState& rs) except +
     void save_point_selection_info(const PointsSelection& psel,
@@ -181,23 +186,30 @@ cdef extern from "qlat/selected-points.h" namespace "qlat":
     void save_selected_points[M](const SelectedPoints[M]& sp, const std_string& path) except +
     void load_selected_points[M](SelectedPoints[M]& sp, const std_string& path) except +
     PointsSelection mk_tslice_point_selection(const int t_size, const int t_dir) except +
+    void field_glb_sum[M](SelectedPoints[M]& sp, const Field[M]& f) except +
+    void field_glb_sum_tslice[M](SelectedPoints[M]& sp, const Field[M]& f, const int t_dir) except +
 
 cdef extern from "qlat/selected-field.h" namespace "qlat":
 
+    double qnorm[M](const SelectedField[M]& sp) except +
     void set_selected_field[t](SelectedField[t]& sf, const Field[t]& f,
                                const FieldSelection& fsel) except +
     void set_selected_field[t](SelectedField[t]& sf, const SelectedField[t] sf0,
                                const FieldSelection& fsel, const FieldSelection& fsel0) except +
     void set_selected_field[t](SelectedField[t]& sf, const SelectedPoints[t] sp,
                                const FieldSelection& fsel, const PointsSelection& psel) except +
-    void set_selected_points[t](SelectedPoints[t]& sp, const Field[t] sf,
+    void set_selected_points[t](SelectedPoints[t]& sp, const Field[t] f,
                                 const PointsSelection& psel) except +
     void set_selected_points[t](SelectedPoints[t]& sp, const SelectedField[t] sf,
                                 const PointsSelection& psel, const FieldSelection& fsel) except +
-    void set_field_selected[t](Field[t]& sf, const SelectedField[t]& f,
+    void set_field_selected[t](Field[t]& f, const SelectedField[t]& sf,
                                const FieldSelection& fsel) except +
-    void set_field_selected[t](Field[t]& sf, const SelectedPoints[t]& f,
+    void set_field_selected[t](Field[t]& f, const SelectedPoints[t]& sp,
                                const Geometry& geo, const PointsSelection& psel) except +
+    void set_selected_points[t](SelectedPoints[t]& sp, const Field[t] f,
+                                const PointsSelection& psel, const int m) except +
+    void set_field_selected[t](Field[t]& f, const SelectedPoints[t]& sp,
+                               const Geometry& geo, const PointsSelection& psel, const int m) except +
     bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2) except +
 
 cdef extern from "qlat/selected-field-io.h" namespace "qlat":

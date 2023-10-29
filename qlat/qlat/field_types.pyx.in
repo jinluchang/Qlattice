@@ -65,40 +65,20 @@ cdef class Field{{name}}(FieldBase):
         self.xx.init(geo.xx, multiplicity)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
-        cdef const cc.Geometry* p_geo = &self.xx.get_geo()
-        cdef cc.Coordinate local_site = p_geo[0].local_site()
-        cdef int multiplicity = p_geo[0].multiplicity
-        cdef cc.Vector[cc.{{name}}] fvec = cc.get_data(self.xx)
-        cdef int ndim = 5 + ElemType{{name}}.ndim()
-        cdef char* fmt = ElemType{{name}}.format()
-        cdef Buffer buf = Buffer(self, ndim, ElemType{{name}}.itemsize())
+        cdef int ndim = 2 + ElemType{{name}}.ndim()
+        cdef Buffer buf = Buffer(self, ndim)
+        buf.format = ElemType{{name}}.format()
+        buf.itemsize = ElemType{{name}}.itemsize()
+        buf.buf = <char*>(self.xx.field.data())
+        cdef int multiplicity = self.xx.get_geo().multiplicity
+        buf.set_dim_size(0, self.xx.field.size() // multiplicity)
+        buf.set_dim_size(1, multiplicity)
         cdef cc.std_vector[Py_ssize_t] vec = ElemType{{name}}.shape()
-        cdef Py_ssize_t* shape = &buf.shape_strides[0]
-        cdef Py_ssize_t* strides = &buf.shape_strides[buf.ndim]
-        cdef int i
-        shape[0] = local_site[3]
-        shape[1] = local_site[2]
-        shape[2] = local_site[1]
-        shape[3] = local_site[0]
-        shape[4] = multiplicity
-        for i in range(ElemType{{name}}.ndim()):
-            shape[5 + i] = vec[i]
+        cdef int dim
+        for dim in range(vec.size()):
+            buf.set_dim_size(2 + dim, vec[dim])
         buf.update_strides_from_shape()
-        buffer.buf = <char*>(fvec.data())
-        if flags & PyBUF_FORMAT:
-            buffer.format = fmt
-        else:
-            buffer.format = NULL
-        buffer.internal = NULL
-        buffer.itemsize = buf.itemsize
-        buffer.len = buf.get_len()
-        buffer.ndim = buf.ndim
-        buffer.obj = buf
-        buffer.readonly = 0
-        buffer.shape = shape
-        buffer.strides = strides
-        buffer.suboffsets = NULL
-        assert buffer.len * buffer.itemsize == fvec.size() * ElemType{{name}}.size()
+        buf.set_buffer(buffer, flags)
         self.view_count += 1
 
     def release_buffer(self, Buffer buf):
@@ -150,6 +130,54 @@ cdef class Field{{name}}(FieldBase):
         # cc.assign_direct(geo.xx, self.xx.get_geo())
         geo.xx = self.xx.get_geo()
         return geo
+
+    def glb_sum(self):
+        """
+        return SelectedPoints with n_points=1
+        """
+        from .c import get_psel_single
+        cdef PointsSelection psel = get_psel_single(self.total_site())
+        cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, self.multiplicity())
+        cc.field_glb_sum(sp.xx, self.xx)
+        return sp
+
+    def glb_sum_tslice(self, *, int t_dir=3):
+        """
+        return SelectedPoints with n_points=total_site[t_dir]
+        """
+        from .c import get_psel_tslice
+        cdef PointsSelection psel = get_psel_tslice(self.total_site(), t_dir=t_dir)
+        cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, self.multiplicity())
+        cc.field_glb_sum_tslice(sp.xx, self.xx, t_dir)
+        return sp
+
+    def get_elems_xg(self, xg_arr):
+        cdef Geometry geo = self.geo()
+        cdef PointsSelection psel = PointsSelection(xg_arr, geo)
+        cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, self.multiplicity())
+        sp @= self
+        return sp
+
+    def set_elems_xg(self, xg_arr, val):
+        cdef Geometry geo = self.geo()
+        cdef PointsSelection psel = PointsSelection(xg_arr, geo)
+        cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, self.multiplicity())
+        np.asarray(sp).ravel()[:] = np.asarray(val).ravel()
+        self @= sp
+
+    def get_elem_xg(self, xg_arr, int m):
+        cdef Geometry geo = self.geo()
+        cdef PointsSelection psel = PointsSelection(xg_arr, geo)
+        cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, 1)
+        cc.set_selected_points(sp.xx, self.xx, psel.xx, m)
+        return sp
+
+    def set_elem_xg(self, xg_arr, int m, val):
+        cdef Geometry geo = self.geo()
+        cdef PointsSelection psel = PointsSelection(xg_arr, geo)
+        cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, 1)
+        np.asarray(sp).ravel()[:] = np.asarray(val).ravel()
+        cc.set_field_selected(self.xx, sp.xx, geo.xx, psel.xx, m)
 
 field_type_dict[ElemType{{name}}] = Field{{name}}
 

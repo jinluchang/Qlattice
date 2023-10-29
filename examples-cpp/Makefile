@@ -36,8 +36,9 @@ run-grid: $(patsubst %, %.run, $(tests_grid))
 clean: $(patsubst %, %.clean, $(tests) $(tests_grid))
 
 compile-proj:
-	-meson setup build
-	-time meson compile -C build
+	-mkdir -p build
+	-meson setup build >build/log.compile 2>&1
+	-time meson compile -C build >>build/log.compile 2>&1
 
 run-proj: compile-proj
 	-mkdir build
@@ -47,7 +48,7 @@ run-proj: compile-proj
 	-if diff build/log.check log ; then cat build/log.full ; else echo passed ; fi
 	-rm -rfv log
 	-cp build/log.check log
-	-cp build/log.full log.full
+	-cat build/log.compile build/log.full >log.full
 
 clean-proj:
 	-rm -rf build log.full

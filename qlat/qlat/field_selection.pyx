@@ -25,6 +25,7 @@ cdef class PointsSelection:
         """
         PointsSelection()
         PointsSelection(n_points, geo)
+        PointsSelection(xg, geo)
         PointsSelection(xg_arr, geo)
         PointsSelection(xg_list, geo)
         """
@@ -97,6 +98,7 @@ cdef class PointsSelection:
         """
         psel.set_xg_arr()
         psel.set_xg_arr(n_points, geo)
+        psel.set_xg_arr(xg, geo)
         psel.set_xg_arr(xg_arr, geo)
         psel.set_xg_arr(xg_list, geo)
         """
@@ -105,11 +107,17 @@ cdef class PointsSelection:
         self.geo = geo
         cdef long n_points
         cdef long i
+        cdef Coordinate xg
         if xg_arr is None:
             self.xx = cc.PointsSelection()
         elif isinstance(xg_arr, int):
             n_points = xg_arr
             self.set_n_points(n_points)
+        elif isinstance(xg_arr, Coordinate):
+            xg = xg_arr
+            n_points = 1
+            self.xx = cc.PointsSelection(n_points)
+            cc.assign_direct(self.xx[0], xg.xx)
         elif isinstance(xg_arr, np.ndarray):
             n_points = len(xg_arr)
             self.xx = cc.PointsSelection(n_points)
@@ -255,10 +263,23 @@ def mk_xg_field(Geometry geo):
     cc.set_xg_field(f.xx, geo.xx)
     return f
 
+def get_psel_single(Coordinate total_site, Coordinate xg=None):
+    """
+    [ xg, ]
+    need total_site to set the psel.geo property
+    """
+    if xg is None:
+        xg = Coordinate([ -1, -1, -1, -1, ])
+    param_tuple = (total_site[0], total_site[1], total_site[2], total_site[3], xg[0], xg[1], xg[2], xg[3],)
+    if param_tuple not in cache_point_selection:
+        psel = PointsSelection([ xg, ], Geometry(total_site))
+        cache_point_selection[param_tuple] = psel
+    return cache_point_selection[param_tuple]
+
 def get_psel_tslice(Coordinate total_site, *, int t_dir=3):
     """
-    if t_dir = 3, then [ [0,0,0,0,], [0,0,0,1,], ..., [0,0,0,total_site[3]-1],]
-    if t_dir = 2, then [ [0,0,0,0,], [0,0,1,0,], ..., [0,0,total_site[2]-1],0,]
+    if t_dir = 3, then [ [-1,-1,-1,-1,], [-1,-1,-1,1,], ..., [-1,-1,-1,total_site[3]-1], ]
+    if t_dir = 2, then [ [-1,-1,-1,-1,], [-1,-1,1,-1,], ..., [-1,-1,total_site[2]-1,-1], ]
     need total_site to set the psel.geo property
     """
     assert 0 <= t_dir and t_dir < 4
