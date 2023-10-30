@@ -173,7 +173,7 @@ def f_get_elem_wm(field, pos_snk):
         return 0
     return field.get_elem_wm(pos_snk)
 
-def mk_get_elem_wm(field, pos_dict = None):
+def mk_get_elem_wm(field, pos_dict=None):
     """
     return get function
     get(pos_snk) ==> ama_prop
