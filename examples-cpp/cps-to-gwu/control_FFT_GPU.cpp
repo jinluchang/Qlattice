@@ -1,8 +1,9 @@
 #include <sys/sysinfo.h>
 #include "utils_io_vec.h"
 #include "general_funs.h"
-#include "check_fun.h"
+#include "utils_check_fun.h"
 #include "utils_FFT_GPU.h"
+#include <qlat/field-fft.h>
 
 #define TyD qlat::Complex
 #define TyF qlat::Complex 
@@ -75,7 +76,7 @@ int main(int argc, char* argv[])
   bool GPU = true;
   bool ft4D = true;
   bool checkdiff = true;
-  const int Nvec =    10;
+  const int Nvec =    1;
   int bfac = in.bfac;
   int mode_FFT_MPI = in.mode_FFT_MPI;
   if(in.debuga == 3){ft4D = false;}

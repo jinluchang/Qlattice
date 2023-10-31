@@ -1,0 +1,289 @@
+// utils_eo_copies.h
+// Gen Wang
+// Jun. 2023
+
+#ifndef UTILS_EO_COPIES_H
+#define UTILS_EO_COPIES_H
+#pragma once
+
+#include "utils_vector_cs.h"
+
+namespace qlat{
+
+inline void qlat_map_eo_site(qlat::FieldM<char, 1>& eo, const Geometry& geo)
+{
+  if(eo.initialized)if(eo.geo() == geo){return ;}
+  eo.init(geo);
+  char* res = (char*) qlat::get_data(eo).data();
+  ////only bool is not write thread safe
+  qacc_for(isp, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(isp);
+    int site_eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
+    res[isp] = site_eo;
+  });
+}
+
+///////src and res can be tthe same pointer
+template <class Ty, int civ>
+void apply_eo_sign(Ty* sP, Ty* rP, qlat::FieldM<char, 1>& eo, const char dir = 1)
+{
+  TIMER("apply_eo_sign");
+  const Geometry& geo = eo.geo();
+  Qassert(eo.initialized);
+  char* eP = (char*) qlat::get_data(eo).data();
+  ///////DATA_TYPE typenum = get_data_type<Ty >();
+  qacc_for(isp, geo.local_volume(), {
+    qlat::Complex sign = qlat::Complex(-1.0 * dir *(eP[isp]*2 - 1), 0);
+    for(int ic=0;ic<civ;ic++){rP[isp*civ+ic] = sign * sP[isp*civ+ic];}
+  });
+}
+
+/////src and res can be tthe same pointer
+template <class Ty, int civ>
+void apply_eo_sign(qlat::FieldM<Ty , civ>& src, qlat::FieldM<Ty , civ>& res, qlat::FieldM<char, 1>& eo, const char dir = 1)
+{
+  TIMER("apply_eo_sign");
+  if(!src.initialized or !res.initialized){abort_r("src should be initialized with geo!\n");}
+  const Geometry& geo = src.geo();
+  if(!eo.initialized){qlat_map_eo_site(eo, geo);}
+  Ty*   sP = (Ty*  ) qlat::get_data(src).data();
+  Ty*   rP = (Ty*  ) qlat::get_data(res).data();
+  apply_eo_sign<Ty, civ>(sP, rP, eo, dir);
+}
+
+template <class Ty, int civ>
+void apply_eo_sign(std::vector<qlat::FieldM<Ty , civ> >& src, std::vector<qlat::FieldM<Ty , civ> >& res, qlat::FieldM<char, 1>& eo)
+{
+  Qassert(src.size() == res.size());
+  for(unsigned int si = 0; si<src.size(); si++){
+    apply_eo_sign<Ty, civ>(src[si], res[si], eo);
+  }
+}
+
+template <class Ty, int civ, char Real>
+void reduce_color_Re(qlat::vector_gpu<Ty >& res, qlat::FieldM<Ty , civ>& p0, qlat::FieldM<Ty , civ>& p1, const int sign)
+{
+  TIMER("reduce_color");
+  Qassert(p0.initialized and p1.initialized );
+  const Geometry& geo = p0.geo();
+  const long V = geo.local_volume();
+  const Ty* pa = (Ty*) qlat::get_data(p0).data();
+  const Ty* pb = (Ty*) qlat::get_data(p1).data();
+  Qassert(long(res.size()) == V);
+  Ty* resP = res.data();
+  qacc_for(isp, V , {
+    if(Real ==  1)for(int ic=0;ic<civ;ic++){resP[isp] += (sign * (qlat::qconj(pa[isp*civ + ic]) * pb[isp*civ + ic]).real());}
+    if(Real ==  0)for(int ic=0;ic<civ;ic++){resP[isp] += (sign * (qlat::qconj(pa[isp*civ + ic]) * pb[isp*civ + ic])       );}
+    if(Real == -1)for(int ic=0;ic<civ;ic++){resP[isp] += (sign * (qlat::qconj(pa[isp*civ + ic]) * pb[isp*civ + ic]).imag());}
+  });
+}
+
+template <class Ty, int civ>
+void reduce_color(qlat::vector_gpu<Ty >& res, qlat::FieldM<Ty , civ>& p0, qlat::FieldM<Ty , civ>& p1, const int sign, char Real )
+{
+  if(Real ==  1){reduce_color_Re<Ty, civ,  1>(res, p0, p1, sign);}
+  if(Real ==  0){reduce_color_Re<Ty, civ,  0>(res, p0, p1, sign);}
+  if(Real == -1){reduce_color_Re<Ty, civ, -1>(res, p0, p1, sign);}
+}
+
+template <class Ty, int civ>
+void reduce_color(std::vector<qlat::vector_gpu<Ty > >& res, std::vector<qlat::FieldM<Ty , civ> >& p0,
+  std::vector<qlat::FieldM<Ty , civ> >& p1, const int sign, char Real )
+{
+  const unsigned int nsrc = res.size();
+  Qassert(p0.size() == nsrc and p1.size() == nsrc);
+  for(unsigned int ni=0;ni<nsrc;ni++)
+  {
+    reduce_color(res[ni], p0[ni], p1[ni], sign, Real);
+  }
+}
+
+template <class Ty>
+void reduce_color(qlat::vector_acc<Ty >& resC, qlat::vector_gpu<Ty >& p0, qlat::vector_gpu<Ty >& p1, const int sign, const int t0, const int clear, const Geometry& geo)
+{
+  TIMER("reduce_color");
+  const long V = geo.local_volume();
+  Qassert(p0.size() == p1.size() and p0.size()%V == 0);
+  const Ty* pa = (Ty*) qlat::get_data(p0).data();
+  const Ty* pb = (Ty*) qlat::get_data(p1).data();
+  qlat::vector_gpu<Ty > res;res.resize(V);
+  Ty* resP = res.data();
+  const int Nc = p0.size()/V;
+  qacc_for(isp, V , {
+    for(int ic=0;ic<Nc;ic++){
+      resP[isp] += ( sign * qlat::qconj(pa[isp*Nc + ic]) * pb[isp*Nc + ic] );
+    }
+  });
+
+  /////reduce zero
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+  vec_corrE(res.data(), resC, fd, 1, clear, Coordinate(), Ty(1.0, 0.0), t0);
+
+  //qlat::vector_gpu<Ty > tmpT;tmpT.resize(fd.Nt);qlat::set_zero(tmpT);
+  //reduce_vec(res.data(), tmpT.data(), fd.Nx*fd.Ny*fd.Nz, fd.Nt);
+  //sum_all_size(tmpT.data(), tmpT.size(), true);
+
+  //Qassert(resC.size() == nt);
+  //const int init = fd.init;
+  //const int nt = fd.nt;
+  //Ty* d = resC.data();Ty* a = tmpT.data();
+  //qacc_for(it, Nt, {d[(it + init - t0 + nt)%nt] += a[it]});
+}
+
+inline void get_index_mappings_reverse(qlat::vector_acc<long >& map, const Geometry& geo)
+{
+  const long V = geo.local_volume();
+  const long Vh = V / 2;
+
+  if(map.size() == V){return ;}
+  else{map.resize(V);}
+  qacc_for(qlat_idx_4d, V , {
+    const Coordinate xl = geo.coordinate_from_index(qlat_idx_4d);
+    const int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
+    const long quda_idx = eo * Vh + qlat_idx_4d / 2;
+    ////map[qlat_idx_4d] = quda_idx;
+    map[quda_idx] = qlat_idx_4d;
+  });
+}
+
+inline void get_index_mappings(qlat::vector_acc<long >& map, const Geometry& geo)
+{
+  const long V = geo.local_volume();
+  const long Vh = V / 2;
+
+  if(map.size() == V){return ;}
+  else{map.resize(V);}
+  qacc_for(qlat_idx_4d, V , {
+    const Coordinate xl = geo.coordinate_from_index(qlat_idx_4d);
+    const int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
+    const long quda_idx = eo * Vh + qlat_idx_4d / 2;
+    map[qlat_idx_4d] = quda_idx;
+  });
+}
+
+/////GPU order with color to be outside even odd
+template <class T1, class Ty, int dir>
+void qlat_cf_to_quda_cfT(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector_acc<long >& map_)
+{
+  TIMER("qlat_cf_to_quda_cf");
+  const long V = geo.local_volume();
+  long Vh = V / 2;
+  if(map_.size() != V){get_index_mappings(map_, geo);}
+  qlat::vector_acc<long >& map = map_;
+  qacc_for(qlat_idx_4d, V, {
+    const long quda_idx = map[qlat_idx_4d];
+    const long eo = quda_idx / Vh;
+    const long qi = quda_idx % Vh;
+    for(int dc = 0; dc < Dim; dc++)
+    {
+      //if(dir == 1){quda_cf[ quda_idx*Dim + dc] = src[qlat_idx_4d*Dim + dc];}
+      //if(dir == 0){src[qlat_idx_4d*Dim + dc] = quda_cf[quda_idx*Dim + dc];}
+      if(dir == 1){quda_cf[(eo*Dim + dc)*Vh + qi] = src[qlat_idx_4d*Dim + dc];}
+      if(dir == 0){src[qlat_idx_4d*Dim + dc] = quda_cf[(eo*Dim + dc)*Vh + qi];}
+    }
+  });
+}
+
+template <class T1, class Ty>
+void qlat_cf_to_quda_cf(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector_acc<long >& map)
+{
+  qlat_cf_to_quda_cfT<T1, Ty, 1>(quda_cf, src, Dim, geo, map);
+}
+
+template <class T1, class Ty>
+void quda_cf_to_qlat_cf(Ty* res, T1*  quda_cf, const int Dim, const Geometry& geo, qlat::vector_acc<long >& map)
+{
+  qlat_cf_to_quda_cfT<T1, Ty, 0>(quda_cf, res, Dim, geo, map);
+}
+
+
+
+template<typename Ty, int dir, int mode>
+void copy_eo_cs_to_fieldMT(qlat::vector_gpu<Ty >& res, const int civ, const Geometry& geo, vector_cs<Ty >& even, vector_cs<Ty >& odd,
+  int e0, int e1, int o0, int o1, qlat::vector_acc<long >& map)
+{
+  TIMER_FLOPS("copy_eo_cs_to_fieldM");
+  Qassert(even.initialized and odd.initialized);
+  ////fft_desc_basic& fd = get_fft_desc_basic_plan(res.geo());
+  const bool GPU = even.GPU;
+  const long V = geo.local_volume();
+  const long Vh= V/2;
+  if(dir == 1){if(long(res.size()) != civ*V){res.resize(civ * V, GPU);}}
+  if(dir == 0){Qassert(long(res.size()) == V * civ );}
+  Qassert(res.GPU == even.GPU);
+
+  const int DIM = 3;
+  Qassert(civ % DIM == 0);
+  if(map.size() == 0){get_index_mappings_reverse(map, geo);}
+  int nvec = civ / DIM;
+  Qassert(e1 > e0 and o1 > o0);
+  int ne = e1 - e0;
+  int no = o1 - o0;
+  Qassert(ne == no);
+  Qassert(ne <= nvec and no <= nvec and e1 <= even.nvec and o1 <= odd.nvec);
+  const int b_size = even.b_size;
+  const int btotal = even.btotal;
+
+  Qassert(btotal * b_size == DIM*V/2);
+  qlat::vector_acc<Ty** > eP;eP.resize(2*ne);
+  //qlat::vector_acc<Ty** > oP;oP.resize(no);
+  ////Ty** eP = even.get_pointers(ni)
+  for(int ei=0;ei<ne;ei++){eP[ei]      = even.get_pointers(ei + e0);}
+  for(int oi=0;oi<no;oi++){eP[ne + oi] =  odd.get_pointers(oi + o0);}
+  const long* mapP = (long*) qlat::get_data(map).data();
+
+  ////NtNzNyNx, DIM x nvec
+  Ty* r = (Ty*) qlat::get_data(res).data();
+  //if(mode == 1)
+  {
+  qGPU_for(qi, Vh, GPU,{
+    //const int ni = ci / DIM;
+    //const int c  = ci % DIM;
+    for(int ni=0;ni<ne;ni++)
+    for(int eo = 0; eo < 2;eo++)
+    {
+      const long quda_idx = eo*Vh + qi;
+      const long qlat_idx_4d = mapP[quda_idx];
+      Ty* rr = &r[qlat_idx_4d*civ];
+      for(int c = 0; c < DIM ; c++)
+      {
+        long bv =  qi*DIM + c;////default mode with c to be inside
+        ////const long bv = qi*DIM + c; ////quda vectors this order
+        if(mode == 1){bv = c*Vh + qi;} ////quda vectors this order
+        const long bi = bv / b_size;
+        const long bj = bv % b_size;
+        {
+          {
+          if(dir == 1){rr[c*nvec + ni] = eP[eo*ne + ni][bi][bj];}
+          if(dir == 0){eP[eo*ne + ni][bi][bj] = rr[c*nvec + ni];}
+          }
+        }
+      }
+    }
+  });}
+
+  timer.flops += double(V) * DIM * ne * sizeof(Ty);
+}
+
+template<typename Ty>
+void copy_eo_cs_to_fieldM(qlat::vector_gpu<Ty >& res, const int civ, const Geometry& geo, vector_cs<Ty >& even, vector_cs<Ty >& odd,
+  int e0, int e1, int o0, int o1, qlat::vector_acc<long >& map, int mode = 0, int dir = 1)
+{
+  if(dir == 0 and mode == 0){copy_eo_cs_to_fieldMT<Ty, 0, 0>(res, civ, geo, even, odd, e0, e1, o0, o1, map);return ;}
+  if(dir == 0 and mode == 1){copy_eo_cs_to_fieldMT<Ty, 0, 1>(res, civ, geo, even, odd, e0, e1, o0, o1, map);return ;}
+  if(dir == 1 and mode == 0){copy_eo_cs_to_fieldMT<Ty, 1, 0>(res, civ, geo, even, odd, e0, e1, o0, o1, map);return ;}
+  if(dir == 1 and mode == 1){copy_eo_cs_to_fieldMT<Ty, 1, 1>(res, civ, geo, even, odd, e0, e1, o0, o1, map);return ;}
+  abort_r("Can not find cases");
+}
+
+template<typename Ty>
+void copy_fieldM_to_eo_cs(vector_cs<Ty >& even, vector_cs<Ty >& odd, qlat::vector_gpu<Ty >& res, const int civ, const Geometry& geo, 
+  int e0, int e1, int o0, int o1, qlat::vector_acc<long >& map, int mode = 0)
+{
+  copy_eo_cs_to_fieldM(res, civ, geo, even, odd, e0, e1, o0, o1, map, mode, 0);
+}
+
+}
+
+#endif
+

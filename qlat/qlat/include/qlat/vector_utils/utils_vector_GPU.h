@@ -8,6 +8,7 @@
 #pragma once
 #include <qlat/qcd.h>
 #include "utils_float_type.h"
+#include "utils_read_txt.h"
 #include "utils_COPY_data.h"
 
 ////needed for norm calculation
@@ -20,21 +21,24 @@ struct vector_gpu{
   ///Vector<Ty > v;
   Ty*    p;
   size_t n;
-  bool GPU;
+  int GPU;///1 for GPU, 0 for CPU, -1 for unified
+  bool is_copy;
 
   vector_gpu<Ty >()
   {
-    p = NULL; n = 0;GPU = true;
+    p = NULL; n = 0;GPU = 1;is_copy = false;
   }
 
-  vector_gpu<Ty >(const size_t n_set, const bool GPU_set = true)
+  vector_gpu<Ty >(const size_t n_set, const int GPU_set = 1)
   {
-    p = NULL; n = 0;GPU = true;
+    p = NULL; n = 0;GPU = 1;is_copy = false;
     resize(n_set, GPU_set);
   }
 
-  void resize(const size_t n_set, const bool GPU_set)
+  inline void resize(const size_t n_set, const int GPU_set)
   {
+    Qassert(not is_copy);
+    Qassert(GPU_set == -1 or GPU_set == 0 or GPU_set == 1);
     if(n_set == 0){clean_mem(); return ;}
     if((n != n_set) or (GPU != GPU_set))
     {
@@ -42,174 +46,230 @@ struct vector_gpu{
       clean_mem();
       n = n_set;
       GPU    = GPU_set;
-      if(GPU){
-        #ifdef QLAT_USE_ACC
-        gpuErrchk(cudaMalloc(&p, n*sizeof(Ty)));
-        #else
-        p = (Ty*) aligned_alloc_no_acc( n*sizeof(Ty));
-        #endif
-      }
-      else{p = (Ty*) aligned_alloc_no_acc(n*sizeof(Ty));}
-
+      gpuMalloc(p, size_t(n), Ty, GPU);
+      //if(GPU){
+      //  #ifdef QLAT_USE_ACC
+      //  gpuErrchk(cudaMalloc(&p, n*sizeof(Ty)));
+      //  #else
+      //  p = (Ty*) aligned_alloc_no_acc( n*sizeof(Ty));
+      //  #endif
+      //}
+      //else{
+      //  p = (Ty*) aligned_alloc_no_acc(n*sizeof(Ty));
+      //}
       set_zero();
     }
     ////qacc_barrier(dummy);
   }
 
-  void resize(const size_t n_set)
+  vector_gpu(const vector_gpu<Ty>& vp)
   {
-    bool GPU_tem = GPU;
+    #ifndef QLAT_USE_ACC
+        Qassert(false);
+    #endif
+    is_copy = true;
+    p = vp.p;
+    n = vp.n;
+    GPU = vp.GPU;
+  }
+
+  vector_gpu(vector_gpu<Ty>&& vp) noexcept
+  {
+    is_copy = vp.is_copy;
+    p = vp.p;
+    n = vp.n;
+    GPU = vp.GPU;
+    vp.is_copy = true;
+  }
+
+  inline void resize(const size_t n_set)
+  {
+    int GPU_tem = GPU;
     resize(n_set, GPU_tem);
   }
 
-  void resizeL(const size_t n_set)
+  inline void resizeL(const size_t n_set, const int GPU_ = -2)
   {
-    if(n < n_set){resize(n_set);}
+    int GPU_cur = GPU;if(GPU_ != -2){GPU_cur = GPU_;}
+    if(GPU_cur != GPU){resize(n_set, GPU_cur); return ;}
+    if(n < n_set){resize(n_set, GPU_cur);}
   }
 
   qacc size_t size() const{return n;}
   qacc Ty* data(){return p;}
   qacc const Ty* data() const { return p; }
-
   qacc const Ty& operator[](const size_t i) const { return p[i]; }
   qacc Ty& operator[](const size_t i) { return p[i]; }
 
-  void set_zero(bool dummy = true)
+  inline void set_zero(QBOOL dummy=QTRUE)
   {
     zero_Ty(p, n, GPU, dummy);
   }
 
-  void clean_mem(){
+  inline void set_zero_pt(QBOOL dummy=QTRUE)
+  {
+    Ty* pr = p;
+    int GPU_ = GPU;
+    long n_ = n;
+    qGPU_for(isp, n_, GPU_, {pr[isp] = NULL;});
+  }
+
+  inline void clean_mem(){
     free_buf(p, GPU);
     p = NULL;n = 0;
   }
-  void clear(){clean_mem();}
-
-  ~vector_gpu(){
+  void clear(){
+    Qassert(not is_copy);
     clean_mem();
   }
 
-  template <class T >
-  vector_gpu<Ty>& operator=(const vector_gpu<T >& vp)
+  ~vector_gpu(){
+    if (not is_copy){
+      clean_mem();
+    }
+  }
+
+  //template <class T >
+  //vector_gpu<Ty>& operator=(const vector_gpu<T >& vp)
+  //{
+  //  print0("NO SUPPORT yet!\n");
+  //  Qassert(false);
+  //  ////bool tem_GPU = vp.GPU;
+  //  resize(vp.size(), vp.GPU);
+
+  //  int mode_cpu = 0;
+  //  if(vp.GPU == false and GPU == false){mode_cpu =  0;}
+  //  if(vp.GPU == true  and GPU == true ){mode_cpu =  1;}
+
+  //  cpy_data_thread(p, vp.p, n, mode_cpu, true);
+
+  //  return *this;
+  //}
+
+  /////template <class T >
+  const vector_gpu<Ty>& operator=(const vector_gpu<Ty >& vp)
   {
-    print0("NO SUPPORT yet!\n");
-    qassert(false);
-    ////bool tem_GPU = vp.GPU;
+    Qassert(not is_copy);
     resize(vp.size(), vp.GPU);
-
-    int mode_cpu = 0;
-    if(vp.GPU == false and GPU == false){mode_cpu =  0;}
-    if(vp.GPU == true  and GPU == true ){mode_cpu =  1;}
-
-    cpy_data_thread(p, vp.p, n, mode_cpu, true);
-
+    //int mode_cpu = 0;
+    //if(vp.GPU == false and GPU == false){mode_cpu =  0;}
+    //if(vp.GPU == true  and GPU == true ){mode_cpu =  1;}
+    //cpy_data_thread(p, vp.p, n, mode_cpu, true);
+    cpy_GPU(p, vp.p, n, GPU, vp.GPU, QTRUE);
     return *this;
   }
 
-
   ////
   template <class T >
-  void copy_from(const T* src, size_t Ndata, int GPU_set = -1, int GPU_ori = 0)
+  void copy_from(const T* src, size_t Ndata, int GPU_set = -2, int GPU_ori = 0)
   {
-    bool tem_GPU = GPU;
-    bool GPU_src = true;
-    qassert(GPU_ori == 0 or GPU_ori == 1);
-    if(GPU_ori == 0 ){GPU_src = false ;}
-    if(GPU_ori == 1 ){GPU_src = true  ;}
+    //Qassert(GPU_ori == 0 or GPU_ori == 1);
+    Qassert(GPU_ori == 0 or GPU_ori == 1 or GPU_ori == -1);
+    int GPU_src = GPU_ori;
+    //if(GPU_ori == 0 ){GPU_src = false ;}
+    //if(GPU_ori == 1 ){GPU_src = true  ;}
 
-    if(GPU_set == -1){tem_GPU = GPU_src;}
-    if(GPU_set == 0 ){tem_GPU = false ;}
-    if(GPU_set == 1 ){tem_GPU = true  ;}
+    int tem_GPU = GPU;
+    if(GPU_set != -2){tem_GPU = GPU_set;}
     resize(Ndata, tem_GPU);
   
-    int mode_cpu = 0;
-    if(GPU_src == false and GPU == false){mode_cpu =  0;} // host to host
-    if(GPU_src == true  and GPU == true ){mode_cpu =  1;} // device to device
-    if(GPU_src == false and GPU == true ){mode_cpu =  2;} // host to device
-    if(GPU_src == true  and GPU == false){mode_cpu =  3;} // device to host
-  
-    cpy_data_thread(p, src, n, mode_cpu, true);
+    //int mode_cpu = 0;
+    //if(GPU_src == false and GPU == false){mode_cpu =  0;} // host to host
+    //if(GPU_src == true  and GPU == true ){mode_cpu =  1;} // device to device
+    //if(GPU_src == false and GPU == true ){mode_cpu =  2;} // host to device
+    //if(GPU_src == true  and GPU == false){mode_cpu =  3;} // device to host
+    //cpy_data_thread(p, src, n, mode_cpu, true);
+
+    cpy_GPU(p, src, n, GPU, GPU_src, QTRUE);
 
   }
 
   template <class T >
-  void copy_from(const vector_gpu<T >& vp, int GPU_set = -1)
+  void copy_from(const vector_gpu<T >& vp, int GPU_set = -2)
   {
     copy_from(vp.p, vp.n, GPU_set, int(vp.GPU));
   }
 
   template <class T >
-  void copy_from(const std::vector<T >& vp, int GPU_set = -1)
+  void copy_from(const std::vector<T >& vp, int GPU_set = -2)
   {
     int GPU_mem = 0;
-    if(GPU_set == -1){GPU_mem = 1;}else{GPU_mem = GPU_set;}
+    if(GPU_set == -2){GPU_mem = GPU;}else{GPU_mem = GPU_set;}
     copy_from(&vp[0], vp.size(), GPU_mem, 0);
   }
 
 
   template <class T >
-  void copy_from(qlat::vector_acc<T >& vp, int GPU_set = -1, int GPU_ori = 0)
+  void copy_from(qlat::vector_acc<T >& vp, int GPU_set = -2, int GPU_ori = 0)
   {
     int GPU_mem = 0;
-    if(GPU_set == -1){GPU_mem = 1;}else{GPU_mem = GPU_set;}
+    if(GPU_set == -2){GPU_mem = GPU;}else{GPU_mem = GPU_set;}
     T* src = (T*) qlat::get_data(vp).data();
     copy_from(src, vp.size(), GPU_mem, GPU_ori);
-
   }
 
   template <class T >
-  void copy_to(T* res, int GPU_ori = -1)
+  void copy_to(T* res, int GPU_ori = -2)
   {
-    int mode_cpu = 0;
-    int GPU_set = GPU_ori;if(GPU_ori == -1){GPU_set  =  1;}
-    if(GPU == false and GPU_set == 0){mode_cpu =  0;} // host to host
-    if(GPU == true  and GPU_set == 1){mode_cpu =  1;} // device to device
-    if(GPU == true  and GPU_set == 0){mode_cpu =  3;} // device to host
-    if(GPU == false and GPU_set == 1){mode_cpu =  2;} // host to device
-    cpy_data_thread(res, p, n, mode_cpu, true);
+    ////int mode_cpu = 0;
+    int GPU_set = GPU_ori;if(GPU_ori == -2){GPU_set  =  1;}
+    //if(GPU == false and GPU_set == 0){mode_cpu =  0;} // host to host
+    //if(GPU == true  and GPU_set == 1){mode_cpu =  1;} // device to device
+    //if(GPU == true  and GPU_set == 0){mode_cpu =  3;} // device to host
+    //if(GPU == false and GPU_set == 1){mode_cpu =  2;} // host to device
+    //cpy_data_thread(res, p, n, mode_cpu, true);
+    cpy_GPU(res, p, n, GPU_set, GPU, QTRUE);
   }
 
-
   template <class T >
-  void copy_to(vector_gpu<T >& vp, int GPU_set = -1)
+  void copy_to(vector_gpu<T >& vp, int GPU_set = -2)
   {
-    bool tem_GPU =  GPU;
-    if(GPU_set == -1){tem_GPU = GPU;}
-    if(GPU_set == 0 ){tem_GPU = false ;}
-    if(GPU_set == 1 ){tem_GPU = true  ;}
+    int tem_GPU =  GPU;
+    if(GPU_set != -2){tem_GPU = GPU_set;}
+    //if(GPU_set == -2){tem_GPU = GPU;}
+    //else{tem_GPU = GPU_set;}
+    //if(GPU_set == -1 ){tem_GPU = true ;}
+    //if(GPU_set ==  0 ){tem_GPU = false ;}
+    //if(GPU_set ==  1 ){tem_GPU = true  ;}
     vp.resize(size(), tem_GPU);
     copy_to(vp.p, GPU_set);
   }
 
-  inline Ty norm()
+  inline Ty norm2()
   {
     qlat::vector_acc<Ty > tmp;tmp.resize(1);tmp[0] = 0;
     qlat::vector_gpu<Ty > copy;copy.resize(n, GPU);
     Ty* res = copy.data();Ty* src = p;
-    if(GPU){
-      qacc_for(isp, long(n),    {res[isp] = qlat::qconj(src[isp]) * src[isp];});
-    }
-    else{
-      qthread_for(isp, long(n), {res[isp] = qlat::qconj(src[isp]) * src[isp];});
-    }
-    if(GPU == true ){reduce_vec(res, tmp.data(), n, 1);}
-    if(GPU == false){reduce_cpu(res, tmp.data(), n, 1);}
+    //if(GPU){
+    //  qacc_for(isp, long(n),    {res[isp] = qlat::qconj(src[isp]) * src[isp];});
+    //}
+    //else{
+    //  qthread_for(isp, long(n), {res[isp] = qlat::qconj(src[isp]) * src[isp];});
+    //}
+    qGPU_for(isp, long(n), GPU, { res[isp] = qlat::qconj(src[isp]) * src[isp]; });
+    //if(GPU == true ){reduce_vec(res, tmp.data(), n, 1);}
+    //if(GPU == false){reduce_cpu(res, tmp.data(), n, 1);}
+    reduce_vec(res, tmp.data(), n, 1, GPU);
     glb_sum(tmp[0]);
     return tmp[0];
   }
   
-  inline void print_norm()
+  inline void print_norm2(std::string prec = std::string("%.8e"))
   {
-    Ty normC = norm();
-    print0("==norm %.8e \n", normC.real());
+    Ty normC = norm2();
+    char pr[500];
+    sprintf(pr, prec.c_str(), normC.real());
+    print0("==norm %s \n", pr);
   }
 
   template <class T >
   void swap(std::vector<T >& vp)
   {
+    Qassert(not is_copy);
+    Qassert(not vp.is_copy);
     Ty*  p_tmp   = vp.p;
     size_t n_tmp = vp.n;
-    bool GPU_tmp = vp.GPU;
+    int GPU_tmp = vp.GPU;
 
     ////copy to vp
     vp.p = p;
@@ -226,10 +286,11 @@ struct vector_gpu{
   void copy_to(std::vector<T >& vp)
   {
     vp.resize(n);
-    int mode_cpu = 0;
-    if(GPU == false){mode_cpu =  0;}
-    if(GPU == true ){mode_cpu =  3;} // device to host
-    cpy_data_thread(&vp[0], p, n, mode_cpu, true);
+    //int mode_cpu = 0;
+    //if(GPU == false){mode_cpu =  0;}
+    //if(GPU == true ){mode_cpu =  3;} // device to host
+    //cpy_data_thread(&vp[0], p, n, mode_cpu, true);
+    cpy_GPU(&vp[0], p, n, 0, GPU, QTRUE);
   }
 
   template <class T >
@@ -243,26 +304,91 @@ struct vector_gpu{
   template <class T >
   const vector_gpu<Ty>& operator+=(const vector_gpu<T >& vp)
   {
-    qassert(GPU == vp.GPU and n == vp.n);
-    int mode_cpu = 0;
-    if(vp.GPU == false and GPU == false){mode_cpu =  0;}
-    if(vp.GPU == true  and GPU == true ){mode_cpu =  1;}
-    cpy_data_thread(p, vp.p, n, mode_cpu, true, 1.0);
+    Qassert(GPU == vp.GPU and n == vp.n);
+    //int mode_cpu = 0;
+    //if(vp.GPU == false and GPU == false){mode_cpu =  0;}
+    //if(vp.GPU == true  and GPU == true ){mode_cpu =  1;}
+    //cpy_data_thread(p, vp.p, n, mode_cpu, true, 1.0);
+    //cpy_GPU(p, vp.p,n, GPU, vp.GPU, true, 1.0);
+    const long N = n;
+    const int GPU_ = GPU;
+    T*  r = p;
+    Ty* s = vp.p;
+    qGPU_for(isp, N, GPU_, { r[isp] += s[isp]; } );
     return *this;
   }
 
   template <class T >
   const vector_gpu<Ty>& operator-=(const vector_gpu<T >& vp)
   {
-    qassert(GPU == vp.GPU and n == vp.n);
-    int mode_cpu = 0;
-    if(vp.GPU == false and GPU == false){mode_cpu =  0;}
-    if(vp.GPU == true  and GPU == true ){mode_cpu =  1;}
-    cpy_data_thread(p, vp.p, n, mode_cpu, true, -1.0);
+    Qassert(GPU == vp.GPU and n == vp.n);
+    //int mode_cpu = 0;
+    //if(vp.GPU == false and GPU == false){mode_cpu =  0;}
+    //if(vp.GPU == true  and GPU == true ){mode_cpu =  1;}
+    //cpy_data_thread(p, vp.p, n, mode_cpu, true, -1.0);
+    //cpy_GPU(p, vp.p,n, GPU, vp.GPU, true, -1.0);
+    const long N = n;
+    const int GPU_ = GPU;
+    T*  r = p;
+    Ty* s = vp.p;
+    qGPU_for(isp, N, GPU_, { r[isp] -= s[isp]; } );
+    return *this;
+  }
+
+  template <class T >
+  const vector_gpu<Ty>& operator*=(const T& f)
+  {
+    Ty* data = p;
+    const int GPU_ = GPU;
+    qGPU_for(isp, long(n), GPU_, {
+      data[isp] = f * data[isp];
+    });
     return *this;
   }
 
 };
+
+////y = alpha x + beta y
+template <typename Ty, typename T >
+void qblas_xAXPY(vector_gpu<Ty>& y, vector_gpu<Ty>& x, T& alpha, T& beta = 0.0)
+{
+  Qassert(x.GPU == y.GPU and x.n == y.n);
+  Ty* xp = x.p;
+  Ty* yp = y.p;
+  const long N = x.n;
+  const int GPU = x.GPU;
+  if(beta != 0.0){
+    qGPU_for(isp, N, GPU, {
+      yp[isp]  = alpha * xp[isp] + beta * yp[isp];
+    });
+  }else{
+    qGPU_for(isp, N, GPU, {
+      yp[isp]  = alpha * xp[isp];
+    });
+  }
+}
+
+////dot = x^T y
+template <typename Ty >
+Ty qblas_dot(vector_gpu<Ty>& y, vector_gpu<Ty>& x, bool conj = true)
+{
+  Qassert(x.GPU == y.GPU and x.n == y.n);
+  Ty* xp = x.p;
+  Ty* yp = y.p;
+  const long N = x.n;
+  const int GPU = x.GPU;
+  vector_gpu<Ty > buf;buf.resize(N, GPU);
+  if(conj){
+    qGPU_for(isp, N, GPU, {
+      buf[isp] = qconj(xp[isp]) * yp[isp];
+    });
+  }else{
+    qGPU_for(isp, N, GPU, {
+      buf[isp] = xp[isp] * yp[isp];
+    });
+  }
+  return buf.norm2();
+}
 
 template <typename Ty >
 qacc Vector<Ty> get_data(vector_gpu<Ty>& vec)
@@ -280,12 +406,12 @@ qacc void set_zero(vector_gpu<Ty>& vec)
 struct VectorGPUKey {
   std::string tag;
   size_t size;
-  bool GPU;
+  int GPU;
   VectorGPUKey()
   {
     size = 0; GPU = false;tag = std::string("");
   }
-  VectorGPUKey(size_t size_, std::string tag_, bool GPU_)
+  VectorGPUKey(size_t size_, std::string tag_, int GPU_)
   {
     size = size_; GPU = GPU_;tag = tag_;
   }
@@ -306,7 +432,7 @@ inline bool operator<(const VectorGPUKey& x, const VectorGPUKey& y)
 template <typename Ty >
 inline Cache<VectorGPUKey, vector_gpu<Ty > >& get_vector_gpu_cache()
 {
-  static Cache<VectorGPUKey, vector_gpu<Ty > > cache("VectorGPUKey", 16);
+  static Cache<VectorGPUKey, vector_gpu<Ty > > cache("VectorGPUKey", 128);
   return cache;
 }
 
@@ -318,8 +444,9 @@ inline vector_gpu<Ty >& get_vector_gpu_plan(const VectorGPUKey& gkey)
   }
   vector_gpu<Ty >& buf = get_vector_gpu_cache<Ty>()[gkey];
 
+  buf.GPU = gkey.GPU;
   if(buf.size() < gkey.size){
-    buf.resize(gkey.size, gkey.GPU);
+    buf.resize(gkey.size);
   }
   return buf;
 }
@@ -356,6 +483,27 @@ inline void safe_free_vector_gpu_plan(std::string& info, const int GPU, const bo
   VectorGPUKey gkey(0, info, GPU);
   safe_free_vector_gpu_plan<Ty >(gkey, zero);
 }
+
+inline void clear_vector_gpu_cache()
+{
+  get_vector_gpu_cache<char >().clear();
+  get_vector_gpu_cache<float >().clear();
+  get_vector_gpu_cache<double >().clear();
+  get_vector_gpu_cache<qlat::ComplexT<float> >().clear();
+  get_vector_gpu_cache<qlat::ComplexT<double> >().clear();
+ 
+  //Cache<VectorGPUKey, vector_gpu<char > >& c0 = get_vector_gpu_cache<char >();
+  //Cache<VectorGPUKey, vector_gpu<float > >& c1 = get_vector_gpu_cache<float >();
+  //Cache<VectorGPUKey, vector_gpu<double > >& c2 = get_vector_gpu_cache<double >();
+  //Cache<VectorGPUKey, vector_gpu<qlat::ComplexT<float > > >& c3 = get_vector_gpu_cache<qlat::ComplexT<float> >();
+  //Cache<VectorGPUKey, vector_gpu<qlat::ComplexT<double> > >& c4 = get_vector_gpu_cache<qlat::ComplexT<double> >();
+  //c0.clear();
+  //c1.clear();
+  //c2.clear();
+  //c3.clear();
+  //c4.clear();
+}
+
 
 }
 

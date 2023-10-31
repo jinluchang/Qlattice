@@ -15,6 +15,8 @@
 #ifndef QLAT_NO_SYSINFO
 #include <sys/sysinfo.h>
 #endif
+#include <qlat-utils/mat-vec.h>
+#include <qlat-utils/eigen.h>
 #include <qlat/qcd.h>
 
 namespace qlat{
@@ -54,14 +56,14 @@ namespace qlat{
 
 #define large_vuse Elarge_vector
 #if Enablefloat==0
-#define Complexq qlat::Complex
+#define Complexq qlat::ComplexT<double >
 #define Ftype double
 //////needed for contraction change to small power of 2 if shared memory too small
 #define BFACG_SHARED 4
 #endif
 
 #if Enablefloat==1
-#define Complexq qlat::ComplexF
+#define Complexq qlat::ComplexT<float >
 #define Ftype float
 #define BFACG_SHARED 8
 #endif
@@ -91,6 +93,54 @@ namespace qlat{
 #define LINE_LIMIT 3000
 
 #define PI 3.1415926535898
+
+//enum QBOOL{
+//  QFALSE = 0,
+//  QTRUE  = 1
+//};
+
+enum QBOOL{
+  QFALSE,
+  QTRUE 
+};
+
+enum QMEM{
+  QMSYNC = -1,
+  QMCPU  =  0,
+  QMGPU  =  1
+};
+
+inline int check_GPU_same(QMEM a, QMEM b)
+{
+  if(a == QMSYNC){return 1;}
+  if(b == QMSYNC){return 1;}
+  if(a == b){return 1;}
+  return 0;
+}
+
+inline int check_GPU_same(QMEM a, bool b)
+{
+  if(a == QMSYNC){return 1;}
+  if(a == QMGPU and b == 1){return 1;}
+  if(a == QMCPU and b == 0){return 1;}
+  return 0;
+}
+
+inline int check_GPU_multi(QMEM a, QMEM b)
+{
+  if(a == QMSYNC){return b;}
+  if(b == QMSYNC){return a;}
+  if(a == b){return a;}
+  return -2;
+}
+
+inline int check_GPU_multi(QMEM a, bool b)
+{
+  if(a == QMSYNC){return b;}
+  if(a == QMGPU and b == 1){return 1;}
+  if(a == QMCPU and b == 0){return 0;}
+  return -2;
+}
 
 inline void print_NONE(const char *filename)
 {
@@ -138,7 +188,7 @@ inline void print_NONE(const char *filename)
 #endif
 
 
-#define QLAT_VEC_CKPOINT abort_r("QLAT CHECK POINT \n");
+
 
 #ifdef QLAT_USE_ACC
 // *************** FOR ERROR CHECKING *******************
@@ -214,30 +264,60 @@ inline void* aligned_alloc_no_acc(const size_t min_size)
 #endif
 }
 
+#define print0 if(qlat::get_id_node() == 0) printf
+
+inline void abort_r(std::string stmp=std::string(""))
+{
+  if(stmp!=std::string(""))print0("%s\n",stmp.c_str());
+  //MPI_Barrier(get_comm());
+  MPI_Barrier(MPI_COMM_WORLD);
+  fflush(stdout);
+  ////MPI_Finalize();
+  qlat::end();
+  abort();
+}
+
+
+#define Qassert(ans) { QAssert((ans), __FILE__, __LINE__); }
+inline void QAssert(bool s, const char *file, int line){
+  if(!s){
+    abort_r(qlat::ssprintf("qlat error %s %d \n", file, line));
+  }
+}
 
 #ifdef QLAT_USE_ACC
-#define gpuMalloc(bres,bsize, Ty) {gpuErrchk(cudaMalloc(&bres, bsize*sizeof(Ty)));}
+#define gpuMalloc(bres, bsize, Ty, GPU) { \
+  if(int(GPU) == -1){gpuErrchk(cudaMallocManaged(&bres, bsize*sizeof(Ty)));} \
+  if(int(GPU) ==  0){bres = (Ty*) aligned_alloc_no_acc(bsize * sizeof(Ty));} \
+  if(int(GPU) ==  1){gpuErrchk(cudaMalloc(&bres, bsize*sizeof(Ty)));} }
 #else
-#define gpuMalloc(bres,bsize, Ty) {bres = (Ty *)aligned_alloc_no_acc(bsize*sizeof(Ty));}
+#define gpuMalloc(bres,bsize, Ty, GPU) {bres = (Ty *)aligned_alloc_no_acc(bsize*sizeof(Ty));}
 #endif
 
 #define qGPU_for(iter, num, GPU, ...) \
-  if(GPU == true){qacc_for(iter, num, {__VA_ARGS__});} \
+  Qassert(int(GPU) != -2); \
+  if(bool(GPU) == true){qacc_for(iter, num, {__VA_ARGS__});} \
   else{qthread_for(iter, num, {__VA_ARGS__});}
 
-inline void free_buf(void* buf, bool GPU){
+#define qGPU_forNB(iter, num, GPU, ...) \
+  Qassert(int(GPU) != -2); \
+  if(bool(GPU) == true){qacc_forNB(iter, num, {__VA_ARGS__});} \
+  else{qthread_for(iter, num, {__VA_ARGS__});}
+
+#define qGPU_for2d(iter1, num1, iter2, num2, GPU, ...) \
+  Qassert(int(GPU) != -2); \
+  if(bool(GPU) == true){qacc_for2d(iter1, num1, iter2, num2, {__VA_ARGS__});} \
+  else{qthread_for2d(iter1, num1, iter2, num2, {__VA_ARGS__});}
+
+#define qGPU_for2dNB(iter1, num1, iter2, num2, GPU, ...) \
+  Qassert(int(GPU) != -2); \
+  if(bool(GPU) == true){qacc_for2dNB(iter1, num1, iter2, num2, {__VA_ARGS__});} \
+  else{qthread_for2d(iter1, num1, iter2, num2, {__VA_ARGS__});}
+
+inline void free_buf(void* buf, int GPU){
   if(buf != NULL){if(GPU){gpuFree(buf);}else{free(buf);}}
   buf = NULL;
 }
-
-//template<typename Ty>
-//inline void alloc_buf(Ty* buf, size_t size, bool GPU){
-//  free_buf(buf, GPU);
-//  buf = (Ty*) malloc(size * sizeof(Ty));
-//  //if(GPU){gpuMalloc(buf, size, Ty);}
-//  //else{buf = (Ty*) malloc(size * sizeof(Ty));}
-//}
-
 
 #ifndef QLAT_USE_ACC
 #ifdef __GNUC__
@@ -268,16 +348,29 @@ inline std::complex<double> operator-(const std::complex<float > &a, const std::
 #endif
 #endif
 
+template<typename T>
+struct qlat_is_pointer { static const bool value = false; };
+
+template<typename T>
+struct qlat_is_pointer<T*> { static const bool value = true; };
+
 template<typename Ty>
-void zero_Ty(Ty* a, size_t size,int GPU=0, bool dummy=true)
+void zero_Ty(Ty* a, size_t size,int GPU=0, QBOOL dummy=QTRUE)
 {
   TIMERA("zero_Ty")
+  if(qlat_is_pointer<Ty>::value){
+    ////printf("type is pointers! \n");
+    //void* pr = (void*) a;
+    //qGPU_for(isp, size, GPU, {pr[isp] = NULL;});
+    return ;
+  } ///donot set zero to pointers!!!
+
   (void)GPU;
   (void)dummy;
   #ifdef QLAT_USE_ACC
-  if(GPU == 1){
+  if(GPU == 1 or GPU == -1){
     cudaMemsetAsync(a, 0, size*sizeof(Ty));
-    if(dummy)qacc_barrier(dummy);
+    if(dummy==QTRUE){qacc_barrier(dummy);}
     return ;
   }
   #endif
@@ -298,7 +391,7 @@ void zero_Ty(Ty* a, size_t size,int GPU=0, bool dummy=true)
 }
 
 template<typename Ty>
-void clear_qv(qlat::vector_acc<Ty > &G, bool dummy = true)
+void clear_qv(qlat::vector_acc<Ty > &G, QBOOL dummy=QTRUE)
 {
   zero_Ty(G.data(), G.size(), 1 , dummy);
 }
@@ -320,7 +413,6 @@ inline crc32_t quick_checksum(Ty* buf, size_t Nsize, const long Nsum =11, const 
   return sum;
 }
 
-#define print0 if(qlat::get_id_node() == 0) printf
 
 inline unsigned int get_node_rank_funs0()
 {
@@ -330,17 +422,8 @@ inline unsigned int get_node_rank_funs0()
   return rank;
 }
 
-inline void abort_r(std::string stmp=std::string(""))
-{
-  if(stmp!=std::string(""))print0("%s\n",stmp.c_str());
-  //MPI_Barrier(get_comm());
-  MPI_Barrier(MPI_COMM_WORLD);
-  fflush(stdout);
-  ////MPI_Finalize();
-  qlat::end();
-  //qassert(false);
-  abort();
-}
+
+#define QLAT_VEC_CKPOINT abort_r("QLAT CHECK POINT \n");
 
 
 }

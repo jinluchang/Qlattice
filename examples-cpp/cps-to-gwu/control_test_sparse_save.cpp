@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
   Geometry geo;
   geo.init(total_site, 1); 
 
-  PointsSelection pconf;
+  PointSelection pconf;
   FieldSelection fsel;
 
   qlat::RngState rG(seed);

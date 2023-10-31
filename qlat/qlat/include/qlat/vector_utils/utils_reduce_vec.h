@@ -10,8 +10,9 @@
 
 #include <qlat/qcd.h>
 
+////add support for addition
 #ifdef QLAT_USE_ACC
-template <unsigned int blockSize, typename Ty>
+template <unsigned int blockSize, typename Ty, bool clear>
 __global__ void reduce6(const Ty *g_idata, Ty *g_odata, unsigned long n,unsigned int divide){
   ////extern __shared__ Ty sdata[];
   __shared__ Ty sdata[blockSize];
@@ -38,7 +39,8 @@ __global__ void reduce6(const Ty *g_idata, Ty *g_odata, unsigned long n,unsigned
   }
   __syncthreads();
   }
-  if (tid == 0) g_odata[iv*gridDim.x + blockIdx.x] = sdata[0];
+  if(clear == true)if (tid == 0) g_odata[iv*gridDim.x + blockIdx.x]  = sdata[0];
+  if(clear != true)if (tid == 0) g_odata[iv*gridDim.x + blockIdx.x] += sdata[0];
 
 }
 
@@ -64,7 +66,7 @@ inline unsigned long nextPowerOf2(unsigned long n)
 }
 
 #ifdef QLAT_USE_ACC
-template<typename Ty>
+template<typename Ty, bool clear>
 inline void reduce_T_global6(const Ty* src,Ty* res,const long n, const int nv,long nt, long blockS)
 {
   ///const long blockS = (n + nt - 1)/(nt);
@@ -78,24 +80,24 @@ inline void reduce_T_global6(const Ty* src,Ty* res,const long n, const int nv,lo
 
   switch (threads)
   {
-    case 1024:reduce6<1024,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
-    case 512: reduce6< 512,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
-    case 256: reduce6< 256,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
-    case 128: reduce6< 128,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
-    case 64:  reduce6<  64,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
-    case 32:  reduce6<  32,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
-    case 16:  reduce6<  16,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
-    case 8:   reduce6<   8,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
-    case 4:   reduce6<   4,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
-    case 2:   reduce6<   2,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
-    case 1:   reduce6<   1,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
+    case 1024:reduce6<1024,Ty, clear><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
+    case 512: reduce6< 512,Ty, clear><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
+    case 256: reduce6< 256,Ty, clear><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
+    case 128: reduce6< 128,Ty, clear><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
+    case 64:  reduce6<  64,Ty, clear><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
+    case 32:  reduce6<  32,Ty, clear><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
+    case 16:  reduce6<  16,Ty, clear><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
+    case 8:   reduce6<   8,Ty, clear><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
+    case 4:   reduce6<   4,Ty, clear><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
+    case 2:   reduce6<   2,Ty, clear><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
+    case 1:   reduce6<   1,Ty, clear><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
   }
   qacc_barrier(dummy);
 }
 #endif
 
 template<typename Ty>
-void reduce_cpu(const Ty *src,Ty &res,const long n){
+void reduce_cpu(const Ty *src,Ty &res,const long n, bool clear){
   //#pragma omp parallel for reduction(+: res)
   //for(unsigned long index=0;index<n;index++){
   //  res += src[index];
@@ -106,9 +108,9 @@ void reduce_cpu(const Ty *src,Ty &res,const long n){
   if(n < 10*Nv)Nv=1;
   //int Nv = 1;
   if(Nv == 1){
-  for(long index=0;index<n;index++){
-    res += src[index];
-  }}
+  if( clear){for(long index=0;index<n;index++){res  = src[index];}}
+  if(!clear){for(long index=0;index<n;index++){res += src[index];}}
+  }
   else{
     ////print0("====Reduce omp \n");
     omp_set_num_threads(omp_get_max_threads());
@@ -130,12 +132,13 @@ void reduce_cpu(const Ty *src,Ty &res,const long n){
     //for(unsigned long index=0;index<n;index++){
     //  buf[omp_get_thread_num()] += src[index];
     //}
-    for(int iv=0;iv<Nv;iv++){res += buf[iv];}
+    if(!clear){for(int iv=0;iv<Nv;iv++){res += buf[iv];}}
+    if( clear){for(int iv=0;iv<Nv;iv++){res  = buf[iv];}}
   }
 }
 
 
-template<typename Ty>
+template<typename Ty, bool clear>
 inline void reduce_gpu2d_6(const Ty* src,Ty* res,long n, int nv=1,
     int thread_pow2 = 8,int divide=128,int fac=16)
 {
@@ -162,15 +165,16 @@ inline void reduce_gpu2d_6(const Ty* src,Ty* res,long n, int nv=1,
 
   if(n <= cutN){
     //for(int i=0;i<nv;i++)reduce_cpu(&src[i*n],res[i],n);return;
-    reduce_T_global6(&src[0],&pres[0], n, nv, nt, 1);
-    #pragma omp parallel for
-    for(int i=0;i<nv;i++)res[i] += pres[i];
+    //reduce_T_global6(&src[0],&pres[0], n, nv, nt, 1);
+    //#pragma omp parallel for
+    //for(int i=0;i<nv;i++)res[i] += pres[i];
+    reduce_T_global6<Ty, clear>(&src[0], &res[0], n, nv, nt, 1);
     return;
   }
 
   /////for(int iv=0;iv<nv;iv++)reduce_cpu(&src[iv*n],res[iv],n);return;
 
-  reduce_T_global6(src,pres, n, nv, nt, Ny0);
+  reduce_T_global6<Ty, true>(src,pres, n, nv, nt, Ny0);
   ////Nres0 = Ny;
   psrc = &buf0[0];pres=&buf1[0];
 
@@ -178,22 +182,22 @@ inline void reduce_gpu2d_6(const Ty* src,Ty* res,long n, int nv=1,
 
   for(int si=0;si<1000;si++){
     if(Ny0 <= cutN){
-      #pragma omp parallel for
-      for(int i=0;i<nv;i++)reduce_cpu(&psrc[i*Ny0],res[i],Ny0);
+      //#pragma omp parallel for
+      //for(int i=0;i<nv;i++)reduce_cpu(&psrc[i*Ny0],res[i],Ny0);
+      reduce_T_global6<Ty, clear>(psrc, &res[0], Ny0, nv, nt, 1);
       return;
-      //reduce_T_global6(psrc,pres, Ny0, nv, nt, 1);
       //#pragma omp parallel for
       //for(int i=0;i<nv;i++)res[i] += pres[i];return;
     }
     Ny1 = (Ny0 + ntL - 1)/(ntL);
-    reduce_T_global6(psrc,pres, Ny0, nv, nt, Ny1);
+    reduce_T_global6<Ty, true>(psrc,pres, Ny0, nv, nt, Ny1);
     /////Switch psrc, pres
     tem = pres;pres = psrc;psrc = tem;
     Ny0 = Ny1;
   }
-  reduce_T_global6(psrc,pres, Ny0, nv, nt, 1);
-  #pragma omp parallel for
-  for(int i=0;i<nv;i++)res[i] += pres[i];
+  reduce_T_global6<Ty, clear>(psrc, &res[0], Ny0, nv, nt, 1);
+  //#pragma omp parallel for
+  //for(int i=0;i<nv;i++)res[i] += pres[i];
   return;
   /////for(int i=0;i<nv;i++)reduce_cpu(&psrc[i*Ny0],res[i],Ny0);return;
   #endif
@@ -224,9 +228,9 @@ inline unsigned long reduce_T(const Ty *src,Ty *res,const unsigned long n,const 
 }
 
 template<typename Ty>
-void reduce_cpu(const Ty* src,Ty* res,long n, int nv)
+void reduce_cpu(const Ty* src,Ty* res,long n, int nv, bool clear)
 {
-  for(long i=0;i<nv;i++){reduce_cpu(&src[i*n], res[i],n);}
+  for(long i=0;i<nv;i++){reduce_cpu(&src[i*n], res[i],n, clear);}
 }
 
 template<typename Ty>
@@ -270,10 +274,15 @@ inline void reduce_gpu(const Ty *src,Ty *res,const long n,const int nv=1,
 
 
 template<typename Ty>
-void reduce_vec(const Ty* src, Ty* res,long n, int nv=1)
+void reduce_vec(const Ty* src, Ty* res,long n, int nv=1, int GPU = 1, bool clear = false)
 {
+  TIMERA("reduce_vec");
+  if(GPU == 0){
+    reduce_cpu(src, res, n , nv, clear);
+  }
+  if(GPU != 0){
   #ifndef QLAT_USE_ACC
-  reduce_cpu(src, res, n , nv);
+  reduce_cpu(src, res, n , nv, clear);
   return ;
   #else
   int thread_pow2 = 1;
@@ -293,8 +302,10 @@ void reduce_vec(const Ty* src, Ty* res,long n, int nv=1)
   //print0("====cores %8d, maxthreads %8d, maxblock %8d \n",cores,maxthreads,maxblock);
   //if(blockS_use > maxblock)blockS_use = maxblock;
   //#endif
-  reduce_gpu2d_6(src, res, n, nv, thread_pow2,divide, fac);
+  if( clear)reduce_gpu2d_6<Ty, 1>(src, res, n, nv, thread_pow2,divide, fac);
+  if(!clear)reduce_gpu2d_6<Ty, 0>(src, res, n, nv, thread_pow2,divide, fac);
   #endif
+  }
 
 }
 

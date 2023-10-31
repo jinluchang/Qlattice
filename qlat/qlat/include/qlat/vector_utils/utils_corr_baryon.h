@@ -33,13 +33,13 @@ void proton_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
   int NTt  = fd.Nv[3];
   LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   int nmass = prop1.size();
-  qassert(prop1.size() == prop2.size());
-  qassert(prop1.size() == prop3.size());
+  Qassert(prop1.size() == prop2.size());
+  Qassert(prop1.size() == prop3.size());
   if(clear == 1){ini_resE(res, nmass, fd);}
-  if(clear == 0){qassert(res.size() == long(nmass*NTt * Nxyz));}
+  if(clear == 0){Qassert(res.size() == long(nmass*NTt * Nxyz));}
     
   ////Prop format, src d-4, c-3, sink d-4, c-3, Nt, EigenVTa<Nxyz>
-  if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");qassert(false);}
+  if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");Qassert(false);}
 
   qlat::vector_acc<Ty* > p1 = EigenM_to_pointers(prop1);
   qlat::vector_acc<Ty* > p2 = EigenM_to_pointers(prop2);
@@ -119,8 +119,8 @@ void proton_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
   int NTt  = fd.Nv[3];
   LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
 
-  qassert(prop1.size() == prop2.size());
-  qassert(prop1.size() == prop3.size());
+  Qassert(prop1.size() == prop2.size());
+  Qassert(prop1.size() == prop3.size());
 
   if(clear == 1){ini_resE(res,nmass,fd);}
 
@@ -217,15 +217,15 @@ void baryon_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
   int NTt  = fd.Nv[3];
   LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   int nmass = prop1.size();
-  qassert(prop1.size() == prop2.size());
-  qassert(prop1.size() == prop3.size());
-  qassert(G.size()  == 16);
-  qassert(mL.size() == 3);
-  qassert(fd.order_ch == 0);
+  Qassert(prop1.size() == prop2.size());
+  Qassert(prop1.size() == prop3.size());
+  Qassert(G.size()  == 16);
+  Qassert(mL.size() == 3);
+  Qassert(fd.order_ch == 0);
   if(clear == 1){ini_resE(res,nmass,fd);}
 
-  ////if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");qassert(false);}
-  if(res.size()==0){print0("Size of res wrong. \n");qassert(false);}
+  ////if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");Qassert(false);}
+  if(res.size()==0){print0("Size of res wrong. \n");Qassert(false);}
 
   qlat::vector_acc<Ty* > p1 = EigenM_to_pointers(prop1);
   qlat::vector_acc<Ty* > p2 = EigenM_to_pointers(prop2);
@@ -314,16 +314,16 @@ void baryon_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
   ////check_prop_size(prop1);check_prop_size(prop2);check_prop_size(prop3);
   const qlat::Geometry &geo = prop1[0].geo();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
-  qassert(insertion == 0 or insertion == 1 or insertion == 2);
+  Qassert(insertion == 0 or insertion == 1 or insertion == 2);
 
   int NTt  = fd.Nv[3];
   LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   const int nmass = prop1.size();
-  qassert(prop1.size() == prop2.size());
-  qassert(prop1.size() == prop3.size());
-  qassert(G.size()  == 16);
-  qassert(mL.size() == 3);
-  qassert(fd.order_ch == 0);
+  Qassert(prop1.size() == prop2.size());
+  Qassert(prop1.size() == prop3.size());
+  Qassert(G.size()  == 16);
+  Qassert(mL.size() == 3);
+  Qassert(fd.order_ch == 0);
 
   if(clear==1){
     if(int(resP.size()) != nmass){resP.resize(nmass);}
@@ -332,8 +332,8 @@ void baryon_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
       else{qlat::set_zero(resP[mi]);}
     }
   }
-  qassert(int(resP.size()) == nmass);
-  for(int mi=0;mi<nmass;mi++){qassert(resP[mi].initialized);}
+  Qassert(int(resP.size()) == nmass);
+  for(int mi=0;mi<nmass;mi++){Qassert(resP[mi].initialized);}
 
   /////check_prop_size(resP);
 
@@ -743,8 +743,8 @@ void baryon_vectorEV(Ty** p1, Ty** p2, Ty** p3, Ty* resP, int nmass,
   int NTt  = fd.Nv[3];
   long Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   int Ngv = GV.size()/16;
-  qassert(GV.size()  == 16*Ngv);
-  qassert(mLV.size() == 3*Ngv);
+  Qassert(GV.size()  == 16*Ngv);
+  Qassert(mLV.size() == 3*Ngv);
 
   if(clear == 1){zero_Ty(resP, Ngv*nmass*NTt*Nxyz , 1);}
 
@@ -943,12 +943,12 @@ void baryon_vectorEV(EigenTy& prop1, EigenTy& prop2, EigenTy& prop3,
   long Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   ////check_prop_size(prop1);check_prop_size(prop2);check_prop_size(prop3);
   int nmass = prop1.size();
-  qassert(prop1.size() == prop2.size());
-  qassert(prop1.size() == prop3.size());
+  Qassert(prop1.size() == prop2.size());
+  Qassert(prop1.size() == prop3.size());
   int Ngv = GV.size()/16;
   const unsigned long resL = Ngv * nmass*NTt * Nxyz;
   if(clear == 1){if(res.size()!= resL){res.resize(resL); } }
-  if(res.size() != resL){print0("Size of res wrong. \n");qassert(false);}
+  if(res.size() != resL){print0("Size of res wrong. \n");Qassert(false);}
 
   qlat::vector_acc<Ty* > prop1P = EigenM_to_pointers(prop1, Nxyz);
   qlat::vector_acc<Ty* > prop2P = EigenM_to_pointers(prop2, Nxyz);
@@ -969,7 +969,7 @@ void baryon_corrE(EigenTy& prop1, EigenTy& prop2, EigenTy& prop3,
   fft_desc_basic& fd, int clear=1,const Coordinate& mom = Coordinate())
 {
   if(prop1.size() == 0){res.resize(0); return ;}
-  int NTt  = fd.Nv[3];
+  //int NTt  = fd.Nv[3];
   ////LInt Nxyz = prop1[0].size();
   int nmass = prop1.size();
   ////int nt = fd.nt;
@@ -1000,7 +1000,7 @@ void Omega_corrE(EigenTy& prop1, EigenTy& prop2, EigenTy& prop3,
   const qlat::Geometry &geo = prop1[0].geo();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
 
-  int NTt  = fd.Nv[3];
+  //int NTt  = fd.Nv[3];
   ///LInt Nxyz = prop1[0].size();
   int nmass = prop1.size();
   ///int nt = fd.nt;

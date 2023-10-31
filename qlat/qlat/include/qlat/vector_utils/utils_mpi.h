@@ -42,7 +42,7 @@ unsigned int get_MPI_type(MPI_Datatype& curr)
   curr = MPI_BYTE;unsigned int size = 1;
   DATA_TYPE typenum = get_data_type<M >();
   if(typenum == INVALID_TYPE){
-    if(get_id_node()== 0){printf("Type not found !!!! \n");}qassert(false); return 0;
+    if(get_id_node()== 0){printf("Type not found !!!! \n");}Qassert(false); return 0;
   }
 
   int dtype = typenum % MAXTYPE;
@@ -79,7 +79,7 @@ unsigned int get_MPI_type(MPI_Datatype& curr)
     if(!get_data_type_is_double<M >()){curr = MPI_C_FLOAT_COMPLEX ; size = ComplexF_TYPE/MAXTYPE;return size ;}
   }
 
-  if(get_id_node()== 0){printf("Type not found !!!! \n");}qassert(false);
+  if(get_id_node()== 0){printf("Type not found !!!! \n");}Qassert(false);
   return 0;
 
 }
@@ -94,7 +94,7 @@ void bcast_all_size(Ty *src, long size, int root, int GPU=0, MPI_Comm* commp=NUL
   MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(double);
   M_size = get_MPI_type<Ty >(curr);
 
-  qassert(sizeof(Ty)%M_size == 0);int fac = sizeof(Ty)/M_size;
+  Qassert(sizeof(Ty)%M_size == 0);int fac = sizeof(Ty)/M_size;
   ////printf("size %5d %5d, type %d \n", int(size), int(fac), int(sizeof(Ty)));
 
   if(commp == NULL){
@@ -109,12 +109,12 @@ void bcast_all_size(Ty *src, long size, int root, int GPU=0, MPI_Comm* commp=NUL
 template<typename Ty>
 void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, const MPI_Comm* commp=NULL)
 {
-  TIMER("global sum sum_all_size");
+  //TIMER("global sum sum_all_size");
   if(size == 0){return ;}
   if(qlat::get_num_node() == 1){
     if(src == sav){return;}
     if(src != sav){
-      cpy_data_thread(sav, src, size, GPU, true);return;}
+      cpy_data_thread(sav, src, size, GPU);return;}
   }
 
   const int iomp = omp_get_thread_num(); ////each thread will have it's own buf
@@ -131,7 +131,7 @@ void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, const MPI_Comm* commp=NU
   MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(double);
   M_size = get_MPI_type<Ty >(curr);
 
-  qassert(sizeof(Ty)%M_size == 0);int fac = sizeof(Ty)/M_size;
+  Qassert(sizeof(Ty)%M_size == 0);int fac = sizeof(Ty)/M_size;
 
 
   Ty* tem_src = NULL; Ty* tem_res = NULL;
@@ -148,7 +148,7 @@ void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, const MPI_Comm* commp=NU
   if(do_copy == true ){
     tem_sHIP.resize(size);tem_rHIP.resize(size);
 
-    cpy_data_thread(&tem_sHIP[0], src, size, 3, true);
+    cpy_data_thread(&tem_sHIP[0], src, size, 3);
     tem_src = &tem_sHIP[0];tem_res = &tem_rHIP[0];
   }
   
@@ -156,13 +156,13 @@ void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, const MPI_Comm* commp=NU
   else{MPI_Allreduce(tem_src,tem_res, size * fac, curr, MPI_SUM, *commp);}
 
   if(do_copy == true){
-    cpy_data_thread(buf_res, &tem_rHIP[0], size, 2, true);
+    cpy_data_thread(buf_res, &tem_rHIP[0], size, 2);
   }
 
 
   if(src == sav)
   {
-    cpy_data_thread(sav, buf_res, size, GPU, true);
+    cpy_data_thread(sav, buf_res, size, GPU);
   }
   if(src != sav){safe_free_vector_gpu_plan<char>(gkey);}
 }
@@ -293,7 +293,7 @@ void Redistribute_all_Nt(Ty *src,long size,const qlat::Geometry &geo, int GPU=0)
   const int nt = vg[3];
 
   int mt = nt/Nt;
-  if(mt != Nmpi){print0("Not supported !");qassert(false);return;}
+  if(mt != Nmpi){print0("Not supported !");Qassert(false);return;}
 
   /////int rank  = qlat::get_id_node();
   long size_c = sizeof(Ty)*size/mt;
@@ -315,7 +315,6 @@ void Redistribute_all_Nt(Ty *src,long size,const qlat::Geometry &geo, int GPU=0)
 
   //Ty* buf;
   //if(GPU == 0){buf = (Ty *)aligned_alloc_no_acc(size*sizeof(Ty));}
-  //if(GPU == 1){gpuMalloc(buf, size, Ty);}
   qlat::vector_gpu<Ty > buf; buf.resize(size, GPU);
 
   {
@@ -324,7 +323,7 @@ void Redistribute_all_Nt(Ty *src,long size,const qlat::Geometry &geo, int GPU=0)
             buf.data(),(int*) &recv[0],(int*) &rpls[0], MPI_CHAR, get_comm());
   }
 
-  cpy_data_thread(src, buf.data(), size, GPU, true);
+  cpy_data_thread(src, buf.data(), size, GPU);
 }
 
 ////sum all src or bcast each node data to others
@@ -407,7 +406,7 @@ inline int get_mpi_id_node_close()
 {
   int globalRank;
   MPI_Comm_rank(MPI_COMM_WORLD, &globalRank);
-  //qassert(globalRank == get_id_node());
+  //Qassert(globalRank == get_id_node());
   // node local comm
   MPI_Comm nodeComm;
   MPI_Comm_split_type(MPI_COMM_WORLD, MPI_COMM_TYPE_SHARED, globalRank,
@@ -417,7 +416,7 @@ inline int get_mpi_id_node_close()
   int localRank;
   MPI_Comm_rank(nodeComm, &localRank);
   //if (0 == get_id_node()) {
-  //  qassert(localRank == 0);
+  //  Qassert(localRank == 0);
   //}
   //return 0;
   // number of process in this node
@@ -438,7 +437,7 @@ inline int get_mpi_id_node_close()
   // calculate id of node (master rank of the 0 local rank process)
   long id_of_node = masterRank;
   MPI_Bcast(&id_of_node, 1, MPI_LONG, 0, nodeComm);
-  qassert(id_of_node < num_of_node);
+  Qassert(id_of_node < num_of_node);
   // calculate number of processes for each node
   std::vector<long> n0(num_of_node, 0);
   std::vector<long> n1(num_of_node, 0);
@@ -464,12 +463,12 @@ inline int get_mpi_id_node_close()
   //}
   //// calculate the id of the master comm (same as local rank)
   //long id_of_master_comm = localRank;
-  //qassert(id_of_master_comm < num_of_master_comm);
+  //Qassert(id_of_master_comm < num_of_master_comm);
   //// calculate number of processes for each masterComm
   //std::vector<long> num_process_for_each_master_comm(num_of_master_comm, 0);
   //num_process_for_each_master_comm[id_of_master_comm] = 1;
   //glb_sum(get_data(num_process_for_each_master_comm));
-  //qassert(num_process_for_each_master_comm[id_of_master_comm] == masterSize);
+  //Qassert(num_process_for_each_master_comm[id_of_master_comm] == masterSize);
   //// calculate id_node_in_shuffle
   // calculate the list of id_node for each id_node_in_shuffle
   //std::vector<long> list_long(get_num_node(), 0);
@@ -480,12 +479,12 @@ inline int get_mpi_id_node_close()
   //  list[i] = list_long[i];
   //}
   //// checking
-  //qassert(list[0] == 0);
+  //Qassert(list[0] == 0);
   //for (long i = 0; i < get_num_node(); ++i) {
-  //  qassert(0 <= list[i]);
-  //  qassert(list[i] < get_num_node());
+  //  Qassert(0 <= list[i]);
+  //  Qassert(list[i] < get_num_node());
   //  for (long j = 0; j < i; ++j) {
-  //    qassert(list[i] != list[j]);
+  //    Qassert(list[i] != list[j]);
   //  }
   //}
   //return list;

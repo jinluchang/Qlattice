@@ -118,7 +118,7 @@ inline Vec_redistribute::Vec_redistribute(fft_desc_basic &fds, bool GPU_set)
   secT.resize(fd->Nmpi);
   for(long i=0;i<secT.size();i++){secT[i] = fd->Nt;}
 
-  //////if(secT_or.size()!=fd->Nmpi){print0("secT wrong %8d ! \n", int(secT_or.size()));qassert(false);}
+  //////if(secT_or.size()!=fd->Nmpi){print0("secT wrong %8d ! \n", int(secT_or.size()));Qassert(false);}
   ////secT = secT_or;
   ////Check same number secT for MPI
   ////long mvol = mx*my*mz;
@@ -132,7 +132,7 @@ inline Vec_redistribute::Vec_redistribute(fft_desc_basic &fds, bool GPU_set)
     if(fd->Pos0[m][3] == init)
     {
     int ns   = secT[m];
-    if(ins != ns){print0("Not match, n %8d, m %8d, ins %8d, ns %8d \n",n,m,ins,ns);qassert(false);}
+    if(ins != ns){print0("Not match, n %8d, m %8d, ins %8d, ns %8d \n",n,m,ins,ns);Qassert(false);}
     }
     }
   }
@@ -172,7 +172,7 @@ inline void Vec_redistribute::set_mem(int b0_or,int civa_or)
   b0 = b0_or;civa = civa_or;
 
   if(b0<=0 or civa<=0){
-    print0("Need at least biv = 1, civ %6d !\n",civa);qassert(false);
+    print0("Need at least biv = 1, civ %6d !\n",civa);Qassert(false);
   }
 
   /////set up the map on fd
@@ -291,7 +291,7 @@ void Vec_redistribute::call_MPI(int flag)
   timer.flops  += Total*sizeof(Ty);
   #endif
 
-  if(flag_set_mem==0){print0("Buf not set. \n");qassert(false);}
+  if(flag_set_mem==0){print0("Buf not set. \n");Qassert(false);}
 
   Ty* src = NULL;Ty* res = NULL;
   if(flag == 0){res = (Ty*) recvV; src = (Ty*) sendV;}
@@ -299,7 +299,7 @@ void Vec_redistribute::call_MPI(int flag)
 
   unsigned int off = sizeof(Ty);MPI_Datatype curr = MPI_BYTE;
   unsigned int M_size = get_MPI_type<Ty >(curr );
-  qassert(off%M_size == 0);off = off/M_size;
+  Qassert(off%M_size == 0);off = off/M_size;
 
   if(tem_off != int(off) or update_off == true){
     ///if(findN && sizeof(Ty)== 8){curr = MPI_FLOAT ;off = off/sizeof(float)  ;findN=false;}
@@ -320,9 +320,9 @@ void Vec_redistribute::call_MPI(int flag)
   ////======Copy data
   if(copy_same_node){
   int ranklocal = map_mpi_vec[fd->rank];
-  qassert(currsend[ranklocal] == currrecv[ranklocal]);
+  Qassert(currsend[ranklocal] == currrecv[ranklocal]);
   if(currsend[ranklocal] != 0){
-    cpy_data_thread(&res[currrpls[ranklocal]], &src[currspls[ranklocal]], currsend[ranklocal], GPU, false);
+    cpy_data_thread(&res[currrpls[ranklocal]], &src[currspls[ranklocal]], currsend[ranklocal], GPU, QFALSE);
     sendM[ranklocal] = 0;
     recvM[ranklocal] = 0;
   }}
@@ -362,8 +362,8 @@ void Vec_redistribute::re_order_recv(int flag)
   long bfac = Nv[orderN[2]]*civa;
   LInt* m0 = (LInt*) qlat::get_data(map_order).data();
   LInt* m1 = (LInt*) qlat::get_data(map_Dorder).data();
-  if(flag==0){cpy_data_from_index(&send[0],&recv[0], m0, m1, map_order.size(), bfac, GPU, true);}
-  if(flag==1){cpy_data_from_index(&recv[0],&send[0], m1, m0, map_order.size(), bfac, GPU, true);}
+  if(flag==0){cpy_data_from_index(&send[0],&recv[0], m0, m1, map_order.size(), bfac, GPU, QTRUE);}
+  if(flag==1){cpy_data_from_index(&recv[0],&send[0], m1, m0, map_order.size(), bfac, GPU, QTRUE);}
 }
 
 //////buf size  --> b0 * Nt * (nx*ny*nz/(Nx*Ny*Nz)) * Nx*Ny*Nz * civa * sizeof(Ty)
@@ -454,7 +454,7 @@ struct Rotate_vecs{
   template<typename Ty>
   void set_mem(int b0_or, int civa_or, int mode_set = -2){
     TIMERA("Rotate_vecs set_mem");
-    if(b0_or == -2 and civa_or == -2){qassert(b0 > 0 and civa > 0 and mode > -2 and vol_buf > 0);return;}
+    if(b0_or == -2 and civa_or == -2){Qassert(b0 > 0 and civa > 0 and mode > -2 and vol_buf > 0);return;}
     if(b0_or == b0 and civa_or == civa and sizeof(Ty) == bsize){
       if(mode_set == -2 or mode_set == mode){return ;}
     }
@@ -484,12 +484,12 @@ struct Rotate_vecs{
     if(Bsize != Bsize0){
     Bsize = Bsize0;
     free_buf(buf, GPU);free_buf(src, GPU);buf=NULL;src=NULL;
-    if(GPU){gpuMalloc(buf, Bsize/sizeof(Ty), Ty);gpuMalloc(src, Bsize/sizeof(Ty), Ty);}
+    if(GPU){gpuMalloc(buf, Bsize/sizeof(Ty), Ty, 1);gpuMalloc(src, Bsize/sizeof(Ty), Ty, 1);}
     else{ 
       src = aligned_alloc_no_acc(Bsize);
       if(mode != -1)buf = aligned_alloc_no_acc(Bsize);
     }}
-    qassert(b0 > 0 and civa > 0 and vol_buf > 0);
+    Qassert(b0 > 0 and civa > 0 and vol_buf > 0);
 
     //map_vecs.resize( b0);
     //for(int bi=0;bi<b0;bi++){map_vecs[bi] = fd.get_mi_curr(mode + 3)*b0 + bi;}

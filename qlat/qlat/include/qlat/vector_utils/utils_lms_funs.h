@@ -12,7 +12,7 @@
 #include "utils_momentum.h"
 #include "utils_fft_desc.h"
 #include "utils_shift_vecs.h"
-#include "utils_eigensys.h"
+#include "utils_eigen_ov.h"
 #include "utils_construction.h"
 #include "utils_FFT_GPU.h"
 #include "utils_grid_src.h"
@@ -137,7 +137,7 @@ void pick_mom_data(qlat::vector_gpu<Ty >& res, qlat::vector_gpu<Ty >& src,
 
   const long Nvol = src.size()/nvec;
   const long Mvol = res.size()/nvec;
-  qassert(mapA.size() <= Mvol);
+  Qassert(mapA.size() <= Mvol);
 
   long* A = mapA.data();
   long* B = mapB.data();
@@ -211,7 +211,7 @@ void prop_to_vec(std::vector<qlat::vector_gpu<Ty > >& Eprop, qlat::vector_gpu<Ty
 
   baryon_vectorEV(p1, p1, p1, ra, nmass, ga2,ga1, G, mL, fd, 1);
   /////add baryon two contractions
-  cpy_data_thread(rb, ra, resTa.size()/2, 1, true,  1.0);
+  cpy_data_thread(rb, ra, resTa.size()/2, 1, QTRUE,  1.0);
   
   meson_vectorEV( p1, p1, ra, nmass, gL, gL, fd, 1);
 
@@ -249,7 +249,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
 
   Coordinate Lat;for(int i=0;i<4;i++){Lat[i] = fd.nv[i];}
   Coordinate pos;Coordinate off_L;
-  std::vector<PointsSelection > Ngrid;
+  std::vector<PointSelection > Ngrid;
   check_noise_pos(src, pos, off_L);
   grid_list_posT(Ngrid, off_L, pos, srcI.combineT, Lat);
   for(unsigned int ic=0;ic<Ngrid.size();ic++)
@@ -304,9 +304,9 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     EresH.resize(32 * nmass * fd.nt); 
     EresL.resize(32 * nmass * fd.nt); 
     EresA.resize(32 * nmass * fd.nt); 
-    clear_qv(EresH , false);
-    clear_qv(EresL , false);
-    clear_qv(EresA , false);
+    clear_qv(EresH , QFALSE);
+    clear_qv(EresL , QFALSE);
+    clear_qv(EresA , QFALSE);
     qacc_barrier(dummy);
   }
   const int nvecs = 32 * nmass;
@@ -385,10 +385,10 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   if(savezero){
     resZero.resize(resTa.size() * nZero);resZero.set_zero();
     if(srcI.save_full_vec == 0){
-      cpy_data_thread(&resZero[0*resTa.size()], resTa.data(), resTa.size(), 1, true, -1.0*Nlms);
+      cpy_data_thread(&resZero[0*resTa.size()], resTa.data(), resTa.size(), 1, QTRUE, -1.0*Nlms);
     }
     if(srcI.save_full_vec == 1){
-      cpy_data_thread(&resZero[0*resTa.size()], resTa.data(), resTa.size(), 1, true, +1.0);
+      cpy_data_thread(&resZero[0*resTa.size()], resTa.data(), resTa.size(), 1, QTRUE, +1.0);
     }
   }
   if(saveFFT){
@@ -443,10 +443,10 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
 
     if(savezero){
     if(srcI.save_full_vec == 0){
-      cpy_data_thread(&resZero[0*resTa.size()], resTa.data(), resTa.size(), 1, true, +1.0);
+      cpy_data_thread(&resZero[0*resTa.size()], resTa.data(), resTa.size(), 1, QTRUE, +1.0);
     }
     if(srcI.save_full_vec == 1){
-      cpy_data_thread(&resZero[(gi+1)*resTa.size()], resTa.data(), resTa.size(), 1, true, +1.0);
+      cpy_data_thread(&resZero[(gi+1)*resTa.size()], resTa.data(), resTa.size(), 1, QTRUE, +1.0);
     }
     }
     if(saveFFT){
@@ -469,7 +469,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   if(savezero){
     TIMER("lms savezero");
     ////std::vector<qlat::FieldM<Ty, 1> > Vzero_data;
-    qassert(resZero.size() == nZero*32*nmass*Vol);
+    Qassert(resZero.size() == nZero*32*nmass*Vol);
     const long nvec = resZero.size()/Vol;
     print0("=====vec %d \n", int(nvec));
     if(long(Vzero_data.size() ) != nvec){
@@ -480,7 +480,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     }
     for(long iv=0;iv<nvec;iv++){
       Ty* resP = (Ty*) qlat::get_data(Vzero_data[iv]).data();
-      cpy_data_thread(resP, &resZero[iv*Vol], geo.local_volume(), 1, true);
+      cpy_data_thread(resP, &resZero[iv*Vol], geo.local_volume(), 1, QTRUE);
     }
     save_qlat_noises(srcI.name_zero_vecs.c_str(), Vzero_data, true, POS_LIST);
   }
@@ -492,7 +492,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
       shift_result_t(EresA, fd.nt, tini);
     }
     ////subtract high mode from EresA
-    cpy_data_thread(EresA.data(), EresH.data(), EresA.size(), 1, true, -1.0*Nlms);
+    cpy_data_thread(EresA.data(), EresH.data(), EresA.size(), 1, QTRUE, -1.0*Nlms);
     res.write_corr((Ty*) EresL.data(), EresL.size());
     res.write_corr((Ty*) EresH.data(), EresH.size());
     res.write_corr((Ty*) EresA.data(), EresA.size());

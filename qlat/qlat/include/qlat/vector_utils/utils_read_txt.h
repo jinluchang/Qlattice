@@ -61,7 +61,7 @@ inline std::string listtostring(const std::vector<int > src, const int limit = 0
   for(unsigned int i=0;i<src.size();i++){
     if(i==0){
       if(limit == 1){
-        qassert(src[i] <= 99999999);
+        Qassert(src[i] <= 99999999);
         sprintf(tmp,"%-8d ",src[i]);
       }
       else{
@@ -116,12 +116,17 @@ inline int stringtonum(std::string &tem_string)
 
 }
 
+inline int stringtonumber(std::string &tem_string)
+{
+  return stringtonum(tem_string);
+}
+
 inline Coordinate string_to_Coordinate(const std::string& paraI = std::string("NONE"))
 {
   Coordinate sp;for(int i=0;i<4;i++){sp[i] = 0;}
   if(paraI != "NONE"){
     std::vector<std::string > Li = stringtolist(paraI);
-    qassert(Li.size() == 4);
+    Qassert(Li.size() == 4);
     for(int i=0;i<4;i++){sp[i] = stringtonum(Li[i]);}
   }
   return sp;
@@ -153,7 +158,7 @@ inline std::vector<double> string_to_mass(const std::string& INFO_MASS)
 inline unsigned long get_file_size_o(const char *filename)
 {
   std::ifstream File(filename);
-  if(!File.is_open()){if(qlat::get_id_node() == 0){printf("file is not exist\n");}return 0;}
+  if(!File.is_open()){if(qlat::get_id_node() == 0){printf("file doesn't exist\n");}return 0;}
   unsigned long Begin = File.tellg();
   File.seekg(0, std::ios_base::end);
   unsigned long End = File.tellg();
@@ -167,7 +172,7 @@ inline size_t get_file_size_MPI(const char *filename, bool silence = false)
   if(qlat::get_id_node()==0){
     std::ifstream File(filename);
     if(!File.is_open()){
-      if(!silence)if(qlat::get_id_node() == 0){printf("%s file is not exist\n",  filename);}
+      if(!silence)if(qlat::get_id_node() == 0){printf("%s file doesn't exist\n",  filename);}
       sizen = 0;
     }
     else{
@@ -216,7 +221,7 @@ inline size_t get_write_factor(const size_t size)
 inline size_t file_operation(void* buf, const size_t size, const size_t count, FILE* file, const bool read)
 {
   const size_t factor = get_write_factor(size);
-  qassert(size  % factor == 0);
+  Qassert(size  % factor == 0);
   const size_t currN = size / factor;
   size_t check = 1;
 
@@ -234,7 +239,7 @@ void write_data(Ty* dat, FILE* file, size_t size, bool read=false, bool single_f
   TIMER("Single node write");
   if(qlat::get_id_node()==0){
     size_t sem = 0;
-    qassert(sizeof(Ty) == sizeof(float) or sizeof(Ty) == sizeof(double));
+    Qassert(sizeof(Ty) == sizeof(float) or sizeof(Ty) == sizeof(double));
     int bsize = sizeof(double);
     if(single_file == true){bsize = sizeof(float);}
 
@@ -666,7 +671,7 @@ struct inputpara{
     if(find_para(std::string("nvec"),nvec)==0)nvec  = 0;
     if(find_para(std::string("anti_peri"),anti_peri)==0)anti_peri  = 0;
     if(find_para(std::string("write_mode"),write_mode)==0)write_mode  = 0;
-    if(find_para(std::string("mode_dis"),mode_dis)==0)mode_dis  = 0;
+    if(find_para(std::string("mode_dis"),mode_dis)==0)mode_dis  = 2;
     if(find_para(std::string("split_save"),split_save)==0)split_save  = 0;
     if(find_para(std::string("ndouble"),ndouble)==0)ndouble  = 200;
     if(find_para(std::string("fermion_type"),fermion_type)==0)fermion_type  = 0;
@@ -753,7 +758,7 @@ struct inputpara{
     for(int mi=0;mi<nmass;mi++){
       std::string tem = std::string("NONE");
       char mname[500];sprintf(mname, "mass%02d", mi);
-      if(find_para(std::string(mname), tem)==0){masses.push_back(0.2);}
+      if(find_para(std::string(mname), tem)==0){masses.push_back(0.0);}
       else{masses.push_back(stringtodouble(tem));}
     }
 
@@ -888,12 +893,12 @@ inline size_t vec_head_write(inputpara &in, const char* filename, int type=-1, b
     fprintf(filew, "checksum %12X \n"  , in.checksum);
 
     fprintf(filew, "Save_Date %s \n", buf);
-    qassert(in.INFO_LIST.size() < LINE_LIMIT );
+    Qassert(in.INFO_LIST.size() < LINE_LIMIT );
     fprintf(filew, "INFO_LIST %s \n", in.INFO_LIST.c_str());
 
-    qassert(in.INFOA.size() < 10000);
+    Qassert(in.INFOA.size() < 10000);
     for(unsigned int li=0;li<in.INFOA.size();li++){
-      qassert(in.INFOA[li].size() < LINE_LIMIT );
+      Qassert(in.INFOA[li].size() < LINE_LIMIT );
       fprintf(filew, "INFOA%02d %s \n", li, in.INFOA[li].c_str());
     }
 
@@ -934,7 +939,7 @@ inline int get_save_type(const std::string save_type){
   if(save_type.c_str() == std::string("Single")){return 1;}
 
   print0("Cannot find type. \n");
-  qassert(false);
+  Qassert(false);
 
   return -1;
   ////  if(find_para(std::string("save_type"),save_type)==0)save_type  = std::string("NONE");
@@ -955,7 +960,7 @@ inline std::string print_size(size_t size, int limit = 0){
   if(limit == 0){sprintf(tem_size, "%zu", size_t(size));}
   if(limit == 1){sprintf(tem_size, "%-20zu", size_t(size));}
   return std::string(tem_size);
-  ////qassert(std::string(tem_size) == in.total_size);
+  ////Qassert(std::string(tem_size) == in.total_size);
 }
 
 template <typename Ty >
@@ -987,8 +992,8 @@ struct corr_dat
   qlat::vector<char > buf;
   inputpara in_buf;
 
-  inline const Ty& operator[](const long i) const {qassert(i < total); return dat[i]; }
-  inline Ty& operator[](const long i) {qassert(i < total); return dat[i]; }
+  inline const Ty& operator[](const long i) const {Qassert(i < total); return dat[i]; }
+  inline Ty& operator[](const long i) {Qassert(i < total); return dat[i]; }
 
   //corr_dat<Ty >(bool null){
   //  std::string dimN = "NONE";
@@ -1046,22 +1051,22 @@ struct corr_dat
     dim_name.resize(0);
     initialize();
 
-    if(sizeof(Ty) != sizeof(float) and sizeof(Ty) != sizeof(double)){qassert(false);};
+    if(sizeof(Ty) != sizeof(float) and sizeof(Ty) != sizeof(double)){Qassert(false);};
     std::vector<std::string > tem = stringtolist(key);
     dim = tem.size();
     key_T.resize(dim);c_a_t.resize(dim);total = 1;
     for(LInt i=0;i<tem.size();i++){
       key_T[i] = stringtonum(tem[i]);
-      qassert(key_T[i] != 0);
+      Qassert(key_T[i] != 0);
       c_a_t[i] = 0;
       total = total * key_T[i];
     }
-    qassert(total >= 0 and dim >= 0);
+    Qassert(total >= 0 and dim >= 0);
     if(dimN != std::string("NONE")){dim_name = stringtolist(dimN);}else{
       dim_name.resize(dim);
       for(int d=0;d<dim;d++){dim_name[d] = std::string(" ");}
     }
-    qassert(int(dim_name.size()) == dim);
+    Qassert(int(dim_name.size()) == dim);
 
     //////memory only on node 0
     //if(qlat::get_id_node() == 0)dat.resize(total);
@@ -1077,16 +1082,16 @@ struct corr_dat
     for(LInt i=1;i<key_T.size();i++){
       i_num = (i_num)*key_T[i] + c_a_t[i];
     }
-    qassert(i_num <= total);
+    Qassert(i_num <= total);
     return i_num;
   }
 
   inline long get_off(std::string &site){
     std::vector<std::string > tem = stringtolist(site);
-    qassert(int(tem.size()) == dim);
+    Qassert(int(tem.size()) == dim);
     for(LInt i=0;i<tem.size();i++){
       c_a_t[i] = stringtonum(tem[i]);
-      qassert(c_a_t[i] < key_T[i]);
+      Qassert(c_a_t[i] < key_T[i]);
     }
     return get_off();
   }
@@ -1121,7 +1126,7 @@ struct corr_dat
 
   inline long shift_off(std::vector<int > c_a_t_off){
     if(c_a_t_off.size() == 0){return get_off();}
-    qassert(c_a_t_off.size() == (LInt) dim);
+    Qassert(c_a_t_off.size() == (LInt) dim);
     c_a_t = c_a_t_off;
     return get_off();
   }
@@ -1129,11 +1134,11 @@ struct corr_dat
   inline void read_dat(const char* filename){
     inputpara in;
     in.load_para(filename, false);
-    qassert(in.OBJECT == std::string("BEGIN_Corr_HEAD"));
+    Qassert(in.OBJECT == std::string("BEGIN_Corr_HEAD"));
     if(in.OBJECT != std::string("BEGIN_Corr_HEAD")){print0("File %s head wrong!\n", filename);
       MPI_Barrier(get_comm());
       fflush(stdout);
-      qassert(false);
+      Qassert(false);
     }
 
     ////printf("==OBJECT %s \n", OBJECT);
@@ -1145,8 +1150,8 @@ struct corr_dat
     int bsize = sizeof(double);if(type == 1){bsize=sizeof(float);}
     //char tem_size[500];
     //printf(tem_size, "%30zu", size_t(total * bsize));
-    //qassert(std::string(tem_size) == in.total_size);
-    qassert(size_t(total * bsize) == string_to_size(in.total_size));
+    //Qassert(std::string(tem_size) == in.total_size);
+    Qassert(size_t(total * bsize) == string_to_size(in.total_size));
 
     INFO_LIST = in.INFO_LIST;
     INFOA     = in.INFOA;
@@ -1172,7 +1177,7 @@ struct corr_dat
     }
 
     MPI_Bcast(&crc32_tem, sizeof(crc32_tem), MPI_CHAR, 0, get_comm());
-    qassert(crc32_tem == in.checksum);
+    Qassert(crc32_tem == in.checksum);
   }
 
   std::string get_key_T(){
@@ -1191,8 +1196,8 @@ struct corr_dat
 
   inline void update_info()
   {
-    qassert(write_bsize > 0);
-    qassert(write_type == 0 or write_type == 1);
+    Qassert(write_bsize > 0);
+    Qassert(write_type == 0 or write_type == 1);
 
     in_buf.key_T = get_key_T();
     in_buf.dim_name = get_dim_name();
@@ -1233,7 +1238,7 @@ struct corr_dat
 
     //print0("dat off %30zu \n", off_file);
 
-    qassert(file_open == NULL);
+    Qassert(file_open == NULL);
     if(qlat::get_id_node()==node_control){
       file_open = fopen(filename, "wb");
       fseek( file_open , head_off , SEEK_SET );
@@ -1243,12 +1248,12 @@ struct corr_dat
 
   inline crc32_t write_part(size_t off , size_t Psize)
   {
-    qassert(head_off != 0);
-    qassert(write_bsize > 0);
-    qassert(write_type == 0 or write_type == 1);
+    Qassert(head_off != 0);
+    Qassert(write_bsize > 0);
+    Qassert(write_type == 0 or write_type == 1);
     crc32_t crc32_tem = 0;
     if(qlat::get_id_node()==node_control){
-      qassert(file_open != NULL);
+      Qassert(file_open != NULL);
       buf.resize(Psize * write_bsize);
 
       if(write_type == 0)cpy_data_thread((double*)&buf[0], &dat[off], Psize, 0);
@@ -1268,8 +1273,8 @@ struct corr_dat
     crc32_t crc32_total = 0;
     ////combine check sum
     if(head_off != 0 ){
-      qassert(small_size);
-      qassert(crc32_list.size() == crc32_size.size());
+      Qassert(small_size);
+      Qassert(crc32_list.size() == crc32_size.size());
       long Ns = crc32_size.size();
       long total_write = 0;
       for(long si=0;si<Ns;si++){
@@ -1304,10 +1309,10 @@ struct corr_dat
     }
 
     if(head_off == 0 ){
-      qassert(!small_size);
+      Qassert(!small_size);
       write_head(filename);
-      qassert(write_bsize > 0);
-      qassert(write_type == 0 or write_type == 1);
+      Qassert(write_bsize > 0);
+      Qassert(write_type == 0 or write_type == 1);
 
       size_t factor = get_write_factor(total);
       size_t partF  = total / factor;
@@ -1326,7 +1331,7 @@ struct corr_dat
     in_buf.checksum = crc32_total;
     update_info();
     size_t off_tem = corr_head_write(in_buf, filename, false);
-    qassert(head_off == off_tem);
+    Qassert(head_off == off_tem);
 
     if(qlat::get_id_node()==node_control)
     {
@@ -1341,7 +1346,7 @@ struct corr_dat
   inline void add_size(const int n){
     if(key_T.size() < 1){
       print0("key_T size wrong!\n");MPI_Barrier(get_comm());
-      fflush(stdout);qassert(false);}
+      fflush(stdout);Qassert(false);}
 
     const size_t Npre = dat.size();
     if(!small_size){
@@ -1384,7 +1389,7 @@ struct corr_dat
     if(long(double_size + cur) >  total){ 
       if(key_T.size() < 1){
         print0("key_T size wrong!\n");MPI_Barrier(get_comm());
-        fflush(stdout);qassert(false);}
+        fflush(stdout);Qassert(false);}
       long each = total/key_T[0];long base = key_T[0];
       size_t n = (double_size + cur + each - 1) / (each) - base;
       add_size(n);
@@ -1400,7 +1405,7 @@ struct corr_dat
     if(!small_size){wdat = &dat[cur];}
     if( small_size){wdat = &dat[0]  ;}
 
-    qassert(mode_copy == 0 or mode_copy == 3);
+    Qassert(mode_copy == 0 or mode_copy == 3);
     if( is_double){cpy_data_thread(wdat, (double*) src, double_size, mode_copy);}
     if(!is_double){cpy_data_thread(wdat, (float* ) src, double_size, mode_copy);}
 
@@ -1409,8 +1414,8 @@ struct corr_dat
     }
     if( small_size)
     {
-      qassert(write_bsize > 0);
-      qassert(write_type == 0 or write_type == 1);
+      Qassert(write_bsize > 0);
+      Qassert(write_type == 0 or write_type == 1);
       crc32_t crc32_tem = write_part(0, double_size );
       crc32_list.push_back(crc32_tem);
       crc32_size.push_back(double_size * write_bsize);

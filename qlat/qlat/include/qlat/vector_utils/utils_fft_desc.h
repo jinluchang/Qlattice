@@ -63,7 +63,7 @@ struct fft_desc_basic
     Nmpi  = qlat::get_num_node();
     rank  = qlat::get_id_node();
 
-    qassert(geo.node_site != qlat::Coordinate());
+    Qassert(geo.node_site != qlat::Coordinate());
 
     ////set nv, Nv, mv, iniv
     geo_to_nv(geo, nv, Nv, mv);
@@ -266,8 +266,8 @@ inline void fft_desc_basic::print_info(){
 inline void fft_desc_basic::set_variable()
 {
   TIMERA("fft_desc_basic::set_variable");
-  for(int i=0;i<4;i++){qassert(iniv[i] >= 0);qassert(nv[i] > 0);qassert(Nv[i] > 0);}
-  mv.resize(4);for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];qassert(mv[i] > 0);}
+  for(int i=0;i<4;i++){Qassert(iniv[i] >= 0);Qassert(nv[i] > 0);Qassert(Nv[i] > 0);}
+  mv.resize(4);for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];Qassert(mv[i] > 0);}
 
   nx = nv[0];ny = nv[1];nz = nv[2];nt = nv[3];
   Nx = Nv[0];Ny = Nv[1];Nz = Nv[2];Nt = Nv[3];

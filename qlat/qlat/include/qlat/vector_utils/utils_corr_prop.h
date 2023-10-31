@@ -159,7 +159,7 @@ void qprop_move_dc_in(Ty* src, const qlat::Geometry &geo, const int dir = 1)
 template<typename Ty>
 void qprop_move_dc_in(qpropT& src, const int dir = 1)
 {
-  qassert(src.initialized);
+  Qassert(src.initialized);
   qprop_move_dc_in((Ty*) qlat::get_data(src).data(), src.geo(), dir);
 }
 
@@ -200,7 +200,7 @@ template<typename Ty>
 void qprop_sub_add(std::vector<qpropT >& res, std::vector< qpropT >& s0, std::vector< qpropT >& s1, const Ty f0, const Ty f1)
 {
   if(s0.size() == 0){res.resize(0); return ;}
-  qassert(s0.size() == s1.size());
+  Qassert(s0.size() == s1.size());
   const int Nvec = s0.size();
   const qlat::Geometry &geo = s0[0].geo();
   const long Nvol = geo.local_volume();
@@ -359,7 +359,7 @@ void vec_corrE(Ty* srcE, qlat::vector_acc<Ty >& res,qlat::fft_desc_basic &fd,con
   if(mom != Coordinate())
   {
     bufE.resize(nvec * Nxyz*NTt);
-    cpy_data_thread(bufE.data(), srcE, bufE.size(), 1, true);
+    cpy_data_thread(bufE.data(), srcE, bufE.size(), 1, QTRUE);
     src = bufE.data();
 
     qlat::vector_acc<double > p0;p0.resize(3);
@@ -401,7 +401,7 @@ void vec_corrE(Ty* srcE, qlat::vector_acc<Ty >& res,qlat::fft_desc_basic &fd,con
   int nt = fd.nt;
   //if(clear == 1){res.resize(0);res.resize(nvecs*nt);qlat::set_zero(res);}
   if(clear == 1){if(res.size() != nvec*nt){res.resize(nvec*nt);} qlat::set_zero(res);}
-  if(clear == 0){if(res.size() != nvec*nt){print0("res size wrong for corr.");qassert(false);}}
+  if(clear == 0){if(res.size() != nvec*nt){print0("res size wrong for corr.\n");Qassert(false);}}
 
   qlat::vector_acc<Ty > tmp;tmp.resize(nvec*NTt);qlat::set_zero(tmp);//tmp.set_zero();
   reduce_vec(src, tmp.data(), Nxyz, nvec*NTt);
@@ -417,27 +417,27 @@ void vec_corrE(Ty* srcE, qlat::vector_acc<Ty >& res,qlat::fft_desc_basic &fd,con
 
   //////sum_all_size((Ftype*) (RES.data()), 2*RES.size(), 1);
   sum_all_size(RES.data(), RES.size(), 1);
-  cpy_data_thread((Ty*) qlat::get_data(res).data(), RES.data(), RES.size(), 1, true, 1.0);
+  cpy_data_thread((Ty*) qlat::get_data(res).data(), RES.data(), RES.size(), 1, QTRUE, 1.0);
 }
 
 template<typename Ty>
 void vec_corrE(qlat::vector_gpu<Ty >& resE, qlat::vector_acc<Ty >& res,qlat::fft_desc_basic &fd,const int clear=0,
-  const Coordinate& mom = Coordinate(), const Ty& src_phase = 1.0){
+  const Coordinate& mom = Coordinate(), const Ty& src_phase = 1.0, int t0=0){
   int NTt  = fd.Nv[3];
   LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   int nvec = resE.size()/(NTt*Nxyz);
-  vec_corrE(resE.data(), res, fd, nvec, clear, mom, src_phase);
+  vec_corrE(resE.data(), res, fd, nvec, clear, mom, src_phase, t0);
 }
 
 template<typename Ty>
 void vec_corrE(qlat::vector_acc<Ty >& resE, qlat::vector_acc<Ty >& res,qlat::fft_desc_basic &fd,const int clear=0,
-  const Coordinate& mom = Coordinate(), const Ty& src_phase = 1.0){
+  const Coordinate& mom = Coordinate(), const Ty& src_phase = 1.0, int t0 = 0){
   int NTt  = fd.Nv[3];
   LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   int nvec = resE.size()/(NTt*Nxyz);
   ///qlat::vector_gpu<Ty > r0;r0.copy_from(resE);
   Ty* r0 = (Ty*) qlat::get_data(resE).data();
-  vec_corrE(r0, res, fd, nvec, clear, mom, src_phase);
+  vec_corrE(r0, res, fd, nvec, clear, mom, src_phase, t0);
 }
 
 void write_pos_to_string(std::string& POS_LIST, Coordinate& pos){
@@ -455,11 +455,11 @@ void write_pos_to_string(std::string& POS_LIST, Coordinate& pos){
 inline std::vector<Coordinate > string_to_coord(std::string& INFO){
   std::vector<Coordinate > posL ;
   std::vector<std::string > a = stringtolist(INFO);
-  qassert(a.size() % 5 == 0);
+  Qassert(a.size() % 5 == 0);
   int Npos = a.size()/5;
   for(int i=0;i< Npos;i++)
   {
-    qassert(a[i*5+4] == std::string(";"));
+    Qassert(a[i*5+4] == std::string(";"));
     Coordinate c;
     for(int j = 0;j<4;j++){c[j] = stringtonum(a[i*5 + j]);}
     posL.push_back(c);
@@ -504,7 +504,7 @@ void shift_result_t(qlat::vector_acc<Ty >& Esrc, int nt, int tini){
 //template<typename Ty, typename Ta>
 //void copy_propE(std::vector<Ty* > &pV1, EigenMTa &prop, qlat::fft_desc_basic &fd, int dir=0){
 //  TIMER("Copy prop");
-//  qassert(fd.order_ch == 0);
+//  Qassert(fd.order_ch == 0);
 //  const LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
 //  const int NTt  = fd.Nv[3];
 //  Geometry geo;fd.get_geo(geo);
@@ -512,7 +512,7 @@ void shift_result_t(qlat::vector_acc<Ty >& Esrc, int nt, int tini){
 //  if(dir==0){nmass = pV1.size();ini_propE(prop,nmass,fd);}
 //  if(dir==1){
 //    nmass = prop.size()/(12*12*NTt);
-//    qassert(int(pV1.size()) == nmass);
+//    Qassert(int(pV1.size()) == nmass);
 //    //if(pV1.size() != (LInt) nmass){
 //    //  pV1.resize(0);
 //    //  pV1.resize(nmass);for(int i=0;i<nmass;i++){pV1[i].init(geo);}
@@ -548,12 +548,12 @@ void shift_result_t(qlat::vector_acc<Ty >& Esrc, int nt, int tini){
 //void copy_propE(Propagator4dT<Ty > &pV, EigenMTa &prop, qlat::fft_desc_basic &fd, int dir=0){
 //  int nmass = 1;
 //  if(dir==0){
-//    qassert(pV.initialized);
+//    Qassert(pV.initialized);
 //    ini_propE(prop,nmass,fd);
 //  }
 //  if(dir==1){
 //    nmass = prop.size()/(12*12*fd.Nv[3]);
-//    qassert(nmass == 1);
+//    Qassert(nmass == 1);
 //    if(!pV.initialized){
 //      Geometry geo;fd.get_geo(geo);
 //      pV.init(geo);
@@ -624,7 +624,7 @@ void check_prop_size(EigenTy& prop, fft_desc_basic& fd){
     if(prop[0].size() != size_t(fd.Nvol)*12*12)
     {
       print0("Size of Prop wrong. \n");
-      qassert(false);
+      Qassert(false);
     }
   }
 }
@@ -639,10 +639,10 @@ void copy_qprop_to_propG(EigenTy& res, std::vector<qpropT >& src, const qlat::Ge
   }
   if(dir == 0){
     nvec = res.size();
-    src.resize(nvec);
+    src.resize(0);src.resize(nvec);
     for(int ni=0;ni<nvec;ni++){
       src[ni].init(geo);
-      qassert(res[ni].size() == size_t(12*12*geo.local_volume()));
+      Qassert(res[ni].size() == size_t(12*12*geo.local_volume()));
     }
   }
   if(nvec == 0){return ;}
@@ -682,7 +682,7 @@ inline std::vector<int >  get_map_sec(int dT,int nt){
   {
     for(int t=t0;t < (si+1)*lensec;t++)///boundary with the same sector?
     {
-      qassert(t < nt);
+      Qassert(t < nt);
       map_sec[t] = si;
       tcount = tcount + 1;
     }
@@ -741,7 +741,7 @@ inline Coordinate get_src_pos(std::string src_n, Coordinate& off_L, const Geomet
 
 /////momentum related
 inline std::vector<double >  hash_mom(const Coordinate& m){
-  qassert(m[3] == 0);
+  Qassert(m[3] == 0);
   std::vector<double > q;q.resize(4);
   for(int i=0;i<4;i++){q[i] = 0;}
 
@@ -808,17 +808,31 @@ void get_phases(std::vector<vector_gpu<Ty >>& phases, const std::vector<Coordina
   });
 }
 
-template <class Ty, int civ>
-void apply_phases(qlat::FieldM<Ty, civ >& src, std::vector<qlat::FieldM<Ty, civ>>& res, std::vector<vector_gpu<Ty >>& phases){
-  qassert(src.initialized);
-  const Geometry& geo = src.geo();
-  const unsigned int Nmom = phases.size();
+template<typename Ty>
+void get_phases(vector_gpu<Ty >& phases, const Coordinate& mom,
+            const Geometry& geo, const char sign = 1, const Coordinate& offset = Coordinate() )
+{
+  TIMER("get_phases");
+  std::vector<Coordinate > momL;momL.resize(1);momL[0] = mom;
+  std::vector<vector_gpu<Ty > > phaseL;
+  get_phases(phaseL, momL, geo, sign, offset);
+  phases.copy_from(phaseL[0]);
+}
 
-  qlat::vector_acc<Ty* > Pphase = EigenM_to_pointers(phases);
+template <class Ty, int civ>
+void apply_phases(qlat::FieldM<Ty, civ >& src, qlat::FieldM<Ty, civ>* res, vector_gpu<Ty >* phases, const unsigned int Nmom){
+  Qassert(src.initialized);
+  const Geometry& geo = src.geo();
+  //const unsigned int Nmom = phases.size();
+
+  //qlat::vector_acc<Ty* > Pphase = EigenM_to_pointers(phases);
+  qlat::vector_acc<Ty* > Pphase;Pphase.resize(Nmom);
+  for(unsigned int mi=0;mi<Nmom;mi++){Pphase[mi] = (Ty*) qlat::get_data(phases[mi]).data();}
+  ////= EigenM_to_pointers(phases);
   Ty* psrc = (Ty*) qlat::get_data(src).data();
 
   qlat::vector_acc<Ty* > pres;pres.resize(Nmom);
-  if(res.size() != Nmom){res.resize(Nmom);}
+  /////if(res.size() != Nmom){res.resize(Nmom);}
   for(unsigned int mi=0;mi<Nmom;mi++){
     if(!res[mi].initialized){res[mi].init(geo);}
     pres[mi] = (Ty*) qlat::get_data(res[mi]).data();
@@ -838,12 +852,92 @@ void apply_phases(qlat::FieldM<Ty, civ >& src, std::vector<qlat::FieldM<Ty, civ>
       }
     }
   });
-
 }
 
 template <class Ty, int civ>
+void apply_phases(qlat::FieldM<Ty, civ >& src, std::vector<qlat::FieldM<Ty, civ>>& res, std::vector<vector_gpu<Ty >>& phases){
+  Qassert(src.initialized);
+  //const Geometry& geo = src.geo();
+  const unsigned int Nmom = phases.size();
+
+  if(res.size() != Nmom){res.resize(Nmom);}
+  //for(unsigned int mi=0;mi<Nmom;mi++){
+  //  if(!res[mi].initialized){res[mi].init(geo);}
+  //  ////pres[mi] = (Ty*) qlat::get_data(res[mi]).data();
+  //}
+  apply_phases(src, &res[0], &phases[0], Nmom);
+}
+
+template <class Ty, int civ>
+void apply_phases(qlat::FieldM<Ty, civ >& src, qlat::FieldM<Ty, civ>& res, vector_gpu<Ty >& phases){
+  Qassert(src.initialized);
+  //const Geometry& geo = src.geo();
+  apply_phases(src, &res, &phases, 1);
+}
+
+template <class Ty, class Td>
+void apply_phases(Propagator4dT<Td>& src, Propagator4dT<Td>& res, qlat::vector_gpu<Ty >& phases){
+
+  Qassert(src.initialized);
+  const Geometry& geo = src.geo();
+  if(!res.initialized){res.init(geo);}
+
+  Ty* Pphase = (Ty*) qlat::get_data(phases).data();
+  Ty* psrc = (Ty*) qlat::get_data(src).data();
+  Ty* pres = (Ty*) qlat::get_data(res).data();
+
+  qlat::vector_acc<int > nv, Nv, mv;geo_to_nv(geo, nv, Nv, mv);
+  const long vol = Nv[0]*Nv[1]*Nv[2];
+  const int   Nt = Nv[3];
+  const int civ = 12 * 12;
+
+  qacc_for(xi, long(vol),{
+    {
+      const Ty& ph   = Pphase[xi];
+      for(int ti=0;ti<Nt;ti++)
+      for(int ci=0;ci<civ;ci++){
+        pres[(ti*vol+xi)*civ + ci] = psrc[(ti*vol+xi)*civ + ci] * ph;
+      }
+    }
+  });
+
+}
+
+//template <class Ty, int civ>
+//void apply_phases(qlat::FieldM<Ty, civ >& src, std::vector<qlat::FieldM<Ty, civ>>& res, std::vector<vector_gpu<Ty >>& phases){
+//  Qassert(src.initialized);
+//  const Geometry& geo = src.geo();
+//  const unsigned int Nmom = phases.size();
+//
+//  qlat::vector_acc<Ty* > Pphase = EigenM_to_pointers(phases);
+//  Ty* psrc = (Ty*) qlat::get_data(src).data();
+//
+//  qlat::vector_acc<Ty* > pres;pres.resize(Nmom);
+//  if(res.size() != Nmom){res.resize(Nmom);}
+//  for(unsigned int mi=0;mi<Nmom;mi++){
+//    if(!res[mi].initialized){res[mi].init(geo);}
+//    pres[mi] = (Ty*) qlat::get_data(res[mi]).data();
+//  }
+//
+//  qlat::vector_acc<int > nv, Nv, mv;geo_to_nv(geo, nv, Nv, mv);
+//  const long vol = Nv[0]*Nv[1]*Nv[2];
+//  const int   Nt = Nv[3];
+//
+//  qacc_for(xi, long(vol),{
+//    for(int momi = 0;momi < Nmom; momi++)
+//    {
+//      const Ty& ph   = Pphase[momi][xi];
+//      for(int ti=0;ti<Nt;ti++)
+//      for(int ci=0;ci<civ;ci++){
+//        pres[momi][(ti*vol+xi)*civ + ci] = psrc[(ti*vol+xi)*civ + ci] * ph;
+//      }
+//    }
+//  });
+//}
+
+template <class Ty, int civ>
 void multi_factor(qlat::FieldM<Ty, civ >& src, qlat::FieldM<Ty, civ>& res, const Ty& phases){
-  qassert(src.initialized);
+  Qassert(src.initialized);
   const Geometry& geo = src.geo();
   if(!res.initialized){res.init(geo);}
 
@@ -862,7 +956,7 @@ template<typename Ty>
 void get_phases(std::vector<Ty >& phases, Coordinate& pL, const Coordinate& src, const Coordinate& Lat){
   long vol = pL[0]*pL[1]*pL[2];
   phases.resize(vol);
-  for(int i=0;i<3;i++){qassert(pL[i] % 2 == 1);}
+  for(int i=0;i<3;i++){Qassert(pL[i] % 2 == 1);}
   #pragma omp parallel for
   for(long isp =0;isp<vol;isp++){
     Coordinate pos = qlat::coordinate_from_index(isp, pL);
@@ -887,7 +981,7 @@ void copy_qprop_to_propE(std::vector<qlat::vector_acc<Ty > >& Eprop, std::vector
   std::vector<Ty* > ps;ps.resize(nmass);
   
   for(int mi=0;mi<nmass;mi++){
-    qassert(src[mi].initialized);
+    Qassert(src[mi].initialized);
     ps[mi] = (Ty*) qlat::get_data(src[mi]).data();
   }
 
@@ -898,7 +992,7 @@ void copy_qprop_to_propE(std::vector<qlat::vector_acc<Ty > >& Eprop, std::vector
   ///const long sizeF = geo.local_volume();
   const long nvec  = Eprop.size()/nmass;
   const long sizeF = Eprop[0].size();
-  qassert(nvec * sizeF == 12*12*geo.local_volume());
+  Qassert(nvec * sizeF == 12*12*geo.local_volume());
 
   ////V x 12 a x 12 b to 12b x 12a x V
   for(int mi=0;mi<nmass;mi++)
@@ -917,7 +1011,7 @@ void copy_propE_to_qprop(std::vector<qpropT >& src, std::vector<qlat::vector_acc
 
 template<typename Ty>
 void noise_to_propT(qpropT& prop, qnoiT& noi){
-  qassert(noi.initialized);
+  Qassert(noi.initialized);
   const Geometry& geo = noi.geo();
 
   if(!prop.initialized){prop.init(geo);}
@@ -953,14 +1047,14 @@ void copy_FieldM(std::vector<qlat::FieldM<Ty, civ> >& res, const std::vector<qla
 {
   if(src.size() == 0){res.resize(0); return;}
   const int Nv = src.size();
-  for(int iv=0;iv<Nv;iv++){qassert(src[iv].initialized);}
+  for(int iv=0;iv<Nv;iv++){Qassert(src[iv].initialized);}
   if(res.size() != Nv){res.resize(Nv);}
 
   const Geometry& geo = src[0].geo();
   const size_t Nvol = size_t(geo.local_volume()) * civ;
   for(int iv=0;iv<Nv;iv++)
   {
-    res[iv].init(geo);
+    if(!res[iv].initialized){res[iv].init(geo);}
     Ty* resP = (Ty*) qlat::get_data(res[iv]).data();
     Ty* srcP = (Ty*) qlat::get_data(src[iv]).data();
     cpy_data_thread(resP, srcP, Nvol, 1, false);

@@ -180,7 +180,7 @@ void prodab(Complexq* a0,Complexq* b0, const qlat::Geometry &geo, Complexq *fM, 
   unsigned long Nvol = geo.local_volume();
   int Nt = geo.node_site[3];
   long Nsum = Nvol/Nt;
-  /////qassert(Nsum%32 == 0);
+  /////Qassert(Nsum%32 == 0);
 
   Complexq* a = a0;
   Complexq* b = b0;
@@ -230,7 +230,7 @@ inline void reducefM(qlat::vector_acc<Complexq > &fd,Complexq* NabL, long bufN, 
   if(mode_reduce == 1)
   {
     long Nsum = Nvol/Nt;
-    if(Nsum%32 !=0){print0("Assumed Nsum divide 32 == 0, %8d \n", int(Nsum%32));qassert(false);}
+    if(Nsum%32 !=0){print0("Assumed Nsum divide 32 == 0, %8d \n", int(Nsum%32));Qassert(false);}
     Nsum = Nsum/32;
 
     set_zero(reduce_sum);
@@ -384,7 +384,7 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector_acc<Ftype > &Mr
     long largeB = nt*16;largeB += nmass;
     int sizeB = largeB*sizeof(Complexq);
     /////Sum over time
-    /////if(nt < 16){print0("time too short for production. \n");qassert(false);}
+    /////if(nt < 16){print0("time too short for production. \n");Qassert(false);}
     multiplyNab_global<<< nB, nthreads, sizeB >>>(&Nab[offNab],MresP,&Mvalues[0],nt,nmass,bufN0, GmapM.data());
     /////multiplyNab_global<<< nB, nthreads, sizeB >>>(Nab, 0,&Mres[0],&Mvalues[0],nt,nmass,bufN0, &GmapM[0]);
     qacc_barrier(dummy);
@@ -628,7 +628,7 @@ struct Nab_distribute{
 //  //  //MPI_Comm_split(get_comm() ,color_xyz, fd.rank,&vec_comm);
 //
 //  //  //MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(double);
-//  //  //M_size = get_MPI_type<Ftype >(curr );qassert(M_size <= FLOATIND+3);
+//  //  //M_size = get_MPI_type<Ftype >(curr );Qassert(M_size <= FLOATIND+3);
 //
 //  //  //Ftype* src = reinterpret_cast<Ftype* > (&NabL[0]);
 //  //  //long size_sum = fd.Nt*fd.Nmpi*16 * 2;
@@ -836,7 +836,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   if(modeCopy == 1){
     TIMER("CUDA mem allocate");
     bufE.resize(Ncutbuf);
-    for(unsigned long iv=0;iv<bufE.size();iv++){gpuMalloc(bufE[iv], npoints, Complexq);}
+    for(unsigned long iv=0;iv<bufE.size();iv++){gpuMalloc(bufE[iv], npoints, Complexq, 1);}
     //for(unsigned long iv=0;iv<bufE.size();iv++){bufE[iv].init(eigen[0].geo());}
     //for(unsigned long iv=0;iv<bufE.size();iv++){cudaMalloc(&bufE[iv],  npoints*sizeof(Complexq));}
   }

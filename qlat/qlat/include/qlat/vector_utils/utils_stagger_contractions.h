@@ -13,6 +13,7 @@
 #include "utils_reduce_vec.h"
 #include "utils_grid_src.h"
 #include "utils_construction.h"
+#include "utils_eo_copies.h"
 
 namespace qlat{
 
@@ -38,6 +39,8 @@ struct stag_inv_buf{
   std::vector<qlat::vector_gpu<Ty > > propS_smear;
   std::vector<int > prop_load;
   std::vector<int > prop_load_smear;
+  std::vector<qlat::vector_acc<Ty > > resCA;
+  std::vector<qlat::vector_acc<Ty > > resCB;
 
   inline void free_buf(){
 
@@ -52,11 +55,19 @@ struct stag_inv_buf{
     propB.resize(0);
     propS.resize(0);
     prop_shift.resize(0);
+    eo.init();
+    for(unsigned int i=0;i<gfL.size();i++){
+      gfL[i].init();
+    };
     gfL.resize(0);
     buf_vec.resize(0);
     propS_cpu.resize(0);
+    propS_smear.resize(0);
     prop_load.resize(0);
+    prop_load_smear.resize(0);
     ///prop_src_gpu.resize(0);
+    resCA.resize(0);
+    resCB.resize(0);
   }
 
   inline void init(){
@@ -69,13 +80,13 @@ template <class Ty>
 void cf_simple_pion(std::vector<colorFT >& cf0, std::vector<colorFT >& cf1, EigenV &corr, qlat::fft_desc_basic &fd,int clear=1, bool print=false, double factor = 1.0)
 {
   TIMER("cf_simple_pion");
-  qassert(cf0.size() == 3);qassert(cf1.size() == 3);
+  Qassert(cf0.size() == 3);Qassert(cf1.size() == 3);
   int  NTt  = fd.Nv[3];
   ////LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   const Geometry& geo = cf0[0].geo();
 
   EigenV resV;ini_resE(resV, 1, fd);
-  if(resV.size()%NTt !=0 or resV.size()==0){print0("Size of res wrong. \n");qassert(false);}
+  if(resV.size()%NTt !=0 or resV.size()==0){print0("Size of res wrong. \n");Qassert(false);}
 
   const int Dim = 3;
   qlat::vector_acc<Ty* > d0;d0.resize(Dim);
@@ -100,58 +111,6 @@ void cf_simple_pion(std::vector<colorFT >& cf0, std::vector<colorFT >& cf1, Eige
   }
 
 }
-
-inline void qlat_map_eo_site(qlat::FieldM<char, 1>& eo, const Geometry& geo)
-{
-  if(eo.initialized)if(eo.geo() == geo){return ;}
-  eo.init(geo);
-  char* res = (char*) qlat::get_data(eo).data();
-  ////only bool is not write thread safe
-  qacc_for(isp, geo.local_volume(), {
-    const Coordinate xl = geo.coordinate_from_index(isp);
-    int site_eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
-    res[isp] = site_eo;
-  });
-}
-
-/////src and res can be tthe same pointer
-template <class Ty, int civ>
-void apply_eo_sign(Ty* sP, Ty* rP, qlat::FieldM<char, 1>& eo, const char dir = 1)
-{
-  TIMER("apply_eo_sign");
-  const Geometry& geo = eo.geo();
-  qassert(eo.initialized);
-  char* eP = (char*) qlat::get_data(eo).data();
-  ///////DATA_TYPE typenum = get_data_type<Ty >();
-  qacc_for(isp, geo.local_volume(), {
-    qlat::Complex sign = qlat::Complex(-1.0 * dir *(eP[isp]*2 - 1), 0);
-    for(int ic=0;ic<civ;ic++){rP[isp*civ+ic] = sign * sP[isp*civ+ic];}
-  });
-}
-
-/////src and res can be tthe same pointer
-template <class Ty, int civ>
-void apply_eo_sign(qlat::FieldM<Ty , civ>& src, qlat::FieldM<Ty , civ>& res, qlat::FieldM<char, 1>& eo, const char dir = 1)
-{
-  TIMER("apply_eo_sign");
-  if(!src.initialized or !res.initialized){abort_r("src should be initialized with geo!\n");}
-  const Geometry& geo = src.geo();
-  if(!eo.initialized){qlat_map_eo_site(eo, geo);}
-  Ty*   sP = (Ty*  ) qlat::get_data(src).data();
-  Ty*   rP = (Ty*  ) qlat::get_data(res).data();
-  apply_eo_sign<Ty, civ>(sP, rP, eo, dir);
-}
-
-template <class Ty, int civ>
-void apply_eo_sign(std::vector<qlat::FieldM<Ty , civ> >& src, std::vector<qlat::FieldM<Ty , civ> >& res, qlat::FieldM<char, 1>& eo)
-{
-  qassert(src.size() == res.size());
-  for(unsigned int si = 0; si<src.size(); si++){
-    apply_eo_sign<Ty, civ>(src[si], res[si], eo);
-  }
-}
-
-
 
 }
 

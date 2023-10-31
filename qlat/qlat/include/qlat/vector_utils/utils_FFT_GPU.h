@@ -8,6 +8,8 @@
 
 #include "general_funs.h"
 #include "utils_Vec_redistribute.h"
+#include "fftw3.h"
+
 #ifdef __QLAT_WITH_FFT_MPI__
 #include "fftw3-mpi.h"
 #endif
@@ -25,7 +27,7 @@ struct FFT_Vecs{
 
   int dim;
   std::vector<int > nv;
-  int vol;
+  size_t vol;
 
   void *fft_dat;
 
@@ -67,7 +69,7 @@ struct FFT_Vecs{
   ////only one mode (cpu/gpu) per FFT struct
   FFT_Vecs(bool GPU_set=true){
     (void)GPU_set;
-    /////qassert(GPU == 0 or GPU == 1);
+    /////Qassert(GPU == 0 or GPU == 1);
     #ifndef QLAT_USE_ACC
     GPU = false;
     #else
@@ -105,8 +107,8 @@ template<typename Ty>
 void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_t > MPI_para_set)
 {
   TIMERB("FFT_Vecs Set up plan");
-  qassert(nv_set.size()!=0 and civ_set > 0);
-  ///qassert(nv_set.size()!=0 and biva_set>0 and civ_set > 0);
+  Qassert(nv_set.size()!=0 and civ_set > 0);
+  ///Qassert(nv_set.size()!=0 and biva_set>0 and civ_set > 0);
   int do_clear = 0;
   if(do_clear == 0 and nv_set != nv){do_clear = 1;}
   ///if(do_clear == 0 and biva_set != biva){do_clear = 1;}
@@ -126,15 +128,15 @@ void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_
     bsize = sizeof(Ty);
     if(bsize == 2*sizeof(double))single_type = 0;
     if(bsize == 2*sizeof(float ))single_type = 1;
-    qassert(single_type != -1);
+    Qassert(single_type != -1);
 
-    vol = 1;for(int i=0;i<dim;i++){vol = vol*nv[i];}qassert(vol > 0);
+    vol = 1;for(int i=0;i<dim;i++){vol = vol*nv[i];}Qassert(vol > 0);
     #ifdef QLAT_USE_ACC
     if(MPI_para.size() !=0 ){abort_r("GPU FFT MPI version not supported. \n");}
     #endif
 
     MPI_para  = MPI_para_set;
-    qassert(MPI_para.size() == 3 or MPI_para.size() == 0);
+    Qassert(MPI_para.size() == 3 or MPI_para.size() == 0);
     if(MPI_para.size() == 3){
       block0 = MPI_para[0];
       ////color_xyz = cxyz;ranku = ranku_set;
@@ -148,7 +150,7 @@ void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_
   int istride = howmany* istride_fac_default;int idist = idist_default;
   //doffsize  = vol * howmany * bsize;
   //datasize  = doffsize;
-  datasize  = vol * howmany * bsize;
+  datasize  = vol * long(howmany * bsize);
 
   if(GPU){
   #ifdef QLAT_USE_ACC
@@ -229,7 +231,7 @@ void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_
   }////MPI verstion
   }
 
-  ////qassert(fft_dat != NULL);
+  ////Qassert(fft_dat != NULL);
   flag_mem_set = true;
 
 }
@@ -494,7 +496,7 @@ struct fft_schedule{
     enable_MPI = 0;
     #endif
 
-    if(GPU){qassert(enable_MPI == 0);}
+    if(GPU){Qassert(enable_MPI == 0);}
     NEED_COPY = 0;
     if(civ%(N_extra*c0) != 0 or GPU){NEED_COPY = 1;}
 
@@ -624,7 +626,7 @@ struct fft_schedule{
 
         for(int bi=0;bi<b0*N_extra;bi++){
           dp = &(data[bma][cma*fd.noden]);
-          cpy_data_thread(&src[bi*fd.noden*c0], dp, fd.noden*c0, GPU , false);
+          cpy_data_thread(&src[bi*fd.noden*c0], dp, fd.noden*c0, GPU , QFALSE);
           cma += c0;if(cma == civ){cma=0;bma+=1;if(bma == bN)break;}
         }
         qacc_barrier(dummy);
@@ -639,7 +641,7 @@ struct fft_schedule{
 
         for(int bi=0;bi<b0*N_extra;bi++){
           dp = &(data[bm ][cm *fd.noden]);
-          cpy_data_thread(dp, &src[bi*fd.noden*c0], fd.noden*c0, GPU , false);
+          cpy_data_thread(dp, &src[bi*fd.noden*c0], fd.noden*c0, GPU , QFALSE);
           cm  += c0;if(cm  == civ){cm =0;bm +=1;if(bm  == bN)break;}
         }
         qacc_barrier(dummy);
@@ -753,7 +755,7 @@ struct fft_gpu_copy{
   fft_gpu_copy(const fft_gpu_copy& fft) 
   {
     #ifndef QLAT_USE_ACC
-    qassert(false);
+    Qassert(false);
     #endif
     is_copy = true;
     fftP = fft.fftP;
@@ -767,10 +769,10 @@ struct fft_gpu_copy{
     fft.is_copy = true;
   }
 
-  qacc void swap(fft_gpu_copy& x)
+  inline void swap(fft_gpu_copy& x)
   {
-    qassert(not is_copy);
-    qassert(not x.is_copy);
+    Qassert(not is_copy);
+    Qassert(not x.is_copy);
     fft_schedule* tmp = fftP;
     fftP   = x.fftP;
     x.fftP = tmp;
@@ -781,7 +783,7 @@ struct fft_gpu_copy{
   //
   const fft_gpu_copy& operator=(const fft_gpu_copy& fft)
   {
-    qassert(not is_copy);
+    Qassert(not is_copy);
     if(fftP != NULL){delete (fftP); fftP = NULL;}
 
     prec = fft.prec;
@@ -792,14 +794,18 @@ struct fft_gpu_copy{
 
     if(prec == Complex_TYPE ){     fftP->set_mem<Complex  >(nvec, civ, dimN, -1 );}
     else if(prec == ComplexF_TYPE){fftP->set_mem<ComplexF >(nvec, civ, dimN, -1 );}
-    else{print0("Only Complex and ComplexF supported for fft on GPU! \n");qassert(false);}
+    else{print0("Only Complex and ComplexF supported for fft on GPU! \n");Qassert(false);}
     ///fft.fftP->print_info();
     ///fftP->print_info();
 
     return *this;
   }
 
-  ~fft_gpu_copy(){if(fftP != NULL and is_copy == false){delete (fftP); fftP = NULL;}}
+  inline void clear(){
+    if(fftP != NULL and is_copy == false){delete (fftP); fftP = NULL;}
+  }
+
+  ~fft_gpu_copy(){clear();}
 };
 
 inline bool operator<(const FFTGPUPlanKey& x, const FFTGPUPlanKey& y)
@@ -843,7 +849,7 @@ inline fft_gpu_copy make_fft_gpu_plan(const Geometry& geo, int nvec, int civ , b
 
   if(prec == Complex_TYPE ){     ft.fftP->set_mem<Complex  >(nvec, civ, dimN, -1 );}
   else if(prec == ComplexF_TYPE){ft.fftP->set_mem<ComplexF >(nvec, civ, dimN, -1 );}
-  else{print0("Only Complex and ComplexF supported for fft on GPU! \n");qassert(false);}
+  else{print0("Only Complex and ComplexF supported for fft on GPU! \n");Qassert(false);}
   ft.fftP->print_info();
 
   ///int nvec = src.size();
@@ -879,7 +885,7 @@ inline const fft_gpu_copy& get_fft_gpu_plan(const FFTGPUPlanKey& fkey)
 template<typename Ty, int civ>
 inline FFTGPUPlanKey get_fft_gpu_plan_key(std::vector<qlat::FieldM<Ty, civ> >& src, bool fft4d=false)
 {
-  qassert(src.size() > 0);
+  Qassert(src.size() > 0);
   FFTGPUPlanKey fkey;
   fkey.geo = src[0].geo();
   fkey.GPU = true;
@@ -1040,10 +1046,10 @@ void FFT_vecs_corr(qlat::vector_gpu<Ty >& src, std::vector<qlat::FieldM<Ty, 1> >
   fft_fieldM<Ty >(src.data(), nvecs, 1, geo, true);
   for(int iv=0;iv<nvecs;iv++)
   {
-    qlat::FieldM<Ty, 1>& buf = FFT_data[off*nvecs + iv];qassert(buf.initialized);
+    qlat::FieldM<Ty, 1>& buf = FFT_data[off*nvecs + iv];Qassert(buf.initialized);
     Ty* s0 = &src[iv*volume];
     Ty* r0 = (Ty*) qlat::get_data(buf).data();
-    cpy_data_thread(r0, s0, volume, 1, true);
+    cpy_data_thread(r0, s0, volume, 1, QTRUE);
   }
 }
 
@@ -1051,3 +1057,4 @@ void FFT_vecs_corr(qlat::vector_gpu<Ty >& src, std::vector<qlat::FieldM<Ty, 1> >
 }
 
 #endif
+

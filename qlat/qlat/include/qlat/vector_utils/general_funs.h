@@ -21,8 +21,6 @@
 #include "utils_vector_GPU.h"
 #include "utils_mpi.h"
 
-#include <qlat-utils/eigen.h>
-
 namespace qlat
 {
 
@@ -63,6 +61,17 @@ inline void reorder_civ(char* src,char* res,int biva,int civ,size_t sizeF,int fl
   if(flag == 0){memcpy((char*)&res[0],(char*)&tmp[0],biva*sizeF*civ*size_inner);}
 }
 
+template<typename Ty>
+inline void print_numbers(Ty* src, int size, int GPU)
+{
+  qlat::vector_acc<Ty > buf;buf.resize(size);
+  cpy_GPU(buf.data(), src, size, 0, GPU);
+  for(int i=0;i<size;i++)
+  {
+    print0("i %5d, value %+.8e %+.8e \n", i, buf[i].real(), buf[i].imag());
+  }
+}
+
 ///flag = 1 --> biva * sizeF * civ * size_inner --> biva * civ * sizeF * size_inner
 #ifdef QLAT_USE_ACC
 template <typename Ty, bool flag, int Threads, int Biva>
@@ -70,14 +79,15 @@ __global__ void move_index_global(Ty* src, Ty* res, long sizeF, int civ, int inn
 {
   __shared__ Ty buf[Threads*Biva];
 
-  int    tid = threadIdx.x;
-  long s0    = blockIdx.x*blockDim.x;
+  const int    tid = threadIdx.x;
+  const long s0    = blockIdx.x*blockDim.x;
 
   int Total = Threads*civ*inner;
   if(s0 + Threads > sizeF){Total = (sizeF - s0) * civ*inner;}
 
-  int nB    = (Total + Threads-1)/Threads;
-  int nC    = (Total + Biva*Threads-1)/(Biva*Threads);
+  const int nT    = Total / (civ * inner);
+  const int nB    = (Total + Threads-1)/Threads;
+  const int nC    = (Total + Biva*Threads-1)/(Biva*Threads);
 
   int ci, si, i0;
   long z0 = 0;long off = 0;long off1 = 0;
@@ -96,8 +106,8 @@ __global__ void move_index_global(Ty* src, Ty* res, long sizeF, int civ, int inn
     off = tid;
     for(int xi=0;xi<nB;xi++)
     {
-      ci = off/(Threads*inner);
-      si = (off/inner)%Threads;
+      ci = off/(nT*inner);
+      si = (off/inner)%nT;
       i0 = off%inner;
 
       off1 = (si*civ + ci)*inner + i0 - z0;
@@ -179,7 +189,7 @@ struct move_index
   /////size_t sizeF = sizeF0;
 
   ////size_t bufN = biva*civ*size_inner*sizeof(Ty)*sizeF;
-  size_t Off = civ*sizeF*size_inner;
+  const size_t Off = civ*sizeF*size_inner;
   #if PRINT_TIMER>5
   TIMER_FLOPS("reorder index");
   timer.flops += biva*Off*sizeof(Ty);
@@ -187,7 +197,7 @@ struct move_index
 
   ////TIMERB("reorder index");
   if(size_inner < 1){qlat::displayln_info(qlat::ssprintf("size_inner too small %d !\n", size_inner));
-    MPI_Barrier(get_comm());fflush(stdout);qassert(false);
+    MPI_Barrier(get_comm());fflush(stdout);Qassert(false);
   }
 
   char* tmp_buf = NULL;
@@ -203,7 +213,7 @@ struct move_index
   //#ifdef QLAT_USE_ACC
   //if(GPU)
   if(src == res)if((Off*sizeof(Ty)) % sizeof(qlat::ComplexF) != 0){
-    qlat::displayln_info(qlat::ssprintf("size not divided by 16, too small. \n"));qassert(false);}
+    qlat::displayln_info(qlat::ssprintf("size not divided by 16, too small. \n"));Qassert(false);}
   ///#endif
 
   for(int bi=0;bi<biva;bi++){
@@ -217,14 +227,17 @@ struct move_index
       long Nb = (sizeF + Threads -1)/Threads;
       dim3 dimBlock(    Threads,    1, 1);
       dim3 dimGrid(     Nb,    1, 1);
+      //print0("sizeF %d, civ %d, size_inner %d, Biva %d, Nb %d \n", int(sizeF), int(civ), int(size_inner), Biva, int(Nb));
       if(flag==0)move_index_global<Ty, false , Threads, Biva><<< dimGrid, dimBlock >>>(s0, s1, sizeF, civ, size_inner);
       if(flag==1)move_index_global<Ty, true  , Threads, Biva><<< dimGrid, dimBlock >>>(s0, s1, sizeF, civ, size_inner);
       qacc_barrier(dummy);
       }
 
+      //print_numbers((qlat::ComplexF*) s1, 100, GPU);
       if(src == res){
-      long Nvol = long(Off*sizeof(Ty)/sizeof(qlat::ComplexF));
-      cpy_data_thread((qlat::ComplexF*) &res[bi*Off], (qlat::ComplexF*) s1, Nvol, 1);
+        const long Nvol = long(Off*sizeof(Ty)/sizeof(qlat::ComplexF));
+        //cpy_data_thread((qlat::ComplexF*) &res[bi*Off], (qlat::ComplexF*) s1, Nvol, 1);
+        cpy_GPU((qlat::ComplexF*) &res[bi*Off], (qlat::ComplexF*) s1, Nvol, 1, 1);
       }
 
     continue ;}
@@ -276,6 +289,10 @@ inline void clear_move_index_mem(){
   safe_free_vector_gpu_plan<char >(gkey1, true);
 }
 
+#ifdef QLAT_USE_ACC
+#define MAX_CUDA_STEAM 100
+static cudaStream_t stream[MAX_CUDA_STEAM];
+#endif
 
 inline void set_GPU(){
   #ifdef QLAT_USE_ACC
@@ -291,6 +308,7 @@ inline void set_GPU(){
   //printf("CPU node %d (of %d) uses CUDA device %d\n", id_node, num_node, gpu_id);
   fflush(stdout);
   MPI_Barrier(get_comm());
+  for (int i = 0; i < MAX_CUDA_STEAM; ++i)cudaStreamCreate(&stream[i]) ;
   #endif
 
 }
@@ -318,7 +336,7 @@ inline void set_GPU_threads(int mode=0){
   {
     unsigned int cpu_thread_id = omp_get_thread_num();
     unsigned int num_cpu_threads = omp_get_num_threads();
-    if(cpu_thread_id%num_gpus != 0){print0("Wrong mapping of omp !\n");qassert(false);}
+    if(cpu_thread_id%num_gpus != 0){print0("Wrong mapping of omp !\n");Qassert(false);}
     int Nthreads = cpu_thread_id/num_gpus;
 
     cudaSetDevice(cpu_thread_id / Nthreads);
@@ -469,6 +487,7 @@ template<typename Ty>
 inline void random_Ty(Ty* a, long N0,int GPU=0, int seed = 0, const int mode = 0)
 {
   (void)GPU;
+  TIMERA("random_Ty");
   if(N0 == 0)return;
   qlat::RngState rs(qlat::get_id_node() + 1 + seed );
 
@@ -479,8 +498,8 @@ inline void random_Ty(Ty* a, long N0,int GPU=0, int seed = 0, const int mode = 0
     for(long i=0;i<bfac;i++){
       size_t off = isp*bfac + i;
       if(off < size_t(N0)){
-        if(mode==0){a[off] = Ty(std::cos((ini+isp)*0.5) , (5.0/(isp+1))*ini*0.1);}
-        if(mode==1){a[off] = Ty(std::cos((ini+isp)*0.5) , std::sin(5.0*(isp+1))*ini*0.1);}
+        if(mode==0){a[off] = Ty(std::cos((ini+isp+i)*0.5) , (5.0/(isp+1+i))*ini*0.1);}
+        if(mode==1){a[off] = Ty(std::cos((ini+isp+i)*0.5) , std::sin(5.0*(isp+1+i))*ini*0.1);}
       }
     }
   });
@@ -501,33 +520,43 @@ inline void random_EigenM(std::vector<qlat::vector_acc<Ty > >& a, int GPU=0, int
 }
 
 template<typename Ty>
-inline void zeroE(qlat::vector_acc<Ty >& a,int GPU=0, bool dummy=true)
+inline void zeroE(qlat::vector_acc<Ty >& a,int GPU=0, QBOOL dummy=QTRUE)
 {
   zero_Ty(a.data(), a.size(), GPU, dummy);
 }
 
 template<typename Ty>
-inline void zeroE(std::vector<qlat::vector_acc<Ty > >& a,int GPU=0, bool dummy=true)
+inline void zeroE(std::vector<qlat::vector_acc<Ty > >& a,int GPU=0, QBOOL dummy=QTRUE)
 {
   for(LInt iv=0;iv<a.size();iv++){zeroE(a[iv], GPU, false);}
-  if (dummy) {
-    qacc_barrier(dummy);
-  }
+  if(dummy==QTRUE){qacc_barrier(dummy);}
 }
 
 template<typename Ty, int civ>
 inline void random_FieldM(qlat::FieldM<Ty , civ>& a,int GPU=0, int seed = 0)
 {
-  qassert(a.initialized);
+  Qassert(a.initialized);
   const Geometry& geo = a.geo();
   Ty* buf = (Ty*) qlat::get_data(a).data();
   random_Ty(buf, geo.local_volume() * civ, GPU, seed);
 }
 
 template<typename Ty, int civ>
+inline void copy_FieldM(qlat::FieldM<Ty , civ>& res, qlat::FieldM<Ty , civ>& src )
+{
+  Qassert(src.initialized);
+  const Geometry& geo = src.geo();
+  if(!res.initialized){res.init(geo);}
+  Ty* a = (Ty*) qlat::get_data(src).data();
+  Ty* b = (Ty*) qlat::get_data(res).data();
+  const long  V = geo.local_volume() ;
+  cpy_GPU(b, a, V*civ, 1, 1);
+}
+
+template<typename Ty, int civ>
 inline Ty norm_FieldM(qlat::FieldM<Ty , civ>& a)
 {
-  qassert(a.initialized);
+  Qassert(a.initialized);
   const Geometry& geo = a.geo();
   Ty* buf = (Ty*) qlat::get_data(a).data();
   const long  V = geo.local_volume() ;
@@ -543,7 +572,7 @@ inline Ty norm_FieldM(qlat::FieldM<Ty , civ>& a)
 template <class Td>
 void random_prop(Propagator4dT<Td >& prop, int seed = -1)
 {
-  qassert(prop.initialized);
+  Qassert(prop.initialized);
   ////print0("print time %.3f\n", tm.tv_sec);
   int rand_seed = qlat::get_id_node() + 1;
   if(seed == -1){timeval tm;gettimeofday(&tm, NULL);rand_seed += int(tm.tv_sec);}else{rand_seed += seed;}
@@ -845,16 +874,20 @@ inline int end_Lat()
   fflush_MPI();
   qlat::Timer::display();
   if(qlat::is_MPI_initialized()){MPI_Finalize();}
+  #ifdef QLAT_USE_ACC
+  for (int i = 0; i < MAX_CUDA_STEAM; ++i)cudaStreamDestroy(stream[i]) ;
+  #endif
   return 0;
 }
 
 inline std::vector<long > job_create(long total, long each)
 {
+  std::vector<long > a;a.resize(0);
+  if(total == 0){return a;}
   if(total < 1 or each < 1){
-    print0("Give me valid job types total %ld, each %ld \n", total, each);
+    print0("===Give me valid job types total %ld, each %ld \n", total, each);
     abort_r();}
   /////std::vector<long > a = job_create(total, each);
-  std::vector<long > a;a.resize(0);
   long jobN  = (total + each - 1)/each;
   int i0 = 0; int dj = each;
   for(int ji = 0; ji < jobN ; ji++)
@@ -897,7 +930,7 @@ inline void allocate_buf(std::vector<Ty* >& buf, size_t n0, size_t n1)
   TIMERA("CUDA Buf mem allocation");
   buf.resize(n0);
   for(LInt i=0;i<buf.size();i++){
-    gpuMalloc(buf[i], n1, Ty);
+    gpuMalloc(buf[i], n1, Ty, 1);
   }
 }
 
@@ -930,7 +963,7 @@ qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qlat::vector_gpu<Ty > >& s
   if(Nvec == 0){return res;}
 
   if(Nvol != -1){
-    qassert(src[0].size() % Nvol == 0);
+    Qassert(src[0].size() % Nvol == 0);
   }else{
     Nvol = src[0].size();
   }
@@ -939,7 +972,7 @@ qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qlat::vector_gpu<Ty > >& s
   res.resize(Nvec * Nt);
   for(size_t iv=0;iv<Nvec;iv++)
   {
-    qassert(src[iv].size() == Nt * Nvol);
+    Qassert(src[iv].size() == Nt * Nvol);
     for(size_t it=0;it<Nt;it++)
     {
       res[iv*Nt + it] = &src[iv].data()[it* Nvol];
@@ -992,7 +1025,7 @@ Ty sum_local_to_global_vector(Ty src, MPI_Comm* commp=NULL)
 
 inline std::vector<int > num_to_site(const long num, const std::vector<int > key_T)
 {
-  qassert(key_T.size() > 0);
+  Qassert(key_T.size() > 0);
   int dim = key_T.size();
   std::vector<int > site;site.resize(dim);
   for(int iv=0;iv<dim;iv++){site[iv] = 0;}
@@ -1027,6 +1060,82 @@ inline std::vector<long > random_list(const long n, const long m, const int seed
   }
   return b;
 
+}
+
+template<typename Ty>
+inline Ty vec_norm2(Ty* s0, Ty* s1, long Ndata, QMEM GPU = QMGPU)
+{
+  TIMERB("vec_norm2 single");
+
+  VectorGPUKey gkey(0, ssprintf("vec_norm2_buf"), GPU);
+  vector_gpu<char >& Buf = get_vector_gpu_plan<char >(gkey);
+  Buf.resizeL(size_t(Ndata)* sizeof(Ty));
+  Ty* buf = (Ty*) Buf.data();
+
+  qGPU_for(isp, Ndata, GPU, {
+    buf[isp] = qlat::qconj(s0[isp]) * s1[isp];
+  });
+
+  qlat::vector_acc<Ty > rsum;rsum.resize(1);rsum[0] = 0.0;
+  reduce_vec(buf, &rsum[0], Ndata, 1, GPU);
+  sum_all_size( (Ty*) rsum.data(), 1, true );
+  return rsum[0];
+}
+
+template<typename Ty>
+inline Ty reduce_norm2(Ty* buf, long Ndata, QMEM GPU = QMGPU)
+{
+  TIMERB("vec_norm2 reduce");
+
+  qlat::vector_acc<Ty > rsum;rsum.resize(1);rsum[0] = 0.0;
+  reduce_vec(buf, &rsum[0], Ndata, 1, GPU);
+  sum_all_size( (Ty*) rsum.data(), 1, true );
+  return rsum[0];
+}
+
+
+template<typename Ty>
+std::vector<long > get_sort_index(Ty* src, long size)
+{
+  //std::vector<Ty > copy;copy.resize(size);
+  //for(long it=0;it<size;it++){copy[it] = src[it];}
+  std::vector<std::pair<Ty, long > > vec; 
+  for(long it=0;it<size;it++) 
+  {    
+    vec.push_back( std::make_pair(src[it], it) );
+  }    
+
+  std::sort(vec.begin(), vec.end(), [](std::pair<Ty, long >& a, std::pair<Ty, long >& b) { 
+    return a.first < b.first;
+  });  //check order
+
+  std::vector<long > index;index.resize(size);
+  for(long it=0;it<size;it++) 
+  {
+    index[it] = vec[it].second;
+  }
+  return index;
+}
+
+template<typename Ty>
+void sort_vectors_by_axis(std::vector<std::vector<Ty > >& src, std::vector<std::vector<Ty > >& res, int axis = 0)
+{
+  int Naxis = src.size();
+  Qassert(Naxis > axis);
+  res.resize(src.size());
+
+  const long Ndata = src[0].size();
+
+  std::vector<long > index = get_sort_index(&src[axis][0], Ndata);
+  for(int ai=0;ai<Naxis;ai++)
+  {
+    Qassert(long( src[ai].size() ) == Ndata);
+    res[ai].resize(src[ai].size());
+    for(long ni=0;ni<Ndata;ni++)
+    {
+      res[ai][ni] = src[ai][index[ni]];
+    }
+  }
 }
 
 //inline qlat::vector_acc<int > Coordinates_to_list(std::vector<Coordinate >& moms)

@@ -20,7 +20,7 @@ namespace qlat{
 
 //template<typename Ty, int civ>
 //void FieldM_to_vector_gpu(qlat::vector_gpu<Ty >& res, std::vector<qlat::FieldM<Ty , civ> >& src, int dir = 0){
-//  qassert(src.size() > 0);qassert(src[0].initialized);
+//  Qassert(src.size() > 0);Qassert(src[0].initialized);
 //  const Geometry geo = src[0].geo();
 //  const long V = geo.local_volume();
 //  const int nvec = src.size();
@@ -101,7 +101,7 @@ struct momentum_dat{
   std::string file_name;
   std::vector<std::string > fn_list;
 
-  ////PointsSelection pconf;
+  ////PointSelection pconf;
   FieldSelection fsel;
   FieldSelection fsel_1;
   ////write_float_from_double(sfw, tag, sf, sbs);
@@ -154,8 +154,8 @@ struct momentum_dat{
      if(Mvol != 0){nvec = srcF.size()/Mvol;}
     }
     if(dir == 1){
-      qassert(sf_.initialized);
-      //qassert(sf.n_elems % Mvol == 0)
+      Qassert(sf_.initialized);
+      //Qassert(sf.n_elems % Mvol == 0)
       //nvec = sf.n_elems / Mvol;
       //nvec = sf.n_elems;
       nvec = sf_.geo().multiplicity;
@@ -187,8 +187,8 @@ struct momentum_dat{
     TIMERA("Qlat write mdat");
     //const long Mvol =  mapA.size();
     //printf("long %d %ld %ld %ld \n",  qlat::get_id_node(), srcF.size() ,mapA.size(), srcF.size()%mapA.size());
-    //qassert(srcF.size() % Mvol == 0);
-    if(mapA.size() !=0 ){qassert(srcF.size() % mapA.size() == 0);}
+    //Qassert(srcF.size() % Mvol == 0);
+    if(mapA.size() !=0 ){Qassert(srcF.size() % mapA.size() == 0);}
 
     ////const ShuffledBitSet sbs = mk_shuffled_bitset(fsel, new_size_node);
 
@@ -214,17 +214,17 @@ struct momentum_dat{
   template<typename Ty > 
   void shift_t(qlat::vector_gpu<Ty >& s1, qlat::vector_gpu<Ty >& s0, const Coordinate& shift_){
     TIMERA("shift_t");
-    ////qassert(t0 < nv[3]);
+    ////Qassert(t0 < nv[3]);
 
     Coordinate shift(0, 0, 0, 0);
-    for(int i=0;i<4;i++){qassert(shift[i] < nv[i]); shift[i] = -1 * shift_[i];}
+    for(int i=0;i<4;i++){Qassert(shift[i] < nv[i]); shift[i] = -1 * shift_[i];}
     //shift[3] = (nv[3] - t0 + nv[3])%nv[3];
     //shift[3] = -t0;
     copy_momF_to_sf(sf, s0);
     qlat::field_shift(sf_1, fsel_1, sf, fsel, shift);
     copy_sf_to_momF(s1, sf_1);
 
-    //qassert(nvec_copy != 0);
+    //Qassert(nvec_copy != 0);
     //Ty* src = s1.data();
     //const long* A = mapA.data();
     //const long  Mvol = mapA.size();
@@ -324,7 +324,7 @@ struct momentum_dat{
     //});
     //sum_all_size(pconf_vec.data(), pconf_vec.size(), 0);
 
-    //PointsSelection pconf;
+    //PointSelection pconf;
     //pconf.resize(Nmpi * Mvol);
     //qthread_for(ai , Nmpi * Mvol , {
     //  int* src = &pconf_vec[ai * 4 + 0];
@@ -359,7 +359,7 @@ struct momentum_dat{
       long i0 = mapA[isp];
       //long si = fsel.f_local_idx.get_elems_const(i0)[0];
       const long si = fsel.f_local_idx.get_elem_offset(i0);
-      //qassert(si != -1);
+      //Qassert(si != -1);
       fsel_map[isp] = si;
     });
 
@@ -371,7 +371,7 @@ struct momentum_dat{
       if(tem > 8  and tem <= 16){ionum = 16;}
       if(tem > 16){ionum = 32;}
     }
-    qassert(ionum == 8 or ionum == 16 or ionum == 32);
+    Qassert(ionum == 8 or ionum == 16 or ionum == 32);
 
     if(ionum == 8){new_size_node = Coordinate(1, 2, 2, 2);}
     if(ionum ==16){new_size_node = Coordinate(1, 2, 2, 4);}
@@ -411,7 +411,7 @@ struct momentum_dat{
   {
     TIMERA("update_phases");
     const long Mvol = mapA.size();
-    qassert(sizeof(Ty)%sizeof(Complexq) == 0);
+    Qassert(sizeof(Ty)%sizeof(Complexq) == 0);
     const int fac = sizeof(Ty)/sizeof(Complexq);
     if(cur_pos == src and long(phases.size()) == Mvol * fac and cur_shift == shift){return ;}
     cur_shift = shift;
@@ -436,9 +436,9 @@ struct momentum_dat{
   {
     TIMERA("apply_src_phases");
     const long Mvol = mapA.size();
-    if(Mvol != 0){qassert(vec.size()%Mvol == 0);}
+    if(Mvol != 0){Qassert(vec.size()%Mvol == 0);}
     ////const long nvec = src.size() / Mvol;
-    qassert(nvec_copy != 0);
+    Qassert(nvec_copy != 0);
     const long nvec = nvec_copy;
 
     update_phases<Ty >(src, shift, sign);
@@ -473,8 +473,8 @@ void fft_local_to_global(qlat::vector_gpu<Ty >& FG, qlat::vector_gpu<Ty >& FL, m
   sum_value_mpi(nvec);
 
   const long Mvol = mdat.nv[3]*mc*mc*mc;
-  qassert(mdat.mapA.size() <= Mvol);
-  qassert(nvec > 0);
+  Qassert(mdat.mapA.size() <= Mvol);
+  Qassert(nvec > 0);
   FG.resize(nvec * Mvol);FG.set_zero();
 
   const long* PmapB = (long*) qlat::get_data(mdat.mapB).data();

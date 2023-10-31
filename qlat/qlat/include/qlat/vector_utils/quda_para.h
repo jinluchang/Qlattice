@@ -10,9 +10,34 @@
 
 #include <cstdlib>
 #include "utils_float_type.h"
+#include "utils_stagger_contractions.h"
 
 namespace quda
 {
+
+//quda::Complex& operator+=(const thrust::complex<double>& rhs){
+//  double a = real + rhs.real();
+//  double b = imag + rhs.imag();
+//  *this = quda::Complex(a, b);
+//  //real() += rhs.real();
+//  //imag() += rhs.imag();
+//  return *this;
+//}
+//quda::Complex& operator+=(const thrust::complex<float>& rhs){
+//  real() += rhs.real();
+//  imag() += rhs.imag();
+//  return *this;
+//}
+//inline qlat::ComplexT<double> operator+(const quda::Complex &a, const qlat::ComplexT<double> &b) {
+//    return qlat::ComplexT<double>(a.real() + b.real(), a.imag() + b.imag());
+//}
+//inline quda::Complex operator+(const quda::Complex &a, const qlat::ComplexT<double> &b) {
+//    return quda::Complex<double>(a.real() + b.real(), a.imag() + b.imag());
+//}
+//inline qlat::ComplexT<double> operator*(const quda::Complex &a, const qlat::ComplexT<double> &b) {
+//    return qlat::ComplexT<double>(a.real() + b.real(), a.imag() + b.imag());
+//}
+
 
 void massRescale(ColorSpinorField &b, QudaInvertParam &param, bool for_multishift)
 {
@@ -121,10 +146,10 @@ void begin_Qlat_with_quda(bool t = false)
   ////printf("rank %d, nodeD, %d %d %d %d \n", id_node, nodeD[0], nodeD[1], nodeD[2], nodeD[3]);
   qlat::begin(rank, nodeD);
   //printf("rank %d check %d, ", quda::comm_rank(), qlat::get_id_node());
-  /////qassert(quda::comm_rank() == qlat::get_id_node());
+  /////Qassert(quda::comm_rank() == qlat::get_id_node());
 
   for (int d = 0; d < 4; d++) {
-    qassert(quda::comm_coord(d) == qlat::get_coor_node()[d]);
+    Qassert(quda::comm_coord(d) == qlat::get_coor_node()[d]);
     //printf("%d  %d, ", quda::comm_coord(d),  qlat::get_coor_node()[d]);
   }
   //printf("\n");
@@ -192,11 +217,27 @@ inline void quda_begin(int mpi_layout[4])
       get_id_node(), get_coor_node()[0], get_coor_node()[1], get_coor_node()[2],
       get_coor_node()[3]);
   // Make sure there is no mismatch
-  qassert(comm_rank() == get_id_node());
+  Qassert(comm_rank() == get_id_node());
   for (int d = 0; d < 4; d++) {
-    qassert(comm_coord(d) == get_coor_node()[d]);
+    Qassert(comm_coord(d) == get_coor_node()[d]);
   }
   cudaDeviceSetCacheConfig(cudaFuncCachePreferNone );
+}
+
+inline void check_quda_layout_eo(const Geometry& geo)
+{
+  ////qlat::GeometryNode geon = qlat::get_geometry_node();for(int i=0;i<4;i++){mpi_layout[i] = geon.size_node[i];}
+  ////Nv.resize(4);nv.resize(4);mv.resize(4);
+  ////for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
+  ////for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
+  for(int i=0;i<4;i++)
+  {
+    if(geo.node_site[i] % 2 != 0)
+    {
+      print0("dir %5d, size %5d wrong! \n", i, geo.node_site[i]);
+      abort_r();
+    }
+  }
 }
 
 inline void quda_end()
@@ -211,7 +252,7 @@ void quda_convert_gauge(qlat::vector<qlat::ComplexT<T > >& qgf, GaugeField& gf, 
   TIMER("quda_convert_gauge(qgf,gf)");
   const Geometry& geo = gf.geo();
   ColorMatrix* quda_pt = reinterpret_cast<ColorMatrix*>(qgf.data());
-  qassert(geo.multiplicity == 4);
+  Qassert(geo.multiplicity == 4);
   long V = geo.local_volume();
   long Vh = V / 2;
   for (long qlat_idx = 0; qlat_idx < V; qlat_idx++) {
@@ -241,7 +282,7 @@ QudaPrecision get_quda_precision(int byte)
       return QUDA_HALF_PRECISION; 
       break;
     default:
-      qassert(false);
+      Qassert(false);
       return QUDA_INVALID_PRECISION;
   }
 }
@@ -255,7 +296,7 @@ QudaPrecision get_quda_precision(int byte)
 //  const WilsonVector* quda_pt =
 //      reinterpret_cast<const WilsonVector*>(qff.data());
 //  int Ls = geo.multiplicity;
-//  qassert(Ls > 0);
+//  Qassert(Ls > 0);
 //  long V = geo.local_volume();
 //  long Vh = V / 2;
 //
@@ -280,7 +321,7 @@ QudaPrecision get_quda_precision(int byte)
 //  const Geometry& geo = ff.geo();
 //  WilsonVector* quda_pt = reinterpret_cast<WilsonVector*>(qff.data());
 //  int Ls = geo.multiplicity;
-//  qassert(Ls > 0);
+//  Qassert(Ls > 0);
 //  long V = geo.local_volume();
 //  long Vh = V / 2;
 ////
@@ -542,7 +583,7 @@ template <class Td, class T1>
 void Ffield4d_to_quda_ff(T1*  quda_ff, qlat::FermionField4dT<Td>& ff, int dir = 1)
 {
   TIMER("Ffield4d_to_quda_ff(ff, quda_ff)");
-  qassert(ff.initialized);
+  Qassert(ff.initialized);
   const Geometry& geo = ff.geo();
   //const WilsonVector* quda_pt =
   //    reinterpret_cast<const WilsonVector*>(qff.data());
@@ -600,11 +641,11 @@ void quda_cf_to_qlat_cf(Ty* qlat_cf, T1* quda_cf, const Geometry& geo, int Dim)
 template <class Ty, class T1>
 void qlat_cf_to_quda_cf(T1*  quda_cf, colorFT& qlat_cf, int dir = 1)
 {
-  qassert(qlat_cf.initialized);
+  Qassert(qlat_cf.initialized);
   const Geometry& geo = qlat_cf.geo();
   long V = geo.local_volume();
   //long Vh = V / 2;
-  qassert(geo.multiplicity == 3);
+  Qassert(geo.multiplicity == 3);
   const long Dim = geo.multiplicity;
 
   Ty* src = (Ty*) qlat::get_data(qlat_cf).data();
@@ -620,16 +661,16 @@ void quda_cf_to_qlat_cf(colorFT& qlat_cf, T1* quda_cf)
 template <class Ty>
 void copy_color_prop(qlat::vector_gpu<Ty >& res, std::vector<colorFT >& src, int dir = 1)
 {
-  qassert(src.size() == 3);
+  Qassert(src.size() == 3);
   qlat::vector_acc<Ty* > srcP;srcP.resize(3);
   for(int ic=0;ic<3;ic++){
-    qassert(src[ic].initialized);
+    Qassert(src[ic].initialized);
     srcP[ic] = (Ty*) qlat::get_data(src[ic]).data();
   }
 
   const qlat::Geometry& geo = src[0].geo();
   const long V = geo.local_volume();
-  qassert(res.size() == V*9);
+  Qassert(res.size() == V*9);
   Ty* resP = res.data();
 
   if(dir == 1){
@@ -658,55 +699,55 @@ void copy_to_color_prop(std::vector<colorFT >& res, qlat::vector_gpu<Ty >& src)
 }
 
 
-inline void get_index_mappings(qlat::vector_acc<long >& map, const Geometry& geo)
-{
-  const long V = geo.local_volume();
-  const long Vh = V / 2;
+//inline void get_index_mappings(qlat::vector_acc<long >& map, const Geometry& geo)
+//{
+//  const long V = geo.local_volume();
+//  const long Vh = V / 2;
+//
+//  if(map.size() == V){return ;}
+//  else{map.resize(V);}
+//  qacc_for(qlat_idx_4d, V , {
+//    const Coordinate xl = geo.coordinate_from_index(qlat_idx_4d);
+//    const int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
+//    const long quda_idx = eo * Vh + qlat_idx_4d / 2;
+//    map[qlat_idx_4d] = quda_idx;
+//  });
+//}
 
-  if(map.size() == V){return ;}
-  else{map.resize(V);}
-  qacc_for(qlat_idx_4d, V , {
-    const Coordinate xl = geo.coordinate_from_index(qlat_idx_4d);
-    const int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
-    const long quda_idx = eo * Vh + qlat_idx_4d / 2;
-    map[qlat_idx_4d] = quda_idx;
-  });
-}
+///////GPU order with color to be outside even odd
+//template <class T1, class Ty, int dir>
+//void qlat_cf_to_quda_cfT(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector_acc<long >& map_)
+//{
+//  TIMER("qlat_cf_to_quda_cf");
+//  const long V = geo.local_volume();
+//  long Vh = V / 2;
+//  if(map_.size() != V){get_index_mappings(map_, geo);}
+//  qlat::vector_acc<long >& map = map_;
+//  qacc_for(qlat_idx_4d, V, {
+//    const long quda_idx = map[qlat_idx_4d];
+//    const long eo = quda_idx / Vh;
+//    const long qi = quda_idx % Vh;
+//    for(int dc = 0; dc < Dim; dc++)
+//    {
+//      //if(dir == 1){quda_cf[ quda_idx*Dim + dc] = src[qlat_idx_4d*Dim + dc];}
+//      //if(dir == 0){src[qlat_idx_4d*Dim + dc] = quda_cf[quda_idx*Dim + dc];}
+//      if(dir == 1){quda_cf[(eo*Dim + dc)*Vh + qi] = src[qlat_idx_4d*Dim + dc];}
+//      if(dir == 0){src[qlat_idx_4d*Dim + dc] = quda_cf[(eo*Dim + dc)*Vh + qi];}
+//    }
+//  });
+//}
 
-/////GPU order with color to be outside even odd
-template <class T1, class Ty, int dir>
-void qlat_cf_to_quda_cfT(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector_acc<long >& map_)
-{
-  TIMER("qlat_cf_to_quda_cf");
-  const long V = geo.local_volume();
-  long Vh = V / 2;
-  if(map_.size() != V){get_index_mappings(map_, geo);}
-  qlat::vector_acc<long >& map = map_;
-  qacc_for(qlat_idx_4d, V, {
-    const long quda_idx = map[qlat_idx_4d];
-    const long eo = quda_idx / Vh;
-    const long qi = quda_idx % Vh;
-    for(int dc = 0; dc < Dim; dc++)
-    {
-      //if(dir == 1){quda_cf[ quda_idx*Dim + dc] = src[qlat_idx_4d*Dim + dc];}
-      //if(dir == 0){src[qlat_idx_4d*Dim + dc] = quda_cf[quda_idx*Dim + dc];}
-      if(dir == 1){quda_cf[(eo*Dim + dc)*Vh + qi] = src[qlat_idx_4d*Dim + dc];}
-      if(dir == 0){src[qlat_idx_4d*Dim + dc] = quda_cf[(eo*Dim + dc)*Vh + qi];}
-    }
-  });
-}
-
-template <class T1, class Ty>
-void qlat_cf_to_quda_cf(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector_acc<long >& map)
-{
-  qlat_cf_to_quda_cfT<T1, Ty, 1>(quda_cf, src, Dim, geo, map);
-}
-
-template <class T1, class Ty>
-void quda_cf_to_qlat_cf(Ty* res, T1*  quda_cf, const int Dim, const Geometry& geo, qlat::vector_acc<long >& map)
-{
-  qlat_cf_to_quda_cfT<T1, Ty, 0>(quda_cf, res, Dim, geo, map);
-}
+//template <class T1, class Ty>
+//void qlat_cf_to_quda_cf(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector_acc<long >& map)
+//{
+//  qlat_cf_to_quda_cfT<T1, Ty, 1>(quda_cf, src, Dim, geo, map);
+//}
+//
+//template <class T1, class Ty>
+//void quda_cf_to_qlat_cf(Ty* res, T1*  quda_cf, const int Dim, const Geometry& geo, qlat::vector_acc<long >& map)
+//{
+//  qlat_cf_to_quda_cfT<T1, Ty, 0>(quda_cf, res, Dim, geo, map);
+//}
 
 template <class Ty, int dir>
 void qlat_cf_to_quda_cfT(quda::ColorSpinorField& x, Ty* src, const Geometry& geo, qlat::vector_acc<long >& map)
@@ -716,25 +757,50 @@ void qlat_cf_to_quda_cfT(quda::ColorSpinorField& x, Ty* src, const Geometry& geo
   const long V = geo.local_volume();
   const int Ndata = x.Nspin() * x.Ncolor();//Ncolor()
   const size_t Vl = size_t(V) * Ndata;
-  const size_t Vb = Vl * sizeof(float) * 2;
-  qassert( x.TotalBytes() % Vb == 0);
+  //const size_t Vb = Vl * 2;
+  quda::ColorSpinorParam param(x);
+  //Qassert( x.TotalBytes() % Vb == 0);
+  QudaPrecision Dtype = param.Precision();
+  Qassert(Dtype == QUDA_DOUBLE_PRECISION or Dtype == QUDA_SINGLE_PRECISION or Dtype == QUDA_HALF_PRECISION);
+
+  quda::ColorSpinorField *g = NULL;
+  if(Dtype == QUDA_HALF_PRECISION){
+    //quda::ColorSpinorParam param(x);
+    param.setPrecision(QUDA_SINGLE_PRECISION, QUDA_SINGLE_PRECISION, true);
+    param.is_composite  = false;
+    param.is_component  = false;
+    param.composite_dim = 1;
+    g = quda::ColorSpinorField::Create(param);
+  }
   if(x.IsComposite()){
-    const int dim = (x.CompositeDim());
-    qassert( x.TotalBytes() / Vb == dim or x.TotalBytes() / Vb == dim*2);
-    for(int di=0;di<dim;di++)
+    for(int di=0;di<x.CompositeDim();di++)
     {
-      if(x.TotalBytes() / Vb == dim*2)
+      if(Dtype == QUDA_DOUBLE_PRECISION)
       qlat_cf_to_quda_cfT<qlat::ComplexT<double>, Ty, dir>((qlat::ComplexT<double>* ) x.Component(di).V(), &src[di*Vl], Ndata, geo, map);
-      if(x.TotalBytes() / Vb == dim  )
+      if(Dtype == QUDA_SINGLE_PRECISION)
       qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) x.Component(di).V(), &src[di*Vl], Ndata, geo, map);
+      if(Dtype == QUDA_HALF_PRECISION)
+      {
+      if(dir == 0)*g = x.Component(di);
+      qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) g->V(), &src[di*Vl], Ndata, geo, map);
+      if(dir == 1)x.Component(di) = *g;
+      }
     }
   }else{
-    qassert( x.TotalBytes() / Vb == 1 or x.TotalBytes() / Vb == 2);
-    if(x.TotalBytes() / Vb == 2)
+    if(Dtype == QUDA_DOUBLE_PRECISION)
     qlat_cf_to_quda_cfT<qlat::ComplexT<double>, Ty, dir>((qlat::ComplexT<double>* ) x.V(), src, Ndata, geo, map);
-    if(x.TotalBytes() / Vb == 1  )
+    if(Dtype == QUDA_SINGLE_PRECISION)
     qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) x.V(), src, Ndata, geo, map);
+    if(Dtype == QUDA_HALF_PRECISION)
+    {
+    if(dir == 0)*g = x;
+    qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) g->V(), src, Ndata, geo, map);
+    if(dir == 1)x = *g;
+    }
+
   }
+
+  if(g != NULL){delete g;}
 }
 
 template <class Ty>

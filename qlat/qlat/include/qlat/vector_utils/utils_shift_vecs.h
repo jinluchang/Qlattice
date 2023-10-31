@@ -104,6 +104,9 @@ struct shift_vec{
   template<typename Ty>
   void shift_vecP(Ty* src,Ty* res,std::vector<int >& iDir ,int civ_or);
 
+  template<typename Ty>
+  void shift_vecs_dir(Ty* src, Ty* res, int civ_, int mu, int sign);
+
   template<typename Ty, int civ_>
   void shift_vecs_dir(qlat::FieldM<Ty , civ_>& src, qlat::FieldM<Ty , civ_>& res, int mu, int sign);
 
@@ -115,13 +118,31 @@ struct shift_vec{
   {gauge = gauge_;gbfac = gbfac_;gd0 = gd0_;Conj = Conj_;src_gauge = src_gauge_;}
 
   void set_bfacs(int gbfac_, int gd0_, bool Conj_=false, bool src_gauge_ = false)
-  {qassert(gauge!=NULL);gbfac = gbfac_;gd0 = gd0_;Conj = Conj_;src_gauge = src_gauge_;}
+  {Qassert(gauge!=NULL);gbfac = gbfac_;gd0 = gd0_;Conj = Conj_;src_gauge = src_gauge_;}
 
   template<typename Ty, bool Conj_>
   void mult_gauge(void* pt, int dir_or);
 
-  void clear_mem_dir(int dir);
-  ////void clear_mem();
+  inline void clear_mem_dir(int dir){
+    sendbufP[dir].resize(0);
+    recvbufP[dir].resize(0);
+  }
+
+  inline void clear_mem()
+  {
+    dir_cur = 0;biva = -1;civ = -1;
+    for(int i=0;i<8;i++){MPI_size[i] = 0;}
+    zeroP.resize(0);
+    bufsP.resize(0);
+    bufrP.resize(0);
+    for(int dir=0;dir<8;dir++)
+    {
+      clear_mem_dir(dir);
+      MPI_size[dir] = 0;
+      sendbufP[dir].resize(0);
+      recvbufP[dir].resize(0);
+    }
+  }
 
 };
 
@@ -305,7 +326,7 @@ void shift_vec::set_MPI_size(int biva_or, int civ_or, int dir_or )
     bsize = sizeof(Ty);
     MPI_off = sizeof(Ty);////MPI_Datatype curr = MPI_BYTE;
     unsigned int M_size = get_MPI_type<Ty >(MPI_curr );
-    qassert(MPI_off%M_size == 0);MPI_off = MPI_off/M_size;qassert(MPI_off != 0);
+    Qassert(MPI_off%M_size == 0);MPI_off = MPI_off/M_size;Qassert(MPI_off != 0);
   }
 
   ////===assign biva and civ
@@ -360,7 +381,7 @@ void shift_vec::write_send_recv(Ty* src, Ty* res)
   LInt* s0 = (LInt*) qlat::get_data(sendoffa[dir_cur]).data();
   LInt* s1 = (LInt*) qlat::get_data(sendoffx[dir_cur]).data();
   cpy_data_from_index( &s_tem[bi*writeN*civ], &src[bi*Length*civ], 
-       s1, s0, sendoffa[dir_cur].size(), civ, GPU, false);
+       s1, s0, sendoffa[dir_cur].size(), civ, GPU, QFALSE);
   }
   qacc_barrier(dummy);
 
@@ -373,7 +394,7 @@ void shift_vec::write_send_recv(Ty* src, Ty* res)
   LInt* s1 = (LInt*) qlat::get_data(sendoffb[dir_cur]).data();
   LInt* s0 = (LInt*) qlat::get_data(sendoffx[dir_cur]).data();
   cpy_data_from_index( &res[bi*Length*civ], &r_tem[bi*writeN*civ], 
-        s1, s0, sendoffb[dir_cur].size(), civ, GPU, false);
+        s1, s0, sendoffb[dir_cur].size(), civ, GPU, QFALSE);
   }
   qacc_barrier(dummy);
 
@@ -385,7 +406,7 @@ void shift_vec::write_send_recv(Ty* src, Ty* res)
   LInt* s1 = (LInt*) qlat::get_data(buffoffb[dir_cur]).data();
   LInt* s0 = (LInt*) qlat::get_data(buffoffa[dir_cur]).data();
   cpy_data_from_index( &res[bi*Length*civ], &src[bi*Length*civ], 
-       s1, s0, buffoffa[dir_cur].size(), civ, GPU, false);
+       s1, s0, buffoffa[dir_cur].size(), civ, GPU, QFALSE);
   }
   qacc_barrier(dummy);
   }
@@ -435,7 +456,7 @@ void multiply_gauge(void *src, void* gauge, const int dir_gauge,const int biva,c
 {
   (void)GPU;
   const int dir_limit = 4;
-  if(cs != -1){qassert(gd0 == gs);}
+  if(cs != -1){Qassert(gd0 == gs);}
   ////convention not the same as Qlattice
   ////current x, y, z,t ,-x,-y,-z,-t; 
   //////Qlat -t,-z,-y,-x, x, y, z, t
@@ -451,7 +472,7 @@ void multiply_gauge(void *src, void* gauge, const int dir_gauge,const int biva,c
   #else
   if(cs != -1){        fast_eigen = 1;}
   #endif
-  qassert( fast_eigen == 0 or fast_eigen == 1 or fast_eigen == 2);
+  Qassert( fast_eigen == 0 or fast_eigen == 1 or fast_eigen == 2);
   ////fast_eigen = 0;
 
   ////std::vector<int > map_dir = {4,5,6,7,  3,2,1,0};
@@ -462,7 +483,7 @@ void multiply_gauge(void *src, void* gauge, const int dir_gauge,const int biva,c
   ////gpu fast mode
   #ifdef QLAT_USE_ACC
   if(fast_eigen == 2){
-    qassert(gs < 512);
+    Qassert(gs < 512);
     dim3 dimGrid( Length, 1, 1);
     dim3 dimBlock( gs, 3, 1);
     if(!Conj)multiply_gauge_global<Cy, gs, false><<< dimGrid, dimBlock >>>((Cy*) gauge, (Cy*) src, dir_gauge, biva, gbfac);
@@ -499,7 +520,7 @@ void multiply_gauge(void *src, void* gauge, const int dir_gauge,const int biva,c
 
   //////gpu and cpu sloow mode
   if(fast_eigen == 0){
-  qassert(gd0 <= 128);
+  Qassert(gd0 <= 128);
   qacc_for(index,  long(Length), {
     ALIGN(QLAT_ALIGNED_BYTES) Cy buf[9];
     ALIGN(QLAT_ALIGNED_BYTES) Cy res[128*3];
@@ -527,8 +548,8 @@ template<typename Ty, bool Conj_>
 void shift_vec::mult_gauge(void* pt, int dir_gauge){
   TIMERB("Gauge multiplication");
   bool id = get_data_type_is_double<Ty >();
-  if( id){qassert(long(civ*sizeof(Ty)/16) == gbfac * 3 * gd0);}
-  if(!id){qassert(long(civ*sizeof(Ty)/8 ) == gbfac * 3 * gd0);}
+  if( id){Qassert(long(civ*sizeof(Ty)/16) == gbfac * 3 * gd0);}
+  if(!id){Qassert(long(civ*sizeof(Ty)/8 ) == gbfac * 3 * gd0);}
   bool cfind = false;
   #define shift_macros(bf) if(bf == gd0){cfind = true; \
     if( id)multiply_gauge<qlat::Complex , bf, 1, Conj_>(pt, gauge, dir_gauge, biva,Length,gbfac,gd0,GPU); \
@@ -549,7 +570,7 @@ void shift_vec::mult_gauge(void* pt, int dir_gauge){
     if( id)multiply_gauge<qlat::Complex , 1, -1, Conj_>(pt, gauge, dir_gauge, biva,Length,gbfac,gd0,GPU);
     if(!id)multiply_gauge<qlat::ComplexF, 1, -1, Conj_>(pt, gauge, dir_gauge, biva,Length,gbfac,gd0,GPU);}
   #undef shift_macros
-  qassert(cfind);
+  Qassert(cfind);
 }
 
 template<typename Ty>
@@ -671,8 +692,8 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
     {
       ///in case of a simple memory shift
       if(src[vi] != res[vi]){
-        cpy_data_thread((Ty*) tem.data(), &src[vi][0], Nsize, GPU, true);
-        cpy_data_thread(&res[vi][0], (Ty*) tem.data(), Nsize, GPU, true);
+        cpy_data_thread((Ty*) tem.data(), &src[vi][0], Nsize, GPU, QTRUE);
+        cpy_data_thread(&res[vi][0], (Ty*) tem.data(), Nsize, GPU, QTRUE);
       }
     }
     return ;
@@ -684,7 +705,9 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
   //print0("Flag %d, civ %d %d , biva %d \n",int(flag_shift_set),civ_or,civ, biva);
   //if(flag_shift_set == false){if(civ_or==1)set_MPI_size<Ty >(1,12);if(civ_or != 1)set_MPI_size<Ty >(1, civ_or);}
   if(civ == -1 or biva == -1){if(civ_or==1){set_MPI_size<Ty >(1,12);}if(civ_or != 1){set_MPI_size<Ty >(1, civ_or);}}
-  if(civ_or != 1){if(civ_or != civ ){abort_r("Configuration not equal \n");}}
+  if(civ_or != 1){if(civ_or != civ ){
+    print0("civor %3d, civ %3d \n", civ_or, civ);abort_r("Configuration not equal \n");
+  }}
 
   std::vector<Ty *> ptem0;ptem0.resize(civ );
 
@@ -716,7 +739,7 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
         for(int ci=0;ci<civ ;ci++)
         {
           ////memcpy(&vec_s[(li*civ +ci)*Ng+0],&ptem0[ci][0],sizeof(Ty)*Ng);
-          cpy_data_thread(&vec_s[(li*civ +ci)*Ng+0],&ptem0[ci][0], Ng, GPU, false);
+          cpy_data_thread(&vec_s[(li*civ +ci)*Ng+0],&ptem0[ci][0], Ng, GPU, QFALSE);
         }
       }
       }
@@ -725,7 +748,7 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
       {
       if(count < size_vec){
       ////memcpy(&vec_s[li*Ng*civ_or+0],&src[count/civ_or][0],sizeof(Ty)*Ng*civ_or);
-      cpy_data_thread(&vec_s[li*Ng*civ_or+0],&src[count/civ_or][0], Ng*civ_or, GPU, false);
+      cpy_data_thread(&vec_s[li*Ng*civ_or+0],&src[count/civ_or][0], Ng*civ_or, GPU, QFALSE);
       count = count + civ_or;
       }
       if(count == size_vec)flagend = 1;
@@ -743,7 +766,7 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
     {
       call_MPI((Ty*) &vec_s[0], (Ty*) &vec_r[0],dir_curl[di]);
       ///memcpy(&vec_s[0],&vec_r[0],sizeof(Ty)*(biva*Ng*civ));
-      cpy_data_thread(&vec_s[0],&vec_r[0], (biva*Ng*civ), GPU, true);
+      cpy_data_thread(&vec_s[0],&vec_r[0], (biva*Ng*civ), GPU, QFALSE);
     }
     }
     /////Shift direction kernal
@@ -770,7 +793,7 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
         for(int ci=0;ci<civ ;ci++)
         {
           //memcpy(&ptem0[ci][0],&vec_s[(li*civ +ci)*Ng+0],sizeof(Ty)*Ng);
-          cpy_data_thread(&ptem0[ci][0],&vec_s[(li*civ +ci)*Ng+0], Ng, GPU, false);
+          cpy_data_thread(&ptem0[ci][0],&vec_s[(li*civ +ci)*Ng+0], Ng, GPU, QFALSE);
         }
       }
       //write_in_MPIsend(ptem0,li,1);
@@ -779,7 +802,7 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
       {
       if(start < size_vec){
         //memcpy(&res[start/civ_or][0],&vec_s[li*Ng*civ_or+0],sizeof(Ty)*Ng*civ_or);
-        cpy_data_thread(&res[start/civ_or][0],&vec_s[li*Ng*civ_or+0], Ng*civ_or, GPU, false);
+        cpy_data_thread(&res[start/civ_or][0],&vec_s[li*Ng*civ_or+0], Ng*civ_or, GPU, QFALSE);
         start = start + civ_or;
       }
       qacc_barrier(dummy);
@@ -829,9 +852,17 @@ void shift_vec::shift_Evec(std::vector<qlat::vector_acc<Ty > > &srcE,std::vector
 
 }
 
+template<typename Ty>
+void shift_vec::shift_vecs_dir(Ty* src, Ty* res, int civ_, int mu, int sign)
+{
+  std::vector<int > iDir(4);for(int i=0;i<4;i++){iDir[i] = 0;}
+  iDir[mu] = sign;
+  shift_vecP(src, res, iDir , civ_);
+}
+
 template<typename Ty, const int civ_ >
 void shift_vec::shift_vecs_dir(qlat::FieldM<Ty, civ_ >& src, qlat::FieldM<Ty, civ_ >& res, const int mu, const int sign){
-  qassert(src.initialized and res.initialized );
+  Qassert(src.initialized and res.initialized );
   Ty* ps0 = (Ty*) qlat::get_data(src).data();
   Ty* ps1 = (Ty*) qlat::get_data(res).data();
   std::vector<int > iDir(4);for(int i=0;i<4;i++){iDir[i] = 0;}
@@ -842,23 +873,18 @@ void shift_vec::shift_vecs_dir(qlat::FieldM<Ty, civ_ >& src, qlat::FieldM<Ty, ci
 template<typename Ty, int civ_>
 void shift_vec::shift_vecs_dir(std::vector<qlat::FieldM<Ty , civ_> >& src, std::vector<qlat::FieldM<Ty , civ_> >& res, int mu, int sign)
 {
-  qassert(src.size() == res.size());
+  Qassert(src.size() == res.size());
   int Nsrc = src.size();if(Nsrc == 0){return ;}
   std::vector<Ty* > Psrc; std::vector<Ty* > Pres; 
   Psrc.resize(Nsrc);Pres.resize(Nsrc);
   for(int si = 0; si < Nsrc; si++)
   {
-    qassert(src[si].initialized and res[si].initialized);
+    Qassert(src[si].initialized and res[si].initialized);
     Psrc[si] = (Ty*) qlat::get_data(src[si]).data();
     Pres[si] = (Ty*) qlat::get_data(res[si]).data();
   }
   std::vector<int > iDir(4);for(int i=0;i<4;i++){iDir[i] = 0;}iDir[mu] = sign;
   shift_vecs(Psrc, Pres, iDir, civ_);
-}
-
-void shift_vec::clear_mem_dir(int dir){
-  sendbufP[dir].resize(0);
-  recvbufP[dir].resize(0);
 }
 
 shift_vec::~shift_vec(){
@@ -926,10 +952,79 @@ void shift_fieldM(shift_vec& svec, std::vector<Propagator4dT<Td > > & src, std::
 {
   std::vector<Propagator4dT<Td >* >srcP(0);srcP.resize(src.size());
   std::vector<Propagator4dT<Td >* >resP(0);resP.resize(res.size());
-  for(int i=0;i<src.size();i++){srcP[i] = &src[i];}
-  for(int i=0;i<res.size();i++){resP[i] = &res[i];}
+  for(unsigned int i=0;i<src.size();i++){srcP[i] = &src[i];}
+  for(unsigned int i=0;i<res.size();i++){resP[i] = &res[i];}
   shift_fieldM(svec, srcP, resP, iDir);
 }
+
+template <class Td>
+void symmetric_shift(shift_vec& svec, std::vector<Propagator4dT<Td > >& src, std::vector< Propagator4dT<Td > >& res, std::vector< Propagator4dT<Td > >& buf, int idir)
+{
+  if(src.size() == 0){res.resize(0);return ;}
+  std::vector<int > iDir(4);for(int i=0;i<4;i++){iDir[i] = 0;}
+
+  const qlat::Geometry &geo = src[0].geo();
+  const long Nvol = geo.local_volume();
+
+  if(res.size() != src.size()){res.resize(src.size());}
+  if(buf.size() != src.size()){buf.resize(src.size());}
+  qlat::vector_acc<qlat::ComplexT<Td>* > srcP;srcP.resize(src.size());
+  qlat::vector_acc<qlat::ComplexT<Td>* > resP;resP.resize(src.size());
+  qlat::vector_acc<qlat::ComplexT<Td>* > bufP;bufP.resize(src.size());
+  for(unsigned int i=0;i<res.size();i++){
+    if(!res[i].initialized){res[i].init(src[0].geo());}
+    if(!buf[i].initialized){buf[i].init(src[0].geo());}
+    srcP[i] = (qlat::ComplexT<Td>*) qlat::get_data(src[i]).data();
+    resP[i] = (qlat::ComplexT<Td>*) qlat::get_data(res[i]).data();
+    bufP[i] = (qlat::ComplexT<Td>*) qlat::get_data(buf[i]).data();
+  }
+
+  //for(unsigned int i=0;i<res.size();i++){
+  //  qacc_for(isp, Nvol*12*12, {resP[i][isp]  = srcP[i][isp];});
+  //}
+
+  iDir[idir] = +1;
+  shift_fieldM(svec, src, buf, iDir);
+  for(unsigned int i=0;i<res.size();i++){
+    qacc_for(isp, Nvol*12*12, {resP[i][isp]  = 0.5 * bufP[i][isp];});
+  }
+
+  iDir[idir] = -1;
+  shift_fieldM(svec, src, buf, iDir);
+
+  for(unsigned int i=0;i<res.size();i++){
+    qacc_for(isp, Nvol*12*12, {resP[i][isp] -= 0.5 * bufP[i][isp];});
+  }
+
+}
+
+
+///////src should be different than res
+//template<typename Ty>
+//void shift_vecs_dir_qpropT(std::vector<qpropT >& src, std::vector<qpropT >& res, int mu, int sign, shift_vec& svec)
+//{
+//  if(src.size() == 0){res.resize(0); return; }
+//
+//  Qassert(src.size() == res.size());
+//  for(unsigned int i=0;i<src.size();i++)
+//  {
+//    qprop_move_dc_in(src[i]);
+//  }
+//
+//  for(unsigned int iv=0;iv<src.size();iv++)
+//  {
+//    if(!res[iv].initialized){res[iv].init(src[0].geo());}
+//  }
+//
+//  svec.shift_vecs_dir(src, res, mu, sign);
+//
+//  for(unsigned int i=0;i<src.size();i++)
+//  {
+//    qprop_move_dc_out(res[i]);
+//    qprop_move_dc_out(src[i]);
+//  }
+//}
+
 
 }
 

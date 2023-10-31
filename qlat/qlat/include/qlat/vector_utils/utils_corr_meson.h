@@ -22,7 +22,7 @@ template <typename Td>
 void meson_vectorE(std::vector<Propagator4dT<Td > > &pV1, std::vector<Propagator4dT<Td > > &pV2, ga_M &ga1,ga_M &ga2,
         qlat::vector_acc<qlat::ComplexT<Td > > &res, qlat::fft_desc_basic &fd,int clear=1){
   TIMER("Meson_vectorE");
-  qassert(fd.order_ch == 0);
+  Qassert(fd.order_ch == 0);
   ///////check_prop_size(prop1);check_prop_size(prop2);
   int  NTt  = fd.Nv[3];
   LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
@@ -31,8 +31,8 @@ void meson_vectorE(std::vector<Propagator4dT<Td > > &pV1, std::vector<Propagator
 
   if(clear == 1){ini_resE(res,nmass,fd);}
 
-  if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");qassert(false);}
-  qassert(pV1.size() == pV2.size());
+  if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");Qassert(false);}
+  Qassert(pV1.size() == pV2.size());
 
   for(int mi=0;mi<nmass;mi++)
   {
@@ -75,9 +75,9 @@ void meson_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, ga_
   int  nmass = prop1.size();  ////(12*12*NTt)
   if(nmass == 0){res.resize(0);return;}
   if(clear == 1){ini_resE(res, nmass, fd);}
-  if(res.size()%NTt != 0 or res.size() == 0){print0("Size of res wrong. \n");qassert(false);}
+  if(res.size()%NTt != 0 or res.size() == 0){print0("Size of res wrong. \n");Qassert(false);}
 
-  qassert(prop1.size() == prop2.size());
+  Qassert(prop1.size() == prop2.size());
   qlat::vector_acc<Ty* > p1 = EigenM_to_pointers(prop1);
   qlat::vector_acc<Ty* > p2 = EigenM_to_pointers(prop2);
 
@@ -130,9 +130,9 @@ void meson_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, ga_
 //  int  nmass = prop1.size();  ////(12*12*NTt)
 //  if(nmass == 0){res.resize(0);return;}
 //  if(clear == 1){ini_resE(res, nmass*16, fd);}
-//  if(res.size()%NTt != 0 or res.size() == 0){print0("Size of res wrong. \n");qassert(false);}
+//  if(res.size()%NTt != 0 or res.size() == 0){print0("Size of res wrong. \n");Qassert(false);}
 //
-//  qassert(prop1.size() == prop2.size());
+//  Qassert(prop1.size() == prop2.size());
 //  qlat::vector_acc<Ty* > p1 = EigenM_to_pointers(prop1);
 //  qlat::vector_acc<Ty* > p2 = EigenM_to_pointers(prop2);
 //
@@ -185,8 +185,8 @@ void meson_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, ga_
 //
 //  if(clear == 1){ini_resE(res,nmass,fd);}
 //
-//  if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");qassert(false);}
-//  qassert(prop1.size() == prop2.size());
+//  if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");Qassert(false);}
+//  Qassert(prop1.size() == prop2.size());
 //
 //  for(int d2=0;d2<4;d2++)
 //  for(int c2=0;c2<3;c2++)
@@ -416,7 +416,7 @@ void meson_vectorEV(Ty** p1, Ty** p2, Ty* resP,  int nmass,
   ///////check_prop_size(prop1);check_prop_size(prop2);
   int  NTt  = fd.Nv[3];
   long Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
-  qassert(ga1V.size() == ga2V.size());
+  Qassert(ga1V.size() == ga2V.size());
   int Ngv = ga1V.size();
   if(clear == 1){zero_Ty(resP, Ngv*nmass*NTt*Nxyz , 1);}
 
@@ -558,8 +558,8 @@ void meson_vectorEV(Ty** p1, Ty** p2, Ty* resP,  int nmass,
 //  long resL = Ngv * nmass * fd.Nv[0]*fd.Nv[1]*fd.Nv[2] * fd.Nv[3];
 //  if(clear == 1){if(res.size()!= resL){res.resize(resL);}}
 //
-//  if(res.size() != resL){print0("Size of res wrong. \n");qassert(false);}
-//  qassert(prop1.size() == prop2.size());
+//  if(res.size() != resL){print0("Size of res wrong. \n");Qassert(false);}
+//  Qassert(prop1.size() == prop2.size());
 //
 //  qlat::vector_acc<Ta* > prop1P = EigenM_to_pointers(prop1);
 //  qlat::vector_acc<Ta* > prop2P = EigenM_to_pointers(prop2);
@@ -583,12 +583,12 @@ void meson_vectorEV(EigenTy& prop1, EigenTy& prop2, qlat::vector_gpu<Ty > &res
   const long Nxyz= fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   if(clear == 1){if(res.size()!= resL){res.resize(resL);}}
 
-  if(res.size() != resL){print0("Size of res wrong. \n");qassert(false);}
-  qassert(prop1.size() == prop2.size());
+  if(res.size() != resL){print0("Size of res wrong. \n");Qassert(false);}
+  Qassert(prop1.size() == prop2.size());
   for(int mi=0;mi<nmass;mi++)
   {
-    qassert(prop1[mi].size() == 12 * 12 * fd.Nvol);
-    qassert(prop2[mi].size() == 12 * 12 * fd.Nvol);
+    Qassert(prop1[mi].size() == 12 * 12 * fd.Nvol);
+    Qassert(prop2[mi].size() == 12 * 12 * fd.Nvol);
   }
 
   qlat::vector_acc<Ty* > prop1P = EigenM_to_pointers(prop1, Nxyz);
