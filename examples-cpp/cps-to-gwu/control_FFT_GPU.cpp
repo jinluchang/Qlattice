@@ -93,6 +93,9 @@ int main(int argc, char* argv[])
   fft_desc_basic fd(geo);
   std::vector<int > dimN;
 
+  const long Nvol = geo.local_volume();
+  qlat::vector_gpu<TyF > check_sum;check_sum.resize(Nvec * Nvol);
+
   std::vector<qlat::FieldM<TyF, Nvec> > src;src.resize(in.nvec);
   for(int iv=0;iv<in.nvec;iv++)src[iv].init(geo);
   TyF* P0 = (TyF*) (qlat::get_data(src[0]).data());
@@ -107,6 +110,9 @@ int main(int argc, char* argv[])
       P0[isp*Nvec + di ] = TyF(std::cos((ini+isp+di)*0.5) , (5.0/(isp+1))*(ini+di)*0.1);
     }
   });}
+
+  check_sum.copy_from(P0, check_sum.size());
+  check_sum.print_norm2("%.15e");
 
   fft_schedule fft3D(fd, GPU);
   dimN.resize(3);dimN[0] = nv[2];dimN[1] = nv[1];dimN[2] = nv[0];
@@ -183,6 +189,13 @@ int main(int argc, char* argv[])
     TyD tem = Pa[isp*Nvec + di];
     fftdiff += qnorm(TyF(tem.real(),tem.imag()) - P0[isp*Nvec + di]);
   }
+
+  check_sum.copy_from(P0, check_sum.size());
+  check_sum.print_norm2("%.15e");
+
+  check_sum.copy_from(Pa, check_sum.size());
+  check_sum.print_norm2("%.15e");
+
   sum_all_size(&fftdiff , 1);
   print0("===fft total diff %.3e \n", fftdiff);
 

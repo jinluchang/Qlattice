@@ -810,6 +810,9 @@ struct fft_gpu_copy{
 
 inline bool operator<(const FFTGPUPlanKey& x, const FFTGPUPlanKey& y)
 {
+  if(x.geo.total_site < y.geo.total_site ){return true ;}
+  if(y.geo.total_site < x.geo.total_site ){return false;}
+
   if(x.GPU   < y.GPU  ){return true;}
   if(y.GPU   < x.GPU  ){return false;}
 
