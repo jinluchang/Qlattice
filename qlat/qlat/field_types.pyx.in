@@ -179,7 +179,7 @@ cdef class Field{{name}}(FieldBase):
         np.asarray(sp).ravel()[:] = np.asarray(val).ravel()
         cc.set_field_selected(self.xx, sp.xx, geo.xx, psel.xx, m)
 
-    def field_shift(self, Coordinate shift not None):
+    def shift(self, Coordinate shift not None):
         """
         return new shifted Field
         shift is the coordinate to shift the field
