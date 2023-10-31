@@ -196,13 +196,13 @@ def set_g_rand_color_matrix_field(fc, rng, sigma, n_steps=1):
     assert isinstance(rng, RngState)
     return c.set_g_rand_color_matrix_field(fc, rng, sigma, n_steps)
 
-def gf_twist_boundary_at_boundary(gf : GaugeField, lmom: float=-0.5, mu: int=3):
+def gf_twist_boundary_at_boundary(GaugeField gf, double lmom=-0.5, int mu=3):
     """
     modify gf in place
     """
     c.gf_twist_boundary_at_boundary(gf, lmom, mu)
 
-def mk_left_expanded_gauge_field(gf):
-    gf1 = field_expanded(gf, 1, 0)
+def mk_left_expanded_gauge_field(GaugeField gf):
+    cdef GaugeField gf1 = field_expanded(gf, 1, 0)
     refresh_expanded_1(gf1)
     return gf1
