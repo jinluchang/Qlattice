@@ -810,8 +810,8 @@ struct fft_gpu_copy{
 
 inline bool operator<(const FFTGPUPlanKey& x, const FFTGPUPlanKey& y)
 {
-  if(x.geo.total_site < y.geo.total_site ){return true ;}
-  if(y.geo.total_site < x.geo.total_site ){return false;}
+  if(x.geo.total_site() < y.geo.total_site() ){return true ;}
+  if(y.geo.total_site() < x.geo.total_site() ){return false;}
 
   if(x.GPU   < y.GPU  ){return true;}
   if(y.GPU   < x.GPU  ){return false;}
@@ -870,7 +870,7 @@ inline fft_gpu_copy make_fft_gpu_plan(const FFTGPUPlanKey& fkey)
 
 inline Cache<FFTGPUPlanKey, fft_gpu_copy >& get_fft_gpu_plan_cache()
 {
-  static Cache<FFTGPUPlanKey, fft_gpu_copy > cache("FFTGPUPlanCache", 16);
+  static Cache<FFTGPUPlanKey, fft_gpu_copy > cache("FFTGPUPlanCache", 5);
   return cache;
 }
 

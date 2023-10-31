@@ -54,8 +54,8 @@ int main(int argc, char* argv[])
 
   set_GPU();
 
-  int nx,ny,nz,nt;
-  nx = in.nx;
+  int nxi,ny,nz,nt;
+  nxi = in.nx;
   ny = in.ny;
   nz = in.nz;
   nt = in.nt;
@@ -65,6 +65,7 @@ int main(int argc, char* argv[])
   fflush_MPI();
   print_mem_info();
 
+  for(int nx=int(nxi/4);nx<=nxi;nx = nx + int(nxi/4)){
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
   Geometry geo;
   geo.init(total_site, 1); 
@@ -73,12 +74,12 @@ int main(int argc, char* argv[])
 
   bool check_fft_with_qlat   = 1;
 
-  bool GPU = true;
+  ///bool GPU = true;
   bool ft4D = true;
   bool checkdiff = true;
   const int Nvec =    1;
   int bfac = in.bfac;
-  int mode_FFT_MPI = in.mode_FFT_MPI;
+  ////int mode_FFT_MPI = in.mode_FFT_MPI;
   if(in.debuga == 3){ft4D = false;}
   if(sizeof(TyF) == sizeof(ComplexF)){checkdiff = false;}
   //if(in.nvec >= 2){checkdiff = false;}
@@ -114,19 +115,20 @@ int main(int argc, char* argv[])
   check_sum.copy_from(P0, check_sum.size());
   check_sum.print_norm2("%.15e");
 
-  fft_schedule fft3D(fd, GPU);
-  dimN.resize(3);dimN[0] = nv[2];dimN[1] = nv[1];dimN[2] = nv[0];
-  if(!ft4D){
-  fft3D.set_mem<TyF >(src.size(), Nvec, dimN, mode_FFT_MPI,  Nvec);
-  //fft3D.set_mem<TyF >(src.size(), Nvec, dimN, -3,  Nvec);
-  fft3D.print_info();}
+  //fft_schedule fft3D(fd, GPU);
+  //dimN.resize(3);dimN[0] = nv[2];dimN[1] = nv[1];dimN[2] = nv[0];
+  //if(!ft4D){
+  //fft3D.set_mem<TyF >(src.size(), Nvec, dimN, mode_FFT_MPI,  Nvec);
+  ////fft3D.set_mem<TyF >(src.size(), Nvec, dimN, -3,  Nvec);
+  //fft3D.print_info();}
 
 
-  fft_schedule fft4D(fd, GPU);
-  dimN.resize(4);dimN[0] = nv[3];dimN[1] = nv[2];dimN[2] = nv[1];dimN[3] = nv[0];
-  if( ft4D){
-  fft4D.set_mem<TyF >(src.size(), Nvec, dimN, mode_FFT_MPI,   Nvec);
-  fft4D.print_info();}
+  ////more detailed constructions
+  //fft_schedule fft4D(fd, GPU);
+  //dimN.resize(4);dimN[0] = nv[3];dimN[1] = nv[2];dimN[2] = nv[1];dimN[3] = nv[0];
+  //if( ft4D){
+  //fft4D.set_mem<TyF >(src.size(), Nvec, dimN, mode_FFT_MPI,   Nvec);
+  //fft4D.print_info();}
 
   qlat::FieldM<TyD, Nvec> srcF;srcF.init(geo);
   qlat::FieldM<TyF, Nvec> srcT;srcT.init(geo);
@@ -141,7 +143,7 @@ int main(int argc, char* argv[])
 
   if( ft4D){
   if(checkdiff){TIMER("qlat fft");qlat::fft_complex_field(srcF, false);}
-  {TIMER("new fft ");fft_fieldM(fft4D, src, false);}}
+  {TIMER("new fft ");fft_fieldM(src, false, true);}}
 
   if(!ft4D){
   if(checkdiff){
@@ -152,7 +154,7 @@ int main(int argc, char* argv[])
   {
     TIMER("new fft ");
     for(int iv=0;iv<bfac;iv++){
-      fft_fieldM(fft3D, src, false);
+      fft_fieldM(src, false, false);
     }
     //fft_fieldM(fft3D, src, false);
 
@@ -203,7 +205,7 @@ int main(int argc, char* argv[])
   std::vector<TyD >  dat1;
   std::vector<TyD >  dat2;
   std::vector<int > mom(4);
-  mom[0] = 0;mom[1] = 0;mom[2] = 3;mom[3] = 32;
+  mom[0] = 0;mom[1] = 0;mom[2] = 3%nz;mom[3] = 32%nt;
   get_mom_apply(srcT , mom, dat0, false, ft4D);
   get_mom_fft(src[0] , mom, dat1, ft4D);
   get_mom_fft(srcF   , mom, dat2, ft4D);
@@ -231,6 +233,7 @@ int main(int argc, char* argv[])
 
   }
   /////==========test correct
+  }
 
   return end_Lat();
 }
