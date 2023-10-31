@@ -358,7 +358,7 @@ def auto_contract_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get_f
         values_shifted = q.parallel_map_sum(feval, xg_fsel_list,
                 sum_function = sum_function, sum_start = q.SelectedField("Complex", fsel, len(expr_names)))
         field_r += values_shifted
-    field_r.reflect()
+    field_r = field_r.reflect()
     field += field_r
     field *= 0.5
     # scale the value appropriately

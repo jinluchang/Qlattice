@@ -167,6 +167,8 @@ cdef extern from "qlat/field.h" namespace "qlat":
 
     double qnorm[M](const Field[M]& f) except +
     void set_xg_field(Field[Int]& f, const Geometry& geo) except +
+    void field_shift[M](Field[M]& f, const Field[M]& f1, const Coordinate& shift) except +
+    void reflect_field[M](Field[M]& f) except +
 
 cdef extern from "qlat/field-expand.h" namespace "qlat":
 

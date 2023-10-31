@@ -326,21 +326,6 @@ cdef class FieldBase:
         """
         self[idx, m] = val
 
-    def field_shift(self, shift):
-        """
-        return new shifted Field
-        shift is the coordinate to shift the field
-        """
-        f1 = self.copy(is_copying_data=False)
-        c.field_shift_field(f1, self, shift)
-        return f1
-
-    def reflect(self):
-        """
-        reflect the field, return None
-        """
-        return c.reflect_field(self)
-
 ### -------------------------------------------------------------------
 
 def split_fields(fs, f):

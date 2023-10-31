@@ -179,6 +179,23 @@ cdef class Field{{name}}(FieldBase):
         np.asarray(sp).ravel()[:] = np.asarray(val).ravel()
         cc.set_field_selected(self.xx, sp.xx, geo.xx, psel.xx, m)
 
+    def field_shift(self, Coordinate shift not None):
+        """
+        return new shifted Field
+        shift is the coordinate to shift the field
+        """
+        cdef Field{{name}} f1 = self.copy(is_copying_data=False)
+        cc.field_shift(f1.xx, self.xx, shift.xx)
+        return f1
+
+    def reflect(self):
+        """
+        return new reflected field
+        """
+        cdef Field{{name}} f1 = self.copy()
+        cc.reflect_field(f1.xx)
+        return f1
+
 field_type_dict[ElemType{{name}}] = Field{{name}}
 
 {{endfor}}
