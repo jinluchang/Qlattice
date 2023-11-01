@@ -27,6 +27,7 @@ tests = \
 		jackknife-super.log \
 		qplot.log \
 		field-utils.log \
+		field-multi-size.log \
 		field-selection.log \
 		selected-field.log \
 		fields-io.log \

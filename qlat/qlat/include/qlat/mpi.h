@@ -151,6 +151,8 @@ int glb_sum(Vector<ComplexF> recv, const Vector<ComplexF>& send);
 
 int glb_sum(Vector<int64_t> recv, const Vector<int64_t>& send);
 
+int glb_sum(Vector<int32_t> recv, const Vector<int32_t>& send);
+
 int glb_sum(Vector<char> recv, const Vector<char>& send);
 
 int glb_sum(Vector<double> vec);
@@ -163,6 +165,8 @@ int glb_sum(Vector<ComplexF> vec);
 
 int glb_sum(Vector<int64_t> vec);
 
+int glb_sum(Vector<int32_t> vec);
+
 int glb_sum(Vector<char> vec);
 
 int glb_sum(double& x);
@@ -170,6 +174,8 @@ int glb_sum(double& x);
 int glb_sum(float& x);
 
 int glb_sum(int64_t& x);
+
+int glb_sum(int32_t& x);
 
 int glb_sum(Complex& c);
 
@@ -189,9 +195,9 @@ void bcast(float& x, const int root = 0);
 
 void bcast(double& x, const int root = 0);
 
-void bcast(Complex& x, const int root = 0);
-
 void bcast(ComplexF& x, const int root = 0);
+
+void bcast(Complex& x, const int root = 0);
 
 void bcast(Coordinate& x, const int root = 0);
 
@@ -388,13 +394,26 @@ int glb_sum_float_vec(Vector<M> x)
 template <class M>
 int glb_sum_long_vec(Vector<M> x)
 {
-  return glb_sum(Vector<long>((long*)x.data(), x.data_size() / sizeof(long)));
+  if (sizeof(long) == sizeof(int64_t)) {
+    return glb_sum_int64_vec(x);
+  } else if (sizeof(long) == sizeof(int32_t)) {
+    return glb_sum_int32_vec(x);
+  } else {
+    qassert(false);
+    return 0;
+  }
 }
 
 template <class M>
 int glb_sum_int64_vec(Vector<M> x)
 {
   return glb_sum(Vector<int64_t>((int64_t*)x.data(), x.data_size() / sizeof(int64_t)));
+}
+
+template <class M>
+int glb_sum_int32_vec(Vector<M> x)
+{
+  return glb_sum(Vector<int32_t>((int32_t*)x.data(), x.data_size() / sizeof(int32_t)));
 }
 
 template <class M>
