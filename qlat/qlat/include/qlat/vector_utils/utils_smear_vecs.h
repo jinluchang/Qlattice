@@ -52,7 +52,7 @@ __global__ void gauss_smear_global4(T* pres, const T* psrc, const T* gf, const T
   }
 
   const long res_off = map_final[index];
-  T* wo = &psrc[res_off*bfac*3*d0];
+  const T* wo = &psrc[res_off*bfac*3*d0];
   T* wm = &pres[res_off*bfac*3*d0];
 
   ///////(2*dir) --> bi, c1 , d0
@@ -441,12 +441,14 @@ struct smear_fun{
         const int mpi_tag = 10;
         for (size_t i = 0; i < plan.recv_msg_infos.size(); ++i) {
           const CommMsgInfo& cmi = plan.recv_msg_infos[i];
-          MPI_Irecv(&recv_buffer[cmi.buffer_idx*bfac], cmi.size * bfac * sizeof(Ty), MPI_BYTE,
+          long count = cmi.size * bfac * sizeof(Ty) / sizeof(double);
+          MPI_Irecv(&recv_buffer[cmi.buffer_idx*bfac], count, MPI_DOUBLE,
                     cmi.id_node, mpi_tag, get_comm(), &recv_reqs[i]);
         }
         for (size_t i = 0; i < plan.send_msg_infos.size(); ++i) {
           const CommMsgInfo& cmi = plan.send_msg_infos[i];
-          MPI_Isend(&send_buffer[cmi.buffer_idx*bfac], cmi.size * bfac * sizeof(Ty), MPI_BYTE,
+          long count = cmi.size * bfac * sizeof(Ty) / sizeof(double);
+          MPI_Isend(&send_buffer[cmi.buffer_idx*bfac], count, MPI_DOUBLE,
                     cmi.id_node, mpi_tag, get_comm(), &send_reqs[i]);
         }
       }
@@ -1006,7 +1008,7 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
         }
       }
 
-      T* wo = &prop_src[map_final[index]*nsites];
+      const T* wo = &prop_src[map_final[index]*nsites];
       T* wp = &prop_res[map_final[index]*nsites];
       for(int ic=0;ic<nsites;ic++){wp[ic]  = norm*(wo[ic] + bw*buf[ic]);}
 

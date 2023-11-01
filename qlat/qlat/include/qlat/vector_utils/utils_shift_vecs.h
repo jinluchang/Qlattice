@@ -70,7 +70,7 @@ struct shift_vec{
   bool Conj;bool src_gauge;
 
 
-  void init(fft_desc_basic &fds, bool GPU_set = true);
+  inline void init(fft_desc_basic &fds, bool GPU_set = true);
 
   shift_vec(){
     civ = 0;
@@ -79,10 +79,30 @@ struct shift_vec{
   {init(fds, GPU_set);}
 
 
-  void print_info();
-  ~shift_vec();
+  inline void print_info();
+  ////~shift_vec();
+  ~shift_vec(){
+    flag_shift_set = false;bsize = 0;
+    dir_cur = 0;civ = -1;biva = -1;
+    periodic = 1;
 
-  void shift_set();
+    for(int dir=0;dir<8;dir++){clear_mem_dir(dir);}
+    MPI_size.resize(0);
+
+    zeroP.resize(0);
+    bufsP.resize(0);
+    bufrP.resize(0);
+
+    rank_sr.resize(0);
+    buffoffa.resize(0);
+    buffoffb.resize(0);
+    sendoffa.resize(0);
+    sendoffb.resize(0);
+    sendoffx.resize(0);
+  }
+
+
+  inline void shift_set();
 
   template<typename Ty>
   void set_MPI_size(int biva_or, int civ_or, int dir_or = 0);
@@ -146,7 +166,7 @@ struct shift_vec{
 
 };
 
-void shift_vec::init(fft_desc_basic &fds, bool GPU_set)
+inline void shift_vec::init(fft_desc_basic &fds, bool GPU_set)
 {
   TIMERB("Construct shift_vec");
   (void)GPU_set;
@@ -188,7 +208,7 @@ void shift_vec::init(fft_desc_basic &fds, bool GPU_set)
 
 }
 
-void shift_vec::shift_set()
+inline void shift_vec::shift_set()
 {
   TIMERB("shift_vec::shift_set");
   if(flag_shift_set){return ;}
@@ -349,7 +369,7 @@ void shift_vec::set_MPI_size(int dir_or)
   set_MPI_size<Ty >(biva, civ, dir_or);
 }
 
-void shift_vec::print_info()
+inline void shift_vec::print_info()
 {
 
   print0("dir_curr %d,", dir_cur);
@@ -633,7 +653,7 @@ void shift_vec::call_MPI(Ty *src, Ty *res,int dir_or)
   s_tem = NULL; r_tem = NULL;
 }
 
-void get_periodic(int &dx,int nx)
+inline void get_periodic(int &dx,int nx)
 {
   dx = dx%nx;
   if(std::abs(dx) > nx/2.0)
@@ -887,26 +907,6 @@ void shift_vec::shift_vecs_dir(std::vector<qlat::FieldM<Ty , civ_> >& src, std::
   shift_vecs(Psrc, Pres, iDir, civ_);
 }
 
-shift_vec::~shift_vec(){
-  flag_shift_set = false;bsize = 0;
-  dir_cur = 0;civ = -1;biva = -1;
-  periodic = 1;
-
-  for(int dir=0;dir<8;dir++){clear_mem_dir(dir);}
-  MPI_size.resize(0);
-
-  zeroP.resize(0);
-  bufsP.resize(0);
-  bufrP.resize(0);
-
-  rank_sr.resize(0);
-  buffoffa.resize(0);
-  buffoffb.resize(0);
-  sendoffa.resize(0);
-  sendoffb.resize(0);
-  sendoffx.resize(0);
-
-}
 
 template <class Ty, int civ>
 void shift_fieldM(shift_vec& svec, std::vector<qlat::FieldM<Ty, civ> >& src, std::vector<qlat::FieldM<Ty, civ> >& res, std::vector<int >& iDir)
