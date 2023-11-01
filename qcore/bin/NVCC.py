@@ -216,6 +216,7 @@ class NvccCmdLine:
                 self.cc_flags.append(arg)
                 n_arg = 1
             elif arg.startswith("-Wl,-rpath"):
+                self.cc_flags.append("-Wl,-rpath,XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
                 self.cc_flags.append(arg)
             else:
                 argv_new.append(arg)
@@ -292,10 +293,12 @@ class NvccCmdLine:
         for arg in self.wl_group_flags:
             if arg.startswith("-l") or arg.endswith(".a"):
                 argv_new.append(arg)
-            elif arg.endswith(".so"):
+            elif (not arg.startswith("-")) and arg.endswith(".so"):
+                dirname = os.path.dirname(arg)
                 libname = os.path.basename(arg)
                 assert libname.startswith("lib")
                 libname = libname.removeprefix("lib").removesuffix(".so")
+                argv_new.append(f'-L{dirname}')
                 argv_new.append(f'-l{libname}')
             else:
                 argv_new.append('-Xcompiler')
