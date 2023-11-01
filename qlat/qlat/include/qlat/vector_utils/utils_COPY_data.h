@@ -81,7 +81,7 @@ void cpy_data_from_index(qlat::vector<T >& res, qlat::vector<T >& src, const qla
 
 #ifdef QLAT_USE_ACC
 template <typename T, typename TInt, typename TI0, typename TI1>
-__global__ void cpy_data_from_group_global(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_src, const TI1 bfac)
+__global__ void cpy_data_from_group_global(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_src, const TInt* map_off, const TI1 bfac)
 {
   TI0  index =  blockIdx.y*gridDim.x + blockIdx.x;
   unsigned int  tid    =  threadIdx.x;
@@ -89,8 +89,8 @@ __global__ void cpy_data_from_group_global(T* Pres, T* Psrc, const TInt* map_res
 
   float* r = (float*) &Pres[map_res[index]*bfac];
   float* s = (float*) &Psrc[map_src[index]*bfac];
-  TInt   off = map_off[index]
-  TI0 Mend = (off*bfac*sizeof(T))/sizeof(float);
+  TInt   moff = map_off[index];
+  TI0 Mend = (moff*bfac*sizeof(T))/sizeof(float);
   TI0 off = tid;
   while(off < Mend){r[off] = s[off];off += nt;}
 }
