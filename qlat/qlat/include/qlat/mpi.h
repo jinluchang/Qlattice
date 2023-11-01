@@ -452,7 +452,7 @@ int glb_sum_float(M& x)
 template <class M>
 int glb_sum_long(M& x)
 {
-  return glb_sum(Vector<long>((long*)&x, sizeof(M) / sizeof(long)));
+  return glb_sum_long_vec(get_data_one_elem(x));
 }
 
 template <class M>
