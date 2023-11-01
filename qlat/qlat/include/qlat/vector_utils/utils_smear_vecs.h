@@ -1182,7 +1182,7 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
     }else{
     //Tfloat = c0*d0*2*int(qlat::qnorm(width))*vGb*Fcount;
     /////print0("%3d dir %d vol %d Flops %d \n", int(width), 6, int(vGb), int(Fcount));
-    Tfloat = 6*int(width)*vGb*Fcount;
+    Tfloat = 4 * 6*int(width) * vGb * Fcount;
     }
   }
   timer.flops += Tfloat;
