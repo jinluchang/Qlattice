@@ -40,10 +40,10 @@ cdef class LatData:
         cdef cc.bool is_complex = self.xx.is_complex()
         if is_complex:
             buf.format = 'Zd'
-            buf.itemsize = sizeof(cc.Complex)
+            buf.itemsize = sizeof(cc.ComplexD)
         else:
             buf.format = 'd'
-            buf.itemsize = sizeof(cc.Double)
+            buf.itemsize = sizeof(cc.RealD)
         buf.buf = <char*>(self.xx.data())
         cdef int dim
         for dim in range(ndim):
@@ -296,8 +296,8 @@ cdef class LatData:
         return self
 
     def __imul__(self, factor):
-        cdef cc.Double f
-        cdef cc.Complex c
+        cdef cc.RealD f
+        cdef cc.ComplexD c
         if isinstance(factor, float):
             f = factor
             self.xx = self.xx * f
@@ -322,8 +322,8 @@ cdef class LatData:
         assert isinstance(ld, LatData)
         cdef LatData ld1 = type(ld)()
         cdef LatData ld0 = ld
-        cdef cc.Double f
-        cdef cc.Complex c
+        cdef cc.RealD f
+        cdef cc.ComplexD c
         if isinstance(factor, float):
             f = factor
             ld1.xx = ld0.xx * f

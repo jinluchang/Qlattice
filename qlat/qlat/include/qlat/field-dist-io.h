@@ -248,7 +248,7 @@ long dist_write_dist_data(const std::vector<DistData<M> >& dds,
   long total_bytes = 0;
   long total_ops = 0;
   const int n_cycle = std::max(1, num_node / dist_write_par_limit());
-  std::vector<long> id_counts(num_node, 0);
+  std::vector<Long> id_counts(num_node, 0);
   for (int i = 0; i < n_cycle; i++) {
     long bytes = 0;
     long ops = 0;
@@ -279,7 +279,7 @@ long dist_write_dist_data(const std::vector<DistData<M> >& dds,
                                     "= %10ld ; total_bytes = %15ld",
                                     i + 1, n_cycle, total_ops, total_bytes));
   }
-  std::vector<long> id_exists(num_node, 0);
+  std::vector<Long> id_exists(num_node, 0);
   for (size_t id = 0; id < id_exists.size(); ++id) {
     id_exists[id] = id_counts[id] > 0 ? 1 : 0;
   }
@@ -378,7 +378,7 @@ long dist_read_dist_data(const std::vector<DistData<M> >& dds,
   long total_bytes = 0;
   long total_ops = 0;
   const int n_cycle = std::max(1, num_node / dist_read_par_limit());
-  std::vector<long> id_counts(num_node, 0);
+  std::vector<Long> id_counts(num_node, 0);
   for (int i = 0; i < n_cycle; i++) {
     long bytes = 0;
     long ops = 0;
@@ -409,7 +409,7 @@ long dist_read_dist_data(const std::vector<DistData<M> >& dds,
                                     "= %10ld ; total_bytes = %15ld",
                                     i + 1, n_cycle, total_ops, total_bytes));
   }
-  std::vector<long> id_exists(num_node, 0);
+  std::vector<Long> id_exists(num_node, 0);
   for (size_t id = 0; id < id_exists.size(); ++id) {
     id_exists[id] = id_counts[id] > 0 ? 1 : 0;
   }

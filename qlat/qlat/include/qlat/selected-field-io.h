@@ -171,14 +171,14 @@ long read_selected_field(SelectedField<M>& sf, const std::string& path,
   std::vector<SelectedField<M>> sfs;
   sfs.resize(fsels.size());
   const int new_num_node = product(new_size_node);
-  std::vector<long> n_elems_vec(new_num_node, 0);
+  std::vector<Long> n_elems_vec(new_num_node, 0);
   for (size_t i = 0; i < sfs.size(); ++i) {
     const int id_node = fsels[i].f_rank.geo().geon.id_node;
     n_elems_vec[id_node] = fsels[i].n_elems;
     sfs[i].init(fsels[i], geo.multiplicity);
   }
   glb_sum_long_vec(get_data(n_elems_vec));
-  std::vector<long> data_offset_vec(new_num_node + 1, 0);
+  std::vector<Long> data_offset_vec(new_num_node + 1, 0);
   long total_bytes = 0;
   for (int i = 0; i < new_num_node; ++i) {
     data_offset_vec[i] = total_bytes;

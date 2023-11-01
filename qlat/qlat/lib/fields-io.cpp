@@ -819,7 +819,7 @@ bool does_file_exist_sync_node(ShuffledFieldsReader& sfr, const std::string& fn)
 }
 
 bool check_file_sync_node(ShuffledFieldsReader& sfr, const std::string& fn,
-                          std::vector<long>& final_offsets)
+                          std::vector<Long>& final_offsets)
 // interface function
 // set final_offsets to be the files position after loading the data ``fn''
 // (zero if failed for that file) return if data is loaded successfully
@@ -880,7 +880,7 @@ int truncate_fields_sync_node(const std::string& path,
       return 2;
     }
   }
-  std::vector<long> final_offsets(sfr.frs.size(), 0);
+  std::vector<Long> final_offsets(sfr.frs.size(), 0);
   if (fns_keep.size() >= 1) {
     const std::string& fn_last = fns_keep.back();
     const bool is_fn_last_valid =
@@ -928,12 +928,12 @@ std::vector<std::string> properly_truncate_fields_sync_node(
   ShuffledFieldsReader sfr;
   sfr.init(path, new_size_node);
   fns = list_fields(sfr);
-  std::vector<long> last_final_offsets(sfr.frs.size(), 0);
+  std::vector<Long> last_final_offsets(sfr.frs.size(), 0);
   long last_idx = -1;
   if (is_check_all) {
     for (long i = 0; i < (long)fns.size(); ++i) {
       const std::string& fn = fns[i];
-      std::vector<long> final_offsets;
+      std::vector<Long> final_offsets;
       const bool b = check_file_sync_node(sfr, fn, final_offsets);
       if (b) {
         last_final_offsets = final_offsets;
@@ -945,7 +945,7 @@ std::vector<std::string> properly_truncate_fields_sync_node(
   } else {
     for (long i = (long)fns.size() - 1; i >= 0; i -= 1) {
       const std::string& fn = fns[i];
-      std::vector<long> final_offsets;
+      std::vector<Long> final_offsets;
       const bool b = check_file_sync_node(sfr, fn, final_offsets);
       if (b) {
         last_final_offsets = final_offsets;

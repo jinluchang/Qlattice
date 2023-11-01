@@ -8,7 +8,7 @@
 namespace qlat
 {  //
 
-typedef std::vector<std::vector<double>> DataTable;
+typedef std::vector<std::vector<RealD>> DataTable;
 
 typedef uint32_t crc32_t;
 
@@ -245,15 +245,15 @@ inline std::string get_type_name<int64_t>()
 }
 
 template <>
-inline std::string get_type_name<float>()
+inline std::string get_type_name<RealF>()
 {
-  return "Float";
+  return "RealF";
 }
 
 template <>
-inline std::string get_type_name<double>()
+inline std::string get_type_name<RealD>()
 {
-  return "Double";
+  return "RealD";
 }
 
 template <>
@@ -263,9 +263,9 @@ inline std::string get_type_name<ComplexF>()
 }
 
 template <>
-inline std::string get_type_name<Complex>()
+inline std::string get_type_name<ComplexD>()
 {
-  return "Complex";
+  return "ComplexD";
 }
 
 template <>
@@ -301,49 +301,49 @@ inline std::string get_type_name<ColorMatrix>()
 // -------------------------------------------------------------------------
 
 template <class M>
-qacc bool is_composed_of_complex()
+qacc bool is_composed_of_complex_d()
 {
   return false;
 }
 
 template <>
-qacc bool is_composed_of_complex<Complex>()
+qacc bool is_composed_of_complex_d<ComplexD>()
 {
   return true;
 }
 
 template <>
-qacc bool is_composed_of_complex<ColorMatrix>()
+qacc bool is_composed_of_complex_d<ColorMatrix>()
 {
   return true;
 }
 
 template <>
-qacc bool is_composed_of_complex<WilsonMatrix>()
+qacc bool is_composed_of_complex_d<WilsonMatrix>()
 {
   return true;
 }
 
 template <>
-qacc bool is_composed_of_complex<SpinMatrix>()
+qacc bool is_composed_of_complex_d<SpinMatrix>()
 {
   return true;
 }
 
 template <>
-qacc bool is_composed_of_complex<WilsonVector>()
+qacc bool is_composed_of_complex_d<WilsonVector>()
 {
   return true;
 }
 
 template <>
-qacc bool is_composed_of_complex<IsospinMatrix>()
+qacc bool is_composed_of_complex_d<IsospinMatrix>()
 {
   return true;
 }
 
 template <>
-qacc bool is_composed_of_complex<NonRelWilsonMatrix>()
+qacc bool is_composed_of_complex_d<NonRelWilsonMatrix>()
 {
   return true;
 }
@@ -351,55 +351,55 @@ qacc bool is_composed_of_complex<NonRelWilsonMatrix>()
 // -------------------------------------------------------------------------
 
 template <class M>
-qacc bool is_composed_of_double()
+qacc bool is_composed_of_real_d()
 {
   return false;
 }
 
 template <>
-qacc bool is_composed_of_double<double>()
+qacc bool is_composed_of_real_d<RealD>()
 {
   return true;
 }
 
 template <>
-qacc bool is_composed_of_double<Complex>()
+qacc bool is_composed_of_real_d<Complex>()
 {
   return true;
 }
 
 template <>
-qacc bool is_composed_of_double<ColorMatrix>()
+qacc bool is_composed_of_real_d<ColorMatrix>()
 {
   return true;
 }
 
 template <>
-qacc bool is_composed_of_double<WilsonMatrix>()
+qacc bool is_composed_of_real_d<WilsonMatrix>()
 {
   return true;
 }
 
 template <>
-qacc bool is_composed_of_double<SpinMatrix>()
+qacc bool is_composed_of_real_d<SpinMatrix>()
 {
   return true;
 }
 
 template <>
-qacc bool is_composed_of_double<WilsonVector>()
+qacc bool is_composed_of_real_d<WilsonVector>()
 {
   return true;
 }
 
 template <>
-qacc bool is_composed_of_double<IsospinMatrix>()
+qacc bool is_composed_of_real_d<IsospinMatrix>()
 {
   return true;
 }
 
 template <>
-qacc bool is_composed_of_double<NonRelWilsonMatrix>()
+qacc bool is_composed_of_real_d<NonRelWilsonMatrix>()
 {
   return true;
 }
@@ -421,19 +421,19 @@ qacc bool is_composed_of_complex_f<ComplexF>()
 // -------------------------------------------------------------------------
 
 template <class M>
-qacc bool is_composed_of_float()
+qacc bool is_composed_of_real_f()
 {
   return false;
 }
 
 template <>
-qacc bool is_composed_of_float<float>()
+qacc bool is_composed_of_real_f<float>()
 {
   return true;
 }
 
 template <>
-qacc bool is_composed_of_float<ComplexF>()
+qacc bool is_composed_of_real_f<ComplexF>()
 {
   return true;
 }

@@ -122,7 +122,7 @@ inline void save_gm_force_magnitudes_list(const std::string& fn = "")
     lat_data_alloc(ld);
     for (long i = 0; i < idx_size; ++i) {
       for (long j = 0; j < ln_size; ++j) {
-        lat_data_get(ld, make_array<long>(i, j))[0] = db[i][j];
+        lat_data_get(ld, make_array<Long>(i, j))[0] = db[i][j];
       }
     }
     lat_data_save_info(fn, ld);
@@ -201,7 +201,7 @@ inline LatData convert_energy_list(
       "name", make_array<std::string>("flow_time", "energy_density")));
   lat_data_alloc(ld);
   for (long i = 0; i < (long)energy_density_list.size(); ++i) {
-    Vector<double> ldv = lat_data_get(ld, make_array<long>(i));
+    Vector<double> ldv = lat_data_get(ld, make_array<Long>(i));
     ldv[0] = (i + 1) * wilson_flow_step;
     ldv[1] = energy_density_list[i];
   }

@@ -176,11 +176,11 @@ qacc double middle_mod(const double x, const double y, const double len)
 
 // --------------------
 
-struct API Coordinate : public array<int, DIMN> {
-  qacc Coordinate() { array<int, DIMN>::fill(0); }
-  qacc Coordinate(int first, int second, int third, int fourth)
+struct API Coordinate : public array<Int, DIMN> {
+  qacc Coordinate() { array<Int, DIMN>::fill(0); }
+  qacc Coordinate(Int first, Int second, Int third, Int fourth)
   {
-    int* p = data();
+    Int* p = data();
     p[0] = first;
     p[1] = second;
     p[2] = third;
@@ -335,16 +335,16 @@ qacc Coordinate c_rand_gen(RngState& rs, const Coordinate& size)
 
 // --------------------
 
-struct API CoordinateD : public array<double, DIMN> {
+struct API CoordinateD : public array<RealD, DIMN> {
   qacc CoordinateD() { memset(this, 0, sizeof(CoordinateD)); }
-  qacc CoordinateD(const array<double, DIMN>& arr)
+  qacc CoordinateD(const array<RealD, DIMN>& arr)
   {
     CoordinateD& c = *this;
     c = arr;
     qassert(false == qisnan(c));
   }
-  qacc CoordinateD(const double x0, const double x1, const double x2,
-                   const double x3)
+  qacc CoordinateD(const RealD x0, const RealD x1, const RealD x2,
+                   const RealD x3)
   {
     qassert(DIMN == 4);
     CoordinateD& c = *this;
@@ -503,7 +503,7 @@ qacc Coordinate coordinate_shifts(const Coordinate& x, const int dir1,
 }
 
 inline Coordinate coordinate_shifts(const Coordinate& x,
-                                    const std::vector<int>& path)
+                                    const std::vector<Int>& path)
 {
   Coordinate ret = x;
   for (int i = 0; i < (int)path.size(); ++i) {

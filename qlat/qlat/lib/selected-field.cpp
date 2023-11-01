@@ -213,8 +213,8 @@ bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2)
     return false;
   }
   bool is_same = true;
-  const vector_acc<long>& indices1 = fsel1.indices;
-  const vector_acc<long>& indices2 = fsel2.indices;
+  const vector_acc<Long>& indices1 = fsel1.indices;
+  const vector_acc<Long>& indices2 = fsel2.indices;
   qassert(indices1.size() == n_elems);
   qassert(indices2.size() == n_elems);
   qthread_for(idx, n_elems, {
@@ -235,14 +235,14 @@ PointsSelection psel_from_fsel(const FieldSelection& fsel)
   glb_sum(total_n_elems);
   // const int num_node = geo.geon.num_node;
   const int id_node = geo.geon.id_node;
-  vector<long> vec(geo.geon.num_node, 0);
+  vector<Long> vec(geo.geon.num_node, 0);
   all_gather(get_data(vec), get_data_one_elem(n_elems));
   long idx_offset = 0;
   for (int i = 0; i < id_node; ++i) {
     idx_offset += vec[i];
   }
   qassert(idx_offset <= total_n_elems);
-  vector<long> vec_gindex(total_n_elems, 0);
+  vector<Long> vec_gindex(total_n_elems, 0);
   qthread_for(idx, fsel.n_elems, {
     const long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -275,7 +275,7 @@ PointsSelection psel_from_fsel_local(const FieldSelection& fsel)
   return psel;
 }
 
-void set_selected_gindex(SelectedField<long>& sfgi, const FieldSelection& fsel)
+void set_selected_gindex(SelectedField<Long>& sfgi, const FieldSelection& fsel)
 {
   TIMER_VERBOSE("set_selected_gindex");
   const Geometry& geo = fsel.f_rank.geo();
@@ -329,7 +329,7 @@ void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
 #pragma omp parallel for
     for (int t = t_start; t < t_end; ++t) {
       RngState rst = rs.split(t);
-      std::vector<long> ranks(n_per_tslice);
+      std::vector<Long> ranks(n_per_tslice);
       for (long i = 0; i < n_per_tslice; ++i) {
         ranks[i] = i;
       }

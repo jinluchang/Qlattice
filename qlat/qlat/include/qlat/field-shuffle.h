@@ -9,17 +9,17 @@ namespace qlat
 {  //
 
 struct API ShufflePlanMsgInfo {
-  int id_node;  // index for the target send/recv node
-  long idx;     // idx of the starting location in send/recv buffer
-  long size;    // number of data site for this msg
+  Int id_node;  // index for the target send/recv node
+  Long idx;     // idx of the starting location in send/recv buffer
+  Long size;    // number of data site for this msg
 };
 
 struct API ShuffleCommPlan {
-  long global_comm_size;  // global comm data size for Timer flops
-  long total_send_size;   // total send buffer size
+  Long global_comm_size;  // global comm data size for Timer flops
+  Long total_send_size;   // total send buffer size
   std::vector<ShufflePlanMsgInfo>
       send_msg_infos;    // corresponds to every sent msg
-  long total_recv_size;  // total recv buffer size
+  Long total_recv_size;  // total recv buffer size
   std::vector<ShufflePlanMsgInfo>
       recv_msg_infos;  // corresponds to every recv msg
   //
@@ -32,16 +32,16 @@ struct API ShuffleCommPlan {
 };
 
 struct API ShufflePlanRecvPackInfo {
-  int local_geos_idx;  // idx of the field that the data belong to
-  long field_idx;      // idx of the data in the field
-  long buffer_idx;     // idx of the data in the buffer
-  long size;           // number of data site for this pack of data
+  Int local_geos_idx;  // idx of the field that the data belong to
+  Long field_idx;      // idx of the data in the field
+  Long buffer_idx;     // idx of the data in the buffer
+  Long size;           // number of data site for this pack of data
 };
 
 struct API ShufflePlanSendPackInfo {
-  long field_idx;   // idx of the data in the field
-  long buffer_idx;  // idx of the data in the buffer
-  long size;        // number of data site for this pack of data
+  Long field_idx;   // idx of the data in the field
+  Long buffer_idx;  // idx of the data in the buffer
+  Long size;        // number of data site for this pack of data
 };
 
 struct API ShufflePlan {
@@ -50,7 +50,7 @@ struct API ShufflePlan {
   Geometry geo_send;                // geo of the send field
   std::vector<Geometry> geos_recv;  // geos of the recv fields
   long n_elems_send;  // n_elems for only send field, useful in sparse field
-  std::vector<long>
+  std::vector<Long>
       n_elems_recv;  // n_elems for recv fields, only useful in sparse field
   std::vector<ShufflePlanSendPackInfo>
       send_pack_infos;  // corresponds to how to create send buffer from local
@@ -515,13 +515,13 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
   const int new_num_node = product(sp.new_size_node);
   const int num_node = sp.geo_send.geon.num_node;
   // global index for each selected site
-  SelectedField<long> sf_rank;
+  SelectedField<Long> sf_rank;
   sf_rank.init(fsel, 1);
   // shuffled global index for each selected site
-  SelectedField<long> sf_gindex_s;
+  SelectedField<Long> sf_gindex_s;
   sf_gindex_s.init(fsel, 1);
   // target node id_node (real id_node) for each selected site
-  SelectedField<int> sf_id_node_send;
+  SelectedField<Int> sf_id_node_send;
   sf_id_node_send.init(fsel, 1);
 #pragma omp parallel for
   for (long idx = 0; idx < fsel.n_elems; ++idx) {
@@ -591,9 +591,9 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
     }
   }
   // communicate to determine recv msg size from each node
-  std::map<int, long> recv_id_node_size;
+  std::map<Int, Long> recv_id_node_size;
   {
-    vector<long> send_size(num_node, 0), recv_size(num_node, -1);
+    vector<Long> send_size(num_node, 0), recv_size(num_node, -1);
     for (auto it = send_id_node_size.cbegin(); it != send_id_node_size.cend();
          ++it) {
       const int id_node = it->first;
@@ -656,20 +656,20 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
     sp.scp.total_recv_size = count;
   }
   // exec shuffle for sf_gindex_s
-  vector<long> send_buffer(sp.scp.total_send_size);
+  vector<Long> send_buffer(sp.scp.total_send_size);
   shuffle_field_pack_send(get_data(send_buffer), get_data(sf_gindex_s),
                           sp.send_pack_infos, 1);
-  vector<long> recv_buffer(sp.scp.total_recv_size);
+  vector<Long> recv_buffer(sp.scp.total_recv_size);
   shuffle_field_comm(get_data(recv_buffer), get_data(send_buffer), sp.scp, 1);
   shuffle_field_pack_send(get_data(send_buffer), get_data(sf_rank),
                           sp.send_pack_infos, 1);
-  vector<long> recv_buffer_rank(sp.scp.total_recv_size);
+  vector<Long> recv_buffer_rank(sp.scp.total_recv_size);
   shuffle_field_comm(get_data(recv_buffer_rank), get_data(send_buffer), sp.scp,
                      1);
   clear(send_buffer);
   // recv_pack_infos
   {
-    vector<int> local_geos_idx_from_new_id_node(new_num_node, -1);
+    vector<Int> local_geos_idx_from_new_id_node(new_num_node, -1);
     for (int i = 0; i < (int)fsels.size(); ++i) {
       const int local_geos_idx = i;
       const Geometry& geo_recv = sp.geos_recv[i];
@@ -701,7 +701,7 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
       set_field_selection(fsels[i], f_ranks[i]);
     }
     long last_local_geos_idx = -1;
-    vector<long> last_field_idx(sp.geos_recv.size(), 0);
+    vector<Long> last_field_idx(sp.geos_recv.size(), 0);
     for (long buffer_idx = 0; buffer_idx < (long)recv_buffer.size();
          ++buffer_idx) {
       const long gindex_s = recv_buffer[buffer_idx];

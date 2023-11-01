@@ -14,23 +14,23 @@
 namespace qlat
 {  //
 
-API inline std::vector<int>& get_id_node_list_for_shuffle()
+API inline std::vector<Int>& get_id_node_list_for_shuffle()
 // qlat parameter
 // initialized in begin_comm with mk_id_node_list_for_shuffle()
 // return list
 // list[id_node_in_shuffle] = id_node
 {
-  static std::vector<int> list;
+  static std::vector<Int> list;
   return list;
 }
 
-API inline std::vector<int>& get_id_node_in_shuffle_list()
+API inline std::vector<Int>& get_id_node_in_shuffle_list()
 // qlat parameter
 // initialized in begin_comm with mk_id_node_in_shuffle_list()
 // return list
 // list[id_node] = id_node_in_shuffle
 {
-  static std::vector<int> list;
+  static std::vector<Int> list;
   return list;
 }
 
@@ -209,15 +209,15 @@ void bcast(LatData& ld, const int root = 0);
 
 void sync_node();
 
-std::vector<int> mk_id_node_list_for_shuffle_rs(const RngState& rs);
+std::vector<Int> mk_id_node_list_for_shuffle_rs(const RngState& rs);
 
-std::vector<int> mk_id_node_list_for_shuffle_step_size(const int step_size_);
+std::vector<Int> mk_id_node_list_for_shuffle_step_size(const int step_size_);
 
-std::vector<int> mk_id_node_list_for_shuffle_node();
+std::vector<Int> mk_id_node_list_for_shuffle_node();
 
-std::vector<int> mk_id_node_list_for_shuffle();
+std::vector<Int> mk_id_node_list_for_shuffle();
 
-std::vector<int> mk_id_node_in_shuffle_list();
+std::vector<Int> mk_id_node_in_shuffle_list();
 
 int get_id_node_in_shuffle(const int id_node, const int new_num_node,
                            const int num_node);
@@ -425,11 +425,11 @@ int glb_sum_byte_vec(Vector<M> x)
 template <class M>
 int glb_sum_vec(Vector<M> x)
 {
-  if (is_composed_of_double<M>()) {
+  if (is_composed_of_real_d<M>()) {
     return glb_sum_double_vec(x);
   } else if (is_composed_of_int64<M>()) {
     return glb_sum_int64_vec(x);
-  } else if (is_composed_of_float<M>()) {
+  } else if (is_composed_of_real_f<M>()) {
     return glb_sum_float_vec(x);
   } else {
     qerr(ssprintf("glb_sum_vec get_type_name(M)='%s'",
@@ -497,7 +497,7 @@ void bcast(std::vector<std::vector<M> >& datatable, const int root = 0)
     return;
   }
   long nrow, total_size;
-  std::vector<long> row_sizes;
+  std::vector<Long> row_sizes;
   std::vector<M> data;
   if (get_id_node() == root) {
     row_sizes = vector_map_size(datatable);

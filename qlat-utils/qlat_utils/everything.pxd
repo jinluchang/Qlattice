@@ -16,31 +16,23 @@ from cpython.ref cimport PyObject
 
 ### --------------------------------------------------------
 
-ctypedef double complex PyComplex
+ctypedef double complex PyComplexD
 ctypedef float complex PyComplexF
 
-ctypedef libcpp.complex.complex[double] Complex
+ctypedef libcpp.complex.complex[double] ComplexD
 ctypedef libcpp.complex.complex[float] ComplexF
 
-cdef inline PyComplex py_complex_cast(Complex x):
-    return (<PyComplex*>(&x))[0]
+cdef inline PyComplexD py_complex_cast(ComplexD x):
+    return (<PyComplexD*>(&x))[0]
 
 cdef inline PyComplexF py_complex_f_cast(ComplexF x):
     return (<PyComplexF*>(&x))[0]
 
-cdef inline Complex complex_cast(PyComplex x):
-    return (<Complex*>(&x))[0]
+cdef inline ComplexD complex_cast(PyComplexD x):
+    return (<ComplexD*>(&x))[0]
 
 cdef inline ComplexF complex_f_cast(PyComplexF x):
     return (<ComplexF*>(&x))[0]
-
-ctypedef double Double
-
-ctypedef float Float
-
-ctypedef long Long
-
-ctypedef int Int
 
 ctypedef int64_t Int64t
 
@@ -52,6 +44,16 @@ ctypedef char Char
 
 ctypedef uint32_t crc32_t
 
+ctypedef double RealD
+
+ctypedef float RealF
+
+ctypedef RealD Real
+
+ctypedef Int64t Long
+
+ctypedef Int32t Int
+
 ctypedef std_vector[std_vector[double]] DataTable
 
 ### --------------------------------------------------------
@@ -60,22 +62,22 @@ cdef extern from "qlat-utils/mat-vec.h" namespace "qlat":
 
     cdef cppclass ColorMatrix:
         ColorMatrix()
-        Complex* data()
+        ComplexD* data()
     cdef cppclass SpinMatrix:
         SpinMatrix()
-        Complex* data()
+        ComplexD* data()
     cdef cppclass WilsonMatrix:
         WilsonMatrix()
-        Complex* data()
+        ComplexD* data()
     cdef cppclass NonRelWilsonMatrix:
         NonRelWilsonMatrix()
-        Complex* data()
+        ComplexD* data()
     cdef cppclass IsospinMatrix:
         IsospinMatrix()
-        Complex* data()
+        ComplexD* data()
     cdef cppclass WilsonVector:
         WilsonVector()
-        Complex* data()
+        ComplexD* data()
 
 cdef extern from "qlat-utils/handle.h" namespace "qlat":
 
@@ -134,33 +136,33 @@ cdef extern from "qlat-utils/mat.h" namespace "qlat":
     void set_zero(NonRelWilsonMatrix& x)
     void set_zero(IsospinMatrix& x)
     void set_zero(WilsonVector& x)
-    Vector[Complex] get_data(const ColorMatrix& x)
-    Vector[Complex] get_data(const SpinMatrix& x)
-    Vector[Complex] get_data(const WilsonMatrix& x)
-    Vector[Complex] get_data(const NonRelWilsonMatrix& x)
-    Vector[Complex] get_data(const IsospinMatrix& x)
-    Vector[Complex] get_data(const WilsonVector& x)
-    Complex matrix_trace(const SpinMatrix& m)
-    Complex matrix_trace(const ColorMatrix& m)
-    Complex matrix_trace(const WilsonMatrix& m)
-    Complex matrix_trace(const WilsonMatrix& m1, const WilsonMatrix& m2)
-    Complex matrix_trace(const WilsonMatrix& m1, const SpinMatrix& m2)
-    Complex matrix_trace(const SpinMatrix& m1, const WilsonMatrix& m2)
-    Complex matrix_trace(const SpinMatrix& m1, const SpinMatrix& m2)
-    Complex matrix_trace(const WilsonMatrix& m1, const ColorMatrix& m2)
-    Complex matrix_trace(const ColorMatrix& m1, const WilsonMatrix& m2)
-    Complex matrix_trace(const ColorMatrix& m1, const ColorMatrix& m2)
+    Vector[ComplexD] get_data(const ColorMatrix& x)
+    Vector[ComplexD] get_data(const SpinMatrix& x)
+    Vector[ComplexD] get_data(const WilsonMatrix& x)
+    Vector[ComplexD] get_data(const NonRelWilsonMatrix& x)
+    Vector[ComplexD] get_data(const IsospinMatrix& x)
+    Vector[ComplexD] get_data(const WilsonVector& x)
+    ComplexD matrix_trace(const SpinMatrix& m)
+    ComplexD matrix_trace(const ColorMatrix& m)
+    ComplexD matrix_trace(const WilsonMatrix& m)
+    ComplexD matrix_trace(const WilsonMatrix& m1, const WilsonMatrix& m2)
+    ComplexD matrix_trace(const WilsonMatrix& m1, const SpinMatrix& m2)
+    ComplexD matrix_trace(const SpinMatrix& m1, const WilsonMatrix& m2)
+    ComplexD matrix_trace(const SpinMatrix& m1, const SpinMatrix& m2)
+    ComplexD matrix_trace(const WilsonMatrix& m1, const ColorMatrix& m2)
+    ComplexD matrix_trace(const ColorMatrix& m1, const WilsonMatrix& m2)
+    ComplexD matrix_trace(const ColorMatrix& m1, const ColorMatrix& m2)
     const SpinMatrix& get_gamma_matrix(const int mu)
     void benchmark_matrix_functions(const long count)
     WilsonMatrix g5_herm(const WilsonMatrix& m)
-    SpinMatrix operator*(const Complex& a, const SpinMatrix& m)
-    SpinMatrix operator*(const SpinMatrix& m, const Complex& a)
+    SpinMatrix operator*(const ComplexD& a, const SpinMatrix& m)
+    SpinMatrix operator*(const SpinMatrix& m, const ComplexD& a)
     SpinMatrix operator*(const SpinMatrix& m1, const SpinMatrix& m2)
-    ColorMatrix operator*(const Complex& a, const ColorMatrix& m)
-    ColorMatrix operator*(const ColorMatrix& m, const Complex& a)
+    ColorMatrix operator*(const ComplexD& a, const ColorMatrix& m)
+    ColorMatrix operator*(const ColorMatrix& m, const ComplexD& a)
     ColorMatrix operator*(const ColorMatrix& m1, const ColorMatrix& m2)
-    WilsonMatrix operator*(const Complex& a, const WilsonMatrix& m)
-    WilsonMatrix operator*(const WilsonMatrix& m, const Complex& a)
+    WilsonMatrix operator*(const ComplexD& a, const WilsonMatrix& m)
+    WilsonMatrix operator*(const WilsonMatrix& m, const ComplexD& a)
     WilsonMatrix operator*(const WilsonMatrix& m1, const WilsonMatrix& m2)
     WilsonMatrix operator*(const SpinMatrix& m1, const WilsonMatrix& m2)
     WilsonMatrix operator*(const WilsonMatrix& m1, const SpinMatrix& m2)
@@ -310,9 +312,9 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
     LatDim lat_dim_number(const std_string& name, const long start, const long end, const long inc)
     LatDim lat_dim_string(const std_string& name, const std_vector[std_string]& indices)
     long lat_dim_idx(const LatDim& dim, const std_string& idx) except +
-    LatData operator*(const Complex& a, const LatData& ld) except +
+    LatData operator*(const ComplexD& a, const LatData& ld) except +
     LatData operator*(const double a, const LatData& ld) except +
-    LatData operator*(const LatData& ld, const Complex& a) except +
+    LatData operator*(const LatData& ld, const ComplexD& a) except +
     LatData operator*(const LatData& ld, const double a) except +
     LatData operator+(const LatData& ld1, const LatData& ld2) except +
     LatData operator-(const LatData& ld1, const LatData& ld2) except +
@@ -354,12 +356,14 @@ cdef fused ElemType:
     IsospinMatrix
     SpinMatrix
     WilsonVector
-    Complex
+    ComplexD
     ComplexF
-    Double
-    Float
+    RealD
+    RealF
     Long
+    Int
     Int64t
+    Int32t
     Int8t
     Char
 

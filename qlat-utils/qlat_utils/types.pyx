@@ -71,7 +71,7 @@ cdef class Buffer:
 
 ### -------------------------------------------------------------------
 
-# ColorMatrix WilsonMatrix NonRelWilsonMatrix SpinMatrix WilsonVector Complex ComplexF Double Float Long Int Int64t Int8t Char
+# ColorMatrix WilsonMatrix NonRelWilsonMatrix SpinMatrix WilsonVector ComplexD ComplexF RealD RealF Long Int Int64t Int32t Int8t Char
 
 cdef class ElemType:
     name = ""
@@ -84,7 +84,7 @@ cdef class ElemTypeColorMatrix(ElemType):
         return fmt
     @staticmethod
     cdef Py_ssize_t itemsize():
-        return sizeof(cc.Complex)
+        return sizeof(cc.ComplexD)
     @staticmethod
     cdef int ndim():
         return 2
@@ -103,7 +103,7 @@ cdef class ElemTypeWilsonMatrix(ElemType):
         return fmt
     @staticmethod
     cdef Py_ssize_t itemsize():
-        return sizeof(cc.Complex)
+        return sizeof(cc.ComplexD)
     @staticmethod
     cdef int ndim():
         return 2
@@ -122,7 +122,7 @@ cdef class ElemTypeNonRelWilsonMatrix(ElemType):
         return fmt
     @staticmethod
     cdef Py_ssize_t itemsize():
-        return sizeof(cc.Complex)
+        return sizeof(cc.ComplexD)
     @staticmethod
     cdef int ndim():
         return 2
@@ -141,7 +141,7 @@ cdef class ElemTypeIsospinMatrix(ElemType):
         return fmt
     @staticmethod
     cdef Py_ssize_t itemsize():
-        return sizeof(cc.Complex)
+        return sizeof(cc.ComplexD)
     @staticmethod
     cdef int ndim():
         return 2
@@ -160,7 +160,7 @@ cdef class ElemTypeSpinMatrix(ElemType):
         return fmt
     @staticmethod
     cdef Py_ssize_t itemsize():
-        return sizeof(cc.Complex)
+        return sizeof(cc.ComplexD)
     @staticmethod
     cdef int ndim():
         return 2
@@ -179,7 +179,7 @@ cdef class ElemTypeWilsonVector(ElemType):
         return fmt
     @staticmethod
     cdef Py_ssize_t itemsize():
-        return sizeof(cc.Complex)
+        return sizeof(cc.ComplexD)
     @staticmethod
     cdef int ndim():
         return 1
@@ -190,15 +190,15 @@ cdef class ElemTypeWilsonVector(ElemType):
     cdef Py_ssize_t size():
         return sizeof(cc.WilsonVector)
 
-cdef class ElemTypeComplex(ElemType):
-    name = "Complex"
+cdef class ElemTypeComplexD(ElemType):
+    name = "ComplexD"
     @staticmethod
     cdef char* format():
         cdef char* fmt = 'Zd'
         return fmt
     @staticmethod
     cdef Py_ssize_t itemsize():
-        return sizeof(cc.Complex)
+        return sizeof(cc.ComplexD)
     @staticmethod
     cdef int ndim():
         return 0
@@ -207,7 +207,7 @@ cdef class ElemTypeComplex(ElemType):
         return cc.std_vector[Py_ssize_t]()
     @staticmethod
     cdef Py_ssize_t size():
-        return sizeof(cc.Complex)
+        return sizeof(cc.ComplexD)
 
 cdef class ElemTypeComplexF(ElemType):
     name = "ComplexF"
@@ -228,15 +228,15 @@ cdef class ElemTypeComplexF(ElemType):
     cdef Py_ssize_t size():
         return sizeof(cc.ComplexF)
 
-cdef class ElemTypeDouble(ElemType):
-    name = "Double"
+cdef class ElemTypeRealD(ElemType):
+    name = "RealD"
     @staticmethod
     cdef char* format():
         cdef char* fmt = 'd'
         return fmt
     @staticmethod
     cdef Py_ssize_t itemsize():
-        return sizeof(cc.Double)
+        return sizeof(cc.RealD)
     @staticmethod
     cdef int ndim():
         return 0
@@ -245,17 +245,17 @@ cdef class ElemTypeDouble(ElemType):
         return cc.std_vector[Py_ssize_t]()
     @staticmethod
     cdef Py_ssize_t size():
-        return sizeof(cc.Double)
+        return sizeof(cc.RealD)
 
-cdef class ElemTypeFloat(ElemType):
-    name = "Float"
+cdef class ElemTypeRealF(ElemType):
+    name = "RealF"
     @staticmethod
     cdef char* format():
         cdef char* fmt = 'f'
         return fmt
     @staticmethod
     cdef Py_ssize_t itemsize():
-        return sizeof(cc.Float)
+        return sizeof(cc.RealF)
     @staticmethod
     cdef int ndim():
         return 0
@@ -264,7 +264,7 @@ cdef class ElemTypeFloat(ElemType):
         return cc.std_vector[Py_ssize_t]()
     @staticmethod
     cdef Py_ssize_t size():
-        return sizeof(cc.Float)
+        return sizeof(cc.RealF)
 
 cdef class ElemTypeLong(ElemType):
     name = "Long"
@@ -322,6 +322,25 @@ cdef class ElemTypeInt64t(ElemType):
     @staticmethod
     cdef Py_ssize_t size():
         return sizeof(cc.Int64t)
+
+cdef class ElemTypeInt32t(ElemType):
+    name = "Int32t"
+    @staticmethod
+    cdef char* format():
+        cdef char* fmt = 'i'
+        return fmt
+    @staticmethod
+    cdef Py_ssize_t itemsize():
+        return sizeof(cc.Int32t)
+    @staticmethod
+    cdef int ndim():
+        return 0
+    @staticmethod
+    cdef cc.std_vector[Py_ssize_t] shape():
+        return cc.std_vector[Py_ssize_t]()
+    @staticmethod
+    cdef Py_ssize_t size():
+        return sizeof(cc.Int32t)
 
 cdef class ElemTypeInt8t(ElemType):
     name = "Int8t"

@@ -618,8 +618,8 @@ struct VFile
   std::string mode;
   long pos;
   long size;
-  std::multimap<long, Vector<uint8_t> > read_entries;
-  std::multimap<long, Vector<uint8_t> > write_entries;
+  std::multimap<Long, Vector<uint8_t> > read_entries;
+  std::multimap<Long, Vector<uint8_t> > write_entries;
 };
 
 inline void set_vfile_size(VFile& fp)
@@ -661,7 +661,7 @@ inline void vclose(VFile& fp)
     set_vfile_size(fp);
     VBFile fpr = vbopen(fp.fn, "r");
     long pos = 0;
-    for (std::multimap<long, Vector<uint8_t> >::const_iterator it =
+    for (std::multimap<Long, Vector<uint8_t> >::const_iterator it =
              fp.read_entries.begin();
          it != fp.read_entries.end(); ++it) {
       const long new_pos = it->first;
@@ -685,7 +685,7 @@ inline void vclose(VFile& fp)
     qassert(fp.mode == "w");
     VBFile fpr = vbopen(fp.fn + ".partial", "w");
     long pos = 0;
-    for (std::multimap<long, Vector<uint8_t> >::const_iterator it =
+    for (std::multimap<Long, Vector<uint8_t> >::const_iterator it =
              fp.write_entries.begin();
          it != fp.write_entries.end(); ++it) {
       const long new_pos = it->first;
@@ -714,7 +714,7 @@ long vread_data(const Vector<M>& v, VFile& fp)
 {
   qassert(fp.mode == "r");
   Vector<uint8_t> dv((uint8_t*)v.data(), v.data_size());
-  fp.read_entries.insert(std::pair<long, Vector<uint8_t> >(fp.pos, dv));
+  fp.read_entries.insert(std::pair<Long, Vector<uint8_t> >(fp.pos, dv));
   fp.pos += dv.size();
   qassert(0 <= fp.pos);
   return dv.size();
@@ -725,7 +725,7 @@ long vwrite_data(const Vector<M>& v, VFile& fp)
 {
   qassert(fp.mode == "w");
   Vector<uint8_t> dv((uint8_t*)v.data(), v.data_size());
-  fp.write_entries.insert(std::pair<long, Vector<uint8_t> >(fp.pos, dv));
+  fp.write_entries.insert(std::pair<Long, Vector<uint8_t> >(fp.pos, dv));
   fp.pos += dv.size();
   return dv.size();
 }

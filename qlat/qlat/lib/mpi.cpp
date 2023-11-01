@@ -300,11 +300,11 @@ void sync_node()
   qassert(s == v * get_num_node());
 }
 
-std::vector<int> mk_id_node_list_for_shuffle_rs(const RngState& rs)
+std::vector<Int> mk_id_node_list_for_shuffle_rs(const RngState& rs)
 {
   TIMER_VERBOSE("mk_id_node_list_for_shuffle_rs");
   const int num_node = get_num_node();
-  std::vector<int> list(num_node);
+  std::vector<Int> list(num_node);
   for (int i = 0; i < num_node; ++i) {
     list[i] = i;
   }
@@ -319,13 +319,13 @@ std::vector<int> mk_id_node_list_for_shuffle_rs(const RngState& rs)
   return list;
 }
 
-std::vector<int> mk_id_node_list_for_shuffle_step_size(const int step_size_)
+std::vector<Int> mk_id_node_list_for_shuffle_step_size(const int step_size_)
 {
   TIMER_VERBOSE("mk_id_node_list_for_shuffle_step_size");
   const int num_node = get_num_node();
   const int step_size =
       (step_size_ < num_node and num_node % step_size_ == 0) ? step_size_ : 1;
-  std::vector<int> list(num_node);
+  std::vector<Int> list(num_node);
   for (int i = 0; i < num_node; ++i) {
     const int id_node_in_shuffle = i;
     const int id_node =
@@ -335,7 +335,7 @@ std::vector<int> mk_id_node_list_for_shuffle_step_size(const int step_size_)
   return list;
 }
 
-std::vector<int> mk_id_node_list_for_shuffle_node()
+std::vector<Int> mk_id_node_list_for_shuffle_node()
 // return list
 // list[id_node_in_shuffle] = id_node
 {
@@ -374,7 +374,7 @@ std::vector<int> mk_id_node_list_for_shuffle_node()
   MPI_Bcast(&id_of_node, 1, MPI_LONG, 0, nodeComm);
   qassert(id_of_node < num_of_node);
   // calculate number of processes for each node
-  std::vector<long> num_process_for_each_node(num_of_node, 0);
+  std::vector<Long> num_process_for_each_node(num_of_node, 0);
   num_process_for_each_node[id_of_node] = 1;
   glb_sum(get_data(num_process_for_each_node));
   qassert(num_process_for_each_node[id_of_node] == localSize);
@@ -390,7 +390,7 @@ std::vector<int> mk_id_node_list_for_shuffle_node()
   long id_of_master_comm = localRank;
   qassert(id_of_master_comm < num_of_master_comm);
   // calculate number of processes for each masterComm
-  std::vector<long> num_process_for_each_master_comm(num_of_master_comm, 0);
+  std::vector<Long> num_process_for_each_master_comm(num_of_master_comm, 0);
   num_process_for_each_master_comm[id_of_master_comm] = 1;
   glb_sum(get_data(num_process_for_each_master_comm));
   qassert(num_process_for_each_master_comm[id_of_master_comm] == masterSize);
@@ -400,10 +400,10 @@ std::vector<int> mk_id_node_list_for_shuffle_node()
     id_node_in_shuffle += num_process_for_each_master_comm[i];
   }
   // calculate the list of id_node for each id_node_in_shuffle
-  std::vector<long> list_long(get_num_node(), 0);
+  std::vector<Long> list_long(get_num_node(), 0);
   list_long[id_node_in_shuffle] = get_id_node();
   glb_sum(get_data(list_long));
-  std::vector<int> list(get_num_node(), 0);
+  std::vector<Int> list(get_num_node(), 0);
   for (long i = 0; i < get_num_node(); ++i) {
     list[i] = list_long[i];
   }
@@ -419,7 +419,7 @@ std::vector<int> mk_id_node_list_for_shuffle_node()
   return list;
 }
 
-std::vector<int> mk_id_node_list_for_shuffle()
+std::vector<Int> mk_id_node_list_for_shuffle()
 // use env variable "q_mk_id_node_in_shuffle_seed"
 // if env variable start with "seed_", then the rest will be used as seed for
 // random assignment else env variable will be viewed as int for step_size
@@ -438,15 +438,15 @@ std::vector<int> mk_id_node_list_for_shuffle()
   }
 }
 
-std::vector<int> mk_id_node_in_shuffle_list()
+std::vector<Int> mk_id_node_in_shuffle_list()
 // return list_new
 // list_new[id_node] = id_node_in_shuffle
 {
   TIMER_VERBOSE("mk_id_node_in_shuffle_list")
-  const std::vector<int>& list = get_id_node_list_for_shuffle();
+  const std::vector<Int>& list = get_id_node_list_for_shuffle();
   const int num_node = list.size();
   qassert(num_node == get_num_node());
-  std::vector<int> list_new(num_node, 0);
+  std::vector<Int> list_new(num_node, 0);
   for (int i = 0; i < num_node; ++i) {
     const int id_node_in_shuffle = i;
     const int id_node = list[i];
@@ -468,7 +468,7 @@ int get_id_node_in_shuffle(const int id_node, const int new_num_node,
   if (new_num_node == num_node) {
     return id_node;
   } else {
-    const std::vector<int>& list = get_id_node_in_shuffle_list();
+    const std::vector<Int>& list = get_id_node_in_shuffle_list();
     qassert((long)list.size() == num_node);
     qassert(list[0] == 0);
     return list[id_node];
@@ -484,7 +484,7 @@ int get_id_node_from_id_node_in_shuffle(const int id_node_in_shuffle,
   if (new_num_node == num_node) {
     return id_node_in_shuffle;
   } else {
-    const std::vector<int>& list = get_id_node_list_for_shuffle();
+    const std::vector<Int>& list = get_id_node_list_for_shuffle();
     qassert((long)list.size() == num_node);
     qassert(list[0] == 0);
     return list[id_node_in_shuffle];

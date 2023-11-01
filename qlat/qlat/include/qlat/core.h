@@ -936,7 +936,7 @@ void qswap(SelectedPoints<M>& f1, SelectedPoints<M>& f2)
 
 using FieldRank = FieldM<int64_t, 1>;
 
-using FieldIndex = FieldM<long, 1>;
+using FieldIndex = FieldM<Long, 1>;
 
 struct API FieldSelection {
   long n_elems;  // num points of this node
@@ -946,7 +946,7 @@ struct API FieldSelection {
   FieldIndex f_local_idx;  // idx of points on this node (-1 if not selected)
   //
   vector_acc<int64_t> ranks;  // rank of the selected points
-  vector_acc<long> indices;   // local indices of selected points
+  vector_acc<Long> indices;   // local indices of selected points
   //
   void init();
   //

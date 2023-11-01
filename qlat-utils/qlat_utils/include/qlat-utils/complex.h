@@ -36,6 +36,10 @@ constexpr int qlat_aligned_bytes(int size)
 namespace qlat
 {  //
 
+using Long = int64_t;
+
+using Int = int32_t;
+
 using RealD = double;
 
 using RealF = float;

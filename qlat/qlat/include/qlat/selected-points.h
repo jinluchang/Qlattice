@@ -381,9 +381,9 @@ template <class M>
 LatData lat_data_from_selected_points(const SelectedPoints<M>& sp)
 {
   TIMER("lat_data_from_selected_points");
-  if (is_composed_of_complex<M>()) {
+  if (is_composed_of_complex_d<M>()) {
     return lat_data_from_selected_points_complex(sp);
-  } else if (is_composed_of_double<M>()) {
+  } else if (is_composed_of_real_d<M>()) {
     return lat_data_from_selected_points_double(sp);
   } else {
     qerr(fname + ssprintf(": get_type_name(M)=%s", get_type_name<M>().c_str()));
@@ -395,9 +395,9 @@ template <class M>
 void selected_points_from_lat_data(SelectedPoints<M>& sp, const LatData& ld)
 {
   TIMER("selected_points_from_lat_data");
-  if (is_composed_of_complex<M>()) {
+  if (is_composed_of_complex_d<M>()) {
     return selected_points_from_lat_data_complex(sp, ld);
-  } else if (is_composed_of_double<M>()) {
+  } else if (is_composed_of_real_d<M>()) {
     return selected_points_from_lat_data_double(sp, ld);
   } else {
     qerr(fname + ssprintf(": get_type_name(M)=%s", get_type_name<M>().c_str()));

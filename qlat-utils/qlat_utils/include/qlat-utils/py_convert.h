@@ -19,7 +19,7 @@ bool check_ctype_name(const std::string& ctype)
 template <>
 inline bool check_ctype_name<Complex>(const std::string& ctype)
 {
-  return "Complex" == ctype;
+  return "ComplexD" == ctype;
 }
 
 template <>
@@ -31,13 +31,13 @@ inline bool check_ctype_name<ComplexF>(const std::string& ctype)
 template <>
 inline bool check_ctype_name<double>(const std::string& ctype)
 {
-  return "Double" == ctype;
+  return "RealD" == ctype;
 }
 
 template <>
 inline bool check_ctype_name<float>(const std::string& ctype)
 {
-  return "Float" == ctype;
+  return "RealF" == ctype;
 }
 
 template <>

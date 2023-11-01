@@ -52,7 +52,7 @@ PointsSelection psel_from_fsel(const FieldSelection& fsel);
 
 PointsSelection psel_from_fsel_local(const FieldSelection& fsel);
 
-void set_selected_gindex(SelectedField<long>& sfgi, const FieldSelection& fsel);
+void set_selected_gindex(SelectedField<Long>& sfgi, const FieldSelection& fsel);
 
 void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
                              const Coordinate& total_site,
@@ -181,7 +181,7 @@ void only_keep_selected_points(Field<M>& f, const FieldSelection& fsel)
   qassert(fsel.f_local_idx.geo().is_only_local);
   qassert(geo_remult(f.geo()) == geo_remult(fsel.f_local_idx.geo()));
   const Geometry& geo = f.geo();
-  const FieldM<long, 1>& f_local_idx = fsel.f_local_idx;
+  const FieldM<Long, 1>& f_local_idx = fsel.f_local_idx;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const long idx = f_local_idx.get_elems_const(index)[0];

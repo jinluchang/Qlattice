@@ -572,9 +572,9 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
     }
   }
   const Coordinate shift_remain = shift - shift_corrected;
-  std::vector<long> to_send_size(num_node, 0);
-  std::vector<long> to_recv_size(num_node, 0);
-  FieldM<long, 2> f_send_idx, f_recv_idx;  // id_node, idx_for_that_node
+  std::vector<Long> to_send_size(num_node, 0);
+  std::vector<Long> to_recv_size(num_node, 0);
+  FieldM<Long, 2> f_send_idx, f_recv_idx;  // id_node, idx_for_that_node
   f_send_idx.init(geo);
   f_recv_idx.init(geo);
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -586,8 +586,8 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
         index_from_coordinate(xg_send / node_site, size_node);
     const long id_node_recv =
         index_from_coordinate(xg_recv / node_site, size_node);
-    Vector<long> fsv = f_send_idx.get_elems(index);
-    Vector<long> frv = f_recv_idx.get_elems(index);
+    Vector<Long> fsv = f_send_idx.get_elems(index);
+    Vector<Long> frv = f_recv_idx.get_elems(index);
     fsv[0] = id_node_send;
     frv[0] = id_node_recv;
     fsv[1] = to_send_size[id_node_send];
@@ -614,7 +614,7 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Vector<M> fv = f1.get_elems_const(index);
-    const Vector<long> fsv = f_send_idx.get_elems_const(index);
+    const Vector<Long> fsv = f_send_idx.get_elems_const(index);
     const int id_node = fsv[0];
     const long offset = fsv[1] * geo.multiplicity;
     std::vector<M>& to_send_v = to_send[id_node];
@@ -683,7 +683,7 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
     const Coordinate xl_s = mod(xl + shift_remain, total_site);
     const long index_s = geo.index_from_coordinate(xl_s);
     Vector<M> fv = f.get_elems(index_s);
-    const Vector<long> frv = f_recv_idx.get_elems_const(index);
+    const Vector<Long> frv = f_recv_idx.get_elems_const(index);
     const int id_node = frv[0];
     const long offset = frv[1] * geo.multiplicity;
     std::vector<M>& to_recv_v = to_recv[id_node];
@@ -717,7 +717,7 @@ void qnorm_field(FieldM<double, 1>& f, const Field<M>& f1)
 
 // --------------------
 
-void set_xg_field(Field<int>& f, const Geometry& geo_);
+void set_xg_field(Field<Int>& f, const Geometry& geo_);
 
 // --------------------
 

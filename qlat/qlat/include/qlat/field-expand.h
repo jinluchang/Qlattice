@@ -53,22 +53,22 @@ void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo,
                               const std::string& tag);
 
 struct API CommPackInfo {
-  long offset;
-  long buffer_idx;
-  long size;
+  Long offset;
+  Long buffer_idx;
+  Long size;
 };
 
 struct API CommMsgInfo {
-  int id_node;
-  long buffer_idx;
-  long size;
+  Int id_node;
+  Long buffer_idx;
+  Long size;
 };
 
 struct API CommPlan {
-  long total_send_size;  // send buffer size
+  Long total_send_size;  // send buffer size
   std::vector<CommMsgInfo> send_msg_infos;
   std::vector<CommPackInfo> send_pack_infos;
-  long total_recv_size;  // recv buffer size
+  Long total_recv_size;  // recv buffer size
   std::vector<CommMsgInfo> recv_msg_infos;
   std::vector<CommPackInfo> recv_pack_infos;
 };

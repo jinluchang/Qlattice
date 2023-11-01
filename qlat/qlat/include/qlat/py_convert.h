@@ -27,7 +27,7 @@
     } else if ("Float" == (ctype)) {                                    \
       (p_ret) = fname<float>(__VA_ARGS__);                              \
     } else if ("Long" == (ctype)) {                                     \
-      (p_ret) = fname<long>(__VA_ARGS__);                               \
+      (p_ret) = fname<Long>(__VA_ARGS__);                               \
     } else if ("Int64t" == (ctype)) {                                   \
       (p_ret) = fname<int64_t>(__VA_ARGS__);                            \
     } else if ("Char" == (ctype)) {                                     \
@@ -124,7 +124,7 @@ inline void py_convert(PyField& out, PyObject* in)
 // deprecated
 {
   out.ctype = py_get_ctype(in);
-  out.cdata = (void*)py_convert_data<long>(in, "cdata");
+  out.cdata = (void*)py_convert_data<Long>(in, "cdata");
 }
 
 inline PyField py_convert_field(PyObject* in)

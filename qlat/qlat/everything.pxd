@@ -11,7 +11,7 @@ cdef extern from "qlat/mpi.h" namespace "qlat":
     void sync_node() except +
     void bcast(float& x, const int root) except +
     void bcast(long& x, const int root) except +
-    void bcast(Complex& x, const int root) except +
+    void bcast(ComplexD& x, const int root) except +
     void bcast(ComplexF& x, const int root) except +
     void bcast(std_string& recv, const int root) except +
     void bcast(Coordinate& x, const int root) except +
@@ -19,7 +19,7 @@ cdef extern from "qlat/mpi.h" namespace "qlat":
     void glb_sum(long& ld) except +
     void glb_sum(float& ld) except +
     void glb_sum(double& ld) except +
-    void glb_sum(Complex& ld) except +
+    void glb_sum(ComplexD& ld) except +
     void glb_sum(ComplexF& ld) except +
     void glb_sum(LatData& ld) except +
 
@@ -232,7 +232,7 @@ cdef extern from "qlat/qcd-prop.h" namespace "qlat":
                       const int tslice, const CoordinateD& lmom) except +
 
     void set_point_src(Prop& prop, const Geometry& geo_input,
-                       const Coordinate& xg, const Complex& value)
+                       const Coordinate& xg, const ComplexD& value)
 
 cdef extern from "qlat/qcd-smear.h" namespace "qlat":
 

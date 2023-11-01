@@ -70,7 +70,7 @@ ShufflePlan make_shuffle_plan(std::vector<FieldSelection>& fsels,
     sp.scp.global_comm_size = fsel.f_rank.geo().total_volume();
     return sp;
   }
-  return make_shuffle_plan_generic(fsels, fsel, new_size_node, identity<long>);
+  return make_shuffle_plan_generic(fsels, fsel, new_size_node, identity<Long>);
 }
 
 ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)

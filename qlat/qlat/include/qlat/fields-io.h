@@ -475,7 +475,7 @@ struct API ShuffledFieldsReader {
             const Coordinate& new_size_node_=Coordinate());
 };
 
-typedef std::map<long, Handle<ShuffledFieldsWriter> > ShuffledFieldsWriterMap;
+typedef std::map<Long, Handle<ShuffledFieldsWriter> > ShuffledFieldsWriterMap;
 
 API inline ShuffledFieldsWriterMap& get_all_shuffled_fields_writer()
 {
@@ -508,7 +508,7 @@ bool does_file_exist_sync_node(ShuffledFieldsReader& sfr,
                                const std::string& fn);
 
 bool check_file_sync_node(ShuffledFieldsReader& sfr, const std::string& fn,
-                          std::vector<long>& final_offsets);
+                          std::vector<Long>& final_offsets);
 
 std::vector<std::string> list_fields(ShuffledFieldsReader& sfr);
 
@@ -585,7 +585,7 @@ void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
   TIMER_VERBOSE("set_field_info_from_fields");
   total_site = Coordinate();
   multiplicity = 0;
-  std::vector<long> available_nodes(product(sfr.new_size_node), 0);
+  std::vector<Long> available_nodes(product(sfr.new_size_node), 0);
   for (int i = 0; i < (int)fs.size(); ++i) {
     const int id_node = sfr.frs[i].geon.id_node;
     qassert(0 <= id_node and id_node < (int)available_nodes.size());
@@ -633,7 +633,7 @@ void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
   TIMER_VERBOSE("set_field_info_from_fields");
   total_site = Coordinate();
   multiplicity = 0;
-  std::vector<long> available_nodes(product(sfr.new_size_node), 0);
+  std::vector<Long> available_nodes(product(sfr.new_size_node), 0);
   for (int i = 0; i < (int)sfs.size(); ++i) {
     const int id_node = sfr.frs[i].geon.id_node;
     qassert(0 <= id_node and id_node < (int)available_nodes.size());

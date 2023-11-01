@@ -89,7 +89,7 @@ cdef class ElemTypeWilsonVector(ElemType):
     @staticmethod
     cdef Py_ssize_t size()
 
-cdef class ElemTypeComplex(ElemType):
+cdef class ElemTypeComplexD(ElemType):
     @staticmethod
     cdef char* format()
     @staticmethod
@@ -113,7 +113,7 @@ cdef class ElemTypeComplexF(ElemType):
     @staticmethod
     cdef Py_ssize_t size()
 
-cdef class ElemTypeDouble(ElemType):
+cdef class ElemTypeRealD(ElemType):
     @staticmethod
     cdef char* format()
     @staticmethod
@@ -125,7 +125,7 @@ cdef class ElemTypeDouble(ElemType):
     @staticmethod
     cdef Py_ssize_t size()
 
-cdef class ElemTypeFloat(ElemType):
+cdef class ElemTypeRealF(ElemType):
     @staticmethod
     cdef char* format()
     @staticmethod
@@ -162,6 +162,18 @@ cdef class ElemTypeInt(ElemType):
     cdef Py_ssize_t size()
 
 cdef class ElemTypeInt64t(ElemType):
+    @staticmethod
+    cdef char* format()
+    @staticmethod
+    cdef Py_ssize_t itemsize()
+    @staticmethod
+    cdef int ndim()
+    @staticmethod
+    cdef cqlat_utils.std_vector[Py_ssize_t] shape()
+    @staticmethod
+    cdef Py_ssize_t size()
+
+cdef class ElemTypeInt32t(ElemType):
     @staticmethod
     cdef char* format()
     @staticmethod
