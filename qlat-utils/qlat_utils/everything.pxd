@@ -309,6 +309,7 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
     LatDim lat_dim_number(const std_string& name, const long start, const long end)
     LatDim lat_dim_number(const std_string& name, const long start, const long end, const long inc)
     LatDim lat_dim_string(const std_string& name, const std_vector[std_string]& indices)
+    long lat_dim_idx(const LatDim& dim, const std_string& idx) except +
     LatData operator*(const Complex& a, const LatData& ld) except +
     LatData operator*(const double a, const LatData& ld) except +
     LatData operator*(const LatData& ld, const Complex& a) except +

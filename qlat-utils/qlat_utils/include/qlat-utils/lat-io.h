@@ -189,6 +189,20 @@ inline long lat_dim_idx(const LatDim& dim, const std::string& idx)
       qassert(i < dim.size);
       return i;
     }
+  } else if ((long)dim.indices.size() == dim.size) {
+    for (long i = 0; i < (long)dim.indices.size(); ++i) {
+      if (idx == dim.indices[i]) {
+        return i;
+      }
+    }
+    std::vector<long> possible_i_vec;
+    for (long i = 0; i < (long)dim.indices.size(); ++i) {
+      if (dim.indices[i].find(idx) != std::string::npos) {
+        possible_i_vec.push_back(i);
+      }
+    }
+    qassert(possible_i_vec.size() == 1);
+    return possible_i_vec[0];
   } else {
     qassert((long)dim.indices.size() <= dim.size);
     for (long i = 0; i < (long)dim.indices.size(); ++i) {

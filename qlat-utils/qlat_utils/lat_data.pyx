@@ -178,6 +178,9 @@ cdef class LatData:
         cdef int i
         return [ self.xx.info[i].name for i in range(ndim) ]
 
+    def dim_idx(self, int dim, const cc.std_string& idx):
+        return cc.lat_dim_idx(self.xx.info[dim], idx)
+
     def to_numpy(self):
         return np.asarray(self).copy()
 

@@ -7,6 +7,7 @@ __all__ += [
         'Coordinate',
         'mod_coordinate',
         'smod_coordinate',
+        'smod_sym_coordinate',
         'middle_mod_coordinate',
         'coordinate_from_index',
         'index_from_coordinate',
