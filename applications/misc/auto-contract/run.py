@@ -230,7 +230,7 @@ def auto_contract_hvp_field(job_tag, traj, get_prop, get_psel, get_fsel):
                 values[idx] = v
             assert count == fsel.n_elems()
             shift = [ -x for x in xg_src ]
-            values_shifted = values.field_shift(shift)
+            values_shifted = values.shift(shift)
             return values_shifted
         values_shifted = q.parallel_map_sum(feval, xg_fsel_list,
                 sum_function = sum_function, sum_start = q.SelectedField("Complex", fsel, len(expr_names)))
@@ -320,7 +320,7 @@ def auto_contract_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get_f
                 values[idx] = v.tobytes()
             assert count == fsel.n_elems()
             shift = [ -x for x in xg_src ]
-            values_shifted = values.field_shift(shift)
+            values_shifted = values.shift(shift)
             return values_shifted
         values_shifted = q.parallel_map_sum(feval, xg_fsel_list,
                 sum_function = sum_function, sum_start = q.SelectedField("Complex", fsel, len(expr_names)))
@@ -353,12 +353,12 @@ def auto_contract_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get_f
                 values[idx] = v.tobytes()
             assert count == fsel.n_elems()
             shift = [ -x for x in xg_src ]
-            values_shifted = values.field_shift(shift)
+            values_shifted = values.shift(shift)
             return values_shifted
         values_shifted = q.parallel_map_sum(feval, xg_fsel_list,
                 sum_function = sum_function, sum_start = q.SelectedField("Complex", fsel, len(expr_names)))
         field_r += values_shifted
-    field_r.reflect()
+    field_r = field_r.reflect()
     field += field_r
     field *= 0.5
     # scale the value appropriately

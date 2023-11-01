@@ -448,8 +448,10 @@ def mk_rand_fsel_smear(job_tag, traj, n_per_tslice_smear):
 
 @q.timer_verbose
 def run_psel_smear(job_tag, traj):
-    # return lambda : psel_smear
-    # psel_smear should randomly select same number of point on each tslice
+    """
+    return lambda : psel_smear
+    psel_smear should randomly select same number of point on each tslice
+    """
     tfn = f"{job_tag}/point-selection-smear/traj-{traj}.txt"
     path_psel = get_load_path(tfn)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
@@ -485,8 +487,7 @@ def run_gf_ape(job_tag, get_gf):
     @q.timer_verbose
     def run():
         gf = get_gf()
-        gf_ape = gf.copy()
-        q.gf_spatial_ape_smear(gf_ape, coef, step)
+        gf_ape = q.gf_spatial_ape_smear(gf, coef, step)
         gf_ape = q.mk_left_expanded_gauge_field(gf_ape)
         return gf_ape
     return q.lazy_call(run)

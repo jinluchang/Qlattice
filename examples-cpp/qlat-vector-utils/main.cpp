@@ -101,8 +101,8 @@ void simple_tests()
     Vec_redistribute vec_rot(fd, true);
     vec_rot.reorder(gfT.data(), gfT_buf.data(), 1, 9 ,   0);
 
-    double gnorm = gauge.norm().real();
-    double rnorm = gfT.norm().real();
+    double gnorm = gauge.norm2().real();
+    double rnorm = gfT.norm2().real();
     qlat::vector_gpu<qlat::Complex > diff;diff.resize(Nsize);
     Complex* p1 = gfT.p;
     Complex* p2 = gauge.p;
@@ -113,7 +113,7 @@ void simple_tests()
     displayln_info(
         ssprintf("CHECK: Consistency: orig qnorm: %.10E ; rotate qnorm %.10E, "
                  "diff qnorm %.10E",
-                 gnorm, rnorm / gnorm, diff.norm().real()));
+                 gnorm, rnorm / gnorm, diff.norm2().real()));
   }
 
 }

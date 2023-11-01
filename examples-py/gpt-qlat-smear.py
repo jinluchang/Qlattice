@@ -41,8 +41,7 @@ fsel.set_rand(rs, total_site, n_per_tslice)
 fselc = fsel.copy()
 fselc.add_psel(psel)
 
-gf_ape = gf.copy()
-q.gf_spatial_ape_smear(gf_ape, 0.5, 30)
+gf_ape = q.gf_spatial_ape_smear(gf, 0.5, 30)
 gf_ape = q.mk_left_expanded_gauge_field(gf_ape)
 
 inv_type = 1
@@ -61,7 +60,7 @@ q.displayln_info(f"CHECK: qnorm(src) = {q.qnorm(src)}")
 
 smear_coef = 0.9375
 smear_step = 10
-q.prop_smear(src, gf_ape, smear_coef, smear_step)
+src = q.prop_smear(src, gf_ape, smear_coef, smear_step)
 
 q.displayln_info(f"CHECK: qnorm(src) = {q.qnorm(src):.12E} after smear")
 
@@ -95,9 +94,7 @@ q.displayln_info(f"CHECK: qnorm(sol_ws) = {q.qnorm(sol_ws):.5E}")
 
 sol_smear_psel = q.PselProp(psel_smear)
 
-sol_smear = sol.copy()
-
-q.prop_smear(sol_smear, gf_ape, smear_coef, smear_step)
+sol_smear = q.prop_smear(sol, gf_ape, smear_coef, smear_step)
 
 q.displayln_info(f"CHECK: qnorm(sol_smear) = {q.qnorm(sol_smear):.5E}")
 

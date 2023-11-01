@@ -131,6 +131,13 @@ int glb_sum(Vector<int64_t> recv, const Vector<int64_t>& send)
                        MPI_SUM, get_comm());
 }
 
+int glb_sum(Vector<int32_t> recv, const Vector<int32_t>& send)
+{
+  qassert(recv.size() == send.size());
+  return MPI_Allreduce((int32_t*)send.data(), recv.data(), recv.size(),
+                       MPI_INT32_T, MPI_SUM, get_comm());
+}
+
 int glb_sum(Vector<char> recv, const Vector<char>& send)
 {
   qassert(recv.size() == send.size());
@@ -188,6 +195,16 @@ int glb_sum(Vector<int64_t> vec)
   return glb_sum(vec, tmp);
 }
 
+int glb_sum(Vector<int32_t> vec)
+{
+  if (1 == get_num_node()) {
+    return 0;
+  }
+  std::vector<int32_t> tmp(vec.size());
+  assign(tmp, vec);
+  return glb_sum(vec, tmp);
+}
+
 int glb_sum(Vector<char> vec)
 {
   if (1 == get_num_node()) {
@@ -203,6 +220,8 @@ int glb_sum(double& x) { return glb_sum(Vector<double>(x)); }
 int glb_sum(float& x) { return glb_sum(Vector<float>(x)); }
 
 int glb_sum(int64_t& x) { return glb_sum(Vector<int64_t>(x)); }
+
+int glb_sum(int32_t& x) { return glb_sum(Vector<int32_t>(x)); }
 
 int glb_sum(Complex& c) { return glb_sum(Vector<double>((double*)&c, 2)); }
 

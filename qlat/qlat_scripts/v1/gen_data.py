@@ -286,8 +286,7 @@ def compute_prop_3(inv, src_smear, *, tag, sfw, path_sp, psel, fsel, fselc, gt, 
     sol_gt = gt * sol
     sol_ws = sol_gt.glb_sum_tslice()
     sol_ws.save(get_save_path(fn_spw))
-    sol_smear = sol.copy()
-    smear(sol_smear)
+    sol_smear = smear(sol)
     sol_smear_psel = q.PselProp(psel_smear)
     sol_smear_psel @= sol_smear
     sol_smear_psel.save(get_save_path(fn_sps))
@@ -310,9 +309,8 @@ def compute_prop_smear(job_tag, xg_src, inv_type, inv_acc, *,
     coef = get_param(job_tag, "prop_smear_coef")
     step = get_param(job_tag, "prop_smear_step")
     def smear(src):
-        q.prop_smear(src, gf_ape, coef, step)
-    src = q.mk_point_src(geo, xg_src)
-    smear(src)
+        return q.prop_smear(src, gf_ape, coef, step)
+    src = smear(q.mk_point_src(geo, xg_src))
     prop = compute_prop_3(inv, src, tag = tag, sfw = sfw, path_sp = path_sp,
                           psel = psel, fsel = fsel, fselc = fselc, gt = gt,
                           psel_smear = psel_smear, smear = smear)
