@@ -77,8 +77,8 @@ EXPORT(hmc_estimate_mass_scalar_action, {
   }
   ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
   Field<double>& masses = py_convert_type<Field<double>>(p_masses);
-  const Field<ComplexD>& field_ft = py_convert_type<Field<Complex>>(p_field_ft);
-  const Field<ComplexD>& force_ft = py_convert_type<Field<Complex>>(p_force_ft);
+  const Field<ComplexD>& field_ft = py_convert_type<Field<ComplexD>>(p_field_ft);
+  const Field<ComplexD>& force_ft = py_convert_type<Field<ComplexD>>(p_force_ft);
   sa.hmc_estimate_mass(masses, field_ft, force_ft, phi0);
   Py_RETURN_NONE;
 })
@@ -105,7 +105,7 @@ EXPORT(hmc_m_hamilton_node_scalar_action, {
     return NULL;
   }
   ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
-  const Field<ComplexD>& sm = py_convert_type<Field<Complex>>(p_sm);
+  const Field<ComplexD>& sm = py_convert_type<Field<ComplexD>>(p_sm);
   const Field<double>& masses = py_convert_type<Field<double>>(p_masses);
   const double ret = sa.hmc_m_hamilton_node(sm, masses);
   return py_convert(ret);
@@ -137,8 +137,8 @@ EXPORT(hmc_field_evolve_scalar_action, {
     return NULL;
   }
   ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
-  Field<ComplexD>& sf = py_convert_type<Field<Complex>>(p_sf);
-  const Field<ComplexD>& sm = py_convert_type<Field<Complex>>(p_sm);
+  Field<ComplexD>& sf = py_convert_type<Field<ComplexD>>(p_sf);
+  const Field<ComplexD>& sm = py_convert_type<Field<ComplexD>>(p_sm);
   const Field<double>& masses = py_convert_type<Field<double>>(p_masses);
   sa.hmc_field_evolve(sf, sm, masses, step_size);
   Py_RETURN_NONE;
@@ -182,7 +182,7 @@ EXPORT(hmc_set_rand_momentum_scalar_action, {
     return NULL;
   }
   ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
-  Field<ComplexD>& sm = py_convert_type<Field<Complex>>(p_sm);
+  Field<ComplexD>& sm = py_convert_type<Field<ComplexD>>(p_sm);
   Field<double>& masses = py_convert_type<Field<double>>(p_masses);
   const RngState& rs = py_convert_type<RngState>(p_rs);
   sa.hmc_set_rand_momentum(sm, masses, rs);
@@ -200,8 +200,8 @@ EXPORT(hmc_predict_field_scalar_action, {
     return NULL;
   }
   ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
-  Field<ComplexD>& sf_ft = py_convert_type<Field<Complex>>(p_sf_ft);
-  const Field<ComplexD>& sm_ft = py_convert_type<Field<Complex>>(p_sm_ft);
+  Field<ComplexD>& sf_ft = py_convert_type<Field<ComplexD>>(p_sf_ft);
+  const Field<ComplexD>& sm_ft = py_convert_type<Field<ComplexD>>(p_sm_ft);
   const Field<double>& masses = py_convert_type<Field<double>>(p_masses);
   sa.hmc_predict_field(sf_ft, sm_ft, masses, vev_sigma);
   Py_RETURN_NONE;

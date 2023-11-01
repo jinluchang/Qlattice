@@ -38,7 +38,7 @@ enum DATA_TYPE {
   //
   DOUBLE_TYPE = FLOATIND + 0 + MAXTYPE * sizeof(double),
   FLOAT_TYPE = FLOATIND + 1 + MAXTYPE * sizeof(float),
-  ComplexD_TYPE = FLOATIND + 2 + MAXTYPE * sizeof(Complex),
+  ComplexD_TYPE = FLOATIND + 2 + MAXTYPE * sizeof(ComplexD),
   ComplexF_TYPE = FLOATIND + 3 + MAXTYPE * sizeof(ComplexF),
   //
   ColorMatrix_TYPE = FLOATIND + 4 + MAXTYPE * sizeof(ColorMatrixT<double>),

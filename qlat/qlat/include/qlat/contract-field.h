@@ -132,7 +132,7 @@ inline void field_complex_conjugate(Field<ComplexD>& f)
 // -----------------------------------------------------------------------------------
 
 inline void contract_meson_vv_unshifted_acc_x(
-    Vector<ComplexD> v, const Complex coef, const WallSrcProps& wsp1,
+    Vector<ComplexD> v, const ComplexD coef, const WallSrcProps& wsp1,
     const WallSrcProps& wsp2, const WilsonMatrix& wm3_x_y,
     const Coordinate& xg_x, const long xg_x_idx, const Coordinate& xg_y,
     const long xg_y_psel_idx, const int t_wall, const bool exact)
@@ -162,7 +162,7 @@ inline void contract_meson_vv_unshifted_acc_x(
 }
 
 inline void contract_meson_vv_unshifted_acc_x(
-    Vector<ComplexD> v, const Complex coef, const WallSrcProps& wsp1,
+    Vector<ComplexD> v, const ComplexD coef, const WallSrcProps& wsp1,
     const WallSrcProps& wsp2, const WilsonMatrix& wm3_x_y,
     const Coordinate& xg_x, const long xg_x_idx, const Coordinate& xg_y,
     const long xg_y_psel_idx, const int t_wall)
@@ -239,7 +239,7 @@ inline void contract_meson_vv_unshifted(
 }
 
 inline void contract_meson_vv_acc(
-    FieldM<ComplexD, 8 * 8>& decay, FieldM<Complex, 8 * 8>& fission,
+    FieldM<ComplexD, 8 * 8>& decay, FieldM<ComplexD, 8 * 8>& fission,
     const WallSrcProps& wsp1, const WallSrcProps& wsp2,
     const SelProp& prop3_x_y, const Coordinate& xg_y, const long xg_y_psel_idx,
     const int tsep, const PointsSelection& psel, const FieldSelection& fsel,
@@ -287,7 +287,7 @@ inline WilsonMatrix get_wsnk_prop_avg(const WallSrcProps& wsp, const int t_snk,
 }
 
 inline void contract_meson_vv_meson_unshifted_acc_x(
-    Vector<ComplexD> v, const Complex coef, const WallSrcProps& wsp1,
+    Vector<ComplexD> v, const ComplexD coef, const WallSrcProps& wsp1,
     const WallSrcProps& wsp2, const WallSrcProps& wsp3,
     const WilsonMatrix& wm4_x_y, const Coordinate& xg_x, const long xg_x_idx,
     const Coordinate& xg_y, const long xg_y_psel_idx, const int t_wall_snk,
@@ -328,7 +328,7 @@ inline void contract_meson_vv_meson_unshifted_acc_x(
 }
 
 inline void contract_meson_vv_meson_unshifted_acc_x(
-    Vector<ComplexD> v, const Complex coef, const WallSrcProps& wsp1,
+    Vector<ComplexD> v, const ComplexD coef, const WallSrcProps& wsp1,
     const WallSrcProps& wsp2, const WallSrcProps& wsp3,
     const WilsonMatrix& wm4_x_y, const Coordinate& xg_x, const long xg_x_idx,
     const Coordinate& xg_y, const long xg_y_psel_idx, const int t_wall_snk,
@@ -457,7 +457,7 @@ inline void contract_meson_vv_meson_unshifted(
 }
 
 inline void contract_meson_vv_meson_acc(
-    FieldM<ComplexD, 8 * 8>& forward, FieldM<Complex, 8 * 8>& backward,
+    FieldM<ComplexD, 8 * 8>& forward, FieldM<ComplexD, 8 * 8>& backward,
     const WallSrcProps& wsp1, const WallSrcProps& wsp2,
     const WallSrcProps& wsp3, const SelProp& prop4_x_y, const Coordinate& xg_y,
     const long xg_y_psel_idx, const int tsep, const PointsSelection& psel,

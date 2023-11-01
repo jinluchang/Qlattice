@@ -60,7 +60,7 @@ void fft_complex_field_dir(Field<M>& field1, const Field<M>& field,
   std::vector<Field<M> > fft_fields;
   shuffle_field(fft_fields, field, sp);
   field1.init();
-  ComplexD* fftdatac = (Complex*)fftw_malloc(nc_size * sizec * sizeof(Complex));
+  ComplexD* fftdatac = (ComplexD*)fftw_malloc(nc_size * sizec * sizeof(ComplexD));
 #pragma omp parallel for
   for (int i = 0; i < (int)fft_fields.size(); ++i) {
     if (not(get_data_size(fft_fields[i]) == nc_size * (int)sizeof(ComplexD))) {

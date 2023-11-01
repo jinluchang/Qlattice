@@ -24,7 +24,7 @@ void simple_tests()
 
   {
     VectorGPUKey gkey(100*sizeof(qlat::ComplexD), std::string("test_buf"), false);
-    vector_gpu<qlat::ComplexD>& buf = get_vector_gpu_plan<qlat::Complex >(gkey);
+    vector_gpu<qlat::ComplexD>& buf = get_vector_gpu_plan<qlat::ComplexD >(gkey);
     buf[0] = 0;
     buf[100-1] = 1;
     displayln_info(ssprintf("CHECK: vector gpu buf: OK") );

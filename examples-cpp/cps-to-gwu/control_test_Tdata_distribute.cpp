@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
     /////Be careful about the order
     int bi = fd.get_mi_curr(4)*b0 + ni;
 
-    qlat::ComplexD tem = sendbuf[off] - (((p[3]*900+p[2])*900+p[1])*900+p[0] + std::cos(ci) + qlat::Complex(0.0,std::cos(bi)));
+    qlat::ComplexD tem = sendbuf[off] - (((p[3]*900+p[2])*900+p[1])*900+p[0] + std::cos(ci) + qlat::ComplexD(0.0,std::cos(bi)));
     diff += qnorm(tem);
   }
   sum_all_size(&diff, 1);
@@ -182,7 +182,7 @@ int main(int argc, char* argv[])
     /////Be careful about the order
     int bi = fd.get_mi_curr()*b0 + ni;
 
-    qlat::ComplexD tem = sendbuf[off] - (((p[3]*900+p[2])*900+p[1])*900+p[0] + std::cos(ci) + qlat::Complex(0.0,std::cos(bi)));
+    qlat::ComplexD tem = sendbuf[off] - (((p[3]*900+p[2])*900+p[1])*900+p[0] + std::cos(ci) + qlat::ComplexD(0.0,std::cos(bi)));
     diff += qnorm(tem);
   }
   sum_all_size(&diff, 1);
@@ -273,7 +273,7 @@ int main(int argc, char* argv[])
     int bi = fd.get_mi_curr()*b0 + ni;
 
     /////databuf[off] = ((p[3]*900+p[2])*900+p[1])*900+p[0] + std::cos(ci) + qlat::ComplexD(0.0,std::cos(bi));
-    qlat::ComplexD tem = sendbuf[off] - (((p[3]*900+p[2])*900+p[1])*900+p[0] + std::cos(ci) + qlat::Complex(0.0,std::cos(bi)));
+    qlat::ComplexD tem = sendbuf[off] - (((p[3]*900+p[2])*900+p[1])*900+p[0] + std::cos(ci) + qlat::ComplexD(0.0,std::cos(bi)));
     diff += qnorm(tem);
   }
   sum_all_size(&diff, 1);

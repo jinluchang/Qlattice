@@ -26,7 +26,7 @@ template <class M>
 PyObject* set_double_from_complex_field_ctype(PyObject* p_field, PyObject* p_cf)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
-  Field<ComplexD>& cf = py_convert_type_field<Complex>(p_cf);
+  Field<ComplexD>& cf = py_convert_type_field<ComplexD>(p_cf);
   set_double_from_complex(f, cf);
   Py_RETURN_NONE;
 }
@@ -35,7 +35,7 @@ template <class M>
 PyObject* set_abs_from_complex_field_ctype(PyObject* p_field, PyObject* p_cf)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
-  Field<ComplexD>& cf = py_convert_type_field<Complex>(p_cf);
+  Field<ComplexD>& cf = py_convert_type_field<ComplexD>(p_cf);
   set_abs_from_complex(f, cf);
   Py_RETURN_NONE;
 }

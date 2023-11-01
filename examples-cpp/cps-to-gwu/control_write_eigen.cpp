@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
     ////random_link(gf, 0); 
     //set_left_expanded_gauge_field(gfD, gf);
     /////GaugeFieldT<qlat::ComplexD  > gfD;gfD = gfa;
-    //qlat::ComplexD*  tem0 = (qlat::Complex*  ) qlat::get_data(gfD).data();
+    //qlat::ComplexD*  tem0 = (qlat::ComplexD*  ) qlat::get_data(gfD).data();
     //qlat::ComplexF* tem1 = (qlat::ComplexF* ) qlat::get_data(gfF).data();
     //LInt cpy_size = (LInt)(qlat::get_data(gfD).data_size()/(sizeof(qlat::ComplexD)));
     //cpy_data_thread(tem1, tem0, cpy_size, 0);

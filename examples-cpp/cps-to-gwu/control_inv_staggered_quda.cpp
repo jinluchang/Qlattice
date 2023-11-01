@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
     //quda_in[i]->Source(QUDA_RANDOM_SOURCE);
 
     //////set point src at zero
-    qlat::ComplexD* res = (qlat::Complex*) (qinv.csrc->V());
+    qlat::ComplexD* res = (qlat::ComplexD*) (qinv.csrc->V());
     long Vh = V / 2;
     #pragma omp parallel for
     for (long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {

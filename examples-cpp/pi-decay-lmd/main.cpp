@@ -3,7 +3,7 @@
 namespace qlat
 {  //
 
-inline void scalar_inversion(Field<ComplexD>& sol, const Field<Complex>& src,
+inline void scalar_inversion(Field<ComplexD>& sol, const Field<ComplexD>& src,
                              const double mass,
                              const CoordinateD momtwist = CoordinateD())
 // the mass is not necessarily the exponent of the exponential fall off
@@ -35,7 +35,7 @@ inline void scalar_inversion(Field<ComplexD>& sol, const Field<Complex>& src,
   sol *= 1.0 / geo.total_volume();
 }
 
-inline void scalar_derivative(Field<ComplexD>& sol, const Field<Complex>& src,
+inline void scalar_derivative(Field<ComplexD>& sol, const Field<ComplexD>& src,
                               const CoordinateD momtwist = CoordinateD())
 // v[m*4 + mu] = sv[m] * std::sin(kk[mu]);
 {
@@ -69,7 +69,7 @@ inline void scalar_derivative(Field<ComplexD>& sol, const Field<Complex>& src,
   sol *= 1.0 / geo.total_volume();
 }
 
-inline void scalar_divergence(Field<ComplexD>& sol, const Field<Complex>& src,
+inline void scalar_divergence(Field<ComplexD>& sol, const Field<ComplexD>& src,
                               const CoordinateD momtwist = CoordinateD())
 // v[m] += sv[m*4+mu] * std::sin(kk[mu]);
 {
@@ -105,7 +105,7 @@ inline void scalar_divergence(Field<ComplexD>& sol, const Field<Complex>& src,
 }
 
 inline void set_pion_photon_photon_vertex_two_end(
-    FieldM<ComplexD, 4 * 4>& pion, const FieldM<Complex, 4>& photon1,
+    FieldM<ComplexD, 4 * 4>& pion, const FieldM<ComplexD, 4>& photon1,
     const FieldM<ComplexD, 4>& photon2, const double m_vector, const double f_pi)
 {
   TIMER("set_pion_photon_photon_vertex_two_end");
@@ -229,7 +229,7 @@ inline void set_pion_photon_photon_vertex(FieldM<ComplexD, 4 * 4>& pion,
 }
 
 inline void set_photon_pion_photon_vertex_two_end(
-    FieldM<ComplexD, 4>& photon1, const FieldM<Complex, 1>& pion,
+    FieldM<ComplexD, 4>& photon1, const FieldM<ComplexD, 1>& pion,
     const FieldM<ComplexD, 4>& photon2, const double m_vector, const double f_pi)
 {
   TIMER("set_photon_pion_photon_vertex_two_end");

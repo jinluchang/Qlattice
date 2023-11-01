@@ -471,7 +471,7 @@ struct smear_fun{
   }
 
   //void gauge_setup(qlat::vector_gpu<T >& gfE, const GaugeFieldT<Tg >& gf,
-  //           const qlat::vector_acc<qlat::ComplexD >& momF = qlat::vector_acc<qlat::Complex >(), bool force_update = false);
+  //           const qlat::vector_acc<qlat::ComplexD >& momF = qlat::vector_acc<qlat::ComplexD >(), bool force_update = false);
   template <class Td>
   void gauge_setup(const GaugeFieldT<Td >& gf, const CoordinateD& mom_, const int force_update = 0)
   {
@@ -647,7 +647,7 @@ struct smear_fun_copy{
     //smfP = smf.smfP;
 
     if(prec == ComplexD_TYPE ){
-      const smear_fun<ComplexD  >* a =   ((const smear_fun<Complex  >*) smf.smfP);
+      const smear_fun<ComplexD  >* a =   ((const smear_fun<ComplexD  >*) smf.smfP);
       smfP = (void*) (new smear_fun<ComplexD  >(a->geo, a->smear_in_time_dir));
     }
     else if(prec == ComplexF_TYPE ){
@@ -663,7 +663,7 @@ struct smear_fun_copy{
   inline void delete_pointer()
   {
     if(smfP != NULL){
-    if(prec == ComplexD_TYPE  ){delete ((smear_fun<Complex  >*)smfP);}
+    if(prec == ComplexD_TYPE  ){delete ((smear_fun<ComplexD  >*)smfP);}
     if(prec == ComplexF_TYPE ){delete ((smear_fun<ComplexF >*)smfP);}
     smfP = NULL;
     }
@@ -681,7 +681,7 @@ inline smear_fun_copy make_smear_plan(const Geometry& geo, const bool smear_in_t
 {
   TIMER_VERBOSE("make_smear_plan");
   smear_fun_copy st;st.prec = prec;
-  if(prec == ComplexD_TYPE ){     st.smfP = (void*) (new smear_fun<Complex >(geo, smear_in_time_dir));}
+  if(prec == ComplexD_TYPE ){     st.smfP = (void*) (new smear_fun<ComplexD >(geo, smear_in_time_dir));}
   else if(prec == ComplexF_TYPE){st.smfP = (void*) (new smear_fun<ComplexF>(geo, smear_in_time_dir));}
   else{print0("Only ComplexD and ComplexF supported for smearing! \n");Qassert(false);}
   return st;
@@ -731,7 +731,7 @@ inline SmearPlanKey get_smear_plan_key(const Geometry& geo, const bool smear_in_
 
 ////TODO need to change other parts for c0, c1
 template <class T, class Td>
-void extend_links_to_vecs(T* resE, const GaugeFieldT<Td >& gf, const qlat::vector_acc<qlat::ComplexD >& mom_factors=qlat::vector_acc<qlat::Complex >()){
+void extend_links_to_vecs(T* resE, const GaugeFieldT<Td >& gf, const qlat::vector_acc<qlat::ComplexD >& mom_factors=qlat::vector_acc<qlat::ComplexD >()){
   TIMERB("extend_links_to_vecs");
   const Geometry& geo = gf.geo();
   GaugeFieldT<Td > gf1;
@@ -766,7 +766,7 @@ void extend_links_to_vecs(T* resE, const GaugeFieldT<Td >& gf, const qlat::vecto
 }
 
 template <class T, class Td>
-void extend_links_to_vecs(qlat::vector_gpu<T >& gfE, const GaugeFieldT<Td >& gf, const qlat::vector_acc<qlat::ComplexD >& mom_factors=qlat::vector_acc<qlat::Complex >()){
+void extend_links_to_vecs(qlat::vector_gpu<T >& gfE, const GaugeFieldT<Td >& gf, const qlat::vector_acc<qlat::ComplexD >& mom_factors=qlat::vector_acc<qlat::ComplexD >()){
   gfE.resize(2*4* gf.geo().local_volume() * 9);
   extend_links_to_vecs(gfE.data(), gf, mom_factors);
 }

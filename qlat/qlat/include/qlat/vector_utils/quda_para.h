@@ -31,7 +31,7 @@ namespace quda
 //inline qlat::ComplexT<double> operator+(const quda::ComplexD &a, const qlat::ComplexT<double> &b) {
 //    return qlat::ComplexT<double>(a.real() + b.real(), a.imag() + b.imag());
 //}
-//inline quda::ComplexD operator+(const quda::Complex &a, const qlat::ComplexT<double> &b) {
+//inline quda::ComplexD operator+(const quda::ComplexD &a, const qlat::ComplexT<double> &b) {
 //    return quda::ComplexD<double>(a.real() + b.real(), a.imag() + b.imag());
 //}
 //inline qlat::ComplexT<double> operator*(const quda::ComplexD &a, const qlat::ComplexT<double> &b) {

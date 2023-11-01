@@ -792,7 +792,7 @@ struct fft_gpu_copy{
     int civ  = fft.fftP->civ;
     std::vector<int > dimN = fft.fftP->dimN;
 
-    if(prec == ComplexD_TYPE ){     fftP->set_mem<Complex  >(nvec, civ, dimN, -1 );}
+    if(prec == ComplexD_TYPE ){     fftP->set_mem<ComplexD  >(nvec, civ, dimN, -1 );}
     else if(prec == ComplexF_TYPE){fftP->set_mem<ComplexF >(nvec, civ, dimN, -1 );}
     else{print0("Only ComplexD and ComplexF supported for fft on GPU! \n");Qassert(false);}
     ///fft.fftP->print_info();
@@ -850,7 +850,7 @@ inline fft_gpu_copy make_fft_gpu_plan(const Geometry& geo, int nvec, int civ , b
   ft.fftP = new fft_schedule(fd, GPU);
   ft.prec = prec;
 
-  if(prec == ComplexD_TYPE ){     ft.fftP->set_mem<Complex  >(nvec, civ, dimN, -1 );}
+  if(prec == ComplexD_TYPE ){     ft.fftP->set_mem<ComplexD  >(nvec, civ, dimN, -1 );}
   else if(prec == ComplexF_TYPE){ft.fftP->set_mem<ComplexF >(nvec, civ, dimN, -1 );}
   else{print0("Only ComplexD and ComplexF supported for fft on GPU! \n");Qassert(false);}
   ft.fftP->print_info();
@@ -990,7 +990,7 @@ void fft_fieldM(std::vector<Handle<qlat::Field<M> > >& src, bool fftdir=true, bo
   bool is_double     = get_data_type_is_double<M >();
   DATA_TYPE prec = ComplexD_TYPE;int civ = 1;
   const Geometry& geo = src[0]().geo();
-  if( is_double){prec = ComplexD_TYPE ; civ = geo.multiplicity * sizeof(M)/sizeof(Complex ); }
+  if( is_double){prec = ComplexD_TYPE ; civ = geo.multiplicity * sizeof(M)/sizeof(ComplexD ); }
   if(!is_double){prec = ComplexF_TYPE; civ = geo.multiplicity * sizeof(M)/sizeof(ComplexF); }
 
   int nfft = src.size() * civ;

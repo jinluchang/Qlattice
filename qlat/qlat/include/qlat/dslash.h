@@ -350,7 +350,7 @@ inline void deflate(FermionField5d& out, const FermionField5d& in, LowModes& lm)
     const Vector<WilsonVector> vin = in.get_elems_const(index);
     qassert(vhv.size() ==
             vin.size() * (long)sizeof(WilsonVector) / (long)sizeof(ComplexD));
-    const Vector<ComplexD> vff((const Complex*)vin.data(), vhv.size());
+    const Vector<ComplexD> vff((const ComplexD*)vin.data(), vhv.size());
     for (int m = 0; m < vhv.size(); ++m) {
       vhv[m] = vff[m];
     }
@@ -369,7 +369,7 @@ inline void deflate(FermionField5d& out, const FermionField5d& in, LowModes& lm)
     Vector<WilsonVector> vout = out.get_elems(index);
     qassert(vhv.size() ==
             vout.size() * (long)sizeof(WilsonVector) / (long)sizeof(ComplexD));
-    Vector<ComplexD> vff((Complex*)vout.data(), vhv.size());
+    Vector<ComplexD> vff((ComplexD*)vout.data(), vhv.size());
     for (int m = 0; m < vhv.size(); ++m) {
       vff[m] = vhv[m];
     }
@@ -855,11 +855,11 @@ inline void multiply_mdag_e_e(FermionField5d& out, const FermionField5d& in,
           (p_p * (m < fa.ls - 1
                       ? (WilsonVector)((ComplexD)cee[m + 1] * iv[m + 1])
                       : (WilsonVector)(
-                            (ComplexD)(-qconj((Complex)fa.mass) * cee[0]) *
+                            (ComplexD)(-qconj((ComplexD)fa.mass) * cee[0]) *
                             iv[0]))) +
           (p_m * (m > 0
                       ? (WilsonVector)((ComplexD)cee[m - 1] * iv[m - 1])
-                      : (WilsonVector)((ComplexD)(-qconj((Complex)fa.mass) *
+                      : (WilsonVector)((ComplexD)(-qconj((ComplexD)fa.mass) *
                                                   cee[fa.ls - 1]) *
                                        iv[fa.ls - 1])));
       v[m] -= tmp;
@@ -1210,11 +1210,11 @@ inline void multiply_mdag_e_o(FermionField5d& out, const FermionField5d& in,
           (p_p * (m < fa.ls - 1
                       ? (WilsonVector)((ComplexD)ceo[m + 1] * iv[m + 1])
                       : (WilsonVector)(
-                            (ComplexD)(-qconj((Complex)fa.mass) * ceo[0]) *
+                            (ComplexD)(-qconj((ComplexD)fa.mass) * ceo[0]) *
                             iv[0]))) +
           (p_m * (m > 0
                       ? (WilsonVector)((ComplexD)ceo[m - 1] * iv[m - 1])
-                      : (WilsonVector)((ComplexD)(-qconj((Complex)fa.mass) *
+                      : (WilsonVector)((ComplexD)(-qconj((ComplexD)fa.mass) *
                                                   ceo[fa.ls - 1]) *
                                        iv[fa.ls - 1])));
       v[m] -= tmp;
@@ -1456,9 +1456,9 @@ inline ComplexD dot_product(const FermionField5d& ff1, const FermionField5d& ff2
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<WilsonVector> v1 = ff1.get_elems_const(xl);
     const Vector<WilsonVector> v2 = ff2.get_elems_const(xl);
-    const Vector<ComplexD> cv1((const Complex*)v1.data(),
+    const Vector<ComplexD> cv1((const ComplexD*)v1.data(),
                                v1.data_size() / sizeof(ComplexD));
-    const Vector<ComplexD> cv2((const Complex*)v2.data(),
+    const Vector<ComplexD> cv2((const ComplexD*)v2.data(),
                                v2.data_size() / sizeof(ComplexD));
     qassert(cv1.size() == cv2.size());
     for (int k = 0; k < cv1.size(); ++k) {

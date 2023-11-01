@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
 
   qlat::FieldM<ComplexD, 12*12 > propM;propM.init(geo);
   //Propagator4dT<ComplexD > propM;propM.init(geo);
-  //ComplexD* data = (Complex*) &propM.get_elem(0);
+  //ComplexD* data = (ComplexD*) &propM.get_elem(0);
   ComplexD* data = qlat::get_data(propM).data();
   for(long isp=0;isp<geo.local_volume();isp++)
   {

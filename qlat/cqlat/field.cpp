@@ -258,7 +258,7 @@ EXPORT(set_mul_cfield_field, {
   const std::string ctype_c = py_get_ctype(p_cfield);
   PyObject* p_ret = NULL;
   if (ctype_c == "ComplexD") {
-    Field<ComplexD>& f_factor = py_convert_type_field<Complex>(p_cfield);
+    Field<ComplexD>& f_factor = py_convert_type_field<ComplexD>(p_cfield);
     FIELD_DISPATCH(p_ret, set_mul_field_ctype, ctype, p_field, f_factor);
   } else if (ctype_c == "Double") {
     Field<double>& f_factor = py_convert_type_field<double>(p_cfield);

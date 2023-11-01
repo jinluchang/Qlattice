@@ -33,7 +33,7 @@ void apply_eo_sign(Ty* sP, Ty* rP, qlat::FieldM<char, 1>& eo, const char dir = 1
   char* eP = (char*) qlat::get_data(eo).data();
   ///////DATA_TYPE typenum = get_data_type<Ty >();
   qacc_for(isp, geo.local_volume(), {
-    qlat::ComplexD sign = qlat::Complex(-1.0 * dir *(eP[isp]*2 - 1), 0);
+    qlat::ComplexD sign = qlat::ComplexD(-1.0 * dir *(eP[isp]*2 - 1), 0);
     for(int ic=0;ic<civ;ic++){rP[isp*civ+ic] = sign * sP[isp*civ+ic];}
   });
 }

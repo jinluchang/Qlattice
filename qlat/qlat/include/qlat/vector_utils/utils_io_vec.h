@@ -1616,7 +1616,7 @@ void save_gwu_noiP(const char *filename,Propagator4dT<Td>& prop){
       sum += std::fabs(src(d1,d0).real());
       sum += std::fabs(src(d1,d0).imag());
     }
-    qlat::ComplexD phase = qlat::Complex(src(0,0).real(),src(0,0).imag());
+    qlat::ComplexD phase = qlat::ComplexD(src(0,0).real(),src(0,0).imag());
 
     if(sum >1e-8){noi.get_elem_offset(index) = 1.0*phase;}
   }
@@ -1820,7 +1820,7 @@ void load_qlat_noisesT_core(FILE* file, std::vector<Ty*  > &noises, const Geomet
   //buf = aligned_alloc_no_acc(bufN*bfac*io_use.noden * 2*bsize);
   qlat::vector<char > buf_vec;buf_vec.resize(bufN*bfac*io_use.noden * 2*bsize);
   void* buf = (void*) buf_vec.data();
-  qlat::ComplexD*  bufD = (qlat::Complex* ) buf;
+  qlat::ComplexD*  bufD = (qlat::ComplexD* ) buf;
   qlat::ComplexF* bufF = (qlat::ComplexF*) buf;
 
   move_index mv_civ;

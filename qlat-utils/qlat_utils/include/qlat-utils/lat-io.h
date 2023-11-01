@@ -311,7 +311,7 @@ Vector<ComplexD> lat_data_complex_get(LatData& ld, const VecS& idx)
   const long size = lat_data_size(ld, idx.size());
   qassert(size % 2 == 0);
   qassert(offset * size + size <= (long)ld.res.size());
-  Vector<ComplexD> ret((Complex*)&ld.res[offset * size], size / 2);
+  Vector<ComplexD> ret((ComplexD*)&ld.res[offset * size], size / 2);
   return ret;
 }
 
@@ -326,7 +326,7 @@ Vector<ComplexD> lat_data_complex_get_const(const LatData& ld, const VecS& idx)
   const long size = lat_data_size(ld, idx.size());
   qassert(size % 2 == 0);
   qassert(offset * size + size <= (long)ld.res.size());
-  Vector<ComplexD> ret((Complex*)&ld.res[offset * size], size / 2);
+  Vector<ComplexD> ret((ComplexD*)&ld.res[offset * size], size / 2);
   return ret;
 }
 

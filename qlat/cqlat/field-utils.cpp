@@ -286,7 +286,7 @@ EXPORT(set_phase_field, {
     return NULL;
   }
   const CoordinateD lmom = py_convert_data<CoordinateD>(p_lmom);
-  FieldM<ComplexD, 1>& f = py_convert_type_field<Complex, 1>(p_field);
+  FieldM<ComplexD, 1>& f = py_convert_type_field<ComplexD, 1>(p_field);
   set_phase_field(f, lmom);
   Py_RETURN_NONE;
 })
@@ -302,7 +302,7 @@ EXPORT(assign_as_field, {
   const std::string ctype1 = py_get_ctype(p_field1);
   PyObject* p_ret = NULL;
   if (ctype == "ComplexD") {
-    Field<ComplexD>& f = py_convert_type_field<Complex>(p_field);
+    Field<ComplexD>& f = py_convert_type_field<ComplexD>(p_field);
     FIELD_DISPATCH(p_ret, assign_as_field_ctype, ctype1, f, p_field1);
   } else if (ctype == "Double") {
     Field<double>& f = py_convert_type_field<double>(p_field);
@@ -334,7 +334,7 @@ EXPORT(assign_from_field, {
   const std::string ctype1 = py_get_ctype(p_field1);
   PyObject* p_ret = NULL;
   if (ctype1 == "ComplexD") {
-    const Field<ComplexD>& f1 = py_convert_type_field<Complex>(p_field1);
+    const Field<ComplexD>& f1 = py_convert_type_field<ComplexD>(p_field1);
     FIELD_DISPATCH(p_ret, assign_from_field_ctype, ctype, p_field, f1);
   } else if (ctype1 == "Double") {
     const Field<double>& f1 = py_convert_type_field<double>(p_field1);

@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
   qlat::vector_acc<ComplexD > src;src.resize(na);
   qlat::vector_acc<ComplexD > s0;s0.resize(na);
   qlat::vector_acc<ComplexD > s1;s1.resize(na);
-  ComplexD* k = (Complex*) qlat::get_data(src).data();
+  ComplexD* k = (ComplexD*) qlat::get_data(src).data();
   qacc_barrier(dummy);
   qacc_for(isp , na, {
     //src[isp] = src[isp] + 1;

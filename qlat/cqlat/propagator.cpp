@@ -46,7 +46,7 @@ EXPORT(set_rand_u1_src_psel, {
   }
   Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
   prop.init();
-  FieldM<ComplexD, 1>& fu1 = py_convert_type_field<Complex, 1>(p_fu1);
+  FieldM<ComplexD, 1>& fu1 = py_convert_type_field<ComplexD, 1>(p_fu1);
   fu1.init();
   const PointsSelection& psel = py_convert_type<PointsSelection>(p_psel);
   const Geometry& geo = py_convert_type<Geometry>(p_geo);
@@ -67,7 +67,7 @@ EXPORT(set_rand_u1_sol_psel, {
   SelectedPoints<WilsonMatrix>& sp_prop =
       py_convert_type<SelectedPoints<WilsonMatrix> >(p_sp_prop);
   const Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
-  const FieldM<ComplexD, 1>& fu1 = py_convert_type_field<Complex, 1>(p_fu1);
+  const FieldM<ComplexD, 1>& fu1 = py_convert_type_field<ComplexD, 1>(p_fu1);
   qassert(fu1.geo().multiplicity == 1);
   const PointsSelection& psel = py_convert_type<PointsSelection>(p_psel);
   set_rand_u1_sol_psel(sp_prop, prop, fu1, psel);
@@ -85,7 +85,7 @@ EXPORT(set_rand_u1_src_fsel, {
   }
   Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
   prop.init();
-  FieldM<ComplexD, 1>& fu1 = py_convert_type_field<Complex, 1>(p_fu1);
+  FieldM<ComplexD, 1>& fu1 = py_convert_type_field<ComplexD, 1>(p_fu1);
   fu1.init();
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   const RngState& rs = py_convert_type<RngState>(p_rs);
@@ -105,7 +105,7 @@ EXPORT(set_rand_u1_sol_fsel, {
   SelectedField<WilsonMatrix>& sf_prop =
       py_convert_type<SelectedField<WilsonMatrix> >(p_sf_prop);
   const Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
-  const FieldM<ComplexD, 1>& fu1 = py_convert_type_field<Complex, 1>(p_fu1);
+  const FieldM<ComplexD, 1>& fu1 = py_convert_type_field<ComplexD, 1>(p_fu1);
   qassert(fu1.geo().multiplicity == 1);
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   set_rand_u1_sol_fsel(sf_prop, prop, fu1, fsel);
@@ -225,7 +225,7 @@ EXPORT(free_scalar_invert_mom_cfield, {
     return NULL;
   }
   qassert("ComplexD" == py_get_ctype(p_field));
-  Field<ComplexD>& f = py_convert_type_field<Complex>(p_field);
+  Field<ComplexD>& f = py_convert_type_field<ComplexD>(p_field);
   const CoordinateD momtwist;
   prop_free_scalar_invert(f, mass, momtwist);
   Py_RETURN_NONE;

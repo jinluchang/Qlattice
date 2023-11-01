@@ -34,7 +34,7 @@ void set_complex_from_double(Field<M>& cf, const Field<double>& sf)
   qacc_for(index, geo.local_volume(), {
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> v = cf.get_elems(xl);
-    Vector<ComplexD> cf_v((Complex*)v.data(), v.data_size() / sizeof(Complex));
+    Vector<ComplexD> cf_v((ComplexD*)v.data(), v.data_size() / sizeof(ComplexD));
     int N = cf_v.size();
     qassert(N == geo.multiplicity);
     for (int m = 0; m < N; ++m) {

@@ -112,7 +112,7 @@ int glb_sum(Vector<float> recv, const Vector<float>& send)
                        MPI_SUM, get_comm());
 }
 
-int glb_sum(Vector<ComplexD> recv, const Vector<Complex>& send)
+int glb_sum(Vector<ComplexD> recv, const Vector<ComplexD>& send)
 {
   return glb_sum(Vector<double>((double*)recv.data(), recv.size() * 2),
                  Vector<double>((double*)send.data(), send.size() * 2));

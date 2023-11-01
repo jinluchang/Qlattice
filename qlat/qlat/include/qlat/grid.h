@@ -123,13 +123,13 @@ inline void grid_convert(Grid::LatticeGaugeField& ggf, const GaugeField& gf)
     Grid::Coordinate coor = grid_convert(xl);
     const Vector<ColorMatrix> ms = gf.get_elems_const(xl);
     LorentzColourMatrix gms;
-    array<ComplexD, sizeof(LorentzColourMatrix) / sizeof(Complex)>& fs =
-        (array<ComplexD, sizeof(LorentzColourMatrix) / sizeof(Complex)>&)gms;
-    array<ComplexD, sizeof(LorentzColourMatrix) / sizeof(Complex)>& ds =
-        *((array<ComplexD, sizeof(LorentzColourMatrix) / sizeof(Complex)>*)
+    array<ComplexD, sizeof(LorentzColourMatrix) / sizeof(ComplexD)>& fs =
+        (array<ComplexD, sizeof(LorentzColourMatrix) / sizeof(ComplexD)>&)gms;
+    array<ComplexD, sizeof(LorentzColourMatrix) / sizeof(ComplexD)>& ds =
+        *((array<ComplexD, sizeof(LorentzColourMatrix) / sizeof(ComplexD)>*)
               ms.data());
     qassert(sizeof(LorentzColourMatrix) ==
-            ms.data_size() / sizeof(ComplexD) * sizeof(Complex));
+            ms.data_size() / sizeof(ComplexD) * sizeof(ComplexD));
     qassert((long)fs.size() * (long)sizeof(ComplexD) == ms.data_size());
     qassert(fs.size() == ds.size());
     for (int i = 0; i < (int)fs.size(); ++i) {
@@ -269,8 +269,8 @@ inline void grid_convert(FermionField5d& ff, const Grid::LatticeFermionF& gff)
     for (int m = 0; m < geo.multiplicity; ++m) {
       coor[0] = m;
       peekLocalSite(fs, gff_v, coor);
-      array<ComplexD, sizeof(WilsonVector) / sizeof(Complex)>& ds =
-          (array<ComplexD, sizeof(WilsonVector) / sizeof(Complex)>&)
+      array<ComplexD, sizeof(WilsonVector) / sizeof(ComplexD)>& ds =
+          (array<ComplexD, sizeof(WilsonVector) / sizeof(ComplexD)>&)
               wvs[m];
       for (int k = 0; k < (int)(sizeof(WilsonVector) / sizeof(ComplexD)); ++k) {
         ds[k] = fs[k];
@@ -292,8 +292,8 @@ inline void grid_convert(Grid::LatticeFermionF& gff, const FermionField5d& ff)
     array<ComplexF, sizeof(WilsonVector) / sizeof(ComplexD)> fs;
     for (int m = 0; m < geo.multiplicity; ++m) {
       coor[0] = m;
-      const array<ComplexD, sizeof(WilsonVector) / sizeof(Complex)>& ds =
-          (const array<ComplexD, sizeof(WilsonVector) / sizeof(Complex)>&)
+      const array<ComplexD, sizeof(WilsonVector) / sizeof(ComplexD)>& ds =
+          (const array<ComplexD, sizeof(WilsonVector) / sizeof(ComplexD)>&)
               wvs[m];
       for (int k = 0; k < (int)(sizeof(WilsonVector) / sizeof(ComplexD)); ++k) {
         fs[k] = ds[k];

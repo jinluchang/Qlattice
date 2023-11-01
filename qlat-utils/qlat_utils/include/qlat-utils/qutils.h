@@ -79,7 +79,7 @@ qacc void set_unit(double& x, const double& coef = 1.0) { x = coef; }
 
 qacc void set_unit(double& x, const ComplexD& coef) { x = coef.real(); }
 
-qacc void set_unit(ComplexD& x, const Complex& coef = 1.0) { x = coef; }
+qacc void set_unit(ComplexD& x, const ComplexD& coef = 1.0) { x = coef; }
 
 qacc void set_unit(ComplexF& x, const ComplexD& coef = 1.0) { x = coef; }
 

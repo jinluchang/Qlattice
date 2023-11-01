@@ -79,7 +79,7 @@ EXPORT(set_pion_four_point_mom_field, {
   }
   PyField pf = py_convert_field(p_field);
   pqassert(pf.ctype == "ComplexD");
-  Field<ComplexD>& f = *(Field<Complex>*)pf.cdata;
+  Field<ComplexD>& f = *(Field<ComplexD>*)pf.cdata;
   const Geometry& geo = f.geo();
   pqassert(f.geo().multiplicity == 16);
   std::string tag;
@@ -213,7 +213,7 @@ EXPORT(acc_four_point_func_em, {
   LatData& ld = py_convert_type<LatData>(p_ld);
   PyField pf = py_convert_field(p_field);
   pqassert(pf.ctype == "ComplexD");
-  Field<ComplexD>& f = *(Field<Complex>*)pf.cdata;
+  Field<ComplexD>& f = *(Field<ComplexD>*)pf.cdata;
   qlat::acc_four_point_func_em(ld, f, type, r_scaling_factor);
   Py_RETURN_NONE;
 });

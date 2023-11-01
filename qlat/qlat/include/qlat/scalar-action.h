@@ -115,7 +115,7 @@ struct ScalarAction {
 									std::cos(2*PI*pg[3]/L[3])));
   }
 
-  inline void hmc_estimate_mass(Field<double>& masses, const Field<ComplexD>& field_ft, const Field<Complex>& force_ft, const double phi0)
+  inline void hmc_estimate_mass(Field<double>& masses, const Field<ComplexD>& field_ft, const Field<ComplexD>& force_ft, const double phi0)
   {
     TIMER("ScalarAction.hmc_estimate_mass");
     const Geometry geo = field_ft.geo();
@@ -242,7 +242,7 @@ struct ScalarAction {
     hmc_set_force_no_comm(sm_force, sf_ext);
   }
 
-  inline void hmc_field_evolve(Field<ComplexD>& sf_complex, const Field<Complex>& sm_complex,
+  inline void hmc_field_evolve(Field<ComplexD>& sf_complex, const Field<ComplexD>& sm_complex,
                                const Field<double>& masses, const double step_size)
   {
     TIMER("hmc_field_evolve");
@@ -364,7 +364,7 @@ struct ScalarAction {
     });
   }
 
-  inline void hmc_predict_field(Field<ComplexD>& field_ft, const Field<Complex>& momentum_ft, const Field<double>& masses, const double vev_sigma)
+  inline void hmc_predict_field(Field<ComplexD>& field_ft, const Field<ComplexD>& momentum_ft, const Field<double>& masses, const double vev_sigma)
   {
     TIMER("hmc_predict_field");
     const Geometry& geo = momentum_ft.geo();

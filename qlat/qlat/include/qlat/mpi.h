@@ -145,7 +145,7 @@ int glb_sum(Vector<double> recv, const Vector<double>& send);
 
 int glb_sum(Vector<float> recv, const Vector<float>& send);
 
-int glb_sum(Vector<ComplexD> recv, const Vector<Complex>& send);
+int glb_sum(Vector<ComplexD> recv, const Vector<ComplexD>& send);
 
 int glb_sum(Vector<ComplexF> recv, const Vector<ComplexF>& send);
 

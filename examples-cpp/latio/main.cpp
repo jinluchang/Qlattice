@@ -17,8 +17,8 @@ inline void demo_c()
   for (int i = 0; i < n_tsep; ++i) {
     for (int j = 0; j < n_op; ++j) {
       Vector<ComplexD> v = lat_data_cget(ld, make_array<long>(i, j));
-      v[0] = (ComplexD)i + ii * (Complex)j;
-      v[1] = (ComplexD)j + ii * (Complex)i;
+      v[0] = (ComplexD)i + ii * (ComplexD)j;
+      v[1] = (ComplexD)j + ii * (ComplexD)i;
     }
   }
   ld.save("results-data-c.lat");
