@@ -807,7 +807,8 @@ struct API SelectedPoints {
   void init_zero(const PointsSelection& psel, const int multiplicity);
   //
   SelectedPoints() { init(); }
-  SelectedPoints(SelectedPoints&&) noexcept;
+  SelectedPoints(const SelectedPoints<M>&) = default;
+  SelectedPoints(SelectedPoints<M>&&) noexcept = default;
   //
   SelectedPoints<M>& operator=(const SelectedPoints<M>&) = default;
   SelectedPoints<M>& operator=(SelectedPoints<M>&&) noexcept = default;
@@ -974,7 +975,8 @@ struct API SelectedField {
   void init_zero(const FieldSelection& fsel, const int multiplicity);
   //
   SelectedField() { init(); }
-  SelectedField(SelectedField&&) noexcept = default;
+  SelectedField(const SelectedField<M>&) = default;
+  SelectedField(SelectedField<M>&&) noexcept = default;
   //
   SelectedField<M>& operator=(const SelectedField<M>&) = default;
   SelectedField<M>& operator=(SelectedField<M>&&) noexcept = default;
