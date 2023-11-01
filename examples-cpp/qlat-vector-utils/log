@@ -4,5 +4,5 @@ CHECK: move index: OK
 CHECK: fft-sec-basic: OK
 CHECK: sum_all_size: OK
 CHECK: Consistency: orig qnorm: 1.4779959966E+05 ; shift qnorm 2.9676067457E+05 2.9413680135E+05 2.9563028072E+05 2.9462902098E+05
-CHECK: Consistency: orig qnorm: 2.3041961101E+03 ; rotate qnorm 2.0000000000E+00, diff qnorm 9.6406114409E+03
+CHECK: Consistency: orig qnorm: 2.3059562071E+03 ; rotate qnorm 2.0000000000E+00, diff qnorm 7.4335203520E+03
 CHECK: finished successfully.
