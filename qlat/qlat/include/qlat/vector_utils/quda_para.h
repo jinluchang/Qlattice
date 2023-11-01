@@ -15,26 +15,26 @@
 namespace quda
 {
 
-//quda::Complex& operator+=(const thrust::complex<double>& rhs){
+//quda::ComplexD& operator+=(const thrust::complex<double>& rhs){
 //  double a = real + rhs.real();
 //  double b = imag + rhs.imag();
-//  *this = quda::Complex(a, b);
+//  *this = quda::ComplexD(a, b);
 //  //real() += rhs.real();
 //  //imag() += rhs.imag();
 //  return *this;
 //}
-//quda::Complex& operator+=(const thrust::complex<float>& rhs){
+//quda::ComplexD& operator+=(const thrust::complex<float>& rhs){
 //  real() += rhs.real();
 //  imag() += rhs.imag();
 //  return *this;
 //}
-//inline qlat::ComplexT<double> operator+(const quda::Complex &a, const qlat::ComplexT<double> &b) {
+//inline qlat::ComplexT<double> operator+(const quda::ComplexD &a, const qlat::ComplexT<double> &b) {
 //    return qlat::ComplexT<double>(a.real() + b.real(), a.imag() + b.imag());
 //}
-//inline quda::Complex operator+(const quda::Complex &a, const qlat::ComplexT<double> &b) {
-//    return quda::Complex<double>(a.real() + b.real(), a.imag() + b.imag());
+//inline quda::ComplexD operator+(const quda::Complex &a, const qlat::ComplexT<double> &b) {
+//    return quda::ComplexD<double>(a.real() + b.real(), a.imag() + b.imag());
 //}
-//inline qlat::ComplexT<double> operator*(const quda::Complex &a, const qlat::ComplexT<double> &b) {
+//inline qlat::ComplexT<double> operator*(const quda::ComplexD &a, const qlat::ComplexT<double> &b) {
 //    return qlat::ComplexT<double>(a.real() + b.real(), a.imag() + b.imag());
 //}
 

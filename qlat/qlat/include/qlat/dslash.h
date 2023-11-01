@@ -238,7 +238,7 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, LowModes& lm)
   BlockedHalfVector bhv;
   convert_half_vector(bhv, hv_in, lm.cesi.block_site);
   const Geometry geo = geo_reform(bhv.geo(), n_basis);
-  Field<Complex> chv, phv;
+  Field<ComplexD> chv, phv;
   chv.init(geo);
   phv.init(geo_remult(geo, n_vec));
   set_zero(chv);
@@ -252,9 +252,9 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, LowModes& lm)
       const Vector<ComplexF> vbs = lm.cesb.get_elems_const(index);
       const Vector<ComplexF> vcs = lm.cesc.get_elems_const(index);
       // project to coarse grid
-      Vector<Complex> vc = chv.get_elems(index);
+      Vector<ComplexD> vc = chv.get_elems(index);
       for (int j = 0; j < n_basis; ++j) {
-        Complex& vc_j = vc.p[j];
+        ComplexD& vc_j = vc.p[j];
         const Vector<ComplexF> vbs_j(vbs.p + j * block_size, block_size);
         for (long k = 0; k < block_size; ++k) {
           const ComplexF& vb_k = vb.p[k];
@@ -262,24 +262,24 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, LowModes& lm)
         }
       }
       // compute inner products
-      Vector<Complex> vp = phv.get_elems(index);
+      Vector<ComplexD> vp = phv.get_elems(index);
       for (int i = 0; i < n_vec; ++i) {
-        Complex& vp_i = vp.p[i];
+        ComplexD& vp_i = vp.p[i];
         const Vector<ComplexF> vcs_i(vcs.p + i * n_basis, n_basis);
         for (int j = 0; j < n_basis; ++j) {
-          const Complex& vc_j = vc.p[j];
-          vp_i += (Complex)qconj(vcs_i.p[j]) * vc_j;
+          const ComplexD& vc_j = vc.p[j];
+          vp_i += (ComplexD)qconj(vcs_i.p[j]) * vc_j;
         }
       }
     }
   }
-  std::vector<Complex> phv_sum(n_vec, 0.0);
+  std::vector<ComplexD> phv_sum(n_vec, 0.0);
   {
     TIMER("deflate-glbsum");
     // glb sum inner products
     for (long index = 0; index < geo.local_volume(); ++index) {
       // const Coordinate xl = geo.coordinate_from_index(index);
-      Vector<Complex> vp = phv.get_elems(index);
+      Vector<ComplexD> vp = phv.get_elems(index);
 #pragma omp parallel for
       for (int i = 0; i < n_vec; ++i) {
         phv_sum[i] += vp[i];
@@ -303,13 +303,13 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, LowModes& lm)
       const Vector<ComplexF> vbs = lm.cesb.get_elems_const(index);
       const Vector<ComplexF> vcs = lm.cesc.get_elems_const(index);
       // compute inner products
-      Vector<Complex> vc = chv.get_elems(index);
+      Vector<ComplexD> vc = chv.get_elems(index);
       for (int i = 0; i < n_vec; ++i) {
-        const Complex& phv_sum_i = phv_sum[i];
+        const ComplexD& phv_sum_i = phv_sum[i];
         const Vector<ComplexF> vcs_i(vcs.p + i * n_basis, n_basis);
         for (int j = 0; j < n_basis; ++j) {
-          Complex& vc_j = vc.p[j];
-          vc_j += (Complex)(vcs_i.p[j]) * phv_sum_i;
+          ComplexD& vc_j = vc.p[j];
+          vc_j += (ComplexD)(vcs_i.p[j]) * phv_sum_i;
         }
       }
       // project to fine grid
@@ -349,8 +349,8 @@ inline void deflate(FermionField5d& out, const FermionField5d& in, LowModes& lm)
     Vector<ComplexF> vhv = hv.get_elems(index);
     const Vector<WilsonVector> vin = in.get_elems_const(index);
     qassert(vhv.size() ==
-            vin.size() * (long)sizeof(WilsonVector) / (long)sizeof(Complex));
-    const Vector<Complex> vff((const Complex*)vin.data(), vhv.size());
+            vin.size() * (long)sizeof(WilsonVector) / (long)sizeof(ComplexD));
+    const Vector<ComplexD> vff((const Complex*)vin.data(), vhv.size());
     for (int m = 0; m < vhv.size(); ++m) {
       vhv[m] = vff[m];
     }
@@ -368,8 +368,8 @@ inline void deflate(FermionField5d& out, const FermionField5d& in, LowModes& lm)
     const Vector<ComplexF> vhv = hv.get_elems(index);
     Vector<WilsonVector> vout = out.get_elems(index);
     qassert(vhv.size() ==
-            vout.size() * (long)sizeof(WilsonVector) / (long)sizeof(Complex));
-    Vector<Complex> vff((Complex*)vout.data(), vhv.size());
+            vout.size() * (long)sizeof(WilsonVector) / (long)sizeof(ComplexD));
+    Vector<ComplexD> vff((Complex*)vout.data(), vhv.size());
     for (int m = 0; m < vhv.size(); ++m) {
       vff[m] = vhv[m];
     }
@@ -526,13 +526,13 @@ inline void multiply_m_dwf_no_comm(FermionField5d& out,
       SpinMatrixConstants::get_cps_gammas();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const SpinMatrix& unit = SpinMatrixConstants::get_unit();
-  const SpinMatrix p_p = (Complex)0.5 * (unit + gamma5);
-  const SpinMatrix p_m = (Complex)0.5 * (unit - gamma5);
+  const SpinMatrix p_p = (ComplexD)0.5 * (unit + gamma5);
+  const SpinMatrix p_m = (ComplexD)0.5 * (unit - gamma5);
   array<SpinMatrix, 4> p_mu_p;
   array<SpinMatrix, 4> p_mu_m;
   for (int mu = 0; mu < 4; ++mu) {
-    p_mu_p[mu] = (Complex)0.5 * (unit + gammas[mu]);
-    p_mu_m[mu] = (Complex)0.5 * (unit - gammas[mu]);
+    p_mu_p[mu] = (ComplexD)0.5 * (unit + gammas[mu]);
+    p_mu_m[mu] = (ComplexD)0.5 * (unit - gammas[mu]);
   }
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -541,13 +541,13 @@ inline void multiply_m_dwf_no_comm(FermionField5d& out,
     {
       const Vector<WilsonVector> iv = in.get_elems_const(xl);
       for (int m = 0; m < fa.ls; ++m) {
-        v[m] = (Complex)(5.0 - fa.m5) * iv[m];
+        v[m] = (ComplexD)(5.0 - fa.m5) * iv[m];
         v[m] -= p_m * (m < fa.ls - 1
                            ? iv[m + 1]
-                           : (WilsonVector)((Complex)(-fa.mass) * iv[0]));
+                           : (WilsonVector)((ComplexD)(-fa.mass) * iv[0]));
         v[m] -= p_p *
                 (m > 0 ? iv[m - 1]
-                       : (WilsonVector)((Complex)(-fa.mass) * iv[fa.ls - 1]));
+                       : (WilsonVector)((ComplexD)(-fa.mass) * iv[fa.ls - 1]));
       }
     }
     for (int mu = 0; mu < 4; ++mu) {
@@ -598,8 +598,8 @@ inline void multiply_wilson_d_no_comm(FermionField5d& out,
   array<SpinMatrix, 4> p_mu_p;
   array<SpinMatrix, 4> p_mu_m;
   for (int mu = 0; mu < 4; ++mu) {
-    p_mu_p[mu] = (Complex)0.5 * (unit + gammas[mu]);
-    p_mu_m[mu] = (Complex)0.5 * (unit - gammas[mu]);
+    p_mu_p[mu] = (ComplexD)0.5 * (unit + gammas[mu]);
+    p_mu_m[mu] = (ComplexD)0.5 * (unit - gammas[mu]);
   }
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -608,7 +608,7 @@ inline void multiply_wilson_d_no_comm(FermionField5d& out,
     {
       const Vector<WilsonVector> iv = in.get_elems_const(xl);
       for (int m = 0; m < ls; ++m) {
-        v[m] = (Complex)(4.0 + mass) * iv[m];
+        v[m] = (ComplexD)(4.0 + mass) * iv[m];
       }
     }
     for (int mu = 0; mu < 4; ++mu) {
@@ -646,8 +646,8 @@ inline void multiply_d_minus(FermionField5d& out, const FermionField5d& in,
     Vector<WilsonVector> v1 = in1.get_elems(xl);
     const Vector<WilsonVector> iv = in.get_elems_const(xl);
     for (int m = 0; m < fa.ls; ++m) {
-      const Complex& c = fa.cs[m];
-      v1[m] = (Complex)(-c) * iv[m];
+      const ComplexD& c = fa.cs[m];
+      v1[m] = (ComplexD)(-c) * iv[m];
       v[m] = iv[m];
     }
   }
@@ -684,8 +684,8 @@ inline void multiply_m_full(FermionField5d& out, const FermionField5d& in,
   qassert((int)fa.cs.size() == fa.ls);
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const SpinMatrix& unit = SpinMatrixConstants::get_unit();
-  const SpinMatrix p_p = (Complex)0.5 * (unit + gamma5);
-  const SpinMatrix p_m = (Complex)0.5 * (unit - gamma5);
+  const SpinMatrix p_p = (ComplexD)0.5 * (unit + gamma5);
+  const SpinMatrix p_m = (ComplexD)0.5 * (unit - gamma5);
   const GaugeField& gf = inv.gf;
   const Geometry geo1 = geo_resize(in.geo(), 1);
   FermionField5d in1, fftmp;
@@ -698,18 +698,18 @@ inline void multiply_m_full(FermionField5d& out, const FermionField5d& in,
     Vector<WilsonVector> v = fftmp.get_elems(xl);
     Vector<WilsonVector> v1 = in1.get_elems(xl);
     for (int m = 0; m < fa.ls; ++m) {
-      const Complex& b = fa.bs[m];
-      const Complex& c = fa.cs[m];
-      v1[m] = (Complex)b * iv[m];
+      const ComplexD& b = fa.bs[m];
+      const ComplexD& c = fa.cs[m];
+      v1[m] = (ComplexD)b * iv[m];
       v[m] = iv[m];
       const WilsonVector tmp =
           (p_m * (m < fa.ls - 1
                       ? iv[m + 1]
-                      : (WilsonVector)((Complex)(-fa.mass) * iv[0]))) +
+                      : (WilsonVector)((ComplexD)(-fa.mass) * iv[0]))) +
           (p_p * (m > 0
                       ? iv[m - 1]
-                      : (WilsonVector)((Complex)(-fa.mass) * iv[fa.ls - 1])));
-      v1[m] += (Complex)c * tmp;
+                      : (WilsonVector)((ComplexD)(-fa.mass) * iv[fa.ls - 1])));
+      v1[m] += (ComplexD)c * tmp;
       v[m] -= tmp;
     }
   }
@@ -778,8 +778,8 @@ inline void multiply_m_e_e(FermionField5d& out, const FermionField5d& in,
   qassert(in.geo().eo == 1 or in.geo().eo == 2);
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const SpinMatrix& unit = SpinMatrixConstants::get_unit();
-  const SpinMatrix p_p = (Complex)0.5 * (unit + gamma5);
-  const SpinMatrix p_m = (Complex)0.5 * (unit - gamma5);
+  const SpinMatrix p_p = (ComplexD)0.5 * (unit + gamma5);
+  const SpinMatrix p_m = (ComplexD)0.5 * (unit - gamma5);
   FermionField5d in_copy;
   ConstHandle<FermionField5d> hin;
   if (&out != &in) {
@@ -790,7 +790,7 @@ inline void multiply_m_e_e(FermionField5d& out, const FermionField5d& in,
     hin.init(in_copy);
   }
   const Geometry& geo = out.geo();
-  std::vector<Complex> bee(fa.ls), cee(fa.ls);
+  std::vector<ComplexD> bee(fa.ls), cee(fa.ls);
   for (int m = 0; m < fa.ls; ++m) {
     bee[m] = 1.0 + fa.bs[m] * (4.0 - fa.m5);
     cee[m] = 1.0 - fa.cs[m] * (4.0 - fa.m5);
@@ -801,15 +801,15 @@ inline void multiply_m_e_e(FermionField5d& out, const FermionField5d& in,
     const Vector<WilsonVector> iv = hin().get_elems_const(xl);
     Vector<WilsonVector> v = out.get_elems(xl);
     for (int m = 0; m < fa.ls; ++m) {
-      v[m] = (Complex)bee[m] * iv[m];
+      v[m] = (ComplexD)bee[m] * iv[m];
       const WilsonVector tmp =
           (p_m * (m < fa.ls - 1
                       ? iv[m + 1]
-                      : (WilsonVector)((Complex)(-fa.mass) * iv[0]))) +
+                      : (WilsonVector)((ComplexD)(-fa.mass) * iv[0]))) +
           (p_p * (m > 0
                       ? iv[m - 1]
-                      : (WilsonVector)((Complex)(-fa.mass) * iv[fa.ls - 1])));
-      v[m] -= (Complex)cee[m] * tmp;
+                      : (WilsonVector)((ComplexD)(-fa.mass) * iv[fa.ls - 1])));
+      v[m] -= (ComplexD)cee[m] * tmp;
     }
   }
 }
@@ -827,8 +827,8 @@ inline void multiply_mdag_e_e(FermionField5d& out, const FermionField5d& in,
   qassert(in.geo().eo == 1 or in.geo().eo == 2);
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const SpinMatrix& unit = SpinMatrixConstants::get_unit();
-  const SpinMatrix p_p = (Complex)0.5 * (unit + gamma5);
-  const SpinMatrix p_m = (Complex)0.5 * (unit - gamma5);
+  const SpinMatrix p_p = (ComplexD)0.5 * (unit + gamma5);
+  const SpinMatrix p_m = (ComplexD)0.5 * (unit - gamma5);
   FermionField5d in_copy;
   ConstHandle<FermionField5d> hin;
   if (&out != &in) {
@@ -839,7 +839,7 @@ inline void multiply_mdag_e_e(FermionField5d& out, const FermionField5d& in,
     hin.init(in_copy);
   }
   const Geometry& geo = out.geo();
-  std::vector<Complex> bee(fa.ls), cee(fa.ls);
+  std::vector<ComplexD> bee(fa.ls), cee(fa.ls);
   for (int m = 0; m < fa.ls; ++m) {
     bee[m] = qconj(1.0 + fa.bs[m] * (4.0 - fa.m5));
     cee[m] = qconj(1.0 - fa.cs[m] * (4.0 - fa.m5));
@@ -850,16 +850,16 @@ inline void multiply_mdag_e_e(FermionField5d& out, const FermionField5d& in,
     const Vector<WilsonVector> iv = hin().get_elems_const(xl);
     Vector<WilsonVector> v = out.get_elems(xl);
     for (int m = 0; m < fa.ls; ++m) {
-      v[m] = (Complex)bee[m] * iv[m];
+      v[m] = (ComplexD)bee[m] * iv[m];
       const WilsonVector tmp =
           (p_p * (m < fa.ls - 1
-                      ? (WilsonVector)((Complex)cee[m + 1] * iv[m + 1])
+                      ? (WilsonVector)((ComplexD)cee[m + 1] * iv[m + 1])
                       : (WilsonVector)(
-                            (Complex)(-qconj((Complex)fa.mass) * cee[0]) *
+                            (ComplexD)(-qconj((Complex)fa.mass) * cee[0]) *
                             iv[0]))) +
           (p_m * (m > 0
-                      ? (WilsonVector)((Complex)cee[m - 1] * iv[m - 1])
-                      : (WilsonVector)((Complex)(-qconj((Complex)fa.mass) *
+                      ? (WilsonVector)((ComplexD)cee[m - 1] * iv[m - 1])
+                      : (WilsonVector)((ComplexD)(-qconj((Complex)fa.mass) *
                                                   cee[fa.ls - 1]) *
                                        iv[fa.ls - 1])));
       v[m] -= tmp;
@@ -881,21 +881,21 @@ inline void multiply_m_e_e_inv(FermionField5d& out, const FermionField5d& in,
   qassert(in.geo().eo == 1 or in.geo().eo == 2);
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const SpinMatrix& unit = SpinMatrixConstants::get_unit();
-  const SpinMatrix p_p = (Complex)0.5 * (unit + gamma5);
-  const SpinMatrix p_m = (Complex)0.5 * (unit - gamma5);
+  const SpinMatrix p_p = (ComplexD)0.5 * (unit + gamma5);
+  const SpinMatrix p_m = (ComplexD)0.5 * (unit - gamma5);
   const Geometry& geo = out.geo();
-  std::vector<Complex> bee(fa.ls), cee(fa.ls);
+  std::vector<ComplexD> bee(fa.ls), cee(fa.ls);
   for (int m = 0; m < fa.ls; ++m) {
     bee[m] = 1.0 + fa.bs[m] * (4.0 - fa.m5);
     cee[m] = 1.0 - fa.cs[m] * (4.0 - fa.m5);
   }
-  std::vector<Complex> lee(fa.ls - 1), leem(fa.ls - 1);
+  std::vector<ComplexD> lee(fa.ls - 1), leem(fa.ls - 1);
   for (int m = 0; m < fa.ls - 1; ++m) {
     lee[m] = -cee[m + 1] / bee[m];
     leem[m] = m == 0 ? fa.mass * cee[fa.ls - 1] / bee[0]
                      : leem[m - 1] * cee[m - 1] / bee[m];
   }
-  std::vector<Complex> dee(fa.ls, 0.0);
+  std::vector<ComplexD> dee(fa.ls, 0.0);
   dee[fa.ls - 1] = fa.mass * cee[fa.ls - 1];
   for (int m = 0; m < fa.ls - 1; ++m) {
     dee[fa.ls - 1] *= cee[m] / bee[m];
@@ -903,7 +903,7 @@ inline void multiply_m_e_e_inv(FermionField5d& out, const FermionField5d& in,
   for (int m = 0; m < fa.ls; ++m) {
     dee[m] += bee[m];
   }
-  std::vector<Complex> uee(fa.ls - 1), ueem(fa.ls - 1);
+  std::vector<ComplexD> uee(fa.ls - 1), ueem(fa.ls - 1);
   for (int m = 0; m < fa.ls - 1; ++m) {
     uee[m] = -cee[m] / bee[m];
     ueem[m] =
@@ -919,24 +919,24 @@ inline void multiply_m_e_e_inv(FermionField5d& out, const FermionField5d& in,
     // {L^m_{ee}}^{-1}
     set_zero(tmp);
     for (int m = 0; m < fa.ls - 1; ++m) {
-      tmp += (Complex)(-leem[m]) * v[m];
+      tmp += (ComplexD)(-leem[m]) * v[m];
     }
     v[fa.ls - 1] += p_m * tmp;
     // {L'_{ee}}^{-1}
     for (int m = 1; m < fa.ls; ++m) {
-      v[m] += (Complex)(-lee[m - 1]) * (p_p * v[m - 1]);
+      v[m] += (ComplexD)(-lee[m - 1]) * (p_p * v[m - 1]);
     }
     // {D_{ee}}^{-1}
     for (int m = 0; m < fa.ls; ++m) {
-      v[m] *= (Complex)(1.0 / dee[m]);
+      v[m] *= (ComplexD)(1.0 / dee[m]);
     }
     // {U^'_{ee}}^{-1}
     for (int m = fa.ls - 2; m >= 0; --m) {
-      v[m] += (Complex)(-uee[m]) * (p_m * v[m + 1]);
+      v[m] += (ComplexD)(-uee[m]) * (p_m * v[m + 1]);
     }
     // {U^m_{ee}}^{-1}
     for (int m = 0; m < fa.ls - 1; ++m) {
-      v[m] += (Complex)(-ueem[m]) * (p_p * v[fa.ls - 1]);
+      v[m] += (ComplexD)(-ueem[m]) * (p_p * v[fa.ls - 1]);
     }
   }
 }
@@ -955,21 +955,21 @@ inline void multiply_mdag_e_e_inv(FermionField5d& out, const FermionField5d& in,
   qassert(in.geo().eo == 1 or in.geo().eo == 2);
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const SpinMatrix& unit = SpinMatrixConstants::get_unit();
-  const SpinMatrix p_p = (Complex)0.5 * (unit + gamma5);
-  const SpinMatrix p_m = (Complex)0.5 * (unit - gamma5);
+  const SpinMatrix p_p = (ComplexD)0.5 * (unit + gamma5);
+  const SpinMatrix p_m = (ComplexD)0.5 * (unit - gamma5);
   const Geometry& geo = out.geo();
-  std::vector<Complex> bee(fa.ls), cee(fa.ls);
+  std::vector<ComplexD> bee(fa.ls), cee(fa.ls);
   for (int m = 0; m < fa.ls; ++m) {
     bee[m] = 1.0 + fa.bs[m] * (4.0 - fa.m5);
     cee[m] = 1.0 - fa.cs[m] * (4.0 - fa.m5);
   }
-  std::vector<Complex> lee(fa.ls - 1), leem(fa.ls - 1);
+  std::vector<ComplexD> lee(fa.ls - 1), leem(fa.ls - 1);
   for (int m = 0; m < fa.ls - 1; ++m) {
     lee[m] = -cee[m + 1] / bee[m];
     leem[m] = m == 0 ? fa.mass * cee[fa.ls - 1] / bee[0]
                      : leem[m - 1] * cee[m - 1] / bee[m];
   }
-  std::vector<Complex> dee(fa.ls, 0.0);
+  std::vector<ComplexD> dee(fa.ls, 0.0);
   dee[fa.ls - 1] = fa.mass * cee[fa.ls - 1];
   for (int m = 0; m < fa.ls - 1; ++m) {
     dee[fa.ls - 1] *= cee[m] / bee[m];
@@ -977,7 +977,7 @@ inline void multiply_mdag_e_e_inv(FermionField5d& out, const FermionField5d& in,
   for (int m = 0; m < fa.ls; ++m) {
     dee[m] += bee[m];
   }
-  std::vector<Complex> uee(fa.ls - 1), ueem(fa.ls - 1);
+  std::vector<ComplexD> uee(fa.ls - 1), ueem(fa.ls - 1);
   for (int m = 0; m < fa.ls - 1; ++m) {
     uee[m] = -cee[m] / bee[m];
     ueem[m] =
@@ -1004,24 +1004,24 @@ inline void multiply_mdag_e_e_inv(FermionField5d& out, const FermionField5d& in,
     // {U^m_{ee}}^\dagger^{-1}
     set_zero(tmp);
     for (int m = 0; m < fa.ls - 1; ++m) {
-      tmp += (Complex)(-ueem[m]) * v[m];
+      tmp += (ComplexD)(-ueem[m]) * v[m];
     }
     v[fa.ls - 1] += p_p * tmp;
     // {U^'_{ee}}^\dagger^{-1}
     for (int m = 1; m < fa.ls; ++m) {
-      v[m] += (Complex)(-uee[m - 1]) * (p_m * v[m - 1]);
+      v[m] += (ComplexD)(-uee[m - 1]) * (p_m * v[m - 1]);
     }
     // {D_{ee}}^\dagger^{-1}
     for (int m = 0; m < fa.ls; ++m) {
-      v[m] *= (Complex)(1.0 / dee[m]);
+      v[m] *= (ComplexD)(1.0 / dee[m]);
     }
     // {L'_{ee}}^\dagger^{-1}
     for (int m = fa.ls - 2; m >= 0; --m) {
-      v[m] += (Complex)(-lee[m]) * (p_p * v[m + 1]);
+      v[m] += (ComplexD)(-lee[m]) * (p_p * v[m + 1]);
     }
     // {L^m_{ee}}^\dagger^{-1}
     for (int m = 0; m < fa.ls - 1; ++m) {
-      v[m] += (Complex)(-leem[m]) * (p_m * v[fa.ls - 1]);
+      v[m] += (ComplexD)(-leem[m]) * (p_m * v[fa.ls - 1]);
     }
   }
 }
@@ -1054,8 +1054,8 @@ inline void multiply_wilson_d_e_o_no_comm(FermionField5d& out,
   array<SpinMatrix, 4> p_mu_p;
   array<SpinMatrix, 4> p_mu_m;
   for (int mu = 0; mu < 4; ++mu) {
-    p_mu_p[mu] = (Complex)0.5 * (unit + gammas[mu]);
-    p_mu_m[mu] = (Complex)0.5 * (unit - gammas[mu]);
+    p_mu_p[mu] = (ComplexD)0.5 * (unit + gammas[mu]);
+    p_mu_m[mu] = (ComplexD)0.5 * (unit - gammas[mu]);
   }
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -1104,8 +1104,8 @@ inline void multiply_wilson_ddag_e_o_no_comm(FermionField5d& out,
   array<SpinMatrix, 4> p_mu_p;
   array<SpinMatrix, 4> p_mu_m;
   for (int mu = 0; mu < 4; ++mu) {
-    p_mu_p[mu] = (Complex)0.5 * (unit + gammas[mu]);
-    p_mu_m[mu] = (Complex)0.5 * (unit - gammas[mu]);
+    p_mu_p[mu] = (ComplexD)0.5 * (unit + gammas[mu]);
+    p_mu_m[mu] = (ComplexD)0.5 * (unit - gammas[mu]);
   }
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -1133,13 +1133,13 @@ inline void multiply_m_e_o(FermionField5d& out, const FermionField5d& in,
   TIMER("multiply_m_e_o(5d,5d,gf,fa)");
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const SpinMatrix& unit = SpinMatrixConstants::get_unit();
-  const SpinMatrix p_p = (Complex)0.5 * (unit + gamma5);
-  const SpinMatrix p_m = (Complex)0.5 * (unit - gamma5);
+  const SpinMatrix p_p = (ComplexD)0.5 * (unit + gamma5);
+  const SpinMatrix p_m = (ComplexD)0.5 * (unit - gamma5);
   const int in_geo_eo = in.geo().eo;
   FermionField5d in1;
   in1.init(geo_resize(in.geo(), 1));
   const Geometry& geo = in.geo();
-  std::vector<Complex> beo(fa.ls), ceo(fa.ls);
+  std::vector<ComplexD> beo(fa.ls), ceo(fa.ls);
   for (int m = 0; m < fa.ls; ++m) {
     beo[m] = fa.bs[m];
     ceo[m] = -fa.cs[m];
@@ -1150,15 +1150,15 @@ inline void multiply_m_e_o(FermionField5d& out, const FermionField5d& in,
     const Vector<WilsonVector> iv = in.get_elems_const(xl);
     Vector<WilsonVector> v = in1.get_elems(xl);
     for (int m = 0; m < fa.ls; ++m) {
-      v[m] = (Complex)beo[m] * iv[m];
+      v[m] = (ComplexD)beo[m] * iv[m];
       const WilsonVector tmp =
           (p_m * (m < fa.ls - 1
                       ? iv[m + 1]
-                      : (WilsonVector)((Complex)(-fa.mass) * iv[0]))) +
+                      : (WilsonVector)((ComplexD)(-fa.mass) * iv[0]))) +
           (p_p * (m > 0
                       ? iv[m - 1]
-                      : (WilsonVector)((Complex)(-fa.mass) * iv[fa.ls - 1])));
-      v[m] -= (Complex)ceo[m] * tmp;
+                      : (WilsonVector)((ComplexD)(-fa.mass) * iv[fa.ls - 1])));
+      v[m] -= (ComplexD)ceo[m] * tmp;
     }
   }
   refresh_expanded_1(in1);
@@ -1176,14 +1176,14 @@ inline void multiply_mdag_e_o(FermionField5d& out, const FermionField5d& in,
   TIMER("multiply_mdag_e_o(5d,5d,gf,fa)");
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const SpinMatrix& unit = SpinMatrixConstants::get_unit();
-  const SpinMatrix p_p = (Complex)0.5 * (unit + gamma5);
-  const SpinMatrix p_m = (Complex)0.5 * (unit - gamma5);
+  const SpinMatrix p_p = (ComplexD)0.5 * (unit + gamma5);
+  const SpinMatrix p_m = (ComplexD)0.5 * (unit - gamma5);
   const int in_geo_eo = in.geo().eo;
   qassert(is_matching_geo(gf.geo(), in.geo()));
   qassert(in.geo().eo == 1 or in.geo().eo == 2);
   Geometry geo = geo_resize(in.geo());
   geo.eo = 3 - in.geo().eo;
-  std::vector<Complex> beo(fa.ls), ceo(fa.ls);
+  std::vector<ComplexD> beo(fa.ls), ceo(fa.ls);
   for (int m = 0; m < fa.ls; ++m) {
     beo[m] = qconj(fa.bs[m]);
     ceo[m] = qconj(-fa.cs[m]);
@@ -1205,16 +1205,16 @@ inline void multiply_mdag_e_o(FermionField5d& out, const FermionField5d& in,
     const Vector<WilsonVector> iv = out1.get_elems_const(xl);
     Vector<WilsonVector> v = out.get_elems(xl);
     for (int m = 0; m < fa.ls; ++m) {
-      v[m] = (Complex)beo[m] * iv[m];
+      v[m] = (ComplexD)beo[m] * iv[m];
       const WilsonVector tmp =
           (p_p * (m < fa.ls - 1
-                      ? (WilsonVector)((Complex)ceo[m + 1] * iv[m + 1])
+                      ? (WilsonVector)((ComplexD)ceo[m + 1] * iv[m + 1])
                       : (WilsonVector)(
-                            (Complex)(-qconj((Complex)fa.mass) * ceo[0]) *
+                            (ComplexD)(-qconj((Complex)fa.mass) * ceo[0]) *
                             iv[0]))) +
           (p_m * (m > 0
-                      ? (WilsonVector)((Complex)ceo[m - 1] * iv[m - 1])
-                      : (WilsonVector)((Complex)(-qconj((Complex)fa.mass) *
+                      ? (WilsonVector)((ComplexD)ceo[m - 1] * iv[m - 1])
+                      : (WilsonVector)((ComplexD)(-qconj((Complex)fa.mass) *
                                                   ceo[fa.ls - 1]) *
                                        iv[fa.ls - 1])));
       v[m] -= tmp;
@@ -1444,22 +1444,22 @@ inline void multiply_m_with_prec_sym2(FermionField5d& out,
   set_half_fermion(out, out_o, 1);
 }
 
-inline Complex dot_product(const FermionField5d& ff1, const FermionField5d& ff2)
+inline ComplexD dot_product(const FermionField5d& ff1, const FermionField5d& ff2)
 // return ff1^dag * ff2
 {
   TIMER("dot_product");
   qassert(is_matching_geo(ff1.geo(), ff2.geo()));
   qassert(ff1.geo().eo == ff2.geo().eo);
   const Geometry& geo = ff1.geo();
-  Complex sum = 0.0;
+  ComplexD sum = 0.0;
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<WilsonVector> v1 = ff1.get_elems_const(xl);
     const Vector<WilsonVector> v2 = ff2.get_elems_const(xl);
-    const Vector<Complex> cv1((const Complex*)v1.data(),
-                               v1.data_size() / sizeof(Complex));
-    const Vector<Complex> cv2((const Complex*)v2.data(),
-                               v2.data_size() / sizeof(Complex));
+    const Vector<ComplexD> cv1((const Complex*)v1.data(),
+                               v1.data_size() / sizeof(ComplexD));
+    const Vector<ComplexD> cv2((const Complex*)v2.data(),
+                               v2.data_size() / sizeof(ComplexD));
     qassert(cv1.size() == cv2.size());
     for (int k = 0; k < cv1.size(); ++k) {
       sum += qconj(cv1[k]) * cv2[k];

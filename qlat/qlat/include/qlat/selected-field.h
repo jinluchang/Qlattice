@@ -162,7 +162,7 @@ SelectedField<M>& operator*=(SelectedField<M>& f, const double factor)
 }
 
 template <class M>
-SelectedField<M>& operator*=(SelectedField<M>& f, const Complex factor)
+SelectedField<M>& operator*=(SelectedField<M>& f, const ComplexD factor)
 {
   TIMER("sel_field_operator*=(F,C)");
   qassert(f.initialized);
@@ -395,7 +395,7 @@ bool is_consistent(const SelectedPoints<M>& sp, const SelectedField<M>& sf,
 }
 
 // template <class M>
-// void acc_field(Field<M>& f, const Complex& coef, const SelectedField<M>& sf,
+// void acc_field(Field<M>& f, const ComplexD& coef, const SelectedField<M>& sf,
 //                const FieldSelection& fsel)
 // // f can be empty
 // {

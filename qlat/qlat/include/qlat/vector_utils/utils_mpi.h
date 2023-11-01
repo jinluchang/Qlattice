@@ -75,7 +75,7 @@ unsigned int get_MPI_type(MPI_Datatype& curr)
     if(dtype ==FLOATIND+3){curr =  MPI_C_FLOAT_COMPLEX      ; return size ;}
   }
   else{
-    if( get_data_type_is_double<M >()){curr = MPI_C_DOUBLE_COMPLEX; size = Complex_TYPE/MAXTYPE ;return size ;}
+    if( get_data_type_is_double<M >()){curr = MPI_C_DOUBLE_COMPLEX; size = ComplexD_TYPE/MAXTYPE ;return size ;}
     if(!get_data_type_is_double<M >()){curr = MPI_C_FLOAT_COMPLEX ; size = ComplexF_TYPE/MAXTYPE;return size ;}
   }
 

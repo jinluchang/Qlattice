@@ -48,8 +48,8 @@ int main(int argc, char* argv[])
 
   Vec_redistribute vec_large(fd, 1);
 
-  qlat::vector_gpu<qlat::Complex > prop;
-  qlat::vector_gpu<qlat::Complex > prop_buf;
+  qlat::vector_gpu<qlat::ComplexD > prop;
+  qlat::vector_gpu<qlat::ComplexD > prop_buf;
   int NVmpi = fd.mv[0]*fd.mv[1]*fd.mv[2];
   long Nvol = geo.local_volume();
   prop.resize(NVmpi * Nvol * 12);
@@ -65,9 +65,9 @@ int main(int argc, char* argv[])
   ////int Nt = fd.Nt;
 
   int nvol = in.nx*in.ny*in.nz;
-  qlat::vector_acc<qlat::Complex > sendbuf;////recvbuf;
-  qlat::vector_gpu<qlat::Complex > sendbufG;////recvbuf;
-  qlat::vector_acc<qlat::Complex > databuf;
+  qlat::vector_acc<qlat::ComplexD > sendbuf;////recvbuf;
+  qlat::vector_gpu<qlat::ComplexD > sendbufG;////recvbuf;
+  qlat::vector_acc<qlat::ComplexD > databuf;
   /////sendbuf.set_acc(true);databuf.set_acc(true);
   int civ = 1;int Nvec = 3;
   int biva = Nvec * (fd.vol*fd.nt)/(fd.Nvol);
@@ -83,15 +83,15 @@ int main(int argc, char* argv[])
   {
     long long off = (bi*fd.Nvol+vi)*civ+ci;
     const Coordinate& p = fd.coordinate_g_from_index(vi, fd.rank);
-    databuf[off] = ((p[3]*900+p[2])*900+p[1])*900+p[0] + std::cos(ci) + qlat::Complex(0.0,std::cos(bi));
+    databuf[off] = ((p[3]*900+p[2])*900+p[1])*900+p[0] + std::cos(ci) + qlat::ComplexD(0.0,std::cos(bi));
   }
 
   memcpy(&sendbuf[0], &databuf[0], 2*sizeof(double)*sendbuf.size());
-  rot.set_mem<qlat::Complex >(b0, civ, 1);
+  rot.set_mem<qlat::ComplexD >(b0, civ, 1);
 
-  ////rot.reorder(true, (qlat::Complex*) &sendbuf[0]);
+  ////rot.reorder(true, (qlat::ComplexD*) &sendbuf[0]);
   sendbufG.copy_from(sendbuf, 1, 1);
-  rot.reorder(true, (qlat::Complex*) &sendbufG[0]);
+  rot.reorder(true, (qlat::ComplexD*) &sendbufG[0]);
   sendbufG.copy_to(sendbuf, 1);
 
   double diff = 0.0;
@@ -105,16 +105,16 @@ int main(int argc, char* argv[])
     /////Be careful about the order
     int bi = fd.get_mi_curr(4)*b0 + ni;
 
-    qlat::Complex tem = sendbuf[off] - (((p[3]*900+p[2])*900+p[1])*900+p[0] + std::cos(ci) + qlat::Complex(0.0,std::cos(bi)));
+    qlat::ComplexD tem = sendbuf[off] - (((p[3]*900+p[2])*900+p[1])*900+p[0] + std::cos(ci) + qlat::Complex(0.0,std::cos(bi)));
     diff += qnorm(tem);
   }
   sum_all_size(&diff, 1);
   print0("Diff rotate 0 %.3e .\n",diff);
 
-  //rot.reorder(false, (qlat::Complex*) &sendbuf[0]);
+  //rot.reorder(false, (qlat::ComplexD*) &sendbuf[0]);
 
   sendbufG.copy_from(sendbuf, 1, 1);
-  rot.reorder(false, (qlat::Complex*) &sendbufG[0]);
+  rot.reorder(false, (qlat::ComplexD*) &sendbufG[0]);
   sendbufG.copy_to(sendbuf, 1);
 
 
@@ -126,7 +126,7 @@ int main(int argc, char* argv[])
   sum_all_size(&diff, 1);
   print0("Diff rotate 1 %.3e .\n",diff);
 
-  qlat::vector_gpu<qlat::Complex > sendT;sendT.resize(sendbuf.size());
+  qlat::vector_gpu<qlat::ComplexD > sendT;sendT.resize(sendbuf.size());
   for(int i=0;i<100;i++){TIMER("=====Rotate 4D");rot.reorder(false, (double*) sendT.data());}
 
   }
@@ -138,9 +138,9 @@ int main(int argc, char* argv[])
   ////int Nt = fd.Nt;
 
   int nvol = in.nx*in.ny*in.nz;
-  qlat::vector_acc<qlat::Complex > sendbuf;////recvbuf;
-  qlat::vector_gpu<qlat::Complex > sendbufG;////recvbuf;
-  qlat::vector_acc<qlat::Complex > databuf;
+  qlat::vector_acc<qlat::ComplexD > sendbuf;////recvbuf;
+  qlat::vector_gpu<qlat::ComplexD > sendbufG;////recvbuf;
+  qlat::vector_acc<qlat::ComplexD > databuf;
   ////sendbuf.set_acc(true);databuf.set_acc(true);
   int civ = 6;int Nvec = 6;
   int biva = Nvec * (fd.vol*fd.Nt)/(fd.Nvol);
@@ -156,7 +156,7 @@ int main(int argc, char* argv[])
   {
     long long off = (bi*fd.Nvol+vi)*civ+ci;
     const Coordinate& p = fd.coordinate_g_from_index(vi, fd.rank);
-    databuf[off] = ((p[3]*900+p[2])*900+p[1])*900+p[0] + std::cos(ci) + qlat::Complex(0.0,std::cos(bi));
+    databuf[off] = ((p[3]*900+p[2])*900+p[1])*900+p[0] + std::cos(ci) + qlat::ComplexD(0.0,std::cos(bi));
   }
 
   memcpy(&sendbuf[0], &databuf[0], 2*sizeof(double)*sendbuf.size());
@@ -182,7 +182,7 @@ int main(int argc, char* argv[])
     /////Be careful about the order
     int bi = fd.get_mi_curr()*b0 + ni;
 
-    qlat::Complex tem = sendbuf[off] - (((p[3]*900+p[2])*900+p[1])*900+p[0] + std::cos(ci) + qlat::Complex(0.0,std::cos(bi)));
+    qlat::ComplexD tem = sendbuf[off] - (((p[3]*900+p[2])*900+p[1])*900+p[0] + std::cos(ci) + qlat::Complex(0.0,std::cos(bi)));
     diff += qnorm(tem);
   }
   sum_all_size(&diff, 1);
@@ -204,7 +204,7 @@ int main(int argc, char* argv[])
   sum_all_size(&diff, 1);
   print0("Diff rotate 3 %.3e .\n",diff);
 
-  qlat::vector_gpu<qlat::Complex > sendT;sendT.resize(sendbuf.size());
+  qlat::vector_gpu<qlat::ComplexD > sendT;sendT.resize(sendbuf.size());
   for(int i=0;i<100;i++){TIMER("=====Rotate 3D");rot.reorder(false, (double*) sendT.data());}
 
   }
@@ -216,8 +216,8 @@ int main(int argc, char* argv[])
   ////int Nt = fd.Nt;
 
   int nvol = in.nx*in.ny*in.nz;
-  qlat::vector_acc<qlat::Complex > sendbuf,recvbuf;
-  qlat::vector_acc<qlat::Complex > databuf;
+  qlat::vector_acc<qlat::ComplexD > sendbuf,recvbuf;
+  qlat::vector_acc<qlat::ComplexD > databuf;
   ////sendbuf.set_acc(true);recvbuf.set_acc(true);databuf.set_acc(true);
   int biva = 2*(fd.vol*fd.Nt)/(fd.Nvol);int civ = 6;
   int Nvec = biva*fd.Nvol/(fd.vol*fd.Nt);
@@ -238,7 +238,7 @@ int main(int argc, char* argv[])
     //int yi = fd.Pos0[fd.rank][1] + (vi%(fd.Ny*fd.Nx))/fd.Nx;
     //int xi = fd.Pos0[fd.rank][0] + (vi%fd.Nx);
     const Coordinate& p = fd.coordinate_g_from_index(vi, fd.rank);
-    databuf[off] = ((p[3]*900+p[2])*900+p[1])*900+p[0] + std::cos(ci) + qlat::Complex(0.0,std::cos(bi));
+    databuf[off] = ((p[3]*900+p[2])*900+p[1])*900+p[0] + std::cos(ci) + qlat::ComplexD(0.0,std::cos(bi));
 
   }
 
@@ -272,8 +272,8 @@ int main(int argc, char* argv[])
     /////Be careful about the order
     int bi = fd.get_mi_curr()*b0 + ni;
 
-    /////databuf[off] = ((p[3]*900+p[2])*900+p[1])*900+p[0] + std::cos(ci) + qlat::Complex(0.0,std::cos(bi));
-    qlat::Complex tem = sendbuf[off] - (((p[3]*900+p[2])*900+p[1])*900+p[0] + std::cos(ci) + qlat::Complex(0.0,std::cos(bi)));
+    /////databuf[off] = ((p[3]*900+p[2])*900+p[1])*900+p[0] + std::cos(ci) + qlat::ComplexD(0.0,std::cos(bi));
+    qlat::ComplexD tem = sendbuf[off] - (((p[3]*900+p[2])*900+p[1])*900+p[0] + std::cos(ci) + qlat::Complex(0.0,std::cos(bi)));
     diff += qnorm(tem);
   }
   sum_all_size(&diff, 1);
@@ -292,13 +292,13 @@ int main(int argc, char* argv[])
   }
 
 
-  //qlat::Complex* sendT;
-  //qlat::Complex* sbufT;
-  ////gpuErrchk( cudaMalloc(&sendT    , b0*civ*nvol*fd.Nt * sizeof(qlat::Complex)));
-  ////gpuErrchk( cudaMalloc(&sbufT    , b0*civ*nvol*fd.Nt * sizeof(qlat::Complex)));
+  //qlat::ComplexD* sendT;
+  //qlat::ComplexD* sbufT;
+  ////gpuErrchk( cudaMalloc(&sendT    , b0*civ*nvol*fd.Nt * sizeof(qlat::ComplexD)));
+  ////gpuErrchk( cudaMalloc(&sbufT    , b0*civ*nvol*fd.Nt * sizeof(qlat::ComplexD)));
 
-  //gpuMalloc(sendT, b0*civ*nvol*fd.Nt , qlat::Complex);
-  //gpuMalloc(sbufT, b0*civ*nvol*fd.Nt , qlat::Complex);
+  //gpuMalloc(sendT, b0*civ*nvol*fd.Nt , qlat::ComplexD);
+  //gpuMalloc(sbufT, b0*civ*nvol*fd.Nt , qlat::ComplexD);
 
   //for(int i=0;i<20;i++){
   //TIMER("Single Vec redistribute GPU");

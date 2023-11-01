@@ -45,7 +45,7 @@ void test_gf_fft()
       ColorMatrix& cm = v[m];
       for (int i = 0; i < NUM_COLOR; ++i) {
         for (int j = 0; j < NUM_COLOR; ++j) {
-          cm(i, j) = Complex(g_rand_gen(rsi), g_rand_gen(rsi));
+          cm(i, j) = ComplexD(g_rand_gen(rsi), g_rand_gen(rsi));
         }
       }
     }
@@ -70,15 +70,15 @@ void test_fft()
   RngState rs(get_global_rng_state(), "test_fft");
   Geometry geo;
   geo.init(total_site, 1);
-  FieldM<Complex, N> f, ff;
+  FieldM<ComplexD, N> f, ff;
   f.init(geo);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     RngState rsi(rs, get_id_node() * geo.local_volume() + index);
     Coordinate xl = geo.coordinate_from_index(index);
-    Vector<Complex> v = f.get_elems(xl);
+    Vector<ComplexD> v = f.get_elems(xl);
     for (int m = 0; m < v.size(); ++m) {
-      v[m] = Complex(g_rand_gen(rsi), g_rand_gen(rsi));
+      v[m] = ComplexD(g_rand_gen(rsi), g_rand_gen(rsi));
     }
   }
   ff = f;

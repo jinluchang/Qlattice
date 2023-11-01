@@ -572,7 +572,7 @@ void shift_vec::mult_gauge(void* pt, int dir_gauge){
   if(!id){Qassert(long(civ*sizeof(Ty)/8 ) == gbfac * 3 * gd0);}
   bool cfind = false;
   #define shift_macros(bf) if(bf == gd0){cfind = true; \
-    if( id)multiply_gauge<qlat::Complex , bf, 1, Conj_>(pt, gauge, dir_gauge, biva,Length,gbfac,gd0,GPU); \
+    if( id)multiply_gauge<qlat::ComplexD , bf, 1, Conj_>(pt, gauge, dir_gauge, biva,Length,gbfac,gd0,GPU); \
     if(!id)multiply_gauge<qlat::ComplexF, bf, 1, Conj_>(pt, gauge, dir_gauge, biva,Length,gbfac,gd0,GPU);}
   shift_macros(1);
   shift_macros(2);
@@ -587,7 +587,7 @@ void shift_vec::mult_gauge(void* pt, int dir_gauge){
   shift_macros(12*12);
 
   if(!cfind){cfind = true;
-    if( id)multiply_gauge<qlat::Complex , 1, -1, Conj_>(pt, gauge, dir_gauge, biva,Length,gbfac,gd0,GPU);
+    if( id)multiply_gauge<qlat::ComplexD , 1, -1, Conj_>(pt, gauge, dir_gauge, biva,Length,gbfac,gd0,GPU);
     if(!id)multiply_gauge<qlat::ComplexF, 1, -1, Conj_>(pt, gauge, dir_gauge, biva,Length,gbfac,gd0,GPU);}
   #undef shift_macros
   Qassert(cfind);

@@ -170,7 +170,7 @@ inline void extend_half_fermion_field(FermionField5d& ff, const FermionField5d& 
     const Vector<WilsonVector> hv = hff.get_elems_const(hxl);
     Vector<WilsonVector> v = ff.get_elems(xl);
     for (int m = 0; m < hgeo.multiplicity; ++m) {
-      v[m] += (WilsonVector)((Complex)16.0 * hv[m]);
+      v[m] += (WilsonVector)((ComplexD)16.0 * hv[m]);
     }
   }
   // TODO

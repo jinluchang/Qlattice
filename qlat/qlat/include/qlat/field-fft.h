@@ -13,7 +13,7 @@ namespace qlat
 
 struct API FftComplexFieldPlan {
   Geometry geo;     // geo.is_only_local == true
-  int mc;           // geo.multiplicity * sizeof(M) / sizeof(Complex)
+  int mc;           // geo.multiplicity * sizeof(M) / sizeof(ComplexD)
   int dir;          // direction of the fft
   bool is_forward;  // is forward fft (forward \sum_x f[x] exp(-i k x))
   //
@@ -46,7 +46,7 @@ void fft_complex_field_dir(Field<M>& field1, const Field<M>& field,
   TIMER("fft_complex_field_dir");
   Geometry geo = field.geo();
   geo.resize(0);
-  const int mc = geo.multiplicity * sizeof(M) / sizeof(Complex);
+  const int mc = geo.multiplicity * sizeof(M) / sizeof(ComplexD);
   FftComplexFieldPlan& plan = get_fft_plan(geo, mc, dir, is_forward);
   fftw_plan& fftplan = plan.fftplan;
   const int sizec = geo.total_site()[dir];
@@ -60,15 +60,15 @@ void fft_complex_field_dir(Field<M>& field1, const Field<M>& field,
   std::vector<Field<M> > fft_fields;
   shuffle_field(fft_fields, field, sp);
   field1.init();
-  Complex* fftdatac = (Complex*)fftw_malloc(nc_size * sizec * sizeof(Complex));
+  ComplexD* fftdatac = (Complex*)fftw_malloc(nc_size * sizec * sizeof(Complex));
 #pragma omp parallel for
   for (int i = 0; i < (int)fft_fields.size(); ++i) {
-    if (not(get_data_size(fft_fields[i]) == nc_size * (int)sizeof(Complex))) {
+    if (not(get_data_size(fft_fields[i]) == nc_size * (int)sizeof(ComplexD))) {
       displayln(fname +
-                ssprintf(": get_data_size=%d ; nc_size*sizeof(Complex)=%d",
+                ssprintf(": get_data_size=%d ; nc_size*sizeof(ComplexD)=%d",
                          get_data_size(fft_fields[i]),
-                         nc_size * (int)sizeof(Complex)));
-      qassert(get_data_size(fft_fields[i]) == nc_size * (int)sizeof(Complex));
+                         nc_size * (int)sizeof(ComplexD)));
+      qassert(get_data_size(fft_fields[i]) == nc_size * (int)sizeof(ComplexD));
     }
     std::memcpy((void*)&fftdatac[nc_size * i],
                 (void*)get_data(fft_fields[i]).data(),

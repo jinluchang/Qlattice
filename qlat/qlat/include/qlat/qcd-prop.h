@@ -180,7 +180,7 @@ void invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
 
 template <class T>
 void set_point_src_fermion_field(FermionField4dT<T>& ff, const Coordinate& xg,
-                                 const int cs, const Complex& value = 1.0)
+                                 const int cs, const ComplexD& value = 1.0)
 // ff need to be initialized
 {
   TIMER("set_point_src_fermion_field");
@@ -194,7 +194,7 @@ void set_point_src_fermion_field(FermionField4dT<T>& ff, const Coordinate& xg,
 
 template <class T>
 void set_point_src(Propagator4dT<T>& prop, const Geometry& geo_input,
-                   const Coordinate& xg, const Complex& value = 1.0)
+                   const Coordinate& xg, const ComplexD& value = 1.0)
 {
   TIMER_VERBOSE("set_point_src");
   const Geometry geo = geo_reform(geo_input);
@@ -209,7 +209,7 @@ void set_point_src(Propagator4dT<T>& prop, const Geometry& geo_input,
 
 template <class Inverter, class T>
 void set_point_src_propagator(Propagator4dT<T>& prop, const Inverter& inv,
-                              const Coordinate& xg, const Complex& value = 1.0)
+                              const Coordinate& xg, const ComplexD& value = 1.0)
 {
   TIMER_VERBOSE("set_point_src_propagator");
   const Geometry geo = geo_reform(inv.geo());
@@ -281,7 +281,7 @@ inline void set_wall_src_propagator(Propagator4d& prop, const Inverter& inv,
   }
 }
 
-inline void set_rand_u1_src_psel(Propagator4d& prop, FieldM<Complex, 1>& fu1,
+inline void set_rand_u1_src_psel(Propagator4d& prop, FieldM<ComplexD, 1>& fu1,
                                  const PointsSelection& psel,
                                  const Geometry& geo_, const RngState& rs)
 {
@@ -299,7 +299,7 @@ inline void set_rand_u1_src_psel(Propagator4d& prop, FieldM<Complex, 1>& fu1,
       const long gindex = index_from_coordinate(xg, total_site);
       RngState rst = rs.newtype(gindex);
       const double phase = u_rand_gen(rst, PI, -PI);
-      const Complex u1 = qpolar(1.0, phase);
+      const ComplexD u1 = qpolar(1.0, phase);
       set_unit(prop.get_elem(xl), u1);
       fu1.get_elem(xl) = u1;
     }
@@ -308,22 +308,22 @@ inline void set_rand_u1_src_psel(Propagator4d& prop, FieldM<Complex, 1>& fu1,
 
 inline void set_rand_u1_sol_psel(SelectedPoints<WilsonMatrix>& sp_prop,
                                  const Propagator4d& prop,
-                                 const FieldM<Complex, 1>& fu1,
+                                 const FieldM<ComplexD, 1>& fu1,
                                  const PointsSelection& psel)
 // calculate self loop at psel locations
 {
   TIMER_VERBOSE("set_rand_u1_sol_psel")
-  SelectedPoints<Complex> sp_fu1;
+  SelectedPoints<ComplexD> sp_fu1;
   set_selected_points(sp_prop, prop, psel);
   set_selected_points(sp_fu1, fu1, psel);
   qthread_for(idx, (long)psel.size(), {
-    const Complex& u1 = sp_fu1.get_elem(idx);
+    const ComplexD& u1 = sp_fu1.get_elem(idx);
     WilsonMatrix& wm = sp_prop.get_elem(idx);
     wm *= qlat::qconj(u1);
   });
 }
 
-inline void set_rand_u1_src_fsel(Propagator4d& prop, FieldM<Complex, 1>& fu1,
+inline void set_rand_u1_src_fsel(Propagator4d& prop, FieldM<ComplexD, 1>& fu1,
                                  const FieldSelection& fsel, const RngState& rs)
 {
   TIMER_VERBOSE("set_rand_u1_src_fsel");
@@ -341,7 +341,7 @@ inline void set_rand_u1_src_fsel(Propagator4d& prop, FieldM<Complex, 1>& fu1,
     const long gindex = index_from_coordinate(xg, total_site);
     RngState rst = rs.newtype(gindex);
     const double phase = u_rand_gen(rst, PI, -PI);
-    const Complex u1 = qpolar(1.0, phase);
+    const ComplexD u1 = qpolar(1.0, phase);
     set_unit(prop.get_elem(xl), u1);
     fu1.get_elem(xl) = u1;
   });
@@ -349,16 +349,16 @@ inline void set_rand_u1_src_fsel(Propagator4d& prop, FieldM<Complex, 1>& fu1,
 
 inline void set_rand_u1_sol_fsel(SelectedField<WilsonMatrix>& sf_prop,
                                  const Propagator4d& prop,
-                                 const FieldM<Complex, 1>& fu1,
+                                 const FieldM<ComplexD, 1>& fu1,
                                  const FieldSelection& fsel)
 // calculate self loop at fsel locations
 {
   TIMER_VERBOSE("set_rand_u1_sol_fsel")
-  SelectedField<Complex> sf_fu1;
+  SelectedField<ComplexD> sf_fu1;
   set_selected_field(sf_prop, prop, fsel);
   set_selected_field(sf_fu1, fu1, fsel);
   qthread_for(idx, fsel.n_elems, {
-    const Complex& u1 = sf_fu1.get_elem(idx);
+    const ComplexD& u1 = sf_fu1.get_elem(idx);
     WilsonMatrix& wm = sf_prop.get_elem(idx);
     wm *= qlat::qconj(u1);
   });

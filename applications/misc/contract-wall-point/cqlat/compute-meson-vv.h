@@ -49,7 +49,7 @@ inline void compute_meson_vv_type(const std::string& job_tag, const int traj,
   const long n_points = psel.size();
   const FieldSelection& fsel = get_field_selection(job_tag, traj);
   const int tsep = tsep_op_wall_src(job_tag);
-  std::map<std::string, FieldM<Complex, 8 * 8> > cache;
+  std::map<std::string, FieldM<ComplexD, 8 * 8> > cache;
   long iter = 0;
   for (long n = 0; n < n_points; ++n) {
     const long xg_y_psel_idx = n;
@@ -65,9 +65,9 @@ inline void compute_meson_vv_type(const std::string& job_tag, const int traj,
     for (int i = 0; i < num_type; ++i) {
       const int type1 = type1_list[i];
       const int type2 = type2_list[i];
-      FieldM<Complex, 8 * 8>& decay =
+      FieldM<ComplexD, 8 * 8>& decay =
           cache[ssprintf("decay-%d-%d-%d", type1, type2, type3)];
-      FieldM<Complex, 8 * 8>& fission =
+      FieldM<ComplexD, 8 * 8>& fission =
           cache[ssprintf("fission-%d-%d-%d", type1, type2, type3)];
       displayln_info(fname + ssprintf(":n=%ld iter=%ld types=%d-%d-%d", n, iter,
                                       type1, type2, type3));
@@ -81,9 +81,9 @@ inline void compute_meson_vv_type(const std::string& job_tag, const int traj,
   for (int i = 0; i < num_type; ++i) {
     const int type1 = type1_list[i];
     const int type2 = type2_list[i];
-    FieldM<Complex, 8 * 8>& decay =
+    FieldM<ComplexD, 8 * 8>& decay =
         cache[ssprintf("decay-%d-%d-%d", type1, type2, type3)];
-    FieldM<Complex, 8 * 8>& fission =
+    FieldM<ComplexD, 8 * 8>& fission =
         cache[ssprintf("fission-%d-%d-%d", type1, type2, type3)];
     const double coef = 1.0 / (double)n_iter;
     decay *= coef;
@@ -97,10 +97,10 @@ inline void compute_meson_vv_type(const std::string& job_tag, const int traj,
     const int type1 = type1_list[i];
     const int type2 = type2_list[i];
     if (type1 <= type2) {
-      FieldM<Complex, 8 * 8> avg;
-      FieldM<Complex, 8 * 8>& f1 =
+      FieldM<ComplexD, 8 * 8> avg;
+      FieldM<ComplexD, 8 * 8>& f1 =
           cache[ssprintf("decay-%d-%d-%d", type1, type2, type3)];
-      FieldM<Complex, 8 * 8>& f2 =
+      FieldM<ComplexD, 8 * 8>& f2 =
           cache[ssprintf("decay-%d-%d-%d", type2, type1, type3)];
       qassert(is_initialized(f1));
       qassert(is_initialized(f2));

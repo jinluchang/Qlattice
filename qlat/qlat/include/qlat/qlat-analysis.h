@@ -495,7 +495,7 @@ make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850(
   for (int i = 0; i < csi.fas.size(); ++i) {
     FermionAction& fa = csi.fas[i];
     fa.is_using_zmobius = true;
-    std::vector<Complex> omega(12, 0);
+    std::vector<ComplexD> omega(12, 0);
     omega[0] = 1.0903256131299373;
     omega[1] = 0.9570283702230611;
     omega[2] = 0.7048886040934104;
@@ -504,10 +504,10 @@ make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850(
     omega[5] = 0.21664245377015995;
     omega[6] = 0.14121112711957107;
     omega[7] = 0.0907785101745156;
-    omega[8] = Complex(0.05608303440064219, -0.007537158177840385);
-    omega[9] = Complex(0.05608303440064219, 0.007537158177840385);
-    omega[10] = Complex(0.0365221637144842, -0.03343945161367745);
-    omega[11] = Complex(0.0365221637144842, 0.03343945161367745);
+    omega[8] = ComplexD(0.05608303440064219, -0.007537158177840385);
+    omega[9] = ComplexD(0.05608303440064219, 0.007537158177840385);
+    omega[10] = ComplexD(0.0365221637144842, -0.03343945161367745);
+    omega[11] = ComplexD(0.0365221637144842, 0.03343945161367745);
     qassert(fa.bs.size() == fa.ls);
     qassert(fa.cs.size() == fa.ls);
     qassert(omega.size() == fa.ls);
@@ -575,7 +575,7 @@ make_configurations_info_32c64_dsdr_mu0p00107_ms0p0850(
   for (int i = 0; i < csi.fas.size(); ++i) {
     FermionAction& fa = csi.fas[i];
     fa.is_using_zmobius = true;
-    std::vector<Complex> omega(12, 0);
+    std::vector<ComplexD> omega(12, 0);
     omega[0] = 1.0903256131299373;
     omega[1] = 0.9570283702230611;
     omega[2] = 0.7048886040934104;
@@ -584,10 +584,10 @@ make_configurations_info_32c64_dsdr_mu0p00107_ms0p0850(
     omega[5] = 0.21664245377015995;
     omega[6] = 0.14121112711957107;
     omega[7] = 0.0907785101745156;
-    omega[8] = Complex(0.05608303440064219, -0.007537158177840385);
-    omega[9] = Complex(0.05608303440064219, 0.007537158177840385);
-    omega[10] = Complex(0.0365221637144842, -0.03343945161367745);
-    omega[11] = Complex(0.0365221637144842, 0.03343945161367745);
+    omega[8] = ComplexD(0.05608303440064219, -0.007537158177840385);
+    omega[9] = ComplexD(0.05608303440064219, 0.007537158177840385);
+    omega[10] = ComplexD(0.0365221637144842, -0.03343945161367745);
+    omega[11] = ComplexD(0.0365221637144842, 0.03343945161367745);
     qassert(fa.bs.size() == fa.ls);
     qassert(fa.cs.size() == fa.ls);
     qassert(omega.size() == fa.ls);
@@ -687,9 +687,9 @@ inline ConfigurationsInfo make_configurations_info_48c96_mu0p00078_ms0p0362(
     fa.bs[6] = 4.4659153528626341e+00;
     fa.bs[7] = 5.5498080139636414e+00;
     fa.bs[8] =
-        Complex(4.9320961582039766e+00, -3.5559998543638791e+00);
+        ComplexD(4.9320961582039766e+00, -3.5559998543638791e+00);
     fa.bs[9] =
-        Complex(4.9320961582039766e+00, 3.5559998543638791e+00);
+        ComplexD(4.9320961582039766e+00, 3.5559998543638791e+00);
     for (int i = 0; i < fa.ls; i++) {
       fa.cs[i] = fa.bs[i] - 1.0;
     }

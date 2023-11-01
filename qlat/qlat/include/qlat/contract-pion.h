@@ -21,11 +21,11 @@ inline LatData contract_pion(const Propagator4d& prop, const int tslice_src)
   const Geometry& geo = prop.geo();
   const Coordinate total_site = geo.total_site();
   LatData ld = mk_pion_corr_table(total_site);
-  Vector<Complex> ldv = lat_data_cget(ld);
+  Vector<ComplexD> ldv = lat_data_cget(ld);
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const Complex val = qnorm(prop.get_elem(xl));
+    const ComplexD val = qnorm(prop.get_elem(xl));
     const int tsep = mod(xg[3] - tslice_src, total_site[3]);
     ldv[tsep] += val;
   }
@@ -41,10 +41,10 @@ inline LatData contract_pion(const PselProp& prop, const int tslice_src,
   qassert(n_points == (long)psel.size());
   const Coordinate total_site = geo.total_site();
   LatData ld = mk_pion_corr_table(total_site);
-  Vector<Complex> ldv = lat_data_cget(ld);
+  Vector<ComplexD> ldv = lat_data_cget(ld);
   for (long idx = 0; idx < n_points; ++idx) {
     const Coordinate& xg = psel[idx];
-    const Complex val = qnorm(prop.get_elem(idx));
+    const ComplexD val = qnorm(prop.get_elem(idx));
     const int tsep = mod(xg[3] - tslice_src, total_site[3]);
     ldv[tsep] += val;
   }
@@ -59,12 +59,12 @@ inline LatData contract_pion(const SelProp& prop, const int tslice_src,
   const Geometry& geo = prop.geo();
   const Coordinate total_site = geo.total_site();
   LatData ld = mk_pion_corr_table(total_site);
-  Vector<Complex> ldv = lat_data_cget(ld);
+  Vector<ComplexD> ldv = lat_data_cget(ld);
   for (long idx = 0; idx < fsel.n_elems; ++idx) {
     const long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const Complex val = qnorm(prop.get_elem(idx));
+    const ComplexD val = qnorm(prop.get_elem(idx));
     const int tsep = mod(xg[3] - tslice_src, total_site[3]);
     ldv[tsep] += val;
   }
@@ -80,12 +80,12 @@ inline LatData contract_kaon(const SelProp& prop1, const SelProp& prop2,
   const Geometry& geo = prop1.geo();
   const Coordinate total_site = geo.total_site();
   LatData ld = mk_pion_corr_table(total_site);
-  Vector<Complex> ldv = lat_data_cget(ld);
+  Vector<ComplexD> ldv = lat_data_cget(ld);
   for (long idx = 0; idx < fsel.n_elems; ++idx) {
     const long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const Complex val =
+    const ComplexD val =
         matrix_trace(prop1.get_elem(idx), matrix_adjoint(prop2.get_elem(idx)));
     const int tsep = mod(xg[3] - tslice_src, total_site[3]);
     ldv[tsep] += val;
@@ -105,7 +105,7 @@ inline LatData contract_pion_wall_snk(const SelProp& prop, const int tslice_src,
   const PselProp wm_ts = contract_wall_snk_prop(prop, fsel);
   qassert(wm_ts.n_points == (long)total_site[3]);
   LatData ld = mk_pion_corr_table(total_site);
-  Vector<Complex> ldv = lat_data_cget(ld);
+  Vector<ComplexD> ldv = lat_data_cget(ld);
   for (int t = 0; t < total_site[3]; ++t) {
     const int tsep = mod(t - tslice_src, total_site[3]);
     ldv[tsep] = qnorm(wm_ts.get_elem(t));
@@ -130,7 +130,7 @@ inline LatData contract_kaon_wall_snk(const SelProp& prop1,
   qassert(wm1_ts.n_points == (long)total_site[3]);
   qassert(wm2_ts.n_points == (long)total_site[3]);
   LatData ld = mk_pion_corr_table(total_site);
-  Vector<Complex> ldv = lat_data_cget(ld);
+  Vector<ComplexD> ldv = lat_data_cget(ld);
   for (int t = 0; t < total_site[3]; ++t) {
     const int tsep = mod(t - tslice_src, total_site[3]);
     ldv[tsep] =
@@ -192,7 +192,7 @@ inline LatData contract_two_point_function(const SelProp& prop1,
       }
     }
   }
-  vector<array<Complex, 16 * 16> > m_ts(total_site[3]);
+  vector<array<ComplexD, 16 * 16> > m_ts(total_site[3]);
   set_zero(m_ts);
 #pragma omp parallel for
   for (int t = 0; t < total_site[3]; ++t) {
@@ -207,7 +207,7 @@ inline LatData contract_two_point_function(const SelProp& prop1,
   LatData ld = mk_two_point_table(total_site);
   set_zero(ld);
   for (int tsep = 0; tsep < total_site[3]; ++tsep) {
-    Vector<Complex> m_src_snk = lat_data_complex_get(ld, make_array(tsep));
+    Vector<ComplexD> m_src_snk = lat_data_complex_get(ld, make_array(tsep));
     for (int k = 0; k < 16 * 16; ++k) {
       m_src_snk[k] += m_ts[tsep][k];
     }
@@ -227,7 +227,7 @@ inline LatData contract_two_point_wall_snk_function(
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   qassert(prop1.n_points == (long)total_site[3]);
   qassert(prop2.n_points == (long)total_site[3]);
-  vector<array<Complex, 16 * 16> > m_ts(total_site[3]);
+  vector<array<ComplexD, 16 * 16> > m_ts(total_site[3]);
   set_zero(m_ts);
 #pragma omp parallel for
   for (int t = 0; t < total_site[3]; ++t) {
@@ -246,7 +246,7 @@ inline LatData contract_two_point_wall_snk_function(
   LatData ld = mk_two_point_table(total_site);
   set_zero(ld);
   for (int tsep = 0; tsep < total_site[3]; ++tsep) {
-    Vector<Complex> m_src_snk = lat_data_complex_get(ld, make_array(tsep));
+    Vector<ComplexD> m_src_snk = lat_data_complex_get(ld, make_array(tsep));
     for (int k = 0; k < 16 * 16; ++k) {
       m_src_snk[k] += m_ts[tsep][k];
     }
@@ -401,7 +401,7 @@ inline LatData contract_three_point_function(const SelProp& prop_a,
   const int tsep = mod(tb - ta, total_site[3]);
   for (int t = 0; t < total_site[3]; ++t) {
     const int top = mod(t - ta, total_site[3]);
-    Vector<Complex> v = lat_data_complex_get(ld, make_array(tsep, top));
+    Vector<ComplexD> v = lat_data_complex_get(ld, make_array(tsep, top));
     for (int op = 0; op < 16; ++op) {
       v[op] = matrix_trace(wm_ts[t], gms[op]);
     }
@@ -490,7 +490,7 @@ inline LatData mk_meson_snk_src_table(const Coordinate& total_site)
   return ld;
 }
 
-inline Complex contract_meson_snk_src(const WallSrcProps& wsp1,
+inline ComplexD contract_meson_snk_src(const WallSrcProps& wsp1,
                                       const WallSrcProps& wsp2, const int t_snk,
                                       const bool exact_snk, const int t_src,
                                       const bool exact_src)
@@ -504,12 +504,12 @@ inline Complex contract_meson_snk_src(const WallSrcProps& wsp1,
       get_wsnk_prop(wsp1, t_snk, exact_snk).get_elem(t_src);
   const WilsonMatrix& wm2_src_snk =
       get_wsnk_prop(wsp2, t_snk, exact_snk).get_elem(t_src);
-  const Complex v1 = matrix_trace(gamma5 * wm1_snk_src, gamma5 * wm2_src_snk);
-  const Complex v2 = matrix_trace(gamma5 * wm2_snk_src, gamma5 * wm1_src_snk);
+  const ComplexD v1 = matrix_trace(gamma5 * wm1_snk_src, gamma5 * wm2_src_snk);
+  const ComplexD v2 = matrix_trace(gamma5 * wm2_snk_src, gamma5 * wm1_src_snk);
   return 0.5 * (v1 + qconj(v2));
 }
 
-inline Complex contract_meson_snk_src(const WallSrcProps& wsp1,
+inline ComplexD contract_meson_snk_src(const WallSrcProps& wsp1,
                                       const WallSrcProps& wsp2, const int t_snk,
                                       const int t_src)
 {
@@ -520,13 +520,13 @@ inline Complex contract_meson_snk_src(const WallSrcProps& wsp1,
   qassert(wsp2.exact_tslice_mask[t_snk] == has_exact_snk);
   const bool has_exact_src = wsp1.exact_tslice_mask[t_src];
   qassert(wsp2.exact_tslice_mask[t_src] == has_exact_src);
-  Complex ret = 0.0;
+  ComplexD ret = 0.0;
   if (t_src == t_snk and has_exact_src) {
     qassert(has_exact_src == has_exact_snk);
     const double sloppy_exact_ratio_1 = wsp1.sloppy_exact_ratio_1;
     qassert(sloppy_exact_ratio_1 == wsp2.sloppy_exact_ratio_1);
-    const Complex coef1 = sloppy_exact_ratio_1;
-    const Complex coef2 = 1.0 - sloppy_exact_ratio_1;
+    const ComplexD coef1 = sloppy_exact_ratio_1;
+    const ComplexD coef2 = 1.0 - sloppy_exact_ratio_1;
     ret += coef1 * contract_meson_snk_src(wsp1, wsp2, t_snk, true, t_src, true);
     ret +=
         coef2 * contract_meson_snk_src(wsp1, wsp2, t_snk, false, t_src, false);
@@ -534,9 +534,9 @@ inline Complex contract_meson_snk_src(const WallSrcProps& wsp1,
     const double sloppy_exact_ratio_11 = wsp1.sloppy_exact_ratio_11;
     const double sloppy_exact_ratio_1 = wsp1.sloppy_exact_ratio_1;
     qassert(sloppy_exact_ratio_1 == wsp2.sloppy_exact_ratio_1);
-    const Complex coef1 = sloppy_exact_ratio_11;
-    const Complex coef2 = sloppy_exact_ratio_1 - sloppy_exact_ratio_11;
-    const Complex coef3 =
+    const ComplexD coef1 = sloppy_exact_ratio_11;
+    const ComplexD coef2 = sloppy_exact_ratio_1 - sloppy_exact_ratio_11;
+    const ComplexD coef3 =
         1.0 - 2.0 * sloppy_exact_ratio_1 + sloppy_exact_ratio_11;
     ret += coef1 * contract_meson_snk_src(wsp1, wsp2, t_snk, true, t_src, true);
     ret +=
@@ -548,8 +548,8 @@ inline Complex contract_meson_snk_src(const WallSrcProps& wsp1,
   } else if (has_exact_snk or has_exact_src) {
     const double sloppy_exact_ratio_1 = wsp1.sloppy_exact_ratio_1;
     qassert(sloppy_exact_ratio_1 == wsp2.sloppy_exact_ratio_1);
-    const Complex coef1 = sloppy_exact_ratio_1;
-    const Complex coef2 = 1.0 - sloppy_exact_ratio_1;
+    const ComplexD coef1 = sloppy_exact_ratio_1;
+    const ComplexD coef2 = 1.0 - sloppy_exact_ratio_1;
     if (has_exact_snk and (not has_exact_src)) {
       ret +=
           coef1 * contract_meson_snk_src(wsp1, wsp2, t_snk, true, t_src, false);

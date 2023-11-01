@@ -223,7 +223,7 @@ std::string show_complex(const LatData& ld)
     for (int a = 0; a < (int)info.size() - 1; ++a) {
       out << ssprintf("%12s ", idx_name(info[a], idx[a]).c_str());
     }
-    const Vector<Complex> ldv = lat_data_complex_get_const(ld, idx);
+    const Vector<ComplexD> ldv = lat_data_complex_get_const(ld, idx);
     out << ssprintf("%24.17E %24.17E\n", ldv[0].real(), ldv[0].imag());
     if ((int)info.size() - 2 >= 0) {
       idx[(int)info.size() - 2] += 1;
@@ -278,9 +278,9 @@ const LatData& operator*=(LatData& ld, const double factor)
   return ld;
 }
 
-const LatData& operator*=(LatData& ld, const Complex& factor)
+const LatData& operator*=(LatData& ld, const ComplexD& factor)
 {
-  Vector<Complex> v = lat_data_cget(ld);
+  Vector<ComplexD> v = lat_data_cget(ld);
   for (long i = 0; i < v.size(); ++i) {
     v[i] *= factor;
   }
@@ -299,14 +299,14 @@ LatData operator*(const double factor, const LatData& ld)
   return ld * factor;
 }
 
-LatData operator*(const LatData& ld, const Complex& factor)
+LatData operator*(const LatData& ld, const ComplexD& factor)
 {
   LatData ret = ld;
   ret *= factor;
   return ret;
 }
 
-LatData operator*(const Complex& factor, const LatData& ld)
+LatData operator*(const ComplexD& factor, const LatData& ld)
 {
   return ld * factor;
 }

@@ -64,7 +64,7 @@ PyObject* set_mul_field_ctype(PyObject* p_field, const double& factor)
 }
 
 template <class M>
-PyObject* set_mul_field_ctype(PyObject* p_field, const Complex& factor)
+PyObject* set_mul_field_ctype(PyObject* p_field, const ComplexD& factor)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
   f *= factor;
@@ -72,7 +72,7 @@ PyObject* set_mul_field_ctype(PyObject* p_field, const Complex& factor)
 }
 
 template <class M>
-PyObject* set_mul_field_ctype(PyObject* p_field, const Field<Complex>& f_factor)
+PyObject* set_mul_field_ctype(PyObject* p_field, const Field<ComplexD>& f_factor)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
   f *= f_factor;
@@ -96,7 +96,7 @@ PyObject* set_zero_field_ctype(PyObject* p_field)
 }
 
 template <class M>
-PyObject* set_unit_field_ctype(PyObject* p_field, const Complex& coef)
+PyObject* set_unit_field_ctype(PyObject* p_field, const ComplexD& coef)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
   set_unit(f, coef);
@@ -237,7 +237,7 @@ EXPORT(set_mul_double_field, {
 EXPORT(set_mul_complex_field, {
   using namespace qlat;
   PyObject* p_field = NULL;
-  Complex factor = 0.0;
+  ComplexD factor = 0.0;
   if (!PyArg_ParseTuple(args, "OD", &p_field, &factor)) {
     return NULL;
   }
@@ -257,8 +257,8 @@ EXPORT(set_mul_cfield_field, {
   const std::string ctype = py_get_ctype(p_field);
   const std::string ctype_c = py_get_ctype(p_cfield);
   PyObject* p_ret = NULL;
-  if (ctype_c == "Complex") {
-    Field<Complex>& f_factor = py_convert_type_field<Complex>(p_cfield);
+  if (ctype_c == "ComplexD") {
+    Field<ComplexD>& f_factor = py_convert_type_field<Complex>(p_cfield);
     FIELD_DISPATCH(p_ret, set_mul_field_ctype, ctype, p_field, f_factor);
   } else if (ctype_c == "Double") {
     Field<double>& f_factor = py_convert_type_field<double>(p_cfield);
@@ -284,7 +284,7 @@ EXPORT(set_zero_field, {
 EXPORT(set_unit_field, {
   using namespace qlat;
   PyObject* p_field = NULL;
-  Complex coef = 1.0;
+  ComplexD coef = 1.0;
   if (!PyArg_ParseTuple(args, "O|D", &p_field, &coef)) {
     return NULL;
   }

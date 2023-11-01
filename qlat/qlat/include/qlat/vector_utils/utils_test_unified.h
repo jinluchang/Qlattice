@@ -8,7 +8,7 @@ namespace qlat{
 
 struct test_unified
 {
-  qlat::vector<qlat::vector<qlat::Complex > > alpha;
+  qlat::vector<qlat::vector<qlat::ComplexD > > alpha;
 
   test_unified(int a){
     qlat::displayln_info(qlat::ssprintf("construct"));
@@ -24,7 +24,7 @@ struct test_unified
   void prop_L()
   {
     //TIMER("==prop_L");
-    qlat::vector<qlat::Complex > b;b.resize(20);
+    qlat::vector<qlat::ComplexD > b;b.resize(20);
     qacc_for(coff, long(b.size()),{
       b[coff] = 0.0;
     });

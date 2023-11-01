@@ -34,17 +34,17 @@ void set_complex_from_double(Field<M>& cf, const Field<double>& sf)
   qacc_for(index, geo.local_volume(), {
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> v = cf.get_elems(xl);
-    Vector<Complex> cf_v((Complex*)v.data(), v.data_size() / sizeof(Complex));
+    Vector<ComplexD> cf_v((Complex*)v.data(), v.data_size() / sizeof(Complex));
     int N = cf_v.size();
     qassert(N == geo.multiplicity);
     for (int m = 0; m < N; ++m) {
-      cf_v[m] = Complex(sf.get_elem(xl, m));
+      cf_v[m] = ComplexD(sf.get_elem(xl, m));
     }
   });
 }
 
 template <class M>
-void set_double_from_complex(Field<M>& sf, const Field<Complex>& cf)
+void set_double_from_complex(Field<M>& sf, const Field<ComplexD>& cf)
 {
   TIMER("set_double_from_complex");
   const Geometry geo = cf.geo();
@@ -62,7 +62,7 @@ void set_double_from_complex(Field<M>& sf, const Field<Complex>& cf)
 }
 
 template <class M>
-void set_abs_from_complex(Field<M>& sf, const Field<Complex>& cf)
+void set_abs_from_complex(Field<M>& sf, const Field<ComplexD>& cf)
 {
   TIMER("set_mod_sq_from_complex");
   const Geometry geo = cf.geo();

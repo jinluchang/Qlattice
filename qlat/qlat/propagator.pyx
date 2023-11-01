@@ -4,7 +4,7 @@ from qlat_utils.all cimport *
 from . cimport everything as cc
 from .geometry cimport Geometry
 from .field_types cimport (
-        FieldComplex,
+        FieldComplexD,
         )
 from .field_selection cimport (
         FieldSelection,
@@ -68,7 +68,7 @@ cdef class PselProp(SelectedPointsWilsonMatrix):
 
 ###
 
-def set_point_src(Prop prop_src not None, Geometry geo not None, Coordinate xg not None, cc.PyComplex value=1.0):
+def set_point_src(Prop prop_src not None, Geometry geo not None, Coordinate xg not None, cc.PyComplexD value=1.0):
     cc.set_point_src(prop_src.xxx().p[0], geo.xx, xg.xx, cc.complex_cast(value))
 
 def set_wall_src(Prop prop_src not None, Geometry geo not None, int tslice, CoordinateD lmom=None):
@@ -76,7 +76,7 @@ def set_wall_src(Prop prop_src not None, Geometry geo not None, int tslice, Coor
         lmom = q.CoordinateD()
     cc.set_wall_src(prop_src.xxx().p[0], geo.xx, tslice, lmom.xx)
 
-def mk_point_src(Geometry geo not None, Coordinate xg not None, cc.PyComplex value=1.0):
+def mk_point_src(Geometry geo not None, Coordinate xg not None, cc.PyComplexD value=1.0):
     cdef Prop prop_src = Prop(geo)
     set_point_src(prop_src, geo, xg, value)
     return prop_src
@@ -94,7 +94,7 @@ def mk_rand_u1_src(sel, rs):
     sel can be psel or fsel
     """
     prop_src = Prop()
-    fu1 = FieldComplex()
+    fu1 = FieldComplexD()
     if isinstance(sel, FieldSelection):
         fsel = sel
         c.set_rand_u1_src_fsel(prop_src, fu1, fsel, rs)
@@ -108,9 +108,9 @@ def mk_rand_u1_src(sel, rs):
     return (prop_src, fu1,)
 
 @q.timer
-def get_rand_u1_sol(Prop prop_sol, FieldComplex fu1, sel):
+def get_rand_u1_sol(Prop prop_sol, FieldComplexD fu1, sel):
     assert isinstance(prop_sol, Prop)
-    assert isinstance(fu1, FieldComplex)
+    assert isinstance(fu1, FieldComplexD)
     if isinstance(sel, FieldSelection):
         fsel = sel
         s_prop = SelProp(fsel)
@@ -179,8 +179,8 @@ def flip_tpbc_with_tslice(prop, tslice_flip_tpbc):
         assert False
 
 @q.timer
-def free_scalar_invert_mom_cfield(FieldComplex f, mass):
-    assert isinstance(f, FieldComplex)
+def free_scalar_invert_mom_cfield(FieldComplexD f, mass):
+    assert isinstance(f, FieldComplexD)
     c.free_scalar_invert_mom_cfield(f, mass)
 
 @q.timer

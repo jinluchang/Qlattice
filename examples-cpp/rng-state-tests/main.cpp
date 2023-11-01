@@ -67,7 +67,7 @@ void test3()
   double sum = 0;
   double sigma2 = 0;
   for (int block = 0; block < Nb; block++) {
-    Complex a = 0;
+    ComplexD a = 0;
     for (int id = 0; id < Ni; id++) {
       int index = block * Ni + id;
       reset(rs, index);
@@ -98,7 +98,7 @@ void test4()
   double sum = 0;
   double sigma2 = 0;
   for (int block = 0; block < Nb; block++) {
-    Complex a = 0;
+    ComplexD a = 0;
     for (int id = 0; id < Ni; id++) {
       int index = block * Ni + id;
       RngState rsi = rs.newtype(index);

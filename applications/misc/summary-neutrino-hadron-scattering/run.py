@@ -105,7 +105,7 @@ def analysis_three_point(job_tag, traj, type1, type2, type3):
 
 @q.timer_verbose
 def analysis_meson_vv_meson(job_tag, traj, type1, type2, type3, type4):
-    f = q.Field("Complex")
+    f = q.Field("ComplexD")
     f.load_double_from_float(
             get_load_path(
                 f"{job_tag}/field-meson-vv-meson/results-{traj}/forward-{type1}-{type2}-{type3}-{type4}.field"))

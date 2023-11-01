@@ -39,7 +39,7 @@ inline void compute_psel_fsel_distribution_type(const std::string& job_tag,
   const PointsSelection& psel = get_point_selection(job_tag, traj);
   const long n_points = psel.size();
   const FieldSelection& fsel = get_field_selection(job_tag, traj);
-  FieldM<Complex, 1> pos;
+  FieldM<ComplexD, 1> pos;
   long iter = 0;
   for (long n = 0; n < n_points; ++n) {
     const long xg_y_psel_idx = n;
@@ -57,10 +57,10 @@ inline void compute_psel_fsel_distribution_type(const std::string& job_tag,
   const long n_iter = iter;
   const double coef = 1.0 / (double)n_iter;
   pos *= coef;
-  FieldM<Complex, 1> neg;
+  FieldM<ComplexD, 1> neg;
   neg = pos;
   reflect_field(neg);
-  FieldM<Complex, 1> avg;
+  FieldM<ComplexD, 1> avg;
   avg += pos;
   avg += neg;
   avg *= 0.5;

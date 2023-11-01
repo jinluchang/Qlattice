@@ -100,7 +100,7 @@ qacc void to_from_big_endian_64(void* str, const size_t len)
   }
 }
 
-qacc int8_t& operator*=(int8_t& x, const Complex& factor)
+qacc int8_t& operator*=(int8_t& x, const ComplexD& factor)
 {
   (void)x;
   (void)factor;
@@ -108,7 +108,7 @@ qacc int8_t& operator*=(int8_t& x, const Complex& factor)
   return x;
 }
 
-qacc int& operator*=(int& x, const Complex& factor)
+qacc int& operator*=(int& x, const ComplexD& factor)
 {
   (void)x;
   (void)factor;
@@ -116,7 +116,7 @@ qacc int& operator*=(int& x, const Complex& factor)
   return x;
 }
 
-qacc long& operator*=(long& x, const Complex& factor)
+qacc long& operator*=(long& x, const ComplexD& factor)
 {
   (void)x;
   (void)factor;
@@ -124,7 +124,7 @@ qacc long& operator*=(long& x, const Complex& factor)
   return x;
 }
 
-qacc long long& operator*=(long long& x, const Complex& factor)
+qacc long long& operator*=(long long& x, const ComplexD& factor)
 {
   (void)x;
   (void)factor;
@@ -132,7 +132,7 @@ qacc long long& operator*=(long long& x, const Complex& factor)
   return x;
 }
 
-qacc double& operator*=(double& x, const Complex& factor)
+qacc double& operator*=(double& x, const ComplexD& factor)
 {
   (void)x;
   (void)factor;
@@ -140,7 +140,7 @@ qacc double& operator*=(double& x, const Complex& factor)
   return x;
 }
 
-qacc float& operator*=(float& x, const Complex& factor)
+qacc float& operator*=(float& x, const ComplexD& factor)
 {
   (void)x;
   (void)factor;
@@ -148,7 +148,7 @@ qacc float& operator*=(float& x, const Complex& factor)
   return x;
 }
 
-qacc char& operator*=(char& x, const Complex& factor)
+qacc char& operator*=(char& x, const ComplexD& factor)
 {
   (void)x;
   (void)factor;

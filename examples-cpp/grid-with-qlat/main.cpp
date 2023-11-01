@@ -14,7 +14,7 @@ inline void test()
   gf_show_info(gf);
   Grid::GridCartesian* UGrid = Grid::SpaceTimeGrid::makeFourDimGrid(
       grid_convert(total_site),
-      Grid::GridDefaultSimd(Grid::Nd, Grid::vComplex::Nsimd()),
+      Grid::GridDefaultSimd(Grid::Nd, Grid::vComplexD::Nsimd()),
       grid_convert(geo.geon.size_node));
   qassert(geo.geon.id_node == id_node_from_grid(UGrid));
   Grid::LatticeGaugeField ggf(UGrid);

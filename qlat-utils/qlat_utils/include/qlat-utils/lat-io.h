@@ -145,15 +145,15 @@ void print(const LatData& ld);
 
 const LatData& operator*=(LatData& ld, const double factor);
 
-const LatData& operator*=(LatData& ld, const Complex& factor);
+const LatData& operator*=(LatData& ld, const ComplexD& factor);
 
 LatData operator*(const LatData& ld, const double factor);
 
 LatData operator*(const double factor, const LatData& ld);
 
-LatData operator*(const LatData& ld, const Complex& factor);
+LatData operator*(const LatData& ld, const ComplexD& factor);
 
-LatData operator*(const Complex& factor, const LatData& ld);
+LatData operator*(const ComplexD& factor, const LatData& ld);
 
 const LatData& operator+=(LatData& ld, const LatData& ld1);
 
@@ -303,7 +303,7 @@ Vector<double> lat_data_get_const(const LatData& ld, const VecS& idx)
 }
 
 template <class VecS>
-Vector<Complex> lat_data_complex_get(LatData& ld, const VecS& idx)
+Vector<ComplexD> lat_data_complex_get(LatData& ld, const VecS& idx)
 {
   qassert(is_lat_info_complex(ld.info));
   qassert((long)idx.size() < (long)ld.info.size());
@@ -311,12 +311,12 @@ Vector<Complex> lat_data_complex_get(LatData& ld, const VecS& idx)
   const long size = lat_data_size(ld, idx.size());
   qassert(size % 2 == 0);
   qassert(offset * size + size <= (long)ld.res.size());
-  Vector<Complex> ret((Complex*)&ld.res[offset * size], size / 2);
+  Vector<ComplexD> ret((Complex*)&ld.res[offset * size], size / 2);
   return ret;
 }
 
 template <class VecS>
-Vector<Complex> lat_data_complex_get_const(const LatData& ld, const VecS& idx)
+Vector<ComplexD> lat_data_complex_get_const(const LatData& ld, const VecS& idx)
 // Be cautious about the const property
 // 改不改靠自觉
 {
@@ -326,18 +326,18 @@ Vector<Complex> lat_data_complex_get_const(const LatData& ld, const VecS& idx)
   const long size = lat_data_size(ld, idx.size());
   qassert(size % 2 == 0);
   qassert(offset * size + size <= (long)ld.res.size());
-  Vector<Complex> ret((Complex*)&ld.res[offset * size], size / 2);
+  Vector<ComplexD> ret((Complex*)&ld.res[offset * size], size / 2);
   return ret;
 }
 
 template <class VecS>
-Vector<Complex> lat_data_cget(LatData& ld, const VecS& idx)
+Vector<ComplexD> lat_data_cget(LatData& ld, const VecS& idx)
 {
   return lat_data_complex_get(ld, idx);
 }
 
 template <class VecS>
-Vector<Complex> lat_data_cget_const(const LatData& ld, const VecS& idx)
+Vector<ComplexD> lat_data_cget_const(const LatData& ld, const VecS& idx)
 // Be cautious about the const property
 // 改不改靠自觉
 {
@@ -358,13 +358,13 @@ inline Vector<double> lat_data_get_const(const LatData& ld)
   return lat_data_get_const(ld, idx);
 }
 
-inline Vector<Complex> lat_data_cget(LatData& ld)
+inline Vector<ComplexD> lat_data_cget(LatData& ld)
 {
   array<int, 0> idx;
   return lat_data_cget(ld, idx);
 }
 
-inline Vector<Complex> lat_data_cget_const(const LatData& ld)
+inline Vector<ComplexD> lat_data_cget_const(const LatData& ld)
 // Be cautious about the const property
 // 改不改靠自觉
 {

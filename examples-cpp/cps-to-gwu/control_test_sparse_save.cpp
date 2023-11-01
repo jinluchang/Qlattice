@@ -56,17 +56,17 @@ int main(int argc, char* argv[])
   save_point_selection_info(pconf, namew);
   ////===save point selection info
 
-  qlat::FieldM<Complex, 12*12 > propM;propM.init(geo);
-  //Propagator4dT<Complex > propM;propM.init(geo);
-  //Complex* data = (Complex*) &propM.get_elem(0);
-  Complex* data = qlat::get_data(propM).data();
+  qlat::FieldM<ComplexD, 12*12 > propM;propM.init(geo);
+  //Propagator4dT<ComplexD > propM;propM.init(geo);
+  //ComplexD* data = (Complex*) &propM.get_elem(0);
+  ComplexD* data = qlat::get_data(propM).data();
   for(long isp=0;isp<geo.local_volume();isp++)
   {
     double ini = qlat::u_rand_gen(rs);
-    for(int j=0;j<12*12;j++){data[isp*12*12 + j] = Complex(ini, ini/2.0);}
+    for(int j=0;j<12*12;j++){data[isp*12*12 + j] = ComplexD(ini, ini/2.0);}
   }
 
-  qlat::SelectedField<Complex > sf;sf.init(fsel, 12*12);
+  qlat::SelectedField<ComplexD > sf;sf.init(fsel, 12*12);
   set_selected_field(sf, propM, fsel);
   Coordinate new_size_node = Coordinate(1, 1, 2, 4);
   const ShuffledBitSet sbs = mk_shuffled_bitset(fsel, new_size_node);

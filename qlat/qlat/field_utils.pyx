@@ -88,7 +88,7 @@ def mk_phase_field(Geometry geo, lmom):
     lmom is in lattice momentum unit
     exp(i * 2*pi/L * lmom \cdot xg )
     """
-    f = Field(ElemTypeComplex, geo, 1)
+    f = Field(ElemTypeComplexD, geo, 1)
     c.set_phase_field(f, lmom)
     return f
 

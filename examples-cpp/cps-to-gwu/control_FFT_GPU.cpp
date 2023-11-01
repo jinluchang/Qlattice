@@ -6,7 +6,7 @@
 #include <qlat/field-fft.h>
 
 #define TyD qlat::Complex
-#define TyF qlat::Complex 
+#define TyF qlat::ComplexD 
 
 int main(int argc, char* argv[])
 {

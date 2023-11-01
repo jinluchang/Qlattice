@@ -27,14 +27,14 @@ inline LatData contract_chvp3(const SelProp& prop1, const SelProp& prop2,
   qassert(fsel.n_elems == prop1.n_elems);
   qassert(fsel.n_elems == prop2.n_elems);
   const int multiplicity = 3;
-  SelectedField<Complex> chvp;
+  SelectedField<ComplexD> chvp;
   chvp.init(fsel, multiplicity);
   qacc_for(idx, fsel.n_elems, {
     const WilsonMatrix& wm1_x_y = prop1.get_elem(idx);
     const WilsonMatrix& wm2_x_y = prop2.get_elem(idx);
     const WilsonMatrix wm2_y_x =
         gamma5 * (WilsonMatrix)matrix_adjoint(wm2_x_y) * gamma5;
-    Vector<Complex> chvp_v = chvp.get_elems(idx);
+    Vector<ComplexD> chvp_v = chvp.get_elems(idx);
     for (int mu = 0; mu < 3; ++mu) {
       const WilsonMatrix wm = wm2_y_x * v_ms[mu] * wm1_x_y;
       chvp_v[mu] = matrix_trace(wm, v_ms[mu]);
@@ -46,8 +46,8 @@ inline LatData contract_chvp3(const SelProp& prop1, const SelProp& prop2,
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const int tsep = mod(xg[3] - tslice_src, total_site[3]);
-    const Vector<Complex> chvp_v = chvp.get_elems_const(idx);
-    Vector<Complex> ldv = lat_data_cget(ld, make_array<int>(tsep));
+    const Vector<ComplexD> chvp_v = chvp.get_elems_const(idx);
+    Vector<ComplexD> ldv = lat_data_cget(ld, make_array<int>(tsep));
     ldv += chvp_v;
   }
   glb_sum_lat_data(ld);

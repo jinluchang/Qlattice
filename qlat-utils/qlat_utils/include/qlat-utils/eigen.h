@@ -47,7 +47,7 @@ struct NumTraits<thrust::complex<float>> : NumTraits<std::complex<float>> {
   typedef float Real;
   typedef typename NumTraits<Real>::Literal Literal;
   enum {
-    IsComplex = 1,
+    IsComplexD = 1,
     RequireInitialization = NumTraits<Real>::RequireInitialization,
     ReadCost = 2 * NumTraits<Real>::ReadCost,
     AddCost = 2 * NumTraits<Real>::AddCost,
@@ -60,7 +60,7 @@ struct NumTraits<thrust::complex<double>> : NumTraits<std::complex<double>> {
   typedef double Real;
   typedef typename NumTraits<Real>::Literal Literal;
   enum {
-    IsComplex = 1,
+    IsComplexD = 1,
     RequireInitialization = NumTraits<Real>::RequireInitialization,
     ReadCost = 2 * NumTraits<Real>::ReadCost,
     AddCost = 2 * NumTraits<Real>::AddCost,

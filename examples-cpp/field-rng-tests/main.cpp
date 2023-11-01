@@ -30,7 +30,7 @@ void test1()
   RngState rs(seed);
   split_rng_state(rs, rs, type);
   split_rng_state(rs, rs, traj);
-  FieldM<Complex, 1> af;
+  FieldM<ComplexD, 1> af;
   FieldM<double, 1> sumf;
   FieldM<double, 1> sigma2f;
   af.init(geoHalf);
@@ -57,7 +57,7 @@ void test1()
     }
     for (long index = 0; index < geoHalf.local_volume(); ++index) {
       Coordinate x = geoHalf.coordinate_from_index(index);
-      Complex& a = af.get_elem(x);
+      ComplexD& a = af.get_elem(x);
       sumf.get_elem(x) += qnorm(a);
       sigma2f.get_elem(x) += sqr(qnorm(a));
     }

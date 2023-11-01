@@ -98,7 +98,7 @@ PyObject* set_sub_spfield_ctype(PyField& pf_new, PyField& pf)
 }
 
 template <class M>
-PyObject* set_mul_spfield_ctype(PyField& pf, const Complex& factor)
+PyObject* set_mul_spfield_ctype(PyField& pf, const ComplexD& factor)
 {
   SelectedPoints<M>& f = *(SelectedPoints<M>*)pf.cdata;
   f *= factor;

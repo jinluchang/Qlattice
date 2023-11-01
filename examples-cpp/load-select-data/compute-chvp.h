@@ -42,7 +42,7 @@ inline void compute_chvp_type(const std::string& job_tag, const int traj,
   const long n_points = psel.size();
   const FieldSelection& fsel = get_field_selection(job_tag, traj);
   const int tsep = tsep_op_wall_src(job_tag);
-  std::map<std::string, FieldM<Complex, 8 * 8> > cache;
+  std::map<std::string, FieldM<ComplexD, 8 * 8> > cache;
   std::map<std::string, long> counts;
   for (long n = 0; n < n_points; ++n) {
     const long xg_y_psel_idx = n;
@@ -61,7 +61,7 @@ inline void compute_chvp_type(const std::string& job_tag, const int traj,
       }
       const std::string tag = ssprintf("chvp-%d-%d", type1, type2);
       displayln_info(fname + ssprintf(":n=%ld types=%d-%d", n, type1, type2));
-      SelectedField<Complex> s_chvp;
+      SelectedField<ComplexD> s_chvp;
       contract_chvp_ama(s_chvp, job_tag, traj, xg_y, type1, type2);
       acc_field(cache[tag], 1.0, s_chvp, ssp);
       counts[tag] += 1;
@@ -71,11 +71,11 @@ inline void compute_chvp_type(const std::string& job_tag, const int traj,
     const int type1 = type1_list[i];
     const int type2 = type2_list[i];
     const std::string tag = ssprintf("chvp-%d-%d", type1, type2);
-    FieldM<Complex, 8 * 8>& chvp = cache[tag];
+    FieldM<ComplexD, 8 * 8>& chvp = cache[tag];
     const double coef = 1.0 / (double)counts[tag];
     chvp *= coef;
     // avg decay and fission to decay
-    FieldM<Complex, 8 * 8> tmp;
+    FieldM<ComplexD, 8 * 8> tmp;
     tmp = chvp;
     reflect_field(tmp);
     field_permute_mu_nu(tmp);
@@ -88,7 +88,7 @@ inline void compute_chvp_type(const std::string& job_tag, const int traj,
     const int type1 = type1_list[i];
     const int type2 = type2_list[i];
     const std::string tag = ssprintf("chvp-%d-%d", type1, type2);
-    const FieldM<Complex, 8 * 8>& chvp = cache[tag];
+    const FieldM<ComplexD, 8 * 8>& chvp = cache[tag];
     qassert(fn_list[i] != "");
     write_field_float_from_double(chvp, fn_list[i]);
   }

@@ -206,7 +206,7 @@ inline void extract_par_vct_from_bfm_vct(void* par_vct, const void* bfm_vct,
 
 inline void scalar_multiplication_by_partition(void* out_vct,
                                                const void* bfm_vct,
-                                               const std::vector<Complex>& b,
+                                               const std::vector<ComplexD>& b,
                                                int Ls, const Coordinate& tw_par,
                                                const Geometry& geo)
 {
@@ -252,9 +252,9 @@ inline void scalar_multiplication_by_partition(void* out_vct,
   }
 }
 
-inline void fft_convolution(std::vector<Complex>& out,
-                            const std::vector<Complex>& x,
-                            const std::vector<Complex>& y)
+inline void fft_convolution(std::vector<ComplexD>& out,
+                            const std::vector<ComplexD>& x,
+                            const std::vector<ComplexD>& y)
 {
   // global calculation: same on all nodes.
   // single thread!!!

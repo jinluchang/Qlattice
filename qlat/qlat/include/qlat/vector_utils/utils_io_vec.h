@@ -1601,7 +1601,7 @@ void save_gwu_noi(const char *filename,qlat::FieldM<Ty,1> &noi){
 
 template <typename Td>
 void save_gwu_noiP(const char *filename,Propagator4dT<Td>& prop){
-  qlat::FieldM<qlat::Complex,1> noi;
+  qlat::FieldM<qlat::ComplexD,1> noi;
   noi.init(prop.geo());
   qlat::set_zero(noi);
   
@@ -1616,7 +1616,7 @@ void save_gwu_noiP(const char *filename,Propagator4dT<Td>& prop){
       sum += std::fabs(src(d1,d0).real());
       sum += std::fabs(src(d1,d0).imag());
     }
-    qlat::Complex phase = qlat::Complex(src(0,0).real(),src(0,0).imag());
+    qlat::ComplexD phase = qlat::Complex(src(0,0).real(),src(0,0).imag());
 
     if(sum >1e-8){noi.get_elem_offset(index) = 1.0*phase;}
   }
@@ -1633,7 +1633,7 @@ void save_gwu_noiP(std::string &filename,Propagator4dT<Td>& prop){
 }
 
 template <typename Td>
-void noi_to_propP(qlat::FieldM<qlat::Complex,1> &noi,Propagator4dT<Td>& prop, int dir = 0){
+void noi_to_propP(qlat::FieldM<qlat::ComplexD,1> &noi,Propagator4dT<Td>& prop, int dir = 0){
   for (long index = 0; index < prop.geo().local_volume(); ++index)
   {
     qlat::WilsonMatrixT<Td>& res =  prop.get_elem_offset(index);
@@ -1645,7 +1645,7 @@ void noi_to_propP(qlat::FieldM<qlat::Complex,1> &noi,Propagator4dT<Td>& prop, in
 template <typename Td>
 void load_gwu_noiP(const char *filename,Propagator4dT<Td>& prop){
   ////io_vec& io_use = get_io_vec_plan(prop.geo());
-  qlat::FieldM<qlat::Complex,1> noi;
+  qlat::FieldM<qlat::ComplexD,1> noi;
   noi.init(prop.geo());
   qlat::set_zero(noi);
   load_gwu_noi(filename,noi);
@@ -1820,7 +1820,7 @@ void load_qlat_noisesT_core(FILE* file, std::vector<Ty*  > &noises, const Geomet
   //buf = aligned_alloc_no_acc(bufN*bfac*io_use.noden * 2*bsize);
   qlat::vector<char > buf_vec;buf_vec.resize(bufN*bfac*io_use.noden * 2*bsize);
   void* buf = (void*) buf_vec.data();
-  qlat::Complex*  bufD = (qlat::Complex* ) buf;
+  qlat::ComplexD*  bufD = (qlat::Complex* ) buf;
   qlat::ComplexF* bufF = (qlat::ComplexF*) buf;
 
   move_index mv_civ;

@@ -428,7 +428,7 @@ long read_selected_field_double_from_float(
       <TYPENAME>(SelectedField<TYPENAME>& f, const double factor);      \
                                                                         \
   QLAT_EXTERN template SelectedField<TYPENAME>& operator*=              \
-      <TYPENAME>(SelectedField<TYPENAME>& f, const Complex factor);     \
+      <TYPENAME>(SelectedField<TYPENAME>& f, const ComplexD factor);     \
                                                                         \
   QLAT_EXTERN template void only_keep_selected_points<TYPENAME>(        \
       Field<TYPENAME> & f, const FieldSelection& fsel);                 \

@@ -49,7 +49,7 @@ for total_site in total_site_list:
     rs = q.RngState(f"{total_site}")
     q.displayln_info(total_site, seed)
     geo = q.Geometry(total_site, 1)
-    f = q.FieldComplex(geo)
+    f = q.FieldComplexD(geo)
     f.set_rand(q.RngState())
     f0 = fft0 * f
     f1 = fft1 * f

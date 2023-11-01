@@ -109,7 +109,7 @@ SelectedPoints<M>& operator*=(SelectedPoints<M>& f, const double factor)
 }
 
 template <class M>
-SelectedPoints<M>& operator*=(SelectedPoints<M>& f, const Complex factor)
+SelectedPoints<M>& operator*=(SelectedPoints<M>& f, const ComplexD factor)
 {
   TIMER("sel_points_operator*=(F,C)");
   qassert(f.initialized);
@@ -318,8 +318,8 @@ LatData lat_data_from_selected_points_complex(const SelectedPoints<M>& sp)
   LatData ld;
   ld.info.push_back(lat_dim_number("idx", 0, sp.n_points - 1));
   ld.info.push_back(lat_dim_number("m", 0, sp.multiplicity - 1));
-  qassert(sizeof(M) >= sizeof(Complex));
-  ld.info.push_back(lat_dim_number("v", 0, (long)(sizeof(M) / sizeof(Complex)) - 1));
+  qassert(sizeof(M) >= sizeof(ComplexD));
+  ld.info.push_back(lat_dim_number("v", 0, (long)(sizeof(M) / sizeof(ComplexD)) - 1));
   ld.info.push_back(lat_dim_re_im());
   lat_data_alloc(ld);
   assign(get_data(ld.res), get_data(sp.points));
@@ -339,7 +339,7 @@ void selected_points_from_lat_data_complex(SelectedPoints<M>& sp,
   const long n_points = ld.info[0].size;
   const long multiplicity = ld.info[1].size;
   const long sizof_M_vs_sizeof_complex = ld.info[2].size;
-  qassert(sizeof(M) == sizof_M_vs_sizeof_complex * sizeof(Complex));
+  qassert(sizeof(M) == sizof_M_vs_sizeof_complex * sizeof(ComplexD));
   qassert(ld.info[3].size == 2);
   sp.init(n_points, multiplicity);
   assign(get_data(sp.points), get_data(ld.res));
@@ -458,7 +458,7 @@ void load_selected_points(SelectedPoints<M>& sp, const std::string& path)
       <TYPENAME>(SelectedPoints<TYPENAME>& f, const double factor);      \
                                                                          \
   QLAT_EXTERN template SelectedPoints<TYPENAME>& operator*=              \
-      <TYPENAME>(SelectedPoints<TYPENAME>& f, const Complex factor);     \
+      <TYPENAME>(SelectedPoints<TYPENAME>& f, const ComplexD factor);     \
                                                                          \
   QLAT_EXTERN template void only_keep_selected_points<TYPENAME>(         \
       Field<TYPENAME> & f, const PointsSelection& psel);                 \

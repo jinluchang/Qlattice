@@ -23,8 +23,8 @@ void simple_tests()
   }
 
   {
-    VectorGPUKey gkey(100*sizeof(qlat::Complex), std::string("test_buf"), false);
-    vector_gpu<qlat::Complex>& buf = get_vector_gpu_plan<qlat::Complex >(gkey);
+    VectorGPUKey gkey(100*sizeof(qlat::ComplexD), std::string("test_buf"), false);
+    vector_gpu<qlat::ComplexD>& buf = get_vector_gpu_plan<qlat::Complex >(gkey);
     buf[0] = 0;
     buf[100-1] = 1;
     displayln_info(ssprintf("CHECK: vector gpu buf: OK") );
@@ -33,7 +33,7 @@ void simple_tests()
   {
     TIMER_VERBOSE("test-move-index");
     move_index mv_idx;
-    qlat::vector_acc<qlat::Complex > buf;buf.resize(800);
+    qlat::vector_acc<qlat::ComplexD > buf;buf.resize(800);
     mv_idx.dojob(buf.data(), buf.data(), 2, 50, 4, 1,   2, true);
     displayln_info(ssprintf("CHECK: move index: OK") );
   }
@@ -64,7 +64,7 @@ void simple_tests()
 
     fft_desc_basic fd(geo);
     shift_vec svec(fd, true);
-    qlat::vector_gpu<qlat::Complex > gfE;
+    qlat::vector_gpu<qlat::ComplexD > gfE;
     extend_links_to_vecs(gfE, gf);
     svec.set_gauge(qlat::get_data(gfE).data(), 4, 12);
 
@@ -91,11 +91,11 @@ void simple_tests()
     const long NVmpi = fd.mz*fd.my*fd.mx;
     const long Nsize = fd.Nx* fd.Ny* fd.Nz* fd.Nt * 9;
 
-    qlat::vector_gpu<qlat::Complex > gauge;gauge.resize(Nsize);
+    qlat::vector_gpu<qlat::ComplexD > gauge;gauge.resize(Nsize);
     random_Ty(gauge.data(), gauge.size(), 1, int(qlat::u_rand_gen(rs) * 100) );
 
-    qlat::vector_gpu<qlat::Complex > gfT;gfT.resize(NVmpi*Nsize);
-    qlat::vector_gpu<qlat::Complex > gfT_buf;gfT_buf.resize(NVmpi*Nsize);
+    qlat::vector_gpu<qlat::ComplexD > gfT;gfT.resize(NVmpi*Nsize);
+    qlat::vector_gpu<qlat::ComplexD > gfT_buf;gfT_buf.resize(NVmpi*Nsize);
     for(long vi=0;vi<NVmpi;vi++){cpy_data_thread(&(gfT.data()[vi*Nsize]), gauge.data(), Nsize, 1);}
 
     Vec_redistribute vec_rot(fd, true);
@@ -103,10 +103,10 @@ void simple_tests()
 
     double gnorm = gauge.norm2().real();
     double rnorm = gfT.norm2().real();
-    qlat::vector_gpu<qlat::Complex > diff;diff.resize(Nsize);
-    Complex* p1 = gfT.p;
-    Complex* p2 = gauge.p;
-    Complex* p3 = diff.p;
+    qlat::vector_gpu<qlat::ComplexD > diff;diff.resize(Nsize);
+    ComplexD* p1 = gfT.p;
+    ComplexD* p2 = gauge.p;
+    ComplexD* p3 = diff.p;
     qacc_for(isp, Nsize, {
       p3[isp] = qnorm(p1[isp] - p2[isp]);
     });

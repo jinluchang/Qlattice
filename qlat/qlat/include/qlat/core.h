@@ -720,7 +720,7 @@ void set_zero(Field<M>& f)
 }
 
 template <class M>
-void set_unit(Field<M>& f, const Complex& coef = 1.0)
+void set_unit(Field<M>& f, const ComplexD& coef = 1.0)
 {
   TIMER("set_unit(Field)");
   for (long offset = 0; offset < f.field.size(); ++offset) {
@@ -1245,7 +1245,7 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
   QLAT_EXTERN template void set_zero<TYPENAME>(SelectedPoints<TYPENAME> & f); \
                                                                               \
   QLAT_EXTERN template void set_unit<TYPENAME>(Field<TYPENAME> & f,           \
-                                               const Complex& coef);          \
+                                               const ComplexD& coef);          \
                                                                               \
   QLAT_EXTERN template void qswap<TYPENAME>(Field<TYPENAME> & f1,             \
                                             Field<TYPENAME> & f2);            \

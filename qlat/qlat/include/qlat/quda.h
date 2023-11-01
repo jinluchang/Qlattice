@@ -222,9 +222,9 @@ void set_inv_param(QudaInvertParam& inv_param, const FermionAction& fa,
   // Note that Quda uses -M5 as M5 ...
   inv_param.m5 = -fa.m5;
   if (fa.is_using_zmobius) {
-    static_assert(sizeof(__complex__ double) == sizeof(Complex));
-    memcpy(inv_param.b_5, fa.bs.data(), fa.ls * sizeof(Complex));
-    memcpy(inv_param.c_5, fa.cs.data(), fa.ls * sizeof(Complex));
+    static_assert(sizeof(__complex__ double) == sizeof(ComplexD));
+    memcpy(inv_param.b_5, fa.bs.data(), fa.ls * sizeof(ComplexD));
+    memcpy(inv_param.c_5, fa.cs.data(), fa.ls * sizeof(ComplexD));
   } else {
     for (int s = 0; s < fa.ls; s++) {
       inv_param.b_5[s] = 0.5 * fa.mobius_scale + 0.5;

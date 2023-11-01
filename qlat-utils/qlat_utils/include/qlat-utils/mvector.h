@@ -92,7 +92,7 @@ qacc void set_zero(MvectorT<DIMN, T>& m)
 }
 
 template <int DIMN, class T>
-qacc void set_unit(MvectorT<DIMN, T>& m, const Complex& coef = 1.0)
+qacc void set_unit(MvectorT<DIMN, T>& m, const ComplexD& coef = 1.0)
 {
   for (int i = 0; i < DIMN; ++i) {
     m.p[i] = coef;

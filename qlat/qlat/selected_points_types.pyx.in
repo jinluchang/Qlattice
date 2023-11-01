@@ -150,7 +150,7 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
 
     def __imul__(self, f):
         cdef double fd
-        cdef cc.Complex fc
+        cdef cc.ComplexD fc
         if isinstance(f, float):
             fd = f
             cc.imul_direct(self.xx, fd)

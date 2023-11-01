@@ -133,25 +133,25 @@ int main(int argc, char* argv[])
 
   ////print_sum(pres, tmp_Lp, "=====Final prop check");
 
-  std::vector< qlat::FieldM<qlat::Complex , 12*12> > FpropV;FpropV.resize(nmass);
+  std::vector< qlat::FieldM<qlat::ComplexD , 12*12> > FpropV;FpropV.resize(nmass);
   ///for(unsigned int iv=0;iv<FpropV.size();iv++){FpropV[iv].init(geo);}
 
   copy_eigen_src_to_FieldM(ptmp, FpropV, ei.b_size, fd, 0, 1, false);
 
-  //qlat::Complex* tmp = (qlat::Complex*) qlat::get_data(FpropV[0]).data();
+  //qlat::ComplexD* tmp = (qlat::Complex*) qlat::get_data(FpropV[0]).data();
   //print0("size0 %ld, size1 %ld \n", 
-  //  long(geo.local_volume()*12*12), long(qlat::get_data(FpropV[0]).data_size()/sizeof(qlat::Complex)));
+  //  long(geo.local_volume()*12*12), long(qlat::get_data(FpropV[0]).data_size()/sizeof(qlat::ComplexD)));
   //print_sum(tmp, geo.local_volume(), "sum FpropV 0", 1);
 
   //print_sum(tmp, geo.local_volume(), "sum FpropV 2", 1);
-  //print_sum((qlat::Complex*) qlat::get_data(FpropV[0]).data(), qlat::get_data(FpropV[0]).data_size()/sizeof(qlat::Complex), 
+  //print_sum((qlat::ComplexD*) qlat::get_data(FpropV[0]).data(), qlat::get_data(FpropV[0]).data_size()/sizeof(qlat::Complex), 
   //  "sum FpropV 2", 1);
 
 
   copy_eigen_src_to_FieldM(bufP, FpropV, ei.b_size, fd, 1, 1, false);
 
   //print_sum(tmp, geo.local_volume(), "sum FpropV 1", 1);
-  //print_sum((qlat::Complex*) qlat::get_data(FpropV[0]).data(), qlat::get_data(FpropV[0]).data_size()/sizeof(qlat::Complex), 
+  //print_sum((qlat::ComplexD*) qlat::get_data(FpropV[0]).data(), qlat::get_data(FpropV[0]).data_size()/sizeof(qlat::Complex), 
   //  "sum FpropV 1", 1);
 
   copy_eigen_prop_to_EigenM(bufP.data(), s0, ei.b_size, nmass, fd, 0);
@@ -165,7 +165,7 @@ int main(int argc, char* argv[])
   //std::vector<Propagator4d > propS_new;propS_new.resize(nmass);for(unsigned int i=0;i<propS_new.size();i++)propS_new[i].init(geo);
   //copy_propE(propS_new, s0, fd, 1);
 
-  //std::vector< qlat::FieldM<qlat::Complex , 12*12> > FpropV;FpropV.resize(nmass);
+  //std::vector< qlat::FieldM<qlat::ComplexD , 12*12> > FpropV;FpropV.resize(nmass);
   //for(int im=0;im<nmass;im++){
   //  sprintf(names, in.Pname.c_str(),icfg);
   //  sprintf(namep, "%s.m%8.6f", names, massL[im]);
@@ -177,7 +177,7 @@ int main(int argc, char* argv[])
   //copy_propE(bufS, s0, fd, 1);
 
   //for(int im=0;im<nmass;im++){
-  //print_sum((Complex*)qlat::get_data(propS_new[im]).data(), qlat::get_data(propS_new[im]).data_size()/sizeof(qlat::Complex),
+  //print_sum((ComplexD*)qlat::get_data(propS_new[im]).data(), qlat::get_data(propS_new[im]).data_size()/sizeof(qlat::Complex),
   //    "=====Final prop");
   //}
 

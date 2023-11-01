@@ -6,7 +6,7 @@ namespace qlat
 {  //
 
 inline void acc_four_point_func_em(LatData& ld,
-                                   const Field<Complex>& hf,
+                                   const Field<ComplexD>& hf,
                                    const int type,
                                    const double r_scaling_factor)
 {
@@ -36,8 +36,8 @@ inline void acc_four_point_func_em(LatData& ld,
     const double coef2 = rd - r1;
     qassert(r2 < ld.info[2].size);
     if (t < ld.info[1].size) {
-      const Vector<Complex> hv = hf.get_elems_const(xl);
-      std::array<Complex, 4> vt;
+      const Vector<ComplexD> hv = hf.get_elems_const(xl);
+      std::array<ComplexD, 4> vt;
       vt[0] = 0.0;
       for (int mu = 0; mu < 4; ++mu) {
         vt[0] += hv[ndir * mu + mu];
@@ -53,9 +53,9 @@ inline void acc_four_point_func_em(LatData& ld,
           vt[3] += xreld[i] * xreld[j] * hv[ndir * i + j];
         }
       }
-      Vector<Complex> v1 =
+      Vector<ComplexD> v1 =
           lat_data_complex_get(ld, make_array<int>(type, t, r1));
-      Vector<Complex> v2 =
+      Vector<ComplexD> v2 =
           lat_data_complex_get(ld, make_array<int>(type, t, r2));
       for (int m = 0; m < 4; ++m) {
         v1[m] += coef1 * vt[m];
@@ -78,8 +78,8 @@ EXPORT(set_pion_four_point_mom_field, {
     return NULL;
   }
   PyField pf = py_convert_field(p_field);
-  pqassert(pf.ctype == "Complex");
-  Field<Complex>& f = *(Field<Complex>*)pf.cdata;
+  pqassert(pf.ctype == "ComplexD");
+  Field<ComplexD>& f = *(Field<Complex>*)pf.cdata;
   const Geometry& geo = f.geo();
   pqassert(f.geo().multiplicity == 16);
   std::string tag;
@@ -131,7 +131,7 @@ EXPORT(set_pion_four_point_mom_field, {
     } else if (-2 == tag_index) {
       f_pi_sq = sqr(sqr(r_pi) / 6.0 * s2);
     }
-    Vector<Complex> v = f.get_elems(kl);
+    Vector<ComplexD> v = f.get_elems(kl);
     set_zero(v);
     for (int mu = 0; mu < 4; ++mu) {
       for (int nu = 0; nu < 4; ++nu) {
@@ -150,7 +150,7 @@ EXPORT(set_pion_four_point_mom_field, {
       const int mu_nu = mu * 4 + nu;
       v[mu_nu] = total_site[3] * 2 * pion_mass;
     } else {
-      array<Complex, 4> p_p_q, p_m_q, tp_p_q, tp_m_q, tp_p_q_sym, tp_m_q_sym;
+      array<ComplexD, 4> p_p_q, p_m_q, tp_p_q, tp_m_q, tp_p_q_sym, tp_m_q_sym;
       set_zero(p_p_q);
       set_zero(p_m_q);
       set_zero(tp_p_q);
@@ -164,8 +164,8 @@ EXPORT(set_pion_four_point_mom_field, {
       tp_m_q[3] = 2.0 * ii * mh;
       tp_p_q_sym[3] = 2.0 * ii * mh;
       tp_m_q_sym[3] = 2.0 * ii * mh;
-      Complex s_p = sqr(mh);
-      Complex s_m = sqr(mh);
+      ComplexD s_p = sqr(mh);
+      ComplexD s_m = sqr(mh);
       for (int mu = 0; mu < 4; ++mu) {
         p_p_q[mu] += ks[mu];
         p_m_q[mu] -= ks[mu];
@@ -212,8 +212,8 @@ EXPORT(acc_four_point_func_em, {
   }
   LatData& ld = py_convert_type<LatData>(p_ld);
   PyField pf = py_convert_field(p_field);
-  pqassert(pf.ctype == "Complex");
-  Field<Complex>& f = *(Field<Complex>*)pf.cdata;
+  pqassert(pf.ctype == "ComplexD");
+  Field<ComplexD>& f = *(Field<Complex>*)pf.cdata;
   qlat::acc_four_point_func_em(ld, f, type, r_scaling_factor);
   Py_RETURN_NONE;
 });

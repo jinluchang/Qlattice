@@ -6,7 +6,7 @@
 2. More transformations:
    1. More general common subexpression elimination (works for more general spin & color contractions)
    2. Common subexpression elimination for summation over coordinates.
-   3. Complex conjugate and $\gamma_5$ hermiticity.
+   3. ComplexD conjugate and $\gamma_5$ hermiticity.
 3. Efficient evaluation
    1. Parallel evaluations.
    2. Generic C++ code to compute the contraction.

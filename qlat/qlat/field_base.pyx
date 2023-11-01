@@ -102,14 +102,14 @@ cdef class FieldBase:
 
     def __imul__(self, factor):
         """
-		factor can be float, complex, FieldM<Complex,1>
+		factor can be float, complex, FieldM<ComplexD,1>
         """
         if isinstance(factor, float):
             c.set_mul_double_field(self, factor)
         elif isinstance(factor, complex):
             c.set_mul_complex_field(self, factor)
         elif isinstance(factor, FieldBase):
-            assert factor.ctype in [ ElemTypeComplex, ElemTypeDouble, ]
+            assert factor.ctype in [ ElemTypeComplexD, ElemTypeDouble, ]
             c.set_mul_cfield_field(self, factor)
         else:
             assert False
@@ -281,7 +281,7 @@ cdef class FieldBase:
         assert isinstance(tag, str)
         c.to_from_endianness_field(self, tag)
 
-    def as_field(self, ctype=ElemTypeComplex):
+    def as_field(self, ctype=ElemTypeComplexD):
         """
 		return new Field(ctype) with the same content
         """

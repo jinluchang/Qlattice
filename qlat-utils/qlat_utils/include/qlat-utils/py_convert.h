@@ -17,7 +17,7 @@ bool check_ctype_name(const std::string& ctype)
 }
 
 template <>
-inline bool check_ctype_name<Complex>(const std::string& ctype)
+inline bool check_ctype_name<ComplexD>(const std::string& ctype)
 {
   return "ComplexD" == ctype;
 }
@@ -83,16 +83,16 @@ inline void py_convert(double& out, PyObject* in)
   }
 }
 
-inline void py_convert(Complex& out, PyObject* in)
+inline void py_convert(ComplexD& out, PyObject* in)
 {
   if (PyLong_Check(in)) {
     out = PyLong_AsLong(in);
   } else if (PyFloat_Check(in)) {
     out = PyFloat_AsDouble(in);
   } else {
-    qassert(PyComplex_Check(in));
+    qassert(PyComplexD_Check(in));
     Py_complex& py_out = (Py_complex&)out;
-    py_out = PyComplex_AsCComplex(in);
+    py_out = PyComplexD_AsCComplex(in);
   }
 }
 
@@ -202,7 +202,7 @@ T py_convert_data(PyObject* in)
 // py_convert_data<int>(in)
 // py_convert_data<long>(in)
 // py_convert_data<double>(in)
-// py_convert_data<Complex>(in)
+// py_convert_data<ComplexD>(in)
 // py_convert_data<bool>(in)
 // py_convert_data<std::string>(in)
 // py_convert_data<Coordinate>(in)
@@ -326,9 +326,9 @@ inline PyObject* py_convert(const float& x)
 
 inline PyObject* py_convert(const double& x) { return PyFloat_FromDouble(x); }
 
-inline PyObject* py_convert(const Complex& x)
+inline PyObject* py_convert(const ComplexD& x)
 {
-  return PyComplex_FromCComplex((Py_complex&)x);
+  return PyComplexD_FromCComplex((Py_complex&)x);
 }
 
 inline PyObject* py_convert(void* x) { return PyLong_FromVoidPtr(x); }

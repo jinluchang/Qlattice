@@ -123,14 +123,14 @@ inline void grid_convert(Grid::LatticeGaugeField& ggf, const GaugeField& gf)
     Grid::Coordinate coor = grid_convert(xl);
     const Vector<ColorMatrix> ms = gf.get_elems_const(xl);
     LorentzColourMatrix gms;
-    array<Complex, sizeof(LorentzColourMatrix) / sizeof(Complex)>& fs =
-        (array<Complex, sizeof(LorentzColourMatrix) / sizeof(Complex)>&)gms;
-    array<Complex, sizeof(LorentzColourMatrix) / sizeof(Complex)>& ds =
-        *((array<Complex, sizeof(LorentzColourMatrix) / sizeof(Complex)>*)
+    array<ComplexD, sizeof(LorentzColourMatrix) / sizeof(Complex)>& fs =
+        (array<ComplexD, sizeof(LorentzColourMatrix) / sizeof(Complex)>&)gms;
+    array<ComplexD, sizeof(LorentzColourMatrix) / sizeof(Complex)>& ds =
+        *((array<ComplexD, sizeof(LorentzColourMatrix) / sizeof(Complex)>*)
               ms.data());
     qassert(sizeof(LorentzColourMatrix) ==
-            ms.data_size() / sizeof(Complex) * sizeof(Complex));
-    qassert((long)fs.size() * (long)sizeof(Complex) == ms.data_size());
+            ms.data_size() / sizeof(ComplexD) * sizeof(Complex));
+    qassert((long)fs.size() * (long)sizeof(ComplexD) == ms.data_size());
     qassert(fs.size() == ds.size());
     for (int i = 0; i < (int)fs.size(); ++i) {
       fs[i] = ds[i];
@@ -152,12 +152,12 @@ inline void grid_convert(Grid::LatticeGaugeFieldF& ggf, const GaugeField& gf)
     LorentzColourMatrixF gms;
     array<ComplexF, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>& fs =
         (array<ComplexF, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>&)gms;
-    array<Complex, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>& ds =
-        *((array<Complex, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>*)
+    array<ComplexD, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>& ds =
+        *((array<ComplexD, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>*)
               ms.data());
     qassert(sizeof(LorentzColourMatrixF) ==
-            ms.data_size() / sizeof(Complex) * sizeof(ComplexF));
-    qassert((long)fs.size() * (long)sizeof(Complex) == ms.data_size());
+            ms.data_size() / sizeof(ComplexD) * sizeof(ComplexF));
+    qassert((long)fs.size() * (long)sizeof(ComplexD) == ms.data_size());
     qassert(fs.size() == ds.size());
     for (int i = 0; i < (int)fs.size(); ++i) {
       fs[i] = ds[i];
@@ -180,7 +180,7 @@ inline void grid_convert(Grid::LatticePropagatorF& gprop, const Field<WilsonMatr
     const WilsonMatrix& wm = prop.get_elem(xl);
     WilsonMatrix msc;
     convert_mspincolor_from_wm(msc, wm);
-    array<ComplexF, sizeof(WilsonMatrix) / sizeof(Complex)> fs;
+    array<ComplexF, sizeof(WilsonMatrix) / sizeof(ComplexD)> fs;
     for (int k = 0; k < (int)fs.size(); ++k) {
       fs[k] = msc.p[k];
     }
@@ -202,7 +202,7 @@ inline void grid_convert(Grid::LatticePropagatorD& gprop, const Field<WilsonMatr
     const WilsonMatrix& wm = prop.get_elem(xl);
     WilsonMatrix msc;
     convert_mspincolor_from_wm(msc, wm);
-    array<ComplexD, sizeof(WilsonMatrix) / sizeof(Complex)> fs;
+    array<ComplexD, sizeof(WilsonMatrix) / sizeof(ComplexD)> fs;
     for (int k = 0; k < (int)fs.size(); ++k) {
       fs[k] = msc.p[k];
     }
@@ -221,7 +221,7 @@ inline void grid_convert(Field<WilsonMatrix>& prop, const Grid::LatticePropagato
     const Geometry& geo = prop.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Grid::Coordinate coor = grid_convert(xl);
-    array<ComplexF, sizeof(WilsonMatrix) / sizeof(Complex)> fs;
+    array<ComplexF, sizeof(WilsonMatrix) / sizeof(ComplexD)> fs;
     peekLocalSite(fs, gprop_v, coor);
     WilsonMatrix msc;
     for (int k = 0; k < (int)fs.size(); ++k) {
@@ -243,7 +243,7 @@ inline void grid_convert(Field<WilsonMatrix>& prop, const Grid::LatticePropagato
     const Geometry& geo = prop.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Grid::Coordinate coor = grid_convert(xl);
-    array<ComplexD, sizeof(WilsonMatrix) / sizeof(Complex)> fs;
+    array<ComplexD, sizeof(WilsonMatrix) / sizeof(ComplexD)> fs;
     peekLocalSite(fs, gprop_v, coor);
     WilsonMatrix msc;
     for (int k = 0; k < (int)fs.size(); ++k) {
@@ -265,14 +265,14 @@ inline void grid_convert(FermionField5d& ff, const Grid::LatticeFermionF& gff)
     const Coordinate xl = geo.coordinate_from_index(index);
     Grid::Coordinate coor = grid_convert(xl, 0);
     Vector<WilsonVector> wvs = ff.get_elems(xl);
-    array<ComplexF, sizeof(WilsonVector) / sizeof(Complex)> fs;
+    array<ComplexF, sizeof(WilsonVector) / sizeof(ComplexD)> fs;
     for (int m = 0; m < geo.multiplicity; ++m) {
       coor[0] = m;
       peekLocalSite(fs, gff_v, coor);
-      array<Complex, sizeof(WilsonVector) / sizeof(Complex)>& ds =
-          (array<Complex, sizeof(WilsonVector) / sizeof(Complex)>&)
+      array<ComplexD, sizeof(WilsonVector) / sizeof(Complex)>& ds =
+          (array<ComplexD, sizeof(WilsonVector) / sizeof(Complex)>&)
               wvs[m];
-      for (int k = 0; k < (int)(sizeof(WilsonVector) / sizeof(Complex)); ++k) {
+      for (int k = 0; k < (int)(sizeof(WilsonVector) / sizeof(ComplexD)); ++k) {
         ds[k] = fs[k];
       }
     }
@@ -289,13 +289,13 @@ inline void grid_convert(Grid::LatticeFermionF& gff, const FermionField5d& ff)
     const Coordinate xl = geo.coordinate_from_index(index);
     Grid::Coordinate coor = grid_convert(xl, 0);
     const Vector<WilsonVector> wvs = ff.get_elems_const(xl);
-    array<ComplexF, sizeof(WilsonVector) / sizeof(Complex)> fs;
+    array<ComplexF, sizeof(WilsonVector) / sizeof(ComplexD)> fs;
     for (int m = 0; m < geo.multiplicity; ++m) {
       coor[0] = m;
-      const array<Complex, sizeof(WilsonVector) / sizeof(Complex)>& ds =
-          (const array<Complex, sizeof(WilsonVector) / sizeof(Complex)>&)
+      const array<ComplexD, sizeof(WilsonVector) / sizeof(Complex)>& ds =
+          (const array<ComplexD, sizeof(WilsonVector) / sizeof(Complex)>&)
               wvs[m];
-      for (int k = 0; k < (int)(sizeof(WilsonVector) / sizeof(Complex)); ++k) {
+      for (int k = 0; k < (int)(sizeof(WilsonVector) / sizeof(ComplexD)); ++k) {
         fs[k] = ds[k];
       }
       pokeLocalSite(fs, gff_v, coor);
@@ -338,7 +338,7 @@ struct InverterDomainWallGrid : InverterDomainWall {
     qassert(geo().geon.id_node == id_node_from_grid(UGrid));
     Umu = new LatticeGaugeFieldF(UGrid);
     grid_convert(*Umu, gf);
-    std::vector<Complex> omega(fa.ls, 0.0);
+    std::vector<ComplexD> omega(fa.ls, 0.0);
     for (int i = 0; i < fa.ls; ++i) {
       omega[i] = 1.0 / (fa.bs[i] + fa.cs[i]);
     }

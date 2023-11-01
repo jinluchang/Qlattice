@@ -88,7 +88,7 @@ PyObject* set_sub_sfield_ctype(PyObject* pf_new, PyObject* pf)
 }
 
 template <class M>
-PyObject* set_mul_sfield_ctype(PyObject* pf, const Complex& factor)
+PyObject* set_mul_sfield_ctype(PyObject* pf, const ComplexD& factor)
 {
   SelectedField<M>& f = py_convert_type_sfield<M>(pf);
   f *= factor;

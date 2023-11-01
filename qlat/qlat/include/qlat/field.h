@@ -21,9 +21,9 @@ inline CoordinateD lattice_mom_mult(const Geometry& geo)
   return lattice_mom_mult(geo.total_site());
 }
 
-void set_mom_phase_field(FieldM<Complex, 1>& f, const CoordinateD& mom);
+void set_mom_phase_field(FieldM<ComplexD, 1>& f, const CoordinateD& mom);
 
-void set_phase_field(FieldM<Complex, 1>& f, const CoordinateD& lmom);
+void set_phase_field(FieldM<ComplexD, 1>& f, const CoordinateD& lmom);
 
 // --------------------
 
@@ -124,7 +124,7 @@ const Field<M>& operator*=(Field<M>& f, const Field<double>& f_factor)
 }
 
 template <class M>
-const Field<M>& operator*=(Field<M>& f, const Field<Complex>& f_factor)
+const Field<M>& operator*=(Field<M>& f, const Field<ComplexD>& f_factor)
 {
   TIMER("field_operator*=(F,FC)");
   qassert(is_matching_geo(f.geo(), f_factor.geo()));
@@ -135,13 +135,13 @@ const Field<M>& operator*=(Field<M>& f, const Field<Complex>& f_factor)
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> v = f.get_elems(xl);
     if (multiplicity_f == 1) {
-      const Complex fac = f_factor.get_elem(xl);
+      const ComplexD fac = f_factor.get_elem(xl);
       for (int m = 0; m < geo.multiplicity; ++m) {
         v[m] *= fac;
       }
     } else {
       qassert(multiplicity_f == geo.multiplicity);
-      const Vector<Complex> fac = f_factor.get_elems_const(xl);
+      const Vector<ComplexD> fac = f_factor.get_elems_const(xl);
       for (int m = 0; m < geo.multiplicity; ++m) {
         v[m] *= fac[m];
       }
@@ -166,7 +166,7 @@ const Field<M>& operator*=(Field<M>& f, const double factor)
 }
 
 template <class M>
-const Field<M>& operator*=(Field<M>& f, const Complex& factor)
+const Field<M>& operator*=(Field<M>& f, const ComplexD& factor)
 {
   TIMER("field_operator*=(F,C)");
   const Geometry& geo = f.geo();
@@ -320,7 +320,7 @@ std::vector<M> field_project_mom(const Field<M>& f, const CoordinateD& mom)
     for (int k = 0; k < DIMN; ++k) {
       phase += mom[k] * xg[k];
     }
-    const Complex factor = qpolar(1.0, -phase);
+    const ComplexD factor = qpolar(1.0, -phase);
     const Vector<M> v = f.get_elems_const(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       M x = v[m];
@@ -739,13 +739,13 @@ void set_xg_field(Field<Int>& f, const Geometry& geo_);
       Field<TYPENAME>& f, const Field<double>& f_factor);                     \
                                                                               \
   QLAT_EXTERN template const Field<TYPENAME>& operator*=(                     \
-      Field<TYPENAME>& f, const Field<Complex>& f_factor);                    \
+      Field<TYPENAME>& f, const Field<ComplexD>& f_factor);                    \
                                                                               \
   QLAT_EXTERN template const Field<TYPENAME>& operator*=                      \
       <TYPENAME>(Field<TYPENAME>& f, const double factor);                    \
                                                                               \
   QLAT_EXTERN template const Field<TYPENAME>& operator*=                      \
-      <TYPENAME>(Field<TYPENAME>& f, const Complex& factor);                  \
+      <TYPENAME>(Field<TYPENAME>& f, const ComplexD& factor);                  \
                                                                               \
   QLAT_EXTERN template double qnorm<TYPENAME>(const Field<TYPENAME>& f);      \
                                                                               \

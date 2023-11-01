@@ -3,7 +3,7 @@
 namespace qlat
 {  //
 
-inline void scalar_inversion(Field<Complex>& sol, const Field<Complex>& src,
+inline void scalar_inversion(Field<ComplexD>& sol, const Field<Complex>& src,
                              const double mass,
                              const CoordinateD momtwist = CoordinateD())
 // the mass is not necessarily the exponent of the exponential fall off
@@ -26,7 +26,7 @@ inline void scalar_inversion(Field<Complex>& sol, const Field<Complex>& src,
       s2 += 4.0 * sqr(std::sin(kk[i] / 2.0));
     }
     const double fac = 1.0 / (s2 + sqr(mass));
-    Vector<Complex> v = sol.get_elems(kl);
+    Vector<ComplexD> v = sol.get_elems(kl);
     for (int m = 0; m < v.size(); ++m) {
       v[m] *= fac;
     }
@@ -35,7 +35,7 @@ inline void scalar_inversion(Field<Complex>& sol, const Field<Complex>& src,
   sol *= 1.0 / geo.total_volume();
 }
 
-inline void scalar_derivative(Field<Complex>& sol, const Field<Complex>& src,
+inline void scalar_derivative(Field<ComplexD>& sol, const Field<Complex>& src,
                               const CoordinateD momtwist = CoordinateD())
 // v[m*4 + mu] = sv[m] * std::sin(kk[mu]);
 {
@@ -44,7 +44,7 @@ inline void scalar_derivative(Field<Complex>& sol, const Field<Complex>& src,
   sol.init(geo);
   qassert(sol.geo() == geo);
   const Coordinate total_site = geo.total_site();
-  Field<Complex> src_mom;
+  Field<ComplexD> src_mom;
   src_mom.init(geo_resize(src.geo()));
   src_mom = src;
   fft_complex_field(src_mom, true);
@@ -57,8 +57,8 @@ inline void scalar_derivative(Field<Complex>& sol, const Field<Complex>& src,
       kg[i] = smod(kg[i], total_site[i]);
       kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)total_site[i];
     }
-    const Vector<Complex> sv = src_mom.get_elems_const(kl);
-    Vector<Complex> v = sol.get_elems(kl);
+    const Vector<ComplexD> sv = src_mom.get_elems_const(kl);
+    Vector<ComplexD> v = sol.get_elems(kl);
     for (int m = 0; m < sv.size(); ++m) {
       for (int mu = 0; mu < 4; ++mu) {
         v[m * 4 + mu] = sv[m] * std::sin(kk[mu]);
@@ -69,7 +69,7 @@ inline void scalar_derivative(Field<Complex>& sol, const Field<Complex>& src,
   sol *= 1.0 / geo.total_volume();
 }
 
-inline void scalar_divergence(Field<Complex>& sol, const Field<Complex>& src,
+inline void scalar_divergence(Field<ComplexD>& sol, const Field<Complex>& src,
                               const CoordinateD momtwist = CoordinateD())
 // v[m] += sv[m*4+mu] * std::sin(kk[mu]);
 {
@@ -78,7 +78,7 @@ inline void scalar_divergence(Field<Complex>& sol, const Field<Complex>& src,
   sol.init(geo);
   qassert(sol.geo() == geo);
   const Coordinate total_site = geo.total_site();
-  Field<Complex> src_mom;
+  Field<ComplexD> src_mom;
   src_mom.init(geo_resize(src.geo()));
   src_mom = src;
   fft_complex_field(src_mom, true);
@@ -91,8 +91,8 @@ inline void scalar_divergence(Field<Complex>& sol, const Field<Complex>& src,
       kg[i] = smod(kg[i], total_site[i]);
       kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)total_site[i];
     }
-    const Vector<Complex> sv = src_mom.get_elems_const(kl);
-    Vector<Complex> v = sol.get_elems(kl);
+    const Vector<ComplexD> sv = src_mom.get_elems_const(kl);
+    Vector<ComplexD> v = sol.get_elems(kl);
     for (int m = 0; m < v.size(); ++m) {
       v[m] = 0;
       for (int mu = 0; mu < 4; ++mu) {
@@ -105,28 +105,28 @@ inline void scalar_divergence(Field<Complex>& sol, const Field<Complex>& src,
 }
 
 inline void set_pion_photon_photon_vertex_two_end(
-    FieldM<Complex, 4 * 4>& pion, const FieldM<Complex, 4>& photon1,
-    const FieldM<Complex, 4>& photon2, const double m_vector, const double f_pi)
+    FieldM<ComplexD, 4 * 4>& pion, const FieldM<Complex, 4>& photon1,
+    const FieldM<ComplexD, 4>& photon2, const double m_vector, const double f_pi)
 {
   TIMER("set_pion_photon_photon_vertex_two_end");
   qassert(photon1.geo() == photon2.geo());
   const Geometry geo = geo_reform(photon1.geo(), 4 * 4, 0);
-  FieldM<Complex, 4 * 4> pinv1, pinv2, p1, p2;
+  FieldM<ComplexD, 4 * 4> pinv1, pinv2, p1, p2;
   scalar_derivative(p1, photon1);
   scalar_derivative(p2, photon2);
   scalar_inversion(pinv1, p1, m_vector);
   scalar_inversion(pinv2, p2, m_vector);
   pion.init(geo);
   set_zero(pion);
-  const Complex fac = 1.0 / (4.0 * sqr(PI) * f_pi) * ii * sqr(m_vector) / 2.0;
+  const ComplexD fac = 1.0 / (4.0 * sqr(PI) * f_pi) * ii * sqr(m_vector) / 2.0;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    const Vector<Complex> v1 = pinv1.get_elems_const(xl);
-    const Vector<Complex> v2 = pinv2.get_elems_const(xl);
-    const Vector<Complex> d1 = p1.get_elems_const(xl);
-    const Vector<Complex> d2 = p2.get_elems_const(xl);
-    Vector<Complex> pv = pion.get_elems(xl);
+    const Vector<ComplexD> v1 = pinv1.get_elems_const(xl);
+    const Vector<ComplexD> v2 = pinv2.get_elems_const(xl);
+    const Vector<ComplexD> d1 = p1.get_elems_const(xl);
+    const Vector<ComplexD> d2 = p2.get_elems_const(xl);
+    Vector<ComplexD> pv = pion.get_elems(xl);
     for (int mu = 0; mu < 4; ++mu) {
       for (int nu = 0; nu < 4; ++nu) {
         if (nu == mu) {
@@ -141,7 +141,7 @@ inline void set_pion_photon_photon_vertex_two_end(
               continue;
             }
             pv[mu * 4 + nu] += fac *
-                               (Complex)epsilon_tensor(mu, nu, rho, sigma) *
+                               (ComplexD)epsilon_tensor(mu, nu, rho, sigma) *
                                (v1[mu * 4 + rho] * d2[nu * 4 + sigma] +
                                 d1[mu * 4 + rho] * v2[nu * 4 + sigma]);
           }
@@ -151,29 +151,29 @@ inline void set_pion_photon_photon_vertex_two_end(
   }
 }
 
-inline void set_pion_photon_photon_vertex_vmd(FieldM<Complex, 4 * 4>& pion,
-                                              const FieldM<Complex, 4>& photon1,
-                                              const FieldM<Complex, 4>& photon2,
+inline void set_pion_photon_photon_vertex_vmd(FieldM<ComplexD, 4 * 4>& pion,
+                                              const FieldM<ComplexD, 4>& photon1,
+                                              const FieldM<ComplexD, 4>& photon2,
                                               const double m_vector,
                                               const double f_pi)
 {
   TIMER("set_pion_photon_photon_vertex_vmd");
   qassert(photon1.geo() == photon2.geo());
   const Geometry geo = geo_reform(photon1.geo(), 4 * 4, 0);
-  FieldM<Complex, 4 * 4> pinv1, pinv2, p1, p2;
+  FieldM<ComplexD, 4 * 4> pinv1, pinv2, p1, p2;
   scalar_derivative(p1, photon1);
   scalar_derivative(p2, photon2);
   scalar_inversion(pinv1, p1, m_vector);
   scalar_inversion(pinv2, p2, m_vector);
   pion.init(geo);
   set_zero(pion);
-  const Complex fac = 1.0 / (4.0 * sqr(PI) * f_pi) * ii * sqr(sqr(m_vector));
+  const ComplexD fac = 1.0 / (4.0 * sqr(PI) * f_pi) * ii * sqr(sqr(m_vector));
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    const Vector<Complex> v1 = pinv1.get_elems_const(xl);
-    const Vector<Complex> v2 = pinv2.get_elems_const(xl);
-    Vector<Complex> pv = pion.get_elems(xl);
+    const Vector<ComplexD> v1 = pinv1.get_elems_const(xl);
+    const Vector<ComplexD> v2 = pinv2.get_elems_const(xl);
+    Vector<ComplexD> pv = pion.get_elems(xl);
     for (int mu = 0; mu < 4; ++mu) {
       for (int nu = 0; nu < 4; ++nu) {
         if (nu == mu) {
@@ -188,7 +188,7 @@ inline void set_pion_photon_photon_vertex_vmd(FieldM<Complex, 4 * 4>& pion,
               continue;
             }
             pv[mu * 4 + nu] += fac *
-                               (Complex)epsilon_tensor(mu, nu, rho, sigma) *
+                               (ComplexD)epsilon_tensor(mu, nu, rho, sigma) *
                                v1[mu * 4 + rho] * v2[nu * 4 + sigma];
           }
         }
@@ -197,14 +197,14 @@ inline void set_pion_photon_photon_vertex_vmd(FieldM<Complex, 4 * 4>& pion,
   }
 }
 
-inline void set_pion_photon_photon_vertex_lmd(FieldM<Complex, 4 * 4>& pion,
-                                              const FieldM<Complex, 4>& photon1,
-                                              const FieldM<Complex, 4>& photon2,
+inline void set_pion_photon_photon_vertex_lmd(FieldM<ComplexD, 4 * 4>& pion,
+                                              const FieldM<ComplexD, 4>& photon1,
+                                              const FieldM<ComplexD, 4>& photon2,
                                               const double m_vector,
                                               const double f_pi)
 {
   TIMER_VERBOSE("set_pion_photon_photon_vertex_lmd");
-  FieldM<Complex, 4 * 4> pion_tmp;
+  FieldM<ComplexD, 4 * 4> pion_tmp;
   set_pion_photon_photon_vertex_vmd(pion, photon1, photon2, m_vector, f_pi);
   set_pion_photon_photon_vertex_two_end(pion_tmp, photon1, photon2, m_vector,
                                         f_pi);
@@ -214,9 +214,9 @@ inline void set_pion_photon_photon_vertex_lmd(FieldM<Complex, 4 * 4>& pion,
   pion += pion_tmp;
 }
 
-inline void set_pion_photon_photon_vertex(FieldM<Complex, 4 * 4>& pion,
-                                          const FieldM<Complex, 4>& photon1,
-                                          const FieldM<Complex, 4>& photon2,
+inline void set_pion_photon_photon_vertex(FieldM<ComplexD, 4 * 4>& pion,
+                                          const FieldM<ComplexD, 4>& photon1,
+                                          const FieldM<ComplexD, 4>& photon2,
                                           const double m_vector,
                                           const double f_pi)
 // vertex function
@@ -229,8 +229,8 @@ inline void set_pion_photon_photon_vertex(FieldM<Complex, 4 * 4>& pion,
 }
 
 inline void set_photon_pion_photon_vertex_two_end(
-    FieldM<Complex, 4>& photon1, const FieldM<Complex, 1>& pion,
-    const FieldM<Complex, 4>& photon2, const double m_vector, const double f_pi)
+    FieldM<ComplexD, 4>& photon1, const FieldM<Complex, 1>& pion,
+    const FieldM<ComplexD, 4>& photon2, const double m_vector, const double f_pi)
 {
   TIMER("set_photon_pion_photon_vertex_two_end");
   const Geometry geo = geo_reform(photon2.geo(), 4, 0);
@@ -238,20 +238,20 @@ inline void set_photon_pion_photon_vertex_two_end(
   photon1.init(geo);
   qassert(photon1.geo() == geo);
   set_zero(photon1);
-  FieldM<Complex, 4 * 4> pinv1, pinv2, p1, p2;
+  FieldM<ComplexD, 4 * 4> pinv1, pinv2, p1, p2;
   scalar_derivative(p2, photon2);
   scalar_inversion(pinv2, p2, m_vector);
   p1.init(geo);
   pinv1.init(geo);
-  const Complex fac = 1.0 / (4.0 * sqr(PI) * f_pi) * ii * sqr(m_vector) / 2.0;
+  const ComplexD fac = 1.0 / (4.0 * sqr(PI) * f_pi) * ii * sqr(m_vector) / 2.0;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    Vector<Complex> d1 = p1.get_elems(xl);
-    const Vector<Complex> d2 = p2.get_elems_const(xl);
-    Vector<Complex> v1 = pinv1.get_elems(xl);
-    const Vector<Complex> v2 = pinv2.get_elems_const(xl);
-    const Complex& v = pion.get_elem(xl);
+    Vector<ComplexD> d1 = p1.get_elems(xl);
+    const Vector<ComplexD> d2 = p2.get_elems_const(xl);
+    Vector<ComplexD> v1 = pinv1.get_elems(xl);
+    const Vector<ComplexD> v2 = pinv2.get_elems_const(xl);
+    const ComplexD& v = pion.get_elem(xl);
     for (int mu = 0; mu < 4; ++mu) {
       for (int nu = 0; nu < 4; ++nu) {
         if (nu == mu) {
@@ -265,8 +265,8 @@ inline void set_photon_pion_photon_vertex_two_end(
             if (sigma == mu or sigma == nu or sigma == rho) {
               continue;
             }
-            const Complex c =
-                -fac * (Complex)epsilon_tensor(mu, nu, rho, sigma) * v;
+            const ComplexD c =
+                -fac * (ComplexD)epsilon_tensor(mu, nu, rho, sigma) * v;
             d1[mu * 4 + rho] += c * v2[nu * 4 + sigma];
             v1[mu * 4 + rho] += c * d2[nu * 4 + sigma];
           }
@@ -279,9 +279,9 @@ inline void set_photon_pion_photon_vertex_two_end(
   scalar_divergence(photon1, p1);
 }
 
-inline void set_photon_pion_photon_vertex_vmd(FieldM<Complex, 4>& photon1,
-                                              const FieldM<Complex, 1>& pion,
-                                              const FieldM<Complex, 4>& photon2,
+inline void set_photon_pion_photon_vertex_vmd(FieldM<ComplexD, 4>& photon1,
+                                              const FieldM<ComplexD, 1>& pion,
+                                              const FieldM<ComplexD, 4>& photon2,
                                               const double m_vector,
                                               const double f_pi)
 {
@@ -291,18 +291,18 @@ inline void set_photon_pion_photon_vertex_vmd(FieldM<Complex, 4>& photon1,
   photon1.init(geo);
   qassert(photon1.geo() == geo);
   set_zero(photon1);
-  FieldM<Complex, 4 * 4> pinv1, pinv2, p1, p2;
+  FieldM<ComplexD, 4 * 4> pinv1, pinv2, p1, p2;
   scalar_derivative(p2, photon2);
   scalar_inversion(pinv2, p2, m_vector);
   p1.init(geo);
   pinv1.init(geo);
-  const Complex fac = 1.0 / (4.0 * sqr(PI) * f_pi) * ii * sqr(sqr(m_vector));
+  const ComplexD fac = 1.0 / (4.0 * sqr(PI) * f_pi) * ii * sqr(sqr(m_vector));
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    Vector<Complex> v1 = pinv1.get_elems(xl);
-    const Vector<Complex> v2 = pinv2.get_elems_const(xl);
-    const Complex& v = pion.get_elem(xl);
+    Vector<ComplexD> v1 = pinv1.get_elems(xl);
+    const Vector<ComplexD> v2 = pinv2.get_elems_const(xl);
+    const ComplexD& v = pion.get_elem(xl);
     for (int mu = 0; mu < 4; ++mu) {
       for (int nu = 0; nu < 4; ++nu) {
         if (nu == mu) {
@@ -316,8 +316,8 @@ inline void set_photon_pion_photon_vertex_vmd(FieldM<Complex, 4>& photon1,
             if (sigma == mu or sigma == nu or sigma == rho) {
               continue;
             }
-            const Complex c =
-                -fac * (Complex)epsilon_tensor(mu, nu, rho, sigma) * v;
+            const ComplexD c =
+                -fac * (ComplexD)epsilon_tensor(mu, nu, rho, sigma) * v;
             v1[mu * 4 + rho] += c * v2[nu * 4 + sigma];
           }
         }
@@ -328,14 +328,14 @@ inline void set_photon_pion_photon_vertex_vmd(FieldM<Complex, 4>& photon1,
   scalar_divergence(photon1, p1);
 }
 
-inline void set_photon_pion_photon_vertex_lmd(FieldM<Complex, 4>& photon1,
-                                              const FieldM<Complex, 1>& pion,
-                                              const FieldM<Complex, 4>& photon2,
+inline void set_photon_pion_photon_vertex_lmd(FieldM<ComplexD, 4>& photon1,
+                                              const FieldM<ComplexD, 1>& pion,
+                                              const FieldM<ComplexD, 4>& photon2,
                                               const double m_vector,
                                               const double f_pi)
 {
   TIMER_VERBOSE("set_photon_pion_photon_vertex_lmd");
-  FieldM<Complex, 4> photon1_tmp;
+  FieldM<ComplexD, 4> photon1_tmp;
   set_photon_pion_photon_vertex_vmd(photon1, pion, photon2, m_vector, f_pi);
   set_photon_pion_photon_vertex_two_end(photon1_tmp, pion, photon2, m_vector,
                                         f_pi);
@@ -345,9 +345,9 @@ inline void set_photon_pion_photon_vertex_lmd(FieldM<Complex, 4>& photon1,
   photon1 += photon1_tmp;
 }
 
-inline void set_photon_pion_photon_vertex(FieldM<Complex, 4>& photon1,
-                                          const FieldM<Complex, 1>& pion,
-                                          const FieldM<Complex, 4>& photon2,
+inline void set_photon_pion_photon_vertex(FieldM<ComplexD, 4>& photon1,
+                                          const FieldM<ComplexD, 1>& pion,
+                                          const FieldM<ComplexD, 4>& photon2,
                                           const double m_vector,
                                           const double f_pi)
 // vertex function
@@ -359,7 +359,7 @@ inline void set_photon_pion_photon_vertex(FieldM<Complex, 4>& photon1,
   set_photon_pion_photon_vertex_lmd(photon1, pion, photon2, m_vector, f_pi);
 }
 
-inline void set_pion_gg_decay(FieldM<Complex, 4 * 4>& decay,
+inline void set_pion_gg_decay(FieldM<ComplexD, 4 * 4>& decay,
                               const Coordinate& total_site, const int t_sep,
                               const double m_pi, const double f_pi,
                               const double m_vector)
@@ -371,7 +371,7 @@ inline void set_pion_gg_decay(FieldM<Complex, 4 * 4>& decay,
   decay.init();
   decay.init(geo);
   //
-  FieldM<Complex, 1> pion;
+  FieldM<ComplexD, 1> pion;
   pion.init(geo);
   set_zero(pion);
   const int t_src = mod(-t_sep, total_site[3]);
@@ -388,7 +388,7 @@ inline void set_pion_gg_decay(FieldM<Complex, 4 * 4>& decay,
   pion *= exp(m_pi * t_sep);
   //
   for (int nu = 0; nu < 4; ++nu) {
-    FieldM<Complex, 4> photon1, photon2;
+    FieldM<ComplexD, 4> photon1, photon2;
     photon1.init(geo);
     photon2.init(geo);
     set_zero(photon1);
@@ -401,8 +401,8 @@ inline void set_pion_gg_decay(FieldM<Complex, 4 * 4>& decay,
 #pragma omp parallel for
     for (long index = 0; index < geo.local_volume(); ++index) {
       const Coordinate xl = geo.coordinate_from_index(index);
-      Vector<Complex> v = decay.get_elems(xl);
-      const Vector<Complex> p1v = photon1.get_elems(xl);
+      Vector<ComplexD> v = decay.get_elems(xl);
+      const Vector<ComplexD> p1v = photon1.get_elems(xl);
       for (int mu = 0; mu < 4; ++mu) {
         v[mu * 4 + nu] = p1v[mu];
       }
@@ -410,14 +410,14 @@ inline void set_pion_gg_decay(FieldM<Complex, 4 * 4>& decay,
   }
 }
 
-inline std::vector<Complex> get_pion_corr(const Coordinate& total_site,
+inline std::vector<ComplexD> get_pion_corr(const Coordinate& total_site,
                                           const double m_pi)
 {
   TIMER_VERBOSE("get_pion_corr");
   Geometry geo;
   geo.init(total_site, 1);
   //
-  FieldM<Complex, 1> pion;
+  FieldM<ComplexD, 1> pion;
   pion.init(geo);
   set_zero(pion);
 #pragma omp parallel for
@@ -430,7 +430,7 @@ inline std::vector<Complex> get_pion_corr(const Coordinate& total_site,
   }
   scalar_inversion(pion, pion, m_pi);
   //
-  std::vector<Complex> corr(total_site[3], 0.0);
+  std::vector<ComplexD> corr(total_site[3], 0.0);
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
@@ -461,7 +461,7 @@ inline void save_pion_gg(const std::string& path, const Coordinate& total_site,
     qtouch_info(path + "/info.txt", out.str());
   }
   {
-    const std::vector<Complex> corr =
+    const std::vector<ComplexD> corr =
         get_pion_corr(total_site, m_pi_gev / ainv_gev);
     std::ostringstream out;
     out << "# t C[t].real() C[t].imag()\n";
@@ -472,7 +472,7 @@ inline void save_pion_gg(const std::string& path, const Coordinate& total_site,
     qtouch_info(path + "/pion-corr.txt", out.str());
   }
   {
-    FieldM<Complex, 4 * 4> decay;
+    FieldM<ComplexD, 4 * 4> decay;
     set_pion_gg_decay(decay, total_site, t_sep, m_pi_gev / ainv_gev,
                       f_pi_gev / ainv_gev, m_vector_gev / ainv_gev);
     write_field_double(decay, path + "/decay.field");

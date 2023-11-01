@@ -12,8 +12,8 @@
 namespace qlat
 {  //
 
-typedef array<Complex, 6> MatrixTruncatedSU3;
-typedef array<Complex, 9> MatrixSU3;
+typedef array<ComplexD, 6> MatrixTruncatedSU3;
+typedef array<ComplexD, 9> MatrixSU3;
 
 class rePort
 {

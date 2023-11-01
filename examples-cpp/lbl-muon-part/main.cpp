@@ -4,14 +4,14 @@
 
 const char* cname = "Main";
 
-void setField(qlat::Field<qlat::Complex>& f)
+void setField(qlat::Field<qlat::ComplexD>& f)
 {
   TIMER("setField");
   const qlat::Geometry& geo = f.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     qlat::Coordinate x = geo.coordinate_from_index(index);
-    qlat::Vector<qlat::Complex> fx = f.get_elems(x);
+    qlat::Vector<qlat::ComplexD> fx = f.get_elems(x);
     for (int m = 0; m < geo.multiplicity; ++m) {
       fx[m] =
           geo.geon.id_node * sqrt(2) + index * sqrt(3) * qlat::ii + m * sqrt(5);
@@ -23,7 +23,7 @@ qlat::SpinMatrix projPositiveState(const qlat::SpinMatrix& x)
 {
   const qlat::SpinMatrix psm = (qlat::SpinMatrixConstants::get_unit() +
                                 qlat::SpinMatrixConstants::get_gamma(3)) /
-                               (qlat::Complex)2.0;
+                               (qlat::ComplexD)2.0;
   return psm * x * psm;
 }
 
@@ -146,7 +146,7 @@ void lblMagneticMomentSpinMatrix(qlat::Array<qlat::SpinMatrix, 3> bs,
       bs[i] = qlat::SpinMatrixConstants::get_gamma5() *
               matrix_adjoint(snk.get_elem(xlop)) *
               qlat::SpinMatrixConstants::get_gamma5();
-      bs[i] *= qlat::SpinMatrixConstants::get_cap_sigma(i) * (qlat::Complex)(mass / 2.0);
+      bs[i] *= qlat::SpinMatrixConstants::get_cap_sigma(i) * (qlat::ComplexD)(mass / 2.0);
       bs[i] *= src.get_elem(xlop);
       bs[i] = projPositiveState(bs[i]);
     }
@@ -155,12 +155,12 @@ void lblMagneticMomentSpinMatrix(qlat::Array<qlat::SpinMatrix, 3> bs,
                                      get_data_size(bs) / sizeof(double)));
 }
 
-qlat::Complex linearFit(const qlat::SpinMatrix& x, const qlat::SpinMatrix& base)
+qlat::ComplexD linearFit(const qlat::SpinMatrix& x, const qlat::SpinMatrix& base)
 {
   using namespace qlat;
   const int size = 4 * 4;
-  Complex s1 = 0.0;
-  Complex s2 = 0.0;
+  ComplexD s1 = 0.0;
+  ComplexD s2 = 0.0;
   for (int i = 0; i < size; ++i) {
     s1 += qconj(base.data()[i]) * x.data()[i];
     s2 += qconj(base.data()[i]) * base.data()[i];
@@ -288,17 +288,17 @@ void displayGammas()
               qlat::show(qlat::SpinMatrixConstants::get_gamma(3)).c_str());
   qlat::DisplayInfo(
       cname, fname.c_str(), "ii * gamma0 =\n%s\n",
-      qlat::show((qlat::SpinMatrix)((qlat::Complex)qlat::ii *
+      qlat::show((qlat::SpinMatrix)((qlat::ComplexD)qlat::ii *
                                     qlat::SpinMatrixConstants::get_gamma(0)))
           .c_str());
   qlat::DisplayInfo(
       cname, fname.c_str(), "ii * gamma1 =\n%s\n",
-      qlat::show((qlat::SpinMatrix)((qlat::Complex)qlat::ii *
+      qlat::show((qlat::SpinMatrix)((qlat::ComplexD)qlat::ii *
                                     qlat::SpinMatrixConstants::get_gamma(1)))
           .c_str());
   qlat::DisplayInfo(
       cname, fname.c_str(), "ii * gamma2 =\n%s\n",
-      qlat::show((qlat::SpinMatrix)((qlat::Complex)qlat::ii *
+      qlat::show((qlat::SpinMatrix)((qlat::ComplexD)qlat::ii *
                                     qlat::SpinMatrixConstants::get_gamma(2)))
           .c_str());
 }

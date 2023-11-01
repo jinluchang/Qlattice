@@ -211,7 +211,7 @@ def auto_contract_hvp_field(job_tag, traj, get_prop, get_psel, get_fsel):
     xg_fsel_list = list(map(tuple, fsel.to_psel_local().to_list()))
     xg_psel_list = list(map(tuple, psel.to_list()))
     geo = q.Geometry(total_site, 1)
-    field = q.Field("Complex", geo, len(expr_names))
+    field = q.Field("ComplexD", geo, len(expr_names))
     field.set_zero()
     for idx, xg_src in enumerate(xg_psel_list):
         @q.timer
@@ -233,7 +233,7 @@ def auto_contract_hvp_field(job_tag, traj, get_prop, get_psel, get_fsel):
             values_shifted = values.shift(shift)
             return values_shifted
         values_shifted = q.parallel_map_sum(feval, xg_fsel_list,
-                sum_function = sum_function, sum_start = q.SelectedField("Complex", fsel, len(expr_names)))
+                sum_function = sum_function, sum_start = q.SelectedField("ComplexD", fsel, len(expr_names)))
         field += values_shifted
     # scale the value appropriately
     field *= 1.0 / (len(xg_psel_list) * fsel.prob())
@@ -292,7 +292,7 @@ def auto_contract_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get_f
     xg_psel_list = list(map(tuple, psel.to_list()))
     tsep = rup.dict_params[job_tag]["meson_tensor_tsep"]
     geo = q.Geometry(total_site, 1)
-    field = q.Field("Complex", geo, len(expr_names))
+    field = q.Field("ComplexD", geo, len(expr_names))
     field.set_zero()
     for idx, xg_src in enumerate(xg_psel_list):
         @q.timer
@@ -323,9 +323,9 @@ def auto_contract_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get_f
             values_shifted = values.shift(shift)
             return values_shifted
         values_shifted = q.parallel_map_sum(feval, xg_fsel_list,
-                sum_function = sum_function, sum_start = q.SelectedField("Complex", fsel, len(expr_names)))
+                sum_function = sum_function, sum_start = q.SelectedField("ComplexD", fsel, len(expr_names)))
         field += values_shifted
-    field_r = q.Field("Complex", geo, len(expr_names))
+    field_r = q.Field("ComplexD", geo, len(expr_names))
     field_r.set_zero()
     for idx, xg_src in enumerate(xg_psel_list):
         @q.timer
@@ -356,7 +356,7 @@ def auto_contract_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get_f
             values_shifted = values.shift(shift)
             return values_shifted
         values_shifted = q.parallel_map_sum(feval, xg_fsel_list,
-                sum_function = sum_function, sum_start = q.SelectedField("Complex", fsel, len(expr_names)))
+                sum_function = sum_function, sum_start = q.SelectedField("ComplexD", fsel, len(expr_names)))
         field_r += values_shifted
     field_r = field_r.reflect()
     field += field_r

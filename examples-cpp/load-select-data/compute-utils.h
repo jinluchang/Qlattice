@@ -185,7 +185,7 @@ inline const SelProp& get_prop_psrc_ama(const std::string& job_tag,
   return cache[key];
 }
 
-inline void contract_chvp_ama(SelectedField<Complex>& chvp_ama,
+inline void contract_chvp_ama(SelectedField<ComplexD>& chvp_ama,
                               const std::string& job_tag, const int traj,
                               const Coordinate& xg, const int type1,
                               const int type2)
@@ -224,7 +224,7 @@ inline void contract_chvp_ama(SelectedField<Complex>& chvp_ama,
     qassert(is_initialized(prop1));
     const SelProp& prop2 = get_prop_psrc(job_tag, traj, xg, type2, acc);
     qassert(is_initialized(prop2));
-    SelectedField<Complex> chvp;
+    SelectedField<ComplexD> chvp;
     contract_chvp(chvp, prop1, prop2, fsel);
     chvp *= coefs[acc];
     chvp_ama += chvp;

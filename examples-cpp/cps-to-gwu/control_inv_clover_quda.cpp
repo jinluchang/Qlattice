@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
   quda_begin(mpi_layout);
 
   long V = geo.local_volume();
-  qlat::vector_acc<qlat::Complex > quda_gf;quda_gf.resize(V * 4 * 3*3);
+  qlat::vector_acc<qlat::ComplexD > quda_gf;quda_gf.resize(V * 4 * 3*3);
   quda_convert_gauge(quda_gf, gf);
 
   int Nsrc = 12;
@@ -75,7 +75,7 @@ int main(int argc, char* argv[])
 
   for (int i = 0; i < Nsrc; i++) {
     //////set point src at zero
-    qlat::Complex* res = (qlat::Complex*) (qinv.csrc->V());
+    qlat::ComplexD* res = (qlat::Complex*) (qinv.csrc->V());
     long Vh = V / 2;
     #pragma omp parallel for
     for (long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {
@@ -86,10 +86,10 @@ int main(int argc, char* argv[])
 
       for(int dc=0;dc<12;dc++){
       if(xg[0] == sp[0] and xg[1] == sp[1] and xg[2] == sp[2] and xg[3] == sp[3] and dc == i){
-        res[quda_idx*12 + dc] = qlat::Complex(1.0, 0.0);
+        res[quda_idx*12 + dc] = qlat::ComplexD(1.0, 0.0);
       }
       else{
-        res[quda_idx*12 + dc] = qlat::Complex(0.0, 0.0);
+        res[quda_idx*12 + dc] = qlat::ComplexD(0.0, 0.0);
       }
       }
     }
@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
     printfQuda("Done: %i iter / %g secs = %g Gflops\n\n", qinv.inv_param.iter, qinv.inv_param.secs,
                qinv.inv_param.gflops / qinv.inv_param.secs);
 
-    quda_ff_to_Ffield4d(qlat_ff[i], (qlat::Complex*) qinv.cres->V());
+    quda_ff_to_Ffield4d(qlat_ff[i], (qlat::ComplexD*) qinv.cres->V());
 
   }
 

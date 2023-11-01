@@ -5,7 +5,7 @@
 namespace qlat
 {  //
 
-void set_mom_phase_field(FieldM<Complex, 1>& f, const CoordinateD& mom)
+void set_mom_phase_field(FieldM<ComplexD, 1>& f, const CoordinateD& mom)
 // mom is in lattice unit (1/a)
 // exp(i * mom \cdot xg )
 {
@@ -23,7 +23,7 @@ void set_mom_phase_field(FieldM<Complex, 1>& f, const CoordinateD& mom)
   });
 }
 
-void set_phase_field(FieldM<Complex, 1>& f, const CoordinateD& lmom)
+void set_phase_field(FieldM<ComplexD, 1>& f, const CoordinateD& lmom)
 // lmom is in lattice momentum unit
 // exp(i * 2*pi/L * lmom \cdot xg )
 {

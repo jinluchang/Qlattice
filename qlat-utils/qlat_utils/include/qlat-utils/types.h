@@ -38,7 +38,7 @@ enum DATA_TYPE {
   //
   DOUBLE_TYPE = FLOATIND + 0 + MAXTYPE * sizeof(double),
   FLOAT_TYPE = FLOATIND + 1 + MAXTYPE * sizeof(float),
-  Complex_TYPE = FLOATIND + 2 + MAXTYPE * sizeof(Complex),
+  ComplexD_TYPE = FLOATIND + 2 + MAXTYPE * sizeof(Complex),
   ComplexF_TYPE = FLOATIND + 3 + MAXTYPE * sizeof(ComplexF),
   //
   ColorMatrix_TYPE = FLOATIND + 4 + MAXTYPE * sizeof(ColorMatrixT<double>),
@@ -139,9 +139,9 @@ qacc DATA_TYPE get_data_type<float>()
   return FLOAT_TYPE;
 }
 template <>
-qacc DATA_TYPE get_data_type<Complex>()
+qacc DATA_TYPE get_data_type<ComplexD>()
 {
-  return Complex_TYPE;
+  return ComplexD_TYPE;
 }
 template <>
 qacc DATA_TYPE get_data_type<ComplexF>()
@@ -363,7 +363,7 @@ qacc bool is_composed_of_real_d<RealD>()
 }
 
 template <>
-qacc bool is_composed_of_real_d<Complex>()
+qacc bool is_composed_of_real_d<ComplexD>()
 {
   return true;
 }

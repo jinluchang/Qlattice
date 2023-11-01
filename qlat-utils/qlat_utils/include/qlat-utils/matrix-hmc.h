@@ -273,7 +273,7 @@ struct API ColorMatrixConstants {
     }
     for (int a = 0; a < 8; ++a) {
       for (int b = 0; b < 8; ++b) {
-        Complex tr = matrix_trace(ts[a], ts[b]);
+        ComplexD tr = matrix_trace(ts[a], ts[b]);
         if (a == b) {
           tr -= -2;
         }
@@ -291,7 +291,7 @@ struct API ColorMatrixConstants {
     array<double, 8> basis = basis_projection_anti_hermitian_matrix(x);
     for (int a = 0; a < 8; ++a) {
       for (int b = 0; b < 8; ++b) {
-        Complex sum = 0.0;
+        ComplexD sum = 0.0;
         for (int c = 0; c < 8; ++c) {
           sum += -f[c](a, b) * basis[c];
         }
@@ -306,8 +306,8 @@ struct API ColorMatrixConstants {
         basis_b[a] = exp_adx(a, b);
       }
       const ColorMatrix mx_b = make_anti_hermitian_matrix(basis_b);
-      const ColorMatrix exp_x = make_matrix_exp((Complex)coef * x);
-      const ColorMatrix exp_n_x = make_matrix_exp(-(Complex)coef * x);
+      const ColorMatrix exp_x = make_matrix_exp((ComplexD)coef * x);
+      const ColorMatrix exp_n_x = make_matrix_exp(-(ComplexD)coef * x);
       if (qnorm(mx_b - exp_x * ts[b] * exp_n_x) >= 1e-20) {
         displayln_info("adx_b: " + show(qnorm(mx_b)));
         displayln_info("exp_x b exp_n_x: " +
@@ -316,9 +316,9 @@ struct API ColorMatrixConstants {
         qassert(false);
       }
     }
-    const AdjointColorMatrix j_x = make_diff_exp_map((Complex)coef * x, *this);
+    const AdjointColorMatrix j_x = make_diff_exp_map((ComplexD)coef * x, *this);
     const AdjointColorMatrix j_n_x =
-        make_diff_exp_map(-(Complex)coef * x, *this);
+        make_diff_exp_map(-(ComplexD)coef * x, *this);
     qassert(qnorm(j_x - matrix_adjoint(j_n_x)) < 1e-20);
     qassert(qnorm(j_n_x - exp_adx * j_x) < 1e-20);
     for (int a = 0; a < 8; ++a) {
@@ -392,8 +392,8 @@ qacc AdjointColorMatrix make_diff_exp_map_diff_ref(
 {
   const array<ColorMatrix, 8>& ts = cmcs.ts;
   const double eps = 1e-4;
-  const ColorMatrix m_p = m + (Complex)eps * ts[a];
-  const ColorMatrix m_n = m - (Complex)eps * ts[a];
+  const ColorMatrix m_p = m + (ComplexD)eps * ts[a];
+  const ColorMatrix m_n = m - (ComplexD)eps * ts[a];
   const AdjointColorMatrix j_p = make_diff_exp_map(m_p, cmcs);
   const AdjointColorMatrix j_n = make_diff_exp_map(m_n, cmcs);
   return (1.0 / (2.0 * eps)) * (j_p - j_n);

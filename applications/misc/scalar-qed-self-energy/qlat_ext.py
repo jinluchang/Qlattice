@@ -6,7 +6,7 @@ import cqlat as c
 @q.timer
 def mk_pion_four_point_field(total_site, pion_mass, tag = "", r_pi = 0.0):
     geo = q.Geometry(total_site, 16)
-    f = q.Field("Complex", geo)
+    f = q.Field("ComplexD", geo)
     c.set_pion_four_point_mom_field(f, pion_mass, tag, r_pi)
     fft_b = mk_fft(False)
     f = fft_b * f

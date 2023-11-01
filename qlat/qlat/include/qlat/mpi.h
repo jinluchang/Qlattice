@@ -145,7 +145,7 @@ int glb_sum(Vector<double> recv, const Vector<double>& send);
 
 int glb_sum(Vector<float> recv, const Vector<float>& send);
 
-int glb_sum(Vector<Complex> recv, const Vector<Complex>& send);
+int glb_sum(Vector<ComplexD> recv, const Vector<Complex>& send);
 
 int glb_sum(Vector<ComplexF> recv, const Vector<ComplexF>& send);
 
@@ -159,7 +159,7 @@ int glb_sum(Vector<double> vec);
 
 int glb_sum(Vector<float> vec);
 
-int glb_sum(Vector<Complex> vec);
+int glb_sum(Vector<ComplexD> vec);
 
 int glb_sum(Vector<ComplexF> vec);
 
@@ -177,7 +177,7 @@ int glb_sum(int64_t& x);
 
 int glb_sum(int32_t& x);
 
-int glb_sum(Complex& c);
+int glb_sum(ComplexD& c);
 
 int glb_sum(ComplexF& c);
 
@@ -197,7 +197,7 @@ void bcast(double& x, const int root = 0);
 
 void bcast(ComplexF& x, const int root = 0);
 
-void bcast(Complex& x, const int root = 0);
+void bcast(ComplexD& x, const int root = 0);
 
 void bcast(Coordinate& x, const int root = 0);
 

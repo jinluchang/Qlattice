@@ -33,7 +33,7 @@ def mk_gpt_field(ctype, geo):
         return g.mspincolor(mk_grid(geo))
     elif ctype == q.ElemTypeWilsonVector:
         return g.vspincolor(mk_grid(geo))
-    elif ctype == q.ElemTypeComplex:
+    elif ctype == q.ElemTypeComplexD:
         return g.complex(mk_grid(geo))
     else:
         raise Exception("make_gpt_field")
@@ -219,18 +219,18 @@ def qlat_from_gpt_complex(gpt_fcs):
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
     geo = q.Geometry(total_site, 1)
     n = len(gpt_fcs)
-    fs = [ q.FieldComplex(geo) for i in range(n) ]
+    fs = [ q.FieldComplexD(geo) for i in range(n) ]
     for i in range(n):
         plan(fs[i].mview(), gpt_fcs[i])
     if n == 1:
         return fs[0]
-    ff = q.FieldComplex(q.Geometry(total_site, n))
+    ff = q.FieldComplexD(q.Geometry(total_site, n))
     q.merge_fields(ff, fs)
     return ff
 
 @q.timer
 def gpt_from_qlat_complex(fc):
-    assert isinstance(fc, q.FieldComplex)
+    assert isinstance(fc, q.FieldComplexD)
     geo = fc.geo()
     ctype = q.ElemTypeComplex
     total_site = geo.total_site()
@@ -311,7 +311,7 @@ def gpt_from_qlat(obj):
         return gpt_from_qlat_gauge_field(obj)
     elif isinstance(obj, q.FermionField4d):
         return gpt_from_qlat_ff4d(obj)
-    elif isinstance(obj, q.FieldComplex):
+    elif isinstance(obj, q.FieldComplexD):
         return gpt_from_qlat_complex(obj)
     elif isinstance(obj, list):
         return [ gpt_from_qlat(p) for p in obj ]

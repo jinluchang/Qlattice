@@ -262,9 +262,9 @@ qacc Vector<double> get_data_double(const Vector<M>& v)
 }
 
 template <class M>
-qacc Vector<Complex> get_data_complex(const Vector<M>& v)
+qacc Vector<ComplexD> get_data_complex(const Vector<M>& v)
 {
-  return get_data_as<Complex>(v);
+  return get_data_as<ComplexD>(v);
 }
 
 template <class M>
@@ -487,7 +487,7 @@ qacc Array<M, N> operator*=(Array<M, N> v, const double factor)
 }
 
 template <class M, int N>
-qacc Array<M, N> operator*=(Array<M, N> v, const Complex factor)
+qacc Array<M, N> operator*=(Array<M, N> v, const ComplexD factor)
 {
   for (int i = 0; i < N; ++i) {
     v.p[i] *= factor;
@@ -525,7 +525,7 @@ qacc Vector<M> operator*=(Vector<M> v, const double factor)
 }
 
 template <class M>
-qacc Vector<M> operator*=(Vector<M> v, const Complex factor)
+qacc Vector<M> operator*=(Vector<M> v, const ComplexD factor)
 {
   for (long i = 0; i < v.size(); ++i) {
     v.p[i] *= factor;

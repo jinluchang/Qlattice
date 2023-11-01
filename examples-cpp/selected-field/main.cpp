@@ -14,7 +14,7 @@ inline void demo()
   RngState rs = RngState("selected-field");
   //
   displayln_info(fname + ssprintf(": init field 'f'"));
-  Field<Complex> f;
+  Field<ComplexD> f;
   f.init(geo, 2);
   set_zero(f);
   //
@@ -58,8 +58,8 @@ inline void demo()
   //
   displayln_info(fname + ssprintf(": compute crc32=%06X.", field_crc32(f)));
   //
-  displayln_info(fname + ssprintf(": declare 'sf' or type 'SelectedField<Complex>'"));
-  SelectedField<Complex> sf;
+  displayln_info(fname + ssprintf(": declare 'sf' or type 'SelectedField<ComplexD>'"));
+  SelectedField<ComplexD> sf;
   //
   displayln_info(fname + ssprintf(": 'sf' only store the selected points' data of 'f'"));
   set_selected_field(sf, f, fsel);
@@ -90,14 +90,14 @@ inline void demo()
   //
   displayln_info(fname + ssprintf(": compute the sum of all the selected points in 'f'"));
   {
-    Complex sum = 0.0;
+    ComplexD sum = 0.0;
     for (long index = 0; index < f.geo().local_volume(); ++index) {
       const long idx = fsel.f_local_idx.get_elems_const(index)[0];
       if (idx < 0) {
         continue;
       }
       const Coordinate xl = f.geo().coordinate_from_index(index);
-      const Vector<Complex> fv = f.get_elems_const(xl);
+      const Vector<ComplexD> fv = f.get_elems_const(xl);
       // f.geto.multiplicity = 2 is the number of elements per site
       for (int m = 0; m < f.geo().multiplicity; ++m) {
         sum += fv[m];
@@ -106,13 +106,13 @@ inline void demo()
     displayln_info(fname + ssprintf(": v1 sum is %s", show(sum).c_str()));
   }
   {
-    Complex sum = 0.0;
+    ComplexD sum = 0.0;
     for (long index = 0; index < f.geo().local_volume(); ++index) {
       const long idx = fsel.f_local_idx.get_elems_const(index)[0];
       if (idx < 0) {
         continue;
       }
-      const Vector<Complex> fv = sf.get_elems_const(idx);
+      const Vector<ComplexD> fv = sf.get_elems_const(idx);
       // f.geto.multiplicity = 2 is the number of elements per site
       for (int m = 0; m < f.geo().multiplicity; ++m) {
         sum += fv[m];
@@ -121,10 +121,10 @@ inline void demo()
     displayln_info(fname + ssprintf(": v2 sum is %s", show(sum).c_str()));
   }
   {
-    Complex sum = 0.0;
+    ComplexD sum = 0.0;
     for (long idx = 0; idx < sf.n_elems; ++idx) {
       // const long index = fsel.indices[idx];
-      const Vector<Complex> fv = sf.get_elems_const(idx);
+      const Vector<ComplexD> fv = sf.get_elems_const(idx);
       // f.geto.multiplicity = 2 is the number of elements per site
       for (int m = 0; m < f.geo().multiplicity; ++m) {
         sum += fv[m];
@@ -144,7 +144,7 @@ inline void test(const std::string& tag, const long n_per_tslice)
   qmkdir_info("huge-data");
   qmkdir_info("huge-data/" + tag);
   // init f
-  Field<Complex> f;
+  Field<ComplexD> f;
   f.init(geo, 2);
   set_zero(f);
   // init fsel
@@ -170,7 +170,7 @@ inline void test(const std::string& tag, const long n_per_tslice)
   set_zero(f);
   set_u_rand_double(f, rs.split("f-init"));
   displayln_info(ssprintf(": %06X <- f-init", field_crc32(f)));
-  SelectedField<Complex> sf;
+  SelectedField<ComplexD> sf;
   set_selected_field(sf, f, fsel);
   set_zero(f);
   set_u_rand_double(f, rs.split("f-init-1"));
@@ -250,7 +250,7 @@ inline void test_grid(const std::string& tag, const long n_per_tslice)
   qmkdir_info("huge-data");
   qmkdir_info("huge-data/" + tag);
   // init f
-  Field<Complex> f;
+  Field<ComplexD> f;
   f.init(geo, 2);
   set_zero(f);
   // init fsel
@@ -277,7 +277,7 @@ inline void test_grid(const std::string& tag, const long n_per_tslice)
   set_zero(f);
   set_u_rand_double(f, rs.split("f-init"));
   displayln_info(ssprintf(": %06X <- f-init", field_crc32(f)));
-  SelectedField<Complex> sf;
+  SelectedField<ComplexD> sf;
   set_selected_field(sf, f, fsel);
   set_zero(f);
   set_u_rand_double(f, rs.split("f-init-1"));
@@ -325,24 +325,24 @@ inline void test_selected_points(const std::string& tag, const long n_points)
       load_point_selection_info("huge-data/" + tag + "/point-selection.txt");
   qassert(psel == psel_load);
   //
-  Field<Complex> f;
+  Field<ComplexD> f;
   f.init(geo, 2);
   set_zero(f);
   set_u_rand_double(f, rs.split("f-init"));
   displayln_info(ssprintf(": %06X <- f-init", field_crc32(f)));
   //
-  Field<Complex> f1;
+  Field<ComplexD> f1;
   f1 = f;
   only_keep_selected_points(f1, psel);
   const crc32_t crc1 = field_crc32(f1);
   displayln_info(ssprintf(": %06X <- f1 only selected", crc1));
   //
-  SelectedPoints<Complex> sp;
+  SelectedPoints<ComplexD> sp;
   set_selected_points(sp, f, psel);
   save_selected_points(sp, "huge-data/" + tag + "/f.lat");
-  SelectedPoints<Complex> sp2;
+  SelectedPoints<ComplexD> sp2;
   load_selected_points(sp2, "huge-data/" + tag + "/f.lat");
-  Field<Complex> f2;
+  Field<ComplexD> f2;
   set_field_selected(f2, sp2, f.geo(), psel);
   const crc32_t crc2 = field_crc32(f2);
   displayln_info(ssprintf(": %06X <- f2 set and set", crc2));
@@ -356,7 +356,7 @@ inline void test_selected_points(const std::string& tag, const long n_points)
     ShuffledFieldsWriter sfw(path, new_size_node);
     write(sfw, "f.psel", f, sbs);
   }
-  Field<Complex> f3;
+  Field<ComplexD> f3;
   {
     ShuffledFieldsReader sfr(path);
     read(sfr, "f.psel", f3);
@@ -375,20 +375,20 @@ inline void test_shift(const std::string& tag, const long n_per_tslice, const lo
   Geometry geo;
   geo.init(total_site, 1);
   RngState rs = RngState("test_shift");
-  Field<Complex> f;
+  Field<ComplexD> f;
   f.init(geo, 2);
   set_zero(f);
   set_u_rand_double(f, rs.split("f-init"));
   displayln_info(fname + ssprintf(": f crc32 = %08X", field_crc32(f)));
-  SelectedField<Complex> sf;
+  SelectedField<ComplexD> sf;
   const PointsSelection psel =
       mk_random_point_selection(total_site, n_points, rs.split("psel"));
   FieldSelection fsel;
   set_field_selection(fsel, total_site, n_per_tslice, rs.split("fsel"), psel);
   set_selected_field(sf, f, fsel);
-  SelectedField<Complex> sf0;
+  SelectedField<ComplexD> sf0;
   sf0 = sf;
-  Field<Complex> f0;
+  Field<ComplexD> f0;
   set_field_selected(f0, sf, fsel);
   displayln_info(fname + ssprintf(": f0 (with sparse) crc32 = %08X", field_crc32(f0)));
   std::vector<Coordinate> shift_list;

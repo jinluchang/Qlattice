@@ -62,12 +62,12 @@ int main(int argc, char* argv[])
   inputpara in_tem;
   int file_type = check_qlat_eigen_file_type(ename, io_read, nvec, in_tem);
 
-  std::vector<qlat::FieldM<qlat::Complex , 12> > eigenD;
+  std::vector<qlat::FieldM<qlat::ComplexD , 12> > eigenD;
   std::vector<qlat::FieldM<qlat::ComplexF, 12> > eigenF;
   eigenD.resize(each);
   eigenF.resize(each);
 
-  //std::vector<qlat::FieldM<qlat::Complex , 12> > noi_bufD;
+  //std::vector<qlat::FieldM<qlat::ComplexD , 12> > noi_bufD;
   //std::vector<qlat::FieldM<qlat::ComplexF, 12> > noi_bufF;
   //noi_bufD.resize(each);
   //noi_bufF.resize(each);
@@ -104,10 +104,10 @@ int main(int argc, char* argv[])
     load_gwu_link(rbc_conf, gf);
     ////random_link(gf, 0); 
     //set_left_expanded_gauge_field(gfD, gf);
-    /////GaugeFieldT<qlat::Complex  > gfD;gfD = gfa;
-    //qlat::Complex*  tem0 = (qlat::Complex*  ) qlat::get_data(gfD).data();
+    /////GaugeFieldT<qlat::ComplexD  > gfD;gfD = gfa;
+    //qlat::ComplexD*  tem0 = (qlat::Complex*  ) qlat::get_data(gfD).data();
     //qlat::ComplexF* tem1 = (qlat::ComplexF* ) qlat::get_data(gfF).data();
-    //LInt cpy_size = (LInt)(qlat::get_data(gfD).data_size()/(sizeof(qlat::Complex)));
+    //LInt cpy_size = (LInt)(qlat::get_data(gfD).data_size()/(sizeof(qlat::ComplexD)));
     //cpy_data_thread(tem1, tem0, cpy_size, 0);
   }
 

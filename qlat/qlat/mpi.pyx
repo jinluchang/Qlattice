@@ -45,7 +45,7 @@ def bcast_double(double x, int root=0):
     cc.bcast(x, root)
     return x
 
-def bcast_complex(cc.Complex x, int root=0):
+def bcast_complex(cc.ComplexD x, int root=0):
     cc.bcast(x, root)
     return x
 
@@ -67,7 +67,7 @@ def glb_sum_double(double x):
     cc.glb_sum(x)
     return x
 
-def glb_sum_complex(cc.Complex x):
+def glb_sum_complex(cc.ComplexD x):
     cc.glb_sum(x)
     return x
 

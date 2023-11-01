@@ -3,21 +3,21 @@
 namespace qlat
 {  //
 
-inline void reflect_and_revert_mu_nu(FieldM<Complex, 8 * 8>& f_munu)
+inline void reflect_and_revert_mu_nu(FieldM<ComplexD, 8 * 8>& f_munu)
 {
   TIMER_VERBOSE("reflect_and_revert_mu_nu");
   reflect_field(f_munu);
   field_permute_mu_nu(f_munu);
 }
 
-inline void set_pfdist(FieldM<Complex, 1>& pfdist,
+inline void set_pfdist(FieldM<ComplexD, 1>& pfdist,
                        const std::vector<int>& trajs)
 {
   TIMER_VERBOSE("set_pfdist");
   pfdist.init();
   for (long i = 0; i < (long)trajs.size(); ++i) {
     const int traj = trajs[i];
-    FieldM<Complex, 1> pfdist_tmp;
+    FieldM<ComplexD, 1> pfdist_tmp;
     const std::string path = ssprintf(
         "analysis/field-psel-fsel-distribution/24D/results=%d/avg-0.field",
         traj);
@@ -27,16 +27,16 @@ inline void set_pfdist(FieldM<Complex, 1>& pfdist,
   }
 }
 
-inline void set_meson_vv(FieldM<Complex, 8 * 8>& meson_vv,
+inline void set_meson_vv(FieldM<ComplexD, 8 * 8>& meson_vv,
                          const std::vector<int>& trajs, const std::string& tag)
 {
   TIMER_VERBOSE("set_meson_vv");
   meson_vv.init();
-  FieldM<Complex, 1> pfdist;
+  FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
   for (long i = 0; i < (long)trajs.size(); ++i) {
     const int traj = trajs[i];
-    FieldM<Complex, 8 * 8> meson_vv_tmp;
+    FieldM<ComplexD, 8 * 8> meson_vv_tmp;
     const std::string path =
         ssprintf("analysis/field-meson-vv/24D/results=%d/%s-0-0-0.field", traj,
                  tag.c_str());
@@ -47,17 +47,17 @@ inline void set_meson_vv(FieldM<Complex, 8 * 8>& meson_vv,
   rescale_field_with_psel_fsel_distribution(meson_vv, pfdist);
 }
 
-inline void set_meson_vv_meson(FieldM<Complex, 8 * 8>& meson_vv_meson,
+inline void set_meson_vv_meson(FieldM<ComplexD, 8 * 8>& meson_vv_meson,
                                const std::vector<int>& trajs,
                                const std::string& tag)
 {
   TIMER_VERBOSE("set_meson_vv_meson");
   meson_vv_meson.init();
-  FieldM<Complex, 1> pfdist;
+  FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
   for (long i = 0; i < (long)trajs.size(); ++i) {
     const int traj = trajs[i];
-    FieldM<Complex, 8 * 8> tmp;
+    FieldM<ComplexD, 8 * 8> tmp;
     const std::string path = ssprintf(
         "analysis/field-meson-vv-meson/24D/results=%d/%s-0-0-0-0.field", traj,
         tag.c_str());
@@ -68,17 +68,17 @@ inline void set_meson_vv_meson(FieldM<Complex, 8 * 8>& meson_vv_meson,
   rescale_field_with_psel_fsel_distribution(meson_vv_meson, pfdist);
 }
 
-inline void set_meson_vv_old(FieldM<Complex, 8 * 8>& meson_vv,
+inline void set_meson_vv_old(FieldM<ComplexD, 8 * 8>& meson_vv,
                              const std::vector<int>& trajs,
                              const std::string& tag)
 {
   TIMER_VERBOSE("set_meson_vv_old");
   meson_vv.init();
-  FieldM<Complex, 1> pfdist;
+  FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
   for (long i = 0; i < (long)trajs.size(); ++i) {
     const int traj = trajs[i];
-    FieldM<Complex, 8 * 8> meson_vv_tmp;
+    FieldM<ComplexD, 8 * 8> meson_vv_tmp;
     const std::string path = ssprintf(
         "/sdcc/u/jluchang/qcdqedta/luchang/all-analysis-data/field-pion-gg/"
         "24D-0.00107/results=%d/%s_type_1.field",
@@ -90,7 +90,7 @@ inline void set_meson_vv_old(FieldM<Complex, 8 * 8>& meson_vv,
   }
   for (long i = 0; i < (long)trajs.size(); ++i) {
     const int traj = trajs[i];
-    FieldM<Complex, 8 * 8> meson_vv_tmp;
+    FieldM<ComplexD, 8 * 8> meson_vv_tmp;
     const std::string path = ssprintf(
         "/sdcc/u/jluchang/qcdqedta/luchang/all-analysis-data/field-pion-gg/"
         "24D-0.00107/results=%d/%s_type_2.field",
@@ -102,17 +102,17 @@ inline void set_meson_vv_old(FieldM<Complex, 8 * 8>& meson_vv,
   rescale_field_with_psel_fsel_distribution(meson_vv, pfdist);
 }
 
-inline void set_meson_vv_meson_old(FieldM<Complex, 8 * 8>& meson_vv_meson,
+inline void set_meson_vv_meson_old(FieldM<ComplexD, 8 * 8>& meson_vv_meson,
                                    const std::vector<int>& trajs,
                                    const std::string& tag)
 {
   TIMER_VERBOSE("set_meson_vv_meson_old");
   meson_vv_meson.init();
-  FieldM<Complex, 1> pfdist;
+  FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
   for (long i = 0; i < (long)trajs.size(); ++i) {
     const int traj = trajs[i];
-    FieldM<Complex, 8 * 8> tmp;
+    FieldM<ComplexD, 8 * 8> tmp;
     const std::string path = ssprintf(
         "/sdcc/u/jluchang/qcdqedta/luchang/all-analysis-data/field-ppgg/"
         "24D-0.00107/results=%d/%s_type_1.field",
@@ -124,7 +124,7 @@ inline void set_meson_vv_meson_old(FieldM<Complex, 8 * 8>& meson_vv_meson,
   }
   for (long i = 0; i < (long)trajs.size(); ++i) {
     const int traj = trajs[i];
-    FieldM<Complex, 8 * 8> tmp;
+    FieldM<ComplexD, 8 * 8> tmp;
     const std::string path = ssprintf(
         "/sdcc/u/jluchang/qcdqedta/luchang/all-analysis-data/field-ppgg/"
         "24D-0.00107/results=%d/%s_type_2.field",
@@ -159,7 +159,7 @@ inline void test_meson_vv()
   TIMER_VERBOSE("test_meson_vv");
   const std::string tag = "decay";
   // const std::string tag = "fission";
-  FieldM<Complex, 8 * 8> meson_vv, meson_vv_old, meson_vv_diff;
+  FieldM<ComplexD, 8 * 8> meson_vv, meson_vv_old, meson_vv_diff;
   std::vector<int> trajs;
   trajs.push_back(1010);
   trajs.push_back(1030);
@@ -207,7 +207,7 @@ inline void test_meson_vv_meson()
   TIMER_VERBOSE("test_meson_vv_meson");
   // const std::string tag = "forward";
   const std::string tag = "backward";
-  FieldM<Complex, 8 * 8> meson_vv_meson, meson_vv_meson_old,
+  FieldM<ComplexD, 8 * 8> meson_vv_meson, meson_vv_meson_old,
       meson_vv_meson_diff;
   std::vector<int> trajs;
   trajs.push_back(1010);
@@ -252,17 +252,17 @@ inline void test_meson_vv_meson()
       std::sqrt(qnorm(meson_vv_meson_diff) / qnorm(meson_vv_meson_old))));
 }
 
-inline void set_meson_vv_v2(FieldM<Complex, 8 * 8>& meson_vv,
+inline void set_meson_vv_v2(FieldM<ComplexD, 8 * 8>& meson_vv,
                             const std::vector<int>& trajs,
                             const std::string& tag)
 {
   TIMER_VERBOSE("set_meson_vv_v2");
   meson_vv.init();
-  FieldM<Complex, 1> pfdist;
+  FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
   for (long i = 0; i < (long)trajs.size(); ++i) {
     const int traj = trajs[i];
-    FieldM<Complex, 8 * 8> tmp;
+    FieldM<ComplexD, 8 * 8> tmp;
     const std::string path =
         ssprintf("analysis-v2/field-meson-vv/24D/results=%d/%s-0.field",
                  traj, tag.c_str());
@@ -273,10 +273,10 @@ inline void set_meson_vv_v2(FieldM<Complex, 8 * 8>& meson_vv,
   rescale_field_with_psel_fsel_distribution(meson_vv, pfdist);
 }
 
-inline void ref_avg(FieldM<Complex, 8 * 8>& f)
+inline void ref_avg(FieldM<ComplexD, 8 * 8>& f)
 {
   TIMER_VERBOSE("ref_avg");
-  FieldM<Complex, 8 * 8> tmp;
+  FieldM<ComplexD, 8 * 8> tmp;
   tmp = f;
   reflect_field(tmp);
   field_permute_mu_nu(tmp);
@@ -286,17 +286,17 @@ inline void ref_avg(FieldM<Complex, 8 * 8>& f)
   f *= 0.5;
 }
 
-inline void set_meson_vv_v3(FieldM<Complex, 8 * 8>& meson_vv,
+inline void set_meson_vv_v3(FieldM<ComplexD, 8 * 8>& meson_vv,
                             const std::vector<int>& trajs,
                             const std::string& tag1, const std::string& tag2)
 {
   TIMER_VERBOSE("set_meson_vv_v3");
   meson_vv.init();
-  FieldM<Complex, 1> pfdist;
+  FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
   for (long i = 0; i < (long)trajs.size(); ++i) {
     const int traj = trajs[i];
-    FieldM<Complex, 8 * 8> tmp;
+    FieldM<ComplexD, 8 * 8> tmp;
     const std::string path =
         ssprintf("analysis-v3/field-meson-vv/24D/results=%d/%s-0.field",
                  traj, tag1.c_str());
@@ -305,7 +305,7 @@ inline void set_meson_vv_v3(FieldM<Complex, 8 * 8>& meson_vv,
   }
   for (long i = 0; i < (long)trajs.size(); ++i) {
     const int traj = trajs[i];
-    FieldM<Complex, 8 * 8> tmp;
+    FieldM<ComplexD, 8 * 8> tmp;
     const std::string path =
         ssprintf("analysis-v3/field-meson-vv/24D/results=%d/%s-0.field", traj,
                  tag2.c_str());
@@ -320,17 +320,17 @@ inline void set_meson_vv_v3(FieldM<Complex, 8 * 8>& meson_vv,
   rescale_field_with_psel_fsel_distribution(meson_vv, pfdist);
 }
 
-inline void set_meson_vv_v4(FieldM<Complex, 8 * 8>& meson_vv,
+inline void set_meson_vv_v4(FieldM<ComplexD, 8 * 8>& meson_vv,
                             const std::vector<int>& trajs,
                             const std::string& tag)
 {
   TIMER_VERBOSE("set_meson_vv_v4");
   meson_vv.init();
-  FieldM<Complex, 1> pfdist;
+  FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
   for (long i = 0; i < (long)trajs.size(); ++i) {
     const int traj = trajs[i];
-    FieldM<Complex, 8 * 8> tmp;
+    FieldM<ComplexD, 8 * 8> tmp;
     const std::string path =
         ssprintf("analysis/field-meson-vv/24D/results=%d/%s-0.field",
                  traj, tag.c_str());
@@ -346,7 +346,7 @@ inline void test_meson_vv_v4()
   TIMER_VERBOSE("test_meson_vv_v4");
   // const std::string tag = "decay";
   // const std::string tag = "fission";
-  FieldM<Complex, 8 * 8> meson_vv, meson_vv_old, meson_vv_diff;
+  FieldM<ComplexD, 8 * 8> meson_vv, meson_vv_old, meson_vv_diff;
   std::vector<int> trajs;
   for (long traj = 1000; traj < 3000; traj += 10) {
     if (does_file_exist_sync_node(ssprintf(
@@ -385,17 +385,17 @@ inline void test_meson_vv_v4()
                std::sqrt(qnorm(meson_vv_diff) / qnorm(meson_vv_old))));
 }
 
-inline void set_meson_vv_meson_v2(FieldM<Complex, 8 * 8>& meson_vv_meson,
+inline void set_meson_vv_meson_v2(FieldM<ComplexD, 8 * 8>& meson_vv_meson,
                                   const std::vector<int>& trajs,
                                   const std::string& tag)
 {
   TIMER_VERBOSE("set_meson_vv_meson_v2");
   meson_vv_meson.init();
-  FieldM<Complex, 1> pfdist;
+  FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
   for (long i = 0; i < (long)trajs.size(); ++i) {
     const int traj = trajs[i];
-    FieldM<Complex, 8 * 8> tmp;
+    FieldM<ComplexD, 8 * 8> tmp;
     const std::string path = ssprintf(
         "analysis-v2/field-meson-vv-meson/24D/results=%d/%s-0-0.field",
         traj, tag.c_str());
@@ -406,17 +406,17 @@ inline void set_meson_vv_meson_v2(FieldM<Complex, 8 * 8>& meson_vv_meson,
   rescale_field_with_psel_fsel_distribution(meson_vv_meson, pfdist);
 }
 
-inline void set_meson_vv_meson_v2avg(FieldM<Complex, 8 * 8>& meson_vv_meson,
+inline void set_meson_vv_meson_v2avg(FieldM<ComplexD, 8 * 8>& meson_vv_meson,
                                   const std::vector<int>& trajs,
                                   const std::string& tag)
 {
   TIMER_VERBOSE("set_meson_vv_meson_v2avg");
   meson_vv_meson.init();
-  FieldM<Complex, 1> pfdist;
+  FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
   for (long i = 0; i < (long)trajs.size(); ++i) {
     const int traj = trajs[i];
-    FieldM<Complex, 8 * 8> tmp;
+    FieldM<ComplexD, 8 * 8> tmp;
     const std::string path = ssprintf(
         "analysis-v2/field-meson-vv-meson-avg/24D/results=%d/%s-0-0.field",
         traj, tag.c_str());
@@ -427,17 +427,17 @@ inline void set_meson_vv_meson_v2avg(FieldM<Complex, 8 * 8>& meson_vv_meson,
   rescale_field_with_psel_fsel_distribution(meson_vv_meson, pfdist);
 }
 
-inline void set_meson_vv_meson_v3(FieldM<Complex, 8 * 8>& meson_vv_meson,
+inline void set_meson_vv_meson_v3(FieldM<ComplexD, 8 * 8>& meson_vv_meson,
                                   const std::vector<int>& trajs,
                                   const std::string& tag)
 {
   TIMER_VERBOSE("set_meson_vv_meson_v3");
   meson_vv_meson.init();
-  FieldM<Complex, 1> pfdist;
+  FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
   for (long i = 0; i < (long)trajs.size(); ++i) {
     const int traj = trajs[i];
-    FieldM<Complex, 8 * 8> tmp;
+    FieldM<ComplexD, 8 * 8> tmp;
     const std::string path = ssprintf(
         "analysis-v3/field-meson-vv-meson/24D/results=%d/%s-0-0.field",
         traj, tag.c_str());
@@ -448,17 +448,17 @@ inline void set_meson_vv_meson_v3(FieldM<Complex, 8 * 8>& meson_vv_meson,
   rescale_field_with_psel_fsel_distribution(meson_vv_meson, pfdist);
 }
 
-inline void set_meson_vv_meson_v4(FieldM<Complex, 8 * 8>& meson_vv_meson,
+inline void set_meson_vv_meson_v4(FieldM<ComplexD, 8 * 8>& meson_vv_meson,
                                   const std::vector<int>& trajs,
                                   const std::string& tag)
 {
   TIMER_VERBOSE("set_meson_vv_meson_v4");
   meson_vv_meson.init();
-  FieldM<Complex, 1> pfdist;
+  FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
   for (long i = 0; i < (long)trajs.size(); ++i) {
     const int traj = trajs[i];
-    FieldM<Complex, 8 * 8> tmp;
+    FieldM<ComplexD, 8 * 8> tmp;
     const std::string path = ssprintf(
         "analysis/field-meson-vv-meson/24D/results=%d/%s-0-0.field",
         traj, tag.c_str());
@@ -474,7 +474,7 @@ inline void test_meson_vv_meson_v4()
   TIMER_VERBOSE("test_meson_vv_meson_v4");
   // const std::string tag = "forward";
   // const std::string tag = "backward";
-  FieldM<Complex, 8 * 8> meson_vv_meson, meson_vv_meson_old,
+  FieldM<ComplexD, 8 * 8> meson_vv_meson, meson_vv_meson_old,
       meson_vv_meson_diff;
   std::vector<int> trajs;
   for (long traj = 1000; traj < 3000; traj += 10) {

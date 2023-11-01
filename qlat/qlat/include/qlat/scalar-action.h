@@ -115,7 +115,7 @@ struct ScalarAction {
 									std::cos(2*PI*pg[3]/L[3])));
   }
 
-  inline void hmc_estimate_mass(Field<double>& masses, const Field<Complex>& field_ft, const Field<Complex>& force_ft, const double phi0)
+  inline void hmc_estimate_mass(Field<double>& masses, const Field<ComplexD>& field_ft, const Field<Complex>& force_ft, const double phi0)
   {
     TIMER("ScalarAction.hmc_estimate_mass");
     const Geometry geo = field_ft.geo();
@@ -129,8 +129,8 @@ struct ScalarAction {
       int M = masses_v.size();
       qassert(M == geo.multiplicity);
       for (int m = 0; m < M; ++m) {
-        Complex fld = field_ft.get_elem(xl, m);
-        Complex frc = force_ft.get_elem(xl, m);
+        ComplexD fld = field_ft.get_elem(xl, m);
+        ComplexD frc = force_ft.get_elem(xl, m);
         if(gindex==0 && m==0){
           masses_v[m] = 4/(PI*PI)*std::pow((frc.real()*frc.real()+frc.imag()*frc.imag())/((fld.real()-phi0)*(fld.real()-phi0)+fld.imag()*fld.imag()), 0.5);
         } else {
@@ -155,14 +155,14 @@ struct ScalarAction {
     });
   }
 
-  inline double hmc_m_hamilton_node(const Field<Complex>& sm_complex, const Field<double>& masses)
+  inline double hmc_m_hamilton_node(const Field<ComplexD>& sm_complex, const Field<double>& masses)
   {
     // Return the part of an HMC Hamiltonian due to the given momentum
     // field (on the current node).
     TIMER("ScalarAction.hmc_m_hamilton_node");
     // Creates a complex copy of the real field so that we can compute
     // the Fourier transform
-    // static Field<Complex> sm_complex;
+    // static Field<ComplexD> sm_complex;
     // set_complex_from_double(sm_complex, sm);
     // Computes the Fourier transform of the field
     // fft_complex_field(sm_complex);
@@ -181,7 +181,7 @@ struct ScalarAction {
       Coordinate xl = geo.coordinate_from_index(index);
       double s=0;
       for (int m = 0; m < geo.multiplicity; ++m) {
-        Complex c = sm_complex.get_elem(xl,m);
+        ComplexD c = sm_complex.get_elem(xl,m);
         s += (c.real()*c.real()+c.imag()*c.imag())/2/masses.get_elem(xl,m); // /hmc_mass_p(L,geo.coordinate_g_from_l(xl));
       }
       fd.get_elem(index) = s;
@@ -242,12 +242,12 @@ struct ScalarAction {
     hmc_set_force_no_comm(sm_force, sf_ext);
   }
 
-  inline void hmc_field_evolve(Field<Complex>& sf_complex, const Field<Complex>& sm_complex,
+  inline void hmc_field_evolve(Field<ComplexD>& sf_complex, const Field<Complex>& sm_complex,
                                const Field<double>& masses, const double step_size)
   {
     TIMER("hmc_field_evolve");
-    //Field<Complex> sf_complex;
-    //Field<Complex> sm_complex;
+    //Field<ComplexD> sf_complex;
+    //Field<ComplexD> sm_complex;
     //set_complex_from_double(sf_complex, sf);
     //set_complex_from_double(sm_complex, sm);
     // Computes the Fourier transform of the fields
@@ -260,8 +260,8 @@ struct ScalarAction {
     qacc_for(index, geo.local_volume(), {
       const Geometry& geo = sf_complex.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
-      Vector<Complex> sf_v = sf_complex.get_elems(xl);
-      const Vector<Complex> sm_v = sm_complex.get_elems_const(xl);
+      Vector<ComplexD> sf_v = sf_complex.get_elems(xl);
+      const Vector<ComplexD> sm_v = sm_complex.get_elems_const(xl);
       qassert(sf_v.size() == sm_v.size());
       for (int m = 0; m < sf_v.size(); ++m) {
         sf_v[m] = sf_v[m] + sm_v[m]*step_size/masses.get_elem(xl,m);
@@ -345,7 +345,7 @@ struct ScalarAction {
     axial_current_node_no_comm(axial_current, sf_ext);
   }
 
-  inline void hmc_set_rand_momentum(Field<Complex>& sm_complex, const Field<double>& masses, const RngState& rs)
+  inline void hmc_set_rand_momentum(Field<ComplexD>& sm_complex, const Field<double>& masses, const RngState& rs)
   {
     TIMER("set_rand_momentum");
     // Note that momentum fields produced with this function need to be
@@ -356,15 +356,15 @@ struct ScalarAction {
       const Coordinate xg = geo.coordinate_g_from_l(xl);
       const long gindex = geo.g_index_from_g_coordinate(xg);
       RngState rsi = rs.newtype(gindex);
-      Vector<Complex> v = sm_complex.get_elems(xl);
+      Vector<ComplexD> v = sm_complex.get_elems(xl);
       for (int m = 0; m < v.size(); ++m) {
         double sigma = std::pow(masses.get_elem(xl,m), 0.5);
-        v[m] = Complex(g_rand_gen(rsi, 0, sigma), g_rand_gen(rsi, 0, sigma));
+        v[m] = ComplexD(g_rand_gen(rsi, 0, sigma), g_rand_gen(rsi, 0, sigma));
       }
     });
   }
 
-  inline void hmc_predict_field(Field<Complex>& field_ft, const Field<Complex>& momentum_ft, const Field<double>& masses, const double vev_sigma)
+  inline void hmc_predict_field(Field<ComplexD>& field_ft, const Field<Complex>& momentum_ft, const Field<double>& masses, const double vev_sigma)
   {
     TIMER("hmc_predict_field");
     const Geometry& geo = momentum_ft.geo();
@@ -373,18 +373,18 @@ struct ScalarAction {
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
       const long gindex = geo.g_index_from_g_coordinate(xg);
-      Vector<Complex> v = field_ft.get_elems(xl);
+      Vector<ComplexD> v = field_ft.get_elems(xl);
       int M = v.size();
       qassert(M == geo.multiplicity);
       qassert(M == masses.geo().multiplicity);
       for (int m = 0; m < M; ++m) {
-        Complex mom = momentum_ft.get_elem(xl, m);
+        ComplexD mom = momentum_ft.get_elem(xl, m);
         if (gindex == 0 && m == 0) {
-          v[m] = Complex(mom.real() / masses.get_elem(xl, m) / PI * 2 +
+          v[m] = ComplexD(mom.real() / masses.get_elem(xl, m) / PI * 2 +
                              vev_sigma * std::pow(geo.total_volume(), 0.5),
                          mom.imag() / masses.get_elem(xl, m) / PI * 2);
         } else {
-          v[m] = Complex(mom.real() / masses.get_elem(xl, m) / PI * 2,
+          v[m] = ComplexD(mom.real() / masses.get_elem(xl, m) / PI * 2,
                          mom.imag() / masses.get_elem(xl, m) / PI * 2);
         }
       }

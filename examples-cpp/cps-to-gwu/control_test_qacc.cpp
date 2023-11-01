@@ -38,14 +38,14 @@ int main(int argc, char* argv[])
 
   long na = 64;
 
-  qlat::vector_acc<Complex > src;src.resize(na);
-  qlat::vector_acc<Complex > s0;s0.resize(na);
-  qlat::vector_acc<Complex > s1;s1.resize(na);
-  Complex* k = (Complex*) qlat::get_data(src).data();
+  qlat::vector_acc<ComplexD > src;src.resize(na);
+  qlat::vector_acc<ComplexD > s0;s0.resize(na);
+  qlat::vector_acc<ComplexD > s1;s1.resize(na);
+  ComplexD* k = (Complex*) qlat::get_data(src).data();
   qacc_barrier(dummy);
   qacc_for(isp , na, {
     //src[isp] = src[isp] + 1;
-    k[isp] = Complex(1.0, 0.0);
+    k[isp] = ComplexD(1.0, 0.0);
     s1[isp] = isp;
     s0[isp] = s1[isp] * s1[isp];
   });

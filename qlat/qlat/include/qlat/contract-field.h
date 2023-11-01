@@ -15,7 +15,7 @@ void acc_field(Field<M>& f, const SelectedField<M>& sf,
   acc_field(f, sf_shifted, ssp.fsel);
 }
 
-inline void contract_psel_fsel_distribution_acc(FieldM<Complex, 1>& pos,
+inline void contract_psel_fsel_distribution_acc(FieldM<ComplexD, 1>& pos,
                                                 const Coordinate& xg_y,
                                                 const FieldSelection& fsel,
                                                 const ShiftShufflePlan& ssp)
@@ -24,9 +24,9 @@ inline void contract_psel_fsel_distribution_acc(FieldM<Complex, 1>& pos,
   TIMER_VERBOSE("contract_psel_fsel_distribution");
   qassert(ssp.shift == -xg_y);
   qassert(ssp.is_reflect == false);
-  SelectedField<Complex> s_pos;
+  SelectedField<ComplexD> s_pos;
   s_pos.init(fsel, 1);
-  const Complex coef = 1.0 / get_fsel_prob(fsel);
+  const ComplexD coef = 1.0 / get_fsel_prob(fsel);
 #pragma omp parallel for
   for (long idx = 0; idx < fsel.n_elems; ++idx) {
     s_pos.get_elem(idx) = coef;
@@ -36,17 +36,17 @@ inline void contract_psel_fsel_distribution_acc(FieldM<Complex, 1>& pos,
 
 template <class M>
 void rescale_field_with_psel_fsel_distribution(Field<M>& f,
-                                               const FieldM<Complex, 1>& pfdist)
+                                               const FieldM<ComplexD, 1>& pfdist)
 {
   TIMER_VERBOSE("rescale_field_with_psel_fsel_distribution");
   const Geometry& geo = f.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    const Complex factor = pfdist.get_elem(xl);
+    const ComplexD factor = pfdist.get_elem(xl);
     Vector<M> fv = f.get_elems(xl);
     if (factor != 0.0) {
-      const Complex coef = 1.0 / factor;
+      const ComplexD coef = 1.0 / factor;
       for (int m = 0; m < geo.multiplicity; ++m) {
         fv[m] *= coef;
       }
@@ -80,16 +80,16 @@ API inline array<SpinMatrix, 8>& get_va_matrices()
 
 // -----------------------------------------------------------------------------------
 
-inline void field_permute_mu_nu(FieldM<Complex, 8 * 8>& f)
+inline void field_permute_mu_nu(FieldM<ComplexD, 8 * 8>& f)
 {
   TIMER_VERBOSE("field_permute_mu_nu");
   const Geometry& geo = f.geo();
-  FieldM<Complex, 8 * 8> f0;
+  FieldM<ComplexD, 8 * 8> f0;
   f0 = f;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
-    const Vector<Complex> fv0 = f0.get_elems_const(index);
-    Vector<Complex> fv = f.get_elems(index);
+    const Vector<ComplexD> fv0 = f0.get_elems_const(index);
+    Vector<ComplexD> fv = f.get_elems(index);
     for (int mu = 0; mu < 8; ++mu) {
       for (int nu = 0; nu < 8; ++nu) {
         fv[mu * 8 + nu] = fv0[nu * 8 + mu];
@@ -98,13 +98,13 @@ inline void field_permute_mu_nu(FieldM<Complex, 8 * 8>& f)
   }
 }
 
-inline void field_conjugate_mu_nu(FieldM<Complex, 8 * 8>& f)
+inline void field_conjugate_mu_nu(FieldM<ComplexD, 8 * 8>& f)
 {
   TIMER_VERBOSE("field_conjugate_mu_nu");
   const Geometry& geo = f.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
-    Vector<Complex> fv = f.get_elems(index);
+    Vector<ComplexD> fv = f.get_elems(index);
     for (int mu = 0; mu < 8; ++mu) {
       const double theta_mu = mu < 4 ? 1.0 : -1.0;
       for (int nu = 0; nu < 8; ++nu) {
@@ -116,13 +116,13 @@ inline void field_conjugate_mu_nu(FieldM<Complex, 8 * 8>& f)
   }
 }
 
-inline void field_complex_conjugate(Field<Complex>& f)
+inline void field_complex_conjugate(Field<ComplexD>& f)
 {
   TIMER_VERBOSE("field_complex_conjugate");
   const Geometry& geo = f.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
-    Vector<Complex> fv = f.get_elems(index);
+    Vector<ComplexD> fv = f.get_elems(index);
     for (int m = 0; m < geo.multiplicity; ++m) {
       fv[m] = qconj(fv[m]);
     }
@@ -132,7 +132,7 @@ inline void field_complex_conjugate(Field<Complex>& f)
 // -----------------------------------------------------------------------------------
 
 inline void contract_meson_vv_unshifted_acc_x(
-    Vector<Complex> v, const Complex coef, const WallSrcProps& wsp1,
+    Vector<ComplexD> v, const Complex coef, const WallSrcProps& wsp1,
     const WallSrcProps& wsp2, const WilsonMatrix& wm3_x_y,
     const Coordinate& xg_x, const long xg_x_idx, const Coordinate& xg_y,
     const long xg_y_psel_idx, const int t_wall, const bool exact)
@@ -162,7 +162,7 @@ inline void contract_meson_vv_unshifted_acc_x(
 }
 
 inline void contract_meson_vv_unshifted_acc_x(
-    Vector<Complex> v, const Complex coef, const WallSrcProps& wsp1,
+    Vector<ComplexD> v, const Complex coef, const WallSrcProps& wsp1,
     const WallSrcProps& wsp2, const WilsonMatrix& wm3_x_y,
     const Coordinate& xg_x, const long xg_x_idx, const Coordinate& xg_y,
     const long xg_y_psel_idx, const int t_wall)
@@ -175,8 +175,8 @@ inline void contract_meson_vv_unshifted_acc_x(
   if (has_exact) {
     const double sloppy_exact_ratio_1 = wsp1.sloppy_exact_ratio_1;
     qassert(sloppy_exact_ratio_1 == wsp2.sloppy_exact_ratio_1);
-    const Complex coef1 = sloppy_exact_ratio_1 * coef;
-    const Complex coef2 = (1.0 - sloppy_exact_ratio_1) * coef;
+    const ComplexD coef1 = sloppy_exact_ratio_1 * coef;
+    const ComplexD coef2 = (1.0 - sloppy_exact_ratio_1) * coef;
     contract_meson_vv_unshifted_acc_x(v, coef1, wsp1, wsp2, wm3_x_y, xg_x,
                                       xg_x_idx, xg_y, xg_y_psel_idx, t_wall,
                                       true);
@@ -191,7 +191,7 @@ inline void contract_meson_vv_unshifted_acc_x(
 }
 
 inline void contract_meson_vv_unshifted(
-    std::vector<SelectedField<Complex> >& sfs, const WallSrcProps& wsp1,
+    std::vector<SelectedField<ComplexD> >& sfs, const WallSrcProps& wsp1,
     const WallSrcProps& wsp2, const SelProp& prop3_x_y, const Coordinate& xg_y,
     const long xg_y_psel_idx, const int tsep, const PointsSelection& psel,
     const FieldSelection& fsel)
@@ -208,8 +208,8 @@ inline void contract_meson_vv_unshifted(
     sfs[i].init(fsel, multiplicity);
     set_zero(sfs[i]);
   }
-  SelectedField<Complex>& s_decay = sfs[0];
-  SelectedField<Complex>& s_fission = sfs[1];
+  SelectedField<ComplexD>& s_decay = sfs[0];
+  SelectedField<ComplexD>& s_fission = sfs[1];
   const int yt = xg_y[3];
 #pragma omp parallel for
   for (long idx = 0; idx < fsel.n_elems; ++idx) {
@@ -228,8 +228,8 @@ inline void contract_meson_vv_unshifted(
       t_snk = mod(yt + tsep, total_site[3]);
     }
     const WilsonMatrix& wm3_x_y = prop3_x_y.get_elem(idx);
-    Vector<Complex> vd = s_decay.get_elems(idx);
-    Vector<Complex> vf = s_fission.get_elems(idx);
+    Vector<ComplexD> vd = s_decay.get_elems(idx);
+    Vector<ComplexD> vf = s_fission.get_elems(idx);
     contract_meson_vv_unshifted_acc_x(vd, 1.0, wsp1, wsp2, wm3_x_y, xg_x,
                                       xg_x_idx, xg_y, xg_y_psel_idx, t_src);
     contract_meson_vv_unshifted_acc_x(vf, 1.0, wsp1, wsp2, wm3_x_y, xg_x,
@@ -239,7 +239,7 @@ inline void contract_meson_vv_unshifted(
 }
 
 inline void contract_meson_vv_acc(
-    FieldM<Complex, 8 * 8>& decay, FieldM<Complex, 8 * 8>& fission,
+    FieldM<ComplexD, 8 * 8>& decay, FieldM<Complex, 8 * 8>& fission,
     const WallSrcProps& wsp1, const WallSrcProps& wsp2,
     const SelProp& prop3_x_y, const Coordinate& xg_y, const long xg_y_psel_idx,
     const int tsep, const PointsSelection& psel, const FieldSelection& fsel,
@@ -258,13 +258,13 @@ inline void contract_meson_vv_acc(
   qassert(psel[xg_y_psel_idx] == xg_y);
   qassert(ssp.shift == -xg_y);
   qassert(ssp.is_reflect == false);
-  std::vector<SelectedField<Complex> > sfs;
+  std::vector<SelectedField<ComplexD> > sfs;
   contract_meson_vv_unshifted(sfs, wsp1, wsp2, prop3_x_y, xg_y, xg_y_psel_idx,
                               tsep, psel, fsel);
   qassert(sfs.size() == 2);
-  SelectedField<Complex>& s_decay = sfs[0];
-  SelectedField<Complex>& s_fission = sfs[1];
-  const Complex coef = 1.0 / get_fsel_prob(fsel);
+  SelectedField<ComplexD>& s_decay = sfs[0];
+  SelectedField<ComplexD>& s_fission = sfs[1];
+  const ComplexD coef = 1.0 / get_fsel_prob(fsel);
   s_decay *= coef;
   s_fission *= coef;
   acc_field(decay, s_decay, ssp);
@@ -278,7 +278,7 @@ inline WilsonMatrix get_wsnk_prop_avg(const WallSrcProps& wsp, const int t_snk,
                                       const bool exact_src)
 {
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
-  return (Complex)0.5 *
+  return (ComplexD)0.5 *
          (get_wsnk_prop(wsp, t_src, exact_src).get_elem(t_snk) +
           gamma5 *
               (WilsonMatrix)matrix_adjoint(
@@ -287,7 +287,7 @@ inline WilsonMatrix get_wsnk_prop_avg(const WallSrcProps& wsp, const int t_snk,
 }
 
 inline void contract_meson_vv_meson_unshifted_acc_x(
-    Vector<Complex> v, const Complex coef, const WallSrcProps& wsp1,
+    Vector<ComplexD> v, const Complex coef, const WallSrcProps& wsp1,
     const WallSrcProps& wsp2, const WallSrcProps& wsp3,
     const WilsonMatrix& wm4_x_y, const Coordinate& xg_x, const long xg_x_idx,
     const Coordinate& xg_y, const long xg_y_psel_idx, const int t_wall_snk,
@@ -328,7 +328,7 @@ inline void contract_meson_vv_meson_unshifted_acc_x(
 }
 
 inline void contract_meson_vv_meson_unshifted_acc_x(
-    Vector<Complex> v, const Complex coef, const WallSrcProps& wsp1,
+    Vector<ComplexD> v, const Complex coef, const WallSrcProps& wsp1,
     const WallSrcProps& wsp2, const WallSrcProps& wsp3,
     const WilsonMatrix& wm4_x_y, const Coordinate& xg_x, const long xg_x_idx,
     const Coordinate& xg_y, const long xg_y_psel_idx, const int t_wall_snk,
@@ -349,8 +349,8 @@ inline void contract_meson_vv_meson_unshifted_acc_x(
     qassert(has_exact_src == has_exact_snk);
     const double sloppy_exact_ratio_1 = wsp1.sloppy_exact_ratio_1;
     qassert(sloppy_exact_ratio_1 == wsp2.sloppy_exact_ratio_1);
-    const Complex coef1 = sloppy_exact_ratio_1 * coef;
-    const Complex coef2 = (1.0 - sloppy_exact_ratio_1) * coef;
+    const ComplexD coef1 = sloppy_exact_ratio_1 * coef;
+    const ComplexD coef2 = (1.0 - sloppy_exact_ratio_1) * coef;
     contract_meson_vv_meson_unshifted_acc_x(v, coef1, wsp1, wsp2, wsp3, wm4_x_y,
                                             xg_x, xg_x_idx, xg_y, xg_y_psel_idx,
                                             t_wall_snk, true, t_wall_src, true);
@@ -361,9 +361,9 @@ inline void contract_meson_vv_meson_unshifted_acc_x(
     const double sloppy_exact_ratio_11 = wsp1.sloppy_exact_ratio_11;
     const double sloppy_exact_ratio_1 = wsp1.sloppy_exact_ratio_1;
     qassert(sloppy_exact_ratio_1 == wsp2.sloppy_exact_ratio_1);
-    const Complex coef1 = sloppy_exact_ratio_11 * coef;
-    const Complex coef2 = (sloppy_exact_ratio_1 - sloppy_exact_ratio_11) * coef;
-    const Complex coef3 =
+    const ComplexD coef1 = sloppy_exact_ratio_11 * coef;
+    const ComplexD coef2 = (sloppy_exact_ratio_1 - sloppy_exact_ratio_11) * coef;
+    const ComplexD coef3 =
         (1.0 - 2.0 * sloppy_exact_ratio_1 + sloppy_exact_ratio_11) * coef;
     contract_meson_vv_meson_unshifted_acc_x(v, coef1, wsp1, wsp2, wsp3, wm4_x_y,
                                             xg_x, xg_x_idx, xg_y, xg_y_psel_idx,
@@ -380,8 +380,8 @@ inline void contract_meson_vv_meson_unshifted_acc_x(
   } else if (has_exact_snk or has_exact_src) {
     const double sloppy_exact_ratio_1 = wsp1.sloppy_exact_ratio_1;
     qassert(sloppy_exact_ratio_1 == wsp2.sloppy_exact_ratio_1);
-    const Complex coef1 = sloppy_exact_ratio_1 * coef;
-    const Complex coef2 = (1.0 - sloppy_exact_ratio_1) * coef;
+    const ComplexD coef1 = sloppy_exact_ratio_1 * coef;
+    const ComplexD coef2 = (1.0 - sloppy_exact_ratio_1) * coef;
     if (has_exact_snk and (not has_exact_src)) {
       contract_meson_vv_meson_unshifted_acc_x(
           v, coef1, wsp1, wsp2, wsp3, wm4_x_y, xg_x, xg_x_idx, xg_y,
@@ -406,7 +406,7 @@ inline void contract_meson_vv_meson_unshifted_acc_x(
 }
 
 inline void contract_meson_vv_meson_unshifted(
-    std::vector<SelectedField<Complex> >& meson_vv_meson,
+    std::vector<SelectedField<ComplexD> >& meson_vv_meson,
     const WallSrcProps& wsp1, const WallSrcProps& wsp2,
     const WallSrcProps& wsp3, const SelProp& prop4_x_y, const Coordinate& xg_y,
     const long xg_y_psel_idx, const int tsep, const PointsSelection& psel,
@@ -424,8 +424,8 @@ inline void contract_meson_vv_meson_unshifted(
     meson_vv_meson[i].init(fsel, multiplicity);
     set_zero(meson_vv_meson[i]);
   }
-  SelectedField<Complex>& meson_vv_meson_forward = meson_vv_meson[0];
-  SelectedField<Complex>& meson_vv_meson_backward = meson_vv_meson[1];
+  SelectedField<ComplexD>& meson_vv_meson_forward = meson_vv_meson[0];
+  SelectedField<ComplexD>& meson_vv_meson_backward = meson_vv_meson[1];
   const int yt = xg_y[3];
 #pragma omp parallel for
   for (long idx = 0; idx < fsel.n_elems; ++idx) {
@@ -444,8 +444,8 @@ inline void contract_meson_vv_meson_unshifted(
       t_snk = mod(yt + tsep, total_site[3]);
     }
     const WilsonMatrix& wm4_x_y = prop4_x_y.get_elem(idx);
-    Vector<Complex> vf = meson_vv_meson_forward.get_elems(idx);
-    Vector<Complex> vb = meson_vv_meson_backward.get_elems(idx);
+    Vector<ComplexD> vf = meson_vv_meson_forward.get_elems(idx);
+    Vector<ComplexD> vb = meson_vv_meson_backward.get_elems(idx);
     contract_meson_vv_meson_unshifted_acc_x(vf, 1.0, wsp1, wsp2, wsp3, wm4_x_y,
                                             xg_x, xg_x_idx, xg_y, xg_y_psel_idx,
                                             t_snk, t_src);
@@ -457,7 +457,7 @@ inline void contract_meson_vv_meson_unshifted(
 }
 
 inline void contract_meson_vv_meson_acc(
-    FieldM<Complex, 8 * 8>& forward, FieldM<Complex, 8 * 8>& backward,
+    FieldM<ComplexD, 8 * 8>& forward, FieldM<Complex, 8 * 8>& backward,
     const WallSrcProps& wsp1, const WallSrcProps& wsp2,
     const WallSrcProps& wsp3, const SelProp& prop4_x_y, const Coordinate& xg_y,
     const long xg_y_psel_idx, const int tsep, const PointsSelection& psel,
@@ -477,13 +477,13 @@ inline void contract_meson_vv_meson_acc(
   qassert(psel[xg_y_psel_idx] == xg_y);
   qassert(ssp.shift == -xg_y);
   qassert(ssp.is_reflect == false);
-  std::vector<SelectedField<Complex> > sfs;
+  std::vector<SelectedField<ComplexD> > sfs;
   contract_meson_vv_meson_unshifted(sfs, wsp1, wsp2, wsp3, prop4_x_y, xg_y,
                                     xg_y_psel_idx, tsep, psel, fsel);
   qassert(sfs.size() == 2);
-  SelectedField<Complex>& s_forward = sfs[0];
-  SelectedField<Complex>& s_backward = sfs[1];
-  const Complex coef = 1.0 / get_fsel_prob(fsel);
+  SelectedField<ComplexD>& s_forward = sfs[0];
+  SelectedField<ComplexD>& s_backward = sfs[1];
+  const ComplexD coef = 1.0 / get_fsel_prob(fsel);
   s_forward *= coef;
   s_backward *= coef;
   acc_field(forward, s_forward, ssp);
@@ -492,7 +492,7 @@ inline void contract_meson_vv_meson_acc(
 
 // -----------------------------------------------------------------------------------
 
-inline void contract_chvp(SelectedField<Complex>& chvp,
+inline void contract_chvp(SelectedField<ComplexD>& chvp,
                           const SelProp& prop1_x_y, const SelProp& prop2_x_y,
                           const FieldSelection& fsel)
 // fsel.prob is NOT accounted.
@@ -510,7 +510,7 @@ inline void contract_chvp(SelectedField<Complex>& chvp,
     const WilsonMatrix& wm2_x_y = prop2_x_y.get_elem(idx);
     const WilsonMatrix wm2_y_x =
         gamma5 * (WilsonMatrix)matrix_adjoint(wm2_x_y) * gamma5;
-    Vector<Complex> chvp_v = chvp.get_elems(idx);
+    Vector<ComplexD> chvp_v = chvp.get_elems(idx);
     for (int mu = 0; mu < 8; ++mu) {
       const WilsonMatrix wm = wm2_y_x * va_ms[mu] * wm1_x_y;
       for (int nu = 0; nu < 8; ++nu) {
@@ -521,7 +521,7 @@ inline void contract_chvp(SelectedField<Complex>& chvp,
   });
 }
 
-inline void contract_chvp_16(FieldM<Complex, 16>& chvp,
+inline void contract_chvp_16(FieldM<ComplexD, 16>& chvp,
                              const Propagator4d& prop1_x_y,
                              const Propagator4d& prop2_x_y)
 // chvp.get_elem(x, mu * 4 + nu) ==
@@ -548,7 +548,7 @@ inline void contract_chvp_16(FieldM<Complex, 16>& chvp,
     const WilsonMatrix& wm2_x_y = prop2_x_y.get_elem(index);
     const WilsonMatrix wm2_y_x =
         gamma5 * (WilsonMatrix)matrix_adjoint(wm2_x_y) * gamma5;
-    Vector<Complex> chvp_v = chvp.get_elems(index);
+    Vector<ComplexD> chvp_v = chvp.get_elems(index);
     for (int mu = 0; mu < 4; ++mu) {
       const WilsonMatrix wm = wm2_y_x * gammas[mu] * wm1_x_y;
       for (int nu = 0; nu < 4; ++nu) {
@@ -585,9 +585,9 @@ inline LatData meson_snk_src_shift(const LatData& ld, const int shift)
   return ld_s;
 }
 
-inline void contract_meson_chvp_acc(FieldM<Complex, 8 * 8>& mchvp,
+inline void contract_meson_chvp_acc(FieldM<ComplexD, 8 * 8>& mchvp,
                                     const LatData& ld_meson_snk_src_1_2,
-                                    const FieldM<Complex, 8 * 8>& chvp_3_4,
+                                    const FieldM<ComplexD, 8 * 8>& chvp_3_4,
                                     const int tsep)
 // ld_meson_snk_src_1_2 should already shifted to origin (t_y -> 0)
 // chvp_3_4 already should shifted to origin (xg_y -> 0)
@@ -616,9 +616,9 @@ inline void contract_meson_chvp_acc(FieldM<Complex, 8 * 8>& mchvp,
       t_snk = mod(yt + tsep, total_site[3]);
     }
     const array<int, 2> idx = make_array<int>(t_snk, t_src);
-    const Complex mss = lat_data_cget_const(ld_meson_snk_src_1_2, idx)[0];
-    Vector<Complex> fv = mchvp.get_elems(xl);
-    const Vector<Complex> fv0 = chvp_3_4.get_elems_const(xl);
+    const ComplexD mss = lat_data_cget_const(ld_meson_snk_src_1_2, idx)[0];
+    Vector<ComplexD> fv = mchvp.get_elems(xl);
+    const Vector<ComplexD> fv0 = chvp_3_4.get_elems_const(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       fv[m] += mss * fv0[m];
     }

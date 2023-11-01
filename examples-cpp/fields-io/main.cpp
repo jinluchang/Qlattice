@@ -5,7 +5,7 @@ using namespace qlat;
 inline void test_read(const std::string& path, const std::string& fn)
 {
   TIMER_VERBOSE("test_read");
-  Field<Complex> f;
+  Field<ComplexD> f;
   read_field_double_from_float(f, path, fn);
   const crc32_t crc = field_crc32(f);
   displayln_info(fname +
@@ -16,13 +16,13 @@ inline void test_read(const std::string& path, const std::string& fn)
 inline void test_read_sbs(const std::string& path, const std::string& fn, const ShuffledBitSet& sbs)
 {
   TIMER_VERBOSE("test_read_sbs");
-  Field<Complex> f;
+  Field<ComplexD> f;
   read_field_double_from_float(f, path, fn);
   const crc32_t crc = field_crc32(f);
   displayln_info(fname +
                  ssprintf(": compute crc32=%08X for fn='%s' from path '%s'.",
                           crc, fn.c_str(), path.c_str()));
-  SelectedField<Complex> sf;
+  SelectedField<ComplexD> sf;
   read_field_double_from_float(sf, path, fn, sbs);
   f.init();
   set_field_selected(f, sf, sbs.fsel);
@@ -67,7 +67,7 @@ inline void demo(const std::string& tag, const Coordinate& total_site,
   read_field_selection(fsel, "huge-data/" + tag + "/fsel.field");
   //
   displayln_info(fname + ssprintf(": init field 'f'"));
-  Field<Complex> f, sf, rf;
+  Field<ComplexD> f, sf, rf;
   f.init(geo, 2);
   set_zero(f);
   //

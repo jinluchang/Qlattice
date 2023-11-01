@@ -8,7 +8,7 @@ EXPORT(contract_chvp_16_field, {
   if (!PyArg_ParseTuple(args, "OOO", &p_chvp_16, &p_prop1, &p_prop2)) {
     return NULL;
   }
-  FieldM<Complex, 16>& chvp = py_convert_type<FieldM<Complex, 16> >(p_chvp_16);
+  FieldM<ComplexD, 16>& chvp = py_convert_type<FieldM<Complex, 16> >(p_chvp_16);
   const Propagator4d& prop1 = py_convert_type<Propagator4d>(p_prop1);
   const Propagator4d& prop2 = py_convert_type<Propagator4d>(p_prop2);
   contract_chvp_16(chvp, prop1, prop2);

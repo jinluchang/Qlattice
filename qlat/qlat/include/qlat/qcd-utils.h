@@ -524,7 +524,7 @@ inline ColorMatrix gf_avg_wilson_line(const GaugeField& gf,
       wlf1 = wlf;
     }
   }
-  return field_glb_sum(wlf)[0] / (Complex)geo.total_volume();
+  return field_glb_sum(wlf)[0] / (ComplexD)geo.total_volume();
 }
 
 inline WilsonLinePath make_wilson_loop_path(const Coordinate& target_l,
@@ -547,7 +547,7 @@ inline ColorMatrix gf_avg_wilson_loop(const GaugeField& gf, const int l,
       gf_avg_wilson_line(gf, make_wilson_loop_path(Coordinate(l, 0, 0, 0), t)) +
       gf_avg_wilson_line(gf, make_wilson_loop_path(Coordinate(0, l, 0, 0), t)) +
       gf_avg_wilson_line(gf, make_wilson_loop_path(Coordinate(0, 0, l, 0), t));
-  return m / Complex(3.0);
+  return m / ComplexD(3.0);
 }
 
 inline std::vector<Coordinate> spatial_permute_direction(const Coordinate& l)

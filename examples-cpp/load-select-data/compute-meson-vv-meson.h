@@ -53,7 +53,7 @@ inline void compute_meson_vv_meson_type(const std::string& job_tag,
   const long n_points = psel.size();
   const FieldSelection& fsel = get_field_selection(job_tag, traj);
   const int tsep = tsep_op_wall_src(job_tag);
-  std::map<std::string, FieldM<Complex, 8 * 8> > cache;
+  std::map<std::string, FieldM<ComplexD, 8 * 8> > cache;
   long iter = 0;
   for (long n = 0; n < n_points; ++n) {
     const long xg_y_psel_idx = n;
@@ -70,9 +70,9 @@ inline void compute_meson_vv_meson_type(const std::string& job_tag,
       const int type1 = type1_list[i];
       const int type2 = type2_list[i];
       const int type3 = type3_list[i];
-      FieldM<Complex, 8 * 8>& forward =
+      FieldM<ComplexD, 8 * 8>& forward =
           cache[ssprintf("forward-%d-%d-%d-%d", type1, type2, type3, type4)];
-      FieldM<Complex, 8 * 8>& backward =
+      FieldM<ComplexD, 8 * 8>& backward =
           cache[ssprintf("backward-%d-%d-%d-%d", type1, type2, type3, type4)];
       displayln_info(fname + ssprintf(":n=%ld iter=%ld types=%d-%d-%d-%d", n,
                                       iter, type1, type2, type3, type4));
@@ -89,9 +89,9 @@ inline void compute_meson_vv_meson_type(const std::string& job_tag,
     const int type1 = type1_list[i];
     const int type2 = type2_list[i];
     const int type3 = type3_list[i];
-    FieldM<Complex, 8 * 8>& forward =
+    FieldM<ComplexD, 8 * 8>& forward =
         cache[ssprintf("forward-%d-%d-%d-%d", type1, type2, type3, type4)];
-    FieldM<Complex, 8 * 8>& backward =
+    FieldM<ComplexD, 8 * 8>& backward =
         cache[ssprintf("backward-%d-%d-%d-%d", type1, type2, type3, type4)];
     const double coef = 1.0 / (double)n_iter;
     forward *= coef;
@@ -106,10 +106,10 @@ inline void compute_meson_vv_meson_type(const std::string& job_tag,
     const int type2 = type2_list[i];
     const int type3 = type3_list[i];
     if (type1 <= type2) {
-      FieldM<Complex, 8 * 8> avg;
-      FieldM<Complex, 8 * 8>& f1 =
+      FieldM<ComplexD, 8 * 8> avg;
+      FieldM<ComplexD, 8 * 8>& f1 =
           cache[ssprintf("forward-%d-%d-%d-%d", type1, type2, type3, type4)];
-      FieldM<Complex, 8 * 8>& f2 =
+      FieldM<ComplexD, 8 * 8>& f2 =
           cache[ssprintf("forward-%d-%d-%d-%d", type2, type1, type3, type4)];
       qassert(is_initialized(f1));
       qassert(is_initialized(f2));

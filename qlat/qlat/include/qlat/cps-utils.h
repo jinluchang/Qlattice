@@ -72,7 +72,7 @@ const Array<M, N>& operator*=(Array<M, N>& v, double factor)
 }
 
 template <class M, int N>
-const Array<M, N>& operator*=(Array<M, N>& v, Complex factor)
+const Array<M, N>& operator*=(Array<M, N>& v, ComplexD factor)
 {
   for (int i = 0; i < N; ++i) {
     v.data[i] *= factor;
@@ -111,7 +111,7 @@ Array<M, N> operator*(const Array<M, N>& v1, double factor)
 }
 
 template <class M, int N>
-Array<M, N> operator*(const Array<M, N>& v1, Complex factor)
+Array<M, N> operator*(const Array<M, N>& v1, ComplexD factor)
 {
   Array<M, N> v;
   for (int i = 0; i < N; ++i) {
@@ -131,7 +131,7 @@ Array<M, N> operator*(double factor, const Array<M, N>& v1)
 }
 
 template <class M, int N>
-Array<M, N> operator*(Complex factor, const Array<M, N>& v1)
+Array<M, N> operator*(ComplexD factor, const Array<M, N>& v1)
 {
   Array<M, N> v;
   for (int i = 0; i < N; ++i) {
@@ -152,7 +152,7 @@ void setZero(std::vector<M>& v)
   memset(v.data(), 0, v.size() * sizeof(M));
 }
 
-void print(const Complex& v) { printf("%.16E:+%.16E", v.real(), v.imag()); }
+void print(const ComplexD& v) { printf("%.16E:+%.16E", v.real(), v.imag()); }
 
 template <class M, int N>
 void print(const Array<M, N>& v)
@@ -165,12 +165,12 @@ void print(const Array<M, N>& v)
   printf("\n");
 }
 
-struct SpinorMatrix : public Array<Complex, 2 * 2> {
+struct SpinorMatrix : public Array<ComplexD, 2 * 2> {
 };
 
 inline bool notnan(const double& x) { return !isnan(x); }
 
-inline bool notnan(const Complex& x)
+inline bool notnan(const ComplexD& x)
 {
   return notnan(x.real()) && notnan(x.imag());
 }
@@ -824,7 +824,7 @@ inline void setZero(WilsonMatrix& m) { memset(&m, 0, sizeof(m)); }
 
 inline void setZero(SpinMatrix& m) { memset(&m, 0, sizeof(m)); }
 
-inline void setUnit(Complex& x) { x = 1; }
+inline void setUnit(ComplexD& x) { x = 1; }
 
 inline void setUnit(WilsonMatrix& m)
 {
@@ -978,9 +978,9 @@ inline void gammaLeft(SpinMatrix& m, const int dir)
   gammaLeftPlus(m, m1, dir);
 }
 
-inline Complex trace(const WilsonMatrix& m)
+inline ComplexD trace(const WilsonMatrix& m)
 {
-  Complex t = 0;
+  ComplexD t = 0;
   for (int s = 0; s < 4; s++) {
     for (int c = 0; c < 3; c++) {
       t += m(s, c, s, c);
@@ -989,9 +989,9 @@ inline Complex trace(const WilsonMatrix& m)
   return t;
 }
 
-inline Complex trace(const SpinMatrix& m)
+inline ComplexD trace(const SpinMatrix& m)
 {
-  Complex t = 0;
+  ComplexD t = 0;
   for (int s = 0; s < 4; s++) {
     t += m(s, s);
   }

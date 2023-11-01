@@ -32,10 +32,10 @@ inline ColorMatrix color_matrix_sub_invert(const ColorMatrix& x, const int ind)
     p2 *= ipsqr;
     p3 *= ipsqr;
     // fill with inverse
-    y(i1, i1) = Complex(p0, -p3);
-    y(i2, i2) = Complex(p0, p3);
-    y(i1, i2) = Complex(-p2, -p1);
-    y(i2, i1) = Complex(p2, -p1);
+    y(i1, i1) = ComplexD(p0, -p3);
+    y(i2, i2) = ComplexD(p0, p3);
+    y(i1, i2) = ComplexD(-p2, -p1);
+    y(i2, i1) = ComplexD(p2, -p1);
     return y;
   }
 }
@@ -110,9 +110,9 @@ void prop_smear(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
           ? geo_resize(geo, 1)
           : geo_resize(geo, Coordinate(1, 1, 1, 0), Coordinate(1, 1, 1, 0));
   const int dir_limit = smear_in_time_dir ? 4 : 3;
-  array<Complex, 8> mom_factors_v;
-  box_acc<array<Complex, 8>> mom_factors(
-      mom_factors_v);  // (array<Complex, 8>());
+  array<ComplexD, 8> mom_factors_v;
+  box_acc<array<ComplexD, 8>> mom_factors(
+      mom_factors_v);  // (array<ComplexD, 8>());
   for (int i = 0; i < 8; ++i) {
     const int dir = i - 4;
     const double phase = dir >= 0 ? mom[dir] : -mom[-dir - 1];

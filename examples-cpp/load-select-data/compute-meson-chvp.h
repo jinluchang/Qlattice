@@ -89,7 +89,7 @@ inline void compute_meson_chvp_type(const std::string& job_tag, const int traj,
   const Geometry& geo = fsel.f_rank.geo();
   const Coordinate total_site = geo.total_site();
   const int tsep = tsep_op_wall_src(job_tag);
-  std::map<std::string, FieldM<Complex, 8 * 8> > cache;
+  std::map<std::string, FieldM<ComplexD, 8 * 8> > cache;
   std::map<std::string, long> counts;
   std::map<std::string, LatData> ld_mss_shift_weight;
   std::vector<LatData> ld_mss_list(num_type_12);
@@ -99,7 +99,7 @@ inline void compute_meson_chvp_type(const std::string& job_tag, const int traj,
   for (long tslice = 0; tslice < total_site[3]; ++tslice) {
     Timer::autodisplay();
     TIMER_VERBOSE("compute_meson_chvp_type-tslice");
-    std::vector<FieldM<Complex, 8 * 8> > chvp_list(num_type_34);
+    std::vector<FieldM<ComplexD, 8 * 8> > chvp_list(num_type_34);
     std::vector<long> chvp_count_list(num_type_34, 0);
     for (long n = 0; n < n_points; ++n) {
       const long xg_y_psel_idx = n;
@@ -120,7 +120,7 @@ inline void compute_meson_chvp_type(const std::string& job_tag, const int traj,
         displayln_info(fname +
                        ssprintf(": tslice=%ld n=%ld j=%d chvp types=%d-%d",
                                 tslice, n, j, type3, type4));
-        SelectedField<Complex> s_chvp;
+        SelectedField<ComplexD> s_chvp;
         contract_chvp_ama(s_chvp, job_tag, traj, xg_y, type3, type4);
         acc_field(chvp_list[j], 1.0, s_chvp, ssp);
         chvp_count_list[j] += 1;
@@ -173,9 +173,9 @@ inline void compute_meson_chvp_type(const std::string& job_tag, const int traj,
         const std::string& fn_mss_s_w = fn_mss_s_w_list[i * num_type_34 + j];
         const LatData& ld_mss_s_w = ld_mss_shift_weight[tag12];
         lat_data_save_info(fn_mss_s_w, ld_mss_s_w);
-        FieldM<Complex, 8 * 8>& mchvp_1_2_3_4 = cache[tag12];
-        FieldM<Complex, 8 * 8>& mchvp_2_1_3_4 = cache[tag21];
-        FieldM<Complex, 8 * 8> tmp;
+        FieldM<ComplexD, 8 * 8>& mchvp_1_2_3_4 = cache[tag12];
+        FieldM<ComplexD, 8 * 8>& mchvp_2_1_3_4 = cache[tag21];
+        FieldM<ComplexD, 8 * 8> tmp;
         tmp = mchvp_2_1_3_4;
         reflect_field(tmp);
         tmp += mchvp_1_2_3_4;

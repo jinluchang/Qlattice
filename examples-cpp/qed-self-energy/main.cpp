@@ -34,7 +34,7 @@ double l_func(const double ts, const double x_sq, const double mass)
   return coef * adaptive_simpson(f, 0.0, 1.0 / 0.0, 1e-10);
 }
 
-void set_h_field(FieldM<Complex, 1>& h, const Coordinate& total_site,
+void set_h_field(FieldM<ComplexD, 1>& h, const Coordinate& total_site,
                  const double mass)
 {
   TIMER_VERBOSE("set_h_field");
@@ -86,7 +86,7 @@ const std::vector<std::vector<double> >& get_l_func_table(
   return l_func_table;
 }
 
-void acc_h_field(const FieldM<Complex, 1>& h, const double mass,
+void acc_h_field(const FieldM<ComplexD, 1>& h, const double mass,
                  const int ts_limit, const long x_vec_sq_limit)
 {
   TIMER_VERBOSE("acc_h_field");
@@ -107,7 +107,7 @@ void acc_h_field(const FieldM<Complex, 1>& h, const double mass,
     const double x_sq = x_vec_sq + sqr(ts);
     const double photon_prop =
         alpha_qed / PI * (x_sq == 0.0 ? 2.76963 : 1.0 / x_sq);
-    const Complex& h_val = h.get_elem(xl);
+    const ComplexD& h_val = h.get_elem(xl);
     qassert(x_vec_sq < x_vec_sq_limit);
     int_short[ts] += photon_prop * h_val.real();
     bound_long[ts] += l_func_table[ts][x_vec_sq] * h_val.real();
@@ -136,7 +136,7 @@ void compute(const int l_size, const double mass, const int ts_limit, const long
   {
     TIMER_VERBOSE("compute");
     const Coordinate total_site(l_size, l_size, l_size, ts_limit);
-    FieldM<Complex, 1> h;
+    FieldM<ComplexD, 1> h;
     set_h_field(h, total_site, mass);
     acc_h_field(h, mass, ts_limit, x_vec_sq_limit);
   }

@@ -12,7 +12,7 @@ import qlat as q
 class Field_fft:
     def __init__(self, geo, mult=1):
         self.field = q.Field(q.ElemTypeDouble, geo, mult)
-        self.field_ft = q.Field(q.ElemTypeComplex, geo, mult)
+        self.field_ft = q.Field(q.ElemTypeComplexD, geo, mult)
         self.updated = True
         self.updated_ft = True
         self.fft = q.mk_fft(True, is_normalizing=True)
@@ -574,7 +574,7 @@ class Measurements:
         # Create a field to store the "spherical" version of the field
         self.polar_field = q.Field(q.ElemTypeDouble,field_geo)
         # Auxillary fields for use in calculations
-        self.auxc = q.Field(q.ElemTypeComplex,field_geo)
+        self.auxc = q.Field(q.ElemTypeComplexD,field_geo)
         self.auxd = q.Field(q.ElemTypeDouble,field_geo)
         # Create the geometry for the axial current field
         geo_cur = q.Geometry(total_site, 3)

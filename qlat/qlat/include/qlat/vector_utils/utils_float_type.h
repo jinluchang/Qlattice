@@ -85,7 +85,7 @@ namespace qlat{
 #define qpropT  qlat::FieldM<Ty, 12*12>
 
 /////Fields for staggered fermion
-#define colorFD qlat::FieldM<Complex , 3>
+#define colorFD qlat::FieldM<ComplexD , 3>
 #define colorFF qlat::FieldM<Complexq, 3>
 #define colorFT qlat::FieldM<Ty, 3>
 

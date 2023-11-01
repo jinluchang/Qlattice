@@ -112,7 +112,7 @@ int glb_sum(Vector<float> recv, const Vector<float>& send)
                        MPI_SUM, get_comm());
 }
 
-int glb_sum(Vector<Complex> recv, const Vector<Complex>& send)
+int glb_sum(Vector<ComplexD> recv, const Vector<Complex>& send)
 {
   return glb_sum(Vector<double>((double*)recv.data(), recv.size() * 2),
                  Vector<double>((double*)send.data(), send.size() * 2));
@@ -165,12 +165,12 @@ int glb_sum(Vector<float> vec)
   return glb_sum(vec, tmp);
 }
 
-int glb_sum(Vector<Complex> vec)
+int glb_sum(Vector<ComplexD> vec)
 {
   if (1 == get_num_node()) {
     return 0;
   }
-  std::vector<Complex> tmp(vec.size());
+  std::vector<ComplexD> tmp(vec.size());
   assign(tmp, vec);
   return glb_sum(vec, tmp);
 }
@@ -223,7 +223,7 @@ int glb_sum(int64_t& x) { return glb_sum(Vector<int64_t>(x)); }
 
 int glb_sum(int32_t& x) { return glb_sum(Vector<int32_t>(x)); }
 
-int glb_sum(Complex& c) { return glb_sum(Vector<double>((double*)&c, 2)); }
+int glb_sum(ComplexD& c) { return glb_sum(Vector<double>((double*)&c, 2)); }
 
 int glb_sum(ComplexF& c) { return glb_sum(Vector<float>((float*)&c, 2)); }
 
@@ -246,7 +246,7 @@ void bcast(double& x, const int root) { bcast(get_data_one_elem(x), root); }
 
 void bcast(ComplexF& x, const int root) { bcast(get_data_one_elem(x), root); }
 
-void bcast(Complex& x, const int root) { bcast(get_data_one_elem(x), root); }
+void bcast(ComplexD& x, const int root) { bcast(get_data_one_elem(x), root); }
 
 void bcast(Coordinate& x, const int root) { bcast(get_data_one_elem(x), root); }
 

@@ -21,7 +21,7 @@ EXPORT(mk_fermion_action_zmobius, {
   if (!PyArg_ParseTuple(args, "ddO", &mass, &m5, &p_omega)) {
     return NULL;
   }
-  std::vector<Complex> omega;
+  std::vector<ComplexD> omega;
   py_convert(omega, p_omega);
   const int ls = omega.size();
   FermionAction* pfa = new FermionAction(mass, ls, m5, 0.0, true, true);
@@ -83,7 +83,7 @@ EXPORT(get_omega_fermion_action, {
   }
   const FermionAction& fa = py_convert_type<FermionAction>(p_fa);
   if (fa.is_using_zmobius) {
-    std::vector<Complex> omega(fa.bs.size());
+    std::vector<ComplexD> omega(fa.bs.size());
     for (int i = 0; i < (int)omega.size(); ++i) {
       omega[i] = 1.0 / (fa.bs[i] + fa.cs[i]);
     }

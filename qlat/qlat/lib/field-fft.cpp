@@ -45,8 +45,8 @@ void FftComplexFieldPlan::init(const Geometry& geo_, const int mc_,
   // fftw_init_threads();
   // fftw_plan_with_nthreads(omp_get_max_threads());
   displayln_info(ssprintf("FftComplexFieldPlan::init: malloc %ld",
-                          nc_size * sizec * sizeof(Complex)));
-  Complex* fftdatac = (Complex*)fftw_malloc(nc_size * sizec * sizeof(Complex));
+                          nc_size * sizec * sizeof(ComplexD)));
+  ComplexD* fftdatac = (Complex*)fftw_malloc(nc_size * sizec * sizeof(Complex));
   const int rank = 1;
   const int n[1] = {sizec};
   const long howmany = nc_size;
@@ -58,7 +58,7 @@ void FftComplexFieldPlan::init(const Geometry& geo_, const int mc_,
                                FFTW_ESTIMATE);
   fftw_free(fftdatac);
   displayln_info(ssprintf("FftComplexFieldPlan::init: free %ld",
-                          nc_size * sizec * sizeof(Complex)));
+                          nc_size * sizec * sizeof(ComplexD)));
   sp = make_shuffle_plan_fft(geo.total_site(), dir);
 }
 

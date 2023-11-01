@@ -252,9 +252,9 @@ qacc ColorMatrix gf_all_staple_no_comm(const GaugeField& gf,
   ColorMatrix acc;
   set_zero(acc);
   const double c1 = ga.c1;
-  acc += (Complex)(1.0 - 8.0 * c1) * gf_plaq_staple_no_comm(gf, xl, mu);
+  acc += (ComplexD)(1.0 - 8.0 * c1) * gf_plaq_staple_no_comm(gf, xl, mu);
   if (c1 != 0.0) {
-    acc += (Complex)c1 * gf_rect_staple_no_comm(gf, xl, mu);
+    acc += (ComplexD)c1 * gf_rect_staple_no_comm(gf, xl, mu);
   }
   return acc;
 }
@@ -267,7 +267,7 @@ qacc ColorMatrix gf_force_site_no_comm(const GaugeField& gf,
   const ColorMatrix ad_staple =
       matrix_adjoint(gf_all_staple_no_comm(gf, ga, xl, mu));
   const ColorMatrix force =
-      (Complex)(-beta / 3.0) * (gf.get_elem(xl, mu) * ad_staple);
+      (ComplexD)(-beta / 3.0) * (gf.get_elem(xl, mu) * ad_staple);
   return make_tr_less_anti_herm_matrix(force);
 }
 

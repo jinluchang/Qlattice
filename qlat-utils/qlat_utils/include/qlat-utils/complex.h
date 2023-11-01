@@ -106,7 +106,7 @@ using ComplexD = ComplexT<RealD>;
 
 using ComplexF = ComplexT<RealF>;
 
-using Complex = ComplexT<Real>;
+using ComplexD = ComplexT<Real>;
 
 const ComplexD ii(0, 1);
 

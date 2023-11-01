@@ -16,11 +16,11 @@ void simple_tests()
   Geometry geo;
   geo.init(total_site, 1);
 
-  qlat::FieldM<qlat::Complex, 12> src;src.init(geo);
+  qlat::FieldM<qlat::ComplexD, 12> src;src.init(geo);
   set_g_rand_double(src, RngState(rs, "prop-0.1"));
 
-  std::vector< qlat::FieldM<qlat::Complex, 12> > cpuF;cpuF.resize(1);
-  std::vector< qlat::FieldM<qlat::Complex, 12> > gpuF;gpuF.resize(1);
+  std::vector< qlat::FieldM<qlat::ComplexD, 12> > cpuF;cpuF.resize(1);
+  std::vector< qlat::FieldM<qlat::ComplexD, 12> > gpuF;gpuF.resize(1);
   cpuF[0] = src;
   gpuF[0] = src;
 

@@ -29,7 +29,7 @@ field_ctypes_complex = [
         ElemTypeIsospinMatrix,
         ElemTypeSpinMatrix,
         ElemTypeWilsonVector,
-        ElemTypeComplex,
+        ElemTypeComplexD,
         ]
 
 field_ctypes_double = [
@@ -39,7 +39,7 @@ field_ctypes_double = [
         ElemTypeIsospinMatrix,
         ElemTypeSpinMatrix,
         ElemTypeWilsonVector,
-        ElemTypeComplex,
+        ElemTypeComplexD,
         ElemTypeDouble,
         ]
 

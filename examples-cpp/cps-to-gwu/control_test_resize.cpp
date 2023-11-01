@@ -1,7 +1,7 @@
 #include <qlat/qcd.h>
 #include <sys/sysinfo.h>
 
-void resize_EigenM(std::vector< qlat::vector<qlat::Complex > >& a, size_t n0, size_t n1)
+void resize_EigenM(std::vector< qlat::vector<qlat::ComplexD > >& a, size_t n0, size_t n1)
 {
   TIMER_VERBOSE("resize_EigenM");
   /////a.resize(0);
@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
   Geometry geo;
   geo.init(total_site, 1); 
 
-  std::vector< qlat::vector<qlat::Complex > > src;
+  std::vector< qlat::vector<qlat::ComplexD > > src;
   resize_EigenM(src, 2, 3);
   resize_EigenM(src,10,10);
 
@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
       for(int d0=0;d0<12;d0++)
       for(int d1=0;d1<12;d1++)
       {
-        qlat::Complex tem = vs(d0,d1) - vd(d0,d1);
+        qlat::ComplexD tem = vs(d0,d1) - vd(d0,d1);
         diff += tem.real()*tem.real() + tem.imag()*tem.imag();
       }
   });

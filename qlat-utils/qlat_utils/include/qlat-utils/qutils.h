@@ -31,7 +31,7 @@ qacc void set_zero(double& x) { x = 0; }
 
 qacc void set_zero(float& x) { x = 0; }
 
-qacc void set_zero(Complex& x) { x = 0; }
+qacc void set_zero(ComplexD& x) { x = 0; }
 
 qacc void set_zero(ComplexF& x) { x = 0; }
 
@@ -53,35 +53,35 @@ void set_zero(std::vector<M>& vec)
 
 qacc void set_unit(char& x, const long& coef = 1) { x = coef; }
 
-qacc void set_unit(char& x, const Complex& coef = 1) { x = coef.real(); }
+qacc void set_unit(char& x, const ComplexD& coef = 1) { x = coef.real(); }
 
 qacc void set_unit(int8_t& x, const long& coef = 1) { x = coef; }
 
-qacc void set_unit(int8_t& x, const Complex& coef = 1) { x = coef.real(); }
+qacc void set_unit(int8_t& x, const ComplexD& coef = 1) { x = coef.real(); }
 
 qacc void set_unit(int& x, const long& coef = 1) { x = coef; }
 
-qacc void set_unit(int& x, const Complex& coef) { x = coef.real(); }
+qacc void set_unit(int& x, const ComplexD& coef) { x = coef.real(); }
 
 qacc void set_unit(long& x, const long& coef = 1) { x = coef; }
 
-qacc void set_unit(long& x, const Complex& coef) { x = coef.real(); }
+qacc void set_unit(long& x, const ComplexD& coef) { x = coef.real(); }
 
 qacc void set_unit(long long& x, const long& coef = 1) { x = coef; }
 
-qacc void set_unit(long long& x, const Complex& coef) { x = coef.real(); }
+qacc void set_unit(long long& x, const ComplexD& coef) { x = coef.real(); }
 
 qacc void set_unit(float& x, const double& coef = 1.0) { x = coef; }
 
-qacc void set_unit(float& x, const Complex& coef) { x = coef.real(); }
+qacc void set_unit(float& x, const ComplexD& coef) { x = coef.real(); }
 
 qacc void set_unit(double& x, const double& coef = 1.0) { x = coef; }
 
-qacc void set_unit(double& x, const Complex& coef) { x = coef.real(); }
+qacc void set_unit(double& x, const ComplexD& coef) { x = coef.real(); }
 
-qacc void set_unit(Complex& x, const Complex& coef = 1.0) { x = coef; }
+qacc void set_unit(ComplexD& x, const Complex& coef = 1.0) { x = coef; }
 
-qacc void set_unit(ComplexF& x, const Complex& coef = 1.0) { x = coef; }
+qacc void set_unit(ComplexF& x, const ComplexD& coef = 1.0) { x = coef; }
 
 // -------------------
 

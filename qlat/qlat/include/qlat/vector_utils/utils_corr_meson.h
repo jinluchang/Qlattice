@@ -728,7 +728,7 @@ void print_pion(std::vector<Propagator4dT<Td > > &prop1, std::vector<Propagator4
 //  ////Coordinate xg1;
 //  ////xg1[0] = pos/10000000;xg1[1] = (pos%10000000)/100000;xg1[2] = (pos%100000)/1000;xg1[3] = pos%1000;
 //
-//  qlat::vector_acc<qlat::Complex > res;ga_matrices_cps   ga_cps;
+//  qlat::vector_acc<qlat::ComplexD > res;ga_matrices_cps   ga_cps;
 //  meson_corrE(propa, propb, ga_cps.ga[a][b],ga_cps.ga[c][d],  res);
 //  std::vector<double > write;write.resize(2*nt);
 //  for(unsigned int ti=0;ti<write.size()/2;ti++){
@@ -758,7 +758,7 @@ void print_pion(std::vector<Propagator4dT<Td > > &prop1, std::vector<Propagator4
 //  ////copy_propE(propVa, propa, fd );
 //  ////copy_propE(propVb, propb, fd );
 //
-//  qlat::vector_acc<qlat::Complex > res;ga_matrices_cps   ga_cps;
+//  qlat::vector_acc<qlat::ComplexD > res;ga_matrices_cps   ga_cps;
 //  meson_corrE(propa, propb, ga_cps.ga[a][b],ga_cps.ga[c][d],  res);
 //  for(int ti=0;ti<nt;ti++)
 //  {

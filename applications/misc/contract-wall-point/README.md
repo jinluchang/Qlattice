@@ -151,7 +151,7 @@ $$
 ssprintf("analysis/field-psel-fsel-distribution/%s/results=%d", job_tag.c_str(), traj)
 ```
 
-Data format: ``FieldM<Complex, 1>`` with ``write_field_double``.
+Data format: ``FieldM<ComplexD, 1>`` with ``write_field_double``.
 
 ```cpp
 ssprintf("/pos.field")
@@ -183,7 +183,7 @@ The average of the above two data sets.
 ssprintf("analysis/field-meson-vv/%s/results=%d", job_tag.c_str(), traj)
 ```
 
-Data format: ``FieldM<Complex, 8 * 8>`` with ``write_field_float_from_double``.
+Data format: ``FieldM<ComplexD, 8 * 8>`` with ``write_field_float_from_double``.
 
 Use $y$ as the point source location in calculation.
 
@@ -236,7 +236,7 @@ inline int tsep_op_wall_src(const std::string& job_tag)
 ssprintf("analysis/field-meson-vv-meson/%s/results=%d", job_tag.c_str(), traj)
 ```
 
-Data format: ``FieldM<Complex, 8 * 8>`` with ``write_field_float_from_double``.
+Data format: ``FieldM<ComplexD, 8 * 8>`` with ``write_field_float_from_double``.
 
 Use $y$ as the point source location in calculation.
 
@@ -316,7 +316,7 @@ $$
 ssprintf("analysis/field-chvp/%s/results=%d", job_tag.c_str(), traj);
 ```
 
-Data format: ``FieldM<Complex, 8 * 8>`` with ``write_field_float_from_double``.
+Data format: ``FieldM<ComplexD, 8 * 8>`` with ``write_field_float_from_double``.
 
 Use $y$ as the point source location in calculation.
 
@@ -364,7 +364,7 @@ Weighted properly for different time slice according to number of point source p
 ssprintf("analysis/field-meson-chvp/%s/results=%d", job_tag.c_str(), traj);
 ```
 
-Data format: ``FieldM<Complex, 8 * 8>`` with ``write_field_float_from_double``.
+Data format: ``FieldM<ComplexD, 8 * 8>`` with ``write_field_float_from_double``.
 
 Use $y$ as the point source location in calculation.
 

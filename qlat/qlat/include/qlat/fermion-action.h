@@ -13,8 +13,8 @@ struct API FermionAction {
   //
   bool is_using_zmobius;
   int cg_diagonal_mee;
-  std::vector<Complex> bs;
-  std::vector<Complex> cs;
+  std::vector<ComplexD> bs;
+  std::vector<ComplexD> cs;
   //
   void init()
   {
@@ -26,8 +26,8 @@ struct API FermionAction {
     is_multiplying_dminus = true;
     is_using_zmobius = false;
     cg_diagonal_mee = 2;
-    bs = std::vector<Complex>(ls, 0.5 * mobius_scale + 0.5);
-    cs = std::vector<Complex>(ls, 0.5 * mobius_scale - 0.5);
+    bs = std::vector<ComplexD>(ls, 0.5 * mobius_scale + 0.5);
+    cs = std::vector<ComplexD>(ls, 0.5 * mobius_scale - 0.5);
   }
   //
   FermionAction() { init(); }
@@ -45,8 +45,8 @@ struct API FermionAction {
     is_multiplying_dminus = is_multiplying_dminus_;
     is_using_zmobius = is_using_zmobius_;
     cg_diagonal_mee = 2;
-    bs = std::vector<Complex>(ls, 0.5 * mobius_scale + 0.5);
-    cs = std::vector<Complex>(ls, 0.5 * mobius_scale - 0.5);
+    bs = std::vector<ComplexD>(ls, 0.5 * mobius_scale + 0.5);
+    cs = std::vector<ComplexD>(ls, 0.5 * mobius_scale - 0.5);
   }
 };
 

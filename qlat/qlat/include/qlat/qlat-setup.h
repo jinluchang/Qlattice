@@ -364,7 +364,7 @@ inline std::vector<FermionAction> get_fermion_actions(
       fas.push_back(FermionAction(0.0362, 24, 1.8, 1.5 + 0.5, true, false));
     }
     {
-      std::vector<Complex> bs(10, 0);
+      std::vector<ComplexD> bs(10, 0);
       bs[0] = 8.4292038368159705e-01;
       bs[1] = 9.2289979238280184e-01;
       bs[2] = 1.1017200769981794e+00;
@@ -373,8 +373,8 @@ inline std::vector<FermionAction> get_fermion_actions(
       bs[5] = 2.8654191667525488e+00;
       bs[6] = 4.4659153528626341e+00;
       bs[7] = 5.5498080139636414e+00;
-      bs[8] = Complex(4.9320961582039766e+00, -3.5559998543638791e+00);
-      bs[9] = Complex(4.9320961582039766e+00, 3.5559998543638791e+00);
+      bs[8] = ComplexD(4.9320961582039766e+00, -3.5559998543638791e+00);
+      bs[9] = ComplexD(4.9320961582039766e+00, 3.5559998543638791e+00);
       for (int i = 0; i < (int)bs.size(); i++) {
         fas[0].bs[i] = bs[i];
         fas[0].cs[i] = fas[0].bs[i] - 1.0;
@@ -394,7 +394,7 @@ inline std::vector<FermionAction> get_fermion_actions(
              job_tag == "48D-0.00107" or job_tag == "24D-0.0174") {
     fas.push_back(FermionAction(0.00107, 12, 1.8, (2.5 + 1.5) * 2, true, true));
     {
-      std::vector<Complex> omega(12, 0);
+      std::vector<ComplexD> omega(12, 0);
       omega[0] = 1.0903256131299373;
       omega[1] = 0.9570283702230611;
       omega[2] = 0.7048886040934104;
@@ -403,10 +403,10 @@ inline std::vector<FermionAction> get_fermion_actions(
       omega[5] = 0.21664245377015995;
       omega[6] = 0.14121112711957107;
       omega[7] = 0.0907785101745156;
-      omega[8] = Complex(0.05608303440064219, -0.007537158177840385);
-      omega[9] = Complex(0.05608303440064219, 0.007537158177840385);
-      omega[10] = Complex(0.0365221637144842, -0.03343945161367745);
-      omega[11] = Complex(0.0365221637144842, 0.03343945161367745);
+      omega[8] = ComplexD(0.05608303440064219, -0.007537158177840385);
+      omega[9] = ComplexD(0.05608303440064219, 0.007537158177840385);
+      omega[10] = ComplexD(0.0365221637144842, -0.03343945161367745);
+      omega[11] = ComplexD(0.0365221637144842, 0.03343945161367745);
       for (int i = 0; i < (int)omega.size(); i++) {
         fas[0].bs[i] = 0.5 * (1.0 / omega[i] + 1.0);
         fas[0].cs[i] = fas[0].bs[i] - 1.0;
@@ -422,7 +422,7 @@ inline std::vector<FermionAction> get_fermion_actions(
   } else if (job_tag == "32Dfine-0.0001") {
     fas.push_back(FermionAction(0.0001, 12, 1.8, 32.0 / 12.0, true, true));
     {
-      std::vector<Complex> omega(12, 0.375);
+      std::vector<ComplexD> omega(12, 0.375);
       for (int i = 0; i < (int)omega.size(); i++) {
         fas[0].bs[i] = 0.5 * (1.0 / omega[i] + 1.0);
         fas[0].cs[i] = fas[0].bs[i] - 1.0;

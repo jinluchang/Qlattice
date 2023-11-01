@@ -68,7 +68,7 @@ inline void set_mom_stochastic_qed_field_feynman(Field<T>& f,
       kk[i] = 2.0 * PI * smod(kg[i], total_site[i]) / (double)total_site[i];
       s2 += 4.0 * sqr(std::sin(kk[i] / 2.0));
     }
-    Vector<Complex> fv = f.get_elems(kl);
+    Vector<ComplexD> fv = f.get_elems(kl);
     if (0.0 == kk[0] && 0.0 == kk[1] && 0.0 == kk[2]) {
       for (int m = 0; m < geo.multiplicity; ++m) {
         fv[m] = 0.0;
@@ -116,7 +116,7 @@ inline void set_mom_stochastic_qed_field_mass(Field<T>& f, const Geometry& geo,
       kk[i] = 2.0 * PI * smod(kg[i], total_site[i]) / (double)total_site[i];
       s2 += 4.0 * sqr(std::sin(kk[i] / 2.0));
     }
-    Vector<Complex> fv = f.get_elems(kl);
+    Vector<ComplexD> fv = f.get_elems(kl);
     const double sigma = std::sqrt(1.0 / (2.0 * total_volume * s2));
     for (int m = 0; m < geo.multiplicity; ++m) {
       const double re = g_rand_gen(rst, 0.0, sigma);
@@ -223,7 +223,7 @@ inline double acosh(const double x)
   return std::log(x + std::sqrt(x + 1.0) * std::sqrt(x - 1.0));
 }
 
-inline void prop_free_scalar_invert(Field<Complex>& f, const double mass,
+inline void prop_free_scalar_invert(Field<ComplexD>& f, const double mass,
                                     const CoordinateD& momtwist)
 {
   TIMER("prop_free_scalar_invert");
@@ -242,7 +242,7 @@ inline void prop_free_scalar_invert(Field<Complex>& f, const double mass,
       s2 += sqr(ks[i]);
     }
     const double fac = 1.0 / (m_pi_sq + s2);
-    Vector<Complex> v = f.get_elems(kl);
+    Vector<ComplexD> v = f.get_elems(kl);
     for (int i = 0; i < v.size(); ++i) {
       v[i] *= fac;
     }
@@ -314,7 +314,7 @@ void prop_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const double mass,
   sp4d *= 1.0 / geo.total_volume();
 }
 
-inline void set_point_source_plusm(QedGaugeField& f, const Complex& coef,
+inline void set_point_source_plusm(QedGaugeField& f, const ComplexD& coef,
                                    const Coordinate& xg, const int mu)
 {
   TIMER("set_point_source_plusm");
@@ -326,7 +326,7 @@ inline void set_point_source_plusm(QedGaugeField& f, const Complex& coef,
 }
 
 template <class T>
-void set_box_source_plusm(SpinPropagator4dT<T>& f, const Complex& coef,
+void set_box_source_plusm(SpinPropagator4dT<T>& f, const ComplexD& coef,
                           const Coordinate& xg1, const Coordinate& xg2)
 // 0 <= xg1 <= xg2 <= total_site
 // FIXME: Do not handle the cross boundary case very well.
@@ -346,7 +346,7 @@ void set_box_source_plusm(SpinPropagator4dT<T>& f, const Complex& coef,
 }
 
 template <class T>
-void set_wall_source_plusm(SpinPropagator4dT<T>& f, const Complex& coef,
+void set_wall_source_plusm(SpinPropagator4dT<T>& f, const ComplexD& coef,
                            const int t)
 {
   TIMER("set_wall_source_plusm");
@@ -360,7 +360,7 @@ void set_wall_source_plusm(SpinPropagator4dT<T>& f, const Complex& coef,
 
 template <class T>
 void sequential_photon_spin_propagator_plusm(SpinPropagator4dT<T>& src,
-                                             const Complex coef,
+                                             const ComplexD coef,
                                              const QedGaugeField& egf,
                                              const SpinPropagator4dT<T>& sol)
 {
@@ -371,7 +371,7 @@ void sequential_photon_spin_propagator_plusm(SpinPropagator4dT<T>& src,
     Coordinate xl = geo.coordinate_from_index(index);
     for (int mu = 0; mu < DIMN; mu++) {
       // a = A_\mu(x)
-      Complex a = egf.get_elem(xl, mu);
+      ComplexD a = egf.get_elem(xl, mu);
       // tmp = \gamma_\mu \psi(x)
       SpinMatrixT<T> tmp =
           SpinMatrixConstantsT<T>::get_gamma(mu) * sol.get_elem(xl);

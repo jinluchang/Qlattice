@@ -18,8 +18,8 @@
       (p_ret) = fname<SpinMatrix>(__VA_ARGS__);                         \
     } else if ("WilsonVector" == (ctype)) {                             \
       (p_ret) = fname<WilsonVector>(__VA_ARGS__);                       \
-    } else if ("Complex" == (ctype)) {                                  \
-      (p_ret) = fname<Complex>(__VA_ARGS__);                            \
+    } else if ("ComplexD" == (ctype)) {                                  \
+      (p_ret) = fname<ComplexD>(__VA_ARGS__);                            \
     } else if ("ComplexF" == (ctype)) {                                 \
       (p_ret) = fname<ComplexF>(__VA_ARGS__);                           \
     } else if ("Double" == (ctype)) {                                   \
