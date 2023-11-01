@@ -3,9 +3,9 @@
 from qlat_utils.all cimport *
 from . cimport everything as cc
 from .geometry cimport Geometry
-from .field_types cimport FieldFloat
+from .field_types cimport FieldRealF
 from .field_selection cimport PointsSelection, FieldSelection
-from .selected_field_types cimport SelectedFieldFloat
+from .selected_field_types cimport SelectedFieldRealF
 
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
@@ -109,7 +109,7 @@ cdef class FieldBase:
         elif isinstance(factor, complex):
             c.set_mul_complex_field(self, factor)
         elif isinstance(factor, FieldBase):
-            assert factor.ctype in [ ElemTypeComplexD, ElemTypeDouble, ]
+            assert factor.ctype in [ ElemTypeComplexD, ElemTypeRealD, ]
             c.set_mul_cfield_field(self, factor)
         else:
             assert False
@@ -214,7 +214,7 @@ cdef class FieldBase:
         Generic save for double element Field object
         save double Field as float (do conversion of endianness and precision)
         """
-        ff = FieldFloat()
+        ff = FieldRealF()
         ff.float_from_double(self)
         from .fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
@@ -249,7 +249,7 @@ cdef class FieldBase:
         Generic load for double Field object
         load double Field from float(do conversion of endianness or precision)
         """
-        ff = FieldFloat()
+        ff = FieldRealF()
         ret = ff.load_direct(path, *args)
         if ret > 0:
             from .fields_io import ShuffledFieldsReader
@@ -262,12 +262,12 @@ cdef class FieldBase:
 
     def float_from_double(self, FieldBase f):
         """
-        self needs to be FieldFloat
+        self needs to be FieldRealF
         """
-        assert isinstance(self, FieldFloat)
+        assert isinstance(self, FieldRealF)
         c.convert_float_from_double_field(self, f)
 
-    def double_from_float(self, FieldFloat ff):
+    def double_from_float(self, FieldRealF ff):
         """
         self can be any FieldBase subtype but need to be actually contains double precision numbers
         """
@@ -507,7 +507,7 @@ cdef class SelectedFieldBase:
         """
         Generic save for SelectedField object with conversion
         """
-        ff = SelectedFieldFloat(self.fsel)
+        ff = SelectedFieldRealF(self.fsel)
         ff.float_from_double(self)
         from .fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
@@ -539,7 +539,7 @@ cdef class SelectedFieldBase:
         """
         Generic load for SelectedField object with conversion
         """
-        ff = SelectedField(ElemTypeFloat, self.fsel)
+        ff = SelectedField(ElemTypeRealF, self.fsel)
         ret = ff.load_direct(path, *args)
         if ret > 0:
             from .fields_io import ShuffledFieldsReader
@@ -551,11 +551,11 @@ cdef class SelectedFieldBase:
         return ret
 
     def float_from_double(self, SelectedFieldBase f):
-        assert isinstance(self, SelectedFieldFloat)
+        assert isinstance(self, SelectedFieldRealF)
         self.fsel = f.fsel
         c.convert_float_from_double_sfield(self, f)
 
-    def double_from_float(self, SelectedFieldFloat ff):
+    def double_from_float(self, SelectedFieldRealF ff):
         self.fsel = ff.fsel
         c.convert_double_from_float_sfield(self, ff)
 

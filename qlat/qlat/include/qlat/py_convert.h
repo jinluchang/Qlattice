@@ -22,18 +22,22 @@
       (p_ret) = fname<ComplexD>(__VA_ARGS__);                            \
     } else if ("ComplexF" == (ctype)) {                                 \
       (p_ret) = fname<ComplexF>(__VA_ARGS__);                           \
-    } else if ("Double" == (ctype)) {                                   \
-      (p_ret) = fname<double>(__VA_ARGS__);                             \
-    } else if ("Float" == (ctype)) {                                    \
-      (p_ret) = fname<float>(__VA_ARGS__);                              \
+    } else if ("RealD" == (ctype)) {                                   \
+      (p_ret) = fname<RealD>(__VA_ARGS__);                             \
+    } else if ("RealF" == (ctype)) {                                    \
+      (p_ret) = fname<RealF>(__VA_ARGS__);                              \
     } else if ("Long" == (ctype)) {                                     \
       (p_ret) = fname<Long>(__VA_ARGS__);                               \
+    } else if ("Int" == (ctype)) {                                     \
+      (p_ret) = fname<Int>(__VA_ARGS__);                               \
     } else if ("Int64t" == (ctype)) {                                   \
       (p_ret) = fname<int64_t>(__VA_ARGS__);                            \
-    } else if ("Char" == (ctype)) {                                     \
-      (p_ret) = fname<char>(__VA_ARGS__);                               \
+    } else if ("Int32t" == (ctype)) {                                   \
+      (p_ret) = fname<int32_t>(__VA_ARGS__);                            \
     } else if ("Int8t" == (ctype)) {                                    \
       (p_ret) = fname<int8_t>(__VA_ARGS__);                             \
+    } else if ("Char" == (ctype)) {                                     \
+      (p_ret) = fname<char>(__VA_ARGS__);                               \
     } else {                                                            \
       qerr(qlat::ssprintf("%s %s='%s' does not exist.", #fname, #ctype, \
                           (ctype).c_str()));                            \

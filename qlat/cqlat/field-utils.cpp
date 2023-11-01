@@ -304,13 +304,13 @@ EXPORT(assign_as_field, {
   if (ctype == "ComplexD") {
     Field<ComplexD>& f = py_convert_type_field<ComplexD>(p_field);
     FIELD_DISPATCH(p_ret, assign_as_field_ctype, ctype1, f, p_field1);
-  } else if (ctype == "Double") {
+  } else if (ctype == "RealD") {
     Field<double>& f = py_convert_type_field<double>(p_field);
     FIELD_DISPATCH(p_ret, assign_as_field_ctype, ctype1, f, p_field1);
   } else if (ctype == "ComplexF") {
     Field<ComplexF>& f = py_convert_type_field<ComplexF>(p_field);
     FIELD_DISPATCH(p_ret, assign_as_field_ctype, ctype1, f, p_field1);
-  } else if (ctype == "Float") {
+  } else if (ctype == "RealF") {
     Field<float>& f = py_convert_type_field<float>(p_field);
     FIELD_DISPATCH(p_ret, assign_as_field_ctype, ctype1, f, p_field1);
   } else if (ctype == "Char") {
@@ -336,13 +336,13 @@ EXPORT(assign_from_field, {
   if (ctype1 == "ComplexD") {
     const Field<ComplexD>& f1 = py_convert_type_field<ComplexD>(p_field1);
     FIELD_DISPATCH(p_ret, assign_from_field_ctype, ctype, p_field, f1);
-  } else if (ctype1 == "Double") {
+  } else if (ctype1 == "RealD") {
     const Field<double>& f1 = py_convert_type_field<double>(p_field1);
     FIELD_DISPATCH(p_ret, assign_from_field_ctype, ctype, p_field, f1);
   } else if (ctype1 == "ComplexF") {
     const Field<ComplexF>& f1 = py_convert_type_field<ComplexF>(p_field1);
     FIELD_DISPATCH(p_ret, assign_from_field_ctype, ctype, p_field, f1);
-  } else if (ctype1 == "Float") {
+  } else if (ctype1 == "RealF") {
     const Field<float>& f1 = py_convert_type_field<float>(p_field1);
     FIELD_DISPATCH(p_ret, assign_from_field_ctype, ctype, p_field, f1);
   } else if (ctype1 == "Char") {

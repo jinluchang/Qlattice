@@ -40,12 +40,12 @@ field_ctypes_double = [
         ElemTypeSpinMatrix,
         ElemTypeWilsonVector,
         ElemTypeComplexD,
-        ElemTypeDouble,
+        ElemTypeRealD,
         ]
 
 field_ctypes_float = [
         ElemTypeComplexF,
-        ElemTypeFloat,
+        ElemTypeRealF,
         ]
 
 field_ctypes_long = [

@@ -78,7 +78,7 @@ q.displayln_info(f"CHECK: prop_norm.qnorm() = {prop_norm.qnorm():.13E}")
 s_prop_norm = q.sqrt_double_field(q.qnorm_field(s_prop))
 q.displayln_info(f"CHECK: s_prop_norm.qnorm() = {s_prop_norm.qnorm():.13E}")
 
-s_prop_norm1 = q.SelectedField(q.ElemTypeDouble, fsel)
+s_prop_norm1 = q.SelectedField(q.ElemTypeRealD, fsel)
 s_prop_norm1 @= prop_norm
 s_prop_norm1 -= s_prop_norm
 q.displayln_info(f"CHECK: s_prop_norm1.qnorm() = {s_prop_norm1.qnorm():.13E}")
@@ -86,7 +86,7 @@ q.displayln_info(f"CHECK: s_prop_norm1.qnorm() = {s_prop_norm1.qnorm():.13E}")
 sp_prop_norm = q.sqrt_double_field(q.qnorm_field(sp_prop))
 q.displayln_info(f"CHECK: sp_prop_norm.qnorm() = {sp_prop_norm.qnorm():.13E}")
 
-sp_prop_norm1 = q.SelectedPoints(q.ElemTypeDouble, psel)
+sp_prop_norm1 = q.SelectedPoints(q.ElemTypeRealD, psel)
 sp_prop_norm1 @= prop_norm
 sp_prop_norm1 -= sp_prop_norm
 q.displayln_info(f"CHECK: sp_prop_norm1.qnorm() = {sp_prop_norm1.qnorm():.13E}")

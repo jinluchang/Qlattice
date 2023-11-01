@@ -914,7 +914,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     total_site_arr = np.broadcast_to(total_site_arr, (n_elems, 4,))
     #
     threshold = get_param(job_tag, "meson_jwjj_threshold")
-    u_rand_prob = q.SelectedField(q.ElemTypeDouble, fsel, 1)
+    u_rand_prob = q.SelectedField(q.ElemTypeRealD, fsel, 1)
     u_rand_prob.set_rand(q.RngState(f"auto_contract_meson_jwjj,{job_tag},{traj}"), 1.0, 0.0)
     u_rand_prob_arr = np.asarray(u_rand_prob).ravel()
     fn_meson_corr = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"
@@ -1135,7 +1135,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_prop, get_psel, get_fsel):
     total_site_arr = np.broadcast_to(total_site_arr, (n_elems, 4,))
     #
     threshold = get_param(job_tag, "meson_jwjj_threshold")
-    u_rand_prob = q.SelectedField(q.ElemTypeDouble, fsel, 1)
+    u_rand_prob = q.SelectedField(q.ElemTypeRealD, fsel, 1)
     u_rand_prob.set_rand(q.RngState(f"auto_contract_meson_jwjj2,{job_tag},{traj}"), 1.0, 0.0)
     u_rand_prob_arr = np.asarray(u_rand_prob).ravel()
     fn_meson_corr = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"

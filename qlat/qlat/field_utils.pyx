@@ -147,15 +147,15 @@ def mk_fft(is_forward, *, is_only_spatial=False, is_normalizing=False, mode_fft=
 @q.timer
 def qnorm_field(f):
     if isinstance(f, FieldBase):
-        f_n = Field(ElemTypeDouble)
+        f_n = Field(ElemTypeRealD)
         c.qnorm_field_field(f_n, f)
     elif isinstance(f, SelectedFieldBase):
         fsel = f.fsel
-        f_n = SelectedField(ElemTypeDouble, fsel)
+        f_n = SelectedField(ElemTypeRealD, fsel)
         c.qnorm_field_sfield(f_n, f)
     elif isinstance(f, SelectedPointsBase):
         psel = f.psel
-        f_n = SelectedPoints(ElemTypeDouble, psel)
+        f_n = SelectedPoints(ElemTypeRealD, psel)
         c.qnorm_field_spfield(f_n, f)
     else:
         q.displayln_info("qnorm_field:", type(f))
@@ -165,18 +165,18 @@ def qnorm_field(f):
 @q.timer
 def sqrt_double_field(f):
     if isinstance(f, FieldBase):
-        assert f.ctype is ElemTypeDouble
-        f_ret = Field(ElemTypeDouble)
+        assert f.ctype is ElemTypeRealD
+        f_ret = Field(ElemTypeRealD)
         c.set_sqrt_double_field(f_ret, f)
     elif isinstance(f, SelectedFieldBase):
-        assert f.ctype == ElemTypeDouble
+        assert f.ctype == ElemTypeRealD
         fsel = f.fsel
-        f_ret = SelectedField(ElemTypeDouble, fsel)
+        f_ret = SelectedField(ElemTypeRealD, fsel)
         c.set_sqrt_double_sfield(f_ret, f)
     elif isinstance(f, SelectedPointsBase):
-        assert f.ctype == ElemTypeDouble
+        assert f.ctype == ElemTypeRealD
         psel = f.psel
-        f_ret = SelectedPoints(ElemTypeDouble, psel)
+        f_ret = SelectedPoints(ElemTypeRealD, psel)
         c.set_sqrt_double_spfield(f_ret, f)
     else:
         q.displayln_info("sqrt_double_field:", type(f))

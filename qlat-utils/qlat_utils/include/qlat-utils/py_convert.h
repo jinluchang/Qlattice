@@ -90,9 +90,9 @@ inline void py_convert(ComplexD& out, PyObject* in)
   } else if (PyFloat_Check(in)) {
     out = PyFloat_AsDouble(in);
   } else {
-    qassert(PyComplexD_Check(in));
+    qassert(PyComplex_Check(in));
     Py_complex& py_out = (Py_complex&)out;
-    py_out = PyComplexD_AsCComplexD(in);
+    py_out = PyComplex_AsCComplex(in);
   }
 }
 
@@ -328,7 +328,7 @@ inline PyObject* py_convert(const double& x) { return PyFloat_FromDouble(x); }
 
 inline PyObject* py_convert(const ComplexD& x)
 {
-  return PyComplexD_FromCComplexD((Py_complex&)x);
+  return PyComplex_FromCComplex((Py_complex&)x);
 }
 
 inline PyObject* py_convert(void* x) { return PyLong_FromVoidPtr(x); }

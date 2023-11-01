@@ -212,7 +212,7 @@ def gpt_from_qlat_ff4d(ff):
 def qlat_from_gpt_complex(gpt_fcs):
     assert isinstance(gpt_fcs, list)
     assert len(gpt_fcs) >= 1
-    ctype = q.ElemTypeComplex
+    ctype = q.ElemTypeComplexD
     total_site = q.Coordinate(gpt_fcs[0].grid.fdimensions)
     multiplicity = 1
     tag = "qlat_from_gpt"
@@ -232,7 +232,7 @@ def qlat_from_gpt_complex(gpt_fcs):
 def gpt_from_qlat_complex(fc):
     assert isinstance(fc, q.FieldComplexD)
     geo = fc.geo()
-    ctype = q.ElemTypeComplex
+    ctype = q.ElemTypeComplexD
     total_site = geo.total_site()
     multiplicity = 1
     tag = "gpt_from_qlat"
