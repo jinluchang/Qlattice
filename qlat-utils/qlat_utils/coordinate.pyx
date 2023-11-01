@@ -167,6 +167,16 @@ def smod_coordinate(Coordinate c, Coordinate size):
     cc.assign_direct(x.xx, cc.smod(c.xx, size.xx))
     return x
 
+def smod_sym_coordinate(Coordinate c, Coordinate size):
+    """
+    smod based on ``size``
+    return ``x``
+    ``-size/2 < x < size/2``
+    """
+    cdef Coordinate x = Coordinate()
+    cc.assign_direct(x.xx, cc.smod_sym(c.xx, size.xx))
+    return x
+
 def middle_mod_coordinate(Coordinate x, Coordinate y, Coordinate size):
     """
     return middle of x and y

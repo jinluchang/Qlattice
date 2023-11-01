@@ -124,6 +124,17 @@ qacc double smod(const double x, const double len)
   }
 }
 
+qacc int smod_sym(const int x, const int len)
+{
+  qassert(0 < len);
+  const int m = smod(x, len);
+  if (std::abs(m * 2) == len) {
+    return 0;
+  } else {
+    return m;
+  }
+}
+
 qacc double smod_sym(const double x, const double len,
                      const double eps = 1.0e-8)
 {
@@ -291,6 +302,16 @@ qacc Coordinate smod(const Coordinate& x, const Coordinate& size)
   ret[1] = smod(x[1], size[1]);
   ret[2] = smod(x[2], size[2]);
   ret[3] = smod(x[3], size[3]);
+  return ret;
+}
+
+qacc Coordinate smod_sym(const Coordinate& x, const Coordinate& size)
+{
+  Coordinate ret;
+  ret[0] = smod_sym(x[0], size[0]);
+  ret[1] = smod_sym(x[1], size[1]);
+  ret[2] = smod_sym(x[2], size[2]);
+  ret[3] = smod_sym(x[3], size[3]);
   return ret;
 }
 

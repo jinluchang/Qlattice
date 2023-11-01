@@ -271,6 +271,7 @@ cdef extern from "qlat-utils/coordinate-d.h" namespace "qlat":
     int eo_from_coordinate(const Coordinate& xl)
     Coordinate mod(const Coordinate& x, const Coordinate& size)
     Coordinate smod(const Coordinate& x, const Coordinate& size)
+    Coordinate smod_sym(const Coordinate& x, const Coordinate& size)
     Coordinate middle_mod(const Coordinate& x, const Coordinate& y, const Coordinate& size)
     Coordinate operator+(const Coordinate& x, const Coordinate& y)
     Coordinate operator-(const Coordinate& x, const Coordinate& y)
