@@ -2,6 +2,7 @@ vector_utils_header_files = files(
   'check_fun.h',
   'general_funs.h',
   'quda_para.h',
+  'utils_check_fun.h',
   'utils_construction.h',
   'utils_COPY_data.h',
   'utils_corr_baryon.h',
