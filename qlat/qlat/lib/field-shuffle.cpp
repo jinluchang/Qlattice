@@ -282,10 +282,10 @@ ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site, const int dir)
       }
     }
   }
-  long num_send_packs = ret.send_pack_infos.size();
-  long num_recv_packs = ret.recv_pack_infos.size();
-  long num_send_msgs = ret.scp.send_msg_infos.size();
-  long num_recv_msgs = ret.scp.recv_msg_infos.size();
+  Long num_send_packs = ret.send_pack_infos.size();
+  Long num_recv_packs = ret.recv_pack_infos.size();
+  Long num_send_msgs = ret.scp.send_msg_infos.size();
+  Long num_recv_msgs = ret.scp.recv_msg_infos.size();
   displayln_info(0,
                  fname + ssprintf(": num_send_packs = %10ld", num_send_packs));
   displayln_info(0,

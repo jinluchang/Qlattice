@@ -602,7 +602,7 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
       qassert(0 <= node_size);
       send_size[id_node] = node_size;
     }
-    long neg_count = 0;
+    Long neg_count = 0;
     do {
       std::vector<MPI_Request> reqs;
       const int mpi_tag = 12;
@@ -741,10 +741,10 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
       sp.n_elems_recv[i] = fsels[i].n_elems;
     }
   }
-  long num_send_packs = sp.send_pack_infos.size();
-  long num_recv_packs = sp.recv_pack_infos.size();
-  long num_send_msgs = sp.scp.send_msg_infos.size();
-  long num_recv_msgs = sp.scp.recv_msg_infos.size();
+  Long num_send_packs = sp.send_pack_infos.size();
+  Long num_recv_packs = sp.recv_pack_infos.size();
+  Long num_send_msgs = sp.scp.send_msg_infos.size();
+  Long num_recv_msgs = sp.scp.recv_msg_infos.size();
   displayln_info(0,
                  fname + ssprintf(": num_send_packs = %10ld", num_send_packs));
   displayln_info(0,

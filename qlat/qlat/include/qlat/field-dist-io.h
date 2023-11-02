@@ -112,7 +112,7 @@ std::vector<crc32_t> dist_crc32s(const std::vector<DistData<M> >& dds,
 {
   sync_node();
   TIMER_VERBOSE_FLOPS("dist_crc32s");
-  long total_bytes = 0;
+  Long total_bytes = 0;
   std::vector<crc32_t> ret(num_node, 0);
   for (int k = 0; k < (int)dds.size(); ++k) {
     const DistData<M>& dd = dds[k];
@@ -250,8 +250,8 @@ long dist_write_dist_data(const std::vector<DistData<M> >& dds,
   const int n_cycle = std::max(1, num_node / dist_write_par_limit());
   std::vector<Long> id_counts(num_node, 0);
   for (int i = 0; i < n_cycle; i++) {
-    long bytes = 0;
-    long ops = 0;
+    Long bytes = 0;
+    Long ops = 0;
     for (size_t k = 0; k < dds.size(); ++k) {
       const int id_node = dds[k].id_node;
       qassert(0 <= id_node && id_node < num_node);
@@ -380,8 +380,8 @@ long dist_read_dist_data(const std::vector<DistData<M> >& dds,
   const int n_cycle = std::max(1, num_node / dist_read_par_limit());
   std::vector<Long> id_counts(num_node, 0);
   for (int i = 0; i < n_cycle; i++) {
-    long bytes = 0;
-    long ops = 0;
+    Long bytes = 0;
+    Long ops = 0;
     for (size_t k = 0; k < dds.size(); ++k) {
       const int id_node = dds[k].id_node;
       qassert(0 <= id_node && id_node < num_node);
