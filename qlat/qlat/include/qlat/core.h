@@ -16,9 +16,9 @@ namespace qlat
 struct API GeometryNode {
   bool initialized;
   // About node geometry.
-  int num_node;
+  Int num_node;
   // num_node = size_node[0] * size_node[1] * size_node[2] * size_node[3]
-  int id_node;
+  Int id_node;
   // id_node = get_id_node()
   // 0 <= id_node < num_node
   Coordinate size_node;
@@ -75,9 +75,9 @@ struct API Geometry {
   //
   GeometryNode geon;
   //
-  int eo;  // 0:full; 1:odd ; 2:even
+  Int eo;  // 0:full; 1:odd ; 2:even
   //
-  int multiplicity;
+  Int multiplicity;
   // number of elements on each lattice site
   //
   Coordinate node_site;  // size of the coordinate on local node.
@@ -794,8 +794,8 @@ struct API SelectedPoints {
   // (it is likely not be what you think it is)
   //
   bool initialized;
-  int multiplicity;
-  long n_points;
+  Int multiplicity;
+  Long n_points;
   vector_acc<M> points;  // global quantity, same on each node
   // points.size() == n_points * multiplicity if initialized = true
   //
@@ -939,7 +939,7 @@ using FieldRank = FieldM<int64_t, 1>;
 using FieldIndex = FieldM<Long, 1>;
 
 struct API FieldSelection {
-  long n_elems;  // num points of this node
+  Long n_elems;  // num points of this node
   //
   FieldRank f_rank;  // rank when the points being selected (-1 if not selected)
   //
@@ -963,7 +963,7 @@ struct API SelectedField {
   // (it is likely not be what you think it is)
   //
   bool initialized;
-  long n_elems;
+  Long n_elems;
   box_acc<Geometry> geo;
   vector_acc<M> field;  // field.size() == n_elems * multiplicity
   //

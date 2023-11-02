@@ -193,7 +193,7 @@ cdef extern from "qlat/selected-points.h" namespace "qlat":
 
 cdef extern from "qlat/selected-field.h" namespace "qlat":
 
-    double qnorm[M](const SelectedField[M]& sp) except +
+    double qnorm[M](const SelectedField[M]& sf) except +
     void set_selected_field[t](SelectedField[t]& sf, const Field[t]& f,
                                const FieldSelection& fsel) except +
     void set_selected_field[t](SelectedField[t]& sf, const SelectedField[t] sf0,
