@@ -103,16 +103,6 @@ qacc DATA_TYPE get_data_type<unsigned long>()
   return ULONG_TYPE;
 }
 template <>
-qacc DATA_TYPE get_data_type<long long>()
-{
-  return LONGL_TYPE;
-}
-template <>
-qacc DATA_TYPE get_data_type<unsigned long long>()
-{
-  return ULONGL_TYPE;
-}
-template <>
 qacc DATA_TYPE get_data_type<std::int8_t>()
 {
   return INT8_TYPE;
