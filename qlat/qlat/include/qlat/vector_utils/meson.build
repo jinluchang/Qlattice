@@ -10,7 +10,7 @@ vector_utils_header_files = files(
   'utils_corr_baryon.h',
   'utils_corr_meson.h',
   'utils_corr_prop.h',
-  'utils_eigensys.h',
+  'utils_eigen_ov.h',
   'utils_fft_desc.h',
   'utils_float_type.h',
   'utils_gammas.h',
