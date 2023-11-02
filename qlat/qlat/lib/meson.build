@@ -11,6 +11,7 @@ cppsources = files(
   'selected-points.cpp',
   'smear.cpp',
   'utils-io.cpp',
+  'utils_Matrix_prod.cpp',
   )
 py3.install_sources(cppsources, subdir: 'qlat/lib')
 
