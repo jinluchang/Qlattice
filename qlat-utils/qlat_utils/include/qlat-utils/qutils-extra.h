@@ -124,14 +124,6 @@ qacc Long& operator*=(Long& x, const ComplexD& factor)
   return x;
 }
 
-qacc long long& operator*=(long long& x, const ComplexD& factor)
-{
-  (void)x;
-  (void)factor;
-  assert(false);
-  return x;
-}
-
 qacc double& operator*=(double& x, const ComplexD& factor)
 {
   (void)x;
