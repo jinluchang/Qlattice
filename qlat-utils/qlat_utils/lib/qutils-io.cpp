@@ -35,7 +35,7 @@ std::vector<std::string> qls_all_aux(const std::string& path,
     return all_contents;
   }
   const std::vector<std::string> contents = qls_aux(path, is_sort);
-  for (long i = 0; i < (long)contents.size(); ++i) {
+  for (Long i = 0; i < (Long)contents.size(); ++i) {
     const std::string& path_i = contents[i];
     if (not is_directory(path_i)) {
       all_contents.push_back(path_i);
@@ -62,7 +62,7 @@ int qremove_all_aux(const std::string& path)
   } else {
     int ret = 0;
     const std::vector<std::string> paths = qls_aux(path);
-    for (long i = 0; i < (long)paths.size(); ++i) {
+    for (Long i = 0; i < (Long)paths.size(); ++i) {
       ret += qremove_all_aux(paths[i]);
     }
     return ret + qremove(path);
@@ -76,7 +76,7 @@ void flush() { fflush(get_output_file()); }
 std::string dirname(const std::string& fn)
 // try to follow libgen.h version see man 3 dirname
 {
-  long cur = fn.size() - 1;
+  Long cur = fn.size() - 1;
   // remove trailing '/'
   while (cur > 0 and fn[cur] == '/') {
     cur -= 1;
@@ -111,7 +111,7 @@ std::string dirname(const std::string& fn)
 std::string basename(const std::string& fn)
 // try to follow libgen.h version see man 3 basename
 {
-  long cur = fn.size() - 1;
+  Long cur = fn.size() - 1;
   // remove trailing '/'
   while (cur > 0 and fn[cur] == '/') {
     cur -= 1;
@@ -125,7 +125,7 @@ std::string basename(const std::string& fn)
       return std::string(fn, 0, cur + 1);
     }
   } else {
-    const long pos_stop = cur + 1;
+    const Long pos_stop = cur + 1;
     // skip last component
     while (cur >= 0 and fn[cur] != '/') {
       cur -= 1;
@@ -142,7 +142,7 @@ std::string remove_trailing_slashes(const std::string& fn)
 // remove_trailing_slashes("/home/") = "/home"
 // remove_trailing_slashes("//") = "/"
 {
-  long cur = fn.size() - 1;
+  Long cur = fn.size() - 1;
   while (cur > 0 and fn[cur] == '/') {
     cur -= 1;
   }
@@ -213,7 +213,7 @@ bool is_directory_cache(const std::string& dir_)
   TIMER("is_directory_cache");
   const std::string dir = remove_trailing_slashes(dir_) + "/";
   Cache<std::string, bool>& cache = get_is_directory_cache();
-  for (long cur = 0; cur < (long)dir.size(); ++cur) {
+  for (Long cur = 0; cur < (Long)dir.size(); ++cur) {
     if (dir[cur] != '/') {
       continue;
     }
@@ -311,7 +311,7 @@ int qmkdir_p(const std::string& path_, const mode_t mode)
       }
     }
   }
-  for (long i = paths.size() - 1; i >= 0; i -= 1) {
+  for (Long i = paths.size() - 1; i >= 0; i -= 1) {
     if (not(0 == mkdir(paths[i].c_str(), mode))) {
       // qwarn(fname + ssprintf(": '%s' failed.", path_.c_str()));
       continue;

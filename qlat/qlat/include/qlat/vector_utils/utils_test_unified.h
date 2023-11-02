@@ -25,7 +25,7 @@ struct test_unified
   {
     //TIMER("==prop_L");
     qlat::vector<qlat::ComplexD > b;b.resize(20);
-    qacc_for(coff, long(b.size()),{
+    qacc_for(coff, Long(b.size()),{
       b[coff] = 0.0;
     });
     qlat::displayln_info(qlat::ssprintf("b call"));
@@ -47,7 +47,7 @@ struct test_unified
     }
 
     auto& alpha = this -> alpha;
-    qacc_for(coff, long(alpha.size()),{
+    qacc_for(coff, Long(alpha.size()),{
       for(int i=0;i<n_vec;i++)alpha[coff][i] = 0.0;
       for(int i=0;i<10;i++)alpha[coff][i] = 0.0;
       for(int i=0;i<alpha[coff].size();i++)alpha[coff][i] = 0.0;

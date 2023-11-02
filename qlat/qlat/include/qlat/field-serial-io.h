@@ -40,7 +40,7 @@ inline Coordinate get_default_serial_new_size_node(const Geometry& geo, const in
 }
 
 template <class M>
-long serial_write_field(const Field<M>& f, const std::string& path,
+Long serial_write_field(const Field<M>& f, const std::string& path,
                         const Coordinate& new_size_node)
 // will append to the file
 // assume new_size_node is properly chosen so that concatenate the new fields
@@ -78,14 +78,14 @@ long serial_write_field(const Field<M>& f, const std::string& path,
                get_comm());
     }
   }
-  const long file_size = get_data(f).data_size() * f.geo().geon.num_node;
+  const Long file_size = get_data(f).data_size() * f.geo().geon.num_node;
   timer.flops += file_size;
   return file_size;
 }
 
 template <class M>
-long serial_read_field(Field<M>& f, const std::string& path,
-                       const Coordinate& new_size_node, const long offset = 0,
+Long serial_read_field(Field<M>& f, const std::string& path,
+                       const Coordinate& new_size_node, const Long offset = 0,
                        const int whence = SEEK_SET)
 // will read from offset relative to whence
 // assume new_size_node is properly choosen so that concatenate the new fields
@@ -136,15 +136,15 @@ long serial_read_field(Field<M>& f, const std::string& path,
     }
   }
   shuffle_field_back(f, fs, new_size_node);
-  const long file_size = get_data(f).data_size() * f.geo().geon.num_node;
+  const Long file_size = get_data(f).data_size() * f.geo().geon.num_node;
   timer.flops += file_size;
   return file_size;
 }
 
 template <class M>
-long serial_read_field_par(Field<M>& f, const std::string& path,
+Long serial_read_field_par(Field<M>& f, const std::string& path,
                            const Coordinate& new_size_node,
-                           const long offset = 0, const int whence = SEEK_SET)
+                           const Long offset = 0, const int whence = SEEK_SET)
 // will read from offset relative to whence
 // assume new_size_node is properly choosen so that concatenate the new fields
 // would be correct. eg. new_size_node = Coordinate(1,1,1,2)
@@ -177,13 +177,13 @@ long serial_read_field_par(Field<M>& f, const std::string& path,
   }
   shuffle_field_back(f, fs, new_size_node);
   sync_node();
-  const long file_size = get_data(f).data_size() * f.geo().geon.num_node;
+  const Long file_size = get_data(f).data_size() * f.geo().geon.num_node;
   timer.flops += file_size;
   return file_size;
 }
 
 template <class M>
-long serial_write_field(const Field<M>& f, const std::string& path)
+Long serial_write_field(const Field<M>& f, const std::string& path)
 // interface_function
 {
   return serial_write_field(
@@ -191,8 +191,8 @@ long serial_write_field(const Field<M>& f, const std::string& path)
 }
 
 template <class M>
-long serial_read_field(Field<M>& f, const std::string& path,
-                       const long offset = 0, const int whence = SEEK_SET)
+Long serial_read_field(Field<M>& f, const std::string& path,
+                       const Long offset = 0, const int whence = SEEK_SET)
 // interface_function
 {
   return serial_read_field(
@@ -201,8 +201,8 @@ long serial_read_field(Field<M>& f, const std::string& path,
 }
 
 template <class M>
-long serial_read_field_par(Field<M>& f, const std::string& path,
-                           const long offset = 0, const int whence = SEEK_SET)
+Long serial_read_field_par(Field<M>& f, const std::string& path,
+                           const Long offset = 0, const int whence = SEEK_SET)
 // interface_function
 {
   return serial_read_field_par(
@@ -219,7 +219,7 @@ crc32_t field_simple_checksum(const Field<M>& f)
   crc32_t ret = 0;
   const Vector<M> v = get_data(f);
   Vector<crc32_t> vc((crc32_t*)v.data(), v.data_size() / sizeof(crc32_t));
-  for (long i = 0; i < vc.size(); ++i) {
+  for (Long i = 0; i < vc.size(); ++i) {
     ret += vc[i];
   }
   Long sum = ret;
@@ -254,19 +254,19 @@ crc32_t field_crc32_sites(const Field<M>& f)
 {
   TIMER_VERBOSE_FLOPS("field_crc32_sites");
   const Geometry& geo = f.geo();
-  const long total_volume = geo.total_volume();
-  const long data_size_site = geo.multiplicity * sizeof(M);
+  const Long total_volume = geo.total_volume();
+  const Long data_size_site = geo.multiplicity * sizeof(M);
   const int v_limit = omp_get_max_threads();
   std::vector<crc32_t> crcs(v_limit, 0);
 #pragma omp parallel
   {
     crc32_t crc = 0;
 #pragma omp for
-    for (long index = 0; index < geo.local_volume(); ++index) {
+    for (Long index = 0; index < geo.local_volume(); ++index) {
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
-      const long gindex = geo.g_index_from_g_coordinate(xg);
-      const long offset = data_size_site * (total_volume - gindex - 1);
+      const Long gindex = geo.g_index_from_g_coordinate(xg);
+      const Long offset = data_size_site * (total_volume - gindex - 1);
       const Vector<M> v = f.get_elems_const(xl);
       crc ^= crc32_shift(crc32(v), offset);
     }
@@ -308,7 +308,7 @@ inline std::string make_field_header(const Geometry& geo, const int sizeof_M,
 }
 
 template <class M>
-long write_field(const Field<M>& f, const std::string& path,
+Long write_field(const Field<M>& f, const std::string& path,
                  const Coordinate& new_size_node = Coordinate())
 // if new_size_node != Coordinate() then use dist_write_field
 {
@@ -331,7 +331,7 @@ long write_field(const Field<M>& f, const std::string& path,
         make_field_header(geo_remult(geo, multiplicity), sizeof_M, crc32));
     get_force_field_write_sizeof_M() = 0;
   }
-  const long file_size = serial_write_field(
+  const Long file_size = serial_write_field(
       f, path + ".partial",
       get_default_serial_new_size_node(geo, dist_write_par_limit()));
   qrename_info(path + ".partial", path);
@@ -374,7 +374,7 @@ inline void read_geo_info(Coordinate& total_site, int& multiplicity, int& sizeof
 }
 
 template <class M>
-long read_field(Field<M>& f, const std::string& path,
+Long read_field(Field<M>& f, const std::string& path,
                 const Coordinate& new_size_node_ = Coordinate())
 // assume new_size_node is properly choosen so that concatenate the new fields
 // would be correct. eg. new_size_node = Coordinate(1,1,1,2)
@@ -404,13 +404,13 @@ long read_field(Field<M>& f, const std::string& path,
   Geometry geo;
   geo.init(total_site, multiplicity);
   f.init(geo, geo.multiplicity);
-  const long data_size =
+  const Long data_size =
       geo.geon.num_node * geo.local_volume() * geo.multiplicity * sizeof(M);
   const Coordinate new_size_node =
       new_size_node_ == Coordinate()
           ? get_default_serial_new_size_node(geo, dist_read_par_limit())
           : new_size_node_;
-  const long file_size =
+  const Long file_size =
       serial_read_field_par(f, path, new_size_node, -data_size, SEEK_END);
   if (file_size != data_size) {
     displayln_info(
@@ -436,7 +436,7 @@ long read_field(Field<M>& f, const std::string& path,
 }
 
 template <class M>
-long write_field_float_from_double(
+Long write_field_float_from_double(
     const Field<M>& f, const std::string& path,
     const Coordinate& new_size_node = Coordinate())
 // interface_function
@@ -445,20 +445,20 @@ long write_field_float_from_double(
   Field<float> ff;
   convert_field_float_from_double(ff, f);
   to_from_big_endian_32(get_data(ff));
-  const long total_bytes = write_field(ff, path, new_size_node);
+  const Long total_bytes = write_field(ff, path, new_size_node);
   timer.flops += total_bytes;
   return total_bytes;
 }
 
 template <class M>
-long read_field_double_from_float(
+Long read_field_double_from_float(
     Field<M>& f, const std::string& path,
     const Coordinate& new_size_node = Coordinate())
 // interface_function
 {
   TIMER_VERBOSE_FLOPS("read_field_double_from_float");
   Field<float> ff;
-  const long total_bytes = read_field(ff, path, new_size_node);
+  const Long total_bytes = read_field(ff, path, new_size_node);
   if (total_bytes == 0) {
     return 0;
   } else {
@@ -470,7 +470,7 @@ long read_field_double_from_float(
 }
 
 template <class M>
-long write_field_64(const Field<M>& f, const std::string& path,
+Long write_field_64(const Field<M>& f, const std::string& path,
                     const Coordinate& new_size_node = Coordinate())
 // interface_function
 {
@@ -478,18 +478,18 @@ long write_field_64(const Field<M>& f, const std::string& path,
   Field<M> ff;
   ff.init(f);
   to_from_big_endian_64(get_data(ff));
-  const long total_bytes = write_field(ff, path, new_size_node);
+  const Long total_bytes = write_field(ff, path, new_size_node);
   timer.flops += total_bytes;
   return total_bytes;
 }
 
 template <class M>
-long read_field_64(Field<M>& f, const std::string& path,
+Long read_field_64(Field<M>& f, const std::string& path,
                    const Coordinate& new_size_node = Coordinate())
 // interface_function
 {
   TIMER_VERBOSE_FLOPS("read_field_64");
-  const long total_bytes = read_field(f, path, new_size_node);
+  const Long total_bytes = read_field(f, path, new_size_node);
   if (total_bytes == 0) {
     return 0;
   } else {
@@ -500,7 +500,7 @@ long read_field_64(Field<M>& f, const std::string& path,
 }
 
 template <class M>
-long write_field_double(const Field<M>& f, const std::string& path,
+Long write_field_double(const Field<M>& f, const std::string& path,
                         const Coordinate& new_size_node = Coordinate())
 // interface_function
 {
@@ -508,18 +508,18 @@ long write_field_double(const Field<M>& f, const std::string& path,
   Field<M> ff;
   ff.init(f);
   to_from_big_endian_64(get_data(ff));
-  const long total_bytes = write_field(ff, path, new_size_node);
+  const Long total_bytes = write_field(ff, path, new_size_node);
   timer.flops += total_bytes;
   return total_bytes;
 }
 
 template <class M>
-long read_field_double(Field<M>& f, const std::string& path,
+Long read_field_double(Field<M>& f, const std::string& path,
                        const Coordinate& new_size_node = Coordinate())
 // interface_function
 {
   TIMER_VERBOSE_FLOPS("read_field_double");
-  const long total_bytes = read_field(f, path, new_size_node);
+  const Long total_bytes = read_field(f, path, new_size_node);
   if (total_bytes == 0) {
     return 0;
   } else {
@@ -532,7 +532,7 @@ long read_field_double(Field<M>& f, const std::string& path,
 inline bool is_field(const std::string& path)
 {
   TIMER("is_field");
-  long nfile = 0;
+  Long nfile = 0;
   if (get_id_node() == 0) {
     QFile qfile = qfopen(path, "r");
     if (not qfile.null()) {

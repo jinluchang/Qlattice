@@ -17,11 +17,11 @@ namespace qlat
 
 struct QFileInternal;
 
-typedef std::map<long, std::weak_ptr<QFileInternal> > QFileMap;
+typedef std::map<Long, std::weak_ptr<QFileInternal> > QFileMap;
 
 API inline QFileMap& get_all_qfile()
 // get_all_qfile()[key] -> std::weak_ptr<QFileInternal>
-// key = (long)&qfile_internal
+// key = (Long)&qfile_internal
 {
   static QFileMap all_qfile;
   return all_qfile;
@@ -37,7 +37,7 @@ struct API QFile {
   QFile() { init(); }
   QFile(const std::weak_ptr<QFileInternal>& wp) { init(wp); }
   QFile(const std::string& path, const std::string& mode) { init(path, mode); }
-  QFile(const QFile& qfile, const long q_offset_start, const long q_offset_end)
+  QFile(const QFile& qfile, const Long q_offset_start, const Long q_offset_end)
   {
     init(qfile, q_offset_start, q_offset_end);
   }
@@ -48,8 +48,8 @@ struct API QFile {
     p = std::shared_ptr<QFileInternal>(wp);
   }
   void init(const std::string& path, const std::string& mode);
-  void init(const QFile& qfile, const long q_offset_start,
-            const long q_offset_end);
+  void init(const QFile& qfile, const Long q_offset_start,
+            const Long q_offset_end);
   //
   void close();
   //
@@ -65,7 +65,7 @@ struct API QFile {
 inline void add_qfile(const QFile& qfile)
 {
   QFileMap& qfile_map = get_all_qfile();
-  const long key = (long)qfile.p.get();
+  const Long key = (Long)qfile.p.get();
   qassert(not has(qfile_map, key));
   qfile_map[key] = qfile.p;
 }
@@ -73,7 +73,7 @@ inline void add_qfile(const QFile& qfile)
 inline void remove_qfile(const QFileInternal& qfile_internal)
 {
   QFileMap& qfile_map = get_all_qfile();
-  const long key = (long)&qfile_internal;
+  const Long key = (Long)&qfile_internal;
   qassert(has(qfile_map, key));
   qfile_map.erase(key);
 }
@@ -81,7 +81,7 @@ inline void remove_qfile(const QFileInternal& qfile_internal)
 inline QFile get_qfile(const QFileInternal& qfile_internal)
 {
   QFileMap& qfile_map = get_all_qfile();
-  const long key = (long)&qfile_internal;
+  const Long key = (Long)&qfile_internal;
   qassert(has(qfile_map, key));
   return QFile(qfile_map[key]);
 }
@@ -97,18 +97,18 @@ struct QFileInternal {
   //
   QFile parent;  // If parent.null(), then this QFileInternal own the fp pointer
                  // and will be responsible for close it.
-  long number_of_child;  // Can close the FILE only when number_of_child == 0.
+  Long number_of_child;  // Can close the FILE only when number_of_child == 0.
   //
   bool is_eof;  // the eof state of QFileInternal.
                 // NOTE: may not match with eof state of fp.
-  long pos;     // position of the QFileInternal. (correspond to position of fp
+  Long pos;     // position of the QFileInternal. (correspond to position of fp
                 // should be pos + offset_start).
   // NOTE: Actual fp position may be adjust elsewhere and does not
   // match this pos. When performing operations, always fseek fp to
   // location indicated by pos first.
   //
-  long offset_start;  // start offset of fp for QFileInternal
-  long offset_end;    // end offset of fp for QFileInternal (-1 if not limit,
+  Long offset_start;  // start offset of fp for QFileInternal
+  Long offset_end;    // end offset of fp for QFileInternal (-1 if not limit,
                       // useful when writing)
   //
   QFileInternal()
@@ -123,8 +123,8 @@ struct QFileInternal {
     number_of_child = 0;
     init(path_, mode_);
   }
-  QFileInternal(const QFile& qfile, const long q_offset_start,
-                const long q_offset_end)
+  QFileInternal(const QFile& qfile, const Long q_offset_start,
+                const Long q_offset_end)
   {
     fp = NULL;
     number_of_child = 0;
@@ -179,8 +179,8 @@ struct QFileInternal {
     offset_start = 0;
     offset_end = -1;
   }
-  void init(const QFile& qfile, const long q_offset_start,
-            const long q_offset_end)
+  void init(const QFile& qfile, const Long q_offset_start,
+            const Long q_offset_end)
   // Become a child of qfile.
   // NOTE: q_offset_start and q_offset_end are relative offset for qfile not the
   // absolute offset for qfile.fp .
@@ -267,8 +267,8 @@ inline void QFile::init(const std::string& path, const std::string& mode)
   p->init(path, mode);
 }
 
-inline void QFile::init(const QFile& qfile, const long q_offset_start,
-                        const long q_offset_end)
+inline void QFile::init(const QFile& qfile, const Long q_offset_start,
+                        const Long q_offset_end)
 {
   if (p == nullptr) {
     p = std::shared_ptr<QFileInternal>(new QFileInternal());
@@ -310,7 +310,7 @@ inline bool qfeof(const QFile& qfile)
   return qfile.p->is_eof;
 }
 
-inline long qftell(const QFile& qfile)
+inline Long qftell(const QFile& qfile)
 // interface function
 {
   qassert(not qfile.null());
@@ -324,11 +324,11 @@ inline int qfflush(const QFile& qfile)
   return fflush(qfile.get_fp());
 }
 
-int qfseek(const QFile& qfile, const long q_offset, const int whence);
+int qfseek(const QFile& qfile, const Long q_offset, const int whence);
 
-long qfread(void* ptr, const long size, const long nmemb, const QFile& qfile);
+Long qfread(void* ptr, const Long size, const Long nmemb, const QFile& qfile);
 
-long qfwrite(const void* ptr, const long size, const long nmemb,
+Long qfwrite(const void* ptr, const Long size, const Long nmemb,
              const QFile& qfile);
 
 int qvfscanf(const QFile& qfile, const char* fmt, va_list args);
@@ -348,65 +348,65 @@ inline std::vector<std::string> qgetlines(const QFile& qfile)
   return ret;
 }
 
-inline long qfile_remaining_size(const QFile& qfile)
+inline Long qfile_remaining_size(const QFile& qfile)
 // interface function
 // qfile should have definite size.
 // return the remaining size of qfile (start from the current position).
 {
   TIMER_FLOPS("qfile_remaining_size");
   qassert(not qfile.null());
-  const long offset_start = qftell(qfile);
+  const Long offset_start = qftell(qfile);
   qfseek(qfile, 0, SEEK_END);
-  const long offset_end = qftell(qfile);
+  const Long offset_end = qftell(qfile);
   qfseek(qfile, offset_start, SEEK_SET);
-  const long data_len = offset_end - offset_start;
+  const Long data_len = offset_end - offset_start;
   qassert(data_len >= 0);
   return data_len;
 }
 
 template <class M>
-long qwrite_data(const Vector<M>& v, const QFile& qfile)
+Long qwrite_data(const Vector<M>& v, const QFile& qfile)
 // interface function
 {
   TIMER_FLOPS("qwrite_data(v,qfile)");
   qassert(not qfile.null());
-  const long data_size = sizeof(M) * qfwrite((void*)v.p, sizeof(M), v.n, qfile);
+  const Long data_size = sizeof(M) * qfwrite((void*)v.p, sizeof(M), v.n, qfile);
   timer.flops += data_size;
   return data_size;
 }
 
-inline long qwrite_data(const std::string& line, const QFile& qfile)
+inline Long qwrite_data(const std::string& line, const QFile& qfile)
 // interface function
 {
   qassert(not qfile.null());
   return qwrite_data(get_data(line), qfile);
 }
 
-inline long qwrite_data(const std::vector<std::string>& lines,
+inline Long qwrite_data(const std::vector<std::string>& lines,
                         const QFile& qfile)
 // interface function
 {
   qassert(not qfile.null());
-  long total_bytes = 0;
-  for (long i = 0; i < (long)lines.size(); ++i) {
+  Long total_bytes = 0;
+  for (Long i = 0; i < (Long)lines.size(); ++i) {
     total_bytes += qwrite_data(lines[i], qfile);
   }
   return total_bytes;
 }
 
 template <class M>
-long qread_data(const Vector<M>& v, const QFile& qfile)
+Long qread_data(const Vector<M>& v, const QFile& qfile)
 // interface function
 {
   TIMER_FLOPS("qread_data(v,qfile)");
   qassert(not qfile.null());
-  const long data_size = sizeof(M) * qfread((void*)v.p, sizeof(M), v.n, qfile);
+  const Long data_size = sizeof(M) * qfread((void*)v.p, sizeof(M), v.n, qfile);
   timer.flops += data_size;
   return data_size;
 }
 
 template <class M>
-long qread_data_all(std::vector<M>& v, const QFile& qfile)
+Long qread_data_all(std::vector<M>& v, const QFile& qfile)
 // interface function
 // Read all the remaining data.
 // (Remaining size must be multiple of sizeof(M) otherwise will fail.)
@@ -414,34 +414,34 @@ long qread_data_all(std::vector<M>& v, const QFile& qfile)
 {
   TIMER_FLOPS("qread_data_all(v,qfile)");
   qassert(not qfile.null());
-  const long pos_initial = qftell(qfile);
+  const Long pos_initial = qftell(qfile);
   qfseek(qfile, 0, SEEK_END);
-  const long pos_final = qftell(qfile);
-  const long data_size = pos_final - pos_initial;
-  const long n = data_size / sizeof(M);
+  const Long pos_final = qftell(qfile);
+  const Long data_size = pos_final - pos_initial;
+  const Long n = data_size / sizeof(M);
   qassert(data_size == sizeof(M) * n);
   qfseek(qfile, pos_initial, SEEK_SET);
   v.resize(n);
-  const long data_size_read = qread_data(get_data(v), qfile);
+  const Long data_size_read = qread_data(get_data(v), qfile);
   qassert(data_size_read == data_size);
   timer.flops += data_size;
   return data_size;
 }
 
-inline long qvfprintf(const QFile& qfile, const char* fmt, va_list args)
+inline Long qvfprintf(const QFile& qfile, const char* fmt, va_list args)
 {
   const std::string str = vssprintf(fmt, args);
   return qwrite_data(str, qfile);
 }
 
-inline long qfprintf(const QFile& qfile, const char* fmt, ...)
+inline Long qfprintf(const QFile& qfile, const char* fmt, ...)
 {
   va_list args;
   va_start(args, fmt);
   return qvfprintf(qfile, fmt, args);
 }
 
-long write_from_qfile(const QFile& qfile_out, const QFile& qfile_in);
+Long write_from_qfile(const QFile& qfile_out, const QFile& qfile_in);
 
 // -------------------
 
@@ -450,14 +450,14 @@ const std::string qar_header = "#!/usr/bin/env qar-glimpse\n\n";
 const std::string qar_idx_header = "#!/usr/bin/env qar-idx-glimpse\n\n";
 
 struct QarSegmentInfo {
-  long offset;
-  long offset_fn;
-  long offset_info;
-  long offset_data;
-  long offset_end;
-  long fn_len;
-  long info_len;
-  long data_len;
+  Long offset;
+  Long offset_fn;
+  Long offset_info;
+  Long offset_data;
+  Long offset_end;
+  Long fn_len;
+  Long info_len;
+  Long data_len;
   //
   QarSegmentInfo() { init(); }
   //
@@ -502,17 +502,17 @@ struct QarFileVolInternal {
   std::vector<std::string> fn_list;
   std::map<std::string, QarSegmentInfo> qsinfo_map;
   std::set<std::string> directories;
-  long max_offset;  // when read, maximum offset reached so far
+  Long max_offset;  // when read, maximum offset reached so far
   //
-  long current_write_segment_offset;  // when write, the offset of the beginning
+  Long current_write_segment_offset;  // when write, the offset of the beginning
                                       // of the current working segment.
-  long current_write_segment_offset_data;  // when write, the offset of the
+  Long current_write_segment_offset_data;  // when write, the offset of the
                                            // beginning of the data of the
                                            // current working segment.
-  long current_write_segment_offset_header_len;
-  long current_write_segment_offset_fn_len;
-  long current_write_segment_offset_info_len;
-  long current_write_segment_offset_data_len;
+  Long current_write_segment_offset_header_len;
+  Long current_write_segment_offset_fn_len;
+  Long current_write_segment_offset_info_len;
+  Long current_write_segment_offset_data_len;
   //
   QarFileVolInternal() { init(); }
   QarFileVolInternal(const QFile& qfile) { init(qfile); }
@@ -543,7 +543,7 @@ struct QarFileVolInternal {
       qfwrite(qar_header.data(), qar_header.size(), 1, qfile);
     } else if (mode() == "r") {
       std::vector<char> check_line(qar_header.size(), 0);
-      const long qfread_check_len =
+      const Long qfread_check_len =
           qfread(check_line.data(), qar_header.size(), 1, qfile);
       if (not(qfread_check_len == 1 and
               std::string(check_line.data(), check_line.size()) ==
@@ -612,11 +612,11 @@ std::vector<std::string> list(const QarFileVol& qar);
 
 void write_start(const QarFileVol& qar, const std::string& fn,
                  const std::string& info, QFile& qfile_out,
-                 const long data_len = -1, const long header_len = 60);
+                 const Long data_len = -1, const Long header_len = 60);
 
 void write_end(const QarFileVol& qar);
 
-long write_from_qfile(const QarFileVol& qar, const std::string& fn,
+Long write_from_qfile(const QarFileVol& qar, const std::string& fn,
                       const std::string& info, const QFile& qfile_in);
 
 int truncate_qar_file(const std::string& path,

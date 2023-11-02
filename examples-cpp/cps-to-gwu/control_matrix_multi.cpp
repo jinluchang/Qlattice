@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
     qlat::vector_acc<Complexq* > aP;aP.resize(L);Complexq* A = a.data();
     qlat::vector_acc<Complexq* > bP;bP.resize(L);Complexq* B = b.data();
     qlat::vector_acc<Complexq* > cP;cP.resize(L);Complexq* C = c1.data();
-    qGPU_for(i, long(L), true, {
+    qGPU_for(i, Long(L), true, {
       aP[i] = &A[i* m*w];
       bP[i] = &B[i* w*n];
       cP[i] = &C[i* m*n];

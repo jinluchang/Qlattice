@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
   qlat::vector_gpu<qlat::ComplexD > prop;
   qlat::vector_gpu<qlat::ComplexD > prop_buf;
   int NVmpi = fd.mv[0]*fd.mv[1]*fd.mv[2];
-  long Nvol = geo.local_volume();
+  Long Nvol = geo.local_volume();
   prop.resize(NVmpi * Nvol * 12);
   prop_buf.resize(prop.size());
   random_Ty(prop.data(), prop.size(), 1, in.seed);
@@ -77,9 +77,9 @@ int main(int argc, char* argv[])
   sendbuf.resize(biva*fd.Nvol*civ);
   ///recvbuf.resize(b0*civ*nvol*fd.Nt);
   databuf.resize(biva*fd.Nvol*civ);
-  for(long bi=0;bi<biva;bi++)
+  for(Long bi=0;bi<biva;bi++)
   for(unsigned long long vi=0;vi<fd.Nvol;vi++)
-  for(long ci=0;ci<civ;ci++)
+  for(Long ci=0;ci<civ;ci++)
   {
     long long off = (bi*fd.Nvol+vi)*civ+ci;
     const Coordinate& p = fd.coordinate_g_from_index(vi, fd.rank);
@@ -95,9 +95,9 @@ int main(int argc, char* argv[])
   sendbufG.copy_to(sendbuf, 1);
 
   double diff = 0.0;
-  for(long ni=0;ni<b0;ni++)
+  for(Long ni=0;ni<b0;ni++)
   for(long long vi=0;vi<fd.nt*nvol;vi++)
-  for(long ci=0;ci<civ;ci++)
+  for(Long ci=0;ci<civ;ci++)
   {
     ////int t = Nti + fd.init;
     long long off = (ni*fd.nt*nvol+vi)*civ+ci;
@@ -119,7 +119,7 @@ int main(int argc, char* argv[])
 
 
   diff = 0.0;
-  for(long i = 0;i< sendbuf.size();i++)
+  for(Long i = 0;i< sendbuf.size();i++)
   {
     diff += qnorm(sendbuf[i] - databuf[i]);
   }
@@ -150,9 +150,9 @@ int main(int argc, char* argv[])
   sendbuf.resize(b0*civ*nvol*fd.Nt);
   ///recvbuf.resize(b0*civ*nvol*fd.Nt);
   databuf.resize(b0*civ*nvol*fd.Nt);
-  for(long bi=0;bi<biva;bi++)
+  for(Long bi=0;bi<biva;bi++)
   for(unsigned long long vi=0;vi<fd.Nvol;vi++)
-  for(long ci=0;ci<civ;ci++)
+  for(Long ci=0;ci<civ;ci++)
   {
     long long off = (bi*fd.Nvol+vi)*civ+ci;
     const Coordinate& p = fd.coordinate_g_from_index(vi, fd.rank);
@@ -171,10 +171,10 @@ int main(int argc, char* argv[])
   //rot.reorder(true, (double*) sendbuf.v.p);
     
   double diff = 0.0;
-  for(long ni=0;ni<b0;ni++)
+  for(Long ni=0;ni<b0;ni++)
   for(int Nti=0;Nti<fd.Nt;Nti++)
   for(long long vi=0;vi<nvol;vi++)
-  for(long ci=0;ci<civ;ci++)
+  for(Long ci=0;ci<civ;ci++)
   {
     int t = Nti + fd.init;
     long long off = ((ni*fd.Nt+Nti)*nvol+vi)*civ+ci;
@@ -197,7 +197,7 @@ int main(int argc, char* argv[])
   //rot.reorder(false, tmp);
 
   diff = 0.0;
-  for(long i = 0;i< sendbuf.size();i++)
+  for(Long i = 0;i< sendbuf.size();i++)
   {
     diff += qnorm(sendbuf[i] - databuf[i]);
   }
@@ -227,9 +227,9 @@ int main(int argc, char* argv[])
   sendbuf.resize(b0*civ*nvol*fd.Nt);
   recvbuf.resize(b0*civ*nvol*fd.Nt);
   databuf.resize(b0*civ*nvol*fd.Nt);
-  for(long bi=0;bi<biva;bi++)
+  for(Long bi=0;bi<biva;bi++)
   for(unsigned long long vi=0;vi<fd.Nvol;vi++)
-  for(long ci=0;ci<civ;ci++)
+  for(Long ci=0;ci<civ;ci++)
   {
     long long off = (bi*fd.Nvol+vi)*civ+ci;
     //////Need a function in fd to get the coordinates?
@@ -252,10 +252,10 @@ int main(int argc, char* argv[])
   } 
 
   double diff = 0.0;
-  for(long ni=0;ni<b0;ni++)
+  for(Long ni=0;ni<b0;ni++)
   for(int Nti=0;Nti<fd.Nt;Nti++)
   for(long long vi=0;vi<nvol;vi++)
-  for(long ci=0;ci<civ;ci++)
+  for(Long ci=0;ci<civ;ci++)
   {
     int t = Nti + fd.init;
     long long off = ((ni*fd.Nt+Nti)*nvol+vi)*civ+ci;
@@ -283,7 +283,7 @@ int main(int argc, char* argv[])
   vec_large.reorder((double*) &sendbuf[0],(double*) &recvbuf[0],b0,c0 ,100);
 
   diff = 0.0;
-  for(long i = 0;i< sendbuf.size();i++)
+  for(Long i = 0;i< sendbuf.size();i++)
   {
     diff += qnorm(sendbuf[i] - databuf[i]);
   }

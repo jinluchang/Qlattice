@@ -137,7 +137,7 @@ template <class M>
 PyObject* get_n_elems_sfield_ctype(PyObject* pf)
 {
   SelectedField<M>& sf = py_convert_type_sfield<M>(pf);
-  const long ret = sf.n_elems;
+  const Long ret = sf.n_elems;
   return py_convert(ret);
 }
 
@@ -153,7 +153,7 @@ template <class M>
 PyObject* get_multiplicity_sfield_ctype(PyObject* pf)
 {
   SelectedField<M>& sf = py_convert_type_sfield<M>(pf);
-  const long ret = sf.geo().multiplicity;
+  const Long ret = sf.geo().multiplicity;
   return py_convert(ret);
 }
 
@@ -182,14 +182,14 @@ PyObject* qnorm_field_sfield_ctype(SelectedField<double>& f, PyObject* p_field1)
 }
 
 template <class M>
-PyObject* get_elems_sfield_ctype(PyObject* p_sfield, const long idx)
+PyObject* get_elems_sfield_ctype(PyObject* p_sfield, const Long idx)
 {
   const SelectedField<M>& f = py_convert_type_sfield<M>(p_sfield);
   return py_convert(f.get_elems_const(idx));
 }
 
 template <class M>
-PyObject* get_elem_sfield_ctype(PyObject* p_sfield, const long idx, const int m)
+PyObject* get_elem_sfield_ctype(PyObject* p_sfield, const Long idx, const int m)
 {
   const SelectedField<M>& f = py_convert_type_sfield<M>(p_sfield);
   if (m >= 0) {
@@ -200,19 +200,19 @@ PyObject* get_elem_sfield_ctype(PyObject* p_sfield, const long idx, const int m)
 }
 
 template <class M>
-PyObject* set_elems_sfield_ctype(PyObject* p_field, const long idx,
+PyObject* set_elems_sfield_ctype(PyObject* p_field, const Long idx,
                                  PyObject* p_val)
 {
   SelectedField<M>& f = py_convert_type_sfield<M>(p_field);
   const int multiplicity = f.geo().multiplicity;
-  qassert((long)PyBytes_Size(p_val) == (long)multiplicity * (long)sizeof(M));
+  qassert((Long)PyBytes_Size(p_val) == (Long)multiplicity * (Long)sizeof(M));
   const Vector<M> val((M*)PyBytes_AsString(p_val), multiplicity);
   assign(f.get_elems(idx), val);
   Py_RETURN_NONE;
 }
 
 template <class M>
-PyObject* set_elem_sfield_ctype(PyObject* p_field, const long idx,
+PyObject* set_elem_sfield_ctype(PyObject* p_field, const Long idx,
                                 const int m, PyObject* p_val)
 {
   SelectedField<M>& f = py_convert_type_sfield<M>(p_field);
@@ -251,7 +251,7 @@ PyObject* save_sfield_ctype(PyObject* pf, const std::string& path,
                             const FieldSelection& fsel)
 {
   const SelectedField<M>& f = py_convert_type_sfield<M>(pf);
-  const long ret = write_selected_field(f, path, fsel);
+  const Long ret = write_selected_field(f, path, fsel);
   return py_convert(ret);
 }
 
@@ -260,7 +260,7 @@ PyObject* load_sfield_ctype(PyObject* pf, const std::string& path,
                             const FieldSelection& fsel)
 {
   SelectedField<M>& f = py_convert_type_sfield<M>(pf);
-  const long ret = read_selected_field(f, path, fsel);
+  const Long ret = read_selected_field(f, path, fsel);
   return py_convert(ret);
 }
 
@@ -504,7 +504,7 @@ EXPORT(set_sqrt_double_sfield, {
 EXPORT(get_elems_sfield, {
   using namespace qlat;
   PyObject* p_field = NULL;
-  long idx = -1;
+  Long idx = -1;
   if (!PyArg_ParseTuple(args, "Ol", &p_field, &idx)) {
     return NULL;
   }
@@ -517,8 +517,8 @@ EXPORT(get_elems_sfield, {
 EXPORT(get_elem_sfield, {
   using namespace qlat;
   PyObject* p_field = NULL;
-  long idx = -1;
-  long m = -1;
+  Long idx = -1;
+  Long m = -1;
   if (!PyArg_ParseTuple(args, "Ol|l", &p_field, &idx, &m)) {
     return NULL;
   }
@@ -531,7 +531,7 @@ EXPORT(get_elem_sfield, {
 EXPORT(set_elems_sfield, {
   using namespace qlat;
   PyObject* p_field = NULL;
-  long idx = -1;
+  Long idx = -1;
   PyObject* p_val = NULL;
   if (!PyArg_ParseTuple(args, "OlO", &p_field, &idx, &p_val)) {
     return NULL;
@@ -545,8 +545,8 @@ EXPORT(set_elems_sfield, {
 EXPORT(set_elem_sfield, {
   using namespace qlat;
   PyObject* p_field = NULL;
-  long idx = -1;
-  long m = -1;
+  Long idx = -1;
+  Long m = -1;
   PyObject* p_val = NULL;
   if (!PyArg_ParseTuple(args, "OllO", &p_field, &idx, &m, &p_val)) {
     return NULL;

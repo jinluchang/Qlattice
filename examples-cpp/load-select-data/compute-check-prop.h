@@ -92,7 +92,7 @@ inline bool check_all_prop_wsrc(const std::string& job_tag, const int traj,
   const Coordinate total_site = get_total_site(job_tag);
   const std::string path = get_prop_wsrc_path(job_tag, traj, type);
   const std::string path_psel = get_psel_prop_wsrc_path(job_tag, traj, type);
-  long count_exact = 0;
+  Long count_exact = 0;
   for (int tslice = 0; tslice < total_site[3]; ++tslice) {
     check_sigterm();
     if (not get_does_prop_wsrc_exist(job_tag, traj, tslice, type, 1)) {

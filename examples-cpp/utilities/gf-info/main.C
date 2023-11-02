@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
   if (argc >= 5) {
     delta_t = read_double(argv[4]);
   }
-  long n_steps = 100;
+  Long n_steps = 100;
   if (argc >= 6) {
     n_steps = read_long(argv[5]);
   }

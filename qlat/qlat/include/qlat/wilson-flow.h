@@ -56,7 +56,7 @@ inline double gf_energy_density_no_comm(const GaugeField& gf)
     fd.get_elem(index) = s;
   });
   double sum = 0.0;
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     sum += fd.get_elem(index);
   }
   glb_sum(sum);

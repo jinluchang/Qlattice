@@ -158,7 +158,7 @@ struct API Geometry {
     return ret;
   }
   //
-  qacc long offset_from_coordinate(const Coordinate& xl) const
+  qacc Long offset_from_coordinate(const Coordinate& xl) const
   {
     Coordinate xe = mirror(xl);
     if (eo == 0) {
@@ -174,7 +174,7 @@ struct API Geometry {
     }
   }
   //
-  qacc Coordinate coordinate_from_offset(const long offset) const
+  qacc Coordinate coordinate_from_offset(const Long offset) const
   // 0 <= offset < local_volume_expanded() * multiplicity
   {
     Coordinate xl;
@@ -197,7 +197,7 @@ struct API Geometry {
     return xl;
   }
   //
-  qacc long index_from_coordinate(const Coordinate& xl) const
+  qacc Long index_from_coordinate(const Coordinate& xl) const
   // 0 <= index < local_volume()
   {
     const Coordinate xm = mirror(xl);
@@ -211,7 +211,7 @@ struct API Geometry {
     }
   }
   //
-  qacc Coordinate coordinate_from_index(const long index) const
+  qacc Coordinate coordinate_from_index(const Long index) const
   // get local coordinate from index
   // 0 <= index < local_volume()
   {
@@ -228,12 +228,12 @@ struct API Geometry {
     }
   }
   //
-  qacc long offset_from_index(const long index) const
+  qacc Long offset_from_index(const Long index) const
   {
     return offset_from_coordinate(coordinate_from_index(index));
   }
   //
-  qacc long g_index_from_g_coordinate(const Coordinate& xg) const
+  qacc Long g_index_from_g_coordinate(const Coordinate& xg) const
   {
     const Coordinate ts = total_site();
     return qlat::index_from_coordinate(mod(xg, ts), ts);
@@ -264,7 +264,7 @@ struct API Geometry {
   //
   qacc const Coordinate& local_site() const { return node_site; }
   //
-  qacc long local_volume() const
+  qacc Long local_volume() const
   {
     if (eo == 0) {
       return node_site[0] * node_site[1] * node_site[2] * node_site[3];
@@ -275,7 +275,7 @@ struct API Geometry {
     }
   }
   //
-  qacc long local_volume_expanded() const
+  qacc Long local_volume_expanded() const
   {
     if (eo == 0) {
       return node_site_expanded[0] * node_site_expanded[1] *
@@ -291,7 +291,7 @@ struct API Geometry {
   //
   qacc Coordinate total_site() const { return node_site * geon.size_node; }
   //
-  qacc long total_volume() const { return local_volume() * geon.num_node; }
+  qacc Long total_volume() const { return local_volume() * geon.num_node; }
   //
   qacc Coordinate coordinate_g_from_l(const Coordinate& xl) const
   {
@@ -313,14 +313,14 @@ struct API Geometry {
   //   return total_site();
   // }
   // //
-  // long recordFromCoordinate(const Coordinate& x) const
+  // Long recordFromCoordinate(const Coordinate& x) const
   // {
   //   Coordinate xe = x;
   //   xe = xe + expansion_left;
   //   return qlat::index_from_coordinate(xe, node_site_expanded);
   // }
   // //
-  // Coordinate coordinateFromRecord(long record) const
+  // Coordinate coordinateFromRecord(Long record) const
   // // 0 <= offset < local_volume_expanded() * multiplicity
   // {
   //   Coordinate x = qlat::coordinate_from_index(record, node_site_expanded);
@@ -454,14 +454,14 @@ struct API Field {
   //
   qacc const Geometry& get_geo() const { return geo(); }
   //
-  qacc M& get_elem_offset(const long offset)
+  qacc M& get_elem_offset(const Long offset)
   {
-    qassert(0 <= offset && offset < (long)field.size());
+    qassert(0 <= offset && offset < (Long)field.size());
     return field[offset];
   }
-  qacc const M& get_elem_offset(const long offset) const
+  qacc const M& get_elem_offset(const Long offset) const
   {
-    qassert(0 <= offset && offset < (long)field.size());
+    qassert(0 <= offset && offset < (Long)field.size());
     return field[offset];
   }
   //
@@ -470,7 +470,7 @@ struct API Field {
     const Geometry& geo_v = geo();
     qassert(geo_v.is_on_node(x));
     qassert(0 <= m && m < geo_v.multiplicity);
-    const long offset = geo_v.offset_from_coordinate(x) + m;
+    const Long offset = geo_v.offset_from_coordinate(x) + m;
     return get_elem_offset(offset);
   }
   qacc const M& get_elem(const Coordinate& x, const int m) const
@@ -478,7 +478,7 @@ struct API Field {
     const Geometry& geo_v = geo();
     qassert(geo_v.is_on_node(x));
     qassert(0 <= m && m < geo_v.multiplicity);
-    const long offset = geo_v.offset_from_coordinate(x) + m;
+    const Long offset = geo_v.offset_from_coordinate(x) + m;
     return get_elem_offset(offset);
   }
   //
@@ -497,7 +497,7 @@ struct API Field {
   {
     const Geometry& geo_v = geo();
     qassert(geo_v.is_on_node(x));
-    const long offset = geo_v.offset_from_coordinate(x);
+    const Long offset = geo_v.offset_from_coordinate(x);
     return Vector<M>(&field[offset], geo_v.multiplicity);
   }
   qacc Vector<M> get_elems_const(const Coordinate& x) const
@@ -512,18 +512,18 @@ struct API Field {
 #endif
       qassert(false);
     }
-    const long offset = geo_v.offset_from_coordinate(x);
+    const Long offset = geo_v.offset_from_coordinate(x);
     return Vector<M>(&field[offset], geo_v.multiplicity);
   }
   //
-  qacc M& get_elem(const long index, const int m)
+  qacc M& get_elem(const Long index, const int m)
   {
     const Geometry& geo_v = geo();
     qassert(geo_v.is_only_local);
     qassert(0 <= m && m < geo_v.multiplicity);
     return get_elem_offset(index * geo_v.multiplicity + m);
   }
-  qacc const M& get_elem(const long index, const int m) const
+  qacc const M& get_elem(const Long index, const int m) const
   {
     const Geometry& geo_v = geo();
     qassert(geo_v.is_only_local);
@@ -531,14 +531,14 @@ struct API Field {
     return get_elem_offset(index * geo_v.multiplicity + m);
   }
   //
-  qacc M& get_elem(const long index)
+  qacc M& get_elem(const Long index)
   {
     const Geometry& geo_v = geo();
     qassert(geo_v.is_only_local);
     qassert(1 == geo_v.multiplicity);
     return get_elem_offset(index);
   }
-  qacc const M& get_elem(const long index) const
+  qacc const M& get_elem(const Long index) const
   {
     const Geometry& geo_v = geo();
     qassert(geo_v.is_only_local);
@@ -546,13 +546,13 @@ struct API Field {
     return get_elem_offset(index);
   }
   //
-  qacc Vector<M> get_elems(const long index)
+  qacc Vector<M> get_elems(const Long index)
   {
     const Geometry& geo_v = geo();
     qassert(geo_v.is_only_local);
     return Vector<M>(&field[index * geo_v.multiplicity], geo_v.multiplicity);
   }
-  qacc Vector<M> get_elems_const(const long index) const
+  qacc Vector<M> get_elems_const(const Long index) const
   // Be cautious about the const property
   // 改不改靠自觉
   {
@@ -723,7 +723,7 @@ template <class M>
 void set_unit(Field<M>& f, const ComplexD& coef = 1.0)
 {
   TIMER("set_unit(Field)");
-  for (long offset = 0; offset < f.field.size(); ++offset) {
+  for (Long offset = 0; offset < f.field.size(); ++offset) {
     set_unit(f.get_elem_offset(offset), coef);
   }
 }
@@ -800,10 +800,10 @@ struct API SelectedPoints {
   // points.size() == n_points * multiplicity if initialized = true
   //
   void init();
-  void init(const long n_points_, const int multiplicity_);
+  void init(const Long n_points_, const int multiplicity_);
   void init(const PointsSelection& psel, const int multiplicity);
   //
-  void init_zero(const long n_points_, const int multiplicity_);
+  void init_zero(const Long n_points_, const int multiplicity_);
   void init_zero(const PointsSelection& psel, const int multiplicity);
   //
   SelectedPoints() { init(); }
@@ -813,33 +813,33 @@ struct API SelectedPoints {
   SelectedPoints<M>& operator=(const SelectedPoints<M>&) = default;
   SelectedPoints<M>& operator=(SelectedPoints<M>&&) noexcept = default;
   //
-  qacc M& get_elem(const long& idx)
+  qacc M& get_elem(const Long& idx)
   {
     qassert(1 == multiplicity);
     return points[idx];
   }
-  qacc const M& get_elem(const long& idx) const
+  qacc const M& get_elem(const Long& idx) const
   {
     qassert(1 == multiplicity);
     return points[idx];
   }
   //
-  qacc M& get_elem(const long& idx, const int m)
+  qacc M& get_elem(const Long& idx, const int m)
   {
     qassert(0 <= m and m < multiplicity);
     return points[idx * multiplicity + m];
   }
-  qacc const M& get_elem(const long& idx, const int m) const
+  qacc const M& get_elem(const Long& idx, const int m) const
   {
     qassert(0 <= m and m < multiplicity);
     return points[idx * multiplicity + m];
   }
   //
-  qacc Vector<M> get_elems(const long idx)
+  qacc Vector<M> get_elems(const Long idx)
   {
     return Vector<M>(&points[idx * multiplicity], multiplicity);
   }
-  qacc Vector<M> get_elems_const(const long idx) const
+  qacc Vector<M> get_elems_const(const Long idx) const
   // Be cautious about the const property
   // 改不改靠自觉
   {
@@ -857,12 +857,12 @@ void SelectedPoints<M>::init()
 }
 
 template <class M>
-void SelectedPoints<M>::init(const long n_points_, const int multiplicity_)
+void SelectedPoints<M>::init(const Long n_points_, const int multiplicity_)
 {
   if (initialized) {
     qassert(multiplicity_ == multiplicity);
     qassert(n_points_ == n_points);
-    qassert((long)points.size() == n_points * multiplicity);
+    qassert((Long)points.size() == n_points * multiplicity);
   } else {
     TIMER("SelectedPoints::init(np,mult)")
     init();
@@ -887,12 +887,12 @@ void SelectedPoints<M>::init(const PointsSelection& psel, const int multiplicity
 }
 
 template <class M>
-void SelectedPoints<M>::init_zero(const long n_points_, const int multiplicity_)
+void SelectedPoints<M>::init_zero(const Long n_points_, const int multiplicity_)
 {
   if (initialized) {
     qassert(multiplicity_ == multiplicity);
     qassert(n_points_ == n_points);
-    qassert((long)points.size() == n_points * multiplicity);
+    qassert((Long)points.size() == n_points * multiplicity);
   } else {
     TIMER("SelectedPoints::init_zero(np,mult)")
     init();
@@ -968,10 +968,10 @@ struct API SelectedField {
   vector_acc<M> field;  // field.size() == n_elems * multiplicity
   //
   void init();
-  void init(const Geometry& geo_, const long n_elems_, const int multiplicity);
+  void init(const Geometry& geo_, const Long n_elems_, const int multiplicity);
   void init(const FieldSelection& fsel, const int multiplicity);
   //
-  void init_zero(const Geometry& geo_, const long n_elems_, const int multiplicity);
+  void init_zero(const Geometry& geo_, const Long n_elems_, const int multiplicity);
   void init_zero(const FieldSelection& fsel, const int multiplicity);
   //
   SelectedField() { init(); }
@@ -983,35 +983,35 @@ struct API SelectedField {
   //
   qacc const Geometry& get_geo() const { return geo(); }
   //
-  qacc M& get_elem(const long idx)
+  qacc M& get_elem(const Long idx)
   {
     qassert(1 == geo().multiplicity);
     return field[idx];
   }
-  qacc const M& get_elem(const long idx) const
+  qacc const M& get_elem(const Long idx) const
   {
     qassert(1 == geo().multiplicity);
     return field[idx];
   }
-  qacc M& get_elem(const long idx, const int m)
+  qacc M& get_elem(const Long idx, const int m)
   {
     const int multiplicity = geo().multiplicity;
     qassert(0 <= m and m < multiplicity);
     return field[idx * multiplicity + m];
   }
-  qacc const M& get_elem(const long idx, const int m) const
+  qacc const M& get_elem(const Long idx, const int m) const
   {
     const int multiplicity = geo().multiplicity;
     qassert(0 <= m and m < multiplicity);
     return field[idx * multiplicity + m];
   }
   //
-  qacc Vector<M> get_elems(const long idx)
+  qacc Vector<M> get_elems(const Long idx)
   {
     const int multiplicity = geo().multiplicity;
     return Vector<M>(&field[idx * multiplicity], multiplicity);
   }
-  qacc Vector<M> get_elems_const(const long idx) const
+  qacc Vector<M> get_elems_const(const Long idx) const
   // Be cautious about the const property
   // 改不改靠自觉
   {
@@ -1029,13 +1029,13 @@ void SelectedField<M>::init()
 }
 
 template <class M>
-void SelectedField<M>::init(const Geometry& geo_, const long n_elems_,
+void SelectedField<M>::init(const Geometry& geo_, const Long n_elems_,
                             const int multiplicity)
 {
   if (initialized) {
     qassert(geo() == geo_remult(geo_, multiplicity));
     qassert(n_elems == n_elems_);
-    qassert((long)field.size() == n_elems * multiplicity);
+    qassert((Long)field.size() == n_elems * multiplicity);
   } else {
     TIMER("SelectedField::init(geo,n_elems,mult)")
     init();
@@ -1060,13 +1060,13 @@ void SelectedField<M>::init(const FieldSelection& fsel, const int multiplicity)
 }
 
 template <class M>
-void SelectedField<M>::init_zero(const Geometry& geo_, const long n_elems_,
+void SelectedField<M>::init_zero(const Geometry& geo_, const Long n_elems_,
                                  const int multiplicity)
 {
   if (initialized) {
     qassert(geo() == geo_remult(geo_, multiplicity));
     qassert(n_elems == n_elems_);
-    qassert((long)field.size() == n_elems * multiplicity);
+    qassert((Long)field.size() == n_elems * multiplicity);
   } else {
     TIMER("SelectedField::init_zero(geo,n_elems,mult)")
     init();
@@ -1126,7 +1126,7 @@ void set_u_rand_float(Field<M>& f, const RngState& rs, const double upper = 1.0,
   qthread_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const long gindex = geo.g_index_from_g_coordinate(xg);
+    const Long gindex = geo.g_index_from_g_coordinate(xg);
     RngState rsi = rs.newtype(gindex);
     Vector<M> v = f.get_elems(xl);
     Vector<float> dv((float*)v.data(), v.data_size() / sizeof(float));
@@ -1145,7 +1145,7 @@ void set_u_rand_double(Field<M>& f, const RngState& rs,
     const Geometry& geo = f.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const long gindex = geo.g_index_from_g_coordinate(xg);
+    const Long gindex = geo.g_index_from_g_coordinate(xg);
     RngState rsi = rs.newtype(gindex);
     Vector<M> v = f.get_elems(xl);
     Vector<double> dv((double*)v.data(), v.data_size() / sizeof(double));
@@ -1164,7 +1164,7 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
   qthread_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const long gindex = geo.g_index_from_g_coordinate(xg);
+    const Long gindex = geo.g_index_from_g_coordinate(xg);
     RngState rsi = rs.newtype(gindex);
     Vector<M> v = f.get_elems(xl);
     Vector<double> dv((double*)v.data(), v.data_size() / sizeof(double));

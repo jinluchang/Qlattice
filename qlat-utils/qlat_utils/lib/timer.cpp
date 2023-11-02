@@ -84,7 +84,7 @@ void Timer::init()
 
 void Timer::init(const std::string& fname_str)
 {
-  std::map<std::string, long>& tiim = get_timer_info_index_map();
+  std::map<std::string, Long>& tiim = get_timer_info_index_map();
   std::vector<TimerInfo>& tdb = get_timer_database();
   if (has(tiim, fname_str)) {
     info_index = tiim[fname_str];
@@ -106,13 +106,13 @@ void Timer::init(const std::string& cname_str, const std::string& fname_str)
   init(fname);
 }
 
-void Timer::reset(const long max_call_times_for_always_show_info_)
+void Timer::reset(const Long max_call_times_for_always_show_info_)
 // if max_call_times_for_always_show_info_ <= -1:
 // then do not change the current value.
 // else update the max_call_times_for_always_show_info.
 {
   std::vector<TimerInfo>& tdb = get_timer_database();
-  for (long i = 0; i < (long)tdb.size(); ++i) {
+  for (Long i = 0; i < (Long)tdb.size(); ++i) {
     tdb[i].reset();
   }
   get_start_time() = get_time();
@@ -125,10 +125,10 @@ void Timer::reset(const long max_call_times_for_always_show_info_)
   displayln_info(0,
                  ssprintf("Timer::reset(%ld): Reset all timers! (level = %ld)",
                           max_call_times_for_always_show_info(),
-                          (long)tdb_history.size()));
+                          (Long)tdb_history.size()));
 }
 
-void Timer::fork(const long max_call_times_for_always_show_info_)
+void Timer::fork(const Long max_call_times_for_always_show_info_)
 // if max_call_times_for_always_show_info_ <= -1:
 // then do not change the current value.
 // else update the max_call_times_for_always_show_info.
@@ -145,12 +145,12 @@ void Timer::fork(const long max_call_times_for_always_show_info_)
       get_timer_database_history();
   std::vector<TimerInfo>& tdb = get_timer_database();
   tdb_history.push_back(tdb);
-  for (long i = 0; i < (long)tdb.size(); ++i) {
+  for (Long i = 0; i < (Long)tdb.size(); ++i) {
     tdb[i].reset();
   }
   displayln_info(0, ssprintf("Timer::fork(%ld): Fork all timers! (level = %ld)",
                              max_call_times_for_always_show_info(),
-                             (long)tdb_history.size()));
+                             (Long)tdb_history.size()));
 }
 
 void Timer::merge()
@@ -168,12 +168,12 @@ void Timer::merge()
   std::vector<TimerInfo>& tdb = get_timer_database();
   qassert(tdb_history.size() >= 1);
   qassert(tdb.size() >= tdb_history.back().size());
-  for (long i = 0; i < (long)tdb_history.back().size(); ++i) {
+  for (Long i = 0; i < (Long)tdb_history.back().size(); ++i) {
     tdb[i].merge(tdb_history.back()[i]);
   }
   tdb_history.pop_back();
   displayln_info(0, ssprintf("Timer::merge(): Merge all timers! (level = %ld)",
-                             (long)tdb_history.size()));
+                             (Long)tdb_history.size()));
 }
 
 void Timer::start(bool verbose)
@@ -210,7 +210,7 @@ void Timer::start(bool verbose)
 void Timer::stop(bool verbose)
 {
   TimerInfo& info = get_timer_database()[info_index];
-  std::vector<long>& t_stack = get_timer_stack();
+  std::vector<Long>& t_stack = get_timer_stack();
   qassert(not t_stack.empty());
   if (not(t_stack.back() == info_index)) {
     displayln(ssprintf("%s::%s ERROR: stack is corrupted", cname,
@@ -282,17 +282,17 @@ void Timer::display(const std::string& tag)
   const std::vector<std::vector<TimerInfo>>& tdb_history =
       get_timer_database_history();
   std::vector<const TimerInfo*> db;
-  const long tdbsize = tdb.size();
-  for (long i = 0; i < tdbsize; i++) {
+  const Long tdbsize = tdb.size();
+  for (Long i = 0; i < tdbsize; i++) {
     db.push_back(&tdb[i]);
   }
   std::sort(db.begin(), db.end(), compare_time_info_p);
   displayln_info(ssprintf(
       "Timer::display-start: %s (level=%ld) fname : time%% number of calls; "
       "Avg,Tot sec; Avg,Tot flops; Gflops",
-      tag.c_str(), (long)tdb_history.size()));
-  const long dbsize = db.size();
-  for (long i = 0; i < dbsize; i++) {
+      tag.c_str(), (Long)tdb_history.size()));
+  const Long dbsize = db.size();
+  for (Long i = 0; i < dbsize; i++) {
     if (db[i]->call_times > 0) {
       db[i]->show_avg("display", max_function_name_length_shown());
     }
@@ -300,7 +300,7 @@ void Timer::display(const std::string& tag)
   displayln_info(ssprintf(
       "Timer::display-end:   %s (level=%ld) --------------------- total %.4E "
       "sec ----------------------",
-      tag.c_str(), (long)tdb_history.size(), total_time));
+      tag.c_str(), (Long)tdb_history.size(), total_time));
 }
 
 void Timer::autodisplay(const double time)
@@ -317,9 +317,9 @@ void Timer::display_stack_always()
 {
   displayln("display_stack start");
   const std::vector<TimerInfo>& tdb = get_timer_database();
-  const std::vector<long>& t_stack = get_timer_stack();
-  for (long i = (long)t_stack.size() - 1; i >= 0; --i) {
-    const long info_index = t_stack[i];
+  const std::vector<Long>& t_stack = get_timer_stack();
+  for (Long i = (Long)t_stack.size() - 1; i >= 0; --i) {
+    const Long info_index = t_stack[i];
     tdb[info_index].show_avg_always(ssprintf("stack[%3ld]", i),
                                     max_function_name_length_shown());
   }

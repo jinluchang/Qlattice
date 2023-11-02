@@ -23,7 +23,7 @@ void test()
   FieldM<double, 1> fsum;
   fsum.init(geo);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ColorMatrix> fv = gf.get_elems_const(xl);
     double sum = 0;
@@ -33,7 +33,7 @@ void test()
     fsum.get_elem(xl) = sum;
   }
   double gf_trace_sum = 0.0;
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     gf_trace_sum += fsum.get_elem(xl);
   }

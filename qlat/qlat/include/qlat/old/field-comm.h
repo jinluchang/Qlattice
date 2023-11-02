@@ -25,8 +25,8 @@ void fetch_expanded(Field<M> &field_comm)
   Coordinate node_pos;  // home node coordinate of a site in node space
 
   // populate send_map with the data that we need to send to other nodes
-  long record_size = field_comm.geo().local_volume_expanded();
-  for (long record = 0; record < record_size; record++) {
+  Long record_size = field_comm.geo().local_volume_expanded();
+  for (Long record = 0; record < record_size; record++) {
     pos = field_comm.geo().coordinateFromRecord(record);
     if (field_comm.geo().is_local(pos)) continue;
     for (int mu = 0; mu < DIMN; mu++) {
@@ -54,9 +54,9 @@ void fetch_expanded(Field<M> &field_comm)
   for (it = send_map.begin(); it != send_map.end(); it++) {
     node_pos = it->first;
     std::vector<M> &send_vec = it->second;
-    long size = send_vec.size();
+    Long size = send_vec.size();
     size_t size_bytes = size * sizeof(M);
-    recv_vec.resize(std::max((long)2500, size));
+    recv_vec.resize(std::max((Long)2500, size));
 
     M *send = send_vec.data();
     M *recv = recv_vec.data();
@@ -88,7 +88,7 @@ void fetch_expanded(Field<M> &field_comm)
   }
   // Now send_map[node_pos] is the vector of data recieved from the node
   // pointed to by key.
-  for (long record = 0; record < record_size; record++) {
+  for (Long record = 0; record < record_size; record++) {
     pos = field_comm.geo().coordinateFromRecord(record);
     if (field_comm.geo().is_local(pos)) continue;
     for (int mu = 0; mu < DIMN; mu++) {
@@ -163,7 +163,7 @@ void produce_chart_envelope(Chart<M> &chart, const Geometry geometry,
 
   Coordinate index_pos;
   Coordinate index_pos_m;
-  for (long index = 0; index < geometry.local_volume(); index++) {
+  for (Long index = 0; index < geometry.local_volume(); index++) {
     index_pos = geometry.coordinate_from_index(index);
     for (int mu = 0; mu < DIMN; mu++) {
       for (int nu = 0; nu < DIMN; nu++) {
@@ -201,7 +201,7 @@ void produce_chart_envelope(Chart<M> &chart, const Geometry geometry,
   }
 
   typename Chart<M>::iterator it_chart;
-  long size;
+  Long size;
   for (it_chart = chart.begin(); it_chart != chart.end(); it_chart++) {
     size = geometry.multiplicity * it_chart->second.size();
     chart.send_map[it_chart->first].resize(size);
@@ -234,7 +234,7 @@ void produce_chart_envelope(Chart<M> &chart, const Geometry geometry,
 //
 //	Coordinate index_pos;
 //	Coordinate index_pos_m;
-//	for(long index = 0; index < geometry.local_volume(); index++){
+//	for(Long index = 0; index < geometry.local_volume(); index++){
 //		geometry.coordinate_from_index(index_pos, index);
 //		for(int mu = 0; mu < DIMN; mu++){
 //		for(int nu = 0; nu < DIMN; nu++){
@@ -271,7 +271,7 @@ void produce_chart_envelope(Chart<M> &chart, const Geometry geometry,
 //	}
 //
 //	typename Chart<M>::iterator it_chart;
-//	long size;
+//	Long size;
 //	for(it_chart = chart.begin(); it_chart != chart.end(); it_chart++){
 //		size = geometry.multiplicity * it_chart->second.size();
 //		chart.send_map[it_chart->first].resize(size);
@@ -291,8 +291,8 @@ void produce_chart_geo(Chart<M> &chart, const Geometry geometry)
   chart.expansion_right = geometry.expansion_right;
 
   chart.clear();
-  long record_size = geometry.local_volume_expanded();
-  for (long record = 0; record < record_size; record++) {
+  Long record_size = geometry.local_volume_expanded();
+  for (Long record = 0; record < record_size; record++) {
     pos = geometry.coordinateFromRecord(record);
     if (geometry.is_local(pos)) continue;
     for (int mu = 0; mu < DIMN; mu++) {
@@ -307,7 +307,7 @@ void produce_chart_geo(Chart<M> &chart, const Geometry geometry)
   }
 
   typename Chart<M>::iterator it_chart;
-  long size;
+  Long size;
   for (it_chart = chart.begin(); it_chart != chart.end(); it_chart++) {
     size = geometry.multiplicity * it_chart->second.size();
     chart.send_map[it_chart->first].resize(size);
@@ -336,7 +336,7 @@ void fetch_expanded_chart(Field<M> &field_comm, Chart<M> &send_chart)
   for (it_chart = send_chart.begin(); it_chart != send_chart.end();
        it_chart++) {
     node_pos = it_chart->first;
-    long consume = 0;
+    Long consume = 0;
     std::vector<M> &vec = send_chart.send_map[node_pos];
     for (it_coor = it_chart->second.begin(); it_coor != it_chart->second.end();
          it_coor++) {
@@ -360,9 +360,9 @@ void fetch_expanded_chart(Field<M> &field_comm, Chart<M> &send_chart)
          it++) {
       node_pos = it->first;
       std::vector<M> &send_vec = it->second;
-      long size = send_vec.size();
+      Long size = send_vec.size();
       size_t size_bytes = size * sizeof(M);
-      recv_vec.resize(std::max((long)2500, size));
+      recv_vec.resize(std::max((Long)2500, size));
 
       M *send = send_vec.data();
       M *recv = recv_vec.data();
@@ -397,7 +397,7 @@ void fetch_expanded_chart(Field<M> &field_comm, Chart<M> &send_chart)
   for (it_chart = send_chart.begin(); it_chart != send_chart.end();
        it_chart++) {
     node_pos = it_chart->first;
-    long consume = 0;
+    Long consume = 0;
     std::vector<M> &vec = send_chart.send_map[node_pos];
     for (it_coor = it_chart->second.begin(); it_coor != it_chart->second.end();
          it_coor++) {

@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
 
   //qlat::ComplexD* tmp = (qlat::ComplexD*) qlat::get_data(FpropV[0]).data();
   //print0("size0 %ld, size1 %ld \n", 
-  //  long(geo.local_volume()*12*12), long(qlat::get_data(FpropV[0]).data_size()/sizeof(qlat::ComplexD)));
+  //  Long(geo.local_volume()*12*12), Long(qlat::get_data(FpropV[0]).data_size()/sizeof(qlat::ComplexD)));
   //print_sum(tmp, geo.local_volume(), "sum FpropV 0", 1);
 
   //print_sum(tmp, geo.local_volume(), "sum FpropV 2", 1);

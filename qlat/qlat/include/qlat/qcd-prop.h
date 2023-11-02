@@ -32,7 +32,7 @@ void set_propagator_from_fermion_fields(
   prop.init(geo_reform(geo));
   qassert(prop.geo() == geo);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     array<ConstHandle<WilsonVectorT<T> >, 4 * NUM_COLOR> cols;
     for (int k = 0; k < 4 * NUM_COLOR; ++k) {
@@ -61,7 +61,7 @@ inline void set_propagator_col_from_fermion_field(Propagator4dT<T>& prop,
   const Geometry& geo = ff.geo();
   qassert(geo == prop.geo());
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     set_wilson_matrix_col_from_vector(prop.get_elem(xl), idx, ff.get_elem(xl));
   }
@@ -87,7 +87,7 @@ inline void set_fermion_field_from_propagator_col(FermionField4dT<T>& ff,
   ff.init(geo_reform(geo));
   qassert(geo == ff.geo());
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     set_wilson_vector_from_matrix_col(ff.get_elem(xl), prop.get_elem(xl), idx);
   }
@@ -106,7 +106,7 @@ inline void fermion_field_5d_from_4d(FermionField5dT<T>& ff5d,
   set_zero(ff5d);
   const int sizewvh = sizeof(WilsonVectorT<T>) / 2;
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     Coordinate x = geo.coordinate_from_index(index);
     memcpy((char*)&(ff5d.get_elem(x, upper)), (const char*)&(ff4d.get_elem(x)),
            sizewvh);
@@ -128,7 +128,7 @@ void fermion_field_4d_from_5d(FermionField4dT<T>& ff4d,
   set_zero(ff4d);
   const int sizewvh = sizeof(WilsonVectorT<T>) / 2;
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     Coordinate x = geo.coordinate_from_index(index);
     memcpy((char*)&(ff4d.get_elem(x)), (const char*)&(ff5d.get_elem(x, upper)),
            sizewvh);
@@ -138,7 +138,7 @@ void fermion_field_4d_from_5d(FermionField4dT<T>& ff4d,
 }
 
 template <class Inverter, class T>
-inline long invert_dwf(FermionField4dT<T>& sol, const FermionField4dT<T>& src,
+inline Long invert_dwf(FermionField4dT<T>& sol, const FermionField4dT<T>& src,
                        const Inverter& inv, const int ls_ = 0)
 // sol do not need to be initialized
 // inv.geo() must be the geometry of the fermion field
@@ -155,7 +155,7 @@ inline long invert_dwf(FermionField4dT<T>& sol, const FermionField4dT<T>& src,
   src5d.init(geo_ls);
   fermion_field_5d_from_4d(src5d, src, 0, ls - 1);
   fermion_field_5d_from_4d(sol5d, sol, ls - 1, 0);
-  const long iter = invert(sol5d, src5d, inv);
+  const Long iter = invert(sol5d, src5d, inv);
   fermion_field_4d_from_5d(sol, sol5d, ls - 1, 0);
   return iter;
 }
@@ -234,7 +234,7 @@ inline void set_wall_src_fermion_field(FermionField4d& ff, const int tslice,
   const CoordinateD mom = lmom * lattice_mom_mult(geo);
   set_zero(ff);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     if (xg[3] == tslice) {
@@ -292,11 +292,11 @@ inline void set_rand_u1_src_psel(Propagator4d& prop, FieldM<ComplexD, 1>& fu1,
   fu1.init(geo);
   set_zero(prop);
   set_zero(fu1);
-  qthread_for(idx, (long)psel.size(), {
+  qthread_for(idx, (Long)psel.size(), {
     const Coordinate xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {
-      const long gindex = index_from_coordinate(xg, total_site);
+      const Long gindex = index_from_coordinate(xg, total_site);
       RngState rst = rs.newtype(gindex);
       const double phase = u_rand_gen(rst, PI, -PI);
       const ComplexD u1 = qpolar(1.0, phase);
@@ -316,7 +316,7 @@ inline void set_rand_u1_sol_psel(SelectedPoints<WilsonMatrix>& sp_prop,
   SelectedPoints<ComplexD> sp_fu1;
   set_selected_points(sp_prop, prop, psel);
   set_selected_points(sp_fu1, fu1, psel);
-  qthread_for(idx, (long)psel.size(), {
+  qthread_for(idx, (Long)psel.size(), {
     const ComplexD& u1 = sp_fu1.get_elem(idx);
     WilsonMatrix& wm = sp_prop.get_elem(idx);
     wm *= qlat::qconj(u1);
@@ -334,11 +334,11 @@ inline void set_rand_u1_src_fsel(Propagator4d& prop, FieldM<ComplexD, 1>& fu1,
   set_zero(prop);
   set_zero(fu1);
   qthread_for(idx, fsel.n_elems, {
-    const long index = fsel.indices[idx];
+    const Long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     qassert(geo.is_local(xl));
-    const long gindex = index_from_coordinate(xg, total_site);
+    const Long gindex = index_from_coordinate(xg, total_site);
     RngState rst = rs.newtype(gindex);
     const double phase = u_rand_gen(rst, PI, -PI);
     const ComplexD u1 = qpolar(1.0, phase);
@@ -372,7 +372,7 @@ inline void set_mom_src_fermion_field(FermionField4d& ff,
   const CoordinateD mom = lmom * lattice_mom_mult(geo);
   set_zero(ff);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     double phase = 0.0;
@@ -428,7 +428,7 @@ void free_mom_invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
   sol.init(src);
   const Geometry& geo = src.geo();
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
     array<double, DIMN> kk, ks;
@@ -592,7 +592,7 @@ inline void flip_tpbc_with_tslice(SelectedPoints<WilsonMatrix>& ps_prop,
   TIMER_VERBOSE("flip_tpbc_with_tslice(psel)");
   qassert(t_size > 0);
   qassert(t_size > tslice_flip_tpbc);
-  qassert(ps_prop.n_points == (long)psel.size());
+  qassert(ps_prop.n_points == (Long)psel.size());
   int t_start, t_stop;
   set_t_range_flip_tpbc_with_tslice(t_start, t_stop, tslice_flip_tpbc, t_size);
   qthread_for(idx, ps_prop.n_points, {
@@ -613,13 +613,13 @@ inline void flip_tpbc_with_tslice(SelectedField<WilsonMatrix>& s_prop,
     return;
   }
   TIMER_VERBOSE("flip_tpbc_with_tslice(fsel)");
-  qassert(s_prop.n_elems == (long)fsel.n_elems);
+  qassert(s_prop.n_elems == (Long)fsel.n_elems);
   const Geometry& geo = fsel.f_rank.geo();
   const int t_size = geo.total_site()[3];
   int t_start, t_stop;
   set_t_range_flip_tpbc_with_tslice(t_start, t_stop, tslice_flip_tpbc, t_size);
   qacc_for(idx, fsel.n_elems, {
-    const long index = fsel.indices[idx];
+    const Long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const int t = xg[3];
@@ -642,7 +642,7 @@ inline void set_tslice_mom_src_fermion_field(FermionField4d& ff,
   const CoordinateD mom = lmom * lattice_mom_mult(geo);
   set_zero(ff);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     if (xg[3] == tslice) {
@@ -698,7 +698,7 @@ inline void set_volume_src_fermion_field(FermionField4d& ff,
   const CoordinateD mom = lmom * lattice_mom_mult(geo);
   set_zero(ff);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     double phase = 0.0;

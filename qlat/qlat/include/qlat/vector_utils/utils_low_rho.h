@@ -32,8 +32,8 @@ __global__ void multiplyNab_global(const Complexq* Nab, Ftype *Mres,const Ftype 
   /////__shared__ Complexq Nabv_multi[16*3];
 
   unsigned int tid = threadIdx.x;
-  long bi = blockIdx.x;
-  //long bN = gridDim.x;
+  Long bi = blockIdx.x;
+  //Long bN = gridDim.x;
   ///unsigned int bi = ji/Aoper;
   ///unsigned int ipr  = ji%Aoper;
 
@@ -100,7 +100,7 @@ __global__ void multiplyNab_global(const Complexq* Nab, Ftype *Mres,const Ftype 
       Ftype v10 = v1[ipr].real();
       for(int mi=0;mi<nmass;mi++)
       {
-        ////long jobN = Aoper*nt;
+        ////Long jobN = Aoper*nt;
         Mres[offAB] += (buf[mi*2+0]*v00 + buf[mi*2+1]*v10);
         offAB += shiftM;
         ///mi += blockDim.x;
@@ -179,7 +179,7 @@ void prodab(Complexq* a0,Complexq* b0, const qlat::Geometry &geo, Complexq *fM, 
 
   unsigned long Nvol = geo.local_volume();
   int Nt = geo.node_site[3];
-  long Nsum = Nvol/Nt;
+  Long Nsum = Nvol/Nt;
   /////Qassert(Nsum%32 == 0);
 
   Complexq* a = a0;
@@ -202,11 +202,11 @@ void prodab(Complexq* a0,Complexq* b0, const qlat::Geometry &geo, Complexq *fM, 
 
   if(mode_reduce == 0){
     /////ELSE do with CPU
-    long m = 4;
-    long n = 4;
-    long w = 3*Nsum;
+    Long m = 4;
+    Long n = 4;
+    Long w = 3*Nsum;
     #pragma omp parallel for
-    for(long i=0;i<Nt*4*4;i++){f0[i] = 0;}
+    for(Long i=0;i<Nt*4*4;i++){f0[i] = 0;}
     //#pragma omp parallel for
     //for(int it=0;it<Nt;it++){
     //  matrix_prod_cpu(&b[it*m*w], &a[it*n*w], &f0[it*m*n] , m,n, w, 1, true, true);
@@ -217,7 +217,7 @@ void prodab(Complexq* a0,Complexq* b0, const qlat::Geometry &geo, Complexq *fM, 
   }
 }
 
-inline void reducefM(qlat::vector_acc<Complexq > &fd,Complexq* NabL, long bufN, std::vector<ga_M > &gL,const Geometry &geo,const int nvec,const Ftype facvol, unsigned long bufi, int mode_reduce=1)
+inline void reducefM(qlat::vector_acc<Complexq > &fd,Complexq* NabL, Long bufN, std::vector<ga_M > &gL,const Geometry &geo,const int nvec,const Ftype facvol, unsigned long bufi, int mode_reduce=1)
 {
   /////const qlat::Geometry &geo = a0.geo();
   ////const Coordinate vg = geo.total_site();
@@ -229,7 +229,7 @@ inline void reducefM(qlat::vector_acc<Complexq > &fd,Complexq* NabL, long bufN, 
 
   if(mode_reduce == 1)
   {
-    long Nsum = Nvol/Nt;
+    Long Nsum = Nvol/Nt;
     if(Nsum%32 !=0){print0("Assumed Nsum divide 32 == 0, %8d \n", int(Nsum%32));Qassert(false);}
     Nsum = Nsum/32;
 
@@ -368,9 +368,9 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector_acc<Ftype > &Mr
 
   ////nt distributed
   //int rank = qlat::get_id_node();
-  //long offNab = rank*nt*bufN0*16;
+  //Long offNab = rank*nt*bufN0*16;
   //if(mode_nt == 1){offNab = 0;}
-  long offNab = 0;
+  Long offNab = 0;
 
   ////GPU prod
   if(mode_reduce == 1){
@@ -378,10 +378,10 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector_acc<Ftype > &Mr
     int rank = qlat::get_id_node();
 
     int  nthreads = nt;
-    long nB = bufN;
-    //long largeB = nt*16;if(nmass > largeB){largeB = nmass;}
+    Long nB = bufN;
+    //Long largeB = nt*16;if(nmass > largeB){largeB = nmass;}
     //int sizeB = largeB*sizeof(Complexq);
-    long largeB = nt*16;largeB += nmass;
+    Long largeB = nt*16;largeB += nmass;
     int sizeB = largeB*sizeof(Complexq);
     /////Sum over time
     /////if(nt < 16){print0("time too short for production. \n");Qassert(false);}
@@ -400,7 +400,7 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector_acc<Ftype > &Mr
     signed char G3[32];
 
     /////unsigned int tid = threadIdx.x;
-    /////long bi = blockIdx.x;
+    /////Long bi = blockIdx.x;
     for(unsigned int off=0;off<32;off++){G0[off] = GmapM[0*32+off];}
     for(unsigned int off=0;off<32;off++){G1[off] = GmapM[1*32+off];}
     for(unsigned int off=0;off<32;off++){G2[off] = GmapM[2*32+off];}
@@ -408,7 +408,7 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector_acc<Ftype > &Mr
 
     /////NabL[ivec*nt*bufN*16 + it*bufN*16 + bufi*16 + gi]
     /////Each rank do one multiply
-    ////long offNab = 0;
+    ////Long offNab = 0;
     #pragma omp parallel for
     for(LInt bi=0; bi<bufN; bi++)
     {
@@ -474,14 +474,14 @@ inline std::vector<unsigned long > get_loop_cut(int Nx,int Ny, int Nycut, int Nx
   jobL.resize(Ny*Nx);
   int Nx_bound = (Nx+Nxcut-1)/Nxcut;
   int Ny_bound = (Ny+Nycut-1)/Nycut;
-  long count = 0;
+  Long count = 0;
   for(int lyi=0;lyi<Ny_bound;lyi++)
   for(int lxi=0;lxi<Nx_bound;lxi++)
   for(int ayi=0;ayi<Nycut;ayi++)
   for(int axi=0;axi<Nxcut;axi++)
   {
-    long yi = lyi*Nycut + ayi;
-    long xi = lxi*Nxcut + axi;
+    Long yi = lyi*Nycut + ayi;
+    Long xi = lxi*Nxcut + axi;
     if(xi < Nx and yi < Ny){
       jobL[count] = yi*Nx + xi;count += 1;
     }
@@ -560,7 +560,7 @@ struct Nab_distribute{
   void set_bufN(const fft_desc_basic &fd, int bufN_or)
   {
     bufN = bufN_or;
-    long size_c = fd.Nt*bufN*16 * sizeof(Complexq);
+    Long size_c = fd.Nt*bufN*16 * sizeof(Complexq);
     send.resize(fd.mt);
     recv.resize(fd.mt);
     spls.resize(fd.mt);
@@ -621,7 +621,7 @@ struct Nab_distribute{
 //  //if(mode_nt == 0)
 //  //{
 //  //  sum_all_size(reinterpret_cast<Ftype* > (&NabL[0]), 2*sumsize , 1);
-//  //  //long bufN = NabL.size()/(fd.nt*fd.Nmpi  *16);
+//  //  //Long bufN = NabL.size()/(fd.nt*fd.Nmpi  *16);
 //  //  //MPI_Comm vec_comm;
 //  //  //int tini = fd->init;
 //  //  //int color_xyz = tini;
@@ -631,8 +631,8 @@ struct Nab_distribute{
 //  //  //M_size = get_MPI_type<Ftype >(curr );Qassert(M_size <= FLOATIND+3);
 //
 //  //  //Ftype* src = reinterpret_cast<Ftype* > (&NabL[0]);
-//  //  //long size_sum = fd.Nt*fd.Nmpi*16 * 2;
-//  //  //long src_off = (tini/fd.Nt)*size_sum
+//  //  //Long size_sum = fd.Nt*fd.Nmpi*16 * 2;
+//  //  //Long src_off = (tini/fd.Nt)*size_sum
 //  //  //MPI_Allreduce(&src[src_off],&src[src_off], size_sum, curr, MPI_SUM, vec_comm);
 //
 //  //  //MPI_Gather( void* send_data,
@@ -746,7 +746,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   int Ncut = (n_vec-1)/2 + 1;
 
   int  Nmpi   = qlat::get_num_node();
-  long npoints = eigen[0].geo().local_volume()*12;
+  Long npoints = eigen[0].geo().local_volume()*12;
   ////double vGb_vec = npoints*Nmpi*2.0/(1024.0*1024*1024);
   double vGb_vec = npoints*2.0/(1024.0*1024*1024);
 
@@ -766,8 +766,8 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   if(mode_reduce == 1)prodFMV.resize(Nmpi*geo.local_volume()*16/32);
   Complexq* prodFM = prodFMV.data();
 
-  long NabL_size  = 16*Nt*Nmpi;
-  long MresL_size = nmass*16*nt*nt;
+  Long NabL_size  = 16*Nt*Nmpi;
+  Long MresL_size = nmass*16*nt*nt;
 
   //NabL_size = 16*nt;
   //if(mode_nt==1){NabL_size = 16*nt;}
@@ -792,7 +792,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
 
   modeCopy = 1;
 
-  long total_vol = Nmpi*geo.local_volume();
+  Long total_vol = Nmpi*geo.local_volume();
   bufN = 2*((total_vol*12)/(nmass*16*nt*facbufN));
   double membufN = (MresL_size + NabL_size)*sizeof(Complexq)*pow(0.5,30);
   /////CPU memory limit, only bufN 1 or a small number
@@ -949,7 +949,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
     #endif
 
     ////Vector reduce to Nab
-    long off_FM = 0;
+    Long off_FM = 0;
     if(mode_reduce == 0)off_FM=((countrun%Nmpi)*Nt*16);
     if(mode_reduce == 1)off_FM=((countrun%Nmpi)*geo.local_volume()*16)/32;
     {
@@ -1035,10 +1035,10 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
 
   ///ipr --> mi --> bi -- > t0
   Mres.resize(nmass*16*nt*nt);set_zero(Mres);
-  /////long Msum = Mres.size();
+  /////Long Msum = Mres.size();
   {
   TIMER("Copy final result");
-  long Nsize = nmass*16*nt;
+  Long Nsize = nmass*16*nt;
   qacc_for(isp, Nsize, {
     int mi  =  isp/(16*nt); 
     int ipr = (isp%(16*nt))/(nt);

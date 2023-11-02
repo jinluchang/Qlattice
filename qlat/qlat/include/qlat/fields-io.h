@@ -16,7 +16,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// aLong with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // File format should be compatible with Christoph Lehner's file format.
 
@@ -117,7 +117,7 @@ std::vector<char> BitSet::compress_selected(const Vector<M>& src) const
 }
 
 std::vector<char> bitset_decompress(const std::vector<char>& data,
-                                    const long local_volume);
+                                    const Long local_volume);
 
 BitSet mk_bitset_from_field_rank(const FieldM<int64_t, 1>& f_rank);
 
@@ -152,8 +152,8 @@ struct API FieldsReader {
   //
   bool is_read_through;
   std::vector<std::string> fn_list;
-  std::map<std::string, long> offsets_map;
-  long max_offset;
+  std::map<std::string, Long> offsets_map;
+  Long max_offset;
   //
   FieldsReader() { init(); }
   //
@@ -173,7 +173,7 @@ void mkfile(FieldsReader& fr);
 
 std::string get_file_path(FieldsReader& fr);
 
-long get_file_size(FieldsReader& fr);
+Long get_file_size(FieldsReader& fr);
 
 template <class M>
 void convert_endian_32(Vector<M> data, const bool is_little_endian)
@@ -198,56 +198,56 @@ void convert_endian_64(Vector<M> data, const bool is_little_endian)
 void qfwrite_convert_endian(void* ptr, const size_t size, const size_t nmemb,
                             QFile& qfile, const bool is_little_endian);
 
-long write(FieldsWriter& fw, const std::string& fn, const Geometry& geo,
+Long write(FieldsWriter& fw, const std::string& fn, const Geometry& geo,
            const Vector<char> data, const bool is_sparse_field=false);
 
-long qfread_convert_endian(void* ptr, const size_t size, const size_t nmemb,
+Long qfread_convert_endian(void* ptr, const size_t size, const size_t nmemb,
                            QFile& qfile, const bool is_little_endian);
 
 bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
               crc32_t& crc, int64_t& data_len, bool& is_sparse_field);
 
-long read_data(FieldsReader& fr, std::vector<char>& data,
+Long read_data(FieldsReader& fr, std::vector<char>& data,
                const int64_t data_len, const crc32_t crc);
 
-long read_next(FieldsReader& fr, std::string& fn, Coordinate& total_site,
+Long read_next(FieldsReader& fr, std::string& fn, Coordinate& total_site,
                std::vector<char>& data, bool& is_sparse_field);
 
 void read_through(FieldsReader& fr);
 
 bool does_file_exist(FieldsReader& fr, const std::string& fn);
 
-long read(FieldsReader& fr, const std::string& fn, Coordinate& total_site,
+Long read(FieldsReader& fr, const std::string& fn, Coordinate& total_site,
           std::vector<char>& data, bool& is_sparse_field);
 
-long check_file(FieldsReader& fr, const std::string& fn);
+Long check_file(FieldsReader& fr, const std::string& fn);
 
 int flush(FieldsWriter& fw);
 
 // -----------------
 
 template <class M>
-long write(FieldsWriter& fw, const std::string& fn, const Field<M>& field)
+Long write(FieldsWriter& fw, const std::string& fn, const Field<M>& field)
 // field already have endianess converted correctly
 {
   TIMER_FLOPS("write(fw,fn,field)");
   const Geometry& geo = field.geo();
   const Vector<M> v = get_data(field);
   const Vector<char> data((const char*)v.data(), v.data_size());
-  const long total_bytes = write(fw, fn, geo, data, false);
+  const Long total_bytes = write(fw, fn, geo, data, false);
   timer.flops += total_bytes;
   return total_bytes;
 }
 
 template <class M>
-long write(FieldsWriter& fw, const std::string& fn, const SelectedField<M>& sf,
+Long write(FieldsWriter& fw, const std::string& fn, const SelectedField<M>& sf,
            const BitSet& bs)
 // field already have endianness converted correctly
 {
   TIMER_FLOPS("write(fw,fn,sf,bs)");
   const Geometry& geo = sf.geo();
   const std::vector<char> data = bs.compress_selected(get_data(sf));
-  const long total_bytes = write(fw, fn, geo, get_data(data), true);
+  const Long total_bytes = write(fw, fn, geo, get_data(data), true);
   timer.flops += total_bytes;
   return total_bytes;
 }
@@ -260,7 +260,7 @@ void set_field_from_data(Field<M>& field, const GeometryNode& geon,
 {
   TIMER("set_field_from_data");
   const Coordinate node_site = total_site / geon.size_node;
-  const long local_volume = product(node_site);
+  const Long local_volume = product(node_site);
   ConstHandle<std::vector<char> > hdata(data);
   std::vector<char> dc_data;
   if (is_sparse_field) {
@@ -271,8 +271,8 @@ void set_field_from_data(Field<M>& field, const GeometryNode& geon,
     field.init();
     return;
   }
-  const long local_data_size = hdata().size();
-  const long site_data_size = local_data_size / local_volume;
+  const Long local_data_size = hdata().size();
+  const Long site_data_size = local_data_size / local_volume;
   qassert(site_data_size % sizeof(M) == 0);
   const int multiplicity = site_data_size / sizeof(M);
   Geometry geo;
@@ -280,7 +280,7 @@ void set_field_from_data(Field<M>& field, const GeometryNode& geon,
   field.init();
   field.init(geo);
   Vector<M> fv = get_data(field);
-  qassert(fv.data_size() == (long)hdata().size());
+  qassert(fv.data_size() == (Long)hdata().size());
   memcpy(fv.data(), hdata().data(), fv.data_size());
 }
 
@@ -291,13 +291,13 @@ void set_field_from_data(SelectedField<M>& sf, FieldM<int64_t, 1>& f_rank,
   TIMER("set_field_from_data");
   const Geometry& geo = f_rank.geo();
   const Coordinate& node_site = geo.node_site;
-  const long local_volume = product(node_site);
+  const Long local_volume = product(node_site);
   const size_t N = local_volume;
   const size_t nbytes = 1 + (N - 1) / 8;
   BitSet bs(N);
   bs.set(&data[0], nbytes);
   bs.set_f_rank(f_rank);
-  const long n_elems = bs.cN;
+  const Long n_elems = bs.cN;
   if (n_elems == 0) {
     sf.init();
     return;
@@ -320,14 +320,14 @@ void set_field_from_data(SelectedField<M>& sf, const std::vector<char>& data,
   TIMER("set_field_from_data");
   const Geometry& geo = fsel.f_rank.geo();
   const Coordinate& node_site = geo.node_site;
-  const long local_volume = product(node_site);
+  const Long local_volume = product(node_site);
   const size_t N = local_volume;
   const size_t nbytes = 1 + (N - 1) / 8;
   BitSet bs(N);
   bs.set(&data[0], nbytes);
   qassert(bs.check_f_rank(fsel.f_rank));
-  const long n_elems = fsel.n_elems;
-  qassert(n_elems == (long)bs.cN);
+  const Long n_elems = fsel.n_elems;
+  qassert(n_elems == (Long)bs.cN);
   if (n_elems == 0) {
     sf.init();
     return;
@@ -343,14 +343,14 @@ void set_field_from_data(SelectedField<M>& sf, const std::vector<char>& data,
 }
 
 template <class M>
-long read(FieldsReader& fr, const std::string& fn, Field<M>& field)
+Long read(FieldsReader& fr, const std::string& fn, Field<M>& field)
 // field endianess not converted at all
 {
   TIMER_FLOPS("read(fr,fn,field)");
   Coordinate total_site;
   std::vector<char> data;
   bool is_sparse_field = false;
-  const long total_bytes = read(fr, fn, total_site, data, is_sparse_field);
+  const Long total_bytes = read(fr, fn, total_site, data, is_sparse_field);
   if (0 == total_bytes) {
     return 0;
   }
@@ -360,7 +360,7 @@ long read(FieldsReader& fr, const std::string& fn, Field<M>& field)
 }
 
 template <class M>
-long read(FieldsReader& fr, const std::string& fn, SelectedField<M>& sf,
+Long read(FieldsReader& fr, const std::string& fn, SelectedField<M>& sf,
           FieldM<int64_t, 1>& f_rank)
 // field endianess not converted at all
 // f_rank does not need to be initialized
@@ -369,7 +369,7 @@ long read(FieldsReader& fr, const std::string& fn, SelectedField<M>& sf,
   Coordinate total_site;
   std::vector<char> data;
   bool is_sparse_field = false;
-  const long total_bytes = read(fr, fn, total_site, data, is_sparse_field);
+  const Long total_bytes = read(fr, fn, total_site, data, is_sparse_field);
   if (0 == total_bytes) {
     return 0;
   }
@@ -384,7 +384,7 @@ long read(FieldsReader& fr, const std::string& fn, SelectedField<M>& sf,
 }
 
 template <class M>
-long read(FieldsReader& fr, const std::string& fn, const FieldSelection& fsel,
+Long read(FieldsReader& fr, const std::string& fn, const FieldSelection& fsel,
           SelectedField<M>& sf)
 // field endianess not converted at all
 // fsel must match the actual data
@@ -394,7 +394,7 @@ long read(FieldsReader& fr, const std::string& fn, const FieldSelection& fsel,
   Coordinate total_site;
   std::vector<char> data;
   bool is_sparse_field = false;
-  const long total_bytes = read(fr, fn, total_site, data, is_sparse_field);
+  const Long total_bytes = read(fr, fn, total_site, data, is_sparse_field);
   if (0 == total_bytes) {
     return 0;
   }
@@ -524,7 +524,7 @@ std::vector<std::string> properly_truncate_fields_sync_node(
 // -----------------
 
 template <class M>
-long write(ShuffledFieldsWriter& sfw, const std::string& fn,
+Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
            const Field<M>& field)
 // interface function
 {
@@ -544,7 +544,7 @@ long write(ShuffledFieldsWriter& sfw, const std::string& fn,
 }
 
 template <class M>
-long write(ShuffledFieldsWriter& sfw, const std::string& fn,
+Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
            const SelectedField<M>& sf, const ShuffledBitSet& sbs)
 // interface function
 // sbs must match the actual data
@@ -567,7 +567,7 @@ long write(ShuffledFieldsWriter& sfw, const std::string& fn,
 }
 
 template <class M>
-long write(ShuffledFieldsWriter& sfw, const std::string& fn,
+Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
            const Field<M>& field, const ShuffledBitSet& sbs)
 // interface function
 {
@@ -675,7 +675,7 @@ void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
 }
 
 template <class M>
-long read(ShuffledFieldsReader& sfr, const std::string& fn, Field<M>& field)
+Long read(ShuffledFieldsReader& sfr, const std::string& fn, Field<M>& field)
 // interface function
 {
   TIMER_VERBOSE_FLOPS("read(sfr,fn,field)");
@@ -683,9 +683,9 @@ long read(ShuffledFieldsReader& sfr, const std::string& fn, Field<M>& field)
   displayln_info(0, fname + ssprintf(": reading field with fn='%s' from '%s'.",
                                      fn.c_str(), sfr.path.c_str()));
   std::vector<Field<M> > fs(sfr.frs.size());
-  long zero_size_count = 0;
+  Long zero_size_count = 0;
   for (int i = 0; i < (int)fs.size(); ++i) {
-    const long bytes = read(sfr.frs[i], fn, fs[i]);
+    const Long bytes = read(sfr.frs[i], fn, fs[i]);
     if (0 == bytes) {
       zero_size_count += 1;
       qassert(0 == total_bytes);
@@ -712,7 +712,7 @@ long read(ShuffledFieldsReader& sfr, const std::string& fn, Field<M>& field)
 }
 
 template <class M>
-long read(ShuffledFieldsReader& sfr, const std::string& fn,
+Long read(ShuffledFieldsReader& sfr, const std::string& fn,
           SelectedField<M>& sf, FieldSelection& fsel)
 // interface function
 {
@@ -722,10 +722,10 @@ long read(ShuffledFieldsReader& sfr, const std::string& fn,
                                      fn.c_str(), sfr.path.c_str()));
   std::vector<SelectedField<M> > sfs(sfr.frs.size());
   std::vector<Field<int64_t> > f_rank_s(sfr.frs.size());
-  long zero_size_count = 0;
+  Long zero_size_count = 0;
   for (int i = 0; i < (int)sfs.size(); ++i) {
     FieldM<int64_t, 1>& f_rank = static_cast<FieldM<int64_t, 1>&>(f_rank_s[i]);
-    const long bytes = read(sfr.frs[i], fn, sfs[i], f_rank);
+    const Long bytes = read(sfr.frs[i], fn, sfs[i], f_rank);
     if (0 == bytes) {
       zero_size_count += 1;
       qassert(0 == total_bytes);
@@ -754,7 +754,7 @@ long read(ShuffledFieldsReader& sfr, const std::string& fn,
 }
 
 template <class M>
-long read(ShuffledFieldsReader& sfr, const std::string& fn,
+Long read(ShuffledFieldsReader& sfr, const std::string& fn,
           const ShuffledBitSet& sbs, SelectedField<M>& sf)
 // interface function
 // sbs must match the actual data
@@ -767,9 +767,9 @@ long read(ShuffledFieldsReader& sfr, const std::string& fn,
       0, fname + ssprintf(": reading sparse field with fn='%s' from '%s'.",
                           fn.c_str(), sfr.path.c_str()));
   std::vector<SelectedField<M> > sfs(sfr.frs.size());
-  long zero_size_count = 0;
+  Long zero_size_count = 0;
   for (int i = 0; i < (int)sfs.size(); ++i) {
-    const long bytes = read(sfr.frs[i], fn, sbs.fsels[i], sfs[i]);
+    const Long bytes = read(sfr.frs[i], fn, sbs.fsels[i], sfs[i]);
     if (0 == bytes) {
       zero_size_count += 1;
       qassert(0 == total_bytes);
@@ -797,7 +797,7 @@ long read(ShuffledFieldsReader& sfr, const std::string& fn,
 }
 
 template <class M>
-long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
+Long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
                              const Field<M>& field)
 // interface function
 {
@@ -805,13 +805,13 @@ long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
   Field<float> ff;
   convert_field_float_from_double(ff, field);
   to_from_little_endian_32(get_data(ff));
-  const long total_bytes = write(sfw, fn, ff);
+  const Long total_bytes = write(sfw, fn, ff);
   timer.flops += total_bytes;
   return total_bytes;
 }
 
 template <class M>
-long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
+Long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
                              const SelectedField<M>& sf,
                              const ShuffledBitSet& sbs)
 // interface function
@@ -821,13 +821,13 @@ long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
   SelectedField<float> sff;
   convert_field_float_from_double(sff, sf);
   to_from_little_endian_32(get_data(sff));
-  const long total_bytes = write(sfw, fn, sff, sbs);
+  const Long total_bytes = write(sfw, fn, sff, sbs);
   timer.flops += total_bytes;
   return total_bytes;
 }
 
 template <class M>
-long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
+Long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
                              const Field<M>& field, const ShuffledBitSet& sbs)
 // interface function
 {
@@ -838,13 +838,13 @@ long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
 }
 
 template <class M>
-long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
+Long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
                             Field<M>& field)
 // interface function
 {
   TIMER_VERBOSE_FLOPS("read_double_from_float(sfr,fn,field)");
   Field<float> ff;
-  const long total_bytes = read(sfr, fn, ff);
+  const Long total_bytes = read(sfr, fn, ff);
   if (total_bytes == 0) {
     return 0;
   } else {
@@ -856,14 +856,14 @@ long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
 }
 
 template <class M>
-long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
+Long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
                             SelectedField<M>& sf, FieldSelection& fsel)
 // interface function
 {
   TIMER_VERBOSE_FLOPS("read_double_from_float(sfr,fn,sf,fsel)");
   sf.init();
   SelectedField<float> sff;
-  const long total_bytes = read(sfr, fn, sff, fsel);
+  const Long total_bytes = read(sfr, fn, sff, fsel);
   if (total_bytes == 0) {
     return 0;
   } else {
@@ -875,7 +875,7 @@ long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
 }
 
 template <class M>
-long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
+Long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
                             const ShuffledBitSet& sbs, SelectedField<M>& sf)
 // interface function
 // sbs must match the actual data
@@ -883,7 +883,7 @@ long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
   TIMER_VERBOSE_FLOPS("read_double_from_float(sfr,fn,sbs,sf)");
   sf.init();
   SelectedField<float> sff;
-  const long total_bytes = read(sfr, fn, sbs, sff);
+  const Long total_bytes = read(sfr, fn, sbs, sff);
   if (total_bytes == 0) {
     return 0;
   } else {
@@ -895,7 +895,7 @@ long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
 }
 
 template <class M>
-long read_field(Field<M>& field, const std::string& path, const std::string& fn)
+Long read_field(Field<M>& field, const std::string& path, const std::string& fn)
 // interface function
 {
   TIMER_VERBOSE("read_field(field,path,fn)");
@@ -904,7 +904,7 @@ long read_field(Field<M>& field, const std::string& path, const std::string& fn)
 }
 
 template <class M>
-long read_field(SelectedField<M>& sf, const std::string& path,
+Long read_field(SelectedField<M>& sf, const std::string& path,
                 const std::string& fn, const ShuffledBitSet& sbs)
 // interface function
 // sbs must match the actual data
@@ -915,7 +915,7 @@ long read_field(SelectedField<M>& sf, const std::string& path,
 }
 
 template <class M>
-long read_field_double_from_float(Field<M>& field, const std::string& path,
+Long read_field_double_from_float(Field<M>& field, const std::string& path,
                                   const std::string& fn)
 // interface function
 {
@@ -925,7 +925,7 @@ long read_field_double_from_float(Field<M>& field, const std::string& path,
 }
 
 template <class M>
-long read_field_double_from_float(SelectedField<M>& sf, const std::string& path,
+Long read_field_double_from_float(SelectedField<M>& sf, const std::string& path,
                                   const std::string& fn,
                                   const ShuffledBitSet& sbs)
 // interface function
@@ -958,10 +958,10 @@ bool does_file_exist_sync_node(const std::string& path, const std::string& fn);
   QLAT_EXTERN template std::vector<char> BitSet::compress_selected(            \
       const Vector<TYPENAME>& src) const;                                      \
                                                                                \
-  QLAT_EXTERN template long write(FieldsWriter& fw, const std::string& fn,     \
+  QLAT_EXTERN template Long write(FieldsWriter& fw, const std::string& fn,     \
                                   const Field<TYPENAME>& field);               \
                                                                                \
-  QLAT_EXTERN template long write(FieldsWriter& fw, const std::string& fn,     \
+  QLAT_EXTERN template Long write(FieldsWriter& fw, const std::string& fn,     \
                                   const SelectedField<TYPENAME>& sf,           \
                                   const BitSet& bs);                           \
                                                                                \
@@ -978,26 +978,26 @@ bool does_file_exist_sync_node(const std::string& path, const std::string& fn);
                                                 const std::vector<char>& data, \
                                                 const FieldSelection& fsel);   \
                                                                                \
-  QLAT_EXTERN template long read(FieldsReader& fr, const std::string& fn,      \
+  QLAT_EXTERN template Long read(FieldsReader& fr, const std::string& fn,      \
                                  Field<TYPENAME>& field);                      \
                                                                                \
-  QLAT_EXTERN template long read(FieldsReader& fr, const std::string& fn,      \
+  QLAT_EXTERN template Long read(FieldsReader& fr, const std::string& fn,      \
                                  SelectedField<TYPENAME>& sf,                  \
                                  FieldM<int64_t, 1>& f_rank);                  \
                                                                                \
-  QLAT_EXTERN template long read(FieldsReader& fr, const std::string& fn,      \
+  QLAT_EXTERN template Long read(FieldsReader& fr, const std::string& fn,      \
                                  const FieldSelection& fsel,                   \
                                  SelectedField<TYPENAME>& sf);                 \
                                                                                \
-  QLAT_EXTERN template long write(ShuffledFieldsWriter& sfw,                   \
+  QLAT_EXTERN template Long write(ShuffledFieldsWriter& sfw,                   \
                                   const std::string& fn,                       \
                                   const Field<TYPENAME>& field);               \
                                                                                \
-  QLAT_EXTERN template long write(                                             \
+  QLAT_EXTERN template Long write(                                             \
       ShuffledFieldsWriter& sfw, const std::string& fn,                        \
       const SelectedField<TYPENAME>& sf, const ShuffledBitSet& sbs);           \
                                                                                \
-  QLAT_EXTERN template long write(                                             \
+  QLAT_EXTERN template Long write(                                             \
       ShuffledFieldsWriter& sfw, const std::string& fn,                        \
       const Field<TYPENAME>& field, const ShuffledBitSet& sbs);                \
                                                                                \
@@ -1010,53 +1010,53 @@ bool does_file_exist_sync_node(const std::string& path, const std::string& fn);
       std::vector<SelectedField<TYPENAME> >& sfs,                              \
       const ShuffledFieldsReader& sfr);                                        \
                                                                                \
-  QLAT_EXTERN template long read(ShuffledFieldsReader& sfr,                    \
+  QLAT_EXTERN template Long read(ShuffledFieldsReader& sfr,                    \
                                  const std::string& fn,                        \
                                  Field<TYPENAME>& field);                      \
                                                                                \
-  QLAT_EXTERN template long read(                                              \
+  QLAT_EXTERN template Long read(                                              \
       ShuffledFieldsReader& sfr, const std::string& fn,                        \
       SelectedField<TYPENAME>& sf, FieldSelection& fsel);                      \
                                                                                \
-  QLAT_EXTERN template long read(                                              \
+  QLAT_EXTERN template Long read(                                              \
       ShuffledFieldsReader& sfr, const std::string& fn,                        \
       const ShuffledBitSet& sbs, SelectedField<TYPENAME>& sf);                 \
                                                                                \
-  QLAT_EXTERN template long write_float_from_double(                           \
+  QLAT_EXTERN template Long write_float_from_double(                           \
       ShuffledFieldsWriter& sfw, const std::string& fn,                        \
       const Field<TYPENAME>& field);                                           \
                                                                                \
-  QLAT_EXTERN template long write_float_from_double(                           \
+  QLAT_EXTERN template Long write_float_from_double(                           \
       ShuffledFieldsWriter& sfw, const std::string& fn,                        \
       const SelectedField<TYPENAME>& sf, const ShuffledBitSet& sbs);           \
                                                                                \
-  QLAT_EXTERN template long write_float_from_double(                           \
+  QLAT_EXTERN template Long write_float_from_double(                           \
       ShuffledFieldsWriter& sfw, const std::string& fn,                        \
       const Field<TYPENAME>& field, const ShuffledBitSet& sbs);                \
                                                                                \
-  QLAT_EXTERN template long read_double_from_float(ShuffledFieldsReader& sfr,  \
+  QLAT_EXTERN template Long read_double_from_float(ShuffledFieldsReader& sfr,  \
                                                    const std::string& fn,      \
                                                    Field<TYPENAME>& field);    \
                                                                                \
-  QLAT_EXTERN template long read_double_from_float(                            \
+  QLAT_EXTERN template Long read_double_from_float(                            \
       ShuffledFieldsReader& sfr, const std::string& fn,                        \
       SelectedField<TYPENAME>& sf, FieldSelection& fsel);                      \
                                                                                \
-  QLAT_EXTERN template long read_double_from_float(                            \
+  QLAT_EXTERN template Long read_double_from_float(                            \
       ShuffledFieldsReader& sfr, const std::string& fn,                        \
       const ShuffledBitSet& sbs, SelectedField<TYPENAME>& sf);                 \
                                                                                \
-  QLAT_EXTERN template long read_field(                                        \
+  QLAT_EXTERN template Long read_field(                                        \
       Field<TYPENAME>& field, const std::string& path, const std::string& fn); \
                                                                                \
-  QLAT_EXTERN template long read_field(                                        \
+  QLAT_EXTERN template Long read_field(                                        \
       SelectedField<TYPENAME>& sf, const std::string& path,                    \
       const std::string& fn, const ShuffledBitSet& sbs);                       \
                                                                                \
-  QLAT_EXTERN template long read_field_double_from_float(                      \
+  QLAT_EXTERN template Long read_field_double_from_float(                      \
       Field<TYPENAME>& field, const std::string& path, const std::string& fn); \
                                                                                \
-  QLAT_EXTERN template long read_field_double_from_float(                      \
+  QLAT_EXTERN template Long read_field_double_from_float(                      \
       SelectedField<TYPENAME>& sf, const std::string& path,                    \
       const std::string& fn, const ShuffledBitSet& sbs)
 

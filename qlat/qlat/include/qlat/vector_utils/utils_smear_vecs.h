@@ -20,7 +20,7 @@ namespace qlat{
 #ifdef QLAT_USE_ACC
 template <class T, int bfac, int d0, int dirL>
 __global__ void gauss_smear_global4(T* pres, const T* psrc, const T* gf, const T bw, const T norm,
-  const unsigned long Nvol, const long* map_bufD, const long* map_final)
+  const unsigned long Nvol, const Long* map_bufD, const Long* map_final)
 {
 
   __shared__ T ls[(dirL*2)*3*3 + 1];
@@ -51,14 +51,14 @@ __global__ void gauss_smear_global4(T* pres, const T* psrc, const T* gf, const T
     }
   }
 
-  const long res_off = map_final[index];
+  const Long res_off = map_final[index];
   const T* wo = &psrc[res_off*bfac*3*d0];
   T* wm = &pres[res_off*bfac*3*d0];
 
   ///////(2*dir) --> bi, c1 , d0
   for (int dir = -dirL; dir < dirL; ++dir){
-    ////long src_off = map_bufD[(dir+4)*Nvol + index];
-    long src_off = map_bufD[index* dirL*2 + (dir + dirL)];
+    ////Long src_off = map_bufD[(dir+4)*Nvol + index];
+    Long src_off = map_bufD[index* dirL*2 + (dir + dirL)];
     const T* src_t = &psrc[src_off*bfac*3*d0];
     //T* res_t     = &ps[(dir+dirL)*bfac*3*d0];
     ////T* res_t     = &ps[dir+dirL];
@@ -119,8 +119,8 @@ struct smear_fun{
   fft_desc_basic fd;
   fft_desc_basic fd_new;
 
-  std::vector<qlat::vector_gpu<long > > mapvq_send;
-  std::vector<qlat::vector_gpu<long > > mapvq_recv;
+  std::vector<qlat::vector_gpu<Long > > mapvq_send;
+  std::vector<qlat::vector_gpu<Long > > mapvq_recv;
   ////int CONTINUS;
   qlat::vector<MPI_Request> send_reqs;
   qlat::vector<MPI_Request> recv_reqs;
@@ -129,8 +129,8 @@ struct smear_fun{
   unsigned long Nvol;
   unsigned long Nvol_ext;
 
-  std::vector<qlat::vector_acc<long > > map_bufV;
-  qlat::vector_acc<long > map_bufD;
+  std::vector<qlat::vector_acc<Long > > map_bufV;
+  qlat::vector_acc<Long > map_bufD;
   qlat::vector_acc<int> Nv,nv,mv;
 
   unsigned int NVmpi;
@@ -218,23 +218,23 @@ struct smear_fun{
     ////if(gauge.size() != Nvol*4*2*9){Qassert(false);}
   };
 
-  inline void get_mapvq(const std::vector<CommPackInfo> &pack_infos, std::vector<qlat::vector_gpu<long > >& mapvq, int dir=0)
+  inline void get_mapvq(const std::vector<CommPackInfo> &pack_infos, std::vector<qlat::vector_gpu<Long > >& mapvq, int dir=0)
   {
-    std::vector<std::vector<long > > mapv(3);//mapv.resize(4*pack_infos.size());
-    ///std::vector<long > factorL;
-    for (long i = 0; i < (long)pack_infos.size(); ++i) {
+    std::vector<std::vector<Long > > mapv(3);//mapv.resize(4*pack_infos.size());
+    ///std::vector<Long > factorL;
+    for (Long i = 0; i < (Long)pack_infos.size(); ++i) {
       const CommPackInfo& cpi = pack_infos[i];
-      long bufi = cpi.buffer_idx + 0;
-      long fi   = cpi.offset     + 0;
+      Long bufi = cpi.buffer_idx + 0;
+      Long fi   = cpi.offset     + 0;
 
       if(dir == 0){mapv[0].push_back(bufi);mapv[1].push_back(  fi);mapv[2].push_back(  cpi.size);}
       if(dir == 1){mapv[0].push_back(  fi);mapv[1].push_back(bufi);mapv[2].push_back(  cpi.size);}
 
-      //for(long j=0; j< cpi.size ; j++)
+      //for(Long j=0; j< cpi.size ; j++)
       //{
       //  ////factorL.push_back(cpi.size);
-      //  long bufi = cpi.buffer_idx + j;
-      //  long fi   = cpi.offset     + j;
+      //  Long bufi = cpi.buffer_idx + j;
+      //  Long fi   = cpi.offset     + j;
       //  print0("size %d, group %d, bufi %d, fi %d \n", int(i), int(cpi.size), int(bufi), int(fi));
       //  if(dir == 0){mapv[0].push_back(bufi);mapv[1].push_back(  fi);}
       //  if(dir == 1){mapv[0].push_back(  fi);mapv[1].push_back(bufi);}
@@ -245,9 +245,9 @@ struct smear_fun{
     //  print0("%8ld %8ld %8ld \n", mapv[0][j], mapv[1][j], mapv[2][j]);
     //}
 
-    //std::vector<long > index = get_sort_index(&mapv[1][0], mapv[1].size());
+    //std::vector<Long > index = get_sort_index(&mapv[1][0], mapv[1].size());
 
-    std::vector<std::vector<long > > mapv_copy(3);
+    std::vector<std::vector<Long > > mapv_copy(3);
     sort_vectors_by_axis(mapv, mapv_copy, 1);
 
     //print0("\n\n\n");
@@ -256,7 +256,7 @@ struct smear_fun{
     //}
  
     ////how to check continus
-    //long maxF = *max_element(std::begin(factorL), std::end(factorL)); 
+    //Long maxF = *max_element(std::begin(factorL), std::end(factorL)); 
     //int C0 = 1;
     //for(int fi=maxF;fi>0;fi--){
     //  int wrong = 0;
@@ -355,7 +355,7 @@ struct smear_fun{
     const int dir_max = 4;
     const size_t Ndata = gauge_buf.size();
 
-    for(long vi=0;vi<NVmpi;vi++){cpy_data_thread(&(gfT.data()[vi*Ndata]), gauge_buf.data(), Ndata);}
+    for(Long vi=0;vi<NVmpi;vi++){cpy_data_thread(&(gfT.data()[vi*Ndata]), gauge_buf.data(), Ndata);}
 
     vec_rot->reorder(gfT.data(), gfT_buf.data(), 1, (dir_max*2)*9 ,   0);
     gauge_buf.copy_from(gfT);
@@ -415,7 +415,7 @@ struct smear_fun{
     check_setup();
     if(redistribution_copy == 1){return ;}
     const CommPlan& plan = get_comm_plan(set_marks_field_1, "", geo_ext);
-    const long total_bytes =
+    const Long total_bytes =
         (plan.total_recv_size + plan.total_send_size) * bfac * sizeof(Ty);
     if (0 == total_bytes) {return;}
     TIMER_FLOPS("refresh_expanded");
@@ -441,13 +441,13 @@ struct smear_fun{
         const int mpi_tag = 10;
         for (size_t i = 0; i < plan.recv_msg_infos.size(); ++i) {
           const CommMsgInfo& cmi = plan.recv_msg_infos[i];
-          long count = cmi.size * bfac * sizeof(Ty) / sizeof(double);
+          Long count = cmi.size * bfac * sizeof(Ty) / sizeof(double);
           MPI_Irecv(&recv_buffer[cmi.buffer_idx*bfac], count, MPI_DOUBLE,
                     cmi.id_node, mpi_tag, get_comm(), &recv_reqs[i]);
         }
         for (size_t i = 0; i < plan.send_msg_infos.size(); ++i) {
           const CommMsgInfo& cmi = plan.send_msg_infos[i];
-          long count = cmi.size * bfac * sizeof(Ty) / sizeof(double);
+          Long count = cmi.size * bfac * sizeof(Ty) / sizeof(double);
           MPI_Isend(&send_buffer[cmi.buffer_idx*bfac], count, MPI_DOUBLE,
                     cmi.id_node, mpi_tag, get_comm(), &send_reqs[i]);
         }
@@ -785,7 +785,7 @@ void rotate_Vec_prop(Propagator4dT<T>& prop, qlat::vector_gpu<ComplexT<T> > &pro
   long long Nvol =  geo.local_volume();
   if(dir == 0)propT.resize(NVmpi*Nvol*groupP*12);
 
-  qacc_for(index, long(Nvol), {
+  qacc_for(index, Long(Nvol), {
     qlat::WilsonMatrixT<T>& v0 =  prop.get_elem_offset(index);
 
     for(int c1 = 0;c1 < 3; c1++)
@@ -799,8 +799,8 @@ void rotate_Vec_prop(Propagator4dT<T>& prop, qlat::vector_gpu<ComplexT<T> > &pro
 
       int off0 = c0*4+d0;
       //LInt off = (c0*3+c1)*16+d0*4 + d1;
-      //long offP = n0*Nvol*groupP*12 + index*groupP*12 + n1*12 + off0;
-      long offP = ((n0*Nvol + index)*groupP + n1)*12 + off0;
+      //Long offP = n0*Nvol*groupP*12 + index*groupP*12 + n1*12 + off0;
+      Long offP = ((n0*Nvol + index)*groupP + n1)*12 + off0;
       if(dir == 0){propT[offP] = v0(d0*3+c0, d1*3+c1);}
       if(dir == 1){v0(d0*3+c0, d1*3+c1) = propT[offP];}
     }
@@ -841,7 +841,7 @@ void smear_propagator_box(T* src, const int Bsize, smear_fun<T >& smf){
   if (Bsize <= 0) {return;}
   /////Qassert(!smear_in_time_dir);
   smf.check_setup();
-  long Nvol = smf.Nvol;
+  Long Nvol = smf.Nvol;
   //const Geometry& geo = smf.geo;
   //const int dir_limit = smear_in_time_dir ? 4 : 3;
   const int nsites = bfac*3*civ;
@@ -944,13 +944,13 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
   if(bfac*civ <=  6){ nt = 3*bfac*civ;}
   //int nt = 32;
   dim3 dimBlock(nt, 1, 1);
-  long sn = Nvol;
+  Long sn = Nvol;
   dim3 dimGrid( sn, 1, 1);
 
   #endif
 
-  const long* Pdir1 = (long*) qlat::get_data(smf.map_bufD).data();
-  const long* map_final = &smf.map_bufV[0][0];
+  const Long* Pdir1 = (Long*) qlat::get_data(smf.map_bufD).data();
+  const Long* map_final = &smf.map_bufV[0][0];
 
   T* prop_src = (T*) prop_buf0.data();
   T* prop_tmp = (T*) prop_buf0.data();
@@ -962,7 +962,7 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
   ////cpy_data_from_index(prop_res, src, &smf.map_bufV[0][0], &smf.map_bufV[1][0], Nvol, nsites, GPU);
   }
 
-  //const long Ndata = smf.Nvol * nsites;
+  //const Long Ndata = smf.Nvol * nsites;
   ////cpy_data_from_index(prop_res, src, &smf.map_bufV[1][0], &smf.map_bufV[1][0], Nvol, nsites, GPU);
   //size_t Ndata = smf.Nvol * bfac * 3* civ;
   //cpy_data_thread(prop_res, src, Ndata);
@@ -984,7 +984,7 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
 
     const int dir_max = 4;
     const int dir_limit = smf.dirL;
-    qacc_for(index,  long(Nvol),{
+    qacc_for(index,  Long(Nvol),{
       QLAT_ALIGN(QLAT_ALIGNED_BYTES) T buf[nsites];for(int i=0;i<nsites;i++){buf[i] = 0;}
       for (int dir = -dir_limit; dir < dir_limit; ++dir) {
         const T* wm1p = &prop_src[size_t(Pdir1[index*dir_limit*2 + (dir + dir_limit)])*nsites];
@@ -1141,7 +1141,7 @@ void rotate_prop(Propagator4dT<T>& prop, int dir = 0)
   long long Nvol =  geo.local_volume();
 
   ComplexT<T>* src =  (ComplexT<T>*) qlat::get_data(prop).data();
-  qacc_for(index, long(Nvol), {
+  qacc_for(index, Long(Nvol), {
     QLAT_ALIGN(QLAT_ALIGNED_BYTES) ComplexT<T> buf[12*12];
     ComplexT<T>* res = &src[index*12*12];
     for(int i=0;i<12*12;i++){buf[i] = res[i];}
@@ -1204,7 +1204,7 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
   ////fft_desc_basic fd(geo);
   ////Vec_redistribute vec_large(fd);
 
-  long Nvol_pre = geo.local_volume();
+  Long Nvol_pre = geo.local_volume();
   bool reorder = false;
   int groupP = (d0+smf.NVmpi-1)/smf.NVmpi;
 
@@ -1248,8 +1248,8 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
     Ty* res = prop_buf0.data();prop_buf0.set_zero();
 
     ////need to check this rotation
-    cpy_GPU2D(res, src, long(d0), long(Nvol_pre*c0*3), long(smf.NVmpi*groupP), long(d0), QMGPU, QMGPU);
-    //void copy_buffers_vecs(Ty *res, Ty *src,long N0, long N1, long Ncopy, size_t Vol, int GPU = 1)
+    cpy_GPU2D(res, src, Long(d0), Long(Nvol_pre*c0*3), Long(smf.NVmpi*groupP), Long(d0), QMGPU, QMGPU);
+    //void copy_buffers_vecs(Ty *res, Ty *src,Long N0, Long N1, Long Ncopy, size_t Vol, int GPU = 1)
     //copy_buffers_vecs(res, src, smf.NVmpi*groupP, d0, d0, Nvol_pre*c0*3, 1);
     smf.mv_idx.dojob(res, res, 1, smf.NVmpi, Nvol_pre*c0*3, 1,   groupP, true);
     {TIMERC("Vec prop");smf.vec_rot->reorder(res, prop_buf1.data(), 1, c0*3*groupP ,   0);}
@@ -1264,7 +1264,7 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
     Ty* res = prop_buf0.data();
     {TIMERC("Vec prop");smf.vec_rot->reorder(res, prop_buf1.data(), 1, c0*3*groupP , 100);}
     smf.mv_idx.dojob(res, res, 1, smf.NVmpi, Nvol_pre*c0*3, 0,  groupP , true);
-    cpy_GPU2D(prop, prop_buf0.data(), long(d0), long(Nvol_pre*c0*3), long(d0), long(smf.NVmpi*groupP), QMGPU, QMGPU);
+    cpy_GPU2D(prop, prop_buf0.data(), Long(d0), Long(Nvol_pre*c0*3), Long(d0), Long(smf.NVmpi*groupP), QMGPU, QMGPU);
     ////cpy_data_thread(prop, smf.prop.data(), smf.prop.size(), 1);
     //copy_buffers_vecs(prop, prop_buf0.data(), d0, smf.NVmpi*groupP, d0, Nvol_pre*c0*3, 1);
   }
@@ -1284,14 +1284,14 @@ double source_radius(Propagator4dT<Td >& prop, const int tsrc = 0)
   double rho = 0; 
   double rho_x2 = 0; 
   const qlat::Geometry &geo = prop.geo();
-  const long Nvol = geo.local_volume();
+  const Long Nvol = geo.local_volume();
   std::vector<int > nv, Nv, mv;
   geo_to_nv(geo, nv, Nv, mv);
 
   //position p;
   //int tem_x =  (*source.vec[0]).desc->nx;
   //print0("tem_x---------%3d\n",tem_x);
-  for(long isp = 0; isp < Nvol; isp ++)
+  for(Long isp = 0; isp < Nvol; isp ++)
   {
     double rx2 = 0; 
     Coordinate xl   = geo.coordinate_from_index(isp);
@@ -1335,7 +1335,7 @@ void smear_propagator_gwu_convension(qpropT& prop, const GaugeFieldT<Td >& gf,
                       const double width, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1, const int dup = -1, const int force_update = 0)
 {
   if (0 == step) {return;}
-  const long Nvol = prop.geo().local_volume();
+  const Long Nvol = prop.geo().local_volume();
   Ty* src = (Ty*) qlat::get_data(prop).data();
   move_index mv_civ;int flag = 0;
   flag = 0;mv_civ.dojob(src, src, 1, 12*12, Nvol, flag, 1, false);

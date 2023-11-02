@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
     qlat::FieldM<Complexq ,1> fd;fd.init(geo);
 
     int Nt = geo.node_site[3];
-    long Nsum = geo.local_volume()/geo.node_site[3];
+    Long Nsum = geo.local_volume()/geo.node_site[3];
     Complexq* p = &fd.get_elem(0);
 
     qlat::vector<Complexq > res0;res0.resize(Nt);set_zero(res0);
@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
       for(int it=0;it<Nt;it++){
       p = &fd.get_elem(it*Nsum);
       Complexq& Ntem = res0[it];
-      for(long isp=0;isp<Nsum;isp++)Ntem += p[isp];
+      for(Long isp=0;isp<Nsum;isp++)Ntem += p[isp];
     }}
 
 
@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
       for(int it=0;it<Nt;it++){
       p = &fd.get_elem(it*Nsum);
       Complexq& Ntem = res0[it];
-      for(long isp=0;isp<Nsum;isp++)Ntem += p[isp];
+      for(Long isp=0;isp<Nsum;isp++)Ntem += p[isp];
     }}
 
     //set_zero(res1);

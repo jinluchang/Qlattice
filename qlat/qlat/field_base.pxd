@@ -3,13 +3,13 @@ from .field_selection cimport FieldSelection, PointsSelection
 
 cdef class FieldBase:
 
-    cdef readonly long cdata
+    cdef readonly cqlat.Long cdata
 
     cdef readonly int view_count
 
 cdef class SelectedFieldBase:
 
-    cdef readonly long cdata
+    cdef readonly cqlat.Long cdata
 
     cdef readonly int view_count
 
@@ -17,7 +17,7 @@ cdef class SelectedFieldBase:
 
 cdef class SelectedPointsBase:
 
-    cdef readonly long cdata
+    cdef readonly cqlat.Long cdata
 
     cdef readonly int view_count
 

@@ -4,10 +4,10 @@
 namespace qlat
 {
 
-int mpi_send(const void* buf, long count, MPI_Datatype datatype, int dest,
+int mpi_send(const void* buf, Long count, MPI_Datatype datatype, int dest,
              int tag, MPI_Comm comm)
 {
-  const long int_max = INT_MAX;
+  const Long int_max = INT_MAX;
   if (count <= int_max) {
     return MPI_Send(buf, count, datatype, dest, tag, comm);
   } else {
@@ -16,17 +16,17 @@ int mpi_send(const void* buf, long count, MPI_Datatype datatype, int dest,
     uint8_t* cbuf = (uint8_t*)buf;
     while (count > int_max) {
       MPI_Send(cbuf, int_max, datatype, dest, tag, comm);
-      cbuf += (long)int_max * type_size;
+      cbuf += (Long)int_max * type_size;
       count -= int_max;
     }
     return MPI_Send(cbuf, count, datatype, dest, tag, comm);
   }
 }
 
-int mpi_recv(void* buf, long count, MPI_Datatype datatype, int source, int tag,
+int mpi_recv(void* buf, Long count, MPI_Datatype datatype, int source, int tag,
              MPI_Comm comm, MPI_Status* status)
 {
-  const long int_max = INT_MAX;
+  const Long int_max = INT_MAX;
   if (count <= int_max) {
     return MPI_Recv(buf, count, datatype, source, tag, comm, status);
   } else {
@@ -35,17 +35,17 @@ int mpi_recv(void* buf, long count, MPI_Datatype datatype, int source, int tag,
     uint8_t* cbuf = (uint8_t*)buf;
     while (count > int_max) {
       MPI_Recv(cbuf, int_max, datatype, source, tag, comm, status);
-      cbuf += (long)int_max * type_size;
+      cbuf += (Long)int_max * type_size;
       count -= int_max;
     }
     return MPI_Recv(cbuf, count, datatype, source, tag, comm, status);
   }
 }
 
-int mpi_isend(const void* buf, long count, MPI_Datatype datatype, int dest,
+int mpi_isend(const void* buf, Long count, MPI_Datatype datatype, int dest,
               int tag, MPI_Comm comm, std::vector<MPI_Request>& requests)
 {
-  const long int_max = INT_MAX;
+  const Long int_max = INT_MAX;
   if (count <= int_max) {
     MPI_Request r;
     int ret = MPI_Isend(buf, count, datatype, dest, tag, comm, &r);
@@ -58,17 +58,17 @@ int mpi_isend(const void* buf, long count, MPI_Datatype datatype, int dest,
     uint8_t* cbuf = (uint8_t*)buf;
     while (count > int_max) {
       mpi_isend(cbuf, int_max, datatype, dest, tag, comm, requests);
-      cbuf += (long)int_max * type_size;
+      cbuf += (Long)int_max * type_size;
       count -= int_max;
     }
     return mpi_isend(cbuf, count, datatype, dest, tag, comm, requests);
   }
 }
 
-int mpi_irecv(void* buf, long count, MPI_Datatype datatype, int source, int tag,
+int mpi_irecv(void* buf, Long count, MPI_Datatype datatype, int source, int tag,
               MPI_Comm comm, std::vector<MPI_Request>& requests)
 {
-  const long int_max = INT_MAX;
+  const Long int_max = INT_MAX;
   if (count <= int_max) {
     MPI_Request r;
     int ret = MPI_Irecv(buf, count, datatype, source, tag, comm, &r);
@@ -81,7 +81,7 @@ int mpi_irecv(void* buf, long count, MPI_Datatype datatype, int source, int tag,
     uint8_t* cbuf = (uint8_t*)buf;
     while (count > int_max) {
       mpi_irecv(cbuf, int_max, datatype, source, tag, comm, requests);
-      cbuf += (long)int_max * type_size;
+      cbuf += (Long)int_max * type_size;
       count -= int_max;
     }
     return mpi_irecv(cbuf, count, datatype, source, tag, comm, requests);
@@ -255,7 +255,7 @@ void bcast(std::string& recv, const int root)
   if (1 == get_num_node()) {
     return;
   }
-  long size = recv.size();
+  Long size = recv.size();
   bcast(get_data(size), root);
   recv.resize(size);
   bcast(get_data(recv), root);
@@ -266,10 +266,10 @@ void bcast(std::vector<std::string>& recv, const int root)
   if (1 == get_num_node()) {
     return;
   }
-  long size = recv.size();
+  Long size = recv.size();
   bcast(get_data(size), root);
   recv.resize(size);
-  for (long i = 0; i < size; ++i) {
+  for (Long i = 0; i < size; ++i) {
     bcast(recv[i], root);
   }
 }
@@ -294,7 +294,7 @@ void bcast(LatData& ld, const int root)
 void sync_node()
 {
   RngState& rs = get_comm_list().back().sync_node_rs;
-  const long v = rand_gen(rs) % (1024 * 1024);
+  const Long v = rand_gen(rs) % (1024 * 1024);
   Long s = v;
   glb_sum(s);
   qassert(s == v * get_num_node());
@@ -367,10 +367,10 @@ std::vector<Int> mk_id_node_list_for_shuffle_node()
   int masterSize;
   MPI_Comm_size(masterComm, &masterSize);
   // calculate number of node
-  long num_of_node = masterSize;
+  Long num_of_node = masterSize;
   MPI_Bcast(&num_of_node, 1, MPI_LONG, 0, nodeComm);
   // calculate id of node (master rank of the 0 local rank process)
-  long id_of_node = masterRank;
+  Long id_of_node = masterRank;
   MPI_Bcast(&id_of_node, 1, MPI_LONG, 0, nodeComm);
   qassert(id_of_node < num_of_node);
   // calculate number of processes for each node
@@ -380,14 +380,14 @@ std::vector<Int> mk_id_node_list_for_shuffle_node()
   qassert(num_process_for_each_node[id_of_node] == localSize);
   // calculate the number of master comm (the maximum in
   // num_process_for_each_node)
-  long num_of_master_comm = 0;
-  for (long i = 0; i < (long)num_process_for_each_node.size(); ++i) {
+  Long num_of_master_comm = 0;
+  for (Long i = 0; i < (Long)num_process_for_each_node.size(); ++i) {
     if (num_process_for_each_node[i] > num_of_master_comm) {
       num_of_master_comm = num_process_for_each_node[i];
     }
   }
   // calculate the id of the master comm (same as local rank)
-  long id_of_master_comm = localRank;
+  Long id_of_master_comm = localRank;
   qassert(id_of_master_comm < num_of_master_comm);
   // calculate number of processes for each masterComm
   std::vector<Long> num_process_for_each_master_comm(num_of_master_comm, 0);
@@ -395,8 +395,8 @@ std::vector<Int> mk_id_node_list_for_shuffle_node()
   glb_sum(get_data(num_process_for_each_master_comm));
   qassert(num_process_for_each_master_comm[id_of_master_comm] == masterSize);
   // calculate id_node_in_shuffle
-  long id_node_in_shuffle = masterRank;
-  for (long i = 0; i < id_of_master_comm; ++i) {
+  Long id_node_in_shuffle = masterRank;
+  for (Long i = 0; i < id_of_master_comm; ++i) {
     id_node_in_shuffle += num_process_for_each_master_comm[i];
   }
   // calculate the list of id_node for each id_node_in_shuffle
@@ -404,15 +404,15 @@ std::vector<Int> mk_id_node_list_for_shuffle_node()
   list_long[id_node_in_shuffle] = get_id_node();
   glb_sum(get_data(list_long));
   std::vector<Int> list(get_num_node(), 0);
-  for (long i = 0; i < get_num_node(); ++i) {
+  for (Long i = 0; i < get_num_node(); ++i) {
     list[i] = list_long[i];
   }
   // checking
   qassert(list[0] == 0);
-  for (long i = 0; i < get_num_node(); ++i) {
+  for (Long i = 0; i < get_num_node(); ++i) {
     qassert(0 <= list[i]);
     qassert(list[i] < get_num_node());
-    for (long j = 0; j < i; ++j) {
+    for (Long j = 0; j < i; ++j) {
       qassert(list[i] != list[j]);
     }
   }
@@ -433,7 +433,7 @@ std::vector<Int> mk_id_node_list_for_shuffle()
     RngState rs(seed.substr(seed_prefix.size()));
     return mk_id_node_list_for_shuffle_rs(rs);
   } else {
-    const long step_size = read_long(seed);
+    const Long step_size = read_long(seed);
     return mk_id_node_list_for_shuffle_step_size(step_size);
   }
 }
@@ -469,7 +469,7 @@ int get_id_node_in_shuffle(const int id_node, const int new_num_node,
     return id_node;
   } else {
     const std::vector<Int>& list = get_id_node_in_shuffle_list();
-    qassert((long)list.size() == num_node);
+    qassert((Long)list.size() == num_node);
     qassert(list[0] == 0);
     return list[id_node];
   }
@@ -485,7 +485,7 @@ int get_id_node_from_id_node_in_shuffle(const int id_node_in_shuffle,
     return id_node_in_shuffle;
   } else {
     const std::vector<Int>& list = get_id_node_list_for_shuffle();
-    qassert((long)list.size() == num_node);
+    qassert((Long)list.size() == num_node);
     qassert(list[0] == 0);
     return list[id_node_in_shuffle];
   }
@@ -626,12 +626,12 @@ void display_qlat_banner()
       "======================================================================");
 }
 
-void initialize_qlat_comm(const long begin_count)
+void initialize_qlat_comm(const Long begin_count)
 {
   if (begin_count == 1) {
     display_qlat_banner();
     if (get_env("OMP_NUM_THREADS") == "") {
-      const long num_threads = get_env_long_default("q_num_threads", 2);
+      const Long num_threads = get_env_long_default("q_num_threads", 2);
       omp_set_num_threads(num_threads);
     }
     displayln_info("qlat::begin(): q_num_threads = " +
@@ -669,7 +669,7 @@ void initialize_qlat_comm(const long begin_count)
 void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
 // begin Qlat with existing comm (assuming MPI already initialized)
 {
-  static long begin_count = 0;
+  static Long begin_count = 0;
   begin_count += 1;
   get_comm_list().push_back(
       Q_Comm(comm, size_node, RngState("sync_node:" + show(size_node))));

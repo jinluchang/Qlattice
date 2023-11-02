@@ -107,12 +107,12 @@ struct ga_M
     ///unsigned long resp = 0;
     resp = 0;
     for(int i=0;i<4;i++){
-      resp += ((int(g[i].real())+5)*100+(int(g[i].imag())+5)*10+ind[i])*long(std::pow(1000,i));
+      resp += ((int(g[i].real())+5)*100+(int(g[i].imag())+5)*10+ind[i])*Long(std::pow(1000,i));
     }
     ///unsigned long resm = 0;
     resm = 0;
     for(int i=0;i<4;i++){
-      resm += ((-1*int(g[i].real())+5)*100+(-1*int(g[i].imag())+5)*10+ind[i])*long(std::pow(1000,i));
+      resm += ((-1*int(g[i].real())+5)*100+(-1*int(g[i].imag())+5)*10+ind[i])*Long(std::pow(1000,i));
     }
   }
 
@@ -309,9 +309,9 @@ qacc Ty reduce_gamma(const Ty *src,const ga_M &ga){
 //}
 
 //////Assumed memory d,c--> t, zyx
-inline void vecE_gamma(Complexq* src, ga_M& ga, long noden)
+inline void vecE_gamma(Complexq* src, ga_M& ga, Long noden)
 {
-  qacc_for(isp, long(noden),{
+  qacc_for(isp, Long(noden),{
     ////Evector tmp;tmp.resize(12);
     Complexq tmp[12];
     for(unsigned int d=0;d<12;d++){tmp[d] = src[d*noden+ isp];}

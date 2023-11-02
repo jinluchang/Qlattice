@@ -50,11 +50,11 @@ void fft_complex_field_dir(Field<M>& field1, const Field<M>& field,
   FftComplexFieldPlan& plan = get_fft_plan(geo, mc, dir, is_forward);
   fftw_plan& fftplan = plan.fftplan;
   const int sizec = geo.total_site()[dir];
-  const long nc = geo.local_volume() / geo.node_site[dir] * mc;
-  const long chunk = ((nc / mc - 1) / geo.geon.size_node[dir] + 1) * mc;
-  const long nc_start = std::min(nc, geo.geon.coor_node[dir] * chunk);
-  const long nc_stop = std::min(nc, nc_start + chunk);
-  const long nc_size = nc_stop - nc_start;
+  const Long nc = geo.local_volume() / geo.node_site[dir] * mc;
+  const Long chunk = ((nc / mc - 1) / geo.geon.size_node[dir] + 1) * mc;
+  const Long nc_start = std::min(nc, geo.geon.coor_node[dir] * chunk);
+  const Long nc_stop = std::min(nc, nc_start + chunk);
+  const Long nc_size = nc_stop - nc_start;
   qassert(nc_size >= 0);
   const ShufflePlan& sp = plan.sp;
   std::vector<Field<M> > fft_fields;
@@ -129,7 +129,7 @@ void fft_complex_fields(std::vector<Handle<Field<M> > >& vec,
                         const std::vector<bool>& fft_is_forwards,
                         int mode_fft = 1)
 {
-  const long n_field = vec.size();
+  const Long n_field = vec.size();
   int use_plan = 0;
   bool fft_direction = false;
   bool ft4D = false;
@@ -157,9 +157,9 @@ void fft_complex_fields(std::vector<Handle<Field<M> > >& vec,
     }
   }
   if (use_plan == 0) {
-    for (long i = 0; i < n_field; ++i) {
+    for (Long i = 0; i < n_field; ++i) {
       Field<M> ft;
-      for (long k = 0; k < (long)fft_dirs.size(); ++k) {
+      for (Long k = 0; k < (Long)fft_dirs.size(); ++k) {
         ft = vec[i]();
         const int fft_dir = fft_dirs[k];
         const bool is_forward = fft_is_forwards[k];

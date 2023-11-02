@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
   //double ini = qlat::u_rand_gen(rs);
   for(int iv=0;iv<Nvec;iv++){
   PD1 = (TyD*) (qlat::get_data(src[iv]).data());
-  for(long isp=0;isp < geo.local_volume(); isp++){
+  for(Long isp=0;isp < geo.local_volume(); isp++){
     qlat::Coordinate ts = geo.coordinate_from_index(isp);
     qlat::Coordinate p  = geo.coordinate_g_from_l(ts);
     double offV0 = ((p[3]*900+p[2])*900+p[1])*900+p[0];
@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
   //svec.set_MPI_size<TyF >(2, 12*12);
   //ckpoint;
 
-  long volE = geo.local_volume() * civ;
+  Long volE = geo.local_volume() * civ;
   for(LInt ni=0;ni<src.size();ni++){
     PF0 = (TyF*) qlat::get_data(srcF[ni]).data();
     PD1 = (TyD*) qlat::get_data(src[ ni]).data();
@@ -151,7 +151,7 @@ int main(int argc, char* argv[])
   for(LInt iv=0;iv<src.size();iv++){
     PF0 = (TyF*) qlat::get_data(resF[iv]).data();
     PD1 = (TyD*) qlat::get_data(src[ iv]).data();
-    for(long isp=0;isp<geo.local_volume();isp++){
+    for(Long isp=0;isp<geo.local_volume();isp++){
       qlat::Coordinate ts = geo.coordinate_from_index(isp);
       qlat::Coordinate p  = geo.coordinate_g_from_l(ts);
       double offV0 = ((p[3]*900+p[2])*900+p[1])*900+p[0];
@@ -160,7 +160,7 @@ int main(int argc, char* argv[])
       double offV1 = ((p[3]*900+p[2])*900+p[1])*900+p[0];
 
       for(int di=0;di<inner;di++){
-          long offP = isp*inner + di ;
+          Long offP = isp*inner + di ;
           ////P1[isp*Nvec + di ] = TyD(std::cos((iv + ini+isp+di)*0.5) , (5.0/(isp+1))*(iv + ini+di)*0.1);
           TyD ref0 = TyD(offV0 + std::cos((di)*0.5) , (5.0/(1.0))*(iv + di)*0.1);
           TyD ref1 = TyD(offV1 + std::cos((di)*0.5) , (5.0/(1.0))*(iv + di)*0.1);

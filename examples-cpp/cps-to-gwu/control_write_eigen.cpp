@@ -114,15 +114,15 @@ int main(int argc, char* argv[])
   FILE* file_read  = open_eigensystem_file(ename, nini, nvec, true , io_read , in_read_eigen , 2);
   FILE* file_write = open_eigensystem_file(Sname, nini, nvec, false, io_write, in_write_eigen, stringtonum(in0.save_type));
 
-  std::vector<long > job =  job_create(nread, each);
+  std::vector<Long > job =  job_create(nread, each);
   for(LInt ji = 0; ji < job.size()/2 ; ji++)
   {
     /////int n0 = nini + job[ji*2 + 0]; int n1 = n0 + job[ji*2 + 1];
     if(!F_single){load_eigensystem_vecs(file_read ,   eigenD, io_read , in_read_eigen , 0, job[ji*2 + 1]);}
     if( F_single){load_eigensystem_vecs(file_read ,   eigenF, io_read , in_read_eigen , 0, job[ji*2 + 1]);}
 
-    ////for(long iv=0;iv < job[ji*2 + 1];iv++){noi_bufD[iv] = eigenD[iv];}
-    ////for(long iv=0;iv < job[ji*2 + 1];iv++){noi_bufF[iv] = eigenF[iv];}
+    ////for(Long iv=0;iv < job[ji*2 + 1];iv++){noi_bufD[iv] = eigenD[iv];}
+    ////for(Long iv=0;iv < job[ji*2 + 1];iv++){noi_bufF[iv] = eigenF[iv];}
 
     /////===smearing of eigen
     if(step != 0){

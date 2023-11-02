@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
   size_node_list.push_back(Coordinate(1, 1, 1, 16));
   begin(&argc, &argv, size_node_list);
   if (argc != 4) {
-    displayln_info("usage: ./field-compare float/double/long fn1 fn2");
+    displayln_info("usage: ./field-compare float/double/Long fn1 fn2");
     exit(-1);
   }
   const std::string dtype = argv[1];
@@ -47,8 +47,8 @@ int main(int argc, char* argv[])
     f1 -= f2;
     const double qnorm_diff = qnorm(f1);
     displayln_info(ssprintf("qnorm(f1-f2) = %24.17E", qnorm_diff));
-  } else if (dtype == "long") {
-    Field<long> f1, f2;
+  } else if (dtype == "Long") {
+    Field<Long> f1, f2;
     read_field_64(f1, fn1);
     const double qnorm1 = qnorm(f1);
     displayln_info(ssprintf("qnorm(f1) = %24.17E", qnorm1));

@@ -5,7 +5,7 @@ EXPORT(contract_chvp3_sfield, {
   PyObject* p_ld = NULL;
   PyObject* p_prop1 = NULL;
   PyObject* p_prop2 = NULL;
-  long tslice_src = -1;
+  Long tslice_src = -1;
   if (!PyArg_ParseTuple(args, "OOOi", &p_ld, &p_prop1, &p_prop2, &tslice_src)) {
     return NULL;
   }

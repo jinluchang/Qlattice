@@ -31,7 +31,7 @@ inline Coordinate normalize_coordinate(const Coordinate& c)
   }
 }
 
-inline long index_from_relative_coordinate(const Coordinate& rel,
+inline Long index_from_relative_coordinate(const Coordinate& rel,
                                            const Coordinate& total_site)
 {
   const Coordinate limit = total_site / 2 + Coordinate(1, 1, 1, 1);
@@ -40,7 +40,7 @@ inline long index_from_relative_coordinate(const Coordinate& rel,
 }
 
 inline Coordinate normalized_relative_coordinate_from_index(
-    const long index, const Coordinate& total_site)
+    const Long index, const Coordinate& total_site)
 {
   const Coordinate limit = total_site / 2 + Coordinate(1, 1, 1, 1);
   return coordinate_from_index(index, limit);
@@ -60,21 +60,21 @@ inline void normalize_pd(PointDistribution& pd, const Coordinate& total_site)
 {
   TIMER_VERBOSE("normalize_pd");
   double count = 0;
-  for (long index = 1; index < (long)pd.size(); ++index) {
+  for (Long index = 1; index < (Long)pd.size(); ++index) {
     count += pd[index];
   }
   PointDistribution pdm;
   init_pd(pdm, total_site);
-  for (long index = 0; index < product(total_site); ++index) {
+  for (Long index = 0; index < product(total_site); ++index) {
     const Coordinate rel = relative_coordinate(
         coordinate_from_index(index, total_site), total_site);
-    const long idx = index_from_relative_coordinate(rel, total_site);
-    qassert(0 <= idx and idx < (long)pdm.size());
+    const Long idx = index_from_relative_coordinate(rel, total_site);
+    qassert(0 <= idx and idx < (Long)pdm.size());
     pdm[idx] += 1;
   }
   qassert(pd.size() == pdm.size());
 #pragma omp parallel for
-  for (long index = 1; index < (long)pd.size(); ++index) {
+  for (Long index = 1; index < (Long)pd.size(); ++index) {
     if (pdm[index] > 0) {
       pd[index] /= count * pdm[index];
     }
@@ -88,20 +88,20 @@ inline void renormalize_pd(PointDistribution& pd, const Coordinate& total_site)
   TIMER_VERBOSE("renormalize_pd");
   PointDistribution pdm;
   init_pd(pdm, total_site);
-  for (long index = 0; index < product(total_site); ++index) {
+  for (Long index = 0; index < product(total_site); ++index) {
     const Coordinate rel = relative_coordinate(
         coordinate_from_index(index, total_site), total_site);
-    const long idx = index_from_relative_coordinate(rel, total_site);
-    qassert(0 <= idx and idx < (long)pdm.size());
+    const Long idx = index_from_relative_coordinate(rel, total_site);
+    qassert(0 <= idx and idx < (Long)pdm.size());
     pdm[idx] += 1;
   }
   qassert(pd.size() == pdm.size());
   double prob_sum = 0;
-  for (long index = 1; index < (long)pd.size(); ++index) {
+  for (Long index = 1; index < (Long)pd.size(); ++index) {
     prob_sum += pd[index] * pdm[index];
   }
 #pragma omp parallel for
-  for (long index = 1; index < (long)pd.size(); ++index) {
+  for (Long index = 1; index < (Long)pd.size(); ++index) {
     if (pdm[index] > 0) {
       pd[index] /= prob_sum;
     }
@@ -116,7 +116,7 @@ inline void save_pd(const PointDistribution& pd, const Coordinate& total_site,
   if (get_id_node() == 0) {
     FILE* fp = qopen(path + ".partial", "w");
     qassert(fp != NULL);
-    for (long index = 0; index < (long)pd.size(); ++index) {
+    for (Long index = 0; index < (Long)pd.size(); ++index) {
       const Coordinate rel =
           normalized_relative_coordinate_from_index(index, total_site);
       if (rel == normalize_coordinate(rel)) {
@@ -143,7 +143,7 @@ inline void load_pd(PointDistribution& pd, const Coordinate& total_site,
   if (get_id_node() == 0) {
     FILE* fp = qopen(path, "r");
     qassert(fp != NULL);
-    for (long index = 0; index < (long)pd.size(); ++index) {
+    for (Long index = 0; index < (Long)pd.size(); ++index) {
       const Coordinate rel =
           normalized_relative_coordinate_from_index(index, total_site);
       if (rel == normalize_coordinate(rel)) {

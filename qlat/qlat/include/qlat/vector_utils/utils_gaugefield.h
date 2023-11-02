@@ -76,7 +76,7 @@ void set_rand_link(GaugeFieldT<Td> &gf, const int seed = -1)
     ColorMatrixT<Td> unit;set_unit(unit, 1.0);
     /////TODO This function cannot be done on GPU
     /////Eigen normalize/normalized problem 
-    for(long isp=0;isp<gf.field.size();isp++)
+    for(Long isp=0;isp<gf.field.size();isp++)
     {
       gf.get_elem_offset(isp) = gf.get_elem_offset(isp) * (1/2.0) + unit;
       unitarize(gf.get_elem_offset(isp));

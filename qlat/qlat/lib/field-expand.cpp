@@ -15,7 +15,7 @@ void set_marks_field_all(CommMarks& marks, const Geometry& geo,
   marks.init(geo);
   set_zero(marks);
 #pragma omp parallel for
-  for (long offset = 0; offset < geo.local_volume_expanded() * geo.multiplicity;
+  for (Long offset = 0; offset < geo.local_volume_expanded() * geo.multiplicity;
        ++offset) {
     const Coordinate xl = geo.coordinate_from_offset(offset);
     if (not geo.is_local(xl)) {
@@ -36,7 +36,7 @@ void set_marks_field_1(CommMarks& marks, const Geometry& geo,
   Geometry geo_full = geo;
   geo_full.eo = 0;
 #pragma omp parallel for
-  for (long index = 0; index < geo_full.local_volume(); ++index) {
+  for (Long index = 0; index < geo_full.local_volume(); ++index) {
     const Coordinate xl = geo_full.coordinate_from_index(index);
     for (int dir = -4; dir < 4; ++dir) {
       const Coordinate xl1 = coordinate_shifts(xl, dir);
@@ -50,8 +50,8 @@ void set_marks_field_1(CommMarks& marks, const Geometry& geo,
   }
 }
 
-void g_offset_id_node_from_offset(long& g_offset, int& id_node,
-                                  const long offset, const Geometry& geo)
+void g_offset_id_node_from_offset(Long& g_offset, int& id_node,
+                                  const Long offset, const Geometry& geo)
 // offset is expanded
 // g_offset calculated assume lattice_size_multiplier*total_site
 {
@@ -68,7 +68,7 @@ void g_offset_id_node_from_offset(long& g_offset, int& id_node,
              offset % geo.multiplicity;
 }
 
-long offset_send_from_g_offset(const long g_offset, const Geometry& geo)
+Long offset_send_from_g_offset(const Long g_offset, const Geometry& geo)
 // g_offset calculated assume lattice_size_multiplier*total_site
 // return offset is local
 {
@@ -88,7 +88,7 @@ long offset_send_from_g_offset(const long g_offset, const Geometry& geo)
   return geo.offset_from_coordinate(xl) + g_offset % geo.multiplicity;
 }
 
-long offset_recv_from_g_offset(const long g_offset, const Geometry& geo)
+Long offset_recv_from_g_offset(const Long g_offset, const Geometry& geo)
 // g_offset calculated assume lattice_size_multiplier*total_site
 // return offset is expanded
 {
@@ -119,12 +119,12 @@ CommPlan make_comm_plan(const CommMarks& marks)
   //
   std::map<int, std::vector<Long> >
       src_id_node_g_offsets;  // src node id ; vector of g_offset
-  for (long offset = 0; offset < geo.local_volume_expanded() * geo.multiplicity;
+  for (Long offset = 0; offset < geo.local_volume_expanded() * geo.multiplicity;
        ++offset) {
     const int8_t r = marks.get_elem_offset(offset);
     if (r != 0) {
       int id_node;
-      long g_offset;
+      Long g_offset;
       g_offset_id_node_from_offset(g_offset, id_node, offset, geo);
       if (id_node != get_id_node()) {
         qassert(0 <= id_node and id_node < get_num_node());
@@ -136,7 +136,7 @@ CommPlan make_comm_plan(const CommMarks& marks)
   vector<Long> src_id_node_count(get_num_node(),
                                  0);  // number of total send pkgs for each node
   {
-    long count = 0;
+    Long count = 0;
     for (std::map<int, std::vector<Long> >::const_iterator it =
              src_id_node_g_offsets.begin();
          it != src_id_node_g_offsets.end(); ++it) {
@@ -189,7 +189,7 @@ CommPlan make_comm_plan(const CommMarks& marks)
     {
       const int mpi_tag = 9;
       int k = 0;
-      long count = 0;
+      Long count = 0;
       for (std::map<int, std::vector<Long> >::iterator it =
                dst_id_node_g_offsets.begin();
            it != dst_id_node_g_offsets.end(); ++it) {
@@ -217,7 +217,7 @@ CommPlan make_comm_plan(const CommMarks& marks)
     }
   }
   {
-    long current_buffer_idx = 0;
+    Long current_buffer_idx = 0;
     int k = 0;
     for (std::map<int, std::vector<Long> >::const_iterator it =
              src_id_node_g_offsets.begin();
@@ -226,11 +226,11 @@ CommPlan make_comm_plan(const CommMarks& marks)
       const std::vector<Long>& g_offsets = it->second;
       qassert(src_id_node == ret.recv_msg_infos[k].id_node);
       qassert(current_buffer_idx == ret.recv_msg_infos[k].buffer_idx);
-      qassert((long)g_offsets.size() == ret.recv_msg_infos[k].size);
-      long current_offset = -1;
-      for (long i = 0; i < (long)g_offsets.size(); ++i) {
-        const long g_offset = g_offsets[i];
-        const long offset =
+      qassert((Long)g_offsets.size() == ret.recv_msg_infos[k].size);
+      Long current_offset = -1;
+      for (Long i = 0; i < (Long)g_offsets.size(); ++i) {
+        const Long g_offset = g_offsets[i];
+        const Long offset =
             offset_recv_from_g_offset(g_offset, geo);  // offset is expanded
         if (offset != current_offset) {
           CommPackInfo cpi;
@@ -251,7 +251,7 @@ CommPlan make_comm_plan(const CommMarks& marks)
     }
   }
   {
-    long current_buffer_idx = 0;
+    Long current_buffer_idx = 0;
     int k = 0;
     for (std::map<int, std::vector<Long> >::const_iterator it =
              dst_id_node_g_offsets.begin();
@@ -260,11 +260,11 @@ CommPlan make_comm_plan(const CommMarks& marks)
       const std::vector<Long>& g_offsets = it->second;
       qassert(dst_id_node == ret.send_msg_infos[k].id_node);
       qassert(current_buffer_idx == ret.send_msg_infos[k].buffer_idx);
-      qassert((long)g_offsets.size() == ret.send_msg_infos[k].size);
-      long current_offset = -1;
-      for (long i = 0; i < (long)g_offsets.size(); ++i) {
-        const long g_offset = g_offsets[i];
-        const long offset =
+      qassert((Long)g_offsets.size() == ret.send_msg_infos[k].size);
+      Long current_offset = -1;
+      for (Long i = 0; i < (Long)g_offsets.size(); ++i) {
+        const Long g_offset = g_offsets[i];
+        const Long offset =
             offset_send_from_g_offset(g_offset, geo);  // offset is local
         if (offset != current_offset) {
           CommPackInfo cpi;
@@ -327,7 +327,7 @@ void set_marks_field_gf_hamilton(CommMarks& marks, const Geometry& geo,
   marks.init(geo);
   set_zero(marks);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     for (int mu = 0; mu < 3; ++mu) {
       for (int nu = mu + 1; nu < 4; ++nu) {
@@ -355,7 +355,7 @@ void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo,
   marks.init(geo);
   set_zero(marks);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     for (int mu = 0; mu < 4; ++mu) {
       for (int nu = -4; nu < 4; ++nu) {
@@ -384,7 +384,7 @@ void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo,
 //   marks.init();
 //   marks.init(geo);
 // #pragma omp parallel for
-//   for (long record = 0; record < geo.local_volume_expanded(); ++record) {
+//   for (Long record = 0; record < geo.local_volume_expanded(); ++record) {
 //     const Coordinate xl = geo.coordinateFromRecord(record);
 //     if (xl[0] < 1 - geo.expansion_left[0] or
 //         xl[0] >= geo.node_site[0] + geo.expansion_right[0] -
@@ -425,8 +425,8 @@ void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo,
 //   node Coordinate node_pos; // home node coordinate of a site in node space
 //
 //   // populate send_map with the data that we need to send to other nodes
-//   long record_size = field_comm.geo().local_volume_expanded();
-//   for(long record = 0; record < record_size; record++){
+//   Long record_size = field_comm.geo().local_volume_expanded();
+//   for(Long record = 0; record < record_size; record++){
 //     pos = field_comm.geo().coordinateFromRecord(record);
 //     if(field_comm.geo().is_local(pos)) continue;
 //     for(int mu = 0; mu < DIMN; mu++){
@@ -454,9 +454,9 @@ void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo,
 //   for(it = send_map.begin(); it != send_map.end(); it++){
 //     node_pos = it->first;
 //     std::vector<M> &send_vec = it->second;
-//     long size = send_vec.size();
+//     Long size = send_vec.size();
 //     size_t size_bytes = size * sizeof(M);
-//     recv_vec.resize(std::max((long)2500, size));
+//     recv_vec.resize(std::max((Long)2500, size));
 //
 //     M *send = send_vec.data();
 //     M *recv = recv_vec.data();
@@ -489,7 +489,7 @@ void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo,
 //   }
 //   // Now send_map[node_pos] is the vector of data recieved from the node
 //   // pointed to by key.
-//   for(long record = 0; record < record_size; record++){
+//   for(Long record = 0; record < record_size; record++){
 //     pos = field_comm.geo().coordinateFromRecord(record);
 //     if(field_comm.geo().is_local(pos)) continue;
 //     for(int mu = 0; mu < DIMN; mu++){

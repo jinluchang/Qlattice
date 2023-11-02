@@ -6,14 +6,14 @@ namespace qlat
 {  //
 
 void add_field_selection(FieldM<int64_t, 1>& f_rank, const PointsSelection& psel,
-                         const long rank_psel)
+                         const Long rank_psel)
 // interface function
 // add psel points to f_rank. (only lower rank if already selected)
 {
   TIMER_VERBOSE("add_field_selection(psel)");
   const Geometry& geo = f_rank.geo();
 #pragma omp parallel for
-  for (long i = 0; i < (long)psel.size(); ++i) {
+  for (Long i = 0; i < (Long)psel.size(); ++i) {
     const Coordinate xl = geo.coordinate_l_from_g(psel[i]);
     if (geo.is_local(xl)) {
       int64_t& rank = f_rank.get_elem(xl);
@@ -38,7 +38,7 @@ void mk_field_selection(FieldM<int64_t, 1>& f_rank,
   f_rank.init(geo);
   qassert(f_rank.geo().is_only_local);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     int64_t& rank = f_rank.get_elem(index);
     rank = val;
   }
@@ -46,15 +46,15 @@ void mk_field_selection(FieldM<int64_t, 1>& f_rank,
 
 void mk_field_selection(FieldM<int64_t, 1>& f_rank,
                         const Coordinate& total_site,
-                        const std::vector<Coordinate>& xgs, const long rank_xgs)
+                        const std::vector<Coordinate>& xgs, const Long rank_xgs)
 {
   TIMER_VERBOSE("mk_field_selection(xgs)");
   mk_field_selection(f_rank, total_site, -1);
   add_field_selection(f_rank, xgs, rank_xgs);
 }
 
-void select_rank_range(FieldM<int64_t, 1>& f_rank, const long rank_start,
-                       const long rank_stop)
+void select_rank_range(FieldM<int64_t, 1>& f_rank, const Long rank_start,
+                       const Long rank_stop)
 // keep rank info if rank_start <= rank and (rank < rank_stop or rank_stop ==
 // -1) otherwise rank = -1 default parameter does not change selection but will
 // erase the rank information for points not selected (rank = -1)
@@ -71,8 +71,8 @@ void select_rank_range(FieldM<int64_t, 1>& f_rank, const long rank_start,
   });
 }
 
-void select_t_range(FieldM<int64_t, 1>& f_rank, const long t_start,
-                    const long t_stop)
+void select_t_range(FieldM<int64_t, 1>& f_rank, const Long t_start,
+                    const Long t_stop)
 // keep rank info if t_start <= t and (t < t_stop or t_stop == -1)
 // otherwise rank = -1
 // default parameter does not change selection
@@ -93,7 +93,7 @@ void select_t_range(FieldM<int64_t, 1>& f_rank, const long t_start,
   });
 }
 
-void set_n_per_tslice(FieldM<int64_t, 1>& f_rank, const long n_per_tslice)
+void set_n_per_tslice(FieldM<int64_t, 1>& f_rank, const Long n_per_tslice)
 // will erase the rank information for points not selected (rank = -1)
 //
 // if n_per_tslice == -1 then all points are selected regardless of rank
@@ -110,7 +110,7 @@ void set_n_per_tslice(FieldM<int64_t, 1>& f_rank, const long n_per_tslice)
   const Geometry& geo = f_rank.geo();
   qassert(geo.is_only_local);
   const Coordinate total_site = geo.total_site();
-  const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
+  const Long spatial_vol = total_site[0] * total_site[1] * total_site[2];
   qassert(n_per_tslice == -1 or
           (0 <= n_per_tslice and n_per_tslice <= spatial_vol));
   qacc_for(index, geo.local_volume(), {
@@ -132,10 +132,10 @@ void update_field_selection(FieldSelection& fsel)
   qassert(geo.is_only_local);
   fsel.f_local_idx.init();
   fsel.f_local_idx.init(geo);
-  long n_elems = 0;
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  Long n_elems = 0;
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const int64_t& rank = fsel.f_rank.get_elem(index);
-    long& idx = fsel.f_local_idx.get_elem(index);
+    Long& idx = fsel.f_local_idx.get_elem(index);
     if (0 <= rank) {
       idx = n_elems;
       n_elems += 1;
@@ -147,10 +147,10 @@ void update_field_selection(FieldSelection& fsel)
   fsel.ranks.resize(fsel.n_elems);
   fsel.indices.resize(fsel.n_elems);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
-    const long idx = fsel.f_local_idx.get_elems_const(index)[0];
+  for (Long index = 0; index < geo.local_volume(); ++index) {
+    const Long idx = fsel.f_local_idx.get_elems_const(index)[0];
     if (idx >= 0) {
-      const long rank = fsel.f_rank.get_elem(index);
+      const Long rank = fsel.f_rank.get_elem(index);
       fsel.ranks[idx] = rank;
       fsel.indices[idx] = index;
     }
@@ -159,7 +159,7 @@ void update_field_selection(FieldSelection& fsel)
 
 void set_grid_field_selection(FieldSelection& fsel,
                               const Coordinate& total_site,
-                              const long n_per_tslice, const RngState& rs)
+                              const Long n_per_tslice, const RngState& rs)
 {
   TIMER_VERBOSE("set_grid_field_selection(fsel,total_site,n_per_tslice,rs)");
   fsel.init();
@@ -186,7 +186,7 @@ void set_field_selection(FieldSelection& fsel, const Coordinate& total_site)
 }
 
 void set_field_selection(FieldSelection& fsel, const Coordinate& total_site,
-                         const long n_per_tslice, const RngState& rs)
+                         const Long n_per_tslice, const RngState& rs)
 {
   TIMER_VERBOSE("set_field_selection(fsel,total_site,n_per_tslice,rs)");
   fsel.init();
@@ -195,7 +195,7 @@ void set_field_selection(FieldSelection& fsel, const Coordinate& total_site,
 }
 
 void set_field_selection(FieldSelection& fsel, const Coordinate& total_site,
-                         const long n_per_tslice, const RngState& rs,
+                         const Long n_per_tslice, const RngState& rs,
                          const PointsSelection& psel)
 {
   TIMER_VERBOSE("set_field_selection(fsel,total_site,n_per_tslice,rs,psel)");
@@ -208,7 +208,7 @@ void set_field_selection(FieldSelection& fsel, const Coordinate& total_site,
 bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2)
 // only check selection, does not check rank or parameter
 {
-  const long n_elems = fsel1.n_elems;
+  const Long n_elems = fsel1.n_elems;
   if (n_elems != fsel2.n_elems) {
     return false;
   }
@@ -230,30 +230,30 @@ PointsSelection psel_from_fsel(const FieldSelection& fsel)
   TIMER("psel_from_fsel")
   const Geometry& geo = fsel.f_rank.geo();
   const Coordinate total_site = geo.total_site();
-  long n_elems = fsel.n_elems;
-  long total_n_elems = n_elems;
+  Long n_elems = fsel.n_elems;
+  Long total_n_elems = n_elems;
   glb_sum(total_n_elems);
   // const int num_node = geo.geon.num_node;
-  const int id_node = geo.geon.id_node;
+  const Int id_node = geo.geon.id_node;
   vector<Long> vec(geo.geon.num_node, 0);
   all_gather(get_data(vec), get_data_one_elem(n_elems));
-  long idx_offset = 0;
-  for (int i = 0; i < id_node; ++i) {
+  Long idx_offset = 0;
+  for (Int i = 0; i < id_node; ++i) {
     idx_offset += vec[i];
   }
   qassert(idx_offset <= total_n_elems);
   vector<Long> vec_gindex(total_n_elems, 0);
   qthread_for(idx, fsel.n_elems, {
-    const long index = fsel.indices[idx];
+    const Long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const long gindex = index_from_coordinate(xg, total_site);
+    const Long gindex = index_from_coordinate(xg, total_site);
     vec_gindex[idx_offset + idx] = gindex;
   });
   glb_sum(get_data(vec_gindex));
   PointsSelection psel(total_n_elems);
-  qthread_for(idx, (long)psel.size(), {
-    long gindex = vec_gindex[idx];
+  qthread_for(idx, (Long)psel.size(), {
+    Long gindex = vec_gindex[idx];
     psel[idx] = coordinate_from_index(gindex, total_site);
   });
   return psel;
@@ -264,10 +264,10 @@ PointsSelection psel_from_fsel_local(const FieldSelection& fsel)
   TIMER("psel_from_fsel_local")
   const Geometry& geo = fsel.f_rank.geo();
   // const Coordinate total_site = geo.total_site();
-  long n_elems = fsel.n_elems;
+  Long n_elems = fsel.n_elems;
   PointsSelection psel(n_elems);
-  qthread_for(idx, (long)psel.size(), {
-    const long index = fsel.indices[idx];
+  qthread_for(idx, (Long)psel.size(), {
+    const Long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     psel[idx] = xg;
@@ -282,27 +282,27 @@ void set_selected_gindex(SelectedField<Long>& sfgi, const FieldSelection& fsel)
   const Coordinate total_site = geo.total_site();
   sfgi.init(fsel, 1);
   qthread_for(idx, fsel.n_elems, {
-    const long index = fsel.indices[idx];
+    const Long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const long gindex = index_from_coordinate(xg, total_site);
+    const Long gindex = index_from_coordinate(xg, total_site);
     sfgi.get_elem(idx) = gindex;
   });
 }
 
 void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
                              const Coordinate& total_site,
-                             const long n_per_tslice_, const RngState& rs)
+                             const Long n_per_tslice_, const RngState& rs)
 // each time slice has "n_per_tslice = spatial_vol / ratio" points been
 // selected. not selected points has value = -1; selected points has value from
 // 0 to "n_per_tslice - 1" in random order (different per time slice)
 {
   TIMER_VERBOSE("mk_grid_field_selection");
-  const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
-  const long n_per_tslice = n_per_tslice_ == -1 ? spatial_vol : n_per_tslice_;
+  const Long spatial_vol = total_site[0] * total_site[1] * total_site[2];
+  const Long n_per_tslice = n_per_tslice_ == -1 ? spatial_vol : n_per_tslice_;
   qassert(n_per_tslice > 0);
   qassert(spatial_vol % n_per_tslice == 0);
-  const long ratio = spatial_vol / n_per_tslice;
+  const Long ratio = spatial_vol / n_per_tslice;
   qassert(ratio >= 0);
   RngState rs_shift(rs, "random_shift");
   const Coordinate random_shift = mod(
@@ -330,12 +330,12 @@ void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
     for (int t = t_start; t < t_end; ++t) {
       RngState rst = rs.split(t);
       std::vector<Long> ranks(n_per_tslice);
-      for (long i = 0; i < n_per_tslice; ++i) {
+      for (Long i = 0; i < n_per_tslice; ++i) {
         ranks[i] = i;
       }
       random_permute(ranks, rst);
-      long idx = 0;
-      for (long index = 0; index < ngeo.local_volume(); ++index) {
+      Long idx = 0;
+      for (Long index = 0; index < ngeo.local_volume(); ++index) {
         const Coordinate xl = ngeo.coordinate_from_index(index);
         const Coordinate xg = ngeo.coordinate_g_from_l(xl);
         if (xg[3] != t) {
@@ -399,14 +399,14 @@ void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
 }
 
 void mk_field_selection(FieldM<int64_t, 1>& f_rank,
-                        const Coordinate& total_site, const long n_per_tslice,
+                        const Coordinate& total_site, const Long n_per_tslice,
                         const RngState& rs)
 // interface function
 // not selected points has value = -1;
 // random select n_per_tslice points based on ranks from mk_grid_field_selection
 {
   TIMER_VERBOSE("mk_field_selection(n_per_tslice,rs)");
-  const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
+  const Long spatial_vol = total_site[0] * total_site[1] * total_site[2];
   mk_grid_field_selection(f_rank, total_site, spatial_vol, rs);
   if (n_per_tslice == -1 or n_per_tslice == spatial_vol) {
     return;
@@ -414,18 +414,18 @@ void mk_field_selection(FieldM<int64_t, 1>& f_rank,
   set_n_per_tslice(f_rank, n_per_tslice);
 }
 
-long write_field_selection(const FieldSelection& fsel, const std::string& path)
+Long write_field_selection(const FieldSelection& fsel, const std::string& path)
 {
   TIMER_VERBOSE("write_field_selection");
   return write_field_64(fsel.f_rank, path);
 }
 
-long read_field_selection(FieldSelection& fsel, const std::string& path)
+Long read_field_selection(FieldSelection& fsel, const std::string& path)
 {
   TIMER_VERBOSE("read_field_selection");
   fsel.init();
   FieldM<int64_t, 1> f_rank;
-  const long total_bytes = read_field_64(f_rank, path);
+  const Long total_bytes = read_field_64(f_rank, path);
   if (total_bytes > 0) {
     set_field_selection(fsel, f_rank);
   }
@@ -451,12 +451,12 @@ std::string make_selected_field_header(const Geometry& geo,
   return out.str();
 }
 
-long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
+Long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
                             int& sizeof_M, crc32_t& crc,
                             const std::string& path)
 {
   TIMER("read_selected_geo_info");
-  long pos = 0;
+  Long pos = 0;
   if (get_id_node() == 0) {
     QFile fp = qfopen(path, "r");
     if (not fp.null()) {
@@ -493,7 +493,7 @@ long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
 bool is_selected_field(const std::string& path)
 {
   TIMER("is_selected_field");
-  long nfile = 0;
+  Long nfile = 0;
   if (get_id_node() == 0) {
     QFile fp = qfopen(path, "r");
     if (not fp.null()) {

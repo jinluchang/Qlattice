@@ -15,7 +15,7 @@ template <class T>
 void diff_gauge( GaugeFieldT<T> &g0, GaugeFieldT<T> &g1)
 {
   double diff = 0.0;int count_print = 0;
-  for (long index = 0; index < g0.geo().local_volume(); ++index) {
+  for (Long index = 0; index < g0.geo().local_volume(); ++index) {
     Vector<ColorMatrixT<T> > v0 = g0.get_elems(index);
     Vector<ColorMatrixT<T> > v1 = g1.get_elems(index);
     for(int m = 0; m < 4; ++m){
@@ -39,9 +39,9 @@ template <class T>
 void diff_prop(Propagator4dT<T>& p0, Propagator4dT<T>& p1, double err=1e-15)
 {
   int rank = qlat::get_id_node();
-  long MAX_COUNT = 64;
-  double diffp = 0.0; long countp = 0;
-  for (long index = 0; index < p0.geo().local_volume(); ++index) {
+  Long MAX_COUNT = 64;
+  double diffp = 0.0; Long countp = 0;
+  for (Long index = 0; index < p0.geo().local_volume(); ++index) {
     Coordinate xl0 = p0.geo().coordinate_from_index(index);
     Coordinate xg0 = p0.geo().coordinate_g_from_l(xl0);
 
@@ -82,7 +82,7 @@ void diff_prop(Propagator4dT<T>& p0, Propagator4dT<T>& p1, double err=1e-15)
 template <class Ty, int civ>
 void print_norm2(qlat::FieldM<Ty , civ>& p0)
 {
-  const long V = p0.geo().local_volume() * civ;
+  const Long V = p0.geo().local_volume() * civ;
   Ty* src = (Ty*) qlat::get_data(p0).data();
   qlat::vector_gpu<Ty > buf;
   buf.copy_from(src, V, 1, 1);
@@ -91,14 +91,14 @@ void print_norm2(qlat::FieldM<Ty , civ>& p0)
 
 
 template <class Ty, int civ>
-void diff_propT(qlat::FieldM<Ty , civ>& p0, qlat::FieldM<Ty , civ>& p1, double err=1e-15, long MAX_COUNT = 64)
+void diff_propT(qlat::FieldM<Ty , civ>& p0, qlat::FieldM<Ty , civ>& p1, double err=1e-15, Long MAX_COUNT = 64)
 {
   int rank = qlat::get_id_node();
-  /////long MAX_COUNT = 64;
-  double diffp = 0.0; long countp = 0;
+  /////Long MAX_COUNT = 64;
+  double diffp = 0.0; Long countp = 0;
   Ty* s0 = (Ty*) qlat::get_data(p0).data();
   Ty* s1 = (Ty*) qlat::get_data(p1).data();
-  for (long index = 0; index < p0.geo().local_volume(); ++index) {
+  for (Long index = 0; index < p0.geo().local_volume(); ++index) {
     Coordinate xl0 = p0.geo().coordinate_from_index(index);
     Coordinate xg0 = p0.geo().coordinate_g_from_l(xl0);
 
@@ -135,7 +135,7 @@ void diff_propT(qlat::FieldM<Ty , civ>& p0, qlat::FieldM<Ty , civ>& p1, double e
 template <class T, int bfac>
 void print_src(qlat::FieldM<T, bfac> &noi)
 {
-  for (long index = 0; index < noi.geo().local_volume(); ++index) {
+  for (Long index = 0; index < noi.geo().local_volume(); ++index) {
     Coordinate xl0 = noi.geo().coordinate_from_index(index);
     Coordinate xg0 = noi.geo().coordinate_g_from_l(xl0);
 
@@ -161,7 +161,7 @@ void diff_EigenM(qlat::vector<T >& a, qlat::vector<T >& b, std::string lab)
   if(a.size() != b.size()){print0("%s size not equal %d, %d\n",
     lab.c_str(), int(a.size()), int(b.size()) );abort_r("");}
 
-  for(long i=0;i < a.size(); i++)
+  for(Long i=0;i < a.size(); i++)
   {
     Complexq tem = a[i] - b[i];
     diff += (tem.real()*tem.real() + tem.imag()*tem.imag());
@@ -187,7 +187,7 @@ void random_point_src(Propagator4dT<T>& prop, int seed = 0)
   qlat::displayln_info(qlat::ssprintf("===Point src x %5d, y %5d, z %5d, t %5d \n",xg[0], xg[1], xg[2], xg[3]));
   const Coordinate xl = geo.coordinate_l_from_g(xg);
   if(geo.is_local(xl)){
-    long index = geo.index_from_coordinate(xl);
+    Long index = geo.index_from_coordinate(xl);
     qlat::WilsonMatrixT<T>&  s0 =  prop.get_elem_offset(index);
     for(int d0=0;d0<12;d0++)s0(d0,d0) = 1.0;
     printf("===set value, node %d, index %ld \n", rank, index );
@@ -207,10 +207,10 @@ void get_mom_apply(qlat::FieldM<Ty0, civ> &src, std::vector<int >& mom, std::vec
   Ty0* P0 = (Ty0*) (qlat::get_data(src).data());int psum = 3;
   if( ft4D){dat.resize(civ);psum = 4;}
   if(!ft4D){dat.resize(nv[3]*civ);psum = 3;}
-  for(long di=0;di<long(dat.size());di++){dat[di] = 0.0;}
+  for(Long di=0;di<Long(dat.size());di++){dat[di] = 0.0;}
 
   double pi = 3.14159265358979323846;
-  for(long isp = 0; isp < geo.local_volume(); isp++)
+  for(Long isp = 0; isp < geo.local_volume(); isp++)
   {
     Coordinate xl = geo.coordinate_from_index(isp);
     Coordinate xg = geo.coordinate_g_from_l(xl);
@@ -219,7 +219,7 @@ void get_mom_apply(qlat::FieldM<Ty0, civ> &src, std::vector<int >& mom, std::vec
     Ty1 phase = 0.0;
     if(!dir)phase = Ty1(std::cos(tem), std::sin(tem));
     if( dir)phase = Ty1(std::cos(tem), -1.0*std::sin(tem));
-    for(long di=0;di<civ;di++)
+    for(Long di=0;di<civ;di++)
     {
       if( ft4D)dat[            di] += phase * P0[isp*civ + di];
       if(!ft4D)dat[xg[3]*civ + di] += phase * P0[isp*civ + di];
@@ -241,9 +241,9 @@ void get_mom_fft(qlat::FieldM<Ty0, civ> &src, std::vector<int >& mom, std::vecto
   Ty0* P0 = (Ty0*) (qlat::get_data(src).data());
   if( ft4D){dat.resize(civ);}
   if(!ft4D){dat.resize(nv[3]*civ);}
-  for(long di=0;di<long(dat.size());di++){dat[di] = 0.0;}
+  for(Long di=0;di<Long(dat.size());di++){dat[di] = 0.0;}
 
-  for(long isp = 0; isp < geo.local_volume(); isp++)
+  for(Long isp = 0; isp < geo.local_volume(); isp++)
   {
     Coordinate xl = geo.coordinate_from_index(isp);
     Coordinate xg = geo.coordinate_g_from_l(xl);
@@ -277,12 +277,12 @@ double check_sum_prop(qpropT& p0)
   const Geometry& geo = p0.geo();
   double check_sum = 0.0;
   const Ty* src = (Ty*) qlat::get_data(p0).data();
-  const long Nvol = geo.local_volume();
-  for(long index = 0; index < Nvol; ++index){
+  const Long Nvol = geo.local_volume();
+  for(Long index = 0; index < Nvol; ++index){
     Coordinate xl = geo.coordinate_from_index(index);
     Coordinate xg = geo.coordinate_g_from_l(xl);
     double cor = xg[0]*0.5 + xg[1]*1.7 + xg[2]*xg[2]*2.5 + xg[3]*xg[3]*0.2;
-    for(long dc = 0;dc<12*12;dc++)
+    for(Long dc = 0;dc<12*12;dc++)
     {
       Ty fac = Ty(std::cos(cor + dc) , std::sin(cor*5.7  + dc*dc) );
       check_sum += qlat::qnorm( src[dc*Nvol + index] * fac ) ;
@@ -298,11 +298,11 @@ template <class T, int civ>
 void diff_FieldM(qlat::FieldM<T , civ>& prop0, qlat::FieldM<T , civ>& prop1, double err=1e-15)
 {
   int rank = qlat::get_id_node();
-  long MAX_COUNT = 64;
-  double diffp = 0.0; long countp = 0;
+  Long MAX_COUNT = 64;
+  double diffp = 0.0; Long countp = 0;
   T* s0 = (T*) qlat::get_data(prop0).data();
   T* s1 = (T*) qlat::get_data(prop1).data();
-  for (long index = 0; index < prop0.geo().local_volume(); ++index) {
+  for (Long index = 0; index < prop0.geo().local_volume(); ++index) {
     Coordinate xl0 = prop0.geo().coordinate_from_index(index);
     Coordinate xg0 = prop0.geo().coordinate_g_from_l(xl0);
     for(int d0=0;d0<civ;d0++)

@@ -79,9 +79,9 @@ struct fft_desc_basic
 
   inline void set_variable();
   inline void print_info();
-  inline long get_mi_curr(int dir=3);
-  inline long get_tmi_curr();
-  inline long get_xyzmi_curr();
+  inline Long get_mi_curr(int dir=3);
+  inline Long get_tmi_curr();
+  inline Long get_xyzmi_curr();
   inline void check_mem();
   inline Coordinate coordinate_l_from_index(LInt isp) const;
   inline Coordinate coordinate_g_from_g_index(LInt isp) const ;
@@ -125,14 +125,14 @@ inline void copy_fft_desc(fft_desc_basic& fd1, const fft_desc_basic& fd0)
 
 /////Get the index for current node in 3D or 4D
 /////fft redistribution needed
-inline long fft_desc_basic::get_mi_curr(int dir)
+inline Long fft_desc_basic::get_mi_curr(int dir)
 {
   int tmi = Pos0[rank][3]/Nt;
   int zmi = Pos0[rank][2]/Nz;
   int ymi = Pos0[rank][1]/Ny;
   int xmi = Pos0[rank][0]/Nx;
 
-  long re = (zmi*my + ymi)*mx + xmi;
+  Long re = (zmi*my + ymi)*mx + xmi;
   if(dir == 4){
     if(Nv[0] == nv[0]){re += tmi*mz*my*mx;}
     if(Nv[0] != nv[0]){re = re*(mt) + tmi;}
@@ -141,13 +141,13 @@ inline long fft_desc_basic::get_mi_curr(int dir)
   return re;
 }
 
-inline long fft_desc_basic::get_tmi_curr()
+inline Long fft_desc_basic::get_tmi_curr()
 {
   int tmi = Pos0[rank][3]/Nt;
   return tmi;
 }
 
-inline long fft_desc_basic::get_xyzmi_curr()
+inline Long fft_desc_basic::get_xyzmi_curr()
 {
   return get_mi_curr(3);
 }
@@ -159,7 +159,7 @@ inline Coordinate fft_desc_basic::coordinate_l_from_index(LInt isp) const
 
   ////std::vector<int > g0;g0.resize(4);for(int i=0;i<4;i++){g0[i] = 0;}
   Coordinate g0;for(int i=0;i<4;i++){g0[i] = 0;}
-  g0[3] += isp/(Nv[0]*Nv[1]*Nv[2]);long tem = isp%(Nv[0]*Nv[1]*Nv[2]);
+  g0[3] += isp/(Nv[0]*Nv[1]*Nv[2]);Long tem = isp%(Nv[0]*Nv[1]*Nv[2]);
   g0[orderN[0]] += tem/(Nv[orderN[1]]*Nv[orderN[2]]);tem = tem%(Nv[orderN[1]]*Nv[orderN[2]]);
   g0[orderN[1]] += tem/(Nv[orderN[2]]);
   g0[orderN[2]] += tem%(Nv[orderN[2]]);
@@ -173,7 +173,7 @@ inline Coordinate fft_desc_basic::coordinate_g_from_g_index(LInt isp) const
 
   ////std::vector<int > g0;g0.resize(4);
   Coordinate g0;for(int i=0;i<4;i++){g0[i] = 0;}
-  g0[3] += isp/(nv[0]*nv[1]*nv[2]);long tem = isp%(nv[0]*nv[1]*nv[2]);
+  g0[3] += isp/(nv[0]*nv[1]*nv[2]);Long tem = isp%(nv[0]*nv[1]*nv[2]);
   g0[orderN[0]] += tem/(nv[orderN[1]]*nv[orderN[2]]);tem = tem%(nv[orderN[1]]*nv[orderN[2]]);
   g0[orderN[1]] += tem/(nv[orderN[2]]);
   g0[orderN[2]] += tem%(nv[orderN[2]]);
@@ -220,7 +220,7 @@ inline Coordinate fft_desc_basic::coordinate_g_from_index(LInt isp, int rank_set
   Coordinate g0;/////for(int i=0;i<4;i++){g0[i] = 0;}
   for(int i=0;i<4;i++){g0[i] = Pos0[rank_cur][i];}
 
-  g0[3] += isp/(Nv[0]*Nv[1]*Nv[2]);long tem = isp%(Nv[0]*Nv[1]*Nv[2]);
+  g0[3] += isp/(Nv[0]*Nv[1]*Nv[2]);Long tem = isp%(Nv[0]*Nv[1]*Nv[2]);
   g0[orderN[0]] += tem/(Nv[orderN[1]]*Nv[orderN[2]]);tem = tem%(Nv[orderN[1]]*Nv[orderN[2]]);
   g0[orderN[1]] += tem/(Nv[orderN[2]]);
   g0[orderN[2]] += tem%(Nv[orderN[2]]);

@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
   fft_desc_basic fd(geo);
   std::vector<int > dimN;
 
-  const long Nvol = geo.local_volume();
+  const Long Nvol = geo.local_volume();
   qlat::vector_gpu<TyF > check_sum;check_sum.resize(Nvec * Nvol);
 
   std::vector<qlat::FieldM<TyF, Nvec> > src;src.resize(in.nvec);
@@ -136,7 +136,7 @@ int main(int argc, char* argv[])
 
   P0 = (TyF*) (qlat::get_data(src[0]).data());
   TyD* Pa = (TyD*) (qlat::get_data(srcF  ).data());
-  for(long isp=0;isp<geo.local_volume(); isp++)
+  for(Long isp=0;isp<geo.local_volume(); isp++)
   for(int di=0;di<Nvec;di++){
     Pa[isp*Nvec + di] = P0[isp*Nvec + di];
   }
@@ -186,7 +186,7 @@ int main(int argc, char* argv[])
   double fftdiff = 0.0;
   P0 = (TyF*) (qlat::get_data(src[0]).data());
   Pa = (TyD* ) (qlat::get_data(srcF  ).data());
-  for(long isp=0;isp<geo.local_volume(); isp++)
+  for(Long isp=0;isp<geo.local_volume(); isp++)
   for(int di=0;di<Nvec;di++){
     TyD tem = Pa[isp*Nvec + di];
     fftdiff += qnorm(TyF(tem.real(),tem.imag()) - P0[isp*Nvec + di]);
@@ -213,7 +213,7 @@ int main(int argc, char* argv[])
   if(checkdiff){
   double diff[2];
   diff[0] = 0.0;diff[1] = 0.0;
-  for(long di=0;di<long(dat0.size());di++){
+  for(Long di=0;di<Long(dat0.size());di++){
     diff[0] += qlat::qnorm(dat0[di] - dat1[di]);
     diff[1] += qlat::qnorm(dat0[di] - dat2[di]);
     if(qlat::qnorm(dat0[di] - dat1[di]) > 1e-5 or qlat::qnorm(dat0[di] - dat2[di]) > 1e-5)

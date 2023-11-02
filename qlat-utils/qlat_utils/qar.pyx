@@ -10,11 +10,11 @@ def get_qar_multi_vol_max_size(size = None):
     """
     Parameter controls the size of a single `qar` file in number of bytes. Note, `qar` never splits a single file into multiple `qar` volume.
     """
-    cdef long* p_size
+    cdef cc.Long* p_size
     if size is not None:
         assert isinstance(size, int)
         p_size = &cc.get_qar_multi_vol_max_size()
-        p_size[0] = <long>size
+        p_size[0] = <cc.Long>size
     return cc.get_qar_multi_vol_max_size()
 
 def does_regular_file_exist_qar(const cc.std_string& path):

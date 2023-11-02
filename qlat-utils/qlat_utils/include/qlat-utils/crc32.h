@@ -13,12 +13,12 @@
 namespace qlat
 {  //
 
-// inline crc32_t crc32(const crc32_t initial, const void* data, const long len)
+// inline crc32_t crc32(const crc32_t initial, const void* data, const Long len)
 // {
 //   // crc32 of zlib was incorrect for very large sizes, so do it block-wise
 //   const size_t step = 1024*1024*1024;
 //   const unsigned char* blk = (const unsigned char*)data;
-//   long remain_len = len;
+//   Long remain_len = len;
 //   crc32_t crc = initial;
 //   while (remain_len > step) {
 //     crc = crc32_z(crc, blk, step);
@@ -29,17 +29,17 @@ namespace qlat
 //   return crc;
 // }
 
-inline crc32_t crc32(const crc32_t initial, const void* data, const long len)
+inline crc32_t crc32(const crc32_t initial, const void* data, const Long len)
 {
   return crc32_z(initial, (const unsigned char*)data, len);
 }
 
-inline crc32_t crc32(const void* smessage, const long nBytes)
+inline crc32_t crc32(const void* smessage, const Long nBytes)
 {
   return crc32(0, smessage, nBytes);
 }
 
-inline crc32_t crc32_shift(const crc32_t initial, const long offset)
+inline crc32_t crc32_shift(const crc32_t initial, const Long offset)
 // shift initial left by offset length
 // if offset == 0 then return initial
 // offset should be the length of the part after the initial part (which
@@ -60,7 +60,7 @@ crc32_t crc32(const Vector<M> v)
   return crc32(0, v.data(), v.data_size());
 }
 
-inline crc32_t crc32_par(const void* smessage, const long nBytes)
+inline crc32_t crc32_par(const void* smessage, const Long nBytes)
 {
   const uint8_t* ptr = (const uint8_t*)smessage;
   const int v_limit = omp_get_max_threads();
@@ -70,7 +70,7 @@ inline crc32_t crc32_par(const void* smessage, const long nBytes)
   {
     const int nthreads = omp_get_num_threads();
     const int id = omp_get_thread_num();
-    long start = 0, len = 0;
+    Long start = 0, len = 0;
     split_work(start, len, nBytes, nthreads, id);
     const crc32_t crc = crc32(ptr + start, len);
     crcs[id] = crc32_shift(crc, nBytes - start - len);
@@ -113,9 +113,9 @@ inline void crc32_check()
   qassert(check_value == v3);
   const int nthreads = omp_get_max_threads();
   displayln(ssprintf("nthreads=%d", nthreads));
-  const long limit = 1024 * 1024;
+  const Long limit = 1024 * 1024;
   std::vector<uint8_t> test_data(limit, 0);
-  for (long i = 0; i < limit; ++i) {
+  for (Long i = 0; i < limit; ++i) {
     test_data[i] = i * 7 + 23;
   }
   for (int i = 0; i < 128; ++i) {

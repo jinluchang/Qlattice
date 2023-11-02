@@ -37,12 +37,12 @@ inline void compute_psel_fsel_distribution_type(const std::string& job_tag,
   }
   TIMER_VERBOSE("compute_psel_fsel_distribution_type");
   const PointsSelection& psel = get_point_selection(job_tag, traj);
-  const long n_points = psel.size();
+  const Long n_points = psel.size();
   const FieldSelection& fsel = get_field_selection(job_tag, traj);
   FieldM<ComplexD, 1> pos;
-  long iter = 0;
-  for (long n = 0; n < n_points; ++n) {
-    const long xg_y_psel_idx = n;
+  Long iter = 0;
+  for (Long n = 0; n < n_points; ++n) {
+    const Long xg_y_psel_idx = n;
     const Coordinate& xg_y = psel[xg_y_psel_idx];
     if (get_point_src_info(job_tag, traj, xg_y, type).size() == 0) {
       continue;
@@ -54,7 +54,7 @@ inline void compute_psel_fsel_distribution_type(const std::string& job_tag,
     displayln_info(fname + ssprintf(":n=%ld iter=%ld type=%d", n, iter, type));
     contract_psel_fsel_distribution_acc(pos, xg_y, fsel, ssp);
   }
-  const long n_iter = iter;
+  const Long n_iter = iter;
   const double coef = 1.0 / (double)n_iter;
   pos *= coef;
   FieldM<ComplexD, 1> neg;

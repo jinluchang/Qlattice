@@ -109,7 +109,7 @@ EXPORT(save_gauge_field, {
   const GaugeField& gf = py_convert_type<GaugeField>(p_gf);
   std::string path;
   py_convert(path, p_path);
-  const long ret = save_gauge_field(gf, path);
+  const Long ret = save_gauge_field(gf, path);
   return py_convert(ret);
 })
 
@@ -122,7 +122,7 @@ EXPORT(load_gauge_field, {
   }
   GaugeField& gf = py_convert_type<GaugeField>(p_gf);
   const std::string path = py_convert_data<std::string>(p_path);
-  const long ret = load_gauge_field(gf, path);
+  const Long ret = load_gauge_field(gf, path);
   return py_convert(ret);
 })
 
@@ -149,7 +149,7 @@ EXPORT(save_gauge_transform_cps, {
   }
   const GaugeTransform& gt = py_convert_type<GaugeTransform>(p_gt);
   const std::string path = py_convert_data<std::string>(p_path);
-  const long ret = save_gauge_transform_cps(gt, path);
+  const Long ret = save_gauge_transform_cps(gt, path);
   return py_convert(ret);
 })
 
@@ -162,7 +162,7 @@ EXPORT(load_gauge_transform_cps, {
   }
   GaugeTransform& gt = py_convert_type<GaugeTransform>(p_gt);
   const std::string path = py_convert_data<std::string>(p_path);
-  const long ret = load_gauge_transform_cps(gt, path);
+  const Long ret = load_gauge_transform_cps(gt, path);
   return py_convert(ret);
 })
 

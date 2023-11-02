@@ -94,7 +94,7 @@ double gf_avg_spatial_plaq_no_comm(const GaugeFieldT<T>& gf)
   {
     double sum_avg_plaq = 0.0;
 #pragma omp for
-    for (long index = 0; index < geo.local_volume(); ++index) {
+    for (Long index = 0; index < geo.local_volume(); ++index) {
       Coordinate xl = geo.coordinate_from_index(index);
       const Vector<ColorMatrixT<T> > v = gf.get_elems_const(xl);
       std::vector<Vector<ColorMatrixT<T> > > vms(DIMN - 1);
@@ -175,7 +175,7 @@ struct API GaugeFieldInfo {
   std::string date;
   std::string datatype;
   std::string floating_point;
-  long sequence_num;
+  Long sequence_num;
   double beta;
   double plaq, trace;
   crc32_t simple_checksum, crc32;
@@ -276,7 +276,7 @@ inline void read_gauge_field_header(GaugeFieldInfo& gfi,
 }
 
 template <class T>
-long save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
+Long save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
                       const GaugeFieldInfo& gfi_ = GaugeFieldInfo())
 {
   TIMER_VERBOSE_FLOPS("save_gauge_field");
@@ -285,7 +285,7 @@ long save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
   FieldM<ComplexD, 4 * 6> gft;
   gft.init(geo);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ColorMatrixT<T> > v = gf.get_elems_const(xl);
     Vector<ComplexD> vt = gft.get_elems(xl);
@@ -306,14 +306,14 @@ long save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
   gfi.crc32 = field_crc32(gft);
   gfi.total_site = gf.geo().total_site();
   qtouch_info(path + ".partial", make_gauge_field_header(gfi));
-  const long file_size = serial_write_field(gft, path + ".partial");
+  const Long file_size = serial_write_field(gft, path + ".partial");
   qrename_info(path + ".partial", path);
   timer.flops += file_size;
   return file_size;
 }
 
 template <class T = Real>
-long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
+Long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field");
   displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
@@ -332,7 +332,7 @@ long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
   geo.init(gfi.total_site, 4);
   Field<ComplexD> gft;
   gft.init(geo_remult(geo, 4 * n_complex_su3));
-  const long file_size = serial_read_field_par(
+  const Long file_size = serial_read_field_par(
       gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
   if (0 == file_size) {
     return 0;
@@ -388,7 +388,7 @@ long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
 }
 
 template <class T = Real>
-inline long load_gauge_field_cps3x3(GaugeFieldT<T>& gf,
+inline Long load_gauge_field_cps3x3(GaugeFieldT<T>& gf,
                                     const std::string& path)
 // assuming gf already initialized and have correct size;
 {
@@ -398,13 +398,13 @@ inline long load_gauge_field_cps3x3(GaugeFieldT<T>& gf,
   const Geometry& geo = gf.geo();
   FieldM<ComplexD, 4 * 9> gft;
   gft.init(geo);
-  const long file_size = serial_read_field_par(
+  const Long file_size = serial_read_field_par(
       gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
   if (file_size == 0) {
     return 0;
   }
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ComplexD> vt = gft.get_elems(xl);
     to_from_big_endian_64(get_data(vt));
@@ -418,7 +418,7 @@ inline long load_gauge_field_cps3x3(GaugeFieldT<T>& gf,
 }
 
 template <class T = Real>
-inline long load_gauge_field_milc(GaugeFieldT<T>& gf,
+inline Long load_gauge_field_milc(GaugeFieldT<T>& gf,
                                   const std::string& path,
                                   const bool par_read = false)
 // assuming gf already initialized and have correct size;
@@ -430,7 +430,7 @@ inline long load_gauge_field_milc(GaugeFieldT<T>& gf,
   FieldM<ComplexF, 4 * 9> gft;
   gft.init(geo);
   // ADJUST ME
-  long file_size = 0;
+  Long file_size = 0;
   if (par_read) {
     file_size = serial_read_field_par(gft, path, 0x730, SEEK_SET);
   } else {
@@ -440,7 +440,7 @@ inline long load_gauge_field_milc(GaugeFieldT<T>& gf,
     return 0;
   }
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<ComplexF> vt = gft.get_elems(xl);
     to_from_big_endian_32((char*)vt.data(), vt.data_size());
@@ -577,7 +577,7 @@ inline void read_gauge_transform_header(GaugeTransformInfo& info,
   bcast(info.gf_accuracy);
 }
 
-inline long save_gauge_transform_cps(
+inline Long save_gauge_transform_cps(
     const GaugeTransform& gt, const std::string& path,
     const GaugeTransformInfo& info_ = GaugeTransformInfo())
 {
@@ -591,13 +591,13 @@ inline long save_gauge_transform_cps(
   info.simple_checksum = field_simple_checksum(gt1); // before to_from_big_endian_64
   to_from_big_endian_64(get_data(gt1));
   qtouch_info(path + ".partial", make_gauge_transform_header(info));
-  const long file_size = serial_write_field(gt1, path + ".partial");
+  const Long file_size = serial_write_field(gt1, path + ".partial");
   qrename_info(path + ".partial", path);
   timer.flops += file_size;
   return file_size;
 }
 
-inline long load_gauge_transform_cps(GaugeTransform& gt, const std::string& path)
+inline Long load_gauge_transform_cps(GaugeTransform& gt, const std::string& path)
 // USE: read_field_double(gt, path) for qlat format GaugeTransform
 {
   TIMER_VERBOSE_FLOPS("load_gauge_transform_cps");
@@ -608,7 +608,7 @@ inline long load_gauge_transform_cps(GaugeTransform& gt, const std::string& path
   qassert(info.data_per_site == 18);
   const Geometry geo(info.total_site, 1);
   gt.init(geo);
-  const long file_size = serial_read_field_par(
+  const Long file_size = serial_read_field_par(
       gt, path, -get_data_size(gt) * get_num_node(), SEEK_END);
   if (0 == file_size) {
     displayln_info(fname + ssprintf(": failed to read any content."));

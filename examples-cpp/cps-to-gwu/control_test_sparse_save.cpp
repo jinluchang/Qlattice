@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
   }
 
 
-  long n_per_tslice = long(long(nl*nl*nl)/(16));
+  Long n_per_tslice = Long(Long(nl*nl*nl)/(16));
 
   //set_field_selection(fsel, total_site, n_per_tslice, rs);
   set_field_selection(fsel, total_site, n_per_tslice, rs, pconf);
@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
   //Propagator4dT<ComplexD > propM;propM.init(geo);
   //ComplexD* data = (ComplexD*) &propM.get_elem(0);
   ComplexD* data = qlat::get_data(propM).data();
-  for(long isp=0;isp<geo.local_volume();isp++)
+  for(Long isp=0;isp<geo.local_volume();isp++)
   {
     double ini = qlat::u_rand_gen(rs);
     for(int j=0;j<12*12;j++){data[isp*12*12 + j] = ComplexD(ini, ini/2.0);}
@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
   {
     const std::string path = "res/test.selfield";
     const std::vector<std::string> fns = list_fields(path);
-    for (long i = 0; i < (long)fns.size(); ++i) {
+    for (Long i = 0; i < (Long)fns.size(); ++i) {
       displayln_info(ssprintf(": %5d : '%s' from '%s'.", i, fns[i].c_str(), path.c_str()));
     }
   }

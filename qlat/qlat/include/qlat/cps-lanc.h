@@ -2,7 +2,7 @@
 
 CPS_START_NAMESPACE
 
-long lanczosWriteParNode(const Lanczos& lanc, const std::string& path)
+Long lanczosWriteParNode(const Lanczos& lanc, const std::string& path)
 {
   TIMER_VERBOSE_FLOPS("lanczosWriteParNode");
   timer.flops += lanc.size * lanc.vec_size * getNumNode();
@@ -25,12 +25,12 @@ long lanczosWriteParNode(const Lanczos& lanc, const std::string& path)
     dsns[k].nmemb = 1;
   }
   qlat::DisplayInfo(cname, fname.c_str(), "Writing %d vectors.\n", lanc.size);
-  long total_bytes = dataWriteParNode(dsns, path);
+  Long total_bytes = dataWriteParNode(dsns, path);
   saveString(path + "/checkpoint", "");
   return total_bytes;
 }
 
-long lanczosReadParNode(Lanczos& lanc, const std::string& path)
+Long lanczosReadParNode(Lanczos& lanc, const std::string& path)
 {
   if (!DoesFileExist(path + "/checkpoint")) {
     qlat::DisplayInfo(cname, "lanczosReadParNode", "'%s' do not exist.\n",
@@ -38,7 +38,7 @@ long lanczosReadParNode(Lanczos& lanc, const std::string& path)
     return 0;
   }
   TIMER_VERBOSE_FLOPS("lanczosReadParNode");
-  long nvec = 0;
+  Long nvec = 0;
   if (0 == getIdNode()) {
     const std::string filename = path + "/eigen-values.txt";
     FILE* file = fopen(filename.c_str(), "r");
@@ -81,7 +81,7 @@ long lanczosReadParNode(Lanczos& lanc, const std::string& path)
     dsns[k].nmemb = 1;
   }
   qlat::DisplayInfo(cname, fname.c_str(), "Reading %d vectors.\n", lanc.size);
-  long total_bytes = dataReadParNode(dsns, path);
+  Long total_bytes = dataReadParNode(dsns, path);
   return total_bytes;
 }
 

@@ -22,7 +22,7 @@ const std::string lat_data_header = "#!/usr/bin/env lat-io-glimpse\n";
 
 struct API LatDim {
   std::string name;
-  long size;                         // size of this dimension
+  Long size;                         // size of this dimension
   std::vector<std::string> indices;  // indices names
                                      // (default: "-1", "-2", "-3", ...)
                                      // If indices.size() < size then example
@@ -39,8 +39,8 @@ bool is_lat_info_complex(const LatInfo& info);
 
 LatDim lat_dim_re_im();
 
-LatDim lat_dim_number(const std::string& name, const long start, const long end,
-                      const long inc = 1);
+LatDim lat_dim_number(const std::string& name, const Long start, const Long end,
+                      const Long inc = 1);
 
 std::string show(const LatDim& dim);
 
@@ -112,16 +112,16 @@ inline bool is_zero(const LatData& ld)
   return ld.res[0] == 0.0;
 }
 
-inline long lat_info_size(const LatInfo& info, const int level = 0)
+inline Long lat_info_size(const LatInfo& info, const int level = 0)
 {
-  long total = 1;
+  Long total = 1;
   for (int i = level; i < (int)info.size(); ++i) {
     total *= info[i].size;
   }
   return total;
 }
 
-inline long lat_data_size(const LatData& ld, const int level = 0)
+inline Long lat_data_size(const LatData& ld, const int level = 0)
 {
   return lat_info_size(ld.info, level);
 }
@@ -177,10 +177,10 @@ LatDim lat_dim_string(const std::string& name, const VecS& indices)
   return dim;
 }
 
-inline long lat_dim_idx(const LatDim& dim, const std::string& idx)
+inline Long lat_dim_idx(const LatDim& dim, const std::string& idx)
 {
-  if ((long)dim.indices.size() == 0) {
-    long i = read_long(idx);
+  if ((Long)dim.indices.size() == 0) {
+    Long i = read_long(idx);
     if (i >= 0) {
       qassert(i < dim.size);
       return i;
@@ -189,14 +189,14 @@ inline long lat_dim_idx(const LatDim& dim, const std::string& idx)
       qassert(i < dim.size);
       return i;
     }
-  } else if ((long)dim.indices.size() == dim.size) {
-    for (long i = 0; i < (long)dim.indices.size(); ++i) {
+  } else if ((Long)dim.indices.size() == dim.size) {
+    for (Long i = 0; i < (Long)dim.indices.size(); ++i) {
       if (idx == dim.indices[i]) {
         return i;
       }
     }
-    std::vector<long> possible_i_vec;
-    for (long i = 0; i < (long)dim.indices.size(); ++i) {
+    std::vector<Long> possible_i_vec;
+    for (Long i = 0; i < (Long)dim.indices.size(); ++i) {
       if (dim.indices[i].find(idx) != std::string::npos) {
         possible_i_vec.push_back(i);
       }
@@ -204,54 +204,54 @@ inline long lat_dim_idx(const LatDim& dim, const std::string& idx)
     qassert(possible_i_vec.size() == 1);
     return possible_i_vec[0];
   } else {
-    qassert((long)dim.indices.size() <= dim.size);
-    for (long i = 0; i < (long)dim.indices.size(); ++i) {
+    qassert((Long)dim.indices.size() <= dim.size);
+    for (Long i = 0; i < (Long)dim.indices.size(); ++i) {
       if (idx == dim.indices[i]) {
         return i;
       }
     }
-    const long i = -read_long(idx) - 1;
-    qassert((long)dim.indices.size() <= i and i < dim.size);
+    const Long i = -read_long(idx) - 1;
+    qassert((Long)dim.indices.size() <= i and i < dim.size);
     return i;
   }
 }
 
-inline long lat_dim_idx(const LatDim& dim, const long& idx)
+inline Long lat_dim_idx(const LatDim& dim, const Long& idx)
 {
-  qassert((long)dim.indices.size() <= dim.size);
+  qassert((Long)dim.indices.size() <= dim.size);
   qassert(0 <= idx and idx < dim.size);
   return idx;
 }
 
 template <class VecS>
-long lat_info_offset(const LatInfo& info, const VecS& idx)
+Long lat_info_offset(const LatInfo& info, const VecS& idx)
 // will return offset at the level the idx specify
-// VecS can be std::vector<std::string> or std::vector<long>
+// VecS can be std::vector<std::string> or std::vector<Long>
 // or can be array of certain length
 {
-  qassert((long)idx.size() <= (long)info.size());
-  long ret = 0;
+  qassert((Long)idx.size() <= (Long)info.size());
+  Long ret = 0;
   for (int i = 0; i < (int)idx.size(); ++i) {
-    const long k = lat_dim_idx(info[i], idx[i]);
+    const Long k = lat_dim_idx(info[i], idx[i]);
     ret = ret * info[i].size + k;
   }
   return ret;
 }
 
 template <class VecS>
-long lat_data_offset(const LatData& ld, const VecS& idx)
+Long lat_data_offset(const LatData& ld, const VecS& idx)
 // will return offset at the level the idx specify
-// VecS can be std::vector<std::string> or std::vector<long>
+// VecS can be std::vector<std::string> or std::vector<Long>
 // or can be array of certain length
 {
   return lat_info_offset(ld.info, idx);
 }
 
-inline std::string idx_name(const LatDim& dim, const long idx)
+inline std::string idx_name(const LatDim& dim, const Long idx)
 {
-  if (0 == (long)dim.indices.size()) {
+  if (0 == (Long)dim.indices.size()) {
     return show(idx);
-  } else if (idx < (long)dim.indices.size()) {
+  } else if (idx < (Long)dim.indices.size()) {
     return dim.indices[idx];
   } else {
     return show(-idx - 1);
@@ -283,9 +283,9 @@ inline bool is_matching(const LatData& ld1, const LatData& ld2)
 template <class VecS>
 Vector<double> lat_data_get(LatData& ld, const VecS& idx)
 {
-  const long offset = lat_data_offset(ld, idx);
-  const long size = lat_data_size(ld, idx.size());
-  qassert(offset * size + size <= (long)ld.res.size());
+  const Long offset = lat_data_offset(ld, idx);
+  const Long size = lat_data_size(ld, idx.size());
+  qassert(offset * size + size <= (Long)ld.res.size());
   Vector<double> ret(&ld.res[offset * size], size);
   return ret;
 }
@@ -295,9 +295,9 @@ Vector<double> lat_data_get_const(const LatData& ld, const VecS& idx)
 // Be cautious about the const property
 // 改不改靠自觉
 {
-  const long offset = lat_data_offset(ld, idx);
-  const long size = lat_data_size(ld, idx.size());
-  qassert(offset * size + size <= (long)ld.res.size());
+  const Long offset = lat_data_offset(ld, idx);
+  const Long size = lat_data_size(ld, idx.size());
+  qassert(offset * size + size <= (Long)ld.res.size());
   Vector<double> ret(&ld.res[offset * size], size);
   return ret;
 }
@@ -306,11 +306,11 @@ template <class VecS>
 Vector<ComplexD> lat_data_complex_get(LatData& ld, const VecS& idx)
 {
   qassert(is_lat_info_complex(ld.info));
-  qassert((long)idx.size() < (long)ld.info.size());
-  const long offset = lat_data_offset(ld, idx);
-  const long size = lat_data_size(ld, idx.size());
+  qassert((Long)idx.size() < (Long)ld.info.size());
+  const Long offset = lat_data_offset(ld, idx);
+  const Long size = lat_data_size(ld, idx.size());
   qassert(size % 2 == 0);
-  qassert(offset * size + size <= (long)ld.res.size());
+  qassert(offset * size + size <= (Long)ld.res.size());
   Vector<ComplexD> ret((ComplexD*)&ld.res[offset * size], size / 2);
   return ret;
 }
@@ -321,11 +321,11 @@ Vector<ComplexD> lat_data_complex_get_const(const LatData& ld, const VecS& idx)
 // 改不改靠自觉
 {
   qassert(is_lat_info_complex(ld.info));
-  qassert((long)idx.size() < (long)ld.info.size());
-  const long offset = lat_data_offset(ld, idx);
-  const long size = lat_data_size(ld, idx.size());
+  qassert((Long)idx.size() < (Long)ld.info.size());
+  const Long offset = lat_data_offset(ld, idx);
+  const Long size = lat_data_size(ld, idx.size());
   qassert(size % 2 == 0);
-  qassert(offset * size + size <= (long)ld.res.size());
+  qassert(offset * size + size <= (Long)ld.res.size());
   Vector<ComplexD> ret((ComplexD*)&ld.res[offset * size], size / 2);
   return ret;
 }

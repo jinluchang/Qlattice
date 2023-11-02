@@ -84,12 +84,12 @@ const int lattice_size_multiplier = 3;
 // g_offset calculated assume lattice_size_multiplier*total_site
 // (This is a hack, please fix me)
 
-void g_offset_id_node_from_offset(long& g_offset, int& id_node,
-                                  const long offset, const Geometry& geo);
+void g_offset_id_node_from_offset(Long& g_offset, int& id_node,
+                                  const Long offset, const Geometry& geo);
 
-long offset_send_from_g_offset(const long g_offset, const Geometry& geo);
+Long offset_send_from_g_offset(const Long g_offset, const Geometry& geo);
 
-long offset_recv_from_g_offset(const long g_offset, const Geometry& geo);
+Long offset_recv_from_g_offset(const Long g_offset, const Geometry& geo);
 
 CommPlan make_comm_plan(const CommMarks& marks);
 
@@ -109,7 +109,7 @@ const CommPlan& get_comm_plan(const SetMarksField& set_marks_field,
 template <class M>
 void refresh_expanded(Field<M>& f, const CommPlan& plan)
 {
-  const long total_bytes =
+  const Long total_bytes =
       (plan.total_recv_size + plan.total_send_size) * sizeof(M);
   if (0 == total_bytes) {
     return;
@@ -119,7 +119,7 @@ void refresh_expanded(Field<M>& f, const CommPlan& plan)
   vector<M> send_buffer(plan.total_send_size);
   vector<M> recv_buffer(plan.total_recv_size);
 #pragma omp parallel for
-  for (long i = 0; i < (long)plan.send_pack_infos.size(); ++i) {
+  for (Long i = 0; i < (Long)plan.send_pack_infos.size(); ++i) {
     const CommPackInfo& cpi = plan.send_pack_infos[i];
     memcpy(&send_buffer[cpi.buffer_idx], &f.get_elem_offset(cpi.offset),
            cpi.size * sizeof(M));
@@ -148,7 +148,7 @@ void refresh_expanded(Field<M>& f, const CommPlan& plan)
     sync_node();
   }
 #pragma omp parallel for
-  for (long i = 0; i < (long)plan.recv_pack_infos.size(); ++i) {
+  for (Long i = 0; i < (Long)plan.recv_pack_infos.size(); ++i) {
     const CommPackInfo& cpi = plan.recv_pack_infos[i];
     memcpy(&f.get_elem_offset(cpi.offset), &recv_buffer[cpi.buffer_idx],
            cpi.size * sizeof(M));

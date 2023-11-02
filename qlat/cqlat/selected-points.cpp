@@ -135,7 +135,7 @@ template <class M>
 PyObject* get_n_points_spfield_ctype(PyField& pf)
 {
   SelectedPoints<M>& spf = *(SelectedPoints<M>*)pf.cdata;
-  const long ret = spf.n_points;
+  const Long ret = spf.n_points;
   return py_convert(ret);
 }
 
@@ -143,7 +143,7 @@ template <class M>
 PyObject* get_multiplicity_spfield_ctype(PyField& pf)
 {
   SelectedPoints<M>& spf = *(SelectedPoints<M>*)pf.cdata;
-  const long ret = spf.multiplicity;
+  const Long ret = spf.multiplicity;
   return py_convert(ret);
 }
 
@@ -164,14 +164,14 @@ PyObject* qnorm_field_spfield_ctype(SelectedPoints<double>& f, PyObject* p_field
 }
 
 template <class M>
-PyObject* get_elems_spfield_ctype(PyField& pf, const long idx)
+PyObject* get_elems_spfield_ctype(PyField& pf, const Long idx)
 {
   const SelectedPoints<M>& f = *(SelectedPoints<M>*)pf.cdata;
   return py_convert(f.get_elems_const(idx));
 }
 
 template <class M>
-PyObject* get_elem_spfield_ctype(PyField& pf, const long idx, const int m)
+PyObject* get_elem_spfield_ctype(PyField& pf, const Long idx, const int m)
 {
   const SelectedPoints<M>& f = *(SelectedPoints<M>*)pf.cdata;
   if (m >= 0) {
@@ -182,19 +182,19 @@ PyObject* get_elem_spfield_ctype(PyField& pf, const long idx, const int m)
 }
 
 template <class M>
-PyObject* set_elems_spfield_ctype(PyObject* p_field, const long idx,
+PyObject* set_elems_spfield_ctype(PyObject* p_field, const Long idx,
                                   PyObject* p_val)
 {
   SelectedPoints<M>& f = py_convert_type_spoints<M>(p_field);
   const int multiplicity = f.multiplicity;
-  qassert((long)PyBytes_Size(p_val) == (long)multiplicity * (long)sizeof(M));
+  qassert((Long)PyBytes_Size(p_val) == (Long)multiplicity * (Long)sizeof(M));
   const Vector<M> val((M*)PyBytes_AsString(p_val), multiplicity);
   assign(f.get_elems(idx), val);
   Py_RETURN_NONE;
 }
 
 template <class M>
-PyObject* set_elem_spfield_ctype(PyObject* p_field, const long idx,
+PyObject* set_elem_spfield_ctype(PyObject* p_field, const Long idx,
                                 const int m, PyObject* p_val)
 {
   SelectedPoints<M>& f = py_convert_type_spoints<M>(p_field);
@@ -391,7 +391,7 @@ EXPORT(set_sqrt_double_spfield, {
 EXPORT(get_elems_spfield, {
   using namespace qlat;
   PyObject* p_field = NULL;
-  long idx = -1;
+  Long idx = -1;
   if (!PyArg_ParseTuple(args, "Ol", &p_field, &idx)) {
     return NULL;
   }
@@ -404,8 +404,8 @@ EXPORT(get_elems_spfield, {
 EXPORT(get_elem_spfield, {
   using namespace qlat;
   PyObject* p_field = NULL;
-  long idx = -1;
-  long m = -1;
+  Long idx = -1;
+  Long m = -1;
   if (!PyArg_ParseTuple(args, "Ol|l", &p_field, &idx, &m)) {
     return NULL;
   }
@@ -418,7 +418,7 @@ EXPORT(get_elem_spfield, {
 EXPORT(set_elems_spfield, {
   using namespace qlat;
   PyObject* p_field = NULL;
-  long idx = -1;
+  Long idx = -1;
   PyObject* p_val = NULL;
   if (!PyArg_ParseTuple(args, "OlO", &p_field, &idx, &p_val)) {
     return NULL;
@@ -432,8 +432,8 @@ EXPORT(set_elems_spfield, {
 EXPORT(set_elem_spfield, {
   using namespace qlat;
   PyObject* p_field = NULL;
-  long idx = -1;
-  long m = -1;
+  Long idx = -1;
+  Long m = -1;
   PyObject* p_val = NULL;
   if (!PyArg_ParseTuple(args, "OllO", &p_field, &idx, &m, &p_val)) {
     return NULL;

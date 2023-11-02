@@ -29,7 +29,7 @@ cdef class Prop(FieldWilsonMatrix):
         assert self.xx.get_geo().multiplicity == 1
         return cc.Handle[cc.Prop](<cc.Prop&>self.xx)
 
-    def get_elem_wm(self, long index, int m=0):
+    def get_elem_wm(self, cc.Long index, int m=0):
         cdef WilsonMatrix wm = WilsonMatrix()
         np.asarray(wm)[:] = self[index, m]
         return wm
@@ -45,7 +45,7 @@ cdef class SelProp(SelectedFieldWilsonMatrix):
         assert self.xx.get_geo().multiplicity == 1
         return cc.Handle[cc.SelProp](<cc.SelProp&>self.xx)
 
-    def get_elem_wm(self, long idx, int m=0):
+    def get_elem_wm(self, cc.Long idx, int m=0):
         cdef WilsonMatrix wm = WilsonMatrix()
         np.asarray(wm)[:] = self[idx, m]
         return wm
@@ -61,7 +61,7 @@ cdef class PselProp(SelectedPointsWilsonMatrix):
         assert self.xx.multiplicity == 1
         return cc.Handle[cc.PselProp](<cc.PselProp&>self.xx)
 
-    def get_elem_wm(self, long idx, int m=0):
+    def get_elem_wm(self, cc.Long idx, int m=0):
         cdef WilsonMatrix wm = WilsonMatrix()
         np.asarray(wm)[:] = self[idx, m]
         return wm

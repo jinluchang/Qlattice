@@ -33,7 +33,7 @@ inline void make_local_deflation_plan(
   u1gts.resize(Np);
   for (int i = 0; i < Np; i++) {
     u1gts[i].init(geo);
-    for (long j = 0; j < u1gts[i].field.size(); j++) {
+    for (Long j = 0; j < u1gts[i].field.size(); j++) {
       u1gts[i].field[j] = +1.;
     }
   }
@@ -61,9 +61,9 @@ inline void make_local_deflation_plan(
              target_border);
 
       // Flip all gt link in [0, target_border) to -1
-      long num_flip = 0;
+      Long num_flip = 0;
       // #pragma omp parallel for
-      for (long index = 0; index < geo.local_volume(); index++) {
+      for (Long index = 0; index < geo.local_volume(); index++) {
         Coordinate local_coor = geo.coordinate_from_index(index);
         Coordinate global_coor = geo.coordinate_g_from_l(local_coor);
         if ((target_border < global_size[mu] / 2 && global_coor[mu] >= 0 &&
@@ -86,7 +86,7 @@ inline void make_local_deflation_plan(
     double sum_real = 0.;
     double sum_imag = 0.;
     // TODO: Test!!!
-    for (long index = 0; index < geo.local_volume();
+    for (Long index = 0; index < geo.local_volume();
          index++) {  // We are only working with vectors so it seems we don't
                      // need to worry about communication?
       sum_real += u1gts[i].field[index].real();

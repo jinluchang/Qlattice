@@ -23,7 +23,7 @@ qacc void set_zero(int8_t& x) { x = 0; }
 
 qacc void set_zero(int& x) { x = 0; }
 
-qacc void set_zero(long& x) { x = 0; }
+qacc void set_zero(Long& x) { x = 0; }
 
 qacc void set_zero(long long& x) { x = 0; }
 
@@ -38,36 +38,36 @@ qacc void set_zero(ComplexF& x) { x = 0; }
 template <class M, unsigned long N>
 qacc void set_zero(array<M, N>& arr)
 {
-  long size = N * sizeof(M);
+  Long size = N * sizeof(M);
   std::memset((void*)arr.data(), 0, size);
 }
 
 template <class M>
 void set_zero(std::vector<M>& vec)
 {
-  long size = vec.size() * sizeof(M);
+  Long size = vec.size() * sizeof(M);
   std::memset((void*)vec.data(), 0, size);
 }
 
 // -------------------
 
-qacc void set_unit(char& x, const long& coef = 1) { x = coef; }
+qacc void set_unit(char& x, const Long& coef = 1) { x = coef; }
 
 qacc void set_unit(char& x, const ComplexD& coef = 1) { x = coef.real(); }
 
-qacc void set_unit(int8_t& x, const long& coef = 1) { x = coef; }
+qacc void set_unit(int8_t& x, const Long& coef = 1) { x = coef; }
 
 qacc void set_unit(int8_t& x, const ComplexD& coef = 1) { x = coef.real(); }
 
-qacc void set_unit(int& x, const long& coef = 1) { x = coef; }
+qacc void set_unit(int& x, const Long& coef = 1) { x = coef; }
 
 qacc void set_unit(int& x, const ComplexD& coef) { x = coef.real(); }
 
-qacc void set_unit(long& x, const long& coef = 1) { x = coef; }
+qacc void set_unit(Long& x, const Long& coef = 1) { x = coef; }
 
-qacc void set_unit(long& x, const ComplexD& coef) { x = coef.real(); }
+qacc void set_unit(Long& x, const ComplexD& coef) { x = coef.real(); }
 
-qacc void set_unit(long long& x, const long& coef = 1) { x = coef; }
+qacc void set_unit(long long& x, const Long& coef = 1) { x = coef; }
 
 qacc void set_unit(long long& x, const ComplexD& coef) { x = coef.real(); }
 
@@ -91,7 +91,7 @@ qacc double qnorm(const int8_t x) { return x * x; }
 
 qacc double qnorm(const int x) { return x * x; }
 
-qacc double qnorm(const long x) { return x * x; }
+qacc double qnorm(const Long x) { return x * x; }
 
 qacc double qnorm(const long long x) { return x * x; }
 

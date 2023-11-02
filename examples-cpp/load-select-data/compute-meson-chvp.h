@@ -84,25 +84,25 @@ inline void compute_meson_chvp_type(const std::string& job_tag, const int traj,
   }
   TIMER_VERBOSE("compute_meson_chvp_type");
   const PointsSelection& psel = get_point_selection(job_tag, traj);
-  const long n_points = psel.size();
+  const Long n_points = psel.size();
   const FieldSelection& fsel = get_field_selection(job_tag, traj);
   const Geometry& geo = fsel.f_rank.geo();
   const Coordinate total_site = geo.total_site();
   const int tsep = tsep_op_wall_src(job_tag);
   std::map<std::string, FieldM<ComplexD, 8 * 8> > cache;
-  std::map<std::string, long> counts;
+  std::map<std::string, Long> counts;
   std::map<std::string, LatData> ld_mss_shift_weight;
   std::vector<LatData> ld_mss_list(num_type_12);
   for (int i = 0; i < num_type_12; ++i) {
     ld_mss_list[i] = lat_data_load_info(fn_mss_list[i]);
   }
-  for (long tslice = 0; tslice < total_site[3]; ++tslice) {
+  for (Long tslice = 0; tslice < total_site[3]; ++tslice) {
     Timer::autodisplay();
     TIMER_VERBOSE("compute_meson_chvp_type-tslice");
     std::vector<FieldM<ComplexD, 8 * 8> > chvp_list(num_type_34);
-    std::vector<long> chvp_count_list(num_type_34, 0);
-    for (long n = 0; n < n_points; ++n) {
-      const long xg_y_psel_idx = n;
+    std::vector<Long> chvp_count_list(num_type_34, 0);
+    for (Long n = 0; n < n_points; ++n) {
+      const Long xg_y_psel_idx = n;
       const Coordinate& xg_y = psel[xg_y_psel_idx];
       if (xg_y[3] != tslice) {
         continue;

@@ -80,7 +80,7 @@ struct ScalarAction {
     // (this cannot be done in the previous loops because the previous
     // loop runs in parallel)
     double sum = 0.0;
-    for (long index = 0; index < geo_r.local_volume(); ++index) {
+    for (Long index = 0; index < geo_r.local_volume(); ++index) {
       sum += fd.get_elem(index);
     }
     return sum;
@@ -124,7 +124,7 @@ struct ScalarAction {
       const Geometry& geo = field_ft.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
-      const long gindex = geo.g_index_from_g_coordinate(xg);
+      const Long gindex = geo.g_index_from_g_coordinate(xg);
       Vector<double> masses_v = masses.get_elems(xl);
       int M = masses_v.size();
       qassert(M == geo.multiplicity);
@@ -175,7 +175,7 @@ struct ScalarAction {
     // from each point
     FieldM<double, 1> fd;
     fd.init(geo_r);
-    // long V = geo.total_volume();
+    // Long V = geo.total_volume();
     qacc_for(index, geo_r.local_volume(), {
       const Geometry& geo = sm_complex.geo();
       Coordinate xl = geo.coordinate_from_index(index);
@@ -190,7 +190,7 @@ struct ScalarAction {
     // (this cannot be done in the previous loops because the previous
     // loop runs in parallel)
     double sum = 0.0;
-    for (long index = 0; index < geo.local_volume(); ++index) {
+    for (Long index = 0; index < geo.local_volume(); ++index) {
       sum += fd.get_elem(index);
     }
     return sum;
@@ -252,7 +252,7 @@ struct ScalarAction {
     //set_complex_from_double(sm_complex, sm);
     // Computes the Fourier transform of the fields
     const Geometry& geo = sf_complex.geo();
-    // long rt_V = std::pow(geo.total_volume(),0.5);
+    // Long rt_V = std::pow(geo.total_volume(),0.5);
     //fft_complex_field(sf_complex,true);
     //sf_complex*=1/rt_V;
     //fft_complex_field(sm_complex,true);
@@ -323,7 +323,7 @@ struct ScalarAction {
     // (this cannot be done in the previous loops because the previous
      // loop runs in parallel)
     double sum = 0;
-    for (long index = 0; index < geo_r.local_volume(); ++index) {
+    for (Long index = 0; index < geo_r.local_volume(); ++index) {
       sum += fd.get_elem(index);
     }
     return sum;
@@ -354,7 +354,7 @@ struct ScalarAction {
     qthread_for(index, geo.local_volume(), {
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
-      const long gindex = geo.g_index_from_g_coordinate(xg);
+      const Long gindex = geo.g_index_from_g_coordinate(xg);
       RngState rsi = rs.newtype(gindex);
       Vector<ComplexD> v = sm_complex.get_elems(xl);
       for (int m = 0; m < v.size(); ++m) {
@@ -372,7 +372,7 @@ struct ScalarAction {
       const Geometry& geo = momentum_ft.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
-      const long gindex = geo.g_index_from_g_coordinate(xg);
+      const Long gindex = geo.g_index_from_g_coordinate(xg);
       Vector<ComplexD> v = field_ft.get_elems(xl);
       int M = v.size();
       qassert(M == geo.multiplicity);

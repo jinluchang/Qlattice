@@ -75,8 +75,8 @@ struct API FermionActionCloverWilson {
 struct API LancArg {
   bool initialized;
   double ch_alpha, ch_beta;
-  long ch_ord;
-  long n_use, n_get, n_true_get;
+  Long ch_ord;
+  Long n_use, n_get, n_true_get;
   //
   void init()
   {
@@ -90,8 +90,8 @@ struct API LancArg {
   }
   //
   LancArg() { init(); }
-  LancArg(double ch_alpha_, double ch_beta_, long ch_ord_, long n_use_,
-          long n_get_, long n_true_get_)
+  LancArg(double ch_alpha_, double ch_beta_, Long ch_ord_, Long n_use_,
+          Long n_get_, Long n_true_get_)
   {
     init();
     initialized = true;

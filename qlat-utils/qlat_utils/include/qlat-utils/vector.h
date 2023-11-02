@@ -25,9 +25,9 @@ API inline size_t& get_alignment()
   return alignment;
 }
 
-inline size_t get_aligned_mem_size(const size_t alignment, const long min_size)
+inline size_t get_aligned_mem_size(const size_t alignment, const Long min_size)
 {
-  const long n_elem = 1 + (min_size - 1) / alignment;
+  const Long n_elem = 1 + (min_size - 1) / alignment;
   const size_t size = n_elem * alignment;
   return size;
 }
@@ -129,7 +129,7 @@ API inline MemCache& get_mem_cache(const bool is_acc = false)
 inline void clear_mem_cache()
 {
   TIMER_VERBOSE_FLOPS("clear_mem_cache");
-  long total_bytes = 0;
+  Long total_bytes = 0;
   total_bytes += get_mem_cache(false).mem_cache_size;
   total_bytes += get_mem_cache(true).mem_cache_size;
   get_mem_cache(false).gc();
@@ -140,7 +140,7 @@ inline void clear_mem_cache()
   timer.flops += total_bytes;
 }
 
-inline void* alloc_mem_alloc_no_acc(const long size)
+inline void* alloc_mem_alloc_no_acc(const Long size)
 {
   const size_t alignment = get_alignment();
 #if defined QLAT_NO_ALIGNED_ALLOC
@@ -150,7 +150,7 @@ inline void* alloc_mem_alloc_no_acc(const long size)
 #endif
 }
 
-inline void* alloc_mem(const long min_size, const bool is_acc = false)
+inline void* alloc_mem(const Long min_size, const bool is_acc = false)
 {
   if (min_size <= 0) {
     return NULL;
@@ -192,7 +192,7 @@ inline void* alloc_mem(const long min_size, const bool is_acc = false)
   }
 }
 
-inline void free_mem(void* ptr, const long min_size, const bool is_acc = false)
+inline void free_mem(void* ptr, const Long min_size, const bool is_acc = false)
 {
   TIMER_FLOPS("free_mem");
   timer.flops += min_size;
@@ -244,7 +244,7 @@ struct API vector {
     v = vp.v;
     vp.is_copy = true;
   }
-  vector(const long size)
+  vector(const Long size)
   {
     // TIMER("vector::vector(size)")
     qassert(v.p == NULL);
@@ -252,7 +252,7 @@ struct API vector {
     is_acc = false;
     resize(size);
   }
-  vector(const long size, const M& x)
+  vector(const Long size, const M& x)
   {
     // TIMER("vector::vector(size,x)")
     qassert(v.p == NULL);
@@ -323,7 +323,7 @@ struct API vector {
     x.v = t;
   }
   //
-  void resize(const long size)
+  void resize(const Long size)
   {
     qassert(not is_copy);
     qassert(0 <= size);
@@ -343,14 +343,14 @@ struct API vector {
       }
     }
   }
-  void resize(const long size, const M& x)
+  void resize(const Long size, const M& x)
   {
     qassert(not is_copy);
     qassert(0 <= size);
     if (v.p == NULL) {
       v.p = (M*)alloc_mem(size * sizeof(M), is_acc);
       v.n = size;
-      for (long i = 0; i < v.n; ++i) {
+      for (Long i = 0; i < v.n; ++i) {
         v[i] = x;
       }
     } else {
@@ -363,7 +363,7 @@ struct API vector {
         std::memcpy(v.p, vp.v.p, size * sizeof(M));
       } else {
         std::memcpy(v.p, vp.v.p, vp.v.n * sizeof(M));
-        for (long i = size; i < v.n; ++i) {
+        for (Long i = size; i < v.n; ++i) {
           v[i] = x;
         }
       }
@@ -376,7 +376,7 @@ struct API vector {
     qassert(not is_copy);
     clear();
     resize(vp.size());
-    for (long i = 0; i < v.n; ++i) {
+    for (Long i = 0; i < v.n; ++i) {
       v[i] = vp[i];
     }
     return *this;
@@ -396,16 +396,16 @@ struct API vector {
     qassert(not is_copy);
     clear();
     resize(vp.size());
-    for (long i = 0; i < v.n; ++i) {
+    for (Long i = 0; i < v.n; ++i) {
       v[i] = vp[i];
     }
     return *this;
   }
   //
-  qacc const M& operator[](const long i) const { return v[i]; }
-  qacc M& operator[](const long i) { return v[i]; }
+  qacc const M& operator[](const Long i) const { return v[i]; }
+  qacc M& operator[](const Long i) { return v[i]; }
   //
-  qacc long size() const { return v.size(); }
+  qacc Long size() const { return v.size(); }
   //
   qacc M* data() { return v.data(); }
   qacc const M* data() const { return v.data(); }
@@ -448,7 +448,7 @@ struct API vector_acc : vector<M> {
     v = vp.v;
     vp.is_copy = true;
   }
-  vector_acc(const long size)
+  vector_acc(const Long size)
   {
     // TIMER("vector_acc::vector_acc(size)");
     qassert(v.p == NULL);
@@ -456,7 +456,7 @@ struct API vector_acc : vector<M> {
     is_acc = true;
     resize(size);
   }
-  vector_acc(const long size, const M& x)
+  vector_acc(const Long size, const M& x)
   {
     // TIMER("vector_acc::vector_acc(size,x)");
     qassert(v.p == NULL);
@@ -532,7 +532,7 @@ template <class T>
 qacc double qnorm(const vector<T>& mm)
 {
   double sum = 0.0;
-  for (long i = 0; i < mm.size(); ++i) {
+  for (Long i = 0; i < mm.size(); ++i) {
     sum += qnorm(mm[i]);
   }
   return sum;

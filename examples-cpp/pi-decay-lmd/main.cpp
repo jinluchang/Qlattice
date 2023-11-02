@@ -15,7 +15,7 @@ inline void scalar_inversion(Field<ComplexD>& sol, const Field<ComplexD>& src,
   sol = src;
   fft_complex_field(sol, true);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
     CoordinateD kk;
@@ -49,7 +49,7 @@ inline void scalar_derivative(Field<ComplexD>& sol, const Field<ComplexD>& src,
   src_mom = src;
   fft_complex_field(src_mom, true);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
     CoordinateD kk;
@@ -83,7 +83,7 @@ inline void scalar_divergence(Field<ComplexD>& sol, const Field<ComplexD>& src,
   src_mom = src;
   fft_complex_field(src_mom, true);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
     CoordinateD kk;
@@ -120,7 +120,7 @@ inline void set_pion_photon_photon_vertex_two_end(
   set_zero(pion);
   const ComplexD fac = 1.0 / (4.0 * sqr(PI) * f_pi) * ii * sqr(m_vector) / 2.0;
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ComplexD> v1 = pinv1.get_elems_const(xl);
     const Vector<ComplexD> v2 = pinv2.get_elems_const(xl);
@@ -169,7 +169,7 @@ inline void set_pion_photon_photon_vertex_vmd(FieldM<ComplexD, 4 * 4>& pion,
   set_zero(pion);
   const ComplexD fac = 1.0 / (4.0 * sqr(PI) * f_pi) * ii * sqr(sqr(m_vector));
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ComplexD> v1 = pinv1.get_elems_const(xl);
     const Vector<ComplexD> v2 = pinv2.get_elems_const(xl);
@@ -245,7 +245,7 @@ inline void set_photon_pion_photon_vertex_two_end(
   pinv1.init(geo);
   const ComplexD fac = 1.0 / (4.0 * sqr(PI) * f_pi) * ii * sqr(m_vector) / 2.0;
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ComplexD> d1 = p1.get_elems(xl);
     const Vector<ComplexD> d2 = p2.get_elems_const(xl);
@@ -298,7 +298,7 @@ inline void set_photon_pion_photon_vertex_vmd(FieldM<ComplexD, 4>& photon1,
   pinv1.init(geo);
   const ComplexD fac = 1.0 / (4.0 * sqr(PI) * f_pi) * ii * sqr(sqr(m_vector));
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ComplexD> v1 = pinv1.get_elems(xl);
     const Vector<ComplexD> v2 = pinv2.get_elems_const(xl);
@@ -376,7 +376,7 @@ inline void set_pion_gg_decay(FieldM<ComplexD, 4 * 4>& decay,
   set_zero(pion);
   const int t_src = mod(-t_sep, total_site[3]);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     if (xg[3] == t_src) {
@@ -399,7 +399,7 @@ inline void set_pion_gg_decay(FieldM<ComplexD, 4 * 4>& decay,
     }
     set_photon_pion_photon_vertex(photon1, pion, photon2, m_vector, f_pi);
 #pragma omp parallel for
-    for (long index = 0; index < geo.local_volume(); ++index) {
+    for (Long index = 0; index < geo.local_volume(); ++index) {
       const Coordinate xl = geo.coordinate_from_index(index);
       Vector<ComplexD> v = decay.get_elems(xl);
       const Vector<ComplexD> p1v = photon1.get_elems(xl);
@@ -421,7 +421,7 @@ inline std::vector<ComplexD> get_pion_corr(const Coordinate& total_site,
   pion.init(geo);
   set_zero(pion);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     if (xg[3] == 0) {
@@ -431,7 +431,7 @@ inline std::vector<ComplexD> get_pion_corr(const Coordinate& total_site,
   scalar_inversion(pion, pion, m_pi);
   //
   std::vector<ComplexD> corr(total_site[3], 0.0);
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     corr[xg[3]] += pion.get_elem(xl);

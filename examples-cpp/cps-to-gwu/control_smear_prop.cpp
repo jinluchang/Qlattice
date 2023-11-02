@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
 
   if(in.nx == 24)twist_boundary_at_boundary(gf, -0.5, 3 );
   //if(nx == 24)twist_boundary_at_boundary(gf, EIGEN_PI/1.0, 3 );
-  //qacc_for(isp, long(geo1.local_volume_expanded()), {
+  //qacc_for(isp, Long(geo1.local_volume_expanded()), {
   //  auto* res = gfF.get_elem(isp).p;
   //  auto* src =  gf.get_elem(isp).p;
   //  for(int m=0;m<3*3*4;m++)res[isp*3*3*4 + m] = src[isp*3*3*4 + m];

@@ -37,7 +37,7 @@ inline void take_real_part_and_multiply_sqrt2(Field<T>& f)
   TIMER("take_real_part_and_multiply_sqrt2");
   const Geometry& geo = f.geo();
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<T> fv = f.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
@@ -56,10 +56,10 @@ inline void set_mom_stochastic_qed_field_feynman(Field<T>& f,
   f.init(geo);
   const double total_volume = geo.total_volume();
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate kl = geo.coordinate_from_index(index);
     const Coordinate kg = geo.coordinate_g_from_l(kl);
-    const long gindex = geo.g_index_from_g_coordinate(kg);
+    const Long gindex = geo.g_index_from_g_coordinate(kg);
     RngState rst = rs.newtype(gindex);
     double s2 = 0.0;
     array<double, DIMN> kk;
@@ -104,10 +104,10 @@ inline void set_mom_stochastic_qed_field_mass(Field<T>& f, const Geometry& geo,
   f.init(geo);
   const double total_volume = geo.total_volume();
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate kl = geo.coordinate_from_index(index);
     const Coordinate kg = geo.coordinate_g_from_l(kl);
-    const long gindex = geo.g_index_from_g_coordinate(kg);
+    const Long gindex = geo.g_index_from_g_coordinate(kg);
     RngState rst = rs.newtype(gindex);
     double s2 = sqr(mass);
     array<double, DIMN> kk;
@@ -144,7 +144,7 @@ inline void prop_mom_photon_invert(QedGaugeField& egf,
 {
   TIMER("prop_mom_photon_invert");
   const Geometry& geo = egf.geo();
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
     array<double, DIMN> kk;
@@ -188,7 +188,7 @@ inline void prop_mom_complex_scalar_invert(
 {
   TIMER("prop_mom_complex_scalar_invert");
   const Geometry& geo = csf.geo();
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
     array<double, DIMN> kk;
@@ -259,7 +259,7 @@ void prop_mom_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const double mass,
   const Geometry& geo = sp4d.geo();
   const double m5 = 1.0;
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
     array<double, DIMN> kk, ks;
@@ -336,7 +336,7 @@ void set_box_source_plusm(SpinPropagator4dT<T>& f, const ComplexD& coef,
   SpinMatrixT<T> sm;
   set_unit(sm, coef);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     Coordinate xl = geo.coordinate_from_index(index);
     Coordinate xg = geo.coordinate_g_from_l(xl);
     if (xg1 <= xg && xg < xg2) {
@@ -367,7 +367,7 @@ void sequential_photon_spin_propagator_plusm(SpinPropagator4dT<T>& src,
   TIMER("sequential_photon_spin_propagator_plusm");
   const Geometry& geo = sol.geo();
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     Coordinate xl = geo.coordinate_from_index(index);
     for (int mu = 0; mu < DIMN; mu++) {
       // a = A_\mu(x)
@@ -395,7 +395,7 @@ SpinMatrixT<T> contract_spin_propagator4d(const SpinPropagator4dT<T>& snk,
     SpinMatrixT<T> psum;
     set_zero(psum);
 #pragma omp for nowait
-    for (long index = 0; index < geo.local_volume(); ++index) {
+    for (Long index = 0; index < geo.local_volume(); ++index) {
       Coordinate xl = geo.coordinate_from_index(index);
       psum += matrix_adjoint(snk.get_elem(xl)) * src.get_elem(xl);
     }

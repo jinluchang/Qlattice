@@ -34,7 +34,7 @@ inline void test_read_sbs(const std::string& path, const std::string& fn, const 
 }
 
 inline void demo(const std::string& tag, const Coordinate& total_site,
-                 const long n_random_points, const long n_per_tslice,
+                 const Long n_random_points, const Long n_per_tslice,
                  const Coordinate& new_size_node)
 {
   TIMER_VERBOSE("demo");
@@ -131,7 +131,7 @@ inline void demo(const std::string& tag, const Coordinate& total_site,
   {
     const std::string path = "huge-data/" + tag + "/demo.lfs";
     const std::vector<std::string> fns = list_fields(path);
-    for (long i = 0; i < (long)fns.size(); ++i) {
+    for (Long i = 0; i < (Long)fns.size(); ++i) {
       displayln_info(fname + ssprintf(": %5d : '%s' from '%s'.", i, fns[i].c_str(), path.c_str()));
     }
   }

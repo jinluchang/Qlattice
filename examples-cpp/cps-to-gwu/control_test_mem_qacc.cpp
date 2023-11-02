@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
   const int seed = 131;
   qlat::RngState rs(qlat::get_id_node() + 1 + seed);
 
-  const long MAX = 100;
+  const Long MAX = 100;
 
   double ini = qlat::u_rand_gen(rs);
   {

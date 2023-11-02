@@ -21,7 +21,7 @@ qacc bool is_outside_coordinate(const Coordinate& x, const Coordinate& size)
          std::abs(x[2]) * 2 > size[2] || std::abs(x[3]) * 2 > size[3];
 }
 
-qacc long distance_sq_relative_coordinate_g(const Coordinate& xg)
+qacc Long distance_sq_relative_coordinate_g(const Coordinate& xg)
 {
   return sqr(xg);
 }
@@ -137,11 +137,11 @@ qacc int epsilon_tensor_acc(const int a, const int b, const int c, const int d)
 
 inline Coordinate read_coordinate(const std::string& str)
 {
-  long x = 0;
-  long y = 0;
-  long z = 0;
-  long t = 0;
-  long cur = 0;
+  Long x = 0;
+  Long y = 0;
+  Long z = 0;
+  Long t = 0;
+  Long cur = 0;
   char c;
   qassert(parse_long(x, cur, str));
   qassert(parse_char(c, cur, str) and (c == 'x' or c == ','));

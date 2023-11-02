@@ -127,16 +127,16 @@ API inline const GeometryNodeNeighbor& get_geometry_node_neighbor()
 
 // ----------------------------------
 
-int mpi_send(const void* buf, long count, MPI_Datatype datatype, int dest,
+int mpi_send(const void* buf, Long count, MPI_Datatype datatype, int dest,
              int tag, MPI_Comm comm);
 
-int mpi_recv(void* buf, long count, MPI_Datatype datatype, int source, int tag,
+int mpi_recv(void* buf, Long count, MPI_Datatype datatype, int source, int tag,
              MPI_Comm comm, MPI_Status* status);
 
-int mpi_isend(const void* buf, long count, MPI_Datatype datatype, int dest,
+int mpi_isend(const void* buf, Long count, MPI_Datatype datatype, int dest,
               int tag, MPI_Comm comm, std::vector<MPI_Request>& requests);
 
-int mpi_irecv(void* buf, long count, MPI_Datatype datatype, int source, int tag,
+int mpi_irecv(void* buf, Long count, MPI_Datatype datatype, int source, int tag,
               MPI_Comm comm, std::vector<MPI_Request>& requests);
 
 int mpi_waitall(std::vector<MPI_Request>& requests);
@@ -329,7 +329,7 @@ int get_data_dir(Vector<M> recv, const Vector<M>& send, const int dir)
   TIMER_FLOPS("get_data_dir");
   const int mpi_tag = 0;
   qassert(recv.size() == send.size());
-  const long size = recv.size() * sizeof(M);
+  const Long size = recv.size() * sizeof(M);
   timer.flops += size;
   const int self_ID = get_id_node();
   const int idf = (self_ID + 1 - 2 * dir + get_num_node()) % get_num_node();
@@ -352,7 +352,7 @@ int get_data_dir_mu(Vector<M> recv, const Vector<M>& send, const int dir,
   TIMER_FLOPS("get_data_dir_mu");
   const int mpi_tag = 1;
   qassert(recv.size() == send.size());
-  const long size = recv.size() * sizeof(M);
+  const Long size = recv.size() * sizeof(M);
   timer.flops += size;
   const GeometryNodeNeighbor& geonb = get_geometry_node_neighbor();
   const int idf = geonb.dest[dir][mu];
@@ -394,9 +394,9 @@ int glb_sum_float_vec(Vector<M> x)
 template <class M>
 int glb_sum_long_vec(Vector<M> x)
 {
-  if (sizeof(long) == sizeof(int64_t)) {
+  if (sizeof(Long) == sizeof(int64_t)) {
     return glb_sum_int64_vec(x);
-  } else if (sizeof(long) == sizeof(int32_t)) {
+  } else if (sizeof(Long) == sizeof(int32_t)) {
     return glb_sum_int32_vec(x);
   } else {
     qassert(false);
@@ -484,7 +484,7 @@ void bcast(std::vector<M>& recv, const int root = 0)
   if (1 == get_num_node()) {
     return;
   }
-  long size = recv.size();
+  Long size = recv.size();
   bcast(get_data(size), root);
   recv.resize(size);
   bcast(get_data(recv), root);
@@ -496,7 +496,7 @@ void bcast(std::vector<std::vector<M> >& datatable, const int root = 0)
   if (1 == get_num_node()) {
     return;
   }
-  long nrow, total_size;
+  Long nrow, total_size;
   std::vector<Long> row_sizes;
   std::vector<M> data;
   if (get_id_node() == root) {

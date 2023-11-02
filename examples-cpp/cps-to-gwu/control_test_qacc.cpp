@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
   #endif
   }
 
-  long na = 64;
+  Long na = 64;
 
   qlat::vector_acc<ComplexD > src;src.resize(na);
   qlat::vector_acc<ComplexD > s0;s0.resize(na);

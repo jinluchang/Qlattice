@@ -150,7 +150,7 @@ void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_
   int istride = howmany* istride_fac_default;int idist = idist_default;
   //doffsize  = vol * howmany * bsize;
   //datasize  = doffsize;
-  datasize  = vol * long(howmany * bsize);
+  datasize  = vol * Long(howmany * bsize);
 
   if(GPU){
   #ifdef QLAT_USE_ACC
@@ -452,7 +452,7 @@ struct fft_schedule{
 
     civ = civ_set;nvec = nvec_set;default_MPI= default_MPI_set;
     if(!(default_MPI >= -3 and default_MPI < 2)){abort_r("Wrong default_MPI ! \n");};
-    ////long total  = nvec*civ;
+    ////Long total  = nvec*civ;
     N_extra = -1;int N0 = -1;int N1 = -1;
 
     /////default vector options
@@ -949,7 +949,7 @@ template <class Ty>
 void fft_fieldM(Ty* src, int nvec, int civ, const Geometry& geo, bool fftdir=true, bool fft4d = false)
 {
   std::vector<Ty* > data;data.resize(nvec);
-  const long offD = geo.local_volume() * civ;
+  const Long offD = geo.local_volume() * civ;
   for(int iv=0;iv<nvec;iv++){data[iv] = &src[iv*offD];}
   fft_fieldM<Ty >(data, civ, geo, fftdir, fft4d);
 }
@@ -1043,8 +1043,8 @@ template<typename Ty>
 void FFT_vecs_corr(qlat::vector_gpu<Ty >& src, std::vector<qlat::FieldM<Ty, 1> >& FFT_data, int off=0)
 {
   const Geometry& geo = FFT_data[0].geo();
-  const long volume = geo.local_volume();
-  const long Sdata = src.size();const int nvecs = Sdata/volume;
+  const Long volume = geo.local_volume();
+  const Long Sdata = src.size();const int nvecs = Sdata/volume;
 
   fft_fieldM<Ty >(src.data(), nvecs, 1, geo, true);
   for(int iv=0;iv<nvecs;iv++)

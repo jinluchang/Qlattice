@@ -83,7 +83,7 @@ inline bool qtruncate(const std::string& evilFile)
   return does_exist;
 }
 
-inline bool qtruncate(const std::string& path, const long offset)
+inline bool qtruncate(const std::string& path, const Long offset)
 // return true if successful.
 {
   const int ret = truncate(path.c_str(), offset);
@@ -131,7 +131,7 @@ inline std::string qgetline(FILE* fp)
 {
   char* lineptr = NULL;
   size_t n = 0;
-  const long size = getline(&lineptr, &n, fp);
+  const Long size = getline(&lineptr, &n, fp);
   if (size > 0) {
     std::string ret(lineptr, size);
     std::free(lineptr);
@@ -205,7 +205,7 @@ inline int install_qhandle_sig()
 }
 
 template <class M>
-long qwrite_data(const Vector<M>& v, FILE* fp)
+Long qwrite_data(const Vector<M>& v, FILE* fp)
 {
   TIMER_FLOPS("qwrite_data");
   timer.flops += v.data_size();
@@ -213,7 +213,7 @@ long qwrite_data(const Vector<M>& v, FILE* fp)
 }
 
 template <class M>
-long qread_data(const Vector<M>& v, FILE* fp)
+Long qread_data(const Vector<M>& v, FILE* fp)
 {
   TIMER_FLOPS("qread_data");
   timer.flops += v.data_size();

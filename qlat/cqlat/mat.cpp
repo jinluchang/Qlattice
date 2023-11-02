@@ -5,7 +5,7 @@ EXPORT(get_elem_wm_prop, {
   PyObject* p_wm = NULL;
   PyObject* p_obj = NULL;
   PyObject* p_xg = NULL;
-  long m = 0;
+  Long m = 0;
   if (!PyArg_ParseTuple(args, "OOO|l", &p_wm, &p_obj, &p_xg, &m)) {
     return NULL;
   }
@@ -20,8 +20,8 @@ EXPORT(get_elem_wm_sprop, {
   using namespace qlat;
   PyObject* p_wm = NULL;
   PyObject* p_obj = NULL;
-  long idx = 0;
-  long m = 0;
+  Long idx = 0;
+  Long m = 0;
   if (!PyArg_ParseTuple(args, "OOl|l", &p_wm, &p_obj, &idx, &m)) {
     return NULL;
   }
@@ -36,8 +36,8 @@ EXPORT(get_elem_wm_psprop, {
   using namespace qlat;
   PyObject* p_wm = NULL;
   PyObject* p_obj = NULL;
-  long idx = 0;
-  long m = 0;
+  Long idx = 0;
+  Long m = 0;
   if (!PyArg_ParseTuple(args, "OOl|l", &p_wm, &p_obj, &idx, &m)) {
     return NULL;
   }

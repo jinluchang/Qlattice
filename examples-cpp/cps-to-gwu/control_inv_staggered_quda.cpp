@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
     print0("spatial plaquette %.8e , plaquette %.8e \n", splaq, gplaq);
   }
 
-  const long Dim = 3;
+  const Long Dim = 3;
   const int  Nsrc = Dim;
   std::vector<colorFD > qlat_cf;qlat_cf.resize(Nsrc);
   for(int i=0;i<qlat_cf.size();i++){qlat_cf[i].init(geo);}
@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
 
   quda_begin(mpi_layout);
 
-  long V = geo.local_volume();
+  Long V = geo.local_volume();
   qlat::vector<qlat::ComplexD > quda_gf;quda_gf.resize(V * 4 * 3*3);
   quda_convert_gauge(quda_gf, gf);
 
@@ -88,9 +88,9 @@ int main(int argc, char* argv[])
 
     //////set point src at zero
     qlat::ComplexD* res = (qlat::ComplexD*) (qinv.csrc->V());
-    long Vh = V / 2;
+    Long Vh = V / 2;
     #pragma omp parallel for
-    for (long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {
+    for (Long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {
       const Coordinate xl = geo.coordinate_from_index(qlat_idx_4d);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
       int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;

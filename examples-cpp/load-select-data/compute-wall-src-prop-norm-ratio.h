@@ -85,7 +85,7 @@ inline LatData lat_data_cratio(const LatData& ld1, const LatData& ld2)
   const Vector<ComplexD> ld1_v = lat_data_cget_const(ld1);
   const Vector<ComplexD> ld2_v = lat_data_cget_const(ld2);
   qassert(ld1_v.size() == ld2_v.size());
-  for (long i = 0; i < (long)ld_ratio_v.size(); ++i) {
+  for (Long i = 0; i < (Long)ld_ratio_v.size(); ++i) {
     const ComplexD c1 = ld1_v[i];
     const ComplexD c2 = ld2_v[i];
     ld_ratio_v[i] = c1 / c2;
@@ -100,7 +100,7 @@ inline LatData lat_data_cratio_sqrt(const LatData& ld1, const LatData& ld2)
   const Vector<ComplexD> ld1_v = lat_data_cget_const(ld1);
   const Vector<ComplexD> ld2_v = lat_data_cget_const(ld2);
   qassert(ld1_v.size() == ld2_v.size());
-  for (long i = 0; i < (long)ld_ratio_v.size(); ++i) {
+  for (Long i = 0; i < (Long)ld_ratio_v.size(); ++i) {
     const ComplexD c1 = ld1_v[i];
     const ComplexD c2 = ld2_v[i];
     ld_ratio_v[i] = std::sqrt(c1 / c2);
@@ -144,7 +144,7 @@ inline LatData get_wall_src_prop_norm_ratio_compute(const std::string& job_tag,
   qassert(ld_ratio_v.size() == total_site[3]);
   qassert(ld_acc_e_v.size() == total_site[3]);
   qassert(ld_acc_s_v.size() == total_site[3]);
-  for (long i = 0; i < (long)ld_ratio_v.size(); ++i) {
+  for (Long i = 0; i < (Long)ld_ratio_v.size(); ++i) {
     const ComplexD s = ld_acc_s_v[i] + ld_acc_s_v[mod(-i, total_site[3])];
     const ComplexD e = ld_acc_e_v[i] + ld_acc_e_v[mod(-i, total_site[3])];
     ld_ratio_v[i] = std::sqrt(s / e);
@@ -185,8 +185,8 @@ inline void scale_prop_wsrc_with_ratio(SelProp& s_prop, const int tslice_src,
   const Coordinate total_site = geo.total_site();
   const Vector<ComplexD> ldv = lat_data_cget_const(ld);
 #pragma omp parallel for
-  for (long idx = 0; idx < fsel.n_elems; ++idx) {
-    const long index = fsel.indices[idx];
+  for (Long idx = 0; idx < fsel.n_elems; ++idx) {
+    const Long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const int tsep = mod(xg[3] - tslice_src, total_site[3]);

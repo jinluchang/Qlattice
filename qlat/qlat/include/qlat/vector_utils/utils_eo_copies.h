@@ -66,10 +66,10 @@ void reduce_color_Re(qlat::vector_gpu<Ty >& res, qlat::FieldM<Ty , civ>& p0, qla
   TIMER("reduce_color");
   Qassert(p0.initialized and p1.initialized );
   const Geometry& geo = p0.geo();
-  const long V = geo.local_volume();
+  const Long V = geo.local_volume();
   const Ty* pa = (Ty*) qlat::get_data(p0).data();
   const Ty* pb = (Ty*) qlat::get_data(p1).data();
-  Qassert(long(res.size()) == V);
+  Qassert(Long(res.size()) == V);
   Ty* resP = res.data();
   qacc_for(isp, V , {
     if(Real ==  1)for(int ic=0;ic<civ;ic++){resP[isp] += (sign * (qlat::qconj(pa[isp*civ + ic]) * pb[isp*civ + ic]).real());}
@@ -102,7 +102,7 @@ template <class Ty>
 void reduce_color(qlat::vector_acc<Ty >& resC, qlat::vector_gpu<Ty >& p0, qlat::vector_gpu<Ty >& p1, const int sign, const int t0, const int clear, const Geometry& geo)
 {
   TIMER("reduce_color");
-  const long V = geo.local_volume();
+  const Long V = geo.local_volume();
   Qassert(p0.size() == p1.size() and p0.size()%V == 0);
   const Ty* pa = (Ty*) qlat::get_data(p0).data();
   const Ty* pb = (Ty*) qlat::get_data(p1).data();
@@ -130,50 +130,50 @@ void reduce_color(qlat::vector_acc<Ty >& resC, qlat::vector_gpu<Ty >& p0, qlat::
   //qacc_for(it, Nt, {d[(it + init - t0 + nt)%nt] += a[it]});
 }
 
-inline void get_index_mappings_reverse(qlat::vector_acc<long >& map, const Geometry& geo)
+inline void get_index_mappings_reverse(qlat::vector_acc<Long >& map, const Geometry& geo)
 {
-  const long V = geo.local_volume();
-  const long Vh = V / 2;
+  const Long V = geo.local_volume();
+  const Long Vh = V / 2;
 
   if(map.size() == V){return ;}
   else{map.resize(V);}
   qacc_for(qlat_idx_4d, V , {
     const Coordinate xl = geo.coordinate_from_index(qlat_idx_4d);
     const int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
-    const long quda_idx = eo * Vh + qlat_idx_4d / 2;
+    const Long quda_idx = eo * Vh + qlat_idx_4d / 2;
     ////map[qlat_idx_4d] = quda_idx;
     map[quda_idx] = qlat_idx_4d;
   });
 }
 
-inline void get_index_mappings(qlat::vector_acc<long >& map, const Geometry& geo)
+inline void get_index_mappings(qlat::vector_acc<Long >& map, const Geometry& geo)
 {
-  const long V = geo.local_volume();
-  const long Vh = V / 2;
+  const Long V = geo.local_volume();
+  const Long Vh = V / 2;
 
   if(map.size() == V){return ;}
   else{map.resize(V);}
   qacc_for(qlat_idx_4d, V , {
     const Coordinate xl = geo.coordinate_from_index(qlat_idx_4d);
     const int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
-    const long quda_idx = eo * Vh + qlat_idx_4d / 2;
+    const Long quda_idx = eo * Vh + qlat_idx_4d / 2;
     map[qlat_idx_4d] = quda_idx;
   });
 }
 
 /////GPU order with color to be outside even odd
 template <class T1, class Ty, int dir>
-void qlat_cf_to_quda_cfT(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector_acc<long >& map_)
+void qlat_cf_to_quda_cfT(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector_acc<Long >& map_)
 {
   TIMER("qlat_cf_to_quda_cf");
-  const long V = geo.local_volume();
-  long Vh = V / 2;
+  const Long V = geo.local_volume();
+  Long Vh = V / 2;
   if(map_.size() != V){get_index_mappings(map_, geo);}
-  qlat::vector_acc<long >& map = map_;
+  qlat::vector_acc<Long >& map = map_;
   qacc_for(qlat_idx_4d, V, {
-    const long quda_idx = map[qlat_idx_4d];
-    const long eo = quda_idx / Vh;
-    const long qi = quda_idx % Vh;
+    const Long quda_idx = map[qlat_idx_4d];
+    const Long eo = quda_idx / Vh;
+    const Long qi = quda_idx % Vh;
     for(int dc = 0; dc < Dim; dc++)
     {
       //if(dir == 1){quda_cf[ quda_idx*Dim + dc] = src[qlat_idx_4d*Dim + dc];}
@@ -185,13 +185,13 @@ void qlat_cf_to_quda_cfT(T1*  quda_cf, Ty* src, const int Dim, const Geometry& g
 }
 
 template <class T1, class Ty>
-void qlat_cf_to_quda_cf(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector_acc<long >& map)
+void qlat_cf_to_quda_cf(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector_acc<Long >& map)
 {
   qlat_cf_to_quda_cfT<T1, Ty, 1>(quda_cf, src, Dim, geo, map);
 }
 
 template <class T1, class Ty>
-void quda_cf_to_qlat_cf(Ty* res, T1*  quda_cf, const int Dim, const Geometry& geo, qlat::vector_acc<long >& map)
+void quda_cf_to_qlat_cf(Ty* res, T1*  quda_cf, const int Dim, const Geometry& geo, qlat::vector_acc<Long >& map)
 {
   qlat_cf_to_quda_cfT<T1, Ty, 0>(quda_cf, res, Dim, geo, map);
 }
@@ -200,16 +200,16 @@ void quda_cf_to_qlat_cf(Ty* res, T1*  quda_cf, const int Dim, const Geometry& ge
 
 template<typename Ty, int dir, int mode>
 void copy_eo_cs_to_fieldMT(qlat::vector_gpu<Ty >& res, const int civ, const Geometry& geo, vector_cs<Ty >& even, vector_cs<Ty >& odd,
-  int e0, int e1, int o0, int o1, qlat::vector_acc<long >& map)
+  int e0, int e1, int o0, int o1, qlat::vector_acc<Long >& map)
 {
   TIMER_FLOPS("copy_eo_cs_to_fieldM");
   Qassert(even.initialized and odd.initialized);
   ////fft_desc_basic& fd = get_fft_desc_basic_plan(res.geo());
   const bool GPU = even.GPU;
-  const long V = geo.local_volume();
-  const long Vh= V/2;
-  if(dir == 1){if(long(res.size()) != civ*V){res.resize(civ * V, GPU);}}
-  if(dir == 0){Qassert(long(res.size()) == V * civ );}
+  const Long V = geo.local_volume();
+  const Long Vh= V/2;
+  if(dir == 1){if(Long(res.size()) != civ*V){res.resize(civ * V, GPU);}}
+  if(dir == 0){Qassert(Long(res.size()) == V * civ );}
   Qassert(res.GPU == even.GPU);
 
   const int DIM = 3;
@@ -230,7 +230,7 @@ void copy_eo_cs_to_fieldMT(qlat::vector_gpu<Ty >& res, const int civ, const Geom
   ////Ty** eP = even.get_pointers(ni)
   for(int ei=0;ei<ne;ei++){eP[ei]      = even.get_pointers(ei + e0);}
   for(int oi=0;oi<no;oi++){eP[ne + oi] =  odd.get_pointers(oi + o0);}
-  const long* mapP = (long*) qlat::get_data(map).data();
+  const Long* mapP = (Long*) qlat::get_data(map).data();
 
   ////NtNzNyNx, DIM x nvec
   Ty* r = (Ty*) qlat::get_data(res).data();
@@ -242,16 +242,16 @@ void copy_eo_cs_to_fieldMT(qlat::vector_gpu<Ty >& res, const int civ, const Geom
     for(int ni=0;ni<ne;ni++)
     for(int eo = 0; eo < 2;eo++)
     {
-      const long quda_idx = eo*Vh + qi;
-      const long qlat_idx_4d = mapP[quda_idx];
+      const Long quda_idx = eo*Vh + qi;
+      const Long qlat_idx_4d = mapP[quda_idx];
       Ty* rr = &r[qlat_idx_4d*civ];
       for(int c = 0; c < DIM ; c++)
       {
-        long bv =  qi*DIM + c;////default mode with c to be inside
-        ////const long bv = qi*DIM + c; ////quda vectors this order
+        Long bv =  qi*DIM + c;////default mode with c to be inside
+        ////const Long bv = qi*DIM + c; ////quda vectors this order
         if(mode == 1){bv = c*Vh + qi;} ////quda vectors this order
-        const long bi = bv / b_size;
-        const long bj = bv % b_size;
+        const Long bi = bv / b_size;
+        const Long bj = bv % b_size;
         {
           {
           if(dir == 1){rr[c*nvec + ni] = eP[eo*ne + ni][bi][bj];}
@@ -267,7 +267,7 @@ void copy_eo_cs_to_fieldMT(qlat::vector_gpu<Ty >& res, const int civ, const Geom
 
 template<typename Ty>
 void copy_eo_cs_to_fieldM(qlat::vector_gpu<Ty >& res, const int civ, const Geometry& geo, vector_cs<Ty >& even, vector_cs<Ty >& odd,
-  int e0, int e1, int o0, int o1, qlat::vector_acc<long >& map, int mode = 0, int dir = 1)
+  int e0, int e1, int o0, int o1, qlat::vector_acc<Long >& map, int mode = 0, int dir = 1)
 {
   if(dir == 0 and mode == 0){copy_eo_cs_to_fieldMT<Ty, 0, 0>(res, civ, geo, even, odd, e0, e1, o0, o1, map);return ;}
   if(dir == 0 and mode == 1){copy_eo_cs_to_fieldMT<Ty, 0, 1>(res, civ, geo, even, odd, e0, e1, o0, o1, map);return ;}
@@ -278,7 +278,7 @@ void copy_eo_cs_to_fieldM(qlat::vector_gpu<Ty >& res, const int civ, const Geome
 
 template<typename Ty>
 void copy_fieldM_to_eo_cs(vector_cs<Ty >& even, vector_cs<Ty >& odd, qlat::vector_gpu<Ty >& res, const int civ, const Geometry& geo, 
-  int e0, int e1, int o0, int o1, qlat::vector_acc<long >& map, int mode = 0)
+  int e0, int e1, int o0, int o1, qlat::vector_acc<Long >& map, int mode = 0)
 {
   copy_eo_cs_to_fieldM(res, civ, geo, even, odd, e0, e1, o0, o1, map, mode, 0);
 }

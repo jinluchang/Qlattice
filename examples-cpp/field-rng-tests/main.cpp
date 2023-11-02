@@ -42,20 +42,20 @@ void test1()
   const int Ntake = 1;
   const int Nb = geo.total_volume() / Ni;
   const int Ntraj = 16;
-  for (long traj = 0; traj < Ntraj; ++traj) {
+  for (Long traj = 0; traj < Ntraj; ++traj) {
     set_zero(af);
     set_zero(sumf);
     set_zero(sigma2f);
-    for (long index = 0; index < geo.local_volume(); ++index) {
+    for (Long index = 0; index < geo.local_volume(); ++index) {
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
-      const long gindex = geo.g_index_from_g_coordinate(xg);
+      const Long gindex = geo.g_index_from_g_coordinate(xg);
       Coordinate xh;
       coordinateHalf(xh, xl);
       RngState rs0 = rs.split(ssprintf("%ld %ld", gindex, traj));
       af.get_elem(xh) += qpolar(1.0, u_rand_gen(rs0, PI, -PI));
     }
-    for (long index = 0; index < geoHalf.local_volume(); ++index) {
+    for (Long index = 0; index < geoHalf.local_volume(); ++index) {
       Coordinate x = geoHalf.coordinate_from_index(index);
       ComplexD& a = af.get_elem(x);
       sumf.get_elem(x) += qnorm(a);

@@ -156,16 +156,16 @@ inline const SelProp& get_prop_psrc_ama(const std::string& job_tag,
         qassert(false);
       }
       const Geometry& geo = fsel.f_rank.geo();
-      qassert(ps_prop.n_points == (long)psel.size());
+      qassert(ps_prop.n_points == (Long)psel.size());
       double qnorm_comm = 0.0;
       double qnorm_diff = 0.0;
-      for (long ps_idx = 0; ps_idx < ps_prop.n_points; ++ps_idx) {
+      for (Long ps_idx = 0; ps_idx < ps_prop.n_points; ++ps_idx) {
         const Coordinate& xg = psel[ps_idx];
         const Coordinate xl = geo.coordinate_l_from_g(xg);
         if (not geo.is_local(xl)) {
           continue;
         }
-        const long s_idx = fsel.f_local_idx.get_elem(xl);
+        const Long s_idx = fsel.f_local_idx.get_elem(xl);
         if (s_idx >= 0) {
           qnorm_comm += qnorm(s_prop.get_elem(s_idx));
           qnorm_diff +=

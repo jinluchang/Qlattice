@@ -10,8 +10,8 @@ namespace qlat
 inline double get_fsel_prob(const FieldSelection& fsel)
 {
   const Geometry& geo = fsel.f_rank.geo();
-  const long total_volume = geo.total_volume();
-  long n_elems = fsel.n_elems;
+  const Long total_volume = geo.total_volume();
+  Long n_elems = fsel.n_elems;
   glb_sum(n_elems);
   return n_elems / total_volume;
 }
@@ -66,8 +66,8 @@ inline PselProp contract_wall_snk_prop(const SelProp& prop,
   vector<WilsonMatrix> gwm_ts(omp_get_max_threads() * total_site[3]);
   set_zero(gwm_ts);
 #pragma omp parallel for
-  for (long idx = 0; idx < (long)fsel.indices.size(); ++idx) {
-    const long index = fsel.indices[idx];
+  for (Long idx = 0; idx < (Long)fsel.indices.size(); ++idx) {
+    const Long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     gwm_ts[omp_get_thread_num() * total_site[3] + xg[3]] += prop.get_elem(idx);

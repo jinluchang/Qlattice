@@ -231,8 +231,8 @@ inline std::vector<PointInfo> load_lbl_pis(const std::string& path)
   TIMER_VERBOSE("load_lbl_pis");
   const std::vector<std::string> lines = qgetlines(path);
   qassert(lines.size() > 0);
-  const long len = read_long(lines[0]);
-  qassert(len + 1 <= (long)lines.size());
+  const Long len = read_long(lines[0]);
+  qassert(len + 1 <= (Long)lines.size());
   std::vector<PointInfo> pis;
   for (int k = 1; k < len + 1; ++k) {
     const std::vector<std::string> strs = split_line_with_spaces(lines[k]);
@@ -325,8 +325,8 @@ inline std::vector<Coordinate> load_lbl_pcs(const std::string& path)
   TIMER_VERBOSE("load_lbl_pcs");
   const std::vector<std::string> lines = qgetlines(path);
   qassert(lines.size() > 0);
-  const long len = read_long(lines[0]);
-  qassert(len + 1 <= (long)lines.size());
+  const Long len = read_long(lines[0]);
+  qassert(len + 1 <= (Long)lines.size());
   std::vector<Coordinate> pcs;
   for (int k = 1; k < len + 1; ++k) {
     const std::vector<std::string> strs = split_line_with_spaces(lines[k]);

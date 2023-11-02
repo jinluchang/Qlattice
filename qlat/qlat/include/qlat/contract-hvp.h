@@ -41,8 +41,8 @@ inline LatData contract_chvp3(const SelProp& prop1, const SelProp& prop2,
     }
   });
   LatData ld = mk_hvp_table(total_site);
-  for (long idx = 0; idx < fsel.n_elems; ++idx) {
-    const long index = fsel.indices[idx];
+  for (Long idx = 0; idx < fsel.n_elems; ++idx) {
+    const Long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const int tsep = mod(xg[3] - tslice_src, total_site[3]);

@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// aLong with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
@@ -160,21 +160,21 @@ inline void displayln_info(const std::string& str, FILE* fp = NULL)
   }
 }
 
-inline void display(const long minimum_verbose_level, const std::string& str)
+inline void display(const Long minimum_verbose_level, const std::string& str)
 {
   if (get_verbose_level() >= minimum_verbose_level) {
     display(str);
   }
 }
 
-inline void displayln(const long minimum_verbose_level, const std::string& str)
+inline void displayln(const Long minimum_verbose_level, const std::string& str)
 {
   if (get_verbose_level() >= minimum_verbose_level) {
     displayln(str);
   }
 }
 
-inline void display_info(const long minimum_verbose_level,
+inline void display_info(const Long minimum_verbose_level,
                          const std::string& str)
 {
   if (0 == get_id_node() && 0 == get_id_thread()) {
@@ -182,7 +182,7 @@ inline void display_info(const long minimum_verbose_level,
   }
 }
 
-inline void displayln_info(const long minimum_verbose_level,
+inline void displayln_info(const Long minimum_verbose_level,
                            const std::string& str)
 {
   if (0 == get_id_node() && 0 == get_id_thread()) {
@@ -275,18 +275,18 @@ struct API TimerInfo {
 
 struct API Timer {
   const char* cname;
-  long info_index;
+  Long info_index;
   bool is_using_total_flops;
-  long is_running;
+  Long is_running;
   double start_time;
   double stop_time;
   long long start_flops;
   long long stop_flops;
   long long flops;
   //
-  API static std::map<std::string, long>& get_timer_info_index_map()
+  API static std::map<std::string, Long>& get_timer_info_index_map()
   {
-    static std::map<std::string, long> timer_info_index_map;
+    static std::map<std::string, Long> timer_info_index_map;
     return timer_info_index_map;
   }
   //
@@ -308,22 +308,22 @@ struct API Timer {
     return history;
   }
   //
-  API static std::vector<long>&
+  API static std::vector<Long>&
   get_max_call_times_for_always_show_info_history()
   {
-    static std::vector<long> history;
+    static std::vector<Long> history;
     return history;
   }
   //
-  API static std::vector<long>& get_timer_stack()
+  API static std::vector<Long>& get_timer_stack()
   {
-    static std::vector<long> stack;
+    static std::vector<Long> stack;
     return stack;
   }
   //
-  API static void reset(const long max_call_times_for_always_show_info_ = -1);
+  API static void reset(const Long max_call_times_for_always_show_info_ = -1);
   //
-  API static void fork(const long max_call_times_for_always_show_info_ = -1);
+  API static void fork(const Long max_call_times_for_always_show_info_ = -1);
   //
   API static void merge();
   //
@@ -352,18 +352,18 @@ struct API Timer {
     return minimum_duration_for_show_info();
   }
   //
-  API static long& max_call_times_for_always_show_info()
+  API static Long& max_call_times_for_always_show_info()
   // qlat parameter
   {
-    static long max_call_times =
+    static Long max_call_times =
         get_env_long_default("q_timer_max_always_show", 10);
     return max_call_times;
   }
   //
-  API static long& max_function_name_length_shown()
+  API static Long& max_function_name_length_shown()
   // qlat parameter
   {
-    static long max_len = get_env_long_default("q_timer_max_func_name_len", 50);
+    static Long max_len = get_env_long_default("q_timer_max_func_name_len", 50);
     return max_len;
   }
   //

@@ -806,7 +806,7 @@ def increase_type_dict_count(type_dict, key):
 
 def drop_tag_last_subscript(tag):
     """
-    coordinates with names that are same after dropping last subscript belong to the same permutation group
+    coordinates with names that are same after dropping last subscript beLong to the same permutation group
     """
     return tag.rsplit("_", 1)[0]
 

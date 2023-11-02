@@ -4,4 +4,4 @@ cdef class CommPlan:
 
     cdef cqlat.CommPlan xx
 
-    cdef readonly long cdata
+    cdef readonly cqlat.Long cdata

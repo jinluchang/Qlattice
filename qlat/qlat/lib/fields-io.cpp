@@ -21,7 +21,7 @@ void BitSet::set_f_rank(FieldM<int64_t, 1>& f_rank, const int64_t rank)
 {
   TIMER("BitSet::set_f_rank")
   const Geometry& geo = f_rank.geo();
-  qassert(geo.local_volume() == (long)N);
+  qassert(geo.local_volume() == (Long)N);
   qassert(geo.is_only_local);
   qassert(geo.multiplicity == 1);
   for (size_t i = 0; i < N; i++) {
@@ -39,7 +39,7 @@ bool BitSet::check_f_rank(const FieldM<int64_t, 1>& f_rank)
   const Geometry& geo = f_rank.geo();
   qassert(geo.is_only_local);
   qassert(geo.multiplicity == 1);
-  if (not(geo.local_volume() == (long)N)) {
+  if (not(geo.local_volume() == (Long)N)) {
     return false;
   }
   for (size_t i = 0; i < N; i++) {
@@ -85,7 +85,7 @@ void BitSet::decompress(const void* src, void* dst, size_t block_size) const
 }
 
 std::vector<char> bitset_decompress(const std::vector<char>& data,
-                                    const long local_volume)
+                                    const Long local_volume)
 {
   TIMER("bitset_decompress");
   const size_t N = local_volume;
@@ -113,7 +113,7 @@ BitSet mk_bitset_from_field_rank(const FieldM<int64_t, 1>& f_rank)
   const Geometry& geo = f_rank.geo();
   BitSet bs(geo.local_volume());
   qassert(geo.is_only_local);
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const int64_t rank = f_rank.get_elem(index);
     if (0 <= rank) {
       bs.set(index, true);
@@ -249,14 +249,14 @@ std::string get_file_path(FieldsReader& fr)
   return "";
 }
 
-long get_file_size(FieldsReader& fr)
+Long get_file_size(FieldsReader& fr)
 // the file must be opened for reading
 // will restore the position.
 {
   if (not fr.qfile.null()) {
-    const long pos = qftell(fr.qfile);
+    const Long pos = qftell(fr.qfile);
     qfseek(fr.qfile, 0L, SEEK_END);
-    const long sz = qftell(fr.qfile);
+    const Long sz = qftell(fr.qfile);
     qfseek(fr.qfile, pos, SEEK_SET);
     return sz;
   } else {
@@ -284,7 +284,7 @@ void qfwrite_convert_endian(void* ptr, const size_t size, const size_t nmemb,
   }
 }
 
-long write(FieldsWriter& fw, const std::string& fn, const Geometry& geo,
+Long write(FieldsWriter& fw, const std::string& fn, const Geometry& geo,
            const Vector<char> data, const bool is_sparse_field)
 {
   TIMER("write(fw,fn,geo,data)");
@@ -332,13 +332,13 @@ long write(FieldsWriter& fw, const std::string& fn, const Geometry& geo,
   return data_len;
 }
 
-long qfread_convert_endian(void* ptr, const size_t size, const size_t nmemb,
+Long qfread_convert_endian(void* ptr, const size_t size, const size_t nmemb,
                            QFile& qfile, const bool is_little_endian)
 {
   if (qfile.null()) {
     return 0;
   }
-  const long total_nmemb = qfread(ptr, size, nmemb, qfile);
+  const Long total_nmemb = qfread(ptr, size, nmemb, qfile);
   if (size == 4) {
     convert_endian_32(Vector<int32_t>((int32_t*)ptr, nmemb), is_little_endian);
   } else if (size == 8) {
@@ -365,7 +365,7 @@ bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
     return false;
   }
   //
-  const long offset_initial = qftell(fr.qfile);
+  const Long offset_initial = qftell(fr.qfile);
   //
   // first read tag
   int32_t tag_len = 0;
@@ -462,7 +462,7 @@ bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
     return false;
   }
   //
-  const long final_offset = qftell(fr.qfile) + data_len;
+  const Long final_offset = qftell(fr.qfile) + data_len;
   if (final_offset > fr.max_offset) {
     fr.max_offset = final_offset;
   }
@@ -474,7 +474,7 @@ bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   return true;
 }
 
-long read_data(FieldsReader& fr, std::vector<char>& data,
+Long read_data(FieldsReader& fr, std::vector<char>& data,
                const int64_t data_len, const crc32_t crc)
 // return data_len (if not successful then return 0)
 {
@@ -486,7 +486,7 @@ long read_data(FieldsReader& fr, std::vector<char>& data,
                    get_file_path(fr).c_str()));
     return 0;
   }
-  const long read_data_all = qfread(&data[0], data_len, 1, fr.qfile);
+  const Long read_data_all = qfread(&data[0], data_len, 1, fr.qfile);
   if (not(1 == read_data_all)) {
     qwarn(ssprintf("read_data: data not complete fn='%s'",
                    get_file_path(fr).c_str()));
@@ -503,7 +503,7 @@ long read_data(FieldsReader& fr, std::vector<char>& data,
   return data_len;
 }
 
-long read_next(FieldsReader& fr, std::string& fn, Coordinate& total_site,
+Long read_next(FieldsReader& fr, std::string& fn, Coordinate& total_site,
                std::vector<char>& data, bool& is_sparse_field)
 {
   TIMER_FLOPS("read_next(fr,fn,geo,data)");
@@ -511,7 +511,7 @@ long read_next(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   int64_t data_len = 0;
   const bool is_ok =
       read_tag(fr, fn, total_site, crc, data_len, is_sparse_field);
-  const long total_bytes = is_ok ? read_data(fr, data, data_len, crc) : 0;
+  const Long total_bytes = is_ok ? read_data(fr, data, data_len, crc) : 0;
   timer.flops += total_bytes;
   return total_bytes;
 }
@@ -570,7 +570,7 @@ bool does_file_exist(FieldsReader& fr, const std::string& fn)
   }
 }
 
-long read(FieldsReader& fr, const std::string& fn, Coordinate& total_site,
+Long read(FieldsReader& fr, const std::string& fn, Coordinate& total_site,
           std::vector<char>& data, bool& is_sparse_field)
 {
   TIMER_FLOPS("read(fr,fn,site,data)");
@@ -580,13 +580,13 @@ long read(FieldsReader& fr, const std::string& fn, Coordinate& total_site,
   qassert(fr.offsets_map.count(fn) == 1);
   qfseek(fr.qfile, fr.offsets_map[fn], SEEK_SET);
   std::string fn_r;
-  const long total_bytes =
+  const Long total_bytes =
       read_next(fr, fn_r, total_site, data, is_sparse_field);
   qassert(fn == fn_r);
   return total_bytes;
 }
 
-long check_file(FieldsReader& fr, const std::string& fn)
+Long check_file(FieldsReader& fr, const std::string& fn)
 // return final offset of the data
 // if check_file fail, return 0
 {
@@ -594,7 +594,7 @@ long check_file(FieldsReader& fr, const std::string& fn)
   Coordinate total_site;
   std::vector<char> data;
   bool is_sparse_field;
-  const long total_bytes = read(fr, fn, total_site, data, is_sparse_field);
+  const Long total_bytes = read(fr, fn, total_site, data, is_sparse_field);
   if (total_bytes > 0) {
     return qftell(fr.qfile);
   } else {
@@ -653,9 +653,9 @@ ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
   FieldM<int64_t, 1> f_rank_combined;
   f_rank_combined = f_rank;
   const Coordinate total_site = geo.total_site();
-  const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
+  const Long spatial_vol = total_site[0] * total_site[1] * total_site[2];
 #pragma omp parallel for
-  for (long i = 0; i < (long)xgs.size(); ++i) {
+  for (Long i = 0; i < (Long)xgs.size(); ++i) {
     const Coordinate xl = geo.coordinate_l_from_g(xgs[i]);
     if (geo.is_local(xl)) {
       f_rank_combined.get_elem(xl) = spatial_vol + i;
@@ -770,7 +770,7 @@ void close_all_shuffled_fields_writer()
   for (auto it = sfwm.begin(); it != sfwm.end(); ++it) {
     sfwv.push_back(it->second);
   }
-  for (long i = 0; i < (long)sfwv.size(); ++i) {
+  for (Long i = 0; i < (Long)sfwv.size(); ++i) {
     sfwv[i]().close();
   }
   qassert(sfwm.size() == 0);
@@ -873,7 +873,7 @@ int truncate_fields_sync_node(const std::string& path,
                            fns_keep.size()));
     return 1;
   }
-  for (long i = 0; i < (long)fns_keep.size(); ++i) {
+  for (Long i = 0; i < (Long)fns_keep.size(); ++i) {
     if (fns[i] != fns_keep[i]) {
       qwarn(fname + ssprintf(": fns[i]='%s' fns_keep[i]='%s'", fns[i].c_str(),
                              fns_keep[i].c_str()));
@@ -893,9 +893,9 @@ int truncate_fields_sync_node(const std::string& path,
   for (int i = 0; i < (int)sfr.frs.size(); ++i) {
     FieldsReader& fr = sfr.frs[i];
     const std::string path_file = get_file_path(fr);
-    const long file_size = get_file_size(fr);
+    const Long file_size = get_file_size(fr);
     fr.close();
-    const long final_offset = final_offsets[i];
+    const Long final_offset = final_offsets[i];
     if (file_size != final_offset) {
       displayln_info(
           0,
@@ -929,9 +929,9 @@ std::vector<std::string> properly_truncate_fields_sync_node(
   sfr.init(path, new_size_node);
   fns = list_fields(sfr);
   std::vector<Long> last_final_offsets(sfr.frs.size(), 0);
-  long last_idx = -1;
+  Long last_idx = -1;
   if (is_check_all) {
-    for (long i = 0; i < (long)fns.size(); ++i) {
+    for (Long i = 0; i < (Long)fns.size(); ++i) {
       const std::string& fn = fns[i];
       std::vector<Long> final_offsets;
       const bool b = check_file_sync_node(sfr, fn, final_offsets);
@@ -943,7 +943,7 @@ std::vector<std::string> properly_truncate_fields_sync_node(
       }
     }
   } else {
-    for (long i = (long)fns.size() - 1; i >= 0; i -= 1) {
+    for (Long i = (Long)fns.size() - 1; i >= 0; i -= 1) {
       const std::string& fn = fns[i];
       std::vector<Long> final_offsets;
       const bool b = check_file_sync_node(sfr, fn, final_offsets);
@@ -957,9 +957,9 @@ std::vector<std::string> properly_truncate_fields_sync_node(
   for (int i = 0; i < (int)sfr.frs.size(); ++i) {
     FieldsReader& fr = sfr.frs[i];
     const std::string path_file = get_file_path(fr);
-    const long file_size = get_file_size(fr);
+    const Long file_size = get_file_size(fr);
     fr.close();
-    const long final_offset = last_final_offsets[i];
+    const Long final_offset = last_final_offsets[i];
     if (file_size != final_offset) {
       if (is_only_check) {
         qwarn(fname +
@@ -981,7 +981,7 @@ std::vector<std::string> properly_truncate_fields_sync_node(
   }
   errno = 0;
   fns.resize(last_idx + 1);
-  for (long i = 0; i < (long)fns.size(); ++i) {
+  for (Long i = 0; i < (Long)fns.size(); ++i) {
     const std::string& fn = fns[i];
     displayln_info(0, fname + ssprintf(": i=%5ld fn='%s'", i, fn.c_str()));
   }
@@ -1019,14 +1019,14 @@ bool does_file_exist_sync_node(const std::string& path, const std::string& fn)
 
 /*
 template <class M>
-long read_next(FieldsReader& fr, std::string& fn, Field<M>& field)
+Long read_next(FieldsReader& fr, std::string& fn, Field<M>& field)
 // field endianess not converted at all
 {
   TIMER_FLOPS("read_next(fr,fn,field)");
   Coordinate total_site;
   std::vector<char> data;
   bool is_sparse_field = false;
-  const long total_bytes = read_next(fr, fn, total_site, data, is_sparse_field);
+  const Long total_bytes = read_next(fr, fn, total_site, data, is_sparse_field);
   if (0 == total_bytes) {
     return 0;
   }
@@ -1038,16 +1038,16 @@ long read_next(FieldsReader& fr, std::string& fn, Field<M>& field)
 
 /*
 template <class M>
-long read_next(ShuffledFieldsReader& sfr, std::string& fn, Field<M>& field)
+Long read_next(ShuffledFieldsReader& sfr, std::string& fn, Field<M>& field)
 // interface function
 {
   TIMER_VERBOSE_FLOPS("read_next(sfr,fn,field)");
   fn = "";
-  long total_bytes = 0;
+  Long total_bytes = 0;
   std::vector<Field<M> > fs(sfr.frs.size());
   for (int i = 0; i < (int)fs.size(); ++i) {
     std::string fni;
-    const long bytes = read_next(sfr.frs[i], fni, fs[i]);
+    const Long bytes = read_next(sfr.frs[i], fni, fs[i]);
     if (0 == bytes) {
       qassert(0 == total_bytes);
     } else {
@@ -1081,13 +1081,13 @@ long read_next(ShuffledFieldsReader& sfr, std::string& fn, Field<M>& field)
 
 /*
 template <class M>
-long read_next_double_from_float(ShuffledFieldsReader& sfr, std::string& fn,
+Long read_next_double_from_float(ShuffledFieldsReader& sfr, std::string& fn,
                                  Field<M>& field)
 // interface function
 {
   TIMER_VERBOSE_FLOPS("read_next_double_from_float(sfr,fn,field)");
   Field<float> ff;
-  const long total_bytes = read_next(sfr, fn, ff);
+  const Long total_bytes = read_next(sfr, fn, ff);
   if (total_bytes == 0) {
     return 0;
   } else {
@@ -1101,14 +1101,14 @@ long read_next_double_from_float(ShuffledFieldsReader& sfr, std::string& fn,
 
 /*
 template <class M>
-long write(FieldsWriter& fw, const std::string& fn, const Field<M>& field,
+Long write(FieldsWriter& fw, const std::string& fn, const Field<M>& field,
            const BitSet& bs)
 // field already have endianess converted correctly
 {
   TIMER_FLOPS("write(fw,fn,field,bs)");
   const Geometry& geo = field.geo();
   const std::vector<char> data = bs.compress(get_data(field));
-  const long total_bytes = write(fw, fn, geo, get_data(data), true);
+  const Long total_bytes = write(fw, fn, geo, get_data(data), true);
   timer.flops += total_bytes;
   return total_bytes;
 }

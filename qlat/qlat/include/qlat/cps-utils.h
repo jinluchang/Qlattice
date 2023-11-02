@@ -193,7 +193,7 @@ template <class M>
 inline bool notnan(const GridComm<M>& gc)
 {
   const Geometry& geo = gc.getGeometry();
-  for (long index = 0; index < geo.localVolume(); ++index) {
+  for (Long index = 0; index < geo.localVolume(); ++index) {
     int xl[4];
     geo.coordinateFromIndex(xl, index);
     for (int m = 0; m < geo.multiplicity; ++m) {
@@ -395,10 +395,10 @@ inline Coordinate mkCoordinateFromRefRel(const Geometry& geo,
   return c;
 }
 
-inline long distance2RelativeCoordinateG(const int xg[4])
+inline Long distance2RelativeCoordinateG(const int xg[4])
 {
-  return sqr((long)xg[0]) + sqr((long)xg[1]) + sqr((long)xg[2]) +
-         sqr((long)xg[3]);
+  return sqr((Long)xg[0]) + sqr((Long)xg[1]) + sqr((Long)xg[2]) +
+         sqr((Long)xg[3]);
 }
 
 inline double distanceRelativeCoordinateG(const int xg[4])
@@ -406,7 +406,7 @@ inline double distanceRelativeCoordinateG(const int xg[4])
   return sqrt(distance2RelativeCoordinateG(xg));
 }
 
-inline long distance2TwoCoordinateG(const int xg1[4], const int xg2[4],
+inline Long distance2TwoCoordinateG(const int xg1[4], const int xg2[4],
                                     const Geometry& geo)
 {
   int xgref[4];
@@ -414,7 +414,7 @@ inline long distance2TwoCoordinateG(const int xg1[4], const int xg2[4],
   return distance2RelativeCoordinateG(xgref);
 }
 
-inline long distance2TwoCoordinateG(const Coordinate& xg1,
+inline Long distance2TwoCoordinateG(const Coordinate& xg1,
                                     const Coordinate& xg2, const Geometry& geo)
 {
   Coordinate xgref;
@@ -422,7 +422,7 @@ inline long distance2TwoCoordinateG(const Coordinate& xg1,
   return distance2RelativeCoordinateG(xgref.x);
 }
 
-inline void coordinateFromIndex(int x[4], long index, const int size[4])
+inline void coordinateFromIndex(int x[4], Long index, const int size[4])
 {
   x[0] = index % size[0];
   index /= size[0];
@@ -433,30 +433,30 @@ inline void coordinateFromIndex(int x[4], long index, const int size[4])
   x[3] = index % size[3];
 }
 
-inline long indexFromCoordinate(const int x[4], const int size[4])
+inline Long indexFromCoordinate(const int x[4], const int size[4])
 {
   return (((x[3] * size[2]) + x[2]) * size[1] + x[1]) * size[0] + x[0];
 }
 
-inline void sumDoubleArray(double* vs, const long n_elem)
+inline void sumDoubleArray(double* vs, const Long n_elem)
 {
 #ifdef USE_QMP
   QMP_sum_double_array(vs, n_elem);
 #endif
 }
 
-inline int sumArray(long* recv, const long* send, const long n_elem)
+inline int sumArray(Long* recv, const Long* send, const Long n_elem)
 {
 #ifdef USE_QMP
-  return MPI_Allreduce((long*)send, recv, n_elem, MPI_LONG, MPI_SUM,
+  return MPI_Allreduce((Long*)send, recv, n_elem, MPI_LONG, MPI_SUM,
                        QMP_COMM_WORLD);
 #else
-  memmove(recv, send, n_elem * sizeof(long));
+  memmove(recv, send, n_elem * sizeof(Long));
   return 0;
 #endif
 }
 
-inline int sumArray(double* recv, const double* send, const long n_elem)
+inline int sumArray(double* recv, const double* send, const Long n_elem)
 {
 #ifdef USE_QMP
   return MPI_Allreduce((double*)send, recv, n_elem, MPI_DOUBLE, MPI_SUM,
@@ -468,7 +468,7 @@ inline int sumArray(double* recv, const double* send, const long n_elem)
 }
 
 template <class M>
-int sumArray(M* vs, const long n_elem)
+int sumArray(M* vs, const Long n_elem)
 {
   // M can be double or long
   int status = 0;
@@ -482,11 +482,11 @@ int sumArray(M* vs, const long n_elem)
 
 inline void syncNode()
 {
-  long v;
+  Long v;
   sumArray(&v, 1);
 }
 
-inline void allGather(void* recvbuf, const void* sendbuf, const long sendsize)
+inline void allGather(void* recvbuf, const void* sendbuf, const Long sendsize)
 {
 #ifdef USE_QMP
   MPI_Allgather((void*)sendbuf, sendsize, MPI_BYTE, recvbuf, sendsize, MPI_BYTE,
@@ -497,7 +497,7 @@ inline void allGather(void* recvbuf, const void* sendbuf, const long sendsize)
 #endif
 }
 
-inline void bcast(void* recvbuf, const long size, const int root = 0)
+inline void bcast(void* recvbuf, const Long size, const int root = 0)
 {
 #ifdef USE_QMP
   MPI_Bcast(recvbuf, size, MPI_BYTE, root, QMP_COMM_WORLD);
@@ -592,7 +592,7 @@ struct GeometryNodeNeighbor {
   GeometryNodeNeighbor() { init(); }
 };
 
-API inline int getDataDirMu(void* recv, void* send, const long size, const int dir,
+API inline int getDataDirMu(void* recv, void* send, const Long size, const int dir,
                         const int mu)
 {
   // dir = 0, 1 for Plus dir or Minus dir
@@ -617,12 +617,12 @@ API inline int getDataDirMu(void* recv, void* send, const long size, const int d
 #endif
 }
 
-inline int getDataPlusMu(void* recv, void* send, const long size, const int mu)
+inline int getDataPlusMu(void* recv, void* send, const Long size, const int mu)
 {
   return getDataDirMu(recv, send, size, 0, mu);
 }
 
-inline int getDataMinusMu(void* recv, void* send, const long size, const int mu)
+inline int getDataMinusMu(void* recv, void* send, const Long size, const int mu)
 {
   return getDataDirMu(recv, send, size, 1, mu);
 }
@@ -645,7 +645,7 @@ inline bool doesFileExist(const std::string& fn)
 
 inline bool DoesFileExist(const std::string& fn)
 {
-  long nfile = 0;
+  Long nfile = 0;
   if (0 == getIdNode()) {
     if (doesFileExist(fn)) {
       nfile = 1;
@@ -694,7 +694,7 @@ inline int Makedir(const std::string& path,
 inline int Mkdir(const std::string& path, const mode_t mode = defaultDirMode())
 {
   TIMER("Mkdir");
-  long ret = 0;
+  Long ret = 0;
   if (0 == getIdNode()) {
     ret = mkdir(path.c_str(), mode);
   }
@@ -705,7 +705,7 @@ inline int Mkdir(const std::string& path, const mode_t mode = defaultDirMode())
 inline int Rmdir(const std::string& path)
 {
   TIMER("Rmdir");
-  long ret = 0;
+  Long ret = 0;
   if (0 == getIdNode()) {
     ret = rmdir(path.c_str());
   }

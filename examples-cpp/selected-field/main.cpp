@@ -38,7 +38,7 @@ inline void demo()
   //
   displayln_info(fname + ssprintf(": compute crc32=%06X.", field_crc32(f)));
   //
-  const long n_per_tslice = 16;
+  const Long n_per_tslice = 16;
   displayln_info(fname + ssprintf(": random select points on each time slice"));
   displayln_info(fname + ssprintf(": select %d points per time slice", n_per_tslice));
   displayln_info(fname + ssprintf(": selection is stored in 'fsel' of type 'FieldSelection'"));
@@ -91,8 +91,8 @@ inline void demo()
   displayln_info(fname + ssprintf(": compute the sum of all the selected points in 'f'"));
   {
     ComplexD sum = 0.0;
-    for (long index = 0; index < f.geo().local_volume(); ++index) {
-      const long idx = fsel.f_local_idx.get_elems_const(index)[0];
+    for (Long index = 0; index < f.geo().local_volume(); ++index) {
+      const Long idx = fsel.f_local_idx.get_elems_const(index)[0];
       if (idx < 0) {
         continue;
       }
@@ -107,8 +107,8 @@ inline void demo()
   }
   {
     ComplexD sum = 0.0;
-    for (long index = 0; index < f.geo().local_volume(); ++index) {
-      const long idx = fsel.f_local_idx.get_elems_const(index)[0];
+    for (Long index = 0; index < f.geo().local_volume(); ++index) {
+      const Long idx = fsel.f_local_idx.get_elems_const(index)[0];
       if (idx < 0) {
         continue;
       }
@@ -122,8 +122,8 @@ inline void demo()
   }
   {
     ComplexD sum = 0.0;
-    for (long idx = 0; idx < sf.n_elems; ++idx) {
-      // const long index = fsel.indices[idx];
+    for (Long idx = 0; idx < sf.n_elems; ++idx) {
+      // const Long index = fsel.indices[idx];
       const Vector<ComplexD> fv = sf.get_elems_const(idx);
       // f.geto.multiplicity = 2 is the number of elements per site
       for (int m = 0; m < f.geo().multiplicity; ++m) {
@@ -134,7 +134,7 @@ inline void demo()
   }
 }
 
-inline void test(const std::string& tag, const long n_per_tslice)
+inline void test(const std::string& tag, const Long n_per_tslice)
 {
   TIMER_VERBOSE("test");
   const Coordinate total_site(4,4,4,8);
@@ -240,7 +240,7 @@ inline void test(const std::string& tag, const long n_per_tslice)
   check_all_files_crc32_info("huge-data/" + tag);
 }
 
-inline void test_grid(const std::string& tag, const long n_per_tslice)
+inline void test_grid(const std::string& tag, const Long n_per_tslice)
 {
   TIMER_VERBOSE("test_grid");
   const Coordinate total_site(4, 4, 4, 8);
@@ -299,7 +299,7 @@ inline void test_grid(const std::string& tag, const long n_per_tslice)
   check_all_files_crc32_info("huge-data/" + tag);
 }
 
-inline void test_selected_points(const std::string& tag, const long n_points)
+inline void test_selected_points(const std::string& tag, const Long n_points)
 {
   const Coordinate total_site(4, 4, 4, 8);
   Geometry geo;
@@ -368,7 +368,7 @@ inline void test_selected_points(const std::string& tag, const long n_points)
   check_all_files_crc32_info("huge-data/" + tag);
 }
 
-inline void test_shift(const std::string& tag, const long n_per_tslice, const long n_points)
+inline void test_shift(const std::string& tag, const Long n_per_tslice, const Long n_points)
 {
   TIMER_VERBOSE("test_shift");
   const Coordinate total_site(4,4,4,8);

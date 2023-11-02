@@ -130,7 +130,7 @@ inline void grid_convert(Grid::LatticeGaugeField& ggf, const GaugeField& gf)
               ms.data());
     qassert(sizeof(LorentzColourMatrix) ==
             ms.data_size() / sizeof(ComplexD) * sizeof(ComplexD));
-    qassert((long)fs.size() * (long)sizeof(ComplexD) == ms.data_size());
+    qassert((Long)fs.size() * (Long)sizeof(ComplexD) == ms.data_size());
     qassert(fs.size() == ds.size());
     for (int i = 0; i < (int)fs.size(); ++i) {
       fs[i] = ds[i];
@@ -157,7 +157,7 @@ inline void grid_convert(Grid::LatticeGaugeFieldF& ggf, const GaugeField& gf)
               ms.data());
     qassert(sizeof(LorentzColourMatrixF) ==
             ms.data_size() / sizeof(ComplexD) * sizeof(ComplexF));
-    qassert((long)fs.size() * (long)sizeof(ComplexD) == ms.data_size());
+    qassert((Long)fs.size() * (Long)sizeof(ComplexD) == ms.data_size());
     qassert(fs.size() == ds.size());
     for (int i = 0; i < (int)fs.size(); ++i) {
       fs[i] = ds[i];
@@ -454,10 +454,10 @@ inline void invert_grid_no_dminus(FermionField5d& sol,
   }
 }
 
-inline long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
+inline Long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
                                const InverterDomainWallGrid& inv,
                                const double stop_rsd = 1e-8,
-                               const long max_num_iter = 50000)
+                               const Long max_num_iter = 50000)
 {
   TIMER_VERBOSE_FLOPS("cg_with_herm_sym_2(5d,5d,InvGrid)");
   displayln_info(fname + ssprintf(": stop_rsd=%8.2E ; max_num_iter=%5ld",
@@ -475,18 +475,18 @@ inline long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
   ConjugateGradient<LatticeFermionF> CG(stop_rsd, max_num_iter, false);
   CG(*inv.HermOp, gsrc, gsol);
   grid_convert(sol, gsol);
-  const long iter = CG.IterationsToComplete;
+  const Long iter = CG.IterationsToComplete;
   timer.flops += 5500 * iter * inv.fa.ls * inv.geo().local_volume();
   return iter;
 }
 
-inline long invert(FermionField5d& sol, const FermionField5d& src,
+inline Long invert(FermionField5d& sol, const FermionField5d& src,
                    const InverterDomainWallGrid& inv)
 {
   return invert_with_cg(sol, src, inv, cg_with_herm_sym_2);
 }
 
-inline long invert(FermionField4d& sol, const FermionField4d& src,
+inline Long invert(FermionField4d& sol, const FermionField4d& src,
                    const InverterDomainWallGrid& inv)
 {
   return invert_dwf(sol, src, inv);

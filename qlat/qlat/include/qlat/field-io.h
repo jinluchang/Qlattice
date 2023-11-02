@@ -110,7 +110,7 @@ void fieldCastTruncated(Field<M> &dest, const Field<N> &src)
   const Geometry &geo = src.geo();
   dest.init(geo);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     Coordinate xl = geo.coordinate_from_index(index);
     const Vector<N> s = src.get_elems_const(xl);
     Vector<M> d = dest.get_elems(xl);
@@ -132,8 +132,8 @@ uint32_t fieldChecksumSum32(const Field<M> &f)
   qassert(sizeof(M) % sizeof(uint32_t) == 0);
   Long sum = 0;
   const uint32_t *data = (const uint32_t *)f_local.field.data();
-  const long size = f_local.field.size() * sizeof(M) / sizeof(uint32_t);
-  for (long i = 0; i < size; ++i) {
+  const Long size = f_local.field.size() * sizeof(M) / sizeof(uint32_t);
+  for (Long i = 0; i < size; ++i) {
     sum += data[i];
   }
   glb_sum(sum);
@@ -163,7 +163,7 @@ std::string field_hash_crc32(const qlat::Field<M> &origin)
   return ssprintf("%08X", hash);
 }
 
-inline void timer_fwrite(char *ptr, long size, FILE *outputFile)
+inline void timer_fwrite(char *ptr, Long size, FILE *outputFile)
 {
   TIMER("timer_fwrite");
   fwrite(ptr, size, 1, outputFile);
@@ -189,8 +189,8 @@ void sophisticated_make_to_order(Field<M> &result, const Field<M> &origin)
 
   Coordinate total_site = geo_only_local.total_site();
 
-  long range_low = geo_only_local.local_volume() * get_id_node();
-  long range_high = range_low + geo_only_local.local_volume();
+  Long range_low = geo_only_local.local_volume() * get_id_node();
+  Long range_high = range_low + geo_only_local.local_volume();
 
   for (int i = 0; i < get_num_node(); i++) {
     // std::cout << "Shuffle loop: " << i << std::endl;
@@ -207,7 +207,7 @@ void sophisticated_make_to_order(Field<M> &result, const Field<M> &origin)
         global_coor[mu] =
             local_coor[mu] + coor_send_node[mu] * geo_only_local.node_site[mu];
       }
-      long global_index = index_from_coordinate(global_coor, total_site);
+      Long global_index = index_from_coordinate(global_coor, total_site);
       if (global_index >= range_low && global_index < range_high) {
         Coordinate local_coor_write =
             geo_only_local.coordinate_from_index(global_index - range_low);
@@ -251,7 +251,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
     if (get_id_node() == 0) {
       M *ptr = get_data(field_send).data();
       qassert(ptr != NULL);
-      long size = sizeof(M) * geo_only_local.local_volume() *
+      Long size = sizeof(M) * geo_only_local.local_volume() *
                   geo_only_local.multiplicity;
       std::cout << "Writing CYCLE: " << i << "\tSIZE = " << size << std::endl;
       timer_fwrite((char *)ptr, size, outputFile);
@@ -277,7 +277,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 // IMPLEMENTED.";
 // }
 
-inline void timer_fread(char *ptr, long size, FILE *inputFile)
+inline void timer_fread(char *ptr, Long size, FILE *inputFile)
 {
   TIMER_VERBOSE("timer_fread");
   fread(ptr, size, 1, inputFile);
@@ -322,8 +322,8 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 
 #ifndef USE_SINGLE_NODE
 
-  long range_low = geo_only_local.local_volume() * get_id_node();
-  long range_high = range_low + geo_only_local.local_volume();
+  Long range_low = geo_only_local.local_volume() * get_id_node();
+  Long range_high = range_low + geo_only_local.local_volume();
 
   sync_node();
   int cycle_limit = 0;
@@ -336,7 +336,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
       std::cout << "Reading STARTED:  Node Number =\t" << get_id_node()
                 << std::endl;
       M *ptr = field_send.field.data();
-      long size = sizeof(M) * geo_only_local.local_volume() *
+      Long size = sizeof(M) * geo_only_local.local_volume() *
                   geo_only_local.multiplicity;
       qassert(!fseek(input, size * get_id_node(), SEEK_CUR));
       timer_fread((char *)ptr, size, input);
@@ -367,7 +367,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
   //		if(get_id_node() == 0){
   //			std::cout << "Reading Cycle: " << i << std::endl;
   //			M *ptr = get_data(field_send).data();
-  //                         long size = sizeof(M) *
+  //                         Long size = sizeof(M) *
   //                         geo_only_local.local_volume() *
   //                         geo_only_local.multiplicity;
   //                         timer_fread((char*)ptr, size, inputFile);
@@ -395,7 +395,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
         global_coor[mu] =
             local_coor[mu] + coor_send_node[mu] * geo_only_local.node_site[mu];
       }
-      long global_index = index_from_coordinate(global_coor, total_site);
+      Long global_index = index_from_coordinate(global_coor, total_site);
       if (global_index >= range_low && global_index < range_high) {
         Coordinate local_coor_read =
             geo_only_local.coordinate_from_index(global_index - range_low);
@@ -416,7 +416,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 #else
 
   M *ptr = field_rslt.field.data();
-  long size = geo_only_local.local_volume() * geo_only_local.multiplicity;
+  Long size = geo_only_local.local_volume() * geo_only_local.multiplicity;
   //	printf("read = %d\n", fread((char*)ptr, sizeof(M), size, input));
   fread((char *)ptr, sizeof(M), size, input);
 

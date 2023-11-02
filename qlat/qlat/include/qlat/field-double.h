@@ -11,7 +11,7 @@ void set_checkers_double(Field<M>& f)
   TIMER("set_checkers");
   const Geometry& geo = f.geo();
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     Vector<M> v = f.get_elems(xl);

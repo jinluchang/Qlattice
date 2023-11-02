@@ -253,16 +253,16 @@ void quda_convert_gauge(qlat::vector<qlat::ComplexT<T > >& qgf, GaugeField& gf, 
   const Geometry& geo = gf.geo();
   ColorMatrix* quda_pt = reinterpret_cast<ColorMatrix*>(qgf.data());
   Qassert(geo.multiplicity == 4);
-  long V = geo.local_volume();
-  long Vh = V / 2;
-  for (long qlat_idx = 0; qlat_idx < V; qlat_idx++) {
+  Long V = geo.local_volume();
+  Long Vh = V / 2;
+  for (Long qlat_idx = 0; qlat_idx < V; qlat_idx++) {
     Coordinate xl = geo.coordinate_from_index(qlat_idx);
     //const Vector<ColorMatrix> ms = gf.get_elems_const(xl);
     //Vector<ColorMatrix> ms = gf.get_elems(xl);
     int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
     for (int mu = 0; mu < 4; mu++) {
       ColorMatrixT<T>& ms = gf.get_elem_offset(qlat_idx*gf.geo().multiplicity+mu);
-      long quda_idx = (qlat_idx / 2 + eo * Vh) * 4 + mu;
+      Long quda_idx = (qlat_idx / 2 + eo * Vh) * 4 + mu;
       if(dir == 0){quda_pt[quda_idx] = ms;}
       if(dir == 1){ms = quda_pt[quda_idx];}
     }
@@ -297,12 +297,12 @@ QudaPrecision get_quda_precision(int byte)
 //      reinterpret_cast<const WilsonVector*>(qff.data());
 //  int Ls = geo.multiplicity;
 //  Qassert(Ls > 0);
-//  long V = geo.local_volume();
-//  long Vh = V / 2;
+//  Long V = geo.local_volume();
+//  Long Vh = V / 2;
 //
 //  //
 //  #pragma omp parallel for
-//  for (long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {
+//  for (Long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {
 //    const Coordinate xl = geo.coordinate_from_index(qlat_idx_4d);
 //    int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
 //    Vector<WilsonVector> wvs = ff.get_elems(xl);
@@ -322,11 +322,11 @@ QudaPrecision get_quda_precision(int byte)
 //  WilsonVector* quda_pt = reinterpret_cast<WilsonVector*>(qff.data());
 //  int Ls = geo.multiplicity;
 //  Qassert(Ls > 0);
-//  long V = geo.local_volume();
-//  long Vh = V / 2;
+//  Long V = geo.local_volume();
+//  Long Vh = V / 2;
 ////
 //#pragma omp parallel for
-//  for (long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {
+//  for (Long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {
 //    const Coordinate xl = geo.coordinate_from_index(qlat_idx_4d);
 //    int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
 //    const Vector<WilsonVector> wvs = ff.get_elems_const(xl);
@@ -337,7 +337,7 @@ QudaPrecision get_quda_precision(int byte)
 //  }
 //}
 
-//template <typename Float> void constructCloverField(Float *res, double norm, double diag, long V)
+//template <typename Float> void constructCloverField(Float *res, double norm, double diag, Long V)
 //{
 //
 //  Float c = 2.0 * norm / RAND_MAX;
@@ -365,7 +365,7 @@ QudaPrecision get_quda_precision(int byte)
 //  }
 //}
 
-//void constructQudaCloverField(void *clover, double norm, double diag, QudaPrecision precision, long V)
+//void constructQudaCloverField(void *clover, double norm, double diag, QudaPrecision precision, Long V)
 //{
 //  if (precision == QUDA_DOUBLE_PRECISION)
 //    constructCloverField((double *)clover, norm, diag, V);
@@ -417,7 +417,7 @@ void constructWilsonTestSpinorParam(quda::ColorSpinorParam *cs_param, const Quda
 
 //// data reordering routines
 //template <typename Out, typename In>
-//void reorderQDPtoMILC(Out *milc_out, In *qdp_in, long V, int siteSize)
+//void reorderQDPtoMILC(Out *milc_out, In *qdp_in, Long V, int siteSize)
 //{
 //  qthread_for(i, V,{
 //    for (int dir = 0; dir < 4; dir++) {
@@ -479,7 +479,7 @@ int fullLatticeIndex(int i, int oddBit, int Z[4])
 
 
 template <typename Ty>
-void applyGaugeFieldScaling_long(Ty *gauge, long Vh, QudaGaugeParam *param, QudaDslashType dslash_type = QUDA_STAGGERED_DSLASH)
+void applyGaugeFieldScaling_long(Ty *gauge, Long Vh, QudaGaugeParam *param, QudaDslashType dslash_type = QUDA_STAGGERED_DSLASH)
 {
   int X1h = param->X[0] / 2;
   int X1 = param->X[0];
@@ -487,12 +487,12 @@ void applyGaugeFieldScaling_long(Ty *gauge, long Vh, QudaGaugeParam *param, Quda
   int X3 = param->X[2];
   int X4 = param->X[3];
 
-  const long V = Vh*2;
+  const Long V = Vh*2;
 
-  // rescale long links by the appropriate coefficient
+  // rescale Long links by the appropriate coefficient
   if (dslash_type == QUDA_ASQTAD_DSLASH) {
     #pragma omp parallel for
-    for(long isp=0;isp < V; isp ++)
+    for(Long isp=0;isp < V; isp ++)
     for (int d = 0; d < 4 * 9; d++) {
       {
         gauge[isp*4*9 + d] /= (-24 * param->tadpole_coeff * param->tadpole_coeff);
@@ -525,7 +525,7 @@ void applyGaugeFieldScaling_long(Ty *gauge, long Vh, QudaGaugeParam *param, Quda
         if ((i4 + i1 + i2) % 2 == 1) { sign = -1; }
       }
 
-      long indexe = ((0 * Vh + i)*4 + d)*9 ;
+      Long indexe = ((0 * Vh + i)*4 + d)*9 ;
       for (int j = 0; j < 9; j++) { gauge[indexe + j] *= sign; }
       //if(i1 == 1 and i2 == 1 and i3 == 1 and i4 == 1){print0("==even  %d \n", int(sign));}
     }
@@ -550,7 +550,7 @@ void applyGaugeFieldScaling_long(Ty *gauge, long Vh, QudaGaugeParam *param, Quda
         if ((i4 + i1 + i2) % 2 == 1) { sign = -1; }
       }
 
-      long indexo = ((1 * Vh + i)*4 + d)*9 ;
+      Long indexo = ((1 * Vh + i)*4 + d)*9 ;
       ////for (int j = 0; j < 18; j++) { gauge[d][(Vh + i) * gauge_site_size + j] *= sign; }
       for (int j = 0; j < 9; j++) { gauge[indexo + j] *= sign; }
       //if(i1 == 1 and i2 == 1 and i3 == 1 and i4 == 0){print0("==odd  %d \n", int(sign));}
@@ -568,8 +568,8 @@ void applyGaugeFieldScaling_long(Ty *gauge, long Vh, QudaGaugeParam *param, Quda
         if (j >= (X4 - 1) * X1h * X2 * X3) { sign = -1; }
       }
 
-      long indexe = ((0 * Vh + j)*4 + 3)*9 ;
-      long indexo = ((1 * Vh + j)*4 + 3)*9 ;
+      Long indexe = ((0 * Vh + j)*4 + 3)*9 ;
+      Long indexo = ((1 * Vh + j)*4 + 3)*9 ;
       for (int i = 0; i < 9; i++) {
         gauge[indexe + i] *= sign;
         gauge[indexo + i] *= sign;
@@ -587,19 +587,19 @@ void Ffield4d_to_quda_ff(T1*  quda_ff, qlat::FermionField4dT<Td>& ff, int dir = 
   const Geometry& geo = ff.geo();
   //const WilsonVector* quda_pt =
   //    reinterpret_cast<const WilsonVector*>(qff.data());
-  long V = geo.local_volume();
-  long Vh = V / 2;
+  Long V = geo.local_volume();
+  Long Vh = V / 2;
 
   qlat::ComplexT<Td>* src = (qlat::ComplexT<Td>*) qlat::get_data(ff).data();
 
   //
   #pragma omp parallel for
-  for (long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {
+  for (Long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {
     const Coordinate xl = geo.coordinate_from_index(qlat_idx_4d);
     int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
     for (int dc = 0; dc < 12; dc++)
     {
-      long quda_idx = eo * Vh + qlat_idx_4d / 2;
+      Long quda_idx = eo * Vh + qlat_idx_4d / 2;
       if(dir == 1){quda_ff[quda_idx*12 + dc] = src[qlat_idx_4d*12 + dc];}
       if(dir == 0){src[qlat_idx_4d*12 + dc] = quda_ff[quda_idx*12 + dc];}
     }
@@ -617,15 +617,15 @@ template <class Ty, class T1>
 void qlat_cf_to_quda_cf(T1*  quda_cf, Ty* src, const Geometry& geo, int Dim, int dir = 1)
 {
   TIMER("qlat_cf_to_quda_cf(qlat_cf, quda_cf)");
-  long V = geo.local_volume();
-  long Vh = V / 2;
+  Long V = geo.local_volume();
+  Long Vh = V / 2;
   #pragma omp parallel for
-  for (long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {
+  for (Long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {
     const Coordinate xl = geo.coordinate_from_index(qlat_idx_4d);
     int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
     for (int dc = 0; dc < Dim; dc++)
     {
-      long quda_idx = eo * Vh + qlat_idx_4d / 2;
+      Long quda_idx = eo * Vh + qlat_idx_4d / 2;
       if(dir == 1){quda_cf[quda_idx*Dim + dc] = src[qlat_idx_4d*Dim + dc];}
       if(dir == 0){src[qlat_idx_4d*Dim + dc] = quda_cf[quda_idx*Dim + dc];}
     }
@@ -643,10 +643,10 @@ void qlat_cf_to_quda_cf(T1*  quda_cf, colorFT& qlat_cf, int dir = 1)
 {
   Qassert(qlat_cf.initialized);
   const Geometry& geo = qlat_cf.geo();
-  long V = geo.local_volume();
-  //long Vh = V / 2;
+  Long V = geo.local_volume();
+  //Long Vh = V / 2;
   Qassert(geo.multiplicity == 3);
-  const long Dim = geo.multiplicity;
+  const Long Dim = geo.multiplicity;
 
   Ty* src = (Ty*) qlat::get_data(qlat_cf).data();
   qlat_cf_to_quda_cf(quda_cf, src, geo, Dim, dir);
@@ -669,7 +669,7 @@ void copy_color_prop(qlat::vector_gpu<Ty >& res, std::vector<colorFT >& src, int
   }
 
   const qlat::Geometry& geo = src[0].geo();
-  const long V = geo.local_volume();
+  const Long V = geo.local_volume();
   Qassert(res.size() == V*9);
   Ty* resP = res.data();
 
@@ -699,34 +699,34 @@ void copy_to_color_prop(std::vector<colorFT >& res, qlat::vector_gpu<Ty >& src)
 }
 
 
-//inline void get_index_mappings(qlat::vector_acc<long >& map, const Geometry& geo)
+//inline void get_index_mappings(qlat::vector_acc<Long >& map, const Geometry& geo)
 //{
-//  const long V = geo.local_volume();
-//  const long Vh = V / 2;
+//  const Long V = geo.local_volume();
+//  const Long Vh = V / 2;
 //
 //  if(map.size() == V){return ;}
 //  else{map.resize(V);}
 //  qacc_for(qlat_idx_4d, V , {
 //    const Coordinate xl = geo.coordinate_from_index(qlat_idx_4d);
 //    const int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
-//    const long quda_idx = eo * Vh + qlat_idx_4d / 2;
+//    const Long quda_idx = eo * Vh + qlat_idx_4d / 2;
 //    map[qlat_idx_4d] = quda_idx;
 //  });
 //}
 
 ///////GPU order with color to be outside even odd
 //template <class T1, class Ty, int dir>
-//void qlat_cf_to_quda_cfT(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector_acc<long >& map_)
+//void qlat_cf_to_quda_cfT(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector_acc<Long >& map_)
 //{
 //  TIMER("qlat_cf_to_quda_cf");
-//  const long V = geo.local_volume();
-//  long Vh = V / 2;
+//  const Long V = geo.local_volume();
+//  Long Vh = V / 2;
 //  if(map_.size() != V){get_index_mappings(map_, geo);}
-//  qlat::vector_acc<long >& map = map_;
+//  qlat::vector_acc<Long >& map = map_;
 //  qacc_for(qlat_idx_4d, V, {
-//    const long quda_idx = map[qlat_idx_4d];
-//    const long eo = quda_idx / Vh;
-//    const long qi = quda_idx % Vh;
+//    const Long quda_idx = map[qlat_idx_4d];
+//    const Long eo = quda_idx / Vh;
+//    const Long qi = quda_idx % Vh;
 //    for(int dc = 0; dc < Dim; dc++)
 //    {
 //      //if(dir == 1){quda_cf[ quda_idx*Dim + dc] = src[qlat_idx_4d*Dim + dc];}
@@ -738,23 +738,23 @@ void copy_to_color_prop(std::vector<colorFT >& res, qlat::vector_gpu<Ty >& src)
 //}
 
 //template <class T1, class Ty>
-//void qlat_cf_to_quda_cf(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector_acc<long >& map)
+//void qlat_cf_to_quda_cf(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector_acc<Long >& map)
 //{
 //  qlat_cf_to_quda_cfT<T1, Ty, 1>(quda_cf, src, Dim, geo, map);
 //}
 //
 //template <class T1, class Ty>
-//void quda_cf_to_qlat_cf(Ty* res, T1*  quda_cf, const int Dim, const Geometry& geo, qlat::vector_acc<long >& map)
+//void quda_cf_to_qlat_cf(Ty* res, T1*  quda_cf, const int Dim, const Geometry& geo, qlat::vector_acc<Long >& map)
 //{
 //  qlat_cf_to_quda_cfT<T1, Ty, 0>(quda_cf, res, Dim, geo, map);
 //}
 
 template <class Ty, int dir>
-void qlat_cf_to_quda_cfT(quda::ColorSpinorField& x, Ty* src, const Geometry& geo, qlat::vector_acc<long >& map)
+void qlat_cf_to_quda_cfT(quda::ColorSpinorField& x, Ty* src, const Geometry& geo, qlat::vector_acc<Long >& map)
 {
   //quda::ColorSpinorParam cs_tmp(x);
   /////ColorSpinorField& x
-  const long V = geo.local_volume();
+  const Long V = geo.local_volume();
   const int Ndata = x.Nspin() * x.Ncolor();//Ncolor()
   const size_t Vl = size_t(V) * Ndata;
   //const size_t Vb = Vl * 2;
@@ -804,13 +804,13 @@ void qlat_cf_to_quda_cfT(quda::ColorSpinorField& x, Ty* src, const Geometry& geo
 }
 
 template <class Ty>
-void qlat_cf_to_quda_cf(quda::ColorSpinorField& x, Ty* src, const Geometry& geo, qlat::vector_acc<long >& map)
+void qlat_cf_to_quda_cf(quda::ColorSpinorField& x, Ty* src, const Geometry& geo, qlat::vector_acc<Long >& map)
 {
   qlat_cf_to_quda_cfT<Ty, 1>(x, src, geo, map);
 }
 
 template <class Ty>
-void quda_cf_to_qlat_cf(Ty* src, quda::ColorSpinorField& x, const Geometry& geo, qlat::vector_acc<long >& map)
+void quda_cf_to_qlat_cf(Ty* src, quda::ColorSpinorField& x, const Geometry& geo, qlat::vector_acc<Long >& map)
 {
   qlat_cf_to_quda_cfT<Ty, 0>(x, src, geo, map);
 }

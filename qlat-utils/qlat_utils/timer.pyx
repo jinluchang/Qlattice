@@ -24,7 +24,7 @@ def set_verbose_level(level=None):
     """
     if level is None:
         level = cc.get_verbose_level_default()
-    cdef long* p_ret = &cc.get_verbose_level()
+    cdef cc.Long* p_ret = &cc.get_verbose_level()
     p_ret[0] = level
     assert cc.get_verbose_level() == level
 
@@ -188,14 +188,14 @@ def timer_display_stack_always():
     cc.Timer.display_stack_always()
     cc.flush()
 
-def timer_reset(long max_call_times_for_always_show_info = -1):
+def timer_reset(cc.Long max_call_times_for_always_show_info = -1):
     """
     Reset all timers, ``get_total_time``, ``get_start_time``.
     But does not reset ``get_actual_start_time`` or ``get_actual_total_time``
     """
     cc.Timer.reset(max_call_times_for_always_show_info)
 
-def timer_fork(long max_call_times_for_always_show_info = -1):
+def timer_fork(cc.Long max_call_times_for_always_show_info = -1):
     cc.Timer.fork(max_call_times_for_always_show_info)
 
 def timer_merge():

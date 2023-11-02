@@ -397,15 +397,15 @@ void clear_qv(qlat::vector_acc<Ty > &G, QBOOL dummy=QTRUE)
 }
 
 template<typename Ty>
-inline crc32_t quick_checksum(Ty* buf, size_t Nsize, const long Nsum =11, const long hits = 13)
+inline crc32_t quick_checksum(Ty* buf, size_t Nsize, const Long Nsum =11, const Long hits = 13)
 {
   TIMERA("quick_checksum");
   crc32_t sum = 0;
   if(hits < 0){sum = crc32_par((void*) buf, Nsize * sizeof(Ty));}
   if(hits > 0){
-    long Nuse = Nsum;
-    if(long(Nsize / hits) < Nuse){Nuse = Nsize / hits;}
-    for(long hi=0;hi < hits; hi++)
+    Long Nuse = Nsum;
+    if(Long(Nsize / hits) < Nuse){Nuse = Nsize / hits;}
+    for(Long hi=0;hi < hits; hi++)
     {
       sum += crc32_par((void*) &buf[hi * Nuse], Nuse * sizeof(Ty));
     }

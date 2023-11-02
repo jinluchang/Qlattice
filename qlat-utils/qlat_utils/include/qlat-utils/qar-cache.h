@@ -72,7 +72,7 @@ void load_qar_index(const QarFile& qar, const std::string& fn);
 
 // -------------------
 
-inline std::string qar_file_multi_vol_suffix(const long i)
+inline std::string qar_file_multi_vol_suffix(const Long i)
 {
   if (i == 0) {
     return "";
@@ -101,7 +101,7 @@ struct API QarFile : std::vector<QarFileVol> {
     init();
     if (mode == "r") {
       // maximally 1024 * 1024 * 1024 volumes
-      for (long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
+      for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
         const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
         if (not does_regular_file_exist_qar(path_qar_v)) {
           break;
@@ -181,7 +181,7 @@ inline std::string show_files_crc32(
     const std::vector<std::pair<std::string, crc32_t> >& fcrcs)
 {
   std::ostringstream out;
-  for (long i = 0; i < (long)fcrcs.size(); ++i) {
+  for (Long i = 0; i < (Long)fcrcs.size(); ++i) {
     out << ssprintf("%5ld ", i) << show_file_crc32(fcrcs[i]) << std::endl;
   }
   return out.str();

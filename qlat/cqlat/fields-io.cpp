@@ -8,7 +8,7 @@ PyObject* write_sfw_field_ctype(ShuffledFieldsWriter& sfw,
                                 const std::string& fn, PyObject* p_field)
 {
   const Field<M>& f = py_convert_type_field<M>(p_field);
-  const long ret = write(sfw, fn, f);
+  const Long ret = write(sfw, fn, f);
   return py_convert(ret);
 }
 
@@ -17,7 +17,7 @@ PyObject* read_sfr_field_ctype(ShuffledFieldsReader& sfr, const std::string& fn,
                                PyObject* p_field)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
-  const long ret = read(sfr, fn, f);
+  const Long ret = read(sfr, fn, f);
   return py_convert(ret);
 }
 
@@ -27,7 +27,7 @@ PyObject* write_sfw_sfield_ctype(ShuffledFieldsWriter& sfw,
                                  const ShuffledBitSet& sbs)
 {
   const SelectedField<M>& sf = py_convert_type_sfield<M>(p_sfield);
-  const long ret = write(sfw, fn, sf, sbs);
+  const Long ret = write(sfw, fn, sf, sbs);
   return py_convert(ret);
 }
 
@@ -40,12 +40,12 @@ PyObject* read_sfr_sfield_ctype(ShuffledFieldsReader& sfr,
   if (p_sbs != Py_None) {
     qassert(p_fsel == NULL);
     const ShuffledBitSet& sbs = py_convert_type<ShuffledBitSet>(p_sbs);
-    const long ret = read(sfr, fn, sbs, sf);
+    const Long ret = read(sfr, fn, sbs, sf);
     return py_convert(ret);
   } else {
     qassert(p_fsel != NULL);
     FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
-    const long ret = read(sfr, fn, sf, fsel);
+    const Long ret = read(sfr, fn, sf, fsel);
     return py_convert(ret);
   }
   qassert(false);

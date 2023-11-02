@@ -8,7 +8,7 @@
 #define Et Eigen::ColMajor
 #define D 3
 
-__global__ void eigen_test(Cy* va, Cy* vb, Cy* vc, const long m)
+__global__ void eigen_test(Cy* va, Cy* vb, Cy* vc, const Long m)
 {
   unsigned long index =  threadIdx.y*blockDim.x + threadIdx.x;
   if(index < m){
@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
   const int seed = 131;
   qlat::RngState rs(qlat::get_id_node() + 1 + seed);
 
-  const long MAX = 100;
+  const Long MAX = 100;
 
   double ini = qlat::u_rand_gen(rs);
   //qlat::vector_acc<Cy > qva;qva.resize((MAX)*9);
@@ -83,13 +83,13 @@ int main(int argc, char* argv[])
   cudaMemcpy(vcH, vc, MAX*3*D*sizeof(Cy), cudaMemcpyDeviceToHost);
   cudaDeviceSynchronize();
 
-  const long nc =  (MAX + 32-1)/32;
+  const Long nc =  (MAX + 32-1)/32;
   dim3 dimGrid( nc, 1, 1); 
   dim3 dimBlock(32, 1, 1); 
   eigen_test<<< dimGrid, dimBlock >>>(va, vb, vd, MAX);
   cudaDeviceSynchronize();
 
-  //for(long index=0;index<MAX;index++ ){
+  //for(Long index=0;index<MAX;index++ ){
   //  Cy buf[9];
   //  for(int ci=0;ci<9;ci++){buf[ci] = vaH[index*9 +  ci];}
   //  Eigen::Matrix<Cy, 3   , 3, Et>&   lE = *((Eigen::Matrix<Cy, 3   , 3, Et>*) buf);
@@ -135,7 +135,7 @@ int main(int argc, char* argv[])
   }); 
 
 
-  for(long index=0;index<MAX;index++ )
+  for(Long index=0;index<MAX;index++ )
   {
     //Cy buf[9];
     //for(int ci=0;ci<9;ci++){buf[ci] = vaH[index*9 +  ci];}
@@ -151,7 +151,7 @@ int main(int argc, char* argv[])
   cudaMemcpy(veH, ve , MAX*3*D*sizeof(Cy), cudaMemcpyDeviceToHost);
 
   std::vector<double >  diff(3);for(int i=0;i<diff.size();i++){diff[i] = 0;}
-  for(long index=0;index<MAX*3*D;index++ )
+  for(Long index=0;index<MAX*3*D;index++ )
   {
     diff[0] += qlat::qnorm(vcH[index] - vbH[index]);
     diff[1] += qlat::qnorm(vcH[index] - vdH[index]);

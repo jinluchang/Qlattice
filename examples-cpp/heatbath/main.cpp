@@ -86,7 +86,7 @@ struct Observables
 typedef FieldM<double, 1> ScalarField;
 
 inline void set_rng_field(RngField& rf, const Coordinate& total_site,
-                          const std::string& seed, const long traj)
+                          const std::string& seed, const Long traj)
 {
   TIMER("set_rng_field");
   Geometry geo;
@@ -150,7 +150,7 @@ inline void sweep_scalar_field(ScalarField& sf, RngField& rf,
   const double k1 = 4.0 + 0.5 * mass_sqr;
   const double k2 = 1.0 / 24.0 * lambda;
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     if ((xg[0] + xg[1] + xg[2] + xg[3]) % 2 == 2 - eo) {
@@ -184,7 +184,7 @@ inline CorrFuncs measure_corr_funcs(const ScalarField& sf, const CorrParams& cp)
   std::vector<double> phi_ts(total_site[3], 0.0);
   std::vector<double> phi_ts2(total_site[3], 0.0);
   double phi2 = 0.0;
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const double val = sf.get_elem(xl);
@@ -229,7 +229,7 @@ inline Observables get_observables(const CorrFuncs& cf, const CorrParams& cp)
   return obs;
 }
 
-inline std::string show_result(const long traj, const CorrFuncs& cf)
+inline std::string show_result(const Long traj, const CorrFuncs& cf)
 {
   TIMER("show_result");
   std::ostringstream out;
@@ -263,22 +263,22 @@ inline std::string show_results(const std::vector<CorrFuncs>& cfs,
   out << ssprintf(" (mass-sqr %.10lf)", mass_sqr);
   out << std::endl;
   out << ssprintf(" (lambda   %.10lf)", lambda);
-  const long skip_traj = (long)cfs.size() / 3;
+  const Long skip_traj = (Long)cfs.size() / 3;
   std::vector<CorrFuncs> cfs_d = vector_drop(cfs, skip_traj);
   out << std::endl;
   out << ssprintf(" (n-traj      %ld)", cfs.size());
   out << std::endl;
   out << ssprintf(" (n-traj-used %ld)", cfs_d.size());
-  std::vector<long> n_block_list;
+  std::vector<Long> n_block_list;
   n_block_list.push_back(1024 * 1024);
   n_block_list.push_back(128);
   n_block_list.push_back(64);
   n_block_list.push_back(32);
   for (int k = 0; k < (int)n_block_list.size(); ++k) {
-    const long n_block = n_block_list[k];
+    const Long n_block = n_block_list[k];
     std::vector<CorrFuncs> cfs_db = vector_block(cfs_d, n_block);
     std::vector<CorrFuncs> jcfs = jackknife(cfs_db);
-    const long jsize = jcfs.size();
+    const Long jsize = jcfs.size();
     std::vector<Observables> jobs(jsize);
     for (int i = 0; i < jsize; ++i) {
       jobs[i] = get_observables(jcfs[i], cp);
@@ -329,18 +329,18 @@ inline void evolution(const Coordinate& total_site, const CorrParams& cp,
     TIMER_VERBOSE("evolution");
     std::vector<CorrFuncs> cfs;
     // ADJUST ME
-    const long max_traj = 2 / 2 * 3;
-    const long n_steps = 1;
+    const Long max_traj = 2 / 2 * 3;
+    const Long n_steps = 1;
     //
     ScalarField sf;
     set_scalar_field(sf, total_site);
-    for (long traj = 0; traj < max_traj; ++traj) {
+    for (Long traj = 0; traj < max_traj; ++traj) {
       {
         TIMER_VERBOSE("evolution-traj");
         RngField rf;
         set_rng_field(rf, total_site, "seed", traj);
         CorrFuncs cf;
-        for (long i = 0; i < n_steps; ++i) {
+        for (Long i = 0; i < n_steps; ++i) {
           sweep_scalar_field(sf, rf, mass_sqr, lambda);
           cf += measure_corr_funcs(sf, cp);
         }

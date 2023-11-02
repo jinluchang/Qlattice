@@ -80,10 +80,10 @@ inline ColorMatrix color_matrix_su_projection(const ColorMatrix& x,
 }
 
 void gf_ape_smear(GaugeField& gf, const GaugeField& gf0, const double alpha,
-                  const long steps = 1);
+                  const Long steps = 1);
 
 void gf_spatial_ape_smear(GaugeField& gf, const GaugeField& gf0,
-                          const double alpha, const long steps = 1);
+                          const double alpha, const Long steps = 1);
 
 void gf_hyp_smear(GaugeField& gf, const GaugeField& gf0, const double alpha1,
                   const double alpha2, const double alpha3);

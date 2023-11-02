@@ -54,7 +54,7 @@ cdef class Field{{name}}(FieldBase):
     ctype = ElemType{{name}}
 
     def __cinit__(self):
-        self.cdata = <long>&(self.xx)
+        self.cdata = <cc.Long>&(self.xx)
         self.view_count = 0
 
     def __init__(self, Geometry geo=None, int multiplicity=0):

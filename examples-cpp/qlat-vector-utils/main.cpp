@@ -88,15 +88,15 @@ void simple_tests()
 
     fft_desc_basic fd(geo);
 
-    const long NVmpi = fd.mz*fd.my*fd.mx;
-    const long Nsize = fd.Nx* fd.Ny* fd.Nz* fd.Nt * 9;
+    const Long NVmpi = fd.mz*fd.my*fd.mx;
+    const Long Nsize = fd.Nx* fd.Ny* fd.Nz* fd.Nt * 9;
 
     qlat::vector_gpu<qlat::ComplexD > gauge;gauge.resize(Nsize);
     random_Ty(gauge.data(), gauge.size(), 1, int(qlat::u_rand_gen(rs) * 100) );
 
     qlat::vector_gpu<qlat::ComplexD > gfT;gfT.resize(NVmpi*Nsize);
     qlat::vector_gpu<qlat::ComplexD > gfT_buf;gfT_buf.resize(NVmpi*Nsize);
-    for(long vi=0;vi<NVmpi;vi++){cpy_data_thread(&(gfT.data()[vi*Nsize]), gauge.data(), Nsize, 1);}
+    for(Long vi=0;vi<NVmpi;vi++){cpy_data_thread(&(gfT.data()[vi*Nsize]), gauge.data(), Nsize, 1);}
 
     Vec_redistribute vec_rot(fd, true);
     vec_rot.reorder(gfT.data(), gfT_buf.data(), 1, 9 ,   0);

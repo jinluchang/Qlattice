@@ -14,15 +14,15 @@ namespace qlat
 
 struct API CacheBase {
   std::string name;
-  long limit;
-  long buffer_size;  // number of empty slots created by gc()
+  Long limit;
+  Long buffer_size;  // number of empty slots created by gc()
   //
   virtual ~CacheBase(){};
   //
-  virtual long size() = 0;
+  virtual Long size() = 0;
   virtual void clear() = 0;
   //
-  void init(const long limit_, const long buffer_size_ = 0)
+  void init(const Long limit_, const Long buffer_size_ = 0)
   // If buffer_size_ == 0, then buffer_size = limit - limit / 2, which is also
   // the maximally allowed value
   {
@@ -42,7 +42,7 @@ struct API CacheBase {
     }
   }
   //
-  virtual void resize(const long limit_, const long buffer_size_ = 0)
+  virtual void resize(const Long limit_, const Long buffer_size_ = 0)
   {
     init(limit_, buffer_size_);
   }
@@ -88,11 +88,11 @@ inline void clear_all_caches()
 
 template <class K, class M>
 struct API Cache : CacheBase {
-  std::map<K, std::pair<long, M> > m;
-  long idx;
+  std::map<K, std::pair<Long, M> > m;
+  Long idx;
   //
-  Cache(const std::string& name_ = "Cache", const long limit_ = 16,
-        const long buffer_size_ = 0)
+  Cache(const std::string& name_ = "Cache", const Long limit_ = 16,
+        const Long buffer_size_ = 0)
   {
     init(name_, limit_, buffer_size_);
   }
@@ -103,8 +103,8 @@ struct API Cache : CacheBase {
     get_all_caches().erase(this);
   }
   //
-  void init(const std::string& name_, const long limit_,
-            const long buffer_size_ = 0)
+  void init(const std::string& name_, const Long limit_,
+            const Long buffer_size_ = 0)
   {
     name = name_;
     CacheBase::init(limit_, buffer_size_);
@@ -116,11 +116,11 @@ struct API Cache : CacheBase {
   //
   bool has(const K& key) const { return qlat::has(m, key); }
   //
-  long erase(const K& key) { return m.erase(key); }
+  Long erase(const K& key) { return m.erase(key); }
   //
   M& operator[](const K& key)
   {
-    typename std::map<K, std::pair<long, M> >::iterator it = m.find(key);
+    typename std::map<K, std::pair<Long, M> >::iterator it = m.find(key);
     if (it != m.end()) {
       if ((it->second).first != idx - 1) {
         (it->second).first = idx;
@@ -130,7 +130,7 @@ struct API Cache : CacheBase {
     } else {
       gc();
       displayln_info(0, show_info() + " to add");
-      std::pair<long, M>& v = m[key];
+      std::pair<Long, M>& v = m[key];
       v.first = idx;
       idx += 1;
       return v.second;
@@ -139,24 +139,24 @@ struct API Cache : CacheBase {
   //
   void gc()
   {
-    if (limit > 0 and (long) m.size() >= limit) {
+    if (limit > 0 and (Long) m.size() >= limit) {
       TIMER_VERBOSE("Cache::gc");
       displayln_info(0, show_info() + " before gc");
-      std::vector<long> idxes;
-      for (typename std::map<K, std::pair<long, M> >::iterator it = m.begin();
+      std::vector<Long> idxes;
+      for (typename std::map<K, std::pair<Long, M> >::iterator it = m.begin();
            it != m.end(); ++it) {
-        const long i = (it->second).first;
+        const Long i = (it->second).first;
         idxes.push_back(i);
       }
       std::sort(idxes.begin(), idxes.end());
-      qassert((long)m.size() == limit);
-      qassert((long)m.size() > buffer_size);
-      const long threshhold = idxes[buffer_size];
+      qassert((Long)m.size() == limit);
+      qassert((Long)m.size() > buffer_size);
+      const Long threshhold = idxes[buffer_size];
       std::vector<K> to_free;
-      for (typename std::map<K, std::pair<long, M> >::iterator it = m.begin();
+      for (typename std::map<K, std::pair<Long, M> >::iterator it = m.begin();
            it != m.end(); ++it) {
         const K& k = it->first;
-        const long i = (it->second).first;
+        const Long i = (it->second).first;
         if (i <= threshhold) {
           to_free.push_back(k);
         }
@@ -168,7 +168,7 @@ struct API Cache : CacheBase {
     }
   }
   //
-  long size() { return m.size(); }
+  Long size() { return m.size(); }
   //
   void clear()
   {

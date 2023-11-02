@@ -15,7 +15,7 @@ inline void set_pfdist(FieldM<ComplexD, 1>& pfdist,
 {
   TIMER_VERBOSE("set_pfdist");
   pfdist.init();
-  for (long i = 0; i < (long)trajs.size(); ++i) {
+  for (Long i = 0; i < (Long)trajs.size(); ++i) {
     const int traj = trajs[i];
     FieldM<ComplexD, 1> pfdist_tmp;
     const std::string path = ssprintf(
@@ -34,7 +34,7 @@ inline void set_meson_vv(FieldM<ComplexD, 8 * 8>& meson_vv,
   meson_vv.init();
   FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
-  for (long i = 0; i < (long)trajs.size(); ++i) {
+  for (Long i = 0; i < (Long)trajs.size(); ++i) {
     const int traj = trajs[i];
     FieldM<ComplexD, 8 * 8> meson_vv_tmp;
     const std::string path =
@@ -55,7 +55,7 @@ inline void set_meson_vv_meson(FieldM<ComplexD, 8 * 8>& meson_vv_meson,
   meson_vv_meson.init();
   FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
-  for (long i = 0; i < (long)trajs.size(); ++i) {
+  for (Long i = 0; i < (Long)trajs.size(); ++i) {
     const int traj = trajs[i];
     FieldM<ComplexD, 8 * 8> tmp;
     const std::string path = ssprintf(
@@ -76,7 +76,7 @@ inline void set_meson_vv_old(FieldM<ComplexD, 8 * 8>& meson_vv,
   meson_vv.init();
   FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
-  for (long i = 0; i < (long)trajs.size(); ++i) {
+  for (Long i = 0; i < (Long)trajs.size(); ++i) {
     const int traj = trajs[i];
     FieldM<ComplexD, 8 * 8> meson_vv_tmp;
     const std::string path = ssprintf(
@@ -88,7 +88,7 @@ inline void set_meson_vv_old(FieldM<ComplexD, 8 * 8>& meson_vv,
     reflect_and_revert_mu_nu(meson_vv_tmp);
     meson_vv += meson_vv_tmp;
   }
-  for (long i = 0; i < (long)trajs.size(); ++i) {
+  for (Long i = 0; i < (Long)trajs.size(); ++i) {
     const int traj = trajs[i];
     FieldM<ComplexD, 8 * 8> meson_vv_tmp;
     const std::string path = ssprintf(
@@ -110,7 +110,7 @@ inline void set_meson_vv_meson_old(FieldM<ComplexD, 8 * 8>& meson_vv_meson,
   meson_vv_meson.init();
   FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
-  for (long i = 0; i < (long)trajs.size(); ++i) {
+  for (Long i = 0; i < (Long)trajs.size(); ++i) {
     const int traj = trajs[i];
     FieldM<ComplexD, 8 * 8> tmp;
     const std::string path = ssprintf(
@@ -122,7 +122,7 @@ inline void set_meson_vv_meson_old(FieldM<ComplexD, 8 * 8>& meson_vv_meson,
     reflect_and_revert_mu_nu(tmp);
     meson_vv_meson += tmp;
   }
-  for (long i = 0; i < (long)trajs.size(); ++i) {
+  for (Long i = 0; i < (Long)trajs.size(); ++i) {
     const int traj = trajs[i];
     FieldM<ComplexD, 8 * 8> tmp;
     const std::string path = ssprintf(
@@ -137,17 +137,17 @@ inline void set_meson_vv_meson_old(FieldM<ComplexD, 8 * 8>& meson_vv_meson,
 }
 
 template <class M>
-void set_field_range(Field<M>& f, const long dis_sq_range)
+void set_field_range(Field<M>& f, const Long dis_sq_range)
 {
   TIMER_VERBOSE("set_field_range");
   const Geometry& geo = f.geo;
   const Coordinate total_site = geo.total_site();
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const Coordinate xgrel = smod(xg, total_site);
-    const long dis_sq = sqr(xgrel);
+    const Long dis_sq = sqr(xgrel);
     if (dis_sq > dis_sq_range) {
       set_zero(f.get_elems(xl));
     }
@@ -179,7 +179,7 @@ inline void test_meson_vv()
   trajs_old.push_back(1010);
   trajs_old.push_back(1030);
   set_meson_vv_old(meson_vv_old, trajs_old, tag);
-  const long dis_sq_range = sqr(3);
+  const Long dis_sq_range = sqr(3);
   set_field_range(meson_vv, dis_sq_range);
   set_field_range(meson_vv_old, dis_sq_range);
   const Geometry& geo = meson_vv.geo;
@@ -228,7 +228,7 @@ inline void test_meson_vv_meson()
   trajs_old.push_back(1010);
   // trajs_old.push_back(1030);
   set_meson_vv_meson_old(meson_vv_meson_old, trajs_old, tag);
-  const long dis_sq_range = sqr(5);
+  const Long dis_sq_range = sqr(5);
   set_field_range(meson_vv_meson, dis_sq_range);
   set_field_range(meson_vv_meson_old, dis_sq_range);
   const Geometry& geo = meson_vv_meson.geo;
@@ -260,7 +260,7 @@ inline void set_meson_vv_v2(FieldM<ComplexD, 8 * 8>& meson_vv,
   meson_vv.init();
   FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
-  for (long i = 0; i < (long)trajs.size(); ++i) {
+  for (Long i = 0; i < (Long)trajs.size(); ++i) {
     const int traj = trajs[i];
     FieldM<ComplexD, 8 * 8> tmp;
     const std::string path =
@@ -294,7 +294,7 @@ inline void set_meson_vv_v3(FieldM<ComplexD, 8 * 8>& meson_vv,
   meson_vv.init();
   FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
-  for (long i = 0; i < (long)trajs.size(); ++i) {
+  for (Long i = 0; i < (Long)trajs.size(); ++i) {
     const int traj = trajs[i];
     FieldM<ComplexD, 8 * 8> tmp;
     const std::string path =
@@ -303,7 +303,7 @@ inline void set_meson_vv_v3(FieldM<ComplexD, 8 * 8>& meson_vv,
     read_field_double_from_float(tmp, path);
     meson_vv += tmp;
   }
-  for (long i = 0; i < (long)trajs.size(); ++i) {
+  for (Long i = 0; i < (Long)trajs.size(); ++i) {
     const int traj = trajs[i];
     FieldM<ComplexD, 8 * 8> tmp;
     const std::string path =
@@ -328,7 +328,7 @@ inline void set_meson_vv_v4(FieldM<ComplexD, 8 * 8>& meson_vv,
   meson_vv.init();
   FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
-  for (long i = 0; i < (long)trajs.size(); ++i) {
+  for (Long i = 0; i < (Long)trajs.size(); ++i) {
     const int traj = trajs[i];
     FieldM<ComplexD, 8 * 8> tmp;
     const std::string path =
@@ -348,7 +348,7 @@ inline void test_meson_vv_v4()
   // const std::string tag = "fission";
   FieldM<ComplexD, 8 * 8> meson_vv, meson_vv_old, meson_vv_diff;
   std::vector<int> trajs;
-  for (long traj = 1000; traj < 3000; traj += 10) {
+  for (Long traj = 1000; traj < 3000; traj += 10) {
     if (does_file_exist_sync_node(ssprintf(
             "analysis/field-meson-vv/24D/results=%d/decay-0-1-0.field",
             traj))) {
@@ -364,7 +364,7 @@ inline void test_meson_vv_v4()
   meson_vv_old += meson_vv;
   meson_vv_old *= 0.5;
   set_meson_vv_v4(meson_vv, trajs, "decay-0-1");
-  const long dis_sq_range = sqr(3);
+  const Long dis_sq_range = sqr(3);
   set_field_range(meson_vv, dis_sq_range);
   set_field_range(meson_vv_old, dis_sq_range);
   const Geometry& geo = meson_vv.geo;
@@ -393,7 +393,7 @@ inline void set_meson_vv_meson_v2(FieldM<ComplexD, 8 * 8>& meson_vv_meson,
   meson_vv_meson.init();
   FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
-  for (long i = 0; i < (long)trajs.size(); ++i) {
+  for (Long i = 0; i < (Long)trajs.size(); ++i) {
     const int traj = trajs[i];
     FieldM<ComplexD, 8 * 8> tmp;
     const std::string path = ssprintf(
@@ -414,7 +414,7 @@ inline void set_meson_vv_meson_v2avg(FieldM<ComplexD, 8 * 8>& meson_vv_meson,
   meson_vv_meson.init();
   FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
-  for (long i = 0; i < (long)trajs.size(); ++i) {
+  for (Long i = 0; i < (Long)trajs.size(); ++i) {
     const int traj = trajs[i];
     FieldM<ComplexD, 8 * 8> tmp;
     const std::string path = ssprintf(
@@ -435,7 +435,7 @@ inline void set_meson_vv_meson_v3(FieldM<ComplexD, 8 * 8>& meson_vv_meson,
   meson_vv_meson.init();
   FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
-  for (long i = 0; i < (long)trajs.size(); ++i) {
+  for (Long i = 0; i < (Long)trajs.size(); ++i) {
     const int traj = trajs[i];
     FieldM<ComplexD, 8 * 8> tmp;
     const std::string path = ssprintf(
@@ -456,7 +456,7 @@ inline void set_meson_vv_meson_v4(FieldM<ComplexD, 8 * 8>& meson_vv_meson,
   meson_vv_meson.init();
   FieldM<ComplexD, 1> pfdist;
   set_pfdist(pfdist, trajs);
-  for (long i = 0; i < (long)trajs.size(); ++i) {
+  for (Long i = 0; i < (Long)trajs.size(); ++i) {
     const int traj = trajs[i];
     FieldM<ComplexD, 8 * 8> tmp;
     const std::string path = ssprintf(
@@ -477,7 +477,7 @@ inline void test_meson_vv_meson_v4()
   FieldM<ComplexD, 8 * 8> meson_vv_meson, meson_vv_meson_old,
       meson_vv_meson_diff;
   std::vector<int> trajs;
-  for (long traj = 1000; traj < 3000; traj += 10) {
+  for (Long traj = 1000; traj < 3000; traj += 10) {
     if (does_file_exist_sync_node(
             ssprintf("analysis/field-meson-vv-meson/24D/results=%d/"
                      "forward-0-0-0-0.field",
@@ -504,7 +504,7 @@ inline void test_meson_vv_meson_v4()
   meson_vv_meson_old += meson_vv_meson;
   meson_vv_meson_old *= 0.5;
   set_meson_vv_meson_v4(meson_vv_meson, trajs, "forward-0-1");
-  const long dis_sq_range = sqr(5);
+  const Long dis_sq_range = sqr(5);
   set_field_range(meson_vv_meson, dis_sq_range);
   set_field_range(meson_vv_meson_old, dis_sq_range);
   const Geometry& geo = meson_vv_meson.geo;

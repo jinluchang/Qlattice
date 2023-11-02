@@ -73,8 +73,8 @@ void quda_convert_gauge(std::vector<T>& qgf, const GaugeField& gf)
   const Geometry& geo = gf.geo();
   ColorMatrix* quda_pt = reinterpret_cast<ColorMatrix*>(qgf.data());
   qassert(geo.multiplicity == 4);
-  long V = geo.local_volume();
-  long Vh = V / 2;
+  Long V = geo.local_volume();
+  Long Vh = V / 2;
   for (int qlat_idx = 0; qlat_idx < V; qlat_idx++) {
     Coordinate xl = geo.coordinate_from_index(qlat_idx);
     const Vector<ColorMatrix> ms = gf.get_elems_const(xl);
@@ -95,11 +95,11 @@ void quda_convert_fermion(FermionField5d& ff, const std::vector<T>& qff)
       reinterpret_cast<const WilsonVector*>(qff.data());
   int Ls = geo.multiplicity;
   qassert(Ls > 0);
-  long V = geo.local_volume();
-  long Vh = V / 2;
+  Long V = geo.local_volume();
+  Long Vh = V / 2;
 //
 #pragma omp parallel for
-  for (long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {
+  for (Long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {
     const Coordinate xl = geo.coordinate_from_index(qlat_idx_4d);
     int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
     Vector<WilsonVector> wvs = ff.get_elems(xl);
@@ -118,11 +118,11 @@ void quda_convert_fermion(std::vector<T>& qff, const FermionField5d& ff)
   WilsonVector* quda_pt = reinterpret_cast<WilsonVector*>(qff.data());
   int Ls = geo.multiplicity;
   qassert(Ls > 0);
-  long V = geo.local_volume();
-  long Vh = V / 2;
+  Long V = geo.local_volume();
+  Long Vh = V / 2;
 //
 #pragma omp parallel for
-  for (long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {
+  for (Long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {
     const Coordinate xl = geo.coordinate_from_index(qlat_idx_4d);
     int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
     const Vector<WilsonVector> wvs = ff.get_elems_const(xl);

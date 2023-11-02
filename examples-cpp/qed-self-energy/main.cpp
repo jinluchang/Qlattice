@@ -43,7 +43,7 @@ void set_h_field(FieldM<ComplexD, 1>& h, const Coordinate& total_site,
   h.init(geo);
   set_zero(h);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const Coordinate krel = smod(xg, total_site);
@@ -59,7 +59,7 @@ void set_h_field(FieldM<ComplexD, 1>& h, const Coordinate& total_site,
 }
 
 const std::vector<std::vector<double> >& get_l_func_table(
-    const double mass, const int ts_limit, const long x_vec_sq_limit)
+    const double mass, const int ts_limit, const Long x_vec_sq_limit)
 {
   static Cache<std::string, std::vector<std::vector<double> > > cache(
       "l_func_tables", 16);
@@ -73,7 +73,7 @@ const std::vector<std::vector<double> >& get_l_func_table(
     for (int ts = 0; ts < ts_limit; ++ts) {
       l_func_table[ts].resize(x_vec_sq_limit, 0.0);
 #pragma omp parallel for
-      for (long x_vec_sq = 0; x_vec_sq < x_vec_sq_limit; ++x_vec_sq) {
+      for (Long x_vec_sq = 0; x_vec_sq < x_vec_sq_limit; ++x_vec_sq) {
         if (x_vec_sq % num_node == id_node) {
           l_func_table[ts][x_vec_sq] = l_func(ts, x_vec_sq, mass);
         } else {
@@ -87,7 +87,7 @@ const std::vector<std::vector<double> >& get_l_func_table(
 }
 
 void acc_h_field(const FieldM<ComplexD, 1>& h, const double mass,
-                 const int ts_limit, const long x_vec_sq_limit)
+                 const int ts_limit, const Long x_vec_sq_limit)
 {
   TIMER_VERBOSE("acc_h_field");
   const Geometry& geo = h.geo();
@@ -98,12 +98,12 @@ void acc_h_field(const FieldM<ComplexD, 1>& h, const double mass,
   const std::vector<std::vector<double> >& l_func_table = get_l_func_table(mass, ts_limit, x_vec_sq_limit);
   std::vector<double> int_short(total_site[3], 0.0);
   std::vector<double> bound_long(total_site[3], 0.0);
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const Coordinate xrel = smod(xg, total_site);
     const int ts = xg[3];
-    const long x_vec_sq = sqr(xrel[0]) + sqr(xrel[1]) + sqr(xrel[2]);
+    const Long x_vec_sq = sqr(xrel[0]) + sqr(xrel[1]) + sqr(xrel[2]);
     const double x_sq = x_vec_sq + sqr(ts);
     const double photon_prop =
         alpha_qed / PI * (x_sq == 0.0 ? 2.76963 : 1.0 / x_sq);
@@ -131,7 +131,7 @@ void acc_h_field(const FieldM<ComplexD, 1>& h, const double mass,
   }
 }
 
-void compute(const int l_size, const double mass, const int ts_limit, const long x_vec_sq_limit)
+void compute(const int l_size, const double mass, const int ts_limit, const Long x_vec_sq_limit)
 {
   {
     TIMER_VERBOSE("compute");
@@ -154,7 +154,7 @@ int main(int argc, char* argv[])
   displayln_info(show(l_func(2.0, 1.0, 0.14)));
   displayln_info(show(l_func(2.0, 2.0, 0.14)));
   const int ts_limit = 200;
-  const long x_vec_sq_limit = 1 + 3 * sqr(48);
+  const Long x_vec_sq_limit = 1 + 3 * sqr(48);
   for (int i = 96; i >= 2; i -= 2) {
     compute(i, 0.14, ts_limit, x_vec_sq_limit);
     compute(i, 0.07, ts_limit, x_vec_sq_limit);

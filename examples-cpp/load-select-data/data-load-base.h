@@ -146,8 +146,8 @@ inline const FieldSelection& get_field_selection(const std::string& job_tag,
         get_field_selection_path(job_tag, traj);
     qassert(get_does_file_exist(fn_field_selection));
     const Coordinate total_site = get_total_site(job_tag);
-    const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
-    const long n_per_tslice = spatial_vol / 16;
+    const Long spatial_vol = total_site[0] * total_site[1] * total_site[2];
+    const Long n_per_tslice = spatial_vol / 16;
     read_field_selection(cache[key], fn_field_selection, n_per_tslice);
   }
   return cache[key];
@@ -239,7 +239,7 @@ inline const PointInfoMap& get_point_info_map(const std::string& job_tag,
     TIMER_VERBOSE("get_point_info_map");
     PointInfoMap& pim = cache[key];
     const std::vector<PointInfo>& pis = get_point_src_info(job_tag, traj);
-    for (long i = 0; i < (long)pis.size(); ++i) {
+    for (Long i = 0; i < (Long)pis.size(); ++i) {
       const PointInfo& pi = pis[i];
       const std::string tag = ssprintf("%s,%d", show(pi.xg).c_str(), pi.type);
       pim[tag].push_back(pi);
@@ -282,7 +282,7 @@ inline void display_fields_wsrc(const std::string& job_tag, const int traj,
   display_info(show_list(fns));
 }
 
-inline long load_prop(PselProp& ps_prop, SelProp& s_prop,
+inline Long load_prop(PselProp& ps_prop, SelProp& s_prop,
                       const std::string& path, const std::string& fn,
                       const PointsSelection& psel, const FieldSelection& fsel)
 {
@@ -291,7 +291,7 @@ inline long load_prop(PselProp& ps_prop, SelProp& s_prop,
       fname +
       ssprintf(": WARNING: obsolete. Try to use the sbs version instead."));
   Propagator4d prop;
-  const long total_bytes = read_field_double_from_float(prop, path, fn);
+  const Long total_bytes = read_field_double_from_float(prop, path, fn);
   if (total_bytes > 0) {
     set_selected_points(ps_prop, prop, psel);
     set_selected_field(s_prop, prop, fsel);
@@ -299,14 +299,14 @@ inline long load_prop(PselProp& ps_prop, SelProp& s_prop,
   return total_bytes;
 }
 
-inline long load_prop(PselProp& ps_prop, SelProp& s_prop,
+inline Long load_prop(PselProp& ps_prop, SelProp& s_prop,
                       const std::string& path, const std::string& fn,
                       const PointsSelection& psel, const FieldSelection& fsel,
                       const ShuffledBitSet& sbs)
 {
   TIMER_VERBOSE("load_prop(ps_prop,s_prop,path,fn,psel,fsel,sbs)");
   SelProp sprop;
-  const long total_bytes = read_field_double_from_float(sprop, path, fn, sbs);
+  const Long total_bytes = read_field_double_from_float(sprop, path, fn, sbs);
   if (total_bytes > 0) {
     set_selected_points(ps_prop, sprop, psel, sbs.fsel);
     set_selected_field(s_prop, sprop, fsel, sbs.fsel);

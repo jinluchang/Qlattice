@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 
   fft_desc_basic fd(geo);
   Vec_redistribute vec_large(fd);
-  long Nvol = geo.local_volume();
+  Long Nvol = geo.local_volume();
 
   if(in.paraI != "None"){
     std::vector<std::string > Li = stringtolist(in.paraI);
@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
         {TIMER("Vec prop");vec_large.reorder(&propT[0],&propT_buf[0], repeat, groupP*12 ,   0);}
         for(int i =0; i< repeat; i++ )
         {
-          long off = i*NVmpi*Nvol*groupP*12;
+          Long off = i*NVmpi*Nvol*groupP*12;
           int bfac = groupP; int d0 = 4;
           smear_propagator4(&propT[off], &gfET[0], width, step, &propT_buf[0], smf, bfac, d0);
         }

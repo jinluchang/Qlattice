@@ -189,7 +189,7 @@ double qnorm(const Field<M>& f)
   {
     double psum = 0.0;
 #pragma omp for nowait
-    for (long index = 0; index < geo.local_volume(); ++index) {
+    for (Long index = 0; index < geo.local_volume(); ++index) {
       const Coordinate x = geo.coordinate_from_index(index);
       const Vector<M> fx = f.get_elems_const(x);
       for (int m = 0; m < geo.multiplicity; ++m) {
@@ -219,7 +219,7 @@ double qnorm_double(const Field<M>& f1, const Field<M>& f2)
 }
 
 template <class M>
-qacc long get_data_size(const Field<M>& f)
+qacc Long get_data_size(const Field<M>& f)
 // NOT including the expended parts, only local volume data size
 // only size on one node
 {
@@ -253,7 +253,7 @@ std::vector<M> field_sum(const Field<M>& f)
   const int multiplicity = geo.multiplicity;
   std::vector<M> vec(multiplicity);
   set_zero(vec);
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<M> fvec = f.get_elems_const(xl);
     for (int m = 0; m < multiplicity; ++m) {
@@ -273,7 +273,7 @@ std::vector<M> field_sum_tslice(const Field<M>& f, const int t_dir = 3)
   const int multiplicity = geo.multiplicity;
   std::vector<M> vec(t_size * multiplicity);
   set_zero(vec);
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const Vector<M> fvec = f.get_elems_const(xl);
@@ -313,7 +313,7 @@ std::vector<M> field_project_mom(const Field<M>& f, const CoordinateD& mom)
   const Geometry& geo = f.geo();
   std::vector<M> ret(geo.multiplicity);
   set_zero(ret);
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     double phase = 0;
@@ -418,14 +418,14 @@ void split_fields(std::vector<Handle<Field<M> > >& vec, const Field<M>& f)
   TIMER("split_fields");
   qassert(vec.size() >= 1);
   qassert(is_initialized(f));
-  const long nf = vec.size();
+  const Long nf = vec.size();
   const Geometry& geo = f.geo();
   qassert(geo.is_only_local);
   const int multiplicity = geo.multiplicity;
   const int multiplicity_v = multiplicity / nf;
   qassert(multiplicity_v * nf == multiplicity);
   const Geometry geo_v = geo_reform(geo, multiplicity_v);
-  for (long i = 0; i < nf; ++i) {
+  for (Long i = 0; i < nf; ++i) {
     Field<M>& f1 = vec[i]();
     f1.init();
     f1.init(geo_v);
@@ -448,17 +448,17 @@ void merge_fields(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& vec)
   qassert(vec.size() >= 1);
   qassert(not vec[0].null());
   qassert(is_initialized(vec[0]()));
-  const long nf = vec.size();
+  const Long nf = vec.size();
   const Geometry& geo_v = vec[0]().geo();
   qassert(geo_v.is_only_local);
   const int multiplicity_v = geo_v.multiplicity;
   const int multiplicity = nf * multiplicity_v;
   const Geometry geo = geo_reform(geo_v, multiplicity);
-  for (long i = 1; i < nf; ++i) {
+  for (Long i = 1; i < nf; ++i) {
     qassert(geo_v == vec[i]().geo());
   }
   f.init(geo);
-  for (long i = 0; i < nf; ++i) {
+  for (Long i = 0; i < nf; ++i) {
     const Field<M>& f1 = vec[i]();
     const int m_offset = i * multiplicity_v;
     qacc_for(index, geo.local_volume(), {
@@ -479,11 +479,11 @@ void merge_fields_ms(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& ve
   qassert(vec.size() >= 1);
   qassert(not vec[0].null());
   qassert(is_initialized(vec[0]()));
-  const long multiplicity = vec.size();
-  qassert(multiplicity == (long)m_vec.size());
+  const Long multiplicity = vec.size();
+  qassert(multiplicity == (Long)m_vec.size());
   const Geometry geo = geo_reform(vec[0]().geo(), multiplicity);
   f.init(geo);
-  for (long m = 0; m < multiplicity; ++m) {
+  for (Long m = 0; m < multiplicity; ++m) {
     const Field<M>& f1 = vec[m]();
     const Geometry& geo_v = f1.geo();
     qassert(geo_v.is_only_local);
@@ -518,7 +518,7 @@ void field_shift_dir(Field<M>& f, const Field<M>& f1, const int dir,
   tmp1 = f1;
   for (int i = 0; i < geo.geon.size_node[dir]; ++i) {
 #pragma omp parallel for
-    for (long index = 0; index < geo.local_volume(); ++index) {
+    for (Long index = 0; index < geo.local_volume(); ++index) {
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
       const Coordinate xg1 =
@@ -577,14 +577,14 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
   FieldM<Long, 2> f_send_idx, f_recv_idx;  // id_node, idx_for_that_node
   f_send_idx.init(geo);
   f_recv_idx.init(geo);
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const Coordinate xg_send = mod(xg + shift_corrected, total_site);
     const Coordinate xg_recv = mod(xg - shift_corrected, total_site);
-    const long id_node_send =
+    const Long id_node_send =
         index_from_coordinate(xg_send / node_site, size_node);
-    const long id_node_recv =
+    const Long id_node_recv =
         index_from_coordinate(xg_recv / node_site, size_node);
     Vector<Long> fsv = f_send_idx.get_elems(index);
     Vector<Long> frv = f_recv_idx.get_elems(index);
@@ -600,23 +600,23 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
   std::vector<std::vector<M> > to_send(num_node);
   std::vector<std::vector<M> > to_recv(num_node);
   for (int i = 0; i < num_node; ++i) {
-    const long size_s = to_send_size[i];
+    const Long size_s = to_send_size[i];
     if (size_s > 0) {
       to_send[i].resize(size_s * geo.multiplicity);
       n_send += 1;
     }
-    const long size_r = to_recv_size[i];
+    const Long size_r = to_recv_size[i];
     if (size_r > 0) {
       to_recv[i].resize(size_r * geo.multiplicity);
       n_recv += 1;
     }
   }
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Vector<M> fv = f1.get_elems_const(index);
     const Vector<Long> fsv = f_send_idx.get_elems_const(index);
     const int id_node = fsv[0];
-    const long offset = fsv[1] * geo.multiplicity;
+    const Long offset = fsv[1] * geo.multiplicity;
     std::vector<M>& to_send_v = to_send[id_node];
     for (int m = 0; m < geo.multiplicity; ++m) {
       to_send_v[offset + m] = fv[m];
@@ -625,8 +625,8 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
   {
     TIMER_FLOPS("field_shift_direct-comm");
     timer.flops +=
-        geo.local_volume() * (long)geo.multiplicity * (long)sizeof(M);
-    const long max_elem = 1 + get_max_field_shift_direct_msg_size() / sizeof(M);
+        geo.local_volume() * (Long)geo.multiplicity * (Long)sizeof(M);
+    const Long max_elem = 1 + get_max_field_shift_direct_msg_size() / sizeof(M);
     std::vector<MPI_Request> reqs(n_recv + n_send);
     Vector<MPI_Request> recv_reqs(reqs.data(), n_recv);
     Vector<MPI_Request> send_reqs(reqs.data() + n_recv, n_send);
@@ -634,12 +634,12 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
     int i_send = 0;
     int i_recv = 0;
     for (int i = 0; i < num_node; ++i) {
-      long size_r = to_recv[i].size();
+      Long size_r = to_recv[i].size();
       if (size_r > 0) {
         const int id_node = i;
         qassert(i_recv < n_recv);
         std::vector<M>& to_recv_v = to_recv[id_node];
-        long offset = 0;
+        Long offset = 0;
         while (size_r > max_elem) {
           MPI_Request req;
           MPI_Irecv(&to_recv_v[offset], max_elem * sizeof(M), MPI_BYTE, id_node,
@@ -652,12 +652,12 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
                   mpi_tag, get_comm(), &recv_reqs[i_recv]);
         i_recv += 1;
       }
-      long size_s = to_send[i].size();
+      Long size_s = to_send[i].size();
       if (size_s > 0) {
         const int id_node = i;
         qassert(i_send < n_send);
         std::vector<M>& to_send_v = to_send[id_node];
-        long offset = 0;
+        Long offset = 0;
         while (size_s > max_elem) {
           MPI_Request req;
           MPI_Isend(&to_send_v[offset], max_elem * sizeof(M), MPI_BYTE, id_node,
@@ -678,14 +678,14 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
   }
   f.init(geo);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xl_s = mod(xl + shift_remain, total_site);
-    const long index_s = geo.index_from_coordinate(xl_s);
+    const Long index_s = geo.index_from_coordinate(xl_s);
     Vector<M> fv = f.get_elems(index_s);
     const Vector<Long> frv = f_recv_idx.get_elems_const(index);
     const int id_node = frv[0];
-    const long offset = frv[1] * geo.multiplicity;
+    const Long offset = frv[1] * geo.multiplicity;
     std::vector<M>& to_recv_v = to_recv[id_node];
     for (int m = 0; m < geo.multiplicity; ++m) {
       fv[m] = to_recv_v[offset + m];

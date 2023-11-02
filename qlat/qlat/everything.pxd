@@ -10,13 +10,13 @@ cdef extern from "qlat/mpi.h" namespace "qlat":
     const Coordinate& get_coor_node() except +
     void sync_node() except +
     void bcast(float& x, const int root) except +
-    void bcast(long& x, const int root) except +
+    void bcast(Long& x, const int root) except +
     void bcast(ComplexD& x, const int root) except +
     void bcast(ComplexF& x, const int root) except +
     void bcast(std_string& recv, const int root) except +
     void bcast(Coordinate& x, const int root) except +
     void bcast(LatData& ld, const int root) except +
-    void glb_sum(long& ld) except +
+    void glb_sum(Long& ld) except +
     void glb_sum(float& ld) except +
     void glb_sum(double& ld) except +
     void glb_sum(ComplexD& ld) except +
@@ -49,11 +49,11 @@ cdef extern from "qlat/geometry.h" namespace "qlat":
         void init(Coordinate& total_site, int multiplicity) except +
         Coordinate total_site()
         Coordinate local_site()
-        long local_volume()
-        long total_volume()
+        Long local_volume()
+        Long total_volume()
         bool is_local(const Coordinate& x)
-        long index_from_coordinate(const Coordinate& xl)
-        Coordinate coordinate_from_index(const long index)
+        Long index_from_coordinate(const Coordinate& xl)
+        Coordinate coordinate_from_index(const Long index)
         Coordinate coordinate_g_from_l(const Coordinate& xl)
         Coordinate coordinate_l_from_g(const Coordinate& xg)
     std_string show(const Geometry& geo) except +
@@ -101,10 +101,10 @@ cdef extern from "qlat/core.h" namespace "qlat":
         const Geometry& get_geo() except +
         T& get_elem(const Coordinate& x) except +
         T& get_elem(const Coordinate& x, const int m) except +
-        T& get_elem(const long index) except +
-        T& get_elem(const long index, const int m) except +
+        T& get_elem(const Long index) except +
+        T& get_elem(const Long index, const int m) except +
         Vector[T] get_elems(const Coordinate& x) except +
-        Vector[T] get_elems(const long index) except +
+        Vector[T] get_elems(const Long index) except +
     cdef cppclass GaugeField(Field[ColorMatrix]):
         pass
     cdef cppclass GaugeTransform(Field[ColorMatrix]):
@@ -118,7 +118,7 @@ cdef extern from "qlat/core.h" namespace "qlat":
     cdef cppclass FieldIndex(Field[Long]):
         pass
     cdef cppclass FieldSelection:
-        long n_elems
+        Long n_elems
         FieldRank f_rank
         FieldIndex f_local_idx
         vector_acc[Int64t] ranks
@@ -128,26 +128,26 @@ cdef extern from "qlat/core.h" namespace "qlat":
         const Geometry& get_geo()
     cdef cppclass PointsSelection:
         PointsSelection()
-        PointsSelection(const long n_points) except +
-        long size()
-        void resize(const long n_points)
+        PointsSelection(const Long n_points) except +
+        Long size()
+        void resize(const Long n_points)
         Coordinate* data()
-        Coordinate& operator[](long i)
+        Coordinate& operator[](Long i)
     cdef cppclass SelectedField[T]:
-        long n_elems;
+        Long n_elems;
         vector_acc[T] field
         SelectedField()
         void init()
-        void init(const Geometry& geo, const long n_elems, const int multiplicity) except +
+        void init(const Geometry& geo, const Long n_elems, const int multiplicity) except +
         void init(const FieldSelection& fsel, const int multiplicity) except +
         const Geometry& get_geo()
     cdef cppclass SelectedPoints[T]:
         int multiplicity
-        long n_points
+        Long n_points
         vector_acc[T] points
         SelectedPoints()
         void init()
-        void init(const long n_points, const int multiplicity) except +
+        void init(const Long n_points, const int multiplicity) except +
         void init(const PointsSelection& psel, const int multiplicity) except +
     Vector[T] get_data[T](const Field[T]& x)
     void set_zero[T](Field[T]& x)
@@ -179,7 +179,7 @@ cdef extern from "qlat/selected-points.h" namespace "qlat":
 
     double qnorm[M](const SelectedPoints[M]& sp) except +
     PointsSelection mk_random_point_selection(const Coordinate& total_site,
-                                              const long num, const RngState& rs) except +
+                                              const Long num, const RngState& rs) except +
     void save_point_selection_info(const PointsSelection& psel,
                                    const std_string& path) except +
     PointsSelection load_point_selection_info(const std_string& path) except +
@@ -216,12 +216,12 @@ cdef extern from "qlat/selected-field.h" namespace "qlat":
 
 cdef extern from "qlat/selected-field-io.h" namespace "qlat":
 
-    long write_field_selection(const FieldSelection& fsel, const std_string& path) except +
-    long read_field_selection(FieldSelection& fsel, const std_string& path) except +
+    Long write_field_selection(const FieldSelection& fsel, const std_string& path) except +
+    Long read_field_selection(FieldSelection& fsel, const std_string& path) except +
     bool is_selected_field(const std_string& path) except +
     void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site, const Int64t val) except +
-    void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site, const long n_per_tslice, const RngState& rs) except +
-    void add_field_selection(FieldRank& f_rank, const PointsSelection& psel, const long rank_psel) except +
+    void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site, const Long n_per_tslice, const RngState& rs) except +
+    void add_field_selection(FieldRank& f_rank, const PointsSelection& psel, const Long rank_psel) except +
     void update_field_selection(FieldSelection& fsel) except +
     PointsSelection psel_from_fsel(const FieldSelection& fsel)
     PointsSelection psel_from_fsel_local(const FieldSelection& fsel)
@@ -237,9 +237,9 @@ cdef extern from "qlat/qcd-prop.h" namespace "qlat":
 cdef extern from "qlat/qcd-smear.h" namespace "qlat":
 
     void gf_ape_smear(GaugeField& gf, const GaugeField& gf0,
-                      const double alpha, const long steps) except +
+                      const double alpha, const Long steps) except +
     void gf_spatial_ape_smear(GaugeField& gf, const GaugeField& gf0,
-                              const double alpha, const long steps) except +
+                              const double alpha, const Long steps) except +
     void gf_hyp_smear(GaugeField& gf, const GaugeField& gf0,
                       const double alpha1, const double alpha2, const double alpha3) except +
     void prop_smear(Prop& prop, const GaugeField& gf1,

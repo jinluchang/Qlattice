@@ -8,7 +8,7 @@ PyObject* save_field_ctype(PyField& pf, const std::string& path,
                            const Coordinate& new_size_node)
 {
   const Field<M>& f = *(Field<M>*)pf.cdata;
-  const long ret = write_field(f, path, new_size_node);
+  const Long ret = write_field(f, path, new_size_node);
   return py_convert(ret);
 }
 
@@ -16,7 +16,7 @@ template <class M>
 PyObject* load_field_ctype(PyField& pf, const std::string& path)
 {
   Field<M>& f = *(Field<M>*)pf.cdata;
-  const long ret = read_field(f, path);
+  const Long ret = read_field(f, path);
   return py_convert(ret);
 }
 

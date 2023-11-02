@@ -49,12 +49,12 @@ struct eigen_ov {
   EigenV eval_self;
 
   /////Group the inner vector for vectorizations
-  long b_size, bfac;
+  Long b_size, bfac;
 
   bool gpu_mem_set;
   int ncutgpu, ncutbuf;
-  long bfac_group;
-  long BFAC_GROUP_CPU;
+  Long bfac_group;
+  Long BFAC_GROUP_CPU;
 
 
   int nV_prop;
@@ -325,9 +325,9 @@ void eigen_ov::allocate_GPU_mem(int nprop)
   //if(sm == 1){if(Eigenbuf_Sm.size() != 0 or Eigendyn_Sm.size() != 0){return ;}}
 
   LInt Lae = 2*bfac/bfac_group;
-  LInt Lbe = bfac_group*ncutbuf*long(b_size);
+  LInt Lbe = bfac_group*ncutbuf*Long(b_size);
   LInt Lax = 2*bfac/bfac_group;
-  LInt Lbx = bfac_group*ncutgpu*long(b_size);
+  LInt Lbx = bfac_group*ncutgpu*Long(b_size);
 
   if(Eigenbuf.size() == Lae and Eigendyn.size() == Lax){return ;}
 
@@ -402,7 +402,7 @@ void eigen_ov::copy_FieldM_to_Mvec(Ty* src, int ncur, int sm, int dir , bool dat
   }
 
   //////move d,c to outter loop
-  long sizeF = noden;
+  Long sizeF = noden;
   if(dir == 1){mv_civ.dojob(s0, s0, 1, 12, sizeF, 1, 1, data_GPU);}
 
   ////a factor of 2 by chiral
@@ -575,18 +575,18 @@ void eigen_ov::smear_eigen(const std::string& Ename_Sm,
     return ;
   }
 
-  long La = 2*bfac/BFAC_GROUP_CPU;
-  long Lb = BFAC_GROUP_CPU*n_vec*long(b_size);
+  Long La = 2*bfac/BFAC_GROUP_CPU;
+  Long Lb = BFAC_GROUP_CPU*n_vec*Long(b_size);
   print_mem_info("Before Eigen Memory Allocate");
   resize_EigenM(Mvec_Sm , La, Lb);enable_smearE = true;
   print_mem_info("Eigen Memory Allocate Done");
 
   const int each = 12;
-  long Ncopy = geo.local_volume() * 12;
+  Long Ncopy = geo.local_volume() * 12;
   qlat::vector_gpu<Complexq > buf;buf.resize(each * Ncopy);
 
   move_index mv_idx;
-  std::vector<long > job =  job_create(n_vec, each);
+  std::vector<Long > job =  job_create(n_vec, each);
   for(LInt ji = 0; ji < job.size()/2 ; ji++)
   {
     int flag = 0;
@@ -628,7 +628,7 @@ void eigen_ov::save_eigen_Mvec(const std::string& ename, int sm)
   std::vector<qlat::FieldM<Complexq , 12> > buf;buf.resize(each);
   for(int iv=0;iv<each;iv++){buf[iv].init(io_use.geop);}
 
-  std::vector<long > job =  job_create(n_vec, each);
+  std::vector<Long > job =  job_create(n_vec, each);
   for(LInt ji = 0; ji < job.size()/2 ; ji++)
   {
     for(int iv=0;iv<job[ji*2 + 1];iv++){copy_to_FieldM(buf[iv], job[ji*2 + 0] + iv, sm );}
@@ -652,8 +652,8 @@ void eigen_ov::load_eigen_Mvec(const std::string& ename, int sm, int nini, int c
 
   io_vec& io_use = get_io_vec_plan(geo);
 
-  long La = 2*bfac/BFAC_GROUP_CPU;
-  long Lb = BFAC_GROUP_CPU*n_vec*long(b_size);
+  Long La = 2*bfac/BFAC_GROUP_CPU;
+  Long Lb = BFAC_GROUP_CPU*n_vec*Long(b_size);
   print_mem_info("Before Eigen Memory Allocate");
   if(sm == 0){resize_EigenM(Mvec    , La, Lb);}
   if(sm == 1){resize_EigenM(Mvec_Sm , La, Lb);enable_smearE = true;}
@@ -666,7 +666,7 @@ void eigen_ov::load_eigen_Mvec(const std::string& ename, int sm, int nini, int c
   std::vector<qlat::FieldM<Complexq , 12> > buf;buf.resize(each);
   for(int iv=0;iv<each;iv++){buf[iv].init(io_use.geop);}
 
-  std::vector<long > job =  job_create(n_vec, each);
+  std::vector<Long > job =  job_create(n_vec, each);
   for(LInt ji = 0; ji < job.size()/2 ; ji++)
   {
     ////int n0 = nini + job[ji*2 + 0]; int n1 = n0 + job[ji*2 + 1]; 
@@ -719,16 +719,16 @@ void eigen_ov::random_eigen(int sm, int seed)
   TIMERB("=====Loading random Eigen=====");
   eval_self.resize(n_vec);random_EigenM(eval_self, 0, seed + 10);
   
-  long La = 2*bfac/BFAC_GROUP_CPU;
-  long Lb = BFAC_GROUP_CPU*n_vec*long(b_size);
+  Long La = 2*bfac/BFAC_GROUP_CPU;
+  Long Lb = BFAC_GROUP_CPU*n_vec*Long(b_size);
   print_mem_info("Before Eigen Memory Allocate");
   if(sm == 0){
     resize_EigenM(Mvec    , La, Lb);
-    for(long iv=0;iv<La;iv++)random_Ty(Mvec[iv].data()   , Lb, 0, seed + 20 + iv);
+    for(Long iv=0;iv<La;iv++)random_Ty(Mvec[iv].data()   , Lb, 0, seed + 20 + iv);
   }
   if(sm == 1){
     resize_EigenM(Mvec_Sm , La, Lb);
-    for(long iv=0;iv<La;iv++)random_Ty(Mvec_Sm[iv].data(), Lb, 0, seed + 30 + iv);
+    for(Long iv=0;iv<La;iv++)random_Ty(Mvec_Sm[iv].data(), Lb, 0, seed + 30 + iv);
     enable_smearE = true;
   }
 
@@ -766,7 +766,7 @@ void eigen_ov::initialize_mass(std::vector<double> &mass, int Ns, int one_minus_
   //stmp.resize(tmp_Ls);ptmp.resize(tmp_Lp);
   ////stmp.clear(false);ptmp.clear(false);
 
-  if(eval_tem.size() != long(mN*n_vec)){eval_tem.resize(mN*n_vec);}
+  if(eval_tem.size() != Long(mN*n_vec)){eval_tem.resize(mN*n_vec);}
   #pragma omp parallel for
   for(int mki=0;mki< mN*n_vec;mki++)
   {
@@ -825,8 +825,8 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
   Complexq* alpha_list  = ei.alpha_list.data();
   Complexq* eval_list   = ei.eval_list.data();
 
-  long& bfac        = ei.bfac;
-  long& b_size      = ei.b_size;
+  Long& bfac        = ei.bfac;
+  Long& b_size      = ei.b_size;
 
   int&  n_vec       = ei.n_vec;
   int& ncutgpu     = ei.ncutgpu;
@@ -849,9 +849,9 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
     ei.copy_evec_to_GPU(nini);
 
     {
-    long m = ncur;
-    long n = Ns;
-    long w = b_size;
+    Long m = ncur;
+    Long n = Ns;
+    Long w = b_size;
 
     TIMERA("prop low vec reduce");
     //TIMER_FLOPS("vec reduce");
@@ -859,11 +859,11 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
     //int Fcount0   = 6 + 2;  
     //timer.flops  += vGb*Fcount0;
 
-    std::vector<long > jobA = job_create(2*bfac, ei.BFAC_GROUP_CPU);
+    std::vector<Long > jobA = job_create(2*bfac, ei.BFAC_GROUP_CPU);
     if(nini > ncutbuf){jobA = job_create(2*bfac, ei.bfac_group);} //// vector size groups
     for(LInt jobi=0;jobi < jobA.size()/2; jobi++)
     {
-      long bini = jobA[jobi*2 + 0]; long bcut = jobA[jobi*2+1];
+      Long bini = jobA[jobi*2 + 0]; Long bcut = jobA[jobi*2+1];
       Complexq* rp = &alpha_bfac[(bini + 0)*m*n + 0];
       Complexq* Ep = ei.getEigenP(nini, bini*b_size, sm0);
       Complexq* sp = &src[       (bini + 0)*n*w + 0];
@@ -877,10 +877,10 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
 
     {
     TIMERA("Reduce alpha");
-    qacc_for(coff, long(2*ncur*Ns),{
+    qacc_for(coff, Long(2*ncur*Ns),{
       int chi = coff/(ncur*Ns);
-      long xi = coff%(ncur*Ns);
-      for(long bi=0;bi<bfac;bi++){
+      Long xi = coff%(ncur*Ns);
+      for(Long bi=0;bi<bfac;bi++){
         alpha[coff] += alpha_bfac[chi*bfac*ncur*Ns + bi*ncur*Ns + xi];
       }
     });
@@ -897,7 +897,7 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
     TIMERA("Get alpha list")
     Complexq Iimag(0.0,1.0);
     Complexq Two2(2.0,0.0);
-    qacc_for(coff, long(2*mN*Ns*ncur),{
+    qacc_for(coff, Long(2*mN*Ns*ncur),{
       int chi   =  coff/(mN*Ns*ncur);
       int mi    = (coff/(Ns*ncur  ))%mN;
       int is    = (coff/(ncur     ))%Ns;
@@ -916,9 +916,9 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
 
 
     {
-    long m = mN*Ns;
-    long n = b_size;
-    long w = ncur;
+    Long m = mN*Ns;
+    Long n = b_size;
+    Long w = ncur;
 
     //TIMER("vec multi");
     TIMER_FLOPS("vec multi");
@@ -934,10 +934,10 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
       zero_Ty(ei.alpha_bfac.data(), ei.alpha_bfac.size(), 1, false);
     }
 
-    for(long coff=0;coff<2*bfac;coff++)
+    for(Long coff=0;coff<2*bfac;coff++)
     {
-      long chi = coff/bfac;
-      long bi  = coff%bfac;
+      Long chi = coff/bfac;
+      Long bi  = coff%bfac;
 
       Complexq* rp = &props[(chi*bfac+bi)*mN*Ns*b_size + 0];
       ////Complexq* rp = &ei.ptmp[(chi*bfac+bi)*mN*Ns*b_size + 0];
@@ -999,8 +999,8 @@ void copy_eigen_prop_to_EigenG(std::vector<qlat::vector_gpu<Ty > >& res, T* src,
     ////index for src
     int chi = mi/(total);
     LInt xi = mi%(total);
-    long bi = xi/b_size;
-    long bj = xi%b_size;
+    Long bi = xi/b_size;
+    Long bj = xi%b_size;
 
     T* s0   = &src[(chi*bfac+bi)*Ns*b_size  + d0*b_size + bj];
     Ty* s1  = (Ty*) &res[massi][((d0i*12 + d1)*NTt+ti)*Nxyz + vi];
@@ -1026,7 +1026,7 @@ void FieldM_src_to_FieldM_prop(qlat::FieldM<Ty , 1>& src, qlat::FieldM<Ty , 12*1
 
   //std::vector<int > nv, Nv, mv;
   //geo_to_nv(geo, nv, Nv,mv);
-  long Ncopy = geo.local_volume();
+  Long Ncopy = geo.local_volume();
 
   Ty* s0 = NULL; Ty* s1 = NULL;Ty* st = NULL;
   ///for(int iv=0;iv<nV;iv++)
@@ -1046,7 +1046,7 @@ void FieldM_src_to_FieldM_prop(std::vector<qlat::FieldM<Ty , 1> >& src, std::vec
 {
   if(src.size() == 0){return ;}
   ////qlat::Geometry& geo = src[0].geo();
-  long nV = src.size();
+  Long nV = src.size();
   if(res.size() != src.size()){res.resize(nV);}
   for(int iv=0;iv<nV;iv++)FieldM_src_to_FieldM_prop(src[iv], res[iv], GPU, false);
   qacc_barrier(dummy);
@@ -1069,7 +1069,7 @@ void copy_eigen_src_to_FieldM(qlat::vector_gpu<Ty >& src, std::vector<qlat::Fiel
   if(total % b_size != 0){abort_r("eigen system configurations wrong! \n");}
 
   if(dir == 0){
-    long dsize = src.size();
+    Long dsize = src.size();
     if(dsize%(2*total) != 0){abort_r("src size wrong!\n");};
     nV  = dsize/(2*total);
     if(nV%(cfac) != 0){abort_r("res civ wrong!\n");}
@@ -1116,8 +1116,8 @@ void copy_eigen_src_to_FieldM(qlat::vector_gpu<Ty >& src, std::vector<qlat::Fiel
     ////index for src
     int chi = mi/(total);
     LInt xi = mi%(total);
-    long bi = xi/b_size;
-    long bj = xi%b_size;
+    Long bi = xi/b_size;
+    Long bj = xi%b_size;
 
     s0 = &psrc[(chi*bfac+bi)*nV*b_size  + d0*b_size + bj];
     st = (Ty*) qlat::get_data(res[d0a]).data();

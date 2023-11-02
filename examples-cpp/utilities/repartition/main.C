@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
   const Coordinate new_size_node = read_coordinate(argv[1]);
   displayln_info("new_size_node: " + show(new_size_node));
   std::vector<std::string> fns(argc - 2);
-  for (long i = 0; i < (long)fns.size(); ++i) {
+  for (Long i = 0; i < (Long)fns.size(); ++i) {
     fns[i] = remove_trailing_slashes(argv[2 + i]);
   }
   {
@@ -31,13 +31,13 @@ int main(int argc, char* argv[])
     const RngState rs_permute(show(time));
     random_permute(fns, rs_permute);
   }
-  for (long i = 0; i < (long)fns.size(); ++i) {
+  for (Long i = 0; i < (Long)fns.size(); ++i) {
     displayln_info(
         ssprintf("fns[%5d/%d] = '%s'", i, fns.size(), fns[i].c_str()));
   }
   install_qhandle_sig();
   displayln_info("Start to repartition...");
-  for (long i = 0; i < (long)fns.size(); ++i) {
+  for (Long i = 0; i < (Long)fns.size(); ++i) {
     if (is_sigterm_received() > 0) {
       Timer::display();
       displayln_info("quit: because sigint received.");

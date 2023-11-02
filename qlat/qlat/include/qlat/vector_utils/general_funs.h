@@ -75,12 +75,12 @@ inline void print_numbers(Ty* src, int size, int GPU)
 ///flag = 1 --> biva * sizeF * civ * size_inner --> biva * civ * sizeF * size_inner
 #ifdef QLAT_USE_ACC
 template <typename Ty, bool flag, int Threads, int Biva>
-__global__ void move_index_global(Ty* src, Ty* res, long sizeF, int civ, int inner)
+__global__ void move_index_global(Ty* src, Ty* res, Long sizeF, int civ, int inner)
 {
   __shared__ Ty buf[Threads*Biva];
 
   const int    tid = threadIdx.x;
-  const long s0    = blockIdx.x*blockDim.x;
+  const Long s0    = blockIdx.x*blockDim.x;
 
   int Total = Threads*civ*inner;
   if(s0 + Threads > sizeF){Total = (sizeF - s0) * civ*inner;}
@@ -90,7 +90,7 @@ __global__ void move_index_global(Ty* src, Ty* res, long sizeF, int civ, int inn
   const int nC    = (Total + Biva*Threads-1)/(Biva*Threads);
 
   int ci, si, i0;
-  long z0 = 0;long off = 0;long off1 = 0;
+  Long z0 = 0;Long off = 0;Long off1 = 0;
   for(int ni=0;ni < nC; ni++)
   {
     if(z0 >= Total){break;}
@@ -169,21 +169,21 @@ struct move_index
 
   /////order follow src memory order
   template <typename Ty >
-  void move_civ_out(Ty* src,Ty* res,int biva, long sizeF,int civ, int size_inner, bool GPU = false)
+  void move_civ_out(Ty* src,Ty* res,int biva, Long sizeF,int civ, int size_inner, bool GPU = false)
   {
     dojob(src, res, biva, civ, sizeF, 1, size_inner, GPU);
   }
 
   /////order follow src memory order
   template <typename Ty >
-  void move_civ_in(Ty* src,Ty* res,int biva, int civ, long sizeF, int size_inner, bool GPU = false)
+  void move_civ_in(Ty* src,Ty* res,int biva, int civ, Long sizeF, int size_inner, bool GPU = false)
   {
     dojob(src, res, biva, civ, sizeF, 0, size_inner, GPU);
   }
 
   ////flag = 1 --> biva * sizeF * civ * size_inner --> biva * civ * sizeF * size_inner
   template <typename Ty >
-  void dojob(Ty* src,Ty* res,int biva,int civ,long sizeF,int flag, int size_inner, bool GPU = false)
+  void dojob(Ty* src,Ty* res,int biva,int civ,Long sizeF,int flag, int size_inner, bool GPU = false)
   {
   if(biva == 0 or civ == 0 or sizeF == 0 or size_inner == 0){return ;}
   /////size_t sizeF = sizeF0;
@@ -224,7 +224,7 @@ struct move_index
 
       {
       const int Threads = 32;const int Biva =  (16*16+sizeof(Ty)-1)/sizeof(Ty);
-      long Nb = (sizeF + Threads -1)/Threads;
+      Long Nb = (sizeF + Threads -1)/Threads;
       dim3 dimBlock(    Threads,    1, 1);
       dim3 dimGrid(     Nb,    1, 1);
       //print0("sizeF %d, civ %d, size_inner %d, Biva %d, Nb %d \n", int(sizeF), int(civ), int(size_inner), Biva, int(Nb));
@@ -235,7 +235,7 @@ struct move_index
 
       //print_numbers((qlat::ComplexF*) s1, 100, GPU);
       if(src == res){
-        const long Nvol = long(Off*sizeof(Ty)/sizeof(qlat::ComplexF));
+        const Long Nvol = Long(Off*sizeof(Ty)/sizeof(qlat::ComplexF));
         //cpy_data_thread((qlat::ComplexF*) &res[bi*Off], (qlat::ComplexF*) s1, Nvol, 1);
         cpy_GPU((qlat::ComplexF*) &res[bi*Off], (qlat::ComplexF*) s1, Nvol, 1, 1);
       }
@@ -244,7 +244,7 @@ struct move_index
     #endif
 
     #pragma omp parallel for
-    for(long   si=0;si<sizeF;si++)
+    for(Long   si=0;si<sizeF;si++)
     for(int    ci=0;ci<civ;ci++)
     {
       Ty* p0=NULL;Ty* p1=NULL;
@@ -260,7 +260,7 @@ struct move_index
     }
 
     if(src == res){
-      long Nvol = long(Off*sizeof(Ty)/sizeof(qlat::ComplexF));
+      Long Nvol = Long(Off*sizeof(Ty)/sizeof(qlat::ComplexF));
       cpy_data_thread((qlat::ComplexF*) &res[bi*Off], (qlat::ComplexF*) s1, Nvol, 0);
     }
 
@@ -484,7 +484,7 @@ void p_vector(const qlat::vector<Ty> teml)
 }
 
 template<typename Ty>
-inline void random_Ty(Ty* a, long N0,int GPU=0, int seed = 0, const int mode = 0)
+inline void random_Ty(Ty* a, Long N0,int GPU=0, int seed = 0, const int mode = 0)
 {
   (void)GPU;
   TIMERA("random_Ty");
@@ -492,10 +492,10 @@ inline void random_Ty(Ty* a, long N0,int GPU=0, int seed = 0, const int mode = 0
   qlat::RngState rs(qlat::get_id_node() + 1 + seed );
 
   double ini = qlat::u_rand_gen(rs);
-  long bfac = long(std::sqrt(N0));
-  long Nuse = long(N0/bfac + 1);
+  Long bfac = Long(std::sqrt(N0));
+  Long Nuse = Long(N0/bfac + 1);
   qGPU_for(isp, Nuse, GPU, {
-    for(long i=0;i<bfac;i++){
+    for(Long i=0;i<bfac;i++){
       size_t off = isp*bfac + i;
       if(off < size_t(N0)){
         if(mode==0){a[off] = Ty(std::cos((ini+isp+i)*0.5) , (5.0/(isp+1+i))*ini*0.1);}
@@ -549,7 +549,7 @@ inline void copy_FieldM(qlat::FieldM<Ty , civ>& res, qlat::FieldM<Ty , civ>& src
   if(!res.initialized){res.init(geo);}
   Ty* a = (Ty*) qlat::get_data(src).data();
   Ty* b = (Ty*) qlat::get_data(res).data();
-  const long  V = geo.local_volume() ;
+  const Long  V = geo.local_volume() ;
   cpy_GPU(b, a, V*civ, 1, 1);
 }
 
@@ -559,7 +559,7 @@ inline Ty norm_FieldM(qlat::FieldM<Ty , civ>& a)
   Qassert(a.initialized);
   const Geometry& geo = a.geo();
   Ty* buf = (Ty*) qlat::get_data(a).data();
-  const long  V = geo.local_volume() ;
+  const Long  V = geo.local_volume() ;
   qlat::vector_gpu<Ty > tmp;tmp.resize(V*civ);
   Ty* srcP = (Ty* ) qlat::get_data(a).data();
   Ty* resP = tmp.data();
@@ -606,7 +606,7 @@ void random_link(GaugeFieldT<Td> &gf, const int seed = -1)
     ColorMatrixT<Td> unit;set_unit(unit, 1.0);
     /////TODO This function cannot be done on GPU
     /////Eigen normalize/normalized problem
-    for(long isp=0;isp<gf.field.size();isp++)
+    for(Long isp=0;isp<gf.field.size();isp++)
     {
       gf.get_elem_offset(isp) = gf.get_elem_offset(isp) * (1/2.0) + unit;
       unitarize(gf.get_elem_offset(isp));
@@ -880,15 +880,15 @@ inline int end_Lat()
   return 0;
 }
 
-inline std::vector<long > job_create(long total, long each)
+inline std::vector<Long > job_create(Long total, Long each)
 {
-  std::vector<long > a;a.resize(0);
+  std::vector<Long > a;a.resize(0);
   if(total == 0){return a;}
   if(total < 1 or each < 1){
     print0("===Give me valid job types total %ld, each %ld \n", total, each);
     abort_r();}
-  /////std::vector<long > a = job_create(total, each);
-  long jobN  = (total + each - 1)/each;
+  /////std::vector<Long > a = job_create(total, each);
+  Long jobN  = (total + each - 1)/each;
   int i0 = 0; int dj = each;
   for(int ji = 0; ji < jobN ; ji++)
   {
@@ -956,7 +956,7 @@ qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qpropT >& src)
 }
 
 template<typename Ty>
-qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qlat::vector_gpu<Ty > >& src, long Nvol = -1)
+qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qlat::vector_gpu<Ty > >& src, Long Nvol = -1)
 {
   qlat::vector_acc< Ty* >  res;
   const size_t Nvec = src.size();
@@ -1002,13 +1002,13 @@ Ty sum_local_to_global_vector(Ty src, MPI_Comm* commp=NULL)
   int rank  = qlat::get_id_node();
   if(commp != NULL){MPI_Comm_size(*commp, &Nmpi);MPI_Comm_rank(*commp, &rank);}
 
-  qlat::vector<long > size_global;size_global.resize(Nmpi);
+  qlat::vector<Long > size_global;size_global.resize(Nmpi);
   zero_Ty(size_global.data(), size_global.size(), 0);
 
   size_global[rank] = src.size();
   sum_all_size(size_global.data(), size_global.size(), 0, commp);
 
-  long total = 0;long current = 0;
+  Long total = 0;Long current = 0;
   for(int i=0;i<Nmpi;i++){total += size_global[i];if(i < rank){current += size_global[i];}}
 
   /////for(unsigned int i=0;i<size_global.size();i++){printf("rank %d, size %ld \n", rank, size_global[i]);}
@@ -1023,17 +1023,17 @@ Ty sum_local_to_global_vector(Ty src, MPI_Comm* commp=NULL)
 
 }
 
-inline std::vector<int > num_to_site(const long num, const std::vector<int > key_T)
+inline std::vector<int > num_to_site(const Long num, const std::vector<int > key_T)
 {
   Qassert(key_T.size() > 0);
   int dim = key_T.size();
   std::vector<int > site;site.resize(dim);
   for(int iv=0;iv<dim;iv++){site[iv] = 0;}
 
-  long tem_i = num;
+  Long tem_i = num;
   for(int Ni=0; Ni < dim; Ni++)
   {
-    long N_T = 1;
+    Long N_T = 1;
     for(int numi = Ni+1;numi < dim;numi++)
     {
       N_T = N_T*key_T[numi];
@@ -1044,17 +1044,17 @@ inline std::vector<int > num_to_site(const long num, const std::vector<int > key
   return site;
 }
 
-inline std::vector<long > random_list(const long n, const long m, const int seed)
+inline std::vector<Long > random_list(const Long n, const Long m, const int seed)
 {
-  std::vector<long > r;
-  std::vector<long > b;
+  std::vector<Long > r;
+  std::vector<Long > b;
   qlat::RngState rs(13021 + seed);
-  for(long ri = 0; ri < n; ri++){r.push_back(ri);}
+  for(Long ri = 0; ri < n; ri++){r.push_back(ri);}
   if(m >= n or m <  0){return r;}
   if(m == 0){r.resize(0);return r;}
 
-  for(long ri=0;ri<m;ri++){
-    long u = int(qlat::u_rand_gen(rs) * r.size());
+  for(Long ri=0;ri<m;ri++){
+    Long u = int(qlat::u_rand_gen(rs) * r.size());
     b.push_back(r[u]);
     r.erase(r.begin()+ u);
   }
@@ -1063,7 +1063,7 @@ inline std::vector<long > random_list(const long n, const long m, const int seed
 }
 
 template<typename Ty>
-inline Ty vec_norm2(Ty* s0, Ty* s1, long Ndata, QMEM GPU = QMGPU)
+inline Ty vec_norm2(Ty* s0, Ty* s1, Long Ndata, QMEM GPU = QMGPU)
 {
   TIMERB("vec_norm2 single");
 
@@ -1083,7 +1083,7 @@ inline Ty vec_norm2(Ty* s0, Ty* s1, long Ndata, QMEM GPU = QMGPU)
 }
 
 template<typename Ty>
-inline Ty reduce_norm2(Ty* buf, long Ndata, QMEM GPU = QMGPU)
+inline Ty reduce_norm2(Ty* buf, Long Ndata, QMEM GPU = QMGPU)
 {
   TIMERB("vec_norm2 reduce");
 
@@ -1095,22 +1095,22 @@ inline Ty reduce_norm2(Ty* buf, long Ndata, QMEM GPU = QMGPU)
 
 
 template<typename Ty>
-std::vector<long > get_sort_index(Ty* src, long size)
+std::vector<Long > get_sort_index(Ty* src, Long size)
 {
   //std::vector<Ty > copy;copy.resize(size);
-  //for(long it=0;it<size;it++){copy[it] = src[it];}
-  std::vector<std::pair<Ty, long > > vec; 
-  for(long it=0;it<size;it++) 
+  //for(Long it=0;it<size;it++){copy[it] = src[it];}
+  std::vector<std::pair<Ty, Long > > vec; 
+  for(Long it=0;it<size;it++) 
   {    
     vec.push_back( std::make_pair(src[it], it) );
   }    
 
-  std::sort(vec.begin(), vec.end(), [](std::pair<Ty, long >& a, std::pair<Ty, long >& b) { 
+  std::sort(vec.begin(), vec.end(), [](std::pair<Ty, Long >& a, std::pair<Ty, Long >& b) { 
     return a.first < b.first;
   });  //check order
 
-  std::vector<long > index;index.resize(size);
-  for(long it=0;it<size;it++) 
+  std::vector<Long > index;index.resize(size);
+  for(Long it=0;it<size;it++) 
   {
     index[it] = vec[it].second;
   }
@@ -1124,14 +1124,14 @@ void sort_vectors_by_axis(std::vector<std::vector<Ty > >& src, std::vector<std::
   Qassert(Naxis > axis);
   res.resize(src.size());
 
-  const long Ndata = src[0].size();
+  const Long Ndata = src[0].size();
 
-  std::vector<long > index = get_sort_index(&src[axis][0], Ndata);
+  std::vector<Long > index = get_sort_index(&src[axis][0], Ndata);
   for(int ai=0;ai<Naxis;ai++)
   {
-    Qassert(long( src[ai].size() ) == Ndata);
+    Qassert(Long( src[ai].size() ) == Ndata);
     res[ai].resize(src[ai].size());
-    for(long ni=0;ni<Ndata;ni++)
+    for(Long ni=0;ni<Ndata;ni++)
     {
       res[ai][ni] = src[ai][index[ni]];
     }

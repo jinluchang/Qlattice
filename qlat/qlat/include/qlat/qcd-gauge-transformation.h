@@ -146,7 +146,7 @@ inline void prop_apply_gauge_transformation(
   prop.init(fsel, multiplicity);
   qassert(is_matching_geo_mult(prop.geo(), prop0.geo()));
   qacc_for(idx, fsel.indices.size(), {
-    const long index = fsel.indices[idx];
+    const Long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<WilsonMatrix> v = prop.get_elems(idx);
     const Vector<WilsonMatrix> v0 = prop0.get_elems_const(idx);
@@ -164,8 +164,8 @@ inline void prop_apply_gauge_transformation(
   TIMER("prop_apply_gauge_transformation");
   const Geometry& geo = gt.geo();
   qassert(geo.multiplicity == 1);
-  const long num_points = pcs.size();
-  qassert((long)prop0.size() == num_points);
+  const Long num_points = pcs.size();
+  qassert((Long)prop0.size() == num_points);
   vector<WilsonMatrix> tmp;
   tmp.resize(num_points);
   set_zero(tmp);
@@ -189,7 +189,7 @@ inline void prop_apply_gauge_transformation(
   TIMER("prop_apply_gauge_transformation");
   const Geometry& geo = gt.geo();
   qassert(geo.multiplicity == 1);
-  const long num_points = psel.size();
+  const Long num_points = psel.size();
   qassert(prop0.initialized == true);
   qassert(prop0.n_points == num_points);
   qassert(prop0.multiplicity == 1);
@@ -250,7 +250,7 @@ inline void make_temporal_gauge_transformation(GaugeTransform& gt,
     refresh_expanded(gt1);
     const int tg = mod(tgref + tgrel, total_site[dir]);
 #pragma omp parallel for
-    for (long index = 0; index < geo.local_volume(); ++index) {
+    for (Long index = 0; index < geo.local_volume(); ++index) {
       Coordinate xl = geo.coordinate_from_index(index);
       Coordinate xg = geo.coordinate_g_from_l(xl);
       if (tg == xg[dir]) {

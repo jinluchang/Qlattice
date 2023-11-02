@@ -180,8 +180,8 @@ inline void collect_field_selection(const std::string& job_tag, const int traj)
     qmkdir_info(ssprintf("data/field-selection"));
     qmkdir_info(ssprintf("data/field-selection/%s", job_tag.c_str()));
     const Coordinate total_site = get_total_site(job_tag);
-    const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
-    const long n_per_tslice = spatial_vol / 16;
+    const Long spatial_vol = total_site[0] * total_site[1] * total_site[2];
+    const Long n_per_tslice = spatial_vol / 16;
     const RngState rs_sel =
         RngState("field-sel").split(old_job_tag).split(traj);
     FieldSelection fsel;
@@ -227,7 +227,7 @@ inline void collect_gauge_transform(const std::string& job_tag, const int traj)
     qmkdir_info(ssprintf("data/gauge-transform"));
     qmkdir_info(ssprintf("data/gauge-transform/%s", job_tag.c_str()));
     GaugeTransform gt;
-    const long total_bytes = read_field_double(gt, fn_old);
+    const Long total_bytes = read_field_double(gt, fn_old);
     qassert(total_bytes > 0);
     qassert(is_initialized(gt));
     write_field_double(gt, fn);
@@ -256,8 +256,8 @@ inline void set_sparse_parameters(std::vector<Coordinate>& psel,
   qassert(fn_field_selection != "");
   psel = load_lbl_pcs_info(fn_point_selection);
   const Coordinate total_site = get_total_site(job_tag);
-  const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
-  const long n_per_tslice = spatial_vol / 16;
+  const Long spatial_vol = total_site[0] * total_site[1] * total_site[2];
+  const Long n_per_tslice = spatial_vol / 16;
   read_field_selection(fsel, fn_field_selection, n_per_tslice);
 }
 
@@ -326,7 +326,7 @@ inline void collect_prop_psrc_light(const std::string& job_tag, const int traj)
     ShuffledBitSet sbs = mk_shuffled_bitset(fsel.f_rank, psel, new_size_node);
     ShuffledFieldsWriter sfw(path + ".acc", new_size_node, true);
     if (is_old_collection_ensemble(job_tag)) {
-      for (long i = 0; i < (long)pis.size(); ++i) {
+      for (Long i = 0; i < (Long)pis.size(); ++i) {
         const PointInfo& pi = pis[i];
         if (pi.type == type) {
           const Coordinate xg = pi.xg;
@@ -346,7 +346,7 @@ inline void collect_prop_psrc_light(const std::string& job_tag, const int traj)
           SelectedPoints<WilsonMatrix> sp;
           load_selected_points_complex(sp, old_path + ".lat");
           Propagator4d prop;
-          const long total_bytes = read_selected_field_double_from_float(
+          const Long total_bytes = read_selected_field_double_from_float(
               prop, old_path + ".sfield", fsel);
           qassert(total_bytes > 0);
           set_field_selected(prop, sp, prop.geo(), psel);
@@ -361,7 +361,7 @@ inline void collect_prop_psrc_light(const std::string& job_tag, const int traj)
       ShuffledFieldsReader sfr(old_path + "/sparse_point_src_props_light");
       ShuffledFieldsReader sfr_psel(old_path +
                                     "/sparse_psrc_point_src_props_light");
-      for (long i = 0; i < (long)pis.size(); ++i) {
+      for (Long i = 0; i < (Long)pis.size(); ++i) {
         const PointInfo& pi = pis[i];
         if (pi.type == type) {
           const Coordinate xg = pi.xg;
@@ -383,13 +383,13 @@ inline void collect_prop_psrc_light(const std::string& job_tag, const int traj)
           SelectedPoints<WilsonMatrix> sp;
           {
             Propagator4d prop_psel;
-            const long total_bytes_psel =
+            const Long total_bytes_psel =
                 read_double_from_float(sfr_psel, tag, prop_psel);
             qassert(total_bytes_psel > 0);
             set_selected_points(sp, prop_psel, psel);
           }
           Propagator4d prop;
-          const long total_bytes = read_double_from_float(sfr, tag, prop);
+          const Long total_bytes = read_double_from_float(sfr, tag, prop);
           qassert(total_bytes > 0);
           set_field_selected(prop, sp, prop.geo(), psel);
           write_float_from_double(sfw, psrc_tag, prop, sbs);
@@ -444,7 +444,7 @@ inline void collect_prop_psrc_strange(const std::string& job_tag,
     ShuffledBitSet sbs = mk_shuffled_bitset(fsel.f_rank, psel, new_size_node);
     ShuffledFieldsWriter sfw(path + ".acc", new_size_node, true);
     if (is_old_collection_ensemble(job_tag)) {
-      for (long i = 0; i < (long)pis.size(); ++i) {
+      for (Long i = 0; i < (Long)pis.size(); ++i) {
         const PointInfo& pi = pis[i];
         if (pi.type == type) {
           const Coordinate xg = pi.xg;
@@ -464,7 +464,7 @@ inline void collect_prop_psrc_strange(const std::string& job_tag,
           SelectedPoints<WilsonMatrix> sp;
           load_selected_points_complex(sp, old_path + ".lat");
           Propagator4d prop;
-          const long total_bytes = read_selected_field_double_from_float(
+          const Long total_bytes = read_selected_field_double_from_float(
               prop, old_path + ".sfield", fsel);
           qassert(total_bytes > 0);
           set_field_selected(prop, sp, prop.geo(), psel);
@@ -485,7 +485,7 @@ inline void collect_prop_psrc_strange(const std::string& job_tag,
         sfr_new_psel.init(old_path +
                           "/sparse_psrc_point_src_props_strange_new2");
       }
-      for (long i = 0; i < (long)pis.size(); ++i) {
+      for (Long i = 0; i < (Long)pis.size(); ++i) {
         const PointInfo& pi = pis[i];
         if (pi.type == type) {
           const Coordinate xg = pi.xg;
@@ -507,7 +507,7 @@ inline void collect_prop_psrc_strange(const std::string& job_tag,
           SelectedPoints<WilsonMatrix> sp;
           {
             Propagator4d prop_psel;
-            long total_bytes_psel = 0;
+            Long total_bytes_psel = 0;
             if (job_tag == "48I") {
               total_bytes_psel =
                   read_double_from_float(sfr_new_psel, tag, prop_psel);
@@ -520,7 +520,7 @@ inline void collect_prop_psrc_strange(const std::string& job_tag,
             set_selected_points(sp, prop_psel, psel);
           }
           Propagator4d prop;
-          long total_bytes = 0;
+          Long total_bytes = 0;
           if (job_tag == "48I") {
             total_bytes = read_double_from_float(sfr_new, tag, prop);
           }
@@ -583,7 +583,7 @@ inline void collect_prop_psrc_exact(const std::string& job_tag, const int traj)
     ShuffledBitSet sbs = mk_shuffled_bitset(fsel.f_rank, psel, new_size_node);
     ShuffledFieldsWriter sfw(path + ".acc", new_size_node, true);
     if (is_old_collection_ensemble(job_tag)) {
-      for (long i = 0; i < (long)pis.size(); ++i) {
+      for (Long i = 0; i < (Long)pis.size(); ++i) {
         const PointInfo& pi = pis[i];
         if (pi.accuracy == accuracy) {
           const Coordinate xg = pi.xg;
@@ -603,7 +603,7 @@ inline void collect_prop_psrc_exact(const std::string& job_tag, const int traj)
           SelectedPoints<WilsonMatrix> sp;
           load_selected_points_complex(sp, old_path + ".lat");
           Propagator4d prop;
-          const long total_bytes = read_selected_field_double_from_float(
+          const Long total_bytes = read_selected_field_double_from_float(
               prop, old_path + ".sfield", fsel);
           qassert(total_bytes > 0);
           set_field_selected(prop, sp, prop.geo(), psel);
@@ -621,7 +621,7 @@ inline void collect_prop_psrc_exact(const std::string& job_tag, const int traj)
                                     "/sparse_psrc_point_src_props_light");
       ShuffledFieldsReader sfr_s_psel(old_path +
                                       "/sparse_psrc_point_src_props_strange");
-      for (long i = 0; i < (long)pis.size(); ++i) {
+      for (Long i = 0; i < (Long)pis.size(); ++i) {
         const PointInfo& pi = pis[i];
         if (pi.accuracy == accuracy) {
           const Coordinate xg = pi.xg;
@@ -643,7 +643,7 @@ inline void collect_prop_psrc_exact(const std::string& job_tag, const int traj)
           SelectedPoints<WilsonMatrix> sp;
           {
             Propagator4d prop_psel;
-            long total_bytes_psel = 0;
+            Long total_bytes_psel = 0;
             total_bytes_psel = read_double_from_float(sfr_psel, tag, prop_psel);
             if (total_bytes_psel == 0) {
               total_bytes_psel =
@@ -653,7 +653,7 @@ inline void collect_prop_psrc_exact(const std::string& job_tag, const int traj)
             set_selected_points(sp, prop_psel, psel);
           }
           Propagator4d prop;
-          long total_bytes = 0;
+          Long total_bytes = 0;
           total_bytes = read_double_from_float(sfr, tag, prop);
           if (total_bytes == 0) {
             total_bytes = read_double_from_float(sfr_s, tag, prop);
@@ -773,7 +773,7 @@ inline void collect_prop_wsrc_light(const std::string& job_tag, const int traj)
           SelectedPoints<WilsonMatrix> sp;
           load_selected_points_complex(sp, old_path + ".lat");
           Propagator4d prop;
-          const long total_bytes = read_selected_field_double_from_float(
+          const Long total_bytes = read_selected_field_double_from_float(
               prop, old_path + ".sfield", fsel);
           qassert(total_bytes > 0);
           set_field_selected(prop, sp, prop.geo(), psel);
@@ -806,7 +806,7 @@ inline void collect_prop_wsrc_light(const std::string& job_tag, const int traj)
               old_job_tag.c_str(), traj, tslice, type, accuracy);
           SelectedPoints<WilsonMatrix> sp;
           Propagator4d prop_psel;
-          const long total_bytes_psel =
+          const Long total_bytes_psel =
               read_double_from_float(sfr_psel, tag, prop_psel);
           if (accuracy == 2 and total_bytes_psel == 0) {
             continue;
@@ -816,7 +816,7 @@ inline void collect_prop_wsrc_light(const std::string& job_tag, const int traj)
           set_selected_points(sp, prop_psel, psel);
           prop_psel.init();
           Propagator4d prop;
-          const long total_bytes = read_double_from_float(sfr, tag, prop);
+          const Long total_bytes = read_double_from_float(sfr, tag, prop);
           qassert(total_bytes > 0);
           set_field_selected(prop, sp, prop.geo(), psel);
           write_float_from_double(sfw, wsrc_tag, prop, sbs);
@@ -896,7 +896,7 @@ inline void collect_prop_wsrc_strange(const std::string& job_tag,
           SelectedPoints<WilsonMatrix> sp;
           load_selected_points_complex(sp, old_path + ".lat");
           Propagator4d prop;
-          const long total_bytes = read_selected_field_double_from_float(
+          const Long total_bytes = read_selected_field_double_from_float(
               prop, old_path + ".sfield", fsel);
           qassert(total_bytes > 0);
           set_field_selected(prop, sp, prop.geo(), psel);
@@ -929,7 +929,7 @@ inline void collect_prop_wsrc_strange(const std::string& job_tag,
               old_job_tag.c_str(), traj, tslice, type, accuracy);
           SelectedPoints<WilsonMatrix> sp;
           Propagator4d prop_psel;
-          const long total_bytes_psel =
+          const Long total_bytes_psel =
               read_double_from_float(sfr_psel, tag, prop_psel);
           if (accuracy == 2 and total_bytes_psel == 0) {
             continue;
@@ -939,7 +939,7 @@ inline void collect_prop_wsrc_strange(const std::string& job_tag,
           set_selected_points(sp, prop_psel, psel);
           prop_psel.init();
           Propagator4d prop;
-          const long total_bytes = read_double_from_float(sfr, tag, prop);
+          const Long total_bytes = read_double_from_float(sfr, tag, prop);
           qassert(total_bytes > 0);
           set_field_selected(prop, sp, prop.geo(), psel);
           write_float_from_double(sfw, wsrc_tag, prop, sbs);

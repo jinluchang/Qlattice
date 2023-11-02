@@ -28,7 +28,7 @@ inline void contract_psel_fsel_distribution_acc(FieldM<ComplexD, 1>& pos,
   s_pos.init(fsel, 1);
   const ComplexD coef = 1.0 / get_fsel_prob(fsel);
 #pragma omp parallel for
-  for (long idx = 0; idx < fsel.n_elems; ++idx) {
+  for (Long idx = 0; idx < fsel.n_elems; ++idx) {
     s_pos.get_elem(idx) = coef;
   }
   acc_field(pos, s_pos, ssp);
@@ -41,7 +41,7 @@ void rescale_field_with_psel_fsel_distribution(Field<M>& f,
   TIMER_VERBOSE("rescale_field_with_psel_fsel_distribution");
   const Geometry& geo = f.geo();
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const ComplexD factor = pfdist.get_elem(xl);
     Vector<M> fv = f.get_elems(xl);
@@ -87,7 +87,7 @@ inline void field_permute_mu_nu(FieldM<ComplexD, 8 * 8>& f)
   FieldM<ComplexD, 8 * 8> f0;
   f0 = f;
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Vector<ComplexD> fv0 = f0.get_elems_const(index);
     Vector<ComplexD> fv = f.get_elems(index);
     for (int mu = 0; mu < 8; ++mu) {
@@ -103,7 +103,7 @@ inline void field_conjugate_mu_nu(FieldM<ComplexD, 8 * 8>& f)
   TIMER_VERBOSE("field_conjugate_mu_nu");
   const Geometry& geo = f.geo();
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     Vector<ComplexD> fv = f.get_elems(index);
     for (int mu = 0; mu < 8; ++mu) {
       const double theta_mu = mu < 4 ? 1.0 : -1.0;
@@ -121,7 +121,7 @@ inline void field_complex_conjugate(Field<ComplexD>& f)
   TIMER_VERBOSE("field_complex_conjugate");
   const Geometry& geo = f.geo();
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     Vector<ComplexD> fv = f.get_elems(index);
     for (int m = 0; m < geo.multiplicity; ++m) {
       fv[m] = qconj(fv[m]);
@@ -134,8 +134,8 @@ inline void field_complex_conjugate(Field<ComplexD>& f)
 inline void contract_meson_vv_unshifted_acc_x(
     Vector<ComplexD> v, const ComplexD coef, const WallSrcProps& wsp1,
     const WallSrcProps& wsp2, const WilsonMatrix& wm3_x_y,
-    const Coordinate& xg_x, const long xg_x_idx, const Coordinate& xg_y,
-    const long xg_y_psel_idx, const int t_wall, const bool exact)
+    const Coordinate& xg_x, const Long xg_x_idx, const Coordinate& xg_y,
+    const Long xg_y_psel_idx, const int t_wall, const bool exact)
 {
   (void)xg_x;
   (void)xg_y;
@@ -164,8 +164,8 @@ inline void contract_meson_vv_unshifted_acc_x(
 inline void contract_meson_vv_unshifted_acc_x(
     Vector<ComplexD> v, const ComplexD coef, const WallSrcProps& wsp1,
     const WallSrcProps& wsp2, const WilsonMatrix& wm3_x_y,
-    const Coordinate& xg_x, const long xg_x_idx, const Coordinate& xg_y,
-    const long xg_y_psel_idx, const int t_wall)
+    const Coordinate& xg_x, const Long xg_x_idx, const Coordinate& xg_y,
+    const Long xg_y_psel_idx, const int t_wall)
 // perform AMA correction for wall src props
 {
   qassert(wsp1.exact_tslice_mask.size() == wsp2.exact_tslice_mask.size());
@@ -193,7 +193,7 @@ inline void contract_meson_vv_unshifted_acc_x(
 inline void contract_meson_vv_unshifted(
     std::vector<SelectedField<ComplexD> >& sfs, const WallSrcProps& wsp1,
     const WallSrcProps& wsp2, const SelProp& prop3_x_y, const Coordinate& xg_y,
-    const long xg_y_psel_idx, const int tsep, const PointsSelection& psel,
+    const Long xg_y_psel_idx, const int tsep, const PointsSelection& psel,
     const FieldSelection& fsel)
 // fsel.prob is NOT accounted.
 {
@@ -212,9 +212,9 @@ inline void contract_meson_vv_unshifted(
   SelectedField<ComplexD>& s_fission = sfs[1];
   const int yt = xg_y[3];
 #pragma omp parallel for
-  for (long idx = 0; idx < fsel.n_elems; ++idx) {
-    const long xg_x_idx = idx;
-    const long index = fsel.indices[idx];
+  for (Long idx = 0; idx < fsel.n_elems; ++idx) {
+    const Long xg_x_idx = idx;
+    const Long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const Coordinate& xg_x = xg;
@@ -241,7 +241,7 @@ inline void contract_meson_vv_unshifted(
 inline void contract_meson_vv_acc(
     FieldM<ComplexD, 8 * 8>& decay, FieldM<ComplexD, 8 * 8>& fission,
     const WallSrcProps& wsp1, const WallSrcProps& wsp2,
-    const SelProp& prop3_x_y, const Coordinate& xg_y, const long xg_y_psel_idx,
+    const SelProp& prop3_x_y, const Coordinate& xg_y, const Long xg_y_psel_idx,
     const int tsep, const PointsSelection& psel, const FieldSelection& fsel,
     const ShiftShufflePlan& ssp)
 // xg_y = psel[xg_y_psel_idx] is the point src location for prop3_x_y
@@ -289,8 +289,8 @@ inline WilsonMatrix get_wsnk_prop_avg(const WallSrcProps& wsp, const int t_snk,
 inline void contract_meson_vv_meson_unshifted_acc_x(
     Vector<ComplexD> v, const ComplexD coef, const WallSrcProps& wsp1,
     const WallSrcProps& wsp2, const WallSrcProps& wsp3,
-    const WilsonMatrix& wm4_x_y, const Coordinate& xg_x, const long xg_x_idx,
-    const Coordinate& xg_y, const long xg_y_psel_idx, const int t_wall_snk,
+    const WilsonMatrix& wm4_x_y, const Coordinate& xg_x, const Long xg_x_idx,
+    const Coordinate& xg_y, const Long xg_y_psel_idx, const int t_wall_snk,
     const bool exact_snk, const int t_wall_src, const bool exact_src)
 {
   (void)xg_x;
@@ -330,8 +330,8 @@ inline void contract_meson_vv_meson_unshifted_acc_x(
 inline void contract_meson_vv_meson_unshifted_acc_x(
     Vector<ComplexD> v, const ComplexD coef, const WallSrcProps& wsp1,
     const WallSrcProps& wsp2, const WallSrcProps& wsp3,
-    const WilsonMatrix& wm4_x_y, const Coordinate& xg_x, const long xg_x_idx,
-    const Coordinate& xg_y, const long xg_y_psel_idx, const int t_wall_snk,
+    const WilsonMatrix& wm4_x_y, const Coordinate& xg_x, const Long xg_x_idx,
+    const Coordinate& xg_y, const Long xg_y_psel_idx, const int t_wall_snk,
     const int t_wall_src)
 // perform AMA correction for wall src props
 {
@@ -409,7 +409,7 @@ inline void contract_meson_vv_meson_unshifted(
     std::vector<SelectedField<ComplexD> >& meson_vv_meson,
     const WallSrcProps& wsp1, const WallSrcProps& wsp2,
     const WallSrcProps& wsp3, const SelProp& prop4_x_y, const Coordinate& xg_y,
-    const long xg_y_psel_idx, const int tsep, const PointsSelection& psel,
+    const Long xg_y_psel_idx, const int tsep, const PointsSelection& psel,
     const FieldSelection& fsel)
 // fsel.prob is NOT accounted.
 {
@@ -428,9 +428,9 @@ inline void contract_meson_vv_meson_unshifted(
   SelectedField<ComplexD>& meson_vv_meson_backward = meson_vv_meson[1];
   const int yt = xg_y[3];
 #pragma omp parallel for
-  for (long idx = 0; idx < fsel.n_elems; ++idx) {
-    const long xg_x_idx = idx;
-    const long index = fsel.indices[idx];
+  for (Long idx = 0; idx < fsel.n_elems; ++idx) {
+    const Long xg_x_idx = idx;
+    const Long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const Coordinate& xg_x = xg;
@@ -460,7 +460,7 @@ inline void contract_meson_vv_meson_acc(
     FieldM<ComplexD, 8 * 8>& forward, FieldM<ComplexD, 8 * 8>& backward,
     const WallSrcProps& wsp1, const WallSrcProps& wsp2,
     const WallSrcProps& wsp3, const SelProp& prop4_x_y, const Coordinate& xg_y,
-    const long xg_y_psel_idx, const int tsep, const PointsSelection& psel,
+    const Long xg_y_psel_idx, const int tsep, const PointsSelection& psel,
     const FieldSelection& fsel, const ShiftShufflePlan& ssp)
 // xg_y = psel[xg_y_psel_idx] is the point src location for prop3_x_y
 // ssp = make_shift_shuffle_plan(fsel, -xg_y);
@@ -602,7 +602,7 @@ inline void contract_meson_chvp_acc(FieldM<ComplexD, 8 * 8>& mchvp,
     set_zero(mchvp);
   }
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const int yt = 0;

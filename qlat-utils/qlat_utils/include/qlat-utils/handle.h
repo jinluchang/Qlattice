@@ -61,7 +61,7 @@ struct API ConstHandle {
 template <class M>
 struct API Vector {
   M* p;
-  long n;
+  Long n;
   //
   qacc Vector<M>()
   {
@@ -84,7 +84,7 @@ struct API Vector {
     p = (M*)vec.data();
     n = vec.size();
   }
-  qacc Vector<M>(const M* p_, const long n_)
+  qacc Vector<M>(const M* p_, const Long n_)
   {
     p = (M*)p_;
     n = n_;
@@ -95,7 +95,7 @@ struct API Vector {
     n = 1;
   }
   //
-  qacc const M& operator[](const long i) const
+  qacc const M& operator[](const Long i) const
   {
     if (not(0 <= i && i < n)) {
 #ifndef QLAT_IN_ACC
@@ -108,7 +108,7 @@ struct API Vector {
     }
     return p[i];
   }
-  qacc M& operator[](const long i)
+  qacc M& operator[](const Long i)
   {
     if (not(0 <= i && i < n)) {
 #ifndef QLAT_IN_ACC
@@ -125,9 +125,9 @@ struct API Vector {
   qacc M* data() { return p; }
   qacc const M* data() const { return p; }
   //
-  qacc long size() const { return n; }
+  qacc Long size() const { return n; }
   //
-  qacc long data_size() const { return n * sizeof(M); }
+  qacc Long data_size() const { return n * sizeof(M); }
   //
   qacc Vector<M>& operator=(const Vector<M>& v)
   {
@@ -172,7 +172,7 @@ struct API Array {
   //
   qacc int size() const { return N; }
   //
-  qacc long data_size() const { return N * sizeof(M); }
+  qacc Long data_size() const { return N * sizeof(M); }
   //
   qacc Array<M, N>& operator=(const Array<M, N>& v)
   {

@@ -14,7 +14,7 @@ cdef class Geometry:
 
     def __cinit__(self):
         self.xx = cc.Geometry()
-        self.cdata = <long>&(self.xx)
+        self.cdata = <cc.Long>&(self.xx)
 
     def __init__(self, Coordinate total_site=None, int multiplicity=1):
         """
@@ -119,7 +119,7 @@ cdef class Geometry:
     def index_from_coordinate(self, Coordinate xg not None):
         return self.xx.index_from_coordinate(xg.xx)
 
-    def coordinate_from_index(self, long index):
+    def coordinate_from_index(self, cc.Long index):
         cdef Coordinate xl = Coordinate()
         cc.assign_direct(xl.xx, self.xx.coordinate_from_index(index))
         return xl
@@ -142,7 +142,7 @@ cdef class Geometry:
         from .field_selection import mk_xg_field
         f_xg = mk_xg_field(self)
         xg_arr = np.asarray(f_xg, dtype=np.int32)
-        cdef long local_volume = self.local_volume()
+        cdef cc.Long local_volume = self.local_volume()
         return xg_arr.reshape((local_volume, 4,))
 
 ### -------------------------------------------------------------------

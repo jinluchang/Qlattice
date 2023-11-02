@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// aLong with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
@@ -46,7 +46,7 @@ struct SprngSha256 {
   //
   static constexpr result_type max() { return UINT64_MAX; }
   //
-  void seed(result_type val = default_seed) { reset(rs, (long)val); }
+  void seed(result_type val = default_seed) { reset(rs, (Long)val); }
   template <class Sseq>
   typename std::enable_if<std::is_class<Sseq>::value>::type seed(Sseq& q)
   {

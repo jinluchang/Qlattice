@@ -110,7 +110,7 @@ struct vector_gpu{
   {
     Ty* pr = p;
     int GPU_ = GPU;
-    long n_ = n;
+    Long n_ = n;
     qGPU_for(isp, n_, GPU_, {pr[isp] = NULL;});
   }
 
@@ -241,12 +241,12 @@ struct vector_gpu{
     qlat::vector_gpu<Ty > copy;copy.resize(n, GPU);
     Ty* res = copy.data();Ty* src = p;
     //if(GPU){
-    //  qacc_for(isp, long(n),    {res[isp] = qlat::qconj(src[isp]) * src[isp];});
+    //  qacc_for(isp, Long(n),    {res[isp] = qlat::qconj(src[isp]) * src[isp];});
     //}
     //else{
-    //  qthread_for(isp, long(n), {res[isp] = qlat::qconj(src[isp]) * src[isp];});
+    //  qthread_for(isp, Long(n), {res[isp] = qlat::qconj(src[isp]) * src[isp];});
     //}
-    qGPU_for(isp, long(n), GPU, { res[isp] = qlat::qconj(src[isp]) * src[isp]; });
+    qGPU_for(isp, Long(n), GPU, { res[isp] = qlat::qconj(src[isp]) * src[isp]; });
     //if(GPU == true ){reduce_vec(res, tmp.data(), n, 1);}
     //if(GPU == false){reduce_cpu(res, tmp.data(), n, 1);}
     reduce_vec(res, tmp.data(), n, 1, GPU);
@@ -310,7 +310,7 @@ struct vector_gpu{
     //if(vp.GPU == true  and GPU == true ){mode_cpu =  1;}
     //cpy_data_thread(p, vp.p, n, mode_cpu, true, 1.0);
     //cpy_GPU(p, vp.p,n, GPU, vp.GPU, true, 1.0);
-    const long N = n;
+    const Long N = n;
     const int GPU_ = GPU;
     T*  r = p;
     Ty* s = vp.p;
@@ -327,7 +327,7 @@ struct vector_gpu{
     //if(vp.GPU == true  and GPU == true ){mode_cpu =  1;}
     //cpy_data_thread(p, vp.p, n, mode_cpu, true, -1.0);
     //cpy_GPU(p, vp.p,n, GPU, vp.GPU, true, -1.0);
-    const long N = n;
+    const Long N = n;
     const int GPU_ = GPU;
     T*  r = p;
     Ty* s = vp.p;
@@ -340,7 +340,7 @@ struct vector_gpu{
   {
     Ty* data = p;
     const int GPU_ = GPU;
-    qGPU_for(isp, long(n), GPU_, {
+    qGPU_for(isp, Long(n), GPU_, {
       data[isp] = f * data[isp];
     });
     return *this;
@@ -355,7 +355,7 @@ void qblas_xAXPY(vector_gpu<Ty>& y, vector_gpu<Ty>& x, T& alpha, T& beta = 0.0)
   Qassert(x.GPU == y.GPU and x.n == y.n);
   Ty* xp = x.p;
   Ty* yp = y.p;
-  const long N = x.n;
+  const Long N = x.n;
   const int GPU = x.GPU;
   if(beta != 0.0){
     qGPU_for(isp, N, GPU, {
@@ -375,7 +375,7 @@ Ty qblas_dot(vector_gpu<Ty>& y, vector_gpu<Ty>& x, bool conj = true)
   Qassert(x.GPU == y.GPU and x.n == y.n);
   Ty* xp = x.p;
   Ty* yp = y.p;
-  const long N = x.n;
+  const Long N = x.n;
   const int GPU = x.GPU;
   vector_gpu<Ty > buf;buf.resize(N, GPU);
   if(conj){

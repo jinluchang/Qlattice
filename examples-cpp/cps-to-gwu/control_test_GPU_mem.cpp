@@ -54,13 +54,13 @@ int main(int argc, char* argv[])
   int n = 1024;
   int w = 1024*64;
   a.resize(m*w);b.resize(n*w);c.resize(m*n);
-  qacc_for(coff, long(a.size()),{a[coff] = std::cos(coff*0.7);});
-  qacc_for(coff, long(b.size()),{b[coff] = qlat::ComplexD(std::cos(coff*1.7), 0.5/(coff+1));});
+  qacc_for(coff, Long(a.size()),{a[coff] = std::cos(coff*0.7);});
+  qacc_for(coff, Long(b.size()),{b[coff] = qlat::ComplexD(std::cos(coff*1.7), 0.5/(coff+1));});
 
   {TIMER("Loop A");
-  qacc_for(coff, long(m*n),{
-    long mi = coff/n;
-    long ni = coff%n;
+  qacc_for(coff, Long(m*n),{
+    Long mi = coff/n;
+    Long ni = coff%n;
     qlat::ComplexD buf = 0.0;
     for(int wi=0;wi<w;wi++){buf += a[mi*w + wi] * b[ni*w + wi];}
     c[coff] += buf;
@@ -74,13 +74,13 @@ int main(int argc, char* argv[])
   w = 2024*12;
 
   a.resize(m*w);b.resize(n*w);c.resize(m*n);
-  qacc_for(coff, long(a.size()),{a[coff] = std::cos(coff*0.7);});
-  qacc_for(coff, long(b.size()),{b[coff] = qlat::ComplexD(std::cos(coff*1.7), 0.5/(coff+1));});
+  qacc_for(coff, Long(a.size()),{a[coff] = std::cos(coff*0.7);});
+  qacc_for(coff, Long(b.size()),{b[coff] = qlat::ComplexD(std::cos(coff*1.7), 0.5/(coff+1));});
 
   {TIMER("Loop B");
-  qacc_for(coff, long(m*n),{
-    long mi = coff/n;
-    long ni = coff%n;
+  qacc_for(coff, Long(m*n),{
+    Long mi = coff/n;
+    Long ni = coff%n;
     qlat::ComplexD buf = 0.0;
     for(int wi=0;wi<w;wi++){buf += a[mi*w + wi] * b[ni*w + wi];}
     c[coff] += buf;

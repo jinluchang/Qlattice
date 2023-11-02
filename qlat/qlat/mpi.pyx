@@ -38,7 +38,7 @@ def get_coor_node():
 
 ### -------------------------------------------------------------------
 
-def bcast_long(long x, int root=0):
+def bcast_long(cc.Long x, int root=0):
     cc.bcast(x, root)
     return x
 
@@ -60,7 +60,7 @@ def bcast_lat_data(LatData ld, int root=0):
 
 ### -------------------------------------------------------------------
 
-def glb_sum_long(long x):
+def glb_sum_long(cc.Long x):
     cc.glb_sum(x)
     return x
 

@@ -98,13 +98,13 @@ cdef extern from "qlat-utils/handle.h" namespace "qlat":
         T& val() except +
     cdef cppclass Vector[T]:
         T* p
-        long n
+        Long n
         Vector()
-        Vector(const T* p, const long n)
-        T& operator[](const long i) except +
+        Vector(const T* p, const Long n)
+        T& operator[](const Long i) except +
         T* data()
-        long size()
-        long data_size()
+        Long size()
+        Long data_size()
 
 cdef extern from "qlat-utils/vector.h" namespace "qlat":
 
@@ -114,9 +114,9 @@ cdef extern from "qlat-utils/vector.h" namespace "qlat":
         Vector[T] v
         vector()
         void init()
-        long size()
+        Long size()
         T* data()
-        T& operator[](const long i) except +
+        T& operator[](const Long i) except +
     cdef cppclass vector_acc[T](vector[T]):
         vector_acc()
     cdef cppclass box[T]:
@@ -161,7 +161,7 @@ cdef extern from "qlat-utils/mat.h" namespace "qlat":
     ComplexD matrix_trace(const ColorMatrix& m1, const WilsonMatrix& m2)
     ComplexD matrix_trace(const ColorMatrix& m1, const ColorMatrix& m2)
     const SpinMatrix& get_gamma_matrix(const int mu)
-    void benchmark_matrix_functions(const long count)
+    void benchmark_matrix_functions(const Long count)
     WilsonMatrix g5_herm(const WilsonMatrix& m)
     SpinMatrix operator*(const ComplexD& a, const SpinMatrix& m)
     SpinMatrix operator*(const SpinMatrix& m, const ComplexD& a)
@@ -180,9 +180,9 @@ cdef extern from "qlat-utils/mat.h" namespace "qlat":
 cdef extern from "qlat-utils/env.h" namespace "qlat":
 
     double& get_time_limit()
-    long get_time_limit_default()
-    long& get_verbose_level()
-    long get_verbose_level_default()
+    Long get_time_limit_default()
+    Long& get_verbose_level()
+    Long get_verbose_level_default()
     double& get_time_budget()
     double get_time_budget_default()
 
@@ -213,9 +213,9 @@ cdef extern from "qlat-utils/timer.h" namespace "qlat":
         @staticmethod
         void display_stack_always()
         @staticmethod
-        void reset(long max_call_times_for_always_show_info)
+        void reset(Long max_call_times_for_always_show_info)
         @staticmethod
-        void fork(long max_call_times_for_always_show_info)
+        void fork(Long max_call_times_for_always_show_info)
         @staticmethod
         void merge()
 
@@ -276,8 +276,8 @@ cdef extern from "qlat-utils/coordinate-d.h" namespace "qlat":
         CoordinateD(const Coordinate& x)
         CoordinateD(double x, double y, double z, double t)
         double& operator[](unsigned long i)
-    Coordinate coordinate_from_index(long index, const Coordinate& size)
-    long index_from_coordinate(const Coordinate& x, const Coordinate& size)
+    Coordinate coordinate_from_index(Long index, const Coordinate& size)
+    Long index_from_coordinate(const Coordinate& x, const Coordinate& size)
     int eo_from_coordinate(const Coordinate& xl)
     Coordinate mod(const Coordinate& x, const Coordinate& size)
     Coordinate smod(const Coordinate& x, const Coordinate& size)
@@ -290,7 +290,7 @@ cdef extern from "qlat-utils/coordinate-d.h" namespace "qlat":
     Coordinate operator*(const int x, const Coordinate& y)
     bool operator==(const Coordinate& x, const Coordinate& y)
     Coordinate c_rand_gen(RngState& rs, const Coordinate& size)
-    long sqr(const Coordinate& xg)
+    Long sqr(const Coordinate& xg)
     CoordinateD operator+(const CoordinateD& x, const CoordinateD& y)
     CoordinateD operator-(const CoordinateD& x, const CoordinateD& y)
     CoordinateD operator*(const CoordinateD& x, const CoordinateD& y)
@@ -302,7 +302,7 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
 
     cdef cppclass LatDim:
         std_string name
-        long size
+        Long size
         std_vector[std_string] indices
         LatDim()
     ctypedef std_vector[LatDim] LatInfo
@@ -316,10 +316,10 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
         int ndim()
         double* data()
     LatDim lat_dim_re_im()
-    LatDim lat_dim_number(const std_string& name, const long start, const long end)
-    LatDim lat_dim_number(const std_string& name, const long start, const long end, const long inc)
+    LatDim lat_dim_number(const std_string& name, const Long start, const Long end)
+    LatDim lat_dim_number(const std_string& name, const Long start, const Long end, const Long inc)
     LatDim lat_dim_string(const std_string& name, const std_vector[std_string]& indices)
-    long lat_dim_idx(const LatDim& dim, const std_string& idx) except +
+    Long lat_dim_idx(const LatDim& dim, const std_string& idx) except +
     LatData operator*(const ComplexD& a, const LatData& ld) except +
     LatData operator*(const double a, const LatData& ld) except +
     LatData operator*(const LatData& ld, const ComplexD& a) except +
@@ -327,7 +327,7 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
     LatData operator+(const LatData& ld1, const LatData& ld2) except +
     LatData operator-(const LatData& ld1, const LatData& ld2) except +
     bool is_matching(const LatData& ld1, const LatData& ld2)
-    long lat_data_size(LatData& ld)
+    Long lat_data_size(LatData& ld)
     void lat_data_alloc(LatData& ld) except +
     Vector[double] get_data(const LatData& x)
     void set_zero(LatData& x)
@@ -339,7 +339,7 @@ cdef extern from "qlat-utils/qar-cache.h" namespace "qlat":
 
     bool does_regular_file_exist_qar(const std_string& path) except +
     bool does_file_exist_qar(const std_string& path) except +
-    long& get_qar_multi_vol_max_size()
+    Long& get_qar_multi_vol_max_size()
     void qar_build_index(const std_string& path_qar) except +
     int qar_create(const std_string& path_qar, const std_string& path_folder,
                    const bool is_remove_folder_after) except +

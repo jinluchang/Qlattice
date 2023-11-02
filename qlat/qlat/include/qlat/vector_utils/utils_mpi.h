@@ -85,7 +85,7 @@ unsigned int get_MPI_type(MPI_Datatype& curr)
 }
 
 template<typename Ty>
-void bcast_all_size(Ty *src, long size, int root, int GPU=0, MPI_Comm* commp=NULL)
+void bcast_all_size(Ty *src, Long size, int root, int GPU=0, MPI_Comm* commp=NULL)
 {
   TIMER("bcast_all_size");
   if(size == 0){return ;}
@@ -107,7 +107,7 @@ void bcast_all_size(Ty *src, long size, int root, int GPU=0, MPI_Comm* commp=NUL
 
 
 template<typename Ty>
-void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, const MPI_Comm* commp=NULL)
+void sum_all_size(Ty *src,Ty *sav,Long size, int GPU=0, const MPI_Comm* commp=NULL)
 {
   //TIMER("global sum sum_all_size");
   if(size == 0){return ;}
@@ -168,7 +168,7 @@ void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, const MPI_Comm* commp=NU
 }
 
 template<typename Ty>
-void sum_all_size(Ty *src,long size, int GPU=0, const MPI_Comm* commp=NULL)
+void sum_all_size(Ty *src,Long size, int GPU=0, const MPI_Comm* commp=NULL)
 {
   sum_all_size(src,src,size, GPU, commp);
 }
@@ -237,12 +237,12 @@ void MPI_Alltoallv_mode(Ty* src0, int* send, int* spls, Ty* res0, int* recv, int
   if(do_copy == false){src = src0; res = res0;}
 
   ////resize buffers
-  long max_src = 0;
-  long max_res = 0;
+  Long max_src = 0;
+  Long max_res = 0;
   if(do_copy == true){
     int num_node;MPI_Comm_size(comm, &num_node);
     for(int n = 0; n < num_node; n++){
-      long cur_size = spls[n]/sizeof(Ty) + send[n]/sizeof(Ty);
+      Long cur_size = spls[n]/sizeof(Ty) + send[n]/sizeof(Ty);
       if(cur_size > max_src){max_src = cur_size;}
       cur_size = rpls[n]/sizeof(Ty) + recv[n]/sizeof(Ty);
       if(cur_size > max_res){max_res = cur_size;}
@@ -283,7 +283,7 @@ void MPI_Alltoallv_mode(Ty* src0, int* send, int* spls, Ty* res0, int* recv, int
 ////Need add explanations
 ////sum all src or bcast each node data to others
 template<typename Ty>
-void Redistribute_all_Nt(Ty *src,long size,const qlat::Geometry &geo, int GPU=0)
+void Redistribute_all_Nt(Ty *src,Long size,const qlat::Geometry &geo, int GPU=0)
 {
   if(qlat::get_num_node() == 1){return;}
   int Nt = geo.node_site[3];
@@ -296,7 +296,7 @@ void Redistribute_all_Nt(Ty *src,long size,const qlat::Geometry &geo, int GPU=0)
   if(mt != Nmpi){print0("Not supported !");Qassert(false);return;}
 
   /////int rank  = qlat::get_id_node();
-  long size_c = sizeof(Ty)*size/mt;
+  Long size_c = sizeof(Ty)*size/mt;
 
   std::vector<int > send,recv,spls,rpls;
   send.resize(Nmpi);
@@ -328,7 +328,7 @@ void Redistribute_all_Nt(Ty *src,long size,const qlat::Geometry &geo, int GPU=0)
 
 ////sum all src or bcast each node data to others
 template<typename Ty>
-void Bcast_all_Nt(Ty *src,long size,const qlat::Geometry &geo)
+void Bcast_all_Nt(Ty *src,Long size,const qlat::Geometry &geo)
 {
   if(qlat::get_num_node() == 1){return;}
   int Nt = geo.node_site[3];
@@ -345,7 +345,7 @@ void Bcast_all_Nt(Ty *src,long size,const qlat::Geometry &geo)
 
   int mt = nt/Nt;
   int rank  = qlat::get_id_node();
-  long size_c = sizeof(Ty)*size/mt;
+  Long size_c = sizeof(Ty)*size/mt;
 
   unsigned short t0 = 0;
   {
@@ -394,7 +394,7 @@ void sum_value_mpi(Ty& num)
   //int Nmpi  = qlat::get_num_node();
   //int rank  = qlat::get_id_node();
   Ty buf = num;
-  long nvalue = 0;
+  Long nvalue = 0;
   if(std::fabs(num) > 1e-30){nvalue = 1;}
   sum_all_size(&buf, 1);
   sum_all_size(&nvalue, 1);
@@ -432,15 +432,15 @@ inline int get_mpi_id_node_close()
   int masterSize;
   MPI_Comm_size(masterComm, &masterSize);
   // calculate number of node
-  long num_of_node = masterSize;
+  Long num_of_node = masterSize;
   MPI_Bcast(&num_of_node, 1, MPI_LONG, 0, nodeComm);
   // calculate id of node (master rank of the 0 local rank process)
-  long id_of_node = masterRank;
+  Long id_of_node = masterRank;
   MPI_Bcast(&id_of_node, 1, MPI_LONG, 0, nodeComm);
   Qassert(id_of_node < num_of_node);
   // calculate number of processes for each node
-  std::vector<long> n0(num_of_node, 0);
-  std::vector<long> n1(num_of_node, 0);
+  std::vector<Long> n0(num_of_node, 0);
+  std::vector<Long> n1(num_of_node, 0);
   n0[id_of_node] = 1;
   /////glb_sum(get_data(num_process_for_each_node));
   /////MPI_Allreduce(get_data(num_process_for_each_node), get_data(num_process_for_each_node), )
@@ -450,40 +450,40 @@ inline int get_mpi_id_node_close()
   ////printf("id_of_node %5d, total %5d \n", int(id_of_node), int(n1[id_of_node]));
 
   int id_node_local = localRank;
-  for (long i = 0; i < id_of_node; ++i) {
+  for (Long i = 0; i < id_of_node; ++i) {
     id_node_local += n1[i];
   }
 
   //// calculate the number of master comm (the maximum in num_process_for_each_node)
-  //long num_of_master_comm = 0;
-  //for (long i = 0; i < (long)num_process_for_each_node.size(); ++i) {
+  //Long num_of_master_comm = 0;
+  //for (Long i = 0; i < (Long)num_process_for_each_node.size(); ++i) {
   //  if (num_process_for_each_node[i] > num_of_master_comm) {
   //    num_of_master_comm = num_process_for_each_node[i];
   //  }
   //}
   //// calculate the id of the master comm (same as local rank)
-  //long id_of_master_comm = localRank;
+  //Long id_of_master_comm = localRank;
   //Qassert(id_of_master_comm < num_of_master_comm);
   //// calculate number of processes for each masterComm
-  //std::vector<long> num_process_for_each_master_comm(num_of_master_comm, 0);
+  //std::vector<Long> num_process_for_each_master_comm(num_of_master_comm, 0);
   //num_process_for_each_master_comm[id_of_master_comm] = 1;
   //glb_sum(get_data(num_process_for_each_master_comm));
   //Qassert(num_process_for_each_master_comm[id_of_master_comm] == masterSize);
   //// calculate id_node_in_shuffle
   // calculate the list of id_node for each id_node_in_shuffle
-  //std::vector<long> list_long(get_num_node(), 0);
+  //std::vector<Long> list_long(get_num_node(), 0);
   //list_long[id_node_in_shuffle] = get_id_node();
   //glb_sum(get_data(list_long));
   //std::vector<int> list(get_num_node(), 0);
-  //for (long i = 0; i < get_num_node(); ++i) {
+  //for (Long i = 0; i < get_num_node(); ++i) {
   //  list[i] = list_long[i];
   //}
   //// checking
   //Qassert(list[0] == 0);
-  //for (long i = 0; i < get_num_node(); ++i) {
+  //for (Long i = 0; i < get_num_node(); ++i) {
   //  Qassert(0 <= list[i]);
   //  Qassert(list[i] < get_num_node());
-  //  for (long j = 0; j < i; ++j) {
+  //  for (Long j = 0; j < i; ++j) {
   //    Qassert(list[i] != list[j]);
   //  }
   //}

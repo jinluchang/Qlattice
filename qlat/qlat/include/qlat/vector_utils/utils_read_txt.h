@@ -187,7 +187,7 @@ inline size_t get_file_size_MPI(const char *filename, bool silence = false)
   return sizen;
 }
 
-inline size_t guess_factor(size_t n, const long limit)
+inline size_t guess_factor(size_t n, const Long limit)
 {
   const int T = 30;
   std::vector<unsigned int > a;a.resize(T);
@@ -355,7 +355,7 @@ inline size_t read_input(const char *filename,std::vector<std::vector<std::strin
   }
   if(count_line == 5000){binary = true;}
   size_t off_file = ftell(filer);
-  if(binary){printf("Binary file or file line too long! \n");read_f.resize(0);off_file = 0;}
+  if(binary){printf("Binary file or file line too Long! \n");read_f.resize(0);off_file = 0;}
   fclose(filer);
 
   return off_file;
@@ -746,9 +746,9 @@ struct inputpara{
     if(find_para(std::string("FILE_ENDIAN"),FILE_ENDIAN)==0)FILE_ENDIAN  = std::string("NONE");
     if(find_para(std::string("VECS_TYPE"),VECS_TYPE)==0)VECS_TYPE  = std::string("NONE");
 
-    long maxline = 10000;
-    if(long(read_f.size()) < maxline){maxline = read_f.size();}
-    for(long li=0;li<maxline;li++){
+    Long maxline = 10000;
+    if(Long(read_f.size()) < maxline){maxline = read_f.size();}
+    for(Long li=0;li<maxline;li++){
       std::string tem = std::string("NONE");
       char mname[500];sprintf(mname, "INFOA%02d", int(li));
       if(find_para(std::string(mname), tem)!=0){INFOA.push_back(tem);}
@@ -971,8 +971,8 @@ struct corr_dat
   std::vector<std::string> dim_name;
 
   int  dim;
-  long total;
-  ////long off;
+  Long total;
+  ////Long off;
   std::vector<Ty > dat;
   std::string corr_name;
   std::string INFO_LIST;
@@ -992,8 +992,8 @@ struct corr_dat
   qlat::vector<char > buf;
   inputpara in_buf;
 
-  inline const Ty& operator[](const long i) const {Qassert(i < total); return dat[i]; }
-  inline Ty& operator[](const long i) {Qassert(i < total); return dat[i]; }
+  inline const Ty& operator[](const Long i) const {Qassert(i < total); return dat[i]; }
+  inline Ty& operator[](const Long i) {Qassert(i < total); return dat[i]; }
 
   //corr_dat<Ty >(bool null){
   //  std::string dimN = "NONE";
@@ -1076,9 +1076,9 @@ struct corr_dat
     INFOA.resize(0);
   }
 
-  inline long get_off(){
+  inline Long get_off(){
     if(key_T.size() == 0){return 0;}
-    long i_num = c_a_t[0];
+    Long i_num = c_a_t[0];
     for(LInt i=1;i<key_T.size();i++){
       i_num = (i_num)*key_T[i] + c_a_t[i];
     }
@@ -1086,7 +1086,7 @@ struct corr_dat
     return i_num;
   }
 
-  inline long get_off(std::string &site){
+  inline Long get_off(std::string &site){
     std::vector<std::string > tem = stringtolist(site);
     Qassert(int(tem.size()) == dim);
     for(LInt i=0;i<tem.size();i++){
@@ -1096,13 +1096,13 @@ struct corr_dat
     return get_off();
   }
 
-  inline std::vector<int > get_site(long n){
+  inline std::vector<int > get_site(Long n){
     std::vector<int > site;site.resize(dim);
     for(int iv=0;iv<dim;iv++){site[iv] = 0;}
-    long tem_i = n;
+    Long tem_i = n;
     for(int Ni=0; Ni < dim; Ni++)
     {
-      long N_T = 1;
+      Long N_T = 1;
       for(int numi = Ni+1;numi < dim;numi++)
       {
         N_T = N_T*key_T[numi];
@@ -1118,13 +1118,13 @@ struct corr_dat
     c_a_t = get_site(0);
   }
 
-  inline void shift_off(long off){
+  inline void shift_off(Long off){
     if(key_T.size() == 0){c_a_t.resize(0); return ;}
-    long cur = get_off();
+    Long cur = get_off();
     c_a_t = get_site(cur + off);
   }
 
-  inline long shift_off(std::vector<int > c_a_t_off){
+  inline Long shift_off(std::vector<int > c_a_t_off){
     if(c_a_t_off.size() == 0){return get_off();}
     Qassert(c_a_t_off.size() == (LInt) dim);
     c_a_t = c_a_t_off;
@@ -1275,9 +1275,9 @@ struct corr_dat
     if(head_off != 0 ){
       Qassert(small_size);
       Qassert(crc32_list.size() == crc32_size.size());
-      long Ns = crc32_size.size();
-      long total_write = 0;
-      for(long si=0;si<Ns;si++){
+      Long Ns = crc32_size.size();
+      Long total_write = 0;
+      for(Long si=0;si<Ns;si++){
         total_write += crc32_size[si] / write_bsize;
       }
       ////correct the file if not all total is written
@@ -1285,7 +1285,7 @@ struct corr_dat
         print0("Write additional data \n");
         shift_off(total_write);
         size_t diff = total - total_write;
-        const long cur = get_off();
+        const Long cur = get_off();
         crc32_t crc32_tem = write_part(cur, diff );
         crc32_list.push_back(crc32_tem);
         crc32_size.push_back(diff * write_bsize);
@@ -1295,11 +1295,11 @@ struct corr_dat
 
       /////calculate crc32 sum 
       size_t end_of_file = head_off;
-      for(long si=0;si<Ns;si++){
+      for(Long si=0;si<Ns;si++){
         end_of_file += crc32_size[si];
       }
       size_t pos_file_cur = head_off;
-      for(long si=0;si<Ns;si++){
+      for(Long si=0;si<Ns;si++){
         crc32_t crc32_tem = crc32_list[si];
         size_t cur = crc32_size[si];
         crc32_tem = crc32_combine(crc32_tem, 0, end_of_file - pos_file_cur - cur );
@@ -1367,10 +1367,10 @@ struct corr_dat
   }
 
   template<typename Ta>
-  void write_corr(Ta* src, const long size, int mode_copy = 0){
+  void write_corr(Ta* src, const Long size, int mode_copy = 0){
     TIMER("write_corr");
     ///if(size > total){abort_r("Write size too larg. \n");}
-    long cur = 0;
+    Long cur = 0;
     if(!small_size){
       cur = get_off();
     }
@@ -1386,11 +1386,11 @@ struct corr_dat
     if( is_double){double_size = size * sizeof(Ta)/sizeof(double);}
     if(!is_double){double_size = size * sizeof(Ta)/sizeof(float );}
 
-    if(long(double_size + cur) >  total){ 
+    if(Long(double_size + cur) >  total){ 
       if(key_T.size() < 1){
         print0("key_T size wrong!\n");MPI_Barrier(get_comm());
         fflush(stdout);Qassert(false);}
-      long each = total/key_T[0];long base = key_T[0];
+      Long each = total/key_T[0];Long base = key_T[0];
       size_t n = (double_size + cur + each - 1) / (each) - base;
       add_size(n);
       if(small_size)

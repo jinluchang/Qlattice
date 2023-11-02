@@ -151,10 +151,10 @@ template <typename Ty>
 void check_noise_high(qlat::FieldM<Ty, 1>& noise, std::vector<int >& sinkt, double& factor)
 {
   const qlat::Geometry& geo = noise.geo();
-  ////const long Nvol = geo.local_volume();
+  ////const Long Nvol = geo.local_volume();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
 
-  const long Nxyz = fd.Nx*fd.Ny*fd.Nz;
+  const Long Nxyz = fd.Nx*fd.Ny*fd.Nz;
 
   std::vector<double > count;
   count.resize(fd.nt);
@@ -163,9 +163,9 @@ void check_noise_high(qlat::FieldM<Ty, 1>& noise, std::vector<int >& sinkt, doub
   qthread_for(ti, fd.Nt, {
     const int tg = ti + fd.init;
 
-    for(long isp=0;isp<Nxyz;isp++)
+    for(Long isp=0;isp<Nxyz;isp++)
     {
-      const long off = ti * Nxyz + isp;
+      const Long off = ti * Nxyz + isp;
       {
         double tem_source =  qlat::qnorm(noise.get_elem_offset(off));
         if(qnorm(tem_source)> 1e-3)
@@ -193,7 +193,7 @@ void check_noise_high(qlat::FieldM<Ty, 1>& noise, std::vector<int >& sinkt, doub
 }
 
 /////get positions by spatial setups
-inline void grid_list_pos(const Coordinate& off_L,qlat::vector_acc<long > &Ngrid)
+inline void grid_list_pos(const Coordinate& off_L,qlat::vector_acc<Long > &Ngrid)
 {
   TIMERA("===grid_list_pos===")
   if(off_L.size() != 4){abort_r("dimention of positions wrong!\n ");}
@@ -235,7 +235,7 @@ inline void grid_list_pos(const Coordinate& off_L,qlat::vector_acc<long > &Ngrid
   }
 }
 
-inline Coordinate get_grid_off(long j0, const Coordinate& off_L, const Coordinate& pos_ini, const Coordinate& Lat)
+inline Coordinate get_grid_off(Long j0, const Coordinate& off_L, const Coordinate& pos_ini, const Coordinate& Lat)
 {
   if(pos_ini.size() != 4 or off_L.size() != 4){abort_r("dimension of positions wrong!\n ");}
   //////std::vector<int > pos;pos.resize(4);
@@ -246,7 +246,7 @@ inline Coordinate get_grid_off(long j0, const Coordinate& off_L, const Coordinat
   for(int i=0;i<4;i++){pos[i] += ((Lat[i]/(off_L[i]))*off_pos[i] ) %(Lat[i]);}
 
   //int it  = j0/(off_L[0]*off_L[1]*off_L[2]);
-  //long i0 = j0%(off_L[0]*off_L[1]*off_L[2]);
+  //Long i0 = j0%(off_L[0]*off_L[1]*off_L[2]);
   //int ix= i0/(off_L[1]*off_L[2]);
   //int iy= (i0%(off_L[1]*off_L[2]))/off_L[2];
   //int iz= i0%off_L[2];
@@ -261,13 +261,13 @@ inline Coordinate get_grid_off(long j0, const Coordinate& off_L, const Coordinat
 inline void grid_list_posT(std::vector<PointsSelection > &LMS_points, const Coordinate& off_L, const Coordinate& pos, const int combineT, const Coordinate& Lat)
 {
   TIMERA("===grid_list_posT===")
-  qlat::vector_acc<long > Nfull;
+  qlat::vector_acc<Long > Nfull;
   /////get positions by spatial setups
   grid_list_pos(off_L, Nfull);
 
   Coordinate cur_pos;
   Coordinate cur_off;
-  for(long gi=0;gi<Nfull.size();gi++){
+  for(Long gi=0;gi<Nfull.size();gi++){
     cur_pos = get_grid_off(Nfull[gi], off_L, pos, Lat);
     if(combineT == 0){
       for(int it = 0; it < off_L[3]; it++){
@@ -287,8 +287,8 @@ inline void grid_list_posT(std::vector<PointsSelection > &LMS_points, const Coor
       LMS_points.push_back(lms_res);
     }
   }
-  if(combineT == int(0)){Qassert(long(LMS_points.size()) == long(Nfull.size()*off_L[3]));}
-  if(combineT == int(1)){Qassert(long(LMS_points.size()) == long(Nfull.size()         ));}
+  if(combineT == int(0)){Qassert(Long(LMS_points.size()) == Long(Nfull.size()*off_L[3]));}
+  if(combineT == int(1)){Qassert(Long(LMS_points.size()) == Long(Nfull.size()         ));}
 }
 
 
@@ -311,7 +311,7 @@ void write_grid_point_to_src(Ty* res, const qnoiT& src, const PointsSelection& p
   ////Coordinate xg0 = geo.coordinate_g_from_l(xl0);
 
   Ty phase = 0.0;
-  for(long pi=0;pi<long(posL.size());pi++){
+  for(Long pi=0;pi<Long(posL.size());pi++){
   const Coordinate& pos = posL[pi];
   if(fd.coordinate_g_is_local(pos)){
     LInt isp = fd.index_l_from_g_coordinate(pos);
@@ -319,12 +319,12 @@ void write_grid_point_to_src(Ty* res, const qnoiT& src, const PointsSelection& p
     ////printf("src pos %d %d %d %d, real %.3f imag %.3f \n", pos[0], pos[1], pos[2], pos[3], phase.real(), phase.imag());
     qacc_forNB(d0, 12, {
       int d1 = d0;
-      long mi = d1*NTt*Nxyz + isp;
+      Long mi = d1*NTt*Nxyz + isp;
       int chi = mi/(total);
       LInt xi = mi%(total);
-      long bi = xi/b_size;
-      long bj = xi%b_size;
-      long off  = (chi*bfac+bi)*Ns*b_size  + d0*b_size + bj;
+      Long bi = xi/b_size;
+      Long bj = xi%b_size;
+      Long off  = (chi*bfac+bi)*Ns*b_size  + d0*b_size + bj;
       res[off] += phase;
     });
     /////phaseN = qlat::qnorm(src[isp]);
@@ -375,7 +375,7 @@ inline void get_grid_psel(PointsSelection& psel, const Coordinate& nv, const Coo
   //sum_all_size(&seed, 1 );
   //qlat::RngState rs(seed);
 
-  long total = 1;
+  Long total = 1;
   for(int i=0;i<4;i++){
    if(nv[i] < 0 or grid[i] < 0 or nv[i]%grid[i] != 0){print0("Grid offset wrong nv[i] %d, grid[i] %d !\n", nv[i], grid[i]);}
    total *= grid[i];
@@ -451,10 +451,10 @@ void get_noises_Coordinate(const qlat::FieldM<Ty, 1>& noise, PointsSelection& ps
   std::vector<int > grid_pos_global = sum_local_to_global_vector(grid_pos);
   /////for(unsigned int i=0;i< grid_pos_global.size();i++){print0("i %d %d \n",i ,grid_pos_global[i]);}
 
-  long total = grid_pos_global.size()/DIM;
+  Long total = grid_pos_global.size()/DIM;
 
   psel.resize(total);Coordinate tem;
-  for(long p =0;p < total;p++){
+  for(Long p =0;p < total;p++){
     for(int i=0;i < DIM; i++ ){tem[i] = grid_pos_global[p*4 + i];}
     psel[p] = tem;
   }
@@ -470,7 +470,7 @@ void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp,
   TIMERA("get_mix_color_src");
   Qassert(src.initialized);
   const qlat::Geometry& geo = src.geo();
-  const long V_local = geo.local_volume();
+  const Long V_local = geo.local_volume();
 
   Ty* srcP = (Ty*) qlat::get_data(src).data();
   zero_Ty(srcP, V_local*civ, 0);
@@ -546,7 +546,7 @@ void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp,
     }
     
     qthread_for(isp, geo.local_volume(), {
-      const long rank = fsel.f_local_idx.get_elem_offset(isp);
+      const Long rank = fsel.f_local_idx.get_elem_offset(isp);
       if(rank >= 0){
         const Coordinate xl  = geo.coordinate_from_index(isp);
         const Coordinate xg  = geo.coordinate_g_from_l(xl);
@@ -598,7 +598,7 @@ void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp,
   if(type_src == 20) ////T grid src, all spatial the same for momenta projections
   {
     Qassert(offT > 0);Qassert(fd.nt % offT == 0);
-    Qassert(long(color_phases.size()) == fd.nt/offT * civ);
+    Qassert(Long(color_phases.size()) == fd.nt/offT * civ);
     /////qlat::RngState rs = qlat::RngState(seed + type_src*10 + qlat::get_id_node() * 5);
     Coordinate tem = sp;
     for(int ti = 0; ti < fd.nt/offT; ti ++)
@@ -623,7 +623,7 @@ void vec_apply_cut(qlat::vector_gpu<Ty >& res, const Coordinate& sp, const doubl
 {
   TIMER("vec_apply_cut");
   if(rmax < 0 ){return ;}
-  //const long V_local = geo.local_volume();
+  //const Long V_local = geo.local_volume();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
 
   qlat::vector_acc<int > nv, mv, Nv;
@@ -662,7 +662,7 @@ void get_point_color_src(std::vector<qlat::FieldM<Tr , civ> >& srcL,
   Qassert(srcL.size() == civ);
   Qassert(srcL[0].initialized);
   const qlat::Geometry& geo = srcL[0].geo();
-  const long V_local = geo.local_volume();
+  const Long V_local = geo.local_volume();
 
   std::vector<Tr* > srcP;srcP.resize(srcL.size());
   for(int ic=0;ic<srcL.size();ic++){
@@ -692,7 +692,7 @@ void make_point_prop(Propagator4dT<T>& prop, const Coordinate& sp = Coordinate(0
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
   if(fd.coordinate_g_is_local(sp))
   {
-    /////long isp = 0;
+    /////Long isp = 0;
     LInt isp = fd.index_l_from_g_coordinate(sp);
     Coordinate xl   = geo.coordinate_from_index(isp);
     Coordinate p    = geo.coordinate_g_from_l(xl);
@@ -713,7 +713,7 @@ void make_grid_src(Propagator4dT<Td >& src, const Coordinate& sp, const Coordina
   TIMERA("make_grid_src");
   Qassert(src.initialized);
   const qlat::Geometry& geo = src.geo();
-  const long V_local = geo.local_volume();
+  const Long V_local = geo.local_volume();
   const int civ = 12 * 12;
 
   qlat::ComplexT<Td >* srcP = (qlat::ComplexT<Td >*) qlat::get_data(src).data();

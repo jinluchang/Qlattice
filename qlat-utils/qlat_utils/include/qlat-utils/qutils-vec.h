@@ -155,7 +155,7 @@ qacc void set_zero(Vector<M> vec)
 template <class M, int N>
 qacc void set_zero(Array<M, N> arr)
 {
-  long size = N * sizeof(M);
+  Long size = N * sizeof(M);
   std::memset((void*)arr.data(), 0, size);
 }
 
@@ -172,7 +172,7 @@ qacc Vector<M> get_data(Vector<M> vec)
 }
 
 template <class M>
-qacc Vector<M> get_data(Vector<M> vec, const long size)
+qacc Vector<M> get_data(Vector<M> vec, const Long size)
 // only get a portion of the vec
 // vec should be at least size long
 {
@@ -215,7 +215,7 @@ qacc Vector<M> get_data_one_elem(const M& x)
   return Vector<M>(&x, 1);
 }
 
-qacc Vector<long> get_data(const long& x) { return get_data_one_elem(x); }
+qacc Vector<Long> get_data(const Long& x) { return get_data_one_elem(x); }
 
 qacc Vector<double> get_data(const double& x) { return get_data_one_elem(x); }
 
@@ -227,8 +227,8 @@ template <class T>
 qacc double qnorm(const Vector<T>& mm)
 {
   double sum = 0.0;
-  const long size = mm.size();
-  for (long i = 0; i < size; ++i) {
+  const Long size = mm.size();
+  for (Long i = 0; i < size; ++i) {
     sum += qnorm(mm[i]);
   }
   return sum;
@@ -238,9 +238,9 @@ template <class T>
 qacc double qnorm(const Vector<T>& m1, const Vector<T>& m2)
 {
   double sum = 0.0;
-  const long size = m1.size();
-  qassert(size == (long)m2.size());
-  for (long i = 0; i < size; ++i) {
+  const Long size = m1.size();
+  qassert(size == (Long)m2.size());
+  for (Long i = 0; i < size; ++i) {
     sum += qnorm(m1[i], m2[i]);
   }
   return sum;
@@ -249,7 +249,7 @@ qacc double qnorm(const Vector<T>& m1, const Vector<T>& m2)
 template <class N, class M>
 qacc Vector<N> get_data_as(const Vector<M>& v)
 {
-  const long n = v.data_size() / sizeof(N);
+  const Long n = v.data_size() / sizeof(N);
   Vector<N> v1((N*)v.data(), n);
   qassert(v1.data_size() == v.data_size());
   return v1;
@@ -268,13 +268,13 @@ qacc Vector<ComplexD> get_data_complex(const Vector<M>& v)
 }
 
 template <class M>
-qacc Vector<long> get_data_long(const Vector<M>& v)
+qacc Vector<Long> get_data_long(const Vector<M>& v)
 {
-  return get_data_as<long>(v);
+  return get_data_as<Long>(v);
 }
 
 template <class M>
-qacc long get_data_size(const M& x)
+qacc Long get_data_size(const M& x)
 {
   return get_data(x).data_size();
 }
@@ -433,7 +433,7 @@ qacc void assign_truncate(M& x, const N& y)
 
 qacc bool is_integer(const double& x)
 {
-  const double diff = x - (long)x;
+  const double diff = x - (Long)x;
   return 1e-6 > diff || diff > 1 - 1e-6;
 }
 
@@ -499,7 +499,7 @@ template <class M>
 qacc Vector<M> operator+=(Vector<M> v, const Vector<M> v1)
 {
   qassert(v.size() == v1.size());
-  for (long i = 0; i < v.size(); ++i) {
+  for (Long i = 0; i < v.size(); ++i) {
     v.p[i] += v1.p[i];
   }
   return v;
@@ -509,7 +509,7 @@ template <class M>
 qacc Vector<M> operator-=(Vector<M> v, const Vector<M> v1)
 {
   qassert(v.size() == v1.size());
-  for (long i = 0; i < v.size(); ++i) {
+  for (Long i = 0; i < v.size(); ++i) {
     v.p[i] -= v1.p[i];
   }
   return v;
@@ -518,7 +518,7 @@ qacc Vector<M> operator-=(Vector<M> v, const Vector<M> v1)
 template <class M>
 qacc Vector<M> operator*=(Vector<M> v, const double factor)
 {
-  for (long i = 0; i < v.size(); ++i) {
+  for (Long i = 0; i < v.size(); ++i) {
     v.p[i] *= factor;
   }
   return v;
@@ -527,7 +527,7 @@ qacc Vector<M> operator*=(Vector<M> v, const double factor)
 template <class M>
 qacc Vector<M> operator*=(Vector<M> v, const ComplexD factor)
 {
-  for (long i = 0; i < v.size(); ++i) {
+  for (Long i = 0; i < v.size(); ++i) {
     v.p[i] *= factor;
   }
   return v;
@@ -578,7 +578,7 @@ void set_u_rand_float(Vector<M> v, const RngState& rs, const double upper = 1.0,
 template <class M>
 bool does_vec_have(const std::vector<M>& vec, const M& val)
 {
-  for (long i = 0; i < (long)vec.size(); ++i) {
+  for (Long i = 0; i < (Long)vec.size(); ++i) {
     if (vec[i] == val) {
       return true;
     }
@@ -599,9 +599,9 @@ void vector_append(std::vector<M>& v, const std::vector<M>& v1)
 }
 
 template <class M>
-std::vector<long> vector_map_size(const std::vector<std::vector<M> >& datatable)
+std::vector<Long> vector_map_size(const std::vector<std::vector<M> >& datatable)
 {
-  std::vector<long> row_sizes(datatable.size());
+  std::vector<Long> row_sizes(datatable.size());
   for (size_t i = 0; i < datatable.size(); ++i) {
     const std::vector<M>& row = datatable[i];
     row_sizes[i] = row.size();
@@ -631,7 +631,7 @@ std::vector<M> vector_concat(const std::vector<std::vector<M> >& datatable)
 
 template <class M>
 std::vector<std::vector<M> > vector_split(const std::vector<M>& data,
-                                          const std::vector<long>& row_sizes)
+                                          const std::vector<Long>& row_sizes)
 {
   std::vector<std::vector<M> > datatable;
   datatable.resize(row_sizes.size());

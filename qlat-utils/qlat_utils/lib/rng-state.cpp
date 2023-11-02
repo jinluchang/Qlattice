@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// aLong with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <qlat-utils/assert.h>
 #include <qlat-utils/config.h>
@@ -167,7 +167,7 @@ void reset(RngState& rs, const std::string& seed)
   split_rng_state(rs, rs, seed);
 }
 
-void reset(RngState& rs, const long seed) { reset(rs, show(seed)); }
+void reset(RngState& rs, const Long seed) { reset(rs, show(seed)); }
 
 void split_rng_state(RngState& rs, const RngState& rs0,
                             const std::string& sindex)
@@ -200,7 +200,7 @@ void split_rng_state(RngState& rs, const RngState& rs0,
 }
 
 void split_rng_state(RngState& rs, const RngState& rs0,
-                            const long sindex)
+                            const Long sindex)
 {
   split_rng_state(rs, rs0, show(sindex));
 }

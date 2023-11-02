@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// aLong with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
@@ -69,7 +69,7 @@ bool qisnan(const std::vector<M>& arr)
 
 // --------------------
 
-qacc long modl(const long x, const long len)
+qacc Long modl(const Long x, const Long len)
 {
   qassert(0 < len);
   const int m = x % len;
@@ -193,16 +193,16 @@ inline std::string show(const Coordinate& x)
   return ssprintf("%dx%dx%dx%d", x[0], x[1], x[2], x[3]);
 }
 
-qacc long product(const Coordinate& coor)
+qacc Long product(const Coordinate& coor)
 {
-  long ret = 1;
+  Long ret = 1;
   for (int i = 0; i < (int)coor.size(); i++) {
     ret *= coor[i];
   }
   return ret;
 }
 
-qacc Coordinate coordinate_from_index(long index, const Coordinate& size)
+qacc Coordinate coordinate_from_index(Long index, const Coordinate& size)
 {
   Coordinate x;
   x[0] = index % size[0];
@@ -215,12 +215,12 @@ qacc Coordinate coordinate_from_index(long index, const Coordinate& size)
   return x;
 }
 
-qacc long index_from_coordinate(const Coordinate& x, const Coordinate& size)
+qacc Long index_from_coordinate(const Coordinate& x, const Coordinate& size)
 {
-  return ((((long)x[3] * (long)size[2]) + (long)x[2]) * (long)size[1] +
-          (long)x[1]) *
-             (long)size[0] +
-         (long)x[0];
+  return ((((Long)x[3] * (Long)size[2]) + (Long)x[2]) * (Long)size[1] +
+          (Long)x[1]) *
+             (Long)size[0] +
+         (Long)x[0];
 }
 
 qacc int eo_from_coordinate(const Coordinate& xl)
@@ -328,8 +328,8 @@ qacc Coordinate middle_mod(const Coordinate& x, const Coordinate& y,
 
 qacc Coordinate c_rand_gen(RngState& rs, const Coordinate& size)
 {
-  const long total_vol = product(size);
-  const long ri = rand_gen(rs) % total_vol;
+  const Long total_vol = product(size);
+  const Long ri = rand_gen(rs) % total_vol;
   return coordinate_from_index(ri, size);
 }
 
@@ -370,10 +370,10 @@ inline std::string show(const CoordinateD& c)
 
 // --------------------
 
-qacc long sqr(const Coordinate& xg)
+qacc Long sqr(const Coordinate& xg)
 {
-  return sqr((long)xg[0]) + sqr((long)xg[1]) + sqr((long)xg[2]) +
-         sqr((long)xg[3]);
+  return sqr((Long)xg[0]) + sqr((Long)xg[1]) + sqr((Long)xg[2]) +
+         sqr((Long)xg[3]);
 }
 
 qacc Coordinate operator/(const Coordinate& coor, const int integer)

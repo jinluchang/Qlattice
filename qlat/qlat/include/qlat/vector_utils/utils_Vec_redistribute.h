@@ -14,7 +14,7 @@ namespace qlat{
 ////////each MPI NT will have all nx,ny,nz
 struct Vec_redistribute
 {
-  long noden;int rank;int Nmpi;
+  Long noden;int rank;int Nmpi;
   int nx,ny,nz,nt,vol,Nvol;
   int Nx,Ny,Nz,Nt;
   int mx,my,mz,mt;
@@ -116,12 +116,12 @@ inline Vec_redistribute::Vec_redistribute(fft_desc_basic &fds, bool GPU_set)
 
   //////Needed for three point functions, need copy from dev
   secT.resize(fd->Nmpi);
-  for(long i=0;i<secT.size();i++){secT[i] = fd->Nt;}
+  for(Long i=0;i<secT.size();i++){secT[i] = fd->Nt;}
 
   //////if(secT_or.size()!=fd->Nmpi){print0("secT wrong %8d ! \n", int(secT_or.size()));Qassert(false);}
   ////secT = secT_or;
   ////Check same number secT for MPI
-  ////long mvol = mx*my*mz;
+  ////Long mvol = mx*my*mz;
   qlat::vector<int > check;check.resize(0);
   for(int n=0;n<fd->Nmpi;n++)
   {
@@ -139,7 +139,7 @@ inline Vec_redistribute::Vec_redistribute(fft_desc_basic &fds, bool GPU_set)
   ////Check same number secT for MPI
 
   map_mpi_vec.resize(Nmpi);
-  for(long mapi=0;mapi<map_mpi_vec.size();mapi++){map_mpi_vec[mapi] = 0;}
+  for(Long mapi=0;mapi<map_mpi_vec.size();mapi++){map_mpi_vec[mapi] = 0;}
 
   //for(int icomm=0;icomm<vec_comm_list.size();icomm++)
   //{MPI_Comm_free(&vec_comm_list[icomm]);}
@@ -179,7 +179,7 @@ inline void Vec_redistribute::set_mem(int b0_or,int civa_or)
   //fd->set_up_map();
   ///map i --> nz*ny*nx   to recieve position
   /////2 is the fatest
-  qlat::vector<long > mapcur_Vtoi;
+  qlat::vector<Long > mapcur_Vtoi;
   mapcur_Vtoi.resize(nx*ny*nz/Nv[orderN[2]]);
   int Nts = secT[fd->rank];
   for(int tmi=0;tmi<mt;tmi++)
@@ -218,7 +218,7 @@ inline void Vec_redistribute::set_mem(int b0_or,int civa_or)
 
   map_order.resize(b0*Nts * LoopN);
   map_Dorder.resize(b0*Nts * LoopN);
-  qthread_for(iv, long(b0*Nts * LoopN), {
+  qthread_for(iv, Long(b0*Nts * LoopN), {
     int bi   =  iv/(Nts*LoopN);
     int ti   = (iv%(Nts*LoopN))/LoopN;
     size_t i =  iv%(LoopN);
@@ -287,7 +287,7 @@ void Vec_redistribute::call_MPI(int flag)
   #if PRINT_TIMER>4
   TIMER_FLOPS("==Vec redistribute MPI reorder");
   double Total = 0.0;
-  for(long i=0;i<long(currsend.size());i++){Total += double(currsend[i]);}
+  for(Long i=0;i<Long(currsend.size());i++){Total += double(currsend[i]);}
   timer.flops  += Total*sizeof(Ty);
   #endif
 
@@ -304,7 +304,7 @@ void Vec_redistribute::call_MPI(int flag)
   if(tem_off != int(off) or update_off == true){
     ///if(findN && sizeof(Ty)== 8){curr = MPI_FLOAT ;off = off/sizeof(float)  ;findN=false;}
     ///if(findN && sizeof(Ty)==16){curr = MPI_DOUBLE;off = off/sizeof(double) ;findN=false;}
-    ///////print0("Check int %d, long %d \n",sizeof(int), sizeof(long));
+    ///////print0("Check int %d, Long %d \n",sizeof(int), sizeof(Long));
     #pragma omp parallel for
     for(int n=0;n<Nmpi/mt;n++)sendM[n] = off*currsend[n];
     #pragma omp parallel for
@@ -359,7 +359,7 @@ void Vec_redistribute::re_order_recv(int flag)
   Ty* recv = (Ty*) recvV;
   Ty* send = (Ty*) sendV;
 
-  long bfac = Nv[orderN[2]]*civa;
+  Long bfac = Nv[orderN[2]]*civa;
   LInt* m0 = (LInt*) qlat::get_data(map_order).data();
   LInt* m1 = (LInt*) qlat::get_data(map_Dorder).data();
   if(flag==0){cpy_data_from_index(&send[0],&recv[0], m0, m1, map_order.size(), bfac, GPU, QTRUE);}

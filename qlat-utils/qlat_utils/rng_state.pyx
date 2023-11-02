@@ -18,7 +18,7 @@ import functools
 cdef class RngState:
 
     def __cinit__(self):
-        self.cdata = <long>&(self.xx)
+        self.cdata = <cc.Long>&(self.xx)
 
     def __init__(self, x=None, y=None):
         cdef cc.std_string seed
@@ -92,8 +92,8 @@ cdef class RngState:
         return self.u_rand_fill_double(arr, upper, lower)
 
     def u_rand_fill_double(self, double[:] arr, double upper=1.0, double lower=0.0):
-        cdef long size = arr.size
-        cdef long i
+        cdef cc.Long size = arr.size
+        cdef cc.Long i
         for i in range(size):
             arr[i] = cc.u_rand_gen(self.xx, upper, lower)
 
@@ -108,8 +108,8 @@ cdef class RngState:
         return self.g_rand_fill_double(arr, center, sigma)
 
     def g_rand_fill_double(self, double[:] arr, double center=0.0, double sigma=1.0):
-        cdef long size = arr.size
-        cdef long i
+        cdef cc.Long size = arr.size
+        cdef cc.Long i
         for i in range(size):
             arr[i] = cc.g_rand_gen(self.xx, center, sigma)
 
@@ -140,10 +140,10 @@ def random_permute(list l, RngState rs):
     Do not change `l`.
     Return a new permuted list.
     """
-    cdef long size = len(l)
+    cdef cc.Long size = len(l)
     cdef cc.std_vector[cc.PyObject*] vec
     vec.resize(size)
-    cdef long i = 0
+    cdef cc.Long i = 0
     for i in range(size):
         vec[i] = <cc.PyObject*>l[i]
     cc.random_permute(vec, rs.xx)

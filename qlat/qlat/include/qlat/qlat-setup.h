@@ -5,9 +5,9 @@
 namespace qlat
 {  //
 
-inline long& get_log_idx()
+inline Long& get_log_idx()
 {
-  static long idx = -1;
+  static Long idx = -1;
   return idx;
 }
 
@@ -16,7 +16,7 @@ inline void setup_log_idx(const std::string& path = "results")
   TIMER_VERBOSE("setup_log_idx");
   qmkdir_info(path);
   qmkdir_info(path + "/logs-lock");
-  for (long i = 0; true; ++i) {
+  for (Long i = 0; true; ++i) {
     const std::string fn = path + ssprintf("/logs-lock/%010d", i);
     if (!does_file_exist_sync_node(fn) && 0 == mkdir_lock(fn)) {
       get_log_idx() = i;
@@ -132,9 +132,9 @@ inline Coordinate get_total_site(const std::string& job_tag)
 {
   if (job_tag.substr(0, 5) == "free-" or job_tag.substr(0, 5) == "test-") {
     // eg: job_tag = "free-4nt8"
-    long size_l_dir = 0;
-    long size_t_dir = 0;
-    long cur = 5;
+    Long size_l_dir = 0;
+    Long size_t_dir = 0;
+    Long cur = 5;
     qassert(parse_long(size_l_dir, cur, job_tag));
     char c = 0;
     qassert(parse_char(c, cur, job_tag) and c == 'n');
@@ -293,11 +293,11 @@ inline std::string get_config_fn(const std::string& job_tag, const int traj)
   return "";
 }
 
-inline long load_configuration(GaugeField& gf, const std::string& job_tag,
+inline Long load_configuration(GaugeField& gf, const std::string& job_tag,
                                const int traj)
 {
   TIMER_VERBOSE("load_configuration");
-  long file_size = 0;
+  Long file_size = 0;
   const Geometry geo = get_geo(job_tag);
   gf.init(geo);
   if (job_tag.substr(0, 5) == "free-") {
@@ -438,8 +438,8 @@ inline std::vector<FermionAction> get_fermion_actions(
 }
 
 inline LancArg get_lanc_arg(const std::string& job_tag)
-// LancArg(double ch_alpha_, double ch_beta_, long ch_ord_, long n_use_, long
-// n_get_, long n_true_get_)
+// LancArg(double ch_alpha_, double ch_beta_, Long ch_ord_, Long n_use_, long
+// n_get_, Long n_true_get_)
 {
   LancArg la;
   if (job_tag.substr(0, 5) == "free-") {

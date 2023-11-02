@@ -37,10 +37,6 @@ constexpr int qlat_aligned_bytes(int size)
 namespace qlat
 {  //
 
-using Long = int64_t;
-
-using Int = int32_t;
-
 using RealD = double;
 
 using RealF = float;
@@ -91,7 +87,7 @@ ComplexT<T> qconj(const ComplexT<T>& x)
   return std::conj(x);
 }
 
-template <class T, std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
+template <class T>
 T qnorm(const ComplexT<T>& x)
 {
   return std::norm(x);

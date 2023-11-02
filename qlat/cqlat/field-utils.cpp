@@ -64,7 +64,7 @@ PyObject* set_elems_field_ctype(PyObject* p_field, const Coordinate& xg,
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
   const int multiplicity = f.geo().multiplicity;
-  qassert((long)PyBytes_Size(p_val) == (long)multiplicity * (long)sizeof(M));
+  qassert((Long)PyBytes_Size(p_val) == (Long)multiplicity * (Long)sizeof(M));
   const Vector<M> val((M*)PyBytes_AsString(p_val), multiplicity);
   field_set_elems(f, xg, val);
   Py_RETURN_NONE;
@@ -86,14 +86,14 @@ PyObject* set_elem_field_ctype(PyObject* p_field, const Coordinate& xg,
 }
 
 template <class M>
-PyObject* get_elems_field_ctype(PyObject* p_field, const long index)
+PyObject* get_elems_field_ctype(PyObject* p_field, const Long index)
 {
   const Field<M>& f = py_convert_type_field<M>(p_field);
   return py_convert(f.get_elems_const(index));
 }
 
 template <class M>
-PyObject* get_elem_field_ctype(PyObject* p_field, const long index, const int m)
+PyObject* get_elem_field_ctype(PyObject* p_field, const Long index, const int m)
 {
   const Field<M>& f = py_convert_type_field<M>(p_field);
   if (m >= 0) {
@@ -104,19 +104,19 @@ PyObject* get_elem_field_ctype(PyObject* p_field, const long index, const int m)
 }
 
 template <class M>
-PyObject* set_elems_field_ctype(PyObject* p_field, const long index,
+PyObject* set_elems_field_ctype(PyObject* p_field, const Long index,
                                 PyObject* p_val)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
   const int multiplicity = f.geo().multiplicity;
-  qassert((long)PyBytes_Size(p_val) == (long)multiplicity * (long)sizeof(M));
+  qassert((Long)PyBytes_Size(p_val) == (Long)multiplicity * (Long)sizeof(M));
   const Vector<M> val((M*)PyBytes_AsString(p_val), multiplicity);
   assign(f.get_elems(index), val);
   Py_RETURN_NONE;
 }
 
 template <class M>
-PyObject* set_elem_field_ctype(PyObject* p_field, const long index,
+PyObject* set_elem_field_ctype(PyObject* p_field, const Long index,
                                const int m, PyObject* p_val)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
@@ -136,9 +136,9 @@ PyObject* fft_fields_ctype(const std::vector<PyObject*>& p_field_vec,
                            const std::vector<bool>& fft_is_forwards,
                            int mode_fft = 1)
 {
-  const long n_field = p_field_vec.size();
+  const Long n_field = p_field_vec.size();
   std::vector<Handle<Field<M> > > vec(n_field);
-  for (long i = 0; i < n_field; ++i) {
+  for (Long i = 0; i < n_field; ++i) {
     vec[i].init(py_convert_type_field<M>(p_field_vec[i]));
   }
   fft_complex_fields(vec, fft_dirs, fft_is_forwards, mode_fft);
@@ -365,7 +365,7 @@ EXPORT(get_elems_field, {
   const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
   if (PyLong_Check(p_index)) {
-    const long index = py_convert_data<long>(p_index);
+    const Long index = py_convert_data<Long>(p_index);
     FIELD_DISPATCH(p_ret, get_elems_field_ctype, ctype, p_field, index);
   } else {
     const Coordinate xg = py_convert_data<Coordinate>(p_index);
@@ -378,14 +378,14 @@ EXPORT(get_elem_field, {
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_index = NULL;
-  long m = -1;
+  Long m = -1;
   if (!PyArg_ParseTuple(args, "OO|l", &p_field, &p_index, &m)) {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
   if (PyLong_Check(p_index)) {
-    const long index = py_convert_data<long>(p_index);
+    const Long index = py_convert_data<Long>(p_index);
     FIELD_DISPATCH(p_ret, get_elem_field_ctype, ctype, p_field, index, m);
   } else {
     const Coordinate xg = py_convert_data<Coordinate>(p_index);
@@ -405,7 +405,7 @@ EXPORT(set_elems_field, {
   const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
   if (PyLong_Check(p_index)) {
-    const long index = py_convert_data<long>(p_index);
+    const Long index = py_convert_data<Long>(p_index);
     FIELD_DISPATCH(p_ret, set_elems_field_ctype, ctype, p_field, index, p_val);
   } else {
     const Coordinate xg = py_convert_data<Coordinate>(p_index);
@@ -418,7 +418,7 @@ EXPORT(set_elem_field, {
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_index = NULL;
-  long m = -1;
+  Long m = -1;
   PyObject* p_val = NULL;
   if (!PyArg_ParseTuple(args, "OOlO", &p_field, &p_index, &m, &p_val)) {
     return NULL;
@@ -426,7 +426,7 @@ EXPORT(set_elem_field, {
   const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
   if (PyLong_Check(p_index)) {
-    const long index = py_convert_data<long>(p_index);
+    const Long index = py_convert_data<Long>(p_index);
     FIELD_DISPATCH(p_ret, set_elem_field_ctype, ctype, p_field, index, m, p_val);
   } else {
     const Coordinate xg = py_convert_data<Coordinate>(p_index);
@@ -453,7 +453,7 @@ EXPORT(fft_fields, {
       py_convert_data<std::vector<PyObject*> >(p_field_vec);
   qassert(p_f_vec.size() >= 1);
   const std::string ctype = py_get_ctype(p_f_vec[0]);
-  for (long i = 0; i < (long)p_f_vec.size(); ++i) {
+  for (Long i = 0; i < (Long)p_f_vec.size(); ++i) {
     qassert(ctype == py_get_ctype(p_f_vec[i]));
   }
   const std::vector<int> fft_dirs =

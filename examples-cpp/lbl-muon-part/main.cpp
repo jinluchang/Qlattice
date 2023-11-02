@@ -9,7 +9,7 @@ void setField(qlat::Field<qlat::ComplexD>& f)
   TIMER("setField");
   const qlat::Geometry& geo = f.geo();
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (qlat::Long index = 0; index < geo.local_volume(); ++index) {
     qlat::Coordinate x = geo.coordinate_from_index(index);
     qlat::Vector<qlat::ComplexD> fx = f.get_elems(x);
     for (int m = 0; m < geo.multiplicity; ++m) {

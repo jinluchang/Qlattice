@@ -46,13 +46,13 @@ inline void compute_meson_vv_type(const std::string& job_tag, const int traj,
   }
   TIMER_VERBOSE("compute_meson_vv_type");
   const PointsSelection& psel = get_point_selection(job_tag, traj);
-  const long n_points = psel.size();
+  const Long n_points = psel.size();
   const FieldSelection& fsel = get_field_selection(job_tag, traj);
   const int tsep = tsep_op_wall_src(job_tag);
   std::map<std::string, FieldM<ComplexD, 8 * 8> > cache;
-  long iter = 0;
-  for (long n = 0; n < n_points; ++n) {
-    const long xg_y_psel_idx = n;
+  Long iter = 0;
+  for (Long n = 0; n < n_points; ++n) {
+    const Long xg_y_psel_idx = n;
     const Coordinate& xg_y = psel[xg_y_psel_idx];
     if (get_point_src_info(job_tag, traj, xg_y, type3).size() == 0) {
       continue;
@@ -77,7 +77,7 @@ inline void compute_meson_vv_type(const std::string& job_tag, const int traj,
                             xg_y_psel_idx, tsep, psel, fsel, ssp);
     }
   }
-  const long n_iter = iter;
+  const Long n_iter = iter;
   for (int i = 0; i < num_type; ++i) {
     const int type1 = type1_list[i];
     const int type2 = type2_list[i];

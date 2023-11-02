@@ -116,7 +116,7 @@ qacc int& operator*=(int& x, const ComplexD& factor)
   return x;
 }
 
-qacc long& operator*=(long& x, const ComplexD& factor)
+qacc Long& operator*=(Long& x, const ComplexD& factor)
 {
   (void)x;
   (void)factor;
@@ -194,8 +194,8 @@ bool is_equal_vec(const Vec& v1, const Vec& v2)
   if (not b) {
     return false;
   } else {
-    const long s = v1.size();
-    for (long i = 0; i < s; ++i) {
+    const Long s = v1.size();
+    for (Long i = 0; i < s; ++i) {
       if (not(v1[i] == v2[i])) {
         return false;
       }
@@ -312,54 +312,54 @@ double adaptive_simpson(const F& f, const double a, const double b,
   }
 }
 
-qacc void split_work(long& start, long& size, const long total,
-                     const long num_worker, const long id_worker)
+qacc void split_work(Long& start, Long& size, const Long total,
+                     const Long num_worker, const Long id_worker)
 {
-  const long size_max = (total - 1) / num_worker + 1;
+  const Long size_max = (total - 1) / num_worker + 1;
   start = std::min(id_worker * size_max, total);
-  const long stop = std::min(start + size_max, total);
+  const Long stop = std::min(start + size_max, total);
   size = stop - start;
 }
 
-qacc long find_worker(const long idx, const long total, const long num_worker)
+qacc Long find_worker(const Long idx, const Long total, const Long num_worker)
 {
-  const long size_max = (total - 1) / num_worker + 1;
+  const Long size_max = (total - 1) / num_worker + 1;
   return idx / size_max;
 }
 
 template <typename T>
-std::vector<T> vector_drop(const std::vector<T>& vs, const long n)
+std::vector<T> vector_drop(const std::vector<T>& vs, const Long n)
 {
   if (n <= 0) {
     return vs;
   }
-  const long len = vs.size() - n;
+  const Long len = vs.size() - n;
   if (len <= 0) {
     return std::vector<T>();
   }
   std::vector<T> ret(len);
-  for (long i = 0; i < len; ++i) {
+  for (Long i = 0; i < len; ++i) {
     ret[i] = vs[i + n];
   }
   return ret;
 }
 
 template <typename T>
-std::vector<T> vector_block(const std::vector<T>& vs, const long n_block)
+std::vector<T> vector_block(const std::vector<T>& vs, const Long n_block)
 // need =, +=, *=
 {
   qassert(n_block >= 1);
-  const long size = vs.size();
+  const Long size = vs.size();
   if (n_block > size) {
     return vs;
   }
-  const long block_size = size / n_block;
+  const Long block_size = size / n_block;
   qassert(block_size >= 1);
-  const long reminder = size - block_size * n_block;
+  const Long reminder = size - block_size * n_block;
   std::vector<T> ret(n_block);
-  long cur = 0;
+  Long cur = 0;
   for (int i = 0; i < n_block; ++i) {
-    long count = 0;
+    Long count = 0;
     qassert(cur < size);
     ret[i] = vs[cur];
     cur += 1;
@@ -379,11 +379,11 @@ template <typename T>
 T average(const std::vector<T>& vs)
 // need =, +=, *=
 {
-  const long size = vs.size();
+  const Long size = vs.size();
   qassert(size >= 1);
   T val;
   val = vs[0];
-  for (long i = 1; i < size; ++i) {
+  for (Long i = 1; i < size; ++i) {
     val += vs[i];
   }
   val *= 1.0 / (double)size;
@@ -394,7 +394,7 @@ template <typename T>
 std::vector<T> jackknife(const std::vector<T>& vs)
 // need =, +=, *=
 {
-  const long size = vs.size();
+  const Long size = vs.size();
   qassert(size >= 1);
   std::vector<T> ret(size + 1);
   ret[0] = average(vs);
@@ -402,7 +402,7 @@ std::vector<T> jackknife(const std::vector<T>& vs)
     ret[1] = ret[0];
     return ret;
   }
-  for (long i = 0; i < size; ++i) {
+  for (Long i = 0; i < size; ++i) {
     ret[i + 1] = vs[i];
     ret[i + 1] *= -1.0 / (double)size;
     ret[i + 1] += ret[0];
@@ -415,14 +415,14 @@ template <typename T>
 T jackknife_sigma(const std::vector<T>& vs)
 // need =, *=, -, *, sqrt
 {
-  const long size = vs.size();
+  const Long size = vs.size();
   qassert(size >= 2);
   T val_sub, val_diff, val_sum, val2_sum;
   val_sub = vs[0];
   val_diff = vs[0] - val_sub;
   val_sum = val_diff;
   val2_sum = sqr(val_diff);
-  for (long i = 1; i < size; ++i) {
+  for (Long i = 1; i < size; ++i) {
     val_diff = vs[i] - val_sub;
     val_sum += val_diff;
     val2_sum += sqr(val_diff);

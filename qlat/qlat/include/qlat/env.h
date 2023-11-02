@@ -14,10 +14,10 @@ API inline int& get_field_init()
   return t;
 }
 
-API inline long& get_max_field_shift_direct_msg_size()
+API inline Long& get_max_field_shift_direct_msg_size()
 {
-  static long size = 1024L * 1024L * 1024L;
-  // static long size = 16;
+  static Long size = 1024L * 1024L * 1024L;
+  // static Long size = 16;
   return size;
 }
 

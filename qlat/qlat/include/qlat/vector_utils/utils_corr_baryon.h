@@ -36,7 +36,7 @@ void proton_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
   Qassert(prop1.size() == prop2.size());
   Qassert(prop1.size() == prop3.size());
   if(clear == 1){ini_resE(res, nmass, fd);}
-  if(clear == 0){Qassert(res.size() == long(nmass*NTt * Nxyz));}
+  if(clear == 0){Qassert(res.size() == Long(nmass*NTt * Nxyz));}
     
   ////Prop format, src d-4, c-3, sink d-4, c-3, Nt, EigenVTa<Nxyz>
   if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");Qassert(false);}
@@ -84,7 +84,7 @@ void proton_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
         Ty* tr0 = &(res.data()[(massi*NTt + ti)*Nxyz]);
 
         #if USEQACC==1
-        qacc_forNB(i, long(Nxyz),{ tr0[i] -= ((tp1[i]*tp2[i]*tp3[i] + tn1[i]*tn2[i]*tn3[i])*giE); });
+        qacc_forNB(i, Long(Nxyz),{ tr0[i] -= ((tp1[i]*tp2[i]*tp3[i] + tn1[i]*tn2[i]*tn3[i])*giE); });
         #else
         EAy vp1(tp1,Nxyz);
         EAy vp2(tp2,Nxyz);
@@ -160,8 +160,8 @@ void proton_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
     if(map_sec[(t-t0+nt)%nt]%2==0)
     {
       #if USEQACC==1
-      if(oppo==0)qacc_forNB(i, long(Nxyz), { tr0[i] += tv0[i]; });
-      if(oppo==1)qacc_forNB(i, long(Nxyz), { tr0[i] += tv1[i]; });
+      if(oppo==0)qacc_forNB(i, Long(Nxyz), { tr0[i] += tv0[i]; });
+      if(oppo==1)qacc_forNB(i, Long(Nxyz), { tr0[i] += tv1[i]; });
       #else
       if(oppo==0){r0 += v0;}
       if(oppo==1){r0 += v1;}
@@ -171,8 +171,8 @@ void proton_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
     if(map_sec[(t-t0+nt)%nt]%2==1)
     {
       #if USEQACC==1
-      if(oppo==0)qacc_forNB(i, long(Nxyz), { tr0[i] += tv1[i]; });
-      if(oppo==1)qacc_forNB(i, long(Nxyz), { tr0[i] += tv0[i]; });
+      if(oppo==0)qacc_forNB(i, Long(Nxyz), { tr0[i] += tv1[i]; });
+      if(oppo==1)qacc_forNB(i, Long(Nxyz), { tr0[i] += tv0[i]; });
       #else
       if(oppo==0){r0 += v1;}
       if(oppo==1){r0 += v0;}
@@ -287,7 +287,7 @@ void baryon_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
           Ty* tr0 = &(res.data()[(massi*NTt + ti)*Nxyz]);
 
           #if USEQACC==1
-          qacc_forNB(i, long(Nxyz),{ tr0[i] += (tp1[i]*tp2[i]*tp3[i] * giE); });
+          qacc_forNB(i, Long(Nxyz),{ tr0[i] += (tp1[i]*tp2[i]*tp3[i] * giE); });
           #else
           EAy vp1(tp1,Nxyz);
           EAy vp2(tp2,Nxyz);
@@ -400,9 +400,9 @@ void baryon_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
           Ty* tr0 = &rP[massi][(r0*NTt+ti)*Nxyz];
 
           #if USEQACC==1
-          if(insertion == 0)qacc_forNB(i, long(Nxyz),{ tr0[i] += (tp2[i]*tp3[i] * giE); });
-          if(insertion == 1)qacc_forNB(i, long(Nxyz),{ tr0[i] += (tp1[i]*tp3[i] * giE); });
-          if(insertion == 2)qacc_forNB(i, long(Nxyz),{ tr0[i] += (tp1[i]*tp2[i] * giE); });
+          if(insertion == 0)qacc_forNB(i, Long(Nxyz),{ tr0[i] += (tp2[i]*tp3[i] * giE); });
+          if(insertion == 1)qacc_forNB(i, Long(Nxyz),{ tr0[i] += (tp1[i]*tp3[i] * giE); });
+          if(insertion == 2)qacc_forNB(i, Long(Nxyz),{ tr0[i] += (tp1[i]*tp2[i] * giE); });
           #else
           EAy vp1(tp1,Nxyz);
           EAy vp2(tp2,Nxyz);
@@ -428,8 +428,8 @@ void baryon_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
   const qlat::Geometry &geo = prop1[0].geo();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
 
-  const long Nt = fd.Nt;
-  const long Nxyz = fd.Nx * fd.Ny * fd.Nz;
+  const Long Nt = fd.Nt;
+  const Long Nxyz = fd.Nx * fd.Ny * fd.Nz;
   ga_matrices_cps   ga_cps;
   ga_M& A = ga_cps.ga[1][3];
   ga_M& B = ga_cps.ga[1][3];
@@ -519,7 +519,7 @@ void baryon_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
         {
           Ty* src = (Ty*) qlat::get_data(buf[bind][vi]).data();
           Ty* res = (Ty*) qlat::get_data(resP[prj][vi]).data();
-          const long off_d = da*Nt*Nxyz + ti*Nxyz;
+          const Long off_d = da*Nt*Nxyz + ti*Nxyz;
           cpy_data_threadC(&res[off_d], &src[off_d], Nxyz, 1, false, sign);
         }
         qacc_barrier(dummy);
@@ -535,15 +535,15 @@ void baryon_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
 template<typename Ty, int bfac, int Blocks>
 __global__ void baryon_vectorEV_global(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
   char** gPP, unsigned char** oPP, const int* ivP,
-  const int nmass, const int NTt, const long Nxyz, const int Ngv)
+  const int nmass, const int NTt, const Long Nxyz, const int Ngv)
 {
   //unsigned long gi =  blockIdx.x*blockDim.x + threadIdx.x;
   const unsigned long gi =  blockIdx.x;
   //const unsigned int tid = threadIdx.x;
   const unsigned int tid = threadIdx.y*blockDim.x+ threadIdx.x;
   /////const unsigned int Tid = blockDim.x;
-  const long Ntotal = nmass * NTt * Nxyz;
-  const long Nbfac  = Ntotal/bfac;
+  const Long Ntotal = nmass * NTt * Nxyz;
+  const Long Nbfac  = Ntotal/bfac;
   __shared__ Ty P1[bfac*12*12];
   __shared__ Ty P2[bfac*12*12];
   __shared__ Ty P3[bfac*12*12];
@@ -551,10 +551,10 @@ __global__ void baryon_vectorEV_global(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
   if(gi*bfac < Ntotal){
 
   //__shared__ Ty buf[bfac*16+1];
-  ////const long offR0 = gi;
+  ////const Long offR0 = gi;
   int bi0= 0;int dc = 0;
   int ji = 0;int massi = 0;int ti = 0;
-  ////const long ixyz = (bi0*Nbfac + gi)%Nxyz;
+  ////const Long ixyz = (bi0*Nbfac + gi)%Nxyz;
 
   int jobN = bfac*12*12;
   unsigned int off = tid;
@@ -564,7 +564,7 @@ __global__ void baryon_vectorEV_global(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
     ji    = (bi0*Nbfac + gi)/Nxyz;
     massi = ji/NTt;
     ti    = ji%NTt;
-    long ixyz = (bi0*Nbfac + gi)%Nxyz;
+    Long ixyz = (bi0*Nbfac + gi)%Nxyz;
     //massi = (ji + bi)/NTt;
     //ti    = (ji + bi)%NTt;
     P1[dc*bfac + bi0] = p1[(massi*12*12 + dc)*NTt + ti][ixyz];
@@ -661,12 +661,12 @@ __global__ void baryon_vectorEV_global(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
 template<typename Ty, int bfac>
 void baryon_vectorEV_kernel(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
   char** gPP, unsigned char** oPP, const int* ivP,
-  const int nmass, const int NTt, const long Nxyz, const int Ngv)
+  const int nmass, const int NTt, const Long Nxyz, const int Ngv)
 {
-  long Ntotal  = nmass*NTt*Nxyz;
+  Long Ntotal  = nmass*NTt*Nxyz;
   ////print0("nmass %d, NTt %d, Nxyz %d \n", int(nmass), int(NTt), int(Nxyz));
   if(Ntotal % bfac != 0){abort_r("Please correct your bfac! \n");}
-  long Nbfac = Ntotal/bfac;
+  Long Nbfac = Ntotal/bfac;
 
   #if USEGLOBAL==1
   const int nt = 16;
@@ -684,11 +684,11 @@ void baryon_vectorEV_kernel(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
     Ty P2[bfac*12*12+1];
     Ty P3[bfac*12*12+1];
 
-    long ixyz = gi%Nxyz;
+    Long ixyz = gi%Nxyz;
     int ji    = (gi/Nxyz)*bfac + 0;
     int massi = ji/NTt;
     int ti    = ji%NTt;
-    const long offR0 = (massi*NTt + ti)*Nxyz + ixyz;
+    const Long offR0 = (massi*NTt + ti)*Nxyz + ixyz;
 
     for(int bi=0;bi<bfac;bi++)
     {
@@ -718,7 +718,7 @@ void baryon_vectorEV_kernel(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
         }
       }
 
-      long offR = iv * Ntotal;
+      Long offR = iv * Ntotal;
       Ty* r0 = &resP[offR + offR0];
       for(int bi=0;bi<bfac; bi++){
         r0[bi*Nxyz]  += buf[bi];
@@ -741,7 +741,7 @@ void baryon_vectorEV(Ty** p1, Ty** p2, Ty** p3, Ty* resP, int nmass,
 {
   TIMER("Proton_vectorEV");
   int NTt  = fd.Nv[3];
-  long Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
+  Long Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   int Ngv = GV.size()/16;
   Qassert(GV.size()  == 16*Ngv);
   Qassert(mLV.size() == 3*Ngv);
@@ -771,7 +771,7 @@ void baryon_vectorEV(Ty** p1, Ty** p2, Ty** p3, Ty* resP, int nmass,
 
   /////contraction Kernel
   #if USEKERNEL==1
-  ////long Ntotal  = nmass*NTt*Nxyz;
+  ////Long Ntotal  = nmass*NTt*Nxyz;
   /////const int Loff = 3*3*3*3*4*4*4*4;
   std::vector<std::vector<char > > giEL;giEL.resize(Ngv);//giEL.resize(  Ngv*Loff);
   std::vector<std::vector<unsigned char   > > oiL ;oiL.resize(Ngv );//oiL.resize(3*Ngv*Loff);
@@ -847,7 +847,7 @@ void baryon_vectorEV(Ty** p1, Ty** p2, Ty** p3, Ty* resP, int nmass,
   ///for(int iv=0;iv<Ngv;iv++){if(iv_size[iv] > maxNv){maxNv = iv_size[iv];}}
 
   //{
-  //long total = 0;
+  //Long total = 0;
   //for(int iv=0;iv<Ngv;iv++){total += iv_size[iv];}
   //print0("==Ngv %d, total %d \n", int(Ngv), int(total));
   //}
@@ -861,7 +861,7 @@ void baryon_vectorEV(Ty** p1, Ty** p2, Ty** p3, Ty* resP, int nmass,
   #if USEKERNEL==0
   for(int iv=0;iv<Ngv;iv++)
   {
-    long offR = iv*nmass*NTt * Nxyz;
+    Long offR = iv*nmass*NTt * Nxyz;
     const Ty* G  = &(GVP[iv*16 + 0]);
     const int*      mL = &(mLP[iv*3 + 0]);
     int bmL[3];
@@ -912,7 +912,7 @@ void baryon_vectorEV(Ty** p1, Ty** p2, Ty** p3, Ty* resP, int nmass,
           Ty* tr0 = &(resP[offR + (massi*NTt + ti)*Nxyz]);
 
           #if USEQACC==1
-          qacc_forNB(i, long(Nxyz),{ tr0[i] += (tp1[i]*tp2[i]*tp3[i] * giE); });
+          qacc_forNB(i, Long(Nxyz),{ tr0[i] += (tp1[i]*tp2[i]*tp3[i] * giE); });
           #else
           EAy vp1(tp1,Nxyz);
           EAy vp2(tp2,Nxyz);
@@ -940,7 +940,7 @@ void baryon_vectorEV(EigenTy& prop1, EigenTy& prop2, EigenTy& prop3,
   check_prop_size(prop1, fd);check_prop_size(prop2, fd);check_prop_size(prop3, fd);
 
   int NTt  = fd.Nv[3];
-  long Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
+  Long Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   ////check_prop_size(prop1);check_prop_size(prop2);check_prop_size(prop3);
   int nmass = prop1.size();
   Qassert(prop1.size() == prop2.size());

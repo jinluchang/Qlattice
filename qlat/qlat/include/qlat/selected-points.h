@@ -11,8 +11,8 @@ PointsSelection mk_tslice_point_selection(const Coordinate& total_site,
                                           const int t_dir = 3);
 
 PointsSelection mk_random_point_selection(const Coordinate& total_site,
-                                         const long num, const RngState& rs,
-                                         const long pool_factor = 2);
+                                         const Long num, const RngState& rs,
+                                         const Long pool_factor = 2);
 
 void save_point_selection(const PointsSelection& psel, const std::string& path);
 
@@ -53,7 +53,7 @@ bool is_initialized(const SelectedPoints<M>& sp)
 template <class M>
 bool is_consistent(const SelectedPoints<M>& sp, const PointsSelection& psel)
 {
-  return sp.initialized and sp.n_points == (long)psel.size();
+  return sp.initialized and sp.n_points == (Long)psel.size();
 }
 
 template <class M>
@@ -68,7 +68,7 @@ SelectedPoints<M>& operator+=(SelectedPoints<M>& f, const SelectedPoints<M>& f1)
     qassert(f.n_points == f1.n_points);
     qassert(f.points.size() == f1.points.size());
 #pragma omp parallel for
-    for (long k = 0; k < (long)f.points.size(); ++k) {
+    for (Long k = 0; k < (Long)f.points.size(); ++k) {
       f.points[k] += f1.points[k];
     }
   }
@@ -89,7 +89,7 @@ SelectedPoints<M>& operator-=(SelectedPoints<M>& f, const SelectedPoints<M>& f1)
     qassert(f.n_points == f1.n_points);
     qassert(f.points.size() == f1.points.size());
 #pragma omp parallel for
-    for (long k = 0; k < (long)f.points.size(); ++k) {
+    for (Long k = 0; k < (Long)f.points.size(); ++k) {
       f.points[k] -= f1.points[k];
     }
   }
@@ -102,7 +102,7 @@ SelectedPoints<M>& operator*=(SelectedPoints<M>& f, const double factor)
   TIMER("sel_points_operator*=(F,D)");
   qassert(f.initialized);
 #pragma omp parallel for
-  for (long k = 0; k < (long)f.points.size(); ++k) {
+  for (Long k = 0; k < (Long)f.points.size(); ++k) {
     f.points[k] *= factor;
   }
   return f;
@@ -114,7 +114,7 @@ SelectedPoints<M>& operator*=(SelectedPoints<M>& f, const ComplexD factor)
   TIMER("sel_points_operator*=(F,C)");
   qassert(f.initialized);
 #pragma omp parallel for
-  for (long k = 0; k < (long)f.points.size(); ++k) {
+  for (Long k = 0; k < (Long)f.points.size(); ++k) {
     f.points[k] *= factor;
   }
   return f;
@@ -129,9 +129,9 @@ void only_keep_selected_points(Field<M>& f, const PointsSelection& psel)
   Field<M> f1;
   f1.init(geo);
   set_zero(f1);
-  const long n_points = psel.size();
+  const Long n_points = psel.size();
 #pragma omp parallel for
-  for (long idx = 0; idx < n_points; ++idx) {
+  for (Long idx = 0; idx < n_points; ++idx) {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {
@@ -171,7 +171,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
   TIMER("set_selected_points(sp,f,psel)");
   const Geometry& geo = f.geo();
   qassert(geo.is_only_local);
-  const long n_points = psel.size();
+  const Long n_points = psel.size();
   sp.init(psel, geo.multiplicity);
   set_zero(sp);  // has to set_zero for glb_sum_byte_vec
   qthread_for(idx, n_points, {
@@ -195,7 +195,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
   TIMER("set_selected_points(sp,f,psel,m)");
   const Geometry& geo = f.geo();
   qassert(geo.is_only_local);
-  const long n_points = psel.size();
+  const Long n_points = psel.size();
   sp.init(psel, 1);
   set_zero(sp);  // has to set_zero for glb_sum_byte_vec
   qthread_for(idx, n_points, {
@@ -217,8 +217,8 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
   TIMER("set_field_selected(f,sp,geo,psel)");
   const Geometry geo = geo_reform(geo_, sp.multiplicity, 0);
   qassert(geo.is_only_local);
-  const long n_points = sp.n_points;
-  qassert(n_points == (long)psel.size());
+  const Long n_points = sp.n_points;
+  qassert(n_points == (Long)psel.size());
   if (is_keeping_data) {
     f.init_zero(geo);
   } else {
@@ -246,8 +246,8 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
 {
   TIMER("set_field_selected(f,sp,geo,psel,m)");
   const Geometry& geo = f.geo();
-  const long n_points = sp.n_points;
-  qassert(n_points == (long)psel.size());
+  const Long n_points = sp.n_points;
+  qassert(n_points == (Long)psel.size());
   qthread_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
@@ -268,11 +268,11 @@ void acc_field(Field<M>& f, const SelectedPoints<M>& sp, const Geometry& geo_,
   TIMER("acc_field(f,sp,geo,psel)");
   const Geometry geo = geo_reform(geo_, sp.multiplicity, 0);
   qassert(geo.is_only_local);
-  const long n_points = sp.n_points;
-  qassert(n_points == (long)psel.size());
+  const Long n_points = sp.n_points;
+  qassert(n_points == (Long)psel.size());
   f.init(geo);
 #pragma omp parallel for
-  for (long idx = 0; idx < n_points; ++idx) {
+  for (Long idx = 0; idx < n_points; ++idx) {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {
@@ -319,7 +319,7 @@ LatData lat_data_from_selected_points_complex(const SelectedPoints<M>& sp)
   ld.info.push_back(lat_dim_number("idx", 0, sp.n_points - 1));
   ld.info.push_back(lat_dim_number("m", 0, sp.multiplicity - 1));
   qassert(sizeof(M) >= sizeof(ComplexD));
-  ld.info.push_back(lat_dim_number("v", 0, (long)(sizeof(M) / sizeof(ComplexD)) - 1));
+  ld.info.push_back(lat_dim_number("v", 0, (Long)(sizeof(M) / sizeof(ComplexD)) - 1));
   ld.info.push_back(lat_dim_re_im());
   lat_data_alloc(ld);
   assign(get_data(ld.res), get_data(sp.points));
@@ -336,9 +336,9 @@ void selected_points_from_lat_data_complex(SelectedPoints<M>& sp,
   qassert(ld.info[1].name == "m");
   qassert(ld.info[2].name == "v");
   qassert(ld.info[3].name == "re-im");
-  const long n_points = ld.info[0].size;
-  const long multiplicity = ld.info[1].size;
-  const long sizof_M_vs_sizeof_complex = ld.info[2].size;
+  const Long n_points = ld.info[0].size;
+  const Long multiplicity = ld.info[1].size;
+  const Long sizof_M_vs_sizeof_complex = ld.info[2].size;
   qassert(sizeof(M) == sizof_M_vs_sizeof_complex * sizeof(ComplexD));
   qassert(ld.info[3].size == 2);
   sp.init(n_points, multiplicity);
@@ -354,7 +354,7 @@ LatData lat_data_from_selected_points_double(const SelectedPoints<M>& sp)
   ld.info.push_back(lat_dim_number("m", 0, sp.multiplicity - 1));
   qassert(sizeof(M) >= sizeof(double));
   ld.info.push_back(
-      lat_dim_number("v", 0, (long)(sizeof(M) / sizeof(double)) - 1));
+      lat_dim_number("v", 0, (Long)(sizeof(M) / sizeof(double)) - 1));
   lat_data_alloc(ld);
   assign(get_data(ld.res), get_data(sp.points));
   return ld;
@@ -369,9 +369,9 @@ void selected_points_from_lat_data_double(SelectedPoints<M>& sp,
   qassert(ld.info[0].name == "idx");
   qassert(ld.info[1].name == "m");
   qassert(ld.info[2].name == "v");
-  const long n_points = ld.info[0].size;
-  const long multiplicity = ld.info[1].size;
-  const long sizof_M_vs_sizeof_double = ld.info[2].size;
+  const Long n_points = ld.info[0].size;
+  const Long multiplicity = ld.info[1].size;
+  const Long sizof_M_vs_sizeof_double = ld.info[2].size;
   qassert(sizeof(M) == sizof_M_vs_sizeof_double * sizeof(double));
   sp.init(n_points, multiplicity);
   assign(get_data(sp.points), get_data(ld.res));
@@ -418,8 +418,8 @@ template <class M>
 void load_selected_points(SelectedPoints<M>& sp, const std::string& path)
 {
   TIMER_VERBOSE("load_selected_points");
-  long n_points = 0;
-  long multiplicity = 0;
+  Long n_points = 0;
+  Long multiplicity = 0;
   if (get_id_node() == 0) {
     LatData ld;
     ld.load(path);

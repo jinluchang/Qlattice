@@ -33,7 +33,7 @@ bool obtain_lock(const std::string& path)
     displayln_info(fname + ssprintf(": Lock obtained '%s'.", path.c_str()));
     return true;
   } else if (does_file_exist_sync_node(path_time)) {
-    long ret = 0;
+    Long ret = 0;
     if (0 == get_id_node()) {
       double time;
       reads(time, qcat(path_time));
@@ -102,7 +102,7 @@ void check_stop(const std::string& fn)
 
 bool does_file_exist_sync_node(const std::string& fn)
 {
-  long nfile = 0;
+  Long nfile = 0;
   if (0 == get_id_node()) {
     if (does_file_exist(fn)) {
       nfile = 1;
@@ -114,7 +114,7 @@ bool does_file_exist_sync_node(const std::string& fn)
 
 bool does_regular_file_exist_qar_sync_node(const std::string& fn)
 {
-  long nfile = 0;
+  Long nfile = 0;
   if (0 == get_id_node()) {
     if (does_regular_file_exist_qar(fn)) {
       nfile = 1;
@@ -126,7 +126,7 @@ bool does_regular_file_exist_qar_sync_node(const std::string& fn)
 
 bool does_file_exist_qar_sync_node(const std::string& fn)
 {
-  long nfile = 0;
+  Long nfile = 0;
   if (0 == get_id_node()) {
     if (does_file_exist_qar(fn)) {
       nfile = 1;
@@ -138,7 +138,7 @@ bool does_file_exist_qar_sync_node(const std::string& fn)
 
 bool is_directory_sync_node(const std::string& fn)
 {
-  long nfile = 0;
+  Long nfile = 0;
   if (0 == get_id_node()) {
     if (is_directory(fn)) {
       nfile = 1;
@@ -150,7 +150,7 @@ bool is_directory_sync_node(const std::string& fn)
 
 bool is_regular_file_sync_node(const std::string& fn)
 {
-  long nfile = 0;
+  Long nfile = 0;
   if (0 == get_id_node()) {
     if (is_regular_file(fn)) {
       nfile = 1;
@@ -183,7 +183,7 @@ int qmkdir_p_sync_node(const std::string& path, const mode_t mode)
 int mkdir_lock(const std::string& path, const mode_t mode)
 {
   TIMER("mkdir_lock");
-  long ret = 0;
+  Long ret = 0;
   if (0 == get_id_node()) {
     ret = mkdir(path.c_str(), mode);
   }
@@ -200,7 +200,7 @@ int mkdir_lock_all_node(const std::string& path, const mode_t mode)
 int rmdir_lock(const std::string& path)
 {
   TIMER("rmdir_lock");
-  long ret = 0;
+  Long ret = 0;
   if (0 == get_id_node()) {
     ret = rmdir(path.c_str());
   }
@@ -238,7 +238,7 @@ std::vector<std::string> qls_all_sync_node(const std::string& path,
 int qremove_info(const std::string& path)
 {
   TIMER_VERBOSE("qremove_info");
-  long ret = 0;
+  Long ret = 0;
   if (0 == get_id_node()) {
     ret = qremove(path);
   }
@@ -249,7 +249,7 @@ int qremove_info(const std::string& path)
 int qremove_all_info(const std::string& path)
 {
   TIMER_VERBOSE("qremove_all_info");
-  long ret = 0;
+  Long ret = 0;
   if (0 == get_id_node()) {
     ret = qremove_all(path);
   }
@@ -261,7 +261,7 @@ int qar_create_info(const std::string& path_qar,
                     const std::string& path_folder_,
                     const bool is_remove_folder_after)
 {
-  long ret = 0;
+  Long ret = 0;
   if (0 == get_id_node()) {
     ret = qar_create(path_qar, path_folder_, is_remove_folder_after);
   }
@@ -273,7 +273,7 @@ int qar_extract_info(const std::string& path_qar,
                      const std::string& path_folder_,
                      const bool is_remove_qar_after)
 {
-  long ret = 0;
+  Long ret = 0;
   if (0 == get_id_node()) {
     ret = qar_extract(path_qar, path_folder_, is_remove_qar_after);
   }
@@ -283,7 +283,7 @@ int qar_extract_info(const std::string& path_qar,
 
 int qcopy_file_info(const std::string& path_src, const std::string& path_dst)
 {
-  long ret = 0;
+  Long ret = 0;
   if (0 == get_id_node()) {
     ret = qcopy_file(path_src, path_dst);
   }
@@ -377,7 +377,7 @@ bool obtain_lock_all_node(const std::string& path)
     displayln_info(fname + ssprintf(": Lock obtained '%s'.", path.c_str()));
     return true;
   } else if (does_file_exist(path_time)) {
-    long ret = 0;
+    Long ret = 0;
     double time;
     reads(time, qcat(path_time));
     if (get_time() - time > 0.0 && 0 == qremove(path_time)) {

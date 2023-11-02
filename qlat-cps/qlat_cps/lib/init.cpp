@@ -8,7 +8,7 @@ void begin_with_cps(const std::vector<std::string>& sargs,
 {
   // make cargs
   std::vector<const char*> cargs(sargs.size() + 1);
-  for (long i = 0; i < (long)sargs.size(); ++i) {
+  for (Long i = 0; i < (Long)sargs.size(); ++i) {
     cargs[i] = sargs[i].c_str();
   }
   cargs.back() = NULL;

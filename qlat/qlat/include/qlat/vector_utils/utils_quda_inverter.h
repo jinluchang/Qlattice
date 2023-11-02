@@ -30,7 +30,7 @@ namespace qlat
 //#define DIMCG_DOUBLE 5
 
 struct quda_inverter {
-  long V;
+  Long V;
   int X[4];
   QudaGaugeParam  gauge_param;
   ////void* quda_gf_default;
@@ -41,7 +41,7 @@ struct quda_inverter {
   bool CG_reset;
 
   Geometry geo;
-  qlat::vector_acc<long > map_index;
+  qlat::vector_acc<Long > map_index;
   int solve_mode ;
   /////QudaInvertParam df_param;
 
@@ -534,7 +534,7 @@ inline void quda_inverter::save_prop(const void* srcP, const char* filename)
   for(int n = 0; n < prop.size(); n++){prop[n].init(geo);}
 
   qlat::ComplexD* src = (qlat::ComplexD*) srcP;
-  long Nvol = geo.local_volume() * n0 ;
+  Long Nvol = geo.local_volume() * n0 ;
 
   for(int n=0;n<n0;n++){
     quda_cf_to_qlat_cf(prop[n], &src[n*Nvol]);
@@ -743,7 +743,7 @@ inline void quda_inverter::save_evecs(const char* filename, const bool read, con
   qlat::Geometry geo;geo.init(total_site, 1);
 
   //std::vector<qlat::FieldM<qlat::ComplexF, 3> > eig;eig.resize(nsave);
-  long Nvol = geo.local_volume() * spinor_site_size;
+  Long Nvol = geo.local_volume() * spinor_site_size;
   std::vector<qlat::FieldM<qlat::ComplexD , 3> > eigD;eigD.resize(n0);
   //////if(read == false){eigD.resize(n0 + n1);}
   for(int n = 0; n < eigD.size(); n++){eigD[n].init(geo);}
@@ -1886,11 +1886,11 @@ inline void quda_inverter::random_src(const int seed)
   random_Ty((qlat::ComplexD*) gsrc->V(), gsrc->Volume() * spinor_site_size, 1, seed + 111111, random_mode);
   quda::blas::ax(0.05, *gsrc);
   quda::ComplexD* tmp = (quda::ComplexD*) (gsrc->V());
-  long totalN = gsrc->Volume() * spinor_site_size;
-  //for(long i=0;i<totalN/200 + 1;i++)
-  //for(long i=0;i< 50;i++)
+  Long totalN = gsrc->Volume() * spinor_site_size;
+  //for(Long i=0;i<totalN/200 + 1;i++)
+  //for(Long i=0;i< 50;i++)
   //{
-  //  long vi = long(quda::comm_drand()*totalN);
+  //  Long vi = Long(quda::comm_drand()*totalN);
   //  double ri = quda::comm_drand()*totalN;
   //  tmp[vi] = ri * quda::ComplexD(quda::comm_drand(), quda::comm_drand());
   //}
@@ -2426,7 +2426,7 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
   inv_param.gflops = solverParam.gflops;
   quda::comm_allreduce_sum(inv_param.gflops);
   inv_param.iter = solverParam.iter;
-  // cache is written out even if a long benchmarking job gets interrupted
+  // cache is written out even if a Long benchmarking job gets interrupted
   quda::saveTuneCache();
 }
 
@@ -2585,7 +2585,7 @@ inline void quda_inverter::invertQuda_COPY(quda::ColorSpinorField& res, quda::Co
   inv_param.gflops = solverParam.gflops;
   quda::comm_allreduce_sum(inv_param.gflops);
   inv_param.iter = solverParam.iter;
-  // cache is written out even if a long benchmarking job gets interrupted
+  // cache is written out even if a Long benchmarking job gets interrupted
   quda::saveTuneCache();
 }
 
@@ -2894,7 +2894,7 @@ void get_staggered_prop(quda_inverter& qinv, Ty* src, Ty* prop,
   //qlat_cf_to_quda_cf((qlat::ComplexD*) qinv.csrc->V(), src, geo, Dim);
 
   //{
-  //const long V = qinv.geo.local_volume();
+  //const Long V = qinv.geo.local_volume();
   //qlat::vector_gpu<Ty > tmp;tmp.resize(V*3);
   //tmp.copy_from(src, V*3);
   //Ty norm = tmp.norm();
@@ -3008,9 +3008,9 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
   timeval tm0,tm1;gettimeofday(&tm0, NULL);gettimeofday(&tm1, NULL);
 
   const int nsrc = src.size();
-  Qassert(nsrc == long(prop.size()) and nsrc == long(buf.size()));
+  Qassert(nsrc == Long(prop.size()) and nsrc == Long(buf.size()));
   if(nsrc == 0){return ;}
-  qlat::vector_acc<long >& map = qinv.map_index;
+  qlat::vector_acc<Long >& map = qinv.map_index;
   const Geometry& geo = qinv.geo;
   Qassert(low_only == 0 or low_only == 1);///0 for full, 1 for low only
 
@@ -3275,7 +3275,7 @@ void get_staggered_prop_group(quda_inverter& qinv, std::vector<colorFT >& src, s
   qlat::vector_acc<Ty* > r0;
   qlat::vector_acc<Ty* > b0;
   const int nsrc = src.size();
-  Qassert(nsrc == long(buf.size()) and nsrc == long(prop.size()));
+  Qassert(nsrc == Long(buf.size()) and nsrc == Long(prop.size()));
   s0.resize(nsrc);
   r0.resize(nsrc);
   b0.resize(nsrc);

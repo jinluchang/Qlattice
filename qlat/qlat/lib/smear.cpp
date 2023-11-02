@@ -24,7 +24,7 @@ void gf_ape_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
   gf.init(geo_resize(geo));
   qassert(is_matching_geo_mult(geo, gf.geo()));
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = gf.get_elems(xl);
     for (int mu = 0; mu < DIMN; ++mu) {
@@ -34,13 +34,13 @@ void gf_ape_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
 }
 
 void gf_ape_smear(GaugeField& gf, const GaugeField& gf0, const double alpha,
-                  const long steps)
+                  const Long steps)
 {
   TIMER_VERBOSE("gf_ape_smear");
   gf = gf0;
   GaugeField gf1;
   gf1.init(geo_resize(gf0.geo(), 1));
-  for (long i = 0; i < steps; ++i) {
+  for (Long i = 0; i < steps; ++i) {
     gf1 = gf;
     refresh_expanded(gf1);
     gf_ape_smear_no_comm(gf, gf1, alpha);
@@ -66,7 +66,7 @@ void gf_spatial_ape_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
   gf.init(geo_resize(geo));
   qassert(is_matching_geo_mult(geo, gf.geo()));
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = gf.get_elems(xl);
     for (int mu = 0; mu < 3; ++mu) {
@@ -77,7 +77,7 @@ void gf_spatial_ape_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
 }
 
 void gf_spatial_ape_smear(GaugeField& gf, const GaugeField& gf0,
-                          const double alpha, const long steps)
+                          const double alpha, const Long steps)
 {
   TIMER_VERBOSE("gf_spatial_ape_smear");
   gf = gf0;
@@ -85,7 +85,7 @@ void gf_spatial_ape_smear(GaugeField& gf, const GaugeField& gf0,
   const Coordinate expan_right(1, 1, 1, 0);
   GaugeField gf1;
   gf1.init(geo_resize(gf0.geo(), expan_left, expan_right));
-  for (long i = 0; i < steps; ++i) {
+  for (Long i = 0; i < steps; ++i) {
     gf1 = gf;
     refresh_expanded(gf1);
     gf_spatial_ape_smear_no_comm(gf, gf1, alpha);
@@ -189,7 +189,7 @@ void gf_hyp_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
   gf.init(geo_resize(geo));
   qassert(is_matching_geo_mult(geo, gf.geo()));
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = gf.get_elems(xl);
     for (int mu = 0; mu < DIMN; ++mu) {

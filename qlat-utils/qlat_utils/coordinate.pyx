@@ -80,7 +80,7 @@ cdef class Coordinate:
 
     def sqr(self):
         """
-        Return the square sum of all the components as ``long``.
+        Return the square sum of all the components as ``cc.Long``.
         """
         return cc.sqr(self.xx)
 
@@ -88,7 +88,7 @@ cdef class Coordinate:
         """
         get spatial distance square as int
         """
-        cdef long r_sqr = self.xx[0] * self.xx[0] + self.xx[1] * self.xx[1] + self.xx[2] * self.xx[2]
+        cdef cc.Long r_sqr = self.xx[0] * self.xx[0] + self.xx[1] * self.xx[1] + self.xx[2] * self.xx[2]
         return r_sqr
 
     def __getitem__(self, int key):
@@ -141,7 +141,7 @@ cdef class Coordinate:
     def __eq__(self, other):
         return isinstance(other, Coordinate) and self.xx == (<Coordinate>other).xx
 
-    def from_index(self, long index, Coordinate size):
+    def from_index(self, cc.Long index, Coordinate size):
         cc.assign_direct(self.xx, cc.coordinate_from_index(index, size.xx))
 
     def to_index(self, Coordinate size):
@@ -189,7 +189,7 @@ def middle_mod_coordinate(Coordinate x, Coordinate y, Coordinate size):
     cc.assign_direct(ret.xx, cc.middle_mod(x.xx, y.xx, size.xx))
     return ret
 
-def coordinate_from_index(long index, Coordinate size not None):
+def coordinate_from_index(cc.Long index, Coordinate size not None):
     cdef Coordinate x = Coordinate()
     cc.assign_direct(x.xx, cc.coordinate_from_index(index, (<Coordinate>size).xx))
     return x

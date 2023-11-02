@@ -59,8 +59,8 @@ struct LowModes {
     cesb.init();
     cesc.init();
   }
-  void init(const Geometry& geo, const Coordinate& block_site, const long neig,
-            const long nkeep)
+  void init(const Geometry& geo, const Coordinate& block_site, const Long neig,
+            const Long nkeep)
   // geo.multiplicity = ls
   {
     initialized = true;
@@ -83,14 +83,14 @@ struct LowModes {
   }
 };
 
-inline long load_low_modes(LowModes& lm, const std::string& path)
+inline Long load_low_modes(LowModes& lm, const std::string& path)
 {
   TIMER_VERBOSE("load_low_modes");
   lm.initialized = false;
   if (path == "/dev/null" or path == "") {
     return 0;
   } else {
-    const long total_bytes = load_compressed_eigen_vectors(
+    const Long total_bytes = load_compressed_eigen_vectors(
         lm.eigen_values, lm.cesi, lm.cesb, lm.cesc, path);
     if (0 != total_bytes) {
       lm.initialized = true;
@@ -99,7 +99,7 @@ inline long load_low_modes(LowModes& lm, const std::string& path)
   }
 }
 
-inline long load_or_compute_low_modes(LowModes& lm, const std::string& path,
+inline Long load_or_compute_low_modes(LowModes& lm, const std::string& path,
                                       const GaugeField& gf,
                                       const FermionAction& fa,
                                       const LancArg& la)
@@ -109,7 +109,7 @@ inline long load_or_compute_low_modes(LowModes& lm, const std::string& path,
   (void)gf;
   (void)fa;
   (void)la;
-  long total_bytes = load_low_modes(lm, path);
+  Long total_bytes = load_low_modes(lm, path);
   return total_bytes;
 }
 
@@ -138,11 +138,11 @@ inline void load_or_compute_low_modes_delay(LowModes& lm,
   lm.lmi.la = la;
 }
 
-inline long force_low_modes(LowModes& lm)
+inline Long force_low_modes(LowModes& lm)
 {
   TIMER("force_low_modes");
   if (lm.lmi.initialized) {
-    long total_bytes = load_or_compute_low_modes(lm, lm.lmi.path, lm.lmi.gf,
+    Long total_bytes = load_or_compute_low_modes(lm, lm.lmi.path, lm.lmi.gf,
                                                  lm.lmi.fa, lm.lmi.la);
     lm.lmi.init();
     return total_bytes;
@@ -160,7 +160,7 @@ inline void set_u_rand(LowModes& lm, const RngState& rs)
   set_u_rand_float(lm.cesc, rs.split("cesc"));
 }
 
-inline long save_low_modes_decompress(LowModes& lm, const std::string& path)
+inline Long save_low_modes_decompress(LowModes& lm, const std::string& path)
 {
   TIMER_VERBOSE("save_low_modes_decompress");
   qassert(lm.initialized);
@@ -177,11 +177,11 @@ inline long save_low_modes_decompress(LowModes& lm, const std::string& path)
   qmkdir(path);
   qmkdir(path + ssprintf("/%02d", dir_idx));
   const std::string fn = path + ssprintf("/%02d/%010d", dir_idx, idx);
-  long total_bytes = 0;
+  Long total_bytes = 0;
   const int n_cycle = std::max(1, num_node / dist_write_par_limit());
   std::vector<crc32_t> crcs(num_node, 0);
   for (int i = 0; i < n_cycle; i++) {
-    long bytes = 0;
+    Long bytes = 0;
     if (id_node % n_cycle == i) {
       qassert(hvs.size() >= 1);
       bytes = hvs.size() * get_data(hvs[0]).data_size();
@@ -211,7 +211,7 @@ inline long save_low_modes_decompress(LowModes& lm, const std::string& path)
     QFile fp = qfopen(fn, "w");
     qassert(not fp.null());
     qwrite_data(ssprintf("%ld\n", lm.eigen_values.size()), fp);
-    for (long i = 0; i < lm.eigen_values.size(); ++i) {
+    for (Long i = 0; i < lm.eigen_values.size(); ++i) {
       qwrite_data(ssprintf("%.20lE\n", lm.eigen_values[i]), fp);
     }
     qfclose(fp);
@@ -231,10 +231,10 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, LowModes& lm)
   }
   TIMER("deflate(hv,hv,lm)");
   const int ls = lm.cesi.ls;
-  const long block_size = lm.cesb.block_vol_eo * ls * HalfVector::c_size;
-  const long n_basis = lm.cesb.n_basis;
-  const long n_vec = lm.cesc.n_vec;
-  qassert(n_vec == (long)lm.eigen_values.size());
+  const Long block_size = lm.cesb.block_vol_eo * ls * HalfVector::c_size;
+  const Long n_basis = lm.cesb.n_basis;
+  const Long n_vec = lm.cesc.n_vec;
+  qassert(n_vec == (Long)lm.eigen_values.size());
   BlockedHalfVector bhv;
   convert_half_vector(bhv, hv_in, lm.cesi.block_site);
   const Geometry geo = geo_reform(bhv.geo(), n_basis);
@@ -246,7 +246,7 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, LowModes& lm)
   {
     TIMER("deflate-project");
 #pragma omp parallel for
-    for (long index = 0; index < geo.local_volume(); ++index) {
+    for (Long index = 0; index < geo.local_volume(); ++index) {
       // const Coordinate xl = geo.coordinate_from_index(index);
       const Vector<ComplexF> vb = bhv.get_elems_const(index);
       const Vector<ComplexF> vbs = lm.cesb.get_elems_const(index);
@@ -256,7 +256,7 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, LowModes& lm)
       for (int j = 0; j < n_basis; ++j) {
         ComplexD& vc_j = vc.p[j];
         const Vector<ComplexF> vbs_j(vbs.p + j * block_size, block_size);
-        for (long k = 0; k < block_size; ++k) {
+        for (Long k = 0; k < block_size; ++k) {
           const ComplexF& vb_k = vb.p[k];
           vc_j += qconj(vbs_j.p[k]) * vb_k;
         }
@@ -277,7 +277,7 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, LowModes& lm)
   {
     TIMER("deflate-glbsum");
     // glb sum inner products
-    for (long index = 0; index < geo.local_volume(); ++index) {
+    for (Long index = 0; index < geo.local_volume(); ++index) {
       // const Coordinate xl = geo.coordinate_from_index(index);
       Vector<ComplexD> vp = phv.get_elems(index);
 #pragma omp parallel for
@@ -298,7 +298,7 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, LowModes& lm)
     // producing coarse space vector
     set_zero(chv);
 #pragma omp parallel for
-    for (long index = 0; index < geo.local_volume(); ++index) {
+    for (Long index = 0; index < geo.local_volume(); ++index) {
       // const Coordinate xl = geo.coordinate_from_index(index);
       const Vector<ComplexF> vbs = lm.cesb.get_elems_const(index);
       const Vector<ComplexF> vcs = lm.cesc.get_elems_const(index);
@@ -317,7 +317,7 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, LowModes& lm)
       for (int j = 0; j < n_basis; ++j) {
         const ComplexF& vc_j = (ComplexF)vc[j];
         const Vector<ComplexF> vbs_j(vbs.p + j * block_size, block_size);
-        for (long k = 0; k < block_size; ++k) {
+        for (Long k = 0; k < block_size; ++k) {
           ComplexF& vb_k = vb.p[k];
           vb_k += vbs_j.p[k] * vc_j;
         }
@@ -343,13 +343,13 @@ inline void deflate(FermionField5d& out, const FermionField5d& in, LowModes& lm)
   HalfVector hv;
   init_half_vector(hv, geo, ls);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     qassert((xl[0] + xl[1] + xl[2] + xl[3]) % 2 == 2 - geo.eo);
     Vector<ComplexF> vhv = hv.get_elems(index);
     const Vector<WilsonVector> vin = in.get_elems_const(index);
     qassert(vhv.size() ==
-            vin.size() * (long)sizeof(WilsonVector) / (long)sizeof(ComplexD));
+            vin.size() * (Long)sizeof(WilsonVector) / (Long)sizeof(ComplexD));
     const Vector<ComplexD> vff((const ComplexD*)vin.data(), vhv.size());
     for (int m = 0; m < vhv.size(); ++m) {
       vhv[m] = vff[m];
@@ -362,13 +362,13 @@ inline void deflate(FermionField5d& out, const FermionField5d& in, LowModes& lm)
   out.init(geo);
   qassert(out.geo().eo == geo.eo);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     qassert((xl[0] + xl[1] + xl[2] + xl[3]) % 2 == 2 - geo.eo);
     const Vector<ComplexF> vhv = hv.get_elems(index);
     Vector<WilsonVector> vout = out.get_elems(index);
     qassert(vhv.size() ==
-            vout.size() * (long)sizeof(WilsonVector) / (long)sizeof(ComplexD));
+            vout.size() * (Long)sizeof(WilsonVector) / (Long)sizeof(ComplexD));
     Vector<ComplexD> vff((ComplexD*)vout.data(), vhv.size());
     for (int m = 0; m < vhv.size(); ++m) {
       vff[m] = vhv[m];
@@ -377,8 +377,8 @@ inline void deflate(FermionField5d& out, const FermionField5d& in, LowModes& lm)
 }
 
 inline void benchmark_deflate(const Geometry& geo, const int ls,
-                              const Coordinate& block_site, const long neig,
-                              const long nkeep, const RngState& rs)
+                              const Coordinate& block_site, const Long neig,
+                              const Long nkeep, const RngState& rs)
 {
   TIMER_VERBOSE("benchmark_deflate");
   displayln_info(ssprintf("geo = %s", show(geo).c_str()));
@@ -404,8 +404,8 @@ inline void benchmark_deflate(const Geometry& geo, const int ls,
 
 struct InverterParams {
   double stop_rsd;
-  long max_num_iter;
-  long max_mixed_precision_cycle;
+  Long max_num_iter;
+  Long max_mixed_precision_cycle;
   int solver_type;  // 0 -> CG, 1-> EIGCG, 2->MSPCG
   int higher_precision;
   int lower_precision;
@@ -477,11 +477,11 @@ struct InverterDomainWall {
   double& stop_rsd() { return ip.stop_rsd; }
   const double& stop_rsd() const { return ip.stop_rsd; }
   //
-  long& max_num_iter() { return ip.max_num_iter; }
-  const long& max_num_iter() const { return ip.max_num_iter; }
+  Long& max_num_iter() { return ip.max_num_iter; }
+  const Long& max_num_iter() const { return ip.max_num_iter; }
   //
-  long& max_mixed_precision_cycle() { return ip.max_mixed_precision_cycle; }
-  const long& max_mixed_precision_cycle() const
+  Long& max_mixed_precision_cycle() { return ip.max_mixed_precision_cycle; }
+  const Long& max_mixed_precision_cycle() const
   {
     return ip.max_mixed_precision_cycle;
   }
@@ -535,7 +535,7 @@ inline void multiply_m_dwf_no_comm(FermionField5d& out,
     p_mu_m[mu] = (ComplexD)0.5 * (unit - gammas[mu]);
   }
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<WilsonVector> v = out.get_elems(xl);
     {
@@ -602,7 +602,7 @@ inline void multiply_wilson_d_no_comm(FermionField5d& out,
     p_mu_m[mu] = (ComplexD)0.5 * (unit - gammas[mu]);
   }
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<WilsonVector> v = out.get_elems(xl);
     {
@@ -640,7 +640,7 @@ inline void multiply_d_minus(FermionField5d& out, const FermionField5d& in,
   in1.init(geo1);
   out1.init(geo);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<WilsonVector> v = out1.get_elems(xl);
     Vector<WilsonVector> v1 = in1.get_elems(xl);
@@ -692,7 +692,7 @@ inline void multiply_m_full(FermionField5d& out, const FermionField5d& in,
   in1.init(geo1);
   fftmp.init(geo);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<WilsonVector> iv = in.get_elems_const(xl);
     Vector<WilsonVector> v = fftmp.get_elems(xl);
@@ -730,7 +730,7 @@ inline void get_half_fermion(FermionField5d& half, const FermionField5d& ff,
   qassert(ff.geo().eo == 0);
   qassert(is_matching_geo(ff.geo(), half.geo()));
 #pragma omp parallel for
-  for (long index = 0; index < geoh.local_volume(); ++index) {
+  for (Long index = 0; index < geoh.local_volume(); ++index) {
     const Coordinate xl = geoh.coordinate_from_index(index);
     assign(half.get_elems(xl), ff.get_elems_const(xl));
   }
@@ -749,7 +749,7 @@ inline void set_half_fermion(FermionField5d& ff, const FermionField5d& half,
   qassert(ff.geo().eo == 0);
   qassert(is_matching_geo(ff.geo(), half.geo()));
 #pragma omp parallel for
-  for (long index = 0; index < geoh.local_volume(); ++index) {
+  for (Long index = 0; index < geoh.local_volume(); ++index) {
     const Coordinate xl = geoh.coordinate_from_index(index);
     assign(ff.get_elems(xl), half.get_elems_const(xl));
   }
@@ -796,7 +796,7 @@ inline void multiply_m_e_e(FermionField5d& out, const FermionField5d& in,
     cee[m] = 1.0 - fa.cs[m] * (4.0 - fa.m5);
   }
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<WilsonVector> iv = hin().get_elems_const(xl);
     Vector<WilsonVector> v = out.get_elems(xl);
@@ -845,7 +845,7 @@ inline void multiply_mdag_e_e(FermionField5d& out, const FermionField5d& in,
     cee[m] = qconj(1.0 - fa.cs[m] * (4.0 - fa.m5));
   }
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<WilsonVector> iv = hin().get_elems_const(xl);
     Vector<WilsonVector> v = out.get_elems(xl);
@@ -910,7 +910,7 @@ inline void multiply_m_e_e_inv(FermionField5d& out, const FermionField5d& in,
         m == 0 ? fa.mass * cee[0] / bee[0] : ueem[m - 1] * cee[m] / bee[m];
   }
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<WilsonVector> iv = in.get_elems_const(xl);
     Vector<WilsonVector> v = out.get_elems(xl);
@@ -995,7 +995,7 @@ inline void multiply_mdag_e_e_inv(FermionField5d& out, const FermionField5d& in,
     ueem[m] = qconj(ueem[m]);
   }
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<WilsonVector> iv = in.get_elems_const(xl);
     Vector<WilsonVector> v = out.get_elems(xl);
@@ -1058,7 +1058,7 @@ inline void multiply_wilson_d_e_o_no_comm(FermionField5d& out,
     p_mu_m[mu] = (ComplexD)0.5 * (unit - gammas[mu]);
   }
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<WilsonVector> v = out.get_elems(xl);
     for (int mu = 0; mu < 4; ++mu) {
@@ -1108,7 +1108,7 @@ inline void multiply_wilson_ddag_e_o_no_comm(FermionField5d& out,
     p_mu_m[mu] = (ComplexD)0.5 * (unit - gammas[mu]);
   }
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<WilsonVector> v = out.get_elems(xl);
     for (int mu = 0; mu < 4; ++mu) {
@@ -1145,7 +1145,7 @@ inline void multiply_m_e_o(FermionField5d& out, const FermionField5d& in,
     ceo[m] = -fa.cs[m];
   }
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<WilsonVector> iv = in.get_elems_const(xl);
     Vector<WilsonVector> v = in1.get_elems(xl);
@@ -1200,7 +1200,7 @@ inline void multiply_mdag_e_o(FermionField5d& out, const FermionField5d& in,
   }
   out.init(geo);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<WilsonVector> iv = out1.get_elems_const(xl);
     Vector<WilsonVector> v = out.get_elems(xl);
@@ -1452,7 +1452,7 @@ inline ComplexD dot_product(const FermionField5d& ff1, const FermionField5d& ff2
   qassert(ff1.geo().eo == ff2.geo().eo);
   const Geometry& geo = ff1.geo();
   ComplexD sum = 0.0;
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<WilsonVector> v1 = ff1.get_elems_const(xl);
     const Vector<WilsonVector> v2 = ff2.get_elems_const(xl);
@@ -1470,10 +1470,10 @@ inline ComplexD dot_product(const FermionField5d& ff1, const FermionField5d& ff2
 }
 
 template <class Inv>
-inline long cg_with_f(
+inline Long cg_with_f(
     FermionField5d& out, const FermionField5d& in, const Inv& inv,
     void f(FermionField5d&, const FermionField5d&, const Inv&),
-    const double stop_rsd = 1e-8, const long max_num_iter = 50000)
+    const double stop_rsd = 1e-8, const Long max_num_iter = 50000)
 // f(out, in, inv);
 {
   TIMER("cg_with_f");
@@ -1502,7 +1502,7 @@ inline long cg_with_f(
           ": start max_num_iter=%4ld        sqrt(qnorm_in)=%.3E stop_rsd=%.3E",
           max_num_iter, sqrt(qnorm_in), stop_rsd));
   double qnorm_r = qnorm(r);
-  for (long iter = 1; iter <= max_num_iter; ++iter) {
+  for (Long iter = 1; iter <= max_num_iter; ++iter) {
     f(ap, p, inv);
     const double alpha = qnorm_r / dot_product(p, ap).real();
     tmp = p;
@@ -1574,12 +1574,12 @@ void restore_field_from_odd_prec_sym2(FermionField5d& out,
 }
 
 template <class Inv>
-long invert_with_cg(FermionField5d& out, const FermionField5d& in,
+Long invert_with_cg(FermionField5d& out, const FermionField5d& in,
                     const Inv& inv,
-                    long cg(FermionField5d&, const FermionField5d&, const Inv&,
-                            const double, const long),
-                    double stop_rsd = -1, long max_num_iter = -1,
-                    long max_mixed_precision_cycle = -1,
+                    Long cg(FermionField5d&, const FermionField5d&, const Inv&,
+                            const double, const Long),
+                    double stop_rsd = -1, Long max_num_iter = -1,
+                    Long max_mixed_precision_cycle = -1,
                     bool dminus_multiplied_already = false)
 {
   TIMER_VERBOSE_FLOPS("invert_with_cg(5d,5d,inv,cg)");
@@ -1614,7 +1614,7 @@ long invert_with_cg(FermionField5d& out, const FermionField5d& in,
     set_zero(out);
     return 0;
   }
-  long total_iter = 0;
+  Long total_iter = 0;
   if (inv.fa.is_using_zmobius == true and inv.fa.cg_diagonal_mee == 2) {
     FermionField5d in_o_p, out_e_p, out_o_p;
     set_odd_prec_field_sym2(in_o_p, out_e_p, dm_in, inv);
@@ -1632,7 +1632,7 @@ long invert_with_cg(FermionField5d& out, const FermionField5d& in,
       } else {
         set_zero(tmp);
       }
-      const long iter =
+      const Long iter =
           cg(tmp, itmp, inv, stop_rsd * sqrt(qnorm_in_o_p / qnorm_itmp),
              max_num_iter);
       total_iter += iter;
@@ -1664,12 +1664,12 @@ long invert_with_cg(FermionField5d& out, const FermionField5d& in,
 }
 
 template <class Inv>
-long invert_with_cg_with_guess(FermionField5d& out, const FermionField5d& in,
+Long invert_with_cg_with_guess(FermionField5d& out, const FermionField5d& in,
                                const Inv& inv,
-                               long cg(FermionField5d&, const FermionField5d&,
-                                       const Inv&, const double, const long),
-                               double stop_rsd = -1, long max_num_iter = -1,
-                               long max_mixed_precision_cycle = -1,
+                               Long cg(FermionField5d&, const FermionField5d&,
+                                       const Inv&, const double, const Long),
+                               double stop_rsd = -1, Long max_num_iter = -1,
+                               Long max_mixed_precision_cycle = -1,
                                bool dminus_multiplied_already = false)
 {
   TIMER_VERBOSE("invert_with_cg_with_guess");
@@ -1697,32 +1697,32 @@ long invert_with_cg_with_guess(FermionField5d& out, const FermionField5d& in,
   const double ratio = sqrt(qnorm_dm_in / qnorm_dm_in_sub);
   stop_rsd *= ratio;
   displayln_info(fname + ssprintf(": guess ratio = %.3E", ratio));
-  const long total_iter =
+  const Long total_iter =
       invert_with_cg(tmp, dm_in, inv, cg, stop_rsd, max_num_iter,
                      max_mixed_precision_cycle, true);
   out += tmp;
   return total_iter;
 }
 
-inline long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
+inline Long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
                                const InverterDomainWall& inv,
                                const double stop_rsd = 1e-8,
-                               const long max_num_iter = 50000)
+                               const Long max_num_iter = 50000)
 {
   TIMER_VERBOSE_FLOPS("cg_with_herm_sym_2(5d,5d,inv)");
-  const long iter =
+  const Long iter =
       cg_with_f(sol, src, inv, multiply_hermop_sym2, stop_rsd, max_num_iter);
   timer.flops += 5500 * iter * inv.fa.ls * inv.geo().local_volume();
   return iter;
 }
 
-inline long invert(FermionField5d& out, const FermionField5d& in,
+inline Long invert(FermionField5d& out, const FermionField5d& in,
                    const InverterDomainWall& inv)
 {
   return invert_with_cg(out, in, inv, cg_with_herm_sym_2);
 }
 
-inline long invert(FermionField4d& out, const FermionField4d& in,
+inline Long invert(FermionField4d& out, const FermionField4d& in,
                    const InverterDomainWall& inv)
 {
   return invert_dwf(out, in, inv);
@@ -1730,7 +1730,7 @@ inline long invert(FermionField4d& out, const FermionField4d& in,
 
 inline double find_max_eigen_value_hermop_sym2(const InverterDomainWall& inv,
                                                const RngState& rs,
-                                               const long max_iter = 100)
+                                               const Long max_iter = 100)
 {
   TIMER_VERBOSE("find_max_eigen_value_hermop_sym2");
   Geometry geo = geo_reform(inv.geo(), inv.fa.ls);
@@ -1740,7 +1740,7 @@ inline double find_max_eigen_value_hermop_sym2(const InverterDomainWall& inv,
   set_u_rand_double(ff, rs);
   ff *= 1.0 / sqrt(qnorm(ff));
   double sqrt_qnorm_ratio = 1.0;
-  for (long i = 0; i < max_iter; ++i) {
+  for (Long i = 0; i < max_iter; ++i) {
     multiply_hermop_sym2(ff, ff, inv);
     sqrt_qnorm_ratio = sqrt(qnorm(ff));
     displayln_info(fname + ssprintf(": %5d: sqrt_qnorm_ratio =%24.17E."

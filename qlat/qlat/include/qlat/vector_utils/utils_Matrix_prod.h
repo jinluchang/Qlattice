@@ -18,7 +18,7 @@ namespace qlat{
 #ifdef QLAT_USE_ACC
 //////shared memory 16KB or 48KB per thread
 template <unsigned int blockSize, unsigned int sm, unsigned int sn, unsigned int ch,unsigned int Conj, unsigned int trans, typename Ty >
-__global__ void matrix_prod_global2(Ty** a, Ty** b, Ty** c, const long m, const long n, const long w)
+__global__ void matrix_prod_global2(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const Long w)
 {
   __shared__ Ty as[sm+1][blockSize+1];
   __shared__ Ty bs[blockSize+1][sn+1];
@@ -99,7 +99,7 @@ __global__ void matrix_prod_global2(Ty** a, Ty** b, Ty** c, const long m, const 
 }
 
 template<typename Ty>
-void matrix_prod_gpu2(Ty** a, Ty** b, Ty** c, const long m, const long n, const long w, const long L=1, bool Conj=true, bool trans=false)
+void matrix_prod_gpu2(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false)
 {
   int nt = 32;int sm = 8;int sn = 4;
 
@@ -196,7 +196,7 @@ void matrix_prod_gpu2(Ty** a, Ty** b, Ty** c, const long m, const long n, const 
 
 
 template <unsigned int sn, unsigned int ch,unsigned int Conj, typename Ty >
-__global__ void matrix_prod_global1(Ty** a, Ty** b, Ty** c, const long m, const long n, const long w)
+__global__ void matrix_prod_global1(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const Long w)
 {
   __shared__ Ty as[sn+1][sn+1];
   __shared__ Ty bs[sn+1][sn+1];
@@ -245,7 +245,7 @@ __global__ void matrix_prod_global1(Ty** a, Ty** b, Ty** c, const long m, const 
 }
 
 template<typename Ty>
-void matrix_prod_gpu1(Ty** a, Ty** b, Ty** c, const long m, const long n, const long w, const long L=1, bool Conj=true)
+void matrix_prod_gpu1(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true)
 {
   int sn = 4;
   int nt = sn*sn;
@@ -309,7 +309,7 @@ void matrix_prod_gpu1(Ty** a, Ty** b, Ty** c, const long m, const long n, const 
 
 
 template <unsigned int Conj,typename Ty>
-__global__ void matrix_prod_global0(Ty** a, Ty** b, Ty** c, const long m, const long n, const long w)
+__global__ void matrix_prod_global0(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const Long w)
 {
   //////======c, mxn, a, mxw, b, nxw
   unsigned long ni =  blockIdx.x * blockDim.x + threadIdx.x;
@@ -339,7 +339,7 @@ __global__ void matrix_prod_global0(Ty** a, Ty** b, Ty** c, const long m, const 
 }
 
 template<typename Ty>
-void matrix_prod_gpu0(Ty** a, Ty** b, Ty** c, const long m, const long n, const long w, const long L=1, bool Conj=true)
+void matrix_prod_gpu0(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true)
 {
   //case 1024:reduce6<1024,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
   int ntLm[] = {32,32,16,16,8,8,4,4,2,2,1};
@@ -371,7 +371,7 @@ void matrix_prod_gpu0(Ty** a, Ty** b, Ty** c, const long m, const long n, const 
 #endif
 
 template<typename Ty>
-void matrix_prod_cpu(Ty** a, Ty** b, Ty** c, const long m, const long n, const long w, const long L=1, bool Conj=true, bool trans=false)
+void matrix_prod_cpu(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false)
 {
   TIMER_FLOPS("==Matrix Multi CPU");
   //size_t offA = m*w;
@@ -379,7 +379,7 @@ void matrix_prod_cpu(Ty** a, Ty** b, Ty** c, const long m, const long n, const l
   //size_t offC = m*n;
 
   //#pragma omp parallel for
-  //for(long li=0;li<L;li++)
+  //for(Long li=0;li<L;li++)
   //{
   //  EML  A(&a[li*offA], m, w);
   //  EMLC B(&b[li*offB], w, n);
@@ -390,7 +390,7 @@ void matrix_prod_cpu(Ty** a, Ty** b, Ty** c, const long m, const long n, const l
   //Eigen::initParallel();
   //Eigen::setNbThreads(0);
 
-  //for(long li=0;li<L;li++)
+  //for(Long li=0;li<L;li++)
   //{
   //  EM  A( &a[li*offA], m, w);
   //  EMC B( &b[li*offB], w, n);
@@ -406,7 +406,7 @@ void matrix_prod_cpu(Ty** a, Ty** b, Ty** c, const long m, const long n, const l
   if(m*L < Nv){Nv = 1;}
 
   if(Nv == 1){
-  for(long li=0;li<L;li++)
+  for(Long li=0;li<L;li++)
   {
     EML  A(  &a[li][0], m, w);
     EMLC B0( &b[li][0], w, n);
@@ -421,7 +421,7 @@ void matrix_prod_cpu(Ty** a, Ty** b, Ty** c, const long m, const long n, const l
     int Nfac = Nv;
     int Nm = (m+Nv-1)/Nv;
     #pragma omp parallel for
-    for(long off=0;off<L*Nfac;off++)
+    for(Long off=0;off<L*Nfac;off++)
     {
       int li   = off/Nfac;
       int mi   = off%Nfac;
@@ -449,7 +449,7 @@ void matrix_prod_cpu(Ty** a, Ty** b, Ty** c, const long m, const long n, const l
 }
 
 template<typename Ty>
-void matrix_prod_gpu(Ty** a, Ty** b, Ty** c, const long m, const long n, const long w, const long L=1, bool Conj=true, QBOOL dummy = QTRUE, bool trans=false, int modeGPU = 2)
+void matrix_prod_gpu(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, QBOOL dummy = QTRUE, bool trans=false, int modeGPU = 2)
 {
   #ifdef QLAT_USE_ACC
 
@@ -475,14 +475,14 @@ void matrix_prod_gpu(Ty** a, Ty** b, Ty** c, const long m, const long n, const l
 
 ////// c = a b; c dim m x n, a dim m x w, b dim w x n, done it l times
 template<typename Ty>
-void matrix_prodP(Ty** a, Ty** b, Ty** c, const long m, const long n, const long w, const long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE)
+void matrix_prodP(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE)
 {
   if( GPU){matrix_prod_gpu(a,b,c , m,n,w,L, Conj, dummy, trans);}
   if(!GPU){matrix_prod_cpu(a,b,c , m,n,w,L, Conj, trans);}
 }
 
 template<typename Ty>
-void matrix_prod(Ty* A, Ty* B, Ty* C, const long m, const long n, const long w, const long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE)
+void matrix_prod(Ty* A, Ty* B, Ty* C, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE)
 {
   const size_t offA = m*w;
   const size_t offB = n*w;

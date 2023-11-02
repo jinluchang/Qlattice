@@ -21,10 +21,10 @@ inline void set_g_rand_anti_hermitian_matrix_field(Field<ColorMatrix>& fc,
   TIMER("set_g_rand_anti_hermitian_matrix_field");
   const Geometry& geo = fc.geo();
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const long gindex = geo.g_index_from_g_coordinate(xg);
+    const Long gindex = geo.g_index_from_g_coordinate(xg);
     RngState rsi(rs, gindex);
     Vector<ColorMatrix> v = fc.get_elems(xl);
     for (int m = 0; m < (int)v.size(); ++m) {
@@ -41,10 +41,10 @@ inline void set_g_rand_color_matrix_field(Field<ColorMatrix>& fc,
   TIMER("set_g_rand_color_matrix_field");
   const Geometry& geo = fc.geo();
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const long gindex = geo.g_index_from_g_coordinate(xg);
+    const Long gindex = geo.g_index_from_g_coordinate(xg);
     RngState rsi(rs, gindex);
     Vector<ColorMatrix> v = fc.get_elems(xl);
     for (int m = 0; m < (int)v.size(); ++m) {
@@ -96,7 +96,7 @@ qacc ColorMatrix gf_wilson_line_no_comm(const GaugeField& gf,
                                         const Coordinate& xl, const Vec& path,
                                         const Vec& path_n)
 {
-  qassert((long)path.size() == (long)path_n.size());
+  qassert((Long)path.size() == (Long)path_n.size());
   ColorMatrix ret;
   set_unit(ret);
   Coordinate xl1 = xl;
@@ -233,7 +233,7 @@ inline void set_local_current_from_props(FieldM<WilsonMatrix, 4>& cf,
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   cf.init(geo);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const WilsonMatrix& m1 = prop1.get_elem(xl);
     const WilsonMatrix& m2 = prop2.get_elem(xl);
@@ -412,7 +412,7 @@ inline void set_multiply_simple_wilson_line_field_partial_comm(
     qassert(-DIMN <= dir && dir < DIMN);
     refresh_expanded_1(wlf1);
 #pragma omp parallel for
-    for (long index = 0; index < geo.local_volume(); ++index) {
+    for (Long index = 0; index < geo.local_volume(); ++index) {
       Coordinate xl = geo.coordinate_from_index(index);
       ColorMatrix& l1 = wlf.get_elem(xl);
       if (0 <= dir) {

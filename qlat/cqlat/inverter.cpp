@@ -70,7 +70,7 @@ EXPORT(get_max_num_iter_inverter_domain_wall, {
 EXPORT(set_max_num_iter_inverter_domain_wall, {
   using namespace qlat;
   PyObject* p_inv = NULL;
-  long max_num_iter = 200;
+  Long max_num_iter = 200;
   if (!PyArg_ParseTuple(args, "Ol", &p_inv, &max_num_iter)) {
     return NULL;
   }
@@ -92,7 +92,7 @@ EXPORT(get_max_mixed_precision_cycle_inverter_domain_wall, {
 EXPORT(set_max_mixed_precision_cycle_inverter_domain_wall, {
   using namespace qlat;
   PyObject* p_inv = NULL;
-  long max_mixed_precision_cycle = 300;
+  Long max_mixed_precision_cycle = 300;
   if (!PyArg_ParseTuple(args, "Ol", &p_inv, &max_mixed_precision_cycle)) {
     return NULL;
   }

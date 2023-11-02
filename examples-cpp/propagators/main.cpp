@@ -14,8 +14,8 @@ inline void set_sparse_parameters(FieldSelection& fsel,
   const std::string job_path = get_job_path(job_tag, traj);
   const std::string f_rank_path = job_path + "/f-rank.field";
   const Coordinate total_site = get_total_site(job_tag);
-  const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
-  const long n_per_tslice = spatial_vol / 16;
+  const Long spatial_vol = total_site[0] * total_site[1] * total_site[2];
+  const Long n_per_tslice = spatial_vol / 16;
   const RngState rs_sel = RngState("field-sel").split(job_tag).split(traj);
   set_field_selection(fsel, total_site, n_per_tslice, rs_sel);
   if (not does_file_exist_sync_node(f_rank_path)) {

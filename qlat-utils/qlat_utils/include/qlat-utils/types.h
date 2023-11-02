@@ -23,7 +23,7 @@ enum DATA_TYPE {
   //
   INT_TYPE = 4 + MAXTYPE * sizeof(int),
   UINT_TYPE = 5 + MAXTYPE * sizeof(unsigned int),
-  LONG_TYPE = 6 + MAXTYPE * sizeof(long),
+  LONG_TYPE = 6 + MAXTYPE * sizeof(Long),
   ULONG_TYPE = 7 + MAXTYPE * sizeof(unsigned long),
   LONGL_TYPE = 8 + MAXTYPE * sizeof(long long),
   ULONGL_TYPE = 9 + MAXTYPE * sizeof(unsigned long long),
@@ -93,7 +93,7 @@ qacc DATA_TYPE get_data_type<unsigned int>()
   return UINT_TYPE;
 }
 template <>
-qacc DATA_TYPE get_data_type<long>()
+qacc DATA_TYPE get_data_type<Long>()
 {
   return LONG_TYPE;
 }

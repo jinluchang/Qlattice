@@ -4,4 +4,4 @@ cdef class Geometry:
 
     cdef cqlat.Geometry xx
 
-    cdef readonly long cdata
+    cdef readonly cqlat.Long cdata

@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
   std::vector<double> massL = in.masses;
 
   ////qprop tmpa;tmpa.init(geo);
-  ////print0("vol %ld %ld \n", geo.local_volume(), long(qlat::get_data_size(tmpa)));
+  ////print0("vol %ld %ld \n", geo.local_volume(), Long(qlat::get_data_size(tmpa)));
 
   ////===load eigen
   print_time();

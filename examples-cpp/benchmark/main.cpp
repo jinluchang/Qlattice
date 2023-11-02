@@ -37,7 +37,7 @@ void test_gf_fft()
   GaugeField gf;
   gf.init(geo);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     RngState rsi(rs, get_id_node() * geo.local_volume() + index);
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = gf.get_elems(xl);
@@ -50,7 +50,7 @@ void test_gf_fft()
       }
     }
   }
-  const long flops = get_data_size(gf) * get_num_node();
+  const Long flops = get_data_size(gf) * get_num_node();
   for (int i = 0; i < 16; ++i) {
     TIMER_VERBOSE_FLOPS("fft-gf");
     timer.flops += flops * 2;
@@ -73,7 +73,7 @@ void test_fft()
   FieldM<ComplexD, N> f, ff;
   f.init(geo);
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     RngState rsi(rs, get_id_node() * geo.local_volume() + index);
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<ComplexD> v = f.get_elems(xl);
@@ -82,7 +82,7 @@ void test_fft()
     }
   }
   ff = f;
-  const long flops = get_data_size(f) * get_num_node();
+  const Long flops = get_data_size(f) * get_num_node();
   const double total_volume = geo.total_volume();
   displayln_info(fname + ssprintf(": %d", N));
   Timer::max_call_times_for_always_show_info() = 0;

@@ -12,7 +12,7 @@ inline double get_field_max(const FieldM<double, 1>& fd)
   const Geometry& geo = fd.geo();
   qassert(fd.geo().is_only_local);
   double m = fd.get_elem(0);
-  for (long index = 1; index < geo.local_volume(); ++index) {
+  for (Long index = 1; index < geo.local_volume(); ++index) {
     m = std::max(m, fd.get_elem(index));
   }
   std::vector<double> ms(get_num_node(), 0.0);
@@ -62,7 +62,7 @@ inline std::vector<double> get_gm_force_magnitudes(
     fd_max.get_elem(index) = 15.0 * linf;
   });
   std::vector<double> mag_vec(n_elems, 0.0);
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Vector<double> fdv = fd.get_elems_const(index);
     for (int m = 0; m < n_elems - 1; ++m) {
       mag_vec[m] += fdv[m];
@@ -114,14 +114,14 @@ inline void save_gm_force_magnitudes_list(const std::string& fn = "")
   TIMER_VERBOSE("save_gm_force_magnitudes_list");
   std::vector<std::vector<double> >& db = get_gm_force_magnitudes_list();
   if (db.size() > 0 and fn != "") {
-    const long idx_size = db.size();
-    const long ln_size = db[0].size();
+    const Long idx_size = db.size();
+    const Long ln_size = db[0].size();
     LatData ld;
     ld.info.push_back(lat_dim_number("idx", 0, idx_size - 1));
     ld.info.push_back(lat_dim_number("ln", 0, ln_size - 1));
     lat_data_alloc(ld);
-    for (long i = 0; i < idx_size; ++i) {
-      for (long j = 0; j < ln_size; ++j) {
+    for (Long i = 0; i < idx_size; ++i) {
+      for (Long j = 0; j < ln_size; ++j) {
         lat_data_get(ld, make_array<Long>(i, j))[0] = db[i][j];
       }
     }
@@ -147,7 +147,7 @@ inline std::vector<double> get_gauge_field_infos(const GaugeField& gf)
   FieldM<double, 1> topf;
   clf_topology_field_5(topf, clf1, clf2, clf3, clf4, clf5);
   std::vector<double> info_vec(info_vec_size, 0.0);
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const double pa = paf.get_elem(index);
     const double top = topf.get_elem(index);
     info_vec[0] += pa;
@@ -200,7 +200,7 @@ inline LatData convert_energy_list(
   ld.info.push_back(lat_dim_string(
       "name", make_array<std::string>("flow_time", "energy_density")));
   lat_data_alloc(ld);
-  for (long i = 0; i < (long)energy_density_list.size(); ++i) {
+  for (Long i = 0; i < (Long)energy_density_list.size(); ++i) {
     Vector<double> ldv = lat_data_get(ld, make_array<Long>(i));
     ldv[0] = (i + 1) * wilson_flow_step;
     ldv[1] = energy_density_list[i];

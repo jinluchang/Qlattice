@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
   int nmass = 2;
   std::vector<Propagator4d > prop0;
   prop0.resize(nmass);for(unsigned int i=0;i<prop0.size();i++)prop0[i].init(geo);
-  qacc_for(isp, long(geo.local_volume()),{
+  qacc_for(isp, Long(geo.local_volume()),{
     for(int im=0;im<nmass;im++)
     {   
     qlat::WilsonMatrix& v0 =  prop0[im].get_elem(isp);
@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
   double diff = 0.0;
   for(int im=0;im<nmass;im++)
   {
-  qacc_for(isp, long(geo.local_volume()), {
+  qacc_for(isp, Long(geo.local_volume()), {
       qlat::WilsonMatrix&  vs =  propS[im].get_elem(isp);
       qlat::WilsonMatrix&  vd =  propD[im].get_elem(isp);
       for(int d0=0;d0<12;d0++)

@@ -245,7 +245,7 @@ inline const vector_acc<Long>& get_flowed_hmc_indices_mask_flow_size(
       ssprintf("%s-%d-%d", show(geo.node_site).c_str(), mask, flow_size);
   vector_acc<Long>& vec = cache[key];
   if (vec.size() == 0) {
-    long count = 0;
+    Long count = 0;
     qfor(index, geo.local_volume(), {
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
@@ -498,7 +498,7 @@ inline void set_flow_staple_mask_mu_no_comm(FieldM<ColorMatrix, 1>& cf,
       get_flowed_hmc_indices_mask_flow_size(geo, mask, flow_size);
   cf.init(geo);
   qacc_for(idx, flowed_indices.size(), {
-    const long index = flowed_indices[idx];
+    const Long index = flowed_indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     cf.get_elem(xl) = gf_flow_staple_no_comm(gf_ext, xl, mu, flow_size);
   });
@@ -525,7 +525,7 @@ inline void gf_flow_plaq_mask_mu_no_comm(GaugeField& gf,
   FieldM<ColorMatrix, 1> cf;
   set_flow_staple_mask_mu_no_comm(cf, gf0_ext, mask, mu, flow_size);
   qacc_for(idx, flowed_indices.size(), {
-    const long index = flowed_indices[idx];
+    const Long index = flowed_indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const ColorMatrix& c_x_mu = cf.get_elem(xl);
     const ColorMatrix& u0_x_mu = gf0_ext.get_elem(xl, mu);
@@ -557,7 +557,7 @@ inline void gf_flow_inv_plaq_mask_mu_no_comm(
   FieldM<ColorMatrix, 1> cf;
   set_flow_staple_mask_mu_no_comm(cf, gf1_ext, mask, mu, flow_size);
   qacc_for(idx, flowed_indices.size(), {
-    const long index = flowed_indices[idx];
+    const Long index = flowed_indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const ColorMatrix c_x_mu_dagger = matrix_adjoint(cf.get_elem(xl));
     const ColorMatrix& u1_x_mu = gf1_ext.get_elem(xl, mu);
@@ -591,7 +591,7 @@ inline void set_marks_flow_plaq_mask_mu(CommMarks& marks, const Geometry& geo,
   const vector_acc<Long>& flowed_indices =
       get_flowed_hmc_indices_mask_flow_size(geo, mask, flow_size);
   qacc_for(idx, flowed_indices.size(), {
-    const long index = flowed_indices[idx];
+    const Long index = flowed_indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     for (int nu = -4; nu < 4; ++nu) {
       if (nu == mu or -nu - 1 == mu) {
@@ -1000,7 +1000,7 @@ inline void set_n_mat_plaq_mask_mu_no_comm(FieldM<AdjointColorMatrix, 1>& nf,
       get_flowed_hmc_indices_mask_flow_size(geo, mask, flow_size);
   nf.init(geo);
   qacc_for(idx, flowed_indices.size(), {
-    const long index = flowed_indices[idx];
+    const Long index = flowed_indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     AdjointColorMatrix& n_mat = nf.get_elem(xl);
     n_mat = n_mat_plaq_site_no_comm(cf, gf_ext, xl, mu, cmcs());
@@ -1024,7 +1024,7 @@ inline void set_ad_x_and_j_n_x_plaq_mask_mu_no_comm(
       get_flowed_hmc_indices_mask_flow_size(geo, mask, flow_size);
   f_ad_x_and_j_n_x.init(geo);
   qacc_for(idx, flowed_indices.size(), {
-    const long index = flowed_indices[idx];
+    const Long index = flowed_indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const ColorMatrix& u = gf.get_elem(xl, mu);
     const ColorMatrix c_dagger = matrix_adjoint(cf.get_elem(xl));
@@ -1130,7 +1130,7 @@ inline void set_mp_mat_plaq_mask_mu_no_comm(
       get_flowed_hmc_indices_mask_flow_size(geo, mask, flow_size);
   mpf.init(geo);
   qacc_for(idx, flowed_indices.size(), {
-    const long index = flowed_indices[idx];
+    const Long index = flowed_indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const AdjointColorMatrix& n_mat = nf.get_elem(xl, 0);
     AdjointColorMatrix& m_mat = mpf.get_elem(xl);
@@ -1220,7 +1220,7 @@ inline void set_f_det_util_plaq_mask_mu(
   f_n_e_mp_inv_j_x.init(geo);
   f_e2_dj_x_n_mp_inv.init(geo);
   qacc_for(idx, flowed_indices.size(), {
-    const long index = flowed_indices[idx];
+    const Long index = flowed_indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const AdjointColorMatrix& mp_mat = mpf.get_elem(xl);
     const AdjointColorMatrix mp_inv_mat = matrix_inverse(mp_mat);
@@ -1323,13 +1323,13 @@ inline double mf_ln_det_sum(const Field<AdjointColorMatrix>& mpf,
   f_ln_det.init(geo);
   set_zero(f_ln_det);
   qacc_for(idx, flowed_indices.size(), {
-    const long index = flowed_indices[idx];
+    const Long index = flowed_indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const AdjointColorMatrix& m_mat = mpf.get_elem(xl, 0);
     f_ln_det.get_elem(xl) = std::log(matrix_determinant(m_mat));
   });
   double sum = 0.0;
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     sum += f_ln_det.get_elem(index);
   }
   return sum;

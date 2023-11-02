@@ -13,12 +13,12 @@ void reset(RngState& rs);
 
 void reset(RngState& rs, const std::string& seed);
 
-void reset(RngState& rs, const long seed);
+void reset(RngState& rs, const Long seed);
 
 void split_rng_state(RngState& rs, const RngState& rs0,
                      const std::string& sindex);
 
-void split_rng_state(RngState& rs, const RngState& rs0, const long sindex = 0);
+void split_rng_state(RngState& rs, const RngState& rs0, const Long sindex = 0);
 
 void set_type(RngState& rs, const unsigned long type);
 
@@ -48,13 +48,13 @@ struct API RngState {
   //
   RngState() { init(); }
   RngState(const std::string& seed) { reset(*this, seed); }
-  RngState(const long seed) { reset(*this, seed); }
+  RngState(const Long seed) { reset(*this, seed); }
   RngState(const RngState& rs0, const std::string& sindex)
   {
     std::memset((void*)this, 0, sizeof(RngState));
     split_rng_state(*this, rs0, sindex);
   }
-  RngState(const RngState& rs0, const long sindex)
+  RngState(const RngState& rs0, const Long sindex)
   {
     std::memset((void*)this, 0, sizeof(RngState));
     split_rng_state(*this, rs0, sindex);
@@ -64,7 +64,7 @@ struct API RngState {
   {
     return RngState(*this, sindex);
   }
-  RngState split(const long sindex) const { return RngState(*this, sindex); }
+  RngState split(const Long sindex) const { return RngState(*this, sindex); }
   //
   RngState newtype(const unsigned long type) const
   {
@@ -84,10 +84,10 @@ template <class M>
 void random_permute(std::vector<M>& vec, const RngState& rs_)
 {
   RngState rs = rs_;
-  const long size = (long)vec.size();
+  const Long size = (Long)vec.size();
   M tmp;
-  for (long k = 0; k < size; ++k) {
-    const long kk = rand_gen(rs) % (size - k);
+  for (Long k = 0; k < size; ++k) {
+    const Long kk = rand_gen(rs) % (size - k);
     tmp = vec[k];
     vec[k] = vec[k + kk];
     vec[k + kk] = tmp;

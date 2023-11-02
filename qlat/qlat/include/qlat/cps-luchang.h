@@ -129,7 +129,7 @@ inline void field_convert(cps::GridComm<M>& gc, const Field<N>& f)
   gc.init(cgeo);
   qassert(check_matching_geo_mult(f.geo(), geo_convert(gc.getGeometry())));
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<N> v = f.get_elems_const(xl);
     M* gcv = gc.getElem(xl.data(), 0);
@@ -148,7 +148,7 @@ inline void field_convert(Field<N>& f, const cps::GridComm<M>& gc)
   f.init(geo);
   qassert(check_matching_geo_mult(f.geo(), geo));
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const M* gcv = gc.getElem(xl.data(), 0);
     Vector<N> v = f.get_elems(xl);
@@ -205,7 +205,7 @@ inline void gt_gf_fix_gauge_coulomb(GaugeTransform& gt, const GaugeField& gf,
   fg.run();
   gt.init(gf.geo());
 #pragma omp parallel for
-  for (long index = 0; index < gt.geo().local_volume(); ++index) {
+  for (Long index = 0; index < gt.geo().local_volume(); ++index) {
     const Coordinate xl = gt.geo().coordinate_from_index(index);
     const int k =
         ((xl[2] * gt.geo().node_site[1]) + xl[1]) * gt.geo().node_site[0] + xl[0];
@@ -307,7 +307,7 @@ inline void run_lanc(LowModesCPS& lm, const GaugeField& gf,
   cps::LanczosRun<float>::run(lm.lanc, cgf, fa_convert(fa), cla);
 }
 
-inline long read_low_modes_compressed(LowModesCPS& lm, const std::string& path)
+inline Long read_low_modes_compressed(LowModesCPS& lm, const std::string& path)
 {
   if (!does_file_exist_sync_node(path + "/metadata.txt")) {
     displayln_info(
@@ -331,8 +331,8 @@ inline long read_low_modes_compressed(LowModesCPS& lm, const std::string& path)
     decompress_eigen_system(bhvs, cesb, cesc);
     convert_half_vectors(hvs, bhvs);
   }
-  const long nvec = hvs.size();
-  const long vec_size = get_data(hvs[0]).data_size();
+  const Long nvec = hvs.size();
+  const Long vec_size = get_data(hvs[0]).data_size();
   timer.flops += nvec * vec_size * get_num_node();
   qassert(nvec == vals.size());
   qassert(vec_size == lanc.vec_size);
@@ -356,32 +356,32 @@ inline long read_low_modes_compressed(LowModesCPS& lm, const std::string& path)
   return nvec * vec_size;
 }
 
-inline long read_low_modes(LowModesCPS& lm, const std::string& path)
+inline Long read_low_modes(LowModesCPS& lm, const std::string& path)
 // lm must be initialized
 {
   TIMER_VERBOSE("read_low_modes");
   qassert(lm.initialized);
-  long size = read_low_modes_compressed(lm, path);
+  Long size = read_low_modes_compressed(lm, path);
   if (size == 0) {
     size = cps::lanczosReadParNode(lm.lanc, path);
   }
   return size;
 }
 
-inline long load_low_modes(LowModesCPS& lm, const std::string& path)
+inline Long load_low_modes(LowModesCPS& lm, const std::string& path)
 {
   TIMER_VERBOSE("load_low_modes");
   if (not lm.initialized) {
     return 0;
   }
-  const long total_bytes = read_low_modes(lm, path);
+  const Long total_bytes = read_low_modes(lm, path);
   if (0 != total_bytes) {
     lm.initialized = true;
   }
   return total_bytes;
 }
 
-inline long write_low_modes(const LowModesCPS& lm, const std::string& path)
+inline Long write_low_modes(const LowModesCPS& lm, const std::string& path)
 {
   TIMER_VERBOSE("write_low_modes");
   qassert(lm.initialized);
@@ -470,7 +470,7 @@ inline void setup_inverter(InverterDomainWallCPS& inverter,
   inverter.lm.init(lm);
 }
 
-inline long invert(FermionField5d& sol, const FermionField5d& src,
+inline Long invert(FermionField5d& sol, const FermionField5d& src,
                    const InverterDomainWallCPS& inverter)
 // sol do not need to be initialized
 {
@@ -490,7 +490,7 @@ inline long invert(FermionField5d& sol, const FermionField5d& src,
   return 0;
 }
 
-inline long invert(FermionField4d& sol, const FermionField4d& src,
+inline Long invert(FermionField4d& sol, const FermionField4d& src,
                    const InverterDomainWallCPS& inverter)
 {
   return invert_dwf(sol, src, inverter);

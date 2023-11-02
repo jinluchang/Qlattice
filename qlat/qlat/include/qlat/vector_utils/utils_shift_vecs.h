@@ -377,7 +377,7 @@ inline void shift_vec::print_info()
   for(int di=0;di<8;di++)
   {
     print0("dir %d, bufsize %ld, MPI_size %ld, sendsize %ld, copysize %ld \n", 
-            di, long(sendbufP[di].size()/bsize), long(MPI_size[di]), sendoffa[di].size(), buffoffa[di].size());
+            di, Long(sendbufP[di].size()/bsize), Long(MPI_size[di]), sendoffa[di].size(), buffoffa[di].size());
   }
   fflush_MPI();
 
@@ -472,7 +472,7 @@ __global__ void multiply_gauge_global(Ty* a, Ty* b, const int dir_gauge, const i
 
 /////gs will be ignored if cs == -1
 template<typename Cy, int gs, int cs, bool Conj>
-void multiply_gauge(void *src, void* gauge, const int dir_gauge,const int biva,const long Length, const int gbfac, const int gd0, const bool GPU)
+void multiply_gauge(void *src, void* gauge, const int dir_gauge,const int biva,const Long Length, const int gbfac, const int gd0, const bool GPU)
 {
   (void)GPU;
   const int dir_limit = 4;
@@ -514,7 +514,7 @@ void multiply_gauge(void *src, void* gauge, const int dir_gauge,const int biva,c
 
   ////cpu fast mode
   if(fast_eigen == 1){
-  qthread_for(index,  long(Length), {
+  qthread_for(index,  Long(Length), {
     QLAT_ALIGN(QLAT_ALIGNED_BYTES) Cy buf[9];
     //if(!Conj)for(int ci=0;ci<9;ci++){buf[(ci%3)*3 + ci/3] = ((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci];}
     //if( Conj)for(int ci=0;ci<9;ci++){buf[(ci%3)*3 + ci/3] = qlat::qconj(((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci]);}
@@ -541,7 +541,7 @@ void multiply_gauge(void *src, void* gauge, const int dir_gauge,const int biva,c
   //////gpu and cpu sloow mode
   if(fast_eigen == 0){
   Qassert(gd0 <= 128);
-  qacc_for(index,  long(Length), {
+  qacc_for(index,  Long(Length), {
     QLAT_ALIGN(QLAT_ALIGNED_BYTES) Cy buf[9];
     QLAT_ALIGN(QLAT_ALIGNED_BYTES) Cy res[128*3];
     if(!Conj)for(int ci=0;ci<9;ci++){buf[ci] = ((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci];}
@@ -568,8 +568,8 @@ template<typename Ty, bool Conj_>
 void shift_vec::mult_gauge(void* pt, int dir_gauge){
   TIMERB("Gauge multiplication");
   bool id = get_data_type_is_double<Ty >();
-  if( id){Qassert(long(civ*sizeof(Ty)/16) == gbfac * 3 * gd0);}
-  if(!id){Qassert(long(civ*sizeof(Ty)/8 ) == gbfac * 3 * gd0);}
+  if( id){Qassert(Long(civ*sizeof(Ty)/16) == gbfac * 3 * gd0);}
+  if(!id){Qassert(Long(civ*sizeof(Ty)/8 ) == gbfac * 3 * gd0);}
   bool cfind = false;
   #define shift_macros(bf) if(bf == gd0){cfind = true; \
     if( id)multiply_gauge<qlat::ComplexD , bf, 1, Conj_>(pt, gauge, dir_gauge, biva,Length,gbfac,gd0,GPU); \
@@ -964,7 +964,7 @@ void symmetric_shift(shift_vec& svec, std::vector<Propagator4dT<Td > >& src, std
   std::vector<int > iDir(4);for(int i=0;i<4;i++){iDir[i] = 0;}
 
   const qlat::Geometry &geo = src[0].geo();
-  const long Nvol = geo.local_volume();
+  const Long Nvol = geo.local_volume();
 
   if(res.size() != src.size()){res.resize(src.size());}
   if(buf.size() != src.size()){buf.resize(src.size());}

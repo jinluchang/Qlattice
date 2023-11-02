@@ -12,18 +12,18 @@ std::string get_env_default(const std::string& var_name, const std::string& x0);
 
 double get_env_double_default(const std::string& var_name, const double x0);
 
-long get_env_long_default(const std::string& var_name, const long x0);
+Long get_env_long_default(const std::string& var_name, const Long x0);
 
-long get_verbose_level_default();
+Long get_verbose_level_default();
 
 double get_time_limit_default();
 
 double get_time_budget_default();
 
-API inline long& get_verbose_level()
+API inline Long& get_verbose_level()
 // qlat parameter
 {
-  static long level = get_verbose_level_default();
+  static Long level = get_verbose_level_default();
   return level;
 }
 
@@ -41,11 +41,11 @@ API inline double& get_time_budget()
   return budget;
 }
 
-API inline long& get_qar_multi_vol_max_size()
+API inline Long& get_qar_multi_vol_max_size()
 // qlat parameter
 // size in bytes
 {
-  static long size = get_env_long_default("q_qar_multi_vol_max_size",
+  static Long size = get_env_long_default("q_qar_multi_vol_max_size",
                                           500L * 1000L * 1000L * 1000L);
   return size;
 }
@@ -57,11 +57,11 @@ API inline mode_t& default_dir_mode()
   return mode;
 }
 
-API inline long& write_from_qfile_chunk_size()
+API inline Long& write_from_qfile_chunk_size()
 // qlat parameter
 // size in bytes
 {
-  static long size = 512 * 1024;
+  static Long size = 512 * 1024;
   return size;
 }
 

@@ -127,7 +127,7 @@ struct lms_para{
 
 template<typename Ty>
 void pick_mom_data(qlat::vector_gpu<Ty >& res, qlat::vector_gpu<Ty >& src,
-  const int nvec, qlat::vector_acc<long >& mapA, qlat::vector_acc<long >& mapB, const Geometry& geo)
+  const int nvec, qlat::vector_acc<Long >& mapA, qlat::vector_acc<Long >& mapB, const Geometry& geo)
 {
   TIMER("save FFT");
   ////false to match to gwu code convention
@@ -135,15 +135,15 @@ void pick_mom_data(qlat::vector_gpu<Ty >& res, qlat::vector_gpu<Ty >& src,
   fft_fieldM(src.data(), nvec, 1, geo, false);
   res.set_zero();
 
-  const long Nvol = src.size()/nvec;
-  const long Mvol = res.size()/nvec;
+  const Long Nvol = src.size()/nvec;
+  const Long Mvol = res.size()/nvec;
   Qassert(mapA.size() <= Mvol);
 
-  long* A = mapA.data();
-  long* B = mapB.data();
+  Long* A = mapA.data();
+  Long* B = mapB.data();
   qacc_for(isp, mapA.size() ,{
-    long i0 = A[isp];
-    long i1 = B[isp];
+    Long i0 = A[isp];
+    Long i1 = B[isp];
     for(int iv=0;iv<nvec;iv++){res[iv*Mvol + i1] = src[iv*Nvol + i0];}
   });
 
@@ -167,8 +167,8 @@ void prop_to_vec(std::vector<qlat::vector_gpu<Ty > >& Eprop, qlat::vector_gpu<Ty
   for(int i=5;i<6;i++){gL[o] = ga_cps.ga[4][i];o+=1;}}
 
   ///////===new contractions
-  long NTt = fd.Nv[3];
-  long Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
+  Long NTt = fd.Nv[3];
+  Long Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   int nmass = Eprop.size();
 
   //qlat::vector_gpu<Ty > resT0, resT1;////, resTa;
@@ -239,7 +239,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   print_mem_info("Before point_corr");
   if(propH.size() != massL.size()){abort_r("prop size, mass size not match!\n");}
   ////int Ns = src.size();
-  const long Size_prop = fd.get_prop_size();
+  const Long Size_prop = fd.get_prop_size();
   const Geometry& geo = src.geo();
 
   const int GPU = 1;const bool rotate = false;
@@ -327,9 +327,9 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   const int mc = srcI.mom_cut*2 + 1;
   ////momentum_dat mdat(geo, srcI.mom_cut);
   //std::vector<qlat::vector_gpu<Ty > > FFT_data;FFT_data.resize(1 + Nlms);
-  //qlat::vector_gpu<Ty > FFT_data;long Nfdata = long(32)*massL.size()*fd.nt*mc*mc*mc ;
+  //qlat::vector_gpu<Ty > FFT_data;Long Nfdata = Long(32)*massL.size()*fd.nt*mc*mc*mc ;
   //qlat::vector_gpu<Ty > FFT_data_high;
-  //qlat::vector_acc<long > mapA, mapB;
+  //qlat::vector_acc<Long > mapA, mapB;
 
   ///////check production for this source
   ///////low mode ignored if check point enabled
@@ -345,7 +345,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     }
   }
 
-  long nZero = 1;////number of saved zeros
+  Long nZero = 1;////number of saved zeros
   if(srcI.save_full_vec == 1){nZero = 1 + Nlms;}
 
   char key_T[1000], dimN[1000];
@@ -470,15 +470,15 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     TIMER("lms savezero");
     ////std::vector<qlat::FieldM<Ty, 1> > Vzero_data;
     Qassert(resZero.size() == nZero*32*nmass*Vol);
-    const long nvec = resZero.size()/Vol;
+    const Long nvec = resZero.size()/Vol;
     print0("=====vec %d \n", int(nvec));
-    if(long(Vzero_data.size() ) != nvec){
+    if(Long(Vzero_data.size() ) != nvec){
       Vzero_data.resize(0);Vzero_data.resize(nvec);
-      for(long iv=0;iv<nvec;iv++){
+      for(Long iv=0;iv<nvec;iv++){
         if(!Vzero_data[iv].initialized){Vzero_data[iv].init(geo);}
       }
     }
-    for(long iv=0;iv<nvec;iv++){
+    for(Long iv=0;iv<nvec;iv++){
       Ty* resP = (Ty*) qlat::get_data(Vzero_data[iv]).data();
       cpy_data_thread(resP, &resZero[iv*Vol], geo.local_volume(), 1, QTRUE);
     }

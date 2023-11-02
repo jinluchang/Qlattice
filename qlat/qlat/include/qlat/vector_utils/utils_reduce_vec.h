@@ -67,14 +67,14 @@ inline unsigned long nextPowerOf2(unsigned long n)
 
 #ifdef QLAT_USE_ACC
 template<typename Ty, bool clear>
-inline void reduce_T_global6(const Ty* src,Ty* res,const long n, const int nv,long nt, long blockS)
+inline void reduce_T_global6(const Ty* src,Ty* res,const Long n, const int nv,Long nt, Long blockS)
 {
-  ///const long blockS = (n + nt - 1)/(nt);
+  ///const Long blockS = (n + nt - 1)/(nt);
   dim3 dimGrid(blockS, nv, 1);
   dim3 dimBlock(nt, 1, 1);
 
-  long threads = nt;
-  ////long smemSize = nt*sizeof(Ty);
+  Long threads = nt;
+  ////Long smemSize = nt*sizeof(Ty);
   unsigned int divide = (n+nt*blockS-1)/(nt*blockS);
   /////reduce6 <<<cu_blocks,cu_threads, nt*sizeof(Ty) >>>(src,res,n);
 
@@ -97,7 +97,7 @@ inline void reduce_T_global6(const Ty* src,Ty* res,const long n, const int nv,lo
 #endif
 
 template<typename Ty>
-void reduce_cpu(const Ty *src,Ty &res,const long n, bool clear){
+void reduce_cpu(const Ty *src,Ty &res,const Long n, bool clear){
   //#pragma omp parallel for reduction(+: res)
   //for(unsigned long index=0;index<n;index++){
   //  res += src[index];
@@ -108,8 +108,8 @@ void reduce_cpu(const Ty *src,Ty &res,const long n, bool clear){
   if(n < 10*Nv)Nv=1;
   //int Nv = 1;
   if(Nv == 1){
-  if( clear){for(long index=0;index<n;index++){res  = src[index];}}
-  if(!clear){for(long index=0;index<n;index++){res += src[index];}}
+  if( clear){for(Long index=0;index<n;index++){res  = src[index];}}
+  if(!clear){for(Long index=0;index<n;index++){res += src[index];}}
   }
   else{
     ////print0("====Reduce omp \n");
@@ -139,25 +139,25 @@ void reduce_cpu(const Ty *src,Ty &res,const long n, bool clear){
 
 
 template<typename Ty, bool clear>
-inline void reduce_gpu2d_6(const Ty* src,Ty* res,long n, int nv=1,
+inline void reduce_gpu2d_6(const Ty* src,Ty* res,Long n, int nv=1,
     int thread_pow2 = 8,int divide=128,int fac=16)
 {
   (void)thread_pow2;
   (void)divide;
   (void)fac;
   #ifdef QLAT_USE_ACC
-  //long nthreads = qlat::qacc_num_threads();
-  long nthreads = 32;
+  //Long nthreads = qlat::qacc_num_threads();
+  Long nthreads = 32;
   nthreads = nextPowerOf2(nthreads);
 
-  ////long nfac = 1<<thread_pow2;
-  long nfac = thread_pow2;
-  long cutN = nthreads*fac;
-  long nt  = nthreads*nfac;if(nt > 1024){nt = 1024;nfac=nt/nthreads;}
+  ////Long nfac = 1<<thread_pow2;
+  Long nfac = thread_pow2;
+  Long cutN = nthreads*fac;
+  Long nt  = nthreads*nfac;if(nt > 1024){nt = 1024;nfac=nt/nthreads;}
 
-  long ntL = nt*divide;
-  long Ny0 = (n  + ntL - 1)/(ntL);
-  long Ny1 = (Ny0 + ntL - 1)/(ntL);
+  Long ntL = nt*divide;
+  Long Ny0 = (n  + ntL - 1)/(ntL);
+  Long Ny1 = (Ny0 + ntL - 1)/(ntL);
   Ty *psrc;Ty *pres;Ty *tem;
   qlat::vector_acc<Ty > buf0,buf1;
   buf0.resize(nv*Ny0);buf1.resize(nv*Ny1);
@@ -212,7 +212,7 @@ template<typename Ty>
 inline unsigned long reduce_T(const Ty *src,Ty *res,const unsigned long n,const int nv,const unsigned long Lx){
   unsigned long Ny = n/Lx;
   unsigned long Nx = ((n+Ny-1)/Ny);
-  qacc_for(index, (long)Ny, {
+  qacc_for(index, (Long)Ny, {
     for(int iv=0;iv<nv;iv++){
       res[iv*Ny+index] = 0;
       unsigned long tid = iv*n + index*Nx;
@@ -228,13 +228,13 @@ inline unsigned long reduce_T(const Ty *src,Ty *res,const unsigned long n,const 
 }
 
 template<typename Ty>
-void reduce_cpu(const Ty* src,Ty* res,long n, int nv, bool clear)
+void reduce_cpu(const Ty* src,Ty* res,Long n, int nv, bool clear)
 {
-  for(long i=0;i<nv;i++){reduce_cpu(&src[i*n], res[i],n, clear);}
+  for(Long i=0;i<nv;i++){reduce_cpu(&src[i*n], res[i],n, clear);}
 }
 
 template<typename Ty>
-inline void reduce_gpu(const Ty *src,Ty *res,const long n,const int nv=1,
+inline void reduce_gpu(const Ty *src,Ty *res,const Long n,const int nv=1,
   const int Ld=128,const int Ld0=8,const int fac=16)
 {
   (void)Ld;
@@ -247,7 +247,7 @@ inline void reduce_gpu(const Ty *src,Ty *res,const long n,const int nv=1,
   if(n <= cutN){for(int i=0;i<nv;i++){reduce_cpu(&src[i*n],res[i],n);}return;}
 
   Ty *psrc;Ty *pres;Ty *tem;
-  long Nres;
+  Long Nres;
 
   qlat::vector<Ty > buf0,buf1;
   buf0.resize(nv*Ny);
@@ -274,7 +274,7 @@ inline void reduce_gpu(const Ty *src,Ty *res,const long n,const int nv=1,
 
 
 template<typename Ty>
-void reduce_vec(const Ty* src, Ty* res,long n, int nv=1, int GPU = 1, bool clear = false)
+void reduce_vec(const Ty* src, Ty* res,Long n, int nv=1, int GPU = 1, bool clear = false)
 {
   TIMERA("reduce_vec");
   if(GPU == 0){

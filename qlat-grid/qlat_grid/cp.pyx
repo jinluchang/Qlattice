@@ -13,9 +13,9 @@ def begin_with_grid(size_node_list = None):
         assert isinstance(size_node_list, list)
         size_node_list = list(map(q.Coordinate, size_node_list))
     size_node_list = size_node_list + q.default_size_node_list
-    cdef long vec_size = len(size_node_list)
+    cdef cc.Long vec_size = len(size_node_list)
     cdef cc.std_vector[cc.Coordinate] size_node_vec = cc.std_vector[cc.Coordinate](vec_size)
-    cdef long i
+    cdef cc.Long i
     cdef Coordinate size_node
     for i in range(vec_size):
         size_node = Coordinate(size_node_list[i])

@@ -66,7 +66,7 @@ inline void py_convert(int& out, PyObject* in)
   out = PyLong_AsLong(in);
 }
 
-inline void py_convert(long& out, PyObject* in)
+inline void py_convert(Long& out, PyObject* in)
 {
   qassert(PyLong_Check(in));
   out = PyLong_AsLong(in);
@@ -107,7 +107,7 @@ inline void py_convert(std::string& s, PyObject* in)
   if (PyType_Check(in)) {
     s = ((PyTypeObject*)in)->tp_name;
   } else if (PyBytes_Check(in)) {
-    const long size = PyBytes_Size(in);
+    const Long size = PyBytes_Size(in);
     s = std::string(PyBytes_AsString(in), size);
   } else if (PyUnicode_Check(in)) {
     PyObject* temp = PyUnicode_AsEncodedString(in, "UTF-8", "strict");
@@ -164,12 +164,12 @@ void py_convert(Vector<M> out, PyObject* in)
 {
   if (PyList_Check(in)) {
     qassert(out.size() == PyList_Size(in));
-    for (long i = 0; i < out.size(); i++) {
+    for (Long i = 0; i < out.size(); i++) {
       py_convert(out[i], PyList_GetItem(in, i));
     }
   } else if (PyTuple_Check(in)) {
     qassert(out.size() == PyTuple_Size(in));
-    for (long i = 0; i < out.size(); i++) {
+    for (Long i = 0; i < out.size(); i++) {
       py_convert(out[i], PyTuple_GetItem(in, i));
     }
   } else {
@@ -182,12 +182,12 @@ void py_convert(array<M, N>& out, PyObject* in)
 {
   if (PyList_Check(in)) {
     qassert(out.size() == PyList_Size(in));
-    for (long i = 0; i < out.size(); i++) {
+    for (Long i = 0; i < out.size(); i++) {
       py_convert(out[i], PyList_GetItem(in, i));
     }
   } else if (PyTuple_Check(in)) {
     qassert(out.size() == PyTuple_Size(in));
-    for (long i = 0; i < out.size(); i++) {
+    for (Long i = 0; i < out.size(); i++) {
       py_convert(out[i], PyTuple_GetItem(in, i));
     }
   } else {
@@ -200,7 +200,7 @@ T py_convert_data(PyObject* in)
 // interface
 // examples:
 // py_convert_data<int>(in)
-// py_convert_data<long>(in)
+// py_convert_data<Long>(in)
 // py_convert_data<double>(in)
 // py_convert_data<ComplexD>(in)
 // py_convert_data<bool>(in)
@@ -218,7 +218,7 @@ template <class T>
 T py_convert_data(PyObject* in, const std::string& attr)
 // interface
 // py_convert_data<std::string>(in, "ctype")
-// py_convert_data<long>(in, "cdata")
+// py_convert_data<Long>(in, "cdata")
 {
   PyObject* p_obj = PyObject_GetAttrString(in, attr.c_str());
   T x = py_convert_data<T>(p_obj);
@@ -259,7 +259,7 @@ T& py_convert_type(PyObject* in)
 // py_convert_type<GaugeField>(in);
 // py_convert_type<CommMarks>(in);
 {
-  T* out = (T*)py_convert_data<long>(in, "cdata");
+  T* out = (T*)py_convert_data<Long>(in, "cdata");
   return *out;
 }
 
@@ -291,13 +291,13 @@ T& py_convert_type(PyObject* in, const std::string& attr, const std::string& att
 
 inline PyObject* py_convert(PyObject* x) { return x; }
 
-inline PyObject* py_convert(const char& x) { return PyLong_FromLong((long)x); }
+inline PyObject* py_convert(const char& x) { return PyLong_FromLong((Long)x); }
 
-inline PyObject* py_convert(const bool& x) { return PyBool_FromLong((long)x); }
+inline PyObject* py_convert(const bool& x) { return PyBool_FromLong((Long)x); }
 
-inline PyObject* py_convert(const int& x) { return PyLong_FromLong((long)x); }
+inline PyObject* py_convert(const int& x) { return PyLong_FromLong((Long)x); }
 
-inline PyObject* py_convert(const long& x) { return PyLong_FromLong(x); }
+inline PyObject* py_convert(const Long& x) { return PyLong_FromLong(x); }
 
 inline PyObject* py_convert(const long long& x)
 {
@@ -342,7 +342,7 @@ template <class M>
 PyObject* py_convert(const std::vector<M>& vec)
 {
   PyObject* ret = PyList_New(vec.size());
-  for (long i = 0; i < (long)vec.size(); i++) {
+  for (Long i = 0; i < (Long)vec.size(); i++) {
     PyList_SetItem(ret, i, py_convert(vec[i]));
   }
   return ret;
@@ -352,7 +352,7 @@ template <class M>
 PyObject* py_convert(const Vector<M>& vec)
 {
   PyObject* ret = PyList_New(vec.size());
-  for (long i = 0; i < (long)vec.size(); i++) {
+  for (Long i = 0; i < (Long)vec.size(); i++) {
     PyList_SetItem(ret, i, py_convert(vec[i]));
   }
   return ret;

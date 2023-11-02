@@ -20,18 +20,18 @@ int main(int argc, char* argv[])
     exit(-1);
   }
   std::vector<std::string> fns(argc - 1);
-  for (long i = 0; i < (long)fns.size(); ++i) {
+  for (Long i = 0; i < (Long)fns.size(); ++i) {
     fns[i] = remove_trailing_slashes(argv[1 + i]);
     displayln_info(
         ssprintf("fns[%5d/%d] = '%s'", i, fns.size(), fns[i].c_str()));
   }
   displayln_info("Start to calculating crc32...");
-  for (long i = 0; i < (long)fns.size(); ++i) {
+  for (Long i = 0; i < (Long)fns.size(); ++i) {
     displayln_info(
         ssprintf("fns[%5d/%d] = '%s'", i, fns.size(), fns[i].c_str()));
     if (is_d_field(fns[i])) {
       Field<char> f;
-      const long total_bytes = read_field(f, fns[i]);
+      const Long total_bytes = read_field(f, fns[i]);
       if (total_bytes == 0 or is_checksum_missmatch()) {
         displayln_info(ssprintf("FAILED: fns[%5d/%d]\nFAILED FILENAME: %s", i,
                                 fns.size(), fns[i].c_str()));

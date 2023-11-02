@@ -37,9 +37,9 @@ inline void setup_params()
                           get_start_time() + get_lock_expiration_time_limit()));
 }
 
-inline long& get_log_idx()
+inline Long& get_log_idx()
 {
-  static long idx = -1;
+  static Long idx = -1;
   return idx;
 }
 
@@ -48,7 +48,7 @@ inline void setup_log_idx(const std::string& path = ".")
   TIMER_VERBOSE("setup_log_idx");
   qmkdir_info(path);
   qmkdir_info(path + "/logs-lock");
-  for (long i = 0; true; ++i) {
+  for (Long i = 0; true; ++i) {
     const std::string fn = path + ssprintf("/logs-lock/%010d", i);
     if (!does_file_exist_sync_node(fn) && 0 == mkdir_lock(fn)) {
       get_log_idx() = i;

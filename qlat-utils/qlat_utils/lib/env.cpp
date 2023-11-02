@@ -41,10 +41,10 @@ double get_env_double_default(const std::string& var_name, const double x0)
   return x;
 }
 
-long get_env_long_default(const std::string& var_name, const long x0)
+Long get_env_long_default(const std::string& var_name, const Long x0)
 {
   const std::string val = get_env(var_name);
-  long x;
+  Long x;
   if (val == "") {
     x = x0;
     displayln_info(0, ssprintf("%s=%ld (default)", var_name.c_str(), x));
@@ -55,12 +55,12 @@ long get_env_long_default(const std::string& var_name, const long x0)
   return x;
 }
 
-long get_verbose_level_default()
+Long get_verbose_level_default()
 {
-  const long x0 = -1;  // default verbose_level
+  const Long x0 = -1;  // default verbose_level
   const std::string var_name = "q_verbose";
   const std::string val = get_env(var_name);
-  long x;
+  Long x;
   if (val == "") {
     x = x0;
   } else {

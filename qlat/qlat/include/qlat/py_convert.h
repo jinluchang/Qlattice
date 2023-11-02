@@ -211,7 +211,7 @@ inline GaugeField& py_convert_type(PyObject* in)
 inline PyObject* py_convert(const Coordinate& coor)
 {
   PyObject* ret = PyList_New(coor.size());
-  for (long i = 0; i < (long)coor.size(); i++) {
+  for (Long i = 0; i < (Long)coor.size(); i++) {
     PyList_SetItem(ret, i, PyLong_FromLong(coor[i]));
   }
   return ret;

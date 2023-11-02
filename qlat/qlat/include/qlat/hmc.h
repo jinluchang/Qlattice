@@ -77,7 +77,7 @@ inline double gm_hamilton_node(const GaugeMomentum& gm)
     fd.get_elem(index) = s;
   });
   double sum = 0.0;
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     sum += fd.get_elem(index);
   }
   return sum;
@@ -118,7 +118,7 @@ inline double gf_sum_re_tr_plaq_node_no_comm(const GaugeField& gf)
     fd.get_elem(index) = s;
   });
   double sum = 0.0;
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     sum += fd.get_elem(index);
   }
   return sum;
@@ -144,7 +144,7 @@ inline double gf_sum_re_tr_rect_node_no_comm(const GaugeField& gf)
     fd.get_elem(index) = s;
   });
   double sum = 0.0;
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  for (Long index = 0; index < geo.local_volume(); ++index) {
     sum += fd.get_elem(index);
   }
   return sum;

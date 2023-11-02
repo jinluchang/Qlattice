@@ -41,7 +41,7 @@ template<typename Td, int dir, bool conj>
 void prop4d_src_gammaT(Propagator4dT<Td >& prop, ga_M& ga){
   TIMERA("prop4d_src_gamma");
   ////Rowmajor (a,b), b is continues in memory
-  qacc_for(isp, long(prop.geo().local_volume()),{
+  qacc_for(isp, Long(prop.geo().local_volume()),{
     qlat::WilsonMatrixT<Td>& v0 =  prop.get_elem_offset(isp);
     qlat::WilsonMatrixT<Td>  v1 = v0;
 
@@ -75,11 +75,11 @@ void prop4d_sink_gamma(Propagator4dT<Td >& prop, ga_M& ga, bool conj = false){
 }
 
 template<typename Ty, int dir, bool conj>
-void qprop_src_gamma_T(Ty* res, ga_M& ga, const long Nsize){
+void qprop_src_gamma_T(Ty* res, ga_M& ga, const Long Nsize){
   TIMERA("qprop_src_gamma");
   ////Rowmajor (a,b), b is continues in memory
   ///Ty* res = (Ty*) qlat::get_data(prop1).data()
-  //const long Nsize = prop.geo().local_volume();
+  //const Long Nsize = prop.geo().local_volume();
   qacc_for(isp, Nsize,{
     Ty src[12*12];
     Ty buf[12*12];
@@ -112,7 +112,7 @@ void qprop_src_gamma_T(Ty* res, ga_M& ga, const long Nsize){
 template<typename Ty>
 void qprop_src_gamma(qpropT& prop, ga_M& ga, bool conj = false){
   Ty* res = (Ty*) qlat::get_data(prop).data();
-  const long Nsize = prop.geo().local_volume();
+  const Long Nsize = prop.geo().local_volume();
   if(!conj)qprop_src_gamma_T<Ty, 0, false>(res, ga, Nsize);
   if( conj)qprop_src_gamma_T<Ty, 0, true >(res, ga, Nsize);
 }
@@ -121,7 +121,7 @@ void qprop_src_gamma(qpropT& prop, ga_M& ga, bool conj = false){
 template<typename Ty>
 void qprop_sink_gamma(qpropT& prop, ga_M& ga, bool conj = false){
   Ty* res = (Ty*) qlat::get_data(prop).data();
-  const long Nsize = prop.geo().local_volume();
+  const Long Nsize = prop.geo().local_volume();
   if(!conj)qprop_src_gamma_T<Ty, 1, false>(res, ga, Nsize);
   if( conj)qprop_src_gamma_T<Ty, 1, true >(res, ga, Nsize);
 }
@@ -150,7 +150,7 @@ template<typename Ty>
 void qprop_move_dc_in(Ty* src, const qlat::Geometry &geo, const int dir = 1)
 {
   move_index mv_civ;
-  const long sizeF = geo.local_volume();
+  const Long sizeF = geo.local_volume();
 
   if(dir == 1){mv_civ.move_civ_in( src, src, 1, 12*12, sizeF, 1, true);}
   if(dir == 0){mv_civ.move_civ_out(src, src, 1, sizeF, 12*12, 1, true);}
@@ -181,7 +181,7 @@ void qprop_sub_add(std::vector<qpropT >& res, std::vector< qpropT >& s0, const T
   if(s0.size() == 0){res.resize(0); return ;}
   const int Nvec = s0.size();
   const qlat::Geometry &geo = s0[0].geo();
-  const long Nvol = geo.local_volume();
+  const Long Nvol = geo.local_volume();
 
   init_qpropT(res, Nvec, geo);
   for(int vi=0;vi<Nvec;vi++)
@@ -203,7 +203,7 @@ void qprop_sub_add(std::vector<qpropT >& res, std::vector< qpropT >& s0, std::ve
   Qassert(s0.size() == s1.size());
   const int Nvec = s0.size();
   const qlat::Geometry &geo = s0[0].geo();
-  const long Nvol = geo.local_volume();
+  const Long Nvol = geo.local_volume();
 
   init_qpropT(res, Nvec, geo);
   for(int vi=0;vi<Nvec;vi++)
@@ -297,12 +297,12 @@ void get_corr_pion(std::vector<qlat::FermionField4dT<Td > > &prop,const Coordina
 
   unsigned long Nvol = geo.local_volume();
   ///int Nt = geo.node_site[3];
-  ///long Nsum = Nvol/Nt;
+  ///Long Nsum = Nvol/Nt;
   int tini = x_ini[3];
 
   qlat::vector_acc<qlat::ComplexT<Td> > res;res.resize(Nvol);
 
-  qacc_for(isp, long(Nvol),{
+  qacc_for(isp, Long(Nvol),{
     qlat::ComplexT<Td> buf(0.0,0.0);
 
     for(int dc2=0;dc2<12;dc2++){
@@ -374,7 +374,7 @@ void vec_corrE(Ty* srcE, qlat::vector_acc<Ty >& res,qlat::fft_desc_basic &fd,con
     ////qlat::vector_gpu<int > pos_tem;pos_tem.copy_from(fd.Pos0[fd.rank]);int* posP = pos_tem.data();
     /////===may not be consistent for fd definiations under qacc
     /////===slow
-    qthread_for(xi, long(Nxyz),{
+    qthread_for(xi, Long(Nxyz),{
       //int pi[3];
       //pi[orderN[0]] = xi/(Nv[orderN[1]]*Nv[orderN[2]]);
       //pi[orderN[1]] = (xi%(Nv[orderN[1]]*Nv[orderN[2]]))/Nv[orderN[2]];
@@ -388,7 +388,7 @@ void vec_corrE(Ty* srcE, qlat::vector_acc<Ty >& res,qlat::fft_desc_basic &fd,con
 
     size_t Ns = Nxyz;
     Ns = nvec*NTt*Nxyz;
-    qacc_for(i, long(Ns),{
+    qacc_for(i, Long(Ns),{
       LInt mi = i/(NTt*Nxyz);
       LInt ti = (i%(NTt*Nxyz))/Nxyz;
       LInt xi = i%(Nxyz);
@@ -408,10 +408,10 @@ void vec_corrE(Ty* srcE, qlat::vector_acc<Ty >& res,qlat::fft_desc_basic &fd,con
 
   qlat::vector_gpu<Ty > RES;RES.resize(nvec*nt );RES.set_zero();
   Ty* s1 = RES.data();Ty* s0 = tmp.data();
-  long Ntotal = nvec*NTt;
+  Long Ntotal = nvec*NTt;
   qacc_for(mti, Ntotal, {
-    long mi  = mti/NTt;
-    long  ti = mti%NTt;
+    Long mi  = mti/NTt;
+    Long  ti = mti%NTt;
     s1[mi*nt + (t_rank + ti + nt - t0)%nt ] = s0[mi*NTt + ti] * src_phase;
   });
 
@@ -470,7 +470,7 @@ inline std::vector<Coordinate > string_to_coord(std::string& INFO){
 template<typename Ty>
 void shift_result_t(qlat::vector_acc<Ty >& Esrc, int nt, int tini){
   if(tini == 0){return ;}
-  long Ntotal = Esrc.size();
+  Long Ntotal = Esrc.size();
   if(Ntotal %(nt) != 0){abort_r("Correlation function size wrong!\n");}
   qlat::vector_acc<Ty > tmp;tmp.resize(Ntotal);
   qacc_for(i, Ntotal, {
@@ -524,7 +524,7 @@ void shift_result_t(qlat::vector_acc<Ty >& Esrc, int nt, int tini){
 //    Ty* pv = pV1[mi];
 //    /////Propagator4dT<Ty >& pv = pV1[mi];
 //    qlat::vector_acc<Ta* > ps = EigenM_to_pointers(prop);
-//    qacc_for(isp, long(NTt*Nxyz),{
+//    qacc_for(isp, Long(NTt*Nxyz),{
 //      int ti = isp/Nxyz;
 //      int xi = isp%Nxyz;
 //      /////qlat::WilsonMatrixT<Ty>& v0 =  pv.get_elem_offset(isp);
@@ -605,8 +605,8 @@ void shift_result_t(qlat::vector_acc<Ty >& Esrc, int nt, int tini){
 //
 
 template<typename Ty>
-void ini_propG(EigenTy& prop, const long nmass, size_t Nsize, bool clear = true){
-  if(long(prop.size()) != nmass){prop.resize(nmass);}
+void ini_propG(EigenTy& prop, const Long nmass, size_t Nsize, bool clear = true){
+  if(Long(prop.size()) != nmass){prop.resize(nmass);}
   for(unsigned long i=0;i<prop.size();i++){
     if(prop[i].size() != Nsize){
       prop[i].resize(Nsize);
@@ -782,7 +782,7 @@ void get_phases(std::vector<vector_gpu<Ty >>& phases, const std::vector<Coordina
   int Nmom = momL.size();
   phases.resize(Nmom);if(Nmom == 0){return ;}
   qlat::vector_acc<int > nv, Nv, mv;geo_to_nv(geo, nv, Nv, mv);
-  long vol = Nv[0]*Nv[1]*Nv[2];
+  Long vol = Nv[0]*Nv[1]*Nv[2];
   for(int momi=0;momi<Nmom;momi++){phases[momi].resize(vol);}
   qlat::vector_acc<Ty* > Pres = EigenM_to_pointers(phases);
 
@@ -796,7 +796,7 @@ void get_phases(std::vector<vector_gpu<Ty >>& phases, const std::vector<Coordina
   int* momLP = momLV.data();
   ////copy momentum to gpu memery
 
-  qacc_for(xi, long(vol),{
+  qacc_for(xi, Long(vol),{
     const Coordinate xl  = geo.coordinate_from_index(xi);
     const Coordinate pos = geo.coordinate_g_from_l(xl);
     for(int momi = 0;momi < Nmom; momi++)
@@ -839,10 +839,10 @@ void apply_phases(qlat::FieldM<Ty, civ >& src, qlat::FieldM<Ty, civ>* res, vecto
   }
 
   qlat::vector_acc<int > nv, Nv, mv;geo_to_nv(geo, nv, Nv, mv);
-  const long vol = Nv[0]*Nv[1]*Nv[2];
+  const Long vol = Nv[0]*Nv[1]*Nv[2];
   const int   Nt = Nv[3];
 
-  qacc_for(xi, long(vol),{
+  qacc_for(xi, Long(vol),{
     for(int momi = 0;momi < Nmom; momi++)
     {
       const Ty& ph   = Pphase[momi][xi];
@@ -887,11 +887,11 @@ void apply_phases(Propagator4dT<Td>& src, Propagator4dT<Td>& res, qlat::vector_g
   Ty* pres = (Ty*) qlat::get_data(res).data();
 
   qlat::vector_acc<int > nv, Nv, mv;geo_to_nv(geo, nv, Nv, mv);
-  const long vol = Nv[0]*Nv[1]*Nv[2];
+  const Long vol = Nv[0]*Nv[1]*Nv[2];
   const int   Nt = Nv[3];
   const int civ = 12 * 12;
 
-  qacc_for(xi, long(vol),{
+  qacc_for(xi, Long(vol),{
     {
       const Ty& ph   = Pphase[xi];
       for(int ti=0;ti<Nt;ti++)
@@ -920,10 +920,10 @@ void apply_phases(Propagator4dT<Td>& src, Propagator4dT<Td>& res, qlat::vector_g
 //  }
 //
 //  qlat::vector_acc<int > nv, Nv, mv;geo_to_nv(geo, nv, Nv, mv);
-//  const long vol = Nv[0]*Nv[1]*Nv[2];
+//  const Long vol = Nv[0]*Nv[1]*Nv[2];
 //  const int   Nt = Nv[3];
 //
-//  qacc_for(xi, long(vol),{
+//  qacc_for(xi, Long(vol),{
 //    for(int momi = 0;momi < Nmom; momi++)
 //    {
 //      const Ty& ph   = Pphase[momi][xi];
@@ -954,11 +954,11 @@ void multi_factor(qlat::FieldM<Ty, civ >& src, qlat::FieldM<Ty, civ>& res, const
 ////phases for momentum data
 template<typename Ty>
 void get_phases(std::vector<Ty >& phases, Coordinate& pL, const Coordinate& src, const Coordinate& Lat){
-  long vol = pL[0]*pL[1]*pL[2];
+  Long vol = pL[0]*pL[1]*pL[2];
   phases.resize(vol);
   for(int i=0;i<3;i++){Qassert(pL[i] % 2 == 1);}
   #pragma omp parallel for
-  for(long isp =0;isp<vol;isp++){
+  for(Long isp =0;isp<vol;isp++){
     Coordinate pos = qlat::coordinate_from_index(isp, pL);
 
     for(int i=0;i<3;i++){
@@ -989,14 +989,14 @@ void copy_qprop_to_propE(std::vector<qlat::vector_acc<Ty > >& Eprop, std::vector
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
   if(dir == 1){ini_propE(Eprop, nmass, fd);}
   
-  ///const long sizeF = geo.local_volume();
-  const long nvec  = Eprop.size()/nmass;
-  const long sizeF = Eprop[0].size();
+  ///const Long sizeF = geo.local_volume();
+  const Long nvec  = Eprop.size()/nmass;
+  const Long sizeF = Eprop[0].size();
   Qassert(nvec * sizeF == 12*12*geo.local_volume());
 
   ////V x 12 a x 12 b to 12b x 12a x V
   for(int mi=0;mi<nmass;mi++)
-  for(long i=0;i<nvec;i++)
+  for(Long i=0;i<nvec;i++)
   {
     if(dir == 1)cpy_data_thread(Eprop[mi*nvec + i].data(), &ps[mi][i*sizeF], sizeF, 1, false);
     if(dir == 0)cpy_data_thread(&ps[mi][i*sizeF], Eprop[mi*nvec + i].data(), sizeF, 1, false);
@@ -1019,7 +1019,7 @@ void noise_to_propT(qpropT& prop, qnoiT& noi){
   Ty* res = (Ty*) qlat::get_data(prop).data();
   Ty* src = (Ty*) qlat::get_data(noi ).data();
 
-  const long Nvol = geo.local_volume();
+  const Long Nvol = geo.local_volume();
 
   for(int d0=0;d0<12;d0++){
     cpy_data_thread(&res[(d0*12+d0)*Nvol + 0], src, Nvol, 1, false);
@@ -1033,7 +1033,7 @@ void prop4D_factor(Propagator4dT<Td>& prop, const qlat::ComplexT<Td >& factor)
 {
   const size_t Nvol = size_t(prop.geo().local_volume()) * 12 * 12;
   qlat::ComplexT<Td >* src = (qlat::ComplexT<Td >*) qlat::get_data(prop).data();
-  qacc_for(isp, long(Nvol), {
+  qacc_for(isp, Long(Nvol), {
     src[isp] *= factor;
   })
   ////if(qlat::qnorm(factor) >= QLAT_COPY_LIMIT){cpy_data_threadC(src, src, Nvol, 1, true, factor);}

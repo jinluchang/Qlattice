@@ -142,7 +142,7 @@ template <class M>
 PyObject* get_multiplicity_field_ctype(PyObject* p_field)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
-  const long ret = f.geo().multiplicity;
+  const Long ret = f.geo().multiplicity;
   return py_convert(ret);
 }
 
@@ -150,7 +150,7 @@ template <class M>
 PyObject* get_sizeof_m_field_ctype(PyObject* p_field)
 {
   (void)p_field;
-  const long size = sizeof(M);
+  const Long size = sizeof(M);
   return py_convert(size);
 }
 
@@ -175,7 +175,7 @@ PyObject* crc32_field_ctype(PyObject* p_field)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
   const crc32_t ret = field_crc32(f);
-  return py_convert((long)ret);
+  return py_convert((Long)ret);
 }
 
 template <class M>

@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// aLong with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
@@ -38,6 +38,10 @@
 
 namespace qlat
 {  //
+
+using Long = int64_t;
+
+using Int = int32_t;
 
 inline std::string vssprintf(const char* fmt, va_list args)
 {
@@ -64,7 +68,7 @@ inline std::string show(const int& x) { return ssprintf("%d", x); }
 
 inline std::string show(const unsigned int& x) { return ssprintf("%u", x); }
 
-inline std::string show(const long& x) { return ssprintf("%ld", x); }
+inline std::string show(const Long& x) { return ssprintf("%ld", x); }
 
 inline std::string show(const unsigned long& x) { return ssprintf("%lu", x); }
 
@@ -85,7 +89,7 @@ template <class T>
 std::string show_list(const std::vector<T>& vec)
 {
   std::ostringstream out;
-  for (long i = 0; i < (long)vec.size(); ++i) {
+  for (Long i = 0; i < (Long)vec.size(); ++i) {
     out << ssprintf("%5ld: ", i) << show(vec[i]) << std::endl;
   }
   return out.str();
@@ -107,9 +111,9 @@ T& reads(T& x, const std::string& str)
   return x;
 }
 
-inline long read_long(const std::string& str)
+inline Long read_long(const std::string& str)
 {
-  long ret = 0;
+  Long ret = 0;
   reads(ret, str);
   return ret;
 }
@@ -130,7 +134,7 @@ inline uint32_t read_crc32(const std::string& s)
 
 inline std::string remove_trailing_newline(const std::string& s)
 {
-  long cur = s.size() - 1;
+  Long cur = s.size() - 1;
   while (cur >= 0 and (s[cur] == '\n' or s[cur] == '\r')) {
     cur -= 1;
   }
@@ -142,16 +146,16 @@ inline bool is_space(const char c)
   return c == ' ' || c == '\n' || c == '\r' || c == '\t';
 }
 
-inline bool parse_end(long& cur, const std::string& data)
+inline bool parse_end(Long& cur, const std::string& data)
 {
-  assert(cur <= (long)data.size());
-  return cur == (long)data.size();
+  assert(cur <= (Long)data.size());
+  return cur == (Long)data.size();
 }
 
-inline bool parse_char(char& c, long& cur, const std::string& data)
+inline bool parse_char(char& c, Long& cur, const std::string& data)
 {
-  assert(cur <= (long)data.size());
-  if ((long)data.size() <= cur) {
+  assert(cur <= (Long)data.size());
+  if ((Long)data.size() <= cur) {
     c = 0;
     return false;
   }
@@ -160,7 +164,8 @@ inline bool parse_char(char& c, long& cur, const std::string& data)
   return true;
 }
 
-inline bool parse_char_not(char& c, long& cur, const std::string& data, const char c_match)
+inline bool parse_char_not(char& c, Long& cur, const std::string& data,
+                           const char c_match)
 {
   if (not parse_char(c, cur, data)) {
     return false;
@@ -172,7 +177,7 @@ inline bool parse_char_not(char& c, long& cur, const std::string& data, const ch
   return false;
 }
 
-inline bool parse_char_space(char& c, long& cur, const std::string& data)
+inline bool parse_char_space(char& c, Long& cur, const std::string& data)
 {
   if (not parse_char(c, cur, data)) {
     return false;
@@ -184,7 +189,7 @@ inline bool parse_char_space(char& c, long& cur, const std::string& data)
   return false;
 }
 
-inline bool parse_char_not_space(char& c, long& cur, const std::string& data)
+inline bool parse_char_not_space(char& c, Long& cur, const std::string& data)
 {
   if (not parse_char(c, cur, data)) {
     return false;
@@ -196,7 +201,8 @@ inline bool parse_char_not_space(char& c, long& cur, const std::string& data)
   return false;
 }
 
-inline bool parse_literal(long& cur, const std::string& data, const char c_match)
+inline bool parse_literal(Long& cur, const std::string& data,
+                          const char c_match)
 {
   char c;
   if (not parse_char(c, cur, data)) {
@@ -209,9 +215,10 @@ inline bool parse_literal(long& cur, const std::string& data, const char c_match
   return false;
 }
 
-inline bool parse_literal(long& cur, const std::string& data, const std::string& literal)
+inline bool parse_literal(Long& cur, const std::string& data,
+                          const std::string& literal)
 {
-  assert(cur <= (long)data.size());
+  assert(cur <= (Long)data.size());
   if (0 != data.compare(cur, literal.size(), literal)) {
     return false;
   }
@@ -219,11 +226,12 @@ inline bool parse_literal(long& cur, const std::string& data, const std::string&
   return true;
 }
 
-inline bool parse_len(std::string& str, long& cur, const std::string& data, const long& len)
+inline bool parse_len(std::string& str, Long& cur, const std::string& data,
+                      const Long& len)
 // not including the '"' char
 {
-  assert(cur <= (long)data.size());
-  if (cur + len > (long)data.size()) {
+  assert(cur <= (Long)data.size());
+  if (cur + len > (Long)data.size()) {
     return false;
   }
   str = data.substr(cur, len);
@@ -231,18 +239,18 @@ inline bool parse_len(std::string& str, long& cur, const std::string& data, cons
   return true;
 }
 
-inline bool parse_string(std::string& str, long& cur, const std::string& data)
+inline bool parse_string(std::string& str, Long& cur, const std::string& data)
 // not including the '"' char
 {
-  assert(cur <= (long)data.size());
-  const long initial = cur;
+  assert(cur <= (Long)data.size());
+  const Long initial = cur;
   char c;
   if (not parse_literal(cur, data, '"')) {
     str = "";
     assert(cur == initial);
     return false;
   }
-  const long start = cur;
+  const Long start = cur;
   while (parse_char_not(c, cur, data, '"')) {
   }
   if (not parse_literal(cur, data, '"')) {
@@ -254,17 +262,17 @@ inline bool parse_string(std::string& str, long& cur, const std::string& data)
   return true;
 }
 
-inline bool parse_line(std::string& str, long& cur, const std::string& data)
+inline bool parse_line(std::string& str, Long& cur, const std::string& data)
 // include ending '\n' (if data has it)
 {
-  assert(cur <= (long)data.size());
-  const long initial = cur;
-  if ((long)data.size() <= cur) {
+  assert(cur <= (Long)data.size());
+  const Long initial = cur;
+  if ((Long)data.size() <= cur) {
     str = "";
     assert(cur == initial);
     return false;
   }
-  const long start = cur;
+  const Long start = cur;
   char c;
   while (parse_char_not(c, cur, data, '\n')) {
   }
@@ -277,12 +285,12 @@ inline bool parse_line(std::string& str, long& cur, const std::string& data)
   return true;
 }
 
-inline bool parse_word(std::string& str, long& cur, const std::string& data)
+inline bool parse_word(std::string& str, Long& cur, const std::string& data)
 // not include initial spaces and do not parse space after it
 {
-  assert(cur <= (long)data.size());
-  const long initial = cur;
-  if ((long)data.size() <= cur) {
+  assert(cur <= (Long)data.size());
+  const Long initial = cur;
+  if ((Long)data.size() <= cur) {
     str = "";
     assert(cur == initial);
     return false;
@@ -290,7 +298,7 @@ inline bool parse_word(std::string& str, long& cur, const std::string& data)
   char c;
   while (parse_char_space(c, cur, data)) {
   }
-  const long start = cur;
+  const Long start = cur;
   while (parse_char_not_space(c, cur, data)) {
   }
   if (cur <= start) {
@@ -302,11 +310,11 @@ inline bool parse_word(std::string& str, long& cur, const std::string& data)
   return true;
 }
 
-inline bool parse_long(long& num, long& cur, const std::string& data)
+inline bool parse_long(Long& num, Long& cur, const std::string& data)
 {
-  assert(cur <= (long)data.size());
-  const long initial = cur;
-  const long start = cur;
+  assert(cur <= (Long)data.size());
+  const Long initial = cur;
+  const Long start = cur;
   char c;
   while (parse_char(c, cur, data)) {
     if (not(('0' <= c and c <= '9') or (c == '-') or (c == '+'))) {
@@ -324,11 +332,11 @@ inline bool parse_long(long& num, long& cur, const std::string& data)
   return true;
 }
 
-inline bool parse_double(double& num, long& cur, const std::string& data)
+inline bool parse_double(double& num, Long& cur, const std::string& data)
 {
-  assert(cur <= (long)data.size());
-  const long initial = cur;
-  const long start = cur;
+  assert(cur <= (Long)data.size());
+  const Long initial = cur;
+  const Long start = cur;
   char c;
   while (parse_char(c, cur, data)) {
     if (not(('0' <= c and c <= '9') or (c == '-') or (c == '+') or (c == '.') or
@@ -401,10 +409,10 @@ inline std::vector<double> read_doubles(const std::string& str)
   return ret;
 }
 
-inline std::vector<long> read_longs(const std::string& str)
+inline std::vector<Long> read_longs(const std::string& str)
 {
   const std::vector<std::string> strs = split_line_with_spaces(str);
-  std::vector<long> ret(strs.size());
+  std::vector<Long> ret(strs.size());
   for (size_t i = 0; i < strs.size(); ++i) {
     ret[i] = read_long(strs[i]);
   }

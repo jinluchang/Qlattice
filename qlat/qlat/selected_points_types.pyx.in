@@ -59,7 +59,7 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
     ctype = ElemType{{name}}
 
     def __cinit__(self):
-        self.cdata = <long>&(self.xx)
+        self.cdata = <cc.Long>&(self.xx)
         self.view_count = 0
 
     def __init__(self, PointsSelection psel, int multiplicity=0):

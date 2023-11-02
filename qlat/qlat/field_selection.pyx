@@ -17,7 +17,7 @@ import numpy as np
 cdef class PointsSelection:
 
     def __cinit__(self):
-        self.cdata = <long>&(self.xx)
+        self.cdata = <cc.Long>&(self.xx)
         self.geo = None
         self.view_count = 0
 
@@ -65,7 +65,7 @@ cdef class PointsSelection:
     def __deepcopy__(self, memo):
         return self.copy()
 
-    def set_rand(self, RngState rs not None, Coordinate total_site not None, long n_points):
+    def set_rand(self, RngState rs not None, Coordinate total_site not None, cc.Long n_points):
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
         self.geo = Geometry(total_site)
@@ -83,7 +83,7 @@ cdef class PointsSelection:
     def n_points(self):
         return self.xx.size()
 
-    def set_n_points(self, const long n_points):
+    def set_n_points(self, const cc.Long n_points):
         self.xx.resize(n_points)
 
     def xg_arr(self):
@@ -105,8 +105,8 @@ cdef class PointsSelection:
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
         self.geo = geo
-        cdef long n_points
-        cdef long i
+        cdef cc.Long n_points
+        cdef cc.Long i
         cdef Coordinate xg
         if xg_arr is None:
             self.xx = cc.PointsSelection()
@@ -134,17 +134,17 @@ cdef class PointsSelection:
     def set_geo(self, Geometry geo):
         self.geo = geo
 
-    def __getitem__(self, long idx):
+    def __getitem__(self, cc.Long idx):
         cdef Coordinate xg = Coordinate()
         cc.assign_direct(xg.xx, self.xx[idx])
         return xg
 
-    def __setitem__(self, long idx, Coordinate xg not None):
+    def __setitem__(self, cc.Long idx, Coordinate xg not None):
         cc.assign_direct(self.xx[idx], xg.xx)
 
     def __iter__(self):
-        cdef long idx
-        cdef long n_points = self.n_points()
+        cdef cc.Long idx
+        cdef cc.Long n_points = self.n_points()
         for idx in range(n_points):
             yield self[idx]
 
@@ -156,9 +156,9 @@ cdef class PointsSelection:
 cdef class FieldSelection:
 
     def __cinit__(self):
-        self.cdata = <long>&(self.xx)
+        self.cdata = <cc.Long>&(self.xx)
 
-    def __init__(self, Coordinate total_site=None, long n_per_tslice=-1, RngState rs=None, PointsSelection psel=None):
+    def __init__(self, Coordinate total_site=None, cc.Long n_per_tslice=-1, RngState rs=None, PointsSelection psel=None):
         if total_site is not None:
             assert rs is not None
             self.set_rand(rs, total_site, n_per_tslice)
@@ -189,11 +189,11 @@ cdef class FieldSelection:
         cc.mk_field_selection(self.xx.f_rank, total_site.xx, val)
         self.update()
 
-    def set_rand(self, RngState rs, Coordinate total_site, long n_per_tslice):
+    def set_rand(self, RngState rs, Coordinate total_site, cc.Long n_per_tslice):
         cc.mk_field_selection(self.xx.f_rank, total_site.xx, n_per_tslice, rs.xx)
         self.update()
 
-    def add_psel(self, PointsSelection psel, long rank_psel=1024 * 1024 * 1024 * 1024 * 1024):
+    def add_psel(self, PointsSelection psel, cc.Long rank_psel=1024 * 1024 * 1024 * 1024 * 1024):
         """
         Add psel points to the selection, with the rank specified as rank_psel.
         If the point is already selected with lower rank, the rank is unchanged.
@@ -236,20 +236,20 @@ cdef class FieldSelection:
     def n_elems(self):
         return self.xx.n_elems
 
-    def __getitem__(self, long idx):
+    def __getitem__(self, cc.Long idx):
         cdef Coordinate xg = Coordinate()
-        cdef long index = self.xx.indices[idx]
+        cdef cc.Long index = self.xx.indices[idx]
         cc.assign_direct(xg.xx, self.xx.f_local_idx.get_geo().coordinate_from_index(index))
         return xg
 
     def idx_from_coordinate(self, Coordinate xg not None):
         cdef cc.Coordinate xl_xx = self.xx.f_local_idx.get_geo().coordinate_l_from_g(xg.xx)
-        cdef long idx = self.xx.f_local_idx.get_elem(xl_xx)
+        cdef cc.Long idx = self.xx.f_local_idx.get_elem(xl_xx)
         return idx
 
-    def coordinate_from_idx(self, long idx):
+    def coordinate_from_idx(self, cc.Long idx):
         cdef Coordinate xg = Coordinate()
-        cdef long index = self.xx.indices[idx]
+        cdef cc.Long index = self.xx.indices[idx]
         cc.assign_direct(xg.xx, self.xx.f_local_idx.get_geo().coordinate_from_index(index))
         return xg
 

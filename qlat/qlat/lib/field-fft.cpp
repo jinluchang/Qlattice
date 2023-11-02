@@ -37,11 +37,11 @@ void FftComplexFieldPlan::init(const Geometry& geo_, const int mc_,
   dir = dir_;
   is_forward = is_forward_;
   const int sizec = geo.total_site()[dir];
-  const long nc = geo.local_volume() / geo.node_site[dir] * mc;
-  const long chunk = ((nc / mc - 1) / geo.geon.size_node[dir] + 1) * mc;
-  const long nc_start = std::min(nc, geo.geon.coor_node[dir] * chunk);
-  const long nc_stop = std::min(nc, nc_start + chunk);
-  const long nc_size = nc_stop - nc_start;
+  const Long nc = geo.local_volume() / geo.node_site[dir] * mc;
+  const Long chunk = ((nc / mc - 1) / geo.geon.size_node[dir] + 1) * mc;
+  const Long nc_start = std::min(nc, geo.geon.coor_node[dir] * chunk);
+  const Long nc_stop = std::min(nc, nc_start + chunk);
+  const Long nc_size = nc_stop - nc_start;
   // fftw_init_threads();
   // fftw_plan_with_nthreads(omp_get_max_threads());
   displayln_info(ssprintf("FftComplexFieldPlan::init: malloc %ld",
@@ -49,9 +49,9 @@ void FftComplexFieldPlan::init(const Geometry& geo_, const int mc_,
   ComplexD* fftdatac = (ComplexD*)fftw_malloc(nc_size * sizec * sizeof(ComplexD));
   const int rank = 1;
   const int n[1] = {sizec};
-  const long howmany = nc_size;
-  const long dist = 1;
-  const long stride = nc_size;
+  const Long howmany = nc_size;
+  const Long dist = 1;
+  const Long stride = nc_size;
   fftplan = fftw_plan_many_dft(rank, n, howmany, (fftw_complex*)fftdatac, n,
                                stride, dist, (fftw_complex*)fftdatac, n, stride,
                                dist, is_forward ? FFTW_FORWARD : FFTW_BACKWARD,

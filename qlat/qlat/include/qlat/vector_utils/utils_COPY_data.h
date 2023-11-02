@@ -40,9 +40,9 @@ void cpy_data_from_index(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_
 
   #ifdef QLAT_USE_ACC
   if(GPU == 1){
-  long Mend = (bfac*sizeof(T));
+  Long Mend = (bfac*sizeof(T));
   Qassert(Mend%sizeof(float) == 0);
-  long nt = 32;if(Mend < 12){nt = 12;}
+  Long nt = 32;if(Mend < 12){nt = 12;}
   dim3 dimBlock(   nt,   1, 1);
   dim3 dimGrid(  Nvol,  1, 1);
   cpy_data_from_index_global<T,TInt,TI0,TI1  ><<< dimGrid, dimBlock >>>(Pres, Psrc, &map_res[0], &map_src[0], bfac);
@@ -66,7 +66,7 @@ void cpy_data_from_index(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_
 
 
 template <typename T>
-void cpy_data_from_index(qlat::vector<T >& res, qlat::vector<T >& src, const qlat::vector<long >& map_res, const qlat::vector<long >& map_src, const long bfac, int GPU=1, QBOOL dummy=QTRUE)
+void cpy_data_from_index(qlat::vector<T >& res, qlat::vector<T >& src, const qlat::vector<Long >& map_res, const qlat::vector<Long >& map_src, const Long bfac, int GPU=1, QBOOL dummy=QTRUE)
 {
   //Qassert(map_res.size() ==     src.size());
   //Qassert(map_res.size() ==     res.size());
@@ -74,8 +74,8 @@ void cpy_data_from_index(qlat::vector<T >& res, qlat::vector<T >& src, const qla
   /////qlat vector correct data pointer
   T* s1 = (T*) qlat::get_data(res).data();
   T* s0 = (T*) qlat::get_data(src).data();
-  long* m1 = (long*) qlat::get_data(map_res).data();
-  long* m0 = (long*) qlat::get_data(map_src).data();
+  Long* m1 = (Long*) qlat::get_data(map_res).data();
+  Long* m0 = (Long*) qlat::get_data(map_src).data();
   cpy_data_from_index(s1, s0, m1, m0, map_res.size(), bfac, GPU, dummy);
 }
 
@@ -107,9 +107,9 @@ void cpy_data_from_group(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_
 
   #ifdef QLAT_USE_ACC
   if(GPU == 1){
-  long Mend = (bfac*sizeof(T));
+  Long Mend = (bfac*sizeof(T));
   Qassert(Mend%sizeof(float) == 0);
-  long nt = 32;if(Mend < 12){nt = 12;}
+  Long nt = 32;if(Mend < 12){nt = 12;}
   dim3 dimBlock(   nt,   1, 1);
   dim3 dimGrid(  Nvol,  1, 1);
   cpy_data_from_group_global<T,TInt,TI0,TI1  ><<< dimGrid, dimBlock >>>(Pres, Psrc, &map_res[0], &map_src[0], &map_off[0], bfac);
@@ -133,7 +133,7 @@ void cpy_data_from_group(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_
 
 
 template <typename T>
-void cpy_data_from_group(qlat::vector<T >& res, qlat::vector<T >& src, const qlat::vector<long >& map_res, const qlat::vector<long >& map_src, const qlat::vector<long >& map_off, const long bfac, int GPU=1, QBOOL dummy=QTRUE)
+void cpy_data_from_group(qlat::vector<T >& res, qlat::vector<T >& src, const qlat::vector<Long >& map_res, const qlat::vector<Long >& map_src, const qlat::vector<Long >& map_off, const Long bfac, int GPU=1, QBOOL dummy=QTRUE)
 {
   //Qassert(map_res.size() ==     src.size());
   //Qassert(map_res.size() ==     res.size());
@@ -142,9 +142,9 @@ void cpy_data_from_group(qlat::vector<T >& res, qlat::vector<T >& src, const qla
   /////qlat vector correct data pointer
   T* s1 = (T*) qlat::get_data(res).data();
   T* s0 = (T*) qlat::get_data(src).data();
-  long* m1 = (long*) qlat::get_data(map_res).data();
-  long* m0 = (long*) qlat::get_data(map_src).data();
-  long* o0 = (long*) qlat::get_data(map_off).data();
+  Long* m1 = (Long*) qlat::get_data(map_res).data();
+  Long* m0 = (Long*) qlat::get_data(map_src).data();
+  Long* o0 = (Long*) qlat::get_data(map_off).data();
   cpy_data_from_group(s1, s0, m1, m0, o0, map_res.size(), bfac, GPU, dummy);
 }
 
@@ -178,7 +178,7 @@ void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, Q
   /////qacc_forNB(i, Nvol, {Pres[i]=Psrc[i];});
 
   const int Threads = 64;const int Biva = (4*16+sizeof(T0)-1)/sizeof(T0);
-  long Nb = (Nvol + Threads*Biva -1)/(Threads*Biva);
+  Long Nb = (Nvol + Threads*Biva -1)/(Threads*Biva);
   dim3 dimBlock(    Threads,    1, 1);
   dim3 dimGrid(     Nb,    1, 1);
 
@@ -352,10 +352,10 @@ int cpy_GPU2D_G(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, cons
     //////if(Gres == -1){Gori = Gsrc;}
     int Gori = Gsrc;
     if(Gsrc == QMSYNC){Gori = Gres;}
-    const long Ndata = NOff * Nvol;
+    const Long Ndata = NOff * Nvol;
     qGPU_forNB(ik, Ndata, Gori, {
-      const long off = ik / Nvol;
-      const long isp = ik % Nvol;
+      const Long off = ik / Nvol;
+      const Long isp = ik % Nvol;
       Pres[off*rOff + isp] = Psrc[off*sOff + isp];
     });
     did = 1;
@@ -419,7 +419,7 @@ void cpy_GPU2D(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, const
   if(dummy==QTRUE){qacc_barrier(dummy);}
   return ;
   ////sizeof(T0) == sizeof(T1) and 
-  //qGPU_for2dNB(isp, long(Nvol), off, long(NOff), 0, {
+  //qGPU_for2dNB(isp, Long(Nvol), off, Long(NOff), 0, {
   //  Pres[off*rOff + isp] = Psrc[off*sOff + isp];
   //});
   //return ;
@@ -469,7 +469,7 @@ void untouch_GPU(Ty* Mres , long long Msize)
 ////Vol * N0 for res <== Vol * N1 for src
 ////N0 >= N1
 template<typename Ty>
-void copy_buffers_vecs(Ty *res, Ty *src,long N0, long N1, long Ncopy, size_t Vol, int GPU = 1)
+void copy_buffers_vecs(Ty *res, Ty *src,Long N0, Long N1, Long Ncopy, size_t Vol, int GPU = 1)
 {
   int GPU_set = GPU;
   #ifndef QLAT_USE_ACC
