@@ -299,11 +299,6 @@ inline PyObject* py_convert(const int& x) { return PyLong_FromLong((Long)x); }
 
 inline PyObject* py_convert(const Long& x) { return PyLong_FromLong(x); }
 
-inline PyObject* py_convert(const long long& x)
-{
-  return PyLong_FromLongLong(x);
-}
-
 inline PyObject* py_convert(const unsigned int& x)
 {
   return PyLong_FromUnsignedLong((unsigned long)x);
