@@ -534,7 +534,7 @@ long write(ShuffledFieldsWriter& sfw, const std::string& fn,
   std::vector<Field<M> > fs;
   shuffle_field(fs, field, sfw.new_size_node);
   qassert(fs.size() == sfw.fws.size());
-  long total_bytes = 0;
+  Long total_bytes = 0;
   for (int i = 0; i < (int)fs.size(); ++i) {
     total_bytes += write(sfw.fws[i], fn, fs[i]);
   }
@@ -557,7 +557,7 @@ long write(ShuffledFieldsWriter& sfw, const std::string& fn,
   shuffle_field(sfs, sf, sbs.sp);
   qassert(sfs.size() == sfw.fws.size());
   qassert(sbs.vbs.size() == sfw.fws.size());
-  long total_bytes = 0;
+  Long total_bytes = 0;
   for (int i = 0; i < (int)sfs.size(); ++i) {
     total_bytes += write(sfw.fws[i], fn, sfs[i], sbs.vbs[i]);
   }
@@ -679,7 +679,7 @@ long read(ShuffledFieldsReader& sfr, const std::string& fn, Field<M>& field)
 // interface function
 {
   TIMER_VERBOSE_FLOPS("read(sfr,fn,field)");
-  long total_bytes = 0;
+  Long total_bytes = 0;
   displayln_info(0, fname + ssprintf(": reading field with fn='%s' from '%s'.",
                                      fn.c_str(), sfr.path.c_str()));
   std::vector<Field<M> > fs(sfr.frs.size());
@@ -717,7 +717,7 @@ long read(ShuffledFieldsReader& sfr, const std::string& fn,
 // interface function
 {
   TIMER_VERBOSE_FLOPS("read(sfr,fn,sf,fsel)")
-  long total_bytes = 0;
+  Long total_bytes = 0;
   displayln_info(0, fname + ssprintf(": reading field with fn='%s' from '%s'.",
                                      fn.c_str(), sfr.path.c_str()));
   std::vector<SelectedField<M> > sfs(sfr.frs.size());
@@ -762,7 +762,7 @@ long read(ShuffledFieldsReader& sfr, const std::string& fn,
 {
   TIMER_VERBOSE_FLOPS("read(sfr,fn,sbs,sf)");
   sf.init();
-  long total_bytes = 0;
+  Long total_bytes = 0;
   displayln_info(
       0, fname + ssprintf(": reading sparse field with fn='%s' from '%s'.",
                           fn.c_str(), sfr.path.c_str()));
