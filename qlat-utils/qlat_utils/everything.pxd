@@ -197,7 +197,7 @@ cdef extern from "qlat-utils/timer.h" namespace "qlat":
     double get_actual_total_time()
     double get_remaining_time()
     cdef cppclass Timer:
-        long long flops
+        Long flops
         Timer()
         Timer(const std_string& fname)
         void start()

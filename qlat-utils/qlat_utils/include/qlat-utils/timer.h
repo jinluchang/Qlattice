@@ -190,13 +190,13 @@ inline void displayln_info(const Long minimum_verbose_level,
   }
 }
 
-inline long long get_total_flops()
+inline Long get_total_flops()
 {
-  long long flops = 0;
+  Long flops = 0;
 #ifdef USE_PAPI
   const int n_threads = omp_get_max_threads();
-  long long flopses[n_threads];
-  std::memset(flopses, 0, n_threads * sizeof(long long));
+  Long flopses[n_threads];
+  std::memset(flopses, 0, n_threads * sizeof(Long));
 #pragma omp parallel
   {
     float rtime, ptime, mflops;
@@ -243,8 +243,8 @@ struct API TimerInfo {
   std::string fname;
   double dtime;
   double accumulated_time;
-  long long dflops;
-  long long accumulated_flops;
+  Long dflops;
+  Long accumulated_flops;
   int call_times;
   //
   TimerInfo() { init(); }
@@ -280,9 +280,9 @@ struct API Timer {
   Long is_running;
   double start_time;
   double stop_time;
-  long long start_flops;
-  long long stop_flops;
-  long long flops;
+  Long start_flops;
+  Long stop_flops;
+  Long flops;
   //
   API static std::map<std::string, Long>& get_timer_info_index_map()
   {

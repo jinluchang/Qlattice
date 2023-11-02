@@ -99,7 +99,7 @@ void prop_smear(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
 {
   TIMER_FLOPS("prop_smear");
   const int n_avg = smear_in_time_dir ? 8 : 6;
-  const long long vGb = prop.geo().local_volume() * 12 * 4;
+  const Long vGb = prop.geo().local_volume() * 12 * 4;
   timer.flops += vGb * step * n_avg * (3 * (3 * 6 + 2 * 2));
   if (0 == step) {
     return;
