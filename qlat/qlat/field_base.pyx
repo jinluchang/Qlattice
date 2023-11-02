@@ -412,9 +412,6 @@ cdef class SelectedFieldBase:
         else:
             assert False
 
-    def qnorm(self):
-        return c.qnorm_sfield(self)
-
     def __setitem__(self, idx, val):
         """
         Implemented in terms of ``np.asarray``

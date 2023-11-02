@@ -139,6 +139,9 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         cc.assign_direct(geo.xx, self.xx.get_geo())
         return geo
 
+    def qnorm(self):
+        return cc.qnorm(self.xx)
+
 selected_field_type_dict[ElemType{{name}}] = SelectedField{{name}}
 
 {{endfor}}

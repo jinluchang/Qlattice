@@ -146,9 +146,9 @@ void only_keep_selected_points(Field<M>& f, const PointsSelection& psel)
 }
 
 template <class M>
-double qnorm(const SelectedPoints<M>& sp)
+RealD qnorm(const SelectedPoints<M>& sp)
 {
-  TIMER("qnorm");
+  TIMER("qnorm(sp)");
   return qnorm(sp.points);
 }
 

@@ -104,9 +104,10 @@ bool is_consistent(const SelectedField<M>& sf, const FieldSelection& fsel)
 }
 
 template <class M>
-double qnorm(const SelectedField<M>& sf)
+RealD qnorm(const SelectedField<M>& sf)
 {
-  double s = qnorm(sf.field);
+  TIMER("qnorm(sf)");
+  RealD s = qnorm(sf.field);
   glb_sum(s);
   return s;
 }

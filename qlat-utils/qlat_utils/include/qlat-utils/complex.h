@@ -5,6 +5,7 @@
 #include <qlat-utils/show.h>
 
 #include <complex>
+#include <type_traits>
 
 #ifdef QLAT_USE_ACC
 #include <thrust/complex.h>
@@ -56,7 +57,8 @@ qacc RealF qconj(const RealF& x) { return x; }
 
 #ifdef QLAT_USE_ACC
 
-template <class T = Real>
+template <class T = Real,
+          std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
 using ComplexT = thrust::complex<T>;
 
 template <class T>
@@ -79,7 +81,8 @@ qacc ComplexT<T> qpolar(const T& r, const T& theta = T())
 
 #else
 
-template <class T = Real>
+template <class T = Real,
+          std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
 using ComplexT = std::complex<T>;
 
 template <class T>
@@ -88,14 +91,14 @@ ComplexT<T> qconj(const ComplexT<T>& x)
   return std::conj(x);
 }
 
-template <class T>
+template <class T, std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
 T qnorm(const ComplexT<T>& x)
 {
   return std::norm(x);
 }
 
 template <class T>
-qacc ComplexT<T> qpolar(const T& r, const T& theta = T())
+ComplexT<T> qpolar(const T& r, const T& theta = T())
 {
   return std::polar(r, theta);
 }
