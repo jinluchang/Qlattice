@@ -295,7 +295,7 @@ void sync_node()
 {
   RngState& rs = get_comm_list().back().sync_node_rs;
   const long v = rand_gen(rs) % (1024 * 1024);
-  long s = v;
+  Long s = v;
   glb_sum(s);
   qassert(s == v * get_num_node());
 }

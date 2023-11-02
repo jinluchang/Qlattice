@@ -746,7 +746,7 @@ void ShuffledFieldsReader::init(const std::string& path_,
 void add_shuffled_fields_writer(ShuffledFieldsWriter& sfw)
 {
   ShuffledFieldsWriterMap& sfwm = get_all_shuffled_fields_writer();
-  const long key = (long)&sfw;
+  const Long key = (Long)&sfw;
   qassert(not has(sfwm, key));
   sfwm[key] = Handle<ShuffledFieldsWriter>(sfw);
 }
@@ -754,7 +754,7 @@ void add_shuffled_fields_writer(ShuffledFieldsWriter& sfw)
 void remove_shuffled_fields_writer(ShuffledFieldsWriter& sfw)
 {
   ShuffledFieldsWriterMap& sfwm = get_all_shuffled_fields_writer();
-  const long key = (long)&sfw;
+  const Long key = (Long)&sfw;
   if (has(sfwm, key)) {
     sfwm.erase(key);
   }
@@ -776,11 +776,11 @@ void close_all_shuffled_fields_writer()
   qassert(sfwm.size() == 0);
 }
 
-long flush(ShuffledFieldsWriter& sfw)
+Long flush(ShuffledFieldsWriter& sfw)
 // interface function
 {
   TIMER_VERBOSE("flush(sfw)");
-  long ret = 0;
+  Long ret = 0;
   for (int i = 0; i < (int)sfw.fws.size(); ++i) {
     ret += flush(sfw.fws[i]);
   }
@@ -801,7 +801,7 @@ bool does_file_exist_sync_node(ShuffledFieldsReader& sfr, const std::string& fn)
 // interface function
 {
   TIMER_VERBOSE("does_file_exist_sync_node(sfr,fn)");
-  long total_counts = 0;
+  Long total_counts = 0;
   displayln_info(0, fname + ssprintf(": check fn='%s' from '%s'.", fn.c_str(),
                                      sfr.path.c_str()));
   for (int i = 0; i < (int)sfr.frs.size(); ++i) {
@@ -829,7 +829,7 @@ bool check_file_sync_node(ShuffledFieldsReader& sfr, const std::string& fn,
                                      fn.c_str(), sfr.path.c_str()));
   clear(final_offsets);
   final_offsets.resize(sfr.frs.size(), 0);
-  long total_failed_counts = 0;
+  Long total_failed_counts = 0;
   for (int i = 0; i < (int)sfr.frs.size(); ++i) {
     final_offsets[i] = check_file(sfr.frs[i], fn);
     if (final_offsets[i] == 0) {

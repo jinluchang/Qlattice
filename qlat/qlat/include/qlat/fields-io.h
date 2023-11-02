@@ -500,7 +500,7 @@ API inline ShuffledFieldsReaderCache& get_shuffled_fields_reader_cache()
 ShuffledFieldsReader& get_shuffled_fields_reader(
     const std::string& path, const Coordinate& new_size_node=Coordinate());
 
-long flush(ShuffledFieldsWriter& sfw);
+Long flush(ShuffledFieldsWriter& sfw);
 
 void read_through_sync_node(ShuffledFieldsReader& sfr);
 
