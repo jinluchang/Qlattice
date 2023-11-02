@@ -297,13 +297,13 @@ cdef class LatData:
 
     def __imul__(self, factor):
         cdef cc.RealD f
-        cdef cc.ComplexD c
+        cdef cc.PyComplexD c
         if isinstance(factor, float):
             f = factor
             self.xx = self.xx * f
         elif isinstance(factor, complex):
             c = factor
-            self.xx = self.xx * c
+            self.xx = self.xx * cc.ccpy_d(c)
         else:
             assert False
         return self
@@ -323,13 +323,13 @@ cdef class LatData:
         cdef LatData ld1 = type(ld)()
         cdef LatData ld0 = ld
         cdef cc.RealD f
-        cdef cc.ComplexD c
+        cdef cc.PyComplexD c
         if isinstance(factor, float):
             f = factor
             ld1.xx = ld0.xx * f
         elif isinstance(factor, complex):
             c = factor
-            ld1.xx = ld0.xx * c
+            ld1.xx = ld0.xx * cc.ccpy_d(c)
         else:
             assert False
         return ld1

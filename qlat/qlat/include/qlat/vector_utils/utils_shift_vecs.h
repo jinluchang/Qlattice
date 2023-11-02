@@ -515,7 +515,7 @@ void multiply_gauge(void *src, void* gauge, const int dir_gauge,const int biva,c
   ////cpu fast mode
   if(fast_eigen == 1){
   qthread_for(index,  long(Length), {
-    ALIGN(QLAT_ALIGNED_BYTES) Cy buf[9];
+    QLAT_ALIGN(QLAT_ALIGNED_BYTES) Cy buf[9];
     //if(!Conj)for(int ci=0;ci<9;ci++){buf[(ci%3)*3 + ci/3] = ((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci];}
     //if( Conj)for(int ci=0;ci<9;ci++){buf[(ci%3)*3 + ci/3] = qlat::qconj(((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci]);}
     if(!Conj)for(int ci=0;ci<9;ci++){buf[ci] = ((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci];}
@@ -542,8 +542,8 @@ void multiply_gauge(void *src, void* gauge, const int dir_gauge,const int biva,c
   if(fast_eigen == 0){
   Qassert(gd0 <= 128);
   qacc_for(index,  long(Length), {
-    ALIGN(QLAT_ALIGNED_BYTES) Cy buf[9];
-    ALIGN(QLAT_ALIGNED_BYTES) Cy res[128*3];
+    QLAT_ALIGN(QLAT_ALIGNED_BYTES) Cy buf[9];
+    QLAT_ALIGN(QLAT_ALIGNED_BYTES) Cy res[128*3];
     if(!Conj)for(int ci=0;ci<9;ci++){buf[ci] = ((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci];}
     if( Conj)for(int ci=0;ci<9;ci++){buf[ci] = qlat::qconj(((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci]);}
     for(int bi=0;bi<biva;bi++)

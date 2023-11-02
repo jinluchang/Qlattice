@@ -1594,7 +1594,7 @@ class CExprCodeGenPy:
             assert x.otype == "Tr"
             c, t = self.gen_expr(x)
             assert t == "V_a"
-            append_cy(f"cdef cc.PyComplexD {name} = cc.py_complex_cast({c})")
+            append_cy(f"cdef cc.PyComplexD {name} = cc.pycc_d({c})")
             append_py(f"{name} = {c}")
         append(f"# set terms")
         for name, term in cexpr.named_terms:

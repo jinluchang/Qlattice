@@ -1,5 +1,6 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+cimport qlat_utils.everything
 from qlat_utils.all cimport *
 from . cimport everything as cc
 from cpython cimport Py_buffer
@@ -45,8 +46,8 @@ def bcast_double(double x, int root=0):
     cc.bcast(x, root)
     return x
 
-def bcast_complex(cc.ComplexD x, int root=0):
-    cc.bcast(x, root)
+def bcast_complex(cc.PyComplexD x, int root=0):
+    cc.bcast(cc.ccpy_d(x), root)
     return x
 
 def bcast_lat_data_in_place(LatData ld, int root=0):
@@ -67,8 +68,8 @@ def glb_sum_double(double x):
     cc.glb_sum(x)
     return x
 
-def glb_sum_complex(cc.ComplexD x):
-    cc.glb_sum(x)
+def glb_sum_complex(cc.PyComplexD x):
+    cc.glb_sum(cc.ccpy_d(x))
     return x
 
 def glb_sum_lat_data_in_place(LatData ld):

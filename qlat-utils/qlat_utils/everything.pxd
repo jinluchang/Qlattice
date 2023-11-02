@@ -16,23 +16,31 @@ from cpython.ref cimport PyObject
 
 ### --------------------------------------------------------
 
+cdef extern from "qlat-utils/complex.h" namespace "qlat":
+
+    cdef cppclass ComplexD:
+        ComplexD()
+    cdef cppclass ComplexF:
+        ComplexF()
+
 ctypedef double complex PyComplexD
 ctypedef float complex PyComplexF
 
-ctypedef libcpp.complex.complex[double] ComplexD
-ctypedef libcpp.complex.complex[float] ComplexF
+# Python Complex Cast utilities
 
-cdef inline PyComplexD py_complex_cast(ComplexD x):
+cdef inline PyComplexD pycc_d(ComplexD x):
     return (<PyComplexD*>(&x))[0]
 
-cdef inline PyComplexF py_complex_f_cast(ComplexF x):
+cdef inline PyComplexF pycc_f(ComplexF x):
     return (<PyComplexF*>(&x))[0]
 
-cdef inline ComplexD complex_cast(PyComplexD x):
+cdef inline ComplexD ccpy_d(PyComplexD x):
     return (<ComplexD*>(&x))[0]
 
-cdef inline ComplexF complex_f_cast(PyComplexF x):
+cdef inline ComplexF ccpy_f(PyComplexF x):
     return (<ComplexF*>(&x))[0]
+
+### --------------------------------------------------------
 
 ctypedef int64_t Int64t
 
@@ -54,7 +62,7 @@ ctypedef Int64t Long
 
 ctypedef Int32t Int
 
-ctypedef std_vector[std_vector[double]] DataTable
+ctypedef std_vector[std_vector[RealD]] DataTable
 
 ### --------------------------------------------------------
 

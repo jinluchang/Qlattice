@@ -49,7 +49,7 @@ struct CommaLoader {
 // --------------------
 
 template <int DIMN, class T>
-struct API ALIGN(sizeof(T) * DIMN * DIMN) MatrixT {
+struct API QLAT_ALIGN(sizeof(T) * DIMN * DIMN) MatrixT {
   T p[DIMN * DIMN];
   //
   qacc T* data() { return p; }
@@ -190,7 +190,7 @@ using IsospinMatrix = IsospinMatrixT<>;
 // --------------------
 
 template <int DIMN, class T>
-struct API ALIGN(sizeof(T) * DIMN) MvectorT {
+struct API QLAT_ALIGN(sizeof(T) * DIMN) MvectorT {
   T p[DIMN];
   //
   qacc T* data() { return p; }

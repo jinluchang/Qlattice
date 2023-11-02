@@ -13,8 +13,8 @@
 #if defined QLAT_NO_ALIGNED_ALLOC
 #define QLAT_ALIGNED_BYTES 1
 constexpr int qlat_aligned_bytes(int size) { return 1; }
-#define ALIGN(SIZE) __attribute__((aligned(1)))
-// #define ALIGN(SIZE) alignas(1)
+#define QLAT_ALIGN(SIZE) __attribute__((aligned(1)))
+// #define QLAT_ALIGN(SIZE) alignas(1)
 #else
 #define QLAT_ALIGNED_BYTES 16 // should divide all matrix sizes (which can convert with GPT).
 constexpr int qlat_aligned_bytes(int size)
@@ -29,8 +29,8 @@ constexpr int qlat_aligned_bytes(int size)
          : (size % 256 != 0) ? 128
                              : 256;
 }
-#define ALIGN(SIZE) __attribute__((aligned(qlat_aligned_bytes(SIZE))))
-// #define ALIGN(SIZE) alignas(SIZE)
+#define QLAT_ALIGN(SIZE) __attribute__((aligned(qlat_aligned_bytes(SIZE))))
+// #define QLAT_ALIGN(SIZE) alignas(SIZE)
 #endif
 
 namespace qlat

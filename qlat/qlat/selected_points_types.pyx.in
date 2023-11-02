@@ -150,13 +150,13 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
 
     def __imul__(self, f):
         cdef double fd
-        cdef cc.ComplexD fc
+        cdef cc.PyComplexD fc
         if isinstance(f, float):
             fd = f
             cc.imul_direct(self.xx, fd)
         elif isinstance(f, complex):
             fc = f
-            cc.imul_direct(self.xx, fc)
+            cc.imul_direct(self.xx, cc.ccpy_d(fc))
         else:
             raise Exception(f"SelectedPoints.__imul__(self, f={f})")
         return self
