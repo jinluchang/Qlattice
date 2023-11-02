@@ -5,7 +5,7 @@
 #define UTILS_MATRIX_PROD_H
 
 #pragma once
-#include "utils_float_type.h"
+#include "utils_vector_GPU.h"
 
 #define EML  Eigen::Map< Eigen::Matrix<Ty , Eigen::Dynamic, Eigen::Dynamic ,Eigen::RowMajor> >
 #define EMLC Eigen::Map< Eigen::Matrix<Ty , Eigen::Dynamic, Eigen::Dynamic ,Eigen::ColMajor> >
@@ -472,17 +472,16 @@ void matrix_prod_gpu(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const L
   #endif
 }
 
-
 ////// c = a b; c dim m x n, a dim m x w, b dim w x n, done it l times
 template<typename Ty>
-void matrix_prodP(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE)
+void matrix_prodPT(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE)
 {
   if( GPU){matrix_prod_gpu(a,b,c , m,n,w,L, Conj, dummy, trans);}
   if(!GPU){matrix_prod_cpu(a,b,c , m,n,w,L, Conj, trans);}
 }
 
 template<typename Ty>
-void matrix_prod(Ty* A, Ty* B, Ty* C, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE)
+void matrix_prodT(Ty* A, Ty* B, Ty* C, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE)
 {
   const size_t offA = m*w;
   const size_t offB = n*w;
@@ -501,6 +500,29 @@ void matrix_prod(Ty* A, Ty* B, Ty* C, const Long m, const Long n, const Long w, 
   if(dummy == QTRUE )qacc_barrier(dummy);
 }
 
+void matrix_prodP(qlat::ComplexT<double>** a, qlat::ComplexT<double>** b, qlat::ComplexT<double>** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE);
+void matrix_prodP(qlat::ComplexT<float >** a, qlat::ComplexT<float >** b, qlat::ComplexT<float >** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE);
+
+void matrix_prod(qlat::ComplexT<double>* A, qlat::ComplexT<double>* B, qlat::ComplexT<double>* C, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE);
+void matrix_prod(qlat::ComplexT<float >* A, qlat::ComplexT<float >* B, qlat::ComplexT<float >* C, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE);
+
+
+//#ifdef QLAT_INSTANTIATE_MATRIX_PROD
+//#define QLAT_EXTERN
+//#else
+//#define QLAT_EXTERN extern
+//#endif
+//
+//QLAT_EXTERN template void prop_smear_qlat_convension<Real, Real>(
+//    Propagator4d&, const GaugeField&, const double, const int,
+//    const CoordinateD&, const bool, const int, const int, const int);
+//
+//void matrix_prod<double>(qlat::ComplexT<double>* , qlat::ComplexT<double>* , qlat::ComplexT<double>* ,
+//  const , const , const , const , bool , bool , bool , QBOOL );
+//
+//
+//
+//#undef QLAT_EXTERN
 
 
 }
