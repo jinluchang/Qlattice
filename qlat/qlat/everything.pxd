@@ -33,7 +33,7 @@ cdef extern from "qlat/geometry.h" namespace "qlat":
         Coordinate coor_node
         GeometryNode()
         void init()
-        void init(const int id_node, const Coordinate& size_node)
+        void init(const int id_node, const Coordinate& size_node) except +
     cdef cppclass Geometry:
         bool initialized
         GeometryNode geon
@@ -130,9 +130,9 @@ cdef extern from "qlat/core.h" namespace "qlat":
         PointsSelection()
         PointsSelection(const Long n_points) except +
         Long size()
-        void resize(const Long n_points)
+        void resize(const Long n_points) except +
         Coordinate* data()
-        Coordinate& operator[](Long i)
+        Coordinate& operator[](Long i) except +
     cdef cppclass SelectedField[T]:
         Long n_elems;
         vector_acc[T] field
@@ -149,14 +149,14 @@ cdef extern from "qlat/core.h" namespace "qlat":
         void init()
         void init(const Long n_points, const int multiplicity) except +
         void init(const PointsSelection& psel, const int multiplicity) except +
-    Vector[T] get_data[T](const Field[T]& x)
-    void set_zero[T](Field[T]& x)
+    Vector[T] get_data[T](const Field[T]& x) except +
+    void set_zero[T](Field[T]& x) except +
     void qswap[T](Field[T]& x, Field[T]& y) except +
-    Vector[T] get_data[T](const SelectedField[T]& x)
-    void set_zero[T](SelectedField[T]& x)
+    Vector[T] get_data[T](const SelectedField[T]& x) except +
+    void set_zero[T](SelectedField[T]& x) except +
     void qswap[T](SelectedField[T]& x, SelectedField[T]& y) except +
-    Vector[T] get_data[T](const SelectedPoints[T]& x)
-    void set_zero[T](SelectedPoints[T]& x)
+    Vector[T] get_data[T](const SelectedPoints[T]& x) except +
+    void set_zero[T](SelectedPoints[T]& x) except +
     void qswap[T](SelectedPoints[T]& x, SelectedPoints[T]& y) except +
     cdef cppclass SelProp(SelectedField[WilsonMatrix]):
         pass
@@ -223,16 +223,15 @@ cdef extern from "qlat/selected-field-io.h" namespace "qlat":
     void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site, const Long n_per_tslice, const RngState& rs) except +
     void add_field_selection(FieldRank& f_rank, const PointsSelection& psel, const Long rank_psel) except +
     void update_field_selection(FieldSelection& fsel) except +
-    PointsSelection psel_from_fsel(const FieldSelection& fsel)
-    PointsSelection psel_from_fsel_local(const FieldSelection& fsel)
+    PointsSelection psel_from_fsel(const FieldSelection& fsel) except +
+    PointsSelection psel_from_fsel_local(const FieldSelection& fsel) except +
 
 cdef extern from "qlat/qcd-prop.h" namespace "qlat":
 
     void set_wall_src(Prop& prop, const Geometry& geo_input,
                       const int tslice, const CoordinateD& lmom) except +
-
     void set_point_src(Prop& prop, const Geometry& geo_input,
-                       const Coordinate& xg, const ComplexD& value)
+                       const Coordinate& xg, const ComplexD& value) except +
 
 cdef extern from "qlat/qcd-smear.h" namespace "qlat":
 
@@ -254,3 +253,37 @@ cdef extern from "qlat/vector_utils/utils_smear_vecs.h" namespace "qlat":
                                     const CoordinateD& mom,
                                     const bool smear_in_time_dir,
                                     const int mode_smear) except +
+
+cdef extern from "qlat/fields-io.h" namespace "qlat":
+
+    cdef cppclass ShuffledBitSet:
+        FieldSelection fsel
+        std_vector[FieldSelection] fsels
+        ShuffledBitSet()
+    ShuffledBitSet mk_shuffled_bitset(const FieldRank& f_rank, const Coordinate& new_size_node) except +
+    ShuffledBitSet mk_shuffled_bitset(const FieldSelection& fsel, const Coordinate& new_size_node) except +
+    ShuffledBitSet mk_shuffled_bitset(const Coordinate& total_site, const PointsSelection& xgs, const Coordinate& new_size_node) except +
+    ShuffledBitSet mk_shuffled_bitset(const FieldRank& f_rank, const PointsSelection& xgs, const Coordinate& new_size_node) except +
+    cdef cppclass ShuffledFieldsWriter:
+        ShuffledFieldsWriter()
+        void init() except +
+        void init(const std_string& path_, const Coordinate& new_size_node_, const bool is_append) except +
+        void close() except +
+    cdef cppclass ShuffledFieldsReader:
+        ShuffledFieldsReader()
+        void init() except +
+        void init(const std_string& path_, const Coordinate& new_size_node_, const bool is_append) except +
+        void close() except +
+    Long write[M](ShuffledFieldsWriter& sfw, const std_string& fn, const Field[M]& field) except +
+    Long write[M](ShuffledFieldsWriter& sfw, const std_string& fn, const SelectedField[M]& sf, const ShuffledBitSet& sbs) except +
+    Long write[M](ShuffledFieldsWriter& sfw, const std_string& fn, const Field[M]& field, const ShuffledBitSet& sbs) except +
+    Long read[M](ShuffledFieldsReader& sfr, const std_string& fn, Field[M]& field) except +
+    Long read[M](ShuffledFieldsReader& sfr, const std_string& fn, SelectedField[M]& sf, FieldSelection& fsel) except +
+    Long read[M](ShuffledFieldsReader& sfr, const std_string& fn, const ShuffledBitSet& sbs, SelectedField[M]& sf) except +
+    Long flush(ShuffledFieldsWriter& sfw) except +
+    void read_through_sync_node(ShuffledFieldsReader& sfr) except +
+    bool check_file_sync_node(ShuffledFieldsReader& sfr, const std_string& fn, std_vector[Long]& final_offsets) except +
+    bool does_file_exist_sync_node(ShuffledFieldsReader& sfr, const std_string& fn) except +
+    std_vector[std_string] list_fields(ShuffledFieldsReader& sfr) except +
+    int truncate_fields_sync_node(const std_string& path, const std_vector[std_string]& fns_keep, const Coordinate& new_size_node) except +
+    std_vector[std_string] properly_truncate_fields_sync_node(const std_string& path, const bool is_check_all, const bool is_only_check, const Coordinate& new_size_node) except +

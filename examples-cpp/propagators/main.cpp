@@ -23,7 +23,7 @@ inline void set_sparse_parameters(FieldSelection& fsel,
   }
   FieldSelection fsel_load;
   read_field_selection(fsel_load, f_rank_path);
-  FieldM<int64_t, 1> f_rank;
+  FieldRank f_rank;
   f_rank = fsel_load.f_rank;
   f_rank -= fsel.f_rank;
   qassert(qnorm(f_rank) == 0.0);

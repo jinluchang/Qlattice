@@ -15,7 +15,6 @@ py_files = files(
   'coordinate.py',
   'fermion_action.py',
   'field_double.py',
-  'fields_io.py',
   'field_type_dict.py',
   'fthmc.py',
   'gauge_action.py',
@@ -102,6 +101,7 @@ name_pyx_list = [
   'propagator',
   'smear',
   'mpi',
+  'fields_io',
   ]
 
 foreach name: name_pyx_list

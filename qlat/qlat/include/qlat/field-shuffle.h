@@ -675,7 +675,7 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
       const Geometry& geo_recv = sp.geos_recv[i];
       local_geos_idx_from_new_id_node[geo_recv.geon.id_node] = local_geos_idx;
     }
-    std::vector<FieldM<int64_t, 1> > f_ranks(fsels.size());
+    std::vector<FieldRank> f_ranks(fsels.size());
     for (int i = 0; i < (int)f_ranks.size(); ++i) {
       f_ranks[i].init(sp.geos_recv[i], 1);
 #pragma omp parallel for

@@ -188,14 +188,14 @@ inline void collect_field_selection(const std::string& job_tag, const int traj)
     set_field_selection(fsel, total_site, n_per_tslice, rs_sel);
     FieldSelection fsel_load;
     read_field_selection(fsel_load, fn_old, n_per_tslice);
-    FieldM<int64_t, 1> f_rank;
+    FieldRank f_rank;
     f_rank = fsel_load.f_rank;
     f_rank -= fsel.f_rank;
     qassert(qnorm(f_rank) == 0.0);
     write_field_selection(fsel, fn);
     FieldSelection fsel_load2;
     read_field_selection(fsel_load2, fn, n_per_tslice);
-    FieldM<int64_t, 1> f_rank2;
+    FieldRank f_rank2;
     f_rank2 = fsel_load2.f_rank;
     f_rank2 -= fsel.f_rank;
     qassert(qnorm(f_rank2) == 0.0);

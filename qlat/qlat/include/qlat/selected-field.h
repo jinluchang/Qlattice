@@ -6,26 +6,25 @@
 namespace qlat
 {  //
 
-void add_field_selection(FieldM<int64_t, 1>& f_rank, const PointsSelection& psel,
+void add_field_selection(FieldRank& f_rank, const PointsSelection& psel,
                          const Long rank_psel = 1024L * 1024L * 1024L * 1024L *
                                                 1024L);
 
-void mk_field_selection(FieldM<int64_t, 1>& f_rank,
-                        const Coordinate& total_site, const int64_t val = 0);
+void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site,
+                        const int64_t val = 0);
 
-void mk_field_selection(FieldM<int64_t, 1>& f_rank,
-                        const Coordinate& total_site,
-                        const std::vector<Coordinate>& xgs,
+void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site,
+                        const PointsSelection& psel,
                         const Long rank_xgs = 1024L * 1024L * 1024L * 1024L *
                                               1024L);
 
-void select_rank_range(FieldM<int64_t, 1>& f_rank, const Long rank_start = 0,
+void select_rank_range(FieldRank& f_rank, const Long rank_start = 0,
                        const Long rank_stop = -1);
 
-void select_t_range(FieldM<int64_t, 1>& f_rank, const Long t_start = 0,
+void select_t_range(FieldRank& f_rank, const Long t_start = 0,
                     const Long t_stop = -1);
 
-void set_n_per_tslice(FieldM<int64_t, 1>& f_rank, const Long n_per_tslice);
+void set_n_per_tslice(FieldRank& f_rank, const Long n_per_tslice);
 
 void update_field_selection(FieldSelection& fsel);
 
@@ -35,7 +34,7 @@ void set_grid_field_selection(FieldSelection& fsel,
                               const Coordinate& total_site,
                               const Long n_per_tslice, const RngState& rs);
 
-void set_field_selection(FieldSelection& fsel, const FieldM<int64_t, 1>& f_rank);
+void set_field_selection(FieldSelection& fsel, const FieldRank& f_rank);
 
 void set_field_selection(FieldSelection& fsel, const Coordinate& total_site);
 
@@ -54,13 +53,11 @@ PointsSelection psel_from_fsel_local(const FieldSelection& fsel);
 
 void set_selected_gindex(SelectedField<Long>& sfgi, const FieldSelection& fsel);
 
-void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
-                             const Coordinate& total_site,
+void mk_grid_field_selection(FieldRank& f_rank, const Coordinate& total_site,
                              const Long n_per_tslice_, const RngState& rs);
 
-void mk_field_selection(FieldM<int64_t, 1>& f_rank,
-                        const Coordinate& total_site, const Long n_per_tslice,
-                        const RngState& rs);
+void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site,
+                        const Long n_per_tslice, const RngState& rs);
 
 Long write_field_selection(const FieldSelection& fsel, const std::string& path);
 

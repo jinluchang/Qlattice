@@ -17,7 +17,7 @@ void BitSet::set(const void* pbytes, const size_t nbytes)
   }
 }
 
-void BitSet::set_f_rank(FieldM<int64_t, 1>& f_rank, const int64_t rank)
+void BitSet::set_f_rank(FieldRank& f_rank, const int64_t rank)
 {
   TIMER("BitSet::set_f_rank")
   const Geometry& geo = f_rank.geo();
@@ -33,7 +33,7 @@ void BitSet::set_f_rank(FieldM<int64_t, 1>& f_rank, const int64_t rank)
   }
 }
 
-bool BitSet::check_f_rank(const FieldM<int64_t, 1>& f_rank)
+bool BitSet::check_f_rank(const FieldRank& f_rank)
 {
   TIMER("BitSet::check_f_rank")
   const Geometry& geo = f_rank.geo();
@@ -107,7 +107,7 @@ std::vector<char> bitset_decompress(const std::vector<char>& data,
   return ret;
 }
 
-BitSet mk_bitset_from_field_rank(const FieldM<int64_t, 1>& f_rank)
+BitSet mk_bitset_from_field_rank(const FieldRank& f_rank)
 {
   TIMER("mk_bitset_from_field_rank");
   const Geometry& geo = f_rank.geo();
@@ -608,7 +608,7 @@ int flush(FieldsWriter& fw)
   return qfflush(fw.qfile);
 }
 
-ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
+ShuffledBitSet mk_shuffled_bitset(const FieldRank& f_rank,
                                   const Coordinate& new_size_node)
 {
   TIMER("mk_shuffled_bitset(f_rank,new_size_node)");
@@ -619,7 +619,7 @@ ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
   sbs.sp = make_shuffle_plan(sbs.fsels, sbs.fsel, new_size_node);
   sbs.vbs.resize(fs_rank.size());
   for (int i = 0; i < (int)fs_rank.size(); ++i) {
-    FieldM<int64_t, 1> fs_rank_i;
+    FieldRank fs_rank_i;
     fs_rank_i.init(fs_rank[i]);
     sbs.vbs[i] = mk_bitset_from_field_rank(fs_rank_i);
   }
@@ -635,32 +635,23 @@ ShuffledBitSet mk_shuffled_bitset(const FieldSelection& fsel,
 }
 
 ShuffledBitSet mk_shuffled_bitset(const Coordinate& total_site,
-                                  const std::vector<Coordinate>& xgs,
+                                  const PointsSelection& psel,
                                   const Coordinate& new_size_node)
 {
-  TIMER("mk_shuffled_bitset");
-  FieldM<int64_t, 1> f_rank;
-  mk_field_selection(f_rank, total_site, xgs);
+  TIMER("mk_shuffled_bitset(total_site,psel,new_size_node)");
+  FieldRank f_rank;
+  mk_field_selection(f_rank, total_site, psel);
   return mk_shuffled_bitset(f_rank, new_size_node);
 }
 
-ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
-                                  const std::vector<Coordinate>& xgs,
+ShuffledBitSet mk_shuffled_bitset(const FieldRank& f_rank,
+                                  const PointsSelection& psel,
                                   const Coordinate& new_size_node)
 {
-  TIMER_VERBOSE("mk_shuffled_bitset");
-  const Geometry& geo = f_rank.geo();
-  FieldM<int64_t, 1> f_rank_combined;
+  TIMER_VERBOSE("mk_shuffled_bitset(f_rank,psel,new_size_node)");
+  FieldRank f_rank_combined;
   f_rank_combined = f_rank;
-  const Coordinate total_site = geo.total_site();
-  const Long spatial_vol = total_site[0] * total_site[1] * total_site[2];
-#pragma omp parallel for
-  for (Long i = 0; i < (Long)xgs.size(); ++i) {
-    const Coordinate xl = geo.coordinate_l_from_g(xgs[i]);
-    if (geo.is_local(xl)) {
-      f_rank_combined.get_elem(xl) = spatial_vol + i;
-    }
-  }
+  add_field_selection(f_rank_combined, psel);
   return mk_shuffled_bitset(f_rank_combined, new_size_node);
 }
 
@@ -710,24 +701,26 @@ void ShuffledFieldsWriter::init(const std::string& path_,
 void ShuffledFieldsWriter::close()
 // interface function
 {
-  TIMER_VERBOSE("ShuffledFieldsWriter::close")
   remove_shuffled_fields_writer(*this);
-  clear(fws);
-  sync_node();
+  if (fws.size() > 0) {
+    TIMER_VERBOSE("ShuffledFieldsWriter::close");
+    clear(fws);
+  }
 }
 
 void ShuffledFieldsReader::init()
 // interface function
 {
+  close();
   path = "";
   new_size_node = Coordinate();
-  clear(frs);
 }
 
 void ShuffledFieldsReader::init(const std::string& path_,
                                 const Coordinate& new_size_node_)
 // interface function
 {
+  TIMER_VERBOSE("ShuffledFieldsReader::init")
   init();
   path = path_;
   if (does_file_exist_qar_sync_node(path + "/geon-info.txt")) {
@@ -740,6 +733,15 @@ void ShuffledFieldsReader::init(const std::string& path_,
   frs.resize(geons.size());
   for (int i = 0; i < (int)geons.size(); ++i) {
     frs[i].init(path, geons[i]);
+  }
+}
+
+void ShuffledFieldsReader::close()
+// interface function
+{
+  if (frs.size() > 0) {
+    TIMER_VERBOSE("ShuffledFieldsReader::close")
+    clear(frs);
   }
 }
 
@@ -766,7 +768,7 @@ void close_all_shuffled_fields_writer()
 {
   TIMER_VERBOSE("close_all_shuffled_fields_writer");
   ShuffledFieldsWriterMap& sfwm = get_all_shuffled_fields_writer();
-  std::vector<Handle<ShuffledFieldsWriter> > sfwv;
+  std::vector<Handle<ShuffledFieldsWriter>> sfwv;
   for (auto it = sfwm.begin(); it != sfwm.end(); ++it) {
     sfwv.push_back(it->second);
   }
@@ -774,6 +776,7 @@ void close_all_shuffled_fields_writer()
     sfwv[i]().close();
   }
   qassert(sfwm.size() == 0);
+  sync_node();
 }
 
 Long flush(ShuffledFieldsWriter& sfw)

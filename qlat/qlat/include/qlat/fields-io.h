@@ -74,9 +74,9 @@ struct API BitSet {
     return (bytes[idx / 8] & (1 << (idx % 8))) != 0;
   }
   //
-  void set_f_rank(FieldM<int64_t, 1>& f_rank, const int64_t rank=0);
+  void set_f_rank(FieldRank& f_rank, const int64_t rank = 0);
   //
-  bool check_f_rank(const FieldM<int64_t, 1>& f_rank);
+  bool check_f_rank(const FieldRank& f_rank);
   //
   void compress(const void* src, void* dst, size_t block_size) const;
   //
@@ -119,7 +119,7 @@ std::vector<char> BitSet::compress_selected(const Vector<M>& src) const
 std::vector<char> bitset_decompress(const std::vector<char>& data,
                                     const Long local_volume);
 
-BitSet mk_bitset_from_field_rank(const FieldM<int64_t, 1>& f_rank);
+BitSet mk_bitset_from_field_rank(const FieldRank& f_rank);
 
 // ---------------------------------------------------
 
@@ -136,7 +136,7 @@ struct API FieldsWriter {
   //
   void init();
   void init(const std::string& path_, const GeometryNode& geon_,
-            const bool is_append=false);
+            const bool is_append = false);
   //
   void close() { qfclose(qfile); }
 };
@@ -165,7 +165,7 @@ struct API FieldsReader {
 
 void fields_writer_dirs_geon_info(const GeometryNode& geon,
                                   const std::string& path,
-                                  const mode_t mode=default_dir_mode());
+                                  const mode_t mode = default_dir_mode());
 
 Coordinate shuffled_fields_reader_size_node_info(const std::string& path);
 
@@ -199,7 +199,7 @@ void qfwrite_convert_endian(void* ptr, const size_t size, const size_t nmemb,
                             QFile& qfile, const bool is_little_endian);
 
 Long write(FieldsWriter& fw, const std::string& fn, const Geometry& geo,
-           const Vector<char> data, const bool is_sparse_field=false);
+           const Vector<char> data, const bool is_sparse_field = false);
 
 Long qfread_convert_endian(void* ptr, const size_t size, const size_t nmemb,
                            QFile& qfile, const bool is_little_endian);
@@ -261,7 +261,7 @@ void set_field_from_data(Field<M>& field, const GeometryNode& geon,
   TIMER("set_field_from_data");
   const Coordinate node_site = total_site / geon.size_node;
   const Long local_volume = product(node_site);
-  ConstHandle<std::vector<char> > hdata(data);
+  ConstHandle<std::vector<char>> hdata(data);
   std::vector<char> dc_data;
   if (is_sparse_field) {
     dc_data = bitset_decompress(data, local_volume);
@@ -285,7 +285,7 @@ void set_field_from_data(Field<M>& field, const GeometryNode& geon,
 }
 
 template <class M>
-void set_field_from_data(SelectedField<M>& sf, FieldM<int64_t, 1>& f_rank,
+void set_field_from_data(SelectedField<M>& sf, FieldRank& f_rank,
                          const std::vector<char>& data)
 {
   TIMER("set_field_from_data");
@@ -361,7 +361,7 @@ Long read(FieldsReader& fr, const std::string& fn, Field<M>& field)
 
 template <class M>
 Long read(FieldsReader& fr, const std::string& fn, SelectedField<M>& sf,
-          FieldM<int64_t, 1>& f_rank)
+          FieldRank& f_rank)
 // field endianess not converted at all
 // f_rank does not need to be initialized
 {
@@ -414,18 +414,18 @@ struct API ShuffledBitSet {
   std::vector<BitSet> vbs;
 };
 
-ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
+ShuffledBitSet mk_shuffled_bitset(const FieldRank& f_rank,
                                   const Coordinate& new_size_node);
 
 ShuffledBitSet mk_shuffled_bitset(const FieldSelection& fsel,
                                   const Coordinate& new_size_node);
 
 ShuffledBitSet mk_shuffled_bitset(const Coordinate& total_site,
-                                  const std::vector<Coordinate>& xgs,
+                                  const PointsSelection& psel,
                                   const Coordinate& new_size_node);
 
-ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
-                                  const std::vector<Coordinate>& xgs,
+ShuffledBitSet mk_shuffled_bitset(const FieldRank& f_rank,
+                                  const PointsSelection& psel,
                                   const Coordinate& new_size_node);
 
 // -----------------
@@ -438,7 +438,7 @@ struct API ShuffledFieldsWriter {
   ShuffledFieldsWriter() { init(); }
   ShuffledFieldsWriter(const std::string& path_,
                        const Coordinate& new_size_node_,
-                       const bool is_append=false)
+                       const bool is_append = false)
   // interface function
   {
     init(path_, new_size_node_, is_append);
@@ -448,7 +448,7 @@ struct API ShuffledFieldsWriter {
   //
   void init();
   void init(const std::string& path_, const Coordinate& new_size_node_,
-            const bool is_append=false);
+            const bool is_append = false);
   //
   void close();
 };
@@ -464,7 +464,7 @@ struct API ShuffledFieldsReader {
     init();
   }
   ShuffledFieldsReader(const std::string& path_,
-                       const Coordinate& new_size_node_=Coordinate())
+                       const Coordinate& new_size_node_ = Coordinate())
   // interface function
   {
     init(path_, new_size_node_);
@@ -472,10 +472,12 @@ struct API ShuffledFieldsReader {
   //
   void init();
   void init(const std::string& path_,
-            const Coordinate& new_size_node_=Coordinate());
+            const Coordinate& new_size_node_ = Coordinate());
+  //
+  void close();
 };
 
-typedef std::map<Long, Handle<ShuffledFieldsWriter> > ShuffledFieldsWriterMap;
+typedef std::map<Long, Handle<ShuffledFieldsWriter>> ShuffledFieldsWriterMap;
 
 API inline ShuffledFieldsWriterMap& get_all_shuffled_fields_writer()
 {
@@ -498,7 +500,7 @@ API inline ShuffledFieldsReaderCache& get_shuffled_fields_reader_cache()
 }
 
 ShuffledFieldsReader& get_shuffled_fields_reader(
-    const std::string& path, const Coordinate& new_size_node=Coordinate());
+    const std::string& path, const Coordinate& new_size_node = Coordinate());
 
 Long flush(ShuffledFieldsWriter& sfw);
 
@@ -514,7 +516,7 @@ std::vector<std::string> list_fields(ShuffledFieldsReader& sfr);
 
 int truncate_fields_sync_node(const std::string& path,
                               const std::vector<std::string>& fns_keep,
-                              const Coordinate& new_size_node=Coordinate());
+                              const Coordinate& new_size_node = Coordinate());
 
 std::vector<std::string> properly_truncate_fields_sync_node(
     const std::string& path, const bool is_check_all = false,
@@ -531,7 +533,7 @@ Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
   TIMER_VERBOSE_FLOPS("write(sfw,fn,field)");
   displayln_info(0, fname + ssprintf(": writing field with fn='%s' from '%s'.",
                                      fn.c_str(), sfw.path.c_str()));
-  std::vector<Field<M> > fs;
+  std::vector<Field<M>> fs;
   shuffle_field(fs, field, sfw.new_size_node);
   qassert(fs.size() == sfw.fws.size());
   Long total_bytes = 0;
@@ -553,7 +555,7 @@ Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
   displayln_info(
       0, fname + ssprintf(": writing sparse field with fn='%s' from '%s'.",
                           fn.c_str(), sfw.path.c_str()));
-  std::vector<SelectedField<M> > sfs;
+  std::vector<SelectedField<M>> sfs;
   shuffle_field(sfs, sf, sbs.sp);
   qassert(sfs.size() == sfw.fws.size());
   qassert(sbs.vbs.size() == sfw.fws.size());
@@ -579,7 +581,7 @@ Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
 
 template <class M>
 void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
-                                std::vector<Field<M> >& fs,
+                                std::vector<Field<M>>& fs,
                                 const ShuffledFieldsReader& sfr)
 {
   TIMER_VERBOSE("set_field_info_from_fields");
@@ -627,7 +629,7 @@ void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
 
 template <class M>
 void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
-                                std::vector<SelectedField<M> >& sfs,
+                                std::vector<SelectedField<M>>& sfs,
                                 const ShuffledFieldsReader& sfr)
 {
   TIMER_VERBOSE("set_field_info_from_fields");
@@ -682,7 +684,7 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn, Field<M>& field)
   Long total_bytes = 0;
   displayln_info(0, fname + ssprintf(": reading field with fn='%s' from '%s'.",
                                      fn.c_str(), sfr.path.c_str()));
-  std::vector<Field<M> > fs(sfr.frs.size());
+  std::vector<Field<M>> fs(sfr.frs.size());
   Long zero_size_count = 0;
   for (int i = 0; i < (int)fs.size(); ++i) {
     const Long bytes = read(sfr.frs[i], fn, fs[i]);
@@ -720,11 +722,11 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn,
   Long total_bytes = 0;
   displayln_info(0, fname + ssprintf(": reading field with fn='%s' from '%s'.",
                                      fn.c_str(), sfr.path.c_str()));
-  std::vector<SelectedField<M> > sfs(sfr.frs.size());
-  std::vector<Field<int64_t> > f_rank_s(sfr.frs.size());
+  std::vector<SelectedField<M>> sfs(sfr.frs.size());
+  std::vector<Field<int64_t>> f_rank_s(sfr.frs.size());
   Long zero_size_count = 0;
   for (int i = 0; i < (int)sfs.size(); ++i) {
-    FieldM<int64_t, 1>& f_rank = static_cast<FieldM<int64_t, 1>&>(f_rank_s[i]);
+    FieldRank& f_rank = static_cast<FieldRank&>(f_rank_s[i]);
     const Long bytes = read(sfr.frs[i], fn, sfs[i], f_rank);
     if (0 == bytes) {
       zero_size_count += 1;
@@ -766,7 +768,7 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn,
   displayln_info(
       0, fname + ssprintf(": reading sparse field with fn='%s' from '%s'.",
                           fn.c_str(), sfr.path.c_str()));
-  std::vector<SelectedField<M> > sfs(sfr.frs.size());
+  std::vector<SelectedField<M>> sfs(sfr.frs.size());
   Long zero_size_count = 0;
   for (int i = 0; i < (int)sfs.size(); ++i) {
     const Long bytes = read(sfr.frs[i], fn, sbs.fsels[i], sfs[i]);
@@ -971,7 +973,7 @@ bool does_file_exist_sync_node(const std::string& path, const std::string& fn);
       const bool is_sparse_field);                                             \
                                                                                \
   QLAT_EXTERN template void set_field_from_data(                               \
-      SelectedField<TYPENAME>& sf, FieldM<int64_t, 1>& f_rank,                 \
+      SelectedField<TYPENAME>& sf, FieldRank& f_rank,                          \
       const std::vector<char>& data);                                          \
                                                                                \
   QLAT_EXTERN template void set_field_from_data(SelectedField<TYPENAME>& sf,   \
@@ -983,7 +985,7 @@ bool does_file_exist_sync_node(const std::string& path, const std::string& fn);
                                                                                \
   QLAT_EXTERN template Long read(FieldsReader& fr, const std::string& fn,      \
                                  SelectedField<TYPENAME>& sf,                  \
-                                 FieldM<int64_t, 1>& f_rank);                  \
+                                 FieldRank& f_rank);                           \
                                                                                \
   QLAT_EXTERN template Long read(FieldsReader& fr, const std::string& fn,      \
                                  const FieldSelection& fsel,                   \
@@ -1003,11 +1005,11 @@ bool does_file_exist_sync_node(const std::string& path, const std::string& fn);
                                                                                \
   QLAT_EXTERN template void set_field_info_from_fields(                        \
       Coordinate& total_site, int& multiplicity,                               \
-      std::vector<Field<TYPENAME> >& fs, const ShuffledFieldsReader& sfr);     \
+      std::vector<Field<TYPENAME>>& fs, const ShuffledFieldsReader& sfr);      \
                                                                                \
   QLAT_EXTERN template void set_field_info_from_fields(                        \
       Coordinate& total_site, int& multiplicity,                               \
-      std::vector<SelectedField<TYPENAME> >& sfs,                              \
+      std::vector<SelectedField<TYPENAME>>& sfs,                               \
       const ShuffledFieldsReader& sfr);                                        \
                                                                                \
   QLAT_EXTERN template Long read(ShuffledFieldsReader& sfr,                    \

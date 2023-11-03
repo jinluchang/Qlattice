@@ -108,6 +108,7 @@ struct vector_gpu{
 
   inline void set_zero_pt(QBOOL dummy=QTRUE)
   {
+    (void)dummy;
     Ty* pr = p;
     int GPU_ = GPU;
     Long n_ = n;

@@ -45,7 +45,7 @@ void benchmark_matrix_functions(const Long count)
     timer.flops += count * 13536;
   }
   {
-    TIMER_VERBOSE_FLOPS(fname + "benchmark_matrix_functions-sm*wm");
+    TIMER_VERBOSE_FLOPS("benchmark_matrix_functions-sm*wm");
     for (Long i = 0; i < count; ++i) {
       const SpinMatrix& sm1 = sm[(i * 2) % n_mat];
       const WilsonMatrix& wm2 = wm[(i * 2 + 2) % n_mat];
@@ -55,7 +55,7 @@ void benchmark_matrix_functions(const Long count)
     timer.flops += count * 4320;
   }
   {
-    TIMER_VERBOSE_FLOPS(fname + "benchmark_matrix_functions-wm*sm");
+    TIMER_VERBOSE_FLOPS("benchmark_matrix_functions-wm*sm");
     for (Long i = 0; i < count; ++i) {
       const WilsonMatrix& wm1 = wm[(i * 2) % n_mat];
       const SpinMatrix& sm2 = sm[(i * 2 + 2) % n_mat];
@@ -65,7 +65,7 @@ void benchmark_matrix_functions(const Long count)
     timer.flops += count * 4320;
   }
   {
-    TIMER_VERBOSE_FLOPS(fname + "benchmark_matrix_functions-sm*sm");
+    TIMER_VERBOSE_FLOPS("benchmark_matrix_functions-sm*sm");
     for (Long i = 0; i < count; ++i) {
       const SpinMatrix& sm1 = sm[(i * 2) % n_mat];
       const SpinMatrix& sm2 = sm[(i * 2 + 2) % n_mat];

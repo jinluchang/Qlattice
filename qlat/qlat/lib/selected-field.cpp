@@ -5,7 +5,7 @@
 namespace qlat
 {  //
 
-void add_field_selection(FieldM<int64_t, 1>& f_rank, const PointsSelection& psel,
+void add_field_selection(FieldRank& f_rank, const PointsSelection& psel,
                          const Long rank_psel)
 // interface function
 // add psel points to f_rank. (only lower rank if already selected)
@@ -24,8 +24,8 @@ void add_field_selection(FieldM<int64_t, 1>& f_rank, const PointsSelection& psel
   }
 }
 
-void mk_field_selection(FieldM<int64_t, 1>& f_rank,
-                        const Coordinate& total_site, const int64_t val)
+void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site,
+                        const int64_t val)
 // interface function
 // select everything with val
 // default val = 0 ; means selection everything
@@ -44,16 +44,15 @@ void mk_field_selection(FieldM<int64_t, 1>& f_rank,
   }
 }
 
-void mk_field_selection(FieldM<int64_t, 1>& f_rank,
-                        const Coordinate& total_site,
-                        const std::vector<Coordinate>& xgs, const Long rank_xgs)
+void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site,
+                        const PointsSelection& psel, const Long rank_xgs)
 {
-  TIMER_VERBOSE("mk_field_selection(xgs)");
+  TIMER_VERBOSE("mk_field_selection(psel)");
   mk_field_selection(f_rank, total_site, -1);
-  add_field_selection(f_rank, xgs, rank_xgs);
+  add_field_selection(f_rank, psel, rank_xgs);
 }
 
-void select_rank_range(FieldM<int64_t, 1>& f_rank, const Long rank_start,
+void select_rank_range(FieldRank& f_rank, const Long rank_start,
                        const Long rank_stop)
 // keep rank info if rank_start <= rank and (rank < rank_stop or rank_stop ==
 // -1) otherwise rank = -1 default parameter does not change selection but will
@@ -71,8 +70,7 @@ void select_rank_range(FieldM<int64_t, 1>& f_rank, const Long rank_start,
   });
 }
 
-void select_t_range(FieldM<int64_t, 1>& f_rank, const Long t_start,
-                    const Long t_stop)
+void select_t_range(FieldRank& f_rank, const Long t_start, const Long t_stop)
 // keep rank info if t_start <= t and (t < t_stop or t_stop == -1)
 // otherwise rank = -1
 // default parameter does not change selection
@@ -93,7 +91,7 @@ void select_t_range(FieldM<int64_t, 1>& f_rank, const Long t_start,
   });
 }
 
-void set_n_per_tslice(FieldM<int64_t, 1>& f_rank, const Long n_per_tslice)
+void set_n_per_tslice(FieldRank& f_rank, const Long n_per_tslice)
 // will erase the rank information for points not selected (rank = -1)
 //
 // if n_per_tslice == -1 then all points are selected regardless of rank
@@ -167,7 +165,7 @@ void set_grid_field_selection(FieldSelection& fsel,
   update_field_selection(fsel);
 }
 
-void set_field_selection(FieldSelection& fsel, const FieldM<int64_t, 1>& f_rank)
+void set_field_selection(FieldSelection& fsel, const FieldRank& f_rank)
 // strictly follow f_rank on selection
 {
   TIMER_VERBOSE("set_field_selection(fsel,f_rank)");
@@ -290,8 +288,7 @@ void set_selected_gindex(SelectedField<Long>& sfgi, const FieldSelection& fsel)
   });
 }
 
-void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
-                             const Coordinate& total_site,
+void mk_grid_field_selection(FieldRank& f_rank, const Coordinate& total_site,
                              const Long n_per_tslice_, const RngState& rs)
 // each time slice has "n_per_tslice = spatial_vol / ratio" points been
 // selected. not selected points has value = -1; selected points has value from
@@ -314,7 +311,7 @@ void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
   f_rank.init(geo);
   qassert(f_rank.geo().is_only_local);
   qthread_for(index, geo.local_volume(), { f_rank.get_elem(index) = -1; });
-  std::vector<Field<int64_t> > fs;
+  std::vector<Field<int64_t>> fs;
   const Coordinate new_size_node = get_default_serial_new_size_node(geo);
   shuffle_field(fs, f_rank, new_size_node);
   qassert(fs.size() <= 1);
@@ -398,9 +395,8 @@ void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
   shuffle_field_back(f_rank, fs, new_size_node);
 }
 
-void mk_field_selection(FieldM<int64_t, 1>& f_rank,
-                        const Coordinate& total_site, const Long n_per_tslice,
-                        const RngState& rs)
+void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site,
+                        const Long n_per_tslice, const RngState& rs)
 // interface function
 // not selected points has value = -1;
 // random select n_per_tslice points based on ranks from mk_grid_field_selection
@@ -424,7 +420,7 @@ Long read_field_selection(FieldSelection& fsel, const std::string& path)
 {
   TIMER_VERBOSE("read_field_selection");
   fsel.init();
-  FieldM<int64_t, 1> f_rank;
+  FieldRank f_rank;
   const Long total_bytes = read_field_64(f_rank, path);
   if (total_bytes > 0) {
     set_field_selection(fsel, f_rank);
@@ -432,8 +428,8 @@ Long read_field_selection(FieldSelection& fsel, const std::string& path)
   return total_bytes;
 }
 
-std::string make_selected_field_header(const Geometry& geo,
-                                       const int sizeof_M, const crc32_t crc32)
+std::string make_selected_field_header(const Geometry& geo, const int sizeof_M,
+                                       const crc32_t crc32)
 {
   const Coordinate total_site = geo.total_site();
   std::ostringstream out;

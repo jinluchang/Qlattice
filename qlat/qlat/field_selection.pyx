@@ -108,6 +108,7 @@ cdef class PointsSelection:
         cdef cc.Long n_points
         cdef cc.Long i
         cdef Coordinate xg
+        cdef cc.Coordinate *p_xg
         if xg_arr is None:
             self.xx = cc.PointsSelection()
         elif isinstance(xg_arr, int):
@@ -127,7 +128,7 @@ cdef class PointsSelection:
             n_points = len(xg_arr)
             self.xx = cc.PointsSelection(n_points)
             for i in range(n_points):
-                cc.assign_direct(self.xx[i], Coordinate(xg_arr[i]).xx)
+                self.xx[i] = Coordinate(xg_arr[i]).xx
         else:
             raise Exception(f"PointsSelection.set_xg_arr({xg_arr},{geo})")
 

@@ -1,8 +1,14 @@
-from qlat_utils import *
-from .c import *
-from . import c
+# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
-cache_fields_io = mk_cache("fields_io")
+from qlat_utils.all cimport *
+from . cimport everything as cc
+from .field_base cimport FieldBase, SelectedFieldBase
+from .field_selection cimport FieldSelection
+
+import cqlat as c
+import qlat_utils as q
+
+cache_fields_io = q.mk_cache("fields_io")
 
 class ShuffledFieldsWriter:
 
@@ -82,8 +88,10 @@ class ShuffledFieldsReader:
         return sbs
 
     def read(self, fn, obj):
-        # Can also read SelectedField obj with obj.fsel is None
-        # After reading, obj.fsel will be properly loaded.
+        """
+        Can also read SelectedField obj with obj.fsel is None
+        After reading, obj.fsel will be properly loaded.
+        """
         assert isinstance(fn, str)
         if isinstance(obj, FieldBase):
             return c.read_sfr_field(self, fn, obj)
@@ -121,7 +129,9 @@ class ShuffledBitSet:
         c.free_sbs(self)
 
 def open_fields(path, mode, new_size_node = None):
-    # path can be the folder path or the 'geon-info.txt' path
+    """
+    path can be the folder path or the 'geon-info.txt' path
+    """
     assert isinstance(path, str)
     assert isinstance(mode, str)
     if path[-14:] == "/geon-info.txt":
@@ -155,10 +165,12 @@ def properly_truncate_fields(path, is_check_all = False, is_only_check = False, 
         return c.properly_truncate_fields_sync_node(path, is_check_all, is_only_check, new_size_node)
 
 def truncate_fields(path, fns_keep, new_size_node = None):
-    # fns_keep is the list of fields that need to keep
-    # fns_keep needs to be in the same order as the data is stored in path
-    # all fns_keep must be already in the path
-    # fns_keep can be empty list
+    """
+    fns_keep is the list of fields that need to keep
+    fns_keep needs to be in the same order as the data is stored in path
+    all fns_keep must be already in the path
+    fns_keep can be empty list
+    """
     if path[-14:] == "/geon-info.txt":
         path = path[:-14]
     if new_size_node is None:
@@ -169,16 +181,20 @@ def truncate_fields(path, fns_keep, new_size_node = None):
         raise Exception(f"truncate_fields error {ret}")
 
 def check_fields(path, is_check_all = True, new_size_node = None):
-    # return list of field that is stored successful
+    """
+    return list of field that is stored successful
+    """
     if path[-14:] == "/geon-info.txt":
         path = path[:-14]
     is_only_check = True
     return properly_truncate_fields(path, is_check_all, is_only_check, new_size_node)
 
 def check_compressed_eigen_vectors(path):
-    # return bool value suggest whether the data can be read successfully
-    # return True is the data has problem
-    # return False if the data is ok
+    """
+    return bool value suggest whether the data can be read successfully
+    return True is the data has problem
+    return False if the data is ok
+    """
     if path[-14:] == "/geon-info.txt":
         path = path[:-14]
     return c.check_compressed_eigen_vectors(path)
