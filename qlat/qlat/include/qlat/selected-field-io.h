@@ -54,6 +54,7 @@ template <class M>
 Long write_selected_field(const SelectedField<M>& sf, const std::string& path,
                           const FieldSelection& fsel,
                           const Coordinate& new_size_node_ = Coordinate())
+// interface function
 {
   TIMER_VERBOSE_FLOPS("write_selected_field");
   displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));
@@ -130,6 +131,7 @@ template <class M>
 Long read_selected_field(SelectedField<M>& sf, const std::string& path,
                          const FieldSelection& fsel,
                          const Coordinate& new_size_node_ = Coordinate())
+// interface function
 {
   TIMER_VERBOSE_FLOPS("read_selected_field");
   displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));

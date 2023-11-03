@@ -27,6 +27,7 @@ header_files = files(
   'dslash.h',
   'env.h',
   'fermion-action.h',
+  'field-base-io.h',
   'field-dist-io.h',
   'field-double.h',
   'field-expand.h',

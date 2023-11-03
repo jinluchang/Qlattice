@@ -1,7 +1,7 @@
 #pragma once
 
+#include <qlat/field-base-io.h>
 #include <qlat/field-dist-io.h>
-#include <qlat/field-io.h>
 
 #include <stdio.h>
 #include <ctime>

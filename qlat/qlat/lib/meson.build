@@ -4,6 +4,7 @@ cppsources = files(
   'field.cpp',
   'field-expand.cpp',
   'field-fft.cpp',
+  'field-io.cpp',
   'field-shuffle.cpp',
   'fields-io.cpp',
   'mpi.cpp',
