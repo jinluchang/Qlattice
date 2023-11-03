@@ -198,10 +198,20 @@ cdef class Field{{name}}(FieldBase):
         cc.reflect_field(f1.xx)
         return f1
 
-    def read_sfr(self, ShuffledFieldsReader sfr, const cc.std_string& fn):
+    def read_direct(self, const cc.std_string& fn, Coordinate new_size_node=None):
+        if new_size_node is None:
+            new_size_node = Coordinate()
+        return cc.read_field(self.xx, fn, new_size_node.xx)
+
+    def write_direct(self, const cc.std_string& fn, Coordinate new_size_node=None):
+        if new_size_node is None:
+            new_size_node = Coordinate()
+        return cc.write_field(self.xx, fn, new_size_node.xx)
+
+    def read_sfr_direct(self, ShuffledFieldsReader sfr, const cc.std_string& fn):
         return cc.read(sfr.xx, fn, self.xx)
 
-    def write_sfw(self, ShuffledFieldsWriter sfw, const cc.std_string& fn):
+    def write_sfw_direct(self, ShuffledFieldsWriter sfw, const cc.std_string& fn):
         return cc.write(sfw.xx, fn, self.xx)
 
 field_type_dict[ElemType{{name}}] = Field{{name}}

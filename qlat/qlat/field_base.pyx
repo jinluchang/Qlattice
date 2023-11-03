@@ -3,6 +3,7 @@
 from qlat_utils.all cimport *
 from . cimport everything as cc
 from .geometry cimport Geometry
+from .fields_io cimport ShuffledFieldsReader, ShuffledFieldsWriter
 from .field_types cimport FieldRealF
 from .field_selection cimport PointsSelection, FieldSelection
 from .selected_field_types cimport SelectedFieldRealF
@@ -152,17 +153,14 @@ cdef class FieldBase:
         f.save_direct(path, new_size_node)
         f.save_direct(sfw, fn)
         """
-        from qlat.fields_io import ShuffledFieldsWriter
+        cdef cc.Long n_bytes
         if isinstance(path, str):
-            if len(args) == 0:
-                n_bytes = c.save_field(self, path)
-            else:
-                [ new_size_node, ] = args
-                n_bytes = c.save_field(self, path, new_size_node)
+            assert len(args) == 0
+            n_bytes = self.write_direct(path)
         elif isinstance(path, ShuffledFieldsWriter):
             sfw = path
-            [fn] = args
-            n_bytes = sfw.write(fn, self)
+            fn, = args
+            n_bytes = self.write_sfw_direct(sfw, fn)
         else:
             raise Exception("Field.save_direct")
         assert n_bytes != 0
@@ -177,15 +175,16 @@ cdef class FieldBase:
         f.load_direct(path)
         f.load_direct(sfr, fn)
         """
-        from qlat.fields_io import ShuffledFieldsReader
+        cdef cc.Long n_bytes
         if isinstance(path, str):
-            n_bytes = c.load_field(self, path)
+            assert len(args) == 0
+            n_bytes = self.read_direct(path)
         elif isinstance(path, ShuffledFieldsReader):
             sfr = path
-            [ fn, ] = args
-            n_bytes = sfr.read(fn, self)
+            fn, = args
+            n_bytes = self.read_sfr_direct(sfr, fn)
         else:
-            raise Exception("Field.load_direct")
+            raise Exception("SelectedField.load")
         assert n_bytes != 0
         return n_bytes
 
@@ -449,14 +448,14 @@ cdef class SelectedFieldBase:
         f.save_direct(path) # has some limitations
         f.save_direct(sfw, fn)
         """
-        from .fields_io import ShuffledFieldsWriter
+        cdef cc.Long n_bytes
         if isinstance(path, str):
             assert len(args) == 0
-            n_bytes = c.save_sfield(self, path)
+            n_bytes = self.write_direct(path)
         elif isinstance(path, ShuffledFieldsWriter):
             sfw = path
-            [fn] = args
-            n_bytes = sfw.write(fn, self)
+            fn, = args
+            n_bytes = self.write_sfw_direct(sfw, fn)
         else:
             raise Exception("SelectedField.save_direct")
         assert n_bytes != 0
@@ -470,13 +469,14 @@ cdef class SelectedFieldBase:
         f.load_direct(sfr, fn)
         if self.fsel is None, self.fsel will be set during f.load_direct(sfr, fn)
         """
-        from .fields_io import ShuffledFieldsReader
+        cdef cc.Long n_bytes
         if isinstance(path, str):
-            n_bytes = c.load_sfield(self, path)
+            assert len(args) == 0
+            n_bytes = self.read_direct(path)
         elif isinstance(path, ShuffledFieldsReader):
             sfr = path
-            [fn] = args
-            n_bytes = sfr.read(fn, self)
+            fn, = args
+            n_bytes = self.read_sfr_direct(sfr, fn)
         else:
             raise Exception("SelectedField.load")
         assert n_bytes != 0

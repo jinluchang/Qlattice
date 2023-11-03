@@ -1,6 +1,6 @@
 #pragma once
 
-#include <qlat/field-serial-io.h>
+#include <qlat/field-io.h>
 #include <qlat/selected-field.h>
 
 namespace qlat

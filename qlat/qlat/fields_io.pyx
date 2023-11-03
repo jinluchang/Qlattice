@@ -45,7 +45,7 @@ cdef class ShuffledFieldsWriter:
 
     def write(self, str fn, obj):
         if isinstance(obj, (FieldBase, SelectedFieldBase,)):
-            return obj.write_sfw(self, fn)
+            return obj.write_sfw_direct(self, fn)
         else:
             raise Exception("ShuffledFieldsWriter.write")
 
@@ -101,7 +101,7 @@ cdef class ShuffledFieldsReader:
         After reading, obj.fsel will be properly loaded.
         """
         if isinstance(obj, (FieldBase, SelectedFieldBase,)):
-            return obj.read_sfr(self, fn)
+            return obj.read_sfr_direct(self, fn)
         else:
             raise Exception("ShuffledFieldsReader.read")
 

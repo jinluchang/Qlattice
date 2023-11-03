@@ -143,7 +143,13 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
     def qnorm(self):
         return cc.qnorm(self.xx)
 
-    def read_sfr(self, ShuffledFieldsReader sfr, const cc.std_string& fn):
+    def read_direct(self, const cc.std_string& fn):
+        return cc.read_selected_field(self.xx, fn, self.fsel.xx)
+
+    def write_direct(self, const cc.std_string& fn):
+        return cc.write_selected_field(self.xx, fn, self.fsel.xx)
+
+    def read_sfr_direct(self, ShuffledFieldsReader sfr, const cc.std_string& fn):
         if self.fsel is None:
             if self.view_count > 0:
                 raise ValueError("can't re-init while being viewed")
@@ -152,7 +158,7 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         cdef ShuffledBitSet sbs = sfr.get_cache_sbs(self.fsel)
         return cc.read(sfr.xx, fn, sbs.xx, self.xx)
 
-    def write_sfw(self, ShuffledFieldsWriter sfw, const cc.std_string& fn):
+    def write_sfw_direct(self, ShuffledFieldsWriter sfw, const cc.std_string& fn):
         cdef ShuffledBitSet sbs = sfw.get_cache_sbs(self.fsel)
         return cc.write(sfw.xx, fn, sbs.xx, self.xx)
 

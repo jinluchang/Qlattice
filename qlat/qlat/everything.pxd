@@ -175,6 +175,15 @@ cdef extern from "qlat/field-expand.h" namespace "qlat":
     cdef cppclass CommPlan:
         CommPlan()
 
+cdef extern from "qlat/field-io.h" namespace "qlat":
+
+    bool is_field(const std_string& path) except +
+    bool is_d_field(const std_string& path) except +
+    bool dist_repartition(const Coordinate& new_size_node, const std_string& path, const std_string& new_path) except +
+    crc32_t field_crc32[M](const Field[M]& f) except +
+    Long write_field[M](const Field[M]& f, const std_string& path, const Coordinate& new_size_node) except +
+    Long read_field[M](Field[M]& f, const std_string& path, const Coordinate& new_size_node) except +
+
 cdef extern from "qlat/selected-points.h" namespace "qlat":
 
     double qnorm[M](const SelectedPoints[M]& sp) except +
@@ -225,6 +234,8 @@ cdef extern from "qlat/selected-field-io.h" namespace "qlat":
     void update_field_selection(FieldSelection& fsel) except +
     PointsSelection psel_from_fsel(const FieldSelection& fsel) except +
     PointsSelection psel_from_fsel_local(const FieldSelection& fsel) except +
+    Long write_selected_field[M](const SelectedField[M]& sf, const std_string& path, const FieldSelection& fsel) except +
+    Long read_selected_field[M](SelectedField[M]& sf, const std_string& path, const FieldSelection& fsel) except +
 
 cdef extern from "qlat/qcd-prop.h" namespace "qlat":
 
