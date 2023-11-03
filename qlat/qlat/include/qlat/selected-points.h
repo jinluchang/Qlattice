@@ -162,6 +162,9 @@ void qnorm_field(SelectedPoints<double>& sp, const SelectedPoints<M>& sp1)
            { sp.get_elem(idx) = qnorm(sp1.get_elems_const(idx)); });
 }
 
+void set_sqrt_field(SelectedPoints<RealD>& sp,
+                    const SelectedPoints<RealD>& sp1);
+
 // -------------------------------------------
 
 template <class M>

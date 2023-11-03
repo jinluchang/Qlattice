@@ -198,6 +198,7 @@ cdef extern from "qlat/selected-points.h" namespace "qlat":
     PointsSelection mk_tslice_point_selection(const int t_size, const int t_dir) except +
     void field_glb_sum[M](SelectedPoints[M]& sp, const Field[M]& f) except +
     void field_glb_sum_tslice[M](SelectedPoints[M]& sp, const Field[M]& f, const int t_dir) except +
+    void set_sqrt_field(SelectedPoints[RealD]& sp, const SelectedPoints[RealD]& sp1) except +
 
 cdef extern from "qlat/selected-field.h" namespace "qlat":
 

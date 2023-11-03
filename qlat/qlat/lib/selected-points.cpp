@@ -131,4 +131,19 @@ PointsSelection load_point_selection_info(const std::string& path)
   return psel;
 }
 
+void set_sqrt_field(SelectedPoints<RealD>& sp, const SelectedPoints<RealD>& sp1)
+{
+  TIMER("set_sqrt_field(sp,sp1)");
+  const Long n_points = sp1.n_points;
+  const Int multiplicity = sp1.multiplicity;
+  sp.init(n_points, multiplicity);
+  qthread_for(idx, n_points, {
+    const Vector<RealD> spv1 = sp1.get_elems_const(idx);
+    Vector<RealD> spv = sp.get_elems(idx);
+    for (Int m = 0; m < multiplicity; ++m) {
+      spv[m] = std::sqrt(spv1[m]);
+    }
+  });
+}
+
 }  // namespace qlat

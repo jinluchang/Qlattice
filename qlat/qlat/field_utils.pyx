@@ -10,7 +10,10 @@ from .field_base cimport (
         )
 from .field_types cimport (
         FieldInt8t,
+        FieldRealD,
         )
+from .selected_field_types cimport SelectedFieldRealD
+from .selected_points_types cimport SelectedPointsRealD
 
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
@@ -147,11 +150,11 @@ def mk_fft(is_forward, *, is_only_spatial=False, is_normalizing=False, mode_fft=
 @q.timer
 def qnorm_field(f):
     if isinstance(f, FieldBase):
-        f_n = Field(ElemTypeRealD)
+        f_n = FieldRealD()
         c.qnorm_field_field(f_n, f)
     elif isinstance(f, SelectedFieldBase):
         fsel = f.fsel
-        f_n = SelectedField(ElemTypeRealD, fsel)
+        f_n = SelectedFieldRealD(fsel)
         c.qnorm_field_sfield(f_n, f)
     elif isinstance(f, SelectedPointsBase):
         f_n = f.qnorm_field()
@@ -160,22 +163,22 @@ def qnorm_field(f):
         assert False
     return f_n
 
+def sqrt_selected_points(SelectedPointsRealD f):
+    cdef  SelectedPointsRealD f_ret = f.copy(is_copying_data=False)
+    cc.set_sqrt_field(f_ret.xx, f.xx)
+    return f_ret
+
 @q.timer
 def sqrt_double_field(f):
-    if isinstance(f, FieldBase):
-        assert f.ctype is ElemTypeRealD
-        f_ret = Field(ElemTypeRealD)
+    if isinstance(f, FieldRealD):
+        f_ret = FieldRealD()
         c.set_sqrt_double_field(f_ret, f)
-    elif isinstance(f, SelectedFieldBase):
-        assert f.ctype == ElemTypeRealD
+    elif isinstance(f, SelectedFieldRealD):
         fsel = f.fsel
-        f_ret = SelectedField(ElemTypeRealD, fsel)
+        f_ret = SelectedFieldRealD(fsel)
         c.set_sqrt_double_sfield(f_ret, f)
-    elif isinstance(f, SelectedPointsBase):
-        assert f.ctype == ElemTypeRealD
-        psel = f.psel
-        f_ret = SelectedPoints(ElemTypeRealD, psel)
-        c.set_sqrt_double_spfield(f_ret, f)
+    elif isinstance(f, SelectedPointsRealD):
+        f_ret = sqrt_selected_points(f)
     else:
         q.displayln_info("sqrt_double_field:", type(f))
         assert False
