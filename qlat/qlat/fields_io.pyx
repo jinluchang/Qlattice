@@ -24,6 +24,9 @@ cdef class ShuffledFieldsWriter:
         self.xx.close()
         cache_fields_io.pop(id(self), None)
 
+    def path(self):
+        return self.xx.path
+
     def new_size_node(self):
         cdef Coordinate x = Coordinate()
         x.xx = self.xx.new_size_node
@@ -38,6 +41,9 @@ cdef class ShuffledFieldsWriter:
         cache_fields_io[id(self)] = (fsel, sbs,)
         return sbs
 
+    def flush(self):
+        return cc.flush(self.xx)
+
     def write(self, fn, obj):
         assert isinstance(fn, str)
         if isinstance(obj, FieldBase):
@@ -46,9 +52,6 @@ cdef class ShuffledFieldsWriter:
             return c.write_sfw_sfield(self, fn, obj, self.get_cache_sbs(obj.fsel))
         else:
             raise Exception("ShuffledFieldsWriter.save")
-
-    def flush(self):
-        return c.flush_sfw(self)
 
 ## --------------
 
@@ -71,6 +74,9 @@ cdef class ShuffledFieldsReader:
         self.tags = None
         cache_fields_io.pop(id(self), None)
 
+    def path(self):
+        return self.xx.path
+
     def new_size_node(self):
         cdef Coordinate x = Coordinate()
         x.xx = self.xx.new_size_node
@@ -84,6 +90,14 @@ cdef class ShuffledFieldsReader:
         sbs = ShuffledBitSet(fsel, self.new_size_node())
         cache_fields_io[id(self)] = (fsel, sbs,)
         return sbs
+
+    def list(self):
+        return cc.list_fields(self.xx)
+
+    def has(self, str fn):
+        if self.tags is None:
+            self.tags = set(self.list())
+        return fn in self.tags
 
     def read(self, const cc.std_string& fn, obj):
         """
@@ -104,17 +118,6 @@ cdef class ShuffledFieldsReader:
                 return c.read_sfr_sfield(self, fn, self.get_cache_sbs(obj.fsel), obj)
         else:
             raise Exception("ShuffledFieldsReader.load")
-
-    def list(self):
-        return c.list_sfr(self)
-
-    def has_sync_node(self, const cc.std_string& fn):
-        return c.does_file_exist_sync_node_sfr(self, fn)
-
-    def has(self, str fn):
-        if self.tags is None:
-            self.tags = set(self.list())
-        return fn in self.tags
 
 ## --------------
 
@@ -141,15 +144,14 @@ def open_fields(str path, str mode, Coordinate new_size_node=None):
         return ShuffledFieldsWriter(path, new_size_node)
     elif mode == "a":
         if new_size_node is None:
-            return ShuffledFieldsWriter(path, [0, 0, 0, 0], True)
-        else:
-            return ShuffledFieldsWriter(path, new_size_node, True)
+            new_size_node = Coordinate()
+        return ShuffledFieldsWriter(path, new_size_node, True)
     else:
         raise Exception("open_fields")
 
 def list_fields(str path, Coordinate new_size_node=None):
-    sfr = open_fields(path, "r", new_size_node)
-    fns = sfr.list()
+    cdef ShuffledFieldsReader sfr = open_fields(path, "r", new_size_node)
+    cdef list fns = sfr.list()
     sfr.close()
     return fns
 
@@ -157,9 +159,8 @@ def properly_truncate_fields(str path, cc.bool is_check_all=False, cc.bool is_on
     if path[-14:] == "/geon-info.txt":
         path = path[:-14]
     if new_size_node is None:
-        return c.properly_truncate_fields_sync_node(path, is_check_all, is_only_check)
-    else:
-        return c.properly_truncate_fields_sync_node(path, is_check_all, is_only_check, new_size_node)
+        new_size_node = Coordinate()
+    return cc.properly_truncate_fields_sync_node(path, is_check_all, is_only_check, new_size_node.xx)
 
 def truncate_fields(str path, list fns_keep, Coordinate new_size_node=None):
     """
@@ -171,11 +172,10 @@ def truncate_fields(str path, list fns_keep, Coordinate new_size_node=None):
     if path[-14:] == "/geon-info.txt":
         path = path[:-14]
     if new_size_node is None:
-        ret = c.truncate_fields_sync_node(path, fns_keep)
-    else:
-        ret = c.truncate_fields_sync_node(path, fns_keep, new_size_node)
+        new_size_node = Coordinate()
+    ret = cc.truncate_fields_sync_node(path, fns_keep, new_size_node.xx)
     if ret != 0:
-        raise Exception(f"truncate_fields error {ret}")
+        raise Exception(f"truncate_fields: error {ret}")
 
 def check_fields(str path, cc.bool is_check_all=True, Coordinate new_size_node=None):
     """
@@ -194,11 +194,11 @@ def check_compressed_eigen_vectors(str path):
     """
     if path[-14:] == "/geon-info.txt":
         path = path[:-14]
-    return c.check_compressed_eigen_vectors(path)
+    return cc.check_compressed_eigen_vectors(path)
 
 def eigen_system_repartition(Coordinate new_size_node, str path, str path_new=""):
     if path[-14:] == "/geon-info.txt":
         path = path[:-14]
     if path_new[-14:] == "/geon-info.txt":
         path_new = path_new[:-14]
-    return c.eigen_system_repartition(new_size_node, path, path_new)
+    return cc.eigen_system_repartition(new_size_node.xx, path, path_new)

@@ -850,16 +850,24 @@ bool check_file_sync_node(ShuffledFieldsReader& sfr, const std::string& fn,
 std::vector<std::string> list_fields(ShuffledFieldsReader& sfr)
 // interface function
 {
-  TIMER_VERBOSE("list_fields");
+  TIMER_VERBOSE("list_fields(sfr)");
   read_through_sync_node(sfr);
   std::vector<std::string> ret;
   if (0 == get_id_node()) {
     qassert(sfr.frs.size() > 0);
-    FieldsReader& fr = sfr.frs[0];
+    const FieldsReader& fr = sfr.frs[0];
     qassert(fr.is_read_through);
     ret = fr.fn_list;
   }
   bcast(ret);
+  for (int i = 0; i < (int)sfr.frs.size(); ++i) {
+    const FieldsReader& fr = sfr.frs[i];
+    qassert(fr.is_read_through);
+    qassert(fr.fn_list.size() == ret.size());
+    for (Long j = 0; j < (Long)ret.size(); ++j) {
+      qassert(ret[j] == fr.fn_list[j]);
+    }
+  }
   return ret;
 }
 

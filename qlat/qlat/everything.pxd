@@ -291,3 +291,10 @@ cdef extern from "qlat/fields-io.h" namespace "qlat":
     std_vector[std_string] list_fields(ShuffledFieldsReader& sfr) except +
     int truncate_fields_sync_node(const std_string& path, const std_vector[std_string]& fns_keep, const Coordinate& new_size_node) except +
     std_vector[std_string] properly_truncate_fields_sync_node(const std_string& path, const bool is_check_all, const bool is_only_check, const Coordinate& new_size_node) except +
+
+cdef extern from "qlat/compressed-eigen-io.h" namespace "qlat":
+
+    bool check_compressed_eigen_vectors(const std_string& path) except +
+    bool eigen_system_repartition(const Coordinate& new_size_node, const std_string& path, const std_string& new_path) except +
+
+
