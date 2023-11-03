@@ -67,7 +67,8 @@ inline void demo(const std::string& tag, const Coordinate& total_site,
   read_field_selection(fsel, "huge-data/" + tag + "/fsel.field");
   //
   displayln_info(fname + ssprintf(": init field 'f'"));
-  Field<ComplexD> f, sf, rf;
+  Field<ComplexD> f, fsf, rf;
+  SelectedField<ComplexD> sf;
   f.init(geo, 2);
   set_zero(f);
   //
@@ -85,10 +86,11 @@ inline void demo(const std::string& tag, const Coordinate& total_site,
       ssprintf(
           ": possible to only keep selected points non-zero for field 'f'."));
   displayln_info(fname + ssprintf(": (DOES NOT CHANGE THE SIZE IN MOMEORY)"));
-  sf = f;
-  only_keep_selected_points(sf, fsel);
+  fsf = f;
+  only_keep_selected_points(fsf, fsel);
+  set_selected_field(sf, f, fsel);
   //
-  const crc32_t crc_3 = field_crc32(sf);
+  const crc32_t crc_3 = field_crc32(fsf);
   displayln_info(fname + ssprintf(": compute crc32=%08X.", crc_3));
   //
   {
@@ -98,16 +100,16 @@ inline void demo(const std::string& tag, const Coordinate& total_site,
     //
     displayln_info(fname + ssprintf(": save to disk"));
     write(sfw, "f.field", f);
-    write(sfw, "f.sfield", f, sbs);
+    write(sfw, "f.sfield", sbs, sf);
     write_float_from_double(sfw, "f.float.field", f);
-    write_float_from_double(sfw, "f.float.sfield", f, sbs);
+    write_float_from_double(sfw, "f.float.sfield", sbs, sf);
     //
     //
     displayln_info(fname + ssprintf(": save sf to disk"));
-    write(sfw, "sf.field", sf);
-    write(sfw, "sf.sfield", sf, sbs);
-    write_float_from_double(sfw, "sf.float.field", sf);
-    write_float_from_double(sfw, "sf.float.sfield", sf, sbs);
+    write(sfw, "sf.field", fsf);
+    write(sfw, "sf.sfield", sbs, sf);
+    write_float_from_double(sfw, "sf.float.field", fsf);
+    write_float_from_double(sfw, "sf.float.sfield", sbs, sf);
   }
   {
     ShuffledFieldsWriter sfw("huge-data/" + tag + "/demo.lfs", new_size_node, true);
@@ -116,16 +118,16 @@ inline void demo(const std::string& tag, const Coordinate& total_site,
     //
     displayln_info(fname + ssprintf(": save to disk append"));
     write(sfw, "fa.field", f);
-    write(sfw, "fa.sfield", f, sbs);
+    write(sfw, "fa.sfield", sbs, sf);
     write_float_from_double(sfw, "fa.float.field", f);
-    write_float_from_double(sfw, "fa.float.sfield", f, sbs);
+    write_float_from_double(sfw, "fa.float.sfield", sbs, sf);
     //
     //
     displayln_info(fname + ssprintf(": save sf to disk append"));
-    write(sfw, "sfa.field", sf);
-    write(sfw, "sfa.sfield", sf, sbs);
-    write_float_from_double(sfw, "sfa.float.field", sf);
-    write_float_from_double(sfw, "sfa.float.sfield", sf, sbs);
+    write(sfw, "sfa.field", fsf);
+    write(sfw, "sfa.sfield", sbs, sf);
+    write_float_from_double(sfw, "sfa.float.field", fsf);
+    write_float_from_double(sfw, "sfa.float.sfield", sbs, sf);
   }
   //
   {

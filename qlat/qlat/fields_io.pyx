@@ -5,7 +5,6 @@ from . cimport everything as cc
 from .field_base cimport FieldBase, SelectedFieldBase
 from .field_selection cimport FieldSelection
 
-import cqlat as c
 import qlat_utils as q
 
 cache_fields_io = q.mk_cache("fields_io")
@@ -44,14 +43,11 @@ cdef class ShuffledFieldsWriter:
     def flush(self):
         return cc.flush(self.xx)
 
-    def write(self, fn, obj):
-        assert isinstance(fn, str)
-        if isinstance(obj, FieldBase):
-            return c.write_sfw_field(self, fn, obj)
-        elif isinstance(obj, SelectedFieldBase):
-            return c.write_sfw_sfield(self, fn, obj, self.get_cache_sbs(obj.fsel))
+    def write(self, str fn, obj):
+        if isinstance(obj, (FieldBase, SelectedFieldBase,)):
+            return obj.write_sfw(self, fn)
         else:
-            raise Exception("ShuffledFieldsWriter.save")
+            raise Exception("ShuffledFieldsWriter.write")
 
 ## --------------
 
@@ -99,25 +95,15 @@ cdef class ShuffledFieldsReader:
             self.tags = set(self.list())
         return fn in self.tags
 
-    def read(self, const cc.std_string& fn, obj):
+    def read(self, str fn, obj):
         """
         Can also read SelectedField obj with obj.fsel is None
         After reading, obj.fsel will be properly loaded.
         """
-        assert isinstance(fn, str)
-        if isinstance(obj, FieldBase):
-            return c.read_sfr_field(self, fn, obj)
-        elif isinstance(obj, SelectedFieldBase):
-            fsel = obj.fsel
-            if fsel is None:
-                if obj.view_count > 0:
-                    raise ValueError("can't re-init while being viewed")
-                obj.fsel = FieldSelection()
-                return c.read_sfr_sfield(self, fn, None, obj, obj.fsel)
-            else:
-                return c.read_sfr_sfield(self, fn, self.get_cache_sbs(obj.fsel), obj)
+        if isinstance(obj, (FieldBase, SelectedFieldBase,)):
+            return obj.read_sfr(self, fn)
         else:
-            raise Exception("ShuffledFieldsReader.load")
+            raise Exception("ShuffledFieldsReader.read")
 
 ## --------------
 

@@ -547,11 +547,11 @@ Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
 
 template <class M>
 Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
-           const SelectedField<M>& sf, const ShuffledBitSet& sbs)
+           const ShuffledBitSet& sbs, const SelectedField<M>& sf)
 // interface function
 // sbs must match the actual data
 {
-  TIMER_VERBOSE_FLOPS("write(sfw,fn,sf,sbs)");
+  TIMER_VERBOSE_FLOPS("write(sfw,fn,sbs,sf)");
   displayln_info(
       0, fname + ssprintf(": writing sparse field with fn='%s' from '%s'.",
                           fn.c_str(), sfw.path.c_str()));
@@ -568,16 +568,26 @@ Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
   return total_bytes;
 }
 
-template <class M>
-Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
-           const Field<M>& field, const ShuffledBitSet& sbs)
-// interface function
-{
-  TIMER_VERBOSE_FLOPS("write(sfw,fn,field,sbs)");
-  SelectedField<M> sf;
-  set_selected_field(sf, field, sbs.fsel);
-  return write(sfw, fn, sf, sbs);
-}
+// template <class M>
+// Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
+//            const SelectedField<M>& sf, const ShuffledBitSet& sbs)
+// // interface function
+// // sbs must match the actual data
+// {
+//   TIMER_VERBOSE_FLOPS("DEPRECATED:write(sfw,fn,sf,sbs)");
+//   return write(sfw, fn, sbs, sf);
+// }
+//
+// template <class M>
+// Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
+//            const Field<M>& field, const ShuffledBitSet& sbs)
+// // interface function
+// {
+//   TIMER_VERBOSE_FLOPS("DEPRECATED:write(sfw,fn,field,sbs)");
+//   SelectedField<M> sf;
+//   set_selected_field(sf, field, sbs.fsel);
+//   return write(sfw, fn, sf, sbs);
+// }
 
 template <class M>
 void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
@@ -814,29 +824,18 @@ Long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
 
 template <class M>
 Long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
-                             const SelectedField<M>& sf,
-                             const ShuffledBitSet& sbs)
+                             const ShuffledBitSet& sbs,
+                             const SelectedField<M>& sf)
 // interface function
 // sbs must match the actual data
 {
-  TIMER_VERBOSE_FLOPS("write_float_from_double(sfw,fn,sf,sbs)");
+  TIMER_VERBOSE_FLOPS("write_float_from_double(sfw,fn,sbs,sf)");
   SelectedField<float> sff;
   convert_field_float_from_double(sff, sf);
   to_from_little_endian_32(get_data(sff));
-  const Long total_bytes = write(sfw, fn, sff, sbs);
+  const Long total_bytes = write(sfw, fn, sbs, sff);
   timer.flops += total_bytes;
   return total_bytes;
-}
-
-template <class M>
-Long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
-                             const Field<M>& field, const ShuffledBitSet& sbs)
-// interface function
-{
-  TIMER_VERBOSE_FLOPS("write_float_from_double(sfw,fn,field,sbs)");
-  SelectedField<M> sf;
-  set_selected_field(sf, field, sbs.fsel);
-  return write_float_from_double(sfw, fn, sf, sbs);
 }
 
 template <class M>
@@ -997,11 +996,7 @@ bool does_file_exist_sync_node(const std::string& path, const std::string& fn);
                                                                                \
   QLAT_EXTERN template Long write(                                             \
       ShuffledFieldsWriter& sfw, const std::string& fn,                        \
-      const SelectedField<TYPENAME>& sf, const ShuffledBitSet& sbs);           \
-                                                                               \
-  QLAT_EXTERN template Long write(                                             \
-      ShuffledFieldsWriter& sfw, const std::string& fn,                        \
-      const Field<TYPENAME>& field, const ShuffledBitSet& sbs);                \
+      const ShuffledBitSet& sbs, const SelectedField<TYPENAME>& sf);           \
                                                                                \
   QLAT_EXTERN template void set_field_info_from_fields(                        \
       Coordinate& total_site, int& multiplicity,                               \
@@ -1030,11 +1025,7 @@ bool does_file_exist_sync_node(const std::string& path, const std::string& fn);
                                                                                \
   QLAT_EXTERN template Long write_float_from_double(                           \
       ShuffledFieldsWriter& sfw, const std::string& fn,                        \
-      const SelectedField<TYPENAME>& sf, const ShuffledBitSet& sbs);           \
-                                                                               \
-  QLAT_EXTERN template Long write_float_from_double(                           \
-      ShuffledFieldsWriter& sfw, const std::string& fn,                        \
-      const Field<TYPENAME>& field, const ShuffledBitSet& sbs);                \
+      const ShuffledBitSet& sbs, const SelectedField<TYPENAME>& sf);           \
                                                                                \
   QLAT_EXTERN template Long read_double_from_float(ShuffledFieldsReader& sfr,  \
                                                    const std::string& fn,      \

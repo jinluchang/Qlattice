@@ -354,7 +354,9 @@ inline void test_selected_points(const std::string& tag, const Long n_points)
   const std::string path = "huge-data/" + tag + "/fields";
   {
     ShuffledFieldsWriter sfw(path, new_size_node);
-    write(sfw, "f.psel", f, sbs);
+    SelectedField<ComplexD> sf_tmp;
+    set_selected_field(sf_tmp, f, sbs.fsel);
+    write(sfw, "f.psel", sbs, sf_tmp);
   }
   Field<ComplexD> f3;
   {

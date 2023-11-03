@@ -27,6 +27,7 @@ from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
 from .geometry cimport *
 from .field_selection cimport *
+from .fields_io cimport *
 from .field_types cimport *
 from .selected_points_types cimport *
 
@@ -141,6 +142,19 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
 
     def qnorm(self):
         return cc.qnorm(self.xx)
+
+    def read_sfr(self, ShuffledFieldsReader sfr, const cc.std_string& fn):
+        if self.fsel is None:
+            if self.view_count > 0:
+                raise ValueError("can't re-init while being viewed")
+            self.fsel = FieldSelection()
+            return cc.read(sfr.xx, fn, self.xx, self.fsel.xx)
+        cdef ShuffledBitSet sbs = sfr.get_cache_sbs(self.fsel)
+        return cc.read(sfr.xx, fn, sbs.xx, self.xx)
+
+    def write_sfw(self, ShuffledFieldsWriter sfw, const cc.std_string& fn):
+        cdef ShuffledBitSet sbs = sfw.get_cache_sbs(self.fsel)
+        return cc.write(sfw.xx, fn, sbs.xx, self.xx)
 
 selected_field_type_dict[ElemType{{name}}] = SelectedField{{name}}
 

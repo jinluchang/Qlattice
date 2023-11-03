@@ -279,8 +279,7 @@ cdef extern from "qlat/fields-io.h" namespace "qlat":
         void init(const std_string& path_, const Coordinate& new_size_node_) except +
         void close() except +
     Long write[M](ShuffledFieldsWriter& sfw, const std_string& fn, const Field[M]& field) except +
-    Long write[M](ShuffledFieldsWriter& sfw, const std_string& fn, const SelectedField[M]& sf, const ShuffledBitSet& sbs) except +
-    Long write[M](ShuffledFieldsWriter& sfw, const std_string& fn, const Field[M]& field, const ShuffledBitSet& sbs) except +
+    Long write[M](ShuffledFieldsWriter& sfw, const std_string& fn, const ShuffledBitSet& sbs, const SelectedField[M]& sf) except +
     Long read[M](ShuffledFieldsReader& sfr, const std_string& fn, Field[M]& field) except +
     Long read[M](ShuffledFieldsReader& sfr, const std_string& fn, SelectedField[M]& sf, FieldSelection& fsel) except +
     Long read[M](ShuffledFieldsReader& sfr, const std_string& fn, const ShuffledBitSet& sbs, SelectedField[M]& sf) except +

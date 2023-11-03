@@ -27,7 +27,7 @@ PyObject* write_sfw_sfield_ctype(ShuffledFieldsWriter& sfw,
                                  const ShuffledBitSet& sbs)
 {
   const SelectedField<M>& sf = py_convert_type_sfield<M>(p_sfield);
-  const Long ret = write(sfw, fn, sf, sbs);
+  const Long ret = write(sfw, fn, sbs, sf);
   return py_convert(ret);
 }
 
