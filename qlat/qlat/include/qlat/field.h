@@ -739,13 +739,13 @@ void set_xg_field(Field<Int>& f, const Geometry& geo_);
       Field<TYPENAME>& f, const Field<double>& f_factor);                     \
                                                                               \
   QLAT_EXTERN template const Field<TYPENAME>& operator*=(                     \
-      Field<TYPENAME>& f, const Field<ComplexD>& f_factor);                    \
+      Field<TYPENAME>& f, const Field<ComplexD>& f_factor);                   \
                                                                               \
   QLAT_EXTERN template const Field<TYPENAME>& operator*=                      \
       <TYPENAME>(Field<TYPENAME>& f, const double factor);                    \
                                                                               \
   QLAT_EXTERN template const Field<TYPENAME>& operator*=                      \
-      <TYPENAME>(Field<TYPENAME>& f, const ComplexD& factor);                  \
+      <TYPENAME>(Field<TYPENAME>& f, const ComplexD& factor);                 \
                                                                               \
   QLAT_EXTERN template double qnorm<TYPENAME>(const Field<TYPENAME>& f);      \
                                                                               \

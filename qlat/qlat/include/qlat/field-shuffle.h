@@ -1091,30 +1091,30 @@ void field_shift(SelectedField<M>& sf, FieldSelection& fsel,
       const int multiplicity);                                                 \
                                                                                \
   QLAT_EXTERN template void shuffle_field_unpack_recv<TYPENAME>(               \
-      vector<Vector<TYPENAME> > & fsdata, const Vector<TYPENAME> recv_buffer,  \
+      vector<Vector<TYPENAME>> & fsdata, const Vector<TYPENAME> recv_buffer,   \
       const std::vector<ShufflePlanRecvPackInfo>& recv_pack_infos,             \
       const int multiplicity);                                                 \
                                                                                \
   QLAT_EXTERN template void shuffle_field_pack_recv<TYPENAME>(                 \
-      Vector<TYPENAME> recv_buffer, const vector<Vector<TYPENAME> >& fsdata,   \
+      Vector<TYPENAME> recv_buffer, const vector<Vector<TYPENAME>>& fsdata,    \
       const std::vector<ShufflePlanRecvPackInfo>& recv_pack_infos,             \
       const int multiplicity);                                                 \
                                                                                \
   QLAT_EXTERN template void shuffle_field<TYPENAME>(                           \
-      std::vector<Field<TYPENAME> > & fs, const Field<TYPENAME>& f,            \
+      std::vector<Field<TYPENAME>> & fs, const Field<TYPENAME>& f,             \
       const ShufflePlan& sp);                                                  \
                                                                                \
   QLAT_EXTERN template void shuffle_field_back<TYPENAME>(                      \
-      Field<TYPENAME> & f, const std::vector<Field<TYPENAME> >& fs,            \
+      Field<TYPENAME> & f, const std::vector<Field<TYPENAME>>& fs,             \
       const ShufflePlan& sp);                                                  \
                                                                                \
   QLAT_EXTERN template void shuffle_field<TYPENAME>(                           \
-      std::vector<SelectedField<TYPENAME> > & fs,                              \
+      std::vector<SelectedField<TYPENAME>> & fs,                               \
       const SelectedField<TYPENAME>& f, const ShufflePlan& sp);                \
                                                                                \
   QLAT_EXTERN template void shuffle_field_back<TYPENAME>(                      \
       SelectedField<TYPENAME> & f,                                             \
-      const std::vector<SelectedField<TYPENAME> >& fs, const ShufflePlan& sp); \
+      const std::vector<SelectedField<TYPENAME>>& fs, const ShufflePlan& sp);  \
                                                                                \
   QLAT_EXTERN template void shuffle_field<TYPENAME>(                           \
       SelectedField<TYPENAME> & sf, const SelectedField<TYPENAME>& sf0,        \
@@ -1125,28 +1125,28 @@ void field_shift(SelectedField<M>& sf, FieldSelection& fsel,
       const ShufflePlan& sp);                                                  \
                                                                                \
   QLAT_EXTERN template void shuffle_field<TYPENAME>(                           \
-      std::vector<Field<TYPENAME> > & fs, const Field<TYPENAME>& f,            \
+      std::vector<Field<TYPENAME>> & fs, const Field<TYPENAME>& f,             \
       const Coordinate& new_size_node);                                        \
                                                                                \
   QLAT_EXTERN template void shuffle_field_back<TYPENAME>(                      \
-      Field<TYPENAME> & f, const std::vector<Field<TYPENAME> >& fs,            \
+      Field<TYPENAME> & f, const std::vector<Field<TYPENAME>>& fs,             \
       const Coordinate& new_size_node);                                        \
                                                                                \
   QLAT_EXTERN template void shuffle_field<TYPENAME>(                           \
-      std::vector<SelectedField<TYPENAME> > & fs,                              \
+      std::vector<SelectedField<TYPENAME>> & fs,                               \
       std::vector<FieldSelection> & fsels, const SelectedField<TYPENAME>& f,   \
       const Coordinate& new_size_node, const FieldSelection& fsel);            \
                                                                                \
   QLAT_EXTERN template void shuffle_field_back<TYPENAME>(                      \
       SelectedField<TYPENAME> & f,                                             \
-      const std::vector<SelectedField<TYPENAME> >& fs,                         \
+      const std::vector<SelectedField<TYPENAME>>& fs,                          \
       const Coordinate& new_size_node, const FieldSelection& fsel);            \
                                                                                \
   QLAT_EXTERN template void reflect_field<TYPENAME>(Field<TYPENAME> & f);      \
                                                                                \
   QLAT_EXTERN template void field_shift_shuffle<TYPENAME>(                     \
       Field<TYPENAME> & f, const Field<TYPENAME>& f0, const Coordinate& shift, \
-      const bool is_reflect = false);                                          \
+      const bool is_reflect);                                                  \
                                                                                \
   QLAT_EXTERN template void field_shift<TYPENAME>(                             \
       SelectedField<TYPENAME> & sf, const SelectedField<TYPENAME>& sf0,        \
@@ -1155,7 +1155,7 @@ void field_shift(SelectedField<M>& sf, FieldSelection& fsel,
   QLAT_EXTERN template void field_shift<TYPENAME>(                             \
       SelectedField<TYPENAME> & sf, FieldSelection & fsel,                     \
       const SelectedField<TYPENAME>& sf0, const FieldSelection& fsel0,         \
-      const Coordinate& shift, const bool is_reflect = false)
+      const Coordinate& shift, const bool is_reflect)
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 #undef QLAT_EXTERN_TEMPLATE
