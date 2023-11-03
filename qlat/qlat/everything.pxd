@@ -187,10 +187,9 @@ cdef extern from "qlat/field-io.h" namespace "qlat":
 cdef extern from "qlat/selected-points.h" namespace "qlat":
 
     double qnorm[M](const SelectedPoints[M]& sp) except +
-    PointsSelection mk_random_point_selection(const Coordinate& total_site,
-                                              const Long num, const RngState& rs) except +
-    void save_point_selection_info(const PointsSelection& psel,
-                                   const std_string& path) except +
+    void qnorm_field[M](SelectedPoints[RealD]& sp, const SelectedPoints[M]& sp1) except +
+    PointsSelection mk_random_point_selection(const Coordinate& total_site, const Long num, const RngState& rs) except +
+    void save_point_selection_info(const PointsSelection& psel, const std_string& path) except +
     PointsSelection load_point_selection_info(const std_string& path) except +
     LatData lat_data_from_selected_points[M](const SelectedPoints[M]& sp) except +
     void selected_points_from_lat_data[M](SelectedPoints[M]& sp, const LatData& ld) except +

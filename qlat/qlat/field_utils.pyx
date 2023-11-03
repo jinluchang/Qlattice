@@ -154,9 +154,7 @@ def qnorm_field(f):
         f_n = SelectedField(ElemTypeRealD, fsel)
         c.qnorm_field_sfield(f_n, f)
     elif isinstance(f, SelectedPointsBase):
-        psel = f.psel
-        f_n = SelectedPoints(ElemTypeRealD, psel)
-        c.qnorm_field_spfield(f_n, f)
+        f_n = f.qnorm_field()
     else:
         q.displayln_info("qnorm_field:", type(f))
         assert False

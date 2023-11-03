@@ -164,6 +164,11 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
     def qnorm(self):
         return cc.qnorm(self.xx)
 
+    def qnorm_field(self):
+        cdef SelectedPointsRealD f_n = SelectedPointsRealD(self.psel)
+        cc.qnorm_field(f_n.xx, self.xx)
+        return f_n
+
 selected_points_type_dict[ElemType{{name}}] = SelectedPoints{{name}}
 
 {{endfor}}
