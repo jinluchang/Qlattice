@@ -451,6 +451,8 @@ void matrix_prod_cpu(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const L
 template<typename Ty>
 void matrix_prod_gpu(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, QBOOL dummy = QTRUE, bool trans=false, int modeGPU = 2)
 {
+  (void)dummy;
+  (void)modeGPU;
   #ifdef QLAT_USE_ACC
 
   //TIMER_FLOPS("==Matrix Multi GPU");
@@ -497,7 +499,7 @@ void matrix_prodT(Ty* A, Ty* B, Ty* C, const Long m, const Long n, const Long w,
   if( GPU){matrix_prod_gpu(a, b, c, m,n,w,L, Conj, dummy, trans);}
   if(!GPU){matrix_prod_cpu(a, b, c, m,n,w,L, Conj, trans);}
   if(dummy == QFALSE){abort_r("buffers of pointers undefined if job not complete!");}
-  if(dummy == QTRUE )qacc_barrier(dummy);
+  if(dummy == QTRUE ){qacc_barrier(dummy);}
 }
 
 void matrix_prodP(qlat::ComplexT<double>** a, qlat::ComplexT<double>** b, qlat::ComplexT<double>** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE);

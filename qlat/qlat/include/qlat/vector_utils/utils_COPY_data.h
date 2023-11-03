@@ -216,6 +216,7 @@ void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, Q
 template <typename T0, typename T1,  typename TInt, typename Tadd>
 void cpy_data_threadT(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, QBOOL dummy, const Tadd ADD, void* stream = NULL)
 {
+  (void)stream;
   if(Nvol <= 0){return ;}
   if((GPU == 0 or GPU == 1) and qlat::qnorm(ADD) <  QLAT_COPY_LIMIT){
     if((void*) Pres == (void*) Psrc)////may need to be careful about comparing pointers of CPU and GPUs
@@ -320,6 +321,7 @@ void cpy_GPU(T0* Pres, const T1* Psrc, const TInt Nvol, int Gres=1, int Gsrc=1, 
 template <typename T0, typename T1,  typename TInt>
 int cpy_GPU2D_G(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, const TInt rOff, const TInt sOff, QMEM Gres=QMGPU, QMEM Gsrc=QMGPU, void* stream = NULL)
 {
+  (void)stream;
   int diff_cuda = 0;
   int did = 0;
   #ifdef QLAT_USE_ACC
