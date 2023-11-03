@@ -1,10 +1,10 @@
 CHECK: geo.show() = Geometry([4, 4, 4, 8], 1)
 CHECK: prop 4021037301 4.93041082746695E+04
-CHECK: sfw.new_size_node() [1, 1, 1, 8]
+CHECK: sfw.new_size_node() Coordinate([1, 1, 1, 8])
 CHECK: s_prop = SelProp(fsel) and s_prop @= prop   1.239182E+04
 CHECK: prop1 = SelProp(fselc) and prop1 @= prop 1.25896071556403E+04
 CHECK: sfr.list() ['prop.d', 'prop', 's_prop', 'prop1']
-CHECK: sfr.new_size_node() [1, 1, 1, 8]
+CHECK: sfr.new_size_node() Coordinate([1, 1, 1, 8])
 CHECK: prop_d 4021037301 4.93041082746695E+04
 CHECK: prop_d -= prop 4103169609 0.00000000000000E+00
 CHECK: prop_f 3862544378 4.93041082799339E+04

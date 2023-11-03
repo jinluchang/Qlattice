@@ -69,7 +69,7 @@ def compute_prop_wsrc_all_checker(job_tag, traj, *,
     path_s = f"{job_tag}/prop-wsrc-{inv_type_name}/traj-{traj}"
     path_sp = f"{job_tag}/psel-prop-wsrc-{inv_type_name}/traj-{traj}"
     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
-    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 4, ])
+    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 1, 1, 1, 4, ]))
     inv_acc = 2
     for idx, tslice in enumerate(range(total_site[3])):
         compute_prop_wsrc_checker(job_tag, tslice, inv_type, inv_acc = 2,
@@ -134,7 +134,7 @@ def compute_prop_psrc_all_checker(job_tag, traj, *,
     inv_type_name = inv_type_names[inv_type]
     path_s = f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}"
     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
-    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 4, ])
+    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 1, 1, 1, 4, ]))
     def comp(idx, xg_src, inv_acc):
         compute_prop_psrc_checker(job_tag, xg_src, inv_type, inv_acc,
                 idx = idx, gf = gf, gt = gt, sfw = sfw,

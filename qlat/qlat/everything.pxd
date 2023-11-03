@@ -265,14 +265,18 @@ cdef extern from "qlat/fields-io.h" namespace "qlat":
     ShuffledBitSet mk_shuffled_bitset(const Coordinate& total_site, const PointsSelection& xgs, const Coordinate& new_size_node) except +
     ShuffledBitSet mk_shuffled_bitset(const FieldRank& f_rank, const PointsSelection& xgs, const Coordinate& new_size_node) except +
     cdef cppclass ShuffledFieldsWriter:
+        std_string path
+        Coordinate new_size_node
         ShuffledFieldsWriter()
         void init() except +
         void init(const std_string& path_, const Coordinate& new_size_node_, const bool is_append) except +
         void close() except +
     cdef cppclass ShuffledFieldsReader:
+        std_string path
+        Coordinate new_size_node
         ShuffledFieldsReader()
         void init() except +
-        void init(const std_string& path_, const Coordinate& new_size_node_, const bool is_append) except +
+        void init(const std_string& path_, const Coordinate& new_size_node_) except +
         void close() except +
     Long write[M](ShuffledFieldsWriter& sfw, const std_string& fn, const Field[M]& field) except +
     Long write[M](ShuffledFieldsWriter& sfw, const std_string& fn, const SelectedField[M]& sf, const ShuffledBitSet& sbs) except +

@@ -74,7 +74,7 @@ sol_psel.save(f"results/{tag} ; psnk.lat")
 
 q.displayln_info(f"CHECK: qnorm(sol_psel) = {q.qnorm(sol_psel):.6E}")
 
-sfw = q.open_fields("results/prop-smear", "w", [ 1, 1, 2, 4, ])
+sfw = q.open_fields("results/prop-smear", "w", q.Coordinate([ 1, 1, 2, 4, ]))
 
 sol_s = q.SelProp(fselc)
 sol_s @= sol

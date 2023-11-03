@@ -23,7 +23,7 @@ prop = q.Prop(geo)
 prop.set_rand(rs.split("prop-1"))
 q.displayln_info("CHECK: prop", prop.crc32(), f"{prop.qnorm():.14E}")
 
-sfw = q.open_fields("results/prop.fields", "w", [1,1,1,8])
+sfw = q.open_fields("results/prop.fields", "w", q.Coordinate([ 1, 1, 1, 8, ]))
 
 q.displayln_info("CHECK: sfw.new_size_node()", sfw.new_size_node())
 

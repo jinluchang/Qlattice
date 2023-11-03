@@ -39,6 +39,7 @@ pxd_files = files(
   'field_utils.pxd',
   'qcd.pxd',
   'propagator.pxd',
+  'fields_io.pxd',
   )
 
 py3.install_sources(init_files + py_files + pxd_files, subdir: 'qlat')

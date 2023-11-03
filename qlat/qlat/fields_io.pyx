@@ -10,34 +10,32 @@ import qlat_utils as q
 
 cache_fields_io = q.mk_cache("fields_io")
 
-class ShuffledFieldsWriter:
+cdef class ShuffledFieldsWriter:
 
     # self.cdata
 
-    def __init__(self, path, new_size_node, is_append = False):
-        assert isinstance(path, str)
-        assert isinstance(is_append , bool)
-        self.cdata = c.mk_sfw(path, new_size_node, is_append)
+    def __cinit__(self):
+        self.cdata = <cc.Long>&(self.xx)
+
+    def __init__(self, str path not None, Coordinate new_size_node not None, cc.bool is_append=False):
+        self.xx.init(path, new_size_node.xx, is_append)
 
     def close(self):
-        if self.cdata is not None:
-            c.free_sfw(self)
-        self.cdata = None
+        self.xx.close()
         cache_fields_io.pop(id(self), None)
 
-    def __del__(self):
-        self.close()
-
     def new_size_node(self):
-        return c.get_new_size_node_sfw(self)
+        cdef Coordinate x = Coordinate()
+        x.xx = self.xx.new_size_node
+        return x
 
-    def get_cache_sbs(self, fsel):
+    def get_cache_sbs(self, FieldSelection fsel):
         if id(self) in cache_fields_io:
-            [ c_fsel, c_sbs ] = cache_fields_io[id(self)]
+            c_fsel, c_sbs = cache_fields_io[id(self)]
             if fsel is c_fsel:
                 return c_sbs
         sbs = ShuffledBitSet(fsel, self.new_size_node())
-        cache_fields_io[id(self)] = [ fsel, sbs, ]
+        cache_fields_io[id(self)] = (fsel, sbs,)
         return sbs
 
     def write(self, fn, obj):
@@ -52,42 +50,42 @@ class ShuffledFieldsWriter:
     def flush(self):
         return c.flush_sfw(self)
 
-class ShuffledFieldsReader:
+## --------------
+
+cdef class ShuffledFieldsReader:
 
     # self.cdata
     # self.tags
 
-    def __init__(self, path, new_size_node = None):
-        assert isinstance(path, str)
+    def __cinit__(self):
+        self.cdata = <cc.Long>&(self.xx)
+
+    def __init__(self, str path not None, Coordinate new_size_node=None):
         if new_size_node is None:
-            self.cdata = c.mk_sfr(path)
-        else:
-            self.cdata = c.mk_sfr(path, new_size_node)
+            new_size_node = Coordinate()
+        self.xx.init(path, new_size_node.xx)
         self.tags = None
 
     def close(self):
-        if self.cdata is not None:
-            c.free_sfr(self)
-        self.cdata = None
+        self.xx.close()
         self.tags = None
         cache_fields_io.pop(id(self), None)
 
-    def __del__(self):
-        self.close()
-
     def new_size_node(self):
-        return c.get_new_size_node_sfr(self)
+        cdef Coordinate x = Coordinate()
+        x.xx = self.xx.new_size_node
+        return x
 
-    def get_cache_sbs(self, fsel):
+    def get_cache_sbs(self, FieldSelection fsel):
         if id(self) in cache_fields_io:
-            [ c_fsel, c_sbs ] = cache_fields_io[id(self)]
+            c_fsel, c_sbs = cache_fields_io[id(self)]
             if fsel is c_fsel:
                 return c_sbs
         sbs = ShuffledBitSet(fsel, self.new_size_node())
-        cache_fields_io[id(self)] = [ fsel, sbs, ]
+        cache_fields_io[id(self)] = (fsel, sbs,)
         return sbs
 
-    def read(self, fn, obj):
+    def read(self, const cc.std_string& fn, obj):
         """
         Can also read SelectedField obj with obj.fsel is None
         After reading, obj.fsel will be properly loaded.
@@ -110,30 +108,30 @@ class ShuffledFieldsReader:
     def list(self):
         return c.list_sfr(self)
 
-    def has_sync_node(self, fn):
+    def has_sync_node(self, const cc.std_string& fn):
         return c.does_file_exist_sync_node_sfr(self, fn)
 
-    def has(self, fn):
+    def has(self, str fn):
         if self.tags is None:
             self.tags = set(self.list())
         return fn in self.tags
 
-class ShuffledBitSet:
+## --------------
 
-    def __init__(self, fsel, new_size_node):
-        assert isinstance(fsel, FieldSelection)
-        self.cdata = c.mk_sbs(fsel, new_size_node)
+cdef class ShuffledBitSet:
 
-    def __del__(self):
-        assert isinstance(self.cdata, int)
-        c.free_sbs(self)
+    def __cinit__(self):
+        self.cdata = <cc.Long>&(self.xx)
 
-def open_fields(path, mode, new_size_node = None):
+    def __init__(self, FieldSelection fsel not None, Coordinate new_size_node not None):
+        self.xx = cc.mk_shuffled_bitset(fsel.xx, new_size_node.xx)
+
+## --------------
+
+def open_fields(str path, str mode, Coordinate new_size_node=None):
     """
     path can be the folder path or the 'geon-info.txt' path
     """
-    assert isinstance(path, str)
-    assert isinstance(mode, str)
     if path[-14:] == "/geon-info.txt":
         path = path[:-14]
     if mode == "r":
@@ -149,14 +147,13 @@ def open_fields(path, mode, new_size_node = None):
     else:
         raise Exception("open_fields")
 
-def list_fields(path, new_size_node = None):
-    assert isinstance(path, str)
+def list_fields(str path, Coordinate new_size_node=None):
     sfr = open_fields(path, "r", new_size_node)
     fns = sfr.list()
     sfr.close()
     return fns
 
-def properly_truncate_fields(path, is_check_all = False, is_only_check = False, new_size_node = None):
+def properly_truncate_fields(str path, cc.bool is_check_all=False, cc.bool is_only_check=False, Coordinate new_size_node=None):
     if path[-14:] == "/geon-info.txt":
         path = path[:-14]
     if new_size_node is None:
@@ -164,7 +161,7 @@ def properly_truncate_fields(path, is_check_all = False, is_only_check = False, 
     else:
         return c.properly_truncate_fields_sync_node(path, is_check_all, is_only_check, new_size_node)
 
-def truncate_fields(path, fns_keep, new_size_node = None):
+def truncate_fields(str path, list fns_keep, Coordinate new_size_node=None):
     """
     fns_keep is the list of fields that need to keep
     fns_keep needs to be in the same order as the data is stored in path
@@ -180,7 +177,7 @@ def truncate_fields(path, fns_keep, new_size_node = None):
     if ret != 0:
         raise Exception(f"truncate_fields error {ret}")
 
-def check_fields(path, is_check_all = True, new_size_node = None):
+def check_fields(str path, cc.bool is_check_all=True, Coordinate new_size_node=None):
     """
     return list of field that is stored successful
     """
@@ -189,7 +186,7 @@ def check_fields(path, is_check_all = True, new_size_node = None):
     is_only_check = True
     return properly_truncate_fields(path, is_check_all, is_only_check, new_size_node)
 
-def check_compressed_eigen_vectors(path):
+def check_compressed_eigen_vectors(str path):
     """
     return bool value suggest whether the data can be read successfully
     return True is the data has problem
@@ -199,7 +196,7 @@ def check_compressed_eigen_vectors(path):
         path = path[:-14]
     return c.check_compressed_eigen_vectors(path)
 
-def eigen_system_repartition(new_size_node, path, path_new = ""):
+def eigen_system_repartition(Coordinate new_size_node, str path, str path_new=""):
     if path[-14:] == "/geon-info.txt":
         path = path[:-14]
     if path_new[-14:] == "/geon-info.txt":

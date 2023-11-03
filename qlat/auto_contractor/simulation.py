@@ -80,7 +80,7 @@ def get_all_points(total_site, *, tslice = None):
 @q.timer
 def compute_prop_psrc_all(gf, job_tag, inv_type, *, path_s, eig):
     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
-    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 2 ])
+    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 1, 1, 1, 2 ]))
     total_site = ru.get_total_site(job_tag)
     inv_acc = 2
     for idx, xg in enumerate(get_all_points(total_site)):
@@ -116,7 +116,7 @@ def get_all_walls(time_vol):
 @q.timer
 def compute_prop_wsrc_all(gf, gt, job_tag, inv_type, *, path_s, path_sp, eig):
     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
-    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 2 ])
+    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 1, 1, 1, 2 ]))
     total_site = ru.get_total_site(job_tag)
     inv_acc = 2
     for idx, tslice in enumerate(get_all_walls(total_site[3])):
