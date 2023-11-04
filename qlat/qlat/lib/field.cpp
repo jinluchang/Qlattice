@@ -5,6 +5,21 @@
 namespace qlat
 {  //
 
+void set_sqrt_field(Field<RealD>& f, const Field<RealD>& f1)
+{
+  TIMER("set_sqrt_field(f,f1)");
+  const Geometry geo = geo_resize(f1.geo());
+  const Int multiplicity = geo.multiplicity;
+  f.init(geo);
+  qacc_for(index, geo.local_volume(), {
+    const Vector<RealD> f1v = f1.get_elems_const(index);
+    Vector<RealD> fv = f.get_elems(index);
+    for (Int m = 0; m < multiplicity; ++m) {
+      fv[m] = std::sqrt(f1v[m]);
+    }
+  });
+}
+
 void set_mom_phase_field(FieldM<ComplexD, 1>& f, const CoordinateD& mom)
 // mom is in lattice unit (1/a)
 // exp(i * mom \cdot xg )

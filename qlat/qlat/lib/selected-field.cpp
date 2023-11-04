@@ -507,4 +507,19 @@ bool is_selected_field(const std::string& path)
   return nfile > 0;
 }
 
+void set_sqrt_field(SelectedField<RealD>& f, const SelectedField<RealD>& f1)
+{
+  TIMER("set_sqrt_field(f,f1)");
+  const Geometry& geo = f1.geo();
+  const Int multiplicity = geo.multiplicity;
+  f.init(geo, f1.n_elems, multiplicity);
+  qacc_for(idx, f.n_elems, {
+    const Vector<RealD> f1v = f1.get_elems_const(idx);
+    Vector<RealD> fv = f.get_elems(idx);
+    for (Int m = 0; m < multiplicity; ++m) {
+      fv[m] = std::sqrt(f1v[m]);
+    }
+  });
+}
+
 }  // namespace qlat

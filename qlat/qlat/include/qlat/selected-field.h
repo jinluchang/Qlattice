@@ -101,15 +101,6 @@ bool is_consistent(const SelectedField<M>& sf, const FieldSelection& fsel)
 }
 
 template <class M>
-RealD qnorm(const SelectedField<M>& sf)
-{
-  TIMER("qnorm(sf)");
-  RealD s = qnorm(sf.field);
-  glb_sum(s);
-  return s;
-}
-
-template <class M>
 SelectedField<M>& operator+=(SelectedField<M>& f, const SelectedField<M>& f1)
 {
   TIMER("sel_field_operator+=");
@@ -190,6 +181,29 @@ void only_keep_selected_points(Field<M>& f, const FieldSelection& fsel)
     }
   }
 }
+
+template <class M>
+RealD qnorm(const SelectedField<M>& sf)
+{
+  TIMER("qnorm(sf)");
+  RealD s = qnorm(sf.field);
+  glb_sum(s);
+  return s;
+}
+
+template <class M>
+void qnorm_field(SelectedField<RealD>& f, const SelectedField<M>& f1)
+{
+  TIMER("qnorm_field(f,f1)");
+  const Geometry& geo = f1.geo();
+  f.init(geo, f1.n_elems, 1);
+  qacc_for(idx, f.n_elems, {
+    const Vector<M> f1v = f1.get_elems_const(idx);
+    f.get_elem(idx) = qnorm(f1v);
+  });
+}
+
+void set_sqrt_field(SelectedField<RealD>& f, const SelectedField<RealD>& f1);
 
 // -------------------------------------------
 
@@ -483,19 +497,6 @@ void field_glb_sum_tslice(SelectedPoints<M>& sp, const SelectedField<M>& sf,
   glb_sum_vec(get_data(vec));
   sp.init(t_size, multiplicity);
   sp.points = vec;
-}
-
-template <class M>
-void qnorm_field(SelectedField<double>& f, const SelectedField<M>& f1)
-{
-  TIMER("qnorm_field");
-  const Geometry& geo = f1.geo();
-  f.init();
-  f.init(geo, f1.n_elems, 1);
-  qacc_for(idx, f.n_elems, {
-    const Vector<M> f1v = f1.get_elems_const(idx);
-    f.get_elem(idx) = qnorm(f1v);
-  });
 }
 
 template <class M>

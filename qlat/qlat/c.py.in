@@ -106,7 +106,7 @@ __all__ += [
         'FastFourierTransform',
         'mk_fft',
         'qnorm_field',
-        'sqrt_double_field',
+        'sqrt_field',
         ]
 
 __all__ += [

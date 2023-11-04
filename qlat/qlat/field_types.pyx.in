@@ -133,6 +133,15 @@ cdef class Field{{name}}(FieldBase):
         geo.xx = self.xx.get_geo()
         return geo
 
+    def qnorm(self):
+        return cc.qnorm(self.xx)
+
+    def qnorm_field(self):
+        cdef Geometry geo = self.geo()
+        cdef FieldRealD f_n = FieldRealD(geo, 1)
+        cc.qnorm_field(f_n.xx, self.xx)
+        return f_n
+
     def glb_sum(self):
         """
         return SelectedPoints with n_points=1

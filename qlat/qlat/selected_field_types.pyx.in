@@ -143,6 +143,11 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
     def qnorm(self):
         return cc.qnorm(self.xx)
 
+    def qnorm_field(self):
+        cdef SelectedFieldRealD f_n = SelectedFieldRealD(self.fsel)
+        cc.qnorm_field(f_n.xx, self.xx)
+        return f_n
+
     def read_direct(self, const cc.std_string& fn):
         return cc.read_selected_field(self.xx, fn, self.fsel.xx)
 

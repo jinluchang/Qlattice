@@ -183,6 +183,7 @@ const Field<M>& operator*=(Field<M>& f, const ComplexD& factor)
 template <class M>
 double qnorm(const Field<M>& f)
 {
+  TIMER("qnorm(f)");
   const Geometry& geo = f.geo();
   double sum = 0.0;
 #pragma omp parallel
@@ -208,6 +209,18 @@ double qnorm(const Field<M>& f)
 }
 
 template <class M>
+void qnorm_field(Field<RealD>& f, const Field<M>& f1)
+{
+  TIMER("qnorm_field(f,f1)");
+  const Geometry geo = geo_reform(f1.geo());
+  f.init(geo);
+  qacc_for(index, geo.local_volume(), {
+    const Vector<M> f1v = f1.get_elems_const(index);
+    f.get_elem(index) = qnorm(f1v);
+  });
+}
+
+template <class M>
 double qnorm_double(const Field<M>& f1, const Field<M>& f2)
 {
   const Geometry& geo = f1.geo();
@@ -225,6 +238,8 @@ qacc Long get_data_size(const Field<M>& f)
 {
   return f.geo().local_volume() * f.geo().multiplicity * sizeof(M);
 }
+
+void set_sqrt_field(Field<RealD>& f, const Field<RealD>& f1);
 
 // --------------------
 
@@ -701,20 +716,6 @@ void field_shift(Field<M>& f, const Field<M>& f1, const Coordinate& shift)
   field_shift_direct(f, f1, shift);
 }
 
-template <class M>
-void qnorm_field(FieldM<double, 1>& f, const Field<M>& f1)
-{
-  TIMER("qnorm_field");
-  const Geometry geo = geo_reform(f1.geo());
-  f.init();
-  f.init(geo);
-  qacc_for(index, geo.local_volume(), {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Vector<M> f1v = f1.get_elems_const(xl);
-    f.get_elem(index) = qnorm(f1v);
-  });
-}
-
 // --------------------
 
 void set_xg_field(Field<Int>& f, const Geometry& geo_);
@@ -747,9 +748,12 @@ void set_xg_field(Field<Int>& f, const Geometry& geo_);
   QLAT_EXTERN template const Field<TYPENAME>& operator*=                      \
       <TYPENAME>(Field<TYPENAME>& f, const ComplexD& factor);                 \
                                                                               \
-  QLAT_EXTERN template double qnorm<TYPENAME>(const Field<TYPENAME>& f);      \
+  QLAT_EXTERN template RealD qnorm<TYPENAME>(const Field<TYPENAME>& f);      \
                                                                               \
-  QLAT_EXTERN template double qnorm_double<TYPENAME>(                         \
+  QLAT_EXTERN template void qnorm_field<TYPENAME>(Field<RealD> & f,           \
+                                                  const Field<TYPENAME>& f1); \
+                                                                              \
+  QLAT_EXTERN template RealD qnorm_double<TYPENAME>(                         \
       const Field<TYPENAME>& f1, const Field<TYPENAME>& f2);                  \
                                                                               \
   QLAT_EXTERN template std::vector<TYPENAME> field_sum<TYPENAME>(             \
@@ -810,12 +814,8 @@ void set_xg_field(Field<Int>& f, const Geometry& geo_);
       Field<TYPENAME> & f, const Field<TYPENAME>& f1,                         \
       const Coordinate& shift);                                               \
                                                                               \
-  QLAT_EXTERN template void field_shift<TYPENAME>(Field<TYPENAME> & f,        \
-                                                  const Field<TYPENAME>& f1,  \
-                                                  const Coordinate& shift);   \
-                                                                              \
-  QLAT_EXTERN template void qnorm_field<TYPENAME>(FieldM<double, 1> & f,      \
-                                                  const Field<TYPENAME>& f1)
+  QLAT_EXTERN template void field_shift<TYPENAME>(                            \
+      Field<TYPENAME> & f, const Field<TYPENAME>& f1, const Coordinate& shift)
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 #undef QLAT_EXTERN_TEMPLATE

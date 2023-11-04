@@ -166,9 +166,11 @@ cdef extern from "qlat/core.h" namespace "qlat":
 cdef extern from "qlat/field.h" namespace "qlat":
 
     double qnorm[M](const Field[M]& f) except +
+    void qnorm_field[M](Field[RealD]& f, const Field[M]& f1) except +
     void set_xg_field(Field[Int]& f, const Geometry& geo) except +
     void field_shift[M](Field[M]& f, const Field[M]& f1, const Coordinate& shift) except +
     void reflect_field[M](Field[M]& f) except +
+    void set_sqrt_field(Field[RealD]& f, const Field[RealD]& f1) except +
 
 cdef extern from "qlat/field-expand.h" namespace "qlat":
 
@@ -203,6 +205,7 @@ cdef extern from "qlat/selected-points.h" namespace "qlat":
 cdef extern from "qlat/selected-field.h" namespace "qlat":
 
     double qnorm[M](const SelectedField[M]& sf) except +
+    void qnorm_field[M](SelectedField[RealD]& f, const SelectedField[M]& f1) except +
     void set_selected_field[t](SelectedField[t]& sf, const Field[t]& f,
                                const FieldSelection& fsel) except +
     void set_selected_field[t](SelectedField[t]& sf, const SelectedField[t] sf0,
@@ -222,6 +225,7 @@ cdef extern from "qlat/selected-field.h" namespace "qlat":
     void set_field_selected[t](Field[t]& f, const SelectedPoints[t]& sp,
                                const Geometry& geo, const PointsSelection& psel, const int m) except +
     bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2) except +
+    void set_sqrt_field(SelectedField[RealD]& f, const SelectedField[RealD]& f1) except +
 
 cdef extern from "qlat/selected-field-io.h" namespace "qlat":
 

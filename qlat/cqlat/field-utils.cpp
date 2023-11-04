@@ -558,7 +558,7 @@ EXPORT(qnorm_field_field, {
   return p_ret;
 })
 
-EXPORT(set_sqrt_double_field, {
+EXPORT(set_sqrt_field, {
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_field1 = NULL;

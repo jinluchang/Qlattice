@@ -149,38 +149,41 @@ def mk_fft(is_forward, *, is_only_spatial=False, is_normalizing=False, mode_fft=
 
 @q.timer
 def qnorm_field(f):
-    if isinstance(f, FieldBase):
-        f_n = FieldRealD()
-        c.qnorm_field_field(f_n, f)
-    elif isinstance(f, SelectedFieldBase):
-        fsel = f.fsel
-        f_n = SelectedFieldRealD(fsel)
-        c.qnorm_field_sfield(f_n, f)
-    elif isinstance(f, SelectedPointsBase):
+    if isinstance(f, (FieldBase, SelectedFieldBase, SelectedPointsBase,)):
         f_n = f.qnorm_field()
     else:
         q.displayln_info("qnorm_field:", type(f))
         assert False
     return f_n
 
-def sqrt_selected_points(SelectedPointsRealD f):
-    cdef  SelectedPointsRealD f_ret = f.copy(is_copying_data=False)
+@q.timer
+def sqrt_selected_points_real_d(SelectedPointsRealD f):
+    cdef SelectedPointsRealD f_ret = f.copy(is_copying_data=False)
     cc.set_sqrt_field(f_ret.xx, f.xx)
     return f_ret
 
 @q.timer
-def sqrt_double_field(f):
+def sqrt_selected_field_real_d(SelectedFieldRealD f):
+    cdef SelectedFieldRealD f_ret = f.copy(is_copying_data=False)
+    cc.set_sqrt_field(f_ret.xx, f.xx)
+    return f_ret
+
+@q.timer
+def sqrt_field_real_d(FieldRealD f):
+    cdef FieldRealD f_ret = f.copy(is_copying_data=False)
+    cc.set_sqrt_field(f_ret.xx, f.xx)
+    return f_ret
+
+@q.timer
+def sqrt_field(f):
     if isinstance(f, FieldRealD):
-        f_ret = FieldRealD()
-        c.set_sqrt_double_field(f_ret, f)
+        f_ret = sqrt_field_real_d(f)
     elif isinstance(f, SelectedFieldRealD):
-        fsel = f.fsel
-        f_ret = SelectedFieldRealD(fsel)
-        c.set_sqrt_double_sfield(f_ret, f)
+        f_ret = sqrt_selected_field_real_d(f)
     elif isinstance(f, SelectedPointsRealD):
-        f_ret = sqrt_selected_points(f)
+        f_ret = sqrt_selected_points_real_d(f)
     else:
-        q.displayln_info("sqrt_double_field:", type(f))
+        q.displayln_info("sqrt_field:", type(f))
         assert False
     return f_ret
 

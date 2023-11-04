@@ -206,7 +206,7 @@ def mk_field_norm_sqrt(field):
     if isinstance(field, int):
         assert field == 0
         return 0
-    return q.sqrt_double_field(q.qnorm_field(field))
+    return q.sqrt_field(q.qnorm_field(field))
 
 def mk_get_elem_norm(field, pos_dict = None):
     # return get function
