@@ -34,17 +34,6 @@ source qcore/set-prefix.sh $name
 
     cd "$wd"
 
-    for log in examples-cpp/*/log ; do
-        echo diff "$prefix/$log" "$log"
-        diff "$prefix/$log" "$log" | grep 'CHECK: ' && ( echo "$log" ; cat "$prefix/$log" || true )
-        if diff "$prefix/$log" "$log" >/dev/null 2>&1 ; then
-            :
-        else
-            cp -rpv "$prefix/$log" "$log".new || true
-            cp -rpv "$prefix/$log.full" "$log".full.txt || true
-        fi
-    done
-
     echo "!!!! $name build !!!!"
     rm -rf "$temp_dir" || true
 } } 2>&1 | tee $prefix/log.$name.txt
