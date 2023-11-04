@@ -8,7 +8,7 @@ class Cache(dict):
 
     def __init__(self, *keys):
         super().__init__()
-        self.keys = keys
+        self.cache_keys = keys
 
 ###
 
@@ -35,7 +35,7 @@ def clean_cache(ca = cache):
     """
     Remove values of cache, but keep all the structures
     """
-    info_str = show_cache_keys(ca.keys)
+    info_str = show_cache_keys(ca.cache_keys)
     items = list(ca.items())
     displayln_info(0, f"clean_cache: cache{info_str}: len={len(items)}")
     for key, val in items:
@@ -55,7 +55,7 @@ def mk_cache(*keys, ca = cache):
             ca = ca[key]
             assert isinstance(ca, Cache)
         else:
-            ca[key] = Cache(*(ca.keys), key)
+            ca[key] = Cache(*ca.cache_keys, key)
             ca = ca[key]
     return ca
 

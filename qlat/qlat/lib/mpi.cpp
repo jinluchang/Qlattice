@@ -293,6 +293,7 @@ void bcast(LatData& ld, const int root)
 
 void sync_node()
 {
+  TIMER("sync_node");
   RngState& rs = get_comm_list().back().sync_node_rs;
   const Long v = rand_gen(rs) % (1024 * 1024);
   Long s = v;

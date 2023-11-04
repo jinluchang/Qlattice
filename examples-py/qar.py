@@ -60,6 +60,6 @@ q.check_all_files_crc32_info("results")
 
 q.timer_display()
 
-q.displayln_info(f"CHECK: finished successfully.")
-
 q.end_with_mpi()
+
+q.displayln_info(f"CHECK: finished successfully.")

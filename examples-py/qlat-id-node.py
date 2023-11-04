@@ -6,6 +6,6 @@ q.begin_with_mpi()
 
 q.show_machine()
 
-q.displayln_info(f"CHECK: finished successfully.")
-
 q.end_with_mpi()
+
+q.displayln_info(f"CHECK: finished successfully.")

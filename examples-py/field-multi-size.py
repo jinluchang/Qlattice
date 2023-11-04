@@ -59,6 +59,6 @@ for total_site in total_site_list:
 
 q.timer_display()
 
-q.displayln_info(f"CHECK: finished successfully.")
-
 q.end_with_mpi()
+
+q.displayln_info(f"CHECK: finished successfully.")

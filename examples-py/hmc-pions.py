@@ -862,6 +862,6 @@ main()
 
 q.timer_display()
 
-q.displayln_info(f"CHECK: Simulation finished successfully.")
-
 q.end_with_mpi()
+
+q.displayln_info(f"CHECK: Simulation finished successfully.")

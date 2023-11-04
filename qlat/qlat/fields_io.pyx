@@ -19,6 +19,9 @@ cdef class ShuffledFieldsWriter:
     def __init__(self, str path not None, Coordinate new_size_node not None, cc.bool is_append=False):
         self.xx.init(path, new_size_node.xx, is_append)
 
+    def __del__(self):
+        self.close()
+
     def close(self):
         self.xx.close()
         cache_fields_io.pop(id(self), None)
@@ -64,6 +67,9 @@ cdef class ShuffledFieldsReader:
             new_size_node = Coordinate()
         self.xx.init(path, new_size_node.xx)
         self.tags = None
+
+    def __del__(self):
+        self.close()
 
     def close(self):
         self.xx.close()

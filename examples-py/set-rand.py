@@ -93,6 +93,6 @@ q.displayln_info(f"CHECK: sp_prop_norm1.qnorm() = {sp_prop_norm1.qnorm():.13E}")
 
 q.timer_display()
 
-q.displayln_info(f"CHECK: finished successfully.")
-
 q.end_with_mpi()
+
+q.displayln_info(f"CHECK: finished successfully.")

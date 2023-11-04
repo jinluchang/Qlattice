@@ -67,6 +67,6 @@ q.displayln_info(f"CHECK: {sol.qnorm():.14E} {sol1.qnorm():.14E} {sol_diff.qnorm
 
 q.timer_display()
 
-q.displayln_info(f"CHECK: finished successfully.")
-
 qg.end_with_gpt()
+
+q.displayln_info(f"CHECK: finished successfully.")

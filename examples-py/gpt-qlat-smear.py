@@ -108,6 +108,6 @@ q.check_all_files_crc32_info("results")
 
 q.timer_display()
 
-q.displayln_info(f"CHECK: finished successfully.")
-
 qg.end_with_gpt()
+
+q.displayln_info(f"CHECK: finished successfully.")

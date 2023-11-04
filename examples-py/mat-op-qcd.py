@@ -124,6 +124,9 @@ v2 = q.get_double_sig(wilson_matrix_g5_herm(wm2), q.RngState("seed-sig-mul"))
 q.displayln_info(f"CHECK: wilson_matrix_g5_herm: {v1:.10f} {v2:.10f}")
 
 q.check_all_files_crc32_info("results")
+
 q.timer_display()
-q.displayln_info(f"CHECK: finished successfully.")
+
 q.end_with_mpi()
+
+q.displayln_info(f"CHECK: finished successfully.")

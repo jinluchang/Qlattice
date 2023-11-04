@@ -52,6 +52,6 @@ assert abs(plaq - plaq1) < 1e-12
 
 q.timer_display()
 
-q.displayln_info(f"CHECK: finished successfully.")
-
 q.end_with_mpi()
+
+q.displayln_info(f"CHECK: finished successfully.")

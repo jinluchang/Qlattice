@@ -108,6 +108,6 @@ q.displayln_info("CHECK: ", q.qls_all_sync_node("results"))
 
 q.timer_display()
 
-q.displayln_info(f"CHECK: finished successfully.")
-
 q.end_with_mpi()
+
+q.displayln_info(f"CHECK: finished successfully.")

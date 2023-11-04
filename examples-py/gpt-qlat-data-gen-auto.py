@@ -1260,6 +1260,6 @@ for job_tag in job_tags:
 
 q.timer_display()
 
-q.displayln_info("CHECK: finished successfully.")
-
 qg.end_with_gpt()
+
+q.displayln_info("CHECK: finished successfully.")

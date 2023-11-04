@@ -81,6 +81,6 @@ q.displayln_info(q.show(ld1))
 
 q.timer_display()
 
-q.displayln_info(f"CHECK: finished successfully.")
-
 qg.end_with_gpt()
+
+q.displayln_info(f"CHECK: finished successfully.")

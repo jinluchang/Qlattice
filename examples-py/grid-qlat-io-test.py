@@ -46,6 +46,6 @@ assert q.qnorm(prop1) == 0
 
 q.timer_display()
 
-q.displayln_info(f"CHECK: finished successfully.")
-
 q.end_with_grid()
+
+q.displayln_info(f"CHECK: finished successfully.")

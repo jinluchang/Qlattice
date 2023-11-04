@@ -154,6 +154,6 @@ for tag, inv in zip(tags[1:], invs[1:]) :
 
 q.timer_display()
 
-q.displayln_info(f"CHECK: finished successfully.")
-
 qg.end_with_gpt()
+
+q.displayln_info(f"CHECK: finished successfully.")

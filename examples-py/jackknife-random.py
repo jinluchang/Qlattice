@@ -28,6 +28,6 @@ avg, err = q.g_jk_avg_err(jk_list)
 q.displayln_info(f"CHECK: {avg}")
 q.displayln_info(f"CHECK: {err}")
 
-q.displayln_info(f"CHECK: finished successfully.")
-
 q.end_with_mpi()
+
+q.displayln_info(f"CHECK: finished successfully.")
