@@ -287,54 +287,6 @@ qacc double qnorm_double(const Vector<T>& m1, const Vector<T>& m2)
   return qnorm(dm1, dm2);
 }
 
-template <class M>
-qacc void to_from_little_endian_16(Vector<M> v)
-{
-  to_from_little_endian_16((void*)v.data(), v.data_size());
-}
-
-template <class M>
-qacc void to_from_little_endian_32(Vector<M> v)
-{
-  to_from_little_endian_32((void*)v.data(), v.data_size());
-}
-
-template <class M>
-qacc void to_from_little_endian_64(Vector<M> v)
-{
-  to_from_little_endian_64((void*)v.data(), v.data_size());
-}
-
-template <class M>
-qacc void to_from_big_endian_16(Vector<M> v)
-{
-  to_from_big_endian_16((void*)v.data(), v.data_size());
-}
-
-template <class M>
-qacc void to_from_big_endian_32(Vector<M> v)
-{
-  to_from_big_endian_32((void*)v.data(), v.data_size());
-}
-
-template <class M>
-qacc void to_from_big_endian_64(Vector<M> v)
-{
-  to_from_big_endian_64((void*)v.data(), v.data_size());
-}
-
-inline void from_big_endian_32(char* str, const size_t len)
-// obsolete
-{
-  to_from_big_endian_32(str, len);
-}
-
-inline void from_big_endian_64(char* str, const size_t len)
-// obsolete
-{
-  to_from_big_endian_64(str, len);
-}
-
 template <class M, class N>
 qacc void assign_direct(M& x, const N& y)
 {

@@ -47,15 +47,15 @@ inline bool check_ctype_name<int64_t>(const std::string& ctype)
 }
 
 template <>
-inline bool check_ctype_name<char>(const std::string& ctype)
+inline bool check_ctype_name<int32_t>(const std::string& ctype)
 {
-  return "Char" == ctype;
+  return "Int32t" == ctype or "Int" == ctype;
 }
 
 template <>
 inline bool check_ctype_name<int8_t>(const std::string& ctype)
 {
-  return "Int8t" == ctype;
+  return "Int8t" == ctype or "Char" == ctype;
 }
 
 inline void py_convert(PyObject*& out, PyObject* in) { out = in; }

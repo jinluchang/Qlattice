@@ -241,7 +241,7 @@ Long write_field_float_from_double(
   TIMER_VERBOSE_FLOPS("write_field_float_from_double");
   Field<float> ff;
   convert_field_float_from_double(ff, f);
-  to_from_big_endian_32(get_data(ff));
+  to_from_big_endian(get_data(ff));
   const Long total_bytes = write_field(ff, path, new_size_node);
   timer.flops += total_bytes;
   return total_bytes;
@@ -259,7 +259,7 @@ Long read_field_double_from_float(
   if (total_bytes == 0) {
     return 0;
   } else {
-    to_from_big_endian_32(get_data(ff));
+    to_from_big_endian(get_data(ff));
     convert_field_double_from_float(f, ff);
     timer.flops += total_bytes;
     return total_bytes;
@@ -274,7 +274,7 @@ Long write_field_64(const Field<M>& f, const std::string& path,
   TIMER_VERBOSE_FLOPS("write_field_64");
   Field<M> ff;
   ff.init(f);
-  to_from_big_endian_64(get_data(ff));
+  to_from_big_endian(get_data(ff));
   const Long total_bytes = write_field(ff, path, new_size_node);
   timer.flops += total_bytes;
   return total_bytes;
@@ -290,7 +290,7 @@ Long read_field_64(Field<M>& f, const std::string& path,
   if (total_bytes == 0) {
     return 0;
   } else {
-    to_from_big_endian_64(get_data(f));
+    to_from_big_endian(get_data(f));
     timer.flops += total_bytes;
     return total_bytes;
   }
@@ -304,7 +304,7 @@ Long write_field_double(const Field<M>& f, const std::string& path,
   TIMER_VERBOSE_FLOPS("write_field_double");
   Field<M> ff;
   ff.init(f);
-  to_from_big_endian_64(get_data(ff));
+  to_from_big_endian(get_data(ff));
   const Long total_bytes = write_field(ff, path, new_size_node);
   timer.flops += total_bytes;
   return total_bytes;
@@ -320,7 +320,7 @@ Long read_field_double(Field<M>& f, const std::string& path,
   if (total_bytes == 0) {
     return 0;
   } else {
-    to_from_big_endian_64(get_data(f));
+    to_from_big_endian(get_data(f));
     timer.flops += total_bytes;
     return total_bytes;
   }

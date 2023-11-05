@@ -176,22 +176,12 @@ std::string get_file_path(FieldsReader& fr);
 Long get_file_size(FieldsReader& fr);
 
 template <class M>
-void convert_endian_32(Vector<M> data, const bool is_little_endian)
+void convert_endian(Vector<M> data, const bool is_little_endian)
 {
   if (is_little_endian) {
-    to_from_little_endian_32(data);
+    to_from_little_endian(data);
   } else {
-    to_from_big_endian_32(data);
-  }
-}
-
-template <class M>
-void convert_endian_64(Vector<M> data, const bool is_little_endian)
-{
-  if (is_little_endian) {
-    to_from_little_endian_64(data);
-  } else {
-    to_from_big_endian_64(data);
+    to_from_big_endian(data);
   }
 }
 
@@ -816,7 +806,7 @@ Long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
   TIMER_VERBOSE_FLOPS("write_float_from_double(sfw,fn,field)");
   Field<float> ff;
   convert_field_float_from_double(ff, field);
-  to_from_little_endian_32(get_data(ff));
+  to_from_little_endian(get_data(ff));
   const Long total_bytes = write(sfw, fn, ff);
   timer.flops += total_bytes;
   return total_bytes;
@@ -832,7 +822,7 @@ Long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
   TIMER_VERBOSE_FLOPS("write_float_from_double(sfw,fn,sbs,sf)");
   SelectedField<float> sff;
   convert_field_float_from_double(sff, sf);
-  to_from_little_endian_32(get_data(sff));
+  to_from_little_endian(get_data(sff));
   const Long total_bytes = write(sfw, fn, sbs, sff);
   timer.flops += total_bytes;
   return total_bytes;
@@ -849,7 +839,7 @@ Long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
   if (total_bytes == 0) {
     return 0;
   } else {
-    to_from_little_endian_32(get_data(ff));
+    to_from_little_endian(get_data(ff));
     convert_field_double_from_float(field, ff);
     timer.flops += total_bytes;
     return total_bytes;
@@ -868,7 +858,7 @@ Long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
   if (total_bytes == 0) {
     return 0;
   } else {
-    to_from_little_endian_32(get_data(sff));
+    to_from_little_endian(get_data(sff));
     convert_field_double_from_float(sf, sff);
     timer.flops += total_bytes;
     return total_bytes;
@@ -888,7 +878,7 @@ Long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
   if (total_bytes == 0) {
     return 0;
   } else {
-    to_from_little_endian_32(get_data(sff));
+    to_from_little_endian(get_data(sff));
     convert_field_double_from_float(sf, sff);
     timer.flops += total_bytes;
     return total_bytes;

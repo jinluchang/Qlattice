@@ -2,10 +2,9 @@
 
 #pragma once
 
+#include <qlat-utils/qar-cache.h>
 #include <qlat/field-shuffle.h>
 #include <qlat/utils-io.h>
-
-#include <qlat-utils/qar-cache.h>
 
 namespace qlat
 {  //
@@ -89,10 +88,7 @@ inline QFile dist_open(const std::string& path, const int id_node,
   return ret;
 }
 
-inline void dist_close(QFile& fp)
-{
-  qfclose(fp);
-}
+inline void dist_close(QFile& fp) { qfclose(fp); }
 
 template <class M>
 struct DistData {
@@ -107,7 +103,7 @@ Vector<M> get_data(const DistData<M>& dd)
 }
 
 template <class M>
-std::vector<crc32_t> dist_crc32s(const std::vector<DistData<M> >& dds,
+std::vector<crc32_t> dist_crc32s(const std::vector<DistData<M>>& dds,
                                  const int num_node)
 {
   sync_node();
@@ -129,12 +125,12 @@ std::vector<crc32_t> dist_crc32s(const std::vector<DistData<M> >& dds,
 inline crc32_t dist_crc32(const std::vector<crc32_t>& crcs)
 {
   std::vector<crc32_t> d = crcs;
-  to_from_big_endian_32(get_data(d));
+  to_from_big_endian(get_data(d));
   return crc32(get_data(d));
 }
 
 template <class M>
-crc32_t dist_crc32(const std::vector<DistData<M> >& dds, const int num_node)
+crc32_t dist_crc32(const std::vector<DistData<M>>& dds, const int num_node)
 {
   return dist_crc32(dist_crc32s(dds, num_node));
 }
@@ -142,7 +138,7 @@ crc32_t dist_crc32(const std::vector<DistData<M> >& dds, const int num_node)
 template <class M>
 crc32_t field_dist_crc32(const Field<M>& f)
 {
-  std::vector<DistData<M> > dds(1);
+  std::vector<DistData<M>> dds(1);
   dds[0].id_node = f.geo().geon.id_node;
   dds[0].data = get_data(f);
   return dist_crc32(dds, get_num_node());
@@ -166,13 +162,13 @@ inline void dist_write_geo_info(const Geometry& geo, const int sizeof_M,
     qwrite_data(ssprintf("sizeof(M) = %d\n", sizeof_M), fp);
     qwrite_data(ssprintf("geo.geon.num_node = %d\n", geo.geon.num_node), fp);
     qwrite_data(ssprintf("geo.geon.size_node[0] = %d\n", geo.geon.size_node[0]),
-              fp);
+                fp);
     qwrite_data(ssprintf("geo.geon.size_node[1] = %d\n", geo.geon.size_node[1]),
-              fp);
+                fp);
     qwrite_data(ssprintf("geo.geon.size_node[2] = %d\n", geo.geon.size_node[2]),
-              fp);
+                fp);
     qwrite_data(ssprintf("geo.geon.size_node[3] = %d\n", geo.geon.size_node[3]),
-              fp);
+                fp);
     qwrite_data(ssprintf("geo.local_volume() = %ld\n", geo.local_volume()), fp);
     qwrite_data(ssprintf("geo.node_site[0] = %d\n", geo.node_site[0]), fp);
     qwrite_data(ssprintf("geo.node_site[1] = %d\n", geo.node_site[1]), fp);
@@ -239,7 +235,7 @@ inline void dist_read_geo_info(Geometry& geo, int& sizeof_M,
 }
 
 template <class M>
-Long dist_write_dist_data(const std::vector<DistData<M> >& dds,
+Long dist_write_dist_data(const std::vector<DistData<M>>& dds,
                           const int num_node, const std::string& path)
 // interface_function
 {
@@ -310,7 +306,7 @@ Long dist_write_dist_data(const std::vector<DistData<M> >& dds,
 }
 
 template <class M>
-Long dist_write_fields(const std::vector<ConstHandle<Field<M> > >& fs,
+Long dist_write_fields(const std::vector<ConstHandle<Field<M>>>& fs,
                        const int num_node, const std::string& path)
 {
   for (int k = 0; k < (int)fs.size(); ++k) {
@@ -332,7 +328,7 @@ Long dist_write_fields(const std::vector<ConstHandle<Field<M> > >& fs,
     }
   }
   sync_node();
-  std::vector<DistData<M> > dds(fs.size());
+  std::vector<DistData<M>> dds(fs.size());
   for (size_t i = 0; i < dds.size(); ++i) {
     dds[i].id_node = fs[i]().geo().geon.id_node;
     dds[i].data = get_data(fs[i]());
@@ -344,10 +340,10 @@ Long dist_write_fields(const std::vector<ConstHandle<Field<M> > >& fs,
 }
 
 template <class M>
-Long dist_write_fields(const std::vector<Field<M> >& fs, const int num_node,
+Long dist_write_fields(const std::vector<Field<M>>& fs, const int num_node,
                        const std::string& path)
 {
-  std::vector<ConstHandle<Field<M> > > fhs(fs.size());
+  std::vector<ConstHandle<Field<M>>> fhs(fs.size());
   for (size_t i = 0; i < fs.size(); ++i) {
     fhs[i].init(fs[i]);
   }
@@ -360,13 +356,13 @@ Long dist_write_field(const Field<M>& f, const std::string& path)
 {
   TIMER_VERBOSE("dist_write_field");
   qassert(f.geo().is_only_local);
-  std::vector<ConstHandle<Field<M> > > fs(1);
+  std::vector<ConstHandle<Field<M>>> fs(1);
   fs[0].init(f);
   return dist_write_fields(fs, get_num_node(), path);
 }
 
 template <class M>
-Long dist_read_dist_data(const std::vector<DistData<M> >& dds,
+Long dist_read_dist_data(const std::vector<DistData<M>>& dds,
                          const int num_node, const std::string& path)
 // interface_function
 {
@@ -460,7 +456,7 @@ Long dist_read_dist_data(const std::vector<DistData<M> >& dds,
 }
 
 template <class M>
-Long dist_read_fields(std::vector<Field<M> >& fs, Geometry& geo,
+Long dist_read_fields(std::vector<Field<M>>& fs, Geometry& geo,
                       Coordinate& new_size_node, const std::string& path)
 // will clear fs before read
 {
@@ -487,7 +483,7 @@ Long dist_read_fields(std::vector<Field<M> >& fs, Geometry& geo,
   std::vector<Geometry> new_geos =
       make_dist_io_geos(geo.total_site(), geo.multiplicity, new_size_node);
   fs.resize(new_geos.size());
-  std::vector<DistData<M> > dds(fs.size());
+  std::vector<DistData<M>> dds(fs.size());
   for (size_t i = 0; i < fs.size(); ++i) {
     fs[i].init(new_geos[i]);
     dds[i].id_node = fs[i].geo().geon.id_node;
@@ -503,7 +499,7 @@ Long dist_write_field(const Field<M>& f, const Coordinate new_size_node,
 {
   TIMER_VERBOSE_FLOPS("dist_write_field");
   displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));
-  std::vector<Field<M> > fs;
+  std::vector<Field<M>> fs;
   shuffle_field(fs, f, new_size_node);
   Long total_bytes = dist_write_fields(fs, product(new_size_node), path);
   timer.flops += total_bytes;
@@ -517,7 +513,7 @@ Long dist_read_field(Field<M>& f, const std::string& path)
   TIMER_VERBOSE_FLOPS("dist_read_field");
   displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));
   Geometry geo;
-  std::vector<Field<M> > fs;
+  std::vector<Field<M>> fs;
   Coordinate new_size_node;
   const Long total_bytes = dist_read_fields(fs, geo, new_size_node, path);
   if (total_bytes == 0) {
@@ -549,9 +545,7 @@ void convert_field_float_from_double(Field<N>& ff, const Field<M>& f)
   Vector<N> ffdata = get_data(ff);
   Vector<float> ffd((float*)ffdata.data(), ffdata.data_size() / sizeof(float));
   qassert(ffd.size() == fd.size());
-  qacc_for(i, ffd.size(), {
-    ffd[i] = fd[i];
-  });
+  qacc_for(i, ffd.size(), { ffd[i] = fd[i]; });
 }
 
 template <class M, class N>
@@ -573,9 +567,7 @@ void convert_field_double_from_float(Field<N>& ff, const Field<M>& f)
   Vector<double> ffd((double*)ffdata.data(),
                      ffdata.data_size() / sizeof(double));
   qassert(ffd.size() == fd.size());
-  qacc_for(i, ffd.size(), {
-    ffd[i] = fd[i];
-  });
+  qacc_for(i, ffd.size(), { ffd[i] = fd[i]; });
 }
 
 template <class M>
@@ -586,7 +578,7 @@ Long dist_write_field_float_from_double(const Field<M>& f,
   TIMER_VERBOSE_FLOPS("dist_write_field_float_from_double");
   Field<float> ff;
   convert_field_float_from_double(ff, f);
-  to_from_big_endian_32(get_data(ff));
+  to_from_big_endian(get_data(ff));
   const Long total_bytes = dist_write_field(ff, path);
   timer.flops += total_bytes;
   return total_bytes;
@@ -601,7 +593,7 @@ Long dist_write_field_float_from_double(const Field<M>& f,
   TIMER_VERBOSE_FLOPS("dist_write_field_float_from_double");
   Field<float> ff;
   convert_field_float_from_double(ff, f);
-  to_from_big_endian_32(get_data(ff));
+  to_from_big_endian(get_data(ff));
   const Long total_bytes = dist_write_field(ff, new_size_node, path);
   timer.flops += total_bytes;
   return total_bytes;
@@ -617,7 +609,7 @@ Long dist_read_field_double_from_float(Field<M>& f, const std::string& path)
   if (total_bytes == 0) {
     return 0;
   } else {
-    to_from_big_endian_32(get_data(ff));
+    to_from_big_endian(get_data(ff));
     convert_field_double_from_float(f, ff);
     timer.flops += total_bytes;
     return total_bytes;
@@ -631,7 +623,7 @@ Long dist_write_field_double(const Field<M>& f, const std::string& path)
   TIMER_VERBOSE_FLOPS("dist_write_field_double");
   Field<M> ff;
   ff.init(f);
-  to_from_big_endian_64(get_data(ff));
+  to_from_big_endian(get_data(ff));
   const Long total_bytes = dist_write_field(ff, path);
   timer.flops += total_bytes;
   return total_bytes;
@@ -645,7 +637,7 @@ Long dist_write_field_double(const Field<M>& f, const Coordinate& new_size_node,
   TIMER_VERBOSE_FLOPS("dist_write_field_double");
   Field<M> ff;
   ff.init(f);
-  to_from_big_endian_64(get_data(ff));
+  to_from_big_endian(get_data(ff));
   const Long total_bytes = dist_write_field(ff, new_size_node, path);
   timer.flops += total_bytes;
   return total_bytes;
@@ -660,7 +652,7 @@ Long dist_read_field_double(Field<M>& f, const std::string& path)
   if (total_bytes == 0) {
     return 0;
   } else {
-    to_from_big_endian_64(get_data(f));
+    to_from_big_endian(get_data(f));
     timer.flops += total_bytes;
     return total_bytes;
   }

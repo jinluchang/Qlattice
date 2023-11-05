@@ -38,6 +38,7 @@ header_files = files(
   'crc32.h',
   'eigen.h',
   'env.h',
+  'endian.h',
   'handle.h',
   'lat-io.h',
   'mat.h',

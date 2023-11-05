@@ -43,6 +43,8 @@ using Long = int64_t;
 
 using Int = int32_t;
 
+using Char = int8_t;
+
 inline std::string vssprintf(const char* fmt, va_list args)
 {
   char* cstr;

@@ -304,6 +304,25 @@ cdef class ElemTypeInt(ElemType):
     cdef Py_ssize_t size():
         return sizeof(cc.Int)
 
+cdef class ElemTypeChar(ElemType):
+    name = "Char"
+    @staticmethod
+    cdef char* format():
+        cdef char* fmt = 'b'
+        return fmt
+    @staticmethod
+    cdef Py_ssize_t itemsize():
+        return sizeof(cc.Char)
+    @staticmethod
+    cdef int ndim():
+        return 0
+    @staticmethod
+    cdef cc.std_vector[Py_ssize_t] shape():
+        return cc.std_vector[Py_ssize_t]()
+    @staticmethod
+    cdef Py_ssize_t size():
+        return sizeof(cc.Char)
+
 cdef class ElemTypeInt64t(ElemType):
     name = "Int64t"
     @staticmethod
@@ -360,24 +379,5 @@ cdef class ElemTypeInt8t(ElemType):
     @staticmethod
     cdef Py_ssize_t size():
         return sizeof(cc.Int8t)
-
-cdef class ElemTypeChar(ElemType):
-    name = "Char"
-    @staticmethod
-    cdef char* format():
-        cdef char* fmt = 'c'
-        return fmt
-    @staticmethod
-    cdef Py_ssize_t itemsize():
-        return sizeof(cc.Char)
-    @staticmethod
-    cdef int ndim():
-        return 0
-    @staticmethod
-    cdef cc.std_vector[Py_ssize_t] shape():
-        return cc.std_vector[Py_ssize_t]()
-    @staticmethod
-    cdef Py_ssize_t size():
-        return sizeof(cc.Char)
 
 ### -------------------------------------------------------------------

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qlat-utils/matrix.h>
+#include <qlat-utils/endian.h>
 
 #include <cstdint>
 #include <vector>
@@ -223,6 +224,12 @@ inline std::string get_type_name<int8_t>()
 }
 
 template <>
+inline std::string get_type_name<int16_t>()
+{
+  return "Int16t";
+}
+
+template <>
 inline std::string get_type_name<int32_t>()
 {
   return "Int32t";
@@ -232,6 +239,30 @@ template <>
 inline std::string get_type_name<int64_t>()
 {
   return "Int64t";
+}
+
+template <>
+inline std::string get_type_name<uint8_t>()
+{
+  return "UInt8t";
+}
+
+template <>
+inline std::string get_type_name<uint16_t>()
+{
+  return "UInt16t";
+}
+
+template <>
+inline std::string get_type_name<uint32_t>()
+{
+  return "UInt32t";
+}
+
+template <>
+inline std::string get_type_name<uint64_t>()
+{
+  return "UInt64t";
 }
 
 template <>
@@ -288,108 +319,58 @@ inline std::string get_type_name<ColorMatrix>()
   return "ColorMatrix";
 }
 
-// -------------------------------------------------------------------------
-
-template <class M>
-qacc bool is_composed_of_complex_d()
-{
-  return false;
-}
-
 template <>
-qacc bool is_composed_of_complex_d<ComplexD>()
+inline std::string get_type_name<IsospinMatrix>()
 {
-  return true;
-}
-
-template <>
-qacc bool is_composed_of_complex_d<ColorMatrix>()
-{
-  return true;
-}
-
-template <>
-qacc bool is_composed_of_complex_d<WilsonMatrix>()
-{
-  return true;
-}
-
-template <>
-qacc bool is_composed_of_complex_d<SpinMatrix>()
-{
-  return true;
-}
-
-template <>
-qacc bool is_composed_of_complex_d<WilsonVector>()
-{
-  return true;
-}
-
-template <>
-qacc bool is_composed_of_complex_d<IsospinMatrix>()
-{
-  return true;
-}
-
-template <>
-qacc bool is_composed_of_complex_d<NonRelWilsonMatrix>()
-{
-  return true;
+  return "IsospinMatrix";
 }
 
 // -------------------------------------------------------------------------
 
 template <class M>
-qacc bool is_composed_of_real_d()
+qacc constexpr bool is_composed_of_complex_d()
 {
   return false;
 }
 
 template <>
-qacc bool is_composed_of_real_d<RealD>()
+qacc constexpr bool is_composed_of_complex_d<ComplexD>()
 {
   return true;
 }
 
 template <>
-qacc bool is_composed_of_real_d<ComplexD>()
+qacc constexpr bool is_composed_of_complex_d<ColorMatrix>()
 {
   return true;
 }
 
 template <>
-qacc bool is_composed_of_real_d<ColorMatrix>()
+qacc constexpr bool is_composed_of_complex_d<WilsonMatrix>()
 {
   return true;
 }
 
 template <>
-qacc bool is_composed_of_real_d<WilsonMatrix>()
+qacc constexpr bool is_composed_of_complex_d<SpinMatrix>()
 {
   return true;
 }
 
 template <>
-qacc bool is_composed_of_real_d<SpinMatrix>()
+qacc constexpr bool is_composed_of_complex_d<WilsonVector>()
 {
   return true;
 }
 
 template <>
-qacc bool is_composed_of_real_d<WilsonVector>()
+qacc constexpr bool is_composed_of_complex_d<IsospinMatrix>()
 {
   return true;
 }
 
 template <>
-qacc bool is_composed_of_real_d<IsospinMatrix>()
-{
-  return true;
-}
-
-template <>
-qacc bool is_composed_of_real_d<NonRelWilsonMatrix>()
+qacc constexpr bool is_composed_of_complex_d<NonRelWilsonMatrix>()
 {
   return true;
 }
@@ -397,13 +378,55 @@ qacc bool is_composed_of_real_d<NonRelWilsonMatrix>()
 // -------------------------------------------------------------------------
 
 template <class M>
-qacc bool is_composed_of_complex_f()
+qacc constexpr bool is_composed_of_real_d()
 {
   return false;
 }
 
 template <>
-qacc bool is_composed_of_complex_f<ComplexF>()
+qacc constexpr bool is_composed_of_real_d<RealD>()
+{
+  return true;
+}
+
+template <>
+qacc constexpr bool is_composed_of_real_d<ComplexD>()
+{
+  return true;
+}
+
+template <>
+qacc constexpr bool is_composed_of_real_d<ColorMatrix>()
+{
+  return true;
+}
+
+template <>
+qacc constexpr bool is_composed_of_real_d<WilsonMatrix>()
+{
+  return true;
+}
+
+template <>
+qacc constexpr bool is_composed_of_real_d<SpinMatrix>()
+{
+  return true;
+}
+
+template <>
+qacc constexpr bool is_composed_of_real_d<WilsonVector>()
+{
+  return true;
+}
+
+template <>
+qacc constexpr bool is_composed_of_real_d<IsospinMatrix>()
+{
+  return true;
+}
+
+template <>
+qacc constexpr bool is_composed_of_real_d<NonRelWilsonMatrix>()
 {
   return true;
 }
@@ -411,19 +434,13 @@ qacc bool is_composed_of_complex_f<ComplexF>()
 // -------------------------------------------------------------------------
 
 template <class M>
-qacc bool is_composed_of_real_f()
+qacc constexpr bool is_composed_of_complex_f()
 {
   return false;
 }
 
 template <>
-qacc bool is_composed_of_real_f<float>()
-{
-  return true;
-}
-
-template <>
-qacc bool is_composed_of_real_f<ComplexF>()
+qacc constexpr bool is_composed_of_complex_f<ComplexF>()
 {
   return true;
 }
@@ -431,13 +448,19 @@ qacc bool is_composed_of_real_f<ComplexF>()
 // -------------------------------------------------------------------------
 
 template <class M>
-qacc bool is_composed_of_int64()
+qacc constexpr bool is_composed_of_real_f()
 {
   return false;
 }
 
 template <>
-qacc bool is_composed_of_int64<int64_t>()
+qacc constexpr bool is_composed_of_real_f<float>()
+{
+  return true;
+}
+
+template <>
+qacc constexpr bool is_composed_of_real_f<ComplexF>()
 {
   return true;
 }
@@ -445,13 +468,13 @@ qacc bool is_composed_of_int64<int64_t>()
 // -------------------------------------------------------------------------
 
 template <class M>
-qacc bool is_composed_of_int32()
+qacc constexpr bool is_composed_of_int64()
 {
   return false;
 }
 
 template <>
-qacc bool is_composed_of_int32<int32_t>()
+qacc constexpr bool is_composed_of_int64<int64_t>()
 {
   return true;
 }
@@ -459,15 +482,158 @@ qacc bool is_composed_of_int32<int32_t>()
 // -------------------------------------------------------------------------
 
 template <class M>
-qacc bool is_composed_of_int8()
+qacc constexpr bool is_composed_of_int32()
 {
   return false;
 }
 
 template <>
-qacc bool is_composed_of_int8<int8_t>()
+qacc constexpr bool is_composed_of_int32<int32_t>()
 {
   return true;
+}
+
+// -------------------------------------------------------------------------
+
+template <class M>
+qacc constexpr bool is_composed_of_int8()
+{
+  return false;
+}
+
+template <>
+qacc constexpr bool is_composed_of_int8<int8_t>()
+{
+  return true;
+}
+
+// -------------------------------------------------------------------------
+
+template <class M>
+qacc constexpr int element_size_of();  // for example size for convert endian
+
+template <>
+qacc constexpr int element_size_of<int8_t>()
+{
+  return 1;
+}
+
+template <>
+qacc constexpr int element_size_of<int16_t>()
+{
+  return 2;
+}
+
+template <>
+qacc constexpr int element_size_of<int32_t>()
+{
+  return 4;
+}
+
+template <>
+qacc constexpr int element_size_of<int64_t>()
+{
+  return 8;
+}
+
+template <>
+qacc constexpr int element_size_of<uint8_t>()
+{
+  return 1;
+}
+
+template <>
+qacc constexpr int element_size_of<uint16_t>()
+{
+  return 2;
+}
+
+template <>
+qacc constexpr int element_size_of<uint32_t>()
+{
+  return 4;
+}
+
+template <>
+qacc constexpr int element_size_of<uint64_t>()
+{
+  return 8;
+}
+
+template <>
+qacc constexpr int element_size_of<RealF>()
+{
+  return 4;
+}
+
+template <>
+qacc constexpr int element_size_of<RealD>()
+{
+  return 8;
+}
+
+template <>
+qacc constexpr int element_size_of<ComplexF>()
+{
+  return 4;
+}
+
+template <>
+qacc constexpr int element_size_of<ComplexD>()
+{
+  return 8;
+}
+
+template <>
+qacc constexpr int element_size_of<WilsonVector>()
+{
+  return 8;
+}
+
+template <>
+qacc constexpr int element_size_of<SpinMatrix>()
+{
+  return 8;
+}
+
+template <>
+qacc constexpr int element_size_of<NonRelWilsonMatrix>()
+{
+  return 8;
+}
+
+template <>
+qacc constexpr int element_size_of<WilsonMatrix>()
+{
+  return 8;
+}
+
+template <>
+qacc constexpr int element_size_of<ColorMatrix>()
+{
+  return 8;
+}
+
+template <>
+qacc constexpr int element_size_of<IsospinMatrix>()
+{
+  return 8;
+}
+
+// -------------------------------------------------------------------------
+
+template <class M>
+qacc void to_from_little_endian(Vector<M> v)
+{
+  constexpr int size = element_size_of<M>();
+  to_from_little_endian<size>((void*)v.data(), v.data_size());
+}
+
+template <class M>
+qacc void to_from_big_endian(Vector<M> v)
+{
+  constexpr int size = element_size_of<M>();
+  to_from_big_endian<size>((void*)v.data(), v.data_size());
 }
 
 // -------------------------------------------------------------------------

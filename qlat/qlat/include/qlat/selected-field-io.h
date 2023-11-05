@@ -223,7 +223,7 @@ Long write_selected_field_64(const SelectedField<M>& f, const std::string& path,
   TIMER_VERBOSE_FLOPS("write_selected_field_64");
   SelectedField<M> ff;
   ff = f;
-  to_from_big_endian_64(get_data(ff));
+  to_from_big_endian(get_data(ff));
   const Long total_bytes = write_selected_field(ff, path, fsel, new_size_node_);
   timer.flops += total_bytes;
   return total_bytes;
@@ -239,7 +239,7 @@ Long read_selected_field_64(SelectedField<M>& sf, const std::string& path,
   if (total_bytes == 0) {
     return 0;
   } else {
-    to_from_big_endian_64(get_data(sf));
+    to_from_big_endian(get_data(sf));
     timer.flops += total_bytes;
     return total_bytes;
   }
@@ -253,7 +253,7 @@ Long write_selected_field_double(
   TIMER_VERBOSE_FLOPS("write_selected_field_double");
   SelectedField<M> ff;
   ff = f;
-  to_from_big_endian_64(get_data(ff));
+  to_from_big_endian(get_data(ff));
   const Long total_bytes = write_selected_field(ff, path, fsel, new_size_node_);
   timer.flops += total_bytes;
   return total_bytes;
@@ -269,7 +269,7 @@ Long read_selected_field_double(SelectedField<M>& sf, const std::string& path,
   if (total_bytes == 0) {
     return 0;
   } else {
-    to_from_big_endian_64(get_data(sf));
+    to_from_big_endian(get_data(sf));
     timer.flops += total_bytes;
     return total_bytes;
   }
@@ -283,7 +283,7 @@ Long write_selected_field_float_from_double(
   TIMER_VERBOSE_FLOPS("write_selected_field_float_from_double");
   SelectedField<float> ff;
   convert_field_float_from_double(ff, f);
-  to_from_big_endian_32(get_data(ff));
+  to_from_big_endian(get_data(ff));
   const Long total_bytes = write_selected_field(ff, path, fsel, new_size_node_);
   timer.flops += total_bytes;
   return total_bytes;
@@ -300,7 +300,7 @@ Long read_selected_field_double_from_float(
   if (total_bytes == 0) {
     return 0;
   } else {
-    to_from_big_endian_32(get_data(ff));
+    to_from_big_endian(get_data(ff));
     convert_field_double_from_float(f, ff);
     timer.flops += total_bytes;
     return total_bytes;

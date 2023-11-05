@@ -48,8 +48,6 @@ ctypedef int32_t Int32t
 
 ctypedef int8_t Int8t
 
-ctypedef char Char
-
 ctypedef uint32_t crc32_t
 
 ctypedef double RealD
@@ -61,6 +59,8 @@ ctypedef RealD Real
 ctypedef Int64t Long
 
 ctypedef Int32t Int
+
+ctypedef int8_t Char
 
 ctypedef std_vector[std_vector[RealD]] DataTable
 

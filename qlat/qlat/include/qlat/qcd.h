@@ -299,7 +299,7 @@ Long save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
   }
   GaugeFieldInfo gfi = gfi_;
   gfi.simple_checksum = field_simple_checksum(gft); // before to_from_big_endian_64
-  to_from_big_endian_64(get_data(gft));
+  to_from_big_endian(get_data(gft));
   gfi.plaq = gf_avg_plaq(gf);
   gfi.trace = gf_avg_link_trace(gf);
   gfi.crc32 = field_crc32(gft);
@@ -345,9 +345,9 @@ Long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
     }
   }
   if (gfi.floating_point == "IEEE64BIG") {
-    to_from_big_endian_64(get_data(gft));
+    to_from_big_endian(get_data(gft));
   } else if (gfi.floating_point == "IEEE64LITTLE") {
-    to_from_little_endian_64(get_data(gft));
+    to_from_little_endian(get_data(gft));
   } else {
     qassert(false);
   }
@@ -406,7 +406,7 @@ inline Long load_gauge_field_cps3x3(GaugeFieldT<T>& gf,
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ComplexD> vt = gft.get_elems(xl);
-    to_from_big_endian_64(get_data(vt));
+    to_from_big_endian(vt);
     Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       assign_truncate(v[m], vt[m]);
@@ -442,7 +442,7 @@ inline Long load_gauge_field_milc(GaugeFieldT<T>& gf,
   for (Long index = 0; index < geo.local_volume(); ++index) {
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<ComplexF> vt = gft.get_elems(xl);
-    to_from_big_endian_32((char*)vt.data(), vt.data_size());
+    to_from_big_endian(vt);
     Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       // assign_truncate(v[m], vt[m]);
@@ -588,7 +588,7 @@ inline Long save_gauge_transform_cps(
   GaugeTransformInfo info = info_;
   info.total_site = geo.total_site();
   info.simple_checksum = field_simple_checksum(gt1); // before to_from_big_endian_64
-  to_from_big_endian_64(get_data(gt1));
+  to_from_big_endian(get_data(gt1));
   qtouch_info(path + ".partial", make_gauge_transform_header(info));
   const Long file_size = serial_write_field(gt1, path + ".partial");
   qrename_info(path + ".partial", path);
@@ -615,9 +615,9 @@ inline Long load_gauge_transform_cps(GaugeTransform& gt, const std::string& path
     return 0;
   }
   if (info.floating_point == "IEEE64BIG") {
-    to_from_big_endian_64(get_data(gt));
+    to_from_big_endian(get_data(gt));
   } else if (info.floating_point == "IEEE64LITTLE") {
-    to_from_little_endian_64(get_data(gt));
+    to_from_little_endian(get_data(gt));
   } else {
     qassert(false);
   }

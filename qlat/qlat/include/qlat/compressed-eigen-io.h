@@ -47,7 +47,7 @@ inline void read_floats(Vector<float> out, const Vector<uint8_t> fp_data)
 {
   qassert(out.data_size() == fp_data.size());
   memcpy(out.data(), fp_data.data(), fp_data.size());
-  to_from_little_endian_32(out);
+  to_from_little_endian(out);
 }
 
 inline int fp_map(const float in, const float min, const float max, const int N)
@@ -113,7 +113,7 @@ inline void read_floats_fp16(Vector<float> out, const Vector<uint8_t> fp_data,
   qassert(fp_data.size() == size);
   std::vector<uint16_t> buffer(size / sizeof(uint16_t));
   memcpy(buffer.data(), fp_data.data(), fp_data.size());
-  to_from_little_endian_16(get_data(buffer));
+  to_from_little_endian(get_data(buffer));
   read_floats_fp16(out.data(), (const uint8_t*)buffer.data(), out.size(), nsc);
 }
 
@@ -1305,8 +1305,7 @@ inline crc32_t save_half_vectors(const std::vector<HalfVector>& hvs,
     if (is_bfm_format) {
       convert_half_vector_bfm_format(get_data(buffer), hvs[i]);
     }
-    to_from_big_endian_32(
-        get_data(buffer));  // always save data in big endianness
+    to_from_big_endian(get_data(buffer));  // always save data in big endianness
     crc = crc32_par(crc, get_data(buffer));
     qwrite_data(get_data(buffer), fp);
   }
@@ -1341,7 +1340,7 @@ inline Long decompress_eigen_vectors_node(
   init_compressed_eigen_system_bases(cesb, cesi, idx, size_node);
   init_compressed_eigen_system_coefs(cesc, cesi, idx, size_node);
   std::vector<crc32_t> crcs = load_node(cesb, cesc, cesi, old_path);
-  to_from_big_endian_32(get_data(crcs));
+  to_from_big_endian(get_data(crcs));
   QFile fp = qfopen(new_fn + ".orig-crc32", "w");
   qassert(not fp.null());
   qwrite_data(get_data(crcs), fp);
@@ -1398,7 +1397,7 @@ inline void combine_crc32(const std::string& path, const int idx_size,
             path + ssprintf("/%02d/%010d.orig-crc32", dir_idx, idx), "r");
         if (not fp.null()) {
           qread_data(get_data(crcs), fp);
-          to_from_big_endian_32(get_data(crcs));
+          to_from_big_endian(get_data(crcs));
           qfclose(fp);
         } else {
           displayln(fname +

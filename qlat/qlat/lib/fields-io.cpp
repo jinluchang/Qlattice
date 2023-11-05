@@ -268,17 +268,17 @@ void qfwrite_convert_endian(void* ptr, const size_t size, const size_t nmemb,
                             QFile& qfile, const bool is_little_endian)
 {
   if (size == 4) {
-    convert_endian_32(Vector<int32_t>((int32_t*)ptr, nmemb), is_little_endian);
+    convert_endian(Vector<int32_t>((int32_t*)ptr, nmemb), is_little_endian);
   } else if (size == 8) {
-    convert_endian_64(Vector<int64_t>((int64_t*)ptr, nmemb), is_little_endian);
+    convert_endian(Vector<int64_t>((int64_t*)ptr, nmemb), is_little_endian);
   } else {
     qassert(false);
   }
   qfwrite(ptr, size, nmemb, qfile);
   if (size == 4) {
-    convert_endian_32(Vector<int32_t>((int32_t*)ptr, nmemb), is_little_endian);
+    convert_endian(Vector<int32_t>((int32_t*)ptr, nmemb), is_little_endian);
   } else if (size == 8) {
-    convert_endian_64(Vector<int64_t>((int64_t*)ptr, nmemb), is_little_endian);
+    convert_endian(Vector<int64_t>((int64_t*)ptr, nmemb), is_little_endian);
   } else {
     qassert(false);
   }
@@ -340,9 +340,9 @@ Long qfread_convert_endian(void* ptr, const size_t size, const size_t nmemb,
   }
   const Long total_nmemb = qfread(ptr, size, nmemb, qfile);
   if (size == 4) {
-    convert_endian_32(Vector<int32_t>((int32_t*)ptr, nmemb), is_little_endian);
+    convert_endian(Vector<int32_t>((int32_t*)ptr, nmemb), is_little_endian);
   } else if (size == 8) {
-    convert_endian_64(Vector<int64_t>((int64_t*)ptr, nmemb), is_little_endian);
+    convert_endian(Vector<int64_t>((int64_t*)ptr, nmemb), is_little_endian);
   } else {
     qassert(false);
   }

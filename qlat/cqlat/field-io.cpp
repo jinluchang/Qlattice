@@ -46,13 +46,13 @@ PyObject* to_from_endianness_field_ctype(PyField& pf,
 {
   Field<M>& f = *(Field<M>*)pf.cdata;
   if ("big_32" == endianness_tag) {
-    to_from_big_endian_32(get_data(f));
+    to_from_big_endian(get_data(f));
   } else if ("big_64" == endianness_tag) {
-    to_from_big_endian_64(get_data(f));
+    to_from_big_endian(get_data(f));
   } else if ("little_32" == endianness_tag) {
-    to_from_little_endian_32(get_data(f));
+    to_from_little_endian(get_data(f));
   } else if ("little_64" == endianness_tag) {
-    to_from_little_endian_64(get_data(f));
+    to_from_little_endian(get_data(f));
   } else {
     qassert(false);
   }

@@ -22,6 +22,8 @@
 #include <qlat-utils/assert.h>
 #include <qlat-utils/complex.h>
 #include <qlat-utils/config.h>
+#include <qlat-utils/endian.h>
+#include <qlat-utils/handle.h>
 #include <qlat-utils/qacc-func.h>
 #include <qlat-utils/qacc.h>
 #include <qlat-utils/show.h>

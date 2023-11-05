@@ -2,12 +2,6 @@
 
 #include <qlat-utils/core.h>
 
-#ifdef QLAT_USE_MACHINE_ENDIAN_H
-#include <machine/endian.h>
-#else
-#include <endian.h>
-#endif
-
 #include <vector>
 #include <map>
 #include <set>
@@ -117,20 +111,6 @@ void clear(std::vector<M>& vec)
   std::vector<M> empty;
   std::swap(empty, vec);
 }
-
-// -------------------
-
-qacc bool is_big_endian()
-{
-#if defined(__BYTE_ORDER) && (__BYTE_ORDER != 0) && \
-    (__BYTE_ORDER == __BIG_ENDIAN)
-  return true;
-#else
-  return false;
-#endif
-}
-
-qacc bool is_little_endian() { return not is_big_endian(); }
 
 // -------------------
 

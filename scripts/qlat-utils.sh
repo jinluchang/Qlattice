@@ -26,7 +26,7 @@ source qcore/set-prefix.sh $name
         export LIBS="$QLAT_LIBS"
     fi
 
-    # touch "$wd"/qlat-utils/meson.build
+    rm -rfv "$prefix"/build-successfully.txt
 
     time-run meson setup "$wd/qlat-utils" \
         --prefix="$prefix" \
@@ -38,6 +38,8 @@ source qcore/set-prefix.sh $name
     rm -rfv "$prefix"/bin
     rm -rfv "$prefix"/lib
     time-run meson install
+
+    touch "$prefix"/build-successfully.txt
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"

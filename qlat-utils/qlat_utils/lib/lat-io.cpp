@@ -145,7 +145,7 @@ void LatData::load(QFile& qfile)
     qerr(ssprintf("ERROR: crc do not match: file=%08X computed=%08X path='%s'.",
                   crc, crc_computed, qfile.path().c_str()));
   }
-  to_from_little_endian_64(res.data(), res.size() * sizeof(double));
+  to_from_little_endian<8>(res.data(), res.size() * sizeof(double));
 }
 
 void LatData::save(QFile& qfile) const
@@ -155,7 +155,7 @@ void LatData::save(QFile& qfile) const
   if (!is_little_endian()) {
     res_copy = res;
     qassert(res_copy.size() == res.size());
-    to_from_little_endian_64(res_copy.data(), res_copy.size() * sizeof(double));
+    to_from_little_endian<8>(res_copy.data(), res_copy.size() * sizeof(double));
   }
   const std::string data_size =
       ssprintf("data_size\n%ld\n", res.size() * sizeof(double));
