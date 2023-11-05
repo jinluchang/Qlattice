@@ -169,7 +169,7 @@ void shuffle_field_unpack_send(
 
 template <class M>
 void shuffle_field_unpack_recv(
-    vector<Vector<M> >& fsdata, const Vector<M> recv_buffer,
+    vector<Vector<M>>& fsdata, const Vector<M> recv_buffer,
     const std::vector<ShufflePlanRecvPackInfo>& recv_pack_infos,
     const int multiplicity)
 {
@@ -186,7 +186,7 @@ void shuffle_field_unpack_recv(
 
 template <class M>
 void shuffle_field_pack_recv(
-    Vector<M> recv_buffer, const vector<Vector<M> >& fsdata,
+    Vector<M> recv_buffer, const vector<Vector<M>>& fsdata,
     const std::vector<ShufflePlanRecvPackInfo>& recv_pack_infos,
     const int multiplicity)
 {
@@ -205,7 +205,7 @@ void shuffle_field_pack_recv(
 }
 
 template <class M>
-void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
+void shuffle_field(std::vector<Field<M>>& fs, const Field<M>& f,
                    const ShufflePlan& sp)
 {
   qassert(is_initialized(sp));
@@ -248,7 +248,7 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
     geos_recv[i].remult(geo.multiplicity);
     fs[i].init(geos_recv[i]);
   }
-  vector<Vector<M> > fsdata(fs.size());
+  vector<Vector<M>> fsdata(fs.size());
   for (size_t i = 0; i < fs.size(); ++i) {
     fsdata[i] = get_data(fs[i]);
   }
@@ -258,7 +258,7 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
 }
 
 template <class M>
-void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
+void shuffle_field_back(Field<M>& f, const std::vector<Field<M>>& fs,
                         const ShufflePlan& sp)
 // f needs to have correct size
 {
@@ -289,7 +289,7 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
   const Long total_bytes =
       sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
   timer.flops += total_bytes;
-  vector<Vector<M> > fsdata(fs.size());
+  vector<Vector<M>> fsdata(fs.size());
   for (size_t i = 0; i < fs.size(); ++i) {
     fsdata[i] = get_data(fs[i]);
   }
@@ -306,8 +306,8 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
 }
 
 template <class M>
-void shuffle_field(std::vector<SelectedField<M> >& fs,
-                   const SelectedField<M>& f, const ShufflePlan& sp)
+void shuffle_field(std::vector<SelectedField<M>>& fs, const SelectedField<M>& f,
+                   const ShufflePlan& sp)
 {
   qassert(is_initialized(sp));
   if (is_no_shuffle(sp)) {
@@ -347,7 +347,7 @@ void shuffle_field(std::vector<SelectedField<M> >& fs,
     geos_recv[i].remult(geo.multiplicity);
     fs[i].init(geos_recv[i], sp.n_elems_recv[i], geo.multiplicity);
   }
-  vector<Vector<M> > fsdata(fs.size());
+  vector<Vector<M>> fsdata(fs.size());
   for (size_t i = 0; i < fs.size(); ++i) {
     fsdata[i] = get_data(fs[i]);
   }
@@ -358,7 +358,7 @@ void shuffle_field(std::vector<SelectedField<M> >& fs,
 
 template <class M>
 void shuffle_field_back(SelectedField<M>& f,
-                        const std::vector<SelectedField<M> >& fs,
+                        const std::vector<SelectedField<M>>& fs,
                         const ShufflePlan& sp)
 // f needs to have correct size
 {
@@ -386,7 +386,7 @@ void shuffle_field_back(SelectedField<M>& f,
   const Long total_bytes =
       sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
   timer.flops += total_bytes;
-  vector<Vector<M> > fsdata(fs.size());
+  vector<Vector<M>> fsdata(fs.size());
   for (size_t i = 0; i < fs.size(); ++i) {
     fsdata[i] = get_data(fs[i]);
   }
@@ -415,7 +415,7 @@ void shuffle_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
   qassert(sp.geos_recv.size() == 1);
   const Geometry& geo = sf0.geo();
   timer.flops += sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
-  std::vector<SelectedField<M> > sfs;
+  std::vector<SelectedField<M>> sfs;
   shuffle_field(sfs, sf0, sp);
   qassert(sfs.size() == 1);
   qswap(sf, sfs[0]);
@@ -435,7 +435,7 @@ void shuffle_field_back(SelectedField<M>& sf, const SelectedField<M>& sf0,
   qassert(sp.geos_recv.size() == 1);
   const Geometry& geo = sf0.geo();
   timer.flops += sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
-  std::vector<SelectedField<M> > sfs(1);
+  std::vector<SelectedField<M>> sfs(1);
   sfs[0] = sf0;
   sf.init(geo, sp.n_elems_send, geo.multiplicity);
   shuffle_field_back(sf, sfs, sp);
@@ -818,7 +818,7 @@ inline const ShufflePlan& get_shuffle_plan(const Coordinate& total_site,
 }
 
 template <class M>
-void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
+void shuffle_field(std::vector<Field<M>>& fs, const Field<M>& f,
                    const Coordinate& new_size_node)
 {
   sync_node();
@@ -833,7 +833,7 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
 }
 
 template <class M>
-void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
+void shuffle_field_back(Field<M>& f, const std::vector<Field<M>>& fs,
                         const Coordinate& new_size_node)
 // f needs to have correct size
 {
@@ -849,7 +849,7 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
 // sparse field dist write shuffle
 
 template <class M>
-void shuffle_field(std::vector<SelectedField<M> >& fs,
+void shuffle_field(std::vector<SelectedField<M>>& fs,
                    std::vector<FieldSelection>& fsels,
                    const SelectedField<M>& f, const Coordinate& new_size_node,
                    const FieldSelection& fsel)
@@ -866,7 +866,7 @@ void shuffle_field(std::vector<SelectedField<M> >& fs,
 
 template <class M>
 void shuffle_field_back(SelectedField<M>& f,
-                        const std::vector<SelectedField<M> >& fs,
+                        const std::vector<SelectedField<M>>& fs,
                         const Coordinate& new_size_node,
                         const FieldSelection& fsel)
 // f needs to have correct size
@@ -963,7 +963,7 @@ void reflect_field(Field<M>& f)
   ShufflePlan sp =
       make_shuffle_plan_generic(fsels, fsel, geo.geon.size_node, func);
   qassert(fsels.size() == 1);
-  std::vector<Field<M> > fs;
+  std::vector<Field<M>> fs;
   shuffle_field(fs, f, sp);
   qassert(fs.size() == 1);
   qswap(f, fs[0]);
@@ -1002,7 +1002,7 @@ void field_shift_shuffle(Field<M>& f, const Field<M>& f0,
   ShufflePlan sp =
       make_shuffle_plan_generic(fsels, fsel, geo.geon.size_node, func);
   qassert(fsels.size() == 1);
-  std::vector<Field<M> > fs;
+  std::vector<Field<M>> fs;
   shuffle_field(fs, f0, sp);
   qassert(fs.size() == 1);
   qswap(f, fs[0]);
