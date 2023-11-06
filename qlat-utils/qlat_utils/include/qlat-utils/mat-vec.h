@@ -177,6 +177,18 @@ struct API IsospinMatrixT : MatrixT<2, ComplexT<T>> {
   }
 };
 
+template <class T, QLAT_ENABLE_IF(is_real<T>())>
+struct API AdjointColorMatrixT : MatrixT<8, T> {
+  qacc AdjointColorMatrixT() {}
+  qacc AdjointColorMatrixT(const MatrixT<8, T>& m) { *this = m; }
+  //
+  qacc AdjointColorMatrixT& operator=(const MatrixT<8, T>& m)
+  {
+    *this = (const AdjointColorMatrixT&)m;
+    return *this;
+  }
+};
+
 using ColorMatrix = ColorMatrixT<Real>;
 
 using WilsonMatrix = WilsonMatrixT<Real>;
@@ -187,15 +199,19 @@ using NonRelWilsonMatrix = NonRelWilsonMatrixT<Real>;
 
 using IsospinMatrix = IsospinMatrixT<Real>;
 
-using ColorMatrixD = ColorMatrixT<Real>;
+using AdjointColorMatrix = AdjointColorMatrixT<Real>;
 
-using WilsonMatrixD = WilsonMatrixT<Real>;
+using ColorMatrixD = ColorMatrixT<RealD>;
 
-using SpinMatrixD = SpinMatrixT<Real>;
+using WilsonMatrixD = WilsonMatrixT<RealD>;
 
-using NonRelWilsonMatrixD = NonRelWilsonMatrixT<Real>;
+using SpinMatrixD = SpinMatrixT<RealD>;
 
-using IsospinMatrixD = IsospinMatrixT<Real>;
+using NonRelWilsonMatrixD = NonRelWilsonMatrixT<RealD>;
+
+using IsospinMatrixD = IsospinMatrixT<RealD>;
+
+using AdjointColorMatrixD = AdjointColorMatrixT<RealD>;
 
 using ColorMatrixF = ColorMatrixT<RealF>;
 
@@ -206,6 +222,8 @@ using SpinMatrixF = SpinMatrixT<RealF>;
 using NonRelWilsonMatrixF = NonRelWilsonMatrixT<RealF>;
 
 using IsospinMatrixF = IsospinMatrixT<RealF>;
+
+using AdjointColorMatrixF = AdjointColorMatrixT<RealF>;
 
 // --------------------
 

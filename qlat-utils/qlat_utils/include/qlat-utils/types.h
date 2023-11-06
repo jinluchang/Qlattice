@@ -16,6 +16,78 @@ typedef uint32_t crc32_t;
 // -------------------------------------------------------------------------
 
 template <class M>
+qacc constexpr bool is_signed_integer()
+{
+  return false;
+}
+
+template <>
+qacc constexpr bool is_signed_integer<int8_t>()
+{
+  return true;
+}
+
+template <>
+qacc constexpr bool is_signed_integer<int16_t>()
+{
+  return true;
+}
+
+template <>
+qacc constexpr bool is_signed_integer<int32_t>()
+{
+  return true;
+}
+
+template <>
+qacc constexpr bool is_signed_integer<int64_t>()
+{
+  return true;
+}
+
+// -------------------------------------------------------------------------
+
+template <class M>
+qacc constexpr bool is_unsigned_integer()
+{
+  return false;
+}
+
+template <>
+qacc constexpr bool is_unsigned_integer<uint8_t>()
+{
+  return true;
+}
+
+template <>
+qacc constexpr bool is_unsigned_integer<uint16_t>()
+{
+  return true;
+}
+
+template <>
+qacc constexpr bool is_unsigned_integer<uint32_t>()
+{
+  return true;
+}
+
+template <>
+qacc constexpr bool is_unsigned_integer<int64_t>()
+{
+  return true;
+}
+
+// -------------------------------------------------------------------------
+
+template <class M>
+qacc constexpr bool is_integer()
+{
+  return is_signed_integer<M>() or is_unsigned_integer<M>();
+}
+
+// -------------------------------------------------------------------------
+
+template <class M>
 std::string get_type_name()
 {
   return "unknown";
@@ -338,150 +410,27 @@ qacc constexpr bool is_composed_of_int8<int8_t>()
 // -------------------------------------------------------------------------
 
 template <class M>
-qacc constexpr int element_size_of();  // for example size for convert endian
-
-template <>
-qacc constexpr int element_size_of<int8_t>()
+qacc constexpr int element_size_of()  // for example size for convert endian
 {
-  return 1;
+  int ret = 0;
+  if (is_integer<M>() or is_real<M>()) {
+    ret = sizeof(M);
+  } else if (is_composed_of_real_d<M>()) {
+    ret = sizeof(RealD);
+  } else if (is_composed_of_real_f<M>()) {
+    ret = sizeof(RealF);
+  } else {
+    ret = 0;
+  }
+  return ret;
 }
 
-template <>
-qacc constexpr int element_size_of<int16_t>()
-{
-  return 2;
-}
+// -------------------------------------------------------------------------
 
-template <>
-qacc constexpr int element_size_of<int32_t>()
+template <class M>
+qacc constexpr bool is_data_value_type()  // for example size for convert endian
 {
-  return 4;
-}
-
-template <>
-qacc constexpr int element_size_of<int64_t>()
-{
-  return 8;
-}
-
-template <>
-qacc constexpr int element_size_of<uint8_t>()
-{
-  return 1;
-}
-
-template <>
-qacc constexpr int element_size_of<uint16_t>()
-{
-  return 2;
-}
-
-template <>
-qacc constexpr int element_size_of<uint32_t>()
-{
-  return 4;
-}
-
-template <>
-qacc constexpr int element_size_of<uint64_t>()
-{
-  return 8;
-}
-
-template <>
-qacc constexpr int element_size_of<RealF>()
-{
-  return 4;
-}
-
-template <>
-qacc constexpr int element_size_of<RealD>()
-{
-  return 8;
-}
-
-template <>
-qacc constexpr int element_size_of<ComplexF>()
-{
-  return 4;
-}
-
-template <>
-qacc constexpr int element_size_of<ComplexD>()
-{
-  return 8;
-}
-
-template <>
-qacc constexpr int element_size_of<WilsonVectorD>()
-{
-  return 8;
-}
-
-template <>
-qacc constexpr int element_size_of<SpinMatrixD>()
-{
-  return 8;
-}
-
-template <>
-qacc constexpr int element_size_of<NonRelWilsonMatrixD>()
-{
-  return 8;
-}
-
-template <>
-qacc constexpr int element_size_of<WilsonMatrixD>()
-{
-  return 8;
-}
-
-template <>
-qacc constexpr int element_size_of<ColorMatrixD>()
-{
-  return 8;
-}
-
-template <>
-qacc constexpr int element_size_of<IsospinMatrixD>()
-{
-  return 8;
-}
-
-template <>
-qacc constexpr int element_size_of<WilsonVectorF>()
-{
-  return 4;
-}
-
-template <>
-qacc constexpr int element_size_of<SpinMatrixF>()
-{
-  return 4;
-}
-
-template <>
-qacc constexpr int element_size_of<NonRelWilsonMatrixF>()
-{
-  return 4;
-}
-
-template <>
-qacc constexpr int element_size_of<WilsonMatrixF>()
-{
-  return 4;
-}
-
-template <>
-qacc constexpr int element_size_of<ColorMatrixF>()
-{
-  return 4;
-}
-
-template <>
-qacc constexpr int element_size_of<IsospinMatrixF>()
-{
-  return 4;
+  return element_size_of<M>() > 0;
 }
 
 // -------------------------------------------------------------------------

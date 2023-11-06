@@ -187,17 +187,6 @@ qacc ColorMatrix make_tr_less_anti_herm_matrix(const ColorMatrix& m)
   return ret;
 }
 
-struct API AdjointColorMatrix : MatrixT<8, double> {
-  qacc AdjointColorMatrix() {}
-  qacc AdjointColorMatrix(const MatrixT<8, double>& m) { *this = m; }
-  //
-  qacc AdjointColorMatrix& operator=(const MatrixT<8, double>& m)
-  {
-    *this = (const AdjointColorMatrix&)m;
-    return *this;
-  }
-};
-
 struct API ColorMatrixConstants;
 
 qacc AdjointColorMatrix make_adjoint_representation(

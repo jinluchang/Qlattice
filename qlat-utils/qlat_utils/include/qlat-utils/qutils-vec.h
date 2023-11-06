@@ -217,11 +217,11 @@ qacc Vector<M> get_data_one_elem(const M& x)
 
 qacc Vector<Long> get_data(const Long& x) { return get_data_one_elem(x); }
 
-qacc Vector<double> get_data(const double& x) { return get_data_one_elem(x); }
+qacc Vector<RealD> get_data(const RealD& x) { return get_data_one_elem(x); }
 
-qacc Vector<int> get_data(const int& x) { return get_data_one_elem(x); }
+qacc Vector<Int> get_data(const Int& x) { return get_data_one_elem(x); }
 
-qacc Vector<float> get_data(const float& x) { return get_data_one_elem(x); }
+qacc Vector<RealF> get_data(const RealF& x) { return get_data_one_elem(x); }
 
 template <class T>
 qacc double qnorm(const Vector<T>& mm)
@@ -598,5 +598,9 @@ std::vector<std::vector<M> > vector_split(const std::vector<M>& data,
   }
   return datatable;
 }
+
+void convert_double_from_float(Vector<RealD> vd, const Vector<RealF> vf);
+
+void convert_float_from_double(Vector<RealF> vf, const Vector<RealD> vd);
 
 }  // namespace qlat

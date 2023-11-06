@@ -20,19 +20,33 @@ constexpr int qlat_aligned_bytes(int size) { return 1; }
 #define QLAT_ALIGNED_BYTES 16 // should divide all matrix sizes (which can convert with GPT).
 constexpr int qlat_aligned_bytes(int size)
 {
-  return (size % 2 != 0)     ? 1
-         : (size % 4 != 0)   ? 2
-         : (size % 8 != 0)   ? 4
-         : (size % 16 != 0)  ? 8
-         : (size % 32 != 0)  ? 16
-         : (size % 64 != 0)  ? 32
-         : (size % 128 != 0) ? 64
-         : (size % 256 != 0) ? 128
-                             : 256;
+  int ret = 0;
+  if (size % 2 != 0) {
+    ret = 1;
+  } else if (size % 4 != 0) {
+    ret = 2;
+  } else if (size % 8 != 0) {
+    ret = 4;
+  } else if (size % 16 != 0) {
+    ret = 8;
+  } else if (size % 32 != 0) {
+    ret = 16;
+  } else if (size % 64 != 0) {
+    ret = 32;
+  } else if (size % 128 != 0) {
+    ret = 64;
+  } else if (size % 256 != 0) {
+    ret = 128;
+  } else {
+    ret = 256;
+  }
+  return ret;
 }
 #define QLAT_ALIGN(SIZE) __attribute__((aligned(qlat_aligned_bytes(SIZE))))
 // #define QLAT_ALIGN(SIZE) alignas(SIZE)
 #endif
+
+#define QLAT_ENABLE_IF(X) std::enable_if_t<(X), bool> = true
 
 namespace qlat
 {  //
@@ -43,18 +57,39 @@ using RealF = float;
 
 using Real = RealD;  // default Real type should not change
 
-qacc RealD qnorm(const RealD& x) { return x * x; }
+template <class M>
+qacc constexpr bool is_real()
+{
+  return false;
+}
 
-qacc RealF qnorm(const RealF& x) { return x * x; }
+template <>
+qacc constexpr bool is_real<RealD>()
+{
+  return true;
+}
 
-qacc RealD qconj(const RealD& x) { return x; }
+template <>
+qacc constexpr bool is_real<RealF>()
+{
+  return true;
+}
 
-qacc RealF qconj(const RealF& x) { return x; }
+template <class T, QLAT_ENABLE_IF(is_real<T>())>
+qacc RealD qnorm(const T& x)
+{
+  return x * x;
+}
+
+template <class T, QLAT_ENABLE_IF(is_real<T>())>
+qacc T qconj(const T& x)
+{
+  return x;
+}
 
 #ifdef QLAT_USE_ACC
 
-template <class T,
-          std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
+template <class T, QLAT_ENABLE_IF(is_real<T>())>
 using ComplexT = thrust::complex<T>;
 
 template <class T>
@@ -64,7 +99,7 @@ qacc ComplexT<T> qconj(const ComplexT<T>& x)
 }
 
 template <class T>
-qacc T qnorm(const ComplexT<T>& x)
+qacc RealD qnorm(const ComplexT<T>& x)
 {
   return thrust::norm(x);
 }
@@ -77,8 +112,7 @@ qacc ComplexT<T> qpolar(const T& r, const T& theta = T())
 
 #else
 
-template <class T,
-          std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
+template <class T, QLAT_ENABLE_IF(is_real<T>())>
 using ComplexT = std::complex<T>;
 
 template <class T>
@@ -88,7 +122,7 @@ ComplexT<T> qconj(const ComplexT<T>& x)
 }
 
 template <class T>
-T qnorm(const ComplexT<T>& x)
+RealD qnorm(const ComplexT<T>& x)
 {
   return std::norm(x);
 }
