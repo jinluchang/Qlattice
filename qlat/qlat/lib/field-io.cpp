@@ -5,6 +5,20 @@
 namespace qlat
 {  //
 
+bool is_dist_field(const std::string& path)
+{
+  TIMER("is_dist_field");
+  Long nfile = 0;
+  if (get_id_node() == 0) {
+    if (does_file_exist(path + "/geo-info.txt") and
+        does_file_exist(path + "/checkpoint")) {
+      nfile = 1;
+    }
+  }
+  bcast(get_data(nfile));
+  return nfile > 0;
+}
+
 bool is_field(const std::string& path)
 {
   TIMER("is_field");

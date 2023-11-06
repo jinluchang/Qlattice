@@ -85,6 +85,176 @@ crc32_t field_crc32(const Field<M>& f)
   return field_crc32_shuffle(f);
 }
 
+// ----------------------
+
+template <class M>
+Long dist_write_field(const Field<M>& f, const Coordinate& new_size_node,
+                      const std::string& path)
+// interface_function
+{
+  TIMER_VERBOSE_FLOPS("dist_write_field");
+  displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));
+  std::vector<Field<M>> fs;
+  shuffle_field(fs, f, new_size_node);
+  Long total_bytes = dist_write_fields(fs, product(new_size_node), path);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+template <class M>
+Long dist_read_field(Field<M>& f, const std::string& path)
+// interface_function
+{
+  TIMER_VERBOSE_FLOPS("dist_read_field");
+  displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));
+  Geometry geo;
+  std::vector<Field<M>> fs;
+  Coordinate new_size_node;
+  const Long total_bytes = dist_read_fields(fs, geo, new_size_node, path);
+  if (total_bytes == 0) {
+    return 0;
+  } else {
+    f.init(geo);
+    qassert(f.geo() == geo);
+    shuffle_field_back(f, fs, new_size_node);
+    timer.flops += total_bytes;
+    return total_bytes;
+  }
+}
+
+template <class M, class N>
+void convert_field_float_from_double(Field<N>& ff, const Field<M>& f)
+// interface_function
+{
+  TIMER("convert_field_float_from_double");
+  qassert(f.geo().is_only_local);
+  qassert(sizeof(M) % sizeof(double) == 0);
+  qassert(sizeof(N) % sizeof(float) == 0);
+  qassert(f.geo().multiplicity * sizeof(M) / 2 % sizeof(N) == 0);
+  const int multiplicity = f.geo().multiplicity * sizeof(M) / 2 / sizeof(N);
+  const Geometry geo = geo_remult(f.geo(), multiplicity);
+  ff.init(geo);
+  const Vector<M> fdata = get_data(f);
+  const Vector<double> fd((double*)fdata.data(),
+                          fdata.data_size() / sizeof(double));
+  Vector<N> ffdata = get_data(ff);
+  Vector<float> ffd((float*)ffdata.data(), ffdata.data_size() / sizeof(float));
+  qassert(ffd.size() == fd.size());
+  qacc_for(i, ffd.size(), { ffd[i] = fd[i]; });
+}
+
+template <class M, class N>
+void convert_field_double_from_float(Field<N>& ff, const Field<M>& f)
+// interface_function
+{
+  TIMER("convert_field_double_from_float");
+  qassert(f.geo().is_only_local);
+  qassert(sizeof(M) % sizeof(float) == 0);
+  qassert(sizeof(N) % sizeof(double) == 0);
+  qassert(f.geo().multiplicity * sizeof(M) * 2 % sizeof(N) == 0);
+  const int multiplicity = f.geo().multiplicity * sizeof(M) * 2 / sizeof(N);
+  const Geometry geo = geo_remult(f.geo(), multiplicity);
+  ff.init(geo);
+  const Vector<M> fdata = get_data(f);
+  const Vector<float> fd((float*)fdata.data(),
+                         fdata.data_size() / sizeof(float));
+  Vector<N> ffdata = get_data(ff);
+  Vector<double> ffd((double*)ffdata.data(),
+                     ffdata.data_size() / sizeof(double));
+  qassert(ffd.size() == fd.size());
+  qacc_for(i, ffd.size(), { ffd[i] = fd[i]; });
+}
+
+template <class M>
+Long dist_write_field_float_from_double(const Field<M>& f,
+                                        const std::string& path)
+// interface_function
+{
+  TIMER_VERBOSE_FLOPS("dist_write_field_float_from_double");
+  Field<float> ff;
+  convert_field_float_from_double(ff, f);
+  to_from_big_endian(get_data(ff));
+  const Long total_bytes = dist_write_field(ff, path);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+template <class M>
+Long dist_write_field_float_from_double(const Field<M>& f,
+                                        const Coordinate& new_size_node,
+                                        const std::string& path)
+// interface_function
+{
+  TIMER_VERBOSE_FLOPS("dist_write_field_float_from_double");
+  Field<float> ff;
+  convert_field_float_from_double(ff, f);
+  to_from_big_endian(get_data(ff));
+  const Long total_bytes = dist_write_field(ff, new_size_node, path);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+template <class M>
+Long dist_read_field_double_from_float(Field<M>& f, const std::string& path)
+// interface_function
+{
+  TIMER_VERBOSE_FLOPS("dist_read_field_double_from_float");
+  Field<float> ff;
+  const Long total_bytes = dist_read_field(ff, path);
+  if (total_bytes == 0) {
+    return 0;
+  } else {
+    to_from_big_endian(get_data(ff));
+    convert_field_double_from_float(f, ff);
+    timer.flops += total_bytes;
+    return total_bytes;
+  }
+}
+
+template <class M>
+Long dist_write_field_double(const Field<M>& f, const std::string& path)
+// interface_function
+{
+  TIMER_VERBOSE_FLOPS("dist_write_field_double");
+  Field<M> ff;
+  ff.init(f);
+  to_from_big_endian(get_data(ff));
+  const Long total_bytes = dist_write_field(ff, path);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+template <class M>
+Long dist_write_field_double(const Field<M>& f, const Coordinate& new_size_node,
+                             const std::string& path)
+// interface_function
+{
+  TIMER_VERBOSE_FLOPS("dist_write_field_double");
+  Field<M> ff;
+  ff.init(f);
+  to_from_big_endian(get_data(ff));
+  const Long total_bytes = dist_write_field(ff, new_size_node, path);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+template <class M>
+Long dist_read_field_double(Field<M>& f, const std::string& path)
+// interface_function
+{
+  TIMER_VERBOSE_FLOPS("dist_read_field_double");
+  const Long total_bytes = dist_read_field(f, path);
+  if (total_bytes == 0) {
+    return 0;
+  } else {
+    to_from_big_endian(get_data(f));
+    timer.flops += total_bytes;
+    return total_bytes;
+  }
+}
+
+// ----------------------
+
 inline std::string make_field_header(const Geometry& geo, const int sizeof_M,
                                      const crc32_t crc32)
 {
@@ -326,6 +496,10 @@ Long read_field_double(Field<M>& f, const std::string& path,
   }
 }
 
+// --------------------
+
+bool is_dist_field(const std::string& path);
+
 bool is_field(const std::string& path);
 
 bool is_d_field(const std::string& path);
@@ -341,18 +515,25 @@ bool dist_repartition(const Coordinate& new_size_node, const std::string& path,
 #define QLAT_EXTERN extern
 #endif
 
-#define QLAT_EXTERN_TEMPLATE(TYPENAME)                   \
-                                                         \
-  QLAT_EXTERN template crc32_t field_crc32<TYPENAME>(    \
-      const Field<TYPENAME>& f);                         \
-                                                         \
-  QLAT_EXTERN template Long write_field<TYPENAME>(       \
-      const Field<TYPENAME>& f, const std::string& path, \
-      const Coordinate& new_size_node);                  \
-                                                         \
-  QLAT_EXTERN template Long read_field<TYPENAME>(        \
-      Field<TYPENAME> & f, const std::string& path,      \
-      const Coordinate& new_size_node_)
+#define QLAT_EXTERN_TEMPLATE(TYPENAME)                           \
+                                                                 \
+  QLAT_EXTERN template crc32_t field_crc32<TYPENAME>(            \
+      const Field<TYPENAME>& f);                                 \
+                                                                 \
+  QLAT_EXTERN template Long dist_write_field<TYPENAME>(          \
+      const Field<TYPENAME>& f, const Coordinate& new_size_node, \
+      const std::string& path);                                  \
+                                                                 \
+  QLAT_EXTERN template Long dist_read_field<TYPENAME>(           \
+      Field<TYPENAME> & f, const std::string& path);             \
+                                                                 \
+  QLAT_EXTERN template Long write_field<TYPENAME>(               \
+      const Field<TYPENAME>& f, const std::string& path,         \
+      const Coordinate& new_size_node);                          \
+                                                                 \
+  QLAT_EXTERN template Long read_field<TYPENAME>(                \
+      Field<TYPENAME> & f, const std::string& path,              \
+      const Coordinate& new_size_node)
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 #undef QLAT_EXTERN_TEMPLATE

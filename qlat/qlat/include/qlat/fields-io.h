@@ -22,7 +22,7 @@
 
 #include <errno.h>
 #include <qlat-utils/qar-cache.h>
-#include <qlat/field-dist-io.h>
+#include <qlat/field-io.h>
 #include <qlat/selected-field.h>
 #include <qlat/selected-points.h>
 
