@@ -41,7 +41,7 @@ using RealD = double;
 
 using RealF = float;
 
-using Real = RealD;  // default Real type
+using Real = RealD;  // default Real type should not change
 
 qacc RealD qnorm(const RealD& x) { return x * x; }
 
@@ -53,7 +53,7 @@ qacc RealF qconj(const RealF& x) { return x; }
 
 #ifdef QLAT_USE_ACC
 
-template <class T = Real,
+template <class T,
           std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
 using ComplexT = thrust::complex<T>;
 
@@ -77,7 +77,7 @@ qacc ComplexT<T> qpolar(const T& r, const T& theta = T())
 
 #else
 
-template <class T = Real,
+template <class T,
           std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
 using ComplexT = std::complex<T>;
 

@@ -73,10 +73,10 @@ qacc void unitarize(ColorMatrixT<T>& cm)
   cross_product_conj(p3, p1, p2);
 }
 
-qacc ColorMatrixT<> make_anti_hermitian_matrix(const array<double, 8>& basis)
+qacc ColorMatrix make_anti_hermitian_matrix(const array<double, 8>& basis)
 {
   qassert(3 == NUM_COLOR);
-  ColorMatrixT<> m;
+  ColorMatrix m;
   Array<double, 18> p(m.d());
   const double s3 = (1.0 / std::sqrt(3.0)) * basis[7];
   p[0] = 0.0;
@@ -117,7 +117,7 @@ qacc array<double, 8> basis_projection_anti_hermitian_matrix(
   return basis;
 }
 
-inline ColorMatrixT<> make_g_rand_anti_hermitian_matrix(RngState& rs,
+inline ColorMatrix make_g_rand_anti_hermitian_matrix(RngState& rs,
                                                         const double sigma)
 //  Creates an antihermitian 3x3 complex matrix with each complex
 //  element drawn at random from a gaussian distribution with zero mean.
@@ -133,7 +133,7 @@ inline ColorMatrixT<> make_g_rand_anti_hermitian_matrix(RngState& rs,
   return make_anti_hermitian_matrix(a);
 }
 
-qacc double neg_half_tr_square(const ColorMatrixT<>& m)
+qacc double neg_half_tr_square(const ColorMatrix& m)
 {
   const Array<double, 18> p(m.d());
   return sqr(p[3]) + sqr(p[2]) + sqr(p[1] - p[9]) * 0.25 + sqr(p[5]) +
@@ -174,10 +174,10 @@ qacc ColorMatrixT<T> matrix_evolve(const ColorMatrixT<T>& gf_cm,
   return make_matrix_exp(t) * gf_cm;
 }
 
-qacc ColorMatrixT<> make_tr_less_anti_herm_matrix(const ColorMatrixT<>& m)
+qacc ColorMatrix make_tr_less_anti_herm_matrix(const ColorMatrix& m)
 // (m - m^\dagger) / 2 - Tr(m - m^\dagger) / 6
 {
-  ColorMatrixT<> ret = m - matrix_adjoint(m);
+  ColorMatrix ret = m - matrix_adjoint(m);
   ret *= 0.5;
   Array<double, 18> p(ret.d());
   const double c = (p[1] + p[9] + p[17]) / 3.0;

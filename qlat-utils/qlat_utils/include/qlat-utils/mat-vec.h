@@ -110,10 +110,10 @@ struct API QLAT_ALIGN(sizeof(T) * DIMN * DIMN) MatrixT {
   }
 };
 
-template <class T = Real>
-struct API ColorMatrixT : MatrixT<NUM_COLOR, ComplexT<T> > {
+template <class T>
+struct API ColorMatrixT : MatrixT<NUM_COLOR, ComplexT<T>> {
   qacc ColorMatrixT() {}
-  qacc ColorMatrixT(const MatrixT<NUM_COLOR, ComplexT<T> >& m) { *this = m; }
+  qacc ColorMatrixT(const MatrixT<NUM_COLOR, ComplexT<T>>& m) { *this = m; }
   //
   qacc ColorMatrixT& operator=(const MatrixT<NUM_COLOR, ComplexT<T>>& m)
   {
@@ -122,10 +122,10 @@ struct API ColorMatrixT : MatrixT<NUM_COLOR, ComplexT<T> > {
   }
 };
 
-template <class T = Real>
-struct API WilsonMatrixT : MatrixT<4 * NUM_COLOR, ComplexT<T> > {
+template <class T>
+struct API WilsonMatrixT : MatrixT<4 * NUM_COLOR, ComplexT<T>> {
   qacc WilsonMatrixT() {}
-  qacc WilsonMatrixT(const MatrixT<4 * NUM_COLOR, ComplexT<T> >& m)
+  qacc WilsonMatrixT(const MatrixT<4 * NUM_COLOR, ComplexT<T>>& m)
   {
     *this = m;
   }
@@ -137,10 +137,10 @@ struct API WilsonMatrixT : MatrixT<4 * NUM_COLOR, ComplexT<T> > {
   }
 };
 
-template <class T = Real>
-struct API SpinMatrixT : MatrixT<4, ComplexT<T> > {
+template <class T>
+struct API SpinMatrixT : MatrixT<4, ComplexT<T>> {
   qacc SpinMatrixT() {}
-  qacc SpinMatrixT(const MatrixT<4, ComplexT<T> >& m) { *this = m; }
+  qacc SpinMatrixT(const MatrixT<4, ComplexT<T>>& m) { *this = m; }
   //
   qacc SpinMatrixT& operator=(const MatrixT<4, ComplexT<T>>& m)
   {
@@ -149,10 +149,10 @@ struct API SpinMatrixT : MatrixT<4, ComplexT<T> > {
   }
 };
 
-template <class T = Real>
-struct API NonRelWilsonMatrixT : MatrixT<2 * NUM_COLOR, ComplexT<T> > {
+template <class T>
+struct API NonRelWilsonMatrixT : MatrixT<2 * NUM_COLOR, ComplexT<T>> {
   qacc NonRelWilsonMatrixT() {}
-  qacc NonRelWilsonMatrixT(const MatrixT<2 * NUM_COLOR, ComplexT<T> >& m)
+  qacc NonRelWilsonMatrixT(const MatrixT<2 * NUM_COLOR, ComplexT<T>>& m)
   {
     *this = m;
   }
@@ -165,10 +165,10 @@ struct API NonRelWilsonMatrixT : MatrixT<2 * NUM_COLOR, ComplexT<T> > {
   }
 };
 
-template <class T = Real>
-struct API IsospinMatrixT : MatrixT<2, ComplexT<T> > {
+template <class T>
+struct API IsospinMatrixT : MatrixT<2, ComplexT<T>> {
   qacc IsospinMatrixT() {}
-  qacc IsospinMatrixT(const MatrixT<2, ComplexT<T> >& m) { *this = m; }
+  qacc IsospinMatrixT(const MatrixT<2, ComplexT<T>>& m) { *this = m; }
   //
   qacc IsospinMatrixT& operator=(const MatrixT<2, ComplexT<T>>& m)
   {
@@ -177,15 +177,35 @@ struct API IsospinMatrixT : MatrixT<2, ComplexT<T> > {
   }
 };
 
-using ColorMatrix = ColorMatrixT<>;
+using ColorMatrix = ColorMatrixT<Real>;
 
-using WilsonMatrix = WilsonMatrixT<>;
+using WilsonMatrix = WilsonMatrixT<Real>;
 
-using SpinMatrix = SpinMatrixT<>;
+using SpinMatrix = SpinMatrixT<Real>;
 
-using NonRelWilsonMatrix = NonRelWilsonMatrixT<>;
+using NonRelWilsonMatrix = NonRelWilsonMatrixT<Real>;
 
-using IsospinMatrix = IsospinMatrixT<>;
+using IsospinMatrix = IsospinMatrixT<Real>;
+
+using ColorMatrixD = ColorMatrixT<Real>;
+
+using WilsonMatrixD = WilsonMatrixT<Real>;
+
+using SpinMatrixD = SpinMatrixT<Real>;
+
+using NonRelWilsonMatrixD = NonRelWilsonMatrixT<Real>;
+
+using IsospinMatrixD = IsospinMatrixT<Real>;
+
+using ColorMatrixF = ColorMatrixT<RealF>;
+
+using WilsonMatrixF = WilsonMatrixT<RealF>;
+
+using SpinMatrixF = SpinMatrixT<RealF>;
+
+using NonRelWilsonMatrixF = NonRelWilsonMatrixT<RealF>;
+
+using IsospinMatrixF = IsospinMatrixT<RealF>;
 
 // --------------------
 
@@ -243,26 +263,25 @@ struct API QLAT_ALIGN(sizeof(T) * DIMN) MvectorT {
   }
 };
 
-template <class T = Real>
-struct API WilsonVectorT : MvectorT<4 * NUM_COLOR, ComplexT<T> > {
+template <class T>
+struct API WilsonVectorT : MvectorT<4 * NUM_COLOR, ComplexT<T>> {
   qacc WilsonVectorT() {}
-  qacc WilsonVectorT(const MvectorT<4 * NUM_COLOR, ComplexT<T> >& m)
+  qacc WilsonVectorT(const MvectorT<4 * NUM_COLOR, ComplexT<T>>& m)
   {
     *this = m;
   }
   //
-  qacc WilsonVectorT& operator=(
-      const MvectorT<4 * NUM_COLOR, ComplexT<T> >& m)
+  qacc WilsonVectorT& operator=(const MvectorT<4 * NUM_COLOR, ComplexT<T>>& m)
   {
     *this = (const WilsonVectorT&)m;
     return *this;
   }
 };
 
-template <class T = Real>
-struct API SpinVectorT : MvectorT<4, ComplexT<T> > {
+template <class T>
+struct API SpinVectorT : MvectorT<4, ComplexT<T>> {
   qacc SpinVectorT() {}
-  qacc SpinVectorT(const MvectorT<4, ComplexT<T> >& m) { *this = m; }
+  qacc SpinVectorT(const MvectorT<4, ComplexT<T>>& m) { *this = m; }
   //
   qacc SpinVectorT& operator=(const MvectorT<4, ComplexT<T>>& m)
   {
@@ -271,9 +290,17 @@ struct API SpinVectorT : MvectorT<4, ComplexT<T> > {
   }
 };
 
-using WilsonVector = WilsonVectorT<>;
+using WilsonVector = WilsonVectorT<Real>;
 
-using SpinVector = SpinVectorT<>;
+using SpinVector = SpinVectorT<Real>;
+
+using WilsonVectorD = WilsonVectorT<RealD>;
+
+using SpinVectorD = SpinVectorT<RealD>;
+
+using WilsonVectorF = WilsonVectorT<RealF>;
+
+using SpinVectorF = SpinVectorT<RealF>;
 
 // --------------------
 

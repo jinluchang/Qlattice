@@ -7,7 +7,7 @@
 namespace qlat
 {  //
 
-const SpinMatrixT<>& get_gamma_matrix(const int mu);
+const SpinMatrixT<RealD>& get_gamma_matrix(const int mu);
 
 void benchmark_matrix_functions(const Long count = 128);
 
