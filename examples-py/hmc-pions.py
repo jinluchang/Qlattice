@@ -841,6 +841,9 @@ def main():
     # started where this one left off
     hmc.save_field()
     measurements.save()
+    
+    q.displayln_info(f"CHECK: The vacuum expectation value of phi_0 is {round(np.mean(measurements.phi_list[int(n_traj/2):], axis=0)[0],2)}.")
+    q.displayln_info(f"CHECK: The vacuum expectation value of phi^2 is {round(np.mean(measurements.psq_list[int(n_traj/2):]),2)}.")
 
 size_node_list = [
         [1, 1, 1, 1],
