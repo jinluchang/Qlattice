@@ -1,8 +1,8 @@
 #pragma once
 
-#include <qlat-utils/qacc.h>
 #include <qlat-utils/array.h>
 #include <qlat-utils/assert.h>
+#include <qlat-utils/qacc.h>
 
 namespace qlat
 {  //
@@ -137,7 +137,7 @@ struct API Vector {
   }
 };
 
-template <class M, int N>
+template <class M, Long N>
 struct API Array {
   M* p;
   //
@@ -156,12 +156,12 @@ struct API Array {
     p = (M*)&x;
   }
   //
-  qacc const M& operator[](int i) const
+  qacc const M& operator[](Long i) const
   {
     qassert(0 <= i && i < N);
     return p[i];
   }
-  qacc M& operator[](int i)
+  qacc M& operator[](Long i)
   {
     qassert(0 <= i && i < N);
     return p[i];
@@ -170,7 +170,7 @@ struct API Array {
   qacc M* data() { return p; }
   qacc const M* data() const { return p; }
   //
-  qacc int size() const { return N; }
+  qacc Long size() const { return N; }
   //
   qacc Long data_size() const { return N * sizeof(M); }
   //

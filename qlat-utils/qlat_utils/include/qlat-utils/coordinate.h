@@ -33,42 +33,6 @@
 namespace qlat
 {
 
-// --------------------
-
-qacc bool qisnan(const float& arg) { return std::isnan(arg); }
-
-qacc bool qisnan(const double& arg) { return std::isnan(arg); }
-
-template <class T>
-bool qisnan(const std::complex<T>& arg)
-{
-  return qisnan(arg.real()) or qisnan(arg.imag());
-}
-
-template <class M, unsigned long N>
-qacc bool qisnan(const array<M, N>& arr)
-{
-  for (int i = 0; i < (int)N; ++i) {
-    if (qisnan(arr[i])) {
-      return true;
-    }
-  }
-  return false;
-}
-
-template <class M>
-bool qisnan(const std::vector<M>& arr)
-{
-  for (size_t i = 0; i < arr.size(); ++i) {
-    if (qisnan(arr[i])) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// --------------------
-
 qacc Long modl(const Long x, const Long len)
 {
   qassert(0 < len);
@@ -175,18 +139,6 @@ qacc double middle_mod(const double x, const double y, const double len)
 }
 
 // --------------------
-
-struct API Coordinate : public array<Int, DIMN> {
-  qacc Coordinate() { array<Int, DIMN>::fill(0); }
-  qacc Coordinate(Int first, Int second, Int third, Int fourth)
-  {
-    Int* p = data();
-    p[0] = first;
-    p[1] = second;
-    p[2] = third;
-    p[3] = fourth;
-  }
-};
 
 inline std::string show(const Coordinate& x)
 {
@@ -334,34 +286,6 @@ qacc Coordinate c_rand_gen(RngState& rs, const Coordinate& size)
 }
 
 // --------------------
-
-struct API CoordinateD : public array<RealD, DIMN> {
-  qacc CoordinateD() { memset(this, 0, sizeof(CoordinateD)); }
-  qacc CoordinateD(const array<RealD, DIMN>& arr)
-  {
-    CoordinateD& c = *this;
-    c = arr;
-    qassert(false == qisnan(c));
-  }
-  qacc CoordinateD(const RealD x0, const RealD x1, const RealD x2,
-                   const RealD x3)
-  {
-    qassert(DIMN == 4);
-    CoordinateD& c = *this;
-    c[0] = x0;
-    c[1] = x1;
-    c[2] = x2;
-    c[3] = x3;
-    qassert(false == qisnan(c));
-  }
-  qacc CoordinateD(const Coordinate& x)
-  {
-    CoordinateD& c = *this;
-    for (int i = 0; i < DIMN; ++i) {
-      c[i] = x[i];
-    }
-  }
-};
 
 inline std::string show(const CoordinateD& c)
 {

@@ -427,7 +427,7 @@ int glb_sum_vec(Vector<M> x)
 {
   if (is_composed_of_real_d<M>()) {
     return glb_sum_double_vec(x);
-  } else if (is_composed_of_int64<M>()) {
+  } else if (is_composed_of_long<M>()) {
     return glb_sum_int64_vec(x);
   } else if (is_composed_of_real_f<M>()) {
     return glb_sum_float_vec(x);

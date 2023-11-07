@@ -18,12 +18,12 @@
 
 #pragma once
 
-#include <qlat-utils/config.h>
-#include <qlat-utils/qacc.h>
 #include <qlat-utils/assert.h>
 #include <qlat-utils/complex.h>
-#include <qlat-utils/qcd-setting.h>
+#include <qlat-utils/config.h>
 #include <qlat-utils/handle.h>
+#include <qlat-utils/qacc.h>
+#include <qlat-utils/qcd-setting.h>
 
 namespace qlat
 {

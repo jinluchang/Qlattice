@@ -7,25 +7,25 @@
 namespace qlat
 {  //
 
-template <class T, int N>
+template <class T, Long N>
 qacc void normalize_array_real(Array<T, N> p)
 //------------------------------------------------------------------
 // Few routines that are needed by the Unitarize routine
 //------------------------------------------------------------------
 {
   RealD norm = 0;
-  for (int i = 0; i < N; i++) {
+  for (Long i = 0; i < N; i++) {
     norm += p[i] * p[i];
   }
   if (not(norm == 1.0)) {
     norm = 1.0 / sqrt(norm);
-    for (int i = 0; i < N; i++) {
+    for (Long i = 0; i < N; i++) {
       p[i] *= norm;
     }
   }
 }
 
-template <class T, int N>
+template <class T, Long N>
 qacc void normalize_array_complex(Array<ComplexT<T>, N> p)
 //------------------------------------------------------------------
 // Few routines that are needed by the Unitarize routine
@@ -35,17 +35,17 @@ qacc void normalize_array_complex(Array<ComplexT<T>, N> p)
   normalize_array_real(p_r);
 }
 
-template <class T, int N>
+template <class T, Long N>
 qacc void orthogonalize_array_complex(Array<T, N> p2, const Array<T, N> p1)
 //	v2' = v2 - v1 * (v1^*, v2)
 // 	then	(v1^*, v2') = 0
 {
   ComplexD c = 0.0;
-  for (int i = 0; i < N; ++i) {
+  for (Long i = 0; i < N; ++i) {
     c += qconj(p1[i]) * p2[i];
   }
   if (not(c == 0.0)) {
-    for (int i = 0; i < N; ++i) {
+    for (Long i = 0; i < N; ++i) {
       p2[i] -= c * p1[i];
     }
   }
@@ -53,7 +53,7 @@ qacc void orthogonalize_array_complex(Array<T, N> p2, const Array<T, N> p1)
 
 template <class T>
 qacc void cross_product_conj(Array<T, 3> v3, const Array<T, 3> v1,
-                        const Array<T, 3> v2)
+                             const Array<T, 3> v2)
 // v3 = ( v1 x v2 )^*
 {
   v3[0] = qconj(v1[1] * v2[2] - v1[2] * v2[1]);

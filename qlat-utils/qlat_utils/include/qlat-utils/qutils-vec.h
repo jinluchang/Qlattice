@@ -159,18 +159,6 @@ qacc void set_zero(Array<M, N> arr)
   std::memset((void*)arr.data(), 0, size);
 }
 
-template <class M, int N>
-qacc Vector<M> get_data(Array<M, N> arr)
-{
-  return Vector<M>(arr.data(), arr.size());
-}
-
-template <class M>
-qacc Vector<M> get_data(Vector<M> vec)
-{
-  return vec;
-}
-
 template <class M>
 qacc Vector<M> get_data(Vector<M> vec, const Long size)
 // only get a portion of the vec
@@ -178,18 +166,6 @@ qacc Vector<M> get_data(Vector<M> vec, const Long size)
 {
   qassert(vec.size() >= size);
   return Vector<M>(vec.data(), size);
-}
-
-template <class M, unsigned long N>
-qacc Vector<M> get_data(const array<M, N>& vec)
-{
-  return Vector<M>((M*)vec.data(), vec.size());
-}
-
-template <class M>
-Vector<M> get_data(const std::vector<M>& vec)
-{
-  return Vector<M>((M*)vec.data(), vec.size());
 }
 
 inline Vector<char> get_data(const std::string& str)

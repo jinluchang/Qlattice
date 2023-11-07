@@ -1185,12 +1185,11 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
   FUNC(WilsonVector);              \
   FUNC(ComplexD);                  \
   FUNC(ComplexF);                  \
-  FUNC(double);                    \
-  FUNC(float);                     \
-  FUNC(int64_t);                   \
-  FUNC(int32_t);                   \
-  FUNC(char);                      \
-  FUNC(int8_t)
+  FUNC(RealD);                     \
+  FUNC(RealF);                     \
+  FUNC(Long);                      \
+  FUNC(Int);                       \
+  FUNC(Char)
 
 #define QLAT_CALL_WITH_TYPES_1(FUNC, TYPENAME) \
   FUNC(ColorMatrix, TYPENAME);                 \
@@ -1201,12 +1200,11 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
   FUNC(WilsonVector, TYPENAME);                \
   FUNC(ComplexD, TYPENAME);                    \
   FUNC(ComplexF, TYPENAME);                    \
-  FUNC(double, TYPENAME);                      \
-  FUNC(float, TYPENAME);                       \
-  FUNC(int64_t, TYPENAME);                     \
-  FUNC(int32_t, TYPENAME);                     \
-  FUNC(char, TYPENAME);                        \
-  FUNC(int8_t, TYPENAME)
+  FUNC(RealD, TYPENAME);                       \
+  FUNC(RealF, TYPENAME);                       \
+  FUNC(Long, TYPENAME);                        \
+  FUNC(Int, TYPENAME);                         \
+  FUNC(Char, TYPENAME)
 
 #define QLAT_CALL_WITH_TYPES_2(FUNC)                \
   QLAT_CALL_WITH_TYPES_1(FUNC, ColorMatrix);        \
@@ -1217,12 +1215,11 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
   QLAT_CALL_WITH_TYPES_1(FUNC, WilsonVector);       \
   QLAT_CALL_WITH_TYPES_1(FUNC, ComplexD);           \
   QLAT_CALL_WITH_TYPES_1(FUNC, ComplexF);           \
-  QLAT_CALL_WITH_TYPES_1(FUNC, double);             \
-  QLAT_CALL_WITH_TYPES_1(FUNC, float);              \
-  QLAT_CALL_WITH_TYPES_1(FUNC, int64_t);            \
-  QLAT_CALL_WITH_TYPES_1(FUNC, int32_t);            \
-  QLAT_CALL_WITH_TYPES_1(FUNC, char);               \
-  QLAT_CALL_WITH_TYPES_1(FUNC, int8_t)
+  QLAT_CALL_WITH_TYPES_1(FUNC, RealD);              \
+  QLAT_CALL_WITH_TYPES_1(FUNC, RealF);              \
+  QLAT_CALL_WITH_TYPES_1(FUNC, Long);               \
+  QLAT_CALL_WITH_TYPES_1(FUNC, Int);                \
+  QLAT_CALL_WITH_TYPES_1(FUNC, Char)
 
 #ifdef QLAT_INSTANTIATE_CORE
 #define QLAT_EXTERN
@@ -1245,7 +1242,7 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
   QLAT_EXTERN template void set_zero<TYPENAME>(SelectedPoints<TYPENAME> & f); \
                                                                               \
   QLAT_EXTERN template void set_unit<TYPENAME>(Field<TYPENAME> & f,           \
-                                               const ComplexD& coef);          \
+                                               const ComplexD& coef);         \
                                                                               \
   QLAT_EXTERN template void qswap<TYPENAME>(Field<TYPENAME> & f1,             \
                                             Field<TYPENAME> & f2);            \

@@ -28,8 +28,10 @@
 #include <qlat-utils/qacc.h>
 #include <qlat-utils/show.h>
 #include <qlat-utils/timer.h>
+#include <qlat-utils/types.h>
 #include <qlat-utils/vector.h>
 #include <qlat-utils/version.h>
+#include <qlat-utils/qutils.h>
 #include <unistd.h>
 
 namespace qlat

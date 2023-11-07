@@ -51,6 +51,12 @@ constexpr int qlat_aligned_bytes(int size)
 namespace qlat
 {  //
 
+template <class M, class N>
+qacc constexpr bool is_same()
+{
+  return std::is_same<M, N>::value;
+}
+
 using RealD = double;
 
 using RealF = float;
@@ -60,19 +66,19 @@ using Real = RealD;  // default Real type should not change
 template <class M>
 qacc constexpr bool is_real()
 {
-  return false;
+  bool ret = false;
+  if (is_same<M, RealD>()) {
+    ret = true;
+  } else if (is_same<M, RealF>()) {
+    ret = true;
+  }
+  return ret;
 }
 
-template <>
-qacc constexpr bool is_real<RealD>()
+template <class T, QLAT_ENABLE_IF(is_real<T>())>
+qacc bool qisnan(const T& x)
 {
-  return true;
-}
-
-template <>
-qacc constexpr bool is_real<RealF>()
-{
-  return true;
+  return std::isnan(x);
 }
 
 template <class T, QLAT_ENABLE_IF(is_real<T>())>
@@ -135,11 +141,29 @@ ComplexT<T> qpolar(const T& r, const T& theta = T())
 
 #endif
 
+template <class T>
+bool qisnan(const ComplexT<T>& arg)
+{
+  return qisnan(arg.real()) or qisnan(arg.imag());
+}
+
 using ComplexD = ComplexT<RealD>;
 
 using ComplexF = ComplexT<RealF>;
 
 using Complex = ComplexT<Real>;
+
+template <class M>
+qacc constexpr bool is_complex()
+{
+  bool ret = false;
+  if (is_same<M, ComplexD>()) {
+    ret = true;
+  } else if (is_same<M, ComplexF>()) {
+    ret = true;
+  }
+  return ret;
+}
 
 const ComplexD ii(0, 1);
 

@@ -7,6 +7,7 @@
 #endif
 
 #include <qlat-utils/handle.h>
+#include <qlat-utils/types.h>
 
 namespace qlat
 {  //
@@ -116,6 +117,22 @@ qacc void to_from_big_endian(void* str, const size_t len)
   if (is_little_endian()) {
     flip_endian<SIZE>(str, len);
   }
+}
+
+// -------------------
+
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+qacc void to_from_little_endian(Vector<M> v)
+{
+  constexpr int size = element_size_of<M>();
+  to_from_little_endian<size>((void*)v.data(), v.data_size());
+}
+
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+qacc void to_from_big_endian(Vector<M> v)
+{
+  constexpr int size = element_size_of<M>();
+  to_from_big_endian<size>((void*)v.data(), v.data_size());
 }
 
 // -------------------

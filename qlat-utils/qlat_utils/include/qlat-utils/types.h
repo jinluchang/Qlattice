@@ -1,7 +1,6 @@
 #pragma once
 
-#include <qlat-utils/matrix.h>
-#include <qlat-utils/endian.h>
+#include <qlat-utils/mat-vec.h>
 
 #include <cstdint>
 #include <vector>
@@ -9,9 +8,75 @@
 namespace qlat
 {  //
 
-typedef std::vector<std::vector<RealD>> DataTable;
+using DataTable = std::vector<std::vector<RealD>>;
 
-typedef uint32_t crc32_t;
+using crc32_t = uint32_t;
+
+// -------------------------------------------------------------------------
+
+template <class M, size_t N>
+qacc bool qisnan(const array<M, N>& arr)
+{
+  for (int i = 0; i < (int)N; ++i) {
+    if (qisnan(arr[i])) {
+      return true;
+    }
+  }
+  return false;
+}
+
+template <class M>
+bool qisnan(const std::vector<M>& arr)
+{
+  for (size_t i = 0; i < arr.size(); ++i) {
+    if (qisnan(arr[i])) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// --------------------
+
+struct API Coordinate : public array<Int, DIMN> {
+  qacc Coordinate() { array<Int, DIMN>::fill(0); }
+  qacc Coordinate(Int first, Int second, Int third, Int fourth)
+  {
+    Int* p = data();
+    p[0] = first;
+    p[1] = second;
+    p[2] = third;
+    p[3] = fourth;
+  }
+};
+
+struct API CoordinateD : public array<RealD, DIMN> {
+  qacc CoordinateD() { memset(this, 0, sizeof(CoordinateD)); }
+  qacc CoordinateD(const array<RealD, DIMN>& arr)
+  {
+    CoordinateD& c = *this;
+    c = arr;
+    qassert(false == qisnan(c));
+  }
+  qacc CoordinateD(const RealD x0, const RealD x1, const RealD x2,
+                   const RealD x3)
+  {
+    qassert(DIMN == 4);
+    CoordinateD& c = *this;
+    c[0] = x0;
+    c[1] = x1;
+    c[2] = x2;
+    c[3] = x3;
+    qassert(false == qisnan(c));
+  }
+  qacc CoordinateD(const Coordinate& x)
+  {
+    CoordinateD& c = *this;
+    for (int i = 0; i < DIMN; ++i) {
+      c[i] = x[i];
+    }
+  }
+};
 
 // -------------------------------------------------------------------------
 
@@ -83,6 +148,30 @@ template <class M>
 qacc constexpr bool is_integer()
 {
   return is_signed_integer<M>() or is_unsigned_integer<M>();
+}
+
+// -------------------------------------------------------------------------
+
+template <class M>
+qacc constexpr bool is_number()
+{
+  return is_integer<M>() or is_real<M>() or is_complex<M>();
+}
+
+// -------------------------------------------------------------------------
+
+template <class M>
+qacc constexpr bool is_char()
+{
+  bool ret = false;
+  if (is_same<M, char>()) {
+    ret = true;
+  } else if (is_same<M, signed char>()) {
+    ret = true;
+  } else if (is_same<M, unsigned char>()) {
+    ret = true;
+  }
+  return ret;
 }
 
 // -------------------------------------------------------------------------
@@ -304,13 +393,13 @@ qacc constexpr bool is_composed_of_complex_d<SpinVectorD>()
 template <class M>
 qacc constexpr bool is_composed_of_real_d()
 {
-  return is_composed_of_complex_d<M>();
-}
-
-template <>
-qacc constexpr bool is_composed_of_real_d<RealD>()
-{
-  return true;
+  bool ret = is_composed_of_complex_d<M>();
+  if (is_same<M, RealD>()) {
+    ret = true;
+  } else if (is_same<M, CoordinateD>()) {
+    ret = true;
+  }
+  return ret;
 }
 
 // -------------------------------------------------------------------------
@@ -392,43 +481,41 @@ qacc constexpr bool is_composed_of_real_f<float>()
 // -------------------------------------------------------------------------
 
 template <class M>
-qacc constexpr bool is_composed_of_int64()
+qacc constexpr bool is_composed_of_long()
 {
-  return false;
-}
-
-template <>
-qacc constexpr bool is_composed_of_int64<int64_t>()
-{
-  return true;
-}
-
-// -------------------------------------------------------------------------
-
-template <class M>
-qacc constexpr bool is_composed_of_int32()
-{
-  return false;
-}
-
-template <>
-qacc constexpr bool is_composed_of_int32<int32_t>()
-{
-  return true;
+  bool ret = false;
+  if (is_same<M, Long>()) {
+    ret = true;
+  }
+  return ret;
 }
 
 // -------------------------------------------------------------------------
 
 template <class M>
-qacc constexpr bool is_composed_of_int8()
+qacc constexpr bool is_composed_of_int()
 {
-  return false;
+  bool ret = false;
+  if (is_same<M, Int>()) {
+    ret = true;
+  } else if (is_same<M, Coordinate>()) {
+    ret = true;
+  }
+  return ret;
 }
 
-template <>
-qacc constexpr bool is_composed_of_int8<int8_t>()
+// -------------------------------------------------------------------------
+
+template <class M>
+qacc constexpr bool is_composed_of_char()
+// Char is int8_t
+// NOTE: not char, not signed char, not unsigned char
 {
-  return true;
+  bool ret = false;
+  if (is_same<M, Char>()) {
+    ret = true;
+  }
+  return ret;
 }
 
 // -------------------------------------------------------------------------
@@ -438,8 +525,14 @@ qacc constexpr int element_size_of()
 // for example: size for convert endianness
 {
   int ret = 0;
-  if (is_integer<M>() or is_real<M>()) {
+  if (is_integer<M>() or is_real<M>() or is_char<M>()) {
     ret = sizeof(M);
+  } else if (is_composed_of_long<M>()) {
+    ret = sizeof(Long);
+  } else if (is_composed_of_int<M>()) {
+    ret = sizeof(Int);
+  } else if (is_composed_of_char<M>()) {
+    ret = sizeof(Char);
   } else if (is_composed_of_real_d<M>()) {
     ret = sizeof(RealD);
   } else if (is_composed_of_real_f<M>()) {
@@ -456,22 +549,6 @@ template <class M>
 qacc constexpr bool is_data_value_type()  // for example size for convert endian
 {
   return element_size_of<M>() > 0;
-}
-
-// -------------------------------------------------------------------------
-
-template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
-qacc void to_from_little_endian(Vector<M> v)
-{
-  constexpr int size = element_size_of<M>();
-  to_from_little_endian<size>((void*)v.data(), v.data_size());
-}
-
-template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
-qacc void to_from_big_endian(Vector<M> v)
-{
-  constexpr int size = element_size_of<M>();
-  to_from_big_endian<size>((void*)v.data(), v.data_size());
 }
 
 // -------------------------------------------------------------------------
