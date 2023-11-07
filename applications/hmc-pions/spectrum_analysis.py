@@ -81,7 +81,7 @@ class Spectrum():
         T1=self.get_matrix_elems(t,matrix,corrs)
         T2=self.get_matrix_elems(t+1,matrix,corrs)
         w,v = sp.linalg.eigh(T1,T2)
-        return np.log(w)
+        return np.concatenate([[np.log(w)], v])
     
     def get_spectrum(self, t):
         names = list(self.corrs)
@@ -97,6 +97,9 @@ class Spectrum():
         for i in range(len(self.matrix)):
             matrix.append([])
             for j in range(len(self.matrix[0])):
-                matrix[i].append(names.index(self.matrix[i][j]))
+                if self.matrix[i][j]=="0":
+                    matrix[i].append("0")
+                else:
+                    matrix[i].append(names.index(self.matrix[i][j]))
         blocks = jackknife.get_jackknife_blocks(corrs, self.block_size, lambda x: self.get_spectrum_from_corrs(t,matrix,x))
         return jackknife.get_errors_from_blocks(self.get_spectrum_from_corrs(t,matrix,np.mean(corrs,axis=0)), blocks)

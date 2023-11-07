@@ -30,16 +30,16 @@ sigma_vev_errors = []
 sigma_mass_effs = []
 sigma_mass_eff_errors = []
 
-lambdas=[10000.0]
-msq_facts=[0.3, 0.2, 0.15, 0.099, 0.095, 0.09, 0.07]
-lattice_sizes=[[12, 24]]
-alphas=[0.015]
+lambdas=[300.0]
+msq_facts=[0.004, 0.1, 0.102, 0.105, 0.107, 0.11]
+lattice_sizes=[[16, 32]]
+alphas=[0.007]
 
 for lmbd in lambdas:
     for msq_fact in msq_facts:
         for lattice_size  in lattice_sizes:
             for alpha in alphas:
-                data = LatticeData(lattice_size[0], lattice_size[1], -round(msq_fact*lmbd, 3), lmbd, alpha, "3-1", 2000, 200)
+                data = LatticeData(lattice_size[0], lattice_size[1], -round(msq_fact*lmbd, 3), lmbd, alpha, "3-1", 1000, 100)
                 try:
                     data.load_all_data()
                     #data.cut_old_data()
