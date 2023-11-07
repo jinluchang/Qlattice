@@ -1,1 +1,3 @@
+CHECK: The vacuum expectation value of phi_0 is -0.92.
+CHECK: The vacuum expectation value of phi^2 is 1.42.
 CHECK: Simulation finished successfully.
