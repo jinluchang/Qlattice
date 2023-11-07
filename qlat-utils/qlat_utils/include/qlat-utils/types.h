@@ -270,7 +270,7 @@ qacc constexpr bool is_composed_of_complex_d<SpinMatrixD>()
 }
 
 template <>
-qacc constexpr bool is_composed_of_complex_d<WilsonVectorD>()
+qacc constexpr bool is_composed_of_complex_d<NonRelWilsonMatrixD>()
 {
   return true;
 }
@@ -282,7 +282,19 @@ qacc constexpr bool is_composed_of_complex_d<IsospinMatrixD>()
 }
 
 template <>
-qacc constexpr bool is_composed_of_complex_d<NonRelWilsonMatrixD>()
+qacc constexpr bool is_composed_of_complex_d<AdjointColorMatrixD>()
+{
+  return true;
+}
+
+template <>
+qacc constexpr bool is_composed_of_complex_d<WilsonVectorD>()
+{
+  return true;
+}
+
+template <>
+qacc constexpr bool is_composed_of_complex_d<SpinVectorD>()
 {
   return true;
 }
@@ -334,7 +346,7 @@ qacc constexpr bool is_composed_of_complex_f<SpinMatrixF>()
 }
 
 template <>
-qacc constexpr bool is_composed_of_complex_f<WilsonVectorF>()
+qacc constexpr bool is_composed_of_complex_f<NonRelWilsonMatrixF>()
 {
   return true;
 }
@@ -346,7 +358,19 @@ qacc constexpr bool is_composed_of_complex_f<IsospinMatrixF>()
 }
 
 template <>
-qacc constexpr bool is_composed_of_complex_f<NonRelWilsonMatrixF>()
+qacc constexpr bool is_composed_of_complex_f<AdjointColorMatrixF>()
+{
+  return true;
+}
+
+template <>
+qacc constexpr bool is_composed_of_complex_f<WilsonVectorF>()
+{
+  return true;
+}
+
+template <>
+qacc constexpr bool is_composed_of_complex_f<SpinVectorF>()
 {
   return true;
 }
@@ -410,7 +434,8 @@ qacc constexpr bool is_composed_of_int8<int8_t>()
 // -------------------------------------------------------------------------
 
 template <class M>
-qacc constexpr int element_size_of()  // for example size for convert endian
+qacc constexpr int element_size_of()
+// for example: size for convert endianness
 {
   int ret = 0;
   if (is_integer<M>() or is_real<M>()) {
@@ -435,14 +460,14 @@ qacc constexpr bool is_data_value_type()  // for example size for convert endian
 
 // -------------------------------------------------------------------------
 
-template <class M>
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
 qacc void to_from_little_endian(Vector<M> v)
 {
   constexpr int size = element_size_of<M>();
   to_from_little_endian<size>((void*)v.data(), v.data_size());
 }
 
-template <class M>
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
 qacc void to_from_big_endian(Vector<M> v)
 {
   constexpr int size = element_size_of<M>();
