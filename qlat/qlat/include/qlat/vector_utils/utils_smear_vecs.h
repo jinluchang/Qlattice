@@ -163,6 +163,8 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   std::vector<Long >& pos_typeA   )
 {
 
+  (void)local_map_typeA1;
+
   Qassert(dirL == 3 or dirL == 4);
 
   qlat::vector_acc<int> Nv,nv,mv;
@@ -1037,6 +1039,7 @@ struct smear_fun{
   template<int bfac>
   void refresh_expanded_GPU(Ty* f, int GPU = 1)
   {
+    (void)GPU;
     check_setup();
     if(redistribution_copy == 1){return ;}
     const CommPlan& plan = get_comm_plan(set_marks_field_1, "", geo_ext);

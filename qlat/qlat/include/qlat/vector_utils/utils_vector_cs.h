@@ -357,7 +357,7 @@ struct vector_cs{
         A[id][jd] = 0;
       })
     }
-    if(dummy==QTRUE)qacc_barrier(dummy);
+    if (dummy == QTRUE) { qacc_barrier(dummy); }
   }
 
   inline void clean_mem(){
@@ -463,7 +463,7 @@ struct vector_cs{
           size_t(b_size), size_t(bfac_group), roff, soff,  GPU_r, GPU_s, QFALSE);
       }
     }
-    if(dummy==QTRUE)qacc_barrier(dummy);
+    if (dummy == QTRUE) { qacc_barrier(dummy); }
 
     double flops = double(b_size) * btotal * sizeof(Ty);
     timer.flops  += flops;

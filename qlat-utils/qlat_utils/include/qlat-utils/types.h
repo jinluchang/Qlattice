@@ -83,66 +83,34 @@ struct API CoordinateD : public array<RealD, DIMN> {
 template <class M>
 qacc constexpr bool is_signed_integer()
 {
-  return false;
+  bool ret = false;
+  if (is_same<M, int8_t>()) {
+    ret = true;
+  } else if (is_same<M, int16_t>()) {
+    ret = true;
+  } else if (is_same<M, int32_t>()) {
+    ret = true;
+  } else if (is_same<M, int64_t>()) {
+    ret = true;
+  }
+  return ret;
 }
-
-template <>
-qacc constexpr bool is_signed_integer<int8_t>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_signed_integer<int16_t>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_signed_integer<int32_t>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_signed_integer<int64_t>()
-{
-  return true;
-}
-
-// -------------------------------------------------------------------------
 
 template <class M>
 qacc constexpr bool is_unsigned_integer()
 {
-  return false;
+  bool ret = false;
+  if (is_same<M, uint8_t>()) {
+    ret = true;
+  } else if (is_same<M, uint16_t>()) {
+    ret = true;
+  } else if (is_same<M, uint32_t>()) {
+    ret = true;
+  } else if (is_same<M, uint64_t>()) {
+    ret = true;
+  }
+  return ret;
 }
-
-template <>
-qacc constexpr bool is_unsigned_integer<uint8_t>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_unsigned_integer<uint16_t>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_unsigned_integer<uint32_t>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_unsigned_integer<int64_t>()
-{
-  return true;
-}
-
-// -------------------------------------------------------------------------
 
 template <class M>
 qacc constexpr bool is_integer()
@@ -150,15 +118,11 @@ qacc constexpr bool is_integer()
   return is_signed_integer<M>() or is_unsigned_integer<M>();
 }
 
-// -------------------------------------------------------------------------
-
 template <class M>
 qacc constexpr bool is_number()
 {
   return is_integer<M>() or is_real<M>() or is_complex<M>();
 }
-
-// -------------------------------------------------------------------------
 
 template <class M>
 qacc constexpr bool is_char()
@@ -174,60 +138,70 @@ qacc constexpr bool is_char()
   return ret;
 }
 
-// -------------------------------------------------------------------------
-
 template <class M>
 std::string get_type_name()
 {
-  return "unknown";
-}
-
-template <>
-inline std::string get_type_name<int8_t>()
-{
-  return "Int8t";
-}
-
-template <>
-inline std::string get_type_name<int16_t>()
-{
-  return "Int16t";
-}
-
-template <>
-inline std::string get_type_name<int32_t>()
-{
-  return "Int32t";
-}
-
-template <>
-inline std::string get_type_name<int64_t>()
-{
-  return "Int64t";
-}
-
-template <>
-inline std::string get_type_name<uint8_t>()
-{
-  return "UInt8t";
-}
-
-template <>
-inline std::string get_type_name<uint16_t>()
-{
-  return "UInt16t";
-}
-
-template <>
-inline std::string get_type_name<uint32_t>()
-{
-  return "UInt32t";
-}
-
-template <>
-inline std::string get_type_name<uint64_t>()
-{
-  return "UInt64t";
+  std::string ret = "unknown";
+  if (is_same<M, char>()) {
+    ret = "char";
+  } else if (is_same<M, signed char>()) {
+    ret = "signed_char";
+  } else if (is_same<M, unsigned char>()) {
+    ret = "unsigned_char";
+  } else if (is_same<M, int8_t>()) {
+    ret = "Int8t";
+  } else if (is_same<M, int16_t>()) {
+    ret = "Int16t";
+  } else if (is_same<M, int32_t>()) {
+    ret = "Int32t";
+  } else if (is_same<M, int64_t>()) {
+    ret = "Int64t";
+  } else if (is_same<M, uint8_t>()) {
+    ret = "UInt8t";
+  } else if (is_same<M, uint16_t>()) {
+    ret = "UInt16t";
+  } else if (is_same<M, uint32_t>()) {
+    ret = "UInt32t";
+  } else if (is_same<M, uint64_t>()) {
+    ret = "UInt64t";
+  } else if (is_same<M, RealF>()) {
+    ret = "RealF";
+  } else if (is_same<M, RealD>()) {
+    ret = "RealD";
+  } else if (is_same<M, ComplexD>()) {
+    ret = "ComplexD";
+  } else if (is_same<M, ComplexF>()) {
+    ret = "ComplexF";
+  } else if (is_same<M, ColorMatrixD>()) {
+    ret = "ColorMatrixD";
+  } else if (is_same<M, ColorMatrixF>()) {
+    ret = "ColorMatrixF";
+  } else if (is_same<M, WilsonMatrixD>()) {
+    ret = "WilsonMatrixD";
+  } else if (is_same<M, WilsonMatrixF>()) {
+    ret = "WilsonMatrixF";
+  } else if (is_same<M, SpinMatrixD>()) {
+    ret = "SpinMatrixD";
+  } else if (is_same<M, SpinMatrixF>()) {
+    ret = "SpinMatrixF";
+  } else if (is_same<M, NonRelWilsonMatrixD>()) {
+    ret = "NonRelWilsonMatrixD";
+  } else if (is_same<M, NonRelWilsonMatrixF>()) {
+    ret = "NonRelWilsonMatrixF";
+  } else if (is_same<M, IsospinMatrixD>()) {
+    ret = "IsospinMatrixD";
+  } else if (is_same<M, IsospinMatrixF>()) {
+    ret = "IsospinMatrixF";
+  } else if (is_same<M, WilsonVectorD>()) {
+    ret = "WilsonVectorD";
+  } else if (is_same<M, WilsonVectorF>()) {
+    ret = "WilsonVectorF";
+  } else if (is_same<M, SpinVectorD>()) {
+    ret = "SpinVectorD";
+  } else if (is_same<M, SpinVectorF>()) {
+    ret = "SpinVectorF";
+  }
+  return ret;
 }
 
 template <>
@@ -331,64 +305,26 @@ inline std::string get_type_name<IsospinMatrixF>()
 template <class M>
 qacc constexpr bool is_composed_of_complex_d()
 {
-  return false;
+  bool ret = false;
+  if (is_same<M, ComplexD>()) {
+    ret = true;
+  } else if (is_same<M, ColorMatrixD>()) {
+    ret = true;
+  } else if (is_same<M, WilsonMatrixD>()) {
+    ret = true;
+  } else if (is_same<M, SpinMatrixD>()) {
+    ret = true;
+  } else if (is_same<M, NonRelWilsonMatrixD>()) {
+    ret = true;
+  } else if (is_same<M, IsospinMatrixD>()) {
+    ret = true;
+  } else if (is_same<M, WilsonVectorD>()) {
+    ret = true;
+  } else if (is_same<M, SpinVectorD>()) {
+    ret = true;
+  }
+  return ret;
 }
-
-template <>
-qacc constexpr bool is_composed_of_complex_d<ComplexD>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_composed_of_complex_d<ColorMatrixD>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_composed_of_complex_d<WilsonMatrixD>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_composed_of_complex_d<SpinMatrixD>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_composed_of_complex_d<NonRelWilsonMatrixD>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_composed_of_complex_d<IsospinMatrixD>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_composed_of_complex_d<AdjointColorMatrixD>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_composed_of_complex_d<WilsonVectorD>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_composed_of_complex_d<SpinVectorD>()
-{
-  return true;
-}
-
-// -------------------------------------------------------------------------
 
 template <class M>
 qacc constexpr bool is_composed_of_real_d()
@@ -398,87 +334,47 @@ qacc constexpr bool is_composed_of_real_d()
     ret = true;
   } else if (is_same<M, CoordinateD>()) {
     ret = true;
+  } else if (is_same<M, AdjointColorMatrixD>()) {
+    ret = true;
   }
   return ret;
 }
 
-// -------------------------------------------------------------------------
-
 template <class M>
 qacc constexpr bool is_composed_of_complex_f()
 {
-  return false;
+  bool ret = false;
+  if (is_same<M, ComplexF>()) {
+    ret = true;
+  } else if (is_same<M, ColorMatrixF>()) {
+    ret = true;
+  } else if (is_same<M, WilsonMatrixF>()) {
+    ret = true;
+  } else if (is_same<M, SpinMatrixF>()) {
+    ret = true;
+  } else if (is_same<M, NonRelWilsonMatrixF>()) {
+    ret = true;
+  } else if (is_same<M, IsospinMatrixF>()) {
+    ret = true;
+  } else if (is_same<M, WilsonVectorF>()) {
+    ret = true;
+  } else if (is_same<M, SpinVectorF>()) {
+    ret = true;
+  }
+  return ret;
 }
-
-template <>
-qacc constexpr bool is_composed_of_complex_f<ComplexF>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_composed_of_complex_f<ColorMatrixF>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_composed_of_complex_f<WilsonMatrixF>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_composed_of_complex_f<SpinMatrixF>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_composed_of_complex_f<NonRelWilsonMatrixF>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_composed_of_complex_f<IsospinMatrixF>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_composed_of_complex_f<AdjointColorMatrixF>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_composed_of_complex_f<WilsonVectorF>()
-{
-  return true;
-}
-
-template <>
-qacc constexpr bool is_composed_of_complex_f<SpinVectorF>()
-{
-  return true;
-}
-
-// -------------------------------------------------------------------------
 
 template <class M>
 qacc constexpr bool is_composed_of_real_f()
 {
-  return is_composed_of_complex_f<M>();
+  bool ret = is_composed_of_complex_f<M>();
+  if (is_same<M, RealF>()) {
+    ret = true;
+  } else if (is_same<M, AdjointColorMatrixF>()) {
+    ret = true;
+  }
+  return ret;
 }
-
-template <>
-qacc constexpr bool is_composed_of_real_f<float>()
-{
-  return true;
-}
-
-// -------------------------------------------------------------------------
 
 template <class M>
 qacc constexpr bool is_composed_of_long()
@@ -489,8 +385,6 @@ qacc constexpr bool is_composed_of_long()
   }
   return ret;
 }
-
-// -------------------------------------------------------------------------
 
 template <class M>
 qacc constexpr bool is_composed_of_int()
@@ -504,8 +398,6 @@ qacc constexpr bool is_composed_of_int()
   return ret;
 }
 
-// -------------------------------------------------------------------------
-
 template <class M>
 qacc constexpr bool is_composed_of_char()
 // Char is int8_t
@@ -517,8 +409,6 @@ qacc constexpr bool is_composed_of_char()
   }
   return ret;
 }
-
-// -------------------------------------------------------------------------
 
 template <class M>
 qacc constexpr int element_size_of()
@@ -542,8 +432,6 @@ qacc constexpr int element_size_of()
   }
   return ret;
 }
-
-// -------------------------------------------------------------------------
 
 template <class M>
 qacc constexpr bool is_data_value_type()  // for example size for convert endian
