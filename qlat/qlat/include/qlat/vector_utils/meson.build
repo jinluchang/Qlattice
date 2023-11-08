@@ -5,6 +5,7 @@ vector_utils_header_files = files(
   'utils_FFT_GPU.h',
   'utils_Matrix_prod.h',
   'utils_Vec_redistribute.h',
+  'utils_eo_copies.h',
   'utils_check_fun.h',
   'utils_construction.h',
   'utils_corr_baryon.h',
