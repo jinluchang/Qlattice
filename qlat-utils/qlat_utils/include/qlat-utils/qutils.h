@@ -12,51 +12,69 @@ namespace qlat
 // -------------------
 
 template <class M>
-struct HasGetData {
+struct IsDataVectorType {
   static constexpr bool value = is_data_value_type<M>();
   using DataType = M;
 };
 
 template <class M>
-struct HasGetData<Vector<M>> {
+struct IsDataVectorType<Vector<M>> {
   static constexpr bool value = is_data_value_type<M>();
   using DataType = M;
 };
 
 template <class M>
-struct HasGetData<std::vector<M>> {
+struct IsDataVectorType<std::vector<M>> {
   static constexpr bool value = is_data_value_type<M>();
   using DataType = M;
 };
 
 template <class M, Long N>
-struct HasGetData<Array<M, N>> {
+struct IsDataVectorType<Array<M, N>> {
   static constexpr bool value = is_data_value_type<M>();
   using DataType = M;
 };
 
 template <class M, size_t N>
-struct HasGetData<array<M, N>> {
+struct IsDataVectorType<array<M, N>> {
   static constexpr bool value = is_data_value_type<M>();
   using DataType = M;
 };
 
 template <class M>
-struct HasGetData<Handle<M>> {
+struct IsDataVectorType<Handle<M>> {
   static constexpr bool value = is_data_value_type<M>();
   using DataType = M;
 };
 
 template <class M>
-struct HasGetData<ConstHandle<M>> {
+struct IsDataVectorType<ConstHandle<M>> {
   static constexpr bool value = is_data_value_type<M>();
   using DataType = M;
 };
 
+// -------------------
+
 template <class M>
-qacc constexpr bool has_get_data()
+qacc constexpr bool is_data_vector_type()
 {
-  return HasGetData<M>::value;
+  return IsDataVectorType<M>::value;
+};
+
+// -------------------
+
+template <class M>
+struct IsGetDataType {
+  static constexpr bool value = is_data_vector_type<M>();
+  using DataType = typename IsDataVectorType<M>::DataType;
+};
+
+// -------------------
+
+template <class M>
+qacc constexpr bool is_get_data_type()
+{
+  return IsGetDataType<M>::value;
 };
 
 // -------------------
@@ -105,10 +123,10 @@ qacc Vector<M> get_data(ConstHandle<M>& h)
 
 // -------------------
 
-template <class T, QLAT_ENABLE_IF(has_get_data<T>())>
+template <class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
 void set_zero(T& xx)
 {
-  using M = typename HasGetData<T>::DataType;
+  using M = typename IsGetDataType<T>::DataType;
   const Vector<M> vec = get_data(xx);
   Long size = vec.size() * sizeof(M);
   std::memset((void*)vec.data(), 0, size);
@@ -148,11 +166,11 @@ qacc RealD qnorm(const M& x)
   return x * x;
 }
 
-template <class T,
-          QLAT_ENABLE_IF(has_get_data<T>() and not is_data_value_type<T>())>
+template <class T, QLAT_ENABLE_IF(is_data_vector_type<T>() and
+                                  not is_data_value_type<T>())>
 RealD qnorm(const T& xx)
 {
-  using M = typename HasGetData<T>::DataType;
+  using M = typename IsDataVectorType<T>::DataType;
   const Vector<M> vec = get_data(xx);
   RealD sum = 0.0;
   for (Long i = 0; i < vec.size(); ++i) {
