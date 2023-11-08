@@ -4,7 +4,7 @@
 #include <sys/sysinfo.h>
 #include "utils_Matrix_prod.h"
 #include "general_funs.h"
-#include "check_fun.h"
+#include "utils_check_fun.h"
 ////#include "utils_low_rho.h"
 //#include "utils_construction.h"
 
@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
     matrix_prod(a.data(), b.data(), c1.data(), m,n,w,L, Conj, false, modeGPU);fflush_MPI();
   }
   Complexq res = c1.norm2();
-  print0("===result %.8e %.8e \n", res.real(), res.imag());
+  print0("===result %.12e %.12e \n", res.real(), res.imag());
 
   if(test_pointers >= 1)
   {
@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
       matrix_prodP(aP.data(), bP.data(), cP.data(), m,n,w, L, Conj, false, modeGPU);fflush_MPI();
     }
     Complexq ra = c1.norm2();
-    print0("===result %.8e %.8e, %.8e %.8e \n", ra.real(), ra.imag(), (ra-res).real(), (ra-res).imag());
+    print0("===result %.12e %.12e, %.12e %.12e \n", ra.real(), ra.imag(), (ra-res).real(), (ra-res).imag());
   }
   if(test_pointers >= 2)
   {
@@ -97,21 +97,8 @@ int main(int argc, char* argv[])
       matrix_prodP(aP.data(), bP.data(), cP.data(), m,n,w,L, Conj, false, modeGPU);fflush_MPI();
     }
     Complexq ra = c1.norm2();
-    print0("===result %.8e %.8e, %.8e %.8e \n", ra.real(), ra.imag(), (ra-res).real(), (ra-res).imag());
+    print0("===result %.12e %.12e, %.12e %.12e \n", ra.real(), ra.imag(), (ra-res).real(), (ra-res).imag());
   }
-
-  //for(int i=0;i< in.debuga;i++){matrix_prod_cpu(&a[0],&b[0],&c0[0], m,n,w,L, Conj);fflush_MPI();}
-  //print0("END CPU Multi! \n");
-  //diff_EigenM(c0,c1, "Matrix prod ");
-
-  ////for(int i=0;i< in.debuga;i++){matrix_prod_cpu(&a[0],&b[0],&c0[0], m,n,w,L);}
-  ////matrix_prod_cpu(&a[0],&b[0],&c0[0], m,n,w,L);
-  ////for(int i=0;i< in.debuga;i++){
-  ////  zeroE(c1);matrix_prod_gpu(&a[0],&b[0],&c1[0], m,n,w,L, modeGPU);
-  ////}
-  //for(int i=0;i< in.debuga;i++){matrix_prod_cpu(&a[0],&b[0],&c1[0], m,n,w,L);}
-  //print0("END CPU Multi! \n");
-  //fflush_MPI();
 
   return end_Lat();
 }

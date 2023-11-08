@@ -12,6 +12,7 @@
 #include <qlat/qcd-smear.h>
 #include "utils_Vec_redistribute.h"
 #include "utils_shift_vecs.h"
+#include "utils_eo_copies.h"
 #include "utils_check_fun.h"
  
 namespace qlat{
@@ -20,50 +21,52 @@ namespace qlat{
 #ifdef QLAT_USE_ACC
 template <class T, int bfac, int d0, int dirL>
 __global__ void gauss_smear_global4(T* pres, const T* psrc, const T* gf, const T bw, const T norm,
-  const unsigned long Nvol, const Long* map_bufD, const Long* map_final)
+  const Long Nvol, const Long* map_bufD, const Long* map_final)
 {
 
   __shared__ T ls[(dirL*2)*3*3 + 1];
   __shared__ T ps[(dirL*2)*bfac*3*d0 + 1];
   ///tid should larger than 9
   unsigned int   tid   =  threadIdx.x;
-  unsigned long  index =  blockIdx.y*gridDim.x + blockIdx.x;
+  unsigned long  count =  blockIdx.y*gridDim.x + blockIdx.x;
   unsigned int   ns = blockDim.x;
   const int dir_max = 4;
+  const int nsites = bfac * 3 * d0;
 
-  if(index < Nvol){
+  if(count < Nvol){
 
   ///////(2*dirL) --> c0 , c1
   ///////TODO need to check dirL is not 3
   unsigned int off = tid;
   {
-    const T* gf_t = &gf[index*(2*dir_max)*9];
+    const T* gf_t = &gf[count*(2*dir_max)*9];
     while(off < (2*dirL)*9){
       //int dir = off/9;int c = off%9;
-      //ls[(c/3)*(2*dirL)*3 + dir*3 + c%3] = gf[index*(2*dirL)*9 + off];off += ns;
+      //ls[(c/3)*(2*dirL)*3 + dir*3 + c%3] = gf[count*(2*dirL)*9 + off];off += ns;
       //ls[off] = gf_t[off];
       int dir = off/9;
       int c0 = (off/3)%3;
       int c1 =  off%3;
-      ls[c1*(2*dirL)*3 + dir*3 + c0 ] = gf_t[(dir + 1)*9 + c1*3 + c0];
+      int dirM = dir - dirL;
+      ls[c1*(2*dirL)*3 + dir*3 + c0 ] = gf_t[(dirM + dir_max)*9 + c1*3 + c0];
       ////ls[c1*(2*dirL)*3 + dir*3 + c0 ] = gf_t[(dir + 1)*9 + c0*3 + c1];
       off += ns;
     }
   }
 
-  const Long res_off = map_final[index];
-  const T* wo = &psrc[res_off*bfac*3*d0];
-  T* wm = &pres[res_off*bfac*3*d0];
+  const Long res_off = map_final[count];
+  const T* wo = &psrc[res_off*nsites];
+  T* wm       = &pres[res_off*nsites];
 
   ///////(2*dir) --> bi, c1 , d0
   for (int dir = -dirL; dir < dirL; ++dir){
-    ////Long src_off = map_bufD[(dir+4)*Nvol + index];
-    Long src_off = map_bufD[index* dirL*2 + (dir + dirL)];
-    const T* src_t = &psrc[src_off*bfac*3*d0];
+    ////Long src_off = map_bufD[(dir+4)*Nvol + count];
+    Long src_off = map_bufD[count* dirL*2 + (dir + dirL)];
+    const T* src_t = &psrc[src_off*nsites];
     //T* res_t     = &ps[(dir+dirL)*bfac*3*d0];
     ////T* res_t     = &ps[dir+dirL];
     off = tid;
-    while(off < bfac*3*d0){
+    while(off < nsites){
       //res_t[off] = src_t[off]; off+=ns;
       unsigned int bi = off/(3*d0);
       unsigned int c  = (off%(3*d0))/d0;
@@ -76,9 +79,12 @@ __global__ void gauss_smear_global4(T* pres, const T* psrc, const T* gf, const T
 
   T tmp = 0.0;
   off = tid;
-  while(off < bfac*3*d0){
-    unsigned int c0 = off/(bfac*d0);
-    unsigned int bi = (off%(bfac*d0))/d0;
+  while(off < nsites){
+    //unsigned int c0 = off/(bfac*d0);
+    //unsigned int bi = (off%(bfac*d0))/d0;
+    //unsigned int di = off%d0;
+    unsigned int bi = off/(3*d0);
+    unsigned int c0 = (off%(3*d0))/d0;
     unsigned int di = off%d0;
 
     T* a = &ls[c0*(2*dirL*3)];
@@ -93,7 +99,8 @@ __global__ void gauss_smear_global4(T* pres, const T* psrc, const T* gf, const T
       tmp += b[dir] * a[dir];
     }
 
-    wm[(bi*3 + c0)*d0 + di] = norm*(wo[(bi*3 + c0)*d0 + di ] + bw*tmp);
+    //wm[(bi*3 + c0)*d0 + di] = norm*(wo[(bi*3 + c0)*d0 + di ] + bw*tmp);
+    wm[off] = norm*(wo[off] + bw*tmp);
     off += ns;
   }
 
@@ -101,6 +108,582 @@ __global__ void gauss_smear_global4(T* pres, const T* psrc, const T* gf, const T
 
 }
 #endif
+
+inline void get_mapvq_each(const std::vector<CommPackInfo> &pack_infos, std::vector<qlat::vector_acc<Long > >& mapvq, int dir=0)
+{
+  std::vector<std::vector<Long > > mapv(2);//mapv.resize(4*pack_infos.size());
+  ////std::vector<Long > factorL;
+  for (Long i = 0; i < (Long)pack_infos.size(); ++i) {
+    const CommPackInfo& cpi = pack_infos[i];
+    //Long bufi = cpi.buffer_idx + 0;
+    //Long fi   = cpi.offset     + 0;
+    for(Long j=0; j< cpi.size ; j++)
+    {
+      ////factorL.push_back(cpi.size);
+      Long bufi = cpi.buffer_idx + j;
+      Long fi   = cpi.offset     + j;
+      //if(dir == 1){
+      //  print0("transfer ori %8ld, buffer %8ld \n", fi, bufi);
+      //}
+      ////print0("size %d, group %d, bufi %d, fi %d \n", int(i), int(cpi.size), int(bufi), int(fi));
+      if(dir == 0){mapv[0].push_back(bufi);mapv[1].push_back(  fi);}
+      if(dir == 1){mapv[0].push_back(  fi);mapv[1].push_back(bufi);}
+    }
+  }
+  //std::vector<std::vector<Long > > mapv_copy(3);
+  //sort_vectors_by_axis(mapv, mapv_copy, 1);
+  mapvq.resize(2);
+  for(int j=0;j<2;j++)
+  {
+    mapvq[j].resize( mapv[j].size() );
+    for(unsigned long i=0;i<mapv[j].size();i++)
+    {
+      mapvq[j][i] = mapv[j][i];
+    }
+  }
+
+  //mapvq.resize(2);for(unsigned int i=0;i<2;i++){mapvq[i].copy_from(mapv[i], 1);}
+}
+
+////  === output
+////  qlat::vector_acc<Long > local_map_typeA0;  //// i to count, Nvol_ext, original positions to count new positions
+////  qlat::vector_acc<Long > local_map_typeA1;  //// reverse
+////  qlat::vector_acc<Long > map_index_typeA0;  //// index to index_typeA
+////  qlat::vector_acc<Long > map_index_typeA1;  //// from count to writi (new indexings)
+////  qlat::vector_acc<Long > map_index_typeAL;  //// count to index, loop mappings
+////  qlat::vector_acc<Long > map_bufD_typeA  ;  //// Nvol * dirL * 2, count*dirL*2 + (dir+dirL), direction indexings
+inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, const int dirL,
+  qlat::vector_acc<Long >& local_map_typeA0,
+  qlat::vector_acc<Long >& local_map_typeA1,
+  qlat::vector_acc<Long >& map_index_typeA0,
+  qlat::vector_acc<Long >& map_index_typeA1,
+  qlat::vector_acc<Long >& map_index_typeAL,
+  qlat::vector_acc<Long >& map_bufD_typeA  ,
+  std::vector< qlat::vector_acc<Long > >& copy_extra_index,
+  std::vector<Long >& pos_typeA   )
+{
+
+  Qassert(dirL == 3 or dirL == 4);
+
+  qlat::vector_acc<int> Nv,nv,mv;
+  geo_to_nv(geo, nv, Nv, mv);
+  const Long Nvol     = geo.local_volume();
+  const Long Nvol_ext = geo_ext.local_volume_expanded();
+  pos_typeA.resize(2);
+
+  //std::vector<qlat::vector_acc<Long > > map_bufV;
+  qlat::vector_acc<Long > map_bufD;
+
+  /////const int dir_max = 4;
+  qlat::vector_acc<Long > map_index_typeO_0;map_index_typeO_0.resize(Nvol_ext);
+  qlat::vector_acc<Long > map_index_typeO_1;map_index_typeO_1.resize(Nvol    );
+  for(Long i=0;i<Nvol_ext;i++){map_index_typeO_0[i] = -1;}
+  for(Long i=0;i<Nvol    ;i++){map_index_typeO_1[i] = -1;}
+
+  //for(unsigned int i=0;i<map_bufV.size();i++){map_bufV[i].resize(Nvol       );}
+
+  #pragma omp parallel for
+  for(Long index=0;index<Nvol;index++){
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Long index_ext = geo_ext.offset_from_coordinate(xl);
+    map_index_typeO_0[index_ext] = index    ;
+    map_index_typeO_1[index    ] = index_ext;
+    //if(index == 0){
+    //  print0("==rank %3d, x y z t, %3d %3d %3d %3d, ext %ld \n", qlat::get_id_node(), xl[0], xl[1], xl[2], xl[3], index_ext);
+    //}
+    //print0("index ext %8ld index %8ld\n", index_ext, index);
+    //map_bufV[0][index]  = geo_ext.offset_from_coordinate(xl);
+    //map_bufV[1][index]  = index;
+    //////print0(" mappings %ld %ld \n",map_bufV[0][index], map_bufV[1][index]);
+  }
+
+  map_bufD.resize(Nvol*dirL*2);
+
+  std::vector<Long > need_pos;need_pos.resize(Nvol_ext); ////for checkings only
+  for(Long i=0;i<Long(need_pos.size());i++){need_pos[i] = 0;}
+
+  //std::vector<int > xlE;xlE.resize(8);
+  for(int dir=-dirL;dir<dirL; dir++){
+  #pragma omp parallel for
+  for(Long index=0;index<Nvol;index++)
+  {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xl1 = coordinate_shifts(xl, dir);
+    Long index_ext = geo_ext.offset_from_coordinate(xl1);
+    map_bufD[index*dirL*2 + (dir+dirL)] = index_ext;
+    need_pos[ map_bufD[index*dirL*2 + (dir+dirL)] ] += 1;
+    //if(map_index_typeO_0[index_ext] == -1)
+    //{
+    //  ////const Coordinate xl = geo_ext.coordinate_from_index(i);///this function is wrong!
+    //  if(xl[3] == 0){
+    //    xlE[xl1[2]] += 1;
+    //    //print0("rank %3d, x y z t, %3d %3d %3d %3d, ext %3d %3d %3d %3d , index %ld ext %ld\n", qlat::get_id_node(), 
+    //    //  xl[0], xl[1], xl[2], xl[3],
+    //    //  xl1[0], xl1[1], xl1[2], xl1[3],
+    //    //  index, index_ext
+    //    //);
+    //  }
+    //}
+
+  }}
+  //for(int i=0;i<8;i++)
+  //{
+  //  print0("i %3d, count %5d \n", i, xlE[i]);
+  //}
+
+  //Qassert(false)
+
+  //Long Nneed = 0;
+  //for(Long i=0;i<Long(need_pos.size());i++){
+  //  if(need_pos[i] > 0){Nneed += 1;}
+  //}
+  //print0("rank %3d, Nneed %ld, total %ld \n", qlat::get_id_node(), Nneed - Nvol, Nvol_ext - Nvol );
+
+  const CommPlan& plan = get_comm_plan(set_marks_field_1, "", geo_ext);
+
+  std::vector<qlat::vector_acc<Long > > mapvq_send;
+  std::vector<qlat::vector_acc<Long > > mapvq_recv;
+  get_mapvq_each(plan.send_pack_infos, mapvq_send, 0);
+  get_mapvq_each(plan.recv_pack_infos, mapvq_recv, 1);
+
+  qlat::vector_acc<Long > send_buffer_index;
+  qlat::vector_acc<Long > recv_buffer_index;
+
+  ////Qassert(false);
+  ////print0("rank %5d, send %ld, recv %ld \n", qlat::get_id_node(), Long(plan.total_send_size), Long(plan.total_recv_size));
+
+  //{
+  //  std::vector<Long > buf_s;
+  //  std::vector<Long > buf_r;
+  //  buf_s.resize(plan.total_send_size);
+  //  buf_r.resize(plan.total_recv_size);
+  //  for(unsigned long i=0;i<buf_s.size();i++){buf_s[i] = -1;}
+  //  for(unsigned long i=0;i<buf_r.size();i++){buf_r[i] = -1;}
+
+  //  Long count_send = 0;
+  //  Long count_recv = 0;
+  //  {
+  //    ////TIMER("refresh_expanded-comm-init");
+  //    for (size_t i = 0; i < plan.recv_msg_infos.size(); ++i) {
+  //      const CommMsgInfo& cmi = plan.recv_msg_infos[i];
+  //      count_recv += cmi.size;
+  //      for(Long i=0;i<cmi.size;i++){buf_r[cmi.buffer_idx + i] = 1;}
+  //    }
+  //    for (size_t i = 0; i < plan.send_msg_infos.size(); ++i) {
+  //      const CommMsgInfo& cmi = plan.send_msg_infos[i];
+  //      count_send += cmi.size;
+  //      for(Long i=0;i<cmi.size;i++){buf_s[cmi.buffer_idx + i] = 1;}
+  //    }
+  //  }
+  //  //////print0("Actual send %ld, recv %ld \n", count_send, count_recv);
+  //}
+
+
+  std::vector<std::vector<Long> > check_send;check_send.resize(Nvol_ext);
+  std::vector<std::vector<Long> > check_recv;check_recv.resize(Nvol_ext);
+  //for(Long i=0;i<Nvol_ext;i++){
+  //  check_send[i] = -1;check_recv[i] = -1;
+  //}
+
+  ///#pragma omp parallel for
+  ////same data may be send to different nodex
+  Long count_s = 0;
+  Long count_r = 0;
+  ////#pragma omp parallel for
+  for(Long i=0;i<Long(mapvq_send[0].size());i++)
+  {
+    Long ri = mapvq_send[0][i];
+    Long si = mapvq_send[1][i];
+    ////send_buffer_index[ri] = si;
+    //if(need_pos[si])
+    //Qassert(check_send[si] == -1)
+    check_send[si].push_back(ri);
+    count_s += 1;
+  }
+  ////#pragma omp parallel for
+  for(Long i=0;i<Long(mapvq_recv[0].size());i++)
+  {
+    Long ri = mapvq_recv[1][i];
+    Long si = mapvq_recv[0][i];
+    //recv_buffer_index[ri] = si;
+    ////print0("%ld %ld, max %ld %ld \n", ri, si, Long(recv_buffer_index.size()), Nvol_ext);
+    Qassert(check_send[si].size() == 0);
+    check_recv[si].push_back(ri);
+    count_r += 1;
+  }
+  //print0("plan write send %ld, recv %ld \n", count_s, count_r);
+  ////Qassert(false)
+  /////QLAT_VEC_CKPOINT
+
+  qlat::FieldM<char, 1> eo;
+  qlat::qlat_map_eo_site(eo, geo);
+  char* eo_char = (char*) qlat::get_data(eo).data();
+
+  std::vector<Long > local_map_typeA0_e;local_map_typeA0_e.resize(Nvol_ext); ////local_map0[count] == original positions
+  std::vector<Long > local_map_typeA0_o;local_map_typeA0_o.resize(Nvol_ext); ////local_map0[count] == original positions
+  //std::vector<Long > local_map_typeA0;
+  //std::vector<Long > local_map_typeA1;
+  //std::vector<Long > local_map_typeA2;local_map_typeA1.resize(Nvol_ext);
+  #pragma omp parallel for
+  for(Long i=0;i<Nvol_ext;i++){
+    local_map_typeA0_e[i] = -1;
+    local_map_typeA0_o[i] = -1;
+  }
+
+  //std::sort(check_send.begin(), check_send.end());
+  //std::sort(check_recv.begin(), check_recv.end());
+
+  //for(Long i=0;i<Nvol_ext;i++)
+  //{
+  //  if(check_send[i] != -1){
+  //    print0("index ext %8ld, send %8ld \n", i, check_send[i]);
+  //  }
+  //}
+
+  //for(Long i=0;i<Nvol_ext;i++)
+  //{
+  //  if(check_recv[i] != -1){
+  //    print0("index ext %8ld, recv %8ld \n", i, check_recv[i]);
+  //  }
+  //}
+
+  //QLAT_VEC_CKPOINT
+
+  Long count_e = 0;
+  Long count_o = 0;
+  //std::vector<int > xlC;xlC.resize(8);
+  for(Long i=0;i<Nvol_ext;i++)
+  {
+    if(check_send[i].size() == 0 and check_recv[i].size() == 0)
+    {
+      Long index = map_index_typeO_0[i];
+      //if(index == -1)
+      //if(index == -1 and need_pos[i] == -1)
+      //if(index == -1 and need_pos[i] > 0)
+      //{
+      //  xlC[0] += 1;
+      //  //const Coordinate xl = geo_ext.coordinate_from_index(i);///this function is wrong!
+      //  //if(xl[3] == 0){
+      //  //  xlC[xl[2]] += 1;
+      //  //  print0("rank %3d, x y z t, %3d %3d %3d %3d \n", qlat::get_id_node(), xl[0] - 1, xl[1] - 1, xl[2], xl[3]);
+      //  //}
+      //}
+      Qassert(not (index == -1 and need_pos[i] > 0));
+      if(index == -1){continue ;} ////corners 
+      //#if GET_MAPS_DEBUG==1
+      //////print0("index %ld %ld \n", index, i);
+      //Qassert(index != -1);
+      //#endif
+      if(eo_char[index] == 0){
+        local_map_typeA0_e[i] = count_e;
+        count_e += 1;
+      }
+
+      if(eo_char[index] == 1){
+        local_map_typeA0_o[i] = count_o;
+        count_o += 1;
+      }
+      ////local_map1[i    ] = count;
+      //count += 1;
+    }
+  }
+  //for(int i=0;i<8;i++)
+  //{
+  //  print0("i %3d, count %5d \n", i, xlC[i]);
+  //}
+
+  Long Nvol_sum = count_e + count_o + count_s + count_r;
+  if(Nvol_sum < Nvol_ext){
+    ////print0("==Check %ld %ld \n", Nvol_ext, Nvol_sum);
+    Nvol_sum = Nvol_ext;
+  }
+  local_map_typeA0.resize(Nvol_sum); ////local_map0[count] == original positions
+  //local_map_typeA1.resize(Nvol_sum);
+  #pragma omp parallel for
+  for(Long i=0;i<Nvol_sum;i++){
+    local_map_typeA0[i]   = -1;
+    //local_map_typeA1[i]   = -1;
+  }
+
+  //print0("Vol %ld, extra %ld, full %ld \n", Nvol, Nvol_ext, Nvol_sum);
+
+  const int use_eo = 0;
+
+  ////write index with eo splitted
+  Long count = 0;
+  for(Long i=0;i<Nvol_ext;i++)
+  {
+    if(local_map_typeA0_e[i] != -1)
+    {
+      ////local_map_typeA0_e[i]
+      Qassert(local_map_typeA0[i] == -1);
+      //Qassert(local_map_typeA1[count] == -1);
+      local_map_typeA0[i    ] = count;
+      //local_map_typeA1[count] = i    ;
+      count += 1;
+    }
+
+    if(use_eo == 0)
+    if(local_map_typeA0_o[i] != -1)
+    {
+      Qassert(local_map_typeA0[i] == -1);
+      //Qassert(local_map_typeA1[count] == -1);
+      ////local_map_typeA0_e[i]
+      local_map_typeA0[i    ] = count;
+      //local_map_typeA1[count] = i    ;
+      count += 1;
+    }
+  }
+
+  if(use_eo == 1)
+  for(Long i=0;i<Nvol_ext;i++)
+  {
+    if(local_map_typeA0_o[i] != -1)
+    {
+      Qassert(local_map_typeA0[i] == -1);
+      //Qassert(local_map_typeA1[count] == -1);
+      ////local_map_typeA0_e[i]
+      local_map_typeA0[i    ] = count;
+      //local_map_typeA1[count] = i    ;
+      count += 1;
+    }
+  }
+  //print0("total local %8ld, even %8ld, odd %8ld \n", count, count_e, count_o);
+
+  Long pos_send = 0;
+  Long pos_recv = 0;
+  pos_send = count;
+
+  Long max_pos = pos_send;
+  std::vector<std::vector<Long > > copy_extra;////send inner boundaries copy
+  //std::vector<Long > copy_extra0;////send inner boundaries copy
+  //std::vector<std::vector<Long > > copy_extra1;////send inner boundaries copy
+
+  copy_extra.resize(Nvol_ext);
+  /////Lont count_copy = 0;
+  for(Long i=0;i<Nvol_ext;i++)
+  {
+    /////if(check_send[i].size() != 0)
+    for(unsigned long j=0;j < check_send[i].size();j++)
+    {
+      Long send = pos_send + check_send[i][j];
+      copy_extra[i].push_back(send);
+      if(send + 1 >= max_pos){max_pos = send + 1;}
+      if(local_map_typeA0[i] == -1){
+        local_map_typeA0[i] = send;
+      }
+      //else{
+      //  Qassert(map_index_typeO_0[i] == -1);////must be boundaries
+      //}
+      /////local_map_typeA0[i    ] = send;
+      //Qassert(local_map_typeA0[i] == -1);
+      Qassert(send < Nvol_sum);
+      //Qassert(local_map_typeA1[send] == -1);
+      //local_map_typeA1[send ] = i;
+      count += 1;
+    }
+  }
+  ////Qassert(false);
+
+  std::vector<Long > copy_extraL;////send inner boundaries copy
+  std::vector<std::vector<Long > > copy_extra_pos;////send inner boundaries copy
+  Long count_sum = 0;
+  for(Long i=0;i<Nvol_ext;i++)
+  { 
+    if(copy_extra[i].size() > 1){
+      copy_extraL.push_back(copy_extra[i][0]);
+      std::vector<Long > pos;
+      for(unsigned int j=1;j<copy_extra[i].size();j++)
+      {
+        pos.push_back(copy_extra[i][j]);
+        count_sum += 1;
+      }
+      copy_extra_pos.push_back(pos);
+    }
+  }
+
+  std::vector<Long > sortL = get_sort_index(&copy_extraL[0], copy_extraL.size());
+  ////std::vector< qlat::vector_acc<Long > > copy_extra_index;
+  copy_extra_index.resize(3);
+
+  qlat::vector_acc<Long >& copy_extra_index0 = copy_extra_index[0];
+  qlat::vector_acc<Long >& copy_extra_index1 = copy_extra_index[1];
+  qlat::vector_acc<Long >& copy_extra_posL   = copy_extra_index[2];
+  copy_extra_index0.resize(sortL.size());
+  copy_extra_index1.resize(sortL.size() + 1);
+  copy_extra_posL.resize(count_sum);
+
+  //for(unsigned long isp=0;isp<copy_extra_index0.size();isp++){copy_extra_index[isp] = copy_extra_index0[isp];}
+  //for(unsigned long isp=0;isp<copy_extra_posL0.size() ;isp++){copy_extra_posL[ isp] = copy_extra_posL0[ isp];}
+
+  Long counti = 0;
+  for(unsigned long si=0;si<sortL.size();si++)
+  {
+    Long li = sortL[si];
+    Long send = copy_extraL[li];
+    std::vector<Long >& pos = copy_extra_pos[li];
+    copy_extra_index0[si ] = send;
+    copy_extra_index1[si ] = counti;
+    //print0("copy %ld, c0 %ld ", send, counti);
+    for(unsigned long j=0;j<pos.size();j++)
+    {
+      copy_extra_posL[counti] = pos[j];
+      counti += 1;
+    }
+    //print0(" c1 %ld \n", counti);
+  }
+  copy_extra_index1[sortL.size() ] = counti;
+  /////Qassert(false);
+
+  //Long counti = 0;
+  //std::vector<Long > copy_extra_index0;
+  //std::vector<Long > copy_extra_posL0;
+  //Long counti = 0;
+  //for(Long i=0;i<Nvol_ext;i++)
+  //{
+  //  if(copy_extra[i].size() > 1){
+  //    copy_extra_index0.push_back(copy_extra[i][0]);///index of the initial value
+  //    ////copy_extra_index0.push_back(copy_extra[i].size() - 1);
+  //    copy_extra_index0.push_back(counti);////index of initial positions
+  //    print0("copy %ld, c0 %ld ", copy_extra[i][0], counti);
+  //    for(unsigned int j=1;j<copy_extra[i].size();j++)
+  //    {
+  //      copy_extra_posL0.push_back(copy_extra[i][j]);
+  //      counti += 1;
+  //    }
+  //    copy_extra_index0.push_back(counti);////index of final positions
+  //    print0(" c1 %ld \n", counti);
+  //  }
+  //}
+
+  Qassert(max_pos >= count);////some may be empty
+  ////print0("actual send %ld, max send %ld \n", count - pos_send, max_pos - pos_send);
+  pos_recv = max_pos;
+  //Long count0 = count;
+
+  for(Long i=0;i<Nvol_ext;i++)
+  {
+    ////if(check_recv[i] != -1)
+    for(unsigned long j=0;j < check_recv[i].size();j++)
+    {
+      Long recv = pos_recv + check_recv[i][j];
+      if(recv + 1 >= max_pos){max_pos = recv + 1;}
+      /////local_map_typeA0[i    ] = recv;
+      Qassert(local_map_typeA0[i] == -1);
+      //Qassert(local_map_typeA1[recv] == -1);
+      //if(local_map_typeA0[i] == -1){
+      //  local_map_typeA0[i] = recv;
+      //}else{
+      //  Qassert(map_index_typeO_0[i] == -1);////must be boundaries
+      //}
+      local_map_typeA0[i] = recv;
+      //local_map_typeA1[recv ] = i    ;
+      count += 1;
+    }
+  }
+
+  Qassert(max_pos >= count);////some may be empty
+  /////print0("actual recv %ld, max recv %ld \n", count - pos_recv, max_pos - pos_recv);
+
+  pos_typeA[0] = pos_send;
+  pos_typeA[1] = pos_recv;
+
+  ////Long count_end = max_pos;
+  //for(Long i=pos_send;i<pos_recv;i++){ 
+  //  if(local_map_typeA1[i] != -1){
+  //  Qassert(local_map_typeA0[local_map_typeA1[i]] < pos_recv );}
+  //}
+  //for(Long i=pos_recv;i<count_end;i++){
+  //  if(local_map_typeA1[i] != -1){
+  //  Qassert(local_map_typeA0[local_map_typeA1[i]] < count_end);}
+  //}
+  //for(Long i=0;i<count_end;i++){
+  //  if(local_map_typeA0[i] == -1 or local_map_typeA1[i] == -1)
+  //  {
+  //    print0("layout wrong %ld !\n", i);
+  //  }
+  //}
+  //print0("send_pos %ld %ld recv_pos %ld %ld, final %ld %ld %ld, vol %ld \n", 
+  //  pos_send, pos_recv - pos_send, pos_recv, count_end - pos_recv, count0, count, count_end, Nvol_ext);
+  ////Qassert(false);
+
+  ////map to original vol index
+  //qlat::vector_acc<Long > map_index_typeA0;
+  //qlat::vector_acc<Long > map_index_typeA1;
+  //qlat::vector_acc<Long > map_index_typeAL;
+  map_index_typeA0.resize(Nvol);
+  map_index_typeA1.resize(Nvol_sum);
+  map_index_typeAL.resize(Nvol_sum);
+  #pragma omp parallel for
+  for(Long i=0;i<Nvol;i++){    map_index_typeA0[i] = -1;}
+  #pragma omp parallel for
+  for(Long i=0;i<Nvol_sum;i++){map_index_typeA1[i] = -1;}
+  #pragma omp parallel for
+  for(Long i=0;i<Nvol_sum;i++){    map_index_typeAL[i] = -1;}
+
+  #pragma omp parallel for
+  for(Long index = 0;index  < Nvol; index++){
+    Long index_ext   = map_index_typeO_1[index];
+    Long index_typeA = local_map_typeA0[index_ext]; ////memory positions in typeA format
+    Qassert(index_typeA != -1);
+
+    Qassert(map_index_typeA0[index      ] == -1);
+    Qassert(map_index_typeA1[index_typeA] == -1);
+    map_index_typeA0[index      ] = index_typeA;
+    map_index_typeA1[index_typeA] = index;
+  }
+
+  count = 0;
+  for(Long index_typeA = 0;index_typeA  < Nvol_ext; index_typeA++){
+    Long index = map_index_typeA1[index_typeA];
+    if(index != -1){
+      map_index_typeAL[count] = index;
+      count += 1;
+      Qassert(count <= Nvol);
+    }
+  }
+  //print0("indexed count %8ld, vol %8ld \n", count, Nvol);
+
+  map_index_typeA1.resize(Nvol);////reuse map_index_typeA1
+
+  //////map_bufD[index*dirL*2 + (dir+dirL)] --> needed Nvol_ext positions
+  //qlat::vector_acc<Long > map_bufD_typeA;
+  map_bufD_typeA.resize(Nvol * dirL * 2 );
+  #pragma omp parallel for
+  for(Long i=0;i<Long(map_bufD_typeA.size());i++){map_bufD_typeA[i] = -1;}
+  ////count = index_typeAL
+
+  #pragma omp parallel for
+  for(Long count = 0;count < Nvol;count++){
+    Long index = map_index_typeAL[count];
+    map_index_typeA1[count] = map_index_typeA0[index];
+    ////print0("=count %8ld, iwrite %8ld \n", count, map_index_typeA0[index]);
+    ////Long index_typeA = map_index_typeA1[index];
+    for(int dir=-dirL;dir<dirL; dir++)
+    {
+      Long index_ext = map_bufD[index*dirL*2 + (dir+dirL)]; ////memory postions in index_ext
+      Long index_typeA = local_map_typeA0[index_ext];
+      Qassert(index_typeA != -1);
+      map_bufD_typeA[count*dirL*2 + (dir+dirL)] = index_typeA;
+    }
+  }
+
+  #pragma omp parallel for
+  for(Long i=0;i<Nvol * dirL * 2;i++){Qassert(map_bufD_typeA[i] != -1);}
+  //count = 0;
+  //for(Long i=0;i<Nvol_ext;i++){
+  //  if(map_index_typeA1[i]!=-1){count += 1;}
+  //}
+  //Qassert(count == Nvol);
+
+  count = 0;
+  for(Long i=0;i<Nvol;i++){
+    if(map_index_typeA0[i]!=-1){count += 1;}
+  }
+  Qassert(count == Nvol);
+
+
+}
 
 ////Ty must be complex
 template <typename Ty >
@@ -119,19 +702,30 @@ struct smear_fun{
   fft_desc_basic fd;
   fft_desc_basic fd_new;
 
-  std::vector<qlat::vector_gpu<Long > > mapvq_send;
-  std::vector<qlat::vector_gpu<Long > > mapvq_recv;
+  //std::vector<qlat::vector_gpu<Long > > mapvq_send;
+  //std::vector<qlat::vector_gpu<Long > > mapvq_recv;
   ////int CONTINUS;
   qlat::vector<MPI_Request> send_reqs;
   qlat::vector<MPI_Request> recv_reqs;
   ///unsigned int bfac;
   ////unsigned int Tsize;
-  unsigned long Nvol;
-  unsigned long Nvol_ext;
+  Long Nvol;
+  Long Nvol_ext;
 
-  std::vector<qlat::vector_acc<Long > > map_bufV;
-  qlat::vector_acc<Long > map_bufD;
+  //std::vector<qlat::vector_acc<Long > > map_bufV;
+  //qlat::vector_acc<Long > map_bufD;
   qlat::vector_acc<int> Nv,nv,mv;
+
+  qlat::vector_acc<Long > map_index_typeI ;
+  qlat::vector_acc<Long > map_index_typeA0;
+  qlat::vector_acc<Long > map_index_typeA1;
+  qlat::vector_acc<Long > map_index_typeAL;
+  qlat::vector_acc<Long > map_bufD_typeA  ;
+
+  int use_gauge_mapping;
+
+  std::vector< qlat::vector_acc<Long > > copy_extra_index;
+  std::vector<Long> pos_typeA;
 
   unsigned int NVmpi;
   int groupP;
@@ -199,6 +793,7 @@ struct smear_fun{
     ////Box smearing buffer size
     vL.resize(8);
     vec_rot = NULL;
+    use_gauge_mapping = -1;
     /////CONTINUS = 1;
   }
 
@@ -211,8 +806,8 @@ struct smear_fun{
     if(gauge_buf.size() == 0){Qassert(false);}
     if(gauge_check == NULL){Qassert(false);}
     ////if(gauge_checksum == 0){Qassert(false);}
-    if(map_bufV.size() == 0){Qassert(false);}
-    if(map_bufD.size() == 0){Qassert(false);}
+    ////if(map_bufV.size() == 0){Qassert(false);}
+    ////if(map_bufD.size() == 0){Qassert(false);}
     if(vL.size() != 8){Qassert(false);}
     if(mem_setup_flag == false){Qassert(false);}
     ////if(gauge.size() != Nvol*4*2*9){Qassert(false);}
@@ -241,7 +836,7 @@ struct smear_fun{
       //}
     }
 
-    //for(unsigned long j=0;j<mapv[0].size();j++){
+    //for(Long j=0;j<mapv[0].size();j++){
     //  print0("%8ld %8ld %8ld \n", mapv[0][j], mapv[1][j], mapv[2][j]);
     //}
 
@@ -251,7 +846,7 @@ struct smear_fun{
     sort_vectors_by_axis(mapv, mapv_copy, 1);
 
     //print0("\n\n\n");
-    //for(unsigned long j=0;j<mapv[0].size();j++){
+    //for(Long j=0;j<mapv[0].size();j++){
     //  print0("%8ld %8ld %8ld \n", mapv_copy[0][j], mapv_copy[1][j], mapv_copy[2][j]);
     //}
  
@@ -296,8 +891,16 @@ struct smear_fun{
     if(!smear_in_time_dir){dirL = 3;}
     if( smear_in_time_dir){dirL = 4;}
 
-    get_mapvq(plan.send_pack_infos, mapvq_send, 0);
-    get_mapvq(plan.recv_pack_infos, mapvq_recv, 1);
+    //get_mapvq(plan.send_pack_infos, mapvq_send, 0);
+    //get_mapvq(plan.recv_pack_infos, mapvq_recv, 1);
+
+    qlat::vector_acc<Long > local_map_typeA0;
+    qlat::vector_acc<Long > local_map_typeA1;
+    get_maps_hoppings(geo, geo_ext, dirL,
+      local_map_typeA0, local_map_typeA1, map_index_typeA0, map_index_typeA1, map_index_typeAL, map_bufD_typeA, copy_extra_index, pos_typeA);
+
+    map_index_typeI.resize(Nvol);
+    for(Long i=0;i<Long(Nvol);i++){map_index_typeI[i] = i;}
 
     //if(C0 != C1){abort_r("QLAT SMEARING CONTINUES FAILED!");}
     //CONTINUS = C0;
@@ -305,29 +908,29 @@ struct smear_fun{
     send_reqs.resize(plan.send_msg_infos.size());
     recv_reqs.resize(plan.recv_msg_infos.size());
 
-
     /////const int dir_max = 4;
-    map_bufV.resize(2);
-    for(unsigned int i=0;i<map_bufV.size();i++){map_bufV[i].resize(Nvol       );}
-    #pragma omp parallel for
-    for(unsigned long index=0;index<Nvol;index++){
-      const Coordinate xl = geo.coordinate_from_index(index);
-      map_bufV[0][index]  = geo_ext.offset_from_coordinate(xl);
-      map_bufV[1][index]  = index;
-      //////print0(" mappings %ld %ld \n",map_bufV[0][index], map_bufV[1][index]);
-    }
+    //map_bufV.resize(2);
+    //for(unsigned int i=0;i<map_bufV.size();i++){map_bufV[i].resize(Nvol       );}
+    //#pragma omp parallel for
+    //for(Long index=0;index<Nvol;index++){
+    //  const Coordinate xl = geo.coordinate_from_index(index);
+    //  map_bufV[0][index]  = geo_ext.offset_from_coordinate(xl);
+    //  map_bufV[1][index]  = index;
+    //  //////print0(" mappings %ld %ld \n",map_bufV[0][index], map_bufV[1][index]);
+    //}
 
     //////abort_r();
 
-    map_bufD.resize(Nvol*dirL*2);
-    for(int dir=-dirL;dir<dirL; dir++)
-    #pragma omp parallel for
-    for(unsigned long index=0;index<Nvol;index++)
-    {
-      const Coordinate xl = geo.coordinate_from_index(index);
-      const Coordinate xl1 = coordinate_shifts(xl, dir);
-      map_bufD[index*dirL*2 + (dir+dirL)] = geo_ext.offset_from_coordinate(xl1);
-    }
+    //map_bufD.resize(Nvol*dirL*2);
+    //for(int dir=-dirL;dir<dirL; dir++)
+    //#pragma omp parallel for
+    //for(Long index=0;index<Nvol;index++)
+    //{
+    //  const Coordinate xl = geo.coordinate_from_index(index);
+    //  const Coordinate xl1 = coordinate_shifts(xl, dir);
+    //  map_bufD[index*dirL*2 + (dir+dirL)] = geo_ext.offset_from_coordinate(xl1);
+    //}
+
     mem_setup_flag = true;
   }
 
@@ -363,22 +966,41 @@ struct smear_fun{
     Nvol     = Nv[3] * nv[2]*nv[1]*nv[0];
     Nvol_ext = Nv[3] * nv[2]*nv[1]*nv[0];
 
+    ///===new varaibles
+    //local_map_typeA0.resize(Nvol);
+    //local_map_typeA1.resize(Nvol);
+    map_index_typeA0.resize(Nvol);
+    map_index_typeA1.resize(Nvol);
+    map_index_typeAL.resize(Nvol);
+    for(Long i=0;i<Long(Nvol);i++)
+    {
+      //local_map_typeA0[i] = i;
+      //local_map_typeA1[i] = i;
+      map_index_typeA0[i] = i;
+      map_index_typeA1[i] = i;
+      map_index_typeAL[i] = i;
+    }
+
+    copy_extra_index.resize(3);
+    map_bufD_typeA.resize(Nvol*dirL*2);
+    ///===new varaibles
+
     std::vector<int > Nn;Nn.resize(4);
     for(int i=0;i<3;i++){Nn[i] = nv[i];}
     Nn[3] = Nv[3];
 
-    map_bufV.resize(2);
-    for(unsigned int i=0;i<map_bufV.size();i++){map_bufV[i].resize(Nvol       );}
-    #pragma omp parallel for
-    for(unsigned long index=0;index<Nvol;index++){
-      map_bufV[0][index] = index;
-      map_bufV[1][index] = index;
-    }
+    //map_bufV.resize(2);
+    //for(unsigned int i=0;i<map_bufV.size();i++){map_bufV[i].resize(Nvol       );}
+    //#pragma omp parallel for
+    //for(Long index=0;index<Nvol;index++){
+    //  map_bufV[0][index] = index;
+    //  map_bufV[1][index] = index;
+    //}
 
-    map_bufD.resize(Nvol*dirL*2);
+    ////map_bufD.resize(Nvol*dirL*2);
     for(int dir=-dirL;dir<dirL; dir++)
     #pragma omp parallel for
-    for(unsigned long index=0;index<Nvol;index++)
+    for(Long index=0;index<Nvol;index++)
     {
       std::vector<int > xl;xl.resize(4);
       xl[3] =  index/(Nn[2]*Nn[1]*Nn[0]);
@@ -399,7 +1021,9 @@ struct smear_fun{
 
       ///map_bufD[(dir+4)*Nvol + index] = ((xl[3]*Nn[2]+xl[2])*Nn[1] + xl[1])*Nn[0] + xl[0];
       //map_bufD[index*dirL*2 + (dir+dirL)] = geo_ext.offset_from_coordinate(xl1);
-      map_bufD[index*dirL*2 + (dir+dirL)] =  ((xl[3]*Nn[2]+xl[2])*Nn[1] + xl[1])*Nn[0] + xl[0];
+      const Long pos = ((xl[3]*Nn[2]+xl[2])*Nn[1] + xl[1])*Nn[0] + xl[0]; 
+      //map_bufD[index*dirL*2 + (dir+dirL)] = pos;
+      map_bufD_typeA[index*dirL*2 + (dir+dirL)] = pos;
     }
 
     //geo_ext.resize(Coordinate(0, 0, 0, 0), Coordinate(0, 0, 0, 0));
@@ -410,7 +1034,8 @@ struct smear_fun{
     redistribution_copy = 1;
   }
 
-  inline void refresh_expanded_GPU(Ty* f, const int bfac, int GPU = 1)
+  template<int bfac>
+  void refresh_expanded_GPU(Ty* f, int GPU = 1)
   {
     check_setup();
     if(redistribution_copy == 1){return ;}
@@ -421,16 +1046,43 @@ struct smear_fun{
     TIMER_FLOPS("refresh_expanded");
     timer.flops += total_bytes / 2;
 
-    send_buffer.resizeL(plan.total_send_size*bfac);
-    recv_buffer.resizeL(plan.total_recv_size*bfac);
-    ////init_buf<T >(bfac);
-    //T* send_buffer = (T*) send_bufferV;
-    //T* recv_buffer = (T*) recv_bufferV;
-    ////shift_copy(send_buffer, f , smf.mapvq_send, smf.bfac);
-    cpy_data_from_group(send_buffer.data(), f , mapvq_send[0].data(), mapvq_send[1].data(), mapvq_send[2].data(), mapvq_send[0].size(), bfac, GPU);
+    //send_buffer.resizeL(plan.total_send_size*bfac);
+    //recv_buffer.resizeL(plan.total_recv_size*bfac);
 
-    /////vector<MPI_Request> send_reqs(plan.send_msg_infos.size());
-    /////vector<MPI_Request> recv_reqs(plan.recv_msg_infos.size());
+    ////copy extra send buf
+    //copy_extra_index
+    qlat::vector_acc<Long >& copy_extra_index0 = copy_extra_index[0];
+    qlat::vector_acc<Long >& copy_extra_index1 = copy_extra_index[1];
+    qlat::vector_acc<Long >& copy_extra_posL   = copy_extra_index[2];
+    //copy_extra_index0.resize(sortL.size());
+    //copy_extra_index1.resize(sortL.size());
+    //copy_extra_posL.resize(count_sum);
+    const Long Ncopy = copy_extra_index0.size();
+    if(Ncopy != 0)
+    {TIMERA("smear Copy extra");
+    qacc_for(isp, Ncopy, {
+      const Long send   = copy_extra_index0[isp];
+      const Long count0 = copy_extra_index1[isp];
+      const Long count1 = copy_extra_index1[isp + 1];
+      const Long loop = count1 - count0;
+      const Long* cP  = &copy_extra_posL[count0];
+      QLAT_ALIGN(QLAT_ALIGNED_BYTES) Ty buf[bfac];
+      for(Long bi=0;bi<bfac;bi++){buf[bi] = f[send*bfac + bi];}
+
+      //////Ty buf = f[send*bfac + bi];
+      for(Long j=0;j<loop;j++)
+      for(Long bi=0;bi<bfac;bi++)
+      {
+        ////Qassert(cP[j] >= pos_typeA[0] and cP[j] < pos_typeA[1]);
+        f[cP[j]*bfac + bi] = buf[bi];
+      }
+    });
+    }
+
+
+    //cpy_data_from_group(send_buffer.data(), f , mapvq_send[0].data(), mapvq_send[1].data(), mapvq_send[2].data(), mapvq_send[0].size(), bfac, GPU);
+    Ty* s_buf = &f[pos_typeA[0] * bfac];
+    Ty* r_buf = &f[pos_typeA[1] * bfac];
     {
       //sync_node();
       TIMER_FLOPS("refresh_expanded-comm");
@@ -442,22 +1094,26 @@ struct smear_fun{
         for (size_t i = 0; i < plan.recv_msg_infos.size(); ++i) {
           const CommMsgInfo& cmi = plan.recv_msg_infos[i];
           Long count = cmi.size * bfac * sizeof(Ty) / sizeof(double);
-          MPI_Irecv(&recv_buffer[cmi.buffer_idx*bfac], count, MPI_DOUBLE,
+          //MPI_Irecv(&recv_buffer[cmi.buffer_idx*bfac], count, MPI_DOUBLE,
+          //          cmi.id_node, mpi_tag, get_comm(), &recv_reqs[i]);
+
+          MPI_Irecv(&r_buf[cmi.buffer_idx*bfac], count, MPI_DOUBLE,
                     cmi.id_node, mpi_tag, get_comm(), &recv_reqs[i]);
         }
         for (size_t i = 0; i < plan.send_msg_infos.size(); ++i) {
           const CommMsgInfo& cmi = plan.send_msg_infos[i];
           Long count = cmi.size * bfac * sizeof(Ty) / sizeof(double);
-          MPI_Isend(&send_buffer[cmi.buffer_idx*bfac], count, MPI_DOUBLE,
+          //MPI_Isend(&send_buffer[cmi.buffer_idx*bfac], count, MPI_DOUBLE,
+          //          cmi.id_node, mpi_tag, get_comm(), &send_reqs[i]);
+
+          MPI_Isend(&s_buf[cmi.buffer_idx*bfac], count, MPI_DOUBLE,
                     cmi.id_node, mpi_tag, get_comm(), &send_reqs[i]);
         }
       }
       MPI_Waitall(recv_reqs.size(), recv_reqs.data(), MPI_STATUS_IGNORE);
       MPI_Waitall(send_reqs.size(), send_reqs.data(), MPI_STATUS_IGNORE);
-      //sync_node();
     }
-    //shift_copy(f, recv_buffer , mapvq_recv, bfac);
-    cpy_data_from_group(f, recv_buffer.data(), mapvq_recv[0].data(), mapvq_recv[1].data(), mapvq_recv[2].data(), mapvq_recv[0].size(), bfac, GPU);
+    //cpy_data_from_group(f, recv_buffer.data(), mapvq_recv[0].data(), mapvq_recv[1].data(), mapvq_recv[2].data(), mapvq_recv[0].size(), bfac, GPU);
   }
 
   inline void gauge_buf_name_append(int buf)
@@ -473,8 +1129,9 @@ struct smear_fun{
   //void gauge_setup(qlat::vector_gpu<T >& gfE, const GaugeFieldT<Tg >& gf,
   //           const qlat::vector_acc<qlat::ComplexD >& momF = qlat::vector_acc<qlat::ComplexD >(), bool force_update = false);
   template <class Td>
-  void gauge_setup(const GaugeFieldT<Td >& gf, const CoordinateD& mom_, const int force_update = 0)
+  void gauge_setup(const GaugeFieldT<Td >& gf, const CoordinateD& mom_, const int force_update = 0, const int use_gauge_mapping_ = 1)
   {
+    Qassert(mem_setup_flag == true);
     qlat::vector_acc<qlat::ComplexD > momF(8);
     for (int i = 0; i < 8; ++i) {
       const int dir = i - 4;
@@ -492,6 +1149,7 @@ struct smear_fun{
     if(gauge_check != (void*) qlat::get_data(gf).data()){update = true;}
     if(mom_factors.size() != 8){update = true;}
     else{for(int i=0;i<momF.size();i++){if(momF[i]!=mom_factors[i]){update = true;}}}
+    if(use_gauge_mapping != use_gauge_mapping_){update = true;}
 
     ////for_update == -1; do not check gauge sum
     if(force_update == 0){
@@ -519,7 +1177,13 @@ struct smear_fun{
       Qassert(geo.total_site() == gf.geo().total_site());
       gauge_buf.resizeL(2*4* gf.geo().local_volume() * 9);
       mom_factors = momF;
-      extend_links_to_vecs(gauge_buf.data(), gf, momF);
+      if(use_gauge_mapping_ == 1){
+        extend_links_to_vecs(gauge_buf.data(), gf, momF, map_index_typeAL);
+      }else{
+        extend_links_to_vecs(gauge_buf.data(), gf, momF);
+      }
+
+      use_gauge_mapping = use_gauge_mapping_;
       gauge_setup_flag = true;
       gauge_check = (void*) qlat::get_data(gf).data();
       gauge_checksum = tmp_gauge_checksum;
@@ -731,7 +1395,7 @@ inline SmearPlanKey get_smear_plan_key(const Geometry& geo, const bool smear_in_
 
 ////TODO need to change other parts for c0, c1
 template <class T, class Td>
-void extend_links_to_vecs(T* resE, const GaugeFieldT<Td >& gf, const qlat::vector_acc<qlat::ComplexD >& mom_factors=qlat::vector_acc<qlat::ComplexD >()){
+void extend_links_to_vecs(T* resE, const GaugeFieldT<Td >& gf, const qlat::vector_acc<qlat::ComplexD >& mom_factors=qlat::vector_acc<qlat::ComplexD >(), const qlat::vector_acc<Long >& index_map = qlat::vector_acc<Long >(0)){
   TIMERB("extend_links_to_vecs");
   const Geometry& geo = gf.geo();
   GaugeFieldT<Td > gf1;
@@ -746,11 +1410,21 @@ void extend_links_to_vecs(T* resE, const GaugeFieldT<Td >& gf, const qlat::vecto
     Qassert(mom_factors.size()==8);
     momF = (qlat::ComplexD*) qlat::get_data(mom_factors).data();
   }
+
+  const Long* index_mapT = (Long*) index_map.data();
+  qlat::vector_acc<Long > index_mapR;
+  const Long Nvol = geo.local_volume();
+  if(index_map.size() == 0){
+    index_mapR.resize(Nvol);
+    for(Long i=0;i<Nvol;i++){index_mapR[i] = i;}
+    index_mapT = index_mapR.data();
+  }
   ////set up mom factors
   //mom_factors()[dir + 4];
-  qacc_for(index,  geo.local_volume(),{
+  qacc_for(count,  geo.local_volume(),{
+    Long index = index_mapT[count];
+    const Coordinate xl = geo.coordinate_from_index(index);
     for (int dir = -dir_limit; dir < dir_limit; ++dir) {
-      const Coordinate xl = geo.coordinate_from_index(index);
       const ColorMatrixT<Td > link =
           dir >= 0 ? gf1.get_elem(xl, dir)
                    : (ColorMatrixT<Td >)matrix_adjoint(
@@ -759,7 +1433,7 @@ void extend_links_to_vecs(T* resE, const GaugeFieldT<Td >& gf, const qlat::vecto
       ////also in multiply_gauge of utils_shift_vecs.h
       for(int ci=0; ci<9; ci++){
         //resE[(index*dir_limit*2+ (dir+dir_limit))*9 + (ci%3)*3 + ci/3] = momF[dir + 4] * link.p[ci];
-        resE[(index*dir_limit*2+ (dir+dir_limit))*9 + ci] = momF[dir + 4] * link.p[ci];
+        resE[(count*dir_limit*2+ (dir+dir_limit))*9 + ci] = momF[dir + 4] * link.p[ci];
       }
     }
   })
@@ -916,7 +1590,7 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
   if(smf.dirL == 4 ){bw_fac = bw_fac * 3.0/4.0;}
   const T bw = bw_fac;
 
-  unsigned long Nvol = smf.Nvol;
+  Long Nvol = smf.Nvol;
   const int nsites = bfac*3*civ;
 
   const int GPU = 1;
@@ -927,8 +1601,9 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
   smf.check_setup();
 
   const T* gf = (T*) gauge_buf.data();
-  prop_buf0.resizeL(smf.Nvol_ext * bfac * 3* civ);
-  prop_buf1.resizeL(smf.Nvol_ext * bfac * 3* civ);
+  const Long Nvol_sum = smf.map_index_typeAL.size();////only Nvol have data, just save Nvol_sum
+  prop_buf0.resizeL(Nvol_sum * bfac * 3* civ);
+  prop_buf1.resizeL(Nvol_sum * bfac * 3* civ);
   ////cpy_data_thread(prop, src, Ndata);
   ////copy src to buf0
 
@@ -948,9 +1623,11 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
   dim3 dimGrid( sn, 1, 1);
 
   #endif
+  //const Long* map_final = &smf.map_bufV[0][0];
 
-  const Long* Pdir1 = (Long*) qlat::get_data(smf.map_bufD).data();
-  const Long* map_final = &smf.map_bufV[0][0];
+  //const Long* Pdir1 = (Long*) qlat::get_data(smf.map_bufD).data();
+  const Long* Pdir1 = (Long*) qlat::get_data(smf.map_bufD_typeA).data();
+  const Long* map_final = &smf.map_index_typeA1[0];
 
   T* prop_src = (T*) prop_buf0.data();
   T* prop_tmp = (T*) prop_buf0.data();
@@ -958,8 +1635,8 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
 
   if(smf.redistribution_copy == 0)
   {
-  cpy_data_from_index(prop_src, src, &smf.map_bufV[0][0], &smf.map_bufV[1][0], Nvol, nsites, GPU);
-  ////cpy_data_from_index(prop_res, src, &smf.map_bufV[0][0], &smf.map_bufV[1][0], Nvol, nsites, GPU);
+  cpy_data_from_index(prop_src, src, &smf.map_index_typeA0[0], &smf.map_index_typeI[0], Nvol, nsites, GPU);
+  //cpy_data_from_index(prop_src, src, &smf.map_bufV[0][0], &smf.map_bufV[1][0], Nvol, nsites, GPU);
   }
 
   //const Long Ndata = smf.Nvol * nsites;
@@ -973,7 +1650,7 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
     //cpy_data_from_index(prop_src, prop_res, &smf.map_bufV[0][0], &smf.map_bufV[0][0], Nvol, nsites, GPU);}
 
     {TIMERC("Communication");
-    smf.refresh_expanded_GPU(prop_src, nsites, GPU);}
+    smf.template refresh_expanded_GPU<nsites>(prop_src, GPU);}
 
     {TIMERC("Matrix multiply");
     #ifdef QLAT_USE_ACC
@@ -982,16 +1659,36 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
     qacc_barrier(dummy);
     #else
 
-    const int dir_max = 4;
+    const int dir_max  = 4;
     const int dir_limit = smf.dirL;
-    qacc_for(index,  Long(Nvol),{
-      QLAT_ALIGN(QLAT_ALIGNED_BYTES) T buf[nsites];for(int i=0;i<nsites;i++){buf[i] = 0;}
+    ////const Long* map_count = smf.map_index_typeAL[0];
+    qacc_for(count,  Long(Nvol),{
+      //const Long index  = smf.map_index_typeAL[count];
+      //const Long iwrite = smf.map_index_typeA0[index];
+      const Long iwrite = map_final[count];
+      QLAT_ALIGN(QLAT_ALIGNED_BYTES) T  buf[nsites];
+
+      //QLAT_ALIGN(QLAT_ALIGNED_BYTES) T lbuf[3*3];
+      //const T* lp = &lbuf[0];
+
+      for(int i=0;i<nsites;i++){ 
+        buf[i] = 0; 
+      }
       for (int dir = -dir_limit; dir < dir_limit; ++dir) {
-        const T* wm1p = &prop_src[size_t(Pdir1[index*dir_limit*2 + (dir + dir_limit)])*nsites];
-        const T* lp = &gf[(index*dir_max*2 + dir + dir_max)*9];
+        ////const Long index_dir = smf.local_map_typeA0[Pdir1[index*dir_limit*2 + (dir + dir_limit)]];
+        const Long index_dir = Pdir1[count*dir_limit*2 + (dir + dir_limit)];
+        const T* wm1p = &prop_src[size_t(index_dir)*nsites];
+        const T* lp = &gf[(count*dir_max*2 + dir + dir_max)*9];
+        //const T* l0 = &gf[(count*dir_max*2 + dir + dir_max)*9];
+        //for(int c0=0;c0<3;c0++)
+        //for(int c1=0;c1<3;c1++)
+        //{
+        //  lbuf[c0*3+c1] = l0[c0*3+c1];
+        //}
 
         for(int bi=0;bi<bfac;bi++){
           Eigen::Matrix<T, 3, 3, Eigen::ColMajor>&     lE = *((Eigen::Matrix<T, 3, 3, Eigen::ColMajor>*) lp);
+          //Eigen::Matrix<T, 3, 3, Eigen::RowMajor>&     lE = *((Eigen::Matrix<T, 3, 3, Eigen::RowMajor>*) lp);
           Eigen::Matrix<T, civ, 3, Eigen::ColMajor>& wmE = *((Eigen::Matrix<T, civ, 3, Eigen::ColMajor>*)  &buf[bi*3*civ]);
 
           //Eigen::Matrix<T, civ, 3, Eigen::ColMajor>&  pE = *((Eigen::Matrix<T, civ, 3, Eigen::ColMajor>*) &wm1p[bi*3*civ]);
@@ -1008,14 +1705,14 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
         }
       }
 
-      const T* wo = &prop_src[map_final[index]*nsites];
-      T* wp = &prop_res[map_final[index]*nsites];
-      for(int ic=0;ic<nsites;ic++){wp[ic]  = norm*(wo[ic] + bw*buf[ic]);}
-
+      const T* wo = &prop_src[iwrite*nsites];
+            T* wp = &prop_res[iwrite*nsites];
+      //const T* wo = &prop_src[map_final[index]*nsites];
       //T* wp = &prop_res[map_final[index]*nsites];
-      //for(int i=0;i<nsites;i++){wp[i]  = norm*(wp[i] + bw*buf[i]);}
 
+      for(int ic=0;ic<nsites;ic++){wp[ic]  = norm*(wo[ic] + bw*buf[ic]);}
     });
+
     #endif
     }
 
@@ -1027,15 +1724,13 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
     prop_src = prop_res;
     prop_res = prop_tmp;
 
-    //cpy_data_thread(prop_res, src, Ndata);
+    /////cpy_data_thread(prop_res, src, Ndata);
   }
 
-  if(smf.redistribution_copy == 0)
-  cpy_data_from_index(src, prop_src, &smf.map_bufV[1][0], &smf.map_bufV[0][0], Nvol, nsites, GPU);
-  //cpy_data_thread(src, prop_res, Ndata);
-
-  //cpy_data_from_index(prop_src, prop_res, &smf.map_bufV[0][0], &smf.map_bufV[1][0], Nvol, nsites, GPU);
+  if(smf.redistribution_copy == 0){
+  cpy_data_from_index(src, prop_src, &smf.map_index_typeI[0], &smf.map_index_typeA0[0], Nvol, nsites, GPU);
   //cpy_data_from_index(src, prop_src, &smf.map_bufV[1][0], &smf.map_bufV[0][0], Nvol, nsites, GPU);
+  }
 
   smf.clear_mem();
 }
@@ -1106,6 +1801,12 @@ void smear_kernel(T* src, const double width, const int step, smear_fun<T >& smf
   smear_macros(  24,  1);
   smear_macros(  48,  1);
 
+  #ifndef QLAT_USE_ACC
+  //smear_macros( 384 , 1);
+  smear_macros(  12,  12);
+  smear_macros(   1, 384);
+  smear_macros(   1,  96);
+  #endif
   smear_macros(   1, 48);
   smear_macros(   1, 27);
   smear_macros(   1, 24);
@@ -1130,6 +1831,7 @@ void smear_kernel(T* src, const double width, const int step, smear_fun<T >& smf
   }
   if(cfind == false){print0("Case bfac %5d, civ %5d \n", bfac, civ); abort_r("smear kernel not found!\n");}
   ////Qassert(cfind);
+  //print0("==check Case bfac %5d, civ %5d \n", bfac, civ);
 }
 
 ////4*3_0   4*3_1 --> 3_0 --> 4*4*3_1
@@ -1169,7 +1871,12 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
   ///double mem       = 0.0;
   Geometry geo = gf.geo();
   geo.multiplicity = 1;geo.eo=0;
+  #ifdef QLAT_USE_ACC
   if(c0*d0 > 48){abort_r("d0 should be smaller than 48 for gpu mem. \n");}
+  #endif
+
+  int use_gauge_mapping = 1;
+  if(step < 0){ use_gauge_mapping = 0;}////hack for box smearings
 
   {
     long long Lat = geo.local_volume();
@@ -1199,7 +1906,6 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
   smear_fun<Ty >& smf = *((smear_fun<Ty >*) (smf_copy.smfP));
   ////hack to reuse links
   smf.gauge_buf_name_append(skey.dup);
-  smf.gauge_setup(gf, mom, force_update );
 
   ////fft_desc_basic fd(geo);
   ////Vec_redistribute vec_large(fd);
@@ -1234,6 +1940,9 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
   const int GPU = 1;
   qlat::vector_gpu<Ty >& prop_buf0 = get_vector_gpu_plan<Ty >(0, smf.prop_buf0_name, GPU);
   qlat::vector_gpu<Ty >& prop_buf1 = get_vector_gpu_plan<Ty >(0, smf.prop_buf1_name, GPU);
+
+  if(reorder){use_gauge_mapping = 0;}////hack for reordering
+  smf.gauge_setup(gf, mom, force_update, use_gauge_mapping );
 
   if(reorder ){
     /////print0("====Vec setup, NVmpi %d, groupP %d \n", smf.NVmpi, groupP);
