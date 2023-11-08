@@ -209,6 +209,8 @@ inline void displayln_malloc_stats()
 #endif
 }
 
+// --------------------
+
 template <class M>
 struct API vector {
   // Avoid copy constructor when possible
@@ -516,6 +518,20 @@ qacc void qswap(vector<M>& v1, vector<M>& v2)
   v1.swap(v2);
 }
 
+// --------------------
+
+template <class M>
+struct IsDataVectorType<vector<M>> {
+  static constexpr bool value = is_data_value_type<M>();
+  using DataType = M;
+};
+
+template <class M>
+struct IsDataVectorType<vector_acc<M>> {
+  static constexpr bool value = is_data_value_type<M>();
+  using DataType = M;
+};
+
 template <class M>
 qacc Vector<M> get_data(const vector<M>& v)
 {
@@ -523,20 +539,12 @@ qacc Vector<M> get_data(const vector<M>& v)
 }
 
 template <class M>
-qacc void set_zero(vector<M>& v)
+qacc Vector<M> get_data(const vector_acc<M>& v)
 {
-  set_zero(v.v);
+  return get_data((const vector<M>&)v);
 }
 
-template <class T>
-qacc double qnorm(const vector<T>& mm)
-{
-  double sum = 0.0;
-  for (Long i = 0; i < mm.size(); ++i) {
-    sum += qnorm(mm[i]);
-  }
-  return sum;
-}
+// --------------------
 
 template <class M>
 struct API box {
@@ -759,22 +767,34 @@ qacc void qswap(box<M>& v1, box<M>& v2)
   v1.swap(v2);
 }
 
+// --------------------
+
+template <class M>
+struct IsDataVectorType<box<M>> {
+  static constexpr bool value = is_data_value_type<M>();
+  using DataType = M;
+};
+
+template <class M>
+struct IsDataVectorType<box_acc<M>> {
+  static constexpr bool value = is_data_value_type<M>();
+  using DataType = M;
+};
+
 template <class M>
 qacc Vector<M> get_data(const box<M>& v)
 {
   if (not v.null()) {
-    return get_data_one_elem(v());
+    return get_data(v());
   } else {
     return Vector<M>();
   }
 }
 
 template <class M>
-qacc void set_zero(box<M>& v)
+qacc Vector<M> get_data(const box_acc<M>& v)
 {
-  if (not v.null()) {
-    set_zero(v());
-  }
+  return get_data((const box<M>&)v);
 }
 
 }  // namespace qlat

@@ -14,7 +14,7 @@ namespace qlat
 template <class M>
 struct IsDataVectorType {
   static constexpr bool value = is_data_value_type<M>();
-  using DataType = M;
+  using DataType = typename IsDataValueType<M>::DataType;
 };
 
 template <class M>
@@ -35,12 +35,6 @@ struct IsDataVectorType<Array<M, N>> {
   using DataType = M;
 };
 
-template <class M, size_t N>
-struct IsDataVectorType<array<M, N>> {
-  static constexpr bool value = is_data_value_type<M>();
-  using DataType = M;
-};
-
 template <class M>
 struct IsDataVectorType<Handle<M>> {
   static constexpr bool value = is_data_value_type<M>();
@@ -57,6 +51,8 @@ struct IsDataVectorType<ConstHandle<M>> {
 
 template <class M>
 qacc constexpr bool is_data_vector_type()
+// data vector types
+// data value types + all kinds of vector of data value types
 {
   return IsDataVectorType<M>::value;
 };
@@ -73,6 +69,9 @@ struct IsGetDataType {
 
 template <class M>
 qacc constexpr bool is_get_data_type()
+// get data types
+// data vector types + many other containers of data value types
+// support get_data function
 {
   return IsGetDataType<M>::value;
 };
@@ -83,6 +82,12 @@ template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
 qacc Vector<M> get_data(const M& x)
 {
   return Vector<M>(&x, 1);
+}
+
+template <class M, size_t N, QLAT_ENABLE_IF(is_data_value_type<M>())>
+qacc Vector<M> get_data(const array<M, N>& arr)
+{
+  return Vector<M>(arr.data(), arr.size());
 }
 
 template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
@@ -101,12 +106,6 @@ template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
 qacc Vector<M> get_data(const std::vector<M>& vec)
 {
   return Vector<M>(vec.data(), vec.size());
-}
-
-template <class M, size_t N, QLAT_ENABLE_IF(is_data_value_type<M>())>
-qacc Vector<M> get_data(const array<M, N>& arr)
-{
-  return Vector<M>(arr.data(), arr.size());
 }
 
 template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
@@ -167,7 +166,7 @@ qacc RealD qnorm(const M& x)
 }
 
 template <class T, QLAT_ENABLE_IF(is_data_vector_type<T>() and
-                                  not is_data_value_type<T>())>
+                                  not is_basic_data_type<T>())>
 RealD qnorm(const T& xx)
 {
   using M = typename IsDataVectorType<T>::DataType;

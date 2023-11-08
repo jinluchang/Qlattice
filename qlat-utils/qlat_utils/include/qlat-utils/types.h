@@ -81,64 +81,6 @@ struct API CoordinateD : public array<RealD, DIMN> {
 // -------------------------------------------------------------------------
 
 template <class M>
-qacc constexpr bool is_signed_integer()
-{
-  bool ret = false;
-  if (is_same<M, int8_t>()) {
-    ret = true;
-  } else if (is_same<M, int16_t>()) {
-    ret = true;
-  } else if (is_same<M, int32_t>()) {
-    ret = true;
-  } else if (is_same<M, int64_t>()) {
-    ret = true;
-  }
-  return ret;
-}
-
-template <class M>
-qacc constexpr bool is_unsigned_integer()
-{
-  bool ret = false;
-  if (is_same<M, uint8_t>()) {
-    ret = true;
-  } else if (is_same<M, uint16_t>()) {
-    ret = true;
-  } else if (is_same<M, uint32_t>()) {
-    ret = true;
-  } else if (is_same<M, uint64_t>()) {
-    ret = true;
-  }
-  return ret;
-}
-
-template <class M>
-qacc constexpr bool is_integer()
-{
-  return is_signed_integer<M>() or is_unsigned_integer<M>();
-}
-
-template <class M>
-qacc constexpr bool is_number()
-{
-  return is_integer<M>() or is_real<M>() or is_complex<M>();
-}
-
-template <class M>
-qacc constexpr bool is_char()
-{
-  bool ret = false;
-  if (is_same<M, char>()) {
-    ret = true;
-  } else if (is_same<M, signed char>()) {
-    ret = true;
-  } else if (is_same<M, unsigned char>()) {
-    ret = true;
-  }
-  return ret;
-}
-
-template <class M>
 std::string get_type_name()
 {
   std::string ret = "unknown";
@@ -204,103 +146,65 @@ std::string get_type_name()
   return ret;
 }
 
-template <>
-inline std::string get_type_name<RealF>()
-{
-  return "RealF";
-}
-
-template <>
-inline std::string get_type_name<RealD>()
-{
-  return "RealD";
-}
-
-template <>
-inline std::string get_type_name<ComplexF>()
-{
-  return "ComplexF";
-}
-
-template <>
-inline std::string get_type_name<ComplexD>()
-{
-  return "ComplexD";
-}
-
-template <>
-inline std::string get_type_name<WilsonVectorD>()
-{
-  return "WilsonVectorD";
-}
-
-template <>
-inline std::string get_type_name<SpinMatrixD>()
-{
-  return "SpinMatrixD";
-}
-
-template <>
-inline std::string get_type_name<NonRelWilsonMatrixD>()
-{
-  return "NonRelWilsonMatrixD";
-}
-
-template <>
-inline std::string get_type_name<WilsonMatrixD>()
-{
-  return "WilsonMatrixD";
-}
-
-template <>
-inline std::string get_type_name<ColorMatrixD>()
-{
-  return "ColorMatrixD";
-}
-
-template <>
-inline std::string get_type_name<IsospinMatrixD>()
-{
-  return "IsospinMatrixD";
-}
-
-template <>
-inline std::string get_type_name<WilsonVectorF>()
-{
-  return "WilsonVectorF";
-}
-
-template <>
-inline std::string get_type_name<SpinMatrixF>()
-{
-  return "SpinMatrixF";
-}
-
-template <>
-inline std::string get_type_name<NonRelWilsonMatrixF>()
-{
-  return "NonRelWilsonMatrixF";
-}
-
-template <>
-inline std::string get_type_name<WilsonMatrixF>()
-{
-  return "WilsonMatrixF";
-}
-
-template <>
-inline std::string get_type_name<ColorMatrixF>()
-{
-  return "ColorMatrixF";
-}
-
-template <>
-inline std::string get_type_name<IsospinMatrixF>()
-{
-  return "IsospinMatrixF";
-}
-
 // -------------------------------------------------------------------------
+
+template <class M>
+qacc constexpr bool is_signed_integer()
+{
+  bool ret = false;
+  if (is_same<M, int8_t>()) {
+    ret = true;
+  } else if (is_same<M, int16_t>()) {
+    ret = true;
+  } else if (is_same<M, int32_t>()) {
+    ret = true;
+  } else if (is_same<M, int64_t>()) {
+    ret = true;
+  }
+  return ret;
+}
+
+template <class M>
+qacc constexpr bool is_unsigned_integer()
+{
+  bool ret = false;
+  if (is_same<M, uint8_t>()) {
+    ret = true;
+  } else if (is_same<M, uint16_t>()) {
+    ret = true;
+  } else if (is_same<M, uint32_t>()) {
+    ret = true;
+  } else if (is_same<M, uint64_t>()) {
+    ret = true;
+  }
+  return ret;
+}
+
+template <class M>
+qacc constexpr bool is_integer()
+{
+  return is_signed_integer<M>() or is_unsigned_integer<M>();
+}
+
+template <class M>
+qacc constexpr bool is_number()
+{
+  return is_integer<M>() or is_real<M>() or is_complex<M>();
+}
+
+template <class M>
+qacc constexpr bool is_char()
+{
+  bool ret = false;
+  if (is_same<M, char>()) {
+    ret = true;
+  } else if (is_same<M, signed char>()) {
+    ret = true;
+  } else if (is_same<M, unsigned char>()) {
+    ret = true;
+  }
+  return ret;
+}
 
 template <class M>
 qacc constexpr bool is_composed_of_complex_d()
@@ -433,10 +337,38 @@ qacc constexpr int element_size_of()
   return ret;
 }
 
+// -------------------------------------------------------------------------
+
 template <class M>
-qacc constexpr bool is_data_value_type()  // for example size for convert endian
+qacc constexpr bool is_basic_data_type()
+// basic data types
+// Long, RealD, ComplexD, ColorMatrixD, etc
 {
   return element_size_of<M>() > 0;
+}
+
+// -------------------------------------------------------------------------
+
+template <class M>
+struct IsDataValueType {
+  static constexpr bool value = is_basic_data_type<M>();
+  using DataType = M;
+};
+
+template <class M, size_t N>
+struct IsDataValueType<array<M, N>> {
+  static constexpr bool value = IsDataValueType<M>::value;
+  using DataType = typename IsDataValueType<M>::DataType;
+};
+
+// -------------------------------------------------------------------------
+
+template <class M>
+qacc constexpr bool is_data_value_type()
+// data value types
+// basic data types + qlat::array of basic data types
+{
+  return IsDataValueType<M>::value;
 }
 
 // -------------------------------------------------------------------------
