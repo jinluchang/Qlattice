@@ -78,7 +78,8 @@ qacc constexpr bool is_get_data_type()
 
 // -------------------
 
-template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+template <class M,
+          QLAT_ENABLE_IF((is_basic_data_type<M>() or is_same<M, RngState>()))>
 qacc Vector<M> get_data(const M& x)
 {
   return Vector<M>(&x, 1);

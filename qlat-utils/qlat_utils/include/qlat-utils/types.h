@@ -373,7 +373,8 @@ struct IsDataValueType<RngState> {
 template <class M>
 qacc constexpr bool is_data_value_type()
 // data value types
-// basic data types + qlat::array of basic data types
+// basic data types + qlat::array of basic data types + RngState + etc
+// data value types should contain its data within itself (no pointers)
 {
   return IsDataValueType<M>::value;
 }
