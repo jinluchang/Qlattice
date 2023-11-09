@@ -123,7 +123,7 @@ qacc Vector<M> get_data(ConstHandle<M>& h)
 // -------------------
 
 template <class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
-void set_zero(T& xx)
+qacc void set_zero(T& xx)
 {
   using M = typename IsGetDataType<T>::DataType;
   const Vector<M> vec = get_data(xx);
