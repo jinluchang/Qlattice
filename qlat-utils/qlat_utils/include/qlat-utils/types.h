@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qlat-utils/mat-vec.h>
+#include <qlat-utils/rng-state.h>
 
 #include <cstdint>
 #include <vector>
@@ -359,6 +360,12 @@ template <class M, size_t N>
 struct IsDataValueType<array<M, N>> {
   static constexpr bool value = IsDataValueType<M>::value;
   using DataType = typename IsDataValueType<M>::DataType;
+};
+
+template <>
+struct IsDataValueType<RngState> {
+  static constexpr bool value = true;
+  using DataType = RngState;
 };
 
 // -------------------------------------------------------------------------
