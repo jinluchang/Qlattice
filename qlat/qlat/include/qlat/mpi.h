@@ -163,7 +163,7 @@ int glb_sum(T& xx)
   using M = typename IsDataVectorType<T>::DataType;
   Vector<M> vec = get_data(xx);
   vector<M> tmp_vec(vec.size());
-  std::memcpy((void*)tmp_vec.data(), (void*)vec.data(), vec.size() * sizeof(M));
+  assign(tmp_vec, vec);
   return glb_sum(vec, get_data(tmp_vec));
 }
 
