@@ -118,7 +118,7 @@ cdef class PointsSelection:
             xg = xg_arr
             n_points = 1
             self.xx = cc.PointsSelection(n_points)
-            cc.assign_direct(self.xx[0], xg.xx)
+            self.xx[0] = xg.xx
         elif isinstance(xg_arr, np.ndarray):
             n_points = len(xg_arr)
             self.xx = cc.PointsSelection(n_points)
@@ -137,11 +137,11 @@ cdef class PointsSelection:
 
     def __getitem__(self, cc.Long idx):
         cdef Coordinate xg = Coordinate()
-        cc.assign_direct(xg.xx, self.xx[idx])
+        xg.xx = self.xx[idx]
         return xg
 
     def __setitem__(self, cc.Long idx, Coordinate xg not None):
-        cc.assign_direct(self.xx[idx], xg.xx)
+        self.xx[idx] = xg.xx
 
     def __iter__(self):
         cdef cc.Long idx
