@@ -50,7 +50,7 @@ inline LatData contract_chvp3(const SelProp& prop1, const SelProp& prop2,
     Vector<ComplexD> ldv = lat_data_cget(ld, make_array<int>(tsep));
     ldv += chvp_v;
   }
-  glb_sum_lat_data(ld);
+  glb_sum(ld);
   ld *= 1.0 / get_fsel_prob(fsel);
   return ld;
 }

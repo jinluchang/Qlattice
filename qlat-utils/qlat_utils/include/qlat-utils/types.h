@@ -82,70 +82,314 @@ struct API CoordinateD : public array<RealD, DIMN> {
 // -------------------------------------------------------------------------
 
 template <class M>
+struct IsBasicDataType {
+  static constexpr bool value = false;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "unknown_type"; }
+  using ElementaryType = M;
+};
+
+template <>
+struct IsBasicDataType<char> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "char"; }
+  using ElementaryType = char;
+};
+
+template <>
+struct IsBasicDataType<int8_t> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "Int8t"; }
+  using ElementaryType = int8_t;
+};
+
+template <>
+struct IsBasicDataType<int16_t> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "Int16t"; }
+  using ElementaryType = int16_t;
+};
+
+template <>
+struct IsBasicDataType<int32_t> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "Int32t"; }
+  using ElementaryType = int32_t;
+};
+
+template <>
+struct IsBasicDataType<int64_t> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "Int64t"; }
+  using ElementaryType = int64_t;
+};
+
+template <>
+struct IsBasicDataType<uint8_t> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "UInt8t"; }
+  using ElementaryType = uint8_t;
+};
+
+template <>
+struct IsBasicDataType<uint16_t> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "UInt16t"; }
+  using ElementaryType = uint16_t;
+};
+
+template <>
+struct IsBasicDataType<uint32_t> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "UInt32t"; }
+  using ElementaryType = uint32_t;
+};
+
+template <>
+struct IsBasicDataType<uint64_t> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "UInt64t"; }
+  using ElementaryType = uint64_t;
+};
+
+template <>
+struct IsBasicDataType<RealF> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "RealF"; }
+  using ElementaryType = RealF;
+};
+
+template <>
+struct IsBasicDataType<RealD> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "RealD"; }
+  using ElementaryType = RealD;
+};
+
+template <>
+struct IsBasicDataType<ComplexF> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = true;
+  static const std::string get_type_name() { return "ComplexF"; }
+  using ElementaryType = RealF;
+};
+
+template <>
+struct IsBasicDataType<ComplexD> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = true;
+  static const std::string get_type_name() { return "ComplexD"; }
+  using ElementaryType = RealD;
+};
+
+template <>
+struct IsBasicDataType<ColorMatrixD> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = true;
+  static const std::string get_type_name() { return "ColorMatrixD"; }
+  using ElementaryType = RealD;
+};
+
+template <>
+struct IsBasicDataType<ColorMatrixF> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = true;
+  static const std::string get_type_name() { return "ColorMatrixF"; }
+  using ElementaryType = RealF;
+};
+
+template <>
+struct IsBasicDataType<WilsonMatrixD> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = true;
+  static const std::string get_type_name() { return "WilsonMatrixD"; }
+  using ElementaryType = RealD;
+};
+
+template <>
+struct IsBasicDataType<WilsonMatrixF> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = true;
+  static const std::string get_type_name() { return "WilsonMatrixF"; }
+  using ElementaryType = RealF;
+};
+
+template <>
+struct IsBasicDataType<SpinMatrixD> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = true;
+  static const std::string get_type_name() { return "SpinMatrixD"; }
+  using ElementaryType = RealD;
+};
+
+template <>
+struct IsBasicDataType<SpinMatrixF> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = true;
+  static const std::string get_type_name() { return "SpinMatrixF"; }
+  using ElementaryType = RealF;
+};
+
+template <>
+struct IsBasicDataType<NonRelWilsonMatrixD> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = true;
+  static const std::string get_type_name() { return "NonRelWilsonMatrixD"; }
+  using ElementaryType = RealD;
+};
+
+template <>
+struct IsBasicDataType<NonRelWilsonMatrixF> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = true;
+  static const std::string get_type_name() { return "NonRelWilsonMatrixF"; }
+  using ElementaryType = RealF;
+};
+
+template <>
+struct IsBasicDataType<IsospinMatrixD> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = true;
+  static const std::string get_type_name() { return "IsospinMatrixD"; }
+  using ElementaryType = RealD;
+};
+
+template <>
+struct IsBasicDataType<IsospinMatrixF> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = true;
+  static const std::string get_type_name() { return "IsospinMatrixF"; }
+  using ElementaryType = RealF;
+};
+
+template <>
+struct IsBasicDataType<AdjointColorMatrixD> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "AdjointColorMatrixD"; }
+  using ElementaryType = RealD;
+};
+
+template <>
+struct IsBasicDataType<AdjointColorMatrixF> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "AdjointColorMatrixF"; }
+  using ElementaryType = RealF;
+};
+
+template <>
+struct IsBasicDataType<WilsonVectorD> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = true;
+  static const std::string get_type_name() { return "WilsonVectorD"; }
+  using ElementaryType = RealD;
+};
+
+template <>
+struct IsBasicDataType<WilsonVectorF> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = true;
+  static const std::string get_type_name() { return "WilsonVectorF"; }
+  using ElementaryType = RealF;
+};
+
+template <>
+struct IsBasicDataType<SpinVectorD> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = true;
+  static const std::string get_type_name() { return "SpinVectorD"; }
+  using ElementaryType = RealD;
+};
+
+template <>
+struct IsBasicDataType<SpinVectorF> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = true;
+  static const std::string get_type_name() { return "SpinVectorF"; }
+  using ElementaryType = RealF;
+};
+
+template <>
+struct IsBasicDataType<Coordinate> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "Coordinate"; }
+  using ElementaryType = Int;
+};
+
+template <>
+struct IsBasicDataType<CoordinateD> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "CoordinateD"; }
+  using ElementaryType = RealD;
+};
+
+// -------------------------------------------------------------------------
+
+template <class M>
+qacc constexpr bool is_basic_data_type()
+// basic data types
+// Long, RealD, ComplexD, ColorMatrixD, etc
+{
+  return IsBasicDataType<M>::value;
+}
+
+template <class M>
 std::string get_type_name()
 {
-  std::string ret = "unknown";
-  if (is_same<M, char>()) {
-    ret = "char";
-  } else if (is_same<M, signed char>()) {
-    ret = "signed_char";
-  } else if (is_same<M, unsigned char>()) {
-    ret = "unsigned_char";
-  } else if (is_same<M, int8_t>()) {
-    ret = "Int8t";
-  } else if (is_same<M, int16_t>()) {
-    ret = "Int16t";
-  } else if (is_same<M, int32_t>()) {
-    ret = "Int32t";
-  } else if (is_same<M, int64_t>()) {
-    ret = "Int64t";
-  } else if (is_same<M, uint8_t>()) {
-    ret = "UInt8t";
-  } else if (is_same<M, uint16_t>()) {
-    ret = "UInt16t";
-  } else if (is_same<M, uint32_t>()) {
-    ret = "UInt32t";
-  } else if (is_same<M, uint64_t>()) {
-    ret = "UInt64t";
-  } else if (is_same<M, RealF>()) {
-    ret = "RealF";
-  } else if (is_same<M, RealD>()) {
-    ret = "RealD";
-  } else if (is_same<M, ComplexD>()) {
-    ret = "ComplexD";
-  } else if (is_same<M, ComplexF>()) {
-    ret = "ComplexF";
-  } else if (is_same<M, ColorMatrixD>()) {
-    ret = "ColorMatrixD";
-  } else if (is_same<M, ColorMatrixF>()) {
-    ret = "ColorMatrixF";
-  } else if (is_same<M, WilsonMatrixD>()) {
-    ret = "WilsonMatrixD";
-  } else if (is_same<M, WilsonMatrixF>()) {
-    ret = "WilsonMatrixF";
-  } else if (is_same<M, SpinMatrixD>()) {
-    ret = "SpinMatrixD";
-  } else if (is_same<M, SpinMatrixF>()) {
-    ret = "SpinMatrixF";
-  } else if (is_same<M, NonRelWilsonMatrixD>()) {
-    ret = "NonRelWilsonMatrixD";
-  } else if (is_same<M, NonRelWilsonMatrixF>()) {
-    ret = "NonRelWilsonMatrixF";
-  } else if (is_same<M, IsospinMatrixD>()) {
-    ret = "IsospinMatrixD";
-  } else if (is_same<M, IsospinMatrixF>()) {
-    ret = "IsospinMatrixF";
-  } else if (is_same<M, WilsonVectorD>()) {
-    ret = "WilsonVectorD";
-  } else if (is_same<M, WilsonVectorF>()) {
-    ret = "WilsonVectorF";
-  } else if (is_same<M, SpinVectorD>()) {
-    ret = "SpinVectorD";
-  } else if (is_same<M, SpinVectorF>()) {
-    ret = "SpinVectorF";
-  }
-  return ret;
+  return IsBasicDataType<M>::get_type_name();
 }
+
+template <class M>
+qacc constexpr bool is_elementary_type()
+// elementary types
+// Long, RealD, etc
+{
+  return is_same<typename IsBasicDataType<M>::ElementaryType, M>();
+}
+
+// -------------------------------------------------------------------------
+
+template <class M>
+struct IsDataValueType {
+  using DataType = M;
+  using BasicDataType = DataType;
+  using ElementaryType =
+      typename IsBasicDataType<BasicDataType>::ElementaryType;
+  static constexpr bool value = is_basic_data_type<BasicDataType>();
+  static constexpr bool is_complex = IsBasicDataType<BasicDataType>::is_complex;
+};
+
+template <class M, size_t N>
+struct IsDataValueType<array<M, N>> {
+  using DataType = M;
+  using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
+  using ElementaryType = typename IsBasicDataType<DataType>::ElementaryType;
+  static constexpr bool value = IsDataValueType<DataType>::value;
+  static constexpr bool is_complex = IsDataValueType<DataType>::is_complex;
+};
+
+template <>
+struct IsDataValueType<RngState> {
+  using DataType = RngState;
+  using BasicDataType = DataType;
+  using ElementaryType = BasicDataType;
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+};
 
 // -------------------------------------------------------------------------
 
@@ -199,174 +443,62 @@ qacc constexpr bool is_char()
   bool ret = false;
   if (is_same<M, char>()) {
     ret = true;
-  } else if (is_same<M, signed char>()) {
-    ret = true;
-  } else if (is_same<M, unsigned char>()) {
-    ret = true;
   }
   return ret;
 }
 
-template <class M>
-qacc constexpr bool is_composed_of_complex_d()
-{
-  bool ret = false;
-  if (is_same<M, ComplexD>()) {
-    ret = true;
-  } else if (is_same<M, ColorMatrixD>()) {
-    ret = true;
-  } else if (is_same<M, WilsonMatrixD>()) {
-    ret = true;
-  } else if (is_same<M, SpinMatrixD>()) {
-    ret = true;
-  } else if (is_same<M, NonRelWilsonMatrixD>()) {
-    ret = true;
-  } else if (is_same<M, IsospinMatrixD>()) {
-    ret = true;
-  } else if (is_same<M, WilsonVectorD>()) {
-    ret = true;
-  } else if (is_same<M, SpinVectorD>()) {
-    ret = true;
-  }
-  return ret;
-}
+// -------------------------------------------------------------------------
 
 template <class M>
 qacc constexpr bool is_composed_of_real_d()
 {
-  bool ret = is_composed_of_complex_d<M>();
-  if (is_same<M, RealD>()) {
-    ret = true;
-  } else if (is_same<M, CoordinateD>()) {
-    ret = true;
-  } else if (is_same<M, AdjointColorMatrixD>()) {
-    ret = true;
-  }
-  return ret;
-}
-
-template <class M>
-qacc constexpr bool is_composed_of_complex_f()
-{
-  bool ret = false;
-  if (is_same<M, ComplexF>()) {
-    ret = true;
-  } else if (is_same<M, ColorMatrixF>()) {
-    ret = true;
-  } else if (is_same<M, WilsonMatrixF>()) {
-    ret = true;
-  } else if (is_same<M, SpinMatrixF>()) {
-    ret = true;
-  } else if (is_same<M, NonRelWilsonMatrixF>()) {
-    ret = true;
-  } else if (is_same<M, IsospinMatrixF>()) {
-    ret = true;
-  } else if (is_same<M, WilsonVectorF>()) {
-    ret = true;
-  } else if (is_same<M, SpinVectorF>()) {
-    ret = true;
-  }
-  return ret;
+  return is_same<typename IsDataValueType<M>::ElementaryType, RealD>();
 }
 
 template <class M>
 qacc constexpr bool is_composed_of_real_f()
 {
-  bool ret = is_composed_of_complex_f<M>();
-  if (is_same<M, RealF>()) {
-    ret = true;
-  } else if (is_same<M, AdjointColorMatrixF>()) {
-    ret = true;
-  }
-  return ret;
+  return is_same<typename IsDataValueType<M>::ElementaryType, RealF>();
+}
+
+template <class M>
+qacc constexpr bool is_composed_of_complex_d()
+{
+  return IsDataValueType<M>::is_complex and is_composed_of_real_d<M>();
+}
+
+template <class M>
+qacc constexpr bool is_composed_of_complex_f()
+{
+  return IsDataValueType<M>::is_complex and is_composed_of_real_f<M>();
 }
 
 template <class M>
 qacc constexpr bool is_composed_of_long()
 {
-  bool ret = false;
-  if (is_same<M, Long>()) {
-    ret = true;
-  }
-  return ret;
+  return is_same<typename IsDataValueType<M>::ElementaryType, Long>();
 }
 
 template <class M>
 qacc constexpr bool is_composed_of_int()
 {
-  bool ret = false;
-  if (is_same<M, Int>()) {
-    ret = true;
-  } else if (is_same<M, Coordinate>()) {
-    ret = true;
-  }
-  return ret;
+  return is_same<typename IsDataValueType<M>::ElementaryType, Int>();
 }
 
 template <class M>
 qacc constexpr bool is_composed_of_char()
-// Char is int8_t
-// NOTE: not char, not signed char, not unsigned char
 {
-  bool ret = false;
-  if (is_same<M, Char>()) {
-    ret = true;
-  }
-  return ret;
+  return is_same<typename IsDataValueType<M>::ElementaryType, Char>();
 }
+
+// -------------------------------------------------------------------------
 
 template <class M>
 qacc constexpr int element_size_of()
 // for example: size for convert endianness
 {
-  int ret = 0;
-  if (is_integer<M>() or is_real<M>() or is_char<M>()) {
-    ret = sizeof(M);
-  } else if (is_composed_of_long<M>()) {
-    ret = sizeof(Long);
-  } else if (is_composed_of_int<M>()) {
-    ret = sizeof(Int);
-  } else if (is_composed_of_char<M>()) {
-    ret = sizeof(Char);
-  } else if (is_composed_of_real_d<M>()) {
-    ret = sizeof(RealD);
-  } else if (is_composed_of_real_f<M>()) {
-    ret = sizeof(RealF);
-  } else {
-    ret = 0;
-  }
-  return ret;
+  return sizeof(typename IsDataValueType<M>::ElementaryType);
 }
-
-// -------------------------------------------------------------------------
-
-template <class M>
-qacc constexpr bool is_basic_data_type()
-// basic data types
-// Long, RealD, ComplexD, ColorMatrixD, etc
-{
-  return element_size_of<M>() > 0;
-}
-
-// -------------------------------------------------------------------------
-
-template <class M>
-struct IsDataValueType {
-  static constexpr bool value = is_basic_data_type<M>();
-  using DataType = M;
-};
-
-template <class M, size_t N>
-struct IsDataValueType<array<M, N>> {
-  static constexpr bool value = IsDataValueType<M>::value;
-  using DataType = typename IsDataValueType<M>::DataType;
-};
-
-template <>
-struct IsDataValueType<RngState> {
-  static constexpr bool value = true;
-  using DataType = RngState;
-};
 
 // -------------------------------------------------------------------------
 

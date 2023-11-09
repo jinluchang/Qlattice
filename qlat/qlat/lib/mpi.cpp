@@ -98,47 +98,56 @@ int mpi_waitall(std::vector<MPI_Request>& requests)
   return MPI_SUCCESS;
 }
 
-int glb_sum(Vector<double> recv, const Vector<double>& send)
+int glb_sum(Vector<RealD> recv, const Vector<RealD>& send)
 {
   qassert(recv.size() == send.size());
-  return MPI_Allreduce((double*)send.data(), recv.data(), recv.size(),
+  return MPI_Allreduce((RealD*)send.data(), recv.data(), recv.size(),
                        MPI_DOUBLE, MPI_SUM, get_comm());
 }
 
-int glb_sum(Vector<float> recv, const Vector<float>& send)
+int glb_sum(Vector<RealF> recv, const Vector<RealF>& send)
 {
   qassert(recv.size() == send.size());
-  return MPI_Allreduce((float*)send.data(), recv.data(), recv.size(), MPI_FLOAT,
+  return MPI_Allreduce((RealF*)send.data(), recv.data(), recv.size(), MPI_FLOAT,
                        MPI_SUM, get_comm());
 }
 
 int glb_sum(Vector<ComplexD> recv, const Vector<ComplexD>& send)
 {
-  return glb_sum(Vector<double>((double*)recv.data(), recv.size() * 2),
-                 Vector<double>((double*)send.data(), send.size() * 2));
+  return glb_sum(Vector<RealD>((RealD*)recv.data(), recv.size() * 2),
+                 Vector<RealD>((RealD*)send.data(), send.size() * 2));
 }
 
 int glb_sum(Vector<ComplexF> recv, const Vector<ComplexF>& send)
 {
-  return glb_sum(Vector<float>((float*)recv.data(), recv.size() * 2),
-                 Vector<float>((float*)send.data(), send.size() * 2));
+  return glb_sum(Vector<RealF>((RealF*)recv.data(), recv.size() * 2),
+                 Vector<RealF>((RealF*)send.data(), send.size() * 2));
 }
 
-int glb_sum(Vector<int64_t> recv, const Vector<int64_t>& send)
+int glb_sum(Vector<Long> recv, const Vector<Long>& send)
 {
   qassert(recv.size() == send.size());
-  return MPI_Allreduce((int64_t*)send.data(), recv.data(), recv.size(), MPI_INT64_T,
+  return MPI_Allreduce((Long*)send.data(), recv.data(), recv.size(),
+                       MPI_INT64_T, MPI_SUM, get_comm());
+}
+
+int glb_sum(Vector<Int> recv, const Vector<Int>& send)
+{
+  qassert(recv.size() == send.size());
+  return MPI_Allreduce((Int*)send.data(), recv.data(), recv.size(), MPI_INT32_T,
                        MPI_SUM, get_comm());
 }
 
-int glb_sum(Vector<int32_t> recv, const Vector<int32_t>& send)
+int glb_sum(Vector<Char> recv, const Vector<Char>& send)
+// not SUM but BXOR
 {
   qassert(recv.size() == send.size());
-  return MPI_Allreduce((int32_t*)send.data(), recv.data(), recv.size(),
-                       MPI_INT32_T, MPI_SUM, get_comm());
+  return MPI_Allreduce((char*)send.data(), (char*)recv.data(), recv.size(),
+                       MPI_BYTE, MPI_BXOR, get_comm());
 }
 
 int glb_sum(Vector<char> recv, const Vector<char>& send)
+// not SUM but BXOR
 {
   qassert(recv.size() == send.size());
   return MPI_Allreduce((char*)send.data(), (char*)recv.data(), recv.size(),
@@ -227,12 +236,7 @@ int glb_sum(ComplexD& c) { return glb_sum(Vector<double>((double*)&c, 2)); }
 
 int glb_sum(ComplexF& c) { return glb_sum(Vector<float>((float*)&c, 2)); }
 
-int glb_sum_lat_data(LatData& ld)
-{
-  return glb_sum_double_vec(get_data(ld.res));
-}
-
-int glb_sum(LatData& ld) { return glb_sum_lat_data(ld); }
+int glb_sum(LatData& ld) { return glb_sum_double_vec(get_data(ld.res)); }
 
 void bcast(int32_t& x, const int root) { bcast(get_data_one_elem(x), root); }
 

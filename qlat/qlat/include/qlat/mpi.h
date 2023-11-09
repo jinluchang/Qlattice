@@ -141,47 +141,37 @@ int mpi_irecv(void* buf, Long count, MPI_Datatype datatype, int source, int tag,
 
 int mpi_waitall(std::vector<MPI_Request>& requests);
 
-int glb_sum(Vector<double> recv, const Vector<double>& send);
+int glb_sum(Vector<RealD> recv, const Vector<RealD>& send);
 
-int glb_sum(Vector<float> recv, const Vector<float>& send);
+int glb_sum(Vector<RealF> recv, const Vector<RealF>& send);
 
 int glb_sum(Vector<ComplexD> recv, const Vector<ComplexD>& send);
 
 int glb_sum(Vector<ComplexF> recv, const Vector<ComplexF>& send);
 
-int glb_sum(Vector<int64_t> recv, const Vector<int64_t>& send);
+int glb_sum(Vector<Long> recv, const Vector<Long>& send);
 
-int glb_sum(Vector<int32_t> recv, const Vector<int32_t>& send);
+int glb_sum(Vector<Int> recv, const Vector<Int>& send);
+
+int glb_sum(Vector<Char> recv, const Vector<Char>& send);
 
 int glb_sum(Vector<char> recv, const Vector<char>& send);
 
-int glb_sum(Vector<double> vec);
+template <class T, QLAT_ENABLE_IF(is_data_vector_type<T>())>
+int glb_sum(T& xx)
+{
+  using M = typename IsDataVectorType<T>::DataType;
+  // using MM = typename IsDataValueType
+  Vector<M> vec = get_data(xx);
+  return glb_sum(vec, vec);
+}
 
-int glb_sum(Vector<float> vec);
-
-int glb_sum(Vector<ComplexD> vec);
-
-int glb_sum(Vector<ComplexF> vec);
-
-int glb_sum(Vector<int64_t> vec);
-
-int glb_sum(Vector<int32_t> vec);
-
-int glb_sum(Vector<char> vec);
-
-int glb_sum(double& x);
-
-int glb_sum(float& x);
-
-int glb_sum(int64_t& x);
-
-int glb_sum(int32_t& x);
-
-int glb_sum(ComplexD& c);
-
-int glb_sum(ComplexF& c);
-
-int glb_sum_lat_data(LatData& ld);
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+int glb_sum(Vector<M> xx)
+// so that xx don't have to be a reference
+{
+  return glb_sum<Vector<M>>(xx);
+}
 
 int glb_sum(LatData& ld);
 

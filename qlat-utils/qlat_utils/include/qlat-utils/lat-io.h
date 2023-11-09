@@ -1,13 +1,13 @@
 #pragma once
 
-#include <qlat-utils/timer.h>
 #include <qlat-utils/crc32.h>
-#include <qlat-utils/qutils-io.h>
-#include <qlat-utils/qutils.h>
-#include <qlat-utils/qutils-vec.h>
-#include <qlat-utils/show.h>
-#include <qlat-utils/qar.h>
 #include <qlat-utils/qar-cache.h>
+#include <qlat-utils/qar.h>
+#include <qlat-utils/qutils-io.h>
+#include <qlat-utils/qutils-vec.h>
+#include <qlat-utils/qutils.h>
+#include <qlat-utils/show.h>
+#include <qlat-utils/timer.h>
 #include <stdint.h>
 #include <zlib.h>
 
@@ -131,7 +131,13 @@ inline void lat_data_alloc(LatData& ld)
   ld.res.resize(lat_data_size(ld));
 }
 
-inline Vector<double> get_data(const LatData& ld) { return get_data(ld.res); }
+template <>
+struct IsGetDataType<LatData> {
+  static constexpr bool value = true;
+  using DataType = RealD;
+};
+
+inline Vector<RealD> get_data(const LatData& ld) { return get_data(ld.res); }
 
 inline void clear(LatData& ld) { ld.init(); }
 

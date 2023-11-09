@@ -29,7 +29,7 @@ inline LatData contract_pion(const Propagator4d& prop, const int tslice_src)
     const int tsep = mod(xg[3] - tslice_src, total_site[3]);
     ldv[tsep] += val;
   }
-  glb_sum_lat_data(ld);
+  glb_sum(ld);
   return ld;
 }
 
@@ -68,7 +68,7 @@ inline LatData contract_pion(const SelProp& prop, const int tslice_src,
     const int tsep = mod(xg[3] - tslice_src, total_site[3]);
     ldv[tsep] += val;
   }
-  glb_sum_lat_data(ld);
+  glb_sum(ld);
   ld *= 1.0 / get_fsel_prob(fsel);
   return ld;
 }
@@ -90,7 +90,7 @@ inline LatData contract_kaon(const SelProp& prop1, const SelProp& prop2,
     const int tsep = mod(xg[3] - tslice_src, total_site[3]);
     ldv[tsep] += val;
   }
-  glb_sum_lat_data(ld);
+  glb_sum(ld);
   ld *= 1.0 / get_fsel_prob(fsel);
   return ld;
 }
