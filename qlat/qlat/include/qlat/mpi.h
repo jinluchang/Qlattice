@@ -145,10 +145,6 @@ int glb_sum(Vector<RealD> recv, const Vector<RealD>& send);
 
 int glb_sum(Vector<RealF> recv, const Vector<RealF>& send);
 
-int glb_sum(Vector<ComplexD> recv, const Vector<ComplexD>& send);
-
-int glb_sum(Vector<ComplexF> recv, const Vector<ComplexF>& send);
-
 int glb_sum(Vector<Long> recv, const Vector<Long>& send);
 
 int glb_sum(Vector<Int> recv, const Vector<Int>& send);
@@ -160,9 +156,9 @@ int glb_sum(Vector<char> recv, const Vector<char>& send);
 template <class T, QLAT_ENABLE_IF(is_data_vector_type<T>())>
 int glb_sum(T& xx)
 {
-  using M = typename IsDataVectorType<T>::DataType;
-  Vector<M> vec = get_data(xx);
-  vector<M> tmp_vec(vec.size());
+  using E = typename IsDataVectorType<T>::ElementaryType;
+  Vector<E> vec = get_data_in_elementary_type(xx);
+  vector<E> tmp_vec(vec.size());
   assign(tmp_vec, vec);
   return glb_sum(vec, get_data(tmp_vec));
 }
