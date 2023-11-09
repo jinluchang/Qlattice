@@ -161,9 +161,10 @@ template <class T, QLAT_ENABLE_IF(is_data_vector_type<T>())>
 int glb_sum(T& xx)
 {
   using M = typename IsDataVectorType<T>::DataType;
-  // using MM = typename IsDataValueType
   Vector<M> vec = get_data(xx);
-  return glb_sum(vec, vec);
+  vector<M> tmp_vec(vec.size());
+  std::memcpy((void*)tmp_vec.data(), (void*)vec.data(), vec.size() * sizeof(M));
+  return glb_sum(vec, get_data(tmp_vec));
 }
 
 template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
