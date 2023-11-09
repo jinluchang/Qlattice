@@ -74,8 +74,9 @@ struct io_vec
     int curr_threadio = threadio;
     int Nv = omp_get_max_threads();
     if(curr_threadio < 1 or curr_threadio > Nv){curr_threadio = Nv;}
-    if(curr_threadio * ionum > 512 ){curr_threadio = 1;}
     if(do_thread_io == 0){curr_threadio = 1;}
+    if(do_thread_io >  0){curr_threadio = do_thread_io;}
+    if(curr_threadio * ionum > 64 ){curr_threadio = 1;}
     threadio = curr_threadio;
 
     if(do_checksum)ini_crc(true);

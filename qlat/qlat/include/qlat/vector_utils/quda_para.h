@@ -210,13 +210,15 @@ inline void quda_begin(int mpi_layout[4])
   // comm_set_gridsize(mpi_layout);
   initQuda(-1000);
   //initQuda(-1);
-  printf(
-      "initialized on quda rank #%03d (%03d,%03d,%03d,%03d), qlat rank #%03d "
-      "(%03d,%03d,%03d,%03d).\n",
-      comm_rank(), comm_coord(0), comm_coord(1), comm_coord(2), comm_coord(3),
-      get_id_node(), get_coor_node()[0], get_coor_node()[1], get_coor_node()[2],
-      get_coor_node()[3]);
+
+  //printf(
+  //    "initialized on quda rank #%03d (%03d,%03d,%03d,%03d), qlat rank #%03d "
+  //    "(%03d,%03d,%03d,%03d).\n",
+  //    comm_rank(), comm_coord(0), comm_coord(1), comm_coord(2), comm_coord(3),
+  //    get_id_node(), get_coor_node()[0], get_coor_node()[1], get_coor_node()[2],
+  //    get_coor_node()[3]);
   // Make sure there is no mismatch
+
   Qassert(comm_rank() == get_id_node());
   for (int d = 0; d < 4; d++) {
     Qassert(comm_coord(d) == get_coor_node()[d]);

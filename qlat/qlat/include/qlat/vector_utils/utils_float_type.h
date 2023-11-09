@@ -278,7 +278,7 @@ inline void abort_r(std::string stmp=std::string(""))
 }
 
 
-#define Qassert(ans) { QAssert((ans), __FILE__, __LINE__); }
+#define Qassert(ans) { qlat::QAssert((ans), __FILE__, __LINE__); }
 inline void QAssert(bool s, const char *file, int line){
   if(!s){
     abort_r(qlat::ssprintf("qlat error %s %d \n", file, line));

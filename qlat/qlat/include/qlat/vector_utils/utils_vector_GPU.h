@@ -412,7 +412,7 @@ struct VectorGPUKey {
   {
     size = 0; GPU = false;tag = std::string("");
   }
-  VectorGPUKey(size_t size_, std::string tag_, int GPU_)
+  VectorGPUKey(size_t size_, const std::string tag_, int GPU_)
   {
     size = size_; GPU = GPU_;tag = tag_;
   }
@@ -471,7 +471,7 @@ inline void safe_free_vector_gpu_plan(const VectorGPUKey& gkey, const bool zero 
 }
 
 template <typename Ty >
-inline vector_gpu<Ty >& get_vector_gpu_plan(size_t vol, std::string& info, const int GPU)
+inline vector_gpu<Ty >& get_vector_gpu_plan(size_t vol, const std::string& info, const int GPU)
 {
   VectorGPUKey gkey(vol, info, GPU);
   vector_gpu<Ty >& buf = get_vector_gpu_plan<Ty >(gkey);
@@ -479,7 +479,7 @@ inline vector_gpu<Ty >& get_vector_gpu_plan(size_t vol, std::string& info, const
 }
 
 template <typename Ty >
-inline void safe_free_vector_gpu_plan(std::string& info, const int GPU, const bool zero = false)
+inline void safe_free_vector_gpu_plan(const std::string& info, const int GPU, const bool zero = false)
 {
   VectorGPUKey gkey(0, info, GPU);
   safe_free_vector_gpu_plan<Ty >(gkey, zero);

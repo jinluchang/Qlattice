@@ -197,7 +197,8 @@ struct momentum_dat{
 
     copy_momF_to_sf(sf, srcF);
     std::string tag = ssprintf("%s.momcut%05d", tag_.c_str(), mom_cut);
-    qlat::write(sfw, tag, sf, sbs);
+    //qlat::write(sfw, tag, sf, sbs);
+    qlat::write(sfw, tag, sbs, sf);
   }
 
   /////template<typename Ty > 
