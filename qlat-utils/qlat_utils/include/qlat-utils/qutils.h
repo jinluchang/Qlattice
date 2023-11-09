@@ -122,26 +122,66 @@ qacc Vector<M> get_data(const std::vector<M>& vec)
 }
 
 template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
-qacc Vector<M> get_data(Handle<M>& h)
+qacc Vector<M> get_data(Handle<M> h)
 {
   return Vector<M>(h.p, 1);
 }
 
 template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
-qacc Vector<M> get_data(ConstHandle<M>& h)
+qacc Vector<M> get_data(ConstHandle<M> h)
 {
   return Vector<M>(h.p, 1);
 }
 
 // -------------------
 
-template <class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
+template <class T, class E = typename IsDataVectorType<T>::ElementaryType,
+          QLAT_ENABLE_IF(is_data_vector_type<T>())>
+qacc Vector<E> get_data_in_elementary_type(const T& xx)
+{
+  using M = typename IsGetDataType<T>::DataType;
+  static_assert(sizeof(M) % sizeof(E) == 0, "get_data_in_elementary_type");
+  constexpr int m = sizeof(M) / sizeof(E);
+  const Vector<M> vec = get_data(xx);
+  return Vector<E>((E*)vec.p, vec.n * m);
+}
+
+// -------------------
+
+template <class T, QLAT_ENABLE_IF(is_data_vector_type<T>())>
 qacc void set_zero(T& xx)
 {
   using M = typename IsGetDataType<T>::DataType;
-  const Vector<M> vec = get_data(xx);
+  Vector<M> vec = get_data(xx);
   Long size = vec.size() * sizeof(M);
   std::memset((void*)vec.data(), 0, size);
+}
+
+template <class T1, class T2,
+          class E1 = typename IsDataVectorType<T1>::ElementaryType,
+          class E2 = typename IsDataVectorType<T2>::ElementaryType,
+          QLAT_ENABLE_IF((is_data_vector_type<T1>() and
+                          is_data_vector_type<T2>()))>
+qacc void assign(T1& xx, const T2& yy)
+{
+  if (not is_same<E1, E2>()) {
+    qerr(ssprintf("assign type mismatch: %s %s",
+                  IsBasicDataType<E1>::get_type_name().c_str(),
+                  IsBasicDataType<E2>::get_type_name().c_str()));
+  }
+  Vector<E1> vx = get_data_in_elementary_type(xx);
+  const Vector<E2> vy = get_data_in_elementary_type(yy);
+  qassert(vx.size() == vy.size());
+  std::memcpy((void*)vx.data(), (void*)vy.data(), vx.size() * sizeof(E1));
+}
+
+template <
+    class M1, class T2, class E1 = typename IsDataValueType<M1>::ElementaryType,
+    class E2 = typename IsDataVectorType<T2>::ElementaryType,
+    QLAT_ENABLE_IF((is_data_value_type<M1>() and is_data_vector_type<T2>()))>
+qacc void assign(Vector<M1> xx, const T2& yy)
+{
+  return assign<Vector<M1>, T2>(xx, yy);
 }
 
 // -------------------

@@ -287,67 +287,6 @@ qacc void imul_direct(M& x, const N& y)
   x *= y;
 }
 
-template <class M, int N>
-qacc void assign(array<M, N>& vec, const Array<M, N>& src)
-{
-  std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
-}
-
-template <class M, int N>
-qacc void assign(array<M, N>& vec, const Vector<M>& src)
-{
-  qassert(N == src.size());
-  std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
-}
-
-template <class M, int N>
-qacc void assign(std::vector<M>& vec, const Array<M, N>& src)
-{
-  vec.resize(src.size());
-  std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
-}
-
-template <class M>
-void assign(std::vector<M>& vec, const Vector<M>& src)
-{
-  vec.resize(src.size());
-  std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
-}
-
-template <class M>
-qacc void assign(Vector<M> vec, const Vector<M>& src)
-{
-  qassert(vec.size() == src.size());
-  std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
-}
-
-template <class M, class N>
-qacc void assign(Vector<M> vec, const Vector<N>& src)
-{
-  qassert(vec.data_size() == src.data_size());
-  std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
-}
-
-template <class M, int N>
-qacc void assign(Vector<M> vec, const Array<M, N>& src)
-{
-  qassert(vec.size() == N);
-  std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
-}
-
-template <class M, int N>
-qacc void assign(Array<M, N> vec, const Array<M, N>& src)
-{
-  std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
-}
-
-template <class M, int N>
-qacc void assign(Array<M, N> vec, const Vector<M>& src)
-{
-  qassert(src.size() == N);
-  std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
-}
-
 template <class M, class N>
 qacc void assign_truncate(M& x, const N& y)
 {
