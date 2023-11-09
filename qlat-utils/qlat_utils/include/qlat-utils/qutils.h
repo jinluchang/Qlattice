@@ -13,38 +13,50 @@ namespace qlat
 
 template <class M>
 struct IsDataVectorType {
-  static constexpr bool value = is_data_value_type<M>();
   using DataType = typename IsDataValueType<M>::DataType;
+  using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
+  using ElementaryType = typename IsDataValueType<DataType>::ElementaryType;
+  static constexpr bool value = is_data_value_type<DataType>();
 };
 
 template <class M>
 struct IsDataVectorType<Vector<M>> {
-  static constexpr bool value = is_data_value_type<M>();
   using DataType = M;
+  using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
+  using ElementaryType = typename IsDataValueType<DataType>::ElementaryType;
+  static constexpr bool value = is_data_value_type<DataType>();
 };
 
 template <class M>
 struct IsDataVectorType<std::vector<M>> {
-  static constexpr bool value = is_data_value_type<M>();
   using DataType = M;
+  using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
+  using ElementaryType = typename IsDataValueType<DataType>::ElementaryType;
+  static constexpr bool value = is_data_value_type<DataType>();
 };
 
 template <class M, Long N>
 struct IsDataVectorType<Array<M, N>> {
-  static constexpr bool value = is_data_value_type<M>();
   using DataType = M;
+  using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
+  using ElementaryType = typename IsDataValueType<DataType>::ElementaryType;
+  static constexpr bool value = is_data_value_type<DataType>();
 };
 
 template <class M>
 struct IsDataVectorType<Handle<M>> {
-  static constexpr bool value = is_data_value_type<M>();
   using DataType = M;
+  using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
+  using ElementaryType = typename IsDataValueType<DataType>::ElementaryType;
+  static constexpr bool value = is_data_value_type<DataType>();
 };
 
 template <class M>
 struct IsDataVectorType<ConstHandle<M>> {
-  static constexpr bool value = is_data_value_type<M>();
   using DataType = M;
+  using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
+  using ElementaryType = typename IsDataValueType<DataType>::ElementaryType;
+  static constexpr bool value = is_data_value_type<DataType>();
 };
 
 // -------------------

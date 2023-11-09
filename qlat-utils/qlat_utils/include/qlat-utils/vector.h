@@ -771,14 +771,18 @@ qacc void qswap(box<M>& v1, box<M>& v2)
 
 template <class M>
 struct IsDataVectorType<box<M>> {
-  static constexpr bool value = is_data_value_type<M>();
   using DataType = M;
+  using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
+  using ElementaryType = typename IsDataValueType<DataType>::ElementaryType;
+  static constexpr bool value = is_data_value_type<DataType>();
 };
 
 template <class M>
 struct IsDataVectorType<box_acc<M>> {
-  static constexpr bool value = is_data_value_type<M>();
   using DataType = M;
+  using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
+  using ElementaryType = typename IsDataValueType<DataType>::ElementaryType;
+  static constexpr bool value = is_data_value_type<DataType>();
 };
 
 template <class M>
