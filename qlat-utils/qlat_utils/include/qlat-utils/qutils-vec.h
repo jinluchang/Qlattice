@@ -497,10 +497,10 @@ std::vector<M> vector_concat(const std::vector<std::vector<M> >& datatable)
 }
 
 template <class M>
-std::vector<std::vector<M> > vector_split(const std::vector<M>& data,
-                                          const std::vector<Long>& row_sizes)
+std::vector<std::vector<M>> vector_split(const vector<M>& data,
+                                         const vector<Long>& row_sizes)
 {
-  std::vector<std::vector<M> > datatable;
+  std::vector<std::vector<M>> datatable;
   datatable.resize(row_sizes.size());
   size_t count = 0;
   for (size_t i = 0; i < datatable.size(); ++i) {

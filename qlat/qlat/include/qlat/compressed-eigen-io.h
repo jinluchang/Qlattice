@@ -262,7 +262,7 @@ inline CompressedEigenSystemInfo read_compressed_eigen_system_info(
       qassert(cesdi.ls == gs5);
     }
   }
-  bcast(Vector<CompressedEigenSystemDenseInfo>(&cesdi, 1));
+  bcast(Vector<Char>((Char*)&cesdi, sizeof(CompressedEigenSystemDenseInfo)));
   crcs.resize(product(cesdi.total_site / cesdi.node_site));
   bcast(get_data(crcs));
   return populate_eigen_system_info(cesdi, crcs);

@@ -172,27 +172,87 @@ int glb_sum(Vector<M> xx)
 
 int glb_sum(LatData& ld);
 
-void bcast(int32_t& x, const int root = 0);
+int bcast(Vector<Char> recv, const int root = 0);
 
-void bcast(int64_t& x, const int root = 0);
+template <class T, QLAT_ENABLE_IF(is_data_vector_type<T>())>
+int bcast(T& xx, const int root = 0)
+{
+  using M = typename IsDataVectorType<T>::DataType;
+  Vector<M> vec = get_data(xx);
+  Vector<Char> char_vec((Char*)vec.data(), vec.data_size());
+  return bcast(char_vec, root);
+}
 
-void bcast(uint32_t& x, const int root = 0);
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+int bcast(Vector<M> xx, const int root = 0)
+// so that xx don't have to be a reference
+{
+  return bcast<Vector<M>>(xx, root);
+}
 
-void bcast(float& x, const int root = 0);
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+int bcast(std::vector<M>& recv, const int root = 0)
+{
+  if (1 == get_num_node()) {
+    return 0;
+  }
+  int ret = 0;
+  Long size = recv.size();
+  ret += bcast<Long>(size, root);
+  recv.resize(size);
+  ret += bcast(get_data(recv), root);
+  return ret;
+}
 
-void bcast(double& x, const int root = 0);
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+int bcast(vector<M>& recv, const int root = 0)
+{
+  if (1 == get_num_node()) {
+    return 0;
+  }
+  int ret = 0;
+  Long size = recv.size();
+  ret += bcast<Long>(size, root);
+  recv.resize(size);
+  ret += bcast(get_data(recv), root);
+  return ret;
+}
 
-void bcast(ComplexF& x, const int root = 0);
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+int bcast(std::vector<std::vector<M>>& datatable, const int root = 0)
+{
+  if (1 == get_num_node()) {
+    return 0;
+  }
+  int ret = 0;
+  Long nrow, total_size;
+  vector<Long> row_sizes;
+  vector<M> data;
+  if (get_id_node() == root) {
+    row_sizes = vector_map_size(datatable);
+    data = vector_concat(datatable);
+    nrow = row_sizes.size();
+    total_size = data.size();
+  }
+  ret += bcast(nrow, root);
+  ret += bcast(total_size, root);
+  if (get_id_node() != root) {
+    row_sizes.resize(nrow);
+    data.resize(total_size);
+  }
+  ret += bcast(row_sizes, root);
+  ret += bcast(data, root);
+  if (get_id_node() != root) {
+    datatable = vector_split(data, row_sizes);
+  }
+  return ret;
+}
 
-void bcast(ComplexD& x, const int root = 0);
+int bcast(std::string& recv, const int root = 0);
 
-void bcast(Coordinate& x, const int root = 0);
+int bcast(std::vector<std::string>& recv, const int root = 0);
 
-void bcast(std::string& recv, const int root = 0);
-
-void bcast(std::vector<std::string>& recv, const int root = 0);
-
-void bcast(LatData& ld, const int root = 0);
+int bcast(LatData& ld, const int root = 0);
 
 void sync_node();
 
@@ -454,55 +514,6 @@ void all_gather(Vector<M> recv, const Vector<M>& send)
   qassert(recv.size() == send.size() * get_num_node());
   MPI_Allgather((void*)send.data(), send.data_size(), MPI_BYTE,
                 (void*)recv.data(), send.data_size(), MPI_BYTE, get_comm());
-}
-
-template <class M>
-void bcast(Vector<M> recv, const int root = 0)
-{
-  if (1 == get_num_node()) {
-    return;
-  }
-  MPI_Bcast((void*)recv.data(), recv.data_size(), MPI_BYTE, root, get_comm());
-}
-
-template <class M>
-void bcast(std::vector<M>& recv, const int root = 0)
-{
-  if (1 == get_num_node()) {
-    return;
-  }
-  Long size = recv.size();
-  bcast(get_data(size), root);
-  recv.resize(size);
-  bcast(get_data(recv), root);
-}
-
-template <class M>
-void bcast(std::vector<std::vector<M> >& datatable, const int root = 0)
-{
-  if (1 == get_num_node()) {
-    return;
-  }
-  Long nrow, total_size;
-  std::vector<Long> row_sizes;
-  std::vector<M> data;
-  if (get_id_node() == root) {
-    row_sizes = vector_map_size(datatable);
-    data = vector_concat(datatable);
-    nrow = row_sizes.size();
-    total_size = data.size();
-  }
-  bcast(get_data(nrow), root);
-  bcast(get_data(total_size), root);
-  if (get_id_node() != root) {
-    row_sizes.resize(nrow);
-    data.resize(total_size);
-  }
-  bcast(get_data(row_sizes), root);
-  bcast(get_data(data), root);
-  if (get_id_node() != root) {
-    datatable = vector_split(data, row_sizes);
-  }
 }
 
 }  // namespace qlat

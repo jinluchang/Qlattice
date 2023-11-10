@@ -86,9 +86,9 @@ void check_time_limit(const double budget)
                "= ( %.2lf + %.2lf ) / %.2lf hours.",
                get_actual_total_time() / 3600.0, budget / 3600.0,
                get_time_limit() / 3600.0));
-  bool b = budget + get_actual_total_time() > get_time_limit();
-  bcast(get_data_one_elem(b));
-  if (b) {
+  double time_deficit = budget + get_actual_total_time() - get_time_limit();
+  bcast(time_deficit);
+  if (time_deficit > 0) {
     qquit("because too little time left.");
   }
 }

@@ -9,19 +9,19 @@ cdef extern from "qlat/mpi.h" namespace "qlat":
     const Coordinate& get_size_node() except +
     const Coordinate& get_coor_node() except +
     void sync_node() except +
-    void bcast(float& x, const int root) except +
-    void bcast(Long& x, const int root) except +
-    void bcast(ComplexD& x, const int root) except +
-    void bcast(ComplexF& x, const int root) except +
-    void bcast(std_string& recv, const int root) except +
-    void bcast(Coordinate& x, const int root) except +
-    void bcast(LatData& ld, const int root) except +
-    void glb_sum(Long& ld) except +
-    void glb_sum(float& ld) except +
-    void glb_sum(double& ld) except +
-    void glb_sum(ComplexD& ld) except +
-    void glb_sum(ComplexF& ld) except +
-    void glb_sum(LatData& ld) except +
+    int bcast(float& x, const int root) except +
+    int bcast(Long& x, const int root) except +
+    int bcast(ComplexD& x, const int root) except +
+    int bcast(ComplexF& x, const int root) except +
+    int bcast(std_string& recv, const int root) except +
+    int bcast(Coordinate& x, const int root) except +
+    int bcast(LatData& ld, const int root) except +
+    int glb_sum(Long& ld) except +
+    int glb_sum(float& ld) except +
+    int glb_sum(double& ld) except +
+    int glb_sum(ComplexD& ld) except +
+    int glb_sum(ComplexF& ld) except +
+    int glb_sum(LatData& ld) except +
 
 cdef extern from "qlat/geometry.h" namespace "qlat":
 

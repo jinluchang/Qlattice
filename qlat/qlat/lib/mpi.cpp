@@ -144,61 +144,63 @@ int glb_sum(Vector<char> recv, const Vector<char>& send)
 
 int glb_sum(LatData& ld) { return glb_sum_double_vec(get_data(ld.res)); }
 
-void bcast(int32_t& x, const int root) { bcast(get_data_one_elem(x), root); }
-
-void bcast(int64_t& x, const int root) { bcast(get_data_one_elem(x), root); }
-
-void bcast(uint32_t& x, const int root) { bcast(get_data_one_elem(x), root); }
-
-void bcast(float& x, const int root) { bcast(get_data_one_elem(x), root); }
-
-void bcast(double& x, const int root) { bcast(get_data_one_elem(x), root); }
-
-void bcast(ComplexF& x, const int root) { bcast(get_data_one_elem(x), root); }
-
-void bcast(ComplexD& x, const int root) { bcast(get_data_one_elem(x), root); }
-
-void bcast(Coordinate& x, const int root) { bcast(get_data_one_elem(x), root); }
-
-void bcast(std::string& recv, const int root)
+int bcast(Vector<Char> recv, const int root)
 {
+  TIMER("bcast(Vector<Char>)");
   if (1 == get_num_node()) {
-    return;
+    return 0;
   }
-  Long size = recv.size();
-  bcast(get_data(size), root);
-  recv.resize(size);
-  bcast(get_data(recv), root);
+  return MPI_Bcast((void*)recv.data(), recv.size(), MPI_BYTE, root, get_comm());
 }
 
-void bcast(std::vector<std::string>& recv, const int root)
+int bcast(std::string& recv, const int root)
 {
+  TIMER("bcast(std::string&)");
   if (1 == get_num_node()) {
-    return;
+    return 0;
   }
+  int ret = 0;
   Long size = recv.size();
-  bcast(get_data(size), root);
+  ret += bcast(get_data(size), root);
+  recv.resize(size);
+  ret += bcast(get_data(recv), root);
+  return ret;
+}
+
+int bcast(std::vector<std::string>& recv, const int root)
+{
+  TIMER("bcast(std::vector<std::string>&)");
+  if (1 == get_num_node()) {
+    return 0;
+  }
+  int ret = 0;
+  Long size = recv.size();
+  ret += bcast(get_data(size), root);
   recv.resize(size);
   for (Long i = 0; i < size; ++i) {
-    bcast(recv[i], root);
+    ret += bcast(recv[i], root);
   }
+  return ret;
 }
 
-void bcast(LatData& ld, const int root)
+int bcast(LatData& ld, const int root)
 {
+  TIMER("bcast(LatData&)");
   if (1 == get_num_node()) {
-    return;
+    return 0;
   }
+  int ret = 0;
   std::string info_str;
   if (get_id_node() == root) {
     info_str = show(ld.info);
   }
-  bcast(info_str, root);
+  ret += bcast(info_str, root);
   if (get_id_node() != root) {
     ld.info = read_lat_info(info_str);
     lat_data_alloc(ld);
   }
-  bcast(get_data(ld.res), root);
+  ret += bcast(get_data(ld.res), root);
+  return ret;
 }
 
 void sync_node()
