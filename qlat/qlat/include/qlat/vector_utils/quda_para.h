@@ -223,7 +223,7 @@ inline void quda_begin(int mpi_layout[4])
   for (int d = 0; d < 4; d++) {
     Qassert(comm_coord(d) == get_coor_node()[d]);
   }
-  cudaDeviceSetCacheConfig(cudaFuncCachePreferNone );
+  qlat_GPU_DeviceSetCacheConfig(qlat_GPU_FuncCachePreferNone );
 }
 
 inline void check_quda_layout_eo(const Geometry& geo)

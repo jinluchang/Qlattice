@@ -49,7 +49,7 @@ struct vector_gpu{
       gpuMalloc(p, size_t(n), Ty, GPU);
       //if(GPU){
       //  #ifdef QLAT_USE_ACC
-      //  gpuErrchk(cudaMalloc(&p, n*sizeof(Ty)));
+      //  gpuErrchk(qlat_GPU_Malloc(&p, n*sizeof(Ty)));
       //  #else
       //  p = (Ty*) aligned_alloc_no_acc( n*sizeof(Ty));
       //  #endif

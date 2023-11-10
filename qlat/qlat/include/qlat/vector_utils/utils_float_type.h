@@ -46,12 +46,6 @@ namespace qlat{
 #define PRINT_TIMER  0
 #endif
 
-////#include <cuda_runtime.h>
-//
-////#include <Eigen/Dense>
-////#include "fftw3.h"
-////#include "fftw3-mpi.h"
-
 #define LInt unsigned long
 
 #define large_vuse Elarge_vector
@@ -187,16 +181,13 @@ inline void print_NONE(const char *filename)
 #define TIMERA(name) TIMER((std::string("A_T ") + std::string(name)).c_str());
 #endif
 
-
-
-
 #ifdef QLAT_USE_ACC
 // *************** FOR ERROR CHECKING *******************
 #ifndef CUDA_RT_CALL
 #define CUDA_RT_CALL( call )                                                                                           \
     {                                                                                                                  \
-        auto status = static_cast<cudaError_t>( call );                                                                \
-        if ( status != cudaSuccess )                                                                                   \
+        auto status = static_cast<qlat_GPU_Error>( call );                                                                \
+        if ( status != qlat_GPU_Success )                                                                                   \
             fprintf( stderr,                                                                                           \
                      "ERROR: CUDA RT call \"%s\" in line %d of file %s failed "                                        \
                      "with "                                                                                           \
@@ -204,36 +195,17 @@ inline void print_NONE(const char *filename)
                      #call,                                                                                            \
                      __LINE__,                                                                                         \
                      __FILE__,                                                                                         \
-                     cudaGetErrorString( status ),                                                                     \
+                     qlat_GPU_GetErrorString( status ),                                                                     \
                      status );                                                                                         \
     }
 #endif  // CUDA_RT_CALL
 
-#ifndef CUFFT_CALL
-#define CUFFT_CALL( call )                                                                                             \
-    {                                                                                                                  \
-        auto status = static_cast<cufftResult>( call );                                                                \
-        if ( status != CUFFT_SUCCESS )                                                                                 \
-            fprintf( stderr,                                                                                           \
-                     "ERROR: CUFFT call \"%s\" in line %d of file %s failed "                                          \
-                     "with "                                                                                           \
-                     "code (%d).\n",                                                                                   \
-                     #call,                                                                                            \
-                     __LINE__,                                                                                         \
-                     __FILE__,                                                                                         \
-                     status );                                                                                         \
-    }
-#endif  // CUFFT_CALL
-// *************** FOR ERROR CHECKING *******************
-#endif
-
-#ifdef QLAT_USE_ACC
 #define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
-inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
+inline void gpuAssert(qlat_GPU_Error code, const char *file, int line, bool abort=true)
 {
-   if (code != cudaSuccess)
+   if (code != qlat_GPU_Success)
    {
-      qlat::displayln(qlat::ssprintf("cuda error: %s %s %d\n", cudaGetErrorString(code), file, line ));
+      qlat::displayln(qlat::ssprintf("qlat_GPU error: %s %s %d\n", qlat_GPU_GetErrorString(code), file, line ));
       qassert(false);
    }
 }
@@ -243,7 +215,7 @@ inline void gpuFree(void* res)
 {
   if(res!=NULL){
     #ifdef QLAT_USE_ACC
-    gpuErrchk(cudaFree(res));
+    gpuErrchk(qlat_GPU_Free(res));
     #else
     //delete [] res;
     free(res);
@@ -287,9 +259,9 @@ inline void QAssert(bool s, const char *file, int line){
 
 #ifdef QLAT_USE_ACC
 #define gpuMalloc(bres, bsize, Ty, GPU) { \
-  if(int(GPU) == -1){gpuErrchk(cudaMallocManaged(&bres, bsize*sizeof(Ty)));} \
+  if(int(GPU) == -1){gpuErrchk(qlat_GPU_MallocManaged(&bres, bsize*sizeof(Ty)));} \
   if(int(GPU) ==  0){bres = (Ty*) aligned_alloc_no_acc(bsize * sizeof(Ty));} \
-  if(int(GPU) ==  1){gpuErrchk(cudaMalloc(&bres, bsize*sizeof(Ty)));} }
+  if(int(GPU) ==  1){gpuErrchk(qlat_GPU_Malloc(&bres, bsize*sizeof(Ty)));} }
 #else
 #define gpuMalloc(bres,bsize, Ty, GPU) {bres = (Ty *)aligned_alloc_no_acc(bsize*sizeof(Ty));}
 #endif
@@ -369,7 +341,7 @@ void zero_Ty(Ty* a, size_t size,int GPU=0, QBOOL dummy=QTRUE)
   (void)dummy;
   #ifdef QLAT_USE_ACC
   if(GPU == 1 or GPU == -1){
-    cudaMemsetAsync(a, 0, size*sizeof(Ty));
+    qlat_GPU_MemsetAsync(a, 0, size*sizeof(Ty));
     if(dummy==QTRUE){qacc_barrier(dummy);}
     return ;
   }

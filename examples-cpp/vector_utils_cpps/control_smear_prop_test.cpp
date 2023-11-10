@@ -73,12 +73,12 @@ int main(int argc, char* argv[])
       gpuMalloc(gfET     ,gfET_tmp.size() , Complexq);
 
 
-      //gpuErrchk(cudaMalloc(&propT, propT_tmp.size()*sizeof(Complexq)));
-      //gpuErrchk(cudaMalloc(&propT_buf, propT_tmp.size()*sizeof(Complexq)));
-      //gpuErrchk(cudaMalloc(&gfET, gfET_tmp.size()*sizeof(Complexq)));
+      //gpuErrchk(qlat_GPU_Malloc(&propT, propT_tmp.size()*sizeof(Complexq)));
+      //gpuErrchk(qlat_GPU_Malloc(&propT_buf, propT_tmp.size()*sizeof(Complexq)));
+      //gpuErrchk(qlat_GPU_Malloc(&gfET, gfET_tmp.size()*sizeof(Complexq)));
 
-      cudaMemcpy(&propT[0], &propT_tmp[0], propT_tmp.size()*sizeof(Complexq),cudaMemcpyDeviceToDevice);
-      cudaMemcpy(&gfET[0], &gfET_tmp[0], gfET_tmp.size()*sizeof(Complexq),cudaMemcpyDeviceToDevice);
+      qlat_GPU_Memcpy(&propT[0], &propT_tmp[0], propT_tmp.size()*sizeof(Complexq),qlat_GPU_MemcpyDeviceToDevice);
+      qlat_GPU_Memcpy(&gfET[0], &gfET_tmp[0], gfET_tmp.size()*sizeof(Complexq),qlat_GPU_MemcpyDeviceToDevice);
 
       ////random_numbers(propT, Np);
 

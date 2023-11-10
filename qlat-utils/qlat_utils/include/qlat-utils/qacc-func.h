@@ -74,10 +74,10 @@ API inline int& qacc_num_threads()
     dim3 CUDA_THREADS_DIM3(QACC_NUM_THREADS, 1, 1);                         \
     dim3 CUDA_BLOCKS_DIM3((num1 + QACC_NUM_THREADS - 1) / QACC_NUM_THREADS, \
                           num2, 1);                                         \
-    cudaError CUDA_LAST_ERROR_OBJECT = cudaGetLastError();                  \
-    if (cudaSuccess != CUDA_LAST_ERROR_OBJECT) {                            \
+    qlat_GPU_Error CUDA_LAST_ERROR_OBJECT = qlat_GPU_GetLastError();                  \
+    if (qlat_GPU_Success != CUDA_LAST_ERROR_OBJECT) {                            \
       qerr(qlat::ssprintf("qacc_for: Cuda error %s from '%s' Line %d.",     \
-                          cudaGetErrorString(CUDA_LAST_ERROR_OBJECT),       \
+                          qlat_GPU_GetErrorString(CUDA_LAST_ERROR_OBJECT),       \
                           __FILE__, __LINE__));                             \
     }                                                                       \
     qlambda_apply<<<CUDA_BLOCKS_DIM3, CUDA_THREADS_DIM3>>>(                 \
@@ -96,12 +96,12 @@ __global__ void qlambda_apply(Long num1, Long num2, Lambda lam)
 
 #define qacc_barrier(dummy)                                                \
   {                                                                        \
-    cudaDeviceSynchronize();                                               \
-    cudaError err = cudaGetLastError();                                    \
-    if (cudaSuccess != err) {                                              \
+    qlat_GPU_DeviceSynchronize();                                               \
+    qlat_GPU_Error err = qlat_GPU_GetLastError();                                    \
+    if (qlat_GPU_Success != err) {                                              \
       qlat::displayln(                                                     \
           qlat::ssprintf("qacc_barrier: Cuda error %s from '%s' Line %d.", \
-                         cudaGetErrorString(err), __FILE__, __LINE__));    \
+                         qlat_GPU_GetErrorString(err), __FILE__, __LINE__));    \
       qassert(false);                                                      \
     }                                                                      \
   }

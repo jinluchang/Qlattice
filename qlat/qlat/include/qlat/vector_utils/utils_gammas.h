@@ -279,8 +279,8 @@ public:
 //__device__ __constant__  Complexq gamma_com_cps[4*16];
 //__device__ __constant__  int      gamma_int_cps[4*16];
 //for(int iv=0;iv<16;iv++){
-//  cudaMemcpyToSymbol(gamma_com_cps, &ga_cps.gL[iv].g[0]  , 4*sizeof(Complexq),iv*4*sizeof(Complexq), cudaMemcpyHostToDevice);
-//  cudaMemcpyToSymbol(gamma_int_cps, &ga_cps.gL[iv].ind[0], 4*sizeof(int), iv*4*sizeof(int),cudaMemcpyHostToDevice);
+//  qlat_GPU_MemcpyToSymbol(gamma_com_cps, &ga_cps.gL[iv].g[0]  , 4*sizeof(Complexq),iv*4*sizeof(Complexq), qlat_GPU_MemcpyHostToDevice);
+//  qlat_GPU_MemcpyToSymbol(gamma_int_cps, &ga_cps.gL[iv].ind[0], 4*sizeof(int), iv*4*sizeof(int),qlat_GPU_MemcpyHostToDevice);
 //}
 
 

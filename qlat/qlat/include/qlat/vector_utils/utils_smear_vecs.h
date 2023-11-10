@@ -1665,7 +1665,7 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
     const int dir_max  = 4;
     const int dir_limit = smf.dirL;
     ////const Long* map_count = smf.map_index_typeAL[0];
-    qacc_for(count,  Long(Nvol),{
+    qthread_for(count,  Long(Nvol),{
       //const Long index  = smf.map_index_typeAL[count];
       //const Long iwrite = smf.map_index_typeA0[index];
       const Long iwrite = map_final[count];

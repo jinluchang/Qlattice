@@ -455,10 +455,10 @@ void matrix_prod_gpu(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const L
   (void)modeGPU;
   #ifdef QLAT_USE_ACC
 
-  //TIMER_FLOPS("==Matrix Multi GPU");
-  //long long vGb = L*m*n*w;
-  //int Fcount0   = 6 + 2; 
-  //timer.flops += vGb*Fcount0;
+  TIMER_FLOPS("==Matrix Multi GPU");
+  long long vGb = L*m*n*w;
+  int Fcount0   = 6 + 2; 
+  timer.flops += vGb*Fcount0;
 
   /////int modeGPU = 1;
   if(modeGPU == 0){matrix_prod_gpu0(a, b, c, m, n, w, L, Conj);}

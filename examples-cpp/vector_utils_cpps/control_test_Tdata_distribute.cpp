@@ -294,8 +294,8 @@ int main(int argc, char* argv[])
 
   //qlat::ComplexD* sendT;
   //qlat::ComplexD* sbufT;
-  ////gpuErrchk( cudaMalloc(&sendT    , b0*civ*nvol*fd.Nt * sizeof(qlat::ComplexD)));
-  ////gpuErrchk( cudaMalloc(&sbufT    , b0*civ*nvol*fd.Nt * sizeof(qlat::ComplexD)));
+  ////gpuErrchk( qlat_GPU_Malloc(&sendT    , b0*civ*nvol*fd.Nt * sizeof(qlat::ComplexD)));
+  ////gpuErrchk( qlat_GPU_Malloc(&sbufT    , b0*civ*nvol*fd.Nt * sizeof(qlat::ComplexD)));
 
   //gpuMalloc(sendT, b0*civ*nvol*fd.Nt , qlat::ComplexD);
   //gpuMalloc(sbufT, b0*civ*nvol*fd.Nt , qlat::ComplexD);
