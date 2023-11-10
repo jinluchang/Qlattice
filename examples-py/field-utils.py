@@ -47,6 +47,18 @@ q.displayln_info(gf.get_elems_xg(q.Coordinate([0, 0, 0, 0,]))[:])
 qnorm = q.qnorm(gf.get_elems_xg(q.Coordinate([0, 0, 0, 0,]))[:])
 q.displayln_info(f"CHECK: {qnorm:.14E}")
 
+xg_rand = rs.split("xg").c_rand_gen(total_site)
+val1 = gf.get_elems_xg(xg_rand)[:]
+q.displayln_info(f"gf xg={xg_rand} val1={val1}")
+sig1 = q.get_double_sig(val1, rs.split("sig1"))
+q.displayln_info(f"CHECK: gf xg={xg_rand} sig={sig1:.14E}")
+
+m = 1
+val2 = gf.get_elem_xg(xg_rand, m)[:]
+q.displayln_info(f"gf xg={xg_rand} val2={val2}")
+sig2 = q.get_double_sig(val2, rs.split("sig2"))
+q.displayln_info(f"CHECK: gf xg={xg_rand} m={m} sig={sig2:.14E}")
+
 gf_sum_initial = gf.glb_sum()
 
 gf_sum = gf_sum_initial.copy()[:]
