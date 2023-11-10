@@ -30,6 +30,7 @@
 #include <qlat/qcd-utils.h>
 #include <qlat/qcd.h>
 #include <qlat/qed.h>
+#include <qlat/qm-action.h>
 #include <qlat/scalar-action.h>
 #include <qlat/selected-field-io.h>
 #include <qlat/selected-field.h>

@@ -56,6 +56,7 @@ header_files = files(
   'qlat-analysis.h',
   'qlat.h',
   'qlat-setup.h',
+  'qm-action.h',
   'quda.h',
   'scalar-action.h',
   'selected-field.h',

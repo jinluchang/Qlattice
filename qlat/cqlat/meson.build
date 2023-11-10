@@ -19,6 +19,7 @@ cpp_files = files(
   'mat.cpp',
   'propagator.cpp',
   'qcd.cpp',
+  'qm-action.cpp',
   'scalar-action.cpp',
   'selected-field.cpp',
   'topology.cpp',

@@ -23,6 +23,8 @@ from .gauge_action import *
 
 from .scalar_action import *
 
+from .qm_action import *
+
 from .hmc import *
 
 from .fthmc import *

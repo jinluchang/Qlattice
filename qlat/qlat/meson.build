@@ -24,6 +24,7 @@ py_files = files(
   'inverter.py',
   '__main__.py',
   'mpi_utils.py',
+  'qm_action.py',
   'scalar_action.py',
   'topology.py',
   'wilson_flow.py',
