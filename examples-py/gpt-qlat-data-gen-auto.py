@@ -1134,35 +1134,44 @@ def run_job(job_tag, traj):
     get_gt = run_gt(job_tag, traj_gf, get_gf)
     get_gf_ape = run_gf_ape(job_tag, get_gf)
     #
+    get_wi = run_wi(job_tag, traj)
+    #
+    def run_wsrc_full():
+        #
+        get_eig = run_eig(job_tag, traj_gf, get_gf)
+        # run_get_inverter(job_tag, traj, inv_type=0, get_gf=get_gf, get_gt=get_gt, get_eig=get_eig)
+        run_prop_wsrc_full(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_wi=get_wi)
+        #
+        get_eig = run_eig_strange(job_tag, traj_gf, get_gf)
+        # run_get_inverter(job_tag, traj, inv_type=1, get_gf=get_gf, get_gt=get_gt, get_eig=get_eig)
+        run_prop_wsrc_full(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_wi=get_wi)
+    #
     get_psel = run_psel(job_tag, traj)
     get_fsel = run_fsel(job_tag, traj, get_psel)
     #
-    get_wi = run_wi(job_tag, traj)
     get_psel_smear = run_psel_smear(job_tag, traj)
     #
     def run_with_eig():
         get_eig = run_eig(job_tag, traj_gf, get_gf)
-        run_get_inverter(job_tag, traj, inv_type = 0, get_gf = get_gf, get_eig = get_eig)
-        run_get_inverter(job_tag, traj, inv_type = 0, get_gf = get_gf, get_gt = get_gt, get_eig = get_eig)
-        run_prop_wsrc(job_tag, traj, inv_type = 0, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt, get_psel = get_psel, get_fsel = get_fsel, get_wi = get_wi)
-        run_prop_rand_u1(job_tag, traj, inv_type = 0, get_gf = get_gf, get_fsel = get_fsel, get_eig = get_eig)
-        run_prop_psrc(job_tag, traj, inv_type = 0, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt, get_psel = get_psel, get_fsel = get_fsel)
-        run_prop_smear(job_tag, traj, inv_type = 0, get_gf = get_gf, get_gf_ape = get_gf_ape, get_eig = get_eig, get_gt = get_gt, get_psel = get_psel, get_fsel = get_fsel, get_psel_smear = get_psel_smear)
+        # run_get_inverter(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig)
+        run_prop_wsrc(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_wi=get_wi)
+        run_prop_rand_u1(job_tag, traj, inv_type=0, get_gf=get_gf, get_fsel=get_fsel, get_eig=get_eig)
+        run_prop_psrc(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel)
+        run_prop_smear(job_tag, traj, inv_type=0, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_psel_smear=get_psel_smear)
         q.clean_cache(q.cache_inv)
     #
     def run_with_eig_strange():
         get_eig = run_eig_strange(job_tag, traj_gf, get_gf)
-        run_get_inverter(job_tag, traj, inv_type = 1, get_gf = get_gf, get_eig = get_eig)
-        run_get_inverter(job_tag, traj, inv_type = 1, get_gf = get_gf, get_gt = get_gt, get_eig = get_eig)
-        run_prop_wsrc(job_tag, traj, inv_type = 1, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt, get_psel = get_psel, get_fsel = get_fsel, get_wi = get_wi)
-        run_prop_rand_u1(job_tag, traj, inv_type = 1, get_gf = get_gf, get_fsel = get_fsel, get_eig = get_eig)
-        run_prop_psrc(job_tag, traj, inv_type = 1, get_gf = get_gf, get_eig = get_eig, get_gt = get_gt, get_psel = get_psel, get_fsel = get_fsel)
-        run_prop_smear(job_tag, traj, inv_type = 1, get_gf = get_gf, get_gf_ape = get_gf_ape, get_eig = get_eig, get_gt = get_gt, get_psel = get_psel, get_fsel = get_fsel, get_psel_smear = get_psel_smear)
+        # run_get_inverter(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig)
+        run_prop_wsrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_wi=get_wi)
+        run_prop_rand_u1(job_tag, traj, inv_type=1, get_gf=get_gf, get_fsel=get_fsel, get_eig=get_eig)
+        run_prop_psrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel)
+        run_prop_smear(job_tag, traj, inv_type=1, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_psel_smear=get_psel_smear)
         q.clean_cache(q.cache_inv)
     #
     def run_charm():
-        run_get_inverter(job_tag, traj, inv_type = 2, get_gf = get_gf)
-        run_prop_rand_u1(job_tag, traj, inv_type = 2, get_gf = get_gf, get_fsel = get_fsel)
+        # run_get_inverter(job_tag, traj, inv_type=2, get_gf=get_gf)
+        run_prop_rand_u1(job_tag, traj, inv_type=2, get_gf=get_gf, get_fsel=get_fsel)
         q.clean_cache(q.cache_inv)
     #
     run_with_eig()

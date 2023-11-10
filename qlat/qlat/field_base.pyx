@@ -138,9 +138,6 @@ cdef class FieldBase:
         else:
             assert False
 
-    def qnorm(self):
-        return c.qnorm_field(self)
-
     def crc32(self):
         return c.crc32_field(self)
 

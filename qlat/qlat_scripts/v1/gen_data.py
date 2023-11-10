@@ -21,6 +21,70 @@ def run_get_inverter(job_tag, traj, *, inv_type, get_gf, get_gt=None, get_eig=No
 # -----------------------------------------------------------------------------
 
 @q.timer_verbose
+def compute_prop_full_1(inv, src, *, tag, sfw):
+    sol = inv * src
+    sol.save_double(sfw, tag)
+    sfw.flush()
+    return sol
+
+@q.timer
+def compute_prop_wsrc_full(gf, gt, tslice, job_tag, inv_type, inv_acc, *,
+        idx, sfw, path_sp, psel, fsel, fselc, eig, finished_tags):
+    tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
+    if tag in finished_tags:
+        return None
+    q.check_stop()
+    q.check_time_limit()
+    q.displayln_info(f"compute_prop_wsrc_full: idx={idx} tslice={tslice}", job_tag, inv_type, inv_acc)
+    inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    geo = q.Geometry(total_site, 1)
+    src = q.mk_wall_src(geo, tslice)
+    prop = compute_prop_full_1(inv, src, tag=tag, sfw=sfw)
+
+@q.timer_verbose
+def compute_prop_wsrc_full_all(job_tag, traj, *,
+                               inv_type, gf, gt, wi, eig):
+    inv_type_names = [ "light", "strange", ]
+    inv_type_name = inv_type_names[inv_type]
+    path_s = f"{job_tag}/prop-wsrc-full-{inv_type_name}/traj-{traj}"
+    finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
+    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
+    for inv_acc in [ 2, 1, ]:
+        for p in wi:
+            idx, tslice, inv_type_p, inv_acc_p=p
+            if inv_type_p == inv_type and inv_acc_p == inv_acc:
+                compute_prop_wsrc_full(gf, gt, tslice, job_tag, inv_type, inv_acc,
+                                       idx=idx, sfw=sfw, path_sp=path_sp, eig=eig,
+                                       finished_tags=finished_tags)
+    sfw.close()
+    q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
+
+@q.timer
+def run_prop_wsrc_full(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_wi):
+    if None in [ get_gf, get_gt, ]:
+        return
+    if get_eig is None:
+        if inv_type == 0:
+            return
+        get_eig = lambda: None
+    inv_type_names = [ "light", "strange", ]
+    inv_type_name = inv_type_names[inv_type]
+    if get_load_path(f"{job_tag}/prop-wsrc-full-{inv_type_name}/traj-{traj}/geon-info.txt") is not None:
+        return
+    if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-full-{inv_type_name}"):
+        gf = get_gf()
+        gt = get_gt()
+        eig = get_eig()
+        wi = get_wi()
+        compute_prop_wsrc_full_all(job_tag, traj,
+                                   inv_type=inv_type, gf=gf, gt=gt, wi=wi,
+                                   eig=eig)
+        q.release_lock()
+
+# -----------------------------------------------------------------------------
+
+@q.timer_verbose
 def compute_prop_1(inv, src, *, tag, sfw, path_sp, psel, fsel, fselc):
     fn_sp = os.path.join(path_sp, f"{tag}.lat")
     fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
@@ -130,7 +194,7 @@ def compute_prop_psrc(job_tag, xg_src, inv_type, inv_acc, *,
     q.check_stop()
     q.check_time_limit()
     q.displayln_info(f"compute_prop_psrc: {job_tag} idx={idx} tag='{tag}'")
-    inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig)
+    inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig=eig)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site, 1)
     src = q.mk_point_src(geo, xg_src)
@@ -201,7 +265,7 @@ def compute_prop_rand_u1_type_acc(*, sfw, job_tag, traj, gf, eig, fsel, idx_rand
         return
     q.check_stop()
     q.check_time_limit()
-    inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig)
+    inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig=eig)
     rs = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_u1(rand_u1)").split(str(idx_rand_u1))
     s_prop = q.mk_rand_u1_prop(inv, fsel, rs)
     s_prop.save_float_from_double(sfw, tag)
