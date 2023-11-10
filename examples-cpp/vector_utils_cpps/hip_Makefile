@@ -1,0 +1,50 @@
+SHELL=/bin/bash
+
+GXX=hipcc --cudart shared -std=c++17 -arch compute_80 -code compute_80 -ccbin CC -Xcompiler -fopenmp -x cu -O2 -Xcompiler -fPIC 
+GXX+= -expt-relaxed-constexpr -expt-extended-lambda -expt-relaxed-constexpr
+GXX+= -allow-unsupported-compiler
+LXX=hipcc -O2 --cudart shared -std=c++17 -arch compute_80 -code compute_80 -ccbin CC  -Xcompiler -fopenmp -link
+
+QLAT_INCLUDE=~/build
+QLAT_HEAD=$(QLAT_INCLUDE)/Qcopy/head_files/
+
+HIP_ROOT=/.../rocm/5.5.1/
+QLAT_GFLAGS= -I$(QLAT_INCLUDE)  -I${HIP_ROOT}/include/
+QLAT_GFLAGS+= -I$(QLAT_INCLUDE)/eigen/include
+QLAT_GFLAGS+= -I$(QLAT_INCLUDE)/fftw/include
+QLAT_GFLAGS+= -I$(QLAT_HEAD)
+
+QLAT_GFLAGS+= -Xcompiler -fopenmp
+QLAT_GFLAGS+= -D__ENABLE_DOUBLE__
+QLAT_GFLAGS+= -D__DEBUG_VECUTILS__
+
+FFT_LIB=$(QLAT_INCLUDE)/fftw/lib
+FFT_FLAGS=$(FFT_LIB)/libfftw3.a $(FFT_LIB)/libfftw3f.a
+
+QLAT_LDFLAGS=$(FFT_FLAGS) $(QLAT_INCLUDE)/zlib/lib/libz.a -lm -L${HIP_ROOT}/lib64  -lcudart -lcufft
+
+QUTILS_LIB_PATH=$(QLAT_INCLUDE)/Qcopy/libs/qlat-utils/
+QLAT_LIB_PATH=$(QLAT_INCLUDE)/Qcopy/libs/qlat/
+QLAT_LDFLAGS+=$(QLAT_LIB_PATH)/*.o  $(QUTILS_LIB_PATH)/*.o
+
+SRCSU := $(wildcard $(QUTILS_LIB_PATH)/*.cpp)
+SRCSQ := $(wildcard $(QLAT_LIB_PATH)/*.cpp)
+OBJSU := $(patsubst $(QUTILS_LIB_PATH)/%.cpp,$(QUTILS_LIB_PATH)/%.o,$(SRCSU))
+OBJSQ := $(patsubst $(QLAT_LIB_PATH)/%.cpp,$(QLAT_LIB_PATH)/%.o,$(SRCSQ))
+
+control_%.cu :
+	ln -fs $(basename $@).cpp $(basename $@).cu; sleep 1s;
+
+% : *.h  control_%.cu control_%.cpp $(OBJSU) $(OBJSQ)
+	$(GXX) $(QLAT_GFLAGS) -c control_$@.cu -o program.o;$(LXX) -o $@ $(QLAT_GFLAGS) program.o $(QLAT_LDFLAGS);rm program.o control_$@.cu
+
+$(QUTILS_LIB_PATH)/%.o: $(QUTILS_LIB_PATH)/%.cpp
+	ln -fs $(basename $@).cpp $(basename $@).cu; sleep 1s;$(GXX) $(QLAT_GFLAGS) -c $(basename $@).cu -o $@;rm $(basename $@).cu
+        
+$(QLAT_LIB_PATH)/%.o: $(QLAT_LIB_PATH)/%.cpp
+	ln -fs $(basename $@).cpp $(basename $@).cu; sleep 1s;$(GXX) $(QLAT_GFLAGS) -c $(basename $@).cu -o $@;rm $(basename $@).cu
+ 
+.PRECIOUS: $(QLAT_LIB_PATH)/%.o $(QUTILS_LIB_PATH)/%.o
+
+clean:
+	if [ -a *.o ] ; then rm *.o ; fi; rm $(QLAT_LIB_PATH)/*.o $(QUTILS_LIB_PATH)/*.o
