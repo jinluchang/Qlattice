@@ -6,6 +6,8 @@ from .types cimport *
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
 
+import numpy as np
+
 ### -------------------------------------------------------------------
 
 cdef class WilsonMatrix:
@@ -47,6 +49,18 @@ cdef class WilsonMatrix:
 
     def release_buffer(self, Buffer buf):
         pass
+
+    def __setitem__(self, idx, val):
+        """
+        Implemented in terms of ``np.asarray``
+        """
+        np.asarray(self)[idx] = val
+
+    def __getitem__(self, idx):
+        """
+        Implemented in terms of ``np.asarray``
+        """
+        return np.asarray(self)[idx]
 
     def g5_herm(self):
         self.xx = cc.g5_herm(self.xx)
@@ -93,6 +107,18 @@ cdef class SpinMatrix:
     def release_buffer(self, Buffer buf):
         pass
 
+    def __setitem__(self, idx, val):
+        """
+        Implemented in terms of ``np.asarray``
+        """
+        np.asarray(self)[idx] = val
+
+    def __getitem__(self, idx):
+        """
+        Implemented in terms of ``np.asarray``
+        """
+        return np.asarray(self)[idx]
+
 ### -------------------------------------------------------------------
 
 cdef class ColorMatrix:
@@ -134,6 +160,18 @@ cdef class ColorMatrix:
 
     def release_buffer(self, Buffer buf):
         pass
+
+    def __setitem__(self, idx, val):
+        """
+        Implemented in terms of ``np.asarray``
+        """
+        np.asarray(self)[idx] = val
+
+    def __getitem__(self, idx):
+        """
+        Implemented in terms of ``np.asarray``
+        """
+        return np.asarray(self)[idx]
 
 ### -------------------------------------------------------------------
 

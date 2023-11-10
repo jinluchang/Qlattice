@@ -96,11 +96,11 @@ struct API MemCache {
       qassert(ptr != NULL);
 #ifdef QLAT_USE_ACC
       if (is_acc) {
-        cudaError err = cudaFree(ptr);
-        if (cudaSuccess != err) {
-          if (cudaErrorCudartUnloading != err) {
-            qerr(fname + ssprintf(": Cuda error '%s' (%d) after cudaFree.",
-                                  cudaGetErrorString(err), err));
+        qlat_GPU_Error err = qlat_GPU_Free(ptr);
+        if (qlat_GPU_Success != err) {
+          if (qlat_GPU_ErrorCudartUnloading != err) {
+            qerr(fname + ssprintf(": Cuda error '%s' (%d) after qlat_GPU_Free.",
+                                  qlat_GPU_GetErrorString(err), err));
           }
         }
       } else {
@@ -170,16 +170,16 @@ inline void* alloc_mem(const Long min_size, const bool is_acc = false)
     void* ptr = NULL;
 #ifdef QLAT_USE_ACC
     if (is_acc) {
-      cudaError err = cudaGetLastError();
-      if (cudaSuccess != err) {
-        qerr(fname + ssprintf(": Cuda error '%s' before cudaMallocManaged.",
-                              cudaGetErrorString(err)));
+      qlat_GPU_Error err = qlat_GPU_GetLastError();
+      if (qlat_GPU_Success != err) {
+        qerr(fname + ssprintf(": Cuda error '%s' before qlat_GPU_MallocManaged.",
+                              qlat_GPU_GetErrorString(err)));
       }
-      err = cudaMallocManaged(&ptr, size);
-      if (cudaSuccess != err) {
+      err = qlat_GPU_MallocManaged(&ptr, size);
+      if (qlat_GPU_Success != err) {
         qerr(fname +
              ssprintf(": Cuda error '%s', min_size=%ld, size=%ld, ptr=%lX.",
-                      cudaGetErrorString(err), min_size, size, ptr));
+                      qlat_GPU_GetErrorString(err), min_size, size, ptr));
       }
     } else {
       ptr = alloc_mem_alloc_no_acc(size);
@@ -217,7 +217,7 @@ struct API vector {
   // (it is likely not what you think it is)
   //
   bool is_copy;  // do not free memory if is_copy=true
-  bool is_acc;   // if place data on cudaMallocManaged memory (default false)
+  bool is_acc;   // if place data on qlat_GPU_MallocManaged memory (default false)
   Vector<M> v;
   //
   vector()
@@ -559,7 +559,7 @@ struct API box {
   // (it is likely not be what you think it is)
   //
   bool is_copy;  // do not free memory if is_copy=true
-  bool is_acc;   // if place data on cudaMallocManaged memory (default false)
+  bool is_acc;   // if place data on qlat_GPU_MallocManaged memory (default false)
   Handle<M> v;
   //
   box()

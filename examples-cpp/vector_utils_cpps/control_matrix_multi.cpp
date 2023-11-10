@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
   random_Ty(a.data(), a.size(), 1, in.seed + 1);
   random_Ty(b.data(), b.size(), 1, in.seed + 2);
 
-  ////cudaDeviceSynchronize();
+  ////qlat_GPU_DeviceSynchronize();
   //for(int i=0;i< in.debuga;i++){matrix_prod_gpu(a.data(), b.data(), c1.data(), m,n,w,L, Conj, true,false, modeGPU);fflush_MPI();}
   for(int i=0;i< in.debuga;i++){
     matrix_prod(a.data(), b.data(), c1.data(), m,n,w,L, Conj, false, modeGPU);fflush_MPI();

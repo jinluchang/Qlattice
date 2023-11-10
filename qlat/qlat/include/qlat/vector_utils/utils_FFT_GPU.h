@@ -13,15 +13,74 @@
 #ifdef __QLAT_WITH_FFT_MPI__
 #include "fftw3-mpi.h"
 #endif
-//#include <inc/cufft.h>
+
 #ifdef QLAT_USE_ACC
+
+#ifndef QLAT_FFT_USE_HIP
 #include <cufftXt.h>
+
+#define qlat_GPU_FFT_C2C                    CUFFT_C2C
+#define qlat_GPU_FFT_FORWARD                CUFFT_FORWARD
+#define qlat_GPU_FFT_INVERSE                CUFFT_INVERSE
+#define qlat_GPU_FFT_SUCCESS                CUFFT_SUCCESS
+#define qlat_GPU_FFT_Z2Z                    CUFFT_Z2Z
+#define qlat_GPU_fftCreate                  cufftCreate
+#define qlat_GPU_fftDestroy                 cufftDestroy
+#define qlat_GPU_fftExecC2C                 cufftExecC2C
+#define qlat_GPU_fftExecZ2Z                 cufftExecZ2Z
+#define qlat_GPU_fftHandle                  cufftHandle
+#define qlat_GPU_fftPlanMany                cufftPlanMany
+#define qlat_GPU_fftResult                  cufftResult
+#define qlat_GPU_fftType                    cufftType
+#define qlat_GPU_fftComplex                 cufftComplex
+#define qlat_GPU_fftDoubleComplex           cufftDoubleComplex
+
+#else
+#include <hipfftXt.h>
+
+#define qlat_GPU_FFT_C2C                    HIPFFT_C2C
+#define qlat_GPU_FFT_FORWARD                HIPFFT_FORWARD
+#define qlat_GPU_FFT_INVERSE                HIPFFT_BACKWARD
+#define qlat_GPU_FFT_SUCCESS                HIPFFT_SUCCESS
+#define qlat_GPU_FFT_Z2Z                    HIPFFT_Z2Z
+#define qlat_GPU_fftCreate                  hipfftCreate
+#define qlat_GPU_fftDestroy                 hipfftDestroy
+#define qlat_GPU_fftExecC2C                 hipfftExecC2C
+#define qlat_GPU_fftExecZ2Z                 hipfftExecZ2Z
+#define qlat_GPU_fftHandle                  hipfftHandle
+#define qlat_GPU_fftPlanMany                hipfftPlanMany
+#define qlat_GPU_fftResult                  hipfftResult
+#define qlat_GPU_fftType                    hipfftType
+#define qlat_GPU_fftComplex                 hipfftComplex
+#define qlat_GPU_fftDoubleComplex           hipfftDoubleComplex
+
+#endif
+
 #endif
 
 /////FFT for complex to complex for 3D on CPU and GPU, 4D only on CPU
 
 namespace qlat
 {
+
+#ifdef QLAT_USE_ACC
+#ifndef qlat_GPU_FFT_CALL
+#define qlat_GPU_FFT_CALL( call )                                                                                             \
+    {                                                                                                                  \
+        auto status = static_cast<qlat_GPU_fftResult>( call );                                                                \
+        if ( status != qlat_GPU_FFT_SUCCESS )                                                                                 \
+            fprintf( stderr,                                                                                           \
+                     "ERROR: CUFFT call \"%s\" in line %d of file %s failed "                                          \
+                     "with "                                                                                           \
+                     "code (%d).\n",                                                                                   \
+                     #call,                                                                                            \
+                     __LINE__,                                                                                         \
+                     __FILE__,                                                                                         \
+                     status );                                                                                         \
+    }
+#endif  // qlat_GPU_FFT_CALL
+// *************** FOR ERROR CHECKING *******************
+#endif
 
 struct FFT_Vecs{
 
@@ -34,7 +93,7 @@ struct FFT_Vecs{
   fftw_plan   plan_cpuD0,plan_cpuD1;
   fftwf_plan  plan_cpuF0,plan_cpuF1;
   #ifdef QLAT_USE_ACC
-  cufftHandle plan_gpu;
+  qlat_GPU_fftHandle plan_gpu;
   #endif
 
   bool GPU;
@@ -155,14 +214,14 @@ void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_
   if(GPU){
   #ifdef QLAT_USE_ACC
   /////====GPU parts
-  CUFFT_CALL( cufftCreate( &plan_gpu ) );
+  qlat_GPU_FFT_CALL( qlat_GPU_fftCreate( &plan_gpu ) );
   if(dim == 4){abort_r("dim 4 on GPU not supported! \n");}
 
-  cufftType cutype = CUFFT_Z2Z;
-  if(single_type == 0)cutype = CUFFT_Z2Z;
-  if(single_type == 1)cutype = CUFFT_C2C;
+  qlat_GPU_fftType cutype = qlat_GPU_FFT_Z2Z;
+  if(single_type == 0)cutype = qlat_GPU_FFT_Z2Z;
+  if(single_type == 1)cutype = qlat_GPU_FFT_C2C;
 
-  CUFFT_CALL( cufftPlanMany(&plan_gpu, dim, &nv[0],
+  qlat_GPU_FFT_CALL( qlat_GPU_fftPlanMany(&plan_gpu, dim, &nv[0],
       &nv[0], istride, idist,
       &nv[0], istride, idist, cutype, howmany) );
 
@@ -245,7 +304,7 @@ inline void FFT_Vecs::clear_plan()
 
   if(GPU){
   #ifdef QLAT_USE_ACC
-  CUFFT_CALL( cufftDestroy(plan_gpu) );
+  qlat_GPU_FFT_CALL( qlat_GPU_fftDestroy(plan_gpu) );
   #endif
   }else{
 
@@ -292,15 +351,22 @@ void FFT_Vecs::do_fft(Ty* inputD, bool fftdir, bool dummy)
   if(GPU == true){
   #ifdef QLAT_USE_ACC
 
-  //if(data_on_cpu_only){CUDA_RT_CALL( cudaMemcpy( fft_dat, src, datasize, cudaMemcpyHostToDevice   ) );}
-  //else{                CUDA_RT_CALL( cudaMemcpy( fft_dat, src, datasize, cudaMemcpyDeviceToDevice ) );}
+  //if(data_on_cpu_only){CUDA_RT_CALL( qlat_GPU_Memcpy( fft_dat, src, datasize, qlat_GPU_MemcpyHostToDevice   ) );}
+  //else{                CUDA_RT_CALL( qlat_GPU_Memcpy( fft_dat, src, datasize, qlat_GPU_MemcpyDeviceToDevice ) );}
 
-  if(fftdir == true )CUFFT_CALL( cufftXtExec( plan_gpu, fft_dat, fft_dat, CUFFT_FORWARD  ) );
-  if(fftdir == false)CUFFT_CALL( cufftXtExec( plan_gpu, fft_dat, fft_dat, CUFFT_INVERSE  ) );
+  if(single_type == 0){
+    if(fftdir == true )qlat_GPU_FFT_CALL( qlat_GPU_fftExecZ2Z( plan_gpu, (qlat_GPU_fftDoubleComplex*) fft_dat, (qlat_GPU_fftDoubleComplex*) fft_dat, qlat_GPU_FFT_FORWARD  ) );
+    if(fftdir == false)qlat_GPU_FFT_CALL( qlat_GPU_fftExecZ2Z( plan_gpu, (qlat_GPU_fftDoubleComplex*) fft_dat, (qlat_GPU_fftDoubleComplex*) fft_dat, qlat_GPU_FFT_INVERSE  ) );
+  }
+  if(single_type == 1){
+    if(fftdir == true )qlat_GPU_FFT_CALL( qlat_GPU_fftExecC2C( plan_gpu, (qlat_GPU_fftComplex*) fft_dat, (qlat_GPU_fftComplex*) fft_dat, qlat_GPU_FFT_FORWARD  ) );
+    if(fftdir == false)qlat_GPU_FFT_CALL( qlat_GPU_fftExecC2C( plan_gpu, (qlat_GPU_fftComplex*) fft_dat, (qlat_GPU_fftComplex*) fft_dat, qlat_GPU_FFT_INVERSE  ) );
+  }
+
   if(dummy)qacc_barrier(dummy);
 
-  //if(data_on_cpu_only){CUDA_RT_CALL( cudaMemcpy( res, fft_dat, datasize, cudaMemcpyDeviceToHost   ) );}
-  //else{                CUDA_RT_CALL( cudaMemcpy( res, fft_dat, datasize, cudaMemcpyDeviceToDevice ) );}
+  //if(data_on_cpu_only){CUDA_RT_CALL( qlat_GPU_Memcpy( res, fft_dat, datasize, qlat_GPU_MemcpyDeviceToHost   ) );}
+  //else{                CUDA_RT_CALL( qlat_GPU_Memcpy( res, fft_dat, datasize, qlat_GPU_MemcpyDeviceToDevice ) );}
 
   #endif
   }else{

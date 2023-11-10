@@ -13,7 +13,7 @@ inline Complexq inv_self(const Complexq& lam, double m, double rho,int one_minus
   return tem;
 }
 
-void printDevProp(cudaDeviceProp devProp)
+void printDevProp(qlat_GPU_DeviceProp devProp)
 {
   printf("%s\n", devProp.name);
   printf("Major revision number:         %d\n", devProp.major);
@@ -74,11 +74,11 @@ int main(int argc, char* argv[])
   //char namew[500],namer[500],prop_tmp[500],name[500],name_tem[500];
   //char name0[500],name1[500],filename[500];
   int nDevices;
-  cudaGetDeviceCount(&nDevices);
+  qlat_GPU_GetDeviceCount(&nDevices);
   if(qlat::get_id_node() == 0)
   for (int i = 0; i < nDevices; i++) {
-    cudaDeviceProp prop;
-    cudaGetDeviceProperties(&prop, i);
+    qlat_GPU_DeviceProp prop;
+    qlat_GPU_GetDeviceProperties(&prop, i);
     printf("Device Number: %d\n", i);
     printf("  Device name: %s\n", prop.name);
     printf("  Memory Clock Rate (KHz): %d\n",

@@ -422,7 +422,7 @@ def run_fsel(job_tag, traj, get_psel):
             fsel.save(get_save_path(tfn))
             fselc = mk_fselc(fsel, get_psel())
             q.release_lock()
-            return lambda : ( fsel, fselc, )
+            return lambda : (fsel, fselc,)
         else:
             return None
     @q.timer_verbose

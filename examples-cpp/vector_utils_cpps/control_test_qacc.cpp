@@ -25,11 +25,11 @@ int main(int argc, char* argv[])
   int id_node;MPI_Comm_rank(get_comm(), &id_node);
 
   int num_gpus = 0; 
-  cudaGetDeviceCount(&num_gpus);
-  ////cudaDeviceReset();
-  cudaSetDevice(id_node % num_gpus);
+  qlat_GPU_GetDeviceCount(&num_gpus);
+  ////qlat_GPU_DeviceReset();
+  qlat_GPU_SetDevice(id_node % num_gpus);
   int gpu_id = -1;  
-  cudaGetDevice(&gpu_id);
+  qlat_GPU_GetDevice(&gpu_id);
   //printf("CPU node %d (of %d) uses CUDA device %d\n", id_node, num_node, gpu_id);
   fflush(stdout);
   MPI_Barrier(get_comm());

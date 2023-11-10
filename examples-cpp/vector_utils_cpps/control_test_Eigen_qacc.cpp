@@ -54,11 +54,11 @@ int main(int argc, char* argv[])
   //Cy* vd = (Cy*) qlat::get_data(qvd).data();
   //Cy* ve = (Cy*) qlat::get_data(qve).data();
 
-  Cy* va = NULL;cudaMalloc(&va, MAX*3*3*sizeof(Cy));
-  Cy* vb = NULL;cudaMalloc(&vb, MAX*3*D*sizeof(Cy));
-  Cy* vc = NULL;cudaMalloc(&vc, MAX*3*D*sizeof(Cy));
-  Cy* vd = NULL;cudaMalloc(&vd, MAX*3*D*sizeof(Cy));
-  Cy* ve = NULL;cudaMalloc(&ve, MAX*3*D*sizeof(Cy));
+  Cy* va = NULL;qlat_GPU_Malloc(&va, MAX*3*3*sizeof(Cy));
+  Cy* vb = NULL;qlat_GPU_Malloc(&vb, MAX*3*D*sizeof(Cy));
+  Cy* vc = NULL;qlat_GPU_Malloc(&vc, MAX*3*D*sizeof(Cy));
+  Cy* vd = NULL;qlat_GPU_Malloc(&vd, MAX*3*D*sizeof(Cy));
+  Cy* ve = NULL;qlat_GPU_Malloc(&ve, MAX*3*D*sizeof(Cy));
 
   Cy* vaH = NULL;vaH = (Cy *)malloc(MAX*3*3*sizeof(Cy));
   Cy* vbH = NULL;vbH = (Cy *)malloc(MAX*3*D*sizeof(Cy));
@@ -78,16 +78,16 @@ int main(int argc, char* argv[])
       ve[isp*3*D+ic] = vb[isp*3*D+ic];
     }
   })
-  cudaMemcpy(vaH, va, MAX*3*3*sizeof(Cy), cudaMemcpyDeviceToHost);
-  cudaMemcpy(vbH, vb, MAX*3*D*sizeof(Cy), cudaMemcpyDeviceToHost);
-  cudaMemcpy(vcH, vc, MAX*3*D*sizeof(Cy), cudaMemcpyDeviceToHost);
-  cudaDeviceSynchronize();
+  qlat_GPU_Memcpy(vaH, va, MAX*3*3*sizeof(Cy), qlat_GPU_MemcpyDeviceToHost);
+  qlat_GPU_Memcpy(vbH, vb, MAX*3*D*sizeof(Cy), qlat_GPU_MemcpyDeviceToHost);
+  qlat_GPU_Memcpy(vcH, vc, MAX*3*D*sizeof(Cy), qlat_GPU_MemcpyDeviceToHost);
+  qlat_GPU_DeviceSynchronize();
 
   const Long nc =  (MAX + 32-1)/32;
   dim3 dimGrid( nc, 1, 1); 
   dim3 dimBlock(32, 1, 1); 
   eigen_test<<< dimGrid, dimBlock >>>(va, vb, vd, MAX);
-  cudaDeviceSynchronize();
+  qlat_GPU_DeviceSynchronize();
 
   //for(Long index=0;index<MAX;index++ ){
   //  Cy buf[9];
@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
   //  //bE = eE;
   //  //bE *= lE; 
   //}
-  //cudaDeviceSynchronize();
+  //qlat_GPU_DeviceSynchronize();
 
   //qthread_for(index, MAX, {
   //  Cy buf[9];
@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
   //  bE = eE;
   //  //bE *= lE; 
   //}); 
-  //cudaMemcpy(vb, vbH, MAX*3*D*sizeof(Cy), cudaMemcpyHostToDevice);
+  //qlat_GPU_Memcpy(vb, vbH, MAX*3*D*sizeof(Cy), qlat_GPU_MemcpyHostToDevice);
 
   qacc_for(index, MAX, {
     //Cy buf[9];
@@ -146,9 +146,9 @@ int main(int argc, char* argv[])
     bE *= lE; 
   }
 
-  cudaMemcpy(vbH, vb , MAX*3*D*sizeof(Cy), cudaMemcpyDeviceToHost);
-  cudaMemcpy(vdH, vd , MAX*3*D*sizeof(Cy), cudaMemcpyDeviceToHost);
-  cudaMemcpy(veH, ve , MAX*3*D*sizeof(Cy), cudaMemcpyDeviceToHost);
+  qlat_GPU_Memcpy(vbH, vb , MAX*3*D*sizeof(Cy), qlat_GPU_MemcpyDeviceToHost);
+  qlat_GPU_Memcpy(vdH, vd , MAX*3*D*sizeof(Cy), qlat_GPU_MemcpyDeviceToHost);
+  qlat_GPU_Memcpy(veH, ve , MAX*3*D*sizeof(Cy), qlat_GPU_MemcpyDeviceToHost);
 
   std::vector<double >  diff(3);for(int i=0;i<diff.size();i++){diff[i] = 0;}
   for(Long index=0;index<MAX*3*D;index++ )
@@ -167,11 +167,11 @@ int main(int argc, char* argv[])
   //qvc.resize(0);
   //qvd.resize(0);
   //qve.resize(0);
-  cudaFree(va);
-  cudaFree(vb);
-  cudaFree(vc);
-  cudaFree(vd);
-  cudaFree(ve);
+  qlat_GPU_Free(va);
+  qlat_GPU_Free(vb);
+  qlat_GPU_Free(vc);
+  qlat_GPU_Free(vd);
+  qlat_GPU_Free(ve);
   free(vaH);
   free(vbH);
   free(vcH);

@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
   double length = (geo.local_volume()*pow(0.5,30))*12*sizeof(Complexq);
   size_t freeM = 0;size_t totalM = 0;
   #ifdef QLAT_USE_ACC
-  cudaMemGetInfo(&freeM,&totalM);
+  qlat_GPU_MemGetInfo(&freeM,&totalM);
   #endif
   double freeD = freeM*pow(0.5,30);double totalD = totalM*pow(0.5,30); 
   struct sysinfo s_info;
@@ -211,7 +211,7 @@ int main(int argc, char* argv[])
       random_EigenM(src);
       /////ei.prop_L(src, props, massL);
       //#ifdef QLAT_USE_ACC
-      //cudaMemcpy(  ei.stmp, &src[0]  , ei.stmp_size*sizeof(Complexq),cudaMemcpyDeviceToDevice);
+      //qlat_GPU_Memcpy(  ei.stmp, &src[0]  , ei.stmp_size*sizeof(Complexq),qlat_GPU_MemcpyDeviceToDevice);
       //#else
       //memcpy(  ei.stmp, &src[0]  , ei.stmp_size*sizeof(Complexq));
       //#endif

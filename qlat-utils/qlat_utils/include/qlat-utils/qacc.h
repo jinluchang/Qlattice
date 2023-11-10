@@ -9,11 +9,17 @@
 #define QLAT_USE_ACC
 #endif
 
+#ifdef __HIPCC__
+#define QLAT_USE_ACC
+#endif
+
 #ifdef __CUDA_ARCH__
 #define QLAT_IN_ACC
 #endif
 
 #endif
+
+#include <qlat-utils/qlat_GPU_translator.h>
 
 namespace qlat
 {  //
