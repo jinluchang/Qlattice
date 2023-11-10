@@ -37,12 +37,19 @@ struct QMAction {
   inline double V(const double x)
   {
     // Returns the potential evaluated at point x
-    if(x>v0) {
-      if(dV_phi4(x)>0) return 0;
+    if (x > v0) {
+      if (dV_phi4(x) > 0) {
+        return 0;
+      } else {
+        // I am not sure what to do here. Only try to fix warning messages from compilers. --LJ
+        qassert(false);
+        return 0;
+      }
+    } else {
+      return lmbd * (x * x - v0 * v0) * (x * x - v0 * v0) - alpha * x;
     }
-    else return lmbd*(x*x - v0*v0)*(x*x - v0*v0) - alpha*x;
   }
-  
+
   inline double dV_phi4(const double x)
   {
     // Returns the derivative of the potential with respect to x
@@ -52,10 +59,17 @@ struct QMAction {
   inline double dV(const double x)
   {
     double rtn = dV_phi4(x);
-    if(x>v0) {
-      if(rtn>0) return 0;
+    if (x > v0) {
+      if (rtn > 0) {
+        return 0;
+      } else {
+        // I am not sure what to do here. Only try to fix warning messages from compilers. --LJ
+        qassert(false);
+        return 0;
+      }
+    } else {
+      return rtn;
     }
-    else return rtn;
   }
 
   qacc double action_point(QMAction& qma, const Field<double>& f, Coordinate xl)
@@ -64,9 +78,9 @@ struct QMAction {
     // point (including the relavent neighbor interactions)
     // TIMER("QMAction.action_point");
     double psi = f.get_elem(xl);
-    xl[3]+=1;
-    double psi_eps = f.get_elem(xl);
-    xl[3]-=1;
+    // xl[3]+=1;
+    // double psi_eps = f.get_elem(xl);
+    // xl[3]-=1;
     return qma.V(psi);//(m_particle/2.0/qma.dt/qma.dt)*(psi_eps-psi)*(psi_eps-psi) + qma.V(psi);
   }
 
