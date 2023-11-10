@@ -1,7 +1,9 @@
 CHECK: geo.show() = Geometry([4, 4, 4, 8], 1)
 CHECK: 1.20000000000000E+01
-CHECK: gf xg=Coordinate([1, 2, 3, 7]) sig=3.38451679473450E-01-1.09341903059263E+00j
-CHECK: gf xg=Coordinate([1, 2, 3, 7]) m=1 sig=7.54338902143517E-01-1.14465965052302E+00j
+CHECK: gf xg=Coordinate([2, 3, 0, 6]) sig=1.97418413549541E+00-2.78027590300937E-01j
+CHECK: gf xg=(Coordinate([2, 3, 0, 6]), Coordinate([2, 0, 1, 4])) sig=-1.39275905099909E+00+1.19531663634017E+00j
+CHECK: gf xg=Coordinate([2, 3, 0, 6]) m=1 sig=9.82826887028789E-01-3.95497219625811E-02j
+CHECK: gf xg=(Coordinate([2, 3, 0, 6]), Coordinate([2, 0, 1, 4])) m=1 sig=-1.65144268088029E+00+1.25669468525698E-01j
 CHECK: 1.32086688810265E+03
 CHECK: t_dir=3 (default) qnorm(gf_sum_tslice)=1.53129372971588E+03
 CHECK: t_dir=0 n_points=4 multiplicity=4 psel_list=[[0, -1, -1, -1], [1, -1, -1, -1], [2, -1, -1, -1], [3, -1, -1, -1]]

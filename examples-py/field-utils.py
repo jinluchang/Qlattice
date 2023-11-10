@@ -47,17 +47,29 @@ q.displayln_info(gf.get_elems_xg(q.Coordinate([0, 0, 0, 0,]))[:])
 qnorm = q.qnorm(gf.get_elems_xg(q.Coordinate([0, 0, 0, 0,]))[:])
 q.displayln_info(f"CHECK: {qnorm:.14E}")
 
-xg_rand = rs.split("xg").c_rand_gen(total_site)
-val1 = gf.get_elems_xg(xg_rand)[:]
-q.displayln_info(f"gf xg={xg_rand} val1={val1}")
+xg1 = rs.split("xg1").c_rand_gen(total_site)
+xg2 = rs.split("xg2").c_rand_gen(total_site)
+
+val1 = gf.get_elems_xg(xg1)[:]
+q.displayln_info(f"gf xg={xg1} val1={val1}")
 sig1 = q.get_double_sig(val1, rs.split("sig1"))
-q.displayln_info(f"CHECK: gf xg={xg_rand} sig={sig1:.14E}")
+q.displayln_info(f"CHECK: gf xg={xg1} sig={sig1:.14E}")
+
+val12 = gf.get_elems_xg([ xg1, xg2, ])[:]
+q.displayln_info(f"gf xg={xg1, xg2} val12={val12}")
+sig12 = q.get_double_sig(val12, rs.split("sig12"))
+q.displayln_info(f"CHECK: gf xg={xg1, xg2} sig={sig12:.14E}")
 
 m = 1
-val2 = gf.get_elem_xg(xg_rand, m)[:]
-q.displayln_info(f"gf xg={xg_rand} val2={val2}")
+val2 = gf.get_elem_xg(xg1, m)[:]
+q.displayln_info(f"gf xg={xg1} val2={val2}")
 sig2 = q.get_double_sig(val2, rs.split("sig2"))
-q.displayln_info(f"CHECK: gf xg={xg_rand} m={m} sig={sig2:.14E}")
+q.displayln_info(f"CHECK: gf xg={xg1} m={m} sig={sig2:.14E}")
+
+val22 = gf.get_elem_xg([ xg1, xg2, ], m)[:]
+q.displayln_info(f"gf xg={xg1, xg2} val22={val22}")
+sig22 = q.get_double_sig(val22, rs.split("sig22"))
+q.displayln_info(f"CHECK: gf xg={xg1, xg2} m={m} sig={sig22:.14E}")
 
 gf_sum_initial = gf.glb_sum()
 
