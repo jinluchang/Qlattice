@@ -310,5 +310,3 @@ cdef extern from "qlat/compressed-eigen-io.h" namespace "qlat":
 
     bool check_compressed_eigen_vectors(const std_string& path) except +
     bool eigen_system_repartition(const Coordinate& new_size_node, const std_string& path, const std_string& new_path) except +
-
-
