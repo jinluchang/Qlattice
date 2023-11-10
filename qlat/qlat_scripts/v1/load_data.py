@@ -21,8 +21,8 @@ def get_prop_wsrc(prop_cache, inv_type, t_src, tag_snk_type):
     tslice = t_src
     def mk_tag(inv_acc):
         return f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; {tag_snk_type}"
-    tag = mk_tag(inv_acc = 1)
-    tag1 = mk_tag(inv_acc = 2)
+    tag = mk_tag(inv_acc=1)
+    tag1 = mk_tag(inv_acc=2)
     prob = prop_cache_prob[f"type={inv_type} ; accuracy=1 ; wsrc ; prob"]
     # level light_accuracy strange_accuracy
     # 0     inv_acc=1      inv_acc=1
@@ -72,9 +72,9 @@ def get_prop_psrc(prop_cache, inv_type, xg_src, tag_snk_type):
     xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
     def mk_tag(inv_acc):
         return f"xg={xg_str} ; type={inv_type} ; accuracy={inv_acc} ; {tag_snk_type}"
-    tag = mk_tag(inv_acc = 0)
-    tag1 = mk_tag(inv_acc = 1)
-    tag2 = mk_tag(inv_acc = 2)
+    tag = mk_tag(inv_acc=0)
+    tag1 = mk_tag(inv_acc=1)
+    tag2 = mk_tag(inv_acc=2)
     prob = prop_cache_prob[f"type={inv_type} ; accuracy=0 ; psrc ; prob"]
     # level light_accuracy strange_accuracy
     # 0     inv_acc=0      inv_acc=0/zero_prop
@@ -211,7 +211,7 @@ def mk_field_norm_sqrt(field):
         return 0
     return q.sqrt_field(q.qnorm_field(field))
 
-def mk_get_elem_norm(field, pos_dict = None):
+def mk_get_elem_norm(field, pos_dict=None):
     """
     return get function
     get(pos_snk) ==> ama_prop_norm_sqrt
@@ -656,10 +656,10 @@ def load_prop_rand_u1_fsel(job_tag, traj, flavor, *, psel, fsel, fselc):
         assert total_bytes > 0
         return s_prop
     for idx_rand_u1 in range(n_rand_u1_fsel):
-        sp0 = load(idx_rand_u1, inv_acc = 0)
+        sp0 = load(idx_rand_u1, inv_acc=0)
         assert sp0 is not None
-        sp1 = load(idx_rand_u1, inv_acc = 1)
-        sp2 = load(idx_rand_u1, inv_acc = 2)
+        sp1 = load(idx_rand_u1, inv_acc=1)
+        sp2 = load(idx_rand_u1, inv_acc=2)
         if sp2 is not None:
             assert sp1 is not None
             sp2 -= sp1
@@ -702,13 +702,13 @@ def load_gauge_original(job_tag, traj, *, gf):
 
 @q.timer_verbose
 def run_get_prop(job_tag, traj, *,
-                 get_gf = None,
+                 get_gf=None,
                  get_gt,
                  get_psel,
                  get_fsel,
                  get_wi,
-                 get_psel_smear = None,
-                 prop_types = None):
+                 get_psel_smear=None,
+                 prop_types=None):
     if get_gf is None:
         get_gf = lambda: None
     if get_psel_smear is None:
@@ -745,17 +745,17 @@ def run_get_prop(job_tag, traj, *,
         prop_cache["fselc_pos_dict"] = dict([ (pos.to_tuple(), i,) for i, pos in enumerate(fselc.to_psel_local()) ])
         #
         prop_load_dict = dict()
-        prop_load_dict["wsrc psel s"] = lambda: load_prop_wsrc_psel(job_tag, traj, "s", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
-        prop_load_dict["wsrc psel l"] = lambda: load_prop_wsrc_psel(job_tag, traj, "l", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
-        prop_load_dict["wsrc fsel s"] = lambda: load_prop_wsrc_fsel(job_tag, traj, "s", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
-        prop_load_dict["wsrc fsel l"] = lambda: load_prop_wsrc_fsel(job_tag, traj, "l", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
-        prop_load_dict["psrc psel s"] = lambda: load_prop_psrc_psel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
-        prop_load_dict["psrc psel l"] = lambda: load_prop_psrc_psel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
-        prop_load_dict["psrc fsel s"] = lambda: load_prop_psrc_fsel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
-        prop_load_dict["psrc fsel l"] = lambda: load_prop_psrc_fsel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
-        prop_load_dict["rand_u1 fsel c"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "c", psel = psel, fsel = fsel, fselc = fselc)
-        prop_load_dict["rand_u1 fsel s"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
-        prop_load_dict["rand_u1 fsel l"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
+        prop_load_dict["wsrc psel s"] = lambda: load_prop_wsrc_psel(job_tag, traj, "s", wi=wi, psel=psel, fsel=fsel, fselc=fselc, gt=gt)
+        prop_load_dict["wsrc psel l"] = lambda: load_prop_wsrc_psel(job_tag, traj, "l", wi=wi, psel=psel, fsel=fsel, fselc=fselc, gt=gt)
+        prop_load_dict["wsrc fsel s"] = lambda: load_prop_wsrc_fsel(job_tag, traj, "s", wi=wi, psel=psel, fsel=fsel, fselc=fselc, gt=gt)
+        prop_load_dict["wsrc fsel l"] = lambda: load_prop_wsrc_fsel(job_tag, traj, "l", wi=wi, psel=psel, fsel=fsel, fselc=fselc, gt=gt)
+        prop_load_dict["psrc psel s"] = lambda: load_prop_psrc_psel(job_tag, traj, "s", psel=psel, fsel=fsel, fselc=fselc)
+        prop_load_dict["psrc psel l"] = lambda: load_prop_psrc_psel(job_tag, traj, "l", psel=psel, fsel=fsel, fselc=fselc)
+        prop_load_dict["psrc fsel s"] = lambda: load_prop_psrc_fsel(job_tag, traj, "s", psel=psel, fsel=fsel, fselc=fselc)
+        prop_load_dict["psrc fsel l"] = lambda: load_prop_psrc_fsel(job_tag, traj, "l", psel=psel, fsel=fsel, fselc=fselc)
+        prop_load_dict["rand_u1 fsel c"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "c", psel=psel, fsel=fsel, fselc=fselc)
+        prop_load_dict["rand_u1 fsel s"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "s", psel=psel, fsel=fsel, fselc=fselc)
+        prop_load_dict["rand_u1 fsel l"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "l", psel=psel, fsel=fsel, fselc=fselc)
         for pt in prop_types:
             prop_load_dict[pt]()
         #
@@ -765,7 +765,7 @@ def run_get_prop(job_tag, traj, *,
         prop_norm_lookup_cache = q.mk_cache(f"prop_norm_lookup_cache", f"{job_tag}", f"{traj}")
         q.timer_display()
         q.timer_merge()
-        def get_prop(flavor, p_snk, p_src, *, is_norm_sqrt = False):
+        def get_prop(flavor, p_snk, p_src, *, is_norm_sqrt=False):
             if is_norm_sqrt:
                 return get_prop_norm_lookup_snk_src(prop_norm_lookup_cache, flavor, p_snk, p_src)
             elif flavor == "U":
