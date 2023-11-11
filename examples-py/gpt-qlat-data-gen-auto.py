@@ -1137,7 +1137,6 @@ def run_job(job_tag, traj):
     get_wi = run_wi(job_tag, traj)
     #
     def run_wsrc_full():
-        #
         get_eig = run_eig(job_tag, traj_gf, get_gf)
         # run_get_inverter(job_tag, traj, inv_type=0, get_gf=get_gf, get_gt=get_gt, get_eig=get_eig)
         run_prop_wsrc_full(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_wi=get_wi)
@@ -1145,6 +1144,8 @@ def run_job(job_tag, traj):
         get_eig = run_eig_strange(job_tag, traj_gf, get_gf)
         # run_get_inverter(job_tag, traj, inv_type=1, get_gf=get_gf, get_gt=get_gt, get_eig=get_eig)
         run_prop_wsrc_full(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_wi=get_wi)
+    #
+    run_wsrc_full()
     #
     get_psel = run_psel(job_tag, traj)
     get_fsel = run_fsel(job_tag, traj, get_psel)
