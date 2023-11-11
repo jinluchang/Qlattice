@@ -8,6 +8,8 @@
 ////#include "utils_low_rho.h"
 //#include "utils_construction.h"
 
+#define ComplexM qlat::ComplexT<double>
+
 int main(int argc, char* argv[])
 {
   using namespace qlat;
@@ -45,10 +47,10 @@ int main(int argc, char* argv[])
   LInt n = nvec;
   LInt w = in.nx*in.ny*in.nz*in.nt;
 
-  qlat::vector_gpu<Complexq > a ;a.resize( L * m * w);
-  qlat::vector_gpu<Complexq > b ;b.resize( L * w * n);
-  qlat::vector_gpu<Complexq > c0;c0.resize(L * m * n);
-  qlat::vector_gpu<Complexq > c1;c1.resize(L * m * n);
+  qlat::vector_gpu<ComplexM > a ;a.resize( L * m * w);
+  qlat::vector_gpu<ComplexM > b ;b.resize( L * w * n);
+  qlat::vector_gpu<ComplexM > c0;c0.resize(L * m * n);
+  qlat::vector_gpu<ComplexM > c1;c1.resize(L * m * n);
 
   print0("end memory allocation! \n");
   fflush_MPI();
@@ -62,15 +64,15 @@ int main(int argc, char* argv[])
   for(int i=0;i< in.debuga;i++){
     matrix_prod(a.data(), b.data(), c1.data(), m,n,w,L, Conj, false, modeGPU);fflush_MPI();
   }
-  Complexq res = c1.norm2();
+  ComplexM res = c1.norm2();
   print0("===result %.12e %.12e \n", res.real(), res.imag());
 
   if(test_pointers >= 1)
   {
     c1.set_zero();
-    qlat::vector_acc<Complexq* > aP;aP.resize(L);Complexq* A = a.data();
-    qlat::vector_acc<Complexq* > bP;bP.resize(L);Complexq* B = b.data();
-    qlat::vector_acc<Complexq* > cP;cP.resize(L);Complexq* C = c1.data();
+    qlat::vector_acc<ComplexM* > aP;aP.resize(L);ComplexM* A = a.data();
+    qlat::vector_acc<ComplexM* > bP;bP.resize(L);ComplexM* B = b.data();
+    qlat::vector_acc<ComplexM* > cP;cP.resize(L);ComplexM* C = c1.data();
     for(size_t i=0;i < L;i++){
       aP[i] = &A[i* m*w];
       bP[i] = &B[i* w*n];
@@ -79,15 +81,15 @@ int main(int argc, char* argv[])
     for(int i=0;i< in.debuga;i++){
       matrix_prodP(aP.data(), bP.data(), cP.data(), m,n,w, L, Conj, false, modeGPU);fflush_MPI();
     }
-    Complexq ra = c1.norm2();
+    ComplexM ra = c1.norm2();
     print0("===result %.12e %.12e, %.12e %.12e \n", ra.real(), ra.imag(), (ra-res).real(), (ra-res).imag());
   }
   if(test_pointers >= 2)
   {
     c1.set_zero();
-    qlat::vector_acc<Complexq* > aP;aP.resize(L);Complexq* A = a.data();
-    qlat::vector_acc<Complexq* > bP;bP.resize(L);Complexq* B = b.data();
-    qlat::vector_acc<Complexq* > cP;cP.resize(L);Complexq* C = c1.data();
+    qlat::vector_acc<ComplexM* > aP;aP.resize(L);ComplexM* A = a.data();
+    qlat::vector_acc<ComplexM* > bP;bP.resize(L);ComplexM* B = b.data();
+    qlat::vector_acc<ComplexM* > cP;cP.resize(L);ComplexM* C = c1.data();
     qGPU_for(i, Long(L), true, {
       aP[i] = &A[i* m*w];
       bP[i] = &B[i* w*n];
@@ -96,7 +98,7 @@ int main(int argc, char* argv[])
     for(int i=0;i< in.debuga;i++){
       matrix_prodP(aP.data(), bP.data(), cP.data(), m,n,w,L, Conj, false, modeGPU);fflush_MPI();
     }
-    Complexq ra = c1.norm2();
+    ComplexM ra = c1.norm2();
     print0("===result %.12e %.12e, %.12e %.12e \n", ra.real(), ra.imag(), (ra-res).real(), (ra-res).imag());
   }
 

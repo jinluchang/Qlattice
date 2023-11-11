@@ -1036,6 +1036,8 @@ struct smear_fun{
     redistribution_copy = 1;
   }
 
+  ////on CPU or Nvidia GPU, could avoid copy data to buffer
+  ////on GPU AMD hip, somehow necessary
   template<int bfac>
   void refresh_expanded_GPU(Ty* f, int GPU = 1)
   {
@@ -1049,8 +1051,11 @@ struct smear_fun{
     TIMER_FLOPS("refresh_expanded");
     timer.flops += total_bytes / 2;
 
-    //send_buffer.resizeL(plan.total_send_size*bfac);
-    //recv_buffer.resizeL(plan.total_recv_size*bfac);
+    #ifdef QLAT_USE_ACC
+    const Long Nvol = map_index_typeAL.size();
+    send_buffer.resizeL((pos_typeA[1] - pos_typeA[0])*bfac);
+    recv_buffer.resizeL((Nvol - pos_typeA[1])*bfac);
+    #endif
 
     ////copy extra send buf
     //copy_extra_index
@@ -1060,34 +1065,48 @@ struct smear_fun{
     //copy_extra_index0.resize(sortL.size());
     //copy_extra_index1.resize(sortL.size());
     //copy_extra_posL.resize(count_sum);
+
+    Ty* s_buf = &f[pos_typeA[0] * bfac];
+    Ty* r_buf = &f[pos_typeA[1] * bfac];
+
+    Ty* S_buf = s_buf;
+    Ty* R_buf = r_buf;
+
+    const Long shift = pos_typeA[0];
+    #ifdef QLAT_USE_ACC
+    Ty* s_copy = send_buffer.data();
+    cpy_GPU(send_buffer.data(), s_buf, send_buffer.size());
+
+    S_buf = send_buffer.data();
+    R_buf = recv_buffer.data();
+    #else
+    Ty* s_copy = &f[shift*bfac];
+    #endif
+
     const Long Ncopy = copy_extra_index0.size();
     if(Ncopy != 0)
     {TIMERA("smear Copy extra");
     qacc_for(isp, Ncopy, {
-      const Long send   = copy_extra_index0[isp];
+      const Long send   = copy_extra_index0[isp] - shift;
       const Long count0 = copy_extra_index1[isp];
       const Long count1 = copy_extra_index1[isp + 1];
       const Long loop = count1 - count0;
       const Long* cP  = &copy_extra_posL[count0];
       QLAT_ALIGN(QLAT_ALIGNED_BYTES) Ty buf[bfac];
-      for(Long bi=0;bi<bfac;bi++){buf[bi] = f[send*bfac + bi];}
+      for(Long bi=0;bi<bfac;bi++){buf[bi] = s_copy[send*bfac + bi];}
 
       //////Ty buf = f[send*bfac + bi];
       for(Long j=0;j<loop;j++)
       for(Long bi=0;bi<bfac;bi++)
       {
         ////Qassert(cP[j] >= pos_typeA[0] and cP[j] < pos_typeA[1]);
-        f[cP[j]*bfac + bi] = buf[bi];
+        s_copy[(cP[j]-shift)*bfac + bi] = buf[bi];
       }
     });
     }
 
-
     //cpy_data_from_group(send_buffer.data(), f , mapvq_send[0].data(), mapvq_send[1].data(), mapvq_send[2].data(), mapvq_send[0].size(), bfac, GPU);
-    Ty* s_buf = &f[pos_typeA[0] * bfac];
-    Ty* r_buf = &f[pos_typeA[1] * bfac];
     {
-      //sync_node();
       TIMER_FLOPS("refresh_expanded-comm");
       timer.flops +=
           (plan.total_recv_size + plan.total_send_size) * bfac * sizeof(Ty) / 2;
@@ -1097,25 +1116,33 @@ struct smear_fun{
         for (size_t i = 0; i < plan.recv_msg_infos.size(); ++i) {
           const CommMsgInfo& cmi = plan.recv_msg_infos[i];
           Long count = cmi.size * bfac * sizeof(Ty) / sizeof(double);
+          //print0("==recv comm %ld\n", count);
           //MPI_Irecv(&recv_buffer[cmi.buffer_idx*bfac], count, MPI_DOUBLE,
           //          cmi.id_node, mpi_tag, get_comm(), &recv_reqs[i]);
 
-          MPI_Irecv(&r_buf[cmi.buffer_idx*bfac], count, MPI_DOUBLE,
+          MPI_Irecv(&R_buf[cmi.buffer_idx*bfac], count, MPI_DOUBLE,
                     cmi.id_node, mpi_tag, get_comm(), &recv_reqs[i]);
         }
         for (size_t i = 0; i < plan.send_msg_infos.size(); ++i) {
           const CommMsgInfo& cmi = plan.send_msg_infos[i];
           Long count = cmi.size * bfac * sizeof(Ty) / sizeof(double);
+          //print0("==send comm %ld\n", count);
           //MPI_Isend(&send_buffer[cmi.buffer_idx*bfac], count, MPI_DOUBLE,
           //          cmi.id_node, mpi_tag, get_comm(), &send_reqs[i]);
 
-          MPI_Isend(&s_buf[cmi.buffer_idx*bfac], count, MPI_DOUBLE,
+          MPI_Isend(&S_buf[cmi.buffer_idx*bfac], count, MPI_DOUBLE,
                     cmi.id_node, mpi_tag, get_comm(), &send_reqs[i]);
         }
       }
       MPI_Waitall(recv_reqs.size(), recv_reqs.data(), MPI_STATUS_IGNORE);
       MPI_Waitall(send_reqs.size(), send_reqs.data(), MPI_STATUS_IGNORE);
     }
+
+    #ifdef QLAT_USE_ACC
+    cpy_GPU(r_buf, recv_buffer.data(), recv_buffer.size());
+    #endif
+
+    ////sync_node();
     //cpy_data_from_group(f, recv_buffer.data(), mapvq_recv[0].data(), mapvq_recv[1].data(), mapvq_recv[2].data(), mapvq_recv[0].size(), bfac, GPU);
   }
 
@@ -2165,4 +2192,5 @@ QLAT_EXTERN template void prop_smear_qlat_convension<Real, Real>(
 
 }
 #endif
+
 
