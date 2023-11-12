@@ -389,7 +389,7 @@ bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2)
 bool is_containing(const FieldSelection& fsel, const FieldSelection& fsel_small)
 {
   TIMER("is_containing(fsel,fsel_small)");
-  long n_missing_points = 0;
+  Long n_missing_points = 0;
   qthread_for(idx, fsel_small.indices.size(), {
     const Long index = fsel_small.indices[idx];
     const int64_t rank = fsel.f_rank.get_elem(index);
@@ -409,7 +409,7 @@ bool is_containing(const FieldSelection& fsel, const PointsSelection& psel)
   TIMER("is_containing(fsel,psel)");
   const Geometry& geo = fsel.f_rank.geo();
   qassert(geo.is_only_local);
-  long n_missing_points = 0;
+  Long n_missing_points = 0;
   qthread_for(i, (Long)psel.size(), {
     const Coordinate xl = geo.coordinate_l_from_g(psel[i]);
     if (geo.is_local(xl)) {
