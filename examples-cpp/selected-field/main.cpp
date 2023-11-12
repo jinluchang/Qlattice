@@ -305,7 +305,7 @@ inline void test_selected_points(const std::string& tag, const Long n_points)
   Geometry geo;
   geo.init(total_site, 1);
   const RngState rs = RngState("test_selected_points").split(tag);
-  PointsSelection psel;
+  std::vector<Coordinate> psel_std_vec;
   {
     const RngState rs_psel = rs.split("psel");
     for (int i = 0; i < n_points; ++i) {
@@ -315,9 +315,10 @@ inline void test_selected_points(const std::string& tag, const Long n_points)
         xgr[m] = rand_gen(rsi);
       }
       const Coordinate xg = mod(xgr, total_site);
-      psel.push_back(xg);
+      psel_std_vec.push_back(xg);
     }
   }
+  PointsSelection psel(psel_std_vec);
   qmkdir_info("huge-data");
   qmkdir_info("huge-data/" + tag);
   save_point_selection_info(psel, "huge-data/" + tag + "/point-selection.txt");

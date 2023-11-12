@@ -160,6 +160,9 @@ cdef class PointsSelection:
         psel_new.xx = cc.intersect(fsel.xx, self.xx)
         return psel_new
 
+    def crc32(self):
+        return 0
+
 ### -------------------------------------------------------------------
 
 cdef class FieldSelection:
@@ -277,10 +280,12 @@ cdef class FieldSelection:
         return psel
 
     def save(self, const cc.std_string& path):
-        return cc.write_field_selection(self.xx, path)
+        cdef cc.Long total_bytes = cc.write_field_selection(self.xx, path)
+        return total_bytes
 
     def load(self, const cc.std_string& path):
-        return cc.read_field_selection(self.xx, path)
+        cdef cc.Long total_bytes = cc.read_field_selection(self.xx, path)
+        return total_bytes
 
     def geo(self):
         cdef Geometry geo = Geometry()

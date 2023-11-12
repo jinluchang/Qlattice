@@ -249,6 +249,10 @@ void set_selected_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
     return;
   }
   TIMER("set_selected_field(sf,sf0,fsel,fsel0)");
+  if (&fsel == &fsel0) {
+    sf = sf0;
+    return;
+  }
   qassert(not sf0.geo.null());
   qassert(not fsel.f_local_idx.geo.null());
   qassert(not fsel0.f_local_idx.geo.null());

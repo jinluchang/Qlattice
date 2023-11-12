@@ -237,6 +237,8 @@ cdef extern from "qlat/selected-field-io.h" namespace "qlat":
                                 const PointsSelection& psel) except +
     void set_selected_points[t](SelectedPoints[t]& sp, const SelectedField[t] sf,
                                 const PointsSelection& psel, const FieldSelection& fsel) except +
+    void set_selected_points[t](SelectedPoints[t]& sp, const SelectedPoints[t] sp0,
+                                const PointsSelection& psel, const PointsSelection& psel0) except +
     void set_field_selected[t](Field[t]& f, const SelectedField[t]& sf,
                                const FieldSelection& fsel) except +
     void set_field_selected[t](Field[t]& f, const SelectedPoints[t]& sp,

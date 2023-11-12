@@ -785,6 +785,8 @@ inline GaugeField& gf_from_field(Field<ColorMatrix>& f)
 // --------------------
 
 using PointsSelection = std::vector<Coordinate>;
+// Cannot be qlat::vector or qlat::vector_acc because we use the copy
+// constructor a lot.
 
 // --------------------
 

@@ -41,11 +41,7 @@ from .field_type_dict import selected_points_type_dict
 
 cdef void set_field_sp_sp_{{name}}(SelectedPoints{{name}} self, SelectedPoints{{name}} other):
     # two psel must be the same object
-    if self.psel is other.psel:
-        cc.assign_direct(self.xx, other.xx)
-        # self.xx = other.xx
-    else:
-        raise Exception("SelectedPoints{{name}} @= psel mismatch")
+    cc.set_selected_points(self.xx, other.xx, self.psel.xx, other.psel.xx)
 
 cdef void set_field_sp_sf_{{name}}(SelectedPoints{{name}} self, SelectedField{{name}} other):
     # only assign available points

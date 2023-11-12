@@ -46,11 +46,7 @@ cdef void set_field_sf_sp_{{name}}(SelectedField{{name}} self, SelectedPoints{{n
 
 cdef void set_field_sf_sf_{{name}}(SelectedField{{name}} self, SelectedField{{name}} other):
     # two fsel do not need to match
-    if self.fsel is other.fsel:
-        cc.assign_direct(self.xx, other.xx)
-        # self.xx = other.xx
-    else:
-        cc.set_selected_field(self.xx, other.xx, self.fsel.xx, other.fsel.xx)
+    cc.set_selected_field(self.xx, other.xx, self.fsel.xx, other.fsel.xx)
 
 cdef void set_field_sf_f_{{name}}(SelectedField{{name}} self, Field{{name}} other):
     cc.set_selected_field(self.xx, other.xx, self.fsel.xx)

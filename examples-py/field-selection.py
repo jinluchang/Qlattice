@@ -30,28 +30,20 @@ fsel.set_rand_psel(geo.total_site(), n_per_tslice, rs.split("fsel"))
 
 prob = n_per_tslice * total_site[3] / geo.total_volume()
 
-q.displayln_info("CHECK: fsel info =", fsel.geo().show(), n_per_tslice, f"{prob:.14E}")
-
 total_n_elems = q.glb_sum(fsel.n_elems())
-q.displayln_info(f"CHECK: fsel total_n_elems = {total_n_elems}")
+q.displayln_info(f"CHECK: fsel info = {fsel.geo().show()} total_n_elems = {total_n_elems}")
 
 fsel.save("results/fsel.field")
-
-fsel = q.FieldSelection()
 fsel.load("results/fsel.field")
 fsel.save("results/fsel-1.field")
 
-q.displayln_info("CHECK: fsel info =", fsel.geo().show(), n_per_tslice, f"{prob:.14E}")
-
 total_n_elems = q.glb_sum(fsel.n_elems())
-q.displayln_info(f"CHECK: fsel total_n_elems = {total_n_elems}")
+q.displayln_info(f"CHECK: fsel info = {fsel.geo().show()} total_n_elems = {total_n_elems}")
 
 fsel.add_psel(psel)
 
-q.displayln_info("CHECK: fsel info =", fsel.geo().show(), n_per_tslice, f"{prob:.14E}")
-
 total_n_elems = q.glb_sum(fsel.n_elems())
-q.displayln_info(f"CHECK: fsel total_n_elems = {total_n_elems}")
+q.displayln_info(f"CHECK: fsel info = {fsel.geo().show()} total_n_elems = {total_n_elems}")
 
 psel = q.PointsSelection()
 psel.set_rand(total_site, 32, rs.split("psel"))
@@ -68,8 +60,26 @@ xg_arr_double = np.array(psel1.xg_arr(), dtype=float)
 sig = q.get_double_sig(xg_arr_double, rs.split("sig"))
 q.displayln_info(f"CHECK: psel1.xg_arr sig = {sig:.10E}")
 
-fsel_psel = q.FieldSelection()
-fsel_psel.set_empty(geo)
+fsel2 = q.FieldSelection()
+fsel2.set_empty(geo)
+fsel2.set_rand(total_site, n_per_tslice, rs.split("fsel2"))
+
+total_n_elems = q.glb_sum(fsel2.n_elems())
+q.displayln_info(f"CHECK: fsel2 info = {fsel2.geo().show()} total_n_elems = {total_n_elems}")
+
+fsel3 = fsel2.copy()
+
+fsel3.add_fsel(fsel)
+total_n_elems = q.glb_sum(fsel3.n_elems())
+q.displayln_info(f"CHECK: fsel3 info = {fsel3.geo().show()} total_n_elems = {total_n_elems}")
+
+fsel4 = fsel2.intersect(fsel)
+total_n_elems = q.glb_sum(fsel4.n_elems())
+q.displayln_info(f"CHECK: fsel4 info = {fsel4.geo().show()} total_n_elems = {total_n_elems}")
+
+fsel5 = fsel.intersect(fsel2)
+total_n_elems = q.glb_sum(fsel5.n_elems())
+q.displayln_info(f"CHECK: fsel5 info = {fsel4.geo().show()} total_n_elems = {total_n_elems}")
 
 if q.get_id_node() == 0:
     q.displayln_info(os.listdir("results"))

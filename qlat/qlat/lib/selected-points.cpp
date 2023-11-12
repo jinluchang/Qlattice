@@ -64,7 +64,7 @@ PointsSelection mk_random_point_selection(const Coordinate& total_site,
       }
     }
   }
-  if (psel.back() != Coordinate(-1, -1, -1, -1)) {
+  if (psel[num - 1] != Coordinate(-1, -1, -1, -1)) {
     return psel;
   } else {
     displayln_info(
@@ -129,6 +129,14 @@ PointsSelection load_point_selection_info(const std::string& path)
   }
   bcast(psel);
   return psel;
+}
+
+crc32_t crc32_par(const PointsSelection& psel)
+{
+  PointsSelection psel_ec;
+  psel_ec = psel;
+  to_from_big_endian(get_data(psel_ec), true);
+  return crc32_par(get_data(psel_ec));
 }
 
 void set_sqrt_field(SelectedPoints<RealD>& sp, const SelectedPoints<RealD>& sp1)

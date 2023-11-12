@@ -521,6 +521,40 @@ qacc void qswap(vector<M>& v1, vector<M>& v2)
 // --------------------
 
 template <class M>
+qacc bool operator==(const vector<M>& v1, const vector<M>& v2)
+{
+  if (v1.size() != v2.size()) {
+    return false;
+  }
+  const int cmp = std::memcmp(v1.data(), v2.data(), v1.size() * sizeof(M));
+  return cmp == 0;
+}
+
+template <class M>
+qacc bool operator==(const vector_acc<M>& v1, const vector_acc<M>& v2)
+{
+  if (v1.size() != v2.size()) {
+    return false;
+  }
+  const int cmp = std::memcmp(v1.data(), v2.data(), v1.size() * sizeof(M));
+  return cmp == 0;
+}
+
+template <class M>
+qacc bool operator!=(const vector<M>& v1, const vector<M>& v2)
+{
+  return not(v1 == v2);
+}
+
+template <class M>
+qacc bool operator!=(const vector_acc<M>& v1, const vector_acc<M>& v2)
+{
+  return not(v1 == v2);
+}
+
+// --------------------
+
+template <class M>
 struct IsDataVectorType<vector<M>> {
   using DataType = M;
   using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;

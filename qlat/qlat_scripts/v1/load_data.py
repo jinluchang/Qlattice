@@ -498,10 +498,13 @@ def load_prop_wsrc_fsel(job_tag, traj, flavor, *, wi, psel, fsel, gt):
         #
         # check psel psnk prop
         if f"{tag} ; wsrc ; psel" in cache_psel:
-            sp_prop_diff = q.PselProp(psel)
-            sp_prop_diff @= sc_prop
-            sp_prop_diff -= cache_psel[f"{tag} ; wsrc ; psel"]
-            assert sp_prop_diff.qnorm() <= 1e-14 * cache_psel[f"{tag} ; wsrc ; psel"].qnorm()
+            psel_common = psel.intersect(fsel)
+            sp_prop_fsel = q.PselProp(psel_common)
+            sp_prop_fsel @= sc_prop
+            sp_prop_psel = q.PselProp(psel_common)
+            sp_prop_psel @= cache_psel[f"{tag} ; wsrc ; psel"]
+            sp_prop_psel -= sp_prop_fsel
+            assert sp_prop_psel.qnorm() <= 1e-14 * sp_prop_fsel.qnorm()
         # increase count
         count[inv_acc] += 1
     sfr.close()
@@ -603,10 +606,13 @@ def load_prop_psrc_fsel(job_tag, traj, flavor, *, psel, fsel):
         cache_fsel[f"{tag} ; psrc ; fsel"] = sc_prop
         # check psel psnk prop
         if f"{tag} ; psrc ; psel" in cache_psel:
-            sp_prop_diff = q.PselProp(psel)
-            sp_prop_diff @= sc_prop
-            sp_prop_diff -= cache_psel[f"{tag} ; psrc ; psel"]
-            assert sp_prop_diff.qnorm() <= 1e-14 * cache_psel[f"{tag} ; psrc ; psel"].qnorm()
+            psel_common = psel.intersect(fsel)
+            sp_prop_fsel = q.PselProp(psel_common)
+            sp_prop_fsel @= sc_prop
+            sp_prop_psel = q.PselProp(psel_common)
+            sp_prop_psel @= cache_psel[f"{tag} ; psrc ; psel"]
+            sp_prop_psel -= sp_prop_fsel
+            assert sp_prop_psel.qnorm() <= 1e-14 * sp_prop_fsel.qnorm()
         count[inv_acc] += 1
     sfr.close()
     check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=0 ; psrc ; prob", count[0] / len(psel))
