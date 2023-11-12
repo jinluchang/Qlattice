@@ -14,7 +14,8 @@ q.displayln_info("CHECK: geo.show() =", geo.show())
 
 psel = q.PointsSelection([[0,0,0,0], [0,1,2,0]])
 n_per_tslice = 16
-fsel = q.FieldSelection(geo.total_site(), n_per_tslice, rs.split("fsel"))
+fsel = q.FieldSelection()
+fsel.set_rand(geo.total_site(), n_per_tslice, rs.split("fsel"))
 
 fselc = fsel.copy()
 fselc.add_psel(psel)

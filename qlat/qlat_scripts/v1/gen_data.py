@@ -29,7 +29,7 @@ def compute_prop_full_1(inv, src, *, tag, sfw):
 
 @q.timer
 def compute_prop_wsrc_full(gf, gt, tslice, job_tag, inv_type, inv_acc, *,
-        idx, sfw, path_sp, psel, fsel, fselc, eig, finished_tags):
+                           idx, sfw, eig, finished_tags):
     tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
     if tag in finished_tags:
         return None
@@ -55,7 +55,7 @@ def compute_prop_wsrc_full_all(job_tag, traj, *,
             idx, tslice, inv_type_p, inv_acc_p=p
             if inv_type_p == inv_type and inv_acc_p == inv_acc:
                 compute_prop_wsrc_full(gf, gt, tslice, job_tag, inv_type, inv_acc,
-                                       idx=idx, sfw=sfw, path_sp=path_sp, eig=eig,
+                                       idx=idx, sfw=sfw, eig=eig,
                                        finished_tags=finished_tags)
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
@@ -85,11 +85,11 @@ def run_prop_wsrc_full(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_
 # -----------------------------------------------------------------------------
 
 @q.timer_verbose
-def compute_prop_1(inv, src, *, tag, sfw, path_sp, psel, fsel, fselc):
+def compute_prop_1(inv, src, *, tag, sfw, path_sp, psel, fsel):
     fn_sp = os.path.join(path_sp, f"{tag}.lat")
     fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
     sol = inv * src
-    s_sol = q.SelProp(fselc)
+    s_sol = q.SelProp(fsel)
     s_sol @= sol
     s_sol.save_float_from_double(sfw, tag)
     sp_sol = q.PselProp(psel)
@@ -102,7 +102,7 @@ def compute_prop_1(inv, src, *, tag, sfw, path_sp, psel, fsel, fselc):
 
 @q.timer
 def compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc, *,
-        idx, sfw, path_sp, psel, fsel, fselc, eig, finished_tags):
+        idx, sfw, path_sp, psel, fsel, eig, finished_tags):
     tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
     if tag in finished_tags:
         return None
@@ -114,11 +114,11 @@ def compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc, *,
     geo = q.Geometry(total_site, 1)
     src = q.mk_wall_src(geo, tslice)
     prop = compute_prop_1(inv, src, tag=tag, sfw=sfw, path_sp=path_sp,
-                          psel=psel, fsel=fsel, fselc=fselc)
+                          psel=psel, fsel=fsel)
 
 @q.timer_verbose
 def compute_prop_wsrc_all(job_tag, traj, *,
-                          inv_type, gf, gt, wi, psel, fsel, fselc, eig):
+                          inv_type, gf, gt, wi, psel, fsel, eig):
     inv_type_names = [ "light", "strange", ]
     inv_type_name = inv_type_names[inv_type]
     path_s = f"{job_tag}/prop-wsrc-{inv_type_name}/traj-{traj}"
@@ -131,7 +131,7 @@ def compute_prop_wsrc_all(job_tag, traj, *,
             if inv_type_p == inv_type and inv_acc_p == inv_acc:
                 compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc,
                         idx=idx, sfw=sfw, path_sp=path_sp,
-                        psel=psel, fsel=fsel, fselc=fselc, eig=eig,
+                        psel=psel, fsel=fsel, eig=eig,
                         finished_tags=finished_tags)
     sfw.close()
     q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint.txt")))
@@ -156,22 +156,23 @@ def run_prop_wsrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel,
         gf = get_gf()
         gt = get_gt()
         eig = get_eig()
-        fsel, fselc = get_fsel()
         psel = get_psel()
+        fsel = get_fsel()
+        assert fsel.is_containing(psel)
         wi = get_wi()
         compute_prop_wsrc_all(job_tag, traj,
                               inv_type=inv_type, gf=gf, gt=gt, wi=wi,
-                              psel=psel, fsel=fsel, fselc=fselc, eig=eig)
+                              psel=psel, fsel=fsel, eig=eig)
         q.release_lock()
 
 # -----------------------------------------------------------------------------
 
 @q.timer_verbose
-def compute_prop_2(inv, src, *, tag, sfw, path_sp, psel, fsel, fselc, gt):
+def compute_prop_2(inv, src, *, tag, sfw, path_sp, psel, fsel, gt):
     fn_sp = os.path.join(path_sp, f"{tag}.lat")
     fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
     sol = inv * src
-    s_sol = q.SelProp(fselc)
+    s_sol = q.SelProp(fsel)
     s_sol @= sol
     s_sol.save_float_from_double(sfw, tag)
     sp_sol = q.PselProp(psel)
@@ -185,7 +186,7 @@ def compute_prop_2(inv, src, *, tag, sfw, path_sp, psel, fsel, fselc, gt):
 
 @q.timer
 def compute_prop_psrc(job_tag, xg_src, inv_type, inv_acc, *,
-        idx, gf, gt, sfw, path_sp, psel, fsel, fselc, eig, finished_tags):
+        idx, gf, gt, sfw, path_sp, psel, fsel, eig, finished_tags):
     xg = xg_src
     xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
     tag = f"xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
@@ -199,11 +200,11 @@ def compute_prop_psrc(job_tag, xg_src, inv_type, inv_acc, *,
     geo = q.Geometry(total_site, 1)
     src = q.mk_point_src(geo, xg_src)
     prop = compute_prop_2(inv, src, tag=tag, sfw=sfw, path_sp=path_sp,
-                          psel=psel, fsel=fsel, fselc=fselc, gt=gt)
+                          psel=psel, fsel=fsel, gt=gt)
 
 @q.timer_verbose
 def compute_prop_psrc_all(job_tag, traj, *,
-                          inv_type, gf, gt, psel, fsel, fselc, eig):
+                          inv_type, gf, gt, psel, fsel, eig):
     inv_type_names = [ "light", "strange", ]
     inv_type_name = inv_type_names[inv_type]
     path_s = f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}"
@@ -213,7 +214,7 @@ def compute_prop_psrc_all(job_tag, traj, *,
     def comp(idx, xg_src, inv_acc):
         compute_prop_psrc(job_tag, xg_src, inv_type, inv_acc,
                 idx=idx, gf=gf, gt=gt, sfw=sfw, path_sp=path_sp,
-                psel=psel, fsel=fsel, fselc=fselc,
+                psel=psel, fsel=fsel,
                 eig=eig, finished_tags=finished_tags)
     prob1 = get_param(job_tag, "prob_acc_1_psrc")
     prob2 = get_param(job_tag, "prob_acc_2_psrc")
@@ -248,11 +249,12 @@ def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel,
         gf = get_gf()
         gt = get_gt()
         eig = get_eig()
-        fsel, fselc = get_fsel()
         psel = get_psel()
+        fsel = get_fsel()
+        assert fsel.is_containing(psel)
         compute_prop_psrc_all(job_tag, traj,
                               inv_type=inv_type, gf=gf, gt=gt,
-                              psel=psel, fsel=fsel, fselc=fselc, eig=eig)
+                              psel=psel, fsel=fsel, eig=eig)
         q.release_lock()
 
 # -----------------------------------------------------------------------------
@@ -321,7 +323,7 @@ def run_prop_rand_u1(job_tag, traj, *, inv_type, get_gf, get_fsel, get_eig=None)
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-rand-u1-{inv_type_name}"):
         gf = get_gf()
-        fsel, fselc = get_fsel()
+        fsel = get_fsel()
         eig = get_eig()
         compute_prop_rand_u1(
                 job_tag=job_tag, traj=traj,
@@ -335,12 +337,12 @@ def run_prop_rand_u1(job_tag, traj, *, inv_type, get_gf, get_fsel, get_eig=None)
 # -----------------------------------------------------------------------------
 
 @q.timer_verbose
-def compute_prop_3(inv, src_smear, *, tag, sfw, path_sp, psel, fsel, fselc, gt, psel_smear, smear):
+def compute_prop_3(inv, src_smear, *, tag, sfw, path_sp, psel, fsel, gt, psel_smear, smear):
     fn_sp = os.path.join(path_sp, f"{tag}.lat")
     fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
     fn_sps = os.path.join(path_sp, f"{tag} ; smear-snk.lat")
     sol = inv * src_smear
-    s_sol = q.SelProp(fselc)
+    s_sol = q.SelProp(fsel)
     s_sol @= sol
     s_sol.save_float_from_double(sfw, tag)
     sp_sol = q.PselProp(psel)
@@ -358,7 +360,7 @@ def compute_prop_3(inv, src_smear, *, tag, sfw, path_sp, psel, fsel, fselc, gt, 
 
 @q.timer
 def compute_prop_smear(job_tag, xg_src, inv_type, inv_acc, *,
-        idx, gf, gt, sfw, path_sp, psel, fsel, fselc, psel_smear, gf_ape, eig, finished_tags):
+        idx, gf, gt, sfw, path_sp, psel, fsel, psel_smear, gf_ape, eig, finished_tags):
     xg = xg_src
     xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
     tag = f"smear ; xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
@@ -376,12 +378,12 @@ def compute_prop_smear(job_tag, xg_src, inv_type, inv_acc, *,
         return q.prop_smear(src, gf_ape, coef, step)
     src = smear(q.mk_point_src(geo, xg_src))
     prop = compute_prop_3(inv, src, tag=tag, sfw=sfw, path_sp=path_sp,
-                          psel=psel, fsel=fsel, fselc=fselc, gt=gt,
+                          psel=psel, fsel=fsel, gt=gt,
                           psel_smear=psel_smear, smear=smear)
 
 @q.timer_verbose
 def compute_prop_smear_all(job_tag, traj, *,
-        inv_type, gf, gt, psel, fsel, fselc, psel_smear, gf_ape, eig,
+        inv_type, gf, gt, psel, fsel, psel_smear, gf_ape, eig,
         ):
     inv_type_names = [ "light", "strange", ]
     inv_type_name = inv_type_names[inv_type]
@@ -392,7 +394,7 @@ def compute_prop_smear_all(job_tag, traj, *,
     def comp(idx, xg_src, inv_acc):
         compute_prop_smear(job_tag, xg_src, inv_type, inv_acc,
                 idx=idx, gf=gf, gt=gt, sfw=sfw, path_sp=path_sp,
-                psel=psel, fsel=fsel, fselc=fselc,
+                psel=psel, fsel=fsel,
                 psel_smear=psel_smear, gf_ape=gf_ape,
                 eig=eig, finished_tags=finished_tags)
     prob1 = get_param(job_tag, "prob_acc_1_smear")
@@ -429,12 +431,13 @@ def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_
         gt = get_gt()
         eig = get_eig()
         psel = get_psel()
-        fsel, fselc = get_fsel()
+        fsel = get_fsel()
+        assert fsel.is_containing(psel)
         psel_smear = get_psel_smear()
         gf_ape = get_gf_ape()
         compute_prop_smear_all(job_tag, traj,
                 inv_type=inv_type, gf=gf, gf_ape=gf_ape, gt=gt,
-                psel=psel, fsel=fsel, fselc=fselc, eig=eig, psel_smear=psel_smear)
+                psel=psel, fsel=fsel, eig=eig, psel_smear=psel_smear)
         q.release_lock()
 
 # -----------------------------------------------------------------------------

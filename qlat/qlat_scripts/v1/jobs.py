@@ -211,7 +211,7 @@ def run_wi(job_tag, traj):
     path_light = get_load_path(tfn_l)
     if path_light is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-wi"):
-            wi_light = mk_rand_wall_src_info(job_tag, traj, inv_type = 0)
+            wi_light = mk_rand_wall_src_info(job_tag, traj, inv_type=0)
             save_wall_src_info(wi_light, get_save_path(tfn_l));
             q.release_lock()
         else:
@@ -219,7 +219,7 @@ def run_wi(job_tag, traj):
     path_strange = get_load_path(tfn_s)
     if path_strange is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-wi"):
-            wi_strange = mk_rand_wall_src_info(job_tag, traj, inv_type = 1)
+            wi_strange = mk_rand_wall_src_info(job_tag, traj, inv_type=1)
             save_wall_src_info(wi_strange, get_save_path(tfn_s));
             q.release_lock()
         else:
@@ -244,7 +244,7 @@ def mk_rand_psel(job_tag, traj):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     n_points = get_n_points_psel(job_tag)
     psel = q.PointsSelection()
-    psel.set_rand(rs, total_site, n_points)
+    psel.set_rand(total_site, n_points, rs)
     return psel
 
 @q.timer_verbose
@@ -399,19 +399,11 @@ def mk_rand_fsel(job_tag, traj, n_per_tslice):
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_fsel")
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     fsel = q.FieldSelection()
-    fsel.set_rand(rs, total_site, n_per_tslice)
+    fsel.set_rand(total_site, n_per_tslice, rs)
     return fsel
 
-@q.timer
-def mk_fselc(fsel, psel):
-    fselc = fsel.copy()
-    fselc.add_psel(psel)
-    return fselc
-
 @q.timer_verbose
-def run_fsel(job_tag, traj, get_psel):
-    if get_psel is None:
-        return None
+def run_fsel(job_tag, traj):
     tfn = f"{job_tag}/field-selection/traj-{traj}.field"
     path_fsel = get_load_path(tfn)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
@@ -420,9 +412,8 @@ def run_fsel(job_tag, traj, get_psel):
         if q.obtain_lock(f"locks/{job_tag}-{traj}-fsel"):
             fsel = mk_rand_fsel(job_tag, traj, n_per_tslice)
             fsel.save(get_save_path(tfn))
-            fselc = mk_fselc(fsel, get_psel())
             q.release_lock()
-            return lambda : (fsel, fselc,)
+            return lambda : fsel
         else:
             return None
     @q.timer_verbose
@@ -432,9 +423,31 @@ def run_fsel(job_tag, traj, get_psel):
         fsel = q.FieldSelection()
         total_size = fsel.load(path_fsel)
         assert total_size > 0
-        fselc = mk_fselc(fsel, get_psel())
-        return fsel, fselc
+        return fsel
     return q.lazy_call(load_fsel)
+
+# ----------
+
+@q.timer
+def mk_fselc(fsel, psel):
+    fname = q.get_fname()
+    fselc = fsel.copy()
+    if not fsel.is_containing(psel):
+        q.displayln_info(f"WARNING: {fname}: fsel does not containing psel.")
+        fselc.add_psel(psel)
+    return fselc
+
+@q.timer_verbose
+def run_fselc(job_tag, traj, get_fsel, get_psel):
+    if get_fsel is None:
+        return None
+    if get_psel is None:
+        return None
+    @q.timer_verbose
+    def get():
+        fselc = mk_fselc(get_fsel(), get_psel())
+        return fselc
+    return q.lazy_call(get)
 
 # ----------
 
@@ -443,7 +456,7 @@ def mk_rand_fsel_smear(job_tag, traj, n_per_tslice_smear):
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_fsel_smear")
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     fsel = q.FieldSelection()
-    fsel.set_rand(rs, total_site, n_per_tslice_smear)
+    fsel.set_rand(total_site, n_per_tslice_smear, rs)
     return fsel
 
 @q.timer_verbose
@@ -540,7 +553,7 @@ def run_eig(job_tag, traj, get_gf):
     get_eig = ru.load_eig_lazy(get_load_path(f"{job_tag}/eig/traj-{traj}"), job_tag)
     if get_eig is None and get_gf is not None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig"):
-            get_eig = compute_eig(get_gf(), job_tag, inv_type = 0, path = f"{job_tag}/eig/traj-{traj}")
+            get_eig = compute_eig(get_gf(), job_tag, inv_type=0, path=f"{job_tag}/eig/traj-{traj}")
             q.release_lock()
             return get_eig
         else:
@@ -563,7 +576,7 @@ def run_eig_strange(job_tag, traj, get_gf):
     get_eig = ru.load_eig_lazy(get_load_path(f"{job_tag}/eig-strange/traj-{traj}"), job_tag)
     if get_eig is None and get_gf is not None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig-strange"):
-            get_eig = compute_eig(get_gf(), job_tag, inv_type = 1, path = f"{job_tag}/eig-strange/traj-{traj}")
+            get_eig = compute_eig(get_gf(), job_tag, inv_type=1, path=f"{job_tag}/eig-strange/traj-{traj}")
             q.release_lock()
             return get_eig
         else:

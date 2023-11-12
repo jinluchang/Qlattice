@@ -27,16 +27,17 @@ gf.show_info()
 gt = qg.gauge_fix_coulomb(gf)
 
 n_per_tslice_smear = 8
-fsel_smear = q.FieldSelection(total_site, n_per_tslice_smear, rs)
+fsel_smear = q.FieldSelection()
+fsel_smear.set_rand(total_site, n_per_tslice_smear, rs)
 psel_smear = fsel_smear.to_psel()
 
 n_points = 256
 psel = q.PointsSelection()
-psel.set_rand(rs, total_site, n_points)
+psel.set_rand(total_site, n_points, rs)
 
 n_per_tslice = 16
 fsel = q.FieldSelection()
-fsel.set_rand(rs, total_site, n_per_tslice)
+fsel.set_rand(total_site, n_per_tslice, rs)
 
 fselc = fsel.copy()
 fselc.add_psel(psel)

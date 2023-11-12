@@ -125,7 +125,8 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         cc.qswap(f1.xx, self.xx)
 
     def n_elems(self):
-        return self.xx.n_elems
+        cdef cc.Long x = self.xx.n_elems
+        return x
 
     def total_site(self):
         cdef Coordinate total_site = Coordinate()
@@ -141,7 +142,8 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         return geo
 
     def qnorm(self):
-        return cc.qnorm(self.xx)
+        cdef cc.RealD x = cc.qnorm(self.xx)
+        return x
 
     def qnorm_field(self):
         cdef SelectedFieldRealD f_n = SelectedFieldRealD(self.fsel)
@@ -149,23 +151,37 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         return f_n
 
     def read_direct(self, const cc.std_string& fn):
-        return cc.read_selected_field(self.xx, fn, self.fsel.xx)
+        cdef cc.Long total_bytes = cc.read_selected_field(self.xx, fn, self.fsel.xx)
+        if self.fsel is not None:
+            assert self.xx.n_elems == self.fsel.xx.n_elems
+        return total_bytes
 
     def write_direct(self, const cc.std_string& fn):
-        return cc.write_selected_field(self.xx, fn, self.fsel.xx)
+        if self.fsel is not None:
+            assert self.xx.n_elems == self.fsel.xx.n_elems
+        cdef cc.Long total_bytes = cc.write_selected_field(self.xx, fn, self.fsel.xx)
+        return total_bytes
 
     def read_sfr_direct(self, ShuffledFieldsReader sfr, const cc.std_string& fn):
+        cdef cc.Long total_bytes = 0
+        cdef ShuffledBitSet sbs
         if self.fsel is None:
             if self.view_count > 0:
                 raise ValueError("can't re-init while being viewed")
             self.fsel = FieldSelection()
-            return cc.read(sfr.xx, fn, self.xx, self.fsel.xx)
-        cdef ShuffledBitSet sbs = sfr.get_cache_sbs(self.fsel)
-        return cc.read(sfr.xx, fn, sbs.xx, self.xx)
+            total_bytes = cc.read(sfr.xx, fn, self.xx, self.fsel.xx)
+        else:
+            sbs = sfr.get_cache_sbs(self.fsel)
+            total_bytes = cc.read(sfr.xx, fn, sbs.xx, self.xx)
+        assert self.xx.n_elems == self.fsel.xx.n_elems
+        return total_bytes
 
     def write_sfw_direct(self, ShuffledFieldsWriter sfw, const cc.std_string& fn):
+        if self.fsel is not None:
+            assert self.xx.n_elems == self.fsel.xx.n_elems
         cdef ShuffledBitSet sbs = sfw.get_cache_sbs(self.fsel)
-        return cc.write(sfw.xx, fn, sbs.xx, self.xx)
+        cdef cc.Long total_bytes = cc.write(sfw.xx, fn, sbs.xx, self.xx)
+        return total_bytes
 
 selected_field_type_dict[ElemType{{name}}] = SelectedField{{name}}
 

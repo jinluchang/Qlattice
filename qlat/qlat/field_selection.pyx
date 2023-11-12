@@ -65,7 +65,7 @@ cdef class PointsSelection:
     def __deepcopy__(self, memo):
         return self.copy()
 
-    def set_rand(self, RngState rs not None, Coordinate total_site not None, cc.Long n_points):
+    def set_rand(self, Coordinate total_site not None, cc.Long n_points, RngState rs not None):
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
         self.geo = Geometry(total_site)
@@ -152,6 +152,14 @@ cdef class PointsSelection:
     def __len__(self):
         return self.n_points()
 
+    def intersect(self, FieldSelection fsel):
+        """
+        return new psel
+        """
+        cdef PointsSelection psel_new = self.copy()
+        psel_new.xx = cc.intersect(fsel.xx, self.xx)
+        return psel_new
+
 ### -------------------------------------------------------------------
 
 cdef class FieldSelection:
@@ -159,13 +167,9 @@ cdef class FieldSelection:
     def __cinit__(self):
         self.cdata = <cc.Long>&(self.xx)
 
-    def __init__(self, Coordinate total_site=None, cc.Long n_per_tslice=-1, RngState rs=None, PointsSelection psel=None):
-        if total_site is not None:
-            assert rs is not None
-            self.set_rand(rs, total_site, n_per_tslice)
-            if psel is not None:
-                self.add_psel(psel)
-            self.update()
+    def __init__(self, Geometry geo=None, cc.Long val=-1):
+        if geo is not None:
+            self.set_uniform(geo, val);
 
     def __imatmul__(self, FieldSelection v1):
         cc.assign_direct(self.xx, v1.xx)
@@ -182,16 +186,36 @@ cdef class FieldSelection:
     def __deepcopy__(self, memo):
         return self.copy()
 
-    def set_uniform(self, Coordinate total_site, val=0):
+    def update(self):
+        """
+        update various indices based on f_rank
+        """
+        cc.update_field_selection(self.xx)
+
+    def set_empty(self, Geometry geo not None):
+        """
+        set an empty fsel with geo (all rank=-1)
+        """
+        self.set_uniform(geo, -1)
+
+    def set_uniform(self, Geometry geo not None, cc.Long val=0):
         """
         default (val = 0) select every sites
         val = -1 deselection everything
         """
-        cc.mk_field_selection(self.xx.f_rank, total_site.xx, val)
+        self.xx.init()
+        cc.mk_field_selection(self.xx.f_rank, geo.xx, val)
         self.update()
 
-    def set_rand(self, RngState rs, Coordinate total_site, cc.Long n_per_tslice):
+    def set_rand(self, Coordinate total_site not None, cc.Long n_per_tslice, RngState rs not None):
         cc.mk_field_selection(self.xx.f_rank, total_site.xx, n_per_tslice, rs.xx)
+        self.update()
+
+    def set_rand_psel(self, Coordinate total_site not None, cc.Long n_per_tslice, RngState rs not None,
+                      PointsSelection psel=None):
+        self.set_rand(total_site, n_per_tslice, rs)
+        if psel is not None:
+            self.add_psel(psel)
         self.update()
 
     def add_psel(self, PointsSelection psel, cc.Long rank_psel=1024 * 1024 * 1024 * 1024 * 1024):
@@ -202,11 +226,45 @@ cdef class FieldSelection:
         cc.add_field_selection(self.xx.f_rank, psel.xx, rank_psel)
         self.update()
 
-    def update(self):
+    def add_fsel(self, FieldSelection fsel):
         """
-        update various indices based on f_rank
+        Add fsel points to the selection, with the rank specified in fsel.
+        If the point is already selected with lower rank, the rank is unchanged.
         """
-        cc.update_field_selection(self.xx)
+        cc.add_field_selection(self.xx.f_rank, fsel.xx)
+        self.update()
+
+    def intersect_with(self, FieldSelection fsel):
+        """
+        Modify the `self`.
+        More efficient if `self` is smaller than `fsel`.
+        """
+        cc.intersect_with(self.xx, fsel.xx)
+
+    def intersect(self, FieldSelection fsel):
+        """
+        Do NOT change the `self`, but return a new one
+        More efficient if `self` is smaller than `fsel`
+        """
+        cdef FieldSelection fsel_new = self.copy()
+        fsel_new.intersect_with(fsel)
+        return fsel_new
+
+    def is_containing_psel(self, PointsSelection psel):
+        cdef cc.bool x = cc.is_containing(self.xx, psel.xx)
+        return x
+
+    def is_containing_fsel(self, FieldSelection fsel_small):
+        cdef cc.bool x = cc.is_containing(self.xx, fsel_small.xx)
+        return x
+
+    def is_containing(self, sel_small):
+        if isinstance(sel_small, PointsSelection):
+            return self.is_containing_psel(sel_small)
+        elif isinstance(sel_small, FieldSelection):
+            return self.is_containing_fsel(sel_small)
+        else:
+            raise Exception("'sel_small' not PointsSelection or FieldSelection")
 
     def to_psel(self):
         cdef PointsSelection psel = PointsSelection(None, self.geo())

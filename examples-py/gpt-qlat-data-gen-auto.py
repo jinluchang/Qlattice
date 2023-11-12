@@ -79,7 +79,7 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel, get_fsel):
     t_size = total_site[3]
     get_prop = get_get_prop()
     psel = get_psel()
-    fsel, fselc = get_fsel()
+    fsel = get_fsel()
     xg_fsel_list = np.asarray(fsel.to_psel_local())
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
@@ -132,7 +132,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel, get_fse
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     get_prop = get_get_prop()
-    fsel, fselc = get_fsel()
+    fsel = get_fsel()
     fsel_prob = 1 / 16
     xg_fsel_list = np.asarray(fsel.to_psel_local())
     geo = q.Geometry(total_site, 1)
@@ -191,7 +191,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel, get_fse
     t_size = total_site[3]
     get_prop = get_get_prop()
     psel = get_psel()
-    fsel, fselc = get_fsel()
+    fsel = get_fsel()
     xg_fsel_list = np.asarray(fsel.to_psel_local())
     xg_psel_list = np.asarray(psel)
     geo = q.Geometry(total_site, 1)
@@ -251,7 +251,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel, ge
     t_size = total_site[3]
     get_prop = get_get_prop()
     psel = get_psel()
-    fsel, fselc = get_fsel()
+    fsel = get_fsel()
     fsel_prob = 1 / 16
     xg_fsel_list = np.asarray(fsel.to_psel_local())
     xg_psel_list = np.asarray(psel)
@@ -352,7 +352,7 @@ def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel, get_fsel):
     t_size = total_site[3]
     get_prop = get_get_prop()
     psel = get_psel()
-    fsel, fselc = get_fsel()
+    fsel = get_fsel()
     fsel_prob = 1 / 16
     xg_fsel_list = np.asarray(fsel.to_psel_local())
     xg_psel_list = np.asarray(psel)
@@ -447,7 +447,7 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel, get_fsel):
     t_size = total_site[3]
     get_prop = get_get_prop()
     psel = get_psel()
-    fsel, fselc = get_fsel()
+    fsel = get_fsel()
     fsel_prob = 1 / 16
     xg_fsel_list = np.asarray(fsel.to_psel_local())
     xg_psel_list = np.asarray(psel)
@@ -760,7 +760,7 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel, get_fsel):
     t_size = total_site[3]
     get_prop = get_get_prop()
     psel = get_psel()
-    fsel, fselc = get_fsel()
+    fsel = get_fsel()
     fsel_prob = 1 / 16
     xg_fsel_list = np.asarray(fsel.to_psel_local())
     xg_psel_list = np.asarray(psel)
@@ -881,7 +881,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel, get_fsel):
     t_size = total_site[3]
     get_prop = get_get_prop()
     psel = get_psel()
-    fsel, fselc = get_fsel()
+    fsel = get_fsel()
     fsel_prob = 1 / 16
     xg_fsel_list = np.asarray(fsel.to_psel_local())
     xg_psel_list = np.asarray(psel)
@@ -1148,26 +1148,27 @@ def run_job(job_tag, traj):
     run_wsrc_full()
     #
     get_psel = run_psel(job_tag, traj)
-    get_fsel = run_fsel(job_tag, traj, get_psel)
+    get_fsel = run_fsel(job_tag, traj)
+    get_fselc = run_fselc(job_tag, traj, get_fsel, get_psel)
     #
     get_psel_smear = run_psel_smear(job_tag, traj)
     #
     def run_with_eig():
         get_eig = run_eig(job_tag, traj_gf, get_gf)
         # run_get_inverter(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig)
-        run_prop_wsrc(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_wi=get_wi)
+        run_prop_wsrc(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_wi=get_wi)
         run_prop_rand_u1(job_tag, traj, inv_type=0, get_gf=get_gf, get_fsel=get_fsel, get_eig=get_eig)
-        run_prop_psrc(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel)
-        run_prop_smear(job_tag, traj, inv_type=0, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_psel_smear=get_psel_smear)
+        run_prop_psrc(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc)
+        run_prop_smear(job_tag, traj, inv_type=0, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_psel_smear=get_psel_smear)
         q.clean_cache(q.cache_inv)
     #
     def run_with_eig_strange():
         get_eig = run_eig_strange(job_tag, traj_gf, get_gf)
         # run_get_inverter(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig)
-        run_prop_wsrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_wi=get_wi)
+        run_prop_wsrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_wi=get_wi)
         run_prop_rand_u1(job_tag, traj, inv_type=1, get_gf=get_gf, get_fsel=get_fsel, get_eig=get_eig)
-        run_prop_psrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel)
-        run_prop_smear(job_tag, traj, inv_type=1, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_psel_smear=get_psel_smear)
+        run_prop_psrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc)
+        run_prop_smear(job_tag, traj, inv_type=1, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_psel_smear=get_psel_smear)
         q.clean_cache(q.cache_inv)
     #
     def run_charm():

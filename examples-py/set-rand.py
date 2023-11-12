@@ -32,10 +32,11 @@ q.displayln_info(f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.q
 
 n_points = 16
 psel = q.PointsSelection()
-psel.set_rand(rs.split("psel"), total_site, n_points)
+psel.set_rand(total_site, n_points, rs.split("psel"))
 
 n_per_tslice = 16
-fsel = q.FieldSelection(geo.total_site(), n_per_tslice, rs.split("fsel"))
+fsel = q.FieldSelection()
+fsel.set_rand(geo.total_site(), n_per_tslice, rs.split("fsel"))
 
 fselc = fsel.copy()
 fselc.add_psel(psel)

@@ -186,13 +186,34 @@ cdef extern from "qlat/field-io.h" namespace "qlat":
     Long write_field[M](const Field[M]& f, const std_string& path, const Coordinate& new_size_node) except +
     Long read_field[M](Field[M]& f, const std_string& path, const Coordinate& new_size_node) except +
 
+cdef extern from "qlat/selected-field-io.h" namespace "qlat":
+
+    void save_point_selection_info(const PointsSelection& psel, const std_string& path) except +
+    PointsSelection load_point_selection_info(const std_string& path) except +
+    #
+    PointsSelection mk_random_point_selection(const Coordinate& total_site, const Long num, const RngState& rs) except +
+    #
+    Long write_field_selection(const FieldSelection& fsel, const std_string& path) except +
+    Long read_field_selection(FieldSelection& fsel, const std_string& path) except +
+    #
+    void mk_field_selection(FieldRank& f_rank, const Geometry& geo, const Int64t val) except +
+    void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site, const Long n_per_tslice, const RngState& rs) except +
+    void add_field_selection(FieldRank& f_rank, const PointsSelection& psel, const Long rank_psel) except +
+    void add_field_selection(FieldRank& f_rank, const FieldSelection& fsel) except +
+    void update_field_selection(FieldSelection& fsel) except +
+    #
+    PointsSelection psel_from_fsel(const FieldSelection& fsel) except +
+    PointsSelection psel_from_fsel_local(const FieldSelection& fsel) except +
+    bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2) except +
+    bool is_containing(const FieldSelection& fsel, const FieldSelection& fsel_small) except +
+    bool is_containing(const FieldSelection& fsel, const PointsSelection& psel) except +
+    void intersect_with(FieldSelection& fsel, const FieldSelection& fsel1) except +
+    PointsSelection intersect(const FieldSelection& fsel, const PointsSelection& psel) except +
+
 cdef extern from "qlat/selected-points.h" namespace "qlat":
 
     double qnorm[M](const SelectedPoints[M]& sp) except +
     void qnorm_field[M](SelectedPoints[RealD]& sp, const SelectedPoints[M]& sp1) except +
-    PointsSelection mk_random_point_selection(const Coordinate& total_site, const Long num, const RngState& rs) except +
-    void save_point_selection_info(const PointsSelection& psel, const std_string& path) except +
-    PointsSelection load_point_selection_info(const std_string& path) except +
     LatData lat_data_from_selected_points[M](const SelectedPoints[M]& sp) except +
     void selected_points_from_lat_data[M](SelectedPoints[M]& sp, const LatData& ld) except +
     void save_selected_points[M](const SelectedPoints[M]& sp, const std_string& path) except +
@@ -202,7 +223,7 @@ cdef extern from "qlat/selected-points.h" namespace "qlat":
     void field_glb_sum_tslice[M](SelectedPoints[M]& sp, const Field[M]& f, const int t_dir) except +
     void set_sqrt_field(SelectedPoints[RealD]& sp, const SelectedPoints[RealD]& sp1) except +
 
-cdef extern from "qlat/selected-field.h" namespace "qlat":
+cdef extern from "qlat/selected-field-io.h" namespace "qlat":
 
     double qnorm[M](const SelectedField[M]& sf) except +
     void qnorm_field[M](SelectedField[RealD]& f, const SelectedField[M]& f1) except +
@@ -224,20 +245,9 @@ cdef extern from "qlat/selected-field.h" namespace "qlat":
                                 const PointsSelection& psel, const int m) except +
     void set_field_selected[t](Field[t]& f, const SelectedPoints[t]& sp,
                                const Geometry& geo, const PointsSelection& psel, const int m) except +
-    bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2) except +
     void set_sqrt_field(SelectedField[RealD]& f, const SelectedField[RealD]& f1) except +
-
-cdef extern from "qlat/selected-field-io.h" namespace "qlat":
-
-    Long write_field_selection(const FieldSelection& fsel, const std_string& path) except +
-    Long read_field_selection(FieldSelection& fsel, const std_string& path) except +
+    #
     bool is_selected_field(const std_string& path) except +
-    void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site, const Int64t val) except +
-    void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site, const Long n_per_tslice, const RngState& rs) except +
-    void add_field_selection(FieldRank& f_rank, const PointsSelection& psel, const Long rank_psel) except +
-    void update_field_selection(FieldSelection& fsel) except +
-    PointsSelection psel_from_fsel(const FieldSelection& fsel) except +
-    PointsSelection psel_from_fsel_local(const FieldSelection& fsel) except +
     Long write_selected_field[M](const SelectedField[M]& sf, const std_string& path, const FieldSelection& fsel) except +
     Long read_selected_field[M](SelectedField[M]& sf, const std_string& path, const FieldSelection& fsel) except +
 

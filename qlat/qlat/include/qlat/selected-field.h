@@ -6,9 +6,8 @@
 namespace qlat
 {  //
 
-void add_field_selection(FieldRank& f_rank, const PointsSelection& psel,
-                         const Long rank_psel = 1024L * 1024L * 1024L * 1024L *
-                                                1024L);
+void mk_field_selection(FieldRank& f_rank, const Geometry& geo,
+                        const int64_t val = 0);
 
 void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site,
                         const int64_t val = 0);
@@ -17,6 +16,20 @@ void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site,
                         const PointsSelection& psel,
                         const Long rank_xgs = 1024L * 1024L * 1024L * 1024L *
                                               1024L);
+
+void set_selected_gindex(SelectedField<Long>& sfgi, const FieldSelection& fsel);
+
+void mk_grid_field_selection(FieldRank& f_rank, const Coordinate& total_site,
+                             const Long n_per_tslice_, const RngState& rs);
+
+void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site,
+                        const Long n_per_tslice, const RngState& rs);
+
+void add_field_selection(FieldRank& f_rank, const PointsSelection& psel,
+                         const Long rank_psel = 1024L * 1024L * 1024L * 1024L *
+                                                1024L);
+
+void add_field_selection(FieldRank& f_rank, const FieldSelection& fsel);
 
 void select_rank_range(FieldRank& f_rank, const Long rank_start = 0,
                        const Long rank_stop = -1);
@@ -27,8 +40,6 @@ void select_t_range(FieldRank& f_rank, const Long t_start = 0,
 void set_n_per_tslice(FieldRank& f_rank, const Long n_per_tslice);
 
 void update_field_selection(FieldSelection& fsel);
-
-void update_field_selection(FieldSelection& fsel, const Long n_per_tslice_);
 
 void set_grid_field_selection(FieldSelection& fsel,
                               const Coordinate& total_site,
@@ -47,17 +58,18 @@ void set_field_selection(FieldSelection& fsel, const Coordinate& total_site,
 
 bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2);
 
+bool is_containing(const FieldSelection& fsel,
+                   const FieldSelection& fsel_small);
+
+bool is_containing(const FieldSelection& fsel, const PointsSelection& psel);
+
+void intersect_with(FieldSelection& fsel, const FieldSelection& fsel1);
+
+PointsSelection intersect(const FieldSelection& fsel, const PointsSelection& psel);
+
 PointsSelection psel_from_fsel(const FieldSelection& fsel);
 
 PointsSelection psel_from_fsel_local(const FieldSelection& fsel);
-
-void set_selected_gindex(SelectedField<Long>& sfgi, const FieldSelection& fsel);
-
-void mk_grid_field_selection(FieldRank& f_rank, const Coordinate& total_site,
-                             const Long n_per_tslice_, const RngState& rs);
-
-void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site,
-                        const Long n_per_tslice, const RngState& rs);
 
 Long write_field_selection(const FieldSelection& fsel, const std::string& path);
 
@@ -237,6 +249,9 @@ void set_selected_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
     return;
   }
   TIMER("set_selected_field(sf,sf0,fsel,fsel0)");
+  qassert(not sf0.geo.null());
+  qassert(not fsel.f_local_idx.geo.null());
+  qassert(not fsel0.f_local_idx.geo.null());
   qassert(sf0.geo().is_only_local);
   qassert(fsel.f_local_idx.geo().is_only_local);
   qassert(fsel0.f_local_idx.geo().is_only_local);

@@ -5,23 +5,22 @@
 namespace qlat
 {  //
 
-void add_field_selection(FieldRank& f_rank, const PointsSelection& psel,
-                         const Long rank_psel)
+void mk_field_selection(FieldRank& f_rank, const Geometry& geo_,
+                        const int64_t val)
 // interface function
-// add psel points to f_rank. (only lower rank if already selected)
+// select everything with val
+// default val = 0 ; means selection everything
+// val = -1 deselection everything
 {
-  TIMER_VERBOSE("add_field_selection(psel)");
-  const Geometry& geo = f_rank.geo();
-#pragma omp parallel for
-  for (Long i = 0; i < (Long)psel.size(); ++i) {
-    const Coordinate xl = geo.coordinate_l_from_g(psel[i]);
-    if (geo.is_local(xl)) {
-      int64_t& rank = f_rank.get_elem(xl);
-      if (rank < 0 or rank > rank_psel) {
-        rank = rank_psel;
-      }
-    }
-  }
+  TIMER_VERBOSE("mk_field_selection(f_rank,geo,val)");
+  const Geometry geo = geo_reform(geo_);
+  f_rank.init();
+  f_rank.init(geo);
+  qassert(f_rank.geo().is_only_local);
+  qacc_for(index, geo.local_volume(), {
+    int64_t& rank = f_rank.get_elem(index);
+    rank = val;
+  });
 }
 
 void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site,
@@ -31,17 +30,10 @@ void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site,
 // default val = 0 ; means selection everything
 // val = -1 deselection everything
 {
-  TIMER_VERBOSE("mk_field_selection(f_rank,total_site)");
+  TIMER_VERBOSE("mk_field_selection(f_rank,total_site,val)");
   Geometry geo;
   geo.init(total_site, 1);
-  f_rank.init();
-  f_rank.init(geo);
-  qassert(f_rank.geo().is_only_local);
-#pragma omp parallel for
-  for (Long index = 0; index < geo.local_volume(); ++index) {
-    int64_t& rank = f_rank.get_elem(index);
-    rank = val;
-  }
+  mk_field_selection(f_rank, geo, val);
 }
 
 void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site,
@@ -50,227 +42,6 @@ void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site,
   TIMER_VERBOSE("mk_field_selection(psel)");
   mk_field_selection(f_rank, total_site, -1);
   add_field_selection(f_rank, psel, rank_xgs);
-}
-
-void select_rank_range(FieldRank& f_rank, const Long rank_start,
-                       const Long rank_stop)
-// keep rank info if rank_start <= rank and (rank < rank_stop or rank_stop ==
-// -1) otherwise rank = -1 default parameter does not change selection but will
-// erase the rank information for points not selected (rank = -1)
-{
-  TIMER_VERBOSE("select_rank_range");
-  const Geometry& geo = f_rank.geo();
-  qassert(geo.is_only_local);
-  // const Coordinate total_site = geo.total_site();
-  qacc_for(index, geo.local_volume(), {
-    int64_t& rank = f_rank.get_elem(index);
-    if (not(rank_start <= rank and (rank < rank_stop or rank_stop == -1))) {
-      rank = -1;
-    }
-  });
-}
-
-void select_t_range(FieldRank& f_rank, const Long t_start, const Long t_stop)
-// keep rank info if t_start <= t and (t < t_stop or t_stop == -1)
-// otherwise rank = -1
-// default parameter does not change selection
-// but will erase the rank information for points not selected (rank = -1)
-{
-  TIMER_VERBOSE("select_t_range");
-  const Geometry& geo = f_rank.geo();
-  qassert(geo.is_only_local);
-  // const Coordinate total_site = geo.total_site();
-  qacc_for(index, geo.local_volume(), {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const int t = xg[3];
-    if (not(t_start <= t and (t < t_stop or t_stop == -1))) {
-      int64_t& rank = f_rank.get_elem(index);
-      rank = -1;
-    }
-  });
-}
-
-void set_n_per_tslice(FieldRank& f_rank, const Long n_per_tslice)
-// will erase the rank information for points not selected (rank = -1)
-//
-// if n_per_tslice == -1 then all points are selected regardless of rank
-// (if a point was not selected before (rank < 0), then rank will be set to be
-// rank = spatial_vol).
-//
-// otherwise: n_per_tslice is not enforced but only serve as an limit for f_rank
-//
-// 0 <= rank < n_per_tslice
-//
-// if point is not selected, rank = -1
-{
-  TIMER_VERBOSE("set_n_per_tslice");
-  const Geometry& geo = f_rank.geo();
-  qassert(geo.is_only_local);
-  const Coordinate total_site = geo.total_site();
-  const Long spatial_vol = total_site[0] * total_site[1] * total_site[2];
-  qassert(n_per_tslice == -1 or
-          (0 <= n_per_tslice and n_per_tslice <= spatial_vol));
-  qacc_for(index, geo.local_volume(), {
-    int64_t& rank = f_rank.get_elem(index);
-    if (n_per_tslice == -1 and rank < 0) {
-      rank = spatial_vol;
-    } else if (not(0 <= rank and rank < n_per_tslice)) {
-      rank = -1;
-    }
-  });
-}
-
-void update_field_selection(FieldSelection& fsel)
-// interface function
-// update fsel based only on f_rank
-{
-  TIMER_VERBOSE("update_field_selection");
-  const Geometry& geo = fsel.f_rank.geo();
-  qassert(geo.is_only_local);
-  fsel.f_local_idx.init();
-  fsel.f_local_idx.init(geo);
-  Long n_elems = 0;
-  for (Long index = 0; index < geo.local_volume(); ++index) {
-    const int64_t& rank = fsel.f_rank.get_elem(index);
-    Long& idx = fsel.f_local_idx.get_elem(index);
-    if (0 <= rank) {
-      idx = n_elems;
-      n_elems += 1;
-    } else {
-      idx = -1;
-    }
-  }
-  fsel.n_elems = n_elems;
-  fsel.ranks.resize(fsel.n_elems);
-  fsel.indices.resize(fsel.n_elems);
-#pragma omp parallel for
-  for (Long index = 0; index < geo.local_volume(); ++index) {
-    const Long idx = fsel.f_local_idx.get_elems_const(index)[0];
-    if (idx >= 0) {
-      const Long rank = fsel.f_rank.get_elem(index);
-      fsel.ranks[idx] = rank;
-      fsel.indices[idx] = index;
-    }
-  }
-}
-
-void set_grid_field_selection(FieldSelection& fsel,
-                              const Coordinate& total_site,
-                              const Long n_per_tslice, const RngState& rs)
-{
-  TIMER_VERBOSE("set_grid_field_selection(fsel,total_site,n_per_tslice,rs)");
-  fsel.init();
-  mk_grid_field_selection(fsel.f_rank, total_site, n_per_tslice, rs);
-  update_field_selection(fsel);
-}
-
-void set_field_selection(FieldSelection& fsel, const FieldRank& f_rank)
-// strictly follow f_rank on selection
-{
-  TIMER_VERBOSE("set_field_selection(fsel,f_rank)");
-  fsel.init();
-  fsel.f_rank = f_rank;
-  update_field_selection(fsel);
-}
-
-void set_field_selection(FieldSelection& fsel, const Coordinate& total_site)
-// select everything with rank = 0
-{
-  TIMER_VERBOSE("set_field_selection(fsel,total_site)");
-  fsel.init();
-  mk_field_selection(fsel.f_rank, total_site);
-  update_field_selection(fsel);  // select all points
-}
-
-void set_field_selection(FieldSelection& fsel, const Coordinate& total_site,
-                         const Long n_per_tslice, const RngState& rs)
-{
-  TIMER_VERBOSE("set_field_selection(fsel,total_site,n_per_tslice,rs)");
-  fsel.init();
-  mk_field_selection(fsel.f_rank, total_site, n_per_tslice, rs);
-  update_field_selection(fsel);
-}
-
-void set_field_selection(FieldSelection& fsel, const Coordinate& total_site,
-                         const Long n_per_tslice, const RngState& rs,
-                         const PointsSelection& psel)
-{
-  TIMER_VERBOSE("set_field_selection(fsel,total_site,n_per_tslice,rs,psel)");
-  fsel.init();
-  mk_field_selection(fsel.f_rank, total_site, n_per_tslice, rs);
-  add_field_selection(fsel.f_rank, psel);
-  update_field_selection(fsel);
-}
-
-bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2)
-// only check selection, does not check rank or parameter
-{
-  const Long n_elems = fsel1.n_elems;
-  if (n_elems != fsel2.n_elems) {
-    return false;
-  }
-  bool is_same = true;
-  const vector_acc<Long>& indices1 = fsel1.indices;
-  const vector_acc<Long>& indices2 = fsel2.indices;
-  qassert(indices1.size() == n_elems);
-  qassert(indices2.size() == n_elems);
-  qthread_for(idx, n_elems, {
-    if (indices1[idx] != indices2[idx]) {
-      is_same = false;
-    }
-  });
-  return is_same;
-}
-
-PointsSelection psel_from_fsel(const FieldSelection& fsel)
-{
-  TIMER("psel_from_fsel")
-  const Geometry& geo = fsel.f_rank.geo();
-  const Coordinate total_site = geo.total_site();
-  Long n_elems = fsel.n_elems;
-  Long total_n_elems = n_elems;
-  glb_sum(total_n_elems);
-  // const int num_node = geo.geon.num_node;
-  const Int id_node = geo.geon.id_node;
-  vector<Long> vec(geo.geon.num_node, 0);
-  all_gather(get_data(vec), get_data_one_elem(n_elems));
-  Long idx_offset = 0;
-  for (Int i = 0; i < id_node; ++i) {
-    idx_offset += vec[i];
-  }
-  qassert(idx_offset <= total_n_elems);
-  vector<Long> vec_gindex(total_n_elems, 0);
-  qthread_for(idx, fsel.n_elems, {
-    const Long index = fsel.indices[idx];
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const Long gindex = index_from_coordinate(xg, total_site);
-    vec_gindex[idx_offset + idx] = gindex;
-  });
-  glb_sum(get_data(vec_gindex));
-  PointsSelection psel(total_n_elems);
-  qthread_for(idx, (Long)psel.size(), {
-    Long gindex = vec_gindex[idx];
-    psel[idx] = coordinate_from_index(gindex, total_site);
-  });
-  return psel;
-}
-
-PointsSelection psel_from_fsel_local(const FieldSelection& fsel)
-{
-  TIMER("psel_from_fsel_local")
-  const Geometry& geo = fsel.f_rank.geo();
-  // const Coordinate total_site = geo.total_site();
-  Long n_elems = fsel.n_elems;
-  PointsSelection psel(n_elems);
-  qthread_for(idx, (Long)psel.size(), {
-    const Long index = fsel.indices[idx];
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg = geo.coordinate_g_from_l(xl);
-    psel[idx] = xg;
-  });
-  return psel;
 }
 
 void set_selected_gindex(SelectedField<Long>& sfgi, const FieldSelection& fsel)
@@ -408,6 +179,350 @@ void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site,
     return;
   }
   set_n_per_tslice(f_rank, n_per_tslice);
+}
+
+void add_field_selection(FieldRank& f_rank, const PointsSelection& psel,
+                         const Long rank_psel)
+// interface function
+// f_rank needs to be already initialized
+// add psel points to f_rank. (only lower rank if already selected)
+{
+  TIMER_VERBOSE("add_field_selection(f_rank,psel,rank_psel)");
+  const Geometry& geo = f_rank.geo();
+  qthread_for(i, (Long)psel.size(), {
+    const Coordinate xl = geo.coordinate_l_from_g(psel[i]);
+    if (geo.is_local(xl)) {
+      int64_t& rank = f_rank.get_elem(xl);
+      if (rank < 0 or rank > rank_psel) {
+        rank = rank_psel;
+      }
+    }
+  });
+}
+
+void add_field_selection(FieldRank& f_rank, const FieldSelection& fsel)
+// interface function
+// f_rank needs to be already initialized
+// add fsel points to f_rank. (only lower rank if already selected)
+{
+  TIMER_VERBOSE("add_field_selection(f_rank,fsel)");
+  qacc_for(idx, fsel.n_elems, {
+    const Long index = fsel.indices[idx];
+    const int64_t rank_fsel = fsel.ranks[idx];
+    int64_t& rank = f_rank.get_elem(index);
+    if (rank < 0 or rank > rank_fsel) {
+      rank = rank_fsel;
+    }
+  });
+}
+
+void select_rank_range(FieldRank& f_rank, const Long rank_start,
+                       const Long rank_stop)
+// keep rank info if rank_start <= rank and (rank < rank_stop or rank_stop ==
+// -1) otherwise rank = -1 default parameter does not change selection but will
+// erase the rank information for points not selected (rank = -1)
+{
+  TIMER_VERBOSE("select_rank_range");
+  const Geometry& geo = f_rank.geo();
+  qassert(geo.is_only_local);
+  // const Coordinate total_site = geo.total_site();
+  qacc_for(index, geo.local_volume(), {
+    int64_t& rank = f_rank.get_elem(index);
+    if (not(rank_start <= rank and (rank < rank_stop or rank_stop == -1))) {
+      rank = -1;
+    }
+  });
+}
+
+void select_t_range(FieldRank& f_rank, const Long t_start, const Long t_stop)
+// keep rank info if t_start <= t and (t < t_stop or t_stop == -1)
+// otherwise rank = -1
+// default parameter does not change selection
+// but will erase the rank information for points not selected (rank = -1)
+{
+  TIMER_VERBOSE("select_t_range");
+  const Geometry& geo = f_rank.geo();
+  qassert(geo.is_only_local);
+  // const Coordinate total_site = geo.total_site();
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const int t = xg[3];
+    if (not(t_start <= t and (t < t_stop or t_stop == -1))) {
+      int64_t& rank = f_rank.get_elem(index);
+      rank = -1;
+    }
+  });
+}
+
+void set_n_per_tslice(FieldRank& f_rank, const Long n_per_tslice)
+// will erase the rank information for points not selected (rank = -1)
+//
+// if n_per_tslice == -1 then all points are selected regardless of rank
+// (if a point was not selected before (rank < 0), then rank will be set to be
+// rank = spatial_vol).
+//
+// otherwise: n_per_tslice is not enforced but only serve as an limit for f_rank
+//
+// 0 <= rank < n_per_tslice
+//
+// if point is not selected, rank = -1
+{
+  TIMER_VERBOSE("set_n_per_tslice");
+  const Geometry& geo = f_rank.geo();
+  qassert(geo.is_only_local);
+  const Coordinate total_site = geo.total_site();
+  const Long spatial_vol = total_site[0] * total_site[1] * total_site[2];
+  qassert(n_per_tslice == -1 or
+          (0 <= n_per_tslice and n_per_tslice <= spatial_vol));
+  qacc_for(index, geo.local_volume(), {
+    int64_t& rank = f_rank.get_elem(index);
+    if (n_per_tslice == -1 and rank < 0) {
+      rank = spatial_vol;
+    } else if (not(0 <= rank and rank < n_per_tslice)) {
+      rank = -1;
+    }
+  });
+}
+
+void update_field_selection(FieldSelection& fsel)
+// interface function
+// update fsel based only on f_rank
+{
+  TIMER_VERBOSE("update_field_selection");
+  const Geometry& geo = fsel.f_rank.geo();
+  qassert(geo.is_only_local);
+  fsel.f_local_idx.init();
+  fsel.f_local_idx.init(geo);
+  Long n_elems = 0;
+  for (Long index = 0; index < geo.local_volume(); ++index) {
+    const int64_t& rank = fsel.f_rank.get_elem(index);
+    Long& idx = fsel.f_local_idx.get_elem(index);
+    if (0 <= rank) {
+      idx = n_elems;
+      n_elems += 1;
+    } else {
+      idx = -1;
+    }
+  }
+  fsel.n_elems = n_elems;
+  fsel.ranks.resize(fsel.n_elems);
+  fsel.indices.resize(fsel.n_elems);
+  qthread_for(index, geo.local_volume(), {
+    const Long idx = fsel.f_local_idx.get_elem(index);
+    if (idx >= 0) {
+      const Long rank = fsel.f_rank.get_elem(index);
+      fsel.ranks[idx] = rank;
+      fsel.indices[idx] = index;
+    }
+  });
+}
+
+void set_grid_field_selection(FieldSelection& fsel,
+                              const Coordinate& total_site,
+                              const Long n_per_tslice, const RngState& rs)
+{
+  TIMER_VERBOSE("set_grid_field_selection(fsel,total_site,n_per_tslice,rs)");
+  fsel.init();
+  mk_grid_field_selection(fsel.f_rank, total_site, n_per_tslice, rs);
+  update_field_selection(fsel);
+}
+
+void set_field_selection(FieldSelection& fsel, const FieldRank& f_rank)
+// strictly follow f_rank on selection
+{
+  TIMER_VERBOSE("set_field_selection(fsel,f_rank)");
+  fsel.init();
+  fsel.f_rank = f_rank;
+  update_field_selection(fsel);
+}
+
+void set_field_selection(FieldSelection& fsel, const Coordinate& total_site)
+// select everything with rank = 0
+{
+  TIMER_VERBOSE("set_field_selection(fsel,total_site)");
+  fsel.init();
+  mk_field_selection(fsel.f_rank, total_site);
+  update_field_selection(fsel);  // select all points
+}
+
+void set_field_selection(FieldSelection& fsel, const Coordinate& total_site,
+                         const Long n_per_tslice, const RngState& rs)
+{
+  TIMER_VERBOSE("set_field_selection(fsel,total_site,n_per_tslice,rs)");
+  fsel.init();
+  mk_field_selection(fsel.f_rank, total_site, n_per_tslice, rs);
+  update_field_selection(fsel);
+}
+
+void set_field_selection(FieldSelection& fsel, const Coordinate& total_site,
+                         const Long n_per_tslice, const RngState& rs,
+                         const PointsSelection& psel)
+{
+  TIMER_VERBOSE("set_field_selection(fsel,total_site,n_per_tslice,rs,psel)");
+  fsel.init();
+  mk_field_selection(fsel.f_rank, total_site, n_per_tslice, rs);
+  add_field_selection(fsel.f_rank, psel);
+  update_field_selection(fsel);
+}
+
+bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2)
+// only check selection, does not check rank or parameter
+{
+  const Long n_elems = fsel1.n_elems;
+  if (n_elems != fsel2.n_elems) {
+    return false;
+  }
+  bool is_same = true;
+  const vector_acc<Long>& indices1 = fsel1.indices;
+  const vector_acc<Long>& indices2 = fsel2.indices;
+  qassert(indices1.size() == n_elems);
+  qassert(indices2.size() == n_elems);
+  qthread_for(idx, n_elems, {
+    if (indices1[idx] != indices2[idx]) {
+      is_same = false;
+    }
+  });
+  return is_same;
+}
+
+bool is_containing(const FieldSelection& fsel, const FieldSelection& fsel_small)
+{
+  TIMER("is_containing(fsel,fsel_small)");
+  long n_missing_points = 0;
+  qthread_for(idx, fsel_small.indices.size(), {
+    const Long index = fsel_small.indices[idx];
+    const int64_t rank = fsel.f_rank.get_elem(index);
+    if (rank < 0) {
+      // May miscount due to race condition.
+      // But we only need to know if it is zero or not.
+      // Should be fine.
+      n_missing_points += 1;
+    }
+  });
+  glb_sum(n_missing_points);
+  return n_missing_points == 0;
+}
+
+bool is_containing(const FieldSelection& fsel, const PointsSelection& psel)
+{
+  TIMER("is_containing(fsel,psel)");
+  const Geometry& geo = fsel.f_rank.geo();
+  qassert(geo.is_only_local);
+  long n_missing_points = 0;
+  qthread_for(i, (Long)psel.size(), {
+    const Coordinate xl = geo.coordinate_l_from_g(psel[i]);
+    if (geo.is_local(xl)) {
+      const int64_t rank = fsel.f_rank.get_elem(xl);
+      if (rank < 0) {
+        // May miscount due to race condition.
+        // But we only need to know if it is zero or not.
+        // Should be fine.
+        n_missing_points += 1;
+      }
+    }
+  });
+  glb_sum(n_missing_points);
+  return n_missing_points == 0;
+}
+
+void intersect_with(FieldSelection& fsel, const FieldSelection& fsel1)
+{
+  TIMER("intersect_with(fsel,fsel1)");
+  const Geometry& geo = fsel.f_rank.geo();
+  qassert(geo == fsel1.f_rank.geo());
+  qthread_for(idx, fsel.indices.size(), {
+    const Long index = fsel.indices[idx];
+    const int64_t rank = fsel1.f_rank.get_elem(index);
+    if (rank < 0) {
+      fsel.f_rank.get_elem(index) = -1;
+    }
+  });
+  update_field_selection(fsel);
+}
+
+PointsSelection intersect(const FieldSelection& fsel, const PointsSelection& psel)
+{
+  TIMER("intersect(fsel,psel)");
+  const Geometry& geo = fsel.f_rank.geo();
+  qassert(geo.is_only_local);
+  vector<Int> is_psel_in_fsel(psel.size(), 0);
+  qthread_for(i, (Long)psel.size(), {
+    const Coordinate xl = geo.coordinate_l_from_g(psel[i]);
+    if (geo.is_local(xl)) {
+      const int64_t rank = fsel.f_rank.get_elem(xl);
+      if (rank < 0) {
+        is_psel_in_fsel[i] = 1;
+      }
+    }
+  });
+  glb_sum(is_psel_in_fsel);
+  Long n_points = 0;
+  qfor(i, is_psel_in_fsel.size(), {
+    if (is_psel_in_fsel[i] == 0) {
+      n_points += 1;
+    }
+  });
+  PointsSelection psel_new(n_points);
+  n_points = 0;
+  qfor(i, is_psel_in_fsel.size(), {
+    if (is_psel_in_fsel[i] == 0) {
+      qassert(n_points < (Long)psel_new.size());
+      psel_new[n_points] = psel[i];
+      n_points += 1;
+    }
+  });
+  return psel_new;
+}
+
+PointsSelection psel_from_fsel(const FieldSelection& fsel)
+{
+  TIMER("psel_from_fsel")
+  const Geometry& geo = fsel.f_rank.geo();
+  const Coordinate total_site = geo.total_site();
+  Long n_elems = fsel.n_elems;
+  Long total_n_elems = n_elems;
+  glb_sum(total_n_elems);
+  // const int num_node = geo.geon.num_node;
+  const Int id_node = geo.geon.id_node;
+  vector<Long> vec(geo.geon.num_node, 0);
+  all_gather(get_data(vec), get_data_one_elem(n_elems));
+  Long idx_offset = 0;
+  for (Int i = 0; i < id_node; ++i) {
+    idx_offset += vec[i];
+  }
+  qassert(idx_offset <= total_n_elems);
+  vector<Long> vec_gindex(total_n_elems, 0);
+  qthread_for(idx, fsel.n_elems, {
+    const Long index = fsel.indices[idx];
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const Long gindex = index_from_coordinate(xg, total_site);
+    vec_gindex[idx_offset + idx] = gindex;
+  });
+  glb_sum(get_data(vec_gindex));
+  PointsSelection psel(total_n_elems);
+  qthread_for(idx, (Long)psel.size(), {
+    Long gindex = vec_gindex[idx];
+    psel[idx] = coordinate_from_index(gindex, total_site);
+  });
+  return psel;
+}
+
+PointsSelection psel_from_fsel_local(const FieldSelection& fsel)
+{
+  TIMER("psel_from_fsel_local")
+  const Geometry& geo = fsel.f_rank.geo();
+  // const Coordinate total_site = geo.total_site();
+  Long n_elems = fsel.n_elems;
+  PointsSelection psel(n_elems);
+  qthread_for(idx, (Long)psel.size(), {
+    const Long index = fsel.indices[idx];
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    psel[idx] = xg;
+  });
+  return psel;
 }
 
 Long write_field_selection(const FieldSelection& fsel, const std::string& path)

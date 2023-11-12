@@ -248,7 +248,7 @@ void set_field_from_data(Field<M>& field, const GeometryNode& geon,
                          const std::vector<char>& data,
                          const bool is_sparse_field)
 {
-  TIMER("set_field_from_data");
+  TIMER("set_field_from_data(field,geon,total_site,data)");
   const Coordinate node_site = total_site / geon.size_node;
   const Long local_volume = product(node_site);
   ConstHandle<std::vector<char>> hdata(data);
@@ -277,8 +277,9 @@ void set_field_from_data(Field<M>& field, const GeometryNode& geon,
 template <class M>
 void set_field_from_data(SelectedField<M>& sf, FieldRank& f_rank,
                          const std::vector<char>& data)
+// obtain f_rank from data
 {
-  TIMER("set_field_from_data");
+  TIMER("set_field_from_data(sf,f_rank,data)");
   const Geometry& geo = f_rank.geo();
   const Coordinate& node_site = geo.node_site;
   const Long local_volume = product(node_site);
@@ -305,31 +306,21 @@ void set_field_from_data(SelectedField<M>& sf, FieldRank& f_rank,
 template <class M>
 void set_field_from_data(SelectedField<M>& sf, const std::vector<char>& data,
                          const FieldSelection& fsel)
-// fsel must match the actual data
+// fsel must be a subset of the actual data
 {
-  TIMER("set_field_from_data");
+  TIMER("set_field_from_data(sf,data,fsel)");
   const Geometry& geo = fsel.f_rank.geo();
-  const Coordinate& node_site = geo.node_site;
-  const Long local_volume = product(node_site);
-  const size_t N = local_volume;
-  const size_t nbytes = 1 + (N - 1) / 8;
-  BitSet bs(N);
-  bs.set(&data[0], nbytes);
-  qassert(bs.check_f_rank(fsel.f_rank));
-  const Long n_elems = fsel.n_elems;
-  qassert(n_elems == (Long)bs.cN);
-  if (n_elems == 0) {
+  FieldSelection fsel_data;
+  fsel_data.f_rank.init(geo);
+  SelectedField<M> sf_data;
+  set_field_from_data(sf_data, fsel_data.f_rank, data);
+  update_field_selection(fsel_data);
+  qassert(is_containing(fsel_data, fsel));
+  if (fsel.n_elems == 0) {
     sf.init();
-    return;
+  } else {
+    set_selected_field(sf, sf_data, fsel, fsel_data);
   }
-  const size_t sz_compressed = data.size() - nbytes;
-  qassert(sz_compressed % n_elems == 0);
-  const size_t sz_block = sz_compressed / n_elems;
-  qassert(sz_block % sizeof(M) == 0);
-  const int multiplicity = sz_block / sizeof(M);
-  const Vector<M> fdata((const M*)&data[nbytes], n_elems * multiplicity);
-  sf.init(fsel, multiplicity);
-  assign(get_data(sf), fdata);
 }
 
 template <class M>
@@ -557,27 +548,6 @@ Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
   timer.flops += total_bytes;
   return total_bytes;
 }
-
-// template <class M>
-// Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
-//            const SelectedField<M>& sf, const ShuffledBitSet& sbs)
-// // interface function
-// // sbs must match the actual data
-// {
-//   TIMER_VERBOSE_FLOPS("DEPRECATED:write(sfw,fn,sf,sbs)");
-//   return write(sfw, fn, sbs, sf);
-// }
-//
-// template <class M>
-// Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
-//            const Field<M>& field, const ShuffledBitSet& sbs)
-// // interface function
-// {
-//   TIMER_VERBOSE_FLOPS("DEPRECATED:write(sfw,fn,field,sbs)");
-//   SelectedField<M> sf;
-//   set_selected_field(sf, field, sbs.fsel);
-//   return write(sfw, fn, sf, sbs);
-// }
 
 template <class M>
 void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,

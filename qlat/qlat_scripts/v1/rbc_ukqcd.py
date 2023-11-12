@@ -4,8 +4,7 @@ import os
 import pprint
 
 from . import rbc_ukqcd_params as rup
-from .rbc_ukqcd_params import get_total_site
-from .rbc_ukqcd_params import load_config, load_config_lazy
+from .rbc_ukqcd_params import get_param
 
 def get_fermion_params(job_tag, inv_type, inv_acc):
     return rup.dict_params[job_tag]["fermion_params"][inv_type][inv_acc]
@@ -194,7 +193,7 @@ def load_eig_lazy(path, job_tag, inv_type = 0, inv_acc = 0):
     #
     @q.timer_verbose
     def load_eig():
-        total_site = get_total_site(job_tag)
+        total_site = q.Coordinate(get_param(job_tag, "total_site"))
         fermion_params = get_fermion_params(job_tag, inv_type, inv_acc)
         grids = qg.get_fgrid(total_site, fermion_params)
         eig = g.load(path, grids = grids)

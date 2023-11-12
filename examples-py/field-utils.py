@@ -120,7 +120,8 @@ gf1 -= gf
 q.displayln_info("CHECK: diff norm", gf1.qnorm())
 
 n_per_tslice = 16
-fsel = q.FieldSelection(geo.total_site(), n_per_tslice, rs.split("fsel"))
+fsel = q.FieldSelection()
+fsel.set_rand(geo.total_site(), n_per_tslice, rs.split("fsel"))
 
 prop = q.Prop(geo)
 prop.set_rand(rs.split("prop-1"))

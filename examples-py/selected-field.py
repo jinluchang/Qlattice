@@ -42,7 +42,8 @@ psel = q.PointsSelection([
     geo = geo,
     )
 n_per_tslice = 16
-fsel = q.FieldSelection(geo.total_site(), n_per_tslice, rs.split("fsel"))
+fsel = q.FieldSelection()
+fsel.set_rand(geo.total_site(), n_per_tslice, rs.split("fsel"))
 
 fselc = fsel.copy()
 fselc.add_psel(psel)
