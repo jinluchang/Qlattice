@@ -135,22 +135,31 @@ cdef class PointsSelection:
     def set_geo(self, Geometry geo):
         self.geo = geo
 
-    def __getitem__(self, cc.Long idx):
-        cdef Coordinate xg = Coordinate()
-        xg.xx = self.xx[idx]
-        return xg
+    def __setitem__(self, idx, val):
+        """
+        Implemented in terms of ``np.asarray``
+        """
+        np.asarray(self)[idx] = val
 
-    def __setitem__(self, cc.Long idx, Coordinate xg not None):
-        self.xx[idx] = xg.xx
+    def __getitem__(self, idx):
+        """
+        Implemented in terms of ``np.asarray``
+        """
+        return np.asarray(self)[idx]
 
     def __iter__(self):
         cdef cc.Long idx
         cdef cc.Long n_points = self.n_points()
         for idx in range(n_points):
-            yield self[idx]
+            yield self.coordinate_from_idx(idx)
 
     def __len__(self):
         return self.n_points()
+
+    def coordinate_from_idx(self, cc.Long idx):
+        cdef Coordinate xg = Coordinate()
+        xg.xx = self.xx[idx]
+        return xg
 
     def intersect(self, FieldSelection fsel):
         """
@@ -169,10 +178,33 @@ cdef class FieldSelection:
 
     def __cinit__(self):
         self.cdata = <cc.Long>&(self.xx)
+        self.view_count = 0
 
     def __init__(self, Geometry geo=None, cc.Long val=-1):
         if geo is not None:
             self.set_uniform(geo, val);
+
+    def __getbuffer__(self, Py_buffer *buffer, int flags):
+        """
+        Get buffer view of fsel.f_rank field as 1-D array of np.int64
+        The values are rank (rank >= 0 means selected, rank == -1 means not selected)
+        Need to call fsel.update() after modifying the f_rank via this buffer view.
+        """
+        cdef int ndim = 1
+        cdef Buffer buf = Buffer(self, ndim)
+        buf.format = 'q'
+        buf.itemsize = sizeof(cc.Int64t)
+        buf.buf = <char*>(self.xx.f_rank.field.data())
+        cdef int multiplicity = self.xx.f_rank.get_geo().multiplicity
+        assert multiplicity == 1
+        buf.set_dim_size(0, self.xx.f_rank.field.size())
+        buf.update_strides_from_shape()
+        buf.set_buffer(buffer, flags)
+        self.view_count += 1
+
+    def release_buffer(self, Buffer buf):
+        assert buf.obj is self
+        self.view_count -= 1
 
     def __imatmul__(self, FieldSelection v1):
         cc.assign_direct(self.xx, v1.xx)
@@ -199,6 +231,8 @@ cdef class FieldSelection:
         """
         set an empty fsel with geo (all rank=-1)
         """
+        if self.view_count > 0:
+            raise Exception("FieldSelection: self.view_count>0")
         self.set_uniform(geo, -1)
 
     def set_uniform(self, Geometry geo not None, cc.Long val=0):
@@ -206,16 +240,22 @@ cdef class FieldSelection:
         default (val = 0) select every sites
         val = -1 deselection everything
         """
+        if self.view_count > 0:
+            raise Exception("FieldSelection: self.view_count>0")
         self.xx.init()
         cc.mk_field_selection(self.xx.f_rank, geo.xx, val)
         self.update()
 
     def set_rand(self, Coordinate total_site not None, cc.Long n_per_tslice, RngState rs not None):
+        if self.view_count > 0:
+            raise Exception("FieldSelection: self.view_count>0")
         cc.mk_field_selection(self.xx.f_rank, total_site.xx, n_per_tslice, rs.xx)
         self.update()
 
     def set_rand_psel(self, Coordinate total_site not None, cc.Long n_per_tslice, RngState rs not None,
                       PointsSelection psel=None):
+        if self.view_count > 0:
+            raise Exception("FieldSelection: self.view_count>0")
         self.set_rand(total_site, n_per_tslice, rs)
         if psel is not None:
             self.add_psel(psel)
@@ -284,6 +324,8 @@ cdef class FieldSelection:
         return total_bytes
 
     def load(self, const cc.std_string& path):
+        if self.view_count > 0:
+            raise Exception("FieldSelection: self.view_count>0")
         cdef cc.Long total_bytes = cc.read_field_selection(self.xx, path)
         return total_bytes
 
@@ -300,11 +342,29 @@ cdef class FieldSelection:
     def n_elems(self):
         return self.xx.n_elems
 
-    def __getitem__(self, cc.Long idx):
-        cdef Coordinate xg = Coordinate()
-        cdef cc.Long index = self.xx.indices[idx]
-        cc.assign_direct(xg.xx, self.xx.f_local_idx.get_geo().coordinate_from_index(index))
-        return xg
+    def __setitem__(self, idx, val):
+        """
+        Implemented in terms of ``np.asarray``
+        """
+        np.asarray(self)[idx] = val
+
+    def __getitem__(self, idx):
+        """
+        Implemented in terms of ``np.asarray``
+        """
+        return np.asarray(self)[idx]
+
+    def __iter__(self):
+        """
+        iterate over all local selected coordinate as xg
+        """
+        cdef cc.Long idx
+        cdef cc.Long n_elems = self.n_elems()
+        for idx in range(n_elems):
+            yield self.coordinate_from_idx(idx)
+
+    def __len__(self):
+        return self.n_elems()
 
     def idx_from_coordinate(self, Coordinate xg not None):
         cdef cc.Coordinate xl_xx = self.xx.f_local_idx.get_geo().coordinate_l_from_g(xg.xx)
@@ -314,7 +374,8 @@ cdef class FieldSelection:
     def coordinate_from_idx(self, cc.Long idx):
         cdef Coordinate xg = Coordinate()
         cdef cc.Long index = self.xx.indices[idx]
-        cc.assign_direct(xg.xx, self.xx.f_local_idx.get_geo().coordinate_from_index(index))
+        cdef cc.Coordinate xl_xx = self.xx.f_local_idx.get_geo().coordinate_from_index(index)
+        cc.assign_direct(xg.xx, self.xx.f_local_idx.get_geo().coordinate_g_from_l(xl_xx))
         return xg
 
 ### -------------------------------------------------------------------

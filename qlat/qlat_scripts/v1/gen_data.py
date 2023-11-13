@@ -23,6 +23,7 @@ def run_get_inverter(job_tag, traj, *, inv_type, get_gf, get_gt=None, get_eig=No
 @q.timer_verbose
 def compute_prop_full_1(inv, src, *, tag, sfw):
     sol = inv * src
+    q.qnorm_field(sol).save_double(sfw, tag + " ; qnorm_field")
     sol.save_double(sfw, tag)
     sfw.flush()
     return sol
@@ -84,20 +85,232 @@ def run_prop_wsrc_full(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_
 
 # -----------------------------------------------------------------------------
 
+@q.timer
+def avg_weight_from_prop_full(geo, prop_nf_dict, weight_min):
+    """
+    prop_nf_dict[(inv_type, tslice,)] => prop_nf, prop_nf_glb_sum_tslice
+    type(prop_nf) = q.FieldRealD
+    type(prop_nf_glb_sum_tslice) = q.SelectedPointsRealD
+    """
+    fname = q.get_fname()
+    inv_type_names = [ "light", "strange", ]
+    total_site = geo.total_site()
+    n_samples = [ 0, 0, ]
+    avg_nf_glb_sum_tslice = [ 0, 0, ]
+    for k, v in prop_nf_dict.items():
+        inv_type, tslice = k
+        prop_nf, prop_nf_glb_sum_tslice = v
+        gst = np.roll(prop_nf_glb_sum_tslice[:].ravel(), -tslice)
+        n_samples[inv_type] += 1
+        avg_nf_glb_sum_tslice[inv_type] += gst
+    for inv_type in [ 0, 1, ]:
+        inv_type_name = inv_type_names[inv_type]
+        assert n_samples[inv_type] == total_site[3]
+        avg_nf_glb_sum_tslice[inv_type] = avg_nf_glb_sum_tslice[inv_type] / (geo.total_volume() / total_site[3] * n_samples[inv_type])
+        q.displayln_info(-1, fname, "avg_nf_glb_sum_tslice", inv_type_name, avg_nf_glb_sum_tslice[inv_type])
+    local_tsize = geo.local_site()[3]
+    local_tslices = slice(geo.coor_node()[3] * local_tsize, local_tsize, 1)
+    local_field_shape = tuple(reversed(geo.local_site().to_list()))
+    f_weight_avg = []
+    for inv_type in [ 0, 1, ]:
+        f = q.FieldRealD(geo, 1)
+        q.set_zero(f)
+        f_weight_avg.append(f)
+    for k, v in prop_nf_dict.items():
+        inv_type, tslice = k
+        prop_nf, prop_nf_glb_sum_tslice = v
+        avg_gst = avg_nf_glb_sum_tslice[inv_type][:].ravel()
+        avg_gst_local = np.roll(avg_gst, tslice)[local_tslices]
+        weight = prop_nf[:].reshape(local_field_shape) / avg_gst_local[:, None, None, None]
+        # q.displayln_info(q.avg_err(weight.ravel()))
+        view = f_weight_avg[inv_type][:].reshape(local_field_shape)
+        view += weight / n_samples[inv_type]
+    f_weight_final = q.FieldRealD(geo, 1)
+    q.set_zero(f_weight_final)
+    for inv_type in [ 0, 1, ]:
+        f_weight_final[:] += f_weight_avg[inv_type][:] / 2
+        inv_type_name = inv_type_names[inv_type]
+    f_weight_final[:] = np.maximum(weight_min, f_weight_final[:])
+    return f_weight_avg, f_weight_final
+
+@q.timer
+def make_fsel_from_weight(f_weight, f_rand_01, rate):
+    fname = q.get_fname()
+    geo = f_weight.geo()
+    fsel = q.FieldSelection(geo)
+    sel = f_weight[:].ravel() * rate >= f_rand_01[:].ravel()
+    val = np.rint(f_weight[:].ravel()[sel] * 10**8).astype(int)
+    fsel[sel] = val
+    fsel.update()
+    q.displayln_info(-1, f"{fname} rate = {rate} ; expect_num = {geo.total_volume() * rate} ; actual_num = {q.glb_sum(fsel.n_elems())}")
+    return fsel
+
+@q.timer
+def make_psel_from_weight(f_weight, f_rand_01, rate):
+    fsel = make_fsel_from_weight(f_weight, f_rand_01, rate)
+    psel = fsel.to_psel()
+    return psel
+
+@q.timer_verbose
+def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi):
+    """
+    return get_fsel, get_psel
+        fsel = get_fsel()
+        psel = get_psel()
+    Or if wsrc_prop_full is not available
+    return None
+    """
+    fname = q.get_fname()
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    geo = q.Geometry(total_site, 1)
+    fn_fsel_weight = f"{job_tag}/field-selection-weight/traj-{traj}/weight.field"
+    fn_fsel_rand = f"{job_tag}/field-selection-weight/traj-{traj}/f_rand_01.field"
+    fn_fsel = f"{job_tag}/field-selection/traj-{traj}.field"
+    fn_psel = f"{job_tag}/point-selection/traj-{traj}.txt"
+    @q.timer_verbose
+    def load_fsel():
+        fsel = q.FieldSelection()
+        total_size = fsel.load(get_load_path(fn_fsel))
+        assert total_size > 0
+        return fsel
+    @q.timer_verbose
+    def load_psel():
+        psel = q.PointsSelection()
+        psel.load(get_load_path(fn_psel), geo)
+        return psel
+    ret = q.lazy_call(load_fsel), q.lazy_call(load_psel)
+    if get_load_path(fn_fsel) is not None and get_load_path(fn_psel) is not None:
+        if get_load_path(fn_fsel_weight) is None:
+            q.displayln_info(-1, f"WARNING: {fname} {job_tag} {traj} fsel and psel available but no fsel_weight.")
+        return ret
+    inv_type_names = [ "light", "strange", ]
+    path_f_list = [ f"{job_tag}/prop-wsrc-full-{inv_type_name}/traj-{traj}/geon-info.txt" for inv_type_name in inv_type_names ]
+    for inv_type in [ 0, 1, ]:
+        if get_load_path(path_f_list[inv_type]) is None:
+            q.displayln_info(f"WARNING: {fname}: {job_tag} {traj} {inv_type_name} full prop is not available yet.")
+            return None
+    if q.obtain_lock(f"locks/{job_tag}-{traj}-sel-from-wsrc-prop-full"):
+        assert get_load_path(fn_fsel_weight) is None
+        assert get_load_path(fn_fsel_rand) is None
+        assert get_load_path(fn_fsel) is None
+        assert get_load_path(fn_psel) is None
+        wi = get_wi()
+        weight_min = get_param(job_tag, "field-selection-weight-minimum", default=0.3)
+        fsel_rate = get_param(job_tag, "field-selection-fsel-rate")
+        psel_rate = get_param(job_tag, "field-selection-psel-rate")
+        q.displayln_info(-1, fname, f"fsel_rate = {fsel_rate}")
+        q.displayln_info(-1, fname, f"psel_rate = {psel_rate}")
+        prop_nf_dict = dict()
+        f_rand_01 = q.FieldRealD(geo, 1)
+        rs = q.RngState(f"{job_tag}-{traj}").split("run_sel_from_wsrc_prop_full").split("f_rand_01")
+        f_rand_01.set_rand(rs, 1.0, 0.0)
+        f_rand_01.save_double(get_save_path(fn_fsel_rand))
+        for inv_type in [ 0, 1, ]:
+            path_f = path_f_list[inv_type]
+            sfr = q.open_fields(get_load_path(path_f), "r")
+            available_tags = sfr.list()
+            q.displayln_info(0, f"available_tags={available_tags}")
+            for idx, tslice, type, acc in wi:
+                if type != inv_type:
+                    continue
+                if acc != 1:
+                    continue
+                tag = f"tslice={tslice} ; type={type} ; accuracy={acc}"
+                q.displayln_info(0, f"{fname}: idx={idx} tag='{tag}'")
+                if not sfr.has(tag):
+                    raise Exception(f"{tag} not in {sfr.list()}")
+                prop_nf = q.FieldRealD(geo, 1)
+                q.set_zero(prop_nf)
+                prop_nf.load_double(sfr, tag + " ; qnorm_field")
+                prop_nf_dict[(inv_type, tslice,)] = prop_nf, prop_nf.glb_sum_tslice()
+        f_weight_avg, f_weight_final = avg_weight_from_prop_full(geo, prop_nf_dict, weight_min)
+        for inv_type in [ 0, 1, ]:
+            inv_type_name = inv_type_names[inv_type]
+            f_weight_avg[inv_type].save_double(get_save_path(f"{job_tag}/field-selection-weight/traj-{traj}/weight-{inv_type_name}.field"))
+            q.displayln_info(-1, fname, "field-selection-weight", inv_type_name, f_weight_avg[inv_type].glb_sum_tslice()[:].ravel())
+        f_weight_final.save_double(get_save_path(fn_fsel_weight))
+        q.displayln_info(-1, fname, "field-selection-weight final", f_weight_final.glb_sum_tslice()[:].ravel())
+        fsel = make_fsel_from_weight(f_weight_final, f_rand_01, fsel_rate)
+        psel = make_psel_from_weight(f_weight_final, f_rand_01, psel_rate)
+        fsel.save(get_save_path(fn_fsel))
+        psel.save(get_save_path(fn_psel))
+        q.release_lock()
+        return ret
+
+# -----------------------------------------------------------------------------
+
+@q.timer_verbose
+def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel, get_wi):
+    fname = q.get_fname()
+    if None in [ get_gt, get_psel, get_fsel, ]:
+        return
+    inv_type_names = [ "light", "strange", ]
+    inv_type_name = inv_type_names[inv_type]
+    path_f = f"{job_tag}/prop-wsrc-full-{inv_type_name}/traj-{traj}/geon-info.txt"
+    path_s = f"{job_tag}/prop-wsrc-{inv_type_name}/traj-{traj}"
+    path_sp = f"{job_tag}/psel-prop-wsrc-{inv_type_name}/traj-{traj}"
+    if get_load_path(path_f) is None:
+        q.displayln_info(f"WARNING: {fname}: {job_tag} {traj} {inv_type_name} full prop is not available yet.")
+        return
+    if get_load_path(path_s + "/geon-info.txt") is not None:
+        return
+    if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-{inv_type_name}"):
+        total_site = q.Coordinate(get_param(job_tag, "total_site"))
+        geo = q.Geometry(total_site, 1)
+        gt = get_gt()
+        fsel = get_fsel()
+        psel = get_psel()
+        wi = get_wi()
+        finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
+        q.displayln_info(0, f"finished_tags={finished_tags}")
+        sfr = q.open_fields(get_load_path(path_f), "r")
+        available_tags = sfr.list()
+        q.displayln_info(0, f"available_tags={available_tags}")
+        sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
+        prop = q.Prop(geo)
+        s_prop = q.SelProp(fsel)
+        ps_prop = q.PselProp(psel)
+        for idx, tslice, type, acc in wi:
+            if type != inv_type:
+                continue
+            tag = f"tslice={tslice} ; type={type} ; accuracy={acc}"
+            if tag in finished_tags:
+                continue
+            q.displayln_info(-1, f"{fname}: idx={idx} tag='{tag}'")
+            if not sfr.has(tag):
+                raise Exception(f"{tag} not in {sfr.list()}")
+            q.set_zero(prop)
+            q.set_zero(s_prop)
+            q.set_zero(ps_prop)
+            prop.load_double(sfr, tag)
+            s_prop @= prop
+            ps_prop @= prop
+            ps_prop_ws = prop.glb_sum_tslice()
+            fn_sp = os.path.join(path_sp, f"{tag}.lat")
+            fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
+            ps_prop.save(get_save_path(fn_sp))
+            ps_prop_ws.save(get_save_path(fn_spw))
+            s_prop.save_float_from_double(sfw, tag)
+            sfw.flush()
+        q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
+        q.release_lock()
+
+# -----------------------------------------------------------------------------
+
 @q.timer_verbose
 def compute_prop_1(inv, src, *, tag, sfw, path_sp, psel, fsel):
     fn_sp = os.path.join(path_sp, f"{tag}.lat")
     fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
     sol = inv * src
+    sp_sol = q.PselProp(psel)
+    sp_sol @= sol
+    sp_sol.save(get_save_path(fn_sp))
+    sol_ws = sol.glb_sum_tslice()
+    sol_ws.save(get_save_path(fn_spw))
     s_sol = q.SelProp(fsel)
     s_sol @= sol
     s_sol.save_float_from_double(sfw, tag)
-    sp_sol = q.PselProp(psel)
-    sp_sol @= s_sol
-    sp_sol.save(get_save_path(fn_sp))
     sfw.flush()
-    sol_ws = sol.glb_sum_tslice()
-    sol_ws.save(get_save_path(fn_spw))
     return sol
 
 @q.timer
@@ -172,16 +385,16 @@ def compute_prop_2(inv, src, *, tag, sfw, path_sp, psel, fsel, gt):
     fn_sp = os.path.join(path_sp, f"{tag}.lat")
     fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
     sol = inv * src
-    s_sol = q.SelProp(fsel)
-    s_sol @= sol
-    s_sol.save_float_from_double(sfw, tag)
     sp_sol = q.PselProp(psel)
-    sp_sol @= s_sol
+    sp_sol @= sol
     sp_sol.save(get_save_path(fn_sp))
-    sfw.flush()
     sol_gt = gt * sol
     sol_ws = sol_gt.glb_sum_tslice()
     sol_ws.save(get_save_path(fn_spw))
+    s_sol = q.SelProp(fsel)
+    s_sol @= sol
+    s_sol.save_float_from_double(sfw, tag)
+    sfw.flush()
     return sol
 
 @q.timer
@@ -342,13 +555,9 @@ def compute_prop_3(inv, src_smear, *, tag, sfw, path_sp, psel, fsel, gt, psel_sm
     fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
     fn_sps = os.path.join(path_sp, f"{tag} ; smear-snk.lat")
     sol = inv * src_smear
-    s_sol = q.SelProp(fsel)
-    s_sol @= sol
-    s_sol.save_float_from_double(sfw, tag)
     sp_sol = q.PselProp(psel)
-    sp_sol @= s_sol
+    sp_sol @= sol
     sp_sol.save(get_save_path(fn_sp))
-    sfw.flush()
     sol_gt = gt * sol
     sol_ws = sol_gt.glb_sum_tslice()
     sol_ws.save(get_save_path(fn_spw))
@@ -356,6 +565,10 @@ def compute_prop_3(inv, src_smear, *, tag, sfw, path_sp, psel, fsel, gt, psel_sm
     sol_smear_psel = q.PselProp(psel_smear)
     sol_smear_psel @= sol_smear
     sol_smear_psel.save(get_save_path(fn_sps))
+    s_sol = q.SelProp(fsel)
+    s_sol @= sol
+    s_sol.save_float_from_double(sfw, tag)
+    sfw.flush()
     return sol
 
 @q.timer

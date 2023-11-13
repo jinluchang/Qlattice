@@ -50,7 +50,7 @@ inv_acc = 0
 
 inv = mk_inverter(gf, job_tag, inv_type, inv_acc, n_grouped = q.get_num_node())
 
-xg = psel_smear[0]
+xg = q.Coordinate(psel_smear[0])
 
 tag = f"smear ; xg={tuple(xg.to_list())} ; type={inv_type} ; accuracy={inv_acc}"
 
