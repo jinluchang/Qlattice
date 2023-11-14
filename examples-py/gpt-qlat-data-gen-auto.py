@@ -1220,26 +1220,26 @@ def run_job(job_tag, traj):
     #
     run_wsrc_full()
     #
-    # get_fsel, get_psel, get_fsel_prob, get_psel_prob = run_fsel_psel_from_wsrc_prop_full(job_tag, traj, get_wi=get_wi)
+    get_fsel, get_psel, get_fsel_prob, get_psel_prob = run_fsel_psel_from_wsrc_prop_full(job_tag, traj, get_wi=get_wi)
     #
-    get_psel = run_psel(job_tag, traj)
-    get_fsel = run_fsel(job_tag, traj)
-    @q.lazy_call
-    def get_psel_prob():
-        total_site = q.Coordinate(get_param(job_tag, "total_site"))
-        geo = q.Geometry(total_site)
-        psel = get_psel()
-        psel_prob = q.SelectedPointsRealD(psel, 1)
-        psel_prob[:] = psel.n_points() / geo.total_volume()
-        return psel_prob
-    @q.lazy_call
-    def get_fsel_prob():
-        total_site = q.Coordinate(get_param(job_tag, "total_site"))
-        geo = q.Geometry(total_site)
-        fsel = get_fsel()
-        fsel_prob = q.SelectedFieldRealD(fsel, 1)
-        fsel_prob[:] = q.glb_sum(fsel.n_elems()) / geo.total_volume()
-        return fsel_prob
+    # get_psel = run_psel(job_tag, traj)
+    # get_fsel = run_fsel(job_tag, traj)
+    # @q.lazy_call
+    # def get_psel_prob():
+    #     total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    #     geo = q.Geometry(total_site)
+    #     psel = get_psel()
+    #     psel_prob = q.SelectedPointsRealD(psel, 1)
+    #     psel_prob[:] = psel.n_points() / geo.total_volume()
+    #     return psel_prob
+    # @q.lazy_call
+    # def get_fsel_prob():
+    #     total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    #     geo = q.Geometry(total_site)
+    #     fsel = get_fsel()
+    #     fsel_prob = q.SelectedFieldRealD(fsel, 1)
+    #     fsel_prob[:] = q.glb_sum(fsel.n_elems()) / geo.total_volume()
+    #     return fsel_prob
     #
     get_fselc = run_fselc(job_tag, traj, get_fsel, get_psel)
     #
