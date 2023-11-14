@@ -4,8 +4,8 @@ from . import c
 
 class QMAction:
 
-    def __init__(self, lmbd, v0, alpha, m_particle, dt):
-        self.cdata = c.mk_qm_action(lmbd, v0, alpha, m_particle, dt)
+    def __init__(self, lmbd, v0, alpha, barrier_strength, t_full, t_FV, t_ramp, m_particle, dt):
+        self.cdata = c.mk_qm_action(lmbd, v0, alpha, barrier_strength, t_full, t_FV, t_ramp, m_particle, dt)
 
     def __del__(self):
         assert isinstance(self.cdata, int)
@@ -25,11 +25,29 @@ class QMAction:
     def alpha(self):
         return c.get_alpha_qm_action(self)
 
+    def barrier_strength(self):
+        return c.get_barrier_strength_qm_action(self)
+
+    def t_FV(self):
+        return c.get_t_FV_qm_action(self)
+
+    def t_full(self):
+        return c.get_t_full_qm_action(self)
+
+    def t_ramp(self):
+        return c.get_t_ramp_qm_action(self)
+
     def m_particle(self):
         return c.get_m_particle_qm_action(self)
 
     def dt(self):
         return c.get_dt_qm_action(self)
+    
+    def V(self, x, t):
+        return c.V_qm_action(self, x, t)
+    
+    def dV(self, x, t):
+        return c.dV_qm_action(self, x, t)
 
     def action_node(self, f):
         assert isinstance(f, FieldBase)

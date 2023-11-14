@@ -8,6 +8,12 @@ struct QMAction {
   double lmbd;
   double v0;
   double alpha;
+  double barrier_strength;
+  double M;
+  double L;
+  long t_full;
+  long t_FV;
+  //float t_ramp;
   double m_particle;
   double dt;
   //
@@ -17,59 +23,126 @@ struct QMAction {
     lmbd = 0.01;
     v0 = 3.0;
     alpha = 0.0;
+    barrier_strength = 1.0;
+    M = 1.0;
+    L = 0.0;
+    t_full = 10;
+    t_FV = 10;
+    //t_ramp = 5.0;
     m_particle = 1.0;
     dt = 1.0;
   }
   //
   qacc QMAction() { init(); }
   qacc QMAction(const double lmbd_, const double v0_, const double alpha_,
+                const double barrier_strength_, const double M_, 
+                const double L_, const long t_full_, const long t_FV_, 
                 const double m_particle_, const double dt_)
   {
     init();
     initialized = true;
     lmbd = lmbd_;
     alpha = alpha_;
+    barrier_strength = barrier_strength_;
+    M = M_;
+    L = L_;
+    t_full = t_full_;
+    t_FV = t_FV_;
+    //t_ramp = t_ramp_;
     v0 = v0_;
     m_particle = m_particle_;
     dt = dt_;
   }
-
-  inline double V(const double x)
+  
+  inline double V(const double x, const long t)
   {
     // Returns the potential evaluated at point x
-    if (x > v0) {
-      if (dV_phi4(x) > 0) {
-        return 0;
-      } else {
-        // I am not sure what to do here. Only try to fix warning messages from compilers. --LJ
-        qassert(false);
-        return 0;
-      }
-    } else {
-      return lmbd * (x * x - v0 * v0) * (x * x - v0 * v0) - alpha * x;
-    }
+    if(t<t_full)
+        return V_full(x);
+    else if(t<t_full+t_FV)
+      return V_FV(x);
+    else if(t<2*t_full+t_FV)
+      return V_full(x);
+    else
+     return V_TV(x);
+  }
+  
+  inline double dV(const double x, const long t)
+  {
+    // Returns the potential evaluated at point x
+    if(t<t_full)
+        return dV_full(x);
+    else if(t<t_full+t_FV)
+      return dV_FV(x);
+    else if(t<2*t_full+t_FV)
+      return dV_full(x);
+    else
+     return dV_TV(x);
   }
 
+  inline double V_phi4(const double x)
+  {
+    return lmbd*(x*x - v0*v0)*(x*x - v0*v0) - alpha*x;
+  }
+  
   inline double dV_phi4(const double x)
   {
     // Returns the derivative of the potential with respect to x
     return 4.0*lmbd*x*(x*x-v0*v0) - alpha;
   }
   
-  inline double dV(const double x)
+  inline double V_full(const double x)
+  {
+    // Returns the potential evaluated at point x
+    if(x>v0) {
+      if(dV_phi4(x)>0) return 0.0;
+    }
+    return V_phi4(x);
+  }
+  
+  inline double dV_full(const double x)
   {
     double rtn = dV_phi4(x);
-    if (x > v0) {
-      if (rtn > 0) {
-        return 0;
-      } else {
-        // I am not sure what to do here. Only try to fix warning messages from compilers. --LJ
-        qassert(false);
-        return 0;
-      }
-    } else {
-      return rtn;
+    if(x>v0) {
+      if(rtn>0) return 0.0;
     }
+    return rtn;
+  }
+  
+  inline double V_FV(const double x)
+  {
+    double rtn = V_full(x);
+    if(x>0)
+      rtn += barrier_strength*x*x;
+    return rtn;
+  }
+  
+  inline double dV_FV(const double x)
+  {
+    double rtn = dV_full(x);
+    if(x>0)
+      rtn += 2.0*barrier_strength*x;
+    return rtn;
+  }
+  
+  inline double V_TV(const double x)
+  {
+    double rtn = V_full(x);
+    if(x<0)
+      rtn += M*barrier_strength*x*x;
+    else
+      rtn += L*barrier_strength*x*x;
+    return rtn;
+  }
+  
+  inline double dV_TV(const double x)
+  {
+    double rtn = dV_full(x);
+    if(x<0)
+      rtn += M*2.0*barrier_strength*x;
+    if(x>0)
+      rtn += L*2.0*barrier_strength*x;
+    return rtn;
   }
 
   qacc double action_point(QMAction& qma, const Field<double>& f, Coordinate xl)
@@ -78,10 +151,10 @@ struct QMAction {
     // point (including the relavent neighbor interactions)
     // TIMER("QMAction.action_point");
     double psi = f.get_elem(xl);
-    // xl[3]+=1;
-    // double psi_eps = f.get_elem(xl);
-    // xl[3]-=1;
-    return qma.V(psi);//(m_particle/2.0/qma.dt/qma.dt)*(psi_eps-psi)*(psi_eps-psi) + qma.V(psi);
+    xl[3]+=1;
+    double psi_eps = f.get_elem(xl);
+    xl[3]-=1;
+    return (m_particle/2.0/qma.dt/qma.dt)*(psi_eps-psi)*(psi_eps-psi) + qma.V(psi, xl[3]);
   }
 
   inline double action_node_no_comm(const Field<double>& f)
@@ -187,13 +260,13 @@ struct QMAction {
       Vector<double> force_v = force.get_elems(xl);
       qassert(force_v.size() == 1);
       double psi = f.get_elem(xl);
-      force_v[0] = 0;//2 * qma.m_particle * psi;
-      force_v[0] += qma.dV(psi);
-      //xl[3] += 1;
-      //force_v[0] -= qma.m_particle * f.get_elem(xl);
-      //xl[3] -= 2;
-      //force_v[0] -= qma.m_particle * f.get_elem(xl);
-      //xl[3] += 1;
+      force_v[0] = 2.0 * qma.m_particle / qma.dt / qma.dt * psi;
+      force_v[0] += qma.dV(psi,xl[3]);
+      xl[3] += 1;
+      force_v[0] -= qma.m_particle / qma.dt / qma.dt * f.get_elem(xl);
+      xl[3] -= 2;
+      force_v[0] -= qma.m_particle / qma.dt / qma.dt * f.get_elem(xl);
+      xl[3] += 1;
     });
   }
 

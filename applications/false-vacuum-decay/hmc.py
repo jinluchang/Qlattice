@@ -6,6 +6,7 @@ import pickle
 import datetime
 import glob
 import fnmatch
+import matplotlib.pyplot as plt
 
 import qlat as q
 
@@ -42,6 +43,7 @@ class HMC:
         
         if(fresh_start):
             self.field.set_unit()
+            self.field *= -3.0
         else:
             self.load_field()
         
@@ -54,7 +56,7 @@ class HMC:
             self.run_hmc(self.rs.split(f"hmc-{self.traj}"))
         else:
             self.perform_metro = True
-            self.run_hmc(self.rs.split("hmc-{self.traj}"))
+            self.run_hmc(self.rs.split(f"hmc-{self.traj}"))
         self.traj += 1
     
     def load_field(self):
@@ -68,7 +70,7 @@ class HMC:
             # without a metropolis accept/reject step
             self.init_length = 0
         else:
-            self.field.set_unit()
+            self.field.set_zero()
     
     def save_field(self):
         self.field.save_double(f"output_data/fields/fvd_traj_{self.traj}_{self.fileid}.field")
@@ -126,6 +128,12 @@ class HMC:
         # point because of the momentum-dependent mass term used for Fourier
         # acceleration
         self.action.hmc_set_rand_momentum(self.momentum, rs.split("set_rand_momentum"))
+        #q.displayln_info(f"Initial momentum:")
+        #q.displayln_info([self.momentum.get_elem_xg(q.Coordinate([0,0,0,0]),0)[:].item(),
+        #        self.momentum.get_elem_xg(q.Coordinate([0,0,0,5]),0)[:].item(),
+        #        self.momentum.get_elem_xg(q.Coordinate([0,0,0,10]),0)[:].item(),
+        #        self.momentum.get_elem_xg(q.Coordinate([0,0,0,15]),0)[:].item(),
+        #        self.momentum.get_elem_xg(q.Coordinate([0,0,0,20]),0)[:].item()])
         
         # Evolve the field over time md_time using the given momenta and
         # the Hamiltonian appropriate for the given action
@@ -149,7 +157,6 @@ class HMC:
         
         # Evolve the field forward in molecular dynamics time using the
         # given momenta and the Hamiltonian appropriate for the action
-        dt = 1/self.steps
         self.hmc_evolve(field, momentum)
         
         # Calculate the change in the value of the molecular dynamics
@@ -242,6 +249,7 @@ class Measurements:
         #
         self.fields=[]
         self.momentums=[]
+        self.forces=[]
     
     def measure(self, hmc):
         self.trajs.append(hmc.traj)
@@ -254,7 +262,8 @@ class Measurements:
         self.phi_list.append([field_sum[i]/hmc.field.geo().total_volume() for i in range(hmc.mult)])
         #
         self.momentums.append(self.get_representatives(hmc.momentum))
-        self.fields.append(self.get_representatives(hmc.f0))
+        self.fields.append(self.get_representatives(hmc.field))
+        self.forces.append(self.get_representatives(hmc.force))
         #
         self.timeslices.append(hmc.field.glb_sum_tslice().to_numpy())
     
@@ -265,14 +274,76 @@ class Measurements:
         q.displayln_info(self.psq_list[-1])
         #q.displayln_info("Field:")
         #q.displayln_info(self.fields[-1])
+        #q.displayln_info("Forces:")
+        #q.displayln_info(self.forces[-1])
         #q.displayln_info("Momentum:")
         #q.displayln_info(self.momentums[-1])
+    
+    def plot_measurements(self):
+        plt.plot(range(60),self.fields[-1])
+        plt.show()
     
     def get_representatives(self, field):
         return [field.get_elem_xg(q.Coordinate([0,0,0,0]),0)[:].item(),
                 field.get_elem_xg(q.Coordinate([0,0,0,1]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,2]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,3]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,4]),0)[:].item(),
                 field.get_elem_xg(q.Coordinate([0,0,0,5]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,10]),0)[:].item()]
+                field.get_elem_xg(q.Coordinate([0,0,0,6]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,7]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,8]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,9]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,10]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,11]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,12]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,13]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,14]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,15]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,16]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,17]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,18]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,19]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,20]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,21]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,22]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,23]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,24]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,25]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,26]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,27]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,28]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,29]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,30]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,31]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,32]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,33]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,34]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,35]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,36]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,37]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,38]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,39]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,40]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,41]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,42]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,43]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,44]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,45]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,46]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,47]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,48]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,49]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,50]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,51]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,52]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,53]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,54]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,55]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,56]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,57]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,58]),0)[:].item(),
+                field.get_elem_xg(q.Coordinate([0,0,0,59]),0)[:].item(),]
     
     def calc_psq(self, field, action):
         # Calculate the average value of phi^2
@@ -311,20 +382,24 @@ def main():
     lmbd = 0.01
     v0 = 3.0
     alpha = 0.0
+    barrier_strength = 0.2
+    t_full = 10
+    t_FV = 10
+    t_ramp = 0.1
     m_particle = 1.0
-    dt = 0.1
+    dt = 1.0
     # The number of trajectories to calculate
     n_traj = 1000
     #
     version = "0-0"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
-    steps = 100
+    steps = 20
     #
     init_length = 20
     fresh_start = False
     # The number of trajectories to run before each save
-    save_frequency = 50
+    save_frequency = 1000
     
     for i in range(1,len(sys.argv)):
         try:
@@ -346,7 +421,7 @@ def main():
         except:
             raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -s for the number of steps in a trajectory, -R to force restarting with blank initial field, -i for the number of trajectories to do at the beginning without a Metropolis step, and -S for the number of trajectories to run before each save. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1 -t 10000")
     
-    action = q.QMAction(lmbd, v0, alpha, m_particle, dt)
+    action = q.QMAction(lmbd, v0, alpha, barrier_strength, t_full, t_FV, t_ramp, m_particle, dt)
     hmc = HMC(action,f"lmbd_{lmbd}_v0_{v0}_alpha_{alpha}",total_site,mult,steps,init_length,date,version,fresh_start)
     measurements = Measurements(total_site, hmc.field.geo(), f"output_data/measurements_{hmc.fileid}.bin")
     
@@ -359,6 +434,8 @@ def main():
         hmc.run_traj()
         measurements.measure(hmc)
         measurements.display_measurements()
+        #if hmc.traj%10 == 0:
+        #    measurements.plot_measurements()
         
         if hmc.traj%save_frequency == 0:
             hmc.save_field()
@@ -368,6 +445,17 @@ def main():
     # started where this one left off
     hmc.save_field()
     measurements.save()
+    
+    plt.plot(range(60),np.mean(measurements.fields[-500:], axis=0))
+    plt.show()
+    
+    #x = np.arange(-5,5,0.1)
+    #for t in range(0,60,1):
+    #    plt.plot(x, [(action.V(i+0.1,t)-action.V(i,t))/0.1 for i in x])
+    #    plt.plot(x, [action.dV(i,t) for i in x])
+    #    plt.show()
+    
+    q.displayln_info(f"Acceptance rate: {np.mean(measurements.accept_rates[-500:])}")
     
     q.displayln_info(f"CHECK: The vacuum expectation value of phi_0 is {round(np.mean(measurements.phi_list[int(n_traj/2):], axis=0)[0],2)}.")
     q.displayln_info(f"CHECK: The vacuum expectation value of phi^2 is {round(np.mean(measurements.psq_list[int(n_traj/2):]),2)}.")
