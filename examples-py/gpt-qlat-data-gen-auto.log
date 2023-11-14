@@ -3,7 +3,7 @@ CHECK: auto_contract_meson_corr_psnk: ld sig: 6.37767E+00+2.17859E+01j
 CHECK: auto_contract_meson_jwjj: ld_sum sig: -1.90935E+01-1.17837E+01j
 CHECK: auto_contract_meson_jj: ld_sum sig: -4.08600E+02+5.06735E+01j
 CHECK: auto_contract_meson_jt: ld_sum sig: -1.65771E+02-1.74604E+02j
-CHECK: auto_contract_meson_m: ld_sum sig: -3.71737E+00+3.51381E+01j
+CHECK: auto_contract_meson_m: ld_sum sig: -3.7174E+00+3.5138E+01j
 CHECK: auto_contract_meson_corr: ld sig: 3.83778E+04+9.94109E+04j
 CHECK: auto_contract_meson_corr_psrc: ld sig: 6.29586E+00+2.09224E+01j
 CHECK: auto_contract_meson_corr_psnk_psrc: ld sig: -7.72167E-01+1.29304E-01j

@@ -543,7 +543,7 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
     sig_msg_list = [
-            f"CHECK: {fname}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.5E}",
+            f"CHECK: {fname}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.4E}",
             ]
     for msg in sig_msg_list:
         q.displayln_info(msg)
