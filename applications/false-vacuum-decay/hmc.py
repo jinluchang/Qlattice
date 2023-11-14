@@ -284,66 +284,7 @@ class Measurements:
         plt.show()
     
     def get_representatives(self, field):
-        return [field.get_elem_xg(q.Coordinate([0,0,0,0]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,1]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,2]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,3]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,4]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,5]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,6]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,7]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,8]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,9]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,10]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,11]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,12]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,13]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,14]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,15]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,16]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,17]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,18]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,19]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,20]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,21]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,22]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,23]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,24]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,25]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,26]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,27]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,28]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,29]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,30]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,31]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,32]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,33]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,34]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,35]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,36]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,37]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,38]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,39]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,40]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,41]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,42]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,43]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,44]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,45]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,46]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,47]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,48]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,49]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,50]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,51]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,52]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,53]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,54]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,55]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,56]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,57]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,58]),0)[:].item(),
-                field.get_elem_xg(q.Coordinate([0,0,0,59]),0)[:].item(),]
+        return [field.get_elem_xg(q.Coordinate([0,0,0,i]),0)[:].item() for i in range(0,400,10)]
     
     def calc_psq(self, field, action):
         # Calculate the average value of phi^2
@@ -376,18 +317,18 @@ class Measurements:
 @q.timer_verbose
 def main():
     # The lattice dimensions
-    total_site = q.Coordinate([1,1,1,64])
+    total_site = q.Coordinate([1,1,1,400])
     # The multiplicity of the field
     mult = 1
     lmbd = 0.01
     v0 = 3.0
     alpha = 0.0
-    barrier_strength = 0.2
-    t_full = 10
-    t_FV = 10
-    t_ramp = 0.1
+    barrier_strength = 1.0
+    t_full = 200
+    t_FV = 100
+    t_ramp = 1.0
     m_particle = 1.0
-    dt = 1.0
+    dt = 0.05
     # The number of trajectories to calculate
     n_traj = 1000
     #
@@ -437,23 +378,22 @@ def main():
         #if hmc.traj%10 == 0:
         #    measurements.plot_measurements()
         
-        if hmc.traj%save_frequency == 0:
-            hmc.save_field()
-            measurements.save()
+        #if hmc.traj%save_frequency == 0:
+        #    hmc.save_field()
+        #    measurements.save()
     
     # Saves the final field configuration so that the next run can be
     # started where this one left off
-    hmc.save_field()
-    measurements.save()
+    #hmc.save_field()
+    #measurements.save()
     
-    plt.plot(range(60),np.mean(measurements.fields[-500:], axis=0))
+    plt.plot(np.mean(measurements.fields[-500:], axis=0))
     plt.show()
     
     #x = np.arange(-5,5,0.1)
     #for t in range(0,60,1):
-    #    plt.plot(x, [(action.V(i+0.1,t)-action.V(i,t))/0.1 for i in x])
-    #    plt.plot(x, [action.dV(i,t) for i in x])
-    #    plt.show()
+    #    plt.plot(x, [action.V(i,t) for i in x])
+    #plt.show()
     
     q.displayln_info(f"Acceptance rate: {np.mean(measurements.accept_rates[-500:])}")
     
