@@ -109,7 +109,9 @@ def avg_weight_from_prop_full(geo, prop_nf_dict, weight_min):
         avg_nf_glb_sum_tslice[inv_type] = avg_nf_glb_sum_tslice[inv_type] / (geo.total_volume() / total_site[3] * n_samples[inv_type])
         q.displayln_info(-1, fname, "avg_nf_glb_sum_tslice", inv_type_name, avg_nf_glb_sum_tslice[inv_type])
     local_tsize = geo.local_site()[3]
-    local_tslices = slice(geo.coor_node()[3] * local_tsize, local_tsize, 1)
+    local_t_start = geo.coor_node()[3] * local_tsize
+    local_t_end = local_t_start + local_tsize
+    local_tslices = slice(local_t_start, local_t_end, 1)
     local_field_shape = tuple(reversed(geo.local_site().to_list()))
     f_weight_avg = []
     for inv_type in [ 0, 1, ]:
@@ -140,6 +142,7 @@ def make_fsel_from_weight(f_weight, f_rand_01, rate):
     fsel = q.FieldSelection(geo)
     sel = f_weight[:].ravel() * rate >= f_rand_01[:].ravel()
     val = np.rint(f_weight[:].ravel()[sel] * 10**8).astype(int)
+    assert np.all(val >= 0)
     fsel[sel] = val
     fsel.update()
     q.displayln_info(-1, f"{fname} rate = {rate} ; expect_num = {geo.total_volume() * rate} ; actual_num = {q.glb_sum(fsel.n_elems())}")
@@ -164,24 +167,45 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site, 1)
     fn_fsel_weight = f"{job_tag}/field-selection-weight/traj-{traj}/weight.field"
-    fn_fsel_rand = f"{job_tag}/field-selection-weight/traj-{traj}/f_rand_01.field"
+    fn_fsel_rand = f"{job_tag}/field-selection-weight/traj-{traj}/f-rand-01.field"
     fn_fsel = f"{job_tag}/field-selection/traj-{traj}.field"
     fn_psel = f"{job_tag}/point-selection/traj-{traj}.txt"
+    fn_fsel_prob = f"{job_tag}/field-selection-weight/traj-{traj}/fsel-prob.sfield"
+    fn_psel_prob = f"{job_tag}/field-selection-weight/traj-{traj}/psel-prob.lat"
+    @q.lazy_call
     @q.timer_verbose
-    def load_fsel():
+    def get_fsel_prob():
         fsel = q.FieldSelection()
         total_size = fsel.load(get_load_path(fn_fsel))
         assert total_size > 0
-        return fsel
+        fsel_prob = q.SelectedFieldRealD(fsel, 1)
+        total_size = fsel_prob.load_double(get_load_path(fn_fsel_prob))
+        assert total_size > 0
+        return fsel_prob
+    @q.lazy_call
     @q.timer_verbose
-    def load_psel():
+    def get_psel_prob():
         psel = q.PointsSelection()
         psel.load(get_load_path(fn_psel), geo)
-        return psel
-    ret = q.lazy_call(load_fsel), q.lazy_call(load_psel)
-    if get_load_path(fn_fsel) is not None and get_load_path(fn_psel) is not None:
-        if get_load_path(fn_fsel_weight) is None:
-            q.displayln_info(-1, f"WARNING: {fname} {job_tag} {traj} fsel and psel available but no fsel_weight.")
+        psel_prob = q.SelectedPointsRealD(psel, 1)
+        psel_prob.load(get_load_path(fn_psel_prob))
+        return psel_prob
+    @q.lazy_call
+    @q.timer_verbose
+    def get_fsel():
+        fsel_prob = get_fsel_prob()
+        return fsel_prob.fsel
+    @q.lazy_call
+    @q.timer_verbose
+    def get_psel():
+        psel_prob = get_psel_prob()
+        return psel_prob.psel
+    ret = get_fsel, get_psel, get_fsel_prob, get_psel_prob
+    if get_load_path(fn_fsel_prob) is not None and get_load_path(fn_psel_prob) is not None:
+        assert get_load_path(fn_fsel) is not None
+        assert get_load_path(fn_psel) is not None
+        assert get_load_path(fn_fsel_rand) is not None
+        assert get_load_path(fn_fsel_weight) is not None
         return ret
     inv_type_names = [ "light", "strange", ]
     path_f_list = [ f"{job_tag}/prop-wsrc-full-{inv_type_name}/traj-{traj}/geon-info.txt" for inv_type_name in inv_type_names ]
@@ -194,12 +218,16 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi):
         assert get_load_path(fn_fsel_rand) is None
         assert get_load_path(fn_fsel) is None
         assert get_load_path(fn_psel) is None
+        assert get_load_path(fn_fsel_prob) is None
+        assert get_load_path(fn_psel_prob) is None
         wi = get_wi()
         weight_min = get_param(job_tag, "field-selection-weight-minimum", default=0.3)
         fsel_rate = get_param(job_tag, "field-selection-fsel-rate")
         psel_rate = get_param(job_tag, "field-selection-psel-rate")
         q.displayln_info(-1, fname, f"fsel_rate = {fsel_rate}")
         q.displayln_info(-1, fname, f"psel_rate = {psel_rate}")
+        assert fsel_rate is not None
+        assert psel_rate is not None
         prop_nf_dict = dict()
         f_rand_01 = q.FieldRealD(geo, 1)
         rs = q.RngState(f"{job_tag}-{traj}").split("run_sel_from_wsrc_prop_full").split("f_rand_01")
@@ -234,6 +262,14 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi):
         psel = make_psel_from_weight(f_weight_final, f_rand_01, psel_rate)
         fsel.save(get_save_path(fn_fsel))
         psel.save(get_save_path(fn_psel))
+        fsel_prob = q.SelectedFieldRealD(fsel, 1)
+        fsel_prob @= f_weight_final
+        fsel_prob[:] = np.minimum(1.0, fsel_prob[:] * fsel_rate)
+        psel_prob = q.SelectedPointsRealD(psel, 1)
+        psel_prob @= f_weight_final
+        psel_prob[:] = np.minimum(1.0, psel_prob[:] * psel_rate)
+        fsel_prob.save_double(get_save_path(fn_fsel_prob))
+        psel_prob.save(get_save_path(fn_psel_prob))
         q.release_lock()
         return ret
 

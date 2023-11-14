@@ -73,13 +73,27 @@ Long write_selected_field(const SelectedField<M>& sf, const std::string& path,
   shuffle_field(sfs, sf, sp);
   qassert(fsels.size() == sfs.size());
   const int new_num_node = product(new_size_node);
+  std::vector<Long> n_elems_vec(new_num_node, 0);
+  for (size_t i = 0; i < sfs.size(); ++i) {
+    const int id_node = fsels[i].f_rank.geo().geon.id_node;
+    n_elems_vec[id_node] = fsels[i].n_elems;
+    sfs[i].init(fsels[i], geo.multiplicity);
+  }
+  glb_sum_long_vec(get_data(n_elems_vec));
+  std::vector<Long> data_offset_vec(new_num_node + 1, 0);
+  Long total_bytes = 0;
+  for (int i = 0; i < new_num_node; ++i) {
+    data_offset_vec[i] = total_bytes;
+    total_bytes += n_elems_vec[i] * geo.multiplicity * sizeof(M);
+  }
+  data_offset_vec[new_num_node] = total_bytes;
   crc32_t crc = 0;
   for (int i = 0; i < (int)sfs.size(); ++i) {
     const int new_id_node = sfs[i].geo().geon.id_node;
     qassert(sfs[i].geo().geon.num_node == new_num_node);
     const Vector<M> v = get_data(sfs[i].field);
     crc ^= crc32_shift(crc32_par(v),
-                       (new_num_node - new_id_node - 1) * v.data_size());
+                       (total_bytes - data_offset_vec[new_id_node + 1]));
   }
   glb_sum_byte(crc);
   if (get_force_field_write_sizeof_M() == 0) {
@@ -121,8 +135,6 @@ Long write_selected_field(const SelectedField<M>& sf, const std::string& path,
     }
   }
   qrename_info(path + ".partial", path);
-  Long total_bytes = fsel.n_elems * geo.multiplicity * sizeof(M);
-  glb_sum(total_bytes);
   timer.flops += total_bytes;
   return total_bytes;
 }

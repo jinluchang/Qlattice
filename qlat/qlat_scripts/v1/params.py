@@ -21,6 +21,18 @@ dict_params["32IH1"][tag] = list(range(1000, 10000, 10))
 dict_params["32IH2"][tag] = list(range(1000, 10000, 10)) + list(range(1002, 10000, 10))
 dict_params["32IH3"][tag] = list(range(1000, 10000, 10))
 
+tag = "field-selection-fsel-rate"
+set_param("test-4nt8", tag, value=1/16)
+set_param("test-4nt16", tag, value=1/16)
+set_param("48I", tag, value=1/16)
+set_param("64I", tag, value=1/32)
+
+tag = "field-selection-psel-rate"
+set_param("test-4nt8", tag, value=1/32)
+set_param("test-4nt16", tag, value=1/32)
+set_param("48I", tag, value=2048/(48**3*96))
+set_param("64I", tag, value=2048/(64**3*128))
+
 tag = "n_points_psel"
 dict_params["test-4nt8"][tag] = 6
 dict_params["test-4nt16"][tag] = 32

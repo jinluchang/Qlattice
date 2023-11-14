@@ -418,7 +418,7 @@ void selected_points_from_lat_data_double(SelectedPoints<M>& sp,
                                           const LatData& ld)
 {
   TIMER("selected_points_from_lat_data_double");
-  qassert(ld.info.size() == 4);
+  qassert(ld.info.size() == 3);
   qassert(ld.info[0].name == "idx");
   qassert(ld.info[1].name == "m");
   qassert(ld.info[2].name == "v");
