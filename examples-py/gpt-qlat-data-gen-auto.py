@@ -82,6 +82,8 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     fsel_prob = get_fsel_prob()
     psel = psel_prob.psel
     fsel = fsel_prob.fsel
+    if not fsel.is_containing(psel):
+        q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
     fsel_n_elems = fsel.n_elems()
     fsel_prob_arr = fsel_prob[:].ravel()
     psel_prob_arr = psel_prob[:].ravel()
@@ -103,16 +105,16 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
                 "x_1" : ("wall", t_src,),
                 "size" : total_site,
                 }
-        val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
+        val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
         return val, t
     def sum_function(val_list):
-        values = np.zeros((total_site[3], len(expr_names),), dtype = complex)
+        values = np.zeros((total_site[3], len(expr_names),), dtype=complex)
         for val, t in val_list:
             values[t] += val
         return q.glb_sum(values.transpose(1, 0))
-    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default = 128)
+    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default=128)
     q.timer_fork(0)
-    res_sum = q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = auto_contractor_chunk_size)
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size)
     q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
@@ -141,6 +143,8 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, ge
     fsel_prob = get_fsel_prob()
     psel = psel_prob.psel
     fsel = fsel_prob.fsel
+    if not fsel.is_containing(psel):
+        q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
     fsel_n_elems = fsel.n_elems()
     fsel_prob_arr = fsel_prob[:].ravel()
     psel_prob_arr = psel_prob[:].ravel()
@@ -150,30 +154,29 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, ge
     def load_data():
         for t_src in range(total_site[3]):
             for idx in range(fsel_n_elems):
-                xg_snk = xg_fsel_arr[idx]
-                prob_snk = fsel_prob_arr[idx]
-                yield t_src, xg_snk, prob_snk
+                yield t_src, idx
     @q.timer
     def feval(args):
-        t_src, xg_snk, prob_snk = args
-        xg_snk = tuple(xg_snk.tolist())
+        t_src, idx = args
+        xg_snk = tuple(xg_fsel_arr[idx])
+        prob_snk = fsel_prob_arr[idx]
         t = (xg_snk[3] - t_src) % total_site[3]
         pd = {
                 "x_2" : ("point-snk", xg_snk,),
                 "x_1" : ("wall", t_src,),
                 "size" : total_site,
                 }
-        val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
+        val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
         return val / prob_snk, t
     def sum_function(val_list):
-        values = np.zeros((total_site[3], len(expr_names),), dtype = complex)
+        values = np.zeros((total_site[3], len(expr_names),), dtype=complex)
         for val, t in val_list:
             values[t] += val
         return values.transpose(1, 0)
-    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default = 128)
+    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default=128)
     q.timer_fork(0)
     res_sum = q.glb_sum(
-            q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = auto_contractor_chunk_size))
+            q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size))
     q.displayln_info("timer_display for auto_contract_meson_corr_psnk")
     q.timer_display()
     q.timer_merge()
@@ -206,6 +209,8 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, ge
     fsel_prob = get_fsel_prob()
     psel = psel_prob.psel
     fsel = fsel_prob.fsel
+    if not fsel.is_containing(psel):
+        q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
     fsel_n_elems = fsel.n_elems()
     fsel_prob_arr = fsel_prob[:].ravel()
     psel_prob_arr = psel_prob[:].ravel()
@@ -218,29 +223,29 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, ge
                 [ (pidx, t_snk,) for t_snk in range(total_site[3]) for pidx in range(len(xg_psel_arr)) ],
                 rng_state = None)
         for pidx, t_snk in x_t_list:
-            xg_src = xg_psel_arr[pidx]
-            prob_src = psel_prob_arr[pidx]
-            yield xg_src, prob_src, t_snk
+            yield pidx, t_snk
     @q.timer
     def feval(args):
-        xg_src, prob_src, t_snk = args
+        pidx, t_snk = args
+        xg_src = tuple(xg_psel_arr[pidx])
+        prob_src = psel_prob_arr[pidx]
         t = (xg_src[3] - t_snk) % total_site[3]
         pd = {
                 "x_2" : ("point", xg_src,),
                 "x_1" : ("wall", t_snk,),
                 "size" : total_site,
                 }
-        val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
+        val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
         return val / prob_src, t
     def sum_function(val_list):
-        values = np.zeros((total_site[3], len(expr_names),), dtype = complex)
+        values = np.zeros((total_site[3], len(expr_names),), dtype=complex)
         for val, t in val_list:
             values[t] += val
         return values.transpose(1, 0)
-    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default = 128)
+    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default=128)
     q.timer_fork(0)
     res_sum = q.glb_sum(
-            q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = auto_contractor_chunk_size))
+            q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size))
     q.displayln_info("timer_display for auto_contract_meson_corr_psrc")
     q.timer_display()
     q.timer_merge()
@@ -273,6 +278,8 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
     fsel_prob = get_fsel_prob()
     psel = psel_prob.psel
     fsel = fsel_prob.fsel
+    if not fsel.is_containing(psel):
+        q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
     fsel_n_elems = fsel.n_elems()
     fsel_prob_arr = fsel_prob[:].ravel()
     psel_prob_arr = psel_prob[:].ravel()
@@ -283,15 +290,21 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
     r_list = get_r_list(job_tag)
     r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
     def load_data():
-        for xg_src in xg_psel_arr:
-            yield xg_src
+        for pidx in range(len(xg_psel_arr)):
+            yield pidx
     @q.timer
     def feval(args):
-        xg_src = args
-        xg_src = tuple(xg_src.tolist())
+        pidx = args
+        xg_src = tuple(xg_psel_arr[pidx])
+        prob_src = psel_prob_arr[pidx]
         res_list = []
-        for xg_snk in xg_fsel_arr:
-            xg_snk = tuple(xg_snk.tolist())
+        for idx in range(len(xg_fsel_arr)):
+            xg_snk = tuple(xg_fsel_arr[idx])
+            if xg_snk == xg_src:
+                prob_snk = 1.0
+            else:
+                prob_snk = fsel_prob_arr[idx]
+            prob = prob_src * prob_snk
             x_rel = [ q.rel_mod(xg_snk[mu] - xg_src[mu], total_site[mu]) for mu in range(4) ]
             r_sq = q.get_r_sq(x_rel)
             r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
@@ -302,10 +315,10 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
                     "size": total_site,
                     }
             val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
-            res_list.append((val, t, r_idx_low, r_idx_high, coef_low, coef_high))
+            res_list.append((val / prob, t, r_idx_low, r_idx_high, coef_low, coef_high))
         return res_list
     def sum_function(val_list):
-        values = np.zeros((total_site[3], len(r_list), len(expr_names),), dtype = complex)
+        values = np.zeros((total_site[3], len(r_list), len(expr_names),), dtype=complex)
         for idx, res_list in enumerate(val_list):
             for val, t, r_idx_low, r_idx_high, coef_low, coef_high in res_list:
                 values[t, r_idx_low] += coef_low * val
@@ -314,12 +327,12 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
         return values.transpose(2, 0, 1)
     q.timer_fork(0)
     res_sum = q.glb_sum(
-            q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 1))
+            q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1))
     q.displayln_info("timer_display for auto_contract_meson_corr_psnk_psrc")
     q.timer_display()
     q.timer_merge()
-    res_sum *= 1.0 / (len(xg_psel_arr) * total_volume * fsel_prob / total_site[3])
-    assert q.qnorm(res_sum[0].sum(1) - 1.0) < 1e-10
+    res_sum *= 1.0 / (total_volume**2 / total_site[3])
+    q.displayln_info(res_sum[0].sum(1))
     ld = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
         [ "t_sep", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
@@ -378,6 +391,8 @@ def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
     fsel_prob = get_fsel_prob()
     psel = psel_prob.psel
     fsel = fsel_prob.fsel
+    if not fsel.is_containing(psel):
+        q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
     fsel_n_elems = fsel.n_elems()
     fsel_prob_arr = fsel_prob[:].ravel()
     psel_prob_arr = psel_prob[:].ravel()
@@ -387,12 +402,13 @@ def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
     def load_data():
-        for xg_snk in xg_fsel_arr:
-            yield xg_snk
+        for idx in range(len(xg_fsel_arr)):
+            yield idx
     @q.timer
     def feval(args):
-        xg_snk = args
-        xg_snk = tuple(xg_snk.tolist())
+        idx = args
+        xg_snk = tuple(xg_fsel_arr[idx])
+        prob_snk = fsel_prob_arr[idx]
         t = xg_snk[3]
         t_1 = (t - tsep) % total_site[3]
         t_2 = (t + tsep) % total_site[3]
@@ -407,21 +423,21 @@ def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
                 "size" : total_site,
                 }
         val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
-        return val
+        return val / prob_snk
     def sum_function(val_list):
-        values = np.zeros(len(expr_names), dtype = complex)
+        values = np.zeros(len(expr_names), dtype=complex)
         for val in val_list:
             values += val
         return values
-    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default = 128)
+    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default=128)
     q.timer_fork(0)
     res_sum = q.glb_sum(
-            q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = auto_contractor_chunk_size))
+            q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size))
     q.displayln_info("timer_display for auto_contract_meson_jt")
     q.timer_display()
     q.timer_merge()
-    res_sum *= 1.0 / (total_volume * fsel_prob)
-    assert q.qnorm(res_sum[0] - 1.0) < 1e-10
+    res_sum *= 1.0 / total_volume
+    q.displayln_info(0, res_sum[0])
     ld_sum = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
         ])
@@ -477,6 +493,8 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
     fsel_prob = get_fsel_prob()
     psel = psel_prob.psel
     fsel = fsel_prob.fsel
+    if not fsel.is_containing(psel):
+        q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
     fsel_n_elems = fsel.n_elems()
     fsel_prob_arr = fsel_prob[:].ravel()
     psel_prob_arr = psel_prob[:].ravel()
@@ -486,12 +504,13 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
     def load_data():
-        for xg_snk in xg_fsel_arr:
-            yield xg_snk
+        for idx in range(len(xg_fsel_arr)):
+            yield idx
     @q.timer
     def feval(args):
-        xg_snk = args
-        xg_snk = tuple(xg_snk.tolist())
+        idx = args
+        xg_snk = tuple(xg_fsel_arr[idx])
+        prob_snk = fsel_prob_arr[idx]
         t = xg_snk[3]
         t_2 = (t + tsep) % total_site[3]
         t_1 = (t - tsep) % total_site[3]
@@ -501,22 +520,23 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
                 "t_2" : ("wall", t_2,),
                 "size" : total_site,
                 }
-        val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
-        return val
+        val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
+        return val / prob_snk
     def sum_function(val_list):
-        values = np.zeros(len(expr_names), dtype = complex)
+        values = np.zeros(len(expr_names), dtype=complex)
         for val in val_list:
             values += val
         return values
-    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default = 128)
+    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default=128)
     q.timer_fork(0)
     res_sum = q.glb_sum(
-            q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = auto_contractor_chunk_size))
+            q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size))
     q.displayln_info("timer_display for auto_contract_meson_m")
     q.timer_display()
     q.timer_merge()
-    res_sum *= 1.0 / (total_volume * fsel_prob)
-    assert q.qnorm(res_sum[0] - 1.0) < 1e-10
+    total_volume = geo.total_volume()
+    res_sum *= 1.0 / total_volume
+    q.displayln_info(0, res_sum[0])
     ld_sum = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
         ])
@@ -794,6 +814,8 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
     fsel_prob = get_fsel_prob()
     psel = psel_prob.psel
     fsel = fsel_prob.fsel
+    if not fsel.is_containing(psel):
+        q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
     fsel_n_elems = fsel.n_elems()
     fsel_prob_arr = fsel_prob[:].ravel()
     psel_prob_arr = psel_prob[:].ravel()
@@ -801,18 +823,25 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
     xg_psel_arr = psel[:]
     tsep = dict_params[job_tag]["meson_tensor_tsep"]
     geo = q.Geometry(total_site, 1)
+    total_volume = geo.total_volume()
     r_list = get_r_list(job_tag)
     r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
     def load_data():
-        for idx, xg_src in enumerate(xg_psel_arr):
-            xg_src = tuple(xg_src.tolist())
-            yield xg_src
+        for pidx in range(len(xg_psel_arr)):
+            yield pidx
     @q.timer
     def feval(args):
-        xg_src = args
+        pidx = args
+        xg_src = tuple(xg_psel_arr[pidx])
+        prob_src = psel_prob_arr[pidx]
         res_list = []
-        for xg_snk in xg_fsel_arr:
-            xg_snk = tuple(xg_snk.tolist())
+        for idx in range(len(xg_fsel_arr)):
+            xg_snk = tuple(xg_fsel_arr[idx])
+            if xg_snk == xg_src:
+                prob_snk = 1.0
+            else:
+                prob_snk = fsel_prob_arr[idx]
+            prob = prob_src * prob_snk
             x_rel = [ q.rel_mod(xg_snk[mu] - xg_src[mu], total_site[mu]) for mu in range(4) ]
             r_sq = q.get_r_sq(x_rel)
             r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
@@ -829,11 +858,11 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
                     "size" : total_site,
                     }
             t = x_rel_t % t_size
-            val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
-            res_list.append((val, t, r_idx_low, r_idx_high, coef_low, coef_high,))
+            val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
+            res_list.append((val / prob, t, r_idx_low, r_idx_high, coef_low, coef_high,))
         return res_list
     def sum_function(val_list):
-        values = np.zeros((t_size, len(r_list), len(expr_names),), dtype = complex)
+        values = np.zeros((t_size, len(r_list), len(expr_names),), dtype=complex)
         for idx, res_list in enumerate(val_list):
             for val, t, r_idx_low, r_idx_high, coef_low, coef_high in res_list:
                 values[t, r_idx_low] += coef_low * val
@@ -841,11 +870,11 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
             q.displayln_info(f"{fname}: {idx+1}/{len(xg_psel_arr)}")
         return q.glb_sum(values.transpose(2, 0, 1))
     q.timer_fork(0)
-    res_sum = q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 1)
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
     q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
-    res_sum *= 1.0 / (len(xg_psel_arr) * fsel_prob)
+    res_sum *= 1.0 / total_volume
     ld_sum = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
         [ "t", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
@@ -899,8 +928,8 @@ def get_cexpr_meson_jwjj():
         assert len(exprs) == 17
         cexpr = contract_simplify_compile(
                 *exprs,
-                is_isospin_symmetric_limit = True,
-                diagram_type_dict = diagram_type_dict)
+                is_isospin_symmetric_limit=True,
+                diagram_type_dict=diagram_type_dict)
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
@@ -919,6 +948,8 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     fsel_prob = get_fsel_prob()
     psel = psel_prob.psel
     fsel = fsel_prob.fsel
+    if not fsel.is_containing(psel):
+        q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
     fsel_n_elems = fsel.n_elems()
     fsel_prob_arr = fsel_prob[:].ravel()
     psel_prob_arr = psel_prob[:].ravel()
@@ -944,7 +975,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     meson_corr_arr = ld_meson_corr.to_numpy()
     def get_prop_norm_sqrt(*args):
         is_sloppy = True
-        return abs(ama_extract(get_prop(*args, is_norm_sqrt = True), is_sloppy = is_sloppy))
+        return abs(ama_extract(get_prop(*args, is_norm_sqrt=True), is_sloppy=is_sloppy))
     def load_psrc_psrc_prop_norm_sqrt(flavor, i):
         xg1_src = tuple(xg_psel_arr[i])
         x_1 = ("point", xg1_src,)
@@ -1065,8 +1096,11 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         weight_arr[np.abs(xg2_xg_t_arr - xg1_xg_t_arr) >= t_size_arr // 2] = 0.0
         results = []
         for idx_snk in idx_snk_arr[weight_arr > 0]:
-            weight = weight_arr[idx_snk]
             xg_snk = tuple(xg_fsel_arr[idx_snk])
+            prob_snk = fsel_prob_arr[idx_snk]
+            weight = weight_arr[idx_snk]
+            if xg_snk != xg1_src and xg_snk != xg2_src:
+                weight = weight / prob_snk
             xg_t = xg_t_arr[idx_snk]
             xg1_xg_t = xg1_xg_t_arr[idx_snk]
             xg2_xg_t = xg2_xg_t_arr[idx_snk]
@@ -1082,36 +1116,36 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
                     }
             t1 = xg1_xg_t
             t2 = xg2_xg_t
-            val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
+            val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
             r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
-            results.append((weight, val, t1, t2, r_idx_low, r_idx_high, coef_low, coef_high,))
+            results.append((weight * val, t1, t2, r_idx_low, r_idx_high, coef_low, coef_high,))
         return idx1, idx2, results
     def sum_function(val_list):
         n_total = 0
         n_selected = 0
         idx_pair = 0
-        values = np.zeros((t_size, t_size, len(r_list), len(expr_names),), dtype = complex)
+        values = np.zeros((t_size, t_size, len(r_list), len(expr_names),), dtype=complex)
         for idx1, idx2, results in val_list:
             idx_pair += 1
             n_total += n_elems
             xg1_src = tuple(xg_psel_arr[idx1])
             xg2_src = tuple(xg_psel_arr[idx2])
-            for weight, val, t1, t2, r_idx_low, r_idx_high, coef_low, coef_high in results:
+            for val, t1, t2, r_idx_low, r_idx_high, coef_low, coef_high in results:
                 n_selected += 1
-                values[t1, t2, r_idx_low] += coef_low * weight * val
-                values[t1, t2, r_idx_high] += coef_high * weight * val
+                values[t1, t2, r_idx_low] += coef_low * val
+                values[t1, t2, r_idx_high] += coef_high * val
             if idx_pair % (n_pairs // 1000 + 100) == 0:
                 q.displayln_info(1, f"{fname}: {idx_pair}/{n_pairs} {xg1_src} {xg2_src} {len(results)}/{n_elems} n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
         q.displayln_info(1, f"{fname}: Final: n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
         return values.transpose(3, 0, 1, 2)
     q.timer_fork(0)
     res_sum = q.glb_sum(
-            q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 1))
+            q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1))
     q.displayln_info("{fname}: timer_display")
     q.timer_display()
     q.timer_merge()
     total_volume = geo.total_volume()
-    res_sum *= 1.0 / (total_volume * fsel_prob / t_size)
+    res_sum *= 1.0 / (total_volume / t_size)
     ld_sum = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
         [ "t1", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
@@ -1186,10 +1220,26 @@ def run_job(job_tag, traj):
     #
     run_wsrc_full()
     #
-    get_fsel, get_psel, get_fsel_prob, get_psel_prob = run_fsel_psel_from_wsrc_prop_full(job_tag, traj, get_wi=get_wi)
+    # get_fsel, get_psel, get_fsel_prob, get_psel_prob = run_fsel_psel_from_wsrc_prop_full(job_tag, traj, get_wi=get_wi)
     #
-    # get_psel = run_psel(job_tag, traj)
-    # get_fsel = run_fsel(job_tag, traj)
+    get_psel = run_psel(job_tag, traj)
+    get_fsel = run_fsel(job_tag, traj)
+    @q.lazy_call
+    def get_psel_prob():
+        total_site = q.Coordinate(get_param(job_tag, "total_site"))
+        geo = q.Geometry(total_site)
+        psel = get_psel()
+        psel_prob = q.SelectedPointsRealD(psel, 1)
+        psel_prob[:] = psel.n_points() / geo.total_volume()
+        return psel_prob
+    @q.lazy_call
+    def get_fsel_prob():
+        total_site = q.Coordinate(get_param(job_tag, "total_site"))
+        geo = q.Geometry(total_site)
+        fsel = get_fsel()
+        fsel_prob = q.SelectedFieldRealD(fsel, 1)
+        fsel_prob[:] = q.glb_sum(fsel.n_elems()) / geo.total_volume()
+        return fsel_prob
     #
     get_fselc = run_fselc(job_tag, traj, get_fsel, get_psel)
     #
@@ -1291,9 +1341,9 @@ size_node_list = [
         [8, 8, 8, 1],
         ]
 
-set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step", value = 2)
-set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step", value = 8)
-set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj", value = 1)
+set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step", value=2)
+set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step", value=8)
+set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj", value=1)
 set_param("test-4nt8", "trajs", value = [ 1000, ])
 
 qg.begin_with_gpt()
