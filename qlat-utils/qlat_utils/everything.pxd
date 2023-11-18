@@ -42,6 +42,12 @@ cdef inline ComplexF ccpy_f(PyComplexF x):
 
 ### --------------------------------------------------------
 
+ctypedef uint64_t UInt64t
+
+ctypedef uint32_t UInt32t
+
+ctypedef uint8_t UInt8t
+
 ctypedef int64_t Int64t
 
 ctypedef int32_t Int32t
@@ -60,7 +66,13 @@ ctypedef Int64t Long
 
 ctypedef Int32t Int
 
-ctypedef int8_t Char
+ctypedef Int8t Char
+
+ctypedef UInt64t ULong
+
+ctypedef UInt32t UInt
+
+ctypedef UInt8t UChar
 
 ctypedef std_vector[std_vector[RealD]] DataTable
 

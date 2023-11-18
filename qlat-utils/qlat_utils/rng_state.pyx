@@ -81,33 +81,67 @@ cdef class RngState:
         ri = self.rand_gen() % len(l)
         return l[ri]
 
+    def rand_arr(self, shape):
+        """
+        return numpy array with `shape` and dtype=np.uint64
+        Uniformly distributed random integer ranges from 0 up to 2**64 - 1
+        """
+        arr = np.empty(shape, dtype=np.uint64)
+        arr_ravel = arr.ravel()
+        self.rand_fill_u_long(arr.ravel())
+        return arr
+
+    def u_rand_arr(self, shape):
+        """
+        return numpy array with `shape` and dtype=np.float64
+        Uniform distribution from 0.0 to 1.0
+        """
+        arr = np.empty(shape, dtype=np.float64)
+        self.u_rand_fill_real_d(arr.ravel(), 1.0, 0.0)
+        return arr
+
+    def g_rand_arr(self, shape):
+        """
+        return numpy array with `shape` and dtype=np.float64
+        Gaussian distribution center=0.0 with sigma=1.0
+        """
+        arr = np.empty(shape, dtype=np.float64)
+        self.g_rand_fill_real_d(arr.ravel(), 0.0, 1.0)
+        return arr
+
     def u_rand_fill(self, arr, double upper=1.0, double lower=0.0):
         """
-        Fill ``arr`` (of type ``np.ndarray``) with uniform random numbers.
+        obsolete
         """
         arr = arr.ravel()
         assert arr.base is not None
         arr = arr.view(np.float64)
         assert arr.base is not None
-        return self.u_rand_fill_double(arr, upper, lower)
+        return self.u_rand_fill_real_d(arr, upper, lower)
 
-    def u_rand_fill_double(self, double[:] arr, double upper=1.0, double lower=0.0):
+    def g_rand_fill(self, arr, double center=0.0, double sigma=1.0):
+        """
+        obsolete
+        """
+        arr = arr.ravel()
+        assert arr.base is not None
+        arr = arr.view(np.float64)
+        assert arr.base is not None
+        return self.g_rand_fill_real_d(arr, center, sigma)
+
+    def rand_fill_u_long(self, cc.ULong[:] arr):
+        cdef cc.Long size = arr.size
+        cdef cc.Long i
+        for i in range(size):
+            arr[i] = cc.rand_gen(self.xx)
+
+    def u_rand_fill_real_d(self, double[:] arr, double upper=1.0, double lower=0.0):
         cdef cc.Long size = arr.size
         cdef cc.Long i
         for i in range(size):
             arr[i] = cc.u_rand_gen(self.xx, upper, lower)
 
-    def g_rand_fill(self, arr, double center=0.0, double sigma=1.0):
-        """
-        Fill ``arr`` (of type ``np.ndarray``) with Gaussian random numbers.
-        """
-        arr = arr.ravel()
-        assert arr.base is not None
-        arr = arr.view(np.float64)
-        assert arr.base is not None
-        return self.g_rand_fill_double(arr, center, sigma)
-
-    def g_rand_fill_double(self, double[:] arr, double center=0.0, double sigma=1.0):
+    def g_rand_fill_real_d(self, double[:] arr, double center=0.0, double sigma=1.0):
         cdef cc.Long size = arr.size
         cdef cc.Long i
         for i in range(size):
