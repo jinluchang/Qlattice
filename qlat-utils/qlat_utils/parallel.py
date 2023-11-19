@@ -26,7 +26,7 @@ def gc_unfreeze():
     gc.unfreeze()
 
 def process_initialization():
-    set_verbose_level(-1)
+    set_verbose_level(-2)
     timer_reset(0)
     # gc_unfreeze()
     # clean_cache()

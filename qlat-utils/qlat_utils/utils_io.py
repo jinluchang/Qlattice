@@ -2,6 +2,7 @@ import qlat_utils.c as c
 
 import os
 import pickle
+import hashlib
 
 from .c import qremove, qremove_all
 from .c import qmkdir, qmkdir_info
@@ -135,6 +136,36 @@ def pickle_cache_call(func, path, *, is_sync_node=True):
     else:
         obj = load_pickle_obj(path, is_sync_node=is_sync_node)
     return obj
+
+def hash_sha256(s):
+    """
+    compute sha256 of str `s`.
+    """
+    m = hashlib.sha256()
+    m.update(s.encode('utf8'))
+    return m.hexdigest()
+
+def pickle_cache(path, is_sync_node=True):
+    """
+    `path` is the directory to cache results
+    """
+    def dec(func):
+        @functools.wraps(func)
+        def f(*args, **kwargs):
+            func_args = (func.__name__, args, kwargs)
+            func_args_str = repr(func_args)
+            key = hash_sha256(func_args_str)
+            fn = f"{path}/{key}.pickle"
+            c_res = load_pickle_obj(fn, is_sync_node=is_sync_node)
+            if c_res is not None:
+                c_func_args, c_ret = c_res
+                return c_ret
+            ret = func(*args, **kwargs)
+            res = (func_args, ret,)
+            save_pickle_obj(res, fn, is_sync_node=is_sync_node)
+            return ret
+        return f
+    return dec
 
 def qremove_info(path):
     if get_num_node() != 1:

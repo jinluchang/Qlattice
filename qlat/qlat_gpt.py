@@ -370,7 +370,7 @@ def load_gauge_field(path):
     gpt_gf = g.load(path)
     return qlat_from_gpt(gpt_gf)
 
-def line_search_quadratic(s, x, dx, dv0, df, step, *, max_c = 3):
+def line_search_quadratic(s, x, dx, dv0, df, step, *, max_c=3):
     x = g.util.to_list(x)
     xp = g.copy(x)
     # ansatz: f(x) = a + b*(x-c)^2, then solve for c from dv1 and dv0
