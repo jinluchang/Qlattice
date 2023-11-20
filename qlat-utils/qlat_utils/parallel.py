@@ -58,12 +58,11 @@ def set_q_verbose_parallel_map(v):
 
 @timer
 def parallel_map(func, iterable,
-        _to_be_removed_ = None,
         *,
-        n_proc = None,
-        chunksize = 1,
-        process_initialization = process_initialization,
-        verbose = None):
+        n_proc=None,
+        chunksize=1,
+        process_initialization=process_initialization,
+        verbose=None):
     """
     iterable = [ i1, i2, ... ]
     v1 = func(i1)
@@ -71,17 +70,6 @@ def parallel_map(func, iterable,
     ...
     return [ v1, v2, ... ]
     """
-    #####
-    if isinstance(func, int):
-        # assuming it is called with parallel_map(n_proc, func, iterable, ...)
-        return parallel_map(iterable, _to_be_removed_,
-                n_proc = func,
-                sum_function = sum_function,
-                chunksize = chunksize,
-                process_initialization = process_initialization,
-                verbose = verbose)
-    assert _to_be_removed_ is None
-    #####
     if n_proc is None:
         n_proc = get_q_num_mp_processes()
     if verbose is None:
@@ -89,7 +77,13 @@ def parallel_map(func, iterable,
     if verbose > 0:
         displayln_info(f"parallel_map(n_proc={n_proc})")
     if n_proc == 0:
-        return list(map(func, iterable))
+        res = map(func, iterable)
+        ret = []
+        for idx, v in enumerate(res):
+            if verbose > 0 and idx % chunksize == 0:
+                displayln_info(-2, f"parallel_map: idx={idx} done")
+            ret.append(v)
+        return ret
     assert n_proc >= 1
     global pool_function
     assert pool_function is None
@@ -100,10 +94,20 @@ def parallel_map(func, iterable,
         with mp.Pool(n_proc, process_initialization, []) as p:
             if verbose > 0:
                 p.apply(show_memory_usage)
-            timer = Timer("parallel_map.p.map")
+            timer = Timer("parallel_map.p.imap")
             try:
                 timer.start()
-                res = p.map(call_pool_function, iterable, chunksize = chunksize)
+                res = p.imap(call_pool_function, iterable, chunksize=chunksize)
+            finally:
+                timer.stop()
+            timer = Timer("parallel_map.mk_list")
+            try:
+                timer.start()
+                ret = []
+                for idx, v in enumerate(res):
+                    if verbose > 0 and idx % chunksize == 0:
+                        displayln_info(-2, f"parallel_map: idx={idx} done")
+                    ret.append(v)
             finally:
                 timer.stop()
             if verbose > 0:
@@ -113,18 +117,17 @@ def parallel_map(func, iterable,
         gc_unfreeze()
         gc_collect()
         pool_function = None
-    return res
+    return ret
 
 @timer
 def parallel_map_sum(func, iterable,
-        _to_be_removed_ = None,
         *,
-        n_proc = None,
-        sum_function = None,
-        sum_start = None,
-        chunksize = 1,
-        process_initialization = process_initialization,
-        verbose = None):
+        n_proc=None,
+        sum_function=None,
+        sum_start=None,
+        chunksize=1,
+        process_initialization=process_initialization,
+        verbose=None):
     """
     iterable = [ i1, i2, ... ]
     v1 = func(i1)
@@ -132,18 +135,6 @@ def parallel_map_sum(func, iterable,
     ...
     return sum_function([ v1, v2, ... ])
     """
-    #####
-    if isinstance(func, int):
-        # assuming it is called with parallel_map_sum(n_proc, func, iterable, ...)
-        return parallel_map_sum(iterable, _to_be_removed_,
-                n_proc = func,
-                sum_function = sum_function,
-                sum_start = sum_start,
-                chunksize = chunksize,
-                process_initialization = process_initialization,
-                verbose = verbose)
-    assert _to_be_removed_ is None
-    #####
     if n_proc is None:
         n_proc = get_q_num_mp_processes()
     if verbose is None:
@@ -153,7 +144,10 @@ def parallel_map_sum(func, iterable,
     if sum_function is None:
         sum_function = sum
     if n_proc == 0:
-        return sum_function(map(func, iterable))
+        if sum_start is None:
+            return sum_function(map(func, iterable))
+        else:
+            return sum_function(map(func, iterable), sum_start)
     assert n_proc >= 1
     global pool_function
     assert pool_function is None
@@ -167,7 +161,7 @@ def parallel_map_sum(func, iterable,
             timer = Timer("parallel_map_sum.p.imap")
             try:
                 timer.start()
-                res = p.imap(call_pool_function, iterable, chunksize = chunksize)
+                res = p.imap(call_pool_function, iterable, chunksize=chunksize)
             finally:
                 timer.stop()
             timer = Timer("parallel_map_sum.sum_function")
