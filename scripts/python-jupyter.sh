@@ -44,6 +44,7 @@ source qcore/set-prefix.sh $name
     time-run pip3 install $opts pytools || true
     time-run pip3 install $opts Sphinx || true
     time-run pip3 install $opts myst-parser || true
+    time-run pip3 install $opts multiprocess dill || true
     time-run pip3 install $opts torch torchvision torchaudio xformers jax jaxlib
     # time-run pip3 install $opts torch torchvision torchaudio xformers "jax[cuda12_pip]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
     time-run pip3 install $opts ipywidgets || true
