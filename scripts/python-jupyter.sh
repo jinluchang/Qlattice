@@ -27,6 +27,7 @@ source qcore/set-prefix.sh $name
     time-run pip3 install $opts scipy || true
     time-run pip3 install $opts poetry_core || true
     time-run pip3 install $opts pkgconfig || true
+
     time-run pip3 install $opts virtualenv || true
     time-run pip3 install $opts h5py || true
     time-run pip3 install $opts pandas || true
@@ -43,10 +44,10 @@ source qcore/set-prefix.sh $name
     time-run pip3 install $opts pytools || true
     time-run pip3 install $opts Sphinx || true
     time-run pip3 install $opts myst-parser || true
-    time-run pip3 install $opts torch torchvision torchaudio || true
+    time-run pip3 install $opts torch torchvision torchaudio xformers jax jaxlib
+    # time-run pip3 install $opts torch torchvision torchaudio xformers "jax[cuda12_pip]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
     time-run pip3 install $opts ipywidgets || true
     time-run pip3 install $opts transformers || true
-    time-run pip3 install $opts xformers || true
     time-run pip3 install $opts jupyterlab || true
     time-run pip3 install $opts jupyterlab-dash || true
     time-run pip3 install $opts jupyterhub || true
