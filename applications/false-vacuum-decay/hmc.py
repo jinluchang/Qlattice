@@ -234,7 +234,7 @@ class HMC:
         return flag, accept_prob
 
 class Measurements:
-    def __init__(self, total_site, field_geo, save_file):
+    def __init__(self, total_site, field_geo, actions_measure, action_pa, action_ma, save_file):
         self.save_file = save_file
         # Stores the trajectory number for debugging purposes
         self.trajs = []
@@ -244,12 +244,24 @@ class Measurements:
         self.psq_list=[]
         # Stores the average values of each phi_i for each trajectory
         self.phi_list=[]
-        # Stores the timeslice sums of each phi_i for each trajectory
+        #
         self.timeslices=[]
         #
         self.fields=[]
         self.momentums=[]
         self.forces=[]
+        #
+        self.delta_actions = {}
+        self.actions = {}
+        for a in actions_measure:
+            #self.delta_actions[f"{[a.M(), a.L()]}"] = []
+            #self.actions[f"{[a.M(), a.L()]}"] = a
+            self.delta_actions[f"{a.t_full()}"] = []
+            self.actions[f"{a.t_full()}"] = a
+        self.actions["pa"] = action_pa
+        self.delta_actions["pa"] = []
+        self.actions["ma"] = action_ma
+        self.delta_actions["ma"] = []
     
     def measure(self, hmc):
         self.trajs.append(hmc.traj)
@@ -261,11 +273,15 @@ class Measurements:
         field_sum = hmc.field.glb_sum()[0]
         self.phi_list.append([field_sum[i]/hmc.field.geo().total_volume() for i in range(hmc.mult)])
         #
+        self.timeslices.append(hmc.field.glb_sum_tslice().to_numpy())
+        #
         self.momentums.append(self.get_representatives(hmc.momentum))
         self.fields.append(self.get_representatives(hmc.field))
         self.forces.append(self.get_representatives(hmc.force))
         #
-        self.timeslices.append(hmc.field.glb_sum_tslice().to_numpy())
+        for P in self.actions:
+            dS = hmc.action.action_node(hmc.field) - self.actions[P].action_node(hmc.field)
+            self.delta_actions[P].append(q.glb_sum(dS))
     
     def display_measurements(self):
         q.displayln_info("Average phi:")
@@ -284,7 +300,7 @@ class Measurements:
         plt.show()
     
     def get_representatives(self, field):
-        return [field.get_elem_xg(q.Coordinate([0,0,0,i]),0)[:].item() for i in range(0,400,10)]
+        return [field.get_elem_xg(q.Coordinate([0,0,0,i]),0)[:].item() for i in range(0,10,2)]
     
     def calc_psq(self, field, action):
         # Calculate the average value of phi^2
@@ -295,12 +311,14 @@ class Measurements:
     def save(self):
         with open(self.save_file, "wb") as output:
             pickle.dump({"trajs": self.trajs,
-                        "accept_rates": self.accept_rates,
-                        "psq_list": self.psq_list,
-                        "phi_list": self.phi_list,
-                        "timeslices": self.timeslices,
-                        "fields": self.fields,
-                        "momentums": self.momentums},output)
+                "accept_rates": self.accept_rates,
+                "psq_list": self.psq_list,
+                "phi_list": self.phi_list,
+                "timeslices": self.timeslices,
+                "fields": self.fields,
+                "momentums": self.momentums,
+                "forces": self.forces,
+                "delta_actions": self.delta_actions}, output)
     
     def load(self):
         if len(glob.glob(self.save_file)):
@@ -313,34 +331,43 @@ class Measurements:
                 self.timeslices.extend(data["timeslices"])
                 self.fields.extend(data["fields"])
                 self.momentums.extend(data["momentums"])
+                self.forces.extend(data["forces"])
+                for m_P in data["delta_actions"]:
+                    if m_P in self.delta_actions:
+                        self.delta_actions[m_P].extend(data["delta_actions"][m_P])
+                    else:
+                        self.delta_actions[m_P] = data["delta_actions"][m_P]
 
 @q.timer_verbose
 def main():
     # The lattice dimensions
-    total_site = q.Coordinate([1,1,1,400])
+    Nt = 700
+    total_site = q.Coordinate([1,1,1,Nt])
     # The multiplicity of the field
     mult = 1
     lmbd = 0.01
     v0 = 3.0
     alpha = 0.0
     barrier_strength = 1.0
-    t_full = 200
-    t_FV = 100
-    t_ramp = 1.0
+    M = 1.0
+    L = 0.0
+    measure_parameters = []#[[round(M+0.001*i,5),round(L,5)] for i in range(1,21)]
+    t_full = 250
+    t_FV = 200
     m_particle = 1.0
     dt = 0.05
     # The number of trajectories to calculate
-    n_traj = 1000
+    n_traj = 500
     #
-    version = "0-0"
+    version = "0-2"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
-    steps = 20
+    steps = 30
     #
     init_length = 20
     fresh_start = False
     # The number of trajectories to run before each save
-    save_frequency = 1000
+    save_frequency = 250
     
     for i in range(1,len(sys.argv)):
         try:
@@ -359,12 +386,19 @@ def main():
                 init_length = int(sys.argv[i+1])
             elif(sys.argv[i]=="-S"):
                 save_frequency = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-f"):
+                t_full = int(sys.argv[i+1])
         except:
-            raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -s for the number of steps in a trajectory, -R to force restarting with blank initial field, -i for the number of trajectories to do at the beginning without a Metropolis step, and -S for the number of trajectories to run before each save. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1 -t 10000")
+            raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -s for the number of steps in a trajectory, -R to force restarting with blank initial field, -i for the number of trajectories to do at the beginning without a Metropolis step, -S for the number of trajectories to run before each save, -f for the time to evolve with H_full. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1 -t 10000")
     
-    action = q.QMAction(lmbd, v0, alpha, barrier_strength, t_full, t_FV, t_ramp, m_particle, dt)
-    hmc = HMC(action,f"lmbd_{lmbd}_v0_{v0}_alpha_{alpha}",total_site,mult,steps,init_length,date,version,fresh_start)
-    measurements = Measurements(total_site, hmc.field.geo(), f"output_data/measurements_{hmc.fileid}.bin")
+    action = q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_FV, m_particle, dt)
+    hmc = HMC(action,f"lmbd_{lmbd}_v0_{v0}_alpha_{alpha}_m_{m_particle}_dt_{dt}_bar_{barrier_strength}_M_{M}_L_{L}_tfull_{t_full}_tFV_{t_FV}",total_site,mult,steps,init_length,date,version,fresh_start)
+    
+    #actions_measure = [q.QMAction(lmbd, v0, alpha, barrier_strength, P[0], P[1], t_full, t_FV, m_particle, dt) for P in measure_parameters]
+    actions_measure = [q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full-i, t_FV, m_particle, dt) for i in range(1,21)]
+    action_pa = q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_FV-1, m_particle, dt)
+    action_ma = q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_FV+1, m_particle, dt)
+    measurements = Measurements(total_site, hmc.field.geo(), actions_measure, action_pa, action_ma, f"output_data/measurements_{hmc.fileid}.bin")
     
     # If observables have been saved from a previous calculation (on the
     # same day), then load that file first
@@ -378,27 +412,30 @@ def main():
         #if hmc.traj%10 == 0:
         #    measurements.plot_measurements()
         
-        #if hmc.traj%save_frequency == 0:
-        #    hmc.save_field()
-        #    measurements.save()
+        if hmc.traj%save_frequency == 0:
+            hmc.save_field()
+            measurements.save()
     
     # Saves the final field configuration so that the next run can be
     # started where this one left off
-    #hmc.save_field()
-    #measurements.save()
+    hmc.save_field()
+    measurements.save()
     
-    plt.plot(np.mean(measurements.fields[-500:], axis=0))
-    plt.show()
-    
-    #x = np.arange(-5,5,0.1)
-    #for t in range(0,60,1):
-    #    plt.plot(x, [action.V(i,t) for i in x])
-    #plt.show()
-    
-    q.displayln_info(f"Acceptance rate: {np.mean(measurements.accept_rates[-500:])}")
+    q.displayln_info(f"Acceptance rate: {np.mean(measurements.accept_rates[-300:])}")
+    for da in measurements.delta_actions:
+        q.displayln_info(f"delta action for {da}: {np.mean(np.exp(measurements.delta_actions[da][-300:]))}+-{np.std(np.exp(measurements.delta_actions[da][-300:]))/300.0**0.5}")
+    q.displayln_info(f"<E_bar-E_FV>: {np.mean(np.exp(measurements.delta_actions['pa'][-300:]))}+-{np.std(np.exp(measurements.delta_actions['pa'][-300:]))/300.0**0.5}")
+    q.displayln_info(f"<(E_bar-E_FV)^2>: {np.mean(np.power(measurements.delta_actions['pa'][-300:],2))}+-{np.std(np.power(measurements.delta_actions['pa'][-300:],2))/300.0**0.5}")
     
     q.displayln_info(f"CHECK: The vacuum expectation value of phi_0 is {round(np.mean(measurements.phi_list[int(n_traj/2):], axis=0)[0],2)}.")
     q.displayln_info(f"CHECK: The vacuum expectation value of phi^2 is {round(np.mean(measurements.psq_list[int(n_traj/2):]),2)}.")
+    
+    x = np.arange(-5,5,0.1)
+    for t in range(0,Nt,int(Nt/20)):
+        plt.plot([action.V(i,t)*Nt/20.0 + t for i in x],x)
+    #plt.show()
+    plt.plot(range(Nt), np.mean(measurements.timeslices,axis=0))
+    plt.show()
 
 size_node_list = [
         [1, 1, 1, 1],
