@@ -56,6 +56,7 @@ struct QMAction {
 
   inline double V(const double x, const Long t)
   {
+    q.displayln_info(ssprintf("t (in V): %ld", t));
     // Returns the potential evaluated at point x
     if(t<t_full)
         return V_full(x);

@@ -234,7 +234,7 @@ class HMC:
         return flag, accept_prob
 
 class Measurements:
-    def __init__(self, total_site, field_geo, actions_measure, action_pa, action_ma, save_file):
+    def __init__(self, total_site, actions_measure, action_pa, action_ma, save_file):
         self.save_file = save_file
         # Stores the trajectory number for debugging purposes
         self.trajs = []
@@ -341,7 +341,7 @@ class Measurements:
 @q.timer_verbose
 def main():
     # The lattice dimensions
-    Nt = 700
+    Nt = 250
     total_site = q.Coordinate([1,1,1,Nt])
     # The multiplicity of the field
     mult = 1
@@ -349,20 +349,20 @@ def main():
     v0 = 3.0
     alpha = 0.0
     barrier_strength = 1.0
-    M = 1.0
-    L = 0.0
-    measure_parameters = []#[[round(M+0.001*i,5),round(L,5)] for i in range(1,21)]
-    t_full = 250
-    t_FV = 200
+    M = 0.0
+    L = 1.0
+    measure_parameters = [[round(M+0.001*i,5),round(L,5)] for i in range(1,21)]
+    t_full = 100
+    t_FV = 51
     m_particle = 1.0
-    dt = 0.05
+    dt = 0.02
     # The number of trajectories to calculate
     n_traj = 500
     #
     version = "0-2"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
-    steps = 30
+    steps = 50
     #
     init_length = 20
     fresh_start = False
@@ -398,7 +398,7 @@ def main():
     actions_measure = [q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full-i, t_FV, m_particle, dt) for i in range(1,21)]
     action_pa = q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_FV-1, m_particle, dt)
     action_ma = q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_FV+1, m_particle, dt)
-    measurements = Measurements(total_site, hmc.field.geo(), actions_measure, action_pa, action_ma, f"output_data/measurements_{hmc.fileid}.bin")
+    measurements = Measurements(total_site, actions_measure, action_pa, action_ma, f"output_data/measurements_{hmc.fileid}.bin")
     
     # If observables have been saved from a previous calculation (on the
     # same day), then load that file first
@@ -427,11 +427,11 @@ def main():
     q.displayln_info(f"<E_bar-E_FV>: {np.mean(np.exp(measurements.delta_actions['pa'][-300:]))}+-{np.std(np.exp(measurements.delta_actions['pa'][-300:]))/300.0**0.5}")
     q.displayln_info(f"<(E_bar-E_FV)^2>: {np.mean(np.power(measurements.delta_actions['pa'][-300:],2))}+-{np.std(np.power(measurements.delta_actions['pa'][-300:],2))/300.0**0.5}")
     
-    q.displayln_info(f"CHECK: The vacuum expectation value of phi_0 is {round(np.mean(measurements.phi_list[int(n_traj/2):], axis=0)[0],2)}.")
-    q.displayln_info(f"CHECK: The vacuum expectation value of phi^2 is {round(np.mean(measurements.psq_list[int(n_traj/2):]),2)}.")
+    #q.displayln_info(f"CHECK: The vacuum expectation value of phi_0 is {round(np.mean(measurements.phi_list[int(n_traj/2):], axis=0)[0],2)}.")
+    #q.displayln_info(f"CHECK: The vacuum expectation value of phi^2 is {round(np.mean(measurements.psq_list[int(n_traj/2):]),2)}.")
     
     x = np.arange(-5,5,0.1)
-    for t in range(0,Nt,int(Nt/20)):
+    for t in range(0,Nt):
         plt.plot([action.V(i,t)*Nt/20.0 + t for i in x],x)
     #plt.show()
     plt.plot(range(Nt), np.mean(measurements.timeslices,axis=0))
