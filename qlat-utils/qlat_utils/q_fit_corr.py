@@ -4,33 +4,30 @@ from .c import *
 from .utils import *
 from .data import *
 
-def mk_data_set(*, n_jk=10, n_ops=4, n_energies=4, t_size=4, rng=None):
+def mk_data_set(*, n_jk=10, n_ops=4, n_energies=4, t_size=4, sigma=0.1, rng=None):
+    """
+    return param_arr, jk_corr_data, corr_data_sigma
+    #
+    energies[ei] is float
+    coefs[ei, i] is float
+    corr_data[i, j, t] = \sum_{ei} coefs[ei, i] * coefs[ei, j] * \exp(-energies[ei] * t)
+    jk_corr_data[jk, i, j, t] = corr_data[i, j, t] + corr_data_sigma[i, j, t] * N(0,1)
+    """
     if rng is None:
-        rng = RngState("seed-mk_data_set")
-    # energies[ei] is float
+        rng = RngState("mk_data_set-seed")
+    #
     energies = rng.u_rand_arr((n_energies,)) * 2.0 + 0.1
-    energies[0:4] = [
-            0.27,
-            0.50,
-            0.8,
-            1.5,
-            ]
-    # coefs[ei, i] is float
+    #
     coefs = rng.u_rand_arr((n_energies, n_ops)) * 2.0 - 1.0
     #
     t_arr = np.arange(t_size)
-    #
-    # corr_data[i, j, t] = \sum_{ei} coefs[ei, i] * coefs[ei, j] * \exp(-energies[ei] * t)
     corr_data = (coefs[:, :, None, None] * coefs[:, None, :, None]
                  * np.exp(-energies[:, None, None, None] * t_arr)
                  ).sum(0)
+    corr_data_sigma = np.zeros((n_ops, n_ops, t_size,), dtype=float) + sigma
     #
-    corr_data_sigma = np.zeros((n_ops, n_ops, t_size,), dtype=float) + 0.1
-    #
-    # jk_corr_data[jk, i, j, t] = corr_data[i, j, t] + corr_data_sigma[i, j, t] * N(0,1)
     jk_corr_data = np.empty((n_jk, n_ops, n_ops, t_size,), dtype=float)
-    jk_corr_data[0] = corr_data
-    jk_corr_data[1:] = corr_data + rng.g_rand_arr((n_jk-1, n_ops, n_ops, t_size,)) * corr_data_sigma
+    jk_corr_data = corr_data + rng.g_rand_arr((n_jk, n_ops, n_ops, t_size,)) * corr_data_sigma
     #
     param_arr = np.concatenate([ energies, coefs.ravel(), ], dtype=float)
     return param_arr, jk_corr_data, corr_data_sigma

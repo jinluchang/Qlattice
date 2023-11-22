@@ -31,6 +31,8 @@ source qcore/set-prefix.sh $name
     time-run pip3 install -vU poetry_core
     time-run pip3 install -vU pkgconfig
 
+    time-run pip3 install -vU jax jaxlib
+
     mk-setenv.sh
     echo "!!!! $name build !!!!"
     rm -rf $temp_dir || true
