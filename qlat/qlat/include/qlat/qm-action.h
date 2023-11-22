@@ -11,8 +11,8 @@ struct QMAction {
   double barrier_strength;
   double M;
   double L;
-  long t_full;
-  long t_FV;
+  Long t_full;
+  Long t_FV;
   //float t_ramp;
   double m_particle;
   double dt;
@@ -35,8 +35,8 @@ struct QMAction {
   //
   qacc QMAction() { init(); }
   qacc QMAction(const double lmbd_, const double v0_, const double alpha_,
-                const double barrier_strength_, const double M_, 
-                const double L_, const long t_full_, const long t_FV_, 
+                const double barrier_strength_, const double M_,
+                const double L_, const Long t_full_, const Long t_FV_,
                 const double m_particle_, const double dt_)
   {
     init();
@@ -53,8 +53,8 @@ struct QMAction {
     m_particle = m_particle_;
     dt = dt_;
   }
-  
-  inline double V(const double x, const long t)
+
+  inline double V(const double x, const Long t)
   {
     // Returns the potential evaluated at point x
     if(t<t_full)
@@ -66,8 +66,8 @@ struct QMAction {
     else
      return V_TV(x);
   }
-  
-  inline double dV(const double x, const long t)
+
+  inline double dV(const double x, const Long t)
   {
     // Returns the potential evaluated at point x
     if(t<t_full)
@@ -84,13 +84,13 @@ struct QMAction {
   {
     return lmbd*(x*x - v0*v0)*(x*x - v0*v0) - alpha*x;
   }
-  
+
   inline double dV_phi4(const double x)
   {
     // Returns the derivative of the potential with respect to x
     return 4.0*lmbd*x*(x*x-v0*v0) - alpha;
   }
-  
+
   inline double V_full(const double x)
   {
     // Returns the potential evaluated at point x
@@ -99,7 +99,7 @@ struct QMAction {
     }
     return V_phi4(x);
   }
-  
+
   inline double dV_full(const double x)
   {
     double rtn = dV_phi4(x);
@@ -108,7 +108,7 @@ struct QMAction {
     }
     return rtn;
   }
-  
+
   inline double V_FV(const double x)
   {
     double rtn = V_full(x);
@@ -116,7 +116,7 @@ struct QMAction {
       rtn += barrier_strength*x*x;
     return rtn;
   }
-  
+
   inline double dV_FV(const double x)
   {
     double rtn = dV_full(x);
@@ -124,7 +124,7 @@ struct QMAction {
       rtn += 2.0*barrier_strength*x;
     return rtn;
   }
-  
+
   inline double V_TV(const double x)
   {
     double rtn = V_full(x);
@@ -134,7 +134,7 @@ struct QMAction {
       rtn += L*barrier_strength*x*x;
     return rtn;
   }
-  
+
   inline double dV_TV(const double x)
   {
     double rtn = dV_full(x);
@@ -194,7 +194,7 @@ struct QMAction {
 	// with the given scalar field.
     TIMER("QMAction.action_node");
     // Get the values of the field sites that lie just outside of the
-    // current node in the time direction. This is needed to compute the 
+    // current node in the time direction. This is needed to compute the
     // derivative term.
     const Coordinate expand_left(0, 0, 0, 0);
     const Coordinate expand_right(0, 0, 0, 1);
@@ -215,7 +215,7 @@ struct QMAction {
     double sum = sum_sq(m);
     return sum/2.0;
   }
-  
+
   inline double sum_sq(const Field<double>& f)
   {
     // Returns the sum of f(x)^2 over lattice sites (on the current
