@@ -35,7 +35,8 @@ tests = \
 		hmc-pions.log \
 		hmc-pure-gauge-flowed.log \
 		qcd-utils.log \
-		free-invert.log
+		free-invert.log \
+		q-fit-corr.log
 
 tests_gpt = \
 			grid-qlat-io-test.log \

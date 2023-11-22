@@ -1,0 +1,13 @@
+CHECK: [1.25151593 0.15005169 1.48329621 0.4003519 ]
+CHECK: param_arr_setup sig1=0.4490500518
+CHECK: jk_corr_data sig2=4.5711521070
+CHECK: corr_data_sigma sig3=-0.0622537627
+CHECK: jk_chisq sig4=-19.9704649931
+CHECK: jk_param_arr sig5=5.2095443809
+CHECK: jk_chisq_grad sig6=29.6798897712
+CHECK: jk_param_arr_for_scaled_corr sig7=5.1907443974
+CHECK: jk_chisq sig4=-19.9704649931
+CHECK: jk_param_arr sig5=5.2095443809
+CHECK: jk_chisq_grad sig6=29.6798897712
+CHECK: jk_param_arr_for_scaled_corr sig7=5.1907443974
+CHECK: finished successfully.
