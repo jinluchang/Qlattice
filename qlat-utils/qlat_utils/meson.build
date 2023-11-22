@@ -17,6 +17,7 @@ py_files = files(
   'qplot.py',
   'utils_io.py',
   'utils.py',
+  'q_fit_corr.py',
   )
 
 pxd_files = files(
