@@ -90,19 +90,19 @@ res = q.q_fit_corr.fit_energy_amplitude(
 
 sig4 = q.get_double_sig(res['jk_chisq'], q.RngState())
 
-q.displayln_info(f"CHECK: jk_chisq sig4={sig4:.10F}")
+q.displayln_info(f"CHECK: jk_chisq sig4={sig4:.4F}")
 
 sig5 = q.get_double_sig(res['jk_param_arr'], q.RngState())
 
-q.displayln_info(f"CHECK: jk_param_arr sig5={sig5:.10F}")
+q.displayln_info(f"CHECK: jk_param_arr sig5={sig5:.4F}")
 
 sig6 = q.get_double_sig(res['jk_chisq_grad'], q.RngState())
 
-q.displayln_info(f"CHECK: jk_chisq_grad sig6={sig6:.10F}")
+q.displayln_info(f"CHECK: jk_chisq_grad sig6={sig6:.4F}")
 
 sig7 = q.get_double_sig(res['jk_param_arr_for_scaled_corr'], q.RngState())
 
-q.displayln_info(f"CHECK: jk_param_arr_for_scaled_corr sig7={sig7:.10F}")
+q.displayln_info(f"CHECK: jk_param_arr_for_scaled_corr sig7={sig7:.4F}")
 
 q.displayln_info(f"{param_compare}")
 
