@@ -33,6 +33,23 @@ def mk_data_set(*, n_jk=10, n_ops=4, n_energies=4, t_size=4, sigma=0.1, rng=None
     return param_arr, jk_corr_data, corr_data_sigma
 
 @timer
+def build_corr_from_param_arr(param_arr, *, n_ops, t_arr, t_start_arr=None):
+    assert len(param_arr.shape) == 1
+    n_params = len(param_arr)
+    assert n_params % (n_ops + 1) == 0
+    n_energies = n_params // (n_ops + 1)
+    param_arr = nparray(param_arr, dtype=np.float64)
+    es = param_arr[:n_energies]
+    cs = param_arr[n_energies:].reshape(n_energies, n_ops)
+    if t_start_arr is None:
+        t_start_arr = np.zeros(n_energies, dtype=np.float64)
+    # corr[op1_idx, op2_idx, t_idx]
+    corr = (cs[:, :, None, None] * cs[:, None, :, None]
+            * np.exp(-es[:, None, None, None] * (t_arr + t_start_arr[:, None, None, None]))
+            ).sum(0)
+    return corr
+
+@timer
 def mk_fcn(corr_data, corr_data_sigma, t_start):
     """
     Shape of inputs and parameters are like:
@@ -72,6 +89,7 @@ def mk_fcn(corr_data, corr_data_sigma, t_start):
         cs = param_arr[n_energies:].reshape(n_energies, n_ops)
         t_start_arr = np.zeros(n_energies, dtype=np.float64)
         t_start_arr[:] = t_start
+        # corr[op1_idx, op2_idx, t_idx]
         corr = (cs[:, :, None, None] * cs[:, None, :, None]
                 * jnp.exp(-es[:, None, None, None] * (t_arr + t_start_arr[:, None, None, None]))
                 ).sum(0)
@@ -225,6 +243,7 @@ def fit_energy_amplitude(jk_corr_data,
                          t_start_fit=4,
                          t_stop_fit=None,
                          t_start_fcn=0,
+                         t_start_param=0,
                          fixed_energy_arr=None,
                          free_energy_arr=None,
                          c_arr=None,
@@ -254,7 +273,7 @@ def fit_energy_amplitude(jk_corr_data,
     e_arr.shape == (n_energies,)
     c_arr.shape == (n_energies, n_ops,)
     #
-    C^{(jk_idx)}_{i,j}(t) ~ \sum_{n} c_arr[n, i] * c_arr[n, j] * exp(- e_arr[n] * t)
+    C^{(jk_idx)}_{i,j}(t) ~ \sum_{n} c_arr[n, i] * c_arr[n, j] * exp(- e_arr[n] * (t + t_start_param_arr[n]))
     #
     jk_param_arr_mini.shape == (n_jk, n_params)
     param_arr == np.concatenate([ e_arr, c_arr.ravel(), ], dtype=np.float64)
@@ -293,6 +312,9 @@ def fit_energy_amplitude(jk_corr_data,
     #
     t_start_fcn_arr = np.zeros(n_energies, dtype=np.float64)
     t_start_fcn_arr[:] = t_start_fcn
+    #
+    t_start_param_arr = np.zeros(n_energies, dtype=np.float64)
+    t_start_param_arr[:] = t_start_param
     #
     n_ops = jk_corr_data.shape[1]
     assert n_ops == jk_corr_data.shape[2]
@@ -339,7 +361,7 @@ def fit_energy_amplitude(jk_corr_data,
         c_arr = np.zeros((n_energies, n_ops,), dtype=np.float64)
     else:
         assert c_arr.shape == (n_energies, n_ops,)
-        c_arr = c_arr * op_norm_fac * np.exp(-e_arr[:, None] * (t_start_fit - t_start_fcn_arr[:, None]) / 2)
+        c_arr = c_arr * op_norm_fac * np.exp(-e_arr[:, None] * (t_start_fit - (t_start_fcn_arr - t_start_param_arr)[:, None]) / 2)
     #
     param_arr_initial = np.concatenate([ e_arr, c_arr.ravel(), ], dtype=np.float64)
     #
@@ -441,7 +463,7 @@ def fit_energy_amplitude(jk_corr_data,
     jk_param_arr_for_scaled_corr = jk_param_arr.copy()
     jk_e_arr = jk_param_arr[:, :n_energies].copy()
     jk_c_arr = jk_param_arr[:, n_energies:].reshape(n_jk, n_energies, n_ops,).copy()
-    jk_c_arr = jk_c_arr / op_norm_fac / np.exp(-jk_e_arr[:, :, None] * (t_start_fit - t_start_fcn_arr[None, :, None]) / 2)
+    jk_c_arr = jk_c_arr / op_norm_fac / np.exp(-jk_e_arr[:, :, None] * (t_start_fit - (t_start_fcn_arr - t_start_param_arr)[None, :, None]) / 2)
     jk_param_arr[:, :n_energies] = jk_e_arr
     jk_param_arr[:, n_energies:] = jk_c_arr.reshape(n_jk, n_energies * n_ops)
     #
