@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 import os
+
 os.environ['JAX_ENABLE_X64'] = 'True'
+os.environ['JAX_PLATFORMS'] = 'cpu'
 
 import qlat as q
 import numpy as np

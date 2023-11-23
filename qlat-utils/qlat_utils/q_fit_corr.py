@@ -221,11 +221,14 @@ def fit_energy_amplitude(jk_corr_data,
                          t_start_fcn=0,
                          fixed_energy_arr=None,
                          free_energy_arr=None,
+                         c_arr=None,
                          n_step_mini_avg=10,
                          n_step_mini_jk=5,
                          minimize_kwargs=None,
+                         r_amp=1e-6,
+                         off_diag_err_scale_factor=1.0,
                          mp_pool=None,
-                        ):
+                         ):
     """
     return res
     #
@@ -303,6 +306,11 @@ def fit_energy_amplitude(jk_corr_data,
     corr_data[~isfinite_sel] = 0.0
     corr_data_err[~isfinite_sel] = np.inf
     #
+    # corr_data_err[op1_idx, op2_idx, t_idx]
+    op_idx_arr = np.arange(n_ops)
+    op_op_off_diag_sel = op_idx_arr[:, None] != op_idx_arr[None, :]
+    corr_data_err[op_op_off_diag_sel] *= off_diag_err_scale_factor
+    #
     e_arr = np.concatenate([ fixed_energy_arr, free_energy_arr ])
     n_fixed_energies = len(fixed_energy_arr)
     n_free_energies = len(free_energy_arr)
@@ -311,10 +319,12 @@ def fit_energy_amplitude(jk_corr_data,
     fcn_avg = mk_fcn(corr_data, corr_data_err, t_start_fcn)
     #
     rng = RngState(f"fit_energy_amplitude-seed-param")
-    r_amp = 1e-6
     #
-    c_arr = np.zeros(n_energies * n_ops, dtype=np.float64)
-    c_arr.ravel()[:] = (rng.u_rand_arr(len(c_arr.ravel())) - 0.5) * r_amp
+    if c_arr is None:
+        c_arr = np.zeros((n_energies, n_ops,), dtype=np.float64)
+    else:
+        assert c_arr.shape == (n_energies, n_ops,)
+        c_arr = c_arr * op_norm_fac * np.exp(-e_arr[:, None] * (t_start_fit - t_start_fcn) / 2)
     #
     param_arr_initial = np.concatenate([ e_arr, c_arr.ravel(), ], dtype=np.float64)
     #
@@ -409,9 +419,11 @@ def fit_energy_amplitude(jk_corr_data,
     jk_param_arr = np.array(jk_param_arr, dtype=np.float64)
     #
     jk_param_arr_for_scaled_corr = jk_param_arr.copy()
-    jk_param_arr[:, n_energies:].reshape(n_jk, n_energies, n_ops,)[:] *= (
-            1 / op_norm_fac * np.exp(jk_param_arr[:, :n_energies, None] * (t_start_fit - t_start_fcn) / 2)
-            )
+    jk_e_arr = jk_param_arr[:, :n_energies].copy()
+    jk_c_arr = jk_param_arr[:, n_energies:].reshape(n_jk, n_energies, n_ops,).copy()
+    jk_c_arr = jk_c_arr / op_norm_fac / np.exp(-jk_e_arr[:, :, None] * (t_start_fit - t_start_fcn) / 2)
+    jk_param_arr[:, :n_energies] = jk_e_arr
+    jk_param_arr[:, n_energies:].ravel()[:] = jk_c_arr.ravel()
     #
     res = dict()
     res['jk_chisq'] = jk_chisq
