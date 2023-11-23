@@ -260,7 +260,7 @@ def fit_energy_amplitude(jk_corr_data,
     t_start = t_start_fit - t_start_data
     t_stop = t_stop_fit - t_start_data
     #
-    jk_corr_data = jk_corr_data[:, :, :, t_start:t_stop]
+    jk_corr_data = jk_corr_data[:, :, :, t_start:t_stop].copy()
     #
     n_jk = len(jk_corr_data)
     #
@@ -297,6 +297,11 @@ def fit_energy_amplitude(jk_corr_data,
         mp_map = mp_pool.imap
     #
     corr_data, corr_data_err = g_jk_avg_err(jk_corr_data)
+    isfinite_sel = np.isfinite(corr_data)
+    #
+    jk_corr_data[:, ~isfinite_sel] = 0.0
+    corr_data[~isfinite_sel] = 0.0
+    corr_data_err[~isfinite_sel] = np.inf
     #
     e_arr = np.concatenate([ fixed_energy_arr, free_energy_arr ])
     n_fixed_energies = len(fixed_energy_arr)
