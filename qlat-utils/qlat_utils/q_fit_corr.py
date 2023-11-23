@@ -38,13 +38,16 @@ def mk_fcn(corr_data, corr_data_sigma, t_start):
     Shape of inputs and parameters are like:
     corr_data.shape == (n_ops, n_ops, t_size,)
     corr_data_sigma.shape == (n_ops, n_ops, t_size,)
-    t_start is the start tslice of the corr_data
+    t_start is the start tslice of the corr_data (can be energy dependent array, t_start for negative_energy ~ -t_size)
     return fcn
     fcn(param_arr) => chisq, param_grad_arr
     e.g.
     param_arr = np.concatenate([ es.ravel(), cs.ravel() ], dtype=np.float64)
     es.shape == (n_energies,)
     cs.shape == (n_energies, n_ops,)
+    #
+    corr_data[i, j, t] = \sum_{ei} coefs[ei, i] * coefs[ei, j] * \exp(-energies[ei] * (t + t_start[ei]))
+    #
     """
     import jax
     import jax.numpy as jnp
@@ -58,7 +61,7 @@ def mk_fcn(corr_data, corr_data_sigma, t_start):
     t_size = shape[2]
     corr_avg = jnp.array(corr_data, dtype=jnp.float64)
     corr_sigma = jnp.array(corr_data_sigma, dtype=jnp.float64)
-    t_arr = t_start + jnp.arange(t_size, dtype=jnp.float64)
+    t_arr = jnp.arange(t_size, dtype=jnp.float64)
     def fcn_f(param_arr):
         assert len(param_arr.shape) == 1
         n_params = len(param_arr)
@@ -67,8 +70,10 @@ def mk_fcn(corr_data, corr_data_sigma, t_start):
         param_arr = jnp.array(param_arr, dtype=jnp.float64)
         es = param_arr[:n_energies]
         cs = param_arr[n_energies:].reshape(n_energies, n_ops)
+        t_start_arr = np.zeros(n_energies, dtype=np.float64)
+        t_start_arr[:] = t_start
         corr = (cs[:, :, None, None] * cs[:, None, :, None]
-                * jnp.exp(-es[:, None, None, None] * t_arr)
+                * jnp.exp(-es[:, None, None, None] * (t_arr + t_start_arr[:, None, None, None]))
                 ).sum(0)
         corr = (corr - corr_avg) / corr_sigma
         chisqs = corr * corr
@@ -176,7 +181,7 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
           jk_idx,
           corr_data,
           corr_data_err,
-          t_start_fcn,
+          t_start_fcn_arr,
           param_arr_mini,
           n_step_mini_jk,
           r_amp,
@@ -193,7 +198,7 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
                     param_arr[rand_update_mask]
                     + (rng.u_rand_arr(n_params)[rand_update_mask] - 0.5) * r_amp)
             return param_arr
-        fcn = mk_fcn(corr_data, corr_data_err, t_start_fcn)
+        fcn = mk_fcn(corr_data, corr_data_err, t_start_fcn_arr)
         param_arr = param_arr_mini.copy()
         for i in range(n_step_mini_jk):
             param_arr = rand_update(param_arr)
@@ -281,6 +286,14 @@ def fit_energy_amplitude(jk_corr_data,
     fixed_energy_arr = fixed_energy_arr.copy()
     free_energy_arr = free_energy_arr.copy()
     #
+    e_arr = np.concatenate([ fixed_energy_arr, free_energy_arr ])
+    n_fixed_energies = len(fixed_energy_arr)
+    n_free_energies = len(free_energy_arr)
+    n_energies = len(e_arr)
+    #
+    t_start_fcn_arr = np.zeros(n_energies, dtype=np.float64)
+    t_start_fcn_arr[:] = t_start_fcn
+    #
     n_ops = jk_corr_data.shape[1]
     assert n_ops == jk_corr_data.shape[2]
     #
@@ -306,29 +319,27 @@ def fit_energy_amplitude(jk_corr_data,
         mp_map = mp_pool.imap
     #
     corr_data, corr_data_err = g_jk_avg_err(jk_corr_data)
-    isfinite_sel = np.isfinite(corr_data)
     #
+    isfinite_sel = np.isfinite(corr_data)
     jk_corr_data[:, ~isfinite_sel] = 0.0
     corr_data[~isfinite_sel] = 0.0
     corr_data_err[~isfinite_sel] = np.inf
+    #
+    is_zero_err_sel = corr_data_err == 0.0
+    corr_data_err[is_zero_err_sel] = 1.0
     #
     # corr_data_err[op1_idx, op2_idx, t_idx]
     op_idx_arr = np.arange(n_ops)
     op_op_off_diag_sel = op_idx_arr[:, None] != op_idx_arr[None, :]
     corr_data_err[op_op_off_diag_sel] *= off_diag_err_scale_factor
     #
-    e_arr = np.concatenate([ fixed_energy_arr, free_energy_arr ])
-    n_fixed_energies = len(fixed_energy_arr)
-    n_free_energies = len(free_energy_arr)
-    n_energies = len(e_arr)
-    #
-    fcn_avg = mk_fcn(corr_data, corr_data_err, t_start_fcn)
+    fcn_avg = mk_fcn(corr_data, corr_data_err, t_start_fcn_arr)
     #
     if c_arr is None:
         c_arr = np.zeros((n_energies, n_ops,), dtype=np.float64)
     else:
         assert c_arr.shape == (n_energies, n_ops,)
-        c_arr = c_arr * op_norm_fac * np.exp(-e_arr[:, None] * (t_start_fit - t_start_fcn) / 2)
+        c_arr = c_arr * op_norm_fac * np.exp(-e_arr[:, None] * (t_start_fit - t_start_fcn_arr[:, None]) / 2)
     #
     param_arr_initial = np.concatenate([ e_arr, c_arr.ravel(), ], dtype=np.float64)
     #
@@ -394,7 +405,7 @@ def fit_energy_amplitude(jk_corr_data,
                 jk_idx=jk_idx,
                 corr_data=jk_corr_data[jk_idx],
                 corr_data_err=corr_data_err,
-                t_start_fcn=t_start_fcn,
+                t_start_fcn_arr=t_start_fcn_arr,
                 param_arr_mini=param_arr_mini,
                 n_step_mini_jk=n_step_mini_jk,
                 r_amp=r_amp,
@@ -430,7 +441,7 @@ def fit_energy_amplitude(jk_corr_data,
     jk_param_arr_for_scaled_corr = jk_param_arr.copy()
     jk_e_arr = jk_param_arr[:, :n_energies].copy()
     jk_c_arr = jk_param_arr[:, n_energies:].reshape(n_jk, n_energies, n_ops,).copy()
-    jk_c_arr = jk_c_arr / op_norm_fac / np.exp(-jk_e_arr[:, :, None] * (t_start_fit - t_start_fcn) / 2)
+    jk_c_arr = jk_c_arr / op_norm_fac / np.exp(-jk_e_arr[:, :, None] * (t_start_fit - t_start_fcn_arr[None, :, None]) / 2)
     jk_param_arr[:, :n_energies] = jk_e_arr
     jk_param_arr[:, n_energies:] = jk_c_arr.reshape(n_jk, n_energies * n_ops)
     #
