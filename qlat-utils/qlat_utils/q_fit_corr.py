@@ -127,7 +127,7 @@ def adaptive_minimize(fcn, step_size_list, n_step=10, max_total_steps=10000, *, 
                 return param_arr
 
 @timer
-def minimize_scipy(fcn, maxiter=10000, *, param_arr, fixed_param_mask=None):
+def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=None):
     import scipy
     fname = get_fname()
     n_params = len(param_arr)
@@ -149,10 +149,19 @@ def minimize_scipy(fcn, maxiter=10000, *, param_arr, fixed_param_mask=None):
         p_all[free_param_mask] = p_free
         chisq, grad_all = fcn(p_all, requires_grad=True)
         return grad_all[free_param_mask]
-    # method = 'CG'
-    method = 'BFGS'
     p_free = param_arr[free_param_mask]
-    res = scipy.optimize.minimize(c_fcn, p_free, method=method, jac=c_fcn_grad, options=dict(maxiter=maxiter))
+    if minimize_kwargs is None:
+        minimize_kwargs = dict()
+    if "options" not in minimize_kwargs:
+        minimize_kwargs["options"] = dict(maxiter=1e3)
+    if "method" not in minimize_kwargs:
+        minimize_kwargs["method"] = 'BFGS'
+    res = scipy.optimize.minimize(
+            c_fcn,
+            p_free,
+            jac=c_fcn_grad,
+            **minimize_kwargs,
+            )
     p_free_mini = res.x
     param_arr_mini = param_arr.copy()
     param_arr_mini[free_param_mask] = p_free_mini
@@ -169,11 +178,11 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
           t_start_fcn,
           param_arr_mini,
           n_step_mini_jk,
-          n_iter_mini,
           r_amp,
           rand_update_mask,
           all_energies_mask,
           fixed_energies_mask,
+          minimize_kwargs,
           ):
         rng = RngState(f"jk_mini_task_in_fit_energy_amplitude-seed-param").split(f"{jk_idx}")
         n_params = len(param_arr_mini)
@@ -187,12 +196,14 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
         param_arr = param_arr_mini.copy()
         for i in range(n_step_mini_jk):
             param_arr = rand_update(param_arr)
-            param_arr = minimize_scipy(fcn, maxiter=n_iter_mini,
-                                       param_arr=param_arr, fixed_param_mask=all_energies_mask)
+            param_arr = minimize_scipy(fcn, param_arr=param_arr,
+                                       fixed_param_mask=all_energies_mask,
+                                       minimize_kwargs=minimize_kwargs)
         for i in range(n_step_mini_jk):
             param_arr = rand_update(param_arr)
-            param_arr = minimize_scipy(fcn, maxiter=n_iter_mini,
-                                       param_arr=param_arr, fixed_param_mask=fixed_energies_mask)
+            param_arr = minimize_scipy(fcn, param_arr=param_arr,
+                                       fixed_param_mask=fixed_energies_mask,
+                                       minimize_kwargs=minimize_kwargs)
         chisq, chisq_grad = fcn(param_arr)
         return chisq, chisq_grad, param_arr
     return f(**kwargs)
@@ -212,7 +223,7 @@ def fit_energy_amplitude(jk_corr_data,
                          free_energy_arr=None,
                          n_step_mini_avg=10,
                          n_step_mini_jk=5,
-                         n_iter_mini=1e3,
+                         minimize_kwargs=None,
                          mp_pool=None,
                         ):
     """
@@ -336,7 +347,9 @@ def fit_energy_amplitude(jk_corr_data,
     displayln_info(0, f"{fname}: mini with fixed all energies")
     for i in range(n_step_mini_avg):
         param_arr_mini = rand_update(param_arr_mini, rng)
-        param_arr_mini = minimize_scipy(fcn_avg, maxiter=n_iter_mini, param_arr=param_arr_mini, fixed_param_mask=all_energies_mask)
+        param_arr_mini = minimize_scipy(fcn_avg, param_arr=param_arr_mini,
+                                        fixed_param_mask=all_energies_mask,
+                                        minimize_kwargs=minimize_kwargs)
         vl = 1
         if i == n_step_mini_avg - 1:
             vl = 0
@@ -345,7 +358,9 @@ def fit_energy_amplitude(jk_corr_data,
     displayln_info(0, f"{fname}: mini with fixed some energies")
     for i in range(n_step_mini_avg):
         param_arr_mini = rand_update(param_arr_mini, rng)
-        param_arr_mini = minimize_scipy(fcn_avg, maxiter=n_iter_mini, param_arr=param_arr_mini, fixed_param_mask=fixed_energies_mask)
+        param_arr_mini = minimize_scipy(fcn_avg, param_arr=param_arr_mini,
+                                        fixed_param_mask=fixed_energies_mask,
+                                        minimize_kwargs=minimize_kwargs)
         vl = 1
         if i == n_step_mini_avg - 1:
             vl = 0
@@ -359,11 +374,11 @@ def fit_energy_amplitude(jk_corr_data,
                 t_start_fcn=t_start_fcn,
                 param_arr_mini=param_arr_mini,
                 n_step_mini_jk=n_step_mini_jk,
-                n_iter_mini=n_iter_mini,
                 r_amp=r_amp,
                 rand_update_mask=rand_update_mask,
                 all_energies_mask=all_energies_mask,
                 fixed_energies_mask=fixed_energies_mask,
+                minimize_kwargs=minimize_kwargs,
                 )
         return kwargs
     #
