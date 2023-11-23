@@ -165,6 +165,7 @@ def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=Non
     p_free_mini = res.x
     param_arr_mini = param_arr.copy()
     param_arr_mini[free_param_mask] = p_free_mini
+    displayln_info(0, f"{fname}: fun={res.fun} ; grad_norm={np.linalg.norm(res.jac)}")
     displayln_info(0, f"{fname}: success={res.success} ; message={res.message} ; nfev={res.nfev} ; njev={res.njev}")
     return param_arr_mini
 
@@ -252,6 +253,8 @@ def fit_energy_amplitude(jk_corr_data,
     #
     jk_param_arr_mini.shape == (n_jk, n_params)
     param_arr == np.concatenate([ e_arr, c_arr.ravel(), ], dtype=np.float64)
+    #
+    off_diag_err_scale_factor should be np.sqrt(2) if jk_corr_data has been symmetrized
     """
     fname = get_fname()
     #
@@ -285,6 +288,9 @@ def fit_energy_amplitude(jk_corr_data,
     op_norm_fac = 1 / np.sqrt(jk_corr_data[0, op_idx_arr, op_idx_arr, 0])
     jk_corr_data = op_norm_fac[:, None, None] * op_norm_fac[None, :, None] * jk_corr_data
     #
+    if n_step_mini_jk == 0:
+        mp_pool = None
+    #
     is_close_pool = False
     if mp_pool is None:
         mp_map = map
@@ -317,8 +323,6 @@ def fit_energy_amplitude(jk_corr_data,
     n_energies = len(e_arr)
     #
     fcn_avg = mk_fcn(corr_data, corr_data_err, t_start_fcn)
-    #
-    rng = RngState(f"fit_energy_amplitude-seed-param")
     #
     if c_arr is None:
         c_arr = np.zeros((n_energies, n_ops,), dtype=np.float64)
@@ -358,6 +362,9 @@ def fit_energy_amplitude(jk_corr_data,
         return param_arr
     #
     param_arr_mini = param_arr_initial.copy()
+    display_param_arr(param_arr_mini, fcn=fcn_avg, mask=fixed_energies_mask, verbose_level=0)
+    #
+    rng = RngState(f"fit_energy_amplitude-seed-param")
     #
     displayln_info(0, f"{fname}: mini with fixed all energies")
     for i in range(n_step_mini_avg):
@@ -376,6 +383,7 @@ def fit_energy_amplitude(jk_corr_data,
         param_arr_mini = minimize_scipy(fcn_avg, param_arr=param_arr_mini,
                                         fixed_param_mask=fixed_energies_mask,
                                         minimize_kwargs=minimize_kwargs)
+        displayln_info(0, f"free_energy_arr={param_arr_mini[n_fixed_energies:n_energies]}")
         vl = 1
         if i == n_step_mini_avg - 1:
             vl = 0
@@ -406,7 +414,8 @@ def fit_energy_amplitude(jk_corr_data,
     for idx, v in enumerate(mp_map(jk_mini_task_in_fit_energy_amplitude,
                                    map(mk_kwargs, range(n_jk)))):
         if idx % mp_map_print_interval == 0:
-            displayln_info(0, f"map: {idx}")
+            if n_step_mini_jk != 0:
+                displayln_info(0, f"map: {idx}")
         chisq, chisq_grad, param_arr = v
         jk_chisq.append(chisq)
         jk_chisq_grad.append(chisq_grad)
@@ -423,7 +432,7 @@ def fit_energy_amplitude(jk_corr_data,
     jk_c_arr = jk_param_arr[:, n_energies:].reshape(n_jk, n_energies, n_ops,).copy()
     jk_c_arr = jk_c_arr / op_norm_fac / np.exp(-jk_e_arr[:, :, None] * (t_start_fit - t_start_fcn) / 2)
     jk_param_arr[:, :n_energies] = jk_e_arr
-    jk_param_arr[:, n_energies:].ravel()[:] = jk_c_arr.ravel()
+    jk_param_arr[:, n_energies:] = jk_c_arr.reshape(n_jk, n_energies * n_ops)
     #
     res = dict()
     res['jk_chisq'] = jk_chisq
