@@ -207,6 +207,7 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
           all_energies_mask,
           fixed_energies_mask,
           minimize_kwargs,
+          rng_seed,
           ):
         rng = RngState(f"jk_mini_task_in_fit_energy_amplitude-seed-param").split(f"{jk_idx}")
         n_params = len(param_arr_mini)
@@ -253,6 +254,7 @@ def fit_energy_amplitude(jk_corr_data,
                          r_amp=1e-6,
                          diag_err_scale_factor=1.0,
                          off_diag_err_scale_factor=1.0,
+                         rng_seed=None,
                          mp_pool=None,
                          ):
     """
@@ -324,6 +326,9 @@ def fit_energy_amplitude(jk_corr_data,
     op_idx_arr = np.arange(n_ops)
     op_norm_fac = 1 / np.sqrt(jk_corr_data[0, op_idx_arr, op_idx_arr, 0])
     jk_corr_data = op_norm_fac[:, None, None] * op_norm_fac[None, :, None] * jk_corr_data
+    #
+    if rng_seed is None:
+        rng_seed = "fit_energy_amplitude-seed-param"
     #
     if n_step_mini_jk == 0:
         mp_pool = None
@@ -400,7 +405,7 @@ def fit_energy_amplitude(jk_corr_data,
     param_arr_mini = param_arr_initial.copy()
     display_param_arr(param_arr_mini, fcn=fcn_avg, mask=fixed_energies_mask, verbose_level=0)
     #
-    rng = RngState(f"fit_energy_amplitude-seed-param")
+    rng = RngState(rng_seed)
     #
     displayln_info(0, f"{fname}: mini with fixed all energies")
     for i in range(n_step_mini_avg):
@@ -438,6 +443,7 @@ def fit_energy_amplitude(jk_corr_data,
                 all_energies_mask=all_energies_mask,
                 fixed_energies_mask=fixed_energies_mask,
                 minimize_kwargs=minimize_kwargs,
+                rng_seed=f"jk_mini_task_in_{rng_seed}"
                 )
         return kwargs
     #
