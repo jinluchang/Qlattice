@@ -206,6 +206,7 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
           rand_update_mask,
           all_energies_mask,
           fixed_energies_mask,
+          fixed_coef_energy_mask,
           minimize_kwargs,
           rng_seed,
           ):
@@ -222,12 +223,12 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
         for i in range(n_step_mini_jk):
             param_arr = rand_update(param_arr)
             param_arr = minimize_scipy(fcn, param_arr=param_arr,
-                                       fixed_param_mask=all_energies_mask,
+                                       fixed_param_mask=all_energies_mask | fixed_coef_energy_mask,
                                        minimize_kwargs=minimize_kwargs)
         for i in range(n_step_mini_jk):
             param_arr = rand_update(param_arr)
             param_arr = minimize_scipy(fcn, param_arr=param_arr,
-                                       fixed_param_mask=fixed_energies_mask,
+                                       fixed_param_mask=fixed_energies_mask | fixed_coef_energy_mask,
                                        minimize_kwargs=minimize_kwargs)
         chisq, chisq_grad = fcn(param_arr)
         return chisq, chisq_grad, param_arr
@@ -248,6 +249,7 @@ def fit_energy_amplitude(jk_corr_data,
                          e_arr=None,
                          c_arr=None,
                          free_energy_idx_arr=None,
+                         fixed_coef_energy_idx_arr=None,
                          n_step_mini_avg=10,
                          n_step_mini_jk=5,
                          minimize_kwargs=None,
@@ -310,6 +312,11 @@ def fit_energy_amplitude(jk_corr_data,
         free_energy_idx_arr = np.array([], dtype=np.int64)
     else:
         free_energy_idx_arr = np.array(free_energy_idx_arr, dtype=np.int64)
+    #
+    if fixed_coef_energy_idx_arr is None:
+        fixed_coef_energy_idx_arr = np.array([], dtype=np.int64)
+    else:
+        fixed_coef_energy_idx_arr = np.array(fixed_coef_energy_idx_arr, dtype=np.int64)
     #
     n_free_energies = len(free_energy_idx_arr)
     n_fixed_energies = n_energies - n_free_energies
@@ -377,7 +384,13 @@ def fit_energy_amplitude(jk_corr_data,
     fixed_energies_mask = all_energies_mask.copy()
     fixed_energies_mask[free_energy_idx_arr] = False
     free_energies_mask = (~fixed_energies_mask) & all_energies_mask
-    rand_update_mask = ~all_energies_mask
+    #
+    c_mask = np.full((n_energies, n_ops,), False, dtype=bool)
+    c_mask[fixed_coef_energy_idx_arr] = True
+    fixed_coef_energy_mask = np.full(n_params, False, dtype=bool)
+    fixed_coef_energy_mask[n_energies:] = c_mask.ravel()
+    #
+    rand_update_mask = (~all_energies_mask) & (~fixed_coef_energy_mask)
     #
     def display_param_arr(param_arr, fcn, mask=None, verbose_level=0):
         fcn, grad = fcn(param_arr)
@@ -411,7 +424,7 @@ def fit_energy_amplitude(jk_corr_data,
     for i in range(n_step_mini_avg):
         param_arr_mini = rand_update(param_arr_mini, rng)
         param_arr_mini = minimize_scipy(fcn_avg, param_arr=param_arr_mini,
-                                        fixed_param_mask=all_energies_mask,
+                                        fixed_param_mask=all_energies_mask | fixed_coef_energy_mask,
                                         minimize_kwargs=minimize_kwargs)
         vl = 1
         if i == n_step_mini_avg - 1:
@@ -422,9 +435,9 @@ def fit_energy_amplitude(jk_corr_data,
     for i in range(n_step_mini_avg):
         param_arr_mini = rand_update(param_arr_mini, rng)
         param_arr_mini = minimize_scipy(fcn_avg, param_arr=param_arr_mini,
-                                        fixed_param_mask=fixed_energies_mask,
+                                        fixed_param_mask=fixed_energies_mask | fixed_coef_energy_mask,
                                         minimize_kwargs=minimize_kwargs)
-        displayln_info(0, f"free_energy_arr={param_arr_mini[n_fixed_energies:n_energies]}")
+        displayln_info(0, f"free_energy_arr={param_arr_mini[free_energies_mask]}")
         vl = 1
         if i == n_step_mini_avg - 1:
             vl = 0
@@ -442,6 +455,7 @@ def fit_energy_amplitude(jk_corr_data,
                 rand_update_mask=rand_update_mask,
                 all_energies_mask=all_energies_mask,
                 fixed_energies_mask=fixed_energies_mask,
+                fixed_coef_energy_mask=fixed_coef_energy_mask,
                 minimize_kwargs=minimize_kwargs,
                 rng_seed=f"jk_mini_task_in_{rng_seed}"
                 )
