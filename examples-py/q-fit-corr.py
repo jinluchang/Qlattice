@@ -47,14 +47,12 @@ sig3 = q.get_double_sig(corr_data_sigma, q.RngState())
 
 q.displayln_info(f"CHECK: corr_data_sigma sig3={sig3:.10F}")
 
-fixed_energy_arr = param_arr_setup[:n_energies - 1]
-
-free_energy_arr = param_arr_setup[n_energies - 1:n_energies]
+e_arr = param_arr_setup[:n_energies]
 
 res = q.q_fit_corr.fit_energy_amplitude(
     jk_corr_data,
-    fixed_energy_arr=fixed_energy_arr,
-    free_energy_arr=free_energy_arr,
+    e_arr=e_arr,
+    free_energy_idx_arr=[ n_energies - 1, ],
     t_start_fit=1,
     t_stop_fit=10,
     n_step_mini_avg=5,
@@ -81,8 +79,8 @@ param_compare = np.stack((param_arr_setup,) + q.g_jk_avg_err(res['jk_param_arr']
 
 res = q.q_fit_corr.fit_energy_amplitude(
     jk_corr_data,
-    fixed_energy_arr=fixed_energy_arr,
-    free_energy_arr=free_energy_arr,
+    e_arr=e_arr,
+    free_energy_idx_arr=[ n_energies - 1, ],
     t_start_fit=1,
     t_stop_fit=10,
     n_step_mini_avg=5,

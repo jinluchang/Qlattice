@@ -245,9 +245,9 @@ def fit_energy_amplitude(jk_corr_data,
                          t_stop_fit=None,
                          t_start_fcn=0,
                          t_start_param=0,
-                         fixed_energy_arr=None,
-                         free_energy_arr=None,
+                         e_arr=None,
                          c_arr=None,
+                         free_energy_idx_arr=None,
                          n_step_mini_avg=10,
                          n_step_mini_jk=5,
                          minimize_kwargs=None,
@@ -270,9 +270,9 @@ def fit_energy_amplitude(jk_corr_data,
     jk_corr_data.shape == (n_jk, n_ops, n_ops, t_size,)
     jk_corr_data.dtype == np.float64
     #
-    n_energies = len(fixed_energy_arr) + len(free_energy_arr)
+    free_energy_arr = e_arr[free_energy_idx_arr]
+    # by default, all energy are fixed
     #
-    e_arr == np.concatenate([ fixed_energy_arr, free_energy_arr, ], dtype=np.float64)
     e_arr.shape == (n_energies,)
     c_arr.shape == (n_energies, n_ops,)
     #
@@ -298,30 +298,32 @@ def fit_energy_amplitude(jk_corr_data,
     #
     n_jk = len(jk_corr_data)
     #
-    if fixed_energy_arr is None:
-        fixed_energy_arr = np.array([], dtype=np.float64)
-        if free_energy_arr is None:
-            free_energy_arr = np.array([ 0.0, ], dtype=np.float64)
-    else:
-        if free_energy_arr is None:
-            free_energy_arr = np.array([], dtype=np.float64)
+    n_ops = jk_corr_data.shape[1]
+    assert n_ops == jk_corr_data.shape[2]
     #
-    fixed_energy_arr = fixed_energy_arr.copy()
-    free_energy_arr = free_energy_arr.copy()
+    e_arr = np.array(e_arr, dtype=np.float64)
     #
-    e_arr = np.concatenate([ fixed_energy_arr, free_energy_arr ])
-    n_fixed_energies = len(fixed_energy_arr)
-    n_free_energies = len(free_energy_arr)
     n_energies = len(e_arr)
+    assert e_arr.shape == (n_energies,)
+    #
+    if free_energy_idx_arr is None:
+        free_energy_idx_arr = np.array([], dtype=np.int64)
+    else:
+        free_energy_idx_arr = np.array(free_energy_idx_arr, dtype=np.int64)
+    #
+    n_free_energies = len(free_energy_idx_arr)
+    n_fixed_energies = n_energies - n_free_energies
+    #
+    if c_arr is None:
+        c_arr = np.zeros((n_energies, n_ops,), dtype=np.float64)
+    else:
+        assert c_arr.shape == (n_energies, n_ops,)
     #
     t_start_fcn_arr = np.zeros(n_energies, dtype=np.float64)
     t_start_fcn_arr[:] = t_start_fcn
     #
     t_start_param_arr = np.zeros(n_energies, dtype=np.float64)
     t_start_param_arr[:] = t_start_param
-    #
-    n_ops = jk_corr_data.shape[1]
-    assert n_ops == jk_corr_data.shape[2]
     #
     op_idx_arr = np.arange(n_ops)
     op_norm_fac = 1 / np.sqrt(jk_corr_data[0, op_idx_arr, op_idx_arr, 0])
@@ -365,19 +367,17 @@ def fit_energy_amplitude(jk_corr_data,
     #
     fcn_avg = mk_fcn(corr_data, corr_data_err, t_start_fcn_arr)
     #
-    if c_arr is None:
-        c_arr = np.zeros((n_energies, n_ops,), dtype=np.float64)
-    else:
-        assert c_arr.shape == (n_energies, n_ops,)
-        c_arr = c_arr * op_norm_fac * np.exp(-e_arr[:, None] * (t_start_fit - (t_start_fcn_arr - t_start_param_arr)[:, None]) / 2)
+    c_arr = c_arr * op_norm_fac * np.exp(-e_arr[:, None] * (t_start_fit - (t_start_fcn_arr - t_start_param_arr)[:, None]) / 2)
     #
     param_arr_initial = np.concatenate([ e_arr, c_arr.ravel(), ], dtype=np.float64)
     #
     n_params = len(param_arr_initial)
     #
     all_energies_mask = np.arange(n_params) < n_energies
-    fixed_energies_mask = np.arange(n_params) < n_fixed_energies
-    rand_update_mask = np.arange(n_params) >= n_energies
+    fixed_energies_mask = all_energies_mask.copy()
+    fixed_energies_mask[free_energy_idx_arr] = False
+    free_energies_mask = (~fixed_energies_mask) & all_energies_mask
+    rand_update_mask = ~all_energies_mask
     #
     def display_param_arr(param_arr, fcn, mask=None, verbose_level=0):
         fcn, grad = fcn(param_arr)
