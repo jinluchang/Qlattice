@@ -38,7 +38,7 @@ def build_corr_from_param_arr(param_arr, *, n_ops, t_arr, t_start_arr=None):
     n_params = len(param_arr)
     assert n_params % (n_ops + 1) == 0
     n_energies = n_params // (n_ops + 1)
-    param_arr = nparray(param_arr, dtype=np.float64)
+    param_arr = np.array(param_arr, dtype=np.float64)
     es = param_arr[:n_energies]
     cs = param_arr[n_energies:].reshape(n_energies, n_ops)
     if t_start_arr is None:
@@ -103,7 +103,7 @@ def mk_fcn(corr_data, corr_data_sigma, t_start):
     def fcn(param_arr, requires_grad=True):
         if requires_grad:
             chisq, grad = fcn_fg_jit(param_arr)
-            return chisq, np.array(grad, dtype=np.float64)
+            return chisq.item(), np.array(grad, dtype=np.float64)
         else:
             chisq = fcn_f_jit(param_arr)
             return chisq.item()
@@ -251,6 +251,7 @@ def fit_energy_amplitude(jk_corr_data,
                          n_step_mini_jk=5,
                          minimize_kwargs=None,
                          r_amp=1e-6,
+                         diag_err_scale_factor=1.0,
                          off_diag_err_scale_factor=1.0,
                          mp_pool=None,
                          ):
@@ -278,6 +279,7 @@ def fit_energy_amplitude(jk_corr_data,
     jk_param_arr_mini.shape == (n_jk, n_params)
     param_arr == np.concatenate([ e_arr, c_arr.ravel(), ], dtype=np.float64)
     #
+    diag_err_scale_factor should be 1.0
     off_diag_err_scale_factor should be np.sqrt(2) if jk_corr_data has been symmetrized
     """
     fname = get_fname()
@@ -352,8 +354,9 @@ def fit_energy_amplitude(jk_corr_data,
     #
     # corr_data_err[op1_idx, op2_idx, t_idx]
     op_idx_arr = np.arange(n_ops)
-    op_op_off_diag_sel = op_idx_arr[:, None] != op_idx_arr[None, :]
-    corr_data_err[op_op_off_diag_sel] *= off_diag_err_scale_factor
+    op_op_diag_sel = op_idx_arr[:, None] == op_idx_arr[None, :]
+    corr_data_err[op_op_diag_sel] *= diag_err_scale_factor
+    corr_data_err[~op_op_diag_sel] *= off_diag_err_scale_factor
     #
     fcn_avg = mk_fcn(corr_data, corr_data_err, t_start_fcn_arr)
     #
