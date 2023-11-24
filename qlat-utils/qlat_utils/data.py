@@ -253,6 +253,25 @@ def average(data_list):
     v = sum(data_list)
     return 1/n * v
 
+def average_ignore_nan(value_arr_list):
+    if len(value_arr_list) == 0:
+        return None
+    shape = value_arr_list[0].shape
+    dtype = value_arr_list[0].dtype
+    count_arr = np.zeros(shape, dtype=np.int64)
+    sum_arr = np.zeros(shape, dtype=dtype)
+    for v_arr in value_arr_list:
+        assert v_arr.shape == shape
+        assert v_arr.dtype == dtype
+        sel = ~np.isnan(v_arr)
+        count_arr[sel] += 1
+        sum_arr[sel] += v_arr[sel]
+    avg_arr = np.zeros(shape, dtype=dtype)
+    sel = count_arr > 0
+    avg_arr[sel] = sum_arr[sel] / count_arr[sel]
+    avg_arr[~sel] = np.nan
+    return avg_arr
+
 def block_data(data_list, block_size, is_overlapping = True):
     """
     return the list of block averages
