@@ -61,8 +61,8 @@ class HMC:
     
     def load_field(self):
         filename, self.traj = self.find_latest_traj(f"output_data/fields/fvd_traj_*_{self.fileidwc}.field")
-        if(filename==""):
-            filename, self.traj = self.find_latest_traj(f"output_data/fields/fvd_traj_*_{self.fileidwc_no_version}.field")
+        # if(filename==""):
+        #    filename, self.traj = self.find_latest_traj(f"output_data/fields/fvd_traj_*_{self.fileidwc_no_version}.field")
         self.init_length+=self.traj-1
         if(not filename==""):
             self.field.load_double(filename)
