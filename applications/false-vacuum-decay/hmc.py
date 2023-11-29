@@ -349,17 +349,17 @@ def main():
     v0 = 3.0
     alpha = 0.0
     barrier_strength = 1.0
-    M = 0.0
-    L = 1.0
+    M = 1.0
+    L = 0.0
     measure_parameters = [[round(M+0.001*i,5),round(L,5)] for i in range(1,21)]
     t_full = 100
-    t_FV = 51
+    t_FV = 49
     m_particle = 1.0
     dt = 0.02
     # The number of trajectories to calculate
     n_traj = 500
     #
-    version = "0-2"
+    version = "0-3"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
     steps = 50

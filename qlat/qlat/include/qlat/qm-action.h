@@ -56,7 +56,6 @@ struct QMAction {
 
   inline double V(const double x, const Long t)
   {
-    q.displayln_info(ssprintf("t (in V): %ld", t));
     // Returns the potential evaluated at point x
     if(t<t_full)
         return V_full(x);
@@ -64,8 +63,12 @@ struct QMAction {
       return V_FV(x);
     else if(t<2*t_full+t_FV)
       return V_full(x);
-    else
+    else {
+     //displayln(ssprintf("t (in V): %ld", t));
+     //displayln(ssprintf("x (in V): %24.17E", x));
+     //displayln(ssprintf("V_TV(x) (in V): %24.17E", V_TV(x)));
      return V_TV(x);
+    }
   }
 
   inline double dV(const double x, const Long t)
@@ -141,12 +144,12 @@ struct QMAction {
     double rtn = dV_full(x);
     if(x<0)
       rtn += M*2.0*barrier_strength*x;
-    if(x>0)
+    else
       rtn += L*2.0*barrier_strength*x;
     return rtn;
   }
 
-  qacc double action_point(QMAction& qma, const Field<double>& f, Coordinate xl)
+  qacc double action_point(QMAction& qma, const Field<double>& f, const Geometry& geo, Coordinate xl)
   {
     // Returns the contribution to the total action from a single lattice
     // point (including the relavent neighbor interactions)
@@ -155,7 +158,7 @@ struct QMAction {
     xl[3]+=1;
     double psi_eps = f.get_elem(xl);
     xl[3]-=1;
-    return (m_particle/2.0/qma.dt/qma.dt)*(psi_eps-psi)*(psi_eps-psi) + qma.V(psi, xl[3]);
+    return (m_particle/2.0/qma.dt/qma.dt)*(psi_eps-psi)*(psi_eps-psi) + qma.V(psi, geo.coordinate_g_from_l(xl)[3]);
   }
 
   inline double action_node_no_comm(const Field<double>& f)
@@ -177,7 +180,7 @@ struct QMAction {
     qacc_for(index, geo_r.local_volume(), {
       const Geometry& geo = f.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
-      fd.get_elem(index) = qma.action_point(qma, f, xl);
+      fd.get_elem(index) = qma.action_point(qma, f, geo, xl);
     });
     // Sums over the contributions to the total action from each point
     // (this cannot be done in the previous loops because the previous
@@ -262,7 +265,7 @@ struct QMAction {
       qassert(force_v.size() == 1);
       double psi = f.get_elem(xl);
       force_v[0] = 2.0 * qma.m_particle / qma.dt / qma.dt * psi;
-      force_v[0] += qma.dV(psi,xl[3]);
+      force_v[0] += qma.dV(psi,geo.coordinate_g_from_l(xl)[3]);
       xl[3] += 1;
       force_v[0] -= qma.m_particle / qma.dt / qma.dt * f.get_elem(xl);
       xl[3] -= 2;
