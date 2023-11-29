@@ -42,8 +42,7 @@ class HMC:
         self.aux = q.Field(q.ElemTypeRealD, geo, mult)
         
         if(fresh_start):
-            self.field.set_unit()
-            self.field *= -3.0
+            self.init_field()
         else:
             self.load_field()
         
@@ -70,7 +69,11 @@ class HMC:
             # without a metropolis accept/reject step
             self.init_length = 0
         else:
-            self.field.set_zero()
+            self.init_field()
+    
+    def init_field(self):
+        self.field.set_unit()
+        self.field *= -3.0
     
     def save_field(self):
         self.field.save_double(f"output_data/fields/fvd_traj_{self.traj}_{self.fileid}.field")
@@ -353,7 +356,7 @@ def main():
     L = 0.0
     measure_parameters = [[round(M+0.001*i,5),round(L,5)] for i in range(1,21)]
     t_full = 100
-    t_FV = 49
+    t_FV = 48
     m_particle = 1.0
     dt = 0.02
     # The number of trajectories to calculate
