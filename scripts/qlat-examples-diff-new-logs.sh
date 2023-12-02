@@ -1,5 +1,7 @@
 #!/bin/bash
 
+./scripts/qlat-examples-clean-new-logs.sh
+
 source qcore/set-prefix.sh
 
 source qcore/conf.sh
