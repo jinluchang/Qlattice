@@ -18,7 +18,7 @@ If `temp_dir` environmental variable is not set (or empty), the default `TEMP_DI
 
 ```bash
 sudo apt-get install -y git bzip2 autoconf unzip
-sudo apt-get install -y python3-full python3-dev
+sudo apt-get install -y python3-full python3-dev python3-venv
 sudo apt-get install -y libopenmpi-dev ninja-build patchelf
 sudo apt-get install -y libeigen3-dev libgsl-dev
 sudo apt-get install -y zlib1g-dev libssl-dev libmpfr-dev
