@@ -2,7 +2,7 @@ project('qlat', 'cpp', 'cython',
   version: '0.47',
   license: 'GPL-3.0-or-later',
   default_options: [
-    'warning_level=3',
+    'warning_level=1',
     'cpp_std=c++14',
     'libdir=lib',
     'optimization=2',
