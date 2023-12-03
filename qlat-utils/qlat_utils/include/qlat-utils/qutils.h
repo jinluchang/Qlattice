@@ -67,7 +67,7 @@ qacc constexpr bool is_data_vector_type()
 // data value types + all kinds of vector of data value types
 {
   return IsDataVectorType<M>::value;
-};
+}
 
 // -------------------
 
@@ -86,7 +86,7 @@ qacc constexpr bool is_get_data_type()
 // support get_data function
 {
   return IsGetDataType<M>::value;
-};
+}
 
 // -------------------
 
