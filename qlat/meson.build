@@ -1,5 +1,5 @@
 project('qlat', 'cpp', 'cython',
-  version: '0.46',
+  version: '0.47',
   license: 'GPL-3.0-or-later',
   default_options: [
     'warning_level=3',
