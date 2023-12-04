@@ -676,8 +676,7 @@ void ShuffledFieldsWriter::init(const std::string& path_,
                    path.c_str()));
     qassert(false);
   }
-  if (is_append and does_file_exist_sync_node(path)) {
-    qassert(does_file_exist_sync_node(path + "/geon-info.txt"));
+  if (is_append and does_file_exist_sync_node(path + "/geon-info.txt")) {
     new_size_node = shuffled_fields_reader_size_node_info(path);
     if (new_size_node_ != Coordinate() and new_size_node_ != new_size_node) {
       qwarn(ssprintf(
@@ -687,14 +686,26 @@ void ShuffledFieldsWriter::init(const std::string& path_,
           show(new_size_node).c_str(), show(new_size_node_).c_str()));
     }
   } else {
+    if (does_file_exist_sync_node(path)) {
+      qwarn(
+          ssprintf("ShuffledFieldsWriter::init(p,sn,app):"
+                   "WARNING: path='%s' exists but 'geon-info.txt' is not "
+                   "present in the folder.",
+                   path.c_str()));
+    }
     new_size_node = new_size_node_;
   }
   std::vector<GeometryNode> geons = make_dist_io_geons(new_size_node);
   fws.resize(geons.size());
+  if (get_id_node() != 0) {
+    sync_node();
+  }
   for (int i = 0; i < (int)geons.size(); ++i) {
     fws[i].init(path, geons[i], is_append);
   }
-  sync_node();
+  if (get_id_node() == 0) {
+    sync_node();
+  }
   add_shuffled_fields_writer(*this);
 }
 

@@ -17,10 +17,11 @@ If `temp_dir` environmental variable is not set (or empty), the default `TEMP_DI
 ## Install on Ubuntu
 
 ```bash
+sudo apt-get install -y python3-full
+sudo apt-get install -y python3-dev python3-venv python3-wheel
 sudo apt-get install -y git bzip2 autoconf unzip
-sudo apt-get install -y python3-full python3-dev python3-venv
 sudo apt-get install -y libopenmpi-dev ninja-build patchelf
-sudo apt-get install -y libeigen3-dev libgsl-dev
+sudo apt-get install -y libeigen3-dev libgsl-dev libopenblas-dev
 sudo apt-get install -y zlib1g-dev libssl-dev libmpfr-dev
 sudo apt-get install -y gnuplot texlive-metapost poppler-utils
 sudo apt-get install -y libfftw3-dev

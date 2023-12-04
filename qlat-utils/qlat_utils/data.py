@@ -25,7 +25,9 @@ class use_kwargs:
         @functools.wraps(func)
         def f(*args, **kwargs):
             if "is_default_kwargs_applied" not in kwargs:
-                kwargs = self.default_kwargs | kwargs
+                d = self.default_kwargs.copy()
+                d.update(kwargs)
+                kwargs = d
             if self.keys is not None:
                 kwargs = { k: kwargs[k] for k in self.keys }
             return func(*args, **kwargs)

@@ -91,6 +91,23 @@ cdef class Coordinate:
         cdef cc.Long r_sqr = self.xx[0] * self.xx[0] + self.xx[1] * self.xx[1] + self.xx[2] * self.xx[2]
         return r_sqr
 
+    def volume(self):
+        """
+        get product of all components
+        """
+        cdef cc.Long vol = cc.product(self.xx)
+        return vol
+
+    def spatial_volume(self):
+        """
+        get product of all components
+        """
+        cdef cc.Long svol = 1
+        svol *= self.xx[0]
+        svol *= self.xx[1]
+        svol *= self.xx[2]
+        return svol
+
     def __getitem__(self, int key):
         assert 0 <= key
         assert key < 4

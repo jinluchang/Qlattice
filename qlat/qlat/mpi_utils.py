@@ -3,7 +3,6 @@ from . import c
 from .c import get_size_node, get_coor_node
 from .c import sync_node
 from .c import begin, end
-from math import prod
 
 import numpy as np
 
@@ -50,7 +49,7 @@ def begin_with_mpi(size_node_list = None):
     size_node_list = size_node_list + default_size_node_list
     size_node = None
     for size_node_check in size_node_list:
-        if prod(size_node_check.to_list()) == num_node:
+        if size_node_check.volume() == num_node:
             size_node = size_node_check
             break
     if size_node is None:

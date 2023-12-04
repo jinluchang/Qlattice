@@ -10,7 +10,7 @@ q.default_g_jk_kwargs["jk_type"] = "rjk"
 q.default_g_jk_kwargs["n_rand_sample"] = 1024
 q.default_g_jk_kwargs["rng_state"] = q.RngState("rejk")
 
-@functools.cache
+@functools.lru_cache
 def get_trajs(job_tag):
     return list(range(25))
 
