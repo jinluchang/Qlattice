@@ -344,33 +344,33 @@ class Measurements:
 @q.timer_verbose
 def main():
     # The lattice dimensions
-    Nt = 250
+    Nt = 800
     total_site = q.Coordinate([1,1,1,Nt])
     # The multiplicity of the field
     mult = 1
     lmbd = 0.01
-    v0 = 3.0
+    v0 = 5.0
     alpha = 0.0
     barrier_strength = 1.0
     M = 1.0
     L = 0.0
     measure_parameters = [[round(M+0.001*i,5),round(L,5)] for i in range(1,21)]
-    t_full = 100
-    t_FV = 48
+    t_full = 0
+    t_FV = 600
     m_particle = 1.0
-    dt = 0.02
+    dt = 0.05
     # The number of trajectories to calculate
-    n_traj = 500
+    n_traj = 10000
     #
-    version = "0-3"
+    version = "0-5"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
-    steps = 50
+    steps = 10
     #
     init_length = 20
     fresh_start = False
     # The number of trajectories to run before each save
-    save_frequency = 250
+    save_frequency = 1000
     
     for i in range(1,len(sys.argv)):
         try:
@@ -391,14 +391,16 @@ def main():
                 save_frequency = int(sys.argv[i+1])
             elif(sys.argv[i]=="-f"):
                 t_full = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-F"):
+                t_FV = int(sys.argv[i+1])
         except:
-            raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -s for the number of steps in a trajectory, -R to force restarting with blank initial field, -i for the number of trajectories to do at the beginning without a Metropolis step, -S for the number of trajectories to run before each save, -f for the time to evolve with H_full. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1 -t 10000")
+            raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -s for the number of steps in a trajectory, -R to force restarting with blank initial field, -i for the number of trajectories to do at the beginning without a Metropolis step, -S for the number of trajectories to run before each save, -f for the time to evolve with H_full, -F for the time to evolve with H_FV. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1 -t 10000")
     
     action = q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_FV, m_particle, dt)
     hmc = HMC(action,f"lmbd_{lmbd}_v0_{v0}_alpha_{alpha}_m_{m_particle}_dt_{dt}_bar_{barrier_strength}_M_{M}_L_{L}_tfull_{t_full}_tFV_{t_FV}",total_site,mult,steps,init_length,date,version,fresh_start)
     
     #actions_measure = [q.QMAction(lmbd, v0, alpha, barrier_strength, P[0], P[1], t_full, t_FV, m_particle, dt) for P in measure_parameters]
-    actions_measure = [q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full-i, t_FV, m_particle, dt) for i in range(1,21)]
+    actions_measure = [q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full+i, t_FV-2*i, m_particle, dt) for i in range(1,21)]
     action_pa = q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_FV-1, m_particle, dt)
     action_ma = q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_FV+1, m_particle, dt)
     measurements = Measurements(total_site, actions_measure, action_pa, action_ma, f"output_data/measurements_{hmc.fileid}.bin")
@@ -426,12 +428,12 @@ def main():
     
     q.displayln_info(f"Acceptance rate: {np.mean(measurements.accept_rates[-300:])}")
     for da in measurements.delta_actions:
-        q.displayln_info(f"delta action for {da}: {np.mean(np.exp(measurements.delta_actions[da][-300:]))}+-{np.std(np.exp(measurements.delta_actions[da][-300:]))/300.0**0.5}")
-    q.displayln_info(f"<E_bar-E_FV>: {np.mean(np.exp(measurements.delta_actions['pa'][-300:]))}+-{np.std(np.exp(measurements.delta_actions['pa'][-300:]))/300.0**0.5}")
+        q.displayln_info(f"e^(Delta S) for {da}: {np.mean(np.exp(measurements.delta_actions[da][-3000:]))}+-{np.std(np.exp(measurements.delta_actions[da][-3000:]))/3000.0**0.5}")
+    q.displayln_info(f"<e^(E_bar-E_FV)>: {np.mean(np.exp(measurements.delta_actions['pa'][-300:]))}+-{np.std(np.exp(measurements.delta_actions['pa'][-300:]))/300.0**0.5}")
     q.displayln_info(f"<(E_bar-E_FV)^2>: {np.mean(np.power(measurements.delta_actions['pa'][-300:],2))}+-{np.std(np.power(measurements.delta_actions['pa'][-300:],2))/300.0**0.5}")
     
-    #q.displayln_info(f"CHECK: The vacuum expectation value of phi_0 is {round(np.mean(measurements.phi_list[int(n_traj/2):], axis=0)[0],2)}.")
-    #q.displayln_info(f"CHECK: The vacuum expectation value of phi^2 is {round(np.mean(measurements.psq_list[int(n_traj/2):]),2)}.")
+    q.displayln_info(f"CHECK: The vacuum expectation value of phi_0 is {round(np.mean(measurements.phi_list[int(n_traj/2):], axis=0)[0],2)}.")
+    q.displayln_info(f"CHECK: The vacuum expectation value of phi^2 is {round(np.mean(measurements.psq_list[int(n_traj/2):]),2)}.")
     
     x = np.arange(-5,5,0.1)
     for t in range(0,Nt):

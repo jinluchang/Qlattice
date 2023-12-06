@@ -189,7 +189,7 @@ struct QMAction {
     for (Long index = 0; index < geo_r.local_volume(); ++index) {
       sum += fd.get_elem(index);
     }
-    return sum;
+    return sum*dt;
   }
 
   inline double action_node(const Field<double>& f)
@@ -271,6 +271,7 @@ struct QMAction {
       xl[3] -= 2;
       force_v[0] -= qma.m_particle / qma.dt / qma.dt * f.get_elem(xl);
       xl[3] += 1;
+      force_v[0] *= qma.dt;
     });
   }
 
