@@ -33,7 +33,17 @@ def mk_data_set(*, n_jk=10, n_ops=4, n_energies=4, t_size=4, sigma=0.1, rng=None
     return param_arr, jk_corr_data, corr_data_sigma
 
 @timer
-def build_corr_from_param_arr(param_arr, *, n_ops, t_arr, t_start_arr=None):
+def build_corr_from_param_arr(param_arr, *,
+                              n_ops,
+                              t_arr,
+                              t_start_arr=None,
+                              is_atw=False,
+                              atw_t_start_arr=None,
+                              atw_factor_arr=None
+                              ):
+    assert len(t_arr.shape) == 1
+    assert len(t_arr) >= 1
+    t_size = t_arr[-1] + 1
     assert len(param_arr.shape) == 1
     n_params = len(param_arr)
     assert n_params % (n_ops + 1) == 0
@@ -43,19 +53,38 @@ def build_corr_from_param_arr(param_arr, *, n_ops, t_arr, t_start_arr=None):
     cs = param_arr[n_energies:].reshape(n_energies, n_ops)
     if t_start_arr is None:
         t_start_arr = np.zeros(n_energies, dtype=np.float64)
+    else:
+        t_start_arr = np.array(t_start_arr, dtype=np.float64)
     # corr[op1_idx, op2_idx, t_idx]
     corr = (cs[:, :, None, None] * cs[:, None, :, None]
             * np.exp(-es[:, None, None, None] * (t_arr + t_start_arr[:, None, None, None]))
             ).sum(0)
+    if is_atw:
+        if atw_t_start_arr is None:
+            atw_t_start_arr = t_start_arr
+        else:
+            atw_t_start_arr = np.array(atw_t_start_arr, dtype=np.float64)
+        if atw_factor_arr is None:
+            atw_factor_arr = np.ones(n_ops, dtype=np.float64)
+        else:
+            atw_factor_arr = np.array(atw_factor_arr, dtype=np.float64)
+        corr = corr + (cs[:, :, None, None] * cs[:, None, :, None]
+                       * atw_factor_arr[:, None, None]
+                       * atw_factor_arr[None, :, None]
+                       * np.exp(-es[:, None, None, None] * (t_size - 1 - t_arr + atw_t_start_arr[:, None, None, None]))
+                       ).sum(0)
     return corr
 
 @timer
-def mk_fcn(corr_data, corr_data_sigma, t_start):
+def mk_fcn(corr_data, corr_data_sigma, t_start_arr, *,
+           is_atw=False, atw_t_start_arr=None, atw_factor_arr=None):
     """
     Shape of inputs and parameters are like:
     corr_data.shape == (n_ops, n_ops, t_size,)
     corr_data_sigma.shape == (n_ops, n_ops, t_size,)
-    t_start is the start tslice of the corr_data (can be energy dependent array, t_start for negative_energy ~ -t_size)
+    t_start_arr is the start tslice of the corr_data (energy dependent array, t_start_arr for negative_energy ~ -t_size)
+    atw_t_start_arr is the start tslice of the ATW (around the world effects) corr_data (be default atw_t_start_arr = t_start_arr)
+    atw_factor_arr is the additional factor needs to be multiplied to the ATW term (be default `atw_factor_arr = jnp.ones(n_ops, dtype=jnp.float64)`)
     return fcn
     fcn(param_arr) => chisq, param_grad_arr
     e.g.
@@ -63,7 +92,13 @@ def mk_fcn(corr_data, corr_data_sigma, t_start):
     es.shape == (n_energies,)
     cs.shape == (n_energies, n_ops,)
     #
-    corr_data[i, j, t] = \sum_{ei} coefs[ei, i] * coefs[ei, j] * \exp(-energies[ei] * (t + t_start[ei]))
+    corr_data[i, j, t] = \sum_{ei} coefs[ei, i] * coefs[ei, j] * \exp(-energies[ei] * (t + t_start_arr[ei]))
+    #
+    if atw_t_start_arr is not None:
+        corr_data[i, j, t] += (
+            atw_factor_arr[i] * atw_factor_arr[j] *
+            \sum_{ei} coefs[ei, i] * coefs[ei, j] * \exp(-energies[ei] * (t_size - 1 - t + atw_t_start_arr[ei]))
+            )
     #
     """
     import jax
@@ -76,6 +111,17 @@ def mk_fcn(corr_data, corr_data_sigma, t_start):
     n_ops = shape[0]
     assert shape[1] == n_ops
     t_size = shape[2]
+    n_energies = len(t_start_arr)
+    t_start_arr = jnp.array(t_start_arr, dtype=jnp.float64)
+    if is_atw:
+        if atw_t_start_arr is None:
+            atw_t_start_arr = t_start_arr
+        else:
+            atw_t_start_arr = jnp.array(atw_t_start_arr, dtype=jnp.float64)
+        if atw_factor_arr is None:
+            atw_factor_arr = jnp.ones(n_ops, dtype=jnp.float64)
+        else:
+            atw_factor_arr = jnp.array(atw_factor_arr, dtype=jnp.float64)
     corr_avg = jnp.array(corr_data, dtype=jnp.float64)
     corr_sigma = jnp.array(corr_data_sigma, dtype=jnp.float64)
     t_arr = jnp.arange(t_size, dtype=jnp.float64)
@@ -87,12 +133,17 @@ def mk_fcn(corr_data, corr_data_sigma, t_start):
         param_arr = jnp.array(param_arr, dtype=jnp.float64)
         es = param_arr[:n_energies]
         cs = param_arr[n_energies:].reshape(n_energies, n_ops)
-        t_start_arr = np.zeros(n_energies, dtype=np.float64)
-        t_start_arr[:] = t_start
         # corr[op1_idx, op2_idx, t_idx]
         corr = (cs[:, :, None, None] * cs[:, None, :, None]
                 * jnp.exp(-es[:, None, None, None] * (t_arr + t_start_arr[:, None, None, None]))
                 ).sum(0)
+        if is_atw:
+            corr = corr + (cs[:, :, None, None] * cs[:, None, :, None]
+                           * atw_factor_arr[:, None, None]
+                           * atw_factor_arr[None, :, None]
+                           * jnp.exp(-es[:, None, None, None]
+                                     * (t_size - 1 - t_arr + atw_t_start_arr[:, None, None, None]))
+                           ).sum(0)
         corr = (corr - corr_avg) / corr_sigma
         chisqs = corr * corr
         chisq = chisqs.sum()
@@ -200,6 +251,9 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
           corr_data,
           corr_data_err,
           t_start_fcn_arr,
+          is_atw,
+          atw_t_start_fcn_arr,
+          atw_factor_arr,
           param_arr_mini,
           n_step_mini_jk,
           r_amp,
@@ -218,7 +272,10 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
                     param_arr[rand_update_mask]
                     + (rng.u_rand_arr(n_params)[rand_update_mask] - 0.5) * r_amp)
             return param_arr
-        fcn = mk_fcn(corr_data, corr_data_err, t_start_fcn_arr)
+        fcn = mk_fcn(corr_data, corr_data_err, t_start_fcn_arr,
+                     is_atw=is_atw,
+                     atw_t_start_arr=atw_t_start_fcn_arr,
+                     atw_factor_arr=atw_factor_arr)
         param_arr = param_arr_mini.copy()
         for i in range(n_step_mini_jk):
             param_arr = rand_update(param_arr)
@@ -244,8 +301,11 @@ def fit_energy_amplitude(jk_corr_data,
                          t_start_data=0,
                          t_start_fit=4,
                          t_stop_fit=None,
-                         t_start_fcn=0,
                          t_start_param=0,
+                         t_start_fcn=0,
+                         is_atw=False,
+                         atw_t_start_fcn=None,
+                         atw_factor=None,
                          e_arr=None,
                          c_arr=None,
                          free_energy_idx_arr=None,
@@ -326,11 +386,20 @@ def fit_energy_amplitude(jk_corr_data,
     else:
         assert c_arr.shape == (n_energies, n_ops,)
     #
+    t_start_param_arr = np.zeros(n_energies, dtype=np.float64)
+    t_start_param_arr[:] = t_start_param
+    #
     t_start_fcn_arr = np.zeros(n_energies, dtype=np.float64)
     t_start_fcn_arr[:] = t_start_fcn
     #
-    t_start_param_arr = np.zeros(n_energies, dtype=np.float64)
-    t_start_param_arr[:] = t_start_param
+    atw_t_start_fcn_arr = np.zeros(n_energies, dtype=np.float64)
+    if atw_t_start_fcn is not None:
+        atw_t_start_fcn_arr[:] = atw_t_start_fcn
+    else:
+        atw_t_start_fcn_arr[:] = t_start_fcn_arr
+    atw_factor_arr = np.ones(n_ops, dtype=np.float64)
+    if atw_factor is not None:
+        atw_factor_arr[:] = atw_factor
     #
     op_idx_arr = np.arange(n_ops)
     op_norm_fac = 1 / np.sqrt(jk_corr_data[0, op_idx_arr, op_idx_arr, 0])
@@ -372,7 +441,10 @@ def fit_energy_amplitude(jk_corr_data,
     corr_data_err[op_op_diag_sel] *= diag_err_scale_factor
     corr_data_err[~op_op_diag_sel] *= off_diag_err_scale_factor
     #
-    fcn_avg = mk_fcn(corr_data, corr_data_err, t_start_fcn_arr)
+    fcn_avg = mk_fcn(corr_data, corr_data_err, t_start_fcn_arr,
+                     is_atw=is_atw,
+                     atw_t_start_arr=atw_t_start_fcn_arr,
+                     atw_factor_arr=atw_factor_arr)
     #
     c_arr = c_arr * op_norm_fac * np.exp(-e_arr[:, None] * (t_start_fit - (t_start_fcn_arr - t_start_param_arr)[:, None]) / 2)
     #
@@ -449,6 +521,9 @@ def fit_energy_amplitude(jk_corr_data,
                 corr_data=jk_corr_data[jk_idx],
                 corr_data_err=corr_data_err,
                 t_start_fcn_arr=t_start_fcn_arr,
+                is_atw=is_atw,
+                atw_t_start_fcn_arr=atw_t_start_fcn_arr,
+                atw_factor_arr=atw_factor_arr,
                 param_arr_mini=param_arr_mini,
                 n_step_mini_jk=n_step_mini_jk,
                 r_amp=r_amp,
