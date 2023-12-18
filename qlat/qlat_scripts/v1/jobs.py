@@ -235,8 +235,15 @@ def run_wi(job_tag, traj):
 
 def get_n_points_psel(job_tag):
     assert job_tag in rup.dict_params
-    assert "n_points_psel" in rup.dict_params[job_tag]
-    return get_param(job_tag, "n_points_psel")
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    total_volume = total_site.volume()
+    psel_rate = get_param(job_tag, "field-selection-psel-rate")
+    if psel_rate is not None:
+        n_points = round(total_volume * psel_rate)
+        return n_points
+    n_points = get_param(job_tag, "n_points_psel")
+    assert n_points is not None
+    return n_points
 
 @q.timer
 def mk_rand_psel(job_tag, traj):
@@ -407,7 +414,8 @@ def run_fsel(job_tag, traj):
     tfn = f"{job_tag}/field-selection/traj-{traj}.field"
     path_fsel = get_load_path(tfn)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    n_per_tslice = total_site[0] * total_site[1] * total_site[2] // 16
+    fsel_rate = get_param(job_tag, "field-selection-fsel-rate", default=1/16)
+    n_per_tslice = round(total_site[0] * total_site[1] * total_site[2] * fsel_rate)
     if path_fsel is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-fsel"):
             fsel = mk_rand_fsel(job_tag, traj, n_per_tslice)
