@@ -157,9 +157,11 @@ def make_psel_from_weight(f_weight, f_rand_01, rate):
 @q.timer_verbose
 def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi):
     """
-    return get_fsel, get_psel
+    return get_fsel, get_psel, get_fsel_prob, get_psel_prob
         fsel = get_fsel()
         psel = get_psel()
+        fsel_prob = get_fsel_prob()
+        psel_prob = get_psel_prob()
     Or if wsrc_prop_full is not available
     return None
     """

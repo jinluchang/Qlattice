@@ -288,7 +288,7 @@ def get_n_points_pi(job_tag, traj, inv_type, inv_acc):
 def mk_rand_point_src_info(job_tag, traj, psel):
     # pi is a list of [ idx xg inv_type inv_acc ]
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_point_src_info")
-    xg_list = psel.to_list()
+    xg_list = psel.xg_arr().tolist()
     assert len(xg_list) == get_n_points_pi(job_tag, traj, 0, 0)
     g_pi = [ [] for _ in xg_list ]
     for inv_type in [ 0, 1, ]:
