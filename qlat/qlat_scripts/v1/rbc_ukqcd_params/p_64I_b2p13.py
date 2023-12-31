@@ -1,6 +1,6 @@
 from .. import rbc_ukqcd_params as rup
 
-job_tag = "64I_2p13"
+job_tag = "64I_b2p13"
 
 dict_params = {}
 
