@@ -509,7 +509,7 @@ def fit_energy_amplitude(jk_corr_data,
         param_arr_mini = minimize_scipy(fcn_avg, param_arr=param_arr_mini,
                                         fixed_param_mask=fixed_energies_mask | fixed_coef_energy_mask,
                                         minimize_kwargs=minimize_kwargs)
-        displayln_info(0, f"free_energy_arr={param_arr_mini[free_energies_mask]}")
+        displayln_info(0, f"free_energy_arr={param_arr_mini[free_energies_mask].tolist()}")
         vl = 1
         if i == n_step_mini_avg - 1:
             vl = 0
