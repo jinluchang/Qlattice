@@ -148,12 +148,13 @@ def hash_sha256(s):
 def pickle_cache(path, is_sync_node=True):
     """
     `path` is the directory to cache results
+    sha256 hash based on pickle.dumps of the input parameters
     """
     def dec(func):
         @functools.wraps(func)
         def f(*args, **kwargs):
             func_args = (func.__name__, args, kwargs)
-            func_args_str = repr(func_args)
+            func_args_str = pickle.dumps(func_args)
             key = hash_sha256(func_args_str)
             fn = f"{path}/{key}.pickle"
             c_res = load_pickle_obj(fn, is_sync_node=is_sync_node)
