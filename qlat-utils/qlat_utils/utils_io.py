@@ -139,10 +139,12 @@ def pickle_cache_call(func, path, *, is_sync_node=True):
 
 def hash_sha256(s):
     """
-    compute sha256 of str `s`.
+    compute sha256 of str (or bytes) `s`.
     """
     m = hashlib.sha256()
-    m.update(s.encode('utf8'))
+    if isinstance(s, str):
+        s = s.encode('utf8')
+    m.update(s)
     return m.hexdigest()
 
 def pickle_cache(path, is_sync_node=True):
