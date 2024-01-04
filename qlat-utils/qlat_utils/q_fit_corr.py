@@ -345,6 +345,10 @@ def fit_energy_amplitude(jk_corr_data,
     #
     diag_err_scale_factor should be 1.0
     off_diag_err_scale_factor should be np.sqrt(2) if jk_corr_data has been symmetrized
+    #
+    fit data from t_start to t_stop as jk_corr_data = jk_corr_data[:, :, :, t_start:t_stop].copy() where
+    t_start = t_start_fit - t_start_data
+    t_stop = t_stop_fit - t_start_data
     """
     fname = get_fname()
     #
