@@ -201,7 +201,7 @@ def adaptive_minimize(fcn, step_size_list, n_step=10, max_total_steps=10000, *, 
                 return param_arr
 
 @timer
-def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=None, is_verbose=True):
+def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=None):
     import scipy
     fname = get_fname()
     n_params = len(param_arr)
@@ -239,9 +239,8 @@ def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=Non
     p_free_mini = res.x
     param_arr_mini = param_arr.copy()
     param_arr_mini[free_param_mask] = p_free_mini
-    if is_verbose:
-        displayln_info(0, f"{fname}: fun={res.fun} ; grad_norm={np.linalg.norm(res.jac)}")
-        displayln_info(0, f"{fname}: success={res.success} ; message={res.message} ; nfev={res.nfev} ; njev={res.njev}")
+    displayln_info(0, f"{fname}: fun={res.fun} ; grad_norm={np.linalg.norm(res.jac)}")
+    displayln_info(0, f"{fname}: success={res.success} ; message={res.message} ; nfev={res.nfev} ; njev={res.njev}")
     return param_arr_mini
 
 ### -----------------
@@ -264,8 +263,9 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
           fixed_coef_energy_mask,
           minimize_kwargs,
           rng_seed,
-          is_verbose,
+          verbose_level,
           ):
+        set_verbose_level(verbose_level)
         fname = get_fname()
         rng = RngState(rng_seed)
         n_params = len(param_arr_mini)
@@ -275,8 +275,6 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
                      atw_factor_arr=atw_factor_arr)
         rand_update_mask = (~all_energies_mask) & (~fixed_coef_energy_mask)
         def display_param_arr(param_arr, mask=None, verbose_level=0):
-            if not is_verbose:
-                return
             fcn_v, grad = fcn(param_arr)
             grad_norm = np.linalg.norm(grad)
             if mask is not None:
@@ -299,40 +297,30 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
             return param_arr
         param_arr = param_arr_mini.copy()
         display_param_arr(param_arr, mask=fixed_energies_mask, verbose_level=0)
-        if is_verbose:
-            displayln_info(0, f"{fname}: mini fcn (fixed all energies)")
+        displayln_info(0, f"{fname}: mini fcn (fixed all energies)")
         for i in range(n_step_mini_jk):
             param_arr = rand_update(param_arr)
             param_arr = minimize_scipy(fcn, param_arr=param_arr,
                                        fixed_param_mask=all_energies_mask | fixed_coef_energy_mask,
-                                       minimize_kwargs=minimize_kwargs,
-                                       is_verbose=is_verbose)
-            if is_verbose:
-                vl = 1
-                if i == n_step_mini_jk - 1:
-                    vl = 0
-                display_param_arr(param_arr, mask=all_energies_mask, verbose_level=vl)
-        if is_verbose:
-            displayln_info(0, f"{fname}: mini fcn (free energies selected by free_energy_idx_arr)")
+                                       minimize_kwargs=minimize_kwargs)
+            vl = 1
+            if i == n_step_mini_jk - 1:
+                vl = 0
+            display_param_arr(param_arr, mask=all_energies_mask, verbose_level=vl)
+        displayln_info(0, f"{fname}: mini fcn (free energies selected by free_energy_idx_arr)")
         for i in range(n_step_mini_jk):
             param_arr = rand_update(param_arr)
             param_arr = minimize_scipy(fcn, param_arr=param_arr,
                                        fixed_param_mask=fixed_energies_mask | fixed_coef_energy_mask,
-                                       minimize_kwargs=minimize_kwargs,
-                                       is_verbose=is_verbose)
-            if is_verbose:
-                displayln_info(0, f"free_energy_arr={param_arr_mini[free_energies_mask].tolist()}")
-                vl = 1
-                if i == n_step_mini_jk - 1:
-                    vl = 0
-                display_param_arr(param_arr, mask=fixed_energies_mask, verbose_level=vl)
+                                       minimize_kwargs=minimize_kwargs)
+            displayln_info(0, f"free_energy_arr={param_arr_mini[free_energies_mask].tolist()}")
+            vl = 1
+            if i == n_step_mini_jk - 1:
+                vl = 0
+            display_param_arr(param_arr, mask=fixed_energies_mask, verbose_level=vl)
         chisq, chisq_grad = fcn(param_arr)
         return chisq, chisq_grad, param_arr
     return f(**kwargs)
-
-def mp_initializer():
-    import qlat as q
-    q.set_verbose_level(-1)
 
 @timer_verbose
 def fit_energy_amplitude(jk_corr_data,
@@ -467,7 +455,7 @@ def fit_energy_amplitude(jk_corr_data,
     elif isinstance(mp_pool, int):
         mp_pool_n_proc = mp_pool
         import multiprocessing
-        mp_pool = multiprocessing.get_context('spawn').Pool(mp_pool_n_proc, initializer=mp_initializer)
+        mp_pool = multiprocessing.get_context('spawn').Pool(mp_pool_n_proc)
         is_close_pool = True
         mp_map = mp_pool.imap
     else:
@@ -514,7 +502,7 @@ def fit_energy_amplitude(jk_corr_data,
     param_arr_mini = param_arr_initial.copy()
     chisq_mini = chisq_initial
     #
-    def mk_kwargs(jk_idx, rng_seed, is_verbose):
+    def mk_kwargs(jk_idx, rng_seed, verbose_level):
         kwargs = dict(
                 jk_idx=jk_idx,
                 corr_data=jk_corr_data[jk_idx],
@@ -532,14 +520,16 @@ def fit_energy_amplitude(jk_corr_data,
                 fixed_coef_energy_mask=fixed_coef_energy_mask,
                 minimize_kwargs=minimize_kwargs,
                 rng_seed=rng_seed,
-                is_verbose=is_verbose,
+                verbose_level=verbose_level,
                 )
         return kwargs
     #
     displayln_info(0, f"{fname}: mini avg with all rng_seed_list")
     v_list = []
     for idx, v in enumerate(mp_map(jk_mini_task_in_fit_energy_amplitude,
-                                   [ mk_kwargs(0, rng_seed, idx == 0)
+                                   [ mk_kwargs(0,
+                                       rng_seed,
+                                       get_verbose_level() if idx == 0 else -1)
                                        for idx, rng_seed in enumerate(rng_seed_list) ]
                                    )):
         v_list.append(v)
@@ -562,7 +552,9 @@ def fit_energy_amplitude(jk_corr_data,
     jk_chisq_grad = []
     jk_param_arr = []
     for idx, v in enumerate(mp_map(jk_mini_task_in_fit_energy_amplitude,
-                                   [ mk_kwargs(jk_idx, f"{rng_seed_list[0]}/jk_mini_task/{jk_idx}", jk_idx == 0)
+                                   [ mk_kwargs(jk_idx,
+                                       f"{rng_seed_list[0]}/jk_mini_task/{jk_idx}",
+                                       get_verbose_level() if jk_idx == 0 else -1)
                                        for jk_idx in range(n_jk) ]
                                    )):
         chisq, chisq_grad, param_arr = v
