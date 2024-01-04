@@ -260,6 +260,7 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
           r_amp,
           all_energies_mask,
           fixed_energies_mask,
+          free_energies_mask,
           fixed_coef_energy_mask,
           minimize_kwargs,
           rng_seed,
@@ -272,7 +273,6 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
                      is_atw=is_atw,
                      atw_t_start_arr=atw_t_start_fcn_arr,
                      atw_factor_arr=atw_factor_arr)
-        free_energies_mask = (~fixed_energies_mask) & all_energies_mask
         rand_update_mask = (~all_energies_mask) & (~fixed_coef_energy_mask)
         def display_param_arr(param_arr, mask=None, verbose_level=0):
             if not is_verbose:
@@ -509,6 +509,7 @@ def fit_energy_amplitude(jk_corr_data,
     c_mask[fixed_coef_energy_idx_arr] = True
     fixed_coef_energy_mask = np.full(n_params, False, dtype=bool)
     fixed_coef_energy_mask[n_energies:] = c_mask.ravel()
+    free_energies_mask = (~fixed_energies_mask) & all_energies_mask
     #
     param_arr_mini = param_arr_initial.copy()
     chisq_mini = chisq_initial
@@ -527,6 +528,7 @@ def fit_energy_amplitude(jk_corr_data,
                 r_amp=r_amp,
                 all_energies_mask=all_energies_mask,
                 fixed_energies_mask=fixed_energies_mask,
+                free_energies_mask=free_energies_mask,
                 fixed_coef_energy_mask=fixed_coef_energy_mask,
                 minimize_kwargs=minimize_kwargs,
                 rng_seed=rng_seed,
@@ -542,7 +544,7 @@ def fit_energy_amplitude(jk_corr_data,
                                    )):
         v_list.append(v)
         chisq, chisq_grad, param_arr = v
-        displayln_info(0, f"{fname}: map: rs idx={idx} ; chisq={chisq} ; rng_seed={rng_seed_list[idx]}")
+        displayln_info(0, f"{fname}: map: rs idx={idx} ; chisq={chisq} ; rng_seed='{rng_seed_list[idx]}'")
     #
     rng_seed_mini = rng_seed_list[0]
     for idx, v in enumerate(v_list):
@@ -552,7 +554,8 @@ def fit_energy_amplitude(jk_corr_data,
             rng_seed_mini = rng_seed_list[idx]
             param_arr_mini = param_arr
     #
-    displayln_info(0, f"{fname}: chisq_mini={chisq_mini} ; rng_seed_mini={rng_seed_mini}")
+    displayln_info(0, f"{fname}: chisq_mini={chisq_mini} ; rng_seed_mini='{rng_seed_mini}'")
+    displayln_info(0, f"{fname}: free_energy_arr={param_arr_mini[free_energies_mask].tolist()}")
     #
     displayln_info(0, f"{fname}: mini all jk samples")
     jk_chisq = []
