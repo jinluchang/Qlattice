@@ -513,58 +513,6 @@ def fit_energy_amplitude(jk_corr_data,
     param_arr_mini = param_arr_initial.copy()
     chisq_mini = chisq_initial
     #
-    # def display_param_arr(param_arr, fcn, mask=None, verbose_level=0):
-    #     fcn, grad = fcn(param_arr)
-    #     grad_norm = np.linalg.norm(grad)
-    #     if mask is not None:
-    #         grad_masked = grad[~mask]
-    #     else:
-    #         grad_masked = grad
-    #     grad_norm_masked = np.linalg.norm(grad_masked)
-    #     displayln_info(verbose_level, f"fcn={fcn:.5E} grad_norm={grad_norm:.5E} grad_norm_masked={grad_norm_masked:.5E}")
-    #     energies = param_arr[all_energies_mask]
-    #     grad_energies = grad[all_energies_mask]
-    #     grad_energies_norm = np.linalg.norm(grad_energies)
-    #     eg_arr = np.stack([ energies, grad_energies, ]).T
-    #     important_eg_arr = eg_arr[abs(grad_energies) > grad_energies_norm / 10]
-    #     displayln_info(verbose_level, f"energies and grad arr=\n{important_eg_arr}")
-    # #
-    # def rand_update(param_arr, rng):
-    #     param_arr = param_arr.copy()
-    #     param_arr[rand_update_mask] = (
-    #             param_arr[rand_update_mask]
-    #             + (rng.u_rand_arr(n_params)[rand_update_mask] - 0.5) * r_amp)
-    #     return param_arr
-    #
-    #
-    # display_param_arr(param_arr_mini, fcn=fcn_avg, mask=fixed_energies_mask, verbose_level=0)
-    # #
-    # rng = RngState(rng_seed_list[0])
-    # #
-    # displayln_info(0, f"{fname}: mini with fixed all energies")
-    # for i in range(n_step_mini_avg):
-    #     param_arr_mini = rand_update(param_arr_mini, rng)
-    #     param_arr_mini = minimize_scipy(fcn_avg, param_arr=param_arr_mini,
-    #                                     fixed_param_mask=all_energies_mask | fixed_coef_energy_mask,
-    #                                     minimize_kwargs=minimize_kwargs)
-    #     vl = 1
-    #     if i == n_step_mini_avg - 1:
-    #         vl = 0
-    #     display_param_arr(param_arr_mini, fcn=fcn_avg, mask=all_energies_mask, verbose_level=vl)
-    # #
-    # displayln_info(0, f"{fname}: mini with fixed some energies")
-    # free_energies_mask = (~fixed_energies_mask) & all_energies_mask
-    # for i in range(n_step_mini_avg):
-    #     param_arr_mini = rand_update(param_arr_mini, rng)
-    #     param_arr_mini = minimize_scipy(fcn_avg, param_arr=param_arr_mini,
-    #                                     fixed_param_mask=fixed_energies_mask | fixed_coef_energy_mask,
-    #                                     minimize_kwargs=minimize_kwargs)
-    #     displayln_info(0, f"free_energy_arr={param_arr_mini[free_energies_mask].tolist()}")
-    #     vl = 1
-    #     if i == n_step_mini_avg - 1:
-    #         vl = 0
-    #     display_param_arr(param_arr_mini, fcn=fcn_avg, mask=fixed_energies_mask, verbose_level=vl)
-    #
     def mk_kwargs(jk_idx, rng_seed, is_verbose):
         kwargs = dict(
                 jk_idx=jk_idx,
@@ -594,7 +542,7 @@ def fit_energy_amplitude(jk_corr_data,
                                    )):
         v_list.append(v)
         chisq, chisq_grad, param_arr = v
-        displayln_info(0, f"{fname}: map: rs idx={idx} ; chisq={chisq}")
+        displayln_info(0, f"{fname}: map: rs idx={idx} ; chisq={chisq} ; rng_seed={rng_seed_list[idx]}")
     #
     rng_seed_mini = rng_seed_list[0]
     for idx, v in enumerate(v_list):
@@ -603,6 +551,8 @@ def fit_energy_amplitude(jk_corr_data,
             chisq_mini = chisq
             rng_seed_mini = rng_seed_list[idx]
             param_arr_mini = param_arr
+    #
+    displayln_info(0, f"{fname}: chisq_mini={chisq_mini} ; rng_seed_mini={rng_seed_mini}")
     #
     displayln_info(0, f"{fname}: mini all jk samples")
     jk_chisq = []
