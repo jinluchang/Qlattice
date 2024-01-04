@@ -313,7 +313,7 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
             param_arr = minimize_scipy(fcn, param_arr=param_arr,
                                        fixed_param_mask=fixed_energies_mask | fixed_coef_energy_mask,
                                        minimize_kwargs=minimize_kwargs)
-            displayln_info(0, f"free_energy_arr={param_arr_mini[free_energies_mask].tolist()}")
+            displayln_info(0, f"free_energy_arr={param_arr[free_energies_mask].tolist()}")
             vl = 1
             if i == n_step_mini_jk - 1:
                 vl = 0
