@@ -78,24 +78,24 @@ def build_corr_from_param_arr(
     return corr
 
 @timer
-def apply_energy_minimum(param_arr, energy_minimum=None, free_energy_idx_arr=None):
+def apply_energy_minimum(param_arr, energy_minimum_arr=None, free_energy_idx_arr=None):
     """
     return new param_arr (does not change original param_arr)
     param_arr has to be np.array
     should work for jk_param_arr as well
     #
-    if energy_minimum is None:
+    if energy_minimum_arr is None:
         return param_arr
     ...
-    new_energies = energy_minimum + abs(energies - energy_minimum)
+    new_energies = energy_minimum_arr + abs(energies - energy_minimum_arr)
     ...
     return new_param_arr
     """
-    if energy_minimum is None:
+    if energy_minimum_arr is None:
         return param_arr
     assert free_energy_idx_arr is not None
     new_param_arr = param_arr.copy()
-    new_param_arr[..., free_energy_idx_arr] = energy_minimum + np.abs(new_param_arr[..., free_energy_idx_arr] - energy_minimum)
+    new_param_arr[..., free_energy_idx_arr] = energy_minimum_arr + np.abs(new_param_arr[..., free_energy_idx_arr] - energy_minimum_arr)
     return new_param_arr
 
 @timer
@@ -103,7 +103,7 @@ def mk_fcn(
         corr_data, corr_data_sigma, t_start_arr,
         *,
         is_atw=False, atw_t_start_arr=None, atw_factor_arr=None,
-        energy_minimum=None, free_energy_idx_arr=None,
+        energy_minimum_arr=None, free_energy_idx_arr=None,
         ):
     """
     Shape of inputs and parameters are like:
@@ -119,8 +119,8 @@ def mk_fcn(
     es.shape == (n_energies,)
     cs.shape == (n_energies, n_ops,)
     #
-    if energy_minimum is not None:
-        free_energies = energy_minimum + abs(free_energies - energy_minimum)
+    if energy_minimum_arr is not None:
+        free_energies = energy_minimum_arr + abs(free_energies - energy_minimum_arr)
     #
     corr_data[i, j, t] = \sum_{ei} coefs[ei, i] * coefs[ei, j] * \exp(-energies[ei] * (t + t_start_arr[ei]))
     #
@@ -152,9 +152,11 @@ def mk_fcn(
             atw_factor_arr = jnp.ones(n_ops, dtype=jnp.float64)
         else:
             atw_factor_arr = jnp.array(atw_factor_arr, dtype=jnp.float64)
-    if energy_minimum is not None:
+    if energy_minimum_arr is not None:
         assert free_energy_idx_arr is not None
+        energy_minimum_arr = jnp.array(energy_minimum_arr, dtype=jnp.float64)
         free_energy_idx_arr = jnp.array(free_energy_idx_arr, dtype=jnp.int64)
+        assert energy_minimum_arr.shape == free_energy_idx_arr.shape
     corr_avg = jnp.array(corr_data, dtype=jnp.float64)
     corr_sigma = jnp.array(corr_data_sigma, dtype=jnp.float64)
     t_arr = jnp.arange(t_size, dtype=jnp.float64)
@@ -166,9 +168,9 @@ def mk_fcn(
         param_arr = jnp.array(param_arr, dtype=jnp.float64)
         es = param_arr[:n_energies]
         cs = param_arr[n_energies:].reshape(n_energies, n_ops)
-        if energy_minimum is not None:
+        if energy_minimum_arr is not None:
             es = es.at[free_energy_idx_arr].set(
-                    energy_minimum + jnp.abs(es[free_energy_idx_arr] - energy_minimum)
+                    energy_minimum_arr + jnp.abs(es[free_energy_idx_arr] - energy_minimum_arr)
                     )
         # corr[op1_idx, op2_idx, t_idx]
         corr = (cs[:, :, None, None] * cs[:, None, :, None]
@@ -298,7 +300,7 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
           is_atw,
           atw_t_start_fcn_arr,
           atw_factor_arr,
-          energy_minimum,
+          energy_minimum_arr,
           free_energy_idx_arr,
           param_arr_mini,
           n_step_mini_jk,
@@ -319,7 +321,7 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
                      is_atw=is_atw,
                      atw_t_start_arr=atw_t_start_fcn_arr,
                      atw_factor_arr=atw_factor_arr,
-                     energy_minimum=energy_minimum,
+                     energy_minimum_arr=energy_minimum_arr,
                      free_energy_idx_arr=free_energy_idx_arr)
         rand_update_mask = (~all_energies_mask) & (~fixed_coef_energy_mask)
         def display_param_arr(param_arr, mask=None, verbose_level=0):
@@ -362,7 +364,7 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
             param_arr = minimize_scipy(fcn, param_arr=param_arr,
                                        fixed_param_mask=fixed_energies_mask | fixed_coef_energy_mask,
                                        minimize_kwargs=minimize_kwargs)
-            param_arr = apply_energy_minimum(param_arr, energy_minimum, free_energy_idx_arr)
+            param_arr = apply_energy_minimum(param_arr, energy_minimum_arr, free_energy_idx_arr)
             displayln_info(0, f"{fname}: iter={i} free_energy_arr={param_arr[free_energies_mask].tolist()}")
             vl = 1
             if i == n_step_mini_jk - 1:
@@ -384,7 +386,7 @@ def fit_energy_amplitude(jk_corr_data,
                          is_atw=False,
                          atw_t_start_fcn=None,
                          atw_factor=None,
-                         energy_minimum=None,
+                         energy_minimum_arr=None,
                          e_arr=None,
                          c_arr=None,
                          free_energy_idx_arr=None,
@@ -429,7 +431,7 @@ def fit_energy_amplitude(jk_corr_data,
     t_start = t_start_fit - t_start_data
     t_stop = t_stop_fit - t_start_data
     #
-    energy_minimum will constrain all the free energies to be larger than this energy (None means no constraint)
+    `energy_minimum_arr` should be of same shape as `free_energy_idx_arr` will constrain all the free energies to be larger than this energy (None means no constraint)
     """
     fname = get_fname()
     #
@@ -459,6 +461,10 @@ def fit_energy_amplitude(jk_corr_data,
         free_energy_idx_arr = np.array([], dtype=np.int64)
     else:
         free_energy_idx_arr = np.array(free_energy_idx_arr, dtype=np.int64)
+    #
+    if energy_minimum_arr is not None:
+        energy_minimum_arr = np.array(energy_minimum_arr, dtype=np.float64)
+        assert energy_minimum_arr.shape == free_energy_idx_arr.shape
     #
     if fixed_coef_energy_idx_arr is None:
         fixed_coef_energy_idx_arr = np.array([], dtype=np.int64)
@@ -562,7 +568,7 @@ def fit_energy_amplitude(jk_corr_data,
                 is_atw=is_atw,
                 atw_t_start_fcn_arr=atw_t_start_fcn_arr,
                 atw_factor_arr=atw_factor_arr,
-                energy_minimum=energy_minimum,
+                energy_minimum_arr=energy_minimum_arr,
                 free_energy_idx_arr=free_energy_idx_arr,
                 param_arr_mini=param_arr_mini,
                 n_step_mini_jk=n_step_mini_jk,

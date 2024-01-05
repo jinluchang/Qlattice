@@ -110,7 +110,7 @@ res = q.q_fit_corr.fit_energy_amplitude(
     jk_corr_data,
     e_arr=e_arr,
     free_energy_idx_arr=[ n_energies - 1, ],
-    energy_minimum=0.5,
+    energy_minimum_arr=[ 0.5, ],
     t_start_fit=1,
     t_stop_fit=10,
     n_step_mini_avg=5,
