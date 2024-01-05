@@ -164,23 +164,25 @@ def mk_fcn(corr_data, corr_data_sigma, t_start_arr, *,
 
 @timer
 def minimize(fcn, n_step=10, step_size=1e-2, *, param_arr):
+    fname = get_fname()
     chisq_pre = None
     for i in range(n_step):
         chisq, param_grad_arr = fcn(param_arr)
         grad_norm = np.linalg.norm(param_grad_arr)
-        displayln_info(1, f"minimize: step={i} chisq={chisq} grad_norm={grad_norm} param_arr={param_arr}")
+        displayln_info(1, f"{fname}: step={i} chisq={chisq} grad_norm={grad_norm} param_arr={param_arr}")
         if chisq_pre is not None:
             if chisq > chisq_pre:
-                displayln_info(0, f"minimize: early stop step={i} step_size={step_size} chisq={chisq_pre} grad_norm={grad_norm}")
+                displayln_info(0, f"{fname}: early stop step={i} step_size={step_size} chisq={chisq_pre} grad_norm={grad_norm}")
                 return param_arr_pre, i
         param_arr_pre = param_arr
         chisq_pre = chisq
         param_arr = param_arr - step_size / grad_norm * param_grad_arr
-    displayln_info(0, f"minimize: step={n_step} step_size={step_size} chisq={chisq_pre} grad_norm={grad_norm}")
+    displayln_info(0, f"{fname}: step={n_step} step_size={step_size} chisq={chisq_pre} grad_norm={grad_norm}")
     return param_arr_pre, n_step
 
 @timer
 def adaptive_minimize(fcn, step_size_list, n_step=10, max_total_steps=10000, *, param_arr):
+    fname = get_fname()
     idx = 0
     total_steps = 0
     total_steps_pre = 0
@@ -189,7 +191,7 @@ def adaptive_minimize(fcn, step_size_list, n_step=10, max_total_steps=10000, *, 
         param_arr, i_step = minimize(fcn, n_step=n_step, step_size=step_size, param_arr=param_arr)
         total_steps += i_step
         if total_steps - total_steps_pre > 1000:
-            displayln_info(0, f"{step_size:.8f} total_steps={total_steps}")
+            displayln_info(0, f"{fname}: {step_size:.8f} total_steps={total_steps}")
             total_steps_pre = total_steps
         if total_steps > max_total_steps:
             return param_arr
@@ -246,6 +248,7 @@ def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=Non
 ### -----------------
 
 def jk_mini_task_in_fit_energy_amplitude(kwargs):
+    fname = get_fname()
     def f(*,
           jk_idx,
           corr_data,
@@ -266,7 +269,6 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
           verbose_level,
           ):
         set_verbose_level(verbose_level)
-        fname = get_fname()
         rng = RngState(rng_seed)
         n_params = len(param_arr_mini)
         fcn = mk_fcn(corr_data, corr_data_err, t_start_fcn_arr,
@@ -282,13 +284,13 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
             else:
                 grad_masked = grad
             grad_norm_masked = np.linalg.norm(grad_masked)
-            displayln_info(verbose_level, f"fcn={fcn_v:.5E} grad_norm={grad_norm:.5E} grad_norm_masked={grad_norm_masked:.5E}")
+            displayln_info(verbose_level, f"{fname}: fcn={fcn_v:.5E} grad_norm={grad_norm:.5E} grad_norm_masked={grad_norm_masked:.5E}")
             energies = param_arr[all_energies_mask]
             grad_energies = grad[all_energies_mask]
             grad_energies_norm = np.linalg.norm(grad_energies)
             eg_arr = np.stack([ energies, grad_energies, ]).T
             important_eg_arr = eg_arr[abs(grad_energies) > grad_energies_norm / 10]
-            displayln_info(verbose_level, f"energies and grad arr=\n{important_eg_arr}")
+            displayln_info(verbose_level, f"{fname}: energies and grad arr=\n{important_eg_arr}")
         def rand_update(param_arr):
             param_arr = param_arr.copy()
             param_arr[rand_update_mask] = (
@@ -307,13 +309,14 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
             if i == n_step_mini_jk - 1:
                 vl = 0
             display_param_arr(param_arr, mask=all_energies_mask, verbose_level=vl)
+        displayln_info(0, f"{fname}: initial free_energy_arr={param_arr[free_energies_mask].tolist()}")
         displayln_info(0, f"{fname}: mini fcn (free energies selected by free_energy_idx_arr)")
         for i in range(n_step_mini_jk):
             param_arr = rand_update(param_arr)
             param_arr = minimize_scipy(fcn, param_arr=param_arr,
                                        fixed_param_mask=fixed_energies_mask | fixed_coef_energy_mask,
                                        minimize_kwargs=minimize_kwargs)
-            displayln_info(0, f"free_energy_arr={param_arr[free_energies_mask].tolist()}")
+            displayln_info(0, f"{fname}: iter={i} free_energy_arr={param_arr[free_energies_mask].tolist()}")
             vl = 1
             if i == n_step_mini_jk - 1:
                 vl = 0
@@ -524,6 +527,7 @@ def fit_energy_amplitude(jk_corr_data,
                 )
         return kwargs
     #
+    displayln_info(0, f"{fname}: initial free_energy_arr={param_arr_mini[free_energies_mask].tolist()}")
     displayln_info(0, f"{fname}: mini avg with all rng_seed_list")
     v_list = []
     for idx, v in enumerate(mp_map(jk_mini_task_in_fit_energy_amplitude,
@@ -545,7 +549,7 @@ def fit_energy_amplitude(jk_corr_data,
             param_arr_mini = param_arr
     #
     displayln_info(0, f"{fname}: chisq_mini={chisq_mini} ; rng_seed_mini='{rng_seed_mini}'")
-    displayln_info(0, f"{fname}: free_energy_arr={param_arr_mini[free_energies_mask].tolist()}")
+    displayln_info(0, f"{fname}: avg mini free_energy_arr={param_arr_mini[free_energies_mask].tolist()}")
     #
     displayln_info(0, f"{fname}: mini all jk samples")
     jk_chisq = []
@@ -725,14 +729,14 @@ def hmc_traj(fcn, hmc_params):
         hmc_mass_arr = (
                 (1 - hmc_params.hmc_mass_adaptive_rate) * hmc_mass_arr
                 + hmc_params.hmc_mass_adaptive_rate * (4/np.pi**2) * force_sqr_avg)
-    displayln_info(0, f"Delta H = {delta_hh} ; H_final={hmc_energy_final} ; H_initial={hmc_energy_initial}")
+    displayln_info(0, f"{fname}: Delta H = {delta_hh} ; H_final={hmc_energy_final} ; H_initial={hmc_energy_initial}")
     if delta_hh > 1e4 * hmc_params.temperature:
-        displayln_info(-1, f"WARNING: {fname} traj={traj} Delta H = {delta_hh} too large. Keep hmc_params.param_arr unchanged. (only change traj and delta_hh_history)")
+        displayln_info(-1, f"WARNING: {fname}: traj={traj} Delta H = {delta_hh} too large. Keep hmc_params.param_arr unchanged. (only change traj and delta_hh_history)")
         hmc_params.traj = traj + 1
         delta_hh_history.append(delta_hh)
         return
     elif delta_hh > 10 * hmc_params.temperature:
-        displayln_info(-1, f"WARNING: {fname} traj={traj} Delta H = {delta_hh} too large.")
+        displayln_info(-1, f"WARNING: {fname}: traj={traj} Delta H = {delta_hh} too large.")
     hmc_params.traj = traj + 1
     hmc_params.param_arr = param_arr
     hmc_params.hmc_mass_arr = hmc_mass_arr
