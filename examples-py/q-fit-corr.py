@@ -19,7 +19,7 @@ size_node_list = [
 mp_pool_n_proc = q.get_q_num_mp_processes()
 if mp_pool_n_proc > 0:
     import multiprocessing
-    mp_pool = multiprocessing.get_context('fork').Pool(mp_pool_n_proc)
+    mp_pool = multiprocessing.get_context('fork').Pool(mp_pool_n_proc, initializer=q.q_fit_corr.mp_initializer)
 else:
     mp_pool = None
 
@@ -77,6 +77,8 @@ q.displayln_info(f"CHECK: jk_param_arr_for_scaled_corr sig7={sig7:.4F}")
 
 param_compare = np.stack((param_arr_setup,) + q.g_jk_avg_err(res['jk_param_arr'])).T
 
+q.displayln_info(f"{param_compare}")
+
 res = q.q_fit_corr.fit_energy_amplitude(
     jk_corr_data,
     e_arr=e_arr,
@@ -104,7 +106,25 @@ sig7 = q.get_double_sig(res['jk_param_arr_for_scaled_corr'], q.RngState())
 
 q.displayln_info(f"CHECK: jk_param_arr_for_scaled_corr sig7={sig7:.4F}")
 
-q.displayln_info(f"{param_compare}")
+res = q.q_fit_corr.fit_energy_amplitude(
+    jk_corr_data,
+    e_arr=e_arr,
+    free_energy_idx_arr=[ n_energies - 1, ],
+    energy_minimum=0.5,
+    t_start_fit=1,
+    t_stop_fit=10,
+    n_step_mini_avg=5,
+    n_step_mini_jk=5,
+    mp_pool=mp_pool,
+)
+
+sig8 = q.get_double_sig(res['jk_chisq'], q.RngState())
+
+q.displayln_info(f"CHECK: jk_chisq sig8={sig8:.4F}")
+
+sig9 = q.get_double_sig(res['jk_param_arr'], q.RngState())
+
+q.displayln_info(f"CHECK: jk_param_arr sig9={sig9:.4F}")
 
 q.timer_display()
 

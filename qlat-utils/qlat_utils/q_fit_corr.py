@@ -33,14 +33,16 @@ def mk_data_set(*, n_jk=10, n_ops=4, n_energies=4, t_size=4, sigma=0.1, rng=None
     return param_arr, jk_corr_data, corr_data_sigma
 
 @timer
-def build_corr_from_param_arr(param_arr, *,
-                              n_ops,
-                              t_arr,
-                              t_start_arr=None,
-                              is_atw=False,
-                              atw_t_start_arr=None,
-                              atw_factor_arr=None
-                              ):
+def build_corr_from_param_arr(
+        param_arr,
+        *,
+        n_ops,
+        t_arr,
+        t_start_arr=None,
+        is_atw=False,
+        atw_t_start_arr=None,
+        atw_factor_arr=None
+        ):
     assert len(t_arr.shape) == 1
     assert len(t_arr) >= 1
     t_size = t_arr[-1] + 1
@@ -76,8 +78,33 @@ def build_corr_from_param_arr(param_arr, *,
     return corr
 
 @timer
-def mk_fcn(corr_data, corr_data_sigma, t_start_arr, *,
-           is_atw=False, atw_t_start_arr=None, atw_factor_arr=None):
+def apply_energy_minimum(param_arr, energy_minimum=None, free_energy_idx_arr=None):
+    """
+    return new param_arr (does not change original param_arr)
+    param_arr has to be np.array
+    should work for jk_param_arr as well
+    #
+    if energy_minimum is None:
+        return param_arr
+    ...
+    new_energies = energy_minimum + abs(energies - energy_minimum)
+    ...
+    return new_param_arr
+    """
+    if energy_minimum is None:
+        return param_arr
+    assert free_energy_idx_arr is not None
+    new_param_arr = param_arr.copy()
+    new_param_arr[..., free_energy_idx_arr] = energy_minimum + np.abs(new_param_arr[..., free_energy_idx_arr] - energy_minimum)
+    return new_param_arr
+
+@timer
+def mk_fcn(
+        corr_data, corr_data_sigma, t_start_arr,
+        *,
+        is_atw=False, atw_t_start_arr=None, atw_factor_arr=None,
+        energy_minimum=None, free_energy_idx_arr=None,
+        ):
     """
     Shape of inputs and parameters are like:
     corr_data.shape == (n_ops, n_ops, t_size,)
@@ -92,9 +119,12 @@ def mk_fcn(corr_data, corr_data_sigma, t_start_arr, *,
     es.shape == (n_energies,)
     cs.shape == (n_energies, n_ops,)
     #
+    if energy_minimum is not None:
+        free_energies = energy_minimum + abs(free_energies - energy_minimum)
+    #
     corr_data[i, j, t] = \sum_{ei} coefs[ei, i] * coefs[ei, j] * \exp(-energies[ei] * (t + t_start_arr[ei]))
     #
-    if atw_t_start_arr is not None:
+    if is_atw:
         corr_data[i, j, t] += (
             atw_factor_arr[i] * atw_factor_arr[j] *
             \sum_{ei} coefs[ei, i] * coefs[ei, j] * \exp(-energies[ei] * (t_size - 1 - t + atw_t_start_arr[ei]))
@@ -122,6 +152,9 @@ def mk_fcn(corr_data, corr_data_sigma, t_start_arr, *,
             atw_factor_arr = jnp.ones(n_ops, dtype=jnp.float64)
         else:
             atw_factor_arr = jnp.array(atw_factor_arr, dtype=jnp.float64)
+    if energy_minimum is not None:
+        assert free_energy_idx_arr is not None
+        free_energy_idx_arr = jnp.array(free_energy_idx_arr, dtype=jnp.int64)
     corr_avg = jnp.array(corr_data, dtype=jnp.float64)
     corr_sigma = jnp.array(corr_data_sigma, dtype=jnp.float64)
     t_arr = jnp.arange(t_size, dtype=jnp.float64)
@@ -133,6 +166,10 @@ def mk_fcn(corr_data, corr_data_sigma, t_start_arr, *,
         param_arr = jnp.array(param_arr, dtype=jnp.float64)
         es = param_arr[:n_energies]
         cs = param_arr[n_energies:].reshape(n_energies, n_ops)
+        if energy_minimum is not None:
+            es = es.at[free_energy_idx_arr].set(
+                    energy_minimum + jnp.abs(es[free_energy_idx_arr] - energy_minimum)
+                    )
         # corr[op1_idx, op2_idx, t_idx]
         corr = (cs[:, :, None, None] * cs[:, None, :, None]
                 * jnp.exp(-es[:, None, None, None] * (t_arr + t_start_arr[:, None, None, None]))
@@ -247,6 +284,10 @@ def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=Non
 
 ### -----------------
 
+def mp_initializer():
+    import qlat as q
+    q.set_verbose_level(-1)
+
 def jk_mini_task_in_fit_energy_amplitude(kwargs):
     fname = get_fname()
     def f(*,
@@ -257,6 +298,8 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
           is_atw,
           atw_t_start_fcn_arr,
           atw_factor_arr,
+          energy_minimum,
+          free_energy_idx_arr,
           param_arr_mini,
           n_step_mini_jk,
           r_amp,
@@ -271,10 +314,13 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
         set_verbose_level(verbose_level)
         rng = RngState(rng_seed)
         n_params = len(param_arr_mini)
+        n_ops = corr_data.shape[0]
         fcn = mk_fcn(corr_data, corr_data_err, t_start_fcn_arr,
                      is_atw=is_atw,
                      atw_t_start_arr=atw_t_start_fcn_arr,
-                     atw_factor_arr=atw_factor_arr)
+                     atw_factor_arr=atw_factor_arr,
+                     energy_minimum=energy_minimum,
+                     free_energy_idx_arr=free_energy_idx_arr)
         rand_update_mask = (~all_energies_mask) & (~fixed_coef_energy_mask)
         def display_param_arr(param_arr, mask=None, verbose_level=0):
             fcn_v, grad = fcn(param_arr)
@@ -316,12 +362,14 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
             param_arr = minimize_scipy(fcn, param_arr=param_arr,
                                        fixed_param_mask=fixed_energies_mask | fixed_coef_energy_mask,
                                        minimize_kwargs=minimize_kwargs)
+            param_arr = apply_energy_minimum(param_arr, energy_minimum, free_energy_idx_arr)
             displayln_info(0, f"{fname}: iter={i} free_energy_arr={param_arr[free_energies_mask].tolist()}")
             vl = 1
             if i == n_step_mini_jk - 1:
                 vl = 0
             display_param_arr(param_arr, mask=fixed_energies_mask, verbose_level=vl)
         chisq, chisq_grad = fcn(param_arr)
+        set_verbose_level(-1)
         return chisq, chisq_grad, param_arr
     return f(**kwargs)
 
@@ -336,6 +384,7 @@ def fit_energy_amplitude(jk_corr_data,
                          is_atw=False,
                          atw_t_start_fcn=None,
                          atw_factor=None,
+                         energy_minimum=None,
                          e_arr=None,
                          c_arr=None,
                          free_energy_idx_arr=None,
@@ -379,8 +428,12 @@ def fit_energy_amplitude(jk_corr_data,
     fit data from t_start to t_stop as jk_corr_data = jk_corr_data[:, :, :, t_start:t_stop].copy() where
     t_start = t_start_fit - t_start_data
     t_stop = t_stop_fit - t_start_data
+    #
+    energy_minimum will constrain all the free energies to be larger than this energy (None means no constraint)
     """
     fname = get_fname()
+    #
+    verbose_level = get_verbose_level()
     #
     assert len(jk_corr_data.shape) == 4
     #
@@ -458,7 +511,7 @@ def fit_energy_amplitude(jk_corr_data,
     elif isinstance(mp_pool, int):
         mp_pool_n_proc = mp_pool
         import multiprocessing
-        mp_pool = multiprocessing.get_context('spawn').Pool(mp_pool_n_proc)
+        mp_pool = multiprocessing.get_context('spawn').Pool(mp_pool_n_proc, initializer=mp_initializer)
         is_close_pool = True
         mp_map = mp_pool.imap
     else:
@@ -480,15 +533,10 @@ def fit_energy_amplitude(jk_corr_data,
     corr_data_err[op_op_diag_sel] *= diag_err_scale_factor
     corr_data_err[~op_op_diag_sel] *= off_diag_err_scale_factor
     #
-    fcn_avg = mk_fcn(corr_data, corr_data_err, t_start_fcn_arr,
-                     is_atw=is_atw,
-                     atw_t_start_arr=atw_t_start_fcn_arr,
-                     atw_factor_arr=atw_factor_arr)
-    #
     c_arr = c_arr * op_norm_fac * np.exp(-e_arr[:, None] * (t_start_fit - (t_start_fcn_arr - t_start_param_arr)[:, None]) / 2)
     #
     param_arr_initial = np.concatenate([ e_arr, c_arr.ravel(), ], dtype=np.float64)
-    chisq_initial = fcn_avg(param_arr_initial)[0]
+    chisq_initial = np.inf
     #
     n_params = len(param_arr_initial)
     #
@@ -514,6 +562,8 @@ def fit_energy_amplitude(jk_corr_data,
                 is_atw=is_atw,
                 atw_t_start_fcn_arr=atw_t_start_fcn_arr,
                 atw_factor_arr=atw_factor_arr,
+                energy_minimum=energy_minimum,
+                free_energy_idx_arr=free_energy_idx_arr,
                 param_arr_mini=param_arr_mini,
                 n_step_mini_jk=n_step_mini_jk,
                 r_amp=r_amp,
@@ -533,9 +583,10 @@ def fit_energy_amplitude(jk_corr_data,
     for idx, v in enumerate(mp_map(jk_mini_task_in_fit_energy_amplitude,
                                    [ mk_kwargs(0,
                                        rng_seed,
-                                       get_verbose_level() if idx == 0 else -1)
+                                       verbose_level if idx == 0 else -1)
                                        for idx, rng_seed in enumerate(rng_seed_list) ]
                                    )):
+        set_verbose_level(verbose_level)
         v_list.append(v)
         chisq, chisq_grad, param_arr = v
         displayln_info(0, f"{fname}: map: rs idx={idx} ; chisq={chisq} ; rng_seed='{rng_seed_list[idx]}'")
@@ -558,9 +609,10 @@ def fit_energy_amplitude(jk_corr_data,
     for idx, v in enumerate(mp_map(jk_mini_task_in_fit_energy_amplitude,
                                    [ mk_kwargs(jk_idx,
                                        f"{rng_seed_list[0]}/jk_mini_task/{jk_idx}",
-                                       get_verbose_level() if jk_idx == 0 else -1)
+                                       verbose_level if jk_idx == 0 else -1)
                                        for jk_idx in range(n_jk) ]
                                    )):
+        set_verbose_level(verbose_level)
         chisq, chisq_grad, param_arr = v
         jk_chisq.append(chisq)
         jk_chisq_grad.append(chisq_grad)
