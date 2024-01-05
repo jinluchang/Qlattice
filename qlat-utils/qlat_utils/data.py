@@ -592,6 +592,12 @@ def g_jk_avg_err(jk_list, **kwargs):
     """
     return g_jk_avg(jk_list), g_jk_err(jk_list, **kwargs)
 
+def g_jk_avg_err_arr(jk_list, **kwargs):
+    avg, err = g_jk_avg_err(jk_list, **kwargs)
+    avg_err_arr = np.stack([ avg, err, ])
+    avg_err_arr = np.moveaxis(avg_err_arr, 0, -1).copy()
+    return avg_err_arr
+
 @use_kwargs(default_g_jk_kwargs)
 def g_jk_size(**kwargs):
     """
