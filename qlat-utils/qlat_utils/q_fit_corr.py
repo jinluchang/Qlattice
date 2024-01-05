@@ -589,7 +589,7 @@ def fit_energy_amplitude(jk_corr_data,
         set_verbose_level(verbose_level)
         v_list.append(v)
         chisq, chisq_grad, param_arr = v
-        displayln_info(0, f"{fname}: map: rs idx={idx} ; chisq={chisq} ; rng_seed='{rng_seed_list[idx]}'")
+        displayln_info(0, f"{fname}: map: rs idx={idx} ; chisq={chisq} ; free_energy_arr={param_arr[free_energies_mask].tolist()} ; rng_seed='{rng_seed_list[idx]}'")
     #
     rng_seed_mini = rng_seed_list[0]
     for idx, v in enumerate(v_list):
@@ -618,7 +618,7 @@ def fit_energy_amplitude(jk_corr_data,
         jk_chisq_grad.append(chisq_grad)
         jk_param_arr.append(param_arr)
         if n_step_mini_jk != 0:
-            displayln_info(0, f"{fname}: map: jk idx={idx} ; chisq={chisq}")
+            displayln_info(0, f"{fname}: map: jk idx={idx} ; chisq={chisq} ; free_energy_arr={param_arr[free_energies_mask].tolist()}")
     if is_close_pool:
         mp_pool.close()
     #
