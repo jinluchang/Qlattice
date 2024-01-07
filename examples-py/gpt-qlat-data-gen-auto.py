@@ -30,7 +30,7 @@ def mk_jw_a_mu(p, mu):
     return mk_j5pi_mu(p, mu) + mk_j5k_mu(p, mu)
 
 def mk_sw5(p):
-    return mk_pi_p(p, is_dagger = True) + mk_k_p(p, is_dagger = True)
+    return mk_pi_p(p, is_dagger=True) + mk_k_p(p, is_dagger=True)
 
 # ----
 
@@ -63,7 +63,7 @@ def get_cexpr_meson_corr():
                 sum([ mk_jw_a_mu("x_2", mu) * mk_j5k_mu("x_1", mu, True) for mu in range(4) ])
                 + f"jw_a_mu(0) * j5k_mu^dag(-tsep)",
                 ]
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
@@ -314,7 +314,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
                     "x_1": ("point", xg_src,),
                     "size": total_site,
                     }
-            val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
+            val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
             res_list.append((val / prob, t, r_idx_low, r_idx_high, coef_low, coef_high))
         return res_list
     def sum_function(val_list):
@@ -372,7 +372,7 @@ def get_cexpr_meson_jt():
                 op_list[0] * mm_list[3],
                 -op_list[1] * mm_list[3],
                 ]
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
@@ -422,7 +422,7 @@ def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
                 "t_2p" : ("wall", t_2p),
                 "size" : total_site,
                 }
-        val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
+        val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
         return val / prob_snk
     def sum_function(val_list):
         values = np.zeros(len(expr_names), dtype=complex)
@@ -1207,7 +1207,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
     meson_corr_arr = ld_meson_corr.to_numpy()
     def get_prop_norm_sqrt(*args):
         is_sloppy = True
-        return abs(ama_extract(get_prop(*args, is_norm_sqrt = True), is_sloppy = is_sloppy))
+        return abs(ama_extract(get_prop(*args, is_norm_sqrt=True), is_sloppy = is_sloppy))
     def load_psrc_psrc_prop_norm_sqrt(flavor, i):
         xg1_src = tuple(xg_psel_arr[i])
         x_1 = ("point", xg1_src,)
@@ -1348,7 +1348,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
                     }
             t_1 = xg_1_xg_t
             t_2 = xg_2_xg_t
-            val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
+            val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
             r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
             results.append((weight * val / prob_2, t_1, t_2, r_idx_low, r_idx_high, coef_low, coef_high,))
         return idx_1, idx_w, results
@@ -1574,7 +1574,7 @@ size_node_list = [
 set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step", value=2)
 set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step", value=8)
 set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj", value=1)
-set_param("test-4nt8", "trajs", value = [ 1000, ])
+set_param("test-4nt8", "trajs", value=[ 1000, ])
 
 qg.begin_with_gpt()
 
