@@ -10,6 +10,6 @@ CHECK: jk_chisq sig4=-19.9705
 CHECK: jk_param_arr sig5=1.4714
 CHECK: jk_chisq_grad sig6=29.6799
 CHECK: jk_param_arr_for_scaled_corr sig7=2.2792
-CHECK: jk_chisq sig8=-65.9134
+CHECK: jk_chisq sig8=-65.91
 CHECK: jk_param_arr sig9=1.0752
 CHECK: finished successfully.

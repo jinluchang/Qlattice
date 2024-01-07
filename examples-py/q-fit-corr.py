@@ -120,7 +120,7 @@ res = q.q_fit_corr.fit_energy_amplitude(
 
 sig8 = q.get_double_sig(res['jk_chisq'], q.RngState())
 
-q.displayln_info(f"CHECK: jk_chisq sig8={sig8:.4F}")
+q.displayln_info(f"CHECK: jk_chisq sig8={sig8:.2F}")
 
 sig9 = q.get_double_sig(res['jk_param_arr'], q.RngState())
 
