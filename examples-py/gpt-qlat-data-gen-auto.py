@@ -1207,7 +1207,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
     meson_corr_arr = ld_meson_corr.to_numpy()
     def get_prop_norm_sqrt(*args):
         is_sloppy = True
-        return abs(ama_extract(get_prop(*args, is_norm_sqrt=True), is_sloppy = is_sloppy))
+        return abs(ama_extract(get_prop(*args, is_norm_sqrt=True), is_sloppy=is_sloppy))
     def load_psrc_psrc_prop_norm_sqrt(flavor, i):
         xg1_src = tuple(xg_psel_arr[i])
         x_1 = ("point", xg1_src,)
