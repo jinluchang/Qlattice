@@ -240,12 +240,12 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi):
             sfr = q.open_fields(get_load_path(path_f), "r")
             available_tags = sfr.list()
             q.displayln_info(0, f"available_tags={available_tags}")
-            for idx, tslice, type, acc in wi:
-                if type != inv_type:
+            for idx, tslice, inv_type_wi, inv_acc in wi:
+                if inv_type_wi != inv_type:
                     continue
-                if acc != 1:
+                if inv_acc != 1:
                     continue
-                tag = f"tslice={tslice} ; type={type} ; accuracy={acc}"
+                tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
                 q.displayln_info(0, f"{fname}: idx={idx} tag='{tag}'")
                 if not sfr.has(tag):
                     raise Exception(f"{tag} not in {sfr.list()}")
@@ -308,10 +308,10 @@ def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel,
         prop = q.Prop(geo)
         s_prop = q.SelProp(fsel)
         ps_prop = q.PselProp(psel)
-        for idx, tslice, type, acc in wi:
-            if type != inv_type:
+        for idx, tslice, inv_type_wi, inv_acc in wi:
+            if inv_type_wi != inv_type:
                 continue
-            tag = f"tslice={tslice} ; type={type} ; accuracy={acc}"
+            tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
             if tag in finished_tags:
                 continue
             q.displayln_info(-1, f"{fname}: idx={idx} tag='{tag}'")
@@ -393,6 +393,13 @@ def compute_prop_wsrc_all(job_tag, traj, *,
 
 @q.timer
 def run_prop_wsrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel, get_fsel, get_wi):
+    """
+    Can use `run_prop_wsrc_sparse` instead.
+    #
+    run_prop_wsrc_full(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_wi=get_wi)
+    get_fsel, get_psel, get_fsel_prob, get_psel_prob = run_fsel_psel_from_wsrc_prop_full(job_tag, traj, get_wi=get_wi)
+    run_prop_wsrc_sparse(job_tag, traj, inv_type=0, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_wi=get_wi)
+    """
     if None in [ get_gf, get_gt, get_psel, get_fsel, ]:
         return
     if get_eig is None:
