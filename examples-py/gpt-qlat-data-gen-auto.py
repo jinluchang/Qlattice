@@ -1450,25 +1450,7 @@ def run_job(job_tag, traj):
     run_wsrc_full()
     #
     get_fsel, get_psel, get_fsel_prob, get_psel_prob = run_fsel_psel_from_wsrc_prop_full(job_tag, traj, get_wi=get_wi)
-    #
-    # get_psel = run_psel(job_tag, traj)
-    # get_fsel = run_fsel(job_tag, traj)
-    # @q.lazy_call
-    # def get_psel_prob():
-    #     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    #     geo = q.Geometry(total_site)
-    #     psel = get_psel()
-    #     psel_prob = q.SelectedPointsRealD(psel, 1)
-    #     psel_prob[:] = psel.n_points() / geo.total_volume()
-    #     return psel_prob
-    # @q.lazy_call
-    # def get_fsel_prob():
-    #     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    #     geo = q.Geometry(total_site)
-    #     fsel = get_fsel()
-    #     fsel_prob = q.SelectedFieldRealD(fsel, 1)
-    #     fsel_prob[:] = q.glb_sum(fsel.n_elems()) / geo.total_volume()
-    #     return fsel_prob
+    get_f_rand_01_psrc_prop = run_f_rand_01_psrc_prop(job_tag, traj)
     #
     get_fselc = run_fselc(job_tag, traj, get_fsel, get_psel)
     #
@@ -1482,7 +1464,7 @@ def run_job(job_tag, traj):
         # run_get_inverter(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig)
         # run_prop_wsrc(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_wi=get_wi)
         run_prop_rand_u1(job_tag, traj, inv_type=0, get_gf=get_gf, get_fsel=get_fsel, get_eig=get_eig)
-        run_prop_psrc(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc)
+        run_prop_psrc(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_f_rand_01_psrc_prop=get_f_rand_01_psrc_prop)
         run_prop_smear(job_tag, traj, inv_type=0, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_psel_smear=get_psel_smear)
         q.clean_cache(q.cache_inv)
     #
@@ -1491,7 +1473,7 @@ def run_job(job_tag, traj):
         # run_get_inverter(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig)
         # run_prop_wsrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_wi=get_wi)
         run_prop_rand_u1(job_tag, traj, inv_type=1, get_gf=get_gf, get_fsel=get_fsel, get_eig=get_eig)
-        run_prop_psrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc)
+        run_prop_psrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_f_rand_01_psrc_prop=get_f_rand_01_psrc_prop)
         run_prop_smear(job_tag, traj, inv_type=1, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_psel_smear=get_psel_smear)
         q.clean_cache(q.cache_inv)
     #

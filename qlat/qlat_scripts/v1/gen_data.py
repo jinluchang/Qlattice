@@ -170,6 +170,7 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi):
     geo = q.Geometry(total_site, 1)
     fn_fsel_weight = f"{job_tag}/field-selection-weight/traj-{traj}/weight.field"
     fn_fsel_rand = f"{job_tag}/field-selection-weight/traj-{traj}/f-rand-01.field"
+    fn_fsel_rand_psrc_prop = f"{job_tag}/field-selection-weight/traj-{traj}/f-rand-01-psrc-prop.field"
     fn_fsel = f"{job_tag}/field-selection/traj-{traj}.field"
     fn_psel = f"{job_tag}/point-selection/traj-{traj}.txt"
     fn_fsel_prob = f"{job_tag}/field-selection-weight/traj-{traj}/fsel-prob.sfield"
@@ -207,6 +208,7 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi):
         assert get_load_path(fn_fsel) is not None
         assert get_load_path(fn_psel) is not None
         assert get_load_path(fn_fsel_rand) is not None
+        assert get_load_path(fn_fsel_rand_psrc_prop) is not None
         assert get_load_path(fn_fsel_weight) is not None
         return ret
     inv_type_names = [ "light", "strange", ]
@@ -218,6 +220,7 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi):
     if q.obtain_lock(f"locks/{job_tag}-{traj}-sel-from-wsrc-prop-full"):
         assert get_load_path(fn_fsel_weight) is None
         assert get_load_path(fn_fsel_rand) is None
+        assert get_load_path(fn_fsel_rand_psrc_prop) is None
         assert get_load_path(fn_fsel) is None
         assert get_load_path(fn_psel) is None
         assert get_load_path(fn_fsel_prob) is None
@@ -235,6 +238,10 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi):
         rs = q.RngState(f"{job_tag}-{traj}").split("run_sel_from_wsrc_prop_full").split("f_rand_01")
         f_rand_01.set_rand(rs, 1.0, 0.0)
         f_rand_01.save_double(get_save_path(fn_fsel_rand))
+        f_rand_01_psrc_prop = q.FieldRealD(geo, 1)
+        rs = q.RngState(f"{job_tag}-{traj}").split("run_sel_from_wsrc_prop_full").split("f_rand_01_psrc_prop")
+        f_rand_01_psrc_prop.set_rand(rs, 1.0, 0.0)
+        f_rand_01_psrc_prop.save_double(get_save_path(fn_fsel_rand_psrc_prop))
         for inv_type in [ 0, 1, ]:
             path_f = path_f_list[inv_type]
             sfr = q.open_fields(get_load_path(path_f), "r")
@@ -274,6 +281,20 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi):
         psel_prob.save(get_save_path(fn_psel_prob))
         q.release_lock()
         return ret
+
+def run_f_rand_01_psrc_prop(job_tag, traj):
+    fn_fsel_rand_psrc_prop = f"{job_tag}/field-selection-weight/traj-{traj}/f-rand-01-psrc-prop.field"
+    if get_load_path(fn_fsel_rand_psrc_prop) is None:
+        return None
+    @q.lazy_call
+    @q.timer_verbose
+    def get_f_rand_01_psrc_prop():
+        total_site = q.Coordinate(get_param(job_tag, "total_site"))
+        geo = q.Geometry(total_site, 1)
+        f_rand_01_psrc_prop = q.FieldRealD(geo, 1)
+        f_rand_01_psrc_prop.load_double(get_load_path(fn_fsel_rand_psrc_prop))
+        return f_rand_01_psrc_prop
+    return get_f_rand_01_psrc_prop
 
 # -----------------------------------------------------------------------------
 
@@ -426,7 +447,8 @@ def run_prop_wsrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel,
 # -----------------------------------------------------------------------------
 
 @q.timer_verbose
-def compute_prop_2(inv, src, *, tag, sfw, path_sp, psel, fsel, gt):
+def compute_prop_2(inv, src, *, tag, sfw, path_sp, psel, fsel,
+                   f_rand_01_psrc_prop, fsel_psrc_prop_norm_threshold, gt):
     fn_sp = os.path.join(path_sp, f"{tag}.lat")
     fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
     sol = inv * src
@@ -436,7 +458,19 @@ def compute_prop_2(inv, src, *, tag, sfw, path_sp, psel, fsel, gt):
     sol_gt = gt * sol
     sol_ws = sol_gt.glb_sum_tslice()
     sol_ws.save(get_save_path(fn_spw))
-    s_sol = q.SelProp(fsel)
+    sol_ps_sel_prob = q.qnorm_field(sol)
+    sol_ps_sel_prob *= 1.0 / fsel_psrc_prop_norm_threshold
+    sol_ps_sel_prob[:] = np.minimum(1.0, sol_ps_sel_prob[:])
+    ps_sel = f_rand_01_psrc_prop[:, 0] <= sol_ps_sel_prob[:, 0]
+    fsel_ps = q.FieldSelection(fsel.geo())
+    fsel_ps[ps_sel] = 0
+    fsel_ps.update()
+    s_sol_ps_sel_prob = q.SelectedFieldRealD(fsel_ps)
+    s_sol_ps_sel_prob @= sol_ps_sel_prob
+    s_sol_ps_sel_prob.save_double(sfw, f"{tag} ; fsel-prob-psrc-prop")
+    fsel_combine = fsel_ps.copy()
+    fsel_combine.add_fsel(fsel)
+    s_sol = q.SelProp(fsel_combine)
     s_sol @= sol
     s_sol.save_float_from_double(sfw, tag)
     sfw.flush()
@@ -444,7 +478,7 @@ def compute_prop_2(inv, src, *, tag, sfw, path_sp, psel, fsel, gt):
 
 @q.timer
 def compute_prop_psrc(job_tag, xg_src, inv_type, inv_acc, *,
-        idx, gf, gt, sfw, path_sp, psel, fsel, eig, finished_tags):
+        idx, gf, gt, sfw, path_sp, psel, fsel, f_rand_01_psrc_prop, eig, finished_tags):
     xg = xg_src
     xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
     tag = f"xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
@@ -455,14 +489,18 @@ def compute_prop_psrc(job_tag, xg_src, inv_type, inv_acc, *,
     q.displayln_info(f"compute_prop_psrc: {job_tag} idx={idx} tag='{tag}'")
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig=eig)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    fsel_psrc_prop_norm_threshold = get_param(job_tag, "field-selection-fsel-psrc-prop-norm-threshold")
     geo = q.Geometry(total_site, 1)
     src = q.mk_point_src(geo, xg_src)
     prop = compute_prop_2(inv, src, tag=tag, sfw=sfw, path_sp=path_sp,
-                          psel=psel, fsel=fsel, gt=gt)
+                          psel=psel, fsel=fsel,
+                          f_rand_01_psrc_prop=f_rand_01_psrc_prop,
+                          fsel_psrc_prop_norm_threshold=fsel_psrc_prop_norm_threshold,
+                          gt=gt)
 
 @q.timer_verbose
 def compute_prop_psrc_all(job_tag, traj, *,
-                          inv_type, gf, gt, psel, fsel, eig):
+                          inv_type, gf, gt, psel, fsel, f_rand_01_psrc_prop, eig):
     inv_type_names = [ "light", "strange", ]
     inv_type_name = inv_type_names[inv_type]
     path_s = f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}"
@@ -472,7 +510,7 @@ def compute_prop_psrc_all(job_tag, traj, *,
     def comp(idx, xg_src, inv_acc):
         compute_prop_psrc(job_tag, xg_src, inv_type, inv_acc,
                 idx=idx, gf=gf, gt=gt, sfw=sfw, path_sp=path_sp,
-                psel=psel, fsel=fsel,
+                psel=psel, fsel=fsel, f_rand_01_psrc_prop=f_rand_01_psrc_prop,
                 eig=eig, finished_tags=finished_tags)
     prob1 = get_param(job_tag, "prob_acc_1_psrc")
     prob2 = get_param(job_tag, "prob_acc_2_psrc")
@@ -492,8 +530,8 @@ def compute_prop_psrc_all(job_tag, traj, *,
     # q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after=True)
 
 @q.timer
-def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel, get_fsel):
-    if None in [ get_gf, get_gt, get_psel, get_fsel, ]:
+def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel, get_fsel, get_f_rand_01_psrc_prop):
+    if None in [ get_gf, get_gt, get_psel, get_fsel, get_f_rand_01_psrc_prop ]:
         return
     if get_eig is None:
         if inv_type == 0:
@@ -509,10 +547,13 @@ def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel,
         eig = get_eig()
         psel = get_psel()
         fsel = get_fsel()
+        f_rand_01_psrc_prop = get_f_rand_01_psrc_prop()
         assert fsel.is_containing(psel)
         compute_prop_psrc_all(job_tag, traj,
                               inv_type=inv_type, gf=gf, gt=gt,
-                              psel=psel, fsel=fsel, eig=eig)
+                              psel=psel, fsel=fsel,
+                              f_rand_01_psrc_prop=f_rand_01_psrc_prop,
+                              eig=eig)
         q.release_lock()
 
 # -----------------------------------------------------------------------------
