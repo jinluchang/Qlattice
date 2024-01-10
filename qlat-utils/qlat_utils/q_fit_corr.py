@@ -78,6 +78,23 @@ def build_corr_from_param_arr(
     return corr
 
 @timer
+def sort_param_arr_free_energy(param_arr, n_ops, free_energy_idx_arr):
+    """
+    Adjust order of states with free energy parameter
+    """
+    n_energies = len(param_arr) // (n_ops + 1)
+    assert len(param_arr) == n_energies * (n_ops + 1)
+    e_arr = param_arr[:n_energies].copy()
+    c_arr = param_arr[n_energies:].reshape(n_energies, n_ops).copy()
+    free_e_arr = e_arr[free_energy_idx_arr]
+    free_c_arr = c_arr[free_energy_idx_arr]
+    free_e_arr, free_c_arr = zip(*sorted(zip(free_e_arr, free_c_arr), key=lambda p: p[0]))
+    e_arr[free_energy_idx_arr] = free_e_arr
+    c_arr[free_energy_idx_arr] = free_c_arr
+    new_param_arr = np.concatenate([ e_arr, c_arr.ravel(), ], dtype=np.float64)
+    return new_param_arr
+
+@timer
 def apply_energy_minimum(param_arr, energy_minimum_arr=None, free_energy_idx_arr=None):
     """
     return new param_arr (does not change original param_arr)
@@ -310,6 +327,7 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
           free_energies_mask,
           fixed_coef_energy_mask,
           minimize_kwargs,
+          is_sorting_energy_state,
           rng_seed,
           verbose_level,
           ):
@@ -364,6 +382,8 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
             param_arr = minimize_scipy(fcn, param_arr=param_arr,
                                        fixed_param_mask=fixed_energies_mask | fixed_coef_energy_mask,
                                        minimize_kwargs=minimize_kwargs)
+            if is_sorting_energy_state:
+                param_arr = sort_param_arr_free_energy(param_arr, n_ops, free_energy_idx_arr)
             param_arr = apply_energy_minimum(param_arr, energy_minimum_arr, free_energy_idx_arr)
             displayln_info(0, f"{fname}: iter={i} free_energy_arr={param_arr[free_energies_mask].tolist()}")
             vl = 1
@@ -559,7 +579,7 @@ def fit_energy_amplitude(jk_corr_data,
     param_arr_mini = param_arr_initial.copy()
     chisq_mini = chisq_initial
     #
-    def mk_kwargs(jk_idx, rng_seed, verbose_level):
+    def mk_kwargs(jk_idx, is_sorting_energy_state, rng_seed, verbose_level):
         kwargs = dict(
                 jk_idx=jk_idx,
                 corr_data=jk_corr_data[jk_idx],
@@ -578,6 +598,7 @@ def fit_energy_amplitude(jk_corr_data,
                 free_energies_mask=free_energies_mask,
                 fixed_coef_energy_mask=fixed_coef_energy_mask,
                 minimize_kwargs=minimize_kwargs,
+                is_sorting_energy_state=is_sorting_energy_state,
                 rng_seed=rng_seed,
                 verbose_level=verbose_level,
                 )
@@ -588,6 +609,7 @@ def fit_energy_amplitude(jk_corr_data,
     v_list = []
     for idx, v in enumerate(mp_map(jk_mini_task_in_fit_energy_amplitude,
                                    [ mk_kwargs(0,
+                                       True,
                                        rng_seed,
                                        verbose_level if idx == 0 else -1)
                                        for idx, rng_seed in enumerate(rng_seed_list) ]
@@ -618,6 +640,7 @@ def fit_energy_amplitude(jk_corr_data,
     jk_param_arr = []
     for idx, v in enumerate(mp_map(jk_mini_task_in_fit_energy_amplitude,
                                    [ mk_kwargs(jk_idx,
+                                       False,
                                        f"{rng_seed_list[0]}/jk_mini_task/{jk_idx}",
                                        verbose_level if jk_idx == 0 else -1)
                                        for jk_idx in range(n_jk) ]
