@@ -8,15 +8,16 @@ EXPORT(mk_qm_action, {
   double barrier_strength = 1.0;
   double M = 1.0;
   double L = 0.0;
-  long t_full = 10;
+  long t_full1 = 10;
+  long t_full2 = 10;
   long t_FV = 10;
   double m_particle = 1.0;
   double dt = 1.0;
-  if (!PyArg_ParseTuple(args, "d|d|d|d|d|d|l|l|d|d", &lmbd, &v0, 
-      &alpha, &barrier_strength, &M, &L, &t_full, &t_FV, &m_particle, &dt)) {
+  if (!PyArg_ParseTuple(args, "d|d|d|d|d|d|l|l|l|d|d", &lmbd, &v0, 
+      &alpha, &barrier_strength, &M, &L, &t_full1, &t_full2, &t_FV, &m_particle, &dt)) {
     return NULL;
   }
-  QMAction* pqma = new QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_FV, m_particle, dt);
+  QMAction* pqma = new QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full1, t_full2, t_FV, m_particle, dt);
   return py_convert((void*)pqma);
 })
 
@@ -90,14 +91,24 @@ EXPORT(get_L_qm_action, {
   return py_convert(qma.L);
 })
 
-EXPORT(get_t_full_qm_action, {
+EXPORT(get_t_full1_qm_action, {
   using namespace qlat;
   PyObject* p_qma = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_qma)) {
     return NULL;
   }
   const QMAction& qma = py_convert_type<QMAction>(p_qma);
-  return py_convert(qma.t_full);
+  return py_convert(qma.t_full1);
+})
+
+EXPORT(get_t_full2_qm_action, {
+  using namespace qlat;
+  PyObject* p_qma = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_qma)) {
+    return NULL;
+  }
+  const QMAction& qma = py_convert_type<QMAction>(p_qma);
+  return py_convert(qma.t_full2);
 })
 
 EXPORT(get_t_FV_qm_action, {

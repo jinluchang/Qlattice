@@ -11,7 +11,8 @@ struct QMAction {
   double barrier_strength;
   double M;
   double L;
-  Long t_full;
+  Long t_full1;
+  Long t_full2;
   Long t_FV;
   //float t_ramp;
   double m_particle;
@@ -26,7 +27,8 @@ struct QMAction {
     barrier_strength = 1.0;
     M = 1.0;
     L = 0.0;
-    t_full = 10;
+    t_full1 = 10;
+    t_full2 = 10;
     t_FV = 10;
     //t_ramp = 5.0;
     m_particle = 1.0;
@@ -36,8 +38,8 @@ struct QMAction {
   qacc QMAction() { init(); }
   qacc QMAction(const double lmbd_, const double v0_, const double alpha_,
                 const double barrier_strength_, const double M_,
-                const double L_, const Long t_full_, const Long t_FV_,
-                const double m_particle_, const double dt_)
+                const double L_, const Long t_full1_, const Long t_full2_, 
+                const Long t_FV_, const double m_particle_, const double dt_)
   {
     init();
     initialized = true;
@@ -46,7 +48,8 @@ struct QMAction {
     barrier_strength = barrier_strength_;
     M = M_;
     L = L_;
-    t_full = t_full_;
+    t_full1 = t_full1_;
+    t_full2 = t_full2_;
     t_FV = t_FV_;
     //t_ramp = t_ramp_;
     v0 = v0_;
@@ -57,11 +60,11 @@ struct QMAction {
   inline double V(const double x, const Long t)
   {
     // Returns the potential evaluated at point x
-    if(t<t_full)
+    if(t<t_full1)
         return V_full(x);
-    else if(t<t_full+t_FV)
+    else if(t<t_full1+t_FV)
       return V_FV(x);
-    else if(t<2*t_full+t_FV)
+    else if(t<t_full1+t_FV+t_full2)
       return V_full(x);
     else {
      //displayln(ssprintf("t (in V): %ld", t));
@@ -74,11 +77,11 @@ struct QMAction {
   inline double dV(const double x, const Long t)
   {
     // Returns the potential evaluated at point x
-    if(t<t_full)
+    if(t<t_full1)
         return dV_full(x);
-    else if(t<t_full+t_FV)
+    else if(t<t_full1+t_FV)
       return dV_FV(x);
-    else if(t<2*t_full+t_FV)
+    else if(t<t_full1+t_FV+t_full2)
       return dV_full(x);
     else
      return dV_TV(x);

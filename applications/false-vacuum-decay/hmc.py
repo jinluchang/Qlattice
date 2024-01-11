@@ -237,7 +237,7 @@ class HMC:
         return flag, accept_prob
 
 class Measurements:
-    def __init__(self, total_site, actions_measure, action_pa, action_ma, save_file):
+    def __init__(self, total_site, actions_M, actions_L, actions_t_FV, actions_t_TV, save_file):
         self.save_file = save_file
         # Stores the trajectory number for debugging purposes
         self.trajs = []
@@ -254,17 +254,27 @@ class Measurements:
         self.momentums=[]
         self.forces=[]
         #
-        self.delta_actions = {}
-        self.actions = {}
-        for a in actions_measure:
-            #self.delta_actions[f"{[a.M(), a.L()]}"] = []
-            #self.actions[f"{[a.M(), a.L()]}"] = a
-            self.delta_actions[f"{a.t_full()}"] = []
-            self.actions[f"{a.t_full()}"] = a
-        self.actions["pa"] = action_pa
-        self.delta_actions["pa"] = []
-        self.actions["ma"] = action_ma
-        self.delta_actions["ma"] = []
+        self.delta_actions_M = {}
+        self.actions_M = {}
+        for a in actions_M:
+            self.actions_M[f"{a.M()}"] = a
+            self.delta_actions_M[f"{a.M()}"] = []
+        self.delta_actions_L = {}
+        self.actions_L = {}
+        for a in actions_L:
+            self.actions_L[f"{a.L()}"] = a
+            self.delta_actions_L[f"{a.L()}"] = []
+        self.delta_actions_t_FV = {}
+        self.actions_t_FV = {}
+        for a in actions_t_FV:
+            self.actions_t_FV[f"{a.t_FV()}"] = a
+            self.delta_actions_t_FV[f"{a.t_FV()}"] = []
+        self.delta_actions_t_TV = {}
+        self.actions_t_TV = {}
+        for a in actions_t_TV:
+            t_TV = total_site[3] - a.t_full1() - a.t_full2() - a.t_FV()
+            self.actions_t_TV[f"{t_TV}"] = a
+            self.delta_actions_t_TV[f"{t_TV}"] = []
     
     def measure(self, hmc):
         self.trajs.append(hmc.traj)
@@ -282,9 +292,18 @@ class Measurements:
         self.fields.append(self.get_representatives(hmc.field))
         self.forces.append(self.get_representatives(hmc.force))
         #
-        for P in self.actions:
-            dS = hmc.action.action_node(hmc.field) - self.actions[P].action_node(hmc.field)
-            self.delta_actions[P].append(q.glb_sum(dS))
+        for P in self.actions_M:
+            dS = hmc.action.action_node(hmc.field) - self.actions_M[P].action_node(hmc.field)
+            self.delta_actions_M[P].append(q.glb_sum(dS))
+        for P in self.actions_L:
+            dS = hmc.action.action_node(hmc.field) - self.actions_L[P].action_node(hmc.field)
+            self.delta_actions_L[P].append(q.glb_sum(dS))
+        for P in self.actions_t_FV:
+            dS = hmc.action.action_node(hmc.field) - self.actions_t_FV[P].action_node(hmc.field)
+            self.delta_actions_t_FV[P].append(q.glb_sum(dS))
+        for P in self.actions_t_TV:
+            dS = hmc.action.action_node(hmc.field) - self.actions_t_TV[P].action_node(hmc.field)
+            self.delta_actions_t_TV[P].append(q.glb_sum(dS))
     
     def display_measurements(self):
         q.displayln_info("Average phi:")
@@ -321,7 +340,10 @@ class Measurements:
                 "fields": self.fields,
                 "momentums": self.momentums,
                 "forces": self.forces,
-                "delta_actions": self.delta_actions}, output)
+                "delta_actions_M": self.delta_actions_M,
+                "delta_actions_L": self.delta_actions_L,
+                "delta_actions_t_FV": self.delta_actions_t_FV,
+                "delta_actions_t_TV": self.delta_actions_t_TV}, output)
     
     def load(self):
         if len(glob.glob(self.save_file)):
@@ -335,34 +357,48 @@ class Measurements:
                 self.fields.extend(data["fields"])
                 self.momentums.extend(data["momentums"])
                 self.forces.extend(data["forces"])
-                for m_P in data["delta_actions"]:
-                    if m_P in self.delta_actions:
-                        self.delta_actions[m_P].extend(data["delta_actions"][m_P])
+                for m_P in data["delta_actions_M"]:
+                    if m_P in self.delta_actions_M:
+                        self.delta_actions_M[m_P].extend(data["delta_actions_M"][m_P])
                     else:
-                        self.delta_actions[m_P] = data["delta_actions"][m_P]
+                        self.delta_actions_M[m_P] = data["delta_actions_M"][m_P]
+                for m_P in data["delta_actions_L"]:
+                    if m_P in self.delta_actions_L:
+                        self.delta_actions_L[m_P].extend(data["delta_actions_L"][m_P])
+                    else:
+                        self.delta_actions_L[m_P] = data["delta_actions_L"][m_P]
+                for m_P in data["delta_actions_t_FV"]:
+                    if m_P in self.delta_actions_t_FV:
+                        self.delta_actions_t_FV[m_P].extend(data["delta_actions_t_FV"][m_P])
+                    else:
+                        self.delta_actions_t_FV[m_P] = data["delta_actions_t_FV"][m_P]
+                for m_P in data["delta_actions_t_TV"]:
+                    if m_P in self.delta_actions_t_TV:
+                        self.delta_actions_t_TV[m_P].extend(data["delta_actions_t_TV"][m_P])
+                    else:
+                        self.delta_actions_t_TV[m_P] = data["delta_actions_t_TV"][m_P]
 
 @q.timer_verbose
 def main():
     # The lattice dimensions
-    Nt = 800
+    Nt = 100
     total_site = q.Coordinate([1,1,1,Nt])
     # The multiplicity of the field
     mult = 1
     lmbd = 0.01
-    v0 = 5.0
+    v0 = 3.0
     alpha = 0.0
-    barrier_strength = 1.0
+    barrier_strength = 100.0
     M = 1.0
     L = 0.0
-    measure_parameters = [[round(M+0.001*i,5),round(L,5)] for i in range(1,21)]
-    t_full = 0
-    t_FV = 600
+    t_full = 5
+    t_FV = 75
     m_particle = 1.0
     dt = 0.05
     # The number of trajectories to calculate
     n_traj = 10000
     #
-    version = "0-5"
+    version = "1-0"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
     steps = 10
@@ -370,7 +406,7 @@ def main():
     init_length = 20
     fresh_start = False
     # The number of trajectories to run before each save
-    save_frequency = 1000
+    save_frequency = 5000
     
     for i in range(1,len(sys.argv)):
         try:
@@ -393,17 +429,25 @@ def main():
                 t_full = int(sys.argv[i+1])
             elif(sys.argv[i]=="-F"):
                 t_FV = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-M"):
+                M = float(sys.argv[i+1])
+            elif(sys.argv[i]=="-L"):
+                L = float(sys.argv[i+1])
         except:
-            raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -s for the number of steps in a trajectory, -R to force restarting with blank initial field, -i for the number of trajectories to do at the beginning without a Metropolis step, -S for the number of trajectories to run before each save, -f for the time to evolve with H_full, -F for the time to evolve with H_FV. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1 -t 10000")
+            raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -s for the number of steps in a trajectory, -R to force restarting with blank initial field, -i for the number of trajectories to do at the beginning without a Metropolis step, -S for the number of trajectories to run before each save, -f for the time to evolve with H_full, -F for the time to evolve with H_FV, -M to set the left barrier for H_TV, -L to set the right barrier for H_TV. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1 -t 10000")
     
-    action = q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_FV, m_particle, dt)
+    action = q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_full, t_FV, m_particle, dt)
     hmc = HMC(action,f"lmbd_{lmbd}_v0_{v0}_alpha_{alpha}_m_{m_particle}_dt_{dt}_bar_{barrier_strength}_M_{M}_L_{L}_tfull_{t_full}_tFV_{t_FV}",total_site,mult,steps,init_length,date,version,fresh_start)
     
-    #actions_measure = [q.QMAction(lmbd, v0, alpha, barrier_strength, P[0], P[1], t_full, t_FV, m_particle, dt) for P in measure_parameters]
-    actions_measure = [q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full+i, t_FV-2*i, m_particle, dt) for i in range(1,21)]
-    action_pa = q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_FV-1, m_particle, dt)
-    action_ma = q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_FV+1, m_particle, dt)
-    measurements = Measurements(total_site, actions_measure, action_pa, action_ma, f"output_data/measurements_{hmc.fileid}.bin")
+    measure_Ms = [round(min(max(M,0.001)*2**i, 1.0),5) for i in range(1,10)]
+    measure_Ls = [round(min(max(L,0.001)*2**i, 1.0),5) for i in range(1,10)]
+    measure_deltats = range(0,min(t_full,10))
+    
+    actions_M = [q.QMAction(lmbd, v0, alpha, barrier_strength, Mi, L, t_full, t_full, t_FV, m_particle, dt) for Mi in measure_Ms]
+    actions_L = [q.QMAction(lmbd, v0, alpha, barrier_strength, M, Li, t_full, t_full, t_FV, m_particle, dt) for Li in measure_Ls]
+    actions_t_FV = [q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_full+a, t_FV-a, m_particle, dt) for a in measure_deltats]
+    actions_t_TV = [q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_full+a, t_FV, m_particle, dt) for a in measure_deltats]
+    measurements = Measurements(total_site, actions_M, actions_L, actions_t_FV, actions_t_TV, f"output_data/measurements_{hmc.fileid}.bin")
     
     # If observables have been saved from a previous calculation (on the
     # same day), then load that file first
@@ -426,31 +470,34 @@ def main():
     hmc.save_field()
     measurements.save()
     
-    q.displayln_info(f"Acceptance rate: {np.mean(measurements.accept_rates[-300:])}")
-    for da in measurements.delta_actions:
-        q.displayln_info(f"e^(Delta S) for {da}: {np.mean(np.exp(measurements.delta_actions[da][-3000:]))}+-{np.std(np.exp(measurements.delta_actions[da][-3000:]))/3000.0**0.5}")
-    q.displayln_info(f"<e^(E_bar-E_FV)>: {np.mean(np.exp(measurements.delta_actions['pa'][-300:]))}+-{np.std(np.exp(measurements.delta_actions['pa'][-300:]))/300.0**0.5}")
-    q.displayln_info(f"<(E_bar-E_FV)^2>: {np.mean(np.power(measurements.delta_actions['pa'][-300:],2))}+-{np.std(np.power(measurements.delta_actions['pa'][-300:],2))/300.0**0.5}")
+    q.displayln_info(f"Acceptance rate: {np.mean(measurements.accept_rates[-int(n_traj/2):])}")
+    for da in measurements.delta_actions_M:
+        q.displayln_info(f"e^(Delta S) for M={da}: {np.mean(np.exp(measurements.delta_actions_M[da][-int(n_traj/2):]))}+-{np.std(np.exp(measurements.delta_actions_M[da][-int(n_traj/2):]))/(n_traj/2)**0.5}")
+    for da in measurements.delta_actions_L:
+        q.displayln_info(f"e^(Delta S) for L={da}: {np.mean(np.exp(measurements.delta_actions_L[da][-int(n_traj/2):]))}+-{np.std(np.exp(measurements.delta_actions_L[da][-int(n_traj/2):]))/(n_traj/2)**0.5}")
+    for da in measurements.delta_actions_t_FV:
+        q.displayln_info(f"e^(Delta S) for t_FV={da}: {np.mean(np.exp(measurements.delta_actions_t_FV[da][-int(n_traj/2):]))}+-{np.std(np.exp(measurements.delta_actions_t_FV[da][-int(n_traj/2):]))/(n_traj/2)**0.5}")
+    for da in measurements.delta_actions_t_TV:
+        q.displayln_info(f"e^(Delta S) for t_TV={da}: {np.mean(np.exp(measurements.delta_actions_t_TV[da][-int(n_traj/2):]))}+-{np.std(np.exp(measurements.delta_actions_t_TV[da][-int(n_traj/2):]))/(n_traj/2)**0.5}")
     
     q.displayln_info(f"CHECK: The vacuum expectation value of phi_0 is {round(np.mean(measurements.phi_list[int(n_traj/2):], axis=0)[0],2)}.")
     q.displayln_info(f"CHECK: The vacuum expectation value of phi^2 is {round(np.mean(measurements.psq_list[int(n_traj/2):]),2)}.")
     
-    x = np.arange(-5,5,0.1)
-    for t in range(0,Nt):
-        plt.plot([action.V(i,t)*Nt/20.0 + t for i in x],x)
+    #x = np.arange(-5,5,0.1)
+    #for t in range(0,Nt, 20):
+    #    plt.plot([min(action.V(i,t)*Nt/20.0, 3.0) + t for i in x],x)
     #plt.show()
-    plt.plot(range(Nt), np.mean(measurements.timeslices,axis=0))
-    plt.show()
+    #plt.plot(range(Nt), np.mean(measurements.timeslices,axis=0))
+    #plt.show()
 
 size_node_list = [
         [1, 1, 1, 1],
         [1, 1, 1, 2],
         [1, 1, 1, 4],
-        [1, 2, 2, 2],
-        [2, 2, 2, 2],
-        [2, 2, 2, 4],
-        [2, 2, 2, 8],
-        [2, 4, 4, 4]]
+        [1, 1, 1, 8],
+        [1, 1, 1, 16],
+        [1, 1, 1, 32],
+        [1, 1, 1, 64]]
 
 q.begin_with_mpi(size_node_list)
 
