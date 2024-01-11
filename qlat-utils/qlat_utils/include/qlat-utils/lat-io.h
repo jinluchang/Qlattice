@@ -184,6 +184,11 @@ LatDim lat_dim_string(const std::string& name, const VecS& indices)
 }
 
 inline Long lat_dim_idx(const LatDim& dim, const std::string& idx)
+// return the Long idx_int that dim.indices[idx_int] contains the std::string& idx.
+// Will check if the idx_int is unique.
+//
+// For dim.indices does not cover the entire range, will require exact match or (- read_long(idx) - 1).
+// Default index being -idx-1.
 {
   if ((Long)dim.indices.size() == 0) {
     Long i = read_long(idx);

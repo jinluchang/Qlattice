@@ -179,6 +179,13 @@ cdef class LatData:
         return [ self.xx.info[i].name for i in range(ndim) ]
 
     def dim_idx(self, int dim, const cc.std_string& idx):
+        """
+        return the Long idx_int that dim.indices[idx_int] contains the std::string& idx.
+        Will check if the idx_int is unique.
+        #
+        For dim.indices does not cover the entire range, will require exact match or (- read_long(idx) - 1).
+        Default index being -idx-1.
+        """
         return cc.lat_dim_idx(self.xx.info[dim], idx)
 
     def to_numpy(self):

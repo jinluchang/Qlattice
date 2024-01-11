@@ -34,10 +34,10 @@ set_param("48I", tag, value=2048/(48**3*96))
 set_param("64I", tag, value=2048/(64**3*128))
 
 tag = "field-selection-fsel-psrc-prop-norm-threshold"
-set_param("test-4nt8", tag, value=0.01)
-set_param("test-4nt16", tag, value=0.01)
-set_param("48I", tag, value=0.005)
-set_param("64I", tag, value=0.005)
+set_param("test-4nt8", tag, value=1e-3)
+set_param("test-4nt16", tag, value=1e-3)
+set_param("48I", tag, value=1e-4)
+set_param("64I", tag, value=1e-4)
 
 tag = "n_points_psel"
 dict_params["test-4nt8"][tag] = 6
