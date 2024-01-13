@@ -689,13 +689,12 @@ def load_gauge_original(job_tag, traj, *, gf):
     geo = q.geo_reform(gf.geo())
     gf_dagger = q.GaugeField(geo)
     gf_dagger @= gf
-    gf_dagger_arr = np.asarray(gf_dagger)
-    # print(gf_dagger_arr.shape)
-    gf_dagger_arr[:] = gf_dagger_arr.transpose((0, 1, 2, 3, 4, 6, 5,)).conj()
+    gf_dagger[:] = gf_dagger[:].transpose((0, 1, 3, 2,)).conj()
     # gf_dagger.show_info()
     expansion_left = q.Coordinate([ 2, 2, 2, 2, ])
     expansion_right = q.Coordinate([ 1, 1, 1, 1, ])
     gf_expand = q.field_expanded(gf, expansion_left, expansion_right)
+    gf_expand.show_info()
     gf_dagger_expand = q.field_expanded(gf_dagger, expansion_left, expansion_right)
     gf_dagger_expand.show_info()
 
