@@ -15,10 +15,12 @@ if [ -z "\$num_proc" ] ; then
 fi
 module purge
 module load PrgEnv-amd
+module load craype-accel-amd-gfx90a
 module list
 if [ -z "\$USE_COMPILER" ] ; then
     export USE_COMPILER=gcc
 fi
+export MPICH_GPU_SUPPORT_ENABLED=1
 EOF
 
     #
