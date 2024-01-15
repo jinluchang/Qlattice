@@ -20,6 +20,8 @@ module load xpmem
 module load perftools-base
 module load perl
 module load openblas
+module load gsl
+module load hdf5
 module list
 if [ -z "\$USE_COMPILER" ] ; then
     export USE_COMPILER=gcc

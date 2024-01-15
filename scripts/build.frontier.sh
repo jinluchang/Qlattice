@@ -6,13 +6,11 @@ set -e
     ./scripts/setenv.frontier.sh
     ./scripts/qcore.sh
 
-    ./scripts/gsl.sh
     ./scripts/cuba.sh
     ./scripts/zlib.sh
     ./scripts/eigen.sh
     ./scripts/openssl.sh
     ./scripts/libffi.sh
-    ./scripts/hdf5.sh
 
     ./scripts/python.sh
     ./scripts/python-pip.sh
