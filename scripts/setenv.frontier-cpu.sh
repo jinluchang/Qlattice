@@ -13,7 +13,7 @@ cat >"$prefix/setenv.sh" <<EOF
 if [ -z "\$num_proc" ] ; then
     export num_proc=8
 fi
-module purge
+# module purge
 module load PrgEnv-gnu
 module load craype-x86-trento
 module load xpmem
