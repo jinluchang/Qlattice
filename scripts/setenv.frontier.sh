@@ -24,9 +24,9 @@ export CC=cc
 export CXX=CC
 export MPICC=cc
 export MPICXX=CC
-export CFLAGS="-I${ROCM_PATH}/include"
-export CXXFLAGS="-I${ROCM_PATH}/include"
-export LDFLAGS="-L${ROCM_PATH}/lib -lamdhip64"
+export CFLAGS="-I\${ROCM_PATH}/include"
+export CXXFLAGS="-I\${ROCM_PATH}/include"
+export LDFLAGS="-L\${ROCM_PATH}/lib -lamdhip64"
 export MPICH_GPU_SUPPORT_ENABLED=1
 EOF
 

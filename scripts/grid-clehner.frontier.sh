@@ -28,16 +28,16 @@ source qcore/set-prefix.sh $name
         ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
     fi
 
-    export CC=
-    export CXX=hipcc
-    export CFLAGS=
-    export CXXFLAGS="-fPIC --offload-arch=gfx90a -I/opt/rocm/include/ -std=c++14 -I/opt/cray/pe/mpich/8.1.23/ofi/gnu/9.1/include"
-    export LDFLAGS="-L/opt/cray/pe/mpich/8.1.23/ofi/gnu/9.1/lib -lmpi -L/opt/cray/pe/mpich/8.1.23/gtl/lib -lmpi_gtl_hsa -lamdhip64 -fopenmp"
-    export CXXFLAGS="-fPIC --offload-arch=gfx90a -std=c++14"
-    export LDFLAGS="-fopenmp"
-    export LIBS=
-    export MPICXX=mpicxx
-    export MPICC=
+    # export CC=
+    # export CXX=hipcc
+    # export CFLAGS=
+    # export CXXFLAGS="-fPIC --offload-arch=gfx90a -I/opt/rocm/include/ -std=c++14 -I/opt/cray/pe/mpich/8.1.23/ofi/gnu/9.1/include"
+    # export LDFLAGS="-L/opt/cray/pe/mpich/8.1.23/ofi/gnu/9.1/lib -lmpi -L/opt/cray/pe/mpich/8.1.23/gtl/lib -lmpi_gtl_hsa -lamdhip64 -fopenmp"
+    # export CXXFLAGS="-fPIC --offload-arch=gfx90a -std=c++14"
+    # export LDFLAGS="-fopenmp"
+    # export LIBS=
+    # export MPICXX=mpicxx
+    # export MPICC=
 
     opts=""
     if [ -n "$(find-library.sh libgmp.a)" ] ; then
