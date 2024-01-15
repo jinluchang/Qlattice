@@ -171,7 +171,6 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi):
     geo = q.Geometry(total_site, 1)
     fn_fsel_weight = f"{job_tag}/field-selection-weight/traj-{traj}/weight.field"
     fn_fsel_rand = f"{job_tag}/field-selection-weight/traj-{traj}/f-rand-01.field"
-    fn_fsel_rand_psrc_prop = f"{job_tag}/field-selection-weight/traj-{traj}/f-rand-01-psrc-prop.field"
     fn_fsel = f"{job_tag}/field-selection/traj-{traj}.field"
     fn_psel = f"{job_tag}/point-selection/traj-{traj}.txt"
     fn_fsel_prob = f"{job_tag}/field-selection-weight/traj-{traj}/fsel-prob.sfield"
@@ -215,7 +214,6 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi):
         assert get_load_path(fn_fsel) is not None
         assert get_load_path(fn_psel) is not None
         assert get_load_path(fn_fsel_rand) is not None
-        assert get_load_path(fn_fsel_rand_psrc_prop) is not None
         assert get_load_path(fn_fsel_weight) is not None
         return ret
     inv_type_names = [ "light", "strange", ]
@@ -227,7 +225,6 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi):
     if q.obtain_lock(f"locks/{job_tag}-{traj}-sel-from-wsrc-prop-full"):
         assert get_load_path(fn_fsel_weight) is None
         assert get_load_path(fn_fsel_rand) is None
-        assert get_load_path(fn_fsel_rand_psrc_prop) is None
         assert get_load_path(fn_fsel) is None
         assert get_load_path(fn_psel) is None
         assert get_load_path(fn_fsel_prob) is None
