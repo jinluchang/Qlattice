@@ -15,6 +15,9 @@ if [ -z "\$num_proc" ] ; then
 fi
 module purge
 module load PrgEnv-amd
+module load xpmem
+module load craype-x86-trento
+module load perftools-base
 module load craype-accel-amd-gfx90a
 module list
 if [ -z "\$USE_COMPILER" ] ; then
