@@ -18,6 +18,7 @@ module load PrgEnv-amd
 module load craype-x86-trento
 module load xpmem
 module load perftools-base
+module load perl
 module load craype-accel-amd-gfx90a
 module list
 if [ -z "\$USE_COMPILER" ] ; then

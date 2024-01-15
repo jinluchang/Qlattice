@@ -10,7 +10,6 @@ set -e
     ./scripts/cuba.sh
     ./scripts/zlib.sh
     ./scripts/eigen.sh
-    ./scripts/perl.sh
     ./scripts/openssl.sh
     ./scripts/libffi.sh
     ./scripts/openblas.sh

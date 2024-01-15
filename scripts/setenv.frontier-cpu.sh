@@ -18,6 +18,7 @@ module load PrgEnv-gnu
 module load craype-x86-trento
 module load xpmem
 module load perftools-base
+module load perl
 module list
 if [ -z "\$USE_COMPILER" ] ; then
     export USE_COMPILER=gcc
