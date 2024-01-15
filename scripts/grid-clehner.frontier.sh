@@ -33,11 +33,24 @@ source qcore/set-prefix.sh $name
     # export CFLAGS=
     # export CXXFLAGS="-fPIC --offload-arch=gfx90a -I/opt/rocm/include/ -std=c++14 -I/opt/cray/pe/mpich/8.1.23/ofi/gnu/9.1/include"
     # export LDFLAGS="-L/opt/cray/pe/mpich/8.1.23/ofi/gnu/9.1/lib -lmpi -L/opt/cray/pe/mpich/8.1.23/gtl/lib -lmpi_gtl_hsa -lamdhip64 -fopenmp"
+
+    # export CC=
+    # export CXX=hipcc
+    # export CFLAGS=
     # export CXXFLAGS="-fPIC --offload-arch=gfx90a -std=c++14"
     # export LDFLAGS="-fopenmp"
     # export LIBS=
     # export MPICXX=mpicxx
     # export MPICC=
+
+    export CC=
+    export CXX=hipcc
+    export CFLAGS=
+    export CXXFLAGS="-fPIC --offload-arch=gfx90a -std=c++14 -I${ROCM_PATH}/include"
+    export HIPFLAGS="--amdgpu-target=gfx90a"
+    export LDFLAGS="-L${ROCM_PATH}/lib -lamdhip64"
+    export MPICC=
+    export MPICXX=CC
 
     opts=""
     if [ -n "$(find-library.sh libgmp.a)" ] ; then
