@@ -506,11 +506,13 @@ set_param("test-4nt8", "cg_params-1-2", "maxcycle", value=3)
 set_param("test-4nt8", "cg_params-0-2", "pv_maxiter", value=5)
 set_param("test-4nt8", "cg_params-1-2", "pv_maxiter", value=5)
 set_param("test-4nt8", "trajs", value=[ 1000, ])
+set_param("test-8nt16", "trajs", value=[ 1000, 2000, ])
 
 qg.begin_with_gpt()
 
 job_tags = [
         "test-4nt8",
+        # "test-8nt16",
         ]
 
 q.check_time_limit()
@@ -521,6 +523,8 @@ for job_tag in job_tags:
     q.displayln_info(pprint.pformat(get_param(job_tag)))
     for v in get_param(job_tag).items():
         q.displayln_info(f"CHECK: {v}")
+    q.save_pickle_obj(get_param(job_tag), get_save_path(f"{job_tag}/params.pickle"), is_sync_node=True)
+    q.qtouch_info(get_save_path(f"{job_tag}/params.txt"), pprint.pformat(get_param(job_tag)))
     for traj in get_param(job_tag, "trajs"):
         run_job(job_tag, traj)
 
