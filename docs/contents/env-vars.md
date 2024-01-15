@@ -34,7 +34,7 @@
 
   Memory cache size in MB (per processes) for `qlat::vector` allocation.
 
-  Default is `512 MB`.
+  Default is `512` MB.
 
 - `q_num_threads`
 
