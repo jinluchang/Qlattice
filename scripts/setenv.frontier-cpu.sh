@@ -19,6 +19,10 @@ module list
 if [ -z "\$USE_COMPILER" ] ; then
     export USE_COMPILER=gcc
 fi
+export CC=cc
+export CXX=CC
+export MPICC=cc
+export MPICXX=CC
 EOF
 
     #

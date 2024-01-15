@@ -289,7 +289,7 @@ void update_field_selection(FieldSelection& fsel)
 // interface function
 // update fsel based only on f_rank
 {
-  TIMER_VERBOSE("update_field_selection");
+  TIMER("update_field_selection");
   const Geometry& geo = fsel.f_rank.geo();
   qassert(geo.is_only_local);
   fsel.f_local_idx.init();
@@ -331,7 +331,7 @@ void set_grid_field_selection(FieldSelection& fsel,
 void set_field_selection(FieldSelection& fsel, const FieldRank& f_rank)
 // strictly follow f_rank on selection
 {
-  TIMER_VERBOSE("set_field_selection(fsel,f_rank)");
+  TIMER("set_field_selection(fsel,f_rank)");
   fsel.init();
   fsel.f_rank = f_rank;
   update_field_selection(fsel);

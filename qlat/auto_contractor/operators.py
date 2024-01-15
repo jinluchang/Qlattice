@@ -472,6 +472,17 @@ def mk_j1n1_mu(p : str, mu, is_dagger = False):
 
 ###################
 
+def mk_jw_v_mu(p, mu):
+    return mk_jpi_mu(p, mu) + mk_jk_mu(p, mu)
+
+def mk_jw_a_mu(p, mu):
+    return mk_j5pi_mu(p, mu) + mk_j5k_mu(p, mu)
+
+def mk_sw5(p):
+    return mk_pi_p(p, is_dagger=True) + mk_k_p(p, is_dagger=True)
+
+###################
+
 def mk_4qOp_VV(f1 : str, f2 : str, f3 : str, f4 : str, p, is_scalar = False, parity = None, is_dagger = False):
     if parity == "odd":
         return 0

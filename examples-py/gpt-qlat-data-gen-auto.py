@@ -23,17 +23,6 @@ load_path_list[:] = [
 
 # ----
 
-def mk_jw_v_mu(p, mu):
-    return mk_jpi_mu(p, mu) + mk_jk_mu(p, mu)
-
-def mk_jw_a_mu(p, mu):
-    return mk_j5pi_mu(p, mu) + mk_j5k_mu(p, mu)
-
-def mk_sw5(p):
-    return mk_pi_p(p, is_dagger=True) + mk_k_p(p, is_dagger=True)
-
-# ----
-
 @q.timer
 def get_cexpr_meson_corr():
     fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_corr"

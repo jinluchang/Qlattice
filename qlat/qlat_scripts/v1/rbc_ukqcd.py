@@ -202,11 +202,9 @@ def load_eig_lazy(path, job_tag, inv_type = 0, inv_acc = 0):
     return q.lazy_call(load_eig)
 
 def get_cg_mp_maxiter(job_tag, inv_type, inv_acc):
-    cg_params = rup.dict_params[job_tag].get(f"cg_params-{inv_type}-{inv_acc}")
-    if cg_params is not None:
-        maxiter = cg_params.get("maxiter")
-        if maxiter is not None:
-            return maxiter
+    maxiter = get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")
+    if maxiter is not None:
+        return maxiter
     if job_tag[:5] == "test-":
         maxiter = 50
     elif inv_acc == 2:
@@ -241,7 +239,7 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
         params = get_fermion_params(job_tag, inv_type, inv_acc)
         if eig is not None:
             # may need madwf
-            params0 = get_fermion_params(job_tag, inv_type, inv_acc = 0)
+            params0 = get_fermion_params(job_tag, inv_type, inv_acc=0)
             is_madwf = get_ls_from_fermion_params(params) != get_ls_from_fermion_params(params0)
             if is_madwf and inv_type == 1:
                 # do not use madwf for strange even when eig is available (do not use eig for exact solve)
@@ -256,14 +254,14 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
             qm = g.qcd.fermion.mobius(gpt_gf, params)
         inv = g.algorithms.inverter
         cg_mp = inv.cg({"eps": eps, "maxiter": get_cg_mp_maxiter(job_tag, inv_type, inv_acc)})
-        cg_pv_f = inv.cg({"eps": eps, "maxiter": 150})
+        cg_pv_f = inv.cg({"eps": eps, "maxiter": get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "pv_maxiter", default=150)})
         if mpi_split is None or mpi_split == False:
             cg_split = cg_mp
             n_grouped = 1
             mpi_split = None
         else:
-            cg_split = inv.split(cg_mp, mpi_split = mpi_split)
-            cg_pv_f = inv.split(cg_pv_f, mpi_split = mpi_split)
+            cg_split = inv.split(cg_mp, mpi_split=mpi_split)
+            cg_pv_f = inv.split(cg_pv_f, mpi_split=mpi_split)
         q.displayln_info(f"mk_gpt_inverter: mpi_split={mpi_split} n_grouped={n_grouped}")
         if eig is not None:
             cg_defl = inv.coarse_deflate(eig[1], eig[0], eig[2])
@@ -290,32 +288,32 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
             slv_5d_pv_f = inv.preconditioned(pc.eo2_ne(), cg_pv_f)
             slv_5d = pc.mixed_dwf(slv_5d, slv_5d_pv_f, qm0)
         if inv_acc == 0:
-            maxiter = 1
+            maxcycle = get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle", default=1)
         elif inv_acc == 1:
-            maxiter = 2
+            maxcycle = get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle", default=2)
         elif inv_acc == 2:
-            maxiter = 200
+            maxcycle = get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle", default=200)
         else:
             raise Exception("mk_gpt_inverter")
         q.sync_node()
-        q.displayln_info(f"mk_gpt_inverter: eps={eps} max_cycle={maxiter}")
+        q.displayln_info(f"mk_gpt_inverter: eps={eps} maxcycle={maxcycle}")
         slv_qm = qm.propagator(
                 inv.defect_correcting(
                     inv.mixed_precision(
                         slv_5d, g.single, g.double),
-                    eps=eps, maxiter=maxiter)).grouped(n_grouped)
+                    eps=eps, maxiter=maxcycle)).grouped(n_grouped)
         q.displayln_info(f"mk_gpt_inverter: make inv_qm")
         if qtimer is True:
             qtimer = q.Timer(f"py:inv({job_tag},{inv_type},{inv_acc})", True)
         elif qtimer is False:
             qtimer = q.TimerNone()
-        inv_qm = qg.InverterGPT(inverter = slv_qm, qtimer = qtimer)
+        inv_qm = qg.InverterGPT(inverter=slv_qm, qtimer=qtimer)
     else:
         raise Exception("mk_gpt_inverter")
     if gt is None:
         return inv_qm
     else:
-        return q.InverterGaugeTransform(inverter = inv_qm, gt = gt)
+        return q.InverterGaugeTransform(inverter=inv_qm, gt=gt)
 
 @q.timer_verbose
 def mk_qlat_inverter(gf, job_tag, inv_type, inv_acc, *, gt = None):
