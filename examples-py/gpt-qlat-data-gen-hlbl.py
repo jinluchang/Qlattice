@@ -509,8 +509,6 @@ set_param("test-4nt8", "trajs", value=[ 1000, ])
 
 qg.begin_with_gpt()
 
-q.qremove_all_info("results")
-
 job_tags = [
         "test-4nt8",
         ]
