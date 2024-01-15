@@ -46,9 +46,9 @@ source qcore/set-prefix.sh $name
     export CC=
     export CXX=hipcc
     export CFLAGS=
-    export CXXFLAGS="-fPIC --offload-arch=gfx90a -std=c++14 -I${ROCM_PATH}/include"
+    export CXXFLAGS="-fPIC --offload-arch=gfx90a -std=c++14 -I${ROCM_PATH}/include -I${MPICH_DIR}/include"
     export HIPFLAGS="--amdgpu-target=gfx90a"
-    export LDFLAGS="-L${ROCM_PATH}/lib -lamdhip64"
+    export LDFLAGS="-L${ROCM_PATH}/lib -lamdhip64 -L${MPICH_DIR}/lib -lmpi ${CRAY_XPMEM_POST_LINK_OPTS} -lxpmem ${PE_MPICH_GTL_DIR_amd_gfx90a} ${PE_MPICH_GTL_LIBS_amd_gfx90a}"
     export MPICC=
     export MPICXX=CC
 
