@@ -26,6 +26,8 @@ export CC=cc
 export CXX=CC
 export MPICC=cc
 export MPICXX=CC
+export QLAT_CXX=\${GCC_PATH}/bin/g++
+export QLAT_MPICXX=mpic++
 EOF
 
     #

@@ -31,6 +31,8 @@ export CFLAGS="-I\${ROCM_PATH}/include"
 export CXXFLAGS="-I\${ROCM_PATH}/include"
 export LDFLAGS="-L\${ROCM_PATH}/lib -lamdhip64"
 export MPICH_GPU_SUPPORT_ENABLED=1
+export QLAT_CXX=amdclang++
+export QLAT_MPICXX=mpic++
 EOF
 
     #
