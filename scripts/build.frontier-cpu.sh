@@ -12,7 +12,6 @@ set -e
     ./scripts/eigen.sh
     ./scripts/openssl.sh
     ./scripts/libffi.sh
-    ./scripts/openblas.sh
     ./scripts/hdf5.sh
 
     ./scripts/python.sh
