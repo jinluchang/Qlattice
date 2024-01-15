@@ -15,6 +15,9 @@ if [ -z "\$num_proc" ] ; then
 fi
 module purge
 module load PrgEnv-gnu
+module load craype-x86-trento
+module load xpmem
+module load perftools-base
 module list
 if [ -z "\$USE_COMPILER" ] ; then
     export USE_COMPILER=gcc
