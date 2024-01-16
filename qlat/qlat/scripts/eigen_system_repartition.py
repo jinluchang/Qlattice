@@ -10,7 +10,7 @@ if len(sys.argv) not in [ 3, 4, ]:
 
 q.begin_with_mpi()
 
-new_size_node = [ int(x) for x in sys.argv[1].split(".") ]
+new_size_node = q.Coordinate([ int(x) for x in sys.argv[1].split(".") ])
 path = sys.argv[2]
 if len(sys.argv) == 4:
     path_new = sys.argv[3]
