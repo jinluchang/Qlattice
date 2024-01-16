@@ -220,6 +220,7 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi):
     path_f_list = [ f"{job_tag}/prop-wsrc-full-{inv_type_name}/traj-{traj}/geon-info.txt" for inv_type_name in inv_type_names ]
     for inv_type in [ 0, 1, ]:
         if get_load_path(path_f_list[inv_type]) is None:
+            inv_type_name = inv_type_names[inv_type]
             q.displayln_info(f"WARNING: {fname}: {job_tag} {traj} {inv_type_name} full prop is not available yet.")
             return None
     if q.obtain_lock(f"locks/{job_tag}-{traj}-sel-from-wsrc-prop-full"):
