@@ -19,8 +19,8 @@ is_cython = False
 
 load_path_list[:] = [
         "results",
-        os.path.join(os.getenv("HOME"), "/frontier-data/hlbl-proj/qcddata4/"),
-        os.path.join(os.getenv("HOME"), "/frontier-data/hlbl-proj/qcddata5/"),
+        os.path.join(os.getenv("HOME"), "frontier-data/hlbl-proj/qcddata4"),
+        os.path.join(os.getenv("HOME"), "frontier-data/hlbl-proj/qcddata5"),
         ]
 
 # ----
@@ -359,14 +359,18 @@ def run_job(job_tag, traj):
             (f"{job_tag}/prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/prop-wsrc-strange/traj-{traj}/geon-info.txt",),
             (f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}/checkpoint.txt",),
             ]
-    fns_need = [
-            # f"{job_tag}/gauge-transform/traj-{traj}.field",
-            # f"{job_tag}/point-selection/traj-{traj}.txt",
-            # f"{job_tag}/field-selection/traj-{traj}.field",
-            # f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
-            # f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
-            # (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
-            ]
+    if job_tag[:5] == "test-":
+        fns_need = []
+    else:
+        fns_need = [
+                (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
+                f"{job_tag}/eig/traj-{traj}/metadata.txt",
+                # f"{job_tag}/gauge-transform/traj-{traj}.field",
+                # f"{job_tag}/point-selection/traj-{traj}.txt",
+                # f"{job_tag}/field-selection/traj-{traj}.field",
+                # f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
+                # f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
+                ]
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
     #
