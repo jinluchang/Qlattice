@@ -9,7 +9,7 @@ import os
 import numpy as np
 import inspect
 
-def getenv(*names, default = None):
+def getenv(*names, default=None):
     assert len(names) > 0
     for name in names:
         val = os.getenv(name)
@@ -20,7 +20,7 @@ def getenv(*names, default = None):
     displayln_info(0, f"{names[0]}='{val}' (default)")
     return val
 
-def get_arg(option, default = None):
+def get_arg(option, default=None):
     argv = sys.argv
     i_max = len(argv) - 1
     for i, arg in enumerate(argv):

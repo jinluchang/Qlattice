@@ -505,11 +505,8 @@ set_param("24D", "clanc_params", 1, value=None)
 
 qg.begin_with_gpt()
 
-job_tags = [
-        "test-4nt8",
-        # "test-8nt16",
-        # "24D",
-        ]
+# Possible `job_tags` is "test-4nt8,test-8nt16,24D"
+job_tags = q.get_arg("--job_tags", default="test-4nt8").split(",")
 
 q.check_time_limit()
 
