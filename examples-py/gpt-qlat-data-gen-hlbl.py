@@ -519,8 +519,10 @@ for job_tag in job_tags:
     q.displayln_info(pprint.pformat(get_param(job_tag)))
     for v in get_param(job_tag).items():
         q.displayln_info(f"CHECK: {v}")
-    q.save_pickle_obj(get_param(job_tag), get_save_path(f"{job_tag}/params.pickle"), is_sync_node=True)
-    q.qtouch_info(get_save_path(f"{job_tag}/params.txt"), pprint.pformat(get_param(job_tag)))
+    if not q.does_file_exist_qar_sync_node(get_save_path(f"{job_tag}/params.pickle")):
+        q.save_pickle_obj(get_param(job_tag), get_save_path(f"{job_tag}/params.pickle"), is_sync_node=True)
+    if not q.does_file_exist_qar_sync_node(get_save_path(f"{job_tag}/params.txt")):
+        q.qtouch_info(get_save_path(f"{job_tag}/params.txt"), pprint.pformat(get_param(job_tag)))
     for traj in get_param(job_tag, "trajs"):
         run_job(job_tag, traj)
 
