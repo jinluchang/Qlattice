@@ -516,7 +516,7 @@ def run_gf_ape(job_tag, get_gf):
 # ----------
 
 @q.timer
-def compute_eig(gf, job_tag, inv_type = 0, inv_acc = 0, *, path = None):
+def compute_eig(gf, job_tag, inv_type=0, inv_acc=0, *, path=None):
     """
     return a function ``get_eig''
     ``get_eig()'' return the ``eig''
@@ -542,14 +542,14 @@ def test_eig(gf, eig, job_tag, inv_type):
     src = q.FermionField4d(geo)
     src.set_rand(q.RngState("test_eig:src.set_rand"))
     q.displayln_info(f"src norm {src.qnorm():.10E}")
-    sol_ref = ru.get_inv(gf, job_tag, inv_type, inv_acc = 2, eig = eig, eps = 1e-10, mpi_split = False, qtimer = False) * src
+    sol_ref = ru.get_inv(gf, job_tag, inv_type, inv_acc=2, eig=eig, eps=1e-10, mpi_split=False, qtimer=False) * src
     q.displayln_info(f"sol_ref norm {sol_ref.qnorm():.10E} with eig")
     for inv_acc in [ 0, 1, 2, ]:
-        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig, mpi_split = False, qtimer = False) * src
+        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig=eig, mpi_split=False, qtimer=False) * src
         sol -= sol_ref
         q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} with eig")
         if inv_acc in [ 0, 1, ]:
-            sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, mpi_split = False, qtimer = False) * src
+            sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, mpi_split=False, qtimer=False) * src
             sol -= sol_ref
             q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} without eig")
 
@@ -575,7 +575,7 @@ def run_eig_strange(job_tag, traj, get_gf):
     # if no parameter, return lambda : None
     if None in [ get_gf, ]:
         return None
-    if 1 not in rup.dict_params[job_tag]["clanc_params"]:
+    if get_param(job_tag, "clanc-params", 1) is None:
         fn = f"{job_tag}/eig-strange/traj-{traj}/no-eig-parameters.txt"
         if get_load_path(fn) is None:
             q.qtouch_info(get_save_path(fn))

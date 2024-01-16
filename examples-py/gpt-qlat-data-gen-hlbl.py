@@ -19,6 +19,8 @@ is_cython = False
 
 load_path_list[:] = [
         "results",
+        os.path.join(os.getenv("HOME"), "/frontier-data/hlbl-proj/qcddata4/"),
+        os.path.join(os.getenv("HOME"), "/frontier-data/hlbl-proj/qcddata5/"),
         ]
 
 # ----
@@ -472,19 +474,6 @@ def run_job(job_tag, traj):
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
 
-size_node_list = [
-        [1, 1, 1, 1],
-        [1, 1, 2, 1],
-        [1, 2, 2, 1],
-        [2, 2, 2, 1],
-        [2, 2, 4, 1],
-        [2, 4, 4, 1],
-        [4, 4, 4, 1],
-        [4, 4, 8, 1],
-        [4, 8, 8, 1],
-        [8, 8, 8, 1],
-        ]
-
 set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step", value=2)
 set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step", value=8)
 set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj", value=1)
@@ -507,12 +496,15 @@ set_param("test-4nt8", "cg_params-0-2", "pv_maxiter", value=5)
 set_param("test-4nt8", "cg_params-1-2", "pv_maxiter", value=5)
 set_param("test-4nt8", "trajs", value=[ 1000, ])
 set_param("test-8nt16", "trajs", value=[ 1000, 2000, ])
+set_param("24D", "lanc_params", 1, value=None)
+set_param("24D", "clanc_params", 1, value=None)
 
 qg.begin_with_gpt()
 
 job_tags = [
         "test-4nt8",
         # "test-8nt16",
+        # "24D",
         ]
 
 q.check_time_limit()
