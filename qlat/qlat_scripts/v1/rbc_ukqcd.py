@@ -270,11 +270,11 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
             cg = cg_split
         if "omega" in params and eig is None:
             pc_ne = pc.eo2_kappa_ne()
+            q.displayln_info(f"mk_gpt_inverter: pc.eo2_kappa_ne() does not support split_cg")
+            cg = cg_mp
         else:
             pc_ne = pc.eo2_ne()
-        if inv_type == 0:
-            slv_5d = inv.preconditioned(pc_ne, cg)
-        elif inv_type in [ 1, 2, ]:
+        if inv_type in [ 0, 1, 2, ]:
             slv_5d = inv.preconditioned(pc_ne, cg)
         else:
             raise Exception("mk_gpt_inverter")
