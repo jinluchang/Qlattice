@@ -111,11 +111,12 @@ Long write_selected_field(const SelectedField<M>& sf, const std::string& path,
   const int mpi_tag = 8;
   if (get_id_node() == 0) {
     qassert(sfs.size() > 0);
-    Vector<M> v = get_data(sfs[0].field);
     QFile fp = qfopen(path + ".partial", "a");
     qassert(not fp.null());
     const int num_node = get_num_node();
     for (int new_id_node = 0; new_id_node < new_num_node; ++new_id_node) {
+      vector<M> vec(n_elems_vec[new_id_node] * geo.multiplicity);
+      Vector<M> v = get_data(vec);
       const int id_node =
           get_id_node_from_new_id_node(new_id_node, new_num_node, num_node);
       if (0 == id_node) {
