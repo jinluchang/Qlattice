@@ -502,6 +502,9 @@ set_param("test-4nt8", "trajs", value=[ 1000, ])
 set_param("test-8nt16", "trajs", value=[ 1000, 2000, ])
 set_param("24D", "lanc_params", 1, value=None)
 set_param("24D", "clanc_params", 1, value=None)
+set_param("24D", 'fermion_params', 0, 2, value=deepcopy(get_param("24D", 'fermion_params', 0, 0)))
+set_param("24D", 'fermion_params', 1, 0, value=deepcopy(get_param("24D", 'fermion_params', 1, 2)))
+set_param("24D", 'fermion_params', 1, 1, value=deepcopy(get_param("24D", 'fermion_params', 1, 2)))
 
 qg.begin_with_gpt()
 
