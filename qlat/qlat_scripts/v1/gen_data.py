@@ -590,7 +590,9 @@ def compute_prop_psrc_all(job_tag, traj, *,
         sfw_hvp.close()
         q.qrename_info(get_save_path(path_s_hvp + ".acc"), get_save_path(path_s_hvp))
     q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint.txt")))
+    q.qtouch_info(get_save_path(os.path.join(path_hvp_ts, "checkpoint.txt")))
     q.qar_create_info(get_save_path(path_sp + ".qar"), get_save_path(path_sp), is_remove_folder_after=True)
+    q.qar_create_info(get_save_path(path_hvp_ts + ".qar"), get_save_path(path_hvp_ts), is_remove_folder_after=True)
     # q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after=True)
 
 @q.timer
