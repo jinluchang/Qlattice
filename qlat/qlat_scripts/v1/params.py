@@ -38,6 +38,14 @@ set_param("24D", tag, value=1024/(24**3*64))
 set_param("48I", tag, value=2048/(48**3*96))
 set_param("64I", tag, value=2048/(64**3*128))
 
+tag = "field-selection-weight-minimum"
+set_param("test-4nt8", tag, value=0.3)
+set_param("test-4nt16", tag, value=0.3)
+set_param("test-8nt16", tag, value=0.3)
+set_param("24D", tag, value=0.3)
+set_param("48I", tag, value=0.5)
+set_param("64I", tag, value=0.5)
+
 tag = "field-selection-fsel-psrc-prop-norm-threshold"
 set_param("test-4nt8", tag, value=1e-3)
 set_param("test-4nt16", tag, value=1e-3)

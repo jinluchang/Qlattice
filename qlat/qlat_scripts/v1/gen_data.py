@@ -231,7 +231,7 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi):
         assert get_load_path(fn_fsel_prob) is None
         assert get_load_path(fn_psel_prob) is None
         wi = get_wi()
-        weight_min = get_param(job_tag, "field-selection-weight-minimum", default=0.3)
+        weight_min = get_param(job_tag, "field-selection-weight-minimum")
         fsel_rate = get_param(job_tag, "field-selection-fsel-rate")
         psel_rate = get_param(job_tag, "field-selection-psel-rate")
         q.displayln_info(-1, fname, f"fsel_rate = {fsel_rate}")
