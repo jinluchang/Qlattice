@@ -164,7 +164,7 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi):
         psel_prob = get_psel_prob()
         f_rand_01 = get_f_rand_01()
     Or if wsrc_prop_full is not available
-    return None
+    return None, None, None, None, None
     """
     fname = q.get_fname()
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
@@ -222,7 +222,7 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi):
         if get_load_path(path_f_list[inv_type]) is None:
             inv_type_name = inv_type_names[inv_type]
             q.displayln_info(f"WARNING: {fname}: {job_tag} {traj} {inv_type_name} full prop is not available yet.")
-            return None
+            return None, None, None, None, None
     if q.obtain_lock(f"locks/{job_tag}-{traj}-sel-from-wsrc-prop-full"):
         assert get_load_path(fn_fsel_weight) is None
         assert get_load_path(fn_fsel_rand) is None
