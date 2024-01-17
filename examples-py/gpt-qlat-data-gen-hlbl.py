@@ -387,20 +387,26 @@ def run_job(job_tag, traj):
     #
     get_wi = run_wi(job_tag, traj)
     #
+    get_eig_light = run_eig(job_tag, traj_gf, get_gf)
+    get_eig_strange = run_eig_strange(job_tag, traj_gf, get_gf)
+    #
     def run_wsrc_full():
-        get_eig = run_eig(job_tag, traj_gf, get_gf)
+        get_eig = get_eig_light
         # run_get_inverter(job_tag, traj, inv_type=0, get_gf=get_gf, get_gt=get_gt, get_eig=get_eig)
         run_prop_wsrc_full(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_wi=get_wi)
+        q.clean_cache(q.cache_inv)
         #
-        get_eig = run_eig_strange(job_tag, traj_gf, get_gf)
+        get_eig = get_eig_strange
         # run_get_inverter(job_tag, traj, inv_type=1, get_gf=get_gf, get_gt=get_gt, get_eig=get_eig)
         run_prop_wsrc_full(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_wi=get_wi)
+        q.clean_cache(q.cache_inv)
     #
     run_wsrc_full()
     #
     get_fsel, get_psel, get_fsel_prob, get_psel_prob, get_f_rand_01 = run_fsel_psel_from_wsrc_prop_full(job_tag, traj, get_wi=get_wi)
     #
     if get_fsel is None:
+        q.clean_cache()
         return
     #
     get_fselc = run_fselc(job_tag, traj, get_fsel, get_psel)
@@ -411,7 +417,7 @@ def run_job(job_tag, traj):
     get_psel_smear = run_psel_smear(job_tag, traj)
     #
     def run_with_eig():
-        get_eig = run_eig(job_tag, traj_gf, get_gf)
+        get_eig = get_eig_light
         # run_get_inverter(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig)
         # run_prop_wsrc(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_wi=get_wi)
         # run_prop_rand_u1(job_tag, traj, inv_type=0, get_gf=get_gf, get_fsel=get_fsel, get_eig=get_eig)
@@ -420,7 +426,7 @@ def run_job(job_tag, traj):
         q.clean_cache(q.cache_inv)
     #
     def run_with_eig_strange():
-        get_eig = run_eig_strange(job_tag, traj_gf, get_gf)
+        get_eig = get_eig_strange
         # run_get_inverter(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig)
         # run_prop_wsrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_wi=get_wi)
         # run_prop_rand_u1(job_tag, traj, inv_type=1, get_gf=get_gf, get_fsel=get_fsel, get_eig=get_eig)
@@ -478,7 +484,7 @@ def run_job(job_tag, traj):
                 q.timer_display()
                 q.timer_merge()
             q.release_lock()
-            q.clean_cache()
+    q.clean_cache()
 
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
