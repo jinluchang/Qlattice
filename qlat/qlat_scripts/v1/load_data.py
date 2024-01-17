@@ -773,6 +773,7 @@ def run_get_prop(job_tag, traj, *,
         for pt in prop_types:
             v = prop_load_dict[pt]()
             if v is None:
+                q.displayln_info(f"mk_get_prop: {pt} not available. return None.")
                 return None
         #
         # prop_lookup_cache[(pos_src, type_src, type_snk,)] ==> get_prop_pos_snk

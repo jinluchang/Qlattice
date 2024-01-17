@@ -338,7 +338,9 @@ def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel,
             ps_prop_ws.save(get_save_path(fn_spw))
             s_prop.save_float_from_double(sfw, tag)
             sfw.flush()
+        q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint.txt")))
         q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
+        q.qar_create_info(get_save_path(path_sp + ".qar"), get_save_path(path_sp), is_remove_folder_after=True)
         q.release_lock()
 
 # -----------------------------------------------------------------------------

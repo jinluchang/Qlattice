@@ -1501,24 +1501,25 @@ def run_job(job_tag, traj):
     fn_checkpoint = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
     if get_load_path(fn_checkpoint) is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
-            q.timer_fork()
-            # ADJUST ME
-            auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-            auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-            auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-            auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-            auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-            auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-            auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-            auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-            auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-            #
-            q.qtouch_info(get_save_path(fn_checkpoint))
+            get_prop = get_get_prop()
+            if get_prop is not None:
+                q.timer_fork()
+                # ADJUST ME
+                auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+                auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+                auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+                auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+                auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+                auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+                auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+                auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+                auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+                #
+                q.qtouch_info(get_save_path(fn_checkpoint))
+                q.displayln_info("timer_display for runjob")
+                q.timer_display()
+                q.timer_merge()
             q.release_lock()
-            q.displayln_info("timer_display for runjob")
-            q.timer_display()
-            q.timer_merge()
-            #
             q.clean_cache()
 
 def get_all_cexpr():
