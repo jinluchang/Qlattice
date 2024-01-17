@@ -155,7 +155,7 @@ def make_psel_from_weight(f_weight, f_rand_01, rate):
     return psel
 
 @q.timer_verbose
-def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi):
+def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi=None):
     """
     return get_fsel, get_psel, get_fsel_prob, get_psel_prob, get_f_rand_01
         fsel = get_fsel()
@@ -230,6 +230,7 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi):
         assert get_load_path(fn_psel) is None
         assert get_load_path(fn_fsel_prob) is None
         assert get_load_path(fn_psel_prob) is None
+        assert get_wi is not None
         wi = get_wi()
         weight_min = get_param(job_tag, "field-selection-weight-minimum")
         fsel_rate = get_param(job_tag, "field-selection-fsel-rate")
