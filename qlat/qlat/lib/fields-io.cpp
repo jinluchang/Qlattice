@@ -858,7 +858,7 @@ bool check_file_sync_node(ShuffledFieldsReader& sfr, const std::string& fn,
   return ret;
 }
 
-std::vector<std::string> list_fields(ShuffledFieldsReader& sfr)
+std::vector<std::string> list_fields(ShuffledFieldsReader& sfr, bool is_skipping_check)
 // interface function
 {
   TIMER_VERBOSE("list_fields(sfr)");
@@ -871,12 +871,14 @@ std::vector<std::string> list_fields(ShuffledFieldsReader& sfr)
     ret = fr.fn_list;
   }
   bcast(ret);
-  for (int i = 0; i < (int)sfr.frs.size(); ++i) {
-    const FieldsReader& fr = sfr.frs[i];
-    qassert(fr.is_read_through);
-    qassert(fr.fn_list.size() == ret.size());
-    for (Long j = 0; j < (Long)ret.size(); ++j) {
-      qassert(ret[j] == fr.fn_list[j]);
+  if (not is_skipping_check) {
+    for (int i = 0; i < (int)sfr.frs.size(); ++i) {
+      const FieldsReader& fr = sfr.frs[i];
+      qassert(fr.is_read_through);
+      qassert(fr.fn_list.size() == ret.size());
+      for (Long j = 0; j < (Long)ret.size(); ++j) {
+        qassert(ret[j] == fr.fn_list[j]);
+      }
     }
   }
   return ret;
@@ -889,7 +891,7 @@ int truncate_fields_sync_node(const std::string& path,
   TIMER_VERBOSE("truncate_fields_sync_node");
   ShuffledFieldsReader sfr;
   sfr.init(path, new_size_node);
-  const std::vector<std::string> fns = list_fields(sfr);
+  const std::vector<std::string> fns = list_fields(sfr, true);
   if (fns.size() < fns_keep.size()) {
     qwarn(fname + ssprintf(": fns.size()=%ld fns_keep.size()=%ld", fns.size(),
                            fns_keep.size()));
@@ -949,7 +951,7 @@ std::vector<std::string> properly_truncate_fields_sync_node(
   }
   ShuffledFieldsReader sfr;
   sfr.init(path, new_size_node);
-  fns = list_fields(sfr);
+  fns = list_fields(sfr, true);
   std::vector<Long> last_final_offsets(sfr.frs.size(), 0);
   Long last_idx = -1;
   if (is_check_all) {

@@ -493,7 +493,7 @@ bool does_file_exist_sync_node(ShuffledFieldsReader& sfr,
 bool check_file_sync_node(ShuffledFieldsReader& sfr, const std::string& fn,
                           std::vector<Long>& final_offsets);
 
-std::vector<std::string> list_fields(ShuffledFieldsReader& sfr);
+std::vector<std::string> list_fields(ShuffledFieldsReader& sfr, bool is_skipping_check = false);
 
 int truncate_fields_sync_node(const std::string& path,
                               const std::vector<std::string>& fns_keep,
