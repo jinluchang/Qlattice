@@ -419,6 +419,8 @@ def load_prop_wsrc_psel(job_tag, traj, flavor, *, wi, psel, fsel, gt):
     else:
         assert False
     path_sp = f"{job_tag}/psel-prop-wsrc-{flavor_tag}/traj-{traj}"
+    if get_load_path(f"{path_sp}.qar", f"{path_sp}/checkpoint.txt") is None:
+        return None
     gt_inv = gt.inv()
     count = { 1: 0, 2: 0, }
     for idx, tslice, inv_type, inv_acc in wi:
@@ -452,6 +454,7 @@ def load_prop_wsrc_psel(job_tag, traj, flavor, *, wi, psel, fsel, gt):
     check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=1 ; wsrc ; prob", 1)
     check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=2 ; wsrc ; prob", get_prob_exact_wsrc(job_tag))
     populate_prop_idx_cache_wsrc_psel(job_tag, traj, flavor, total_site, psel, fsel)
+    return True
 
 @q.timer
 def load_prop_wsrc_fsel(job_tag, traj, flavor, *, wi, psel, fsel, gt):
@@ -476,8 +479,10 @@ def load_prop_wsrc_fsel(job_tag, traj, flavor, *, wi, psel, fsel, gt):
         flavor_tag = "strange"
     else:
         assert False
-    path_s = f"{job_tag}/prop-wsrc-{flavor_tag}/traj-{traj}/geon-info.txt"
-    sfr = q.open_fields(get_load_path(path_s), "r")
+    path_s = f"{job_tag}/prop-wsrc-{flavor_tag}/traj-{traj}"
+    if get_load_path(f"{path_s}.qar", f"{path_s}/geon-info.txt") is None:
+        return None
+    sfr = q.open_fields(get_load_path(path_s + "/geon-info.txt"), "r")
     gt_inv = gt.inv()
     count = { 1: 0, 2: 0, }
     for idx, tslice, inv_type, inv_acc in wi:
@@ -512,6 +517,7 @@ def load_prop_wsrc_fsel(job_tag, traj, flavor, *, wi, psel, fsel, gt):
     check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=1 ; wsrc ; prob", 1)
     check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=2 ; wsrc ; prob", get_prob_exact_wsrc(job_tag))
     populate_prop_idx_cache_wsrc_fsel(job_tag, traj, flavor, total_site, psel, fsel)
+    return True
 
 @q.timer
 def load_prop_psrc_psel(job_tag, traj, flavor, *, psel, fsel):
@@ -536,6 +542,8 @@ def load_prop_psrc_psel(job_tag, traj, flavor, *, psel, fsel):
     else:
         assert False
     path_sp = f"{job_tag}/psel-prop-psrc-{flavor_tag}/traj-{traj}"
+    if get_load_path(f"{path_sp}.qar", f"{path_sp}/checkpoint.txt") is None:
+        return None
     count = { 0: 0, 1: 0, 2: 0, }
     inv_type = flavor_inv_type
     idx = 0
@@ -564,6 +572,7 @@ def load_prop_psrc_psel(job_tag, traj, flavor, *, psel, fsel):
     check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=1 ; psrc ; prob", rup.dict_params[job_tag]["prob_acc_1_psrc"])
     check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=2 ; psrc ; prob", rup.dict_params[job_tag]["prob_acc_2_psrc"])
     populate_prop_idx_cache_psrc_psel(job_tag, traj, flavor, total_site, psel, fsel)
+    return True
 
 @q.timer
 def load_prop_psrc_fsel(job_tag, traj, flavor, *, psel, fsel):
@@ -588,8 +597,10 @@ def load_prop_psrc_fsel(job_tag, traj, flavor, *, psel, fsel):
         flavor_tag = "strange"
     else:
         assert False
-    path_s = f"{job_tag}/prop-psrc-{flavor_tag}/traj-{traj}/geon-info.txt"
-    sfr = q.open_fields(get_load_path(path_s), "r")
+    path_s = f"{job_tag}/prop-psrc-{flavor_tag}/traj-{traj}"
+    if get_load_path(f"{path_s}.qar", f"{path_s}/geon-info.txt") is None:
+        return None
+    sfr = q.open_fields(get_load_path(path_s + "/geon-info.txt"), "r")
     count = { 0: 0, 1: 0, 2: 0, }
     inv_type = flavor_inv_type
     idx = 0
@@ -619,6 +630,7 @@ def load_prop_psrc_fsel(job_tag, traj, flavor, *, psel, fsel):
     check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=1 ; psrc ; prob", rup.dict_params[job_tag]["prob_acc_1_psrc"])
     check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=2 ; psrc ; prob", rup.dict_params[job_tag]["prob_acc_2_psrc"])
     populate_prop_idx_cache_psrc_fsel(job_tag, traj, flavor, total_site, psel, fsel)
+    return True
 
 @q.timer
 def load_prop_rand_u1_fsel(job_tag, traj, flavor, *, psel, fsel):
@@ -642,8 +654,10 @@ def load_prop_rand_u1_fsel(job_tag, traj, flavor, *, psel, fsel):
     inv_acc = 2
     s_prop_avg = q.SelProp(fsel)
     q.set_zero(s_prop_avg)
-    path_s = f"{job_tag}/prop-rand-u1-{flavor_tag}/traj-{traj}/geon-info.txt"
-    sfr = q.open_fields(get_load_path(path_s), "r")
+    path_s = f"{job_tag}/prop-rand-u1-{flavor_tag}/traj-{traj}"
+    if get_load_path(f"{path_s}.qar", f"{path_s}/geon-info.txt") is None:
+        return None
+    sfr = q.open_fields(get_load_path(path_s + "/geon-info.txt"), "r")
     tags = sfr.list()
     prob1 = rup.dict_params[job_tag]["prob_acc_1_rand_u1"]
     prob2 = rup.dict_params[job_tag]["prob_acc_2_rand_u1"]
@@ -677,6 +691,7 @@ def load_prop_rand_u1_fsel(job_tag, traj, flavor, *, psel, fsel):
     inv_acc = 2
     cache_fsel[f"type={inv_type} ; accuracy={inv_acc} ; rand_u1 ; fsel"] = s_prop_avg
     populate_prop_idx_cache_rand_u1_fsel(job_tag, traj, flavor, total_site, psel, fsel)
+    return True
 
 ### -------
 
@@ -756,7 +771,9 @@ def run_get_prop(job_tag, traj, *,
         prop_load_dict["rand_u1 fsel s"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "s", psel=psel, fsel=fsel)
         prop_load_dict["rand_u1 fsel l"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "l", psel=psel, fsel=fsel)
         for pt in prop_types:
-            prop_load_dict[pt]()
+            v = prop_load_dict[pt]()
+            if v is None:
+                return None
         #
         # prop_lookup_cache[(pos_src, type_src, type_snk,)] ==> get_prop_pos_snk
         # where get_prop_pos_snk(pos_snk) ==> ama_prop
