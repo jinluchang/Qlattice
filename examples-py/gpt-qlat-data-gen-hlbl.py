@@ -8,6 +8,7 @@ import os
 import time
 import importlib
 import sys
+from copy import deepcopy
 
 import qlat_gpt as qg
 
