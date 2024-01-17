@@ -467,23 +467,47 @@ def run_job(job_tag, traj):
     #
     run_r_list(job_tag)
     #
-    fn_checkpoint = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
-    if get_load_path(fn_checkpoint) is None:
-        if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
-            get_prop = get_get_prop()
-            if get_prop is not None:
-                q.timer_fork()
-                # ADJUST ME
-                auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-                auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-                auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-                auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-                #
-                q.qtouch_info(get_save_path(fn_checkpoint))
-                q.displayln_info("timer_display for runjob")
-                q.timer_display()
-                q.timer_merge()
-            q.release_lock()
+    fn_checkpoint_auto_contract = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
+    fns_produce_auto_contract = [
+            fn_checkpoint_auto_contract,
+            ]
+    fns_need_auto_contract = [
+            # (f"{job_tag}/prop-rand-u1-light/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-light/traj-{traj}/geon-info.txt",),
+            # (f"{job_tag}/prop-rand-u1-strange/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-strange/traj-{traj}/geon-info.txt",),
+            # (f"{job_tag}/prop-rand-u1-charm/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-charm/traj-{traj}/geon-info.txt",),
+            #
+            (f"{job_tag}/prop-psrc-light/traj-{traj}.qar", f"{job_tag}/prop-psrc-light/traj-{traj}/geon-info.txt",),
+            (f"{job_tag}/psel-prop-psrc-light/traj-{traj}.qar", f"{job_tag}/psel-prop-psrc-light/traj-{traj}/checkpoint.txt",),
+            (f"{job_tag}/prop-psrc-strange/traj-{traj}.qar", f"{job_tag}/prop-psrc-strange/traj-{traj}/geon-info.txt",),
+            (f"{job_tag}/psel-prop-psrc-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-psrc-strange/traj-{traj}/checkpoint.txt",),
+            #
+            # (f"{job_tag}/prop-smear-light/traj-{traj}.qar", f"{job_tag}/prop-smear-light/traj-{traj}/geon-info.txt",),
+            # (f"{job_tag}/psel-prop-smear-light/traj-{traj}.qar", f"{job_tag}/psel-prop-smear-light/traj-{traj}/checkpoint.txt",),
+            # (f"{job_tag}/prop-smear-strange/traj-{traj}.qar", f"{job_tag}/prop-smear-strange/traj-{traj}/geon-info.txt",),
+            # (f"{job_tag}/psel-prop-smear-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-smear-strange/traj-{traj}/checkpoint.txt",),
+            #
+            (f"{job_tag}/prop-wsrc-light/traj-{traj}.qar", f"{job_tag}/prop-wsrc-light/traj-{traj}/geon-info.txt",),
+            (f"{job_tag}/psel-prop-wsrc-light/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-light/traj-{traj}/checkpoint.txt",),
+            (f"{job_tag}/prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/prop-wsrc-strange/traj-{traj}/geon-info.txt",),
+            (f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}/checkpoint.txt",),
+            ]
+    if not check_job(job_tag, traj, fns_produce_auto_contract, fns_need_auto_contract):
+        return
+    if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
+        get_prop = get_get_prop()
+        if get_prop is not None:
+            q.timer_fork()
+            # ADJUST ME
+            auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+            auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+            auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+            auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+            #
+            q.qtouch_info(get_save_path(fn_checkpoint_auto_contract))
+            q.displayln_info("timer_display for runjob")
+            q.timer_display()
+            q.timer_merge()
+        q.release_lock()
     q.clean_cache()
 
 def get_all_cexpr():
