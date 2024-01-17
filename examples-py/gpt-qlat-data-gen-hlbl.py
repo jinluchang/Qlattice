@@ -400,6 +400,9 @@ def run_job(job_tag, traj):
     #
     get_fsel, get_psel, get_fsel_prob, get_psel_prob, get_f_rand_01 = run_fsel_psel_from_wsrc_prop_full(job_tag, traj, get_wi=get_wi)
     #
+    if get_fsel is None:
+        return
+    #
     get_fselc = run_fselc(job_tag, traj, get_fsel, get_psel)
     #
     run_prop_wsrc_sparse(job_tag, traj, inv_type=0, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_wi=get_wi)
