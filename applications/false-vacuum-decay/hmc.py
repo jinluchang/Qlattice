@@ -394,14 +394,14 @@ def main():
     t_full = 5
     t_FV = 75
     m_particle = 1.0
-    dt = 0.05
+    dt = 0.2
     # The number of trajectories to calculate
-    n_traj = 10000
+    n_traj = 50000
     #
-    version = "1-0"
+    version = "1-1"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
-    steps = 10
+    steps = 5
     #
     init_length = 20
     fresh_start = False
@@ -445,8 +445,8 @@ def main():
     
     actions_M = [q.QMAction(lmbd, v0, alpha, barrier_strength, Mi, L, t_full, t_full, t_FV, m_particle, dt) for Mi in measure_Ms]
     actions_L = [q.QMAction(lmbd, v0, alpha, barrier_strength, M, Li, t_full, t_full, t_FV, m_particle, dt) for Li in measure_Ls]
-    actions_t_FV = [q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_full+a, t_FV-a, m_particle, dt) for a in measure_deltats]
-    actions_t_TV = [q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_full+a, t_FV, m_particle, dt) for a in measure_deltats]
+    actions_t_FV = [q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_full-a, t_FV+a, m_particle, dt) for a in measure_deltats]
+    actions_t_TV = [q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_full-a, t_FV, m_particle, dt) for a in measure_deltats]
     measurements = Measurements(total_site, actions_M, actions_L, actions_t_FV, actions_t_TV, f"output_data/measurements_{hmc.fileid}.bin")
     
     # If observables have been saved from a previous calculation (on the

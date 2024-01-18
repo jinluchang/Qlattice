@@ -28,8 +28,8 @@ class Data:
         self.actions_M = {}
         self.delta_actions_L = {}
         self.actions_L = {}
-        self.delta_actions_t_full = {}
-        self.actions_t_full = {}
+        self.delta_actions_t_FV = {}
+        self.actions_t_FV = {}
         self.delta_actions_t_TV = {}
         self.actions_t_TV = {}
     
@@ -152,32 +152,51 @@ class Data:
             sfs = [sf]
         self.plot_all_expS(self.delta_actions_t_TV, sfs, "tTV", get_x=int, filter_x=lambda x,x0: (int(x)-x0)<t_limit[0] or (int(x)-x0)>t_limit[1])
     
-    def plot_delta_actions_vs_t_full(self, t_limit=[-100,100], sf=""):
+    def plot_delta_actions_vs_t_FV(self, t_limit=[-100,100], sf=""):
         if(sf==""):
-            sfs = list(self.delta_actions_t_full)
+            sfs = list(self.delta_actions_t_FV)
         else:
             sfs = [sf]
-        self.plot_all_expS(self.delta_actions_t_full, sfs, "tfull", get_x=int, filter_x=lambda x,x0: (int(x)-x0)<t_limit[0] or (int(x)-x0)>t_limit[1])
+        self.plot_all_expS(self.delta_actions_t_FV, sfs, "tFV", get_x=int, filter_x=lambda x,x0: (int(x)-x0)<t_limit[0] or (int(x)-x0)>t_limit[1])
     
-    def get_Ebar_E_FV(self, sf, delta_t=1, delta_t2=0):
+    def get_Ebar_blocks(self, sf, delta_t=1):
         t_TV = self.get_t_TV(sf)
+        t_FV = int(self.get_param(sf,"tFV"))
         dt = float(self.get_param(sf, "dt"))
-        blocks = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_TV[sf][f"{t_TV+delta_t}"][self.cutoff:]), self.block_size)
-        blocksa = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_TV[sf][f"{t_TV+delta_t2}"][self.cutoff:]), self.block_size)
-        bdiv = np.log(np.divide(blocksa,blocks))/(dt*(delta_t-delta_t2))
+        blocks_TV = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_TV[sf][f"{t_TV+delta_t}"][self.cutoff:]), self.block_size)
+        blocks_FV = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_FV[sf][f"{t_FV+delta_t}"][self.cutoff:]), self.block_size)
+        bdiv = np.log(np.divide(blocks_FV,blocks_TV))/(dt*delta_t)
+        return bdiv
+    
+    def get_Ebar_E_FV(self, sf, delta_t=1):
+        bdiv = self.get_Ebar_blocks(sf, delta_t)
         return jk.get_errors_from_blocks(np.mean(bdiv), bdiv)
     
-    def get_delta_E(self, sf, delta_t=0, delta_t2=1):
+    def get_Ebar_slope(self, sf1, sf2, delta_t=1):
+        dt_TV = self.get_t_TV(sf2)*float(self.get_param(sf2, "dt")) - self.get_t_TV(sf1)*float(self.get_param(sf2, "dt"))
+        bdiv1 = self.get_Ebar_blocks(sf1, delta_t)
+        bdiv2 = self.get_Ebar_blocks(sf2, delta_t)
+        bdiv = (bdiv1 - bdiv2)**0.5 / dt_TV
+        return jk.get_errors_from_blocks(np.mean(bdiv), bdiv)
+    
+    def get_delta_E(self, sf):
+        delta_t=1
+        delta_t2=2
         t_TV = self.get_t_TV(sf)
+        t_FV = int(self.get_param(sf,"tFV"))
         dt = float(self.get_param(sf, "dt"))
-        blocks = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_TV[sf][f"{t_TV+delta_t}"][self.cutoff:]), self.block_size)
-        blocksa = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_TV[sf][f"{t_TV+delta_t+delta_t2}"][self.cutoff:]), self.block_size)
-        blocksa2 = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_TV[sf][f"{t_TV+delta_t-delta_t2}"][self.cutoff:]), self.block_size)
-        bdiv = (-np.log(np.multiply(blocksa,blocksa2)/np.power(blocks,2.0)))**0.5/(dt*delta_t2)
+        
+        blocks_TVa = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_TV[sf][f"{t_TV+delta_t}"][self.cutoff:]), self.block_size)
+        blocks_FVa = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_FV[sf][f"{t_FV+delta_t}"][self.cutoff:]), self.block_size)
+        
+        blocks_TVa2 = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_TV[sf][f"{t_TV+delta_t2}"][self.cutoff:]), self.block_size)
+        blocks_FVa2 = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_FV[sf][f"{t_FV+delta_t2}"][self.cutoff:]), self.block_size)
+        
+        bdiv = np.log(np.divide(blocks_FVa2,blocks_TVa2)/np.divide(blocks_FVa,blocks_TVa)**2.0)**0.5/(dt*delta_t2)
         #print(bdiv)
         return jk.get_errors_from_blocks(np.mean(bdiv), bdiv)
     
-    def plot_Ebar_E_FV(self, delta_t=1, delta_t2=0):
+    def plot_Ebar_E_FV(self, delta_t=1):
         sfs = self.get_sfs_list(list(self.delta_actions_t_TV), ["M", "L"], [1.0, 0.0])
         sfs.sort(key=self.get_t_TV)
         t_TVs = []
@@ -185,10 +204,36 @@ class Data:
         E_errs = []
         for sf in sfs:
             t_TVs.append(self.get_t_TV(sf)*float(self.get_param(sf,"dt")))
-            E, err = self.get_Ebar_E_FV(sf, delta_t, delta_t2)
+            E, err = self.get_Ebar_E_FV(sf, delta_t)
             Es.append(E)
             E_errs.append(err)
         plt.errorbar(t_TVs, Es, yerr=E_errs)
+    
+    def plot_delta_E(self):
+        sfs = self.get_sfs_list(list(self.delta_actions_t_TV), ["M", "L"], [1.0, 0.0])
+        sfs.sort(key=self.get_t_TV)
+        t_TVs = []
+        dEs = []
+        dE_errs = []
+        for sf in sfs:
+            t_TVs.append(self.get_t_TV(sf)*float(self.get_param(sf,"dt")))
+            dE, err = self.get_delta_E(sf)
+            dEs.append(dE)
+            dE_errs.append(err)
+        plt.errorbar(t_TVs, dEs, yerr=dE_errs)
+    
+    def plot_Ebar_slope(self, delta_t=1):
+        sfs = self.get_sfs_list(list(self.delta_actions_t_TV), ["M", "L"], [1.0, 0.0])
+        sfs.sort(key=self.get_t_TV)
+        t_TVs = []
+        dEs = []
+        dE_errs = []
+        for sf in range(len(sfs)-1):
+            t_TVs.append(self.get_t_TV(sfs[sf])*float(self.get_param(sfs[sf],"dt")))
+            dE, err = self.get_Ebar_slope(sfs[sf], sfs[sf+1], delta_t)
+            dEs.append(dE)
+            dE_errs.append(err)
+        plt.errorbar(t_TVs, dEs, yerr=dE_errs)
     
     def plot_ratio1_vs_t(self, delta_action, dt, t_limit=[-100,100], fact=1.0, label="X"):
         delta_actions = []
@@ -327,5 +372,5 @@ class Data:
                     self.forces[sf] = data["forces"]
                     self.delta_actions_M[sf] = data["delta_actions_M"]
                     self.delta_actions_L[sf] = data["delta_actions_L"]
-                    self.delta_actions_t_full[sf] = data["delta_actions_t_full"]
+                    self.delta_actions_t_FV[sf] = data["delta_actions_t_FV"]
                     self.delta_actions_t_TV[sf] = data["delta_actions_t_TV"]
