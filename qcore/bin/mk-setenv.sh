@@ -56,6 +56,7 @@ for v in \
 done
 for v in \
     "\$setenv_prefix/include" \
+    "\$setenv_prefix/include/ncurses" \
     ; do
     if [ -d "\$v" ] ; then
         export C_INCLUDE_PATH="\$v":"\$C_INCLUDE_PATH"
