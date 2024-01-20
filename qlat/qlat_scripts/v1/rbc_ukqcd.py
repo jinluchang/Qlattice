@@ -272,6 +272,8 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
             pc_ne = pc.eo2_kappa_ne()
             q.displayln_info(f"mk_gpt_inverter: pc.eo2_kappa_ne() does not support split_cg")
             cg = cg_mp
+        elif job_tag in "64I":
+            pc_ne = pc.eo1_ne(parity=g.odd)
         else:
             pc_ne = pc.eo2_ne()
         if inv_type in [ 0, 1, 2, ]:

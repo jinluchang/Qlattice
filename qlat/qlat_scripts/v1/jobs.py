@@ -571,8 +571,10 @@ def run_eig(job_tag, traj, get_gf):
 
 @q.timer_verbose
 def run_eig_strange(job_tag, traj, get_gf):
-    # if failed, return None
-    # if no parameter, return lambda : None
+    """
+    if failed, return None
+    if no parameter, return lambda : None
+    """
     if None in [ get_gf, ]:
         return None
     if get_param(job_tag, "clanc-params", 1) is None:
