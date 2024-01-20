@@ -540,6 +540,7 @@ set_param("24D", "clanc_params", 1, value=None)
 set_param("24D", 'fermion_params', 0, 2, value=deepcopy(get_param("24D", 'fermion_params', 0, 0)))
 set_param("24D", 'fermion_params', 1, 0, value=deepcopy(get_param("24D", 'fermion_params', 1, 2)))
 set_param("24D", 'fermion_params', 1, 1, value=deepcopy(get_param("24D", 'fermion_params', 1, 2)))
+set_param("64I", "trajs", value=list(range(1200, 3680, 40)))
 
 qg.begin_with_gpt()
 
@@ -547,6 +548,7 @@ job_tags_default = [
         "test-4nt8",
         # "test-8nt16",
         # "24D",
+        # "64I",
         ]
 
 job_tags = q.get_arg("--job_tags", default="").split(",")

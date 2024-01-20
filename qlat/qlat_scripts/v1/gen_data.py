@@ -86,7 +86,7 @@ def run_prop_wsrc_full(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_
 # -----------------------------------------------------------------------------
 
 @q.timer
-def avg_weight_from_prop_full(geo, prop_nf_dict, weight_min):
+def avg_weight_from_prop_full(geo, prop_nf_dict):
     """
     prop_nf_dict[(inv_type, tslice,)] => prop_nf, prop_nf_glb_sum_tslice
     type(prop_nf) = q.FieldRealD
@@ -129,10 +129,9 @@ def avg_weight_from_prop_full(geo, prop_nf_dict, weight_min):
         view += weight / n_samples[inv_type]
     f_weight_final = q.FieldRealD(geo, 1)
     q.set_zero(f_weight_final)
+    f_weight_final[:] = 0.5
     for inv_type in [ 0, 1, ]:
-        f_weight_final[:] += f_weight_avg[inv_type][:] / 2
-        inv_type_name = inv_type_names[inv_type]
-    f_weight_final[:] = np.maximum(weight_min, f_weight_final[:])
+        f_weight_final[:] += f_weight_avg[inv_type][:] / 4
     return f_weight_avg, f_weight_final
 
 @q.timer
@@ -232,7 +231,6 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi=None):
         assert get_load_path(fn_psel_prob) is None
         assert get_wi is not None
         wi = get_wi()
-        weight_min = get_param(job_tag, "field-selection-weight-minimum")
         fsel_rate = get_param(job_tag, "field-selection-fsel-rate")
         psel_rate = get_param(job_tag, "field-selection-psel-rate")
         q.displayln_info(-1, fname, f"fsel_rate = {fsel_rate}")
@@ -262,7 +260,7 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi=None):
                 q.set_zero(prop_nf)
                 prop_nf.load_double(sfr, tag + " ; qnorm_field")
                 prop_nf_dict[(inv_type, tslice,)] = prop_nf, prop_nf.glb_sum_tslice()
-        f_weight_avg, f_weight_final = avg_weight_from_prop_full(geo, prop_nf_dict, weight_min)
+        f_weight_avg, f_weight_final = avg_weight_from_prop_full(geo, prop_nf_dict)
         for inv_type in [ 0, 1, ]:
             inv_type_name = inv_type_names[inv_type]
             f_weight_avg[inv_type].save_double(get_save_path(f"{job_tag}/field-selection-weight/traj-{traj}/weight-{inv_type_name}.field"))
