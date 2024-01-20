@@ -511,6 +511,10 @@ def compute_prop_2(inv, src, *, tag, sfw, path_sp, psel, fsel,
     fsel_ps = q.FieldSelection(fsel.geo())
     fsel_ps[ps_sel] = 0
     fsel_ps.update()
+    num_ps = q.glb_sum(np.sum(ps_sel))
+    num_fsel = q.glb_sum(fsel.n_elems())
+    num_fsel_ps = q.glb_sum(fsel_ps.n_elems())
+    q.displayln_info(0, f"compute_prop_psrc: tag='{tag}' ; num_ps={num_ps} ; num_fsel={num_fsel} ; num_fsel_ps={num_fsel_ps}")
     s_sol_ps_sel_prob = q.SelectedFieldRealD(fsel_ps)
     s_sol_ps_sel_prob @= sol_ps_sel_prob
     s_sol_ps_sel_prob.save_double(sfw, f"{tag} ; fsel-prob-psrc-prop")
