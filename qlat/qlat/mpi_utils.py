@@ -95,7 +95,7 @@ def glb_sum(x):
         return c.glb_sum_double(x)
     elif isinstance(x, complex):
         return c.glb_sum_complex(x)
-    elif isinstance(x, int):
+    elif isinstance(x, (int, np.int64)):
         return c.glb_sum_long(x)
     elif isinstance(x, np.ndarray):
         return glb_sum_np(x)
