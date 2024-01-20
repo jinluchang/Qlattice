@@ -11,7 +11,6 @@ CHECK: ('prop_smear_step', 10)
 CHECK: ('trajs', [1000])
 CHECK: ('field-selection-fsel-rate', 0.0625)
 CHECK: ('field-selection-psel-rate', 0.03125)
-CHECK: ('field-selection-weight-minimum', 0.3)
 CHECK: ('field-selection-fsel-psrc-prop-norm-threshold', 0.001)
 CHECK: ('n_points_psel', 6)
 CHECK: ('n_exact_wsrc', 2)
@@ -34,7 +33,7 @@ CHECK: ('cg_params-1-0', {'maxiter': 5, 'maxcycle': 1})
 CHECK: ('cg_params-1-1', {'maxiter': 5, 'maxcycle': 2})
 CHECK: ('cg_params-1-2', {'maxiter': 5, 'maxcycle': 3, 'pv_maxiter': 5})
 CHECK: auto_contract_meson_corr: ld sig: 2.19098E+04+9.53506E+04j
-CHECK: auto_contract_meson_corr_psnk: ld sig: 2.40340E+00+2.02264E+01j
-CHECK: auto_contract_meson_corr_psrc: ld sig: 2.50659E+00+2.02758E+01j
-CHECK: auto_contract_meson_corr_psnk_psrc: ld sig: -7.44568E-01+1.02282E-01j
+CHECK: auto_contract_meson_corr_psnk: ld sig: 2.62796E+00+2.10762E+01j
+CHECK: auto_contract_meson_corr_psrc: ld sig: 2.52455E+00+2.03850E+01j
+CHECK: auto_contract_meson_corr_psnk_psrc: ld sig: -7.73939E-01+1.69557E-01j
 CHECK: finished successfully.

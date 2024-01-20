@@ -11,7 +11,6 @@ CHECK: ('prop_smear_step', 10)
 CHECK: ('trajs', [1000])
 CHECK: ('field-selection-fsel-rate', 0.0625)
 CHECK: ('field-selection-psel-rate', 0.03125)
-CHECK: ('field-selection-weight-minimum', 0.3)
 CHECK: ('field-selection-fsel-psrc-prop-norm-threshold', 0.001)
 CHECK: ('n_points_psel', 6)
 CHECK: ('n_exact_wsrc', 2)
@@ -27,13 +26,13 @@ CHECK: ('meson_tensor_tsep', 1)
 CHECK: ('meson_jwjj_threshold', 0.1)
 CHECK: ('meson_tsep_list', [1, 2, 3, 4, 5, 6, 7])
 CHECK: ('mk_sample_gauge_field', {'rand_n_step': 2, 'flow_n_step': 8, 'hmc_n_traj': 1})
-CHECK: auto_contract_meson_corr_psnk: ld sig: 6.37767E+00+2.17859E+01j
-CHECK: auto_contract_meson_jwjj2: ld_sum sig: -9.53191E+01+4.51140E+01j
-CHECK: auto_contract_meson_jwjj: ld_sum sig: -1.90935E+01-1.17837E+01j
-CHECK: auto_contract_meson_jj: ld_sum sig: -4.08600E+02+5.06735E+01j
-CHECK: auto_contract_meson_jt: ld_sum sig: -1.65771E+02-1.74604E+02j
-CHECK: auto_contract_meson_m: ld_sum sig: -3.7174E+00+3.5138E+01j
+CHECK: auto_contract_meson_corr_psnk: ld sig: 6.43660E+00+2.18489E+01j
+CHECK: auto_contract_meson_jwjj2: ld_sum sig: -9.52498E+01+4.55829E+01j
+CHECK: auto_contract_meson_jwjj: ld_sum sig: -1.88194E+01-9.39254E+00j
+CHECK: auto_contract_meson_jj: ld_sum sig: -4.10286E+02+5.43105E+01j
+CHECK: auto_contract_meson_jt: ld_sum sig: -1.66503E+02-1.75448E+02j
+CHECK: auto_contract_meson_m: ld_sum sig: -3.6201E+00+3.5200E+01j
 CHECK: auto_contract_meson_corr: ld sig: 3.83778E+04+9.94109E+04j
-CHECK: auto_contract_meson_corr_psrc: ld sig: 6.29586E+00+2.09224E+01j
-CHECK: auto_contract_meson_corr_psnk_psrc: ld sig: -7.72167E-01+1.29304E-01j
+CHECK: auto_contract_meson_corr_psrc: ld sig: 6.37114E+00+2.10416E+01j
+CHECK: auto_contract_meson_corr_psnk_psrc: ld sig: -7.87417E-01+1.25102E-01j
 CHECK: finished successfully.
