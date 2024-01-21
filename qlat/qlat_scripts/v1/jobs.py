@@ -525,12 +525,15 @@ def compute_eig(gf, job_tag, inv_type=0, inv_acc=0, *, path=None):
     load_eig = ru.load_eig_lazy(get_load_path(path), job_tag)
     if load_eig is not None:
         return load_eig
+    import gpt as g
+    g.mem_report()
     # evec, evals = ru.mk_eig(gf, job_tag, inv_type, inv_acc)
     basis, cevec, smoothed_evals = ru.mk_ceig(gf, job_tag, inv_type, inv_acc)
     eig = [ basis, cevec, smoothed_evals, ]
     ru.save_ceig(get_save_path(path + ".partial"), eig, job_tag, inv_type, inv_acc);
     q.qrename_info(get_save_path(path + ".partial"), get_save_path(path))
     test_eig(gf, eig, job_tag, inv_type)
+    g.mem_report()
     def get_eig():
         return eig
     return get_eig
@@ -559,17 +562,14 @@ def run_eig(job_tag, traj, get_gf):
         return None
     from . import rbc_ukqcd as ru
     get_eig = ru.load_eig_lazy(get_load_path(f"{job_tag}/eig/traj-{traj}"), job_tag)
-    import gpt as g
     if get_eig is None and get_gf is not None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig"):
             get_eig = compute_eig(get_gf(), job_tag, inv_type=0, path=f"{job_tag}/eig/traj-{traj}")
             q.release_lock()
-            g.mem_report()
             return get_eig
         else:
             return None
     else:
-        g.mem_report()
         return get_eig
 
 @q.timer_verbose
@@ -587,17 +587,14 @@ def run_eig_strange(job_tag, traj, get_gf):
         return lambda : None
     from . import rbc_ukqcd as ru
     get_eig = ru.load_eig_lazy(get_load_path(f"{job_tag}/eig-strange/traj-{traj}"), job_tag)
-    import gpt as g
     if get_eig is None and get_gf is not None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig-strange"):
             get_eig = compute_eig(get_gf(), job_tag, inv_type=1, path=f"{job_tag}/eig-strange/traj-{traj}")
             q.release_lock()
-            g.mem_report()
             return get_eig
         else:
             return None
     else:
-        g.mem_report()
         return get_eig
 
 # ----------

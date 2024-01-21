@@ -193,10 +193,12 @@ def load_eig_lazy(path, job_tag, inv_type = 0, inv_acc = 0):
     #
     @q.timer_verbose
     def load_eig():
+        g.mem_report()
         total_site = q.Coordinate(get_param(job_tag, "total_site"))
         fermion_params = get_fermion_params(job_tag, inv_type, inv_acc)
         grids = qg.get_fgrid(total_site, fermion_params)
         eig = g.load(path, grids = grids)
+        g.mem_report()
         return eig
     #
     return q.lazy_call(load_eig)
