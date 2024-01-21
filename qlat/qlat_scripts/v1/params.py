@@ -43,8 +43,8 @@ set_param("test-4nt8", tag, value=1e-3)
 set_param("test-4nt16", tag, value=1e-3)
 set_param("test-8nt16", tag, value=1e-3)
 set_param("24D", tag, value=1e-4)
-set_param("48I", tag, value=2e-4)
-set_param("64I", tag, value=2e-4)
+set_param("48I", tag, value=1e-4)
+set_param("64I", tag, value=5e-5)
 
 tag = "n_points_psel"
 dict_params["test-4nt8"][tag] = 6
