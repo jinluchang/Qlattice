@@ -468,6 +468,10 @@ def run_job(job_tag, traj):
     run_r_list(job_tag)
     #
     fn_checkpoint_auto_contract = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
+    #
+    if job_tag == "64I":
+        q.qtouch_info(get_save_path(fn_checkpoint_auto_contract))
+    #
     fns_produce_auto_contract = [
             fn_checkpoint_auto_contract,
             ]
