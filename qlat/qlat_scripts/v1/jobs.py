@@ -559,14 +559,17 @@ def run_eig(job_tag, traj, get_gf):
         return None
     from . import rbc_ukqcd as ru
     get_eig = ru.load_eig_lazy(get_load_path(f"{job_tag}/eig/traj-{traj}"), job_tag)
+    import gpt as g
     if get_eig is None and get_gf is not None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig"):
             get_eig = compute_eig(get_gf(), job_tag, inv_type=0, path=f"{job_tag}/eig/traj-{traj}")
             q.release_lock()
+            g.mem_report()
             return get_eig
         else:
             return None
     else:
+        g.mem_report()
         return get_eig
 
 @q.timer_verbose
@@ -584,14 +587,17 @@ def run_eig_strange(job_tag, traj, get_gf):
         return lambda : None
     from . import rbc_ukqcd as ru
     get_eig = ru.load_eig_lazy(get_load_path(f"{job_tag}/eig-strange/traj-{traj}"), job_tag)
+    import gpt as g
     if get_eig is None and get_gf is not None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig-strange"):
             get_eig = compute_eig(get_gf(), job_tag, inv_type=1, path=f"{job_tag}/eig-strange/traj-{traj}")
             q.release_lock()
+            g.mem_report()
             return get_eig
         else:
             return None
     else:
+        g.mem_report()
         return get_eig
 
 # ----------
