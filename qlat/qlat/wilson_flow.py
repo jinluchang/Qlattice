@@ -18,8 +18,10 @@ def gf_wilson_flow_step(gf, epsilon, *, c1 = 0.0, wilson_flow_integrator_type = 
         return gf_wilson_flow_euler(gf, epsilon, c1 = c1)
 
 def gf_wilson_flow_runge_kutta(gf, epsilon, *, c1 = 0.0):
-    # Runge-Kutta scheme
-    # http://arxiv.org/abs/1006.4518v3
+    """
+    Runge-Kutta scheme
+    http://arxiv.org/abs/1006.4518v3
+    """
     return c.gf_wilson_flow_step(gf, epsilon, c1)
 
 def gf_wilson_flow_euler(gf, epsilon, *, c1 = 0.0):

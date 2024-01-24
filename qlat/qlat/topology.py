@@ -6,6 +6,10 @@ from . import c
 from pprint import pformat
 
 def gf_topology_field_clf(gf : GaugeField):
+    """
+    Use the basic gf_clover_leaf_field
+    NOT using 5 loop improved definition
+    """
     geo = gf.geo()
     topf = FieldRealD(geo, 1)
     c.gf_topology_field_clf(topf, gf)
@@ -16,6 +20,10 @@ def gf_topology_clf(gf : GaugeField):
     return gf_topology_field_clf(gf).glb_sum()[:, :].item()
 
 def gf_topology_field(gf : GaugeField):
+    """
+    Using the 5 loop improved definition
+    https://arxiv.org/pdf/hep-lat/9701012v2.pdf
+    """
     geo = gf.geo()
     topf = FieldRealD(geo, 1)
     c.gf_topology_field(topf, gf)
