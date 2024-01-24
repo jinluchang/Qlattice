@@ -268,11 +268,25 @@ std::vector<M> field_sum(const Field<M>& f)
   const int multiplicity = geo.multiplicity;
   std::vector<M> vec(multiplicity);
   set_zero(vec);
-  for (Long index = 0; index < geo.local_volume(); ++index) {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Vector<M> fvec = f.get_elems_const(xl);
-    for (int m = 0; m < multiplicity; ++m) {
-      vec[m] += fvec[m];
+#pragma omp parallel
+  {
+    std::vector<M> pvec(multiplicity);
+    set_zero(pvec);
+#pragma omp for nowait
+    for (Long index = 0; index < geo.local_volume(); ++index) {
+      const Coordinate xl = geo.coordinate_from_index(index);
+      const Vector<M> fvec = f.get_elems_const(xl);
+      for (int m = 0; m < multiplicity; ++m) {
+        pvec[m] += fvec[m];
+      }
+    }
+    for (Int i = 0; i < omp_get_num_threads(); ++i) {
+#pragma omp barrier
+      if (omp_get_thread_num() == i) {
+        for (int m = 0; m < multiplicity; ++m) {
+          vec[m] += pvec[m];
+        }
+      }
     }
   }
   return vec;
@@ -284,16 +298,32 @@ std::vector<M> field_sum_tslice(const Field<M>& f, const int t_dir = 3)
 {
   TIMER("field_sum_tslice");
   const Geometry& geo = f.geo();
-  const int t_size = geo.total_site()[t_dir];
-  const int multiplicity = geo.multiplicity;
+  const Int t_size = geo.total_site()[t_dir];
+  const Int t_size_local = geo.node_site[t_dir];
+  const Int t_shift = t_size_local * geo.geon.coor_node[t_dir];
+  const Int multiplicity = geo.multiplicity;
   std::vector<M> vec(t_size * multiplicity);
   set_zero(vec);
-  for (Long index = 0; index < geo.local_volume(); ++index) {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const Vector<M> fvec = f.get_elems_const(xl);
-    for (int m = 0; m < multiplicity; ++m) {
-      vec[xg[t_dir] * multiplicity + m] += fvec[m];
+#pragma omp parallel
+  {
+    std::vector<M> pvec(multiplicity);
+#pragma omp for
+    for (Int tl = 0; tl < t_size_local; ++tl) {
+      set_zero(pvec);
+      const Int tg = tl + t_shift;
+      for (Long index = 0; index < geo.local_volume(); ++index) {
+        const Coordinate xl = geo.coordinate_from_index(index);
+        if (xl[t_dir] != tl) {
+          continue;
+        }
+        const Vector<M> fvec = f.get_elems_const(xl);
+        for (int m = 0; m < multiplicity; ++m) {
+          pvec[m] += fvec[m];
+        }
+      }
+      for (int m = 0; m < multiplicity; ++m) {
+        vec[tg * multiplicity + m] = pvec[m];
+      }
     }
   }
   return vec;

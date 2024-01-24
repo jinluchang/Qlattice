@@ -37,11 +37,10 @@ inline void gf_wilson_flow_step(GaugeField& gf, const double epsilon,
   gf_evolve(w, z, epsilon);
 }
 
-inline double gf_energy_density_no_comm(const GaugeField& gf)
+inline void gf_energy_density_field_no_comm(FieldM<RealD, 1>& fd, const GaugeField& gf)
 {
-  TIMER("gf_energy_density_no_comm");
+  TIMER("gf_energy_density_field_no_comm");
   const Geometry geo = geo_reform(gf.geo());
-  FieldM<double, 1> fd;
   fd.init(geo);
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -55,25 +54,28 @@ inline double gf_energy_density_no_comm(const GaugeField& gf)
     }
     fd.get_elem(index) = s;
   });
-  double sum = 0.0;
-  for (Long index = 0; index < geo.local_volume(); ++index) {
-    sum += fd.get_elem(index);
-  }
-  glb_sum(sum);
-  sum *= 1.0 / (double)geo.total_volume();
-  return sum;
 }
 
-inline double gf_energy_density(const GaugeField& gf)
+inline void gf_energy_density_field(FieldM<RealD, 1>& fd, const GaugeField& gf)
 // https://arxiv.org/pdf/1006.4518.pdf Eq. (2.1) (Fig. 1) (approximate Eq. (3.1))
 // https://arxiv.org/pdf/1203.4469.pdf
 {
-  TIMER("gf_energy_density");
+  TIMER("gf_energy_density_field");
   GaugeField gf1;
   gf1.init(geo_resize(gf.geo(), 1));
   gf1 = gf;
   refresh_expanded(gf1);
-  return gf_energy_density_no_comm(gf1);
+  gf_energy_density_field_no_comm(fd, gf1);
+}
+
+inline RealD gf_energy_density(const GaugeField& gf)
+// https://arxiv.org/pdf/1006.4518.pdf Eq. (2.1) (Fig. 1) (approximate Eq. (3.1))
+// https://arxiv.org/pdf/1203.4469.pdf
+{
+  TIMER("gf_energy_density");
+  FieldM<RealD, 1> fd;
+  gf_energy_density_field(fd, gf);
+  return field_glb_sum(fd)[0];
 }
 
 inline std::vector<double> gf_wilson_flow(GaugeField& gf,

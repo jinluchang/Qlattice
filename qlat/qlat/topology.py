@@ -68,11 +68,11 @@ def smear_measure_topo(gf, smear_info_list=None, *, is_show_topo_terms=False):
     flow_time = 0
     topo_list = []
     @timer
-    def smear(step_size, n_step, c1 = 0.0, wilson_flow_integrator_type = "runge-kutta"):
+    def smear(step_size, n_step, c1=0.0, wilson_flow_integrator_type="runge-kutta"):
         nonlocal flow_time
         flow_time += n_step * step_size
         for i in range(n_step):
-            gf_wilson_flow_step(gf, step_size, c1 = c1, wilson_flow_integrator_type = wilson_flow_integrator_type)
+            gf_wilson_flow_step(gf, step_size, c1=c1, wilson_flow_integrator_type=wilson_flow_integrator_type)
     @timer
     def measure():
         gf.show_info()
