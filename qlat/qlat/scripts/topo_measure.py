@@ -17,7 +17,7 @@ is_show_topo_terms = p_show_topo_terms is not None
 def load():
     if p_source is None:
         q.displayln_info("Need to provide source file with '--source filename'. Use a sample gauge field for now.")
-        total_site = [ 4, 4, 4, 8, ]
+        total_site = q.Coordinate([ 4, 4, 4, 8, ])
         geo = q.Geometry(total_site, 1)
         gf = q.GaugeField(geo)
         rs = q.RngState("seed")
