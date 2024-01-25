@@ -14,6 +14,29 @@ import qlat_utils as q
 from pprint import pformat
 
 @q.timer
+def gf_plaq_action_field(GaugeField gf):
+    """
+    return paf
+    paf.geo().multiplicity == 1
+    \sum_P (1 - 1/3 * Re Tr U_P)
+    #
+    Action = beta * total_volume() * action_density
+    Single instanton action = 8 * sqr(PI) / g^2
+    beta = 6/g^2
+    """
+    paf = FieldRealD()
+    cc.clf_plaq_action_field(paf.xx, gf.xxx().val())
+    return paf
+
+@q.timer
+def gf_plaq_action(GaugeField gf):
+    """
+    return pa
+    ininstance(pa, float)
+    """
+    return gf_plaq_action_field(gf).glb_sum()[:].item()
+
+@q.timer
 def gf_topology_field_clf(GaugeField gf):
     """
     return topf

@@ -151,6 +151,8 @@ __all__ += [
         ]
 
 __all__ += [
+        'gf_plaq_action_field',
+        'gf_plaq_action',
         'gf_topology_field_clf',
         'gf_topology_clf',
         'gf_topology_field',
