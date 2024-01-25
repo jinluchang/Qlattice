@@ -17,9 +17,7 @@ py_files = files(
   'field_double.py',
   'field_type_dict.py',
   'fthmc.py',
-  'gauge_action.py',
   'get_include_dir.py',
-  'hmc.py',
   'hmc_stats.py',
   'inverter.py',
   '__main__.py',
@@ -39,6 +37,8 @@ pxd_files = files(
   'qcd.pxd',
   'propagator.pxd',
   'fields_io.pxd',
+  'hmc.pxd',
+  'gauge_action.pxd',
   )
 
 py3.install_sources(init_files + py_files + pxd_files, subdir: 'qlat')
@@ -104,6 +104,8 @@ name_pyx_list = [
   'fields_io',
   'wilson_flow',
   'topology',
+  'hmc',
+  'gauge_action',
   ]
 
 foreach name: name_pyx_list

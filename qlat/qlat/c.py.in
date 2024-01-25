@@ -111,6 +111,7 @@ __all__ += [
 
 __all__ += [
         'GaugeField',
+        'GaugeMomentum',
         'GaugeTransform',
         'gf_show_info',
         'gf_avg_plaq',

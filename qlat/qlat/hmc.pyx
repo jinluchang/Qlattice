@@ -1,51 +1,55 @@
-from qlat_utils import *
-from .c import *
+# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
-from .gauge_action import *
-from .mpi_utils import *
+from qlat_utils.all cimport *
+from . cimport everything as cc
+from .geometry cimport Geometry
+from .gauge_action cimport GaugeAction
+from .field_types cimport (
+        FieldColorMatrix,
+        )
+from .qcd cimport GaugeField
 
-from . import c
+import cqlat as c
+import qlat_utils as q
+import numpy as np
+from .mpi import glb_sum_double
 
 import math
 
-class GaugeMomentum(FieldColorMatrix):
+cdef class GaugeMomentum(FieldColorMatrix):
 
-    def __init__(self, geo = None):
+    def __init__(self, Geometry geo=None):
         super().__init__(geo, 4)
 
-    def set_rand(self, rng, sigma = 1.0):
+    cdef cc.Handle[cc.GaugeMomentum] xxx(self):
+        assert self.xx.get_geo().multiplicity == 4
+        return cc.Handle[cc.GaugeMomentum](<cc.GaugeMomentum&>self.xx)
+
+    def set_rand(self, RngState rng, cc.RealD sigma=1.0):
         set_rand_gauge_momentum(self, sigma, rng)
 
-def set_rand_gauge_momentum(gm, sigma, rng):
-    assert isinstance(gm, GaugeMomentum)
-    assert isinstance(sigma, float)
-    assert isinstance(rng, RngState)
+###
+
+def set_rand_gauge_momentum(GaugeMomentum gm, cc.RealD sigma, RngState rng):
     return c.set_rand_gauge_momentum(gm, sigma, rng)
 
-def gm_hamilton_node(gm):
-    assert isinstance(gm, GaugeMomentum)
+def gm_hamilton_node(GaugeMomentum gm):
     return c.gm_hamilton_node(gm)
 
-def gf_hamilton_node(gf, ga):
-    assert isinstance(gf, GaugeField)
-    assert isinstance(ga, GaugeAction)
+def gf_hamilton_node(GaugeField gf, GaugeAction ga):
     return c.gf_hamilton_node(gf, ga)
 
-def gf_evolve(gf, gm, step_size):
-    assert isinstance(gm, GaugeMomentum)
+def gf_evolve(GaugeField gf, GaugeMomentum gm, cc.RealD step_size):
     return c.gf_evolve(gf, gm, step_size)
 
-def set_gm_force(gm_force, gf, ga):
-    assert isinstance(gm_force, GaugeMomentum)
-    assert isinstance(gf, GaugeField)
-    assert isinstance(ga, GaugeAction)
+def set_gm_force(GaugeMomentum gm_force, GaugeField gf, GaugeAction ga):
     return c.set_gm_force(gm_force, gf, ga)
 
-@timer_verbose
+@q.timer_verbose
 def metropolis_accept(delta_h, traj, rs):
     flag_d = 0.0
     accept_prob = 0.0
-    if get_id_node() == 0:
+    if q.get_id_node() == 0:
         if delta_h <= 0.0:
             accept_prob = 1.0
             flag_d = 1.0
@@ -54,13 +58,13 @@ def metropolis_accept(delta_h, traj, rs):
             rand_num = rs.u_rand_gen(1.0, 0.0)
             if rand_num <= accept_prob:
                 flag_d = 1.0
-    flag_d = glb_sum(flag_d)
-    accept_prob = glb_sum(accept_prob)
+    flag_d = glb_sum_double(flag_d)
+    accept_prob = glb_sum_double(accept_prob)
     flag = flag_d > 0.5
-    displayln_info(f"metropolis_accept: flag={flag:d} with accept_prob={accept_prob * 100.0:.1f}% delta_h={delta_h:.16f} traj={traj}")
+    q.displayln_info(f"metropolis_accept: flag={flag:d} with accept_prob={accept_prob * 100.0:.1f}% delta_h={delta_h:.16f} traj={traj}")
     return flag, accept_prob
 
-@timer
+@q.timer
 def gm_evolve_fg_pure_gauge(gm, gf_init, ga, fg_dt, dt):
     geo = gf_init.geo()
     gf = GaugeField(geo)
@@ -72,7 +76,7 @@ def gm_evolve_fg_pure_gauge(gm, gf_init, ga, fg_dt, dt):
     gm_force *= dt
     gm += gm_force
 
-@timer_verbose
+@q.timer_verbose
 def run_hmc_evolve_pure_gauge(gm, gf, ga, rs, n_step, md_time = 1.0):
     energy = gm_hamilton_node(gm) + gf_hamilton_node(gf, ga)
     dt = md_time / n_step
@@ -90,12 +94,12 @@ def run_hmc_evolve_pure_gauge(gm, gf, ga, rs, n_step, md_time = 1.0):
             gf_evolve(gf, gm, lam * dt);
     gf.unitarize()
     delta_h = gm_hamilton_node(gm) + gf_hamilton_node(gf, ga) - energy;
-    delta_h = glb_sum(delta_h)
+    delta_h = glb_sum_double(delta_h)
     return delta_h
 
-@timer_verbose
+@q.timer_verbose
 def run_hmc_pure_gauge(gf, ga, traj, rs, *, is_reverse_test = False, n_step = 6, md_time = 1.0, is_always_accept = False):
-    fname = get_fname()
+    fname = q.get_fname()
     rs = rs.split(f"{traj}")
     geo = gf.geo()
     gf0 = GaugeField(geo)
@@ -110,9 +114,9 @@ def run_hmc_pure_gauge(gf, ga, traj, rs, *, is_reverse_test = False, n_step = 6,
         gf0_r @= gf0
         delta_h_rev = run_hmc_evolve_pure_gauge(gm_r, gf0_r, ga, rs, n_step, -md_time)
         gf0_r -= gf;
-        displayln_info(f"{fname}: reversed delta_diff: {delta_h + delta_h_rev} / {delta_h}")
-        displayln_info(f"{fname}: reversed gf_diff: {qnorm(gf0_r)} / {qnorm(gf0)}")
+        q.displayln_info(f"{fname}: reversed delta_diff: {delta_h + delta_h_rev} / {delta_h}")
+        q.displayln_info(f"{fname}: reversed gf_diff: {q.qnorm(gf0_r)} / {q.qnorm(gf0)}")
     flag, accept_prob = metropolis_accept(delta_h, traj, rs.split("metropolis_accept"))
     if flag or is_always_accept:
-        displayln_info(f"{fname}: update gf (traj={traj})")
+        q.displayln_info(f"{fname}: update gf (traj={traj})")
         gf @= gf0

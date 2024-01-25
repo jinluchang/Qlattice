@@ -102,7 +102,7 @@ cdef class GaugeTransform(FieldColorMatrix):
         """
         return c.load_gauge_transform_cps(self, path)
 
-    def set_rand(self, rng, sigma=0.5, n_step=1):
+    def set_rand(self, RngState rng, cc.RealD sigma=0.5, cc.Int n_step=1):
         set_g_rand_color_matrix_field(self, rng, sigma, n_step)
 
     def unitarize(self):
@@ -208,3 +208,4 @@ def mk_left_expanded_gauge_field(GaugeField gf):
     cdef GaugeField gf1 = field_expanded(gf, 1, 0)
     refresh_expanded_1(gf1)
     return gf1
+

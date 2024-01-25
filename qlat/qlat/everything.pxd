@@ -255,6 +255,15 @@ cdef extern from "qlat/selected-field-io.h" namespace "qlat":
     Long write_selected_field[M](const SelectedField[M]& sf, const std_string& path, const FieldSelection& fsel) except +
     Long read_selected_field[M](SelectedField[M]& sf, const std_string& path, const FieldSelection& fsel) except +
 
+cdef extern from "qlat/gauge-action.h" namespace "qlat":
+
+    cdef cppclass GaugeAction:
+        bool initialized
+        double beta
+        double c1
+        void init() except +
+        GaugeAction() except +
+
 cdef extern from "qlat/qcd-prop.h" namespace "qlat":
 
     void set_wall_src(Prop& prop, const Geometry& geo_input,
