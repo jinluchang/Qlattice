@@ -27,7 +27,6 @@ py_files = files(
   'qm_action.py',
   'scalar_action.py',
   'topology.py',
-  'wilson_flow.py',
   )
 
 pxd_files = files(
@@ -104,6 +103,7 @@ name_pyx_list = [
   'smear',
   'mpi',
   'fields_io',
+  'wilson_flow',
   ]
 
 foreach name: name_pyx_list

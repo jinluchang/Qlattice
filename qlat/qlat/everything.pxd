@@ -107,6 +107,8 @@ cdef extern from "qlat/core.h" namespace "qlat":
         Vector[T] get_elems(const Long index) except +
     cdef cppclass GaugeField(Field[ColorMatrix]):
         pass
+    cdef cppclass GaugeMomentum(Field[ColorMatrix]):
+        pass
     cdef cppclass GaugeTransform(Field[ColorMatrix]):
         pass
     cdef cppclass Prop(Field[WilsonMatrix]):
@@ -322,3 +324,19 @@ cdef extern from "qlat/compressed-eigen-io.h" namespace "qlat":
 
     bool check_compressed_eigen_vectors(const std_string& path) except +
     bool eigen_system_repartition(const Coordinate& new_size_node, const std_string& path, const std_string& new_path) except +
+
+cdef extern from "qlat/wilson-flow.h" namespace "qlat":
+
+    void set_wilson_flow_z(GaugeMomentum& z, const GaugeField& gf, const double c1) except +
+    void gf_wilson_flow_step_euler(GaugeField& gf, const double epsilon, const double c1) except +
+    void gf_wilson_flow_step(GaugeField& gf, const double epsilon, const double c1) except +
+    void gf_energy_density_field(Field[RealD]& fd, const GaugeField& gf) except +
+    RealD gf_energy_density(const GaugeField& gf) except +
+
+cdef extern from "qlat/qcd-topology.h" namespace "qlat":
+
+    void clf_plaq_action_field(Field[RealD]& topf, const GaugeField& gf) except +
+    void clf_topology_field(Field[RealD]& topf, const GaugeField& gf) except +
+    void clf_topology_field_5(Field[RealD]& topf, const GaugeField& gf) except +
+    void clf_topology_field_5_terms(Field[RealD]& topf, const GaugeField& gf) except +
+    RealD topology_charge_5(const GaugeField& gf) except +

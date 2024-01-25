@@ -3,6 +3,7 @@ from .wilson_flow import *
 from .c import *
 from . import c
 
+import qlat_utils as q
 from pprint import pformat
 
 def gf_topology_field_clf(gf : GaugeField):
@@ -15,7 +16,7 @@ def gf_topology_field_clf(gf : GaugeField):
     c.gf_topology_field_clf(topf, gf)
     return topf
 
-@timer
+@q.timer
 def gf_topology_clf(gf : GaugeField):
     return gf_topology_field_clf(gf).glb_sum()[:, :].item()
 
@@ -29,7 +30,7 @@ def gf_topology_field(gf : GaugeField):
     c.gf_topology_field(topf, gf)
     return topf
 
-@timer
+@q.timer
 def gf_topology(gf : GaugeField):
     return gf_topology_field(gf).glb_sum()[:, :].item()
 
@@ -39,11 +40,11 @@ def gf_topology_terms_field(gf : GaugeField):
     c.gf_topology_terms_field(topf, gf)
     return topf
 
-@timer
+@q.timer
 def gf_topology_terms(gf : GaugeField):
     return gf_topology_terms_field(gf).glb_sum()[0, :]
 
-@timer_verbose
+@q.timer_verbose
 def smear_measure_topo(gf, smear_info_list=None, *, is_show_topo_terms=False):
     """
     smear_info = [ [ step_size, n_step, c1 = 0.0, wilson_flow_integrator_type = "runge-kutta", ], ... ]
@@ -63,17 +64,17 @@ def smear_measure_topo(gf, smear_info_list=None, *, is_show_topo_terms=False):
                 [ 0.01, 50, -1.4008, "euler", ],
                 [ 0.01, 50, -1.4008, "euler", ],
                 ]
-    displayln_info(f"smear_info_list =")
-    displayln_info(pformat(smear_info_list))
+    q.displayln_info(f"smear_info_list =")
+    q.displayln_info(pformat(smear_info_list))
     flow_time = 0
     topo_list = []
-    @timer
+    @q.timer
     def smear(step_size, n_step, c1=0.0, wilson_flow_integrator_type="runge-kutta"):
         nonlocal flow_time
         flow_time += n_step * step_size
         for i in range(n_step):
             gf_wilson_flow_step(gf, step_size, c1=c1, wilson_flow_integrator_type=wilson_flow_integrator_type)
-    @timer
+    @q.timer
     def measure():
         gf.show_info()
         plaq = gf.plaq()
@@ -86,8 +87,8 @@ def smear_measure_topo(gf, smear_info_list=None, *, is_show_topo_terms=False):
         topo = topo_field.glb_sum()[:, :].item()
         t_sum = topo_field.glb_sum_tslice()
         t_sum = [ t_sum.get_elem(t).item() for t in range(t_sum.n_points()) ]
-        displayln_info(f"t={flow_time} topo_clf={topo_clf} topo={topo}")
-        displayln_info(pformat(list(enumerate(zip(t_sum_clf, t_sum)))))
+        q.displayln_info(f"t={flow_time} topo_clf={topo_clf} topo={topo}")
+        q.displayln_info(pformat(list(enumerate(zip(t_sum_clf, t_sum)))))
         topo_list.append({
             "flow_time": flow_time,
             "plaq": plaq,
@@ -99,9 +100,9 @@ def smear_measure_topo(gf, smear_info_list=None, *, is_show_topo_terms=False):
             })
         if is_show_topo_terms:
             topo_terms = gf_topology_terms(gf)
-            displayln_info(f"t={t} topo={topo} {sum(topo_terms)}")
+            q.displayln_info(f"t={t} topo={topo} {sum(topo_terms)}")
             topo_terms_str = ',\n '.join([ str(x) for x in topo_terms ])
-            displayln_info(f"[ {topo_terms_str},\n]")
+            q.displayln_info(f"[ {topo_terms_str},\n]")
     measure()
     for si in smear_info_list:
         smear(*si)

@@ -123,6 +123,7 @@ cdef class ShuffledBitSet:
 
 ## --------------
 
+@q.timer
 def open_fields(str path, str mode, Coordinate new_size_node=None):
     """
     path can be the folder path or the 'geon-info.txt' path
@@ -141,12 +142,14 @@ def open_fields(str path, str mode, Coordinate new_size_node=None):
     else:
         raise Exception("open_fields")
 
+@q.timer
 def list_fields(str path, Coordinate new_size_node=None):
     cdef ShuffledFieldsReader sfr = open_fields(path, "r", new_size_node)
     cdef list fns = sfr.list()
     sfr.close()
     return fns
 
+@q.timer
 def properly_truncate_fields(str path, cc.bool is_check_all=False, cc.bool is_only_check=False, Coordinate new_size_node=None):
     if path[-14:] == "/geon-info.txt":
         path = path[:-14]
@@ -154,6 +157,7 @@ def properly_truncate_fields(str path, cc.bool is_check_all=False, cc.bool is_on
         new_size_node = Coordinate()
     return cc.properly_truncate_fields_sync_node(path, is_check_all, is_only_check, new_size_node.xx)
 
+@q.timer
 def truncate_fields(str path, list fns_keep, Coordinate new_size_node=None):
     """
     fns_keep is the list of fields that need to keep
@@ -169,6 +173,7 @@ def truncate_fields(str path, list fns_keep, Coordinate new_size_node=None):
     if ret != 0:
         raise Exception(f"truncate_fields: error {ret}")
 
+@q.timer
 def check_fields(str path, cc.bool is_check_all=True, Coordinate new_size_node=None):
     """
     return list of field that is stored successful
@@ -178,6 +183,7 @@ def check_fields(str path, cc.bool is_check_all=True, Coordinate new_size_node=N
     is_only_check = True
     return properly_truncate_fields(path, is_check_all, is_only_check, new_size_node)
 
+@q.timer
 def check_compressed_eigen_vectors(str path):
     """
     return bool value suggest whether the data can be read successfully
@@ -188,6 +194,7 @@ def check_compressed_eigen_vectors(str path):
         path = path[:-14]
     return cc.check_compressed_eigen_vectors(path)
 
+@q.timer
 def eigen_system_repartition(Coordinate new_size_node, str path, str path_new=""):
     if path[-14:] == "/geon-info.txt":
         path = path[:-14]

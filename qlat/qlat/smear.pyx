@@ -32,6 +32,7 @@ def gf_hyp_smear(GaugeField gf, double alpha1, double alpha2, double alpha3):
     cc.gf_hyp_smear(gf1.xxx().val(), gf.xxx().val(), alpha1, alpha2, alpha3)
     return gf1
 
+@q.timer
 def prop_smear(Prop prop, GaugeField gf1,
                double coef, int step, CoordinateD mom=None,
                cc.bool smear_in_time_dir=False,

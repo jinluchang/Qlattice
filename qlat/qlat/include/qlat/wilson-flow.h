@@ -13,6 +13,16 @@ inline void set_wilson_flow_z(GaugeMomentum& z, const GaugeField& gf,
   set_gm_force(z, gf, ga);
 }
 
+inline void gf_wilson_flow_step_euler(GaugeField& gf, const double epsilon,
+                                      const double c1 = 0.0)
+{
+  TIMER("gf_wilson_flow_step_euler");
+  GaugeField& w = gf;
+  GaugeMomentum z;
+  set_wilson_flow_z(z, w, c1);
+  gf_evolve(w, z, epsilon);
+}
+
 inline void gf_wilson_flow_step(GaugeField& gf, const double epsilon,
                                 const double c1 = 0.0)
 // Runge–Kutta scheme
@@ -37,7 +47,7 @@ inline void gf_wilson_flow_step(GaugeField& gf, const double epsilon,
   gf_evolve(w, z, epsilon);
 }
 
-inline void gf_energy_density_field_no_comm(FieldM<RealD, 1>& fd, const GaugeField& gf)
+inline void gf_energy_density_field_no_comm(Field<RealD>& fd, const GaugeField& gf)
 {
   TIMER("gf_energy_density_field_no_comm");
   const Geometry geo = geo_reform(gf.geo());
@@ -56,7 +66,7 @@ inline void gf_energy_density_field_no_comm(FieldM<RealD, 1>& fd, const GaugeFie
   });
 }
 
-inline void gf_energy_density_field(FieldM<RealD, 1>& fd, const GaugeField& gf)
+inline void gf_energy_density_field(Field<RealD>& fd, const GaugeField& gf)
 // https://arxiv.org/pdf/1006.4518.pdf Eq. (2.1) (Fig. 1) (approximate Eq. (3.1))
 // https://arxiv.org/pdf/1203.4469.pdf
 {
