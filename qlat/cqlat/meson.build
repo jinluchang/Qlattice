@@ -10,7 +10,6 @@ cpp_files = files(
   'field-io.cpp',
   'field-utils.cpp',
   'fthmc.cpp',
-  'gauge-action.cpp',
   'hmc.cpp',
   'hmc-stats.cpp',
   'init.cpp',

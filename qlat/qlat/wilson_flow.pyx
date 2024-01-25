@@ -25,32 +25,22 @@ def gf_energy_density_field(GaugeField gf):
 
 @q.timer
 def gf_wilson_flow_force(GaugeField gf, cc.RealD c1=0.0):
-    ga = GaugeAction(3.0, c1)
-    gm_force = GaugeMomentum()
-    set_gm_force(gm_force, gf, ga)
+    cdef GaugeMomentum gm_force = GaugeMomentum()
+    cc.set_wilson_flow_z(gm_force.xxx().val(), gf.xxx().val(), c1)
     return gm_force
 
 @q.timer
 def gf_wilson_flow_step(GaugeField gf, cc.RealD epsilon, *, cc.RealD c1=0.0, str wilson_flow_integrator_type=None):
+    """
+    default: Runge-Kutta scheme
+    http://arxiv.org/abs/1006.4518v3
+    """
     if wilson_flow_integrator_type is None:
         wilson_flow_integrator_type = "runge-kutta"
     if wilson_flow_integrator_type == "runge-kutta":
-        return gf_wilson_flow_runge_kutta(gf, epsilon, c1=c1)
+        cc.gf_wilson_flow_step(gf.xxx().val(), epsilon, c1=c1)
     elif wilson_flow_integrator_type == "euler":
-        return gf_wilson_flow_euler(gf, epsilon, c1=c1)
-
-@q.timer
-def gf_wilson_flow_runge_kutta(GaugeField gf, cc.RealD epsilon, *, cc.RealD c1=0.0):
-    """
-    Runge-Kutta scheme
-    http://arxiv.org/abs/1006.4518v3
-    """
-    return c.gf_wilson_flow_step(gf, epsilon, c1)
-
-@q.timer
-def gf_wilson_flow_euler(GaugeField gf, cc.RealD epsilon, *, cc.RealD c1=0.0):
-    force = gf_wilson_flow_force(gf, c1=c1)
-    return gf_evolve(gf, force, epsilon)
+        cc.gf_wilson_flow_step_euler(gf.xxx().val(), epsilon, c1=c1)
 
 @q.timer
 def gf_wilson_flow(GaugeField gf, cc.RealD flow_time, cc.Long steps,
