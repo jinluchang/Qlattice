@@ -2,6 +2,7 @@
 
 from qlat_utils.all cimport *
 from . cimport everything as cc
+from .geometry cimport Geometry
 from .qcd cimport GaugeField
 
 import cqlat as c
@@ -9,18 +10,25 @@ from .hmc import GaugeAction, GaugeMomentum, set_gm_force, gf_evolve
 import qlat_utils as q
 
 @q.timer
-def gf_energy_density(gf : GaugeField):
-    return c.gf_energy_density(gf)
+def gf_energy_density(GaugeField gf):
+    return cc.gf_energy_density(gf)
 
 @q.timer
-def gf_wilson_flow_force(gf, c1=0.0):
+def gf_energy_density_field(GaugeField gf):
+    cdef Geometry geo = gf.geo()
+    cdef FieldRealD fd = FieldRealD(geo, 1)
+    cc.gf_energy_density_field(fd, gf)
+    return fd
+
+@q.timer
+def gf_wilson_flow_force(GaugeField gf, cc.RealD c1=0.0):
     ga = GaugeAction(3.0, c1)
     gm_force = GaugeMomentum()
     set_gm_force(gm_force, gf, ga)
     return gm_force
 
 @q.timer
-def gf_wilson_flow_step(gf, epsilon, *, c1=0.0, wilson_flow_integrator_type=None):
+def gf_wilson_flow_step(GaugeField gf, cc.RealD epsilon, *, cc.RealD c1=0.0, str wilson_flow_integrator_type=None):
     if wilson_flow_integrator_type is None:
         wilson_flow_integrator_type = "runge-kutta"
     if wilson_flow_integrator_type == "runge-kutta":
@@ -29,7 +37,7 @@ def gf_wilson_flow_step(gf, epsilon, *, c1=0.0, wilson_flow_integrator_type=None
         return gf_wilson_flow_euler(gf, epsilon, c1=c1)
 
 @q.timer
-def gf_wilson_flow_runge_kutta(gf, epsilon, *, c1=0.0):
+def gf_wilson_flow_runge_kutta(GaugeField gf, cc.RealD epsilon, *, cc.RealD c1=0.0):
     """
     Runge-Kutta scheme
     http://arxiv.org/abs/1006.4518v3
@@ -37,7 +45,7 @@ def gf_wilson_flow_runge_kutta(gf, epsilon, *, c1=0.0):
     return c.gf_wilson_flow_step(gf, epsilon, c1)
 
 @q.timer
-def gf_wilson_flow_euler(gf, epsilon, *, c1=0.0):
+def gf_wilson_flow_euler(GaugeField gf, cc.RealD epsilon, *, cc.RealD c1=0.0):
     force = gf_wilson_flow_force(gf, c1=c1)
     return gf_evolve(gf, force, epsilon)
 
