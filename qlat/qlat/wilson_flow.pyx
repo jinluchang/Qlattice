@@ -5,7 +5,7 @@ from . cimport everything as cc
 from .qcd cimport GaugeField
 
 import cqlat as c
-from qlat.hmc import GaugeAction, GaugeMomentum, set_gm_force, gf_evolve
+from .hmc import GaugeAction, GaugeMomentum, set_gm_force, gf_evolve
 import qlat_utils as q
 
 @q.timer

@@ -1,12 +1,18 @@
-from .wilson_flow import *
+# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
-from .c import *
-from . import c
+from qlat_utils.all cimport *
+from . cimport everything as cc
+from .qcd cimport GaugeField
+from .field_types cimport FieldRealD
 
+import cqlat as c
+from .hmc import GaugeAction, GaugeMomentum, set_gm_force, gf_evolve
+from .wilson_flow import gf_wilson_flow_step, gf_energy_density
 import qlat_utils as q
+
 from pprint import pformat
 
-def gf_topology_field_clf(gf : GaugeField):
+def gf_topology_field_clf(GaugeField gf):
     """
     Use the basic gf_clover_leaf_field
     NOT using 5 loop improved definition
@@ -17,10 +23,10 @@ def gf_topology_field_clf(gf : GaugeField):
     return topf
 
 @q.timer
-def gf_topology_clf(gf : GaugeField):
+def gf_topology_clf(GaugeField gf):
     return gf_topology_field_clf(gf).glb_sum()[:, :].item()
 
-def gf_topology_field(gf : GaugeField):
+def gf_topology_field(GaugeField gf):
     """
     Using the 5 loop improved definition
     https://arxiv.org/pdf/hep-lat/9701012v2.pdf
@@ -31,17 +37,17 @@ def gf_topology_field(gf : GaugeField):
     return topf
 
 @q.timer
-def gf_topology(gf : GaugeField):
+def gf_topology(GaugeField gf):
     return gf_topology_field(gf).glb_sum()[:, :].item()
 
-def gf_topology_terms_field(gf : GaugeField):
+def gf_topology_terms_field(GaugeField gf):
     geo = gf.geo()
     topf = FieldRealD(geo, 5)
     c.gf_topology_terms_field(topf, gf)
     return topf
 
 @q.timer
-def gf_topology_terms(gf : GaugeField):
+def gf_topology_terms(GaugeField gf):
     return gf_topology_terms_field(gf).glb_sum()[0, :]
 
 @q.timer_verbose
@@ -100,7 +106,7 @@ def smear_measure_topo(gf, smear_info_list=None, *, is_show_topo_terms=False):
             })
         if is_show_topo_terms:
             topo_terms = gf_topology_terms(gf)
-            q.displayln_info(f"t={t} topo={topo} {sum(topo_terms)}")
+            q.displayln_info(f"t={flow_time} topo={topo} {sum(topo_terms)}")
             topo_terms_str = ',\n '.join([ str(x) for x in topo_terms ])
             q.displayln_info(f"[ {topo_terms_str},\n]")
     measure()
