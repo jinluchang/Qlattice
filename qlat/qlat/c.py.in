@@ -183,5 +183,9 @@ from .field_utils import *
 from .qcd import *
 from .propagator import *
 from .smear import *
+from .hmc import *
+from .gauge_action import *
+from .topology import *
+from .wilson_flow import *
 
 sys.setdlopenflags(flags)

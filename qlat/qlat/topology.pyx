@@ -4,9 +4,11 @@ from qlat_utils.all cimport *
 from . cimport everything as cc
 from .qcd cimport GaugeField
 from .field_types cimport FieldRealD
+from .gauge_action cimport GaugeAction
+from .hmc cimport GaugeMomentum
 
 import cqlat as c
-from .hmc import GaugeAction, GaugeMomentum, set_gm_force, gf_evolve
+from .hmc import set_gm_force, gf_evolve
 from .wilson_flow import gf_wilson_flow_step, gf_energy_density
 import qlat_utils as q
 
