@@ -174,10 +174,10 @@ qacc RealD clf_topology_density(const CloverLeafField& clf,
   return fac * sum;
 }
 
-inline void clf_plaq_action_field(Field<RealD>& paf,
+inline void clf_plaq_action_density_field(Field<RealD>& paf,
                                   const CloverLeafField& clf)
 {
-  TIMER("clf_plaq_action_field");
+  TIMER("clf_plaq_action_density_field");
   const Geometry& geo = clf.geo();
   paf.init(geo, 1);
   qassert(is_matching_geo(paf.geo(), geo));
@@ -188,7 +188,7 @@ inline void clf_plaq_action_field(Field<RealD>& paf,
   });
 }
 
-inline void clf_plaq_action_field(Field<RealD>& paf, const GaugeField& gf)
+inline void clf_plaq_action_density_field(Field<RealD>& paf, const GaugeField& gf)
 // interface function
 // \sum_P (1 - 1/3 * Re Tr U_P)
 //
@@ -196,10 +196,10 @@ inline void clf_plaq_action_field(Field<RealD>& paf, const GaugeField& gf)
 // Single instanton action = 8 * sqr(PI) / g^2
 // beta = 6/g^2
 {
-  TIMER("clf_plaq_action_field");
+  TIMER("clf_plaq_action_density_field");
   CloverLeafField clf;
   gf_clover_leaf_field(clf, gf);
-  clf_plaq_action_field(paf, clf);
+  clf_plaq_action_density_field(paf, clf);
 }
 
 inline void clf_spatial_plaq_action_field(Field<RealD>& spaf,

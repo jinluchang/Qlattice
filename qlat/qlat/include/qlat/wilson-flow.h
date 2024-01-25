@@ -83,9 +83,10 @@ inline RealD gf_energy_density(const GaugeField& gf)
 // https://arxiv.org/pdf/1203.4469.pdf
 {
   TIMER("gf_energy_density");
+  const Geometry& geo = gf.geo();
   FieldM<RealD, 1> fd;
   gf_energy_density_field(fd, gf);
-  return field_glb_sum(fd)[0];
+  return field_glb_sum(fd)[0] / (RealD)geo.total_volume();
 }
 
 inline std::vector<double> gf_wilson_flow(GaugeField& gf,

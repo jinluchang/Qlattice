@@ -143,7 +143,7 @@ inline std::vector<double> get_gauge_field_infos(const GaugeField& gf)
   CloverLeafField clf1, clf2, clf3, clf4, clf5;
   gf_clover_leaf_field_5(clf1, clf2, clf3, clf4, clf5, gf);
   FieldM<double, 1> paf;
-  clf_plaq_action_field(paf, clf1);
+  clf_plaq_action_density_field(paf, clf1);
   FieldM<double, 1> topf;
   clf_topology_field_5(topf, clf1, clf2, clf3, clf4, clf5);
   std::vector<double> info_vec(info_vec_size, 0.0);

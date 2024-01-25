@@ -151,8 +151,8 @@ __all__ += [
         ]
 
 __all__ += [
-        'gf_plaq_action_field',
-        'gf_plaq_action',
+        'gf_plaq_action_density_field',
+        'gf_plaq_action_density',
         'gf_topology_field_clf',
         'gf_topology_clf',
         'gf_topology_field',
@@ -163,8 +163,8 @@ __all__ += [
         ]
 
 __all__ += [
-        'gf_energy_density',
         'gf_energy_density_field',
+        'gf_energy_density',
         'gf_wilson_flow_force',
         'gf_wilson_flow_step',
         'gf_wilson_flow',

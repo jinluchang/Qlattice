@@ -2,19 +2,20 @@
 
 from qlat_utils.all cimport *
 from . cimport everything as cc
-from .qcd cimport GaugeField
 from .field_types cimport FieldRealD
-from .gauge_action cimport GaugeAction
+from .geometry cimport Geometry
+from .qcd cimport GaugeField
 from .hmc cimport GaugeMomentum
+from .gauge_action cimport GaugeAction
 
 from .hmc import set_gm_force, gf_evolve
-from .wilson_flow import gf_wilson_flow_step, gf_energy_density
+from .wilson_flow import gf_wilson_flow_step, gf_energy_density_field
 import qlat_utils as q
 
 from pprint import pformat
 
 @q.timer
-def gf_plaq_action_field(GaugeField gf):
+def gf_plaq_action_density_field(GaugeField gf):
     """
     return paf
     paf.geo().multiplicity == 1
@@ -25,16 +26,19 @@ def gf_plaq_action_field(GaugeField gf):
     beta = 6/g^2
     """
     paf = FieldRealD()
-    cc.clf_plaq_action_field(paf.xx, gf.xxx().val())
+    cc.clf_plaq_action_density_field(paf.xx, gf.xxx().val())
     return paf
 
 @q.timer
-def gf_plaq_action(GaugeField gf):
+def gf_plaq_action_density(GaugeField gf):
     """
     return pa
     ininstance(pa, float)
+    pa = gf_plaq_action_density_field(gf).glb_sum()[:].item() / total_volume
     """
-    return gf_plaq_action_field(gf).glb_sum()[:].item()
+    cdef Geometry geo = gf.geo()
+    cdef cc.Long total_volume = geo.total_volume()
+    return gf_plaq_action_density_field(gf).glb_sum()[:].item() / total_volume
 
 @q.timer
 def gf_topology_field_clf(GaugeField gf):
@@ -102,7 +106,7 @@ def gf_topology_terms(GaugeField gf):
     return gf_topology_terms_field(gf).glb_sum()[0, :]
 
 @q.timer_verbose
-def smear_measure_topo(gf, smear_info_list=None, *, is_show_topo_terms=False):
+def smear_measure_topo(gf, smear_info_list=None, *, is_show_topo_terms=False, density_field_path=None):
     """
     smear_info = [ [ step_size, n_step, c1 = 0.0, wilson_flow_integrator_type = "runge-kutta", ], ... ]
     c1 = 0.0 # Wilson
@@ -111,6 +115,7 @@ def smear_measure_topo(gf, smear_info_list=None, *, is_show_topo_terms=False):
     wilson_flow_integrator_type = "runge-kutta"
     wilson_flow_integrator_type = "euler"
     """
+    fname = q.get_fname()
     if smear_info_list is None:
         smear_info_list = [
                 [ 0.05, 20, 0.0, "euler", ],
@@ -121,8 +126,12 @@ def smear_measure_topo(gf, smear_info_list=None, *, is_show_topo_terms=False):
                 [ 0.01, 50, -1.4008, "euler", ],
                 [ 0.01, 50, -1.4008, "euler", ],
                 ]
-    q.displayln_info(f"smear_info_list =")
-    q.displayln_info(pformat(smear_info_list))
+    q.displayln_info(0, f"{fname}: smear_info_list =")
+    q.displayln_info(0, pformat(smear_info_list))
+    geo = gf.geo()
+    total_volume = geo.total_volume()
+    total_site = geo.total_site()
+    spatial_volume = total_volume / total_site[3]
     flow_time = 0
     topo_list = []
     @q.timer
@@ -135,31 +144,35 @@ def smear_measure_topo(gf, smear_info_list=None, *, is_show_topo_terms=False):
     def measure():
         gf.show_info()
         plaq = gf.plaq()
-        energy_density = gf_energy_density(gf)
+        energy_density_field = gf_energy_density_field(gf)
+        energy_density = energy_density_field.glb_sum()[:].item() / total_volume
+        t_sum_energy_density = (energy_density_field.glb_sum_tslice()[:].ravel() / spatial_volume).tolist()
+        plaq_action_density_field = gf_plaq_action_density_field(gf)
+        plaq_action_density = plaq_action_density_field.glb_sum()[:].item()
+        t_sum_plaq_action_density = (plaq_action_density_field.glb_sum_tslice()[:].ravel() / spatial_volume).tolist()
         topo_field_clf = gf_topology_field_clf(gf)
-        topo_clf = topo_field_clf.glb_sum()[:, :].item()
-        t_sum_clf = topo_field_clf.glb_sum_tslice()
-        t_sum_clf = [ t_sum_clf.get_elem(t).item() for t in range(t_sum_clf.n_points()) ]
+        topo_clf = topo_field_clf.glb_sum()[:].item()
+        t_sum_topo_clf = topo_field_clf.glb_sum_tslice()[:].ravel().tolist()
         topo_field = gf_topology_field(gf)
-        topo = topo_field.glb_sum()[:, :].item()
-        t_sum = topo_field.glb_sum_tslice()
-        t_sum = [ t_sum.get_elem(t).item() for t in range(t_sum.n_points()) ]
-        q.displayln_info(f"t={flow_time} topo_clf={topo_clf} topo={topo}")
-        q.displayln_info(pformat(list(enumerate(zip(t_sum_clf, t_sum)))))
+        topo = topo_field.glb_sum()[:].item()
+        t_sum_topo = topo_field.glb_sum_tslice()[:].ravel().tolist()
+        q.displayln_info(0, f"{fname}: t={flow_time} ; energy_density={energy_density} ; plaq_action_density={plaq_action_density} ; topo_clf={topo_clf} ; topo={topo}")
+        q.displayln_info(0, pformat(list(enumerate(zip(t_sum_energy_density, t_sum_plaq_action_density, t_sum_topo_clf, t_sum_topo)))))
         topo_list.append({
             "flow_time": flow_time,
             "plaq": plaq,
             "energy_density": energy_density,
+            "energy_density_tslice": t_sum_energy_density,
             "topo_clf": topo_clf,
-            "topo_clf_tslice": t_sum_clf,
+            "topo_clf_tslice": t_sum_topo_clf,
             "topo": topo,
-            "topo_tslice": t_sum,
+            "topo_tslice": t_sum_topo,
             })
         if is_show_topo_terms:
             topo_terms = gf_topology_terms(gf)
-            q.displayln_info(f"t={flow_time} topo={topo} {sum(topo_terms)}")
-            topo_terms_str = ',\n '.join([ str(x) for x in topo_terms ])
-            q.displayln_info(f"[ {topo_terms_str},\n]")
+            q.displayln_info(0, f"{fname}: t={flow_time} ; topo={topo} ; {sum(topo_terms)}")
+            topo_terms_str = ',\n  '.join([ str(x) for x in topo_terms ])
+            q.displayln_info(0, f"[ {topo_terms_str},\n]")
     measure()
     for si in smear_info_list:
         smear(*si)

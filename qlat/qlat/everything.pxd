@@ -344,7 +344,7 @@ cdef extern from "qlat/wilson-flow.h" namespace "qlat":
 
 cdef extern from "qlat/qcd-topology.h" namespace "qlat":
 
-    void clf_plaq_action_field(Field[RealD]& topf, const GaugeField& gf) except +
+    void clf_plaq_action_density_field(Field[RealD]& topf, const GaugeField& gf) except +
     void clf_topology_field(Field[RealD]& topf, const GaugeField& gf) except +
     void clf_topology_field_5(Field[RealD]& topf, const GaugeField& gf) except +
     void clf_topology_field_5_terms(Field[RealD]& topf, const GaugeField& gf) except +
