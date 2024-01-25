@@ -111,7 +111,6 @@ __all__ += [
 
 __all__ += [
         'GaugeField',
-        'GaugeMomentum',
         'GaugeTransform',
         'gf_show_info',
         'gf_avg_plaq',
@@ -149,6 +148,37 @@ __all__ += [
         'gf_spatial_ape_smear',
         'gf_hyp_smear',
         'prop_smear',
+        ]
+
+__all__ += [
+        'gf_topology_field_clf',
+        'gf_topology_clf',
+        'gf_topology_field',
+        'gf_topology',
+        'gf_topology_terms_field',
+        'gf_topology_terms',
+        'smear_measure_topo',
+        ]
+
+__all__ += [
+        'gf_energy_density',
+        'gf_energy_density_field',
+        'gf_wilson_flow_force',
+        'gf_wilson_flow_step',
+        'gf_wilson_flow',
+        ]
+
+__all__ += [
+        'GaugeAction',
+        ]
+
+__all__ += [
+        'GaugeMomentum',
+        'gf_evolve',
+        'set_gm_force',
+        'metropolis_accept',
+        'gm_evolve_fg_pure_gauge',
+        'run_hmc_evolve_pure_gauge',
         ]
 
 ### -------------------------------------------------------------------------
