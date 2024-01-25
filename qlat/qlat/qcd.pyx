@@ -21,7 +21,7 @@ from .field_utils import (
 
 cdef class GaugeField(FieldColorMatrix):
 
-    def __init__(self, geo=None):
+    def __init__(self, Geometry geo=None):
         super().__init__(geo, 4)
 
     cdef cc.Handle[cc.GaugeField] xxx(self):
@@ -42,7 +42,7 @@ cdef class GaugeField(FieldColorMatrix):
         """
         return c.load_gauge_field(self, path)
 
-    def set_rand(self, rng, sigma=0.5, n_step=1):
+    def set_rand(self, RngState rng, cc.RealD sigma=0.5, cc.Int n_step=1):
         set_g_rand_color_matrix_field(self, rng, sigma, n_step)
 
     def unitarize(self):
@@ -54,8 +54,10 @@ cdef class GaugeField(FieldColorMatrix):
     def link_trace(self):
         return gf_avg_link_trace(self)
 
-    def twist_boundary_at_boundary(self, lmom : float=-0.5, mu : int=3):
-        # modify in place
+    def twist_boundary_at_boundary(self, cc.RealD lmom=-0.5, cc.Int mu=3):
+        """
+        modify in place
+        """
         gf_twist_boundary_at_boundary(self, lmom, mu)
 
     def show_info(self):
@@ -65,7 +67,7 @@ cdef class GaugeField(FieldColorMatrix):
 
 cdef class GaugeTransform(FieldColorMatrix):
 
-    def __init__(self, geo=None):
+    def __init__(self, Geometry geo=None):
         super().__init__(geo, 1)
 
     cdef cc.Handle[cc.GaugeTransform] xxx(self):

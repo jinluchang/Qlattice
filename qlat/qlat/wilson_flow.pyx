@@ -2,6 +2,7 @@
 
 from qlat_utils.all cimport *
 from . cimport everything as cc
+from .field_types cimport FieldRealD
 from .geometry cimport Geometry
 from .qcd cimport GaugeField
 
@@ -11,13 +12,13 @@ import qlat_utils as q
 
 @q.timer
 def gf_energy_density(GaugeField gf):
-    return cc.gf_energy_density(gf)
+    return cc.gf_energy_density(gf.xxx().val())
 
 @q.timer
 def gf_energy_density_field(GaugeField gf):
     cdef Geometry geo = gf.geo()
     cdef FieldRealD fd = FieldRealD(geo, 1)
-    cc.gf_energy_density_field(fd, gf)
+    cc.gf_energy_density_field(fd.xx, gf.xxx().val())
     return fd
 
 @q.timer
