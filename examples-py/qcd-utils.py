@@ -80,7 +80,7 @@ if False:
         measure()
     gf_f.save("results/ckpoint.topo1.4nt8.lat")
 
-q.smear_measure_topo(gf)
+q.smear_measure_topo(gf, is_show_topo_terms=True, density_field_path="results/topo-measure-density")
 
 q.timer_display()
 
