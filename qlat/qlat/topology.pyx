@@ -164,10 +164,10 @@ def smear_measure_topo(gf, smear_info_list=None, *, is_show_topo_terms=False, de
             topo_terms_str = ',\n  '.join([ str(x) for x in topo_terms ])
             q.displayln_info(0, f"[ {topo_terms_str},\n]")
         if density_field_path is not None:
-            plaq_action_density_field.save_double(f"{density_field_path}/{len(topo_list)}/plaq_action_density.field")
-            energy_density_field.save_double(f"{density_field_path}/{len(topo_list)}/energy_density.field")
-            topo_field_clf.save_double(f"{density_field_path}/{len(topo_list)}/topo_clf.field")
-            topo_field.save_double(f"{density_field_path}/{len(topo_list)}/topo.field")
+            plaq_action_density_field.save_double(f"{density_field_path}/smear-step-{len(topo_list)}/plaq_action_density.field")
+            energy_density_field.save_double(f"{density_field_path}/smear-step-{len(topo_list)}/energy_density.field")
+            topo_field_clf.save_double(f"{density_field_path}/smear-step-{len(topo_list)}/topo_clf.field")
+            topo_field.save_double(f"{density_field_path}/smear-step-{len(topo_list)}/topo.field")
         topo_list.append({
             "flow_time": flow_time,
             "plaq": plaq,
