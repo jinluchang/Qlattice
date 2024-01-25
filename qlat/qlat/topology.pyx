@@ -145,7 +145,7 @@ def smear_measure_topo(gf, smear_info_list=None, *, is_show_topo_terms=False, de
         gf.show_info()
         plaq = gf.plaq()
         plaq_action_density_field = gf_plaq_action_density_field(gf)
-        plaq_action_density = plaq_action_density_field.glb_sum()[:].item()
+        plaq_action_density = plaq_action_density_field.glb_sum()[:].item() / total_volume
         t_sum_plaq_action_density = (plaq_action_density_field.glb_sum_tslice()[:].ravel() / spatial_volume).tolist()
         energy_density_field = gf_energy_density_field(gf)
         energy_density = energy_density_field.glb_sum()[:].item() / total_volume
