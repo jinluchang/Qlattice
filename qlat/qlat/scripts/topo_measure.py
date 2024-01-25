@@ -3,12 +3,16 @@ import qlat as q
 import numpy as np
 
 if len(sys.argv) == 1:
-    q.displayln_info("Usage: topo-measure [ --source source_config ] [ --output output.pickle ]")
+    q.displayln_info("Usage: topo-measure [ --source source_config ] [ --output output.pickle ] [ --show-topo-terms ] [ --density-field-path path_for_density_field ]")
 
 q.begin_with_mpi()
 
 p_source = q.get_arg("--source")
 p_output = q.get_arg("--output")
+p_show_topo_terms = q.get_arg("--show-topo-terms")
+density_field_path = q.get_arg("--density-field-path")
+
+is_show_topo_terms = p_show_topo_terms is not None
 
 def load():
     if p_source is None:
@@ -25,7 +29,7 @@ def load():
 
 gf = load()
 
-topo_list = q.smear_measure_topo(gf)
+topo_list = q.smear_measure_topo(gf, is_show_topo_terms=is_show_topo_terms, density_field_path=density_field_path)
 
 if p_output is not None:
     q.save_pickle_obj(topo_list, p_output)
