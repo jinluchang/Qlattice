@@ -158,6 +158,16 @@ def smear_measure_topo(gf, smear_info_list=None, *, is_show_topo_terms=False, de
         t_sum_topo = topo_field.glb_sum_tslice()[:].ravel().tolist()
         q.displayln_info(0, f"{fname}: t={flow_time} ; energy_density={energy_density} ; plaq_action_density={plaq_action_density} ; topo_clf={topo_clf} ; topo={topo}")
         q.displayln_info(0, pformat(list(enumerate(zip(t_sum_energy_density, t_sum_plaq_action_density, t_sum_topo_clf, t_sum_topo)))))
+        if is_show_topo_terms:
+            topo_terms = gf_topology_terms(gf)
+            q.displayln_info(0, f"{fname}: t={flow_time} ; topo={topo} ; {sum(topo_terms)}")
+            topo_terms_str = ',\n  '.join([ str(x) for x in topo_terms ])
+            q.displayln_info(0, f"[ {topo_terms_str},\n]")
+        if density_field_path is not None:
+            plaq_action_density_field.save_double(f"{density_field_path}/{len(topo_list)}/plaq_action_density.field")
+            energy_density_field.save_double(f"{density_field_path}/{len(topo_list)}/energy_density.field")
+            topo_field_clf.save_double(f"{density_field_path}/{len(topo_list)}/topo_clf.field")
+            topo_field.save_double(f"{density_field_path}/{len(topo_list)}/topo.field")
         topo_list.append({
             "flow_time": flow_time,
             "plaq": plaq,
@@ -170,16 +180,6 @@ def smear_measure_topo(gf, smear_info_list=None, *, is_show_topo_terms=False, de
             "topo": topo,
             "topo_tslice": t_sum_topo,
             })
-        if is_show_topo_terms:
-            topo_terms = gf_topology_terms(gf)
-            q.displayln_info(0, f"{fname}: t={flow_time} ; topo={topo} ; {sum(topo_terms)}")
-            topo_terms_str = ',\n  '.join([ str(x) for x in topo_terms ])
-            q.displayln_info(0, f"[ {topo_terms_str},\n]")
-        if density_field_path is not None:
-            plaq_action_density_field.save_double(f"{density_field_path}/plaq_action_density.field")
-            energy_density_field.save_double(f"{density_field_path}/energy_density.field")
-            topo_field_clf.save_double(f"{density_field_path}/topo_clf.field")
-            topo_field.save_double(f"{density_field_path}/topo.field")
     measure()
     for si in smear_info_list:
         smear(*si)

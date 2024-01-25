@@ -1,6 +1,7 @@
 import sys
 import qlat as q
 import numpy as np
+from pprint import pformat
 
 if len(sys.argv) == 1:
     q.displayln_info("Usage: topo-measure [ --source source_config ] [ --output output.pickle ] [ --show-topo-terms ] [ --density-field-path path_for_density_field ]")
@@ -35,7 +36,7 @@ if p_output is not None:
     q.save_pickle_obj(topo_list, p_output)
 else:
     q.displayln_info("To save the result, use '--output filename.pickle'. Print to screen for now.")
-    q.displayln_info(q.pformat(topo_list))
+    q.displayln_info(pformat(topo_list))
 
 q.timer_display()
 
