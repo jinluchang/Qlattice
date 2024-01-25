@@ -8,7 +8,6 @@ from .qcd cimport GaugeField
 from .hmc cimport GaugeMomentum
 from .gauge_action cimport GaugeAction
 
-import cqlat as c
 from .hmc import set_gm_force, gf_evolve
 import qlat_utils as q
 

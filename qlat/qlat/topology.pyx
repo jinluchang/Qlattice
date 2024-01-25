@@ -7,49 +7,75 @@ from .field_types cimport FieldRealD
 from .gauge_action cimport GaugeAction
 from .hmc cimport GaugeMomentum
 
-import cqlat as c
 from .hmc import set_gm_force, gf_evolve
 from .wilson_flow import gf_wilson_flow_step, gf_energy_density
 import qlat_utils as q
 
 from pprint import pformat
 
+@q.timer
 def gf_topology_field_clf(GaugeField gf):
     """
+    return topf
+    topf.geo().multiplicity == 1
     Use the basic gf_clover_leaf_field
     NOT using 5 loop improved definition
     """
-    geo = gf.geo()
-    topf = FieldRealD(geo, 1)
-    c.gf_topology_field_clf(topf, gf)
+    topf = FieldRealD()
+    cc.clf_topology_field(topf.xx, gf.xxx().val())
     return topf
 
 @q.timer
 def gf_topology_clf(GaugeField gf):
-    return gf_topology_field_clf(gf).glb_sum()[:, :].item()
+    """
+    return top
+    ininstance(top, float)
+    Use the basic gf_clover_leaf_field
+    NOT using 5 loop improved definition
+    """
+    return gf_topology_field_clf(gf).glb_sum()[:].item()
 
+@q.timer
 def gf_topology_field(GaugeField gf):
     """
+    return topf
+    topf.geo().multiplicity == 1
     Using the 5 loop improved definition
     https://arxiv.org/pdf/hep-lat/9701012v2.pdf
     """
-    geo = gf.geo()
-    topf = FieldRealD(geo, 1)
-    c.gf_topology_field(topf, gf)
+    topf = FieldRealD()
+    cc.clf_topology_field_5(topf.xx, gf.xxx().val())
     return topf
 
 @q.timer
 def gf_topology(GaugeField gf):
-    return gf_topology_field(gf).glb_sum()[:, :].item()
+    """
+    return top
+    ininstance(top, float)
+    Using the 5 loop improved definition
+    https://arxiv.org/pdf/hep-lat/9701012v2.pdf
+    """
+    return gf_topology_field(gf).glb_sum()[:].item()
 
+@q.timer
 def gf_topology_terms_field(GaugeField gf):
-    geo = gf.geo()
-    topf = FieldRealD(geo, 5)
-    c.gf_topology_terms_field(topf, gf)
+    """
+    return topf;
+    topf.geo().multiplicity() == 5
+    sum of the 5 terms should equal to gf_topology_field
+    """
+    topf = FieldRealD()
+    cc.clf_topology_field_5_terms(topf.xx, gf.xxx().val())
     return topf
 
 @q.timer
 def gf_topology_terms(GaugeField gf):
+    """
+    return top_terms;
+    top_terms.shape == (5,)
+    top_terms.dtype == np.float64
+    sum of the 5 terms should equal to gf_topology
+    """
     return gf_topology_terms_field(gf).glb_sum()[0, :]
 
 @q.timer_verbose

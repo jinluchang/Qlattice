@@ -145,7 +145,7 @@ qacc RealD clf_plaq_action_density(const CloverLeafField& clf,
   return sum;
 }
 
-qacc double clf_spatial_plaq_action_density(const CloverLeafField& clf,
+qacc RealD clf_spatial_plaq_action_density(const CloverLeafField& clf,
                                             const Coordinate& xl)
 // \sum_P(spatial only) (1 - 1/3 * Re Tr U_P)
 {
@@ -157,7 +157,7 @@ qacc double clf_spatial_plaq_action_density(const CloverLeafField& clf,
   return sum;
 }
 
-qacc double clf_topology_density(const CloverLeafField& clf,
+qacc RealD clf_topology_density(const CloverLeafField& clf,
                                  const Coordinate& xl)
 // sum of the density of the topological charge Q
 {
