@@ -31,6 +31,7 @@ source qcore/set-prefix.sh $name
     time-run pip3 install $opts virtualenv || true
     time-run pip3 install $opts h5py || true
     time-run pip3 install $opts pandas || true
+    time-run pip3 install $opts scikit-learn || true
     time-run pip3 install $opts xarray || true
     time-run pip3 install $opts matplotlib || true
     time-run pip3 install $opts plotly || true
