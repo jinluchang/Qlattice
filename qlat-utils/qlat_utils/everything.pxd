@@ -42,6 +42,8 @@ cdef inline ComplexF ccpy_f(PyComplexF x):
 
 ### --------------------------------------------------------
 
+ctypedef bool Bool
+
 ctypedef uint64_t UInt64t
 
 ctypedef uint32_t UInt32t
