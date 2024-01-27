@@ -153,6 +153,28 @@ gf2 @= q.mk_merged_fields_ms([ (gf, m) for m in range(4) ])
 
 gf2.show_info()
 
+f = q.FieldRealD(geo, 2)
+f.set_rand(q.RngState("seed-init"))
+
+sig = q.glb_sum(q.get_double_sig(f, q.RngState(f"seed-f-sig-{q.get_id_node()}")))
+q.displayln_info(f"CHECK: f sig = {sig:.5F}")
+
+f1 = f.shift()
+sig = q.glb_sum(q.get_double_sig(f1, q.RngState(f"seed-f1-sig-{q.get_id_node()}")))
+q.displayln_info(f"CHECK: f1 sig = {sig:.5F}")
+
+f2 = f.shift(q.Coordinate([ 1, 2, 3, 4, ]))
+sig = q.glb_sum(q.get_double_sig(f2, q.RngState(f"seed-f2-sig-{q.get_id_node()}")))
+q.displayln_info(f"CHECK: f2 sig = {sig:.5F}")
+
+f3 = f.shift(q.Coordinate([ 0, -2, 8, -9, ]), True)
+sig = q.glb_sum(q.get_double_sig(f3, q.RngState(f"seed-f3-sig-{q.get_id_node()}")))
+q.displayln_info(f"CHECK: f3 sig = {sig:.5F}")
+
+f4 = f.shift(is_reflect=True)
+sig = q.glb_sum(q.get_double_sig(f4, q.RngState(f"seed-f4-sig-{q.get_id_node()}")))
+q.displayln_info(f"CHECK: f4 sig = {sig:.5F}")
+
 q.timer_display()
 
 q.end_with_mpi()
