@@ -190,21 +190,20 @@ cdef class Field{{name}}(FieldBase):
         np.asarray(sp).ravel()[:] = np.asarray(val).ravel()
         cc.set_field_selected(self.xx, sp.xx, geo.xx, psel.xx, m)
 
-    def shift(self, Coordinate shift not None):
+    def shift(self, Coordinate shift, cc.Bool is_reflect=False):
         """
         return new shifted Field
-        shift is the coordinate to shift the field
+        self is not changed.
+        shift is the coordinate to shift the field (or None, which means no shift)
+        is_reflect determine whether to negate coordinate after shift
         """
         cdef Field{{name}} f1 = self.copy(is_copying_data=False)
-        cc.field_shift(f1.xx, self.xx, shift.xx)
-        return f1
-
-    def reflect(self):
-        """
-        return new reflected field
-        """
-        cdef Field{{name}} f1 = self.copy()
-        cc.reflect_field(f1.xx)
+        if shift is None:
+            cc.assign_direct(f1.xx, self.xx)
+        else:
+            cc.field_shift(f1.xx, self.xx, shift.xx)
+        if is_reflect:
+            cc.reflect_field(f1.xx)
         return f1
 
     def read_direct(self, const cc.std_string& fn, Coordinate new_size_node=None):
