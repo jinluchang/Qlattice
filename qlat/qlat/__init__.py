@@ -33,6 +33,8 @@ from .inverter import *
 
 from .get_include_dir import *
 
+from .field_analysis import *
+
 from . import field_double
 
 set_verbose_level()
