@@ -154,9 +154,12 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         is_reflect determine whether to negate coordinate after shift
         """
         cdef SelectedField{{name}} f1 = self.copy(is_copying_data=False)
-        f1.fsel = FieldSelection()
         if shift is None:
+            if not is_reflect:
+                cc.assign_direct(f1.xx, self.xx)
+                return f1
             shift = Coordinate()
+        f1.fsel = FieldSelection()
         cc.field_shift(f1.xx, f1.fsel.xx, self.xx, self.fsel.xx, shift.xx, is_reflect)
         return f1
 
