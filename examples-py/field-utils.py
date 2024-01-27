@@ -176,7 +176,7 @@ sig = q.glb_sum(q.get_double_sig(f4[:], q.RngState(f"seed-f4-sig-{q.get_id_node(
 q.displayln_info(f"CHECK: f4 sig = {sig:.8F}")
 
 fsel = q.FieldSelection(geo)
-fsel[q.RngState("seed-fsel-init").urand_arr(fsel[:].shape) < 1/16] = 0
+fsel[q.RngState("seed-fsel-init").u_rand_arr(fsel[:].shape) < 1/16] = 0
 fsel.update()
 q.displayln_info(f"CHECK: q.glb_sum(fsel.n_elems()) = {q.glb_sum(fsel.n_elems())}")
 
