@@ -39,3 +39,18 @@ def get_super_jackknife_blocks(data, block_size, f=lambda x:x):
             block_av[e] /= (N[e]-1)*block_size
             block_avgs.append(f(block_av))
     return block_avgs
+
+def super_jackknife_combine_blocks(blocks, f=lambda x:x):
+    Nb = len(blocks)
+    N = []
+    block_means = []
+    for b in range(Nb):
+        N.append(int(len(blocks[b])))
+        block_means.append(np.mean(blocks[b],axis=0))
+    new_blocks = []
+    for b in range(Nb):
+        for i in range(N[b]):
+            block_av=np.copy(block_means)
+            block_av[b] = blocks[b][i]
+            new_blocks.append(f(block_av))
+    return new_blocks

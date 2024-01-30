@@ -55,6 +55,13 @@ class Data:
             rtn.append(s)
         return rtn
     
+    def remove_date(self, sf):
+        a = sf.split("_")
+        for i in range(len(a)):
+            if len(a[i].split("-"))==3:
+                a[i] = "*"
+        return "_".join(a)
+    
     def get_sfs_list(self, sfs, params, values):
         rtn = []
         for sf in sfs:
@@ -67,12 +74,28 @@ class Data:
                 rtn.append(sf)
         return rtn
     
-    def get_M_L_list(self, Ms, Ls):
-        sf = list(self.delta_actions_M)[0]
+    #def get_M_L_list(self, Ms, Ls, sf0=""):
+    #    if sf0=="":
+    #        sf = self.remove_date(list(self.delta_actions_M)[0])
+    #    else:
+    #        sf = sf0
+    #    sfs_M = self.replace_params(sf, ["M", "L"], [[M, 1.0] for M in Ms])
+    #    sfs_L = self.replace_params(sf, ["M", "L"], [[1.0, L] for L in Ls])
+    #    delta_actions_M = [np.exp(self.delta_actions_M[sfs_M[i]][str(Ms[i+1])][self.cutoff:]) for i in range(len(Ms)-1)]
+    #    delta_actions_L = [np.exp(self.delta_actions_L[sfs_L[i]][str(Ls[i+1])][self.cutoff:]) for i in range(len(Ls)-1)]
+    #    return delta_actions_M + delta_actions_L
+    
+    def get_M_L_blocks(self, Ms, Ls, sf0=""):
+        if sf0=="":
+            sf = self.remove_date(list(self.delta_actions_M)[0])
+        else:
+            sf = sf0
         sfs_M = self.replace_params(sf, ["M", "L"], [[M, 1.0] for M in Ms])
         sfs_L = self.replace_params(sf, ["M", "L"], [[1.0, L] for L in Ls])
-        delta_actions_M = [np.exp(self.delta_actions_M[sfs_M[i]][str(Ms[i+1])][self.cutoff:]) for i in range(len(Ms)-1)]
-        delta_actions_L = [np.exp(self.delta_actions_L[sfs_L[i]][str(Ls[i+1])][self.cutoff:]) for i in range(len(Ls)-1)]
+        delta_actions_M = [jk.get_jackknife_blocks(np.exp(self.delta_actions_M[sfs_M[i]][str(Ms[i+1])][self.cutoff:]), self.block_size)
+                           for i in range(len(Ms)-1)]
+        delta_actions_L = [jk.get_jackknife_blocks(np.exp(self.delta_actions_L[sfs_L[i]][str(Ls[i+1])][self.cutoff:]), self.block_size)
+                           for i in range(len(Ls)-1)]
         return delta_actions_M + delta_actions_L
     
     def calc_ratio(self, delta_actions, N_Ms):
@@ -83,6 +106,58 @@ class Data:
             else:
                 ratio /= np.mean(delta_actions[i])
         return ratio
+    
+    def calc_gamma(self, R, Ebar, delta_E, t_full, dt):
+        return R*(2*np.pi)**0.5/delta_E * np.exp(-Ebar**2/2/delta_E**2)/(t_full*dt)**2
+    
+    def calc_gamma_w_errors(self, Ms, Ls, sf, sf1, sf2):
+        t_full = int(self.get_param(sf,"tfull"))
+        dt = float(self.get_param(sf, "dt"))
+        da_blocks = self.get_M_L_blocks(Ms, Ls, sf)
+        ratio=self.calc_ratio(da_blocks, len(Ms)-1)
+        R_blocks = jk.super_jackknife_combine_blocks(da_blocks, lambda x: self.calc_ratio(x, len(Ms)-1))
+        Ebar_blocks = self.get_Ebar_blocks(sf)
+        dE_blocks = self.get_Ebar_slope_blocks(sf1, sf2)
+        gamma_blocks = jk.super_jackknife_combine_blocks([R_blocks, Ebar_blocks, dE_blocks], lambda x: self.calc_gamma(x[0], x[1], x[2], t_full, dt))
+        gamma_mean = self.calc_gamma(np.mean(R_blocks), np.mean(Ebar_blocks), np.mean(dE_blocks), t_full, dt)
+        return jk.get_errors_from_blocks(gamma_mean, gamma_blocks)
+    
+    def calc_gamma_M_L_errors(self, Ms, Ls, sf, sf1, sf2):
+        gammas = []
+        for i in range(1,len(Ms)-1):
+            M = Ms.pop(i)
+            gammas.append(self.calc_gamma_w_errors(Ms,Ls,sf,sf1,sf2))
+            Ms.insert(i,M)
+        for i in range(1,len(Ls)-1):
+            L = Ls.pop(i)
+            gammas.append(self.calc_gamma_w_errors(Ms,Ls,sf,sf1,sf2))
+            Ls.insert(i,L)
+        return gammas
+    
+    def plot_gamma(self, Ms, Ls):
+        # TODO: Filter to ensure that all sfs have same parameters
+        sfs = list(filter(lambda x: self.get_param(x,"M")=="1.0" and self.get_param(x,"L")=="0.0", list(self.delta_actions_t_FV)))
+        sfs.sort(key=lambda x: float(self.get_param(x, "tFV")))
+        t_TVs = []
+        gammas = []
+        gamma_errs = []
+        dis_errors_up = []
+        dis_errors_down = []
+        for i in range(1,len(sfs)-1):
+            if self.replace_param(sfs[i], "L", Ls[1]) in list(self.delta_actions_L):
+                gamma = self.calc_gamma_w_errors(Ms, Ls, sfs[i], sfs[i-1], sfs[i+1])
+                gamma_fd = self.calc_gamma_w_errors(Ms, Ls, sfs[i], sfs[i], sfs[i+1])
+                gamma_bd = self.calc_gamma_w_errors(Ms, Ls, sfs[i], sfs[i-1], sfs[i])
+                t_TVs.append(self.get_t_TV(sfs[i])*float(self.get_param(sfs[i], "dt")))
+                gammas.append(gamma[0])
+                gamma_errs.append(gamma[1])
+                dis_errors_up.append(abs(gamma_bd[0]-gamma[0]))
+                dis_errors_down.append(abs(gamma_fd[0]-gamma[0]))
+            else:
+                continue
+        plt.errorbar(t_TVs, gammas, yerr=gamma_errs)
+        plt.errorbar(t_TVs, gammas, yerr=[dis_errors_down,dis_errors_up])
+        return t_TVs, gammas, gamma_errs, [dis_errors_down, dis_errors_up]
     
     def plot_mean_path(self):
         #x = np.arange(-5,5,0.1)
@@ -172,11 +247,14 @@ class Data:
         bdiv = self.get_Ebar_blocks(sf, delta_t)
         return jk.get_errors_from_blocks(np.mean(bdiv), bdiv)
     
-    def get_Ebar_slope(self, sf1, sf2, delta_t=1):
+    def get_Ebar_slope_blocks(self, sf1, sf2, delta_t=1):
         dt_TV = self.get_t_TV(sf2)*float(self.get_param(sf2, "dt")) - self.get_t_TV(sf1)*float(self.get_param(sf2, "dt"))
         bdiv1 = self.get_Ebar_blocks(sf1, delta_t)
         bdiv2 = self.get_Ebar_blocks(sf2, delta_t)
-        bdiv = (bdiv1 - bdiv2)**0.5 / dt_TV
+        return ((bdiv1 - bdiv2) / dt_TV)**0.5
+    
+    def get_Ebar_slope(self, sf1, sf2, delta_t=1):
+        bdiv = self.get_Ebar_slope_blocks(sf1, sf2, delta_t)
         return jk.get_errors_from_blocks(np.mean(bdiv), bdiv)
     
     def get_delta_E(self, sf):
@@ -193,7 +271,6 @@ class Data:
         blocks_FVa2 = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_FV[sf][f"{t_FV+delta_t2}"][self.cutoff:]), self.block_size)
         
         bdiv = np.log(np.divide(blocks_FVa2,blocks_TVa2)/np.divide(blocks_FVa,blocks_TVa)**2.0)**0.5/(dt*delta_t2)
-        #print(bdiv)
         return jk.get_errors_from_blocks(np.mean(bdiv), bdiv)
     
     def plot_Ebar_E_FV(self, delta_t=1):
@@ -235,114 +312,6 @@ class Data:
             dE_errs.append(err)
         plt.errorbar(t_TVs, dEs, yerr=dE_errs)
     
-    def plot_ratio1_vs_t(self, delta_action, dt, t_limit=[-100,100], fact=1.0, label="X"):
-        delta_actions = []
-        delta_action_errs = []
-        t = []
-        ks = list(delta_action)
-        blocks_prev = jk.get_jackknife_blocks(np.exp(delta_action[ks[0]][self.cutoff:]), self.block_size)
-        for k in ks[1:]:
-            try:
-                blocks = jk.get_jackknife_blocks(np.exp(delta_action[k][self.cutoff:]), self.block_size)
-                bdiv = np.log(np.divide(blocks,blocks_prev))/dt
-                #print(f"dS: {delta_actions[-1]}")
-                #print(np.mean(blocks))
-                #print(np.mean(blocks_prev))
-                blocks_prev = blocks
-                #print(f"{int(k)}, {t_limit}")
-                if(int(k)<t_limit[0] or int(k)>t_limit[1]): continue
-                [da, err] = jk.get_errors_from_blocks(np.mean(bdiv), bdiv)
-                t.append(int(k))
-                delta_actions.append(da*fact)
-                delta_action_errs.append(err*fact)
-            except ValueError:
-                continue
-        plt.errorbar(t, delta_actions, yerr=delta_action_errs, label=label)
-        print(t)
-        print(delta_actions)
-    
-    def plot_ratio1_vs_t(self, delta_action, dt, t_limit=[-100,100], fact=1.0, label="X"):
-        delta_actions = []
-        delta_action_errs = []
-        t = []
-        ks = list(delta_action)
-        blocks_prev = jk.get_jackknife_blocks(np.exp(delta_action[ks[0]][self.cutoff:]), self.block_size)
-        for k in ks[1:]:
-            try:
-                blocks = jk.get_jackknife_blocks(np.exp(delta_action[k][self.cutoff:]), self.block_size)
-                bdiv = np.log(np.divide(blocks,blocks_prev))/dt
-                #print(f"dS: {delta_actions[-1]}")
-                #print(np.mean(blocks))
-                #print(np.mean(blocks_prev))
-                blocks_prev = blocks
-                #print(f"{int(k)}, {t_limit}")
-                if(int(k)<t_limit[0] or int(k)>t_limit[1]): continue
-                [da, err] = jk.get_errors_from_blocks(np.mean(bdiv), bdiv)
-                t.append(int(k))
-                delta_actions.append(da*fact)
-                delta_action_errs.append(err*fact)
-            except ValueError:
-                continue
-        plt.errorbar(t, delta_actions, yerr=delta_action_errs, label=label)
-        print(t)
-        print(delta_actions)
-    
-    def plot_ratio1_vs_t_TV(self, t_limit=100, sf=""):
-        if(sf==""):
-            sfs = self.delta_actions_t_TV
-        else:
-            sfs = [sf]
-        fact = 1.0
-        for sf in sfs:
-            print(sf)
-            if(self.get_param(sf,"M")!="1.0" or self.get_param(sf,'L')!="0.0"):
-                continue
-            t_TV = self.get_t_TV(sf)
-            label = f"tTV: {t_TV}, tFV: {self.get_param(sf,'tFV')}, tfull: {self.get_param(sf,'tfull')}"
-            self.plot_ratio1_vs_t(self.delta_actions_t_TV[sf], float(self.get_param(sf,"dt")), [t_TV-t_limit, t_TV+t_limit], fact, label)
-    
-    def plot_ratio2_vs_t(self, delta_action, dt, t_limit=[-100,100], fact=1.0, label="X"):
-        delta_actions = []
-        delta_action_errs = []
-        t = []
-        ks = list(delta_action)
-        blocks_prev2 = jk.get_jackknife_blocks(np.exp(delta_action[ks[0]][self.cutoff:]), self.block_size)
-        blocks_prev = jk.get_jackknife_blocks(np.exp(delta_action[ks[1]][self.cutoff:]), self.block_size)
-        for k in ks[2:]:
-            try:
-                blocks = jk.get_jackknife_blocks(np.exp(delta_action[k][self.cutoff:]), self.block_size)
-                bdiv = np.log(np.divide(blocks,blocks_prev)*np.divide(blocks_prev2,blocks_prev))/dt/dt
-                #print(f"dS: {delta_actions[-1]}")
-                #print(np.mean(blocks))
-                #print(np.mean(blocks_prev))
-                blocks_prev2 = blocks_prev
-                blocks_prev = blocks
-                #print(f"{int(k)}, {t_limit}")
-                if(int(k)<t_limit[0] or int(k)>t_limit[1]): continue
-                [da, err] = jk.get_errors_from_blocks(np.mean(bdiv), bdiv)
-                t.append(int(k))
-                delta_actions.append(da*fact)
-                delta_action_errs.append(err*fact)
-            except ValueError:
-                continue
-        plt.errorbar(t, delta_actions, yerr=delta_action_errs, label=label)
-        print(t)
-        print(delta_actions)
-    
-    def plot_ratio2_vs_t_TV(self, t_limit=100, sf=""):
-        if(sf==""):
-            sfs = self.delta_actions_t_TV
-        else:
-            sfs = [sf]
-        fact = 1.0
-        for sf in sfs:
-            print(sf)
-            if(self.get_param(sf,"M")!="1.0" or self.get_param(sf,'L')!="0.0"):
-                continue
-            t_TV = self.get_t_TV(sf)
-            label = f"tTV: {t_TV}, tFV: {self.get_param(sf,'tFV')}, tfull: {self.get_param(sf,'tfull')}"
-            self.plot_ratio2_vs_t(self.delta_actions_t_TV[sf], float(self.get_param(sf,"dt")), [t_TV-t_limit, t_TV+t_limit], fact, label)
-    
     def plot_change_over_mdtime(self, obs, block_size, t_limit=100):
         y = []
         y_err = []
@@ -359,9 +328,12 @@ class Data:
         files = glob.glob(save_file)
         if len(files):
             for sf in files:
-                print(f"Loading {sf}")
                 with open(sf,"rb") as input:
                     data = pickle.load(input)
+                    sf = self.remove_date(sf)
+                    if(sf in list(self.trajs)):
+                        print(f"Already loaded ensemble with same parameters as {sf}")
+                        continue
                     self.trajs[sf] = data["trajs"]
                     self.accept_rates[sf] = data["accept_rates"]
                     self.psq_list[sf] = data["psq_list"]
@@ -374,3 +346,4 @@ class Data:
                     self.delta_actions_L[sf] = data["delta_actions_L"]
                     self.delta_actions_t_FV[sf] = data["delta_actions_t_FV"]
                     self.delta_actions_t_TV[sf] = data["delta_actions_t_TV"]
+                    print(f"Loaded {sf}")
