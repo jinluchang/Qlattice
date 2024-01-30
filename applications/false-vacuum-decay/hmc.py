@@ -392,7 +392,7 @@ def main():
     M = 1.0
     L = 0.0
     t_full = 5
-    t_FV = 75
+    t_FV = 65
     m_particle = 1.0
     dt = 0.2
     # The number of trajectories to calculate
