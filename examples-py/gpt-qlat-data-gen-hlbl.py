@@ -20,8 +20,8 @@ is_cython = False
 
 load_path_list[:] = [
         "results",
-        os.path.join(os.getenv("HOME"), "frontier-data/hlbl-proj/qcddata4"),
-        os.path.join(os.getenv("HOME"), "frontier-data/hlbl-proj/qcddata5"),
+        "/lustre/orion/lgt119/proj-shared/ljin/qcddata4",
+        "/lustre/orion/lgt119/proj-shared/ljin/qcddata5",
         ]
 
 # ----
