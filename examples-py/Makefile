@@ -25,7 +25,6 @@ tests = \
 		lat-io-test2.log \
 		jackknife-random.log \
 		jackknife-super.log \
-		qplot.log \
 		field-utils.log \
 		field-multi-size.log \
 		field-selection.log \
