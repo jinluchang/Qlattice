@@ -35,7 +35,8 @@ tests = \
 		hmc-pure-gauge-flowed.log \
 		qcd-utils.log \
 		free-invert.log \
-		q-fit-corr.log
+		q-fit-corr.log \
+		mat-mpi-test.log
 
 tests_gpt = \
 			grid-qlat-io-test.log \
