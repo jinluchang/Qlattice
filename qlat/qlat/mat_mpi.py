@@ -105,7 +105,7 @@ class DistArray:
             d_ret.x = self.x * v
         return d_ret
 
-    def __div__(self, v):
+    def __truediv__(self, v):
         comm = self.comm
         d_ret = DistArray(comm=comm)
         d_ret.n = self.n
