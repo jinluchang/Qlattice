@@ -118,7 +118,6 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
     json_results.append((f"{fname}: ld sig", q.get_double_sig(ld, q.RngState()),))
-    q.displayln_info(f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.5E}")
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -180,7 +179,6 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, ge
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    q.displayln_info(f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.5E}")
     json_results.append((f"{fname}: ld sig", q.get_double_sig(ld, q.RngState()),))
 
 @q.timer_verbose
@@ -246,7 +244,6 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, ge
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    q.displayln_info(f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.5E}")
     json_results.append((f"{fname}: ld sig", q.get_double_sig(ld, q.RngState()),))
 
 @q.timer_verbose
@@ -326,7 +323,6 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    q.displayln_info(f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.5E}")
     json_results.append((f"{fname}: ld sig", q.get_double_sig(ld, q.RngState()),))
 
 # ----
@@ -430,7 +426,6 @@ def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
         ])
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
-    q.displayln_info(f"CHECK: {fname}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.5E}")
     json_results.append((f"{fname}: ld_sum sig", q.get_double_sig(ld_sum, q.RngState()),))
 
 # ----
@@ -526,7 +521,6 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
         ])
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
-    q.displayln_info(f"CHECK: {fname}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.4E}")
     json_results.append((f"{fname}: ld_sum sig", q.get_double_sig(ld_sum, q.RngState()),))
 
 # ----
@@ -863,7 +857,6 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
         ])
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
-    q.displayln_info(f"CHECK: {fname}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.5E}")
     json_results.append((f"{fname}: ld_sum sig", q.get_double_sig(ld_sum, q.RngState()),))
 
 # ----
@@ -1136,7 +1129,6 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         ])
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
-    q.displayln_info(f"CHECK: {fname}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.5E}")
     json_results.append((f"{fname}: ld_sum sig", q.get_double_sig(ld_sum, q.RngState()),))
 
 @q.timer_verbose
@@ -1366,7 +1358,6 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
         ])
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
-    q.displayln_info(f"CHECK: {fname}: ld_sum sig: {q.get_double_sig(ld_sum, q.RngState()):.5E}")
     json_results.append((f"{fname}: ld_sum sig", q.get_double_sig(ld_sum, q.RngState()),))
 
 ### ------
@@ -1559,7 +1550,7 @@ for job_tag in job_tags:
 
 if 0 == q.get_id_node():
     json_fn_name = os.path.splitext(__file__)[0] + ".log.json"
-    q.qtouch(json_fn_name + ".new", q.json_dumps(json_results))
+    q.qtouch(json_fn_name + ".new", q.json_dumps(json_results, indent=1))
     if q.does_file_exist_qar(json_fn_name):
         json_results_load = q.json_loads(q.qcat(json_fn_name))
         for i, p in enumerate(zip(json_results, json_results_load)):
