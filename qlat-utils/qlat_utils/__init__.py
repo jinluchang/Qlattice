@@ -29,6 +29,8 @@ from .parallel import *
 
 from .get_include_dir import *
 
+from .json import *
+
 from . import q_fit_corr
 
 set_verbose_level()

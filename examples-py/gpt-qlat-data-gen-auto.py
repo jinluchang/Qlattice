@@ -10,7 +10,6 @@ import os
 import time
 import importlib
 import sys
-import json
 
 import qlat_gpt as qg
 
@@ -1559,19 +1558,19 @@ for job_tag in job_tags:
         run_job(job_tag, traj)
 
 if 0 == q.get_id_node():
-    json_fn_name = os.path.splitext(__file__)[0] + ".json"
-    q.qtouch(json_fn_name + ".new", json.dumps(json_results))
+    json_fn_name = os.path.splitext(__file__)[0] + ".log.json"
+    q.qtouch(json_fn_name + ".new", q.json_dumps(json_results))
     if q.does_file_exist_qar(json_fn_name):
-        json_results_load = json.loads(q.qcat(json_fn_name))
-        for p in zip(json_results, json_results_load):
+        json_results_load = q.json_loads(q.qcat(json_fn_name))
+        for i, p in enumerate(zip(json_results, json_results_load)):
             (n, v,), (nl, vl,) = p
             if n != nl:
-                q.displayln(f"{p}")
-                raise Exception("Json result item does not match.")
+                q.displayln(f"CHECK: {i} {p}")
+                raise Exception("JSON results item does not match.")
                 assert False
             if abs(v - vl) > 1e-5 * (abs(v) + abs(vl)):
-                q.displayln(f"{p}")
-                raise Exception("Json result value does not match.")
+                q.displayln(f"CHECK: {i} {p}")
+                raise Exception("JSON results value does not match.")
 
 q.timer_display()
 
