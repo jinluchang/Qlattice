@@ -26,8 +26,8 @@ jobs:
         sudo apt-get install -y git bzip2 autoconf unzip
         sudo apt-get install -y python3-full python3-dev
         sudo apt-get install -y libopenmpi-dev ninja-build patchelf libeigen3-dev libgsl-dev zlib1g-dev libssl-dev libmpfr-dev
-        sudo apt-get install -y gnuplot texlive-metapost poppler-utils
         sudo apt-get install -y libfftw3-dev
+        # sudo apt-get install -y gnuplot texlive-metapost poppler-utils
         #
         sudo apt-get install -y latexmk texlive-latex-recommended texlive-latex-extra tex-gyre
     - name: Build default
@@ -110,9 +110,9 @@ jobs:
         sudo apt-get install -y git bzip2 autoconf unzip
         sudo apt-get install -y python3-full python3-dev
         sudo apt-get install -y libopenmpi-dev ninja-build patchelf libeigen3-dev libgsl-dev zlib1g-dev libssl-dev libmpfr-dev
-        sudo apt-get install -y gnuplot texlive-metapost poppler-utils
         sudo apt-get install -y libfftw3-dev
         sudo apt-get install -y clang libomp-dev
+        # sudo apt-get install -y gnuplot texlive-metapost poppler-utils
     - name: Download dependencies
       run: |
         ./scripts/download-core.sh
@@ -209,8 +209,8 @@ jobs:
         sudo apt-get install -y git bzip2 autoconf unzip
         sudo apt-get install -y python3-full python3-dev
         sudo apt-get install -y libopenmpi-dev ninja-build patchelf libeigen3-dev libgsl-dev zlib1g-dev libssl-dev libmpfr-dev
-        sudo apt-get install -y gnuplot texlive-metapost poppler-utils
         sudo apt-get install -y libfftw3-dev
+        # sudo apt-get install -y gnuplot texlive-metapost poppler-utils
     - name: Download dependencies
       run: |
         ./scripts/download-core.sh
@@ -321,9 +321,6 @@ jobs:
         python3 -c 'import sys ; from mesonbuild import mesonmain; sys.exit(mesonmain.main())' --version
         type ninja
         ninja --version
-    - name: Install Brew packages for plot
-      run: |
-        brew install gnuplot texlive poppler
     - name: Testing pylib qlat
       run: |
         ./scripts/qlat-examples-py.sh
@@ -379,9 +376,6 @@ jobs:
         python3 -c 'import sys ; from mesonbuild import mesonmain; sys.exit(mesonmain.main())' --version
         type ninja
         ninja --version
-    - name: Install Brew packages for plot
-      run: |
-        brew install gnuplot texlive poppler
     - name: Testing pylib qlat
       run: |
         export num_proc=3
@@ -506,9 +500,6 @@ jobs:
       run: |
         export num_proc=3
         ./scripts/qlat-packages.sh
-    - name: Install Brew packages for plot
-      run: |
-        brew install gnuplot texlive poppler
     - name: Testing pylib qlat
       run: |
         export num_proc=3
