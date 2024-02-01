@@ -35,6 +35,8 @@ from .get_include_dir import *
 
 from .field_analysis import *
 
+from .mat_mpi import *
+
 from . import field_double
 
 set_verbose_level()

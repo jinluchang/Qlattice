@@ -25,6 +25,7 @@ py_files = files(
   'qm_action.py',
   'scalar_action.py',
   'field_analysis.py',
+  'mat_mpi.py',
   )
 
 pxd_files = files(
