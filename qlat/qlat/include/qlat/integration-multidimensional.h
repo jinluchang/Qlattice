@@ -4,6 +4,8 @@
 
 #ifndef QLAT_NO_CUBA
 #include <cuba.h>
+#else
+using peakfinder_t = void*;
 #endif
 
 #include <vector>
@@ -62,7 +64,7 @@ void integrateDivonne(std::vector<double>& integral, std::vector<double>& error,
   //   fail=%f\n", i, integral[i], error[i], prob[i]);
   // }
 #else
-  qerr("integrateDivonne: QLAT_NO_CUBA defined.");
+  qerr("integrateDivonne: QLAT_NO_CUBA defined. (Cuba library not found)");
 #endif
 }
 
@@ -90,7 +92,7 @@ void integrateCuhre(std::vector<double>& integral, std::vector<double>& error,
   //   fail=%f\n", i, integral[i], error[i], prob[i]);
   // }
 #else
-  qerr("integrateDivonne: QLAT_NO_CUBA defined.");
+  qerr("integrateDivonne: QLAT_NO_CUBA defined. (Cuba library not found)");
 #endif
 }
 

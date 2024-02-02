@@ -8,7 +8,7 @@ if not cpp.has_function('sysinfo', prefix: '#include <sys/sysinfo.h>')
   conf_data.set('QLAT_NO_SYSINFO', true)
 endif
 
-if not cpp.has_function('Cuhre', prefix: '#include <cuba.h>')
+if not cpp.has_function('Cuhre', prefix: '#include <cuba.h>', dependencies: cuba)
   conf_data.set('QLAT_NO_CUBA', true)
 endif
 

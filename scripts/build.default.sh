@@ -9,6 +9,7 @@ set -e
     ./scripts/python-venv.sh
     ./scripts/python-pip-install.sh
 
+    ./scripts/cuba.sh
     ./scripts/eigen.sh
     ./scripts/ninja-script.sh
 
