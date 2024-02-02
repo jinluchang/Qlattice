@@ -9,16 +9,17 @@ cdef extern from "qlat/mpi.h" namespace "qlat":
     const Coordinate& get_size_node() except +
     const Coordinate& get_coor_node() except +
     void sync_node() except +
-    int bcast(float& x, const int root) except +
     int bcast(Long& x, const int root) except +
+    int bcast(RealD& x, const int root) except +
+    int bcast(RealF& x, const int root) except +
     int bcast(ComplexD& x, const int root) except +
     int bcast(ComplexF& x, const int root) except +
     int bcast(std_string& recv, const int root) except +
     int bcast(Coordinate& x, const int root) except +
     int bcast(LatData& ld, const int root) except +
     int glb_sum(Long& ld) except +
-    int glb_sum(float& ld) except +
-    int glb_sum(double& ld) except +
+    int glb_sum(RealD& ld) except +
+    int glb_sum(RealF& ld) except +
     int glb_sum(ComplexD& ld) except +
     int glb_sum(ComplexF& ld) except +
     int glb_sum(LatData& ld) except +
@@ -70,7 +71,7 @@ cdef extern from "qlat/utils-io.h" namespace "qlat":
     void release_lock() except +
     bool obtain_lock(const std_string& path) except +
     void qquit(const std_string& msg) except +
-    void check_time_limit(const double budget) except +
+    void check_time_limit(const RealD budget) except +
     void check_stop(const std_string& fn) except +
     bool does_file_exist_sync_node(const std_string& fn) except +
     bool does_regular_file_exist_qar_sync_node(const std_string& fn) except +
@@ -167,7 +168,7 @@ cdef extern from "qlat/core.h" namespace "qlat":
 
 cdef extern from "qlat/field.h" namespace "qlat":
 
-    double qnorm[M](const Field[M]& f) except +
+    RealD qnorm[M](const Field[M]& f) except +
     void qnorm_field[M](Field[RealD]& f, const Field[M]& f1) except +
     void set_xg_field(Field[Int]& f, const Geometry& geo) except +
     void field_shift[M](Field[M]& f, const Field[M]& f1, const Coordinate& shift) except +
@@ -214,7 +215,7 @@ cdef extern from "qlat/selected-field-io.h" namespace "qlat":
 
 cdef extern from "qlat/selected-points.h" namespace "qlat":
 
-    double qnorm[M](const SelectedPoints[M]& sp) except +
+    RealD qnorm[M](const SelectedPoints[M]& sp) except +
     void qnorm_field[M](SelectedPoints[RealD]& sp, const SelectedPoints[M]& sp1) except +
     LatData lat_data_from_selected_points[M](const SelectedPoints[M]& sp) except +
     void selected_points_from_lat_data[M](SelectedPoints[M]& sp, const LatData& ld) except +
@@ -227,7 +228,7 @@ cdef extern from "qlat/selected-points.h" namespace "qlat":
 
 cdef extern from "qlat/selected-field-io.h" namespace "qlat":
 
-    double qnorm[M](const SelectedField[M]& sf) except +
+    RealD qnorm[M](const SelectedField[M]& sf) except +
     void qnorm_field[M](SelectedField[RealD]& f, const SelectedField[M]& f1) except +
     void set_selected_field[t](SelectedField[t]& sf, const Field[t]& f,
                                const FieldSelection& fsel) except +
@@ -265,8 +266,8 @@ cdef extern from "qlat/gauge-action.h" namespace "qlat":
 
     cdef cppclass GaugeAction:
         bool initialized
-        double beta
-        double c1
+        RealD beta
+        RealD c1
         void init() except +
         GaugeAction() except +
 
@@ -365,27 +366,27 @@ cdef extern from "qlat/muon-line.h" namespace "qlat":
     # epsrel = 1e-3
     # dims = [ 6, 6, 6, 6, 6, ] ~ [ 16, 16, 16, 16, 16, ]
     bool compute_save_muonline_interpolation_cc(const std_string& path,
-                                                const std_vector[int]& dims,
-                                                const double epsabs,
-                                                const double epsrel) except +
-    std_vector[double] muon_line_sym_py(const CoordinateD& x,
+                                                const std_vector[Int]& dims,
+                                                const RealD epsabs,
+                                                const RealD epsrel) except +
+    std_vector[RealD] muon_line_sym_py(const CoordinateD& x,
                                         const CoordinateD& y,
-                                        const double epsabs,
-                                        const double epsrel) except +
+                                        const RealD epsabs,
+                                        const RealD epsrel) except +
     #
-    bool load_multiple_muonline_interpolations(const std_string& path, std_vector[long] idx_list) except +
+    bool load_multiple_muonline_interpolations(const std_string& path, std_vector[Long] idx_list) except +
     #
-    std_vector[double] get_muon_line_m_py(
+    std_vector[RealD] get_muon_line_m_py(
             const CoordinateD& x, const CoordinateD& y,
             const CoordinateD& z,
-            const int idx,
-            const double epsabs,
-            const double epsrel) except +
-    std_vector[double] get_muon_line_m_extra_py(const CoordinateD& x,
+            const Int idx,
+            const RealD epsabs,
+            const RealD epsrel) except +
+    std_vector[RealD] get_muon_line_m_extra_py(const CoordinateD& x,
                                                 const CoordinateD& y,
                                                 const CoordinateD& z,
-                                                const int tag) except +
-    std_vector[double] get_muon_line_m_extra_lat_py(
+                                                const Int tag) except +
+    std_vector[RealD] get_muon_line_m_extra_lat_py(
             const Coordinate& x, const Coordinate& y, const Coordinate& z,
-            const Coordinate& total_site, const double a, const int tag) except +
+            const Coordinate& total_site, const RealD a, const Int tag) except +
 

@@ -66,8 +66,8 @@ struct Interpolation2d {
   Interpolation2d() { init(); }
   template <class F>
   Interpolation2d(const F& f, const double xhigh, const double xlow,
-                  const long xsize, const double yhigh, const double ylow,
-                  const long ysize)
+                  const Long xsize, const double yhigh, const double ylow,
+                  const Long ysize)
   {
     init();
     init(f, xhigh, xlow, xsize, yhigh, ylow, ysize);
@@ -76,29 +76,29 @@ struct Interpolation2d {
   //
   void init() { spline = NULL; }
   template <class F>
-  void init(const F& f, const double xhigh, const double xlow, const long xsize,
-            const double yhigh, const double ylow, const long ysize)
+  void init(const F& f, const double xhigh, const double xlow, const Long xsize,
+            const double yhigh, const double ylow, const Long ysize)
   {
     free();
     spline = gsl_spline2d_alloc(gsl_interp2d_bicubic, xsize, ysize);
     const double xsep = (xhigh - xlow) / (xsize - 1);
     const double ysep = (yhigh - ylow) / (ysize - 1);
-    const long size = xsize * ysize;
+    const Long size = xsize * ysize;
     std::vector<double> xs(xsize, 0.0);
     std::vector<double> ys(ysize, 0.0);
     std::vector<double> zs(size, 0.0);
-    for (long i = 0; i < xsize; ++i) {
+    for (Long i = 0; i < xsize; ++i) {
       const double x = xlow + xsep * i;
       xs[i] = x;
     }
-    for (long j = 0; j < ysize; ++j) {
+    for (Long j = 0; j < ysize; ++j) {
       const double y = ylow + ysep * j;
       ys[j] = y;
     }
     xs[xsize - 1] = xhigh;
     ys[ysize - 1] = yhigh;
-    for (long i = 0; i < xsize; ++i) {
-      for (long j = 0; j < ysize; ++j) {
+    for (Long i = 0; i < xsize; ++i) {
+      for (Long j = 0; j < ysize; ++j) {
         const double x = xs[i];
         const double y = ys[j];
         gsl_spline2d_set(spline, zs.data(), i, j, f(x, y));

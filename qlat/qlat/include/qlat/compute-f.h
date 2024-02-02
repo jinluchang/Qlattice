@@ -388,8 +388,8 @@ inline void test_fderiv()
   RngState rs("test_fderiv");
   const double low = -3.0;
   const double high = 3.0;
-  const long size = 4;
-  for (long i = 0; i < size; ++i) {
+  const Long size = 4;
+  for (Long i = 0; i < size; ++i) {
     CoordinateD c;
     for (int mu = 0; mu < 4; ++mu) {
       c[mu] = u_rand_gen(rs, high, low);
@@ -424,11 +424,11 @@ inline void test_fderiv()
 inline void profile_gxxCalc()
 {
   TIMER_VERBOSE_FLOPS("profile_gxxCalc");
-  const long size = 128;
+  const Long size = 128;
   timer.flops += size * size;
   double sum = 0.0;
-  for (long i = 0; i < size; ++i) {
-    for (long j = 0; j < size; ++j) {
+  for (Long i = 0; i < size; ++i) {
+    for (Long j = 0; j < size; ++j) {
       const double len = (double)i / (double)size;
       const double ratio = (double)(2 * j) / (double)size - 1.0;
       sum += gxxCalc(len, ratio);
@@ -440,11 +440,11 @@ inline void profile_gxxCalc()
 inline void profile_f1xxCalc()
 {
   TIMER_VERBOSE_FLOPS("profile_f1xxCalc");
-  const long size = 128;
+  const Long size = 128;
   timer.flops += size * size;
   double sum = 0.0;
-  for (long i = 0; i < size; ++i) {
-    for (long j = 0; j < size; ++j) {
+  for (Long i = 0; i < size; ++i) {
+    for (Long j = 0; j < size; ++j) {
       const double len = (double)i / (double)size;
       const double ratio = (double)(2 * j) / (double)size - 1.0;
       sum += f1xxCalc(len, ratio);
@@ -457,11 +457,11 @@ inline void profile_f1xxCalc()
 inline void profile_g0xxCalc()
 {
   TIMER_VERBOSE_FLOPS("profile_g0xxCalc");
-  const long size = 128;
+  const Long size = 128;
   timer.flops += size * size;
   double sum = 0.0;
-  for (long i = 0; i < size; ++i) {
-    for (long j = 0; j < size; ++j) {
+  for (Long i = 0; i < size; ++i) {
+    for (Long j = 0; j < size; ++j) {
       const double len = (double)i / (double)size;
       const double ratio = (double)(2 * j) / (double)size - 1.0;
       sum += g0xxCalc(len, ratio);
