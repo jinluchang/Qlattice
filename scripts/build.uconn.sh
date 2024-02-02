@@ -10,7 +10,6 @@ set -e
     ./scripts/cuba.sh
     ./scripts/zlib.sh
     ./scripts/eigen.sh
-    ./scripts/perl.sh
     ./scripts/openssl.sh
     ./scripts/libffi.sh
     ./scripts/openblas.sh
@@ -25,6 +24,7 @@ set -e
     ./scripts/python-meson-py.sh
     ./scripts/python-packages.sh
 
+    ./scripts/autoconf.sh
     ./scripts/automake.sh
     ./scripts/gmp.sh
     ./scripts/mpfr.sh
