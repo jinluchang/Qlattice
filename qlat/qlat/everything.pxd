@@ -355,3 +355,37 @@ cdef extern from "qlat/qcd-topology.h" namespace "qlat":
     void clf_topology_field_5(Field[RealD]& topf, const GaugeField& gf) except +
     void clf_topology_field_5_terms(Field[RealD]& topf, const GaugeField& gf) except +
     RealD topology_charge_5(const GaugeField& gf) except +
+
+cdef extern from "qlat/muon-line.h" namespace "qlat":
+
+    void test_integrationMultidimensional() except +
+    #
+    void clear_muon_line_interpolations() except +
+    # epsabs = 1e-8
+    # epsrel = 1e-3
+    # dims = [ 6, 6, 6, 6, 6, ] ~ [ 16, 16, 16, 16, 16, ]
+    bool compute_save_muonline_interpolation_cc(const std_string& path,
+                                                const std_vector[int]& dims,
+                                                const double epsabs,
+                                                const double epsrel) except +
+    std_vector[double] muon_line_sym_py(const CoordinateD& x,
+                                        const CoordinateD& y,
+                                        const double epsabs,
+                                        const double epsrel) except +
+    #
+    bool load_multiple_muonline_interpolations(const std_string& path, std_vector[long] idx_list) except +
+    #
+    std_vector[double] get_muon_line_m_py(
+            const CoordinateD& x, const CoordinateD& y,
+            const CoordinateD& z,
+            const int idx,
+            const double epsabs,
+            const double epsrel) except +
+    std_vector[double] get_muon_line_m_extra_py(const CoordinateD& x,
+                                                const CoordinateD& y,
+                                                const CoordinateD& z,
+                                                const int tag) except +
+    std_vector[double] get_muon_line_m_extra_lat_py(
+            const Coordinate& x, const Coordinate& y, const Coordinate& z,
+            const Coordinate& total_site, const double a, const int tag) except +
+

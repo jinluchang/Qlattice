@@ -13,6 +13,9 @@ message('fftw libdir', qlat_fftw.get_variable('libdir'))
 message('fftwf libdir', qlat_fftwf.get_variable('libdir'))
 qlat_fftw_all = [ qlat_fftw, qlat_fftwf, ]
 
+qlat_cuba = qlat_cpp.find_library('cuba')
+qlat_gsl = dependency('gsl').as_system()
+
 qlat_math = qlat_cpp.find_library('m')
 
 qlat_numpy_include = run_command(qlat_py3, '-c', 'import numpy as np ; print(np.get_include())',
@@ -60,5 +63,5 @@ qlat = declare_dependency(
     qlat_py3.dependency().as_system(),
     qlat_cpp.find_library('qlat', dirs: qlat_lib),
     qlat_cpp.find_library('qlat-utils', dirs: qlat_lib),
-    qlat_numpy, qlat_eigen, qlat_omp, qlat_fftw_all, qlat_zlib, qlat_math, ],
+    qlat_numpy, qlat_eigen, qlat_omp, qlat_fftw_all, qlat_gsl, qlat_cuba, qlat_zlib, qlat_math, ],
   )

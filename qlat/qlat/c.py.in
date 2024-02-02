@@ -183,6 +183,17 @@ __all__ += [
         'run_hmc_evolve_pure_gauge',
         ]
 
+__all__ += [
+        'test_integration_multi_dimensional',
+        'clear_muon_line_interpolations',
+        'compute_save_muonline_interpolation',
+        'load_multiple_muonline_interpolations',
+        'calc_muon_line_m',
+        'get_muon_line_m',
+        'get_muon_line_m_extra',
+        'get_muon_line_m_extra_lat',
+        ]
+
 ### -------------------------------------------------------------------------
 
 import ctypes
@@ -219,5 +230,6 @@ from .hmc import *
 from .gauge_action import *
 from .topology import *
 from .wilson_flow import *
+from .muon_line import *
 
 sys.setdlopenflags(flags)

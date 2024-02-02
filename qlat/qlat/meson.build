@@ -41,6 +41,7 @@ pxd_files = files(
   'fields_io.pxd',
   'hmc.pxd',
   'gauge_action.pxd',
+  'muon_line.pxd',
   )
 
 py3.install_sources(init_files + py_files + pxd_files, subdir: 'qlat')
@@ -108,6 +109,7 @@ name_pyx_list = [
   'topology',
   'hmc',
   'gauge_action',
+  'muon_line',
   ]
 
 foreach name: name_pyx_list

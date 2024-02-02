@@ -40,7 +40,10 @@ message('fftw libdir', fftw.get_variable('libdir'))
 message('fftwf libdir', fftwf.get_variable('libdir'))
 fftw_all = [ fftw, fftwf, ]
 
-deps = [ qlat_utils, mpic, fftw_all, ]
+cuba = cpp.find_library('cuba')
+gsl = dependency('gsl').as_system()
+
+deps = [ qlat_utils, mpic, fftw_all, cuba, gsl, ]
 
 py3.install_sources('qlat_gpt.py')
 
