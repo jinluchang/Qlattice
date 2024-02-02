@@ -230,6 +230,17 @@ class DistArray:
         else:
             raise Exception(f"DistArray.transpose: axes={axes}")
 
+    def conj(self):
+        """
+        return DistArray
+        Collective operation.
+        """
+        comm = self.comm
+        d_ret = DistArray(comm=comm)
+        d_ret.n = self.n
+        d_ret.x = self.x.conj()
+        return d_ret
+
 ###
 
 def d_matmul_ref(d_mat, d_vec):
