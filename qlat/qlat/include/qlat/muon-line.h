@@ -86,9 +86,9 @@ inline std::string compare_multiline_string(const std::string& s1,
   return out.str();
 }
 
-typedef Eigen::Matrix<double, 3, 3, Eigen::RowMajor> SpatialO3Matrix;
+typedef Eigen::Matrix<RealD, 3, 3, Eigen::RowMajor> SpatialO3Matrix;
 
-inline SpatialO3Matrix makeRotationAroundX(const double phi)
+inline SpatialO3Matrix makeRotationAroundX(const RealD phi)
 {
   using namespace std;
   SpatialO3Matrix ret;
@@ -96,7 +96,7 @@ inline SpatialO3Matrix makeRotationAroundX(const double phi)
   return ret;
 }
 
-inline SpatialO3Matrix makeRotationAroundZ(const double phi)
+inline SpatialO3Matrix makeRotationAroundZ(const RealD phi)
 {
   using namespace std;
   SpatialO3Matrix ret;
@@ -120,7 +120,7 @@ inline SpatialO3Matrix makeRandomSpatialO3Matrix(RngState& rs)
 
 inline CoordinateD operator*(const SpatialO3Matrix& m, const CoordinateD& x)
 {
-  Eigen::Matrix<double, 3, 1> vec;
+  Eigen::Matrix<RealD, 3, 1> vec;
   vec << x[0], x[1], x[2];
   vec = m * vec;
   CoordinateD ret;
@@ -131,10 +131,10 @@ inline CoordinateD operator*(const SpatialO3Matrix& m, const CoordinateD& x)
   return ret;
 }
 
-typedef array<double, 92> ManyMagneticMomentsCompressed;
+typedef array<RealD, 92> ManyMagneticMomentsCompressed;
 
 inline ManyMagneticMomentsCompressed operator*(
-    const double a, const ManyMagneticMomentsCompressed& m)
+    const RealD a, const ManyMagneticMomentsCompressed& m)
 {
   ManyMagneticMomentsCompressed ret;
   for (size_t i = 0; i < ret.size(); ++i) {
@@ -144,13 +144,13 @@ inline ManyMagneticMomentsCompressed operator*(
 }
 
 inline ManyMagneticMomentsCompressed operator*(
-    const ManyMagneticMomentsCompressed& m, const double a)
+    const ManyMagneticMomentsCompressed& m, const RealD a)
 {
   return a * m;
 }
 
 inline ManyMagneticMomentsCompressed& operator*=(
-    ManyMagneticMomentsCompressed& m, const double a)
+    ManyMagneticMomentsCompressed& m, const RealD a)
 {
   m = a * m;
   return m;
@@ -249,7 +249,7 @@ inline ManyMagneticMoments muonLine(const CoordinateD& x, const CoordinateD& y,
                                     const double epsrel = 1.0e-3)
 {
   TIMER("muonLine");
-  std::vector<double> integral = integrateMuonLine(x, y, epsabs, epsrel);
+  std::vector<RealD> integral = integrateMuonLine(x, y, epsabs, epsrel);
   return computeProjections(integral);
 }
 
@@ -263,7 +263,7 @@ inline ManyMagneticMoments muonLineSymR(const CoordinateD& x,
   return muonLine(x, y, epsabs, epsrel);
 }
 
-inline std::vector<double> std_vector_from_many_magnetic_moments(
+inline std::vector<RealD> std_vector_from_many_magnetic_moments(
     const ManyMagneticMoments& mmm)
 // return ret;
 //
@@ -271,7 +271,7 @@ inline std::vector<double> std_vector_from_many_magnetic_moments(
 // = ret[i * 64 + rho * 16 + sigma * 4 + lambda]
 // = mmm[16 * sigma + 4 * lambda + rho][i]
 {
-  std::vector<double> ret(3 * 4 * 4 * 4, 0.0);
+  std::vector<RealD> ret(3 * 4 * 4 * 4, 0.0);
   for (int i = 0; i < 3; ++i) {
     for (int rho = 0; rho < 4; ++rho) {
       for (int sigma = 0; sigma < 4; ++sigma) {
@@ -307,10 +307,10 @@ inline ManyMagneticMoments muonLineSym(const CoordinateD& x,
   return averageManyMagneticMoments(mmms);
 }
 
-inline std::vector<double> muon_line_sym_py(const CoordinateD& x,
-                                            const CoordinateD& y,
-                                            const double epsabs = 1.0e-8,
-                                            const double epsrel = 1.0e-3)
+inline std::vector<RealD> muon_line_sym_py(const CoordinateD& x,
+                                           const CoordinateD& y,
+                                           const double epsabs = 1.0e-8,
+                                           const double epsrel = 1.0e-3)
 // python interface function
 // interface function
 // important, return average instead of sum of all six permutations
@@ -330,15 +330,15 @@ inline std::vector<double> muon_line_sym_py(const CoordinateD& x,
 // ------------------------------------------------------
 
 inline void coordinatesFromParams(CoordinateD& x, CoordinateD& y,
-                                  const std::vector<double>& params)
+                                  const std::vector<RealD>& params)
 // if y[0] == 0 then theta = 0 and eta = PI/2
 {
   assert(5 == params.size());
-  const double d = DISTANCE_LIMIT * std::pow(params[0], 2.0);
-  const double alpha = std::pow(params[1], 2.0);
-  const double theta = params[2] * PI;
-  const double phi = params[3] * PI;
-  const double eta = params[4] * PI;
+  const RealD d = DISTANCE_LIMIT * std::pow(params[0], 2.0);
+  const RealD alpha = std::pow(params[1], 2.0);
+  const RealD theta = params[2] * PI;
+  const RealD phi = params[3] * PI;
+  const RealD eta = params[4] * PI;
   x[0] = d * alpha * std::sin(phi) * std::cos(eta);
   x[1] = d * alpha * std::sin(phi) * std::sin(eta);
   x[2] = 0.0;
@@ -358,7 +358,7 @@ inline void coordinatesFromParams(CoordinateD& x, CoordinateD& y,
   }
 }
 
-inline void paramsFromCoordinates(std::vector<double>& params,
+inline void paramsFromCoordinates(std::vector<RealD>& params,
                                   const CoordinateD& x, const CoordinateD& y)
 {
   const double x_len = coordinate_len(x) + 1.0E-99;
@@ -447,7 +447,7 @@ inline ManyMagneticMoments uncompressManyMagneticMoments(
 }
 
 inline ManyMagneticMomentsCompressed muonLineSymParamsCompressed(
-    const std::vector<double>& params, const double epsabs = 1.0e-8,
+    const std::vector<RealD>& params, const double epsabs = 1.0e-8,
     const double epsrel = 1.0e-3)
 // Target function for interpolation
 {
@@ -469,25 +469,25 @@ inline std::vector<MuonLineInterp>& get_muonline_interps()
   return interps;
 }
 
-inline long& get_default_muonline_interp_idx()
+inline Long& get_default_muonline_interp_idx()
 {
-  static long idx = IS_USING_MUON_LINE_INTERPOLATION ? 0 : -1;
+  static Long idx = IS_USING_MUON_LINE_INTERPOLATION ? 0 : -1;
   return idx;
 }
 
 inline MuonLineInterp& getMuonLineInterp(
-    const long idx = get_default_muonline_interp_idx())
+    const Long idx = get_default_muonline_interp_idx())
 {
   qassert(idx >= 0);
   std::vector<MuonLineInterp>& interps = get_muonline_interps();
-  if (idx >= (long)interps.size()) {
+  if (idx >= (Long)interps.size()) {
     interps.resize(idx + 1);
   }
   return interps[idx];
 }
 
 inline ManyMagneticMomentsCompressed muonLineSymParamsCompressedInterpolate(
-    const std::vector<double>& params,
+    const std::vector<RealD>& params,
     const int b_interp = get_default_muonline_interp_idx())
 {
   const MuonLineInterp& interpolation = getMuonLineInterp(b_interp);
@@ -497,7 +497,7 @@ inline ManyMagneticMomentsCompressed muonLineSymParamsCompressedInterpolate(
 }
 
 inline ManyMagneticMoments muonLineSymParams(
-    const std::vector<double>& params, const double epsabs = 1.0e-8,
+    const std::vector<RealD>& params, const double epsabs = 1.0e-8,
     const double epsrel = 1.0e-3,
     const int b_interp = get_default_muonline_interp_idx())
 {
@@ -515,7 +515,7 @@ inline ManyMagneticMoments muonLineSymThroughParam(
     const double epsrel = 1.0e-3,
     const int b_interp = get_default_muonline_interp_idx())
 {
-  std::vector<double> params;
+  std::vector<RealD> params;
   paramsFromCoordinates(params, x, y);
   return muonLineSymParams(params, epsabs, epsrel, b_interp);
 }
@@ -523,7 +523,7 @@ inline ManyMagneticMoments muonLineSymThroughParam(
 inline MagneticMoment operator*(const SpatialO3Matrix& m,
                                 const MagneticMoment& v)
 {
-  Eigen::Matrix<double, 3, 1> vec;
+  Eigen::Matrix<RealD, 3, 1> vec;
   vec << v[0], v[1], v[2];
   MagneticMoment ret;
   vec = m.determinant() * m * vec;
@@ -671,7 +671,7 @@ inline ManyMagneticMoments muonLineSymTransform(
   return muonLineSymPermute(x, y, epsabs, epsrel, b_interp);
 }
 
-inline void paramsFromCoordinatesPermute(std::vector<double>& params,
+inline void paramsFromCoordinatesPermute(std::vector<RealD>& params,
                                          const CoordinateD& x,
                                          const CoordinateD& y)
 {
@@ -701,7 +701,7 @@ inline void compare_many_magnetic_moments(const std::string& tag,
                                           const ManyMagneticMoments& mmm,
                                           const ManyMagneticMoments& mmmp)
 {
-  std::vector<double> params;
+  std::vector<RealD> params;
   paramsFromCoordinatesPermute(params, x, y);
   const double diff_percent = 100.0 * sqrt(qnorm(mmmp - mmm) / qnorm(mmm));
   const bool is_print = diff_percent > 0.0001 || true;
@@ -777,16 +777,16 @@ inline void initializeMuonLineInterpolation(const std::vector<int>& dims,
   interpolation.add_dimension(dims[2], 1.0, 0.0);  // theta
   interpolation.add_dimension(dims[3], 1.0, 0.0);  // phi
   interpolation.add_dimension(dims[4], 1.0, 0.0);  // eta
-  const long jobs_total = interpolation.size();
-  const long num_nodes = get_num_node();
-  const long jobs_per_nodes = jobs_total / num_nodes;
-  const long jobs_parallel = jobs_per_nodes * num_nodes;
-  const long jobs_left = jobs_total - jobs_parallel;
-  const long my_start = jobs_left + jobs_per_nodes * get_id_node();
+  const Long jobs_total = interpolation.size();
+  const Long num_nodes = get_num_node();
+  const Long jobs_per_nodes = jobs_total / num_nodes;
+  const Long jobs_parallel = jobs_per_nodes * num_nodes;
+  const Long jobs_left = jobs_total - jobs_parallel;
+  const Long my_start = jobs_left + jobs_per_nodes * get_id_node();
   std::vector<ManyMagneticMomentsCompressed> workplace(jobs_per_nodes);
 #pragma omp parallel for schedule(dynamic)
-  for (long i = 0; i < jobs_per_nodes; ++i) {
-    const long idx = my_start + i;
+  for (Long i = 0; i < jobs_per_nodes; ++i) {
+    const Long idx = my_start + i;
     TIMER_VERBOSE("interp-initial-iter");
 #pragma omp critical
     {
@@ -800,7 +800,7 @@ inline void initializeMuonLineInterpolation(const std::vector<int>& dims,
                                                       jobs_parallel);
   all_gather(all_workspace, Vector<ManyMagneticMomentsCompressed>(workplace));
 #pragma omp parallel for schedule(dynamic)
-  for (long idx = 0; idx < jobs_left; ++idx) {
+  for (Long idx = 0; idx < jobs_left; ++idx) {
     TIMER_VERBOSE("interp-initial-iter");
 #pragma omp critical
     if (0 == get_id_node()) {
@@ -859,7 +859,7 @@ inline bool loadMuonLineInterpolation(const std::string& path,
   }
   MuonLineInterp& interp = getMuonLineInterp(interp_idx);
   interp.init();
-  std::vector<std::vector<double>> dims;
+  std::vector<std::vector<RealD>> dims;
   if (0 == get_id_node()) {
     qassert(does_file_exist_qar(path + "/dims.txt"));
     dims = qload_datatable(path + "/dims.txt");
@@ -876,7 +876,7 @@ inline bool loadMuonLineInterpolation(const std::string& path,
       interp.add_dimension((int)dims[i][1], dims[i][2], dims[i][3]);
     }
   }
-  long limit = 0;
+  Long limit = 0;
   if (0 == get_id_node()) {
     // Can be obtained from
     // split -da 10 -l 10000 data.txt data.txt.
@@ -906,10 +906,10 @@ inline bool loadMuonLineInterpolation(const std::string& path,
   set_zero(get_data(interp.data));
 #pragma omp parallel for
   for (size_t i = 0; i < data.size(); ++i) {
-    const std::vector<double>& data_vec = data[i];
+    const std::vector<RealD>& data_vec = data[i];
     qassert(data_vec.size() == 1 + 5 + 92);
     const size_t idx = (size_t)data_vec[0];
-    std::vector<double> params = interp.get_coor(idx);
+    std::vector<RealD> params = interp.get_coor(idx);
     qassert(params.size() == 5);
     for (size_t k = 0; k < params.size(); ++k) {
       qassert(params[k] == data_vec[1 + k]);
@@ -950,7 +950,7 @@ inline void save_part_muonline_interpolation_data(
   for (size_t k = 0; k < (size_t)data.size(); ++k) {
     size_t idx = start_idx + k;
     fprintf(fdata, "%10ld", idx);
-    const std::vector<double> params = interp.get_coor(idx);
+    const std::vector<RealD> params = interp.get_coor(idx);
     for (size_t i = 0; i < params.size(); ++i) {
       fprintf(fdata, " %24.17E", params[i]);
     }
@@ -974,7 +974,7 @@ inline bool is_part_muonline_interpolation_data_done(const std::string& path,
 
 struct PointPairWeight {
   CoordinateD rxy, rxz;
-  double weight;
+  RealD weight;
 };
 
 inline int boundary_multiplicity(const Coordinate& xg, const Coordinate& lb,
@@ -1036,7 +1036,7 @@ inline std::vector<PointPairWeight> shift_lat_corr(const Coordinate& x,
             // one edge is too long, outside of the interpolation range
             continue;
           }
-          ppw.weight = 1.0 / (double)boundary_multiplicity(rxz, lb, ub);
+          ppw.weight = 1.0 / (RealD)boundary_multiplicity(rxz, lb, ub);
           ret.push_back(ppw);
         }
       }
@@ -1060,13 +1060,13 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
 // preferred way to generate interpolation field
 {
   TIMER_VERBOSE("compute_save_muonline_interpolation_cc");
-  std::vector<std::vector<double>> ldims;
+  std::vector<std::vector<RealD>> ldims;
   if (0 == get_id_node() && does_file_exist_qar(path + "/dims.txt")) {
-    std::vector<std::vector<double>> ldims =
+    std::vector<std::vector<RealD>> ldims =
         qload_datatable(path + "/dims.txt");
     qassert(ldims.size() == dims.size());
-    for (long i = 0; i < ldims.size(); ++i) {
-      qassert(i == (long)ldims[i][0]);
+    for (Long i = 0; i < ldims.size(); ++i) {
+      qassert(i == (Long)ldims[i][0]);
       qassert(dims[i] == (int)ldims[i][1]);
       qassert(1.0 == ldims[i][2]);
       qassert(0.0 == ldims[i][3]);
@@ -1075,7 +1075,7 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
   assert(dims.size() == 5);
   MuonLineInterp& interp = getMuonLineInterp();
   interp.init();
-  for (long i = 0; i < (long)dims.size(); ++i) {
+  for (Long i = 0; i < (Long)dims.size(); ++i) {
     interp.add_dimension(dims[i], 1.0, 0.0);
   }
   set_zero(get_data(interp.data));
@@ -1088,7 +1088,7 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
       FILE* fdims = qopen(path + "/dims.txt" + ".partial", "w");
       const std::vector<InterpolationDim>& dims = interp.dims;
       fprintf(fdims, "# i dims[i].n dims[i].xhigh dims[i].xlow\n");
-      for (long i = 0; i < (long)dims.size(); ++i) {
+      for (Long i = 0; i < (Long)dims.size(); ++i) {
         fprintf(fdims, "%3ld %5d %24.17E %24.17E\n", i, dims[i].n,
                 dims[i].xhigh, dims[i].xlow);
       }
@@ -1096,12 +1096,12 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
       qrename_partial(path + "/dims.txt");
     }
     test_fCalc();
-    const long jobs_total = interp.size();
+    const Long jobs_total = interp.size();
     displayln_info(ssprintf("jobs_total=%ld", jobs_total));
     // ADJUST ME
-    const long job_chunk_size = 64;
-    std::vector<long> jobs;
-    for (long start = 0; start <= jobs_total - job_chunk_size;
+    const Long job_chunk_size = 64;
+    std::vector<Long> jobs;
+    for (Long start = 0; start <= jobs_total - job_chunk_size;
          start += job_chunk_size) {
       jobs.push_back(start);
     }
@@ -1109,10 +1109,10 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
     std::vector<array<ManyMagneticMomentsCompressed, job_chunk_size>> data;
     qassert(get_num_node() > 1);
     if (0 == get_id_node()) {
-      const long size = jobs.size();
+      const Long size = jobs.size();
       data.resize(size);
-      long num_running_jobs = 0;
-      long idx = 0;
+      Long num_running_jobs = 0;
+      Long idx = 0;
       for (int dest = 1; dest < get_num_node(); ++dest) {
         while (is_part_muonline_interpolation_data_done(path, idx)) {
           idx += 1;
@@ -1162,14 +1162,14 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
         num_running_jobs -= 1;
       }
       for (int dest = 1; dest < get_num_node(); ++dest) {
-        long job = 0;
+        Long job = 0;
         displayln(
-            ssprintf("send-job: %5d %10ld/%ld", dest, (long)-1, jobs_total));
+            ssprintf("send-job: %5d %10ld/%ld", dest, (Long)-1, jobs_total));
         send_job(-1, job, dest);
       }
       idx = 0;
-      for (long i = 0; i < (long)data.size(); ++i) {
-        for (long j = 0; j < job_chunk_size; ++j) {
+      for (Long i = 0; i < (Long)data.size(); ++i) {
+        for (Long j = 0; j < job_chunk_size; ++j) {
           interp[idx] = data[i][j];
           idx += 1;
         }
@@ -1177,7 +1177,7 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
     } else {
       while (true) {
         int64_t flag;
-        long job;
+        Long job;
         receive_job(flag, job);
         if (-1 == flag) {
           displayln(ssprintf("par: %5d done", get_id_node()));
@@ -1185,8 +1185,8 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
         }
         array<ManyMagneticMomentsCompressed, job_chunk_size> result;
 #pragma omp parallel for schedule(dynamic)
-        for (long i = 0; i < job_chunk_size; ++i) {
-          const long idx = job + i;
+        for (Long i = 0; i < job_chunk_size; ++i) {
+          const Long idx = job + i;
           result[i] =
               muonLineSymParamsCompressed(interp.get_coor(idx), epsabs, epsrel);
 #pragma omp critical
@@ -1199,10 +1199,10 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
       }
     }
     if (0 == get_id_node()) {
-      const long last_flag = jobs_total / job_chunk_size;
-      const long last_start_idx = last_flag * job_chunk_size;
+      const Long last_flag = jobs_total / job_chunk_size;
+      const Long last_start_idx = last_flag * job_chunk_size;
 #pragma omp parallel for schedule(dynamic)
-      for (long idx = last_start_idx; idx < jobs_total; ++idx) {
+      for (Long idx = last_start_idx; idx < jobs_total; ++idx) {
         interp[idx] =
             muonLineSymParamsCompressed(interp.get_coor(idx), epsabs, epsrel);
 #pragma omp critical
@@ -1224,13 +1224,13 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
 }
 
 inline bool load_multiple_muonline_interpolations(
-    const std::string& path, std::vector<long> idx_list = std::vector<long>())
+    const std::string& path, std::vector<Long> idx_list = std::vector<Long>())
 // python interface function
 // interface function
 // used to load the data
 {
   TIMER_VERBOSE("load_multiple_muonline_interpolations");
-  long limit = 0;
+  Long limit = 0;
   if (0 == get_id_node()) {
     while (does_file_exist_qar(path + ssprintf("/%010d/checkpoint", limit))) {
       limit += 1;
@@ -1241,12 +1241,12 @@ inline bool load_multiple_muonline_interpolations(
     return loadMuonLineInterpolation(path);
   }
   if (idx_list.size() == 0) {
-    for (long idx = 0; idx < limit; ++idx) {
+    for (Long idx = 0; idx < limit; ++idx) {
       idx_list.push_back(idx);
     }
   }
-  for (long i = 0; i < (long)idx_list.size(); ++i) {
-    const long idx = idx_list[i];
+  for (Long i = 0; i < (Long)idx_list.size(); ++i) {
+    const Long idx = idx_list[i];
     loadMuonLineInterpolation(path + ssprintf("/%010d", idx), idx);
   }
   return true;
@@ -1262,7 +1262,7 @@ inline ManyMagneticMoments get_muon_line_m(
   // return muonLineSym(x - z, y - z, epsabs, epsrel);
 }
 
-inline std::vector<double> get_muon_line_m_py(
+inline std::vector<RealD> get_muon_line_m_py(
     const CoordinateD& x, const CoordinateD& y, const CoordinateD& z,
     const int idx = get_default_muonline_interp_idx(),
     const double epsabs = 1.0e-8, const double epsrel = 1.0e-3)
@@ -1300,7 +1300,7 @@ inline ManyMagneticMoments get_muon_line_m_extra(const CoordinateD& x,
          0.26666666666666667 * m3;
 }
 
-inline std::vector<double> get_muon_line_m_extra_py(const CoordinateD& x,
+inline std::vector<RealD> get_muon_line_m_extra_py(const CoordinateD& x,
                                                     const CoordinateD& y,
                                                     const CoordinateD& z,
                                                     const int tag)
@@ -1325,9 +1325,9 @@ inline ManyMagneticMoments get_muon_line_m_extra_lat(
   const Coordinate rxy = relative_coordinate(y - x, total_site);
   const Coordinate ryz = relative_coordinate(z - y, total_site);
   const Coordinate rzx = relative_coordinate(x - z, total_site);
-  const long d2xy = distance_sq_relative_coordinate_g(rxy);
-  const long d2yz = distance_sq_relative_coordinate_g(ryz);
-  const long d2zx = distance_sq_relative_coordinate_g(rzx);
+  const Long d2xy = distance_sq_relative_coordinate_g(rxy);
+  const Long d2yz = distance_sq_relative_coordinate_g(ryz);
+  const Long d2zx = distance_sq_relative_coordinate_g(rzx);
   std::vector<PointPairWeight> ppws;
   if (d2xy <= d2yz and d2xy <= d2zx) {
     ppws = shift_lat_corr(x, y, z, total_site, a);
@@ -1362,7 +1362,7 @@ inline ManyMagneticMoments get_muon_line_m_extra_lat(
   return mmm;
 }
 
-inline std::vector<double> get_muon_line_m_extra_lat_py(
+inline std::vector<RealD> get_muon_line_m_extra_lat_py(
     const Coordinate& x, const Coordinate& y, const Coordinate& z,
     const Coordinate& total_site, const double a, const int tag)
 // interface
@@ -1501,7 +1501,7 @@ inline void test_muonline_interp()
   for (int i = my_start; i < (int)my_end; ++i) {
     RngState rsi(rs, i);
     const size_t idx = rand_gen(rsi) % interp_size;
-    const std::vector<double> params = interp.get_coor(idx);
+    const std::vector<RealD> params = interp.get_coor(idx);
     CoordinateD x, y;
     coordinatesFromParams(x, y, params);
     for (int i = 0; i < 4; ++i) {
