@@ -2,7 +2,9 @@
 
 #include <qlat/qlat.h>
 
+#ifndef QLAT_NO_CUBA
 #include <cuba.h>
+#endif
 
 #include <vector>
 #include <cstring>
@@ -41,6 +43,7 @@ void integrateDivonne(std::vector<double>& integral, std::vector<double>& error,
                       const char* statefile = NULL, void* spin = NULL)
 {
   TIMER("integrateDivonne");
+#ifndef QLAT_NO_CUBA
   if (0 == ldxgiven) {
     ldxgiven = ndim;
   }
@@ -58,6 +61,9 @@ void integrateDivonne(std::vector<double>& integral, std::vector<double>& error,
   //   DisplayInfo("", fname, "i=%d integral=%23.16e ; error=%23.16e ;
   //   fail=%f\n", i, integral[i], error[i], prob[i]);
   // }
+#else
+  qerr("integrateDivonne: QLAT_NO_CUBA defined.");
+#endif
 }
 
 template <class F>
@@ -70,6 +76,7 @@ void integrateCuhre(std::vector<double>& integral, std::vector<double>& error,
                     const char* statefile = NULL, void* spin = NULL)
 {
   TIMER("integrateCuhre");
+#ifndef QLAT_NO_CUBA
   integral.resize(ncomp);
   error.resize(ncomp);
   prob.resize(ncomp);
@@ -82,6 +89,9 @@ void integrateCuhre(std::vector<double>& integral, std::vector<double>& error,
   //   DisplayInfo("", fname, "i=%d integral=%23.16e ; error=%23.16e ;
   //   fail=%f\n", i, integral[i], error[i], prob[i]);
   // }
+#else
+  qerr("integrateDivonne: QLAT_NO_CUBA defined.");
+#endif
 }
 
 inline std::vector<double> test_integrand4d(const std::vector<double>& vx)

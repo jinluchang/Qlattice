@@ -8,6 +8,10 @@ if not cpp.has_function('sysinfo', prefix: '#include <sys/sysinfo.h>')
   conf_data.set('QLAT_NO_SYSINFO', true)
 endif
 
+if not cpp.has_function('Cuhre', prefix: '#include <cuba.h>')
+  conf_data.set('QLAT_NO_CUBA', true)
+endif
+
 config_file = configure_file(output: 'config.h', configuration: conf_data)
 
 py3.install_sources(config_file, subdir: 'qlat/include/qlat')

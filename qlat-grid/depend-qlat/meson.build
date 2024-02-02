@@ -13,7 +13,7 @@ message('fftw libdir', qlat_fftw.get_variable('libdir'))
 message('fftwf libdir', qlat_fftwf.get_variable('libdir'))
 qlat_fftw_all = [ qlat_fftw, qlat_fftwf, ]
 
-qlat_cuba = qlat_cpp.find_library('cuba')
+qlat_cuba = qlat_cpp.find_library('cuba', required: false)
 qlat_gsl = dependency('gsl').as_system()
 
 qlat_math = qlat_cpp.find_library('m')

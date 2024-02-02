@@ -40,7 +40,7 @@ message('fftw libdir', fftw.get_variable('libdir'))
 message('fftwf libdir', fftwf.get_variable('libdir'))
 fftw_all = [ fftw, fftwf, ]
 
-cuba = cpp.find_library('cuba')
+cuba = cpp.find_library('cuba', required: false)
 gsl = dependency('gsl').as_system()
 
 deps = [ qlat_utils, mpic, fftw_all, cuba, gsl, ]
