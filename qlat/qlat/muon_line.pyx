@@ -22,7 +22,7 @@ def clear_muon_line_interpolations():
     cc.clear_muon_line_interpolations()
 
 @q.timer
-def compute_save_muonline_interpolation(cc.std_string path, cc.std_vector[int] dims, double epsabs, double epsrel):
+def compute_save_muonline_interpolation(cc.std_string path, cc.std_vector[cc.Int] dims, cc.RealD epsabs, cc.RealD epsrel):
     """
     compute and save the muonline interpolation at `path`.
     #
@@ -34,7 +34,7 @@ def compute_save_muonline_interpolation(cc.std_string path, cc.std_vector[int] d
     return cc.compute_save_muonline_interpolation_cc(path, dims, epsabs, epsrel)
 
 @q.timer
-def load_multiple_muonline_interpolations(cc.std_string path, cc.std_vector[long] idx_list):
+def load_multiple_muonline_interpolations(cc.std_string path, cc.std_vector[cc.Long] idx_list):
     """
     load muonline interpolation saved at `path`.
     #
@@ -47,7 +47,7 @@ def load_multiple_muonline_interpolations(cc.std_string path, cc.std_vector[long
     return cc.load_multiple_muonline_interpolations(path, idx_list)
 
 @q.timer
-def calc_muon_line_m(CoordinateD x, CoordinateD y, double epsabs, double epsrel):
+def calc_muon_line_m(CoordinateD x, CoordinateD y, cc.RealD epsabs, cc.RealD epsrel):
     """
     return ret
     ret is 4D np.array with total len=3*4*4*4 and dtype=np.float64
@@ -57,11 +57,11 @@ def calc_muon_line_m(CoordinateD x, CoordinateD y, double epsabs, double epsrel)
     interface to C++ function `muon_line_sym_py`
     default: epsabs=1e-8 ; epsrel=1e-3
     """
-    cdef cc.std_vector[double] vec = cc.muon_line_sym_py(x.xx, y.xx, epsabs, epsrel)
+    cdef cc.std_vector[cc.RealD] vec = cc.muon_line_sym_py(x.xx, y.xx, epsabs, epsrel)
     cdef numpy.ndarray arr = np.ascontiguousarray(vec, dtype=np.float64).reshape(3, 4, 4, 4)
     return arr
 
-def get_muon_line_m(CoordinateD x, CoordinateD y, CoordinateD z, int idx, double epsabs, double epsrel):
+def get_muon_line_m(CoordinateD x, CoordinateD y, CoordinateD z, cc.Int idx, cc.RealD epsabs, cc.RealD epsrel):
     """
     return ret
     ret is 4D np.array with total len=3*4*4*4 and dtype=np.float64
@@ -72,11 +72,11 @@ def get_muon_line_m(CoordinateD x, CoordinateD y, CoordinateD z, int idx, double
     if idx < 0: calculate instead of using loaded interpolation.
     else using the muonline interpolation loaded as `idx` (epsabs and epsrel are ignored).
     """
-    cdef cc.std_vector[double] vec = cc.get_muon_line_m_py(x.xx, y.xx, z.xx, idx, epsabs, epsrel)
+    cdef cc.std_vector[cc.RealD] vec = cc.get_muon_line_m_py(x.xx, y.xx, z.xx, idx, epsabs, epsrel)
     cdef numpy.ndarray arr = np.ascontiguousarray(vec, dtype=np.float64).reshape(3, 4, 4, 4)
     return arr
 
-def get_muon_line_m_extra(CoordinateD x, CoordinateD y, CoordinateD z, int tag):
+def get_muon_line_m_extra(CoordinateD x, CoordinateD y, CoordinateD z, cc.Int tag):
     """
     return ret
     ret is 4D np.array with total len=3*4*4*4 and dtype=np.float64
@@ -87,11 +87,11 @@ def get_muon_line_m_extra(CoordinateD x, CoordinateD y, CoordinateD z, int tag):
     tag = 0 sub
     tag = 1 nosub
     """
-    cdef cc.std_vector[double] vec = cc.get_muon_line_m_extra_py(x.xx, y.xx, z.xx, tag)
+    cdef cc.std_vector[cc.RealD] vec = cc.get_muon_line_m_extra_py(x.xx, y.xx, z.xx, tag)
     cdef numpy.ndarray arr = np.ascontiguousarray(vec, dtype=np.float64).reshape(3, 4, 4, 4)
     return arr
 
-def get_muon_line_m_extra_lat(Coordinate x, Coordinate y, Coordinate z, Coordinate total_site, double a, int tag):
+def get_muon_line_m_extra_lat(Coordinate x, Coordinate y, Coordinate z, Coordinate total_site, cc.RealD a, cc.Int tag):
     """
     return ret
     ret is 4D np.array with total len=3*4*4*4 and dtype=np.float64
@@ -103,6 +103,6 @@ def get_muon_line_m_extra_lat(Coordinate x, Coordinate y, Coordinate z, Coordina
     tag = 0 sub
     tag = 1 nosub
     """
-    cdef cc.std_vector[double] vec = cc.get_muon_line_m_extra_lat_py(x.xx, y.xx, z.xx, total_site.xx, a, tag)
+    cdef cc.std_vector[cc.RealD] vec = cc.get_muon_line_m_extra_lat_py(x.xx, y.xx, z.xx, total_site.xx, a, tag)
     cdef numpy.ndarray arr = np.ascontiguousarray(vec, dtype=np.float64).reshape(3, 4, 4, 4)
     return arr
