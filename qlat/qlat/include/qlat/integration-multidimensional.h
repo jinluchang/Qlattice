@@ -15,6 +15,15 @@ using peakfinder_t = void*;
 namespace qlat
 {
 
+inline bool has_cuba()
+{
+#ifndef QLAT_NO_CUBA
+  return true;
+#else
+  return false;
+#endif
+}
+
 template <class F>
 inline int cubaFunction(const int* ndim, const double x[], const int* ncomp,
                         double f[], void* userdata)

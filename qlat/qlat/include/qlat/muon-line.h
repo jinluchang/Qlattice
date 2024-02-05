@@ -1283,6 +1283,19 @@ inline ManyMagneticMoments get_muon_line_m_extra(const CoordinateD& x,
 // % tag = 1 : no subtraction
 // % m is the muon mass in the lattice unit (or lattice spacing in muon mass unit)
 // % total_site is the lattice size in lattice unit
+// % Interpolations shoulded be loaded for this function:
+// % 0: 6^5 with-sub
+// % 1: 8^5 with-sub (used for tag 0)
+// % 2: 10^5 with-sub
+// % 3: 12^5 with-sub (used for tag 0)
+// % 4: 14^5 with-sub
+// % 5: 16^5 with-sub (used for tag 0)
+// % 6: 6^5 no-sub
+// % 7: 8^5 no-sub (used for tag 1)
+// % 8: 10^5 no-sub
+// % 9: 12^5 no-sub (used for tag 1)
+// % l0: 14^5 no-sub
+// % 11: 16^5 no-sub (used for tag 1)
 {
   ManyMagneticMoments m1, m2, m3;
   if (tag == 0) {

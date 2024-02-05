@@ -11,6 +11,11 @@ import numpy as np
 import qlat_utils as q
 
 @q.timer
+def has_cuba():
+    cdef cc.Bool b = cc.has_cuba()
+    return b
+
+@q.timer
 def test_integration_multi_dimensional():
     cc.test_integrationMultidimensional()
 
@@ -86,6 +91,20 @@ def get_muon_line_m_extra(CoordinateD x, CoordinateD y, CoordinateD z, cc.Int ta
     interface to C++ function `get_muon_line_m_extra_py`
     tag = 0 sub
     tag = 1 nosub
+    #
+    Interpolations shoulded be loaded for this function:
+    0: 6^5 with-sub
+    1: 8^5 with-sub (used for tag 0)
+    2: 10^5 with-sub
+    3: 12^5 with-sub (used for tag 0)
+    4: 14^5 with-sub
+    5: 16^5 with-sub (used for tag 0)
+    6: 6^5 no-sub
+    7: 8^5 no-sub (used for tag 1)
+    8: 10^5 no-sub
+    9: 12^5 no-sub (used for tag 1)
+    l0: 14^5 no-sub
+    11: 16^5 no-sub (used for tag 1)
     """
     cdef cc.std_vector[cc.RealD] vec = cc.get_muon_line_m_extra_py(x.xx, y.xx, z.xx, tag)
     cdef numpy.ndarray arr = np.ascontiguousarray(vec, dtype=np.float64).reshape(3, 4, 4, 4)
@@ -102,6 +121,20 @@ def get_muon_line_m_extra_lat(Coordinate x, Coordinate y, Coordinate z, Coordina
     a is muon_mass in lattice unit.
     tag = 0 sub
     tag = 1 nosub
+    #
+    Interpolations shoulded be loaded for this function:
+    0: 6^5 with-sub
+    1: 8^5 with-sub (used for tag 0)
+    2: 10^5 with-sub
+    3: 12^5 with-sub (used for tag 0)
+    4: 14^5 with-sub
+    5: 16^5 with-sub (used for tag 0)
+    6: 6^5 no-sub
+    7: 8^5 no-sub (used for tag 1)
+    8: 10^5 no-sub
+    9: 12^5 no-sub (used for tag 1)
+    l0: 14^5 no-sub
+    11: 16^5 no-sub (used for tag 1)
     """
     cdef cc.std_vector[cc.RealD] vec = cc.get_muon_line_m_extra_lat_py(x.xx, y.xx, z.xx, total_site.xx, a, tag)
     cdef numpy.ndarray arr = np.ascontiguousarray(vec, dtype=np.float64).reshape(3, 4, 4, 4)

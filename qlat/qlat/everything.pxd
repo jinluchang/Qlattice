@@ -359,6 +359,8 @@ cdef extern from "qlat/qcd-topology.h" namespace "qlat":
 
 cdef extern from "qlat/muon-line.h" namespace "qlat":
 
+    bool has_cuba() except +
+    #
     void test_integrationMultidimensional() except +
     #
     void clear_muon_line_interpolations() except +

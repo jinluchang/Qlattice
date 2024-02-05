@@ -1,0 +1,2 @@
+CHECK: has_cuba=True
+CHECK: finished successfully.

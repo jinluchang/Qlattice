@@ -184,6 +184,7 @@ __all__ += [
         ]
 
 __all__ += [
+        'has_cuba',
         'test_integration_multi_dimensional',
         'clear_muon_line_interpolations',
         'compute_save_muonline_interpolation',
