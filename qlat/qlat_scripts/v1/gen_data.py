@@ -562,12 +562,15 @@ def compute_prop_psrc_all(job_tag, traj, *,
     path_s_hvp = f"{job_tag}/hvp-psrc-{inv_type_name}/traj-{traj}"
     path_hvp_ts = f"{job_tag}/hvp-sum-tslice-psrc-{inv_type_name}/traj-{traj}"
     path_sp = f"{job_tag}/psel-prop-psrc-{inv_type_name}/traj-{traj}"
-    finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
+    finished_tags_prop = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     is_saving_hvp = get_param(job_tag, "run_prop_psrc", "is_saving_hvp", default=True)
     if is_saving_hvp:
+        finished_tags_hvp = q.properly_truncate_fields(get_save_path(path_s_hvp + ".acc"))
+        finished_tags = [ tag for tag in finished_tags_hvp if tag in finished_tags_prop ]
         sfw_hvp = q.open_fields(get_save_path(path_s_hvp + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     else:
+        finished_tags = finished_tags_prop
         sfw_hvp = None
     def comp(idx, xg_src, inv_acc):
         compute_prop_psrc(job_tag, traj, xg_src, inv_type, inv_acc,
