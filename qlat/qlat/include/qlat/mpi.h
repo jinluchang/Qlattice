@@ -254,8 +254,6 @@ int bcast(std::vector<std::string>& recv, const int root = 0);
 
 int bcast(LatData& ld, const int root = 0);
 
-void sync_node();
-
 std::vector<Int> mk_id_node_list_for_shuffle_rs(const RngState& rs);
 
 std::vector<Int> mk_id_node_list_for_shuffle_step_size(const int step_size_);

@@ -203,16 +203,6 @@ int bcast(LatData& ld, const int root)
   return ret;
 }
 
-void sync_node()
-{
-  TIMER("sync_node");
-  RngState& rs = get_comm_list().back().sync_node_rs;
-  const Long v = rand_gen(rs) % (1024 * 1024);
-  Long s = v;
-  glb_sum(s);
-  qassert(s == v * get_num_node());
-}
-
 std::vector<Int> mk_id_node_list_for_shuffle_rs(const RngState& rs)
 {
   TIMER_VERBOSE("mk_id_node_list_for_shuffle_rs");
