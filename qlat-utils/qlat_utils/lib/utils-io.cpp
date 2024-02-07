@@ -395,7 +395,7 @@ int qmkdir(const std::string& path, const mode_t mode)
 int qmkdir_p(const std::string& dir_, const mode_t mode)
 // return 0 if successful
 {
-  TIMER("qmkdir_p");
+  TIMER_VERBOSE("qmkdir_p");
   const std::string dir = remove_trailing_slashes(dir_) + "/";
   if (is_directory_cache(dir)) {
     return 0;
