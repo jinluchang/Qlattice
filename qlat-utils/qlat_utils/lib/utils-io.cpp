@@ -61,11 +61,13 @@ std::vector<std::string> qls_all_aux(const std::string& path,
 int qremove_aux(const std::string& path)
 {
   TIMER("qremove_aux")
-  displayln(
-      0, ssprintf("qremove_aux: '%s' (id_node=%d).", path.c_str(), get_id_node()));
-  const int ret = std::remove(path.c_str());
-  if (ret != 0) {
-    qwarn(fname + ssprintf(": '%s' failed ret='%d'", path.c_str(), ret));
+  displayln(0, ssprintf("qremove_aux: '%s' (id_node=%d).", path.c_str(),
+                        get_id_node()));
+  if (does_file_exist(path)) {
+    const int ret = std::remove(path.c_str());
+    if (ret != 0) {
+      qwarn(fname + ssprintf(": '%s' failed ret='%d'", path.c_str(), ret));
+    }
   }
   return ret;
 }
