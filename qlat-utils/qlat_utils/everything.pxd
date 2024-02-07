@@ -357,7 +357,7 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
     void clear(LatData& x)
     double qnorm(const LatData& x)
 
-cdef extern from "qlat-utils/qar-cache.h" namespace "qlat":
+cdef extern from "qlat-utils/qar.h" namespace "qlat":
 
     bool does_regular_file_exist_qar(const std_string& path) except +
     bool does_file_exist_qar(const std_string& path) except +

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <qlat-utils/crc32.h>
-#include <qlat-utils/qar-cache.h>
 #include <qlat-utils/qar.h>
 #include <qlat-utils/utils-io.h>
 #include <qlat-utils/utils-vec.h>

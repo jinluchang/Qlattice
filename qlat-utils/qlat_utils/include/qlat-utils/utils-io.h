@@ -113,6 +113,36 @@ int qmkdir_p_info(const std::string& path,
 
 // --------------------------
 
+bool does_file_exist_sync_node(const std::string& fn);
+
+bool does_regular_file_exist_qar_sync_node(const std::string& fn);
+
+bool does_file_exist_qar_sync_node(const std::string& fn);
+
+bool is_directory_sync_node(const std::string& fn);
+
+bool is_regular_file_sync_node(const std::string& fn);
+
+int qmkdir_sync_node(const std::string& path,
+                     const mode_t mode = default_dir_mode());
+
+int qmkdir_p_sync_node(const std::string& path,
+                       const mode_t mode = default_dir_mode());
+
+// --------------------------
+
+inline void qset_line_buf(FILE* f)
+{
+  TIMER("qset_line_buf");
+  std::setvbuf(f, NULL, _IOLBF, 0);
+}
+
+inline void qset_fully_buf(FILE* f)
+{
+  TIMER("qset_fully_buf");
+  std::setvbuf(f, NULL, _IOFBF, BUFSIZ);
+}
+
 inline FILE* qopen(const std::string& path, const std::string& mode)
 {
   TIMER("qopen");
@@ -147,18 +177,6 @@ inline int qfclose_info(FILE*& file)
 {
   TIMER("qfclose_info");
   return qfclose(file);
-}
-
-inline void qset_line_buf(FILE* f)
-{
-  TIMER("qset_line_buf");
-  std::setvbuf(f, NULL, _IOLBF, 0);
-}
-
-inline void qset_fully_buf(FILE* f)
-{
-  TIMER("qset_fully_buf");
-  std::setvbuf(f, NULL, _IOFBF, BUFSIZ);
 }
 
 template <class M>

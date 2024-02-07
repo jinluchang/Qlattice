@@ -26,22 +26,6 @@ void check_time_limit(const double budget = get_time_budget());
 
 void check_stop(const std::string& fn = "stop.txt");
 
-bool does_file_exist_sync_node(const std::string& fn);
-
-bool does_regular_file_exist_qar_sync_node(const std::string& fn);
-
-bool does_file_exist_qar_sync_node(const std::string& fn);
-
-bool is_directory_sync_node(const std::string& fn);
-
-bool is_regular_file_sync_node(const std::string& fn);
-
-int qmkdir_sync_node(const std::string& path,
-                     const mode_t mode = default_dir_mode());
-
-int qmkdir_p_sync_node(const std::string& path,
-                       const mode_t mode = default_dir_mode());
-
 int mkdir_lock(const std::string& path, const mode_t mode = default_dir_mode());
 
 int mkdir_lock_all_node(const std::string& path,

@@ -49,7 +49,6 @@ header_files = files(
   'py_convert.h',
   'qacc-func.h',
   'qacc.h',
-  'qar-cache.h',
   'qar.h',
   'qcd-setting.h',
   'utils-extra.h',

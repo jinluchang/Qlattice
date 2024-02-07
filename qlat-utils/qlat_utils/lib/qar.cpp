@@ -1,4 +1,4 @@
-#include <qlat-utils/qar-cache.h>
+#include <qlat-utils/qar.h>
 
 namespace qlat
 {  //
@@ -1519,6 +1519,32 @@ int qcopy_file_info(const std::string& path_src, const std::string& path_dst)
     remove_entry_directory_cache(path_dir);
   }
   return ret;
+}
+
+// ---------------------------------
+
+bool does_regular_file_exist_qar_sync_node(const std::string& fn)
+{
+  Long nfile = 0;
+  if (0 == get_id_node()) {
+    if (does_regular_file_exist_qar(fn)) {
+      nfile = 1;
+    }
+  }
+  glb_sum_long(nfile);
+  return 0 != nfile;
+}
+
+bool does_file_exist_qar_sync_node(const std::string& fn)
+{
+  Long nfile = 0;
+  if (0 == get_id_node()) {
+    if (does_file_exist_qar(fn)) {
+      nfile = 1;
+    }
+  }
+  glb_sum_long(nfile);
+  return 0 != nfile;
 }
 
 }  // namespace qlat

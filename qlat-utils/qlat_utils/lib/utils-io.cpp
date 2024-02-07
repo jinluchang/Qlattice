@@ -497,4 +497,68 @@ int qmkdir_p_info(const std::string& path, const mode_t mode)
   }
 }
 
+// --------------------------------
+
+bool does_file_exist_sync_node(const std::string& fn)
+{
+  Long nfile = 0;
+  if (0 == get_id_node()) {
+    if (does_file_exist(fn)) {
+      nfile = 1;
+    }
+  }
+  glb_sum_long(nfile);
+  return 0 != nfile;
+}
+
+bool is_directory_sync_node(const std::string& fn)
+{
+  Long nfile = 0;
+  if (0 == get_id_node()) {
+    if (is_directory(fn)) {
+      nfile = 1;
+    }
+  }
+  glb_sum_long(nfile);
+  return 0 != nfile;
+}
+
+bool is_regular_file_sync_node(const std::string& fn)
+{
+  Long nfile = 0;
+  if (0 == get_id_node()) {
+    if (is_regular_file(fn)) {
+      nfile = 1;
+    }
+  }
+  glb_sum_long(nfile);
+  return 0 != nfile;
+}
+
+int qmkdir_sync_node(const std::string& path, const mode_t mode)
+{
+  TIMER("qmkdir_sync_node");
+  if (0 == get_id_node()) {
+    qmkdir(path, mode);
+  }
+  sync_node();
+  return check_dir(path, mode);
+}
+
+int qmkdir_p_sync_node(const std::string& path, const mode_t mode)
+{
+  TIMER("qmkdir_p_sync_node");
+  if (0 == get_id_node()) {
+    qmkdir_p(path, mode);
+  }
+  sync_node();
+  const int ret = check_dir(path, mode);
+  if (ret == 0) {
+    add_entry_directory_cache(path, true);
+  } else {
+    remove_entry_directory_cache(path);
+  }
+  return ret;
+}
+
 }  // namespace qlat
