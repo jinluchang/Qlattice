@@ -490,9 +490,11 @@ void set_global_geon(const Coordinate& size_node)
   MPI_Comm_rank(get_comm(), &id_node);
   GeometryNode& geon = get_geometry_node_internal();
   geon.init(id_node, size_node);
+  qassert(geon.num_node == num_node);
   get_id_node_internal() = geon.id_node;
   get_num_node_internal() = geon.num_node;
-  qassert(geon.num_node == num_node);
+  get_glb_sum_long_ptr() = glb_sum_long_mpi;
+  get_sync_node_rs_ptr() = &(get_comm_list().back().sync_node_rs);
 }
 
 void set_cuda_device()

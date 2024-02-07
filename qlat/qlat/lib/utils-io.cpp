@@ -26,7 +26,7 @@ bool obtain_lock(const std::string& path)
                  ssprintf(": Trying to obtain lock '%s'.", path.c_str()));
   qassert(get_lock_location() == "");
   const std::string path_dir = dirname(path);
-  qmkdir_p(path_dir);
+  qmkdir_p_sync_node(path_dir);
   if (0 == mkdir_lock(path)) {
     qtouch_info(path_time, show(expiration_time) + "\n");
     get_lock_location() = path;
@@ -177,7 +177,13 @@ int qmkdir_p_sync_node(const std::string& path, const mode_t mode)
     qmkdir_p(path, mode);
   }
   sync_node();
-  return check_dir(path, mode);
+  const int ret = check_dir(path, mode);
+  if (ret == 0) {
+    add_entry_directory_cache(path, true);
+  } else {
+    remove_entry_directory_cache(path);
+  }
+  return ret;
 }
 
 int mkdir_lock(const std::string& path, const mode_t mode)
@@ -186,6 +192,13 @@ int mkdir_lock(const std::string& path, const mode_t mode)
   Long ret = 0;
   if (0 == get_id_node()) {
     ret = mkdir(path.c_str(), mode);
+    if (ret == 0) {
+      add_entry_directory_cache(path, true);
+    } else {
+      remove_entry_directory_cache(path);
+    }
+  } else {
+    remove_entry_directory_cache(path);
   }
   glb_sum(ret);
   return ret;
@@ -194,6 +207,7 @@ int mkdir_lock(const std::string& path, const mode_t mode)
 int mkdir_lock_all_node(const std::string& path, const mode_t mode)
 {
   TIMER("mkdir_lock_all_node");
+  remove_entry_directory_cache(path);
   return mkdir(path.c_str(), mode);
 }
 
@@ -203,6 +217,13 @@ int rmdir_lock(const std::string& path)
   Long ret = 0;
   if (0 == get_id_node()) {
     ret = rmdir(path.c_str());
+    if (ret == 0) {
+      add_entry_directory_cache(path, false);
+    } else {
+      remove_entry_directory_cache(path);
+    }
+  } else {
+    remove_entry_directory_cache(path);
   }
   glb_sum(ret);
   return ret;
@@ -211,6 +232,7 @@ int rmdir_lock(const std::string& path)
 int rmdir_lock_all_node(const std::string& path)
 {
   TIMER("rmdir_lock_all_node");
+  remove_entry_directory_cache(path);
   return rmdir(path.c_str());
 }
 
@@ -232,62 +254,6 @@ std::vector<std::string> qls_all_sync_node(const std::string& path,
     ret = qls_all(path, is_folder_before_files);
   }
   bcast(ret);
-  return ret;
-}
-
-int qremove_info(const std::string& path)
-{
-  TIMER_VERBOSE("qremove_info");
-  Long ret = 0;
-  if (0 == get_id_node()) {
-    ret = qremove(path);
-  }
-  glb_sum(ret);
-  return ret;
-}
-
-int qremove_all_info(const std::string& path)
-{
-  TIMER_VERBOSE("qremove_all_info");
-  Long ret = 0;
-  if (0 == get_id_node()) {
-    ret = qremove_all(path);
-  }
-  glb_sum(ret);
-  return ret;
-}
-
-int qar_create_info(const std::string& path_qar,
-                    const std::string& path_folder_,
-                    const bool is_remove_folder_after)
-{
-  Long ret = 0;
-  if (0 == get_id_node()) {
-    ret = qar_create(path_qar, path_folder_, is_remove_folder_after);
-  }
-  glb_sum(ret);
-  return ret;
-}
-
-int qar_extract_info(const std::string& path_qar,
-                     const std::string& path_folder_,
-                     const bool is_remove_qar_after)
-{
-  Long ret = 0;
-  if (0 == get_id_node()) {
-    ret = qar_extract(path_qar, path_folder_, is_remove_qar_after);
-  }
-  glb_sum(ret);
-  return ret;
-}
-
-int qcopy_file_info(const std::string& path_src, const std::string& path_dst)
-{
-  Long ret = 0;
-  if (0 == get_id_node()) {
-    ret = qcopy_file(path_src, path_dst);
-  }
-  glb_sum(ret);
   return ret;
 }
 

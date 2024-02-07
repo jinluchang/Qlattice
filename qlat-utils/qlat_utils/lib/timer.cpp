@@ -326,4 +326,16 @@ void Timer::display_stack_always()
   displayln("display_stack end");
 }
 
+// ------------------------------
+
+void sync_node()
+{
+  TIMER("sync_node");
+  RngState& rs = get_sync_node_rs();
+  const Long v = rand_gen(rs) % (1024 * 1024);
+  Long s = v;
+  glb_sum_long(s);
+  qassert(s == v * get_num_node());
+}
+
 }  // namespace qlat

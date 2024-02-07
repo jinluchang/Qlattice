@@ -18,11 +18,9 @@ std::string dirname(const std::string& fn);
 
 std::string basename(const std::string& fn);
 
+std::vector<std::string> all_dirname_vec(const std::string& fn);
+
 std::string remove_trailing_slashes(const std::string& fn);
-
-int qrename(const std::string& old_path, const std::string& new_path);
-
-int qrename_info(const std::string& old_path, const std::string& new_path);
 
 std::vector<std::string> qls(const std::string& path,
                              const bool is_sort = true);
@@ -37,6 +35,8 @@ bool is_directory(const std::string& fn);
 
 bool is_regular_file(const std::string& fn);
 
+int qrename(const std::string& old_path, const std::string& new_path);
+
 int qremove(const std::string& path);
 
 int qremove_all(const std::string& path);
@@ -44,6 +44,12 @@ int qremove_all(const std::string& path);
 int qmkdir(const std::string& path, const mode_t mode = default_dir_mode());
 
 int qmkdir_p(const std::string& path_, const mode_t mode = default_dir_mode());
+
+int qrename_info(const std::string& old_path, const std::string& new_path);
+
+int qremove_info(const std::string& path);
+
+int qremove_all_info(const std::string& path);
 
 int qmkdir_info(const std::string& path,
                 const mode_t mode = default_dir_mode());
@@ -63,6 +69,12 @@ API inline Cache<std::string, bool>& get_is_directory_cache()
 }
 
 inline void clear_is_directory_cache() { get_is_directory_cache().clear(); }
+
+void remove_entry_directory_cache(const std::string& dir_);
+
+void add_entry_directory_cache(const std::string& dir_, bool is_directory);
+
+void change_entry_directory_cache(const std::string& dir_, bool is_directory);
 
 bool is_directory_cache(const std::string& dir_);
 
@@ -95,7 +107,7 @@ inline int ssleep(const double seconds)
   return usleep((useconds_t)(seconds * 1.0e6));
 }
 
-int check_dir(const std::string& path, const mode_t mode = default_dir_mode());
+bool check_dir(const std::string& path, const mode_t mode = default_dir_mode());
 
 inline FILE* qopen(const std::string& path, const std::string& mode)
 {

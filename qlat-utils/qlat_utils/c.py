@@ -102,8 +102,20 @@ __all__ += [
         ]
 
 __all__ += [
-        'displayln_malloc_stats',
         'flush',
+        'basename',
+        'dirname',
+        'all_dirname_vec',
+        'remove_trailing_slashes',
+        'qtouch',
+        'qtouch_info',
+        'qappend',
+        'qappend_info',
+        'qrename',
+        'qrename_info',
+        'qremove',
+        'qremove_all',
+        'displayln_malloc_stats',
         ]
 
 # ----------------------------------

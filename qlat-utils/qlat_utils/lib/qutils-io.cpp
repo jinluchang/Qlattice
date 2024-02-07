@@ -7,6 +7,9 @@ std::vector<std::string> qls_aux(const std::string& path,
                                  const bool is_sort = true)
 {
   std::vector<std::string> contents;
+  if (not is_directory(path)) {
+    return contents;
+  }
   DIR* dir = opendir(path.c_str());
   if (dir == NULL) {
     return contents;
@@ -55,23 +58,61 @@ std::vector<std::string> qls_all_aux(const std::string& path,
   return all_contents;
 }
 
+int qremove_aux(const std::string& path)
+{
+  TIMER("qremove_aux")
+  displayln(
+      0, ssprintf("qremove_aux: '%s' (id_node=%d).", path.c_str(), get_id_node()));
+  const int ret = std::remove(path.c_str());
+  if (ret != 0) {
+    qwarn(fname + ssprintf(": '%s' failed ret='%d'", path.c_str(), ret));
+  }
+  return ret;
+}
+
 int qremove_all_aux(const std::string& path)
 {
   if (not is_directory(path)) {
-    return qremove(path);
+    return qremove_aux(path);
   } else {
     int ret = 0;
     const std::vector<std::string> paths = qls_aux(path);
     for (Long i = 0; i < (Long)paths.size(); ++i) {
       ret += qremove_all_aux(paths[i]);
     }
-    return ret + qremove(path);
+    return ret + qremove_aux(path);
   }
 }
 
 // --------------------------------
 
-void flush() { fflush(get_output_file()); }
+std::string basename(const std::string& fn)
+// try to follow libgen.h version see man 3 basename
+{
+  Long cur = fn.size() - 1;
+  // remove trailing '/'
+  while (cur > 0 and fn[cur] == '/') {
+    cur -= 1;
+  }
+  if (cur < 0) {
+    return "";
+  } else if (cur == 0) {
+    if (fn[cur] == '/') {
+      return "/";
+    } else {
+      return std::string(fn, 0, cur + 1);
+    }
+  } else {
+    const Long pos_stop = cur + 1;
+    // skip last component
+    while (cur >= 0 and fn[cur] != '/') {
+      cur -= 1;
+    }
+    return std::string(fn, cur + 1, pos_stop);
+  }
+  qassert(false);
+  return std::string();
+}
 
 std::string dirname(const std::string& fn)
 // try to follow libgen.h version see man 3 dirname
@@ -108,32 +149,22 @@ std::string dirname(const std::string& fn)
   return std::string();
 }
 
-std::string basename(const std::string& fn)
-// try to follow libgen.h version see man 3 basename
+std::vector<std::string> all_dirname_vec(const std::string& fn)
+// use dirname
+// return [ dirname(fn), dirname(dirname(fn)), ..., ] until results does not
+// change.
 {
-  Long cur = fn.size() - 1;
-  // remove trailing '/'
-  while (cur > 0 and fn[cur] == '/') {
-    cur -= 1;
-  }
-  if (cur < 0) {
-    return "";
-  } else if (cur == 0) {
-    if (fn[cur] == '/') {
-      return "/";
-    } else {
-      return std::string(fn, 0, cur + 1);
+  std::vector<std::string> ret;
+  std::string dn = dirname(fn);
+  ret.push_back(dn);
+  while (true) {
+    dn = dirname(dn);
+    if (dn == ret.back()) {
+      break;
     }
-  } else {
-    const Long pos_stop = cur + 1;
-    // skip last component
-    while (cur >= 0 and fn[cur] != '/') {
-      cur -= 1;
-    }
-    return std::string(fn, cur + 1, pos_stop);
+    ret.push_back(dn);
   }
-  qassert(false);
-  return std::string();
+  return ret;
 }
 
 std::string remove_trailing_slashes(const std::string& fn)
@@ -149,37 +180,7 @@ std::string remove_trailing_slashes(const std::string& fn)
   return std::string(fn, 0, cur + 1);
 }
 
-int qrename(const std::string& old_path, const std::string& new_path)
-{
-  TIMER("qrename");
-  displayln(0,
-            ssprintf("qrename: '%s' '%s'", old_path.c_str(), new_path.c_str()));
-  return rename(old_path.c_str(), new_path.c_str());
-}
-
-int qrename_info(const std::string& old_path, const std::string& new_path)
-{
-  TIMER("qrename_info");
-  if (0 == get_id_node()) {
-    return qrename(old_path, new_path);
-  } else {
-    return 0;
-  }
-}
-
-std::vector<std::string> qls(const std::string& path, const bool is_sort)
-{
-  return qls_aux(remove_trailing_slashes(path), is_sort);
-}
-
-std::vector<std::string> qls_all(const std::string& path,
-                                 const bool is_folder_before_files,
-                                 const bool is_sort)
-// list files before its folder
-{
-  return qls_all_aux(remove_trailing_slashes(path), is_folder_before_files,
-                     is_sort);
-}
+// --------------------------------
 
 bool does_file_exist(const std::string& fn)
 {
@@ -190,6 +191,9 @@ bool does_file_exist(const std::string& fn)
 
 bool is_directory(const std::string& fn)
 {
+  TIMER("is_directory")
+  displayln(
+      0, fname + ssprintf(": '%s' (id_node=%d).", fn.c_str(), get_id_node()));
   struct stat sb;
   if (0 != stat(fn.c_str(), &sb)) {
     return false;
@@ -199,11 +203,73 @@ bool is_directory(const std::string& fn)
 
 bool is_regular_file(const std::string& fn)
 {
+  TIMER("is_regular_file")
   struct stat sb;
   if (0 != stat(fn.c_str(), &sb)) {
     return false;
   }
   return S_ISREG(sb.st_mode);
+}
+
+void remove_entry_directory_cache(const std::string& dir_)
+// remove entry
+{
+  TIMER("remove_entry_directory_cache");
+  const std::string dir = remove_trailing_slashes(dir_) + "/";
+  Cache<std::string, bool>& cache = get_is_directory_cache();
+  auto& m = cache.m;
+  std::vector<std::string> key_vec;
+  for (auto it = m.begin(); it != m.end(); ++it) {
+    const std::string& key = it->first;
+    if (key.substr(0, dir.size()) == dir) {
+      key_vec.push_back(key);
+    }
+  }
+  for (Long i = 0; i < (Long)key_vec.size(); ++i) {
+    cache.erase(key_vec[i]);
+  }
+}
+
+void add_entry_directory_cache(const std::string& dir_, bool is_directory)
+// if is_directory: mark directory and all subdirectories exist.
+{
+  TIMER("add_entry_directory_cache");
+  const std::string dir = remove_trailing_slashes(dir_) + "/";
+  Cache<std::string, bool>& cache = get_is_directory_cache();
+  if (is_directory) {
+    for (Long cur = 0; cur < (Long)dir.size(); ++cur) {
+      if (dir[cur] != '/') {
+        continue;
+      }
+      const std::string subdir = dir.substr(0, cur + 1);
+      cache[subdir] = true;
+    }
+  } else {
+    remove_entry_directory_cache(dir);
+    cache[dir] = false;
+  }
+}
+
+void change_entry_directory_cache(const std::string& dir_, bool is_directory)
+// if have the entry cached, change its value to be specified as is_directory.
+{
+  TIMER("change_entry_directory_cache");
+  const std::string dir = remove_trailing_slashes(dir_) + "/";
+  Cache<std::string, bool>& cache = get_is_directory_cache();
+  if (is_directory) {
+    for (Long cur = 0; cur < (Long)dir.size(); ++cur) {
+      if (dir[cur] != '/') {
+        continue;
+      }
+      const std::string subdir = dir.substr(0, cur + 1);
+      if (cache.has(subdir)) {
+        cache[dir] = true;
+      }
+    }
+  } else {
+    remove_entry_directory_cache(dir);
+    cache[dir] = false;
+  }
 }
 
 bool is_directory_cache(const std::string& dir_)
@@ -255,52 +321,81 @@ bool does_file_exist_cache(const std::string& fn)
   return does_file_exist(fn);
 }
 
+// --------------------------------
+
+void flush() { fflush(get_output_file()); }
+
+std::vector<std::string> qls(const std::string& path, const bool is_sort)
+{
+  return qls_aux(remove_trailing_slashes(path), is_sort);
+}
+
+std::vector<std::string> qls_all(const std::string& path,
+                                 const bool is_folder_before_files,
+                                 const bool is_sort)
+// list files before its folder
+{
+  return qls_all_aux(remove_trailing_slashes(path), is_folder_before_files,
+                     is_sort);
+}
+
+// --------------------------------
+
+int qrename(const std::string& old_path, const std::string& new_path)
+{
+  TIMER_VERBOSE("qrename");
+  displayln(0, fname + ssprintf(": '%s' '%s' (id_node=%d).", old_path.c_str(),
+                                new_path.c_str(), get_id_node()));
+  remove_entry_directory_cache(old_path);
+  remove_entry_directory_cache(new_path);
+  const int ret = rename(old_path.c_str(), new_path.c_str());
+  if (ret != 0) {
+    qwarn(fname + ssprintf(": '%s' '%s' ret=%d", old_path.c_str(),
+                           new_path.c_str(), ret));
+  }
+  return ret;
+}
+
 int qremove(const std::string& path)
 {
-  displayln(0, ssprintf("qremove: '%s'", path.c_str()));
-  return std::remove(path.c_str());
+  TIMER_VERBOSE("qremove")
+  remove_entry_directory_cache(path);
+  const int ret = qremove_aux(path);
+  return ret;
 }
 
 int qremove_all(const std::string& path)
 {
-  clear_is_directory_cache();
-  return qremove_all_aux(remove_trailing_slashes(path));
-}
-
-int check_dir(const std::string& path, const mode_t mode)
-{
-  TIMER("check_dir");
-  int ret = 0;
-  for (int i = 0; i < 1024; ++i) {
-    if (does_file_exist(path)) {
-      break;
-    }
-    ret = mkdir(path.c_str(), mode);
-    ssleep(0.001);
-  }
+  TIMER_VERBOSE("qremove_all")
+  remove_entry_directory_cache(path);
+  const int ret = qremove_all_aux(remove_trailing_slashes(path));
   return ret;
 }
 
 int qmkdir(const std::string& path, const mode_t mode)
 {
-  TIMER("qmkdir");
-  clear_is_directory_cache();
-  mkdir(path.c_str(), mode);
-  return check_dir(path, mode);
+  TIMER_VERBOSE("qmkdir");
+  displayln(
+      0, fname + ssprintf(": '%s' (id_node=%d).", path.c_str(), get_id_node()));
+  remove_entry_directory_cache(path);
+  const int ret = mkdir(path.c_str(), mode);
+  if (ret != 0) {
+    qwarn(fname + ssprintf(": qmkdir failed '%s' ret=%d", path.c_str(), ret))
+  }
+  return ret;
 }
 
 int qmkdir_p(const std::string& path_, const mode_t mode)
 // return 0 if successful
 {
   TIMER("qmkdir_p");
-  clear_is_directory_cache();
   std::string path = remove_trailing_slashes(path_);
-  if (is_directory(path)) {
+  if (is_directory_cache(path)) {
     return 0;
   }
   std::vector<std::string> paths;
   while (true) {
-    if (0 == mkdir(path.c_str(), mode)) {
+    if (0 == qmkdir(path, mode)) {
       break;
     } else {
       paths.push_back(path);
@@ -312,7 +407,7 @@ int qmkdir_p(const std::string& path_, const mode_t mode)
     }
   }
   for (Long i = paths.size() - 1; i >= 0; i -= 1) {
-    if (not(0 == mkdir(paths[i].c_str(), mode))) {
+    if (not(0 == qmkdir(paths[i], mode))) {
       // qwarn(fname + ssprintf(": '%s' failed.", path_.c_str()));
       continue;
     }
@@ -321,16 +416,72 @@ int qmkdir_p(const std::string& path_, const mode_t mode)
     qwarn(fname + ssprintf(": '%s' failed.", path_.c_str()));
     return 1;
   }
+  add_entry_directory_cache(path, true);
   return 0;
+}
+
+bool check_dir(const std::string& path, const mode_t mode)
+// try to create if does not exist.
+{
+  TIMER_VERBOSE("check_dir");
+  if (is_directory(path)) {
+    add_entry_directory_cache(path, true);
+    return true;
+  }
+  for (int i = 0; i < 8; ++i) {
+    qmkdir(path.c_str(), mode);
+    ssleep(0.1);
+    if (is_directory(path)) {
+      add_entry_directory_cache(path, true);
+      return true;
+    }
+  }
+  return false;
+}
+
+// --------------------------------
+
+int qrename_info(const std::string& old_path, const std::string& new_path)
+{
+  TIMER("qrename_info");
+  if (0 == get_id_node()) {
+    return qrename(old_path, new_path);
+  } else {
+    remove_entry_directory_cache(new_path);
+    remove_entry_directory_cache(old_path);
+    return 0;
+  }
+}
+
+int qremove_info(const std::string& path)
+{
+  TIMER("qremove_info");
+  if (0 == get_id_node()) {
+    return qremove(path);
+  } else {
+    remove_entry_directory_cache(path);
+    return 0;
+  }
+}
+
+int qremove_all_info(const std::string& path)
+{
+  TIMER("qremove_all_info");
+  if (0 == get_id_node()) {
+    return qremove_all(path);
+  } else {
+    remove_entry_directory_cache(path);
+    return 0;
+  }
 }
 
 int qmkdir_info(const std::string& path, const mode_t mode)
 {
   TIMER("qmkdir_info");
-  clear_is_directory_cache();
   if (0 == get_id_node()) {
     return qmkdir(path, mode);
   } else {
+    remove_entry_directory_cache(path);
     return 0;
   }
 }
@@ -338,10 +489,10 @@ int qmkdir_info(const std::string& path, const mode_t mode)
 int qmkdir_p_info(const std::string& path, const mode_t mode)
 {
   TIMER("qmkdir_info");
-  clear_is_directory_cache();
   if (0 == get_id_node()) {
     return qmkdir_p(path, mode);
   } else {
+    remove_entry_directory_cache(path);
     return 0;
   }
 }

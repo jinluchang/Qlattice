@@ -64,7 +64,7 @@ def glb_sum_long(cc.Long x):
     cc.glb_sum(x)
     return x
 
-def glb_sum_double(double x):
+def glb_sum_double(cc.RealD x):
     cc.glb_sum(x)
     return x
 

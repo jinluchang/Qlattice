@@ -235,36 +235,43 @@ cdef extern from "qlat-utils/timer.h" namespace "qlat":
 
 cdef extern from "qlat-utils/qutils-io.h" namespace "qlat":
 
-    void flush()
-    int qtouch(const std_string& path)
-    int qtouch_info(const std_string& path)
-    int qtouch(const std_string& path, const std_string& content)
-    int qtouch_info(const std_string& path, const std_string& content)
-    int qappend(const std_string& path, const std_string& content)
-    int qappend_info(const std_string& path, const std_string& content)
-    int qrename(const std_string& old_path, const std_string& new_path)
-    int qrename_info(const std_string& old_path, const std_string& new_path)
-    std_vector[std_string] qls(const std_string& path, const bool is_sort)
-    std_vector[std_string] qls_all(const std_string& path,
-                                      const bool is_folder_before_files,
-                                      const bool is_sort)
-    bool is_directory(const std_string& fn)
-    bool is_regular_file(const std_string& fn)
-    bool does_file_exist(const std_string& fn)
-    void clear_is_directory_cache()
-    bool is_directory_cache(const std_string& dir_)
-    bool is_regular_file_cache(const std_string& fn)
-    bool does_file_exist_cache(const std_string& fn)
-    int qremove(const std_string& path)
-    int qremove_all(const std_string& path)
-    int qmkdir(const std_string& path)
-    int qmkdir_p(const std_string& path)
-    int qmkdir_info(const std_string& path)
-    int qmkdir_p_info(const std_string& path)
-    crc32_t compute_crc32(const std_string& path)
-    void check_all_files_crc32_info(const std_string& path)
+    void flush() except +
+    int qtouch(const std_string& path) except +
+    int qtouch_info(const std_string& path) except +
+    int qtouch(const std_string& path, const std_string& content) except +
+    int qtouch_info(const std_string& path, const std_string& content) except +
+    int qappend(const std_string& path, const std_string& content) except +
+    int qappend_info(const std_string& path, const std_string& content) except +
+    int qrename(const std_string& old_path, const std_string& new_path) except +
+    int qrename_info(const std_string& old_path, const std_string& new_path) except +
+    std_vector[std_string] qls(const std_string& path, const bool is_sort) except +
+    std_vector[std_string] qls_all(const std_string& path, const bool is_folder_before_files, const bool is_sort) except +
+    std_string basename(const std_string& fn) except +
+    std_string dirname(const std_string& fn) except +
+    std_vector[std_string] all_dirname_vec(const std_string& fn) except +
+    std_string remove_trailing_slashes(const std_string& fn) except +
+    bool is_directory(const std_string& fn) except +
+    bool is_regular_file(const std_string& fn) except +
+    bool does_file_exist(const std_string& fn) except +
+    void clear_is_directory_cache() except +
+    void remove_entry_directory_cache(const std_string& dir_) except +
+    void add_entry_directory_cache(const std_string& dir_, bool is_directory) except +
+    void change_entry_directory_cache(const std_string& dir_, bool is_directory) except +
+    bool is_directory_cache(const std_string& dir_) except +
+    bool is_regular_file_cache(const std_string& fn) except +
+    bool does_file_exist_cache(const std_string& fn) except +
+    int qremove(const std_string& path) except +
+    int qremove_all(const std_string& path) except +
+    int qremove_info(const std_string& path) except +
+    int qremove_all_info(const std_string& path) except +
+    int qmkdir(const std_string& path) except +
+    int qmkdir_p(const std_string& path) except +
+    int qmkdir_info(const std_string& path) except +
+    int qmkdir_p_info(const std_string& path) except +
+    crc32_t compute_crc32(const std_string& path) except +
+    void check_all_files_crc32_info(const std_string& path) except +
     DataTable qload_datatable(const std_string& path,
-                                 const bool is_par)
+                                 const bool is_par) except +
 
 cdef extern from "qlat-utils/rng-state.h" namespace "qlat":
 

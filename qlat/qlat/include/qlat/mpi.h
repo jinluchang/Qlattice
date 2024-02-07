@@ -454,13 +454,15 @@ int glb_sum_long_vec(Vector<M> x)
 template <class M>
 int glb_sum_int64_vec(Vector<M> x)
 {
-  return glb_sum(Vector<int64_t>((int64_t*)x.data(), x.data_size() / sizeof(int64_t)));
+  return glb_sum(
+      Vector<int64_t>((int64_t*)x.data(), x.data_size() / sizeof(int64_t)));
 }
 
 template <class M>
 int glb_sum_int32_vec(Vector<M> x)
 {
-  return glb_sum(Vector<int32_t>((int32_t*)x.data(), x.data_size() / sizeof(int32_t)));
+  return glb_sum(
+      Vector<int32_t>((int32_t*)x.data(), x.data_size() / sizeof(int32_t)));
 }
 
 template <class M>
@@ -497,12 +499,6 @@ int glb_sum_float(M& x)
 }
 
 template <class M>
-int glb_sum_long(M& x)
-{
-  return glb_sum_long_vec(get_data_one_elem(x));
-}
-
-template <class M>
 int glb_sum_byte(M& x)
 {
   return glb_sum(Vector<char>((char*)&x, sizeof(M)));
@@ -514,6 +510,15 @@ void all_gather(Vector<M> recv, const Vector<M>& send)
   qassert(recv.size() == send.size() * get_num_node());
   MPI_Allgather((void*)send.data(), send.data_size(), MPI_BYTE,
                 (void*)recv.data(), send.data_size(), MPI_BYTE, get_comm());
+}
+
+// ----------------------------------
+
+inline int glb_sum_long_mpi(Long& x) { return glb_sum(x); }
+
+inline RngState& get_sync_node_rs_mpi()
+{
+  return get_comm_list().back().sync_node_rs;
 }
 
 }  // namespace qlat

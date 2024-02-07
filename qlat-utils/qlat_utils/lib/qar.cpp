@@ -4,7 +4,7 @@ namespace qlat
 {  //
 
 static void check_all_files_crc32_aux(
-    std::vector<std::pair<std::string, crc32_t> >& acc, const std::string& path)
+    std::vector<std::pair<std::string, crc32_t>>& acc, const std::string& path)
 {
   if (not is_directory(path)) {
     acc.push_back(check_file_crc32(path));
@@ -1257,10 +1257,10 @@ std::string get_qar_read_cache_key(const std::string& path)
 // Steps:
 // (1) Check if path exists with does_file_exist_cache. If exists, return path.
 // (2) If not found, search in Qar Cache. If found matching key, try to find
-// within this qar file recursively. Return the key of the closest match. (3) If
-// does not exist, try to find qar file yet to be in cache recursively. Return
-// values: valid key: valid key for a qar found. (qar may not actually contain
-// path).
+// within this qar file recursively. Return the key of the closest match.
+// (3) If does not exist, try to find qar file yet to be in cache recursively.
+// Return values: valid key: valid key for a qar found. (qar may not actually
+// contain path).
 // "": no key is found and path does not exist.
 // path: path exist.
 {
@@ -1453,11 +1453,11 @@ crc32_t compute_crc32(const std::string& path)
   return ret;
 }
 
-std::vector<std::pair<std::string, crc32_t> > check_all_files_crc32(
+std::vector<std::pair<std::string, crc32_t>> check_all_files_crc32(
     const std::string& path)
 {
   TIMER_VERBOSE("check_all_files_crc32");
-  std::vector<std::pair<std::string, crc32_t> > ret;
+  std::vector<std::pair<std::string, crc32_t>> ret;
   check_all_files_crc32_aux(ret, remove_trailing_slashes(path));
   return ret;
 }
@@ -1468,11 +1468,57 @@ void check_all_files_crc32_info(const std::string& path)
   TIMER_VERBOSE("check_all_files_crc32_info");
   if (0 == get_id_node()) {
     displayln(fname + ssprintf(": start checking path='%s'", path.c_str()));
-    std::vector<std::pair<std::string, crc32_t> > fcrcs;
+    std::vector<std::pair<std::string, crc32_t>> fcrcs;
     fcrcs = check_all_files_crc32(path);
     displayln(fname + ssprintf(": summary for path='%s'", path.c_str()));
     display(show_files_crc32(fcrcs));
   }
+}
+
+// ---------------------------------
+
+int qar_create_info(const std::string& path_qar,
+                    const std::string& path_folder_,
+                    const bool is_remove_folder_after)
+{
+  if (is_remove_folder_after) {
+    remove_entry_directory_cache(path_folder_);
+  }
+  Long ret = 0;
+  if (0 == get_id_node()) {
+    ret = qar_create(path_qar, path_folder_, is_remove_folder_after);
+  }
+  glb_sum_long(ret);
+  return ret;
+}
+
+int qar_extract_info(const std::string& path_qar,
+                     const std::string& path_folder_,
+                     const bool is_remove_qar_after)
+{
+  remove_entry_directory_cache(path_folder_);
+  Long ret = 0;
+  if (0 == get_id_node()) {
+    ret = qar_extract(path_qar, path_folder_, is_remove_qar_after);
+  }
+  glb_sum_long(ret);
+  return ret;
+}
+
+int qcopy_file_info(const std::string& path_src, const std::string& path_dst)
+{
+  const std::string path_dir = dirname(path_dst);
+  Long ret = 0;
+  if (0 == get_id_node()) {
+    ret = qcopy_file(path_src, path_dst);
+  }
+  glb_sum_long(ret);
+  if (ret == 0) {
+    add_entry_directory_cache(path_dir, true);
+  } else {
+    remove_entry_directory_cache(path_dir);
+  }
+  return ret;
 }
 
 }  // namespace qlat

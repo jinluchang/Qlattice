@@ -53,7 +53,7 @@ crc32_t compute_crc32(QFile& qfile);
 
 crc32_t compute_crc32(const std::string& path);
 
-std::vector<std::pair<std::string, crc32_t> > check_all_files_crc32(
+std::vector<std::pair<std::string, crc32_t>> check_all_files_crc32(
     const std::string& path);
 
 void check_all_files_crc32_info(const std::string& path);
@@ -162,23 +162,13 @@ inline std::vector<std::string> qgetlines(const std::string& fn)
 
 // -------------------
 
-inline std::string qcat_info(const std::string& path)
-{
-  TIMER("qcat_info");
-  if (0 == get_id_node()) {
-    return qcat(path);
-  } else {
-    return std::string();
-  }
-}
-
 inline std::string show_file_crc32(const std::pair<std::string, crc32_t>& fcrc)
 {
   return ssprintf("%08X  fn='%s'", fcrc.second, fcrc.first.c_str());
 }
 
 inline std::string show_files_crc32(
-    const std::vector<std::pair<std::string, crc32_t> >& fcrcs)
+    const std::vector<std::pair<std::string, crc32_t>>& fcrcs)
 {
   std::ostringstream out;
   for (Long i = 0; i < (Long)fcrcs.size(); ++i) {
@@ -195,6 +185,18 @@ inline std::pair<std::string, crc32_t> check_file_crc32(const std::string& fn)
   p.second = compute_crc32(fn);
   displayln_info(show_file_crc32(p));
   return p;
+}
+
+// -------------------
+
+inline std::string qcat_info(const std::string& path)
+{
+  TIMER("qcat_info");
+  if (0 == get_id_node()) {
+    return qcat(path);
+  } else {
+    return std::string();
+  }
 }
 
 inline int qtouch_info(const std::string& path)
@@ -226,5 +228,15 @@ inline int qappend_info(const std::string& path, const std::string& content)
     return 0;
   }
 }
+
+int qar_create_info(const std::string& path_qar,
+                    const std::string& path_folder_,
+                    const bool is_remove_folder_after = false);
+
+int qar_extract_info(const std::string& path_qar,
+                     const std::string& path_folder_,
+                     const bool is_remove_qar_after = false);
+
+int qcopy_file_info(const std::string& path_src, const std::string& path_dst);
 
 }  // namespace qlat

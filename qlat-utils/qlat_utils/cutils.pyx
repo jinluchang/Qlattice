@@ -7,13 +7,25 @@ from . cimport everything as cc
 def flush():
     cc.flush()
 
-def qtouch(const cc.std_string& path, content = None):
+def basename(const cc.std_string& fn):
+    return cc.basename(fn)
+
+def dirname(const cc.std_string& fn):
+    return cc.dirname(fn)
+
+def all_dirname_vec(const cc.std_string& fn):
+    return cc.all_dirname_vec(fn)
+
+def remove_trailing_slashes(const cc.std_string& fn):
+    return cc.remove_trailing_slashes(fn)
+
+def qtouch(const cc.std_string& path, content=None):
     if content is None:
         return cc.qtouch(path)
     else:
         return cc.qtouch(path, content)
 
-def qtouch_info(const cc.std_string& path, content = None):
+def qtouch_info(const cc.std_string& path, content=None):
     if content is None:
         return cc.qtouch_info(path)
     else:
@@ -70,21 +82,20 @@ def is_regular_file_cache(const cc.std_string& path):
 def does_file_exist_cache(const cc.std_string& path):
     return cc.does_file_exist_cache(path)
 
-def qls(const cc.std_string& path,
-        const cc.bool is_sort = True):
+def qls(const cc.std_string& path, const cc.bool is_sort=True):
     cdef list l = cc.qls(path, is_sort)
     return [ str(v) for v in l ]
 
 def qls_all(const cc.std_string& path,
-            const cc.bool is_folder_before_files = False,
-            const cc.bool is_sort = True):
+            const cc.bool is_folder_before_files=False,
+            const cc.bool is_sort=True):
     cdef list l = cc.qls_all(path, is_folder_before_files, is_sort)
     return [ str(v) for v in l ]
 
 def compute_crc32(const cc.std_string& path):
     return cc.compute_crc32(path)
 
-def qload_datatable(const cc.std_string& path, const cc.bool is_par = False):
+def qload_datatable(const cc.std_string& path, const cc.bool is_par=False):
     return cc.qload_datatable(path, is_par)
 
 def check_all_files_crc32_info(const cc.std_string& path):

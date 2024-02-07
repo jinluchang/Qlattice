@@ -21,6 +21,7 @@
 #include <qlat-utils/assert.h>
 #include <qlat-utils/show.h>
 #include <qlat-utils/env.h>
+#include <qlat-utils/rng-state.h>
 #include <sys/time.h>
 
 #include <algorithm>
@@ -98,24 +99,6 @@ inline double get_remaining_time()
 
 inline double get_total_time() { return get_time() - get_start_time(); }
 
-API inline int& get_num_node_internal()
-// initialized in begin_comm in qlat/mpi.h
-{
-  static int num_node = 1;
-  return num_node;
-}
-
-inline int get_num_node() { return get_num_node_internal(); }
-
-API inline int& get_id_node_internal()
-// initialized in begin_comm in qlat/mpi.h
-{
-  static int id_node = 0;
-  return id_node;
-}
-
-inline int get_id_node() { return get_id_node_internal(); }
-
 inline int get_num_thread()
 {
 #ifdef _OPENMP
@@ -145,6 +128,24 @@ inline int get_id_node_in_shuffle()
 {
   return get_id_node_in_shuffle_internal();
 }
+
+API inline int& get_num_node_internal()
+// initialized in begin_comm in qlat/mpi.h
+{
+  static int num_node = 1;
+  return num_node;
+}
+
+API inline int& get_id_node_internal()
+// initialized in begin_comm in qlat/mpi.h
+{
+  static int id_node = 0;
+  return id_node;
+}
+
+inline int get_num_node() { return get_num_node_internal(); }
+
+inline int get_id_node() { return get_id_node_internal(); }
 
 inline void display_info(const std::string& str, FILE* fp = NULL)
 {
@@ -443,6 +444,42 @@ struct API TimerCtrl {
     ptimer->start(verbose);
   }
 };
+
+// -------------------
+
+inline int glb_sum_long_local(Long& x)
+{
+  assert(get_num_node() == 1);
+  return x;
+}
+
+using GlbSumLongPtr = int (*)(Long&);
+
+API inline GlbSumLongPtr& get_glb_sum_long_ptr()
+{
+  static GlbSumLongPtr ptr = glb_sum_long_local;
+  return ptr;
+}
+
+inline int glb_sum_long(Long& x) { return get_glb_sum_long_ptr()(x); }
+
+API inline RngState& get_sync_node_rs_local()
+{
+  static RngState rs("sync_node_local");
+  return rs;
+}
+
+using RngStatePtr = RngState*;
+
+API inline RngStatePtr& get_sync_node_rs_ptr()
+{
+  static RngStatePtr ptr = &get_sync_node_rs_local();
+  return ptr;
+}
+
+inline RngState& get_sync_node_rs() { return *get_sync_node_rs_ptr(); }
+
+void sync_node();
 
 ///////////////////////////////////////////////////////////////////////
 

@@ -56,20 +56,6 @@ std::vector<std::string> qls_sync_node(const std::string& path);
 std::vector<std::string> qls_all_sync_node(
     const std::string& path, const bool is_folder_before_files = false);
 
-int qremove_info(const std::string& path);
-
-int qremove_all_info(const std::string& path);
-
-int qar_create_info(const std::string& path_qar,
-                    const std::string& path_folder_,
-                    const bool is_remove_folder_after = false);
-
-int qar_extract_info(const std::string& path_qar,
-                     const std::string& path_folder_,
-                     const bool is_remove_qar_after = false);
-
-int qcopy_file_info(const std::string& path_src, const std::string& path_dst);
-
 std::string qcat_sync_node(const std::string& path);
 
 void load_qar_index_sync_node(const QarFile& qar, const std::string& fn);
