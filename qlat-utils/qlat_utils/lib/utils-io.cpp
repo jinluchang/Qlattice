@@ -68,8 +68,13 @@ int qremove_aux(const std::string& path)
     if (ret != 0) {
       qwarn(fname + ssprintf(": '%s' failed ret='%d'", path.c_str(), ret));
     }
+    return ret;
+  } else {
+    displayln(0,
+              ssprintf("qremove_aux: '%s' file does not exist. (id_node=%d).",
+                       path.c_str(), get_id_node()));
+    return 0;
   }
-  return ret;
 }
 
 int qremove_all_aux(const std::string& path)
@@ -200,7 +205,10 @@ bool is_directory(const std::string& fn)
   if (0 != stat(fn.c_str(), &sb)) {
     return false;
   }
-  return S_ISDIR(sb.st_mode);
+  const bool ret = S_ISDIR(sb.st_mode);
+  displayln(0, fname + ssprintf(": '%s' ret=%d (id_node=%d).", fn.c_str(), ret,
+                                get_id_node()));
+  return ret;
 }
 
 bool is_regular_file(const std::string& fn)
