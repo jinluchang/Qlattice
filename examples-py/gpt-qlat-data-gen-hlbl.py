@@ -471,6 +471,7 @@ def run_job(job_tag, traj):
     #
     if job_tag == "64I":
         q.qtouch_info(get_save_path(fn_checkpoint_auto_contract))
+        q.sync_node()
     #
     fns_produce_auto_contract = [
             fn_checkpoint_auto_contract,
