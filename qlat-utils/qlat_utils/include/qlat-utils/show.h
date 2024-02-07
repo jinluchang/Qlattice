@@ -137,7 +137,7 @@ inline uint32_t read_crc32(const std::string& s)
 inline std::string remove_trailing_newline(const std::string& s)
 {
   Long cur = s.size() - 1;
-  while (cur >= 0 and (s[cur] == '\n' or s[cur] == '\r')) {
+  while ((cur >= 0) and (s[cur] == '\n' or s[cur] == '\r')) {
     cur -= 1;
   }
   return std::string(s, 0, cur + 1);
@@ -145,7 +145,7 @@ inline std::string remove_trailing_newline(const std::string& s)
 
 inline bool is_space(const char c)
 {
-  return c == ' ' || c == '\n' || c == '\r' || c == '\t';
+  return (c == ' ') or (c == '\n') or (c == '\r') or (c == '\t');
 }
 
 inline bool parse_end(Long& cur, const std::string& data)
@@ -319,7 +319,7 @@ inline bool parse_long(Long& num, Long& cur, const std::string& data)
   const Long start = cur;
   char c;
   while (parse_char(c, cur, data)) {
-    if (not(('0' <= c and c <= '9') or (c == '-') or (c == '+'))) {
+    if (not((('0' <= c) and (c <= '9')) or (c == '-') or (c == '+'))) {
       cur -= 1;
       break;
     }
@@ -341,8 +341,8 @@ inline bool parse_double(double& num, Long& cur, const std::string& data)
   const Long start = cur;
   char c;
   while (parse_char(c, cur, data)) {
-    if (not(('0' <= c and c <= '9') or (c == '-') or (c == '+') or (c == '.') or
-            (c == 'e') or (c == 'E'))) {
+    if (not((('0' <= c) and (c <= '9')) or (c == '-') or (c == '+') or
+            (c == '.') or (c == 'e') or (c == 'E'))) {
       cur -= 1;
       break;
     }

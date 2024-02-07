@@ -175,7 +175,7 @@ void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site,
   TIMER_VERBOSE("mk_field_selection(n_per_tslice,rs)");
   const Long spatial_vol = total_site[0] * total_site[1] * total_site[2];
   mk_grid_field_selection(f_rank, total_site, spatial_vol, rs);
-  if (n_per_tslice == -1 or n_per_tslice == spatial_vol) {
+  if ((n_per_tslice == -1) or (n_per_tslice == spatial_vol)) {
     return;
   }
   set_n_per_tslice(f_rank, n_per_tslice);
@@ -193,7 +193,7 @@ void add_field_selection(FieldRank& f_rank, const PointsSelection& psel,
     const Coordinate xl = geo.coordinate_l_from_g(psel[i]);
     if (geo.is_local(xl)) {
       int64_t& rank = f_rank.get_elem(xl);
-      if (rank < 0 or rank > rank_psel) {
+      if ((rank < 0) or (rank > rank_psel)) {
         rank = rank_psel;
       }
     }
@@ -210,7 +210,7 @@ void add_field_selection(FieldRank& f_rank, const FieldSelection& fsel)
     const Long index = fsel.indices[idx];
     const int64_t rank_fsel = fsel.ranks[idx];
     int64_t& rank = f_rank.get_elem(index);
-    if (rank < 0 or rank > rank_fsel) {
+    if ((rank < 0) or (rank > rank_fsel)) {
       rank = rank_fsel;
     }
   });
@@ -228,7 +228,7 @@ void select_rank_range(FieldRank& f_rank, const Long rank_start,
   // const Coordinate total_site = geo.total_site();
   qacc_for(index, geo.local_volume(), {
     int64_t& rank = f_rank.get_elem(index);
-    if (not(rank_start <= rank and (rank < rank_stop or rank_stop == -1))) {
+    if (not((rank_start <= rank) and ((rank < rank_stop) or (rank_stop == -1)))) {
       rank = -1;
     }
   });
@@ -248,7 +248,7 @@ void select_t_range(FieldRank& f_rank, const Long t_start, const Long t_stop)
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const int t = xg[3];
-    if (not(t_start <= t and (t < t_stop or t_stop == -1))) {
+    if (not((t_start <= t) and ((t < t_stop) or (t_stop == -1)))) {
       int64_t& rank = f_rank.get_elem(index);
       rank = -1;
     }

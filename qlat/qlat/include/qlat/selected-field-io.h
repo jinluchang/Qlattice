@@ -6,8 +6,8 @@
 namespace qlat
 {  //
 
-std::string make_selected_field_header(const Geometry& geo,
-                                       const int sizeof_M, const crc32_t crc32);
+std::string make_selected_field_header(const Geometry& geo, const int sizeof_M,
+                                       const crc32_t crc32);
 
 Long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
                             int& sizeof_M, crc32_t& crc,
@@ -34,7 +34,7 @@ crc32_t field_crc32(const SelectedField<M>& sf, const FieldSelection& fsel,
   qassert(new_size_node[2] == 1);
   std::vector<FieldSelection> fsels;
   const ShufflePlan sp = make_shuffle_plan(fsels, fsel, new_size_node);
-  std::vector<SelectedField<M> > sfs;
+  std::vector<SelectedField<M>> sfs;
   shuffle_field(sfs, sf, sp);
   qassert(fsels.size() == sfs.size());
   const int new_num_node = product(new_size_node);
@@ -61,9 +61,10 @@ Long write_selected_field(const SelectedField<M>& sf, const std::string& path,
   const Geometry& geo = sf.geo();
   qassert(geo.is_only_local);
   qassert(fsel.f_rank.geo() == geo_remult(geo));
-  const Coordinate new_size_node = new_size_node_ != Coordinate()
-                                       ? new_size_node_
-                                       : get_default_serial_new_size_node(geo);
+  const Coordinate new_size_node =
+      new_size_node_ != Coordinate()
+          ? new_size_node_
+          : get_default_serial_new_size_node(geo, dist_write_par_limit());
   qassert(new_size_node[0] == 1);
   qassert(new_size_node[1] == 1);
   qassert(new_size_node[2] == 1);
@@ -172,9 +173,10 @@ Long read_selected_field(SelectedField<M>& sf, const std::string& path,
   Geometry geo;
   geo.init(total_site, multiplicity);
   qassert(fsel.f_rank.geo() == geo_remult(geo));
-  const Coordinate new_size_node = new_size_node_ != Coordinate()
-                                       ? new_size_node_
-                                       : get_default_serial_new_size_node(geo);
+  const Coordinate new_size_node =
+      new_size_node_ != Coordinate()
+          ? new_size_node_
+          : get_default_serial_new_size_node(geo, dist_read_par_limit());
   qassert(new_size_node[0] == 1);
   qassert(new_size_node[1] == 1);
   qassert(new_size_node[2] == 1);
@@ -443,7 +445,7 @@ Long read_selected_field_double_from_float(
       <TYPENAME>(SelectedField<TYPENAME>& f, const double factor);      \
                                                                         \
   QLAT_EXTERN template SelectedField<TYPENAME>& operator*=              \
-      <TYPENAME>(SelectedField<TYPENAME>& f, const ComplexD factor);     \
+      <TYPENAME>(SelectedField<TYPENAME>& f, const ComplexD factor);    \
                                                                         \
   QLAT_EXTERN template void only_keep_selected_points<TYPENAME>(        \
       Field<TYPENAME> & f, const FieldSelection& fsel);                 \

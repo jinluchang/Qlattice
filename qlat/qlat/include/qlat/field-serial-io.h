@@ -15,7 +15,8 @@ namespace qlat
 inline Coordinate get_default_serial_new_size_node(const Geometry& geo, const int max_num_ = 0)
 {
   const int num_node = geo.geon.num_node;
-  const int max_num = max_num_ <= 0 or max_num_ > num_node ? num_node : max_num_;
+  const int max_num =
+      (max_num_ <= 0) or (max_num_ > num_node) ? num_node : max_num_;
   const Coordinate total_site = geo.total_site();
   Coordinate new_size_node = Coordinate(1, 1, 1, total_site[3]);
   while (max_num < new_size_node[3]) {
