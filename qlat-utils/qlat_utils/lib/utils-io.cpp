@@ -380,43 +380,30 @@ int qmkdir(const std::string& path, const mode_t mode)
   return ret;
 }
 
-int qmkdir_p(const std::string& path_, const mode_t mode)
+int qmkdir_p(const std::string& dir_, const mode_t mode)
 // return 0 if successful
 {
   TIMER("qmkdir_p");
-  const std::string path = remove_trailing_slashes(path_);
-  if (is_directory_cache(path)) {
+  const std::string dir = remove_trailing_slashes(dir_) + "/";
+  if (is_directory_cache(dir)) {
     return 0;
   }
-  const int max_attempts = 1024;
-  std::string path_c = path;
-  std::vector<std::string> paths;
-  for (int i = 0; i < max_attempts; ++i) {
-    if (0 == qmkdir(path_c, mode)) {
-      break;
-    } else {
-      paths.push_back(path_c);
-      path_c = dirname(path_c);
-      if (is_directory_cache(path_c)) {
-        // this directory exist, start to create from here.
-        break;
-      }
-      if (path_c == paths.back()) {
-        qwarn(fname + ssprintf(": '%s' try to create '%s'", path_.c_str(),
-                               path_c.c_str()));
-        break;
-      }
-    }
-  }
-  for (Long i = paths.size() - 1; i >= 0; i -= 1) {
-    if (not(0 == qmkdir(paths[i], mode))) {
-      qwarn(fname + ssprintf(": '%s' failed at '%s'.", path_.c_str(),
-                             paths[i].c_str()));
+  for (Long cur = 0; cur < (Long)dir.size(); ++cur) {
+    if (dir[cur] != '/') {
       continue;
     }
+    const std::string subdir = dir.substr(0, cur + 1);
+    if (not is_directory_cache(subdir)) {
+      const int ret = qmkdir(subdir, mode);
+      if (ret != 0) {
+        qwarn(fname +
+              ssprintf(": '%s' failed at '%s'.", dir_.c_str(), subdir.c_str()));
+        return ret;
+      }
+    }
   }
-  if (not is_directory_cache(path)) {
-    qwarn(fname + ssprintf(": '%s' failed.", path_.c_str()));
+  if (not is_directory_cache(dir)) {
+    qwarn(fname + ssprintf(": '%s' failed.", dir_.c_str()));
     return 1;
   }
   return 0;
@@ -432,7 +419,7 @@ bool check_dir(const std::string& path, const mode_t mode)
   }
   const int max_attempts = 8;
   for (int i = 0; i < max_attempts; ++i) {
-    qmkdir(path.c_str(), mode);
+    qmkdir(path, mode);
     ssleep(0.1);
     if (is_directory(path)) {
       add_entry_directory_cache(path, true);
