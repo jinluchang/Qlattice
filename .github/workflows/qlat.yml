@@ -224,6 +224,7 @@ jobs:
         ./scripts/qcore.sh
         ./scripts/python-venv.sh
         ./scripts/python-pip-install.sh
+        ./scripts/cuba.sh
         ./scripts/eigen.sh
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
@@ -467,9 +468,8 @@ jobs:
         ./scripts/qcore.sh
         ./scripts/python-venv.sh
         ./scripts/python-pip-install.sh
+        ./scripts/cuba.sh
         ./scripts/eigen.sh
-        ./scripts/fftw.sh
-        ./scripts/gsl.sh
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
     - name: Show python venv
