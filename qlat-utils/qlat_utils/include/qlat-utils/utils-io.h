@@ -115,19 +115,25 @@ int qmkdir_p_info(const std::string& path,
 
 bool does_file_exist_sync_node(const std::string& fn);
 
-bool does_regular_file_exist_qar_sync_node(const std::string& fn);
-
-bool does_file_exist_qar_sync_node(const std::string& fn);
-
 bool is_directory_sync_node(const std::string& fn);
 
 bool is_regular_file_sync_node(const std::string& fn);
+
+bool does_file_exist_cache_sync_node(const std::string& fn);
+
+bool is_directory_cache_sync_node(const std::string& fn);
+
+bool is_regular_file_cache_sync_node(const std::string& fn);
 
 int qmkdir_sync_node(const std::string& path,
                      const mode_t mode = default_dir_mode());
 
 int qmkdir_p_sync_node(const std::string& path,
                        const mode_t mode = default_dir_mode());
+
+int qremove_sync_node(const std::string& path);
+
+int qremove_all_sync_node(const std::string& path);
 
 // --------------------------
 

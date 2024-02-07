@@ -4,19 +4,6 @@
 namespace qlat
 {  //
 
-void release_lock()
-{
-  TIMER_VERBOSE("release_lock");
-  std::string& path = get_lock_location();
-  const std::string path_time = path + "/time.txt";
-  displayln_info(fname + ssprintf(": Release lock '%s'", path.c_str()));
-  if (path != "") {
-    qremove_info(path_time);
-    rmdir_lock(path);
-    path = "";
-  }
-}
-
 bool obtain_lock(const std::string& path)
 {
   TIMER_VERBOSE("obtain_lock");
@@ -62,6 +49,31 @@ bool obtain_lock(const std::string& path)
   }
 }
 
+void release_lock()
+{
+  TIMER_VERBOSE("release_lock");
+  std::string& path = get_lock_location();
+  const std::string path_time = path + "/time.txt";
+  displayln_info(fname + ssprintf(": Release lock '%s'", path.c_str()));
+  if (path != "") {
+    qremove_info(path_time);
+    rmdir_lock(path);
+    path = "";
+  }
+}
+
+int mkdir_lock(const std::string& path, const mode_t mode)
+{
+  TIMER("mkdir_lock");
+  return qmkdir_sync_node(path, mode);
+}
+
+int rmdir_lock(const std::string& path)
+{
+  TIMER("rmdir_lock");
+  return qremove_sync_node(path);
+}
+
 void qquit(const std::string& msg)
 // everything needed for gracefully quit and then quit.
 {
@@ -98,56 +110,6 @@ void check_stop(const std::string& fn)
   if (does_file_exist_sync_node(fn)) {
     qquit("File 'stop.txt' detected.");
   }
-}
-
-int mkdir_lock(const std::string& path, const mode_t mode)
-{
-  TIMER("mkdir_lock");
-  Long ret = 0;
-  if (0 == get_id_node()) {
-    ret = mkdir(path.c_str(), mode);
-    if (ret == 0) {
-      add_entry_directory_cache(path, true);
-    } else {
-      remove_entry_directory_cache(path);
-    }
-  } else {
-    remove_entry_directory_cache(path);
-  }
-  glb_sum(ret);
-  return ret;
-}
-
-int mkdir_lock_all_node(const std::string& path, const mode_t mode)
-{
-  TIMER("mkdir_lock_all_node");
-  remove_entry_directory_cache(path);
-  return mkdir(path.c_str(), mode);
-}
-
-int rmdir_lock(const std::string& path)
-{
-  TIMER("rmdir_lock");
-  Long ret = 0;
-  if (0 == get_id_node()) {
-    ret = rmdir(path.c_str());
-    if (ret == 0) {
-      add_entry_directory_cache(path, false);
-    } else {
-      remove_entry_directory_cache(path);
-    }
-  } else {
-    remove_entry_directory_cache(path);
-  }
-  glb_sum(ret);
-  return ret;
-}
-
-int rmdir_lock_all_node(const std::string& path)
-{
-  TIMER("rmdir_lock_all_node");
-  remove_entry_directory_cache(path);
-  return rmdir(path.c_str());
 }
 
 void check_sigterm()
@@ -232,6 +194,18 @@ void release_lock_all_node()
     rmdir_lock_all_node(path);
     path = "";
   }
+}
+
+int mkdir_lock_all_node(const std::string& path, const mode_t mode)
+{
+  TIMER("mkdir_lock_all_node");
+  return qmkdir(path, mode);
+}
+
+int rmdir_lock_all_node(const std::string& path)
+{
+  TIMER("rmdir_lock_all_node");
+  return qremove(path);
 }
 
 // double& get_lock_expiration_time_limit()

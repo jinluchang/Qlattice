@@ -861,6 +861,10 @@ int qcopy_file_info(const std::string& path_src, const std::string& path_dst);
 
 // -------------------
 
+bool does_regular_file_exist_qar_sync_node(const std::string& fn);
+
+bool does_file_exist_qar_sync_node(const std::string& fn);
+
 int qar_create_sync_node(const std::string& path_qar,
                          const std::string& path_folder_,
                          const bool is_remove_folder_after = false);

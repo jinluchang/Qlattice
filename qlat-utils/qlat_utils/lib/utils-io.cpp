@@ -535,29 +535,91 @@ bool is_regular_file_sync_node(const std::string& fn)
   return 0 != nfile;
 }
 
+bool does_file_exist_cache_sync_node(const std::string& fn)
+{
+  Long nfile = 0;
+  if (0 == get_id_node()) {
+    if (does_file_exist_cache(fn)) {
+      nfile = 1;
+    }
+  }
+  glb_sum_long(nfile);
+  return 0 != nfile;
+}
+
+bool is_directory_cache_sync_node(const std::string& fn)
+{
+  Long nfile = 0;
+  if (0 == get_id_node()) {
+    if (is_directory_cache(fn)) {
+      nfile = 1;
+    }
+  }
+  glb_sum_long(nfile);
+  return 0 != nfile;
+}
+
+bool is_regular_file_cache_sync_node(const std::string& fn)
+{
+  Long nfile = 0;
+  if (0 == get_id_node()) {
+    if (is_regular_file_cache(fn)) {
+      nfile = 1;
+    }
+  }
+  glb_sum_long(nfile);
+  return 0 != nfile;
+}
+
 int qmkdir_sync_node(const std::string& path, const mode_t mode)
 {
   TIMER("qmkdir_sync_node");
+  Long ret = 0;
   if (0 == get_id_node()) {
-    qmkdir(path, mode);
+    ret = qmkdir(path, mode);
+  } else {
+    remove_entry_directory_cache(path);
   }
-  sync_node();
-  return check_dir(path, mode);
+  glb_sum_long(ret);
+  return ret;
 }
 
 int qmkdir_p_sync_node(const std::string& path, const mode_t mode)
 {
   TIMER("qmkdir_p_sync_node");
+  Long ret = 0;
   if (0 == get_id_node()) {
-    qmkdir_p(path, mode);
-  }
-  sync_node();
-  const int ret = check_dir(path, mode);
-  if (ret == 0) {
-    add_entry_directory_cache(path, true);
+    ret = qmkdir_p(path, mode);
   } else {
     remove_entry_directory_cache(path);
   }
+  glb_sum_long(ret);
+  return ret;
+}
+
+int qremove_sync_node(const std::string& path)
+{
+  TIMER("qremove_sync_node");
+  Long ret = 0;
+  if (0 == get_id_node()) {
+    ret = qremove(path);
+  } else {
+    remove_entry_directory_cache(path);
+  }
+  glb_sum_long(ret);
+  return ret;
+}
+
+int qremove_all_sync_node(const std::string& path)
+{
+  TIMER("qremove_all_sync_node");
+  Long ret = 0;
+  if (0 == get_id_node()) {
+    ret = qremove_all(path);
+  } else {
+    remove_entry_directory_cache(path);
+  }
+  glb_sum_long(ret);
   return ret;
 }
 
