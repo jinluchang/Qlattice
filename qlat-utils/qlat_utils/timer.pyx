@@ -94,6 +94,12 @@ def get_num_node():
     """
     return cc.get_num_node()
 
+def sync_node():
+    """
+    Perform a glb_sum to make sure all nodes are synced.
+    """
+    cc.sync_node()
+
 def get_time():
     """
     Return current time in seconds since epoch.

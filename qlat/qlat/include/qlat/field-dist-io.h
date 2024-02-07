@@ -152,7 +152,6 @@ inline void dist_write_geo_info(const Geometry& geo, const int sizeof_M,
   const int id_node = geo.geon.id_node;
   qassert(geo.is_only_local);
   if (0 == id_node) {
-    check_dir(path, mode);
     const std::string fn = path + "/geo-info.txt";
     QFile fp = qfopen(fn, "w");
     qwrite_data(ssprintf("node_file_size = %ld\n",

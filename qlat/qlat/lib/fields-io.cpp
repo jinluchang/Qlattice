@@ -130,13 +130,13 @@ void fields_writer_dirs_geon_info(const GeometryNode& geon,
   TIMER("fields_writer_dirs_geon_info");
   dist_mkdir(path, geon.num_node, mode);
   const std::string fn = path + "/geon-info.txt";
-  QFile qfile = qfopen(fn, "w");
-  qwrite_data(ssprintf("geon.num_node = %d\n", geon.num_node), qfile);
-  qwrite_data(ssprintf("geon.size_node[0] = %d\n", geon.size_node[0]), qfile);
-  qwrite_data(ssprintf("geon.size_node[1] = %d\n", geon.size_node[1]), qfile);
-  qwrite_data(ssprintf("geon.size_node[2] = %d\n", geon.size_node[2]), qfile);
-  qwrite_data(ssprintf("geon.size_node[3] = %d\n", geon.size_node[3]), qfile);
-  qfclose(qfile);
+  std::string contents;
+  contents += ssprintf("geon.num_node = %d\n", geon.num_node);
+  contents += ssprintf("geon.size_node[0] = %d\n", geon.size_node[0]);
+  contents += ssprintf("geon.size_node[1] = %d\n", geon.size_node[1]);
+  contents += ssprintf("geon.size_node[2] = %d\n", geon.size_node[2]);
+  contents += ssprintf("geon.size_node[3] = %d\n", geon.size_node[3]);
+  qtouch(fn, contents);
 }
 
 Coordinate shuffled_fields_reader_size_node_info(const std::string& path)
@@ -174,14 +174,6 @@ void FieldsWriter::init(const std::string& path_, const GeometryNode& geon_,
   geon = geon_;
   qfile.init();
   if (geon.id_node == 0) {
-    if (does_file_exist(path + ".partial")) {
-      if (is_append) {
-        qwarn(ssprintf("FieldsWriter: Cannot append '%s.partial' exists.",
-                       path.c_str()));
-        qassert(false);
-      }
-      qremove_all(path + ".partial");
-    }
     displayln(0, "FieldsWriter: open '" + path + "'.");
     if (is_append and does_file_exist(path)) {
       if (not does_file_exist(path + "/geon-info.txt")) {
@@ -669,13 +661,9 @@ void ShuffledFieldsWriter::init(const std::string& path_,
 // interface function
 {
   TIMER_VERBOSE("ShuffledFieldsWriter::init")
+  remove_entry_directory_cache(path_);
   init();
   path = path_;
-  if (is_append and does_file_exist_sync_node(path + ".partial")) {
-    qwarn(ssprintf("ShuffledFieldsWriter: Cannot append '%s.partial' exists.",
-                   path.c_str()));
-    qassert(false);
-  }
   if (is_append and does_file_exist_sync_node(path + "/geon-info.txt")) {
     new_size_node = shuffled_fields_reader_size_node_info(path);
     if (new_size_node_ != Coordinate() and new_size_node_ != new_size_node) {
@@ -697,14 +685,18 @@ void ShuffledFieldsWriter::init(const std::string& path_,
   }
   std::vector<GeometryNode> geons = make_dist_io_geons(new_size_node);
   fws.resize(geons.size());
-  if (get_id_node() != 0) {
-    sync_node();
-  }
   for (int i = 0; i < (int)geons.size(); ++i) {
-    fws[i].init(path, geons[i], is_append);
+    const GeometryNode& geon = geons[i];
+    if (geon.id_node == 0) {
+      fws[i].init(path, geon, is_append);
+    }
   }
-  if (get_id_node() == 0) {
-    sync_node();
+  sync_node();
+  for (int i = 0; i < (int)geons.size(); ++i) {
+    const GeometryNode& geon = geons[i];
+    if (geon.id_node != 0) {
+      fws[i].init(path, geon, is_append);
+    }
   }
   add_shuffled_fields_writer(*this);
 }

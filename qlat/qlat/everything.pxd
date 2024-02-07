@@ -8,7 +8,6 @@ cdef extern from "qlat/mpi.h" namespace "qlat":
     int end(const bool is_preserving_cache) except +
     const Coordinate& get_size_node() except +
     const Coordinate& get_coor_node() except +
-    void sync_node() except +
     int bcast(Long& x, const int root) except +
     int bcast(RealD& x, const int root) except +
     int bcast(RealF& x, const int root) except +
@@ -73,20 +72,8 @@ cdef extern from "qlat/utils-io.h" namespace "qlat":
     void qquit(const std_string& msg) except +
     void check_time_limit(const RealD budget) except +
     void check_stop(const std_string& fn) except +
-    bool does_file_exist_sync_node(const std_string& fn) except +
-    bool does_regular_file_exist_qar_sync_node(const std_string& fn) except +
-    bool does_file_exist_qar_sync_node(const std_string& fn) except +
-    bool is_directory_sync_node(const std_string& fn) except +
-    bool is_regular_file_sync_node(const std_string& fn) except +
-    int qmkdir_sync_node(const std_string& path) except +
-    int qmkdir_p_sync_node(const std_string& path) except +
     std_vector[std_string] qls_sync_node(const std_string& path) except +
     std_vector[std_string] qls_all_sync_node(const std_string& path, const bool is_folder_before_files) except +
-    int qremove_info(const std_string& path) except +
-    int qremove_all_info(const std_string& path) except +
-    int qar_create_info(const std_string& path_qar, const std_string& path_folder_, const bool is_remove_folder_after) except +
-    int qar_extract_info(const std_string& path_qar, const std_string& path_folder_, const bool is_remove_qar_after) except +
-    int qcopy_file_info(const std_string& path_src, const std_string& path_dst) except +
     std_string qcat_sync_node(const std_string& path) except +
     DataTable qload_datatable_sync_node(const std_string& path, const bool is_par) except +
 

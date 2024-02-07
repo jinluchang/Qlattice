@@ -49,6 +49,12 @@ def qremove(const cc.std_string& path):
 def qremove_all(const cc.std_string& path):
     return cc.qremove_all(path)
 
+def qremove_info(const cc.std_string& path):
+    return cc.qremove_info(path)
+
+def qremove_all_info(const cc.std_string& path):
+    return cc.qremove_all_info(path)
+
 def qmkdir(const cc.std_string& path):
     return cc.qmkdir(path)
 
@@ -72,6 +78,9 @@ def does_file_exist(const cc.std_string& path):
 
 def clear_is_directory_cache():
     return cc.clear_is_directory_cache()
+
+def remove_entry_directory_cache(const cc.std_string& path):
+    return cc.remove_entry_directory_cache(path)
 
 def is_directory_cache(const cc.std_string& path):
     return cc.is_directory_cache(path)
@@ -100,6 +109,20 @@ def qload_datatable(const cc.std_string& path, const cc.bool is_par=False):
 
 def check_all_files_crc32_info(const cc.std_string& path):
     return cc.check_all_files_crc32_info(path)
+
+### -------------------------------------------------------------------
+
+def qmkdir_sync_node(path):
+    return cc.qmkdir_sync_node(path)
+
+def does_file_exist_sync_node(path):
+    return cc.does_file_exist_sync_node(path)
+
+def is_directory_sync_node(path):
+    return cc.is_directory_sync_node(path)
+
+def is_regular_file_sync_node(path):
+    return cc.is_regular_file_sync_node(path)
 
 ### -------------------------------------------------------------------
 

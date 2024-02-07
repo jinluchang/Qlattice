@@ -64,8 +64,6 @@ void remove_entry_directory_cache(const std::string& dir_);
 
 void add_entry_directory_cache(const std::string& dir_, bool is_directory);
 
-void change_entry_directory_cache(const std::string& dir_, bool is_directory);
-
 bool is_directory_cache(const std::string& dir_);
 
 bool is_regular_file_cache(const std::string& fn);

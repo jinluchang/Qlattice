@@ -19,8 +19,6 @@ type_name_list = [
     ]
 }}
 
-import qlat_utils
-
 ### -------------------------------------------------------------------------
 
 __all__ = []
@@ -28,7 +26,6 @@ __all__ = []
 __all__ += [
         'begin',
         'end',
-        'sync_node',
         'get_size_node',
         'get_coor_node',
         'bcast_long',
@@ -92,8 +89,6 @@ __all__ += [
         'qquit',
         'check_time_limit',
         'check_stop',
-        'qremove_info',
-        'qremove_all_info',
         ]
 
 __all__ += [
@@ -196,6 +191,8 @@ __all__ += [
         ]
 
 ### -------------------------------------------------------------------------
+
+from qlat_utils.c import *
 
 import ctypes
 import sys

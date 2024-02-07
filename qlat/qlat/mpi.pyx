@@ -21,9 +21,6 @@ def end(cc.bool is_preserving_cache=False):
 
 ### -------------------------------------------------------------------
 
-def sync_node():
-    cc.sync_node()
-
 def get_size_node():
     cdef Coordinate x = Coordinate()
     # cc.assign_direct(x.xx, cc.get_size_node())

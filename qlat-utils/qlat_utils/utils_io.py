@@ -4,22 +4,6 @@ import os
 import pickle
 import hashlib
 
-from .c import qremove, qremove_all
-from .c import qmkdir, qmkdir_info
-from .c import is_directory
-from .c import is_regular_file
-from .c import does_file_exist
-from .c import is_directory_cache
-from .c import is_regular_file_cache
-from .c import does_file_exist_cache
-from .c import clear_is_directory_cache
-from .c import qrename, qrename_info
-from .c import qls
-from .c import qls_all
-from .c import compute_crc32
-from .c import qload_datatable
-from .c import check_all_files_crc32_info
-
 from .qar_utils import *
 
 from .c import *
@@ -27,37 +11,37 @@ from .c import *
 @timer
 def qmkdirs(path):
     os.makedirs(path, exist_ok=True)
-    clear_is_directory_cache()
+    remove_entry_directory_cache(path)
 
 @timer
 def qmkdirs_info(path):
-    clear_is_directory_cache()
+    remove_entry_directory_cache(path)
     if get_id_node() == 0:
         displayln(f"qmkdirs_info: '{path}'.")
         qmkdirs(path)
 
 @timer
 def mk_dirs(path):
-    clear_is_directory_cache()
+    remove_entry_directory_cache(path)
     os.makedirs(path, exist_ok=True)
 
 @timer
 def mk_dirs_info(path):
-    clear_is_directory_cache()
+    remove_entry_directory_cache(path)
     if get_id_node() == 0:
         displayln(f"mk_dirs_info: '{path}'.")
         mk_dirs(path)
 
 @timer
 def mk_file_dirs(fn):
-    clear_is_directory_cache()
+    remove_entry_directory_cache(fn)
     path = os.path.dirname(fn)
     if path != "":
         os.makedirs(path, exist_ok=True)
 
 @timer
 def mk_file_dirs_info(path):
-    clear_is_directory_cache()
+    remove_entry_directory_cache(path)
     if get_id_node() == 0:
         displayln(f"mk_file_dirs_info: '{path}'.")
         mk_file_dirs(path)
@@ -169,43 +153,6 @@ def pickle_cache(path, is_sync_node=True):
             return ret
         return f
     return dec
-
-def qremove_info(path):
-    if get_num_node() != 1:
-        import qlat.c as c
-        return c.qremove_info(path)
-    return qremove(path)
-
-def qremove_all_info(path):
-    if get_num_node() != 1:
-        import qlat.c as c
-        return c.qremove_all_info(path)
-    return qremove_all(path)
-
-def qmkdir_sync_node(path):
-    clear_is_directory_cache()
-    if get_num_node() != 1:
-        import qlat.c as c
-        return c.qmkdir_sync_node(path)
-    return qmkdir(path)
-
-def does_file_exist_sync_node(path):
-    if get_num_node() != 1:
-        import qlat.c as c
-        return c.does_file_exist_sync_node(path)
-    return does_file_exist(path)
-
-def is_directory_sync_node(path):
-    if get_num_node() != 1:
-        import qlat.c as c
-        return c.is_directory_sync_node(path)
-    return is_directory(path)
-
-def is_regular_file_sync_node(path):
-    if get_num_node() != 1:
-        import qlat.c as c
-        return c.is_regular_file_sync_node(path)
-    return is_regular_file(path)
 
 def qls_sync_node(path):
     if get_num_node() != 1:

@@ -30,9 +30,3 @@ def check_time_limit(budget=None):
 
 def check_stop(fn="stop.txt"):
     return cc.check_stop(fn)
-
-def qremove_info(path):
-    return cc.qremove_info(path)
-
-def qremove_all_info(path):
-    return cc.qremove_all_info(path)
