@@ -20,7 +20,7 @@ namespace qlat
 
 struct QFileInternal;
 
-typedef std::map<Long, std::weak_ptr<QFileInternal> > QFileMap;
+typedef std::map<Long, std::weak_ptr<QFileInternal>> QFileMap;
 
 API inline QFileMap& get_all_qfile()
 // get_all_qfile()[key] -> std::weak_ptr<QFileInternal>
@@ -859,6 +859,17 @@ int qar_extract_info(const std::string& path_qar,
 
 int qcopy_file_info(const std::string& path_src, const std::string& path_dst);
 
+// -------------------
 
+int qar_create_sync_node(const std::string& path_qar,
+                         const std::string& path_folder_,
+                         const bool is_remove_folder_after = false);
+
+int qar_extract_sync_node(const std::string& path_qar,
+                          const std::string& path_folder_,
+                          const bool is_remove_qar_after = false);
+
+int qcopy_file_sync_node(const std::string& path_src,
+                         const std::string& path_dst);
 
 }  // namespace qlat

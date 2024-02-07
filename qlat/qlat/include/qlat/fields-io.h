@@ -21,7 +21,7 @@
 // File format should be compatible with Christoph Lehner's file format.
 
 #include <errno.h>
-#include <qlat-utils/qar-cache.h>
+#include <qlat-utils/qar.h>
 #include <qlat/field-io.h>
 #include <qlat/selected-field.h>
 #include <qlat/selected-points.h>

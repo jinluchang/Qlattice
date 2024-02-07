@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <qlat-utils/qar-cache.h>
+#include <qlat-utils/qar.h>
 #include <qlat/field-shuffle.h>
 #include <qlat/utils-io.h>
 

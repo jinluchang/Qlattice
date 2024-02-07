@@ -1481,42 +1481,37 @@ int qar_create_info(const std::string& path_qar,
                     const std::string& path_folder_,
                     const bool is_remove_folder_after)
 {
-  if (is_remove_folder_after) {
-    remove_entry_directory_cache(path_folder_);
-  }
-  Long ret = 0;
   if (0 == get_id_node()) {
-    ret = qar_create(path_qar, path_folder_, is_remove_folder_after);
+    return qar_create(path_qar, path_folder_, is_remove_folder_after);
+  } else {
+    if (is_remove_folder_after) {
+      remove_entry_directory_cache(path_folder_);
+    }
+    return 0;
   }
-  glb_sum_long(ret);
-  return ret;
 }
 
 int qar_extract_info(const std::string& path_qar,
                      const std::string& path_folder_,
                      const bool is_remove_qar_after)
 {
-  remove_entry_directory_cache(path_folder_);
-  Long ret = 0;
   if (0 == get_id_node()) {
-    ret = qar_extract(path_qar, path_folder_, is_remove_qar_after);
+    return qar_extract(path_qar, path_folder_, is_remove_qar_after);
+  } else {
+    remove_entry_directory_cache(path_folder_);
+    return 0;
   }
-  glb_sum_long(ret);
-  return ret;
 }
 
 int qcopy_file_info(const std::string& path_src, const std::string& path_dst)
 {
-  const std::string path_dir = dirname(path_dst);
   Long ret = 0;
   if (0 == get_id_node()) {
     ret = qcopy_file(path_src, path_dst);
-  }
-  glb_sum_long(ret);
-  if (ret == 0) {
-    add_entry_directory_cache(path_dir, true);
   } else {
+    const std::string path_dir = dirname(path_dst);
     remove_entry_directory_cache(path_dir);
+    return 0;
   }
   return ret;
 }
@@ -1545,6 +1540,50 @@ bool does_file_exist_qar_sync_node(const std::string& fn)
   }
   glb_sum_long(nfile);
   return 0 != nfile;
+}
+
+int qar_create_sync_node(const std::string& path_qar,
+                         const std::string& path_folder_,
+                         const bool is_remove_folder_after)
+{
+  Long ret = 0;
+  if (0 == get_id_node()) {
+    ret = qar_create(path_qar, path_folder_, is_remove_folder_after);
+  } else {
+    if (is_remove_folder_after) {
+      remove_entry_directory_cache(path_folder_);
+    }
+  }
+  glb_sum_long(ret);
+  return ret;
+}
+
+int qar_extract_sync_node(const std::string& path_qar,
+                          const std::string& path_folder_,
+                          const bool is_remove_qar_after)
+{
+  Long ret = 0;
+  if (0 == get_id_node()) {
+    ret = qar_extract(path_qar, path_folder_, is_remove_qar_after);
+  } else {
+    remove_entry_directory_cache(path_folder_);
+  }
+  glb_sum_long(ret);
+  return ret;
+}
+
+int qcopy_file_sync_node(const std::string& path_src,
+                         const std::string& path_dst)
+{
+  Long ret = 0;
+  if (0 == get_id_node()) {
+    ret = qcopy_file(path_src, path_dst);
+  } else {
+    const std::string path_dir = dirname(path_dst);
+    remove_entry_directory_cache(path_dir);
+  }
+  glb_sum_long(ret);
+  return ret;
 }
 
 }  // namespace qlat
