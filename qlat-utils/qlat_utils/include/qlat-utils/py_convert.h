@@ -1,8 +1,8 @@
 #pragma once
 
 #include <qlat-utils/core.h>
-#include <qlat-utils/qutils.h>
-#include <qlat-utils/qutils-vec.h>
+#include <qlat-utils/utils.h>
+#include <qlat-utils/utils-vec.h>
 
 #include <Python.h>
 

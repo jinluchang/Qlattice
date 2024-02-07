@@ -31,7 +31,7 @@
 #include <qlat-utils/types.h>
 #include <qlat-utils/vector.h>
 #include <qlat-utils/version.h>
-#include <qlat-utils/qutils.h>
+#include <qlat-utils/utils.h>
 #include <unistd.h>
 
 namespace qlat

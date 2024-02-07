@@ -1,6 +1,6 @@
 #pragma once
 
-#include <qlat-utils/qutils-extra.h>
+#include <qlat-utils/utils-extra.h>
 #include <qlat-utils/rng-state.h>
 
 namespace qlat

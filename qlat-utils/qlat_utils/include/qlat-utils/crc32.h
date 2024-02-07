@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include <qlat-utils/qutils-vec.h>
-#include <qlat-utils/qutils.h>
+#include <qlat-utils/utils-vec.h>
+#include <qlat-utils/utils.h>
 #include <qlat-utils/show.h>
 #include <qlat-utils/types.h>
 #include <zlib.h>

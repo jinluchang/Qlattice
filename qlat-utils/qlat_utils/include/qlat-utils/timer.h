@@ -147,20 +147,6 @@ inline int get_num_node() { return get_num_node_internal(); }
 
 inline int get_id_node() { return get_id_node_internal(); }
 
-inline void display_info(const std::string& str, FILE* fp = NULL)
-{
-  if (0 == get_id_node() && 0 == get_id_thread()) {
-    display(str, fp);
-  }
-}
-
-inline void displayln_info(const std::string& str, FILE* fp = NULL)
-{
-  if (0 == get_id_node() && 0 == get_id_thread()) {
-    displayln(str, fp);
-  }
-}
-
 inline void display(const Long minimum_verbose_level, const std::string& str)
 {
   if (get_verbose_level() >= minimum_verbose_level) {
@@ -175,11 +161,25 @@ inline void displayln(const Long minimum_verbose_level, const std::string& str)
   }
 }
 
+inline void display_info(const std::string& str, FILE* fp = NULL)
+{
+  if (0 == get_id_node() && 0 == get_id_thread()) {
+    display(str, fp);
+  }
+}
+
 inline void display_info(const Long minimum_verbose_level,
                          const std::string& str)
 {
   if (0 == get_id_node() && 0 == get_id_thread()) {
     display(minimum_verbose_level, str);
+  }
+}
+
+inline void displayln_info(const std::string& str, FILE* fp = NULL)
+{
+  if (0 == get_id_node() && 0 == get_id_thread()) {
+    displayln(str, fp);
   }
 }
 

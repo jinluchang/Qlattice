@@ -2,8 +2,8 @@
 
 #include <stdint.h>
 #include <qlat-utils/env.h>
-#include <qlat-utils/qutils-vec.h>
-#include <qlat-utils/qutils-io.h>
+#include <qlat-utils/utils-vec.h>
+#include <qlat-utils/utils-io.h>
 
 #include <cassert>
 #include <string>

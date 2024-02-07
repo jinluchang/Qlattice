@@ -1,8 +1,8 @@
 #pragma once
 
 #include <qlat-utils/env.h>
-#include <qlat-utils/qutils-vec.h>
-#include <qlat-utils/qutils.h>
+#include <qlat-utils/utils-vec.h>
+#include <qlat-utils/utils.h>
 #include <qlat-utils/timer.h>
 #include <qlat-utils/cache.h>
 #include <signal.h>
@@ -45,17 +45,7 @@ int qmkdir(const std::string& path, const mode_t mode = default_dir_mode());
 
 int qmkdir_p(const std::string& path_, const mode_t mode = default_dir_mode());
 
-int qrename_info(const std::string& old_path, const std::string& new_path);
-
-int qremove_info(const std::string& path);
-
-int qremove_all_info(const std::string& path);
-
-int qmkdir_info(const std::string& path,
-                const mode_t mode = default_dir_mode());
-
-int qmkdir_p_info(const std::string& path,
-                  const mode_t mode = default_dir_mode());
+bool check_dir(const std::string& path, const mode_t mode = default_dir_mode());
 
 void flush();
 
@@ -107,18 +97,26 @@ inline int ssleep(const double seconds)
   return usleep((useconds_t)(seconds * 1.0e6));
 }
 
-bool check_dir(const std::string& path, const mode_t mode = default_dir_mode());
+// --------------------------
+
+int qrename_info(const std::string& old_path, const std::string& new_path);
+
+int qremove_info(const std::string& path);
+
+int qremove_all_info(const std::string& path);
+
+int qmkdir_info(const std::string& path,
+                const mode_t mode = default_dir_mode());
+
+int qmkdir_p_info(const std::string& path,
+                  const mode_t mode = default_dir_mode());
+
+// --------------------------
 
 inline FILE* qopen(const std::string& path, const std::string& mode)
 {
   TIMER("qopen");
   return std::fopen(path.c_str(), mode.c_str());
-}
-
-inline void qset_line_buf(FILE* f)
-{
-  TIMER("qset_line_buf");
-  std::setvbuf(f, NULL, _IOLBF, 0);
 }
 
 inline int qfclose(FILE*& file)
@@ -132,11 +130,51 @@ inline int qfclose(FILE*& file)
   return 0;
 }
 
-inline void switch_monitor_file(const std::string& path)
+inline FILE* qopen_info(const std::string& path, const std::string& mode)
 {
-  qfclose(get_monitor_file());
-  get_monitor_file() = qopen(path, "a");
-  qset_line_buf(get_monitor_file());
+  TIMER("qopen_info");
+  if (0 == get_id_node()) {
+    FILE* f = qopen(path, mode);
+    qassert(f != NULL);
+    qset_line_buf(f);
+    return f;
+  } else {
+    return NULL;
+  }
+}
+
+inline int qfclose_info(FILE*& file)
+{
+  TIMER("qfclose_info");
+  return qfclose(file);
+}
+
+inline void qset_line_buf(FILE* f)
+{
+  TIMER("qset_line_buf");
+  std::setvbuf(f, NULL, _IOLBF, 0);
+}
+
+inline void qset_fully_buf(FILE* f)
+{
+  TIMER("qset_fully_buf");
+  std::setvbuf(f, NULL, _IOFBF, BUFSIZ);
+}
+
+template <class M>
+Long qwrite_data(const Vector<M>& v, FILE* fp)
+{
+  TIMER_FLOPS("qwrite_data");
+  timer.flops += v.data_size();
+  return sizeof(M) * std::fwrite((void*)v.p, sizeof(M), v.n, fp);
+}
+
+template <class M>
+Long qread_data(const Vector<M>& v, FILE* fp)
+{
+  TIMER_FLOPS("qread_data");
+  timer.flops += v.data_size();
+  return sizeof(M) * std::fread((void*)v.p, sizeof(M), v.n, fp);
 }
 
 inline std::string qgetline(FILE* fp)
@@ -161,6 +199,20 @@ inline std::vector<std::string> qgetlines(FILE* fp)
     ret.push_back(qgetline(fp));
   }
   return ret;
+}
+
+inline void switch_monitor_file(const std::string& path)
+{
+  qfclose(get_monitor_file());
+  get_monitor_file() = qopen(path, "a");
+  qset_line_buf(get_monitor_file());
+}
+
+inline void switch_monitor_file_info(const std::string& path)
+{
+  if (0 == get_id_node()) {
+    switch_monitor_file(path);
+  }
 }
 
 API inline int& is_sigterm_received()
@@ -214,54 +266,6 @@ inline int install_qhandle_sig()
   struct sigaction act;
   act.sa_handler = qhandler_sig;
   return sigaction(SIGINT, &act, NULL) + sigaction(SIGTERM, &act, NULL);
-}
-
-template <class M>
-Long qwrite_data(const Vector<M>& v, FILE* fp)
-{
-  TIMER_FLOPS("qwrite_data");
-  timer.flops += v.data_size();
-  return sizeof(M) * std::fwrite((void*)v.p, sizeof(M), v.n, fp);
-}
-
-template <class M>
-Long qread_data(const Vector<M>& v, FILE* fp)
-{
-  TIMER_FLOPS("qread_data");
-  timer.flops += v.data_size();
-  return sizeof(M) * std::fread((void*)v.p, sizeof(M), v.n, fp);
-}
-
-inline void switch_monitor_file_info(const std::string& path)
-{
-  if (0 == get_id_node()) {
-    switch_monitor_file(path);
-  }
-}
-
-inline void qset_fully_buf(FILE* f)
-{
-  TIMER("qset_fully_buf");
-  std::setvbuf(f, NULL, _IOFBF, BUFSIZ);
-}
-
-inline FILE* qopen_info(const std::string& path, const std::string& mode)
-{
-  TIMER("qopen_info");
-  if (0 == get_id_node()) {
-    FILE* f = qopen(path, mode);
-    qassert(f != NULL);
-    qset_line_buf(f);
-    return f;
-  } else {
-    return NULL;
-  }
-}
-
-inline int qfclose_info(FILE*& file)
-{
-  TIMER("qfclose_info");
-  return qfclose(file);
 }
 
 }  // namespace qlat

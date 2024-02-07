@@ -143,7 +143,7 @@ cdef extern from "qlat-utils/vector.h" namespace "qlat":
     cdef cppclass box_acc[T](box[T]):
         box_acc()
 
-cdef extern from "qlat-utils/qutils-vec.h" namespace "qlat":
+cdef extern from "qlat-utils/utils-vec.h" namespace "qlat":
 
     void assign_direct[M, N](M& x, const N& y) except +
     void iadd_direct[M, N](M& x, const N& y) except +
@@ -233,7 +233,7 @@ cdef extern from "qlat-utils/timer.h" namespace "qlat":
         @staticmethod
         void merge()
 
-cdef extern from "qlat-utils/qutils-io.h" namespace "qlat":
+cdef extern from "qlat-utils/utils-io.h" namespace "qlat":
 
     void flush() except +
     int qtouch(const std_string& path) except +

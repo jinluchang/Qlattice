@@ -2,7 +2,7 @@
 
 #include <qlat-utils/matrix.h>
 #include <qlat-utils/rng-state.h>
-#include <qlat-utils/qutils-vec.h>
+#include <qlat-utils/utils-vec.h>
 
 namespace qlat
 {  //
