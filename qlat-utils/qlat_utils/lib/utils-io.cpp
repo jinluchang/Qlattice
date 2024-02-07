@@ -203,10 +203,12 @@ bool is_directory(const std::string& fn)
       0, fname + ssprintf(": '%s' (id_node=%d).", fn.c_str(), get_id_node()));
   struct stat sb;
   if (0 != stat(fn.c_str(), &sb)) {
+    displayln(0, fname + ssprintf(": '%s' file does not exist. (id_node=%d).",
+                                  fn.c_str(), get_id_node()));
     return false;
   }
   const bool ret = S_ISDIR(sb.st_mode);
-  displayln(0, fname + ssprintf(": '%s' ret=%d (id_node=%d).", fn.c_str(), ret,
+  displayln(0, fname + ssprintf(": '%s' file exists. ret=%d (id_node=%d).", fn.c_str(), ret,
                                 get_id_node()));
   return ret;
 }
