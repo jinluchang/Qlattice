@@ -18,6 +18,7 @@ class HMC:
         self.total_site = total_site
         self.mult = mult
         self.steps = steps
+        self.steps_initial = steps*10
         # The number of trajectories to calculate before doing accept/reject step
         self.init_length = init_length
         
@@ -176,18 +177,22 @@ class HMC:
     def hmc_evolve(self, field, momentum):
         # Evolve the field according to the given action using the force
         # gradient algorithm
+        if(not self.perform_metro):
+            steps=self.initial_steps
+        else:
+            steps=self.steps
         lam = 0.5 * (1.0 - 1.0 / 3.0**0.5);
         theta = (2.0 - 3.0**0.5) / 48.0;
-        dt = 1/self.steps
+        dt = 1/steps
         ttheta = theta * dt * dt * dt;
         # The field is updated, and then the momentum is updated based 
         # on the new field, and finally the field is updated again
         self.action.hmc_field_evolve(field, momentum, lam*dt)
-        for i in range(self.steps):
+        for i in range(steps):
             self.sm_evolve(field, momentum, 4.0 * ttheta / dt, 0.5 * dt)
             self.action.hmc_field_evolve(field, momentum, (1.0 - 2.0 * lam) * dt)
             self.sm_evolve(field, momentum, 4.0 * ttheta / dt, 0.5 * dt)
-            if i < self.steps - 1:
+            if i < steps - 1:
                 self.action.hmc_field_evolve(field, momentum, 2.0 * lam * dt)
             else:
                 self.action.hmc_field_evolve(field, momentum, lam * dt)
