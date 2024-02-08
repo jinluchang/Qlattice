@@ -6,7 +6,7 @@ import pickle
 import datetime
 import glob
 import fnmatch
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 import qlat as q
 
@@ -318,8 +318,9 @@ class Measurements:
         #q.displayln_info(self.momentums[-1])
     
     def plot_measurements(self):
-        plt.plot(range(60),self.fields[-1])
-        plt.show()
+        #plt.plot(range(60),self.fields[-1])
+        #plt.show()
+        pass
     
     def get_representatives(self, field):
         return [field.get_elem_xg(q.Coordinate([0,0,0,i]),0)[:].item() for i in range(0,10,2)]
@@ -411,15 +412,15 @@ def main():
     for i in range(1,len(sys.argv)):
         try:
             if(sys.argv[i]=="-l"):
-                lmbd = int(sys.argv[i+1])
+                lmbd = float(sys.argv[i+1])
             elif(sys.argv[i]=="-v"):
-                v0 = int(sys.argv[i+1])
+                v0 = float(sys.argv[i+1])
             elif(sys.argv[i]=="-a"):
-                alpha = int(sys.argv[i+1])
+                alpha = float(sys.argv[i+1])
             elif(sys.argv[i]=="-m"):
-                m_particle = int(sys.argv[i+1])
+                m_particle = float(sys.argv[i+1])
             elif(sys.argv[i]=="-b"):
-                barrier_strength = int(sys.argv[i+1])
+                barrier_strength = float(sys.argv[i+1])
             elif(sys.argv[i]=="-t"):
                 t_full = int(sys.argv[i+1])
             elif(sys.argv[i]=="-f"):
@@ -432,7 +433,7 @@ def main():
                 a = sys.argv[i+1].split("x")
                 total_site = q.Coordinate([int(a[j]) for j in range(4)])
             elif(sys.argv[i]=="-d"):
-                dt = int(sys.argv[i+1])
+                dt = float(sys.argv[i+1])
             elif(sys.argv[i]=="-T"):
                 n_traj = int(sys.argv[i+1])
             elif(sys.argv[i]=="-s"):
