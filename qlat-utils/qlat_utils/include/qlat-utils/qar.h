@@ -30,6 +30,8 @@ API inline QFileMap& get_all_qfile()
   return all_qfile;
 }
 
+// ---------------------
+
 struct API QFile {
   // Interface to FILE* which allow a view of a portion of the file specified by
   // offset_start and offset_end.
@@ -65,6 +67,8 @@ struct API QFile {
   FILE* get_fp() const;
 };
 
+// ---------------------
+
 inline void add_qfile(const QFile& qfile)
 {
   QFileMap& qfile_map = get_all_qfile();
@@ -88,6 +92,8 @@ inline QFile get_qfile(const QFileInternal& qfile_internal)
   qassert(has(qfile_map, key));
   return QFile(qfile_map[key]);
 }
+
+// ---------------------
 
 struct QFileInternal {
   // Interface to FILE* which allow a view of a portion of the file specified by
@@ -160,139 +166,30 @@ struct QFileInternal {
     offset_start = 0;
     offset_end = -1;
   }
-  void init(const std::string& path_, const std::string& mode_)
-  {
-    close();
-    path = path_;
-    mode = mode_;
-    displayln_info(
-        1, ssprintf("QFile: open '%s' with '%s'.", path.c_str(), mode.c_str()));
-    if (mode == "r" and (not is_regular_file(path))) {
-      qwarn(ssprintf("QFile: open '%s' with '%s' not regular file.",
-                     path.c_str(), mode.c_str()));
-    }
-    fp = qopen(path, mode);
-    if (fp == NULL) {
-      qwarn(ssprintf("QFile: open '%s' with '%s' failed.", path.c_str(),
-                     mode.c_str()));
-    } else {
-      pos = ftell(fp);
-    }
-    is_eof = false;
-    offset_start = 0;
-    offset_end = -1;
-  }
+  void init(const std::string& path_, const std::string& mode_);
   void init(const QFile& qfile, const Long q_offset_start,
-            const Long q_offset_end)
+            const Long q_offset_end);
   // Become a child of qfile.
   // NOTE: q_offset_start and q_offset_end are relative offset for qfile not the
   // absolute offset for qfile.fp .
   // q_offset_end == -1 means no additional limit
   // NOTE: Initial position set to be 0. Does not perform fseek to appropriate
   // position.
-  {
-    close();
-    if (qfile.null()) {
-      return;
-    }
-    qfile.p->number_of_child += 1;
-    path = qfile.p->path;
-    mode = qfile.p->mode;
-    fp = qfile.p->fp;
-    parent = qfile;
-    qassert(q_offset_start >= 0);
-    is_eof = false;
-    pos = 0;
-    offset_start = qfile.p->offset_start + q_offset_start;
-    if (q_offset_end == -1) {
-      offset_end = qfile.p->offset_end;
-    } else {
-      qassert(q_offset_end >= q_offset_start);
-      offset_end = qfile.p->offset_start + q_offset_end;
-      if (qfile.p->offset_end != -1) {
-        qassert(offset_end <= qfile.p->offset_end);
-      }
-    }
-    if (mode == "r" and offset_end != -1) {
-      const int code = fseek(fp, offset_end, SEEK_SET);
-      if (code != 0) {
-        qwarn(ssprintf("QFile: '%s' with '%s' offset=%ld,%ld failed.",
-                       path.c_str(), mode.c_str(), offset_start, offset_end));
-        close();
-      }
-    }
-  }
   //
-  void close()
-  {
-    // to close the file, it cannot have any child
-    qassert(number_of_child == 0);
-    if (parent.null()) {
-      if (fp != NULL) {
-        displayln_info(1, ssprintf("QFile: close '%s' with '%s'.", path.c_str(),
-                                   mode.c_str()));
-        qfclose(fp);
-      }
-    } else {
-      fp = NULL;
-      parent.p->number_of_child -= 1;
-      parent = QFile();
-    }
-    qassert(fp == NULL);
-    qassert(parent.null());
-  }
+  void close();
   //
-  void swap(QFileInternal& qfile)
-  {
-    // cannot swap if has child
-    qassert(number_of_child == 0);
-    qassert(qfile.number_of_child == 0);
-    std::swap(path, qfile.path);
-    std::swap(mode, qfile.mode);
-    std::swap(fp, qfile.fp);
-    std::swap(parent, qfile.parent);
-    std::swap(number_of_child, qfile.number_of_child);
-    std::swap(is_eof, qfile.is_eof);
-    std::swap(pos, qfile.pos);
-    std::swap(offset_start, qfile.offset_start);
-    std::swap(offset_end, qfile.offset_end);
-  }
+  void swap(QFileInternal& qfile);
   //
   bool null() const { return fp == NULL; }
 };
-
-inline void QFile::init(const std::string& path, const std::string& mode)
-{
-  if (p == nullptr) {
-    p = std::shared_ptr<QFileInternal>(new QFileInternal());
-    add_qfile(*this);
-  }
-  p->init(path, mode);
-}
-
-inline void QFile::init(const QFile& qfile, const Long q_offset_start,
-                        const Long q_offset_end)
-{
-  if (p == nullptr) {
-    p = std::shared_ptr<QFileInternal>(new QFileInternal());
-    add_qfile(*this);
-  }
-  p->init(qfile, q_offset_start, q_offset_end);
-}
-
-inline void QFile::close()
-{
-  if (p != nullptr) {
-    p->close();
-    p = nullptr;
-  }
-}
 
 inline const std::string& QFile::path() const { return p->path; }
 
 inline const std::string& QFile::mode() const { return p->mode; }
 
 inline FILE* QFile::get_fp() const { return p->fp; }
+
+// ---------------------
 
 inline void qfclose(QFile& qfile)
 // interface function
@@ -637,7 +534,7 @@ QFile qfopen(const std::string& path, const std::string& mode);
 
 std::string qcat(const std::string& path);
 
-void qar_build_index(const std::string& path_qar);
+int qar_build_index(const std::string& path_qar);
 
 int qar_create(const std::string& path_qar, const std::string& path_folder_,
                const bool is_remove_folder_after = false);
@@ -682,13 +579,13 @@ void check_all_files_crc32_info(const std::string& path);
 
 struct API QarFile;
 
-void save_qar_index(const QarFile& qar, const std::string& fn);
+int save_qar_index(const QarFile& qar, const std::string& fn);
 
-void save_qar_index_info(const QarFile& qar, const std::string& fn);
+int save_qar_index_info(const QarFile& qar, const std::string& fn);
 
-void parse_qar_index(const QarFile& qar, const std::string& qar_index_content);
+int parse_qar_index(const QarFile& qar, const std::string& qar_index_content);
 
-void load_qar_index(const QarFile& qar, const std::string& fn);
+int load_qar_index(const QarFile& qar, const std::string& fn);
 
 // -------------------
 
@@ -716,27 +613,7 @@ struct API QarFile : std::vector<QarFileVol> {
     std::vector<QarFileVol>& v = *this;
     qlat::clear(v);
   }
-  void init(const std::string& path_qar, const std::string& mode)
-  {
-    init();
-    if (mode == "r") {
-      // maximally 1024 * 1024 * 1024 volumes
-      for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
-        const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
-        if (not does_regular_file_exist_qar(path_qar_v)) {
-          break;
-        }
-        push_back(qfopen(path_qar_v, mode));
-        if (back().null()) {
-          pop_back();
-          break;
-        }
-      }
-      load_qar_index(*this, path_qar + ".idx");
-    } else {
-      qassert(false);
-    }
-  }
+  void init(const std::string& path_qar, const std::string& mode);
   //
   void close() { init(); }
   //
@@ -858,6 +735,8 @@ inline int qappend_info(const std::string& path, const std::string& content)
     return 0;
   }
 }
+
+int qar_build_index_info(const std::string& path_qar);
 
 int qar_create_info(const std::string& path_qar,
                     const std::string& path_folder_,

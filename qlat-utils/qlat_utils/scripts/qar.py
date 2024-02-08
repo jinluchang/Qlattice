@@ -1,4 +1,4 @@
-# Author: Luchang Jin 2022
+# Author: Luchang Jin 2024
 
 import qlat_utils as q
 import sys
@@ -13,7 +13,7 @@ def remove_trailing_slashes(path):
             break
     return path
 
-def show_list_qar(path_qar, idx = 0, is_recursive = True, drop_prefix = ""):
+def show_list_qar(path_qar, idx=0, is_recursive=True, drop_prefix=""):
     assert path_qar[-4:] == ".qar"
     fns = q.list_qar(path_qar)
     for i, fn in enumerate(fns):
@@ -23,10 +23,10 @@ def show_list_qar(path_qar, idx = 0, is_recursive = True, drop_prefix = ""):
         q.displayln_info(f"{idx:8} '{path_qar}' {i:8} '{pfn}'")
         idx += 1
         if is_recursive and fn[-4:] == ".qar":
-            idx = show_list_qar(pfn_full, idx, is_recursive = is_recursive, drop_prefix = drop_prefix)
+            idx = show_list_qar(pfn_full, idx, is_recursive=is_recursive, drop_prefix=drop_prefix)
     return idx
 
-def build_index_qar(path_qar, is_recursive = True):
+def build_index_qar(path_qar, is_recursive=True):
     assert path_qar[-4:] == ".qar"
     q.qar_build_index_info(path_qar)
     if not is_recursive:
@@ -35,7 +35,7 @@ def build_index_qar(path_qar, is_recursive = True):
     for fn in fns:
         if fn[-4:] == ".qar":
             pfn_full = path_qar[:-4] + "/" + fn
-            build_index_qar(pfn_full, is_recursive = is_recursive)
+            build_index_qar(pfn_full, is_recursive=is_recursive)
 
 if len(sys.argv) < 2:
     q.displayln_info("Usage: qar list path.qar")
@@ -63,11 +63,11 @@ action = sys.argv[1]
 if action == "list":
     assert len(sys.argv) == 3
     path_qar = sys.argv[2]
-    show_list_qar(path_qar, 0, is_recursive = False)
+    show_list_qar(path_qar, 0, is_recursive=False)
 elif action == "build-idx":
     assert len(sys.argv) == 3
     path_qar = sys.argv[2]
-    build_index_qar(path_qar, is_recursive = False)
+    build_index_qar(path_qar, is_recursive=False)
 elif action == "create":
     assert len(sys.argv) == 4
     path_qar = sys.argv[2]
@@ -98,17 +98,17 @@ elif action == "cat":
 elif action == "l":
     idx = 0
     for path_qar in sys.argv[2:]:
-        idx = show_list_qar(path_qar, idx, is_recursive = False)
+        idx = show_list_qar(path_qar, idx, is_recursive=False)
 elif action == "lr":
     idx = 0
     for path_qar in sys.argv[2:]:
-        idx = show_list_qar(path_qar, idx, is_recursive = True)
+        idx = show_list_qar(path_qar, idx, is_recursive=True)
 elif action == "b":
     for path_qar in sys.argv[2:]:
-        build_index_qar(path_qar, is_recursive = False)
+        build_index_qar(path_qar, is_recursive=False)
 elif action == "br":
     for path_qar in sys.argv[2:]:
-        build_index_qar(path_qar, is_recursive = True)
+        build_index_qar(path_qar, is_recursive=True)
 elif action in [ "c", "cr" ]:
     path_list = sys.argv[2:]
     for path in path_list:
@@ -122,7 +122,7 @@ elif action in [ "c", "cr" ]:
         if action == "c":
             q.qar_create_info(path_qar, path)
         elif action == "cr":
-            q.qar_create_info(path_qar, path, is_remove_folder_after = True)
+            q.qar_create_info(path_qar, path, is_remove_folder_after=True)
 elif action in [ "x", "xr" ]:
     path_qar_list = sys.argv[2:]
     for path_qar in path_qar_list:
@@ -136,7 +136,7 @@ elif action in [ "x", "xr" ]:
         if action == "x":
             q.qar_extract_info(path_qar, path)
         elif action == "xr":
-            q.qar_extract_info(path_qar, path, is_remove_qar_after = True)
+            q.qar_extract_info(path_qar, path, is_remove_qar_after=True)
 else:
     assert False
 

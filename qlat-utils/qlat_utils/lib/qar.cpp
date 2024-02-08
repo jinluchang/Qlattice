@@ -18,6 +18,161 @@ static void check_all_files_crc32_aux(
 
 // ----------------------------------------------------
 
+void QFileInternal::init(const std::string& path_, const std::string& mode_)
+{
+  close();
+  path = path_;
+  mode = mode_;
+  displayln_info(
+      1, ssprintf("QFile: open '%s' with '%s'.", path.c_str(), mode.c_str()));
+  if (mode == "r" and (not is_regular_file(path))) {
+    qwarn(ssprintf("QFile: open '%s' with '%s' not regular file.", path.c_str(),
+                   mode.c_str()));
+  }
+  fp = qopen(path, mode);
+  if (fp == NULL) {
+    qwarn(ssprintf("QFile: open '%s' with '%s' failed.", path.c_str(),
+                   mode.c_str()));
+  } else {
+    pos = ftell(fp);
+  }
+  is_eof = false;
+  offset_start = 0;
+  offset_end = -1;
+}
+
+void QFileInternal::init(const QFile& qfile, const Long q_offset_start,
+                         const Long q_offset_end)
+// Become a child of qfile.
+// NOTE: q_offset_start and q_offset_end are relative offset for qfile not the
+// absolute offset for qfile.fp .
+// q_offset_end == -1 means no additional limit
+// NOTE: Initial position set to be 0. Does not perform fseek to appropriate
+// position.
+{
+  close();
+  if (qfile.null()) {
+    return;
+  }
+  qfile.p->number_of_child += 1;
+  path = qfile.p->path;
+  mode = qfile.p->mode;
+  fp = qfile.p->fp;
+  parent = qfile;
+  qassert(q_offset_start >= 0);
+  is_eof = false;
+  pos = 0;
+  offset_start = qfile.p->offset_start + q_offset_start;
+  if (q_offset_end == -1) {
+    offset_end = qfile.p->offset_end;
+  } else {
+    qassert(q_offset_end >= q_offset_start);
+    offset_end = qfile.p->offset_start + q_offset_end;
+    if (qfile.p->offset_end != -1) {
+      qassert(offset_end <= qfile.p->offset_end);
+    }
+  }
+  if (mode == "r" and offset_end != -1) {
+    const int code = fseek(fp, offset_end, SEEK_SET);
+    if (code != 0) {
+      qwarn(ssprintf("QFile: '%s' with '%s' offset=%ld,%ld failed.",
+                     path.c_str(), mode.c_str(), offset_start, offset_end));
+      close();
+    }
+  }
+}
+
+void QFileInternal::close()
+{
+  // to close the file, it cannot have any child
+  qassert(number_of_child == 0);
+  if (parent.null()) {
+    if (fp != NULL) {
+      displayln_info(1, ssprintf("QFile: close '%s' with '%s'.", path.c_str(),
+                                 mode.c_str()));
+      qfclose(fp);
+    }
+  } else {
+    fp = NULL;
+    parent.p->number_of_child -= 1;
+    parent = QFile();
+  }
+  qassert(fp == NULL);
+  qassert(parent.null());
+}
+
+void QFileInternal::swap(QFileInternal& qfile)
+{
+  // cannot swap if has child
+  qassert(number_of_child == 0);
+  qassert(qfile.number_of_child == 0);
+  std::swap(path, qfile.path);
+  std::swap(mode, qfile.mode);
+  std::swap(fp, qfile.fp);
+  std::swap(parent, qfile.parent);
+  std::swap(number_of_child, qfile.number_of_child);
+  std::swap(is_eof, qfile.is_eof);
+  std::swap(pos, qfile.pos);
+  std::swap(offset_start, qfile.offset_start);
+  std::swap(offset_end, qfile.offset_end);
+}
+
+// ----------------------------------------------------
+
+void QFile::init(const std::string& path, const std::string& mode)
+{
+  if (p == nullptr) {
+    p = std::shared_ptr<QFileInternal>(new QFileInternal());
+    add_qfile(*this);
+  }
+  p->init(path, mode);
+}
+
+void QFile::init(const QFile& qfile, const Long q_offset_start,
+                        const Long q_offset_end)
+{
+  if (p == nullptr) {
+    p = std::shared_ptr<QFileInternal>(new QFileInternal());
+    add_qfile(*this);
+  }
+  p->init(qfile, q_offset_start, q_offset_end);
+}
+
+void QFile::close()
+{
+  if (p != nullptr) {
+    p->close();
+    p = nullptr;
+  }
+}
+
+// ----------------------------------------------------
+
+void QarFile::init(const std::string& path_qar, const std::string& mode)
+{
+  init();
+  if (mode == "r") {
+    // maximally 1024 * 1024 * 1024 volumes
+    for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
+      const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
+      if (not does_regular_file_exist_qar(path_qar_v)) {
+        break;
+      }
+      push_back(qfopen(path_qar_v, mode));
+      if (back().null()) {
+        pop_back();
+        break;
+      }
+    }
+    load_qar_index(*this, path_qar + ".idx");
+  } else {
+    qassert(false);
+  }
+}
+
+// ----------------------------------------------------
+
+
 int qfseek(const QFile& qfile, const Long q_offset, const int whence)
 // interface function
 // Always call fseek and adjust qfile.is_eof and qfile.pos
@@ -679,11 +834,11 @@ std::vector<std::string> list(const QarFile& qar)
   return fn_list;
 }
 
-void save_qar_index(const QarFile& qar, const std::string& fn)
+int save_qar_index(const QarFile& qar, const std::string& fn)
 // interface function
 {
   if (qar.null()) {
-    return;
+    return 1;
   }
   TIMER("save_qar_index");
   std::vector<std::string> lines;
@@ -714,30 +869,35 @@ void save_qar_index(const QarFile& qar, const std::string& fn)
     }
   }
   qtouch(fn, lines);
+  return 0;
 }
 
-void save_qar_index_info(const QarFile& qar, const std::string& fn)
+int save_qar_index_info(const QarFile& qar, const std::string& fn)
 // interface function
 {
   if (0 == get_id_node()) {
-    save_qar_index(qar, fn);
+    return save_qar_index(qar, fn);
+  } else {
+    remove_entry_directory_cache(fn);
+    return 0;
   }
 }
 
-void parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
+int parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
 // interface function
 {
+  TIMER("parse_qar_index");
   if (qar.null()) {
-    qwarn("parse_qar_index: qar is null.");
-    return;
+    qwarn(fname + ": qar is null.");
+    return 1;
   }
   if (qar_index_content == "") {
-    return;
+    return 2;
   }
   const Long header_len = qar_idx_header.size();
   if (0 != qar_index_content.compare(0, header_len, qar_idx_header)) {
-    qwarn("parse_qar_index: not qar-idx file format.");
-    return;
+    qwarn(fname + ": not qar-idx file format.");
+    return 3;
   }
   Long cur = header_len;
   while (cur < (Long)qar_index_content.size()) {
@@ -750,146 +910,145 @@ void parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
     std::string line3;
     // line1: QAR-FILE-IDX i j fn_len
     if (not parse_line(line1, cur, qar_index_content)) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 4;
     }
     if (not parse_literal(cur1, line1, "QAR-FILE-IDX ")) {
-      qwarn(ssprintf(
-          "parse_qar_index: not qar-idx file format. cur1=%ld line1='%s'.",
-          cur1, line1.c_str()));
-      return;
+      qwarn(fname + ssprintf(": not qar-idx file format. cur1=%ld line1='%s'.",
+                             cur1, line1.c_str()));
+      return 5;
     }
     if (not parse_long(i, cur1, line1)) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 6;
     }
     if (not parse_literal(cur1, line1, ' ')) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 7;
     }
     if (not parse_long(j, cur1, line1)) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 8;
     }
     if (not parse_literal(cur1, line1, ' ')) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 9;
     }
     if (not parse_long(fn_len, cur1, line1)) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 10;
     }
     if (not parse_literal(cur1, line1, '\n')) {
-      qwarn(ssprintf(
-          "parse_qar_index: not qar-idx file format. cur1=%ld line1='%s'.",
-          cur1, line1.c_str()));
-      return;
+      qwarn(fname + ssprintf(": not qar-idx file format. cur1=%ld line1='%s'.",
+                             cur1, line1.c_str()));
+      return 11;
     }
     if (not parse_end(cur1, line1)) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 12;
     }
     // line2: fn
     if (not parse_len(fn, cur, qar_index_content, fn_len)) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 13;
     }
     if (not parse_literal(cur, qar_index_content, '\n')) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 14;
     }
     // line3: offset offset_fn offset_info offset_data offset_end fn_len
     // info_len data_len
     if (not parse_line(line3, cur, qar_index_content)) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 15;
     }
     if (not parse_long(qsinfo.offset, cur3, line3)) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 16;
     }
     if (not parse_literal(cur3, line3, ' ')) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 17;
     }
     if (not parse_long(qsinfo.offset_fn, cur3, line3)) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 18;
     }
     if (not parse_literal(cur3, line3, ' ')) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 19;
     }
     if (not parse_long(qsinfo.offset_info, cur3, line3)) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 20;
     }
     if (not parse_literal(cur3, line3, ' ')) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 21;
     }
     if (not parse_long(qsinfo.offset_data, cur3, line3)) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 22;
     }
     if (not parse_literal(cur3, line3, ' ')) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 23;
     }
     if (not parse_long(qsinfo.offset_end, cur3, line3)) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 24;
     }
     if (not parse_literal(cur3, line3, ' ')) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 25;
     }
     if (not parse_long(qsinfo.fn_len, cur3, line3)) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 26;
     }
     if (not parse_literal(cur3, line3, ' ')) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 27;
     }
     if (not parse_long(qsinfo.info_len, cur3, line3)) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 28;
     }
     if (not parse_literal(cur3, line3, ' ')) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 29;
     }
     if (not parse_long(qsinfo.data_len, cur3, line3)) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 30;
     }
     if (not parse_literal(cur3, line3, '\n')) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 31;
     }
     if (not parse_end(cur3, line3)) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 32;
     }
     // line4:
     if (not parse_literal(cur, qar_index_content, '\n')) {
-      qwarn("parse_qar_index: not qar-idx file format.");
-      return;
+      qwarn(fname + ": not qar-idx file format.");
+      return 33;
     }
     // register_file
     qassert(0 <= i);
     qassert(i < (Long)qar.size());
     register_file(qar[i], fn, qsinfo);
   }
+  return 0;
 }
 
-void load_qar_index(const QarFile& qar, const std::string& fn)
+int load_qar_index(const QarFile& qar, const std::string& fn)
 // interface function
 {
   TIMER_VERBOSE("load_qar_index");
   const std::string qar_index_content = qcat(fn);
-  parse_qar_index(qar, qar_index_content);
+  return parse_qar_index(qar, qar_index_content);
 }
 
 std::string qcat(const std::string& path)
@@ -909,13 +1068,14 @@ std::string qcat(const std::string& path)
   return ret;
 }
 
-void qar_build_index(const std::string& path_qar)
+int qar_build_index(const std::string& path_qar)
 {
   TIMER_VERBOSE("qar_build_index");
   displayln(fname + ssprintf(": '%s'.", path_qar.c_str()));
   QarFile qar(path_qar, "r");
-  save_qar_index(qar, path_qar + ".idx");
+  const int ret = save_qar_index(qar, path_qar + ".idx");
   qar.close();
+  return ret;
 }
 
 int qar_create(const std::string& path_qar, const std::string& path_folder_,
@@ -1476,6 +1636,17 @@ void check_all_files_crc32_info(const std::string& path)
 }
 
 // ---------------------------------
+
+int qar_build_index_info(const std::string& path_qar)
+{
+  TIMER_VERBOSE("qar_build_index_info")
+  if (0 == get_id_node()) {
+    return qar_build_index(path_qar);
+  } else {
+    remove_entry_directory_cache(path_qar + ".idx");
+    return 0;
+  }
+}
 
 int qar_create_info(const std::string& path_qar,
                     const std::string& path_folder_,

@@ -140,6 +140,25 @@ __all__ += [
         'displayln_malloc_stats',
         ]
 
+__all__ += [
+        'get_qar_multi_vol_max_size',
+        'does_regular_file_exist_qar',
+        'does_file_exist_qar',
+        'qcat',
+        'qcat_bytes',
+        'qar_build_index',
+        'qar_create',
+        'qar_extract',
+        'qcopy_file',
+        'list_qar',
+        'does_regular_file_exist_qar_sync_node',
+        'does_file_exist_qar_sync_node',
+        'qar_build_index_info',
+        'qar_create_info',
+        'qar_extract_info',
+        'qcopy_file_info',
+        ]
+
 # ----------------------------------
 
 import ctypes
