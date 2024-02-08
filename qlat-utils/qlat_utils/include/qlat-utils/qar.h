@@ -839,6 +839,16 @@ inline int qtouch_info(const std::string& path, const std::string& content)
   }
 }
 
+inline int qtouch_info(const std::string& path, const std::vector<std::string>& content)
+{
+  TIMER("qtouch_info");
+  if (0 == get_id_node()) {
+    return qtouch(path, content);
+  } else {
+    return 0;
+  }
+}
+
 inline int qappend_info(const std::string& path, const std::string& content)
 {
   TIMER("qappend_info");

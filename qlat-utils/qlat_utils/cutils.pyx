@@ -19,17 +19,25 @@ def all_dirname_vec(const cc.std_string& fn):
 def remove_trailing_slashes(const cc.std_string& fn):
     return cc.remove_trailing_slashes(fn)
 
-def qtouch(const cc.std_string& path, content=None):
+def qtouch(const cc.std_string& path, object content=None):
     if content is None:
         return cc.qtouch(path)
+    elif isinstance(content, (str, bytes,)):
+        return cc.qtouch(path, <cc.std_string>content)
+    elif isinstance(content, (list, tuple,)):
+        return cc.qtouch(path, <cc.std_vector[cc.std_string]>content)
     else:
-        return cc.qtouch(path, content)
+        raise Exception(f"qtouch: {type(content)}")
 
-def qtouch_info(const cc.std_string& path, content=None):
+def qtouch_info(const cc.std_string& path, object content=None):
     if content is None:
         return cc.qtouch_info(path)
+    elif isinstance(content, (str, bytes,)):
+        return cc.qtouch_info(path, <cc.std_string>content)
+    elif isinstance(content, (list, tuple,)):
+        return cc.qtouch_info(path, <cc.std_vector[cc.std_string]>content)
     else:
-        return cc.qtouch_info(path, content)
+        raise Exception(f"qtouch: {type(content)}")
 
 def qappend(const cc.std_string& path, const cc.std_string& content):
     return cc.qappend(path, content)

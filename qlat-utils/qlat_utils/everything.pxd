@@ -239,6 +239,7 @@ cdef extern from "qlat-utils/utils-io.h" namespace "qlat":
     void flush() except +
     int qtouch(const std_string& path) except +
     int qtouch(const std_string& path, const std_string& content) except +
+    int qtouch(const std_string& path, const std_vector[std_string]& content) except +
     int qappend(const std_string& path, const std_string& content) except +
     int qrename(const std_string& old_path, const std_string& new_path) except +
     std_vector[std_string] qls(const std_string& path, const bool is_sort) except +
@@ -262,6 +263,7 @@ cdef extern from "qlat-utils/utils-io.h" namespace "qlat":
     int qmkdir_p(const std_string& path) except +
     int qtouch_info(const std_string& path) except +
     int qtouch_info(const std_string& path, const std_string& content) except +
+    int qtouch_info(const std_string& path, const std_vector[std_string]& content) except +
     int qappend_info(const std_string& path, const std_string& content) except +
     int qrename_info(const std_string& old_path, const std_string& new_path) except +
     int qmkdir_info(const std_string& path) except +
