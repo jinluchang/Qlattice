@@ -410,31 +410,57 @@ def main():
     
     for i in range(1,len(sys.argv)):
         try:
-            if(sys.argv[i]=="-d"):
-                a = sys.argv[i+1].split("x")
-                total_site = q.Coordinate([int(a[j]) for j in range(4)])
-            elif(sys.argv[i]=="-n"):
-                mult = int(sys.argv[i+1])
+            if(sys.argv[i]=="-l"):
+                lmbd = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-v"):
+                v0 = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-a"):
+                alpha = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-m"):
+                m_particle = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-b"):
+                barrier_strength = int(sys.argv[i+1])
             elif(sys.argv[i]=="-t"):
-                n_traj = int(sys.argv[i+1])
-            elif(sys.argv[i]=="-s"):
-                steps = int(sys.argv[i+1])
-            elif(sys.argv[i]=="-R"):
-                fresh_start = True
-            elif(sys.argv[i]=="-i"):
-                init_length = int(sys.argv[i+1])
-            elif(sys.argv[i]=="-S"):
-                save_frequency = int(sys.argv[i+1])
-            elif(sys.argv[i]=="-f"):
                 t_full = int(sys.argv[i+1])
-            elif(sys.argv[i]=="-F"):
+            elif(sys.argv[i]=="-f"):
                 t_FV = int(sys.argv[i+1])
             elif(sys.argv[i]=="-M"):
                 M = float(sys.argv[i+1])
             elif(sys.argv[i]=="-L"):
                 L = float(sys.argv[i+1])
+            elif(sys.argv[i]=="-D"):
+                a = sys.argv[i+1].split("x")
+                total_site = q.Coordinate([int(a[j]) for j in range(4)])
+            elif(sys.argv[i]=="-d"):
+                dt = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-T"):
+                n_traj = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-s"):
+                steps = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-S"):
+                save_frequency = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-R"):
+                fresh_start = True
+            elif(sys.argv[i]=="-i"):
+                init_length = int(sys.argv[i+1])
         except:
-            raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -s for the number of steps in a trajectory, -R to force restarting with blank initial field, -i for the number of trajectories to do at the beginning without a Metropolis step, -S for the number of trajectories to run before each save, -f for the time to evolve with H_full, -F for the time to evolve with H_FV, -M to set the left barrier for H_TV, -L to set the right barrier for H_TV. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1 -t 10000")
+            raise Exception("Invalid arguments: use \
+                            -l for lambda, \
+                            -v for v0, \
+                            -a for alpha, \
+                            -m for the mass of the QM particle, \
+                            -b for the barrier strength used in H_FV and H_TV, \
+                            -t for the time to evolve with H_full, \
+                            -f for the time to evolve with H_FV, \
+                            -M to set the left barrier for H_TV, \
+                            -L to set the right barrier for H_TV, \
+                            -D for lattice dimensions, \
+                            -d for the lattice spacing, \
+                            -T for number of trajectories, \
+                            -s for the number of steps in a trajectory, \
+                            -S for the number of trajectories to run before each save, \
+                            -R to force restarting with blank initial field, \
+                            -i for the number of trajectories to do at the beginning without a Metropolis step.")
     
     action = q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_full, t_FV, m_particle, dt)
     hmc = HMC(action,f"lmbd_{lmbd}_v0_{v0}_alpha_{alpha}_m_{m_particle}_dt_{dt}_bar_{barrier_strength}_M_{M}_L_{L}_tfull_{t_full}_tFV_{t_FV}",total_site,mult,steps,init_length,date,version,fresh_start)
