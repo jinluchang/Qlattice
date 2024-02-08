@@ -178,7 +178,7 @@ class HMC:
         # Evolve the field according to the given action using the force
         # gradient algorithm
         if(not self.perform_metro):
-            steps=self.initial_steps
+            steps=self.steps_initial
         else:
             steps=self.steps
         lam = 0.5 * (1.0 - 1.0 / 3.0**0.5);
