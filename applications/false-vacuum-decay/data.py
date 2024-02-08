@@ -62,36 +62,25 @@ class Data:
                 a[i] = "*"
         return "_".join(a)
     
-    def get_sfs_list(self, sfs, params, values):
+    def get_sfs_list(self, sfs, profile):
         rtn = []
+        profile = profile.split("_")
         for sf in sfs:
+            a = sf.split("_")
             append = True
-            for p in range(len(params)):
-                if(self.get_param(sf,params[p])!=str(values[p])):
-                    append = False
+            for i in range(len(a)):
+                if(profile[i]=="*"):
                     continue
+                elif(a[i]!=profile[i]):
+                    append = False
+                    break
             if(append):
                 rtn.append(sf)
         return rtn
     
-    #def get_M_L_list(self, Ms, Ls, sf0=""):
-    #    if sf0=="":
-    #        sf = self.remove_date(list(self.delta_actions_M)[0])
-    #    else:
-    #        sf = sf0
-    #    sfs_M = self.replace_params(sf, ["M", "L"], [[M, 1.0] for M in Ms])
-    #    sfs_L = self.replace_params(sf, ["M", "L"], [[1.0, L] for L in Ls])
-    #    delta_actions_M = [np.exp(self.delta_actions_M[sfs_M[i]][str(Ms[i+1])][self.cutoff:]) for i in range(len(Ms)-1)]
-    #    delta_actions_L = [np.exp(self.delta_actions_L[sfs_L[i]][str(Ls[i+1])][self.cutoff:]) for i in range(len(Ls)-1)]
-    #    return delta_actions_M + delta_actions_L
-    
-    def get_M_L_blocks(self, Ms, Ls, sf0=""):
-        if sf0=="":
-            sf = self.remove_date(list(self.delta_actions_M)[0])
-        else:
-            sf = sf0
-        sfs_M = self.replace_params(sf, ["M", "L"], [[M, 1.0] for M in Ms])
-        sfs_L = self.replace_params(sf, ["M", "L"], [[1.0, L] for L in Ls])
+    def get_M_L_blocks(self, Ms, Ls, profile):
+        sfs_M = self.replace_params(profile, ["M", "L"], [[M, 1.0] for M in Ms])
+        sfs_L = self.replace_params(profile, ["M", "L"], [[1.0, L] for L in Ls])
         delta_actions_M = [jk.get_jackknife_blocks(np.exp(self.delta_actions_M[sfs_M[i]][str(Ms[i+1])][self.cutoff:]), self.block_size)
                            for i in range(len(Ms)-1)]
         delta_actions_L = [jk.get_jackknife_blocks(np.exp(self.delta_actions_L[sfs_L[i]][str(Ls[i+1])][self.cutoff:]), self.block_size)
@@ -110,54 +99,97 @@ class Data:
     def calc_gamma(self, R, Ebar, delta_E, t_full, dt):
         return R*(2*np.pi)**0.5/delta_E * np.exp(-Ebar**2/2/delta_E**2)/(t_full*dt)**2
     
-    def calc_gamma_w_errors(self, Ms, Ls, sf, sf1, sf2):
-        t_full = int(self.get_param(sf,"tfull"))
-        dt = float(self.get_param(sf, "dt"))
-        da_blocks = self.get_M_L_blocks(Ms, Ls, sf)
-        ratio=self.calc_ratio(da_blocks, len(Ms)-1)
-        R_blocks = jk.super_jackknife_combine_blocks(da_blocks, lambda x: self.calc_ratio(x, len(Ms)-1))
-        Ebar_blocks = self.get_Ebar_blocks(sf)
+    def calc_gamma_blocks(self, Ms, Ls, profile_ML, profile_tFV, der=1):
+        t_full = int(self.get_param(profile_ML,"tfull"))
+        dt = float(self.get_param(profile_ML, "dt"))
+        t_FV = int(self.get_param(profile_ML,"tFV"))
+        ml_blocks = self.get_M_L_blocks(Ms, Ls, profile_ML)
+        R_blocks = jk.super_jackknife_combine_blocks(ml_blocks, lambda x: self.calc_ratio(x, len(Ms)-1))
+        Ebar_blocks = self.get_Ebar_blocks(self.replace_params(profile_ML,["M","L"],[1.0,0.0]))
+        #
+        sfs = self.get_sfs_list(list(self.delta_actions_t_FV), profile_tFV)
+        sfs.sort(key=lambda x: float(self.get_param(x, "tFV")))
+        if der==0:
+            sf1 = self.replace_param(profile_tFV,"tFV",t_FV)
+            sf2 = list(filter(lambda x: int(self.get_param(x,"tFV"))>t_FV, sfs))[0]
+        elif der==1:
+            sf1 = list(filter(lambda x: int(self.get_param(x,"tFV"))<t_FV, sfs))[-1]
+            sf2 = list(filter(lambda x: int(self.get_param(x,"tFV"))>t_FV, sfs))[0]
+        else:
+            sf1 = list(filter(lambda x: int(self.get_param(x,"tFV"))<t_FV, sfs))[-1]
+            sf2 = self.replace_param(profile_tFV,"tFV",t_FV)
         dE_blocks = self.get_Ebar_slope_blocks(sf1, sf2)
+        print(f"Calculating dE with t_FV={self.get_param(sf1,'tFV')} and t_FV={self.get_param(sf2,'tFV')}")
+        #
         gamma_blocks = jk.super_jackknife_combine_blocks([R_blocks, Ebar_blocks, dE_blocks], lambda x: self.calc_gamma(x[0], x[1], x[2], t_full, dt))
         gamma_mean = self.calc_gamma(np.mean(R_blocks), np.mean(Ebar_blocks), np.mean(dE_blocks), t_full, dt)
+        return gamma_mean, gamma_blocks
+    
+    def calc_gamma_w_errors(self, Ms, Ls, profile_ML, profile_tFV, der=1):
+        gamma_mean, gamma_blocks = self.calc_gamma_blocks(Ms, Ls, profile_ML, profile_tFV, der)
         return jk.get_errors_from_blocks(gamma_mean, gamma_blocks)
     
-    def calc_gamma_M_L_errors(self, Ms, Ls, sf, sf1, sf2):
+    def calc_gamma_M_L_errors(self, Ms, Ls, profile_ML, profile_tFV, der=1):
         gammas = []
         for i in range(1,len(Ms)-1):
             M = Ms.pop(i)
-            gammas.append(self.calc_gamma_w_errors(Ms,Ls,sf,sf1,sf2))
+            gammas.append(self.calc_gamma_blocks(Ms,Ls,profile_ML, profile_tFV, der=1)[0])
             Ms.insert(i,M)
         for i in range(1,len(Ls)-1):
             L = Ls.pop(i)
-            gammas.append(self.calc_gamma_w_errors(Ms,Ls,sf,sf1,sf2))
+            gammas.append(self.calc_gamma_blocks(Ms,Ls,profile_ML, profile_tFV, der=1)[0])
             Ls.insert(i,L)
         return gammas
     
-    def plot_gamma(self, Ms, Ls):
-        # TODO: Filter to ensure that all sfs have same parameters
-        sfs = list(filter(lambda x: self.get_param(x,"M")=="1.0" and self.get_param(x,"L")=="0.0", list(self.delta_actions_t_FV)))
-        sfs.sort(key=lambda x: float(self.get_param(x, "tFV")))
-        t_TVs = []
-        gammas = []
-        gamma_errs = []
-        dis_errors_up = []
-        dis_errors_down = []
-        for i in range(1,len(sfs)-1):
-            if self.replace_param(sfs[i], "L", Ls[1]) in list(self.delta_actions_L):
-                gamma = self.calc_gamma_w_errors(Ms, Ls, sfs[i], sfs[i-1], sfs[i+1])
-                gamma_fd = self.calc_gamma_w_errors(Ms, Ls, sfs[i], sfs[i], sfs[i+1])
-                gamma_bd = self.calc_gamma_w_errors(Ms, Ls, sfs[i], sfs[i-1], sfs[i])
-                t_TVs.append(self.get_t_TV(sfs[i])*float(self.get_param(sfs[i], "dt")))
-                gammas.append(gamma[0])
-                gamma_errs.append(gamma[1])
-                dis_errors_up.append(abs(gamma_bd[0]-gamma[0]))
-                dis_errors_down.append(abs(gamma_fd[0]-gamma[0]))
-            else:
-                continue
-        plt.errorbar(t_TVs, gammas, yerr=gamma_errs)
-        plt.errorbar(t_TVs, gammas, yerr=[dis_errors_down,dis_errors_up])
-        return t_TVs, gammas, gamma_errs, [dis_errors_down, dis_errors_up]
+    def calc_gamma_dis_errors(self, Ms, Ls, profile_ML, profile_tFV):
+        gamma = self.calc_gamma_blocks(Ms,Ls,profile_ML, profile_tFV, der=1)[0]
+        fd = self.calc_gamma_blocks(Ms,Ls,profile_ML, profile_tFV, der=2)[0]
+        bd = self.calc_gamma_blocks(Ms,Ls,profile_ML, profile_tFV, der=0)[0]
+        lerr = min([fd,bd])
+        uerr = max([fd,bd])
+        if lerr>0 or uerr<0:
+            lerr = max([abs(lerr),abs(uerr)])
+            uerr = lerr
+        return [abs(less), abs(uerr)]
+    
+    def get_Ebar_blocks(self, sf, delta_t=1):
+        t_TV = self.get_t_TV(sf)
+        t_FV = int(self.get_param(sf,"tFV"))
+        dt = float(self.get_param(sf, "dt"))
+        blocks_TV = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_TV[sf][f"{t_TV+delta_t}"][self.cutoff:]), self.block_size)
+        blocks_FV = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_FV[sf][f"{t_FV+delta_t}"][self.cutoff:]), self.block_size)
+        bdiv = np.log(np.divide(blocks_FV,blocks_TV))/(dt*delta_t)
+        return bdiv
+    
+    def get_Ebar_E_FV(self, sf, delta_t=1):
+        bdiv = self.get_Ebar_blocks(sf, delta_t)
+        return jk.get_errors_from_blocks(np.mean(bdiv), bdiv)
+    
+    def get_Ebar_slope_blocks(self, sf1, sf2, delta_t=1):
+        dt_TV = self.get_t_TV(sf2)*float(self.get_param(sf2, "dt")) - self.get_t_TV(sf1)*float(self.get_param(sf2, "dt"))
+        bdiv1 = self.get_Ebar_blocks(sf1, delta_t)
+        bdiv2 = self.get_Ebar_blocks(sf2, delta_t)
+        return ((bdiv1 - bdiv2) / dt_TV)**0.5
+    
+    def get_Ebar_slope(self, sf1, sf2, delta_t=1):
+        bdiv = self.get_Ebar_slope_blocks(sf1, sf2, delta_t)
+        return jk.get_errors_from_blocks(np.mean(bdiv), bdiv)
+    
+    def get_delta_E(self, sf):
+        delta_t=1
+        delta_t2=2
+        t_TV = self.get_t_TV(sf)
+        t_FV = int(self.get_param(sf,"tFV"))
+        dt = float(self.get_param(sf, "dt"))
+        
+        blocks_TVa = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_TV[sf][f"{t_TV+delta_t}"][self.cutoff:]), self.block_size)
+        blocks_FVa = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_FV[sf][f"{t_FV+delta_t}"][self.cutoff:]), self.block_size)
+        
+        blocks_TVa2 = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_TV[sf][f"{t_TV+delta_t2}"][self.cutoff:]), self.block_size)
+        blocks_FVa2 = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_FV[sf][f"{t_FV+delta_t2}"][self.cutoff:]), self.block_size)
+        
+        bdiv = np.log(np.divide(blocks_FVa2,blocks_TVa2)/np.divide(blocks_FVa,blocks_TVa)**2.0)**0.5/(dt*delta_t2)
+        return jk.get_errors_from_blocks(np.mean(bdiv), bdiv)
     
     def plot_mean_path(self):
         #x = np.arange(-5,5,0.1)
@@ -233,45 +265,6 @@ class Data:
         else:
             sfs = [sf]
         self.plot_all_expS(self.delta_actions_t_FV, sfs, "tFV", get_x=int, filter_x=lambda x,x0: (int(x)-x0)<t_limit[0] or (int(x)-x0)>t_limit[1])
-    
-    def get_Ebar_blocks(self, sf, delta_t=1):
-        t_TV = self.get_t_TV(sf)
-        t_FV = int(self.get_param(sf,"tFV"))
-        dt = float(self.get_param(sf, "dt"))
-        blocks_TV = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_TV[sf][f"{t_TV+delta_t}"][self.cutoff:]), self.block_size)
-        blocks_FV = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_FV[sf][f"{t_FV+delta_t}"][self.cutoff:]), self.block_size)
-        bdiv = np.log(np.divide(blocks_FV,blocks_TV))/(dt*delta_t)
-        return bdiv
-    
-    def get_Ebar_E_FV(self, sf, delta_t=1):
-        bdiv = self.get_Ebar_blocks(sf, delta_t)
-        return jk.get_errors_from_blocks(np.mean(bdiv), bdiv)
-    
-    def get_Ebar_slope_blocks(self, sf1, sf2, delta_t=1):
-        dt_TV = self.get_t_TV(sf2)*float(self.get_param(sf2, "dt")) - self.get_t_TV(sf1)*float(self.get_param(sf2, "dt"))
-        bdiv1 = self.get_Ebar_blocks(sf1, delta_t)
-        bdiv2 = self.get_Ebar_blocks(sf2, delta_t)
-        return ((bdiv1 - bdiv2) / dt_TV)**0.5
-    
-    def get_Ebar_slope(self, sf1, sf2, delta_t=1):
-        bdiv = self.get_Ebar_slope_blocks(sf1, sf2, delta_t)
-        return jk.get_errors_from_blocks(np.mean(bdiv), bdiv)
-    
-    def get_delta_E(self, sf):
-        delta_t=1
-        delta_t2=2
-        t_TV = self.get_t_TV(sf)
-        t_FV = int(self.get_param(sf,"tFV"))
-        dt = float(self.get_param(sf, "dt"))
-        
-        blocks_TVa = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_TV[sf][f"{t_TV+delta_t}"][self.cutoff:]), self.block_size)
-        blocks_FVa = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_FV[sf][f"{t_FV+delta_t}"][self.cutoff:]), self.block_size)
-        
-        blocks_TVa2 = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_TV[sf][f"{t_TV+delta_t2}"][self.cutoff:]), self.block_size)
-        blocks_FVa2 = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_FV[sf][f"{t_FV+delta_t2}"][self.cutoff:]), self.block_size)
-        
-        bdiv = np.log(np.divide(blocks_FVa2,blocks_TVa2)/np.divide(blocks_FVa,blocks_TVa)**2.0)**0.5/(dt*delta_t2)
-        return jk.get_errors_from_blocks(np.mean(bdiv), bdiv)
     
     def plot_Ebar_E_FV(self, delta_t=1):
         sfs = self.get_sfs_list(list(self.delta_actions_t_TV), ["M", "L"], [1.0, 0.0])
