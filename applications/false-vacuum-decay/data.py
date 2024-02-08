@@ -63,6 +63,8 @@ class Data:
         return "_".join(a)
     
     def get_sfs_list(self, sfs, profile):
+        if(profile=="*"):
+            return sfs
         rtn = []
         profile = profile.split("_")
         for sf in sfs:
@@ -105,7 +107,7 @@ class Data:
         t_FV = int(self.get_param(profile_ML,"tFV"))
         ml_blocks = self.get_M_L_blocks(Ms, Ls, profile_ML)
         R_blocks = jk.super_jackknife_combine_blocks(ml_blocks, lambda x: self.calc_ratio(x, len(Ms)-1))
-        Ebar_blocks = self.get_Ebar_blocks(self.replace_params(profile_ML,["M","L"],[1.0,0.0]))
+        Ebar_blocks = self.get_Ebar_blocks(self.replace_params(profile_ML,["M","L"],[[1.0,0.0]])[0])
         #
         sfs = self.get_sfs_list(list(self.delta_actions_t_FV), profile_tFV)
         sfs.sort(key=lambda x: float(self.get_param(x, "tFV")))
@@ -145,12 +147,12 @@ class Data:
         gamma = self.calc_gamma_blocks(Ms,Ls,profile_ML, profile_tFV, der=1)[0]
         fd = self.calc_gamma_blocks(Ms,Ls,profile_ML, profile_tFV, der=2)[0]
         bd = self.calc_gamma_blocks(Ms,Ls,profile_ML, profile_tFV, der=0)[0]
-        lerr = min([fd,bd])
-        uerr = max([fd,bd])
+        lerr = min([fd,bd]) - gamma
+        uerr = max([fd,bd]) - gamma
         if lerr>0 or uerr<0:
             lerr = max([abs(lerr),abs(uerr)])
             uerr = lerr
-        return [abs(less), abs(uerr)]
+        return [abs(lerr), abs(uerr)]
     
     def get_Ebar_blocks(self, sf, delta_t=1):
         t_TV = self.get_t_TV(sf)
@@ -191,12 +193,13 @@ class Data:
         bdiv = np.log(np.divide(blocks_FVa2,blocks_TVa2)/np.divide(blocks_FVa,blocks_TVa)**2.0)**0.5/(dt*delta_t2)
         return jk.get_errors_from_blocks(np.mean(bdiv), bdiv)
     
-    def plot_mean_path(self):
+    def plot_mean_path(self, profile="*"):
         #x = np.arange(-5,5,0.1)
         #for t in range(0,self.Nt,int(self.Nt/20)):
         #    plt.plot([min(self.action.V(i,t)*self.Nt/20.0, 200.0) + t for i in x],x)
-        for sf in self.timeslices:
-            plt.plot(np.mean(self.timeslices[sf][self.cutoff:],axis=0))
+        sfs = self.get_sfs_list(list(self.timeslices), profile)
+        for sf in sfs:
+            plt.plot(np.mean(self.timeslices[sf][self.cutoff:],axis=0), label=sf)
     
     def plot_paths(self):
         #x = np.arange(-5,5,0.1)
@@ -266,8 +269,8 @@ class Data:
             sfs = [sf]
         self.plot_all_expS(self.delta_actions_t_FV, sfs, "tFV", get_x=int, filter_x=lambda x,x0: (int(x)-x0)<t_limit[0] or (int(x)-x0)>t_limit[1])
     
-    def plot_Ebar_E_FV(self, delta_t=1):
-        sfs = self.get_sfs_list(list(self.delta_actions_t_TV), ["M", "L"], [1.0, 0.0])
+    def plot_Ebar_E_FV(self, profile_tFV, delta_t=1):
+        sfs = self.get_sfs_list(list(self.delta_actions_t_TV), profile_tFV)
         sfs.sort(key=self.get_t_TV)
         t_TVs = []
         Es = []
@@ -279,8 +282,8 @@ class Data:
             E_errs.append(err)
         plt.errorbar(t_TVs, Es, yerr=E_errs)
     
-    def plot_delta_E(self):
-        sfs = self.get_sfs_list(list(self.delta_actions_t_TV), ["M", "L"], [1.0, 0.0])
+    def plot_delta_E(self, profile_tFV):
+        sfs = self.get_sfs_list(list(self.delta_actions_t_TV), profile_tFV)
         sfs.sort(key=self.get_t_TV)
         t_TVs = []
         dEs = []
@@ -292,8 +295,8 @@ class Data:
             dE_errs.append(err)
         plt.errorbar(t_TVs, dEs, yerr=dE_errs)
     
-    def plot_Ebar_slope(self, delta_t=1):
-        sfs = self.get_sfs_list(list(self.delta_actions_t_TV), ["M", "L"], [1.0, 0.0])
+    def plot_Ebar_slope(self, profile_tFV, delta_t=1):
+        sfs = self.get_sfs_list(list(self.delta_actions_t_TV), profile_tFV)
         sfs.sort(key=self.get_t_TV)
         t_TVs = []
         dEs = []
@@ -340,3 +343,5 @@ class Data:
                     self.delta_actions_t_FV[sf] = data["delta_actions_t_FV"]
                     self.delta_actions_t_TV[sf] = data["delta_actions_t_TV"]
                     print(f"Loaded {sf}")
+                    print(f"# traj: {len(data['trajs'])}")
+                    print(f"Accept rate: {np.mean(data['accept_rates'])}")
