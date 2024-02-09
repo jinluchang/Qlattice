@@ -19,6 +19,7 @@ static void check_all_files_crc32_aux(
 // ----------------------------------------------------
 
 void QFileInternal::init(const std::string& path_, const std::string& mode_)
+// mode can be "r", "w", "a"
 {
   close();
   path = path_;
@@ -407,14 +408,23 @@ void QarFileVolInternal::init()
   current_write_segment_offset_data_len = -1;
 }
 
+void QarFileVolInternal::init(const std::string& path, const std::string& mode)
+{
+  // TODO
+  init(QFile(path, mode));
+}
+
 void QarFileVolInternal::init(const QFile& qfile_)
 {
+  TIMER("QarFileVolInternal::init(qfile)");
   init();
   qfile = qfile_;
   if (qfile.null()) {
     return;
   }
-  if (mode() == "w") {
+  qassert(qftell(qfile) == 0);
+  if (mode() == "w" or mode() == "a") {
+    // write from scratch even if mode is "a" (perhaps inherited from mother qfile)
     qfwrite(qar_header.data(), qar_header.size(), 1, qfile);
   } else if (mode() == "r") {
     std::vector<char> check_line(qar_header.size(), 0);
@@ -423,9 +433,78 @@ void QarFileVolInternal::init(const QFile& qfile_)
     if (not(qfread_check_len == 1 and
             std::string(check_line.data(), check_line.size()) == qar_header)) {
       qfile.close();
+      qwarn(fname + ssprintf(": '%s' format does not match.", qfile.path().c_str()));
+      return;
     };
     max_offset = qftell(qfile);
     directories.insert("");
+  } else {
+    qassert(false);
+  }
+}
+
+void QarFileVol::init(const std::string& path, const std::string& mode)
+{
+  if (p == nullptr) {
+    p = std::shared_ptr<QarFileVolInternal>(new QarFileVolInternal());
+  }
+  p->init(path, mode);
+}
+
+void QarFileVol::init(const QFile& qfile)
+{
+  if (p == nullptr) {
+    p = std::shared_ptr<QarFileVolInternal>(new QarFileVolInternal());
+  }
+  p->init(qfile);
+}
+
+void QarFileVol::close()
+{
+  if (p != nullptr) {
+    p->close();
+    p = nullptr;
+  }
+}
+
+const std::string& QarFileVol::path() const { return p->path(); }
+
+const std::string& QarFileVol::mode() const { return p->mode(); }
+
+const QFile& QarFileVol::qfile() const { return p->qfile; }
+
+void QarFile::init(const std::string& path_qar, const std::string& mode)
+{
+  init();
+  if (mode == "r") {
+    // maximally 1024 * 1024 * 1024 volumes
+    for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
+      const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
+      if (not does_regular_file_exist_qar(path_qar_v)) {
+        break;
+      }
+      push_back(qfopen(path_qar_v, mode));
+      if (back().null()) {
+        pop_back();
+        break;
+      }
+    }
+    load_qar_index(*this, path_qar + ".idx");
+  } else if (mode == "a") {
+    for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
+      const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
+      if (not does_regular_file_exist_qar(path_qar_v)) {
+        break;
+      }
+      push_back(qfopen(path_qar_v, mode));
+      if (back().null()) {
+        pop_back();
+        break;
+      }
+    }
+    load_qar_index(*this, path_qar + ".idx");
+  } else {
+    qassert(false);
   }
 }
 
@@ -837,6 +916,7 @@ int truncate_qar_file(const std::string& path,
 // return 0 if truncated successfully.
 // if fns_keep is empty, the resulting qar file should have and only have
 // qar_header.
+// qar_file ready to be appended after this call.
 {
   TIMER_VERBOSE("truncate_qar_file");
   QarFileVol qar(path, "r");
@@ -853,29 +933,27 @@ int truncate_qar_file(const std::string& path,
   if (fns.size() < fns_keep.size()) {
     qwarn(fname + ssprintf(": fns.size()=%ld fns_keep.size()=%ld", fns.size(),
                            fns_keep.size()));
-    return 1;
+    return 2;
   }
   for (Long i = 0; i < (Long)fns_keep.size(); ++i) {
     if (fns[i] != fns_keep[i]) {
       qwarn(fname + ssprintf(": fns[i]='%s' fns_keep[i]='%s'", fns[i].c_str(),
                              fns_keep[i].c_str()));
-      return 2;
+      return 3;
     }
   }
+  Long offset_final = qar_header.size();
   if (fns_keep.size() > 0) {
+    std::string fn_last = fns_keep.back();
+    offset_final = qar.p->qsinfo_map[fn_last].offset_end;
   }
-  std::string fn_last = "";
-  if (fns_keep.size() > 0) {
-    fn_last = fns_keep.back();
-  }
-  const Long offset_final = qar.p->qsinfo_map[fn_last].offset_end;
   qar.close();
   const int b = qtruncate(path, offset_final);
   if (b != 0) {
     qwarn(fname +
           ssprintf(": fns.size()=%ld fns_keep.size()=%ld offset_final=%ld",
                    fns.size(), fns_keep.size(), offset_final));
-    return 3;
+    return 4;
   }
   return 0;
 }
@@ -884,6 +962,7 @@ std::vector<std::string> properly_truncate_qar_file(const std::string& path)
 // interface function
 // The resulting qar file should at least have qar_header.
 // Should call this function before append.
+// qar_file ready to be appended after this call.
 {
   std::vector<std::string> fns_keep;
   QarFileVol qar(path, "r");
@@ -893,39 +972,15 @@ std::vector<std::string> properly_truncate_qar_file(const std::string& path)
     return fns_keep;
   }
   fns_keep = list(qar);
-  std::string fn_last = "";
+  Long offset_final = qar_header.size();
   if (fns_keep.size() > 0) {
-    fn_last = fns_keep.back();
+    std::string fn_last = fns_keep.back();
+    offset_final = qar.p->qsinfo_map[fn_last].offset_end;
   }
-  const Long offset_final = qar.p->qsinfo_map[fn_last].offset_end;
   qar.close();
   const int b = qtruncate(path, offset_final);
   qassert(b == 0);
   return fns_keep;
-}
-
-// ----------------------------------------------------
-
-void QarFile::init(const std::string& path_qar, const std::string& mode)
-{
-  init();
-  if (mode == "r") {
-    // maximally 1024 * 1024 * 1024 volumes
-    for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
-      const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
-      if (not does_regular_file_exist_qar(path_qar_v)) {
-        break;
-      }
-      push_back(qfopen(path_qar_v, mode));
-      if (back().null()) {
-        pop_back();
-        break;
-      }
-    }
-    load_qar_index(*this, path_qar + ".idx");
-  } else {
-    qassert(false);
-  }
 }
 
 // ----------------------------------------------------
@@ -1757,7 +1812,6 @@ void check_all_files_crc32_info(const std::string& path)
     display(show_files_crc32(fcrcs));
   }
 }
-
 
 // -------------------
 

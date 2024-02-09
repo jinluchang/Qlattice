@@ -341,10 +341,7 @@ struct API QarFileVol {
   QarFileVol(const QFile& qfile) { init(qfile); }
   //
   void init() { p = nullptr; }
-  void init(const std::string& path, const std::string& mode)
-  {
-    init(QFile(path, mode));
-  }
+  void init(const std::string& path, const std::string& mode);
   void init(const QFile& qfile);
   //
   void close();  // may not close the underling file, only release the pointer
@@ -379,9 +376,14 @@ struct QarFileVolInternal {
   Long current_write_segment_offset_data_len;
   //
   QarFileVolInternal() { init(); }
+  QarFileVolInternal(const std::string& path, const std::string& mode)
+  {
+    init(path, mode);
+  }
   QarFileVolInternal(const QFile& qfile) { init(qfile); }
   //
   void init();
+  void init(const std::string& path, const std::string& mode);
   void init(const QFile& qfile_);
   //
   void close() { init(); }
@@ -392,28 +394,6 @@ struct QarFileVolInternal {
   //
   const std::string& mode() const { return qfile.mode(); }
 };
-
-inline void QarFileVol::init(const QFile& qfile)
-{
-  if (p == nullptr) {
-    p = std::shared_ptr<QarFileVolInternal>(new QarFileVolInternal());
-  }
-  p->init(qfile);
-}
-
-inline void QarFileVol::close()
-{
-  if (p != nullptr) {
-    p->close();
-    p = nullptr;
-  }
-}
-
-inline const std::string& QarFileVol::path() const { return p->path(); }
-
-inline const std::string& QarFileVol::mode() const { return p->mode(); }
-
-inline const QFile& QarFileVol::qfile() const { return p->qfile; }
 
 void register_file(const QarFileVol& qar, const std::string& fn,
                    const QarSegmentInfo& qsinfo);
