@@ -237,32 +237,11 @@ int qfscanf(const QFile& qfile, const char* fmt, ...);
 
 std::string qgetline(const QFile& qfile);
 
-inline std::vector<std::string> qgetlines(const QFile& qfile)
-// interface function
-{
-  qassert(not qfile.null());
-  std::vector<std::string> ret;
-  while (not qfeof(qfile)) {
-    ret.push_back(qgetline(qfile));
-  }
-  return ret;
-}
+std::vector<std::string> qgetlines(const QFile& qfile);
 
-inline Long qfile_remaining_size(const QFile& qfile)
-// interface function
-// qfile should have definite size.
-// return the remaining size of qfile (start from the current position).
-{
-  TIMER_FLOPS("qfile_remaining_size");
-  qassert(not qfile.null());
-  const Long offset_start = qftell(qfile);
-  qfseek(qfile, 0, SEEK_END);
-  const Long offset_end = qftell(qfile);
-  qfseek(qfile, offset_start, SEEK_SET);
-  const Long data_len = offset_end - offset_start;
-  qassert(data_len >= 0);
-  return data_len;
-}
+Long qfile_size(const QFile& qfile);
+
+Long qfile_remaining_size(const QFile& qfile);
 
 template <class M>
 Long qwrite_data(const Vector<M>& v, const QFile& qfile)
@@ -275,24 +254,9 @@ Long qwrite_data(const Vector<M>& v, const QFile& qfile)
   return data_size;
 }
 
-inline Long qwrite_data(const std::string& line, const QFile& qfile)
-// interface function
-{
-  qassert(not qfile.null());
-  return qwrite_data(get_data(line), qfile);
-}
+Long qwrite_data(const std::string& line, const QFile& qfile);
 
-inline Long qwrite_data(const std::vector<std::string>& lines,
-                        const QFile& qfile)
-// interface function
-{
-  qassert(not qfile.null());
-  Long total_bytes = 0;
-  for (Long i = 0; i < (Long)lines.size(); ++i) {
-    total_bytes += qwrite_data(lines[i], qfile);
-  }
-  return total_bytes;
-}
+Long qwrite_data(const std::vector<std::string>& lines, const QFile& qfile);
 
 template <class M>
 Long qread_data(const Vector<M>& v, const QFile& qfile)
@@ -613,94 +577,29 @@ std::string get_qar_read_cache_key(const std::string& path);
 
 // -------------------
 
-inline std::vector<std::string> qgetlines(const std::string& fn)
-{
-  QFile qfile = qfopen(fn, "r");
-  qassert(not qfile.null());
-  std::vector<std::string> lines = qgetlines(qfile);
-  qfclose(qfile);
-  return lines;
-}
+std::vector<std::string> qgetlines(const std::string& fn);
 
 // -------------------
 
-inline std::string show_file_crc32(const std::pair<std::string, crc32_t>& fcrc)
-{
-  return ssprintf("%08X  fn='%s'", fcrc.second, fcrc.first.c_str());
-}
+std::string show_file_crc32(const std::pair<std::string, crc32_t>& fcrc);
 
-inline std::string show_files_crc32(
-    const std::vector<std::pair<std::string, crc32_t>>& fcrcs)
-{
-  std::ostringstream out;
-  for (Long i = 0; i < (Long)fcrcs.size(); ++i) {
-    out << ssprintf("%5ld ", i) << show_file_crc32(fcrcs[i]) << std::endl;
-  }
-  return out.str();
-}
+std::string show_files_crc32(
+    const std::vector<std::pair<std::string, crc32_t>>& fcrcs);
 
-inline std::pair<std::string, crc32_t> check_file_crc32(const std::string& fn)
-{
-  TIMER_VERBOSE("check_file_crc32");
-  std::pair<std::string, crc32_t> p;
-  p.first = fn;
-  p.second = compute_crc32(fn);
-  displayln_info(show_file_crc32(p));
-  return p;
-}
+std::pair<std::string, crc32_t> check_file_crc32(const std::string& fn);
 
 // -------------------
 
-inline std::string qcat_info(const std::string& path)
-{
-  TIMER("qcat_info");
-  if (0 == get_id_node()) {
-    return qcat(path);
-  } else {
-    return std::string();
-  }
-}
+std::string qcat_info(const std::string& path);
 
-inline int qtouch_info(const std::string& path)
-{
-  TIMER("qtouch_info");
-  if (0 == get_id_node()) {
-    return qtouch(path);
-  } else {
-    return 0;
-  }
-}
+int qtouch_info(const std::string& path);
 
-inline int qtouch_info(const std::string& path, const std::string& content)
-{
-  TIMER("qtouch_info");
-  if (0 == get_id_node()) {
-    return qtouch(path, content);
-  } else {
-    return 0;
-  }
-}
+int qtouch_info(const std::string& path, const std::string& content);
 
-inline int qtouch_info(const std::string& path,
-                       const std::vector<std::string>& content)
-{
-  TIMER("qtouch_info");
-  if (0 == get_id_node()) {
-    return qtouch(path, content);
-  } else {
-    return 0;
-  }
-}
+int qtouch_info(const std::string& path,
+                const std::vector<std::string>& content);
 
-inline int qappend_info(const std::string& path, const std::string& content)
-{
-  TIMER("qappend_info");
-  if (0 == get_id_node()) {
-    return qappend(path, content);
-  } else {
-    return 0;
-  }
-}
+int qappend_info(const std::string& path, const std::string& content);
 
 int qar_build_index_info(const std::string& path_qar);
 

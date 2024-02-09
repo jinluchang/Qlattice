@@ -245,15 +245,7 @@ Long get_file_size(FieldsReader& fr)
 // the file must be opened for reading
 // will restore the position.
 {
-  if (not fr.qfile.null()) {
-    const Long pos = qftell(fr.qfile);
-    qfseek(fr.qfile, 0L, SEEK_END);
-    const Long sz = qftell(fr.qfile);
-    qfseek(fr.qfile, pos, SEEK_SET);
-    return sz;
-  } else {
-    return -1;
-  }
+  return qfile_size(fr.qfile);
 }
 
 void qfwrite_convert_endian(void* ptr, const size_t size, const size_t nmemb,
