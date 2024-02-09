@@ -417,43 +417,8 @@ struct QarFileVolInternal {
   QarFileVolInternal() { init(); }
   QarFileVolInternal(const QFile& qfile) { init(qfile); }
   //
-  void init()
-  {
-    qfile.init();
-    is_read_through = false;
-    fn_list.clear();
-    qsinfo_map.clear();
-    directories.clear();
-    max_offset = 0;
-    current_write_segment_offset = -1;
-    current_write_segment_offset_data = -1;
-    current_write_segment_offset_header_len = -1;
-    current_write_segment_offset_fn_len = -1;
-    current_write_segment_offset_info_len = -1;
-    current_write_segment_offset_data_len = -1;
-  }
-  void init(const QFile& qfile_)
-  {
-    init();
-    qfile = qfile_;
-    if (qfile.null()) {
-      return;
-    }
-    if (mode() == "w") {
-      qfwrite(qar_header.data(), qar_header.size(), 1, qfile);
-    } else if (mode() == "r") {
-      std::vector<char> check_line(qar_header.size(), 0);
-      const Long qfread_check_len =
-          qfread(check_line.data(), qar_header.size(), 1, qfile);
-      if (not(qfread_check_len == 1 and
-              std::string(check_line.data(), check_line.size()) ==
-                  qar_header)) {
-        qfile.close();
-      };
-      max_offset = qftell(qfile);
-      directories.insert("");
-    }
-  }
+  void init();
+  void init(const QFile& qfile_);
   //
   void close() { init(); }
   //
@@ -716,7 +681,8 @@ inline int qtouch_info(const std::string& path, const std::string& content)
   }
 }
 
-inline int qtouch_info(const std::string& path, const std::vector<std::string>& content)
+inline int qtouch_info(const std::string& path,
+                       const std::vector<std::string>& content)
 {
   TIMER("qtouch_info");
   if (0 == get_id_node()) {

@@ -148,31 +148,6 @@ void QFile::close()
 
 // ----------------------------------------------------
 
-void QarFile::init(const std::string& path_qar, const std::string& mode)
-{
-  init();
-  if (mode == "r") {
-    // maximally 1024 * 1024 * 1024 volumes
-    for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
-      const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
-      if (not does_regular_file_exist_qar(path_qar_v)) {
-        break;
-      }
-      push_back(qfopen(path_qar_v, mode));
-      if (back().null()) {
-        pop_back();
-        break;
-      }
-    }
-    load_qar_index(*this, path_qar + ".idx");
-  } else {
-    qassert(false);
-  }
-}
-
-// ----------------------------------------------------
-
-
 int qfseek(const QFile& qfile, const Long q_offset, const int whence)
 // interface function
 // Always call fseek and adjust qfile.is_eof and qfile.pos
@@ -344,6 +319,48 @@ Long write_from_qfile(const QFile& qfile_out, const QFile& qfile_in)
   timer.flops += total_bytes;
   return total_bytes;
 }
+
+// ----------------------------------------------------
+
+void QarFileVolInternal::init()
+{
+  qfile.init();
+  is_read_through = false;
+  fn_list.clear();
+  qsinfo_map.clear();
+  directories.clear();
+  max_offset = 0;
+  current_write_segment_offset = -1;
+  current_write_segment_offset_data = -1;
+  current_write_segment_offset_header_len = -1;
+  current_write_segment_offset_fn_len = -1;
+  current_write_segment_offset_info_len = -1;
+  current_write_segment_offset_data_len = -1;
+}
+
+void QarFileVolInternal::init(const QFile& qfile_)
+{
+  init();
+  qfile = qfile_;
+  if (qfile.null()) {
+    return;
+  }
+  if (mode() == "w") {
+    qfwrite(qar_header.data(), qar_header.size(), 1, qfile);
+  } else if (mode() == "r") {
+    std::vector<char> check_line(qar_header.size(), 0);
+    const Long qfread_check_len =
+        qfread(check_line.data(), qar_header.size(), 1, qfile);
+    if (not(qfread_check_len == 1 and
+            std::string(check_line.data(), check_line.size()) == qar_header)) {
+      qfile.close();
+    };
+    max_offset = qftell(qfile);
+    directories.insert("");
+  }
+}
+
+// ----------------------------------------------------
 
 void register_file(const QarFileVol& qar, const std::string& fn,
                    const QarSegmentInfo& qsinfo)
@@ -818,6 +835,32 @@ std::vector<std::string> properly_truncate_qar_file(const std::string& path)
   return fns_keep;
 }
 
+// ----------------------------------------------------
+
+void QarFile::init(const std::string& path_qar, const std::string& mode)
+{
+  init();
+  if (mode == "r") {
+    // maximally 1024 * 1024 * 1024 volumes
+    for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
+      const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
+      if (not does_regular_file_exist_qar(path_qar_v)) {
+        break;
+      }
+      push_back(qfopen(path_qar_v, mode));
+      if (back().null()) {
+        pop_back();
+        break;
+      }
+    }
+    load_qar_index(*this, path_qar + ".idx");
+  } else {
+    qassert(false);
+  }
+}
+
+// ----------------------------------------------------
+
 std::vector<std::string> list(const QarFile& qar)
 // interface function
 {
@@ -825,7 +868,7 @@ std::vector<std::string> list(const QarFile& qar)
     return std::vector<std::string>();
   }
   std::vector<std::string> fn_list;
-  for (unsigned long i = 0; i < qar.size(); ++i) {
+  for (Long i = 0; i < (Long)qar.size(); ++i) {
     const QarFileVol& qar_v = qar[i];
     qassert(not qar_v.null());
     qassert(qar_v.mode() == "r");
@@ -1050,6 +1093,8 @@ int load_qar_index(const QarFile& qar, const std::string& fn)
   const std::string qar_index_content = qcat(fn);
   return parse_qar_index(qar, qar_index_content);
 }
+
+// ----------------------------------------------------
 
 std::string qcat(const std::string& path)
 {
@@ -1297,7 +1342,7 @@ std::vector<std::string> list_qar(const std::string& path)
 bool has_regular_file(const QarFile& qar, const std::string& fn)
 // interface function
 {
-  for (unsigned long i = 0; i < qar.size(); ++i) {
+  for (Long i = 0; i < (Long)qar.size(); ++i) {
     const QarFileVol& qar_v = qar[i];
     qassert(not qar_v.null());
     qassert(qar_v.mode() == "r");
@@ -1311,7 +1356,7 @@ bool has_regular_file(const QarFile& qar, const std::string& fn)
 bool has(const QarFile& qar, const std::string& fn)
 // interface function
 {
-  for (unsigned long i = 0; i < qar.size(); ++i) {
+  for (Long i = 0; i < (Long)qar.size(); ++i) {
     const QarFileVol& qar_v = qar[i];
     qassert(not qar_v.null());
     qassert(qar_v.mode() == "r");
@@ -1326,7 +1371,7 @@ QFile read(const QarFile& qar, const std::string& fn)
 // interface function
 {
   QFile qfile_in;
-  for (unsigned long i = 0; i < qar.size(); ++i) {
+  for (Long i = 0; i < (Long)qar.size(); ++i) {
     const QarFileVol& qar_v = qar[i];
     qassert(not qar_v.null());
     qassert(qar_v.mode() == "r");
