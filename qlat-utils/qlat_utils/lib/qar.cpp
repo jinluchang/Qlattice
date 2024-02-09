@@ -801,8 +801,8 @@ int truncate_qar_file(const std::string& path,
   }
   const Long offset_final = qar.p->qsinfo_map[fn_last].offset_end;
   qar.close();
-  const bool b = qtruncate(path, offset_final);
-  if (not b) {
+  const int b = qtruncate(path, offset_final);
+  if (b != 0) {
     qwarn(fname +
           ssprintf(": fns.size()=%ld fns_keep.size()=%ld offset_final=%ld",
                    fns.size(), fns_keep.size(), offset_final));
@@ -830,8 +830,8 @@ std::vector<std::string> properly_truncate_qar_file(const std::string& path)
   }
   const Long offset_final = qar.p->qsinfo_map[fn_last].offset_end;
   qar.close();
-  const bool b = qtruncate(path, offset_final);
-  qassert(b);
+  const int b = qtruncate(path, offset_final);
+  qassert(b == 0);
   return fns_keep;
 }
 

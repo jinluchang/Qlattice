@@ -72,23 +72,9 @@ bool does_file_exist_cache(const std::string& fn);
 
 // --------------------------
 
-inline bool qtruncate(const std::string& evilFile)
-{
-  std::ofstream evil;
-  evil.open(evilFile.c_str());
-  bool does_exist = evil.good();
-  if (does_exist) {
-    evil.close();
-  }
-  return does_exist;
-}
+int qtruncate(const std::string& evilFile);
 
-inline bool qtruncate(const std::string& path, const Long offset)
-// return true if successful.
-{
-  const int ret = truncate(path.c_str(), offset);
-  return ret == 0;
-}
+int qtruncate(const std::string& path, const Long offset);
 
 inline int ssleep(const double seconds)
 {

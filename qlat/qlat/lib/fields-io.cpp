@@ -922,8 +922,8 @@ int truncate_fields_sync_node(const std::string& path,
       if (file_size < 0) {
         mkfile(fr);
       }
-      const bool b = qtruncate(path_file, final_offset);
-      qassert(b);
+      const int b = qtruncate(path_file, final_offset);
+      qassert(b == 0);
     }
   }
   return 0;
@@ -990,8 +990,8 @@ std::vector<std::string> properly_truncate_fields_sync_node(
         if (file_size < 0) {
           mkfile(fr);
         }
-        const bool b = qtruncate(path_file, final_offset);
-        qassert(b);
+        const int b = qtruncate(path_file, final_offset);
+        qassert(b == 0);
       }
     }
   }
