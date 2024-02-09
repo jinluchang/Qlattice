@@ -48,8 +48,17 @@ ld = q.LatData()
 ld.load(f"results/data4/ld-10000.lat")
 assert q.qnorm(q.load_lat_data(f"results/data4/ld-10000.lat") - q.load_lat_data(f"results/data/ld-10000.lat")) == 0
 
-q.displayln_info("CHECK: ", q.list_qar("results/data4.qar"))
-q.displayln_info("CHECK: ", q.list_qar("results/data4/ld-1000.qar"))
+l1 = q.list_qar("results/data4.qar")
+
+q.sync_node()
+q.displayln_info("CHECK: ", l1)
+q.sync_node()
+
+l2 = q.list_qar("results/data4/ld-1000.qar")
+
+q.sync_node()
+q.displayln_info("CHECK: ", l2)
+q.sync_node()
 
 for fn in [ f"ld-10000.lat", f"ld-1000/ld-1-1000.lat", ]:
     q.qcopy_file_info(f"results/data4/{fn}", f"results/data5/{fn}")
