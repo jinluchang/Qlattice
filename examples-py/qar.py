@@ -25,22 +25,22 @@ q.qar_create_info(f"results/data.qar", f"results/data")
 
 q.qar_extract_info(f"results/data.qar", f"results/data2")
 
-q.qar_create_info(f"results/data2.qar", f"results/data2", is_remove_folder_after = True)
+q.qar_create_info(f"results/data2.qar", f"results/data2", is_remove_folder_after=True)
 
-q.qar_extract_info(f"results/data2.qar", f"results/data2", is_remove_qar_after = True)
+q.qar_extract_info(f"results/data2.qar", f"results/data2", is_remove_qar_after=True)
 
 qar_multi_vol_max_size = q.get_qar_multi_vol_max_size(16 * 1024)
 q.displayln_info(f"CHECK: qar_multi_vol_max_size={qar_multi_vol_max_size}")
 
-q.qar_create_info(f"results/data2/ld-1000.qar", f"results/data2/ld-1000", is_remove_folder_after = True)
+q.qar_create_info(f"results/data2/ld-1000.qar", f"results/data2/ld-1000", is_remove_folder_after=True)
 
 q.qar_create_info(f"results/data2.qar", f"results/data2")
 
 q.qar_extract_info(f"results/data2.qar", f"results/data3")
 
-q.qar_create_info(f"results/data3.qar", f"results/data3", is_remove_folder_after = True)
+q.qar_create_info(f"results/data3.qar", f"results/data3", is_remove_folder_after=True)
 
-q.qar_extract_info(f"results/data3.qar", f"results/data3", is_remove_qar_after = True)
+q.qar_extract_info(f"results/data3.qar", f"results/data3", is_remove_qar_after=True)
 
 q.qar_create_info(f"results/data4.qar", f"results/data3")
 
