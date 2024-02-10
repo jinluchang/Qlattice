@@ -518,7 +518,7 @@ bool QarSegmentInfo::check_offset()
   return true;
 }
 
-void QarFileVolInternal::init()
+void QarFileVolObj::init()
 {
   qfile.init();
   is_read_through = false;
@@ -530,9 +530,9 @@ void QarFileVolInternal::init()
   current_write_segment_info.init();
 }
 
-void QarFileVolInternal::init(const std::string& path, const std::string& mode)
+void QarFileVolObj::init(const std::string& path, const std::string& mode)
 {
-  TIMER("QarFileVolInternal::init(path,mode)");
+  TIMER("QarFileVolObj::init(path,mode)");
   init();
   if (mode == "a") {
     properly_truncate_qar_file(fn_list, qsinfo_map, directories, max_offset,
@@ -543,9 +543,9 @@ void QarFileVolInternal::init(const std::string& path, const std::string& mode)
   }
 }
 
-void QarFileVolInternal::init(const QFile& qfile_)
+void QarFileVolObj::init(const QFile& qfile_)
 {
-  TIMER("QarFileVolInternal::init(qfile)");
+  TIMER("QarFileVolObj::init(qfile)");
   init();
   qfile = qfile_;
   if (qfile.null()) {
@@ -572,7 +572,7 @@ void QarFileVolInternal::init(const QFile& qfile_)
   }
 }
 
-void QarFileVolInternal::close()
+void QarFileVolObj::close()
 {
   qfile.close();
   init();
@@ -582,7 +582,7 @@ void QarFileVol::init(const std::string& path, const std::string& mode)
 {
   TIMER("QarFileVol::init(path,mode)");
   if (p == nullptr) {
-    p = std::shared_ptr<QarFileVolInternal>(new QarFileVolInternal());
+    p = std::shared_ptr<QarFileVolObj>(new QarFileVolObj());
   }
   p->init(path, mode);
 }
@@ -591,7 +591,7 @@ void QarFileVol::init(const QFile& qfile)
 {
   TIMER("QarFileVol::init(qfile)");
   if (p == nullptr) {
-    p = std::shared_ptr<QarFileVolInternal>(new QarFileVolInternal());
+    p = std::shared_ptr<QarFileVolObj>(new QarFileVolObj());
   }
   p->init(qfile);
 }
@@ -739,7 +739,7 @@ QFile qfopen(const std::string& path, const std::string& mode)
   return QFile();
 }
 
-bool read_qar_segment_info(QarFileVolInternal& qar, QarSegmentInfo& qsinfo)
+bool read_qar_segment_info(QarFileVolObj& qar, QarSegmentInfo& qsinfo)
 // Initial pos: beginning of the segment, just before FILE-HEADER.
 // Final pos: at the end of the segment, at the beginning of the next segment.
 // Return true if read successfully (also qfseek to the beginning of the next

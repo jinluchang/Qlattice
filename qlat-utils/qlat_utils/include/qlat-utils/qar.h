@@ -265,10 +265,10 @@ struct QarSegmentInfo {
   bool check_offset();
 };
 
-struct QarFileVolInternal;
+struct QarFileVolObj;
 
 struct API QarFileVol {
-  std::shared_ptr<QarFileVolInternal> p;
+  std::shared_ptr<QarFileVolObj> p;
   //
   QarFileVol() { init(); }
   QarFileVol(const std::string& path, const std::string& mode)
@@ -293,7 +293,7 @@ struct API QarFileVol {
   const QFile& qfile() const;
 };
 
-struct QarFileVolInternal {
+struct QarFileVolObj {
   QFile qfile;
   //
   bool is_read_through; // false if in write/append mode
@@ -309,12 +309,12 @@ struct QarFileVolInternal {
   QarSegmentInfo current_write_segment_info;  // when write, the info of the
                                               // current working segment
   //
-  QarFileVolInternal() { init(); }
-  QarFileVolInternal(const std::string& path, const std::string& mode)
+  QarFileVolObj() { init(); }
+  QarFileVolObj(const std::string& path, const std::string& mode)
   {
     init(path, mode);
   }
-  QarFileVolInternal(const QFile& qfile) { init(qfile); }
+  QarFileVolObj(const QFile& qfile) { init(qfile); }
   //
   void init();
   void init(const std::string& path, const std::string& mode);
@@ -332,7 +332,7 @@ struct QarFileVolInternal {
 void register_file(const QarFileVol& qar, const std::string& fn,
                    const QarSegmentInfo& qsinfo);
 
-bool read_qar_segment_info(QarFileVolInternal& qar, QarSegmentInfo& qsinfo);
+bool read_qar_segment_info(QarFileVolObj& qar, QarSegmentInfo& qsinfo);
 
 std::string read_fn(const QarFileVol& qar, const QarSegmentInfo& qsinfo);
 
