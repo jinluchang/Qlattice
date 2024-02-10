@@ -1,9 +1,17 @@
-CHECK: < (i dbar g5 s)  * (sbar  gmu (1-g5) d)(sbar  gmu (1-g5) d) * (i dbar g5 s) >  exprs[0]
-CHECK: < (i dbar g5 u)  * (ubar  gmu (1-g5) d)(ubar  gmu (1-g5) d) * (i dbar g5 u) >  exprs[1]
-CHECK: < (i ubar g5 u') * (dbar  gmu (1-g5) u)(u'bar gmu (1-g5) s) * (i sbar g5 d) >  exprs[2]
-CHECK: < (i ubar g5 u') * (u'bar gmu (1-g5) u)(dbar  gmu (1-g5) s) * (i sbar g5 d) >  exprs[3]
-CHECK: -1.7374900520E+02-8.6516328621E+02j -1.0672452209E+03-1.3269493406E+02j 6.6559787394E+01-1.8333577205E+02j
-CHECK: -4.8151947691E+03-6.5149676740E+03j 7.0118499153E+03+5.0242190497E+03j -2.2367851514E+03-9.6532429293E+03j
+CHECK: < (i dbar g5 s)(t_2) * (sbar gmu (1-g5) d)(sbar gmu (1-g5) d)(x) * (i dbar g5 s)(t_1) >  exprs[0]
+CHECK: < (i dbar g5 s)(t_2) * (sbar gmu (1+g5) d)(sbar gmu (1+g5) d)(x) * (i dbar g5 s)(t_1) >  exprs[1]
+CHECK: < (i dbar g5 u)(t_2) * (ubar gmu (1-g5) d)(ubar gmu (1-g5) d)(x) * (i dbar g5 u)(t_1) >  exprs[2]
+CHECK: < (i dbar g5 u)(t_2) * (ubar gmu (1+g5) d)(ubar gmu (1+g5) d)(x) * (i dbar g5 u)(t_1) >  exprs[3]
+CHECK: < (i ubar g5 u')(t_2) * (dbar gmu (1-g5) u)(u'bar gmu (1-g5) s)(x) * (i sbar g5 d)(t_1) >  exprs[4]
+CHECK: < (i ubar g5 u')(t_2) * (dbar gmu (1+g5) u)(u'bar gmu (1+g5) s)(x) * (i sbar g5 d)(t_1) >  exprs[5]
+CHECK: < (i ubar g5 u')(t_2) * (u'bar gmu (1-g5) u)(dbar gmu (1-g5) s)(x) * (i sbar g5 d)(t_1) >  exprs[6]
+CHECK: < (i ubar g5 u')(t_2) * (u'bar gmu (1+g5) u)(dbar gmu (1+g5) s)(x) * (i sbar g5 d)(t_1) >  exprs[7]
+CHECK: < (i ubar g5 u')(t_2) * (sbar gmu (1-g5) u)(u'bar gmu (1-g5) d)(x) * (i dbar g5 s)(t_1) >  exprs[8]
+CHECK: < (i ubar g5 u')(t_2) * (sbar gmu (1+g5) u)(u'bar gmu (1+g5) d)(x) * (i dbar g5 s)(t_1) >  exprs[9]
+CHECK: < (i ubar g5 u')(t_2) * (u'bar gmu (1-g5) u)(sbar gmu (1-g5) d)(x) * (i dbar g5 s)(t_1) >  exprs[10]
+CHECK: < (i ubar g5 u')(t_2) * (u'bar gmu (1+g5) u)(sbar gmu (1+g5) d)(x) * (i dbar g5 s)(t_1) >  exprs[11]
+CHECK: -3.2766380003E+03+7.1922197584E+02j 1.2699574333E+03-1.0068261564E+03j -5.8139776632E+02+6.4075145494E+01j
+CHECK: -2.2226279461E+01+5.1702177834E+03j -2.0253701794E+04-1.0670387268E+04j -4.3130476699E+03-3.2230007329E+03j
 CHECK: < (1/2) * ( pi+(t_1)^dag * (ubar g3 u)(x_1) * pi+(t_2) + (-1) * pi-(t_1)^dag * (ubar g3 u)(x_1) * pi-(t_2) ) >  exprs[0]
 CHECK: < (1/2) * ( K+(t_1)^dag * (ubar g3 u)(x_1) * K+(t_2) + (-1) * K-(t_1)^dag * (ubar g3 u)(x_1) * K-(t_2) ) >  exprs[1]
 CHECK: < (1/2) * ( K-(t_1)^dag * (sbar g3 s)(x_1) * K-(t_2) + (-1) * K+(t_1)^dag * (sbar g3 s)(x_1) * K+(t_2) ) >  exprs[2]

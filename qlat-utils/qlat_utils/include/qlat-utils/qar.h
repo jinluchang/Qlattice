@@ -319,6 +319,7 @@ struct QarSegmentInfo {
   Long offset_info;
   Long offset_data;
   Long offset_end;
+  Long header_len;
   Long fn_len;
   Long info_len;
   Long data_len;
@@ -326,6 +327,8 @@ struct QarSegmentInfo {
   QarSegmentInfo() { init(); }
   //
   void init() { set_zero(get_data_one_elem(*this)); }
+  //
+  void update_offset();
 };
 
 struct QarFileVolInternal;
@@ -359,21 +362,16 @@ struct API QarFileVol {
 struct QarFileVolInternal {
   QFile qfile;
   //
-  bool is_read_through;
-  std::vector<std::string> fn_list;
-  std::map<std::string, QarSegmentInfo> qsinfo_map;
-  std::set<std::string> directories;
+  bool is_read_through; // false if in write/append mode
+  std::vector<std::string> fn_list;  // update through register_file
+  std::map<std::string, QarSegmentInfo>
+      qsinfo_map;                     // update through register_file
+  std::set<std::string> directories;  // update through register_file
   Long max_offset;  // when read, maximum offset reached so far
   //
-  Long current_write_segment_offset;  // when write, the offset of the beginning
-                                      // of the current working segment.
-  Long current_write_segment_offset_data;  // when write, the offset of the
-                                           // beginning of the data of the
-                                           // current working segment.
-  Long current_write_segment_offset_header_len;
-  Long current_write_segment_offset_fn_len;
-  Long current_write_segment_offset_info_len;
-  Long current_write_segment_offset_data_len;
+  std::string current_write_segment_fn;
+  QarSegmentInfo current_write_segment_info;  // when write, the info of the
+                                              // current working segment
   //
   QarFileVolInternal() { init(); }
   QarFileVolInternal(const std::string& path, const std::string& mode)

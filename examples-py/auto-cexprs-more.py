@@ -15,7 +15,7 @@ def mk_bk_vv_aa(p : str):
         v1 = mk_vec_mu("s", "d", p, mu) - mk_vec5_mu("s", "d", p, mu)
         v2 = mk_vec_mu("s", "d", p, mu) - mk_vec5_mu("s", "d", p, mu)
         s = s + v1 * v2
-    return s + f"Ok_{{VV+AA}}"
+    return s + f"(sbar gmu (1-g5) d)(sbar gmu (1-g5) d)({p})"
 
 def mk_bpi_vv_aa(p : str):
     s = 0
@@ -23,7 +23,23 @@ def mk_bpi_vv_aa(p : str):
         v1 = mk_vec_mu("u", "d", p, mu) - mk_vec5_mu("u", "d", p, mu)
         v2 = mk_vec_mu("u", "d", p, mu) - mk_vec5_mu("u", "d", p, mu)
         s = s + v1 * v2
-    return s + f"Opi_{{VV+AA}}"
+    return s + f"(ubar gmu (1-g5) d)(ubar gmu (1-g5) d)({p})"
+
+def mk_bkp_vv_aa(p : str):
+    s = 0
+    for mu in range(4):
+        v1 = mk_vec_mu("s", "d", p, mu) + mk_vec5_mu("s", "d", p, mu)
+        v2 = mk_vec_mu("s", "d", p, mu) + mk_vec5_mu("s", "d", p, mu)
+        s = s + v1 * v2
+    return s + f"(sbar gmu (1+g5) d)(sbar gmu (1+g5) d)({p})"
+
+def mk_bpip_vv_aa(p : str):
+    s = 0
+    for mu in range(4):
+        v1 = mk_vec_mu("u", "d", p, mu) + mk_vec5_mu("u", "d", p, mu)
+        v2 = mk_vec_mu("u", "d", p, mu) + mk_vec5_mu("u", "d", p, mu)
+        s = s + v1 * v2
+    return s + f"(ubar gmu (1+g5) d)(ubar gmu (1+g5) d)({p})"
 
 def mk_bkpi1_vv_aa(p : str):
     s = 0
@@ -31,7 +47,7 @@ def mk_bkpi1_vv_aa(p : str):
         v1 = mk_vec_mu("d", "u", p, mu) - mk_vec5_mu("d", "u", p, mu)
         v2 = mk_vec_mu("u'", "s", p, mu) - mk_vec5_mu("u'", "s", p, mu)
         s = s + v1 * v2
-    return s + f"Okpi_{{VV+AA}}"
+    return s + f"(dbar gmu (1-g5) u)(u'bar gmu (1-g5) s)({p})"
 
 def mk_bkpi2_vv_aa(p : str):
     s = 0
@@ -39,21 +55,85 @@ def mk_bkpi2_vv_aa(p : str):
         v1 = mk_vec_mu("u'", "u", p, mu) - mk_vec5_mu("u'", "u", p, mu)
         v2 = mk_vec_mu("d", "s", p, mu) - mk_vec5_mu("d", "s", p, mu)
         s = s + v1 * v2
-    return s + f"Okpi_{{VV+AA}}"
+    return s + f"(u'bar gmu (1-g5) u)(dbar gmu (1-g5) s)({p})"
+
+def mk_bkpi1p_vv_aa(p : str):
+    s = 0
+    for mu in range(4):
+        v1 = mk_vec_mu("d", "u", p, mu) + mk_vec5_mu("d", "u", p, mu)
+        v2 = mk_vec_mu("u'", "s", p, mu) + mk_vec5_mu("u'", "s", p, mu)
+        s = s + v1 * v2
+    return s + f"(dbar gmu (1+g5) u)(u'bar gmu (1+g5) s)({p})"
+
+def mk_bkpi2p_vv_aa(p : str):
+    s = 0
+    for mu in range(4):
+        v1 = mk_vec_mu("u'", "u", p, mu) + mk_vec5_mu("u'", "u", p, mu)
+        v2 = mk_vec_mu("d", "s", p, mu) + mk_vec5_mu("d", "s", p, mu)
+        s = s + v1 * v2
+    return s + f"(u'bar gmu (1+g5) u)(dbar gmu (1+g5) s)({p})"
+
+def mk_bkpi3_vv_aa(p : str):
+    s = 0
+    for mu in range(4):
+        v1 = mk_vec_mu("s", "u", p, mu) - mk_vec5_mu("s", "u", p, mu)
+        v2 = mk_vec_mu("u'", "d", p, mu) - mk_vec5_mu("u'", "d", p, mu)
+        s = s + v1 * v2
+    return s + f"(sbar gmu (1-g5) u)(u'bar gmu (1-g5) d)({p})"
+
+def mk_bkpi4_vv_aa(p : str):
+    s = 0
+    for mu in range(4):
+        v1 = mk_vec_mu("u'", "u", p, mu) - mk_vec5_mu("u'", "u", p, mu)
+        v2 = mk_vec_mu("s", "d", p, mu) - mk_vec5_mu("s", "d", p, mu)
+        s = s + v1 * v2
+    return s + f"(u'bar gmu (1-g5) u)(sbar gmu (1-g5) d)({p})"
+
+def mk_bkpi3p_vv_aa(p : str):
+    s = 0
+    for mu in range(4):
+        v1 = mk_vec_mu("s", "u", p, mu) + mk_vec5_mu("s", "u", p, mu)
+        v2 = mk_vec_mu("u'", "d", p, mu) + mk_vec5_mu("u'", "d", p, mu)
+        s = s + v1 * v2
+    return s + f"(sbar gmu (1+g5) u)(u'bar gmu (1+g5) d)({p})"
+
+def mk_bkpi4p_vv_aa(p : str):
+    s = 0
+    for mu in range(4):
+        v1 = mk_vec_mu("u'", "u", p, mu) + mk_vec5_mu("u'", "u", p, mu)
+        v2 = mk_vec_mu("s", "d", p, mu) + mk_vec5_mu("s", "d", p, mu)
+        s = s + v1 * v2
+    return s + f"(u'bar gmu (1+g5) u)(sbar gmu (1+g5) d)({p})"
 
 @q.timer
 def get_cexpr_meson_bk_bpi_corr():
     fn_base = f"cache/auto_contract_cexpr/get_cexpr_meson_bk_bpi_corr"
     def calc_cexpr():
+        m_ds_2 = mk_meson("d", "s", "t_2")
+        m_du_2 = mk_meson("d", "u", "t_2")
+        m_uup_2 = mk_meson("u", "u'", "t_2")
+        m_ds_1 = mk_meson("d", "s", "t_1")
+        m_du_1 = mk_meson("d", "u", "t_1")
+        m_sd_1 = mk_meson("s", "d", "t_1")
+        bk = m_ds_2 * mk_bk_vv_aa("x") * m_ds_1
+        bpi = m_du_2 * mk_bpi_vv_aa("x") * m_du_1
+        bkp = m_ds_2 * mk_bkp_vv_aa("x") * m_ds_1
+        bpip = m_du_2 * mk_bpip_vv_aa("x") * m_du_1
+        bkpi1 = m_uup_2 * mk_bkpi1_vv_aa("x") * m_sd_1
+        bkpi2 = m_uup_2 * mk_bkpi2_vv_aa("x") * m_sd_1
+        bkpi3 = m_uup_2 * mk_bkpi3_vv_aa("x") * m_ds_1
+        bkpi4 = m_uup_2 * mk_bkpi4_vv_aa("x") * m_ds_1
+        bkpi1p = m_uup_2 * mk_bkpi1p_vv_aa("x") * m_sd_1
+        bkpi2p = m_uup_2 * mk_bkpi2p_vv_aa("x") * m_sd_1
+        bkpi3p = m_uup_2 * mk_bkpi3p_vv_aa("x") * m_ds_1
+        bkpi4p = m_uup_2 * mk_bkpi4p_vv_aa("x") * m_ds_1
         exprs = [
-                mk_meson("d", "s", "t_2") * mk_bk_vv_aa("x") * mk_meson("d", "s", "t_1")
-                + "(i dbar g5 s)  * (sbar  gmu (1-g5) d)(sbar  gmu (1-g5) d) * (i dbar g5 s)",
-                mk_meson("d", "u", "t_2") * mk_bpi_vv_aa("x") * mk_meson("d", "u", "t_1")
-                + "(i dbar g5 u)  * (ubar  gmu (1-g5) d)(ubar  gmu (1-g5) d) * (i dbar g5 u)",
-                mk_meson("u", "u'", "t_2") * mk_bkpi1_vv_aa("x") * mk_meson("s", "d", "t_1")
-                + "(i ubar g5 u') * (dbar  gmu (1-g5) u)(u'bar gmu (1-g5) s) * (i sbar g5 d)",
-                mk_meson("u", "u'", "t_2") * mk_bkpi2_vv_aa("x") * mk_meson("s", "d", "t_1")
-                + "(i ubar g5 u') * (u'bar gmu (1-g5) u)(dbar  gmu (1-g5) s) * (i sbar g5 d)",
+                bk, bkp,
+                bpi, bpip,
+                bkpi1, bkpi1p,
+                bkpi2, bkpi2p,
+                bkpi3, bkpi3p,
+                bkpi4, bkpi4p,
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True)
         return cexpr
