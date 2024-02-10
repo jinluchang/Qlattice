@@ -740,6 +740,12 @@ void ShuffledFieldsReader::close()
   }
 }
 
+std::string show(const ShuffledFieldsWriter& sfw)
+{
+  return ssprintf("ShuffledFieldsWriter(path='%s',new_size_node=%s)",
+                  sfw.path.c_str(), show(sfw.new_size_node).c_str());
+}
+
 void add_shuffled_fields_writer(ShuffledFieldsWriter& sfw)
 {
   ShuffledFieldsWriterMap& sfwm = get_all_shuffled_fields_writer();
@@ -764,7 +770,7 @@ void close_all_shuffled_fields_writer()
   TIMER_VERBOSE("close_all_shuffled_fields_writer");
   ShuffledFieldsWriterMap& sfwm = get_all_shuffled_fields_writer();
   std::vector<Handle<ShuffledFieldsWriter>> sfwv;
-  for (auto it = sfwm.begin(); it != sfwm.end(); ++it) {
+  for (auto it = sfwm.cbegin(); it != sfwm.cend(); ++it) {
     sfwv.push_back(it->second);
   }
   for (Long i = 0; i < (Long)sfwv.size(); ++i) {
@@ -772,6 +778,17 @@ void close_all_shuffled_fields_writer()
   }
   qassert(sfwm.size() == 0);
   sync_node();
+}
+
+std::vector<std::string> show_all_shuffled_fields_writer()
+{
+  std::vector<std::string> ret;
+  const ShuffledFieldsWriterMap& sfwm = get_all_shuffled_fields_writer();
+  for (auto it = sfwm.cbegin(); it != sfwm.cend(); ++it) {
+    const ShuffledFieldsWriter& sfw = (it->second)();
+    ret.push_back(show(sfw));
+  }
+  return ret;
 }
 
 Long flush(ShuffledFieldsWriter& sfw)

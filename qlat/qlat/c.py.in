@@ -190,6 +190,19 @@ __all__ += [
         'get_muon_line_m_extra_lat',
         ]
 
+__all__ += [
+        'ShuffledFieldsWriter',
+        'ShuffledFieldsReader',
+        'ShuffledBitSet',
+        'open_fields',
+        'list_fields',
+        'properly_truncate_fields',
+        'check_fields',
+        'check_compressed_eigen_vectors',
+        'eigen_system_repartition',
+        'show_all_shuffled_fields_writer',
+        ]
+
 ### -------------------------------------------------------------------------
 
 from qlat_utils.c import *
@@ -229,5 +242,6 @@ from .gauge_action import *
 from .topology import *
 from .wilson_flow import *
 from .muon_line import *
+from .fields_io import *
 
 sys.setdlopenflags(flags)

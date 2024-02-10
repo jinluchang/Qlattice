@@ -7,6 +7,8 @@ static void add_qfile(const QFile& qfile);
 
 static void remove_qfile(const QFileObj& qfile_internal);
 
+static std::string qar_file_multi_vol_suffix(const Long i);
+
 static void check_all_files_crc32_aux(
     std::vector<std::pair<std::string, crc32_t>>& acc, const std::string& path);
 
@@ -701,6 +703,17 @@ void QarFile::init(const std::string& path_qar, const std::string& mode)
 }
 
 // ----------------------------------------------------
+
+std::string qar_file_multi_vol_suffix(const Long i)
+{
+  if (i == 0) {
+    return "";
+  } else {
+    return ssprintf(".v%ld", i);
+  }
+  qassert(false);
+  return "";
+}
 
 void register_file(const QarFileVol& qar, const std::string& fn,
                    const QarSegmentInfo& qsinfo)

@@ -201,3 +201,8 @@ def eigen_system_repartition(Coordinate new_size_node, str path, str path_new=""
     if path_new[-14:] == "/geon-info.txt":
         path_new = path_new[:-14]
     return cc.eigen_system_repartition(new_size_node.xx, path, path_new)
+
+## --------------
+
+def show_all_shuffled_fields_writer():
+    return cc.show_all_shuffled_fields_writer()

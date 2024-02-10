@@ -413,17 +413,6 @@ int load_qar_index(const QarFile& qar, const std::string& fn);
 
 // -------------------
 
-inline std::string qar_file_multi_vol_suffix(const Long i)
-{
-  if (i == 0) {
-    return "";
-  } else {
-    return ssprintf(".v%ld", i);
-  }
-  qassert(false);
-  return "";
-}
-
 struct API QarFile : std::vector<QarFileVol> {
   // Only for reading
   QarFile() { init(); }

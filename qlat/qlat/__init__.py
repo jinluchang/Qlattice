@@ -27,8 +27,6 @@ from .contract_pion import *
 
 from .contract_field import *
 
-from .fields_io import *
-
 from .inverter import *
 
 from .get_include_dir import *

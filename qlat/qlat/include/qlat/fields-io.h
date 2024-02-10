@@ -458,13 +458,17 @@ struct API ShuffledFieldsReader {
   void close();
 };
 
-typedef std::map<Long, Handle<ShuffledFieldsWriter>> ShuffledFieldsWriterMap;
+std::string show(const ShuffledFieldsWriter& sfw);
+
+using ShuffledFieldsWriterMap = std::map<Long, Handle<ShuffledFieldsWriter>>;
 
 API inline ShuffledFieldsWriterMap& get_all_shuffled_fields_writer()
 {
   static ShuffledFieldsWriterMap sfwm;
   return sfwm;
 }
+
+std::vector<std::string> show_all_shuffled_fields_writer();
 
 void add_shuffled_fields_writer(ShuffledFieldsWriter& sfw);
 
