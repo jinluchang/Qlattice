@@ -66,29 +66,11 @@ struct API QFile {
 
 // ---------------------
 
-inline void add_qfile(const QFile& qfile)
-{
-  QFileMap& qfile_map = get_all_qfile();
-  const Long key = (Long)qfile.p.get();
-  qassert(not has(qfile_map, key));
-  qfile_map[key] = qfile.p;
-}
+void add_qfile(const QFile& qfile);
 
-inline void remove_qfile(const QFileInternal& qfile_internal)
-{
-  QFileMap& qfile_map = get_all_qfile();
-  const Long key = (Long)&qfile_internal;
-  qassert(has(qfile_map, key));
-  qfile_map.erase(key);
-}
+void remove_qfile(const QFileInternal& qfile_internal);
 
-inline QFile get_qfile(const QFileInternal& qfile_internal)
-{
-  QFileMap& qfile_map = get_all_qfile();
-  const Long key = (Long)&qfile_internal;
-  qassert(has(qfile_map, key));
-  return QFile(qfile_map[key]);
-}
+QFile get_qfile(const QFileInternal& qfile_internal);
 
 // ---------------------
 
@@ -117,52 +99,21 @@ struct QFileInternal {
   Long offset_end;    // end offset of fp for QFileInternal (-1 if not limit,
                       // useful when writing)
   //
-  QFileInternal()
-  {
-    fp = NULL;
-    number_of_child = 0;
-    init();
-  }
-  QFileInternal(const std::string& path_, const std::string& mode_)
-  {
-    fp = NULL;
-    number_of_child = 0;
-    init(path_, mode_);
-  }
+  QFileInternal();
+  QFileInternal(const std::string& path_, const std::string& mode_);
   QFileInternal(const QFile& qfile, const Long q_offset_start,
-                const Long q_offset_end)
-  {
-    fp = NULL;
-    number_of_child = 0;
-    init(qfile, q_offset_start, q_offset_end);
-  }
+                const Long q_offset_end);
   //
   QFileInternal(const QFileInternal&) = delete;
   //
-  QFileInternal(QFileInternal&& qfile) noexcept
-  {
-    fp = NULL;
-    number_of_child = 0;
-    init();
-    swap(qfile);
-  }
+  QFileInternal(QFileInternal&& qfile) noexcept;
   //
-  ~QFileInternal()
-  {
-    close();
-    remove_qfile(*this);
-  }
+  ~QFileInternal();
   //
   void init();
   void init(const std::string& path_, const std::string& mode_);
   void init(const QFile& qfile, const Long q_offset_start,
             const Long q_offset_end);
-  // Become a child of qfile.
-  // NOTE: q_offset_start and q_offset_end are relative offset for qfile not the
-  // absolute offset for qfile.fp .
-  // q_offset_end == -1 means no additional limit
-  // NOTE: Initial position set to be 0. Does not perform fseek to appropriate
-  // position.
   //
   void close();
   //
@@ -512,11 +463,7 @@ struct API QarFile : std::vector<QarFileVol> {
     init(path_qar, mode);
   }
   //
-  void init()
-  {
-    std::vector<QarFileVol>& v = *this;
-    qlat::clear(v);
-  }
+  void init();
   void init(const std::string& path_qar, const std::string& mode);
   //
   void close() { init(); }

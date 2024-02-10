@@ -18,6 +18,42 @@ static void check_all_files_crc32_aux(
 
 // ----------------------------------------------------
 
+QFileInternal::QFileInternal()
+{
+  fp = NULL;
+  number_of_child = 0;
+  init();
+}
+
+QFileInternal::QFileInternal(const std::string& path_, const std::string& mode_)
+{
+  fp = NULL;
+  number_of_child = 0;
+  init(path_, mode_);
+}
+
+QFileInternal::QFileInternal(const QFile& qfile, const Long q_offset_start,
+                             const Long q_offset_end)
+{
+  fp = NULL;
+  number_of_child = 0;
+  init(qfile, q_offset_start, q_offset_end);
+}
+
+QFileInternal::QFileInternal(QFileInternal&& qfile) noexcept
+{
+  fp = NULL;
+  number_of_child = 0;
+  init();
+  swap(qfile);
+}
+
+QFileInternal::~QFileInternal()
+{
+  close();
+  remove_qfile(*this);
+}
+
 void QFileInternal::init()
 {
   close();
@@ -166,6 +202,33 @@ void QFile::close()
 }
 
 // ----------------------------------------------------
+
+void add_qfile(const QFile& qfile)
+{
+  QFileMap& qfile_map = get_all_qfile();
+  const Long key = (Long)qfile.p.get();
+  qassert(not has(qfile_map, key));
+  qfile_map[key] = qfile.p;
+}
+
+void remove_qfile(const QFileInternal& qfile_internal)
+{
+  QFileMap& qfile_map = get_all_qfile();
+  const Long key = (Long)&qfile_internal;
+  qassert(has(qfile_map, key));
+  qfile_map.erase(key);
+}
+
+QFile get_qfile(const QFileInternal& qfile_internal)
+{
+  QFileMap& qfile_map = get_all_qfile();
+  const Long key = (Long)&qfile_internal;
+  qassert(has(qfile_map, key));
+  return QFile(qfile_map[key]);
+}
+
+// ----------------------------------------------------
+
 
 int qfseek(const QFile& qfile, const Long q_offset, const int whence)
 // interface function
@@ -546,6 +609,12 @@ const std::string& QarFileVol::path() const { return p->path(); }
 const std::string& QarFileVol::mode() const { return p->mode(); }
 
 const QFile& QarFileVol::qfile() const { return p->qfile; }
+
+void QarFile::init()
+{
+  std::vector<QarFileVol>& v = *this;
+  qlat::clear(v);
+}
 
 void QarFile::init(const std::string& path_qar, const std::string& mode)
 {
