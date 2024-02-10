@@ -130,38 +130,15 @@ inline FILE* QFile::get_fp() const { return p->fp; }
 
 // ---------------------
 
-inline void qfclose(QFile& qfile)
-// interface function
-{
-  qfile.close();
-}
+void qfclose(QFile& qfile);
 
-inline void qswap(QFile& qfile1, QFile& qfile2)
-// interface function
-{
-  std::swap(qfile1, qfile2);
-}
+void qswap(QFile& qfile1, QFile& qfile2);
 
-inline bool qfeof(const QFile& qfile)
-// interface function
-{
-  qassert(not qfile.null());
-  return qfile.p->is_eof;
-}
+bool qfeof(const QFile& qfile);
 
-inline Long qftell(const QFile& qfile)
-// interface function
-{
-  qassert(not qfile.null());
-  return qfile.p->pos;
-}
+Long qftell(const QFile& qfile);
 
-inline int qfflush(const QFile& qfile)
-// interface function
-{
-  qassert(not qfile.null());
-  return fflush(qfile.get_fp());
-}
+int qfflush(const QFile& qfile);
 
 int qfseek(const QFile& qfile, const Long q_offset, const int whence);
 

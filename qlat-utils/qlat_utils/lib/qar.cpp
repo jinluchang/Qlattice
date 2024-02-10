@@ -229,6 +229,38 @@ QFile get_qfile(const QFileObj& qfile_internal)
 
 // ----------------------------------------------------
 
+void qfclose(QFile& qfile)
+// interface function
+{
+  qfile.close();
+}
+
+void qswap(QFile& qfile1, QFile& qfile2)
+// interface function
+{
+  std::swap(qfile1, qfile2);
+}
+
+bool qfeof(const QFile& qfile)
+// interface function
+{
+  qassert(not qfile.null());
+  return qfile.p->is_eof;
+}
+
+Long qftell(const QFile& qfile)
+// interface function
+{
+  qassert(not qfile.null());
+  return qfile.p->pos;
+}
+
+int qfflush(const QFile& qfile)
+// interface function
+{
+  qassert(not qfile.null());
+  return fflush(qfile.get_fp());
+}
 
 int qfseek(const QFile& qfile, const Long q_offset, const int whence)
 // interface function
