@@ -47,11 +47,8 @@ struct API QFile {
     init(qfile, q_offset_start, q_offset_end);
   }
   //
-  void init() { p = nullptr; }
-  void init(const std::weak_ptr<QFileInternal>& wp)
-  {
-    p = std::shared_ptr<QFileInternal>(wp);
-  }
+  void init();
+  void init(const std::weak_ptr<QFileInternal>& wp);
   void init(const std::string& path, const std::string& mode);
   void init(const QFile& qfile, const Long q_offset_start,
             const Long q_offset_end);
@@ -156,16 +153,7 @@ struct QFileInternal {
     remove_qfile(*this);
   }
   //
-  void init()
-  {
-    close();
-    path = "";
-    mode = "";
-    is_eof = false;
-    pos = 0;
-    offset_start = 0;
-    offset_end = -1;
-  }
+  void init();
   void init(const std::string& path_, const std::string& mode_);
   void init(const QFile& qfile, const Long q_offset_start,
             const Long q_offset_end);
@@ -314,7 +302,6 @@ struct QarSegmentInfo {
   Long offset_info;
   Long offset_data;
   Long offset_end;
-  Long header_len;
   Long fn_len;
   Long info_len;
   Long data_len;
@@ -324,6 +311,7 @@ struct QarSegmentInfo {
   void init() { set_zero(get_data_one_elem(*this)); }
   //
   void update_offset();
+  bool check_offset();
 };
 
 struct QarFileVolInternal;
@@ -358,13 +346,15 @@ struct QarFileVolInternal {
   QFile qfile;
   //
   bool is_read_through; // false if in write/append mode
+  //
   std::vector<std::string> fn_list;  // update through register_file
   std::map<std::string, QarSegmentInfo>
       qsinfo_map;                     // update through register_file
   std::set<std::string> directories;  // update through register_file
-  Long max_offset;  // when read, maximum offset reached so far
+  Long max_offset;  // when read, maximum offset reached so far, update through register_file
   //
-  std::string current_write_segment_fn;
+  std::string current_write_segment_fn;  // when write the fn of the current
+                                         // working segment
   QarSegmentInfo current_write_segment_info;  // when write, the info of the
                                               // current working segment
   //
@@ -379,7 +369,7 @@ struct QarFileVolInternal {
   void init(const std::string& path, const std::string& mode);
   void init(const QFile& qfile_);
   //
-  void close() { init(); }
+  void close();
   //
   bool null() const { return qfile.null(); }
   //
@@ -427,7 +417,16 @@ Long write_from_data(const QarFileVol& qar, const std::string& fn,
 int truncate_qar_file(const std::string& path,
                       const std::vector<std::string>& fns_keep);
 
-std::vector<std::string> properly_truncate_qar_file(const std::string& path);
+void properly_truncate_qar_file(
+    std::vector<std::string>& fn_list,
+    std::map<std::string, QarSegmentInfo>& qsinfo_map,
+    std::set<std::string>& directories, Long& max_offset,
+    const std::string& path, const bool is_check_all = false,
+    const bool is_only_check = false);
+
+std::vector<std::string> properly_truncate_qar_file(
+    const std::string& path, const bool is_check_all = false,
+    const bool is_only_check = false);
 
 // -------------------
 
