@@ -18,21 +18,21 @@ static void check_all_files_crc32_aux(
 
 // ----------------------------------------------------
 
-QFileInternal::QFileInternal()
+QFileObj::QFileObj()
 {
   fp = NULL;
   number_of_child = 0;
   init();
 }
 
-QFileInternal::QFileInternal(const std::string& path_, const std::string& mode_)
+QFileObj::QFileObj(const std::string& path_, const std::string& mode_)
 {
   fp = NULL;
   number_of_child = 0;
   init(path_, mode_);
 }
 
-QFileInternal::QFileInternal(const QFile& qfile, const Long q_offset_start,
+QFileObj::QFileObj(const QFile& qfile, const Long q_offset_start,
                              const Long q_offset_end)
 {
   fp = NULL;
@@ -40,7 +40,7 @@ QFileInternal::QFileInternal(const QFile& qfile, const Long q_offset_start,
   init(qfile, q_offset_start, q_offset_end);
 }
 
-QFileInternal::QFileInternal(QFileInternal&& qfile) noexcept
+QFileObj::QFileObj(QFileObj&& qfile) noexcept
 {
   fp = NULL;
   number_of_child = 0;
@@ -48,13 +48,13 @@ QFileInternal::QFileInternal(QFileInternal&& qfile) noexcept
   swap(qfile);
 }
 
-QFileInternal::~QFileInternal()
+QFileObj::~QFileObj()
 {
   close();
   remove_qfile(*this);
 }
 
-void QFileInternal::init()
+void QFileObj::init()
 {
   close();
   path = "";
@@ -65,7 +65,7 @@ void QFileInternal::init()
   offset_end = -1;
 }
 
-void QFileInternal::init(const std::string& path_, const std::string& mode_)
+void QFileObj::init(const std::string& path_, const std::string& mode_)
 // mode can be "r", "w", "a"
 {
   close();
@@ -89,7 +89,7 @@ void QFileInternal::init(const std::string& path_, const std::string& mode_)
   offset_end = -1;
 }
 
-void QFileInternal::init(const QFile& qfile, const Long q_offset_start,
+void QFileObj::init(const QFile& qfile, const Long q_offset_start,
                          const Long q_offset_end)
 // Become a child of qfile.
 // NOTE: q_offset_start and q_offset_end are relative offset for qfile not the
@@ -130,7 +130,7 @@ void QFileInternal::init(const QFile& qfile, const Long q_offset_start,
   }
 }
 
-void QFileInternal::close()
+void QFileObj::close()
 {
   // to close the file, it cannot have any child
   qassert(number_of_child == 0);
@@ -149,7 +149,7 @@ void QFileInternal::close()
   qassert(parent.null());
 }
 
-void QFileInternal::swap(QFileInternal& qfile)
+void QFileObj::swap(QFileObj& qfile)
 {
   // cannot swap if has child
   qassert(number_of_child == 0);
@@ -169,15 +169,15 @@ void QFileInternal::swap(QFileInternal& qfile)
 
 void QFile::init() { p = nullptr; }
 
-void QFile::init(const std::weak_ptr<QFileInternal>& wp)
+void QFile::init(const std::weak_ptr<QFileObj>& wp)
 {
-  p = std::shared_ptr<QFileInternal>(wp);
+  p = std::shared_ptr<QFileObj>(wp);
 }
 
 void QFile::init(const std::string& path, const std::string& mode)
 {
   if (p == nullptr) {
-    p = std::shared_ptr<QFileInternal>(new QFileInternal());
+    p = std::shared_ptr<QFileObj>(new QFileObj());
     add_qfile(*this);
   }
   p->init(path, mode);
@@ -187,7 +187,7 @@ void QFile::init(const QFile& qfile, const Long q_offset_start,
                         const Long q_offset_end)
 {
   if (p == nullptr) {
-    p = std::shared_ptr<QFileInternal>(new QFileInternal());
+    p = std::shared_ptr<QFileObj>(new QFileObj());
     add_qfile(*this);
   }
   p->init(qfile, q_offset_start, q_offset_end);
@@ -211,7 +211,7 @@ void add_qfile(const QFile& qfile)
   qfile_map[key] = qfile.p;
 }
 
-void remove_qfile(const QFileInternal& qfile_internal)
+void remove_qfile(const QFileObj& qfile_internal)
 {
   QFileMap& qfile_map = get_all_qfile();
   const Long key = (Long)&qfile_internal;
@@ -219,7 +219,7 @@ void remove_qfile(const QFileInternal& qfile_internal)
   qfile_map.erase(key);
 }
 
-QFile get_qfile(const QFileInternal& qfile_internal)
+QFile get_qfile(const QFileObj& qfile_internal)
 {
   QFileMap& qfile_map = get_all_qfile();
   const Long key = (Long)&qfile_internal;

@@ -18,12 +18,12 @@
 namespace qlat
 {  //
 
-struct QFileInternal;
+struct QFileObj;
 
-typedef std::map<Long, std::weak_ptr<QFileInternal>> QFileMap;
+typedef std::map<Long, std::weak_ptr<QFileObj>> QFileMap;
 
 API inline QFileMap& get_all_qfile()
-// get_all_qfile()[key] -> std::weak_ptr<QFileInternal>
+// get_all_qfile()[key] -> std::weak_ptr<QFileObj>
 // key = (Long)&qfile_internal
 {
   static QFileMap all_qfile;
@@ -37,10 +37,10 @@ struct API QFile {
   // offset_start and offset_end.
   // The view can be nested.
   //
-  std::shared_ptr<QFileInternal> p;
+  std::shared_ptr<QFileObj> p;
   //
   QFile() { init(); }
-  QFile(const std::weak_ptr<QFileInternal>& wp) { init(wp); }
+  QFile(const std::weak_ptr<QFileObj>& wp) { init(wp); }
   QFile(const std::string& path, const std::string& mode) { init(path, mode); }
   QFile(const QFile& qfile, const Long q_offset_start, const Long q_offset_end)
   {
@@ -48,7 +48,7 @@ struct API QFile {
   }
   //
   void init();
-  void init(const std::weak_ptr<QFileInternal>& wp);
+  void init(const std::weak_ptr<QFileObj>& wp);
   void init(const std::string& path, const std::string& mode);
   void init(const QFile& qfile, const Long q_offset_start,
             const Long q_offset_end);
@@ -68,13 +68,13 @@ struct API QFile {
 
 void add_qfile(const QFile& qfile);
 
-void remove_qfile(const QFileInternal& qfile_internal);
+void remove_qfile(const QFileObj& qfile_internal);
 
-QFile get_qfile(const QFileInternal& qfile_internal);
+QFile get_qfile(const QFileObj& qfile_internal);
 
 // ---------------------
 
-struct QFileInternal {
+struct QFileObj {
   // Interface to FILE* which allow a view of a portion of the file specified by
   // offset_start and offset_end.
   // The view can be nested.
@@ -83,32 +83,32 @@ struct QFileInternal {
   std::string mode;  // can be "r", "a", "w"
   FILE* fp;
   //
-  QFile parent;  // If parent.null(), then this QFileInternal own the fp pointer
+  QFile parent;  // If parent.null(), then this QFileObj own the fp pointer
                  // and will be responsible for close it.
   Long number_of_child;  // Can close the FILE only when number_of_child == 0.
   //
-  bool is_eof;  // the eof state of QFileInternal.
+  bool is_eof;  // the eof state of QFileObj.
                 // NOTE: may not match with eof state of fp.
-  Long pos;     // position of the QFileInternal. (correspond to position of fp
+  Long pos;     // position of the QFileObj. (correspond to position of fp
                 // should be pos + offset_start).
   // NOTE: Actual fp position may be adjust elsewhere and does not
   // match this pos. When performing operations, always fseek fp to
   // location indicated by pos first.
   //
-  Long offset_start;  // start offset of fp for QFileInternal
-  Long offset_end;    // end offset of fp for QFileInternal (-1 if not limit,
+  Long offset_start;  // start offset of fp for QFileObj
+  Long offset_end;    // end offset of fp for QFileObj (-1 if not limit,
                       // useful when writing)
   //
-  QFileInternal();
-  QFileInternal(const std::string& path_, const std::string& mode_);
-  QFileInternal(const QFile& qfile, const Long q_offset_start,
+  QFileObj();
+  QFileObj(const std::string& path_, const std::string& mode_);
+  QFileObj(const QFile& qfile, const Long q_offset_start,
                 const Long q_offset_end);
   //
-  QFileInternal(const QFileInternal&) = delete;
+  QFileObj(const QFileObj&) = delete;
   //
-  QFileInternal(QFileInternal&& qfile) noexcept;
+  QFileObj(QFileObj&& qfile) noexcept;
   //
-  ~QFileInternal();
+  ~QFileObj();
   //
   void init();
   void init(const std::string& path_, const std::string& mode_);
@@ -117,7 +117,7 @@ struct QFileInternal {
   //
   void close();
   //
-  void swap(QFileInternal& qfile);
+  void swap(QFileObj& qfile);
   //
   bool null() const { return fp == NULL; }
 };
