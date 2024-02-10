@@ -3,18 +3,12 @@
 namespace qlat
 {  //
 
+static void add_qfile(const QFile& qfile);
+
+static void remove_qfile(const QFileObj& qfile_internal);
+
 static void check_all_files_crc32_aux(
-    std::vector<std::pair<std::string, crc32_t>>& acc, const std::string& path)
-{
-  if (not is_directory(path)) {
-    acc.push_back(check_file_crc32(path));
-  } else {
-    const std::vector<std::string> paths = qls(path);
-    for (Long i = 0; i < (Long)paths.size(); ++i) {
-      check_all_files_crc32_aux(acc, paths[i]);
-    }
-  }
-}
+    std::vector<std::pair<std::string, crc32_t>>& acc, const std::string& path);
 
 // ----------------------------------------------------
 
@@ -45,7 +39,7 @@ QFileObj::QFileObj(QFileObj&& qfile) noexcept
   fp = NULL;
   number_of_child = 0;
   init();
-  swap(qfile);
+  qswap(*this, qfile);
 }
 
 QFileObj::~QFileObj()
@@ -149,20 +143,31 @@ void QFileObj::close()
   qassert(parent.null());
 }
 
-void QFileObj::swap(QFileObj& qfile)
+// ----------------------------------------------------
+
+std::string show(const QFileObj& qfile)
+{
+  const std::string has_parent = qfile.parent.null() ? "no" : "yes";
+  return ssprintf(
+      "QFileObj(path='%s',mode='%s',parent='%s',number_of_child=%d)",
+      qfile.path.c_str(), qfile.mode.c_str(), has_parent.c_str(),
+      qfile.number_of_child);
+}
+
+void qswap(QFileObj& qfile1, QFileObj& qfile2)
 {
   // cannot swap if has child
-  qassert(number_of_child == 0);
-  qassert(qfile.number_of_child == 0);
-  std::swap(path, qfile.path);
-  std::swap(mode, qfile.mode);
-  std::swap(fp, qfile.fp);
-  std::swap(parent, qfile.parent);
-  std::swap(number_of_child, qfile.number_of_child);
-  std::swap(is_eof, qfile.is_eof);
-  std::swap(pos, qfile.pos);
-  std::swap(offset_start, qfile.offset_start);
-  std::swap(offset_end, qfile.offset_end);
+  qassert(qfile1.number_of_child == 0);
+  qassert(qfile2.number_of_child == 0);
+  std::swap(qfile1.path, qfile2.path);
+  std::swap(qfile1.mode, qfile2.mode);
+  std::swap(qfile1.fp, qfile2.fp);
+  std::swap(qfile1.parent, qfile2.parent);
+  std::swap(qfile1.number_of_child, qfile2.number_of_child);
+  std::swap(qfile1.is_eof, qfile2.is_eof);
+  std::swap(qfile1.pos, qfile2.pos);
+  std::swap(qfile1.offset_start, qfile2.offset_start);
+  std::swap(qfile1.offset_end, qfile2.offset_end);
 }
 
 // ----------------------------------------------------
@@ -184,7 +189,7 @@ void QFile::init(const std::string& path, const std::string& mode)
 }
 
 void QFile::init(const QFile& qfile, const Long q_offset_start,
-                        const Long q_offset_end)
+                 const Long q_offset_end)
 {
   if (p == nullptr) {
     p = std::shared_ptr<QFileObj>(new QFileObj());
@@ -200,6 +205,12 @@ void QFile::close()
     p = nullptr;
   }
 }
+
+const std::string& QFile::path() const { return p->path; }
+
+const std::string& QFile::mode() const { return p->mode; }
+
+FILE* QFile::get_fp() const { return p->fp; }
 
 // ----------------------------------------------------
 
@@ -219,15 +230,21 @@ void remove_qfile(const QFileObj& qfile_internal)
   qfile_map.erase(key);
 }
 
-QFile get_qfile(const QFileObj& qfile_internal)
+std::vector<std::string> show_all_qfile()
 {
-  QFileMap& qfile_map = get_all_qfile();
-  const Long key = (Long)&qfile_internal;
-  qassert(has(qfile_map, key));
-  return QFile(qfile_map[key]);
+  TIMER_VERBOSE("show_all_qfile");
+  std::vector<std::string> ret;
+  const QFileMap& qfile_map = get_all_qfile();
+  for (auto it = qfile_map.cbegin(); it != qfile_map.cend(); ++it) {
+    QFile qfile = QFile(it->second);
+    ret.push_back(show(qfile));
+  }
+  return ret;
 }
 
 // ----------------------------------------------------
+
+std::string show(const QFile& qfile) { return show(*qfile.p); }
 
 void qfclose(QFile& qfile)
 // interface function
@@ -2014,6 +2031,19 @@ crc32_t compute_crc32(const std::string& path)
   const crc32_t ret = compute_crc32(qfile);
   qfclose(qfile);
   return ret;
+}
+
+void check_all_files_crc32_aux(
+    std::vector<std::pair<std::string, crc32_t>>& acc, const std::string& path)
+{
+  if (not is_directory(path)) {
+    acc.push_back(check_file_crc32(path));
+  } else {
+    const std::vector<std::string> paths = qls(path);
+    for (Long i = 0; i < (Long)paths.size(); ++i) {
+      check_all_files_crc32_aux(acc, paths[i]);
+    }
+  }
 }
 
 std::vector<std::pair<std::string, crc32_t>> check_all_files_crc32(

@@ -20,18 +20,6 @@ namespace qlat
 
 struct QFileObj;
 
-typedef std::map<Long, std::weak_ptr<QFileObj>> QFileMap;
-
-API inline QFileMap& get_all_qfile()
-// get_all_qfile()[key] -> std::weak_ptr<QFileObj>
-// key = (Long)&qfile_internal
-{
-  static QFileMap all_qfile;
-  return all_qfile;
-}
-
-// ---------------------
-
 struct API QFile {
   // Interface to FILE* which allow a view of a portion of the file specified by
   // offset_start and offset_end.
@@ -63,16 +51,6 @@ struct API QFile {
   //
   FILE* get_fp() const;
 };
-
-// ---------------------
-
-void add_qfile(const QFile& qfile);
-
-void remove_qfile(const QFileObj& qfile_internal);
-
-QFile get_qfile(const QFileObj& qfile_internal);
-
-// ---------------------
 
 struct QFileObj {
   // Interface to FILE* which allow a view of a portion of the file specified by
@@ -122,13 +100,27 @@ struct QFileObj {
   bool null() const { return fp == NULL; }
 };
 
-inline const std::string& QFile::path() const { return p->path; }
+using QFileMap = std::map<Long, std::weak_ptr<QFileObj>>;
 
-inline const std::string& QFile::mode() const { return p->mode; }
+API inline QFileMap& get_all_qfile()
+// get_all_qfile()[key] -> std::weak_ptr<QFileObj>
+// key = (Long)&qfile_internal
+{
+  static QFileMap all_qfile;
+  return all_qfile;
+}
 
-inline FILE* QFile::get_fp() const { return p->fp; }
+std::vector<std::string> show_all_qfile();
 
 // ---------------------
+
+std::string show(const QFileObj& qfile);
+
+void qswap(QFileObj& qfile1, QFileObj& qfile2);
+
+// ---------------------
+
+std::string show(const QFile& qfile);
 
 void qfclose(QFile& qfile);
 

@@ -6,6 +6,9 @@ from .timer import timer
 
 ### ----------------------------------------------------------
 
+def show_all_qfile():
+    return cc.show_all_qfile()
+
 def get_qar_multi_vol_max_size(size=None):
     """
     Parameter controls the size of a single `qar` file in number of bytes. Note, `qar` never splits a single file into multiple `qar` volume.

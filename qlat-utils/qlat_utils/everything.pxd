@@ -366,6 +366,8 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
 
 cdef extern from "qlat-utils/qar.h" namespace "qlat":
 
+    std_vector[std_string] show_all_qfile() except +
+    #
     bool does_regular_file_exist_qar(const std_string& path) except +
     bool does_file_exist_qar(const std_string& path) except +
     Long& get_qar_multi_vol_max_size()
