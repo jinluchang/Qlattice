@@ -193,6 +193,22 @@ struct IsBasicDataType<ComplexD> {
   using ElementaryType = RealD;
 };
 
+template <int DIMN, class T>
+struct IsBasicDataType<MatrixT<DIMN, T>> {
+  static constexpr bool value = IsBasicDataType<T>::value;
+  static constexpr bool is_complex = IsBasicDataType<T>::is_complex;
+  static const std::string get_type_name() { return "MatrixT_" + IsBasicDataType<T>::get_type_name(); }
+  using ElementaryType = typename IsBasicDataType<T>::ElementaryType;
+};
+
+template <int DIMN, class T>
+struct IsBasicDataType<MvectorT<DIMN, T>> {
+  static constexpr bool value = IsBasicDataType<T>::value;
+  static constexpr bool is_complex = IsBasicDataType<T>::is_complex;
+  static const std::string get_type_name() { return "MvectorT_" + IsBasicDataType<T>::get_type_name(); }
+  using ElementaryType = typename IsBasicDataType<T>::ElementaryType;
+};
+
 template <>
 struct IsBasicDataType<ColorMatrixD> {
   static constexpr bool value = true;
@@ -337,6 +353,14 @@ struct IsBasicDataType<CoordinateD> {
   using ElementaryType = RealD;
 };
 
+template <>
+struct IsBasicDataType<RngState> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "RngState"; }
+  using ElementaryType = char;
+};
+
 // -------------------------------------------------------------------------
 
 template <class M>
@@ -380,15 +404,6 @@ struct IsDataValueType<array<M, N>> {
   using ElementaryType = typename IsBasicDataType<DataType>::ElementaryType;
   static constexpr bool value = IsDataValueType<DataType>::value;
   static constexpr bool is_complex = IsDataValueType<DataType>::is_complex;
-};
-
-template <>
-struct IsDataValueType<RngState> {
-  using DataType = RngState;
-  using BasicDataType = DataType;
-  using ElementaryType = BasicDataType;
-  static constexpr bool value = true;
-  static constexpr bool is_complex = false;
 };
 
 // -------------------------------------------------------------------------

@@ -10,12 +10,6 @@ namespace qlat
 {  //
 
 template <int DIMN, class T>
-qacc Vector<T> get_data(const MatrixT<DIMN, T>& m)
-{
-  return Vector<T>(m.p, DIMN * DIMN);
-}
-
-template <int DIMN, class T>
 qacc MatrixT<DIMN, T> operator+(const MatrixT<DIMN, T>& x,
                                 const MatrixT<DIMN, T>& y)
 {

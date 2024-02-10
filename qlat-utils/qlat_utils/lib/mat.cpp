@@ -16,7 +16,7 @@ template <class M>
 void set_rand_complex_mat(M& m, RngState& rs)
 {
   TIMER("set_rand_complex_mat")
-  Vector<ComplexD> v = get_data(m);
+  Vector<ComplexD> v = get_data_complex_d(m);
   for (Long k = 0; k < v.size(); ++k) {
     v[k].real(u_rand_gen(rs));
     v[k].imag(u_rand_gen(rs));

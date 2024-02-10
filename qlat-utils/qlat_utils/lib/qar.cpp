@@ -355,11 +355,21 @@ Long qfile_remaining_size(const QFile& qfile)
   return data_len;
 }
 
+Long qwrite_data(const Vector<char>& v, const QFile& qfile)
+// interface function
+{
+  TIMER_FLOPS("qwrite_data(v,qfile)");
+  qassert(not qfile.null());
+  const Long data_size = qfwrite((void*)v.p, sizeof(char), v.n, qfile);
+  timer.flops += data_size;
+  return data_size;
+}
+
 Long qwrite_data(const std::string& line, const QFile& qfile)
 // interface function
 {
   qassert(not qfile.null());
-  return qwrite_data(get_data(line), qfile);
+  return qwrite_data(get_data_char(line), qfile);
 }
 
 Long qwrite_data(const std::vector<std::string>& lines, const QFile& qfile)
@@ -371,6 +381,16 @@ Long qwrite_data(const std::vector<std::string>& lines, const QFile& qfile)
     total_bytes += qwrite_data(lines[i], qfile);
   }
   return total_bytes;
+}
+
+Long qread_data(const Vector<char>& v, const QFile& qfile)
+// interface function
+{
+  TIMER_FLOPS("qread_data(v,qfile)");
+  qassert(not qfile.null());
+  const Long data_size = qfread((void*)v.p, sizeof(char), v.n, qfile);
+  timer.flops += data_size;
+  return data_size;
 }
 
 Long write_from_qfile(const QFile& qfile_out, const QFile& qfile_in)
@@ -921,6 +941,24 @@ Long write_from_qfile(const QarFileVol& qar, const std::string& fn,
   QFile qfile_out;
   write_start(qar, fn, info, qfile_out, data_len);
   const Long total_bytes = write_from_qfile(qfile_out, qfile_in);
+  write_end(qar);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+Long write_from_data(const QarFileVol& qar, const std::string& fn,
+                     const std::string& info, const Vector<char> data)
+// interface function
+// Write content data to qar.
+// NOTE: write_start and write_end can be used for more general usage
+{
+  TIMER_FLOPS("write_from_data");
+  qassert(not qar.null());
+  const Long data_len = get_data_size(data);
+  qassert(data_len >= 0);
+  QFile qfile_out;
+  write_start(qar, fn, info, qfile_out, data_len);
+  const Long total_bytes = qwrite_data(data, qfile_out);
   write_end(qar);
   timer.flops += total_bytes;
   return total_bytes;

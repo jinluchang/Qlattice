@@ -160,44 +160,10 @@ qacc void set_zero(Array<M, N> arr)
 }
 
 template <class M>
-qacc Vector<M> get_data(Vector<M> vec, const Long size)
-// only get a portion of the vec
-// vec should be at least size long
-{
-  qassert(vec.size() >= size);
-  return Vector<M>(vec.data(), size);
-}
-
-inline Vector<char> get_data(const std::string& str)
-{
-  return Vector<char>(&str[0], str.length());
-}
-
-template <class M>
-qacc Vector<M> get_data(const Handle<M>& h)
-{
-  return Vector<M>(h.p, 1);
-}
-
-template <class M>
-qacc Vector<M> get_data(const ConstHandle<M>& h)
-{
-  return Vector<M>(h.p, 1);
-}
-
-template <class M>
 qacc Vector<M> get_data_one_elem(const M& x)
 {
   return Vector<M>(&x, 1);
 }
-
-qacc Vector<Long> get_data(const Long& x) { return get_data_one_elem(x); }
-
-qacc Vector<RealD> get_data(const RealD& x) { return get_data_one_elem(x); }
-
-qacc Vector<Int> get_data(const Int& x) { return get_data_one_elem(x); }
-
-qacc Vector<RealF> get_data(const RealF& x) { return get_data_one_elem(x); }
 
 template <class T>
 qacc double qnorm(const Vector<T>& mm)
@@ -232,13 +198,19 @@ qacc Vector<N> get_data_as(const Vector<M>& v)
 }
 
 template <class M>
-qacc Vector<double> get_data_double(const Vector<M>& v)
+qacc Vector<char> get_data_char(const Vector<M>& v)
 {
-  return get_data_as<double>(v);
+  return get_data_as<char>(v);
 }
 
 template <class M>
-qacc Vector<ComplexD> get_data_complex(const Vector<M>& v)
+qacc Vector<RealD> get_data_real_d(const Vector<M>& v)
+{
+  return get_data_as<RealD>(v);
+}
+
+template <class M>
+qacc Vector<ComplexD> get_data_complex_d(const Vector<M>& v)
 {
   return get_data_as<ComplexD>(v);
 }

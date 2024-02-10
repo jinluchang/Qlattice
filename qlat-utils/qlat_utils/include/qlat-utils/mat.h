@@ -26,31 +26,6 @@ qacc void set_zero(NonRelWilsonMatrix& x) { set_zero<6, ComplexD>(x); }
 qacc void set_zero(IsospinMatrix& x) { set_zero<2, ComplexD>(x); }
 qacc void set_zero(WilsonVector& x) { set_zero<12, ComplexD>(x); }
 
-qacc Vector<ComplexD> get_data(const ColorMatrix& x)
-{
-  return get_data<3, ComplexD>(x);
-}
-qacc Vector<ComplexD> get_data(const SpinMatrix& x)
-{
-  return get_data<4, ComplexD>(x);
-}
-qacc Vector<ComplexD> get_data(const WilsonMatrix& x)
-{
-  return get_data<12, ComplexD>(x);
-}
-qacc Vector<ComplexD> get_data(const NonRelWilsonMatrix& x)
-{
-  return get_data<6, ComplexD>(x);
-}
-qacc Vector<ComplexD> get_data(const IsospinMatrix& x)
-{
-  return get_data<2, ComplexD>(x);
-}
-qacc Vector<ComplexD> get_data(const WilsonVector& x)
-{
-  return get_data<12, ComplexD>(x);
-}
-
 qacc SpinMatrix operator*(const SpinMatrix& m1, const SpinMatrix& m2)
 {
   return operator*<4, ComplexD>(m1, m2);

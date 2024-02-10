@@ -131,9 +131,11 @@ inline void lat_data_alloc(LatData& ld)
 }
 
 template <>
-struct IsGetDataType<LatData> {
-  static constexpr bool value = true;
+struct IsDataVectorType<LatData> {
   using DataType = RealD;
+  using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
+  using ElementaryType = typename IsDataValueType<DataType>::ElementaryType;
+  static constexpr bool value = is_data_value_type<DataType>();
 };
 
 inline Vector<RealD> get_data(const LatData& ld) { return get_data(ld.res); }

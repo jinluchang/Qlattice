@@ -245,14 +245,11 @@ Long qfile_remaining_size(const QFile& qfile);
 
 template <class M>
 Long qwrite_data(const Vector<M>& v, const QFile& qfile)
-// interface function
 {
-  TIMER_FLOPS("qwrite_data(v,qfile)");
-  qassert(not qfile.null());
-  const Long data_size = sizeof(M) * qfwrite((void*)v.p, sizeof(M), v.n, qfile);
-  timer.flops += data_size;
-  return data_size;
+  return qwrite_data(get_data_char(v), qfile);
 }
+
+Long qwrite_data(const Vector<char>& v, const QFile& qfile);
 
 Long qwrite_data(const std::string& line, const QFile& qfile);
 
@@ -262,12 +259,10 @@ template <class M>
 Long qread_data(const Vector<M>& v, const QFile& qfile)
 // interface function
 {
-  TIMER_FLOPS("qread_data(v,qfile)");
-  qassert(not qfile.null());
-  const Long data_size = sizeof(M) * qfread((void*)v.p, sizeof(M), v.n, qfile);
-  timer.flops += data_size;
-  return data_size;
+  return qread_data(get_data_char(v), qfile);
 }
+
+Long qread_data(const Vector<char>& v, const QFile& qfile);
 
 template <class M>
 Long qread_data_all(std::vector<M>& v, const QFile& qfile)
@@ -286,7 +281,7 @@ Long qread_data_all(std::vector<M>& v, const QFile& qfile)
   qassert(data_size == sizeof(M) * n);
   qfseek(qfile, pos_initial, SEEK_SET);
   v.resize(n);
-  const Long data_size_read = qread_data(get_data(v), qfile);
+  const Long data_size_read = qread_data(get_data_char(v), qfile);
   qassert(data_size_read == data_size);
   timer.flops += data_size;
   return data_size;
@@ -425,6 +420,9 @@ void write_end(const QarFileVol& qar);
 
 Long write_from_qfile(const QarFileVol& qar, const std::string& fn,
                       const std::string& info, const QFile& qfile_in);
+
+Long write_from_data(const QarFileVol& qar, const std::string& fn,
+                     const std::string& info, const Vector<char> data);
 
 int truncate_qar_file(const std::string& path,
                       const std::vector<std::string>& fns_keep);

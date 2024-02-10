@@ -24,8 +24,16 @@ struct API array {
   qacc M* data() { return v; }
   qacc const M* data() const { return v; }
   //
-  qacc M& operator[](size_t k) { return v[k]; };
-  qacc const M& operator[](size_t k) const { return v[k]; };
+  qacc M& operator[](size_t k)
+  {
+    assert(k < N);
+    return v[k];
+  };
+  qacc const M& operator[](size_t k) const
+  {
+    assert(k < N);
+    return v[k];
+  };
 };
 
 template <class M>

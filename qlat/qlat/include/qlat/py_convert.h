@@ -143,7 +143,7 @@ Field<M>& py_convert_type_field(PyObject* in)
 {
   const std::string ctype = py_get_ctype(in);
   qassert(check_ctype_name<M>(ctype));
-  Field<M>& f = py_convert_type<Field<M> >(in);
+  Field<M>& f = py_convert_type<Field<M>>(in);
   return f;
 }
 
@@ -153,7 +153,7 @@ FieldM<M, multiplicity>& py_convert_type_field(PyObject* in)
 {
   const std::string ctype = py_get_ctype(in);
   qassert(check_ctype_name<M>(ctype));
-  FieldM<M, multiplicity>& f = py_convert_type<FieldM<M, multiplicity> >(in);
+  FieldM<M, multiplicity>& f = py_convert_type<FieldM<M, multiplicity>>(in);
   if (is_initialized(f)) {
     qassert(multiplicity == f.geo().multiplicity);
   }
@@ -167,7 +167,7 @@ SelectedField<M>& py_convert_type_sfield(PyObject* in)
 {
   const std::string ctype = py_get_ctype(in);
   qassert(check_ctype_name<M>(ctype));
-  SelectedField<M>& f = py_convert_type<SelectedField<M> >(in);
+  SelectedField<M>& f = py_convert_type<SelectedField<M>>(in);
   return f;
 }
 
@@ -178,7 +178,7 @@ SelectedPoints<M>& py_convert_type_spoints(PyObject* in)
 {
   const std::string ctype = py_get_ctype(in);
   qassert(check_ctype_name<M>(ctype));
-  SelectedPoints<M>& f = py_convert_type<SelectedPoints<M> >(in);
+  SelectedPoints<M>& f = py_convert_type<SelectedPoints<M>>(in);
   return f;
 }
 
@@ -217,28 +217,34 @@ inline PyObject* py_convert(const Coordinate& coor)
   return ret;
 }
 
-inline PyObject* py_convert(const ColorMatrix& x) {
-  return py_convert(get_data_complex(get_data_one_elem(x)));
+inline PyObject* py_convert(const ColorMatrix& x)
+{
+  return py_convert(get_data_complex_d(x));
 }
 
-inline PyObject* py_convert(const WilsonMatrix& x) {
-  return py_convert(get_data_complex(get_data_one_elem(x)));
+inline PyObject* py_convert(const WilsonMatrix& x)
+{
+  return py_convert(get_data_complex_d(x));
 }
 
-inline PyObject* py_convert(const NonRelWilsonMatrix& x) {
-  return py_convert(get_data_complex(get_data_one_elem(x)));
+inline PyObject* py_convert(const NonRelWilsonMatrix& x)
+{
+  return py_convert(get_data_complex_d(x));
 }
 
-inline PyObject* py_convert(const IsospinMatrix& x) {
-  return py_convert(get_data_complex(get_data_one_elem(x)));
+inline PyObject* py_convert(const IsospinMatrix& x)
+{
+  return py_convert(get_data_complex_d(x));
 }
 
-inline PyObject* py_convert(const SpinMatrix& x) {
-  return py_convert(get_data_complex(get_data_one_elem(x)));
+inline PyObject* py_convert(const SpinMatrix& x)
+{
+  return py_convert(get_data_complex_d(x));
 }
 
-inline PyObject* py_convert(const WilsonVector& x) {
-  return py_convert(get_data_complex(get_data_one_elem(x)));
+inline PyObject* py_convert(const WilsonVector& x)
+{
+  return py_convert(get_data_complex_d(x));
 }
 
 }  // namespace qlat

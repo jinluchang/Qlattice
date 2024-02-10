@@ -59,6 +59,14 @@ struct IsDataVectorType<ConstHandle<M>> {
   static constexpr bool value = is_data_value_type<DataType>();
 };
 
+template <>
+struct IsDataVectorType<std::string> {
+  using DataType = char;
+  using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
+  using ElementaryType = typename IsDataValueType<DataType>::ElementaryType;
+  static constexpr bool value = is_data_value_type<DataType>();
+};
+
 // -------------------
 
 template <class M>
@@ -73,8 +81,10 @@ qacc constexpr bool is_data_vector_type()
 
 template <class M>
 struct IsGetDataType {
-  static constexpr bool value = is_data_vector_type<M>();
   using DataType = typename IsDataVectorType<M>::DataType;
+  using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
+  using ElementaryType = typename IsDataValueType<DataType>::ElementaryType;
+  static constexpr bool value = is_data_vector_type<M>();
 };
 
 // -------------------
@@ -82,7 +92,7 @@ struct IsGetDataType {
 template <class M>
 qacc constexpr bool is_get_data_type()
 // get data types
-// data vector types + many other containers of data value types
+// basically data vector types
 // support get_data function
 {
   return IsGetDataType<M>::value;
@@ -90,8 +100,7 @@ qacc constexpr bool is_get_data_type()
 
 // -------------------
 
-template <class M,
-          QLAT_ENABLE_IF((is_basic_data_type<M>() or is_same<M, RngState>()))>
+template <class M, QLAT_ENABLE_IF(is_basic_data_type<M>())>
 qacc Vector<M> get_data(const M& x)
 {
   return Vector<M>(&x, 1);
@@ -133,10 +142,74 @@ qacc Vector<M> get_data(ConstHandle<M> h)
   return Vector<M>(h.p, 1);
 }
 
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+qacc Vector<M> get_data(Vector<M> vec, const Long size)
+// only get a portion of the vec
+// vec should be at least size long
+{
+  qassert(vec.size() >= size);
+  return Vector<M>(vec.data(), size);
+}
+
+inline Vector<char> get_data(const std::string& str)
+{
+  return Vector<char>(&str[0], str.length());
+}
+
+// -------------------
+
+template <class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
+qacc Vector<char> get_data_char(const T& xx)
+{
+  using M = typename IsGetDataType<T>::DataType;
+  const Vector<M> vec = get_data(xx);
+  const Long n = vec.data_size();
+  Vector<char> v1((char*)vec.data(), n);
+  return v1;
+}
+
+template <class N, class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
+qacc Vector<N> get_data_as(const T& xx)
+{
+  static_assert(is_same<typename IsDataVectorType<T>::ElementaryType,
+                        typename IsDataValueType<N>::ElementaryType>(),
+                "get_data_as type error");
+  using M = typename IsGetDataType<T>::DataType;
+  const Vector<M> vec = get_data(xx);
+  const Long n = vec.data_size() / sizeof(N);
+  Vector<N> v1((N*)vec.data(), n);
+  qassert(v1.data_size() == vec.data_size());
+  return v1;
+}
+
+template <class T,
+          QLAT_ENABLE_IF(is_get_data_type<T>() and
+                         is_composed_of_real_d<typename IsGetDataType<T>::DataType>())>
+qacc Vector<RealD> get_data_real_d(const T& xx)
+{
+  return get_data_as<RealD>(xx);
+}
+
+template <class T, QLAT_ENABLE_IF(
+                       is_get_data_type<T>() and
+                       is_composed_of_complex_d<typename IsGetDataType<T>::DataType>())>
+qacc Vector<ComplexD> get_data_complex_d(const T& xx)
+{
+  return get_data_as<ComplexD>(xx);
+}
+
+template <class T,
+          QLAT_ENABLE_IF(is_get_data_type<T>() and
+                         is_composed_of_long<typename IsGetDataType<T>::DataType>())>
+qacc Vector<Long> get_data_long(const T& xx)
+{
+  return get_data_as<Long>(xx);
+}
+
 // -------------------
 
 template <class T, class E = typename IsDataVectorType<T>::ElementaryType,
-          QLAT_ENABLE_IF(is_data_vector_type<T>())>
+          QLAT_ENABLE_IF(is_get_data_type<T>())>
 qacc Vector<E> get_data_in_elementary_type(const T& xx)
 {
   using M = typename IsGetDataType<T>::DataType;
@@ -148,7 +221,7 @@ qacc Vector<E> get_data_in_elementary_type(const T& xx)
 
 // -------------------
 
-template <class T, QLAT_ENABLE_IF(is_data_vector_type<T>())>
+template <class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
 qacc void set_zero(T& xx)
 {
   using M = typename IsGetDataType<T>::DataType;
@@ -160,10 +233,12 @@ qacc void set_zero(T& xx)
 template <class T1, class T2,
           class E1 = typename IsDataVectorType<T1>::ElementaryType,
           class E2 = typename IsDataVectorType<T2>::ElementaryType,
-          QLAT_ENABLE_IF((is_data_vector_type<T1>() and
-                          is_data_vector_type<T2>()))>
+          QLAT_ENABLE_IF(is_data_vector_type<T1>() and
+                         is_data_vector_type<T2>())>
 qacc void assign(T1& xx, const T2& yy)
 {
+  // static_assert(is_same<E1, E2>(), "assign type error");
+  // Not used as function may be used in python binding.
   if (not is_same<E1, E2>()) {
     qerr(ssprintf("assign type mismatch: %s %s",
                   IsBasicDataType<E1>::get_type_name().c_str(),
