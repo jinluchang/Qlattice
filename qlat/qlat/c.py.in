@@ -197,6 +197,7 @@ __all__ += [
         'open_fields',
         'list_fields',
         'properly_truncate_fields',
+        'truncate_fields',
         'check_fields',
         'check_compressed_eigen_vectors',
         'eigen_system_repartition',
