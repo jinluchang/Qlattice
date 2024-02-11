@@ -26,6 +26,20 @@ q.displayln_info("CHECK: prop", prop.crc32(), f"{prop.qnorm():.14E}")
 
 sfw = q.open_fields("results/prop.fields", "w", q.Coordinate([ 1, 1, 1, 8, ]))
 
+sf_list = sorted(q.show_all_shuffled_fields_writer())
+q.sync_node()
+q.displayln_info(f"CHECK: q.show_all_shuffled_fields_writer()")
+for idx, s in enumerate(sf_list):
+    q.displayln_info(f"CHECK: {idx} {s}")
+q.sync_node()
+
+sq_list = sorted(q.show_all_qfile())
+q.sync_node()
+q.displayln_info(f"CHECK: q.show_all_qfile()")
+for idx, s in enumerate(sq_list):
+    q.displayln_info(f"CHECK: {idx} {s}")
+q.sync_node()
+
 q.displayln_info("CHECK: sfw.new_size_node()", sfw.new_size_node())
 
 prop.save_double(sfw, "prop.d")
@@ -47,6 +61,13 @@ prop1.save_float_from_double(sfw, "prop1")
 sfw.close()
 
 sfr = q.open_fields("results/prop.fields", "r")
+
+sq_list = sorted(q.show_all_qfile())
+q.sync_node()
+q.displayln_info(f"CHECK: q.show_all_qfile()")
+for idx, s in enumerate(sq_list):
+    q.displayln_info(f"CHECK: {idx} {s}")
+q.sync_node()
 
 fns = sfr.list()
 

@@ -60,6 +60,13 @@ q.sync_node()
 q.displayln_info("CHECK: ", l2)
 q.sync_node()
 
+sq_list = sorted(q.show_all_qfile())
+q.sync_node()
+q.displayln_info(f"CHECK: q.show_all_qfile()")
+for idx, s in enumerate(sq_list):
+    q.displayln_info(f"CHECK: {idx} {s}")
+q.sync_node()
+
 for fn in [ f"ld-10000.lat", f"ld-1000/ld-1-1000.lat", ]:
     q.qcopy_file_info(f"results/data4/{fn}", f"results/data5/{fn}")
     if 0 == q.get_id_node():
