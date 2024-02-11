@@ -298,6 +298,9 @@ void read_through(const QarFileVol& qar);
 
 QFile read(const QarFileVol& qar, const std::string& fn);
 
+void read_info(const QarFileVol& qar, std::string& info,
+               const QarSegmentInfo& qsinfo);
+
 bool has_regular_file(const QarFileVol& qar, const std::string& fn);
 
 bool has(const QarFileVol& qar, const std::string& fn);

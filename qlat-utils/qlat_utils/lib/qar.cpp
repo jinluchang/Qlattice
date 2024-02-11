@@ -20,16 +20,14 @@ static bool read_qar_segment_info(QarFileVolObj& qar, QarSegmentInfo& qsinfo);
 
 static std::string read_fn(const QarFileVol& qar, const QarSegmentInfo& qsinfo);
 
-static void read_info(const QarFileVol& qar, std::string& info,
-               const QarSegmentInfo& qsinfo);
-
-static QFile get_qfile_of_data(const QarFileVol& qar, const QarSegmentInfo& qsinfo);
+static QFile get_qfile_of_data(const QarFileVol& qar,
+                               const QarSegmentInfo& qsinfo);
 
 static std::string mk_key_from_qar_path(const std::string& path);
 
 static std::string mk_new_qar_read_cache_key(const QarFile& qar,
-                                      const std::string& key,
-                                      const std::string& path);
+                                             const std::string& key,
+                                             const std::string& path);
 
 static std::string mk_new_qar_read_cache_key(const std::string& path);
 
@@ -55,7 +53,7 @@ QFileObj::QFileObj(const std::string& path_, const std::string& mode_)
 }
 
 QFileObj::QFileObj(const QFile& qfile, const Long q_offset_start,
-                             const Long q_offset_end)
+                   const Long q_offset_end)
 {
   fp = NULL;
   number_of_child = 0;
@@ -112,7 +110,7 @@ void QFileObj::init(const std::string& path_, const std::string& mode_)
 }
 
 void QFileObj::init(const QFile& qfile, const Long q_offset_start,
-                         const Long q_offset_end)
+                    const Long q_offset_end)
 // Become a child of qfile.
 // NOTE: q_offset_start and q_offset_end are relative offset for qfile not the
 // absolute offset for qfile.fp .
@@ -176,10 +174,9 @@ void QFileObj::close()
 std::string show(const QFileObj& qfile)
 {
   const std::string has_parent = qfile.parent.null() ? "no" : "yes";
-  return ssprintf(
-      "QFileObj(path='%s',mode='%s',parent=%s,number_of_child=%d)",
-      qfile.path.c_str(), qfile.mode.c_str(), has_parent.c_str(),
-      qfile.number_of_child);
+  return ssprintf("QFileObj(path='%s',mode='%s',parent=%s,number_of_child=%d)",
+                  qfile.path.c_str(), qfile.mode.c_str(), has_parent.c_str(),
+                  qfile.number_of_child);
 }
 
 void qswap(QFileObj& qfile1, QFileObj& qfile2)
@@ -643,7 +640,8 @@ void QarFileVolObj::init(const QFile& qfile_)
   }
   qassert(qftell(qfile) == 0);
   if (mode() == "w" or mode() == "a") {
-    // write from scratch even if mode is "a" (perhaps inherited from mother qfile)
+    // write from scratch even if mode is "a" (perhaps inherited from mother
+    // qfile)
     qfwrite(qar_header.data(), qar_header.size(), 1, qfile);
   } else if (mode() == "r") {
     std::vector<char> check_line(qar_header.size(), 0);
@@ -652,7 +650,8 @@ void QarFileVolObj::init(const QFile& qfile_)
     if (not(qfread_check_len == 1 and
             std::string(check_line.data(), check_line.size()) == qar_header)) {
       qfile.close();
-      qwarn(fname + ssprintf(": '%s' format does not match.", qfile.path().c_str()));
+      qwarn(fname +
+            ssprintf(": '%s' format does not match.", qfile.path().c_str()));
       return;
     };
     max_offset = qftell(qfile);
