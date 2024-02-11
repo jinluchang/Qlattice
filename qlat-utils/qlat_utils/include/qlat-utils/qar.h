@@ -288,6 +288,10 @@ struct QarFileVolObj {
 
 // -------------------
 
+bool operator==(const QarSegmentInfo& qsinfo1, const QarSegmentInfo& qsinfo2);
+
+bool operator!=(const QarSegmentInfo& qsinfo1, const QarSegmentInfo& qsinfo2);
+
 QFile read_next(const QarFileVol& qar, std::string& fn);
 
 void read_through(const QarFileVol& qar);

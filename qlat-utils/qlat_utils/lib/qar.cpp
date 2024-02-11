@@ -13,8 +13,8 @@ static void remove_qfile(const QFileObj& qfile_internal);
 
 static std::string qar_file_multi_vol_suffix(const Long i);
 
-static void register_file(const QarFileVol& qar, const std::string& fn,
-                   const QarSegmentInfo& qsinfo);
+static bool register_file(const QarFileVol& qar, const std::string& fn,
+                          const QarSegmentInfo& qsinfo);
 
 static bool read_qar_segment_info(QarFileVolObj& qar, QarSegmentInfo& qsinfo);
 
@@ -743,6 +743,32 @@ void QarFile::init(const std::string& path_qar, const std::string& mode)
 
 // ----------------------------------------------------
 
+bool operator==(const QarSegmentInfo& qsinfo1, const QarSegmentInfo& qsinfo2)
+{
+  if (qsinfo1.offset != qsinfo2.offset) {
+    return false;
+  } else if (qsinfo1.offset_fn != qsinfo2.offset_fn) {
+    return false;
+  } else if (qsinfo1.offset_data != qsinfo2.offset_data) {
+    return false;
+  } else if (qsinfo1.offset_end != qsinfo2.offset_end) {
+    return false;
+  } else if (qsinfo1.fn_len != qsinfo2.fn_len) {
+    return false;
+  } else if (qsinfo1.info_len != qsinfo2.info_len) {
+    return false;
+  } else if (qsinfo1.data_len != qsinfo2.data_len) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+bool operator!=(const QarSegmentInfo& qsinfo1, const QarSegmentInfo& qsinfo2)
+{
+  return not(qsinfo1 == qsinfo2);
+}
+
 std::string qar_file_multi_vol_suffix(const Long i)
 {
   if (i == 0) {
@@ -754,9 +780,10 @@ std::string qar_file_multi_vol_suffix(const Long i)
   return "";
 }
 
-void register_file(const QarFileVol& qar, const std::string& fn,
+bool register_file(const QarFileVol& qar, const std::string& fn,
                    const QarSegmentInfo& qsinfo)
 {
+  TIMER("register_file");
   if (not has(qar.p->qsinfo_map, fn)) {
     qar.p->fn_list.push_back(fn);
     qar.p->qsinfo_map[fn] = qsinfo;
@@ -773,8 +800,14 @@ void register_file(const QarFileVol& qar, const std::string& fn,
       qar.p->max_offset = qsinfo.offset_end;
     }
   } else {
-    qassert(qar.p->qsinfo_map[fn].offset == qsinfo.offset);
+    if (qar.p->qsinfo_map[fn] != qsinfo) {
+      qwarn(fname + ssprintf(": qar at '%s' wrong info for '%s'",
+                             qar.path().c_str(), fn.c_str()));
+      qar.p->qsinfo_map[fn] = qsinfo;
+      return false;
+    }
   }
+  return true;
 }
 
 bool does_regular_file_exist_qar(const std::string& path)
@@ -963,7 +996,10 @@ QFile read_next(const QarFileVol& qar, std::string& fn)
   if (code != 0) {
     qfile.init();
   }
-  register_file(qar, fn, qsinfo);
+  const bool b = register_file(qar, fn, qsinfo);
+  if (not b) {
+    qfile.init();
+  }
   return qfile;
 }
 
@@ -1135,7 +1171,8 @@ void write_end(const QarFileVol& qar)
   qwrite_data("\n\n", qar.qfile());
   qsinfo.update_offset();
   qassert(qftell(qar.qfile()) == qsinfo.offset_end);
-  register_file(qar, qar.p->current_write_segment_fn, qsinfo);
+  const bool b = register_file(qar, qar.p->current_write_segment_fn, qsinfo);
+  qassert(b);
   qar.p->current_write_segment_fn = "";
   qsinfo.init();
 }
@@ -1492,7 +1529,6 @@ int parse_qar_index(std::vector<Long>& vol_idx_vec,
       qwarn(fname + ": not qar-idx file format.");
       return 33;
     }
-    // register_file
     if (not qsinfo.check_offset()) {
       return 34;
     }
@@ -1551,7 +1587,10 @@ int parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
     const Long i = vol_idx_vec[k];
     const std::string& fn = fn_vec[k];
     const QarSegmentInfo& qsinfo = qsinfo_vec[k];
-    register_file(qar[i], fn, qsinfo);
+    const bool b = register_file(qar[i], fn, qsinfo);
+    if (not b) {
+      return 1;
+    }
   }
   return 0;
 }
