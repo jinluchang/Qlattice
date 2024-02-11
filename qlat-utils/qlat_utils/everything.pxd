@@ -379,7 +379,7 @@ cdef extern from "qlat-utils/qar.h" namespace "qlat":
     int qcopy_file(const std_string& path_src, const std_string& path_dst) except +
     std_vector[std_string] list_qar(const std_string& path) except +
     std_string qcat(const std_string& path) except +
-    std_vector[std_string] properly_truncate_qar_file(const std_string& path) except +
+    std_vector[std_string] properly_truncate_qar_vol_file(const std_string& path) except +
     #
     bool does_regular_file_exist_qar_sync_node(const std_string& fn) except +
     bool does_file_exist_qar_sync_node(const std_string& fn) except +

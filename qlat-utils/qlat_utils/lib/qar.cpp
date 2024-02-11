@@ -275,16 +275,16 @@ std::vector<std::string> show_all_qfile()
 
 std::string show(const QFile& qfile) { return show(*qfile.p); }
 
-void qfclose(QFile& qfile)
-// interface function
-{
-  qfile.close();
-}
-
 void qswap(QFile& qfile1, QFile& qfile2)
 // interface function
 {
   std::swap(qfile1, qfile2);
+}
+
+void qfclose(QFile& qfile)
+// interface function
+{
+  qfile.close();
 }
 
 bool qfeof(const QFile& qfile)
@@ -626,8 +626,8 @@ void QarFileVolObj::init(const std::string& path, const std::string& mode)
   TIMER("QarFileVolObj::init(path,mode)");
   init();
   if (mode == "a") {
-    properly_truncate_qar_file(fn_list, qsinfo_map, directories, max_offset,
-                               path, false, false);
+    properly_truncate_qar_vol_file(fn_list, qsinfo_map, directories, max_offset,
+                                   path, false, false);
     qfile = QFile(path, mode);
   } else {
     init(QFile(path, mode));
@@ -702,47 +702,6 @@ const std::string& QarFileVol::path() const { return p->path(); }
 const std::string& QarFileVol::mode() const { return p->mode(); }
 
 const QFile& QarFileVol::qfile() const { return p->qfile; }
-
-void QarFile::init()
-{
-  std::vector<QarFileVol>& v = *this;
-  qlat::clear(v);
-}
-
-void QarFile::init(const std::string& path_qar, const std::string& mode)
-{
-  init();
-  if (mode == "r") {
-    // maximally 1024 * 1024 * 1024 volumes
-    for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
-      const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
-      if (not does_regular_file_exist_qar(path_qar_v)) {
-        break;
-      }
-      push_back(qfopen(path_qar_v, mode));
-      if (back().null()) {
-        pop_back();
-        break;
-      }
-    }
-    load_qar_index(*this, path_qar + ".idx");
-  } else if (mode == "a") {
-    for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
-      const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
-      if (not does_regular_file_exist_qar(path_qar_v)) {
-        break;
-      }
-      push_back(qfopen(path_qar_v, mode));
-      if (back().null()) {
-        pop_back();
-        break;
-      }
-    }
-    load_qar_index(*this, path_qar + ".idx");
-  } else {
-    qassert(false);
-  }
-}
 
 // ----------------------------------------------------
 
@@ -1221,8 +1180,10 @@ Long write_from_data(const QarFileVol& qar, const std::string& fn,
   return total_bytes;
 }
 
-int truncate_qar_file(const std::string& path,
-                      const std::vector<std::string>& fns_keep)
+// ----------------------------------------------------
+
+int truncate_qar_vol_file(const std::string& path,
+                          const std::vector<std::string>& fns_keep)
 // interface function
 // return nonzero if failed.
 // return 0 if truncated successfully.
@@ -1230,7 +1191,7 @@ int truncate_qar_file(const std::string& path,
 // qar_header.
 // qar_file ready to be appended after this call.
 {
-  TIMER_VERBOSE("truncate_qar_file");
+  TIMER_VERBOSE("truncate_qar_vol_file");
   QarFileVol qar(path, "r");
   if (qar.null()) {
     if (fns_keep.size() == 0) {
@@ -1270,14 +1231,14 @@ int truncate_qar_file(const std::string& path,
   return 0;
 }
 
-void properly_truncate_qar_file(
+void properly_truncate_qar_vol_file(
     std::vector<std::string>& fn_list,
     std::map<std::string, QarSegmentInfo>& qsinfo_map,
     std::set<std::string>& directories, Long& max_offset,
     const std::string& path, const bool is_check_all, const bool is_only_check)
 {
   (void)is_check_all;
-  TIMER_VERBOSE("properly_truncate_qar_file");
+  TIMER_VERBOSE("properly_truncate_qar_vol_file");
   QarFileVol qar(path, "r");
   if (qar.null()) {
     fn_list.clear();
@@ -1299,9 +1260,8 @@ void properly_truncate_qar_file(
   }
 }
 
-std::vector<std::string> properly_truncate_qar_file(const std::string& path,
-                                                    const bool is_check_all,
-                                                    const bool is_only_check)
+std::vector<std::string> properly_truncate_qar_vol_file(
+    const std::string& path, const bool is_check_all, const bool is_only_check)
 // interface function
 // The resulting qar file should at least have qar_header.
 // Should call this function before append.
@@ -1311,9 +1271,52 @@ std::vector<std::string> properly_truncate_qar_file(const std::string& path,
   std::map<std::string, QarSegmentInfo> qsinfo_map;
   std::set<std::string> directories;
   Long max_offset;
-  properly_truncate_qar_file(fn_list, qsinfo_map, directories, max_offset, path,
-                             is_check_all, is_only_check);
+  properly_truncate_qar_vol_file(fn_list, qsinfo_map, directories, max_offset,
+                                 path, is_check_all, is_only_check);
   return fn_list;
+}
+
+// ----------------------------------------------------
+
+void QarFile::init()
+{
+  std::vector<QarFileVol>& v = *this;
+  qlat::clear(v);
+}
+
+void QarFile::init(const std::string& path_qar, const std::string& mode)
+{
+  init();
+  if (mode == "r") {
+    // maximally 1024 * 1024 * 1024 volumes
+    for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
+      const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
+      if (not does_regular_file_exist_qar(path_qar_v)) {
+        break;
+      }
+      push_back(qfopen(path_qar_v, mode));
+      if (back().null()) {
+        pop_back();
+        break;
+      }
+    }
+    load_qar_index(*this, path_qar + ".idx");
+  } else if (mode == "a") {
+    for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
+      const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
+      if (not does_regular_file_exist_qar(path_qar_v)) {
+        break;
+      }
+      push_back(qfopen(path_qar_v, mode));
+      if (back().null()) {
+        pop_back();
+        break;
+      }
+    }
+    load_qar_index(*this, path_qar + ".idx");
+  } else {
+    qassert(false);
+  }
 }
 
 // ----------------------------------------------------

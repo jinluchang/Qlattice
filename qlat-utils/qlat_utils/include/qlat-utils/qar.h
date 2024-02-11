@@ -393,8 +393,6 @@ API inline Cache<std::string, QarFile>& get_qar_read_cache()
 
 // -------------------
 
-// -------------------
-
 bool does_regular_file_exist_qar(const std::string& path);
 
 bool does_file_exist_qar(const std::string& path);
