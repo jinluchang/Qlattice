@@ -189,13 +189,10 @@ Long qread_data_all(std::vector<M>& v, const QFile& qfile)
 {
   TIMER_FLOPS("qread_data_all(v,qfile)");
   qassert(not qfile.null());
-  const Long pos_initial = qftell(qfile);
-  qfseek(qfile, 0, SEEK_END);
-  const Long pos_final = qftell(qfile);
-  const Long data_size = pos_final - pos_initial;
+  const Long data_size = qfile_remaining_size(qfile);
+  qassert(data_size >= 0);
   const Long n = data_size / sizeof(M);
   qassert(data_size == sizeof(M) * n);
-  qfseek(qfile, pos_initial, SEEK_SET);
   v.resize(n);
   const Long data_size_read = qread_data(get_data_char(v), qfile);
   qassert(data_size_read == data_size);
