@@ -27,6 +27,8 @@ static QFile get_qfile_of_data(const QarFileVol& qar,
 
 static std::string qar_file_multi_vol_suffix(const Long i);
 
+static void qar_check_new_vol(QarFile& qar, const Long data_size);
+
 static std::string mk_key_from_qar_path(const std::string& path);
 
 static std::string mk_new_qar_read_cache_key(const QarFile& qar,
@@ -627,7 +629,7 @@ void QarFileVolObj::init(const std::string& path, const std::string& mode)
   init();
   if (mode == "a") {
     properly_truncate_qar_vol_file(fn_list, qsinfo_map, directories, max_offset,
-                                   path, false, false);
+                                   path, false);
     qfile = QFile(path, mode);
   } else {
     init(QFile(path, mode));
@@ -1114,11 +1116,7 @@ Long write_from_qfile(const QarFileVol& qar, const std::string& fn,
 {
   TIMER_FLOPS("write_from_qfile(QarFileVol)");
   qassert(not qar.null());
-  const Long offset_start = qftell(qfile_in);
-  qfseek(qfile_in, 0, SEEK_END);
-  const Long offset_end = qftell(qfile_in);
-  qfseek(qfile_in, offset_start, SEEK_SET);
-  const Long data_len = offset_end - offset_start;
+  const Long data_len = qfile_remaining_size(qfile_in);
   qassert(data_len >= 0);
   QFile qfile_out;
   write_start(qar, fn, info, qfile_out, data_len);
@@ -1134,9 +1132,9 @@ Long write_from_data(const QarFileVol& qar, const std::string& fn,
 // Write content data to qar.
 // NOTE: write_start and write_end can be used for more general usage
 {
-  TIMER_FLOPS("write_from_data");
+  TIMER_FLOPS("write_from_data(QarFileVol)");
   qassert(not qar.null());
-  const Long data_len = get_data_size(data);
+  const Long data_len = data.size();
   qassert(data_len >= 0);
   QFile qfile_out;
   write_start(qar, fn, info, qfile_out, data_len);
@@ -1246,14 +1244,16 @@ std::vector<std::string> properly_truncate_qar_vol_file(
 void QarFile::init()
 {
   path = "";
+  mode = "";
   std::vector<QarFileVol>& v = *this;
-  clear(v);
+  qlat::clear(v);
 }
 
-void QarFile::init(const std::string& path_qar, const std::string& mode)
+void QarFile::init(const std::string& path_, const std::string& mode_)
 {
   init();
-  path = path_qar;
+  path = path_;
+  mode = mode_;
   if (mode == "r") {
     // maximally 1024 * 1024 * 1024 volumes
     for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
@@ -1273,8 +1273,11 @@ void QarFile::init(const std::string& path_qar, const std::string& mode)
   } else if (mode == "a") {
     for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
       const std::string path_qar_v = path + qar_file_multi_vol_suffix(iv);
-      if (not does_file_exist_cache(path_qar_v)) {
-        break;
+      // try to open the first file regardless its existence
+      if (iv != 0) {
+        if (not does_file_exist_cache(path_qar_v)) {
+          break;
+        }
       }
       push_back(qfopen(path_qar_v, mode));
       if (back().null()) {
@@ -1554,7 +1557,8 @@ int parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
   const int ret =
       parse_qar_index(vol_idx_vec, fn_vec, qsinfo_vec, qar_index_content);
   if (ret != 0) {
-    qwarn(fname + ssprintf(": index is not parsed correctly for '%s'.", qar.path().c_str()));
+    qwarn(fname +
+          ssprintf(": index is not correct for '%s'.", qar.path.c_str()));
     return ret;
   }
   qassert(fn_vec.size() == vol_idx_vec.size());
@@ -1641,45 +1645,50 @@ QFile read(const QarFile& qar, const std::string& fn)
   return qfile_in;
 }
 
-Long write_from_qfile(const QarFile& qar, const std::string& fn,
+void qar_check_new_vol(QarFile& qar, const Long data_size)
+// make sure qar.back() is appendable after this call.
+{
+  TIMER("qar_check_new_vol");
+  qassert(qar.mode == "a");
+  qassert(not qar.null());
+  const QarFileVol& qar_v = qar.back();
+  qassert(not qar_v.null());
+  qassert(qar_v.mode() == "a");
+  const Long max_size = get_qar_multi_vol_max_size();
+  if (max_size > 0 and qar_v.p->max_offset + data_size > max_size) {
+    const Long iv = qar.size();
+    const std::string path_qar_v1 = qar.path + qar_file_multi_vol_suffix(iv);
+    QarFileVol qar_v1(path_qar_v1, "a");
+    qassert(not qar_v1.null());
+    qar.push_back(qar_v1);
+  }
+  qassert(not qar.back().null());
+  qassert(qar.back().mode() == "a");
+}
+
+Long write_from_qfile(QarFile& qar, const std::string& fn,
                       const std::string& info, const QFile& qfile_in)
 // interface function
 // Write content (start from the current position) of qfile_in to qar.
 // qfile_in should have definite size.
-// NOTE: write_start and write_end can be used for more general usage
 {
   TIMER_FLOPS("write_from_qfile(QarFile)");
-  qassert(not qar.null());
-  const Long offset_start = qftell(qfile_in);
-  qfseek(qfile_in, 0, SEEK_END);
-  const Long offset_end = qftell(qfile_in);
-  qfseek(qfile_in, offset_start, SEEK_SET);
-  const Long data_len = offset_end - offset_start;
+  const Long data_len = qfile_remaining_size(qfile_in);
   qassert(data_len >= 0);
-  QFile qfile_out;
-  write_start(qar, fn, info, qfile_out, data_len);
-  const Long total_bytes = write_from_qfile(qfile_out, qfile_in);
-  write_end(qar);
-  timer.flops += total_bytes;
-  return total_bytes;
+  qar_check_new_vol(qar, data_len);
+  return write_from_qfile(qar.back(), fn, info, qfile_in);
 }
 
-Long write_from_data(const QarFileVol& qar, const std::string& fn,
+Long write_from_data(QarFile& qar, const std::string& fn,
                      const std::string& info, const Vector<char> data)
 // interface function
 // Write content data to qar.
-// NOTE: write_start and write_end can be used for more general usage
 {
-  TIMER_FLOPS("write_from_data");
-  qassert(not qar.null());
-  const Long data_len = get_data_size(data);
+  TIMER_FLOPS("write_from_data(QarFile)");
+  const Long data_len = data.size();
   qassert(data_len >= 0);
-  QFile qfile_out;
-  write_start(qar, fn, info, qfile_out, data_len);
-  const Long total_bytes = qwrite_data(data, qfile_out);
-  write_end(qar);
-  timer.flops += total_bytes;
-  return total_bytes;
+  qar_check_new_vol(qar, data_len);
+  return write_from_data(qar.back(), fn, info, data);
 }
 
 // ----------------------------------------------------
@@ -1901,8 +1910,8 @@ int qar_create(const std::string& path_qar, const std::string& path_folder_,
       qassert(not qfile_in.null());
       if (not qar.null()) {
         const Long total_size_of_current_vol = qftell(qar.qfile());
-        const Long data_size = qfile_remaining_size(qfile_in);
-        if (get_qar_multi_vol_max_size() >= 0 and
+        const Long data_size = qfile_size(qfile_in);
+        if (get_qar_multi_vol_max_size() > 0 and
             total_size_of_current_vol + data_size >
                 get_qar_multi_vol_max_size()) {
           qar.close();

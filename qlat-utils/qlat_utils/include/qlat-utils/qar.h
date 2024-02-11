@@ -325,18 +325,17 @@ void properly_truncate_qar_vol_file(
     std::vector<std::string>& fn_list,
     std::map<std::string, QarSegmentInfo>& qsinfo_map,
     std::set<std::string>& directories, Long& max_offset,
-    const std::string& path, const bool is_check_all = false,
-    const bool is_only_check = false);
+    const std::string& path, const bool is_only_check = false);
 
 std::vector<std::string> properly_truncate_qar_vol_file(
-    const std::string& path, const bool is_check_all = false,
-    const bool is_only_check = false);
+    const std::string& path, const bool is_only_check = false);
 
 // -------------------
 
 struct API QarFile : std::vector<QarFileVol> {
   // Only for reading or appending
   std::string path;
+  std::string mode;
   //
   QarFile() { init(); }
   QarFile(const std::string& path_qar, const std::string& mode)
@@ -361,6 +360,12 @@ bool has_regular_file(const QarFile& qar, const std::string& fn);
 bool has(const QarFile& qar, const std::string& fn);
 
 QFile read(const QarFile& qar, const std::string& fn);
+
+Long write_from_qfile(QarFile& qar, const std::string& fn,
+                      const std::string& info, const QFile& qfile_in);
+
+Long write_from_data(QarFile& qar, const std::string& fn,
+                     const std::string& info, const Vector<char> data);
 
 // -------------------
 
