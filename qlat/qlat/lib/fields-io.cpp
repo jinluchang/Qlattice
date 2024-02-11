@@ -652,28 +652,37 @@ void ShuffledFieldsWriter::init(const std::string& path_,
                                 const bool is_append)
 // interface function
 {
-  TIMER_VERBOSE("ShuffledFieldsWriter::init")
+  TIMER_VERBOSE("ShuffledFieldsWriter::init(p,sn,app)")
   remove_entry_directory_cache(path_);
   init();
   path = path_;
-  if (is_append and does_file_exist_sync_node(path + "/geon-info.txt")) {
-    new_size_node = shuffled_fields_reader_size_node_info(path);
-    if (new_size_node_ != Coordinate() and new_size_node_ != new_size_node) {
-      qwarn(ssprintf(
-          "ShuffledFieldsWriter::init(p,sn,app): WARNING: new_size_node do "
-          "not match. file=%s argument=%s . Will use the new_size_node from "
-          "the existing file.",
-          show(new_size_node).c_str(), show(new_size_node_).c_str()));
+  new_size_node = new_size_node_;
+  if (is_append) {
+    if (does_file_exist_sync_node(path + "/geon-info.txt")) {
+      new_size_node = shuffled_fields_reader_size_node_info(path);
+      if (new_size_node_ != Coordinate() and new_size_node_ != new_size_node) {
+        qwarn(fname +
+              ssprintf(
+                  ": WARNING: new_size_node do not match. file=%s argument=%s "
+                  ". Will use the new_size_node from the existing file.",
+                  show(new_size_node).c_str(), show(new_size_node_).c_str()));
+      }
+    } else {
+      if (does_file_exist_sync_node(path)) {
+        qwarn(fname + ssprintf(": WARNING: path='%s' exists but "
+                               "'geon-info.txt' is not present in the folder.",
+                               path.c_str()));
+      }
     }
   } else {
-    if (does_file_exist_sync_node(path)) {
-      qwarn(
-          ssprintf("ShuffledFieldsWriter::init(p,sn,app):"
-                   "WARNING: path='%s' exists but 'geon-info.txt' is not "
-                   "present in the folder.",
-                   path.c_str()));
+    if (does_file_exist_sync_node(path + "/geon-info.txt")) {
+      qerr(fname + ssprintf(": cannot open for write '%s/geon-info.txt' exist",
+                            path.c_str()));
     }
-    new_size_node = new_size_node_;
+    if (does_file_exist_sync_node(path)) {
+      qerr(fname +
+           ssprintf(": cannot open for write '%s' exist", path.c_str()));
+    }
   }
   std::vector<GeometryNode> geons = make_dist_io_geons(new_size_node);
   fws.resize(geons.size());
