@@ -774,39 +774,6 @@ bool register_file(const QarFileVol& qar, const std::string& fn,
   return true;
 }
 
-bool does_regular_file_exist_qar(const std::string& path)
-// interface function
-// Note: should only check file, not directory.
-{
-  TIMER("does_regular_file_exist_qar");
-  const std::string key = get_qar_read_cache_key(path);
-  if (key == path) {
-    return true;
-  } else if (key == "") {
-    return false;
-  }
-  qassert(key == path.substr(0, key.size()));
-  const std::string fn = path.substr(key.size());
-  QarFile& qar = get_qar_read_cache()[key];
-  return has_regular_file(qar, fn);
-}
-
-bool does_file_exist_qar(const std::string& path)
-// interface function
-{
-  TIMER("does_file_exist_qar");
-  const std::string key = get_qar_read_cache_key(path);
-  if (key == path) {
-    return true;
-  } else if (key == "") {
-    return false;
-  }
-  qassert(key == path.substr(0, key.size()));
-  const std::string fn = path.substr(key.size());
-  QarFile& qar = get_qar_read_cache()[key];
-  return has(qar, fn);
-}
-
 QFile qfopen(const std::string& path, const std::string& mode)
 // interface function
 // qfile.null() == true if qopen failed.
@@ -1041,8 +1008,9 @@ std::vector<std::string> list(const QarFileVol& qar)
   if (qar.null()) {
     return std::vector<std::string>();
   }
-  qassert(qar.mode() == "r");
-  read_through(qar);
+  if (qar.mode() == "r") {
+    read_through(qar);
+  }
   return qar.p->fn_list;
 }
 
@@ -1144,7 +1112,7 @@ Long write_from_qfile(const QarFileVol& qar, const std::string& fn,
 // qfile_in should have definite size.
 // NOTE: write_start and write_end can be used for more general usage
 {
-  TIMER_FLOPS("write_from_qfile");
+  TIMER_FLOPS("write_from_qfile(QarFileVol)");
   qassert(not qar.null());
   const Long offset_start = qftell(qfile_in);
   qfseek(qfile_in, 0, SEEK_END);
@@ -1233,9 +1201,8 @@ void properly_truncate_qar_vol_file(
     std::vector<std::string>& fn_list,
     std::map<std::string, QarSegmentInfo>& qsinfo_map,
     std::set<std::string>& directories, Long& max_offset,
-    const std::string& path, const bool is_check_all, const bool is_only_check)
+    const std::string& path, const bool is_only_check)
 {
-  (void)is_check_all;
   TIMER_VERBOSE("properly_truncate_qar_vol_file");
   QarFileVol qar(path, "r");
   if (qar.null()) {
@@ -1259,7 +1226,7 @@ void properly_truncate_qar_vol_file(
 }
 
 std::vector<std::string> properly_truncate_qar_vol_file(
-    const std::string& path, const bool is_check_all, const bool is_only_check)
+    const std::string& path, const bool is_only_check)
 // interface function
 // The resulting qar file should at least have qar_header.
 // Should call this function before append.
@@ -1270,7 +1237,7 @@ std::vector<std::string> properly_truncate_qar_vol_file(
   std::set<std::string> directories;
   Long max_offset;
   properly_truncate_qar_vol_file(fn_list, qsinfo_map, directories, max_offset,
-                                 path, is_check_all, is_only_check);
+                                 path, is_only_check);
   return fn_list;
 }
 
@@ -1278,17 +1245,19 @@ std::vector<std::string> properly_truncate_qar_vol_file(
 
 void QarFile::init()
 {
+  path = "";
   std::vector<QarFileVol>& v = *this;
-  qlat::clear(v);
+  clear(v);
 }
 
 void QarFile::init(const std::string& path_qar, const std::string& mode)
 {
   init();
+  path = path_qar;
   if (mode == "r") {
     // maximally 1024 * 1024 * 1024 volumes
     for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
-      const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
+      const std::string path_qar_v = path + qar_file_multi_vol_suffix(iv);
       if (not does_regular_file_exist_qar(path_qar_v)) {
         break;
       }
@@ -1298,11 +1267,13 @@ void QarFile::init(const std::string& path_qar, const std::string& mode)
         break;
       }
     }
-    load_qar_index(*this, path_qar + ".idx");
+    if (does_regular_file_exist_qar(path + ".idx")) {
+      load_qar_index(*this, path + ".idx");
+    }
   } else if (mode == "a") {
     for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
-      const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
-      if (not does_regular_file_exist_qar(path_qar_v)) {
+      const std::string path_qar_v = path + qar_file_multi_vol_suffix(iv);
+      if (not does_file_exist_cache(path_qar_v)) {
         break;
       }
       push_back(qfopen(path_qar_v, mode));
@@ -1311,7 +1282,6 @@ void QarFile::init(const std::string& path_qar, const std::string& mode)
         break;
       }
     }
-    load_qar_index(*this, path_qar + ".idx");
   } else {
     qassert(false);
   }
@@ -1603,7 +1573,11 @@ int load_qar_index(const QarFile& qar, const std::string& fn)
 {
   TIMER_VERBOSE("load_qar_index");
   const std::string qar_index_content = qcat(fn);
-  return parse_qar_index(qar, qar_index_content);
+  if (qar_index_content == "") {
+    return 1;
+  } else {
+    return parse_qar_index(qar, qar_index_content);
+  }
 }
 
 // ----------------------------------------------------
@@ -1618,36 +1592,249 @@ std::vector<std::string> list(const QarFile& qar)
   for (Long i = 0; i < (Long)qar.size(); ++i) {
     const QarFileVol& qar_v = qar[i];
     qassert(not qar_v.null());
-    qassert(qar_v.mode() == "r");
     vector_append(fn_list, list(qar_v));
   }
   return fn_list;
 }
 
-std::string qcat(const std::string& path)
+bool has_regular_file(const QarFile& qar, const std::string& fn)
+// interface function
 {
-  TIMER("qcat");
-  QFile qfile = qfopen(path, "r");
-  if (qfile.null()) {
-    return "";
+  for (Long i = 0; i < (Long)qar.size(); ++i) {
+    const QarFileVol& qar_v = qar[i];
+    qassert(not qar_v.null());
+    qassert(qar_v.mode() == "r");
+    if (has_regular_file(qar_v, fn)) {
+      return true;
+    }
   }
-  qfseek(qfile, 0, SEEK_END);
-  const Long length = qftell(qfile);
-  qfseek(qfile, 0, SEEK_SET);
-  std::string ret(length, 0);
-  const Long length_actual = qfread(&ret[0], 1, length, qfile);
-  qassert(length == length_actual);
-  qfclose(qfile);
-  return ret;
+  return false;
 }
 
-std::vector<std::string> qgetlines(const std::string& fn)
+bool has(const QarFile& qar, const std::string& fn)
+// interface function
 {
-  QFile qfile = qfopen(fn, "r");
-  qassert(not qfile.null());
-  std::vector<std::string> lines = qgetlines(qfile);
-  qfclose(qfile);
-  return lines;
+  for (Long i = 0; i < (Long)qar.size(); ++i) {
+    const QarFileVol& qar_v = qar[i];
+    qassert(not qar_v.null());
+    qassert(qar_v.mode() == "r");
+    if (has(qar_v, fn)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+QFile read(const QarFile& qar, const std::string& fn)
+// interface function
+{
+  QFile qfile_in;
+  for (Long i = 0; i < (Long)qar.size(); ++i) {
+    const QarFileVol& qar_v = qar[i];
+    qassert(not qar_v.null());
+    qassert(qar_v.mode() == "r");
+    qfile_in = read(qar_v, fn);
+    if (not qfile_in.null()) {
+      return qfile_in;
+    }
+  }
+  return qfile_in;
+}
+
+Long write_from_qfile(const QarFile& qar, const std::string& fn,
+                      const std::string& info, const QFile& qfile_in)
+// interface function
+// Write content (start from the current position) of qfile_in to qar.
+// qfile_in should have definite size.
+// NOTE: write_start and write_end can be used for more general usage
+{
+  TIMER_FLOPS("write_from_qfile(QarFile)");
+  qassert(not qar.null());
+  const Long offset_start = qftell(qfile_in);
+  qfseek(qfile_in, 0, SEEK_END);
+  const Long offset_end = qftell(qfile_in);
+  qfseek(qfile_in, offset_start, SEEK_SET);
+  const Long data_len = offset_end - offset_start;
+  qassert(data_len >= 0);
+  QFile qfile_out;
+  write_start(qar, fn, info, qfile_out, data_len);
+  const Long total_bytes = write_from_qfile(qfile_out, qfile_in);
+  write_end(qar);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+Long write_from_data(const QarFileVol& qar, const std::string& fn,
+                     const std::string& info, const Vector<char> data)
+// interface function
+// Write content data to qar.
+// NOTE: write_start and write_end can be used for more general usage
+{
+  TIMER_FLOPS("write_from_data");
+  qassert(not qar.null());
+  const Long data_len = get_data_size(data);
+  qassert(data_len >= 0);
+  QFile qfile_out;
+  write_start(qar, fn, info, qfile_out, data_len);
+  const Long total_bytes = qwrite_data(data, qfile_out);
+  write_end(qar);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+// ----------------------------------------------------
+
+std::string mk_key_from_qar_path(const std::string& path)
+{
+  if (path.size() <= 4) {
+    return "";
+  }
+  if (0 != path.compare(path.size() - 4, 4, ".qar")) {
+    return "";
+  }
+  const std::string key = path.substr(0, path.size() - 4) + "/";
+  return key;
+}
+
+std::string mk_new_qar_read_cache_key(const QarFile& qar,
+                                      const std::string& key,
+                                      const std::string& path)
+// (1) Find the first new qar file in qar that match the prefix of path and
+// register the new qar file in qar_read_cache.
+// (2) If qar not found, return key.
+// (3) If path exists in the qar, return the new key of the new qar.
+// (4) If not found, repeat the procedure for the new qar.
+{
+  Cache<std::string, QarFile>& cache = get_qar_read_cache();
+  std::string path_dir = remove_trailing_slashes(path);
+  const std::string pathd = path_dir + "/";
+  while (true) {
+    if (path_dir == "/" or path_dir == ".") {
+      return key;
+    }
+    if (has_regular_file(qar, path_dir + ".qar")) {
+      const std::string key_new = path_dir + "/";
+      qassert(pathd.substr(0, key_new.size()) == key_new);
+      QarFile& qar_new = cache[key + key_new];
+      if (qar_new.null()) {
+        qar_new.init(key + path_dir + ".qar", "r");
+      }
+      qassert(not qar_new.null());
+      const std::string path_new = pathd.substr(key_new.size());
+      if (has(qar_new, path_new)) {
+        return key + key_new;
+      } else {
+        return mk_new_qar_read_cache_key(qar_new, key + key_new, path_new);
+      }
+    }
+    path_dir = dirname(path_dir);
+  }
+  qassert(false);
+  return "";
+}
+
+std::string mk_new_qar_read_cache_key(const std::string& path)
+// (1) Find first qar file that match the prefix of path and register the qar
+// file in qar_read_cache.
+// (2) If qar not found, return "".
+// (2) If path exists in the qar, return the key of qar.
+// (4) If not found, find qar within qar recursively, return the key of the
+// closest qar.
+{
+  Cache<std::string, QarFile>& cache = get_qar_read_cache();
+  std::string path_dir = remove_trailing_slashes(path);
+  const std::string pathd = path_dir + "/";
+  while (true) {
+    if (path_dir == "/" or path_dir == ".") {
+      return "";
+    }
+    if (does_file_exist(path_dir + ".qar")) {
+      const std::string key = path_dir + "/";
+      qassert(pathd.substr(0, key.size()) == key);
+      qassert(not cache.has(key));
+      QarFile& qar = cache[key];
+      qar.init(path_dir + ".qar", "r");
+      qassert(not qar.null());
+      const std::string path_new = pathd.substr(key.size());
+      if (has(qar, path_new)) {
+        return key;
+      } else {
+        return mk_new_qar_read_cache_key(qar, key, path_new);
+      }
+    }
+    path_dir = dirname(path_dir);
+  }
+  qassert(false);
+  return "";
+}
+
+std::string get_qar_read_cache_key(const std::string& path)
+// return key of get_qar_read_cache() that may contain path
+// return empty string if no cached key is found.
+// Note: key should end with '/'.
+// Steps:
+// (1) Check if path exists with does_file_exist_cache. If exists, return path.
+// (2) If not found, search in Qar Cache. If found matching key, try to find
+// within this qar file recursively. Return the key of the closest match.
+// (3) If does not exist, try to find qar file yet to be in cache recursively.
+// Return values: valid key: valid key for a qar found. (qar may not actually
+// contain path).
+// "": no key is found and path does not exist.
+// path: path exist.
+{
+  TIMER("get_qar_read_cache_key");
+  if (does_file_exist_cache(path)) {
+    return path;
+  }
+  Cache<std::string, QarFile>& cache = get_qar_read_cache();
+  for (auto it = cache.m.cbegin(); it != cache.m.cend(); ++it) {
+    const std::string& key = it->first;
+    if (key == path.substr(0, key.size())) {
+      const QarFile& qar = cache[key];
+      const std::string path_new = path.substr(key.size());
+      if (has(qar, path_new)) {
+        return key;
+      } else {
+        return mk_new_qar_read_cache_key(qar, key, path_new);
+      }
+    }
+  }
+  return mk_new_qar_read_cache_key(path);
+}
+
+// ----------------------------------------------------
+
+bool does_regular_file_exist_qar(const std::string& path)
+// interface function
+// Note: should only check file, not directory.
+{
+  TIMER("does_regular_file_exist_qar");
+  const std::string key = get_qar_read_cache_key(path);
+  if (key == path) {
+    return true;
+  } else if (key == "") {
+    return false;
+  }
+  qassert(key == path.substr(0, key.size()));
+  const std::string fn = path.substr(key.size());
+  QarFile& qar = get_qar_read_cache()[key];
+  return has_regular_file(qar, fn);
+}
+
+bool does_file_exist_qar(const std::string& path)
+// interface function
+{
+  TIMER("does_file_exist_qar");
+  const std::string key = get_qar_read_cache_key(path);
+  if (key == path) {
+    return true;
+  } else if (key == "") {
+    return false;
+  }
+  qassert(key == path.substr(0, key.size()));
+  const std::string fn = path.substr(key.size());
+  QarFile& qar = get_qar_read_cache()[key];
+  return has(qar, fn);
 }
 
 int qar_build_index(const std::string& path_qar)
@@ -1844,18 +2031,6 @@ int qcopy_file(const std::string& path_src, const std::string& path_dst)
   return 0;
 }
 
-std::string mk_key_from_qar_path(const std::string& path)
-{
-  if (path.size() <= 4) {
-    return "";
-  }
-  if (0 != path.compare(path.size() - 4, 4, ".qar")) {
-    return "";
-  }
-  const std::string key = path.substr(0, path.size() - 4) + "/";
-  return key;
-}
-
 std::vector<std::string> list_qar(const std::string& path)
 {
   if (not does_file_exist_qar(path)) {
@@ -1876,154 +2051,30 @@ std::vector<std::string> list_qar(const std::string& path)
   }
 }
 
-bool has_regular_file(const QarFile& qar, const std::string& fn)
-// interface function
+std::string qcat(const std::string& path)
 {
-  for (Long i = 0; i < (Long)qar.size(); ++i) {
-    const QarFileVol& qar_v = qar[i];
-    qassert(not qar_v.null());
-    qassert(qar_v.mode() == "r");
-    if (has_regular_file(qar_v, fn)) {
-      return true;
-    }
+  TIMER("qcat");
+  QFile qfile = qfopen(path, "r");
+  if (qfile.null()) {
+    return "";
   }
-  return false;
+  qfseek(qfile, 0, SEEK_END);
+  const Long length = qftell(qfile);
+  qfseek(qfile, 0, SEEK_SET);
+  std::string ret(length, 0);
+  const Long length_actual = qfread(&ret[0], 1, length, qfile);
+  qassert(length == length_actual);
+  qfclose(qfile);
+  return ret;
 }
 
-bool has(const QarFile& qar, const std::string& fn)
-// interface function
+std::vector<std::string> qgetlines(const std::string& fn)
 {
-  for (Long i = 0; i < (Long)qar.size(); ++i) {
-    const QarFileVol& qar_v = qar[i];
-    qassert(not qar_v.null());
-    qassert(qar_v.mode() == "r");
-    if (has(qar_v, fn)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-QFile read(const QarFile& qar, const std::string& fn)
-// interface function
-{
-  QFile qfile_in;
-  for (Long i = 0; i < (Long)qar.size(); ++i) {
-    const QarFileVol& qar_v = qar[i];
-    qassert(not qar_v.null());
-    qassert(qar_v.mode() == "r");
-    qfile_in = read(qar_v, fn);
-    if (not qfile_in.null()) {
-      return qfile_in;
-    }
-  }
-  return qfile_in;
-}
-
-std::string mk_new_qar_read_cache_key(const QarFile& qar,
-                                      const std::string& key,
-                                      const std::string& path)
-// (1) Find the first new qar file in qar that match the prefix of path and
-// register the new qar file in qar_read_cache.
-// (2) If qar not found, return key.
-// (3) If path exists in the qar, return the new key of the new qar.
-// (4) If not found, repeat the procedure for the new qar.
-{
-  Cache<std::string, QarFile>& cache = get_qar_read_cache();
-  std::string path_dir = remove_trailing_slashes(path);
-  const std::string pathd = path_dir + "/";
-  while (true) {
-    if (path_dir == "/" or path_dir == ".") {
-      return key;
-    }
-    if (has_regular_file(qar, path_dir + ".qar")) {
-      const std::string key_new = path_dir + "/";
-      qassert(pathd.substr(0, key_new.size()) == key_new);
-      QarFile& qar_new = cache[key + key_new];
-      if (qar_new.null()) {
-        qar_new.init(key + path_dir + ".qar", "r");
-      }
-      qassert(not qar_new.null());
-      const std::string path_new = pathd.substr(key_new.size());
-      if (has(qar_new, path_new)) {
-        return key + key_new;
-      } else {
-        return mk_new_qar_read_cache_key(qar_new, key + key_new, path_new);
-      }
-    }
-    path_dir = dirname(path_dir);
-  }
-  qassert(false);
-  return "";
-}
-
-std::string mk_new_qar_read_cache_key(const std::string& path)
-// (1) Find first qar file that match the prefix of path and register the qar
-// file in qar_read_cache.
-// (2) If qar not found, return "".
-// (2) If path exists in the qar, return the key of qar.
-// (4) If not found, find qar within qar recursively, return the key of the
-// closest qar.
-{
-  Cache<std::string, QarFile>& cache = get_qar_read_cache();
-  std::string path_dir = remove_trailing_slashes(path);
-  const std::string pathd = path_dir + "/";
-  while (true) {
-    if (path_dir == "/" or path_dir == ".") {
-      return "";
-    }
-    if (does_file_exist(path_dir + ".qar")) {
-      const std::string key = path_dir + "/";
-      qassert(pathd.substr(0, key.size()) == key);
-      qassert(not cache.has(key));
-      QarFile& qar = cache[key];
-      qar.init(path_dir + ".qar", "r");
-      qassert(not qar.null());
-      const std::string path_new = pathd.substr(key.size());
-      if (has(qar, path_new)) {
-        return key;
-      } else {
-        return mk_new_qar_read_cache_key(qar, key, path_new);
-      }
-    }
-    path_dir = dirname(path_dir);
-  }
-  qassert(false);
-  return "";
-}
-
-std::string get_qar_read_cache_key(const std::string& path)
-// return key of get_qar_read_cache() that may contain path
-// return empty string if no cached key is found.
-// Note: key should end with '/'.
-// Steps:
-// (1) Check if path exists with does_file_exist_cache. If exists, return path.
-// (2) If not found, search in Qar Cache. If found matching key, try to find
-// within this qar file recursively. Return the key of the closest match.
-// (3) If does not exist, try to find qar file yet to be in cache recursively.
-// Return values: valid key: valid key for a qar found. (qar may not actually
-// contain path).
-// "": no key is found and path does not exist.
-// path: path exist.
-{
-  TIMER("get_qar_read_cache_key");
-  if (does_file_exist_cache(path)) {
-    return path;
-  }
-  Cache<std::string, QarFile>& cache = get_qar_read_cache();
-  for (auto it = cache.m.cbegin(); it != cache.m.cend(); ++it) {
-    const std::string& key = it->first;
-    if (key == path.substr(0, key.size())) {
-      const QarFile& qar = cache[key];
-      const std::string path_new = path.substr(key.size());
-      if (has(qar, path_new)) {
-        return key;
-      } else {
-        return mk_new_qar_read_cache_key(qar, key, path_new);
-      }
-    }
-  }
-  return mk_new_qar_read_cache_key(path);
+  QFile qfile = qfopen(fn, "r");
+  qassert(not qfile.null());
+  std::vector<std::string> lines = qgetlines(qfile);
+  qfclose(qfile);
+  return lines;
 }
 
 int qtouch(const std::string& path)

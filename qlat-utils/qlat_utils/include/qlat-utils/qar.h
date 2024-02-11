@@ -335,7 +335,9 @@ std::vector<std::string> properly_truncate_qar_vol_file(
 // -------------------
 
 struct API QarFile : std::vector<QarFileVol> {
-  // Only for reading
+  // Only for reading or appending
+  std::string path;
+  //
   QarFile() { init(); }
   QarFile(const std::string& path_qar, const std::string& mode)
   {
