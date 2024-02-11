@@ -1565,6 +1565,7 @@ int parse_qar_index(std::vector<Long>& vol_idx_vec,
     if (idx_current != j) {
       return 38;
     }
+    idx_current += 1;
   }
   return 0;
 }
@@ -1583,6 +1584,7 @@ int parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
   const int ret =
       parse_qar_index(vol_idx_vec, fn_vec, qsinfo_vec, qar_index_content);
   if (ret != 0) {
+    qwarn(fname + ssprintf(": index is not parsed correctly for '%s'.", qar.path().c_str()));
     return ret;
   }
   qassert(fn_vec.size() == vol_idx_vec.size());
