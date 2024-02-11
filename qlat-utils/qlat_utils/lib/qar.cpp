@@ -11,7 +11,9 @@ static void add_qfile(const QFile& qfile);
 
 static void remove_qfile(const QFileObj& qfile_internal);
 
-static std::string qar_file_multi_vol_suffix(const Long i);
+static bool operator==(const QarSegmentInfo& qsinfo1, const QarSegmentInfo& qsinfo2);
+
+static bool operator!=(const QarSegmentInfo& qsinfo1, const QarSegmentInfo& qsinfo2);
 
 static bool register_file(const QarFileVol& qar, const std::string& fn,
                           const QarSegmentInfo& qsinfo);
@@ -22,6 +24,8 @@ static std::string read_fn(const QarFileVol& qar, const QarSegmentInfo& qsinfo);
 
 static QFile get_qfile_of_data(const QarFileVol& qar,
                                const QarSegmentInfo& qsinfo);
+
+static std::string qar_file_multi_vol_suffix(const Long i);
 
 static std::string mk_key_from_qar_path(const std::string& path);
 

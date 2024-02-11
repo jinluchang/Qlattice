@@ -122,9 +122,11 @@ void qswap(QFileObj& qfile1, QFileObj& qfile2);
 
 std::string show(const QFile& qfile);
 
-void qfclose(QFile& qfile);
-
 void qswap(QFile& qfile1, QFile& qfile2);
+
+QFile qfopen(const std::string& path, const std::string& mode);
+
+void qfclose(QFile& qfile);
 
 bool qfeof(const QFile& qfile);
 
@@ -133,6 +135,12 @@ Long qftell(const QFile& qfile);
 int qfflush(const QFile& qfile);
 
 int qfseek(const QFile& qfile, const Long q_offset, const int whence);
+
+Long qfile_size(const QFile& qfile);
+
+Long qfile_remaining_size(const QFile& qfile);
+
+// ---------------------
 
 Long qfread(void* ptr, const Long size, const Long nmemb, const QFile& qfile);
 
@@ -150,10 +158,6 @@ Long qfprintf(const QFile& qfile, const char* fmt, ...);
 std::string qgetline(const QFile& qfile);
 
 std::vector<std::string> qgetlines(const QFile& qfile);
-
-Long qfile_size(const QFile& qfile);
-
-Long qfile_remaining_size(const QFile& qfile);
 
 template <class M>
 Long qwrite_data(const Vector<M>& v, const QFile& qfile)
@@ -288,10 +292,6 @@ struct QarFileVolObj {
 
 // -------------------
 
-bool operator==(const QarSegmentInfo& qsinfo1, const QarSegmentInfo& qsinfo2);
-
-bool operator!=(const QarSegmentInfo& qsinfo1, const QarSegmentInfo& qsinfo2);
-
 QFile read_next(const QarFileVol& qar, std::string& fn);
 
 void read_through(const QarFileVol& qar);
@@ -319,77 +319,21 @@ Long write_from_qfile(const QarFileVol& qar, const std::string& fn,
 Long write_from_data(const QarFileVol& qar, const std::string& fn,
                      const std::string& info, const Vector<char> data);
 
-int truncate_qar_file(const std::string& path,
-                      const std::vector<std::string>& fns_keep);
+// -------------------
 
-void properly_truncate_qar_file(
+int truncate_qar_vol_file(const std::string& path,
+                          const std::vector<std::string>& fns_keep);
+
+void properly_truncate_qar_vol_file(
     std::vector<std::string>& fn_list,
     std::map<std::string, QarSegmentInfo>& qsinfo_map,
     std::set<std::string>& directories, Long& max_offset,
     const std::string& path, const bool is_check_all = false,
     const bool is_only_check = false);
 
-std::vector<std::string> properly_truncate_qar_file(
+std::vector<std::string> properly_truncate_qar_vol_file(
     const std::string& path, const bool is_check_all = false,
     const bool is_only_check = false);
-
-// -------------------
-
-bool does_regular_file_exist_qar(const std::string& path);
-
-bool does_file_exist_qar(const std::string& path);
-
-QFile qfopen(const std::string& path, const std::string& mode);
-
-std::string qcat(const std::string& path);
-
-int qar_build_index(const std::string& path_qar);
-
-int qar_create(const std::string& path_qar, const std::string& path_folder_,
-               const bool is_remove_folder_after = false);
-
-int qar_extract(const std::string& path_qar, const std::string& path_folder_,
-                const bool is_remove_qar_after = false);
-
-int qcopy_file(const std::string& path_src, const std::string& path_dst);
-
-std::vector<std::string> list_qar(const std::string& path);
-
-DataTable qload_datatable_serial(QFile& qfile);
-
-DataTable qload_datatable_par(QFile& qfile);
-
-DataTable qload_datatable_serial(const std::string& path);
-
-DataTable qload_datatable_par(const std::string& path);
-
-DataTable qload_datatable(const std::string& path, const bool is_par = false);
-
-int qtouch(const std::string& path);
-
-int qtouch(const std::string& path, const std::string& content);
-
-int qtouch(const std::string& path, const std::vector<std::string>& content);
-
-int qappend(const std::string& path, const std::string& content);
-
-// -------------------
-
-crc32_t compute_crc32(QFile& qfile);
-
-crc32_t compute_crc32(const std::string& path);
-
-std::vector<std::pair<std::string, crc32_t>> check_all_files_crc32(
-    const std::string& path);
-
-void check_all_files_crc32_info(const std::string& path);
-
-std::string show_file_crc32(const std::pair<std::string, crc32_t>& fcrc);
-
-std::string show_files_crc32(
-    const std::vector<std::pair<std::string, crc32_t>>& fcrcs);
-
-std::pair<std::string, crc32_t> check_file_crc32(const std::string& fn);
 
 // -------------------
 
@@ -449,18 +393,65 @@ API inline Cache<std::string, QarFile>& get_qar_read_cache()
 
 // -------------------
 
+// -------------------
+
+bool does_regular_file_exist_qar(const std::string& path);
+
+bool does_file_exist_qar(const std::string& path);
+
+int qar_build_index(const std::string& path_qar);
+
+int qar_create(const std::string& path_qar, const std::string& path_folder_,
+               const bool is_remove_folder_after = false);
+
+int qar_extract(const std::string& path_qar, const std::string& path_folder_,
+                const bool is_remove_qar_after = false);
+
+int qcopy_file(const std::string& path_src, const std::string& path_dst);
+
+std::vector<std::string> list_qar(const std::string& path);
+
+std::string qcat(const std::string& path);
+
 std::vector<std::string> qgetlines(const std::string& fn);
 
-std::string qcat_info(const std::string& path);
+int qtouch(const std::string& path);
 
-int qtouch_info(const std::string& path);
+int qtouch(const std::string& path, const std::string& content);
 
-int qtouch_info(const std::string& path, const std::string& content);
+int qtouch(const std::string& path, const std::vector<std::string>& content);
 
-int qtouch_info(const std::string& path,
-                const std::vector<std::string>& content);
+int qappend(const std::string& path, const std::string& content);
 
-int qappend_info(const std::string& path, const std::string& content);
+DataTable qload_datatable_serial(QFile& qfile);
+
+DataTable qload_datatable_par(QFile& qfile);
+
+DataTable qload_datatable_serial(const std::string& path);
+
+DataTable qload_datatable_par(const std::string& path);
+
+DataTable qload_datatable(const std::string& path, const bool is_par = false);
+
+// -------------------
+
+crc32_t compute_crc32(QFile& qfile);
+
+crc32_t compute_crc32(const std::string& path);
+
+std::pair<std::string, crc32_t> check_file_crc32(const std::string& fn);
+
+std::vector<std::pair<std::string, crc32_t>> check_all_files_crc32(
+    const std::string& path);
+
+std::string show_file_crc32(const std::pair<std::string, crc32_t>& fcrc);
+
+std::string show_files_crc32(
+    const std::vector<std::pair<std::string, crc32_t>>& fcrcs);
+
+void check_all_files_crc32_info(const std::string& path);
+
+// -------------------
 
 int qar_build_index_info(const std::string& path_qar);
 
@@ -473,6 +464,17 @@ int qar_extract_info(const std::string& path_qar,
                      const bool is_remove_qar_after = false);
 
 int qcopy_file_info(const std::string& path_src, const std::string& path_dst);
+
+std::string qcat_info(const std::string& path);
+
+int qtouch_info(const std::string& path);
+
+int qtouch_info(const std::string& path, const std::string& content);
+
+int qtouch_info(const std::string& path,
+                const std::vector<std::string>& content);
+
+int qappend_info(const std::string& path, const std::string& content);
 
 // -------------------
 
