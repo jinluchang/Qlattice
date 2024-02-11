@@ -220,9 +220,7 @@ struct API QarFileVol {
   void init(const std::string& path, const std::string& mode);
   void init(const QFile& qfile);
   //
-  void close();  // may not close the underling file, only release the pointer
-                 // from this QarFileVol
-  //
+  void close();
   bool null() const { return p == nullptr; }
   //
   const std::string& path() const;
@@ -346,7 +344,7 @@ struct API QarFile : std::vector<QarFileVol> {
   void init();
   void init(const std::string& path_qar, const std::string& mode);
   //
-  void close() { init(); }
+  void close();
   //
   bool null() const { return size() == 0; }
 };

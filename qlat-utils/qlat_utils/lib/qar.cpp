@@ -646,7 +646,7 @@ void QarFileVolObj::init(const QFile& qfile_)
   }
   qassert(qftell(qfile) == 0);
   if (mode() == "w" or mode() == "a") {
-    // write from scratch even if mode is "a" (perhaps inherited from mother
+    // write from scratch even if mode is "a" (perhaps inherited from parent
     // qfile)
     qfwrite(qar_header.data(), qar_header.size(), 1, qfile);
   } else if (mode() == "r") {
@@ -1202,24 +1202,29 @@ void properly_truncate_qar_vol_file(
     const std::string& path, const bool is_only_check)
 {
   TIMER_VERBOSE("properly_truncate_qar_vol_file");
-  QarFileVol qar(path, "r");
-  if (qar.null()) {
+  if (not does_file_exist_cache(path)) {
     fn_list.clear();
     qsinfo_map.clear();
     directories.clear();
-    qar.init(path, "w");
+    QarFileVol qar(path, "w");
     qar.close();
     return;
   }
+  QarFileVol qar(path, "r");
+  qassert(not qar.null());
   read_through(qar);
   fn_list = qar.p->fn_list;
   qsinfo_map = qar.p->qsinfo_map;
   directories = qar.p->directories;
   max_offset = qar.p->max_offset;
+  const Long file_size = qfile_size(qar.p->qfile);
+  qassert(file_size >= max_offset);
   qar.close();
   if (not is_only_check) {
-    const int b = qtruncate(path, max_offset);
-    qassert(b == 0);
+    if (file_size > max_offset) {
+      const int b = qtruncate(path, max_offset);
+      qassert(b == 0);
+    }
   }
 }
 
@@ -1288,6 +1293,15 @@ void QarFile::init(const std::string& path_, const std::string& mode_)
   } else {
     qassert(false);
   }
+}
+
+void QarFile::close()
+{
+  QarFile& qar = *this;
+  for (int i = 0; i < (int)qar.size(); ++i) {
+    qar[i].close();
+  }
+  init();
 }
 
 // ----------------------------------------------------
@@ -1813,39 +1827,6 @@ std::string get_qar_read_cache_key(const std::string& path)
 
 // ----------------------------------------------------
 
-bool does_regular_file_exist_qar(const std::string& path)
-// interface function
-// Note: should only check file, not directory.
-{
-  TIMER("does_regular_file_exist_qar");
-  const std::string key = get_qar_read_cache_key(path);
-  if (key == path) {
-    return true;
-  } else if (key == "") {
-    return false;
-  }
-  qassert(key == path.substr(0, key.size()));
-  const std::string fn = path.substr(key.size());
-  QarFile& qar = get_qar_read_cache()[key];
-  return has_regular_file(qar, fn);
-}
-
-bool does_file_exist_qar(const std::string& path)
-// interface function
-{
-  TIMER("does_file_exist_qar");
-  const std::string key = get_qar_read_cache_key(path);
-  if (key == path) {
-    return true;
-  } else if (key == "") {
-    return false;
-  }
-  qassert(key == path.substr(0, key.size()));
-  const std::string fn = path.substr(key.size());
-  QarFile& qar = get_qar_read_cache()[key];
-  return has(qar, fn);
-}
-
 int qar_build_index(const std::string& path_qar)
 {
   TIMER_VERBOSE("qar_build_index");
@@ -1899,41 +1880,21 @@ int qar_create(const std::string& path_qar, const std::string& path_folder_,
       reg_files.push_back(path);
     }
   }
-  Long num_vol;
-  {
-    Long iv = 0;
-    QarFileVol qar;
-    for (Long i = 0; i < (Long)reg_files.size(); ++i) {
-      const std::string path = reg_files[i];
-      const std::string fn = path.substr(path_prefix_len);
-      QFile qfile_in(path, "r");
-      qassert(not qfile_in.null());
-      if (not qar.null()) {
-        const Long total_size_of_current_vol = qftell(qar.qfile());
-        const Long data_size = qfile_size(qfile_in);
-        if (get_qar_multi_vol_max_size() > 0 and
-            total_size_of_current_vol + data_size >
-                get_qar_multi_vol_max_size()) {
-          qar.close();
-          iv += 1;
-        }
-      }
-      const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
-      displayln(1, fname + ssprintf(": '%s' '%s'/'%s' %ld/%ld.",
-                                    path_qar_v.c_str(), path_prefix.c_str(),
-                                    fn.c_str(), i + 1, reg_files.size()));
-      if (qar.null()) {
-        qar.init(path_qar_v + ".acc", "w");
-        qassert(not qar.null());
-      }
-      timer.flops += write_from_qfile(qar, fn, "", qfile_in);
-    }
-    qar.close();
-    num_vol = iv + 1;
+  QarFile qar(path_qar + ".acc", "a");
+  for (Long i = 0; i < (Long)reg_files.size(); ++i) {
+    const std::string path = reg_files[i];
+    const std::string fn = path.substr(path_prefix_len);
+    QFile qfile_in(path, "r");
+    qassert(not qfile_in.null());
+    write_from_qfile(qar, fn, "", qfile_in);
   }
+  const Long num_vol = qar.size();
+  qar.close();
   for (Long iv = 0; iv < num_vol; ++iv) {
+    const std::string path_qar_v_acc =
+        path_qar + ".acc" + qar_file_multi_vol_suffix(iv);
     const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
-    qrename(path_qar_v + ".acc", path_qar_v);
+    qrename(path_qar_v_acc, path_qar_v);
   }
   qar_build_index(path_qar);
   if (is_remove_folder_after) {
@@ -2038,6 +1999,41 @@ int qcopy_file(const std::string& path_src, const std::string& path_dst)
   qfclose(qfile_in);
   qrename(path_dst + ".acc", path_dst);
   return 0;
+}
+
+// ----------------------------------------------------
+
+bool does_regular_file_exist_qar(const std::string& path)
+// interface function
+// Note: should only check file, not directory.
+{
+  TIMER("does_regular_file_exist_qar");
+  const std::string key = get_qar_read_cache_key(path);
+  if (key == path) {
+    return true;
+  } else if (key == "") {
+    return false;
+  }
+  qassert(key == path.substr(0, key.size()));
+  const std::string fn = path.substr(key.size());
+  QarFile& qar = get_qar_read_cache()[key];
+  return has_regular_file(qar, fn);
+}
+
+bool does_file_exist_qar(const std::string& path)
+// interface function
+{
+  TIMER("does_file_exist_qar");
+  const std::string key = get_qar_read_cache_key(path);
+  if (key == path) {
+    return true;
+  } else if (key == "") {
+    return false;
+  }
+  qassert(key == path.substr(0, key.size()));
+  const std::string fn = path.substr(key.size());
+  QarFile& qar = get_qar_read_cache()[key];
+  return has(qar, fn);
 }
 
 std::vector<std::string> list_qar(const std::string& path)
@@ -2319,6 +2315,56 @@ std::pair<std::string, crc32_t> check_file_crc32(const std::string& fn)
 
 // -------------------
 
+int qar_build_index_info(const std::string& path_qar)
+{
+  TIMER_VERBOSE("qar_build_index_info")
+  if (0 == get_id_node()) {
+    return qar_build_index(path_qar);
+  } else {
+    remove_entry_directory_cache(path_qar + ".idx");
+    return 0;
+  }
+}
+
+int qar_create_info(const std::string& path_qar,
+                    const std::string& path_folder_,
+                    const bool is_remove_folder_after)
+{
+  if (0 == get_id_node()) {
+    return qar_create(path_qar, path_folder_, is_remove_folder_after);
+  } else {
+    if (is_remove_folder_after) {
+      remove_entry_directory_cache(path_folder_);
+    }
+    return 0;
+  }
+}
+
+int qar_extract_info(const std::string& path_qar,
+                     const std::string& path_folder_,
+                     const bool is_remove_qar_after)
+{
+  if (0 == get_id_node()) {
+    return qar_extract(path_qar, path_folder_, is_remove_qar_after);
+  } else {
+    remove_entry_directory_cache(path_folder_);
+    return 0;
+  }
+}
+
+int qcopy_file_info(const std::string& path_src, const std::string& path_dst)
+{
+  Long ret = 0;
+  if (0 == get_id_node()) {
+    ret = qcopy_file(path_src, path_dst);
+  } else {
+    const std::string path_dir = dirname(path_dst);
+    remove_entry_directory_cache(path_dir);
+    return 0;
+  }
+  return ret;
+}
+
 std::string qcat_info(const std::string& path)
 {
   TIMER("qcat_info");
@@ -2372,82 +2418,6 @@ int qappend_info(const std::string& path, const std::string& content)
 
 // ---------------------------------
 
-int qar_build_index_info(const std::string& path_qar)
-{
-  TIMER_VERBOSE("qar_build_index_info")
-  if (0 == get_id_node()) {
-    return qar_build_index(path_qar);
-  } else {
-    remove_entry_directory_cache(path_qar + ".idx");
-    return 0;
-  }
-}
-
-int qar_create_info(const std::string& path_qar,
-                    const std::string& path_folder_,
-                    const bool is_remove_folder_after)
-{
-  if (0 == get_id_node()) {
-    return qar_create(path_qar, path_folder_, is_remove_folder_after);
-  } else {
-    if (is_remove_folder_after) {
-      remove_entry_directory_cache(path_folder_);
-    }
-    return 0;
-  }
-}
-
-int qar_extract_info(const std::string& path_qar,
-                     const std::string& path_folder_,
-                     const bool is_remove_qar_after)
-{
-  if (0 == get_id_node()) {
-    return qar_extract(path_qar, path_folder_, is_remove_qar_after);
-  } else {
-    remove_entry_directory_cache(path_folder_);
-    return 0;
-  }
-}
-
-int qcopy_file_info(const std::string& path_src, const std::string& path_dst)
-{
-  Long ret = 0;
-  if (0 == get_id_node()) {
-    ret = qcopy_file(path_src, path_dst);
-  } else {
-    const std::string path_dir = dirname(path_dst);
-    remove_entry_directory_cache(path_dir);
-    return 0;
-  }
-  return ret;
-}
-
-// ---------------------------------
-
-bool does_regular_file_exist_qar_sync_node(const std::string& fn)
-{
-  Long nfile = 0;
-  if (0 == get_id_node()) {
-    if (does_regular_file_exist_qar(fn)) {
-      nfile = 1;
-    }
-  }
-  glb_sum_long(nfile);
-  return 0 != nfile;
-}
-
-bool does_file_exist_qar_sync_node(const std::string& fn)
-{
-  Long nfile = 0;
-  if (0 == get_id_node()) {
-    if (does_file_exist_qar(fn)) {
-      nfile = 1;
-    }
-  }
-  glb_sum_long(nfile);
-  return 0 != nfile;
-}
-
 int qar_create_sync_node(const std::string& path_qar,
                          const std::string& path_folder_,
                          const bool is_remove_folder_after)
@@ -2490,6 +2460,30 @@ int qcopy_file_sync_node(const std::string& path_src,
   }
   glb_sum_long(ret);
   return ret;
+}
+
+bool does_regular_file_exist_qar_sync_node(const std::string& fn)
+{
+  Long nfile = 0;
+  if (0 == get_id_node()) {
+    if (does_regular_file_exist_qar(fn)) {
+      nfile = 1;
+    }
+  }
+  glb_sum_long(nfile);
+  return 0 != nfile;
+}
+
+bool does_file_exist_qar_sync_node(const std::string& fn)
+{
+  Long nfile = 0;
+  if (0 == get_id_node()) {
+    if (does_file_exist_qar(fn)) {
+      nfile = 1;
+    }
+  }
+  glb_sum_long(nfile);
+  return 0 != nfile;
 }
 
 }  // namespace qlat
