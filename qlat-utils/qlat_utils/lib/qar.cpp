@@ -175,32 +175,6 @@ void QFileObj::close()
 
 // ----------------------------------------------------
 
-std::string show(const QFileObj& qfile)
-{
-  const std::string has_parent = qfile.parent.null() ? "no" : "yes";
-  return ssprintf("QFileObj(path='%s',mode='%s',parent=%s,number_of_child=%d)",
-                  qfile.path.c_str(), qfile.mode.c_str(), has_parent.c_str(),
-                  qfile.number_of_child);
-}
-
-void qswap(QFileObj& qfile1, QFileObj& qfile2)
-{
-  // cannot swap if has child
-  qassert(qfile1.number_of_child == 0);
-  qassert(qfile2.number_of_child == 0);
-  std::swap(qfile1.path, qfile2.path);
-  std::swap(qfile1.mode, qfile2.mode);
-  std::swap(qfile1.fp, qfile2.fp);
-  std::swap(qfile1.parent, qfile2.parent);
-  std::swap(qfile1.number_of_child, qfile2.number_of_child);
-  std::swap(qfile1.is_eof, qfile2.is_eof);
-  std::swap(qfile1.pos, qfile2.pos);
-  std::swap(qfile1.offset_start, qfile2.offset_start);
-  std::swap(qfile1.offset_end, qfile2.offset_end);
-}
-
-// ----------------------------------------------------
-
 void QFile::init() { p = nullptr; }
 
 void QFile::init(const std::weak_ptr<QFileObj>& wp)
@@ -272,6 +246,30 @@ std::vector<std::string> show_all_qfile()
 }
 
 // ----------------------------------------------------
+
+std::string show(const QFileObj& qfile)
+{
+  const std::string has_parent = qfile.parent.null() ? "no" : "yes";
+  return ssprintf("QFileObj(path='%s',mode='%s',parent=%s,number_of_child=%d)",
+                  qfile.path.c_str(), qfile.mode.c_str(), has_parent.c_str(),
+                  qfile.number_of_child);
+}
+
+void qswap(QFileObj& qfile1, QFileObj& qfile2)
+{
+  // cannot swap if has child
+  qassert(qfile1.number_of_child == 0);
+  qassert(qfile2.number_of_child == 0);
+  std::swap(qfile1.path, qfile2.path);
+  std::swap(qfile1.mode, qfile2.mode);
+  std::swap(qfile1.fp, qfile2.fp);
+  std::swap(qfile1.parent, qfile2.parent);
+  std::swap(qfile1.number_of_child, qfile2.number_of_child);
+  std::swap(qfile1.is_eof, qfile2.is_eof);
+  std::swap(qfile1.pos, qfile2.pos);
+  std::swap(qfile1.offset_start, qfile2.offset_start);
+  std::swap(qfile1.offset_end, qfile2.offset_end);
+}
 
 std::string show(const QFile& qfile) { return show(*qfile.p); }
 
@@ -609,6 +607,8 @@ bool QarSegmentInfo::check_offset()
   return true;
 }
 
+// ----------------------------------------------------
+
 void QarFileVolObj::init()
 {
   qfile.init();
@@ -670,6 +670,8 @@ void QarFileVolObj::close()
   qfile.close();
   init();
 }
+
+// ----------------------------------------------------
 
 void QarFileVol::init(const std::string& path, const std::string& mode)
 {
