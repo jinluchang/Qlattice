@@ -80,7 +80,7 @@ struct QFileObj {
   QFileObj();
   QFileObj(const std::string& path_, const std::string& mode_);
   QFileObj(const QFile& qfile, const Long q_offset_start,
-                const Long q_offset_end);
+           const Long q_offset_end);
   //
   QFileObj(const QFileObj&) = delete;
   //
@@ -143,6 +143,10 @@ int qvfscanf(const QFile& qfile, const char* fmt, va_list args);
 
 int qfscanf(const QFile& qfile, const char* fmt, ...);
 
+Long qvfprintf(const QFile& qfile, const char* fmt, va_list args);
+
+Long qfprintf(const QFile& qfile, const char* fmt, ...);
+
 std::string qgetline(const QFile& qfile);
 
 std::vector<std::string> qgetlines(const QFile& qfile);
@@ -195,44 +199,9 @@ Long qread_data_all(std::vector<M>& v, const QFile& qfile)
   return data_size;
 }
 
-inline Long qvfprintf(const QFile& qfile, const char* fmt, va_list args)
-{
-  const std::string str = vssprintf(fmt, args);
-  return qwrite_data(str, qfile);
-}
-
-inline Long qfprintf(const QFile& qfile, const char* fmt, ...)
-{
-  va_list args;
-  va_start(args, fmt);
-  return qvfprintf(qfile, fmt, args);
-}
-
 Long write_from_qfile(const QFile& qfile_out, const QFile& qfile_in);
 
 // -------------------
-
-const std::string qar_header = "#!/usr/bin/env qar-glimpse\n\n";
-
-const std::string qar_idx_header = "#!/usr/bin/env qar-idx-glimpse\n\n";
-
-struct QarSegmentInfo {
-  Long offset;
-  Long offset_fn;
-  Long offset_info;
-  Long offset_data;
-  Long offset_end;
-  Long fn_len;
-  Long info_len;
-  Long data_len;
-  //
-  QarSegmentInfo() { init(); }
-  //
-  void init() { set_zero(get_data_one_elem(*this)); }
-  //
-  void update_offset();
-  bool check_offset();
-};
 
 struct QarFileVolObj;
 
@@ -262,16 +231,35 @@ struct API QarFileVol {
   const QFile& qfile() const;
 };
 
+struct QarSegmentInfo {
+  Long offset;
+  Long offset_fn;
+  Long offset_info;
+  Long offset_data;
+  Long offset_end;
+  Long fn_len;
+  Long info_len;
+  Long data_len;
+  //
+  QarSegmentInfo() { init(); }
+  //
+  void init() { set_zero(get_data_one_elem(*this)); }
+  //
+  void update_offset();
+  bool check_offset();
+};
+
 struct QarFileVolObj {
   QFile qfile;
   //
-  bool is_read_through; // false if in write/append mode
+  bool is_read_through;  // false if in write/append mode
   //
   std::vector<std::string> fn_list;  // update through register_file
   std::map<std::string, QarSegmentInfo>
       qsinfo_map;                     // update through register_file
   std::set<std::string> directories;  // update through register_file
-  Long max_offset;  // when read, maximum offset reached so far, update through register_file
+  Long max_offset;  // when read, maximum offset reached so far, update through
+                    // register_file
   //
   std::string current_write_segment_fn;  // when write the fn of the current
                                          // working segment
@@ -298,17 +286,7 @@ struct QarFileVolObj {
   const std::string& mode() const { return qfile.mode(); }
 };
 
-void register_file(const QarFileVol& qar, const std::string& fn,
-                   const QarSegmentInfo& qsinfo);
-
-bool read_qar_segment_info(QarFileVolObj& qar, QarSegmentInfo& qsinfo);
-
-std::string read_fn(const QarFileVol& qar, const QarSegmentInfo& qsinfo);
-
-void read_info(const QarFileVol& qar, std::string& info,
-               const QarSegmentInfo& qsinfo);
-
-QFile get_qfile_of_data(const QarFileVol& qar, const QarSegmentInfo& qsinfo);
+// -------------------
 
 QFile read_next(const QarFileVol& qar, std::string& fn);
 
@@ -368,8 +346,6 @@ int qar_extract(const std::string& path_qar, const std::string& path_folder_,
 
 int qcopy_file(const std::string& path_src, const std::string& path_dst);
 
-std::string mk_key_from_qar_path(const std::string& path);
-
 std::vector<std::string> list_qar(const std::string& path);
 
 DataTable qload_datatable_serial(QFile& qfile);
@@ -390,6 +366,8 @@ int qtouch(const std::string& path, const std::vector<std::string>& content);
 
 int qappend(const std::string& path, const std::string& content);
 
+// -------------------
+
 crc32_t compute_crc32(QFile& qfile);
 
 crc32_t compute_crc32(const std::string& path);
@@ -399,13 +377,28 @@ std::vector<std::pair<std::string, crc32_t>> check_all_files_crc32(
 
 void check_all_files_crc32_info(const std::string& path);
 
+std::string show_file_crc32(const std::pair<std::string, crc32_t>& fcrc);
+
+std::string show_files_crc32(
+    const std::vector<std::pair<std::string, crc32_t>>& fcrcs);
+
+std::pair<std::string, crc32_t> check_file_crc32(const std::string& fn);
+
 // -------------------
 
 struct API QarFile;
 
+std::vector<std::string> show_qar_index(const QarFile& qar,
+                                        const std::string& fn);
+
 int save_qar_index(const QarFile& qar, const std::string& fn);
 
 int save_qar_index_info(const QarFile& qar, const std::string& fn);
+
+int parse_qar_index(std::vector<Long>& vol_idx_vec,
+                    std::vector<std::string>& fn_vec,
+                    std::vector<QarSegmentInfo>& qsinfo_vec,
+                    const std::string& qar_index_content);
 
 int parse_qar_index(const QarFile& qar, const std::string& qar_index_content);
 
@@ -447,28 +440,9 @@ API inline Cache<std::string, QarFile>& get_qar_read_cache()
   return cache;
 }
 
-std::string mk_new_qar_read_cache_key(const QarFile& qar,
-                                      const std::string& key,
-                                      const std::string& path);
-
-std::string mk_new_qar_read_cache_key(const std::string& path);
-
-std::string get_qar_read_cache_key(const std::string& path);
-
 // -------------------
 
 std::vector<std::string> qgetlines(const std::string& fn);
-
-// -------------------
-
-std::string show_file_crc32(const std::pair<std::string, crc32_t>& fcrc);
-
-std::string show_files_crc32(
-    const std::vector<std::pair<std::string, crc32_t>>& fcrcs);
-
-std::pair<std::string, crc32_t> check_file_crc32(const std::string& fn);
-
-// -------------------
 
 std::string qcat_info(const std::string& path);
 

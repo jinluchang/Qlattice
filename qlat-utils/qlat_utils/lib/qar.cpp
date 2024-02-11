@@ -3,11 +3,37 @@
 namespace qlat
 {  //
 
+const std::string qar_header = "#!/usr/bin/env qar-glimpse\n\n";
+
+const std::string qar_idx_header = "#!/usr/bin/env qar-idx-glimpse\n\n";
+
 static void add_qfile(const QFile& qfile);
 
 static void remove_qfile(const QFileObj& qfile_internal);
 
 static std::string qar_file_multi_vol_suffix(const Long i);
+
+static void register_file(const QarFileVol& qar, const std::string& fn,
+                   const QarSegmentInfo& qsinfo);
+
+static bool read_qar_segment_info(QarFileVolObj& qar, QarSegmentInfo& qsinfo);
+
+static std::string read_fn(const QarFileVol& qar, const QarSegmentInfo& qsinfo);
+
+static void read_info(const QarFileVol& qar, std::string& info,
+               const QarSegmentInfo& qsinfo);
+
+static QFile get_qfile_of_data(const QarFileVol& qar, const QarSegmentInfo& qsinfo);
+
+static std::string mk_key_from_qar_path(const std::string& path);
+
+static std::string mk_new_qar_read_cache_key(const QarFile& qar,
+                                      const std::string& key,
+                                      const std::string& path);
+
+static std::string mk_new_qar_read_cache_key(const std::string& path);
+
+static std::string get_qar_read_cache_key(const std::string& path);
 
 static void check_all_files_crc32_aux(
     std::vector<std::pair<std::string, crc32_t>>& acc, const std::string& path);
@@ -151,7 +177,7 @@ std::string show(const QFileObj& qfile)
 {
   const std::string has_parent = qfile.parent.null() ? "no" : "yes";
   return ssprintf(
-      "QFileObj(path='%s',mode='%s',parent='%s',number_of_child=%d)",
+      "QFileObj(path='%s',mode='%s',parent=%s,number_of_child=%d)",
       qfile.path.c_str(), qfile.mode.c_str(), has_parent.c_str(),
       qfile.number_of_child);
 }
@@ -393,6 +419,19 @@ int qfscanf(const QFile& qfile, const char* fmt, ...)
   va_list args;
   va_start(args, fmt);
   return qvfscanf(qfile, fmt, args);
+}
+
+Long qvfprintf(const QFile& qfile, const char* fmt, va_list args)
+{
+  const std::string str = vssprintf(fmt, args);
+  return qwrite_data(str, qfile);
+}
+
+Long qfprintf(const QFile& qfile, const char* fmt, ...)
+{
+  va_list args;
+  va_start(args, fmt);
+  return qvfprintf(qfile, fmt, args);
 }
 
 std::string qgetline(const QFile& qfile)
@@ -1239,30 +1278,14 @@ std::vector<std::string> properly_truncate_qar_file(const std::string& path,
 
 // ----------------------------------------------------
 
-std::vector<std::string> list(const QarFile& qar)
+std::vector<std::string> show_qar_index(const QarFile& qar)
 // interface function
 {
-  if (qar.null()) {
-    return std::vector<std::string>();
-  }
-  std::vector<std::string> fn_list;
-  for (Long i = 0; i < (Long)qar.size(); ++i) {
-    const QarFileVol& qar_v = qar[i];
-    qassert(not qar_v.null());
-    qassert(qar_v.mode() == "r");
-    vector_append(fn_list, list(qar_v));
-  }
-  return fn_list;
-}
-
-int save_qar_index(const QarFile& qar, const std::string& fn)
-// interface function
-{
-  if (qar.null()) {
-    return 1;
-  }
-  TIMER("save_qar_index");
   std::vector<std::string> lines;
+  if (qar.null()) {
+    return lines;
+  }
+  TIMER("show_qar_index");
   lines.push_back(qar_idx_header);
   for (Long i = 0; i < (Long)qar.size(); ++i) {
     const QarFileVol& qar_v = qar[i];
@@ -1289,8 +1312,18 @@ int save_qar_index(const QarFile& qar, const std::string& fn)
       lines.push_back("\n");
     }
   }
-  qtouch(fn, lines);
-  return 0;
+  return lines;
+}
+
+int save_qar_index(const QarFile& qar, const std::string& fn)
+// interface function
+{
+  TIMER("save_qar_index");
+  std::vector<std::string> lines = show_qar_index(qar);
+  if (lines.size() == 0) {
+    return 1;
+  }
+  return qtouch(fn, lines);
 }
 
 int save_qar_index_info(const QarFile& qar, const std::string& fn)
@@ -1304,14 +1337,17 @@ int save_qar_index_info(const QarFile& qar, const std::string& fn)
   }
 }
 
-int parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
+int parse_qar_index(std::vector<Long>& vol_idx_vec,
+                    std::vector<std::string>& fn_vec,
+                    std::vector<QarSegmentInfo>& qsinfo_vec,
+                    const std::string& qar_index_content)
 // interface function
 {
   TIMER("parse_qar_index");
-  if (qar.null()) {
-    qwarn(fname + ": qar is null.");
-    return 1;
-  }
+  vol_idx_vec.clear();
+  fn_vec.clear();
+  qsinfo_vec.clear();
+  std::vector<Long> idx_vec;
   if (qar_index_content == "") {
     return 2;
   }
@@ -1457,9 +1493,64 @@ int parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
       return 33;
     }
     // register_file
-    qassert(qsinfo.check_offset());
-    qassert(0 <= i);
-    qassert(i < (Long)qar.size());
+    if (not qsinfo.check_offset()) {
+      return 34;
+    }
+    if (i < 0) {
+      return 35;
+    }
+    vol_idx_vec.push_back(i);
+    idx_vec.push_back(j);
+    fn_vec.push_back(fn);
+    qsinfo_vec.push_back(qsinfo);
+  }
+  qassert(vol_idx_vec.size() == idx_vec.size());
+  qassert(fn_vec.size() == idx_vec.size());
+  qassert(qsinfo_vec.size() == idx_vec.size());
+  Long vol_idx_current = 0;
+  Long idx_current = 0;
+  for (Long k = 0; k < (Long)idx_vec.size(); ++k) {
+    const Long i = vol_idx_vec[k];
+    const Long j = idx_vec[k];
+    if (i != vol_idx_current) {
+      if (idx_current <= 0) {
+        return 36;
+      }
+      vol_idx_current += 1;
+      idx_current = 0;
+    }
+    if (vol_idx_current != i) {
+      return 37;
+    }
+    if (idx_current != j) {
+      return 38;
+    }
+  }
+  return 0;
+}
+
+int parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
+// interface function
+{
+  TIMER("parse_qar_index");
+  std::vector<Long> vol_idx_vec;
+  std::vector<std::string> fn_vec;
+  std::vector<QarSegmentInfo> qsinfo_vec;
+  if (qar.null()) {
+    qwarn(fname + ": qar is null.");
+    return 1;
+  }
+  const int ret =
+      parse_qar_index(vol_idx_vec, fn_vec, qsinfo_vec, qar_index_content);
+  if (ret != 0) {
+    return ret;
+  }
+  qassert(fn_vec.size() == vol_idx_vec.size());
+  qassert(qsinfo_vec.size() == vol_idx_vec.size());
+  for (Long k = 0; k < (Long)vol_idx_vec.size(); ++k) {
+    const Long i = vol_idx_vec[k];
+    const std::string& fn = fn_vec[k];
+    const QarSegmentInfo& qsinfo = qsinfo_vec[k];
     register_file(qar[i], fn, qsinfo);
   }
   return 0;
@@ -1474,6 +1565,22 @@ int load_qar_index(const QarFile& qar, const std::string& fn)
 }
 
 // ----------------------------------------------------
+
+std::vector<std::string> list(const QarFile& qar)
+// interface function
+{
+  if (qar.null()) {
+    return std::vector<std::string>();
+  }
+  std::vector<std::string> fn_list;
+  for (Long i = 0; i < (Long)qar.size(); ++i) {
+    const QarFileVol& qar_v = qar[i];
+    qassert(not qar_v.null());
+    qassert(qar_v.mode() == "r");
+    vector_append(fn_list, list(qar_v));
+  }
+  return fn_list;
+}
 
 std::string qcat(const std::string& path)
 {
@@ -2018,6 +2125,8 @@ DataTable qload_datatable(const std::string& path, const bool is_par)
   }
 }
 
+// -------------------
+
 crc32_t compute_crc32(QFile& qfile)
 // interface function
 // compute_crc32 for all the remaining data.
@@ -2080,8 +2189,6 @@ void check_all_files_crc32_info(const std::string& path)
     display(show_files_crc32(fcrcs));
   }
 }
-
-// -------------------
 
 std::string show_file_crc32(const std::pair<std::string, crc32_t>& fcrc)
 {

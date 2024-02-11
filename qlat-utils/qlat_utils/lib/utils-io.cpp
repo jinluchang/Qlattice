@@ -406,7 +406,7 @@ int qmkdir(const std::string& path, const mode_t mode)
   remove_entry_directory_cache(path);
   const int ret = mkdir(path.c_str(), mode);
   if (ret != 0) {
-    qwarn(fname + ssprintf(": qmkdir failed '%s' ret=%d", path.c_str(), ret))
+    qwarn(fname + ssprintf(": qmkdir failed '%s' ret=%d", path.c_str(), ret));
   }
   return ret;
 }
