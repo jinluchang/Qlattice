@@ -960,10 +960,7 @@ QFile read_next(const QarFileVol& qar, std::string& fn)
   if (code != 0) {
     qfile.init();
   }
-  const bool b = register_file(qar, fn, qsinfo);
-  if (not b) {
-    qfile.init();
-  }
+  register_file(qar, fn, qsinfo);
   return qfile;
 }
 
@@ -1135,8 +1132,7 @@ void write_end(const QarFileVol& qar)
   qwrite_data("\n\n", qar.qfile());
   qsinfo.update_offset();
   qassert(qftell(qar.qfile()) == qsinfo.offset_end);
-  const bool b = register_file(qar, qar.p->current_write_segment_fn, qsinfo);
-  qassert(b);
+  register_file(qar, qar.p->current_write_segment_fn, qsinfo);
   qar.p->current_write_segment_fn = "";
   qsinfo.init();
 }
@@ -1595,10 +1591,7 @@ int parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
     const Long i = vol_idx_vec[k];
     const std::string& fn = fn_vec[k];
     const QarSegmentInfo& qsinfo = qsinfo_vec[k];
-    const bool b = register_file(qar[i], fn, qsinfo);
-    if (not b) {
-      return 1;
-    }
+    register_file(qar[i], fn, qsinfo);
   }
   return 0;
 }
