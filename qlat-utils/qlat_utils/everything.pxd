@@ -367,7 +367,7 @@ cdef extern from "qlat-utils/qar.h" namespace "qlat":
     std_vector[std_string] has_regular_file(const QarFile& qar, const std_string& fn) except +
     std_vector[std_string] has(const QarFile& qar, const std_string& fn) except +
     bool verify_index(const QarFile& qar) except +
-    Long write_from_data(QarFile& qar, const std_string& fn, const std_string& info, const std_string& data);
+    Long write_from_data(QarFile& qar, const std_string& fn, const std_string& info, const std_string& data) except +
     #
     std_vector[std_string] show_all_qfile() except +
     std_vector[std_string] properly_truncate_qar_vol_file(const std_string& path) except +
