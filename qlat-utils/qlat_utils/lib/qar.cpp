@@ -1436,7 +1436,7 @@ int parse_qar_index(std::vector<Long>& vol_idx_vec,
                     const std::string& qar_index_content)
 // interface function
 {
-  TIMER("parse_qar_index");
+  TIMER("parse_qar_index(vol_idx_vec,fn_vec,qsinfo_vec,qar_index_content)");
   vol_idx_vec.clear();
   fn_vec.clear();
   qsinfo_vec.clear();
@@ -1625,7 +1625,7 @@ int parse_qar_index(std::vector<Long>& vol_idx_vec,
 int parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
 // interface function
 {
-  TIMER("parse_qar_index");
+  TIMER("parse_qar_index(qar,qar_index_content)");
   std::vector<Long> vol_idx_vec;
   std::vector<std::string> fn_vec;
   std::vector<QarSegmentInfo> qsinfo_vec;
@@ -2007,7 +2007,7 @@ int qar_create(const std::string& path_qar, const std::string& path_folder_,
   ret_rename = qrename(path_qar + ".acc.idx", path_qar + ".idx");
   qassert(ret_rename == 0);
   qar.init(path_qar, "r");
-  qassert((Long)path_qar.size() == num_vol);
+  qassert((Long)qar.size() == num_vol);
   if (not verify_index(qar)) {
     qerr(fname + ": idx verification failed.");
   }
