@@ -536,9 +536,15 @@ Long qwrite_data(const Vector<char>& v, const QFile& qfile)
 {
   TIMER_FLOPS("qwrite_data(v,qfile)");
   qassert(not qfile.null());
-  const Long data_size = qfwrite((void*)v.p, sizeof(char), v.n, qfile);
-  timer.flops += data_size;
-  return data_size;
+  const Long total_bytes = qfwrite((void*)v.p, sizeof(char), v.size(), qfile);
+  if (total_bytes != v.size()) {
+    qwarn(fname +
+          ssprintf(
+              ": qwrite_data data_size=%ld total_bytes=%ld qfile.path()='%s'",
+              v.size(), total_bytes, qfile.path().c_str()));
+  }
+  timer.flops += total_bytes;
+  return total_bytes;
 }
 
 Long qwrite_data(const std::string& line, const QFile& qfile)
@@ -551,6 +557,7 @@ Long qwrite_data(const std::string& line, const QFile& qfile)
 Long qwrite_data(const std::vector<std::string>& lines, const QFile& qfile)
 // interface function
 {
+  TIMER_FLOPS("qwrite_data(lines,qfile)");
   qassert(not qfile.null());
   Long total_bytes = 0;
   for (Long i = 0; i < (Long)lines.size(); ++i) {
@@ -564,9 +571,15 @@ Long qread_data(const Vector<char>& v, const QFile& qfile)
 {
   TIMER_FLOPS("qread_data(v,qfile)");
   qassert(not qfile.null());
-  const Long data_size = qfread((void*)v.p, sizeof(char), v.n, qfile);
-  timer.flops += data_size;
-  return data_size;
+  const Long total_bytes = qfread((void*)v.p, sizeof(char), v.size(), qfile);
+  if (total_bytes != v.size()) {
+    qwarn(
+        fname +
+        ssprintf(": qread_data data_size=%ld total_bytes=%ld qfile.path()='%s'",
+                 v.size(), total_bytes, qfile.path().c_str()));
+  }
+  timer.flops += total_bytes;
+  return total_bytes;
 }
 
 Long write_from_qfile(const QFile& qfile_out, const QFile& qfile_in)
@@ -660,7 +673,7 @@ void QarFileVolObj::init(const QFile& qfile_)
         qfread(check_line.data(), qar_header.size(), 1, qfile);
     if (not(qfread_check_len == 1 and
             std::string(check_line.data(), check_line.size()) == qar_header)) {
-      qfile.close();
+      qfclose(qfile);
       qwarn(fname +
             ssprintf(": '%s' format does not match.", qfile.path().c_str()));
       return;
@@ -674,7 +687,7 @@ void QarFileVolObj::init(const QFile& qfile_)
 
 void QarFileVolObj::close()
 {
-  qfile.close();
+  qfclose(qfile);
   init();
 }
 
@@ -1727,6 +1740,21 @@ QFile read(const QarFile& qar, const std::string& fn)
   return qfile_in;
 }
 
+std::string read_data(const QarFile& qar, const std::string& fn)
+{
+  TIMER_VERBOSE_FLOPS("read_data(qar,fn)");
+  QFile qfile = read(qar, fn);
+  qfseek(qfile, 0, SEEK_END);
+  const Long length = qftell(qfile);
+  qfseek(qfile, 0, SEEK_SET);
+  std::string ret(length, 0);
+  const Long length_actual = qread_data(get_data_char(ret), qfile);
+  qassert(length == length_actual);
+  qfclose(qfile);
+  timer.flops += length_actual;
+  return ret;
+}
+
 std::string read_info(const QarFile& qar, const std::string& fn)
 {
   TIMER("read_info(qar,fn)");
@@ -1783,7 +1811,7 @@ Long write_from_qfile(QarFile& qar, const std::string& fn,
 // Write content (start from the current position) of qfile_in to qar.
 // qfile_in should have definite size.
 {
-  TIMER_FLOPS("write_from_qfile(QarFile)");
+  TIMER_VERBOSE_FLOPS("write_from_qfile(QarFile)");
   if (has_regular_file(qar, fn)) {
     qwarn(fname + ssprintf(": qar at '%s' already has fn='%s'. Append anyway.",
                            qar.path.c_str(), fn.c_str()));
@@ -1791,7 +1819,9 @@ Long write_from_qfile(QarFile& qar, const std::string& fn,
   const Long data_len = qfile_remaining_size(qfile_in);
   qassert(data_len >= 0);
   qar_check_if_create_new_vol(qar, data_len);
-  return write_from_qfile(qar.back(), fn, info, qfile_in);
+  const Long total_bytes = write_from_qfile(qar.back(), fn, info, qfile_in);
+  timer.flops += total_bytes;
+  return total_bytes;
 }
 
 Long write_from_data(QarFile& qar, const std::string& fn,
@@ -1799,7 +1829,7 @@ Long write_from_data(QarFile& qar, const std::string& fn,
 // interface function
 // Write content data to qar.
 {
-  TIMER_FLOPS("write_from_data(QarFile)");
+  TIMER_VERBOSE_FLOPS("write_from_data(QarFile)");
   if (has_regular_file(qar, fn)) {
     qwarn(fname + ssprintf(": qar at '%s' already has fn='%s'. Append anyway.",
                            qar.path.c_str(), fn.c_str()));
@@ -1807,7 +1837,33 @@ Long write_from_data(QarFile& qar, const std::string& fn,
   const Long data_len = data.size();
   qassert(data_len >= 0);
   qar_check_if_create_new_vol(qar, data_len);
-  return write_from_data(qar.back(), fn, info, data);
+  const Long total_bytes = write_from_data(qar.back(), fn, info, data);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+Long write_from_data(QarFile& qar, const std::string& fn,
+                     const std::string& info, const std::string& data)
+{
+  return write_from_data(qar, fn, info, get_data_char(data));
+}
+
+// ----------------------------------------------------
+
+std::vector<std::string> properly_truncate_qar_file(const std::string& path,
+                                                    const bool is_only_check)
+{
+  TIMER_VERBOSE("properly_truncate_qar_file");
+  std::vector<std::string> fn_list;
+  for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
+    const std::string path_qar_v = path + qar_file_multi_vol_suffix(iv);
+    if (not does_file_exist_cache(path_qar_v)) {
+      break;
+    }
+    vector_append(fn_list,
+                  properly_truncate_qar_vol_file(path_qar_v, is_only_check));
+  }
+  return fn_list;
 }
 
 // ----------------------------------------------------
@@ -2065,6 +2121,8 @@ int qar_extract(const std::string& path_qar, const std::string& path_folder_,
     QFile qfile_out(path_folder + ".acc/" + fn, "w");
     qassert(not qfile_out.null());
     timer.flops += write_from_qfile(qfile_out, qfile_in);
+    qfclose(qfile_in);
+    qfclose(qfile_out);
   }
   const Long num_vol = qar.size();
   qar.close();

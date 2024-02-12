@@ -111,9 +111,9 @@ API inline QFileMap& get_all_qfile()
   return all_qfile;
 }
 
-std::vector<std::string> show_all_qfile();
-
 // ---------------------
+
+std::vector<std::string> show_all_qfile();
 
 std::string show(const QFileObj& qfile);
 
@@ -331,7 +331,7 @@ std::vector<std::string> properly_truncate_qar_vol_file(
 // -------------------
 
 struct API QarFile : std::vector<QarFileVol> {
-  // Only for reading or appending
+  // Only support mode == "r" or mode == "a"
   std::string path;
   std::string mode;
   //
@@ -349,6 +349,14 @@ struct API QarFile : std::vector<QarFileVol> {
   bool null() const { return size() == 0; }
 };
 
+API inline Cache<std::string, QarFile>& get_qar_read_cache()
+// key should be the path prefix of the contents of the qar file.
+// Note: key should end with '/'.
+{
+  static Cache<std::string, QarFile> cache("QarReadCache", 64, 1);
+  return cache;
+}
+
 // -------------------
 
 std::vector<std::string> list(const QarFile& qar);
@@ -358,6 +366,8 @@ bool has_regular_file(const QarFile& qar, const std::string& fn);
 bool has(const QarFile& qar, const std::string& fn);
 
 QFile read(const QarFile& qar, const std::string& fn);
+
+std::string read_data(const QarFile& qar, const std::string& fn);
 
 std::string read_info(const QarFile& qar, const std::string& fn);
 
@@ -369,15 +379,13 @@ Long write_from_qfile(QarFile& qar, const std::string& fn,
 Long write_from_data(QarFile& qar, const std::string& fn,
                      const std::string& info, const Vector<char> data);
 
+Long write_from_data(QarFile& qar, const std::string& fn,
+                     const std::string& info, const std::string& data);
+
 // -------------------
 
-API inline Cache<std::string, QarFile>& get_qar_read_cache()
-// key should be the path prefix of the contents of the qar file.
-// Note: key should end with '/'.
-{
-  static Cache<std::string, QarFile> cache("QarReadCache", 64, 1);
-  return cache;
-}
+std::vector<std::string> properly_truncate_qar_file(
+    const std::string& path, const bool is_only_check = false);
 
 // -------------------
 

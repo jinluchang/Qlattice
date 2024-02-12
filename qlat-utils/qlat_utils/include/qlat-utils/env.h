@@ -61,7 +61,7 @@ API inline Long& write_from_qfile_chunk_size()
 // qlat parameter
 // size in bytes
 {
-  static Long size = 512 * 1024;
+  static Long size = 4 * 1024 * 1024;
   return size;
 }
 
