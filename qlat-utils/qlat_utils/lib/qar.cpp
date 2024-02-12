@@ -25,6 +25,10 @@ static std::string read_fn(const QarFileVol& qar, const QarSegmentInfo& qsinfo);
 static QFile get_qfile_of_data(const QarFileVol& qar,
                                const QarSegmentInfo& qsinfo);
 
+static bool verify_segment(const QarFileVol& qar, const std::string& fn);
+
+static bool verify_index(const QarFileVol& qar);
+
 static std::string qar_file_multi_vol_suffix(const Long i);
 
 static void qar_check_if_create_new_vol(QarFile& qar, const Long data_size);
@@ -813,6 +817,7 @@ bool read_qar_segment_info(QarFileVolObj& qar, QarSegmentInfo& qsinfo)
 // Return true if read successfully (also qfseek to the beginning of the next
 // segment).
 {
+  TIMER("read_qar_segment_info(qar_v,qsinfo)");
   qassert(not qar.null());
   qassert(qar.qfile.mode() == "r");
   set_zero(get_data_one_elem(qsinfo));
@@ -869,8 +874,8 @@ bool read_qar_segment_info(QarFileVolObj& qar, QarSegmentInfo& qsinfo)
 }
 
 std::string read_fn(const QarFileVol& qar, const QarSegmentInfo& qsinfo)
-// interface function
 {
+  TIMER("read_fn(qar_v,qsinfo)");
   qassert(not qar.null());
   qassert(qar.mode() == "r");
   std::vector<char> data(qsinfo.fn_len);
@@ -884,10 +889,9 @@ std::string read_fn(const QarFileVol& qar, const QarSegmentInfo& qsinfo)
   return fn;
 }
 
-void read_info(const QarFileVol& qar, std::string& info,
-               const QarSegmentInfo& qsinfo)
-// interface function
+std::string read_info(const QarFileVol& qar, const QarSegmentInfo& qsinfo)
 {
+  TIMER("read_info(qar_v,qsinfo)");
   qassert(not qar.null());
   qassert(qar.mode() == "r");
   std::vector<char> data(qsinfo.info_len);
@@ -896,7 +900,9 @@ void read_info(const QarFileVol& qar, std::string& info,
   if (1 != qfread(data.data(), qsinfo.info_len, 1, qar.qfile())) {
     qassert(false);
   }
+  std::string info;
   info = std::string(data.data(), qsinfo.info_len);
+  return info;
 }
 
 QFile get_qfile_of_data(const QarFileVol& qar, const QarSegmentInfo& qsinfo)
@@ -904,6 +910,7 @@ QFile get_qfile_of_data(const QarFileVol& qar, const QarSegmentInfo& qsinfo)
 // set qfile to be a qfile containing the data specified by qsinfo.
 // qfile initial pos is zero
 {
+  TIMER("get_qfile_of_data(qar_v,qsinfo)");
   qassert(not qar.null());
   qassert(qar.mode() == "r");
   QFile qfile(qar.qfile(), qsinfo.offset_data,
@@ -914,7 +921,7 @@ QFile get_qfile_of_data(const QarFileVol& qar, const QarSegmentInfo& qsinfo)
 
 bool verify_segment(const QarFileVol& qar, const std::string& fn)
 {
-  TIMER("verify_segment");
+  TIMER("verify_segment(qar_v,fn)");
   qassert(has(qar.p->qsinfo_map, fn));
   const QarSegmentInfo& qsinfo = qar.p->qsinfo_map[fn];
   qfseek(qar.p->qfile, qsinfo.offset, SEEK_SET);
@@ -963,7 +970,7 @@ QFile read_next(const QarFileVol& qar, std::string& fn)
 // Initial pos of qar should be at the beginning of a segment.
 // register_file only if qfseek to the end of the file is successful.
 {
-  TIMER("read_next");
+  TIMER("read_next(qar_v,fn)");
   qassert(not qar.null());
   qassert(qar.mode() == "r");
   QarSegmentInfo qsinfo;
@@ -983,7 +990,7 @@ QFile read_next(const QarFileVol& qar, std::string& fn)
 
 void read_through(const QarFileVol& qar)
 {
-  TIMER("read_through");
+  TIMER("read_through(qar_v)");
   qassert(not qar.null());
   qassert(qar.mode() == "r");
   if (qar.p->is_read_through) {
@@ -1003,7 +1010,7 @@ void read_through(const QarFileVol& qar)
 QFile read(const QarFileVol& qar, const std::string& fn)
 // interface function
 {
-  TIMER("read");
+  TIMER("read(qar_v,fn)");
   qassert(not qar.null());
   qassert(qar.mode() == "r");
   qassert(fn != "");
@@ -1659,6 +1666,7 @@ int load_qar_index(const QarFile& qar, const std::string& fn)
 std::vector<std::string> list(const QarFile& qar)
 // interface function
 {
+  TIMER("list(qar)");
   if (qar.null()) {
     return std::vector<std::string>();
   }
@@ -1674,6 +1682,7 @@ std::vector<std::string> list(const QarFile& qar)
 bool has_regular_file(const QarFile& qar, const std::string& fn)
 // interface function
 {
+  TIMER("has_regular_file(qar,fn)");
   for (Long i = 0; i < (Long)qar.size(); ++i) {
     const QarFileVol& qar_v = qar[i];
     qassert(not qar_v.null());
@@ -1687,6 +1696,7 @@ bool has_regular_file(const QarFile& qar, const std::string& fn)
 bool has(const QarFile& qar, const std::string& fn)
 // interface function
 {
+  TIMER("has(qar,fn)");
   for (Long i = 0; i < (Long)qar.size(); ++i) {
     const QarFileVol& qar_v = qar[i];
     qassert(not qar_v.null());
@@ -1700,6 +1710,8 @@ bool has(const QarFile& qar, const std::string& fn)
 QFile read(const QarFile& qar, const std::string& fn)
 // interface function
 {
+  TIMER("read(qar,fn)");
+  qassert(qar.mode == "r");
   QFile qfile_in;
   for (Long i = 0; i < (Long)qar.size(); ++i) {
     const QarFileVol& qar_v = qar[i];
@@ -1711,6 +1723,23 @@ QFile read(const QarFile& qar, const std::string& fn)
     }
   }
   return qfile_in;
+}
+
+std::string read_info(const QarFile& qar, const std::string& fn)
+{
+  TIMER("read_info(qar,fn)");
+  qassert(qar.mode == "r");
+  for (Long i = 0; i < (Long)qar.size(); ++i) {
+    const QarFileVol& qar_v = qar[i];
+    qassert(not qar_v.null());
+    qassert(qar_v.mode() == "r");
+    if (not has(qar_v.p->qsinfo_map, fn)) {
+      continue;
+    }
+    const QarSegmentInfo& qsinfo = qar_v.p->qsinfo_map[fn];
+    return read_info(qar_v, qsinfo)
+  }
+  return "";
 }
 
 bool verify_index(const QarFile& qar)

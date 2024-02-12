@@ -294,8 +294,7 @@ void read_through(const QarFileVol& qar);
 
 QFile read(const QarFileVol& qar, const std::string& fn);
 
-void read_info(const QarFileVol& qar, std::string& info,
-               const QarSegmentInfo& qsinfo);
+std::string read_info(const QarFileVol& qar, const QarSegmentInfo& qsinfo);
 
 bool has_regular_file(const QarFileVol& qar, const std::string& fn);
 
@@ -354,11 +353,15 @@ struct API QarFile : std::vector<QarFileVol> {
 
 std::vector<std::string> list(const QarFile& qar);
 
+bool verify_index(const QarFile& qar);
+
 bool has_regular_file(const QarFile& qar, const std::string& fn);
 
 bool has(const QarFile& qar, const std::string& fn);
 
 QFile read(const QarFile& qar, const std::string& fn);
+
+std::string read_info(const QarFile& qar, const std::string& fn);
 
 Long write_from_qfile(QarFile& qar, const std::string& fn,
                       const std::string& info, const QFile& qfile_in);
