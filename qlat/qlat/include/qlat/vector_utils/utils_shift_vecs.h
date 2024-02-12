@@ -376,8 +376,9 @@ inline void shift_vec::print_info()
   print0("biva %d, civ %d, bsize %d. \n", biva, civ, bsize);
   for(int di=0;di<8;di++)
   {
-    print0("dir %d, bufsize %ld, MPI_size %ld, sendsize %ld, copysize %ld \n", 
-            di, Long(sendbufP[di].size()/bsize), Long(MPI_size[di]), sendoffa[di].size(), buffoffa[di].size());
+    print0("dir %d, bufsize %ld, MPI_size %ld, sendsize %ld, copysize %ld \n",
+           di, (long)(sendbufP[di].size() / bsize), (long)(MPI_size[di]),
+           (long)sendoffa[di].size(), (long)buffoffa[di].size());
   }
   fflush_MPI();
 

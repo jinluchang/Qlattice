@@ -885,7 +885,7 @@ inline std::vector<Long > job_create(Long total, Long each)
   std::vector<Long > a;a.resize(0);
   if(total == 0){return a;}
   if(total < 1 or each < 1){
-    print0("===Give me valid job types total %ld, each %ld \n", total, each);
+    print0("===Give me valid job types total %ld, each %ld \n", (long)total, (long)each);
     abort_r();}
   /////std::vector<Long > a = job_create(total, each);
   Long jobN  = (total + each - 1)/each;
