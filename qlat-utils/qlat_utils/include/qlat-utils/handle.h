@@ -102,9 +102,10 @@ struct API Vector {
       qerr(
           ssprintf("ERROR: expect: 0 <= i && i < n but: i=%d n=%d sizeof(M)=%d",
                    i, n, sizeof(M)));
-#endif
-      printf("%ld %ld %ld", i, n, sizeof(M));
+#else
+      printf("%ld %ld %ld", (long)i, (long)n, (long)sizeof(M));
       qassert(false);
+#endif
     }
     return p[i];
   }
@@ -115,9 +116,10 @@ struct API Vector {
       qerr(
           ssprintf("ERROR: expect: 0 <= i && i < n but: i=%d n=%d sizeof(M)=%d",
                    i, n, sizeof(M)));
-#endif
-      printf("%ld %ld %ld", i, n, sizeof(M));
+#else
+      printf("%ld %ld %ld", (long)i, (long)n, (long)sizeof(M));
       qassert(false);
+#endif
     }
     return p[i];
   }
