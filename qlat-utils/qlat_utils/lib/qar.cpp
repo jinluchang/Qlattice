@@ -1043,7 +1043,7 @@ bool has_regular_file(const QarFileVol& qar, const std::string& fn)
 {
   TIMER("has_regular_file(qar_v,fn)");
   qassert(not qar.null());
-  if (qar.p->is_read_through) {
+  if (qar.p->is_read_through or qar.mode() == "w" or qar.mode() == "a") {
     return has(qar.p->qsinfo_map, fn);
   }
   QFile qfile = read(qar, fn);
@@ -1058,7 +1058,9 @@ bool has(const QarFileVol& qar, const std::string& fn)
   if (has_regular_file(qar, fn)) {
     return true;
   } else {
-    qassert(qar.p->is_read_through);
+    if (qar.mode() == "r") {
+      qassert(qar.p->is_read_through);
+    }
     return has(qar.p->directories, fn);
   }
 }
@@ -1737,7 +1739,7 @@ std::string read_info(const QarFile& qar, const std::string& fn)
       continue;
     }
     const QarSegmentInfo& qsinfo = qar_v.p->qsinfo_map[fn];
-    return read_info(qar_v, qsinfo)
+    return read_info(qar_v, qsinfo);
   }
   return "";
 }
