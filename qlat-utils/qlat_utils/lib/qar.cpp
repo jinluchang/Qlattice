@@ -27,7 +27,7 @@ static QFile get_qfile_of_data(const QarFileVol& qar,
 
 static std::string qar_file_multi_vol_suffix(const Long i);
 
-static void qar_check_new_vol(QarFile& qar, const Long data_size);
+static void qar_check_if_create_new_vol(QarFile& qar, const Long data_size);
 
 static std::string mk_key_from_qar_path(const std::string& path);
 
@@ -648,6 +648,7 @@ void QarFileVolObj::init(const QFile& qfile_)
   if (mode() == "w" or mode() == "a") {
     // write from scratch even if mode is "a" (perhaps inherited from parent
     // qfile)
+    // will append if use QarFileVolObj::init(path, "a")
     qfwrite(qar_header.data(), qar_header.size(), 1, qfile);
   } else if (mode() == "r") {
     std::vector<char> check_line(qar_header.size(), 0);
@@ -911,11 +912,58 @@ QFile get_qfile_of_data(const QarFileVol& qar, const QarSegmentInfo& qsinfo)
   return qfile;
 }
 
+bool verify_segment(const QarFileVol& qar, const std::string& fn)
+{
+  TIMER("verify_segment");
+  qassert(has(qar.p->qsinfo_map, fn));
+  const QarSegmentInfo& qsinfo = qar.p->qsinfo_map[fn];
+  qfseek(qar.p->qfile, qsinfo.offset, SEEK_SET);
+  QarSegmentInfo qsinfo_read;
+  if (not read_qar_segment_info(*qar.p, qsinfo_read)) {
+    return false;
+  }
+  if (qsinfo != qsinfo_read) {
+    return false;
+  }
+  const std::string fn_read = read_fn(qar, qsinfo);
+  if (fn != fn_read) {
+    return false;
+  }
+  return true;
+}
+
+bool verify_index(const QarFileVol& qar)
+{
+  TIMER("verify_index(qar_v)");
+  const std::vector<std::string>& fn_list = qar.p->fn_list;
+  Long offset_end = qar_header.size();
+  for (Long k = 0; k < (Long)fn_list.size(); ++k) {
+    const std::string& fn = fn_list[k];
+    if (not verify_segment(qar, fn)) {
+      return false;
+    }
+    const QarSegmentInfo& qsinfo = qar.p->qsinfo_map[fn];
+    if (qsinfo.offset != offset_end) {
+      return false;
+    }
+    offset_end = qsinfo.offset_end;
+  }
+  if (offset_end != qar.p->max_offset) {
+    return false;
+  }
+  const Long file_size = qfile_size(qar.p->qfile);
+  if (file_size != qar.p->max_offset) {
+    return false;
+  }
+  return true;
+}
+
 QFile read_next(const QarFileVol& qar, std::string& fn)
 // interface function
 // Initial pos of qar should be at the beginning of a segment.
 // register_file only if qfseek to the end of the file is successful.
 {
+  TIMER("read_next");
   qassert(not qar.null());
   qassert(qar.mode() == "r");
   QarSegmentInfo qsinfo;
@@ -935,6 +983,7 @@ QFile read_next(const QarFileVol& qar, std::string& fn)
 
 void read_through(const QarFileVol& qar)
 {
+  TIMER("read_through");
   qassert(not qar.null());
   qassert(qar.mode() == "r");
   if (qar.p->is_read_through) {
@@ -954,6 +1003,7 @@ void read_through(const QarFileVol& qar)
 QFile read(const QarFileVol& qar, const std::string& fn)
 // interface function
 {
+  TIMER("read");
   qassert(not qar.null());
   qassert(qar.mode() == "r");
   qassert(fn != "");
@@ -984,6 +1034,7 @@ QFile read(const QarFileVol& qar, const std::string& fn)
 bool has_regular_file(const QarFileVol& qar, const std::string& fn)
 // interface function
 {
+  TIMER("has_regular_file(qar_v,fn)");
   qassert(not qar.null());
   if (qar.p->is_read_through) {
     return has(qar.p->qsinfo_map, fn);
@@ -995,6 +1046,7 @@ bool has_regular_file(const QarFileVol& qar, const std::string& fn)
 bool has(const QarFileVol& qar, const std::string& fn)
 // interface function
 {
+  TIMER("has(qar_v,fn)");
   qassert(not qar.null());
   if (has_regular_file(qar, fn)) {
     return true;
@@ -1007,6 +1059,7 @@ bool has(const QarFileVol& qar, const std::string& fn)
 std::vector<std::string> list(const QarFileVol& qar)
 // interface function
 {
+  TIMER("list(qar)");
   if (qar.null()) {
     return std::vector<std::string>();
   }
@@ -1026,6 +1079,7 @@ void write_start(const QarFileVol& qar, const std::string& fn,
 // reserved for header.
 // Should call write_end(qar) after writing to qfile_out is finished.
 {
+  TIMER("write_start(qar_v)");
   qassert(not qar.null());
   qar.p->current_write_segment_fn = fn;
   QarSegmentInfo& qsinfo = qar.p->current_write_segment_info;
@@ -1072,6 +1126,7 @@ void write_end(const QarFileVol& qar)
 // Will check / add data_len information in header.
 // Finally, will write "\n\n" after the end of file.
 {
+  TIMER("write_end(qar_v)");
   qassert(not qar.null());
   QarSegmentInfo& qsinfo = qar.p->current_write_segment_info;
   qfseek(qar.qfile(), 0, SEEK_END);
@@ -1309,17 +1364,18 @@ void QarFile::close()
 std::vector<std::string> show_qar_index(const QarFile& qar)
 // interface function
 {
+  TIMER("show_qar_index");
   std::vector<std::string> lines;
   if (qar.null()) {
     return lines;
   }
-  TIMER("show_qar_index");
   lines.push_back(qar_idx_header);
   for (Long i = 0; i < (Long)qar.size(); ++i) {
     const QarFileVol& qar_v = qar[i];
     qassert(not qar_v.null());
-    qassert(qar_v.mode() == "r");
-    read_through(qar_v);
+    if (qar_v.mode() == "r") {
+      read_through(qar_v);
+    }
     const std::vector<std::string>& fn_list = qar_v.p->fn_list;
     const std::map<std::string, QarSegmentInfo> qsinfo_map =
         qar_v.p->qsinfo_map;
@@ -1621,7 +1677,6 @@ bool has_regular_file(const QarFile& qar, const std::string& fn)
   for (Long i = 0; i < (Long)qar.size(); ++i) {
     const QarFileVol& qar_v = qar[i];
     qassert(not qar_v.null());
-    qassert(qar_v.mode() == "r");
     if (has_regular_file(qar_v, fn)) {
       return true;
     }
@@ -1635,7 +1690,6 @@ bool has(const QarFile& qar, const std::string& fn)
   for (Long i = 0; i < (Long)qar.size(); ++i) {
     const QarFileVol& qar_v = qar[i];
     qassert(not qar_v.null());
-    qassert(qar_v.mode() == "r");
     if (has(qar_v, fn)) {
       return true;
     }
@@ -1659,10 +1713,22 @@ QFile read(const QarFile& qar, const std::string& fn)
   return qfile_in;
 }
 
-void qar_check_new_vol(QarFile& qar, const Long data_size)
+bool verify_index(const QarFile& qar)
+{
+  TIMER("verify_index(qar)");
+  qassert(qar.mode == "r");
+  for (int i = 0; i < (int)qar.size(); ++i) {
+    if (not verify_index(qar[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void qar_check_if_create_new_vol(QarFile& qar, const Long data_size)
 // make sure qar.back() is appendable after this call.
 {
-  TIMER("qar_check_new_vol");
+  TIMER("qar_check_if_create_new_vol");
   qassert(qar.mode == "a");
   qassert(not qar.null());
   const QarFileVol& qar_v = qar.back();
@@ -1687,9 +1753,13 @@ Long write_from_qfile(QarFile& qar, const std::string& fn,
 // qfile_in should have definite size.
 {
   TIMER_FLOPS("write_from_qfile(QarFile)");
+  if (has_regular_file(qar, fn)) {
+    qwarn(fname + ssprintf(": qar at '%s' already has fn='%s'. Append anyway.",
+                           qar.path.c_str(), fn.c_str()));
+  }
   const Long data_len = qfile_remaining_size(qfile_in);
   qassert(data_len >= 0);
-  qar_check_new_vol(qar, data_len);
+  qar_check_if_create_new_vol(qar, data_len);
   return write_from_qfile(qar.back(), fn, info, qfile_in);
 }
 
@@ -1699,9 +1769,13 @@ Long write_from_data(QarFile& qar, const std::string& fn,
 // Write content data to qar.
 {
   TIMER_FLOPS("write_from_data(QarFile)");
+  if (has_regular_file(qar, fn)) {
+    qwarn(fname + ssprintf(": qar at '%s' already has fn='%s'. Append anyway.",
+                           qar.path.c_str(), fn.c_str()));
+  }
   const Long data_len = data.size();
   qassert(data_len >= 0);
-  qar_check_new_vol(qar, data_len);
+  qar_check_if_create_new_vol(qar, data_len);
   return write_from_data(qar.back(), fn, info, data);
 }
 
@@ -1889,14 +1963,23 @@ int qar_create(const std::string& path_qar, const std::string& path_folder_,
     write_from_qfile(qar, fn, "", qfile_in);
   }
   const Long num_vol = qar.size();
+  save_qar_index(qar, path_qar + ".acc.idx");
   qar.close();
+  int ret_rename = 0;
   for (Long iv = 0; iv < num_vol; ++iv) {
     const std::string path_qar_v_acc =
         path_qar + ".acc" + qar_file_multi_vol_suffix(iv);
     const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
-    qrename(path_qar_v_acc, path_qar_v);
+    ret_rename = qrename(path_qar_v_acc, path_qar_v);
+    qassert(ret_rename == 0);
   }
-  qar_build_index(path_qar);
+  ret_rename = qrename(path_qar + ".acc.idx", path_qar + ".idx");
+  qassert(ret_rename == 0);
+  qar.init(path_qar, "r");
+  qassert((Long)path_qar.size() == num_vol);
+  if (not verify_index(qar)) {
+    qerr(fname + ": idx verification failed.");
+  }
   if (is_remove_folder_after) {
     for (Long iv = 0; iv < num_vol; ++iv) {
       const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
