@@ -268,6 +268,8 @@ cdef extern from "qlat-utils/utils-io.h" namespace "qlat":
     int qremove_info(const std_string& path) except +
     int qremove_all_info(const std_string& path) except +
     #
+    std_vector[std_string] qls_sync_node(const std_string& path, const bool is_sort) except +
+    std_vector[std_string] qls_all_sync_node(const std_string& path, const bool is_folder_before_files, const bool is_sort) except +
     bool does_file_exist_sync_node(const std_string& fn) except +
     bool is_directory_sync_node(const std_string& fn) except +
     bool is_regular_file_sync_node(const std_string& fn) except +
@@ -417,7 +419,7 @@ cdef extern from "qlat-utils/qar.h" namespace "qlat":
     #
     std_vector[std_string] properly_truncate_qar_file(const std_string& path) except +
     #
-    std_vector[std_string] show_qar_index(const QarFile& qar, const std_string& fn) except +
+    std_vector[std_string] show_qar_index(const QarFile& qar) except +
     int save_qar_index(const QarFile& qar, const std_string& fn) except +
     int parse_qar_index(const QarFile& qar, const std_string& qar_index_content) except +
     int load_qar_index(const QarFile& qar, const std_string& fn) except +
@@ -441,7 +443,6 @@ cdef extern from "qlat-utils/qar.h" namespace "qlat":
     #
     DataTable qload_datatable(const std_string& path, const bool is_par) except +
     #
-    void check_all_files_crc32_info(const std_string& path) except +
     crc32_t compute_crc32(QFile& qfile) except +
     crc32_t compute_crc32(const std_string& path) except +
     #
@@ -455,9 +456,8 @@ cdef extern from "qlat-utils/qar.h" namespace "qlat":
     int qtouch_info(const std_string& path, const std_vector[std_string]& content) except +
     int qappend_info(const std_string& path, const std_string& content) except +
     int qappend_info(const std_string& path, const std_vector[std_string]& content) except +
+    void check_all_files_crc32_info(const std_string& path) except +
     #
-    std_vector[std_string] qls_sync_node(const std_string& path) except +
-    std_vector[std_string] qls_all_sync_node( const std_string& path, const bool is_folder_before_files) except +
     bool does_regular_file_exist_qar_sync_node(const std_string& fn) except +
     bool does_file_exist_qar_sync_node(const std_string& fn) except +
     int qar_create_sync_node(const std_string& path_qar, const std_string& path_folder_, const bool is_remove_folder_after) except +

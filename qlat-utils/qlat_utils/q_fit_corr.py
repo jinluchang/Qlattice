@@ -304,7 +304,7 @@ def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=Non
 ### -----------------
 
 def mp_initializer():
-    import qlat as q
+    import qlat_utils as q
     q.set_verbose_level(-1)
 
 def jk_mini_task_in_fit_energy_amplitude(kwargs):

@@ -1,8 +1,5 @@
-from qlat_utils.timer import *
-
-import qlat_utils.c as c
-
-from qlat_utils.c import get_all_caches_info
+from .timer import *
+from .c import *
 
 class Cache(dict):
 
@@ -76,13 +73,10 @@ def rm_cache(*keys, ca = cache):
     assert isinstance(ca[key], Cache)
     ca.pop(key)
 
-def get_all_caches_info():
-    return c.get_all_caches_info()
-
 @timer
 def clear_all_caches():
     """
     clean python level cache and then C++ level cache
     """
     clean_cache()
-    c.clear_all_caches()
+    clear_all_caches()

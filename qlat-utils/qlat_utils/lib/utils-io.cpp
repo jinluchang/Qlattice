@@ -3,8 +3,8 @@
 namespace qlat
 {  //
 
-std::vector<std::string> qls_aux(const std::string& path,
-                                 const bool is_sort = true)
+static std::vector<std::string> qls_aux(const std::string& path,
+                                        const bool is_sort = true)
 {
   std::vector<std::string> contents;
   if (not is_directory(path)) {
@@ -28,9 +28,9 @@ std::vector<std::string> qls_aux(const std::string& path,
   return contents;
 }
 
-std::vector<std::string> qls_all_aux(const std::string& path,
-                                     const bool is_folder_before_files = false,
-                                     const bool is_sort = true)
+static std::vector<std::string> qls_all_aux(
+    const std::string& path, const bool is_folder_before_files = false,
+    const bool is_sort = true)
 // list all files and folder in path (not including it self)
 {
   std::vector<std::string> all_contents;
@@ -58,7 +58,7 @@ std::vector<std::string> qls_all_aux(const std::string& path,
   return all_contents;
 }
 
-int qremove_aux(const std::string& path)
+static int qremove_aux(const std::string& path)
 {
   TIMER("qremove_aux")
   displayln(0, ssprintf("qremove_aux: '%s' (id_node=%d).", path.c_str(),
@@ -77,7 +77,7 @@ int qremove_aux(const std::string& path)
   }
 }
 
-int qremove_all_aux(const std::string& path)
+static int qremove_all_aux(const std::string& path)
 {
   if (not is_directory(path)) {
     return qremove_aux(path);
@@ -341,6 +341,7 @@ int qtruncate(const std::string& path, const Long offset)
 
 std::vector<std::string> qls(const std::string& path, const bool is_sort)
 {
+  TIMER("qls");
   return qls_aux(remove_trailing_slashes(path), is_sort);
 }
 
@@ -349,6 +350,7 @@ std::vector<std::string> qls_all(const std::string& path,
                                  const bool is_sort)
 // list files before its folder
 {
+  TIMER("qls_all");
   return qls_all_aux(remove_trailing_slashes(path), is_folder_before_files,
                      is_sort);
 }
@@ -507,6 +509,33 @@ int qmkdir_p_info(const std::string& path, const mode_t mode)
 }
 
 // --------------------------------
+
+std::vector<std::string> qls_sync_node(const std::string& path,
+                                       const bool is_sort)
+{
+  TIMER("qls_sync_node");
+  std::vector<std::string> ret;
+  if (0 == get_id_node()) {
+    ret = qls(path, is_sort);
+  }
+  int bret = bcast_with_glb_sum(ret);
+  qassert(bret == 0);
+  return ret;
+}
+
+std::vector<std::string> qls_all_sync_node(const std::string& path,
+                                           const bool is_folder_before_files,
+                                           const bool is_sort)
+{
+  TIMER("qls_all_sync_node");
+  std::vector<std::string> ret;
+  if (0 == get_id_node()) {
+    ret = qls_all(path, is_folder_before_files, is_sort);
+  }
+  int bret = bcast_with_glb_sum(ret);
+  qassert(bret == 0);
+  return ret;
+}
 
 bool does_file_exist_sync_node(const std::string& fn)
 {

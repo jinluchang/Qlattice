@@ -95,6 +95,13 @@ int qremove_all_info(const std::string& path);
 
 // --------------------------
 
+std::vector<std::string> qls_sync_node(const std::string& path,
+                                       const bool is_sort = true);
+
+std::vector<std::string> qls_all_sync_node(
+    const std::string& path, const bool is_folder_before_files = false,
+    const bool is_sort = true);
+
 bool does_file_exist_sync_node(const std::string& fn);
 
 bool is_directory_sync_node(const std::string& fn);

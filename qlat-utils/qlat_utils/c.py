@@ -103,6 +103,12 @@ __all__ += [
         ]
 
 __all__ += [
+        'LatData',
+        'mk_lat_data',
+        'load_lat_data',
+        ]
+
+__all__ += [
         'basename',
         'dirname',
         'all_dirname_vec',
@@ -141,6 +147,9 @@ __all__ += [
         'qremove_all_sync_node',
         #
         'displayln_malloc_stats',
+        #
+        'get_all_caches_info',
+        'clear_all_caches',
         ]
 
 __all__ += [
@@ -156,12 +165,14 @@ __all__ += [
         'qar_extract',
         'qcopy_file',
         'list_qar',
+        #
         'qcat',
         'qcat_bytes',
         'qtouch',
         'qappend',
         'qload_datatable',
         'compute_crc32',
+        #
         'qar_build_index_info',
         'qar_create_info',
         'qar_extract_info',
@@ -172,6 +183,12 @@ __all__ += [
         #
         'does_regular_file_exist_qar_sync_node',
         'does_file_exist_qar_sync_node',
+        'qar_create_sync_node',
+        'qar_extract_sync_node',
+        'qcopy_file_sync_node',
+        'qcat_sync_node',
+        'qcat_bytes_sync_node',
+        'qload_datatable_sync_node',
         ]
 
 # ----------------------------------

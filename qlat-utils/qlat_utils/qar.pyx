@@ -165,7 +165,7 @@ cdef class QarFile:
         return qfile
 
     def read_data(self, const cc.std_string& fn):
-        return cc.read_data(self.xx, fn)
+        return <str>cc.read_data(self.xx, fn)
 
     def read_data_bytes(self, const cc.std_string& fn):
         return <bytes>cc.read_data(self.xx, fn)
@@ -188,6 +188,18 @@ cdef class QarFile:
         else:
             raise Exception(f"write: {type(data)}")
 
+    def show_index(self):
+        return cc.show_qar_index(self.xx)
+
+    def save_index(self, const cc.std_string& fn):
+        return cc.save_qar_index(self.xx, fn)
+
+    def parse_index(self, const cc.std_string& qar_index_content):
+        return cc.parse_qar_index(self.xx, qar_index_content)
+
+    def load_index(self, const cc.std_string& fn):
+        return cc.load_qar_index(self.xx, fn)
+
 ### ----------------------------------------------------------
 
 def get_qar_multi_vol_max_size():
@@ -209,6 +221,11 @@ def set_qar_multi_vol_max_size(size=None):
 
 def show_all_qfile():
     return cc.show_all_qfile()
+
+### ----------------------------------------------------------
+
+def properly_truncate_qar_file(const cc.std_string& path):
+    return cc.properly_truncate_qar_file(path)
 
 ### ----------------------------------------------------------
 
@@ -242,7 +259,7 @@ def qcopy_file(const cc.std_string& path_src, const cc.std_string& path_dst):
 @timer
 def list_qar(const cc.std_string& path_qar):
     cdef list l = cc.list_qar(path_qar)
-    return [ str(fn) for fn in l ]
+    return [ <str>fn for fn in l ]
 
 ### ----------------------------------------------------------
 
@@ -329,5 +346,30 @@ def does_regular_file_exist_qar_sync_node(const cc.std_string& path):
 
 def does_file_exist_qar_sync_node(const cc.std_string& path):
     return cc.does_file_exist_qar_sync_node(path)
+
+@timer
+def qar_create_sync_node(const cc.std_string& path_qar, const cc.std_string& path_folder,
+        *, const cc.bool is_remove_folder_after=False):
+    return cc.qar_create_sync_node(path_qar, path_folder, is_remove_folder_after)
+
+@timer
+def qar_extract_sync_node(const cc.std_string& path_qar, const cc.std_string& path_folder,
+                *, const cc.bool is_remove_qar_after=False):
+    return cc.qar_extract_sync_node(path_qar, path_folder, is_remove_qar_after)
+
+@timer
+def qcopy_file_sync_node(const cc.std_string& path_src, const cc.std_string& path_dst):
+    return cc.qcopy_file_sync_node(path_src, path_dst)
+
+def qcat_sync_node(const cc.std_string& path):
+    """Return contents of file as `str`"""
+    return <str>cc.qcat_sync_node(path)
+
+def qcat_bytes_sync_node(const cc.std_string& path):
+    """Return contents of file as `bytes`"""
+    return <bytes>cc.qcat_sync_node(path)
+
+def qload_datatable_sync_node(const cc.std_string& path, const cc.bool is_par=False):
+    return cc.qload_datatable_sync_node(path, is_par)
 
 ### ----------------------------------------------------------

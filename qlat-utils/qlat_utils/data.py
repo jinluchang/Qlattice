@@ -1,4 +1,3 @@
-from .lat_io import *
 from .rng_state import *
 from .timer import *
 

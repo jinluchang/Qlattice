@@ -1,10 +1,6 @@
-import qlat_utils.c as c
-
 import os
 import pickle
 import hashlib
-
-from .qar_utils import *
 
 from .c import *
 
@@ -45,34 +41,6 @@ def mk_file_dirs_info(path):
     if get_id_node() == 0:
         displayln(f"mk_file_dirs_info: '{path}'.")
         mk_file_dirs(path)
-
-def qtouch(path, content = None):
-    # mk_file_dirs(path)
-    if content is None:
-        return c.qtouch(path)
-    else:
-        return c.qtouch(path, content)
-
-def qtouch_info(path, content = None):
-    # mk_file_dirs_info(path)
-    if content is None:
-        return c.qtouch_info(path)
-    else:
-        return c.qtouch_info(path, content)
-
-def qappend(path, content = None):
-    # mk_file_dirs(path)
-    if content is None:
-        return c.qappend(path)
-    else:
-        return c.qappend(path, content)
-
-def qappend_info(path, content = None):
-    # mk_file_dirs_info(path)
-    if content is None:
-        return c.qappend_info(path)
-    else:
-        return c.qappend_info(path, content)
 
 @timer
 def save_pickle_obj(obj, path, *, is_sync_node=True):
@@ -153,21 +121,3 @@ def pickle_cache(path, is_sync_node=True):
             return ret
         return f
     return dec
-
-def qls_sync_node(path):
-    if get_num_node() != 1:
-        import qlat.c as c
-        return c.qls_sync_node(path)
-    return qls(path)
-
-def qls_all_sync_node(path):
-    if get_num_node() != 1:
-        import qlat.c as c
-        return c.qls_all_sync_node(path)
-    return qls_all(path)
-
-def qload_datatable_sync_node(path, is_par = False):
-    if get_num_node() != 1:
-        import qlat.c as c
-        return c.qload_datatable_sync_node(path, is_par)
-    return qload_datatable(path, is_par)

@@ -18,13 +18,13 @@ def remove_trailing_slashes(const cc.std_string& fn):
 
 def qls(const cc.std_string& path, const cc.bool is_sort=True):
     cdef list l = cc.qls(path, is_sort)
-    return [ str(v) for v in l ]
+    return [ <str>v for v in l ]
 
 def qls_all(const cc.std_string& path,
-            const cc.bool is_folder_before_files=False,
-            const cc.bool is_sort=True):
+        const cc.bool is_folder_before_files=False,
+        const cc.bool is_sort=True):
     cdef list l = cc.qls_all(path, is_folder_before_files, is_sort)
-    return [ str(v) for v in l ]
+    return [ <str>v for v in l ]
 
 def does_file_exist(const cc.std_string& path):
     return cc.does_file_exist(path)
@@ -91,6 +91,16 @@ def qremove_all_info(const cc.std_string& path):
     return cc.qremove_all_info(path)
 
 ### -------------------------------------------------------------------
+
+def qls_sync_node(const cc.std_string& path, const cc.bool is_sort=True):
+    cdef list l = cc.qls_sync_node(path, is_sort)
+    return [ <str>v for v in l ]
+
+def qls_all_sync_node(const cc.std_string& path,
+        const cc.bool is_folder_before_files=False,
+        const cc.bool is_sort=True):
+    cdef list l = cc.qls_all_sync_node(path, is_folder_before_files, is_sort)
+    return [ <str>v for v in l ]
 
 def does_file_exist_sync_node(path):
     return cc.does_file_exist_sync_node(path)

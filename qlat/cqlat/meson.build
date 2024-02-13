@@ -21,7 +21,6 @@ cpp_files = files(
   'qm-action.cpp',
   'scalar-action.cpp',
   'selected-field.cpp',
-  'utils-io.cpp',
   )
 
 lib = py3.extension_module('cqlat',

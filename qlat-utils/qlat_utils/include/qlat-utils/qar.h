@@ -403,8 +403,7 @@ std::vector<std::string> properly_truncate_qar_file(
 
 // -------------------
 
-std::vector<std::string> show_qar_index(const QarFile& qar,
-                                        const std::string& fn);
+std::vector<std::string> show_qar_index(const QarFile& qar);
 
 int save_qar_index(const QarFile& qar, const std::string& fn);
 
@@ -508,11 +507,6 @@ int qappend_info(const std::string& path,
                  const std::vector<std::string>& content);
 
 // -------------------
-
-std::vector<std::string> qls_sync_node(const std::string& path);
-
-std::vector<std::string> qls_all_sync_node(
-    const std::string& path, const bool is_folder_before_files = false);
 
 bool does_regular_file_exist_qar_sync_node(const std::string& fn);
 

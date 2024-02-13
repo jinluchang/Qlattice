@@ -2727,29 +2727,6 @@ int qappend_info(const std::string& path, const std::vector<std::string>& conten
 
 // ---------------------------------
 
-std::vector<std::string> qls_sync_node(const std::string& path)
-{
-  std::vector<std::string> ret;
-  if (0 == get_id_node()) {
-    ret = qls(path);
-  }
-  int bret = bcast_with_glb_sum(ret);
-  qassert(bret == 0);
-  return ret;
-}
-
-std::vector<std::string> qls_all_sync_node(const std::string& path,
-                                           const bool is_folder_before_files)
-{
-  std::vector<std::string> ret;
-  if (0 == get_id_node()) {
-    ret = qls_all(path, is_folder_before_files);
-  }
-  int bret = bcast_with_glb_sum(ret);
-  qassert(bret == 0);
-  return ret;
-}
-
 int qar_create_sync_node(const std::string& path_qar,
                          const std::string& path_folder_,
                          const bool is_remove_folder_after)
