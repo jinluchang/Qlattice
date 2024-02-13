@@ -22,7 +22,7 @@ cdef class LatData:
         self.xx = v1.xx
         return self
 
-    def copy(self, cc.bool is_copying_data = True):
+    def copy(self, cc.bool is_copying_data=True):
         cdef LatData x = type(self)()
         if is_copying_data:
             x.xx = self.xx
@@ -140,7 +140,7 @@ cdef class LatData:
         cdef int i
         return [ self.xx.info[i].size for i in range(ndim) ]
 
-    def set_dim_sizes(self, list dim_sizes, *, cc.bool is_complex = True):
+    def set_dim_sizes(self, list dim_sizes, *, cc.bool is_complex=True):
         if self.view_count > 0:
             raise ValueError("can't change shape while being viewed")
         cdef int ndim = len(dim_sizes)
@@ -155,7 +155,7 @@ cdef class LatData:
             self.xx.info[ndim] = cc.lat_dim_re_im()
         cc.lat_data_alloc(self.xx)
 
-    def set_dim_name(self, int dim, const cc.std_string& name, list indices = None):
+    def set_dim_name(self, int dim, const cc.std_string& name, list indices=None):
         assert 0 <= dim
         assert dim < self.xx.info.size()
         cdef int size
@@ -191,7 +191,7 @@ cdef class LatData:
     def to_numpy(self):
         return np.asarray(self).copy()
 
-    def from_numpy(self, numpy.ndarray val, list dim_names = None, *, cc.bool is_complex = True):
+    def from_numpy(self, numpy.ndarray val, list dim_names=None, *, cc.bool is_complex=True):
         """
         only set LatData shape if it is initially empty
         otherwise only set data and ignore shape completely
@@ -203,7 +203,7 @@ cdef class LatData:
         cdef int dim
         cdef list shape = [ val.shape[dim] for dim in range(ndim) ]
         if self.ndim() == 0:
-            self.set_dim_sizes(shape, is_complex = is_complex)
+            self.set_dim_sizes(shape, is_complex=is_complex)
             if dim_names is None:
                 dim_names = [ n for n in "ijklmnopqrstuvwxyz" ]
             assert ndim <= len(dim_names)
@@ -230,7 +230,7 @@ cdef class LatData:
         if self.view_count > 0:
             raise ValueError("can't load while being viewed")
         if self.ndim() == 0:
-            self.set_dim_sizes([ len(val), ], is_complex = is_complex)
+            self.set_dim_sizes([ len(val), ], is_complex=is_complex)
             self.set_dim_name(0, "i")
         np.asarray(self).ravel()[:] = np.array(val)
         return self
@@ -250,7 +250,7 @@ cdef class LatData:
     def __setstate__(self, state):
         [ is_complex, dim_sizes, dim_names, dim_indices, data_list ] = state
         self.__init__()
-        self.set_dim_sizes(dim_sizes, is_complex = is_complex)
+        self.set_dim_sizes(dim_sizes, is_complex=is_complex)
         ndim = len(dim_sizes)
         for dim in range(ndim):
             self.set_dim_name(dim, dim_names[dim], dim_indices[dim])
@@ -269,7 +269,7 @@ cdef class LatData:
             dim_indices = self.dim_indices(dim)
             return [ dim_name, dim_size, dim_indices, ]
 
-    def set_info(self, list info_list, *, cc.bool is_complex = True):
+    def set_info(self, list info_list, *, cc.bool is_complex=True):
         """
         ``info_list`` format::\n
             [ [ dim_name, dim_size, dim_indices, ], ... ]
@@ -280,7 +280,7 @@ cdef class LatData:
         for info in info_list:
             assert len(info) >= 2
         dim_sizes = [ info[1] for info in info_list ]
-        self.set_dim_sizes(dim_sizes, is_complex = is_complex)
+        self.set_dim_sizes(dim_sizes, is_complex=is_complex)
         ndim = len(dim_sizes)
         for dim in range(ndim):
             info = info_list[dim]
@@ -366,14 +366,14 @@ cdef class LatData:
 
 ### -------------------------------------------------------------------
 
-def mk_lat_data(list info_list, *, cc.bool is_complex = True):
+def mk_lat_data(list info_list, *, cc.bool is_complex=True):
     """
     ``info_list`` format::\n
         [ [ dim_name, dim_size, dim_indices, ], ... ]
     dim_indices can be optional
     """
     ld = LatData()
-    ld.set_info(info_list, is_complex = is_complex)
+    ld.set_info(info_list, is_complex=is_complex)
     return ld
 
 def load_lat_data(const cc.std_string& path):

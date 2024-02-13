@@ -332,18 +332,6 @@ bool does_file_exist_cache(const std::string& fn)
 
 void flush() { fflush(get_output_file()); }
 
-int qtruncate(const std::string& evilFile)
-{
-  std::ofstream evil;
-  evil.open(evilFile.c_str());
-  bool does_exist = evil.good();
-  if (does_exist) {
-    evil.close();
-    return 0;
-  }
-  return 1;
-}
-
 int qtruncate(const std::string& path, const Long offset)
 // return true if successful.
 {

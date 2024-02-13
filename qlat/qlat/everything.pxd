@@ -72,10 +72,6 @@ cdef extern from "qlat/utils-io.h" namespace "qlat":
     void qquit(const std_string& msg) except +
     void check_time_limit(const RealD budget) except +
     void check_stop(const std_string& fn) except +
-    std_vector[std_string] qls_sync_node(const std_string& path) except +
-    std_vector[std_string] qls_all_sync_node(const std_string& path, const bool is_folder_before_files) except +
-    std_string qcat_sync_node(const std_string& path) except +
-    DataTable qload_datatable_sync_node(const std_string& path, const bool is_par) except +
 
 cdef extern from "qlat/core.h" namespace "qlat":
 

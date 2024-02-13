@@ -252,6 +252,7 @@ cdef extern from "qlat-utils/utils-io.h" namespace "qlat":
     int qrename(const std_string& old_path, const std_string& new_path) except +
     int qremove(const std_string& path) except +
     int qremove_all(const std_string& path) except +
+    int qtruncate(const std_string& path, const Long offset) except +
     void flush() except +
     #
     void clear_is_directory_cache() except +
@@ -260,8 +261,6 @@ cdef extern from "qlat-utils/utils-io.h" namespace "qlat":
     bool is_directory_cache(const std_string& dir_) except +
     bool is_regular_file_cache(const std_string& fn) except +
     bool does_file_exist_cache(const std_string& fn) except +
-    int qtruncate(const std_string& path) except +
-    int qtruncate(const std_string& path, const Long offset) except +
     #
     int qmkdir_info(const std_string& path) except +
     int qmkdir_p_info(const std_string& path) except +
@@ -404,18 +403,17 @@ cdef extern from "qlat-utils/qar.h" namespace "qlat":
     Long qwrite_data(const std_vector[std_string]& lines, const QFile& qfile) except +
     Long write_from_qfile(const QFile& qfile_out, const QFile& qfile_in) except +
     std_string qcat(const QFile& qfile) except +
-    int qappend(const QFile& qfile, const std_string& content) except +
-    int qappend(const QFile& qfile, const std_vector[std_string]& content) except +
     #
     std_vector[std_string] list(const QarFile& qar) except +
-    std_vector[std_string] has_regular_file(const QarFile& qar, const std_string& fn) except +
-    std_vector[std_string] has(const QarFile& qar, const std_string& fn) except +
+    bool has_regular_file(const QarFile& qar, const std_string& fn) except +
+    bool has(const QarFile& qar, const std_string& fn) except +
     QFile read(const QarFile& qar, const std_string& fn) except +
     std_string read_data(const QarFile& qar, const std_string& fn) except +
     std_string read_info(const QarFile& qar, const std_string& fn) except +
     bool verify_index(const QarFile& qar) except +
     Long write_from_qfile(QarFile& qar, const std_string& fn, const std_string& info, const QFile& qfile_in) except +
     Long write_from_data(QarFile& qar, const std_string& fn, const std_string& info, const std_string& data) except +
+    Long write_from_data(QarFile& qar, const std_string& fn, const std_string& info, const std_vector[std_string]& data) except +
     #
     std_vector[std_string] properly_truncate_qar_file(const std_string& path) except +
     #
@@ -456,6 +454,7 @@ cdef extern from "qlat-utils/qar.h" namespace "qlat":
     int qtouch_info(const std_string& path, const std_string& content) except +
     int qtouch_info(const std_string& path, const std_vector[std_string]& content) except +
     int qappend_info(const std_string& path, const std_string& content) except +
+    int qappend_info(const std_string& path, const std_vector[std_string]& content) except +
     #
     std_vector[std_string] qls_sync_node(const std_string& path) except +
     std_vector[std_string] qls_all_sync_node( const std_string& path, const bool is_folder_before_files) except +

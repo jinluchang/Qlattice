@@ -392,6 +392,10 @@ Long write_from_data(QarFile& qar, const std::string& fn,
 Long write_from_data(QarFile& qar, const std::string& fn,
                      const std::string& info, const std::string& data);
 
+Long write_from_data(QarFile& qar, const std::string& fn,
+                     const std::string& info,
+                     const std::vector<std::string>& data);
+
 // -------------------
 
 std::vector<std::string> properly_truncate_qar_file(

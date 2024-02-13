@@ -6,8 +6,189 @@ from .timer import timer
 
 ### ----------------------------------------------------------
 
-def show_all_qfile():
-    return cc.show_all_qfile()
+cdef class QFile:
+
+    def __init__(self, *,
+            str path=None, str mode=None,
+            QFile qfile=None, cc.Long q_offset_start=0, cc.Long q_offset_end=-1,
+            ):
+        """
+        QFile(path=path, mode=mode)
+        QFile(qfile=path, q_offset_start=q_offset_start, q_offset_end=q_offset_end)
+        """
+        if path is not None and qfile is None:
+            self.xx.init(path, mode)
+        elif path is None and qfile is not None:
+            self.xx.init(qfile.xx, q_offset_start, q_offset_end)
+        else:
+            assert path is None
+            assert qfile is None
+
+    def __imatmul__(self, QFile v1):
+        self.xx = v1.xx
+        return self
+
+    def copy(self, cc.bool is_copying_data=True):
+        cdef QFile x = type(self)()
+        if is_copying_data:
+            x.xx = self.xx
+        return x
+
+    def __copy__(self):
+        return self.copy()
+
+    def __deepcopy__(self, memo):
+        return self.copy()
+
+    def path(self):
+        return self.xx.path()
+
+    def mode(self):
+        return self.xx.mode()
+
+    def close(self):
+        return self.xx.close()
+
+    def null(self):
+        return self.xx.null()
+
+    def eof(self):
+        return cc.qfeof(self.xx)
+
+    def tell(self):
+        return cc.qftell(self.xx)
+
+    def flush(self):
+        return cc.qfflush(self.xx)
+
+    def seek_set(self, cc.Long q_offset):
+        return cc.qfseek_set(self.xx, q_offset)
+
+    def seek_end(self, cc.Long q_offset):
+        return cc.qfseek_end(self.xx, q_offset)
+
+    def seek_cur(self, cc.Long q_offset):
+        return cc.qfseek_cur(self.xx, q_offset)
+
+    def size(self):
+        return cc.qfile_size(self.xx)
+
+    def remaining_size(self):
+        return cc.qfile_remaining_size(self.xx)
+
+    def getline(self):
+        return cc.qgetline(self.xx)
+
+    def getlines(self):
+        return cc.qgetlines(self.xx)
+
+    def getlines(self):
+        return cc.qgetlines(self.xx)
+
+    def qcat(self):
+        return <str>cc.qcat(self.xx)
+
+    def qcat_bytes(self):
+        return <bytes>cc.qcat(self.xx)
+
+    def write(self, object content):
+        cdef QFile qfile
+        if isinstance(content, QFile):
+            qfile = content
+            return cc.write_from_qfile(self.xx, qfile.xx)
+        elif isinstance(content, (str, bytes,)):
+            return cc.qwrite_data(<cc.std_string>content, self.xx)
+        elif isinstance(content, (list, tuple,)):
+            return cc.qwrite_data(<cc.std_vector[cc.std_string]>content, self.xx)
+        else:
+            raise Exception(f"write: {type(content)}")
+
+    def compute_crc32(self):
+        return cc.compute_crc32(self.xx)
+
+### ----------------------------------------------------------
+
+cdef class QarFile:
+
+    def __init__(self, *, str path=None, str mode=None):
+        """
+        QarFile(path=path, mode=mode)
+        """
+        if path is not None:
+            self.xx.init(path, mode)
+        else:
+            assert path is None
+
+    def __imatmul__(self, QarFile v1):
+        self.xx = v1.xx
+        return self
+
+    def copy(self, cc.bool is_copying_data=True):
+        cdef QarFile x = type(self)()
+        if is_copying_data:
+            x.xx = self.xx
+        return x
+
+    def __copy__(self):
+        return self.copy()
+
+    def __deepcopy__(self, memo):
+        return self.copy()
+
+    def path(self):
+        return self.xx.path
+
+    def mode(self):
+        return self.xx.mode
+
+    def close(self):
+        return self.xx.close()
+
+    def null(self):
+        return self.xx.null()
+
+    def list(self):
+        return cc.list(self.xx)
+
+    def has_regular_file(self, const cc.std_string& fn):
+        return cc.has_regular_file(self.xx, fn)
+
+    def has(self, const cc.std_string& fn):
+        return cc.has(self.xx, fn)
+
+    def read(self, const cc.std_string& fn):
+        """
+        return qfile
+        """
+        cdef QFile qfile = QFile()
+        qfile.xx = cc.read(self.xx, fn)
+        return qfile
+
+    def read_data(self, const cc.std_string& fn):
+        return cc.read_data(self.xx, fn)
+
+    def read_data_bytes(self, const cc.std_string& fn):
+        return <bytes>cc.read_data(self.xx, fn)
+
+    def read_info(self, const cc.std_string& fn):
+        return cc.read_info(self.xx, fn)
+
+    def verify_index(self):
+        return cc.verify_index(self.xx)
+
+    def write(self, const cc.std_string& fn, const cc.std_string& info, object data):
+        cdef QFile qfile
+        if isinstance(data, QFile):
+            qfile = data
+            return cc.write_from_qfile(self.xx, fn, info, qfile.xx)
+        elif isinstance(data, (str, bytes,)):
+            return cc.write_from_data(self.xx, fn, info, <cc.std_string>data)
+        elif isinstance(data, (list, tuple,)):
+            return cc.write_from_data(self.xx, fn, info, <cc.std_vector[cc.std_string]>data)
+        else:
+            raise Exception(f"write: {type(data)}")
+
+### ----------------------------------------------------------
 
 def get_qar_multi_vol_max_size():
     """
@@ -26,19 +207,16 @@ def set_qar_multi_vol_max_size(size=None):
     p_size[0] = size
     assert cc.get_qar_multi_vol_max_size() == size
 
+def show_all_qfile():
+    return cc.show_all_qfile()
+
+### ----------------------------------------------------------
+
 def does_regular_file_exist_qar(const cc.std_string& path):
     return cc.does_regular_file_exist_qar(path)
 
 def does_file_exist_qar(const cc.std_string& path):
     return cc.does_file_exist_qar(path)
-
-def qcat(const cc.std_string& path):
-    """Return contents of file as `str`"""
-    return <str>cc.qcat(path)
-
-def qcat_bytes(const cc.std_string& path):
-    """Return contents of file as `bytes`"""
-    return <bytes>cc.qcat(path)
 
 @timer
 def qar_build_index(const cc.std_string& path_qar):
@@ -68,11 +246,37 @@ def list_qar(const cc.std_string& path_qar):
 
 ### ----------------------------------------------------------
 
-def does_regular_file_exist_qar_sync_node(const cc.std_string& path):
-    return cc.does_regular_file_exist_qar_sync_node(path)
+def qcat(const cc.std_string& path):
+    """Return contents of file as `str`"""
+    return <str>cc.qcat(path)
 
-def does_file_exist_qar_sync_node(const cc.std_string& path):
-    return cc.does_file_exist_qar_sync_node(path)
+def qcat_bytes(const cc.std_string& path):
+    """Return contents of file as `bytes`"""
+    return <bytes>cc.qcat(path)
+
+def qtouch(const cc.std_string& path, object content=None):
+    if content is None:
+        return cc.qtouch(path)
+    elif isinstance(content, (str, bytes,)):
+        return cc.qtouch(path, <cc.std_string>content)
+    elif isinstance(content, (list, tuple,)):
+        return cc.qtouch(path, <cc.std_vector[cc.std_string]>content)
+    else:
+        raise Exception(f"qtouch: {type(content)}")
+
+def qappend(const cc.std_string& path, object content):
+    if isinstance(content, (str, bytes,)):
+        return cc.qappend(path, <cc.std_string>content)
+    elif isinstance(content, (list, tuple,)):
+        return cc.qappend(path, <cc.std_vector[cc.std_string]>content)
+    else:
+        raise Exception(f"qappend: {type(content)}")
+
+def qload_datatable(const cc.std_string& path, const cc.bool is_par=False):
+    return cc.qload_datatable(path, is_par)
+
+def compute_crc32(const cc.std_string& path):
+    return cc.compute_crc32(path)
 
 ### ----------------------------------------------------------
 
@@ -96,5 +300,34 @@ def qar_extract_info(const cc.std_string& path_qar, const cc.std_string& path_fo
 @timer
 def qcopy_file_info(const cc.std_string& path_src, const cc.std_string& path_dst):
     return cc.qcopy_file_info(path_src, path_dst)
+
+def qtouch_info(const cc.std_string& path, object content=None):
+    if content is None:
+        return cc.qtouch_info(path)
+    elif isinstance(content, (str, bytes,)):
+        return cc.qtouch_info(path, <cc.std_string>content)
+    elif isinstance(content, (list, tuple,)):
+        return cc.qtouch_info(path, <cc.std_vector[cc.std_string]>content)
+    else:
+        raise Exception(f"qtouch: {type(content)}")
+
+def qappend_info(const cc.std_string& path, object content):
+    if isinstance(content, (str, bytes,)):
+        return cc.qappend_info(path, <cc.std_string>content)
+    elif isinstance(content, (list, tuple,)):
+        return cc.qappend_info(path, <cc.std_vector[cc.std_string]>content)
+    else:
+        raise Exception(f"qappend: {type(content)}")
+
+def check_all_files_crc32_info(const cc.std_string& path):
+    return cc.check_all_files_crc32_info(path)
+
+### ----------------------------------------------------------
+
+def does_regular_file_exist_qar_sync_node(const cc.std_string& path):
+    return cc.does_regular_file_exist_qar_sync_node(path)
+
+def does_file_exist_qar_sync_node(const cc.std_string& path):
+    return cc.does_file_exist_qar_sync_node(path)
 
 ### ----------------------------------------------------------

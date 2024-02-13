@@ -1284,6 +1284,7 @@ Long write_from_qfile(const QarFileVol& qar, const std::string& fn,
   write_start(qar, fn, info, qfile_out, data_len);
   const Long total_bytes = write_from_qfile(qfile_out, qfile_in);
   write_end(qar);
+  qassert(data_len == total_bytes);
   timer.flops += total_bytes;
   return total_bytes;
 }
@@ -1302,6 +1303,7 @@ Long write_from_data(const QarFileVol& qar, const std::string& fn,
   write_start(qar, fn, info, qfile_out, data_len);
   const Long total_bytes = qwrite_data(data, qfile_out);
   write_end(qar);
+  qassert(data_len == total_bytes);
   timer.flops += total_bytes;
   return total_bytes;
 }
@@ -1310,6 +1312,26 @@ Long write_from_data(QarFileVol& qar, const std::string& fn,
                      const std::string& info, const std::string& data)
 {
   return write_from_data(qar, fn, info, get_data_char(data));
+}
+
+Long write_from_data(QarFileVol& qar, const std::string& fn,
+                     const std::string& info,
+                     const std::vector<std::string>& data)
+{
+  TIMER_FLOPS("write_from_data(QarFileVol)");
+  qassert(not qar.null());
+  Long data_len = 0;
+  for (Long i = 0; i < (Long)data.size(); ++i) {
+    data_len += data[i].size();
+  }
+  qassert(data_len >= 0);
+  QFile qfile_out;
+  write_start(qar, fn, info, qfile_out, data_len);
+  const Long total_bytes = qwrite_data(data, qfile_out);
+  write_end(qar);
+  qassert(data_len == total_bytes);
+  timer.flops += total_bytes;
+  return total_bytes;
 }
 
 // ----------------------------------------------------
@@ -1631,7 +1653,37 @@ Long write_from_data(QarFile& qar, const std::string& fn,
 Long write_from_data(QarFile& qar, const std::string& fn,
                      const std::string& info, const std::string& data)
 {
-  return write_from_data(qar, fn, info, get_data_char(data));
+  TIMER_VERBOSE_FLOPS("write_from_data(QarFile)");
+  if (has_regular_file(qar, fn)) {
+    qwarn(fname + ssprintf(": qar at '%s' already has fn='%s'. Append anyway.",
+                           qar.path.c_str(), fn.c_str()));
+  }
+  const Long data_len = data.size();
+  qassert(data_len >= 0);
+  qar_check_if_create_new_vol(qar, data_len);
+  const Long total_bytes = write_from_data(qar.back(), fn, info, data);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+Long write_from_data(QarFile& qar, const std::string& fn,
+                     const std::string& info,
+                     const std::vector<std::string>& data)
+{
+  TIMER_VERBOSE_FLOPS("write_from_data(QarFile)");
+  if (has_regular_file(qar, fn)) {
+    qwarn(fname + ssprintf(": qar at '%s' already has fn='%s'. Append anyway.",
+                           qar.path.c_str(), fn.c_str()));
+  }
+  Long data_len = 0;
+  for (Long i = 0; i < (Long)data.size(); ++i) {
+    data_len += data[i].size();
+  }
+  qassert(data_len >= 0);
+  qar_check_if_create_new_vol(qar, data_len);
+  const Long total_bytes = write_from_data(qar.back(), fn, info, data);
+  timer.flops += total_bytes;
+  return total_bytes;
 }
 
 // ----------------------------------------------------
@@ -2472,10 +2524,12 @@ DataTable qload_datatable(const std::string& path, const bool is_par)
 
 crc32_t compute_crc32(QFile& qfile)
 // interface function
-// compute_crc32 for all the remaining data.
+// compute_crc32 for all data.
 {
   TIMER_VERBOSE_FLOPS("compute_crc32");
   qassert(not qfile.null());
+  qassert(qfile.mode() == "r");
+  qfseek(qfile, 0, SEEK_SET);
   const size_t chunk_size = 16 * 1024 * 1024;
   std::vector<char> data(chunk_size);
   crc32_t crc = 0;

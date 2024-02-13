@@ -72,9 +72,7 @@ bool does_file_exist_cache(const std::string& fn);
 
 // --------------------------
 
-int qtruncate(const std::string& evilFile);
-
-int qtruncate(const std::string& path, const Long offset);
+int qtruncate(const std::string& path, const Long offset=0);
 
 inline int ssleep(const double seconds)
 {
