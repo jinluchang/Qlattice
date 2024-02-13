@@ -69,7 +69,6 @@ def glb_sum_np(x):
     """
     x does NOT change
     """
-    from qlat_utils.lat_io import LatData
     shape = x.shape
     dtype = x.dtype
     l = list(x.flatten())
