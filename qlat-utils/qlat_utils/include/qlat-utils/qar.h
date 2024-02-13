@@ -137,6 +137,12 @@ int qfflush(const QFile& qfile);
 
 int qfseek(const QFile& qfile, const Long q_offset, const int whence);
 
+int qfseek_set(const QFile& qfile, const Long q_offset);
+
+int qfseek_end(const QFile& qfile, const Long q_offset);
+
+int qfseek_cur(const QFile& qfile, const Long q_offset);
+
 Long qfile_size(const QFile& qfile);
 
 Long qfile_remaining_size(const QFile& qfile);
@@ -398,8 +404,6 @@ std::vector<std::string> show_qar_index(const QarFile& qar,
 
 int save_qar_index(const QarFile& qar, const std::string& fn);
 
-int save_qar_index_info(const QarFile& qar, const std::string& fn);
-
 int parse_qar_index(std::vector<Long>& vol_idx_vec,
                     std::vector<std::string>& fn_vec,
                     std::vector<QarSegmentInfo>& qsinfo_vec,
@@ -440,6 +444,8 @@ int qtouch(const std::string& path, const std::vector<std::string>& content);
 int qappend(const std::string& path, const std::string& content);
 
 int qappend(const std::string& path, const std::vector<std::string>& content);
+
+// -------------------
 
 DataTable qload_datatable_serial(QFile& qfile);
 

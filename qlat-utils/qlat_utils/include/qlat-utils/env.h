@@ -20,6 +20,8 @@ double get_time_limit_default();
 
 double get_time_budget_default();
 
+Long get_qar_multi_vol_max_size_default();
+
 API inline Long& get_verbose_level()
 // qlat parameter
 {
@@ -45,8 +47,7 @@ API inline Long& get_qar_multi_vol_max_size()
 // qlat parameter
 // size in bytes
 {
-  static Long size = get_env_long_default("q_qar_multi_vol_max_size",
-                                          500L * 1000L * 1000L * 1000L);
+  static Long size = get_qar_multi_vol_max_size_default();
   return size;
 }
 

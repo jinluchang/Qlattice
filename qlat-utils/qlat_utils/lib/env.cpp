@@ -87,4 +87,11 @@ double get_time_budget_default()
   return budget;
 }
 
+Long get_qar_multi_vol_max_size_default()
+{
+  Long size = get_env_long_default("q_qar_multi_vol_max_size",
+                                   500L * 1000L * 1000L * 1000L);
+  return size;
+}
+
 }  // namespace qlat

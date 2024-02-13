@@ -381,6 +381,21 @@ int qfseek(const QFile& qfile, const Long q_offset, const int whence)
   return ret;
 }
 
+int qfseek_set(const QFile& qfile, const Long q_offset)
+{
+  return qfseek(qfile, q_offset, SEEK_SET);
+}
+
+int qfseek_end(const QFile& qfile, const Long q_offset)
+{
+  return qfseek(qfile, q_offset, SEEK_END);
+}
+
+int qfseek_cur(const QFile& qfile, const Long q_offset)
+{
+  return qfseek(qfile, q_offset, SEEK_CUR);
+}
+
 Long qfread(void* ptr, const Long size, const Long nmemb, const QFile& qfile)
 // interface function
 // Only read portion of data if not enough content in qfile.
@@ -1686,17 +1701,6 @@ int save_qar_index(const QarFile& qar, const std::string& fn)
     return 1;
   }
   return qtouch(fn, lines);
-}
-
-int save_qar_index_info(const QarFile& qar, const std::string& fn)
-// interface function
-{
-  if (0 == get_id_node()) {
-    return save_qar_index(qar, fn);
-  } else {
-    remove_entry_directory_cache(fn);
-    return 0;
-  }
 }
 
 int parse_qar_index(std::vector<Long>& vol_idx_vec,

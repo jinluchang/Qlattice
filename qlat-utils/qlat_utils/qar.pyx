@@ -9,16 +9,22 @@ from .timer import timer
 def show_all_qfile():
     return cc.show_all_qfile()
 
-def get_qar_multi_vol_max_size(size=None):
+def get_qar_multi_vol_max_size():
     """
     Parameter controls the size of a single `qar` file in number of bytes. Note, `qar` never splits a single file into multiple `qar` volume.
     """
-    cdef cc.Long* p_size
-    if size is not None:
-        assert isinstance(size, int)
-        p_size = &cc.get_qar_multi_vol_max_size()
-        p_size[0] = <cc.Long>size
     return cc.get_qar_multi_vol_max_size()
+
+def set_qar_multi_vol_max_size(size=None):
+    """
+    Parameter controls the size of a single `qar` file in number of bytes. Note, `qar` never splits a single file into multiple `qar` volume.
+    """
+    if size is None:
+        size = cc.get_qar_multi_vol_max_size_default()
+    assert isinstance(size, int)
+    cdef cc.Long* p_size = &cc.get_qar_multi_vol_max_size()
+    p_size[0] = size
+    assert cc.get_qar_multi_vol_max_size() == size
 
 def does_regular_file_exist_qar(const cc.std_string& path):
     return cc.does_regular_file_exist_qar(path)

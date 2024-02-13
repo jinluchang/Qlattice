@@ -199,6 +199,8 @@ cdef extern from "qlat-utils/env.h" namespace "qlat":
     Long get_verbose_level_default()
     double& get_time_budget()
     double get_time_budget_default()
+    Long& get_qar_multi_vol_max_size()
+    Long get_qar_multi_vol_max_size_default()
 
 cdef extern from "qlat-utils/timer.h" namespace "qlat":
 
@@ -354,6 +356,17 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
 
 cdef extern from "qlat-utils/qar.h" namespace "qlat":
 
+    cdef cppclass QFile:
+        QFile() except +
+        QFile(const std_string& path, const std_string& mode) except +
+        QFile(const QFile& qfile, const Long q_offset_start, const Long q_offset_end) except +
+        void init() except +
+        void init(const std_string& path, const std_string& mode) except +
+        void init(const QFile& qfile, const Long q_offset_start, const Long q_offset_end) except +
+        void close() except +
+        bool null()
+        std_string path() except +
+        std_string mode() except +
     cdef cppclass QarFile:
         std_string path
         std_string mode
@@ -363,18 +376,47 @@ cdef extern from "qlat-utils/qar.h" namespace "qlat":
         void init(const std_string& path_qar, const std_string& mode) except +
         void close() except +
         bool null()
+    #
+    std_vector[std_string] show_all_qfile() except +
+    QFile qfopen(const std_string& path, const std_string& mode) except +
+    void qfclose(QFile& qfile) except +
+    bool qfeof(const QFile& qfile) except +
+    Long qftell(const QFile& qfile) except +
+    int qfflush(const QFile& qfile) except +
+    int qfseek_set(const QFile& qfile, const Long q_offset) except +
+    int qfseek_end(const QFile& qfile, const Long q_offset) except +
+    int qfseek_cur(const QFile& qfile, const Long q_offset) except +
+    Long qfile_size(const QFile& qfile) except +
+    Long qfile_remaining_size(const QFile& qfile) except +
+    #
+    std_string qgetline(const QFile& qfile) except +
+    std_vector[std_string] qgetlines(const QFile& qfile) except +
+    Long qwrite_data(const std_string& line, const QFile& qfile) except +
+    Long qwrite_data(const std_vector[std_string]& lines, const QFile& qfile) except +
+    Long write_from_qfile(const QFile& qfile_out, const QFile& qfile_in) except +
+    std_string qcat(const QFile& qfile) except +
+    int qappend(const QFile& qfile, const std_string& content) except +
+    int qappend(const QFile& qfile, const std_vector[std_string]& content) except +
+    #
     std_vector[std_string] list(const QarFile& qar) except +
     std_vector[std_string] has_regular_file(const QarFile& qar, const std_string& fn) except +
     std_vector[std_string] has(const QarFile& qar, const std_string& fn) except +
+    QFile read(const QarFile& qar, const std_string& fn) except +
+    std_string read_data(const QarFile& qar, const std_string& fn) except +
+    std_string read_info(const QarFile& qar, const std_string& fn) except +
     bool verify_index(const QarFile& qar) except +
+    Long write_from_qfile(QarFile& qar, const std_string& fn, const std_string& info, const QFile& qfile_in) except +
     Long write_from_data(QarFile& qar, const std_string& fn, const std_string& info, const std_string& data) except +
     #
-    std_vector[std_string] show_all_qfile() except +
-    std_vector[std_string] properly_truncate_qar_vol_file(const std_string& path) except +
     std_vector[std_string] properly_truncate_qar_file(const std_string& path) except +
+    #
+    std_vector[std_string] show_qar_index(const QarFile& qar, const std_string& fn) except +
+    int save_qar_index(const QarFile& qar, const std_string& fn) except +
+    int parse_qar_index(const QarFile& qar, const std_string& qar_index_content) except +
+    int load_qar_index(const QarFile& qar, const std_string& fn) except +
+    #
     bool does_regular_file_exist_qar(const std_string& path) except +
     bool does_file_exist_qar(const std_string& path) except +
-    Long& get_qar_multi_vol_max_size()
     int qar_build_index(const std_string& path_qar) except +
     int qar_create(const std_string& path_qar, const std_string& path_folder,
                    const bool is_remove_folder_after) except +
@@ -382,13 +424,18 @@ cdef extern from "qlat-utils/qar.h" namespace "qlat":
                     const bool is_remove_qar_after) except +
     int qcopy_file(const std_string& path_src, const std_string& path_dst) except +
     std_vector[std_string] list_qar(const std_string& path) except +
+    #
     std_string qcat(const std_string& path) except +
     int qtouch(const std_string& path) except +
     int qtouch(const std_string& path, const std_string& content) except +
     int qtouch(const std_string& path, const std_vector[std_string]& content) except +
     int qappend(const std_string& path, const std_string& content) except +
+    int qappend(const std_string& path, const std_vector[std_string]& content) except +
+    #
     DataTable qload_datatable(const std_string& path, const bool is_par) except +
+    #
     void check_all_files_crc32_info(const std_string& path) except +
+    crc32_t compute_crc32(QFile& qfile) except +
     crc32_t compute_crc32(const std_string& path) except +
     #
     int qar_build_index_info(const std_string& path_qar) except +

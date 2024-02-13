@@ -29,7 +29,11 @@ q.qar_create_info(f"results/data2.qar", f"results/data2", is_remove_folder_after
 
 q.qar_extract_info(f"results/data2.qar", f"results/data2", is_remove_qar_after=True)
 
-qar_multi_vol_max_size = q.get_qar_multi_vol_max_size(16 * 1024)
+qar_multi_vol_max_size = q.get_qar_multi_vol_max_size()
+q.displayln_info(f"CHECK: qar_multi_vol_max_size={qar_multi_vol_max_size}")
+
+q.set_qar_multi_vol_max_size(16 * 1024)
+qar_multi_vol_max_size = q.get_qar_multi_vol_max_size()
 q.displayln_info(f"CHECK: qar_multi_vol_max_size={qar_multi_vol_max_size}")
 
 q.qar_create_info(f"results/data2/ld-1000.qar", f"results/data2/ld-1000", is_remove_folder_after=True)

@@ -24,6 +24,7 @@ def set_verbose_level(level=None):
     """
     if level is None:
         level = cc.get_verbose_level_default()
+    assert isinstance(level, int)
     cdef cc.Long* p_ret = &cc.get_verbose_level()
     p_ret[0] = level
     assert cc.get_verbose_level() == level
