@@ -652,10 +652,10 @@ std::string qcat(const QFile& qfile)
 
 int qappend(const QFile& qfile, const std::string& content)
 {
-  TIMER_FLOPS("qappend(qfile,content)");
+  TIMER_VERBOSE_FLOPS("qappend(qfile,content)");
   qassert(not qfile.null());
-  const Long total_bytes = qwrite_data(line, qfile);
-  const Long total_bytes_expect = line.size();
+  const Long total_bytes = qwrite_data(content, qfile);
+  const Long total_bytes_expect = content.size();
   timer.flops += total_bytes;
   if (total_bytes != total_bytes_expect) {
     return 1;
@@ -667,9 +667,9 @@ int qappend(const QFile& qfile, const std::vector<std::string>& content)
 {
   TIMER_VERBOSE_FLOPS("qappend(qfile,content)");
   qassert(not qfile.null());
-  for (Long i = 0; i < (Long)lines.size(); ++i) {
-    const Long total_bytes_expect = lines[i].size();
-    const Long total_bytes = qwrite_data(get_data_char(lines[i]), qfile);
+  for (Long i = 0; i < (Long)content.size(); ++i) {
+    const Long total_bytes_expect = content[i].size();
+    const Long total_bytes = qwrite_data(get_data_char(content[i]), qfile);
     timer.flops += total_bytes;
     if (total_bytes != total_bytes_expect) {
       return 1;
@@ -1536,7 +1536,7 @@ std::string read_info(const QarFile& qar, const std::string& fn)
     const QarFileVol& qar_v = qar[i];
     qassert(not qar_v.null());
     qassert(qar_v.mode() == "r");
-    if (has_regular_file(fn)) {
+    if (has_regular_file(qar_v, fn)) {
       return read_info(qar_v, fn);
     }
   }
@@ -2316,7 +2316,7 @@ std::vector<std::string> qgetlines(const std::string& fn)
 int qtouch(const std::string& path)
 // return 0 if success
 {
-  TIMER("qtouch");
+  TIMER("qtouch(fn)");
   QFile qfile = qfopen(path, "w");
   if (qfile.null()) {
     return 1;
@@ -2327,25 +2327,31 @@ int qtouch(const std::string& path)
 
 int qtouch(const std::string& path, const std::string& content)
 {
-  TIMER("qtouch");
+  TIMER("qtouch(fn,content)");
   QFile qfile = qfopen(path + ".partial", "w");
   if (qfile.null()) {
     return 1;
   }
-  qappend(qfile, content);
+  const int ret = qappend(qfile, content);
   qfclose(qfile);
+  if (ret != 0) {
+    return ret;
+  }
   return qrename(path + ".partial", path);
 }
 
 int qtouch(const std::string& path, const std::vector<std::string>& content)
 {
-  TIMER("qtouch");
+  TIMER("qtouch(fn,content)");
   QFile qfile = qfopen(path + ".partial", "w");
   if (qfile.null()) {
     return 1;
   }
-  qappend(qfile, content);
+  const int ret = qappend(qfile, content);
   qfclose(qfile);
+  if (ret != 0) {
+    return ret;
+  }
   return qrename(path + ".partial", path);
 }
 

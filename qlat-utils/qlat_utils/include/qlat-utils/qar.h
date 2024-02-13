@@ -203,7 +203,7 @@ Long qread_data_all(std::vector<M>& v, const QFile& qfile)
 
 Long write_from_qfile(const QFile& qfile_out, const QFile& qfile_in);
 
-std::string qcat(const QFile& qfile)
+std::string qcat(const QFile& qfile);
 
 int qappend(const QFile& qfile, const std::string& content);
 
@@ -302,7 +302,7 @@ bool has(const QarFileVol& qar, const std::string& fn);
 
 QFile read(const QarFileVol& qar, const std::string& fn);
 
-std::string read_data(const QarFile& qar, const std::string& fn);
+std::string read_data(const QarFileVol& qar, const std::string& fn);
 
 std::string read_info(const QarFileVol& qar, const std::string& fn);
 
