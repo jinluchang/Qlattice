@@ -624,8 +624,8 @@ Long qread_data(const Vector<char>& v, const QFile& qfile)
   TIMER_FLOPS("qread_data(v,qfile)");
   qassert(not qfile.null());
   const Long total_bytes = qfread((void*)v.p, sizeof(char), v.size(), qfile);
-  if (total_bytes != v.size()) {
-    qwarn(
+  if (total_bytes > v.size()) {
+    qerr(
         fname +
         ssprintf(": qread_data data_size=%ld total_bytes=%ld qfile.path()='%s'",
                  v.size(), total_bytes, qfile.path().c_str()));
