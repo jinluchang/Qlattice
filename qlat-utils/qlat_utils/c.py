@@ -141,8 +141,9 @@ __all__ += [
         ]
 
 __all__ += [
-        'show_all_qfile',
         'get_qar_multi_vol_max_size',
+        'set_qar_multi_vol_max_size',
+        'show_all_qfile',
         'does_regular_file_exist_qar',
         'does_file_exist_qar',
         'qcat',
