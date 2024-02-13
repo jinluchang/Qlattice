@@ -203,6 +203,12 @@ Long qread_data_all(std::vector<M>& v, const QFile& qfile)
 
 Long write_from_qfile(const QFile& qfile_out, const QFile& qfile_in);
 
+std::string qcat(const QFile& qfile)
+
+int qappend(const QFile& qfile, const std::string& content);
+
+int qappend(const QFile& qfile, const std::vector<std::string>& content);
+
 // -------------------
 
 struct QarFileVolObj;
@@ -288,19 +294,17 @@ struct QarFileVolObj {
 
 // -------------------
 
-QFile read_next(const QarFileVol& qar, std::string& fn);
-
-void read_through(const QarFileVol& qar);
-
-QFile read(const QarFileVol& qar, const std::string& fn);
-
-std::string read_info(const QarFileVol& qar, const QarSegmentInfo& qsinfo);
+std::vector<std::string> list(const QarFileVol& qar);
 
 bool has_regular_file(const QarFileVol& qar, const std::string& fn);
 
 bool has(const QarFileVol& qar, const std::string& fn);
 
-std::vector<std::string> list(const QarFileVol& qar);
+QFile read(const QarFileVol& qar, const std::string& fn);
+
+std::string read_data(const QarFile& qar, const std::string& fn);
+
+std::string read_info(const QarFileVol& qar, const std::string& fn);
 
 void write_start(const QarFileVol& qar, const std::string& fn,
                  const std::string& info, QFile& qfile_out,
@@ -435,6 +439,8 @@ int qtouch(const std::string& path, const std::vector<std::string>& content);
 
 int qappend(const std::string& path, const std::string& content);
 
+int qappend(const std::string& path, const std::vector<std::string>& content);
+
 DataTable qload_datatable_serial(QFile& qfile);
 
 DataTable qload_datatable_par(QFile& qfile);
@@ -487,6 +493,8 @@ int qtouch_info(const std::string& path,
                 const std::vector<std::string>& content);
 
 int qappend_info(const std::string& path, const std::string& content);
+
+int qappend_info(const std::string& path, const std::vector<std::string>& content);
 
 // -------------------
 
