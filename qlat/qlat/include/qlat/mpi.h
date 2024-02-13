@@ -512,11 +512,17 @@ void all_gather(Vector<M> recv, const Vector<M>& send)
 
 // ----------------------------------
 
-inline int glb_sum_long_mpi(Long& x) { return glb_sum(x); }
-
 inline RngState& get_sync_node_rs_mpi()
 {
   return get_comm_list().back().sync_node_rs;
+}
+
+inline int glb_sum_long_mpi(Long& x) { return glb_sum(x); }
+
+inline int glb_sum_bytes_mpi(void* ptr, const Long size)
+{
+  Vector<char> data((char*)ptr, size);
+  return glb_sum(data);
 }
 
 }  // namespace qlat

@@ -500,9 +500,15 @@ int qtouch_info(const std::string& path,
 
 int qappend_info(const std::string& path, const std::string& content);
 
-int qappend_info(const std::string& path, const std::vector<std::string>& content);
+int qappend_info(const std::string& path,
+                 const std::vector<std::string>& content);
 
 // -------------------
+
+std::vector<std::string> qls_sync_node(const std::string& path);
+
+std::vector<std::string> qls_all_sync_node(
+    const std::string& path, const bool is_folder_before_files = false);
 
 bool does_regular_file_exist_qar_sync_node(const std::string& fn);
 
@@ -518,5 +524,10 @@ int qar_extract_sync_node(const std::string& path_qar,
 
 int qcopy_file_sync_node(const std::string& path_src,
                          const std::string& path_dst);
+
+std::string qcat_sync_node(const std::string& path);
+
+DataTable qload_datatable_sync_node(const std::string& path,
+                                    const bool is_par = false);
 
 }  // namespace qlat

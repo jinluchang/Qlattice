@@ -45,6 +45,12 @@ using Int = int32_t;
 
 using Char = int8_t;
 
+using RealD = double;
+
+using RealF = float;
+
+using Real = RealD;  // default Real type should not change
+
 inline std::string vssprintf(const char* fmt, va_list args)
 {
   char* cstr;

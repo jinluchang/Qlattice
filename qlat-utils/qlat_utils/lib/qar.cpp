@@ -2673,6 +2673,29 @@ int qappend_info(const std::string& path, const std::vector<std::string>& conten
 
 // ---------------------------------
 
+std::vector<std::string> qls_sync_node(const std::string& path)
+{
+  std::vector<std::string> ret;
+  if (0 == get_id_node()) {
+    ret = qls(path);
+  }
+  int bret = bcast_with_glb_sum(ret);
+  qassert(bret == 0);
+  return ret;
+}
+
+std::vector<std::string> qls_all_sync_node(const std::string& path,
+                                           const bool is_folder_before_files)
+{
+  std::vector<std::string> ret;
+  if (0 == get_id_node()) {
+    ret = qls_all(path, is_folder_before_files);
+  }
+  int bret = bcast_with_glb_sum(ret);
+  qassert(bret == 0);
+  return ret;
+}
+
 int qar_create_sync_node(const std::string& path_qar,
                          const std::string& path_folder_,
                          const bool is_remove_folder_after)
@@ -2739,6 +2762,30 @@ bool does_file_exist_qar_sync_node(const std::string& fn)
   }
   glb_sum_long(nfile);
   return 0 != nfile;
+}
+
+std::string qcat_sync_node(const std::string& path)
+{
+  TIMER("qcat_sync_node");
+  std::string ret;
+  if (0 == get_id_node()) {
+    ret = qcat(path);
+  }
+  int bret = bcast_with_glb_sum(ret);
+  qassert(bret == 0);
+  return ret;
+}
+
+DataTable qload_datatable_sync_node(const std::string& path, const bool is_par)
+{
+  TIMER_VERBOSE("qload_datatable_sync_node");
+  DataTable dt;
+  if (0 == get_id_node()) {
+    dt = qload_datatable(path, is_par);
+  }
+  int bret = bcast_with_glb_sum(dt);
+  qassert(bret == 0);
+  return dt;
 }
 
 }  // namespace qlat

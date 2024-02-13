@@ -57,12 +57,6 @@ qacc constexpr bool is_same()
   return std::is_same<M, N>::value;
 }
 
-using RealD = double;
-
-using RealF = float;
-
-using Real = RealD;  // default Real type should not change
-
 template <class M>
 qacc constexpr bool is_real()
 {

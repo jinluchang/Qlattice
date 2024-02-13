@@ -449,8 +449,9 @@ struct API TimerCtrl {
 
 inline int glb_sum_long_local(Long& x)
 {
+  (void)x;
   assert(get_num_node() == 1);
-  return x;
+  return 0;
 }
 
 using GlbSumLongPtr = int (*)(Long&);
@@ -480,6 +481,38 @@ API inline RngStatePtr& get_sync_node_rs_ptr()
 inline RngState& get_sync_node_rs() { return *get_sync_node_rs_ptr(); }
 
 void sync_node();
+
+// -------------------
+
+inline int glb_sum_bytes_local(void* ptr, const Long size)
+{
+  (void)ptr;
+  (void)size;
+  assert(get_num_node() == 1);
+  return 0;
+}
+
+using GlbSumBytesPtr = int (*)(void*, const Long);
+
+API inline GlbSumBytesPtr& get_glb_sum_bytes_ptr()
+{
+  static GlbSumBytesPtr ptr = glb_sum_bytes_local;
+  return ptr;
+}
+
+inline int glb_sum_bytes(void* ptr, const Long size)
+{
+  return get_glb_sum_bytes_ptr()(ptr, size);
+}
+
+int bcast_with_glb_sum(std::string& data, const int root = 0);
+
+int bcast_with_glb_sum(std::vector<std::string>& data, const int root = 0);
+
+int bcast_with_glb_sum(std::vector<RealD>& data, const int root = 0);
+
+int bcast_with_glb_sum(std::vector<std::vector<RealD>>& data,
+                       const int root = 0);
 
 ///////////////////////////////////////////////////////////////////////
 

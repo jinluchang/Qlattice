@@ -338,4 +338,107 @@ void sync_node()
   qassert(s == v * get_num_node());
 }
 
+int bcast_with_glb_sum(std::string& data, const int root)
+{
+  TIMER("bcast_with_glb_sum(str)");
+  if (get_num_node() == 1) {
+    return 0;
+  }
+  Long size = 0;
+  if (get_id_node() == root) {
+    size = data.size();
+  }
+  int ret = glb_sum_long(size);
+  if (ret != 0) {
+    return ret;
+  }
+  if (get_id_node() == root) {
+    qassert((Long)data.size() == size);
+  } else {
+    data.resize(size);
+    std::memset(&data[0], 0, data.size());
+  }
+  return glb_sum_bytes(&data[0], data.size());
+}
+
+int bcast_with_glb_sum(std::vector<std::string>& data, const int root)
+{
+  TIMER("bcast_with_glb_sum(vec<str>)");
+  if (get_num_node() == 1) {
+    return 0;
+  }
+  Long size = 0;
+  if (get_id_node() == root) {
+    size = data.size();
+  }
+  int ret = glb_sum_long(size);
+  if (ret != 0) {
+    return ret;
+  }
+  if (get_id_node() == root) {
+    qassert((Long)data.size() == size);
+  } else {
+    data.resize(size);
+  }
+  for (Long i = 0; i < size; ++i) {
+    ret = bcast_with_glb_sum(data[i], root);
+    if (ret != 0) {
+      return ret;
+    }
+  }
+  return 0;
+}
+
+int bcast_with_glb_sum(std::vector<RealD>& data, const int root)
+{
+  TIMER("bcast_with_glb_sum(vec<RealD>)");
+  if (get_num_node() == 1) {
+    return 0;
+  }
+  Long size = 0;
+  if (get_id_node() == root) {
+    size = data.size();
+  }
+  int ret = glb_sum_long(size);
+  if (ret != 0) {
+    return ret;
+  }
+  if (get_id_node() == root) {
+    qassert((Long)data.size() == size);
+  } else {
+    data.resize(size);
+    std::memset(data.data(), 0, data.size() * sizeof(RealD));
+  }
+  ret = glb_sum_bytes(data.data(), data.size() * sizeof(RealD));
+  return 0;
+}
+
+int bcast_with_glb_sum(std::vector<std::vector<RealD>>& data, const int root)
+{
+  TIMER("bcast_with_glb_sum(vec<vec<RealD>>)");
+  if (get_num_node() == 1) {
+    return 0;
+  }
+  Long size = 0;
+  if (get_id_node() == root) {
+    size = data.size();
+  }
+  int ret = glb_sum_long(size);
+  if (ret != 0) {
+    return ret;
+  }
+  if (get_id_node() == root) {
+    qassert((Long)data.size() == size);
+  } else {
+    data.resize(size);
+  }
+  for (Long i = 0; i < size; ++i) {
+    ret = bcast_with_glb_sum(data[i], root);
+    if (ret != 0) {
+      return ret;
+    }
+  }
+  return 0;
+}
+
 }  // namespace qlat

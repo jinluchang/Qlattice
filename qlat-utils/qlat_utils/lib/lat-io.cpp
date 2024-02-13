@@ -370,4 +370,43 @@ LatData operator-(const LatData& ld)
   return ret;
 }
 
+// -----------------------
+
+LatData lat_data_load_sync_node(const std::string& path)
+{
+  TIMER("lat_data_load_sync_node");
+  LatData ld;
+  if (get_id_node() == 0) {
+    ld.load(path);
+  }
+  int ret = bcast_with_glb_sum(ld);
+  qassert(ret == 0);
+  return ld;
+}
+
+int bcast_with_glb_sum(LatData& ld, const int root)
+{
+  TIMER("bcast_with_glb_sum(LatData)");
+  if (1 == get_num_node()) {
+    return 0;
+  }
+  int ret = 0;
+  std::string info_str;
+  if (get_id_node() == root) {
+    info_str = show(ld.info);
+  }
+  ret = bcast_with_glb_sum(info_str, root);
+  if (ret != 0) {
+    return ret;
+  }
+  if (get_id_node() == root) {
+    qassert((Long)ld.res.size() == lat_data_size(ld));
+  } else {
+    ld.info = read_lat_info(info_str);
+    lat_data_alloc(ld);
+  }
+  ret = bcast_with_glb_sum(ld.res, root);
+  return ret;
+}
+
 }  // namespace qlat

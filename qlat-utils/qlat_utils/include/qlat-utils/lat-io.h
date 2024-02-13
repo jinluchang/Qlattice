@@ -2,11 +2,11 @@
 
 #include <qlat-utils/crc32.h>
 #include <qlat-utils/qar.h>
+#include <qlat-utils/show.h>
+#include <qlat-utils/timer.h>
 #include <qlat-utils/utils-io.h>
 #include <qlat-utils/utils-vec.h>
 #include <qlat-utils/utils.h>
-#include <qlat-utils/show.h>
-#include <qlat-utils/timer.h>
 #include <stdint.h>
 #include <zlib.h>
 
@@ -125,10 +125,7 @@ inline Long lat_data_size(const LatData& ld, const int level = 0)
   return lat_info_size(ld.info, level);
 }
 
-inline void lat_data_alloc(LatData& ld)
-{
-  ld.res.resize(lat_data_size(ld));
-}
+inline void lat_data_alloc(LatData& ld) { ld.res.resize(lat_data_size(ld)); }
 
 template <>
 struct IsDataVectorType<LatData> {
@@ -185,11 +182,11 @@ LatDim lat_dim_string(const std::string& name, const VecS& indices)
 }
 
 inline Long lat_dim_idx(const LatDim& dim, const std::string& idx)
-// return the Long idx_int that dim.indices[idx_int] contains the std::string& idx.
-// Will check if the idx_int is unique.
+// return the Long idx_int that dim.indices[idx_int] contains the std::string&
+// idx. Will check if the idx_int is unique.
 //
-// For dim.indices does not cover the entire range, will require exact match or (- read_long(idx) - 1).
-// Default index being -idx-1.
+// For dim.indices does not cover the entire range, will require exact match or
+// (- read_long(idx) - 1). Default index being -idx-1.
 {
   if ((Long)dim.indices.size() == 0) {
     Long i = read_long(idx);
@@ -395,5 +392,9 @@ inline void lat_data_save_info(const std::string& path, const LatData& ld)
     ld.save(path);
   }
 }
+
+LatData lat_data_load_sync_node(const std::string& path);
+
+int bcast_with_glb_sum(LatData& data, const int root = 0);
 
 }  // namespace qlat
