@@ -138,6 +138,8 @@ __all__ += [
         'qremove_info',
         'qremove_all_info',
         #
+        'qls_sync_node',
+        'qls_all_sync_node',
         'does_file_exist_sync_node',
         'is_directory_sync_node',
         'is_regular_file_sync_node',
