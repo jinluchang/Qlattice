@@ -238,37 +238,44 @@ cdef extern from "qlat-utils/timer.h" namespace "qlat":
 
 cdef extern from "qlat-utils/utils-io.h" namespace "qlat":
 
-    void flush() except +
-    int qrename(const std_string& old_path, const std_string& new_path) except +
-    std_vector[std_string] qls(const std_string& path, const bool is_sort) except +
-    std_vector[std_string] qls_all(const std_string& path, const bool is_folder_before_files, const bool is_sort) except +
     std_string basename(const std_string& fn) except +
     std_string dirname(const std_string& fn) except +
     std_vector[std_string] all_dirname_vec(const std_string& fn) except +
     std_string remove_trailing_slashes(const std_string& fn) except +
+    std_vector[std_string] qls(const std_string& path, const bool is_sort) except +
+    std_vector[std_string] qls_all(const std_string& path, const bool is_folder_before_files, const bool is_sort) except +
+    bool does_file_exist(const std_string& fn) except +
     bool is_directory(const std_string& fn) except +
     bool is_regular_file(const std_string& fn) except +
-    bool does_file_exist(const std_string& fn) except +
+    int qmkdir(const std_string& path) except +
+    int qmkdir_p(const std_string& path) except +
+    int qrename(const std_string& old_path, const std_string& new_path) except +
+    int qremove(const std_string& path) except +
+    int qremove_all(const std_string& path) except +
+    void flush() except +
+    #
     void clear_is_directory_cache() except +
     void remove_entry_directory_cache(const std_string& dir_) except +
     void add_entry_directory_cache(const std_string& dir_, bool is_directory) except +
     bool is_directory_cache(const std_string& dir_) except +
     bool is_regular_file_cache(const std_string& fn) except +
     bool does_file_exist_cache(const std_string& fn) except +
-    int qremove(const std_string& path) except +
-    int qremove_all(const std_string& path) except +
-    int qmkdir(const std_string& path) except +
-    int qmkdir_p(const std_string& path) except +
-    int qrename_info(const std_string& old_path, const std_string& new_path) except +
+    int qtruncate(const std_string& path) except +
+    int qtruncate(const std_string& path, const Long offset) except +
+    #
     int qmkdir_info(const std_string& path) except +
     int qmkdir_p_info(const std_string& path) except +
+    int qrename_info(const std_string& old_path, const std_string& new_path) except +
     int qremove_info(const std_string& path) except +
     int qremove_all_info(const std_string& path) except +
-    int qmkdir_sync_node(const std_string& path) except +
-    int qmkdir_p_sync_node(const std_string& path) except +
+    #
     bool does_file_exist_sync_node(const std_string& fn) except +
     bool is_directory_sync_node(const std_string& fn) except +
     bool is_regular_file_sync_node(const std_string& fn) except +
+    int qmkdir_sync_node(const std_string& path) except +
+    int qmkdir_p_sync_node(const std_string& path) except +
+    int qremove_sync_node(const std_string& path) except +
+    int qremove_all_sync_node(const std_string& path) except +
 
 cdef extern from "qlat-utils/rng-state.h" namespace "qlat":
 
@@ -353,6 +360,8 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
     std_string show(const LatData& x)
     void clear(LatData& x)
     double qnorm(const LatData& x)
+    void lat_data_save_info(const std_string& path, const LatData& ld) except +
+    LatData lat_data_load_sync_node(const std_string& path) except +
 
 cdef extern from "qlat-utils/qar.h" namespace "qlat":
 
@@ -448,11 +457,15 @@ cdef extern from "qlat-utils/qar.h" namespace "qlat":
     int qtouch_info(const std_string& path, const std_vector[std_string]& content) except +
     int qappend_info(const std_string& path, const std_string& content) except +
     #
+    std_vector[std_string] qls_sync_node(const std_string& path) except +
+    std_vector[std_string] qls_all_sync_node( const std_string& path, const bool is_folder_before_files) except +
     bool does_regular_file_exist_qar_sync_node(const std_string& fn) except +
     bool does_file_exist_qar_sync_node(const std_string& fn) except +
     int qar_create_sync_node(const std_string& path_qar, const std_string& path_folder_, const bool is_remove_folder_after) except +
     int qar_extract_sync_node(const std_string& path_qar, const std_string& path_folder_, const bool is_remove_qar_after) except +
     int qcopy_file_sync_node(const std_string& path_src, const std_string& path_dst) except +
+    std_string qcat_sync_node(const std_string& path) except +
+    DataTable qload_datatable_sync_node(const std_string& path, const bool is_par) except +
 
 cdef extern from "qlat-utils/cache.h" namespace "qlat":
 

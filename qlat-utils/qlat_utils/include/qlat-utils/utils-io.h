@@ -35,15 +35,15 @@ bool is_directory(const std::string& fn);
 
 bool is_regular_file(const std::string& fn);
 
+int qmkdir(const std::string& path, const mode_t mode = default_dir_mode());
+
+int qmkdir_p(const std::string& path_, const mode_t mode = default_dir_mode());
+
 int qrename(const std::string& old_path, const std::string& new_path);
 
 int qremove(const std::string& path);
 
 int qremove_all(const std::string& path);
-
-int qmkdir(const std::string& path, const mode_t mode = default_dir_mode());
-
-int qmkdir_p(const std::string& path_, const mode_t mode = default_dir_mode());
 
 bool check_dir(const std::string& path, const mode_t mode = default_dir_mode());
 
@@ -83,17 +83,17 @@ inline int ssleep(const double seconds)
 
 // --------------------------
 
-int qrename_info(const std::string& old_path, const std::string& new_path);
-
-int qremove_info(const std::string& path);
-
-int qremove_all_info(const std::string& path);
-
 int qmkdir_info(const std::string& path,
                 const mode_t mode = default_dir_mode());
 
 int qmkdir_p_info(const std::string& path,
                   const mode_t mode = default_dir_mode());
+
+int qrename_info(const std::string& old_path, const std::string& new_path);
+
+int qremove_info(const std::string& path);
+
+int qremove_all_info(const std::string& path);
 
 // --------------------------
 
