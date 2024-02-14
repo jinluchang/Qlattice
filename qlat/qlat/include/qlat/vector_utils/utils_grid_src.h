@@ -1,4 +1,4 @@
-// utils_lms_funs.h
+// utils_grid_src.h
 // Gen Wang
 // Oct. 2021
 
@@ -484,12 +484,14 @@ void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp,
   }
   fft_desc_basic fd(geo);
 
-  if(type_src ==-1) ////point src, with only color zero
+  if(type_src <= -1) ////point src, with only color zero
   {
     if(fd.coordinate_g_is_local(sp)){
       LInt isp = fd.index_l_from_g_coordinate(sp);
-      for(int c=0;c<1;c++){
-        srcP[isp*civ + c] = color_phases[c];
+      for(int c=0;c<civ;c++){
+        if(c == -1 * (type_src + 1)){
+          srcP[isp*civ + c] = color_phases[c];
+        }
       }
     }
   }
@@ -533,6 +535,35 @@ void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp,
       if(xg[3] == tsrc)
       for(int c=0;c<civ;c++){
         srcP[isp*civ + c] = color_phases[c];
+      }
+    });
+  }
+
+  if(type_src == 12 or type_src == 13 or type_src == 14) ////Wall src, even or odd
+  {
+    std::vector<qlat::RngState > rsL;rsL.resize(omp_get_max_threads());
+    for(int is=0;is<omp_get_max_threads();is++)
+    {
+      rsL[is] = qlat::RngState(seed + qlat::get_id_node()*omp_get_max_threads() + is);
+    }
+
+    int seed_g = seed;if(qlat::get_id_node() != 0){seed_g = 0;}
+    sum_all_size(&seed_g, 1);
+    qlat::RngState rs = qlat::RngState(seed_g + 127482);///global random
+    int src_eo = int(qlat::u_rand_gen(rs) * 2);
+    if(type_src == 13){src_eo = 1;}
+    if(type_src == 14){src_eo = 0;}
+    
+    qthread_for(isp, geo.local_volume(), {
+      Coordinate xl = geo.coordinate_from_index(isp);
+      Coordinate xg = geo.coordinate_g_from_l(xl);
+      int site_eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
+      if(xg[3] == tsrc and site_eo == src_eo){
+        qlat::RngState& rs = rsL[omp_get_thread_num()];
+        for(int c=0;c<civ;c++){
+          double r = 2 * PI * qlat::u_rand_gen(rs);
+          srcP[isp*civ + c] = Ty(std::cos(r), std::sin(r));
+        }
       }
     });
   }
@@ -690,13 +721,18 @@ void make_point_prop(Propagator4dT<T>& prop, const Coordinate& sp = Coordinate(0
 {
   const qlat::Geometry& geo = prop.geo();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+
+  const int civ = 12 * 12;
+  qlat::ComplexT<T >* propP = (qlat::ComplexT<T >*) qlat::get_data(prop).data();
+  zero_Ty(propP, geo.local_volume()*civ, 0);
+
   if(fd.coordinate_g_is_local(sp))
   {
     /////Long isp = 0;
     LInt isp = fd.index_l_from_g_coordinate(sp);
     Coordinate xl   = geo.coordinate_from_index(isp);
     Coordinate p    = geo.coordinate_g_from_l(xl);
-    if(p[0] == 0 and p[1] == 0 and p[2] == 0 and p[3] == 0)
+    if(p[0] == sp[0] and p[1] == sp[1] and p[2] == sp[2] and p[3] == sp[3])
     {
       qlat::WilsonMatrixT<double >& p1 =  prop.get_elem_offset(isp);
       for(int dc0 =0;dc0<12;dc0++)
@@ -755,6 +791,84 @@ void make_grid_src(Propagator4dT<Td >& src, const Coordinate& sp, const Coordina
   }); 
 
 }
+
+
+template <class Td>
+void make_volume_src(Propagator4dT<Td >& src, int seed = 0, int mix_color = 0, int mix_spin = 0, int tini = -1)
+{
+  TIMERA("make_volume_src");
+  Qassert(src.initialized);
+  const qlat::Geometry& geo = src.geo();
+  const Long V_local = geo.local_volume();
+  const int civ = 12 * 12;
+
+  qlat::ComplexT<Td >* srcP = (qlat::ComplexT<Td >*) qlat::get_data(src).data();
+  zero_Ty(srcP, V_local*civ, 0);
+  ////fft_desc_basic fd(geo);
+
+  const int Nthread = omp_get_max_threads();
+  std::vector<qlat::RngState > rsL;rsL.resize(Nthread);
+  for(int is=0;is<Nthread;is++)
+  {
+    rsL[is] = qlat::RngState(seed + qlat::get_id_node()*Nthread + is);
+  }
+
+  qthread_for(isp, geo.local_volume(), {
+    qlat::RngState& rs = rsL[omp_get_thread_num()];
+    Coordinate xl   = geo.coordinate_from_index(isp);
+    Coordinate p    = geo.coordinate_g_from_l(xl);
+    if(tini == -1 or p[3] == tini)
+    {
+      if(mix_color == 0 and mix_spin == 0)
+      {
+        ////double r = (2 * PI /3.0 ) * int(3 * qlat::u_rand_gen(rs));
+        double r = 2 * PI * qlat::u_rand_gen(rs);
+        for(int dc=0;dc<12;dc++)
+        {
+          srcP[(isp*12+dc)*12 + dc] = qlat::ComplexT<Td >(std::cos(r), std::sin(r));
+        }
+      }
+
+      if(mix_color == 1 and mix_spin == 0)
+      {
+        for(int c0=0;c0<3;c0++)
+        for(int c1=0;c1<3;c1++)
+        {
+          ////double r = (2 * PI /3.0 ) * int(3 * qlat::u_rand_gen(rs));
+          double r = 2 * PI * qlat::u_rand_gen(rs);
+          for(int d =0;d<4;d++)
+          {
+            srcP[(isp*12+d*3 + c0)*12 + d*3+c1] = qlat::ComplexT<Td >(std::cos(r), std::sin(r)) / 3.0;
+          }
+        }
+      }
+
+      if(mix_color == 1 and mix_spin == 1)
+      {
+        for(int d0 =0;d0<2;d0++)
+        for(int d1 =0;d1<2;d1++)
+        for(int c0=0;c0<3;c0++)
+        for(int c1=0;c1<3;c1++)
+        {
+          double r = 2 * PI * qlat::u_rand_gen(rs);
+          srcP[(isp*12+d0*3 + c0)*12 + d1*3+c1] = qlat::ComplexT<Td >(std::cos(r), std::sin(r))  / 6.0;
+        }
+
+        for(int d0 =2;d0<4;d0++)
+        for(int d1 =2;d1<4;d1++)
+        for(int c0=0;c0<3;c0++)
+        for(int c1=0;c1<3;c1++)
+        {
+          double r = 2 * PI * qlat::u_rand_gen(rs);
+          srcP[(isp*12+d0*3 + c0)*12 + d1*3+c1] = qlat::ComplexT<Td >(std::cos(r), std::sin(r))  / 6.0;
+        }
+
+      }
+    }
+  }); 
+
+}
+
 
 
 

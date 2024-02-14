@@ -248,6 +248,7 @@ public:
   ////qlat::vector<ga_M > gL;
   ga_matrices_cps()
   {
+    TIMERA("ga_matrices_cps");
     Ftype a[4]={-1,1,1,-1};
     for(int i=0;i<4;i++)
     {

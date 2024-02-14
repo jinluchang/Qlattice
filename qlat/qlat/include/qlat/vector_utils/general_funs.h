@@ -282,11 +282,44 @@ struct move_index
 
 };
 
+template <typename Ty>
+inline void quick_move_civ_in(Ty* res,
+  const int biva, const int civ, const Long sizeF, const Long size_inner, const int dir = 1, bool GPU = true)
+{
+  VectorGPUKey gkey(0, ssprintf("quick_move_civ_buf"), GPU);
+  const long nsum = civ * sizeF * size_inner;
+  const long V    =       sizeF * size_inner;
+  vector_gpu<char >& tmp = get_vector_gpu_plan<char >(gkey);tmp.resizeL(sizeof(Ty) * nsum);
+  Ty* buf = (Ty*) tmp.data();
+  for(int bi = 0; bi < biva; bi++){
+    Ty* src = &res[bi * nsum + 0];
+    if(dir == 1){cpy_GPU(buf, src, nsum, GPU, GPU);}
+    qGPU_for(isp, V, GPU, {
+      const long bi = isp / size_inner;
+      const long bj = isp % size_inner;
+      if(dir == 1)
+      for(int ci = 0; ci < civ; ci++){
+        src[(bi*civ + ci)*size_inner + bj] = buf[ci*V + bi*size_inner + bj   ];
+      }
+
+      if(dir == 0)
+      for(int ci = 0; ci < civ; ci++){
+        buf[ci*V + bi*size_inner + bj    ] = src[(bi*civ + ci)*size_inner + bj];
+      }
+    });
+    if(dir == 0){cpy_GPU(src, buf, nsum, GPU, GPU);}
+  }
+}
+
 inline void clear_move_index_mem(){
   VectorGPUKey gkey0(0, std::string("move_index_buf"), false);
   VectorGPUKey gkey1(0, std::string("move_index_buf"),  true);
+  VectorGPUKey qkey0(0, std::string("quick_move_civ_buf"),  false);
+  VectorGPUKey qkey1(0, std::string("quick_move_civ_buf"),  true);
   safe_free_vector_gpu_plan<char >(gkey0, true);
   safe_free_vector_gpu_plan<char >(gkey1, true);
+  safe_free_vector_gpu_plan<char >(qkey0, true);
+  safe_free_vector_gpu_plan<char >(qkey1, true);
 }
 
 #ifdef QLAT_USE_ACC
@@ -305,7 +338,12 @@ inline void set_GPU(){
   qlat_GPU_SetDevice(id_node % num_gpus);
   int gpu_id = -1; 
   qlat_GPU_GetDevice(&gpu_id);
+
+  //{
+  //qlat_GPU_GetDeviceCount(&num_gpus);
   //printf("CPU node %d (of %d) uses CUDA device %d\n", id_node, num_node, gpu_id);
+  //}
+
   fflush(stdout);
   MPI_Barrier(get_comm());
   for (int i = 0; i < MAX_CUDA_STEAM; ++i)qlat_GPU_StreamCreate(&Qstream[i]) ;
@@ -390,6 +428,7 @@ inline void begin_thread(
 
 inline void print_mem_info(std::string stmp = "")
 {
+  fflush_MPI();
   print0("%s, ",stmp.c_str());
   #ifdef QLAT_USE_ACC
   double freeD = 0;double totalD=0;
@@ -603,14 +642,14 @@ void random_link(GaugeFieldT<Td> &gf, const int seed = -1)
     random_Ty(res, geo.local_volume()*geo.multiplicity*sizeof(ColorMatrixT<Td>)/(sizeof(Td)*2), 1, seed);
 
     //qacc_for(isp, gf.field.size(), { set_unit(gf.get_elem_offset(isp), 1.0);});
+    //ColorMatrixT<Td>& unit = gf.get_elem_offset(0);set_unit(unit, 1.0);
     ColorMatrixT<Td> unit;set_unit(unit, 1.0);
     /////TODO This function cannot be done on GPU
     /////Eigen normalize/normalized problem
-    for(Long isp=0;isp<gf.field.size();isp++)
-    {
+    qacc_for(isp, gf.field.size(), {
       gf.get_elem_offset(isp) = gf.get_elem_offset(isp) * (1/2.0) + unit;
       unitarize(gf.get_elem_offset(isp));
-    }
+    });
   }
 }
 
@@ -1153,3 +1192,4 @@ void sort_vectors_by_axis(std::vector<std::vector<Ty > >& src, std::vector<std::
 }
 
 #endif
+

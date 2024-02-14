@@ -1606,9 +1606,8 @@ void save_gwu_noiP(const char *filename,Propagator4dT<Td>& prop){
   noi.init(prop.geo());
   qlat::set_zero(noi);
   
-  size_t noden = prop.geo().local_volume();
-  for (size_t index = 0; index < noden; ++index)
-  {
+  const long noden = prop.geo().local_volume();
+  qthread_for(index, noden, {
     qlat::WilsonMatrixT<Td>&  src =  prop.get_elem_offset(index);
     double sum = 0.0;
     for(int d1=0;d1<12;d1++)
@@ -1620,7 +1619,7 @@ void save_gwu_noiP(const char *filename,Propagator4dT<Td>& prop){
     qlat::ComplexD phase = qlat::ComplexD(src(0,0).real(),src(0,0).imag());
 
     if(sum >1e-8){noi.get_elem_offset(index) = 1.0*phase;}
-  }
+  });
 
   save_gwu_noi(filename,noi);
   ///////load_gwu_prop(filename,prop,io_use,false);
@@ -1699,7 +1698,10 @@ inline void open_file_qlat_noisesT(const char *filename, int bfac, inputpara& in
   ////inputpara in;
   if(in.read == true){
     in.load_para(filename, false);
-    if(in.VECS_TYPE != VECS_TYPE){print0("Noise type wrong, file %s \n", filename);abort_r("");}
+    if(in.VECS_TYPE != VECS_TYPE){
+      print0("Noise type wrong, file %s, input %s, expect %s \n", filename, VECS_TYPE.c_str(), in.VECS_TYPE.c_str());
+      abort_r("");
+    }
     if(in.nvec <= 0){print0("%s \n", filename);abort_r("File noise vector size Wrong! \n");}
     if(in.bfac != 1){Qassert(in.bfac == bfac);}
     in.bfac_write = in.bfac;
@@ -1908,7 +1910,7 @@ void load_qlat_noisesT(FILE* file, std::vector<qlat::FieldM<Ty, bfac> > &noises,
 
 ////initialize the instruct and end of file
 template <class Ty, int bfac>
-void load_qlat_noisesT_file_ini(const char *filename, const int N_noi, inputpara& in, Geometry& geo, bool read=true, bool single_file=true, const std::string& VECS_TYPE = std::string("NONE"), const std::string& INFO_LIST = std::string("NONE"), bool rotate_bfac = true){
+void load_qlat_noisesT_file_ini(const char *filename, const int N_noi, inputpara& in, Geometry& geo, bool read=true, bool single_file=true, const std::string& VECS_TYPE = std::string("NONE"), const std::string& INFO_LIST = std::string("NONE"), const bool rotate_bfac = true){
   if(sizeof(Ty) != 2*sizeof(double ) and sizeof(Ty) != 2*sizeof(float )){
     abort_r("Cannot understand the input format! \n");}
 
@@ -2404,12 +2406,14 @@ template<typename Ty >
 inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vector_acc<Ty >& evals, std::vector<double>& err,
   Geometry& geo, const int N0=0, const int N1=-1,
   double mass = 0.0, int mode_c = 0, const bool single_file = true, const bool read = true ,
-  std::string VECS_TYPE = std::string("EO_Eigensystem"))
+  std::string VECS_TYPE = std::string("EO_Eigensystem"), const int n_off_file = 0)
 {
   TIMERB("load_eo_evecs");
   const fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
   if(even.nvec == 0){return ;}
   io_vec& io_use = get_io_vec_plan(geo);
+  const int DIM = 3;
+  const bool rotate_bfac = true; ////default rotate color to outside to save memory
 
   char fileE[600];
   sprintf(fileE,"%s.evals", filename);
@@ -2419,7 +2423,7 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
     Nmax = N1 - nini;
   }
   Qassert(Nmax > 0);
-  print0("save Nmax %3d \n", Nmax);
+  /////print0("save Nmax %3d \n", Nmax);
 
   int nvec  = 0;
   int nhalf = 0;
@@ -2427,28 +2431,40 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
   if(read == true){
     inputpara in;
     in.load_para(filename, false);
-    nhalf = in.nvec;
+    nhalf = in.nvec / DIM;Qassert(rotate_bfac == true );
     std::vector<std::string > mL = stringtolist(in.INFO_LIST);
     double mre = stringtodouble(mL[1]);
     Qassert(in.nx == fd.nx and in.ny == fd.ny and in.nz == fd.nz and in.nt == fd.nt);
     ///if(nhalf <= 0){return ;}
 
     std::vector<double > values, errors;
-    load_txt_eigenvalues(values, errors, fileE);
-    if(2 * nhalf >= Long(values.size()) ){nvec = values.size();}
-    else{nvec = 2* nhalf;}
-    Qassert(nvec <= Long(values.size()) );///nhalf*2 could be larger than values.size()
-    if(nvec >  Nmax){
-      nvec  = Nmax;
-      nhalf = (nvec + 1)/2;
-    }
-    Qassert(nvec == Nmax);
+    ////load only the values exists
+    if(get_file_size_MPI(fileE, true) > 0){
+      load_txt_eigenvalues(values, errors, fileE);
+      if(2 * nhalf >= Long(values.size()) ){nvec = values.size();}////DIM 3 may be needed here for check
+      else{nvec = 2* nhalf;}
+      Qassert(nvec <= Long(values.size()) );///nhalf*2 could be larger than values.size()
+      if(nvec >  Nmax){
+        nvec  = Nmax;
+        nhalf = (nvec + 1)/2;
+      }
+      Qassert(nvec == Nmax);
 
-    evals.resize(nvec);err.resize(nvec);
-    for(int n=  0;n<nvec;n++){
-      Qassert(qlat::qnorm( values[n*2 + 1] ) < 1e-10);
-      evals[n] = Ty(values[n*2+0] - 4.0*mre*mre, 0.0);
-      err[n]   = errors[n];
+      evals.resize(nvec);err.resize(nvec);
+      for(int n=  0;n<nvec;n++){
+        Qassert(qlat::qnorm( values[n*2 + 1] ) < 1e-10);
+        evals[n] = Ty(values[n*2+0] - 4.0*mre*mre, 0.0);
+        err[n]   = errors[n];
+      }
+    }else{
+      ////half is not correct due to bfac rotations
+      nvec = 2 * nhalf;
+      if(nvec >  Nmax or nvec == 0){
+        nvec  = Nmax;
+        nhalf = (nvec + 1)/2;
+      }
+      ////print0("nhalf %5d, nvec %5d, Nmax %5d \n", nhalf, nvec, Nmax);
+      Qassert(nvec == Nmax);
     }
   }
   if(read == false){
@@ -2456,22 +2472,24 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
     nhalf = (Nmax + 1)/2;////one more vectors if not devided by 2
     if(nvec <= 0){return ;}
 
-    std::vector<double > values;values.resize(nvec*2);
-    mass_file = 0.0;
-    for(int n=  0;n<nvec;n++){
-      values[n*2 + 0] = evals[n].real() - 4.0 * mass * mass; /// subtract to zero mass
-      values[n*2 + 1] = 0.0;
+    ////save only it's none zero
+    if(evals.size() > 0){
+      std::vector<double > values;values.resize(nvec*2);
+      mass_file = 0.0;
+      for(int n=  0;n<nvec;n++){
+        values[n*2 + 0] = evals[n].real() - 4.0 * mass * mass; /// subtract to zero mass
+        values[n*2 + 1] = 0.0;
+      }
+      save_txt_eigenvalues(values, err, fileE, "Fermions EO");
     }
-    save_txt_eigenvalues(values, err, fileE, "Fermions EO");
   }
   print0("nvec %5d, nhalf %5d, ionum %5d \n", nvec, nhalf, io_use.ionum);
   print_mem_info();
 
   /////std::string VECS_TYPE("EO_Eigensystem");
-  const int Ngroup = io_use.ionum;
+  int Ngroup = io_use.ionum;
+  if(Ngroup > nhalf){Ngroup = nhalf;}
   if(Ngroup <= 0){abort_r("ionum wrong!");}
-  const int DIM = 3;
-  bool rotate_bfac = true; ////default rotate color to outside to save memory
   char infoL[500];
   sprintf(infoL,"mass %.8f", mass_file);
   std::string INFO_LIST(infoL);
@@ -2480,11 +2498,11 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
   std::vector<Ty*  > noises;noises.resize(Ngroup);
   std::vector<qlat::vector_gpu<Ty > > eig;eig.resize(Ngroup);
   for(int iv=0;iv<Ngroup;iv++){
-    eig[iv].resize(V * DIM, 0);///default on CPU
+    eig[iv].resize(V * DIM, QMSYNC);///default on SYNC
   }
   for(int iv=0;iv<Ngroup;iv++){noises[iv] = (Ty*) qlat::get_data(eig[iv]).data();}
-  vector_cs<Ty > tmp_end;tmp_end.resize(1, QMCPU, even);
-  //print_mem_info();
+  vector_cs<Ty > tmp_end;tmp_end.resize(1, QMSYNC, even);
+  print0("after io mem allocate");print_mem_info();
 
   ////load evecs
   {
@@ -2505,13 +2523,20 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
   io_use.io_off(file, in.off_file, true);  ////shift file for the head
 
   ////const int mode_c = 0;
+  int nini_off = 0;////will only affect read == true
+  ////only supports offset multiple of 2 due to even-odd writtings together
+  if(read == true){Qassert(n_off_file % 2 == 0);}
+
   std::vector<Long > jobA = job_create(nhalf, Ngroup);
   for(LInt jobi=0;jobi < jobA.size()/2; jobi++)
   {
+    if(read == true){if(jobi == 0){nini_off = n_off_file / 2;}}
+    if(jobi != 0){nini_off = 0;}///default zero offset, by default it will always read next rounds
     const Long n0   = jobA[jobi*2 + 0];
     const Long ncut = jobA[jobi*2 + 1];
     noises.resize(ncut);for(int iv=0;iv<ncut;iv++){noises[iv] = (Ty*) qlat::get_data(eig[iv]).data();}
     print0("load %5d, dN %5d, N %5d ", int(n0), int(ncut), int(nhalf));
+    //print0("load %5d, dN %5d, N %5d, inioff %5d ", int(n0), int(ncut), int(nhalf), int(nini_off));
 
     if(read == false)
     for(int iv=0;iv<ncut;iv++){
@@ -2524,8 +2549,8 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
     }
 
     /////will shift file from current position
-    load_qlat_noisesT_core<Ty, DIM>(file, noises, geo, io_use, in, 0, ncut);
-  ////print_mem_info();
+    load_qlat_noisesT_core<Ty, DIM>(file, noises, geo, io_use, in, nini_off, ncut + nini_off);
+    ////print_mem_info();
 
     if(read == true)
     for(int iv=0;iv<ncut;iv++){

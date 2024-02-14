@@ -1645,8 +1645,12 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
   #ifdef QLAT_USE_ACC
   size_t Ndata = smf.Nvol * bfac * 3* civ;
   int nt  = 3*3*9;
-  if(bfac*civ <= 12){ nt =         32;}
+  /////if(3*bfac*civ <= 36){ nt =         36;}
+  if(3*bfac*civ <= nt){ nt =         3*bfac*civ;}
   if(bfac*civ <=  6){ nt = 3*bfac*civ;}
+  //std::string val = get_env(std::string("q_smear_gpu_thread"));
+  //if(val != ""){nt = stringtonum(val);}
+
   //int nt = 32;
   dim3 dimBlock(nt, 1, 1);
   Long sn = Nvol;

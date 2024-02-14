@@ -23,13 +23,14 @@ inline void qlat_map_eo_site(qlat::FieldM<char, 1>& eo, const Geometry& geo)
   });
 }
 
-///////src and res can be tthe same pointer
+///////src and res can be the same pointer
 template <class Ty, int civ>
 void apply_eo_sign(Ty* sP, Ty* rP, qlat::FieldM<char, 1>& eo, const char dir = 1)
 {
   TIMER("apply_eo_sign");
   const Geometry& geo = eo.geo();
   Qassert(eo.initialized);
+  Qassert(dir == 0 or dir == 1 or dir == -1);
   char* eP = (char*) qlat::get_data(eo).data();
   ///////DATA_TYPE typenum = get_data_type<Ty >();
   qacc_for(isp, geo.local_volume(), {
@@ -42,7 +43,6 @@ void apply_eo_sign(Ty* sP, Ty* rP, qlat::FieldM<char, 1>& eo, const char dir = 1
 template <class Ty, int civ>
 void apply_eo_sign(qlat::FieldM<Ty , civ>& src, qlat::FieldM<Ty , civ>& res, qlat::FieldM<char, 1>& eo, const char dir = 1)
 {
-  TIMER("apply_eo_sign");
   if(!src.initialized or !res.initialized){abort_r("src should be initialized with geo!\n");}
   const Geometry& geo = src.geo();
   if(!eo.initialized){qlat_map_eo_site(eo, geo);}
@@ -52,11 +52,51 @@ void apply_eo_sign(qlat::FieldM<Ty , civ>& src, qlat::FieldM<Ty , civ>& res, qla
 }
 
 template <class Ty, int civ>
-void apply_eo_sign(std::vector<qlat::FieldM<Ty , civ> >& src, std::vector<qlat::FieldM<Ty , civ> >& res, qlat::FieldM<char, 1>& eo)
+void apply_eo_sign(std::vector<qlat::FieldM<Ty , civ> >& src, std::vector<qlat::FieldM<Ty , civ> >& res, qlat::FieldM<char, 1>& eo, const char dir = 1)
 {
   Qassert(src.size() == res.size());
   for(unsigned int si = 0; si<src.size(); si++){
-    apply_eo_sign<Ty, civ>(src[si], res[si], eo);
+    apply_eo_sign<Ty, civ>(src[si], res[si], eo, dir);
+  }
+}
+
+///////src and res can be the same pointer
+template <class Ty, int civ>
+void apply_eo_zeros(Ty* sP, Ty* rP, qlat::FieldM<char, 1>& eo, const char dir = 1)
+{
+  TIMER("apply_eo_zeros");
+  const Geometry& geo = eo.geo();
+  Qassert(eo.initialized);
+  char* eP = (char*) qlat::get_data(eo).data();
+  Qassert(dir == 0 or dir == 1);
+  ///////DATA_TYPE typenum = get_data_type<Ty >();
+  qacc_for(isp, geo.local_volume(), {
+    qlat::ComplexD sign = 1.0;
+    if(eP[isp] == 0 and dir == 0){sign = 0;}////even to be zero
+    if(eP[isp] == 1 and dir == 1){sign = 0;}////odd  to be zero
+    //qlat::ComplexD sign = qlat::ComplexD(-1.0 * dir *(eP[isp]*2 - 1), 0);
+    for(int ic=0;ic<civ;ic++){rP[isp*civ+ic] = sign * sP[isp*civ+ic];}
+  });
+}
+
+/////src and res can be tthe same pointer
+template <class Ty, int civ>
+void apply_eo_zeros(qlat::FieldM<Ty , civ>& src, qlat::FieldM<Ty , civ>& res, qlat::FieldM<char, 1>& eo, const char dir = 1)
+{
+  if(!src.initialized or !res.initialized){abort_r("src should be initialized with geo!\n");}
+  const Geometry& geo = src.geo();
+  if(!eo.initialized){qlat_map_eo_site(eo, geo);}
+  Ty*   sP = (Ty*  ) qlat::get_data(src).data();
+  Ty*   rP = (Ty*  ) qlat::get_data(res).data();
+  apply_eo_zeros<Ty, civ>(sP, rP, eo, dir);
+}
+
+template <class Ty, int civ>
+void apply_eo_zeros(std::vector<qlat::FieldM<Ty , civ> >& src, std::vector<qlat::FieldM<Ty , civ> >& res, qlat::FieldM<char, 1>& eo, const char dir = 1)
+{
+  Qassert(src.size() == res.size());
+  for(unsigned int si = 0; si<src.size(); si++){
+    apply_eo_zeros<Ty, civ>(src[si], res[si], eo, dir);
   }
 }
 
@@ -196,8 +236,6 @@ void quda_cf_to_qlat_cf(Ty* res, T1*  quda_cf, const int Dim, const Geometry& ge
   qlat_cf_to_quda_cfT<T1, Ty, 0>(quda_cf, res, Dim, geo, map);
 }
 
-
-
 template<typename Ty, int dir, int mode>
 void copy_eo_cs_to_fieldMT(qlat::vector_gpu<Ty >& res, const int civ, const Geometry& geo, vector_cs<Ty >& even, vector_cs<Ty >& odd,
   int e0, int e1, int o0, int o1, qlat::vector_acc<Long >& map)
@@ -208,9 +246,12 @@ void copy_eo_cs_to_fieldMT(qlat::vector_gpu<Ty >& res, const int civ, const Geom
   const bool GPU = even.GPU;
   const Long V = geo.local_volume();
   const Long Vh= V/2;
-  if(dir == 1){if(Long(res.size()) != civ*V){res.resize(civ * V, GPU);}}
+  if(dir == 1){if(Long(res.size()) != civ*V){res.resize(civ * V, QMSYNC);}}
   if(dir == 0){Qassert(Long(res.size()) == V * civ );}
-  Qassert(res.GPU == even.GPU);
+  ////Qassert(check_GPU_same(get_type_mem(res.GPU), even.GPU));
+  int GPU_copy = check_GPU_multi(get_type_mem(res.GPU), even.GPU);
+  Qassert(GPU_copy != -2);
+  //Qassert(res.GPU == even.GPU);
 
   const int DIM = 3;
   Qassert(civ % DIM == 0);
@@ -236,7 +277,7 @@ void copy_eo_cs_to_fieldMT(qlat::vector_gpu<Ty >& res, const int civ, const Geom
   Ty* r = (Ty*) qlat::get_data(res).data();
   //if(mode == 1)
   {
-  qGPU_for(qi, Vh, GPU,{
+  qGPU_for(qi, Vh, GPU_copy, {
     //const int ni = ci / DIM;
     //const int c  = ci % DIM;
     for(int ni=0;ni<ne;ni++)

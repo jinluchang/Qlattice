@@ -20,7 +20,7 @@ namespace qlat{
 ////ga1 sink gammas, ga2 src gammas
 template <typename Td>
 void meson_vectorE(std::vector<Propagator4dT<Td > > &pV1, std::vector<Propagator4dT<Td > > &pV2, ga_M &ga1,ga_M &ga2,
-        qlat::vector_acc<qlat::ComplexT<Td > > &res, qlat::fft_desc_basic &fd,int clear=1){
+        qlat::vector_acc<qlat::ComplexT<Td > > &res, qlat::fft_desc_basic &fd,int clear=1, int invmode=1){
   TIMER("Meson_vectorE");
   Qassert(fd.order_ch == 0);
   ///////check_prop_size(prop1);check_prop_size(prop2);
@@ -53,8 +53,15 @@ void meson_vectorE(std::vector<Propagator4dT<Td > > &pV1, std::vector<Propagator
       const qlat::ComplexT<Td > g_tem = ga2.g[d2]*ga1.g[d1];
       for(int c2=0;c2<3;c2++)
       {
-        pres += g_tem * 
-          p1(ga1.ind[d1]*3+c1,d2*3+c2) * qlat::qconj(p2(d1*3+c1,ga2.ind[d2]*3+c2)) ;
+        if(invmode == 1){
+          pres += g_tem * 
+            p1(ga1.ind[d1]*3+c1,d2*3+c2) * qlat::qconj(p2(d1*3+c1,ga2.ind[d2]*3+c2)) ;
+        }
+        if(invmode == 0){
+          pres += g_tem * 
+            p1(ga1.ind[d1]*3+c1,d2*3+c2) *            (p2(d1*3+c1,ga2.ind[d2]*3+c2)) ;
+        }
+
       }
       }
       res[(mi*NTt + ti)*Nxyz + xi%Nxyz] += pres;
@@ -603,7 +610,7 @@ void meson_vectorEV(EigenTy& prop1, EigenTy& prop2, qlat::vector_gpu<Ty > &res
 
 template<typename Td, typename Ta>
 void meson_corrE(std::vector<Propagator4dT<Td > > &pV1, std::vector<Propagator4dT<Td >> &pV2,  ga_M &ga1, ga_M &ga2,
-  qlat::vector_acc<Ta > &res, qlat::fft_desc_basic &fd,int clear=1,const Coordinate& mom = Coordinate()){
+  qlat::vector_acc<Ta > &res, qlat::fft_desc_basic &fd,int clear=1,const Coordinate& mom = Coordinate(), const int invmode=1, const int tini = 0){
   ///int NTt  = fd.Nv[3];
   ///LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   int nmass = pV1.size();
@@ -612,20 +619,77 @@ void meson_corrE(std::vector<Propagator4dT<Td > > &pV1, std::vector<Propagator4d
   qlat::vector_acc<Ta > resE;
   ini_resE(resE,nmass,fd);
 
-  meson_vectorE(pV1,pV2,ga1,ga2,resE,fd,1);
+  meson_vectorE(pV1,pV2,ga1,ga2,resE,fd, 1, invmode);
 
-  vec_corrE(resE,res,fd, clear, mom);
+  vec_corrE(resE,res,fd, clear, mom, qlat::ComplexT<Td>(1.0, 0.0), tini);
+}
+
+template<typename Td, typename Ta>
+void meson_corrE(Propagator4dT<Td > &p1, Propagator4dT<Td > &p2,  ga_M &ga1, ga_M &ga2,
+  qlat::vector_acc<Ta > &res, int clear=1,const Coordinate& mom = Coordinate(), int invmode=1, const int tini = 0){
+  const qlat::Geometry &geo = p1.geo();
+
+  std::vector<Propagator4dT<Td > > P1;
+  std::vector<Propagator4dT<Td > > P2;
+  P1.resize(1);P2.resize(1);
+
+  P1[0].init(geo);P2[0].init(geo);
+
+  P1[0] = p1;P2[0] = p2;
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+  meson_corrE(P1, P2, ga1, ga2, res, fd, clear, mom, invmode, tini);
+}
+
+template<typename Td>
+void meson_corrE(Propagator4dT<Td > &p1, Propagator4dT<Td > &p2, const int ga, const int gb,
+  const std::string& filename, const Coordinate& mom = Coordinate(), int invmode=1, const int tini = 0,
+  const std::string& info = std::string("NONE"), const int shift_end = 1)
+{
+  ga_matrices_cps ga_cps;
+  std::vector<ga_M > gL;gL.resize(16);
+  {int o=0;
+  for(int i=0;i<6;i++){gL[o] = ga_cps.ga[0][i];o+=1;}
+  for(int i=2;i<6;i++){gL[o] = ga_cps.ga[1][i];o+=1;}
+  for(int i=3;i<6;i++){gL[o] = ga_cps.ga[2][i];o+=1;}
+  for(int i=4;i<6;i++){gL[o] = ga_cps.ga[3][i];o+=1;}
+  for(int i=5;i<6;i++){gL[o] = ga_cps.ga[4][i];o+=1;}}
+
+  qlat::vector_acc<qlat::ComplexT<double > > Res;
+  meson_corrE(p1, p2, gL[ga], gL[gb], Res, 1, mom, invmode, tini);
+  const size_t sizen = get_file_size_MPI(filename, true);
+  corr_dat<double > corr(std::string(""));
+  int nt = Res.size();
+  if(sizen > 0){
+    corr.read_dat(filename, 1);
+    if(shift_end == 1){
+      corr.shift_end();
+    }
+  }
+  else{
+    char key_T[1000], dimN[1000];
+    sprintf(key_T, "%d  %d  %d", 1, nt, 2); 
+    sprintf(dimN , "nsrc nt complex");
+    std::string ktem(key_T);
+    std::string dtem(dimN);
+    corr.create_dat(ktem, dtem);
+  }
+  if(info != std::string("NONE") and info.size() != 0){
+    corr.INFOA.push_back(info);
+  }
+
+  corr.write_corr(Res.data(), Res.size());
+  corr.write_dat(filename);
 }
 
 template<typename Ty>
 void meson_corrE(std::vector<qpropT > &prop1, std::vector<qpropT > &prop2,  ga_M &ga1, ga_M &ga2,
-  qlat::vector_acc<Ty >& res, int clear=1,const Coordinate& mom = Coordinate()){
+  qlat::vector_acc<Ty >& res, int clear=1,const Coordinate& mom = Coordinate(), int invmode=1){
   qlat::vector_acc<Ty > resE;
 
   const qlat::Geometry &geo = prop1[0].geo();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
 
-  meson_vectorE(prop1,prop2,ga1,ga2,resE,1);
+  meson_vectorE(prop1,prop2,ga1,ga2,resE,1, invmode);
   vec_corrE(resE, res, fd, clear, mom);
 }
 

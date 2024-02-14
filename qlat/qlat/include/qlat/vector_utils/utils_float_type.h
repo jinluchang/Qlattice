@@ -104,6 +104,17 @@ enum QMEM{
   QMGPU  =  1
 };
 
+inline QMEM get_type_mem(QMEM g){
+  return g;
+}
+
+inline QMEM get_type_mem(int g){
+  if(g == -1){return QMSYNC;}
+  if(g ==  0){return QMCPU ;}
+  if(g ==  1){return QMGPU ;}
+  return QMCPU;
+}
+
 inline int check_GPU_same(QMEM a, QMEM b)
 {
   if(a == QMSYNC){return 1;}
@@ -394,8 +405,7 @@ inline unsigned int get_node_rank_funs0()
   return rank;
 }
 
-
-#define QLAT_VEC_CKPOINT abort_r("QLAT CHECK POINT \n");
+#define QLAT_VEC_CKPOINT qlat::abort_r("QLAT CHECK POINT \n");
 
 
 }

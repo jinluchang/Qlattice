@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include <qlat/qlat.h>
-
 #include <quda.h>
 #include <invert_quda.h>
 
@@ -15,26 +13,26 @@
 namespace quda
 {
 
-//quda::ComplexD& operator+=(const thrust::complex<double>& rhs){
+//quda::Complex& operator+=(const thrust::complex<double>& rhs){
 //  double a = real + rhs.real();
 //  double b = imag + rhs.imag();
-//  *this = quda::ComplexD(a, b);
+//  *this = quda::Complex(a, b);
 //  //real() += rhs.real();
 //  //imag() += rhs.imag();
 //  return *this;
 //}
-//quda::ComplexD& operator+=(const thrust::complex<float>& rhs){
+//quda::Complex& operator+=(const thrust::complex<float>& rhs){
 //  real() += rhs.real();
 //  imag() += rhs.imag();
 //  return *this;
 //}
-//inline qlat::ComplexT<double> operator+(const quda::ComplexD &a, const qlat::ComplexT<double> &b) {
+//inline qlat::ComplexT<double> operator+(const quda::Complex &a, const qlat::ComplexT<double> &b) {
 //    return qlat::ComplexT<double>(a.real() + b.real(), a.imag() + b.imag());
 //}
-//inline quda::ComplexD operator+(const quda::ComplexD &a, const qlat::ComplexT<double> &b) {
-//    return quda::ComplexD<double>(a.real() + b.real(), a.imag() + b.imag());
+//inline quda::Complex operator+(const quda::Complex &a, const qlat::ComplexT<double> &b) {
+//    return quda::Complex<double>(a.real() + b.real(), a.imag() + b.imag());
 //}
-//inline qlat::ComplexT<double> operator*(const quda::ComplexD &a, const qlat::ComplexT<double> &b) {
+//inline qlat::ComplexT<double> operator*(const quda::Complex &a, const qlat::ComplexT<double> &b) {
 //    return qlat::ComplexT<double>(a.real() + b.real(), a.imag() + b.imag());
 //}
 
@@ -179,7 +177,7 @@ static int mpi_rank_from_coords_t(const int* coords, void* fdata)
   return rank;
 }
 //
-inline void quda_begin(int mpi_layout[4])
+inline void quda_begin(int mpi_layout[4], int quda_rankx = 1)
 {
   using namespace quda;
   // The following sets the MPI comm stuff.
@@ -188,7 +186,7 @@ inline void quda_begin(int mpi_layout[4])
   setMPICommHandleQuda((void*) &comm);
   ////default t = false, x running the fast
 
-  int t = 0;
+  ///int t = 0;
   //Coordinate node =  get_size_node();
   //Coordinate cor  = qlat::get_coor_node();
   //Coordinate max  =  Coordinate(0,0,0, node[3]-1);
@@ -200,14 +198,18 @@ inline void quda_begin(int mpi_layout[4])
   //}
   //sum_all_size(&t, 1, 0);
 
-  if (t >= 1) {
-    initCommsGridQuda(4, mpi_layout, mpi_rank_from_coords_t,
-                      reinterpret_cast<void*>(mpi_layout));
-  } else {
+  if(quda_rankx >= 1)
+  {
     initCommsGridQuda(4, mpi_layout, mpi_rank_from_coords_x,
                       reinterpret_cast<void*>(mpi_layout));
+  }else{
+    initCommsGridQuda(4, mpi_layout, mpi_rank_from_coords_t,
+                      reinterpret_cast<void*>(mpi_layout));
   }
+
   // comm_set_gridsize(mpi_layout);
+  //int gpu_id = -1;qlat_GPU_GetDevice(&gpu_id);
+  //initQuda(gpu_id);
   initQuda(-1000);
   //initQuda(-1);
 
@@ -224,6 +226,38 @@ inline void quda_begin(int mpi_layout[4])
     Qassert(comm_coord(d) == get_coor_node()[d]);
   }
   qlat_GPU_DeviceSetCacheConfig(qlat_GPU_FuncCachePreferNone );
+}
+
+inline void begin_quda_with_qlat()
+{
+  using namespace quda;
+
+  int mpi_layout[4]={0,0,0,0};
+  qlat::GeometryNode geon = qlat::get_geometry_node();for(int i=0;i<4;i++){mpi_layout[i] = geon.size_node[i];}
+
+  int rank = qlat::get_id_node();
+  qlat::Coordinate coords  = qlat::get_coor_node();
+  int rankx = coords[3];
+  for (int i = 2; i >= 0; i--) { 
+    rankx = mpi_layout[i] * rankx + coords[i];
+  }
+  
+  int rankt = coords[0];
+  for (int i = 1; i <= 3; i++) { 
+    rankt = mpi_layout[i] * rankt + coords[i];
+  }
+  
+  int quda_rankx = 0;
+  if(rankt != rankx){
+    if(rank == rankt){printf("T rank! %3d %3d \n", rank, rankt);               }
+    if(rank == rankx){printf("X rank! %3d %3d \n", rank, rankx);quda_rankx = 1;}
+    if(rank != rankx and rank != rankt){printf("UNKNOWN rank! \n");}
+  }
+  qlat::sum_all_size(&quda_rankx, 1);
+  print0("Rank X %d \n", quda_rankx);
+
+  qlat::quda_begin(mpi_layout, quda_rankx);
+
 }
 
 inline void check_quda_layout_eo(const Geometry& geo)
@@ -255,9 +289,9 @@ void quda_convert_gauge(qlat::vector<qlat::ComplexT<T > >& qgf, GaugeField& gf, 
   const Geometry& geo = gf.geo();
   ColorMatrix* quda_pt = reinterpret_cast<ColorMatrix*>(qgf.data());
   Qassert(geo.multiplicity == 4);
-  Long V = geo.local_volume();
-  Long Vh = V / 2;
-  for (Long qlat_idx = 0; qlat_idx < V; qlat_idx++) {
+  const Long V = geo.local_volume();
+  const Long Vh = V / 2;
+  qthread_for(qlat_idx, V, {
     Coordinate xl = geo.coordinate_from_index(qlat_idx);
     //const Vector<ColorMatrix> ms = gf.get_elems_const(xl);
     //Vector<ColorMatrix> ms = gf.get_elems(xl);
@@ -268,7 +302,7 @@ void quda_convert_gauge(qlat::vector<qlat::ComplexT<T > >& qgf, GaugeField& gf, 
       if(dir == 0){quda_pt[quda_idx] = ms;}
       if(dir == 1){ms = quda_pt[quda_idx];}
     }
-  }
+  });
 }
 
 QudaPrecision get_quda_precision(int byte)
@@ -778,31 +812,31 @@ void qlat_cf_to_quda_cfT(quda::ColorSpinorField& x, Ty* src, const Geometry& geo
     for(int di=0;di<x.CompositeDim();di++)
     {
       if(Dtype == QUDA_DOUBLE_PRECISION)
-      qlat_cf_to_quda_cfT<qlat::ComplexT<double>, Ty, dir>((qlat::ComplexT<double>* ) x.Component(di).V(), &src[di*Vl], Ndata, geo, map);
+      qlat_cf_to_quda_cfT<qlat::ComplexT<double>, Ty, dir>((qlat::ComplexT<double>* ) x.Component(di).data(), &src[di*Vl], Ndata, geo, map);
       if(Dtype == QUDA_SINGLE_PRECISION)
-      qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) x.Component(di).V(), &src[di*Vl], Ndata, geo, map);
+      qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) x.Component(di).data(), &src[di*Vl], Ndata, geo, map);
       if(Dtype == QUDA_HALF_PRECISION)
       {
       if(dir == 0)*g = x.Component(di);
-      qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) g->V(), &src[di*Vl], Ndata, geo, map);
+      qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) g->data(), &src[di*Vl], Ndata, geo, map);
       if(dir == 1)x.Component(di) = *g;
       }
     }
   }else{
     if(Dtype == QUDA_DOUBLE_PRECISION)
-    qlat_cf_to_quda_cfT<qlat::ComplexT<double>, Ty, dir>((qlat::ComplexT<double>* ) x.V(), src, Ndata, geo, map);
+    qlat_cf_to_quda_cfT<qlat::ComplexT<double>, Ty, dir>((qlat::ComplexT<double>* ) x.data(), src, Ndata, geo, map);
     if(Dtype == QUDA_SINGLE_PRECISION)
-    qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) x.V(), src, Ndata, geo, map);
+    qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) x.data(), src, Ndata, geo, map);
     if(Dtype == QUDA_HALF_PRECISION)
     {
     if(dir == 0)*g = x;
-    qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) g->V(), src, Ndata, geo, map);
+    qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) g->data(), src, Ndata, geo, map);
     if(dir == 1)x = *g;
     }
 
   }
 
-  if(g != NULL){delete g;}
+  if(g != NULL){delete g;g=NULL;}
 }
 
 template <class Ty>
@@ -821,4 +855,5 @@ void quda_cf_to_qlat_cf(Ty* src, quda::ColorSpinorField& x, const Geometry& geo,
 }  // namespace qlat
 
 #endif
+
 

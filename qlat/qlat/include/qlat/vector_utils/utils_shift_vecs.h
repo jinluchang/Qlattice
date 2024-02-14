@@ -66,6 +66,7 @@ struct shift_vec{
   std::vector<qlat::vector_gpu<char > > recvbufP;
 
   void* gauge;
+  int gauge_is_double;
   int gbfac;int gd0;
   bool Conj;bool src_gauge;
 
@@ -134,8 +135,16 @@ struct shift_vec{
   void shift_vecs_dir(std::vector<qlat::FieldM<Ty , civ_> >& src, std::vector<qlat::FieldM<Ty , civ_> >& res, int mu, int sign);
 
 
-  void set_gauge(void* gauge_, int gbfac_, int gd0_, bool Conj_=false, bool src_gauge_ = false)
-  {gauge = gauge_;gbfac = gbfac_;gd0 = gd0_;Conj = Conj_;src_gauge = src_gauge_;}
+  template<typename Ta>
+  void set_gauge(Ta* gauge_, int gbfac_, int gd0_, bool Conj_=false, bool src_gauge_ = false)
+  { 
+    DATA_TYPE cur = get_data_type<Ta>();
+    if(cur != INVALID_TYPE){
+      if( get_data_type_is_double<Ta >()){gauge_is_double = 1;}
+      else{gauge_is_double = 0;}
+    }else{Qassert(gauge_is_double != -1);}
+    gauge = gauge_;gbfac = gbfac_;gd0 = gd0_;Conj = Conj_;src_gauge = src_gauge_;
+  }
 
   void set_bfacs(int gbfac_, int gd0_, bool Conj_=false, bool src_gauge_ = false)
   {Qassert(gauge!=NULL);gbfac = gbfac_;gd0 = gd0_;Conj = Conj_;src_gauge = src_gauge_;}
@@ -204,6 +213,7 @@ inline void shift_vec::init(fft_desc_basic &fds, bool GPU_set)
   shift_set();
 
   gauge = NULL;
+  gauge_is_double = -1;
   gbfac = 1; gd0 = 1;Conj = false;src_gauge = false;
 
 }
@@ -568,12 +578,13 @@ void multiply_gauge(void *src, void* gauge, const int dir_gauge,const int biva,c
 template<typename Ty, bool Conj_>
 void shift_vec::mult_gauge(void* pt, int dir_gauge){
   TIMERB("Gauge multiplication");
-  bool id = get_data_type_is_double<Ty >();
-  if( id){Qassert(Long(civ*sizeof(Ty)/16) == gbfac * 3 * gd0);}
-  if(!id){Qassert(Long(civ*sizeof(Ty)/8 ) == gbfac * 3 * gd0);}
+  const bool id = get_data_type_is_double<Ty >();
+  ////print0("civ %5d, gbfac %5d, gd0 %5d \n", int(civ), int(gbfac), int(gd0));
+  if( id){Qassert(Long(civ*sizeof(Ty)/16) == gbfac * 3 * gd0);Qassert(gauge_is_double == 1 );}
+  if(!id){Qassert(Long(civ*sizeof(Ty)/8 ) == gbfac * 3 * gd0);Qassert(gauge_is_double == 0 );}
   bool cfind = false;
   #define shift_macros(bf) if(bf == gd0){cfind = true; \
-    if( id)multiply_gauge<qlat::ComplexD , bf, 1, Conj_>(pt, gauge, dir_gauge, biva,Length,gbfac,gd0,GPU); \
+    if( id)multiply_gauge<qlat::ComplexD, bf, 1, Conj_>(pt, gauge, dir_gauge, biva,Length,gbfac,gd0,GPU); \
     if(!id)multiply_gauge<qlat::ComplexF, bf, 1, Conj_>(pt, gauge, dir_gauge, biva,Length,gbfac,gd0,GPU);}
   shift_macros(1);
   shift_macros(2);
@@ -589,7 +600,7 @@ void shift_vec::mult_gauge(void* pt, int dir_gauge){
 
   if(!cfind){cfind = true;
     if( id)multiply_gauge<qlat::ComplexD , 1, -1, Conj_>(pt, gauge, dir_gauge, biva,Length,gbfac,gd0,GPU);
-    if(!id)multiply_gauge<qlat::ComplexF, 1, -1, Conj_>(pt, gauge, dir_gauge, biva,Length,gbfac,gd0,GPU);}
+    if(!id)multiply_gauge<qlat::ComplexF, 1, -1, Conj_>(pt,  gauge, dir_gauge, biva,Length,gbfac,gd0,GPU);}
   #undef shift_macros
   Qassert(cfind);
 }

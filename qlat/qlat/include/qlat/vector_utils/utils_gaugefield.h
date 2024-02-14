@@ -87,6 +87,7 @@ void set_rand_link(GaugeFieldT<Td> &gf, const int seed = -1)
 template <class Td>
 void copy_gf(GaugeFieldT<Td> &g1, GaugeFieldT<Td> &g0)
 {
+  TIMER("copy_gf");
   const Geometry geo = g0.geo();
   if(!g1.initialized){g1.init(geo);}
 

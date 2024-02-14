@@ -68,7 +68,7 @@ unsigned int get_MPI_type(MPI_Datatype& curr)
     if(dtype ==15){curr =  MPI_UINT32_T             ; return size ;}
     if(dtype ==16){curr =  MPI_INT64_T              ; return size ;}
     if(dtype ==17){curr =  MPI_UINT64_T             ; return size ;}
-    
+
     if(dtype ==FLOATIND+0){curr =  MPI_DOUBLE               ; return size ;}
     if(dtype ==FLOATIND+1){curr =  MPI_FLOAT                ; return size ;}
     if(dtype ==FLOATIND+2){curr =  MPI_C_DOUBLE_COMPLEX     ; return size ;}

@@ -24,8 +24,11 @@ void diff_gauge( GaugeFieldT<T> &g0, GaugeFieldT<T> &g1)
       for(int pi=0;pi<9*2;pi++)
       {
         diff += std::fabs(p0[pi]-p1[pi]);
-        if(std::fabs(p0[pi]-p1[pi])>1e-6 and count_print < 100){
-          print0("Wrong %.5e %.5e \n",p0[pi],p1[pi]);
+        if(std::fabs(p0[pi]-p1[pi])>1e-6 and count_print < 300){
+          Coordinate xl0 = g0.geo().coordinate_from_index(index);
+          Coordinate xg0 = g0.geo().coordinate_g_from_l(xl0);
+
+          print0("Wrong %3d %3d %3d %3d, dir %1d, ids %3d, %+.8e %+.8e \n", xg0[0], xg0[1], xg0[2], xg0[3], m, pi,p0[pi],p1[pi]);
           count_print += 1;
         }
       }

@@ -36,6 +36,28 @@ void clear_qpropT(std::vector<qpropT >& res)
   }
 }
 
+template<typename Td>
+void prop4d_conj(Propagator4dT<Td >& prop, int rotate = 1){
+  TIMERA("prop4d_conj");
+  ////Rowmajor (a,b), b is continues in memory
+  qacc_for(isp, Long(prop.geo().local_volume()),{
+    qlat::WilsonMatrixT<Td>& v0 =  prop.get_elem_offset(isp);
+    qlat::WilsonMatrixT<Td>  v1 = v0;
+
+    for(int c0 = 0;c0< 3; c0++)
+    for(int d0 = 0;d0< 4; d0++)
+    for(int c1 = 0;c1< 3; c1++)
+    for(int d1 = 0;d1< 4; d1++)
+    {
+      if(rotate == 1){
+        v0(d0*3 + c0, d1*3 + c0) = qlat::qconj( v1(d1*3 + c1, d0*3 + c0) ) ;
+      }
+      if(rotate == 0){
+        v0(d0*3 + c0, d1*3 + c0) = qlat::qconj( v1(d0*3 + c0, d1*3 + c1) ) ;
+      }
+    }
+  });
+}
 
 template<typename Td, int dir, bool conj>
 void prop4d_src_gammaT(Propagator4dT<Td >& prop, ga_M& ga){

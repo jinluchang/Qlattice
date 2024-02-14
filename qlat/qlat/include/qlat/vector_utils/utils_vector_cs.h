@@ -314,6 +314,7 @@ struct vector_cs{
 
     btotal = bfac;
     initialized = true;
+    //if(silence_mem == true){print0("nvec %5d, bfac %5d, size %5d %5d \n", int(nvec), int(bfac), int(b_size), int(bfac_group));}
 
     {
       pointersL.resize(nvec * btotal);
@@ -617,6 +618,23 @@ struct vector_cs{
   }
 
   template <class Ta >
+  void copy_from_group_same(vector_cs<Ta >& src, std::vector<int >& nA, std::vector<int >& nB, QBOOL dummy = QTRUE, int dir = 1)
+  {
+    //if(a1-a0 == 0 and b1 - b0 == 0){return ;}
+    //Qassert(a1 > a0 and b1 > b0);
+    //std::vector<int > nA;
+    //std::vector<int > nB;
+    //const int na = a1 - a0;
+    //const int nb = b1 - b0;
+    //Qassert(na == nb);
+    //nA.resize(na);nB.resize(nb);
+    //for(int a=0;a<na;a++){nA[a] = a0 + a;}
+    //for(int b=0;b<nb;b++){nB[b] = b0 + b;}
+    const QBOOL continus = QTRUE;
+    copy_from(src, nA, nB, dummy, continus, dir);
+  }
+
+  template <class Ta >
   void copy_from_group(vector_cs<Ta >& src, int a0, int a1, int b0, int b1, QBOOL dummy = QTRUE, int dir = 1)
   {
     if(a1-a0 == 0 and b1 - b0 == 0){return ;}
@@ -629,8 +647,59 @@ struct vector_cs{
     nA.resize(na);nB.resize(nb);
     for(int a=0;a<na;a++){nA[a] = a0 + a;}
     for(int b=0;b<nb;b++){nB[b] = b0 + b;}
-    const QBOOL continus = QTRUE;
-    copy_from(src, nA, nB, dummy, continus, dir);
+
+    int do_same = 0;
+    Qassert(initialized or src.initialized);
+    if( initialized and !src.initialized){do_same = 1;}
+    if(!initialized and  src.initialized){do_same = 1;}
+
+    if(do_same == 0)
+    if(src.nsum == nsum and src.b_size == b_size and src.bfac_group ==  bfac_group){
+      do_same = 1;
+    }
+    if(do_same == 1){
+      copy_from_group_same(src, nA, nB, dummy, dir);
+    }else{
+      TIMERA("vector_cs copy from group diff");
+      Qassert(initialized and src.initialized);
+      const int GPU_set = check_GPU_multi(  GPU, src.GPU);
+      VectorGPUKey gkey(0, ssprintf("vector_cs_buf"), GPU_set);
+      vector_gpu<char >& tmp = get_vector_gpu_plan<char >(gkey);tmp.resizeL(sizeof(Ty) * nsum);
+      Ty* buf = (Ty*) tmp.data();
+      if(dir == 1)
+      for(unsigned int vi=0;vi<nA.size();vi++)
+      {
+        src.copy_to(buf, nB[vi], GPU_set, QTRUE);
+        copy_from( buf , nA[vi], GPU_set, QTRUE);
+      }
+
+      if(dir == 0)
+      for(unsigned int vi=0;vi<nA.size();vi++)
+      {
+        copy_to( buf , nA[vi], GPU_set, QTRUE);
+        src.copy_from(buf, nB[vi], GPU_set, QTRUE);
+      }
+    }
+
+    //if(dir == 1){
+    //  Qassert(src.initialized);
+    //  if(!initialized){resize(src.nvec, src.nsum, src.GPU, src.b_size, src.bfac_group);}
+    //}
+    //if(dir == 0){
+    //  Qassert(initialized);
+    //  if(!src.initialized){src.resize(nvec, nsum, GPU, b_size, bfac_group);}
+    //}
+    ///////initialize nsrc, nres if needed
+    //Qassert(nsrc.size() == nres.size());
+    //if(nsrc.size() == 0 ){
+    //  nsrc.resize(nvec);nres.resize(nvec);
+    //  for(int ni=0;ni<nvec;ni++){
+    //    nsrc[ni] = ni;nres[ni] = ni;
+    //  }
+    //}
+
+    //const QBOOL continus = QTRUE;
+    //copy_from(src, nA, nB, dummy, continus, dir);
   }
 
   ////===added, -1 for copy all vecs, 
@@ -1298,6 +1367,7 @@ struct vector_cs{
   }
 
   inline void orthogonalize(int repeat = 2, int i0=0, int i1 = -1){
+    TIMERA("orthogonalize");
     if(nvec == 0){return ;}
     Long Nv = nvec;
     if(i1 != -1){Nv = i1;}
@@ -1306,7 +1376,7 @@ struct vector_cs{
     for(int vi=i0 + 1;vi<Nv;vi++)
     {
       for(int i=0;i<repeat;i++){
-        projections(*this, 0, vi, vi, vi+1);
+        projections(*this, i0, vi, vi, vi+1);
       }
       Ty norm = Ty(1.0/std::sqrt( norm2_vec(vi).real() ), 0.0);
       operator_vec(norm, vi );
@@ -1319,7 +1389,7 @@ struct vector_cs{
     TIMERA("vector_cs linear_combination");
     if(!vec.initialized){vec.resize(vb+1, *this);}
     vec.set_zero(vb);
-    vec_sums(vec, Qts, false, 0, Nsum, 0, 1);
+    vec_sums(vec, Qts, false, 0, Nsum, vb, vb + 1);
     ////const Long Nsize = vec.a[vb].size();
     ////for(Long i=0;i<Nsize;i++){vec.a[vb][i] = 0;}
     //for(Long ni = 0; ni< Nsum;ni++)

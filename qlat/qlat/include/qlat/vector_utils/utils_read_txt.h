@@ -187,6 +187,13 @@ inline size_t get_file_size_MPI(const char *filename, bool silence = false)
   return sizen;
 }
 
+inline size_t get_file_size_MPI(const std::string& filename, bool silence = false)
+{
+  char tmp[1000];
+  sprintf(tmp, "%s", filename.c_str());
+  return get_file_size_MPI(tmp, silence);
+}
+
 inline size_t guess_factor(size_t n, const Long limit)
 {
   const int T = 30;
@@ -545,7 +552,7 @@ struct inputpara{
   //  return 0;
   //}
 
-  int find_string(const std::string &str0, const std::string &str2)
+  inline int find_string(const std::string &str0, const std::string &str2)
   {
     int res = 0;
     //int found = find_string(str0, str2);
@@ -555,7 +562,7 @@ struct inputpara{
   }
 
   //////TODO Check found == 0 correct for all cases
-  int find_para(const std::string &str2, int &res){
+  inline int find_para(const std::string &str2, int &res){
     for(unsigned int is=0;is<read_f.size();is++){
       ////std::string str2("bSize");
       int found = find_string(read_f[is][0], str2);
@@ -570,7 +577,7 @@ struct inputpara{
     return 0;
   }
 
-  int find_para(const std::string &str2, double &res){
+  inline int find_para(const std::string &str2, double &res){
     for(unsigned int is=0;is<read_f.size();is++){
       ////std::string str2("bSize");
       int found = find_string(read_f[is][0], str2);
@@ -588,14 +595,14 @@ struct inputpara{
   }
 
 
-  void read_geo(const Geometry& geo)
+  inline void read_geo(const Geometry& geo)
   {
     std::vector<int > nv(4);
     for(int i=0;i<4;i++){nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
     nx = nv[0];ny = nv[1];nz = nv[2];nt = nv[3];
   }
 
-  int find_para(const std::string &str2, std::string &res){
+  inline int find_para(const std::string &str2, std::string &res){
     for(unsigned int is=0;is<read_f.size();is++){
       ////std::string str2("bSize");
       int found = find_string(read_f[is][0], str2);
@@ -621,7 +628,7 @@ struct inputpara{
     return find_para(std::string(str2), res);
   }
 
-  void load_para(const char *filename, bool printlog_set = true){
+  inline void load_para(const char *filename, bool printlog_set = true){
     printlog = printlog_set;
     int rank = get_node_rank_funs0();
     if(rank == 0)off_file = read_input(filename, read_f);
@@ -790,7 +797,7 @@ struct inputpara{
 
   }
 
-  void load_para(int argc, char* argv[]){
+  inline void load_para(int argc, char* argv[]){
     /////load_para("input.txt");
     std::string file = std::string("NONE");
     for (int i = 1; i < argc-1; ++i) {
@@ -977,7 +984,7 @@ struct corr_dat
   std::string corr_name;
   std::string INFO_LIST;
   std::vector<std::string > INFOA;
-
+  std::string file_write_name;
 
   ////write type and bsize
   int write_type;
@@ -1009,7 +1016,8 @@ struct corr_dat
   /////read mode
   corr_dat<Ty >(const char* filename, const int node_control_ = 0){
     set_node_control(node_control_);
-    read_dat(filename);
+    int tmp = read_dat(filename);
+    (void) tmp;
   }
 
   ~corr_dat(){
@@ -1040,6 +1048,7 @@ struct corr_dat
     head_off = 0;
     shift_off(0);
     in_buf = inputpara();////initialize the corr when written
+    file_write_name = std::string("NONE");
   }
 
   inline void create_dat(const std::string& key, const std::string& dimN, const std::string& corr="NONE"){
@@ -1057,7 +1066,7 @@ struct corr_dat
     key_T.resize(dim);c_a_t.resize(dim);total = 1;
     for(LInt i=0;i<tem.size();i++){
       key_T[i] = stringtonum(tem[i]);
-      Qassert(key_T[i] != 0);
+      if(i != 0){Qassert(key_T[i] != 0);}////zero dim can be zero
       c_a_t[i] = 0;
       total = total * key_T[i];
     }
@@ -1070,7 +1079,10 @@ struct corr_dat
 
     //////memory only on node 0
     //if(qlat::get_id_node() == 0)dat.resize(total);
-    dat.resize(total);zero_Ty((Ty*) dat.data(), total, 0);
+    dat.resize(total);
+    if(total != 0){
+      zero_Ty((Ty*) dat.data(), total, 0);
+    }
     corr_name = corr;
     INFO_LIST = std::string("NONE");
     INFOA.resize(0);
@@ -1113,6 +1125,10 @@ struct corr_dat
     return site;
   }
 
+  inline void shift_end(){
+    c_a_t = get_site(total);
+  }
+
   inline void shift_zero(){
     if(key_T.size() == 0){c_a_t.resize(0); return ;}
     c_a_t = get_site(0);
@@ -1131,14 +1147,20 @@ struct corr_dat
     return get_off();
   }
 
-  inline void read_dat(const char* filename){
+  inline int read_dat(const char* filename, int check_load = 0){
     inputpara in;
     in.load_para(filename, false);
-    Qassert(in.OBJECT == std::string("BEGIN_Corr_HEAD"));
+    /////if(in.OBJECT != std::string("BEGIN_Corr_HEAD")){return 0;}
     if(in.OBJECT != std::string("BEGIN_Corr_HEAD")){print0("File %s head wrong!\n", filename);
       MPI_Barrier(get_comm());
       fflush(stdout);
-      Qassert(false);
+      /////abort if checksum fail
+      if( check_load == 0 )
+      {
+        Qassert(false);
+      }else{
+        return 0;
+      }
     }
 
     ////printf("==OBJECT %s \n", OBJECT);
@@ -1178,16 +1200,23 @@ struct corr_dat
 
     MPI_Bcast(&crc32_tem, sizeof(crc32_tem), MPI_CHAR, 0, get_comm());
     Qassert(crc32_tem == in.checksum);
+    return 1;
   }
 
-  std::string get_key_T(){
+  inline int read_dat(const std::string& filename, int check_load = 0){
+    char name[1000];
+    sprintf(name, "%s", filename.c_str());
+    return read_dat(name, check_load);
+  }
+
+  inline std::string get_key_T(){
     //std::string key = std::string("");
     //for(int d=0;d<dim;d++){key += (std::string("  ") + std::to_string(key_T[d]));}
     return qlat::listtostring(key_T, 1);
     //return key;
   }
 
-  std::string get_dim_name(){
+  inline std::string get_dim_name(){
     //std::string dim_N = std::string("");
     //for(int d=0;d<dim;d++)(dim_N += (std::string("  ") + dim_name[d]));
     return qlat::listtostring(dim_name);
@@ -1342,6 +1371,12 @@ struct corr_dat
     initialize();
   }
 
+  inline void write_dat(const std::string& filename){
+    char tmp[1000];
+    sprintf(tmp, "%s", filename.c_str());
+    write_dat(tmp);
+  }
+
   ////small_size, only update key_T; others update date and key_T
   inline void add_size(const int n){
     if(key_T.size() < 1){
@@ -1424,12 +1459,12 @@ struct corr_dat
 
   }
 
-  void set_zero(){
+  inline void set_zero(){
     zero_Ty(&dat[0], dat.size());
     shift_zero();
   }
 
-  void print_info(){
+  inline void print_info(){
     if(qlat::get_id_node()==node_control){
       printf("===Corr %s, dim %d, mem size %.3e MB \n", 
             corr_name.c_str(), dim, total * sizeof(double)*1.0/(1024.0*1024.0));
@@ -1446,7 +1481,28 @@ struct corr_dat
 
 };
 
+inline void corr_dat_create(const std::string& filename, const std::string& key_T, const std::string& dimN
+  , const std::string& info = std::string("NONE"))
+{
+  corr_dat<double > corr(std::string(""));
+  corr.create_dat(key_T, dimN);
 
+  corr.INFOA.resize(0);
+  if(info != std::string("NONE")){
+    corr.INFOA.push_back(info);
+  }
+  corr.write_dat(filename);
+}
+
+inline void corr_dat_info(const std::string& filename, const std::string& info = std::string("NONE"))
+{
+  corr_dat<double > corr(std::string(""));
+  corr.read_dat(filename, 1);
+  if(info != std::string("NONE") and info.size() != 0){
+    corr.INFOA.push_back(info);
+  }
+  corr.write_dat(filename);
+}
 
 }
 

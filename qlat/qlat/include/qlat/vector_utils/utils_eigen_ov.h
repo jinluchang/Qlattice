@@ -1036,7 +1036,7 @@ void FieldM_src_to_FieldM_prop(qlat::FieldM<Ty , 1>& src, qlat::FieldM<Ty , 12*1
   {
     //////diagonal elements
     s1 = &st[(d0*12+d0)*Ncopy + 0];
-    cpy_data_thread(s1, s0, Ncopy , GPU, false);
+    cpy_data_thread(s1, s0, Ncopy , GPU, QFALSE);
   }
   if(dummy)qacc_barrier(dummy);
 }
@@ -1123,8 +1123,8 @@ void copy_eigen_src_to_FieldM(qlat::vector_gpu<Ty >& src, std::vector<qlat::Fiel
     st = (Ty*) qlat::get_data(res[d0a]).data();
     s1 = &st[((d0b*12 + d1)*NTt+ti)*Nxyz + vi];
 
-    if(dir == 0){cpy_data_thread(s1, s0, each , GPU, false);}
-    if(dir == 1){cpy_data_thread(s0, s1, each , GPU, false);}
+    if(dir == 0){cpy_data_thread(s1, s0, each , GPU, QFALSE);}
+    if(dir == 1){cpy_data_thread(s0, s1, each , GPU, QFALSE);}
   }
 
   qacc_barrier(dummy);

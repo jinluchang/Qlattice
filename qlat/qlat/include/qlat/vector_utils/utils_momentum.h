@@ -18,28 +18,6 @@
 
 namespace qlat{
 
-//template<typename Ty, int civ>
-//void FieldM_to_vector_gpu(qlat::vector_gpu<Ty >& res, std::vector<qlat::FieldM<Ty , civ> >& src, int dir = 0){
-//  Qassert(src.size() > 0);Qassert(src[0].initialized);
-//  const Geometry geo = src[0].geo();
-//  const Long V = geo.local_volume();
-//  const int nvec = src.size();
-//  if(dir == 0){res.resize(V * nvec * civ);}
-//  if(dir == 1){src.resize(nvec); for(unsigned int i=0;i<src.size();i++){src[i].init(geo);}}
-//  Ty* rb = res.data();
-//  for(int iv=0;iv<nvec;iv++){
-//    Ty* ra = (Ty*) qlat::get_data(src[iv]).data();
-//    if(dir ==  0)cpy_data_thread(&rb[iv * V*civ], ra, V*civ, 1, false);
-//    if(dir ==  1)cpy_data_thread(ra, &rb[iv * V*civ], V*civ, 1, false);
-//  }
-//  qacc_barrier(dummy);
-//}
-//
-//template<typename Ty, int civ>
-//void vector_gpu_to_FieldM(std::vector<qlat::FieldM<Ty , civ> >& src, qlat::vector_gpu<Ty >& res){
-//  FieldM_to_vector_gpu(res, src, 1);
-//}
-
 inline void get_mom_single_node(qlat::vector_acc<Long >& mapA, qlat::vector_acc<Long >& mapB,
     const Geometry& geo, const int mom_cut)
 {

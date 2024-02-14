@@ -238,7 +238,7 @@ struct vector_gpu{
 
   inline Ty norm2()
   {
-    qlat::vector_acc<Ty > tmp;tmp.resize(1);tmp[0] = 0;
+    qlat::vector_acc<Ty > tmp;tmp.resize(2);tmp[0] = 0;;
     qlat::vector_gpu<Ty > copy;copy.resize(n, GPU);
     Ty* res = copy.data();Ty* src = p;
     //if(GPU){
@@ -252,6 +252,9 @@ struct vector_gpu{
     //if(GPU == false){reduce_cpu(res, tmp.data(), n, 1);}
     reduce_vec(res, tmp.data(), n, 1, GPU);
     glb_sum(tmp[0]);
+    //MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(double);
+    //M_size = get_MPI_type<Ty >(curr);
+    //MPI_Allreduce(&tmp[0], &tmp[1], sizeof(Ty)/M_size, curr, MPI_SUM, get_comm());
     return tmp[0];
   }
   

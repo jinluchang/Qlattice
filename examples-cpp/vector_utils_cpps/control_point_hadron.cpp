@@ -2,8 +2,8 @@
 #include "general_funs.h"
 #include "utils_io_vec.h"
 #include "utils_construction.h"
-#include "utils_eigen_ov.sh"
-#include "check_fun.h"
+#include "utils_eigen_ov.h"
+#include "utils_check_fun.h"
 #include "utils_smear_vecs.h"
 #include "utils_lms_funs.h"
 

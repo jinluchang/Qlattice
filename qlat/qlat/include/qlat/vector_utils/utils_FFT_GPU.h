@@ -1078,7 +1078,7 @@ void fft_fieldM(std::vector<Handle<qlat::Field<M> > >& src, bool fftdir=true, bo
   {
   #if PRINT_TIMER>4
   TIMER_FLOPS("fft fieldM");
-  timer.flops += src.size() * get_data(src[0]).data_size()/(sizeof(M)) * 64;
+  timer.flops += src.size() * qlat::get_data(src[0]()).data_size()/(sizeof(M)) * 64;
   #else
   TIMER("fft fieldM");
   #endif
