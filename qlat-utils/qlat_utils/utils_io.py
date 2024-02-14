@@ -1,6 +1,7 @@
 import os
 import pickle
 import hashlib
+import functools
 
 from .c import *
 
