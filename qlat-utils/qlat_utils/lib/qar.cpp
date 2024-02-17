@@ -9,7 +9,9 @@ const std::string qar_idx_header = "#!/usr/bin/env qar-idx-glimpse\n\n";
 
 static void add_qfile(const QFile& qfile);
 
-static void remove_qfile(const QFileObj& qfile_internal);
+static void remove_qfile(const QFile& qfile);
+
+static void clean_up_qfile_map();
 
 static bool operator==(const QarSegmentInfo& qsinfo1, const QarSegmentInfo& qsinfo2);
 
@@ -54,31 +56,346 @@ static void check_all_files_crc32_aux(
 
 // ----------------------------------------------------
 
-QFileObj::QFileObj()
+Long QFileBase::size()
+{
+  if (null()) {
+    return -1;
+  }
+  const Long offset_start = tell();
+  seek(0, SEEK_END);
+  const Long offset_end = tell();
+  seek(offset_start, SEEK_SET);
+  qassert(offset_end >= 0);
+  return offset_end;
+}
+
+Long QFileBase::remaining_size()
+{
+  if (null()) {
+    return -1;
+  }
+  const Long offset_start = tell();
+  seek(0, SEEK_END);
+  const Long offset_end = tell();
+  seek(offset_start, SEEK_SET);
+  qassert(offset_end >= 0);
+  const Long data_len = offset_end - offset_start;
+  qassert(data_len >= 0);
+  return data_len;
+}
+
+Long QFileBase::read_data(Vector<char> v)
+{
+  TIMER_FLOPS("QFileBase::read_data(v)");
+  qassert(not null());
+  qassert(mode() == QFileMode::Read);
+  const Long total_bytes = read((void*)v.data(), sizeof(char), v.size());
+  if (total_bytes > v.size()) {
+    qerr(
+        fname +
+        ssprintf(": qread_data data_size=%ld total_bytes=%ld qfile.path()='%s'",
+                 v.size(), total_bytes, path().c_str()));
+  }
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+std::string QFileBase::read_all()
+{
+  TIMER_FLOPS("QFileBase::read_all()");
+  qassert(not null());
+  qassert(mode() == QFileMode::Read);
+  const Long total_bytes_expect = remaining_size();
+  std::string ret;
+  ret.resize(total_bytes_expect);
+  const Long total_bytes = read_data(get_data_char(ret));
+  if (total_bytes != total_bytes_expect) {
+    qerr(fname + ssprintf(": read size=%ld expect size=%ld path()='%s'",
+                          total_bytes, total_bytes_expect, path().c_str()));
+  }
+  timer.flops += total_bytes;
+  return ret;
+}
+
+std::string QFileBase::cat()
+{
+  TIMER_FLOPS("QFileBase::cat()");
+  seek(0, SEEK_END);
+  const Long total_bytes_expect = tell();
+  seek(0, SEEK_SET);
+  std::string ret;
+  ret.resize(total_bytes_expect);
+  const Long total_bytes = read_data(get_data_char(ret));
+  if (total_bytes != total_bytes_expect) {
+    qerr(fname + ssprintf(": read size=%ld expect size=%ld path()='%s'",
+                          total_bytes, total_bytes_expect, path().c_str()));
+  }
+  timer.flops += total_bytes;
+  return ret;
+}
+
+std::string QFileBase::getline()
+// read until '\n' or EOF
+// include the final '\n'
+{
+  TIMER_FLOPS("QFileBase::getline()");
+  qassert(not null());
+  qassert(mode() == QFileMode::Read);
+  const Long chunk_size = 128;
+  std::string ret;
+  std::string buf(chunk_size, ' ');
+  const Long offset_initial = tell();
+  while (true) {
+    const Long len = read_data(get_data_char(buf));
+    qassert(len <= chunk_size);
+    for (int i = 0; i < len; ++i) {
+      if (buf[i] == '\n') {
+        ret += buf.substr(0, i + 1);
+        seek(offset_initial + ret.size(), SEEK_SET);
+        timer.flops += ret.size();
+        return ret;
+      }
+    }
+    ret += buf;
+    if (len < chunk_size) {
+      timer.flops += ret.size();
+      return ret;
+    }
+  }
+  return ret;
+}
+
+std::vector<std::string> QFileBase::getlines()
+{
+  TIMER_FLOPS("QFileBase::getlines()");
+  qassert(not null());
+  qassert(mode() == QFileMode::Read);
+  std::vector<std::string> ret;
+  while (not eof()) {
+    ret.push_back(getline());
+    timer.flops += ret.back().size();
+  }
+  return ret;
+}
+
+Long QFileBase::write_data(Vector<char> v)
+{
+  TIMER_FLOPS("QFileBase::write_data()");
+  qassert(not null());
+  qassert(mode() == QFileMode::Write or mode() == QFileMode::Append);
+  const Long total_bytes = write((void*)v.data(), sizeof(char), v.size());
+  if (total_bytes != v.size()) {
+    qwarn(fname +
+          ssprintf(": qwrite_data data_size=%ld total_bytes=%ld path()='%s'",
+                   v.size(), total_bytes, path().c_str()));
+  }
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+Long QFileBase::write_data(const std::string& v)
+{
+  qassert(not null());
+  return write_data(get_data_char(v));
+}
+
+Long QFileBase::write_data(const std::vector<std::string>& v)
+{
+  TIMER_FLOPS("qwrite_data(vec<str>)");
+  qassert(not null());
+  Long total_bytes = 0;
+  for (Long i = 0; i < (Long)v.size(); ++i) {
+    total_bytes += write_data(v[i]);
+  }
+  return total_bytes;
+}
+
+int QFileBase::append(const std::string& content)
+{
+  TIMER_VERBOSE_FLOPS("QFileBase::append(content)");
+  const Long total_bytes = write_data(content);
+  const Long total_bytes_expect = content.size();
+  timer.flops += total_bytes;
+  if (total_bytes != total_bytes_expect) {
+    return 1;
+  }
+  return 0;
+}
+
+int QFileBase::append(const std::vector<std::string>& content)
+{
+  TIMER_VERBOSE_FLOPS("QFileBase::append(content)");
+  qassert(not null());
+  for (Long i = 0; i < (Long)content.size(); ++i) {
+    const Long total_bytes = write_data(get_data_char(content[i]));
+    const Long total_bytes_expect = content[i].size();
+    timer.flops += total_bytes;
+    if (total_bytes != total_bytes_expect) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+Long QFileBase::vprintf(const char* fmt, va_list args)
+{
+  TIMER("QFileBase::vprintf");
+  const std::string str = vssprintf(fmt, args);
+  return write_data(str);
+}
+
+Long QFileBase::printf(const char* fmt, ...)
+{
+  TIMER("QFileBase::printf");
+  va_list args;
+  va_start(args, fmt);
+  return vprintf(fmt, args);
+}
+
+// ----------------------------------------------------
+
+std::string show(const QFileMode mode)
+{
+  if (mode == QFileMode::Read) {
+    return "r";
+  } else if (mode == QFileMode::Write) {
+    return "w";
+  } else if (mode == QFileMode::Append) {
+    return "a";
+  } else {
+    qassert(false);
+    return "";
+  }
+}
+
+QFileMode read_qfile_mode(const std::string& mode)
+{
+  if (mode == "r") {
+    return QFileMode::Read;
+  } else if (mode == "w") {
+    return QFileMode::Write;
+  } else if (mode == "a") {
+    return QFileMode::Append;
+  } else {
+    qassert(false);
+    return QFileMode::Read;
+  }
+}
+
+Long write_from_qfile(QFileBase& qfile_out, QFileBase& qfile_in)
+{
+  TIMER_FLOPS("write_from_qfile(qfile_out,qfile_in)");
+  const Long chunk_size = write_from_qfile_chunk_size();
+  std::vector<char> buf(chunk_size);
+  Long total_bytes = 0;
+  while (not qfile_in.eof()) {
+    const Long size = qfile_in.read_data(get_data(buf));
+    qassert(size <= chunk_size);
+    const Long size_out = qfile_out.write_data(get_data(get_data(buf), size));
+    qassert(size_out == size);
+    total_bytes += size;
+  }
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+// ----------------------------------------------------
+
+QFileObjCFile::QFileObjCFile()
 {
   fp = NULL;
+  init();
+}
+
+QFileObjCFile::QFileObjCFile(const std::string& path_, const QFileMode mode_)
+{
+  fp = NULL;
+  init(path_, mode_);
+}
+
+QFileObjCFile::~QFileObjCFile() { close(); }
+
+void QFileObjCFile::init()
+{
+  close();
+  path_v = "";
+  mode_v = QFileMode::Read;
+}
+
+void QFileObjCFile::init(const std::string& path_, const QFileMode mode_)
+{
+  close();
+  path_v = path_;
+  mode_v = mode_;
+  fp = fopen(path_v.c_str(), show(mode_v).c_str());
+}
+
+void QFileObjCFile::close()
+{
+  TIMER("QFileObjCFile::close");
+  if (fp == NULL) {
+    return;
+  }
+  int ret = std::fclose(fp);
+  if (ret != 0) {
+    qwarn(fname +
+          ssprintf(": '%s' %s failed.", path().c_str(), show(mode()).c_str()));
+  }
+  fp = NULL;
+}
+
+QFileType QFileObjCFile::ftype() const { return QFileType::CFile; }
+
+const std::string& QFileObjCFile::path() const { return path_v; }
+
+QFileMode QFileObjCFile::mode() const { return mode_v; }
+
+bool QFileObjCFile::null() const { return fp == NULL; }
+
+bool QFileObjCFile::eof() const { return std::feof(fp); }
+
+Long QFileObjCFile::tell() const { return std::ftell(fp); }
+
+int QFileObjCFile::flush() const { return fflush(fp); }
+
+int QFileObjCFile::seek(const Long offset, const int whence)
+{
+  return std::fseek(fp, offset, whence);
+}
+
+Long QFileObjCFile::read(void* ptr, const Long size, const Long nmemb)
+{
+  return fread(ptr, size, nmemb, fp);
+}
+
+Long QFileObjCFile::write(const void* ptr, const Long size, const Long nmemb)
+{
+  return fwrite(ptr, size, nmemb, fp);
+}
+
+// ----------------------------------------------------
+
+QFileObj::QFileObj()
+{
   number_of_child = 0;
   init();
 }
 
-QFileObj::QFileObj(const std::string& path_, const std::string& mode_)
+QFileObj::QFileObj(const std::string& path_, const QFileMode mode_)
 {
-  fp = NULL;
   number_of_child = 0;
   init(path_, mode_);
 }
 
-QFileObj::QFileObj(const QFile& qfile, const Long q_offset_start,
-                   const Long q_offset_end)
+QFileObj::QFileObj(const std::shared_ptr<QFileObj>& qfile,
+                   const Long q_offset_start, const Long q_offset_end)
 {
-  fp = NULL;
   number_of_child = 0;
   init(qfile, q_offset_start, q_offset_end);
 }
 
 QFileObj::QFileObj(QFileObj&& qfile) noexcept
 {
-  fp = NULL;
   number_of_child = 0;
   init();
   qswap(*this, qfile);
@@ -87,46 +404,46 @@ QFileObj::QFileObj(QFileObj&& qfile) noexcept
 QFileObj::~QFileObj()
 {
   close();
-  remove_qfile(*this);
 }
 
 void QFileObj::init()
 {
   close();
-  path = "";
-  mode = "";
-  is_eof = false;
   pos = 0;
+  is_eof = false;
   offset_start = 0;
   offset_end = -1;
 }
 
-void QFileObj::init(const std::string& path_, const std::string& mode_)
-// mode can be "r", "w", "a"
+void QFileObj::init(const std::string& path_, const QFileMode mode_)
 {
   close();
-  path = path_;
-  mode = mode_;
-  displayln_info(
-      1, ssprintf("QFile: open '%s' with '%s'.", path.c_str(), mode.c_str()));
-  if (mode == "r" and (not is_regular_file(path))) {
-    qwarn(ssprintf("QFile: open '%s' with '%s' not regular file.", path.c_str(),
-                   mode.c_str()));
+  displayln_info(1, ssprintf("QFile: open '%s' with '%s'.", path_.c_str(),
+                             show(mode_).c_str()));
+  if (mode_ == QFileMode::Read and (not is_regular_file(path_))) {
+    qwarn(ssprintf("QFile: open '%s' with '%s'. Not regular file.",
+                   path_.c_str(), show(mode_).c_str()));
   }
-  fp = qopen(path, mode);
-  if (fp == NULL) {
-    qwarn(ssprintf("QFile: open '%s' with '%s' failed.", path.c_str(),
-                   mode.c_str()));
+  qassert(fp == nullptr);
+  fp.reset(new QFileObjCFile(path_, mode_));
+  if (fp->null()) {
+    fp = nullptr;
+    qwarn(ssprintf("QFile: open '%s' with '%s' failed.", path_.c_str(),
+                   show(mode_).c_str()));
+    pos = 0;
   } else {
-    pos = ftell(fp);
+    pos = fp->tell();
   }
   is_eof = false;
   offset_start = 0;
   offset_end = -1;
+  if (not fp->null() and mode_ == QFileMode::Read) {
+    offset_end = fp->size();
+  }
 }
 
-void QFileObj::init(const QFile& qfile, const Long q_offset_start,
-                    const Long q_offset_end)
+void QFileObj::init(const std::shared_ptr<QFileObj>& qfile,
+                    const Long q_offset_start, const Long q_offset_end)
 // Become a child of qfile.
 // NOTE: q_offset_start and q_offset_end are relative offset for qfile not the
 // absolute offset for qfile.fp .
@@ -135,32 +452,32 @@ void QFileObj::init(const QFile& qfile, const Long q_offset_start,
 // position.
 {
   close();
-  if (qfile.null()) {
+  if (qfile == nullptr) {
     return;
   }
-  qfile.p->number_of_child += 1;
-  path = qfile.p->path;
-  mode = qfile.p->mode;
-  fp = qfile.p->fp;
   parent = qfile;
+  parent->number_of_child += 1;
+  qassert(fp == nullptr);
+  fp = parent->fp;
   qassert(q_offset_start >= 0);
   is_eof = false;
   pos = 0;
-  offset_start = qfile.p->offset_start + q_offset_start;
+  offset_start = parent->offset_start + q_offset_start;
   if (q_offset_end == -1) {
-    offset_end = qfile.p->offset_end;
+    offset_end = parent->offset_end;
   } else {
     qassert(q_offset_end >= q_offset_start);
-    offset_end = qfile.p->offset_start + q_offset_end;
-    if (qfile.p->offset_end != -1) {
-      qassert(offset_end <= qfile.p->offset_end);
+    offset_end = parent->offset_start + q_offset_end;
+    if (parent->offset_end != -1) {
+      qassert(offset_end <= parent->offset_end);
     }
   }
-  if (mode == "r" and offset_end != -1) {
-    const int code = fseek(fp, offset_end, SEEK_SET);
+  if (fp->mode() == QFileMode::Read and offset_end != -1) {
+    const int code = fp->seek(offset_end, SEEK_SET);
     if (code != 0) {
       qwarn(ssprintf("QFile: '%s' with '%s' offset=%ld,%ld failed.",
-                     path.c_str(), mode.c_str(), offset_start, offset_end));
+                     fp->path().c_str(), show(fp->mode()).c_str(), offset_start,
+                     offset_end));
       close();
     }
   }
@@ -170,84 +487,300 @@ void QFileObj::close()
 {
   // to close the file, it cannot have any child
   qassert(number_of_child == 0);
-  if (parent.null()) {
-    if (fp != NULL) {
-      displayln_info(1, ssprintf("QFile: close '%s' with '%s'.", path.c_str(),
-                                 mode.c_str()));
-      qfclose(fp);
+  if (parent == nullptr) {
+    if (fp != nullptr) {
+      displayln_info(1, ssprintf("QFile: close '%s' with '%s'.", path().c_str(),
+                                 show(mode()).c_str()));
+      fp->close();
+      fp.reset();
     }
   } else {
-    fp = NULL;
-    parent.p->number_of_child -= 1;
-    parent = QFile();
+    fp.reset();
+    parent->number_of_child -= 1;
+    parent.reset();
   }
-  qassert(fp == NULL);
-  qassert(parent.null());
+  qassert(fp == nullptr);
+  qassert(parent == nullptr);
+}
+
+QFileType QFileObj::ftype() const { return fp->ftype(); }
+
+const std::string& QFileObj::path() const { return fp->path(); }
+
+QFileMode QFileObj::mode() const { return fp->mode(); }
+
+bool QFileObj::null() const
+{
+  if (fp == nullptr) {
+    return true;
+  } else {
+    qassert(not fp->null());
+    return false;
+  }
+}
+
+bool QFileObj::eof() const { return is_eof; }
+
+Long QFileObj::tell() const { return pos; }
+
+int QFileObj::flush() const { return fp->flush(); }
+
+int QFileObj::seek(const Long q_offset, const int whence)
+{
+  qassert(not null());
+  is_eof = false;
+  int ret = 0;
+  if (SEEK_SET == whence) {
+    const Long offset = offset_start + q_offset;
+    ret = fp->seek(offset, SEEK_SET);
+  } else if (SEEK_CUR == whence) {
+    ret = fp->seek(offset_start + pos + q_offset, SEEK_SET);
+  } else if (SEEK_END == whence) {
+    if (offset_end == -1) {
+      ret = fp->seek(q_offset, SEEK_END);
+    } else {
+      const Long offset = offset_end + q_offset;
+      ret = fp->seek(offset, SEEK_SET);
+    }
+  } else {
+    qassert(false);
+  }
+  pos = fp->tell() - offset_start;
+  qassert(pos >= 0);
+  if (offset_end != -1) {
+    qassert(offset_start + pos <= offset_end);
+  }
+  return ret;
+}
+
+Long QFileObj::read(void* ptr, const Long size, const Long nmemb)
+// Only read portion of data if not enough content in qfile.
+{
+  qassert(not null());
+  qassert(mode() == QFileMode::Read);
+  if (0 == size or 0 == nmemb) {
+    return 0;
+  }
+  qassert(size > 0);
+  qassert(nmemb > 0);
+  const int code = seek(pos, SEEK_SET);
+  qassert(code == 0);
+  Long actual_nmemb = 0;
+  if (offset_end != -1) {
+    const Long remaining_size = offset_end - offset_start - pos;
+    qassert(remaining_size >= 0);
+    const Long target_nmemb = std::min(nmemb, remaining_size / size);
+    actual_nmemb = fp->read(ptr, size, target_nmemb);
+    qassert(actual_nmemb == target_nmemb);
+  } else {
+    actual_nmemb = fp->read(ptr, size, nmemb);
+  }
+  pos += actual_nmemb * size;
+  qassert(pos >= 0);
+  if (actual_nmemb < nmemb) {
+    is_eof = true;
+  } else {
+    qassert(actual_nmemb == nmemb);
+    is_eof = false;
+  }
+  qassert(offset_start + pos == fp->tell());
+  if (offset_end != -1) {
+    qassert(offset_start + pos <= offset_end);
+    if (is_eof) {
+      qassert(offset_start + pos == offset_end);
+    }
+  } else {
+    qassert(is_eof == fp->eof());
+  }
+  return actual_nmemb;
+}
+
+Long QFileObj::write(const void* ptr, const Long size, const Long nmemb)
+// Crash if no enough space
+{
+  qassert(not null());
+  qassert(mode() == QFileMode::Write or mode() == QFileMode::Append);
+  if (0 == size or 0 == nmemb) {
+    return 0;
+  }
+  qassert(size > 0);
+  qassert(nmemb > 0);
+  const int code = seek(pos, SEEK_SET);
+  qassert(code == 0);
+  if (offset_end != -1) {
+    const Long remaining_size = offset_end - offset_start - pos;
+    qassert(remaining_size >= size * nmemb);
+  }
+  const Long actual_nmemb = fp->write(ptr, size, nmemb);
+  qassert(actual_nmemb == nmemb);
+  pos += actual_nmemb * size;
+  qassert(pos >= 0);
+  qassert(offset_start + pos == fp->tell());
+  if (offset_end != -1) {
+    qassert(offset_start + pos <= offset_end);
+  }
+  return actual_nmemb;
 }
 
 // ----------------------------------------------------
+
+QFile::QFile() { init(); }
+
+QFile::QFile(const std::weak_ptr<QFileObj>& wp) { init(wp); }
+
+QFile::QFile(const std::string& path, const QFileMode mode)
+{
+  init(path, mode);
+}
+
+QFile::QFile(const QFile& qfile, const Long q_offset_start,
+             const Long q_offset_end)
+{
+  init(qfile, q_offset_start, q_offset_end);
+}
 
 void QFile::init() { p = nullptr; }
 
 void QFile::init(const std::weak_ptr<QFileObj>& wp)
 {
+  TIMER("QFile::init(wp)");
+  close();
   p = std::shared_ptr<QFileObj>(wp);
+  if (p->null()) {
+    close();
+  }
 }
 
-void QFile::init(const std::string& path, const std::string& mode)
+void QFile::init(const std::string& path, const QFileMode mode)
 {
-  if (p == nullptr) {
-    p = std::shared_ptr<QFileObj>(new QFileObj());
-    add_qfile(*this);
-  }
+  TIMER("QFile::init(path,mode)");
+  close();
+  p = std::shared_ptr<QFileObj>(new QFileObj());
+  add_qfile(*this);
   p->init(path, mode);
+  if (p->null()) {
+    close();
+  }
 }
 
 void QFile::init(const QFile& qfile, const Long q_offset_start,
                  const Long q_offset_end)
 {
-  if (p == nullptr) {
-    p = std::shared_ptr<QFileObj>(new QFileObj());
-    add_qfile(*this);
+  TIMER("QFile::init(qfile,offset_start,offset_end)");
+  close();
+  p = std::shared_ptr<QFileObj>(new QFileObj());
+  add_qfile(*this);
+  p->init(qfile.p, q_offset_start, q_offset_end);
+  if (p->null()) {
+    close();
   }
-  p->init(qfile, q_offset_start, q_offset_end);
 }
 
 void QFile::close()
 {
   if (p != nullptr) {
+    TIMER("QFile::close()");
     p->close();
+    qassert(p->null());
+    remove_qfile(*this);
     p = nullptr;
+  }
+  qassert(p == nullptr);
+}
+
+QFileType QFile::ftype() const { return p->ftype(); }
+
+const std::string& QFile::path() const { return p->path(); }
+
+QFileMode QFile::mode() const { return p->mode(); }
+
+bool QFile::null() const
+{
+  if (p == nullptr) {
+    return true;
+  } else {
+    qassert(not p->null());
+    return false;
   }
 }
 
-const std::string& QFile::path() const { return p->path; }
+bool QFile::eof() const { return p->eof(); }
 
-const std::string& QFile::mode() const { return p->mode; }
+Long QFile::tell() const { return p->tell(); }
 
-FILE* QFile::get_fp() const { return p->fp; }
+int QFile::flush() const { return p->flush(); }
+
+int QFile::seek(const Long offset, const int whence)
+{
+  qassert(not null());
+  return p->seek(offset, whence);
+}
+
+Long QFile::read(void* ptr, const Long size, const Long nmemb)
+{
+  qassert(not null());
+  return p->read(ptr, size, nmemb);
+}
+
+Long QFile::write(const void* ptr, const Long size, const Long nmemb)
+{
+  qassert(not null());
+  return p->write(ptr, size, nmemb);
+}
 
 // ----------------------------------------------------
 
 void add_qfile(const QFile& qfile)
 {
+  TIMER("add_qfile");
   QFileMap& qfile_map = get_all_qfile();
   const Long key = (Long)qfile.p.get();
-  qassert(not has(qfile_map, key));
+  if (has(qfile_map, key)) {
+    qwarn(fname + ssprintf(": repeatedly add qfile '%s' '%s'",
+                           qfile.path().c_str(), show(qfile.mode()).c_str()));
+  }
   qfile_map[key] = qfile.p;
 }
 
-void remove_qfile(const QFileObj& qfile_internal)
+void remove_qfile(const QFile& qfile)
 {
+  TIMER("remove_qfile");
+  if (qfile.p == nullptr) {
+    return;
+  }
+  if (qfile.p->null()) {
+    QFileMap& qfile_map = get_all_qfile();
+    const Long key = (Long)qfile.p.get();
+    qassert(has(qfile_map, key));
+    qfile_map.erase(key);
+  }
+}
+
+void clean_up_qfile_map()
+{
+  TIMER("clean_up_qfile_map");
   QFileMap& qfile_map = get_all_qfile();
-  const Long key = (Long)&qfile_internal;
-  qassert(has(qfile_map, key));
-  qfile_map.erase(key);
+  std::vector<Long> key_to_remove_vec;
+  for (auto it = qfile_map.cbegin(); it != qfile_map.cend(); ++it) {
+    if (it->second.expired()) {
+      key_to_remove_vec.push_back(it->first);
+    }
+  }
+  for (Long i = 0; (Long)key_to_remove_vec.size(); ++i) {
+    const Long key = key_to_remove_vec[i];
+    qfile_map.erase(key);
+  }
+  if (key_to_remove_vec.size() > 0) {
+    qwarn(fname +
+          ssprintf(": clean up %ld qfiles in qfile_map. %ld qfiles remain.",
+                   (long)key_to_remove_vec.size(), (long)qfile_map.size()));
+  }
 }
 
 std::vector<std::string> show_all_qfile()
 {
   TIMER_VERBOSE("show_all_qfile");
+  clean_up_qfile_map();
   std::vector<std::string> ret;
   const QFileMap& qfile_map = get_all_qfile();
   for (auto it = qfile_map.cbegin(); it != qfile_map.cend(); ++it) {
@@ -261,10 +794,10 @@ std::vector<std::string> show_all_qfile()
 
 std::string show(const QFileObj& qfile)
 {
-  const std::string has_parent = qfile.parent.null() ? "no" : "yes";
+  const std::string has_parent = qfile.parent->null() ? "no" : "yes";
   return ssprintf("QFileObj(path='%s',mode='%s',parent=%s,number_of_child=%d)",
-                  qfile.path.c_str(), qfile.mode.c_str(), has_parent.c_str(),
-                  qfile.number_of_child);
+                  qfile.path().c_str(), show(qfile.mode()).c_str(),
+                  has_parent.c_str(), qfile.number_of_child);
 }
 
 void qswap(QFileObj& qfile1, QFileObj& qfile2)
@@ -272,13 +805,11 @@ void qswap(QFileObj& qfile1, QFileObj& qfile2)
   // cannot swap if has child
   qassert(qfile1.number_of_child == 0);
   qassert(qfile2.number_of_child == 0);
-  std::swap(qfile1.path, qfile2.path);
-  std::swap(qfile1.mode, qfile2.mode);
   std::swap(qfile1.fp, qfile2.fp);
   std::swap(qfile1.parent, qfile2.parent);
   std::swap(qfile1.number_of_child, qfile2.number_of_child);
-  std::swap(qfile1.is_eof, qfile2.is_eof);
   std::swap(qfile1.pos, qfile2.pos);
+  std::swap(qfile1.is_eof, qfile2.is_eof);
   std::swap(qfile1.offset_start, qfile2.offset_start);
   std::swap(qfile1.offset_end, qfile2.offset_end);
 }
@@ -291,14 +822,14 @@ void qswap(QFile& qfile1, QFile& qfile2)
   std::swap(qfile1, qfile2);
 }
 
-QFile qfopen(const std::string& path, const std::string& mode)
+QFile qfopen(const std::string& path, const QFileMode mode)
 // interface function
 // qfile.null() == true if qopen failed.
 // Will open files in qar for read
 // Will create directories needed for write / append
 {
   TIMER("qfopen(path,mode)");
-  if (mode == "r") {
+  if (mode == QFileMode::Read) {
     const std::string key = get_qar_read_cache_key(path);
     if (key == "") {
       return QFile();
@@ -311,7 +842,7 @@ QFile qfopen(const std::string& path, const std::string& mode)
       QFile qfile = read(qar, fn);
       return qfile;
     }
-  } else if (mode == "w" or mode == "a") {
+  } else if (mode == QFileMode::Write or mode == QFileMode::Append) {
     const std::string path_dir = dirname(path);
     qmkdir_p(path_dir);
     return QFile(path, mode);
@@ -319,6 +850,11 @@ QFile qfopen(const std::string& path, const std::string& mode)
     qassert(false);
   }
   return QFile();
+}
+
+QFile qfopen(const std::string& path, const std::string& mode)
+{
+  return qfopen(path, read_qfile_mode(mode));
 }
 
 void qfclose(QFile& qfile)
@@ -330,367 +866,137 @@ void qfclose(QFile& qfile)
 bool qfeof(const QFile& qfile)
 // interface function
 {
-  qassert(not qfile.null());
-  return qfile.p->is_eof;
+  return qfile.eof();
 }
 
 Long qftell(const QFile& qfile)
 // interface function
 {
-  qassert(not qfile.null());
-  return qfile.p->pos;
+  return qfile.tell();
 }
 
 int qfflush(const QFile& qfile)
 // interface function
 {
-  qassert(not qfile.null());
-  return fflush(qfile.get_fp());
+  return qfile.flush();
 }
 
-int qfseek(const QFile& qfile, const Long q_offset, const int whence)
-// interface function
-// Always call fseek and adjust qfile.is_eof and qfile.pos
-// qfile.pos will be set to the actual QFile position after qfseek.
-// return 0 if successful
+int qfseek(QFile& qfile, const Long offset, const int whence)
 {
-  qassert(not qfile.null());
-  qfile.p->is_eof = false;
-  int ret = 0;
-  if (SEEK_SET == whence) {
-    const Long offset = qfile.p->offset_start + q_offset;
-    ret = fseek(qfile.get_fp(), offset, SEEK_SET);
-  } else if (SEEK_CUR == whence) {
-    ret = fseek(qfile.get_fp(), qfile.p->offset_start + qfile.p->pos + q_offset,
-                SEEK_SET);
-  } else if (SEEK_END == whence) {
-    if (qfile.p->offset_end == -1) {
-      ret = fseek(qfile.get_fp(), q_offset, SEEK_END);
-    } else {
-      const Long offset = qfile.p->offset_end + q_offset;
-      ret = fseek(qfile.get_fp(), offset, SEEK_SET);
-    }
-  } else {
-    qassert(false);
-  }
-  qfile.p->pos = ftell(qfile.get_fp()) - qfile.p->offset_start;
-  qassert(qfile.p->pos >= 0);
-  if (qfile.p->offset_end != -1) {
-    qassert(qfile.p->offset_start + qfile.p->pos <= qfile.p->offset_end);
-  }
-  return ret;
+  return qfile.seek(offset, whence);
 }
 
-int qfseek_set(const QFile& qfile, const Long q_offset)
+int qfseek_set(QFile& qfile, const Long offset)
 {
-  return qfseek(qfile, q_offset, SEEK_SET);
+  return qfseek(qfile, offset, SEEK_SET);
 }
 
-int qfseek_end(const QFile& qfile, const Long q_offset)
+int qfseek_end(QFile& qfile, const Long offset)
 {
-  return qfseek(qfile, q_offset, SEEK_END);
+  return qfseek(qfile, offset, SEEK_END);
 }
 
-int qfseek_cur(const QFile& qfile, const Long q_offset)
+int qfseek_cur(QFile& qfile, const Long offset)
 {
-  return qfseek(qfile, q_offset, SEEK_CUR);
+  return qfseek(qfile, offset, SEEK_CUR);
 }
 
-Long qfread(void* ptr, const Long size, const Long nmemb, const QFile& qfile)
+Long qfread(void* ptr, const Long size, const Long nmemb, QFile& qfile)
 // interface function
 // Only read portion of data if not enough content in qfile.
 {
-  qassert(not qfile.null());
-  if (0 == size or 0 == nmemb) {
-    return 0;
-  }
-  qassert(size > 0);
-  qassert(nmemb > 0);
-  const int code = qfseek(qfile, qfile.p->pos, SEEK_SET);
-  qassert(code == 0);
-  Long actual_nmemb = 0;
-  if (qfile.p->offset_end != -1) {
-    const Long remaining_size =
-        qfile.p->offset_end - qfile.p->offset_start - qfile.p->pos;
-    qassert(remaining_size >= 0);
-    const Long target_nmemb = std::min(remaining_size / size, nmemb);
-    actual_nmemb = std::fread(ptr, size, target_nmemb, qfile.get_fp());
-    qassert(actual_nmemb == target_nmemb);
-    qfile.p->pos += target_nmemb * size;
-    qassert(qfile.p->pos == ftell(qfile.get_fp()) - qfile.p->offset_start);
-    if (target_nmemb < nmemb) {
-      qfile.p->is_eof = true;
-    } else {
-      qassert(target_nmemb == nmemb);
-      qfile.p->is_eof = false;
-    }
-  } else {
-    actual_nmemb = std::fread(ptr, size, nmemb, qfile.get_fp());
-    qfile.p->pos = ftell(qfile.get_fp()) - qfile.p->offset_start;
-    qfile.p->is_eof = feof(qfile.get_fp()) != 0;
-  }
-  return actual_nmemb;
+  return qfile.read(ptr, size, nmemb);
 }
 
-Long qfwrite(const void* ptr, const Long size, const Long nmemb,
-             const QFile& qfile)
+Long qfwrite(const void* ptr, const Long size, const Long nmemb, QFile& qfile)
 // interface function
 // Crash if no enough space
 {
-  qassert(not qfile.null());
-  if (0 == size or 0 == nmemb) {
-    return 0;
-  }
-  qassert(size > 0);
-  qassert(nmemb > 0);
-  const int code = qfseek(qfile, qfile.p->pos, SEEK_SET);
-  qassert(code == 0);
-  if (qfile.p->offset_end != -1) {
-    const Long remaining_size =
-        qfile.p->offset_end - qfile.p->offset_start - qfile.p->pos;
-    qassert(remaining_size >= size * nmemb);
-  }
-  const Long actual_nmemb = std::fwrite(ptr, size, nmemb, qfile.get_fp());
-  qassert(actual_nmemb == nmemb);
-  qfile.p->pos = ftell(qfile.get_fp()) - qfile.p->offset_start;
-  qassert(qfile.p->pos >= 0);
-  if (qfile.p->offset_end != -1) {
-    qassert(qfile.p->offset_start + qfile.p->pos <= qfile.p->offset_end);
-  }
-  return actual_nmemb;
+  return qfile.write(ptr, size, nmemb);
 }
 
-int qvfscanf(const QFile& qfile, const char* fmt, va_list args)
+Long qvfprintf(QFile& qfile, const char* fmt, va_list args)
 {
-  qassert(not qfile.null());
-  const int code = qfseek(qfile, qfile.p->pos, SEEK_SET);
-  qassert(code == 0);
-  const int n_elem = vfscanf(qfile.get_fp(), fmt, args);
-  qfile.p->pos = ftell(qfile.get_fp()) - qfile.p->offset_start;
-  return n_elem;
+  return qfile.vprintf(fmt, args);
 }
 
-int qfscanf(const QFile& qfile, const char* fmt, ...)
+Long qfprintf(QFile& qfile, const char* fmt, ...)
 {
   va_list args;
   va_start(args, fmt);
-  return qvfscanf(qfile, fmt, args);
+  return qfile.vprintf(fmt, args);
 }
 
-Long qvfprintf(const QFile& qfile, const char* fmt, va_list args)
-{
-  const std::string str = vssprintf(fmt, args);
-  return qwrite_data(str, qfile);
-}
-
-Long qfprintf(const QFile& qfile, const char* fmt, ...)
-{
-  va_list args;
-  va_start(args, fmt);
-  return qvfprintf(qfile, fmt, args);
-}
-
-std::string qgetline(const QFile& qfile)
+std::string qgetline(QFile& qfile)
 // interface function
 // read an entire line including the final '\n' char.
 {
-  qassert(not qfile.null());
-  const int code = qfseek(qfile, qfile.p->pos, SEEK_SET);
-  qassert(code == 0);
-  char* lineptr = NULL;
-  size_t n = 0;
-  const Long size = getline(&lineptr, &n, qfile.get_fp());
-  qfile.p->is_eof = feof(qfile.get_fp()) != 0;
-  if (size > 0) {
-    std::string ret;
-    const Long pos = ftell(qfile.get_fp()) - qfile.p->offset_start;
-    if (pos < 0) {
-      qerr(
-          ssprintf("qgetline: '%s' initial_pos='%ld' final_pos='%ld' "
-                   "getline_size='%ld'.",
-                   qfile.path().c_str(), qfile.p->pos, pos, size));
-    }
-    if (qfile.p->offset_end != -1 and
-        qfile.p->offset_start + pos > qfile.p->offset_end) {
-      qfseek(qfile, 0, SEEK_END);
-      qfile.p->is_eof = true;
-      const Long size_truncate =
-          size - (qfile.p->offset_start + pos - qfile.p->offset_end);
-      qassert(size_truncate >= 0);
-      ret = std::string(lineptr, size_truncate);
-    } else {
-      qfile.p->pos = pos;
-      ret = std::string(lineptr, size);
-    }
-    std::free(lineptr);
-    return ret;
-  } else {
-    std::free(lineptr);
-    return std::string();
-  }
+  return qfile.getline();
 }
 
-std::vector<std::string> qgetlines(const QFile& qfile)
+std::vector<std::string> qgetlines(QFile& qfile)
 // interface function
 {
-  TIMER_FLOPS("qgetlines(qfile)");
-  qassert(not qfile.null());
-  std::vector<std::string> ret;
-  while (not qfeof(qfile)) {
-    ret.push_back(qgetline(qfile));
-    timer.flops += ret.back().size();
-  }
-  return ret;
+  return qfile.getlines();
 }
 
-Long qfile_size(const QFile& qfile)
+Long qfile_size(QFile& qfile)
 // interface function
 // return the total size of qfile.
 // qfile should have definite size.
 // does not affect qfile position.
 // return -1 if qFile is not opened.
 {
-  if (qfile.null()) {
-    return -1;
-  }
-  qassert(not qfile.null());
-  const Long offset_start = qftell(qfile);
-  qfseek(qfile, 0, SEEK_END);
-  const Long offset_end = qftell(qfile);
-  qfseek(qfile, offset_start, SEEK_SET);
-  qassert(offset_end >= 0);
-  return offset_end;
+  return qfile.size();
 }
 
-Long qfile_remaining_size(const QFile& qfile)
+Long qfile_remaining_size(QFile& qfile)
 // interface function
 // return the remaining size of qfile (start from the current position).
 // qfile should have definite size.
 // does not affect qfile position.
 // return -1 if qfile is not opened.
 {
-  TIMER_FLOPS("qfile_remaining_size");
-  if (qfile.null()) {
-    return -1;
-  }
-  qassert(not qfile.null());
-  const Long offset_start = qftell(qfile);
-  qfseek(qfile, 0, SEEK_END);
-  const Long offset_end = qftell(qfile);
-  qfseek(qfile, offset_start, SEEK_SET);
-  const Long data_len = offset_end - offset_start;
-  qassert(data_len >= 0);
-  return data_len;
+  return qfile.remaining_size();
 }
 
-Long qwrite_data(const Vector<char>& v, const QFile& qfile)
+Long qwrite_data(const Vector<char>& v, QFile& qfile)
 // interface function
 {
-  TIMER_FLOPS("qwrite_data(v,qfile)");
-  qassert(not qfile.null());
-  const Long total_bytes = qfwrite((void*)v.p, sizeof(char), v.size(), qfile);
-  if (total_bytes != v.size()) {
-    qwarn(fname +
-          ssprintf(
-              ": qwrite_data data_size=%ld total_bytes=%ld qfile.path()='%s'",
-              v.size(), total_bytes, qfile.path().c_str()));
-  }
-  timer.flops += total_bytes;
-  return total_bytes;
+  return qfile.write_data(v);
 }
 
-Long qwrite_data(const std::string& line, const QFile& qfile)
+Long qwrite_data(const std::string& v, QFile& qfile)
 // interface function
 {
-  qassert(not qfile.null());
-  return qwrite_data(get_data_char(line), qfile);
+  return qfile.write_data(v);
 }
 
-Long qwrite_data(const std::vector<std::string>& lines, const QFile& qfile)
+Long qwrite_data(const std::vector<std::string>& v, QFile& qfile)
 // interface function
 {
-  TIMER_FLOPS("qwrite_data(lines,qfile)");
-  qassert(not qfile.null());
-  Long total_bytes = 0;
-  for (Long i = 0; i < (Long)lines.size(); ++i) {
-    total_bytes += qwrite_data(lines[i], qfile);
-  }
-  return total_bytes;
+  return qfile.write_data(v);
 }
 
-Long qread_data(const Vector<char>& v, const QFile& qfile)
+Long qread_data(const Vector<char>& v, QFile& qfile)
 // interface function
 {
-  TIMER_FLOPS("qread_data(v,qfile)");
-  qassert(not qfile.null());
-  const Long total_bytes = qfread((void*)v.p, sizeof(char), v.size(), qfile);
-  if (total_bytes > v.size()) {
-    qerr(
-        fname +
-        ssprintf(": qread_data data_size=%ld total_bytes=%ld qfile.path()='%s'",
-                 v.size(), total_bytes, qfile.path().c_str()));
-  }
-  timer.flops += total_bytes;
-  return total_bytes;
+  return qfile.read_data(v);
 }
 
-Long write_from_qfile(const QFile& qfile_out, const QFile& qfile_in)
+std::string qcat(QFile& qfile)
 {
-  TIMER_FLOPS("write_from_qfile(qfile_out,qfile_in)");
-  const Long chunk_size = write_from_qfile_chunk_size();
-  std::vector<char> buf(chunk_size);
-  Long total_bytes = 0;
-  while (not qfeof(qfile_in)) {
-    const Long size = qread_data(get_data(buf), qfile_in);
-    qassert(size <= chunk_size);
-    const Long size_out = qwrite_data(get_data(get_data(buf), size), qfile_out);
-    qassert(size_out == size);
-    total_bytes += size;
-  }
-  timer.flops += total_bytes;
-  return total_bytes;
+  return qfile.cat();
 }
 
-std::string qcat(const QFile& qfile)
+int qappend(QFile& qfile, const std::string& content)
 {
-  TIMER_VERBOSE_FLOPS("qcat(qfile)");
-  qassert(not qfile.null());
-  qfseek(qfile, 0, SEEK_END);
-  const Long length = qftell(qfile);
-  qfseek(qfile, 0, SEEK_SET);
-  std::string ret(length, 0);
-  const Long length_actual = qfread(&ret[0], 1, length, qfile);
-  qassert(length == length_actual);
-  timer.flops += length_actual;
-  return ret;
+  return qfile.append(content);
 }
 
-int qappend(const QFile& qfile, const std::string& content)
+int qappend(QFile& qfile, const std::vector<std::string>& content)
 {
-  TIMER_VERBOSE_FLOPS("qappend(qfile,content)");
-  qassert(not qfile.null());
-  const Long total_bytes = qwrite_data(content, qfile);
-  const Long total_bytes_expect = content.size();
-  timer.flops += total_bytes;
-  if (total_bytes != total_bytes_expect) {
-    return 1;
-  }
-  return 0;
-}
-
-int qappend(const QFile& qfile, const std::vector<std::string>& content)
-{
-  TIMER_VERBOSE_FLOPS("qappend(qfile,content)");
-  qassert(not qfile.null());
-  for (Long i = 0; i < (Long)content.size(); ++i) {
-    const Long total_bytes_expect = content[i].size();
-    const Long total_bytes = qwrite_data(get_data_char(content[i]), qfile);
-    timer.flops += total_bytes;
-    if (total_bytes != total_bytes_expect) {
-      return 1;
-    }
-  }
-  return 0;
+  return qfile.append(content);
 }
 
 // ----------------------------------------------------
@@ -734,11 +1040,11 @@ void QarFileVolObj::init()
   current_write_segment_info.init();
 }
 
-void QarFileVolObj::init(const std::string& path, const std::string& mode)
+void QarFileVolObj::init(const std::string& path, const QFileMode mode)
 {
   TIMER("QarFileVolObj::init(path,mode)");
   init();
-  if (mode == "a") {
+  if (mode == QFileMode::Append) {
     properly_truncate_qar_vol_file(fn_list, qsinfo_map, directories, max_offset,
                                    path, false);
     qfile = QFile(path, mode);
@@ -756,12 +1062,12 @@ void QarFileVolObj::init(const QFile& qfile_)
     return;
   }
   qassert(qftell(qfile) == 0);
-  if (mode() == "w" or mode() == "a") {
-    // write from scratch even if mode is "a" (perhaps inherited from parent
+  if (mode() == QFileMode::Write or mode() == QFileMode::Append) {
+    // write from scratch even if mode is Append (perhaps inherited from parent
     // qfile)
-    // will append if use QarFileVolObj::init(path, "a")
+    // will append if use QarFileVolObj::init(path, QFileMode::Append)
     qfwrite(qar_header.data(), qar_header.size(), 1, qfile);
-  } else if (mode() == "r") {
+  } else if (mode() == QFileMode::Read) {
     std::vector<char> check_line(qar_header.size(), 0);
     const Long qfread_check_len =
         qfread(check_line.data(), qar_header.size(), 1, qfile);
@@ -787,7 +1093,7 @@ void QarFileVolObj::close()
 
 // ----------------------------------------------------
 
-void QarFileVol::init(const std::string& path, const std::string& mode)
+void QarFileVol::init(const std::string& path, const QFileMode mode)
 {
   TIMER("QarFileVol::init(path,mode)");
   if (p == nullptr) {
@@ -815,9 +1121,9 @@ void QarFileVol::close()
 
 const std::string& QarFileVol::path() const { return p->path(); }
 
-const std::string& QarFileVol::mode() const { return p->mode(); }
+QFileMode QarFileVol::mode() const { return p->mode(); }
 
-const QFile& QarFileVol::qfile() const { return p->qfile; }
+QFile& QarFileVol::qfile() const { return p->qfile; }
 
 // ----------------------------------------------------
 
@@ -896,10 +1202,10 @@ bool read_qar_segment_info(QarFileVolObj& qar, QarSegmentInfo& qsinfo)
 {
   TIMER("read_qar_segment_info(qar_v,qsinfo)");
   qassert(not qar.null());
-  qassert(qar.qfile.mode() == "r");
+  qassert(qar.qfile.mode() == QFileMode::Read);
   set_zero(get_data_one_elem(qsinfo));
   if (qar.qfile.null()) {
-    qwarn(ssprintf("read_tag: fn='%s' pos=%ld.", qar.qfile.p->path.c_str(),
+    qwarn(ssprintf("read_tag: fn='%s' pos=%ld.", qar.qfile.path().c_str(),
                    qftell(qar.qfile)));
     return false;
   }
@@ -911,13 +1217,13 @@ bool read_qar_segment_info(QarFileVolObj& qar, QarSegmentInfo& qsinfo)
     return false;
   }
   if (header.size() <= header_prefix.size()) {
-    qwarn(ssprintf("read_tag: fn='%s' pos=%ld.", qar.qfile.p->path.c_str(),
+    qwarn(ssprintf("read_tag: fn='%s' pos=%ld.", qar.qfile.path().c_str(),
                    qftell(qar.qfile)));
     qar.is_read_through = true;
     return false;
   }
   if (header.substr(0, header_prefix.size()) != header_prefix) {
-    qwarn(ssprintf("read_tag: fn='%s' pos=%ld.", qar.qfile.p->path.c_str(),
+    qwarn(ssprintf("read_tag: fn='%s' pos=%ld.", qar.qfile.path().c_str(),
                    qftell(qar.qfile)));
     qar.is_read_through = true;
     return false;
@@ -925,7 +1231,7 @@ bool read_qar_segment_info(QarFileVolObj& qar, QarSegmentInfo& qsinfo)
   const std::vector<Long> len_vec =
       read_longs(header.substr(header_prefix.size()));
   if (len_vec.size() != 3) {
-    qwarn(ssprintf("read_tag: fn='%s' pos=%ld.", qar.qfile.p->path.c_str(),
+    qwarn(ssprintf("read_tag: fn='%s' pos=%ld.", qar.qfile.path().c_str(),
                    qftell(qar.qfile)));
     qar.is_read_through = true;
     return false;
@@ -942,7 +1248,7 @@ bool read_qar_segment_info(QarFileVolObj& qar, QarSegmentInfo& qsinfo)
   const int code = qfseek(qar.qfile, qsinfo.offset_end, SEEK_SET);
   if (code != 0) {
     qwarn(ssprintf("read_tag: fn='%s' pos=%ld offset_end=%ld.",
-                   qar.qfile.p->path.c_str(), qftell(qar.qfile),
+                   qar.qfile.path().c_str(), qftell(qar.qfile),
                    qsinfo.offset_end));
     qar.is_read_through = true;
     return false;
@@ -954,7 +1260,7 @@ std::string read_fn(const QarFileVol& qar, const QarSegmentInfo& qsinfo)
 {
   TIMER("read_fn(qar_v,qsinfo)");
   qassert(not qar.null());
-  qassert(qar.mode() == "r");
+  qassert(qar.mode() == QFileMode::Read);
   std::vector<char> data(qsinfo.fn_len);
   const int code = qfseek(qar.qfile(), qsinfo.offset_fn, SEEK_SET);
   qassert(code == 0);
@@ -970,7 +1276,7 @@ std::string read_info(const QarFileVol& qar, const QarSegmentInfo& qsinfo)
 {
   TIMER("read_info(qar_v,qsinfo)");
   qassert(not qar.null());
-  qassert(qar.mode() == "r");
+  qassert(qar.mode() == QFileMode::Read);
   std::vector<char> data(qsinfo.info_len);
   const int code = qfseek(qar.qfile(), qsinfo.offset_info, SEEK_SET);
   qassert(code == 0);
@@ -989,7 +1295,7 @@ QFile get_qfile_of_data(const QarFileVol& qar, const QarSegmentInfo& qsinfo)
 {
   TIMER("get_qfile_of_data(qar_v,qsinfo)");
   qassert(not qar.null());
-  qassert(qar.mode() == "r");
+  qassert(qar.mode() == QFileMode::Read);
   QFile qfile(qar.qfile(), qsinfo.offset_data,
               qsinfo.offset_data + qsinfo.data_len);
   qassert(not qfile.null());
@@ -1049,7 +1355,7 @@ QFile read_next(const QarFileVol& qar, std::string& fn)
 {
   TIMER("read_next(qar_v,fn)");
   qassert(not qar.null());
-  qassert(qar.mode() == "r");
+  qassert(qar.mode() == QFileMode::Read);
   QarSegmentInfo qsinfo;
   if (not read_qar_segment_info(*qar.p, qsinfo)) {
     fn = std::string();
@@ -1069,7 +1375,7 @@ void read_through(const QarFileVol& qar)
 {
   TIMER("read_through(qar_v)");
   qassert(not qar.null());
-  qassert(qar.mode() == "r");
+  qassert(qar.mode() == QFileMode::Read);
   if (qar.p->is_read_through) {
     return;
   }
@@ -1186,7 +1492,7 @@ std::vector<std::string> list(const QarFileVol& qar)
   if (qar.null()) {
     return std::vector<std::string>();
   }
-  if (qar.mode() == "r") {
+  if (qar.mode() == QFileMode::Read) {
     read_through(qar);
   }
   return qar.p->fn_list;
@@ -1197,7 +1503,8 @@ bool has_regular_file(const QarFileVol& qar, const std::string& fn)
 {
   TIMER("has_regular_file(qar_v,fn)");
   qassert(not qar.null());
-  if (qar.p->is_read_through or qar.mode() == "w" or qar.mode() == "a") {
+  if (qar.p->is_read_through or qar.mode() == QFileMode::Write or
+      qar.mode() == QFileMode::Append) {
     return has(qar.p->qsinfo_map, fn);
   }
   QFile qfile = read(qar, fn);
@@ -1212,7 +1519,7 @@ bool has(const QarFileVol& qar, const std::string& fn)
   if (has_regular_file(qar, fn)) {
     return true;
   } else {
-    if (qar.mode() == "r") {
+    if (qar.mode() == QFileMode::Read) {
       qassert(qar.p->is_read_through);
     }
     return has(qar.p->directories, fn);
@@ -1224,7 +1531,7 @@ QFile read(const QarFileVol& qar, const std::string& fn)
 {
   TIMER("read(qar_v,fn)");
   qassert(not qar.null());
-  qassert(qar.mode() == "r");
+  qassert(qar.mode() == QFileMode::Read);
   qassert(fn != "");
   QFile qfile_in;
   if (has(qar.p->qsinfo_map, fn)) {
@@ -1261,7 +1568,7 @@ std::string read_info(const QarFileVol& qar, const std::string& fn)
 {
   TIMER("read_info(qar_v,fn)");
   qassert(not qar.null());
-  qassert(qar.mode() == "r");
+  qassert(qar.mode() == QFileMode::Read);
   if (not has(qar, fn)) {
     return "";
   }
@@ -1270,7 +1577,7 @@ std::string read_info(const QarFileVol& qar, const std::string& fn)
 }
 
 Long write_from_qfile(const QarFileVol& qar, const std::string& fn,
-                      const std::string& info, const QFile& qfile_in)
+                      const std::string& info, QFile& qfile_in)
 // interface function
 // Write content (start from the current position) of qfile_in to qar.
 // qfile_in should have definite size.
@@ -1346,10 +1653,10 @@ int truncate_qar_vol_file(const std::string& path,
 // qar_file ready to be appended after this call.
 {
   TIMER_VERBOSE("truncate_qar_vol_file");
-  QarFileVol qar(path, "r");
+  QarFileVol qar(path, QFileMode::Read);
   if (qar.null()) {
     if (fns_keep.size() == 0) {
-      qar.init(path, "w");
+      qar.init(path, QFileMode::Write);
       return 0;
     } else {
       qwarn(fname + ssprintf(": fns_keep.size()=%ld", fns_keep.size()));
@@ -1396,11 +1703,11 @@ void properly_truncate_qar_vol_file(
     fn_list.clear();
     qsinfo_map.clear();
     directories.clear();
-    QarFileVol qar(path, "w");
+    QarFileVol qar(path, QFileMode::Write);
     qar.close();
     return;
   }
-  QarFileVol qar(path, "r");
+  QarFileVol qar(path, QFileMode::Read);
   qassert(not qar.null());
   read_through(qar);
   fn_list = qar.p->fn_list;
@@ -1439,17 +1746,17 @@ std::vector<std::string> properly_truncate_qar_vol_file(
 void QarFile::init()
 {
   path = "";
-  mode = "";
+  mode = QFileMode::Read;
   std::vector<QarFileVol>& v = *this;
   qlat::clear(v);
 }
 
-void QarFile::init(const std::string& path_, const std::string& mode_)
+void QarFile::init(const std::string& path_, const QFileMode mode_)
 {
   init();
   path = path_;
   mode = mode_;
-  if (mode == "r") {
+  if (mode == QFileMode::Read) {
     // maximally 1024 * 1024 * 1024 volumes
     for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
       const std::string path_qar_v = path + qar_file_multi_vol_suffix(iv);
@@ -1465,7 +1772,7 @@ void QarFile::init(const std::string& path_, const std::string& mode_)
     if (does_regular_file_exist_qar(path + ".idx")) {
       load_qar_index(*this, path + ".idx");
     }
-  } else if (mode == "a") {
+  } else if (mode == QFileMode::Append) {
     for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
       const std::string path_qar_v = path + qar_file_multi_vol_suffix(iv);
       // try to open the first file regardless its existence
@@ -1544,12 +1851,12 @@ QFile read(const QarFile& qar, const std::string& fn)
 // interface function
 {
   TIMER("read(qar,fn)");
-  qassert(qar.mode == "r");
+  qassert(qar.mode == QFileMode::Read);
   QFile qfile_in;
   for (Long i = 0; i < (Long)qar.size(); ++i) {
     const QarFileVol& qar_v = qar[i];
     qassert(not qar_v.null());
-    qassert(qar_v.mode() == "r");
+    qassert(qar_v.mode() == QFileMode::Read);
     qfile_in = read(qar_v, fn);
     if (not qfile_in.null()) {
       return qfile_in;
@@ -1568,11 +1875,11 @@ std::string read_data(const QarFile& qar, const std::string& fn)
 std::string read_info(const QarFile& qar, const std::string& fn)
 {
   TIMER("read_info(qar,fn)");
-  qassert(qar.mode == "r");
+  qassert(qar.mode == QFileMode::Read);
   for (Long i = 0; i < (Long)qar.size(); ++i) {
     const QarFileVol& qar_v = qar[i];
     qassert(not qar_v.null());
-    qassert(qar_v.mode() == "r");
+    qassert(qar_v.mode() == QFileMode::Read);
     if (has_regular_file(qar_v, fn)) {
       return read_info(qar_v, fn);
     }
@@ -1583,7 +1890,7 @@ std::string read_info(const QarFile& qar, const std::string& fn)
 bool verify_index(const QarFile& qar)
 {
   TIMER("verify_index(qar)");
-  qassert(qar.mode == "r");
+  qassert(qar.mode == QFileMode::Read);
   for (int i = 0; i < (int)qar.size(); ++i) {
     if (not verify_index(qar[i])) {
       return false;
@@ -1596,25 +1903,25 @@ void qar_check_if_create_new_vol(QarFile& qar, const Long data_size)
 // make sure qar.back() is appendable after this call.
 {
   TIMER("qar_check_if_create_new_vol");
-  qassert(qar.mode == "a");
+  qassert(qar.mode == QFileMode::Append);
   qassert(not qar.null());
   const QarFileVol& qar_v = qar.back();
   qassert(not qar_v.null());
-  qassert(qar_v.mode() == "a");
+  qassert(qar_v.mode() == QFileMode::Append);
   const Long max_size = get_qar_multi_vol_max_size();
   if (max_size > 0 and qar_v.p->max_offset + data_size > max_size) {
     const Long iv = qar.size();
     const std::string path_qar_v1 = qar.path + qar_file_multi_vol_suffix(iv);
-    QarFileVol qar_v1(path_qar_v1, "a");
+    QarFileVol qar_v1(path_qar_v1, QFileMode::Append);
     qassert(not qar_v1.null());
     qar.push_back(qar_v1);
   }
   qassert(not qar.back().null());
-  qassert(qar.back().mode() == "a");
+  qassert(qar.back().mode() == QFileMode::Append);
 }
 
 Long write_from_qfile(QarFile& qar, const std::string& fn,
-                      const std::string& info, const QFile& qfile_in)
+                      const std::string& info, QFile& qfile_in)
 // interface function
 // Write content (start from the current position) of qfile_in to qar.
 // qfile_in should have definite size.
@@ -1718,7 +2025,7 @@ std::vector<std::string> show_qar_index(const QarFile& qar)
   for (Long i = 0; i < (Long)qar.size(); ++i) {
     const QarFileVol& qar_v = qar[i];
     qassert(not qar_v.null());
-    if (qar_v.mode() == "r") {
+    if (qar_v.mode() == QFileMode::Read) {
       read_through(qar_v);
     }
     const std::vector<std::string>& fn_list = qar_v.p->fn_list;
@@ -2023,7 +2330,7 @@ std::string mk_new_qar_read_cache_key(const QarFile& qar,
       qassert(pathd.substr(0, key_new.size()) == key_new);
       QarFile& qar_new = cache[key + key_new];
       if (qar_new.null()) {
-        qar_new.init(key + path_dir + ".qar", "r");
+        qar_new.init(key + path_dir + ".qar", QFileMode::Read);
       }
       qassert(not qar_new.null());
       const std::string path_new = pathd.substr(key_new.size());
@@ -2059,7 +2366,7 @@ std::string mk_new_qar_read_cache_key(const std::string& path)
       qassert(pathd.substr(0, key.size()) == key);
       qassert(not cache.has(key));
       QarFile& qar = cache[key];
-      qar.init(path_dir + ".qar", "r");
+      qar.init(path_dir + ".qar", QFileMode::Read);
       qassert(not qar.null());
       const std::string path_new = pathd.substr(key.size());
       if (has(qar, path_new)) {
@@ -2114,7 +2421,7 @@ int qar_build_index(const std::string& path_qar)
 {
   TIMER_VERBOSE("qar_build_index");
   displayln(fname + ssprintf(": '%s'.", path_qar.c_str()));
-  QarFile qar(path_qar, "r");
+  QarFile qar(path_qar, QFileMode::Read);
   const int ret = save_qar_index(qar, path_qar + ".idx");
   qar.close();
   return ret;
@@ -2163,11 +2470,11 @@ int qar_create(const std::string& path_qar, const std::string& path_folder_,
       reg_files.push_back(path);
     }
   }
-  QarFile qar(path_qar + ".acc", "a");
+  QarFile qar(path_qar + ".acc", QFileMode::Append);
   for (Long i = 0; i < (Long)reg_files.size(); ++i) {
     const std::string path = reg_files[i];
     const std::string fn = path.substr(path_prefix_len);
-    QFile qfile_in(path, "r");
+    QFile qfile_in(path, QFileMode::Read);
     qassert(not qfile_in.null());
     write_from_qfile(qar, fn, "", qfile_in);
   }
@@ -2184,7 +2491,7 @@ int qar_create(const std::string& path_qar, const std::string& path_folder_,
   }
   ret_rename = qrename(path_qar + ".acc.idx", path_qar + ".idx");
   qassert(ret_rename == 0);
-  qar.init(path_qar, "r");
+  qar.init(path_qar, QFileMode::Read);
   qassert((Long)qar.size() == num_vol);
   if (not verify_index(qar)) {
     qerr(fname + ": idx verification failed.");
@@ -2225,7 +2532,7 @@ int qar_extract(const std::string& path_qar, const std::string& path_folder_,
                            path_qar.c_str(), path_folder.c_str()));
     return 3;
   }
-  QarFile qar(path_qar, "r");
+  QarFile qar(path_qar, QFileMode::Read);
   const std::vector<std::string> contents = list(qar);
   std::set<std::string> dirs;
   qmkdir_p(path_folder + ".acc");
@@ -2240,7 +2547,7 @@ int qar_extract(const std::string& path_qar, const std::string& path_folder_,
     }
     QFile qfile_in = read(qar, fn);
     qassert(not qfile_in.null());
-    QFile qfile_out(path_folder + ".acc/" + fn, "w");
+    QFile qfile_out(path_folder + ".acc/" + fn, QFileMode::Write);
     qassert(not qfile_out.null());
     timer.flops += write_from_qfile(qfile_out, qfile_in);
     qfclose(qfile_in);
@@ -2284,9 +2591,9 @@ int qcopy_file(const std::string& path_src, const std::string& path_dst)
           ssprintf(": '%s' already exist.", (path_dst + ".acc").c_str()));
     return 3;
   }
-  QFile qfile_in = qfopen(path_src, "r");
+  QFile qfile_in = qfopen(path_src, QFileMode::Read);
   qassert(not qfile_in.null());
-  QFile qfile_out = qfopen(path_dst + ".acc", "w");
+  QFile qfile_out = qfopen(path_dst + ".acc", QFileMode::Write);
   qassert(not qfile_out.null());
   timer.flops += write_from_qfile(qfile_out, qfile_in);
   qfclose(qfile_out);
@@ -2341,11 +2648,11 @@ std::vector<std::string> list_qar(const std::string& path)
     Cache<std::string, QarFile>& cache = get_qar_read_cache();
     QarFile& qar = cache[key];
     if (qar.null()) {
-      qar.init(path, "r");
+      qar.init(path, QFileMode::Read);
     }
     return list(qar);
   } else {
-    QarFile qar(path, "r");
+    QarFile qar(path, QFileMode::Read);
     return list(qar);
   }
 }
@@ -2353,7 +2660,7 @@ std::vector<std::string> list_qar(const std::string& path)
 std::string qcat(const std::string& path)
 {
   TIMER("qcat(fn)");
-  QFile qfile = qfopen(path, "r");
+  QFile qfile = qfopen(path, QFileMode::Read);
   qassert(not qfile.null());
   const std::string ret = qcat(qfile);
   qfclose(qfile);
@@ -2362,7 +2669,7 @@ std::string qcat(const std::string& path)
 
 std::vector<std::string> qgetlines(const std::string& fn)
 {
-  QFile qfile = qfopen(fn, "r");
+  QFile qfile = qfopen(fn, QFileMode::Read);
   qassert(not qfile.null());
   const std::vector<std::string> ret = qgetlines(qfile);
   qfclose(qfile);
@@ -2373,7 +2680,7 @@ int qtouch(const std::string& path)
 // return 0 if success
 {
   TIMER("qtouch(fn)");
-  QFile qfile = qfopen(path, "w");
+  QFile qfile = qfopen(path, QFileMode::Write);
   if (qfile.null()) {
     return 1;
   }
@@ -2384,7 +2691,7 @@ int qtouch(const std::string& path)
 int qtouch(const std::string& path, const std::string& content)
 {
   TIMER("qtouch(fn,content)");
-  QFile qfile = qfopen(path + ".partial", "w");
+  QFile qfile = qfopen(path + ".partial", QFileMode::Write);
   if (qfile.null()) {
     return 1;
   }
@@ -2399,7 +2706,7 @@ int qtouch(const std::string& path, const std::string& content)
 int qtouch(const std::string& path, const std::vector<std::string>& content)
 {
   TIMER("qtouch(fn,content)");
-  QFile qfile = qfopen(path + ".partial", "w");
+  QFile qfile = qfopen(path + ".partial", QFileMode::Write);
   if (qfile.null()) {
     return 1;
   }
@@ -2414,7 +2721,7 @@ int qtouch(const std::string& path, const std::vector<std::string>& content)
 int qappend(const std::string& path, const std::string& content)
 {
   TIMER("qappend(fn,content)");
-  QFile qfile = qfopen(path, "a");
+  QFile qfile = qfopen(path, QFileMode::Append);
   if (qfile.null()) {
     return 1;
   }
@@ -2426,7 +2733,7 @@ int qappend(const std::string& path, const std::string& content)
 int qappend(const std::string& path, const std::vector<std::string>& content)
 {
   TIMER("qappend(fn,content)");
-  QFile qfile = qfopen(path, "a");
+  QFile qfile = qfopen(path, QFileMode::Append);
   if (qfile.null()) {
     return 1;
   }
@@ -2491,7 +2798,7 @@ DataTable qload_datatable_serial(const std::string& path)
   if (not does_regular_file_exist_qar(path)) {
     return DataTable();
   }
-  QFile qfile = qfopen(path, "r");
+  QFile qfile = qfopen(path, QFileMode::Read);
   qassert(not qfile.null());
   DataTable ret = qload_datatable_serial(qfile);
   qfclose(qfile);
@@ -2504,7 +2811,7 @@ DataTable qload_datatable_par(const std::string& path)
   if (not does_regular_file_exist_qar(path)) {
     return DataTable();
   }
-  QFile qfile = qfopen(path, "r");
+  QFile qfile = qfopen(path, QFileMode::Read);
   qassert(not qfile.null());
   DataTable ret = qload_datatable_par(qfile);
   qfclose(qfile);
@@ -2528,7 +2835,7 @@ crc32_t compute_crc32(QFile& qfile)
 {
   TIMER_VERBOSE_FLOPS("compute_crc32");
   qassert(not qfile.null());
-  qassert(qfile.mode() == "r");
+  qassert(qfile.mode() == QFileMode::Read);
   qfseek(qfile, 0, SEEK_SET);
   const size_t chunk_size = 16 * 1024 * 1024;
   std::vector<char> data(chunk_size);
@@ -2546,7 +2853,7 @@ crc32_t compute_crc32(QFile& qfile)
 
 crc32_t compute_crc32(const std::string& path)
 {
-  QFile qfile = qfopen(path, "r");
+  QFile qfile = qfopen(path, QFileMode::Read);
   const crc32_t ret = compute_crc32(qfile);
   qfclose(qfile);
   return ret;

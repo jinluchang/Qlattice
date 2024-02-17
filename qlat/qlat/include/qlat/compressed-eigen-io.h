@@ -1062,12 +1062,12 @@ inline std::vector<double> read_eigen_values(const std::string& path)
     const std::string filename = path + "/eigen-values.txt";
     QFile file = qfopen(filename, "r");
     qassert(not file.null());
-    qassert(1 == qfscanf(file, "%ld\n", &n_eigen_values));
+    n_eigen_values = read_long(qgetline(file));
     glb_sum(n_eigen_values);
     vals.resize(n_eigen_values, 0.0);
     displayln(fname + ssprintf("Reading %d eigen-values.\n", n_eigen_values));
     for (int k = 0; k < n_eigen_values; k++) {
-      qassert(1 == qfscanf(file, "%lE\n", &vals[k]));
+      vals[k] = read_double(qgetline(file));
       displayln(ssprintf("%d %24.17E", k, sqrt(vals[k])));
     }
     qfclose(file);

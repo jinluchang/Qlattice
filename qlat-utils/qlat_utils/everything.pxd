@@ -366,45 +366,49 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
 
 cdef extern from "qlat-utils/qar.h" namespace "qlat":
 
+    cdef cppclass QFileMode:
+        pass
     cdef cppclass QFile:
         QFile() except +
-        QFile(const std_string& path, const std_string& mode) except +
+        QFile(const std_string& path, const QFileMode mode) except +
         QFile(const QFile& qfile, const Long q_offset_start, const Long q_offset_end) except +
         void init() except +
-        void init(const std_string& path, const std_string& mode) except +
+        void init(const std_string& path, const QFileMode mode) except +
         void init(const QFile& qfile, const Long q_offset_start, const Long q_offset_end) except +
         void close() except +
         bool null()
-        std_string path() except +
-        std_string mode() except +
+        const std_string& path() except +
+        QFileMode mode() except +
     cdef cppclass QarFile:
         std_string path
-        std_string mode
+        QFileMode mode
         QarFile() except +
-        QarFile(const std_string& path_qar, const std_string& mode) except +
+        QarFile(const std_string& path_qar, const QFileMode mode) except +
         void init() except +
-        void init(const std_string& path_qar, const std_string& mode) except +
+        void init(const std_string& path_qar, const QFileMode mode) except +
         void close() except +
         bool null()
     #
+    QFileMode read_qfile_mode(const std_string& mode) except +
+    std_string show(const QFileMode mode) except +
     std_vector[std_string] show_all_qfile() except +
     QFile qfopen(const std_string& path, const std_string& mode) except +
     void qfclose(QFile& qfile) except +
     bool qfeof(const QFile& qfile) except +
     Long qftell(const QFile& qfile) except +
     int qfflush(const QFile& qfile) except +
-    int qfseek_set(const QFile& qfile, const Long q_offset) except +
-    int qfseek_end(const QFile& qfile, const Long q_offset) except +
-    int qfseek_cur(const QFile& qfile, const Long q_offset) except +
-    Long qfile_size(const QFile& qfile) except +
-    Long qfile_remaining_size(const QFile& qfile) except +
+    int qfseek_set(QFile& qfile, const Long q_offset) except +
+    int qfseek_end(QFile& qfile, const Long q_offset) except +
+    int qfseek_cur(QFile& qfile, const Long q_offset) except +
+    Long qfile_size(QFile& qfile) except +
+    Long qfile_remaining_size(QFile& qfile) except +
     #
-    std_string qgetline(const QFile& qfile) except +
-    std_vector[std_string] qgetlines(const QFile& qfile) except +
-    Long qwrite_data(const std_string& line, const QFile& qfile) except +
-    Long qwrite_data(const std_vector[std_string]& lines, const QFile& qfile) except +
-    Long write_from_qfile(const QFile& qfile_out, const QFile& qfile_in) except +
-    std_string qcat(const QFile& qfile) except +
+    std_string qgetline(QFile& qfile) except +
+    std_vector[std_string] qgetlines(QFile& qfile) except +
+    Long qwrite_data(const std_string& line, QFile& qfile) except +
+    Long qwrite_data(const std_vector[std_string]& lines, QFile& qfile) except +
+    Long write_from_qfile(QFile& qfile_out, QFile& qfile_in) except +
+    std_string qcat(QFile& qfile) except +
     #
     std_vector[std_string] list(const QarFile& qar) except +
     bool has_regular_file(const QarFile& qar, const std_string& fn) except +
@@ -413,7 +417,7 @@ cdef extern from "qlat-utils/qar.h" namespace "qlat":
     std_string read_data(const QarFile& qar, const std_string& fn) except +
     std_string read_info(const QarFile& qar, const std_string& fn) except +
     bool verify_index(const QarFile& qar) except +
-    Long write_from_qfile(QarFile& qar, const std_string& fn, const std_string& info, const QFile& qfile_in) except +
+    Long write_from_qfile(QarFile& qar, const std_string& fn, const std_string& info, QFile& qfile_in) except +
     Long write_from_data(QarFile& qar, const std_string& fn, const std_string& info, const std_string& data) except +
     Long write_from_data(QarFile& qar, const std_string& fn, const std_string& info, const std_vector[std_string]& data) except +
     #

@@ -17,7 +17,7 @@ cdef class QFile:
         QFile(qfile=path, q_offset_start=q_offset_start, q_offset_end=q_offset_end)
         """
         if path is not None and qfile is None:
-            self.xx.init(path, mode)
+            self.xx.init(path, cc.read_qfile_mode(mode))
         elif path is None and qfile is not None:
             self.xx.init(qfile.xx, q_offset_start, q_offset_end)
         else:
@@ -44,7 +44,7 @@ cdef class QFile:
         return self.xx.path()
 
     def mode(self):
-        return self.xx.mode()
+        return cc.show(self.xx.mode())
 
     def close(self):
         return self.xx.close()
@@ -115,7 +115,7 @@ cdef class QarFile:
         QarFile(path=path, mode=mode)
         """
         if path is not None:
-            self.xx.init(path, mode)
+            self.xx.init(path, cc.read_qfile_mode(mode))
         else:
             assert path is None
 
@@ -139,7 +139,7 @@ cdef class QarFile:
         return self.xx.path
 
     def mode(self):
-        return self.xx.mode
+        return cc.show(self.xx.mode)
 
     def close(self):
         return self.xx.close()

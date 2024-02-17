@@ -19,86 +19,143 @@
 namespace qlat
 {  //
 
-struct QFileObj;
-
-struct API QFile {
-  // Interface to FILE* which allow a view of a portion of the file specified by
-  // offset_start and offset_end.
-  // The view can be nested.
-  //
-  std::shared_ptr<QFileObj> p;
-  //
-  QFile() { init(); }
-  QFile(const std::weak_ptr<QFileObj>& wp) { init(wp); }
-  QFile(const std::string& path, const std::string& mode) { init(path, mode); }
-  QFile(const QFile& qfile, const Long q_offset_start, const Long q_offset_end)
-  {
-    init(qfile, q_offset_start, q_offset_end);
-  }
-  //
-  void init();
-  void init(const std::weak_ptr<QFileObj>& wp);
-  void init(const std::string& path, const std::string& mode);
-  void init(const QFile& qfile, const Long q_offset_start,
-            const Long q_offset_end);
-  //
-  void close();
-  //
-  bool null() const { return p == nullptr; }
-  //
-  const std::string& path() const;
-  //
-  const std::string& mode() const;
-  //
-  FILE* get_fp() const;
+enum struct QFileMode {
+  Read,
+  Write,
+  Append,
 };
 
-struct QFileObj {
-  // Interface to FILE* which allow a view of a portion of the file specified by
-  // offset_start and offset_end.
-  // The view can be nested.
+enum struct QFileType {
+  CFile,
+  String,
+};
+
+struct QFileBase {
+  virtual void init() = 0;
+  virtual void close() = 0;
   //
-  std::string path;
-  std::string mode;  // can be "r", "a", "w"
+  virtual QFileType ftype() const = 0;
+  virtual const std::string& path() const = 0;
+  virtual QFileMode mode() const = 0;
+  virtual bool null() const = 0;
+  virtual bool eof() const = 0;
+  virtual Long tell() const = 0;
+  virtual int flush() const = 0;
+  virtual int seek(const Long offset, const int whence) = 0;
+  virtual Long read(void* ptr, const Long size, const Long nmemb) = 0;
+  virtual Long write(const void* ptr, const Long size, const Long nmemb) = 0;
+  //
+  virtual Long size();
+  virtual Long remaining_size();
+  //
+  virtual Long read_data(Vector<char> v);
+  virtual std::string read_all();
+  virtual std::string cat();
+  virtual std::string getline();
+  virtual std::vector<std::string> getlines();
+  //
+  virtual Long write_data(Vector<char> v);
+  virtual Long write_data(const std::string& v);
+  virtual Long write_data(const std::vector<std::string>& v);
+  virtual int append(const std::string& content);
+  virtual int append(const std::vector<std::string>& content);
+  //
+  virtual Long vprintf(const char* fmt, va_list args);
+  virtual Long printf(const char* fmt, ...);
+};
+
+// ---------------------
+
+std::string show(const QFileMode mode);
+
+QFileMode read_qfile_mode(const std::string& mode);
+
+Long write_from_qfile(QFileBase& qfile_out, QFileBase& qfile_in);
+
+// ---------------------
+
+struct QFileObjCFile : QFileBase {
+  // can not copy
+  //
+  std::string path_v;
+  QFileMode mode_v;
   FILE* fp;
   //
-  QFile parent;  // If parent.null(), then this QFileObj own the fp pointer
-                 // and will be responsible for close it.
-  Long number_of_child;  // Can close the FILE only when number_of_child == 0.
+  QFileObjCFile();
+  QFileObjCFile(const std::string& path_, const QFileMode mode_);
+  ~QFileObjCFile();
+  QFileObjCFile(const QFileObjCFile&) = delete;
+  QFileObjCFile& operator=(const QFileObjCFile&) = delete;
   //
+  void init();
+  void init(const std::string& path_, const QFileMode mode_);
+  void close();
+  QFileType ftype() const;
+  const std::string& path() const;
+  QFileMode mode() const;
+  bool null() const;
+  bool eof() const;
+  Long tell() const;
+  int flush() const;
+  int seek(const Long offset, const int whence);
+  Long read(void* ptr, const Long size, const Long nmemb);
+  Long write(const void* ptr, const Long size, const Long nmemb);
+};
+
+// ---------------------
+
+struct QFileObj : QFileBase {
+  // Interface to a `QFileBase` object which allow a view of a portion of the
+  // file specified by offset_start and offset_end. The view can be nested.
+  //
+  std::shared_ptr<QFileBase> fp;
+  //
+  std::shared_ptr<QFileObj>
+      parent;  // If parent.null(), then the `fp` pointer own the `QFileBase`
+               // object and is responsible for closing it.
+  Long number_of_child;  // Can close `fp` only when number_of_child == 0.
+  //
+  Long pos;     // position of this `QFileObj`. (correspond to position of `fp`
+                // should be pos + offset_start).
   bool is_eof;  // the eof state of QFileObj.
                 // NOTE: may not match with eof state of fp.
-  Long pos;     // position of the QFileObj. (correspond to position of fp
-                // should be pos + offset_start).
   // NOTE: Actual fp position may be adjust elsewhere and does not
   // match this pos. When performing operations, always fseek fp to
   // location indicated by pos first.
   //
-  Long offset_start;  // start offset of fp for QFileObj
-  Long offset_end;    // end offset of fp for QFileObj (-1 if not limit,
+  Long offset_start;  // start offset of `fp` for `QFileObj`
+  Long offset_end;    // end offset of `fp` for `QFileObj` (-1 if not limit,
                       // useful when writing)
   //
   QFileObj();
-  QFileObj(const std::string& path_, const std::string& mode_);
-  QFileObj(const QFile& qfile, const Long q_offset_start,
+  QFileObj(const std::string& path_, const QFileMode mode_);
+  QFileObj(const std::shared_ptr<QFileObj>& qfile, const Long q_offset_start,
            const Long q_offset_end);
   //
   QFileObj(const QFileObj&) = delete;
+  QFileObj& operator=(const QFileObj&) = delete;
   //
   QFileObj(QFileObj&& qfile) noexcept;
   //
   ~QFileObj();
   //
   void init();
-  void init(const std::string& path_, const std::string& mode_);
-  void init(const QFile& qfile, const Long q_offset_start,
+  void init(const std::string& path_, const QFileMode mode_);
+  void init(const std::shared_ptr<QFileObj>& qfile, const Long q_offset_start,
             const Long q_offset_end);
   //
   void close();
   //
-  void swap(QFileObj& qfile);
-  //
-  bool null() const { return fp == NULL; }
+  QFileType ftype() const;
+  const std::string& path() const;
+  QFileMode mode() const;
+  bool null() const;
+  bool eof() const;
+  Long tell() const;
+  int flush() const;
+  int seek(const Long q_offset, const int whence);
+  Long read(void* ptr, const Long size, const Long nmemb);
+  Long write(const void* ptr, const Long size, const Long nmemb);
 };
 
 using QFileMap = std::map<Long, std::weak_ptr<QFileObj>>;
@@ -110,6 +167,38 @@ API inline QFileMap& get_all_qfile()
   static QFileMap all_qfile;
   return all_qfile;
 }
+
+// ---------------------
+
+struct API QFile : QFileBase {
+  // Smart pointer to `QFileObj` which allow a view of a portion of the file
+  // specified by offset_start and offset_end. The view can be nested.
+  //
+  std::shared_ptr<QFileObj> p;
+  //
+  QFile();
+  QFile(const std::weak_ptr<QFileObj>& wp);
+  QFile(const std::string& path, const QFileMode mode);
+  QFile(const QFile& qfile, const Long q_offset_start, const Long q_offset_end);
+  //
+  void init();
+  void init(const std::weak_ptr<QFileObj>& wp);
+  void init(const std::string& path, const QFileMode mode);
+  void init(const QFile& qfile, const Long q_offset_start,
+            const Long q_offset_end);
+  void close();
+  //
+  QFileType ftype() const;
+  const std::string& path() const;
+  QFileMode mode() const;
+  bool null() const;
+  bool eof() const;
+  Long tell() const;
+  int flush() const;
+  int seek(const Long offset, const int whence);
+  Long read(void* ptr, const Long size, const Long nmemb);
+  Long write(const void* ptr, const Long size, const Long nmemb);
+};
 
 // ---------------------
 
@@ -125,6 +214,8 @@ std::string show(const QFile& qfile);
 
 void qswap(QFile& qfile1, QFile& qfile2);
 
+QFile qfopen(const std::string& path, const QFileMode mode);
+
 QFile qfopen(const std::string& path, const std::string& mode);
 
 void qfclose(QFile& qfile);
@@ -135,60 +226,56 @@ Long qftell(const QFile& qfile);
 
 int qfflush(const QFile& qfile);
 
-int qfseek(const QFile& qfile, const Long q_offset, const int whence);
+int qfseek(QFile& qfile, const Long offset, const int whence);
 
-int qfseek_set(const QFile& qfile, const Long q_offset);
+int qfseek_set(QFile& qfile, const Long offset);
 
-int qfseek_end(const QFile& qfile, const Long q_offset);
+int qfseek_end(QFile& qfile, const Long offset);
 
-int qfseek_cur(const QFile& qfile, const Long q_offset);
+int qfseek_cur(QFile& qfile, const Long offset);
 
-Long qfile_size(const QFile& qfile);
+Long qfile_size(QFile& qfile);
 
-Long qfile_remaining_size(const QFile& qfile);
+Long qfile_remaining_size(QFile& qfile);
 
 // ---------------------
 
-Long qfread(void* ptr, const Long size, const Long nmemb, const QFile& qfile);
+Long qfread(void* ptr, const Long size, const Long nmemb, QFile& qfile);
 
 Long qfwrite(const void* ptr, const Long size, const Long nmemb,
-             const QFile& qfile);
+             QFile& qfile);
 
-int qvfscanf(const QFile& qfile, const char* fmt, va_list args);
+Long qvfprintf(QFile& qfile, const char* fmt, va_list args);
 
-int qfscanf(const QFile& qfile, const char* fmt, ...);
+Long qfprintf(QFile& qfile, const char* fmt, ...);
 
-Long qvfprintf(const QFile& qfile, const char* fmt, va_list args);
+std::string qgetline(QFile& qfile);
 
-Long qfprintf(const QFile& qfile, const char* fmt, ...);
-
-std::string qgetline(const QFile& qfile);
-
-std::vector<std::string> qgetlines(const QFile& qfile);
+std::vector<std::string> qgetlines(QFile& qfile);
 
 template <class M>
-Long qwrite_data(const Vector<M>& v, const QFile& qfile)
+Long qwrite_data(const Vector<M>& v, QFile& qfile)
 {
   return qwrite_data(get_data_char(v), qfile);
 }
 
-Long qwrite_data(const Vector<char>& v, const QFile& qfile);
+Long qwrite_data(const Vector<char>& v, QFile& qfile);
 
-Long qwrite_data(const std::string& line, const QFile& qfile);
+Long qwrite_data(const std::string& v, QFile& qfile);
 
-Long qwrite_data(const std::vector<std::string>& lines, const QFile& qfile);
+Long qwrite_data(const std::vector<std::string>& v, QFile& qfile);
 
 template <class M>
-Long qread_data(const Vector<M>& v, const QFile& qfile)
+Long qread_data(const Vector<M>& v, QFile& qfile)
 // interface function
 {
   return qread_data(get_data_char(v), qfile);
 }
 
-Long qread_data(const Vector<char>& v, const QFile& qfile);
+Long qread_data(const Vector<char>& v, QFile& qfile);
 
 template <class M>
-Long qread_data_all(std::vector<M>& v, const QFile& qfile)
+Long qread_data_all(std::vector<M>& v, QFile& qfile)
 // interface function
 // Read all the remaining data.
 // (Remaining size must be multiple of sizeof(M) otherwise will fail.)
@@ -207,41 +294,13 @@ Long qread_data_all(std::vector<M>& v, const QFile& qfile)
   return data_size;
 }
 
-Long write_from_qfile(const QFile& qfile_out, const QFile& qfile_in);
+std::string qcat(QFile& qfile);
 
-std::string qcat(const QFile& qfile);
+int qappend(QFile& qfile, const std::string& content);
 
-int qappend(const QFile& qfile, const std::string& content);
-
-int qappend(const QFile& qfile, const std::vector<std::string>& content);
+int qappend(QFile& qfile, const std::vector<std::string>& content);
 
 // -------------------
-
-struct QarFileVolObj;
-
-struct API QarFileVol {
-  std::shared_ptr<QarFileVolObj> p;
-  //
-  QarFileVol() { init(); }
-  QarFileVol(const std::string& path, const std::string& mode)
-  {
-    init(path, mode);
-  }
-  QarFileVol(const QFile& qfile) { init(qfile); }
-  //
-  void init() { p = nullptr; }
-  void init(const std::string& path, const std::string& mode);
-  void init(const QFile& qfile);
-  //
-  void close();
-  bool null() const { return p == nullptr; }
-  //
-  const std::string& path() const;
-  //
-  const std::string& mode() const;
-  //
-  const QFile& qfile() const;
-};
 
 struct QarSegmentInfo {
   Long offset;
@@ -279,14 +338,14 @@ struct QarFileVolObj {
                                               // current working segment
   //
   QarFileVolObj() { init(); }
-  QarFileVolObj(const std::string& path, const std::string& mode)
+  QarFileVolObj(const std::string& path, const QFileMode mode)
   {
     init(path, mode);
   }
   QarFileVolObj(const QFile& qfile) { init(qfile); }
   //
   void init();
-  void init(const std::string& path, const std::string& mode);
+  void init(const std::string& path, const QFileMode mode);
   void init(const QFile& qfile_);
   //
   void close();
@@ -295,7 +354,31 @@ struct QarFileVolObj {
   //
   const std::string& path() const { return qfile.path(); }
   //
-  const std::string& mode() const { return qfile.mode(); }
+  QFileMode mode() const { return qfile.mode(); }
+};
+
+struct API QarFileVol {
+  std::shared_ptr<QarFileVolObj> p;
+  //
+  QarFileVol() { init(); }
+  QarFileVol(const std::string& path, const QFileMode mode)
+  {
+    init(path, mode);
+  }
+  QarFileVol(const QFile& qfile) { init(qfile); }
+  //
+  void init() { p = nullptr; }
+  void init(const std::string& path, const QFileMode mode);
+  void init(const QFile& qfile);
+  //
+  void close();
+  bool null() const { return p == nullptr; }
+  //
+  const std::string& path() const;
+  //
+  QFileMode mode() const;
+  //
+  QFile& qfile() const;
 };
 
 // -------------------
@@ -341,18 +424,18 @@ std::vector<std::string> properly_truncate_qar_vol_file(
 // -------------------
 
 struct API QarFile : std::vector<QarFileVol> {
-  // Only support mode == "r" or mode == "a"
+  // Only support mode == QFileMode::Read or mode == QFileMode::Append
   std::string path;
-  std::string mode;
+  QFileMode mode;
   //
   QarFile() { init(); }
-  QarFile(const std::string& path_qar, const std::string& mode)
+  QarFile(const std::string& path_qar, const QFileMode mode)
   {
     init(path_qar, mode);
   }
   //
   void init();
-  void init(const std::string& path_qar, const std::string& mode);
+  void init(const std::string& path_qar, const QFileMode mode);
   //
   void close();
   //
@@ -384,7 +467,7 @@ std::string read_info(const QarFile& qar, const std::string& fn);
 bool verify_index(const QarFile& qar);
 
 Long write_from_qfile(QarFile& qar, const std::string& fn,
-                      const std::string& info, const QFile& qfile_in);
+                      const std::string& info, QFile& qfile_in);
 
 Long write_from_data(QarFile& qar, const std::string& fn,
                      const std::string& info, const Vector<char> data);

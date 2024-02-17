@@ -62,7 +62,8 @@ API inline Long& write_from_qfile_chunk_size()
 // qlat parameter
 // size in bytes
 {
-  static Long size = 4 * 1024 * 1024;
+  static Long size =
+      get_env_long_default("q_write_from_qfile_chunk_size", 4L * 1024L * 1024L);
   return size;
 }
 
