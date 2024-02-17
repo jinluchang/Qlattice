@@ -156,10 +156,13 @@ std::string QFileBase::getline()
         return ret;
       }
     }
-    ret += buf;
     if (len < chunk_size) {
+      ret += buf.substr(0, len);
       timer.flops += ret.size();
       return ret;
+    } else {
+      qassert(len == chunk_size);
+      ret += buf;
     }
   }
   return ret;
@@ -332,10 +335,10 @@ void QFileObjCFile::init(const std::string& path_, const QFileMode mode_)
 
 void QFileObjCFile::close()
 {
-  TIMER("QFileObjCFile::close");
   if (fp == NULL) {
     return;
   }
+  TIMER("QFileObjCFile::close");
   int ret = std::fclose(fp);
   if (ret != 0) {
     qwarn(fname +
@@ -352,24 +355,39 @@ QFileMode QFileObjCFile::mode() const { return mode_v; }
 
 bool QFileObjCFile::null() const { return fp == NULL; }
 
-bool QFileObjCFile::eof() const { return std::feof(fp); }
+bool QFileObjCFile::eof() const
+{
+  qassert(not null());
+  return std::feof(fp);
+}
 
-Long QFileObjCFile::tell() const { return std::ftell(fp); }
+Long QFileObjCFile::tell() const
+{
+  qassert(not null());
+  return std::ftell(fp);
+}
 
-int QFileObjCFile::flush() const { return fflush(fp); }
+int QFileObjCFile::flush() const
+{
+  qassert(not null());
+  return fflush(fp);
+}
 
 int QFileObjCFile::seek(const Long offset, const int whence)
 {
+  qassert(not null());
   return std::fseek(fp, offset, whence);
 }
 
 Long QFileObjCFile::read(void* ptr, const Long size, const Long nmemb)
 {
+  qassert(not null());
   return fread(ptr, size, nmemb, fp);
 }
 
 Long QFileObjCFile::write(const void* ptr, const Long size, const Long nmemb)
 {
+  qassert(not null());
   return fwrite(ptr, size, nmemb, fp);
 }
 
@@ -503,11 +521,23 @@ void QFileObj::close()
   qassert(parent == nullptr);
 }
 
-QFileType QFileObj::ftype() const { return fp->ftype(); }
+QFileType QFileObj::ftype() const
+{
+  qassert(not null());
+  return fp->ftype();
+}
 
-const std::string& QFileObj::path() const { return fp->path(); }
+const std::string& QFileObj::path() const
+{
+  qassert(not null());
+  return fp->path();
+}
 
-QFileMode QFileObj::mode() const { return fp->mode(); }
+QFileMode QFileObj::mode() const
+{
+  qassert(not null());
+  return fp->mode();
+}
 
 bool QFileObj::null() const
 {
@@ -519,11 +549,23 @@ bool QFileObj::null() const
   }
 }
 
-bool QFileObj::eof() const { return is_eof; }
+bool QFileObj::eof() const
+{
+  qassert(not null());
+  return is_eof;
+}
 
-Long QFileObj::tell() const { return pos; }
+Long QFileObj::tell() const
+{
+  qassert(not null());
+  return pos;
+}
 
-int QFileObj::flush() const { return fp->flush(); }
+int QFileObj::flush() const
+{
+  qassert(not null());
+  return fp->flush();
+}
 
 int QFileObj::seek(const Long q_offset, const int whence)
 {
@@ -656,10 +698,11 @@ void QFile::init(const std::string& path, const QFileMode mode)
   TIMER("QFile::init(path,mode)");
   close();
   p = std::shared_ptr<QFileObj>(new QFileObj());
-  add_qfile(*this);
   p->init(path, mode);
   if (p->null()) {
     close();
+  } else {
+    add_qfile(*this);
   }
 }
 
@@ -669,10 +712,11 @@ void QFile::init(const QFile& qfile, const Long q_offset_start,
   TIMER("QFile::init(qfile,offset_start,offset_end)");
   close();
   p = std::shared_ptr<QFileObj>(new QFileObj());
-  add_qfile(*this);
   p->init(qfile.p, q_offset_start, q_offset_end);
   if (p->null()) {
     close();
+  } else {
+    add_qfile(*this);
   }
 }
 
@@ -688,11 +732,23 @@ void QFile::close()
   qassert(p == nullptr);
 }
 
-QFileType QFile::ftype() const { return p->ftype(); }
+QFileType QFile::ftype() const
+{
+  qassert(not null());
+  return p->ftype();
+}
 
-const std::string& QFile::path() const { return p->path(); }
+const std::string& QFile::path() const
+{
+  qassert(not null());
+  return p->path();
+}
 
-QFileMode QFile::mode() const { return p->mode(); }
+QFileMode QFile::mode() const
+{
+  qassert(not null());
+  return p->mode();
+}
 
 bool QFile::null() const
 {
@@ -704,11 +760,23 @@ bool QFile::null() const
   }
 }
 
-bool QFile::eof() const { return p->eof(); }
+bool QFile::eof() const
+{
+  qassert(not null());
+  return p->eof();
+}
 
-Long QFile::tell() const { return p->tell(); }
+Long QFile::tell() const
+{
+  qassert(not null());
+  return p->tell();
+}
 
-int QFile::flush() const { return p->flush(); }
+int QFile::flush() const
+{
+  qassert(not null());
+  return p->flush();
+}
 
 int QFile::seek(const Long offset, const int whence)
 {
@@ -1223,8 +1291,9 @@ bool read_qar_segment_info(QarFileVolObj& qar, QarSegmentInfo& qsinfo)
     return false;
   }
   if (header.substr(0, header_prefix.size()) != header_prefix) {
-    qwarn(ssprintf("read_tag: fn='%s' pos=%ld.", qar.qfile.path().c_str(),
-                   qftell(qar.qfile)));
+    qwarn(ssprintf("read_tag: fn='%s' pos=%ld header='%s'.",
+                   qar.qfile.path().c_str(), qftell(qar.qfile),
+                   header.c_str()));
     qar.is_read_through = true;
     return false;
   }
@@ -2477,6 +2546,7 @@ int qar_create(const std::string& path_qar, const std::string& path_folder_,
     QFile qfile_in(path, QFileMode::Read);
     qassert(not qfile_in.null());
     write_from_qfile(qar, fn, "", qfile_in);
+    qfile_in.close();
   }
   const Long num_vol = qar.size();
   save_qar_index(qar, path_qar + ".acc.idx");

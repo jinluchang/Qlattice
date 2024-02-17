@@ -151,7 +151,6 @@ __all__ += [
         'displayln_malloc_stats',
         #
         'get_all_caches_info',
-        'clear_all_caches',
         ]
 
 __all__ += [

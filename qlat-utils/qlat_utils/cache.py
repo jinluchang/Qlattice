@@ -1,5 +1,5 @@
 from .timer import *
-from .c import *
+from . import c
 
 class Cache(dict):
 
@@ -79,4 +79,4 @@ def clear_all_caches():
     clean python level cache and then C++ level cache
     """
     clean_cache()
-    clear_all_caches()
+    c.clear_all_caches()
