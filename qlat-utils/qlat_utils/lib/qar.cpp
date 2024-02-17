@@ -804,8 +804,9 @@ void add_qfile(const QFile& qfile)
   QFileMap& qfile_map = get_all_qfile();
   const Long key = (Long)qfile.p.get();
   if (has(qfile_map, key)) {
-    qwarn(fname + ssprintf(": repeatedly add qfile '%s' '%s'",
-                           qfile.path().c_str(), show(qfile.mode()).c_str()));
+    qwarn(fname + ssprintf(": repeatedly add qfile '%s' '%s' total qfiles %ld",
+                           qfile.path().c_str(), show(qfile.mode()).c_str(),
+                           (long)qfile_map.size()));
   }
   qfile_map[key] = qfile.p;
 }
@@ -831,11 +832,14 @@ void clean_up_qfile_map()
   std::vector<Long> key_to_remove_vec;
   for (auto it = qfile_map.cbegin(); it != qfile_map.cend(); ++it) {
     if (it->second.expired()) {
+      // qwarn(fname + ssprintf(": plan to remove expired entries %ld.",
+      // (long)it->first));
       key_to_remove_vec.push_back(it->first);
     }
   }
-  for (Long i = 0; (Long)key_to_remove_vec.size(); ++i) {
+  for (Long i = 0; i < (Long)key_to_remove_vec.size(); ++i) {
     const Long key = key_to_remove_vec[i];
+    // qwarn(fname + ssprintf(": removing expired entries %ld.", (long)key));
     qfile_map.erase(key);
   }
   if (key_to_remove_vec.size() > 0) {
@@ -862,7 +866,7 @@ std::vector<std::string> show_all_qfile()
 
 std::string show(const QFileObj& qfile)
 {
-  const std::string has_parent = qfile.parent->null() ? "no" : "yes";
+  const std::string has_parent = qfile.parent == nullptr ? "no" : "yes";
   return ssprintf("QFileObj(path='%s',mode='%s',parent=%s,number_of_child=%d)",
                   qfile.path().c_str(), show(qfile.mode()).c_str(),
                   has_parent.c_str(), qfile.number_of_child);
