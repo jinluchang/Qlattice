@@ -108,16 +108,6 @@ QFileType read_qfile_type(const std::string& ftype)
 
 // ----------------------------------------------------
 
-const std::string& QFileBase::content()
-{
-  TIMER_VERBOSE("QFileBase::content");
-  qerr(fname + ssprintf(": Cannot obtain content. '%s' '%s' '%s'",
-                        show(ftype()).c_str(), path().c_str(),
-                        show(mode()).c_str()));
-  static std::string ret = "";
-  return ret;
-}
-
 Long QFileBase::size()
 {
   if (null()) {
@@ -392,38 +382,57 @@ bool QFileObjCFile::null() const { return fp == NULL; }
 
 bool QFileObjCFile::eof() const
 {
+  TIMER("QFileObjCFile::eof()");
   qassert(not null());
   return std::feof(fp);
 }
 
 Long QFileObjCFile::tell() const
 {
+  TIMER("QFileObjCFile::tell()");
   qassert(not null());
   return std::ftell(fp);
 }
 
 int QFileObjCFile::flush() const
 {
+  TIMER("QFileObjCFile::flush()");
   qassert(not null());
   return fflush(fp);
 }
 
 int QFileObjCFile::seek(const Long offset, const int whence)
 {
+  TIMER("QFileObjCFile::seek(offset,whence)");
   qassert(not null());
   return std::fseek(fp, offset, whence);
 }
 
 Long QFileObjCFile::read(void* ptr, const Long size, const Long nmemb)
 {
+  TIMER_FLOPS("QFileObjCFile::read(ptr,size,nmemb)");
   qassert(not null());
-  return fread(ptr, size, nmemb, fp);
+  const Long ret = fread(ptr, size, nmemb, fp);
+  timer.flops += ret * size;
+  return ret;
 }
 
 Long QFileObjCFile::write(const void* ptr, const Long size, const Long nmemb)
 {
+  TIMER_FLOPS("QFileObjCFile::write(ptr,size,nmemb)");
   qassert(not null());
-  return fwrite(ptr, size, nmemb, fp);
+  const Long ret = fwrite(ptr, size, nmemb, fp);
+  timer.flops += ret * size;
+  return ret;
+}
+
+const std::string& QFileObjCFile::content()
+{
+  TIMER_VERBOSE("QFileObjCFile::content()");
+  qassert(not null());
+  qerr(fname + ssprintf(": Cannot obtain content. Not available for this type."));
+  static std::string ret = "";
+  return ret;
 }
 
 // ----------------------------------------------------
@@ -581,7 +590,8 @@ Long QFileObjString::write(const void* ptr, const Long size, const Long nmemb)
 
 const std::string& QFileObjString::content()
 {
-  TIMER("QFileObjString::content");
+  TIMER("QFileObjString::content()");
+  qassert(not null());
   return content_v;
 }
 
@@ -910,6 +920,12 @@ Long QFileObj::write(const void* ptr, const Long size, const Long nmemb)
   return actual_nmemb;
 }
 
+const std::string& QFileObj::content()
+{
+  qassert(not null());
+  return fp->content();
+}
+
 // ----------------------------------------------------
 
 QFile::QFile(const std::weak_ptr<QFileObj>& wp) { init(wp); }
@@ -1070,6 +1086,12 @@ Long QFile::write(const void* ptr, const Long size, const Long nmemb)
 {
   qassert(not null());
   return p->write(ptr, size, nmemb);
+}
+
+const std::string& QFile::content()
+{
+  qassert(not null());
+  return p->content();
 }
 
 // ----------------------------------------------------

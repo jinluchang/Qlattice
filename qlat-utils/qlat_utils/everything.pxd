@@ -339,6 +339,8 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
         LatData()
         void load(const std_string& fn) except +
         void save(const std_string& fn) except +
+        void load_str(std_string& content) except +
+        std_string save_str() except +
         bool is_complex()
         int ndim()
         double* data()

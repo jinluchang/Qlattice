@@ -9,17 +9,52 @@ q.begin_with_mpi()
 q.qremove_all_info("results")
 q.qmkdir_info("results")
 
+content = b"hello world!\n"
+
+if q.get_id_node() == 0:
+    qfile = q.qfopen("results/test-qfile.txt", "w")
+    qfile.write(content)
+    qfile.close()
+
+assert content == q.qcat_bytes_sync_node("results/test-qfile.txt")
+
+if q.get_id_node() == 0:
+    qfile0 = q.qfopen("results/test-qfile.txt", "r")
+    qfile = q.qfopen("results/test-qfile-2.txt", "w")
+    qfile.write(qfile0)
+    qfile0.close()
+    qfile.close()
+
+assert content == q.qcat_bytes_sync_node("results/test-qfile-2.txt")
+
+qfile = q.qfopen_str("/ string /", "w")
+qfile.write(content)
+assert content == qfile.content_bytes()
+qfile.close()
+
+def test_ld_str_io(path):
+    ld_load = q.load_lat_data(path)
+    ld_bytes = ld_load.save_str()
+    assert q.qcat_bytes_sync_node(path) == ld_bytes
+    ld_str = q.LatData()
+    ld_str.load_str(ld_bytes)
+    assert ld_str.save_str() == ld_bytes
+
 ld = q.LatData()
 ld.save(f"results/data/ld.lat")
+
+test_ld_str_io(f"results/data/ld.lat")
 
 for i in range(20):
     ld = q.LatData()
     ld.from_numpy(np.arange(1000.0).astype(complex).reshape(2, 5, 10, 10))
     ld.save(f"results/data/ld-1000/ld-{i}-1000.lat")
+    test_ld_str_io(f"results/data/ld-1000/ld-{i}-1000.lat")
 
 ld = q.LatData()
 ld.from_numpy(np.arange(10000.0).astype(complex).reshape(2, 5, 10, 100))
 ld.save(f"results/data/ld-10000.lat")
+test_ld_str_io(f"results/data/ld-10000.lat")
 
 q.qar_create_info(f"results/data.qar", f"results/data")
 

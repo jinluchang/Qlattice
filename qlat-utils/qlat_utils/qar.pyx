@@ -112,6 +112,14 @@ cdef class QFile:
     def seek_cur(self, cc.Long q_offset):
         return cc.qfseek_cur(self.xx, q_offset)
 
+    def content(self):
+        cdef cc.std_string x = self.xx.content()
+        return <str>x;
+
+    def content_bytes(self):
+        cdef cc.std_string x = self.xx.content()
+        return <bytes>x;
+
     def size(self):
         return cc.qfile_size(self.xx)
 
@@ -133,17 +141,17 @@ cdef class QFile:
     def qcat_bytes(self):
         return <bytes>cc.qcat(self.xx)
 
-    def write(self, object content):
+    def write(self, object data):
         cdef QFile qfile
-        if isinstance(content, QFile):
-            qfile = content
+        if isinstance(data, QFile):
+            qfile = data
             return cc.write_from_qfile(self.xx, qfile.xx)
-        elif isinstance(content, (str, bytes,)):
-            return cc.qwrite_data(<cc.std_string>content, self.xx)
-        elif isinstance(content, (list, tuple,)):
-            return cc.qwrite_data(<cc.std_vector[cc.std_string]>content, self.xx)
+        elif isinstance(data, (str, bytes,)):
+            return cc.qwrite_data(<cc.std_string>data, self.xx)
+        elif isinstance(data, (list, tuple,)):
+            return cc.qwrite_data(<cc.std_vector[cc.std_string]>data, self.xx)
         else:
-            raise Exception(f"write: {type(content)}")
+            raise Exception(f"write: {type(data)}")
 
     def compute_crc32(self):
         return cc.compute_crc32(self.xx)
@@ -162,9 +170,13 @@ def qfopen_str(const cc.std_string& path, const cc.std_string& mode, object cont
     cdef cc.QFileType ftype_v = cc.read_qfile_type(ftype)
     cdef cc.std_string path_v = path
     cdef cc.QFileMode mode_v = cc.read_qfile_mode(mode)
-    cdef cc.std_string content_v = content
+    cdef cc.std_string content_v
     cdef QFile qfile = QFile()
-    qfile.xx = cc.qfopen(ftype_v, path_v, mode_v, content_v);
+    if content is None:
+        qfile.xx = cc.qfopen(ftype_v, path_v, mode_v);
+    else:
+        content_v = content
+        qfile.xx = cc.qfopen(ftype_v, path_v, mode_v, content_v);
     return qfile
 
 ### ----------------------------------------------------------

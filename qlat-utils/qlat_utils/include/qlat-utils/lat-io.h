@@ -80,6 +80,23 @@ struct API LatData {
     qrename(fn + ".partial", fn);
   };
   //
+  void load_str(std::string& content)
+  {
+    QFile qfile =
+        qfopen(QFileType::String, "/ load LatData /", QFileMode::Read, content);
+    load(qfile);
+    qfclose(qfile);
+  }
+  const std::string save_str() const
+  {
+    QFile qfile =
+        qfopen(QFileType::String, "/ save LatData /", QFileMode::Write);
+    save(qfile);
+    const std::string ret = qfile.content();
+    qfclose(qfile);
+    return ret;
+  }
+  //
   bool is_complex() const;
   int ndim() const;
   double* data() { return res.data(); }

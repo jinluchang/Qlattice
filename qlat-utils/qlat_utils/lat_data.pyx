@@ -73,6 +73,12 @@ cdef class LatData:
             self.load_node(path)
         self.bcast()
 
+    def save_str(self):
+        return <bytes>self.xx.save_str()
+
+    def load_str(self, cc.std_string& content):
+        return self.xx.load_str(content)
+
     def bcast(self):
         if cc.get_num_node() != 1:
             import qlat.c as c

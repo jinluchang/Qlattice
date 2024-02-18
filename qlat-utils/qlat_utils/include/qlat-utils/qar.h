@@ -56,8 +56,7 @@ struct QFileBase {
   virtual int seek(const Long offset, const int whence) = 0;
   virtual Long read(void* ptr, const Long size, const Long nmemb) = 0;
   virtual Long write(const void* ptr, const Long size, const Long nmemb) = 0;
-  //
-  virtual const std::string& content();
+  virtual const std::string& content() = 0;
   //
   virtual Long size();
   virtual Long remaining_size();
@@ -111,6 +110,7 @@ struct QFileObjCFile : QFileBase {
   int seek(const Long offset, const int whence);
   Long read(void* ptr, const Long size, const Long nmemb);
   Long write(const void* ptr, const Long size, const Long nmemb);
+  const std::string& content();
 };
 
 // ---------------------
@@ -149,8 +149,7 @@ struct QFileObjString : QFileBase {
   int seek(const Long offset, const int whence);
   Long read(void* ptr, const Long size, const Long nmemb);
   Long write(const void* ptr, const Long size, const Long nmemb);
-  //
-  virtual const std::string& content();
+  const std::string& content();
 };
 
 // ---------------------
@@ -210,6 +209,7 @@ struct QFileObj : QFileBase {
   int seek(const Long q_offset, const int whence);
   Long read(void* ptr, const Long size, const Long nmemb);
   Long write(const void* ptr, const Long size, const Long nmemb);
+  const std::string& content();
 };
 
 using QFileMap = std::map<Long, std::weak_ptr<QFileObj>>;
@@ -260,6 +260,7 @@ struct API QFile : QFileBase {
   int seek(const Long offset, const int whence);
   Long read(void* ptr, const Long size, const Long nmemb);
   Long write(const void* ptr, const Long size, const Long nmemb);
+  const std::string& content();
 };
 
 // ---------------------
