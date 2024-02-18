@@ -202,6 +202,8 @@ struct API QFile : QFileBase {
 
 // ---------------------
 
+int clean_up_qfile_map();
+
 std::vector<std::string> show_all_qfile();
 
 std::string show(const QFileObj& qfile);

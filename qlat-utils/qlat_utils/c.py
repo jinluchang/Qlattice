@@ -158,6 +158,7 @@ __all__ += [
         'QarFile',
         'get_qar_multi_vol_max_size',
         'set_qar_multi_vol_max_size',
+        'clean_up_qfile_map',
         'show_all_qfile',
         'does_regular_file_exist_qar',
         'does_file_exist_qar',

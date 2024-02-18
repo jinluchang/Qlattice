@@ -11,8 +11,6 @@ static void add_qfile(const QFile& qfile);
 
 static void remove_qfile(const QFile& qfile);
 
-static void clean_up_qfile_map();
-
 static bool operator==(const QarSegmentInfo& qsinfo1, const QarSegmentInfo& qsinfo2);
 
 static bool operator!=(const QarSegmentInfo& qsinfo1, const QarSegmentInfo& qsinfo2);
@@ -436,6 +434,7 @@ void QFileObj::init()
 void QFileObj::init(const std::string& path_, const QFileMode mode_)
 {
   close();
+  TIMER("QFileObj::init(path,mode)");
   displayln_info(1, ssprintf("QFile: open '%s' with '%s'.", path_.c_str(),
                              show(mode_).c_str()));
   if (mode_ == QFileMode::Read and (not is_regular_file(path_))) {
@@ -473,6 +472,7 @@ void QFileObj::init(const std::shared_ptr<QFileObj>& qfile,
   if (qfile == nullptr) {
     return;
   }
+  TIMER("QFileObj::init(qfile,q_offset_start,q_offset_end)");
   parent = qfile;
   parent->number_of_child += 1;
   qassert(fp == nullptr);
@@ -507,12 +507,16 @@ void QFileObj::close()
   qassert(number_of_child == 0);
   if (parent == nullptr) {
     if (fp != nullptr) {
+      TIMER("QFileObj::close()");
       displayln_info(1, ssprintf("QFile: close '%s' with '%s'.", path().c_str(),
                                  show(mode()).c_str()));
       fp->close();
       fp.reset();
     }
   } else {
+    TIMER("QFileObj::close()");
+    displayln_info(1, ssprintf("QFile: close child of '%s' with '%s'.",
+                               path().c_str(), show(mode()).c_str()));
     fp.reset();
     parent->number_of_child -= 1;
     parent.reset();
@@ -804,9 +808,10 @@ void add_qfile(const QFile& qfile)
   QFileMap& qfile_map = get_all_qfile();
   const Long key = (Long)qfile.p.get();
   if (has(qfile_map, key)) {
-    qwarn(fname + ssprintf(": repeatedly add qfile '%s' '%s' total qfiles %ld",
-                           qfile.path().c_str(), show(qfile.mode()).c_str(),
-                           (long)qfile_map.size()));
+    displayln_info(
+        0, fname + ssprintf(": repeatedly add qfile '%s' '%s' total qfiles %ld",
+                            qfile.path().c_str(), show(qfile.mode()).c_str(),
+                            (long)qfile_map.size()));
   }
   qfile_map[key] = qfile.p;
 }
@@ -825,28 +830,27 @@ void remove_qfile(const QFile& qfile)
   }
 }
 
-void clean_up_qfile_map()
+int clean_up_qfile_map()
 {
   TIMER("clean_up_qfile_map");
   QFileMap& qfile_map = get_all_qfile();
   std::vector<Long> key_to_remove_vec;
   for (auto it = qfile_map.cbegin(); it != qfile_map.cend(); ++it) {
     if (it->second.expired()) {
-      // qwarn(fname + ssprintf(": plan to remove expired entries %ld.",
-      // (long)it->first));
       key_to_remove_vec.push_back(it->first);
     }
   }
   for (Long i = 0; i < (Long)key_to_remove_vec.size(); ++i) {
     const Long key = key_to_remove_vec[i];
-    // qwarn(fname + ssprintf(": removing expired entries %ld.", (long)key));
     qfile_map.erase(key);
   }
   if (key_to_remove_vec.size() > 0) {
-    qwarn(fname +
-          ssprintf(": clean up %ld qfiles in qfile_map. %ld qfiles remain.",
-                   (long)key_to_remove_vec.size(), (long)qfile_map.size()));
+    displayln_info(
+        0, fname + ssprintf(
+                       ": clean up %ld qfiles in qfile_map. %ld qfiles remain.",
+                       (long)key_to_remove_vec.size(), (long)qfile_map.size()));
   }
+  return key_to_remove_vec.size();
 }
 
 std::vector<std::string> show_all_qfile()
@@ -1663,6 +1667,7 @@ Long write_from_qfile(const QarFileVol& qar, const std::string& fn,
   QFile qfile_out;
   write_start(qar, fn, info, qfile_out, data_len);
   const Long total_bytes = write_from_qfile(qfile_out, qfile_in);
+  qfclose(qfile_out);
   write_end(qar);
   qassert(data_len == total_bytes);
   timer.flops += total_bytes;
@@ -1820,12 +1825,12 @@ void QarFile::init()
 {
   path = "";
   mode = QFileMode::Read;
-  std::vector<QarFileVol>& v = *this;
-  qlat::clear(v);
+  close();
 }
 
 void QarFile::init(const std::string& path_, const QFileMode mode_)
 {
+  TIMER("QarFile::init(path,mode)");
   init();
   path = path_;
   mode = mode_;
@@ -1868,10 +1873,13 @@ void QarFile::init(const std::string& path_, const QFileMode mode_)
 void QarFile::close()
 {
   QarFile& qar = *this;
-  for (int i = 0; i < (int)qar.size(); ++i) {
-    qar[i].close();
+  if (qar.size() > 0) {
+    TIMER("QarFile::close()");
+    for (int i = 0; i < (int)qar.size(); ++i) {
+      qar[i].close();
+    }
+    qar.clear();
   }
-  init();
 }
 
 // ----------------------------------------------------
@@ -1942,7 +1950,9 @@ std::string read_data(const QarFile& qar, const std::string& fn)
 {
   TIMER_VERBOSE("read_data(qar,fn)");
   QFile qfile = read(qar, fn);
-  return qcat(qfile);
+  const std::string ret = qcat(qfile);
+  qfclose(qfile);
+  return ret;
 }
 
 std::string read_info(const QarFile& qar, const std::string& fn)
@@ -2550,7 +2560,7 @@ int qar_create(const std::string& path_qar, const std::string& path_folder_,
     QFile qfile_in(path, QFileMode::Read);
     qassert(not qfile_in.null());
     write_from_qfile(qar, fn, "", qfile_in);
-    qfile_in.close();
+    qfclose(qfile_in);
   }
   const Long num_vol = qar.size();
   save_qar_index(qar, path_qar + ".acc.idx");
@@ -2570,6 +2580,7 @@ int qar_create(const std::string& path_qar, const std::string& path_folder_,
   if (not verify_index(qar)) {
     qerr(fname + ": idx verification failed.");
   }
+  qar.close();
   if (is_remove_folder_after) {
     for (Long iv = 0; iv < num_vol; ++iv) {
       const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);

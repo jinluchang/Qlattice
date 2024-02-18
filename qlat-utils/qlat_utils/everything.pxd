@@ -391,6 +391,7 @@ cdef extern from "qlat-utils/qar.h" namespace "qlat":
     #
     QFileMode read_qfile_mode(const std_string& mode) except +
     std_string show(const QFileMode mode) except +
+    int clean_up_qfile_map() except +
     std_vector[std_string] show_all_qfile() except +
     QFile qfopen(const std_string& path, const std_string& mode) except +
     void qfclose(QFile& qfile) except +

@@ -219,6 +219,9 @@ def set_qar_multi_vol_max_size(size=None):
     p_size[0] = size
     assert cc.get_qar_multi_vol_max_size() == size
 
+def clean_up_qfile_map():
+    return cc.clean_up_qfile_map()
+
 def show_all_qfile():
     return cc.show_all_qfile()
 

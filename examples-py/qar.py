@@ -64,6 +64,9 @@ q.sync_node()
 q.displayln_info("CHECK: ", l2)
 q.sync_node()
 
+num_clean_up_qfiles = q.clean_up_qfile_map()
+q.displayln_info(f"CHECK: clean_up_qfile_map num_clean_up_qfiles={num_clean_up_qfiles}");
+
 sq_list = sorted(q.show_all_qfile())
 q.sync_node()
 q.displayln_info(f"CHECK: q.show_all_qfile()")
