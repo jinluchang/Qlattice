@@ -302,16 +302,25 @@ Long write_from_qfile(QFileBase& qfile_out, QFileBase& qfile_in)
 
 // ----------------------------------------------------
 
-QFileObjCFile::QFileObjCFile()
-{
-  fp = NULL;
-  init();
-}
-
 QFileObjCFile::QFileObjCFile(const std::string& path_, const QFileMode mode_)
 {
   fp = NULL;
   init(path_, mode_);
+}
+
+void QFileObjCFile::init(const std::string& path_, const QFileMode mode_)
+{
+  close();
+  TIMER("QFileObjCFile::init(path,mode)");
+  path_v = path_;
+  mode_v = mode_;
+  fp = fopen(path_v.c_str(), show(mode_v).c_str());
+}
+
+QFileObjCFile::QFileObjCFile()
+{
+  fp = NULL;
+  init();
 }
 
 QFileObjCFile::~QFileObjCFile() { close(); }
@@ -323,20 +332,12 @@ void QFileObjCFile::init()
   mode_v = QFileMode::Read;
 }
 
-void QFileObjCFile::init(const std::string& path_, const QFileMode mode_)
-{
-  close();
-  path_v = path_;
-  mode_v = mode_;
-  fp = fopen(path_v.c_str(), show(mode_v).c_str());
-}
-
 void QFileObjCFile::close()
 {
   if (fp == NULL) {
     return;
   }
-  TIMER("QFileObjCFile::close");
+  TIMER("QFileObjCFile::close()");
   int ret = std::fclose(fp);
   if (ret != 0) {
     qwarn(fname +
@@ -387,6 +388,159 @@ Long QFileObjCFile::write(const void* ptr, const Long size, const Long nmemb)
 {
   qassert(not null());
   return fwrite(ptr, size, nmemb, fp);
+}
+
+// ----------------------------------------------------
+
+QFileObjString::QFileObjString(const std::string& path_, const QFileMode mode_)
+{
+  is_null = true;
+  init(path_, mode_);
+}
+
+QFileObjString::QFileObjString(const std::string& path_, const QFileMode mode_,
+                               std::string& content_)
+{
+  is_null = true;
+  init(path_, mode_, content_);
+}
+
+void QFileObjString::init(const std::string& path_, const QFileMode mode_)
+{
+  TIMER("QFileObjString::init(path,mode)");
+  init();
+  path_v = path_;
+  mode_v = mode_;
+  is_null = false;
+}
+
+void QFileObjString::init(const std::string& path_, const QFileMode mode_,
+                          std::string& content_)
+{
+  TIMER("QFileObjString::init(path,mode,content)");
+  init();
+  path_v = path_;
+  mode_v = mode_;
+  is_null = false;
+  std::swap(content_v, content_);
+  if (mode_v == QFileMode::Append) {
+    pos = content_v.size();
+  } else if (mode_v == QFileMode::Write) {
+    content_v = "";
+  }
+}
+
+QFileObjString::QFileObjString()
+{
+  is_null = true;
+  init();
+}
+
+QFileObjString::~QFileObjString() { close(); }
+
+void QFileObjString::init()
+{
+  close();
+  path_v = "";
+  mode_v = QFileMode::Read;
+  content_v = "";
+  pos = 0;
+  is_eof = false;
+}
+
+void QFileObjString::close()
+// leave the `content_v` as is.
+// can access `content_v` after close this file.
+{
+  if (is_null) {
+    return;
+  }
+  TIMER("QFileObjString::close()");
+  is_null = true;
+}
+
+QFileType QFileObjString::ftype() const { return QFileType::String; }
+
+const std::string& QFileObjString::path() const { return path_v; }
+
+QFileMode QFileObjString::mode() const { return mode_v; }
+
+bool QFileObjString::null() const { return is_null; }
+
+bool QFileObjString::eof() const
+{
+  qassert(not null());
+  return is_eof;
+}
+
+Long QFileObjString::tell() const
+{
+  qassert(not null());
+  return pos;
+}
+
+int QFileObjString::flush() const
+{
+  qassert(not null());
+  return 0;
+}
+
+int QFileObjString::seek(const Long offset, const int whence)
+{
+  qassert(not null());
+  is_eof = false;
+  if (whence == SEEK_SET) {
+    pos = offset;
+  } else if (whence == SEEK_END) {
+    pos = (Long)content_v.size() + offset;
+  } else if (whence == SEEK_CUR) {
+    pos = pos + offset;
+  } else {
+    qassert(false);
+  }
+  if (offset < 0) {
+    return 1;
+  }
+  return 0;
+}
+
+Long QFileObjString::read(void* ptr, const Long size, const Long nmemb)
+{
+  qassert(not null());
+  qassert(pos >= 0);
+  qassert(mode_v == QFileMode::Read);
+  if (size == 0 or nmemb == 0) {
+    return 0;
+  }
+  Long actual_nmemb = nmemb;
+  if (pos + size * nmemb > (Long)content_v.size()) {
+    is_eof = true;
+    if (pos >= (Long)content_v.size()) {
+      return 0;
+    }
+    actual_nmemb = ((Long)content_v.size() - pos) / size;
+  }
+  std::memcpy(ptr, &content_v[pos], size * actual_nmemb);
+  pos = pos + size * actual_nmemb;
+  return actual_nmemb;
+}
+
+Long QFileObjString::write(const void* ptr, const Long size, const Long nmemb)
+{
+  qassert(not null());
+  qassert(pos >= 0);
+  qassert(mode_v == QFileMode::Write or mode_v == QFileMode::Append);
+  if (size == 0 or nmemb == 0) {
+    return 0;
+  }
+  const Long pos_new = pos + size * nmemb;
+  qassert(pos_new >= pos);
+  if (pos_new > (Long)content_v.size()) {
+    content_v.resize(pos_new, (char)0);
+  }
+  std::memcpy(&content_v[pos], ptr, size * nmemb);
+  pos = pos_new;
+  return nmemb;
 }
 
 // ----------------------------------------------------
@@ -593,9 +747,6 @@ int QFileObj::seek(const Long q_offset, const int whence)
   }
   pos = fp->tell() - offset_start;
   qassert(pos >= 0);
-  if (offset_end != -1) {
-    qassert(offset_start + pos <= offset_end);
-  }
   return ret;
 }
 
@@ -614,6 +765,10 @@ Long QFileObj::read(void* ptr, const Long size, const Long nmemb)
   Long actual_nmemb = 0;
   if (offset_end != -1) {
     const Long remaining_size = offset_end - offset_start - pos;
+    if (remaining_size < 0) {
+      is_eof = true;
+      return 0;
+    }
     qassert(remaining_size >= 0);
     const Long target_nmemb = std::min(nmemb, remaining_size / size);
     actual_nmemb = fp->read(ptr, size, target_nmemb);

@@ -81,14 +81,53 @@ struct QFileObjCFile : QFileBase {
   QFileMode mode_v;
   FILE* fp;
   //
-  QFileObjCFile();
   QFileObjCFile(const std::string& path_, const QFileMode mode_);
+  void init(const std::string& path_, const QFileMode mode_);
+  //
+  QFileObjCFile();
   ~QFileObjCFile();
   QFileObjCFile(const QFileObjCFile&) = delete;
   QFileObjCFile& operator=(const QFileObjCFile&) = delete;
   //
   void init();
+  void close();
+  QFileType ftype() const;
+  const std::string& path() const;
+  QFileMode mode() const;
+  bool null() const;
+  bool eof() const;
+  Long tell() const;
+  int flush() const;
+  int seek(const Long offset, const int whence);
+  Long read(void* ptr, const Long size, const Long nmemb);
+  Long write(const void* ptr, const Long size, const Long nmemb);
+};
+
+// ---------------------
+
+struct QFileObjString : QFileBase {
+  // can not copy
+  //
+  std::string path_v;
+  QFileMode mode_v;
+  bool is_null;
+  std::string content_v;
+  Long pos;
+  bool is_eof;
+  //
+  QFileObjString(const std::string& path_, const QFileMode mode_);
+  QFileObjString(const std::string& path_, const QFileMode mode_,
+                 std::string& content_);
   void init(const std::string& path_, const QFileMode mode_);
+  void init(const std::string& path_, const QFileMode mode_,
+            std::string& content_);
+  //
+  QFileObjString();
+  ~QFileObjString();
+  QFileObjString(const QFileObjString&) = delete;
+  QFileObjString& operator=(const QFileObjString&) = delete;
+  //
+  void init();
   void close();
   QFileType ftype() const;
   const std::string& path() const;
