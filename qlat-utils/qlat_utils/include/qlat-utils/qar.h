@@ -166,25 +166,28 @@ struct QFileObj : QFileBase {
   Long offset_end;    // end offset of `fp` for `QFileObj` (-1 if not limit,
                       // useful when writing)
   //
-  QFileObj();
-  QFileObj(const std::string& path_, const QFileMode mode_);
+  QFileObj(const QFileType ftype_, const std::string& path_,
+           const QFileMode mode_);
+  QFileObj(const QFileType ftype_, const std::string& path_,
+           const QFileMode mode_, std::string& content_);
   QFileObj(const std::shared_ptr<QFileObj>& qfile, const Long q_offset_start,
            const Long q_offset_end);
-  //
-  QFileObj(const QFileObj&) = delete;
-  QFileObj& operator=(const QFileObj&) = delete;
-  //
-  QFileObj(QFileObj&& qfile) noexcept;
-  //
-  ~QFileObj();
-  //
-  void init();
-  void init(const std::string& path_, const QFileMode mode_);
+  void init(const QFileType ftype_, const std::string& path_,
+            const QFileMode mode_);
+  void init(const QFileType ftype_, const std::string& path_,
+            const QFileMode mode_, std::string& content_);
   void init(const std::shared_ptr<QFileObj>& qfile, const Long q_offset_start,
             const Long q_offset_end);
   //
-  void close();
+  QFileObj(QFileObj&& qfile) noexcept;
   //
+  QFileObj();
+  ~QFileObj();
+  QFileObj(const QFileObj&) = delete;
+  QFileObj& operator=(const QFileObj&) = delete;
+  //
+  void init();
+  void close();
   QFileType ftype() const;
   const std::string& path() const;
   QFileMode mode() const;
@@ -215,18 +218,26 @@ struct API QFile : QFileBase {
   //
   std::shared_ptr<QFileObj> p;
   //
-  QFile();
   QFile(const std::weak_ptr<QFileObj>& wp);
   QFile(const std::string& path, const QFileMode mode);
+  QFile(const QFileType ftype, const std::string& path, const QFileMode mode);
+  QFile(const QFileType ftype, const std::string& path, const QFileMode mode,
+        std::string& content);
   QFile(const QFile& qfile, const Long q_offset_start, const Long q_offset_end);
   //
-  void init();
   void init(const std::weak_ptr<QFileObj>& wp);
   void init(const std::string& path, const QFileMode mode);
+  void init(const QFileType ftype, const std::string& path,
+            const QFileMode mode);
+  void init(const QFileType ftype, const std::string& path,
+            const QFileMode mode, std::string& content);
   void init(const QFile& qfile, const Long q_offset_start,
             const Long q_offset_end);
-  void close();
   //
+  QFile();
+  //
+  void init();
+  void close();
   QFileType ftype() const;
   const std::string& path() const;
   QFileMode mode() const;
@@ -257,7 +268,19 @@ void qswap(QFile& qfile1, QFile& qfile2);
 
 QFile qfopen(const std::string& path, const QFileMode mode);
 
+QFile qfopen(const QFileType ftype, const std::string& path,
+             const QFileMode mode);
+
+QFile qfopen(const QFileType ftype, const std::string& path,
+             const QFileMode mode, std::string& content);
+
 QFile qfopen(const std::string& path, const std::string& mode);
+
+QFile qfopen(const std::string& ftype, const std::string& path,
+             const std::string& mode);
+
+QFile qfopen(const std::string& ftype, const std::string& path,
+             const std::string& mode, std::string& content);
 
 void qfclose(QFile& qfile);
 

@@ -255,6 +255,30 @@ Long QFileBase::printf(const char* fmt, ...)
 
 // ----------------------------------------------------
 
+std::string show(const QFileType ftype)
+{
+  if (ftype == QFileType::CFile) {
+    return "CFile";
+  } else if (ftype == QFileType::String) {
+    return "String";
+  } else {
+    qassert(false);
+    return "";
+  }
+}
+
+QFileType read_qfile_type(const std::string& ftype)
+{
+  if (ftype == "CFile") {
+    return QFileType::CFile;
+  } else if (ftype == "String") {
+    return QFileType::String;
+  } else {
+    qassert(false);
+    return QFileType::CFile;
+  }
+}
+
 std::string show(const QFileMode mode)
 {
   if (mode == QFileMode::Read) {
@@ -545,16 +569,18 @@ Long QFileObjString::write(const void* ptr, const Long size, const Long nmemb)
 
 // ----------------------------------------------------
 
-QFileObj::QFileObj()
+QFileObj::QFileObj(const QFileType ftype_, const std::string& path_,
+                   const QFileMode mode_)
 {
   number_of_child = 0;
-  init();
+  init(ftype_, path_, mode_);
 }
 
-QFileObj::QFileObj(const std::string& path_, const QFileMode mode_)
+QFileObj::QFileObj(const QFileType ftype_, const std::string& path_,
+                   const QFileMode mode_, std::string& content_)
 {
   number_of_child = 0;
-  init(path_, mode_);
+  init(ftype_, path_, mode_, content_);
 }
 
 QFileObj::QFileObj(const std::shared_ptr<QFileObj>& qfile,
@@ -564,43 +590,59 @@ QFileObj::QFileObj(const std::shared_ptr<QFileObj>& qfile,
   init(qfile, q_offset_start, q_offset_end);
 }
 
-QFileObj::QFileObj(QFileObj&& qfile) noexcept
-{
-  number_of_child = 0;
-  init();
-  qswap(*this, qfile);
-}
-
-QFileObj::~QFileObj()
+void QFileObj::init(const QFileType ftype_, const std::string& path_,
+                    const QFileMode mode_)
 {
   close();
-}
-
-void QFileObj::init()
-{
-  close();
-  pos = 0;
+  TIMER("QFileObj::init(type,path,mode)");
+  displayln_info(1, ssprintf("QFile: '%s' open '%s' with '%s'.", show(ftype_).c_str(), path_.c_str(),
+                             show(mode_).c_str()));
+  qassert(fp == nullptr);
+  if (ftype_ == QFileType::CFile and mode_ == QFileMode::Read and (not is_regular_file(path_))) {
+    qwarn(ssprintf("QFile: '%s' open '%s' with '%s'. Not regular file.",
+                   show(ftype_).c_str(), path_.c_str(), show(mode_).c_str()));
+  }
+  if (ftype_ == QFileType::CFile) {
+    fp.reset(new QFileObjCFile(path_, mode_));
+  } else if (ftype_ == QFileType::String) {
+    fp.reset(new QFileObjString(path_, mode_));
+  } else {
+    qassert(false);
+  }
+  if (fp->null()) {
+    fp = nullptr;
+    qwarn(ssprintf("QFile: '%s' open '%s' with '%s' failed.",
+                   show(ftype_).c_str(), path_.c_str(), show(mode_).c_str()));
+    pos = 0;
+  } else {
+    pos = fp->tell();
+  }
   is_eof = false;
   offset_start = 0;
   offset_end = -1;
+  if (not fp->null() and mode_ == QFileMode::Read) {
+    offset_end = fp->size();
+  }
 }
 
-void QFileObj::init(const std::string& path_, const QFileMode mode_)
+void QFileObj::init(const QFileType ftype_, const std::string& path_,
+                    const QFileMode mode_, std::string& content_)
 {
   close();
-  TIMER("QFileObj::init(path,mode)");
-  displayln_info(1, ssprintf("QFile: open '%s' with '%s'.", path_.c_str(),
-                             show(mode_).c_str()));
-  if (mode_ == QFileMode::Read and (not is_regular_file(path_))) {
-    qwarn(ssprintf("QFile: open '%s' with '%s'. Not regular file.",
-                   path_.c_str(), show(mode_).c_str()));
-  }
+  TIMER("QFileObj::init(type,path,mode,content)");
+  displayln_info(
+      1, ssprintf("QFile: '%s' open '%s' with '%s' and content.",
+                  show(ftype_).c_str(), path_.c_str(), show(mode_).c_str()));
   qassert(fp == nullptr);
-  fp.reset(new QFileObjCFile(path_, mode_));
+  if (ftype_ == QFileType::String) {
+    fp.reset(new QFileObjString(path_, mode_, content_));
+  } else {
+    qassert(false);
+  }
   if (fp->null()) {
     fp = nullptr;
-    qwarn(ssprintf("QFile: open '%s' with '%s' failed.", path_.c_str(),
-                   show(mode_).c_str()));
+    qwarn(ssprintf("QFile: '%s' open '%s' with '%s' failed.",
+                   show(ftype_).c_str(), path_.c_str(), show(mode_).c_str()));
     pos = 0;
   } else {
     pos = fp->tell();
@@ -653,6 +695,33 @@ void QFileObj::init(const std::shared_ptr<QFileObj>& qfile,
       close();
     }
   }
+}
+
+QFileObj::QFileObj(QFileObj&& qfile) noexcept
+{
+  number_of_child = 0;
+  init();
+  qswap(*this, qfile);
+}
+
+QFileObj::QFileObj()
+{
+  number_of_child = 0;
+  init();
+}
+
+QFileObj::~QFileObj()
+{
+  close();
+}
+
+void QFileObj::init()
+{
+  close();
+  pos = 0;
+  is_eof = false;
+  offset_start = 0;
+  offset_end = -1;
 }
 
 void QFileObj::close()
@@ -825,8 +894,6 @@ Long QFileObj::write(const void* ptr, const Long size, const Long nmemb)
 
 // ----------------------------------------------------
 
-QFile::QFile() { init(); }
-
 QFile::QFile(const std::weak_ptr<QFileObj>& wp) { init(wp); }
 
 QFile::QFile(const std::string& path, const QFileMode mode)
@@ -834,13 +901,23 @@ QFile::QFile(const std::string& path, const QFileMode mode)
   init(path, mode);
 }
 
+QFile::QFile(const QFileType ftype, const std::string& path,
+             const QFileMode mode)
+{
+  init(ftype, path, mode);
+}
+
+QFile::QFile(const QFileType ftype, const std::string& path,
+             const QFileMode mode, std::string& content)
+{
+  init(ftype, path, mode, content);
+}
+
 QFile::QFile(const QFile& qfile, const Long q_offset_start,
              const Long q_offset_end)
 {
   init(qfile, q_offset_start, q_offset_end);
 }
-
-void QFile::init() { p = nullptr; }
 
 void QFile::init(const std::weak_ptr<QFileObj>& wp)
 {
@@ -854,10 +931,28 @@ void QFile::init(const std::weak_ptr<QFileObj>& wp)
 
 void QFile::init(const std::string& path, const QFileMode mode)
 {
-  TIMER("QFile::init(path,mode)");
+  init(QFileType::CFile, path, mode);
+}
+
+void QFile::init(const QFileType ftype, const std::string& path, const QFileMode mode)
+{
   close();
+  TIMER("QFile::init(ftype,path,mode)");
   p = std::shared_ptr<QFileObj>(new QFileObj());
-  p->init(path, mode);
+  p->init(ftype, path, mode);
+  if (p->null()) {
+    close();
+  } else {
+    add_qfile(*this);
+  }
+}
+
+void QFile::init(const QFileType ftype, const std::string& path, const QFileMode mode, std::string& content)
+{
+  close();
+  TIMER("QFile::init(ftype,path,mode,content)");
+  p = std::shared_ptr<QFileObj>(new QFileObj());
+  p->init(ftype, path, mode, content);
   if (p->null()) {
     close();
   } else {
@@ -868,8 +963,8 @@ void QFile::init(const std::string& path, const QFileMode mode)
 void QFile::init(const QFile& qfile, const Long q_offset_start,
                  const Long q_offset_end)
 {
-  TIMER("QFile::init(qfile,offset_start,offset_end)");
   close();
+  TIMER("QFile::init(qfile,offset_start,offset_end)");
   p = std::shared_ptr<QFileObj>(new QFileObj());
   p->init(qfile.p, q_offset_start, q_offset_end);
   if (p->null()) {
@@ -878,6 +973,10 @@ void QFile::init(const QFile& qfile, const Long q_offset_start,
     add_qfile(*this);
   }
 }
+
+QFile::QFile() { init(); }
+
+void QFile::init() { close(); }
 
 void QFile::close()
 {
@@ -1054,29 +1153,53 @@ void qswap(QFile& qfile1, QFile& qfile2)
 }
 
 QFile qfopen(const std::string& path, const QFileMode mode)
+{
+  return qfopen(QFileType::CFile, path, mode);
+}
+
+QFile qfopen(const QFileType ftype, const std::string& path,
+             const QFileMode mode)
 // interface function
 // qfile.null() == true if qopen failed.
 // Will open files in qar for read
 // Will create directories needed for write / append
 {
-  TIMER("qfopen(path,mode)");
-  if (mode == QFileMode::Read) {
-    const std::string key = get_qar_read_cache_key(path);
-    if (key == "") {
-      return QFile();
-    } else if (key == path) {
-      return QFile(path, mode);
+  TIMER("qfopen(ftype,path,mode)");
+  if (ftype == QFileType::CFile) {
+    if (mode == QFileMode::Read) {
+      const std::string key = get_qar_read_cache_key(path);
+      if (key == "") {
+        return QFile();
+      } else if (key == path) {
+        return QFile(ftype, path, mode);
+      } else {
+        qassert(key == path.substr(0, key.size()));
+        const std::string fn = path.substr(key.size());
+        QarFile& qar = get_qar_read_cache()[key];
+        QFile qfile = read(qar, fn);
+        return qfile;
+      }
+    } else if (mode == QFileMode::Write or mode == QFileMode::Append) {
+      const std::string path_dir = dirname(path);
+      qmkdir_p(path_dir);
+      return QFile(ftype, path, mode);
     } else {
-      qassert(key == path.substr(0, key.size()));
-      const std::string fn = path.substr(key.size());
-      QarFile& qar = get_qar_read_cache()[key];
-      QFile qfile = read(qar, fn);
-      return qfile;
+      qassert(false);
     }
-  } else if (mode == QFileMode::Write or mode == QFileMode::Append) {
-    const std::string path_dir = dirname(path);
-    qmkdir_p(path_dir);
-    return QFile(path, mode);
+  } else if (ftype == QFileType::String) {
+    return QFile(ftype, path, mode);
+  } else {
+    qassert(false);
+  }
+  return QFile();
+}
+
+QFile qfopen(const QFileType ftype, const std::string& path,
+             const QFileMode mode, std::string& content)
+{
+  TIMER("qfopen(ftype,path,mode,content)");
+  if (ftype == QFileType::String) {
+    return QFile(ftype, path, mode, content);
   } else {
     qassert(false);
   }
@@ -1086,6 +1209,18 @@ QFile qfopen(const std::string& path, const QFileMode mode)
 QFile qfopen(const std::string& path, const std::string& mode)
 {
   return qfopen(path, read_qfile_mode(mode));
+}
+
+QFile qfopen(const std::string& ftype, const std::string& path,
+             const std::string& mode)
+{
+  return qfopen(read_qfile_type(ftype), path, read_qfile_mode(mode));
+}
+
+QFile qfopen(const std::string& ftype, const std::string& path,
+             const std::string& mode, std::string& content)
+{
+  return qfopen(read_qfile_type(ftype), path, read_qfile_mode(mode), content);
 }
 
 void qfclose(QFile& qfile)
