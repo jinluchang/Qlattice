@@ -54,6 +54,70 @@ static void check_all_files_crc32_aux(
 
 // ----------------------------------------------------
 
+std::string show(const QFileMode mode)
+{
+  if (mode == QFileMode::Read) {
+    return "r";
+  } else if (mode == QFileMode::Write) {
+    return "w";
+  } else if (mode == QFileMode::Append) {
+    return "a";
+  } else {
+    qassert(false);
+    return "";
+  }
+}
+
+QFileMode read_qfile_mode(const std::string& mode)
+{
+  if (mode == "r") {
+    return QFileMode::Read;
+  } else if (mode == "w") {
+    return QFileMode::Write;
+  } else if (mode == "a") {
+    return QFileMode::Append;
+  } else {
+    qassert(false);
+    return QFileMode::Read;
+  }
+}
+
+std::string show(const QFileType ftype)
+{
+  if (ftype == QFileType::CFile) {
+    return "CFile";
+  } else if (ftype == QFileType::String) {
+    return "String";
+  } else {
+    qassert(false);
+    return "";
+  }
+}
+
+QFileType read_qfile_type(const std::string& ftype)
+{
+  if (ftype == "CFile") {
+    return QFileType::CFile;
+  } else if (ftype == "String") {
+    return QFileType::String;
+  } else {
+    qassert(false);
+    return QFileType::CFile;
+  }
+}
+
+// ----------------------------------------------------
+
+const std::string& QFileBase::content()
+{
+  TIMER_VERBOSE("QFileBase::content");
+  qerr(fname + ssprintf(": Cannot obtain content. '%s' '%s' '%s'",
+                        show(ftype()).c_str(), path().c_str(),
+                        show(mode()).c_str()));
+  static std::string ret = "";
+  return ret;
+}
+
 Long QFileBase::size()
 {
   if (null()) {
@@ -254,58 +318,6 @@ Long QFileBase::printf(const char* fmt, ...)
 }
 
 // ----------------------------------------------------
-
-std::string show(const QFileType ftype)
-{
-  if (ftype == QFileType::CFile) {
-    return "CFile";
-  } else if (ftype == QFileType::String) {
-    return "String";
-  } else {
-    qassert(false);
-    return "";
-  }
-}
-
-QFileType read_qfile_type(const std::string& ftype)
-{
-  if (ftype == "CFile") {
-    return QFileType::CFile;
-  } else if (ftype == "String") {
-    return QFileType::String;
-  } else {
-    qassert(false);
-    return QFileType::CFile;
-  }
-}
-
-std::string show(const QFileMode mode)
-{
-  if (mode == QFileMode::Read) {
-    return "r";
-  } else if (mode == QFileMode::Write) {
-    return "w";
-  } else if (mode == QFileMode::Append) {
-    return "a";
-  } else {
-    qassert(false);
-    return "";
-  }
-}
-
-QFileMode read_qfile_mode(const std::string& mode)
-{
-  if (mode == "r") {
-    return QFileMode::Read;
-  } else if (mode == "w") {
-    return QFileMode::Write;
-  } else if (mode == "a") {
-    return QFileMode::Append;
-  } else {
-    qassert(false);
-    return QFileMode::Read;
-  }
-}
 
 Long write_from_qfile(QFileBase& qfile_out, QFileBase& qfile_in)
 {
@@ -565,6 +577,12 @@ Long QFileObjString::write(const void* ptr, const Long size, const Long nmemb)
   std::memcpy(&content_v[pos], ptr, size * nmemb);
   pos = pos_new;
   return nmemb;
+}
+
+const std::string& QFileObjString::content()
+{
+  TIMER("QFileObjString::content");
+  return content_v;
 }
 
 // ----------------------------------------------------
@@ -1209,18 +1227,6 @@ QFile qfopen(const QFileType ftype, const std::string& path,
 QFile qfopen(const std::string& path, const std::string& mode)
 {
   return qfopen(path, read_qfile_mode(mode));
-}
-
-QFile qfopen(const std::string& ftype, const std::string& path,
-             const std::string& mode)
-{
-  return qfopen(read_qfile_type(ftype), path, read_qfile_mode(mode));
-}
-
-QFile qfopen(const std::string& ftype, const std::string& path,
-             const std::string& mode, std::string& content)
-{
-  return qfopen(read_qfile_type(ftype), path, read_qfile_mode(mode), content);
 }
 
 void qfclose(QFile& qfile)

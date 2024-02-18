@@ -155,6 +155,8 @@ __all__ += [
 
 __all__ += [
         'QFile',
+        'qfopen',
+        'qfopen_str',
         'QarFile',
         'get_qar_multi_vol_max_size',
         'set_qar_multi_vol_max_size',

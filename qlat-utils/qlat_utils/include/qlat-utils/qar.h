@@ -30,6 +30,18 @@ enum struct QFileType {
   String,
 };
 
+// ---------------------
+
+std::string show(const QFileMode mode);
+
+QFileMode read_qfile_mode(const std::string& mode);
+
+std::string show(const QFileType ftype);
+
+QFileType read_qfile_type(const std::string& ftype);
+
+// ---------------------
+
 struct QFileBase {
   virtual void init() = 0;
   virtual void close() = 0;
@@ -44,6 +56,8 @@ struct QFileBase {
   virtual int seek(const Long offset, const int whence) = 0;
   virtual Long read(void* ptr, const Long size, const Long nmemb) = 0;
   virtual Long write(const void* ptr, const Long size, const Long nmemb) = 0;
+  //
+  virtual const std::string& content();
   //
   virtual Long size();
   virtual Long remaining_size();
@@ -65,10 +79,6 @@ struct QFileBase {
 };
 
 // ---------------------
-
-std::string show(const QFileMode mode);
-
-QFileMode read_qfile_mode(const std::string& mode);
 
 Long write_from_qfile(QFileBase& qfile_out, QFileBase& qfile_in);
 
@@ -139,6 +149,8 @@ struct QFileObjString : QFileBase {
   int seek(const Long offset, const int whence);
   Long read(void* ptr, const Long size, const Long nmemb);
   Long write(const void* ptr, const Long size, const Long nmemb);
+  //
+  virtual const std::string& content();
 };
 
 // ---------------------
@@ -275,12 +287,6 @@ QFile qfopen(const QFileType ftype, const std::string& path,
              const QFileMode mode, std::string& content);
 
 QFile qfopen(const std::string& path, const std::string& mode);
-
-QFile qfopen(const std::string& ftype, const std::string& path,
-             const std::string& mode);
-
-QFile qfopen(const std::string& ftype, const std::string& path,
-             const std::string& mode, std::string& content);
 
 void qfclose(QFile& qfile);
 

@@ -9,19 +9,61 @@ from .timer import timer
 cdef class QFile:
 
     def __init__(self, *,
-            str path=None, str mode=None,
+            str ftype=None, str path=None, str mode=None, object content=None,
             QFile qfile=None, cc.Long q_offset_start=0, cc.Long q_offset_end=-1,
             ):
         """
-        QFile(path=path, mode=mode)
-        QFile(qfile=path, q_offset_start=q_offset_start, q_offset_end=q_offset_end)
+        Always use kwargs.
+        QFile(path, mode)
+        QFile(ftype, path, mode)
+        QFile(ftype, path, mode, content)
+        QFile(qfile, q_offset_start, q_offset_end)
         """
-        if path is not None and qfile is None:
-            self.xx.init(path, cc.read_qfile_mode(mode))
-        elif path is None and qfile is not None:
+        cdef cc.QFileType ftype_v
+        cdef cc.std_string path_v
+        cdef cc.QFileMode mode_v
+        cdef cc.std_string content_v
+        cdef str ftype_default
+        if ftype is not None:
+            ftype_v = cc.read_qfile_type(ftype)
+        else:
+            ftype_default = "CFile"
+            ftype_v = cc.read_qfile_type(ftype_default)
+        if path is not None:
+            path_v = path
+        if mode is not None:
+            mode_v = cc.read_qfile_mode(mode)
+        if content is not None:
+            content_v = content
+        if content is not None:
+            assert ftype is not None
+            assert path is not None
+            assert mode is not None
+            assert qfile is None
+            self.xx.init(ftype_v, path_v, mode_v, content_v)
+        elif ftype is not None:
+            assert path is not None
+            assert mode is not None
+            assert content is None
+            assert qfile is None
+            self.xx.init(ftype_v, path_v, mode_v)
+        elif path is not None:
+            assert ftype is None
+            assert mode is not None
+            assert content is None
+            assert qfile is None
+            self.xx.init(ftype_v, path_v, mode_v)
+        elif qfile is not None:
+            assert ftype is None
+            assert path is None
+            assert mode is None
+            assert content is None
             self.xx.init(qfile.xx, q_offset_start, q_offset_end)
         else:
+            assert ftype is None
             assert path is None
+            assert mode is None
+            assert content is None
             assert qfile is None
 
     def __imatmul__(self, QFile v1):
@@ -105,6 +147,25 @@ cdef class QFile:
 
     def compute_crc32(self):
         return cc.compute_crc32(self.xx)
+
+### ----------------------------------------------------------
+
+def qfopen(const cc.std_string& path, const cc.std_string& mode):
+    cdef cc.std_string path_v = path
+    cdef cc.QFileMode mode_v = cc.read_qfile_mode(mode)
+    cdef QFile qfile = QFile()
+    qfile.xx = cc.qfopen(path_v, mode_v);
+    return qfile
+
+def qfopen_str(const cc.std_string& path, const cc.std_string& mode, object content=None):
+    cdef str ftype = "String"
+    cdef cc.QFileType ftype_v = cc.read_qfile_type(ftype)
+    cdef cc.std_string path_v = path
+    cdef cc.QFileMode mode_v = cc.read_qfile_mode(mode)
+    cdef cc.std_string content_v = content
+    cdef QFile qfile = QFile()
+    qfile.xx = cc.qfopen(ftype_v, path_v, mode_v, content_v);
+    return qfile
 
 ### ----------------------------------------------------------
 

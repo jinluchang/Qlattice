@@ -366,19 +366,21 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
 
 cdef extern from "qlat-utils/qar.h" namespace "qlat":
 
+    cdef cppclass QFileType:
+        pass
     cdef cppclass QFileMode:
         pass
     cdef cppclass QFile:
         QFile() except +
-        QFile(const std_string& path, const QFileMode mode) except +
-        QFile(const QFile& qfile, const Long q_offset_start, const Long q_offset_end) except +
         void init() except +
-        void init(const std_string& path, const QFileMode mode) except +
+        void init(const QFileType ftype, const std_string& path, const QFileMode mode) except +
+        void init(const QFileType ftype, const std_string& path, const QFileMode mode, std_string& content) except +
         void init(const QFile& qfile, const Long q_offset_start, const Long q_offset_end) except +
         void close() except +
         bool null()
         const std_string& path() except +
         QFileMode mode() except +
+        const std_string& content() except +
     cdef cppclass QarFile:
         std_string path
         QFileMode mode
@@ -389,11 +391,15 @@ cdef extern from "qlat-utils/qar.h" namespace "qlat":
         void close() except +
         bool null()
     #
+    QFileType read_qfile_type(const std_string& ftype) except +
+    std_string show(const QFileType ftype) except +
     QFileMode read_qfile_mode(const std_string& mode) except +
     std_string show(const QFileMode mode) except +
     int clean_up_qfile_map() except +
     std_vector[std_string] show_all_qfile() except +
-    QFile qfopen(const std_string& path, const std_string& mode) except +
+    QFile qfopen(const std_string& path, const QFileMode mode) except +
+    QFile qfopen(const QFileType ftype, const std_string& path, const QFileMode mode) except +
+    QFile qfopen(const QFileType ftype, const std_string& path, const QFileMode mode, std_string& content) except +
     void qfclose(QFile& qfile) except +
     bool qfeof(const QFile& qfile) except +
     Long qftell(const QFile& qfile) except +
