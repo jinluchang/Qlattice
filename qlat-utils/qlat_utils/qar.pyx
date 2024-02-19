@@ -2,7 +2,8 @@
 
 from . cimport everything as cc
 
-from .timer import timer
+from .timer import timer, get_id_node
+from .utils import Gobble
 
 ### ----------------------------------------------------------
 
@@ -197,6 +198,7 @@ cdef class QarFile:
             self.xx.init(path, cc.read_qfile_mode(mode))
         else:
             assert path is None
+            assert mode is None
 
     def __imatmul__(self, QarFile v1):
         self.xx = v1.xx
@@ -287,6 +289,16 @@ def open_qar(const cc.std_string& path, const cc.std_string& mode):
     """
     cdef QarFile qar = QarFile(path=path, mode=mode)
     return qar
+
+def open_qar_info(*args, **kwargs):
+    """
+    Call `open_qar` with same arguments if q.get_id_node() == 0.
+    Otherwise return Gobble(), which does nothing for any method and returns it self.
+    """
+    if get_id_node() == 0:
+        return open_qar(*args, **kwargs)
+    else:
+        return Gobble()
 
 ### ----------------------------------------------------------
 

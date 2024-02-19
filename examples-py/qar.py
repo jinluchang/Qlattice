@@ -90,6 +90,15 @@ if q.get_id_node() == 0:
     q.displayln_info(f"CHECK: l6 {l6}")
     assert l5 == l6
 
+qar = q.open_qar_info("results/test-qar.qar", "r")
+l = qar.list()
+l = q.bcast_py(l)
+q.displayln_info(f"CHECK: open_qar_info l='{l}'")
+for fn in l:
+    data = qar.read_data(fn)
+    q.displayln_info(f"CHECK: open_qar_info fn='{fn}' data='{data}'")
+qar.close()
+
 q.qar_create_info(f"results/data.qar", f"results/data")
 
 q.qar_extract_info(f"results/data.qar", f"results/data2")

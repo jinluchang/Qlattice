@@ -4,7 +4,7 @@ import math
 
 import textwrap
 
-def mk_grid(geo = None):
+def mk_grid(geo=None):
     if geo is None:
         l_size = 32 * 9 * 5
         t_size = l_size * 2
@@ -60,7 +60,7 @@ def mk_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag):
         # q.displayln_info("plan destination added")
         qlat_from_gpt.source += f_gpt.view[lexicographic_coordinates]
         # q.displayln_info("plan source added")
-        qlat_from_gpt = qlat_from_gpt(local_only = True)
+        qlat_from_gpt = qlat_from_gpt(local_only=True)
         # q.displayln_info("plan created")
         return qlat_from_gpt
     elif tag == "gpt_from_qlat":
@@ -73,7 +73,7 @@ def mk_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag):
         # q.displayln_info("plan source added")
         gpt_from_qlat.destination += f_gpt.view[lexicographic_coordinates]
         # q.displayln_info("plan destination added")
-        gpt_from_qlat = gpt_from_qlat(local_only = True)
+        gpt_from_qlat = gpt_from_qlat(local_only=True)
         # q.displayln_info("plan created")
         return gpt_from_qlat
     else:
@@ -319,7 +319,7 @@ def gpt_from_qlat(obj):
         raise Exception("gpt_from_qlat")
 
 @q.timer
-def gpt_invert(src, inverter, qtimer = q.TimerNone()):
+def gpt_invert(src, inverter, qtimer=q.TimerNone()):
     qtimer.start()
     sol = g.eval(inverter * src)
     qtimer.stop()
@@ -328,8 +328,8 @@ def gpt_invert(src, inverter, qtimer = q.TimerNone()):
 class InverterGPT(q.Inverter):
 
     def __init__(self, *, inverter,
-            qtimer = q.TimerNone(),
-            gpt_qtimer = q.TimerNone()):
+            qtimer=q.TimerNone(),
+            gpt_qtimer=q.TimerNone()):
         self.inverter = inverter
         self.timer = qtimer
         self.gpt_timer = gpt_qtimer
@@ -421,13 +421,13 @@ def line_search_quadratic(s, x, dx, dv0, df, step, *, max_c=3):
 class non_linear_cg(g.algorithms.base_iterative):
 
     @g.params_convention(
-        eps = 1e-8,
-        maxiter = 1000,
-        step = 1e-3,
-        log_functional_every = 10,
-        line_search = line_search_quadratic,
-        beta = g.algorithms.optimize.fletcher_reeves,
-        max_c = 3,
+        eps=1e-8,
+        maxiter=1000,
+        step=1e-3,
+        log_functional_every=10,
+        line_search=line_search_quadratic,
+        beta=g.algorithms.optimize.fletcher_reeves,
+        max_c=3,
     )
     def __init__(self, params):
         super().__init__()
@@ -462,7 +462,7 @@ class non_linear_cg(g.algorithms.base_iterative):
                         if hasattr(s[nu].otype, "project"):
                             s[nu] = g.project(s[nu], "defect")
                 #
-                c = self.line_search(s, x, dx, d, f.gradient, -self.step, max_c = self.max_c)
+                c = self.line_search(s, x, dx, d, f.gradient, -self.step, max_c=self.max_c)
                 #
                 rs = (
                     sum(g.norm2(d)) / sum([s.grid.gsites * s.otype.nfloats for s in d])
@@ -510,16 +510,16 @@ class non_linear_cg(g.algorithms.base_iterative):
 def gauge_fix_coulomb(
         gf,
         *,
-        gt = None,
-        mpi_split = None,
-        maxiter_gd = 10,
-        maxiter_cg = 200,
-        maxcycle_cg = 50000,
-        log_every = 1,
-        eps = 1e-12,
-        step = 0.3,
-        step_gd = 0.1,
-        rng_seed = None,
+        gt=None,
+        mpi_split=None,
+        maxiter_gd=10,
+        maxiter_cg=200,
+        maxcycle_cg=50000,
+        log_every=1,
+        eps=1e-12,
+        step=0.3,
+        step_gd=0.1,
+        rng_seed=None,
         ):
     g.message(textwrap.dedent(f"""\
             Coulomb gauge fixer run with:
@@ -563,18 +563,18 @@ def gauge_fix_coulomb(
     # optimizer
     opt = g.algorithms.optimize
     cg = non_linear_cg(
-            maxiter = maxiter_cg,
-            eps = eps,
-            step = step,
-            line_search = line_search_quadratic,
-            log_functional_every = log_every,
-            beta = opt.polak_ribiere,
+            maxiter=maxiter_cg,
+            eps=eps,
+            step=step,
+            line_search=line_search_quadratic,
+            log_functional_every=log_every,
+            beta=opt.polak_ribiere,
             )
     gd = opt.gradient_descent(
-            maxiter = maxiter_gd,
-            eps = eps,
-            step = step_gd,
-            log_functional_every = log_every,
+            maxiter=maxiter_gd,
+            eps=eps,
+            step=step_gd,
+            log_functional_every=log_every,
             )
     #
     # Coulomb functional on each time-slice

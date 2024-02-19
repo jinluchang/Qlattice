@@ -36,7 +36,7 @@ default_size_node_list = list(map(Coordinate, [
     [ 8, 8, 8, 12, ],
     ]))
 
-def begin_with_mpi(size_node_list = None):
+def begin_with_mpi(size_node_list=None):
     from mpi4py import MPI
     comm = MPI.COMM_WORLD
     num_node = comm.size
@@ -59,7 +59,7 @@ def begin_with_mpi(size_node_list = None):
         raise Exception("begin_with_mpi: size_node_list not match num_node")
     c.begin(id_node, size_node)
 
-def end_with_mpi(is_preserving_cache = False):
+def end_with_mpi(is_preserving_cache=False):
     c.end(is_preserving_cache)
     from mpi4py import MPI
     MPI.Finalize()
@@ -74,16 +74,16 @@ def glb_sum_np(x):
     l = list(x.flatten())
     ld = LatData()
     if dtype == np.dtype('float64'):
-        ld.from_list(l, is_complex = False)
+        ld.from_list(l, is_complex=False)
     elif dtype == np.dtype('int64'):
-        ld.from_list(list(map(float, l)), is_complex = False)
+        ld.from_list(list(map(float, l)), is_complex=False)
     elif dtype == np.dtype('complex128'):
-        ld.from_list(l, is_complex = True)
+        ld.from_list(l, is_complex=True)
     else:
         displayln(dtype)
         assert False
     ld.glb_sum_in_place()
-    return np.array(ld.to_list(), dtype = dtype).reshape(shape)
+    return np.array(ld.to_list(), dtype=dtype).reshape(shape)
 
 @timer
 def glb_sum(x):

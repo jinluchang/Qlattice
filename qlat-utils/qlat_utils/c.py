@@ -159,6 +159,7 @@ __all__ += [
         'open_qfile_str',
         'QarFile',
         'open_qar',
+        'open_qar_info',
         'get_qar_multi_vol_max_size',
         'set_qar_multi_vol_max_size',
         'clean_up_qfile_map',

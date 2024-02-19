@@ -15,6 +15,11 @@ def get_mpi_comm():
         mpi_comm = MPI.COMM_WORLD
     return mpi_comm
 
+def bcast_py(x, root=0, comm=None):
+    if comm is None:
+        comm = get_mpi_comm()
+    return comm.bcast(x, root)
+
 class DistArray:
 
     """
@@ -23,7 +28,9 @@ class DistArray:
     self.comm : comm used when generate this array
     """
 
-    def __init__(self, *, comm=get_mpi_comm()):
+    def __init__(self, *, comm=None):
+        if comm is None:
+            comm = get_mpi_comm()
         self.x = np.zeros(1, dtype=np.float64)
         self.n = 1
         self.comm = comm
@@ -304,12 +311,14 @@ def d_trace(d_mat):
 
 ###
 
-def scatter_arr(vec, root=0, comm=get_mpi_comm()):
+def scatter_arr(vec, root=0, comm=None):
     """
     return DistArray
     only need value of vec on the root node
     Pad zeros to vec if len(vec) % comm.Get_size() != 0
     """
+    if comm is None:
+        comm = get_mpi_comm()
     d_vec = DistArray(comm=comm)
     size = comm.Get_size()
     rank = comm.Get_rank()

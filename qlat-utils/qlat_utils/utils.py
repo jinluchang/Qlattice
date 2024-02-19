@@ -31,6 +31,12 @@ def get_arg(option, default=None):
                 return argv[i + 1]
     return default
 
+class Gobble:
+    def __getattr__(self, item):
+        return self
+    def __call__(self, *args, **kwargs):
+        return self
+
 def show_memory_usage():
     try:
         import psutil
