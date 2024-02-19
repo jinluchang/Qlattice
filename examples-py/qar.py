@@ -78,6 +78,17 @@ if q.get_id_node() == 0:
     qar.close()
     l4 = q.list_qar("results/test-qar.qar")
     q.displayln_info(f"CHECK: l4 {l4}")
+    qfile = q.open_qfile("results/test-qar.qar", "a")
+    qfile.write("hello")
+    qfile.close()
+    qar = q.open_qar("results/test-qar.qar", "a")
+    qar.write("f3", "f3-info", content)
+    l5 = qar.list()
+    q.displayln_info(f"CHECK: l5 {l5}")
+    qar.close()
+    l6 = q.list_qar("results/test-qar.qar")
+    q.displayln_info(f"CHECK: l6 {l6}")
+    assert l5 == l6
 
 q.qar_create_info(f"results/data.qar", f"results/data")
 

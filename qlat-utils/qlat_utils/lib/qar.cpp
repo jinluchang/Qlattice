@@ -625,7 +625,7 @@ void QFileObj::init(const QFileType ftype_, const std::string& path_,
                     const QFileMode mode_)
 {
   close();
-  TIMER("QFileObj::init(type,path,mode)");
+  TIMER("QFileObj::init(ftype,path,mode)");
   displayln_info(1, ssprintf("QFile: '%s' open '%s' with '%s'.", show(ftype_).c_str(), path_.c_str(),
                              show(mode_).c_str()));
   qassert(fp == nullptr);
@@ -660,7 +660,7 @@ void QFileObj::init(const QFileType ftype_, const std::string& path_,
                     const QFileMode mode_, std::string& content_)
 {
   close();
-  TIMER("QFileObj::init(type,path,mode,content)");
+  TIMER("QFileObj::init(ftype,path,mode,content)");
   displayln_info(
       1, ssprintf("QFile: '%s' open '%s' with '%s' and content.",
                   show(ftype_).c_str(), path_.c_str(), show(mode_).c_str()));
@@ -1445,6 +1445,12 @@ void QarFileVolObj::init(const std::string& path, const QFileMode mode)
     properly_truncate_qar_vol_file(fn_list, qsinfo_map, directories, max_offset,
                                    path, false);
     qfile = QFile(path, mode);
+  } else if (mode == QFileMode::Read) {
+    // Use `qfopen(path, mode)` instead of `QFile(path, mode)` to open qar files
+    // inside qar files.
+    //
+    // Only useful when `QFileMode::Read`.
+    init(qfopen(path, mode));
   } else {
     init(QFile(path, mode));
   }
@@ -1459,10 +1465,7 @@ void QarFileVolObj::init(const QFile& qfile_)
     return;
   }
   qassert(qftell(qfile) == 0);
-  if (mode() == QFileMode::Write or mode() == QFileMode::Append) {
-    // Write from scratch even if mode is Append (perhaps inherited from parent
-    // qfile).
-    // Will append only if use QarFileVolObj::init(path, QFileMode::Append).
+  if (mode() == QFileMode::Write) {
     qfwrite(qar_header.data(), qar_header.size(), 1, qfile);
   } else if (mode() == QFileMode::Read) {
     std::vector<char> check_line(qar_header.size(), 0);
@@ -1477,6 +1480,14 @@ void QarFileVolObj::init(const QFile& qfile_)
     };
     max_offset = qftell(qfile);
     directories.insert("");
+  } else if (mode() == QFileMode::Append) {
+    // Use `QarFileVolObj::init(path, QFileMode::Append)` instead if append is
+    // needed.
+    //
+    // `QarFileVolObj::init(path, QFileMode::Append)` will call
+    // `truncate_qar_vol_file` to regularize the file first. This is not
+    // possible with `QFile` object.
+    qerr(fname + ssprintf("Cannot append to the file."));
   } else {
     qassert(false);
   }
