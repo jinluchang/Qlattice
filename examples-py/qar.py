@@ -12,22 +12,22 @@ q.qmkdir_info("results")
 content = b"hello world!\n"
 
 if q.get_id_node() == 0:
-    qfile = q.qfopen("results/test-qfile.txt", "w")
+    qfile = q.open_qfile("results/test-qfile.txt", "w")
     qfile.write(content)
     qfile.close()
 
 assert content == q.qcat_bytes_sync_node("results/test-qfile.txt")
 
 if q.get_id_node() == 0:
-    qfile0 = q.qfopen("results/test-qfile.txt", "r")
-    qfile = q.qfopen("results/test-qfile-2.txt", "w")
+    qfile0 = q.open_qfile("results/test-qfile.txt", "r")
+    qfile = q.open_qfile("results/test-qfile-2.txt", "w")
     qfile.write(qfile0)
     qfile0.close()
     qfile.close()
 
 assert content == q.qcat_bytes_sync_node("results/test-qfile-2.txt")
 
-qfile = q.qfopen_str("/ string /", "w")
+qfile = q.open_qfile_str("/ string /", "w")
 qfile.write(content)
 assert content == qfile.content_bytes()
 qfile.close()
@@ -55,6 +55,17 @@ ld = q.LatData()
 ld.from_numpy(np.arange(10000.0).astype(complex).reshape(2, 5, 10, 100))
 ld.save(f"results/data/ld-10000.lat")
 test_ld_str_io(f"results/data/ld-10000.lat")
+
+if q.get_id_node() == 0:
+    qar = q.open_qar("results/test-qar.qar", "w")
+    qar.write("f1", "f1-info", content)
+    qar.write("f2", "f2-info", content)
+    l0 = qar.list()
+    q.displayln_info(f"CHECK: {l0}")
+    qar.close()
+    l1 = q.list_qar("results/test-qar.qar")
+    q.displayln_info(f"CHECK: {l1}")
+    assert l0 == l1
 
 q.qar_create_info(f"results/data.qar", f"results/data")
 

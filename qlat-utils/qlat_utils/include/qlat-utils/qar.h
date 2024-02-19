@@ -495,7 +495,6 @@ std::vector<std::string> properly_truncate_qar_vol_file(
 // -------------------
 
 struct API QarFile : std::vector<QarFileVol> {
-  // Only support mode == QFileMode::Read or mode == QFileMode::Append
   std::string path;
   QFileMode mode;
   //

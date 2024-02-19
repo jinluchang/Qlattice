@@ -158,14 +158,20 @@ cdef class QFile:
 
 ### ----------------------------------------------------------
 
-def qfopen(const cc.std_string& path, const cc.std_string& mode):
+def open_qfile(const cc.std_string& path, const cc.std_string& mode):
+    """
+    Call `cc.qfopen`
+    """
     cdef cc.std_string path_v = path
     cdef cc.QFileMode mode_v = cc.read_qfile_mode(mode)
     cdef QFile qfile = QFile()
     qfile.xx = cc.qfopen(path_v, mode_v);
     return qfile
 
-def qfopen_str(const cc.std_string& path, const cc.std_string& mode, object content=None):
+def open_qfile_str(const cc.std_string& path, const cc.std_string& mode, object content=None):
+    """
+    Call `cc.qfopen`
+    """
     cdef str ftype = "String"
     cdef cc.QFileType ftype_v = cc.read_qfile_type(ftype)
     cdef cc.std_string path_v = path
@@ -272,6 +278,15 @@ cdef class QarFile:
 
     def load_index(self, const cc.std_string& fn):
         return cc.load_qar_index(self.xx, fn)
+
+### ----------------------------------------------------------
+
+def open_qar(const cc.std_string& path, const cc.std_string& mode):
+    """
+    Call QarFile(path, mode) with kwargs
+    """
+    cdef QarFile qar = QarFile(path=path, mode=mode)
+    return qar
 
 ### ----------------------------------------------------------
 

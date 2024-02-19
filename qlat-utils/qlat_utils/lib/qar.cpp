@@ -1457,9 +1457,9 @@ void QarFileVolObj::init(const QFile& qfile_)
   }
   qassert(qftell(qfile) == 0);
   if (mode() == QFileMode::Write or mode() == QFileMode::Append) {
-    // write from scratch even if mode is Append (perhaps inherited from parent
-    // qfile)
-    // will append if use QarFileVolObj::init(path, QFileMode::Append)
+    // Write from scratch even if mode is Append (perhaps inherited from parent
+    // qfile).
+    // Will append only if use QarFileVolObj::init(path, QFileMode::Append).
     qfwrite(qar_header.data(), qar_header.size(), 1, qfile);
   } else if (mode() == QFileMode::Read) {
     std::vector<char> check_line(qar_header.size(), 0);
@@ -2183,6 +2183,20 @@ void QarFile::init(const std::string& path_, const QFileMode mode_)
         break;
       }
     }
+  } else if (mode == QFileMode::Write) {
+    for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
+      // Remove all existing files with different suffix by looping over `iv`
+      // from `0` until file does not exist.
+      // Will not work if there is a break (e.g. file.qar, file.qar.v1,
+      // file.qar.v3).
+      const std::string path_qar_v = path + qar_file_multi_vol_suffix(iv);
+      if (not does_file_exist_cache(path_qar_v)) {
+        break;
+      }
+      const int ret = qremove(path_qar_v);
+      qassert(ret == 0);
+    }
+    push_back(qfopen(path + qar_file_multi_vol_suffix(0), mode));
   } else {
     qassert(false);
   }
@@ -2304,21 +2318,21 @@ void qar_check_if_create_new_vol(QarFile& qar, const Long data_size)
 // make sure qar.back() is appendable after this call.
 {
   TIMER("qar_check_if_create_new_vol");
-  qassert(qar.mode == QFileMode::Append);
+  qassert(qar.mode == QFileMode::Write or qar.mode == QFileMode::Append);
   qassert(not qar.null());
   const QarFileVol& qar_v = qar.back();
   qassert(not qar_v.null());
-  qassert(qar_v.mode() == QFileMode::Append);
+  qassert(qar_v.mode() == qar.mode);
   const Long max_size = get_qar_multi_vol_max_size();
   if (max_size > 0 and qar_v.p->max_offset + data_size > max_size) {
     const Long iv = qar.size();
     const std::string path_qar_v1 = qar.path + qar_file_multi_vol_suffix(iv);
-    QarFileVol qar_v1(path_qar_v1, QFileMode::Append);
+    QarFileVol qar_v1(path_qar_v1, qar.mode);
     qassert(not qar_v1.null());
     qar.push_back(qar_v1);
   }
   qassert(not qar.back().null());
-  qassert(qar.back().mode() == QFileMode::Append);
+  qassert(qar.back().mode() == qar.mode);
 }
 
 Long write_from_qfile(QarFile& qar, const std::string& fn,
