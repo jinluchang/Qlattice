@@ -312,6 +312,7 @@ def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel,
         available_tags = sfr.list()
         q.displayln_info(0, f"available_tags={available_tags}")
         sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
+        qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar.acc"), "a")
         prop = q.Prop(geo)
         s_prop = q.SelProp(fsel)
         ps_prop = q.PselProp(psel)
@@ -331,15 +332,14 @@ def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel,
             s_prop @= prop
             ps_prop @= prop
             ps_prop_ws = prop.glb_sum_tslice()
-            fn_sp = os.path.join(path_sp, f"{tag}.lat")
-            fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
-            ps_prop.save(get_save_path(fn_sp))
-            ps_prop_ws.save(get_save_path(fn_spw))
+            qar_sp.write(f"{tag}.lat", "", ps_prop.save_str())
+            qar_sp.write(f"{tag} ; wsnk.lat", "", ps_prop_ws.save_str())
             s_prop.save_float_from_double(sfw, tag)
             sfw.flush()
-        q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint.txt")))
+        qar_sp.write("checkpoint.txt", "", "")
+        qar_sp.close()
         q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
-        q.qar_create_info(get_save_path(path_sp + ".qar"), get_save_path(path_sp), is_remove_folder_after=True)
+        q.qrename_info(get_save_path(path_sp + ".qar.acc"), get_save_path(path_sp + ".qar"))
         q.release_lock()
 
 # -----------------------------------------------------------------------------
