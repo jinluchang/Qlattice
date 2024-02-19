@@ -73,21 +73,24 @@ if True:
     q.displayln_info(np.sqrt(q.qnorm(vv1 - ve)))
     q.clear_muon_line_interpolations()
 
+check_eps = 1e-5
+
 if 0 == q.get_id_node():
     import os
     json_fn_name = os.path.splitext(__file__)[0] + ".log.json"
     q.qtouch(json_fn_name + ".new", q.json_dumps(json_results, indent=1))
     if q.does_file_exist_qar(json_fn_name):
         json_results_load = q.json_loads(q.qcat(json_fn_name))
-        for i, p in enumerate(json_results_load):
-            nl, vl = p
-            n, v = json_results[i]
+        for i, pl in enumerate(json_results_load):
+            p = json_results[i]
+            nl, vl = pl
+            n, v = p
             if n != nl:
-                q.displayln(f"CHECK: {i} {p}")
+                q.displayln(f"CHECK: {i} {p} load:{pl}")
                 q.displayln("CHECK: ERROR: JSON results item does not match.")
                 assert False
-            if abs(v - vl) > 1e-5 * (abs(v) + abs(vl)):
-                q.displayln(f"CHECK: {i} {p}")
+            if abs(v - vl) > check_eps * (abs(v) + abs(vl)):
+                q.displayln(f"CHECK: {i} {p} load:{pl}")
                 q.displayln("CHECK: ERROR: JSON results value does not match.")
         if len(json_results) != len(json_results_load):
             q.displayln(f"CHECK: len(json_results)={len(json_results)} load:{len(json_results_load)}")
