@@ -5,6 +5,10 @@ CHECK: l3 ['f1', 'f2']
 CHECK: l4 ['f1', 'f2']
 CHECK: l5 ['f1', 'f2', 'f3']
 CHECK: l6 ['f1', 'f2', 'f3']
+CHECK: open_qar_info l='['f1', 'f2', 'f3']'
+CHECK: open_qar_info fn='f1' data='hello world!
+CHECK: open_qar_info fn='f2' data='hello world!
+CHECK: open_qar_info fn='f3' data='hello world!
 CHECK: qar_multi_vol_max_size=500000000000
 CHECK: qar_multi_vol_max_size=16384
 CHECK:  ['ld-1000.qar', 'ld-1000.qar.idx', 'ld-1000.qar.v1', 'ld-1000.qar.v10', 'ld-1000.qar.v11', 'ld-1000.qar.v12', 'ld-1000.qar.v13', 'ld-1000.qar.v14', 'ld-1000.qar.v15', 'ld-1000.qar.v16', 'ld-1000.qar.v17', 'ld-1000.qar.v18', 'ld-1000.qar.v19', 'ld-1000.qar.v2', 'ld-1000.qar.v3', 'ld-1000.qar.v4', 'ld-1000.qar.v5', 'ld-1000.qar.v6', 'ld-1000.qar.v7', 'ld-1000.qar.v8', 'ld-1000.qar.v9', 'ld-10000.lat', 'ld.lat']
