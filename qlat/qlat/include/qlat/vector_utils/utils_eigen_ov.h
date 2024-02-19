@@ -833,7 +833,7 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
   int& ncutbuf     = ei.ncutbuf;
   int& num_zero    = ei.num_zero;
 
-  QBOOL dummy_test = QFALSE;
+  ////QBOOL dummy_test = QFALSE;
 
   int Ng = 0;if(ncutgpu!=0){Ng = ei.n_vec/ncutgpu + 1;}
   int nini = 0;
@@ -867,7 +867,8 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
       Complexq* rp = &alpha_bfac[(bini + 0)*m*n + 0];
       Complexq* Ep = ei.getEigenP(nini, bini*b_size, sm0);
       Complexq* sp = &src[       (bini + 0)*n*w + 0];
-      matrix_prod(Ep, sp, rp, m,n, w , bcut, true, dummy_test);
+      //matrix_prod(Ep, sp, rp, m,n, w , bcut, true, dummy_test);
+      matrix_prod(Ep, sp, rp, m,n, w , bcut, true);
     }
 
     /////Output not conflict, GPU end here
@@ -945,7 +946,8 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
 
       Complexq* Ep = ei.getEigenP(nini, coff*b_size, sm1);
 
-      matrix_prod(ap, Ep, rp, m, n, w ,1, false,  dummy_test, true);
+      //matrix_prod(ap, Ep, rp, m, n, w ,1, false,  dummy_test, true);
+      matrix_prod(ap, Ep, rp, m, n, w ,1, false, true);
     }
     /////Output not conflict, GPU end here
     qacc_barrier(dummy);
@@ -1126,6 +1128,14 @@ void copy_eigen_src_to_FieldM(qlat::vector_gpu<Ty >& src, std::vector<qlat::Fiel
     if(dir == 0){cpy_data_thread(s1, s0, each , GPU, QFALSE);}
     if(dir == 1){cpy_data_thread(s0, s1, each , GPU, QFALSE);}
   }
+
+  //print0("nV %d, each %d, group %d, bfac %d, b_size %d \n", int(nV), int(each), int(group), int(bfac), int(b_size));
+  //print0("===RES norm ");src.print_norm2();
+  //for(int i=0;i<nV/cfac;i++){
+  //  //Ty* r = (Ty*) qlat::get_data(res[i]).data();
+  //  Ty* r = psrc;
+  //  print0("==value %+.8e %+.8e \n", r[i * 17].real(), r[i * 17].imag());
+  //} 
 
   qacc_barrier(dummy);
 

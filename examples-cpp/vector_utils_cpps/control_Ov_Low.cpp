@@ -3,7 +3,7 @@
 #include "utils_io_vec.h"
 #include "utils_construction.h"
 #include "utils_eigen_ov.h"
-#include "check_fun.h"
+#include "utils_check_fun.h"
 #include "utils_smear_vecs.h"
 
 int main(int argc, char* argv[])
@@ -46,17 +46,21 @@ int main(int argc, char* argv[])
 
   fflush_MPI();
   fft_desc_basic fd(geo);
-  eigen_ov ei(fd, n_vec, in.bini, in.nmass + 1);
+  eigen_ov ei(geo, n_vec, in.bini, in.nmass + 1);
 
   /////ei.ncut0 = in.ncut0;
   /////ei.ncut1 = in.ncut1;
 
   fflush_MPI();
   int mode_sm = 0;
-  ei.load_eigen(icfg, in.Ename,  io_use);
+  char ename[500];
+  sprintf(ename, in.Ename.c_str(),icfg);
+  ei.load_eigen(ename);
   if(in.Ename_Sm != std::string("NONE"))
   {
-    ei.load_eigen_Mvec(icfg, in.Ename_Sm, io_use, 1);
+    char ename[500];
+    sprintf(ename, in.Ename_Sm.c_str(),icfg);
+    ei.load_eigen_Mvec(ename, 1);
     mode_sm = 2;
   }
 
@@ -68,8 +72,8 @@ int main(int argc, char* argv[])
   size_t Nvol = geo.local_volume();
   
   /////EigenV props;
-  EigenV prop1;
-  EigenM s0;
+  ////EigenV prop1;
+  ////EigenM s0;
 
   char names[450],namep[500];
 
@@ -78,9 +82,9 @@ int main(int argc, char* argv[])
   sprintf(names, in.Sname.c_str(),icfg);
   fflush_MPI();
 
-  std::vector<qlat::FieldM<Complexq, 1> > noi;noi.resize(1);
+  std::vector<qlat::FieldM<Complexq, 1> > noi;noi.resize(1);noi[0].init(geo);
   load_gwu_noiP(names, propS[0]);
-  load_gwu_noi(names, noi[0], io_use);
+  load_gwu_noi(names, noi[0]);
   fflush_MPI();
 
   double width = 0.0; int step = 0;
@@ -94,96 +98,41 @@ int main(int argc, char* argv[])
     set_left_expanded_gauge_field(gfD, gf);
   }
 
-
-  //if(step > 0)
-  //{
-  //  smear_propagator_gwu_convension(propS[0], gfD, width, step);
-  //}
-
-  copy_propE(propS, s0, fd);
+  const Long Size_prop = fd.get_prop_size();
+  //copy_propE(propS, s0, fd);
 
   qlat::vector_gpu<Complexq > stmp, ptmp, bufP;
-  stmp.resize(s0.size()*s0[0].size());
-  ptmp.resize(massL.size()*s0.size()*s0[0].size());
-  bufP.resize(massL.size()*s0.size()*s0[0].size());
+  stmp.resize(Size_prop);
+  ptmp.resize(massL.size()*Size_prop);
+  bufP.resize(massL.size()*Size_prop);
   ptmp.set_zero();bufP.set_zero();
 
   std::vector<qlat::FieldM<Complexq , 12*12> > noi_prop;
   FieldM_src_to_FieldM_prop(noi, noi_prop, true);
   copy_eigen_src_to_FieldM(stmp, noi_prop, ei.b_size, fd, 1, true, false);
 
-  //Complexq* psrc = stmp.data();
-  //Complexq* pres = ptmp.data();
-
-  //copy_eigen_prop_to_EigenM(psrc, s0, ei.b_size, 1, fd, 1);
-
-  //size_t tmp_Lp = 2*massL.size()*ei.bfac * 12*ei.b_size;
-  //zero_Ty(pres, tmp_Lp, 0, true);
-
-  /////props.resize(nmass*12* 12*Nvol);zeroE(props);
-  //qlat::set_zero(ei.ptmp);
-  //ei.ptmp.set_zero();
-
-  //prop_L_device(ei, psrc, pres, 12, massL, mode_sm);
-
+  //print0("===src norm ");stmp.print_norm2();
   prop_L_device(ei, stmp.data(), ptmp.data(), 12, massL, mode_sm);
-
-  ////print_sum((Complexq*)qlat::get_data(ei.ptmp).data(), qlat::get_data(ei.ptmp).data_size()/sizeof(Complexq),
-  ////    "=====Final prop check");
-
-  ////print_sum(pres, tmp_Lp, "=====Final prop check");
+  //print0("===res norm0 ");ptmp.print_norm2();
 
   std::vector< qlat::FieldM<qlat::ComplexD , 12*12> > FpropV;FpropV.resize(nmass);
-  ///for(unsigned int iv=0;iv<FpropV.size();iv++){FpropV[iv].init(geo);}
 
+  //print0("===res norm ");ptmp.print_norm2();
+  //copy_eigen_src_to_FieldM(ptmp, FpropV, ei.b_size, fd, 0, 1, false);
   copy_eigen_src_to_FieldM(ptmp, FpropV, ei.b_size, fd, 0, 1, false);
 
-  //qlat::ComplexD* tmp = (qlat::ComplexD*) qlat::get_data(FpropV[0]).data();
-  //print0("size0 %ld, size1 %ld \n", 
-  //  Long(geo.local_volume()*12*12), Long(qlat::get_data(FpropV[0]).data_size()/sizeof(qlat::ComplexD)));
-  //print_sum(tmp, geo.local_volume(), "sum FpropV 0", 1);
+  //copy_eigen_src_to_FieldM(ptmp, FpropV, ei.b_size, fd, 1, 1, false);
+  //print0("===res norm1 ");ptmp.print_norm2();
+  //print0("===res norm ");ptmp.print_norm2();
 
-  //print_sum(tmp, geo.local_volume(), "sum FpropV 2", 1);
-  //print_sum((qlat::ComplexD*) qlat::get_data(FpropV[0]).data(), qlat::get_data(FpropV[0]).data_size()/sizeof(qlat::ComplexD), 
-  //  "sum FpropV 2", 1);
-
-
-  copy_eigen_src_to_FieldM(bufP, FpropV, ei.b_size, fd, 1, 1, false);
-
-  //print_sum(tmp, geo.local_volume(), "sum FpropV 1", 1);
-  //print_sum((qlat::ComplexD*) qlat::get_data(FpropV[0]).data(), qlat::get_data(FpropV[0]).data_size()/sizeof(qlat::ComplexD), 
-  //  "sum FpropV 1", 1);
-
-  copy_eigen_prop_to_EigenM(bufP.data(), s0, ei.b_size, nmass, fd, 0);
-
-  //copy_eigen_prop_to_EigenM(ptmp.data(), s0, ei.b_size, nmass, fd, 0);
-
-  std::vector<Propagator4d > propS_new;propS_new.resize(nmass);for(unsigned int i=0;i<propS_new.size();i++)propS_new[i].init(geo);
-  copy_propE(propS_new, s0, fd, 1);
-
-  //copy_eigen_prop_to_EigenM(ptmp.data(), s0, ei.b_size, nmass, fd, 0);
-  //std::vector<Propagator4d > propS_new;propS_new.resize(nmass);for(unsigned int i=0;i<propS_new.size();i++)propS_new[i].init(geo);
-  //copy_propE(propS_new, s0, fd, 1);
-
-  //std::vector< qlat::FieldM<qlat::ComplexD , 12*12> > FpropV;FpropV.resize(nmass);
-  //for(int im=0;im<nmass;im++){
-  //  sprintf(names, in.Pname.c_str(),icfg);
-  //  sprintf(namep, "%s.m%8.6f", names, massL[im]);
-  //  load_gwu_prop(namep, FpropV[im], io_use);
-  //}
-  //copy_eigen_src_to_FieldM(bufP, FpropV, ei.b_size, fd, 1, 1, false);
-  //std::vector<Propagator4d > bufS;bufS.resize(nmass);for(unsigned int i=0;i<propS_new.size();i++)bufS[i].init(geo);
-  //copy_eigen_prop_to_EigenM(bufP.data(), s0, ei.b_size, nmass, fd, 0);
-  //copy_propE(bufS, s0, fd, 1);
-
-  //for(int im=0;im<nmass;im++){
-  //print_sum((ComplexD*)qlat::get_data(propS_new[im]).data(), qlat::get_data(propS_new[im]).data_size()/sizeof(qlat::ComplexD),
-  //    "=====Final prop");
-  //}
+  std::vector<Propagator4d > propS_new;propS_new.resize(nmass);
+  for(unsigned int i=0;i<propS_new.size();i++){
+    propS_new[i].init(geo);
+    qprop_to_prop4d(propS_new[i], FpropV[i]);
+  }
 
   propS.resize(0);
   propS.resize(nmass);for(unsigned int i=0;i<propS.size();i++)propS[i].init(geo);
-  //////for(unsigned int i=0;i<propS.size();i++){propS[i] = bufS[i];}
 
   print0("Prop size %5d \n", int(propS.size()));
   for(int im=0;im<nmass;im++)
@@ -192,15 +141,11 @@ int main(int argc, char* argv[])
     sprintf(namep, "%s.m%8.6f"
         , names, massL[im]);
     load_gwu_prop(namep, propS[im]);
-    //if(step > 0)
-    //{
-    //  smear_propagator_gwu_convension(propS[im], gfD, width, step);
-    //}
   }
 
   for(int mi=0;mi<nmass;mi++){
-  diff_prop(propS[mi], propS_new[mi]);}
-
+    diff_prop(propS[mi], propS_new[mi]);
+  }
 
   if(in.debuga != 0)
   {

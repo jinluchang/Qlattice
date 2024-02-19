@@ -34,6 +34,20 @@ int main(int argc, char* argv[])
   int save_full_vec = 0;
   in.find_para(std::string("save_full_vec"), save_full_vec);
 
+  std::string mom_shift_ = std::string("0 0 0 0");
+  in.find_para(std::string("mom_shift"), mom_shift_);
+  const Coordinate mom_shift = string_to_Coordinate(mom_shift_);
+
+  std::string mom_smear_ = std::string("NONE");
+  in.find_para(std::string("mom_smear"), mom_smear_);
+  CoordinateD mom_smear;for(int i=0;i<4;i++){mom_smear[i] = 0;}
+  if(mom_smear_ != std::string("NONE"))
+  {
+    std::vector<std::string > Li = stringtolist(mom_smear_);
+    Qassert(Li.size() == 4);
+    for(int i=0;i<4;i++){mom_smear[i] = stringtodouble(Li[i]);}
+  }
+
   int icfg  = in.icfg;
 
   int n_vec = in.nvec;
@@ -44,7 +58,7 @@ int main(int argc, char* argv[])
 
   {
 
-  momentum_dat mdat(geo, in.mom_cut);
+  momentum_dat mdat(geo, in.mom_cut, mom_shift);
   print_mem_info("momentum dat");
 
   print_mem_info("io_vec");
@@ -83,10 +97,15 @@ int main(int argc, char* argv[])
   sprintf(ename, in.Ename.c_str(),icfg);
   ei.load_eigen(std::string(ename));
 
+  //{
+  //  mode_sm = 2;
+  //  sprintf(ename, in.Ename_Sm.c_str(),icfg);
+  //  ei.load_eigen_Mvec(std::string(ename), 1 );
+  //}
 
   if(src_step != 0){
     sprintf(ename, in.Ename_Sm.c_str(),icfg);
-    ei.smear_eigen(std::string(ename), gf, src_width, src_step);
+    ei.smear_eigen(std::string(ename), gf, src_width, src_step, mom_smear);
     mode_sm = 2;
   }
   print_time();
@@ -214,7 +233,7 @@ int main(int argc, char* argv[])
       srcI.mode_eig_sm = 3;
 
       for(int im=0;im<nmass;im++){
-      smear_propagator_gwu_convension(FpropV[im], gf, sink_width, sink_step);
+      smear_propagator_gwu_convension(FpropV[im], gf, sink_width, sink_step, mom_smear);
       //copy_noise_to_prop(FpropV[im], prop4d, 1);
 
       //smear_propagator_gwu_convension(prop4d, gf, width, step);

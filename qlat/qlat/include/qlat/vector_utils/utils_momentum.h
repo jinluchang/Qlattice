@@ -19,7 +19,7 @@
 namespace qlat{
 
 inline void get_mom_single_node(qlat::vector_acc<Long >& mapA, qlat::vector_acc<Long >& mapB,
-    const Geometry& geo, const int mom_cut)
+    const Geometry& geo, const int mom_cut, const Coordinate& mom_off = Coordinate(0, 0, 0, 0))
 {
   qlat::vector_acc<int > nv,Nv,mv;
   geo_to_nv(geo, nv, Nv, mv);
@@ -27,11 +27,23 @@ inline void get_mom_single_node(qlat::vector_acc<Long >& mapA, qlat::vector_acc<
   mapB.resize(geo.local_volume());Long* Bi = mapB.data();
   const int mc = mom_cut*2 + 1;
 
+  Qassert(mom_off[3] == 0);////only spatial momentum pick
+  for(int i=0;i<3;i++){
+    Qassert(mom_off[i] >= 0 and mom_off[i] < nv[i]);
+    //Qassert(mom_off[i] >= 0 and mom_off[i] <= nv[i]/2);
+    //Qassert(mom_off[i] + mom_cut < nv[i]/2;)
+    //Qassert(mom_off[i] - mom_cut < nv[i]/2;)
+  }
+  ////mom_off
   qacc_for(isp,  geo.local_volume(),{
     Coordinate xl  = geo.coordinate_from_index(isp);
     Coordinate xg  = geo.coordinate_g_from_l(xl);
     bool flag = true;
-    Coordinate mom = xg;
+    ////xg = xg - mom_off;
+    for(int i=0;i<3;i++){
+      xg[i] = (xg[i] - mom_off[i] + nv[i])%nv[i];
+    } ////move to positive
+    Coordinate mom  = xg;
     for(int i=0;i<3;i++){
       if(xg[i] > nv[i]/2){
         mom[i] = (nv[i] - xg[i]);
@@ -271,7 +283,7 @@ struct momentum_dat{
   }
 
   /////mom_cut should be consistent with your production indicated in the saving file
-  momentum_dat(const Geometry& geo_, const int mom_cut_){
+  momentum_dat(const Geometry& geo_, const int mom_cut_, const Coordinate& mom_off = Coordinate(0, 0, 0, 0)){
     TIMERA("momentum_dat");
     geo = geo_;
     mom_cut = mom_cut_;
@@ -281,7 +293,7 @@ struct momentum_dat{
     ////nt = nv[3];
     ////Nvol = geo.local_volume();
 
-    get_mom_single_node(mapA, mapB, geo, mom_cut);
+    get_mom_single_node(mapA, mapB, geo, mom_cut, mom_off);
     const Long Mvol = mapA.size();
 
     ///Mvol = mapA.size();
@@ -385,6 +397,8 @@ struct momentum_dat{
     });}
   }
 
+  /////calculate source phases with coordinate `shift`
+  /////src phases e^{-i p ( x - y)}
   template<typename Ty > 
   void update_phases(const Coordinate& src , const Coordinate& shift = Coordinate(0,0,0,0), const int sign = -1)
   {
@@ -410,6 +424,7 @@ struct momentum_dat{
     cur_pos = src;
   }
 
+  /////src phases e^{-i p ( x - y)}
   template<typename Ty > 
   void apply_src_phases(qlat::vector_gpu<Ty >& vec, const Coordinate& src , const Coordinate& shift = Coordinate(0,0,0,0) , const int sign = -1)
   {
