@@ -1371,9 +1371,10 @@ void save_gwu_prop(const char *filename,Propagator4dT<Td>& prop){
 
 template <typename Td>
 void save_gwu_prop(std::string &filename,Propagator4dT<Td>& prop){
-  char tem[500];
-  sprintf(tem,filename.c_str());
-  save_gwu_prop(tem,prop);
+  // char tem[500];
+  // sprintf(tem,filename.c_str());
+  // save_gwu_prop(tem,prop);
+  save_gwu_prop(filename.c_str(),prop);
 }
 
 template <typename Td>
@@ -1388,9 +1389,10 @@ void load_gwu_prop(const char *filename,Propagator4dT<Td>& prop){
 
 template <typename Td>
 void load_gwu_prop(std::string &filename,Propagator4dT<Td>& prop){
-  char tem[500];
-  sprintf(tem,filename.c_str());
-  load_gwu_prop(tem,prop);
+  // char tem[500];
+  // sprintf(tem,filename.c_str());
+  // load_gwu_prop(tem,prop);
+  load_gwu_prop(filename.c_str(),prop);
 }
 
 template <typename Td>
@@ -1470,9 +1472,10 @@ void save_gwu_link(const char *filename,GaugeFieldT<Td> &gf){
 
 template <class Td>
 void load_gwu_link(std::string &filename,GaugeFieldT<Td> &gf){
-  char tem[500];
-  sprintf(tem,filename.c_str());
-  load_gwu_link(tem,gf);
+  // char tem[500];
+  // sprintf(tem,filename.c_str());
+  // load_gwu_link(tem,gf);
+  load_gwu_link(filename.c_str(),gf);
 }
 
 template<typename Ty>
@@ -1627,9 +1630,10 @@ void save_gwu_noiP(const char *filename,Propagator4dT<Td>& prop){
 
 template <typename Td>
 void save_gwu_noiP(std::string &filename,Propagator4dT<Td>& prop){
-  char tem[500];
-  sprintf(tem,filename.c_str());
-  save_gwu_noiP(tem,prop);
+  // char tem[500];
+  // sprintf(tem,filename.c_str());
+  // save_gwu_noiP(tem,prop);
+  save_gwu_noiP(filename.c_str(),prop);
 }
 
 template <typename Td>
@@ -1657,9 +1661,10 @@ void load_gwu_noiP(const char *filename,Propagator4dT<Td>& prop){
 
 template <typename Td>
 void load_gwu_noiP(std::string &filename,Propagator4dT<Td>& prop){
-  char tem[500];
-  sprintf(tem,filename.c_str());
-  load_gwu_noiP(tem,prop);
+  // char tem[500];
+  // sprintf(tem,filename.c_str());
+  // load_gwu_noiP(tem,prop);
+  load_gwu_noiP(filename.c_str(),prop);
 }
 
 /////================END of NO checksum read/write
