@@ -1444,15 +1444,11 @@ void QarFileVolObj::init(const std::string& path, const QFileMode mode)
   if (mode == QFileMode::Append) {
     properly_truncate_qar_vol_file(fn_list, qsinfo_map, directories, max_offset,
                                    path, false);
-    qfile = QFile(path, mode);
-  } else if (mode == QFileMode::Read) {
-    // Use `qfopen(path, mode)` instead of `QFile(path, mode)` to open qar files
-    // inside qar files.
-    //
-    // Only useful when `QFileMode::Read`.
-    init(qfopen(path, mode));
+    qfile = qfopen(path, mode);
   } else {
-    init(QFile(path, mode));
+    // Use `qfopen(path, mode)` instead of `QFile(path, mode)` to open qar files
+    // inside qar files and create directories if needed.
+    init(qfopen(path, mode));
   }
 }
 
