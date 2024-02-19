@@ -1523,6 +1523,12 @@ void QarFileVol::close()
   }
 }
 
+int QarFileVol::flush() const
+{
+  qassert(not null());
+  return p->flush();
+}
+
 const std::string& QarFileVol::path() const { return p->path(); }
 
 QFileMode QarFileVol::mode() const { return p->mode(); }
@@ -2222,6 +2228,18 @@ void QarFile::close()
     }
     qar.clear();
   }
+}
+
+int QarFile::flush() const
+{
+  TIMER("QarFile::flush");
+  qassert(not null());
+  const QarFile& qar = *this;
+  int ret = 0;
+  for (int i = 0; i < (int)qar.size(); ++i) {
+    ret += qar[i].flush();
+  }
+  return ret;
 }
 
 // ----------------------------------------------------

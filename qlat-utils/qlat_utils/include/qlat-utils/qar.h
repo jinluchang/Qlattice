@@ -423,6 +423,8 @@ struct QarFileVolObj {
   //
   bool null() const { return qfile.null(); }
   //
+  int flush() const { return qfile.flush(); }
+  //
   const std::string& path() const { return qfile.path(); }
   //
   QFileMode mode() const { return qfile.mode(); }
@@ -444,6 +446,7 @@ struct API QarFileVol {
   //
   void close();
   bool null() const { return p == nullptr; }
+  int flush() const;
   //
   const std::string& path() const;
   //
@@ -510,6 +513,8 @@ struct API QarFile : std::vector<QarFileVol> {
   void close();
   //
   bool null() const { return size() == 0; }
+  //
+  int flush() const;
 };
 
 API inline Cache<std::string, QarFile>& get_qar_read_cache()

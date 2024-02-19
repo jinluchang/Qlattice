@@ -334,6 +334,7 @@ def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel,
             ps_prop_ws = prop.glb_sum_tslice()
             qar_sp.write(f"{tag}.lat", "", ps_prop.save_str())
             qar_sp.write(f"{tag} ; wsnk.lat", "", ps_prop_ws.save_str())
+            qar_sp.flush()
             s_prop.save_float_from_double(sfw, tag)
             sfw.flush()
         qar_sp.write("checkpoint.txt", "", "")

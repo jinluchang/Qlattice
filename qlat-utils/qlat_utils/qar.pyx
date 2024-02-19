@@ -228,6 +228,9 @@ cdef class QarFile:
     def null(self):
         return self.xx.null()
 
+    def flush(self):
+        return self.xx.flush()
+
     def list(self):
         return cc.list(self.xx)
 
