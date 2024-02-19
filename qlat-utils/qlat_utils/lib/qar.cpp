@@ -301,7 +301,7 @@ Long QFileBase::vprintf(const char* fmt, va_list args)
 
 Long QFileBase::printf(const char* fmt, ...)
 {
-  TIMER("QFileBase::printf");
+  TIMER("QFileBase::printf(fmt,...)");
   va_list args;
   va_start(args, fmt);
   return vprintf(fmt, args);
@@ -2232,7 +2232,7 @@ void QarFile::close()
 
 int QarFile::flush() const
 {
-  TIMER("QarFile::flush");
+  TIMER("QarFile::flush()");
   qassert(not null());
   const QarFile& qar = *this;
   int ret = 0;
@@ -2441,7 +2441,7 @@ Long write_from_data(QarFile& qar, const std::string& fn,
 std::vector<std::string> properly_truncate_qar_file(const std::string& path,
                                                     const bool is_only_check)
 {
-  TIMER_VERBOSE("properly_truncate_qar_file");
+  TIMER_VERBOSE("properly_truncate_qar_file(path)");
   std::vector<std::string> fn_list;
   for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
     const std::string path_qar_v = path + qar_file_multi_vol_suffix(iv);
@@ -2459,7 +2459,7 @@ std::vector<std::string> properly_truncate_qar_file(const std::string& path,
 std::vector<std::string> show_qar_index(const QarFile& qar)
 // interface function
 {
-  TIMER("show_qar_index");
+  TIMER("show_qar_index(qar)");
   std::vector<std::string> lines;
   if (qar.null()) {
     return lines;
@@ -2497,7 +2497,7 @@ std::vector<std::string> show_qar_index(const QarFile& qar)
 int save_qar_index(const QarFile& qar, const std::string& fn)
 // interface function
 {
-  TIMER("save_qar_index");
+  TIMER("save_qar_index(qar,fn)");
   std::vector<std::string> lines = show_qar_index(qar);
   if (lines.size() == 0) {
     return 1;
@@ -2838,7 +2838,7 @@ std::string get_qar_read_cache_key(const std::string& path)
 // "": no key is found and path does not exist.
 // path: path exist.
 {
-  TIMER("get_qar_read_cache_key");
+  TIMER("get_qar_read_cache_key(path)");
   if (does_file_exist_cache(path)) {
     return path;
   }
@@ -2866,7 +2866,7 @@ void update_qar_cache_due_to_change_of_qar_file(const std::string& path)
 //
 // Do nothing if `path` does not end with ".qar".
 {
-  TIMER("update_qar_cache_due_to_change_of_qar_file");
+  TIMER("update_qar_cache_due_to_change_of_qar_file(path)");
   const std::string key = mk_key_from_qar_path(path);
   Cache<std::string, QarFile>& cache = get_qar_read_cache();
   if (cache.has(key)) {
@@ -2882,7 +2882,7 @@ void update_qar_cache_due_to_change_of_directory(const std::string& path)
 //
 // Parameter `path` is the path of the modified directory.
 {
-  TIMER("update_qar_cache_due_to_change_of_directory");
+  TIMER("update_qar_cache_due_to_change_of_directory(path)");
   Cache<std::string, QarFile>& cache = get_qar_read_cache();
   std::vector<std::string> key_to_remove_vec;
   for (auto it = cache.m.cbegin(); it != cache.m.cend(); ++it) {
@@ -3097,7 +3097,7 @@ bool does_regular_file_exist_qar(const std::string& path)
 // interface function
 // Note: should only check file, not directory.
 {
-  TIMER("does_regular_file_exist_qar");
+  TIMER("does_regular_file_exist_qar(path)");
   const std::string key = get_qar_read_cache_key(path);
   if (key == path) {
     return true;
@@ -3113,7 +3113,7 @@ bool does_regular_file_exist_qar(const std::string& path)
 bool does_file_exist_qar(const std::string& path)
 // interface function
 {
-  TIMER("does_file_exist_qar");
+  TIMER("does_file_exist_qar(path)");
   const std::string key = get_qar_read_cache_key(path);
   if (key == path) {
     return true;
@@ -3472,7 +3472,7 @@ std::string qcat_info(const std::string& path)
 
 int qtouch_info(const std::string& path)
 {
-  TIMER("qtouch_info");
+  TIMER("qtouch_info(fn)");
   if (0 == get_id_node()) {
     return qtouch(path);
   } else {
@@ -3482,7 +3482,7 @@ int qtouch_info(const std::string& path)
 
 int qtouch_info(const std::string& path, const std::string& content)
 {
-  TIMER("qtouch_info");
+  TIMER("qtouch_info(fn)");
   if (0 == get_id_node()) {
     return qtouch(path, content);
   } else {
@@ -3493,7 +3493,7 @@ int qtouch_info(const std::string& path, const std::string& content)
 int qtouch_info(const std::string& path,
                 const std::vector<std::string>& content)
 {
-  TIMER("qtouch_info");
+  TIMER("qtouch_info(fn,content)");
   if (0 == get_id_node()) {
     return qtouch(path, content);
   } else {
@@ -3593,7 +3593,7 @@ bool does_file_exist_qar_sync_node(const std::string& fn)
 
 std::string qcat_sync_node(const std::string& path)
 {
-  TIMER("qcat_sync_node");
+  TIMER("qcat_sync_node(fn)");
   std::string ret;
   if (0 == get_id_node()) {
     ret = qcat(path);
