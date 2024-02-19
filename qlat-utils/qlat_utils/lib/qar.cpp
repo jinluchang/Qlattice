@@ -2162,7 +2162,7 @@ void QarFile::init(const std::string& path_, const QFileMode mode_)
       if (not does_regular_file_exist_qar(path_qar_v)) {
         break;
       }
-      push_back(qfopen(path_qar_v, mode));
+      push_back(QarFileVol(path_qar_v, mode));
       if (back().null()) {
         pop_back();
         break;
@@ -2180,7 +2180,7 @@ void QarFile::init(const std::string& path_, const QFileMode mode_)
           break;
         }
       }
-      push_back(qfopen(path_qar_v, mode));
+      push_back(QarFileVol(path_qar_v, mode));
       if (back().null()) {
         pop_back();
         break;
@@ -2199,7 +2199,7 @@ void QarFile::init(const std::string& path_, const QFileMode mode_)
       const int ret = qremove(path_qar_v);
       qassert(ret == 0);
     }
-    push_back(qfopen(path + qar_file_multi_vol_suffix(0), mode));
+    push_back(QarFileVol(path + qar_file_multi_vol_suffix(0), mode));
   } else {
     qassert(false);
   }
