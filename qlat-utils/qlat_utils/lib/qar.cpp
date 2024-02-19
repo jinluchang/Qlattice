@@ -341,6 +341,9 @@ void QFileObjCFile::init(const std::string& path_, const QFileMode mode_)
   path_v = path_;
   mode_v = mode_;
   fp = fopen(path_v.c_str(), show(mode_v).c_str());
+  if (mode_ != QFileMode::Read) {
+    update_qar_cache_due_to_change_of_qar_file(path_);
+  }
 }
 
 QFileObjCFile::QFileObjCFile()
@@ -2828,6 +2831,50 @@ std::string get_qar_read_cache_key(const std::string& path)
     }
   }
   return mk_new_qar_read_cache_key(path);
+}
+
+void update_qar_cache_due_to_change_of_qar_file(const std::string& path)
+// Call this function whenever a change (e.g. write append, rename, remove) for
+// a potentially cached qar file is made.
+//
+// Parameter `path` is the path of the qar file.
+//
+// Do nothing if `path` does not end with ".qar".
+{
+  TIMER("update_qar_cache_due_to_change_of_qar_file");
+  const std::string key = mk_key_from_qar_path(path);
+  Cache<std::string, QarFile>& cache = get_qar_read_cache();
+  if (cache.has(key)) {
+    displayln_info(0, fname + ssprintf(": key='%s' due to path='%s'",
+                                       key.c_str(), path.c_str()));
+    cache.erase(key);
+  }
+}
+
+void update_qar_cache_due_to_change_of_directory(const std::string& path)
+// Call this function whenever a change (e.g. rename, remove) made to a
+// directory that contains a potentially cached qar file.
+//
+// Parameter `path` is the path of the modified directory.
+{
+  TIMER("update_qar_cache_due_to_change_of_directory");
+  Cache<std::string, QarFile>& cache = get_qar_read_cache();
+  std::vector<std::string> key_to_remove_vec;
+  for (auto it = cache.m.cbegin(); it != cache.m.cend(); ++it) {
+    const std::string& key = it->first;
+    if (key.size() <= path.size()) {
+      continue;
+    }
+    if (key.compare(0, path.size(), path) == 0) {
+      key_to_remove_vec.push_back(key);
+    }
+  }
+  for (Long i = 0; i < (Long)key_to_remove_vec.size(); ++i) {
+    const std::string& key = key_to_remove_vec[i];
+    displayln_info(0, fname + ssprintf(": key='%s' due to path='%s'",
+                                       key.c_str(), path.c_str()));
+    cache.erase(key);
+  }
 }
 
 // ----------------------------------------------------

@@ -1,3 +1,4 @@
+#include <qlat-utils/qar.h>
 #include <qlat-utils/utils-io.h>
 
 namespace qlat
@@ -208,8 +209,8 @@ bool is_directory(const std::string& fn)
     return false;
   }
   const bool ret = S_ISDIR(sb.st_mode);
-  displayln(0, fname + ssprintf(": '%s' file exists. ret=%d (id_node=%d).", fn.c_str(), ret,
-                                get_id_node()));
+  displayln(0, fname + ssprintf(": '%s' file exists. ret=%d (id_node=%d).",
+                                fn.c_str(), ret, get_id_node()));
   return ret;
 }
 
@@ -364,6 +365,9 @@ int qrename(const std::string& old_path, const std::string& new_path)
                                 new_path.c_str(), get_id_node()));
   remove_entry_directory_cache(old_path);
   remove_entry_directory_cache(new_path);
+  update_qar_cache_due_to_change_of_directory(old_path);
+  update_qar_cache_due_to_change_of_qar_file(old_path);
+  update_qar_cache_due_to_change_of_qar_file(new_path);
   const int ret = rename(old_path.c_str(), new_path.c_str());
   if (ret != 0) {
     qwarn(fname + ssprintf(": '%s' '%s' ret=%d", old_path.c_str(),
@@ -376,6 +380,8 @@ int qremove(const std::string& path)
 {
   TIMER_VERBOSE("qremove")
   remove_entry_directory_cache(path);
+  update_qar_cache_due_to_change_of_directory(path);
+  update_qar_cache_due_to_change_of_qar_file(path);
   const int ret = qremove_aux(path);
   return ret;
 }
@@ -384,6 +390,8 @@ int qremove_all(const std::string& path)
 {
   TIMER_VERBOSE("qremove_all")
   remove_entry_directory_cache(path);
+  update_qar_cache_due_to_change_of_directory(path);
+  update_qar_cache_due_to_change_of_qar_file(path);
   const int ret = qremove_all_aux(remove_trailing_slashes(path));
   return ret;
 }
@@ -460,6 +468,9 @@ int qrename_info(const std::string& old_path, const std::string& new_path)
   } else {
     remove_entry_directory_cache(new_path);
     remove_entry_directory_cache(old_path);
+    update_qar_cache_due_to_change_of_directory(old_path);
+    update_qar_cache_due_to_change_of_qar_file(old_path);
+    update_qar_cache_due_to_change_of_qar_file(new_path);
     return 0;
   }
 }
@@ -471,6 +482,8 @@ int qremove_info(const std::string& path)
     return qremove(path);
   } else {
     remove_entry_directory_cache(path);
+    update_qar_cache_due_to_change_of_directory(path);
+    update_qar_cache_due_to_change_of_qar_file(path);
     return 0;
   }
 }
@@ -482,6 +495,8 @@ int qremove_all_info(const std::string& path)
     return qremove_all(path);
   } else {
     remove_entry_directory_cache(path);
+    update_qar_cache_due_to_change_of_directory(path);
+    update_qar_cache_due_to_change_of_qar_file(path);
     return 0;
   }
 }
@@ -643,6 +658,8 @@ int qremove_sync_node(const std::string& path)
     ret = qremove(path);
   } else {
     remove_entry_directory_cache(path);
+    update_qar_cache_due_to_change_of_directory(path);
+    update_qar_cache_due_to_change_of_qar_file(path);
   }
   glb_sum_long(ret);
   return ret;
@@ -656,6 +673,8 @@ int qremove_all_sync_node(const std::string& path)
     ret = qremove_all(path);
   } else {
     remove_entry_directory_cache(path);
+    update_qar_cache_due_to_change_of_directory(path);
+    update_qar_cache_due_to_change_of_qar_file(path);
   }
   glb_sum_long(ret);
   return ret;

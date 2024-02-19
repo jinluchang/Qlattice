@@ -520,6 +520,10 @@ API inline Cache<std::string, QarFile>& get_qar_read_cache()
   return cache;
 }
 
+void update_qar_cache_due_to_change_of_qar_file(const std::string& path);
+
+void update_qar_cache_due_to_change_of_directory(const std::string& path);
+
 // -------------------
 
 std::vector<std::string> list(const QarFile& qar);
