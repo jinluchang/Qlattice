@@ -72,7 +72,7 @@ update-sources:
 %.log: %.py
 	-rm -rfv "$<".p
 	-mkdir -p "$<".p
-	-time ( cd "$<".p ; cp ../"$<" . ; q_verbose=1 timeout -s KILL 30m mpiexec -n 2 $(mpi_options) python3 -m mpi4py ./"$<" -qmp-geom 1 1 1 2 --mpi 1.1.1.2 --mpi_split 1.1.1.1 --mpi 1.1.2 --mpi_split 1.1.1 >log.full.txt 2>&1 ; grep "CHECK: " log.full.txt >log.txt )
+	-time ( cd "$<".p ; fn_py="$<" ; fn_json="$${fn_py%.py}.log.json" ; cp -v ../"$$fn_py" ../"$$fn_json" . ; q_verbose=1 timeout -s KILL 30m mpiexec -n 2 $(mpi_options) python3 -m mpi4py ./"$$fn_py" -qmp-geom 1 1 1 2 --mpi 1.1.1.2 --mpi_split 1.1.1.1 --mpi 1.1.2 --mpi_split 1.1.1 >log.full.txt 2>&1 ; grep "CHECK: " log.full.txt >log.txt )
 	-if diff "$<".p/log.txt "$@" ; then echo passed ; else cat "$<".p/log.full.txt ; false ; fi
 	-rm -rfv "$@"
 	-mv -v "$<".p/log.txt "$@"

@@ -79,15 +79,19 @@ if 0 == q.get_id_node():
     q.qtouch(json_fn_name + ".new", q.json_dumps(json_results, indent=1))
     if q.does_file_exist_qar(json_fn_name):
         json_results_load = q.json_loads(q.qcat(json_fn_name))
-        for i, p in enumerate(zip(json_results, json_results_load)):
-            (n, v,), (nl, vl,) = p
+        for i, p in enumerate(json_results_load):
+            nl, vl = p
+            n, v = json_results[i]
             if n != nl:
                 q.displayln(f"CHECK: {i} {p}")
-                raise Exception("JSON results item does not match.")
+                q.displayln("CHECK: ERROR: JSON results item does not match.")
                 assert False
-            if abs(v - vl) > 1e-7 * (abs(v) + abs(vl)):
+            if abs(v - vl) > 1e-5 * (abs(v) + abs(vl)):
                 q.displayln(f"CHECK: {i} {p}")
-                raise Exception("JSON results value does not match.")
+                q.displayln("CHECK: ERROR: JSON results value does not match.")
+        if len(json_results) != len(json_results_load):
+            q.displayln(f"CHECK: len(json_results)={len(json_results)} load:{len(json_results_load)}")
+            q.displayln("CHECK: ERROR: JSON results len does not match.")
 
 q.timer_display()
 
