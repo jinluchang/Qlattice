@@ -708,6 +708,9 @@ void ShuffledFieldsWriter::close()
   remove_shuffled_fields_writer(*this);
   if (fws.size() > 0) {
     TIMER_VERBOSE("ShuffledFieldsWriter::close");
+    for (Long i = 0; i < (Long)fws.size(); ++i) {
+      fws[i].close();
+    }
     clear(fws);
   }
 }
@@ -745,6 +748,9 @@ void ShuffledFieldsReader::close()
 {
   if (frs.size() > 0) {
     TIMER_VERBOSE("ShuffledFieldsReader::close")
+    for (Long i = 0; i < (Long)frs.size(); ++i) {
+      frs[i].close();
+    }
     clear(frs);
   }
 }
