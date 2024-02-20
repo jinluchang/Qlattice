@@ -625,6 +625,7 @@ void QFileObj::init(const QFileType ftype_, const std::string& path_,
                     const QFileMode mode_)
 {
   close();
+  qassert(null());
   TIMER("QFileObj::init(ftype,path,mode)");
   displayln_info(1, ssprintf("QFile: '%s' open '%s' with '%s'.", show(ftype_).c_str(), path_.c_str(),
                              show(mode_).c_str()));
@@ -660,6 +661,7 @@ void QFileObj::init(const QFileType ftype_, const std::string& path_,
                     const QFileMode mode_, std::string& content_)
 {
   close();
+  qassert(null());
   TIMER("QFileObj::init(ftype,path,mode,content)");
   displayln_info(
       1, ssprintf("QFile: '%s' open '%s' with '%s' and content.",
@@ -696,6 +698,7 @@ void QFileObj::init(const std::shared_ptr<QFileObj>& qfile,
 // position.
 {
   close();
+  qassert(null());
   if (qfile == nullptr) {
     return;
   }
@@ -724,6 +727,7 @@ void QFileObj::init(const std::shared_ptr<QFileObj>& qfile,
                      fp->path().c_str(), show(fp->mode()).c_str(), offset_start,
                      offset_end));
       close();
+      qassert(null());
     }
   }
 }
@@ -757,6 +761,7 @@ QFileObj::~QFileObj()
 void QFileObj::init()
 {
   close();
+  qassert(null());
   pos = 0;
   is_eof = false;
   offset_start = 0;
@@ -765,8 +770,10 @@ void QFileObj::init()
 
 void QFileObj::close()
 {
-  // to close the file, it cannot have any child
-  qassert(number_of_child == 0);
+  if (number_of_child != 0) {
+    // to close the file, it cannot have any child
+    return;
+  }
   if (parent == nullptr) {
     if (fp != nullptr) {
       TIMER("QFileObj::close()");
@@ -808,6 +815,7 @@ QFileMode QFileObj::mode() const
 bool QFileObj::null() const
 {
   if (fp == nullptr) {
+    qassert(parent == nullptr);
     return true;
   } else {
     qassert(not fp->null());
@@ -1028,7 +1036,11 @@ void QFile::close()
   if (p != nullptr) {
     TIMER("QFile::close()");
     p->close();
-    qassert(p->null());
+    if (not p->null()) {
+      displayln(fname + ssprintf(": close '%s' with '%s'.", path().c_str(),
+                                 show(mode()).c_str()));
+      qwarn(fname + ssprintf(": Cannot close file (likely due to its child)."));
+    }
     remove_qfile(*this);
     p = nullptr;
   }
