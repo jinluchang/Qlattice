@@ -1795,10 +1795,11 @@ void read_through(const QarFileVol& qar)
   const int code = qfseek(qar.qfile(), qar.p->max_offset, SEEK_SET);
   qassert(code == 0);
   while (true) {
-    const QFile qfile = read_next(qar, fn);
+    QFile qfile = read_next(qar, fn);
     if (qfile.null()) {
       break;
     }
+    qfile.close();
   }
 }
 
@@ -1965,6 +1966,7 @@ QFile read(const QarFileVol& qar, const std::string& fn)
     if (fn == fn_read) {
       return qfile_in;
     }
+    qfile_in.close();
   }
   return qfile_in;
 }
