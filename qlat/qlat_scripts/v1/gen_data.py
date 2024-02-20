@@ -336,11 +336,12 @@ def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel,
             ps_prop_ws = prop.glb_sum_tslice()
             qar_sp.write(f"{tag}.lat", "", ps_prop.save_str(), skip_if_exist=True)
             qar_sp.write(f"{tag} ; wsnk.lat", "", ps_prop_ws.save_str(), skip_if_exist=True)
-            qar_sp.flush()
             s_prop.save_float_from_double(sfw, tag)
+            qar_sp.flush()
             sfw.flush()
         sfw.close()
         qar_sp.write("checkpoint.txt", "", "", skip_if_exist=True)
+        qar_sp.flush()
         qar_sp.save_index(path_sp + ".qar.idx")
         qar_sp.close()
         q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
@@ -349,96 +350,7 @@ def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel,
 
 # -----------------------------------------------------------------------------
 
-@q.timer_verbose
-def compute_prop_1(inv, src, *, tag, sfw, path_sp, psel, fsel):
-    fn_sp = os.path.join(path_sp, f"{tag}.lat")
-    fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
-    sol = inv * src
-    sp_sol = q.PselProp(psel)
-    sp_sol @= sol
-    sp_sol.save(get_save_path(fn_sp))
-    sol_ws = sol.glb_sum_tslice()
-    sol_ws.save(get_save_path(fn_spw))
-    s_sol = q.SelProp(fsel)
-    s_sol @= sol
-    s_sol.save_float_from_double(sfw, tag)
-    sfw.flush()
-    return sol
-
 @q.timer
-def compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc, *,
-        idx, sfw, path_sp, psel, fsel, eig, finished_tags):
-    tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
-    if tag in finished_tags:
-        return None
-    q.check_stop()
-    q.check_time_limit()
-    q.displayln_info(f"compute_prop_wsrc: idx={idx} tslice={tslice}", job_tag, inv_type, inv_acc)
-    inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
-    total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    geo = q.Geometry(total_site, 1)
-    src = q.mk_wall_src(geo, tslice)
-    prop = compute_prop_1(inv, src, tag=tag, sfw=sfw, path_sp=path_sp,
-                          psel=psel, fsel=fsel)
-
-@q.timer_verbose
-def compute_prop_wsrc_all(job_tag, traj, *,
-                          inv_type, gf, gt, wi, psel, fsel, eig):
-    inv_type_names = [ "light", "strange", ]
-    inv_type_name = inv_type_names[inv_type]
-    path_s = f"{job_tag}/prop-wsrc-{inv_type_name}/traj-{traj}"
-    path_sp = f"{job_tag}/psel-prop-wsrc-{inv_type_name}/traj-{traj}"
-    finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
-    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
-    for inv_acc in [ 2, 1, ]:
-        for p in wi:
-            idx, tslice, inv_type_p, inv_acc_p=p
-            if inv_type_p == inv_type and inv_acc_p == inv_acc:
-                compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc,
-                        idx=idx, sfw=sfw, path_sp=path_sp,
-                        psel=psel, fsel=fsel, eig=eig,
-                        finished_tags=finished_tags)
-    sfw.close()
-    q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint.txt")))
-    # q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint ; wsnk.txt")))
-    q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
-    q.qar_create_info(get_save_path(path_sp + ".qar"), get_save_path(path_sp), is_remove_folder_after=True)
-    # q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after=True)
-
-@q.timer
-def run_prop_wsrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel, get_fsel, get_wi):
-    """
-    Can use `run_prop_wsrc_sparse` instead.
-    #
-    run_prop_wsrc_full(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_wi=get_wi)
-    get_fsel, get_psel, get_fsel_prob, get_psel_prob = run_fsel_psel_from_wsrc_prop_full(job_tag, traj, get_wi=get_wi)
-    run_prop_wsrc_sparse(job_tag, traj, inv_type=0, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_wi=get_wi)
-    """
-    if None in [ get_gf, get_gt, get_psel, get_fsel, ]:
-        return
-    if get_eig is None:
-        if inv_type == 0:
-            return
-        get_eig = lambda: None
-    inv_type_names = [ "light", "strange", ]
-    inv_type_name = inv_type_names[inv_type]
-    if get_load_path(f"{job_tag}/prop-wsrc-{inv_type_name}/traj-{traj}/geon-info.txt") is not None:
-        return
-    if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-{inv_type_name}"):
-        gf = get_gf()
-        gt = get_gt()
-        eig = get_eig()
-        psel = get_psel()
-        fsel = get_fsel()
-        assert fsel.is_containing(psel)
-        wi = get_wi()
-        compute_prop_wsrc_all(job_tag, traj,
-                              inv_type=inv_type, gf=gf, gt=gt, wi=wi,
-                              psel=psel, fsel=fsel, eig=eig)
-        q.release_lock()
-
-# -----------------------------------------------------------------------------
-
 def calc_hvp_sum_tslice(chvp_16):
     """
     return ld_hvp_ts
@@ -491,6 +403,7 @@ def compute_prop_psrc_hvp_contract(
     chvp_16 = q.contract_chvp_16(prop, prop)
     ld_hvp_ts = calc_hvp_sum_tslice(chvp_16)
     qar_hvp_ts.write(f"{tag}.lat", "", ld_hvp_ts.save_str(), skip_if_exist=True)
+    qar_hvp_ts.flush()
     if sfw_hvp is not None:
         if tag not in finished_tags_hvp:
             chvp_16.save_float_from_double(sfw_hvp, tag)
@@ -527,6 +440,7 @@ def compute_prop_2(inv, src, *, tag, sfw, qar_sp, psel, fsel,
     s_sol = q.SelProp(fsel_combine)
     s_sol @= sol
     s_sol.save_float_from_double(sfw, tag)
+    qar_sp.flush()
     sfw.flush()
     return sol
 
@@ -604,10 +518,16 @@ def compute_prop_psrc_all(job_tag, traj, *,
         if r <= prob2:
             comp(idx, xg_src, inv_acc=2)
     sfw.close()
-    qar_sp.save_index(get_save_path(path_sp + ".qar.idx"))
-    qar_hvp_ts.save_index(get_save_path(path_hvp_ts + ".qar.idx"))
     if sfw_hvp is not None:
         sfw_hvp.close()
+    qar_sp.write("checkpoint.txt", "", "", skip_if_exist=True)
+    qar_hvp_ts.write("checkpoint.txt", "", "", skip_if_exist=True)
+    qar_sp.flush()
+    qar_hvp_ts.flush()
+    qar_sp.save_index(get_save_path(path_sp + ".qar.idx"))
+    qar_hvp_ts.save_index(get_save_path(path_hvp_ts + ".qar.idx"))
+    qar_sp.close()
+    qar_hvp_ts.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
     if sfw_hvp is not None:
         q.qrename_info(get_save_path(path_s_hvp + ".acc"), get_save_path(path_s_hvp))
@@ -721,30 +641,28 @@ def run_prop_rand_u1(job_tag, traj, *, inv_type, get_gf, get_fsel, get_eig=None)
 # -----------------------------------------------------------------------------
 
 @q.timer_verbose
-def compute_prop_3(inv, src_smear, *, tag, sfw, path_sp, psel, fsel, gt, psel_smear, smear):
-    fn_sp = os.path.join(path_sp, f"{tag}.lat")
-    fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
-    fn_sps = os.path.join(path_sp, f"{tag} ; smear-snk.lat")
+def compute_prop_3(inv, src_smear, *, tag, sfw, qar_sp, psel, fsel, gt, psel_smear, smear):
     sol = inv * src_smear
     sp_sol = q.PselProp(psel)
     sp_sol @= sol
-    sp_sol.save(get_save_path(fn_sp))
+    qar_sp.write(f"{tag}.lat", "", sp_sol.save_str())
     sol_gt = gt * sol
     sol_ws = sol_gt.glb_sum_tslice()
-    sol_ws.save(get_save_path(fn_spw))
+    qar_sp.write(f"{tag} ; wsnk.lat", "", sol_ws.save_str())
     sol_smear = smear(sol)
     sol_smear_psel = q.PselProp(psel_smear)
     sol_smear_psel @= sol_smear
-    sol_smear_psel.save(get_save_path(fn_sps))
+    qar_sp.write(f"{tag} ; smear-snk.lat", "", sol_smear_psel.save_str())
     s_sol = q.SelProp(fsel)
     s_sol @= sol
     s_sol.save_float_from_double(sfw, tag)
+    qar_sp.flush()
     sfw.flush()
     return sol
 
 @q.timer
 def compute_prop_smear(job_tag, xg_src, inv_type, inv_acc, *,
-        idx, gf, gt, sfw, path_sp, psel, fsel, psel_smear, gf_ape, eig, finished_tags):
+        idx, gf, gt, sfw, qar_sp, psel, fsel, psel_smear, gf_ape, eig, finished_tags):
     xg = xg_src
     xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
     tag = f"smear ; xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
@@ -761,7 +679,7 @@ def compute_prop_smear(job_tag, xg_src, inv_type, inv_acc, *,
     def smear(src):
         return q.prop_smear(src, gf_ape, coef, step)
     src = smear(q.mk_point_src(geo, xg_src))
-    prop = compute_prop_3(inv, src, tag=tag, sfw=sfw, path_sp=path_sp,
+    prop = compute_prop_3(inv, src, tag=tag, sfw=sfw, qar_sp=qar_sp,
                           psel=psel, fsel=fsel, gt=gt,
                           psel_smear=psel_smear, smear=smear)
 
@@ -775,9 +693,10 @@ def compute_prop_smear_all(job_tag, traj, *,
     path_sp = f"{job_tag}/psel-prop-smear-{inv_type_name}/traj-{traj}"
     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
+    qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar.acc"), "a")
     def comp(idx, xg_src, inv_acc):
         compute_prop_smear(job_tag, xg_src, inv_type, inv_acc,
-                idx=idx, gf=gf, gt=gt, sfw=sfw, path_sp=path_sp,
+                idx=idx, gf=gf, gt=gt, sfw=sfw, qar_sp=qar_sp,
                 psel=psel, fsel=fsel,
                 psel_smear=psel_smear, gf_ape=gf_ape,
                 eig=eig, finished_tags=finished_tags)
@@ -793,10 +712,12 @@ def compute_prop_smear_all(job_tag, traj, *,
         if r <= prob2:
             comp(idx, xg_src, inv_acc=2)
     sfw.close()
-    q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint.txt")))
+    qar_sp.write("checkpoint.txt", "", "", skip_if_exist=True)
+    qar_sp.flush()
+    qar_sp.save_index(get_save_path(path_sp + ".qar.idx"))
+    qar_sp.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
-    q.qar_create_info(get_save_path(path_sp + ".qar"), get_save_path(path_sp), is_remove_folder_after=True)
-    # q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after=True)
+    q.qrename_info(get_save_path(path_sp + ".qar.acc"), get_save_path(path_sp + ".qar"))
 
 @q.timer
 def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_gt, get_psel, get_fsel, get_psel_smear):
@@ -825,3 +746,91 @@ def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_
         q.release_lock()
 
 # -----------------------------------------------------------------------------
+
+# @q.timer_verbose
+# def compute_prop_1(inv, src, *, tag, sfw, path_sp, psel, fsel):
+#     fn_sp = os.path.join(path_sp, f"{tag}.lat")
+#     fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
+#     sol = inv * src
+#     sp_sol = q.PselProp(psel)
+#     sp_sol @= sol
+#     sp_sol.save(get_save_path(fn_sp))
+#     sol_ws = sol.glb_sum_tslice()
+#     sol_ws.save(get_save_path(fn_spw))
+#     s_sol = q.SelProp(fsel)
+#     s_sol @= sol
+#     s_sol.save_float_from_double(sfw, tag)
+#     sfw.flush()
+#     return sol
+#
+# @q.timer
+# def compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc, *,
+#         idx, sfw, path_sp, psel, fsel, eig, finished_tags):
+#     tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
+#     if tag in finished_tags:
+#         return None
+#     q.check_stop()
+#     q.check_time_limit()
+#     q.displayln_info(f"compute_prop_wsrc: idx={idx} tslice={tslice}", job_tag, inv_type, inv_acc)
+#     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
+#     total_site = q.Coordinate(get_param(job_tag, "total_site"))
+#     geo = q.Geometry(total_site, 1)
+#     src = q.mk_wall_src(geo, tslice)
+#     prop = compute_prop_1(inv, src, tag=tag, sfw=sfw, path_sp=path_sp,
+#                           psel=psel, fsel=fsel)
+#
+# @q.timer_verbose
+# def compute_prop_wsrc_all(job_tag, traj, *,
+#                           inv_type, gf, gt, wi, psel, fsel, eig):
+#     inv_type_names = [ "light", "strange", ]
+#     inv_type_name = inv_type_names[inv_type]
+#     path_s = f"{job_tag}/prop-wsrc-{inv_type_name}/traj-{traj}"
+#     path_sp = f"{job_tag}/psel-prop-wsrc-{inv_type_name}/traj-{traj}"
+#     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
+#     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
+#     for inv_acc in [ 2, 1, ]:
+#         for p in wi:
+#             idx, tslice, inv_type_p, inv_acc_p=p
+#             if inv_type_p == inv_type and inv_acc_p == inv_acc:
+#                 compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc,
+#                         idx=idx, sfw=sfw, path_sp=path_sp,
+#                         psel=psel, fsel=fsel, eig=eig,
+#                         finished_tags=finished_tags)
+#     sfw.close()
+#     q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint.txt")))
+#     # q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint ; wsnk.txt")))
+#     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
+#     q.qar_create_info(get_save_path(path_sp + ".qar"), get_save_path(path_sp), is_remove_folder_after=True)
+#     # q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after=True)
+#
+# @q.timer
+# def run_prop_wsrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel, get_fsel, get_wi):
+#     """
+#     Can use `run_prop_wsrc_sparse` instead.
+#     #
+#     run_prop_wsrc_full(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_wi=get_wi)
+#     get_fsel, get_psel, get_fsel_prob, get_psel_prob = run_fsel_psel_from_wsrc_prop_full(job_tag, traj, get_wi=get_wi)
+#     run_prop_wsrc_sparse(job_tag, traj, inv_type=0, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_wi=get_wi)
+#     """
+#     if None in [ get_gf, get_gt, get_psel, get_fsel, ]:
+#         return
+#     if get_eig is None:
+#         if inv_type == 0:
+#             return
+#         get_eig = lambda: None
+#     inv_type_names = [ "light", "strange", ]
+#     inv_type_name = inv_type_names[inv_type]
+#     if get_load_path(f"{job_tag}/prop-wsrc-{inv_type_name}/traj-{traj}/geon-info.txt") is not None:
+#         return
+#     if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-{inv_type_name}"):
+#         gf = get_gf()
+#         gt = get_gt()
+#         eig = get_eig()
+#         psel = get_psel()
+#         fsel = get_fsel()
+#         assert fsel.is_containing(psel)
+#         wi = get_wi()
+#         compute_prop_wsrc_all(job_tag, traj,
+#                               inv_type=inv_type, gf=gf, gt=gt, wi=wi,
+#                               psel=psel, fsel=fsel, eig=eig)
+#         q.release_lock()
