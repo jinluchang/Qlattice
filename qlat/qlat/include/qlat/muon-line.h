@@ -1341,11 +1341,15 @@ inline ManyMagneticMoments get_muon_line_m_extra_lat(
   const Long d2xy = distance_sq_relative_coordinate_g(rxy);
   const Long d2yz = distance_sq_relative_coordinate_g(ryz);
   const Long d2zx = distance_sq_relative_coordinate_g(rzx);
-  std::vector<PointPairWeight> ppws;
+  int ppws_counts = 0;
+  std::vector<PointPairWeight> ppws_total;
   if (d2xy <= d2yz and d2xy <= d2zx) {
-    ppws = shift_lat_corr(x, y, z, total_site, a);
-  } else if (d2yz <= d2xy and d2yz <= d2zx) {
-    ppws = shift_lat_corr(y, z, x, total_site, a);
+    std::vector<PointPairWeight> ppws = shift_lat_corr(x, y, z, total_site, a);
+    vector_append(ppws_total, ppws);
+    ppws_counts += 1;
+  }
+  if (d2yz <= d2xy and d2yz <= d2zx) {
+    std::vector<PointPairWeight> ppws = shift_lat_corr(y, z, x, total_site, a);
     // y z : z-y -y
     // -z y-z : y z
     for (int i = 0; i < (int)ppws.size(); ++i) {
@@ -1353,8 +1357,11 @@ inline ManyMagneticMoments get_muon_line_m_extra_lat(
       ppws[i].rxy = -ppw.rxz;
       ppws[i].rxz = ppw.rxy - ppw.rxz;
     }
-  } else if (d2zx <= d2xy and d2zx <= d2yz) {
-    ppws = shift_lat_corr(z, x, y, total_site, a);
+    vector_append(ppws_total, ppws);
+    ppws_counts += 1;
+  }
+  if (d2zx <= d2xy and d2zx <= d2yz) {
+    std::vector<PointPairWeight> ppws = shift_lat_corr(z, x, y, total_site, a);
     // y z : -z y-z
     // z-y -y : y z
     for (int i = 0; i < (int)ppws.size(); ++i) {
@@ -1362,14 +1369,14 @@ inline ManyMagneticMoments get_muon_line_m_extra_lat(
       ppws[i].rxy = ppw.rxz - ppw.rxy;
       ppws[i].rxz = -ppw.rxy;
     }
-  } else {
-    qassert(false);
+    vector_append(ppws_total, ppws);
+    ppws_counts += 1;
   }
   ManyMagneticMoments mmm;
   set_zero(mmm);
-  for (int i = 0; i < (int)ppws.size(); ++i) {
-    const PointPairWeight& ppw = ppws[i];
-    mmm += ppw.weight *
+  for (int i = 0; i < (int)ppws_total.size(); ++i) {
+    const PointPairWeight& ppw = ppws_total[i];
+    mmm += (ppw.weight / ppws_counts) *
            get_muon_line_m_extra(CoordinateD(), ppw.rxy, ppw.rxz, tag);
   }
   return mmm;
