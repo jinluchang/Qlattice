@@ -21,9 +21,9 @@ source qcore/set-prefix.sh $name
     if [ -n "$(find-library.sh libmpfr.a)" ] ; then
         opts+=" --enable-mpfr=$(find-library.sh libmpfr.a)"
     fi
-    if [ -n "$(find-library.sh libfftw3.a)" ] ; then
-        opts+=" --enable-fftw=$(find-library.sh libfftw3.a)"
-    fi
+    # if [ -n "$(find-library.sh libfftw3.a)" ] ; then
+    #     opts+=" --enable-fftw=$(find-library.sh libfftw3.a)"
+    # fi
     if [ -n "$(find-library.sh libqmp.a)" ] ; then
         opts+=" --enable-qmp=$(find-library.sh libqmp.a)"
     fi
@@ -41,12 +41,15 @@ source qcore/set-prefix.sh $name
     export CC=MPICC.sh
     export CXX=MPICXX.sh
 
-    rm -rfv "$prefix/build"
-    mkdir -p "$prefix/build"
-    cd "$prefix/build"
-    time-run "$prefix/$name"/cps_pp/configure \
+    prefix_actual="$(readlink -m "$prefix")"
+
+    rm -rfv "$prefix_actual/build"
+    mkdir -p "$prefix_actual/build"
+    cd "$prefix_actual/build"
+
+    time-run "$prefix_actual/$name"/cps_pp/configure \
         $opts \
-        --prefix="$prefix"
+        --prefix="$prefix_actual"
 
     time-run make -j$num_proc
 
