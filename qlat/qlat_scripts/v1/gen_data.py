@@ -321,6 +321,8 @@ def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel,
                 continue
             tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
             if tag in finished_tags:
+                assert f"{tag}.lat" in qar_sp.list()
+                assert f"{tag} ; wsnk.lat" in qar_sp.list()
                 continue
             q.displayln_info(-1, f"{fname}: idx={idx} tag='{tag}'")
             if not sfr.has(tag):
@@ -332,12 +334,14 @@ def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel,
             s_prop @= prop
             ps_prop @= prop
             ps_prop_ws = prop.glb_sum_tslice()
-            qar_sp.write(f"{tag}.lat", "", ps_prop.save_str())
-            qar_sp.write(f"{tag} ; wsnk.lat", "", ps_prop_ws.save_str())
+            qar_sp.write(f"{tag}.lat", "", ps_prop.save_str(), skip_if_exist=True)
+            qar_sp.write(f"{tag} ; wsnk.lat", "", ps_prop_ws.save_str(), skip_if_exist=True)
             qar_sp.flush()
             s_prop.save_float_from_double(sfw, tag)
             sfw.flush()
-        qar_sp.write("checkpoint.txt", "", "")
+        sfw.close()
+        qar_sp.write("checkpoint.txt", "", "", skip_if_exist=True)
+        qar_sp.save_index(path_sp + ".qar.idx")
         qar_sp.close()
         q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
         q.qrename_info(get_save_path(path_sp + ".qar.acc"), get_save_path(path_sp + ".qar"))
@@ -476,7 +480,7 @@ def calc_hvp_sum_tslice(chvp_16):
 def compute_prop_psrc_hvp_contract(
         job_tag, traj, xg_src, inv_type, inv_acc,
         *,
-        prop, tag, sfw_hvp, path_hvp_ts):
+        prop, tag, sfw_hvp, qar_hvp_ts, finished_tags_hvp):
     """
     # chvp_16.get_elem(x, mu * 4 + nu) is complex
     # (1) mu is the sink polarization and nu is the src polarization
@@ -484,27 +488,26 @@ def compute_prop_psrc_hvp_contract(
     #     It does not include the any minus sign (e.g. The minus sign due to the loop).
     """
     assert isinstance(xg_src, q.Coordinate)
-    fn_hvp_ts = os.path.join(path_hvp_ts, f"{tag}.lat")
     chvp_16 = q.contract_chvp_16(prop, prop)
     ld_hvp_ts = calc_hvp_sum_tslice(chvp_16)
-    ld_hvp_ts.save(get_save_path(fn_hvp_ts))
+    qar_hvp_ts.write(f"{tag}.lat", "", ld_hvp_ts.save_str(), skip_if_exist=True)
     if sfw_hvp is not None:
-        chvp_16.save_float_from_double(sfw_hvp, tag)
+        if tag not in finished_tags_hvp:
+            chvp_16.save_float_from_double(sfw_hvp, tag)
+            sfw_hvp.flush()
 
 # -----------------------------------------------------------------------------
 
 @q.timer_verbose
-def compute_prop_2(inv, src, *, tag, sfw, path_sp, psel, fsel,
+def compute_prop_2(inv, src, *, tag, sfw, qar_sp, psel, fsel,
                    f_rand_01, fsel_psrc_prop_norm_threshold, gt):
-    fn_sp = os.path.join(path_sp, f"{tag}.lat")
-    fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
     sol = inv * src
     sp_sol = q.PselProp(psel)
     sp_sol @= sol
-    sp_sol.save(get_save_path(fn_sp))
+    qar_sp.write(f"{tag}.lat", "", sp_sol.save_str(), skip_if_exist=True)
     sol_gt = gt * sol
     sol_ws = sol_gt.glb_sum_tslice()
-    sol_ws.save(get_save_path(fn_spw))
+    qar_sp.write(f"{tag} ; wsnk.lat", "", sol_ws.save_str(), skip_if_exist=True)
     sol_ps_sel_prob = q.qnorm_field(sol)
     sol_ps_sel_prob *= 1.0 / fsel_psrc_prop_norm_threshold
     sol_ps_sel_prob[:] = np.minimum(1.0, sol_ps_sel_prob[:])
@@ -529,7 +532,8 @@ def compute_prop_2(inv, src, *, tag, sfw, path_sp, psel, fsel,
 
 @q.timer
 def compute_prop_psrc(job_tag, traj, xg_src, inv_type, inv_acc, *,
-        idx, gf, gt, sfw, path_sp, psel, fsel, f_rand_01, sfw_hvp, path_hvp_ts, eig, finished_tags):
+        idx, gf, gt, sfw, qar_sp, psel, fsel, f_rand_01, sfw_hvp, qar_hvp_ts,
+        eig, finished_tags, finished_tags_prop, finished_tags_hvp):
     assert isinstance(xg_src, q.Coordinate)
     xg = xg_src
     xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
@@ -545,14 +549,15 @@ def compute_prop_psrc(job_tag, traj, xg_src, inv_type, inv_acc, *,
     geo = q.Geometry(total_site, 1)
     src = q.mk_point_src(geo, xg_src)
     prop = compute_prop_2(
-            inv, src, tag=tag, sfw=sfw, path_sp=path_sp,
+            inv, src, tag=tag, sfw=sfw, qar_sp=qar_sp,
             psel=psel, fsel=fsel,
             f_rand_01=f_rand_01,
             fsel_psrc_prop_norm_threshold=fsel_psrc_prop_norm_threshold,
             gt=gt)
     compute_prop_psrc_hvp_contract(
             job_tag, traj, xg_src, inv_type, inv_acc,
-            prop=prop, tag=tag, sfw_hvp=sfw_hvp, path_hvp_ts=path_hvp_ts)
+            prop=prop, tag=tag, sfw_hvp=sfw_hvp, qar_hvp_ts=qar_hvp_ts,
+            finished_tags_hvp=finished_tags_hvp)
 
 @q.timer_verbose
 def compute_prop_psrc_all(job_tag, traj, *,
@@ -569,18 +574,24 @@ def compute_prop_psrc_all(job_tag, traj, *,
         finished_tags_hvp = q.properly_truncate_fields(get_save_path(path_s_hvp + ".acc"))
         finished_tags = [ tag for tag in finished_tags_hvp if tag in finished_tags_prop ]
     else:
+        finished_tags_hvp = []
         finished_tags = finished_tags_prop
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     if is_saving_hvp:
         sfw_hvp = q.open_fields(get_save_path(path_s_hvp + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     else:
         sfw_hvp = None
+    qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar.acc"), "a")
+    qar_hvp_ts = q.open_qar_info(get_save_path(path_hvp_ts + ".qar.acc"), "a")
     def comp(idx, xg_src, inv_acc):
         compute_prop_psrc(job_tag, traj, xg_src, inv_type, inv_acc,
-                idx=idx, gf=gf, gt=gt, sfw=sfw, path_sp=path_sp,
+                idx=idx, gf=gf, gt=gt, sfw=sfw, qar_sp=qar_sp,
                 psel=psel, fsel=fsel, f_rand_01=f_rand_01,
-                sfw_hvp=sfw_hvp, path_hvp_ts=path_hvp_ts,
-                eig=eig, finished_tags=finished_tags)
+                sfw_hvp=sfw_hvp, qar_hvp_ts=qar_hvp_ts,
+                finished_tags=finished_tags,
+                finished_tags_hvp=finished_tags_hvp,
+                finished_tags_prop=finished_tags_prop,
+                eig=eig)
     prob1 = get_param(job_tag, "prob_acc_1_psrc")
     prob2 = get_param(job_tag, "prob_acc_2_psrc")
     rs = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_psrc_all(ama)")
@@ -593,15 +604,15 @@ def compute_prop_psrc_all(job_tag, traj, *,
         if r <= prob2:
             comp(idx, xg_src, inv_acc=2)
     sfw.close()
-    q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
+    qar_sp.save_index(get_save_path(path_sp + ".qar.idx"))
+    qar_hvp_ts.save_index(get_save_path(path_hvp_ts + ".qar.idx"))
     if sfw_hvp is not None:
         sfw_hvp.close()
+    q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
+    if sfw_hvp is not None:
         q.qrename_info(get_save_path(path_s_hvp + ".acc"), get_save_path(path_s_hvp))
-    q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint.txt")))
-    q.qtouch_info(get_save_path(os.path.join(path_hvp_ts, "checkpoint.txt")))
-    q.qar_create_info(get_save_path(path_sp + ".qar"), get_save_path(path_sp), is_remove_folder_after=True)
-    q.qar_create_info(get_save_path(path_hvp_ts + ".qar"), get_save_path(path_hvp_ts), is_remove_folder_after=True)
-    # q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after=True)
+    q.qrename_info(get_save_path(path_sp + ".qar.acc"), get_save_path(path_sp + ".qar"))
+    q.qrename_info(get_save_path(path_hvp_ts + ".qar.acc"), get_save_path(path_hvp_ts + ".qar"))
 
 @q.timer
 def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel, get_fsel, get_f_rand_01):

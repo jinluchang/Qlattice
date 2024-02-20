@@ -260,8 +260,11 @@ cdef class QarFile:
     def verify_index(self):
         return cc.verify_index(self.xx)
 
-    def write(self, const cc.std_string& fn, const cc.std_string& info, object data):
+    def write(self, const cc.std_string& fn, const cc.std_string& info, object data, *, skip_if_exist=False):
         cdef QFile qfile
+        if skip_if_exist:
+            if self.has_regular_file(fn):
+                return 0
         if isinstance(data, QFile):
             qfile = data
             return cc.write_from_qfile(self.xx, fn, info, qfile.xx)

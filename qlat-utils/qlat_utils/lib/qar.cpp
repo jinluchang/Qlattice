@@ -1453,6 +1453,7 @@ void QarFileVolObj::init(const std::string& path, const QFileMode mode)
 }
 
 void QarFileVolObj::init(const QFile& qfile_)
+// Will close this `qfile_` when this `QarFileVolObj` object vanishes.
 {
   TIMER("QarFileVolObj::init(qfile)");
   init();

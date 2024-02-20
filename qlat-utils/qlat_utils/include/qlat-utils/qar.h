@@ -414,6 +414,7 @@ struct QarFileVolObj {
     init(path, mode);
   }
   QarFileVolObj(const QFile& qfile) { init(qfile); }
+  ~QarFileVolObj() { close(); };
   //
   void init();
   void init(const std::string& path, const QFileMode mode);
