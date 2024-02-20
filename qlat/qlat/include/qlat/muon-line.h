@@ -20,7 +20,7 @@
 //
 // % interpolate saved data and extrapolate different interpolations
 //
-// % = get_muon_line_m_extra(m * x, m * y, m * z , tag)[16 * sigma  + 4 * lambda + rho ][i]
+// % = get_muon_line_m_extra(m * x, m * y, m * z , tag)[16 * sigma  + 4 * lambda + rho][i]
 //
 // % = get_m_comp(get_muon_line_m_extra_lat(x, y, z, total_site, m, tag), i, rho, sigma, lambda)
 //
@@ -999,45 +999,60 @@ inline std::vector<PointPairWeight> shift_lat_corr(const Coordinate& x,
 // z must be (1) within the box centered at x (2) within the box centered at y
 // if at boundary of the box, need to be divided by the multiplicity
 {
-  const Coordinate rxy = relative_coordinate(y - x, total_site);
-  const CoordinateD rdxy = a * CoordinateD(rxy);
-  Coordinate lb, ub;
-  for (int m = 0; m < 4; ++m) {
-    lb[m] = std::max(0, rxy[m]) - total_site[m] / 2;
-    ub[m] = std::min(0, rxy[m]) + total_site[m] / 2;
-  }
-  Coordinate rxz = relative_coordinate(z - x, total_site);
-  std::vector<PointPairWeight> ret;
-  for (int r0 = rxz[0]; r0 <= ub[0]; r0 += total_site[0]) {
-    if (lb[0] > r0) {
-      continue;
+  const Coordinate rxy0 = relative_coordinate(y - x, total_site);
+  std::vector<Coordinate> rxy_list;
+  for (int r0 = rxy0[0]; r0 <= total_site[0] / 2; r0 += total_site[0]) {
+    for (int r1 = rxy0[1]; r1 <= total_site[1] / 2; r1 += total_site[1]) {
+      for (int r2 = rxy0[2]; r2 <= total_site[2] / 2; r2 += total_site[2]) {
+        for (int r3 = rxy0[3]; r3 <= total_site[3] / 2; r3 += total_site[3]) {
+          rxy_list.push_back(Coordinate(r0, r1, r2, r3));
+        }
+      }
     }
-    for (int r1 = rxz[1]; r1 <= ub[1]; r1 += total_site[1]) {
-      if (lb[1] > r1) {
+  }
+  qassert(rxy_list[0] == rxy0);
+  std::vector<PointPairWeight> ret;
+  for (int i = 0; i < (int)rxy_list.size(); ++i) {
+    const Coordinate rxy = rxy_list[i];
+    const CoordinateD rdxy = a * CoordinateD(rxy);
+    Coordinate lb, ub;
+    for (int m = 0; m < 4; ++m) {
+      lb[m] = std::max(0, rxy[m]) - total_site[m] / 2;
+      ub[m] = std::min(0, rxy[m]) + total_site[m] / 2;
+    }
+    Coordinate rxz = relative_coordinate(z - x, total_site);
+    for (int r0 = rxz[0]; r0 <= ub[0]; r0 += total_site[0]) {
+      if (lb[0] > r0) {
         continue;
       }
-      for (int r2 = rxz[2]; r2 <= ub[2]; r2 += total_site[2]) {
-        if (lb[2] > r2) {
+      for (int r1 = rxz[1]; r1 <= ub[1]; r1 += total_site[1]) {
+        if (lb[1] > r1) {
           continue;
         }
-        for (int r3 = rxz[3]; r3 <= ub[3]; r3 += total_site[3]) {
-          if (lb[3] > r3) {
+        for (int r2 = rxz[2]; r2 <= ub[2]; r2 += total_site[2]) {
+          if (lb[2] > r2) {
             continue;
           }
-          PointPairWeight ppw;
-          ppw.rxy = rdxy;
-          const Coordinate rxz(r0, r1, r2, r3);
-          ppw.rxz = a * CoordinateD(rxz);
-          const double l1 = coordinate_len(ppw.rxz);
-          const double l2 = coordinate_len(ppw.rxz - ppw.rxy);
-          const double l3 = coordinate_len(ppw.rxy);
-          if (l1 >= DISTANCE_LIMIT - 0.01 or l2 >= DISTANCE_LIMIT - 0.01 or
-              l3 >= DISTANCE_LIMIT - 0.01) {
-            // one edge is too long, outside of the interpolation range
-            continue;
+          for (int r3 = rxz[3]; r3 <= ub[3]; r3 += total_site[3]) {
+            if (lb[3] > r3) {
+              continue;
+            }
+            PointPairWeight ppw;
+            ppw.rxy = rdxy;
+            const Coordinate rxz(r0, r1, r2, r3);
+            ppw.rxz = a * CoordinateD(rxz);
+            const double l1 = coordinate_len(ppw.rxz);
+            const double l2 = coordinate_len(ppw.rxz - ppw.rxy);
+            const double l3 = coordinate_len(ppw.rxy);
+            if (l1 >= DISTANCE_LIMIT - 0.01 or l2 >= DISTANCE_LIMIT - 0.01 or
+                l3 >= DISTANCE_LIMIT - 0.01) {
+              // one edge is too long, outside of the interpolation range
+              continue;
+            }
+            ppw.weight = 1.0 / (RealD)rxy_list.size() /
+                         (RealD)boundary_multiplicity(rxz, lb, ub);
+            ret.push_back(ppw);
           }
-          ppw.weight = 1.0 / (RealD)boundary_multiplicity(rxz, lb, ub);
-          ret.push_back(ppw);
         }
       }
     }
@@ -1277,7 +1292,7 @@ inline ManyMagneticMoments get_muon_line_m_extra(const CoordinateD& x,
                                                  const int tag)
 // % \mathcal M_{i,\rho,\sigma,\lambda}(x,y,z)
 // % interpolate saved data and extrapolate different interpolations
-// % = get_muon_line_m_extra(m * x, m * y, m * z , tag)[16 * sigma  + 4 * lambda + rho ][i]
+// % = get_muon_line_m_extra(m * x, m * y, m * z , tag)[16 * sigma  + 4 * lambda + rho][i]
 // % = get_m_comp(get_muon_line_m_extra_lat(x, y, z, total_site, m, tag), i, rho, sigma, lambda)
 // % tag = 0 : subtraction
 // % tag = 1 : no subtraction
@@ -1297,6 +1312,7 @@ inline ManyMagneticMoments get_muon_line_m_extra(const CoordinateD& x,
 // % l0: 14^5 no-sub
 // % 11: 16^5 no-sub (used for tag 1)
 {
+  // TIMER("get_muon_line_m_extra");
   ManyMagneticMoments m1, m2, m3;
   if (tag == 0) {
     m1 = get_muon_line_m(x, y, z, 5);
@@ -1328,19 +1344,31 @@ inline ManyMagneticMoments get_muon_line_m_extra_lat(
 // interface
 // % \mathcal M_{i,\rho,\sigma,\lambda}(x,y,z)
 // % interpolate saved data and extrapolate different interpolations
-// % = get_muon_line_m_extra(m * x, m * y, m * z , tag)[16 * sigma  + 4 * lambda + rho ][i]
+// % = get_muon_line_m_extra(m * x, m * y, m * z , tag)[16 * sigma  + 4 * lambda + rho][i]
 // % = get_m_comp(get_muon_line_m_extra_lat(x, y, z, total_site, m, tag), i, rho, sigma, lambda)
 // % tag = 0 : subtraction
 // % tag = 1 : no subtraction
 // % m is the muon mass in the lattice unit (or lattice spacing in muon mass unit)
 // % total_site is the lattice size in lattice unit
 {
+  // TIMER("get_muon_line_m_extra_lat");
   const Coordinate rxy = relative_coordinate(y - x, total_site);
   const Coordinate ryz = relative_coordinate(z - y, total_site);
   const Coordinate rzx = relative_coordinate(x - z, total_site);
   const Long d2xy = distance_sq_relative_coordinate_g(rxy);
   const Long d2yz = distance_sq_relative_coordinate_g(ryz);
   const Long d2zx = distance_sq_relative_coordinate_g(rzx);
+  ManyMagneticMoments mmm;
+  set_zero(mmm);
+  if (d2xy * sqr(a) > sqr(DISTANCE_LIMIT)) {
+    return mmm;
+  }
+  if (d2yz * sqr(a) > sqr(DISTANCE_LIMIT)) {
+    return mmm;
+  }
+  if (d2zx * sqr(a) > sqr(DISTANCE_LIMIT)) {
+    return mmm;
+  }
   int ppws_counts = 0;
   std::vector<PointPairWeight> ppws_total;
   if (d2xy <= d2yz and d2xy <= d2zx) {
@@ -1372,8 +1400,6 @@ inline ManyMagneticMoments get_muon_line_m_extra_lat(
     vector_append(ppws_total, ppws);
     ppws_counts += 1;
   }
-  ManyMagneticMoments mmm;
-  set_zero(mmm);
   for (int i = 0; i < (int)ppws_total.size(); ++i) {
     const PointPairWeight& ppw = ppws_total[i];
     mmm += (ppw.weight / ppws_counts) *
