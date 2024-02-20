@@ -2022,6 +2022,7 @@ Long write_from_data(const QarFileVol& qar, const std::string& fn,
   QFile qfile_out;
   write_start(qar, fn, info, qfile_out, data_len);
   const Long total_bytes = qwrite_data(data, qfile_out);
+  qfclose(qfile_out);
   write_end(qar);
   qassert(data_len == total_bytes);
   timer.flops += total_bytes;
@@ -2048,6 +2049,7 @@ Long write_from_data(QarFileVol& qar, const std::string& fn,
   QFile qfile_out;
   write_start(qar, fn, info, qfile_out, data_len);
   const Long total_bytes = qwrite_data(data, qfile_out);
+  qfclose(qfile_out);
   write_end(qar);
   qassert(data_len == total_bytes);
   timer.flops += total_bytes;
