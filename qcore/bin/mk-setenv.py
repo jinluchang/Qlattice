@@ -53,7 +53,8 @@ l.append("local setenv_prefix")
 l.append("local v")
 l.append("")
 
-l.append(f'setenv_prefix="{prefix}"')
+# l.append(f'setenv_prefix="{prefix}"')
+l.append('setenv_prefix="$(builtin cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && builtin pwd)"')
 
 if l_init:
     l.append("")

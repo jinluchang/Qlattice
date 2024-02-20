@@ -21,7 +21,6 @@ fi
 
 echo "Python mk-setenv-dir.py scripts failed. Fallback to bash version."
 
-setenv_path="$(basename "$prefix")"
 
 cat >"$prefix"/setenv-new.sh <<EOF
 #!/bin/bash
@@ -31,9 +30,11 @@ func() {
 local setenv_prefix
 local v
 
-setenv_prefix="$prefix"
+# setenv_prefix="$prefix"
+setenv_prefix="\$(builtin cd -- "\$(dirname -- "\${BASH_SOURCE[0]}")" &> /dev/null && builtin pwd)"
 
-export SETENV_PATH="$setenv_path:\$SETENV_PATH"
+setenv_path="\$(basename "\$setenv_prefix")"
+export SETENV_PATH="\$setenv_path:\$SETENV_PATH"
 
 EOF
 

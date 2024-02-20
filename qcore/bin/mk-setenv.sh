@@ -25,7 +25,8 @@ func() {
 local setenv_prefix
 local v
 
-setenv_prefix="$prefix"
+# setenv_prefix="$prefix"
+setenv_prefix="\$(builtin cd -- "\$(dirname -- "\${BASH_SOURCE[0]}")" &> /dev/null && builtin pwd)"
 
 EOF
 

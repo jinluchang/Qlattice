@@ -10,7 +10,7 @@ if not (sys.version_info.major == 3 and sys.version_info.minor >= 6):
 import os
 
 prefix = os.getenv("prefix")
-setenv_path = os.path.basename(prefix)
+# setenv_path = os.path.basename(prefix)
 
 assert prefix[:-1] != '/'
 
@@ -34,9 +34,11 @@ l.append("local setenv_prefix")
 l.append("local v")
 l.append("")
 
-l.append(f'setenv_prefix="{prefix}"')
+# l.append(f'setenv_prefix="{prefix}"')
+l.append('setenv_prefix="$(builtin cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && builtin pwd)"')
 
-l.append(f'export SETENV_PATH="{setenv_path}:$SETENV_PATH"')
+l.append('setenv_path="$(basename "$setenv_prefix")"')
+l.append('export SETENV_PATH="$setenv_path:$SETENV_PATH"')
 
 if l_init:
     l.append("")
