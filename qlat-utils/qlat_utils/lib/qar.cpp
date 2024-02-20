@@ -743,7 +743,15 @@ QFileObj::QFileObj()
 
 QFileObj::~QFileObj()
 {
-  close();
+  if (fp != nullptr) {
+    TIMER_VERBOSE("QFileObj::~QFileObj()-close()");
+    displayln(fname + ssprintf(": close '%s' with '%s'.", path().c_str(),
+                               show(mode()).c_str()));
+    qwarn(fname + ssprintf(": Did not close this file explicitly."));
+    close();
+  } else {
+    close();
+  }
 }
 
 void QFileObj::init()
