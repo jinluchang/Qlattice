@@ -108,6 +108,8 @@ QFileType read_qfile_type(const std::string& ftype)
 
 // ----------------------------------------------------
 
+QFileBase::~QFileBase() {}
+
 Long QFileBase::size()
 {
   if (null()) {

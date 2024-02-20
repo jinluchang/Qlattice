@@ -58,6 +58,8 @@ struct QFileBase {
   virtual Long write(const void* ptr, const Long size, const Long nmemb) = 0;
   virtual const std::string& content() = 0;
   //
+  virtual ~QFileBase();
+  //
   virtual Long size();
   virtual Long remaining_size();
   //
