@@ -245,22 +245,20 @@ inline SpatialO3Matrix makeProperRotation(const CoordinateD& x,
 }
 
 inline ManyMagneticMoments muonLine(const CoordinateD& x, const CoordinateD& y,
-                                    const double epsabs = 1.0e-8,
-                                    const double epsrel = 1.0e-3)
+                                    const IntegrationEps& eps)
 {
   TIMER("muonLine");
-  std::vector<RealD> integral = integrateMuonLine(x, y, epsabs, epsrel);
+  std::vector<RealD> integral = integrateMuonLine(x, y, eps);
   return computeProjections(integral);
 }
 
 inline ManyMagneticMoments muonLineSymR(const CoordinateD& x,
                                         const CoordinateD& y,
-                                        const double epsabs = 1.0e-8,
-                                        const double epsrel = 1.0e-3)
+                                        const IntegrationEps& eps)
 {
   TIMER("muonLineSymR");
   // already performed in the integrand
-  return muonLine(x, y, epsabs, epsrel);
+  return muonLine(x, y, eps);
 }
 
 inline std::vector<RealD> std_vector_from_many_magnetic_moments(
@@ -289,8 +287,7 @@ inline std::vector<RealD> std_vector_from_many_magnetic_moments(
 
 inline ManyMagneticMoments muonLineSym(const CoordinateD& x,
                                        const CoordinateD& y,
-                                       const double epsabs = 1.0e-8,
-                                       const double epsrel = 1.0e-3)
+                                       const IntegrationEps& eps)
 // interface function
 // important, return average instead of sum of all six permutations
 // This function return the avg of six different muon-line diagram
@@ -299,18 +296,17 @@ inline ManyMagneticMoments muonLineSym(const CoordinateD& x,
 {
   TIMER("muonLineSym");
   std::vector<ManyMagneticMoments> mmms(3);
-  mmms[0] = muonLineSymR(x, y, epsabs, epsrel);
-  mmms[1] = permuteNuRhoMu(muonLineSymR(-x + y, -x, epsabs, epsrel), 2, 0,
+  mmms[0] = muonLineSymR(x, y, eps);
+  mmms[1] = permuteNuRhoMu(muonLineSymR(-x + y, -x, eps), 2, 0,
                            1);  // x',2 <- y,0 ; y',0 <- z,1 ; z',1 <- x,2
-  mmms[2] = permuteNuRhoMu(muonLineSymR(-y, x - y, epsabs, epsrel), 1, 2,
+  mmms[2] = permuteNuRhoMu(muonLineSymR(-y, x - y, eps), 1, 2,
                            0);  // x',2 <- z,1 ; y',0 <- x,2 ; z',1 <- y,0
   return averageManyMagneticMoments(mmms);
 }
 
 inline std::vector<RealD> muon_line_sym_py(const CoordinateD& x,
                                            const CoordinateD& y,
-                                           const double epsabs = 1.0e-8,
-                                           const double epsrel = 1.0e-3)
+                                           const IntegrationEps& eps)
 // python interface function
 // interface function
 // important, return average instead of sum of all six permutations
@@ -323,7 +319,7 @@ inline std::vector<RealD> muon_line_sym_py(const CoordinateD& x,
 // = ret[i * 64 + rho * 16 + sigma * 4 + lambda]
 {
   TIMER("muon_line_sym_py");
-  const ManyMagneticMoments mmm = muonLineSym(x, y, epsabs, epsrel);
+  const ManyMagneticMoments mmm = muonLineSym(x, y, eps);
   return std_vector_from_many_magnetic_moments(mmm);
 }
 
@@ -447,14 +443,13 @@ inline ManyMagneticMoments uncompressManyMagneticMoments(
 }
 
 inline ManyMagneticMomentsCompressed muonLineSymParamsCompressed(
-    const std::vector<RealD>& params, const double epsabs = 1.0e-8,
-    const double epsrel = 1.0e-3)
+    const std::vector<RealD>& params, const IntegrationEps& eps)
 // Target function for interpolation
 {
   TIMER("muonLineSymParamsCompressed");
   CoordinateD x, y;
   coordinatesFromParams(x, y, params);
-  const ManyMagneticMoments mmm = muonLineSym(x, y, epsabs, epsrel);
+  const ManyMagneticMoments mmm = muonLineSym(x, y, eps);
   assert(false == qisnan(mmm));
   const ManyMagneticMomentsCompressed ret = compressManyMagneticMoments(mmm);
   // const double mmm_len = std::sqrt(qnorm(ret));
@@ -497,27 +492,25 @@ inline ManyMagneticMomentsCompressed muonLineSymParamsCompressedInterpolate(
 }
 
 inline ManyMagneticMoments muonLineSymParams(
-    const std::vector<RealD>& params, const double epsabs = 1.0e-8,
-    const double epsrel = 1.0e-3,
+    const std::vector<RealD>& params, const IntegrationEps& eps,
     const int b_interp = get_default_muonline_interp_idx())
 {
   ManyMagneticMomentsCompressed mmm;
   if (b_interp >= 0) {
     mmm = muonLineSymParamsCompressedInterpolate(params, b_interp);
   } else {
-    mmm = muonLineSymParamsCompressed(params, epsabs, epsrel);
+    mmm = muonLineSymParamsCompressed(params, eps);
   }
   return uncompressManyMagneticMoments(mmm);
 }
 
 inline ManyMagneticMoments muonLineSymThroughParam(
-    const CoordinateD& x, const CoordinateD& y, const double epsabs = 1.0e-8,
-    const double epsrel = 1.0e-3,
+    const CoordinateD& x, const CoordinateD& y, const IntegrationEps& eps,
     const int b_interp = get_default_muonline_interp_idx())
 {
   std::vector<RealD> params;
   paramsFromCoordinates(params, x, y);
-  return muonLineSymParams(params, epsabs, epsrel, b_interp);
+  return muonLineSymParams(params, eps, b_interp);
 }
 
 inline MagneticMoment operator*(const SpatialO3Matrix& m,
@@ -588,8 +581,7 @@ inline ManyMagneticMoments operator*(const SpatialO3Matrix& m,
 }
 
 inline ManyMagneticMoments muonLineSymRotate(
-    const CoordinateD& x, const CoordinateD& y, const double epsabs = 1.0e-8,
-    const double epsrel = 1.0e-3,
+    const CoordinateD& x, const CoordinateD& y, const IntegrationEps& eps,
     const int b_interp = get_default_muonline_interp_idx())
 {
   const SpatialO3Matrix rot = makeProperRotation(x, y);
@@ -604,12 +596,11 @@ inline ManyMagneticMoments muonLineSymRotate(
   //   }
   // }
   const SpatialO3Matrix rott = rot.transpose();
-  return rott * muonLineSymThroughParam(xr, yr, epsabs, epsrel, b_interp);
+  return rott * muonLineSymThroughParam(xr, yr, eps, b_interp);
 }
 
 inline ManyMagneticMoments muonLineSymPermute(
-    const CoordinateD& x, const CoordinateD& y, const double epsabs = 1.0e-8,
-    const double epsrel = 1.0e-3,
+    const CoordinateD& x, const CoordinateD& y, const IntegrationEps& eps,
     const int b_interp = get_default_muonline_interp_idx())
 {
   const double xyl = coordinate_len(y - x);
@@ -626,30 +617,30 @@ inline ManyMagneticMoments muonLineSymPermute(
   }
   std::vector<ManyMagneticMoments> mmms;
   if (xl <= xyl && xyl <= yl) {
-    mmms.push_back(muonLineSymRotate(x, y, epsabs, epsrel, b_interp));  // y z x
+    mmms.push_back(muonLineSymRotate(x, y, eps, b_interp));  // y z x
   }
   if (xyl <= yl && yl <= xl) {
     mmms.push_back(
-        permuteNuRhoMu(muonLineSymRotate(-x + y, -x, epsabs, epsrel, b_interp),
+        permuteNuRhoMu(muonLineSymRotate(-x + y, -x, eps, b_interp),
                        2, 0, 1));  // z x y
   }
   if (yl <= xl && xl <= xyl) {
     mmms.push_back(
-        permuteNuRhoMu(muonLineSymRotate(-y, x - y, epsabs, epsrel, b_interp),
+        permuteNuRhoMu(muonLineSymRotate(-y, x - y, eps, b_interp),
                        1, 2, 0));  // x y z
   }
   if (yl <= xyl && xyl <= xl) {
     mmms.push_back(permuteNuRhoMu(
-        muonLineSymRotate(y, x, epsabs, epsrel, b_interp), 2, 1, 0));  // x z y
+        muonLineSymRotate(y, x, eps, b_interp), 2, 1, 0));  // x z y
   }
   if (xl <= yl && yl <= xyl) {
     mmms.push_back(
-        permuteNuRhoMu(muonLineSymRotate(-x, -x + y, epsabs, epsrel, b_interp),
+        permuteNuRhoMu(muonLineSymRotate(-x, -x + y, eps, b_interp),
                        0, 2, 1));  // y x z
   }
   if (xyl <= xl && xl <= yl) {
     mmms.push_back(
-        permuteNuRhoMu(muonLineSymRotate(x - y, -y, epsabs, epsrel, b_interp),
+        permuteNuRhoMu(muonLineSymRotate(x - y, -y, eps, b_interp),
                        1, 0, 2));  // z y x
   }
   qassert(mmms.size() > 0);
@@ -657,8 +648,7 @@ inline ManyMagneticMoments muonLineSymPermute(
 }
 
 inline ManyMagneticMoments muonLineSymTransform(
-    const CoordinateD& x, const CoordinateD& y, const double epsabs = 1.0e-8,
-    const double epsrel = 1.0e-3,
+    const CoordinateD& x, const CoordinateD& y, const IntegrationEps& eps,
     const int b_interp = get_default_muonline_interp_idx())
 // interface function
 // This function return the avg of six different muon-line diagram
@@ -668,7 +658,7 @@ inline ManyMagneticMoments muonLineSymTransform(
 // ManyMagneticMoments format [y-pol,z-pol,x-pol][mag-dir]
 // argument x and y assume z = 0
 {
-  return muonLineSymPermute(x, y, epsabs, epsrel, b_interp);
+  return muonLineSymPermute(x, y, eps, b_interp);
 }
 
 inline void paramsFromCoordinatesPermute(std::vector<RealD>& params,
@@ -735,12 +725,11 @@ inline void compare_many_magnetic_moments(const std::string& tag,
 
 inline ManyMagneticMoments muonLineSymParamsCheck(const CoordinateD& x,
                                                   const CoordinateD& y,
-                                                  const double epsabs = 1.0e-8,
-                                                  const double epsrel = 1.0e-3)
+                                                  const IntegrationEps& eps)
 {
   TIMER_VERBOSE("muonLineSymParamsCheck");
-  ManyMagneticMoments mmm = muonLineSym(x, y, epsabs, epsrel);
-  ManyMagneticMoments mmmp = muonLineSymTransform(x, y, epsabs, epsrel);
+  ManyMagneticMoments mmm = muonLineSym(x, y, eps);
+  ManyMagneticMoments mmmp = muonLineSymTransform(x, y, eps);
   compare_many_magnetic_moments("params-check", x, y, mmm, mmmp);
   return mmm;
 }
@@ -748,23 +737,20 @@ inline ManyMagneticMoments muonLineSymParamsCheck(const CoordinateD& x,
 inline ManyMagneticMoments muonLineSymRotateCheck(const SpatialO3Matrix& rot,
                                                   const CoordinateD& x,
                                                   const CoordinateD& y,
-                                                  const double epsabs = 1.0e-8,
-                                                  const double epsrel = 1.0e-3)
+                                                  const IntegrationEps& eps)
 {
   TIMER_VERBOSE("muonLineSymRotateCheck");
-  ManyMagneticMoments mmm = muonLineSymTransform(x, y, epsabs, epsrel);
+  ManyMagneticMoments mmm = muonLineSymTransform(x, y, eps);
   const CoordinateD xr = rot * x;
   const CoordinateD yr = rot * y;
   const SpatialO3Matrix rott = rot.transpose();
-  ManyMagneticMoments mmmp =
-      rott * muonLineSymTransform(xr, yr, epsabs, epsrel);
+  ManyMagneticMoments mmmp = rott * muonLineSymTransform(xr, yr, eps);
   compare_many_magnetic_moments("rotate-check", x, y, mmm, mmmp);
   return mmm;
 }
 
 inline void initializeMuonLineInterpolation(const std::vector<int>& dims,
-                                            const double epsabs = 1.0e-8,
-                                            const double epsrel = 1.0e-3)
+                                            const IntegrationEps& eps)
 // computing the muon-line interpolation database
 // take quite some time
 {
@@ -793,8 +779,8 @@ inline void initializeMuonLineInterpolation(const std::vector<int>& dims,
       displayln(ssprintf("jobs-par: %5d %10ld %10ld/%ld", get_id_node(),
                          my_start, i, jobs_per_nodes));
     }
-    workplace[i] = muonLineSymParamsCompressed(interpolation.get_coor(idx),
-                                               epsabs, epsrel);
+    workplace[i] =
+        muonLineSymParamsCompressed(interpolation.get_coor(idx), eps);
   }
   Vector<ManyMagneticMomentsCompressed> all_workspace(&interpolation[jobs_left],
                                                       jobs_parallel);
@@ -807,8 +793,8 @@ inline void initializeMuonLineInterpolation(const std::vector<int>& dims,
       displayln(ssprintf("jobs-left: %10ld/%ld", idx, jobs_left));
       displayln(show(idx));
     }
-    interpolation[idx] = muonLineSymParamsCompressed(
-        interpolation.get_coor(idx), epsabs, epsrel);
+    interpolation[idx] =
+        muonLineSymParamsCompressed(interpolation.get_coor(idx), eps);
   }
 }
 
@@ -854,6 +840,8 @@ inline bool loadMuonLineInterpolation(const std::string& path,
                                       const size_t interp_idx = 0)
 {
   TIMER_VERBOSE("loadMuonLineInterpolation");
+  displayln_info(fname +
+                 ssprintf(": load '%s' as idx=%ld", path.c_str(), interp_idx));
   if (!does_file_exist_qar_sync_node(path + "/checkpoint")) {
     return false;
   }
@@ -928,12 +916,11 @@ inline bool loadMuonLineInterpolation(const std::string& path,
 
 inline void load_or_compute_muonline_interpolation(const std::string& path,
                                                    const std::vector<int>& dims,
-                                                   const double epsabs = 1.0e-8,
-                                                   const double epsrel = 1.0e-3)
+                                                   const IntegrationEps& eps)
 {
   if (!loadMuonLineInterpolation(path)) {
     test_fCalc();
-    initializeMuonLineInterpolation(dims, epsabs, epsrel);
+    initializeMuonLineInterpolation(dims, eps);
     saveMuonLineInterpolation(path);
   }
 }
@@ -1070,8 +1057,7 @@ inline void clear_muon_line_interpolations()
 
 inline bool compute_save_muonline_interpolation_cc(const std::string& path,
                                                    const std::vector<int>& dims,
-                                                   const double epsabs = 1.0e-8,
-                                                   const double epsrel = 1.0e-3)
+                                                   const IntegrationEps& eps)
 // preferred way to generate interpolation field
 {
   TIMER_VERBOSE("compute_save_muonline_interpolation_cc");
@@ -1203,7 +1189,7 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
         for (Long i = 0; i < job_chunk_size; ++i) {
           const Long idx = job + i;
           result[i] =
-              muonLineSymParamsCompressed(interp.get_coor(idx), epsabs, epsrel);
+              muonLineSymParamsCompressed(interp.get_coor(idx), eps);
 #pragma omp critical
           {
             displayln(ssprintf("par: %5d %10ld/%ld %10ld/%ld", get_id_node(),
@@ -1219,10 +1205,12 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
 #pragma omp parallel for schedule(dynamic)
       for (Long idx = last_start_idx; idx < jobs_total; ++idx) {
         interp[idx] =
-            muonLineSymParamsCompressed(interp.get_coor(idx), epsabs, epsrel);
+            muonLineSymParamsCompressed(interp.get_coor(idx), eps);
 #pragma omp critical
         {
-          displayln(ssprintf("left: %10ld/%ld", idx, jobs_total));
+          displayln(
+              ssprintf("compute_save_muonline_interpolation_cc: %10ld/%ld", idx,
+                       jobs_total));
         }
       }
       save_part_muonline_interpolation_data(
@@ -1252,6 +1240,7 @@ inline bool load_multiple_muonline_interpolations(
     }
   }
   glb_sum(limit);
+  displayln_info(fname + ssprintf(": limit=%ld", (long)limit));
   if (0 == limit) {
     return loadMuonLineInterpolation(path);
   }
@@ -1270,20 +1259,54 @@ inline bool load_multiple_muonline_interpolations(
 inline ManyMagneticMoments get_muon_line_m(
     const CoordinateD& x, const CoordinateD& y, const CoordinateD& z,
     const int idx = get_default_muonline_interp_idx(),
-    const double epsabs = 1.0e-8, const double epsrel = 1.0e-3)
+    const IntegrationEps& eps = IntegrationEps())
 {
   // ADJUST ME
-  return muonLineSymTransform(x - z, y - z, epsabs, epsrel, idx);
-  // return muonLineSym(x - z, y - z, epsabs, epsrel);
+  return muonLineSymTransform(x - z, y - z, eps, idx);
+  // return muonLineSym(x - z, y - z, eps);
 }
 
 inline std::vector<RealD> get_muon_line_m_py(
     const CoordinateD& x, const CoordinateD& y, const CoordinateD& z,
     const int idx = get_default_muonline_interp_idx(),
-    const double epsabs = 1.0e-8, const double epsrel = 1.0e-3)
+    const IntegrationEps& eps = IntegrationEps())
 {
-  const ManyMagneticMoments mmm = get_muon_line_m(x, y, z, idx, epsabs, epsrel);
+  const ManyMagneticMoments mmm = get_muon_line_m(x, y, z, idx, eps);
   return std_vector_from_many_magnetic_moments(mmm);
+}
+
+inline std::vector<std::vector<RealD>> get_muon_line_m_extra_weights_default()
+{
+  std::vector<std::vector<RealD>> ret;
+  ret.resize(3);
+  ret[0].resize(6, 0.0);
+  ret[0][5] = 3.0476190476190476;
+  ret[0][3] = -2.3142857142857143;
+  ret[0][1] = 0.26666666666666667;
+  ret[1].resize(12, 0.0);
+  ret[1][11] = 3.0476190476190476;
+  ret[1][9] = -2.3142857142857143;
+  ret[1][7] = 0.26666666666666667;
+  ret[2].resize(1, 0.0);
+  ret[2][0] = 1.0;
+  return ret;
+}
+
+inline std::vector<std::vector<RealD>>& get_muon_line_m_extra_weights()
+// interface function
+// weight[tag][idx]
+// ->
+// weight for muon-line interpolation of idx for tag in `get_muon_line_m_extra`
+{
+  static std::vector<std::vector<RealD>> weight =
+      get_muon_line_m_extra_weights_default();
+  return weight;
+}
+
+inline void set_muon_line_m_extra_weights(
+    const std::vector<std::vector<RealD>>& weights)
+{
+  get_muon_line_m_extra_weights() = weights;
 }
 
 inline ManyMagneticMoments get_muon_line_m_extra(const CoordinateD& x,
@@ -1298,7 +1321,7 @@ inline ManyMagneticMoments get_muon_line_m_extra(const CoordinateD& x,
 // % tag = 1 : no subtraction
 // % m is the muon mass in the lattice unit (or lattice spacing in muon mass unit)
 // % total_site is the lattice size in lattice unit
-// % Interpolations shoulded be loaded for this function:
+// % Interpolations should be loaded for this function:
 // % 0: 6^5 with-sub
 // % 1: 8^5 with-sub (used for tag 0)
 // % 2: 10^5 with-sub
@@ -1313,20 +1336,21 @@ inline ManyMagneticMoments get_muon_line_m_extra(const CoordinateD& x,
 // % 11: 16^5 no-sub (used for tag 1)
 {
   // TIMER("get_muon_line_m_extra");
-  ManyMagneticMoments m1, m2, m3;
-  if (tag == 0) {
-    m1 = get_muon_line_m(x, y, z, 5);
-    m2 = get_muon_line_m(x, y, z, 3);
-    m3 = get_muon_line_m(x, y, z, 1);
-  } else if (tag == 1) {
-    m1 = get_muon_line_m(x, y, z, 11);
-    m2 = get_muon_line_m(x, y, z, 9);
-    m3 = get_muon_line_m(x, y, z, 7);
-  } else {
-    qassert(false);
+  const std::vector<std::vector<RealD>>& weights =
+      get_muon_line_m_extra_weights();
+  qassert(0 <= tag and tag < weights.size());
+  const std::vector<RealD> ws = weights[tag];
+  const int size = ws.size();
+  ManyMagneticMoments m;
+  set_zero(m);
+  for (int i = 0; i < size; ++i) {
+    const RealD w = ws[i];
+    if (w == 0.0) {
+      continue;
+    }
+    m += w * get_muon_line_m(x, y, z, i);
   }
-  return 3.0476190476190476 * m1 - 2.3142857142857143 * m2 +
-         0.26666666666666667 * m3;
+  return m;
 }
 
 inline std::vector<RealD> get_muon_line_m_extra_py(const CoordinateD& x,
@@ -1424,12 +1448,12 @@ inline std::vector<RealD> get_muon_line_m_extra_lat_py(
 
 inline void load_compute_save_muonline_interpolation(
     const std::string& path, const std::vector<int>& dims,
-    const double epsabs = 1.0e-8, const double epsrel = 1.0e-3)
+    const IntegrationEps& eps)
 {
   if (!load_multiple_muonline_interpolations(path)) {
     // ADJUST ME
-    // load_or_compute_muonline_interpolation(path, dims, epsabs, epsrel);
-    compute_save_muonline_interpolation_cc(path, dims, epsabs, epsrel);
+    // load_or_compute_muonline_interpolation(path, dims, eps);
+    compute_save_muonline_interpolation_cc(path, dims, eps);
     loadMuonLineInterpolation(path);
   }
 }
@@ -1475,7 +1499,7 @@ inline void test_muonline_transformation()
         y[m] /= 20.0;
       }
     }
-    muonLineSymParamsCheck(x, y, 1e-10, 1e-4);
+    muonLineSymParamsCheck(x, y, IntegrationEps());
   }
   timer.flops += size;
 }
@@ -1509,8 +1533,8 @@ inline void test_muonline_transform_scaling()
       y[m] = u_rand_gen(rsi, high, low);
       y[m] *= pow(u_rand_gen(rsi, 1.0, 0.0), 10);
     }
-    ManyMagneticMoments mmm = muonLineSym(x, y, 1e-12, 1e-4);
-    ManyMagneticMoments mmmp = muonLineSymTransform(x, y, 1e-7, 1e-2, false);
+    ManyMagneticMoments mmm = muonLineSym(x, y, IntegrationEps());
+    ManyMagneticMoments mmmp = muonLineSymTransform(x, y, IntegrationEps(), false);
     // ManyMagneticMoments mmmp = ratio * muonLineSymTransform(x/ratio, y/ratio,
     // 1e-12, 1e-3, false); ManyMagneticMoments mmmpp = ratio2 *
     // muonLineSymTransform(x/ratio2, y/ratio2, 1e-12, 1e-3, false);
@@ -1558,9 +1582,9 @@ inline void test_muonline_interp()
         y[i] = 0.0;
       }
     }
-    ManyMagneticMoments mmm = muonLineSym(x, y, 1e-8, 1e-3);
-    ManyMagneticMoments mmmp = muonLineSymTransform(x, y, 1e-8, 1e-3, false);
-    ManyMagneticMoments mmmpp = muonLineSymTransform(x, y, 1e-8, 1e-3, true);
+    ManyMagneticMoments mmm = muonLineSym(x, y, IntegrationEps());
+    ManyMagneticMoments mmmp = muonLineSymTransform(x, y, IntegrationEps(), false);
+    ManyMagneticMoments mmmpp = muonLineSymTransform(x, y, IntegrationEps(), true);
     {
       compare_many_magnetic_moments("checking", x, y, mmm, mmmp);
       compare_many_magnetic_moments("checking2", x, y, mmm, mmmpp);
@@ -1597,7 +1621,7 @@ inline void test_muonline_rotate()
       y[m] = u_rand_gen(rsi, high, low);
       y[m] *= pow(u_rand_gen(rsi, 1.0, 0.0), 5);
     }
-    muonLineSymRotateCheck(makeRandomSpatialO3Matrix(rsi), x, y);
+    muonLineSymRotateCheck(makeRandomSpatialO3Matrix(rsi), x, y, IntegrationEps());
   }
   timer.flops += size;
 }
@@ -1627,7 +1651,7 @@ inline void test_muonline_int()
       x[m] = 0.1 * (int)u_rand_gen(rsi, high, low);
       y[m] = 0.1 * (int)u_rand_gen(rsi, high, low);
     }
-    muonLineSymParamsCheck(x, y, 1e-8, 1e-3);
+    muonLineSymParamsCheck(x, y, IntegrationEps());
     // muonLineSymParamsCheck(x, y, 1e-10, 1e-4);
     // muonLineSymRotateCheck(makeRandomSpatialO3Matrix(rsi), x, y);
     // muonLineSymRotateCheck(makeRandomSpatialO3Matrix(rsi), x, y);
@@ -1643,8 +1667,8 @@ inline void test_muonLine()
   TIMER_VERBOSE("test_muonLine");
   if (IS_USING_MUON_LINE_INTERPOLATION) {
     load_compute_save_muonline_interpolation(
-        "huge-data-muon-line-interpolation", std::vector<int>(5, 12), 1.0e-7,
-        1.0e-2);
+        "huge-data-muon-line-interpolation", std::vector<int>(5, 12),
+        IntegrationEps());
   }
   // const CoordinateD x(0.1, 0.2, 0.0, 0.5);
   // const CoordinateD y(0.3, 0.0, -0.2, 0.1);

@@ -363,9 +363,9 @@ struct MuonLineIntegrandRp {
   }
 };
 
-inline double integrateMuonLine(const MuonLineIntegrand& mli)
+inline double integrateMuonLineTest(const MuonLineIntegrand& mli)
 {
-  TIMER_VERBOSE("integrateMuonLine");
+  TIMER_VERBOSE("integrateMuonLineTest");
   MuonLineIntegrandRp mliRp;
   mliRp.mli = mli;
   return integrate(mliRp, 0.0, 1.0, 1e9, 0.0);
@@ -429,7 +429,7 @@ inline void test_computeIntSeq()
     const double mliPhiInt = integrate(mliPhi, -PI, PI);
     DisplayInfo("", fname.c_str(), "mliPhiInt=%23.16e\n", mliPhiInt);
   }
-  // DisplayInfo("", fname.c_str(), "mliInt=%23.16e\n", integrateMuonLine(mli));
+  // DisplayInfo("", fname.c_str(), "mliInt=%23.16e\n", integrateMuonLineTest(mli));
   profile_computeIntSeq();
 }
 

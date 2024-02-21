@@ -87,10 +87,16 @@ struct MuonLineIntCompact {
   }
 };
 
-inline std::vector<double> integrateMuonLine(const qlat::CoordinateD& x,
-                                             const qlat::CoordinateD& y,
-                                             const double epsabs = 1.0e-8,
-                                             const double epsrel = 1.0e-3)
+struct IntegrationEps {
+  double epsabs = 1e-8;
+  double epsrel = 1e-3;
+  long mineval = 1024 * 1024;
+  long maxeval = 1024 * 1024 * 1024;
+};
+
+inline std::vector<double> integrateMuonLine(
+    const qlat::CoordinateD& x, const qlat::CoordinateD& y,
+    const IntegrationEps& eps = IntegrationEps())
 {
   TIMER("integrateMuonLine");
   MuonLineIntCompact mlic;
@@ -107,10 +113,11 @@ inline std::vector<double> integrateMuonLine(const qlat::CoordinateD& x,
   //      coordinateLen(y), yVx[0], yVx[1], yVx[2], yVx[3]));
   std::vector<double> integral, error, prob;
   const int ncomp = 25;
-  int nregions, neval, fail;
+  int nregions, fail;
+  long long int neval;
   // ADJUST ME
   integrateCuhre(integral, error, prob, nregions, neval, fail, 4, ncomp, mlic,
-                 epsabs, epsrel, 0, 1024 * 1024, 1024 * 1024 * 1024);
+                 eps.epsabs, eps.epsrel, 0, eps.mineval, eps.maxeval);
   // displayln(ssprintf("%s: nregions=%d neval=%d (%.5lf %%) fail=%d", fname,
   // nregions, neval, 100 * (double)neval/(double)(1024 * 1024 * 1024), fail));
   return integral;

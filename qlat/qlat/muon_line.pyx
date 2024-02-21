@@ -27,7 +27,7 @@ def clear_muon_line_interpolations():
     cc.clear_muon_line_interpolations()
 
 @q.timer
-def compute_save_muonline_interpolation(cc.std_string path, cc.std_vector[cc.Int] dims, cc.RealD epsabs, cc.RealD epsrel):
+def compute_save_muonline_interpolation(cc.std_string path, cc.std_vector[cc.Int] dims, object eps):
     """
     compute and save the muonline interpolation at `path`.
     #
@@ -36,7 +36,13 @@ def compute_save_muonline_interpolation(cc.std_string path, cc.std_vector[cc.Int
     default: epsabs=1e-8 ; epsrel=1e-3
     dims = [ 6, 6, 6, 6, 6, ] ~ [ 16, 16, 16, 16, 16, ]
     """
-    return cc.compute_save_muonline_interpolation_cc(path, dims, epsabs, epsrel)
+    cdef cc.IntegrationEps cc_eps
+    epsabs, epsrel, mineval, maxeval = eps
+    cc_eps.epsabs = epsabs
+    cc_eps.epsrel = epsrel
+    cc_eps.mineval = mineval
+    cc_eps.maxeval = maxeval
+    return cc.compute_save_muonline_interpolation_cc(path, dims, cc_eps)
 
 @q.timer
 def load_multiple_muonline_interpolations(cc.std_string path, cc.std_vector[cc.Long] idx_list):
@@ -51,8 +57,16 @@ def load_multiple_muonline_interpolations(cc.std_string path, cc.std_vector[cc.L
     """
     return cc.load_multiple_muonline_interpolations(path, idx_list)
 
+def get_muon_line_m_extra_weights():
+    return cc.get_muon_line_m_extra_weights()
+
+def set_muon_line_m_extra_weights(object weights=None):
+    if weights is None:
+        weights = cc.get_muon_line_m_extra_weights_default()
+    cc.set_muon_line_m_extra_weights(weights)
+
 @q.timer
-def calc_muon_line_m(CoordinateD x, CoordinateD y, cc.RealD epsabs, cc.RealD epsrel):
+def calc_muon_line_m(CoordinateD x, CoordinateD y, object eps):
     """
     return ret
     ret is 4D np.array with total len=3*4*4*4 and dtype=np.float64
@@ -62,11 +76,17 @@ def calc_muon_line_m(CoordinateD x, CoordinateD y, cc.RealD epsabs, cc.RealD eps
     interface to C++ function `muon_line_sym_py`
     default: epsabs=1e-8 ; epsrel=1e-3
     """
-    cdef cc.std_vector[cc.RealD] vec = cc.muon_line_sym_py(x.xx, y.xx, epsabs, epsrel)
+    cdef cc.IntegrationEps cc_eps
+    epsabs, epsrel, mineval, maxeval = eps
+    cc_eps.epsabs = epsabs
+    cc_eps.epsrel = epsrel
+    cc_eps.mineval = mineval
+    cc_eps.maxeval = maxeval
+    cdef cc.std_vector[cc.RealD] vec = cc.muon_line_sym_py(x.xx, y.xx, cc_eps)
     cdef numpy.ndarray arr = np.ascontiguousarray(vec, dtype=np.float64).reshape(3, 4, 4, 4)
     return arr
 
-def get_muon_line_m(CoordinateD x, CoordinateD y, CoordinateD z, cc.Int idx, cc.RealD epsabs, cc.RealD epsrel):
+def get_muon_line_m(CoordinateD x, CoordinateD y, CoordinateD z, cc.Int idx, object eps):
     """
     return ret
     ret is 4D np.array with total len=3*4*4*4 and dtype=np.float64
@@ -75,9 +95,15 @@ def get_muon_line_m(CoordinateD x, CoordinateD y, CoordinateD z, cc.Int idx, cc.
     #
     interface to C++ function `get_muon_line_m_py`
     if idx < 0: calculate instead of using loaded interpolation.
-    else using the muonline interpolation loaded as `idx` (epsabs and epsrel are ignored).
+    else using the muonline interpolation loaded as `idx` (epsabs, epsrel, mineval, maxeval are ignored).
     """
-    cdef cc.std_vector[cc.RealD] vec = cc.get_muon_line_m_py(x.xx, y.xx, z.xx, idx, epsabs, epsrel)
+    cdef cc.IntegrationEps cc_eps
+    epsabs, epsrel, mineval, maxeval = eps
+    cc_eps.epsabs = epsabs
+    cc_eps.epsrel = epsrel
+    cc_eps.mineval = mineval
+    cc_eps.maxeval = maxeval
+    cdef cc.std_vector[cc.RealD] vec = cc.get_muon_line_m_py(x.xx, y.xx, z.xx, idx, cc_eps)
     cdef numpy.ndarray arr = np.ascontiguousarray(vec, dtype=np.float64).reshape(3, 4, 4, 4)
     return arr
 
@@ -92,7 +118,7 @@ def get_muon_line_m_extra(CoordinateD x, CoordinateD y, CoordinateD z, cc.Int ta
     tag = 0 sub
     tag = 1 nosub
     #
-    Interpolations shoulded be loaded for this function:
+    Interpolations should be loaded for this function:
     0: 6^5 with-sub
     1: 8^5 with-sub (used for tag 0)
     2: 10^5 with-sub
@@ -122,7 +148,7 @@ def get_muon_line_m_extra_lat(Coordinate x, Coordinate y, Coordinate z, Coordina
     tag = 0 sub
     tag = 1 nosub
     #
-    Interpolations shoulded be loaded for this function:
+    Interpolations should be loaded for this function:
     0: 6^5 with-sub
     1: 8^5 with-sub (used for tag 0)
     2: 10^5 with-sub

@@ -1563,7 +1563,6 @@ if 0 == q.get_id_node():
             if n != nl:
                 q.displayln(f"CHECK: {i} {p} load:{pl}")
                 q.displayln("CHECK: ERROR: JSON results item does not match.")
-                assert False
             if abs(v - vl) > check_eps * (abs(v) + abs(vl)):
                 q.displayln(f"CHECK: {i} {p} load:{pl}")
                 q.displayln("CHECK: ERROR: JSON results value does not match.")

@@ -349,30 +349,42 @@ cdef extern from "qlat/muon-line.h" namespace "qlat":
     void test_integrationMultidimensional() except +
     #
     void clear_muon_line_interpolations() except +
+    #
+    cdef cppclass IntegrationEps:
+        double epsabs
+        double epsrel
+        long mineval
+        long maxeval
+        IntegrationEps()
     # epsabs = 1e-8
     # epsrel = 1e-3
+    # mineval = 1024 * 1024
+    # maxeval = 1024 * 1024 * 1024
     # dims = [ 6, 6, 6, 6, 6, ] ~ [ 16, 16, 16, 16, 16, ]
-    bool compute_save_muonline_interpolation_cc(const std_string& path,
-                                                const std_vector[Int]& dims,
-                                                const RealD epsabs,
-                                                const RealD epsrel) except +
-    std_vector[RealD] muon_line_sym_py(const CoordinateD& x,
-                                        const CoordinateD& y,
-                                        const RealD epsabs,
-                                        const RealD epsrel) except +
+    bool compute_save_muonline_interpolation_cc(
+            const std_string& path,
+            const std_vector[Int]& dims,
+            const IntegrationEps& eps) except +
+    std_vector[RealD] muon_line_sym_py(
+            const CoordinateD& x,
+            const CoordinateD& y,
+            const IntegrationEps& eps) except +
     #
     bool load_multiple_muonline_interpolations(const std_string& path, std_vector[Long] idx_list) except +
+    #
+    std_vector[std_vector[RealD]] get_muon_line_m_extra_weights_default() except +
+    std_vector[std_vector[RealD]]& get_muon_line_m_extra_weights() except +
+    void set_muon_line_m_extra_weights(const std_vector[std_vector[RealD]]& weight) except +
     #
     std_vector[RealD] get_muon_line_m_py(
             const CoordinateD& x, const CoordinateD& y,
             const CoordinateD& z,
             const Int idx,
-            const RealD epsabs,
-            const RealD epsrel) except +
+            const IntegrationEps& eps) except +
     std_vector[RealD] get_muon_line_m_extra_py(const CoordinateD& x,
-                                                const CoordinateD& y,
-                                                const CoordinateD& z,
-                                                const Int tag) except +
+            const CoordinateD& y,
+            const CoordinateD& z,
+            const Int tag) except +
     std_vector[RealD] get_muon_line_m_extra_lat_py(
             const Coordinate& x, const Coordinate& y, const Coordinate& z,
             const Coordinate& total_site, const RealD a, const Int tag) except +
