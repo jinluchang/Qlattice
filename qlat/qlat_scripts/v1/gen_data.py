@@ -63,6 +63,7 @@ def compute_prop_wsrc_full_all(job_tag, traj, *,
 
 @q.timer
 def run_prop_wsrc_full(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_wi):
+    fname = q.get_fname()
     if None in [ get_gf, get_gt, ]:
         return
     if get_eig is None:
@@ -82,6 +83,7 @@ def run_prop_wsrc_full(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_
                                    inv_type=inv_type, gf=gf, gt=gt, wi=wi,
                                    eig=eig)
         q.release_lock()
+        return [ f"{fname} {job_tag} {traj} {inv_type} done", ]
 
 # -----------------------------------------------------------------------------
 
@@ -347,6 +349,7 @@ def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel,
         q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
         q.qrename_info(get_save_path(path_sp + ".qar.acc"), get_save_path(path_sp + ".qar"))
         q.release_lock()
+        return [ f"{fname} {job_tag} {traj} {inv_type} done", ]
 
 # -----------------------------------------------------------------------------
 
@@ -536,6 +539,7 @@ def compute_prop_psrc_all(job_tag, traj, *,
 
 @q.timer
 def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel, get_fsel, get_f_rand_01):
+    fname = q.get_fname()
     if None in [ get_gf, get_gt, get_psel, get_fsel, get_f_rand_01, ]:
         return
     if get_eig is None:
@@ -560,6 +564,7 @@ def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel,
                               f_rand_01=f_rand_01,
                               eig=eig)
         q.release_lock()
+        return [ f"{fname} {job_tag} {traj} {inv_type} done", ]
 
 # -----------------------------------------------------------------------------
 
@@ -614,6 +619,7 @@ def compute_prop_rand_u1(*, job_tag, traj, inv_type, gf, path_s, fsel, eig=None)
 
 @q.timer_verbose
 def run_prop_rand_u1(job_tag, traj, *, inv_type, get_gf, get_fsel, get_eig=None):
+    fname = q.get_fname()
     if None in [ get_gf, get_fsel, ]:
         return
     if get_eig is None:
@@ -637,6 +643,7 @@ def run_prop_rand_u1(job_tag, traj, *, inv_type, get_gf, get_fsel, get_eig=None)
                 fsel=fsel,
                 eig=eig)
         q.release_lock()
+        return [ f"{fname} {job_tag} {traj} {inv_type} done", ]
 
 # -----------------------------------------------------------------------------
 
@@ -721,6 +728,7 @@ def compute_prop_smear_all(job_tag, traj, *,
 
 @q.timer
 def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_gt, get_psel, get_fsel, get_psel_smear):
+    fname = q.get_fname()
     if None in [ get_gf, get_gt, get_gf_ape, get_psel, get_fsel, ]:
         return
     if get_eig is None:
@@ -744,6 +752,7 @@ def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_
                 inv_type=inv_type, gf=gf, gf_ape=gf_ape, gt=gt,
                 psel=psel, fsel=fsel, eig=eig, psel_smear=psel_smear)
         q.release_lock()
+        return [ f"{fname} {job_tag} {traj} {inv_type} done", ]
 
 # -----------------------------------------------------------------------------
 
