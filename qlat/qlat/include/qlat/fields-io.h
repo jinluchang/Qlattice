@@ -20,6 +20,19 @@
 
 // File format should be compatible with Christoph Lehner's file format.
 
+// Add fields index, which stores fn_list, and offsets_map for each Fields file.
+// index.qar
+// File names will be "0", "1", "2", ...
+// File content will be
+/*
+LENGTH_OF_FN
+[newline character]
+FN
+[newline character]
+OFFSET_0 OFFSET_1 OFFSET_2 ... OFFSET_N
+[newline character]
+*/
+
 #include <errno.h>
 #include <qlat-utils/qar.h>
 #include <qlat/field-io.h>
@@ -155,6 +168,8 @@ struct API FieldsReader {
   std::map<std::string, Long> offsets_map;
   Long max_offset;
   //
+  Long file_size;
+  //
   FieldsReader() { init(); }
   //
   void init();
@@ -172,8 +187,6 @@ Coordinate shuffled_fields_reader_size_node_info(const std::string& path);
 void mkfile(FieldsReader& fr);
 
 std::string get_file_path(FieldsReader& fr);
-
-Long get_file_size(FieldsReader& fr);
 
 template <class M>
 void convert_endian(Vector<M> data, const bool is_little_endian)
@@ -203,6 +216,8 @@ Long read_data(FieldsReader& fr, std::vector<char>& data,
 Long read_next(FieldsReader& fr, std::string& fn, Coordinate& total_site,
                std::vector<char>& data, bool& is_sparse_field);
 
+Long read_skip_next(FieldsReader& fr, std::string& fn);
+
 void read_through(FieldsReader& fr);
 
 bool does_file_exist(FieldsReader& fr, const std::string& fn);
@@ -210,7 +225,9 @@ bool does_file_exist(FieldsReader& fr, const std::string& fn);
 Long read(FieldsReader& fr, const std::string& fn, Coordinate& total_site,
           std::vector<char>& data, bool& is_sparse_field);
 
-Long check_file(FieldsReader& fr, const std::string& fn);
+Long read_skip(FieldsReader& fr, const std::string& fn);
+
+Long check_file(FieldsReader& fr, const std::string& fn, const bool is_check_data);
 
 int flush(FieldsWriter& fw);
 
@@ -495,6 +512,7 @@ bool does_file_exist_sync_node(ShuffledFieldsReader& sfr,
                                const std::string& fn);
 
 bool check_file_sync_node(ShuffledFieldsReader& sfr, const std::string& fn,
+                          const bool is_check_data,
                           std::vector<Long>& final_offsets);
 
 std::vector<std::string> list_fields(ShuffledFieldsReader& sfr, bool is_skipping_check = false);
@@ -502,6 +520,12 @@ std::vector<std::string> list_fields(ShuffledFieldsReader& sfr, bool is_skipping
 int truncate_fields_sync_node(const std::string& path,
                               const std::vector<std::string>& fns_keep,
                               const Coordinate& new_size_node = Coordinate());
+
+void properly_truncate_fields_sync_node(
+    std::vector<std::string>& fn_list,
+    std::vector<std::vector<Long>>& offsets_list, const std::string& path,
+    const bool is_check_all, const bool is_only_check,
+    const Coordinate& new_size_node);
 
 std::vector<std::string> properly_truncate_fields_sync_node(
     const std::string& path, const bool is_check_all = false,

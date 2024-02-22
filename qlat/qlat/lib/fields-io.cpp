@@ -201,6 +201,7 @@ void FieldsReader::init()
   fn_list.clear();
   offsets_map.clear();
   max_offset = 0;
+  file_size = 0;
 }
 
 void FieldsReader::init(const std::string& path_, const GeometryNode& geon_)
@@ -214,8 +215,10 @@ void FieldsReader::init(const std::string& path_, const GeometryNode& geon_)
   qfile = qfopen(dist_file_name(path, geon.id_node, geon.num_node), "r");
   if (qfile.null()) {
     is_read_through = true;
+    file_size = 0;
   } else {
     is_read_through = false;
+    file_size = qfile.size();
   }
   fn_list.clear();
   offsets_map.clear();
@@ -239,13 +242,6 @@ std::string get_file_path(FieldsReader& fr)
     return dist_file_name(fr.path, fr.geon.id_node, fr.geon.num_node);
   }
   return "";
-}
-
-Long get_file_size(FieldsReader& fr)
-// the file must be opened for reading
-// will restore the position.
-{
-  return qfile_size(fr.qfile);
 }
 
 void qfwrite_convert_endian(void* ptr, const size_t size, const size_t nmemb,
@@ -374,10 +370,12 @@ bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   //
   if (has(fr.offsets_map, fn)) {
     if (fr.offsets_map[fn] != offset_initial) {
-      qwarn(ssprintf("fn='%s' appeared twice! %ld %ld", fn.c_str(),
+      qwarn(ssprintf("read_tag: fn='%s' appeared twice! %ld %ld", fn.c_str(),
                      fr.offsets_map[fn], offset_initial));
-      fr.is_read_through = true;
-      return false;
+      if (offset_initial > fr.offsets_map[fn]) {
+        fr.fn_list.push_back(fn);
+        fr.offsets_map[fn] = offset_initial;
+      }
     }
   } else {
     fr.fn_list.push_back(fn);
@@ -500,20 +498,47 @@ Long read_next(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   return total_bytes;
 }
 
-void read_through(FieldsReader& fr)
+Long read_skip_next(FieldsReader& fr, std::string& fn)
+// return offset of the end of this data segment
+// return -1 if failed.
 {
   Coordinate total_site;
   bool is_sparse_field;
+  fn = "";
+  crc32_t crc = 0;
+  int64_t data_len = 0;
+  const bool is_ok =
+      read_tag(fr, fn, total_site, crc, data_len, is_sparse_field);
+  if (not is_ok) {
+    errno = 0;
+    fn = "";
+    return -1;
+  }
+  const int ret = qfseek(fr.qfile, data_len, SEEK_CUR);
+  if (ret != 0) {
+    errno = 0;
+    return -1;
+  }
+  const Long offset_final = fr.qfile.tell();
+  if (offset_final > fr.file_size) {
+    return -1;
+  }
+  return offset_final;
+}
+
+void read_through(FieldsReader& fr)
+{
+  TIMER("read_through(fr)");
+  qassert(not fr.qfile.null());
+  qassert(fr.max_offset <= fr.file_size);
+  const int code = qfseek(fr.qfile, fr.max_offset, SEEK_SET);
+  qassert(code == 0);
   while (true) {
     std::string fn_read = "";
-    crc32_t crc = 0;
-    int64_t data_len = 0;
-    const bool is_ok =
-        read_tag(fr, fn_read, total_site, crc, data_len, is_sparse_field);
-    if (is_ok) {
-      qfseek(fr.qfile, data_len, SEEK_CUR);
-    } else {
-      errno = 0;
+    const Long offset_final = read_skip_next(fr, fn_read);
+    if (offset_final < 0) {
+      qassert(offset_final == -1);
+      fr.is_read_through = true;
       return;
     }
   }
@@ -534,22 +559,15 @@ bool does_file_exist(FieldsReader& fr, const std::string& fn)
       return false;
     }
   }
-  Coordinate total_site;
-  bool is_sparse_field;
   while (true) {
     std::string fn_read = "";
-    crc32_t crc = 0;
-    int64_t data_len = 0;
-    const bool is_ok =
-        read_tag(fr, fn_read, total_site, crc, data_len, is_sparse_field);
-    if (is_ok) {
-      if (fn == fn_read) {
-        return true;
-      } else {
-        qfseek(fr.qfile, data_len, SEEK_CUR);
-      }
-    } else {
+    const Long offset_final = read_skip_next(fr, fn_read);
+    if (offset_final < 0) {
+      qassert(offset_final == -1);
       return false;
+    }
+    if (fn_read == fn) {
+      return true;
     }
   }
 }
@@ -570,11 +588,30 @@ Long read(FieldsReader& fr, const std::string& fn, Coordinate& total_site,
   return total_bytes;
 }
 
-Long check_file(FieldsReader& fr, const std::string& fn)
+Long read_skip(FieldsReader& fr, const std::string& fn)
+// return offset of the end of this data segment
+// return -1 if failed.
+{
+  TIMER_FLOPS("read_skip(fr,fn)");
+  if (not does_file_exist(fr, fn)) {
+    return -1;
+  }
+  qassert(fr.offsets_map.count(fn) == 1);
+  qfseek(fr.qfile, fr.offsets_map[fn], SEEK_SET);
+  std::string fn_r;
+  const Long offset_final = read_skip_next(fr, fn_r);
+  qassert(fn == fn_r);
+  return offset_final;
+}
+
+Long check_file(FieldsReader& fr, const std::string& fn, const bool is_check_data)
 // return final offset of the data
-// if check_file fail, return 0
+// if check_file fail, return -1
 {
   TIMER_FLOPS("check_file(fr,fn)");
+  if (not is_check_data) {
+    return read_skip(fr, fn);
+  }
   Coordinate total_site;
   std::vector<char> data;
   bool is_sparse_field;
@@ -582,7 +619,7 @@ Long check_file(FieldsReader& fr, const std::string& fn)
   if (total_bytes > 0) {
     return qftell(fr.qfile);
   } else {
-    return 0;
+    return -1;
   }
 }
 
@@ -755,6 +792,8 @@ void ShuffledFieldsReader::close()
   }
 }
 
+// ------------------------
+
 std::string show(const ShuffledFieldsWriter& sfw)
 {
   return ssprintf("ShuffledFieldsWriter(path='%s',new_size_node=%s)",
@@ -806,6 +845,8 @@ std::vector<std::string> show_all_shuffled_fields_writer()
   return ret;
 }
 
+// ------------------------
+
 Long flush(ShuffledFieldsWriter& sfw)
 // interface function
 {
@@ -849,20 +890,21 @@ bool does_file_exist_sync_node(ShuffledFieldsReader& sfr, const std::string& fn)
 }
 
 bool check_file_sync_node(ShuffledFieldsReader& sfr, const std::string& fn,
+                          const bool is_check_data,
                           std::vector<Long>& final_offsets)
 // interface function
 // set final_offsets to be the files position after loading the data ``fn''
 // (zero if failed for that file) return if data is loaded successfully
 {
-  TIMER_VERBOSE("check_file_sync_node(sfr,fn)");
+  TIMER_VERBOSE("check_file_sync_node(sfr,fn,is_check_data,final_offsets)");
   displayln_info(0, fname + ssprintf(": reading field with fn='%s' from '%s'.",
                                      fn.c_str(), sfr.path.c_str()));
   clear(final_offsets);
   final_offsets.resize(sfr.frs.size(), 0);
   Long total_failed_counts = 0;
   for (int i = 0; i < (int)sfr.frs.size(); ++i) {
-    final_offsets[i] = check_file(sfr.frs[i], fn);
-    if (final_offsets[i] == 0) {
+    final_offsets[i] = check_file(sfr.frs[i], fn, is_check_data);
+    if (final_offsets[i] == -1) {
       total_failed_counts += 1;
     }
   }
@@ -900,6 +942,8 @@ std::vector<std::string> list_fields(ShuffledFieldsReader& sfr, bool is_skipping
   return ret;
 }
 
+// ------------------------
+
 int truncate_fields_sync_node(const std::string& path,
                               const std::vector<std::string>& fns_keep,
                               const Coordinate& new_size_node)
@@ -924,7 +968,7 @@ int truncate_fields_sync_node(const std::string& path,
   if (fns_keep.size() >= 1) {
     const std::string& fn_last = fns_keep.back();
     const bool is_fn_last_valid =
-        check_file_sync_node(sfr, fn_last, final_offsets);
+        check_file_sync_node(sfr, fn_last, true, final_offsets);
     if (not is_fn_last_valid) {
       qwarn(fname + ssprintf(": fn_last='%s' check failed", fn_last.c_str()));
       return 2;
@@ -933,7 +977,7 @@ int truncate_fields_sync_node(const std::string& path,
   for (int i = 0; i < (int)sfr.frs.size(); ++i) {
     FieldsReader& fr = sfr.frs[i];
     const std::string path_file = get_file_path(fr);
-    const Long file_size = get_file_size(fr);
+    const Long file_size = fr.file_size;
     fr.close();
     const Long final_offset = final_offsets[i];
     if (file_size != final_offset) {
@@ -953,28 +997,32 @@ int truncate_fields_sync_node(const std::string& path,
   return 0;
 }
 
-std::vector<std::string> properly_truncate_fields_sync_node(
-    const std::string& path, const bool is_check_all, const bool is_only_check,
+void properly_truncate_fields_sync_node(
+    std::vector<std::string>& fn_list,
+    std::vector<std::vector<Long>>& offsets_list, const std::string& path,
+    const bool is_check_all, const bool is_only_check,
     const Coordinate& new_size_node)
 // interface function
-// return available fns
+// offsets_list.size() == fn_list.size()
+// offsets_list[0].size() == sfr.frs.size()
 {
   TIMER_VERBOSE("properly_truncate_fields_sync_node");
-  std::vector<std::string> fns;
+  fn_list.clear();
+  offsets_list.clear();
   if (not does_file_exist_qar_sync_node(path + "/geon-info.txt")) {
     displayln_info(0, fname + ssprintf(": '%s' does not exist.", path.c_str()));
-    return fns;
+    return;
   }
   ShuffledFieldsReader sfr;
   sfr.init(path, new_size_node);
-  fns = list_fields(sfr, true);
+  fn_list = list_fields(sfr, true);
   std::vector<Long> last_final_offsets(sfr.frs.size(), 0);
   Long last_idx = -1;
   if (is_check_all) {
-    for (Long i = 0; i < (Long)fns.size(); ++i) {
-      const std::string& fn = fns[i];
+    for (Long i = 0; i < (Long)fn_list.size(); ++i) {
+      const std::string& fn = fn_list[i];
       std::vector<Long> final_offsets;
-      const bool b = check_file_sync_node(sfr, fn, final_offsets);
+      const bool b = check_file_sync_node(sfr, fn, true, final_offsets);
       if (b) {
         last_final_offsets = final_offsets;
         last_idx = i;
@@ -983,10 +1031,10 @@ std::vector<std::string> properly_truncate_fields_sync_node(
       }
     }
   } else {
-    for (Long i = (Long)fns.size() - 1; i >= 0; i -= 1) {
-      const std::string& fn = fns[i];
+    for (Long i = (Long)fn_list.size() - 1; i >= 0; i -= 1) {
+      const std::string& fn = fn_list[i];
       std::vector<Long> final_offsets;
-      const bool b = check_file_sync_node(sfr, fn, final_offsets);
+      const bool b = check_file_sync_node(sfr, fn, false, final_offsets);
       if (b) {
         last_final_offsets = final_offsets;
         last_idx = i;
@@ -994,10 +1042,20 @@ std::vector<std::string> properly_truncate_fields_sync_node(
       }
     }
   }
+  fn_list.resize(last_idx + 1);
+  offsets_list.resize(fn_list.size());
+  for (int j = 0; j < (int)sfr.frs.size(); ++j) {
+    FieldsReader& fr = sfr.frs[j];
+    for (Long i = 0; i < (Long)fn_list.size(); ++i) {
+      const std::string& fn = fn_list[i];
+      const Long offset = fr.offsets_map[fn];
+      offsets_list[i].push_back(offset);
+    }
+  }
   for (int i = 0; i < (int)sfr.frs.size(); ++i) {
     FieldsReader& fr = sfr.frs[i];
     const std::string path_file = get_file_path(fr);
-    const Long file_size = get_file_size(fr);
+    const Long file_size = fr.file_size;
     fr.close();
     const Long final_offset = last_final_offsets[i];
     if (file_size != final_offset) {
@@ -1019,17 +1077,31 @@ std::vector<std::string> properly_truncate_fields_sync_node(
       }
     }
   }
+  sfr.close();
   errno = 0;
-  fns.resize(last_idx + 1);
-  for (Long i = 0; i < (Long)fns.size(); ++i) {
-    const std::string& fn = fns[i];
+  for (Long i = 0; i < (Long)fn_list.size(); ++i) {
+    const std::string& fn = fn_list[i];
     displayln_info(0, fname + ssprintf(": i=%5ld fn='%s'", i, fn.c_str()));
   }
-  displayln_info(
-      0, fname + ssprintf(": fns.size()=%5ld '%s'", fns.size(), path.c_str()));
+  displayln_info(0, fname + ssprintf(": fn_list.size()=%5ld '%s'",
+                                     fn_list.size(), path.c_str()));
   sync_node();
-  return fns;
 }
+
+std::vector<std::string> properly_truncate_fields_sync_node(
+    const std::string& path, const bool is_check_all, const bool is_only_check,
+    const Coordinate& new_size_node)
+// interface function
+// return available fns
+{
+  std::vector<std::string> fn_list;
+  std::vector<std::vector<Long>> offsets_list;
+  properly_truncate_fields_sync_node(fn_list, offsets_list, path, is_check_all,
+                                     is_only_check, new_size_node);
+  return fn_list;
+}
+
+// ------------------------
 
 ShuffledFieldsReader& get_shuffled_fields_reader(
     const std::string& path, const Coordinate& new_size_node)
