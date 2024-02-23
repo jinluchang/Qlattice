@@ -786,8 +786,8 @@ void QFileObj::close()
     }
   } else {
     TIMER("QFileObj::close()");
-    displayln_info(1, ssprintf("QFile: close child of '%s' with '%s'.",
-                               path().c_str(), show(mode()).c_str()));
+    // displayln_info(1, ssprintf("QFile: close child of '%s' with '%s'.",
+    //                            path().c_str(), show(mode()).c_str()));
     fp.reset();
     parent->number_of_child -= 1;
     parent.reset();
