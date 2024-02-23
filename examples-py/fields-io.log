@@ -7,6 +7,7 @@ CHECK: 0 QFileObj(path='results/prop.fields/00/0000000000',mode='w',parent=no,nu
 CHECK: 1 QFileObj(path='results/prop.fields/01/0000000001',mode='w',parent=no,number_of_child=0)
 CHECK: 2 QFileObj(path='results/prop.fields/02/0000000002',mode='w',parent=no,number_of_child=0)
 CHECK: 3 QFileObj(path='results/prop.fields/03/0000000003',mode='w',parent=no,number_of_child=0)
+CHECK: 4 QFileObj(path='results/prop.fields/index.qar',mode='w',parent=no,number_of_child=0)
 CHECK: sfw.new_size_node() Coordinate([1, 1, 1, 8])
 CHECK: s_prop = SelProp(fsel) and s_prop @= prop   1.239182E+04
 CHECK: prop1 = SelProp(fselc) and prop1 @= prop 1.25896071556403E+04
@@ -32,5 +33,5 @@ CHECK:  ['prop.d', 'prop', 's_prop', 'prop1']
 CHECK:  ['prop.d', 'prop', 's_prop', 'prop1']
 CHECK:  ['prop.d', 'prop', 's_prop']
 CHECK:  []
-CHECK:  ['results/prop.fields/00/0000000000', 'results/prop.fields/00', 'results/prop.fields/01/0000000001', 'results/prop.fields/01', 'results/prop.fields/02/0000000002', 'results/prop.fields/02', 'results/prop.fields/03/0000000003', 'results/prop.fields/03', 'results/prop.fields/04/0000000004', 'results/prop.fields/04', 'results/prop.fields/05/0000000005', 'results/prop.fields/05', 'results/prop.fields/06/0000000006', 'results/prop.fields/06', 'results/prop.fields/07/0000000007', 'results/prop.fields/07', 'results/prop.fields/geon-info.txt', 'results/prop.fields']
+CHECK:  ['results/prop.fields/00/0000000000', 'results/prop.fields/00', 'results/prop.fields/01/0000000001', 'results/prop.fields/01', 'results/prop.fields/02/0000000002', 'results/prop.fields/02', 'results/prop.fields/03/0000000003', 'results/prop.fields/03', 'results/prop.fields/04/0000000004', 'results/prop.fields/04', 'results/prop.fields/05/0000000005', 'results/prop.fields/05', 'results/prop.fields/06/0000000006', 'results/prop.fields/06', 'results/prop.fields/07/0000000007', 'results/prop.fields/07', 'results/prop.fields/geon-info.txt', 'results/prop.fields/index.qar', 'results/prop.fields']
 CHECK: finished successfully.
