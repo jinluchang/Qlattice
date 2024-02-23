@@ -22,8 +22,8 @@
 
 // Add fields index, which stores fn_list, and offsets_map for each Fields file.
 // index.qar
-// File names will be "0", "1", "2", ...
-// File content will be
+// Names will be "0", "1", "2", ...
+// Content will be
 /*
 LENGTH_OF_FN
 [newline character]
@@ -436,6 +436,8 @@ struct API ShuffledFieldsWriter {
   std::string path;
   Coordinate new_size_node;
   std::vector<FieldsWriter> fws;
+  QarFile qar_index;
+  Long qar_index_idx;
   //
   ShuffledFieldsWriter() { init(); }
   ShuffledFieldsWriter(const std::string& path_,
@@ -519,7 +521,7 @@ bool check_file_sync_node(ShuffledFieldsReader& sfr, const std::string& fn,
                           const bool is_check_data,
                           std::vector<Long>& final_offsets);
 
-std::vector<std::string> list_fields(ShuffledFieldsReader& sfr, bool is_skipping_check = false);
+std::vector<std::string> list_fields(const ShuffledFieldsReader& sfr, bool is_skipping_check = false);
 
 std::vector<std::string> list_fields(const ShuffledFieldsWriter& sfw, bool is_skipping_check = false);
 
@@ -540,6 +542,36 @@ std::vector<std::string> properly_truncate_fields_sync_node(
 
 // -----------------
 
+std::string show_field_index(const std::string& fn,
+                             const std::vector<Long>& offsets);
+
+void parse_field_index(std::string& fn, std::vector<Long>& all_offsets,
+                       const std::string& field_index_content);
+
+std::vector<Long> collect_fields_offsets(const ShuffledFieldsWriter& sfw,
+                                         const std::string& fn);
+
+std::vector<Long> collect_fields_offsets(const ShuffledFieldsReader& sfr,
+                                         const std::string& fn);
+
+bool populate_fields_offsets(ShuffledFieldsReader& sfr, const std::string& fn,
+                             const std::vector<Long>& offsets);
+
+void load_all_fields_index(std::vector<std::string>& fn_list,
+                           std::vector<std::vector<Long>>& all_offsets_list,
+                           QarFile& qar_index);
+
+void save_fields_index(QarFile& qar_index, const Long idx,
+                       const std::string& fn, const std::vector<Long>& offsets);
+
+void save_fields_index(ShuffledFieldsWriter& sfw, const std::string& fn);
+
+void fields_build_index(const ShuffledFieldsReader& sfr);
+
+void fields_build_index(const std::string& path);
+
+// -----------------
+
 template <class M>
 Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
            const Field<M>& field)
@@ -556,6 +588,7 @@ Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
     total_bytes += write(sfw.fws[i], fn, fs[i]);
   }
   glb_sum(total_bytes);
+  save_fields_index(sfw, fn);
   timer.flops += total_bytes;
   return total_bytes;
 }
@@ -579,6 +612,7 @@ Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
     total_bytes += write(sfw.fws[i], fn, sfs[i], sbs.vbs[i]);
   }
   glb_sum(total_bytes);
+  save_fields_index(sfw, fn);
   timer.flops += total_bytes;
   return total_bytes;
 }

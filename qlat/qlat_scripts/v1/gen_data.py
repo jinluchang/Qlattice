@@ -314,7 +314,7 @@ def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel,
         available_tags = sfr.list()
         q.displayln_info(0, f"available_tags={available_tags}")
         sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
-        qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar.acc"), "a")
+        qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar"), "a")
         prop = q.Prop(geo)
         s_prop = q.SelProp(fsel)
         ps_prop = q.PselProp(psel)
@@ -347,7 +347,6 @@ def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel,
         qar_sp.save_index(path_sp + ".qar.idx")
         qar_sp.close()
         q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
-        q.qrename_info(get_save_path(path_sp + ".qar.acc"), get_save_path(path_sp + ".qar"))
         q.release_lock()
         return [ f"{fname} {job_tag} {traj} {inv_type} done", ]
 
@@ -498,8 +497,8 @@ def compute_prop_psrc_all(job_tag, traj, *,
         sfw_hvp = q.open_fields(get_save_path(path_s_hvp + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     else:
         sfw_hvp = None
-    qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar.acc"), "a")
-    qar_hvp_ts = q.open_qar_info(get_save_path(path_hvp_ts + ".qar.acc"), "a")
+    qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar"), "a")
+    qar_hvp_ts = q.open_qar_info(get_save_path(path_hvp_ts + ".qar"), "a")
     def comp(idx, xg_src, inv_acc):
         compute_prop_psrc(job_tag, traj, xg_src, inv_type, inv_acc,
                 idx=idx, gf=gf, gt=gt, sfw=sfw, qar_sp=qar_sp,
@@ -534,8 +533,6 @@ def compute_prop_psrc_all(job_tag, traj, *,
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
     if sfw_hvp is not None:
         q.qrename_info(get_save_path(path_s_hvp + ".acc"), get_save_path(path_s_hvp))
-    q.qrename_info(get_save_path(path_sp + ".qar.acc"), get_save_path(path_sp + ".qar"))
-    q.qrename_info(get_save_path(path_hvp_ts + ".qar.acc"), get_save_path(path_hvp_ts + ".qar"))
 
 @q.timer
 def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel, get_fsel, get_f_rand_01):
@@ -615,7 +612,6 @@ def compute_prop_rand_u1(*, job_tag, traj, inv_type, gf, path_s, fsel, eig=None)
             comp(idx_rand_u1, inv_acc)
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
-    # q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after=True)
 
 @q.timer_verbose
 def run_prop_rand_u1(job_tag, traj, *, inv_type, get_gf, get_fsel, get_eig=None):
@@ -700,7 +696,7 @@ def compute_prop_smear_all(job_tag, traj, *,
     path_sp = f"{job_tag}/psel-prop-smear-{inv_type_name}/traj-{traj}"
     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
-    qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar.acc"), "a")
+    qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar"), "a")
     def comp(idx, xg_src, inv_acc):
         compute_prop_smear(job_tag, xg_src, inv_type, inv_acc,
                 idx=idx, gf=gf, gt=gt, sfw=sfw, qar_sp=qar_sp,
@@ -724,7 +720,6 @@ def compute_prop_smear_all(job_tag, traj, *,
     qar_sp.save_index(get_save_path(path_sp + ".qar.idx"))
     qar_sp.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
-    q.qrename_info(get_save_path(path_sp + ".qar.acc"), get_save_path(path_sp + ".qar"))
 
 @q.timer
 def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_gt, get_psel, get_fsel, get_psel_smear):
