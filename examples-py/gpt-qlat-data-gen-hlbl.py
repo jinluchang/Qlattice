@@ -490,9 +490,12 @@ def run_job(job_tag, traj):
     #
     fn_checkpoint_auto_contract = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
     #
+    q.displayln_info(f"{fname}: run_ret_list={run_ret_list}")
     if job_tag in [ "64I", ]:
         q.qtouch_info(get_save_path(fn_checkpoint_auto_contract))
         q.sync_node()
+        if run_ret_list:
+            q.qquit(f"{fname} {job_tag} {traj} (partly) done.")
     #
     fns_produce_auto_contract = [
             fn_checkpoint_auto_contract,
@@ -535,10 +538,6 @@ def run_job(job_tag, traj):
             q.timer_merge()
         q.release_lock()
     q.clean_cache()
-    q.displayln_info(f"{fname}: run_ret_list={run_ret_list}")
-    if job_tag in [ "64I", ]:
-        if run_ret_list:
-            q.qquit(f"{fname} {job_tag} {traj} (partly) done.")
 
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
