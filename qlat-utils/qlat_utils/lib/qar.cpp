@@ -269,7 +269,7 @@ Long QFileBase::write_data(const std::vector<std::string>& v)
 
 int QFileBase::append(const std::string& content)
 {
-  TIMER_VERBOSE_FLOPS("QFileBase::append(content)");
+  TIMER_FLOPS("QFileBase::append(content)");
   const Long total_bytes = write_data(content);
   const Long total_bytes_expect = content.size();
   timer.flops += total_bytes;
@@ -281,7 +281,7 @@ int QFileBase::append(const std::string& content)
 
 int QFileBase::append(const std::vector<std::string>& content)
 {
-  TIMER_VERBOSE_FLOPS("QFileBase::append(content)");
+  TIMER_FLOPS("QFileBase::append(content)");
   qassert(not null());
   for (Long i = 0; i < (Long)content.size(); ++i) {
     const Long total_bytes = write_data(get_data_char(content[i]));
@@ -629,8 +629,11 @@ void QFileObj::init(const QFileType ftype_, const std::string& path_,
   close();
   qassert(null());
   TIMER("QFileObj::init(ftype,path,mode)");
-  displayln_info(1, ssprintf("QFile: '%s' open '%s' with '%s'.", show(ftype_).c_str(), path_.c_str(),
-                             show(mode_).c_str()));
+  if (ftype_ != QFileType::String) {
+    displayln_info(
+        1, ssprintf("QFile: '%s' open '%s' with '%s'.", show(ftype_).c_str(),
+                    path_.c_str(), show(mode_).c_str()));
+  }
   qassert(fp == nullptr);
   if (ftype_ == QFileType::CFile and mode_ == QFileMode::Read and (not is_regular_file(path_))) {
     qwarn(ssprintf("QFile: '%s' open '%s' with '%s'. Not regular file.",
@@ -665,9 +668,11 @@ void QFileObj::init(const QFileType ftype_, const std::string& path_,
   close();
   qassert(null());
   TIMER("QFileObj::init(ftype,path,mode,content)");
-  displayln_info(
-      1, ssprintf("QFile: '%s' open '%s' with '%s' and content.",
-                  show(ftype_).c_str(), path_.c_str(), show(mode_).c_str()));
+  if (ftype_ != QFileType::String) {
+    displayln_info(
+        1, ssprintf("QFile: '%s' open '%s' with '%s' and content.",
+                    show(ftype_).c_str(), path_.c_str(), show(mode_).c_str()));
+  }
   qassert(fp == nullptr);
   if (ftype_ == QFileType::String) {
     fp.reset(new QFileObjString(path_, mode_, content_));
@@ -779,8 +784,10 @@ void QFileObj::close()
   if (parent == nullptr) {
     if (fp != nullptr) {
       TIMER("QFileObj::close()");
-      displayln_info(1, ssprintf("QFile: close '%s' with '%s'.", path().c_str(),
-                                 show(mode()).c_str()));
+      if (ftype() != QFileType::String) {
+        displayln_info(1, ssprintf("QFile: close '%s' with '%s'.",
+                                   path().c_str(), show(mode()).c_str()));
+      }
       fp->close();
       fp.reset();
     }
@@ -1174,7 +1181,7 @@ int clean_up_qfile_map()
 
 std::vector<std::string> show_all_qfile()
 {
-  TIMER_VERBOSE("show_all_qfile");
+  TIMER_VERBOSE("show_all_qfile()");
   clean_up_qfile_map();
   std::vector<std::string> ret;
   const QFileMap& qfile_map = get_all_qfile();
@@ -1995,7 +2002,7 @@ QFile read(const QarFileVol& qar, const std::string& fn)
 
 std::string read_data(const QarFileVol& qar, const std::string& fn)
 {
-  TIMER_VERBOSE("read_data(qar_v,fn)");
+  TIMER("read_data(qar_v,fn)");
   QFile qfile = read(qar, fn);
   return qcat(qfile);
 }
@@ -2335,7 +2342,7 @@ QFile read(const QarFile& qar, const std::string& fn)
 
 std::string read_data(const QarFile& qar, const std::string& fn)
 {
-  TIMER_VERBOSE("read_data(qar,fn)");
+  TIMER("read_data(qar,fn)");
   QFile qfile = read(qar, fn);
   const std::string ret = qcat(qfile);
   qfclose(qfile);
@@ -2396,7 +2403,7 @@ Long write_from_qfile(QarFile& qar, const std::string& fn,
 // Write content (start from the current position) of qfile_in to qar.
 // qfile_in should have definite size.
 {
-  TIMER_VERBOSE_FLOPS("write_from_qfile(QarFile)");
+  TIMER_FLOPS("write_from_qfile(QarFile)");
   if (has_regular_file(qar, fn)) {
     qwarn(fname + ssprintf(": qar at '%s' already has fn='%s'. Append anyway.",
                            qar.path.c_str(), fn.c_str()));
@@ -2414,7 +2421,7 @@ Long write_from_data(QarFile& qar, const std::string& fn,
 // interface function
 // Write content data to qar.
 {
-  TIMER_VERBOSE_FLOPS("write_from_data(QarFile)");
+  TIMER_FLOPS("write_from_data(QarFile)");
   if (has_regular_file(qar, fn)) {
     qwarn(fname + ssprintf(": qar at '%s' already has fn='%s'. Append anyway.",
                            qar.path.c_str(), fn.c_str()));
@@ -2430,7 +2437,7 @@ Long write_from_data(QarFile& qar, const std::string& fn,
 Long write_from_data(QarFile& qar, const std::string& fn,
                      const std::string& info, const std::string& data)
 {
-  TIMER_VERBOSE_FLOPS("write_from_data(QarFile)");
+  TIMER_FLOPS("write_from_data(QarFile)");
   if (has_regular_file(qar, fn)) {
     qwarn(fname + ssprintf(": qar at '%s' already has fn='%s'. Append anyway.",
                            qar.path.c_str(), fn.c_str()));
@@ -2447,7 +2454,7 @@ Long write_from_data(QarFile& qar, const std::string& fn,
                      const std::string& info,
                      const std::vector<std::string>& data)
 {
-  TIMER_VERBOSE_FLOPS("write_from_data(QarFile)");
+  TIMER_FLOPS("write_from_data(QarFile)");
   if (has_regular_file(qar, fn)) {
     qwarn(fname + ssprintf(": qar at '%s' already has fn='%s'. Append anyway.",
                            qar.path.c_str(), fn.c_str()));
@@ -3349,7 +3356,7 @@ crc32_t compute_crc32(QFile& qfile)
 // interface function
 // compute_crc32 for all data.
 {
-  TIMER_VERBOSE_FLOPS("compute_crc32");
+  TIMER_FLOPS("compute_crc32");
   qassert(not qfile.null());
   qassert(qfile.mode() == QFileMode::Read);
   qfseek(qfile, 0, SEEK_SET);
@@ -3427,7 +3434,7 @@ std::string show_files_crc32(
 
 std::pair<std::string, crc32_t> check_file_crc32(const std::string& fn)
 {
-  TIMER_VERBOSE("check_file_crc32");
+  TIMER("check_file_crc32");
   std::pair<std::string, crc32_t> p;
   p.first = fn;
   p.second = compute_crc32(fn);
@@ -3632,7 +3639,7 @@ std::string qcat_sync_node(const std::string& path)
 
 DataTable qload_datatable_sync_node(const std::string& path, const bool is_par)
 {
-  TIMER_VERBOSE("qload_datatable_sync_node");
+  TIMER("qload_datatable_sync_node");
   DataTable dt;
   if (0 == get_id_node()) {
     dt = qload_datatable(path, is_par);
