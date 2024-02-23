@@ -145,6 +145,10 @@ struct API FieldsWriter {
   QFile qfile;
   bool is_little_endian;  // should be true
   //
+  std::vector<std::string> fn_list;
+  std::map<std::string, Long> offsets_map;
+  Long max_offset;
+  //
   FieldsWriter() { init(); }
   //
   void init();
@@ -516,6 +520,8 @@ bool check_file_sync_node(ShuffledFieldsReader& sfr, const std::string& fn,
                           std::vector<Long>& final_offsets);
 
 std::vector<std::string> list_fields(ShuffledFieldsReader& sfr, bool is_skipping_check = false);
+
+std::vector<std::string> list_fields(const ShuffledFieldsWriter& sfw, bool is_skipping_check = false);
 
 int truncate_fields_sync_node(const std::string& path,
                               const std::vector<std::string>& fns_keep,

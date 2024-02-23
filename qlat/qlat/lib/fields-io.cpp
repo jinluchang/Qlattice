@@ -165,6 +165,9 @@ void FieldsWriter::init()
   geon.init();
   qfile.init();
   is_little_endian = true;
+  fn_list.clear();
+  offsets_map.clear();
+  max_offset = 0;
 }
 
 void FieldsWriter::init(const std::string& path_, const GeometryNode& geon_,
@@ -268,6 +271,8 @@ Long write(FieldsWriter& fw, const std::string& fn, const Geometry& geo,
            const Vector<char> data, const bool is_sparse_field)
 {
   TIMER("write(fw,fn,geo,data)");
+  // get initial offset
+  const Long offset = fw.qfile.tell();
   // first write tag
   int32_t tag_len = fn.size() + 1;  // fn is the name of the field (say prop1)
   qfwrite_convert_endian(&tag_len, 4, 1, fw.qfile, fw.is_little_endian);
@@ -308,6 +313,10 @@ Long write(FieldsWriter& fw, const std::string& fn, const Geometry& geo,
   //
   // then write data
   qfwrite(&data[0], data_len, 1, fw.qfile);
+  //
+  // register file
+  fw.fn_list.push_back(fn);
+  fw.offsets_map[fn] = offset;
   //
   return data_len;
 }
@@ -694,6 +703,8 @@ void ShuffledFieldsWriter::init(const std::string& path_,
   init();
   path = path_;
   new_size_node = new_size_node_;
+  std::vector<std::string> fn_list;
+  std::vector<std::vector<Long>> offsets_list;
   if (is_append) {
     if (does_file_exist_sync_node(path + "/geon-info.txt")) {
       new_size_node = shuffled_fields_reader_size_node_info(path);
@@ -711,6 +722,8 @@ void ShuffledFieldsWriter::init(const std::string& path_,
                                path.c_str()));
       }
     }
+    properly_truncate_fields_sync_node(fn_list, offsets_list, path, false,
+                                       false, new_size_node);
   } else {
     if (does_file_exist_sync_node(path + "/geon-info.txt")) {
       qerr(fname + ssprintf(": cannot open for write '%s/geon-info.txt' exist",
@@ -734,6 +747,14 @@ void ShuffledFieldsWriter::init(const std::string& path_,
     const GeometryNode& geon = geons[i];
     if (geon.id_node != 0) {
       fws[i].init(path, geon, is_append);
+    }
+  }
+  for (int i = 0; i < (int)fws.size(); ++i) {
+    FieldsWriter& fw = fws[i];
+    fw.fn_list = fn_list;
+    for (Long j = 0; j < (Long)fn_list.size(); ++j) {
+      const std::string& fn = fn_list[j];
+      fw.offsets_map[fn] = offsets_list[j][i];
     }
   }
   add_shuffled_fields_writer(*this);
@@ -936,6 +957,29 @@ std::vector<std::string> list_fields(ShuffledFieldsReader& sfr, bool is_skipping
       qassert(fr.fn_list.size() == ret.size());
       for (Long j = 0; j < (Long)ret.size(); ++j) {
         qassert(ret[j] == fr.fn_list[j]);
+      }
+    }
+  }
+  return ret;
+}
+
+std::vector<std::string> list_fields(const ShuffledFieldsWriter& sfw, bool is_skipping_check)
+// interface function
+{
+  TIMER_VERBOSE("list_fields(sfw)");
+  std::vector<std::string> ret;
+  if (0 == get_id_node()) {
+    qassert(sfw.fws.size() > 0);
+    const FieldsWriter& fw = sfw.fws[0];
+    ret = fw.fn_list;
+  }
+  bcast(ret);
+  if (not is_skipping_check) {
+    for (int i = 0; i < (int)sfw.fws.size(); ++i) {
+      const FieldsWriter& fw = sfw.fws[i];
+      qassert(fw.fn_list.size() == ret.size());
+      for (Long j = 0; j < (Long)ret.size(); ++j) {
+        qassert(ret[j] == fw.fn_list[j]);
       }
     }
   }
