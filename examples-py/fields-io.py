@@ -108,6 +108,20 @@ q.displayln_info("CHECK: prop1_ff -= prop1", f"{prop1_f.qnorm():.14E}")
 
 sfr.close()
 
+index_content = q.qcat_bytes_sync_node("results/prop.fields/index.qar")
+
+q.qremove_info("results/prop.fields/index.qar")
+
+q.fields_build_index("results/prop.fields")
+
+index_content2 = q.qcat_bytes_sync_node("results/prop.fields/index.qar")
+
+assert index_content == index_content2
+
+crc = q.compute_crc32("results/prop.fields/index.qar")
+
+q.displayln_info(f"CHECK: {crc}")
+
 q.displayln_info("CHECK: ", q.list_fields("results/prop.fields"))
 
 q.properly_truncate_fields("results/prop.fields")

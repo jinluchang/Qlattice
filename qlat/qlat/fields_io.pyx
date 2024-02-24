@@ -151,6 +151,12 @@ def list_fields(str path, Coordinate new_size_node=None):
     return fns
 
 @q.timer
+def fields_build_index(str path, Coordinate new_size_node=None):
+    cdef ShuffledFieldsReader sfr = open_fields(path, "r", new_size_node)
+    cc.fields_build_index(sfr.xx)
+    sfr.close()
+
+@q.timer
 def properly_truncate_fields(str path, cc.bool is_check_all=False, cc.bool is_only_check=False, Coordinate new_size_node=None):
     if path[-14:] == "/geon-info.txt":
         path = path[:-14]

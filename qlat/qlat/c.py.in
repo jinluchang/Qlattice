@@ -198,6 +198,7 @@ __all__ += [
         'ShuffledBitSet',
         'open_fields',
         'list_fields',
+        'fields_build_index',
         'properly_truncate_fields',
         'truncate_fields',
         'check_fields',

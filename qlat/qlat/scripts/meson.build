@@ -3,6 +3,7 @@ py_fns = [
   'eigen_system_repartition.py',
   'fields_checksum.py',
   'fields_list.py',
+  'fields_build_index.py',
   'fields_properly_truncate.py',
   'gauge_fix_coulomb.py',
   'qlat_config.py',

@@ -3,6 +3,7 @@ scripts = files(
   'eigen-system-repartition',
   'fields-checksum',
   'fields-list',
+  'fields-build-index',
   'fields-properly-truncate',
   'gauge-fix-coulomb',
   'qlat-config',
