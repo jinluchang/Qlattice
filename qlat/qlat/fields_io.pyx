@@ -43,6 +43,12 @@ cdef class ShuffledFieldsWriter:
         cache_fields_io[id(self)] = (fsel, sbs,)
         return sbs
 
+    def list(self):
+        return cc.list_fields(self.xx)
+
+    def has(self, cc.std_string& fn):
+        return cc.does_file_exist_sync_node(self.xx, fn)
+
     def flush(self):
         return cc.flush(self.xx)
 
@@ -57,7 +63,6 @@ cdef class ShuffledFieldsWriter:
 cdef class ShuffledFieldsReader:
 
     # self.cdata
-    # self.tags
 
     def __cinit__(self):
         self.cdata = <cc.Long>&(self.xx)
@@ -66,14 +71,12 @@ cdef class ShuffledFieldsReader:
         if new_size_node is None:
             new_size_node = Coordinate()
         self.xx.init(path, new_size_node.xx)
-        self.tags = None
 
     def __del__(self):
         self.close()
 
     def close(self):
         self.xx.close()
-        self.tags = None
         cache_fields_io.pop(id(self), None)
 
     def path(self):
@@ -96,10 +99,8 @@ cdef class ShuffledFieldsReader:
     def list(self):
         return cc.list_fields(self.xx)
 
-    def has(self, str fn):
-        if self.tags is None:
-            self.tags = set(self.list())
-        return fn in self.tags
+    def has(self, cc.std_string& fn):
+        return cc.does_file_exist_sync_node(self.xx, fn)
 
     def read(self, str fn, obj):
         """

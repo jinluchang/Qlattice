@@ -553,32 +553,17 @@ void read_through(FieldsReader& fr)
   }
 }
 
-bool does_file_exist(FieldsReader& fr, const std::string& fn)
+bool does_file_exist(const FieldsReader& fr, const std::string& fn)
 {
   TIMER("does_file_exist(fr,fn,site)");
-  if (fr.offsets_map.count(fn) == 1) {
-    return true;
-  } else if (fr.is_read_through) {
-    return false;
-  } else if (fr.qfile.null()) {
-    return false;
-  } else {
-    const int ret = qfseek(fr.qfile, fr.max_offset, SEEK_SET);
-    if (ret != 0) {
-      return false;
-    }
-  }
-  while (true) {
-    std::string fn_read = "";
-    const Long offset_final = read_skip_next(fr, fn_read);
-    if (offset_final < 0) {
-      qassert(offset_final == -1);
-      return false;
-    }
-    if (fn_read == fn) {
-      return true;
-    }
-  }
+  qassert(fr.is_read_through);
+  return has(fr.offsets_map, fn);
+}
+
+bool does_file_exist(const FieldsWriter& fw, const std::string& fn)
+{
+  TIMER("does_file_exist(fw,fn,site)");
+  return has(fw.offsets_map, fn);
 }
 
 Long read(FieldsReader& fr, const std::string& fn, Coordinate& total_site,
@@ -920,12 +905,12 @@ void read_through_sync_node(ShuffledFieldsReader& sfr)
   sync_node();
 }
 
-bool does_file_exist_sync_node(ShuffledFieldsReader& sfr, const std::string& fn)
+bool does_file_exist_sync_node(const ShuffledFieldsReader& sfr, const std::string& fn)
 // interface function
 {
   TIMER_VERBOSE("does_file_exist_sync_node(sfr,fn)");
   Long total_counts = 0;
-  displayln_info(0, fname + ssprintf(": check fn='%s' from '%s'.", fn.c_str(),
+  displayln_info(1, fname + ssprintf(": check fn='%s' from '%s'.", fn.c_str(),
                                      sfr.path.c_str()));
   for (int i = 0; i < (int)sfr.frs.size(); ++i) {
     if (does_file_exist(sfr.frs[i], fn)) {
@@ -937,6 +922,28 @@ bool does_file_exist_sync_node(ShuffledFieldsReader& sfr, const std::string& fn)
     return false;
   } else {
     qassert(total_counts == product(sfr.new_size_node));
+    return true;
+  }
+}
+
+bool does_file_exist_sync_node(const ShuffledFieldsWriter& sfw,
+                               const std::string& fn)
+// interface function
+{
+  TIMER_VERBOSE("does_file_exist_sync_node(sfw,fn)");
+  Long total_counts = 0;
+  displayln_info(1, fname + ssprintf(": check fn='%s' from '%s'.", fn.c_str(),
+                                     sfw.path.c_str()));
+  for (int i = 0; i < (int)sfw.fws.size(); ++i) {
+    if (does_file_exist(sfw.fws[i], fn)) {
+      total_counts += 1;
+    }
+  }
+  glb_sum(total_counts);
+  if (total_counts == 0) {
+    return false;
+  } else {
+    qassert(total_counts == product(sfw.new_size_node));
     return true;
   }
 }

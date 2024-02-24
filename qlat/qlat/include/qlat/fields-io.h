@@ -224,7 +224,9 @@ Long read_skip_next(FieldsReader& fr, std::string& fn);
 
 void read_through(FieldsReader& fr);
 
-bool does_file_exist(FieldsReader& fr, const std::string& fn);
+bool does_file_exist(const FieldsReader& fr, const std::string& fn);
+
+bool does_file_exist(const FieldsWriter& fr, const std::string& fn);
 
 Long read(FieldsReader& fr, const std::string& fn, Coordinate& total_site,
           std::vector<char>& data, bool& is_sparse_field);
@@ -514,7 +516,10 @@ Long flush(ShuffledFieldsWriter& sfw);
 
 void read_through_sync_node(ShuffledFieldsReader& sfr);
 
-bool does_file_exist_sync_node(ShuffledFieldsReader& sfr,
+bool does_file_exist_sync_node(const ShuffledFieldsReader& sfr,
+                               const std::string& fn);
+
+bool does_file_exist_sync_node(const ShuffledFieldsWriter& sfw,
                                const std::string& fn);
 
 bool check_file_sync_node(ShuffledFieldsReader& sfr, const std::string& fn,
