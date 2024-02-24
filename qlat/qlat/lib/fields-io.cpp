@@ -908,7 +908,7 @@ void read_through_sync_node(ShuffledFieldsReader& sfr)
 bool does_file_exist_sync_node(const ShuffledFieldsReader& sfr, const std::string& fn)
 // interface function
 {
-  TIMER_VERBOSE("does_file_exist_sync_node(sfr,fn)");
+  TIMER("does_file_exist_sync_node(sfr,fn)");
   Long total_counts = 0;
   displayln_info(1, fname + ssprintf(": check fn='%s' from '%s'.", fn.c_str(),
                                      sfr.path.c_str()));
@@ -930,7 +930,7 @@ bool does_file_exist_sync_node(const ShuffledFieldsWriter& sfw,
                                const std::string& fn)
 // interface function
 {
-  TIMER_VERBOSE("does_file_exist_sync_node(sfw,fn)");
+  TIMER("does_file_exist_sync_node(sfw,fn)");
   Long total_counts = 0;
   displayln_info(1, fname + ssprintf(": check fn='%s' from '%s'.", fn.c_str(),
                                      sfw.path.c_str()));
