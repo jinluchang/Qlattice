@@ -140,29 +140,28 @@ cdef class FieldBase:
     def crc32(self):
         return c.crc32_field(self)
 
-    def save_direct(self, path, *args):
+    def save_direct(self, path, *args, **kwargs):
         """
         Generic save for Field object
         save Field directly (without any conversion of endianness or precision)
         possible way to call:
         f.save_direct(path)
-        f.save_direct(path, new_size_node)
         f.save_direct(sfw, fn)
         """
         cdef cc.Long n_bytes
         if isinstance(path, str):
             assert len(args) == 0
-            n_bytes = self.write_direct(path)
+            n_bytes = self.write_direct(path, **kwargs)
         elif isinstance(path, ShuffledFieldsWriter):
             sfw = path
             fn, = args
-            n_bytes = self.write_sfw_direct(sfw, fn)
+            n_bytes = self.write_sfw_direct(sfw, fn, **kwargs)
         else:
             raise Exception("Field.save_direct")
         assert n_bytes != 0
         return n_bytes
 
-    def load_direct(self, path, *args):
+    def load_direct(self, path, *args, **kwargs):
         """
         Generic load for Field object
         load Field directly (without any conversion of endianness or precision)
@@ -174,17 +173,17 @@ cdef class FieldBase:
         cdef cc.Long n_bytes
         if isinstance(path, str):
             assert len(args) == 0
-            n_bytes = self.read_direct(path)
+            n_bytes = self.read_direct(path, **kwargs)
         elif isinstance(path, ShuffledFieldsReader):
             sfr = path
             fn, = args
-            n_bytes = self.read_sfr_direct(sfr, fn)
+            n_bytes = self.read_sfr_direct(sfr, fn, **kwargs)
         else:
             raise Exception("SelectedField.load")
         assert n_bytes != 0
         return n_bytes
 
-    def save_64(self, path, *args):
+    def save_64(self, path, *args, **kwargs):
         """
         Generic save for 64-bit size element Field object
         save 64-bit Field (do conversion of endianness)
@@ -195,16 +194,16 @@ cdef class FieldBase:
             f.to_from_endianness("big_64")
         elif isinstance(path, ShuffledFieldsWriter):
             f.to_from_endianness("little_64")
-        return f.save_direct(path, *args)
+        return f.save_direct(path, *args, **kwargs)
 
-    def save_double(self, path, *args):
+    def save_double(self, path, *args, **kwargs):
         """
         Generic save for double element Field object
         save double Field as double (do conversion of endianness)
         """
-        return self.save_64(path, *args)
+        return self.save_64(path, *args, **kwargs)
 
-    def save_float_from_double(self, path, *args):
+    def save_float_from_double(self, path, *args, **kwargs):
         """
         Generic save for double element Field object
         save double Field as float (do conversion of endianness and precision)
@@ -216,14 +215,14 @@ cdef class FieldBase:
             ff.to_from_endianness("big_32")
         elif isinstance(path, ShuffledFieldsWriter):
             ff.to_from_endianness("little_32")
-        return ff.save_direct(path, *args)
+        return ff.save_direct(path, *args, **kwargs)
 
-    def load_64(self, path, *args):
+    def load_64(self, path, *args, **kwargs):
         """
         Generic load for 64-bit size element Field object
         load 64-bit Field (do conversion of endianness)
         """
-        ret = self.load_direct(path, *args)
+        ret = self.load_direct(path, *args, **kwargs)
         if ret > 0:
             from .fields_io import ShuffledFieldsReader
             if isinstance(path, str):
@@ -232,20 +231,20 @@ cdef class FieldBase:
                 self.to_from_endianness("little_64")
         return ret
 
-    def load_double(self, path, *args):
+    def load_double(self, path, *args, **kwargs):
         """
         Generic load for double Field object
         load double Field (do conversion of endianness)
         """
-        return self.load_64(path, *args)
+        return self.load_64(path, *args, **kwargs)
 
-    def load_double_from_float(self, path, *args):
+    def load_double_from_float(self, path, *args, **kwargs):
         """
         Generic load for double Field object
         load double Field from float(do conversion of endianness or precision)
         """
         ff = FieldRealF()
-        ret = ff.load_direct(path, *args)
+        ret = ff.load_direct(path, *args, **kwargs)
         if ret > 0:
             from .fields_io import ShuffledFieldsReader
             if isinstance(path, str):
@@ -437,7 +436,7 @@ cdef class SelectedFieldBase:
         """
         self[idx, m] = val
 
-    def save_direct(self, path, *args):
+    def save_direct(self, path, *args, **kwargs):
         """
         Generic save for SelectedField object
         possible way to call:
@@ -447,17 +446,17 @@ cdef class SelectedFieldBase:
         cdef cc.Long n_bytes
         if isinstance(path, str):
             assert len(args) == 0
-            n_bytes = self.write_direct(path)
+            n_bytes = self.write_direct(path, **kwargs)
         elif isinstance(path, ShuffledFieldsWriter):
             sfw = path
             fn, = args
-            n_bytes = self.write_sfw_direct(sfw, fn)
+            n_bytes = self.write_sfw_direct(sfw, fn, **kwargs)
         else:
             raise Exception("SelectedField.save_direct")
         assert n_bytes != 0
         return n_bytes
 
-    def load_direct(self, path, *args):
+    def load_direct(self, path, *args, **kwargs):
         """
         Generic load for SelectedField object
         possible way to call:
@@ -468,17 +467,17 @@ cdef class SelectedFieldBase:
         cdef cc.Long n_bytes
         if isinstance(path, str):
             assert len(args) == 0
-            n_bytes = self.read_direct(path)
+            n_bytes = self.read_direct(path, **kwargs)
         elif isinstance(path, ShuffledFieldsReader):
             sfr = path
             fn, = args
-            n_bytes = self.read_sfr_direct(sfr, fn)
+            n_bytes = self.read_sfr_direct(sfr, fn, **kwargs)
         else:
             raise Exception("SelectedField.load")
         assert n_bytes != 0
         return n_bytes
 
-    def save_64(self, path, *args):
+    def save_64(self, path, *args, **kwargs):
         """
         Generic save for SelectedField object with conversion
         """
@@ -488,15 +487,15 @@ cdef class SelectedFieldBase:
             f.to_from_endianness("big_64")
         elif isinstance(path, ShuffledFieldsWriter):
             f.to_from_endianness("little_64")
-        return f.save_direct(path, *args)
+        return f.save_direct(path, *args, **kwargs)
 
-    def save_double(self, path, *args):
+    def save_double(self, path, *args, **kwargs):
         """
         Generic save for SelectedField object with conversion
         """
-        return self.save_64(path, *args)
+        return self.save_64(path, *args, **kwargs)
 
-    def save_float_from_double(self, path, *args):
+    def save_float_from_double(self, path, *args, **kwargs):
         """
         Generic save for SelectedField object with conversion
         """
@@ -507,13 +506,13 @@ cdef class SelectedFieldBase:
             ff.to_from_endianness("big_32")
         elif isinstance(path, ShuffledFieldsWriter):
             ff.to_from_endianness("little_32")
-        return ff.save_direct(path, *args)
+        return ff.save_direct(path, *args, **kwargs)
 
-    def load_64(self, path, *args):
+    def load_64(self, path, *args, **kwargs):
         """
         Generic load for SelectedField object with conversion
         """
-        ret = self.load_direct(path, *args)
+        ret = self.load_direct(path, *args, **kwargs)
         if ret > 0:
             from .fields_io import ShuffledFieldsReader
             if isinstance(path, str):
@@ -522,18 +521,18 @@ cdef class SelectedFieldBase:
                 self.to_from_endianness("little_64")
         return ret
 
-    def load_double(self, path, *args):
+    def load_double(self, path, *args, **kwargs):
         """
         Generic load for SelectedField object with conversion
         """
-        return self.load_64(path, *args)
+        return self.load_64(path, *args, **kwargs)
 
-    def load_double_from_float(self, path, *args):
+    def load_double_from_float(self, path, *args, **kwargs):
         """
         Generic load for SelectedField object with conversion
         """
         ff = SelectedField(ElemTypeRealF, self.fsel)
-        ret = ff.load_direct(path, *args)
+        ret = ff.load_direct(path, *args, **kwargs)
         if ret > 0:
             from .fields_io import ShuffledFieldsReader
             if isinstance(path, str):
@@ -555,17 +554,6 @@ cdef class SelectedFieldBase:
     def to_from_endianness(self, tag):
         assert isinstance(tag, str)
         c.to_from_endianness_sfield(self, tag)
-
-    # def field_shift(self, shift, is_reflect=False):
-    #     """
-    #     return new shifted SelectedField
-    #     shift is the coordinate to shift the field
-    #     is_reflect determine whether to negate coordinate after shift
-    #     """
-    #     f1 = self.copy(is_copying_data=False)
-    #     f1.fsel = FieldSelection()
-    #     c.field_shift_sfield(f1, self, shift, is_reflect)
-    #     return f1
 
     def glb_sum_tslice(self, *, t_dir=3):
         """

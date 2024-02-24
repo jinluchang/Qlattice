@@ -24,15 +24,15 @@ def run_get_inverter(job_tag, traj, *, inv_type, get_gf, get_gt=None, get_eig=No
 def compute_prop_full_1(inv, src, *, tag, sfw):
     sol = inv * src
     q.qnorm_field(sol).save_double(sfw, tag + " ; qnorm_field")
-    sol.save_double(sfw, tag)
+    sol.save_double(sfw, tag, skip_if_exist=True)
     sfw.flush()
     return sol
 
 @q.timer
 def compute_prop_wsrc_full(gf, gt, tslice, job_tag, inv_type, inv_acc, *,
-                           idx, sfw, eig, finished_tags):
+                           idx, sfw, eig):
     tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
-    if tag in finished_tags:
+    if sfw.has(tag):
         return None
     q.check_stop()
     q.check_time_limit()
@@ -49,15 +49,13 @@ def compute_prop_wsrc_full_all(job_tag, traj, *,
     inv_type_names = [ "light", "strange", ]
     inv_type_name = inv_type_names[inv_type]
     path_s = f"{job_tag}/prop-wsrc-full-{inv_type_name}/traj-{traj}"
-    finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     for inv_acc in [ 2, 1, ]:
         for p in wi:
             idx, tslice, inv_type_p, inv_acc_p=p
             if inv_type_p == inv_type and inv_acc_p == inv_acc:
                 compute_prop_wsrc_full(gf, gt, tslice, job_tag, inv_type, inv_acc,
-                                       idx=idx, sfw=sfw, eig=eig,
-                                       finished_tags=finished_tags)
+                                       idx=idx, sfw=sfw, eig=eig)
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
@@ -308,8 +306,6 @@ def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel,
         fsel = get_fsel()
         psel = get_psel()
         wi = get_wi()
-        finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
-        q.displayln_info(0, f"finished_tags={finished_tags}")
         sfr = q.open_fields(get_load_path(path_f), "r")
         available_tags = sfr.list()
         q.displayln_info(0, f"available_tags={available_tags}")
@@ -322,9 +318,9 @@ def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel,
             if inv_type_wi != inv_type:
                 continue
             tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
-            if tag in finished_tags:
-                assert f"{tag}.lat" in qar_sp.list()
-                assert f"{tag} ; wsnk.lat" in qar_sp.list()
+            if sfw.has(tag):
+                assert qar_sp.has_regular_file(f"{tag}.lat")
+                assert qar_sp.has_regular_file(f"{tag} ; wsnk.lat")
                 continue
             q.displayln_info(-1, f"{fname}: idx={idx} tag='{tag}'")
             if not sfr.has(tag):
@@ -338,7 +334,7 @@ def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel,
             ps_prop_ws = prop.glb_sum_tslice()
             qar_sp.write(f"{tag}.lat", "", ps_prop.save_str(), skip_if_exist=True)
             qar_sp.write(f"{tag} ; wsnk.lat", "", ps_prop_ws.save_str(), skip_if_exist=True)
-            s_prop.save_float_from_double(sfw, tag)
+            s_prop.save_float_from_double(sfw, tag, skip_if_exist=True)
             qar_sp.flush()
             sfw.flush()
         sfw.close()
@@ -394,7 +390,7 @@ def calc_hvp_sum_tslice(chvp_16):
 def compute_prop_psrc_hvp_contract(
         job_tag, traj, xg_src, inv_type, inv_acc,
         *,
-        prop, tag, sfw_hvp, qar_hvp_ts, finished_tags_hvp):
+        prop, tag, sfw_hvp, qar_hvp_ts):
     """
     # chvp_16.get_elem(x, mu * 4 + nu) is complex
     # (1) mu is the sink polarization and nu is the src polarization
@@ -407,9 +403,8 @@ def compute_prop_psrc_hvp_contract(
     qar_hvp_ts.write(f"{tag}.lat", "", ld_hvp_ts.save_str(), skip_if_exist=True)
     qar_hvp_ts.flush()
     if sfw_hvp is not None:
-        if tag not in finished_tags_hvp:
-            chvp_16.save_float_from_double(sfw_hvp, tag)
-            sfw_hvp.flush()
+        chvp_16.save_float_from_double(sfw_hvp, tag, skip_if_exist=True)
+        sfw_hvp.flush()
 
 # -----------------------------------------------------------------------------
 
@@ -441,7 +436,7 @@ def compute_prop_2(inv, src, *, tag, sfw, qar_sp, psel, fsel,
     s_sol_ps_sel_prob.save_double(sfw, f"{tag} ; fsel-prob-psrc-prop")
     s_sol = q.SelProp(fsel_combine)
     s_sol @= sol
-    s_sol.save_float_from_double(sfw, tag)
+    s_sol.save_float_from_double(sfw, tag, skip_if_exist=True)
     qar_sp.flush()
     sfw.flush()
     return sol
@@ -449,12 +444,15 @@ def compute_prop_2(inv, src, *, tag, sfw, qar_sp, psel, fsel,
 @q.timer
 def compute_prop_psrc(job_tag, traj, xg_src, inv_type, inv_acc, *,
         idx, gf, gt, sfw, qar_sp, psel, fsel, f_rand_01, sfw_hvp, qar_hvp_ts,
-        eig, finished_tags, finished_tags_prop, finished_tags_hvp):
+        eig):
     assert isinstance(xg_src, q.Coordinate)
     xg = xg_src
     xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
     tag = f"xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
-    if tag in finished_tags:
+    if sfw.has(tag) and (sfw_hvp is None or sfw_hvp.has(tag)):
+        assert qar_sp.has_regular_file(f"{tag}.lat")
+        assert qar_sp.has_regular_file(f"{tag} ; wsnk.lat")
+        assert qar_hvp_ts.has_regular_file(f"{tag}.lat")
         return None
     q.check_stop()
     q.check_time_limit()
@@ -472,8 +470,7 @@ def compute_prop_psrc(job_tag, traj, xg_src, inv_type, inv_acc, *,
             gt=gt)
     compute_prop_psrc_hvp_contract(
             job_tag, traj, xg_src, inv_type, inv_acc,
-            prop=prop, tag=tag, sfw_hvp=sfw_hvp, qar_hvp_ts=qar_hvp_ts,
-            finished_tags_hvp=finished_tags_hvp)
+            prop=prop, tag=tag, sfw_hvp=sfw_hvp, qar_hvp_ts=qar_hvp_ts)
 
 @q.timer_verbose
 def compute_prop_psrc_all(job_tag, traj, *,
@@ -484,15 +481,8 @@ def compute_prop_psrc_all(job_tag, traj, *,
     path_s_hvp = f"{job_tag}/hvp-psrc-{inv_type_name}/traj-{traj}"
     path_hvp_ts = f"{job_tag}/hvp-sum-tslice-psrc-{inv_type_name}/traj-{traj}"
     path_sp = f"{job_tag}/psel-prop-psrc-{inv_type_name}/traj-{traj}"
-    finished_tags_prop = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
-    is_saving_hvp = get_param(job_tag, "run_prop_psrc", "is_saving_hvp", default=True)
-    if is_saving_hvp:
-        finished_tags_hvp = q.properly_truncate_fields(get_save_path(path_s_hvp + ".acc"))
-        finished_tags = [ tag for tag in finished_tags_hvp if tag in finished_tags_prop ]
-    else:
-        finished_tags_hvp = []
-        finished_tags = finished_tags_prop
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
+    is_saving_hvp = get_param(job_tag, "run_prop_psrc", "is_saving_hvp", default=True)
     if is_saving_hvp:
         sfw_hvp = q.open_fields(get_save_path(path_s_hvp + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     else:
@@ -504,9 +494,6 @@ def compute_prop_psrc_all(job_tag, traj, *,
                 idx=idx, gf=gf, gt=gt, sfw=sfw, qar_sp=qar_sp,
                 psel=psel, fsel=fsel, f_rand_01=f_rand_01,
                 sfw_hvp=sfw_hvp, qar_hvp_ts=qar_hvp_ts,
-                finished_tags=finished_tags,
-                finished_tags_hvp=finished_tags_hvp,
-                finished_tags_prop=finished_tags_prop,
                 eig=eig)
     prob1 = get_param(job_tag, "prob_acc_1_psrc")
     prob2 = get_param(job_tag, "prob_acc_2_psrc")
@@ -566,17 +553,19 @@ def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel,
 # -----------------------------------------------------------------------------
 
 @q.timer_verbose
-def compute_prop_rand_u1_type_acc(*, sfw, job_tag, traj, gf, eig, fsel, idx_rand_u1, inv_type, inv_acc, finished_tags):
-    # same rand source for different inv_type
+def compute_prop_rand_u1_type_acc(*, sfw, job_tag, traj, gf, eig, fsel, idx_rand_u1, inv_type, inv_acc):
+    """
+    same rand source for different inv_type
+    """
     tag = f"idx_rand_u1={idx_rand_u1} ; type={inv_type} ; accuracy={inv_acc}"
-    if tag in finished_tags:
+    if sfw.has(tag):
         return
     q.check_stop()
     q.check_time_limit()
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig=eig)
     rs = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_u1(rand_u1)").split(str(idx_rand_u1))
     s_prop = q.mk_rand_u1_prop(inv, fsel, rs)
-    s_prop.save_float_from_double(sfw, tag)
+    s_prop.save_float_from_double(sfw, tag, skip_if_exist=True)
     sfw.flush()
     return s_prop
 
@@ -586,7 +575,6 @@ def compute_prop_rand_u1(*, job_tag, traj, inv_type, gf, path_s, fsel, eig=None)
     n_rand_u1_fsel = get_param(job_tag, "n_rand_u1_fsel")
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site, 1)
-    finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     def comp(idx_rand_u1, inv_acc):
         compute_prop_rand_u1_type_acc(
@@ -594,8 +582,7 @@ def compute_prop_rand_u1(*, job_tag, traj, inv_type, gf, path_s, fsel, eig=None)
                 job_tag=job_tag, traj=traj,
                 gf=gf, eig=eig, fsel=fsel,
                 idx_rand_u1=idx_rand_u1,
-                inv_type=inv_type, inv_acc=inv_acc,
-                finished_tags=finished_tags,)
+                inv_type=inv_type, inv_acc=inv_acc)
     rs = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_u1(ama)")
     prob1 = get_param(job_tag, "prob_acc_1_rand_u1")
     prob2 = get_param(job_tag, "prob_acc_2_rand_u1")
@@ -648,28 +635,31 @@ def compute_prop_3(inv, src_smear, *, tag, sfw, qar_sp, psel, fsel, gt, psel_sme
     sol = inv * src_smear
     sp_sol = q.PselProp(psel)
     sp_sol @= sol
-    qar_sp.write(f"{tag}.lat", "", sp_sol.save_str())
+    qar_sp.write(f"{tag}.lat", "", sp_sol.save_str(), skip_if_exist=True)
     sol_gt = gt * sol
     sol_ws = sol_gt.glb_sum_tslice()
-    qar_sp.write(f"{tag} ; wsnk.lat", "", sol_ws.save_str())
+    qar_sp.write(f"{tag} ; wsnk.lat", "", sol_ws.save_str(), skip_if_exist=True)
     sol_smear = smear(sol)
     sol_smear_psel = q.PselProp(psel_smear)
     sol_smear_psel @= sol_smear
-    qar_sp.write(f"{tag} ; smear-snk.lat", "", sol_smear_psel.save_str())
+    qar_sp.write(f"{tag} ; smear-snk.lat", "", sol_smear_psel.save_str(), skip_if_exist=True)
     s_sol = q.SelProp(fsel)
     s_sol @= sol
-    s_sol.save_float_from_double(sfw, tag)
+    s_sol.save_float_from_double(sfw, tag, skip_if_exist=True)
     qar_sp.flush()
     sfw.flush()
     return sol
 
 @q.timer
 def compute_prop_smear(job_tag, xg_src, inv_type, inv_acc, *,
-        idx, gf, gt, sfw, qar_sp, psel, fsel, psel_smear, gf_ape, eig, finished_tags):
+        idx, gf, gt, sfw, qar_sp, psel, fsel, psel_smear, gf_ape, eig):
     xg = xg_src
     xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
     tag = f"smear ; xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
-    if tag in finished_tags:
+    if sfw.has(tag):
+        assert qar_sp.has(f"{tag}.lat")
+        assert qar_sp.has(f"{tag} ; wsnk.lat")
+        assert qar_sp.has(f"{tag} ; smear-snk.lat")
         return None
     q.check_stop()
     q.check_time_limit()
@@ -694,7 +684,6 @@ def compute_prop_smear_all(job_tag, traj, *,
     inv_type_name = inv_type_names[inv_type]
     path_s = f"{job_tag}/prop-smear-{inv_type_name}/traj-{traj}"
     path_sp = f"{job_tag}/psel-prop-smear-{inv_type_name}/traj-{traj}"
-    finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar"), "a")
     def comp(idx, xg_src, inv_acc):
@@ -702,7 +691,7 @@ def compute_prop_smear_all(job_tag, traj, *,
                 idx=idx, gf=gf, gt=gt, sfw=sfw, qar_sp=qar_sp,
                 psel=psel, fsel=fsel,
                 psel_smear=psel_smear, gf_ape=gf_ape,
-                eig=eig, finished_tags=finished_tags)
+                eig=eig)
     prob1 = get_param(job_tag, "prob_acc_1_smear")
     prob2 = get_param(job_tag, "prob_acc_2_smear")
     rs = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_smear_all(ama)")

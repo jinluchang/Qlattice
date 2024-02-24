@@ -170,8 +170,8 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         return total_bytes
 
     def write_direct(self, const cc.std_string& fn):
-        if self.fsel is not None:
-            assert self.xx.n_elems == self.fsel.xx.n_elems
+        assert self.fsel is not None
+        assert self.xx.n_elems == self.fsel.xx.n_elems
         cdef cc.Long total_bytes = cc.write_selected_field(self.xx, fn, self.fsel.xx)
         return total_bytes
 
@@ -189,9 +189,12 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         assert self.xx.n_elems == self.fsel.xx.n_elems
         return total_bytes
 
-    def write_sfw_direct(self, ShuffledFieldsWriter sfw, const cc.std_string& fn):
-        if self.fsel is not None:
-            assert self.xx.n_elems == self.fsel.xx.n_elems
+    def write_sfw_direct(self, ShuffledFieldsWriter sfw, const cc.std_string& fn, *, cc.Bool skip_if_exist=False):
+        if skip_if_exist:
+            if sfw.has(fn):
+                return 0
+        assert self.fsel is not None
+        assert self.xx.n_elems == self.fsel.xx.n_elems
         cdef ShuffledBitSet sbs = sfw.get_cache_sbs(self.fsel)
         cdef cc.Long total_bytes = cc.write(sfw.xx, fn, sbs.xx, self.xx)
         return total_bytes

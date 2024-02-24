@@ -219,7 +219,10 @@ cdef class Field{{name}}(FieldBase):
     def read_sfr_direct(self, ShuffledFieldsReader sfr, const cc.std_string& fn):
         return cc.read(sfr.xx, fn, self.xx)
 
-    def write_sfw_direct(self, ShuffledFieldsWriter sfw, const cc.std_string& fn):
+    def write_sfw_direct(self, ShuffledFieldsWriter sfw, const cc.std_string& fn, *, cc.Bool skip_if_exist=False):
+        if skip_if_exist:
+            if sfw.has(fn):
+                return 0
         return cc.write(sfw.xx, fn, self.xx)
 
 field_type_dict[ElemType{{name}}] = Field{{name}}
