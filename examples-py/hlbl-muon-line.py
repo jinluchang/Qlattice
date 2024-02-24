@@ -163,8 +163,8 @@ if True:
         vv6 = q.get_muon_line_m_extra_lat(cx, cz, cy, total_site, muon_mass, tag)
         json_results.append((f"{fname}: tag={tag} vv6 sig", q.get_double_sig(vv6, q.RngState()),))
     for total_site in [
-        q.Coordinate([ 2, 2, 2, 2, ]),
         q.Coordinate([ 3, 3, 3, 3, ]),
+        q.Coordinate([ 3, 3, 3, 7, ]),
         q.Coordinate([ 2, 3, 4, 5, ]),
         q.Coordinate([ 4, 3, 2, 5, ]),
         q.Coordinate([ 4, 4, 4, 8, ]),
