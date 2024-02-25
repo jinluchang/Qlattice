@@ -154,6 +154,8 @@ __all__ += [
         ]
 
 __all__ += [
+        'Gobble',
+        #
         'QFile',
         'open_qfile',
         'open_qfile_str',

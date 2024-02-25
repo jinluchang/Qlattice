@@ -1,7 +1,7 @@
 from .timer import *
 from .cache import *
-
-from .c import random_permute, displayln_malloc_stats
+from .c import *
+from .json import *
 
 import math
 import sys
@@ -30,12 +30,6 @@ def get_arg(option, default=None):
             else:
                 return argv[i + 1]
     return default
-
-class Gobble:
-    def __getattr__(self, item):
-        return self
-    def __call__(self, *args, **kwargs):
-        return self
 
 def show_memory_usage():
     try:
@@ -96,8 +90,8 @@ def get_chunk_list(total_list, *, chunk_size = None, chunk_number = None, rng_st
     assert chunk_size is not None or chunk_number is not None
     chunk_list = []
     if rng_state is not None:
-        assert isinstance(rng_state, q.RngState)
-        total_list = q.random_permute(total_list, rng_state)
+        assert isinstance(rng_state, RngState)
+        total_list = random_permute(total_list, rng_state)
     total = len(total_list)
     if chunk_size is not None:
         assert isinstance(chunk_size, int)
@@ -278,3 +272,41 @@ def mk_r_sq_interp_idx_coef_list(r_list):
                 break
             r_idx += 1
     return r_sq_interp_idx_coef_list
+
+def check_log_json(script_file, json_results, *, check_eps=1e-5):
+    if 0 == get_id_node():
+        json_fn_name = os.path.splitext(script_file)[0] + ".log.json"
+        qtouch(json_fn_name + ".new", json_dumps(json_results, indent=1))
+        if does_file_exist_qar(json_fn_name):
+            json_results_load = json_loads(qcat(json_fn_name))
+            for i, (p, pl,) in enumerate(zip(json_results, json_results_load)):
+                if len(p) != len(pl):
+                    displayln(f"CHECK: {i} {p} load:{pl}")
+                    displayln("CHECK: ERROR: JSON results length does not match.")
+                    continue
+                if len(p) == 2:
+                    eps = check_eps
+                    epsl = check_eps
+                    n, v = p
+                    nl, vl = pl
+                elif len(p) == 3:
+                    n, v, eps = p
+                    nl, vl, epsl = pl
+                else:
+                    displayln(f"CHECK: {i} {p} load:{pl}")
+                    displayln("CHECK: ERROR: JSON results length not 2 or 3.")
+                    continue
+                if n != nl:
+                    displayln(f"CHECK: {i} {p} load:{pl}")
+                    displayln("CHECK: ERROR: JSON results item does not match.")
+                    continue
+                if eps != epsl:
+                    displayln(f"CHECK: {i} {p} load:{pl}")
+                    displayln("CHECK: ERROR: JSON results eps does not match.")
+                    continue
+                if abs(v - vl) > check_eps * (abs(v) + abs(vl)):
+                    displayln(f"CHECK: {i} {p} load:{pl}")
+                    displayln("CHECK: ERROR: JSON results value does not match.")
+            if len(json_results) != len(json_results_load):
+                displayln(f"CHECK: len(json_results)={len(json_results)} load:{len(json_results_load)}")
+                displayln("CHECK: ERROR: JSON results len does not match.")

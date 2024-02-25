@@ -3,9 +3,14 @@
 from . cimport everything as cc
 
 from .timer import timer, get_id_node
-from .utils import Gobble
 
 ### ----------------------------------------------------------
+
+class Gobble:
+    def __getattr__(self, item):
+        return self
+    def __call__(self, *args, **kwargs):
+        return self
 
 cdef class QFile:
 
