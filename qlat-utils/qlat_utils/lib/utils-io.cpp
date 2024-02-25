@@ -62,8 +62,8 @@ static std::vector<std::string> qls_all_aux(
 static int qremove_aux(const std::string& path)
 {
   TIMER("qremove_aux")
-  displayln(0, ssprintf("qremove_aux: '%s' (id_node=%d).", path.c_str(),
-                        get_id_node()));
+  displayln_info(0, ssprintf("qremove_aux: '%s' (id_node=%d).", path.c_str(),
+                             get_id_node()));
   if (does_file_exist(path)) {
     const int ret = std::remove(path.c_str());
     if (ret != 0) {
@@ -71,9 +71,9 @@ static int qremove_aux(const std::string& path)
     }
     return ret;
   } else {
-    displayln(0,
-              ssprintf("qremove_aux: '%s' file does not exist. (id_node=%d).",
-                       path.c_str(), get_id_node()));
+    displayln_info(
+        0, ssprintf("qremove_aux: '%s' file does not exist. (id_node=%d).",
+                    path.c_str(), get_id_node()));
     return 0;
   }
 }
@@ -200,17 +200,18 @@ bool does_file_exist(const std::string& fn)
 bool is_directory(const std::string& fn)
 {
   TIMER("is_directory")
-  displayln(
+  displayln_info(
       0, fname + ssprintf(": '%s' (id_node=%d).", fn.c_str(), get_id_node()));
   struct stat sb;
   if (0 != stat(fn.c_str(), &sb)) {
-    displayln(0, fname + ssprintf(": '%s' file does not exist. (id_node=%d).",
-                                  fn.c_str(), get_id_node()));
+    displayln_info(0,
+                   fname + ssprintf(": '%s' file does not exist. (id_node=%d).",
+                                    fn.c_str(), get_id_node()));
     return false;
   }
   const bool ret = S_ISDIR(sb.st_mode);
-  displayln(0, fname + ssprintf(": '%s' file exists. ret=%d (id_node=%d).",
-                                fn.c_str(), ret, get_id_node()));
+  displayln_info(0, fname + ssprintf(": '%s' file exists. ret=%d (id_node=%d).",
+                                     fn.c_str(), ret, get_id_node()));
   return ret;
 }
 
@@ -361,8 +362,9 @@ std::vector<std::string> qls_all(const std::string& path,
 int qrename(const std::string& old_path, const std::string& new_path)
 {
   TIMER_VERBOSE("qrename");
-  displayln(0, fname + ssprintf(": '%s' '%s' (id_node=%d).", old_path.c_str(),
-                                new_path.c_str(), get_id_node()));
+  displayln_info(0,
+                 fname + ssprintf(": '%s' '%s' (id_node=%d).", old_path.c_str(),
+                                  new_path.c_str(), get_id_node()));
   remove_entry_directory_cache(old_path);
   remove_entry_directory_cache(new_path);
   update_qar_cache_due_to_change_of_directory(old_path);
@@ -399,7 +401,7 @@ int qremove_all(const std::string& path)
 int qmkdir(const std::string& path, const mode_t mode)
 {
   TIMER_VERBOSE("qmkdir");
-  displayln(
+  displayln_info(
       0, fname + ssprintf(": '%s' (id_node=%d).", path.c_str(), get_id_node()));
   remove_entry_directory_cache(path);
   const int ret = mkdir(path.c_str(), mode);
