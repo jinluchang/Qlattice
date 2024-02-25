@@ -340,7 +340,7 @@ def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel,
         sfw.close()
         qar_sp.write("checkpoint.txt", "", "", skip_if_exist=True)
         qar_sp.flush()
-        qar_sp.save_index(path_sp + ".qar.idx")
+        qar_sp.save_index(get_save_path(path_sp + ".qar.idx"))
         qar_sp.close()
         q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
         q.release_lock()
