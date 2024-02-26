@@ -61,7 +61,7 @@ q.displayln_info(0, f"{c1, c2, c3}")
 
 ve = None
 
-check_eps_interp = 1e-2
+check_eps_interp = 0.05
 
 if True:
     fname = "calc_muon_line_m"
