@@ -86,7 +86,7 @@ namespace qlat{
 /////read input length of each line
 #define LINE_LIMIT 3000
 
-#define PI 3.1415926535898
+// #define PI 3.1415926535898
 
 //enum QBOOL{
 //  QFALSE = 0,

@@ -210,6 +210,7 @@ cdef extern from "qlat-utils/show.h" namespace "qlat":
 
     void display_c_stdout(const std_string& str) except +
     DisplayPtr& get_display_ptr() except +
+    void set_display_ptr() except +
     void set_display_ptr(DisplayPtr f) except +
     void display(const std_string& str) except +
 

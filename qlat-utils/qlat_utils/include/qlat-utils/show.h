@@ -463,6 +463,8 @@ API inline DisplayPtr& get_display_ptr()
   return ptr;
 }
 
+inline void set_display_ptr() { get_display_ptr() = display_c_stdout; }
+
 inline void set_display_ptr(DisplayPtr f) { get_display_ptr() = f; }
 
 inline void display(const std::string& str) { get_display_ptr()(str); }

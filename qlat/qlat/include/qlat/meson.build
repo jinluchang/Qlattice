@@ -59,6 +59,8 @@ header_files = files(
   'mpi.h',
   'muon-line-config.h',
   'muon-line.h',
+  'hlbl-sl-table.h',
+  'hlbl-contract.h',
   'projection.h',
   'py_convert.h',
   'qcd-gauge-transformation.h',

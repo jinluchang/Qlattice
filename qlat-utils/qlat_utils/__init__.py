@@ -30,3 +30,5 @@ from .json import *
 from . import q_fit_corr
 
 set_verbose_level()
+
+set_display_method_obj = SetDisplayMethod()

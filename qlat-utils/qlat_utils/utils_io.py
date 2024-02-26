@@ -122,3 +122,13 @@ def pickle_cache(path, is_sync_node=True):
             return ret
         return f
     return dec
+
+class SetDisplayMethod:
+
+    def __init__(self):
+        set_display_method("py_stdout")
+        # displayln_info(0, f"set_display_method('py_stdout')")
+
+    def __del__(self):
+        # displayln_info(0, f"set_display_method()")
+        set_display_method()

@@ -393,3 +393,9 @@ cdef extern from "qlat/muon-line.h" namespace "qlat":
             const Coordinate& x, const Coordinate& y, const Coordinate& z,
             const Coordinate& total_site, const RealD a, const Int tag) except +
 
+cdef extern from "qlat/hlbl-contract.h" namespace "qlat":
+
+    void set_m_z_field_tag(SelectedField[RealD]& smf_d,
+            const FieldSelection& fsel,
+            const Coordinate& xg_x, const Coordinate& xg_y,
+            const double a, const int tag) except +

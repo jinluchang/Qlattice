@@ -100,6 +100,7 @@ __all__ += [
         'TimerNone',
         'displayln',
         'displayln_info',
+        'set_display_method',
         ]
 
 __all__ += [

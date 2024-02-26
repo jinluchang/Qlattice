@@ -37,7 +37,13 @@ set_verbose_level(-1)
 cdef void display_py_stdout(const cc.std_string& msg):
     sys.stdout.write(msg)
 
-cc.set_display_ptr(display_py_stdout)
+def set_display_method(method=None):
+    if method is None:
+        cc.set_display_ptr()
+    elif method == "py_stdout":
+        cc.set_display_ptr(display_py_stdout)
+    else:
+        raise Exception(f"set_display_method(method='{method}')")
 
 ### -------------------------------------------------------------------
 
