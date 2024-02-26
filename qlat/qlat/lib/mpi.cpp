@@ -555,7 +555,7 @@ void initialize_qlat_comm(const Long begin_count)
     // Rely on the environment variable
     // Can use the bind-gpu.sh scripts
     // set_cuda_device();
-    qset_line_buf(get_output_file());
+    qset_line_buf(stdout);
     displayln_info(ssprintf("Timer::get_timer_database().size() = %ld",
                             Timer::get_timer_database().size()));
     displayln_info(ssprintf("Timer::get_timer_stack().size() = %ld",

@@ -304,7 +304,7 @@ def check_log_json(script_file, json_results, *, check_eps=1e-5):
                     displayln(f"CHECK: {i} {p} load:{pl}")
                     displayln("CHECK: ERROR: JSON results eps does not match.")
                     continue
-                if abs(v - vl) > check_eps * (abs(v) + abs(vl)):
+                if abs(v - vl) > eps * (abs(v) + abs(vl)):
                     displayln(f"CHECK: {i} {p} load:{pl}")
                     displayln("CHECK: ERROR: JSON results value does not match.")
             if len(json_results) != len(json_results_load):

@@ -3,6 +3,7 @@
 from . cimport everything as cc
 
 import functools
+import sys
 
 ### -------------------------------------------------------------------
 
@@ -30,6 +31,13 @@ def set_verbose_level(level=None):
     assert cc.get_verbose_level() == level
 
 set_verbose_level(-1)
+
+### -------------------------------------------------------------------
+
+cdef void display_py_stdout(const cc.std_string& msg):
+    sys.stdout.write(msg)
+
+cc.set_display_ptr(display_py_stdout)
 
 ### -------------------------------------------------------------------
 
@@ -181,19 +189,15 @@ def set_time_budget(time_budget=None):
 
 def timer_display(str tag = ""):
     cc.Timer.display(tag)
-    cc.flush()
 
 def timer_autodisplay():
     cc.Timer.autodisplay()
-    cc.flush()
 
 def timer_display_stack():
     cc.Timer.display_stack()
-    cc.flush()
 
 def timer_display_stack_always():
     cc.Timer.display_stack_always()
-    cc.flush()
 
 def timer_reset(cc.Long max_call_times_for_always_show_info = -1):
     """

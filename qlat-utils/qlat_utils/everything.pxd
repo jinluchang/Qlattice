@@ -80,6 +80,10 @@ ctypedef std_vector[std_vector[RealD]] DataTable
 
 ### --------------------------------------------------------
 
+ctypedef void (*DisplayPtr)(const std_string& str)
+
+### --------------------------------------------------------
+
 cdef extern from "qlat-utils/mat-vec.h" namespace "qlat":
 
     cdef cppclass ColorMatrix:
@@ -201,6 +205,13 @@ cdef extern from "qlat-utils/env.h" namespace "qlat":
     double get_time_budget_default()
     Long& get_qar_multi_vol_max_size()
     Long get_qar_multi_vol_max_size_default()
+
+cdef extern from "qlat-utils/show.h" namespace "qlat":
+
+    void display_c_stdout(const std_string& str) except +
+    DisplayPtr& get_display_ptr() except +
+    void set_display_ptr(DisplayPtr f) except +
+    void display(const std_string& str) except +
 
 cdef extern from "qlat-utils/timer.h" namespace "qlat":
 

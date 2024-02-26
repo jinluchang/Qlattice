@@ -332,7 +332,7 @@ bool does_file_exist_cache(const std::string& fn)
 
 // --------------------------------
 
-void flush() { fflush(get_output_file()); }
+void flush() { fflush(stdout); }
 
 int qtruncate(const std::string& path, const Long offset)
 // return true if successful.

@@ -61,7 +61,7 @@ inline void setup_log_idx(const std::string& path = ".")
 
 inline void initialize(const std::string& path = ".")
 {
-  qset_line_buf(get_output_file());
+  qset_line_buf(stdout);
   setup_params();
   setup_log_idx(path);
 }

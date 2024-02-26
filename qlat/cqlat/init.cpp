@@ -46,7 +46,7 @@ EXPORT(cbegin, {
     begin(&argc, &argv, node_size_list);
   }
   //
-  qset_line_buf(get_output_file());
+  qset_line_buf(stdout);
   //
   Py_RETURN_NONE;
 })

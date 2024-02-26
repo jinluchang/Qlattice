@@ -450,30 +450,28 @@ inline std::string info_get_prop(const std::vector<std::string>& lines,
   }
 }
 
-API inline FILE*& get_output_file()
+inline void display_c_stdout(const std::string& str)
 {
-  static FILE* out = stdout;
-  return out;
+  fwrite(str.c_str(), 1, str.size(), stdout);
 }
 
-inline void display(const std::string& str, FILE* fp = NULL)
+using DisplayPtr = void (*)(const std::string& str);
+
+API inline DisplayPtr& get_display_ptr()
 {
-  if (NULL == fp) {
-    fp = get_output_file();
-  }
-  if (NULL != fp) {
-    fprintf(fp, "%s", str.c_str());
-  }
+  static DisplayPtr ptr = display_c_stdout;
+  return ptr;
 }
 
-inline void displayln(const std::string& str, FILE* fp = NULL)
+inline void set_display_ptr(DisplayPtr f) { get_display_ptr() = f; }
+
+inline void display(const std::string& str) { get_display_ptr()(str); }
+
+inline void displayln(const std::string& str)
 {
-  if (NULL == fp) {
-    fp = get_output_file();
-  }
-  if (NULL != fp) {
-    fprintf(fp, "%s\n", str.c_str());
-  }
+  DisplayPtr display = get_display_ptr();
+  display(str);
+  display("\n");
 }
 
 inline const char* get_c_str(const std::string& str) { return str.c_str(); }
@@ -482,12 +480,13 @@ inline const char* get_c_str(const std::string& str) { return str.c_str(); }
 
 inline void fdisplay(FILE* fp, const std::string& str)
 {
-  fprintf(fp, "%s", str.c_str());
+  fwrite(str.c_str(), 1, str.size(), fp);
 }
 
 inline void fdisplayln(FILE* fp, const std::string& str)
 {
-  fprintf(fp, "%s\n", str.c_str());
+  fwrite(str.c_str(), 1, str.size(), fp);
+  fwrite("\n", 1, 1, fp);
 }
 
 }  // namespace qlat
