@@ -507,8 +507,8 @@ struct API Field {
     const Geometry& geo_v = geo();
     if (not geo_v.is_on_node(x)) {
 #ifndef QLAT_IN_ACC
-      displayln("Field::get_elems_const: x=" + show(x) +
-                "\ngeo=" + show(geo_v));
+      displayln_c_stdout("Field::get_elems_const: x=" + show(x) +
+                         "\ngeo=" + show(geo_v));
 #endif
       qassert(false);
     }

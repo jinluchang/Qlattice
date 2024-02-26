@@ -382,9 +382,9 @@ inline void paramsFromCoordinates(std::vector<RealD>& params,
   params[3] = std::acos(cos_phi) / PI;
   params[4] = std::acos(cos_eta) / PI;
   if (qisnan(params)) {
-    displayln(shows("paramsFromCoordinates ") + show(x));
-    displayln(shows("paramsFromCoordinates ") + show(y));
-    displayln(shows("paramsFromCoordinates ") + show(params));
+    displayln_c_stdout(shows("paramsFromCoordinates ") + show(x));
+    displayln_c_stdout(shows("paramsFromCoordinates ") + show(y));
+    displayln_c_stdout(shows("paramsFromCoordinates ") + show(params));
     qassert(false);
   }
 }
@@ -698,27 +698,31 @@ inline void compare_many_magnetic_moments(const std::string& tag,
   if (is_print) {
 #pragma omp critical
     {
-      displayln(compare_multiline_string(showManyMagneticMoments(mmm),
-                                         showManyMagneticMoments(mmmp), 48));
-      displayln(tag + ": " +
-                ssprintf("CHECKING: %10.2e %10.2e %10.4f%%", sqrt(qnorm(mmm)),
-                         sqrt(qnorm(mmmp - mmm)), diff_percent));
-      displayln(tag + ": " + shows("params= ") + show(params));
-      displayln(tag + ": " +
-                ssprintf(" x  = %8.4f %s", coordinate_len(x), show(x).c_str()));
-      displayln(tag + ": " +
-                ssprintf(" y  = %8.4f %s", coordinate_len(y), show(y).c_str()));
-      displayln(tag + ": " +
-                ssprintf("y-x = %8.4f %s", coordinate_len(y - x),
-                         show(y - x).c_str()));
-      displayln(tag + ": " + ssprintf("x  y  ") + show(sqrt(qnorm(mmm))));
-      displayln(tag + ": " +
-                ssprintf("DATA: %24.17E %24.17E %24.17E %24.17E %24.17E   "
-                         "%24.17E %24.17E %24.17E  %24.17E",
-                         params[0], params[1], params[2], params[3], params[4],
-                         sqrt(qnorm(mmm)), sqrt(qnorm(mmmp)),
-                         sqrt(qnorm(mmmp - mmm)),
-                         sqrt(qnorm(mmmp - mmm) / qnorm(mmm))));
+      displayln_c_stdout(compare_multiline_string(
+          showManyMagneticMoments(mmm), showManyMagneticMoments(mmmp), 48));
+      displayln_c_stdout(tag + ": " +
+                         ssprintf("CHECKING: %10.2e %10.2e %10.4f%%",
+                                  sqrt(qnorm(mmm)), sqrt(qnorm(mmmp - mmm)),
+                                  diff_percent));
+      displayln_c_stdout(tag + ": " + shows("params= ") + show(params));
+      displayln_c_stdout(
+          tag + ": " +
+          ssprintf(" x  = %8.4f %s", coordinate_len(x), show(x).c_str()));
+      displayln_c_stdout(
+          tag + ": " +
+          ssprintf(" y  = %8.4f %s", coordinate_len(y), show(y).c_str()));
+      displayln_c_stdout(tag + ": " +
+                         ssprintf("y-x = %8.4f %s", coordinate_len(y - x),
+                                  show(y - x).c_str()));
+      displayln_c_stdout(tag + ": " + ssprintf("x  y  ") +
+                         show(sqrt(qnorm(mmm))));
+      displayln_c_stdout(
+          tag + ": " +
+          ssprintf("DATA: %24.17E %24.17E %24.17E %24.17E %24.17E   "
+                   "%24.17E %24.17E %24.17E  %24.17E",
+                   params[0], params[1], params[2], params[3], params[4],
+                   sqrt(qnorm(mmm)), sqrt(qnorm(mmmp)), sqrt(qnorm(mmmp - mmm)),
+                   sqrt(qnorm(mmmp - mmm) / qnorm(mmm))));
     }
   }
 }
@@ -776,8 +780,8 @@ inline void initializeMuonLineInterpolation(const std::vector<int>& dims,
     TIMER_VERBOSE("interp-initial-iter");
 #pragma omp critical
     {
-      displayln(ssprintf("jobs-par: %5d %10ld %10ld/%ld", get_id_node(),
-                         my_start, i, jobs_per_nodes));
+      displayln_c_stdout(ssprintf("jobs-par: %5d %10ld %10ld/%ld",
+                                  get_id_node(), my_start, i, jobs_per_nodes));
     }
     workplace[i] =
         muonLineSymParamsCompressed(interpolation.get_coor(idx), eps);
@@ -790,8 +794,8 @@ inline void initializeMuonLineInterpolation(const std::vector<int>& dims,
     TIMER_VERBOSE("interp-initial-iter");
 #pragma omp critical
     if (0 == get_id_node()) {
-      displayln(ssprintf("jobs-left: %10ld/%ld", idx, jobs_left));
-      displayln(show(idx));
+      displayln_c_stdout(ssprintf("jobs-left: %10ld/%ld", idx, jobs_left));
+      displayln_c_stdout(show(idx));
     }
     interpolation[idx] =
         muonLineSymParamsCompressed(interpolation.get_coor(idx), eps);
@@ -1121,7 +1125,7 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
         if (idx >= jobs.size()) {
           break;
         }
-        displayln(
+        displayln_info(
             ssprintf("send-job: %5d %10ld/%ld", dest, jobs[idx], jobs_total));
         send_job(idx, jobs[idx], dest);
         idx += 1;
@@ -1144,7 +1148,7 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
         if (idx >= jobs.size()) {
           break;
         }
-        displayln(
+        displayln_info(
             ssprintf("send-job: %5d %10ld/%ld", source, jobs[idx], jobs_total));
         send_job(idx, jobs[idx], source);
         idx += 1;
@@ -1164,7 +1168,7 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
       }
       for (int dest = 1; dest < get_num_node(); ++dest) {
         Long job = 0;
-        displayln(
+        displayln_info(
             ssprintf("send-job: %5d %10ld/%ld", dest, (Long)-1, jobs_total));
         send_job(-1, job, dest);
       }
@@ -1192,8 +1196,9 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
               muonLineSymParamsCompressed(interp.get_coor(idx), eps);
 #pragma omp critical
           {
-            displayln(ssprintf("par: %5d %10ld/%ld %10ld/%ld", get_id_node(),
-                               idx, jobs_total, i, job_chunk_size));
+            displayln_c_stdout(ssprintf("par: %5d %10ld/%ld %10ld/%ld",
+                                        get_id_node(), idx, jobs_total, i,
+                                        job_chunk_size));
           }
         }
         send_result(flag, result);
@@ -1208,7 +1213,7 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
             muonLineSymParamsCompressed(interp.get_coor(idx), eps);
 #pragma omp critical
         {
-          displayln(
+          displayln_c_stdout(
               ssprintf("compute_save_muonline_interpolation_cc: %10ld/%ld", idx,
                        jobs_total));
         }
@@ -1588,8 +1593,8 @@ inline void test_muonline_interp()
     {
       compare_many_magnetic_moments("checking", x, y, mmm, mmmp);
       compare_many_magnetic_moments("checking2", x, y, mmm, mmmpp);
-      displayln(ssprintf("test_muonline_interp idx=%d params=%s", idx,
-                         show(params).c_str()));
+      displayln_c_stdout(ssprintf("test_muonline_interp idx=%d params=%s", idx,
+                                  show(params).c_str()));
     }
   }
 }

@@ -28,14 +28,14 @@
 #define qqwarn(str)                             \
   {                                             \
     std::string msg = MK_ERR_MSG("qwarn", str); \
-    qlat::displayln(msg);                       \
+    qlat::displayln_c_stdout(msg);              \
     qlat::Timer::display_stack_always();        \
   }
 
 #define qqerr(str)                             \
   {                                            \
     std::string msg = MK_ERR_MSG("qerr", str); \
-    qlat::displayln(msg);                      \
+    qlat::displayln_c_stdout(msg);             \
     qlat::Timer::display_stack_always();       \
     throw std::string(msg);                    \
   };
@@ -44,7 +44,7 @@
   {                                                \
     if (not(x)) {                                  \
       std::string msg = MK_ERR_MSG("qassert", #x); \
-      qlat::displayln(msg);                        \
+      qlat::displayln_c_stdout(msg);               \
       qlat::Timer::display_stack_always();         \
       throw std::string(msg);                      \
     }                                              \

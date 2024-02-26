@@ -56,7 +56,7 @@ void TimerInfo::show_avg_always(const std::string& info,
   double total_time = get_total_time();
   std::string fnameCut;
   fnameCut.assign(fname, 0, fname_len);
-  displayln(ssprintf(
+  displayln_c_stdout(ssprintf(
       "Timer::%s %s :%7.3f%% %8d calls; %.2E,%.2E sec; %.2E,%.2E flops; "
       "%5.2f Gflops",
       info.c_str(),
@@ -187,7 +187,7 @@ void Timer::start(bool verbose)
   } else {
     TimerInfo& info = get_timer_database()[info_index];
     info.show_avg_always("debug", max_function_name_length_shown());
-    displayln(ssprintf("%s::%s ERROR: is_running=%d", cname, info.fname.c_str(),
+    displayln_c_stdout(ssprintf("%s::%s ERROR: is_running=%d", cname, info.fname.c_str(),
                        is_running));
     Timer::display_stack();
     qassert(false);
@@ -213,16 +213,16 @@ void Timer::stop(bool verbose)
   std::vector<Long>& t_stack = get_timer_stack();
   qassert(not t_stack.empty());
   if (not(t_stack.back() == info_index)) {
-    displayln(ssprintf("%s::%s ERROR: stack is corrupted", cname,
-                       info.fname.c_str()));
+    displayln_c_stdout(ssprintf("%s::%s ERROR: stack is corrupted", cname,
+                                info.fname.c_str()));
     Timer::display_stack();
     qassert(false);
   }
   t_stack.pop_back();
   if (is_running <= 0) {
     info.show_avg_always("debug", max_function_name_length_shown());
-    displayln(ssprintf("%s::%s ERROR: is_running=%d", cname, info.fname.c_str(),
-                       is_running));
+    displayln_c_stdout(ssprintf("%s::%s ERROR: is_running=%d", cname,
+                                info.fname.c_str(), is_running));
     Timer::display_stack();
     qassert(false);
   }
@@ -315,7 +315,7 @@ void Timer::autodisplay(const double time)
 void Timer::display_stack_always()
 // display on any process or thread
 {
-  displayln("display_stack start");
+  displayln_c_stdout("display_stack start");
   const std::vector<TimerInfo>& tdb = get_timer_database();
   const std::vector<Long>& t_stack = get_timer_stack();
   for (Long i = (Long)t_stack.size() - 1; i >= 0; --i) {
@@ -323,7 +323,7 @@ void Timer::display_stack_always()
     tdb[info_index].show_avg_always(ssprintf("stack[%3ld]", i),
                                     max_function_name_length_shown());
   }
-  displayln("display_stack end");
+  displayln_c_stdout("display_stack end");
 }
 
 // ------------------------------

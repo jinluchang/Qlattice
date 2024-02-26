@@ -455,6 +455,12 @@ inline void display_c_stdout(const std::string& str)
   fwrite(str.c_str(), 1, str.size(), stdout);
 }
 
+inline void displayln_c_stdout(const std::string& str)
+{
+  display_c_stdout(str);
+  display_c_stdout("\n");
+}
+
 using DisplayPtr = void (*)(const std::string& str);
 
 API inline DisplayPtr& get_display_ptr()
@@ -466,15 +472,6 @@ API inline DisplayPtr& get_display_ptr()
 inline void set_display_ptr() { get_display_ptr() = display_c_stdout; }
 
 inline void set_display_ptr(DisplayPtr f) { get_display_ptr() = f; }
-
-inline void display(const std::string& str) { get_display_ptr()(str); }
-
-inline void displayln(const std::string& str)
-{
-  DisplayPtr display = get_display_ptr();
-  display(str);
-  display("\n");
-}
 
 inline const char* get_c_str(const std::string& str) { return str.c_str(); }
 

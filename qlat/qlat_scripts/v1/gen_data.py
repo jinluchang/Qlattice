@@ -281,6 +281,8 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi=None):
         psel_prob.save(get_save_path(fn_psel_prob))
         q.release_lock()
         return ret
+    else:
+        return None, None, None, None, None
 
 # -----------------------------------------------------------------------------
 

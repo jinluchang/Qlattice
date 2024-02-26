@@ -147,6 +147,22 @@ inline int get_num_node() { return get_num_node_internal(); }
 
 inline int get_id_node() { return get_id_node_internal(); }
 
+inline void display(const std::string& str)
+{
+  if (0 == get_id_thread()) {
+    get_display_ptr()(str);
+  }
+}
+
+inline void displayln(const std::string& str)
+{
+  if (0 == get_id_thread()) {
+    DisplayPtr display = get_display_ptr();
+    display(str);
+    display("\n");
+  }
+}
+
 inline void display(const Long minimum_verbose_level, const std::string& str)
 {
   if (get_verbose_level() >= minimum_verbose_level) {
