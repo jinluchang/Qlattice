@@ -87,8 +87,6 @@ inline bool compute_traj(const std::string& job_tag, const int traj)
   TIMER_VERBOSE("compute_traj");
   qmkdir_info(get_job_path(job_tag));
   qmkdir_info(get_job_path(job_tag) + "/logs");
-  switch_monitor_file_info(get_job_path(job_tag) +
-                           ssprintf("/logs/%010ld.txt", get_log_idx()));
   setup(job_tag);
   displayln_info(fname + ssprintf(": Checking '%s'.",
                                   get_job_path(job_tag, traj).c_str()));
@@ -115,12 +113,8 @@ inline bool compute_traj(const std::string& job_tag, const int traj)
     const std::string job_path = get_job_path(job_tag, traj);
     qmkdir_info(job_path);
     qmkdir_sync_node(job_path + "/logs");
-    switch_monitor_file_info(job_path +
-                             ssprintf("/logs/%010ld.txt", get_log_idx()));
     const bool is_failed = compute_traj_do(job_tag, traj);
     Timer::display();
-    switch_monitor_file_info(get_job_path(job_tag) +
-                             ssprintf("/logs/%010ld.txt", get_log_idx()));
     release_lock();
     return is_failed;
   } else {

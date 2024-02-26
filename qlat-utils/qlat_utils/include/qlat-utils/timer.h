@@ -161,10 +161,10 @@ inline void displayln(const Long minimum_verbose_level, const std::string& str)
   }
 }
 
-inline void display_info(const std::string& str, FILE* fp = NULL)
+inline void display_info(const std::string& str)
 {
   if (0 == get_id_node() && 0 == get_id_thread()) {
-    display(str, fp);
+    display(str);
   }
 }
 
@@ -176,10 +176,10 @@ inline void display_info(const Long minimum_verbose_level,
   }
 }
 
-inline void displayln_info(const std::string& str, FILE* fp = NULL)
+inline void displayln_info(const std::string& str)
 {
   if (0 == get_id_node() && 0 == get_id_thread()) {
-    displayln(str, fp);
+    displayln(str);
   }
 }
 

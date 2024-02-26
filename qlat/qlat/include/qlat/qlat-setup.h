@@ -52,8 +52,6 @@ inline void setup(const std::string& job_tag)
 {
   qmkdir_info(get_job_path(job_tag));
   qmkdir_info(get_job_path(job_tag) + "/logs");
-  switch_monitor_file_info(get_job_path(job_tag) +
-                           ssprintf("/logs/%010ld.txt", get_log_idx()));
   setup();
   if (check_status()) {
     qquit("setup(job_tag)");
@@ -67,8 +65,6 @@ inline void setup(const std::string& job_tag, const int traj)
   qmkdir_info(get_job_path(job_tag));
   qmkdir_info(job_path);
   qmkdir_sync_node(job_path + "/logs");
-  switch_monitor_file_info(job_path +
-                           ssprintf("/logs/%010ld.txt", get_log_idx()));
   TIMER_VERBOSE("setup(job_tag,traj)");
   setup();
   if (check_status()) {

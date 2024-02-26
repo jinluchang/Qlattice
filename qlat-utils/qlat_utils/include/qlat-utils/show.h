@@ -456,28 +456,9 @@ API inline FILE*& get_output_file()
   return out;
 }
 
-API inline FILE*& get_monitor_file()
-{
-  static FILE* out = NULL;
-  return out;
-}
-
-API inline uint64_t& get_output_level()
-{
-  static uint64_t x = UINT64_MAX;
-  return x;
-}
-
 inline void display(const std::string& str, FILE* fp = NULL)
 {
   if (NULL == fp) {
-    if (get_output_level() == 0) {
-      return;
-    }
-    fp = get_monitor_file();
-    if (NULL != fp) {
-      fprintf(fp, "%s", str.c_str());
-    }
     fp = get_output_file();
   }
   if (NULL != fp) {
@@ -488,13 +469,6 @@ inline void display(const std::string& str, FILE* fp = NULL)
 inline void displayln(const std::string& str, FILE* fp = NULL)
 {
   if (NULL == fp) {
-    if (get_output_level() == 0) {
-      return;
-    }
-    fp = get_monitor_file();
-    if (NULL != fp) {
-      fprintf(fp, "%s\n", str.c_str());
-    }
     fp = get_output_file();
   }
   if (NULL != fp) {

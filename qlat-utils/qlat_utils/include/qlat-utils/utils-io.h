@@ -214,20 +214,6 @@ inline std::vector<std::string> qgetlines(FILE* fp)
   return ret;
 }
 
-inline void switch_monitor_file(const std::string& path)
-{
-  qfclose(get_monitor_file());
-  get_monitor_file() = qopen(path, "a");
-  qset_line_buf(get_monitor_file());
-}
-
-inline void switch_monitor_file_info(const std::string& path)
-{
-  if (0 == get_id_node()) {
-    switch_monitor_file(path);
-  }
-}
-
 API inline int& is_sigterm_received()
 {
   static int n = 0;

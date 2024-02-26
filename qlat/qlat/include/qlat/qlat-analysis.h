@@ -82,8 +82,6 @@ inline void update_log_rng()
 {
   if (get_result_path() != "") {
     qassert(get_log_idx() >= 0);
-    switch_monitor_file(get_result_path() +
-                        ssprintf("/logs/%010d.txt", get_log_idx()));
   }
   get_global_rng_state() =
       get_project_root_rng_state().split(get_result_path());

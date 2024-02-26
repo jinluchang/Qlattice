@@ -1383,10 +1383,6 @@ inline void combine_crc32(const std::string& path, const int idx_size,
   if (0 == get_id_node()) {
     {
       // check orig-crc32
-      FILE* mfp = qopen(path + "/combine_crc32.log", "a");
-      qassert(mfp != NULL);
-      qset_line_buf(mfp);
-      get_monitor_file() = mfp;
       const std::vector<crc32_t>& crcs_orig = cesi.crcs;
       const int size = crcs_orig.size();
       std::vector<crc32_t> crcs_acc(size, 0);
@@ -1419,8 +1415,6 @@ inline void combine_crc32(const std::string& path, const int idx_size,
                                      size, crcs_orig[i], crcs_acc[i]));
         }
       }
-      get_monitor_file() = NULL;
-      qfclose(mfp);
     }
     const std::string fn = path + "/checksums.txt";
     if (not does_file_exist(fn)) {
