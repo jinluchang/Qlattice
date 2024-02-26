@@ -1,630 +1,630 @@
 [
  [
   "calc_muon_line_m: v0 sig",
-  -3.821373973363987e-05
+  -3.821373973364086e-05
  ],
  [
   "calc_muon_line_m: v1 sig",
-  -3.8213863781525387e-05
+  -3.8213863781526755e-05
  ],
  [
   "get_muon_line_m: 0 vv1 sig",
-  -6.879885687840052e-06,
-  0.01
+  -6.889457979056546e-06,
+  0.05
  ],
  [
   "get_muon_line_m: 0 vv2 sig",
-  1.9692115671035393e-05,
-  0.01
+  1.9671103909408894e-05,
+  0.05
  ],
  [
   "get_muon_line_m: 0 vv3 sig",
-  -8.818329998460938e-06,
-  0.01
+  -8.783284452035157e-06,
+  0.05
  ],
  [
   "get_muon_line_m: 0 vv4 sig",
-  1.5639466527094612e-05,
-  0.01
+  1.560635723774213e-05,
+  0.05
  ],
  [
   "get_muon_line_m: 0 vv5 sig",
-  -1.5946229259786908e-05,
-  0.01
+  -1.5943191195221066e-05,
+  0.05
  ],
  [
   "get_muon_line_m: 0 vv6 sig",
-  -3.6871372520420525e-06,
-  0.01
+  -3.6615275208382538e-06,
+  0.05
  ],
  [
   "get_muon_line_m: 1 vv1 sig",
-  -7.232004854341781e-06,
-  0.01
+  -7.238945528448851e-06,
+  0.05
  ],
  [
   "get_muon_line_m: 1 vv2 sig",
-  1.9653719185713373e-05,
-  0.01
+  1.9635809660139732e-05,
+  0.05
  ],
  [
   "get_muon_line_m: 1 vv3 sig",
-  -7.85407937822254e-06,
-  0.01
+  -7.823835817003663e-06,
+  0.05
  ],
  [
   "get_muon_line_m: 1 vv4 sig",
-  1.4908448100980692e-05,
-  0.01
+  1.4879989264593567e-05,
+  0.05
  ],
  [
   "get_muon_line_m: 1 vv5 sig",
-  -1.6373491825200047e-05,
-  0.01
+  -1.6372149368071597e-05,
+  0.05
  ],
  [
   "get_muon_line_m: 1 vv6 sig",
-  -3.1025912289296666e-06,
-  0.01
+  -3.0808682112091896e-06,
+  0.05
  ],
  [
   "get_muon_line_m_extra: initial weights 0",
   4.246397448322702,
-  0.01
+  0.05
  ],
  [
   "get_muon_line_m_extra: initial weights 1",
   -2.799126897094928,
-  0.01
+  0.05
  ],
  [
   "get_muon_line_m_extra: initial weights 2",
   0.4824624469298264,
-  0.01
+  0.05
  ],
  [
   "get_muon_line_m_extra: set weights 0",
   0.5570584118386671,
-  0.01
+  0.05
  ],
  [
   "get_muon_line_m_extra: set weights 1",
   0.4824624469298264,
-  0.01
+  0.05
  ],
  [
   "get_muon_line_m_extra: default weights 0",
   4.246397448322702,
-  0.01
+  0.05
  ],
  [
   "get_muon_line_m_extra: default weights 1",
   -2.799126897094928,
-  0.01
+  0.05
  ],
  [
   "get_muon_line_m_extra: default weights 2",
   0.4824624469298264,
-  0.01
+  0.05
  ],
  [
   "get_muon_line_m_extra: tag=0 vv1 sig",
-  -6.762512632339477e-06,
-  0.01
+  -6.772962129259113e-06,
+  0.05
  ],
  [
   "get_muon_line_m_extra: tag=0 vv2 sig",
-  1.9704914499476064e-05,
-  0.01
+  1.968286865916528e-05,
+  0.05
  ],
  [
   "get_muon_line_m_extra: tag=0 vv3 sig",
-  -9.139746871873736e-06,
-  0.01
+  -9.103100663712325e-06,
+  0.05
  ],
  [
   "get_muon_line_m_extra: tag=0 vv4 sig",
-  1.5883139335799246e-05,
-  0.01
+  1.584847989545832e-05,
+  0.05
  ],
  [
   "get_muon_line_m_extra: tag=0 vv5 sig",
-  -1.58038084046492e-05,
-  0.01
+  -1.580020513760422e-05,
+  0.05
  ],
  [
   "get_muon_line_m_extra: tag=0 vv6 sig",
-  -3.881985926412849e-06,
-  0.01
+  -3.855080624047943e-06,
+  0.05
  ],
  [
   "get_muon_line_m_extra: tag=1 vv1 sig",
-  -6.879885687840052e-06,
-  0.01
+  -6.889457979056546e-06,
+  0.05
  ],
  [
   "get_muon_line_m_extra: tag=1 vv2 sig",
-  1.9692115671035393e-05,
-  0.01
+  1.9671103909408894e-05,
+  0.05
  ],
  [
   "get_muon_line_m_extra: tag=1 vv3 sig",
-  -8.818329998460938e-06,
-  0.01
+  -8.783284452035157e-06,
+  0.05
  ],
  [
   "get_muon_line_m_extra: tag=1 vv4 sig",
-  1.5639466527094612e-05,
-  0.01
+  1.560635723774213e-05,
+  0.05
  ],
  [
   "get_muon_line_m_extra: tag=1 vv5 sig",
-  -1.5946229259786908e-05,
-  0.01
+  -1.5943191195221066e-05,
+  0.05
  ],
  [
   "get_muon_line_m_extra: tag=1 vv6 sig",
-  -3.6871372520420525e-06,
-  0.01
+  -3.6615275208382538e-06,
+  0.05
  ],
  [
   "get_muon_line_m_extra_lat: tag=0 vv1 sig",
-  -6.762512632339474e-06,
-  0.01
+  -6.772962129259107e-06,
+  0.05
  ],
  [
   "get_muon_line_m_extra_lat: tag=0 vv2 sig",
-  1.9704914499476064e-05,
-  0.01
+  1.968286865916528e-05,
+  0.05
  ],
  [
   "get_muon_line_m_extra_lat: tag=0 vv3 sig",
-  -9.139746871873732e-06,
-  0.01
+  -9.103100663712325e-06,
+  0.05
  ],
  [
   "get_muon_line_m_extra_lat: tag=0 vv4 sig",
-  1.5883139335799246e-05,
-  0.01
+  1.584847989545832e-05,
+  0.05
  ],
  [
   "get_muon_line_m_extra_lat: tag=0 vv5 sig",
-  -1.58038084046492e-05,
-  0.01
+  -1.580020513760422e-05,
+  0.05
  ],
  [
   "get_muon_line_m_extra_lat: tag=0 vv6 sig",
-  -3.88198592641285e-06,
-  0.01
+  -3.855080624047946e-06,
+  0.05
  ],
  [
   "get_muon_line_m_extra_lat: tag=1 vv1 sig",
-  -6.879885687840049e-06,
-  0.01
+  -6.889457979056543e-06,
+  0.05
  ],
  [
   "get_muon_line_m_extra_lat: tag=1 vv2 sig",
-  1.9692115671035393e-05,
-  0.01
+  1.9671103909408894e-05,
+  0.05
  ],
  [
   "get_muon_line_m_extra_lat: tag=1 vv3 sig",
-  -8.818329998460936e-06,
-  0.01
+  -8.78328445203516e-06,
+  0.05
  ],
  [
   "get_muon_line_m_extra_lat: tag=1 vv4 sig",
-  1.5639466527094612e-05,
-  0.01
+  1.560635723774213e-05,
+  0.05
  ],
  [
   "get_muon_line_m_extra_lat: tag=1 vv5 sig",
-  -1.5946229259786908e-05,
-  0.01
+  -1.5943191195221066e-05,
+  0.05
  ],
  [
   "get_muon_line_m_extra_lat: tag=1 vv6 sig",
-  -3.6871372520420567e-06,
-  0.01
+  -3.6615275208382593e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 3]) 0.1 0 0 [Coordinate([0, 2, 1, 2]), Coordinate([1, 1, 2, 0]), Coordinate([2, 0, 2, 1])]",
   0.0,
-  0.01
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 3]) 0.1 0 1 [Coordinate([1, 0, 1, 1]), Coordinate([1, 0, 2, 2]), Coordinate([0, 0, 2, 0])]",
   0.0,
-  0.01
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 3]) 0.1 0 2 [Coordinate([2, 1, 2, 0]), Coordinate([0, 1, 0, 2]), Coordinate([0, 1, 2, 2])]",
-  -4.928454361610451e-07,
-  0.01
+  -4.895193392636374e-07,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 3]) 0.1 0 3 [Coordinate([1, 2, 0, 0]), Coordinate([2, 0, 0, 1]), Coordinate([1, 0, 2, 1])]",
-  1.617168321875375e-07,
-  0.01
+  1.6103107255035813e-07,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 3]) 0.1 1 0 [Coordinate([0, 2, 1, 2]), Coordinate([1, 1, 2, 0]), Coordinate([2, 0, 2, 1])]",
   0.0,
-  0.01
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 3]) 0.1 1 1 [Coordinate([1, 0, 1, 1]), Coordinate([1, 0, 2, 2]), Coordinate([0, 0, 2, 0])]",
   0.0,
-  0.01
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 3]) 0.1 1 2 [Coordinate([2, 1, 2, 0]), Coordinate([0, 1, 0, 2]), Coordinate([0, 1, 2, 2])]",
-  -4.5897649634592195e-07,
-  0.01
+  -4.5588998838505027e-07,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 3]) 0.1 1 3 [Coordinate([1, 2, 0, 0]), Coordinate([2, 0, 0, 1]), Coordinate([1, 0, 2, 1])]",
-  1.5362868200148598e-07,
-  0.01
+  1.5298676462548466e-07,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 3]) 0.4 0 0 [Coordinate([0, 2, 1, 2]), Coordinate([1, 1, 2, 0]), Coordinate([2, 0, 2, 1])]",
   0.0,
-  0.01
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 3]) 0.4 0 1 [Coordinate([1, 0, 1, 1]), Coordinate([1, 0, 2, 2]), Coordinate([0, 0, 2, 0])]",
   0.0,
-  0.01
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 3]) 0.4 0 2 [Coordinate([2, 1, 2, 0]), Coordinate([0, 1, 0, 2]), Coordinate([0, 1, 2, 2])]",
-  -9.856908723220903e-07,
-  0.01
+  -9.790386785272748e-07,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 3]) 0.4 0 3 [Coordinate([1, 2, 0, 0]), Coordinate([2, 0, 0, 1]), Coordinate([1, 0, 2, 1])]",
-  3.23433664375075e-07,
-  0.01
+  3.2206214510071625e-07,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 3]) 0.4 1 0 [Coordinate([0, 2, 1, 2]), Coordinate([1, 1, 2, 0]), Coordinate([2, 0, 2, 1])]",
   0.0,
-  0.01
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 3]) 0.4 1 1 [Coordinate([1, 0, 1, 1]), Coordinate([1, 0, 2, 2]), Coordinate([0, 0, 2, 0])]",
   0.0,
-  0.01
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 3]) 0.4 1 2 [Coordinate([2, 1, 2, 0]), Coordinate([0, 1, 0, 2]), Coordinate([0, 1, 2, 2])]",
-  -9.179529926918439e-07,
-  0.01
+  -9.117799767701005e-07,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 3]) 0.4 1 3 [Coordinate([1, 2, 0, 0]), Coordinate([2, 0, 0, 1]), Coordinate([1, 0, 2, 1])]",
-  3.0725736400297195e-07,
-  0.01
+  3.059735292509693e-07,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 7]) 0.1 0 0 [Coordinate([0, 2, 1, 2]), Coordinate([1, 1, 2, 5]), Coordinate([2, 0, 2, 5])]",
   0.0,
-  0.01
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 7]) 0.1 0 1 [Coordinate([1, 0, 1, 1]), Coordinate([1, 0, 2, 5]), Coordinate([0, 0, 2, 1])]",
-  1.919374963090252e-06,
-  0.01
+  1.91270620221492e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 7]) 0.1 0 2 [Coordinate([2, 1, 2, 2]), Coordinate([0, 1, 0, 3]), Coordinate([0, 1, 2, 3])]",
-  9.856908723221004e-07,
-  0.01
+  9.79038678527274e-07,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 7]) 0.1 0 3 [Coordinate([1, 2, 0, 2]), Coordinate([2, 0, 0, 4]), Coordinate([1, 0, 2, 2])]",
-  -1.3090706109191294e-06,
-  0.01
+  -1.304059559703933e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 7]) 0.1 1 0 [Coordinate([0, 2, 1, 2]), Coordinate([1, 1, 2, 5]), Coordinate([2, 0, 2, 5])]",
   0.0,
-  0.01
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 7]) 0.1 1 1 [Coordinate([1, 0, 1, 1]), Coordinate([1, 0, 2, 5]), Coordinate([0, 0, 2, 1])]",
-  1.8514645814129783e-06,
-  0.01
+  1.8451668770336098e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 7]) 0.1 1 2 [Coordinate([2, 1, 2, 2]), Coordinate([0, 1, 0, 3]), Coordinate([0, 1, 2, 3])]",
-  9.179529926918532e-07,
-  0.01
+  9.117799767701004e-07,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 7]) 0.1 1 3 [Coordinate([1, 2, 0, 2]), Coordinate([2, 0, 0, 4]), Coordinate([1, 0, 2, 2])]",
-  -1.2551361600985336e-06,
-  0.01
+  -1.2504153998688629e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 7]) 0.4 0 0 [Coordinate([0, 2, 1, 2]), Coordinate([1, 1, 2, 5]), Coordinate([2, 0, 2, 5])]",
   0.0,
-  0.01
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 7]) 0.4 0 1 [Coordinate([1, 0, 1, 1]), Coordinate([1, 0, 2, 5]), Coordinate([0, 0, 2, 1])]",
-  3.838749926180504e-06,
-  0.01
+  3.82541240442984e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 7]) 0.4 0 2 [Coordinate([2, 1, 2, 2]), Coordinate([0, 1, 0, 3]), Coordinate([0, 1, 2, 3])]",
-  1.971381744644201e-06,
-  0.01
+  1.958077357054548e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 7]) 0.4 0 3 [Coordinate([1, 2, 0, 2]), Coordinate([2, 0, 0, 4]), Coordinate([1, 0, 2, 2])]",
-  -2.618141221838259e-06,
-  0.01
+  -2.608119119407866e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 7]) 0.4 1 0 [Coordinate([0, 2, 1, 2]), Coordinate([1, 1, 2, 5]), Coordinate([2, 0, 2, 5])]",
   0.0,
-  0.01
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 7]) 0.4 1 1 [Coordinate([1, 0, 1, 1]), Coordinate([1, 0, 2, 5]), Coordinate([0, 0, 2, 1])]",
-  3.7029291628259565e-06,
-  0.01
+  3.6903337540672196e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 7]) 0.4 1 2 [Coordinate([2, 1, 2, 2]), Coordinate([0, 1, 0, 3]), Coordinate([0, 1, 2, 3])]",
-  1.8359059853837064e-06,
-  0.01
+  1.8235599535402009e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([3, 3, 3, 7]) 0.4 1 3 [Coordinate([1, 2, 0, 2]), Coordinate([2, 0, 0, 4]), Coordinate([1, 0, 2, 2])]",
-  -2.510272320197067e-06,
-  0.01
+  -2.5008307997377257e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([2, 3, 4, 5]) 0.1 0 0 [Coordinate([0, 0, 2, 0]), Coordinate([0, 2, 2, 0]), Coordinate([0, 1, 0, 2])]",
   0.0,
-  0.01
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([2, 3, 4, 5]) 0.1 0 1 [Coordinate([1, 0, 0, 3]), Coordinate([0, 2, 1, 2]), Coordinate([1, 1, 0, 1])]",
   0.0,
-  0.01
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([2, 3, 4, 5]) 0.1 0 2 [Coordinate([1, 2, 2, 1]), Coordinate([0, 0, 2, 4]), Coordinate([0, 0, 2, 1])]",
-  1.1942115900937291e-06,
-  0.01
+  1.1858576249334864e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([2, 3, 4, 5]) 0.1 0 3 [Coordinate([0, 2, 1, 0]), Coordinate([0, 1, 0, 4]), Coordinate([0, 2, 1, 3])]",
-  -3.0070326213151825e-06,
-  0.01
+  -2.9994102024044057e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([2, 3, 4, 5]) 0.1 1 0 [Coordinate([0, 0, 2, 0]), Coordinate([0, 2, 2, 0]), Coordinate([0, 1, 0, 2])]",
   0.0,
-  0.01
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([2, 3, 4, 5]) 0.1 1 1 [Coordinate([1, 0, 0, 3]), Coordinate([0, 2, 1, 2]), Coordinate([1, 1, 0, 1])]",
   0.0,
-  0.01
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([2, 3, 4, 5]) 0.1 1 2 [Coordinate([1, 2, 2, 1]), Coordinate([0, 0, 2, 4]), Coordinate([0, 0, 2, 1])]",
-  1.0788999832331962e-06,
-  0.01
+  1.071025709996737e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([2, 3, 4, 5]) 0.1 1 3 [Coordinate([0, 2, 1, 0]), Coordinate([0, 1, 0, 4]), Coordinate([0, 2, 1, 3])]",
-  -2.9157887611080466e-06,
-  0.01
+  -2.908775000775023e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([2, 3, 4, 5]) 0.4 0 0 [Coordinate([0, 0, 2, 0]), Coordinate([0, 2, 2, 0]), Coordinate([0, 1, 0, 2])]",
   0.0,
-  0.01
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([2, 3, 4, 5]) 0.4 0 1 [Coordinate([1, 0, 0, 3]), Coordinate([0, 2, 1, 2]), Coordinate([1, 1, 0, 1])]",
   0.0,
-  0.01
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([2, 3, 4, 5]) 0.4 0 2 [Coordinate([1, 2, 2, 1]), Coordinate([0, 0, 2, 4]), Coordinate([0, 0, 2, 1])]",
-  2.3884231801874582e-06,
-  0.01
+  2.3717152498669728e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([2, 3, 4, 5]) 0.4 0 3 [Coordinate([0, 2, 1, 0]), Coordinate([0, 1, 0, 4]), Coordinate([0, 2, 1, 3])]",
-  -6.014065242630365e-06,
-  0.01
+  -5.998820404808811e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([2, 3, 4, 5]) 0.4 1 0 [Coordinate([0, 0, 2, 0]), Coordinate([0, 2, 2, 0]), Coordinate([0, 1, 0, 2])]",
   0.0,
-  0.01
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([2, 3, 4, 5]) 0.4 1 1 [Coordinate([1, 0, 0, 3]), Coordinate([0, 2, 1, 2]), Coordinate([1, 1, 0, 1])]",
   0.0,
-  0.01
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([2, 3, 4, 5]) 0.4 1 2 [Coordinate([1, 2, 2, 1]), Coordinate([0, 0, 2, 4]), Coordinate([0, 0, 2, 1])]",
-  2.1577999664663924e-06,
-  0.01
+  2.142051419993474e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([2, 3, 4, 5]) 0.4 1 3 [Coordinate([0, 2, 1, 0]), Coordinate([0, 1, 0, 4]), Coordinate([0, 2, 1, 3])]",
-  -5.831577522216093e-06,
-  0.01
+  -5.817550001550046e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 3, 2, 5]) 0.1 0 0 [Coordinate([0, 0, 1, 0]), Coordinate([0, 1, 1, 0]), Coordinate([2, 0, 0, 2])]",
-  3.2127227174484725e-06,
-  0.01
+  3.205259510657272e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 3, 2, 5]) 0.1 0 1 [Coordinate([1, 0, 0, 3]), Coordinate([2, 2, 0, 2]), Coordinate([3, 0, 0, 1])]",
-  -9.490650501219125e-07,
-  0.01
+  -9.484002845686923e-07,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 3, 2, 5]) 0.1 0 2 [Coordinate([1, 1, 1, 1]), Coordinate([0, 0, 1, 4]), Coordinate([0, 0, 1, 1])]",
-  2.3860646546917547e-06,
-  0.01
+  2.3689268869952474e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 3, 2, 5]) 0.1 0 3 [Coordinate([2, 2, 0, 0]), Coordinate([2, 0, 0, 4]), Coordinate([2, 2, 0, 3])]",
-  -3.077140671352814e-06,
-  0.01
+  -3.0715877052867445e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 3, 2, 5]) 0.1 1 0 [Coordinate([0, 0, 1, 0]), Coordinate([0, 1, 1, 0]), Coordinate([2, 0, 0, 2])]",
-  3.164721685085442e-06,
-  0.01
+  3.157741174091899e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 3, 2, 5]) 0.1 1 1 [Coordinate([1, 0, 0, 3]), Coordinate([2, 2, 0, 2]), Coordinate([3, 0, 0, 1])]",
-  -9.499288944523301e-07,
-  0.01
+  -9.493118806483811e-07,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 3, 2, 5]) 0.1 1 2 [Coordinate([1, 1, 1, 1]), Coordinate([0, 0, 1, 4]), Coordinate([0, 0, 1, 1])]",
-  2.155710879510477e-06,
-  0.01
+  2.139695727617833e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 3, 2, 5]) 0.1 1 3 [Coordinate([2, 2, 0, 0]), Coordinate([2, 0, 0, 4]), Coordinate([2, 2, 0, 3])]",
-  -3.0201073188604565e-06,
-  0.01
+  -3.0149532360427626e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 3, 2, 5]) 0.4 0 0 [Coordinate([0, 0, 1, 0]), Coordinate([0, 1, 1, 0]), Coordinate([2, 0, 0, 2])]",
-  6.425445434896945e-06,
-  0.01
+  6.410519021314544e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 3, 2, 5]) 0.4 0 1 [Coordinate([1, 0, 0, 3]), Coordinate([2, 2, 0, 2]), Coordinate([3, 0, 0, 1])]",
-  -1.898130100243825e-06,
-  0.01
+  -1.8968005691373846e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 3, 2, 5]) 0.4 0 2 [Coordinate([1, 1, 1, 1]), Coordinate([0, 0, 1, 4]), Coordinate([0, 0, 1, 1])]",
-  4.772129309383509e-06,
-  0.01
+  4.737853773990495e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 3, 2, 5]) 0.4 0 3 [Coordinate([2, 2, 0, 0]), Coordinate([2, 0, 0, 4]), Coordinate([2, 2, 0, 3])]",
-  -6.154281342705628e-06,
-  0.01
+  -6.143175410573489e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 3, 2, 5]) 0.4 1 0 [Coordinate([0, 0, 1, 0]), Coordinate([0, 1, 1, 0]), Coordinate([2, 0, 0, 2])]",
-  6.329443370170884e-06,
-  0.01
+  6.315482348183798e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 3, 2, 5]) 0.4 1 1 [Coordinate([1, 0, 0, 3]), Coordinate([2, 2, 0, 2]), Coordinate([3, 0, 0, 1])]",
-  -1.8998577889046602e-06,
-  0.01
+  -1.8986237612967623e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 3, 2, 5]) 0.4 1 2 [Coordinate([1, 1, 1, 1]), Coordinate([0, 0, 1, 4]), Coordinate([0, 0, 1, 1])]",
-  4.311421759020954e-06,
-  0.01
+  4.279391455235666e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 3, 2, 5]) 0.4 1 3 [Coordinate([2, 2, 0, 0]), Coordinate([2, 0, 0, 4]), Coordinate([2, 2, 0, 3])]",
-  -6.040214637720913e-06,
-  0.01
+  -6.029906472085525e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 4, 4, 8]) 0.1 0 0 [Coordinate([0, 1, 0, 2]), Coordinate([0, 2, 2, 6]), Coordinate([2, 2, 2, 5])]",
-  6.326163951893956e-07,
-  0.01
+  6.231107802553071e-07,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 4, 4, 8]) 0.1 0 1 [Coordinate([1, 2, 3, 4]), Coordinate([2, 0, 1, 3]), Coordinate([3, 0, 2, 7])]",
-  1.3814265009477134e-06,
-  0.01
+  1.37545353372324e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 4, 4, 8]) 0.1 0 2 [Coordinate([1, 2, 1, 4]), Coordinate([0, 3, 2, 3]), Coordinate([0, 3, 0, 2])]",
-  -4.019513903185218e-06,
-  0.01
+  -4.005309442331754e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 4, 4, 8]) 0.1 0 3 [Coordinate([2, 2, 2, 1]), Coordinate([2, 2, 1, 7]), Coordinate([2, 0, 0, 3])]",
-  3.9103075857806115e-06,
-  0.01
+  3.9110619721006625e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 4, 4, 8]) 0.1 1 0 [Coordinate([0, 1, 0, 2]), Coordinate([0, 2, 2, 6]), Coordinate([2, 2, 2, 5])]",
-  5.237862142307584e-07,
-  0.01
+  5.149526919839262e-07,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 4, 4, 8]) 0.1 1 1 [Coordinate([1, 2, 3, 4]), Coordinate([2, 0, 1, 3]), Coordinate([3, 0, 2, 7])]",
-  1.3164294557353155e-06,
-  0.01
+  1.3108732917352835e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 4, 4, 8]) 0.1 1 2 [Coordinate([1, 2, 1, 4]), Coordinate([0, 3, 2, 3]), Coordinate([0, 3, 0, 2])]",
-  -3.855568276666778e-06,
-  0.01
+  -3.842272445527429e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 4, 4, 8]) 0.1 1 3 [Coordinate([2, 2, 2, 1]), Coordinate([2, 2, 1, 7]), Coordinate([2, 0, 0, 3])]",
-  3.971182435185543e-06,
-  0.01
+  3.971879142241607e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 4, 4, 8]) 0.4 0 0 [Coordinate([0, 1, 0, 2]), Coordinate([0, 2, 2, 6]), Coordinate([2, 2, 2, 5])]",
-  1.0991297325246455e-06,
-  0.01
+  1.0811442902599727e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 4, 4, 8]) 0.4 0 1 [Coordinate([1, 2, 3, 4]), Coordinate([2, 0, 1, 3]), Coordinate([3, 0, 2, 7])]",
-  2.70061263556594e-06,
-  0.01
+  2.6890658267278835e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 4, 4, 8]) 0.4 0 2 [Coordinate([1, 2, 1, 4]), Coordinate([0, 3, 2, 3]), Coordinate([0, 3, 0, 2])]",
-  -8.039027806370435e-06,
-  0.01
+  -8.010618884663507e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 4, 4, 8]) 0.4 0 3 [Coordinate([2, 2, 2, 1]), Coordinate([2, 2, 1, 7]), Coordinate([2, 0, 0, 3])]",
-  7.91352596655855e-06,
-  0.01
+  7.914946705695089e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 4, 4, 8]) 0.4 1 0 [Coordinate([0, 1, 0, 2]), Coordinate([0, 2, 2, 6]), Coordinate([2, 2, 2, 5])]",
-  9.229951350709057e-07,
-  0.01
+  9.06097431279872e-07,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 4, 4, 8]) 0.4 1 1 [Coordinate([1, 2, 3, 4]), Coordinate([2, 0, 1, 3]), Coordinate([3, 0, 2, 7])]",
-  2.586178636723516e-06,
-  0.01
+  2.575365652931619e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 4, 4, 8]) 0.4 1 2 [Coordinate([1, 2, 1, 4]), Coordinate([0, 3, 2, 3]), Coordinate([0, 3, 0, 2])]",
-  -7.711136553333556e-06,
-  0.01
+  -7.684544891054858e-06,
+  0.05
  ],
  [
   "test_get_muon_line_m_extra_lat: Coordinate([4, 4, 4, 8]) 0.4 1 3 [Coordinate([2, 2, 2, 1]), Coordinate([2, 2, 1, 7]), Coordinate([2, 0, 0, 3])]",
-  8.012047966619082e-06,
-  0.01
+  8.013375355603537e-06,
+  0.05
  ]
 ]
