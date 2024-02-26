@@ -253,7 +253,6 @@ cdef extern from "qlat-utils/utils-io.h" namespace "qlat":
     int qremove(const std_string& path) except +
     int qremove_all(const std_string& path) except +
     int qtruncate(const std_string& path, const Long offset) except +
-    void flush() except +
     #
     void clear_is_directory_cache() except +
     void remove_entry_directory_cache(const std_string& dir_) except +

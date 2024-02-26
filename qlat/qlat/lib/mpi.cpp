@@ -434,11 +434,11 @@ void display_geometry_node()
                          "= %5d ; hostname = %s",
                          geon.id_node, show(geon.coor_node).c_str(),
                          get_id_node_in_shuffle(), get_hostname().c_str()));
-      fflush(get_output_file());
+      flush();
     }
     sync_node();
   }
-  fflush(get_output_file());
+  flush();
   sync_node();
 }
 
@@ -567,7 +567,7 @@ void initialize_qlat_comm(const Long begin_count)
       mallopt(M_MMAP_THRESHOLD, read_long(q_malloc_mmap_threshold));
     }
 #endif
-    fflush(get_output_file());
+    flush();
     sync_node();
   }
 }

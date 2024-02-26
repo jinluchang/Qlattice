@@ -53,9 +53,6 @@ def qremove_all(const cc.std_string& path):
 def qtruncate(const cc.std_string& path, const cc.Long offset=0):
     return cc.qtruncate(path, offset)
 
-def flush():
-    cc.flush()
-
 ### -------------------------------------------------------------------
 
 def clear_is_directory_cache():

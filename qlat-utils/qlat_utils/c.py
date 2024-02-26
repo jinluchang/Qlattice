@@ -124,7 +124,6 @@ __all__ += [
         'qremove',
         'qremove_all',
         'qtruncate',
-        'flush',
         #
         'clear_is_directory_cache',
         'remove_entry_directory_cache',
