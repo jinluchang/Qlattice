@@ -130,5 +130,5 @@ class SetDisplayMethod:
         # displayln_info(0, f"set_display_method('py_stdout')")
 
     def __del__(self):
-        # displayln_info(0, f"set_display_method()")
+        displayln_info(0, f"set_display_method()")
         set_display_method()

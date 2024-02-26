@@ -11,6 +11,9 @@ import numpy as np
 
 ### -------------------------------------------------------------------
 
+def mpi_level_count():
+    return cc.mpi_level_count()
+
 def begin(int id_node, Coordinate size_node, int color=0):
     cc.begin(id_node, size_node.xx, color)
 
@@ -18,6 +21,8 @@ def end(cc.bool is_preserving_cache=False):
     if not is_preserving_cache:
         q.clean_cache()
     cc.end(is_preserving_cache)
+    if mpi_level_count() == 0:
+        q.set_display_method()
 
 ### -------------------------------------------------------------------
 

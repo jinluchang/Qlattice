@@ -4,6 +4,7 @@ from qlat_utils.everything cimport *
 
 cdef extern from "qlat/mpi.h" namespace "qlat":
 
+    Long& mpi_level_count() except +
     int begin(const int id_node, const Coordinate& size_node, const int color) except +
     int end(const bool is_preserving_cache) except +
     const Coordinate& get_size_node() except +
@@ -395,6 +396,14 @@ cdef extern from "qlat/muon-line.h" namespace "qlat":
 
 cdef extern from "qlat/hlbl-contract.h" namespace "qlat":
 
+    cdef cppclass SlTable:
+        int s_limit
+        int l_limit
+        std_vector[ComplexD] table
+        void init()
+        void init(const int s, const int l)
+        void init(const Coordinate& total_site)
+    #
     void set_m_z_field_tag(SelectedField[RealD]& smf_d,
             const FieldSelection& fsel,
             const Coordinate& xg_x, const Coordinate& xg_y,

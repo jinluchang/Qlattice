@@ -8,7 +8,7 @@ namespace qlat
 struct SlTable {
   int s_limit;
   int l_limit;
-  std::vector<Complex> table;
+  std::vector<ComplexD> table;
   //
   void init()
   {

@@ -291,6 +291,8 @@ void display_qlat_banner();
 
 void initialize_qlat_comm();
 
+Long& mpi_level_count();
+
 void begin_comm(const MPI_Comm comm, const Coordinate& size_node);
 
 void begin(const int id_node, const Coordinate& size_node, const int color = 0);

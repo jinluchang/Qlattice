@@ -557,7 +557,7 @@ inline std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
     long& n_points_in_r_sq_limit, long& n_points_computed, const Complex& coef,
     const Field<RealD>& rand_prob_sel_field,
     const Field<Complex>& hvp_x,
-    const vector_acc<array<Complex, 3 * 4>>& edl_list, const Coordinate& xg_x,
+    const SelectedPoints<Complex>& edl_list_c, const Coordinate& xg_x,
     const PointsSelection& psel_edl, const long r_sq_limit,
     const double hvp_sel_threshold, const double weight_pair_0,
     const double muon_mass, const double z_v)
@@ -586,7 +586,10 @@ inline std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
   const int sub_tag = 0;  // use subtracted muon line weighting function
   const long n_labels = 8;
   const long n_points = psel_edl.size();
-  qassert(n_points == (long)edl_list.size());
+  const SelectedPoints<array<ComplexD, 3 * 4>>& edl_list =
+      qcast_const<array<ComplexD, 3 * 4>, ComplexD>(edl_list_c);
+  qassert(n_points == edl_list.n_points);
+  qassert(1 == edl_list.multiplicity);
   bool has_same_x_z = false;
   qfor(k, n_points, {
     const Coordinate& xg_z = psel_edl[k];
@@ -647,8 +650,8 @@ inline std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
     set_zero(sums_dsub_pi);
     set_zero(sums_sub_pi_pisl);
     set_zero(sums_dsub_pi_pisl);
-    qthread_for(k, edl_list.size(), {
-      const array<Complex, 3 * 4>& edl = edl_list[k];
+    qthread_for(k, n_points, {
+      const array<Complex, 3 * 4>& edl = edl_list.get_elem(k);
       const Coordinate& xg_z = psel_edl[k];
       if (sqr(smod(xg_z - xg_x, total_site)) > r_sq_limit or
           sqr(smod(xg_z - xg_y, total_site)) > r_sq_limit) {
@@ -708,7 +711,8 @@ inline std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
       sums_sub_pi_pisl[k] += sub_pi_pisl_sum * pi_proj_pisl_sum;
       sums_dsub_pi_pisl[k] += dsub_pi_pisl_sum * pi_proj_pisl_sum;
     });
-    qfor(k, edl_list.size(), {
+    qcast_const<ComplexD, array<ComplexD, 3 * 4>>(edl_list);
+    qfor(k, n_points, {
       const Coordinate& xg_z = psel_edl[k];
       add_to_sl_table(ts[0], sums_sub[k], xg_x, xg_y, xg_z, total_site);
       add_to_sl_table(ts[1], sums_sub_pi[k], xg_x, xg_y, xg_z, total_site);
