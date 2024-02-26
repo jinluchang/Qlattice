@@ -377,7 +377,9 @@ Long read(FieldsReader& fr, const std::string& fn, SelectedField<M>& sf,
   if (0 == total_bytes) {
     return 0;
   }
-  qassert(is_sparse_field);
+  if (not is_sparse_field) {
+    return 0;
+  }
   Geometry geo;
   geo.init(fr.geon, total_site / fr.geon.size_node, 1);
   f_rank.init(geo);
@@ -402,7 +404,9 @@ Long read(FieldsReader& fr, const std::string& fn, const FieldSelection& fsel,
   if (0 == total_bytes) {
     return 0;
   }
-  qassert(is_sparse_field);
+  if (not is_sparse_field) {
+    return 0;
+  }
   qassert(total_site == fsel.f_rank.geo().total_site());
   set_field_from_data(sf, data, fsel);
   timer.flops += total_bytes;
