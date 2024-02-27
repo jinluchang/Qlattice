@@ -314,7 +314,6 @@ cdef extern from "qlat/fields-io.h" namespace "qlat":
     Long read[M](ShuffledFieldsReader& sfr, const std_string& fn, const ShuffledBitSet& sbs, SelectedField[M]& sf) except +
     Long flush(ShuffledFieldsWriter& sfw) except +
     void read_through_sync_node(ShuffledFieldsReader& sfr) except +
-    bool check_file_sync_node(ShuffledFieldsReader& sfr, const std_string& fn, std_vector[Long]& final_offsets) except +
     bool does_file_exist_sync_node(const ShuffledFieldsReader& sfr, const std_string& fn) except +
     bool does_file_exist_sync_node(const ShuffledFieldsWriter& sfw, const std_string& fn) except +
     std_vector[std_string] list_fields(const ShuffledFieldsReader& sfr) except +

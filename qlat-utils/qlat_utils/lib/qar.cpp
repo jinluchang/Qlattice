@@ -1336,7 +1336,7 @@ Long qfread(void* ptr, const Long size, const Long nmemb, QFile& qfile)
 
 Long qfwrite(const void* ptr, const Long size, const Long nmemb, QFile& qfile)
 // interface function
-// Crash if no enough space
+// Crash if there is no enough space
 {
   return qfile.write(ptr, size, nmemb);
 }

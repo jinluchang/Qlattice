@@ -29,9 +29,14 @@ LENGTH_OF_FN
 [newline character]
 FN
 [newline character]
-OFFSET_0 OFFSET_1 OFFSET_2 ... OFFSET_N
+DENSE_OR_SPARSE
+[newline character]
+OFFSET_START_0 OFFSET_START_1 OFFSET_START_2 ... OFFSET_START_N
+[newline character]
+OFFSET_STOP_0 OFFSET_STOP_1 OFFSET_STOP_2 ... OFFSET_STOP_N
 [newline character]
 */
+// (DENSE_OR_SPARSE will be "dense" or "sparse", not including quote.)
 
 #include <errno.h>
 #include <qlat-utils/qar.h>
@@ -136,6 +141,33 @@ BitSet mk_bitset_from_field_rank(const FieldRank& f_rank);
 
 // ---------------------------------------------------
 
+struct API FieldsSegmentInfo {
+  Long offset_start;
+  Long offset_stop;
+  bool is_sparse_field;
+  //
+  void init()
+  {
+    offset_start = 0;
+    offset_stop = 0;
+    is_sparse_field = false;
+  }
+  void init(const Long offset_start_, const Long offset_stop_,
+            const bool is_sparse_field_)
+  {
+    offset_start = offset_start_;
+    offset_stop = offset_stop_;
+    is_sparse_field = is_sparse_field_;
+  }
+  //
+  FieldsSegmentInfo() { init(); }
+  FieldsSegmentInfo(const Long offset_start_, const Long offset_stop_,
+                    const bool is_sparse_field_)
+  {
+    init(offset_start_, offset_stop_, is_sparse_field_);
+  }
+};
+
 struct API FieldsWriter {
   //
   // should only use ShuffledFieldsWriter
@@ -146,7 +178,7 @@ struct API FieldsWriter {
   bool is_little_endian;  // should be true
   //
   std::vector<std::string> fn_list;
-  std::map<std::string, Long> offsets_map;
+  std::map<std::string, FieldsSegmentInfo> offsets_map;
   Long max_offset;
   //
   FieldsWriter() { init(); }
@@ -169,7 +201,7 @@ struct API FieldsReader {
   //
   bool is_read_through;
   std::vector<std::string> fn_list;
-  std::map<std::string, Long> offsets_map;
+  std::map<std::string, FieldsSegmentInfo> offsets_map;
   Long max_offset;
   //
   Long file_size;
@@ -202,7 +234,7 @@ void convert_endian(Vector<M> data, const bool is_little_endian)
   }
 }
 
-void qfwrite_convert_endian(void* ptr, const size_t size, const size_t nmemb,
+Long qfwrite_convert_endian(void* ptr, const size_t size, const size_t nmemb,
                             QFile& qfile, const bool is_little_endian);
 
 Long write(FieldsWriter& fw, const std::string& fn, const Geometry& geo,
@@ -540,7 +572,7 @@ int truncate_fields_sync_node(const std::string& path,
 
 void properly_truncate_fields_sync_node(
     std::vector<std::string>& fn_list,
-    std::vector<std::vector<Long>>& offsets_list, const std::string& path,
+    std::vector<std::vector<FieldsSegmentInfo>>& offsets_list, const std::string& path,
     const bool is_check_all, const bool is_only_check,
     const Coordinate& new_size_node);
 
@@ -552,26 +584,26 @@ std::vector<std::string> properly_truncate_fields_sync_node(
 // -----------------
 
 std::string show_field_index(const std::string& fn,
-                             const std::vector<Long>& offsets);
+                             const std::vector<FieldsSegmentInfo>& offsets);
 
-void parse_field_index(std::string& fn, std::vector<Long>& all_offsets,
+void parse_field_index(std::string& fn, std::vector<FieldsSegmentInfo>& all_offsets,
                        const std::string& field_index_content);
 
-std::vector<Long> collect_fields_offsets(const ShuffledFieldsWriter& sfw,
+std::vector<FieldsSegmentInfo> collect_fields_offsets(const ShuffledFieldsWriter& sfw,
                                          const std::string& fn);
 
-std::vector<Long> collect_fields_offsets(const ShuffledFieldsReader& sfr,
+std::vector<FieldsSegmentInfo> collect_fields_offsets(const ShuffledFieldsReader& sfr,
                                          const std::string& fn);
 
 bool populate_fields_offsets(ShuffledFieldsReader& sfr, const std::string& fn,
-                             const std::vector<Long>& offsets);
+                             const std::vector<FieldsSegmentInfo>& offsets);
 
 void load_all_fields_index(std::vector<std::string>& fn_list,
-                           std::vector<std::vector<Long>>& all_offsets_list,
+                           std::vector<std::vector<FieldsSegmentInfo>>& all_offsets_list,
                            QarFile& qar_index);
 
 void save_fields_index(QarFile& qar_index, const Long idx,
-                       const std::string& fn, const std::vector<Long>& offsets);
+                       const std::string& fn, const std::vector<FieldsSegmentInfo>& offsets);
 
 void save_fields_index(ShuffledFieldsWriter& sfw, const std::string& fn);
 

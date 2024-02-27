@@ -247,7 +247,7 @@ std::string get_file_path(FieldsReader& fr)
   return "";
 }
 
-void qfwrite_convert_endian(void* ptr, const size_t size, const size_t nmemb,
+Long qfwrite_convert_endian(void* ptr, const size_t size, const size_t nmemb,
                             QFile& qfile, const bool is_little_endian)
 {
   if (size == 4) {
@@ -257,7 +257,7 @@ void qfwrite_convert_endian(void* ptr, const size_t size, const size_t nmemb,
   } else {
     qassert(false);
   }
-  qfwrite(ptr, size, nmemb, qfile);
+  const Long ret = qfwrite(ptr, size, nmemb, qfile);
   if (size == 4) {
     convert_endian(Vector<int32_t>((int32_t*)ptr, nmemb), is_little_endian);
   } else if (size == 8) {
@@ -265,26 +265,41 @@ void qfwrite_convert_endian(void* ptr, const size_t size, const size_t nmemb,
   } else {
     qassert(false);
   }
+  return ret;
 }
 
 Long write(FieldsWriter& fw, const std::string& fn, const Geometry& geo,
            const Vector<char> data, const bool is_sparse_field)
 {
   TIMER("write(fw,fn,geo,data)");
+  Long n_elem_write;
+  Long offset;
   // get initial offset
-  const Long offset = fw.qfile.tell();
+  const Long offset_start = fw.qfile.tell();
+  offset = offset_start;
   // first write tag
   int32_t tag_len = fn.size() + 1;  // fn is the name of the field (say prop1)
-  qfwrite_convert_endian(&tag_len, 4, 1, fw.qfile, fw.is_little_endian);
-  qfwrite(fn.c_str(), tag_len, 1, fw.qfile);
+  n_elem_write =
+      qfwrite_convert_endian(&tag_len, 4, 1, fw.qfile, fw.is_little_endian);
+  qassert(n_elem_write == 1);
+  offset += 4;
+  n_elem_write = qfwrite(fn.c_str(), tag_len, 1, fw.qfile);
+  qassert(n_elem_write == 1);
+  offset += tag_len;
   //
   // then write crc
   crc32_t crc = crc32_par(data);
-  qfwrite_convert_endian(&crc, 4, 1, fw.qfile, fw.is_little_endian);
+  n_elem_write =
+      qfwrite_convert_endian(&crc, 4, 1, fw.qfile, fw.is_little_endian);
+  qassert(n_elem_write == 1);
+  offset += 4;
   //
   // then write geometry info
   int32_t nd = 4;  // <- number of dimensions of field, typically 4
-  qfwrite_convert_endian(&nd, 4, 1, fw.qfile, fw.is_little_endian);
+  n_elem_write =
+      qfwrite_convert_endian(&nd, 4, 1, fw.qfile, fw.is_little_endian);
+  qassert(n_elem_write == 1);
+  offset += 4;
   //
   std::vector<int32_t> gd(4, 0);
   std::vector<int32_t> num_procs(4, 0);
@@ -304,19 +319,34 @@ Long write(FieldsWriter& fw, const std::string& fn, const Geometry& geo,
     // with my old one
   }
   //
-  qfwrite_convert_endian(&gd[0], 4, nd, fw.qfile, fw.is_little_endian);
-  qfwrite_convert_endian(&num_procs[0], 4, nd, fw.qfile, fw.is_little_endian);
+  n_elem_write =
+      qfwrite_convert_endian(&gd[0], 4, nd, fw.qfile, fw.is_little_endian);
+  qassert(n_elem_write == nd);
+  offset += 4 * nd;
+  n_elem_write = qfwrite_convert_endian(&num_procs[0], 4, nd, fw.qfile,
+                                        fw.is_little_endian);
+  qassert(n_elem_write == nd);
+  offset += 4 * nd;
   //
   // then data size
   int64_t data_len = data.size();
-  qfwrite_convert_endian(&data_len, 8, 1, fw.qfile, fw.is_little_endian);
+  n_elem_write =
+      qfwrite_convert_endian(&data_len, 8, 1, fw.qfile, fw.is_little_endian);
+  qassert(n_elem_write == 1);
+  offset += 8;
   //
   // then write data
-  qfwrite(&data[0], data_len, 1, fw.qfile);
+  n_elem_write = qfwrite(&data[0], data_len, 1, fw.qfile);
+  qassert(n_elem_write == 1);
+  offset += data_len;
+  //
+  const Long offset_stop = fw.qfile.tell();
+  qassert(offset_stop == offset);
   //
   // register file
   fw.fn_list.push_back(fn);
-  fw.offsets_map[fn] = offset;
+  fw.offsets_map[fn] =
+      FieldsSegmentInfo(offset_start, offset_stop, is_sparse_field);
   //
   return data_len;
 }
@@ -376,21 +406,6 @@ bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
     return false;
   }
   fn = std::string(fnv.data(), tag_len - 1);
-  //
-  if (has(fr.offsets_map, fn)) {
-    if (fr.offsets_map[fn] != offset_initial) {
-      qwarn(ssprintf("read_tag: fn='%s' appeared twice! %ld %ld", fn.c_str(),
-                     fr.offsets_map[fn], offset_initial));
-      if (offset_initial > fr.offsets_map[fn]) {
-        fr.fn_list.push_back(fn);
-        fr.offsets_map[fn] = offset_initial;
-      }
-    }
-  } else {
-    fr.fn_list.push_back(fn);
-    fr.offsets_map[fn] = offset_initial;
-  }
-  //
   // then read crc
   if (1 != qfread_convert_endian(&crc, 4, 1, fr.qfile, fr.is_little_endian)) {
     qwarn(ssprintf("read_tag: fn='%s'", get_file_path(fr).c_str()));
@@ -453,13 +468,30 @@ bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
     return false;
   }
   //
-  const Long final_offset = qftell(fr.qfile) + data_len;
-  if (final_offset > fr.max_offset) {
-    fr.max_offset = final_offset;
+  const Long offset_final = qftell(fr.qfile) + data_len;
+  //
+  const FieldsSegmentInfo fsinfo = FieldsSegmentInfo(offset_initial, offset_final, is_sparse_field);
+  //
+  if (has(fr.offsets_map, fn)) {
+    if (fr.offsets_map[fn].offset_start != offset_initial) {
+      qwarn(ssprintf("read_tag: fn='%s' appeared twice! %ld %ld", fn.c_str(),
+                     fr.offsets_map[fn], offset_initial));
+      if (offset_initial > fr.offsets_map[fn].offset_start) {
+        fr.fn_list.push_back(fn);
+        fr.offsets_map[fn] = fsinfo;
+      }
+    }
+  } else {
+    fr.fn_list.push_back(fn);
+    fr.offsets_map[fn] = fsinfo;
+  }
+  //
+  if (offset_final > fr.max_offset) {
+    fr.max_offset = offset_final;
   }
   //
   if (fr.geon.id_node == 0) {
-    displayln(
+    displayln_info(
         0, fname + ssprintf(": '%s' from '%s'.", fn.c_str(), fr.path.c_str()));
   }
   return true;
@@ -573,8 +605,8 @@ Long read(FieldsReader& fr, const std::string& fn, Coordinate& total_site,
   if (not does_file_exist(fr, fn)) {
     return 0;
   }
-  qassert(fr.offsets_map.count(fn) == 1);
-  qfseek(fr.qfile, fr.offsets_map[fn], SEEK_SET);
+  qassert(has(fr.offsets_map, fn));
+  qfseek(fr.qfile, fr.offsets_map[fn].offset_start, SEEK_SET);
   std::string fn_r;
   const Long total_bytes =
       read_next(fr, fn_r, total_site, data, is_sparse_field);
@@ -590,8 +622,8 @@ Long read_skip(FieldsReader& fr, const std::string& fn)
   if (not does_file_exist(fr, fn)) {
     return -1;
   }
-  qassert(fr.offsets_map.count(fn) == 1);
-  qfseek(fr.qfile, fr.offsets_map[fn], SEEK_SET);
+  qassert(has(fr.offsets_map, fn));
+  qfseek(fr.qfile, fr.offsets_map[fn].offset_start, SEEK_SET);
   std::string fn_r;
   const Long offset_final = read_skip_next(fr, fn_r);
   qassert(fn == fn_r);
@@ -689,7 +721,7 @@ void ShuffledFieldsWriter::init(const std::string& path_,
   path = path_;
   new_size_node = new_size_node_;
   std::vector<std::string> fn_list;
-  std::vector<std::vector<Long>> offsets_list;
+  std::vector<std::vector<FieldsSegmentInfo>> offsets_list;
   if (is_append) {
     if (does_file_exist_sync_node(path + "/geon-info.txt")) {
       new_size_node = shuffled_fields_reader_size_node_info(path);
@@ -802,12 +834,12 @@ void ShuffledFieldsReader::init(const std::string& path_,
       qar_index.init(path + "/index.qar", QFileMode::Read);
     }
     std::vector<std::string> fn_list;
-    std::vector<std::vector<Long>> all_offsets_list;
+    std::vector<std::vector<FieldsSegmentInfo>> all_offsets_list;
     load_all_fields_index(fn_list, all_offsets_list, qar_index);
     qar_index.close();
     for (Long i = 0; i < (Long)fn_list.size(); ++i) {
       const std::string& fn = fn_list[i];
-      const std::vector<Long>& all_offsets = all_offsets_list[i];
+      const std::vector<FieldsSegmentInfo>& all_offsets = all_offsets_list[i];
       populate_fields_offsets(*this, fn, all_offsets);
     }
   }
@@ -1080,7 +1112,7 @@ int truncate_fields_sync_node(const std::string& path,
 
 void properly_truncate_fields_sync_node(
     std::vector<std::string>& fn_list,
-    std::vector<std::vector<Long>>& offsets_list, const std::string& path,
+    std::vector<std::vector<FieldsSegmentInfo>>& offsets_list, const std::string& path,
     const bool is_check_all, const bool is_only_check,
     const Coordinate& new_size_node)
 // interface function
@@ -1131,7 +1163,7 @@ void properly_truncate_fields_sync_node(
     qassert(fr.fn_list == fn_list);
     for (Long i = 0; i < (Long)fn_list.size(); ++i) {
       const std::string& fn = fn_list[i];
-      const Long offset = fr.offsets_map[fn];
+      const FieldsSegmentInfo offset = fr.offsets_map[fn];
       offsets_list[i].push_back(offset);
     }
   }
@@ -1181,7 +1213,7 @@ std::vector<std::string> properly_truncate_fields_sync_node(
 // return available fns
 {
   std::vector<std::string> fn_list;
-  std::vector<std::vector<Long>> offsets_list;
+  std::vector<std::vector<FieldsSegmentInfo>> offsets_list;
   properly_truncate_fields_sync_node(fn_list, offsets_list, path, is_check_all,
                                      is_only_check, new_size_node);
   return fn_list;
@@ -1189,15 +1221,32 @@ std::vector<std::string> properly_truncate_fields_sync_node(
 
 // ------------------------
 
-std::string show_field_index(const std::string& fn, const std::vector<Long>& all_offsets)
+std::string show_field_index(const std::string& fn, const std::vector<FieldsSegmentInfo>& all_offsets)
 // all_offsets.size() == total number of part-files.
 {
   QFile qfile = qfopen(QFileType::String, "show_field_index", QFileMode::Write);
   qfile.write_data(ssprintf("%ld\n", (long)fn.size()));
   qfile.write_data(fn);
   qfile.write_data("\n");
+  const bool is_sparse_field = all_offsets[0].is_sparse_field;
   for (Long i = 0; i < (Long)all_offsets.size(); ++i) {
-    qfile.write_data(ssprintf("%ld", (long)all_offsets[i]));
+    qassert(is_sparse_field == all_offsets[i].is_sparse_field);
+  }
+  if (is_sparse_field) {
+    qfile.write_data("sparse");
+  } else {
+    qfile.write_data("dense");
+  }
+  qfile.write_data("\n");
+  for (Long i = 0; i < (Long)all_offsets.size(); ++i) {
+    qfile.write_data(ssprintf("%ld", (long)all_offsets[i].offset_start));
+    if (i != (Long)all_offsets.size() - 1) {
+      qfile.write_data(" ");
+    }
+  }
+  qfile.write_data("\n");
+  for (Long i = 0; i < (Long)all_offsets.size(); ++i) {
+    qfile.write_data(ssprintf("%ld", (long)all_offsets[i].offset_stop));
     if (i != (Long)all_offsets.size() - 1) {
       qfile.write_data(" ");
     }
@@ -1208,8 +1257,10 @@ std::string show_field_index(const std::string& fn, const std::vector<Long>& all
   return ret;
 }
 
-void parse_field_index(std::string& fn, std::vector<Long>& all_offsets, const std::string& field_index_content)
+void parse_field_index(std::string& fn, std::vector<FieldsSegmentInfo>& all_offsets, const std::string& field_index_content)
 {
+  fn.clear();
+  all_offsets.clear();
   Long cur = 0;
   std::string fn_len_str;
   bool b;
@@ -1220,20 +1271,47 @@ void parse_field_index(std::string& fn, std::vector<Long>& all_offsets, const st
   qassert(b);
   b = parse_literal(cur, field_index_content, '\n');
   qassert(b);
-  std::string offsets_str;
-  b = parse_line(offsets_str, cur, field_index_content);
-  all_offsets = read_longs(offsets_str);
+  std::string is_sparse_field_str;
+  b = parse_line(is_sparse_field_str, cur, field_index_content);
   qassert(b);
+  bool is_sparse_field;
+  if (is_sparse_field_str == "sparse\n") {
+    is_sparse_field = true;
+  } else if (is_sparse_field_str == "dense\n") {
+    is_sparse_field = false;
+  } else {
+    qerr(ssprintf("parse_field_index: is_sparse_field_str='%s'.",
+                  is_sparse_field_str.c_str()));
+  }
+  std::string offsets_start_str;
+  b = parse_line(offsets_start_str, cur, field_index_content);
+  qassert(b);
+  std::vector<Long> all_offsets_start = read_longs(offsets_start_str);
+  qassert(all_offsets_start.size() > 0);
+  std::string offsets_stop_str;
+  b = parse_line(offsets_stop_str, cur, field_index_content);
+  qassert(b);
+  std::vector<Long> all_offsets_stop = read_longs(offsets_stop_str);
+  qassert(all_offsets_stop.size() > 0);
+  qassert(all_offsets_stop.size() == all_offsets_start.size());
   b = parse_end(cur, field_index_content);
   qassert(b);
+  all_offsets.resize(all_offsets_start.size());
+  for (Long i = 0; i < (Long)all_offsets_start.size(); ++i) {
+    all_offsets[i] = FieldsSegmentInfo(all_offsets_start[i],
+                                       all_offsets_stop[i], is_sparse_field);
+  }
 }
 
-std::vector<Long> collect_fields_offsets(const ShuffledFieldsWriter& sfw, const std::string& fn)
+std::vector<FieldsSegmentInfo> collect_fields_offsets(const ShuffledFieldsWriter& sfw, const std::string& fn)
 {
   TIMER("collect_fields_offsets(sfw,fn)");
   Long num_files = sfw.fws.size();
   glb_sum(num_files);
-  std::vector<Long> all_offsets(num_files, 0);
+  std::vector<FieldsSegmentInfo> all_offsets(num_files);
+  Vector<char> all_offsets_view((char*)all_offsets.data(),
+                                all_offsets.size() * sizeof(FieldsSegmentInfo));
+  set_zero(all_offsets_view);
   for (int i = 0; i < (int)sfw.fws.size(); ++i) {
     const FieldsWriter& fw = sfw.fws[i];
     qassert(fw.geon.num_node == num_files);
@@ -1241,20 +1319,21 @@ std::vector<Long> collect_fields_offsets(const ShuffledFieldsWriter& sfw, const 
     qassert(fw.geon.id_node < num_files);
     if (has(fw.offsets_map, fn)) {
       all_offsets[fw.geon.id_node] = fw.offsets_map.at(fn);
-    } else {
-      all_offsets[fw.geon.id_node] = -1;
     }
   }
-  glb_sum(all_offsets);
+  glb_sum(all_offsets_view);
   return all_offsets;
 }
 
-std::vector<Long> collect_fields_offsets(const ShuffledFieldsReader& sfr, const std::string& fn)
+std::vector<FieldsSegmentInfo> collect_fields_offsets(const ShuffledFieldsReader& sfr, const std::string& fn)
 {
   TIMER("collect_fields_offsets(sfr,fn)");
   Long num_files = sfr.frs.size();
   glb_sum(num_files);
-  std::vector<Long> all_offsets(num_files, 0);
+  std::vector<FieldsSegmentInfo> all_offsets(num_files);
+  Vector<char> all_offsets_view((char*)all_offsets.data(),
+                                all_offsets.size() * sizeof(FieldsSegmentInfo));
+  set_zero(all_offsets_view);
   for (int i = 0; i < (int)sfr.frs.size(); ++i) {
     const FieldsReader& fr = sfr.frs[i];
     qassert(fr.geon.num_node == num_files);
@@ -1262,16 +1341,15 @@ std::vector<Long> collect_fields_offsets(const ShuffledFieldsReader& sfr, const 
     qassert(fr.geon.id_node < num_files);
     if (has(fr.offsets_map, fn)) {
       all_offsets[fr.geon.id_node] = fr.offsets_map.at(fn);
-    } else {
-      all_offsets[fr.geon.id_node] = -1;
     }
   }
-  glb_sum(all_offsets);
+  glb_sum(all_offsets_view);
   return all_offsets;
 }
 
 bool populate_fields_offsets(ShuffledFieldsReader& sfr, const std::string& fn,
-                             const std::vector<Long>& all_offsets)
+                             const std::vector<FieldsSegmentInfo>& all_offsets)
+// should populate fields offsets sequentially in correct order
 {
   TIMER("populate_fields_offsets(sfr,fn)");
   const Long num_files = all_offsets.size();
@@ -1285,17 +1363,19 @@ bool populate_fields_offsets(ShuffledFieldsReader& sfr, const std::string& fn,
       qwarn(fname + ssprintf(": duplicate fn='%s' id_node='%d'", fn.c_str(),
                              fr.geon.id_node));
     }
-    const Long offset = all_offsets[fr.geon.id_node];
-    if (fr.file_size <= offset) {
+    const Long offset_start = all_offsets[fr.geon.id_node].offset_start;
+    const Long offset_stop = all_offsets[fr.geon.id_node].offset_stop;
+    qassert(offset_stop > offset_start);
+    if (fr.file_size < offset_stop) {
       qwarn(fname + ssprintf(": file_size not large enough. fn='%s' "
-                             "id_node='%d' file_size='%ld' offset='%ld'",
+                             "id_node='%d' file_size='%ld' offset_stop='%ld'",
                              fn.c_str(), fr.geon.id_node, (long)fr.file_size,
-                             (long)offset));
-    } else if (fr.max_offset > offset) {
-      qwarn(fname + ssprintf(": fr.max_offset too large. fn='%s' "
+                             (long)offset_stop));
+    } else if (fr.max_offset != offset_start) {
+      qwarn(fname + ssprintf(": fr.max_offset does not match. fn='%s' "
                              "id_node='%d' fr.max_offset='%ld' offset='%ld'",
                              fn.c_str(), fr.geon.id_node, (long)fr.max_offset,
-                             (long)offset));
+                             (long)offset_start));
     } else {
       count += 1;
     }
@@ -1312,36 +1392,52 @@ bool populate_fields_offsets(ShuffledFieldsReader& sfr, const std::string& fn,
     FieldsReader& fr = sfr.frs[i];
     fr.fn_list.push_back(fn);
     fr.offsets_map[fn] = all_offsets[fr.geon.id_node];
-    fr.max_offset = all_offsets[fr.geon.id_node];
+    fr.max_offset = all_offsets[fr.geon.id_node].offset_stop;
   }
   return true;
 }
 
 void load_all_fields_index(std::vector<std::string>& fn_list,
-                           std::vector<std::vector<Long>>& all_offsets_list,
+                           std::vector<std::vector<FieldsSegmentInfo>>& all_offsets_list,
                            QarFile& qar_index)
 {
-  TIMER("save_fields_index(qar_index,idx,fn,offsets)");
+  TIMER("load_all_fields_index(fn_list,all_offsets_list,qar_index)");
   fn_list.clear();
   all_offsets_list.clear();
+  Long num_files = 0;
   if (get_id_node() == 0) {
     const std::vector<std::string> qar_idx_list = list(qar_index);
     for (Long i = 0; i < (Long)qar_idx_list.size(); ++i) {
       const std::string& qar_idx = qar_idx_list[i];
       const std::string field_index_content = read_data(qar_index, qar_idx);
       std::string fn;
-      std::vector<Long> all_offsets;
+      std::vector<FieldsSegmentInfo> all_offsets;
       parse_field_index(fn, all_offsets, field_index_content);
+      qassert((Long)all_offsets.size() > 0);
+      if (num_files == 0) {
+        num_files = all_offsets.size();
+      } else {
+        qassert(num_files == (Long)all_offsets.size());
+      }
       fn_list.push_back(fn);
       all_offsets_list.push_back(all_offsets);
     }
+    qassert(all_offsets_list.size() == fn_list.size());
   }
   bcast(fn_list);
-  bcast(all_offsets_list);
+  bcast(num_files);
+  all_offsets_list.resize(fn_list.size());
+  for (Long i = 0; i < (Long)all_offsets_list.size(); ++i) {
+    std::vector<FieldsSegmentInfo>& all_offsets = all_offsets_list[i];
+    all_offsets.resize(num_files);
+    Vector<char> v((char*)all_offsets.data(),
+                   all_offsets.size() * sizeof(FieldsSegmentInfo));
+    bcast(v);
+  }
 }
 
 void save_fields_index(QarFile& qar_index, const Long idx,
-                       const std::string& fn, const std::vector<Long>& all_offsets)
+                       const std::string& fn, const std::vector<FieldsSegmentInfo>& all_offsets)
 {
   TIMER("save_fields_index(qar_index,idx,fn,all_offsets)");
   if (get_id_node() == 0) {
@@ -1354,7 +1450,7 @@ void save_fields_index(QarFile& qar_index, const Long idx,
 void save_fields_index(ShuffledFieldsWriter& sfw, const std::string& fn)
 {
   TIMER("save_fields_index(sfw,fn)");
-  const std::vector<Long> all_offsets = collect_fields_offsets(sfw, fn);
+  const std::vector<FieldsSegmentInfo> all_offsets = collect_fields_offsets(sfw, fn);
   save_fields_index(sfw.qar_index, sfw.qar_index_idx, fn, all_offsets);
   sfw.qar_index_idx += 1;
 }
@@ -1369,7 +1465,7 @@ void fields_build_index(const ShuffledFieldsReader& sfr)
   }
   for (Long i = 0; i < (Long)fn_list.size(); ++i) {
     const std::string& fn = fn_list[i];
-    const std::vector<Long> all_offsets = collect_fields_offsets(sfr, fn);
+    const std::vector<FieldsSegmentInfo> all_offsets = collect_fields_offsets(sfr, fn);
     save_fields_index(qar_index, i, fn, all_offsets);
   }
   qar_index.close();
