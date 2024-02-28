@@ -110,6 +110,7 @@ inline void demo(const std::string& tag, const Coordinate& total_site,
     write(sfw, "sf.sfield", sbs, sf);
     write_float_from_double(sfw, "sf.float.field", fsf);
     write_float_from_double(sfw, "sf.float.sfield", sbs, sf);
+    sfw.close();
   }
   {
     ShuffledFieldsWriter sfw("huge-data/" + tag + "/demo.lfs", new_size_node, true);
@@ -128,6 +129,7 @@ inline void demo(const std::string& tag, const Coordinate& total_site,
     write(sfw, "sfa.sfield", sbs, sf);
     write_float_from_double(sfw, "sfa.float.field", fsf);
     write_float_from_double(sfw, "sfa.float.sfield", sbs, sf);
+    sfw.close();
   }
   //
   {
@@ -213,6 +215,7 @@ inline void demo(const std::string& tag, const Coordinate& total_site,
                      ssprintf(": compute crc32=%08X.", crc_7));
       qassert(crc_11 == crc_3);
     }
+    sfr.close();
   }
   check_all_files_crc32("huge-data/" + tag);
 }

@@ -358,11 +358,13 @@ inline void test_selected_points(const std::string& tag, const Long n_points)
     SelectedField<ComplexD> sf_tmp;
     set_selected_field(sf_tmp, f, sbs.fsel);
     write(sfw, "f.psel", sbs, sf_tmp);
+    sfw.close();
   }
   Field<ComplexD> f3;
   {
     ShuffledFieldsReader sfr(path);
     read(sfr, "f.psel", f3);
+    sfr.close();
   }
   const crc32_t crc3 = field_crc32(f3);
   displayln_info(ssprintf(": %06X <- f3 write and read", crc3));
