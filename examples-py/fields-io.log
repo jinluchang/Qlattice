@@ -28,7 +28,7 @@ CHECK: prop1_f 1.25896071538441E+04
 CHECK: prop1_f -= prop1 6.35657347080108E-12
 CHECK: prop1_ff 1.25896071538441E+04
 CHECK: prop1_ff -= prop1 6.35657347080108E-12
-CHECK: 3356919353
+CHECK: 2504556907
 CHECK:  ['prop.d', 'prop', 's_prop', 'prop1']
 CHECK:  ['prop.d', 'prop', 's_prop', 'prop1']
 CHECK:  ['prop.d', 'prop', 's_prop', 'prop1']

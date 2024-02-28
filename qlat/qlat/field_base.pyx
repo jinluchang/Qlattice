@@ -158,7 +158,8 @@ cdef class FieldBase:
             n_bytes = self.write_sfw_direct(sfw, fn, **kwargs)
         else:
             raise Exception("Field.save_direct")
-        assert n_bytes != 0
+        if n_bytes == 0:
+            q.displayln_info(f"WARNING: Field.save_direct({path},*{args},**{kwargs}) n_bytes=0")
         return n_bytes
 
     def load_direct(self, path, *args, **kwargs):
@@ -179,8 +180,9 @@ cdef class FieldBase:
             fn, = args
             n_bytes = self.read_sfr_direct(sfr, fn, **kwargs)
         else:
-            raise Exception("SelectedField.load")
-        assert n_bytes != 0
+            raise Exception("Field.load_direct")
+        if n_bytes == 0:
+            q.displayln_info(f"WARNING: Field.load_direct({path},*{args},**{kwargs}) n_bytes=0")
         return n_bytes
 
     def save_64(self, path, *args, **kwargs):
@@ -453,7 +455,8 @@ cdef class SelectedFieldBase:
             n_bytes = self.write_sfw_direct(sfw, fn, **kwargs)
         else:
             raise Exception("SelectedField.save_direct")
-        assert n_bytes != 0
+        if n_bytes == 0:
+            q.displayln_info(f"WARNING: SelectedField.load_direct({path},*{args},**{kwargs}) n_bytes=0")
         return n_bytes
 
     def load_direct(self, path, *args, **kwargs):
@@ -473,8 +476,9 @@ cdef class SelectedFieldBase:
             fn, = args
             n_bytes = self.read_sfr_direct(sfr, fn, **kwargs)
         else:
-            raise Exception("SelectedField.load")
-        assert n_bytes != 0
+            raise Exception("SelectedField.load_direct")
+        if n_bytes == 0:
+            q.displayln_info(f"WARNING: SelectedField.load_direct({path},*{args},**{kwargs}) n_bytes=0")
         return n_bytes
 
     def save_64(self, path, *args, **kwargs):
