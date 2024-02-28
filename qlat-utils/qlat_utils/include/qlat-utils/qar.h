@@ -50,6 +50,7 @@ struct QFileBase {
   virtual const std::string& path() const = 0;
   virtual QFileMode mode() const = 0;
   virtual bool null() const = 0;
+  virtual Long size() const = 0;
   virtual bool eof() const = 0;
   virtual Long tell() const = 0;
   virtual int flush() const = 0;
@@ -60,7 +61,6 @@ struct QFileBase {
   //
   virtual ~QFileBase();
   //
-  virtual Long size();
   virtual Long remaining_size();
   //
   virtual Long read_data(Vector<char> v);
@@ -91,6 +91,7 @@ struct QFileObjCFile : QFileBase {
   std::string path_v;
   QFileMode mode_v;
   FILE* fp;
+  Long file_size;
   //
   QFileObjCFile(const std::string& path_, const QFileMode mode_);
   void init(const std::string& path_, const QFileMode mode_);
@@ -106,6 +107,7 @@ struct QFileObjCFile : QFileBase {
   const std::string& path() const;
   QFileMode mode() const;
   bool null() const;
+  Long size() const;
   bool eof() const;
   Long tell() const;
   int flush() const;
@@ -145,6 +147,7 @@ struct QFileObjString : QFileBase {
   const std::string& path() const;
   QFileMode mode() const;
   bool null() const;
+  Long size() const;
   bool eof() const;
   Long tell() const;
   int flush() const;
@@ -179,6 +182,8 @@ struct QFileObj : QFileBase {
   Long offset_end;    // end offset of `fp` for `QFileObj` (-1 if not limit,
                       // useful when writing)
   //
+  Long file_size;
+  //
   QFileObj(const QFileType ftype_, const std::string& path_,
            const QFileMode mode_);
   QFileObj(const QFileType ftype_, const std::string& path_,
@@ -205,6 +210,7 @@ struct QFileObj : QFileBase {
   const std::string& path() const;
   QFileMode mode() const;
   bool null() const;
+  Long size() const;
   bool eof() const;
   Long tell() const;
   int flush() const;
@@ -256,6 +262,7 @@ struct API QFile : QFileBase {
   const std::string& path() const;
   QFileMode mode() const;
   bool null() const;
+  Long size() const;
   bool eof() const;
   Long tell() const;
   int flush() const;
