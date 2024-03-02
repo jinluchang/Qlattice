@@ -474,8 +474,11 @@ bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   //
   if (has(fr.offsets_map, fn)) {
     if (fr.offsets_map[fn].offset_start != offset_initial) {
-      qwarn(ssprintf("read_tag: fn='%s' appeared twice! %ld %ld", fn.c_str(),
-                     fr.offsets_map[fn], offset_initial));
+      qwarn(
+          ssprintf("read_tag: fn='%s' of '%s' appeared twice! recorded=%ld ; "
+                   "newly read=%ld ; id_node=%d.",
+                   fn.c_str(), fr.path.c_str(), fr.offsets_map[fn].offset_start,
+                   offset_initial, fr.geon.id_node));
       if (offset_initial > fr.offsets_map[fn].offset_start) {
         fr.fn_list.push_back(fn);
         fr.offsets_map[fn] = fsinfo;
