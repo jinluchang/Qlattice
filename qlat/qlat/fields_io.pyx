@@ -108,15 +108,27 @@ cdef class ShuffledFieldsReader:
         return cc.does_file_exist_sync_node(self.xx, fn)
 
     def is_sparse_field(self, cc.std_string& fn):
+        """
+        return True if `self.has(fn)` and is sparse field.
+        """
         return cc.is_sparse_field_sync_node(self.xx, fn)
 
     def read_as_char(self, str fn):
+        """
+        return SelectedFieldChar or FieldChar.
+        return None if `not self.has(fn)`.
+        """
+        has_field = self.has(fn)
+        if not has_field:
+            return None
         is_sparse = self.is_sparse_field(fn)
         if is_sparse:
             obj = SelectedFieldChar(None)
         else:
             obj = FieldChar()
-        return obj.read_sfr_direct(self, fn)
+        total_bytes = obj.read_sfr_direct(self, fn)
+        assert total_bytes > 0
+        return obj
 
     def read(self, str fn, obj):
         """
