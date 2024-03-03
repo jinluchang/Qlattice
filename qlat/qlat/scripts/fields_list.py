@@ -11,7 +11,7 @@ q.begin_with_mpi()
 
 for path in sys.argv[1:]:
     q.displayln_info(0, path)
-    sfr = q.open_fields(path)
+    sfr = q.open_fields(path, "r")
     tags = sfr.list()
     has_dup = sfr.has_duplicates()
     sfr.close()

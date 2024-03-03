@@ -24,7 +24,7 @@ for path in args:
     if has_duplicates or is_force:
         new_path = path + ".rewrite.acc"
         q.displayln_info(-1, f"'{path}' start to rewrite to '{new_path}'.")
-        sfw = q.open_fields(new_path, "w")
+        sfw = q.open_fields(new_path, "w", sfr.new_size_node())
         tags = sfr.list()
         for tag in tags:
             if sfw.has(tag):
