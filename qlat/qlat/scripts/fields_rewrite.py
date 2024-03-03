@@ -16,34 +16,36 @@ is_force = q.get_option("--force", argv=argv, is_removing_from_argv=True)
 
 path_list = argv
 
-for path in args:
+for path in path_list:
     path = q.remove_trailing_slashes(path)
-    q.displayln_info(-1, f"Consider '{path}'.")
+    q.displayln_info(-1, f"INFO: Consider '{path}'.")
     sfr = q.open_fields(path, "r")
     has_duplicates = sfr.has_duplicates()
     if has_duplicates:
-        q.displayln_info(-1, f"'{path}' has_duplicates.")
-    if has_duplicates or is_force:
+        q.displayln_info(-1, f"INFO: '{path}' has_duplicates.")
+    do_rewrite = has_duplicates or is_force
+    if do_rewrite:
         new_path = path + ".rewrite.acc"
-        q.displayln_info(-1, f"'{path}' start to rewrite to '{new_path}'.")
+        q.displayln_info(-1, f"INFO: '{path}' start to rewrite to '{new_path}'.")
         sfw = q.open_fields(new_path, "w", sfr.new_size_node())
         tags = sfr.list()
         for tag in tags:
             if sfw.has(tag):
-                q.displayln_info(-1, f"Skip duplicated '{tag}' of '{sfr.path()}'.")
+                q.displayln_info(-1, f"INFO: Skip duplicated '{tag}' of '{sfr.path()}'.")
                 continue
-            q.displayln_info(-1, f"Read '{tag}' of '{sfr.path()}'.")
+            q.displayln_info(-1, f"INFO: Read '{tag}' of '{sfr.path()}'.")
             obj = sfr.read_as_char(tag)
-            q.displayln_info(-1, f"Write '{tag}' of '{sfw.path()}'.")
+            q.displayln_info(-1, f"INFO: Write '{tag}' of '{sfw.path()}'.")
             obj.save_direct(sfw, tag)
         sfw.close()
     sfr.close()
-    bak_path = path + ".bak"
-    q.displayln_info(-1, f"Rename '{path}' to '{bak_path}'.")
-    q.qrename_info(path, bak_path)
-    q.displayln_info(-1, f"Rename '{new_path}' to '{path}'.")
-    q.qrename_info(new_path, path)
-    q.displayln_info(-1, f"Done '{path}'.")
+    if do_rewrite:
+        bak_path = path + ".bak"
+        q.displayln_info(-1, f"INFO: Rename '{path}' to '{bak_path}'.")
+        q.qrename_info(path, bak_path)
+        q.displayln_info(-1, f"INFO: Rename '{new_path}' to '{path}'.")
+        q.qrename_info(new_path, path)
+    q.displayln_info(-1, f"INFO: Done '{path}'.")
 
 q.timer_display()
 
