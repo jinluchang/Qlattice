@@ -120,7 +120,23 @@ assert index_content == index_content2
 
 crc = q.compute_crc32("results/prop.fields/index.qar")
 
-q.displayln_info(f"CHECK: {crc}")
+q.displayln_info(f"CHECK: index.qar crc={crc}")
+
+q.displayln_info(f"CHECK: test read_as_char and write")
+
+sfr = q.open_fields("results/prop.fields", "r")
+tags = sfr.list()
+q.displayln_info(f"CHECK: tags={tags}")
+sfw = q.open_fields("results/prop-copy.fields", "w", q.Coordinate([ 1, 1, 1, 8, ]))
+for tag in tags:
+    q.displayln_info(f"CHECK: tag='{tag}'")
+    obj = sfr.read_as_char(tag)
+    q.displayln_info(f"CHECK: type='{type(obj)}'")
+    obj.save_direct(sfw, tag, skip_if_exist=True)
+tags_sfw = sfw.list()
+q.displayln_info(f"CHECK: tags_sfw={tags_sfw}")
+sfw.close()
+sfr.close()
 
 q.displayln_info("CHECK: ", q.list_fields("results/prop.fields"))
 
