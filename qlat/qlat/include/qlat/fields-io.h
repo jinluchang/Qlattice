@@ -558,6 +558,8 @@ bool does_file_exist_sync_node(const ShuffledFieldsReader& sfr,
 bool does_file_exist_sync_node(const ShuffledFieldsWriter& sfw,
                                const std::string& fn);
 
+bool is_sparse_field_sync_node(const ShuffledFieldsReader& sfr, const std::string& fn);
+
 bool check_file_sync_node(ShuffledFieldsReader& sfr, const std::string& fn,
                           const bool is_check_data,
                           std::vector<Long>& final_offsets);

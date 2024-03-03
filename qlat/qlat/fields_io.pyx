@@ -105,6 +105,9 @@ cdef class ShuffledFieldsReader:
     def has(self, cc.std_string& fn):
         return cc.does_file_exist_sync_node(self.xx, fn)
 
+    def is_sparse_field(self, cc.std_string& fn):
+        return cc.is_sparse_field_sync_node(self.xx, fn)
+
     def read(self, str fn, obj):
         """
         Can also read SelectedField obj with obj.fsel is None

@@ -983,6 +983,32 @@ bool does_file_exist_sync_node(const ShuffledFieldsWriter& sfw,
   }
 }
 
+bool is_sparse_field_sync_node(const ShuffledFieldsReader& sfr,
+                               const std::string& fn)
+// interface function
+{
+  TIMER("is_sparse_field_sync_node(sfr,fn)");
+  Long total_counts = 0;
+  displayln_info(1, fname + ssprintf(": check fn='%s' from '%s'.", fn.c_str(),
+                                     sfr.path.c_str()));
+  for (int i = 0; i < (int)sfr.frs.size(); ++i) {
+    const FieldsReader& fr = sfr.frs[i];
+    if (has(fr.offsets_map, fn)) {
+      const FieldsSegmentInfo& fsinfo = fr.offsets_map.at(fn);
+      if (fsinfo.is_sparse_field) {
+        total_counts += 1;
+      }
+    }
+  }
+  glb_sum(total_counts);
+  if (total_counts == 0) {
+    return false;
+  } else {
+    qassert(total_counts == product(sfr.new_size_node));
+    return true;
+  }
+}
+
 bool check_file_sync_node(ShuffledFieldsReader& sfr, const std::string& fn,
                           const bool is_check_data,
                           std::vector<Long>& final_offsets)
