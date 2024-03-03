@@ -120,7 +120,7 @@ assert index_content == index_content2
 
 crc = q.compute_crc32("results/prop.fields/index.qar")
 
-q.displayln_info(f"CHECK: index.qar crc={crc}")
+q.displayln_info(f"CHECK: index.qar crc={crc:08X}")
 
 q.displayln_info(f"CHECK: test read_as_char and write")
 
@@ -137,6 +137,17 @@ tags_sfw = sfw.list()
 q.displayln_info(f"CHECK: tags_sfw={tags_sfw}")
 sfw.close()
 sfr.close()
+
+fn1_list = q.qls_all_sync_node("results/prop.fields")
+fn2_list = q.qls_all_sync_node("results/prop-copy.fields")
+for fn1, fn2 in zip(fn1_list, fn2_list):
+    is_reg = q.is_regular_file_sync_node(fn1)
+    assert is_reg == q.is_regular_file_sync_node(fn2)
+    if is_reg:
+        q.displayln_info(f"CHECK: check '{fn1}' and '{fn2}'")
+        crc1 = q.compute_crc32(fn1)
+        crc2 = q.compute_crc32(fn2)
+        assert crc1 == crc2
 
 q.displayln_info("CHECK: ", q.list_fields("results/prop.fields"))
 
