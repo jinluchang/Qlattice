@@ -5,6 +5,7 @@ scripts = files(
   'fields-list',
   'fields-build-index',
   'fields-properly-truncate',
+  'fields-rewrite',
   'gauge-fix-coulomb',
   'qlat-config',
   'topo-measure',

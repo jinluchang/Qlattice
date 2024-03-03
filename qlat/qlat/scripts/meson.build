@@ -5,6 +5,7 @@ py_fns = [
   'fields_list.py',
   'fields_build_index.py',
   'fields_properly_truncate.py',
+  'fields_rewrite.py',
   'gauge_fix_coulomb.py',
   'qlat_config.py',
   'topo_measure.py',

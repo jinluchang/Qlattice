@@ -20,16 +20,41 @@ def getenv(*names, default=None):
     displayln_info(0, f"{names[0]}='{val}' (default)")
     return val
 
-def get_arg(option, default=None):
-    argv = sys.argv
+def get_arg(option, default=None, *, argv=None, is_removing_from_argv=False):
+    """
+    Get the `arg` of the option when it first appears.
+    Remove the option and its arg if `is_removing_from_argv`.
+    """
+    if argv is None:
+        argv = sys.argv
     i_max = len(argv) - 1
-    for i, arg in enumerate(argv):
-        if arg == option:
+    for i in range(len(argv)):
+        if argv[i] == option:
             if i == i_max:
+                if is_removing_from_argv:
+                    argv.pop(i)
                 return ""
             else:
-                return argv[i + 1]
+                arg = argv[i + 1]
+                if is_removing_from_argv:
+                    argv.pop(i)
+                    argv.pop(i)
+                return arg
     return default
+
+def get_option(option, *, argv=None, is_removing_from_argv=False):
+    """
+    Return if `option` in `argv`.
+    Remove the option if `is_removing_from_argv`
+    """
+    if argv is None:
+        argv = sys.argv
+    if option in argv:
+        if is_removing_from_argv:
+            argv.remove(option)
+        return True
+    else:
+        return False
 
 def show_memory_usage():
     try:

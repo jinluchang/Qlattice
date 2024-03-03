@@ -9,22 +9,14 @@ if len(sys.argv) < 2:
 
 q.begin_with_mpi()
 
-args = sys.argv[1:]
+argv = sys.argv[1:]
 
-is_check_all = False
-is_only_check = False
+is_check_all = q.get_option("--check-all", argv=argv, is_removing_from_argv=True)
+is_only_check = q.get_option("--only-check", argv=argv, is_removing_from_argv=True)
 
-while True:
-    if args[0] == "--check-all":
-        is_check_all = True
-        args = args[1:]
-    elif args[0] == "--only-check":
-        is_only_check = True
-        args = args[1:]
-    else:
-        break
+path_list = argv
 
-for path in args:
+for path in path_list:
     tags = q.properly_truncate_fields(
             path, is_check_all = is_check_all, is_only_check = is_only_check)
     for tag in tags:
