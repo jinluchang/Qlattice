@@ -10,9 +10,15 @@ if len(sys.argv) < 2:
 q.begin_with_mpi()
 
 for path in sys.argv[1:]:
-    tags = q.list_fields(path)
+    q.displayln_info(0, path)
+    sfr = q.open_fields(path)
+    tags = sfr.list()
+    has_dup = sfr.has_duplicates()
+    sfr.close()
     for tag in tags:
         q.displayln_info(tag)
+    if has_dup:
+        q.displayln_info(0, f"INFO: '{path}' has_duplicates.")
 
 q.timer_display()
 

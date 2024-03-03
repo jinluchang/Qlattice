@@ -47,6 +47,21 @@ def set_display_method(method=None):
 
 ### -------------------------------------------------------------------
 
+def display(cc.Long level, const cc.std_string& msg):
+    """
+    display level msg
+    """
+    if level <= cc.get_verbose_level():
+        display_py_stdout(msg)
+
+def display_info(cc.Long level, const cc.std_string& msg):
+    """
+    display_info level msg
+    """
+    if cc.get_id_node() == 0:
+        if level <= cc.get_verbose_level():
+            display_py_stdout(msg)
+
 def displayln(level, *args):
     """
     Print all the arguments and then print a newline.
@@ -55,7 +70,7 @@ def displayln(level, *args):
     If the first argument is not integer, will always print all the arguments.
     """
     if isinstance(level, int):
-        if level <= get_verbose_level():
+        if level <= cc.get_verbose_level():
             print(*args, flush=True)
     else:
         print(level, *args, flush=True)

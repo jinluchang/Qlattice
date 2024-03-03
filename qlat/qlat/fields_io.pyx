@@ -99,6 +99,9 @@ cdef class ShuffledFieldsReader:
     def list(self):
         return cc.list_fields(self.xx)
 
+    def has_duplicates(self):
+        return cc.has_duplicates(self.xx)
+
     def has(self, cc.std_string& fn):
         return cc.does_file_exist_sync_node(self.xx, fn)
 
@@ -155,6 +158,13 @@ def fields_build_index(str path, Coordinate new_size_node=None):
     cdef ShuffledFieldsReader sfr = open_fields(path, "r", new_size_node)
     cc.fields_build_index(sfr.xx)
     sfr.close()
+
+@q.timer
+def fields_has_duplicates(str path, Coordinate new_size_node=None):
+    cdef ShuffledFieldsReader sfr = open_fields(path, "r", new_size_node)
+    ret = sfr.has_duplicates();
+    sfr.close()
+    return ret
 
 @q.timer
 def properly_truncate_fields(str path, cc.bool is_check_all=False, cc.bool is_only_check=False, Coordinate new_size_node=None):

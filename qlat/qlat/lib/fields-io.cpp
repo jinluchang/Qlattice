@@ -1222,6 +1222,22 @@ std::vector<std::string> properly_truncate_fields_sync_node(
   return fn_list;
 }
 
+bool has_duplicates(const ShuffledFieldsReader& sfr)
+{
+  TIMER("has_duplicates(sfr)");
+  const std::vector<std::string> fn_list = list_fields(sfr);
+  Long count = 0;
+  for (int j = 0; j < (int)sfr.frs.size(); ++j) {
+    const FieldsReader& fr = sfr.frs[j];
+    qassert(fr.is_read_through);
+    qassert(fr.fn_list.size() == fn_list.size());
+    qassert(fr.offsets_map.size() <= fn_list.size());
+    count += fn_list.size() - fr.offsets_map.size();
+  }
+  glb_sum(count);
+  return count > 0;
+}
+
 // ------------------------
 
 std::string show_field_index(const std::string& fn, const std::vector<FieldsSegmentInfo>& all_offsets)

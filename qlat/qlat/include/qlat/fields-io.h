@@ -581,6 +581,8 @@ std::vector<std::string> properly_truncate_fields_sync_node(
     const bool is_only_check = false,
     const Coordinate& new_size_node = Coordinate());
 
+bool has_duplicates(const ShuffledFieldsReader& sfr);
+
 // -----------------
 
 std::string show_field_index(const std::string& fn,
