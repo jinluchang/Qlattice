@@ -4,6 +4,8 @@ from qlat_utils.all cimport *
 from . cimport everything as cc
 from .field_base cimport FieldBase, SelectedFieldBase
 from .field_selection cimport FieldSelection
+from .field_types cimport FieldChar
+from .selected_field_types cimport SelectedFieldChar
 
 import qlat_utils as q
 
@@ -107,6 +109,14 @@ cdef class ShuffledFieldsReader:
 
     def is_sparse_field(self, cc.std_string& fn):
         return cc.is_sparse_field_sync_node(self.xx, fn)
+
+    def read_as_char(self, str fn):
+        is_sparse = self.is_sparse_field(fn)
+        if is_sparse:
+            obj = SelectedFieldChar(None)
+        else:
+            obj = FieldChar()
+        return obj.read_sfr_direct(self, fn)
 
     def read(self, str fn, obj):
         """
