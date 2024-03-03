@@ -17,6 +17,8 @@ is_force = q.get_option("--force", argv=argv, is_removing_from_argv=True)
 path_list = argv
 
 for path in args:
+    path = q.remove_trailing_slashes(path)
+    q.displayln_info(-1, f"Consider '{path}'.")
     sfr = q.open_fields(path, "r")
     has_duplicates = sfr.has_duplicates()
     if has_duplicates:
