@@ -67,6 +67,26 @@ void TimerInfo::show_avg_always(const std::string& info,
       accumulated_flops / accumulated_time / 1.0E9));
 }
 
+void TimerInfo::show_avg(const std::string& info, const int fname_len) const
+{
+  if (0 == get_id_node() && 0 == get_id_thread()) {
+    double total_time = get_total_time();
+    std::string fnameCut;
+    fnameCut.assign(fname, 0, fname_len);
+    displayln_info(ssprintf(
+        "Timer::%s %s :%7.3f%% %8d calls; %.2E,%.2E sec; %.2E,%.2E flops; "
+        "%5.2f Gflops",
+        info.c_str(),
+        ssprintf(ssprintf("%%%ds", fname_len).c_str(), fnameCut.c_str())
+            .c_str(),
+        accumulated_time / total_time * 100, call_times,
+        accumulated_time / call_times, accumulated_time,
+        (double)accumulated_flops / (double)call_times,
+        (double)accumulated_flops,
+        accumulated_flops / accumulated_time / 1.0E9));
+  }
+}
+
 static bool compare_time_info_p(const TimerInfo* p1, const TimerInfo* p2)
 {
   return p1->accumulated_time < p2->accumulated_time;

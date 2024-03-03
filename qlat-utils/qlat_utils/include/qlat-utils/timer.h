@@ -282,12 +282,7 @@ struct API TimerInfo {
   //
   void show_avg_always(const std::string& info, const int fname_len) const;
   //
-  void show_avg(const std::string& info, const int fname_len) const
-  {
-    if (0 == get_id_node() && 0 == get_id_thread()) {
-      show_avg_always(info, fname_len);
-    }
-  }
+  void show_avg(const std::string& info, const int fname_len) const;
 };
 
 struct API Timer {
