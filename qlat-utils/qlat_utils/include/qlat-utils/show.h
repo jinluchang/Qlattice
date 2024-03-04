@@ -453,12 +453,12 @@ inline std::string info_get_prop(const std::vector<std::string>& lines,
 inline void display_c_stdout(const std::string& str)
 {
   fwrite(str.c_str(), 1, str.size(), stdout);
+  fflush(stdout);
 }
 
 inline void displayln_c_stdout(const std::string& str)
 {
-  display_c_stdout(str);
-  display_c_stdout("\n");
+  display_c_stdout(str + "\n");
 }
 
 using DisplayPtr = void (*)(const std::string& str);

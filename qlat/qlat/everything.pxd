@@ -405,7 +405,4 @@ cdef extern from "qlat/hlbl-contract.h" namespace "qlat":
         void init(const int s, const int l)
         void init(const Coordinate& total_site)
     #
-    void set_m_z_field_tag(SelectedField[RealD]& smf_d,
-            const FieldSelection& fsel,
-            const Coordinate& xg_x, const Coordinate& xg_y,
-            const double a, const int tag) except +
+    void set_m_z_field_tag(SelectedField[RealD]& smf_d, const FieldSelection& fsel, const Coordinate& xg_x, const Coordinate& xg_y, const double a, const int tag) except +

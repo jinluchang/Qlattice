@@ -18,7 +18,11 @@ source qcore/set-prefix.sh $name
 
     cd "$build"
 
-    export CXX="$(grid-config --cxx)"
+    CXX_ARR=($(grid-config --cxx))
+    export CXX="${CXX_ARR[0]}"
+    export CXXFLAGS="${CXX_ARR[@]:1} $CXXFLAGS"
+    export LDFLAGS="${CXX_ARR[@]:1} $LDFLAGS"
+
     # export CXX_LD="$(grid-config --cxxld)"
 
     if [ -n "$QLAT_MPICXX" ] ; then

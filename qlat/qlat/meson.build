@@ -110,6 +110,7 @@ name_pyx_list = [
   'hmc',
   'gauge_action',
   'muon_line',
+  'hlbl_contract',
   ]
 
 foreach name: name_pyx_list

@@ -36,6 +36,7 @@ set_verbose_level(-1)
 
 cdef void display_py_stdout(const cc.std_string& msg):
     sys.stdout.write(msg)
+    sys.stdout.flush()
 
 def set_display_method(method=None):
     if method is None:
@@ -47,20 +48,25 @@ def set_display_method(method=None):
 
 ### -------------------------------------------------------------------
 
-def display(cc.Long level, const cc.std_string& msg):
+def display(level, *args):
     """
-    display level msg
+    Print all the arguments.
+    Interpret the first argument as verbose level if it is ``int``.
+    Only print if ``level <= get_verbose_level()``.
+    If the first argument is not integer, will always print all the arguments.
     """
-    if level <= cc.get_verbose_level():
-        display_py_stdout(msg)
+    if isinstance(level, int):
+        if level <= cc.get_verbose_level():
+            print(*args, end='', flush=True)
+    else:
+        print(level, *args, end='', flush=True)
 
-def display_info(cc.Long level, const cc.std_string& msg):
+def display_info(*args):
     """
-    display_info level msg
+    Same as ``display`` but only print if ``get_id_node() == 0``.
     """
     if cc.get_id_node() == 0:
-        if level <= cc.get_verbose_level():
-            display_py_stdout(msg)
+        display(*args)
 
 def displayln(level, *args):
     """
