@@ -34,12 +34,22 @@ source qcore/set-prefix.sh $name
 
     rm -rfv "$prefix"/build-successfully.txt
 
+    is_fail=false
+
     time-run meson setup "$wd/qlat-cps" \
         --prefix="$prefix" \
         -Dpython.platlibdir="$prefix/lib/python3/qlat-packages" \
-        -Dpython.purelibdir="$prefix/lib/python3/qlat-packages"
+        -Dpython.purelibdir="$prefix/lib/python3/qlat-packages" \
+        || is_fail=true
 
-    time-run meson compile -j$num_proc
+    time-run meson compile -j$num_proc \
+        || is_fail=true
+
+    if $is_fail ; then
+        echo "cat meson-logs/meson-log.txt"
+        cat meson-logs/meson-log.txt
+        exit 1
+    fi
 
     rm -rfv "$prefix"/bin
     rm -rfv "$prefix"/lib
