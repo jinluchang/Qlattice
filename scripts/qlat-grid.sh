@@ -37,6 +37,13 @@ source qcore/set-prefix.sh $name
 
     rm -rfv "$prefix"/build-successfully.txt
 
+    echo "CXX=$CXX"
+    echo "CXX_LD=$CXX_LD"
+    echo "MPICXX=$MPICXX"
+    echo "CXXFLAGS=$CXXFLAGS"
+    echo "LDFLAGS=$LDFLAGS"
+    echo "LIBS=$LIBS"
+
     time-run meson setup "$wd/qlat-grid" \
         --prefix="$prefix" \
         -Dpython.platlibdir="$prefix/lib/python3/qlat-packages" \
