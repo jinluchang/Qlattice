@@ -435,7 +435,7 @@ def compute_prop_2(inv, src, *, tag, sfw, qar_sp, psel, fsel,
     q.displayln_info(0, f"compute_prop_psrc: tag='{tag}' ; num_fsel={num_fsel} ; num_fsel_ps={num_fsel_ps} ; num_fsel_combine={num_fsel_combine}")
     s_sol_ps_sel_prob = q.SelectedFieldRealD(fsel_ps)
     s_sol_ps_sel_prob @= sol_ps_sel_prob
-    s_sol_ps_sel_prob.save_double(sfw, f"{tag} ; fsel-prob-psrc-prop")
+    s_sol_ps_sel_prob.save_double(sfw, f"{tag} ; fsel-prob-psrc-prop", skip_if_exist=True)
     s_sol = q.SelProp(fsel_combine)
     s_sol @= sol
     s_sol.save_float_from_double(sfw, tag, skip_if_exist=True)
@@ -452,6 +452,7 @@ def compute_prop_psrc(job_tag, traj, xg_src, inv_type, inv_acc, *,
     xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
     tag = f"xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
     if sfw.has(tag) and (sfw_hvp is None or sfw_hvp.has(tag)):
+        assert sfw.has(f"{tag} ; fsel-prob-psrc-prop")
         assert qar_sp.has_regular_file(f"{tag}.lat")
         assert qar_sp.has_regular_file(f"{tag} ; wsnk.lat")
         assert qar_hvp_ts.has_regular_file(f"{tag}.lat")
