@@ -667,7 +667,7 @@ void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
                                 std::vector<Field<M>>& fs,
                                 const ShuffledFieldsReader& sfr)
 {
-  TIMER_VERBOSE("set_field_info_from_fields");
+  TIMER("set_field_info_from_fields(total_site,multiplicity,fs,sfr)");
   total_site = Coordinate();
   multiplicity = 0;
   std::vector<Long> available_nodes(product(sfr.new_size_node), 0);
@@ -715,7 +715,7 @@ void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
                                 std::vector<SelectedField<M>>& sfs,
                                 const ShuffledFieldsReader& sfr)
 {
-  TIMER_VERBOSE("set_field_info_from_fields");
+  TIMER("set_field_info_from_fields(total_site,multiplicity,sfs,sfr)");
   total_site = Coordinate();
   multiplicity = 0;
   std::vector<Long> available_nodes(product(sfr.new_size_node), 0);
