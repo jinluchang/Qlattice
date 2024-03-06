@@ -42,14 +42,13 @@ source qcore/set-prefix.sh $name
         -Dpython.purelibdir="$prefix/lib/python3/qlat-packages" \
         || is_fail=true
 
-    time-run meson compile -j$num_proc \
-        || is_fail=true
-
     if $is_fail ; then
         echo "cat meson-logs/meson-log.txt"
         cat meson-logs/meson-log.txt
         exit 1
     fi
+
+    time-run meson compile -j$num_proc
 
     rm -rfv "$prefix"/bin
     rm -rfv "$prefix"/lib

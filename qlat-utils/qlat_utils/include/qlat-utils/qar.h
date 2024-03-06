@@ -500,7 +500,8 @@ void properly_truncate_qar_vol_file(
     std::vector<std::string>& fn_list,
     std::map<std::string, QarSegmentInfo>& qsinfo_map,
     std::set<std::string>& directories, Long& max_offset,
-    const std::string& path, const bool is_only_check = false);
+    const std::string& path, const Long vol_idx, const QarFileIndex& qar_index,
+    const bool is_only_check = false);
 
 std::vector<std::string> properly_truncate_qar_vol_file(
     const std::string& path, const bool is_only_check = false);
@@ -575,14 +576,36 @@ std::vector<std::string> properly_truncate_qar_file(
 
 // -------------------
 
+struct API QarFileIndex {
+  std::vector<Long> vol_idx_vec;
+  std::vector<std::string> fn_vec;
+  std::vector<QarSegmentInfo> qsinfo_vec;
+  //
+  QarFileIndex() { init(); }
+  //
+  void init()
+  {
+    vol_idx_vec.clear();
+    fn_vec.clear();
+    qsinfo_vec.clear();
+  }
+  //
+  bool check() const
+  {
+    return (fn_vec.size() == vol_idx_vec.size()) and
+           (qsinfo_vec.size() == vol_idx_vec.size());
+  }
+};
+
 std::vector<std::string> show_qar_index(const QarFile& qar);
 
 int save_qar_index(const QarFile& qar, const std::string& fn);
 
-int parse_qar_index(std::vector<Long>& vol_idx_vec,
-                    std::vector<std::string>& fn_vec,
-                    std::vector<QarSegmentInfo>& qsinfo_vec,
+int parse_qar_index(QarFileIndex& qar_index,
                     const std::string& qar_index_content);
+
+void install_qar_index(const QarFileVol& qar, const Long vol_idx,
+                       const QarFileIndex& qar_index);
 
 int parse_qar_index(const QarFile& qar, const std::string& qar_index_content);
 

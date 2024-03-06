@@ -1865,6 +1865,7 @@ void read_through(const QarFileVol& qar)
   if (qar.p->is_read_through) {
     return;
   }
+  qassert(qar.p->max_offset <= qar.qfile().size());
   std::string fn;
   const int code = qfseek(qar.qfile(), qar.p->max_offset, SEEK_SET);
   qassert(code == 0);
@@ -1966,7 +1967,8 @@ void write_end(const QarFileVol& qar)
   qsinfo.update_offset();
   qassert(qar.qfile().tell() == qsinfo.offset_end);
   qassert(qar.qfile().size() == qsinfo.offset_end);
-  register_file(qar, qar.p->current_write_segment_fn, qsinfo);
+  const bool b = register_file(qar, qar.p->current_write_segment_fn, qsinfo);
+  qassert(b);
   qar.p->current_write_segment_fn = "";
   qsinfo.init();
 }
@@ -2585,16 +2587,15 @@ int save_qar_index(const QarFile& qar, const std::string& fn)
   return qtouch(fn, lines);
 }
 
-int parse_qar_index(std::vector<Long>& vol_idx_vec,
-                    std::vector<std::string>& fn_vec,
-                    std::vector<QarSegmentInfo>& qsinfo_vec,
+int parse_qar_index(QarFileIndex& qar_index,
                     const std::string& qar_index_content)
 // interface function
 {
-  TIMER("parse_qar_index(vol_idx_vec,fn_vec,qsinfo_vec,qar_index_content)");
-  vol_idx_vec.clear();
-  fn_vec.clear();
-  qsinfo_vec.clear();
+  TIMER("parse_qar_index(qar_index,qar_index_content)");
+  qar_index.init();
+  std::vector<Long>& vol_idx_vec = qar_index.vol_idx_vec;
+  std::vector<std::string>& fn_vec = qar_index.fn_vec;
+  std::vector<QarSegmentInfo>& qsinfo_vec = qar_index.qsinfo_vec;
   std::vector<Long> idx_vec;
   if (qar_index_content == "") {
     return 2;
@@ -2777,31 +2778,41 @@ int parse_qar_index(std::vector<Long>& vol_idx_vec,
   return 0;
 }
 
+void install_qar_index(const QarFileVol& qar, const Long vol_idx,
+                       const QarFileIndex& qar_index)
+{
+  TIMER("parse_qar_index(qar_v,qar_index)");
+  qassert(qar_index.check());
+  for (Long k = 0; k < (Long)qar_index.vol_idx_vec.size(); ++k) {
+    const Long i = qar_index.vol_idx_vec[k];
+    if (i == vol_idx) {
+      const std::string& fn = qar_index.fn_vec[k];
+      const QarSegmentInfo& qsinfo = qar_index.qsinfo_vec[k];
+      register_file(qar, fn, qsinfo);
+    }
+  }
+}
+
 int parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
 // interface function
 {
-  TIMER("parse_qar_index(qar,qar_index_content)");
-  std::vector<Long> vol_idx_vec;
-  std::vector<std::string> fn_vec;
-  std::vector<QarSegmentInfo> qsinfo_vec;
+  TIMER_VERBOSE("parse_qar_index");
   if (qar.null()) {
     qwarn(fname + ": qar is null.");
     return 1;
   }
-  const int ret =
-      parse_qar_index(vol_idx_vec, fn_vec, qsinfo_vec, qar_index_content);
+  if (qar_index_content == "") {
+    return 1;
+  }
+  QarFileIndex qar_index;
+  const int ret = parse_qar_index(qar_index, qar_index_content);
   if (ret != 0) {
     qwarn(fname +
           ssprintf(": index is not correct for '%s'.", qar.path.c_str()));
     return ret;
   }
-  qassert(fn_vec.size() == vol_idx_vec.size());
-  qassert(qsinfo_vec.size() == vol_idx_vec.size());
-  for (Long k = 0; k < (Long)vol_idx_vec.size(); ++k) {
-    const Long i = vol_idx_vec[k];
-    const std::string& fn = fn_vec[k];
-    const QarSegmentInfo& qsinfo = qsinfo_vec[k];
-    register_file(qar[i], fn, qsinfo);
+  for (Long vol_idx = 0; vol_idx < (Long)qar.size(); ++vol_idx) {
+    install_qar_index(qar[vol_idx], vol_idx, qar_index);
   }
   return 0;
 }
@@ -2811,11 +2822,7 @@ int load_qar_index(const QarFile& qar, const std::string& fn)
 {
   TIMER_VERBOSE("load_qar_index");
   const std::string qar_index_content = qcat(fn);
-  if (qar_index_content == "") {
-    return 1;
-  } else {
-    return parse_qar_index(qar, qar_index_content);
-  }
+  return parse_qar_index(qar, qar_index_content);
 }
 
 // ----------------------------------------------------
