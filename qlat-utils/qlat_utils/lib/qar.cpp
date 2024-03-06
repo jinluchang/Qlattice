@@ -2371,7 +2371,9 @@ void QarFile::close()
 {
   if (not null()) {
     TIMER("QarFile::close()");
-    save_index();
+    if (mode != QFileMode::Read) {
+      save_index();
+    }
     QarFile& qar = *this;
     for (int i = 0; i < (int)qar.size(); ++i) {
       qar[i].close();
