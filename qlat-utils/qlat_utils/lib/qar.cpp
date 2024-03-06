@@ -1474,7 +1474,7 @@ void QarSegmentInfo::update_offset()
   offset_end = offset_data + data_len + 2;
 }
 
-bool QarSegmentInfo::check_offset()
+bool QarSegmentInfo::check_offset() const
 {
   const int header_min_len = 14;
   if (offset_fn < offset + header_min_len + 1) {
@@ -1506,13 +1506,14 @@ void QarFileVolObj::init()
   current_write_segment_info.init();
 }
 
-void QarFileVolObj::init(const std::string& path, const QFileMode mode)
+void QarFileVolObj::init(const std::string& path, const QFileMode mode,
+                         const Long vol_idx, const QarFileIndex& qar_index)
 {
-  TIMER("QarFileVolObj::init(path,mode)");
+  TIMER("QarFileVolObj::init(path,mode,vol_idx,qar_index)");
   init();
   if (mode == QFileMode::Append) {
     properly_truncate_qar_vol_file(fn_list, qsinfo_map, directories, max_offset,
-                                   path, false);
+                                   path, vol_idx, qar_index, false);
     qfile = qfopen(path, mode);
   } else {
     // Use `qfopen(path, mode)` instead of `QFile(path, mode)` to open qar files
@@ -1533,6 +1534,9 @@ void QarFileVolObj::init(const QFile& qfile_)
   qassert(qftell(qfile) == 0);
   if (mode() == QFileMode::Write) {
     qfwrite(qar_header.data(), qar_header.size(), 1, qfile);
+    max_offset = qftell(qfile);
+    qassert(max_offset == qar_header.size());
+    directories.insert("");
   } else if (mode() == QFileMode::Read) {
     std::vector<char> check_line(qar_header.size(), 0);
     const Long qfread_check_len =
@@ -1545,6 +1549,7 @@ void QarFileVolObj::init(const QFile& qfile_)
       return;
     };
     max_offset = qftell(qfile);
+    qassert(max_offset == qar_header.size());
     directories.insert("");
   } else if (mode() == QFileMode::Append) {
     // Use `QarFileVolObj::init(path, QFileMode::Append)` instead if append is
@@ -1567,13 +1572,14 @@ void QarFileVolObj::close()
 
 // ----------------------------------------------------
 
-void QarFileVol::init(const std::string& path, const QFileMode mode)
+void QarFileVol::init(const std::string& path, const QFileMode mode,
+                      const Long vol_idx, const QarFileIndex& qar_index)
 {
-  TIMER("QarFileVol::init(path,mode)");
+  TIMER("QarFileVol::init(path,mode,vol_idx,qar_index)");
   if (p == nullptr) {
     p = std::shared_ptr<QarFileVolObj>(new QarFileVolObj());
   }
-  p->init(path, mode);
+  p->init(path, mode, vol_idx, qar_index);
 }
 
 void QarFileVol::init(const QFile& qfile)
@@ -1648,8 +1654,20 @@ bool register_file(const QarFileVol& qar, const std::string& fn,
                    const QarSegmentInfo& qsinfo)
 {
   TIMER("register_file");
+  qassert(qsinfo.check_offset());
   if (not has(qar.p->qsinfo_map, fn)) {
     if (qsinfo.offset_end > qar.p->qfile.size()) {
+      qwarn(fname + ssprintf(": qar_v '%s' failed to register '%s' due to "
+                             "offset larger than file size.",
+                             qar.path().c_str(), fn.c_str()));
+      return false;
+    }
+    if (qsinfo.offset != qar.p->max_offset) {
+      qwarn(fname + ssprintf(": qar_v '%s' failed to register '%s' due to "
+                             "offset mismatch with previous offset_end."
+                             "offset=%ld max_offset=%ld.",
+                             qar.path().c_str(), fn.c_str(),
+                             (long)qsinfo.offset, (long)qar.p->max_offset));
       return false;
     }
     qar.p->fn_list.push_back(fn);
@@ -2190,7 +2208,8 @@ void properly_truncate_qar_vol_file(
     std::vector<std::string>& fn_list,
     std::map<std::string, QarSegmentInfo>& qsinfo_map,
     std::set<std::string>& directories, Long& max_offset,
-    const std::string& path, const bool is_only_check)
+    const std::string& path, const Long vol_idx, const QarFileIndex& qar_index,
+    const bool is_only_check)
 {
   TIMER_VERBOSE("properly_truncate_qar_vol_file");
   if (not does_file_exist_cache(path)) {
@@ -2198,16 +2217,19 @@ void properly_truncate_qar_vol_file(
     qsinfo_map.clear();
     directories.clear();
     QarFileVol qar(path, QFileMode::Write);
+    max_offset = qar.p->max_offset;
     qar.close();
     return;
   }
   QarFileVol qar(path, QFileMode::Read);
   qassert(not qar.null());
+  install_qar_index(qar, vol_idx, qar_index);
   read_through(qar);
   fn_list = qar.p->fn_list;
   qsinfo_map = qar.p->qsinfo_map;
   directories = qar.p->directories;
   max_offset = qar.p->max_offset;
+  qassert(max_offset >= qar_header.size());
   const Long file_size = qfile_size(qar.p->qfile);
   qassert(file_size >= max_offset);
   qar.close();
@@ -2231,7 +2253,7 @@ std::vector<std::string> properly_truncate_qar_vol_file(
   std::set<std::string> directories;
   Long max_offset;
   properly_truncate_qar_vol_file(fn_list, qsinfo_map, directories, max_offset,
-                                 path, is_only_check);
+                                 path, 0, QarFileIndex(), is_only_check);
   return fn_list;
 }
 
@@ -2267,6 +2289,11 @@ void QarFile::init(const std::string& path_, const QFileMode mode_)
       load_qar_index(*this, path + ".idx");
     }
   } else if (mode == QFileMode::Append) {
+    QarFileIndex qar_index;
+    if (does_regular_file_exist_qar(path + ".idx")) {
+      const std::string qar_index_content = qcat(path + ".idx");
+      parse_qar_index(qar_index, qar_index_content);
+    }
     for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
       const std::string path_qar_v = path + qar_file_multi_vol_suffix(iv);
       // try to open the first file regardless its existence
@@ -2275,7 +2302,10 @@ void QarFile::init(const std::string& path_, const QFileMode mode_)
           break;
         }
       }
-      push_back(QarFileVol(path_qar_v, mode));
+      qassert(iv == (Long)size());
+      QarFileVol qar_v;
+      qar_v.init(path_qar_v, mode, iv, qar_index);
+      push_back(qar_v);
       if (back().null()) {
         pop_back();
         break;
@@ -2788,7 +2818,10 @@ void install_qar_index(const QarFileVol& qar, const Long vol_idx,
     if (i == vol_idx) {
       const std::string& fn = qar_index.fn_vec[k];
       const QarSegmentInfo& qsinfo = qar_index.qsinfo_vec[k];
-      register_file(qar, fn, qsinfo);
+      const bool b = register_file(qar, fn, qsinfo);
+      if (not b) {
+        break;
+      }
     }
   }
 }

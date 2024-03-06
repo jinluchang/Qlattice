@@ -397,7 +397,28 @@ struct QarSegmentInfo {
   void init() { set_zero(get_data_one_elem(*this)); }
   //
   void update_offset();
-  bool check_offset();
+  bool check_offset() const;
+};
+
+struct QarFileIndex {
+  std::vector<Long> vol_idx_vec;
+  std::vector<std::string> fn_vec;
+  std::vector<QarSegmentInfo> qsinfo_vec;
+  //
+  QarFileIndex() { init(); }
+  //
+  void init()
+  {
+    vol_idx_vec.clear();
+    fn_vec.clear();
+    qsinfo_vec.clear();
+  }
+  //
+  bool check() const
+  {
+    return (fn_vec.size() == vol_idx_vec.size()) and
+           (qsinfo_vec.size() == vol_idx_vec.size());
+  }
 };
 
 struct QarFileVolObj {
@@ -426,7 +447,9 @@ struct QarFileVolObj {
   ~QarFileVolObj() { close(); };
   //
   void init();
-  void init(const std::string& path, const QFileMode mode);
+  void init(const std::string& path, const QFileMode mode,
+            const Long vol_idx = 0,
+            const QarFileIndex& qar_index = QarFileIndex());
   void init(const QFile& qfile_);
   //
   void close();
@@ -451,7 +474,9 @@ struct API QarFileVol {
   QarFileVol(const QFile& qfile) { init(qfile); }
   //
   void init() { p = nullptr; }
-  void init(const std::string& path, const QFileMode mode);
+  void init(const std::string& path, const QFileMode mode,
+            const Long vol_idx = 0,
+            const QarFileIndex& qar_index = QarFileIndex());
   void init(const QFile& qfile);
   //
   void close();
@@ -575,27 +600,6 @@ std::vector<std::string> properly_truncate_qar_file(
     const std::string& path, const bool is_only_check = false);
 
 // -------------------
-
-struct API QarFileIndex {
-  std::vector<Long> vol_idx_vec;
-  std::vector<std::string> fn_vec;
-  std::vector<QarSegmentInfo> qsinfo_vec;
-  //
-  QarFileIndex() { init(); }
-  //
-  void init()
-  {
-    vol_idx_vec.clear();
-    fn_vec.clear();
-    qsinfo_vec.clear();
-  }
-  //
-  bool check() const
-  {
-    return (fn_vec.size() == vol_idx_vec.size()) and
-           (qsinfo_vec.size() == vol_idx_vec.size());
-  }
-};
 
 std::vector<std::string> show_qar_index(const QarFile& qar);
 
