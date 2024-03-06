@@ -1649,6 +1649,9 @@ bool register_file(const QarFileVol& qar, const std::string& fn,
 {
   TIMER("register_file");
   if (not has(qar.p->qsinfo_map, fn)) {
+    if (qsinfo.offset_end > qar.p->qfile.size()) {
+      return false;
+    }
     qar.p->fn_list.push_back(fn);
     qar.p->qsinfo_map[fn] = qsinfo;
     std::string dir = dirname(fn);
@@ -1843,17 +1846,15 @@ QFile read_next(const QarFileVol& qar, std::string& fn)
     return QFile();
   }
   fn = read_fn(qar, qsinfo);
-  QFile qfile = get_qfile_of_data(qar, qsinfo);
   const int code = qfseek(qar.qfile(), qsinfo.offset_end, SEEK_SET);
-  const Long file_size = qar.qfile().size();
   if (code != 0) {
-    qfile.init();
-  } else if (qsinfo.offset_end > file_size) {
-    qfile.init();
-  } else {
-    register_file(qar, fn, qsinfo);
+    return QFile();
   }
-  return qfile;
+  if (register_file(qar, fn, qsinfo)) {
+    QFile qfile = get_qfile_of_data(qar, qsinfo);
+    return qfile;
+  }
+  return QFile();
 }
 
 void read_through(const QarFileVol& qar)
@@ -1963,7 +1964,8 @@ void write_end(const QarFileVol& qar)
   }
   qwrite_data("\n\n", qar.qfile());
   qsinfo.update_offset();
-  qassert(qftell(qar.qfile()) == qsinfo.offset_end);
+  qassert(qar.qfile().tell() == qsinfo.offset_end);
+  qassert(qar.qfile().size() == qsinfo.offset_end);
   register_file(qar, qar.p->current_write_segment_fn, qsinfo);
   qar.p->current_write_segment_fn = "";
   qsinfo.init();
