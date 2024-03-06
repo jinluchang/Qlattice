@@ -286,6 +286,17 @@ cdef class QarFile:
     def read_index(self, const cc.std_string& qar_index_content):
         return cc.read_qar_index(self.xx, qar_index_content)
 
+    def index_size_saved(self):
+        cdef cc.Long size = self.xx.qar_index_size_saved
+        return size
+
+    def index_size(self):
+        cdef cc.Long size = self.xx.index_size()
+        return size
+
+    def save_index(self, cc.Long max_diff=0):
+        self.xx.save_index(max_diff)
+
 ### ----------------------------------------------------------
 
 def open_qar(const cc.std_string& path, const cc.std_string& mode):

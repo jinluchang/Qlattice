@@ -397,6 +397,7 @@ cdef extern from "qlat-utils/qar.h" namespace "qlat":
     cdef cppclass QarFile:
         std_string path
         QFileMode mode
+        Long qar_index_size_saved;
         QarFile() except +
         QarFile(const std_string& path_qar, const QFileMode mode) except +
         void init() except +
@@ -404,6 +405,8 @@ cdef extern from "qlat-utils/qar.h" namespace "qlat":
         void close() except +
         bool null()
         bool flush() except +
+        Long index_size() except +
+        void save_index(const Long max_diff) except +
     #
     QFileType read_qfile_type(const std_string& ftype) except +
     std_string show(const QFileType ftype) except +
