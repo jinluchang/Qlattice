@@ -82,6 +82,8 @@ def sort_param_arr_free_energy(param_arr, n_ops, free_energy_idx_arr):
     """
     Adjust order of states with free energy parameter
     """
+    if len(free_energy_idx_arr) == 0:
+        return param_arr
     n_energies = len(param_arr) // (n_ops + 1)
     assert len(param_arr) == n_energies * (n_ops + 1)
     e_arr = param_arr[:n_energies].copy()
