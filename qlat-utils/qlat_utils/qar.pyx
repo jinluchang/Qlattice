@@ -283,14 +283,8 @@ cdef class QarFile:
     def show_index(self):
         return cc.show_qar_index(self.xx)
 
-    def save_index(self, const cc.std_string& fn):
-        return cc.save_qar_index(self.xx, fn)
-
-    def parse_index(self, const cc.std_string& qar_index_content):
-        return cc.parse_qar_index(self.xx, qar_index_content)
-
-    def load_index(self, const cc.std_string& fn):
-        return cc.load_qar_index(self.xx, fn)
+    def read_index(self, const cc.std_string& qar_index_content):
+        return cc.read_qar_index(self.xx, qar_index_content)
 
 ### ----------------------------------------------------------
 

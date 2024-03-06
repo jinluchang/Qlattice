@@ -444,10 +444,8 @@ cdef extern from "qlat-utils/qar.h" namespace "qlat":
     #
     std_vector[std_string] properly_truncate_qar_file(const std_string& path) except +
     #
-    std_vector[std_string] show_qar_index(const QarFile& qar) except +
-    int save_qar_index(const QarFile& qar, const std_string& fn) except +
-    int parse_qar_index(const QarFile& qar, const std_string& qar_index_content) except +
-    int load_qar_index(const QarFile& qar, const std_string& fn) except +
+    std_string show_qar_index(const QarFile& qar) except +
+    int read_qar_index(const QarFile& qar, const std_string& qar_index_content) except +
     #
     bool does_regular_file_exist_qar(const std_string& path) except +
     bool does_file_exist_qar(const std_string& path) except +

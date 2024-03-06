@@ -419,6 +419,12 @@ struct QarFileIndex {
     return (fn_vec.size() == vol_idx_vec.size()) and
            (qsinfo_vec.size() == vol_idx_vec.size());
   }
+  //
+  Long size() const
+  {
+    qassert(check());
+    return fn_vec.size();
+  }
 };
 
 struct QarFileVolObj {
@@ -461,6 +467,8 @@ struct QarFileVolObj {
   const std::string& path() const { return qfile.path(); }
   //
   QFileMode mode() const { return qfile.mode(); }
+  //
+  Long size() const { return fn_list.size(); }
 };
 
 struct API QarFileVol {
@@ -480,12 +488,14 @@ struct API QarFileVol {
   void init(const QFile& qfile);
   //
   void close();
-  bool null() const { return p == nullptr; }
+  bool null() const;
   int flush() const;
   //
   const std::string& path() const;
   //
   QFileMode mode() const;
+  //
+  Long size() const;
   //
   QFile& qfile() const;
 };
@@ -537,11 +547,20 @@ struct API QarFile : std::vector<QarFileVol> {
   std::string path;
   QFileMode mode;
   //
-  QarFile() { init(); }
+  Long qar_index_size_saved;
+  //
+  QarFile()
+  {
+    qar_index_size_saved = 0;
+    init();
+  }
   QarFile(const std::string& path_qar, const QFileMode mode)
   {
+    qar_index_size_saved = 0;
     init(path_qar, mode);
   }
+  //
+  ~QarFile() { init(); };
   //
   void init();
   void init(const std::string& path_qar, const QFileMode mode);
@@ -551,6 +570,10 @@ struct API QarFile : std::vector<QarFileVol> {
   bool null() const { return size() == 0; }
   //
   int flush() const;
+  //
+  Long index_size() const;
+  //
+  void save_index(const Long max_diff = 0);
 };
 
 API inline Cache<std::string, QarFile>& get_qar_read_cache()
@@ -601,7 +624,7 @@ std::vector<std::string> properly_truncate_qar_file(
 
 // -------------------
 
-std::vector<std::string> show_qar_index(const QarFile& qar);
+std::string show_qar_index(const QarFile& qar);
 
 int save_qar_index(const QarFile& qar, const std::string& fn);
 
@@ -611,9 +634,7 @@ int parse_qar_index(QarFileIndex& qar_index,
 void install_qar_index(const QarFileVol& qar, const Long vol_idx,
                        const QarFileIndex& qar_index);
 
-int parse_qar_index(const QarFile& qar, const std::string& qar_index_content);
-
-int load_qar_index(const QarFile& qar, const std::string& fn);
+int read_qar_index(const QarFile& qar, const std::string& qar_index_content);
 
 // -------------------
 

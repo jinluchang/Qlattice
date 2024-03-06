@@ -1535,7 +1535,7 @@ void QarFileVolObj::init(const QFile& qfile_)
   if (mode() == QFileMode::Write) {
     qfwrite(qar_header.data(), qar_header.size(), 1, qfile);
     max_offset = qftell(qfile);
-    qassert(max_offset == qar_header.size());
+    qassert(max_offset == (Long)qar_header.size());
     directories.insert("");
   } else if (mode() == QFileMode::Read) {
     std::vector<char> check_line(qar_header.size(), 0);
@@ -1549,7 +1549,7 @@ void QarFileVolObj::init(const QFile& qfile_)
       return;
     };
     max_offset = qftell(qfile);
-    qassert(max_offset == qar_header.size());
+    qassert(max_offset == (Long)qar_header.size());
     directories.insert("");
   } else if (mode() == QFileMode::Append) {
     // Use `QarFileVolObj::init(path, QFileMode::Append)` instead if append is
@@ -1599,17 +1599,37 @@ void QarFileVol::close()
   }
 }
 
+bool QarFileVol::null() const { return p == nullptr; }
+
 int QarFileVol::flush() const
 {
   qassert(not null());
   return p->flush();
 }
 
-const std::string& QarFileVol::path() const { return p->path(); }
+const std::string& QarFileVol::path() const
+{
+  qassert(not null());
+  return p->path();
+}
 
-QFileMode QarFileVol::mode() const { return p->mode(); }
+QFileMode QarFileVol::mode() const
+{
+  qassert(not null());
+  return p->mode();
+}
 
-QFile& QarFileVol::qfile() const { return p->qfile; }
+Long QarFileVol::size() const
+{
+  qassert(not null());
+  return p->size();
+}
+
+QFile& QarFileVol::qfile() const
+{
+  qassert(not null());
+  return p->qfile;
+}
 
 // ----------------------------------------------------
 
@@ -2229,7 +2249,7 @@ void properly_truncate_qar_vol_file(
   qsinfo_map = qar.p->qsinfo_map;
   directories = qar.p->directories;
   max_offset = qar.p->max_offset;
-  qassert(max_offset >= qar_header.size());
+  qassert(max_offset >= (Long)qar_header.size());
   const Long file_size = qfile_size(qar.p->qfile);
   qassert(file_size >= max_offset);
   qar.close();
@@ -2261,9 +2281,9 @@ std::vector<std::string> properly_truncate_qar_vol_file(
 
 void QarFile::init()
 {
+  close();
   path = "";
   mode = QFileMode::Read;
-  close();
 }
 
 void QarFile::init(const std::string& path_, const QFileMode mode_)
@@ -2285,15 +2305,26 @@ void QarFile::init(const std::string& path_, const QFileMode mode_)
         break;
       }
     }
+    QarFile& qar = *this;
+    QarFileIndex qar_index;
     if (does_regular_file_exist_qar(path + ".idx")) {
-      load_qar_index(*this, path + ".idx");
+      const std::string qar_index_content = qcat(path + ".idx");
+      const int pret = parse_qar_index(qar_index, qar_index_content);
+      qassert(pret == 0);
+    }
+    qar_index_size_saved = qar_index.size();
+    for (Long iv = 0; iv < (Long)size(); ++iv) {
+      install_qar_index(qar[iv], iv, qar_index);
+      read_through(qar[iv]);
     }
   } else if (mode == QFileMode::Append) {
     QarFileIndex qar_index;
     if (does_regular_file_exist_qar(path + ".idx")) {
       const std::string qar_index_content = qcat(path + ".idx");
-      parse_qar_index(qar_index, qar_index_content);
+      const int pret = parse_qar_index(qar_index, qar_index_content);
+      qassert(pret == 0);
     }
+    qar_index_size_saved = qar_index.size();
     for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
       const std::string path_qar_v = path + qar_file_multi_vol_suffix(iv);
       // try to open the first file regardless its existence
@@ -2311,7 +2342,13 @@ void QarFile::init(const std::string& path_, const QFileMode mode_)
         break;
       }
     }
+    save_index();
   } else if (mode == QFileMode::Write) {
+    if (does_regular_file_exist_qar(path + ".idx")) {
+      const int ret = qremove(path + ".idx");
+      qassert(ret == 0);
+    }
+    qar_index_size_saved = 0;
     for (Long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
       // Remove all existing files with different suffix by looping over `iv`
       // from `0` until file does not exist.
@@ -2332,14 +2369,16 @@ void QarFile::init(const std::string& path_, const QFileMode mode_)
 
 void QarFile::close()
 {
-  QarFile& qar = *this;
-  if (qar.size() > 0) {
+  if (not null()) {
     TIMER("QarFile::close()");
+    save_index();
+    QarFile& qar = *this;
     for (int i = 0; i < (int)qar.size(); ++i) {
       qar[i].close();
     }
     qar.clear();
   }
+  qar_index_size_saved = 0;
 }
 
 int QarFile::flush() const
@@ -2352,6 +2391,34 @@ int QarFile::flush() const
     ret += qar[i].flush();
   }
   return ret;
+}
+
+Long QarFile::index_size() const
+{
+  Long is = 0;
+  const QarFile& qar = *this;
+  for (Long iv = 0; iv < (Long)size(); ++iv) {
+    is += qar[iv].size();
+  }
+  return is;
+}
+
+void QarFile::save_index(const Long max_diff)
+{
+  TIMER("QarFile::save_index(max_diff)");
+  qassert(not null());
+  const Long is = index_size();
+  if (qar_index_size_saved > is) {
+    qwarn(fname +
+          ssprintf(": '%s' '%s' qar_index_size_saved=%ld > index_size()=%ld.",
+                   path.c_str(), show(mode).c_str(), (long)qar_index_size_saved,
+                   (long)is));
+  }
+  if (qar_index_size_saved > is or is > qar_index_size_saved + max_diff) {
+    QarFile& qar = *this;
+    save_qar_index(qar, path + ".idx");
+    qar_index_size_saved = is;
+  }
 }
 
 // ----------------------------------------------------
@@ -2568,14 +2635,14 @@ std::vector<std::string> properly_truncate_qar_file(const std::string& path,
 
 // ----------------------------------------------------
 
-std::vector<std::string> show_qar_index(const QarFile& qar)
+std::string show_qar_index(const QarFile& qar)
 // interface function
 {
   TIMER("show_qar_index(qar)");
-  std::vector<std::string> lines;
   if (qar.null()) {
-    return lines;
+    return "";
   }
+  std::vector<std::string> lines;
   lines.push_back(qar_idx_header);
   for (Long i = 0; i < (Long)qar.size(); ++i) {
     const QarFileVol& qar_v = qar[i];
@@ -2603,14 +2670,14 @@ std::vector<std::string> show_qar_index(const QarFile& qar)
       lines.push_back("\n");
     }
   }
-  return lines;
+  return merge_lines(lines);
 }
 
 int save_qar_index(const QarFile& qar, const std::string& fn)
 // interface function
 {
   TIMER("save_qar_index(qar,fn)");
-  std::vector<std::string> lines = show_qar_index(qar);
+  const std::string lines = show_qar_index(qar);
   if (lines.size() == 0) {
     return 1;
   }
@@ -2811,7 +2878,7 @@ int parse_qar_index(QarFileIndex& qar_index,
 void install_qar_index(const QarFileVol& qar, const Long vol_idx,
                        const QarFileIndex& qar_index)
 {
-  TIMER("parse_qar_index(qar_v,qar_index)");
+  TIMER("install_qar_index(qar_v,qar_index)");
   qassert(qar_index.check());
   for (Long k = 0; k < (Long)qar_index.vol_idx_vec.size(); ++k) {
     const Long i = qar_index.vol_idx_vec[k];
@@ -2826,15 +2893,12 @@ void install_qar_index(const QarFileVol& qar, const Long vol_idx,
   }
 }
 
-int parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
+int read_qar_index(const QarFile& qar, const std::string& qar_index_content)
 // interface function
 {
-  TIMER_VERBOSE("parse_qar_index");
+  TIMER_VERBOSE("read_qar_index");
   if (qar.null()) {
     qwarn(fname + ": qar is null.");
-    return 1;
-  }
-  if (qar_index_content == "") {
     return 1;
   }
   QarFileIndex qar_index;
@@ -2848,14 +2912,6 @@ int parse_qar_index(const QarFile& qar, const std::string& qar_index_content)
     install_qar_index(qar[vol_idx], vol_idx, qar_index);
   }
   return 0;
-}
-
-int load_qar_index(const QarFile& qar, const std::string& fn)
-// interface function
-{
-  TIMER_VERBOSE("load_qar_index");
-  const std::string qar_index_content = qcat(fn);
-  return parse_qar_index(qar, qar_index_content);
 }
 
 // ----------------------------------------------------
@@ -3087,7 +3143,6 @@ int qar_create(const std::string& path_qar, const std::string& path_folder_,
     qfclose(qfile_in);
   }
   const Long num_vol = qar.size();
-  save_qar_index(qar, path_qar + ".acc.idx");
   qar.close();
   int ret_rename = 0;
   for (Long iv = 0; iv < num_vol; ++iv) {

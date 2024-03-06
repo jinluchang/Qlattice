@@ -384,6 +384,15 @@ inline std::vector<std::string> split_into_lines(const std::string& str)
   return lines;
 }
 
+inline std::string merge_lines(const std::vector<std::string>& lines)
+{
+  std::string ret;
+  for (Long i = 0; i < (Long)lines.size(); ++i) {
+    ret += lines[i];
+  }
+  return ret;
+}
+
 inline std::vector<std::string> split_line_with_spaces(const std::string& str)
 // results do not have spaces
 {
