@@ -365,11 +365,13 @@ def run_job(job_tag, traj):
             # (f"{job_tag}/psel-prop-smear-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-smear-strange/traj-{traj}/checkpoint.txt",),
             ]
     if job_tag[:5] == "test-":
+        has_eig = True
         fns_need = []
     else:
+        has_eig = get_load_path(f"{job_tag}/eig/traj-{traj}/metadata.txt") is not None
         fns_need = [
                 (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
-                f"{job_tag}/eig/traj-{traj}/metadata.txt",
+                # f"{job_tag}/eig/traj-{traj}/metadata.txt",
                 # f"{job_tag}/gauge-transform/traj-{traj}.field",
                 # f"{job_tag}/point-selection/traj-{traj}.txt",
                 # f"{job_tag}/field-selection/traj-{traj}.field",
@@ -391,7 +393,8 @@ def run_job(job_tag, traj):
     #
     get_wi = run_wi(job_tag, traj)
     #
-    get_eig_light = run_eig(job_tag, traj_gf, get_gf)
+    if has_eig:
+        get_eig_light = run_eig(job_tag, traj_gf, get_gf)
     get_eig_strange = run_eig_strange(job_tag, traj_gf, get_gf)
     #
     run_ret_list = []
@@ -406,11 +409,12 @@ def run_job(job_tag, traj):
             run_ret_list.append(v)
     #
     def run_wsrc_full():
-        get_eig = get_eig_light
-        # run_get_inverter(job_tag, traj, inv_type=0, get_gf=get_gf, get_gt=get_gt, get_eig=get_eig)
-        v = run_prop_wsrc_full(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_wi=get_wi)
-        add_to_run_ret_list(v)
-        q.clean_cache(q.cache_inv)
+        if has_eig:
+            get_eig = get_eig_light
+            # run_get_inverter(job_tag, traj, inv_type=0, get_gf=get_gf, get_gt=get_gt, get_eig=get_eig)
+            v = run_prop_wsrc_full(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_wi=get_wi)
+            add_to_run_ret_list(v)
+            q.clean_cache(q.cache_inv)
         #
         get_eig = get_eig_strange
         # run_get_inverter(job_tag, traj, inv_type=1, get_gf=get_gf, get_gt=get_gt, get_eig=get_eig)
@@ -436,15 +440,16 @@ def run_job(job_tag, traj):
     get_psel_smear = run_psel_smear(job_tag, traj)
     #
     def run_with_eig():
-        get_eig = get_eig_light
-        # run_get_inverter(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig)
-        # v = run_prop_rand_u1(job_tag, traj, inv_type=0, get_gf=get_gf, get_fsel=get_fsel, get_eig=get_eig)
-        # add_to_run_ret_list(v)
-        v = run_prop_psrc(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_f_rand_01=get_f_rand_01)
-        add_to_run_ret_list(v)
-        # v = run_prop_smear(job_tag, traj, inv_type=0, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_psel_smear=get_psel_smear)
-        # add_to_run_ret_list(v)
-        q.clean_cache(q.cache_inv)
+        if has_eig:
+            get_eig = get_eig_light
+            # run_get_inverter(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig)
+            # v = run_prop_rand_u1(job_tag, traj, inv_type=0, get_gf=get_gf, get_fsel=get_fsel, get_eig=get_eig)
+            # add_to_run_ret_list(v)
+            v = run_prop_psrc(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_f_rand_01=get_f_rand_01)
+            add_to_run_ret_list(v)
+            # v = run_prop_smear(job_tag, traj, inv_type=0, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_psel_smear=get_psel_smear)
+            # add_to_run_ret_list(v)
+            q.clean_cache(q.cache_inv)
     #
     def run_with_eig_strange():
         get_eig = get_eig_strange
