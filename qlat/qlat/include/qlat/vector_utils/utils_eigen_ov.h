@@ -12,6 +12,7 @@
 #include "utils_construction.h"
 #include "utils_check_fun.h"
 #include "utils_smear_vecs.h"
+#include "utils_props_type.h"
 
 ///#define SUMMIT 0
 
@@ -278,9 +279,9 @@ void eigen_ov::setup_gpufac(int nprop)
   int Ns = nV_prop;if(Ns <=0)Ns = 2;
   ////long long Lat   = noden;
   double memV     = noden*12.0*sizeof(Complexq)*pow(0.5,30);
-  double mem_prop = Ns * 12.0 * memV;
-  if(totalD < mem_prop + 64*memV){
-    print0("===GPU Memory too small, Total %.3e, prop %.3e, 30V %.3e, increase nodes! \n", totalD, mem_prop, 64*memV);
+  double mem_prop = Ns * memV;////Ns have a factor of 12 already
+  if(totalD < mem_prop + 6*12*memV){
+    print0("===GPU Memory too small, Total %.3e, prop %5d %.3e, 6 prop %.3e, increase nodes! \n", totalD, Ns, mem_prop, 6*12*memV);
     Qassert(false);
   }
 
@@ -792,7 +793,6 @@ void eigen_ov::initialize_mass()
   initialize_mass(mass,12,one_minus_halfD);
 }
 
-
 void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vector<double> &mass, int mode_sm = 0,int one_minus_halfD_or=1)
 {
   int mN   = mass.size();
@@ -963,197 +963,6 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
   //////#endif
 
 }
-
-////dir == 1, from src to EigenG res
-////dir == 0  from EigenG res to src
-template <typename T, typename Ty>
-void copy_eigen_prop_to_EigenG(std::vector<qlat::vector_gpu<Ty > >& res, T* src, 
-  LInt b_size, int nmass, qlat::fft_desc_basic& fd, int GPU = 1, int dir = 1)
-{
-  if(nmass == 0){res.resize(0); return ;}
-  if(dir == 1){
-    ini_propG(res, nmass, 12*12*size_t(fd.Nvol), false);
-  }
-
-  int Ns    = nmass*12;
-  int  NTt  = fd.Nv[3];
-  LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
-  LInt total = 6*NTt*Nxyz;
-  if(total % b_size != 0){abort_r("eigen system configurations wrong! \n");}
-  LInt bfac = total/(b_size);
-  LInt each  = Nxyz; if(b_size < Nxyz){each = b_size;}
-  LInt group = (2*total)/each;
-
-  //for(unsigned int d1=0;d1<12;d1++)
-  //for(int ti=0; ti < NTt; ti++)
-  for(int d0=0;d0<Ns;d0++)
-  for(LInt gi=0;gi<group;gi++)
-  {
-    int massi = d0/12;
-    int d0i   = d0%12;
-    LInt mi = gi*each;
-
-    ////index for res
-    LInt d1 =  mi/(NTt*Nxyz);
-    LInt ti = (mi/(Nxyz))%NTt;
-    LInt vi =  mi%(Nxyz);
-
-    ////index for src
-    int chi = mi/(total);
-    LInt xi = mi%(total);
-    Long bi = xi/b_size;
-    Long bj = xi%b_size;
-
-    T* s0   = &src[(chi*bfac+bi)*Ns*b_size  + d0*b_size + bj];
-    Ty* s1  = (Ty*) &res[massi][((d0i*12 + d1)*NTt+ti)*Nxyz + vi];
-    if(dir == 1){cpy_data_thread(s1, s0, each , GPU, QFALSE);}
-    if(dir == 0){cpy_data_thread(s0, s1, each , GPU, QFALSE);}
-
-  }
-  qacc_barrier(dummy);
-
-}
-
-/////res in format src 12* sink 12 --> Nt * Nxyz
-template <typename Ty >
-void FieldM_src_to_FieldM_prop(qlat::FieldM<Ty , 1>& src, qlat::FieldM<Ty , 12*12>& res, int GPU = true, bool dummy = true)
-{
-  qlat::Geometry& geo = src.geo();
-
-  if(!res.initialized){res.init(geo);}
-
-  //bool do_ini = true;
-  //if(res.size() == src.size())if(res[src.size()-1].initialized){do_ini = false;}
-  //if(do_ini){res.resize(nV);for(int iv=0;iv<nV;iv++){res[iv].init(geo);}}
-
-  //std::vector<int > nv, Nv, mv;
-  //geo_to_nv(geo, nv, Nv,mv);
-  Long Ncopy = geo.local_volume();
-
-  Ty* s0 = NULL; Ty* s1 = NULL;Ty* st = NULL;
-  ///for(int iv=0;iv<nV;iv++)
-  s0 = (Ty*) qlat::get_data(src).data();
-  st = (Ty*) qlat::get_data(res).data();
-  for(unsigned int d0=0;d0<12;d0++)
-  {
-    //////diagonal elements
-    s1 = &st[(d0*12+d0)*Ncopy + 0];
-    cpy_data_thread(s1, s0, Ncopy , GPU, QFALSE);
-  }
-  if(dummy)qacc_barrier(dummy);
-}
-
-template <typename Ty >
-void FieldM_src_to_FieldM_prop(std::vector<qlat::FieldM<Ty , 1> >& src, std::vector<qlat::FieldM<Ty , 12*12> >& res, int GPU = true)
-{
-  if(src.size() == 0){return ;}
-  ////qlat::Geometry& geo = src[0].geo();
-  Long nV = src.size();
-  if(res.size() != src.size()){res.resize(nV);}
-  for(int iv=0;iv<nV;iv++)FieldM_src_to_FieldM_prop(src[iv], res[iv], GPU, false);
-  qacc_barrier(dummy);
-
-}
-
-////assumed civ == n*12 with n the source indices, 12 the sink indices 
-template <typename Ty, int civ >
-void copy_eigen_src_to_FieldM(qlat::vector_gpu<Ty >& src, std::vector<qlat::FieldM<Ty , civ> >& res, LInt b_size, qlat::fft_desc_basic& fd, int dir = 0, int GPU = 1, bool rotate = false)
-{
-  TIMERA("copy_eigen_src_to_FieldM");
-  if(civ%12 != 0){abort_r("FieldM type not supported!\n");}
-  unsigned int nV = 0;int cfac = civ/12;
-  move_index mv_civ;
-
-  int  NTt  = fd.Nv[3];
-  LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
-  LInt sizeF = NTt*Nxyz;
-  LInt total = 6*sizeF;
-  if(total % b_size != 0){abort_r("eigen system configurations wrong! \n");}
-
-  if(dir == 0){
-    Long dsize = src.size();
-    if(dsize%(2*total) != 0){abort_r("src size wrong!\n");};
-    nV  = dsize/(2*total);
-    if(nV%(cfac) != 0){abort_r("res civ wrong!\n");}
-    unsigned int ntem = nV/cfac;
-
-    bool do_ini = true;if(res.size() == ntem)if(res[ntem-1].initialized){do_ini = false;}
-    if(do_ini){
-      //////print0("initial Fprop. \n");
-      Geometry geo;fd.get_geo(geo);
-      res.resize(0);res.resize(ntem);
-      for(LInt iv=0;iv<res.size();iv++){res[iv].init(geo);}}
-  }
-  if(dir == 1){
-    nV = res.size() * cfac;
-    src.resize(nV * 2*total);
-  }
-
-  /////rotate FieldM, from Vol->civ to civ->Vol
-  if(dir == 1 and rotate == true){
-    for(LInt iv=0;iv<res.size();iv++){
-      Ty* s0 = (Ty*) qlat::get_data(res[iv]).data();
-      mv_civ.dojob(s0, s0, 1, civ, sizeF, 1, 1, GPU);
-    }
-  }
-
-  LInt bfac = total/(b_size);
-  LInt each  = Nxyz; if(b_size < Nxyz){each = b_size;}
-  LInt group = (2*total)/each;
-
-  Ty* psrc       = src.data();
-  Ty* s0 = NULL; Ty* s1 = NULL;Ty* st = NULL;
-  for(unsigned int d0=0;d0<nV;d0++)
-  for(LInt gi=0;gi<group;gi++)
-  {
-    LInt mi = gi*each;
-
-    ////index for res
-    LInt d1 =  mi/(NTt*Nxyz);
-    LInt ti = (mi/(Nxyz))%NTt;
-    LInt vi =  mi%(Nxyz);
-    int d0a = d0/cfac;
-    int d0b = d0%cfac;
-
-    ////index for src
-    int chi = mi/(total);
-    LInt xi = mi%(total);
-    Long bi = xi/b_size;
-    Long bj = xi%b_size;
-
-    s0 = &psrc[(chi*bfac+bi)*nV*b_size  + d0*b_size + bj];
-    st = (Ty*) qlat::get_data(res[d0a]).data();
-    s1 = &st[((d0b*12 + d1)*NTt+ti)*Nxyz + vi];
-
-    if(dir == 0){cpy_data_thread(s1, s0, each , GPU, QFALSE);}
-    if(dir == 1){cpy_data_thread(s0, s1, each , GPU, QFALSE);}
-  }
-
-  //print0("nV %d, each %d, group %d, bfac %d, b_size %d \n", int(nV), int(each), int(group), int(bfac), int(b_size));
-  //print0("===RES norm ");src.print_norm2();
-  //for(int i=0;i<nV/cfac;i++){
-  //  //Ty* r = (Ty*) qlat::get_data(res[i]).data();
-  //  Ty* r = psrc;
-  //  print0("==value %+.8e %+.8e \n", r[i * 17].real(), r[i * 17].imag());
-  //} 
-
-  qacc_barrier(dummy);
-
-  if(dir == 0 and rotate == true){
-    for(LInt iv=0;iv<res.size();iv++){
-      Ty* s0 = (Ty*) qlat::get_data(res[iv]).data();
-      mv_civ.dojob(s0, s0, 1, civ, sizeF, 0, 1, GPU);
-    }
-  }
-}
-
-template <typename Ty, int civ >
-void copy_FieldM_to_eigen_src(std::vector<qlat::FieldM<Ty , civ> >& src, qlat::vector_gpu<Ty >& res, LInt b_size, qlat::fft_desc_basic& fd, int GPU = 1, bool rotate = false)
-{
-  copy_eigen_src_to_FieldM(res, src, b_size, 1,fd, GPU, rotate);
-}
-
-
 
 }
 

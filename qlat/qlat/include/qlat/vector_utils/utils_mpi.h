@@ -14,7 +14,7 @@
 #include <typeinfo>
 
 #include "utils_float_type.h"
-#include<type_traits>
+#include <type_traits>
 
 #include <iterator>
 #include "utils_read_txt.h"
@@ -491,6 +491,18 @@ inline int get_mpi_id_node_close()
   return id_node_local;
 }
 
+
+inline void geo_to_nv(const qlat::Geometry& geo, std::vector<int >& nv, std::vector<int > &Nv, std::vector<int > &mv)
+{
+  Nv.resize(4);nv.resize(4);mv.resize(4);
+  for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
+  for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
+}
+inline void geo_to_nv(const qlat::Geometry& geo, qlat::vector_acc<int >& nv, qlat::vector_acc<int > &Nv, qlat::vector_acc<int > &mv){
+  Nv.resize(4);nv.resize(4);mv.resize(4);
+  for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
+  for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
+}
 
 
 

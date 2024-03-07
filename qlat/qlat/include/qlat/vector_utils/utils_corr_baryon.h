@@ -665,7 +665,10 @@ void baryon_vectorEV_kernel(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
 {
   Long Ntotal  = nmass*NTt*Nxyz;
   ////print0("nmass %d, NTt %d, Nxyz %d \n", int(nmass), int(NTt), int(Nxyz));
-  if(Ntotal % bfac != 0){abort_r("Please correct your bfac! \n");}
+  if(Ntotal % bfac != 0){
+    print0("Please correct your bfac! nmass %5d, NTt %5d, vol %ld, bfac %d. \n", int(nmass), int(NTt), long(Nxyz), bfac );
+    abort_r("");
+  }
   Long Nbfac = Ntotal/bfac;
 
   #if USEGLOBAL==1
@@ -676,7 +679,10 @@ void baryon_vectorEV_kernel(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
   baryon_vectorEV_global<Ty, bfac, Blocks><<<dimGrid, dimBlock>>>(p1, p2, p3, resP, gPP, oPP, ivP, nmass, NTt, Nxyz, Ngv);
   qacc_barrier(dummy);
   #else
-  if((nmass*NTt) % bfac != 0){abort_r("Please correct your bfac! \n");}
+  if((nmass*NTt) % bfac != 0){
+    print0("Please correct your bfac! nmass %5d, NTt %5d, vol %ld, bfac %d. \n", int(nmass), int(NTt), long(Nxyz), bfac );
+    abort_r("");
+  }
   qacc_for(gi, Nbfac ,
   {
     Ty buf[bfac+1];
@@ -854,7 +860,35 @@ void baryon_vectorEV(Ty** p1, Ty** p2, Ty** p3, Ty* resP, int nmass,
 
   ////int mode = 0;mode = clear;
   const int BFACG = BFACG_SHARED;
+  #ifdef QLAT_USE_ACC
   baryon_vectorEV_kernel<Ty, BFACG>(p1, p2, p3, resP, gPP, oPP, ivP, nmass, NTt, Nxyz, Ngv);
+  #else
+  int get = 0;
+  const int tot = nmass*NTt;
+  if(tot % BFACG == 0 and get == 0){
+    baryon_vectorEV_kernel<Ty, BFACG>(p1, p2, p3, resP, gPP, oPP, ivP, nmass, NTt, Nxyz, Ngv);get = 1;
+  }
+  if(tot % 10    == 0 and get == 0){
+    baryon_vectorEV_kernel<Ty,    10>(p1, p2, p3, resP, gPP, oPP, ivP, nmass, NTt, Nxyz, Ngv);get = 1;
+  }
+
+  if(tot % 11    == 0 and get == 0){
+    baryon_vectorEV_kernel<Ty,    11>(p1, p2, p3, resP, gPP, oPP, ivP, nmass, NTt, Nxyz, Ngv);get = 1;
+  }
+
+  if(tot % 5     == 0 and get == 0){
+    baryon_vectorEV_kernel<Ty,     5>(p1, p2, p3, resP, gPP, oPP, ivP, nmass, NTt, Nxyz, Ngv);get = 1;
+  }
+  if(tot % 3     == 0 and get == 0){
+    baryon_vectorEV_kernel<Ty,     3>(p1, p2, p3, resP, gPP, oPP, ivP, nmass, NTt, Nxyz, Ngv);get = 1;
+  }
+
+  /////slowest mode ...
+  if(tot % 1     == 0 and get == 0){
+    baryon_vectorEV_kernel<Ty,     1>(p1, p2, p3, resP, gPP, oPP, ivP, nmass, NTt, Nxyz, Ngv);get = 1;
+  }
+  Qassert(get == 1);
+  #endif
 
   #endif
 

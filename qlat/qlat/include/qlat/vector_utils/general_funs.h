@@ -653,7 +653,6 @@ void random_link(GaugeFieldT<Td> &gf, const int seed = -1)
   }
 }
 
-
 inline size_t get_threads(size_t thread, size_t Total, int def=1)
 {
   for(size_t temb=thread;temb<Total;temb++)
@@ -806,18 +805,6 @@ inline void add_nodeL(std::vector<Coordinate>& size_node_list)
   size_node_list.push_back(Coordinate(4, 8, 8, 16));
 }
 
-inline void geo_to_nv(const qlat::Geometry& geo, std::vector<int >& nv, std::vector<int > &Nv, std::vector<int > &mv)
-{
-  Nv.resize(4);nv.resize(4);mv.resize(4);
-  for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
-  for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
-}
-inline void geo_to_nv(const qlat::Geometry& geo, qlat::vector_acc<int >& nv, qlat::vector_acc<int > &Nv, qlat::vector_acc<int > &mv){
-  Nv.resize(4);nv.resize(4);mv.resize(4);
-  for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
-  for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
-}
-
 //#include <cuda.h>
 //#include <cuda_runtime.h>
 //void initialisation_cuda()
@@ -908,11 +895,10 @@ inline void begin_Lat(int* argc, char** argv[], inputpara& in, int read_Lat = 0)
 
 inline int end_Lat()
 {
+  qlat::Timer::display();
   fflush_MPI();
   qlat::end();
-  fflush_MPI();
-  qlat::Timer::display();
-  if(qlat::is_MPI_initialized()){MPI_Finalize();}
+  //if(qlat::is_MPI_initialized()){MPI_Finalize();}
   #ifdef QLAT_USE_ACC
   for (int i = 0; i < MAX_CUDA_STEAM; ++i){qlat_GPU_StreamDestroy(Qstream[i]);}
   #endif
@@ -1021,6 +1007,38 @@ qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qlat::vector_gpu<Ty > >& s
 }
 
 template<typename Ty>
+qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qpropT >& src, Long Nvol = -1)
+{
+  qlat::vector_acc< Ty* >  res;
+  const size_t Nvec = src.size();
+  if(Nvec == 0){return res;}
+  for(size_t iv=0;iv<Nvec;iv++){
+    Qassert(src[iv].initialized);
+  }
+  const Geometry& geo = src[0].geo();
+  const long V = geo.local_volume();
+
+  if(Nvol != -1){
+    Qassert((12*12*V) % Nvol == 0);
+  }else{
+    Nvol = 12 * 12 * V;
+  }
+
+  const size_t Nt = (12 * 12 * V) / Nvol;
+  res.resize(Nvec * Nt);
+  for(size_t iv=0;iv<Nvec;iv++)
+  {
+    Ty* p = (Ty*) qlat::get_data(src[iv]).data();
+    for(size_t it=0;it<Nt;it++)
+    {
+      res[iv*Nt + it] = &p[it* Nvol];
+    }
+  }
+  return res;
+}
+
+
+template<typename Ty>
 qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qlat::vector_acc<Ty > >& src)
 {
   qlat::vector_acc<Ty* >  res;
@@ -1031,6 +1049,8 @@ qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qlat::vector_acc<Ty > >& s
   }
   return res;
 }
+
+
 
 /////Ty should have size(), resize(), and data()
 template<class Ty>

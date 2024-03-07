@@ -121,6 +121,12 @@ inline int stringtonumber(std::string &tem_string)
   return stringtonum(tem_string);
 }
 
+inline std::string Coordinate_to_string(const Coordinate& sp)
+{
+  std::string res = ssprintf("%d %d %d %d", sp[0], sp[1], sp[2], sp[3]);
+  return res;
+}
+
 inline Coordinate string_to_Coordinate(const std::string& paraI = std::string("NONE"))
 {
   Coordinate sp;for(int i=0;i<4;i++){sp[i] = 0;}

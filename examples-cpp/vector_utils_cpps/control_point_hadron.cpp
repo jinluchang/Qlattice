@@ -23,11 +23,13 @@ int main(int argc, char* argv[])
   in.find_para(std::string("ckpoint"), ckpoint);
 
   int prop_type = 1;
+  int mass_split = -1;
   in.find_para(std::string("prop_type"), prop_type);
   std::string out_vec_sink  = std::string("NONE");
   std::string out_vec_mom   = std::string("NONE");
   in.find_para(std::string("out_vec_sink"), out_vec_sink);
   in.find_para(std::string("out_vec_mom"), out_vec_mom);
+  in.find_para(std::string("mass_split"), mass_split);
 
   int prop_smear_inv_factor = 1; ////1, if use modified factors within inverstion ; 0 --> normal factors
   in.find_para(std::string("prop_smear_inv_factor"), prop_smear_inv_factor);
@@ -36,7 +38,18 @@ int main(int argc, char* argv[])
 
   std::string mom_shift_ = std::string("0 0 0 0");
   in.find_para(std::string("mom_shift"), mom_shift_);
-  const Coordinate mom_shift = string_to_Coordinate(mom_shift_);
+  std::vector<Coordinate > mom_shiftL;
+  {
+    std::vector<std::string > Li = stringtolist(mom_shift_);
+    Qassert(Li.size() % 4 == 0);
+    const int Nmom = Li.size() / 4;
+    mom_shiftL.resize(Nmom);
+    for(int momi=0;momi<Nmom;momi++)
+    {
+      for(int i=0;i<4;i++){mom_shiftL[momi][i] = stringtonum(Li[momi*4 + i]);}
+    }
+  }
+  //const Coordinate mom_shift = string_to_Coordinate(mom_shift_);
 
   std::string mom_smear_ = std::string("NONE");
   in.find_para(std::string("mom_smear"), mom_smear_);
@@ -58,8 +71,6 @@ int main(int argc, char* argv[])
 
   {
 
-  momentum_dat mdat(geo, in.mom_cut, mom_shift);
-  print_mem_info("momentum dat");
 
   print_mem_info("io_vec");
 
@@ -78,8 +89,11 @@ int main(int argc, char* argv[])
     /////set_left_expanded_gauge_field(gfD, gf);
   }
   /////========load links
-  int nmass = in.nmass;qassert(nmass > 0);
-  std::vector<double> massL = in.masses;
+  int nmass_group = in.nmass;qassert(nmass_group > 0);
+  if(mass_split != -1 and mass_split < nmass_group){
+    nmass_group = mass_split;
+  }
+  std::vector<Long > mass_jobA = job_create(in.nmass, nmass_group);
 
   ////qprop tmpa;tmpa.init(geo);
   ////print0("vol %ld %ld \n", geo.local_volume(), Long(qlat::get_data_size(tmpa)));
@@ -89,7 +103,7 @@ int main(int argc, char* argv[])
   fflush_MPI();
   ////fft_desc_basic fd(geo);
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
-  eigen_ov ei(geo, n_vec, in.bini, in.nmass + 1);
+  eigen_ov ei(geo, n_vec, in.bini, nmass_group + 1);
 
   fflush_MPI();
   int mode_sm = 0;
@@ -110,161 +124,190 @@ int main(int argc, char* argv[])
   }
   print_time();
 
-  ei.initialize_mass(massL, 12);
-  ei.print_info();
-  print0("Low eigen done. \n");
-  ////===load eigen
-
-
-  ////size_t Nvol = geo.local_volume();
-
-  char key_T[1000], dimN[1000];
-  
-  if(sink_step!=0){sprintf(key_T, "%d   %d    %d   %d  %d  %d %d", in.nsource, 2, 3, 32, int(massL.size()), in.nt,2);}
-  else{sprintf(key_T, "%d   %d    %d   %d  %d  %d %d", in.nsource, 1, 3, 32, int(massL.size()), in.nt,2);}
-  sprintf(dimN , "src  sm  LHF operator masses nt complex");
-
-  std::string  INFO_Mass = mass_to_string(massL);
-
-  corr_dat<Ftype > res(std::string(""));
-  if(in.output != std::string("NONE")){
-    std::string ktem(key_T);
-    std::string dtem(dimN);
-    res.create_dat(ktem, dtem);
-    res.print_info();
-  }
-  
-  /////===load noise and prop
-  char names[450],namep[500], names_vec[450], names_mom[450];
-  std::vector<qprop > FpropV;FpropV.resize(nmass);
+  qnoi noi;noi.init(geo);
   Propagator4dT<Ftype > tmp;tmp.init(geo);
-  lms_para<Complexq > srcI;/////buffers and parameters for lms
-  print_time();
-  for(int si = 0; si < in.nsource; si++)
+
+  for(LInt jobi=0;jobi < mass_jobA.size()/2; jobi++)
   {
-    if(out_vec_sink != std::string("NONE") and ckpoint == 1){
-      const size_t vol = size_t(fd.nx) * fd.ny * fd.nz * fd.nt;
-      int flag_do_job = 0;
-      sprintf(names, out_vec_sink.c_str(), icfg, si);
-      sprintf(namep, "%s.pt.zero.vec", names);
-      if(get_file_size_MPI(namep) > vol * 32 * nmass * 8){ 
-        flag_do_job += 1;
-      }   
-      sprintf(namep, "%s.sm.zero.vec", names);
-      if(get_file_size_MPI(namep) > vol * 32 * nmass * 8){ 
-        flag_do_job += 1;
-      } 
-      if(flag_do_job == 2){
-        print0("Pass %s \n", names);
-        continue ;
-      }   
-    }
+    Long bji = mass_jobA[jobi*2 + 0]; Long bcut = mass_jobA[jobi*2+1];
 
-    sprintf(names, in.srcN[si].c_str(),icfg);
-    //std::vector<qnoi > noi;noi.resize(1);
-    if(get_file_size_MPI(names) == 0){
-      print0("Src pass %s \n", names );
-      continue;
-    }
+    std::string outputG = in.output;
+    std::string out_vec_sinkG = out_vec_sink;
+    std::string out_vec_momG  = out_vec_mom ;
 
-    qnoi noi;noi.init(geo);
-    load_gwu_noi(names, noi);
-    print0("%s \n", names);
-
-    for(int im=0;im<nmass;im++)
-    {
-      sprintf(names, in.propN[si].c_str(),icfg);
-      sprintf(namep, "%s.m%8.6f", names, massL[im]);
-
-      if(prop_type == 0){load_gwu_prop( namep, tmp);}
-      if(prop_type == 1){load_qlat_prop(namep, tmp);}
-
-      if(src_width < 0 and prop_smear_inv_factor == 0){
-        const Complexq sm_factor = std::pow( 1.0 * (-1.0*src_width), 3);
-        prop4D_factor(tmp, sm_factor);
+    if(nmass_group != in.nmass){
+      if(outputG != std::string("NONE")){
+        outputG = ssprintf("%s.mgroup%02d", outputG.c_str(), jobi);
       }
 
-      prop4d_to_qprop(FpropV[im], tmp);
-      ////double sum = check_sum_prop(FpropV[im]);
-      ////print0("===checksum %s %.8e \n", namep, sum);
+      if(out_vec_sinkG != std::string("NONE")){
+        out_vec_sinkG = ssprintf("%s.mgroup%02d", out_vec_sinkG.c_str(), jobi);
+      }
+
+      if(out_vec_momG != std::string("NONE")){
+        out_vec_momG = ssprintf("%s.mgroup%02d", out_vec_momG.c_str(), jobi);
+      }
     }
+
+    momentum_dat mdat(geo, in.mom_cut, mom_shiftL);
+    print_mem_info("momentum dat");
+
+    std::vector<double> massL;massL.resize(0);
+    for(int mi=0;mi<bcut;mi++){
+      massL.push_back(in.masses[mi + bji]);
+    }
+    ei.initialize_mass(massL, 12);
+    ei.print_info();
+    print0("Low eigen done. \n");
+    ////===load eigen
+
+    ////size_t Nvol = geo.local_volume();
+
+    char key_T[1000], dimN[1000];
+    if(sink_step!=0){sprintf(key_T, "%d   %d    %d   %d  %d  %d %d", in.nsource, 2, 3, 32, int(massL.size()), in.nt,2);}
+    else{sprintf(key_T, "%d   %d    %d   %d  %d  %d %d", in.nsource, 1, 3, 32, int(massL.size()), in.nt,2);}
+    sprintf(dimN , "src  sm  LHF operator masses nt complex");
+
+    std::string  INFO_Mass = mass_to_string(massL);
+
+    corr_dat<Ftype > res(std::string(""));
+    if(outputG != std::string("NONE")){
+      std::string ktem(key_T);
+      std::string dtem(dimN);
+      res.create_dat(ktem, dtem);
+      res.print_info();
+    }
+    
     /////===load noise and prop
-
-    bool save_vecs_vec = false;
-    bool save_vecs_mom = false;
-    if(out_vec_sink != std::string("NONE")){
-      sprintf(names_vec, out_vec_sink.c_str(), icfg, si);
-      save_vecs_vec = true;
-    }
-    if(out_vec_mom != std::string("NONE")){
-      sprintf(names_mom, out_vec_mom.c_str(), icfg, si);
-      save_vecs_mom = true;
-    }
-
-    srcI.init();
-    srcI.do_all_low = in.do_all_low;
-    srcI.lms      = in.lms;
-    srcI.combineT =  in.combineT;
-    srcI.mode_eig_sm = mode_sm;
-    srcI.SRC_PROP_WITH_LOW = in.SRC_PROP_WITH_LOW;
-    srcI.INFOA.push_back(INFO_Mass);
-    srcI.mom_cut = in.mom_cut;
-    srcI.ckpoint = ckpoint;
-    srcI.save_full_vec = save_full_vec;
-    if(save_vecs_vec){
-      sprintf(namep, "%s.pt.zero.vec", names_vec);
-      srcI.name_zero_vecs = std::string(namep);
-    }
-
-    if(save_vecs_mom){
-      sprintf(namep, "%s.pt", names_mom);
-      srcI.name_mom_vecs = std::string(namep);
-    }
-
-    if(in.output == std::string("NONE")){
-      srcI.save_zero_corr = 0;
-    }
-
-    point_corr(noi, FpropV, massL, ei, fd, res, srcI, mdat, 1);
-
-    if(sink_step != 0){
-      srcI.lms      = in.lms;
-      srcI.combineT = in.combineT;
-      srcI.mode_eig_sm = 3;
-
-      for(int im=0;im<nmass;im++){
-      smear_propagator_gwu_convension(FpropV[im], gf, sink_width, sink_step, mom_smear);
-      //copy_noise_to_prop(FpropV[im], prop4d, 1);
-
-      //smear_propagator_gwu_convension(prop4d, gf, width, step);
-      //smear_propagator_gwu_convension(FpropV[im], gf, width, step);
-
-      //copy_noise_to_prop(FpropV[im], prop4dS, 1);
-      //diff_prop(prop4dS, prop4d);
+    char names[450],namep[500], names_vec[450], names_mom[450];
+    std::vector<qprop > FpropV;FpropV.resize(bcut);
+    lms_para<Complexq > srcI;/////buffers and parameters for lms
+    print_time();
+    for(int si = 0; si < in.nsource; si++)
+    {
+      if(out_vec_sinkG != std::string("NONE") and ckpoint == 1){
+        const size_t vol = size_t(fd.nx) * fd.ny * fd.nz * fd.nt;
+        int flag_do_job = 0;
+        sprintf(names, out_vec_sinkG.c_str(), icfg, si);
+        sprintf(namep, "%s.pt.zero.vec", names);
+        if(get_file_size_MPI(namep) > vol * 32 * bcut * 8){ 
+          flag_do_job += 1;
+        }   
+        sprintf(namep, "%s.sm.zero.vec", names);
+        if(get_file_size_MPI(namep) > vol * 32 * bcut * 8){ 
+          flag_do_job += 1;
+        } 
+        if(flag_do_job == 2){
+          print0("Pass %s \n", names);
+          continue ;
+        }   
       }
 
+      sprintf(names, in.srcN[si].c_str(),icfg);
+      if(get_file_size_MPI(names) == 0){
+        print0("Src pass %s \n", names );
+        continue;
+      }
+
+      load_gwu_noi(names, noi);
+      print0("%s \n", names);
+
+      for(int im=0;im<bcut;im++)
+      {
+        sprintf(names, in.propN[si].c_str(),icfg);
+        sprintf(namep, "%s.m%8.6f", names, massL[im]);
+
+        if(prop_type == 0){load_gwu_prop( namep, tmp);}
+        if(prop_type == 1){load_qlat_prop(namep, tmp);}
+
+        if(src_width < 0 and prop_smear_inv_factor == 0){
+          const Complexq sm_factor = std::pow( 1.0 * (-1.0*src_width), 3);
+          prop4D_factor(tmp, sm_factor);
+        }
+
+        prop4d_to_qprop(FpropV[im], tmp);
+        ////double sum = check_sum_prop(FpropV[im]);
+        ////print0("===checksum %s %.8e \n", namep, sum);
+      }
+      /////===load noise and prop
+
+      bool save_vecs_vec = false;
+      bool save_vecs_mom = false;
+      if(out_vec_sinkG != std::string("NONE")){
+        sprintf(names_vec, out_vec_sinkG.c_str(), icfg, si);
+        save_vecs_vec = true;
+      }
+      if(out_vec_momG != std::string("NONE")){
+        sprintf(names_mom, out_vec_momG.c_str(), icfg, si);
+        save_vecs_mom = true;
+      }
+
+      srcI.init();
+      srcI.do_all_low = in.do_all_low;
+      srcI.lms      = in.lms;
+      srcI.combineT =  in.combineT;
+      srcI.mode_eig_sm = mode_sm;
+      srcI.SRC_PROP_WITH_LOW = in.SRC_PROP_WITH_LOW;
+      srcI.INFOA.push_back(INFO_Mass);
+      srcI.mom_cut = in.mom_cut;
+      srcI.ckpoint = ckpoint;
+      srcI.save_full_vec = save_full_vec;
       if(save_vecs_vec){
-        sprintf(namep, "%s.sm.zero.vec", names_vec);
+        sprintf(namep, "%s.pt.zero.vec", names_vec);
         srcI.name_zero_vecs = std::string(namep);
       }
 
       if(save_vecs_mom){
-        sprintf(namep, "%s.sm", names_mom);
+        sprintf(namep, "%s.pt", names_mom);
         srcI.name_mom_vecs = std::string(namep);
       }
 
+      if(outputG == std::string("NONE")){
+        srcI.save_zero_corr = 0;
+      }
+
       point_corr(noi, FpropV, massL, ei, fd, res, srcI, mdat, 1);
+
+      if(sink_step != 0){
+        srcI.lms      = in.lms;
+        srcI.combineT = in.combineT;
+        srcI.mode_eig_sm = 3;
+
+        for(int im=0;im<bcut;im++){
+        smear_propagator_gwu_convension(FpropV[im], gf, sink_width, sink_step, mom_smear);
+        //copy_noise_to_prop(FpropV[im], prop4d, 1);
+
+        //smear_propagator_gwu_convension(prop4d, gf, width, step);
+        //smear_propagator_gwu_convension(FpropV[im], gf, width, step);
+
+        //copy_noise_to_prop(FpropV[im], prop4dS, 1);
+        //diff_prop(prop4dS, prop4d);
+        }
+
+        if(save_vecs_vec){
+          sprintf(namep, "%s.sm.zero.vec", names_vec);
+          srcI.name_zero_vecs = std::string(namep);
+        }
+
+        if(save_vecs_mom){
+          sprintf(namep, "%s.sm", names_mom);
+          srcI.name_mom_vecs = std::string(namep);
+        }
+
+        point_corr(noi, FpropV, massL, ei, fd, res, srcI, mdat, 1);
+      }
     }
+
+    if(outputG != std::string("NONE")){
+      std::string Name = ssprintf(outputG.c_str(), icfg);
+      res.INFOA.push_back(INFO_Mass);
+      res.print_info();
+      res.write_dat(Name);
+    }
+
+    srcI.free_buf();
   }
 
-  if(in.output != std::string("NONE")){
-    sprintf(names, in.output.c_str(),icfg);
-    res.INFOA.push_back(INFO_Mass);
-    res.print_info();
-    res.write_dat(names);
-  }
-
-  srcI.free_buf();
   ei.clear_GPU_mem(1);
 
   }

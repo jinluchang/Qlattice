@@ -666,11 +666,11 @@ void meson_corrE(Propagator4dT<Td > &p1, Propagator4dT<Td > &p2, const int ga, c
     }
   }
   else{
-    char key_T[1000], dimN[1000];
-    sprintf(key_T, "%d  %d  %d", 1, nt, 2); 
-    sprintf(dimN , "nsrc nt complex");
-    std::string ktem(key_T);
-    std::string dtem(dimN);
+    //char key_T[1000], dimN[1000];
+    //sprintf(key_T, "%d  %d  %d", 1, nt, 2); 
+    //sprintf(dimN , "nsrc nt complex");
+    std::string ktem = ssprintf("%d  %d  %d", 1, nt, 2);
+    std::string dtem = ssprintf("nsrc nt complex");
     corr.create_dat(ktem, dtem);
   }
   if(info != std::string("NONE") and info.size() != 0){

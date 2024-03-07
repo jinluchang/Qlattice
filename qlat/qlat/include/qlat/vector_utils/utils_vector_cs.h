@@ -1580,12 +1580,14 @@ struct vector_cs_mat{
   Long vsize;
   int ncount;
   double mass2_neg;
+  double dslash_flops;
 
   vector_cs_mat(){
     mat.resize(0);
     vsize = 0;
     ncount = 1;
     mass2_neg = 0.0;
+    dslash_flops = 0.0;
   }
   int flops;
 
@@ -1716,6 +1718,9 @@ struct vector_cs_mat{
         if(i==j){vr[i] += (mat[i*loop + j] + mass2_neg) * buf[j];}
       }
     }
+
+    ////estimation of flops, wrong
+    dslash_flops += loop * loop * 3.0;
 
   }
 

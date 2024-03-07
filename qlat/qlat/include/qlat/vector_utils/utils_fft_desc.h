@@ -10,7 +10,7 @@
 #include <complex>
 #include <cmath>
 
-#include "general_funs.h"
+#include "utils_mpi.h"
 
 namespace qlat{
 

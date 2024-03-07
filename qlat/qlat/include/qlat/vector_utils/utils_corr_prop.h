@@ -14,6 +14,8 @@
 #include "utils_grid_src.h"
 #include "utils_shift_vecs.h"
 
+#define QLAT_PI_LOCAL 3.1415926535898
+
 namespace qlat{
 
 template<typename Ty>
@@ -360,9 +362,9 @@ void get_corr_pion(std::vector<qlat::FermionField4dT<Td > > &prop,const Coordina
 template<typename Ty>
 void get_src_phase(Ty& phase, const qlat::vector_acc<int >& nv,
   const Coordinate& pos = Coordinate(), const Coordinate& mom = Coordinate()){
-    double p0[3]={2*PI/nv[0],
-                  2*PI/nv[1],
-                  2*PI/nv[2]};
+    double p0[3]={2 * QLAT_PI_LOCAL /nv[0],
+                  2 * QLAT_PI_LOCAL /nv[1],
+                  2 * QLAT_PI_LOCAL /nv[2]};
     double theta= mom[0]*p0[0]*pos[0] + mom[1]*p0[1]*pos[1] + mom[2]*p0[2]*pos[2];
     phase = Ty(std::cos(theta), -1.0*std::sin(theta));
 }
@@ -626,18 +628,18 @@ void shift_result_t(qlat::vector_acc<Ty >& Esrc, int nt, int tini){
 //}
 //
 
-template<typename Ty>
-void ini_propG(EigenTy& prop, const Long nmass, size_t Nsize, bool clear = true){
-  if(Long(prop.size()) != nmass){prop.resize(nmass);}
-  for(unsigned long i=0;i<prop.size();i++){
-    if(prop[i].size() != Nsize){
-      prop[i].resize(Nsize);
-    }
-    else{
-      if(clear){prop[i].set_zero();}
-    }
-  }
-}
+//template<typename Ty>
+//void ini_propG(EigenTy& prop, const Long nmass, size_t Nsize, bool clear = true){
+//  if(Long(prop.size()) != nmass){prop.resize(nmass);}
+//  for(unsigned long i=0;i<prop.size();i++){
+//    if(prop[i].size() != Nsize){
+//      prop[i].resize(Nsize);
+//    }
+//    else{
+//      if(clear){prop[i].set_zero();}
+//    }
+//  }
+//}
 
 template <typename Ty >
 void check_prop_size(EigenTy& prop, fft_desc_basic& fd){
@@ -809,7 +811,7 @@ void get_phases(std::vector<vector_gpu<Ty >>& phases, const std::vector<Coordina
   qlat::vector_acc<Ty* > Pres = EigenM_to_pointers(phases);
 
   qlat::vector_acc<double > p0;p0.resize(3);
-  for(int i=0;i<3;i++){p0[i] = 2*PI/nv[i];}
+  for(int i=0;i<3;i++){p0[i] = 2 * QLAT_PI_LOCAL /nv[i];}
 
   ////copy momentum to gpu memery
   qlat::vector_acc<int > momLV;momLV.resize(momL.size() * 3);
@@ -989,7 +991,7 @@ void get_phases(std::vector<Ty >& phases, Coordinate& pL, const Coordinate& src,
       }
     }
     double v0 = 0.0;
-    for(int i=0;i<3;i++){v0 += (2.0*PI * src[i] * pos[i]/Lat[i]);}
+    for(int i=0;i<3;i++){v0 += (2.0* QLAT_PI_LOCAL * src[i] * pos[i]/Lat[i]);}
 
     phases[isp] = Ty(std::cos(v0), -1.0* std::sin(v0));
   }
@@ -1086,5 +1088,7 @@ void copy_FieldM(std::vector<qlat::FieldM<Ty, civ> >& res, const std::vector<qla
 
 
 }
+
+#undef  QLAT_PI_LOCAL
 
 #endif

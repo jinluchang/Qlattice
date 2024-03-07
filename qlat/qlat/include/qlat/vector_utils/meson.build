@@ -31,6 +31,7 @@ vector_utils_header_files = files(
   'utils_test_unified.h',
   'utils_vector_GPU.h',
   'utils_vector_cs.h',
+  'utils_corr_seq.h',
   'utils_field_operations.h',
   )
 py3.install_sources(vector_utils_header_files, subdir: 'qlat/include/qlat/vector_utils')

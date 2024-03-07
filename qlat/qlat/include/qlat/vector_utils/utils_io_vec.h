@@ -1281,83 +1281,6 @@ void load_gwu_prop(const char *filename, qlat::FieldM<qlat::ComplexT<Td>, 12*12>
   }
 }
 
-/////V -- 12a x 12b   to   12b x 12a -- V
-template<class Ty, typename Td>
-void prop4d_to_qprop(qpropT& res, Propagator4dT<Td>& src, int dir = 1){
-  TIMERA("prop4d_to_qprop");
-  if(dir == 1){Qassert(src.initialized);res.init();res.init(src.geo());}
-  if(dir == 0){Qassert(res.initialized);src.init();src.init(res.geo());}
-
-  Long sizeF = src.geo().local_volume();
-
-  move_index mv_civ;
-  qlat::ComplexT<Td>* ps; Ty* pt;
-  ps = (qlat::ComplexT<Td>* ) qlat::get_data(src).data();
-  pt = (Ty*) qlat::get_data(res).data();
-
-  ////V x 12 a x 12 b to 12b x 12a x V
-  if(dir == 1){
-    qthread_for(isp, Long(sizeF),{
-      QLAT_ALIGN(QLAT_ALIGNED_BYTES) qlat::ComplexT<Td> buf[12*12];for(unsigned int i=0;i<12*12;i++){buf[i] = ps[isp*12*12 + i];}
-      for(unsigned int d0=0;d0<12;d0++)
-      for(unsigned int d1=0;d1<12;d1++)
-      {
-        pt[(isp*12+d0)*12+d1] = buf[d1*12+d0];
-      }
-    });
-    mv_civ.move_civ_out(pt, pt, 1, sizeF, 12*12, 1, false);
-  }
-  ////12 a x 12 b x V to V x 12b x 12a
-  if(dir == 0){
-    mv_civ.move_civ_in(pt, pt, 1, 12*12, sizeF, 1, false);
-    qthread_for(isp, Long(sizeF),{
-      QLAT_ALIGN(QLAT_ALIGNED_BYTES) qlat::ComplexT<Td> buf[12*12];for(unsigned int i=0;i<12*12;i++){buf[i] = pt[isp*12*12 + i];}
-      for(unsigned int d0=0;d0<12;d0++)
-      for(unsigned int d1=0;d1<12;d1++)
-      {
-        ps[(isp*12+d0)*12+d1] = buf[d1*12+d0];
-      }
-    });
-  }
-}
-
-template<typename Td, typename Ty>
-void qprop_to_prop4d(Propagator4dT<Td>& res, qpropT& src){
-  prop4d_to_qprop(src, res, 0);
-}
-
-template<typename Td, typename Tc>
-void prop4d_to_Fermion(Propagator4dT<Td>& prop,std::vector<qlat::FermionField4dT<Tc > > &buf, int dir=1){
-
-  if(dir==1){buf.resize(0);buf.resize(12);for(int iv=0;iv<12;iv++){
-    if(!buf[iv].initialized){buf[iv].init(prop.geo());}
-  }}
-  if(dir==0){Qassert(buf.size() == 12);if(!prop.initialized){prop.init(buf[0].geo());}}
-
-  #pragma omp parallel for
-  for (Long index = 0; index < prop.geo().local_volume(); ++index)
-  {
-    qlat::WilsonMatrixT<Td>& src =  prop.get_elem_offset(index);
-    for(int d0=0;d0<12;d0++)
-    {
-      ////v0(s*3 + c0, ga.ind[d0]*3 + c1)
-      qlat::ComplexT<Tc>* res = (qlat::ComplexT<Tc>*)&(buf[d0].get_elem_offset(index));
-      for(int d1=0;d1<12;d1++)
-      {
-        if(dir==1){res[d1] = src(d1, d0);}
-        if(dir==0){src(d1, d0) = res[d1];}
-      }
-
-    }
-  }
-
-}
-
-template<typename Td, typename Tc>
-void Fermion_to_prop4d(Propagator4dT<Td>& prop, std::vector<qlat::FermionField4dT<Tc > > &buf){
-  Qassert(buf.size() == 12);
-  prop4d_to_Fermion(prop, buf, 0);
-}
 
 template <typename Td>
 void save_gwu_prop(const char *filename,Propagator4dT<Td>& prop){
@@ -2301,7 +2224,6 @@ void load_eigensystem_vecs(FILE* file, std::vector<qlat::FieldM<Ty, 12> > &noise
   }
 
 }
-
 
 inline void close_eigensystem_file(FILE* file, io_vec& io_use, inputpara& in){
 
