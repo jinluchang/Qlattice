@@ -389,6 +389,32 @@ EXPORT(meson_corr, {
   Py_RETURN_NONE;
 });
 
+EXPORT(prop_corr, {
+  using namespace qlat;
+  PyObject* p_v0 = NULL;
+  PyObject* p_v2 = NULL;
+  PyObject* p_v4 = NULL;
+  PyObject* p_v3 = NULL;
+
+  int tini    =  0;
+  int shift_end = 1;
+  if (!PyArg_ParseTuple(args, "OO|iOiO", &p_v0, &p_v2, &tini, &p_v4, &shift_end, &p_v3)) {
+    return NULL;
+  }
+
+  Propagator4d& p0 = py_convert_type<Propagator4d>(p_v0);
+  std::string filename;
+  std::string info = std::string("NONE");
+  py_convert(filename, p_v2);
+
+  Coordinate mom = Coordinate(0, 0, 0, 0);
+  if(p_v3 != NULL){py_convert(mom , p_v3);}
+  if(p_v4 != NULL){py_convert(info, p_v4);}
+
+  prop_corrE(p0, filename, mom, tini, info, shift_end);
+  Py_RETURN_NONE;
+});
+
 EXPORT(corr_dat_create, {
   using namespace qlat;
   PyObject* p_v0 = NULL;
