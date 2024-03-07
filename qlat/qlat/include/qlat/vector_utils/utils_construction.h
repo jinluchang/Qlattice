@@ -8,6 +8,7 @@
 #pragma once
 
 #include "utils_float_type.h"
+#include "utils_props_type.h"
 #include "utils_gammas.h"
 #include "utils_fft_desc.h"
 #include "utils_reduce_vec.h"
