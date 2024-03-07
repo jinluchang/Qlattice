@@ -512,6 +512,8 @@ struct API ShuffledFieldsReader {
     init(path_, new_size_node_);
   }
   //
+  ~ShuffledFieldsReader() { close(); }
+  //
   void init();
   void init(const std::string& path_,
             const Coordinate& new_size_node_ = Coordinate());
