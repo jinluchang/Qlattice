@@ -17,6 +17,7 @@ py_files = files(
   'utils.py',
   'json.py',
   'q_fit_corr.py',
+  'q_hlt_reconstruction.py',
   )
 
 pxd_files = files(

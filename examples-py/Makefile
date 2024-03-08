@@ -36,6 +36,7 @@ tests = \
 		qcd-utils.log \
 		free-invert.log \
 		q-fit-corr.log \
+		q-hlt-reconstruction.log \
 		mpi-utils.log \
 		mat-mpi-test.log
 
