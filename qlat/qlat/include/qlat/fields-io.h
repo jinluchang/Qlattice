@@ -521,6 +521,8 @@ struct API ShuffledFieldsReader {
   void close();
 };
 
+// --------------------------------------------
+
 std::string show(const ShuffledFieldsWriter& sfw);
 
 using ShuffledFieldsWriterMap = std::map<Long, Handle<ShuffledFieldsWriter>>;
@@ -538,6 +540,28 @@ void add_shuffled_fields_writer(ShuffledFieldsWriter& sfw);
 void remove_shuffled_fields_writer(ShuffledFieldsWriter& sfw);
 
 void close_all_shuffled_fields_writer();
+
+// --------------------------------------------
+
+std::string show(const ShuffledFieldsReader& sfr);
+
+using ShuffledFieldsReaderMap = std::map<Long, Handle<ShuffledFieldsReader>>;
+
+API inline ShuffledFieldsReaderMap& get_all_shuffled_fields_reader()
+{
+  static ShuffledFieldsReaderMap sfrm;
+  return sfrm;
+}
+
+std::vector<std::string> show_all_shuffled_fields_reader();
+
+void add_shuffled_fields_reader(ShuffledFieldsReader& sfr);
+
+void remove_shuffled_fields_reader(ShuffledFieldsReader& sfr);
+
+void close_all_shuffled_fields_reader();
+
+// --------------------------------------------
 
 typedef Cache<std::string, ShuffledFieldsReader> ShuffledFieldsReaderCache;
 

@@ -47,6 +47,8 @@ def mk_hlt_params():
     params["f_e_weight"] = None
     params["tt_size"] = None
     params["atw_factor"] = 1.0 # only has effects if "tt_size" is not None
+    params["mini_iter_max"] = 1
+    params["g_t_arr_init"] = None
     return params
 
 def get_f_e_weight(params):
@@ -130,7 +132,11 @@ def mk_g_t_arr_optimization_fcn_via_sum(params):
 def mk_g_t_arr_via_sum(params):
     fcn = mk_g_t_arr_optimization_fcn_via_sum(params)
     t_arr = params["t_arr"]
-    g_t_arr = q.q_fit_corr.minimize_scipy(fcn, param_arr=np.zeros_like(t_arr, dtype=np.float64))
+    g_t_arr = params["g_t_arr_init"]
+    if g_t_arr is None:
+        g_t_arr = np.zeros_like(t_arr, dtype=np.float64)
+    for i in range(params["mini_iter_max"]):
+        g_t_arr = q.q_fit_corr.minimize_scipy(fcn, param_arr=g_t_arr)
     return g_t_arr
 
 ############## with integration ##############
@@ -251,5 +257,9 @@ def mk_g_t_arr_optimization_fcn(params):
 def mk_g_t_arr(params):
     fcn = mk_g_t_arr_optimization_fcn(params)
     t_arr = params["t_arr"]
-    g_t_arr = q.q_fit_corr.minimize_scipy(fcn, param_arr=np.zeros_like(t_arr, dtype=np.float64))
+    g_t_arr = params["g_t_arr_init"]
+    if g_t_arr is None:
+        g_t_arr = np.zeros_like(t_arr, dtype=np.float64)
+    for i in range(params["mini_iter_max"]):
+        g_t_arr = q.q_fit_corr.minimize_scipy(fcn, param_arr=g_t_arr)
     return g_t_arr

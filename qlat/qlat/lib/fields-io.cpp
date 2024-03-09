@@ -847,11 +847,13 @@ void ShuffledFieldsReader::init(const std::string& path_,
     }
   }
   read_through_sync_node(*this);
+  add_shuffled_fields_reader(*this);
 }
 
 void ShuffledFieldsReader::close()
 // interface function
 {
+  remove_shuffled_fields_reader(*this);
   if (frs.size() > 0) {
     TIMER_VERBOSE("ShuffledFieldsReader::close")
     for (Long i = 0; i < (Long)frs.size(); ++i) {
@@ -910,6 +912,59 @@ std::vector<std::string> show_all_shuffled_fields_writer()
   for (auto it = sfwm.cbegin(); it != sfwm.cend(); ++it) {
     const ShuffledFieldsWriter& sfw = (it->second)();
     ret.push_back(show(sfw));
+  }
+  return ret;
+}
+
+// ------------------------
+
+std::string show(const ShuffledFieldsReader& sfr)
+{
+  return ssprintf("ShuffledFieldsReader(path='%s',new_size_node=%s)",
+                  sfr.path.c_str(), show(sfr.new_size_node).c_str());
+}
+
+void add_shuffled_fields_reader(ShuffledFieldsReader& sfr)
+{
+  ShuffledFieldsReaderMap& sfrm = get_all_shuffled_fields_reader();
+  const Long key = (Long)&sfr;
+  qassert(not has(sfrm, key));
+  sfrm[key] = Handle<ShuffledFieldsReader>(sfr);
+}
+
+void remove_shuffled_fields_reader(ShuffledFieldsReader& sfr)
+{
+  ShuffledFieldsReaderMap& sfrm = get_all_shuffled_fields_reader();
+  const Long key = (Long)&sfr;
+  if (has(sfrm, key)) {
+    sfrm.erase(key);
+  }
+}
+
+void close_all_shuffled_fields_reader()
+// Force close all the ShuffledFieldsReader.
+// Only call this when quitting the program (e.g. in qquit(msg)).
+{
+  TIMER_VERBOSE("close_all_shuffled_fields_reader");
+  ShuffledFieldsReaderMap& sfrm = get_all_shuffled_fields_reader();
+  std::vector<Handle<ShuffledFieldsReader>> sfrv;
+  for (auto it = sfrm.cbegin(); it != sfrm.cend(); ++it) {
+    sfrv.push_back(it->second);
+  }
+  for (Long i = 0; i < (Long)sfrv.size(); ++i) {
+    sfrv[i]().close();
+  }
+  qassert(sfrm.size() == 0);
+  sync_node();
+}
+
+std::vector<std::string> show_all_shuffled_fields_reader()
+{
+  std::vector<std::string> ret;
+  const ShuffledFieldsReaderMap& sfrm = get_all_shuffled_fields_reader();
+  for (auto it = sfrm.cbegin(); it != sfrm.cend(); ++it) {
+    const ShuffledFieldsReader& sfr = (it->second)();
+    ret.push_back(show(sfr));
   }
   return ret;
 }

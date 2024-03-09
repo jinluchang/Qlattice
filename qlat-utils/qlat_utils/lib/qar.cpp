@@ -2279,6 +2279,8 @@ std::vector<std::string> properly_truncate_qar_vol_file(
 
 // ----------------------------------------------------
 
+// ----------------------------------------------------
+
 void QarFile::init()
 {
   close();
@@ -2365,6 +2367,9 @@ void QarFile::init(const std::string& path_, const QFileMode mode_)
   } else {
     qassert(false);
   }
+  if (not null()) {
+    add_qar_file(*this);
+  }
 }
 
 void QarFile::close()
@@ -2381,6 +2386,7 @@ void QarFile::close()
     qar.clear();
   }
   qar_index_size_saved = 0;
+  remove_qar_file(*this);
 }
 
 int QarFile::flush() const
@@ -2421,6 +2427,59 @@ void QarFile::save_index(const Long max_diff)
     save_qar_index(qar, path + ".idx");
     qar_index_size_saved = is;
   }
+}
+
+// ----------------------------------------------------
+
+std::string show(const QarFile& qar)
+{
+  return ssprintf("QarFile(path='%s',mode=%s)", qar.path.c_str(),
+                  show(qar.mode).c_str());
+}
+
+std::vector<std::string> show_all_qar_file()
+{
+  std::vector<std::string> ret;
+  const QarFileMap& qar_map = get_all_qar_file_map();
+  for (auto it = qar_map.cbegin(); it != qar_map.cend(); ++it) {
+    const QarFile& qar = (it->second)();
+    ret.push_back(show(qar));
+  }
+  return ret;
+}
+
+void add_qar_file(QarFile& qar)
+{
+  QarFileMap& qar_map = get_all_qar_file_map();
+  const Long key = (Long)&qar;
+  qassert(not has(qar_map, key));
+  qar_map[key] = Handle<QarFile>(qar);
+}
+
+void remove_qar_file(QarFile& qar)
+{
+  QarFileMap& qar_map = get_all_qar_file_map();
+  const Long key = (Long)&qar;
+  if (has(qar_map, key)) {
+    qar_map.erase(key);
+  }
+}
+
+void close_all_qar_file()
+// Force close all the QarFile.
+// Only call this when quitting the program (e.g. in qquit(msg)).
+{
+  TIMER_VERBOSE("close_all_qar_file()");
+  QarFileMap& qar_map = get_all_qar_file_map();
+  std::vector<Handle<QarFile>> qar_vec;
+  for (auto it = qar_map.cbegin(); it != qar_map.cend(); ++it) {
+    qar_vec.push_back(it->second);
+  }
+  for (Long i = 0; i < (Long)qar_vec.size(); ++i) {
+    qar_vec[i]().close();
+  }
+  qassert(qar_map.size() == 0);
+  sync_node();
 }
 
 // ----------------------------------------------------

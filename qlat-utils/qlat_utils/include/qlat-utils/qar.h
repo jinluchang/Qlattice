@@ -576,6 +576,27 @@ struct API QarFile : std::vector<QarFileVol> {
   void save_index(const Long max_diff = 0);
 };
 
+std::string show(const QarFile& qar);
+
+using QarFileMap = std::map<Long, Handle<QarFile>>;
+
+API inline QarFileMap& get_all_qar_file_map()
+// Note: key be the location of the QarFile converted to Long
+{
+  static QarFileMap qar_map;
+  return qar_map;
+}
+
+std::vector<std::string> show_all_qar_file();
+
+void add_qar_file(QarFile& qar);
+
+void remove_qar_file(QarFile& qar);
+
+void close_all_qar_file();
+
+// -------------------
+
 API inline Cache<std::string, QarFile>& get_qar_read_cache()
 // key should be the path prefix of the contents of the qar file.
 // Note: key should end with '/'.

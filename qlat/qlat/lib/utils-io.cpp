@@ -79,6 +79,8 @@ void qquit(const std::string& msg)
 {
   clear_all_caches();
   close_all_shuffled_fields_writer();
+  close_all_shuffled_fields_reader();
+  close_all_qar_file();
   release_lock();
   Timer::display();
   displayln_info("qquit: " + msg);
