@@ -158,8 +158,7 @@ def get_data_sig(x, RngState rs):
     """
     if isinstance(x, np.ndarray):
         arr = x.ravel()
-        arr_rand = np.zeros(arr.shape, arr.dtype)
-        rs.u_rand_fill(arr_rand, 1.0, -1.0)
+        arr_rand = rs.u_rand_arr(arr.shape) * 2.0 - 1.0
         return np.sum(arr * arr_rand)
     elif isinstance(x, LatData):
         return get_data_sig(np.asarray(x), rs)
