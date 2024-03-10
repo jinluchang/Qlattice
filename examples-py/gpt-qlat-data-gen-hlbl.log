@@ -32,8 +32,4 @@ CHECK: ('cg_params-0-2', {'maxiter': 5, 'maxcycle': 3, 'pv_maxiter': 5})
 CHECK: ('cg_params-1-0', {'maxiter': 5, 'maxcycle': 1})
 CHECK: ('cg_params-1-1', {'maxiter': 5, 'maxcycle': 2})
 CHECK: ('cg_params-1-2', {'maxiter': 5, 'maxcycle': 3, 'pv_maxiter': 5})
-CHECK: auto_contract_meson_corr: ld sig: 2.19098E+04+9.53506E+04j
-CHECK: auto_contract_meson_corr_psnk: ld sig: 2.62796E+00+2.10762E+01j
-CHECK: auto_contract_meson_corr_psrc: ld sig: 2.52455E+00+2.03850E+01j
-CHECK: auto_contract_meson_corr_psnk_psrc: ld sig: -7.73939E-01+1.69557E-01j
 CHECK: finished successfully.

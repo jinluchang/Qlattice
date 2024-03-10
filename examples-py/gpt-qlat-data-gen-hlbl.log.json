@@ -1,74 +1,50 @@
 [
  [
-  "auto_contract_meson_corr_psnk: ld sig",
-  {
-   "real": 6.436598091048982,
-   "imag": 21.848871418968443,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_meson_jwjj2: ld_sum sig",
-  {
-   "real": -95.24975605649655,
-   "imag": 45.58285421877876,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_meson_jwjj: ld_sum sig",
-  {
-   "real": -18.819444588199122,
-   "imag": -9.392535666470815,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_meson_jj: ld_sum sig",
-  {
-   "real": -410.28560769158673,
-   "imag": 54.31046506646789,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_meson_jt: ld_sum sig",
-  {
-   "real": -166.50254093450857,
-   "imag": -175.44802798757073,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_meson_m: ld_sum sig",
-  {
-   "real": -3.6200535365636064,
-   "imag": 35.20020318070085,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
   "auto_contract_meson_corr: ld sig",
   {
-   "real": 38377.80693450349,
-   "imag": 99410.94109531314,
+   "real": 21909.795432146446,
+   "imag": 95350.63748617117,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_meson_corr_psnk: ld sig",
+  {
+   "real": 2.627959085938997,
+   "imag": 21.07615199108608,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_corr_psrc: ld sig",
   {
-   "real": 6.371135060978945,
-   "imag": 21.041590620808947,
+   "real": 2.5245502452064787,
+   "imag": 20.384982067967442,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_corr_psnk_psrc: ld sig",
   {
-   "real": -0.7874171129783163,
-   "imag": 0.12510167632553418,
+   "real": -0.7739390264306474,
+   "imag": 0.1695569490733358,
    "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "get_hvp_average_light:",
+  {
+   "real": 0.11795614767993377,
+   "imag": -6.6274543172559095e-18,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "get_hvp_average_strange:",
+  {
+   "real": 0.11759639157112989,
+   "imag": 5.759600784156716e-18,
+   "__extended_json_type__": "complex"
   }
  ]
 ]
