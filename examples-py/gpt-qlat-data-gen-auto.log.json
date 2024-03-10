@@ -2,72 +2,72 @@
  [
   "auto_contract_meson_corr_psnk: ld sig",
   {
-   "real": 6.436598091048982,
-   "imag": 21.848871418968443,
+   "real": -9.179256658677657,
+   "imag": -2.9972416402059547,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_jwjj2: ld_sum sig",
   {
-   "real": -95.24975605649655,
-   "imag": 45.58285421877876,
+   "real": 59.59845814235748,
+   "imag": 0.05564285838948372,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_jwjj: ld_sum sig",
   {
-   "real": -18.819444588199122,
-   "imag": -9.392535666470815,
+   "real": -1.4283448238580059,
+   "imag": 0.03963215552889006,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_jj: ld_sum sig",
   {
-   "real": -410.28560769158673,
-   "imag": 54.31046506646789,
+   "real": -200.98998137756934,
+   "imag": 2.342628198086521,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_jt: ld_sum sig",
   {
-   "real": -166.50254093450857,
-   "imag": -175.44802798757073,
+   "real": -273.2812111645002,
+   "imag": 0.2385027248820717,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_m: ld_sum sig",
   {
-   "real": -3.6200535365636064,
-   "imag": 35.20020318070085,
+   "real": -69.63253139115227,
+   "imag": 0.2521916436622784,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_corr: ld sig",
   {
-   "real": 38377.80693450349,
-   "imag": 99410.94109531314,
+   "real": -25647.51313035655,
+   "imag": -12145.811126382325,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_corr_psrc: ld sig",
   {
-   "real": 6.371135060978945,
-   "imag": 21.041590620808947,
+   "real": -9.647258449497794,
+   "imag": -3.035047985930372,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_corr_psnk_psrc: ld sig",
   {
-   "real": -0.7874171129783163,
-   "imag": 0.12510167632553418,
+   "real": -0.021265389750253785,
+   "imag": -0.00023113290712074158,
    "__extended_json_type__": "complex128"
   }
  ]

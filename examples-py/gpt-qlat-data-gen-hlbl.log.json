@@ -2,32 +2,32 @@
  [
   "auto_contract_meson_corr: ld sig",
   {
-   "real": 21909.795432146446,
-   "imag": 95350.63748617117,
+   "real": 3610.0701301531662,
+   "imag": -11893.779075561304,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_corr_psnk: ld sig",
   {
-   "real": 2.627959085938997,
-   "imag": 21.07615199108608,
+   "real": -1.9241195557851816,
+   "imag": -2.800089811239215,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_corr_psrc: ld sig",
   {
-   "real": 2.5245502452064787,
-   "imag": 20.384982067967442,
+   "real": -2.4410522791779075,
+   "imag": -2.7376252987783922,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_corr_psnk_psrc: ld sig",
   {
-   "real": -0.7739390264306474,
-   "imag": 0.1695569490733358,
+   "real": -0.03076775091722353,
+   "imag": 3.650631923700614e-05,
    "__extended_json_type__": "complex128"
   }
  ],
