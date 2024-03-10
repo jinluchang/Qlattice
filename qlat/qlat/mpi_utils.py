@@ -64,48 +64,6 @@ def end_with_mpi(is_preserving_cache=False):
     from mpi4py import MPI
     MPI.Finalize()
 
-@timer
-def glb_sum_np(x):
-    """
-    x does NOT change
-    """
-    shape = x.shape
-    dtype = x.dtype
-    l = list(x.flatten())
-    ld = LatData()
-    if dtype == np.dtype('float64'):
-        ld.from_list(l, is_complex=False)
-    elif dtype == np.dtype('int64'):
-        ld.from_list(list(map(float, l)), is_complex=False)
-    elif dtype == np.dtype('complex128'):
-        ld.from_list(l, is_complex=True)
-    else:
-        displayln(dtype)
-        assert False
-    ld.glb_sum_in_place()
-    return np.array(ld.to_list(), dtype=dtype).reshape(shape)
-
-@timer
-def glb_sum(x):
-    """
-    x does NOT change
-    """
-    if isinstance(x, float):
-        return c.glb_sum_double(x)
-    elif isinstance(x, complex):
-        return c.glb_sum_complex(x)
-    elif isinstance(x, (int, np.int64)):
-        return c.glb_sum_long(x)
-    elif isinstance(x, np.ndarray):
-        return glb_sum_np(x)
-    elif isinstance(x, list):
-        return [ glb_sum(x_i) for x_i in x ]
-    elif isinstance(x, tuple):
-        return tuple([ glb_sum(x_i) for x_i in x ])
-    else:
-        # possible types: q.LatData
-        return x.glb_sum()
-
 def glb_sum_list(ret):
     displayln_info("glb_sum_list: deprecated")
     # deprecated (use glb_sum instead)

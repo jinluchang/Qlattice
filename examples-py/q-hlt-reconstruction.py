@@ -43,7 +43,7 @@ params["lambda"] = 0.5
 
 g_t_arr_o = mk_g_t_arr(params)
 
-json_results.append((f"g_t_arr_o", q.get_double_sig(g_t_arr_o, q.RngState()), check_eps))
+json_results.append((f"g_t_arr_o", q.get_data_sig(g_t_arr_o, q.RngState()), check_eps))
 
 aa = aa_from_g(g_t_arr_o, params).item()
 aa0 = aa_from_g(np.zeros_like(g_t_arr_o), params).item()
@@ -57,12 +57,12 @@ e_arr = np.linspace(0.0, 10.0, 1000)
 
 delta_target = f_delta_target(e_arr)
 
-json_results.append((f"delta_target", q.get_double_sig(delta_target, q.RngState()), check_eps))
+json_results.append((f"delta_target", q.get_data_sig(delta_target, q.RngState()), check_eps))
 
 delta = delta_from_g(g_t_arr_o, t_arr, e_arr)
 delta = np.array(delta)
 
-json_results.append((f"delta", q.get_double_sig(delta, q.RngState()), check_eps))
+json_results.append((f"delta", q.get_data_sig(delta, q.RngState()), check_eps))
 
 params = mk_hlt_params()
 params["f_delta_target"] = f_delta_target
@@ -93,7 +93,7 @@ json_results.append((f"aa / aa0 ; g via sum", aa / aa0, check_eps))
 delta_via_sum = delta_from_g(g_t_arr_o_via_sum, t_arr, e_arr)
 delta_via_sum = np.array(delta_via_sum)
 
-json_results.append((f"delta via sum", q.get_double_sig(delta_via_sum, q.RngState()), check_eps))
+json_results.append((f"delta via sum", q.get_data_sig(delta_via_sum, q.RngState()), check_eps))
 
 q.check_log_json(__file__, json_results)
 

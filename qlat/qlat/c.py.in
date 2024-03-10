@@ -36,6 +36,8 @@ __all__ += [
         'glb_sum_double',
         'glb_sum_complex',
         'glb_sum_lat_data',
+        'glb_sum_np',
+        'glb_sum',
         ]
 
 __all__ += [

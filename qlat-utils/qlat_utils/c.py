@@ -15,7 +15,7 @@ __all__ += [
 
 __all__ += [
         'RngState',
-        'get_double_sig',
+        'get_data_sig',
         'random_permute',
         ]
 

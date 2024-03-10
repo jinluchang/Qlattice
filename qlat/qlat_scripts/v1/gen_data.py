@@ -556,19 +556,22 @@ def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel,
 # -----------------------------------------------------------------------------
 
 @q.timer_verbose
-def compute_hvp_average(job_tag, traj, *,
-        inv_type, psel, data_path, geo):
+def compute_hvp_average(job_tag, traj, *, inv_type, psel_prob, data_path, geo):
     fname = q.get_fname()
+    psel = psel_prob.psel
+    psel_prob_arr = psel_prob[:].ravel()
     hvp_average = q.FieldComplexD(geo, 16)
     hvp_average.set_zero()
-    sfr = q.open_fields(data_path, "r")
-    tags = sfr.list()
     rel_acc_list = [ 0, 1, 2, ]
     prob_list = [ get_param(job_tag, f"prob_acc_{inv_acc}_psrc") for inv_acc in rel_acc_list ]
-    for xg in psel:
+    sfr = q.open_fields(data_path, "r")
+    tags = sfr.list()
+    for p_idx in range(len(psel)):
+        xg_src = q.Coordinate(psel[p_idx])
+        prob_src = psel_prob_arr[p_idx]
         val_list = []
         for inv_acc in rel_acc_list:
-            tag = mk_psrc_tag(xg, inv_type, inv_acc)
+            tag = mk_psrc_tag(xg_src, inv_type, inv_acc)
             if tag not in tags:
                 val_list.append(None)
             else:
@@ -576,16 +579,16 @@ def compute_hvp_average(job_tag, traj, *,
                 chvp_16.load_double_from_float(sfr, tag)
                 val_list.append(chvp_16)
         assert val_list[0] is not None
-        ama_val = mk_ama_val(val_list[0], xg.to_tuple(), val_list, rel_acc_list, prob_list)
-        hvp = ama_extract(ama_val).shift(-xg)
+        ama_val = q.mk_ama_val(val_list[0], xg_src.to_tuple(), val_list, rel_acc_list, prob_list)
+        hvp = q.ama_extract(ama_val).shift(-xg_src)
+        hvp *= 1 / prob_src
         hvp_average += hvp
-    hvp_average *= 1 / len(psel)
     sfr.close()
-    hvp_average.save_float_from_double(get_save_path(fn))
-    q.release_lock()
+    hvp_average *= 1 / geo.total_volume()
+    return hvp_average
 
 @q.timer
-def run_hvp_average(job_tag, traj, *, inv_type, get_psel):
+def run_hvp_average(job_tag, traj, *, inv_type, get_psel_prob):
     """
     return get_hvp_average()
     save hvp_average.field in single precision.
@@ -614,11 +617,13 @@ def run_hvp_average(job_tag, traj, *, inv_type, get_psel):
         return
     q.check_stop()
     q.check_time_limit()
-    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{inv_type}-run_hvp_average"):
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{inv_type_name}-run_hvp_average"):
         return
-    psel = get_psel()
-    compute_hvp_average(job_tag, traj, inv_type=inv_type, psel=psel, geo=geo, data_path=data_path)
-    q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type} num_fields={len(psel)}")
+    psel_prob = get_psel_prob()
+    hvp_average = compute_hvp_average(job_tag, traj, inv_type=inv_type, psel_prob=psel_prob, geo=geo, data_path=data_path)
+    hvp_average.save_float_from_double(get_save_path(fn))
+    q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type} num_fields={len(psel_prob.psel)}")
+    q.release_lock()
     return q.lazy_call(load)
 
 # -----------------------------------------------------------------------------

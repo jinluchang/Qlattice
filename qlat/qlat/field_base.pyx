@@ -4,7 +4,7 @@ from qlat_utils.all cimport *
 from . cimport everything as cc
 from .geometry cimport Geometry
 from .fields_io cimport ShuffledFieldsReader, ShuffledFieldsWriter
-from .field_types cimport FieldRealF
+from .field_types cimport FieldRealD, FieldRealF, FieldComplexD
 from .field_selection cimport PointsSelection, FieldSelection
 from .selected_field_types cimport SelectedFieldRealF
 
@@ -15,6 +15,7 @@ import cqlat as c
 import qlat_utils as q
 import numpy as np
 
+from .mpi import glb_sum
 from .field_type_dict import (
         field_type_dict,
         selected_field_type_dict,
@@ -69,6 +70,28 @@ cdef class FieldBase:
         assert mult * self.sizeof_m() == size_per_site
         self.__init__(other.geo(), mult)
         self[:].ravel().view(dtype=np.int8)[:] = other[:].ravel().view(dtype=np.int8)
+
+    @q.timer
+    def get_data_sig(self, RngState rng):
+        """
+        get a signature of the real_d or complex_d field
+        """
+        cdef FieldComplexD fc
+        cdef FieldRealD fr
+        cdef FieldRealD fu
+        if self.ctype in field_ctypes_complex:
+            fc = FieldComplexD()
+            fc.cast_from(self)
+            fu = FieldRealD(fc.geo())
+            fu.set_rand(rng, 1.0, -1.0)
+        elif self.ctype in field_ctypes_double:
+            fr = FieldComplexD()
+            fr.cast_from(self)
+            fu = FieldRealD(fr.geo())
+            fu.set_rand(rng, 1.0, -1.0)
+        else:
+            raise Exception("get_data_sig: {self.ctype}")
+        return glb_sum((fc[:] * fu[:]).sum())
 
     def mview(self):
         return c.get_mview_field(self)

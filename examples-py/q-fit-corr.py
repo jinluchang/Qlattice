@@ -35,15 +35,15 @@ param_arr_setup, jk_corr_data, corr_data_sigma = q.q_fit_corr.mk_data_set(
 
 q.displayln_info(f"CHECK: {param_arr_setup[:n_energies]}")
 
-sig1 = q.get_double_sig(param_arr_setup, q.RngState())
+sig1 = q.get_data_sig(param_arr_setup, q.RngState())
 
 q.displayln_info(f"CHECK: param_arr_setup sig1={sig1:.10F}")
 
-sig2 = q.get_double_sig(jk_corr_data, q.RngState())
+sig2 = q.get_data_sig(jk_corr_data, q.RngState())
 
 q.displayln_info(f"CHECK: jk_corr_data sig2={sig2:.10F}")
 
-sig3 = q.get_double_sig(corr_data_sigma, q.RngState())
+sig3 = q.get_data_sig(corr_data_sigma, q.RngState())
 
 q.displayln_info(f"CHECK: corr_data_sigma sig3={sig3:.10F}")
 
@@ -59,19 +59,19 @@ res = q.q_fit_corr.fit_energy_amplitude(
     n_step_mini_jk=5,
 )
 
-sig4 = q.get_double_sig(res['jk_chisq'], q.RngState())
+sig4 = q.get_data_sig(res['jk_chisq'], q.RngState())
 
 q.displayln_info(f"CHECK: jk_chisq sig4={sig4:.4F}")
 
-sig5 = q.get_double_sig(res['jk_param_arr'], q.RngState())
+sig5 = q.get_data_sig(res['jk_param_arr'], q.RngState())
 
 q.displayln_info(f"CHECK: jk_param_arr sig5={sig5:.4F}")
 
-sig6 = q.get_double_sig(res['jk_chisq_grad'], q.RngState())
+sig6 = q.get_data_sig(res['jk_chisq_grad'], q.RngState())
 
 q.displayln_info(f"CHECK: jk_chisq_grad sig6={sig6:.4F}")
 
-sig7 = q.get_double_sig(res['jk_param_arr_for_scaled_corr'], q.RngState())
+sig7 = q.get_data_sig(res['jk_param_arr_for_scaled_corr'], q.RngState())
 
 q.displayln_info(f"CHECK: jk_param_arr_for_scaled_corr sig7={sig7:.4F}")
 
@@ -90,19 +90,19 @@ res = q.q_fit_corr.fit_energy_amplitude(
     mp_pool=mp_pool,
 )
 
-sig4 = q.get_double_sig(res['jk_chisq'], q.RngState())
+sig4 = q.get_data_sig(res['jk_chisq'], q.RngState())
 
 q.displayln_info(f"CHECK: jk_chisq sig4={sig4:.4F}")
 
-sig5 = q.get_double_sig(res['jk_param_arr'], q.RngState())
+sig5 = q.get_data_sig(res['jk_param_arr'], q.RngState())
 
 q.displayln_info(f"CHECK: jk_param_arr sig5={sig5:.4F}")
 
-sig6 = q.get_double_sig(res['jk_chisq_grad'], q.RngState())
+sig6 = q.get_data_sig(res['jk_chisq_grad'], q.RngState())
 
 q.displayln_info(f"CHECK: jk_chisq_grad sig6={sig6:.4F}")
 
-sig7 = q.get_double_sig(res['jk_param_arr_for_scaled_corr'], q.RngState())
+sig7 = q.get_data_sig(res['jk_param_arr_for_scaled_corr'], q.RngState())
 
 q.displayln_info(f"CHECK: jk_param_arr_for_scaled_corr sig7={sig7:.4F}")
 
@@ -118,11 +118,11 @@ res = q.q_fit_corr.fit_energy_amplitude(
     mp_pool=mp_pool,
 )
 
-sig8 = q.get_double_sig(res['jk_chisq'], q.RngState())
+sig8 = q.get_data_sig(res['jk_chisq'], q.RngState())
 
 q.displayln_info(f"CHECK: jk_chisq sig8={sig8:.2F}")
 
-sig9 = q.get_double_sig(res['jk_param_arr'], q.RngState())
+sig9 = q.get_data_sig(res['jk_param_arr'], q.RngState())
 
 q.displayln_info(f"CHECK: jk_param_arr sig9={sig9:.4F}")
 

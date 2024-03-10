@@ -39,8 +39,8 @@ for total_site in total_site_list:
         step = 3
         prop1 = q.prop_smear(prop, gf1, coef, step)
         prop0 = q.prop_smear(prop, gf1, coef, step, mode_smear=0)
-        q.displayln_info(q.get_double_sig(prop0[:], rs.copy()))
-        q.displayln_info(q.get_double_sig(prop1[:], rs.copy()))
+        q.displayln_info(q.get_data_sig(prop0[:], rs.copy()))
+        q.displayln_info(q.get_data_sig(prop1[:], rs.copy()))
         assert q.qnorm(prop0[:] - prop1[:]) < 1e-15
 
 fft1 = q.mk_fft(is_forward=True, mode_fft=1)
@@ -53,8 +53,8 @@ for total_site in total_site_list:
     f.set_rand(q.RngState())
     f0 = fft0 * f
     f1 = fft1 * f
-    q.displayln_info(q.get_double_sig(f0[:], rs.copy()))
-    q.displayln_info(q.get_double_sig(f1[:], rs.copy()))
+    q.displayln_info(q.get_data_sig(f0[:], rs.copy()))
+    q.displayln_info(q.get_data_sig(f1[:], rs.copy()))
     assert q.qnorm(f1[:] - f0[:]) < 1e-15
 
 q.timer_display()

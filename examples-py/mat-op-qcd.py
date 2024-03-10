@@ -73,54 +73,54 @@ q.displayln_info(f"CHECK: mat_tr_wm_cm: {v1:.10f}")
 v1 = mat_tr_cm_wm(cm1, wm1)
 q.displayln_info(f"CHECK: mat_tr_cm_wm: {v1:.10f}")
 
-v1 = q.get_double_sig(mat_mul_wm_wm(wm1, wm1), q.RngState("seed-sig-mul"))
-v2 = q.get_double_sig(mat_mul_wm_wm(wm2, wm2), q.RngState("seed-sig-mul"))
-v3 = q.get_double_sig(mat_mul_wm_wm(wm1, wm2), q.RngState("seed-sig-mul"))
-v4 = q.get_double_sig(mat_mul_wm_wm(wm2, wm1), q.RngState("seed-sig-mul"))
+v1 = q.get_data_sig(mat_mul_wm_wm(wm1, wm1), q.RngState("seed-sig-mul"))
+v2 = q.get_data_sig(mat_mul_wm_wm(wm2, wm2), q.RngState("seed-sig-mul"))
+v3 = q.get_data_sig(mat_mul_wm_wm(wm1, wm2), q.RngState("seed-sig-mul"))
+v4 = q.get_data_sig(mat_mul_wm_wm(wm2, wm1), q.RngState("seed-sig-mul"))
 q.displayln_info(f"CHECK: mat_mul_wm_wm: {v1:.10f} {v2:.10f} {v3:.10f} {v4:.10f}")
 assert abs(mat_tr_wm(mat_mul_wm_wm(wm1, wm1)) - mat_tr_wm_wm(wm1, wm1)) <= 1e-10
 assert abs(mat_tr_wm(mat_mul_wm_wm(wm2, wm2)) - mat_tr_wm_wm(wm2, wm2)) <= 1e-10
 assert abs(mat_tr_wm(mat_mul_wm_wm(wm1, wm2)) - mat_tr_wm_wm(wm1, wm2)) <= 1e-10
 assert abs(mat_tr_wm(mat_mul_wm_wm(wm2, wm1)) - mat_tr_wm_wm(wm2, wm1)) <= 1e-10
 
-v1 = q.get_double_sig(mat_mul_sm_sm(sm1, sm1), q.RngState("seed-sig-mul"))
-v2 = q.get_double_sig(mat_mul_sm_sm(sm2, sm2), q.RngState("seed-sig-mul"))
-v3 = q.get_double_sig(mat_mul_sm_sm(sm1, sm2), q.RngState("seed-sig-mul"))
-v4 = q.get_double_sig(mat_mul_sm_sm(sm2, sm1), q.RngState("seed-sig-mul"))
+v1 = q.get_data_sig(mat_mul_sm_sm(sm1, sm1), q.RngState("seed-sig-mul"))
+v2 = q.get_data_sig(mat_mul_sm_sm(sm2, sm2), q.RngState("seed-sig-mul"))
+v3 = q.get_data_sig(mat_mul_sm_sm(sm1, sm2), q.RngState("seed-sig-mul"))
+v4 = q.get_data_sig(mat_mul_sm_sm(sm2, sm1), q.RngState("seed-sig-mul"))
 q.displayln_info(f"CHECK: mat_mul_sm_sm: {v1:.10f} {v2:.10f} {v3:.10f} {v4:.10f}")
 assert abs(mat_tr_sm(mat_mul_sm_sm(sm1, sm1)) - mat_tr_sm_sm(sm1, sm1)) <= 1e-10
 assert abs(mat_tr_sm(mat_mul_sm_sm(sm2, sm2)) - mat_tr_sm_sm(sm2, sm2)) <= 1e-10
 assert abs(mat_tr_sm(mat_mul_sm_sm(sm1, sm2)) - mat_tr_sm_sm(sm1, sm2)) <= 1e-10
 assert abs(mat_tr_sm(mat_mul_sm_sm(sm2, sm1)) - mat_tr_sm_sm(sm2, sm1)) <= 1e-10
 
-v1 = q.get_double_sig(mat_mul_cm_cm(cm1, cm1), q.RngState("seed-sig-mul"))
-v2 = q.get_double_sig(mat_mul_cm_cm(cm2, cm2), q.RngState("seed-sig-mul"))
-v3 = q.get_double_sig(mat_mul_cm_cm(cm1, cm2), q.RngState("seed-sig-mul"))
-v4 = q.get_double_sig(mat_mul_cm_cm(cm2, cm1), q.RngState("seed-sig-mul"))
+v1 = q.get_data_sig(mat_mul_cm_cm(cm1, cm1), q.RngState("seed-sig-mul"))
+v2 = q.get_data_sig(mat_mul_cm_cm(cm2, cm2), q.RngState("seed-sig-mul"))
+v3 = q.get_data_sig(mat_mul_cm_cm(cm1, cm2), q.RngState("seed-sig-mul"))
+v4 = q.get_data_sig(mat_mul_cm_cm(cm2, cm1), q.RngState("seed-sig-mul"))
 q.displayln_info(f"CHECK: mat_mul_cm_cm: {v1:.10f} {v2:.10f} {v3:.10f} {v4:.10f}")
 assert abs(mat_tr_cm(mat_mul_cm_cm(cm1, cm1)) - mat_tr_cm_cm(cm1, cm1)) <= 1e-10
 assert abs(mat_tr_cm(mat_mul_cm_cm(cm2, cm2)) - mat_tr_cm_cm(cm2, cm2)) <= 1e-10
 assert abs(mat_tr_cm(mat_mul_cm_cm(cm1, cm2)) - mat_tr_cm_cm(cm1, cm2)) <= 1e-10
 assert abs(mat_tr_cm(mat_mul_cm_cm(cm2, cm1)) - mat_tr_cm_cm(cm2, cm1)) <= 1e-10
 
-v1 = q.get_double_sig(mat_mul_wm_sm(wm1, sm1), q.RngState("seed-sig-mul"))
+v1 = q.get_data_sig(mat_mul_wm_sm(wm1, sm1), q.RngState("seed-sig-mul"))
 q.displayln_info(f"CHECK: mat_mul_wm_sm: {v1:.10f}")
 assert abs(mat_tr_wm(mat_mul_wm_sm(wm1, sm1)) - mat_tr_wm_sm(wm1, sm1)) <= 1e-10
 
-v1 = q.get_double_sig(mat_mul_sm_wm(sm1, wm1), q.RngState("seed-sig-mul"))
+v1 = q.get_data_sig(mat_mul_sm_wm(sm1, wm1), q.RngState("seed-sig-mul"))
 q.displayln_info(f"CHECK: mat_mul_sm_wm: {v1:.10f}")
 assert abs(mat_tr_wm(mat_mul_sm_wm(sm1, wm1)) - mat_tr_sm_wm(sm1, wm1)) <= 1e-10
 
-v1 = q.get_double_sig(mat_mul_wm_cm(wm1, cm1), q.RngState("seed-sig-mul"))
+v1 = q.get_data_sig(mat_mul_wm_cm(wm1, cm1), q.RngState("seed-sig-mul"))
 q.displayln_info(f"CHECK: mat_mul_wm_cm: {v1:.10f}")
 assert abs(mat_tr_wm(mat_mul_wm_cm(wm1, cm1)) - mat_tr_wm_cm(wm1, cm1)) <= 1e-10
 
-v1 = q.get_double_sig(mat_mul_cm_wm(cm1, wm1), q.RngState("seed-sig-mul"))
+v1 = q.get_data_sig(mat_mul_cm_wm(cm1, wm1), q.RngState("seed-sig-mul"))
 q.displayln_info(f"CHECK: mat_mul_cm_wm: {v1:.10f}")
 assert abs(mat_tr_wm(mat_mul_cm_wm(cm1, wm1)) - mat_tr_cm_wm(cm1, wm1)) <= 1e-10
 
-v1 = q.get_double_sig(wilson_matrix_g5_herm(wm1), q.RngState("seed-sig-mul"))
-v2 = q.get_double_sig(wilson_matrix_g5_herm(wm2), q.RngState("seed-sig-mul"))
+v1 = q.get_data_sig(wilson_matrix_g5_herm(wm1), q.RngState("seed-sig-mul"))
+v2 = q.get_data_sig(wilson_matrix_g5_herm(wm2), q.RngState("seed-sig-mul"))
 q.displayln_info(f"CHECK: wilson_matrix_g5_herm: {v1:.10f} {v2:.10f}")
 
 q.check_all_files_crc32_info("results")

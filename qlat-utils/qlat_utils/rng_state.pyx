@@ -150,7 +150,7 @@ cdef class RngState:
 ### -------------------------------------------------------------------
 
 @timer
-def get_double_sig(x, RngState rs):
+def get_data_sig(x, RngState rs):
     """
     Return a signature (a floating point number, real or complex) of data viewed as a 1-D array of numbers.\n
     Result only depends on the value of the data, not the structure.
@@ -162,11 +162,13 @@ def get_double_sig(x, RngState rs):
         rs.u_rand_fill(arr_rand, 1.0, -1.0)
         return np.sum(arr * arr_rand)
     elif isinstance(x, LatData):
-        return get_double_sig(np.asarray(x), rs)
+        return get_data_sig(np.asarray(x), rs)
     elif isinstance(x, (SpinMatrix, ColorMatrix, WilsonMatrix,)):
-        return get_double_sig(np.asarray(x), rs)
+        return get_data_sig(np.asarray(x), rs)
+    elif hasattr(x, "get_data_sig"):
+        return x.get_data_sig(rs)
     else:
-        return x.get_double_sig(rs)
+        return None
 
 @timer
 def random_permute(list l, RngState rs):

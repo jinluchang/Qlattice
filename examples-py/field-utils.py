@@ -52,23 +52,23 @@ xg2 = rs.split("xg2").c_rand_gen(total_site)
 
 val1 = gf.get_elems_xg(xg1)[:]
 q.displayln_info(f"gf xg={xg1} val1={val1}")
-sig1 = q.get_double_sig(val1, rs.split("sig1"))
+sig1 = q.get_data_sig(val1, rs.split("sig1"))
 q.displayln_info(f"CHECK: gf xg={xg1} sig={sig1:.14E}")
 
 val12 = gf.get_elems_xg([ xg1, xg2, ])[:]
 q.displayln_info(f"gf xg={xg1, xg2} val12={val12}")
-sig12 = q.get_double_sig(val12, rs.split("sig12"))
+sig12 = q.get_data_sig(val12, rs.split("sig12"))
 q.displayln_info(f"CHECK: gf xg={xg1, xg2} sig={sig12:.14E}")
 
 m = 1
 val2 = gf.get_elem_xg(xg1, m)[:]
 q.displayln_info(f"gf xg={xg1} val2={val2}")
-sig2 = q.get_double_sig(val2, rs.split("sig2"))
+sig2 = q.get_data_sig(val2, rs.split("sig2"))
 q.displayln_info(f"CHECK: gf xg={xg1} m={m} sig={sig2:.14E}")
 
 val22 = gf.get_elem_xg([ xg1, xg2, ], m)[:]
 q.displayln_info(f"gf xg={xg1, xg2} val22={val22}")
-sig22 = q.get_double_sig(val22, rs.split("sig22"))
+sig22 = q.get_data_sig(val22, rs.split("sig22"))
 q.displayln_info(f"CHECK: gf xg={xg1, xg2} m={m} sig={sig22:.14E}")
 
 gf_sum_initial = gf.glb_sum()
@@ -156,23 +156,23 @@ gf2.show_info()
 f = q.FieldRealD(geo, 2)
 f.set_rand(q.RngState("seed-f-init"))
 
-sig = q.glb_sum(q.get_double_sig(f[:], q.RngState(f"seed-f-sig-{q.get_id_node()}")))
+sig = q.glb_sum(q.get_data_sig(f[:], q.RngState(f"seed-f-sig-{q.get_id_node()}")))
 q.displayln_info(f"CHECK: f sig = {sig:.8F}")
 
 f1 = f.shift()
-sig = q.glb_sum(q.get_double_sig(f1[:], q.RngState(f"seed-f1-sig-{q.get_id_node()}")))
+sig = q.glb_sum(q.get_data_sig(f1[:], q.RngState(f"seed-f1-sig-{q.get_id_node()}")))
 q.displayln_info(f"CHECK: f1 sig = {sig:.8F}")
 
 f2 = f.shift(q.Coordinate([ 1, 2, 3, 4, ]))
-sig = q.glb_sum(q.get_double_sig(f2[:], q.RngState(f"seed-f2-sig-{q.get_id_node()}")))
+sig = q.glb_sum(q.get_data_sig(f2[:], q.RngState(f"seed-f2-sig-{q.get_id_node()}")))
 q.displayln_info(f"CHECK: f2 sig = {sig:.8F}")
 
 f3 = f.shift(q.Coordinate([ 0, -2, 8, -9, ]), True)
-sig = q.glb_sum(q.get_double_sig(f3[:], q.RngState(f"seed-f3-sig-{q.get_id_node()}")))
+sig = q.glb_sum(q.get_data_sig(f3[:], q.RngState(f"seed-f3-sig-{q.get_id_node()}")))
 q.displayln_info(f"CHECK: f3 sig = {sig:.8F}")
 
 f4 = f.shift(is_reflect=True)
-sig = q.glb_sum(q.get_double_sig(f4[:], q.RngState(f"seed-f4-sig-{q.get_id_node()}")))
+sig = q.glb_sum(q.get_data_sig(f4[:], q.RngState(f"seed-f4-sig-{q.get_id_node()}")))
 q.displayln_info(f"CHECK: f4 sig = {sig:.8F}")
 
 fsel = q.FieldSelection(geo)
@@ -183,39 +183,39 @@ q.displayln_info(f"CHECK: q.glb_sum(fsel.n_elems()) = {q.glb_sum(fsel.n_elems())
 sf = q.SelectedFieldRealD(fsel, 2)
 sf @= f
 
-sig = q.glb_sum(q.get_double_sig(sf[:], q.RngState(f"seed-sf-sig-{q.get_id_node()}")))
+sig = q.glb_sum(q.get_data_sig(sf[:], q.RngState(f"seed-sf-sig-{q.get_id_node()}")))
 q.displayln_info(f"CHECK: sf sig = {sig:.8F}")
 
 sf1 = sf.shift()
-sig = q.glb_sum(q.get_double_sig(sf1[:], q.RngState(f"seed-sf1-sig-{q.get_id_node()}")))
+sig = q.glb_sum(q.get_data_sig(sf1[:], q.RngState(f"seed-sf1-sig-{q.get_id_node()}")))
 q.displayln_info(f"CHECK: sf1 sig = {sig:.8F}")
 
 sf1 @= f1
-sig = q.glb_sum(q.get_double_sig(sf1[:], q.RngState(f"seed-sf1-sig-{q.get_id_node()}")))
+sig = q.glb_sum(q.get_data_sig(sf1[:], q.RngState(f"seed-sf1-sig-{q.get_id_node()}")))
 q.displayln_info(f"CHECK: sf1 sig = {sig:.8F}")
 
 sf2 = sf.shift(q.Coordinate([ 1, 2, 3, 4, ]))
-sig = q.glb_sum(q.get_double_sig(sf2[:], q.RngState(f"seed-sf2-sig-{q.get_id_node()}")))
+sig = q.glb_sum(q.get_data_sig(sf2[:], q.RngState(f"seed-sf2-sig-{q.get_id_node()}")))
 q.displayln_info(f"CHECK: sf2 sig = {sig:.8F}")
 
 sf2 @= f2
-sig = q.glb_sum(q.get_double_sig(sf2[:], q.RngState(f"seed-sf2-sig-{q.get_id_node()}")))
+sig = q.glb_sum(q.get_data_sig(sf2[:], q.RngState(f"seed-sf2-sig-{q.get_id_node()}")))
 q.displayln_info(f"CHECK: sf2 sig = {sig:.8F}")
 
 sf3 = sf.shift(q.Coordinate([ 0, -2, 8, -9, ]), True)
-sig = q.glb_sum(q.get_double_sig(sf3[:], q.RngState(f"seed-sf3-sig-{q.get_id_node()}")))
+sig = q.glb_sum(q.get_data_sig(sf3[:], q.RngState(f"seed-sf3-sig-{q.get_id_node()}")))
 q.displayln_info(f"CHECK: sf3 sig = {sig:.8F}")
 
 sf3 @= f3
-sig = q.glb_sum(q.get_double_sig(sf3[:], q.RngState(f"seed-sf3-sig-{q.get_id_node()}")))
+sig = q.glb_sum(q.get_data_sig(sf3[:], q.RngState(f"seed-sf3-sig-{q.get_id_node()}")))
 q.displayln_info(f"CHECK: sf3 sig = {sig:.8F}")
 
 sf4 = sf.shift(is_reflect=True)
-sig = q.glb_sum(q.get_double_sig(sf4[:], q.RngState(f"seed-sf4-sig-{q.get_id_node()}")))
+sig = q.glb_sum(q.get_data_sig(sf4[:], q.RngState(f"seed-sf4-sig-{q.get_id_node()}")))
 q.displayln_info(f"CHECK: sf4 sig = {sig:.8F}")
 
 sf4 @= f4
-sig = q.glb_sum(q.get_double_sig(sf4[:], q.RngState(f"seed-sf4-sig-{q.get_id_node()}")))
+sig = q.glb_sum(q.get_data_sig(sf4[:], q.RngState(f"seed-sf4-sig-{q.get_id_node()}")))
 q.displayln_info(f"CHECK: sf4 sig = {sig:.8F}")
 
 q.timer_display()

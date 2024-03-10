@@ -50,14 +50,14 @@ psel.set_rand(total_site, 32, rs.split("psel"))
 q.displayln_info(f"CHECK: psel.n_points() = {psel.n_points()}")
 
 xg_arr_double = np.array(psel.xg_arr(), dtype=float)
-sig = q.get_double_sig(xg_arr_double, rs.split("sig"))
+sig = q.get_data_sig(xg_arr_double, rs.split("sig"))
 q.displayln_info(f"CHECK: psel.xg_arr sig = {sig:.10E}")
 
 psel1 = psel.intersect(fsel)
 q.displayln_info(f"CHECK: psel1.n_points() = {psel1.n_points()}")
 
 xg_arr_double = np.array(psel1.xg_arr(), dtype=float)
-sig = q.get_double_sig(xg_arr_double, rs.split("sig"))
+sig = q.get_data_sig(xg_arr_double, rs.split("sig"))
 q.displayln_info(f"CHECK: psel1.xg_arr sig = {sig:.10E}")
 
 fsel2 = q.FieldSelection()

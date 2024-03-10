@@ -120,7 +120,7 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld sig", q.get_double_sig(ld, q.RngState()),))
+    json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -182,7 +182,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, ge
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld sig", q.get_double_sig(ld, q.RngState()),))
+    json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
 
 @q.timer_verbose
 def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -247,7 +247,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, ge
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld sig", q.get_double_sig(ld, q.RngState()),))
+    json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -326,7 +326,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld sig", q.get_double_sig(ld, q.RngState()),))
+    json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
 
 # ----
 
@@ -469,8 +469,8 @@ def run_job(job_tag, traj):
     run_with_eig_strange()
     run_charm()
     #
-    get_hvp_average_light = run_hvp_average(job_tag, traj, inv_type=0, get_psel=get_psel)
-    get_hvp_average_strange = run_hvp_average(job_tag, traj, inv_type=1, get_psel=get_psel)
+    get_hvp_average_light = run_hvp_average(job_tag, traj, inv_type=0, get_psel_prob=get_psel_prob)
+    get_hvp_average_strange = run_hvp_average(job_tag, traj, inv_type=1, get_psel_prob=get_psel_prob)
     #
     get_get_prop = run_get_prop(job_tag, traj,
             get_gf=get_gf,
@@ -545,7 +545,9 @@ def run_job(job_tag, traj):
             auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
             auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
             auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-            json_results.append((f"get_hvp_average_light:", get_hvp_average_light(),))
+            #
+            json_results.append((f"get_hvp_average_light:", q.get_data_sig(get_hvp_average_light(), q.RngState()),))
+            json_results.append((f"get_hvp_average_strange:", q.get_data_sig(get_hvp_average_strange(), q.RngState()),))
             #
             q.qtouch_info(get_save_path(fn_checkpoint_auto_contract))
             q.displayln_info("timer_display for runjob")
