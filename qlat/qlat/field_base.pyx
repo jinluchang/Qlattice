@@ -58,6 +58,18 @@ cdef class FieldBase:
     def __deepcopy__(self, memo):
         return self.copy()
 
+    @q.timer
+    def cast_from(self, FieldBase other):
+        """
+        other can be Field but of different type
+        field geo does not change if already initialized.
+        """
+        cdef cc.Long size_per_site = other.multiplicity() * other.sizeof_m()
+        cdef cc.Long mult = size_per_site // self.sizeof_m()
+        assert mult * self.sizeof_m() == size_per_site
+        self.__init__(other.geo(), mult)
+        self[:].ravel().view(dtype=np.int8)[:] = other[:].ravel().view(dtype=np.int8)
+
     def mview(self):
         return c.get_mview_field(self)
 

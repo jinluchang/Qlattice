@@ -125,7 +125,7 @@ cdef class Field{{name}}(FieldBase):
         return self.xx.get_geo().multiplicity
 
     def sizeof_m(self):
-        return self.ctype.size()
+        return ElemType{{name}}.size()
 
     def geo(self):
         cdef Geometry geo = Geometry()

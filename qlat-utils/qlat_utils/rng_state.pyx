@@ -166,7 +166,7 @@ def get_double_sig(x, RngState rs):
     elif isinstance(x, (SpinMatrix, ColorMatrix, WilsonMatrix,)):
         return get_double_sig(np.asarray(x), rs)
     else:
-        return None
+        return x.get_double_sig(rs)
 
 @timer
 def random_permute(list l, RngState rs):

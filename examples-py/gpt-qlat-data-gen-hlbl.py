@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+json_results = []
+
 from auto_contractor.operators import *
 
 import functools
@@ -118,7 +120,7 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    q.displayln_info(f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.5E}")
+    json_results.append((f"{fname}: ld sig", q.get_double_sig(ld, q.RngState()),))
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -180,11 +182,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, ge
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    sig_msg_list = [
-            f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.5E}",
-            ]
-    for msg in sig_msg_list:
-        q.displayln_info(msg)
+    json_results.append((f"{fname}: ld sig", q.get_double_sig(ld, q.RngState()),))
 
 @q.timer_verbose
 def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -249,11 +247,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, ge
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    sig_msg_list = [
-            f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.5E}",
-            ]
-    for msg in sig_msg_list:
-        q.displayln_info(msg)
+    json_results.append((f"{fname}: ld sig", q.get_double_sig(ld, q.RngState()),))
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -332,7 +326,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    q.displayln_info(f"CHECK: {fname}: ld sig: {q.get_double_sig(ld, q.RngState()):.5E}")
+    json_results.append((f"{fname}: ld sig", q.get_double_sig(ld, q.RngState()),))
 
 # ----
 
@@ -363,6 +357,9 @@ def run_job(job_tag, traj):
             #
             # (f"{job_tag}/psel-prop-smear-light/traj-{traj}.qar", f"{job_tag}/psel-prop-smear-light/traj-{traj}/checkpoint.txt",),
             # (f"{job_tag}/psel-prop-smear-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-smear-strange/traj-{traj}/checkpoint.txt",),
+            #
+            f"{job_tag}/hvp-average/traj-{traj}/hvp_average_light.field",
+            f"{job_tag}/hvp-average/traj-{traj}/hvp_average_strange.field",
             ]
     if job_tag[:5] == "test-":
         has_eig = True
@@ -472,6 +469,9 @@ def run_job(job_tag, traj):
     run_with_eig_strange()
     run_charm()
     #
+    get_hvp_average_light = run_hvp_average(job_tag, traj, inv_type=0, get_psel=get_psel)
+    get_hvp_average_strange = run_hvp_average(job_tag, traj, inv_type=1, get_psel=get_psel)
+    #
     get_get_prop = run_get_prop(job_tag, traj,
             get_gf=get_gf,
             get_gt=get_gt,
@@ -530,6 +530,9 @@ def run_job(job_tag, traj):
             #
             # (f"{job_tag}/psel-prop-smear-light/traj-{traj}.qar.idx", f"{job_tag}/psel-prop-smear-light/traj-{traj}/checkpoint.txt",),
             # (f"{job_tag}/psel-prop-smear-strange/traj-{traj}.qar.idx", f"{job_tag}/psel-prop-smear-strange/traj-{traj}/checkpoint.txt",),
+            #
+            f"{job_tag}/hvp-average/traj-{traj}/hvp_average_light.field",
+            f"{job_tag}/hvp-average/traj-{traj}/hvp_average_strange.field",
             ]
     if not check_job(job_tag, traj, fns_produce_auto_contract, fns_need_auto_contract):
         return
@@ -542,6 +545,7 @@ def run_job(job_tag, traj):
             auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
             auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
             auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+            json_results.append((f"get_hvp_average_light:", get_hvp_average_light(),))
             #
             q.qtouch_info(get_save_path(fn_checkpoint_auto_contract))
             q.displayln_info("timer_display for runjob")
@@ -612,6 +616,8 @@ for job_tag in job_tags:
         q.qtouch_info(get_save_path(f"{job_tag}/params.txt"), pprint.pformat(get_param(job_tag)))
     for traj in get_param(job_tag, "trajs"):
         run_job(job_tag, traj)
+
+q.check_log_json(__file__, json_results)
 
 q.timer_display()
 

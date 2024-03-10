@@ -442,14 +442,17 @@ def compute_prop_2(inv, src, *, tag, sfw, qar_sp, psel, fsel,
     sfw.flush()
     return sol
 
+def mk_psrc_tag(xg, inv_type, inv_acc):
+    xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
+    tag = f"xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
+    return tag
+
 @q.timer
 def compute_prop_psrc(job_tag, traj, xg_src, inv_type, inv_acc, *,
         idx, gf, gt, sfw, qar_sp, psel, fsel, f_rand_01, sfw_hvp, qar_hvp_ts,
         eig):
     assert isinstance(xg_src, q.Coordinate)
-    xg = xg_src
-    xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
-    tag = f"xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
+    tag = mk_psrc_tag(xg_src, inv_type, inv_acc)
     if sfw.has(tag) and (sfw_hvp is None or sfw_hvp.has(tag)):
         assert sfw.has(f"{tag} ; fsel-prob-psrc-prop")
         assert qar_sp.has_regular_file(f"{tag}.lat")
@@ -549,6 +552,74 @@ def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel,
                               eig=eig)
         q.release_lock()
         return [ f"{fname} {job_tag} {traj} {inv_type} done", ]
+
+# -----------------------------------------------------------------------------
+
+@q.timer_verbose
+def compute_hvp_average(job_tag, traj, *,
+        inv_type, psel, data_path, geo):
+    fname = q.get_fname()
+    hvp_average = q.FieldComplexD(geo, 16)
+    hvp_average.set_zero()
+    sfr = q.open_fields(data_path, "r")
+    tags = sfr.list()
+    rel_acc_list = [ 0, 1, 2, ]
+    prob_list = [ get_param(job_tag, f"prob_acc_{inv_acc}_psrc") for inv_acc in rel_acc_list ]
+    for xg in psel:
+        val_list = []
+        for inv_acc in rel_acc_list:
+            tag = mk_psrc_tag(xg, inv_type, inv_acc)
+            if tag not in tags:
+                val_list.append(None)
+            else:
+                chvp_16 = q.FieldComplexD(geo, 16)
+                chvp_16.load_double_from_float(sfr, tag)
+                val_list.append(chvp_16)
+        assert val_list[0] is not None
+        ama_val = mk_ama_val(val_list[0], xg.to_tuple(), val_list, rel_acc_list, prob_list)
+        hvp = ama_extract(ama_val).shift(-xg)
+        hvp_average += hvp
+    hvp_average *= 1 / len(psel)
+    sfr.close()
+    hvp_average.save_float_from_double(get_save_path(fn))
+    q.release_lock()
+
+@q.timer
+def run_hvp_average(job_tag, traj, *, inv_type, get_psel):
+    """
+    return get_hvp_average()
+    save hvp_average.field in single precision.
+    hvp_average.get_elem(x, mu * 4 + nu) is complex
+    #
+    (1) mu is the sink polarization and nu is the src polarization
+    (2) hvp field is simply the trace of the products of gamma matrix and propagators.
+        It does not include the any minus sign (e.g. The minus sign due to the loop).
+    """
+    fname = q.get_fname()
+    inv_type_names = [ "light", "strange", ]
+    inv_type_name = inv_type_names[inv_type]
+    fn = f"{job_tag}/hvp-average/traj-{traj}/hvp_average_{inv_type_name}.field"
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    geo = q.Geometry(total_site, 1)
+    def load():
+        hvp_average = q.FieldComplexD(geo, 16)
+        hvp_average.load_double_from_float(get_load_path(fn))
+        return hvp_average
+    if get_load_path(fn) is not None:
+        return q.lazy_call(load)
+    data_fn = f"{job_tag}/hvp-psrc-{inv_type_name}/traj-{traj}/geon-info.txt"
+    data_path = get_load_path(data_fn)
+    if data_path is None:
+        q.displayln_info(f"{fname}: '{data_fn}' not available.")
+        return
+    q.check_stop()
+    q.check_time_limit()
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{inv_type}-run_hvp_average"):
+        return
+    psel = get_psel()
+    compute_hvp_average(job_tag, traj, inv_type=inv_type, psel=psel, geo=geo, data_path=data_path)
+    q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type} num_fields={len(psel)}")
+    return q.lazy_call(load)
 
 # -----------------------------------------------------------------------------
 
