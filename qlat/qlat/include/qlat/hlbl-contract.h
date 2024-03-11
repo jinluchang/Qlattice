@@ -490,16 +490,16 @@ inline std::vector<std::string> contract_four_pair_labels(
 }
 
 inline std::vector<SlTable> contract_four_pair(
-    const Complex& coef, const FieldSelection& fsel,
+    const ComplexD& coef, const FieldSelection& fsel,
     const SelectedField<RealD>& smf_d,
     const SelectedField<WilsonMatrix>& sprop_x,
     const SelectedField<WilsonMatrix>& sprop_y, const Coordinate& xg_x,
-    const Coordinate& xg_y, const int type, const double weight_pair,
-    const std::vector<std::string>& tags, const double muon_mass,
-    const double z_v)
+    const Coordinate& xg_y, const int inv_type, const RealD weight_pair,
+    const std::vector<std::string>& tags, const RealD muon_mass,
+    const RealD z_v)
 // default coef = 1.0
-// type = 0 : light quark
-// type = 1 : strange quark
+// inv_type = 0 : light quark
+// inv_type = 1 : strange quark
 // tags can include "ref-far", "ref-center", "ref-close"
 {
   TIMER_VERBOSE("contract_four_pair");
@@ -512,11 +512,11 @@ inline std::vector<SlTable> contract_four_pair(
   CurrentMoments<WilsonMatrix> cm_xy, cm_yx;
   set_current_moments_from_current(cm_xy, sc_xy, fsel);
   set_current_moments_from_current(cm_yx, sc_yx, fsel);
-  const double alpha_inv = 137.035999139;
-  const double e_charge = std::sqrt(4 * qlat::PI / alpha_inv);
+  const RealD alpha_inv = 137.035999139;
+  const RealD e_charge = std::sqrt(4 * qlat::PI / alpha_inv);
   const Complex coef0 = 1.0E10 * 2.0 * muon_mass * std::pow(e_charge, 6);
   const Complex coef1 =
-      (type == 0 ? 16.0 + 1.0 : 1.0) / 81.0 * (-3.0) * std::pow(z_v, 4);
+      (inv_type == 0 ? 16.0 + 1.0 : 1.0) / 81.0 * (-3.0) * std::pow(z_v, 4);
   const Complex coef_all = coef * coef0 * coef1 / 3.0 * weight_pair;
   std::vector<SlTable> ts;
   for (int i = 0; i < (int)tags.size(); ++i) {
@@ -554,13 +554,13 @@ inline std::vector<std::string> contract_two_plus_two_pair_labels()
 }
 
 inline std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
-    long& n_points_in_r_sq_limit, long& n_points_computed, const Complex& coef,
+    Long& n_points_in_r_sq_limit, Long& n_points_computed, const ComplexD& coef,
     const Field<RealD>& rand_prob_sel_field,
-    const Field<Complex>& hvp_x,
-    const SelectedPoints<Complex>& edl_list_c, const Coordinate& xg_x,
-    const PointsSelection& psel_edl, const long r_sq_limit,
-    const double hvp_sel_threshold, const double weight_pair_0,
-    const double muon_mass, const double z_v)
+    const Field<ComplexD>& hvp_x,
+    const SelectedPoints<ComplexD>& edl_list_c, const Coordinate& xg_x,
+    const PointsSelection& psel_edl, const Long r_sq_limit,
+    const RealD hvp_sel_threshold, const RealD weight_pair_0,
+    const RealD muon_mass, const RealD z_v)
 // hvp point source at x (rho)
 // hvp point sink at y (sigma)
 // hvp with external loop source at z (lambda)
