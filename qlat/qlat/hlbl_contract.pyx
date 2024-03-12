@@ -111,8 +111,8 @@ def contract_two_plus_two_pair_no_glb_sum(
     #
     glb_sum for SlTable not yet performed
     """
-    cdef cc.Long n_points_in_r_sq_limit
-    cdef cc.Long n_points_computed
+    cdef cc.Long n_points_in_r_sq_limit = 0
+    cdef cc.Long n_points_computed = 0
     cdef cc.std_vector[cc.SlTable] sl_table_vec = cc.contract_two_plus_two_pair_no_glb_sum(
             n_points_in_r_sq_limit,
             n_points_computed,

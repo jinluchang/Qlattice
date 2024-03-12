@@ -34,7 +34,7 @@ SelectedPoints<M>& qcast(SelectedPoints<N>& x)
   if (x.initialized) {
     const int size = x.multiplicity * sizeof(N);
     x.multiplicity = size / sizeof(M);
-    qassert(x.multiplicity * sizeof(M) == size);
+    qassert(x.multiplicity * (int)sizeof(M) == size);
   }
   return (SelectedPoints<M>&)x;
 }

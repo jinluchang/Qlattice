@@ -1070,7 +1070,7 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
     std::vector<std::vector<RealD>> ldims =
         qload_datatable(path + "/dims.txt");
     qassert(ldims.size() == dims.size());
-    for (Long i = 0; i < ldims.size(); ++i) {
+    for (Long i = 0; i < (Long)ldims.size(); ++i) {
       qassert(i == (Long)ldims[i][0]);
       qassert(dims[i] == (int)ldims[i][1]);
       qassert(1.0 == ldims[i][2]);
@@ -1122,7 +1122,7 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
         while (is_part_muonline_interpolation_data_done(path, idx)) {
           idx += 1;
         }
-        if (idx >= jobs.size()) {
+        if (idx >= (Long)jobs.size()) {
           break;
         }
         displayln_info(
@@ -1131,7 +1131,7 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
         idx += 1;
         num_running_jobs += 1;
       }
-      while (idx < jobs.size()) {
+      while (idx < (Long)jobs.size()) {
         check_time_limit();
         TIMER_VERBOSE("muonline_interpolation_cc-traj");
         int source;
@@ -1145,7 +1145,7 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
         while (is_part_muonline_interpolation_data_done(path, idx)) {
           idx += 1;
         }
-        if (idx >= jobs.size()) {
+        if (idx >= (Long)jobs.size()) {
           break;
         }
         displayln_info(
@@ -1343,7 +1343,7 @@ inline ManyMagneticMoments get_muon_line_m_extra(const CoordinateD& x,
   // TIMER("get_muon_line_m_extra");
   const std::vector<std::vector<RealD>>& weights =
       get_muon_line_m_extra_weights();
-  qassert(0 <= tag and tag < weights.size());
+  qassert(0 <= tag and tag < (int)weights.size());
   const std::vector<RealD> ws = weights[tag];
   const int size = ws.size();
   ManyMagneticMoments m;
