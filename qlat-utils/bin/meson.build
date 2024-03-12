@@ -6,5 +6,6 @@ scripts = files(
   'qar',
   'qar-glimpse',
   'qlat-utils-config',
+  'qunar.py',
   )
 install_data(scripts, install_dir: get_option('bindir'), install_mode: 'rwxr-xr-x')
