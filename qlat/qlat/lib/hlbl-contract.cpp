@@ -218,8 +218,7 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
     const Field<RealD>& rand_prob_sel_field, const Field<ComplexD>& hvp_x,
     const SelectedPoints<ComplexD>& edl_list_c, const Coordinate& xg_x,
     const PointsSelection& psel_edl, const Long r_sq_limit,
-    const RealD hvp_sel_threshold, const RealD weight_pair_0,
-    const RealD muon_mass, const RealD z_v)
+    const RealD hvp_sel_threshold, const RealD muon_mass, const RealD z_v)
 // hvp point source at x (rho)
 // hvp point sink at y (sigma)
 // hvp with external loop source at z (lambda)
@@ -257,13 +256,10 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
       break;
     }
   });
+  qassert(has_same_x_z);
   const long total_volume = geo.total_volume();
-  double weight_pair = 0.0;
-  if (has_same_x_z) {
-    weight_pair = (total_volume - 1) / (n_points - 1);
-  } else {
-    weight_pair = (total_volume - 1) / n_points;
-  }
+  const double weight_pair_0 = 1.0;
+  const double weight_pair = (total_volume - 1) / (n_points - 1);
   vector_acc<ManyMagneticMoments> mmm_0_list(n_points);
   qfor(k, n_points, {
     const Coordinate& xg_z = psel_edl[k];

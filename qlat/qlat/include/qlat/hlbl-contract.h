@@ -381,7 +381,6 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
     const Field<RealD>& rand_prob_sel_field, const Field<ComplexD>& hvp_x,
     const SelectedPoints<ComplexD>& edl_list_c, const Coordinate& xg_x,
     const PointsSelection& psel_edl, const Long r_sq_limit,
-    const RealD hvp_sel_threshold, const RealD weight_pair_0,
-    const RealD muon_mass, const RealD z_v);
+    const RealD hvp_sel_threshold, const RealD muon_mass, const RealD z_v);
 
 }  // namespace qlat

@@ -97,7 +97,6 @@ def contract_two_plus_two_pair_no_glb_sum(
         PointsSelection psel_edl,
         const cc.Long r_sq_limit,
         const cc.RealD hvp_sel_threshold,
-        const cc.RealD weight_pair_0,
         const cc.RealD muon_mass,
         const cc.RealD z_v,
         ):
@@ -125,7 +124,6 @@ def contract_two_plus_two_pair_no_glb_sum(
             psel_edl.xx,
             r_sq_limit,
             hvp_sel_threshold,
-            weight_pair_0,
             muon_mass,
             z_v,
             )
