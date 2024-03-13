@@ -670,7 +670,7 @@ void baryon_vectorEV_kernel(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
     abort_r("");
   }
   Long Nbfac = Ntotal/bfac;
-  print0("=====CHECK %8d !!!\n", bfac);
+  //print0("=====CHECK %8d !!!\n", bfac);
 
   #if USEGLOBAL==1
   const int nt = 16;
