@@ -27,7 +27,7 @@ fi
 export NVCC_OPTIONS="-w -std=c++14 -arch=\$NVCC_ARCH --expt-extended-lambda --expt-relaxed-constexpr -fopenmp -fno-strict-aliasing" # -D__DEBUG_VECUTILS__
 export QLAT_CXX="NVCC.py -ccbin CXX.sh \$NVCC_OPTIONS"
 export QLAT_MPICXX="NVCC.py -ccbin MPICXX.sh \$NVCC_OPTIONS"
-export QLAT_CXXFLAGS="--NVCC-compile" # -fPIC 
+export QLAT_CXXFLAGS="--NVCC-compile -D__QLAT_BARYON_SHARED_SMALL__" # -fPIC
 export QLAT_LDFLAGS="--NVCC-link" # --shared
 EOF
 
