@@ -62,6 +62,11 @@ namespace qlat{
 #define BFACG_SHARED 8
 #endif
 
+#ifdef __QLAT_BARYON_SHARED_SMALL__
+#undef BFACG_SHARED
+#define BFACG_SHARED 1
+#endif
+
 #define Evector qlat::vector_acc<Complexq >
 #define EigenV   qlat::vector_acc<Complexq >
 
