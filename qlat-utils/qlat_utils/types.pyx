@@ -27,8 +27,11 @@ cdef class Buffer:
         # need to call self.update_strides_from_shape()
 
     cdef void set_buffer(self, Py_buffer *buffer, int flags):
-        cdef Py_ssize_t* shape = &self.shape_strides[0]
-        cdef Py_ssize_t* strides = &self.shape_strides[self.ndim]
+        cdef Py_ssize_t* shape = NULL
+        cdef Py_ssize_t* strides = NULL
+        if self.ndim != 0:
+            shape = &self.shape_strides[0]
+            strides = &self.shape_strides[self.ndim]
         buffer.buf = self.buf
         if flags & PyBUF_FORMAT:
             buffer.format = self.format
@@ -54,13 +57,16 @@ cdef class Buffer:
         self.shape_strides[dim] = dim_size
 
     cdef void update_strides_from_shape(self):
-        cdef Py_ssize_t* shapes = &self.shape_strides[0]
-        cdef Py_ssize_t* strides = &self.shape_strides[self.ndim]
+        cdef Py_ssize_t* shape = NULL
+        cdef Py_ssize_t* strides = NULL
+        if self.ndim != 0:
+            shape = &self.shape_strides[0]
+            strides = &self.shape_strides[self.ndim]
         cdef int i
         cdef Py_ssize_t stride = self.itemsize
         for i in range(self.ndim - 1, -1, -1):
             strides[i] = stride
-            stride *= shapes[i]
+            stride *= shape[i]
 
     cdef Py_ssize_t get_len(self):
         cdef int i
