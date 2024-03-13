@@ -78,8 +78,9 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         buf.set_dim_size(0, self.xx.n_elems)
         buf.set_dim_size(1, multiplicity)
         cdef cc.std_vector[Py_ssize_t] vec = ElemType{{name}}.shape()
+        cdef int dim_size = vec.size()
         cdef int dim
-        for dim in range(vec.size()):
+        for dim in range(dim_size):
             buf.set_dim_size(2 + dim, vec[dim])
         buf.update_strides_from_shape()
         buf.set_buffer(buffer, flags)

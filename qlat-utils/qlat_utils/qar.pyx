@@ -20,10 +20,13 @@ cdef class QFile:
             ):
         """
         Always use kwargs.
-        QFile(path, mode)
-        QFile(ftype, path, mode)
-        QFile(ftype, path, mode, content)
-        QFile(qfile, q_offset_start, q_offset_end)
+        #
+        `QFile(path, mode)`
+        `QFile(ftype, path, mode)`
+        `QFile(ftype, path, mode, content)`
+        `QFile(qfile, q_offset_start, q_offset_end)`
+        #
+        `mode in [ "r", "w", "a", ]`
         """
         cdef cc.QFileType ftype_v
         cdef cc.std_string path_v
@@ -39,6 +42,9 @@ cdef class QFile:
             path_v = path
         if mode is not None:
             mode_v = cc.read_qfile_mode(mode)
+        else:
+            mode_default = "r"
+            mode_v = cc.read_qfile_mode(mode_default)
         if content is not None:
             content_v = content
         if content is not None:

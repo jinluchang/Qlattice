@@ -22,6 +22,8 @@ elif cpp.check_header('Grid/Eigen/Eigen', dependencies: deps)
   conf_data.set('QLAT_USE_GRID_EIGEN', true)
 endif
 
+conf_data.set('NPY_NO_DEPRECATED_API', 'NPY_1_7_API_VERSION')
+
 config_file = configure_file(output: 'config.h', configuration: conf_data)
 py3.install_sources(config_file, subdir: 'qlat_utils/include/qlat-utils')
 

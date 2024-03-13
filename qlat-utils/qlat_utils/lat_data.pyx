@@ -120,18 +120,21 @@ cdef class LatData:
         return self.xx.ndim()
 
     def dim_name(self, int dim):
+        cdef int dim_size = self.xx.info.size()
         assert 0 <= dim
-        assert dim < self.xx.info.size()
+        assert dim < dim_size
         return self.xx.info[dim].name
 
     def dim_size(self, int dim):
+        cdef int dim_size = self.xx.info.size()
         assert 0 <= dim
-        assert dim < self.xx.info.size()
+        assert dim < dim_size
         return self.xx.info[dim].size
 
     def dim_indices(self, int dim, cc.bool is_filling_default=False):
+        cdef int dim_size = self.xx.info.size()
         assert 0 <= dim
-        assert dim < self.xx.info.size()
+        assert dim < dim_size
         cdef list indices = self.xx.info[dim].indices
         if is_filling_default:
             size = self.xx.info[dim].size
@@ -162,8 +165,9 @@ cdef class LatData:
         cc.lat_data_alloc(self.xx)
 
     def set_dim_name(self, int dim, const cc.std_string& name, list indices=None):
+        cdef int dim_size = self.xx.info.size()
         assert 0 <= dim
-        assert dim < self.xx.info.size()
+        assert dim < dim_size
         cdef int size
         cdef int i
         self.xx.info[dim].name = name
