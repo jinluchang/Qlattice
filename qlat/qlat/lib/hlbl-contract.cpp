@@ -76,17 +76,16 @@ void contract_four_loop(SelectedField<Complex>& f_loop_i_rho_sigma_lambda,
     const array<SpinMatrix, 4>& gammas = smc().cps_gammas;
     const RealD prob = fsel_prob_xy.get_elem(idx);
     const RealD weight = 1.0 / prob;
-    const RealD sub_coef = 1.0 - weight;
-    const Complex final_coef = coef * weight;
+    const ComplexD final_coef = coef * weight;
     const long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const CoordinateD xgref =
         choose_reference(xg_x, xg_y, xg, total_site, cr_label);
     const array<WilsonMatrix, 3> sm_yx = simple_moment_with_contact_subtract(
-        cm_yx, xgref, total_site, c_yx, fsel, xg, sub_coef);
+        cm_yx, xgref, total_site, c_yx, fsel, fsel_prob_xy, xg);
     const array<WilsonMatrix, 3> sm_xy = simple_moment_with_contact_subtract(
-        cm_xy, xgref, total_site, c_xy, fsel, xg, sub_coef);
+        cm_xy, xgref, total_site, c_xy, fsel, fsel_prob_xy, xg);
     const Vector<WilsonMatrix> vc_xy = c_xy.get_elems_const(idx);
     const Vector<WilsonMatrix> vc_yx = c_yx.get_elems_const(idx);
     Vector<Complex> v_loop = f_loop_i_rho_sigma_lambda.get_elems(idx);
@@ -186,8 +185,8 @@ std::vector<SlTable> contract_four_pair(
 {
   // TODO: implement r_sq_limit
   TIMER_VERBOSE("contract_four_pair");
-  qassert(0 <= idx_xg_x and idx_xg_x < psel.size());
-  qassert(0 <= idx_xg_y and idx_xg_y < psel.size());
+  qassert(0 <= idx_xg_x and idx_xg_x < (Long)psel.size());
+  qassert(0 <= idx_xg_y and idx_xg_y < (Long)psel.size());
   const Coordinate& xg_x = psel[idx_xg_x];
   const Coordinate& xg_y = psel[idx_xg_y];
   const RealD prob_xg_x = psel_prob.get_elem(idx_xg_x);
@@ -273,7 +272,7 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
 // points.
 {
   TIMER_VERBOSE("contract_two_plus_two_pair_no_glb_sum");
-  qassert(0 <= idx_xg_x and idx_xg_x < psel.size());
+  qassert(0 <= idx_xg_x and idx_xg_x < (Long)psel.size());
   const Coordinate& xg_x = psel[idx_xg_x];
   const RealD prob_xg_x = psel_prob.get_elem(idx_xg_x);
   qassert(rand_prob_sel_field.geo().multiplicity == 1);
@@ -303,7 +302,6 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
     }
   });
   qassert(has_same_x_z);
-  const long total_volume = geo.total_volume();
   vector_acc<ManyMagneticMoments> mmm_0_list(n_points);
   qfor(k, n_points, {
     const Coordinate& xg_z = psel[k];

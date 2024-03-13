@@ -162,9 +162,10 @@ void set_current_moments_from_current(CurrentMoments<M>& cm,
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const Vector<M> v = current.get_elems_const(idx);
     const RealD prob = fsel_prob_xy.get_elem(idx);
+    const ComplexD weight = 1.0 / prob;
     for (int j = 0; j < 3; ++j) {
       for (int k = 0; k < 3; ++k) {
-        cm.d[xg[j]][3 * j + k] += v[k] / prob;
+        cm.d[xg[j]][3 * j + k] += weight * v[k];
       }
     }
   });
@@ -205,17 +206,18 @@ qacc array<M, 3> simple_moment_with_contact_subtract(
     const CurrentMoments<M>& cm, const CoordinateD& ref,
     const Coordinate& total_site, const SelectedField<M>& current,
     const FieldSelection& fsel, const SelectedField<RealD>& fsel_prob_xy,
-    const Coordinate& xg, const Complex& coef)
+    const Coordinate& xg)
 // xg should refer to a local site
 // xg should be a selected point
-// coef = (1.0 - 1.0 / prob) where prob is the probability of a point being
-// selected, e.g. prob = 1.0/16.0, coef = -15.0
 {
   const Geometry& geo = fsel.f_rank.geo();
   const Coordinate xl = geo.coordinate_l_from_g(xg);
   qassert(geo.is_local(xl));
   qassert(fsel.f_rank.get_elem(xl) >= 0);
   const long idx = fsel.f_local_idx.get_elem(xl);
+  const RealD prob = fsel_prob_xy.get_elem(idx);
+  const RealD weight = 1.0 / prob;
+  const RealD sub_coef = 1.0 - weight;
   const Vector<M> cv = current.get_elems_const(idx);
   array<M, 3> ret = simple_moment(cm, ref, total_site);
   for (int i = 0; i < 3; ++i) {
@@ -227,7 +229,7 @@ qacc array<M, 3> simple_moment_with_contact_subtract(
         if (i == k or j == k) {
           continue;
         }
-        ret[i] += (coef * 0.5 * (Complex)epsilon_tensor_acc(i, j, k) *
+        ret[i] += (sub_coef * 0.5 * (Complex)epsilon_tensor_acc(i, j, k) *
                    (Complex)smod_sym(xg[j] - ref[j], (double)total_site[j])) *
                   cv[k];
       }

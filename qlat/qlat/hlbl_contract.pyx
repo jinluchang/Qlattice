@@ -8,7 +8,7 @@ import qlat_utils as q
 from .field_selection cimport FieldSelection, PointsSelection
 from .field_types cimport FieldRealD, FieldComplexD
 from .selected_field_types cimport SelectedFieldRealD, SelectedFieldComplexD
-from .selected_points_types cimport SelectedPointsComplexD
+from .selected_points_types cimport SelectedPointsRealD, SelectedPointsComplexD
 from .propagator cimport SelProp
 
 cdef numpy.ndarray sl_arr_from_sl_table(const cc.SlTable& x):
@@ -46,8 +46,8 @@ def contract_four_pair(
         cc.PyComplexD coef,
         SelectedPointsRealD psel_prob,
         SelectedFieldRealD fsel_prob,
-        const Long idx_xg_x,
-        const Long idx_xg_y,
+        const cc.Long idx_xg_x,
+        const cc.Long idx_xg_y,
         SelectedFieldRealD smf_d,
         SelProp sprop_x,
         SelProp sprop_y,
@@ -102,7 +102,7 @@ def contract_two_plus_two_pair_no_glb_sum(
         SelectedPointsRealD psel_prob,
         FieldRealD rand_prob_sel_field,
         const cc.RealD hvp_sel_threshold,
-        const Long idx_xg_x,
+        const cc.Long idx_xg_x,
         FieldComplexD hvp_x,
         SelectedPointsComplexD edl_list_c,
         const cc.Long r_sq_limit,
