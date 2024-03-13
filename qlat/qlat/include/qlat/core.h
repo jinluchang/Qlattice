@@ -941,14 +941,16 @@ using FieldRank = FieldM<int64_t, 1>;
 using FieldIndex = FieldM<Long, 1>;
 
 struct API FieldSelection {
-  Long n_elems;  // num points of this node
-  //
   FieldRank f_rank;  // rank when the points being selected (-1 if not selected)
+  //
+  // Update the following info with `void update_field_selection(FieldSelection& fsel)`.
+  //
+  Long n_elems;  // num points of this node
   //
   FieldIndex f_local_idx;  // idx of points on this node (-1 if not selected)
   //
-  vector_acc<int64_t> ranks;  // rank of the selected points
-  vector_acc<Long> indices;   // local indices of selected points
+  vector_acc<int64_t> ranks;  // rank of the selected points. `ranks.size() == n_elems`
+  vector_acc<Long> indices;   // local indices of selected points. `indices.size() == n_elems`
   //
   void init();
   //

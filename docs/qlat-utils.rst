@@ -45,7 +45,7 @@ Random number
    :toctree: generated
 
    RngState
-   get_double_sig
+   get_data_sig
 
 Algorithm of the random number generator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

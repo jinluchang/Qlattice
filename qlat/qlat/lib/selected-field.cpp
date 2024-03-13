@@ -543,6 +543,22 @@ Long read_field_selection(FieldSelection& fsel, const std::string& path)
   return total_bytes;
 }
 
+Long idx_from_xg(const Coordinate& xg, const FieldSelection& fsel)
+// idx for xg for this node.
+// idx >= 0 if in the local_volume and selected in fsel.
+// idx=-2 if not in the local volume.
+// idx=-1 if not selected in fsel.
+{
+  const Geometry& geo = fsel.f_rank.geo();
+  const Coordinate xl = geo.coordinate_l_from_g(xg);
+  if (not geo.is_local(xl)) {
+    return -2;
+  }
+  const Long index = geo.index_from_coordinate(xl);
+  const Long idx = fsel.f_local_idx.get_elem(index);
+  return idx;
+}
+
 std::string make_selected_field_header(const Geometry& geo, const int sizeof_M,
                                        const crc32_t crc32)
 {

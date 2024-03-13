@@ -409,9 +409,9 @@ cdef extern from "qlat/hlbl-contract.h" namespace "qlat":
     #
     std_vector[std_string] contract_four_pair_labels(const std_vector[std_string]& tags) except +
     #
-    std_vector[SlTable] contract_four_pair(const ComplexD& coef, const FieldSelection& fsel, const SelectedField[RealD]& smf_d, const SelectedField[WilsonMatrix]& sprop_x, const SelectedField[WilsonMatrix]& sprop_y, const Coordinate& xg_x, const Coordinate& xg_y, const int inv_type, const RealD weight_pair, const std_vector[std_string]& tags, const RealD muon_mass, const RealD z_v) except +
+    std_vector[SlTable] contract_four_pair(const ComplexD& coef, const PointsSelection& psel, const SelectedPoints[RealD]& psel_prob, const FieldSelection& fsel, const SelectedField[RealD]& fsel_prob, const Long idx_xg_x, const Long idx_xg_y, const SelectedField[RealD]& smf_d, const SelectedField[WilsonMatrix]& sprop_x, const SelectedField[WilsonMatrix]& sprop_y, const Int inv_type, const std_vector[std_string]& tags, const Long r_sq_limit, const RealD muon_mass, const RealD z_v) except +
     #
     std_vector[std_string] contract_two_plus_two_pair_labels() except +
     #
-    std_vector[SlTable] contract_two_plus_two_pair_no_glb_sum(Long& n_points_in_r_sq_limit, Long& n_points_computed, const ComplexD& coef, const Field[RealD]& rand_prob_sel_field, const Field[ComplexD]& hvp_x, const SelectedPoints[ComplexD]& edl_list_c, const Coordinate& xg_x, const PointsSelection& psel_edl, const Long r_sq_limit, const RealD hvp_sel_threshold, const RealD muon_mass, const RealD z_v) except +
+    std_vector[SlTable] contract_two_plus_two_pair_no_glb_sum(Long& n_points_in_r_sq_limit, Long& n_points_computed, const ComplexD& coef, const PointsSelection& psel, const SelectedPoints[RealD]& psel_prob, const Field[RealD]& rand_prob_sel_field, const RealD hvp_sel_threshold, const Long idx_xg_x, const Field[ComplexD]& hvp_x, const SelectedPoints[ComplexD]& edl_list_c, const Long r_sq_limit, const RealD muon_mass, const RealD z_v) except +
     #

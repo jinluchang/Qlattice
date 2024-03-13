@@ -75,6 +75,8 @@ Long write_field_selection(const FieldSelection& fsel, const std::string& path);
 
 Long read_field_selection(FieldSelection& fsel, const std::string& path);
 
+Long idx_from_xg(const Coordinate& xg, const FieldSelection& fsel);
+
 // ---------------------------------------
 
 template <class M, class N>

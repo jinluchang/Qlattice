@@ -44,17 +44,18 @@ def contract_two_plus_two_pair_labels():
 @q.timer
 def contract_four_pair(
         cc.PyComplexD coef,
-        FieldSelection fsel,
+        SelectedPointsRealD psel_prob,
+        SelectedFieldRealD fsel_prob,
+        const Long idx_xg_x,
+        const Long idx_xg_y,
         SelectedFieldRealD smf_d,
         SelProp sprop_x,
         SelProp sprop_y,
-        Coordinate xg_x,
-        Coordinate xg_y,
-        cc.Int inv_type,
-        cc.RealD weight_pair,
+        const cc.Int inv_type,
         const cc.std_vector[cc.std_string]& tags,
-        cc.RealD muon_mass,
-        cc.RealD z_v
+        const cc.Long r_sq_limit,
+        const cc.RealD muon_mass,
+        const cc.RealD z_v
         ):
     """
     return [ (label, sl_arr,), ... ]
@@ -64,17 +65,25 @@ def contract_four_pair(
     inv_type = 1 : strange quark
     tags can be [ "ref-far", "ref-center", "ref-close", ]
     """
+    cdef PointsSelection psel = psel_prob.psel
+    cdef FieldSelection fsel = fsel_prob.fsel
+    assert fsel is smf_d.fsel
+    assert fsel is sprop_x.fsel
+    assert fsel is sprop_y.fsel
     cdef cc.std_vector[cc.SlTable] sl_table_vec = cc.contract_four_pair(
             cc.ccpy_d(coef),
+            psel.xx,
+            psel_prob.xx,
             fsel.xx,
+            fsel_prob.xx,
+            idx_xg_x,
+            idx_xg_y,
             smf_d.xx,
             sprop_x.xx,
             sprop_y.xx,
-            xg_x.xx,
-            xg_y.xx,
             inv_type,
-            weight_pair,
             tags,
+            r_sq_limit,
             muon_mass,
             z_v,
             )
@@ -90,13 +99,13 @@ def contract_four_pair(
 @q.timer
 def contract_two_plus_two_pair_no_glb_sum(
         cc.PyComplexD coef,
+        SelectedPointsRealD psel_prob,
         FieldRealD rand_prob_sel_field,
+        const cc.RealD hvp_sel_threshold,
+        const Long idx_xg_x,
         FieldComplexD hvp_x,
         SelectedPointsComplexD edl_list_c,
-        Coordinate xg_x,
-        PointsSelection psel_edl,
         const cc.Long r_sq_limit,
-        const cc.RealD hvp_sel_threshold,
         const cc.RealD muon_mass,
         const cc.RealD z_v,
         ):
@@ -111,19 +120,21 @@ def contract_two_plus_two_pair_no_glb_sum(
     #
     glb_sum for SlTable not yet performed
     """
+    cdef PointsSelection psel = psel_prob.psel
     cdef cc.Long n_points_in_r_sq_limit = 0
     cdef cc.Long n_points_computed = 0
     cdef cc.std_vector[cc.SlTable] sl_table_vec = cc.contract_two_plus_two_pair_no_glb_sum(
             n_points_in_r_sq_limit,
             n_points_computed,
             cc.ccpy_d(coef),
+            psel.xx,
+            psel_prob.xx,
             rand_prob_sel_field.xx,
+            hvp_sel_threshold,
+            idx_xg_x,
             hvp_x.xx,
             edl_list_c.xx,
-            xg_x.xx,
-            psel_edl.xx,
             r_sq_limit,
-            hvp_sel_threshold,
             muon_mass,
             z_v,
             )

@@ -130,7 +130,7 @@ void set_local_current_from_props(SelectedField<WilsonMatrix>& scf,
 
 template <class M>
 struct CurrentMoments {
-  vector_acc<array<M, 3 * 3>> d;
+  vector<array<M, 3 * 3>> d;
   // moment = 0.5 * epsilon_tensor(i, j, k) * smod_sym(xg[j] - ref[j],
   // total_site[j]) * d[ xg[j] ][3*j + k]
   //
@@ -146,7 +146,8 @@ struct CurrentMoments {
 template <class M>
 void set_current_moments_from_current(CurrentMoments<M>& cm,
                                       const SelectedField<M>& current,
-                                      const FieldSelection& fsel)
+                                      const FieldSelection& fsel,
+                                      const SelectedField<RealD>& fsel_prob_xy)
 {
   TIMER("set_current_moments_from_current");
   const Geometry& geo = current.geo();
@@ -160,9 +161,10 @@ void set_current_moments_from_current(CurrentMoments<M>& cm,
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const Vector<M> v = current.get_elems_const(idx);
+    const RealD prob = fsel_prob_xy.get_elem(idx);
     for (int j = 0; j < 3; ++j) {
       for (int k = 0; k < 3; ++k) {
-        cm.d[xg[j]][3 * j + k] += v[k];
+        cm.d[xg[j]][3 * j + k] += v[k] / prob;
       }
     }
   });
@@ -202,11 +204,12 @@ template <class M>
 qacc array<M, 3> simple_moment_with_contact_subtract(
     const CurrentMoments<M>& cm, const CoordinateD& ref,
     const Coordinate& total_site, const SelectedField<M>& current,
-    const FieldSelection& fsel, const Coordinate& xg, const Complex& coef)
+    const FieldSelection& fsel, const SelectedField<RealD>& fsel_prob_xy,
+    const Coordinate& xg, const Complex& coef)
 // xg should refer to a local site
 // xg should be a selected point
-// coef = (prob - 1) where prob is the probability of a point being selected,
-// e.g. prob = 1.0/16.0, coef = -15.0/16.0
+// coef = (1.0 - 1.0 / prob) where prob is the probability of a point being
+// selected, e.g. prob = 1.0/16.0, coef = -15.0
 {
   const Geometry& geo = fsel.f_rank.geo();
   const Coordinate xl = geo.coordinate_l_from_g(xg);
@@ -348,13 +351,14 @@ inline std::vector<std::string> contract_four_pair_labels(
 }
 
 std::vector<SlTable> contract_four_pair(
-    const ComplexD& coef, const FieldSelection& fsel,
-    const SelectedField<RealD>& smf_d,
+    const ComplexD& coef, const PointsSelection& psel,
+    SelectedPoints<RealD>& psel_prob, const FieldSelection& fsel,
+    const SelectedField<RealD>& fsel_prob, const Long idx_xg_x,
+    const Long idx_xg_y, const SelectedField<RealD>& smf_d,
     const SelectedField<WilsonMatrix>& sprop_x,
-    const SelectedField<WilsonMatrix>& sprop_y, const Coordinate& xg_x,
-    const Coordinate& xg_y, const int inv_type, const RealD weight_pair,
-    const std::vector<std::string>& tags, const RealD muon_mass,
-    const RealD z_v);
+    const SelectedField<WilsonMatrix>& sprop_y, const Int inv_type,
+    const std::vector<std::string>& tags, const Long r_sq_limit,
+    const RealD muon_mass, const RealD z_v);
 
 // ------------------------------------------------------------------------
 
@@ -378,9 +382,10 @@ inline std::vector<std::string> contract_two_plus_two_pair_labels()
 
 std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
     Long& n_points_in_r_sq_limit, Long& n_points_computed, const ComplexD& coef,
-    const Field<RealD>& rand_prob_sel_field, const Field<ComplexD>& hvp_x,
-    const SelectedPoints<ComplexD>& edl_list_c, const Coordinate& xg_x,
-    const PointsSelection& psel_edl, const Long r_sq_limit,
-    const RealD hvp_sel_threshold, const RealD muon_mass, const RealD z_v);
+    const PointsSelection& psel, const SelectedPoints<RealD> psel_prob,
+    const Field<RealD>& rand_prob_sel_field, const RealD hvp_sel_threshold,
+    const Long idx_xg_x, const Field<ComplexD>& hvp_x,
+    const SelectedPoints<ComplexD>& edl_list_c, const Long r_sq_limit,
+    const RealD muon_mass, const RealD z_v);
 
 }  // namespace qlat
