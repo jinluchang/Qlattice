@@ -24,6 +24,10 @@ endif
 
 conf_data.set('NPY_NO_DEPRECATED_API', 'NPY_1_7_API_VERSION')
 
+# conf_data.set('_GLIBCXX_DEBUG', true)
+# conf_data.set('_GLIBCXX_DEBUG_PEDANTIC', true)
+# conf_data.set('_GLIBCXX_DEBUG_BACKTRACE', true)
+
 config_file = configure_file(output: 'config.h', configuration: conf_data)
 py3.install_sources(config_file, subdir: 'qlat_utils/include/qlat-utils')
 

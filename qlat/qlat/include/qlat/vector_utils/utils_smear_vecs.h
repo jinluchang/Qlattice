@@ -503,8 +503,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
       copy_extra_pos.push_back(pos);
     }
   }
-
-  std::vector<Long > sortL = get_sort_index(&copy_extraL[0], copy_extraL.size());
+  std::vector<Long > sortL = get_sort_index(copy_extraL.data(), copy_extraL.size());
   ////std::vector< qlat::vector_acc<Long > > copy_extra_index;
   copy_extra_index.resize(3);
 
