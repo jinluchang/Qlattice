@@ -36,7 +36,7 @@ def compute_prop_wsrc_full(gf, gt, tslice, job_tag, inv_type, inv_acc, *,
         return None
     q.check_stop()
     q.check_time_limit()
-    q.displayln_info(f"compute_prop_wsrc_full: idx={idx} tslice={tslice}", job_tag, inv_type, inv_acc)
+    q.displayln_info(0, f"compute_prop_wsrc_full: idx={idx} tslice={tslice}", job_tag, inv_type, inv_acc)
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site, 1)
@@ -46,8 +46,8 @@ def compute_prop_wsrc_full(gf, gt, tslice, job_tag, inv_type, inv_acc, *,
 @q.timer_verbose
 def compute_prop_wsrc_full_all(job_tag, traj, *,
                                inv_type, gf, gt, wi, eig):
-    inv_type_names = [ "light", "strange", ]
-    inv_type_name = inv_type_names[inv_type]
+    inv_type_name_list = [ "light", "strange", ]
+    inv_type_name = inv_type_name_list[inv_type]
     path_s = f"{job_tag}/prop-wsrc-full-{inv_type_name}/traj-{traj}"
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     for inv_acc in [ 2, 1, ]:
@@ -68,8 +68,8 @@ def run_prop_wsrc_full(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_
         if inv_type == 0:
             return
         get_eig = lambda: None
-    inv_type_names = [ "light", "strange", ]
-    inv_type_name = inv_type_names[inv_type]
+    inv_type_name_list = [ "light", "strange", ]
+    inv_type_name = inv_type_name_list[inv_type]
     if get_load_path(f"{job_tag}/prop-wsrc-full-{inv_type_name}/traj-{traj}/geon-info.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-full-{inv_type_name}"):
@@ -93,7 +93,7 @@ def avg_weight_from_prop_full(geo, prop_nf_dict):
     type(prop_nf_glb_sum_tslice) = q.SelectedPointsRealD
     """
     fname = q.get_fname()
-    inv_type_names = [ "light", "strange", ]
+    inv_type_name_list = [ "light", "strange", ]
     total_site = geo.total_site()
     n_samples = [ 0, 0, ]
     avg_nf_glb_sum_tslice = [ 0, 0, ]
@@ -104,7 +104,7 @@ def avg_weight_from_prop_full(geo, prop_nf_dict):
         n_samples[inv_type] += 1
         avg_nf_glb_sum_tslice[inv_type] += gst
     for inv_type in [ 0, 1, ]:
-        inv_type_name = inv_type_names[inv_type]
+        inv_type_name = inv_type_name_list[inv_type]
         assert n_samples[inv_type] == total_site[3]
         avg_nf_glb_sum_tslice[inv_type] = avg_nf_glb_sum_tslice[inv_type] / (geo.total_volume() / total_site[3] * n_samples[inv_type])
         q.displayln_info(-1, fname, "avg_nf_glb_sum_tslice", inv_type_name, avg_nf_glb_sum_tslice[inv_type])
@@ -152,6 +152,221 @@ def make_psel_from_weight(f_weight, f_rand_01, rate):
     fsel = make_fsel_from_weight(f_weight, f_rand_01, rate)
     psel = fsel.to_psel()
     return psel
+
+@q.timer_verbose
+def compute_f_weight_from_wsrc_prop_full(job_tag, traj, *,
+        fn_f_weight,
+        wi,
+        inv_type_list,
+        inv_type_name_list,
+        path_f_list,
+        fn_f_weight_type_list,
+        ):
+    fname = q.get_fname()
+    assert get_load_path(fn_f_weight) is None
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    geo = q.Geometry(total_site, 1)
+    prop_nf_dict = dict()
+    for inv_type in inv_type_list:
+        path_f = path_f_list[inv_type]
+        sfr = q.open_fields(get_load_path(path_f), "r")
+        available_tags = sfr.list()
+        q.displayln_info(0, f"available_tags={available_tags}")
+        for idx, tslice, inv_type_wi, inv_acc in wi:
+            if inv_type_wi != inv_type:
+                continue
+            if inv_acc != 1:
+                continue
+            tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
+            q.displayln_info(0, f"{fname}: idx={idx} tag='{tag}'")
+            if not sfr.has(tag):
+                raise Exception(f"{tag} not in {sfr.list()}")
+            prop_nf = q.FieldRealD(geo, 1)
+            q.set_zero(prop_nf)
+            prop_nf.load_double(sfr, tag + " ; qnorm_field")
+            prop_nf_dict[(inv_type, tslice,)] = prop_nf, prop_nf.glb_sum_tslice()
+    f_weight_avg, f_weight_final = avg_weight_from_prop_full(geo, prop_nf_dict)
+    for inv_type in [ 0, 1, ]:
+        inv_type_name = inv_type_name_list[inv_type]
+        f_weight_avg[inv_type].save_double(get_save_path(fn_f_weight_type_list[inv_type]))
+        q.displayln_info(-1, fname, "field-selection-weight", inv_type_name, f_weight_avg[inv_type].glb_sum_tslice()[:].ravel())
+    f_weight_final.save_double(get_save_path(fn_f_weight))
+    q.displayln_info(-1, fname, "field-selection-weight final", f_weight_final.glb_sum_tslice()[:].ravel())
+
+@q.timer
+def run_f_weight_from_wsrc_prop_full(job_tag, traj, *, get_wi=None):
+    """
+    return get_f_weight
+        f_weight = get_f_weight()
+    Or if wsrc_prop_full is not available
+    return None
+    """
+    fname = q.get_fname()
+    fn_f_weight = f"{job_tag}/field-selection-weight/traj-{traj}/weight.field"
+    @q.lazy_call
+    @q.timer_verbose
+    def get_f_weight():
+        f_weight = q.FieldRealD()
+        total_bytes = f_weight.load_double(fn_f_weight)
+        assert total_bytes > 0
+        return f_weight
+    ret = get_f_weight
+    if get_load_path(fn_f_weight) is not None:
+        return ret
+    if get_wi is None:
+        q.displayln_info(-1, f"{fname}: skip. (get_wi is None)")
+        return None
+    inv_type_list = [ 0, 1, ]
+    inv_type_name_list = [ "light", "strange", ]
+    path_f_list = [
+            f"{job_tag}/prop-wsrc-full-{inv_type_name}/traj-{traj}/geon-info.txt"
+            for inv_type_name in inv_type_name_list
+            ]
+    fn_f_weight_type_list == [
+            f"{job_tag}/field-selection-weight/traj-{traj}/weight-{inv_type_name}.field"
+            for inv_type_name in inv_type_name_list
+            ]
+    for inv_type in inv_type_list:
+        if get_load_path(path_f_list[inv_type]) is None:
+            inv_type_name = inv_type_name_list[inv_type]
+            q.displayln_info(-1, f"WARNING: {fname}: {job_tag} {traj} {inv_type_name} full prop is not available yet.")
+            return None
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-f-weight-from-wsrc-prop-full"):
+        return None
+    wi = get_wi()
+    compute_f_weight_from_wsrc_prop_full(
+            job_tag, traj,
+            fn_f_weight=fn_f_weight,
+            wi=wi,
+            inv_type_list=inv_type_list,
+            inv_type_name_list=inv_type_name_list,
+            path_f_list=path_f_list,
+            fn_f_weight_type_list=fn_f_weight_type_list,
+            )
+    q.release_lock()
+    return ret
+
+@q.timer
+def run_f_rand_01(job_tag, traj):
+    """
+    return get_f_rand_01
+        f_rand_01 = get_f_rand_01()
+    """
+    fname = q.get_fname()
+    fn_f_rand_01 = f"{job_tag}/field-selection-weight/traj-{traj}/f-rand-01.field"
+    @q.lazy_call
+    @q.timer_verbose
+    def get_f_rand_01():
+        f_rand_01 = q.FieldRealD()
+        f_rand_01.load_double(get_load_path(fn_fsel_rand))
+        return f_rand_01
+    ret = get_f_rand_01
+    if get_load_path(fn_f_rand_01) is not None:
+        return ret
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-f-rand-01"):
+        return None
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    geo = q.Geometry(total_site, 1)
+    rs = q.RngState(f"{job_tag}-{traj}").split("run_sel_from_wsrc_prop_full").split("f_rand_01")
+    f_rand_01 = q.FieldRealD(geo, 1)
+    f_rand_01.set_rand(rs, 1.0, 0.0)
+    f_rand_01.save_double(get_save_path(fn_f_rand_01))
+    q.release_lock()
+    return ret
+
+@q.timer
+def run_fsel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
+    """
+    return get_fsel_prob
+        fsel_prob = get_fsel_prob()
+        fsel = fsel_prob.fsel
+    """
+    fname = q.get_fname()
+    fn_fsel = f"{job_tag}/field-selection/traj-{traj}.field"
+    fn_fsel_prob = f"{job_tag}/field-selection-weight/traj-{traj}/fsel-prob.sfield"
+    @q.lazy_call
+    @q.timer_verbose
+    def get_fsel_prob():
+        fsel = q.FieldSelection()
+        total_size = fsel.load(get_load_path(fn_fsel))
+        assert total_size > 0
+        fsel_prob = q.SelectedFieldRealD(fsel, 1)
+        total_size = fsel_prob.load_double(get_load_path(fn_fsel_prob))
+        assert total_size > 0
+        return fsel_prob
+    ret = get_fsel_prob
+    if (get_load_path(fn_fsel) is not None) and (get_load_path(fn_fsel_prob) is not None):
+        return ret
+    if get_f_rand_01 is None:
+        q.displayln_info(-1, f"{fname}: get_f_rand_01 is None")
+        return None
+    if get_f_weight is None:
+        q.displayln_info(-1, f"{fname}: get_f_weight is None")
+        return None
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-fsel-prob"):
+        return None
+    fsel_rate = get_param(job_tag, "field-selection-fsel-rate")
+    q.displayln_info(-1, fname, f"fsel_rate = {fsel_rate}")
+    assert fsel_rate is not None
+    assert get_load_path(fn_fsel) is None
+    assert get_load_path(fn_fsel_prob) is None
+    f_rand_01 = get_f_rand_01()
+    f_weight = get_f_weight()
+    fsel = make_fsel_from_weight(f_weight, f_rand_01, fsel_rate)
+    fsel.save(get_save_path(fn_fsel))
+    fsel_prob = q.SelectedFieldRealD(fsel, 1)
+    fsel_prob @= f_weight
+    fsel_prob[:] = np.minimum(1.0, fsel_prob[:] * fsel_rate)
+    fsel_prob.save_double(get_save_path(fn_fsel_prob))
+    q.release_lock()
+    return ret
+
+@q.timer
+def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
+    """
+    return get_psel_prob
+        psel_prob = get_psel_prob()
+        psel = psel_prob.psel
+    """
+    fname = q.get_fname()
+    fn_psel = f"{job_tag}/point-selection/traj-{traj}.txt"
+    fn_psel_prob = f"{job_tag}/field-selection-weight/traj-{traj}/psel-prob.lat"
+    @q.lazy_call
+    @q.timer_verbose
+    def get_psel_prob():
+        psel = q.PointsSelection()
+        psel.load(get_load_path(fn_psel), geo)
+        psel_prob = q.SelectedPointsRealD(psel, 1)
+        psel_prob.load(get_load_path(fn_psel_prob))
+        return psel_prob
+    ret = get_psel_prob
+    if (get_load_path(fn_psel) is not None) and (get_load_path(fn_psel_prob) is not None):
+        return ret
+    if get_f_rand_01 is None:
+        q.displayln_info(-1, f"{fname}: get_f_rand_01 is None")
+        return None
+    if get_f_weight is None:
+        q.displayln_info(-1, f"{fname}: get_f_weight is None")
+        return None
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-psel-prob"):
+        return None
+    psel_rate = get_param(job_tag, "field-selection-psel-rate")
+    q.displayln_info(-1, fname, f"psel_rate = {psel_rate}")
+    assert psel_rate is not None
+    assert get_load_path(fn_psel) is None
+    assert get_load_path(fn_psel_prob) is None
+    f_rand_01 = get_f_rand_01()
+    f_weight = get_f_weight()
+    psel = make_psel_from_weight(f_weight, f_rand_01, psel_rate)
+    psel.save(get_save_path(fn_psel))
+    psel_prob = q.SelectedPointsRealD(psel, 1)
+    psel_prob @= f_weight_final
+    psel_prob[:] = np.minimum(1.0, psel_prob[:] * psel_rate)
+    psel_prob.save(get_save_path(fn_psel_prob))
+    q.release_lock()
+    return ret
+
+# -----------------------------------------------------------------------------
 
 @q.timer_verbose
 def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi=None):
@@ -215,11 +430,11 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi=None):
         assert get_load_path(fn_fsel_rand) is not None
         assert get_load_path(fn_fsel_weight) is not None
         return ret
-    inv_type_names = [ "light", "strange", ]
-    path_f_list = [ f"{job_tag}/prop-wsrc-full-{inv_type_name}/traj-{traj}/geon-info.txt" for inv_type_name in inv_type_names ]
+    inv_type_name_list = [ "light", "strange", ]
+    path_f_list = [ f"{job_tag}/prop-wsrc-full-{inv_type_name}/traj-{traj}/geon-info.txt" for inv_type_name in inv_type_name_list ]
     for inv_type in [ 0, 1, ]:
         if get_load_path(path_f_list[inv_type]) is None:
-            inv_type_name = inv_type_names[inv_type]
+            inv_type_name = inv_type_name_list[inv_type]
             q.displayln_info(f"WARNING: {fname}: {job_tag} {traj} {inv_type_name} full prop is not available yet.")
             return None, None, None, None, None
     if q.obtain_lock(f"locks/{job_tag}-{traj}-sel-from-wsrc-prop-full"):
@@ -262,7 +477,7 @@ def run_fsel_psel_from_wsrc_prop_full(job_tag, traj, *, get_wi=None):
                 prop_nf_dict[(inv_type, tslice,)] = prop_nf, prop_nf.glb_sum_tslice()
         f_weight_avg, f_weight_final = avg_weight_from_prop_full(geo, prop_nf_dict)
         for inv_type in [ 0, 1, ]:
-            inv_type_name = inv_type_names[inv_type]
+            inv_type_name = inv_type_name_list[inv_type]
             f_weight_avg[inv_type].save_double(get_save_path(f"{job_tag}/field-selection-weight/traj-{traj}/weight-{inv_type_name}.field"))
             q.displayln_info(-1, fname, "field-selection-weight", inv_type_name, f_weight_avg[inv_type].glb_sum_tslice()[:].ravel())
         f_weight_final.save_double(get_save_path(fn_fsel_weight))
@@ -291,8 +506,8 @@ def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel,
     fname = q.get_fname()
     if None in [ get_gt, get_psel, get_fsel, ]:
         return
-    inv_type_names = [ "light", "strange", ]
-    inv_type_name = inv_type_names[inv_type]
+    inv_type_name_list = [ "light", "strange", ]
+    inv_type_name = inv_type_name_list[inv_type]
     path_f = f"{job_tag}/prop-wsrc-full-{inv_type_name}/traj-{traj}/geon-info.txt"
     path_s = f"{job_tag}/prop-wsrc-{inv_type_name}/traj-{traj}"
     path_sp = f"{job_tag}/psel-prop-wsrc-{inv_type_name}/traj-{traj}"
@@ -480,8 +695,8 @@ def compute_prop_psrc(job_tag, traj, xg_src, inv_type, inv_acc, *,
 @q.timer_verbose
 def compute_prop_psrc_all(job_tag, traj, *,
                           inv_type, gf, gt, psel, fsel, f_rand_01, eig):
-    inv_type_names = [ "light", "strange", ]
-    inv_type_name = inv_type_names[inv_type]
+    inv_type_name_list = [ "light", "strange", ]
+    inv_type_name = inv_type_name_list[inv_type]
     path_s = f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}"
     path_s_hvp = f"{job_tag}/hvp-psrc-{inv_type_name}/traj-{traj}"
     path_hvp_ts = f"{job_tag}/hvp-sum-tslice-psrc-{inv_type_name}/traj-{traj}"
@@ -533,8 +748,8 @@ def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel,
         if inv_type == 0:
             return
         get_eig = lambda: None
-    inv_type_names = [ "light", "strange", ]
-    inv_type_name = inv_type_names[inv_type]
+    inv_type_name_list = [ "light", "strange", ]
+    inv_type_name = inv_type_name_list[inv_type]
     if get_load_path(f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}/geon-info.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-psrc-{inv_type_name}"):
@@ -599,8 +814,8 @@ def run_hvp_average(job_tag, traj, *, inv_type, get_psel_prob):
         It does not include the any minus sign (e.g. The minus sign due to the loop).
     """
     fname = q.get_fname()
-    inv_type_names = [ "light", "strange", ]
-    inv_type_name = inv_type_names[inv_type]
+    inv_type_name_list = [ "light", "strange", ]
+    inv_type_name = inv_type_name_list[inv_type]
     fn = f"{job_tag}/hvp-average/traj-{traj}/hvp_average_{inv_type_name}.field"
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site, 1)
@@ -685,8 +900,8 @@ def run_prop_rand_u1(job_tag, traj, *, inv_type, get_gf, get_fsel, get_eig=None)
         if inv_type == 0:
             return
         get_eig = lambda: None
-    inv_type_names = [ "light", "strange", "charm", ]
-    inv_type_name = inv_type_names[inv_type]
+    inv_type_name_list = [ "light", "strange", "charm", ]
+    inv_type_name = inv_type_name_list[inv_type]
     path_s = f"{job_tag}/prop-rand-u1-{inv_type_name}/traj-{traj}"
     if get_load_path(path_s + "/geon-info.txt") is not None:
         return
@@ -756,8 +971,8 @@ def compute_prop_smear(job_tag, xg_src, inv_type, inv_acc, *,
 def compute_prop_smear_all(job_tag, traj, *,
         inv_type, gf, gt, psel, fsel, psel_smear, gf_ape, eig,
         ):
-    inv_type_names = [ "light", "strange", ]
-    inv_type_name = inv_type_names[inv_type]
+    inv_type_name_list = [ "light", "strange", ]
+    inv_type_name = inv_type_name_list[inv_type]
     path_s = f"{job_tag}/prop-smear-{inv_type_name}/traj-{traj}"
     path_sp = f"{job_tag}/psel-prop-smear-{inv_type_name}/traj-{traj}"
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
@@ -794,8 +1009,8 @@ def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_
         if inv_type == 0:
             return
         get_eig = lambda: None
-    inv_type_names = [ "light", "strange", ]
-    inv_type_name = inv_type_names[inv_type]
+    inv_type_name_list = [ "light", "strange", ]
+    inv_type_name = inv_type_name_list[inv_type]
     if get_load_path(f"{job_tag}/prop-smear-{inv_type_name}/traj-{traj}/geon-info.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-smear-{inv_type_name}"):
