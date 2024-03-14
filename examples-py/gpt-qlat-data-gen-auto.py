@@ -1542,9 +1542,7 @@ q.check_time_limit()
 get_all_cexpr()
 
 for job_tag in job_tags:
-    q.displayln_info(pprint.pformat(get_param(job_tag)))
-    for v in get_param(job_tag).items():
-        q.displayln_info(f"CHECK: {v}")
+    run_params(job_tag)
     for traj in get_param(job_tag, "trajs"):
         run_job(job_tag, traj)
 

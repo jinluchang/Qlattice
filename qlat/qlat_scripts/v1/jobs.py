@@ -67,6 +67,20 @@ def check_job(job_tag, traj, fns_produce, fns_need):
 # ----------
 
 @q.timer_verbose
+def run_params(job_tag):
+    q.displayln_info(pprint.pformat(get_param(job_tag)))
+    for v in get_param(job_tag).items():
+        q.displayln_info(f"CHECK: {v}")
+    fn_pickle = get_save_path(f"{job_tag}/params.pickle")
+    fn_txt = get_save_path(f"{job_tag}/params.txt")
+    if not q.does_file_exist_qar_sync_node(fn_pickle):
+        q.save_pickle_obj(get_param(job_tag), fn_pickle, is_sync_node=True)
+    if not q.does_file_exist_qar_sync_node(fn_txt):
+        q.qtouch_info(fn_txt, pprint.pformat(get_param(job_tag)))
+
+# ----------
+
+@q.timer_verbose
 def run_gf(job_tag, traj):
     path_gf = get_load_path(
             f"{job_tag}/configs/ckpoint_lat.{traj}",

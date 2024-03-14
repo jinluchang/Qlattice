@@ -189,6 +189,11 @@ std::vector<SlTable> contract_four_pair(
   qassert(0 <= idx_xg_y and idx_xg_y < (Long)psel.size());
   const Coordinate& xg_x = psel[idx_xg_x];
   const Coordinate& xg_y = psel[idx_xg_y];
+  const Geometry& geo = fsel.f_rank.geo();
+  const Coordinate total_site = geo.total_site();
+  if (sqr(smod(xg_y - xg_x, total_site)) > r_sq_limit) {
+    qassert(false);
+  }
   const RealD prob_xg_x = psel_prob.get_elem(idx_xg_x);
   const RealD prob_xg_y = psel_prob.get_elem(idx_xg_y);
   const RealD prob_pair =
@@ -196,7 +201,6 @@ std::vector<SlTable> contract_four_pair(
   const RealD weight_pair = 1.0 / prob_pair;
   const SelectedField<ManyMagneticMoments>& smf =
       qcast_const<ManyMagneticMoments, RealD>(smf_d);
-  const Geometry& geo = fsel.f_rank.geo();
   qassert(is_matching_geo_mult(geo, fsel_prob.geo()));
   qassert(is_matching_geo_mult(geo, smf.geo()));
   qassert(is_matching_geo_mult(geo, sprop_x.geo()));
