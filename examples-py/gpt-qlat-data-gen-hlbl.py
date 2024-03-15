@@ -121,7 +121,7 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
+    json_results.append((f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()),))
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -183,7 +183,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, ge
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
+    json_results.append((f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()),))
 
 @q.timer_verbose
 def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -248,7 +248,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, ge
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
+    json_results.append((f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()),))
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -327,7 +327,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
+    json_results.append((f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()),))
 
 # ----
 
@@ -465,6 +465,13 @@ def run_job_global_hvp_average_for_subtract(job_tag, traj, *, get_glb_hvp_avg, g
 @q.timer_verbose
 def run_job(job_tag, traj):
     fname = q.get_fname()
+    #
+    traj_gf = traj
+    if job_tag[:5] == "test-":
+        # ADJUST ME
+        traj_gf = 1000
+        #
+    #
     fns_produce = [
             f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
             #
@@ -499,22 +506,17 @@ def run_job(job_tag, traj):
     else:
         has_eig = get_load_path(f"{job_tag}/eig/traj-{traj}/metadata.txt") is not None
         fns_need = [
-                (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
-                # f"{job_tag}/eig/traj-{traj}/metadata.txt",
-                # f"{job_tag}/gauge-transform/traj-{traj}.field",
+                (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
+                # f"{job_tag}/eig/traj-{traj_gf}/metadata.txt",
+                # f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
                 # f"{job_tag}/point-selection/traj-{traj}.txt",
                 # f"{job_tag}/field-selection/traj-{traj}.field",
                 # f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
                 # f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
                 ]
+    #
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
-    #
-    traj_gf = traj
-    if job_tag[:5] == "test-":
-        # ADJUST ME
-        traj_gf = 1000
-        #
     #
     get_gf = run_gf(job_tag, traj_gf)
     get_gt = run_gt(job_tag, traj_gf, get_gf)
@@ -621,7 +623,11 @@ def run_job(job_tag, traj):
 def run_job_contract(job_tag, traj):
     fname = q.get_fname()
     #
-    run_r_list(job_tag)
+    traj_gf = traj
+    if job_tag[:5] == "test-":
+        # ADJUST ME
+        traj_gf = 1000
+        #
     #
     fn_checkpoint_auto_contract = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
     #
@@ -630,7 +636,8 @@ def run_job_contract(job_tag, traj):
             ]
     fns_need = [
             #
-            (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
+            (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
+            f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
             f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
             f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
             f"{job_tag}/point-selection/traj-{traj}.txt",
@@ -639,7 +646,7 @@ def run_job_contract(job_tag, traj):
             f"{job_tag}/field-selection-weight/traj-{traj}/weight.field",
             f"{job_tag}/field-selection-weight/traj-{traj}/fsel-prob.sfield",
             f"{job_tag}/field-selection-weight/traj-{traj}/psel-prob.lat",
-                #
+            #
             f"{job_tag}/hvp-average/hvp_average_light.field",
             f"{job_tag}/hvp-average/hvp_average_light.trajs.txt",
             f"{job_tag}/hvp-average/hvp_average_strange.field",
@@ -674,11 +681,7 @@ def run_job_contract(job_tag, traj):
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
     #
-    traj_gf = traj
-    if job_tag[:5] == "test-":
-        # ADJUST ME
-        traj_gf = 1000
-        #
+    run_r_list(job_tag)
     #
     get_gf = run_gf(job_tag, traj_gf)
     get_gt = run_gt(job_tag, traj_gf, get_gf)
@@ -735,10 +738,10 @@ def run_job_contract(job_tag, traj):
             auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
             auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
             #
-            json_results.append((f"get_hvp_average_light:", q.get_data_sig(get_hvp_average_light(), q.RngState()),))
-            json_results.append((f"get_hvp_average_strange:", q.get_data_sig(get_hvp_average_strange(), q.RngState()),))
-            json_results.append((f"get_glb_hvp_avg_for_sub_light:", q.get_data_sig(get_glb_hvp_avg_for_sub_light(), q.RngState()),))
-            json_results.append((f"get_glb_hvp_avg_for_sub_strange:", q.get_data_sig(get_glb_hvp_avg_for_sub_strange(), q.RngState()),))
+            json_results.append((f"get_hvp_average_light: {traj}", q.get_data_sig(get_hvp_average_light(), q.RngState()),))
+            json_results.append((f"get_hvp_average_strange: {traj}:", q.get_data_sig(get_hvp_average_strange(), q.RngState()),))
+            json_results.append((f"get_glb_hvp_avg_for_sub_light: {traj}:", q.get_data_sig(get_glb_hvp_avg_for_sub_light(), q.RngState()),))
+            json_results.append((f"get_glb_hvp_avg_for_sub_strange: {traj}:", q.get_data_sig(get_glb_hvp_avg_for_sub_strange(), q.RngState()),))
             #
             q.qtouch_info(get_save_path(fn_checkpoint_auto_contract))
             q.displayln_info("timer_display for runjob")
@@ -769,7 +772,7 @@ set_param("test-4nt8", "cg_params-1-1", "maxcycle", value=2)
 set_param("test-4nt8", "cg_params-1-2", "maxcycle", value=3)
 set_param("test-4nt8", "cg_params-0-2", "pv_maxiter", value=5)
 set_param("test-4nt8", "cg_params-1-2", "pv_maxiter", value=5)
-set_param("test-4nt8", "trajs", value=[ 1000, ])
+set_param("test-4nt8", "trajs", value=[ 1000, 2000, ])
 set_param("test-8nt16", "trajs", value=[ 1000, 2000, ])
 set_param("24D", "lanc_params", 1, value=None)
 set_param("24D", "clanc_params", 1, value=None)

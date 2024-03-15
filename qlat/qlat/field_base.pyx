@@ -138,10 +138,10 @@ cdef class FieldBase:
 
     def __imul__(self, factor):
         """
-		factor can be float, complex, FieldM<ComplexD,1>
+		factor can be int, float, complex, FieldM<ComplexD,1>
         """
-        if isinstance(factor, float):
-            c.set_mul_double_field(self, factor)
+        if isinstance(factor, (int, float,)):
+            c.set_mul_double_field(self, float(factor))
         elif isinstance(factor, complex):
             c.set_mul_complex_field(self, factor)
         elif isinstance(factor, FieldBase):
@@ -432,8 +432,8 @@ cdef class SelectedFieldBase:
         return self
 
     def __imul__(self, factor):
-        assert isinstance(factor, float)
-        c.set_mul_double_sfield(self, factor)
+        assert isinstance(factor, (int, float))
+        c.set_mul_double_sfield(self, float(factor))
         return self
 
     def set_rand(self, rng, upper=1.0, lower=0.0):
