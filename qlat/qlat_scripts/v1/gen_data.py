@@ -200,6 +200,8 @@ def run_f_weight_from_wsrc_prop_full(job_tag, traj, *, get_wi=None):
         f_weight = get_f_weight()
     Or if wsrc_prop_full is not available
     return None
+    #
+    get_f_weight = run_f_weight_from_wsrc_prop_full(job_tag, traj, get_wi=get_wi)
     """
     fname = q.get_fname()
     fn_f_weight = f"{job_tag}/field-selection-weight/traj-{traj}/weight.field"
@@ -207,7 +209,7 @@ def run_f_weight_from_wsrc_prop_full(job_tag, traj, *, get_wi=None):
     @q.timer_verbose
     def get_f_weight():
         f_weight = q.FieldRealD()
-        total_bytes = f_weight.load_double(fn_f_weight)
+        total_bytes = f_weight.load_double(get_load_path(fn_f_weight))
         assert total_bytes > 0
         return f_weight
     ret = get_f_weight
@@ -222,7 +224,7 @@ def run_f_weight_from_wsrc_prop_full(job_tag, traj, *, get_wi=None):
             f"{job_tag}/prop-wsrc-full-{inv_type_name}/traj-{traj}/geon-info.txt"
             for inv_type_name in inv_type_name_list
             ]
-    fn_f_weight_type_list == [
+    fn_f_weight_type_list = [
             f"{job_tag}/field-selection-weight/traj-{traj}/weight-{inv_type_name}.field"
             for inv_type_name in inv_type_name_list
             ]
@@ -251,6 +253,8 @@ def run_f_rand_01(job_tag, traj):
     """
     return get_f_rand_01
         f_rand_01 = get_f_rand_01()
+    #
+    get_f_rand_01 = run_f_rand_01(job_tag, traj)
     """
     fname = q.get_fname()
     fn_f_rand_01 = f"{job_tag}/field-selection-weight/traj-{traj}/f-rand-01.field"
@@ -258,7 +262,8 @@ def run_f_rand_01(job_tag, traj):
     @q.timer_verbose
     def get_f_rand_01():
         f_rand_01 = q.FieldRealD()
-        f_rand_01.load_double(get_load_path(fn_fsel_rand))
+        total_bytes = f_rand_01.load_double(get_load_path(fn_f_rand_01))
+        assert total_bytes > 0
         return f_rand_01
     ret = get_f_rand_01
     if get_load_path(fn_f_rand_01) is not None:
@@ -280,6 +285,9 @@ def run_fsel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
     return get_fsel_prob
         fsel_prob = get_fsel_prob()
         fsel = fsel_prob.fsel
+    #
+    get_fsel_prob = run_fsel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
+    get_fsel = lambda : get_fsel_prob().fsel
     """
     fname = q.get_fname()
     fn_fsel = f"{job_tag}/field-selection/traj-{traj}.field"
@@ -327,10 +335,15 @@ def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
     return get_psel_prob
         psel_prob = get_psel_prob()
         psel = psel_prob.psel
+    #
+    get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
+    get_psel = lambda : get_psel_prob().psel
     """
     fname = q.get_fname()
     fn_psel = f"{job_tag}/point-selection/traj-{traj}.txt"
     fn_psel_prob = f"{job_tag}/field-selection-weight/traj-{traj}/psel-prob.lat"
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    geo = q.Geometry(total_site, 1)
     @q.lazy_call
     @q.timer_verbose
     def get_psel_prob():
@@ -360,7 +373,7 @@ def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
     psel = make_psel_from_weight(f_weight, f_rand_01, psel_rate)
     psel.save(get_save_path(fn_psel))
     psel_prob = q.SelectedPointsRealD(psel, 1)
-    psel_prob @= f_weight_final
+    psel_prob @= f_weight
     psel_prob[:] = np.minimum(1.0, psel_prob[:] * psel_rate)
     psel_prob.save(get_save_path(fn_psel_prob))
     q.release_lock()
