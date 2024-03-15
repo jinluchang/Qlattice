@@ -46,5 +46,21 @@
    "imag": 5.759600784156716e-18,
    "__extended_json_type__": "complex"
   }
+ ],
+ [
+  "get_glb_hvp_avg_for_sub_light:",
+  {
+   "real": 0.11795614767993377,
+   "imag": -6.6274543172559095e-18,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "get_glb_hvp_avg_for_sub_strange:",
+  {
+   "real": 0.11759639157112989,
+   "imag": 5.759600784156716e-18,
+   "__extended_json_type__": "complex"
+  }
  ]
 ]

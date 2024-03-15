@@ -336,6 +336,132 @@ def get_all_cexpr():
 
 # ----
 
+@q.timer
+def run_job_global_hvp_average(job_tag, *, inv_type):
+    """
+    get_glb_hvp_avg_light = run_job_global_hvp_average(job_tag, inv_type=0)
+    get_glb_hvp_avg_strange = run_job_global_hvp_average(job_tag, inv_type=1)
+    #
+    get_glb_hvp_avg = run_job_global_hvp_average(job_tag, inv_type=inv_type)
+    glb_hvp_avg_trajs, glb_hvp_avg = get_glb_hvp_avg()
+    """
+    fname = q.get_fname()
+    inv_type_name_list = [ "light", "strange", ]
+    inv_type_name = inv_type_name_list[inv_type]
+    fn = f"{job_tag}/hvp-average/hvp_average_{inv_type_name}.field"
+    fn_trajs = f"{job_tag}/hvp-average/hvp_average_{inv_type_name}.trajs.txt"
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    geo = q.Geometry(total_site, 1)
+    @q.lazy_call
+    @q.timer_verbose
+    def load_glb_hvp_avg():
+        trajs = [ int(x) for x in q.qcat_sync_node(get_load_path(fn_trajs)).splitlines() ]
+        assert len(trajs) > 0
+        hvp_average = q.FieldComplexD(geo, 16)
+        total_bytes = hvp_average.load_double_from_float(get_load_path(fn))
+        assert total_bytes > 0
+        return trajs, hvp_average
+    ret = load_glb_hvp_avg
+    if get_load_path(fn) is not None:
+        assert get_load_path(fn_trajs) is not None
+        return ret
+    #
+    q.check_stop()
+    q.check_time_limit()
+    if not q.obtain_lock(f"locks/{job_tag}-{fname}-{inv_type_name}"):
+        return None
+    #
+    @q.timer_verbose
+    def compute_glb_hvp_average():
+        trajs = get_param(job_tag, "trajs")
+        trajs_hvp_avg = []
+        for traj in trajs:
+            fns_produce = [
+                    fn,
+                    ]
+            fns_need = [
+                    f"{job_tag}/hvp-average/traj-{traj}/hvp_average_{inv_type_name}.field",
+                    f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
+                    f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
+                    f"{job_tag}/point-selection/traj-{traj}.txt",
+                    f"{job_tag}/field-selection/traj-{traj}.field",
+                    f"{job_tag}/field-selection-weight/traj-{traj}/f-rand-01.field",
+                    f"{job_tag}/field-selection-weight/traj-{traj}/weight.field",
+                    f"{job_tag}/field-selection-weight/traj-{traj}/fsel-prob.sfield",
+                    f"{job_tag}/field-selection-weight/traj-{traj}/psel-prob.lat",
+                    ]
+            if check_job(job_tag, traj, fns_produce, fns_need):
+                q.displayln_info(0, f"{fname}: {job_tag} {traj} {inv_type_name} OK")
+                trajs_hvp_avg.append(traj)
+            else:
+                q.displayln_info(0, f"{fname}: {job_tag} {traj} {inv_type_name} not yet finished")
+        #
+        q.displayln_info(0, f"{fname}: {job_tag} {traj} {inv_type_name} num_trajs={len(trajs_hvp_avg)} start.")
+        assert len(trajs_hvp_avg) > 0
+        #
+        hvp_average = q.FieldComplexD(geo, 16)
+        hvp_average.set_zero()
+        for traj in trajs_hvp_avg:
+            get_wi = run_wi(job_tag, traj)
+            get_f_weight = run_f_weight_from_wsrc_prop_full(job_tag, traj, get_wi=get_wi)
+            get_f_rand_01 = run_f_rand_01(job_tag, traj)
+            get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
+            get_hvp_average = run_hvp_average(
+                    job_tag, traj,
+                    inv_type=inv_type,
+                    get_psel_prob=get_psel_prob,
+                    )
+            hvp_average += get_hvp_average()
+        hvp_average *= 1 / len(trajs_hvp_avg)
+        q.qtouch_info(get_save_path(fn_trajs), [ f"{traj}\n" for traj in trajs_hvp_avg ])
+        hvp_average.save_float_from_double(get_save_path(fn))
+        q.displayln_info(-1, f"{fname}: {job_tag} {inv_type_name} num_trajs={len(trajs_hvp_avg)} finished.")
+    #
+    compute_glb_hvp_average()
+    #
+    q.release_lock()
+    q.clean_cache()
+    q.timer_display()
+    return ret
+
+@q.timer_verbose
+def run_job_global_hvp_average_for_subtract(job_tag, traj, *, get_glb_hvp_avg, get_hvp_average):
+    """
+    get_glb_hvp_avg_for_sub = run_job_global_hvp_average_for_subtract(job_tag, traj, get_glb_hvp_avg=get_glb_hvp_avg, get_hvp_average=get_hvp_average)
+    glb_hvp_avg_for_sub = get_glb_hvp_avg_for_sub()
+    #
+    Get global hvp average excluding data from this traj.
+    Suitable for use in subtraction.
+    """
+    fname = q.get_fname()
+    if get_glb_hvp_avg is None:
+        q.displayln_info(-1, f"{fname}: get_glb_hvp_avg is None.")
+        return None
+    if get_hvp_average is None:
+        q.displayln_info(-1, f"{fname}: get_hvp_average is None.")
+        return None
+    @q.lazy_call
+    @q.timer_verbose
+    def get_glb_hvp_avg_for_sub():
+        glb_hvp_avg_trajs, glb_hvp_avg = get_glb_hvp_avg()
+        glb_hvp_avg_for_sub = glb_hvp_avg.copy()
+        if traj not in glb_hvp_avg_trajs:
+            return glb_hvp_avg_for_sub
+        num_trajs = len(glb_hvp_avg_trajs)
+        assert num_trajs > 0
+        if num_trajs == 1:
+            q.displayln_info(-1, f"WARNING: {fname} glb_hvp_avg num_trajs={num_trajs}")
+            return glb_hvp_avg_for_sub
+        hvp_average = get_hvp_average()
+        glb_hvp_avg_for_sub *= num_trajs
+        glb_hvp_avg_for_sub -= hvp_average
+        glb_hvp_avg_for_sub *= 1.0 / (num_trajs - 1.0)
+        return glb_hvp_avg_for_sub
+    ret = get_glb_hvp_avg_for_sub
+    return ret
+
+# ----
+
 @q.timer_verbose
 def run_job(job_tag, traj):
     fname = q.get_fname()
@@ -503,6 +629,25 @@ def run_job_contract(job_tag, traj):
             fn_checkpoint_auto_contract,
             ]
     fns_need = [
+            #
+            (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
+            f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
+            f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
+            f"{job_tag}/point-selection/traj-{traj}.txt",
+            f"{job_tag}/field-selection/traj-{traj}.field",
+            f"{job_tag}/field-selection-weight/traj-{traj}/f-rand-01.field",
+            f"{job_tag}/field-selection-weight/traj-{traj}/weight.field",
+            f"{job_tag}/field-selection-weight/traj-{traj}/fsel-prob.sfield",
+            f"{job_tag}/field-selection-weight/traj-{traj}/psel-prob.lat",
+                #
+            f"{job_tag}/hvp-average/hvp_average_light.field",
+            f"{job_tag}/hvp-average/hvp_average_light.trajs.txt",
+            f"{job_tag}/hvp-average/hvp_average_strange.field",
+            f"{job_tag}/hvp-average/hvp_average_strange.trajs.txt",
+            #
+            f"{job_tag}/hvp-average/traj-{traj}/hvp_average_light.field",
+            f"{job_tag}/hvp-average/traj-{traj}/hvp_average_strange.field",
+            #
             # (f"{job_tag}/prop-rand-u1-light/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-light/traj-{traj}/geon-info.txt",),
             # (f"{job_tag}/prop-rand-u1-strange/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-strange/traj-{traj}/geon-info.txt",),
             # (f"{job_tag}/prop-rand-u1-charm/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-charm/traj-{traj}/geon-info.txt",),
@@ -524,9 +669,6 @@ def run_job_contract(job_tag, traj):
             #
             # (f"{job_tag}/psel-prop-smear-light/traj-{traj}.qar.idx", f"{job_tag}/psel-prop-smear-light/traj-{traj}/checkpoint.txt",),
             # (f"{job_tag}/psel-prop-smear-strange/traj-{traj}.qar.idx", f"{job_tag}/psel-prop-smear-strange/traj-{traj}/checkpoint.txt",),
-            #
-            f"{job_tag}/hvp-average/traj-{traj}/hvp_average_light.field",
-            f"{job_tag}/hvp-average/traj-{traj}/hvp_average_strange.field",
             ]
     #
     if not check_job(job_tag, traj, fns_produce, fns_need):
@@ -546,15 +688,20 @@ def run_job_contract(job_tag, traj):
     #
     get_f_weight = run_f_weight_from_wsrc_prop_full(job_tag, traj, get_wi=get_wi)
     get_f_rand_01 = run_f_rand_01(job_tag, traj)
-    get_fsel_prob = run_fsel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
-    get_fsel = lambda : get_fsel_prob().fsel
     get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
     get_psel = lambda : get_psel_prob().psel
+    get_fsel_prob = run_fsel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
+    get_fsel = lambda : get_fsel_prob().fsel
     #
     get_psel_smear = run_psel_smear(job_tag, traj)
     #
+    get_glb_hvp_avg_light = run_job_global_hvp_average(job_tag, inv_type=0)
+    get_glb_hvp_avg_strange = run_job_global_hvp_average(job_tag, inv_type=1)
     get_hvp_average_light = run_hvp_average(job_tag, traj, inv_type=0, get_psel_prob=get_psel_prob)
     get_hvp_average_strange = run_hvp_average(job_tag, traj, inv_type=1, get_psel_prob=get_psel_prob)
+    #
+    get_glb_hvp_avg_for_sub_light = run_job_global_hvp_average_for_subtract(job_tag, traj, get_glb_hvp_avg=get_glb_hvp_avg_light, get_hvp_average=get_hvp_average_light)
+    get_glb_hvp_avg_for_sub_strange = run_job_global_hvp_average_for_subtract(job_tag, traj, get_glb_hvp_avg=get_glb_hvp_avg_strange, get_hvp_average=get_hvp_average_strange)
     #
     get_get_prop = run_get_prop(job_tag, traj,
             get_gf=get_gf,
@@ -578,7 +725,7 @@ def run_job_contract(job_tag, traj):
                 ],
             )
     #
-    if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
+    if q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
         get_prop = get_get_prop()
         if get_prop is not None:
             q.timer_fork()
@@ -590,6 +737,8 @@ def run_job_contract(job_tag, traj):
             #
             json_results.append((f"get_hvp_average_light:", q.get_data_sig(get_hvp_average_light(), q.RngState()),))
             json_results.append((f"get_hvp_average_strange:", q.get_data_sig(get_hvp_average_strange(), q.RngState()),))
+            json_results.append((f"get_glb_hvp_avg_for_sub_light:", q.get_data_sig(get_glb_hvp_avg_for_sub_light(), q.RngState()),))
+            json_results.append((f"get_glb_hvp_avg_for_sub_strange:", q.get_data_sig(get_glb_hvp_avg_for_sub_strange(), q.RngState()),))
             #
             q.qtouch_info(get_save_path(fn_checkpoint_auto_contract))
             q.displayln_info("timer_display for runjob")
@@ -637,6 +786,8 @@ qg.begin_with_gpt()
 
 job_tags = q.get_arg("--job_tags", default="").split(",")
 
+is_performing_inversion = q.get_arg("--no-inversion", default=None) is None
+
 is_performing_contraction = q.get_arg("--no-contract", default=None) is None
 
 #######################################################
@@ -661,7 +812,12 @@ for job_tag in job_tags:
     run_params(job_tag)
     for traj in get_param(job_tag, "trajs"):
         q.check_time_limit()
-        run_job(job_tag, traj)
+        if is_performing_inversion:
+            run_job(job_tag, traj)
+    run_job_global_hvp_average(job_tag, inv_type=0)
+    run_job_global_hvp_average(job_tag, inv_type=1)
+    for traj in get_param(job_tag, "trajs"):
+        q.check_time_limit()
         if is_performing_contraction:
             q.check_time_limit()
             run_job_contract(job_tag, traj)
