@@ -32,4 +32,6 @@ CHECK: ('cg_params-0-2', {'maxiter': 5, 'maxcycle': 3, 'pv_maxiter': 5})
 CHECK: ('cg_params-1-0', {'maxiter': 5, 'maxcycle': 1})
 CHECK: ('cg_params-1-1', {'maxiter': 5, 'maxcycle': 2})
 CHECK: ('cg_params-1-2', {'maxiter': 5, 'maxcycle': 3, 'pv_maxiter': 5})
+CHECK: ('hlbl_four_prob_scaling_factor', 1.0)
+CHECK: ('hlbl_four_prob_scaling_factor_strange', 1.0)
 CHECK: finished successfully.

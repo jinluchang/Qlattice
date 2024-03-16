@@ -158,9 +158,17 @@ def cache_compiled_cexpr(
     cexpr_all = q.load_pickle_obj(fn_pickle)
     q.displayln_info(1, f"{fname}: Loading '{path}'.")
     if is_cython:
-        module = importlib.import_module((path + "/build/cexpr_code").replace("/", "."))
+        # module = importlib.import_module((path + "/build/cexpr_code").replace("/", "."))
+        file_path = glob.glob(path + "/build/cexpr_code.*.so")
+        assert len(file_path) == 1
+        file_path = file_path[0]
+        h = q.hash_sha256(file_path)
+        module = q.import_file(f"auto_contract_cy_{h}.cexpr_code", file_path)
     else:
-        module = importlib.import_module((path + "/cexpr_code").replace("/", "."))
+        # module = importlib.import_module((path + "/cexpr_code").replace("/", "."))
+        file_path = path + "/cexpr_code.py"
+        h = q.hash_sha256(file_path)
+        module = q.import_file(f"auto_contract_py_{h}.cexpr_code", file_path)
     q.displayln_info(1, f"{fname}: Loaded '{path}'.")
     ccexpr = CCExpr(cexpr_all, module, base_positions_dict=base_positions_dict)
     return ccexpr

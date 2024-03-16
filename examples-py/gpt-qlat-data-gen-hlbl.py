@@ -22,6 +22,7 @@ is_cython = False
 
 load_path_list[:] = [
         "results",
+        "results-props",
         "/lustre/orion/lgt119/proj-shared/ljin/qcddata4",
         "/lustre/orion/lgt119/proj-shared/ljin/qcddata5",
         "/lustre/orion/lgt119/proj-shared/ljin/hlbl-muon-line-data/hlbl-muon-line",
@@ -462,6 +463,100 @@ def run_job_global_hvp_average_for_subtract(job_tag, traj, *, get_glb_hvp_avg, g
 
 # ----
 
+def get_r_sq_limit(job_tag):
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    return q.sqr(total_site[0])
+
+def get_r_coordinate(xg, total_site):
+    xg_rel = q.smod_coordinate(xg, total_site)
+    r_sq = xg_rel.sqr()
+    return np.sqrt(r_sq)
+
+@q.timer
+def get_psrc_prop(job_tag, traj, xg, inv_type, inv_acc, *, sfr, fsel):
+    tag = mk_psrc_tag(xg, inv_type, inv_acc)
+    if not sfr.has(tag):
+        return None
+    s_prop = q.SelProp(fsel)
+    s_prop.load_double_from_float(sfr, tag)
+    return sprop
+
+# ----
+
+def get_prob_func(job_tag, inv_type, r_sq_limit, r_sq):
+    if job_tag == "48I" and inv_type == 0:
+        if r_sq <= 8 * 8:
+            prob = 1.0
+        elif r_sq > r_sq_limit:
+            prob = 0.0
+        else:
+            prob = (8.0 / np.sqrt(r_sq))**3
+    elif job_tag == "64I" and inv_type == 0:
+        if r_sq <= 12 * 12:
+            prob = 1.0
+        elif r_sq > r_sq_limit:
+            prob = 0.0
+        else:
+            prob = (12.0 / np.sqrt(r_sq))**3
+    else:
+        if r_sq <= 3 * 3:
+            prob = 1.0
+        elif r_sq <= 6 * 6:
+            prob = 0.5
+        elif r_sq > r_sq_limit:
+            prob = 0.0
+        else:
+            prob = (5.0 / np.sqrt(r_sq))**3
+    assert 0 <= prob
+    assert prob <= 1
+    return prob
+
+def mk_hlbl_four_get_prob(job_tag, inv_type):
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    r_sq_limit = get_r_sq_limit(job_tag)
+    factor = 1.0
+    if inv_type == 0:
+        factor *= get_param(job_tag, "hlbl_four_prob_scaling_factor")
+    elif inv_type == 1:
+        factor *= get_param(job_tag, "hlbl_four_prob_scaling_factor_strange")
+    else:
+        assert False
+    def get_prob(xg):
+        xg_rel = q.smod_coordinate(xg, total_site)
+        r_sq = xg_rel.sqr()
+        prob = factor * get_prob_func(job_tag, inv_type, r_sq_limit, r_sq)
+        return prob
+    return get_prob
+
+@q.timer
+def get_total_prob(total_site, get_prob):
+    """
+    get_prob(xg) = prob
+    """
+    geo = q.Geometry(total_site, 1)
+    f_prob = q.FieldRealD(geo)
+    f_prob_v = f_prob[:]
+    local_volume = geo.local_volume()
+    xg_arr = geo.xg_arr()
+    assert len(xg_arr) == local_volume
+    for index in range(local_volume):
+        xg = q.Coordinate(xg_arr[index])
+        prob = get_prob(xg)
+        assert isinstance(prob, float)
+        f_prob_v[index] = prob
+    total_prob = f_prob.glb_sum()
+    total_prob = total_prob[0, 0]
+    return total_prob
+
+@q.timer
+def get_hlbl_four_total_prob(job_tag, inv_type):
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    get_prob = mk_hlbl_four_get_prob(job_tag, inv_type)
+    total_prob = get_total_prob(total_site, get_prob)
+    return total_prob
+
+# ----
+
 @q.timer_verbose
 def run_job(job_tag, traj):
     fname = q.get_fname()
@@ -772,63 +867,86 @@ set_param("test-4nt8", "cg_params-1-1", "maxcycle", value=2)
 set_param("test-4nt8", "cg_params-1-2", "maxcycle", value=3)
 set_param("test-4nt8", "cg_params-0-2", "pv_maxiter", value=5)
 set_param("test-4nt8", "cg_params-1-2", "pv_maxiter", value=5)
-set_param("test-4nt8", "trajs", value=[ 1000, 2000, ])
-set_param("test-8nt16", "trajs", value=[ 1000, 2000, ])
+
 set_param("24D", "lanc_params", 1, value=None)
 set_param("24D", "clanc_params", 1, value=None)
 set_param("24D", 'fermion_params', 0, 2, value=deepcopy(get_param("24D", 'fermion_params', 0, 0)))
 set_param("24D", 'fermion_params', 1, 0, value=deepcopy(get_param("24D", 'fermion_params', 1, 2)))
 set_param("24D", 'fermion_params', 1, 1, value=deepcopy(get_param("24D", 'fermion_params', 1, 2)))
-set_param("64I", "trajs", value=list(range(1200, 3680, 40)))
+
+tag = "trajs"
+set_param("test-4nt8", tag, value=[ 1000, 2000, ])
+set_param("24D", tag, value=list(range(2000, 3000, 10)))
+set_param("48I", tag, value=list(range(975, 2185, 10)) + list(range(1102, 1502, 10)))
+set_param("64I", tag, value=list(range(1200, 3680, 40)))
+
+tag = "hlbl_four_prob_scaling_factor"
+set_param("test-4nt8", tag, value=1.0)
+set_param("test-8nt16", tag, value=1.0)
+set_param("24D", tag, value=1.0)
+set_param("48I", tag, value=1.0)
+set_param("64I", tag, value=1.0)
+
+tag = "hlbl_four_prob_scaling_factor_strange"
+set_param("test-4nt8", tag, value=1.0)
+set_param("test-8nt16", tag, value=1.0)
+set_param("24D", tag, value=1.0)
+set_param("48I", tag, value=1.0)
+set_param("64I", tag, value=1.0)
 
 # ----
 
-qg.begin_with_gpt()
+if __name__ == "__main__":
 
-##################### CMD options #####################
+    qg.begin_with_gpt()
 
-job_tags = q.get_arg("--job_tags", default="").split(",")
+    ##################### CMD options #####################
 
-is_performing_inversion = q.get_arg("--no-inversion", default=None) is None
+    job_tags = q.get_arg("--job_tags", default="").split(",")
 
-is_performing_contraction = q.get_arg("--no-contract", default=None) is None
+    is_performing_inversion = q.get_arg("--no-inversion", default=None) is None
 
-#######################################################
+    is_performing_contraction = q.get_arg("--no-contract", default=None) is None
 
-job_tags_default = [
-        "test-4nt8",
-        # "test-8nt16",
-        # "24D",
-        # "64I",
-        ]
+    #######################################################
 
-if job_tags == [ "", ]:
-    job_tags = job_tags_default
-else:
-    is_cython = True
+    job_tags_default = [
+            "test-4nt8",
+            # "test-8nt16",
+            # "24D",
+            # "64I",
+            ]
 
-q.check_time_limit()
+    if job_tags == [ "", ]:
+        job_tags = job_tags_default
+    else:
+        is_cython = True
 
-get_all_cexpr()
+    q.check_time_limit()
 
-for job_tag in job_tags:
-    run_params(job_tag)
-    for traj in get_param(job_tag, "trajs"):
-        q.check_time_limit()
-        if is_performing_inversion:
-            run_job(job_tag, traj)
-    run_job_global_hvp_average(job_tag, inv_type=0)
-    run_job_global_hvp_average(job_tag, inv_type=1)
-    for traj in get_param(job_tag, "trajs"):
-        q.check_time_limit()
-        if is_performing_contraction:
+    get_all_cexpr()
+
+    for job_tag in job_tags:
+        run_params(job_tag)
+        for traj in get_param(job_tag, "trajs"):
             q.check_time_limit()
-            run_job_contract(job_tag, traj)
+            if is_performing_inversion:
+                run_job(job_tag, traj)
+        if is_performing_contraction:
+            run_job_global_hvp_average(job_tag, inv_type=0)
+            run_job_global_hvp_average(job_tag, inv_type=1)
+        for traj in get_param(job_tag, "trajs"):
+            q.check_time_limit()
+            if is_performing_contraction:
+                q.check_time_limit()
+                run_job_contract(job_tag, traj)
 
-q.check_log_json(__file__, json_results)
+    q.check_log_json(__file__, json_results)
 
-q.timer_display()
+    q.timer_display()
 
-qg.end_with_gpt()
+    qg.end_with_gpt()
 
-q.displayln_info("CHECK: finished successfully.")
+    q.displayln_info("CHECK: finished successfully.")
+
+# ----

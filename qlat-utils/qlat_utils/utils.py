@@ -8,6 +8,7 @@ import sys
 import os
 import numpy as np
 import inspect
+import importlib
 
 def getenv(*names, default=None):
     assert len(names) > 0
@@ -64,6 +65,16 @@ def show_memory_usage():
         # displayln_info_malloc_stats()
     except:
         displayln_info(f"show_memory_usage: no psutil.")
+
+def import_file(module_name, file_path):
+    """
+    return the imported module
+    """
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+    return module
 
 def displayln_info_malloc_stats():
     if get_id_node() == 0:
