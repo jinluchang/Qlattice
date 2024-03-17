@@ -32,6 +32,9 @@ for prefix in "$prefix_main/qlat-examples-py" "$prefix_main/qlat-examples-py-gpt
             cp -rpv "$prefix/$log".json "$log".json.new || true
             cp -rpv "$prefix/${log%.log}.py.p/log.full.txt" "$log".full.txt || true
         fi
+        if [ -f "$prefix/${log%.log}.py.p/log.full.txt" ] ; then
+            grep 'INFO: ' "$prefix/${log%.log}.py.p/log.full.txt" || true
+        fi
     done
 done
 

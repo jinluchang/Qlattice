@@ -309,7 +309,9 @@ def mk_r_sq_interp_idx_coef_list(r_list):
             r_idx += 1
     return r_sq_interp_idx_coef_list
 
+@timer
 def check_log_json(script_file, json_results, *, check_eps=1e-5):
+    fname = get_fname()
     if 0 == get_id_node():
         json_fn_name = os.path.splitext(script_file)[0] + ".log.json"
         qtouch(json_fn_name + ".new", json_dumps(json_results, indent=1))
@@ -317,8 +319,8 @@ def check_log_json(script_file, json_results, *, check_eps=1e-5):
             json_results_load = json_loads(qcat(json_fn_name))
             for i, (p, pl,) in enumerate(zip(json_results, json_results_load)):
                 if len(p) != len(pl):
-                    displayln(f"CHECK: {i} {p} load:{pl}")
-                    displayln("CHECK: ERROR: JSON results length does not match.")
+                    displayln(-1, f"CHECK: {i} {p} load:{pl}")
+                    displayln(-1, f"CHECK: ERROR: JSON results length does not match.")
                     continue
                 if len(p) == 2:
                     eps = check_eps
@@ -329,20 +331,27 @@ def check_log_json(script_file, json_results, *, check_eps=1e-5):
                     n, v, eps = p
                     nl, vl, epsl = pl
                 else:
-                    displayln(f"CHECK: {i} {p} load:{pl}")
-                    displayln("CHECK: ERROR: JSON results length not 2 or 3.")
+                    displayln(-1, f"CHECK: {i} {p} load:{pl}")
+                    displayln(-1, f"CHECK: ERROR: JSON results length not 2 or 3.")
                     continue
                 if n != nl:
-                    displayln(f"CHECK: {i} {p} load:{pl}")
-                    displayln("CHECK: ERROR: JSON results item does not match.")
+                    displayln(-1, f"CHECK: {i} {p} load:{pl}")
+                    displayln(-1, f"CHECK: ERROR: JSON results item does not match.")
                     continue
                 if eps != epsl:
-                    displayln(f"CHECK: {i} {p} load:{pl}")
-                    displayln("CHECK: ERROR: JSON results eps does not match.")
+                    displayln(-1, f"CHECK: {i} {p} load:{pl}")
+                    displayln(-1, f"CHECK: ERROR: JSON results eps does not match.")
                     continue
+                actual_eps = 0.0
+                if (abs(v) + abs(vl)) > 0:
+                    actual_eps = abs(v - vl) / (abs(v) + abs(vl))
                 if abs(v - vl) > eps * (abs(v) + abs(vl)):
-                    displayln(f"CHECK: {i} {p} load:{pl}")
-                    displayln("CHECK: ERROR: JSON results value does not match.")
+                    displayln(-1, f"CHECK: {i} {p} load:{pl}")
+                    displayln(-1, f"CHECK: target eps: {eps} ; actual eps: {actual_eps} .")
+                    displayln(-1, f"CHECK: ERROR: JSON results value does not match.")
+                else:
+                    displayln(-1, f"INFO: {fname}: {i} '{n}'")
+                    displayln(-1, f"INFO: {fname}: target eps: {eps} ; actual eps: {actual_eps} .")
             if len(json_results) != len(json_results_load):
-                displayln(f"CHECK: len(json_results)={len(json_results)} load:{len(json_results_load)}")
-                displayln("CHECK: ERROR: JSON results len does not match.")
+                displayln(-1, f"CHECK: len(json_results)={len(json_results)} load:{len(json_results_load)}")
+                displayln(-1, f"CHECK: ERROR: JSON results len does not match.")

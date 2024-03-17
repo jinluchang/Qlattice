@@ -839,6 +839,7 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
         json_results.append((
             f"{fname}: {info_tag}",
             q.get_data_sig(lslt, q.RngState()),
+            5e-3,
             ))
         dict_val = {}
         dict_val["lslt"] = lslt
@@ -910,10 +911,12 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
     json_results.append((
         f"{fname}: {job_tag} {traj} {inv_type_name}",
         q.get_data_sig(results["lslt_sum"], q.RngState()),
+        5e-3,
         ))
     json_results.append((
         f"{fname}: {job_tag} {traj} {inv_type_name}",
         q.get_data_sig(results["lslt_sloppy_sum"], q.RngState()),
+        5e-3,
         ))
     q.save_pickle_obj(results, get_save_path(fn))
     for fn_chunk in fn_chunk_list:
