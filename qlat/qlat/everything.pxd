@@ -355,6 +355,7 @@ cdef extern from "qlat/muon-line.h" namespace "qlat":
     void test_integrationMultidimensional() except +
     #
     void clear_muon_line_interpolations() except +
+    Long get_number_of_muon_line_interpolations() except +
     #
     cdef cppclass IntegrationEps:
         double epsabs

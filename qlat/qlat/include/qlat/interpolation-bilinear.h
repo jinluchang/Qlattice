@@ -33,6 +33,15 @@ struct InterpolationNd {
     data.resize(0);
   }
   //
+  bool empty()
+  {
+    if (data.size() == 0) {
+      qassert(dims.size() == 0);
+      return true;
+    }
+    return false;
+  }
+  //
   void add_dimension(const int n, const double xhigh, const double xlow)
   // use n-grid in next dimension with i=0 <> xlow and i=n-1 <> xhigh
   {
@@ -111,7 +120,10 @@ struct InterpolationNd {
   C operator()(const std::vector<double>& x) const
   // get interpolated value at point x
   {
-    qassert(dims.size() == x.size());
+    if (dims.size() != x.size()) {
+      qerr(ssprintf("InterpolationNd: dims.size=%ld ; x.size()=%ld .",
+                    (Long)dims.size(), (Long)x.size()));
+    }
     std::vector<int> il(dims.size());
     std::vector<double> vl(dims.size());
     // get coordinate left of x in each dimension

@@ -190,9 +190,12 @@ std::vector<SlTable> contract_four_pair(
   const Coordinate& xg_x = psel[idx_xg_x];
   const Coordinate& xg_y = psel[idx_xg_y];
   const Geometry& geo = fsel.f_rank.geo();
+  const Long total_volume = geo.total_volume();
   const Coordinate total_site = geo.total_site();
   if (sqr(smod(xg_y - xg_x, total_site)) > r_sq_limit) {
-    qassert(false);
+    qerr(fname + ssprintf(": xg_x=%s xg_y=%s total_site=%s r_sq_limit=%ld.",
+                          show(xg_x).c_str(), show(xg_y).c_str(),
+                          show(total_site).c_str(), (long)r_sq_limit));
   }
   const RealD prob_xg_x = psel_prob.get_elem(idx_xg_x);
   const RealD prob_xg_y = psel_prob.get_elem(idx_xg_y);
@@ -239,7 +242,7 @@ std::vector<SlTable> contract_four_pair(
   const Complex coef0 = 1.0E10 * 2.0 * muon_mass * std::pow(e_charge, 6);
   const Complex coef1 =
       (inv_type == 0 ? 16.0 + 1.0 : 1.0) / 81.0 * (-3.0) * std::pow(z_v, 4);
-  const Complex coef_all = coef * coef0 * coef1 / 3.0 * weight_pair;
+  const Complex coef_all = coef * coef0 * coef1 / 3.0 / (RealD)total_volume * weight_pair;
   std::vector<SlTable> ts;
   for (int i = 0; i < (int)tags.size(); ++i) {
     SelectedField<Complex> f_loop_i_rho_sigma_lambda;
@@ -284,12 +287,13 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
   n_points_in_r_sq_limit = 0;
   n_points_computed = 0;
   const Geometry& geo = geo_reform(hvp_x.geo());
+  const Long total_volume = geo.total_volume();
   const Coordinate total_site = geo.total_site();
   const double alpha_inv = 137.035999139;
   const double e_charge = std::sqrt(4 * qlat::PI / alpha_inv);
   const Complex coef0 = 1.0E10 * 2.0 * muon_mass * std::pow(e_charge, 6);
   const Complex coef1 = 25.0 / 81.0 * 3.0 * std::pow(z_v, 4);
-  const Complex coef2 = coef * coef0 * coef1 / 3.0;
+  const Complex coef2 = coef * coef0 * coef1 / 3.0 / (RealD)total_volume;
   const int sub_tag = 0;  // use subtracted muon line weighting function
   const long n_labels = 8;
   const long n_points = psel.size();

@@ -10,6 +10,7 @@ import os
 import time
 import importlib
 import sys
+import pprint
 from copy import deepcopy
 
 import qlat_gpt as qg
@@ -463,6 +464,11 @@ def run_job_global_hvp_average_for_subtract(job_tag, traj, *, get_glb_hvp_avg, g
 
 # ----
 
+def get_muon_mass(job_tag):
+    a_inv_gev = get_param(job_tag, "a_inv_gev")
+    muon_mass_mev = 105.6583745
+    return muon_mass_mev / 1e3 / a_inv_gev
+
 def get_r_sq_limit(job_tag):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     return q.sqr(total_site[0])
@@ -472,6 +478,17 @@ def get_r_coordinate(xg, total_site):
     r_sq = xg_rel.sqr()
     return np.sqrt(r_sq)
 
+def show_lslt(labels, lslt, *, label=None):
+    nlabel, nshort, nlong = lslt.shape
+    assert nlabel == len(labels)
+    if label is None:
+        return pprint.pformat([ (labels[i], list(lslt[i,-1,:].real),) for i in range(nlabel) ])
+    else:
+        for i in range(nlabel):
+            if label == labels[i]:
+                return pprint.pformat((labels[i], list(lslt[i,-1,:].real),))
+    return None
+
 @q.timer
 def get_psrc_prop(job_tag, traj, xg, inv_type, inv_acc, *, sfr, fsel):
     tag = mk_psrc_tag(xg, inv_type, inv_acc)
@@ -479,34 +496,111 @@ def get_psrc_prop(job_tag, traj, xg, inv_type, inv_acc, *, sfr, fsel):
         return None
     s_prop = q.SelProp(fsel)
     s_prop.load_double_from_float(sfr, tag)
-    return sprop
+    return s_prop
+
+def get_list_chunk(x_list, id_chunk, num_chunk):
+    x_list_size = len(x_list)
+    chunk_size = (x_list_size - 1) // num_chunk + 1
+    assert chunk_size >= 0
+    chunk_start = chunk_size * id_chunk
+    chunk_stop = chunk_start + chunk_size
+    if id_chunk == num_chunk - 1:
+        assert chunk_stop >= x_list_size
+    x_list_chunk = x_list[chunk_start:chunk_stop]
+    return x_list_chunk
+
+# ----
+
+@q.timer_verbose
+def load_or_compute_muon_line_interpolation():
+    """
+    Actually load (compute if data does not exist) muon_line_interpolation.
+    """
+    fname = q.get_fname()
+    fn = "huge-data-muon-line-interpolation-data"
+    path_qar = get_load_path(f"{fn}.qar")
+    if path_qar is None:
+        # make a quick sample data
+        q.displayln_info(-1, f"WARNING: {fname}: '{fn}' does not exist. Create a test sample data instead.")
+        path = get_save_path(fn)
+        epsabs = 1e-8
+        epsrel = 1e-3
+        mineval = 1024 * 1024
+        maxeval = 1024 * 1024 * 1024
+        eps0 = (epsabs * 1e2, epsrel * 1e2, mineval // 1024, maxeval // 1024,)
+        q.compute_save_muonline_interpolation(
+                f"{path}/{0:010d}",
+                [ 3, 2, 2, 2, 2, ],
+                eps0)
+        q.compute_save_muonline_interpolation(
+                f"{path}/{1:010d}",
+                [ 2, 2, 2, 2, 2, ],
+                eps0)
+        q.qar_create_info(f"{path}.qar", path, is_remove_folder_after=True)
+        q.set_muon_line_m_extra_weights([ [ 4/3, -1/3, ], [ 1.0, ], ])
+        q.load_multiple_muonline_interpolations(path, [ 0, 1, ])
+    else:
+        # load actual data
+        assert path_qar[-4:] == ".qar"
+        path = path_qar[:-4]
+        q.load_multiple_muonline_interpolations(path, [ 1, 3, 5, ])
+    q.sync_node();
+    weights = q.get_muon_line_m_extra_weights()
+    num_muon_line_interps = q.get_number_of_muon_line_interpolations()
+    q.displayln_info(-1, f"{fname}: extrapolation weights={weights} loaded num_muon_line_interps={num_muon_line_interps}")
+
+is_loaded_multiple_muonline_interpolations = False
+
+def force_load_muon_line_interpolation():
+    """
+    Ensure muon line interpolation data is loaded.
+    Only load the data if not loaded.
+    """
+    global is_loaded_multiple_muonline_interpolations
+    if is_loaded_multiple_muonline_interpolations:
+        return
+    load_or_compute_muon_line_interpolation()
+    is_loaded_multiple_muonline_interpolations = True
 
 # ----
 
 def get_prob_func(job_tag, inv_type, r_sq_limit, r_sq):
     if job_tag == "48I" and inv_type == 0:
-        if r_sq <= 8 * 8:
-            prob = 1.0
-        elif r_sq > r_sq_limit:
+        if r_sq > r_sq_limit:
             prob = 0.0
+        elif r_sq == 0:
+            prob = 1.0 / 128.0
+        elif r_sq <= 8 * 8:
+            prob = 1.0
         else:
             prob = (8.0 / np.sqrt(r_sq))**3
     elif job_tag == "64I" and inv_type == 0:
-        if r_sq <= 12 * 12:
-            prob = 1.0
-        elif r_sq > r_sq_limit:
+        if r_sq > r_sq_limit:
             prob = 0.0
+        elif r_sq == 0:
+            prob = 1.0 / 128.0
+        elif r_sq <= 12 * 12:
+            prob = 1.0
         else:
             prob = (12.0 / np.sqrt(r_sq))**3
-    else:
-        if r_sq <= 3 * 3:
-            prob = 1.0
-        elif r_sq <= 6 * 6:
-            prob = 0.5
-        elif r_sq > r_sq_limit:
+    elif job_tag == "test-4nt8":
+        if r_sq > r_sq_limit:
             prob = 0.0
+        elif r_sq == 0:
+            prob = 1.0 / 16.0
+        elif r_sq <= 1.5 * 1.5:
+            prob = 1.0 / 3.0
         else:
-            prob = (5.0 / np.sqrt(r_sq))**3
+            prob = 1.0 / 3.0 * (1.5 / np.sqrt(r_sq))**3
+    else:
+        if r_sq > r_sq_limit:
+            prob = 0.0
+        elif r_sq <= 4 * 4:
+            prob = 1.0
+        elif r_sq <= 8 * 8:
+            prob = 0.5
+        else:
+            prob = (6.0 / np.sqrt(r_sq))**3
     assert 0 <= prob
     assert prob <= 1
     return prob
@@ -554,6 +648,278 @@ def get_hlbl_four_total_prob(job_tag, inv_type):
     get_prob = mk_hlbl_four_get_prob(job_tag, inv_type)
     total_prob = get_total_prob(total_site, get_prob)
     return total_prob
+
+@q.timer
+def mk_hlbl_four_point_pairs(job_tag, traj, *, inv_type, get_psel_prob):
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    geo = q.Geometry(total_site, 1)
+    total_volume = geo.total_volume()
+    inv_type_name_list = [ "light", "strange", ]
+    inv_type_name = inv_type_name_list[inv_type]
+    #
+    psel_prob = get_psel_prob()
+    psel = psel_prob.psel
+    xg_arr = psel.xg_arr()
+    n_xg_arr = len(xg_arr)
+    #
+    get_prob = mk_hlbl_four_get_prob(job_tag, inv_type)
+    # total_prob = get_total_prob(total_site, get_prob)
+    #
+    point_pairs = []
+    rs = q.RngState(f"seed {job_tag} {traj}").split(f"mk_hlbl_four_point_pairs")
+    for i in range(n_xg_arr):
+        xg_x = q.Coordinate(xg_arr[i])
+        for j in range(i + 1):
+            xg_y = q.Coordinate(xg_arr[j])
+            xg_diff = xg_x - xg_y
+            prob = get_prob(xg_diff)
+            prob_accept = prob
+            if prob_accept == 0:
+                continue
+            rsi = rs.split(f"{j} {i}")
+            r = rsi.u_rand_gen()
+            if r <= prob_accept:
+                dict_val = {}
+                dict_val["idx_xg_x"] = i
+                dict_val["idx_xg_y"] = j
+                dict_val["xg_x"] = xg_x
+                dict_val["xg_y"] = xg_y
+                dict_val["r"] = get_r_coordinate(xg_diff, total_site)
+                dict_val["prob_accept"] = prob_accept
+                dict_val["weight_pair"] = 1.0 / prob_accept
+                point_pairs.append(dict_val)
+    point_pairs = q.random_permute(point_pairs, q.RngState(f"mk_hlbl_four_point_pairs {job_tag} {traj} {inv_type}"))
+    q.displayln_info(f"mk_hlbl_four_point_pairs: {job_tag} {traj} {inv_type_name} len(point_pairs)={len(point_pairs)}")
+    return point_pairs
+
+@q.timer
+def run_hlbl_four_point_pairs_info(job_tag, traj, *, inv_type, get_psel_prob):
+    """
+    return get_point_pairs
+    #
+    point_paris = get_point_pairs()
+    """
+    fname = q.get_fname()
+    inv_type_name_list = [ "light", "strange", ]
+    inv_type_name = inv_type_name_list[inv_type]
+    fn = f"{job_tag}/hlbl/clbl-{inv_type_name}/traj-{traj}/point-pairs.pickle"
+    @q.lazy_call
+    def load_point_pairs():
+        return q.load_pickle_obj(get_load_path(fn))
+    ret = load_point_pairs
+    if get_load_path(fn) is not None:
+        return ret
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
+        return None
+    point_pairs = mk_hlbl_four_point_pairs(
+            job_tag, traj,
+            inv_type=inv_type,
+            get_psel_prob=get_psel_prob,
+            )
+    q.save_pickle_obj(point_pairs, get_save_path(fn))
+    q.release_lock()
+    return ret
+
+def get_hlbl_clbl_info_ref_tags(job_tag):
+    return [ "ref-far", "ref-close", "ref-center", ]
+
+@q.timer
+def contract_hlbl_four_labels(job_tag):
+    tags = get_hlbl_clbl_info_ref_tags(job_tag)
+    return q.contract_four_pair_labels(tags)
+
+@q.timer_verbose
+def contract_hlbl_four_ama(job_tag, *, inv_type, get_prop, idx_xg_x, idx_xg_y, psel_prob, fsel_prob, weight_pair):
+    """
+    get_prop(xg) => sprop_ama
+    """
+    psel = psel_prob.psel
+    fsel = fsel_prob.fsel
+    xg_x = psel.coordinate_from_idx(idx_xg_x)
+    xg_y = psel.coordinate_from_idx(idx_xg_y)
+    muon_mass = get_muon_mass(job_tag)
+    coef = complex(weight_pair)
+    force_load_muon_line_interpolation()
+    smf_d = q.mk_m_z_field_tag(fsel, xg_x, xg_y, a=muon_mass, tag=0)
+    tags = get_hlbl_clbl_info_ref_tags(job_tag)
+    r_sq_limit = get_r_sq_limit(job_tag)
+    zz_vv = get_param(job_tag, "zz_vv")
+    def f(sprop_x, sprop_y):
+        return q.contract_four_pair(
+                coef,
+                psel_prob,
+                fsel_prob,
+                idx_xg_x,
+                idx_xg_y,
+                smf_d,
+                sprop_x,
+                sprop_y,
+                inv_type,
+                tags,
+                r_sq_limit,
+                muon_mass,
+                zz_vv,
+                )
+    ama_val = ama_apply2(f, get_prop(xg_x), get_prop(xg_y))
+    return (ama_extract(ama_val, is_sloppy=False), ama_extract(ama_val, is_sloppy=True),)
+
+@q.timer
+def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_point_pairs, id_chunk, num_chunk):
+    fname = q.get_fname()
+    inv_type_name_list = [ "light", "strange", ]
+    inv_type_name = inv_type_name_list[inv_type]
+    fn = f"{job_tag}/hlbl/clbl-{inv_type_name}/traj-{traj}/chunk_{id_chunk}_{num_chunk}.pickle"
+    if get_load_path(fn) is not None:
+        return
+    q.check_stop()
+    q.check_time_limit()
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}-{id_chunk}-{num_chunk}"):
+        return
+    #
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    geo = q.Geometry(total_site, 1)
+    total_volume = geo.total_volume()
+    #
+    psel_prob = get_psel_prob()
+    psel = psel_prob.psel
+    fsel_prob = get_fsel_prob()
+    fsel = fsel_prob.fsel
+    #
+    point_pairs = get_point_pairs()
+    point_pairs_chunk = get_list_chunk(point_pairs, id_chunk, num_chunk)
+    #
+    rel_acc_list = [ 0, 1, 2, ]
+    prob_list = [ get_param(job_tag, f"prob_acc_{inv_acc}_psrc") for inv_acc in rel_acc_list ]
+    #
+    sfr = q.open_fields(get_load_path(f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}/geon-info.txt"), "r")
+    #
+    @functools.lru_cache(maxsize=3000)
+    @q.timer
+    def get_prop_cache(xg, inv_acc):
+        """
+        xg must be tuple
+        """
+        return get_psrc_prop(job_tag, traj, q.Coordinate(xg), inv_type, inv_acc, sfr=sfr, fsel=fsel)
+    #
+    @q.timer
+    def get_prop(xg):
+        val_list = [ get_prop_cache(xg.to_tuple(), inv_acc) for inv_acc in rel_acc_list ]
+        return mk_ama_val(val_list[0], xg.to_tuple(), val_list, rel_acc_list, prob_list)
+    #
+    q.displayln_info(f"get_prop_cache info {get_prop_cache.cache_info()}")
+    labels = contract_hlbl_four_labels(job_tag)
+    pairs_data = []
+    for idx, pp in enumerate(point_pairs_chunk):
+        idx_xg_x = pp["idx_xg_x"]
+        idx_xg_y = pp["idx_xg_y"]
+        xg_x = pp["xg_x"]
+        xg_y = pp["xg_y"]
+        assert xg_x == psel.coordinate_from_idx(idx_xg_x)
+        assert xg_y == psel.coordinate_from_idx(idx_xg_y)
+        r = pp["r"]
+        prob_accept = pp["prob_accept"]
+        weight_pair = pp["weight_pair"]
+        lslt, lslt_sloppy = contract_hlbl_four_ama(
+                job_tag,
+                inv_type=inv_type,
+                get_prop=get_prop,
+                idx_xg_x=idx_xg_x,
+                idx_xg_y=idx_xg_y,
+                psel_prob=psel_prob,
+                fsel_prob=fsel_prob,
+                weight_pair=weight_pair,
+                )
+        info_tag = f"{job_tag} {traj} {inv_type_name} {id_chunk}/{num_chunk} {idx}/{len(point_pairs_chunk)} {xg_x} {xg_y}"
+        q.displayln_info(
+                f"{fname}: {info_tag}\n",
+                f"r={r} weight_pair={weight_pair}\n",
+                show_lslt(labels, lslt * len(point_pairs), label="ref-far proj-all"),
+                "\nsloppy:\n",
+                show_lslt(labels, lslt_sloppy * len(point_pairs), label="ref-far proj-all"))
+        json_results.append((
+            f"{fname}: {info_tag}",
+            q.get_data_sig(lslt, q.RngState()),
+            ))
+        dict_val = {}
+        dict_val["lslt"] = lslt
+        dict_val["lslt_sloppy"] = lslt_sloppy
+        dict_val["xg_x"] = xg_x
+        dict_val["xg_y"] = xg_y
+        dict_val["r"] = r
+        dict_val["prob_accept"] = prob_accept
+        dict_val["weight_pair"] = weight_pair
+        pairs_data.append(dict_val)
+    sfr.close()
+    if len(point_pairs_chunk) != len(pairs_data):
+        raise Exception(f"len(point_pairs_chunk)={len(point_pairs_chunk)} len(pairs_data)={len(pairs_data)}")
+    if len(pairs_data) > 0:
+        q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} {id_chunk}/{num_chunk}\n",
+                show_lslt(labels, sum([ d["lslt"] for d in pairs_data ]) / len(point_pairs_chunk) * len(point_pairs)))
+    q.save_pickle_obj(pairs_data, get_save_path(fn))
+    q.release_lock()
+    q.displayln_info(f"get_prop_cache info {get_prop_cache.cache_info()}")
+
+@q.timer
+def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_point_pairs):
+    fname = q.get_fname()
+    inv_type_name_list = [ "light", "strange", ]
+    inv_type_name = inv_type_name_list[inv_type]
+    if get_point_pairs is None:
+        q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} get_point_pairs is None")
+        return
+    fn = f"{job_tag}/hlbl/clbl-{inv_type_name}/traj-{traj}/results.pickle"
+    if get_load_path(fn) is not None:
+        return
+    num_chunk = get_param(job_tag, "hlbl_four_num_chunk")
+    for id_chunk in range(num_chunk):
+        run_hlbl_four_chunk(
+                job_tag, traj,
+                inv_type=inv_type,
+                get_psel_prob=get_psel_prob,
+                get_fsel_prob=get_fsel_prob,
+                get_point_pairs=get_point_pairs,
+                id_chunk=id_chunk,
+                num_chunk=num_chunk,
+                )
+    fn_chunk_list = []
+    for id_chunk in range(num_chunk):
+        fn_chunk = f"{job_tag}/hlbl/clbl-{inv_type_name}/traj-{traj}/chunk_{id_chunk}_{num_chunk}.pickle"
+        if get_load_path(fn_chunk) is None:
+            q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} not finished (missing '{fn_chunk})'")
+            return
+        else:
+            fn_chunk_list.append(fn_chunk)
+    assert len(fn_chunk_list) == num_chunk
+    if get_load_path(fn) is not None:
+        return
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
+        return
+    labels = contract_hlbl_four_labels(job_tag)
+    pairs_data = []
+    for fn_chunk in fn_chunk_list:
+        pairs_data += q.load_pickle_obj(get_load_path(fn_chunk))
+    if len(pairs_data) != len(get_point_pairs()):
+        raise Exception(f"len(pairs_data)={len(pairs_data)} len(get_point_pairs())=len(get_point_pairs())")
+    results = {}
+    results["labels"] = labels
+    results["pairs_data"] = pairs_data
+    results["n_pairs"] = len(pairs_data)
+    results["lslt_sum"] = sum([ d["lslt"] for d in pairs_data ])
+    results["lslt_sloppy_sum"] = sum([ d["lslt_sloppy"] for d in pairs_data ])
+    q.displayln_info(-1, f"{fname}: {job_tag} {traj} {inv_type_name}\n", show_lslt(labels, results["lslt_sum"]))
+    json_results.append((
+        f"{fname}: {job_tag} {traj} {inv_type_name}",
+        q.get_data_sig(results["lslt_sum"], q.RngState()),
+        ))
+    json_results.append((
+        f"{fname}: {job_tag} {traj} {inv_type_name}",
+        q.get_data_sig(results["lslt_sloppy_sum"], q.RngState()),
+        ))
+    q.save_pickle_obj(results, get_save_path(fn))
+    for fn_chunk in fn_chunk_list:
+        q.qremove_info(get_load_path(fn_chunk))
+    q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} done.")
+    q.release_lock()
 
 # ----
 
@@ -801,6 +1167,15 @@ def run_job_contract(job_tag, traj):
     get_glb_hvp_avg_for_sub_light = run_job_global_hvp_average_for_subtract(job_tag, traj, get_glb_hvp_avg=get_glb_hvp_avg_light, get_hvp_average=get_hvp_average_light)
     get_glb_hvp_avg_for_sub_strange = run_job_global_hvp_average_for_subtract(job_tag, traj, get_glb_hvp_avg=get_glb_hvp_avg_strange, get_hvp_average=get_hvp_average_strange)
     #
+    if job_tag[:5] == "test-":
+        force_load_muon_line_interpolation()
+    #
+    get_point_pairs_light = run_hlbl_four_point_pairs_info(job_tag, traj, inv_type=0, get_psel_prob=get_psel_prob)
+    get_point_pairs_strange = run_hlbl_four_point_pairs_info(job_tag, traj, inv_type=1, get_psel_prob=get_psel_prob)
+    #
+    run_hlbl_four(job_tag, traj, inv_type=0, get_psel_prob=get_psel_prob, get_fsel_prob=get_fsel_prob, get_point_pairs=get_point_pairs_light)
+    run_hlbl_four(job_tag, traj, inv_type=1, get_psel_prob=get_psel_prob, get_fsel_prob=get_fsel_prob, get_point_pairs=get_point_pairs_strange)
+    #
     get_get_prop = run_get_prop(job_tag, traj,
             get_gf=get_gf,
             get_gt=get_gt,
@@ -867,6 +1242,8 @@ set_param("test-4nt8", "cg_params-1-1", "maxcycle", value=2)
 set_param("test-4nt8", "cg_params-1-2", "maxcycle", value=3)
 set_param("test-4nt8", "cg_params-0-2", "pv_maxiter", value=5)
 set_param("test-4nt8", "cg_params-1-2", "pv_maxiter", value=5)
+set_param("test-4nt8", "a_inv_gev", value=1.73)
+set_param("test-4nt8", "zz_vv", value=0.71)
 
 set_param("24D", "lanc_params", 1, value=None)
 set_param("24D", "clanc_params", 1, value=None)
@@ -876,6 +1253,7 @@ set_param("24D", 'fermion_params', 1, 1, value=deepcopy(get_param("24D", 'fermio
 
 tag = "trajs"
 set_param("test-4nt8", tag, value=[ 1000, 2000, ])
+set_param("test-8nt16", tag, value=[ 1000, 2000, ])
 set_param("24D", tag, value=list(range(2000, 3000, 10)))
 set_param("48I", tag, value=list(range(975, 2185, 10)) + list(range(1102, 1502, 10)))
 set_param("64I", tag, value=list(range(1200, 3680, 40)))
@@ -893,6 +1271,13 @@ set_param("test-8nt16", tag, value=1.0)
 set_param("24D", tag, value=1.0)
 set_param("48I", tag, value=1.0)
 set_param("64I", tag, value=1.0)
+
+tag = "hlbl_four_num_chunk"
+set_param("test-4nt8", tag, value=3)
+set_param("test-8nt16", tag, value=6)
+set_param("24D", tag, value=8)
+set_param("48I", tag, value=8)
+set_param("64I", tag, value=8)
 
 # ----
 

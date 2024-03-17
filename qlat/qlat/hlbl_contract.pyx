@@ -12,25 +12,32 @@ from .selected_points_types cimport SelectedPointsRealD, SelectedPointsComplexD
 from .propagator cimport SelProp
 
 cdef numpy.ndarray sl_arr_from_sl_table(const cc.SlTable& x):
-    """
-    return sl_arr
-    sl_arr.shape == (s_limit, l_limit,)
-    """
+    # return sl_arr
+    # sl_arr.shape == (s_limit, l_limit,)
+    # sl_arr.dtype == np.complex128
     cdef cc.Long s_limit = x.s_limit
     cdef cc.Long l_limit = x.l_limit
     cdef numpy.ndarray sl_arr = np.zeros((s_limit, l_limit,), dtype=np.complex128)
-    cdef cc.PyComplexD* ptr = <cc.PyComplexD*>&x.table[0]
-    cdef const cc.PyComplexD[::1] table_view = <cc.PyComplexD[:x.table.size()]>ptr
-    sl_arr.ravel()[:] = table_view[:]
+    cdef cc.PyComplexD[:] ptr = sl_arr.ravel()
+    cdef cc.Long table_size = x.table.size()
+    cc.memcpy(&ptr[0], x.table.data(), table_size * sizeof(cc.PyComplexD))
     return sl_arr
 
-def set_m_z_field_tag(
+@q.timer
+def mk_m_z_field_tag(
         FieldSelection fsel,
         Coordinate xg_x,
         Coordinate xg_y,
         const cc.RealD a,
         const cc.Int tag
         ):
+    """
+    return smf_d
+    smf is SelectedField("double") as the muon-line-field of vertex z
+    a is the lattice spacing (when muon_mass = 1). In lattice unit one should use muon_mass * a for this parameter
+    tag = 0: sub
+    tag = 1: nosub
+    """
     cdef SelectedFieldRealD smf_d = SelectedFieldRealD(fsel)
     cc.set_m_z_field_tag(smf_d.xx, fsel.xx, xg_x.xx, xg_y.xx, a, tag)
     return smf_d
@@ -58,12 +65,18 @@ def contract_four_pair(
         const cc.RealD z_v
         ):
     """
-    return [ (label, sl_arr,), ... ]
+    return lsl_arr
+    #
+    lsl_arr.shape == (len(labels), s_limit, l_limit,)
+    labels = contract_four_pair_labels(tags)
     #
     default coef = 1.0
     inv_type = 0 : light quark
     inv_type = 1 : strange quark
     tags can be [ "ref-far", "ref-center", "ref-close", ]
+    #
+    x, y are two sampled points (elem of `psel`). `psel_prob` factors are already included.
+    z, x_op are summed over with in `fsel`. `fsel_prob` factors are already included.
     """
     cdef PointsSelection psel = psel_prob.psel
     cdef FieldSelection fsel = fsel_prob.fsel
@@ -87,14 +100,12 @@ def contract_four_pair(
             muon_mass,
             z_v,
             )
-    cdef list labels = contract_four_pair_labels(tags)
     cdef cc.Long s = sl_table_vec.size()
-    assert s == len(labels)
-    ret = []
-    for i, label in enumerate(labels):
+    cdef list sl_arr_list = []
+    for i in range(s):
         sl_arr = sl_arr_from_sl_table(sl_table_vec[i])
-        ret.append((label, sl_arr,))
-    return ret
+        sl_arr_list.append(sl_arr)
+    return np.array(sl_arr_list, dtype=np.complex128)
 
 @q.timer
 def contract_two_plus_two_pair_no_glb_sum(
@@ -110,6 +121,11 @@ def contract_two_plus_two_pair_no_glb_sum(
         const cc.RealD z_v,
         ):
     """
+    return lsl_arr
+    #
+    lsl_arr.shape == (len(labels), s_limit, l_limit,)
+    labels = contract_two_plus_two_pair_labels()
+    #
     hvp point source at x (rho)
     hvp point sink at y (sigma)
     hvp with external loop source at z (lambda)
@@ -119,6 +135,11 @@ def contract_two_plus_two_pair_no_glb_sum(
     -hvp_x.get_elem(xl_y, sigma * 4 + rho)
     #
     glb_sum for SlTable not yet performed
+    #
+    x is sampled point (elem of `psel`). `psel_prob` factor is already included.
+    y is summed over with adaptive sampling. Weight factors is already included.
+    z is sampled point (elem of `psel`) and summed over. `psel_prob` factor is already included.
+    x_op is summed over all points.
     """
     cdef PointsSelection psel = psel_prob.psel
     cdef cc.Long n_points_in_r_sq_limit = 0
@@ -138,11 +159,9 @@ def contract_two_plus_two_pair_no_glb_sum(
             muon_mass,
             z_v,
             )
-    cdef list labels = contract_two_plus_two_pair_labels()
     cdef cc.Long s = sl_table_vec.size()
-    assert s == len(labels)
-    ret = []
-    for i, label in enumerate(labels):
+    cdef list sl_arr_list = []
+    for i in range(s):
         sl_arr = sl_arr_from_sl_table(sl_table_vec[i])
-        ret.append((label, sl_arr,))
-    return ret
+        sl_arr_list.append(sl_arr)
+    return np.array(sl_arr_list, dtype=np.complex128)

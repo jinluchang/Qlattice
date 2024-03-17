@@ -458,13 +458,13 @@ inline ManyMagneticMomentsCompressed muonLineSymParamsCompressed(
 
 typedef InterpolationBilinearNd<ManyMagneticMomentsCompressed> MuonLineInterp;
 
-inline std::vector<MuonLineInterp>& get_muonline_interps()
+API inline std::vector<MuonLineInterp>& get_muonline_interps()
 {
   static std::vector<MuonLineInterp> interps(1);
   return interps;
 }
 
-inline Long& get_default_muonline_interp_idx()
+API inline Long& get_default_muonline_interp_idx()
 {
   static Long idx = IS_USING_MUON_LINE_INTERPOLATION ? 0 : -1;
   return idx;
@@ -1059,6 +1059,19 @@ inline void clear_muon_line_interpolations()
   getMuonLineInterp(0).init();
 }
 
+inline Long get_number_of_muon_line_interpolations()
+{
+  const Long size = get_muonline_interps().size();
+  qassert(size >= 1);
+  Long count = 0;
+  for (Long i = 0; i < size; ++i) {
+    if (not getMuonLineInterp(i).empty()) {
+      count += 1;
+    }
+  }
+  return count;
+}
+
 inline bool compute_save_muonline_interpolation_cc(const std::string& path,
                                                    const std::vector<int>& dims,
                                                    const IntegrationEps& eps)
@@ -1297,7 +1310,7 @@ inline std::vector<std::vector<RealD>> get_muon_line_m_extra_weights_default()
   return ret;
 }
 
-inline std::vector<std::vector<RealD>>& get_muon_line_m_extra_weights()
+API inline std::vector<std::vector<RealD>>& get_muon_line_m_extra_weights()
 // interface function
 // weight[tag][idx]
 // ->

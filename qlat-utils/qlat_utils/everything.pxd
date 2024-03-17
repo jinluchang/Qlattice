@@ -3,6 +3,7 @@
 from libcpp cimport bool
 from libcpp.string cimport string as std_string
 from libcpp.vector cimport vector as std_vector
+from libc.string cimport memcpy
 
 cimport libcpp.complex
 from libc.stdint cimport uint64_t

@@ -184,6 +184,7 @@ __all__ += [
         'has_cuba',
         'test_integration_multi_dimensional',
         'clear_muon_line_interpolations',
+        'get_number_of_muon_line_interpolations',
         'compute_save_muonline_interpolation',
         'load_multiple_muonline_interpolations',
         'get_muon_line_m_extra_weights',
@@ -192,6 +193,14 @@ __all__ += [
         'get_muon_line_m',
         'get_muon_line_m_extra',
         'get_muon_line_m_extra_lat',
+        ]
+
+__all__ += [
+        'mk_m_z_field_tag',
+        'contract_four_pair_labels',
+        'contract_two_plus_two_pair_labels',
+        'contract_four_pair',
+        'contract_two_plus_two_pair_no_glb_sum',
         ]
 
 __all__ += [
@@ -248,6 +257,7 @@ from .gauge_action import *
 from .topology import *
 from .wilson_flow import *
 from .muon_line import *
+from .hlbl_contract import *
 from .fields_io import *
 
 sys.setdlopenflags(flags)

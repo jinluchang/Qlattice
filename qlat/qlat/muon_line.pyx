@@ -26,6 +26,12 @@ def clear_muon_line_interpolations():
     """
     cc.clear_muon_line_interpolations()
 
+def get_number_of_muon_line_interpolations():
+    """
+    interface to C++ function `get_number_of_muon_line_interpolations`
+    """
+    return cc.get_number_of_muon_line_interpolations()
+
 @q.timer
 def compute_save_muonline_interpolation(cc.std_string path, cc.std_vector[cc.Int] dims, object eps):
     """
@@ -58,9 +64,15 @@ def load_multiple_muonline_interpolations(cc.std_string path, cc.std_vector[cc.L
     return cc.load_multiple_muonline_interpolations(path, idx_list)
 
 def get_muon_line_m_extra_weights():
+    """
+    return weights as list of list of float.
+    """
     return cc.get_muon_line_m_extra_weights()
 
 def set_muon_line_m_extra_weights(object weights=None):
+    """
+    set weights as list of list of float or None (use default value).
+    """
     if weights is None:
         weights = cc.get_muon_line_m_extra_weights_default()
     cc.set_muon_line_m_extra_weights(weights)
