@@ -837,8 +837,13 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
                 "\nsloppy:\n",
                 show_lslt(labels, lslt_sloppy * len(point_pairs), label="ref-far proj-all"))
         json_results.append((
-            f"{fname}: {info_tag}",
+            f"{fname}: {info_tag} lslt",
             q.get_data_sig(lslt, q.RngState()),
+            5e-3,
+            ))
+        json_results.append((
+            f"{fname}: {info_tag} lslt_sloppy",
+            q.get_data_sig(lslt_sloppy, q.RngState()),
             5e-3,
             ))
         dict_val = {}
@@ -909,13 +914,23 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
     results["lslt_sloppy_sum"] = sum([ d["lslt_sloppy"] for d in pairs_data ])
     q.displayln_info(-1, f"{fname}: {job_tag} {traj} {inv_type_name}\n", show_lslt(labels, results["lslt_sum"]))
     json_results.append((
-        f"{fname}: {job_tag} {traj} {inv_type_name}",
+        f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum",
         q.get_data_sig(results["lslt_sum"], q.RngState()),
         5e-3,
         ))
     json_results.append((
-        f"{fname}: {job_tag} {traj} {inv_type_name}",
+        f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sloppy_sum",
         q.get_data_sig(results["lslt_sloppy_sum"], q.RngState()),
+        5e-3,
+        ))
+    json_results.append((
+        f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum[labels.index('ref-far proj-all'), -1, -1]",
+        results["lslt_sum"][labels.index('ref-far proj-all'), -1, -1],
+        5e-3,
+        ))
+    json_results.append((
+        f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sloppy_sum[labels.index('ref-far proj-all'), -1, -1]",
+        results["lslt_sloppy_sum"][labels.index('ref-far proj-all'), -1, -1],
         5e-3,
         ))
     q.save_pickle_obj(results, get_save_path(fn))

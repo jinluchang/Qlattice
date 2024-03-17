@@ -24,9 +24,9 @@ struct SlTable {
   }
   void init(const Coordinate& total_site)
   {
-    const int s = std::min(total_site[0] / 2 + 9, total_site[0] + 1);
+    const int s = std::min(total_site[0] / 2 + 10, total_site[0] + 2);
     const int l =
-        std::ceil(sqrt(distance_sq_relative_coordinate_g(total_site / 2))) + 1;
+        std::ceil(sqrt(distance_sq_relative_coordinate_g(total_site / 2))) + 2;
     qassert(s > 0);
     qassert(l > 0);
     init(s, l);
@@ -70,11 +70,10 @@ inline std::string show_sl_table(const SlTable& t)
 inline void add_to_sl_table(SlTable& t, const Complex& val,
                             const int dis_sq_min, const int dis_sq_max)
 {
-  const int l_len = std::ceil(std::sqrt(dis_sq_max));
-  const int s_len = std::ceil(std::sqrt(dis_sq_min));
-  if (s_len < t.s_limit && l_len < t.l_limit) {
-    t.table[s_len * t.l_limit + l_len] += val;
-  }
+  const int l_len = std::min(t.l_limit - 1, (int)std::ceil(std::sqrt(dis_sq_max)));
+  const int s_len = std::min(t.s_limit - 1, (int)std::ceil(std::sqrt(dis_sq_min)));
+  qassert(s_len < t.s_limit && l_len < t.l_limit);
+  t.table[s_len * t.l_limit + l_len] += val;
 }
 
 inline void add_to_sl_table(SlTable& t, const Complex& val, const Coordinate& x,
