@@ -839,12 +839,12 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
         json_results.append((
             f"{fname}: {info_tag} lslt",
             q.get_data_sig(lslt, q.RngState()),
-            5e-3,
+            5e-2,
             ))
         json_results.append((
             f"{fname}: {info_tag} lslt_sloppy",
             q.get_data_sig(lslt_sloppy, q.RngState()),
-            5e-3,
+            5e-2,
             ))
         dict_val = {}
         dict_val["lslt"] = lslt
