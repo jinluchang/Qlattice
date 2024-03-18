@@ -1107,6 +1107,7 @@ def run_edl(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice):
     json_results.append((
         f"{fname}: {job_tag} {traj} {inv_type_name} edl",
         q.get_data_sig(hvp_edl[:], q.RngState()),
+        5e-4,
         ))
     q.release_lock()
     return ret
