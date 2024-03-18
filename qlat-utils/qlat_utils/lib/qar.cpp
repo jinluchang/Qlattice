@@ -1284,6 +1284,8 @@ QFile qfopen(const QFileType ftype, const std::string& path,
         return QFile();
       } else if (key == path) {
         return QFile(ftype, path, mode);
+      } else if (key == path + "/") {
+        return QFile();
       } else {
         qassert(key == path.substr(0, key.size()));
         const std::string fn = path.substr(key.size());
@@ -3090,6 +3092,8 @@ std::string get_qar_read_cache_key(const std::string& path)
       } else {
         return mk_new_qar_read_cache_key(qar, key, path_new);
       }
+    } else if (key == path + "/") {
+      return key;
     }
   }
   return mk_new_qar_read_cache_key(path);
@@ -3334,10 +3338,17 @@ bool does_regular_file_exist_qar(const std::string& path)
 // Note: should only check file, not directory.
 {
   TIMER("does_regular_file_exist_qar(path)");
+  if (path.empty()) {
+    return false;
+  } else if (path.back() == '/') {
+    return false;
+  }
   const std::string key = get_qar_read_cache_key(path);
   if (key == path) {
     return true;
   } else if (key == "") {
+    return false;
+  } else if (key == path + "/") {
     return false;
   }
   qassert(key == path.substr(0, key.size()));
@@ -3350,11 +3361,16 @@ bool does_file_exist_qar(const std::string& path)
 // interface function
 {
   TIMER("does_file_exist_qar(path)");
+  if (path.empty()) {
+    return false;
+  }
   const std::string key = get_qar_read_cache_key(path);
   if (key == path) {
     return true;
   } else if (key == "") {
     return false;
+  } else if (key == path + "/") {
+    return true;
   }
   qassert(key == path.substr(0, key.size()));
   const std::string fn = path.substr(key.size());

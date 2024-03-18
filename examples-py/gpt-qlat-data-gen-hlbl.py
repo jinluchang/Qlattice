@@ -862,8 +862,8 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
         q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} {id_chunk}/{num_chunk}\n",
                 show_lslt(labels, sum([ d["lslt"] for d in pairs_data ]) / len(point_pairs_chunk) * len(point_pairs)))
     q.save_pickle_obj(pairs_data, get_save_path(fn))
-    q.release_lock()
     q.displayln_info(f"get_prop_cache info {get_prop_cache.cache_info()}")
+    q.release_lock()
 
 @q.timer
 def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_point_pairs):
@@ -938,6 +938,178 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
         q.qremove_info(get_load_path(fn_chunk))
     q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} done.")
     q.release_lock()
+
+# ----
+
+@q.timer
+def run_hvp_sum_tslice_accs(job_tag, traj, *, inv_type, get_psel):
+    """
+    (1) mu is the sink polarization and nu is the src polarization
+    (2) hvp field is simply the trace of the products of gamma matrix and propagators.
+        It does not include the any minus sign (e.g. The minus sign due to the loop).
+    #
+    accs stand for information of many accuracy levels are included
+    #
+    return get_hvp_sum_tslice_accs
+    #
+    hvp_sum_tslice_accs = get_hvp_sum_tslice_accs()
+    nparr = hvp_sum_tslice_accs[tag]
+    nparr[t_dir, tslice, mu, nu] is complex
+    """
+    fname = q.get_fname()
+    inv_type_name_list = [ "light", "strange", ]
+    inv_type_name = inv_type_name_list[inv_type]
+    if get_psel is None:
+        q.displayln_info(-1, f"{fname}: {job_tag} {traj} {inv_type_name} get_psel is None.")
+        return None
+    path = f"{job_tag}/hvp-sum-tslice-psrc-{inv_type_name}/traj-{traj}"
+    if get_load_path(f"{path}/checkpoint.txt") is None:
+        q.displayln_info(-1, f"{fname}: '{path}' data is not ready.")
+        return None
+    lpath = get_load_path(f"{path}")
+    assert lpath is not None
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    t_size = total_site[3]
+    #
+    @q.lazy_call
+    @q.timer_verbose
+    def get_hvp_sum_tslice_accs():
+        hvp_sum_tslice_accs = dict()
+        psel = get_psel()
+        rel_acc_list = [ 0, 1, 2, ]
+        for xg in psel:
+            for inv_acc in rel_acc_list:
+                tag = mk_psrc_tag(xg, inv_type, inv_acc)
+                fn = f"{lpath}/{tag}.lat"
+                if not q.does_file_exist_qar_sync_node(fn):
+                    continue
+                ld = q.load_lat_data(fn)
+                arr = ld.to_numpy()
+                assert arr.shape == (4, t_size, 4, 4,)
+                hvp_sum_tslice_accs[tag] = arr
+        q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} loaded.")
+        return hvp_sum_tslice_accs
+    return get_hvp_sum_tslice_accs
+
+@q.timer
+def run_hvp_sum_tslice(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice_accs):
+    """
+    return the ama corrected: get_hvp_sum_tslice()
+    hvp_sum_tslice[idx, t_dir, tslice, mu, nu] is complex
+    hvp_sum_tslice.shape == (len(psel), 4, t_size, 4, 4)
+    #
+    get_hvp_sum_tslice_accs = run_hvp_sum_tslice_accs(job_tag, traj, inv_type=inv_type, get_psel=get_psel)
+    """
+    fname = q.get_fname()
+    if get_hvp_sum_tslice_accs is None:
+        q.displayln_info(-1, f"{fname}: get_hvp_sum_tslice_accs is None")
+        return None
+    if get_psel is None:
+        q.displayln_info(-1, f"{fname}: get_psel is None")
+        return None
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    t_size = total_site[3]
+    @q.timer_verbose
+    @q.lazy_call
+    def get_hvp_sum_tslice():
+        psel = get_psel()
+        hvp_sum_tslice_accs = get_hvp_sum_tslice_accs()
+        hvp_sum_tslice = np.zeros((len(psel), 4, t_size, 4, 4,), dtype=np.complex128)
+        rel_acc_list = [ 0, 1, 2, ]
+        prob_list = [ get_param(job_tag, f"prob_acc_{inv_acc}_psrc") for inv_acc in rel_acc_list ]
+        for idx, xg in enumerate(psel):
+            val_list = [ hvp_sum_tslice_accs.get(mk_psrc_tag(xg, inv_type, inv_acc)) for inv_acc in rel_acc_list ]
+            ama_val = mk_ama_val(val_list[0], xg.to_tuple(), val_list, rel_acc_list, prob_list)
+            val = ama_extract(ama_val)
+            hvp_sum_tslice[idx] = val
+        q.displayln_info(-1, f"{fname}: {job_tag} {traj} {inv_type} hvp_sum_tslice.shape={hvp_sum_tslice.shape}")
+        return hvp_sum_tslice
+    return get_hvp_sum_tslice
+
+def get_edl_from_hvp_sum_tslice(xg, hvp_sum_tslice):
+    """
+    edl[k, nu] is complex
+    include -1 from fermion loop (not yet included in this hvp)
+    include 1/2 ii for the magnetic moment projection
+    include - ii for the current couple to internal photon
+    #
+    hvp_sum_tslice[t_dir, tslice, mu, nu]
+    #
+    inner_products[i, mu, nu]
+    #
+    edl[k, nu] = (-1 * 0.5j * -1j) * sum_{i, j} epsilon_{i, j, k} * (t_arr - xg[i]) * hvp_sum_tslice[i, t_arr, j, nu]
+    """
+    assert isinstance(xg, q.Coordinate)
+    edl = np.zeros((3, 4,), dtype=np.complex128)
+    inner_products = np.zeros((3, 4, 4), dtype=np.complex128)
+    t_size = hvp_sum_tslice.shape[1]
+    t_arr = np.arange(t_size)
+    assert hvp_sum_tslice.shape == (4, t_size, 4, 4,)
+    for t_dir in range(3):
+        x_t = xg[t_dir]
+        xrel = q.rel_mod_sym_arr(t_arr - x_t, t_size)[:, None, None]
+        inner_products[t_dir] = (xrel * hvp_sum_tslice[t_dir]).sum(axis=0)
+    edl[0] = inner_products[1, 2] - inner_products[2, 1]
+    edl[1] = inner_products[2, 0] - inner_products[0, 2]
+    edl[2] = inner_products[0, 1] - inner_products[1, 0]
+    edl = (-1 * 0.5j * -1j) * edl
+    return edl
+
+@q.timer
+def run_edl(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice):
+    """
+    edl stand for external (photon) disconnected loop
+    return hvp_edl
+    isinstance(hvp_edl, q.SelectedPointsComplexD)
+    where hvp_edl[idx, k * 4 + nu] is complex
+    hvp_edl[:].shape == (len(psel), 3 * 4,)
+    #
+    include -1 from fermion loop (not yet included in this hvp)
+    include 1/2 ii for the magnetic moment projection
+    include - ii for the current couple to internal photon
+    include 1 or 1/5 as the hvp_type_charge_factor
+    """
+    fname = q.get_fname()
+    inv_type_name_list = [ "light", "strange", ]
+    inv_type_name = inv_type_name_list[inv_type]
+    fn = f"{job_tag}/hlbl/edl-{inv_type_name}/traj-{traj}/edl.lat"
+    @q.timer_verbose
+    @q.lazy_call
+    def get_edl():
+        psel = get_psel()
+        hvp_edl = q.SelectedPointsComplexD(psel)
+        hvp_edl.load(get_load_path(fn))
+        return hvp_edl
+    ret = get_edl
+    if get_load_path(fn) is not None:
+        return ret
+    if get_hvp_sum_tslice is None:
+        q.displayln_info(-1, f"{fname} get_hvp_sum_tslice is None.")
+        return None
+    if get_psel is None:
+        q.displayln_info(-1, f"{fname} get_psel is None.")
+        return None
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
+        return None
+    psel = get_psel()
+    hvp_sum_tslice = get_hvp_sum_tslice()
+    hvp_type_charge_factor_list = [ 1.0, 1.0 / 5.0, ]
+    hvp_type_charge_factor = hvp_type_charge_factor_list[inv_type]
+    hvp_edl = q.SelectedPointsComplexD(psel, 3 * 4)
+    hvp_edl.set_zero()
+    hvp_edl_view = hvp_edl[:].reshape(len(psel), 3, 4)
+    for idx, xg in enumerate(psel):
+        hvp_edl_view[idx] = (
+                hvp_type_charge_factor
+                * get_edl_from_hvp_sum_tslice(xg, hvp_sum_tslice[idx])
+                )
+    hvp_edl.save(get_save_path(fn))
+    json_results.append((
+        f"{fname}: {job_tag} {traj} {inv_type_name} edl",
+        q.get_data_sig(hvp_edl[:], q.RngState()),
+        ))
+    q.release_lock()
+    return ret
 
 # ----
 
@@ -1194,6 +1366,17 @@ def run_job_contract(job_tag, traj):
     run_hlbl_four(job_tag, traj, inv_type=0, get_psel_prob=get_psel_prob, get_fsel_prob=get_fsel_prob, get_point_pairs=get_point_pairs_light)
     run_hlbl_four(job_tag, traj, inv_type=1, get_psel_prob=get_psel_prob, get_fsel_prob=get_fsel_prob, get_point_pairs=get_point_pairs_strange)
     #
+    for inv_type in [ 0, 1, ]:
+        get_hvp_sum_tslice_accs = run_hvp_sum_tslice_accs(job_tag, traj, inv_type=inv_type, get_psel=get_psel)
+        get_hvp_sum_tslice = run_hvp_sum_tslice(job_tag, traj, inv_type=inv_type, get_psel=get_psel, get_hvp_sum_tslice_accs=get_hvp_sum_tslice_accs)
+        get_edl = run_edl(job_tag, traj, inv_type=inv_type, get_psel=get_psel, get_hvp_sum_tslice=get_hvp_sum_tslice)
+        if inv_type == 0:
+            get_edl_light = get_edl
+        elif inv_type == 1:
+            get_edl_strange = get_edl
+        else:
+            raise Exception(f"{fname}: inv_type={inv_type} wrong.")
+    #
     get_get_prop = run_get_prop(job_tag, traj,
             get_gf=get_gf,
             get_gt=get_gt,
@@ -1291,6 +1474,20 @@ set_param("48I", tag, value=1.0)
 set_param("64I", tag, value=1.0)
 
 tag = "hlbl_four_num_chunk"
+set_param("test-4nt8", tag, value=3)
+set_param("test-8nt16", tag, value=6)
+set_param("24D", tag, value=8)
+set_param("48I", tag, value=8)
+set_param("64I", tag, value=8)
+
+tag = "hlbl_two_plus_two_num_hvp_sel_threshold"
+set_param("test-4nt8", tag, value=1e-4)
+set_param("test-8nt16", tag, value=1e-4)
+set_param("24D", tag, value=1e-4)
+set_param("48I", tag, value=1e-3)
+set_param("64I", tag, value=1e-3)
+
+tag = "hlbl_two_plus_two_num_chunk"
 set_param("test-4nt8", tag, value=3)
 set_param("test-8nt16", tag, value=6)
 set_param("24D", tag, value=8)

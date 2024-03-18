@@ -12,9 +12,11 @@ from .selected_points_types cimport SelectedPointsRealD, SelectedPointsComplexD
 from .propagator cimport SelProp
 
 cdef numpy.ndarray sl_arr_from_sl_table(const cc.SlTable& x):
-    # return sl_arr
-    # sl_arr.shape == (s_limit, l_limit,)
-    # sl_arr.dtype == np.complex128
+    """
+    return sl_arr
+    sl_arr.shape == (s_limit, l_limit,)
+    sl_arr.dtype == np.complex128
+    """
     cdef cc.Long s_limit = x.s_limit
     cdef cc.Long l_limit = x.l_limit
     cdef numpy.ndarray sl_arr = np.zeros((s_limit, l_limit,), dtype=np.complex128)

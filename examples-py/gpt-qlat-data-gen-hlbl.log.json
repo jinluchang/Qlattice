@@ -468,6 +468,22 @@
   0.005
  ],
  [
+  "run_edl: test-4nt8 1000 light edl",
+  {
+   "real": -0.061320127264796964,
+   "imag": 1.1732499690275207e-16,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "run_edl: test-4nt8 1000 strange edl",
+  {
+   "real": -0.010399905328306092,
+   "imag": 8.179370775208481e-18,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
   "auto_contract_meson_corr: 1000 ld sig",
   {
    "real": 3610.0701301531662,
@@ -1322,6 +1338,22 @@
    "__extended_json_type__": "complex128"
   },
   0.005
+ ],
+ [
+  "run_edl: test-4nt8 2000 light edl",
+  {
+   "real": 0.017918110377667107,
+   "imag": -5.653224690437514e-17,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "run_edl: test-4nt8 2000 strange edl",
+  {
+   "real": -0.0911541779155326,
+   "imag": -1.860282943127522e-17,
+   "__extended_json_type__": "complex128"
+  }
  ],
  [
   "auto_contract_meson_corr: 2000 ld sig",

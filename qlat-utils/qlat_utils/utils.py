@@ -173,23 +173,23 @@ def rel_mod_arr(x, size):
     """
     Return ``x % size`` or ``x % size - size`` where ``x`` and ``size`` are np.array of same shape
     """
-    assert x.shape == size.shape
+    # assert x.shape == size.shape
     ans = x % size
     assert np.all(ans >= 0)
     mask = 2 * ans >= size
-    ans[mask] = ans[mask] - size[mask]
+    ans[mask] = (ans - size)[mask]
     return ans
 
 def rel_mod_sym_arr(x, size):
     """
     Return ``x % size`` or ``x % size - size`` or ``0`` where ``x`` and ``size`` are np.array of same shape
     """
-    assert x.shape == size.shape
+    # assert x.shape == size.shape
     ans = x % size
     assert np.all(ans >= 0)
     mask1 = 2 * ans > size
     mask2 = 2 * ans == size
-    ans[mask1] = ans[mask1] - size[mask1]
+    ans[mask1] = (ans - size)[mask1]
     ans[mask2] = 0
     return ans
 
@@ -346,7 +346,7 @@ def check_log_json(script_file, json_results, *, check_eps=1e-5):
                 if (abs(v) + abs(vl)) > 0:
                     actual_eps = abs(v - vl) / (abs(v) + abs(vl))
                 if abs(v - vl) > eps * (abs(v) + abs(vl)):
-                    displayln(-1, f"CHECK: {i} {p} load:{pl}")
+                    displayln(-1, f"CHECK: {i} '{n}' actual: {v} ; load: {vl} .")
                     displayln(-1, f"CHECK: target eps: {eps} ; actual eps: {actual_eps} .")
                     displayln(-1, f"CHECK: ERROR: JSON results value does not match.")
                 else:
