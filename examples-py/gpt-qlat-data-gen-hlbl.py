@@ -1163,6 +1163,224 @@ def run_check_hvp_avg(job_tag, traj, *, inv_type, get_psel_prob, get_hvp_average
         1e-4,
         ))
 
+@q.timer_verbose
+def run_hlbl_two_plus_two_chunk(
+        job_tag,
+        traj,
+        *,
+        inv_type,
+        inv_type_e,
+        get_psel_prob,
+        get_edl_light,
+        get_edl_strange,
+        get_glb_hvp_avg_for_sub_light,
+        get_glb_hvp_avg_for_sub_strange,
+        get_f_rand_01,
+        id_chunk,
+        num_chunk,
+        ):
+    fname = q.get_fname()
+    inv_type_name_list = [ "light", "strange", ]
+    inv_type_name = inv_type_name_list[inv_type]
+    inv_type_e_name = inv_type_name_list[inv_type_e]
+    fn = f"{job_tag}/hlbl/dlbl-{inv_type_name}-{inv_type_e_name}/traj-{traj}/chunk_{id_chunk}_{num_chunk}.pickle"
+    if get_load_path(fn) is not None:
+        return
+    q.check_stop()
+    q.check_time_limit()
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}-{inv_type_e_name}-{id_chunk}_{num_chunk}"):
+        return
+    #
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    geo = q.Geometry(total_site, 1)
+    #
+    r_sq_limit = get_r_sq_limit(job_tag)
+    muon_mass = get_muon_mass(job_tag)
+    zz_vv = get_param(job_tag, "zz_vv")
+    hvp_sel_threshold = get_param(job_tag, "hlbl_two_plus_two_num_hvp_sel_threshold")
+    #
+    psel_prob = get_psel_prob()
+    psel = psel_prob.psel
+    #
+    # edl already have charge_factor (and many other factors) multiplied
+    if inv_type_e == 0:
+        edl = get_edl_light()
+    elif inv_type_e == 1:
+        edl = get_edl_strange()
+    else:
+        assert False
+    #
+    # q.FieldRealD(geo, 1) with uniform [0, 1] random number used to sample points.
+    f_rand_01 = get_f_rand_01()
+    #
+    if inv_type == 0:
+        glb_hvp_avg = get_glb_hvp_avg_for_sub_light()
+    elif inv_type == 1:
+        glb_hvp_avg = get_glb_hvp_avg_for_sub_strange()
+    else:
+        assert False
+    #
+    hvp_type_charge_factor_list = [ 1.0, 1.0 / 5.0, ]
+    hvp_type_charge_factor = hvp_type_charge_factor_list[inv_type]
+    #
+    xg_arr = psel.xg_arr()
+    #
+    idx_xg_list = list(range(len(psel)))
+    idx_xg_list_chunk = get_list_chunk(idx_xg_list, id_chunk, num_chunk)
+    #
+    hvp_list = []
+    #
+    sfr = q.open_fields(get_load_path(f"{job_tag}/hvp-psrc-{inv_type_name}/traj-{traj}/geon-info.txt"), "r")
+    tags = sfr.list()
+    rel_acc_list = [ 0, 1, 2, ]
+    prob_list = [ get_param(job_tag, f"prob_acc_{inv_acc}_psrc") for inv_acc in rel_acc_list ]
+    for idx in idx_xg_list_chunk:
+        xg = q.Coordinate(xg_arr[idx])
+        val_list = []
+        for inv_acc in rel_acc_list:
+            tag = mk_psrc_tag(xg, inv_type, inv_acc)
+            if tag not in tags:
+                val_list.append(None)
+            else:
+                chvp_16 = q.FieldComplexD(geo, 16)
+                chvp_16.load_double_from_float(sfr, tag)
+                val_list.append(chvp_16)
+        assert val_list[0] is not None
+        ama_val = mk_ama_val(val_list[0], xg.to_tuple(), val_list, rel_acc_list, prob_list)
+        hvp = ama_extract(ama_val)
+        hvp_avg = glb_hvp_avg.copy().shift(xg)
+        hvp -= hvp_avg
+        hvp *= hvp_type_charge_factor
+        hvp_list.append(hvp)
+    sfr.close()
+    assert len(hvp_list) == len(idx_xg_list_chunk)
+    #
+    info_str = f"{fname}: {job_tag} {traj} {inv_type_name} {inv_type_e_name} id_chunk/num_chunk={id_chunk}/{num_chunk}"
+    #
+    points_data = []
+    for idx, idx_xg_x in enumerate(idx_xg_list_chunk):
+        q.displayln_info(0,
+                f"{info_str} idx/chunk_size={idx}/{len(idx_xg_list_chunk)}")
+        xg_x = q.Coordinate(xg_arr[idx_xg_x])
+        hvp_x = hvp_list[idx]
+        n_points_in_r_sq_limit, n_points_computed, lslt = q.contract_two_plus_two_pair_no_glb_sum(
+                complex(1.0),
+                psel_prob,
+                f_rand_01,
+                hvp_sel_threshold,
+                idx_xg_x,
+                hvp_x,
+                edl,
+                r_sq_limit,
+                muon_mass,
+                zz_vv,
+                )
+        dict_val = {}
+        dict_val["lslt"] = lslt
+        dict_val["idx_xg_x"] = idx_xg_x
+        dict_val["xg_x"] = xg_x
+        dict_val["n_points_in_r_sq_limit"] = n_points_in_r_sq_limit
+        dict_val["n_points_computed"] = n_points_computed
+        points_data.append(dict_val)
+    for d in points_data:
+        d["lslt"] = q.glb_sum(d["lslt"])
+        d["n_points_in_r_sq_limit"] = q.glb_sum(d["n_points_in_r_sq_limit"])
+        d["n_points_computed"] = q.glb_sum(d["n_points_computed"])
+    q.save_pickle_obj(points_data, get_save_path(fn))
+    if len(points_data) > 0:
+        labels = q.contract_two_plus_two_pair_labels()
+        q.displayln_info(-1,
+                f"{info_str}\n",
+                show_lslt(labels, sum([ d["lslt"] for d in points_data ]) / len(points_data) * len(psel)))
+        n_points_in_r_sq_limit = sum([ d["n_points_in_r_sq_limit"] for d in points_data ]) / len(points_data)
+        n_points_computed = sum([ d["n_points_computed"] for d in points_data ]) / len(points_data)
+        q.displayln_info(-1,
+                f"{info_str}\n avg n_points_in_r_sq_limit={n_points_in_r_sq_limit} avg n_points_computed={n_points_computed}")
+    q.displayln_info(0, f"{info_str} done.")
+    q.release_lock()
+
+@q.timer_verbose
+def run_hlbl_two_plus_two(
+        job_tag,
+        traj,
+        *,
+        inv_type,
+        inv_type_e,
+        get_psel_prob,
+        get_edl_light,
+        get_edl_strange,
+        get_glb_hvp_avg_for_sub_light,
+        get_glb_hvp_avg_for_sub_strange,
+        get_f_rand_01,
+        ):
+    """
+    inv_type: inv_type of the internal quark loop
+    inv_type_e: inv_type of the external quark loop (with external photon)
+    """
+    fname = q.get_fname()
+    inv_type_name_list = [ "light", "strange", ]
+    inv_type_name = inv_type_name_list[inv_type]
+    inv_type_e_name = inv_type_name_list[inv_type_e]
+    fn = f"{job_tag}/hlbl/dlbl-{inv_type_name}-{inv_type_e_name}/traj-{traj}/results.pickle"
+    if get_load_path(fn) is not None:
+        return
+    num_chunk = get_param(job_tag, "hlbl_two_plus_two_num_chunk")
+    for id_chunk in range(num_chunk):
+        run_hlbl_two_plus_two_chunk(
+                job_tag,
+                traj,
+                inv_type=inv_type,
+                inv_type_e=inv_type_e,
+                get_psel_prob=get_psel_prob,
+                get_edl_light=get_edl_light,
+                get_edl_strange=get_edl_strange,
+                get_glb_hvp_avg_for_sub_light=get_glb_hvp_avg_for_sub_light,
+                get_glb_hvp_avg_for_sub_strange=get_glb_hvp_avg_for_sub_strange,
+                get_f_rand_01=get_f_rand_01,
+                id_chunk=id_chunk,
+                num_chunk=num_chunk,
+                )
+    q.check_stop()
+    q.check_time_limit()
+    info_str = f"{fname}: {job_tag} {traj} {inv_type_name} {inv_type_e_name}"
+    fn_chunk_list = []
+    for id_chunk in range(num_chunk):
+        fn_chunk = f"{job_tag}/hlbl/dlbl-{inv_type_name}-{inv_type_e_name}/traj-{traj}/chunk_{id_chunk}_{num_chunk}.pickle"
+        if get_load_path(fn_chunk) is None:
+            q.displayln_info(-1, f"{info_str} not finished (missing '{fn_chunk})'")
+            return
+        else:
+            fn_chunk_list.append(fn_chunk)
+    assert len(fn_chunk_list) == num_chunk
+    if get_load_path(fn) is not None:
+        return
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}-{inv_type_e_name}"):
+        return
+    labels = q.contract_two_plus_two_pair_labels()
+    points_data = []
+    for fn_chunk in fn_chunk_list:
+        points_data += q.load_pickle_obj(get_load_path(fn_chunk))
+    assert len(points_data) == len(get_psel_prob().psel)
+    results = dict()
+    results["labels"] = labels
+    results["points_data"] = points_data
+    results["n_points"] = len(points_data)
+    results["lslt_sum"] = sum([ d["lslt"] for d in points_data ])
+    results["n_points_in_r_sq_limit"] = sum([ d["n_points_in_r_sq_limit"] for d in points_data ]) / len(points_data)
+    results["n_points_computed"] = sum([ d["n_points_computed"] for d in points_data ]) / len(points_data)
+    q.save_pickle_obj(results, get_save_path(fn))
+    if results["n_points"] > 0:
+        q.displayln_info(0, f"{info_str}\n",
+                show_lslt(labels, results["lslt_sum"]))
+        n_points_in_r_sq_limit = results["n_points_in_r_sq_limit"]
+        n_points_computed = results["n_points_computed"]
+        q.displayln_info(-1,
+                f"{info_str}\n avg n_points_in_r_sq_limit={n_points_in_r_sq_limit} avg n_points_computed={n_points_computed}")
+    for fn_chunk in fn_chunk_list:
+        q.qremove_info(get_load_path(fn_chunk))
+    q.displayln_info(0, f"{info_str} done.")
+    q.release_lock()
+
 # ----
 
 @q.timer_verbose
@@ -1221,6 +1439,16 @@ def run_job(job_tag, traj):
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
     #
+    run_ret_list = []
+    def add_to_run_ret_list(v):
+        nonlocal run_ret_list
+        if v is None:
+            return
+        if isinstance(v, list):
+            run_ret_list += v
+        else:
+            run_ret_list.append(v)
+    #
     get_gf = run_gf(job_tag, traj_gf)
     get_gt = run_gt(job_tag, traj_gf, get_gf)
     get_gf_ape = run_gf_ape(job_tag, get_gf)
@@ -1230,17 +1458,6 @@ def run_job(job_tag, traj):
     if has_eig:
         get_eig_light = run_eig(job_tag, traj_gf, get_gf)
     get_eig_strange = run_eig_strange(job_tag, traj_gf, get_gf)
-    #
-    run_ret_list = []
-    #
-    def add_to_run_ret_list(v):
-        nonlocal run_ret_list
-        if v is None:
-            return
-        if isinstance(v, list):
-            run_ret_list += v
-        else:
-            run_ret_list.append(v)
     #
     def run_wsrc_full():
         if has_eig:
@@ -1384,6 +1601,16 @@ def run_job_contract(job_tag, traj):
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
     #
+    run_ret_list = []
+    def add_to_run_ret_list(v):
+        nonlocal run_ret_list
+        if v is None:
+            return
+        if isinstance(v, list):
+            run_ret_list += v
+        else:
+            run_ret_list.append(v)
+    #
     run_r_list(job_tag)
     #
     get_gf = run_gf(job_tag, traj_gf)
@@ -1423,11 +1650,38 @@ def run_job_contract(job_tag, traj):
     if job_tag[:5] == "test-":
         force_load_muon_line_interpolation()
     #
-    get_point_pairs_light = run_hlbl_four_point_pairs_info(job_tag, traj, inv_type=0, get_psel_prob=get_psel_prob)
-    get_point_pairs_strange = run_hlbl_four_point_pairs_info(job_tag, traj, inv_type=1, get_psel_prob=get_psel_prob)
+    for inv_type in [ 0, 1, ]:
+        get_point_pairs = run_hlbl_four_point_pairs_info(
+                job_tag,
+                traj,
+                inv_type=inv_type,
+                get_psel_prob=get_psel_prob,
+                )
+        v = run_hlbl_four(
+                job_tag,
+                traj,
+                inv_type=inv_type,
+                get_psel_prob=get_psel_prob,
+                get_fsel_prob=get_fsel_prob,
+                get_point_pairs=get_point_pairs,
+                )
+        add_to_run_ret_list(v)
     #
-    run_hlbl_four(job_tag, traj, inv_type=0, get_psel_prob=get_psel_prob, get_fsel_prob=get_fsel_prob, get_point_pairs=get_point_pairs_light)
-    run_hlbl_four(job_tag, traj, inv_type=1, get_psel_prob=get_psel_prob, get_fsel_prob=get_fsel_prob, get_point_pairs=get_point_pairs_strange)
+    for inv_type in [ 0, 1, ]:
+        for inv_type_e in [ 0, 1, ]:
+            v = run_hlbl_two_plus_two(
+                    job_tag,
+                    traj,
+                    inv_type=inv_type,
+                    inv_type_e=inv_type_e,
+                    get_psel_prob=get_psel_prob,
+                    get_edl_light=get_edl_light,
+                    get_edl_strange=get_edl_strange,
+                    get_glb_hvp_avg_for_sub_light=get_glb_hvp_avg_for_sub_light,
+                    get_glb_hvp_avg_for_sub_strange=get_glb_hvp_avg_for_sub_strange,
+                    get_f_rand_01=get_f_rand_01,
+                    )
+            add_to_run_ret_list(v)
     #
     get_get_prop = run_get_prop(job_tag, traj,
             get_gf=get_gf,
@@ -1451,7 +1705,7 @@ def run_job_contract(job_tag, traj):
                 ],
             )
     #
-    if q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
+    if is_performing_auto_contraction and q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
         get_prop = get_get_prop()
         if get_prop is not None:
             q.timer_fork()
@@ -1471,7 +1725,17 @@ def run_job_contract(job_tag, traj):
             q.timer_display()
             q.timer_merge()
         q.release_lock()
+        v = [ f"{fname} {job_tag} {traj} done", ]
+        add_to_run_ret_list(v)
+    #
     q.clean_cache()
+    #
+    q.sync_node()
+    q.displayln_info(f"{fname}: run_ret_list={run_ret_list}")
+    if job_tag[:5] != "test-":
+        if run_ret_list:
+            q.qquit(f"{fname} {job_tag} {traj} (partly) done.")
+
 
 # ----
 
@@ -1559,6 +1823,8 @@ if __name__ == "__main__":
     is_performing_inversion = q.get_arg("--no-inversion", default=None) is None
 
     is_performing_contraction = q.get_arg("--no-contract", default=None) is None
+
+    is_performing_auto_contraction = q.get_arg("--no-auto-contract", default=None) is None
 
     #######################################################
 

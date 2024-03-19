@@ -260,7 +260,7 @@ std::vector<SlTable> contract_four_pair(
 
 std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
     Long& n_points_in_r_sq_limit, Long& n_points_computed, const ComplexD& coef,
-    const PointsSelection& psel, const SelectedPoints<RealD> psel_prob,
+    const PointsSelection& psel, const SelectedPoints<RealD>& psel_prob,
     const Field<RealD>& rand_prob_sel_field, const RealD hvp_sel_threshold,
     const Long idx_xg_x, const Field<ComplexD>& hvp_x,
     const SelectedPoints<ComplexD>& edl_list_c, const Long r_sq_limit,
@@ -280,10 +280,12 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
 {
   TIMER_VERBOSE("contract_two_plus_two_pair_no_glb_sum");
   qassert(0 <= idx_xg_x and idx_xg_x < (Long)psel.size());
-  const Coordinate& xg_x = psel[idx_xg_x];
-  const RealD prob_xg_x = psel_prob.get_elem(idx_xg_x);
+  qassert(psel_prob.multiplicity == 1);
   qassert(rand_prob_sel_field.geo().multiplicity == 1);
   qassert(hvp_x.geo().multiplicity == 16);
+  qassert(edl_list_c.multiplicity == 3 * 4);
+  const Coordinate& xg_x = psel[idx_xg_x];
+  const RealD prob_xg_x = psel_prob.get_elem(idx_xg_x);
   n_points_in_r_sq_limit = 0;
   n_points_computed = 0;
   const Geometry& geo = geo_reform(hvp_x.geo());
@@ -432,7 +434,6 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
       sums_sub_pi_pisl[k] += sub_pi_pisl_sum * pi_proj_pisl_sum;
       sums_dsub_pi_pisl[k] += dsub_pi_pisl_sum * pi_proj_pisl_sum;
     });
-    qcast_const<ComplexD, array<ComplexD, 3 * 4>>(edl_list);
     qfor(k, n_points, {
       const Coordinate& xg_z = psel[k];
       add_to_sl_table(ts[0], sums_sub[k], xg_x, xg_y, xg_z, total_site);
@@ -451,6 +452,7 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
                       sqr(smod(xg_z - xg_x, total_site)));
     });
   });
+  qcast_const<ComplexD, array<ComplexD, 3 * 4>>(edl_list);
   // no glb sum performed
   for (long i = 0; i < n_labels; ++i) {
     acc_sl_table(ts[i]);

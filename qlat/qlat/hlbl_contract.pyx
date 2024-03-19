@@ -113,7 +113,7 @@ def contract_four_pair(
 def contract_two_plus_two_pair_no_glb_sum(
         cc.PyComplexD coef,
         SelectedPointsRealD psel_prob,
-        FieldRealD rand_prob_sel_field,
+        FieldRealD f_rand_01,
         const cc.RealD hvp_sel_threshold,
         const cc.Long idx_xg_x,
         FieldComplexD hvp_x,
@@ -123,7 +123,7 @@ def contract_two_plus_two_pair_no_glb_sum(
         const cc.RealD z_v,
         ):
     """
-    return lsl_arr
+    return n_points_in_r_sq_limit, n_points_computed, lsl_arr
     #
     lsl_arr.shape == (len(labels), s_limit, l_limit,)
     labels = contract_two_plus_two_pair_labels()
@@ -152,7 +152,7 @@ def contract_two_plus_two_pair_no_glb_sum(
             cc.ccpy_d(coef),
             psel.xx,
             psel_prob.xx,
-            rand_prob_sel_field.xx,
+            f_rand_01.xx,
             hvp_sel_threshold,
             idx_xg_x,
             hvp_x.xx,
@@ -166,4 +166,5 @@ def contract_two_plus_two_pair_no_glb_sum(
     for i in range(s):
         sl_arr = sl_arr_from_sl_table(sl_table_vec[i])
         sl_arr_list.append(sl_arr)
-    return np.array(sl_arr_list, dtype=np.complex128)
+    lsl_arr = np.array(sl_arr_list, dtype=np.complex128)
+    return n_points_in_r_sq_limit, n_points_computed, lsl_arr

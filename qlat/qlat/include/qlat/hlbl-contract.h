@@ -384,7 +384,7 @@ inline std::vector<std::string> contract_two_plus_two_pair_labels()
 
 std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
     Long& n_points_in_r_sq_limit, Long& n_points_computed, const ComplexD& coef,
-    const PointsSelection& psel, const SelectedPoints<RealD> psel_prob,
+    const PointsSelection& psel, const SelectedPoints<RealD>& psel_prob,
     const Field<RealD>& rand_prob_sel_field, const RealD hvp_sel_threshold,
     const Long idx_xg_x, const Field<ComplexD>& hvp_x,
     const SelectedPoints<ComplexD>& edl_list_c, const Long r_sq_limit,
