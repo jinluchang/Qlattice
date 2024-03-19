@@ -839,12 +839,12 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
         json_results.append((
             f"{fname}: {info_tag} lslt",
             q.get_data_sig(lslt, q.RngState()),
-            5e-2,
+            10e-2,
             ))
         json_results.append((
             f"{fname}: {info_tag} lslt_sloppy",
             q.get_data_sig(lslt_sloppy, q.RngState()),
-            5e-2,
+            10e-2,
             ))
         dict_val = {}
         dict_val["lslt"] = lslt
@@ -916,22 +916,22 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
     json_results.append((
         f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum",
         q.get_data_sig(results["lslt_sum"], q.RngState()),
-        5e-3,
+        1e-2,
         ))
     json_results.append((
         f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sloppy_sum",
         q.get_data_sig(results["lslt_sloppy_sum"], q.RngState()),
-        5e-3,
+        1e-2,
         ))
     json_results.append((
         f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum[labels.index('ref-far proj-all'), -1, -1]",
         results["lslt_sum"][labels.index('ref-far proj-all'), -1, -1],
-        5e-3,
+        1e-2,
         ))
     json_results.append((
         f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sloppy_sum[labels.index('ref-far proj-all'), -1, -1]",
         results["lslt_sloppy_sum"][labels.index('ref-far proj-all'), -1, -1],
-        5e-3,
+        1e-2,
         ))
     q.save_pickle_obj(results, get_save_path(fn))
     for fn_chunk in fn_chunk_list:
@@ -1107,10 +1107,61 @@ def run_edl(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice):
     json_results.append((
         f"{fname}: {job_tag} {traj} {inv_type_name} edl",
         q.get_data_sig(hvp_edl[:], q.RngState()),
-        5e-4,
+        1e-3,
         ))
     q.release_lock()
     return ret
+
+@q.timer_verbose
+def run_check_hvp_avg(job_tag, traj, *, inv_type, get_psel_prob, get_hvp_average, get_hvp_sum_tslice):
+    fname = q.get_fname()
+    inv_type_name_list = [ "light", "strange", ]
+    inv_type_name = inv_type_name_list[inv_type]
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    total_site_arr = total_site.to_numpy()
+    t_size = total_site[3]
+    geo = q.Geometry(total_site, 1)
+    psel_prob = get_psel_prob()
+    psel = psel_prob.psel
+    xg_arr = psel.xg_arr()
+    hvp_average = get_hvp_average()
+    hvp_sum_tslice = get_hvp_sum_tslice()
+    idx_arr = np.arange(len(psel))
+    t_arr = np.arange(t_size)
+    t_dir_arr = np.arange(4)
+    tslice_arr = (t_arr + xg_arr[:, :, None]) % total_site_arr[:, None]
+    tslice_arr_sel = t_arr < total_site_arr[:, None]
+    tslice_arr[:, ~tslice_arr_sel] = np.broadcast_to(np.arange(t_size), (4, t_size,))[~tslice_arr_sel]
+    assert tslice_arr.shape == (len(psel), 4, t_size,)
+    hvp_sum_tslice = hvp_sum_tslice[idx_arr[:, None, None], t_dir_arr[None, :, None], tslice_arr]
+    hvp_sum_tslice_avg1 = np.sum(hvp_sum_tslice / psel_prob[:, None, None, None], axis=0) / geo.total_volume()
+    hvp_sum_tslice_avg2 = calc_hvp_sum_tslice(hvp_average)[:]
+    norm_diff_ratio = (
+            2 * np.sqrt(q.qnorm(hvp_sum_tslice_avg1 - hvp_sum_tslice_avg2))
+            / (np.sqrt(q.qnorm(hvp_sum_tslice_avg1)) + np.sqrt(q.qnorm(hvp_sum_tslice_avg2)))
+            )
+    q.displayln_info(-1, f"{fname}: {job_tag} {traj} {inv_type_name} {norm_diff_ratio}")
+    assert norm_diff_ratio < 1e-6
+    json_results.append((
+        f"{fname}: {job_tag} {traj} {inv_type_name} hvp_sum_tslice",
+        q.get_data_sig(hvp_sum_tslice, q.RngState()),
+        1e-4,
+        ))
+    json_results.append((
+        f"{fname}: {job_tag} {traj} {inv_type_name} hvp_sum_tslice_avg1",
+        q.get_data_sig(hvp_sum_tslice_avg1, q.RngState()),
+        1e-4,
+        ))
+    json_results.append((
+        f"{fname}: {job_tag} {traj} {inv_type_name} hvp_average",
+        q.get_data_sig(hvp_average, q.RngState()),
+        1e-4,
+        ))
+    json_results.append((
+        f"{fname}: {job_tag} {traj} {inv_type_name} hvp_sum_tslice_avg2",
+        q.get_data_sig(hvp_sum_tslice_avg2, q.RngState()),
+        1e-4,
+        ))
 
 # ----
 
@@ -1350,13 +1401,24 @@ def run_job_contract(job_tag, traj):
     #
     get_psel_smear = run_psel_smear(job_tag, traj)
     #
-    get_glb_hvp_avg_light = run_job_global_hvp_average(job_tag, inv_type=0)
-    get_glb_hvp_avg_strange = run_job_global_hvp_average(job_tag, inv_type=1)
-    get_hvp_average_light = run_hvp_average(job_tag, traj, inv_type=0, get_psel_prob=get_psel_prob)
-    get_hvp_average_strange = run_hvp_average(job_tag, traj, inv_type=1, get_psel_prob=get_psel_prob)
-    #
-    get_glb_hvp_avg_for_sub_light = run_job_global_hvp_average_for_subtract(job_tag, traj, get_glb_hvp_avg=get_glb_hvp_avg_light, get_hvp_average=get_hvp_average_light)
-    get_glb_hvp_avg_for_sub_strange = run_job_global_hvp_average_for_subtract(job_tag, traj, get_glb_hvp_avg=get_glb_hvp_avg_strange, get_hvp_average=get_hvp_average_strange)
+    for inv_type in [ 0, 1, ]:
+        get_glb_hvp_avg = run_job_global_hvp_average(job_tag, inv_type=inv_type)
+        get_hvp_average = run_hvp_average(job_tag, traj, inv_type=inv_type, get_psel_prob=get_psel_prob)
+        get_glb_hvp_avg_for_sub = run_job_global_hvp_average_for_subtract(job_tag, traj, get_glb_hvp_avg=get_glb_hvp_avg, get_hvp_average=get_hvp_average)
+        get_hvp_sum_tslice_accs = run_hvp_sum_tslice_accs(job_tag, traj, inv_type=inv_type, get_psel=get_psel)
+        get_hvp_sum_tslice = run_hvp_sum_tslice(job_tag, traj, inv_type=inv_type, get_psel=get_psel, get_hvp_sum_tslice_accs=get_hvp_sum_tslice_accs)
+        get_edl = run_edl(job_tag, traj, inv_type=inv_type, get_psel=get_psel, get_hvp_sum_tslice=get_hvp_sum_tslice)
+        run_check_hvp_avg(job_tag, traj, inv_type=inv_type, get_psel_prob=get_psel_prob, get_hvp_sum_tslice=get_hvp_sum_tslice, get_hvp_average=get_hvp_average)
+        if inv_type == 0:
+            get_edl_light = get_edl
+            get_hvp_average_light = get_hvp_average
+            get_glb_hvp_avg_for_sub_light = get_glb_hvp_avg_for_sub
+        elif inv_type == 1:
+            get_edl_strange = get_edl
+            get_hvp_average_strange = get_hvp_average
+            get_glb_hvp_avg_for_sub_strange = get_glb_hvp_avg_for_sub
+        else:
+            raise Exception(f"{fname}: inv_type={inv_type} wrong.")
     #
     if job_tag[:5] == "test-":
         force_load_muon_line_interpolation()
@@ -1366,17 +1428,6 @@ def run_job_contract(job_tag, traj):
     #
     run_hlbl_four(job_tag, traj, inv_type=0, get_psel_prob=get_psel_prob, get_fsel_prob=get_fsel_prob, get_point_pairs=get_point_pairs_light)
     run_hlbl_four(job_tag, traj, inv_type=1, get_psel_prob=get_psel_prob, get_fsel_prob=get_fsel_prob, get_point_pairs=get_point_pairs_strange)
-    #
-    for inv_type in [ 0, 1, ]:
-        get_hvp_sum_tslice_accs = run_hvp_sum_tslice_accs(job_tag, traj, inv_type=inv_type, get_psel=get_psel)
-        get_hvp_sum_tslice = run_hvp_sum_tslice(job_tag, traj, inv_type=inv_type, get_psel=get_psel, get_hvp_sum_tslice_accs=get_hvp_sum_tslice_accs)
-        get_edl = run_edl(job_tag, traj, inv_type=inv_type, get_psel=get_psel, get_hvp_sum_tslice=get_hvp_sum_tslice)
-        if inv_type == 0:
-            get_edl_light = get_edl
-        elif inv_type == 1:
-            get_edl_strange = get_edl
-        else:
-            raise Exception(f"{fname}: inv_type={inv_type} wrong.")
     #
     get_get_prop = run_get_prop(job_tag, traj,
             get_gf=get_gf,
@@ -1534,8 +1585,8 @@ if __name__ == "__main__":
             if is_performing_inversion:
                 run_job(job_tag, traj)
         if is_performing_contraction:
-            run_job_global_hvp_average(job_tag, inv_type=0)
-            run_job_global_hvp_average(job_tag, inv_type=1)
+            for inv_type in [ 0, 1, ]:
+                run_job_global_hvp_average(job_tag, inv_type=inv_type)
         for traj in get_param(job_tag, "trajs"):
             q.check_time_limit()
             if is_performing_contraction:

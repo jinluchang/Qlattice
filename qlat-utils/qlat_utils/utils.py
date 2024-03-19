@@ -344,8 +344,8 @@ def check_log_json(script_file, json_results, *, check_eps=1e-5):
                     continue
                 actual_eps = 0.0
                 if (abs(v) + abs(vl)) > 0:
-                    actual_eps = abs(v - vl) / (abs(v) + abs(vl))
-                if abs(v - vl) > eps * (abs(v) + abs(vl)):
+                    actual_eps = 2 * abs(v - vl) / (abs(v) + abs(vl))
+                if 2 * abs(v - vl) > eps * (abs(v) + abs(vl)):
                     displayln(-1, f"CHECK: {i} '{n}' actual: {v} ; load: {vl} .")
                     displayln(-1, f"CHECK: target eps: {eps} ; actual eps: {actual_eps} .")
                     displayln(-1, f"CHECK: ERROR: JSON results value does not match.")
