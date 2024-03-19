@@ -699,12 +699,13 @@ def run_hvp_average(job_tag, traj, *, inv_type, get_psel_prob):
     fn = f"{job_tag}/hvp-average/traj-{traj}/hvp_average_{inv_type_name}.field"
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site, 1)
+    @q.lazy_call
     def load():
         hvp_average = q.FieldComplexD(geo, 16)
         hvp_average.load_double_from_float(get_load_path(fn))
         return hvp_average
     if get_load_path(fn) is not None:
-        return q.lazy_call(load)
+        return load
     data_fn = f"{job_tag}/hvp-psrc-{inv_type_name}/traj-{traj}/geon-info.txt"
     data_path = get_load_path(data_fn)
     if data_path is None:
@@ -719,7 +720,7 @@ def run_hvp_average(job_tag, traj, *, inv_type, get_psel_prob):
     hvp_average.save_float_from_double(get_save_path(fn))
     q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type} num_fields={len(psel_prob.psel)}")
     q.release_lock()
-    return q.lazy_call(load)
+    return load
 
 # -----------------------------------------------------------------------------
 

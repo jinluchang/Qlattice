@@ -427,39 +427,51 @@ def run_job_global_hvp_average(job_tag, *, inv_type):
     return ret
 
 @q.timer_verbose
-def run_job_global_hvp_average_for_subtract(job_tag, traj, *, get_glb_hvp_avg, get_hvp_average):
+def run_job_global_hvp_average_for_subtract(job_tag, traj, *, inv_type, get_glb_hvp_avg, get_hvp_average):
     """
-    get_glb_hvp_avg_for_sub = run_job_global_hvp_average_for_subtract(job_tag, traj, get_glb_hvp_avg=get_glb_hvp_avg, get_hvp_average=get_hvp_average)
+    get_glb_hvp_avg_for_sub = run_job_global_hvp_average_for_subtract(job_tag, traj, inv_type=inv_type, get_glb_hvp_avg=get_glb_hvp_avg, get_hvp_average=get_hvp_average)
     glb_hvp_avg_for_sub = get_glb_hvp_avg_for_sub()
     #
     Get global hvp average excluding data from this traj.
     Suitable for use in subtraction.
     """
     fname = q.get_fname()
+    inv_type_name_list = [ "light", "strange", ]
+    inv_type_name = inv_type_name_list[inv_type]
+    fn = f"{job_tag}/hlbl/glb-hvp-avg-for-sub/traj-{traj}/hvp_average_{inv_type_name}.field"
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    geo = q.Geometry(total_site, 1)
+    @q.lazy_call
+    def get_glb_hvp_avg_for_sub():
+        glb_hvp_avg_for_sub = q.FieldComplexD(geo, 16)
+        glb_hvp_avg_for_sub.load_double_from_float(get_load_path(fn))
+        return glb_hvp_avg_for_sub
+    ret = get_glb_hvp_avg_for_sub
+    if get_load_path(fn) is not None:
+        return ret
     if get_glb_hvp_avg is None:
         q.displayln_info(-1, f"{fname}: get_glb_hvp_avg is None.")
         return None
     if get_hvp_average is None:
         q.displayln_info(-1, f"{fname}: get_hvp_average is None.")
         return None
-    @q.lazy_call
-    @q.timer_verbose
-    def get_glb_hvp_avg_for_sub():
-        glb_hvp_avg_trajs, glb_hvp_avg = get_glb_hvp_avg()
-        glb_hvp_avg_for_sub = glb_hvp_avg.copy()
-        if traj not in glb_hvp_avg_trajs:
-            return glb_hvp_avg_for_sub
-        num_trajs = len(glb_hvp_avg_trajs)
-        assert num_trajs > 0
-        if num_trajs == 1:
-            q.displayln_info(-1, f"WARNING: {fname} glb_hvp_avg num_trajs={num_trajs}")
-            return glb_hvp_avg_for_sub
-        hvp_average = get_hvp_average()
-        glb_hvp_avg_for_sub *= num_trajs
-        glb_hvp_avg_for_sub -= hvp_average
-        glb_hvp_avg_for_sub *= 1.0 / (num_trajs - 1.0)
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
+        return
+    glb_hvp_avg_trajs, glb_hvp_avg = get_glb_hvp_avg()
+    glb_hvp_avg_for_sub = glb_hvp_avg.copy()
+    if traj not in glb_hvp_avg_trajs:
         return glb_hvp_avg_for_sub
-    ret = get_glb_hvp_avg_for_sub
+    num_trajs = len(glb_hvp_avg_trajs)
+    assert num_trajs > 0
+    if num_trajs == 1:
+        q.displayln_info(-1, f"WARNING: {fname} glb_hvp_avg num_trajs={num_trajs}")
+        return glb_hvp_avg_for_sub
+    hvp_average = get_hvp_average()
+    glb_hvp_avg_for_sub *= num_trajs
+    glb_hvp_avg_for_sub -= hvp_average
+    glb_hvp_avg_for_sub *= 1.0 / (num_trajs - 1.0)
+    glb_hvp_avg_for_sub.save_float_from_double(get_save_path(fn))
+    q.release_lock()
     return ret
 
 # ----
@@ -1072,7 +1084,7 @@ def run_edl(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice):
     fname = q.get_fname()
     inv_type_name_list = [ "light", "strange", ]
     inv_type_name = inv_type_name_list[inv_type]
-    fn = f"{job_tag}/hlbl/edl-{inv_type_name}/traj-{traj}/edl.lat"
+    fn = f"{job_tag}/hlbl/edl/traj-{traj}/edl-{inv_type_name}.lat"
     @q.timer_verbose
     @q.lazy_call
     def get_edl():
@@ -1646,7 +1658,7 @@ def run_job_contract(job_tag, traj):
     for inv_type in [ 0, 1, ]:
         get_glb_hvp_avg = run_job_global_hvp_average(job_tag, inv_type=inv_type)
         get_hvp_average = run_hvp_average(job_tag, traj, inv_type=inv_type, get_psel_prob=get_psel_prob)
-        get_glb_hvp_avg_for_sub = run_job_global_hvp_average_for_subtract(job_tag, traj, get_glb_hvp_avg=get_glb_hvp_avg, get_hvp_average=get_hvp_average)
+        get_glb_hvp_avg_for_sub = run_job_global_hvp_average_for_subtract(job_tag, traj, inv_type=inv_type, get_glb_hvp_avg=get_glb_hvp_avg, get_hvp_average=get_hvp_average)
         get_hvp_sum_tslice_accs = run_hvp_sum_tslice_accs(job_tag, traj, inv_type=inv_type, get_psel=get_psel)
         get_hvp_sum_tslice = run_hvp_sum_tslice(job_tag, traj, inv_type=inv_type, get_psel=get_psel, get_hvp_sum_tslice_accs=get_hvp_sum_tslice_accs)
         get_edl = run_edl(job_tag, traj, inv_type=inv_type, get_psel=get_psel, get_hvp_sum_tslice=get_hvp_sum_tslice)
