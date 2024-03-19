@@ -1388,6 +1388,11 @@ def run_hlbl_two_plus_two(
         q.get_data_sig(results["lslt_sum"], q.RngState()),
         1e-2,
         ))
+    json_results.append((
+        f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum[labels.index('sub proj-all'), -1, -1]",
+        results["lslt_sum"][labels.index('sub proj-all'), -1, -1],
+        1e-2,
+        ))
     q.displayln_info(0, f"{info_str} done.")
     q.release_lock()
 
