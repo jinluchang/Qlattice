@@ -1581,14 +1581,14 @@ if __name__ == "__main__":
     for job_tag in job_tags:
         run_params(job_tag)
         for traj in get_param(job_tag, "trajs"):
-            q.check_time_limit()
             if is_performing_inversion:
+                q.check_time_limit()
                 run_job(job_tag, traj)
         if is_performing_contraction:
             for inv_type in [ 0, 1, ]:
+                q.check_time_limit()
                 run_job_global_hvp_average(job_tag, inv_type=inv_type)
         for traj in get_param(job_tag, "trajs"):
-            q.check_time_limit()
             if is_performing_contraction:
                 q.check_time_limit()
                 run_job_contract(job_tag, traj)
