@@ -1113,7 +1113,7 @@ def run_edl(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice):
     return ret
 
 @q.timer_verbose
-def run_check_hvp_avg(job_tag, traj, *, inv_type, get_psel_prob, get_hvp_average, get_hvp_sum_tslice):
+def run_check_hvp_avg(job_tag, traj, *, inv_type, get_psel_prob, get_hvp_sum_tslice, get_hvp_average):
     fname = q.get_fname()
     inv_type_name_list = [ "light", "strange", ]
     inv_type_name = inv_type_name_list[inv_type]
