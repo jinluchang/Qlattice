@@ -1287,7 +1287,7 @@ def run_hlbl_two_plus_two_chunk(
         d["n_points_in_r_sq_limit"] = q.glb_sum(d["n_points_in_r_sq_limit"])
         d["n_points_computed"] = q.glb_sum(d["n_points_computed"])
         json_results.append((
-            f"{fname}: {info_str} {d['idx_xg_x']} {d['xg_x']} lslt",
+            f"{fname}: {info_str} idx_xg_x={d['idx_xg_x']} {d['xg_x']} lslt",
             q.get_data_sig(d["lslt"], q.RngState()),
             5e-2,
             ))
