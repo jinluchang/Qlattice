@@ -829,20 +829,20 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
                 fsel_prob=fsel_prob,
                 weight_pair=weight_pair,
                 )
-        info_tag = f"{job_tag} {traj} {inv_type_name} {id_chunk}/{num_chunk} {idx}/{len(point_pairs_chunk)} {xg_x} {xg_y}"
+        info_str = f"{job_tag} {traj} {inv_type_name} {id_chunk}/{num_chunk} {idx}/{len(point_pairs_chunk)} {xg_x} {xg_y}"
         q.displayln_info(
-                f"{fname}: {info_tag}\n",
+                f"{fname}: {info_str}\n",
                 f"r={r} weight_pair={weight_pair}\n",
                 show_lslt(labels, lslt * len(point_pairs), label="ref-far proj-all"),
                 "\nsloppy:\n",
                 show_lslt(labels, lslt_sloppy * len(point_pairs), label="ref-far proj-all"))
         json_results.append((
-            f"{fname}: {info_tag} lslt",
+            f"{fname}: {info_str} lslt",
             q.get_data_sig(lslt, q.RngState()),
             10e-2,
             ))
         json_results.append((
-            f"{fname}: {info_tag} lslt_sloppy",
+            f"{fname}: {info_str} lslt_sloppy",
             q.get_data_sig(lslt_sloppy, q.RngState()),
             10e-2,
             ))
@@ -1286,6 +1286,11 @@ def run_hlbl_two_plus_two_chunk(
         d["lslt"] = q.glb_sum(d["lslt"])
         d["n_points_in_r_sq_limit"] = q.glb_sum(d["n_points_in_r_sq_limit"])
         d["n_points_computed"] = q.glb_sum(d["n_points_computed"])
+        json_results.append((
+            f"{fname}: {info_str} {d['idx_xg_x']} {d['xg_x']} lslt",
+            q.get_data_sig(d["lslt"], q.RngState()),
+            5e-2,
+            ))
     q.save_pickle_obj(points_data, get_save_path(fn))
     if len(points_data) > 0:
         labels = q.contract_two_plus_two_pair_labels()
@@ -1378,6 +1383,11 @@ def run_hlbl_two_plus_two(
                 f"{info_str}\n avg n_points_in_r_sq_limit={n_points_in_r_sq_limit} avg n_points_computed={n_points_computed}")
     for fn_chunk in fn_chunk_list:
         q.qremove_info(get_load_path(fn_chunk))
+    json_results.append((
+        f"{fname}: {info_str} lslt_sum",
+        q.get_data_sig(results["lslt_sum"], q.RngState()),
+        1e-2,
+        ))
     q.displayln_info(0, f"{info_str} done.")
     q.release_lock()
 
