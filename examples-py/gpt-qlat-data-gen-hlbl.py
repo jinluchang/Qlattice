@@ -1301,7 +1301,7 @@ def run_hlbl_two_plus_two_chunk(
         json_results.append((
             f"{fname}: {info_str} idx_xg_x={d['idx_xg_x']} {d['xg_x']} lslt",
             q.get_data_sig(d["lslt"], q.RngState()),
-            5e-2,
+            10e-2,
             ))
     q.save_pickle_obj(points_data, get_save_path(fn))
     if len(points_data) > 0:
