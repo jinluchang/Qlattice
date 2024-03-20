@@ -1176,6 +1176,98 @@ def run_check_hvp_avg(job_tag, traj, *, inv_type, get_psel_prob, get_hvp_sum_tsl
         ))
 
 @q.timer_verbose
+def run_hlbl_sub_hvp_sfield(
+        job_tag,
+        traj,
+        *,
+        inv_type,
+        get_psel_prob,
+        get_glb_hvp_avg_for_sub,
+        get_f_rand_01,
+        ):
+    """
+    Save the glb_avg subtracted, importance sparsed, charge factor multiplied, hvp sparse fields.
+    """
+    fname = q.get_fname()
+    inv_type_name_list = [ "light", "strange", ]
+    inv_type_name = inv_type_name_list[inv_type]
+    fn = f"{job_tag}/hlbl/sub-hvp-{inv_type_name}/traj-{traj}"
+    if get_load_path(fn) is not None:
+        return
+    q.check_stop()
+    q.check_time_limit()
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
+        return
+    #
+    sfw = q.open_fields(get_save_path(fn + ".acc"), "w", q.Coordinate([ 1, 2, 2, 2, ]))
+    #
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    geo = q.Geometry(total_site, 1)
+    total_volume = geo.total_volume()
+    #
+    hvp_sel_threshold = get_param(job_tag, "hlbl_two_plus_two_num_hvp_sel_threshold")
+    #
+    psel_prob = get_psel_prob()
+    psel = psel_prob.psel
+    #
+    # q.FieldRealD(geo, 1) with uniform [0, 1] random number used to sample points.
+    f_rand_01 = get_f_rand_01()
+    #
+    glb_hvp_avg = get_glb_hvp_avg_for_sub()
+    #
+    hvp_type_charge_factor_list = [ 1.0, 1.0 / 5.0, ]
+    hvp_type_charge_factor = hvp_type_charge_factor_list[inv_type]
+    #
+    xg_arr = psel.xg_arr()
+    #
+    idx_xg_list = list(range(len(psel)))
+    #
+    sfr = q.open_fields(get_load_path(f"{job_tag}/hvp-psrc-{inv_type_name}/traj-{traj}/geon-info.txt"), "r")
+    tags = sfr.list()
+    rel_acc_list = [ 0, 1, 2, ]
+    prob_list = [ get_param(job_tag, f"prob_acc_{inv_acc}_psrc") for inv_acc in rel_acc_list ]
+    for idx in idx_xg_list:
+        xg = q.Coordinate(xg_arr[idx])
+        val_list = []
+        for inv_acc in rel_acc_list:
+            tag = mk_psrc_tag(xg, inv_type, inv_acc)
+            if tag not in tags:
+                val_list.append(None)
+            else:
+                chvp_16 = q.FieldComplexD(geo, 16)
+                chvp_16.load_double_from_float(sfr, tag)
+                val_list.append(chvp_16)
+        assert val_list[0] is not None
+        ama_val = mk_ama_val(val_list[0], xg.to_tuple(), val_list, rel_acc_list, prob_list)
+        hvp = ama_extract(ama_val)
+        hvp_avg = glb_hvp_avg.copy().shift(xg)
+        hvp -= hvp_avg
+        hvp *= hvp_type_charge_factor
+        hvp_sel_prob = q.sqrt_field(q.qnorm_field(hvp))
+        hvp_sel_prob *= 1.0 / hvp_sel_threshold
+        hvp_sel_prob[:] = np.minimum(1.0, hvp_sel_prob[:])
+        ps_sel = f_rand_01[:, 0] <= hvp_sel_prob[:, 0]
+        fsel_ps = q.FieldSelection(geo)
+        fsel_ps[ps_sel] = 0
+        fsel_ps.update()
+        num_fsel_ps = q.glb_sum(fsel_ps.n_elems())
+        tag = mk_psrc_tag(xg, inv_type, inv_acc="ama")
+        q.displayln_info(0, f"{fname}: {tag} ; num_fsel_ps={num_fsel_ps} ratio={num_fsel_ps/total_volume}")
+        assert num_fsel_ps > 0
+        fsel_ps_prob = q.SelectedFieldRealD(fsel_ps, 1)
+        fsel_ps_prob @= hvp_sel_prob
+        fsel_ps_prob.save_double(sfw, f"{tag} ; fsel-prob", skip_if_exist=True)
+        s_hvp = q.SelectedFieldComplexD(fsel_ps, 16)
+        s_hvp @= hvp
+        s_hvp.save_float_from_double(sfw, tag, skip_if_exist=True)
+        sfw.flush()
+    sfw.close()
+    sfr.close()
+    q.qrename_info(get_save_path(fn + ".acc"), get_save_path(fn))
+    #
+    q.release_lock()
+
+@q.timer_verbose
 def run_hlbl_two_plus_two_chunk(
         job_tag,
         traj,
@@ -1198,6 +1290,9 @@ def run_hlbl_two_plus_two_chunk(
     fn = f"{job_tag}/hlbl/dlbl-{inv_type_name}-{inv_type_e_name}/traj-{traj}/chunk_{id_chunk}_{num_chunk}.pickle"
     if get_load_path(fn) is not None:
         return
+    sub_hvp_fn = f"{job_tag}/hlbl/sub-hvp-{inv_type_name}/traj-{traj}/geon-info.txt"
+    if get_load_path(sub_hvp_fn) is None:
+        return
     q.check_stop()
     q.check_time_limit()
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}-{inv_type_e_name}-{id_chunk}_{num_chunk}"):
@@ -1209,7 +1304,6 @@ def run_hlbl_two_plus_two_chunk(
     r_sq_limit = get_r_sq_limit(job_tag)
     muon_mass = get_muon_mass(job_tag)
     zz_vv = get_param(job_tag, "zz_vv")
-    hvp_sel_threshold = get_param(job_tag, "hlbl_two_plus_two_num_hvp_sel_threshold")
     #
     psel_prob = get_psel_prob()
     psel = psel_prob.psel
@@ -1242,28 +1336,19 @@ def run_hlbl_two_plus_two_chunk(
     #
     hvp_list = []
     #
-    sfr = q.open_fields(get_load_path(f"{job_tag}/hvp-psrc-{inv_type_name}/traj-{traj}/geon-info.txt"), "r")
+    sfr = q.open_fields(get_load_path(sub_hvp_fn), "r")
     tags = sfr.list()
-    rel_acc_list = [ 0, 1, 2, ]
-    prob_list = [ get_param(job_tag, f"prob_acc_{inv_acc}_psrc") for inv_acc in rel_acc_list ]
     for idx in idx_xg_list_chunk:
         xg = q.Coordinate(xg_arr[idx])
-        val_list = []
-        for inv_acc in rel_acc_list:
-            tag = mk_psrc_tag(xg, inv_type, inv_acc)
-            if tag not in tags:
-                val_list.append(None)
-            else:
-                chvp_16 = q.FieldComplexD(geo, 16)
-                chvp_16.load_double_from_float(sfr, tag)
-                val_list.append(chvp_16)
-        assert val_list[0] is not None
-        ama_val = mk_ama_val(val_list[0], xg.to_tuple(), val_list, rel_acc_list, prob_list)
-        hvp = ama_extract(ama_val)
-        hvp_avg = glb_hvp_avg.copy().shift(xg)
-        hvp -= hvp_avg
-        hvp *= hvp_type_charge_factor
-        hvp_list.append(hvp)
+        tag = mk_psrc_tag(xg, inv_type, inv_acc="ama")
+        assert tag in tags
+        assert f"{tag} ; fsel-prob" in tags
+        fsel_ps_prob = q.SelectedFieldRealD(None)
+        fsel_ps_prob.load_double(sfr, f"{tag} ; fsel-prob")
+        fsel_ps = fsel_ps_prob.fsel
+        s_hvp = q.SelectedFieldComplexD(fsel_ps, 16)
+        s_hvp.load_double_from_float(sfr, tag)
+        hvp_list.append((fsel_ps_prob, s_hvp,))
     sfr.close()
     assert len(hvp_list) == len(idx_xg_list_chunk)
     #
@@ -1274,14 +1359,13 @@ def run_hlbl_two_plus_two_chunk(
         q.displayln_info(0,
                 f"{info_str} idx/chunk_size={idx}/{len(idx_xg_list_chunk)}")
         xg_x = q.Coordinate(xg_arr[idx_xg_x])
-        hvp_x = hvp_list[idx]
+        fsel_ps_prob, s_hvp_x = hvp_list[idx]
         n_points_in_r_sq_limit, n_points_computed, lslt = q.contract_two_plus_two_pair_no_glb_sum(
                 complex(1.0),
                 psel_prob,
-                f_rand_01,
-                hvp_sel_threshold,
+                fsel_ps_prob,
                 idx_xg_x,
-                hvp_x,
+                s_hvp_x,
                 edl,
                 r_sq_limit,
                 muon_mass,
@@ -1663,6 +1747,7 @@ def run_job_contract(job_tag, traj):
         get_hvp_sum_tslice = run_hvp_sum_tslice(job_tag, traj, inv_type=inv_type, get_psel=get_psel, get_hvp_sum_tslice_accs=get_hvp_sum_tslice_accs)
         get_edl = run_edl(job_tag, traj, inv_type=inv_type, get_psel=get_psel, get_hvp_sum_tslice=get_hvp_sum_tslice)
         run_check_hvp_avg(job_tag, traj, inv_type=inv_type, get_psel_prob=get_psel_prob, get_hvp_sum_tslice=get_hvp_sum_tslice, get_hvp_average=get_hvp_average)
+        run_hlbl_sub_hvp_sfield(job_tag, traj, inv_type=inv_type, get_psel_prob=get_psel_prob, get_glb_hvp_avg_for_sub=get_glb_hvp_avg_for_sub, get_f_rand_01=get_f_rand_01)
         if inv_type == 0:
             get_edl_light = get_edl
             get_hvp_average_light = get_hvp_average
@@ -1693,6 +1778,7 @@ def run_job_contract(job_tag, traj):
                 get_point_pairs=get_point_pairs,
                 )
         add_to_run_ret_list(v)
+    #
     #
     for inv_type in [ 0, 1, ]:
         for inv_type_e in [ 0, 1, ]:

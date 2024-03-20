@@ -261,8 +261,8 @@ std::vector<SlTable> contract_four_pair(
 std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
     Long& n_points_in_r_sq_limit, Long& n_points_computed, const ComplexD& coef,
     const PointsSelection& psel, const SelectedPoints<RealD>& psel_prob,
-    const Field<RealD>& rand_prob_sel_field, const RealD hvp_sel_threshold,
-    const Long idx_xg_x, const Field<ComplexD>& hvp_x,
+    const FieldSelection& fsel_ps, const SelectedField<RealD>& fsel_ps_prob,
+    const Long idx_xg_x, const SelectedField<ComplexD>& s_hvp_x,
     const SelectedPoints<ComplexD>& edl_list_c, const Long r_sq_limit,
     const RealD muon_mass, const RealD z_v)
 // hvp point source at x (rho)
@@ -271,7 +271,7 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
 // hvp with external loop sink summed over (i)
 // psel[k] = xg_z
 // edl_list[k][i * 4 + lambda]
-// -hvp_x.get_elem(xl_y, sigma * 4 + rho)
+// -s_hvp_x.get_elem(xl_y, sigma * 4 + rho)
 //
 // glb_sum for SlTable not yet performed
 //
@@ -281,14 +281,18 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
   TIMER_VERBOSE("contract_two_plus_two_pair_no_glb_sum");
   qassert(0 <= idx_xg_x and idx_xg_x < (Long)psel.size());
   qassert(psel_prob.multiplicity == 1);
-  qassert(rand_prob_sel_field.geo().multiplicity == 1);
-  qassert(hvp_x.geo().multiplicity == 16);
+  qassert(psel_prob.n_points == (Long)psel.size());
+  qassert(fsel_ps_prob.geo().multiplicity == 1);
+  qassert(fsel_ps_prob.n_elems == fsel_ps.n_elems);
+  qassert(s_hvp_x.geo().multiplicity == 16);
+  qassert(s_hvp_x.n_elems == fsel_ps.n_elems);
   qassert(edl_list_c.multiplicity == 3 * 4);
+  qassert(edl_list_c.n_points == (Long)psel.size());
   const Coordinate& xg_x = psel[idx_xg_x];
   const RealD prob_xg_x = psel_prob.get_elem(idx_xg_x);
   n_points_in_r_sq_limit = 0;
   n_points_computed = 0;
-  const Geometry& geo = geo_reform(hvp_x.geo());
+  const Geometry& geo = geo_reform(s_hvp_x.geo());
   const Long total_volume = geo.total_volume();
   const Coordinate total_site = geo.total_site();
   const double alpha_inv = 137.035999139;
@@ -332,21 +336,18 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
   // pion projection based on loop
   vector_acc<Complex> sums_sub_pi_pisl(n_points, 0.0);
   vector_acc<Complex> sums_dsub_pi_pisl(n_points, 0.0);
-  qfor(index, geo.local_volume(), {
+  qfor(idx, fsel_ps.n_elems, {
+    const Long index = fsel_ps.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg_y = geo.coordinate_g_from_l(xl);
     if (sqr(smod(xg_y - xg_x, total_site)) > r_sq_limit) {
       continue;
     }
-    const Vector<Complex> vhvp = hvp_x.get_elems_const(xl);
+    const Vector<Complex> vhvp = s_hvp_x.get_elems_const(idx);
     qassert(vhvp.size() == 16);
-    const double hvp_sel_ratio = std::sqrt(qnorm(vhvp)) / hvp_sel_threshold;
-    const RealD prob_xg_y = std::min(1.0, hvp_sel_ratio);
+    const RealD prob_xg_y = fsel_ps_prob.get_elem(idx);
     qassert(prob_xg_y > 0.0 and 1.0 >= prob_xg_y);
     n_points_in_r_sq_limit += 1;
-    if (prob_xg_y < rand_prob_sel_field.get_elem(xl)) {
-      continue;
-    }
     n_points_computed += 1;
     // displayln_info(
     //     ssprintf("compute point with index=%ld prob=%.8lf", index, prob));

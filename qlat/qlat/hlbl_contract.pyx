@@ -113,10 +113,9 @@ def contract_four_pair(
 def contract_two_plus_two_pair_no_glb_sum(
         cc.PyComplexD coef,
         SelectedPointsRealD psel_prob,
-        FieldRealD f_rand_01,
-        const cc.RealD hvp_sel_threshold,
+        SelectedFieldRealD fsel_ps_prob,
         const cc.Long idx_xg_x,
-        FieldComplexD hvp_x,
+        SelectedFieldComplexD s_hvp_x,
         SelectedPointsComplexD edl_list_c,
         const cc.Long r_sq_limit,
         const cc.RealD muon_mass,
@@ -144,6 +143,7 @@ def contract_two_plus_two_pair_no_glb_sum(
     x_op is summed over all points.
     """
     cdef PointsSelection psel = psel_prob.psel
+    cdef FieldSelection fsel_ps = fsel_ps_prob.fsel
     cdef cc.Long n_points_in_r_sq_limit = 0
     cdef cc.Long n_points_computed = 0
     cdef cc.std_vector[cc.SlTable] sl_table_vec = cc.contract_two_plus_two_pair_no_glb_sum(
@@ -152,10 +152,10 @@ def contract_two_plus_two_pair_no_glb_sum(
             cc.ccpy_d(coef),
             psel.xx,
             psel_prob.xx,
-            f_rand_01.xx,
-            hvp_sel_threshold,
+            fsel_ps.xx,
+            fsel_ps_prob.xx,
             idx_xg_x,
-            hvp_x.xx,
+            s_hvp_x.xx,
             edl_list_c.xx,
             r_sq_limit,
             muon_mass,
