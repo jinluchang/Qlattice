@@ -89,17 +89,33 @@ void contract_four_loop(SelectedField<Complex>& f_loop_i_rho_sigma_lambda,
     const Vector<WilsonMatrix> vc_xy = c_xy.get_elems_const(idx);
     const Vector<WilsonMatrix> vc_yx = c_yx.get_elems_const(idx);
     Vector<Complex> v_loop = f_loop_i_rho_sigma_lambda.get_elems(idx);
+    // matrix_trace(sm_yx[i] * gammas[rho], vc_xy[lambda] * gammas[sigma])
+    // matrix_trace(sm_xy[i] * gammas[sigma], vc_yx[lambda] * gammas[rho])
+    array<WilsonMatrix, 3 * 4> sm_yx_g;
+    array<WilsonMatrix, 3 * 4> sm_xy_g;
     for (int i = 0; i < 3; ++i) {
       for (int rho = 0; rho < 4; ++rho) {
-        const WilsonMatrix wm_i_rho = sm_yx[i] * gammas[rho];
-        const WilsonMatrix wm_rho_i = gammas[rho] * sm_xy[i];
+        sm_yx_g[i * 4 + rho] = sm_yx[i] * gammas[rho];
+        sm_xy_g[i * 4 + rho] = sm_xy[i] * gammas[rho];
+      }
+    }
+    array<WilsonMatrix, 4 * 4> vc_yx_g;
+    array<WilsonMatrix, 4 * 4> vc_xy_g;
+    for (int lambda = 0; lambda < 4; ++lambda) {
+      for (int sigma = 0; sigma < 4; ++sigma) {
+        vc_xy_g[lambda * 4 + sigma] = vc_xy[lambda] * gammas[sigma];
+        vc_yx_g[lambda * 4 + sigma] = vc_yx[lambda] * gammas[sigma];
+      }
+    }
+    for (int i = 0; i < 3; ++i) {
+      for (int rho = 0; rho < 4; ++rho) {
         for (int sigma = 0; sigma < 4; ++sigma) {
-          const WilsonMatrix wm_sigma_i_rho = gammas[sigma] * wm_i_rho;
-          const WilsonMatrix wm_rho_i_sigma = wm_rho_i * gammas[sigma];
           for (int lambda = 0; lambda < 4; ++lambda) {
             v_loop[64 * i + 16 * rho + 4 * sigma + lambda] +=
-                final_coef * (matrix_trace(wm_sigma_i_rho, vc_xy[lambda]) +
-                              matrix_trace(wm_rho_i_sigma, vc_yx[lambda]));
+                final_coef * (matrix_trace(sm_yx_g[i * 4 + rho],
+                                           vc_xy_g[lambda * 4 + sigma]) +
+                              matrix_trace(sm_xy_g[i * 4 + sigma],
+                                           vc_yx_g[lambda * 4 + rho]));
           }
         }
       }
