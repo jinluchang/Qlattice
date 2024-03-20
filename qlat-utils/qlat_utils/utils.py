@@ -345,11 +345,11 @@ def check_log_json(script_file, json_results, *, check_eps=1e-5):
                 actual_eps = 0.0
                 if (abs(v) + abs(vl)) > 0:
                     actual_eps = 2 * abs(v - vl) / (abs(v) + abs(vl))
-                if 2 * abs(v - vl) > eps * (abs(v) + abs(vl)):
+                if actual_eps > eps:
                     displayln(-1, f"CHECK: {i} '{n}' actual: {v} ; load: {vl} .")
                     displayln(-1, f"CHECK: target eps: {eps} ; actual eps: {actual_eps} .")
                     displayln(-1, f"CHECK: ERROR: JSON results value does not match.")
-                else:
+                elif actual_eps != 0.0:
                     displayln(-1, f"INFO: {fname}: {i} '{n}'")
                     displayln(-1, f"INFO: {fname}: target eps: {eps} ; actual eps: {actual_eps} .")
             if len(json_results) != len(json_results_load):
