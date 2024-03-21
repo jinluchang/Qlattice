@@ -1372,6 +1372,8 @@ def run_hlbl_two_plus_two_chunk(
     #
     info_str = f"{fname}: {job_tag} {traj} {inv_type_name} {inv_type_e_name} id_chunk/num_chunk={id_chunk}/{num_chunk}"
     #
+    force_load_muon_line_interpolation()
+    #
     points_data = []
     for idx, idx_xg_x in enumerate(idx_xg_list_chunk):
         q.displayln_info(0,
