@@ -19,9 +19,9 @@ void set_m_z_field_tag(SelectedField<RealD>& smf_d, const FieldSelection& fsel,
   qthread_for(idx, fsel.n_elems, {
     const long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg = geo.coordinate_g_from_l(xl);  // z location
+    const Coordinate xg_z = geo.coordinate_g_from_l(xl);  // z location
     ManyMagneticMoments& mmm = smf.get_elem(idx);
-    mmm = get_muon_line_m_extra_lat(xg_x, xg_y, xg, total_site, a, tag);
+    mmm = get_muon_line_m_extra_lat(xg_x, xg_y, xg_z, total_site, a, tag);
   });
   qcast<RealD, ManyMagneticMoments>(smf);
 }
@@ -61,7 +61,7 @@ void contract_four_loop(SelectedField<Complex>& f_loop_i_rho_sigma_lambda,
                         const CurrentMoments<WilsonMatrix>& cm_yx,
                         const FieldSelection& fsel,
                         const SelectedField<RealD>& fsel_prob_xy,
-                        const std::string& label)
+                        const Long r_sq_limit, const std::string& label)
 {
   TIMER_VERBOSE("contract_four_loop");
   const box<SpinMatrixConstantsT<>>& smc = get_spin_matrix_constants();
@@ -79,13 +79,17 @@ void contract_four_loop(SelectedField<Complex>& f_loop_i_rho_sigma_lambda,
     const ComplexD final_coef = coef * weight;
     const long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const Coordinate xg_z = geo.coordinate_g_from_l(xl);
+    if (sqr(smod(xg_z - xg_x, total_site)) > r_sq_limit or
+        sqr(smod(xg_z - xg_y, total_site)) > r_sq_limit) {
+      continue;
+    }
     const CoordinateD xgref =
-        choose_reference(xg_x, xg_y, xg, total_site, cr_label);
+        choose_reference(xg_x, xg_y, xg_z, total_site, cr_label);
     const array<WilsonMatrix, 3> sm_yx = simple_moment_with_contact_subtract(
-        cm_yx, xgref, total_site, c_yx, fsel, fsel_prob_xy, xg);
+        cm_yx, xgref, total_site, c_yx, fsel, fsel_prob_xy, xg_z);
     const array<WilsonMatrix, 3> sm_xy = simple_moment_with_contact_subtract(
-        cm_xy, xgref, total_site, c_xy, fsel, fsel_prob_xy, xg);
+        cm_xy, xgref, total_site, c_xy, fsel, fsel_prob_xy, xg_z);
     const Vector<WilsonMatrix> vc_xy = c_xy.get_elems_const(idx);
     const Vector<WilsonMatrix> vc_yx = c_yx.get_elems_const(idx);
     Vector<Complex> v_loop = f_loop_i_rho_sigma_lambda.get_elems(idx);
@@ -127,7 +131,8 @@ void contract_four_combine(
     SlTable& t, SlTable& t_pi, const Complex& coef, const Geometry& geo,
     const Coordinate& xg_x, const Coordinate& xg_y,
     const SelectedField<Complex>& f_loop_i_rho_sigma_lambda,
-    const SelectedField<ManyMagneticMoments>& smf, const FieldSelection& fsel)
+    const SelectedField<ManyMagneticMoments>& smf, const FieldSelection& fsel,
+    const Long r_sq_limit)
 // x and y are global coordinates
 {
   TIMER("contract_four_combine");
@@ -139,12 +144,16 @@ void contract_four_combine(
   qacc_for(idx, fsel.n_elems, {
     const long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const Coordinate xg_z = geo.coordinate_g_from_l(xl);
+    if (sqr(smod(xg_z - xg_x, total_site)) > r_sq_limit or
+        sqr(smod(xg_z - xg_y, total_site)) > r_sq_limit) {
+      continue;
+    }
     const Vector<Complex> v_loop =
         f_loop_i_rho_sigma_lambda.get_elems_const(idx);
     const ManyMagneticMoments& mmm = smf.get_elem(idx);
     const ManyMagneticMoments pion_proj =
-        pion_projection(xg_x, xg_y, xg, total_site, true);
+        pion_projection(xg_x, xg_y, xg_z, total_site, true);
     Vector<Complex> sums = fsum.get_elems(idx);
     Complex sum = 0;
     Complex pi_sum = 0;
@@ -172,12 +181,12 @@ void contract_four_combine(
   qfor(idx, fsel.n_elems, {
     const long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const Coordinate xg_z = geo.coordinate_g_from_l(xl);
     const Vector<Complex> sums = fsum.get_elems_const(idx);
     const Complex& sum = sums[0];
     const Complex& sum_pi = sums[1];
-    add_to_sl_table(t, sum, xg_x, xg_y, xg, total_site);
-    add_to_sl_table(t_pi, sum_pi, xg_x, xg_y, xg, total_site);
+    add_to_sl_table(t, sum, xg_x, xg_y, xg_z, total_site);
+    add_to_sl_table(t_pi, sum_pi, xg_x, xg_y, xg_z, total_site);
   });
   acc_sl_table(t);
   acc_sl_table(t_pi);
@@ -199,7 +208,6 @@ std::vector<SlTable> contract_four_pair(
 // inv_type = 1 : strange quark
 // tags can include "ref-far", "ref-center", "ref-close"
 {
-  // TODO: implement r_sq_limit
   TIMER_VERBOSE("contract_four_pair");
   qassert(0 <= idx_xg_x and idx_xg_x < (Long)psel.size());
   qassert(0 <= idx_xg_y and idx_xg_y < (Long)psel.size());
@@ -263,10 +271,10 @@ std::vector<SlTable> contract_four_pair(
   for (int i = 0; i < (int)tags.size(); ++i) {
     SelectedField<Complex> f_loop_i_rho_sigma_lambda;
     contract_four_loop(f_loop_i_rho_sigma_lambda, 1.0, xg_x, xg_y, sc_xy, sc_yx,
-                       cm_xy, cm_yx, fsel, fsel_prob_xy, tags[i]);
+                       cm_xy, cm_yx, fsel, fsel_prob_xy, r_sq_limit, tags[i]);
     SlTable t, t_pi;
     contract_four_combine(t, t_pi, coef_all, geo, xg_x, xg_y,
-                          f_loop_i_rho_sigma_lambda, smf, fsel);
+                          f_loop_i_rho_sigma_lambda, smf, fsel, r_sq_limit);
     ts.push_back(t);
     ts.push_back(t_pi);
   }

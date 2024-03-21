@@ -318,13 +318,15 @@ void contract_four_loop(SelectedField<Complex>& f_loop_i_rho_sigma_lambda,
                         const SelectedField<WilsonMatrix>& c_yx,
                         const CurrentMoments<WilsonMatrix>& cm_xy,
                         const CurrentMoments<WilsonMatrix>& cm_yx,
-                        const FieldSelection& fsel, const std::string& label);
+                        const FieldSelection& fsel, const Long r_sq_limit,
+                        const std::string& label);
 
 void contract_four_combine(
     SlTable& t, SlTable& t_pi, const Complex& coef, const Geometry& geo,
     const Coordinate& xg_x, const Coordinate& xg_y,
     const SelectedField<Complex>& f_loop_i_rho_sigma_lambda,
-    const SelectedField<ManyMagneticMoments>& smf, const FieldSelection& fsel);
+    const SelectedField<ManyMagneticMoments>& smf, const FieldSelection& fsel,
+    const Long r_sq_limit);
 
 inline std::vector<std::string> get_clbl_inf_ref_tags(
     const std::string& job_tag)
