@@ -757,7 +757,7 @@ def contract_hlbl_four_ama(job_tag, *, inv_type, get_prop, idx_xg_x, idx_xg_y, p
     r_sq_limit = get_r_sq_limit(job_tag)
     zz_vv = get_param(job_tag, "zz_vv")
     def f(sprop_x, sprop_y):
-        return q.contract_four_pair(
+        return q.contract_four_pair_no_glb_sum(
                 coef,
                 psel_prob,
                 fsel_prob,
@@ -841,6 +841,8 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
                 fsel_prob=fsel_prob,
                 weight_pair=weight_pair,
                 )
+        lslt = q.glb_sum(lslt)
+        lslt_sloppy = q.glb_sum(lslt_sloppy)
         info_str = f"{job_tag} {traj} {inv_type_name} {id_chunk}/{num_chunk} {idx}/{len(point_pairs_chunk)} {xg_x} {xg_y}"
         q.displayln_info(
                 f"{fname}: {info_str}\n",

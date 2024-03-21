@@ -51,7 +51,7 @@ def contract_two_plus_two_pair_labels():
     return cc.contract_two_plus_two_pair_labels()
 
 @q.timer
-def contract_four_pair(
+def contract_four_pair_no_glb_sum(
         cc.PyComplexD coef,
         SelectedPointsRealD psel_prob,
         SelectedFieldRealD fsel_prob,
@@ -77,6 +77,8 @@ def contract_four_pair(
     inv_type = 1 : strange quark
     tags can be [ "ref-far", "ref-center", "ref-close", ]
     #
+    glb_sum for SlTable not yet performed
+    #
     x, y are two sampled points (elem of `psel`). `psel_prob` factors are already included.
     z, x_op are summed over with in `fsel`. `fsel_prob` factors are already included.
     """
@@ -85,7 +87,7 @@ def contract_four_pair(
     assert fsel is smf_d.fsel
     assert fsel is sprop_x.fsel
     assert fsel is sprop_y.fsel
-    cdef cc.std_vector[cc.SlTable] sl_table_vec = cc.contract_four_pair(
+    cdef cc.std_vector[cc.SlTable] sl_table_vec = cc.contract_four_pair_no_glb_sum(
             cc.ccpy_d(coef),
             psel.xx,
             psel_prob.xx,

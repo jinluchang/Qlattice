@@ -190,11 +190,9 @@ void contract_four_combine(
   });
   acc_sl_table(t);
   acc_sl_table(t_pi);
-  glb_sum_double_vec(get_data(t.table));
-  glb_sum_double_vec(get_data(t_pi.table));
 }
 
-std::vector<SlTable> contract_four_pair(
+std::vector<SlTable> contract_four_pair_no_glb_sum(
     const ComplexD& coef, const PointsSelection& psel,
     SelectedPoints<RealD>& psel_prob, const FieldSelection& fsel,
     const SelectedField<RealD>& fsel_prob, const Long idx_xg_x,
@@ -208,7 +206,7 @@ std::vector<SlTable> contract_four_pair(
 // inv_type = 1 : strange quark
 // tags can include "ref-far", "ref-center", "ref-close"
 {
-  TIMER_VERBOSE("contract_four_pair");
+  TIMER_VERBOSE("contract_four_pair_no_glb_sum");
   qassert(0 <= idx_xg_x and idx_xg_x < (Long)psel.size());
   qassert(0 <= idx_xg_y and idx_xg_y < (Long)psel.size());
   const Coordinate& xg_x = psel[idx_xg_x];

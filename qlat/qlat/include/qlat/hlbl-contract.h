@@ -354,7 +354,7 @@ inline std::vector<std::string> contract_four_pair_labels(
   return labels;
 }
 
-std::vector<SlTable> contract_four_pair(
+std::vector<SlTable> contract_four_pair_no_glb_sum(
     const ComplexD& coef, const PointsSelection& psel,
     SelectedPoints<RealD>& psel_prob, const FieldSelection& fsel,
     const SelectedField<RealD>& fsel_prob, const Long idx_xg_x,

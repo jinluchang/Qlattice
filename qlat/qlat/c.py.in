@@ -199,7 +199,7 @@ __all__ += [
         'mk_m_z_field_tag',
         'contract_four_pair_labels',
         'contract_two_plus_two_pair_labels',
-        'contract_four_pair',
+        'contract_four_pair_no_glb_sum',
         'contract_two_plus_two_pair_no_glb_sum',
         ]
 
