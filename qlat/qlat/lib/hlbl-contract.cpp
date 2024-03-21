@@ -188,6 +188,7 @@ void contract_four_combine(
     add_to_sl_table(t, sum, xg_x, xg_y, xg_z, total_site);
     add_to_sl_table(t_pi, sum_pi, xg_x, xg_y, xg_z, total_site);
   });
+  // no glb sum performed
   acc_sl_table(t);
   acc_sl_table(t_pi);
 }
@@ -271,6 +272,7 @@ std::vector<SlTable> contract_four_pair_no_glb_sum(
     contract_four_loop(f_loop_i_rho_sigma_lambda, 1.0, xg_x, xg_y, sc_xy, sc_yx,
                        cm_xy, cm_yx, fsel, fsel_prob_xy, r_sq_limit, tags[i]);
     SlTable t, t_pi;
+    // no glb sum performed
     contract_four_combine(t, t_pi, coef_all, geo, xg_x, xg_y,
                           f_loop_i_rho_sigma_lambda, smf, fsel, r_sq_limit);
     ts.push_back(t);
