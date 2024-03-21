@@ -809,6 +809,8 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn, Field<M>& field)
     qassert(0 == total_bytes);
   }
   if (0 == total_bytes) {
+    qwarn(fname + ssprintf(": total_bytes=%ld (fn='%s', sfr.path='%s')",
+                           total_bytes, fn.c_str(), sfr.path.c_str()));
     return 0;
   }
   Coordinate total_site;
@@ -849,6 +851,8 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn,
     qassert(0 == total_bytes);
   }
   if (0 == total_bytes) {
+    qwarn(fname + ssprintf(": total_bytes=%ld (fn='%s', sfr.path='%s')",
+                           total_bytes, fn.c_str(), sfr.path.c_str()));
     return 0;
   }
   Coordinate total_site;
@@ -893,6 +897,8 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn,
     qassert(0 == total_bytes);
   }
   if (0 == total_bytes) {
+    qwarn(fname + ssprintf(": total_bytes=%ld (fn='%s', sfr.path='%s')",
+                           total_bytes, fn.c_str(), sfr.path.c_str()));
     return 0;
   }
   Coordinate total_site;

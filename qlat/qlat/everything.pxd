@@ -23,6 +23,8 @@ cdef extern from "qlat/mpi.h" namespace "qlat":
     int glb_sum(ComplexD& ld) except +
     int glb_sum(ComplexF& ld) except +
     int glb_sum(LatData& ld) except +
+    bool glb_all(const bool b) except +
+    bool glb_any(const bool b) except +
 
 cdef extern from "qlat/geometry.h" namespace "qlat":
 

@@ -387,6 +387,7 @@ bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2)
 }
 
 bool is_containing(const FieldSelection& fsel, const FieldSelection& fsel_small)
+// local checking
 {
   TIMER("is_containing(fsel,fsel_small)");
   Long n_missing_points = 0;
@@ -400,11 +401,11 @@ bool is_containing(const FieldSelection& fsel, const FieldSelection& fsel_small)
       n_missing_points += 1;
     }
   });
-  glb_sum(n_missing_points);
   return n_missing_points == 0;
 }
 
 bool is_containing(const FieldSelection& fsel, const PointsSelection& psel)
+// local checking
 {
   TIMER("is_containing(fsel,psel)");
   const Geometry& geo = fsel.f_rank.geo();
@@ -422,7 +423,6 @@ bool is_containing(const FieldSelection& fsel, const PointsSelection& psel)
       }
     }
   });
-  glb_sum(n_missing_points);
   return n_missing_points == 0;
 }
 

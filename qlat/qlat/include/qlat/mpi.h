@@ -172,6 +172,26 @@ int glb_sum(Vector<M> xx)
 
 int glb_sum(LatData& ld);
 
+inline bool glb_any(const bool b)
+{
+  Long ret = 0;
+  if (b) {
+    ret = 1;
+  }
+  glb_sum(ret);
+  return ret > 0;
+}
+
+inline bool glb_all(const bool b)
+{
+  Long ret = 0;
+  if (not b) {
+    ret = 1;
+  }
+  glb_sum(ret);
+  return ret == 0;
+}
+
 int bcast(Vector<Char> recv, const int root = 0);
 
 template <class T, QLAT_ENABLE_IF(is_data_vector_type<T>())>

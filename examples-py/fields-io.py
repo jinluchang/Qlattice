@@ -22,7 +22,48 @@ fselc.add_psel(psel)
 
 prop = q.Prop(geo)
 prop.set_rand(rs.split("prop-1"))
+
 q.displayln_info("CHECK: prop", prop.crc32(), f"{prop.qnorm():.14E}")
+
+s_prop = q.SelProp(fselc)
+s_prop @= prop
+
+sfw = q.open_fields("results/prop1.fields", "w", q.Coordinate([ 1, 1, 1, 1, ]))
+
+prop.save_float_from_double(sfw, "prop", skip_if_exist=True)
+
+s_prop.save_float_from_double(sfw, "s_prop", skip_if_exist=True)
+
+sfw.close()
+
+prop_1 = q.Prop()
+s_prop_1 = q.SelProp(None)
+s_prop_2 = q.SelProp(fselc)
+s_prop_3 = q.SelProp(fselc)
+
+sfr = q.open_fields("results/prop1.fields", "r")
+
+prop_1.load_double_from_float(sfr, "prop")
+s_prop_1.load_double_from_float(sfr, "s_prop")
+s_prop_2.load_double_from_float(sfr, "s_prop")
+s_prop_3.load_double_from_float(sfr, "s_prop")
+
+sfr.close()
+
+assert q.is_matching_fsel(s_prop.fsel, fselc)
+assert q.is_matching_fsel(s_prop_1.fsel, fselc)
+assert q.is_matching_fsel(s_prop_2.fsel, fselc)
+assert q.is_matching_fsel(s_prop_3.fsel, fselc)
+
+prop_1 -= prop
+s_prop_1 -= s_prop
+s_prop_2 -= s_prop
+s_prop_3 -= s_prop
+
+assert q.qnorm(prop_1) < 1e-10
+assert q.qnorm(s_prop_1) < 1e-10
+assert q.qnorm(s_prop_2) < 1e-10
+assert q.qnorm(s_prop_3) < 1e-10
 
 sfw = q.open_fields("results/prop.fields", "w", q.Coordinate([ 1, 1, 1, 8, ]))
 

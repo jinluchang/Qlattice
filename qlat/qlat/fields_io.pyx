@@ -37,11 +37,16 @@ cdef class ShuffledFieldsWriter:
         return x
 
     def get_cache_sbs(self, FieldSelection fsel):
+        if fsel is None:
+            cache_fields_io.pop(id(self), None)
+            return
         if id(self) in cache_fields_io:
             c_fsel, c_sbs = cache_fields_io[id(self)]
             if fsel is c_fsel:
                 return c_sbs
         sbs = ShuffledBitSet(fsel, self.new_size_node())
+        assert sbs.xx.fsel.n_elems == fsel.xx.n_elems
+        assert cc.is_matching_fsel(sbs.xx.fsel, fsel.xx)
         cache_fields_io[id(self)] = (fsel, sbs,)
         return sbs
 
@@ -90,11 +95,16 @@ cdef class ShuffledFieldsReader:
         return x
 
     def get_cache_sbs(self, FieldSelection fsel):
+        if fsel is None:
+            cache_fields_io.pop(id(self), None)
+            return
         if id(self) in cache_fields_io:
             c_fsel, c_sbs = cache_fields_io[id(self)]
             if fsel is c_fsel:
                 return c_sbs
         sbs = ShuffledBitSet(fsel, self.new_size_node())
+        assert sbs.xx.fsel.n_elems == fsel.xx.n_elems
+        assert cc.is_matching_fsel(sbs.xx.fsel, fsel.xx)
         cache_fields_io[id(self)] = (fsel, sbs,)
         return sbs
 

@@ -184,9 +184,15 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
                 raise ValueError("can't re-init while being viewed")
             self.fsel = FieldSelection()
             total_bytes = cc.read(sfr.xx, fn, self.xx, self.fsel.xx)
+            if total_bytes == 0:
+                return 0
         else:
             sbs = sfr.get_cache_sbs(self.fsel)
             total_bytes = cc.read(sfr.xx, fn, sbs.xx, self.xx)
+            if total_bytes == 0:
+                return 0
+            if sbs.xx.fsel.n_elems != self.fsel.xx.n_elems:
+                raise Exception(f"read_sfr_direct: sbs.xx.fsel.n_elems={sbs.xx.fsel.n_elems} ; self.fsel.xx.n_elems={self.fsel.xx.n_elems}")
         if self.xx.n_elems != self.fsel.xx.n_elems:
             raise Exception(f"read_sfr_direct: self.xx.n_elems={self.xx.n_elems} ; self.fsel.xx.n_elems={self.fsel.xx.n_elems}")
         return total_bytes
@@ -198,6 +204,10 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         assert self.fsel is not None
         assert self.xx.n_elems == self.fsel.xx.n_elems
         cdef ShuffledBitSet sbs = sfw.get_cache_sbs(self.fsel)
+        if sbs.xx.fsel.n_elems != self.fsel.xx.n_elems:
+            raise Exception(f"write_sfw_direct: sbs.xx.fsel.n_elems={sbs.xx.fsel.n_elems} ; self.fsel.xx.n_elems={self.fsel.xx.n_elems}")
+        if self.xx.n_elems != self.fsel.xx.n_elems:
+            raise Exception(f"write_sfw_direct: self.xx.n_elems={self.xx.n_elems} ; self.fsel.xx.n_elems={self.fsel.xx.n_elems}")
         cdef cc.Long total_bytes = cc.write(sfw.xx, fn, sbs.xx, self.xx)
         return total_bytes
 
