@@ -187,7 +187,8 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         else:
             sbs = sfr.get_cache_sbs(self.fsel)
             total_bytes = cc.read(sfr.xx, fn, sbs.xx, self.xx)
-        assert self.xx.n_elems == self.fsel.xx.n_elems
+        if self.xx.n_elems != self.fsel.xx.n_elems:
+            raise Exception(f"read_sfr_direct: self.xx.n_elems={self.xx.n_elems} ; self.fsel.xx.n_elems={self.fsel.xx.n_elems}")
         return total_bytes
 
     def write_sfw_direct(self, ShuffledFieldsWriter sfw, const cc.std_string& fn, *, cc.Bool skip_if_exist=False):
