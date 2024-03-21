@@ -1938,7 +1938,7 @@ set_param("64I", tag, value=32)
 tag = "hlbl_two_plus_two_num_hvp_sel_threshold"
 set_param("test-4nt8", tag, value=5e-3)
 set_param("test-8nt16", tag, value=5e-3)
-set_param("24D", tag, value=1e-4)
+set_param("24D", tag, value=1e-3)
 set_param("48I", tag, value=1e-3)
 set_param("64I", tag, value=1e-3)
 

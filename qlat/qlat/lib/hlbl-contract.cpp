@@ -358,6 +358,14 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
   // pion projection based on loop
   vector_acc<Complex> sums_sub_pi_pisl(n_points, 0.0);
   vector_acc<Complex> sums_dsub_pi_pisl(n_points, 0.0);
+  qfor(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg_y = geo.coordinate_g_from_l(xl);
+    if (sqr(smod(xg_y - xg_x, total_site)) > r_sq_limit) {
+      continue;
+    }
+    n_points_in_r_sq_limit += 1;
+  });
   qfor(idx, fsel_ps.n_elems, {
     const Long index = fsel_ps.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -369,7 +377,6 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
     qassert(vhvp.size() == 16);
     const RealD prob_xg_y = fsel_ps_prob.get_elem(idx);
     qassert(prob_xg_y > 0.0 and 1.0 >= prob_xg_y);
-    n_points_in_r_sq_limit += 1;
     n_points_computed += 1;
     // displayln_info(
     //     ssprintf("compute point with index=%ld prob=%.8lf", index, prob));
