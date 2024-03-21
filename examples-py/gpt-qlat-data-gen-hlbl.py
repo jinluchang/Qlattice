@@ -510,17 +510,6 @@ def get_psrc_prop(job_tag, traj, xg, inv_type, inv_acc, *, sfr, fsel):
     s_prop.load_double_from_float(sfr, tag)
     return s_prop
 
-def get_list_chunk(x_list, id_chunk, num_chunk):
-    x_list_size = len(x_list)
-    chunk_size = (x_list_size - 1) // num_chunk + 1
-    assert chunk_size >= 0
-    chunk_start = chunk_size * id_chunk
-    chunk_stop = chunk_start + chunk_size
-    if id_chunk == num_chunk - 1:
-        assert chunk_stop >= x_list_size
-    x_list_chunk = x_list[chunk_start:chunk_stop]
-    return x_list_chunk
-
 # ----
 
 @q.timer_verbose
@@ -798,7 +787,11 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     fsel = fsel_prob.fsel
     #
     point_pairs = get_point_pairs()
-    point_pairs_chunk = get_list_chunk(point_pairs, id_chunk, num_chunk)
+    point_pairs_chunk_list = q.get_chunk_list(point_pairs, chunk_number=num_chunk)
+    if id_chunk < len(point_pairs_chunk_list):
+        point_pairs_chunk = point_pairs_chunk_list[id_chunk]
+    else:
+        point_pairs_chunk = []
     #
     rel_acc_list = [ 0, 1, 2, ]
     prob_list = [ get_param(job_tag, f"prob_acc_{inv_acc}_psrc") for inv_acc in rel_acc_list ]
@@ -821,54 +814,73 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     q.displayln_info(f"get_prop_cache info {get_prop_cache.cache_info()}")
     labels = contract_hlbl_four_labels(job_tag)
     pairs_data = []
-    for idx, pp in enumerate(point_pairs_chunk):
-        idx_xg_x = pp["idx_xg_x"]
-        idx_xg_y = pp["idx_xg_y"]
-        xg_x = pp["xg_x"]
-        xg_y = pp["xg_y"]
-        assert xg_x == psel.coordinate_from_idx(idx_xg_x)
-        assert xg_y == psel.coordinate_from_idx(idx_xg_y)
-        r = pp["r"]
-        prob_accept = pp["prob_accept"]
-        weight_pair = pp["weight_pair"]
-        lslt, lslt_sloppy = contract_hlbl_four_ama(
-                job_tag,
-                inv_type=inv_type,
-                get_prop=get_prop,
-                idx_xg_x=idx_xg_x,
-                idx_xg_y=idx_xg_y,
-                psel_prob=psel_prob,
-                fsel_prob=fsel_prob,
-                weight_pair=weight_pair,
-                )
-        lslt = q.glb_sum(lslt)
-        lslt_sloppy = q.glb_sum(lslt_sloppy)
-        info_str = f"{job_tag} {traj} {inv_type_name} {id_chunk}/{num_chunk} {idx}/{len(point_pairs_chunk)} {xg_x} {xg_y}"
-        q.displayln_info(
-                f"{fname}: {info_str}\n",
-                f"r={r} weight_pair={weight_pair}\n",
-                show_lslt(labels, lslt * len(point_pairs), label="ref-far proj-all"),
-                "\nsloppy:\n",
-                show_lslt(labels, lslt_sloppy * len(point_pairs), label="ref-far proj-all"))
-        json_results.append((
-            f"{fname}: {info_str} lslt",
-            q.get_data_sig(lslt, q.RngState()),
-            10e-2,
-            ))
-        json_results.append((
-            f"{fname}: {info_str} lslt_sloppy",
-            q.get_data_sig(lslt_sloppy, q.RngState()),
-            10e-2,
-            ))
-        dict_val = {}
-        dict_val["lslt"] = lslt
-        dict_val["lslt_sloppy"] = lslt_sloppy
-        dict_val["xg_x"] = xg_x
-        dict_val["xg_y"] = xg_y
-        dict_val["r"] = r
-        dict_val["prob_accept"] = prob_accept
-        dict_val["weight_pair"] = weight_pair
-        pairs_data.append(dict_val)
+    sub_chunk_size = len(point_pairs_chunk) // 16 + 1
+    idx_point_pairs_sub_chunk_list = q.get_chunk_list(list(enumerate(point_pairs_chunk)), chunk_size=sub_chunk_size)
+    for idx_point_pairs_sub_chunk in idx_point_pairs_sub_chunk_list:
+        for idx, pp in idx_point_pairs_sub_chunk:
+            xg_x = pp["xg_x"]
+            xg_y = pp["xg_y"]
+            get_prop(xg_x)
+            get_prop(xg_y)
+        pairs_data_sub_list = []
+        for idx, pp in idx_point_pairs_sub_chunk:
+            idx_xg_x = pp["idx_xg_x"]
+            idx_xg_y = pp["idx_xg_y"]
+            xg_x = pp["xg_x"]
+            xg_y = pp["xg_y"]
+            assert xg_x == psel.coordinate_from_idx(idx_xg_x)
+            assert xg_y == psel.coordinate_from_idx(idx_xg_y)
+            r = pp["r"]
+            prob_accept = pp["prob_accept"]
+            weight_pair = pp["weight_pair"]
+            lslt, lslt_sloppy = contract_hlbl_four_ama(
+                    job_tag,
+                    inv_type=inv_type,
+                    get_prop=get_prop,
+                    idx_xg_x=idx_xg_x,
+                    idx_xg_y=idx_xg_y,
+                    psel_prob=psel_prob,
+                    fsel_prob=fsel_prob,
+                    weight_pair=weight_pair,
+                    )
+            dict_val = dict()
+            dict_val["lslt"] = lslt
+            dict_val["lslt_sloppy"] = lslt_sloppy
+            dict_val["xg_x"] = xg_x
+            dict_val["xg_y"] = xg_y
+            dict_val["r"] = r
+            dict_val["prob_accept"] = prob_accept
+            dict_val["weight_pair"] = weight_pair
+            pairs_data_sub_list.append(dict_val)
+        pairs_data += pairs_data_sub_list
+        for idx, pp in idx_point_pairs_sub_chunk:
+            dict_val = pairs_data[idx]
+            lslt = q.glb_sum(dict_val["lslt"])
+            lslt_sloppy = q.glb_sum(dict_val["lslt_sloppy"])
+            dict_val["lslt"] = lslt
+            dict_val["lslt_sloppy"] = lslt_sloppy
+            xg_x = dict_val["xg_x"]
+            xg_y = dict_val["xg_y"]
+            r = dict_val["r"] = r
+            prob_accept = dict_val["prob_accept"] = prob_accept
+            weight_pair = dict_val["weight_pair"] = weight_pair
+            info_str = f"{job_tag} {traj} {inv_type_name} {id_chunk}/{num_chunk} {idx}/{len(point_pairs_chunk)} {xg_x} {xg_y}"
+            q.displayln_info(
+                    f"{fname}: {info_str}\n",
+                    f"r={r} weight_pair={weight_pair}\n",
+                    show_lslt(labels, lslt * len(point_pairs), label="ref-far proj-all"),
+                    "\nsloppy:\n",
+                    show_lslt(labels, lslt_sloppy * len(point_pairs), label="ref-far proj-all"))
+            json_results.append((
+                f"{fname}: {info_str} lslt",
+                q.get_data_sig(lslt, q.RngState()),
+                10e-2,
+                ))
+            json_results.append((
+                f"{fname}: {info_str} lslt_sloppy",
+                q.get_data_sig(lslt_sloppy, q.RngState()),
+                10e-2,
+                ))
     sfr.close()
     if len(point_pairs_chunk) != len(pairs_data):
         raise Exception(f"len(point_pairs_chunk)={len(point_pairs_chunk)} len(pairs_data)={len(pairs_data)}")
@@ -1334,7 +1346,11 @@ def run_hlbl_two_plus_two_chunk(
     xg_arr = psel.xg_arr()
     #
     idx_xg_list = list(range(len(psel)))
-    idx_xg_list_chunk = get_list_chunk(idx_xg_list, id_chunk, num_chunk)
+    idx_xg_list_chunk_list = q.get_chunk_list(idx_xg_list, chunk_number=num_chunk)
+    if id_chunk < len(idx_xg_list_chunk_list):
+        idx_xg_list_chunk = idx_xg_list_chunk_list[id_chunk]
+    else:
+        idx_xg_list_chunk = []
     #
     hvp_list = []
     #

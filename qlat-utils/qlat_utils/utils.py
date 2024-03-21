@@ -114,7 +114,7 @@ def show(x):
 def unitarize(x):
     x.unitarize()
 
-def get_chunk_list(total_list, *, chunk_size = None, chunk_number = None, rng_state = None):
+def get_chunk_list(total_list, *, chunk_size=None, chunk_number=None, rng_state=None):
     """
     Split ``total_list`` into ``chunk_number`` chunks or chunks with ``chunk_size``.
     One of ``chunk_size`` and ``chunk_number`` should not be ``None``.\n
