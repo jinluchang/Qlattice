@@ -1477,6 +1477,9 @@ def run_hlbl_two_plus_two(
         return
     if get_f_rand_01 is None:
         return
+    sub_hvp_fn = f"{job_tag}/hlbl/sub-hvp-{inv_type_name}/traj-{traj}/geon-info.txt"
+    if get_load_path(sub_hvp_fn) is None:
+        return
     num_chunk = get_param(job_tag, "hlbl_two_plus_two_num_chunk")
     for id_chunk in range(num_chunk):
         run_hlbl_two_plus_two_chunk(
