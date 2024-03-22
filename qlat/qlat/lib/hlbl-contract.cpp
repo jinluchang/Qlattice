@@ -491,10 +491,10 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
   }
   displayln_info(
       fname +
-      ssprintf(
-          ": n_points_in_r_sq_limit=%ld n_points_computed=%ld ratio=%.10lf",
-          n_points_in_r_sq_limit, n_points_computed,
-          (double)n_points_computed / (double)n_points_in_r_sq_limit));
+      ssprintf(": xg_x=%s ; n_points_in_r_sq_limit=%ld ; n_points_computed=%ld "
+               "; ratio=%.10lf .",
+               show(xg_x).c_str(), n_points_in_r_sq_limit, n_points_computed,
+               (double)n_points_computed / (double)n_points_in_r_sq_limit));
   return ts;
 }
 

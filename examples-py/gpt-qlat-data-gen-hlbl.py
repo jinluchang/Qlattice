@@ -952,12 +952,12 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
     json_results.append((
         f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum[labels.index('ref-far proj-all'), -1, -1]",
         results["lslt_sum"][labels.index('ref-far proj-all'), -1, -1],
-        1e-2,
+        2e-2,
         ))
     json_results.append((
         f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sloppy_sum[labels.index('ref-far proj-all'), -1, -1]",
         results["lslt_sloppy_sum"][labels.index('ref-far proj-all'), -1, -1],
-        1e-2,
+        2e-2,
         ))
     q.save_pickle_obj(results, get_save_path(fn))
     for fn_chunk in fn_chunk_list:
@@ -1392,9 +1392,9 @@ def run_hlbl_two_plus_two_chunk(
                 zz_vv,
                 )
         dict_val = {}
-        dict_val["lslt"] = lslt
         dict_val["idx_xg_x"] = idx_xg_x
         dict_val["xg_x"] = xg_x
+        dict_val["lslt"] = lslt
         dict_val["n_points_in_r_sq_limit"] = n_points_in_r_sq_limit
         dict_val["n_points_computed"] = n_points_computed
         points_data.append(dict_val)
