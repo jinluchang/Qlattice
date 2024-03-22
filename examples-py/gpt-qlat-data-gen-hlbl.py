@@ -814,7 +814,7 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     q.displayln_info(f"get_prop_cache info {get_prop_cache.cache_info()}")
     labels = contract_hlbl_four_labels(job_tag)
     pairs_data = []
-    sub_chunk_size = len(point_pairs_chunk) // 16 + 1
+    sub_chunk_size = len(point_pairs_chunk) // 8 + 1
     idx_point_pairs_sub_chunk_list = q.get_chunk_list(list(enumerate(point_pairs_chunk)), chunk_size=sub_chunk_size)
     for idx_point_pairs_sub_chunk in idx_point_pairs_sub_chunk_list:
         for idx, pp in idx_point_pairs_sub_chunk:
@@ -1346,7 +1346,11 @@ def run_hlbl_two_plus_two_chunk(
     xg_arr = psel.xg_arr()
     #
     idx_xg_list = list(range(len(psel)))
-    idx_xg_list_chunk_list = q.get_chunk_list(idx_xg_list, chunk_number=num_chunk)
+    idx_xg_list_chunk_list = q.get_chunk_list(
+            idx_xg_list,
+            chunk_number=num_chunk,
+            rng_state=q.RngState(f"xg_list permute for hlbl_two_plus_two"),
+            )
     if id_chunk < len(idx_xg_list_chunk_list):
         idx_xg_list_chunk = idx_xg_list_chunk_list[id_chunk]
     else:
