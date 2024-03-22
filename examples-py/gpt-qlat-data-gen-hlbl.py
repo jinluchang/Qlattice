@@ -1143,6 +1143,15 @@ def run_check_hvp_avg(job_tag, traj, *, inv_type, get_psel_prob, get_hvp_sum_tsl
     fname = q.get_fname()
     inv_type_name_list = [ "light", "strange", ]
     inv_type_name = inv_type_name_list[inv_type]
+    fn = f"{job_tag}/hlbl/check-hvp-avg-{inv_type_name}/traj-{traj}.txt"
+    if get_load_path(fn) is not None:
+        return
+    if get_psel_prob is None:
+        return
+    if get_hvp_sum_tslice is None:
+        return
+    if get_hvp_average is None:
+        return
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     total_site_arr = total_site.to_numpy()
     t_size = total_site[3]
@@ -1188,6 +1197,7 @@ def run_check_hvp_avg(job_tag, traj, *, inv_type, get_psel_prob, get_hvp_sum_tsl
         q.get_data_sig(hvp_sum_tslice_avg2, q.RngState()),
         1e-4,
         ))
+    q.qtouch_info(get_save_path(fn))
 
 @q.timer_verbose
 def run_hlbl_sub_hvp_sfield(
@@ -1207,6 +1217,12 @@ def run_hlbl_sub_hvp_sfield(
     inv_type_name = inv_type_name_list[inv_type]
     fn = f"{job_tag}/hlbl/sub-hvp-{inv_type_name}/traj-{traj}"
     if get_load_path(fn) is not None:
+        return
+    if get_glb_hvp_avg_for_sub is None:
+        return
+    if get_psel_prob is None:
+        return
+    if get_f_rand_01 is None:
         return
     q.check_stop()
     q.check_time_limit()
@@ -1448,6 +1464,18 @@ def run_hlbl_two_plus_two(
     inv_type_e_name = inv_type_name_list[inv_type_e]
     fn = f"{job_tag}/hlbl/dlbl-{inv_type_name}-{inv_type_e_name}/traj-{traj}/results.pickle"
     if get_load_path(fn) is not None:
+        return
+    if get_psel_prob is None:
+        return
+    if get_glb_hvp_avg_for_sub_light is None:
+        return
+    if get_glb_hvp_avg_for_sub_strange is None:
+        return
+    if get_edl_light is None:
+        return
+    if get_edl_strange is None:
+        return
+    if get_f_rand_01 is None:
         return
     num_chunk = get_param(job_tag, "hlbl_two_plus_two_num_chunk")
     for id_chunk in range(num_chunk):
