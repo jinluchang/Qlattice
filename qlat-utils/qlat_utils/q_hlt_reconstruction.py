@@ -13,7 +13,7 @@ __all__ = [
         'ww_from_g_wgrad',
         'mk_g_t_arr',
         #
-        'get_f_e_weight',
+        'get_f_e_weight_log',
         ]
 
 import jax
@@ -42,22 +42,23 @@ def mk_hlt_params():
     params["e_arr"] = None
     # optional params
     params["e0"] = 0.0
+    params["ee_max"] = np.inf # only used for functions use integration with e
     params["lambda"] = 1.0
-    params["alpha"] = -0.01 # override by "f_e_weight", see `get_f_e_weight`
-    params["f_e_weight"] = None
+    params["alpha"] = -0.01 # override by "f_e_weight_log", see `get_f_e_weight_log`
+    params["f_e_weight_log"] = None
     params["tt_size"] = None
     params["atw_factor"] = 1.0 # only has effects if "tt_size" is not None
     params["minimization_iter_max"] = 1
     params["g_t_arr_init"] = None
     return params
 
-def get_f_e_weight(params):
-    f = params["f_e_weight"]
+def get_f_e_weight_log(params):
+    f = params["f_e_weight_log"]
     if f is not None:
         return f
     alpha = params["alpha"]
     def f(e):
-        return np.exp(alpha * e)
+        return alpha * e
     return f
 
 @jax.jit
@@ -81,9 +82,9 @@ def aa_from_g_via_sum(g_t_arr, params):
     tt_size = params["tt_size"]
     atw_factor = params["atw_factor"]
     delta_target = f_delta_target(e_arr)
-    f_e_weight = get_f_e_weight(params)
+    f_e_weight_log = get_f_e_weight_log(params)
     e0 = params["e0"]
-    e_w = f_e_weight(e_arr)
+    e_w = np.exp(f_e_weight_log(e_arr))
     e_w = jnp.where(e_arr >= e0, e_w, 0.0)
     delta = delta_from_g(g_t_arr, t_arr, e_arr)
     if tt_size is not None:
@@ -145,11 +146,12 @@ def build_hlt_aa_mat(params):
     tag = "aa_mat"
     if tag in params:
         return params[tag]
-    f_e_weight = get_f_e_weight(params)
+    f_e_weight_log = get_f_e_weight_log(params)
     e0 = params["e0"]
     t_arr = params["t_arr"]
     tt_size = params["tt_size"]
     atw_factor = params["atw_factor"]
+    ee_max = params["ee_max"]
     t_size = len(t_arr)
     aa_mat = np.zeros((t_size, t_size,), dtype=np.float64)
     aa_values = {}
@@ -157,8 +159,8 @@ def build_hlt_aa_mat(params):
         t_sum = int(t_sum)
         if t_sum not in aa_values:
             def f(e):
-                return f_e_weight(e) * np.exp(-e * t_sum)
-            v = integrate.quad(f, e0, np.inf)[0]
+                return np.exp(f_e_weight_log(e) - e * t_sum)
+            v = integrate.quad(f, e0, ee_max)[0]
             aa_values[t_sum] = v
         return aa_values[t_sum]
     for t1_idx, t1 in enumerate(t_arr):
@@ -177,12 +179,13 @@ def build_hlt_f_vec(params):
     tag = "f_vec"
     if tag in params:
         return params[tag]
-    f_e_weight = get_f_e_weight(params)
+    f_e_weight_log = get_f_e_weight_log(params)
     e0 = params["e0"]
     t_arr = params["t_arr"]
     tt_size = params["tt_size"]
     atw_factor = params["atw_factor"]
     f_delta_target = params["f_delta_target"]
+    ee_max = params["ee_max"]
     t_size = len(t_arr)
     f_vec = np.zeros(t_size, dtype=np.float64)
     f_values = {}
@@ -190,8 +193,8 @@ def build_hlt_f_vec(params):
         t = int(t)
         if t not in f_values:
             def f(e):
-                return -2 * f_e_weight(e) * f_delta_target(e) * np.exp(-e * t)
-            v = integrate.quad(f, e0, np.inf)[0]
+                return -2 * f_delta_target(e) * np.exp(f_e_weight_log(e) - e * t)
+            v = integrate.quad(f, e0, ee_max)[0]
             f_values[t] = v
         return f_values[t]
     for t_idx, t in enumerate(t_arr):
@@ -207,12 +210,13 @@ def build_hlt_aa_const(params):
     tag = "aa_const"
     if tag in params:
         return params[tag]
-    f_e_weight = get_f_e_weight(params)
+    f_e_weight_log = get_f_e_weight_log(params)
     e0 = params["e0"]
     f_delta_target = params["f_delta_target"]
+    ee_max = params["ee_max"]
     def f(e):
-        return f_e_weight(e) * f_delta_target(e)**2
-    aa_const = integrate.quad(f, e0, np.inf)[0]
+        return np.exp(f_e_weight_log(e)) * f_delta_target(e)**2
+    aa_const = integrate.quad(f, e0, ee_max)[0]
     params[tag] = aa_const
     return aa_const
 
