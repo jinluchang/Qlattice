@@ -584,6 +584,15 @@ def get_prob_func(job_tag, inv_type, r_sq_limit, r_sq):
             prob = 1.0
         else:
             prob = (12.0 / np.sqrt(r_sq))**3
+    elif job_tag == "24D" and inv_type == 0:
+        if r_sq > r_sq_limit:
+            prob = 0.0
+        elif r_sq == 0:
+            prob = 1.0 / 128.0
+        elif r_sq <= 10 * 10:
+            prob = 1.0
+        else:
+            prob = (10.0 / np.sqrt(r_sq))**3
     elif job_tag == "test-4nt8":
         if r_sq > r_sq_limit:
             prob = 0.0
