@@ -778,7 +778,7 @@ def contract_hlbl_four_ama(job_tag, *, inv_type, get_prop, idx_xg_x, idx_xg_y, p
     return (ama_extract(ama_val, is_sloppy=False), ama_extract(ama_val, is_sloppy=True),)
 
 @q.timer
-def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_point_pairs, id_chunk, num_chunk):
+def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_point_pairs, prop_cache, id_chunk, num_chunk):
     fname = q.get_fname()
     inv_type_name_list = [ "light", "strange", ]
     inv_type_name = inv_type_name_list[inv_type]
@@ -811,20 +811,19 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     #
     sfr = q.open_fields(get_load_path(f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}/geon-info.txt"), "r")
     #
-    @functools.lru_cache(maxsize=3000)
     @q.timer
     def get_prop_cache(xg, inv_acc):
-        """
-        xg must be tuple
-        """
-        return get_psrc_prop(job_tag, traj, q.Coordinate(xg), inv_type, inv_acc, sfr=sfr, fsel=fsel)
+        key = (xg.to_tuple, inv_type, inv_acc,)
+        if key not in prop_cache:
+            prop_cache[key] = get_psrc_prop(job_tag, traj, xg, inv_type, inv_acc, sfr=sfr, fsel=fsel)
+        return prop_cache[key]
     #
     @q.timer
     def get_prop(xg):
-        val_list = [ get_prop_cache(xg.to_tuple(), inv_acc) for inv_acc in rel_acc_list ]
+        val_list = [ get_prop_cache(xg, inv_acc) for inv_acc in rel_acc_list ]
         return mk_ama_val(val_list[0], xg.to_tuple(), val_list, rel_acc_list, prob_list)
     #
-    q.displayln_info(f"get_prop_cache info {get_prop_cache.cache_info()}")
+    q.displayln_info(f"{fname}: len(prop_cache)={len(prop_cache)}")
     labels = contract_hlbl_four_labels(job_tag)
     pairs_data = []
     sub_chunk_size = len(point_pairs_chunk) // 8 + 1
@@ -901,7 +900,7 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
         q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} {id_chunk}/{num_chunk}\n",
                 show_lslt(labels, sum([ d["lslt"] for d in pairs_data ]) / len(point_pairs_chunk) * len(point_pairs)))
     q.save_pickle_obj(pairs_data, get_save_path(fn))
-    q.displayln_info(f"get_prop_cache info {get_prop_cache.cache_info()}")
+    q.displayln_info(f"{fname}: len(prop_cache)={len(prop_cache)}")
     q.release_lock()
 
 @q.timer
@@ -916,6 +915,7 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
     if get_load_path(fn) is not None:
         return
     num_chunk = get_param(job_tag, "hlbl_four_num_chunk")
+    prop_cache = q.mk_cache(f"{fname}-prop_cache", job_tag, f"{traj}")
     for id_chunk in range(num_chunk):
         run_hlbl_four_chunk(
                 job_tag, traj,
@@ -923,9 +923,11 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
                 get_psel_prob=get_psel_prob,
                 get_fsel_prob=get_fsel_prob,
                 get_point_pairs=get_point_pairs,
+                prop_cache=prop_cache,
                 id_chunk=id_chunk,
                 num_chunk=num_chunk,
                 )
+    q.clean_cache(prop_cache)
     fn_chunk_list = []
     for id_chunk in range(num_chunk):
         fn_chunk = f"{job_tag}/hlbl/clbl-{inv_type_name}/traj-{traj}/chunk_{id_chunk}_{num_chunk}.pickle"

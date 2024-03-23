@@ -12,7 +12,7 @@ class Cache(dict):
 cache = Cache()
 
 @timer
-def list_cache(ca = cache):
+def list_cache(ca=cache):
     l = dict()
     for key, val in ca.items():
         if isinstance(val, Cache):
@@ -28,7 +28,7 @@ def show_cache_keys(keys):
         return "['" + "']['".join(keys) + "']"
 
 @timer
-def clean_cache(ca = cache):
+def clean_cache(ca=cache):
     """
     Remove values of cache, but keep all the structures
     """
@@ -42,7 +42,7 @@ def clean_cache(ca = cache):
             # displayln_info(1, f"clean_cache: cache{info_str}['{key}']")
             ca.pop(key)
 
-def mk_cache(*keys, ca = cache):
+def mk_cache(*keys, ca=cache):
     """
     make cache if it does not exist, otherwise return existing elements
     """
@@ -57,7 +57,7 @@ def mk_cache(*keys, ca = cache):
     return ca
 
 @timer
-def rm_cache(*keys, ca = cache):
+def rm_cache(*keys, ca=cache):
     """
     remove cache if it exist
     """
