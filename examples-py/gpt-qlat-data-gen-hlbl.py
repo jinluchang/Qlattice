@@ -687,7 +687,11 @@ def mk_hlbl_four_point_pairs(job_tag, traj, *, inv_type, get_psel_prob):
                 dict_val["xg_y"] = xg_y
                 dict_val["r"] = get_r_coordinate(xg_diff, total_site)
                 dict_val["prob_accept"] = prob_accept
-                dict_val["weight_pair"] = 1.0 / prob_accept
+                if xg_x == xg_y:
+                    dict_val["weight_pair"] = 1.0 / prob_accept
+                else:
+                    # NOTE: need to account for contribution for j > i which is not included in the loop.
+                    dict_val["weight_pair"] = 2.0 / prob_accept
                 point_pairs.append(dict_val)
     point_pairs = q.random_permute(point_pairs, q.RngState(f"mk_hlbl_four_point_pairs {job_tag} {traj} {inv_type}"))
     q.displayln_info(f"mk_hlbl_four_point_pairs: {job_tag} {traj} {inv_type_name} len(point_pairs)={len(point_pairs)}")
@@ -1973,7 +1977,7 @@ set_param("64I", tag, value=32)
 tag = "hlbl_two_plus_two_num_hvp_sel_threshold"
 set_param("test-4nt8", tag, value=5e-3)
 set_param("test-8nt16", tag, value=5e-3)
-set_param("24D", tag, value=1e-3)
+set_param("24D", tag, value=5e-4)
 set_param("48I", tag, value=1e-3)
 set_param("64I", tag, value=1e-3)
 
