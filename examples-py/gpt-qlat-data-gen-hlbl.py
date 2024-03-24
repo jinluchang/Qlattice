@@ -813,7 +813,7 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     #
     @q.timer
     def get_prop_cache(xg, inv_acc):
-        key = (xg.to_tuple, inv_type, inv_acc,)
+        key = (xg.to_tuple(), inv_type, inv_acc,)
         if key not in prop_cache:
             prop_cache[key] = get_psrc_prop(job_tag, traj, xg, inv_type, inv_acc, sfr=sfr, fsel=fsel)
         return prop_cache[key]
