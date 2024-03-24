@@ -911,6 +911,7 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
     if get_point_pairs is None:
         q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} get_point_pairs is None")
         return
+    fn_s = f"{job_tag}/hlbl/clbl-{inv_type_name}/traj-{traj}/results-brief.pickle"
     fn = f"{job_tag}/hlbl/clbl-{inv_type_name}/traj-{traj}/results.pickle"
     if get_load_path(fn) is not None:
         return
@@ -949,10 +950,12 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
         raise Exception(f"len(pairs_data)={len(pairs_data)} len(get_point_pairs())=len(get_point_pairs())")
     results = {}
     results["labels"] = labels
-    results["pairs_data"] = pairs_data
-    results["n_pairs"] = len(pairs_data)
     results["lslt_sum"] = sum([ d["lslt"] for d in pairs_data ])
     results["lslt_sloppy_sum"] = sum([ d["lslt_sloppy"] for d in pairs_data ])
+    results["n_pairs"] = len(pairs_data)
+    q.save_pickle_obj(results, get_save_path(fn_s))
+    results["pairs_data"] = pairs_data
+    q.save_pickle_obj(results, get_save_path(fn))
     q.displayln_info(-1, f"{fname}: {job_tag} {traj} {inv_type_name}\n", show_lslt(labels, results["lslt_sum"]))
     json_results.append((
         f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum",
@@ -974,7 +977,6 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
         results["lslt_sloppy_sum"][labels.index('ref-far proj-all'), -1, -1],
         2e-2,
         ))
-    q.save_pickle_obj(results, get_save_path(fn))
     for fn_chunk in fn_chunk_list:
         q.qremove_info(get_load_path(fn_chunk))
     q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} done.")
@@ -1499,6 +1501,7 @@ def run_hlbl_two_plus_two(
     inv_type_name_list = [ "light", "strange", ]
     inv_type_name = inv_type_name_list[inv_type]
     inv_type_e_name = inv_type_name_list[inv_type_e]
+    fn_s = f"{job_tag}/hlbl/dlbl-{inv_type_name}-{inv_type_e_name}/traj-{traj}/results-brief.pickle"
     fn = f"{job_tag}/hlbl/dlbl-{inv_type_name}-{inv_type_e_name}/traj-{traj}/results.pickle"
     if get_load_path(fn) is not None:
         return
@@ -1556,11 +1559,12 @@ def run_hlbl_two_plus_two(
     assert len(points_data) == len(get_psel_prob().psel)
     results = dict()
     results["labels"] = labels
-    results["points_data"] = points_data
-    results["n_points"] = len(points_data)
     results["lslt_sum"] = sum([ d["lslt"] for d in points_data ])
     results["n_points_selected"] = sum([ d["n_points_selected"] for d in points_data ]) / len(points_data)
     results["n_points_computed"] = sum([ d["n_points_computed"] for d in points_data ]) / len(points_data)
+    results["n_points"] = len(points_data)
+    q.save_pickle_obj(results, get_save_path(fn_s))
+    results["points_data"] = points_data
     q.save_pickle_obj(results, get_save_path(fn))
     if results["n_points"] > 0:
         q.displayln_info(0, f"{info_str}\n",
