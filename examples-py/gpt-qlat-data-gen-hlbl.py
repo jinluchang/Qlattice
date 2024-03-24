@@ -2011,9 +2011,9 @@ set_param("64I", tag, value=1e-3)
 tag = "hlbl_two_plus_two_num_chunk"
 set_param("test-4nt8", tag, value=3)
 set_param("test-8nt16", tag, value=6)
-set_param("24D", tag, value=32)
-set_param("48I", tag, value=32)
-set_param("64I", tag, value=32)
+set_param("24D", tag, value=4)
+set_param("48I", tag, value=8)
+set_param("64I", tag, value=8)
 
 # ----
 
