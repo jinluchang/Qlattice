@@ -64,15 +64,28 @@ def end_with_mpi(is_preserving_cache=False):
     from mpi4py import MPI
     MPI.Finalize()
 
+@timer_verbose
+def show_machine():
+    displayln(f"id_node: {get_id_node():4} / {get_num_node()}"
+            f" ; coor_node: {str(get_coor_node()):9}"
+            f" / {str(get_size_node())}")
+
+def get_mpi_chunk(total_list, *, rng_state=None):
+    """
+    rng_state has to be the same on all the nodes
+    e.g. rng_state = q.RngState("get_mpi_chunk")
+    """
+    chunk_number = get_num_node()
+    chunk_id = get_id_node()
+    chunk_list = get_chunk_list(total_list, chunk_number=chunk_number, rng_state=rng_state)
+    if chunk_id < len(chunk_list):
+        return chunk_list[chunk_id]
+    else:
+        return []
+
 def glb_sum_list(ret):
     displayln_info("glb_sum_list: deprecated")
     # deprecated (use glb_sum instead)
     # ret = [ va, vb, ... ]
     # return [ glb_sum(va), glb_sum(vb), ... ]
     return glb_sum(ret)
-
-@timer_verbose
-def show_machine():
-    displayln(f"id_node: {get_id_node():4} / {get_num_node()}"
-            f" ; coor_node: {str(get_coor_node()):9}"
-            f" / {str(get_size_node())}")

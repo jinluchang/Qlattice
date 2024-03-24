@@ -327,19 +327,6 @@ def benchmark_eval_cexpr(
     q.displayln_info(f"benchmark_eval_cexpr: {benchmark_show_check(check)} {benchmark_show_check(check_ama)}")
     return check, check_ama
 
-def get_mpi_chunk(total_list, *, rng_state = None):
-    """
-    rng_state has to be the same on all the nodes
-    e.g. rng_state = q.RngState("get_mpi_chunk")
-    """
-    chunk_number = q.get_num_node()
-    chunk_id = q.get_id_node()
-    chunk_list = q.get_chunk_list(total_list, chunk_number = chunk_number, rng_state = rng_state)
-    if chunk_id < len(chunk_list):
-        return chunk_list[chunk_id]
-    else:
-        return []
-
 # -----------------------------------------
 
 def get_cexpr_names(ccexpr : CCExpr):

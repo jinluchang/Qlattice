@@ -88,9 +88,9 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
     def load_data():
-        t_t_list = get_mpi_chunk(
+        t_t_list = q.get_mpi_chunk(
                 [ (t_src, t_snk,) for t_snk in range(total_site[3]) for t_src in range(total_site[3]) ],
-                rng_state = None)
+                rng_state=None)
         for t_src, t_snk in t_t_list:
             yield t_src, t_snk
     @q.timer
@@ -212,9 +212,9 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, ge
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
     def load_data():
-        x_t_list = get_mpi_chunk(
+        x_t_list = q.get_mpi_chunk(
                 [ (pidx, t_snk,) for t_snk in range(total_site[3]) for pidx in range(len(xg_psel_arr)) ],
-                rng_state = None)
+                rng_state=None)
         for pidx, t_snk in x_t_list:
             yield pidx, t_snk
     @q.timer
@@ -1394,14 +1394,27 @@ def run_hlbl_two_plus_two_chunk(
     for idx in idx_xg_list_chunk:
         xg = q.Coordinate(xg_arr[idx])
         tag = mk_psrc_tag(xg, inv_type, inv_acc="ama")
-        assert tag in tags
-        assert f"{tag} ; fsel-prob" in tags
+        if tag not in tags:
+            raise Exception(f"{fname}: idx={idx} '{tag}' {tags}")
+        if f"{tag} ; fsel-prob" not in tags:
+            raise Exception(f"{fname}: idx={idx} '{tag} ; fsel-prob' {tags}")
         fsel_ps_prob = q.SelectedFieldRealD(None)
         fsel_ps_prob.load_double(sfr, f"{tag} ; fsel-prob")
         fsel_ps = fsel_ps_prob.fsel
         s_hvp = q.SelectedFieldComplexD(fsel_ps, 16)
         s_hvp.load_double_from_float(sfr, tag)
-        hvp_list.append((fsel_ps_prob, s_hvp,))
+        psel_ps = fsel_ps.to_psel()
+        psel_ps_prob = q.SelectedPointsRealD(psel_ps, 1)
+        psel_ps_prob @= fsel_ps_prob
+        ps_hvp = q.SelectedPointsComplexD(psel_ps, 16)
+        ps_hvp @= s_hvp
+        ps_xg_arr = q.get_mpi_chunk(psel_ps.xg_arr())
+        psel_lps = q.PointsSelection(ps_xg_arr, psel_ps.geo)
+        psel_lps_prob = q.SelectedPointsRealD(psel_lps, 1)
+        psel_lps_prob @= psel_ps_prob
+        lps_hvp = q.SelectedPointsComplexD(psel_lps, 16)
+        lps_hvp @= ps_hvp
+        hvp_list.append((psel_lps_prob, lps_hvp,))
     sfr.close()
     assert len(hvp_list) == len(idx_xg_list_chunk)
     #
@@ -1414,13 +1427,13 @@ def run_hlbl_two_plus_two_chunk(
         q.displayln_info(0,
                 f"{info_str} idx/chunk_size={idx}/{len(idx_xg_list_chunk)}")
         xg_x = q.Coordinate(xg_arr[idx_xg_x])
-        fsel_ps_prob, s_hvp_x = hvp_list[idx]
+        psel_lps_prob, lps_hvp_x = hvp_list[idx]
         n_points_in_r_sq_limit, n_points_computed, lslt = q.contract_two_plus_two_pair_no_glb_sum(
                 complex(1.0),
                 psel_prob,
-                fsel_ps_prob,
+                psel_lps_prob,
                 idx_xg_x,
-                s_hvp_x,
+                lps_hvp_x,
                 edl,
                 r_sq_limit,
                 muon_mass,

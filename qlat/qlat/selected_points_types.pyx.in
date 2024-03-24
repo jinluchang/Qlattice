@@ -40,7 +40,7 @@ from .field_type_dict import selected_points_type_dict
 {{for name in type_name_list}}
 
 cdef void set_field_sp_sp_{{name}}(SelectedPoints{{name}} self, SelectedPoints{{name}} other):
-    # two psel must be the same object
+    # two psel may not be the same object
     cc.set_selected_points(self.xx, other.xx, self.psel.xx, other.psel.xx)
 
 cdef void set_field_sp_sf_{{name}}(SelectedPoints{{name}} self, SelectedField{{name}} other):
@@ -91,7 +91,7 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         won't change self.psel
         """
         if isinstance(other, SelectedPoints{{name}}):
-            # two psel must be the same object
+            # two psel may not be the same object
             set_field_sp_sp_{{name}}(self, other)
         elif isinstance(other, SelectedField{{name}}):
             # only assign available points

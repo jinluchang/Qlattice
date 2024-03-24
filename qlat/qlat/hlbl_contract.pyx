@@ -10,6 +10,7 @@ from .field_types cimport FieldRealD, FieldComplexD
 from .selected_field_types cimport SelectedFieldRealD, SelectedFieldComplexD
 from .selected_points_types cimport SelectedPointsRealD, SelectedPointsComplexD
 from .propagator cimport SelProp
+from .geometry cimport Geometry
 
 cdef numpy.ndarray sl_arr_from_sl_table(const cc.SlTable& x):
     """
@@ -115,9 +116,9 @@ def contract_four_pair_no_glb_sum(
 def contract_two_plus_two_pair_no_glb_sum(
         cc.PyComplexD coef,
         SelectedPointsRealD psel_prob,
-        SelectedFieldRealD fsel_ps_prob,
+        SelectedPointsRealD psel_lps_prob,
         const cc.Long idx_xg_x,
-        SelectedFieldComplexD s_hvp_x,
+        SelectedPointsComplexD lps_hvp_x,
         SelectedPointsComplexD edl_list_c,
         const cc.Long r_sq_limit,
         const cc.RealD muon_mass,
@@ -144,20 +145,22 @@ def contract_two_plus_two_pair_no_glb_sum(
     z is sampled point (elem of `psel`) and summed over. `psel_prob` factor is already included.
     x_op is summed over all points.
     """
+    cdef Geometry geo = psel_prob.psel.geo
     cdef PointsSelection psel = psel_prob.psel
-    cdef FieldSelection fsel_ps = fsel_ps_prob.fsel
+    cdef PointsSelection psel_lps = psel_lps_prob.psel
     cdef cc.Long n_points_in_r_sq_limit = 0
     cdef cc.Long n_points_computed = 0
     cdef cc.std_vector[cc.SlTable] sl_table_vec = cc.contract_two_plus_two_pair_no_glb_sum(
             n_points_in_r_sq_limit,
             n_points_computed,
             cc.ccpy_d(coef),
+            geo.xx,
             psel.xx,
             psel_prob.xx,
-            fsel_ps.xx,
-            fsel_ps_prob.xx,
+            psel_lps.xx,
+            psel_lps_prob.xx,
             idx_xg_x,
-            s_hvp_x.xx,
+            lps_hvp_x.xx,
             edl_list_c.xx,
             r_sq_limit,
             muon_mass,

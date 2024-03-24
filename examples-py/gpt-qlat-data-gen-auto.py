@@ -82,7 +82,7 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
     def load_data():
-        t_t_list = get_mpi_chunk(
+        t_t_list = q.get_mpi_chunk(
                 [ (t_src, t_snk,) for t_snk in range(total_site[3]) for t_src in range(total_site[3]) ],
                 rng_state = None)
         for t_src, t_snk in t_t_list:
@@ -206,7 +206,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, ge
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
     def load_data():
-        x_t_list = get_mpi_chunk(
+        x_t_list = q.get_mpi_chunk(
                 [ (pidx, t_snk,) for t_snk in range(total_site[3]) for pidx in range(len(xg_psel_arr)) ],
                 rng_state = None)
         for pidx, t_snk in x_t_list:

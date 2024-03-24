@@ -219,6 +219,8 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedPoints<M>& sp0,
                          const PointsSelection& psel,
                          const PointsSelection& psel0,
                          const bool is_keeping_data = true)
+// Most efficient is psel and psel0 is the same.
+// If not, more efficient if psel and psel0 has the same order.
 {
   if (&sp == &sp0) {
     return;
@@ -239,10 +241,15 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedPoints<M>& sp0,
   qthread_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     Long idx0 = -1;
+    Long idx_last = 0;
     for (Long i = 0; i < (Long)psel0.size(); ++i) {
-      const Coordinate& xg0 = psel0[i];
+      idx_last += 1;
+      if (idx_last >= (Long)psel0.size()) {
+        idx_last = idx_last % (Long)psel0.size();
+      }
+      const Coordinate& xg0 = psel0[idx_last];
       if (xg0 == xg) {
-        idx0 = i;
+        idx0 = idx_last;
         break;
       }
     }
