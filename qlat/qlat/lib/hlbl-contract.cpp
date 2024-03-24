@@ -283,7 +283,7 @@ std::vector<SlTable> contract_four_pair_no_glb_sum(
 }
 
 std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
-    Long& n_points_in_r_sq_limit, Long& n_points_computed, const ComplexD& coef,
+    Long& n_points_selected, Long& n_points_computed, const ComplexD& coef,
     const Geometry& geo, const PointsSelection& psel,
     const SelectedPoints<RealD>& psel_prob, const PointsSelection& psel_lps,
     const SelectedPoints<RealD>& psel_lps_prob, const Long idx_xg_x,
@@ -315,7 +315,7 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
   qassert(edl_list_c.n_points == (Long)psel.size());
   const Coordinate& xg_x = psel[idx_xg_x];
   const RealD prob_xg_x = psel_prob.get_elem(idx_xg_x);
-  n_points_in_r_sq_limit = 0;
+  n_points_selected = 0;
   n_points_computed = 0;
   const Long total_volume = geo.total_volume();
   const Coordinate total_site = geo.total_site();
@@ -360,24 +360,17 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
   // pion projection based on loop
   vector_acc<Complex> sums_sub_pi_pisl(n_points, 0.0);
   vector_acc<Complex> sums_dsub_pi_pisl(n_points, 0.0);
-  qfor(index, geo.local_volume(), {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg_y = geo.coordinate_g_from_l(xl);
-    if (sqr(smod(xg_y - xg_x, total_site)) > r_sq_limit) {
-      continue;
-    }
-    n_points_in_r_sq_limit += 1;
-  });
   qfor(idx, (Long)psel_lps.size(), {
     const Coordinate xg_y = psel_lps[idx];
+    n_points_selected += 1;
     if (sqr(smod(xg_y - xg_x, total_site)) > r_sq_limit) {
       continue;
     }
+    n_points_computed += 1;
     const Vector<Complex> vhvp = lps_hvp_x.get_elems_const(idx);
     qassert(vhvp.size() == 16);
     const RealD prob_xg_y = psel_lps_prob.get_elem(idx);
     qassert(prob_xg_y > 0.0 and 1.0 >= prob_xg_y);
-    n_points_computed += 1;
     set_zero(sums_sub);
     set_zero(sums_dsub);
     set_zero(sums_sub_pi);
@@ -487,10 +480,10 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
   }
   displayln_info(
       fname +
-      ssprintf(": xg_x=%s ; n_points_in_r_sq_limit=%ld ; n_points_computed=%ld "
+      ssprintf(": xg_x=%s ; n_points_selected=%ld ; n_points_computed=%ld "
                "; ratio=%.10lf .",
-               show(xg_x).c_str(), n_points_in_r_sq_limit, n_points_computed,
-               (double)n_points_computed / (double)n_points_in_r_sq_limit));
+               show(xg_x).c_str(), n_points_selected, n_points_computed,
+               (double)n_points_computed / (double)n_points_selected));
   return ts;
 }
 

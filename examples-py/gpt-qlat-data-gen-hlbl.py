@@ -979,6 +979,7 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
         q.qremove_info(get_load_path(fn_chunk))
     q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} done.")
     q.release_lock()
+    return [ f"{fname}: {job_tag} {traj} {inv_type_name} done.", ]
 
 # ----
 
@@ -1391,13 +1392,13 @@ def run_hlbl_two_plus_two_chunk(
     #
     sfr = q.open_fields(get_load_path(sub_hvp_fn), "r")
     tags = sfr.list()
-    for idx in idx_xg_list_chunk:
-        xg = q.Coordinate(xg_arr[idx])
+    for idx, idx_xg_x in enumerate(idx_xg_list_chunk):
+        xg = q.Coordinate(xg_arr[idx_xg_x])
         tag = mk_psrc_tag(xg, inv_type, inv_acc="ama")
         if tag not in tags:
-            raise Exception(f"{fname}: idx={idx} '{tag}' {tags}")
+            raise Exception(f"{fname}: idx_xg_x={idx_xg_x} '{tag}' {tags}")
         if f"{tag} ; fsel-prob" not in tags:
-            raise Exception(f"{fname}: idx={idx} '{tag} ; fsel-prob' {tags}")
+            raise Exception(f"{fname}: idx_xg_x={idx_xg_x} '{tag} ; fsel-prob' {tags}")
         fsel_ps_prob = q.SelectedFieldRealD(None)
         fsel_ps_prob.load_double(sfr, f"{tag} ; fsel-prob")
         fsel_ps = fsel_ps_prob.fsel
@@ -1415,6 +1416,7 @@ def run_hlbl_two_plus_two_chunk(
         lps_hvp = q.SelectedPointsComplexD(psel_lps, 16)
         lps_hvp @= ps_hvp
         hvp_list.append((psel_lps_prob, lps_hvp,))
+        q.displayln_info(f"{fname}: idx={idx} ; idx_xg_x={idx_xg_x} ; xg={xg} ; tot_num={len(psel_ps)} ; num={len(psel_lps)}")
     sfr.close()
     assert len(hvp_list) == len(idx_xg_list_chunk)
     #
@@ -1428,7 +1430,7 @@ def run_hlbl_two_plus_two_chunk(
                 f"{info_str} idx/chunk_size={idx}/{len(idx_xg_list_chunk)}")
         xg_x = q.Coordinate(xg_arr[idx_xg_x])
         psel_lps_prob, lps_hvp_x = hvp_list[idx]
-        n_points_in_r_sq_limit, n_points_computed, lslt = q.contract_two_plus_two_pair_no_glb_sum(
+        n_points_selected, n_points_computed, lslt = q.contract_two_plus_two_pair_no_glb_sum(
                 complex(1.0),
                 psel_prob,
                 psel_lps_prob,
@@ -1443,12 +1445,12 @@ def run_hlbl_two_plus_two_chunk(
         dict_val["idx_xg_x"] = idx_xg_x
         dict_val["xg_x"] = xg_x
         dict_val["lslt"] = lslt
-        dict_val["n_points_in_r_sq_limit"] = n_points_in_r_sq_limit
+        dict_val["n_points_selected"] = n_points_selected
         dict_val["n_points_computed"] = n_points_computed
         points_data.append(dict_val)
     for d in points_data:
         d["lslt"] = q.glb_sum(d["lslt"])
-        d["n_points_in_r_sq_limit"] = q.glb_sum(d["n_points_in_r_sq_limit"])
+        d["n_points_selected"] = q.glb_sum(d["n_points_selected"])
         d["n_points_computed"] = q.glb_sum(d["n_points_computed"])
         json_results.append((
             f"{fname}: {info_str} idx_xg_x={d['idx_xg_x']} {d['xg_x']} lslt",
@@ -1461,10 +1463,10 @@ def run_hlbl_two_plus_two_chunk(
         q.displayln_info(-1,
                 f"{info_str}\n",
                 show_lslt(labels, sum([ d["lslt"] for d in points_data ]) / len(points_data) * len(psel)))
-        n_points_in_r_sq_limit = sum([ d["n_points_in_r_sq_limit"] for d in points_data ]) / len(points_data)
+        n_points_selected = sum([ d["n_points_selected"] for d in points_data ]) / len(points_data)
         n_points_computed = sum([ d["n_points_computed"] for d in points_data ]) / len(points_data)
         q.displayln_info(-1,
-                f"{info_str}\n avg n_points_in_r_sq_limit={n_points_in_r_sq_limit} avg n_points_computed={n_points_computed}")
+                f"{info_str}\n avg n_points_selected={n_points_selected} avg n_points_computed={n_points_computed}")
     q.displayln_info(0, f"{info_str} done.")
     q.release_lock()
 
@@ -1550,16 +1552,16 @@ def run_hlbl_two_plus_two(
     results["points_data"] = points_data
     results["n_points"] = len(points_data)
     results["lslt_sum"] = sum([ d["lslt"] for d in points_data ])
-    results["n_points_in_r_sq_limit"] = sum([ d["n_points_in_r_sq_limit"] for d in points_data ]) / len(points_data)
+    results["n_points_selected"] = sum([ d["n_points_selected"] for d in points_data ]) / len(points_data)
     results["n_points_computed"] = sum([ d["n_points_computed"] for d in points_data ]) / len(points_data)
     q.save_pickle_obj(results, get_save_path(fn))
     if results["n_points"] > 0:
         q.displayln_info(0, f"{info_str}\n",
                 show_lslt(labels, results["lslt_sum"]))
-        n_points_in_r_sq_limit = results["n_points_in_r_sq_limit"]
+        n_points_selected = results["n_points_selected"]
         n_points_computed = results["n_points_computed"]
         q.displayln_info(-1,
-                f"{info_str}\n avg n_points_in_r_sq_limit={n_points_in_r_sq_limit} avg n_points_computed={n_points_computed}")
+                f"{info_str}\n avg n_points_selected={n_points_selected} avg n_points_computed={n_points_computed}")
     for fn_chunk in fn_chunk_list:
         q.qremove_info(get_load_path(fn_chunk))
     json_results.append((
@@ -1574,6 +1576,7 @@ def run_hlbl_two_plus_two(
         ))
     q.displayln_info(0, f"{info_str} done.")
     q.release_lock()
+    return [ f"{fname}: {job_tag} {traj} {inv_type_name} {inv_type_e_name} done.", ]
 
 # ----
 

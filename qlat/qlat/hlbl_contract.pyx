@@ -125,7 +125,7 @@ def contract_two_plus_two_pair_no_glb_sum(
         const cc.RealD z_v,
         ):
     """
-    return n_points_in_r_sq_limit, n_points_computed, lsl_arr
+    return n_points_selected, n_points_computed, lsl_arr
     #
     lsl_arr.shape == (len(labels), s_limit, l_limit,)
     labels = contract_two_plus_two_pair_labels()
@@ -148,10 +148,10 @@ def contract_two_plus_two_pair_no_glb_sum(
     cdef Geometry geo = psel_prob.psel.geo
     cdef PointsSelection psel = psel_prob.psel
     cdef PointsSelection psel_lps = psel_lps_prob.psel
-    cdef cc.Long n_points_in_r_sq_limit = 0
+    cdef cc.Long n_points_selected = 0
     cdef cc.Long n_points_computed = 0
     cdef cc.std_vector[cc.SlTable] sl_table_vec = cc.contract_two_plus_two_pair_no_glb_sum(
-            n_points_in_r_sq_limit,
+            n_points_selected,
             n_points_computed,
             cc.ccpy_d(coef),
             geo.xx,
@@ -172,4 +172,4 @@ def contract_two_plus_two_pair_no_glb_sum(
         sl_arr = sl_arr_from_sl_table(sl_table_vec[i])
         sl_arr_list.append(sl_arr)
     lsl_arr = np.array(sl_arr_list, dtype=np.complex128)
-    return n_points_in_r_sq_limit, n_points_computed, lsl_arr
+    return n_points_selected, n_points_computed, lsl_arr
