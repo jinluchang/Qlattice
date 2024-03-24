@@ -1408,7 +1408,7 @@ def run_hlbl_two_plus_two_chunk(
         psel_ps = q.PointsSelection(
                 q.random_permute(
                     list(psel_ps.xg_arr()),
-                    q.RngState(f"get_mpi_chunk"),
+                    q.RngState(f"psel_ps-permute-{idx_xg_x}"),
                     ),
                 psel_ps.geo,
                 )
