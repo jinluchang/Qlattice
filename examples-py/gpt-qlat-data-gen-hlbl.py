@@ -1405,11 +1405,18 @@ def run_hlbl_two_plus_two_chunk(
         s_hvp = q.SelectedFieldComplexD(fsel_ps, 16)
         s_hvp.load_double_from_float(sfr, tag)
         psel_ps = fsel_ps.to_psel()
+        psel_ps = q.PointsSelection(
+                q.random_permute(
+                    list(psel_ps.xg_arr()),
+                    q.RngState(f"get_mpi_chunk"),
+                    ),
+                psel_ps.geo,
+                )
         psel_ps_prob = q.SelectedPointsRealD(psel_ps, 1)
         psel_ps_prob @= fsel_ps_prob
         ps_hvp = q.SelectedPointsComplexD(psel_ps, 16)
         ps_hvp @= s_hvp
-        ps_xg_arr = q.get_mpi_chunk(list(psel_ps.xg_arr()), rng_state=q.RngState(f"get_mpi_chunk"))
+        ps_xg_arr = q.get_mpi_chunk(psel_ps.xg_arr())
         psel_lps = q.PointsSelection(ps_xg_arr, psel_ps.geo)
         psel_lps_prob = q.SelectedPointsRealD(psel_lps, 1)
         psel_lps_prob @= psel_ps_prob
