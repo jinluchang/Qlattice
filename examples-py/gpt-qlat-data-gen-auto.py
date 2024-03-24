@@ -1423,9 +1423,9 @@ def run_job(job_tag, traj):
     get_f_weight = run_f_weight_from_wsrc_prop_full(job_tag, traj, get_wi=get_wi)
     get_f_rand_01 = run_f_rand_01(job_tag, traj)
     get_fsel_prob = run_fsel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
-    get_fsel = lambda : get_fsel_prob().fsel
     get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
-    get_psel = lambda : get_psel_prob().psel
+    get_fsel = run_fsel_from_fsel_prob(get_fsel_prob)
+    get_psel = run_psel_from_psel_prob(get_psel_prob)
     #
     get_fselc = run_fselc(job_tag, traj, get_fsel, get_psel)
     #

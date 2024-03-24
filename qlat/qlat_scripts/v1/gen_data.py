@@ -379,6 +379,18 @@ def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
     q.release_lock()
     return ret
 
+@q.timer
+def run_fsel_from_fsel_prob(get_fsel_prob):
+    if get_fsel_prob is None:
+        return None
+    return lambda : get_fsel_prob().fsel
+
+@q.timer
+def run_psel_from_psel_prob(get_psel_prob):
+    if get_psel_prob is None:
+        return None
+    return lambda : get_psel_prob().psel
+
 # -----------------------------------------------------------------------------
 
 @q.timer_verbose
