@@ -1091,7 +1091,8 @@ def get_edl_from_hvp_sum_tslice(xg, total_site, hvp_sum_tslice):
     assert hvp_sum_tslice.shape == (4, t_size, 4, 4,)
     for t_dir in range(3):
         x_t = xg[t_dir]
-        xrel = q.rel_mod_sym_arr(t_arr - x_t, t_size)[:, None, None]
+        size = total_site[t_dir]
+        xrel = q.rel_mod_sym_arr(t_arr - x_t, size)[:, None, None]
         inner_products[t_dir] = (xrel * hvp_sum_tslice[t_dir]).sum(axis=0)
     edl[0] = inner_products[1, 2] - inner_products[2, 1]
     edl[1] = inner_products[2, 0] - inner_products[0, 2]
