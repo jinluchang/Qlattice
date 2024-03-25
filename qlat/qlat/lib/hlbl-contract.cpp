@@ -295,7 +295,7 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
 // hvp with external loop source at z (lambda)
 // hvp with external loop sink summed over (i)
 // psel[k] = xg_z
-// edl_list[k][i * 4 + lambda]
+// edl_list_c[k][i * 4 + lambda]
 // -lps_hvp_x.get_elem(idx_xl_y, sigma * 4 + rho)
 //
 // glb_sum for SlTable not yet performed
@@ -327,10 +327,6 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
   const int sub_tag = 0;  // use subtracted muon line weighting function
   const long n_labels = 8;
   const long n_points = psel.size();
-  const SelectedPoints<array<ComplexD, 3 * 4>>& edl_list =
-      qcast_const<array<ComplexD, 3 * 4>, ComplexD>(edl_list_c);
-  qassert(n_points == edl_list.n_points);
-  qassert(1 == edl_list.multiplicity);
   bool has_same_x_z = false;
   qfor(k, n_points, {
     const Coordinate& xg_z = psel[k];
@@ -380,7 +376,8 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
     qthread_for(k, n_points, {
       const Coordinate& xg_z = psel[k];
       const RealD prob_xg_z = psel_prob.get_elem(k);
-      const array<Complex, 3 * 4>& edl = edl_list.get_elem(k);
+      const Vector<Complex> edl = edl_list_c.get_elems_const(k);
+      qassert(edl.size() == 3 * 4);
       if (sqr(smod(xg_z - xg_x, total_site)) > r_sq_limit or
           sqr(smod(xg_z - xg_y, total_site)) > r_sq_limit) {
         continue;
@@ -473,7 +470,6 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
                       sqr(smod(xg_z - xg_x, total_site)));
     });
   });
-  qcast_const<ComplexD, array<ComplexD, 3 * 4>>(edl_list);
   // no glb sum performed
   for (long i = 0; i < n_labels; ++i) {
     acc_sl_table(ts[i]);

@@ -1070,7 +1070,7 @@ def run_hvp_sum_tslice(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice_
         return hvp_sum_tslice
     return get_hvp_sum_tslice
 
-def get_edl_from_hvp_sum_tslice(xg, hvp_sum_tslice):
+def get_edl_from_hvp_sum_tslice(xg, total_site, hvp_sum_tslice):
     """
     edl[k, nu] is complex
     include -1 from fermion loop (not yet included in this hvp)
@@ -1135,6 +1135,7 @@ def run_edl(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice):
         return None
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
         return None
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
     psel = get_psel()
     hvp_sum_tslice = get_hvp_sum_tslice()
     hvp_type_charge_factor_list = [ 1.0, 1.0 / 5.0, ]
@@ -1145,7 +1146,7 @@ def run_edl(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice):
     for idx, xg in enumerate(psel):
         hvp_edl_view[idx] = (
                 hvp_type_charge_factor
-                * get_edl_from_hvp_sum_tslice(xg, hvp_sum_tslice[idx])
+                * get_edl_from_hvp_sum_tslice(xg, total_site, hvp_sum_tslice[idx])
                 )
     hvp_edl.save(get_save_path(fn))
     json_results.append((
