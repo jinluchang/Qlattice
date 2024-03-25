@@ -159,7 +159,8 @@ def ww_from_g_via_sum(g_t_arr, params):
     cov = params["cov"]
     t_arr = params["t_arr"]
     new_g_t_arr, constraint_penalty = normalization_constraint_via_sum(g_t_arr, params)
-    aa = aa_from_g_via_sum(new_g_t_arr, params)
+    g0_t_arr = jnp.zeros(new_g_t_arr.shape, jnp.float64)
+    aa = aa_from_g_via_sum(new_g_t_arr, params) / aa_from_g_via_sum(g0_t_arr, params)
     ee = get_cov_term(new_g_t_arr, cov) * params["lambda"]
     return aa + ee + constraint_penalty
 
@@ -344,7 +345,8 @@ def ww_from_g(g_t_arr, params):
     cov = params["cov"]
     t_arr = params["t_arr"]
     new_g_t_arr, constraint_penalty = normalization_constraint(g_t_arr, params)
-    aa = aa_from_g(new_g_t_arr, params)
+    g0_t_arr = jnp.zeros(new_g_t_arr.shape, jnp.float64)
+    aa = aa_from_g(new_g_t_arr, params) / aa_from_g(g0_t_arr, params)
     ee = get_cov_term(new_g_t_arr, cov) * params["lambda"]
     return aa + ee + constraint_penalty
 
