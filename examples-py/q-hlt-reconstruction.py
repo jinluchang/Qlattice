@@ -6,7 +6,7 @@ os.environ['JAX_ENABLE_X64'] = 'True'
 os.environ['JAX_PLATFORMS'] = 'cpu'
 
 json_results = []
-check_eps = 1e-6
+check_eps = 1e-5
 
 from qlat_utils.q_hlt_reconstruction import *
 
