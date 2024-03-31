@@ -203,6 +203,15 @@ int bcast(LatData& ld, const int root)
   return ret;
 }
 
+int bcast(PointsSelection& psel, const int root)
+{
+  int ret = 0;
+  ret += bcast(psel.initialized);
+  ret += bcast(psel.distributed);
+  ret += bcast(psel.xgs);
+  return ret;
+}
+
 std::vector<Int> mk_id_node_list_for_shuffle_rs(const RngState& rs)
 {
   TIMER_VERBOSE("mk_id_node_list_for_shuffle_rs");

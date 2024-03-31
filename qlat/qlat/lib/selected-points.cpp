@@ -8,7 +8,7 @@ namespace qlat
 PointsSelection mk_tslice_point_selection(const int t_size, const int t_dir)
 {
   PointsSelection psel;
-  psel.resize(t_size);
+  psel.init(t_size);
   qassert(0 <= t_dir and t_dir < 4);
   const Coordinate xg_all = Coordinate(-1, -1, -1, -1);
   qthread_for(idx, t_size, {
@@ -104,14 +104,15 @@ PointsSelection load_point_selection(const std::string& path)
   qassert(lines.size() > 0);
   const Long len = read_long(lines[0]);
   qassert(len + 1 <= (Long)lines.size());
-  PointsSelection psel;
-  for (Long k = 1; k < len + 1; ++k) {
+  PointsSelection psel(len);
+  for (Long idx = 0; idx < len; ++idx) {
+    const Long k = idx + 1;
     const std::vector<std::string> strs = split_line_with_spaces(lines[k]);
     if (strs.size() >= 5) {
-      qassert(k - 1 == read_long(strs[0]));
+      qassert(idx == read_long(strs[0]));
       const Coordinate xg(read_long(strs[1]), read_long(strs[2]),
                           read_long(strs[3]), read_long(strs[4]));
-      psel.push_back(xg);
+      psel[idx] = xg;
     } else {
       displayln(fname + ssprintf(": line is '%s'.", lines[k].c_str()));
       qassert(false);
@@ -135,8 +136,8 @@ crc32_t crc32_par(const PointsSelection& psel)
 {
   PointsSelection psel_ec;
   psel_ec = psel;
-  to_from_big_endian(get_data(psel_ec), true);
-  return crc32_par(get_data(psel_ec));
+  to_from_big_endian(get_data(psel_ec.xgs), true);
+  return crc32_par(get_data(psel_ec.xgs));
 }
 
 void set_sqrt_field(SelectedPoints<RealD>& sp, const SelectedPoints<RealD>& sp1)

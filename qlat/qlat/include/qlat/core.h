@@ -784,9 +784,42 @@ inline GaugeField& gf_from_field(Field<ColorMatrix>& f)
 
 // --------------------
 
-using PointsSelection = std::vector<Coordinate>;
-// Cannot be qlat::vector or qlat::vector_acc because we use the copy
-// constructor a lot.
+struct API PointsSelection {
+  bool initialized;
+  bool distributed;  // default false (all node has the same data)
+  vector_acc<Coordinate> xgs;
+  //
+  void init();
+  void init(const Long n_points_);
+  void init(const Long n_points_, const Coordinate& xg_init);
+  void init(const std::vector<Coordinate>& xgs_);
+  //
+  PointsSelection() { init(); }
+  PointsSelection(const PointsSelection&) = default;
+  PointsSelection(PointsSelection&&) noexcept = default;
+  PointsSelection(const Long n_points_) { init(n_points_); }
+  PointsSelection(const Long n_points_, const Coordinate& xg_init)
+  {
+    init(n_points_, xg_init);
+  }
+  PointsSelection(const std::vector<Coordinate>& xgs_) { init(xgs_); }
+  //
+  PointsSelection& operator=(const PointsSelection& psel);
+  PointsSelection& operator=(PointsSelection&& psel) noexcept;
+  PointsSelection& operator=(const std::vector<Coordinate>& xgs_) noexcept;
+  //
+  qacc Long size() const { return xgs.size(); }
+  qacc const Coordinate* data() const { return xgs.data(); }
+  qacc Coordinate* data() { return xgs.data(); }
+  //
+  qacc const Coordinate& operator[](const Long i) const { return xgs[i]; }
+  qacc Coordinate& operator[](const Long i) { return xgs[i]; }
+  //
+  void resize(const Long size);
+  void resize(const Long size, const Coordinate& xg_init);
+  //
+  void push_back_slow(const Coordinate& xg);  // Try to avoid. Very inefficient.
+};
 
 // --------------------
 
@@ -796,6 +829,7 @@ struct API SelectedPoints {
   // (it is likely not be what you think it is)
   //
   bool initialized;
+  bool distributed;  // default false (all node has the same data)
   Int multiplicity;
   Long n_points;
   vector_acc<M> points;  // global quantity, same on each node
@@ -853,6 +887,7 @@ template <class M>
 void SelectedPoints<M>::init()
 {
   initialized = false;
+  distributed = false;
   multiplicity = 0;
   n_points = 0;
   points.init();

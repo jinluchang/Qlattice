@@ -419,7 +419,8 @@ struct momentum_dat{
     //  for(unsigned int i = 0; i < 4 ; i++){pconf[ai][i] = src[i];}
     //});
 
-    PointsSelection pconf;pconf.resize(Mvol);
+    PointsSelection pconf;
+    pconf.init(Mvol);
     if(Mvol != 0)
     qthread_for(ai , Mvol , {
       const Long isp = mapA[ai];

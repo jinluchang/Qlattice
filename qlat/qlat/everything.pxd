@@ -116,10 +116,15 @@ cdef extern from "qlat/core.h" namespace "qlat":
         void init()
         const Geometry& get_geo()
     cdef cppclass PointsSelection:
+        bool initialized
+        bool distributed
         PointsSelection()
         PointsSelection(const Long n_points) except +
+        PointsSelection(const Long n_points, const Coordinate& xg_init) except +
+        void init()
+        void init(const Long n_points) except +
+        void init(const Long n_points, const Coordinate& xg_init) except +
         Long size()
-        void resize(const Long n_points) except +
         Coordinate* data()
         Coordinate& operator[](Long i) except +
     cdef cppclass SelectedField[T]:
@@ -131,6 +136,8 @@ cdef extern from "qlat/core.h" namespace "qlat":
         void init(const FieldSelection& fsel, const int multiplicity) except +
         const Geometry& get_geo()
     cdef cppclass SelectedPoints[T]:
+        bool initialized;
+        bool distributed
         int multiplicity
         Long n_points
         vector_acc[T] points

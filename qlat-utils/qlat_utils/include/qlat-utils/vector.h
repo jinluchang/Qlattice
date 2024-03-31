@@ -332,7 +332,7 @@ struct API vector {
     if (v.p == NULL) {
       v.p = (M*)alloc_mem(size * sizeof(M), is_acc);
       v.n = size;
-    } else {
+    } else if (v.n != size) {
       vector<M> vp;
       vp.set_acc(is_acc);
       vp.v = v;
@@ -355,7 +355,7 @@ struct API vector {
       for (Long i = 0; i < v.n; ++i) {
         v[i] = x;
       }
-    } else {
+    } else if (v.n != size) {
       vector<M> vp;
       vp.set_acc(is_acc);
       vp.v = v;

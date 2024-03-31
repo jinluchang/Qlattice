@@ -239,6 +239,20 @@ int bcast(vector<M>& recv, const int root = 0)
 }
 
 template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+int bcast(vector_acc<M>& recv, const int root = 0)
+{
+  if (1 == get_num_node()) {
+    return 0;
+  }
+  int ret = 0;
+  Long size = recv.size();
+  ret += bcast<Long>(size, root);
+  recv.resize(size);
+  ret += bcast(get_data(recv), root);
+  return ret;
+}
+
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
 int bcast(std::vector<std::vector<M>>& datatable, const int root = 0)
 {
   if (1 == get_num_node()) {
@@ -273,6 +287,8 @@ int bcast(std::string& recv, const int root = 0);
 int bcast(std::vector<std::string>& recv, const int root = 0);
 
 int bcast(LatData& ld, const int root = 0);
+
+int bcast(PointsSelection& psel, const int root = 0);
 
 std::vector<Int> mk_id_node_list_for_shuffle_rs(const RngState& rs);
 

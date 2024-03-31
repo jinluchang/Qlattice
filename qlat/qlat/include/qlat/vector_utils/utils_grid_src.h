@@ -273,16 +273,16 @@ inline void grid_list_posT(std::vector<PointsSelection > &LMS_points, const Coor
       for(int it = 0; it < off_L[3]; it++){
         cur_off = cur_pos;
         cur_off[3] += ((Lat[3]/(off_L[3]))*it)%Lat[3]; ////need be careful not to exceed boundaries
-        PointsSelection lms_res;lms_res.push_back(cur_off);
+        PointsSelection lms_res;lms_res.push_back_slow(cur_off);
         LMS_points.push_back(lms_res);
       }
     }
     if(combineT == 1){
-      PointsSelection lms_res;
+      PointsSelection lms_res(off_L[3]);
       for(int it = 0; it < off_L[3]; it++){
         cur_off = cur_pos;
         cur_off[3] += ((Lat[3]/(off_L[3]))*it)%Lat[3];
-        lms_res.push_back(cur_off);
+        lms_res[it] = cur_off;
       }
       LMS_points.push_back(lms_res);
     }
@@ -342,13 +342,13 @@ void write_grid_point_to_src(Ty* res, const qnoiT& src, const PointsSelection& p
 template<typename Ty>
 void write_grid_point_to_src(Ty* res, const qnoiT& src, const Coordinate& pos, int b_size, qlat::fft_desc_basic& fd)
 {
-  PointsSelection posL;posL.resize(1);posL[0] = pos;
+  PointsSelection posL;posL.init(1);posL[0] = pos;
   write_grid_point_to_src(res, src, posL, b_size, fd);
 }
 
 void print_psel(PointsSelection& psel)
 {
-  for(unsigned long i=0;i<psel.size();i++){
+  for(Long i=0;i<psel.size();i++){
     Coordinate& xg0 = psel[i];
     print0("x %d, y %d, z %d, t %d\n", xg0[0], xg0[1], xg0[2], xg0[3]);
   }
@@ -356,7 +356,12 @@ void print_psel(PointsSelection& psel)
 
 void add_psel(PointsSelection& p0, const PointsSelection& p1)
 {
-  for(unsigned int i=0;i<p1.size();i++){p0.push_back(p1[i]);}
+  const Long p0_size = p0.size();
+  const Long p1_size = p1.size();
+  p0.resize(p0_size + p1_size);
+  for (unsigned int i = 0; i < p1.size(); i++) {
+    p0[p0_size + i] = p1[i];
+  }
 }
 
 void vector_to_Coordinate(qlat::vector_acc<int >& nv, Coordinate& pos, int dir = 1)
@@ -374,6 +379,8 @@ inline void get_grid_psel(PointsSelection& psel, const Coordinate& nv, const Coo
   //if(qlat::get_id_node() != 0){seed = 0;}
   //sum_all_size(&seed, 1 );
   //qlat::RngState rs(seed);
+
+  psel.init();
 
   Long total = 1;
   for(int i=0;i<4;i++){
@@ -402,7 +409,8 @@ inline void get_grid_psel(PointsSelection& psel, const Coordinate& nv, const Coo
     }
   }
 
-  psel.resize(0);
+
+  std::vector<Coordinate> psel_xgs;
 
   for(int xi=0;xi<grid[0];xi++)
   for(int yi=0;yi<grid[1];yi++)
@@ -415,9 +423,10 @@ inline void get_grid_psel(PointsSelection& psel, const Coordinate& nv, const Coo
 
     for(int i=0;i<4;i++){xg[i] = (ini[i] + ci[i]*(nv[i]/grid[i])) % (nv[i]);}
 
-    psel.push_back(xg);
+    psel_xgs.push_back(xg);
   }
 
+  psel.init(psel_xgs);
 
 }
 

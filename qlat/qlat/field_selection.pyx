@@ -84,7 +84,10 @@ cdef class PointsSelection:
         return self.xx.size()
 
     def set_n_points(self, const cc.Long n_points):
-        self.xx.resize(n_points)
+        """
+        will clear contents
+        """
+        self.xx.init(n_points)
 
     def xg_arr(self):
         """
@@ -113,20 +116,20 @@ cdef class PointsSelection:
             self.xx = cc.PointsSelection()
         elif isinstance(xg_arr, int):
             n_points = xg_arr
-            self.set_n_points(n_points)
+            self.xx.init(n_points)
         elif isinstance(xg_arr, Coordinate):
             xg = xg_arr
             n_points = 1
-            self.xx = cc.PointsSelection(n_points)
+            self.xx.init(n_points)
             self.xx[0] = xg.xx
         elif isinstance(xg_arr, np.ndarray):
             n_points = len(xg_arr)
-            self.xx = cc.PointsSelection(n_points)
+            self.xx.init(n_points)
             assert xg_arr.shape == (n_points, 4,)
             np.asarray(self, dtype=np.int32)[:] = xg_arr
         elif isinstance(xg_arr, list):
             n_points = len(xg_arr)
-            self.xx = cc.PointsSelection(n_points)
+            self.xx.init(n_points)
             for i in range(n_points):
                 self.xx[i] = Coordinate(xg_arr[i]).xx
         else:

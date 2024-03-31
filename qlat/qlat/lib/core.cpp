@@ -46,6 +46,73 @@ std::string show(const qlat::Geometry& geo)
   return s;
 }
 
+void PointsSelection::init()
+{
+  initialized = false;
+  distributed = false;
+  xgs.init();
+}
+
+void PointsSelection::init(const Long n_points)
+{
+  initialized = true;
+  distributed = false;
+  xgs.clear();
+  xgs.resize(n_points);
+}
+
+void PointsSelection::init(const Long n_points, const Coordinate& xg_init)
+{
+  initialized = true;
+  distributed = false;
+  xgs.clear();
+  xgs.resize(n_points, xg_init);
+}
+
+void PointsSelection::init(const std::vector<Coordinate>& xgs_)
+{
+  initialized = true;
+  distributed = false;
+  xgs = xgs_;
+}
+
+PointsSelection& PointsSelection::operator=(const PointsSelection& psel)
+{
+  initialized = psel.initialized;
+  distributed = psel.distributed;
+  xgs = psel.xgs;
+  return *this;
+}
+
+PointsSelection& PointsSelection::operator=(PointsSelection&& psel) noexcept
+{
+  initialized = psel.initialized;
+  distributed = psel.distributed;
+  xgs = std::move(psel.xgs);
+  return *this;
+}
+
+PointsSelection& PointsSelection::operator=(
+    const std::vector<Coordinate>& xgs_) noexcept
+{
+  init(xgs_);
+  return *this;
+}
+
+void PointsSelection::resize(const Long n_points) { xgs.resize(n_points); }
+
+void PointsSelection::resize(const Long n_points, const Coordinate& xg_init)
+{
+  xgs.resize(n_points, xg_init);
+}
+
+void PointsSelection::push_back_slow(const Coordinate& xg)
+{
+  const Long n_points = xgs.size();
+  xgs.resize(n_points + 1);
+  xgs[n_points] = xg;
+}
+
 void FieldSelection::init()
 {
   f_rank.init();
