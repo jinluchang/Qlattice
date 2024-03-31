@@ -62,7 +62,7 @@ cdef class Coordinate:
         """
         Return a np.ndarray composed of the 4 components of the coordinate.
         """
-        return np.array([  self.xx[0], self.xx[1], self.xx[2], self.xx[3], ], dtype=int)
+        return np.array([ self.xx[0], self.xx[1], self.xx[2], self.xx[3], ], dtype=np.int32)
 
     def from_list(self, x):
         """
@@ -274,11 +274,17 @@ cdef class CoordinateD:
         """
         return (self.xx[0], self.xx[1], self.xx[2], self.xx[3],)
 
-    def from_list(self, list x):
+    def to_numpy(self):
+        """
+        Return a np.ndarray composed of the 4 components of the coordinate.
+        """
+        return np.array([ self.xx[0], self.xx[1], self.xx[2], self.xx[3], ], dtype=np.float64)
+
+    def from_list(self, x):
         """
         set value based on a list composed of the 4 components of the coordinate.
         """
-        assert isinstance(x, (list, tuple,))
+        assert isinstance(x, (list, tuple, np.ndarray))
         assert len(x) == 4
         self.xx = cc.CoordinateD(x[0], x[1], x[2], x[3])
 

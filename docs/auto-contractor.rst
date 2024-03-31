@@ -17,8 +17,6 @@ Evaluation
    eval_cexpr
    get_expr_names
 
-   get_mpi_chunk
-
    mk_sym
    mk_fac
 

@@ -41,33 +41,6 @@ LatData
 
 Multi-dimension array data structure for IO.
 
-.. toctree::
-   :maxdepth: 1
-
-   contents/latio-format.md
-
-.. autosummary::
-   :recursive:
-   :toctree: generated
-
-   LatData
-   LatData.info
-   LatData.set_info
-   LatData.to_numpy
-   LatData.from_numpy
-   LatData.load
-   LatData.save
-   mk_lat_data
-   load_lat_data
-
-Example: ``examples-py/lat-io.py``
-
-.. literalinclude:: ../examples-py/lat-io.py
-
-C++ example: ``examples-cpp/latio/main.cpp``
-
-.. literalinclude:: ../examples-cpp/latio/main.cpp
-
 File format description
 .......................
 
@@ -92,9 +65,31 @@ File format description
 
 Consist of the data stored in double precision (little endian) in sequential order as a standard C multidimensional array.
 
+.. autosummary::
+   :recursive:
+   :toctree: generated
+
+   LatData
+   LatData.info
+   LatData.set_info
+   LatData.to_numpy
+   LatData.from_numpy
+   LatData.load
+   LatData.save
+   mk_lat_data
+   load_lat_data
+
+Example: ``examples-py/lat-io.py``
+
+.. literalinclude:: ../examples-py/lat-io.py
+
+C++ example: ``examples-cpp/latio/main.cpp``
+
+.. literalinclude:: ../examples-cpp/latio/main.cpp
+
 C++ code: ``qlat-utils/include/qlat-utils/lat-io.h``
 
-.. literalinclude:: ../qlat-utils/include/qlat-utils/lat-io.h
+.. literalinclude:: ../qlat-utils/qlat_utils/include/qlat-utils/lat-io.h
 
 Gauge Field
 ^^^^^^^^^^^
@@ -193,8 +188,8 @@ Support ``np.asarray(psel)``.
    PointsSelection
    PointsSelection.save
    PointsSelection.load
-   PointsSelection.to_list
-   PointsSelection.from_list
+   PointsSelection.xg_arr
+   PointsSelection.set_xg_arr
 
 SelectedPointsBase
 ^^^^^^^^^^^^^^^^^^
@@ -207,10 +202,12 @@ Support ``np.asarray(sp)``.
 
    SelectedPoints
    SelectedPointsBase
-   SelectedPointsBase.save
-   SelectedPointsBase.load
-   SelectedPointsBase.save_complex
-   SelectedPointsBase.load_complex
+   SelectedPointsBase.save_str
+   SelectedPointsBase.load_str
    SelectedPointsBase.to_numpy
    SelectedPointsBase.from_numpy
+   SelectedPointsRealD.save
+   SelectedPointsRealD.load
+   SelectedPointsRealD.to_lat_data
+   SelectedPointsRealD.from_lat_data
 

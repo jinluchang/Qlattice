@@ -71,8 +71,22 @@ Coordinate
    rel_mod_sym_arr
 
    Coordinate
-   Coordinate.list
+   Coordinate.to_list
+   Coordinate.to_tuple
+   Coordinate.to_numpy
+   Coordinate.from_list
    Coordinate.sqr
+   Coordinate.r_sqr
+   Coordinate.volume
+   Coordinate.spatial_volume
+   Coordinate.from_index
+   Coordinate.to_index
+
+   CoordinateD
+   CoordinateD.to_list
+   CoordinateD.to_tuple
+   Coordinate.to_numpy
+   Coordinate.from_list
 
 Cache system
 ------------
@@ -139,13 +153,15 @@ ElemType
    :toctree: generated
 
    ElemType
-   ElemTypeChar
    ElemTypeInt8t
+   ElemTypeInt32t
    ElemTypeInt64t
+   ElemTypeChar
+   ElemTypeInt
    ElemTypeLong
-   ElemTypeDouble
-   ElemTypeFloat
-   ElemTypeComplex
+   ElemTypeRealD
+   ElemTypeRealF
+   ElemTypeComplexD
    ElemTypeComplexF
 
    ElemTypeSpinMatrix

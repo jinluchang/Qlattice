@@ -22,3 +22,5 @@ qlat
    PointsSelection
    SelectedPoints
    SelectedPointsBase
+
+   get_mpi_chunk
