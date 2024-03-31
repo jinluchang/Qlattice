@@ -324,6 +324,10 @@ inline void test_selected_points(const std::string& tag, const Long n_points)
   save_point_selection_info(psel, "huge-data/" + tag + "/point-selection.txt");
   const PointsSelection psel_load =
       load_point_selection_info("huge-data/" + tag + "/point-selection.txt");
+  if (psel != psel_load) {
+    qerr(ssprintf("ERR: psel!=psel_load: %ld %ld", (long)psel.size(),
+                  (long)psel_load.size()));
+  }
   qassert(psel == psel_load);
   //
   Field<ComplexD> f;

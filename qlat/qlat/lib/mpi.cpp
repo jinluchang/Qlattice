@@ -205,9 +205,18 @@ int bcast(LatData& ld, const int root)
 
 int bcast(PointsSelection& psel, const int root)
 {
+  TIMER("bcast(PointsSelection&)");
+  if (1 == get_num_node()) {
+    return 0;
+  }
+  if (get_id_node() == root) {
+    qassert(psel.initialized);
+    qassert(not psel.distributed);
+  } else {
+    psel.initialized = true;
+    psel.distributed = false;
+  }
   int ret = 0;
-  ret += bcast(psel.initialized);
-  ret += bcast(psel.distributed);
   ret += bcast(psel.xgs);
   return ret;
 }

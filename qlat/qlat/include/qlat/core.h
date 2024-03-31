@@ -823,6 +823,8 @@ struct API PointsSelection {
 
 bool operator==(const PointsSelection& psel1, const PointsSelection& psel2);
 
+bool operator!=(const PointsSelection& psel1, const PointsSelection& psel2);
+
 // --------------------
 
 template <class M>

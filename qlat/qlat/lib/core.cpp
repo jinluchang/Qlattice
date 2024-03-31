@@ -132,6 +132,11 @@ bool operator==(const PointsSelection& psel1, const PointsSelection& psel2)
   return true;
 }
 
+bool operator!=(const PointsSelection& psel1, const PointsSelection& psel2)
+{
+  return not(psel1 == psel2);
+}
+
 void FieldSelection::init()
 {
   f_rank.init();
