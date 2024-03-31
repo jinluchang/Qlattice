@@ -52,6 +52,34 @@ void set_local_current_from_props(SelectedField<WilsonMatrix>& scf,
   });
 }
 
+void set_current_moments_from_current(
+    CurrentMoments<WilsonMatrix>& cm,
+    const SelectedField<WilsonMatrix>& current, const FieldSelection& fsel,
+    const SelectedField<RealD>& fsel_prob_xy)
+{
+  TIMER("set_current_moments_from_current");
+  const Geometry& geo = current.geo();
+  qassert(geo.multiplicity == 4);
+  const Coordinate total_site = geo.total_site();
+  const int lsize =
+      std::max(total_site[0], std::max(total_site[1], total_site[2]));
+  cm.init(lsize);
+  qfor(idx, fsel.n_elems, {
+    const long index = fsel.indices[idx];
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const Vector<WilsonMatrix> v = current.get_elems_const(idx);
+    const RealD prob = fsel_prob_xy.get_elem(idx);
+    const ComplexD weight = 1.0 / prob;
+    for (int j = 0; j < 3; ++j) {
+      for (int k = 0; k < 3; ++k) {
+        cm.d[xg[j]][3 * j + k] += weight * v[k];
+      }
+    }
+  });
+  glb_sum_double_vec(get_data(cm.d));
+}
+
 void contract_four_loop(SelectedField<Complex>& f_loop_i_rho_sigma_lambda,
                         const Complex& coef, const Coordinate& xg_x,
                         const Coordinate& xg_y,
