@@ -78,6 +78,7 @@ PointsSelection mk_random_point_selection(const Coordinate& total_site,
 void save_point_selection(const PointsSelection& psel, const std::string& path)
 {
   TIMER_VERBOSE("save_point_selection");
+  qassert(not psel.distributed);
   QFile qfile = qfopen(path + ".partial", "w");
   qfprintf(qfile, "%ld\n", (Long)psel.size());
   for (Long i = 0; i < (Long)psel.size(); ++i) {
@@ -92,6 +93,7 @@ void save_point_selection_info(const PointsSelection& psel,
                                const std::string& path)
 {
   TIMER_VERBOSE("save_point_selection_info");
+  qassert(not psel.distributed);
   if (0 == get_id_node()) {
     save_point_selection(psel, path);
   }

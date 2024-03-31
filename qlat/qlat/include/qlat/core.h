@@ -821,6 +821,8 @@ struct API PointsSelection {
   void push_back_slow(const Coordinate& xg);  // Try to avoid. Very inefficient.
 };
 
+bool operator==(const PointsSelection& psel1, const PointsSelection& psel2);
+
 // --------------------
 
 template <class M>

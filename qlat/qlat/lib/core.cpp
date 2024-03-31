@@ -113,6 +113,25 @@ void PointsSelection::push_back_slow(const Coordinate& xg)
   xgs[n_points] = xg;
 }
 
+bool operator==(const PointsSelection& psel1, const PointsSelection& psel2)
+{
+  if (psel1.initialized != psel2.initialized) {
+    return false;
+  }
+  if (psel1.distributed != psel2.distributed) {
+    return false;
+  }
+  if (psel1.xgs.size() != psel2.xgs.size()) {
+    return false;
+  }
+  for (Long i = 0; i < psel1.xgs.size(); ++i) {
+    if (psel1.xgs[i] != psel2.xgs[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void FieldSelection::init()
 {
   f_rank.init();

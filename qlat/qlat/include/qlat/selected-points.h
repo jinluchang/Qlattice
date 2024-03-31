@@ -468,6 +468,7 @@ template <class M>
 void save_selected_points(const SelectedPoints<M>& sp, const std::string& path)
 {
   TIMER_VERBOSE("save_selected_points");
+  qassert(not sp.distributed);
   if (get_id_node() == 0) {
     const LatData ld = lat_data_from_selected_points(sp);
     ld.save(path);
