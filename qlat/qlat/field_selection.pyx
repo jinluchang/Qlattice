@@ -80,6 +80,9 @@ cdef class PointsSelection:
         self.geo = geo
         cc.assign_direct(self.xx, cc.load_point_selection_info(path))
 
+    def is_distributed(self):
+        return self.xx.distributed
+
     def n_points(self):
         return self.xx.size()
 

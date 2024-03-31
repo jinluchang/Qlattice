@@ -901,6 +901,7 @@ template <class M>
 void SelectedPoints<M>::init(const Long n_points_, const int multiplicity_)
 {
   if (initialized) {
+    qassert(not distributed);
     qassert(multiplicity_ == multiplicity);
     qassert(n_points_ == n_points);
     qassert((Long)points.size() == n_points * multiplicity);
@@ -908,6 +909,7 @@ void SelectedPoints<M>::init(const Long n_points_, const int multiplicity_)
     TIMER("SelectedPoints::init(np,mult)")
     init();
     initialized = true;
+    qassert(not distributed);
     multiplicity = multiplicity_;
     n_points = n_points_;
     points.resize(n_points * multiplicity);
@@ -925,12 +927,14 @@ template <class M>
 void SelectedPoints<M>::init(const PointsSelection& psel, const int multiplicity)
 {
   init(psel.size(), multiplicity);
+  distributed = psel.distributed;
 }
 
 template <class M>
 void SelectedPoints<M>::init_zero(const Long n_points_, const int multiplicity_)
 {
   if (initialized) {
+    qassert(not distributed);
     qassert(multiplicity_ == multiplicity);
     qassert(n_points_ == n_points);
     qassert((Long)points.size() == n_points * multiplicity);
@@ -938,6 +942,7 @@ void SelectedPoints<M>::init_zero(const Long n_points_, const int multiplicity_)
     TIMER("SelectedPoints::init_zero(np,mult)")
     init();
     initialized = true;
+    qassert(not distributed);
     multiplicity = multiplicity_;
     n_points = n_points_;
     points.resize(n_points * multiplicity);
@@ -949,6 +954,7 @@ template <class M>
 void SelectedPoints<M>::init_zero(const PointsSelection& psel, const int multiplicity)
 {
   init_zero(psel.size(), multiplicity);
+  distributed = psel.distributed;
 }
 
 template <class M>

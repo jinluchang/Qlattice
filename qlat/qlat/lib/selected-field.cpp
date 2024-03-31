@@ -516,6 +516,7 @@ PointsSelection psel_from_fsel_local(const FieldSelection& fsel)
   // const Coordinate total_site = geo.total_site();
   Long n_elems = fsel.n_elems;
   PointsSelection psel(n_elems);
+  psel.distributed = true;
   qthread_for(idx, (Long)psel.size(), {
     const Long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
