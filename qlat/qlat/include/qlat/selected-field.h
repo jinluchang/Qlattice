@@ -79,25 +79,6 @@ Long idx_from_xg(const Coordinate& xg, const FieldSelection& fsel);
 
 // ---------------------------------------
 
-template <class M, class N>
-SelectedField<M>& qcast(SelectedField<N>& x)
-// IMPORTANT: will modify the multiplicity of x, need to cast back after finish.
-{
-  if (x.initialized) {
-    const int size = x.geo().multiplicity * sizeof(N);
-    x.geo().multiplicity = size / sizeof(M);
-    qassert(x.geo().multiplicity * (int)sizeof(M) == size);
-  }
-  return (SelectedField<M>&)x;
-}
-
-template <class M, class N>
-const SelectedField<M>& qcast_const(const SelectedField<N>& x)
-// IMPORTANT: will modify the multiplicity of x, need to cast back after finish.
-{
-  return qcast<M, N>((SelectedField<N>&)x);
-}
-
 template <class M>
 bool is_initialized(const SelectedField<M>& sf)
 {

@@ -345,9 +345,12 @@ struct API vector {
       qassert(v.n == 0);
     }
     Long total_size = v.n * sizeof(M);
-    vec.v.p = v.p;
+    vec.v.p = (N*)v.p;
     vec.v.n = total_size / sizeof(N);
-    qassert(vec.v.n * sizeof(N) == total_size);
+    if (vec.v.n * (Long)sizeof(N) != total_size) {
+      qerr(ssprintf("vector::view_as: n=%ld ; sizeof(N)=%ld ; total_size=%ld .",
+                    (long)vec.v.n, (long)sizeof(N), (long)total_size));
+    }
     return vec;
   }
   //
@@ -512,7 +515,7 @@ struct API vector_acc : vector<M> {
   vector_acc<N> view_as() const
   {
     qassert(is_acc);
-    vector<N> vec = vector<M>::view_as<N>();
+    vector<N> vec = vector<M>::template view_as<N>();
     return (vector_acc<N>&)vec;
   }
   //
@@ -731,11 +734,11 @@ struct API box {
   //
   box<M> view() const
   {
-    box<M> box;
-    box.is_copy = true;
-    box.is_acc = is_acc;
-    box.v = v;
-    return box;
+    box<M> b;
+    b.is_copy = true;
+    b.is_acc = is_acc;
+    b.v = v;
+    return b;
   }
   //
   void set(const M& x)
@@ -823,8 +826,8 @@ struct API box_acc : box<M> {
   box_acc<M> view() const
   {
     qassert(is_acc);
-    box<M> box = box<M>::view();
-    return (box_acc<M>&)box;
+    box<M> b = box<M>::view();
+    return (box_acc<M>&)b;
   }
   //
   box_acc<M>& operator=(const box_acc<M>& vp)

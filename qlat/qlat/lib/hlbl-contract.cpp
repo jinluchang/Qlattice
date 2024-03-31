@@ -11,11 +11,15 @@ void set_m_z_field_tag(SelectedField<RealD>& smf_d, const FieldSelection& fsel,
 // tag = 1 nosub
 {
   TIMER_VERBOSE("set_m_z_field_tag(smf_d,fsel,xg_x,xg_y,a,tag)");
-  SelectedField<ManyMagneticMoments>& smf =
-      qcast<ManyMagneticMoments, RealD>(smf_d);
+  const int multiplicity = sizeof(ManyMagneticMoments) / sizeof(RealD);
+  qassert(multiplicity * (int)sizeof(RealD) ==
+          (int)sizeof(ManyMagneticMoments));
+  smf_d.init(fsel, multiplicity);
+  SelectedField<ManyMagneticMoments> smf =
+      smf_d.template view_as<ManyMagneticMoments>();
   const Geometry& geo = fsel.f_rank.geo();
   const Coordinate total_site = geo.total_site();
-  smf.init(fsel, 1);
+  // smf.init(fsel, 1);
   qthread_for(idx, fsel.n_elems, {
     const long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -23,7 +27,6 @@ void set_m_z_field_tag(SelectedField<RealD>& smf_d, const FieldSelection& fsel,
     ManyMagneticMoments& mmm = smf.get_elem(idx);
     mmm = get_muon_line_m_extra_lat(xg_x, xg_y, xg_z, total_site, a, tag);
   });
-  qcast<RealD, ManyMagneticMoments>(smf);
 }
 
 void set_local_current_from_props(SelectedField<WilsonMatrix>& scf,
@@ -253,8 +256,8 @@ std::vector<SlTable> contract_four_pair_no_glb_sum(
   const RealD prob_pair =
       xg_x == xg_y ? std::min(prob_xg_x, prob_xg_y) : prob_xg_x * prob_xg_y;
   const RealD weight_pair = 1.0 / prob_pair;
-  const SelectedField<ManyMagneticMoments>& smf =
-      qcast_const<ManyMagneticMoments, RealD>(smf_d);
+  const SelectedField<ManyMagneticMoments> smf =
+      smf_d.template view_as<ManyMagneticMoments>();
   qassert(is_matching_geo_mult(geo, fsel_prob.geo()));
   qassert(is_matching_geo_mult(geo, smf.geo()));
   qassert(is_matching_geo_mult(geo, sprop_x.geo()));
@@ -306,7 +309,6 @@ std::vector<SlTable> contract_four_pair_no_glb_sum(
     ts.push_back(t);
     ts.push_back(t_pi);
   }
-  qcast_const<RealD, ManyMagneticMoments>(smf);
   return ts;
 }
 

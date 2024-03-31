@@ -452,6 +452,31 @@ struct API Field {
   Field<M>& operator=(const Field<M>& f);
   Field<M>& operator=(Field<M>&&) noexcept = default;
   //
+  Field<M> view() const
+  {
+    TIMER("Field::view");
+    Field<M> f;
+    f.initialized = initialized;
+    f.geo = geo.view();
+    f.field = field.view();
+    return f;
+  }
+  //
+  template <class N>
+  Field<N> view_as() const
+  {
+    TIMER("Field::view_as");
+    const int total_size = geo().multiplicity * sizeof(M);
+    const int multiplicity = total_size / sizeof(N);
+    qassert(multiplicity * (int)sizeof(N) == total_size);
+    Field<N> f;
+    f.initialized = initialized;
+    f.geo.set(geo());
+    f.geo().multiplicity = multiplicity;
+    f.field = field.template view_as<N>();
+    return f;
+  }
+  //
   qacc const Geometry& get_geo() const { return geo(); }
   //
   qacc M& get_elem_offset(const Long offset)
@@ -853,6 +878,33 @@ struct API SelectedPoints {
   SelectedPoints<M>& operator=(const SelectedPoints<M>&) = default;
   SelectedPoints<M>& operator=(SelectedPoints<M>&&) noexcept = default;
   //
+  SelectedPoints<M> view() const
+  {
+    TIMER("SelectedPoints::view");
+    SelectedPoints<M> f;
+    f.initialized = initialized;
+    f.distributed = distributed;
+    f.multiplicity = multiplicity;
+    f.n_points = n_points;
+    f.points = points.view();
+    return f;
+  }
+  //
+  template <class N>
+  SelectedPoints<N> view_as() const
+  {
+    TIMER("SelectedPoints::view_as");
+    const int total_size = multiplicity * sizeof(M);
+    SelectedPoints<N> f;
+    f.initialized = initialized;
+    f.distributed = distributed;
+    f.multiplicity = total_size / sizeof(N);
+    f.n_points = n_points;
+    f.points = points.template view_as<N>();
+    qassert(f.multiplicity * (int)sizeof(N) == total_size);
+    return f;
+  }
+  //
   qacc M& get_elem(const Long& idx)
   {
     qassert(1 == multiplicity);
@@ -1029,6 +1081,33 @@ struct API SelectedField {
   //
   SelectedField<M>& operator=(const SelectedField<M>&) = default;
   SelectedField<M>& operator=(SelectedField<M>&&) noexcept = default;
+  //
+  SelectedField<M> view() const
+  {
+    TIMER("SelectedField::view");
+    SelectedField<M> f;
+    f.initialized = initialized;
+    f.n_elems = n_elems;
+    f.geo = geo.view();
+    f.field = field.view();
+    return f;
+  }
+  //
+  template <class N>
+  SelectedField<N> view_as() const
+  {
+    TIMER("SelectedField::view_as");
+    const int total_size = geo().multiplicity * sizeof(M);
+    const int multiplicity = total_size / sizeof(N);
+    qassert(multiplicity * (int)sizeof(N) == total_size);
+    SelectedField<N> f;
+    f.initialized = initialized;
+    f.n_elems = n_elems;
+    f.geo.set(geo());
+    f.geo().multiplicity = multiplicity;
+    f.field = field.template view_as<N>();
+    return f;
+  }
   //
   qacc const Geometry& get_geo() const { return geo(); }
   //
