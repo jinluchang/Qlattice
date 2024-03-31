@@ -654,4 +654,20 @@ void set_sqrt_field(SelectedField<RealD>& f, const SelectedField<RealD>& f1)
   });
 }
 
+// -------------------------------------------
+
+void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_elems,
+                               const RngState& rs)
+// Collective operation.
+{
+  TIMER("set_selected_shuffle_plan(ssp,n_elems,rs)");
+  // TODO
+}
+
+void shuffle_selected_field_char(const SelectedField<char>& data, const SelectedShufflePlan& ssp)
+{
+  TIMER("shuffle_selected_field_char");
+  // TODO
+}
+
 }  // namespace qlat

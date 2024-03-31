@@ -595,4 +595,20 @@ void convert_field_double_from_float(SelectedField<N>& ff,
   });
 }
 
+// -------------------------------------------
+
+struct SelectedShufflePlan {
+  SelectedField<Long>
+      local_shuffle_idx_field;  // Reorder field according to this idx field.
+  int sendcounts;
+  int recvcounts;
+  std::vector<int> sdispls;
+  std::vector<int> rdispls;
+};
+
+void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_elems,
+                               const RngState& rs);
+
+void shuffle_selected_field_char(const SelectedField<char>& data, const SelectedShufflePlan& ssp);
+
 }  // namespace qlat

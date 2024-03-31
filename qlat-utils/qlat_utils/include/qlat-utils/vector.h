@@ -215,6 +215,7 @@ template <class M>
 struct API vector {
   // Avoid copy constructor when possible
   // (it is likely not what you think it is)
+  // Only used in qacc macros, or if it is already a copy.
   //
   bool is_copy;  // do not free memory if is_copy=true
   bool is_acc;   // if place data on qlat_GPU_MallocManaged memory (default false)
@@ -231,7 +232,7 @@ struct API vector {
   {
     // TIMER("vector::vector(&)")
 #ifndef QLAT_USE_ACC
-    qassert(false);
+    qassert(vp.is_copy);
 #endif
     is_copy = true;
     qassert(vp.is_acc);
@@ -323,6 +324,22 @@ struct API vector {
     Vector<M> t = v;
     v = x.v;
     x.v = t;
+  }
+  //
+  template <class N>
+  vector<N> view_as()
+  {
+    vector<N> vec;
+    vec.is_copy = true;
+    vec.is_acc = is_acc;
+    if (v.p == NULL) {
+      qassert(v.n == 0);
+    }
+    Long total_size = v.n * sizeof(M);
+    vec.v.p = v.p;
+    vec.v.n = total_size / sizeof(N);
+    qassert(vec.v.n * sizeof(N) == total_size);
+    return vec;
   }
   //
   void resize(const Long size)
@@ -417,10 +434,12 @@ template <class M>
 struct API vector_acc : vector<M> {
   // Avoid copy constructor when possible
   // (it is likely not what you think it is)
+  // Only used in qacc macros.
   //
   using vector<M>::v;
   using vector<M>::is_copy;
   using vector<M>::is_acc;
+  using vector<M>::view_as;
   using vector<M>::resize;
   //
   vector_acc()
@@ -434,7 +453,7 @@ struct API vector_acc : vector<M> {
   {
     // TIMER("vector_acc::vector_acc(&)");
 #ifndef QLAT_USE_ACC
-    qassert(false);
+    qassert(vp.is_copy);
 #endif
     is_copy = true;
     qassert(vp.is_acc);
