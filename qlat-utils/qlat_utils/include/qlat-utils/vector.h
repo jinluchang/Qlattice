@@ -326,8 +326,17 @@ struct API vector {
     x.v = t;
   }
   //
+  vector<M> view() const
+  {
+    vector<M> vec;
+    vec.is_copy = true;
+    vec.is_acc = is_acc;
+    vec.v = v;
+    return vec;
+  }
+  //
   template <class N>
-  vector<N> view_as()
+  vector<N> view_as() const
   {
     vector<N> vec;
     vec.is_copy = true;
@@ -439,7 +448,6 @@ struct API vector_acc : vector<M> {
   using vector<M>::v;
   using vector<M>::is_copy;
   using vector<M>::is_acc;
-  using vector<M>::view_as;
   using vector<M>::resize;
   //
   vector_acc()
@@ -491,6 +499,21 @@ struct API vector_acc : vector<M> {
     is_copy = false;
     is_acc = true;
     *this = vp;
+  }
+  //
+  vector_acc<M> view() const
+  {
+    qassert(is_acc);
+    vector<M> vec = vector<M>::view();
+    return (vector_acc<M>&)vec;
+  }
+  //
+  template <class N>
+  vector_acc<N> view_as() const
+  {
+    qassert(is_acc);
+    vector<N> vec = vector<M>::view_as<N>();
+    return (vector_acc<N>&)vec;
   }
   //
   vector_acc<M>& operator=(const vector_acc<M>& vp)
@@ -610,6 +633,7 @@ struct API box {
   //
   // Avoid copy constructor when possible
   // (it is likely not be what you think it is)
+  // Only used in qacc macros, or if it is already a copy.
   //
   bool is_copy;  // do not free memory if is_copy=true
   bool is_acc;   // if place data on qlat_GPU_MallocManaged memory (default false)
@@ -626,7 +650,7 @@ struct API box {
   {
     // TIMER("box::box(&)");
 #ifndef QLAT_USE_ACC
-    qassert(false);
+    qassert(vp.is_copy);
 #endif
     is_copy = true;
     qassert(vp.is_acc);
@@ -705,6 +729,15 @@ struct API box {
     x.v = t;
   }
   //
+  box<M> view() const
+  {
+    box<M> box;
+    box.is_copy = true;
+    box.is_acc = is_acc;
+    box.v = v;
+    return box;
+  }
+  //
   void set(const M& x)
   {
     qassert(not is_copy);
@@ -744,6 +777,7 @@ struct API box_acc : box<M> {
   //
   // Avoid copy constructor when possible
   // (it is likely not be what you think it is)
+  // Only used in qacc macros, or if it is already a copy.
   //
   using box<M>::v;
   using box<M>::is_copy;
@@ -761,7 +795,7 @@ struct API box_acc : box<M> {
   {
     // TIMER("box::box(&)");
 #ifndef QLAT_USE_ACC
-    qassert(false);
+    qassert(vp.is_copy);
 #endif
     is_copy = true;
     qassert(vp.is_acc);
@@ -784,6 +818,13 @@ struct API box_acc : box<M> {
     is_copy = false;
     is_acc = true;
     set(x);
+  }
+  //
+  box_acc<M> view() const
+  {
+    qassert(is_acc);
+    box<M> box = box<M>::view();
+    return (box_acc<M>&)box;
   }
   //
   box_acc<M>& operator=(const box_acc<M>& vp)

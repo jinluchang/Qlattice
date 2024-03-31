@@ -664,9 +664,9 @@ void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_elems,
   // TODO
 }
 
-void shuffle_selected_field_char(const SelectedField<char>& data, const SelectedShufflePlan& ssp)
+void shuffle_selected_field_char(const SelectedField<char>& sf, const SelectedShufflePlan& ssp)
 {
-  TIMER("shuffle_selected_field_char");
+  TIMER("shuffle_selected_field_char(sf,ssp)");
   // TODO
 }
 
