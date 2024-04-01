@@ -65,7 +65,8 @@ bool is_containing(const FieldSelection& fsel, const PointsSelection& psel);
 
 void intersect_with(FieldSelection& fsel, const FieldSelection& fsel1);
 
-PointsSelection intersect(const FieldSelection& fsel, const PointsSelection& psel);
+PointsSelection intersect(const FieldSelection& fsel,
+                          const PointsSelection& psel);
 
 PointsSelection psel_from_fsel(const FieldSelection& fsel);
 
@@ -545,9 +546,7 @@ void convert_field_float_from_double(SelectedField<N>& ff,
   Vector<N> ffdata = get_data(ff);
   Vector<float> ffd((float*)ffdata.data(), ffdata.data_size() / sizeof(float));
   qassert(ffd.size() == fd.size());
-  qacc_for(i, ffd.size(), {
-    ffd[i] = fd[i];
-  });
+  qacc_for(i, ffd.size(), { ffd[i] = fd[i]; });
 }
 
 template <class M, class N>
@@ -571,9 +570,7 @@ void convert_field_double_from_float(SelectedField<N>& ff,
   Vector<double> ffd((double*)ffdata.data(),
                      ffdata.data_size() / sizeof(double));
   qassert(ffd.size() == fd.size());
-  qacc_for(i, ffd.size(), {
-    ffd[i] = fd[i];
-  });
+  qacc_for(i, ffd.size(), { ffd[i] = fd[i]; });
 }
 
 // -------------------------------------------
@@ -581,15 +578,56 @@ void convert_field_double_from_float(SelectedField<N>& ff,
 struct SelectedShufflePlan {
   SelectedField<Long>
       local_shuffle_idx_field;  // Reorder field according to this idx field.
-  int sendcounts;
-  int recvcounts;
-  std::vector<int> sdispls;
-  std::vector<int> rdispls;
+  Long total_send_count;
+  Long total_recv_count;
+  vector<int> sendcounts;
+  vector<int> recvcounts;
+  vector<int> sdispls;
+  vector<int> rdispls;
 };
 
 void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_elems,
                                const RngState& rs);
 
-void shuffle_selected_field_char(const SelectedField<char>& sf, const SelectedShufflePlan& ssp);
+void shuffle_selected_field_char(SelectedPoints<char>& spc,
+                                 const SelectedField<char>& sfc,
+                                 const SelectedShufflePlan& ssp);
+
+void set_points_selection_from_selected_points(
+    PointsSelection& psel, const SelectedPoints<Coordinate>& spx);
+
+void set_selected_field_from_field_selection(SelectedField<Coordinate>& sfx,
+                                             const FieldSelection& fsel);
+
+template <class M>
+void shuffle_selected_field(SelectedPoints<M>& sp, const SelectedField<M>& sf,
+                            const SelectedShufflePlan& ssp)
+{
+  TIMER("shuffle_selected_field(sp,sf,ssp)");
+  const Long n_points = ssp.total_recv_count;
+  const Int multiplicity = sf.geo().multiplicity;
+  sp.init(n_points, multiplicity);
+  sp.distributed = true;
+  SelectedPoints<char> spc(sp.template view_as<char>());
+  const SelectedField<char> sfc(sf.template view_as<char>());
+  shuffle_selected_field_char(spc, sfc, ssp);
+}
+
+template <class M>
+void shuffle_selected_field(SelectedPoints<M>& sp, PointsSelection& psel,
+                            const SelectedField<M>& sf,
+                            const FieldSelection& fsel, const RngState& rs)
+{
+  TIMER("shuffle_selected_field(sp,psel,sf,fsel,rs)");
+  const Long n_elems = fsel.n_elems;
+  SelectedShufflePlan ssp;
+  set_selected_shuffle_plan(ssp, n_elems, rs);
+  shuffle_selected_field(sp, sf, ssp);
+  SelectedField<Coordinate> sfx;
+  set_selected_field_from_field_selection(sfx, fsel);
+  SelectedPoints<Coordinate> spx;
+  shuffle_selected_field(spx, sfx, ssp);
+  set_points_selection_from_selected_points(psel, spx);
+}
 
 }  // namespace qlat

@@ -391,10 +391,10 @@ struct API vector {
       v.p = (M*)alloc_mem(size * sizeof(M), is_acc);
       v.n = size;
       if (size <= vp.v.n) {
-        std::memcpy(v.p, vp.v.p, size * sizeof(M));
+        std::memcpy(v.p, vp.v.p, v.n * sizeof(M));
       } else {
         std::memcpy(v.p, vp.v.p, vp.v.n * sizeof(M));
-        for (Long i = size; i < v.n; ++i) {
+        for (Long i = vp.v.n; i < v.n; ++i) {
           v[i] = x;
         }
       }
