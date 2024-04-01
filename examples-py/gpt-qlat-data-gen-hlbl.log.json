@@ -29,8 +29,8 @@
  [
   "run_check_hvp_avg: test-4nt8 1000 light hvp_average",
   {
-   "real": 0.11795614767993377,
-   "imag": -6.6274543172559095e-18,
+   "real": 0.1463389141740749,
+   "imag": -3.24500853610167e-19,
    "__extended_json_type__": "complex"
   },
   0.0001
@@ -74,8 +74,8 @@
  [
   "run_check_hvp_avg: test-4nt8 1000 strange hvp_average",
   {
-   "real": 0.11759639157112989,
-   "imag": 5.759600784156716e-18,
+   "real": 0.1443961933035529,
+   "imag": 1.1628526106191394e-17,
    "__extended_json_type__": "complex"
   },
   0.0001
@@ -1204,32 +1204,32 @@
  [
   "get_hvp_average_light: 1000",
   {
-   "real": 0.11795614767993377,
-   "imag": -6.6274543172559095e-18,
+   "real": 0.1463389141740749,
+   "imag": -3.24500853610167e-19,
    "__extended_json_type__": "complex"
   }
  ],
  [
   "get_hvp_average_strange: 1000:",
   {
-   "real": 0.11759639157112989,
-   "imag": 5.759600784156716e-18,
+   "real": 0.1443961933035529,
+   "imag": 1.1628526106191394e-17,
    "__extended_json_type__": "complex"
   }
  ],
  [
   "get_glb_hvp_avg_for_sub_light: 1000:",
   {
-   "real": 0.17040857531397155,
-   "imag": -1.4428106933021527e-18,
+   "real": 0.20810650762512686,
+   "imag": 7.299547074489268e-19,
    "__extended_json_type__": "complex"
   }
  ],
  [
   "get_glb_hvp_avg_for_sub_strange: 1000:",
   {
-   "real": 0.16712557784172366,
-   "imag": -3.244389934634104e-18,
+   "real": 0.20453174759160161,
+   "imag": -5.176001945213456e-18,
    "__extended_json_type__": "complex"
   }
  ],
@@ -1263,8 +1263,8 @@
  [
   "run_check_hvp_avg: test-4nt8 2000 light hvp_average",
   {
-   "real": 0.1704085694358356,
-   "imag": -1.4428105157053863e-18,
+   "real": 0.2081065012499433,
+   "imag": 7.299547683431027e-19,
    "__extended_json_type__": "complex"
   },
   0.0001
@@ -1308,8 +1308,8 @@
  [
   "run_check_hvp_avg: test-4nt8 2000 strange hvp_average",
   {
-   "real": 0.16712556551073998,
-   "imag": -3.244390063763107e-18,
+   "real": 0.20453173583911566,
+   "imag": -5.176002110389722e-18,
    "__extended_json_type__": "complex"
   },
   0.0001
@@ -2978,32 +2978,32 @@
  [
   "get_hvp_average_light: 2000",
   {
-   "real": 0.1704085694358356,
-   "imag": -1.4428105157053863e-18,
+   "real": 0.2081065012499433,
+   "imag": 7.299547683431027e-19,
    "__extended_json_type__": "complex"
   }
  ],
  [
   "get_hvp_average_strange: 2000:",
   {
-   "real": 0.16712556551073998,
-   "imag": -3.244390063763107e-18,
+   "real": 0.20453173583911566,
+   "imag": -5.176002110389722e-18,
    "__extended_json_type__": "complex"
   }
  ],
  [
   "get_glb_hvp_avg_for_sub_light: 2000:",
   {
-   "real": 0.11795615740999219,
-   "imag": -6.62745454374088e-18,
+   "real": 0.14633892104685714,
+   "imag": -3.245010044171153e-19,
    "__extended_json_type__": "complex"
   }
  ],
  [
   "get_glb_hvp_avg_for_sub_strange: 2000:",
   {
-   "real": 0.11759640330713106,
-   "imag": 5.75960099343462e-18,
+   "real": 0.14439620126923097,
+   "imag": 1.1628526186839393e-17,
    "__extended_json_type__": "complex"
   }
  ]
