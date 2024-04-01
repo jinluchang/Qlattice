@@ -71,7 +71,9 @@ def glb_sum_double(cc.RealD x):
     return x
 
 def glb_sum_complex(cc.PyComplexD x):
-    cc.glb_sum(cc.ccpy_d(x))
+    cdef cc.ComplexD xx = cc.ccpy_d(x)
+    cc.glb_sum(xx)
+    x = cc.pycc_d(xx)
     return x
 
 def glb_sum_lat_data_in_place(LatData ld):

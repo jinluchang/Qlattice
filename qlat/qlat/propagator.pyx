@@ -54,8 +54,16 @@ cdef class SelProp(SelectedFieldWilsonMatrix):
 
 cdef class PselProp(SelectedPointsWilsonMatrix):
 
-    def __init__(self, PointsSelection psel):
-        super().__init__(psel, 1)
+    def __init__(self, *args):
+        cdef cc.Int len_args = len(args)
+        if len_args == 0:
+            super().__init__()
+        elif isinstance(args[0], PointsSelection):
+            psel, = args
+            super().__init__(psel, 1)
+        elif isinstance(args[0], SelProp):
+            sf, rs, = args
+            super().__init__(sf, rs)
 
     cdef cc.Handle[cc.PselProp] xxx(self):
         assert self.xx.multiplicity == 1

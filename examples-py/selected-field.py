@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+json_results = []
+check_eps = 1e-5
+
 import qlat as q
 import os
 import numpy as np
@@ -47,6 +50,32 @@ fsel.set_rand(geo.total_site(), n_per_tslice, rs.split("fsel"))
 
 fselc = fsel.copy()
 fselc.add_psel(psel)
+
+s_prop = q.SelProp(fselc)
+s_prop @= prop
+
+n1 = s_prop.n_elems()
+n2 = q.glb_sum(n1)
+
+q.displayln_info(f"CHECK: s_prop n1={n1} ; n2={n2}")
+
+sp_prop = q.PselProp(s_prop, rs.split("shuffle_selected_field-1"))
+q.displayln_info(f"CHECK: sp_prop from shuffle_selected_field")
+
+n3 = sp_prop.n_points()
+n4 = q.glb_sum(n3)
+q.displayln_info(f"CHECK: s_prop n3={n3} ; n4={n4}")
+
+assert n4 == n2
+
+q.displayln_info(f"CHECK: len(sp_prop.psel) = {len(sp_prop.psel)}")
+q.displayln_info(f"CHECK: sp_prop.psel[:].tolist() = {sp_prop.psel[:].tolist()}")
+
+sig1 = q.get_data_sig(sp_prop[:], q.RngState(f"{q.get_id_node()}"))
+sig2 = q.glb_sum(sig1)
+
+json_results.append((f"sp_prop from shuffle_selected_field sig1", sig1, check_eps))
+json_results.append((f"sp_prop from shuffle_selected_field sig2", sig2, check_eps))
 
 sp_prop = q.PselProp(psel)
 sp_prop @= prop
@@ -138,6 +167,8 @@ assert sp_prop_msc1.qnorm() == 0
 assert sp_prop_wm1.qnorm() == 0
 
 q.check_all_files_crc32_info("results")
+
+q.check_log_json(__file__, json_results)
 
 q.timer_display()
 
