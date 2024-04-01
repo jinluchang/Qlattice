@@ -18,38 +18,43 @@ q.qremove_all_info("results")
 q.qmkdir_info("results")
 
 num_node = q.get_num_node()
+id_node = q.get_id_node()
 
 q.displayln_info(f"CHECK: num_node={num_node}")
 
-a = 12 + q.get_id_node()
+a = 12 + id_node
 gs_a = q.glb_sum(a)
 
 q.displayln_info(f"CHECK: {a} {gs_a}")
 
-b = 12.4 + q.get_id_node()
+b = 12.4 + id_node
 gs_b = q.glb_sum(b)
 
 q.displayln_info(f"CHECK: {b} {gs_b}")
 
-c = np.arange(3.0) + 1.1 + q.get_id_node()
+c = np.arange(3.0) + 1.1 + id_node
 gs_c = q.glb_sum(c)
 
 q.displayln_info(f"CHECK: {c.tolist()} {gs_c.tolist()}")
 
-d = np.arange(3.0) + 1.1 + q.get_id_node() * 1.0j
+d = np.arange(3.0) + 1.1 + id_node * 1.0j
 gs_d = q.glb_sum(d)
 
 q.displayln_info(f"CHECK: {d.tolist()} {gs_d.tolist()}")
 
-e = (np.arange(6.0) + 1.1 + q.get_id_node()).reshape(3,2)
+e = (np.arange(6.0) + 1.1 + id_node).reshape(3,2)
 gs_e = q.glb_sum(e)
 
 q.displayln_info(f"CHECK: {e.tolist()} {gs_e.tolist()}")
 
-f = (np.arange(6.0) + 1.1 + q.get_id_node() * 1.0j).reshape(3,2)
+f = (np.arange(6.0) + 1.1 + id_node * 1.0j).reshape(3,2)
 gs_f = q.glb_sum(f)
 
 q.displayln_info(f"CHECK: {f.tolist()} {gs_f.tolist()}")
+
+g = [ 1.3 + id_node, 1.2 + 2.0j + id_node + 1.5j * id_node, 2 + id_node, (1, 2.2, 2.0, 1.5 + 1j,) ]
+gs_g = q.glb_sum(g)
+q.displayln_info(f"CHECK: {g} {gs_g}")
 
 q.timer_display()
 q.end_with_mpi()
