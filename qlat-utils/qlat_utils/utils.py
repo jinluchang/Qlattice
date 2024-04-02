@@ -9,6 +9,7 @@ import os
 import numpy as np
 import inspect
 import importlib
+import importlib.util
 
 def getenv(*names, default=None):
     assert len(names) > 0
