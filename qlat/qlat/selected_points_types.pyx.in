@@ -25,8 +25,8 @@ from qlat_utils.all cimport *
 from . cimport everything as cc
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
-from .geometry cimport *
-from .field_selection cimport *
+from .geometry cimport Geometry
+from .field_selection cimport FieldSelection, PointsSelection
 from .field_types cimport *
 from .selected_field_types cimport *
 
@@ -36,6 +36,21 @@ import numpy as np
 from .field_type_dict import selected_points_type_dict
 
 ### -------------------------------------------------------------------
+
+cdef class SelectedShufflePlan:
+
+    def __init__(self):
+        self.xx.init()
+
+    def init_from_fsel(self, FieldSelection fsel, RngState rs):
+        """
+        Only depends on `fsel.geo()`, `fsel.n_elems()`.
+        """
+        cdef Geometry geo = fsel.geo()
+        cdef cc.Long n_elems = fsel.n_elems()
+        cc.set_selected_shuffle_plan(self.xx, geo.xx, n_elems, rs.xx)
+
+###
 
 {{for name in type_name_list}}
 
@@ -192,6 +207,8 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         cdef SelectedPointsRealD f_n = SelectedPointsRealD(self.psel)
         cc.qnorm_field(f_n.xx, self.xx)
         return f_n
+
+###
 
 selected_points_type_dict[ElemType{{name}}] = SelectedPoints{{name}}
 

@@ -210,8 +210,9 @@ cdef extern from "qlat/selected-field-io.h" namespace "qlat":
         SelectedField[Long] local_shuffle_idx_field
         Long total_send_count;
         Long total_recv_count;
+        void init()
     #
-    void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_elems, const RngState& rs) except +
+    void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Geometry& geo, const Long n_elems, const RngState& rs) except +
     void shuffle_selected_field[M](SelectedPoints[M]& sp, const SelectedField[M]& sf, const SelectedShufflePlan& ssp) except +
     void shuffle_selected_field[M](SelectedPoints[M]& sp, PointsSelection& psel, const SelectedField[M]& sf, const FieldSelection& fsel, const RngState& rs) except +
 

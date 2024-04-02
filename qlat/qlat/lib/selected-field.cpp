@@ -656,20 +656,29 @@ void set_sqrt_field(SelectedField<RealD>& f, const SelectedField<RealD>& f1)
 
 // -------------------------------------------
 
+void SelectedShufflePlan::init()
+{
+  SelectedField<Long>& sfi = local_shuffle_idx_field;
+  sfi.init();
+  total_send_count = 0;
+  total_recv_count = 0;
+  sdispls.clear();
+  rdispls.clear();
+  sendcounts.clear();
+  recvcounts.clear();
+}
+
 void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Geometry& geo,
                                const Long n_elems, const RngState& rs)
 // Collective operation.
 {
   TIMER("set_selected_shuffle_plan(ssp,n_elems,rs)");
+  ssp.init();
   const Int num_node = get_num_node();
   SelectedField<Long>& sfi = ssp.local_shuffle_idx_field;
   sfi.init(geo, n_elems, 1);
   set_zero(sfi);
   ssp.total_send_count = n_elems;
-  ssp.sdispls.clear();
-  ssp.rdispls.clear();
-  ssp.sendcounts.clear();
-  ssp.recvcounts.clear();
   ssp.sdispls.resize(num_node);
   ssp.rdispls.resize(num_node);
   ssp.sendcounts.resize(num_node);

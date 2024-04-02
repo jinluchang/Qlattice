@@ -584,6 +584,8 @@ struct SelectedShufflePlan {
   vector<int> recvcounts;
   vector<int> sdispls;
   vector<int> rdispls;
+  //
+  void init();
 };
 
 void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Geometry& geo,
