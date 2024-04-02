@@ -215,6 +215,7 @@ cdef extern from "qlat/selected-field-io.h" namespace "qlat":
     void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_elems, const RngState& rs) except +
     void shuffle_selected_field[M](SelectedPoints[M]& sp, const SelectedField[M]& sf, const SelectedShufflePlan& ssp) except +
     void shuffle_selected_field[M](SelectedPoints[M]& sp, PointsSelection& psel, const SelectedField[M]& sf, const FieldSelection& fsel, const RngState& rs) except +
+    void shuffle_selected_field[M](SelectedPoints[M]& sp, PointsSelection& psel, const SelectedField[M]& sf, const FieldSelection& fsel, const SelectedShufflePlan& ssp) except +
 
 cdef extern from "qlat/selected-points.h" namespace "qlat":
 

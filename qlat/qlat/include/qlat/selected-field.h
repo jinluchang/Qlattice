@@ -618,18 +618,29 @@ void shuffle_selected_field(SelectedPoints<M>& sp, const SelectedField<M>& sf,
 template <class M>
 void shuffle_selected_field(SelectedPoints<M>& sp, PointsSelection& psel,
                             const SelectedField<M>& sf,
-                            const FieldSelection& fsel, const RngState& rs)
+                            const FieldSelection& fsel, const SelectedShufflePlan& ssp)
 {
-  TIMER("shuffle_selected_field(sp,psel,sf,fsel,rs)");
+  TIMER("shuffle_selected_field(sp,psel,sf,fsel,ssp)");
   const Long n_elems = fsel.n_elems;
-  SelectedShufflePlan ssp;
-  set_selected_shuffle_plan(ssp, n_elems, rs);
+  qassert(n_elems == ssp.total_send_count);
   shuffle_selected_field(sp, sf, ssp);
   SelectedField<Coordinate> sfx;
   set_selected_field_from_field_selection(sfx, fsel);
   SelectedPoints<Coordinate> spx;
   shuffle_selected_field(spx, sfx, ssp);
   set_points_selection_from_selected_points(psel, spx);
+}
+
+template <class M>
+void shuffle_selected_field(SelectedPoints<M>& sp, PointsSelection& psel,
+                            const SelectedField<M>& sf,
+                            const FieldSelection& fsel, const RngState& rs)
+{
+  TIMER("shuffle_selected_field(sp,psel,sf,fsel,rs)");
+  const Long n_elems = fsel.n_elems;
+  SelectedShufflePlan ssp;
+  set_selected_shuffle_plan(ssp, n_elems, rs);
+  shuffle_selected_field(sp, psel, sf, fsel, ssp);
 }
 
 }  // namespace qlat

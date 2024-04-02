@@ -40,6 +40,10 @@ from .field_type_dict import selected_points_type_dict
 cdef class SelectedShufflePlan:
 
     def __init__(self, *args):
+        """
+        SelectedShufflePlan()
+        SelectedShufflePlan(n_elems, rs)
+        """
         cdef cc.Int len_args = len(args)
         self.xx.init()
         if len_args == 2:
@@ -85,6 +89,7 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         SelectedPoints()
         SelectedPoints(psel)
         SelectedPoints(psel, multiplicity)
+        SelectedPoints(sf, ssp) # via `shuffle_selected_field`
         SelectedPoints(sf, rs) # via `shuffle_selected_field`
         """
         cdef cc.Int len_args = len(args)
@@ -96,7 +101,19 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         elif isinstance(args[0], PointsSelection):
             self.init_from_psel(*args)
         elif isinstance(args[0], SelectedField{{name}}):
-            self.init_from_sf(*args)
+            if len_args == 2:
+                if isinstance(args[1], RngState):
+                    sf, rs, = args
+                    self.init_from_sf_rs(sf, rs)
+                elif isinstance(args[1], SelectedShufflePlan):
+                    sf, ssp, = args
+                    self.init_from_sf_ssp(sf, ssp)
+                else:
+                    raise Exception(f"SelectedPoints.__init__ {args}")
+            else:
+                raise Exception(f"SelectedPoints.__init__ {args}")
+        else:
+            raise Exception(f"SelectedPoints.__init__ {args}")
 
     def init_from_psel(self, PointsSelection psel, cc.Int multiplicity=0):
         self.psel = psel
@@ -105,7 +122,13 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         else:
             self.xx.init(psel.xx, multiplicity)
 
-    def init_from_sf(self, SelectedField{{name}} sf, RngState rs):
+    def init_from_sf_ssp(self, SelectedField{{name}} sf, SelectedShufflePlan ssp):
+        cdef PointsSelection psel = PointsSelection()
+        cdef FieldSelection fsel = sf.fsel
+        self.psel = psel
+        cc.shuffle_selected_field(self.xx, psel.xx, sf.xx, fsel.xx, ssp.xx)
+
+    def init_from_sf_rs(self, SelectedField{{name}} sf, RngState rs):
         cdef PointsSelection psel = PointsSelection()
         cdef FieldSelection fsel = sf.fsel
         self.psel = psel
