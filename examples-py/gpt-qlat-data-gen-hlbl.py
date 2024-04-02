@@ -1412,26 +1412,13 @@ def run_hlbl_two_plus_two_chunk(
         fsel_ps = fsel_ps_prob.fsel
         s_hvp = q.SelectedFieldComplexD(fsel_ps, 16)
         s_hvp.load_double_from_float(sfr, tag)
-        psel_ps = fsel_ps.to_psel()
-        psel_ps = q.PointsSelection(
-                q.random_permute(
-                    list(psel_ps.xg_arr()),
-                    q.RngState(f"psel_ps-permute-{idx_xg_x}"),
-                    ),
-                psel_ps.geo,
-                )
-        psel_ps_prob = q.SelectedPointsRealD(psel_ps, 1)
-        psel_ps_prob @= fsel_ps_prob
-        ps_hvp = q.SelectedPointsComplexD(psel_ps, 16)
-        ps_hvp @= s_hvp
-        ps_xg_arr = q.get_mpi_chunk(psel_ps.xg_arr())
-        psel_lps = q.PointsSelection(ps_xg_arr, psel_ps.geo)
-        psel_lps_prob = q.SelectedPointsRealD(psel_lps, 1)
-        psel_lps_prob @= psel_ps_prob
-        lps_hvp = q.SelectedPointsComplexD(psel_lps, 16)
-        lps_hvp @= ps_hvp
+        ssp = q.SelectedShufflePlan(fsel_ps.n_elems(), q.RngState(f"psel_ps-permute-{idx_xg_x}"))
+        psel_lps_prob = q.SelectedPointsRealD(fsel_ps_prob, ssp)
+        lps_hvp = q.SelectedPointsComplexD(s_hvp, ssp)
+        num = len(psel_lps_prob.psel)
+        tot_num = q.glb_sum(num)
         hvp_list.append((psel_lps_prob, lps_hvp,))
-        q.displayln_info(f"{fname}: idx={idx} ; idx_xg_x={idx_xg_x} ; xg={xg} ; tot_num={len(psel_ps)} ; num={len(psel_lps)}")
+        q.displayln_info(f"{fname}: idx={idx} ; idx_xg_x={idx_xg_x} ; xg={xg} ; tot_num={tot_num} ; num={num} .")
     sfr.close()
     assert len(hvp_list) == len(idx_xg_list_chunk)
     #
