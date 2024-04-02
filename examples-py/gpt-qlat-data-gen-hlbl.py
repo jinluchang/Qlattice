@@ -689,7 +689,7 @@ def mk_hlbl_four_point_pairs(job_tag, traj, *, inv_type, get_psel_prob):
             rsi = rs.split(f"{j} {i}")
             r = rsi.u_rand_gen()
             if r <= prob_accept:
-                dict_val = {}
+                dict_val = dict()
                 dict_val["idx_xg_x"] = i
                 dict_val["idx_xg_y"] = j
                 dict_val["xg_x"] = xg_x
@@ -945,38 +945,42 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
     labels = contract_hlbl_four_labels(job_tag)
     pairs_data = []
     for fn_chunk in fn_chunk_list:
-        pairs_data += q.load_pickle_obj(get_load_path(fn_chunk))
-    if len(pairs_data) != len(get_point_pairs()):
-        raise Exception(f"len(pairs_data)={len(pairs_data)} len(get_point_pairs())=len(get_point_pairs())")
-    results = {}
-    results["labels"] = labels
-    results["lslt_sum"] = sum([ d["lslt"] for d in pairs_data ])
-    results["lslt_sloppy_sum"] = sum([ d["lslt_sloppy"] for d in pairs_data ])
-    results["n_pairs"] = len(pairs_data)
-    q.save_pickle_obj(results, get_save_path(fn_s))
-    results["pairs_data"] = pairs_data
-    q.save_pickle_obj(results, get_save_path(fn))
-    q.displayln_info(-1, f"{fname}: {job_tag} {traj} {inv_type_name}\n", show_lslt(labels, results["lslt_sum"]))
-    json_results.append((
-        f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum",
-        q.get_data_sig(results["lslt_sum"], q.RngState()),
-        1e-2,
-        ))
-    json_results.append((
-        f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sloppy_sum",
-        q.get_data_sig(results["lslt_sloppy_sum"], q.RngState()),
-        1e-2,
-        ))
-    json_results.append((
-        f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum[labels.index('ref-far proj-all'), -1, -1]",
-        results["lslt_sum"][labels.index('ref-far proj-all'), -1, -1],
-        2e-2,
-        ))
-    json_results.append((
-        f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sloppy_sum[labels.index('ref-far proj-all'), -1, -1]",
-        results["lslt_sloppy_sum"][labels.index('ref-far proj-all'), -1, -1],
-        2e-2,
-        ))
+        path_chunk = get_load_path(fn_chunk)
+        assert path_chunk is not None
+        if q.get_id_node() == 0:
+            pairs_data += q.load_pickle_obj(path_chunk, is_sync_node=False)
+    if q.get_id_node() == 0:
+        if len(pairs_data) != len(get_point_pairs()):
+            raise Exception(f"len(pairs_data)={len(pairs_data)} len(get_point_pairs())=len(get_point_pairs())")
+        results = dict()
+        results["labels"] = labels
+        results["lslt_sum"] = sum([ d["lslt"] for d in pairs_data ])
+        results["lslt_sloppy_sum"] = sum([ d["lslt_sloppy"] for d in pairs_data ])
+        results["n_pairs"] = len(pairs_data)
+        q.save_pickle_obj(results, get_save_path(fn_s))
+        results["pairs_data"] = pairs_data
+        q.save_pickle_obj(results, get_save_path(fn))
+        q.displayln_info(-1, f"{fname}: {job_tag} {traj} {inv_type_name}\n", show_lslt(labels, results["lslt_sum"]))
+        json_results.append((
+            f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum",
+            q.get_data_sig(results["lslt_sum"], q.RngState()),
+            1e-2,
+            ))
+        json_results.append((
+            f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sloppy_sum",
+            q.get_data_sig(results["lslt_sloppy_sum"], q.RngState()),
+            1e-2,
+            ))
+        json_results.append((
+            f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum[labels.index('ref-far proj-all'), -1, -1]",
+            results["lslt_sum"][labels.index('ref-far proj-all'), -1, -1],
+            2e-2,
+            ))
+        json_results.append((
+            f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sloppy_sum[labels.index('ref-far proj-all'), -1, -1]",
+            results["lslt_sloppy_sum"][labels.index('ref-far proj-all'), -1, -1],
+            2e-2,
+            ))
     for fn_chunk in fn_chunk_list:
         q.qremove_info(get_load_path(fn_chunk))
     q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} done.")
@@ -1452,7 +1456,7 @@ def run_hlbl_two_plus_two_chunk(
                 muon_mass,
                 zz_vv,
                 )
-        dict_val = {}
+        dict_val = dict()
         dict_val["idx_xg_x"] = idx_xg_x
         dict_val["xg_x"] = xg_x
         dict_val["lslt"] = lslt
@@ -1557,36 +1561,40 @@ def run_hlbl_two_plus_two(
     labels = q.contract_two_plus_two_pair_labels()
     points_data = []
     for fn_chunk in fn_chunk_list:
-        points_data += q.load_pickle_obj(get_load_path(fn_chunk))
-    assert len(points_data) == len(get_psel_prob().psel)
-    results = dict()
-    results["labels"] = labels
-    results["lslt_sum"] = sum([ d["lslt"] for d in points_data ])
-    results["n_points_selected"] = sum([ d["n_points_selected"] for d in points_data ]) / len(points_data)
-    results["n_points_computed"] = sum([ d["n_points_computed"] for d in points_data ]) / len(points_data)
-    results["n_points"] = len(points_data)
-    q.save_pickle_obj(results, get_save_path(fn_s))
-    results["points_data"] = points_data
-    q.save_pickle_obj(results, get_save_path(fn))
-    if results["n_points"] > 0:
-        q.displayln_info(0, f"{info_str}\n",
-                show_lslt(labels, results["lslt_sum"]))
-        n_points_selected = results["n_points_selected"]
-        n_points_computed = results["n_points_computed"]
-        q.displayln_info(-1,
-                f"{info_str}\n avg n_points_selected={n_points_selected} avg n_points_computed={n_points_computed}")
+        path_chunk = get_load_path(fn_chunk)
+        if q.get_id_node() == 0:
+            points_data += q.load_pickle_obj(path_chunk, is_sync_node=False)
+    if q.get_id_node() == 0:
+        assert len(points_data) == len(get_psel_prob().psel)
+        results = dict()
+        results["labels"] = labels
+        results["lslt_sum"] = sum([ d["lslt"] for d in points_data ])
+        results["n_points_selected"] = sum([ d["n_points_selected"] for d in points_data ]) / len(points_data)
+        results["n_points_computed"] = sum([ d["n_points_computed"] for d in points_data ]) / len(points_data)
+        results["n_points"] = len(points_data)
+        q.save_pickle_obj(results, get_save_path(fn_s))
+        results["points_data"] = points_data
+        q.save_pickle_obj(results, get_save_path(fn))
+        if results["n_points"] > 0:
+            q.displayln_info(0, f"{info_str}\n",
+                    show_lslt(labels, results["lslt_sum"]))
+            n_points_selected = results["n_points_selected"]
+            n_points_computed = results["n_points_computed"]
+            q.displayln_info(-1,
+                    f"{info_str}\n avg n_points_selected={n_points_selected} avg n_points_computed={n_points_computed}")
+        json_results.append((
+            f"{fname}: {info_str} lslt_sum",
+            q.get_data_sig(results["lslt_sum"], q.RngState()),
+            2e-2,
+            ))
+        json_results.append((
+            f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum[labels.index('sub proj-all'), -1, -1]",
+            results["lslt_sum"][labels.index('sub proj-all'), -1, -1],
+            2e-2,
+            ))
+    q.sync_node()
     for fn_chunk in fn_chunk_list:
         q.qremove_info(get_load_path(fn_chunk))
-    json_results.append((
-        f"{fname}: {info_str} lslt_sum",
-        q.get_data_sig(results["lslt_sum"], q.RngState()),
-        2e-2,
-        ))
-    json_results.append((
-        f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum[labels.index('sub proj-all'), -1, -1]",
-        results["lslt_sum"][labels.index('sub proj-all'), -1, -1],
-        2e-2,
-        ))
     q.displayln_info(0, f"{info_str} done.")
     q.release_lock()
     return [ f"{fname}: {job_tag} {traj} {inv_type_name} {inv_type_e_name} done.", ]
