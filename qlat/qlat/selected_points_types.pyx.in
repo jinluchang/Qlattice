@@ -39,16 +39,23 @@ from .field_type_dict import selected_points_type_dict
 
 cdef class SelectedShufflePlan:
 
-    def __init__(self):
+    def __init__(self, *args):
+        cdef cc.Int len_args = len(args)
         self.xx.init()
+        if len_args == 2:
+            if isinstance(args[0], int) and isinstance(args[1], RngState):
+                n_elems, rs, = args
+                self.init_from_n_elems(n_elems, rs)
+            else:
+                raise Exception(f"SelectedShufflePlan {args}")
+        else:
+            raise Exception(f"SelectedShufflePlan {args}")
 
-    def init_from_fsel(self, FieldSelection fsel, RngState rs):
+    def init_from_n_elems(self, cc.Long n_elems, RngState rs):
         """
         Only depends on `fsel.geo()`, `fsel.n_elems()`.
         """
-        cdef Geometry geo = fsel.geo()
-        cdef cc.Long n_elems = fsel.n_elems()
-        cc.set_selected_shuffle_plan(self.xx, geo.xx, n_elems, rs.xx)
+        cc.set_selected_shuffle_plan(self.xx, n_elems, rs.xx)
 
 ###
 

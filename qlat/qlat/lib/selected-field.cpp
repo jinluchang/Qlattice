@@ -658,7 +658,7 @@ void set_sqrt_field(SelectedField<RealD>& f, const SelectedField<RealD>& f1)
 
 void SelectedShufflePlan::init()
 {
-  SelectedField<Long>& sfi = local_shuffle_idx_field;
+  SelectedPoints<Long>& sfi = local_shuffle_idx_field;
   sfi.init();
   total_send_count = 0;
   total_recv_count = 0;
@@ -668,15 +668,16 @@ void SelectedShufflePlan::init()
   recvcounts.clear();
 }
 
-void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Geometry& geo,
-                               const Long n_elems, const RngState& rs)
+void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_elems,
+                               const RngState& rs)
 // Collective operation.
 {
   TIMER("set_selected_shuffle_plan(ssp,n_elems,rs)");
   ssp.init();
   const Int num_node = get_num_node();
-  SelectedField<Long>& sfi = ssp.local_shuffle_idx_field;
-  sfi.init(geo, n_elems, 1);
+  SelectedPoints<Long>& sfi = ssp.local_shuffle_idx_field;
+  sfi.init(n_elems, 1);
+  sfi.distributed = true;
   set_zero(sfi);
   ssp.total_send_count = n_elems;
   ssp.sdispls.resize(num_node);
@@ -687,8 +688,9 @@ void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Geometry& geo,
   set_zero(ssp.rdispls);
   set_zero(ssp.sendcounts);
   set_zero(ssp.recvcounts);
-  SelectedField<Int> sf_id_node_send_to;
-  sf_id_node_send_to.init(geo, n_elems, 1);
+  SelectedPoints<Int> sf_id_node_send_to;
+  sf_id_node_send_to.init(n_elems, 1);
+  sf_id_node_send_to.distributed = true;
   RngState rsl = rs.split(get_id_node());
   qthread_for(idx, n_elems, {
     RngState rsi = rsl.newtype(idx);
@@ -743,10 +745,9 @@ void shuffle_selected_field_char(SelectedPoints<char>& spc,
   qassert(spc.distributed == true);
   qassert(spc.n_points == ssp.total_recv_count);
   qassert(spc.multiplicity == multiplicity);
-  const SelectedField<Long>& sfi = ssp.local_shuffle_idx_field;
-  qassert(sfi.n_elems == sfc.n_elems);
-  qassert(is_matching_geo(sfi.geo(), sfc.geo()));
-  qassert(sfi.geo().is_only_local);
+  const SelectedPoints<Long>& sfi = ssp.local_shuffle_idx_field;
+  qassert(sfi.n_points == sfc.n_elems);
+  qassert(sfi.multiplicity == 1);
   qassert(sfc.geo().is_only_local);
   SelectedField<char> sf1;
   sf1.init(sfc.geo(), sfc.n_elems, multiplicity);

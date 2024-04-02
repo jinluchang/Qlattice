@@ -576,7 +576,7 @@ void convert_field_double_from_float(SelectedField<N>& ff,
 // -------------------------------------------
 
 struct SelectedShufflePlan {
-  SelectedField<Long>
+  SelectedPoints<Long>
       local_shuffle_idx_field;  // Reorder field according to this idx field.
   Long total_send_count;
   Long total_recv_count;
@@ -588,8 +588,8 @@ struct SelectedShufflePlan {
   void init();
 };
 
-void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Geometry& geo,
-                               const Long n_elems, const RngState& rs);
+void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_elems,
+                               const RngState& rs);
 
 void shuffle_selected_field_char(SelectedPoints<char>& spc,
                                  const SelectedField<char>& sfc,
@@ -621,10 +621,9 @@ void shuffle_selected_field(SelectedPoints<M>& sp, PointsSelection& psel,
                             const FieldSelection& fsel, const RngState& rs)
 {
   TIMER("shuffle_selected_field(sp,psel,sf,fsel,rs)");
-  const Geometry& geo = fsel.f_rank.geo();
   const Long n_elems = fsel.n_elems;
   SelectedShufflePlan ssp;
-  set_selected_shuffle_plan(ssp, geo, n_elems, rs);
+  set_selected_shuffle_plan(ssp, n_elems, rs);
   shuffle_selected_field(sp, sf, ssp);
   SelectedField<Coordinate> sfx;
   set_selected_field_from_field_selection(sfx, fsel);
