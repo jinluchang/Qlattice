@@ -113,8 +113,9 @@ void contract_four_loop(SelectedField<Complex>& f_loop_i_rho_sigma_lambda,
     const Coordinate xg_z = geo.coordinate_g_from_l(xl);
     if (sqr(smod(xg_z - xg_x, total_site)) > r_sq_limit or
         sqr(smod(xg_z - xg_y, total_site)) > r_sq_limit) {
-      continue;
-    }
+        (void) prob;
+        //continue;
+    }else{
     const CoordinateD xgref =
         choose_reference(xg_x, xg_y, xg_z, total_site, cr_label);
     const array<WilsonMatrix, 3> sm_yx = simple_moment_with_contact_subtract(
@@ -155,6 +156,7 @@ void contract_four_loop(SelectedField<Complex>& f_loop_i_rho_sigma_lambda,
         }
       }
     }
+    }
   });
 }
 
@@ -178,8 +180,9 @@ void contract_four_combine(
     const Coordinate xg_z = geo.coordinate_g_from_l(xl);
     if (sqr(smod(xg_z - xg_x, total_site)) > r_sq_limit or
         sqr(smod(xg_z - xg_y, total_site)) > r_sq_limit) {
-      continue;
-    }
+      (void) xl;
+      //continue;
+    }else{
     const Vector<Complex> v_loop =
         f_loop_i_rho_sigma_lambda.get_elems_const(idx);
     const ManyMagneticMoments& mmm = smf.get_elem(idx);
@@ -206,6 +209,7 @@ void contract_four_combine(
     sums[0] += sum;                   // total contribution
     sums[1] += pi_sum * pi_proj_sum;  // total pion pole (and other pseudo
                                       // scalar exchange type) contribution
+  }
   });
   t.init(total_site);
   t_pi.init(total_site);
