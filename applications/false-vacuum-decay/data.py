@@ -3,6 +3,7 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 import jackknife as jk
+from scipy.optimize import curve_fit
 
 class Data:
     def __init__(self, Nt, cutoff, block_size):
@@ -154,13 +155,16 @@ class Data:
             uerr = lerr
         return [abs(lerr), abs(uerr)]
     
-    def get_Ebar_blocks(self, sf, delta_t=1):
+    def get_exp_Ebar_blocks(self, sf, delta_t=1):
         t_TV = self.get_t_TV(sf)
         t_FV = int(self.get_param(sf,"tFV"))
-        dt = float(self.get_param(sf, "dt"))
         blocks_TV = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_TV[sf][f"{t_TV+delta_t}"][self.cutoff:]), self.block_size)
         blocks_FV = jk.get_jackknife_blocks(np.exp(self.delta_actions_t_FV[sf][f"{t_FV+delta_t}"][self.cutoff:]), self.block_size)
-        bdiv = np.log(np.divide(blocks_FV,blocks_TV))/(dt*delta_t)
+        return np.divide(blocks_FV,blocks_TV)
+    
+    def get_Ebar_blocks(self, sf, delta_t=1):
+        dt = float(self.get_param(sf, "dt"))
+        bdiv = np.log(self.get_exp_Ebar_blocks(sf, delta_t))/(dt*delta_t)
         return bdiv
     
     def get_Ebar_E_FV(self, sf, delta_t=1):
@@ -192,6 +196,48 @@ class Data:
         
         bdiv = np.log(np.divide(blocks_FVa2,blocks_TVa2)/np.divide(blocks_FVa,blocks_TVa)**2.0)**0.5/(dt*delta_t2)
         return jk.get_errors_from_blocks(np.mean(bdiv), bdiv)
+    
+    def fit_ratios(self, ratios, t_TVs, start_time = -1.0):
+        # This integration range is based on the energy distribution after evolving in Euclidean time
+        int_range = 1/np.abs(np.min(np.subtract(t_TVs,start_time)))*200
+        dE = int_range/1000.0
+        E = np.arange(-int_range,int_range,dE)
+        dt = 0.2
+        
+        opt, cov = curve_fit(fit, t_TVs, ratios, sigma=dS_errs, p0=[1.0, 1.0, 1.0], jac=dfit, bounds=((-np.inf,0,0),(np.inf,np.inf,np.inf)))
+        print(np.sqrt(np.diag(cov)))
+
+        plt.plot(t_TVs, ratios)
+        plt.plot(t_TVs, fit(np.array(t_TVs), opt[0], opt[1],opt[2]))
+
+        #ts = np.array([0, 1, 2, 3])
+        #x, ys = integrand(ts,opt[0],opt[1],opt[2])
+        #norms = np.ones(len(ts))#Rt(ts,opt[0],opt[1],opt[2])
+        #plt.plot(x, ys[0]/norms[0])
+        #plt.plot(x, ys[1]/norms[1])
+        #plt.plot(x, ys[2]/norms[2])
+        #plt.plot(x, ys[3]/norms[3])
+
+        #plt.plot(t_TVs, dfit(np.array(t_TVs), opt[0], opt[1],opt[2]))
+        #plt.plot(t_TVs, [0.32e7*corr_tdse[i][0] for i in range(len(corr_tdse))])
+        #print(ratios)
+        print(opt)
+        print(R0(0,opt[0],opt[1])/Rt(np.array([15.0]),opt[0],opt[1],opt[2])[0])
+        #print(int_range)
+        return opt, fit
+    
+    def get_fit_ratios_blocks(self, profile_tFV, t_TV, before=2, after=2):
+        sfs = self.get_sfs_list(list(self.delta_actions_t_FV), profile_tFV)
+        sfs.sort(key=lambda x: float(self.get_param(x, "tFV")))
+        
+        dS_blocks = []
+        t_TVs = []
+        
+        for sf in sfs:
+            dS_blocks.append(self.get_exp_Ebar_blocks(sf))
+            t_TVs.append(self.get_t_TV(sf))
+        
+        blocks = jk.super_jackknife_combine_blocks(dS_blocks_before[-before:]+dS_blocks_after[:after+1], lambda x: self.ratio_fit(x,t_TVs,t_TV))
     
     def plot_mean_path(self, profile="*"):
         #x = np.arange(-5,5,0.1)
