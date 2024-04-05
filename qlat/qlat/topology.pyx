@@ -30,6 +30,17 @@ def gf_plaq_action_density_field(GaugeField gf):
     return paf
 
 @q.timer
+def gf_spatial_plaq_action_density_field(GaugeField gf):
+    """
+    return paf
+    paf.geo().multiplicity == 1
+    \sum_P(spatial only) (1 - 1/3 * Re Tr U_P)
+    """
+    paf = FieldRealD()
+    cc.clf_spatial_plaq_action_density_field(paf.xx, gf.xxx().val())
+    return paf
+
+@q.timer
 def gf_plaq_action_density(GaugeField gf):
     """
     return pa
@@ -39,6 +50,17 @@ def gf_plaq_action_density(GaugeField gf):
     cdef Geometry geo = gf.geo()
     cdef cc.Long total_volume = geo.total_volume()
     return gf_plaq_action_density_field(gf).glb_sum()[:].item() / total_volume
+
+@q.timer
+def gf_spatial_plaq_action_density(GaugeField gf):
+    """
+    return pa
+    ininstance(pa, float)
+    pa = gf_spatial_plaq_action_density_field(gf).glb_sum()[:].item() / total_volume
+    """
+    cdef Geometry geo = gf.geo()
+    cdef cc.Long total_volume = geo.total_volume()
+    return gf_spatial_plaq_action_density_field(gf).glb_sum()[:].item() / total_volume
 
 @q.timer
 def gf_topology_field_clf(GaugeField gf):

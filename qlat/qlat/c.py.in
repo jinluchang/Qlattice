@@ -155,6 +155,8 @@ __all__ += [
 __all__ += [
         'gf_plaq_action_density_field',
         'gf_plaq_action_density',
+        'gf_spatial_plaq_action_density_field',
+        'gf_spatial_plaq_action_density',
         'gf_topology_field_clf',
         'gf_topology_clf',
         'gf_topology_field',

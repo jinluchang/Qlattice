@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 json_results = []
+check_eps = 1e-5
 
 import qlat as q
 import numpy as np

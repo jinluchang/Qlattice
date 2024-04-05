@@ -7,6 +7,18 @@
 namespace qlat
 {  //
 
+RealD topology_charge_5(const GaugeField& gf);
+
+void clf_plaq_action_density_field(Field<RealD>& paf, const GaugeField& gf);
+
+void clf_spatial_plaq_action_density_field(Field<RealD>& paf, const GaugeField& gf);
+
+void clf_topology_field(Field<RealD>& topf, const GaugeField& gf);
+
+void clf_topology_field_5(Field<RealD>& topf, const GaugeField& gf);
+
+void clf_topology_field_5_terms(Field<RealD>& topf, const GaugeField& gf);
+
 struct CloverLeafField : FieldM<ColorMatrix, 6> {
 };
 
@@ -146,7 +158,7 @@ qacc RealD clf_plaq_action_density(const CloverLeafField& clf,
 }
 
 qacc RealD clf_spatial_plaq_action_density(const CloverLeafField& clf,
-                                            const Coordinate& xl)
+                                           const Coordinate& xl)
 // \sum_P(spatial only) (1 - 1/3 * Re Tr U_P)
 {
   const Vector<ColorMatrix> v = clf.get_elems_const(xl);
@@ -158,7 +170,7 @@ qacc RealD clf_spatial_plaq_action_density(const CloverLeafField& clf,
 }
 
 qacc RealD clf_topology_density(const CloverLeafField& clf,
-                                 const Coordinate& xl)
+                                const Coordinate& xl)
 // sum of the density of the topological charge Q
 {
   const Vector<ColorMatrix> v = clf.get_elems_const(xl);
@@ -175,7 +187,7 @@ qacc RealD clf_topology_density(const CloverLeafField& clf,
 }
 
 inline void clf_plaq_action_density_field(Field<RealD>& paf,
-                                  const CloverLeafField& clf)
+                                          const CloverLeafField& clf)
 {
   TIMER("clf_plaq_action_density_field");
   const Geometry& geo = clf.geo();
@@ -186,20 +198,6 @@ inline void clf_plaq_action_density_field(Field<RealD>& paf,
     const Coordinate xl = geo.coordinate_from_index(index);
     paf.get_elem(xl) = clf_plaq_action_density(clf, xl);
   });
-}
-
-inline void clf_plaq_action_density_field(Field<RealD>& paf, const GaugeField& gf)
-// interface function
-// \sum_P (1 - 1/3 * Re Tr U_P)
-//
-// Action = beta * total_volume() * action_density
-// Single instanton action = 8 * sqr(PI) / g^2
-// beta = 6/g^2
-{
-  TIMER("clf_plaq_action_density_field");
-  CloverLeafField clf;
-  gf_clover_leaf_field(clf, gf);
-  clf_plaq_action_density_field(paf, clf);
 }
 
 inline void clf_spatial_plaq_action_field(Field<RealD>& spaf,
@@ -227,15 +225,6 @@ inline void clf_topology_field(Field<RealD>& topf, const CloverLeafField& clf)
     const Coordinate xl = geo.coordinate_from_index(index);
     topf.get_elem(xl) = clf_topology_density(clf, xl);
   });
-}
-
-inline void clf_topology_field(Field<RealD>& topf, const GaugeField& gf)
-// interface function
-{
-  TIMER("clf_topology_field");
-  CloverLeafField clf;
-  gf_clover_leaf_field(clf, gf);
-  clf_topology_field(topf, clf);
 }
 
 inline void clf_topology_field_5(Field<RealD>& topf,
@@ -269,16 +258,6 @@ inline void clf_topology_field_5(Field<RealD>& topf,
   });
 }
 
-inline void clf_topology_field_5(Field<RealD>& topf, const GaugeField& gf)
-// interface function
-// https://arxiv.org/pdf/hep-lat/9701012v2.pdf
-{
-  TIMER("clf_topology_field_5(topf,gf)");
-  CloverLeafField clf1, clf2, clf3, clf4, clf5;
-  gf_clover_leaf_field_5(clf1, clf2, clf3, clf4, clf5, gf);
-  clf_topology_field_5(topf, clf1, clf2, clf3, clf4, clf5);
-}
-
 inline void clf_topology_field_5_terms(Field<RealD>& topf,
                                        const CloverLeafField& clf1,
                                        const CloverLeafField& clf2,
@@ -310,32 +289,6 @@ inline void clf_topology_field_5_terms(Field<RealD>& topf,
     v[3] = c4 / 9.0 * clf_topology_density(clf4, xl);
     v[4] = c5 / 81.0 * clf_topology_density(clf5, xl);
   });
-}
-
-inline void clf_topology_field_5_terms(Field<RealD>& topf, const GaugeField& gf)
-// interface function
-// https://arxiv.org/pdf/hep-lat/9701012v2.pdf
-// topf.geo.multiplicity == 5
-{
-  TIMER("clf_topology_field_5_terms(topf,gf)");
-  CloverLeafField clf1, clf2, clf3, clf4, clf5;
-  gf_clover_leaf_field_5(clf1, clf2, clf3, clf4, clf5, gf);
-  clf_topology_field_5_terms(topf, clf1, clf2, clf3, clf4, clf5);
-}
-
-inline RealD topology_charge_5(const GaugeField& gf)
-// interface function
-{
-  TIMER("topology_charge_5(gf)");
-  FieldM<RealD, 1> topf;
-  clf_topology_field_5(topf, gf);
-  const Geometry& geo = topf.geo();
-  qassert(geo.is_only_local);
-  RealD sum = 0.0;
-  for (Long index = 0; index < geo.local_volume(); ++index) {
-    sum += topf.get_elem(index);
-  }
-  return sum;
 }
 
 }  // namespace qlat

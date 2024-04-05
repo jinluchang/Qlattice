@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+json_results = []
+check_eps = 1e-5
+
 import sys
 import qlat as q
 import numpy as np
@@ -35,6 +38,31 @@ else:
 q.displayln_info(f"CHECK: total_site = {total_site}")
 q.displayln_info("CHECK: geo.show() =", geo.show())
 gf.show_info()
+
+gf_ape_list = []
+
+gf_ape = gf.copy()
+gf_ape_list.append(gf_ape)
+
+gf_ape = q.gf_ape_smear(gf_ape, 0.5, 30)
+gf_ape_list.append(gf_ape)
+
+gf_ape = q.gf_spatial_ape_smear(gf_ape, 0.5, 30)
+gf_ape_list.append(gf_ape)
+
+for i, gf_ape in enumerate(gf_ape_list):
+    plaq = q.gf_avg_plaq(gf_ape)
+    spatial_plaq = q.gf_avg_spatial_plaq(gf_ape)
+    link_trace = q.gf_avg_link_trace(gf_ape)
+    plaq_density = q.gf_plaq_action_density(gf_ape)
+    spatial_plaq_density = q.gf_spatial_plaq_action_density(gf_ape)
+    topo = q.gf_topology(gf_ape)
+    json_results.append((f"gf_ape_list[{i}] plaq", plaq, check_eps,))
+    json_results.append((f"gf_ape_list[{i}] spatial_plaq", spatial_plaq, check_eps,))
+    json_results.append((f"gf_ape_list[{i}] link_trace", link_trace, check_eps,))
+    json_results.append((f"gf_ape_list[{i}] plaq_density", plaq_density, check_eps,))
+    json_results.append((f"gf_ape_list[{i}] spatial_plaq_density", spatial_plaq_density, check_eps,))
+    json_results.append((f"gf_ape_list[{i}] topo", topo, check_eps,))
 
 gf_f = gf.copy()
 
@@ -81,6 +109,8 @@ if False:
     gf_f.save("results/ckpoint.topo1.4nt8.lat")
 
 q.smear_measure_topo(gf, is_show_topo_terms=True, density_field_path="results/topo-measure-density")
+
+q.check_log_json(__file__, json_results)
 
 q.timer_display()
 
