@@ -111,51 +111,48 @@ void contract_four_loop(SelectedField<Complex>& f_loop_i_rho_sigma_lambda,
     const long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg_z = geo.coordinate_g_from_l(xl);
-    if (sqr(smod(xg_z - xg_x, total_site)) > r_sq_limit or
-        sqr(smod(xg_z - xg_y, total_site)) > r_sq_limit) {
-        (void) prob;
-        //continue;
-    }else{
-    const CoordinateD xgref =
-        choose_reference(xg_x, xg_y, xg_z, total_site, cr_label);
-    const array<WilsonMatrix, 3> sm_yx = simple_moment_with_contact_subtract(
-        cm_yx, xgref, total_site, c_yx, fsel, fsel_prob_xy, xg_z);
-    const array<WilsonMatrix, 3> sm_xy = simple_moment_with_contact_subtract(
-        cm_xy, xgref, total_site, c_xy, fsel, fsel_prob_xy, xg_z);
-    const Vector<WilsonMatrix> vc_xy = c_xy.get_elems_const(idx);
-    const Vector<WilsonMatrix> vc_yx = c_yx.get_elems_const(idx);
-    Vector<Complex> v_loop = f_loop_i_rho_sigma_lambda.get_elems(idx);
-    // matrix_trace(sm_yx[i] * gammas[rho], vc_xy[lambda] * gammas[sigma])
-    // matrix_trace(sm_xy[i] * gammas[sigma], vc_yx[lambda] * gammas[rho])
-    array<WilsonMatrix, 3 * 4> sm_yx_g;
-    array<WilsonMatrix, 3 * 4> sm_xy_g;
-    for (int i = 0; i < 3; ++i) {
-      for (int rho = 0; rho < 4; ++rho) {
-        sm_yx_g[i * 4 + rho] = sm_yx[i] * gammas[rho];
-        sm_xy_g[i * 4 + rho] = sm_xy[i] * gammas[rho];
+    if (sqr(smod(xg_z - xg_x, total_site)) <= r_sq_limit and
+        sqr(smod(xg_z - xg_y, total_site)) <= r_sq_limit) {
+      const CoordinateD xgref =
+          choose_reference(xg_x, xg_y, xg_z, total_site, cr_label);
+      const array<WilsonMatrix, 3> sm_yx = simple_moment_with_contact_subtract(
+          cm_yx, xgref, total_site, c_yx, fsel, fsel_prob_xy, xg_z);
+      const array<WilsonMatrix, 3> sm_xy = simple_moment_with_contact_subtract(
+          cm_xy, xgref, total_site, c_xy, fsel, fsel_prob_xy, xg_z);
+      const Vector<WilsonMatrix> vc_xy = c_xy.get_elems_const(idx);
+      const Vector<WilsonMatrix> vc_yx = c_yx.get_elems_const(idx);
+      Vector<Complex> v_loop = f_loop_i_rho_sigma_lambda.get_elems(idx);
+      // matrix_trace(sm_yx[i] * gammas[rho], vc_xy[lambda] * gammas[sigma])
+      // matrix_trace(sm_xy[i] * gammas[sigma], vc_yx[lambda] * gammas[rho])
+      array<WilsonMatrix, 3 * 4> sm_yx_g;
+      array<WilsonMatrix, 3 * 4> sm_xy_g;
+      for (int i = 0; i < 3; ++i) {
+        for (int rho = 0; rho < 4; ++rho) {
+          sm_yx_g[i * 4 + rho] = sm_yx[i] * gammas[rho];
+          sm_xy_g[i * 4 + rho] = sm_xy[i] * gammas[rho];
+        }
       }
-    }
-    array<WilsonMatrix, 4 * 4> vc_yx_g;
-    array<WilsonMatrix, 4 * 4> vc_xy_g;
-    for (int lambda = 0; lambda < 4; ++lambda) {
-      for (int sigma = 0; sigma < 4; ++sigma) {
-        vc_xy_g[lambda * 4 + sigma] = vc_xy[lambda] * gammas[sigma];
-        vc_yx_g[lambda * 4 + sigma] = vc_yx[lambda] * gammas[sigma];
-      }
-    }
-    for (int i = 0; i < 3; ++i) {
-      for (int rho = 0; rho < 4; ++rho) {
+      array<WilsonMatrix, 4 * 4> vc_yx_g;
+      array<WilsonMatrix, 4 * 4> vc_xy_g;
+      for (int lambda = 0; lambda < 4; ++lambda) {
         for (int sigma = 0; sigma < 4; ++sigma) {
-          for (int lambda = 0; lambda < 4; ++lambda) {
-            v_loop[64 * i + 16 * rho + 4 * sigma + lambda] +=
-                final_coef * (matrix_trace(sm_yx_g[i * 4 + rho],
-                                           vc_xy_g[lambda * 4 + sigma]) +
-                              matrix_trace(sm_xy_g[i * 4 + sigma],
-                                           vc_yx_g[lambda * 4 + rho]));
+          vc_xy_g[lambda * 4 + sigma] = vc_xy[lambda] * gammas[sigma];
+          vc_yx_g[lambda * 4 + sigma] = vc_yx[lambda] * gammas[sigma];
+        }
+      }
+      for (int i = 0; i < 3; ++i) {
+        for (int rho = 0; rho < 4; ++rho) {
+          for (int sigma = 0; sigma < 4; ++sigma) {
+            for (int lambda = 0; lambda < 4; ++lambda) {
+              v_loop[64 * i + 16 * rho + 4 * sigma + lambda] +=
+                  final_coef * (matrix_trace(sm_yx_g[i * 4 + rho],
+                                             vc_xy_g[lambda * 4 + sigma]) +
+                                matrix_trace(sm_xy_g[i * 4 + sigma],
+                                             vc_yx_g[lambda * 4 + rho]));
+            }
           }
         }
       }
-    }
     }
   });
 }
@@ -178,38 +175,35 @@ void contract_four_combine(
     const long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg_z = geo.coordinate_g_from_l(xl);
-    if (sqr(smod(xg_z - xg_x, total_site)) > r_sq_limit or
-        sqr(smod(xg_z - xg_y, total_site)) > r_sq_limit) {
-      (void) xl;
-      //continue;
-    }else{
-    const Vector<Complex> v_loop =
-        f_loop_i_rho_sigma_lambda.get_elems_const(idx);
-    const ManyMagneticMoments& mmm = smf.get_elem(idx);
-    const ManyMagneticMoments pion_proj =
-        pion_projection(xg_x, xg_y, xg_z, total_site, true);
-    Vector<Complex> sums = fsum.get_elems(idx);
-    Complex sum = 0;
-    Complex pi_sum = 0;
-    Complex pi_proj_sum = 0;
-    for (int i = 0; i < 3; ++i) {
-      for (int rho = 0; rho < 4; ++rho) {
-        for (int sigma = 0; sigma < 4; ++sigma) {
-          for (int lambda = 0; lambda < 4; ++lambda) {
-            const Complex val =
-                coef * v_loop[64 * i + 16 * rho + 4 * sigma + lambda];
-            sum += val * get_m_comp(mmm, i, rho, sigma, lambda);
-            pi_sum += get_m_comp(pion_proj, i, rho, sigma, lambda) *
-                      get_m_comp(mmm, i, rho, sigma, lambda);
-            pi_proj_sum += val * get_m_comp(pion_proj, i, rho, sigma, lambda);
+    if (sqr(smod(xg_z - xg_x, total_site)) <= r_sq_limit and
+        sqr(smod(xg_z - xg_y, total_site)) <= r_sq_limit) {
+      const Vector<Complex> v_loop =
+          f_loop_i_rho_sigma_lambda.get_elems_const(idx);
+      const ManyMagneticMoments& mmm = smf.get_elem(idx);
+      const ManyMagneticMoments pion_proj =
+          pion_projection(xg_x, xg_y, xg_z, total_site, true);
+      Vector<Complex> sums = fsum.get_elems(idx);
+      Complex sum = 0;
+      Complex pi_sum = 0;
+      Complex pi_proj_sum = 0;
+      for (int i = 0; i < 3; ++i) {
+        for (int rho = 0; rho < 4; ++rho) {
+          for (int sigma = 0; sigma < 4; ++sigma) {
+            for (int lambda = 0; lambda < 4; ++lambda) {
+              const Complex val =
+                  coef * v_loop[64 * i + 16 * rho + 4 * sigma + lambda];
+              sum += val * get_m_comp(mmm, i, rho, sigma, lambda);
+              pi_sum += get_m_comp(pion_proj, i, rho, sigma, lambda) *
+                        get_m_comp(mmm, i, rho, sigma, lambda);
+              pi_proj_sum += val * get_m_comp(pion_proj, i, rho, sigma, lambda);
+            }
           }
         }
       }
+      sums[0] += sum;                   // total contribution
+      sums[1] += pi_sum * pi_proj_sum;  // total pion pole (and other pseudo
+                                        // scalar exchange type) contribution
     }
-    sums[0] += sum;                   // total contribution
-    sums[1] += pi_sum * pi_proj_sum;  // total pion pole (and other pseudo
-                                      // scalar exchange type) contribution
-  }
   });
   t.init(total_site);
   t_pi.init(total_site);
