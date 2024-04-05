@@ -115,6 +115,7 @@ __all__ += [
         'GaugeTransform',
         'gf_show_info',
         'gf_avg_plaq',
+        'gf_avg_spatial_plaq',
         'gf_avg_link_trace',
         'gf_wilson_line_no_comm',
         'gf_wilson_lines_no_comm',
