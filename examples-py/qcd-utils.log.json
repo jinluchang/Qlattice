@@ -1,0 +1,122 @@
+[
+ [
+  "gf_ape_list[0] plaq",
+  -0.003987783999661487,
+  1e-05
+ ],
+ [
+  "gf_ape_list[0] plaq2",
+  -0.003987783999661376,
+  1e-05
+ ],
+ [
+  "gf_ape_list[0] spatial_plaq",
+  -0.010995192857127821,
+  1e-05
+ ],
+ [
+  "gf_ape_list[0] spatial_plaq2",
+  -0.010995192857127689,
+  1e-05
+ ],
+ [
+  "gf_ape_list[0] link_trace",
+  0.022427738155286935,
+  1e-05
+ ],
+ [
+  "gf_ape_list[0] plaq_density",
+  6.023926703997969,
+  1e-05
+ ],
+ [
+  "gf_ape_list[0] spatial_plaq_density",
+  3.0329855785713833,
+  1e-05
+ ],
+ [
+  "gf_ape_list[0] topo",
+  -0.008910860535849302,
+  1e-05
+ ],
+ [
+  "gf_ape_list[1] plaq",
+  0.9748795736997968,
+  1e-05
+ ],
+ [
+  "gf_ape_list[1] plaq2",
+  0.9748795736997969,
+  1e-05
+ ],
+ [
+  "gf_ape_list[1] spatial_plaq",
+  0.9730980278201573,
+  1e-05
+ ],
+ [
+  "gf_ape_list[1] spatial_plaq2",
+  0.9730980278201573,
+  1e-05
+ ],
+ [
+  "gf_ape_list[1] link_trace",
+  0.008193148438145646,
+  1e-05
+ ],
+ [
+  "gf_ape_list[1] plaq_density",
+  0.1507225578012183,
+  1e-05
+ ],
+ [
+  "gf_ape_list[1] spatial_plaq_density",
+  0.08070591653952816,
+  1e-05
+ ],
+ [
+  "gf_ape_list[1] topo",
+  1.782455683433521,
+  1e-05
+ ],
+ [
+  "gf_ape_list[2] plaq",
+  0.9653893585429373,
+  1e-05
+ ],
+ [
+  "gf_ape_list[2] plaq2",
+  0.9653893585429372,
+  1e-05
+ ],
+ [
+  "gf_ape_list[2] spatial_plaq",
+  0.9993764213557157,
+  1e-05
+ ],
+ [
+  "gf_ape_list[2] spatial_plaq2",
+  0.9993764213557156,
+  1e-05
+ ],
+ [
+  "gf_ape_list[2] link_trace",
+  0.009359957402275007,
+  1e-05
+ ],
+ [
+  "gf_ape_list[2] plaq_density",
+  0.2076638487423768,
+  1e-05
+ ],
+ [
+  "gf_ape_list[2] spatial_plaq_density",
+  0.0018707359328533036,
+  1e-05
+ ],
+ [
+  "gf_ape_list[2] topo",
+  0.34506107649998585,
+  1e-05
+ ]
+]
