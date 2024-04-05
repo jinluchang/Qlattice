@@ -295,6 +295,12 @@ cdef extern from "qlat/qcd-smear.h" namespace "qlat":
                     const CoordinateD& mom,
                     const bool smear_in_time_dir) except +
 
+cdef extern from "qlat/qcd.h" namespace "qlat":
+
+    RealD gf_avg_plaq(const GaugeField& gf) except +
+    RealD gf_avg_spatial_plaq(const GaugeField& gf) except +
+    RealD gf_avg_link_trace(const GaugeField& gf) except +
+
 cdef extern from "qlat/vector_utils/utils_smear_vecs.h" namespace "qlat":
 
     void prop_smear_qlat_convension(Prop& prop, const GaugeField& gf1,

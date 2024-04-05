@@ -8,6 +8,7 @@ cppsources = files(
   'field-shuffle.cpp',
   'fields-io.cpp',
   'mpi.cpp',
+  'qcd.cpp',
   'selected-field.cpp',
   'selected-points.cpp',
   'smear.cpp',

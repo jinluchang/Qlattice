@@ -13,6 +13,12 @@
 namespace qlat
 {  //
 
+RealD gf_avg_spatial_plaq(const GaugeField& gf);
+
+RealD gf_avg_plaq(const GaugeField& gf);
+
+RealD gf_avg_link_trace(const GaugeField& gf);
+
 struct U1GaugeTransform : FieldM<ComplexF, 1> {
 };
 
@@ -129,9 +135,9 @@ double gf_avg_spatial_plaq_no_comm(const GaugeFieldT<T>& gf)
 }
 
 template <class T>
-double gf_avg_spatial_plaq(const GaugeFieldT<T>& gf)
+RealD gf_avg_spatial_plaq(const GaugeFieldT<T>& gf)
 {
-  TIMER("gf_avg_spatial_plaq");
+  TIMER("gf_avg_spatial_plaq(gf)");
   GaugeFieldT<T> gf1;
   gf1.init(geo_resize(gf.geo(), Coordinate(0, 0, 0, 0), Coordinate(1, 1, 1, 0)));
   gf1 = gf;

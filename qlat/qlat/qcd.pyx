@@ -144,17 +144,21 @@ cdef class GaugeTransform(FieldColorMatrix):
 ###
 
 @q.timer_verbose
-def gf_show_info(gf):
-    assert isinstance(gf, GaugeField)
+def gf_show_info(GaugeField gf):
+    assert gf is not None
     q.displayln_info(f"gf_show_info: plaq = {gf.plaq():.16F} ; link_trace = {gf.link_trace():.16F}.")
 
-def gf_avg_plaq(gf):
-    assert isinstance(gf, GaugeField)
-    return c.gf_avg_plaq(gf)
+def gf_avg_plaq(GaugeField gf):
+    assert gf is not None
+    return cc.gf_avg_plaq(gf.xxx().val())
 
-def gf_avg_link_trace(gf):
-    assert isinstance(gf, GaugeField)
-    return c.gf_avg_link_trace(gf)
+def gf_avg_spatial_plaq(GaugeField gf):
+    assert gf is not None
+    return cc.gf_avg_spatial_plaq(gf.xxx().val())
+
+def gf_avg_link_trace(GaugeField gf):
+    assert gf is not None
+    return cc.gf_avg_link_trace(gf.xxx().val())
 
 def gf_wilson_line_no_comm(wlf, m, gf_ext, path, path_n=None):
     """
