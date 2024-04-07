@@ -12,12 +12,14 @@ class Inverter:
 
 class InverterDwfFreeField(Inverter):
 
-    # self.mass
-    # self.m5
-    # self.momtwist
-    # self.timer
+    """
+    self.mass
+    self.m5
+    self.momtwist
+    self.timer
+    """
 
-    def __init__(self, *, mass, m5 = 1.0, momtwist = None, qtimer = TimerNone()):
+    def __init__(self, *, mass, m5=1.0, momtwist=None, qtimer=TimerNone()):
         if momtwist is None:
             momtwist = [ 0.0, 0.0, 0.0, 0.0, ]
         self.mass = mass
@@ -30,7 +32,9 @@ class InverterDwfFreeField(Inverter):
         assert isinstance(self.timer, (Timer, TimerNone,))
 
     def __mul__(self, prop_src):
-        # prop_src: prop or [ prop, ... ]
+        """
+        prop_src: prop or [ prop, ... ]
+        """
         if isinstance(prop_src, Prop):
             self.timer.start()
             prop_sol = free_invert(prop_src, self.mass, self.m5, self.momtwist)
@@ -43,10 +47,12 @@ class InverterDwfFreeField(Inverter):
 
 class InverterDomainWall(Inverter):
 
-	# self.cdata
-	# self.timer
+    """
+    self.cdata
+    self.timer
+    """
 
-    def __init__(self, *, gf, fa, qtimer = TimerNone()):
+    def __init__(self, *, gf, fa, qtimer=TimerNone()):
         self.cdata = c.mk_inverter_domain_wall(gf, fa)
         self.timer = qtimer
         assert isinstance(self.timer, (Timer, TimerNone,))
@@ -56,7 +62,9 @@ class InverterDomainWall(Inverter):
         c.free_inverter_domain_wall(self)
 
     def __mul__(self, prop_src):
-        # prop_src: prop or [ prop, ... ]
+        """
+        prop_src: prop or [ prop, ... ]
+        """
         if isinstance(prop_src, Prop):
             self.timer.start()
             prop_sol = Prop()
@@ -88,13 +96,15 @@ class InverterDomainWall(Inverter):
 
 class InverterGaugeTransform(Inverter):
 
-    # self.inverter
-    # self.gt
-    # self.gt_inv
-    # self.timer
+    """
+    self.inverter
+    self.gt
+    self.gt_inv
+    self.timer
+    """
 
     def __init__(self, *, inverter, gt,
-            qtimer = TimerNone()):
+            qtimer=TimerNone()):
         self.inverter = inverter
         self.gt = gt
         self.timer = qtimer

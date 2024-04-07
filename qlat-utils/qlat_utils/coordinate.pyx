@@ -76,6 +76,7 @@ cdef class Coordinate:
         return self.to_list()
 
     def __setstate__(self, state):
+        self.__init__()
         self.from_list(state)
 
     def sqr(self):
@@ -292,6 +293,7 @@ cdef class CoordinateD:
         return self.to_list()
 
     def __setstate__(self, state):
+        self.__init__()
         self.from_list(state)
 
     def __getitem__(self, int key):

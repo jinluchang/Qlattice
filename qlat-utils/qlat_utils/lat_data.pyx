@@ -246,25 +246,25 @@ cdef class LatData:
         return self
 
     def __getstate__(self):
-        if self.view_count > 0:
-            raise ValueError("can't load while being viewed")
         is_complex = self.is_complex()
         ndim = self.ndim()
         dim_sizes = self.dim_sizes()
         assert len(dim_sizes) == ndim
         dim_names = [ self.dim_name(dim) for dim in range(ndim) ]
         dim_indices = [ self.dim_indices(dim) for dim in range(ndim) ]
-        data_list = self.to_list()
-        return [ is_complex, dim_sizes, dim_names, dim_indices, data_list ]
+        data_arr = self.to_numpy()
+        return [ is_complex, dim_sizes, dim_names, dim_indices, data_arr ]
 
     def __setstate__(self, state):
-        [ is_complex, dim_sizes, dim_names, dim_indices, data_list ] = state
+        if self.view_count > 0:
+            raise ValueError("can't load while being viewed")
         self.__init__()
+        [ is_complex, dim_sizes, dim_names, dim_indices, data_arr ] = state
         self.set_dim_sizes(dim_sizes, is_complex=is_complex)
         ndim = len(dim_sizes)
         for dim in range(ndim):
             self.set_dim_name(dim, dim_names[dim], dim_indices[dim])
-        self.from_list(data_list)
+        self.from_numpy(data_arr)
 
     def info(self, dim = None):
         """

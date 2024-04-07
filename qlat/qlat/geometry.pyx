@@ -145,6 +145,32 @@ cdef class Geometry:
         cdef cc.Long local_volume = self.local_volume()
         return xg_arr.reshape((local_volume, 4,))
 
+    def __getstate__(self):
+        """
+        Only work when single node (or if all nodes has the same data).
+        Do not support expansion.
+        """
+        total_site = self.total_site()
+        multiplicity = self.multiplicity()
+        expan_left = self.expansion_left()
+        expan_right = self.expansion_right()
+        return [ total_site, multiplicity, expan_left, expan_right, ]
+
+    def __setstate__(self, state):
+        """
+        Only work when single node (or if all nodes has the same data).
+        Do not support expansion.
+        """
+        self.__init__()
+        cdef Coordinate total_site
+        cdef cc.Int multiplicity
+        cdef Coordinate expan_left
+        cdef Coordinate expan_right
+        [ total_site, multiplicity, expan_left, expan_right, ] = state
+        self.xx.init(total_site.xx, multiplicity)
+        self.xx.expansion_left = expan_left.xx
+        self.xx.expansion_right = expan_right.xx
+
 ### -------------------------------------------------------------------
 
 def geo_reform(Geometry geo, int multiplicity=1, expansion_left=None, expansion_right=None):

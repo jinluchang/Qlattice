@@ -3,6 +3,7 @@ import qlat_utils as q
 import functools
 import numpy as np
 from .geometry import Geometry
+from .c import FieldRealD, mk_fft
 
 @functools.lru_cache(maxsize=16)
 @q.timer
@@ -21,9 +22,10 @@ def mk_shift_xg_idx_arr(total_site, xg_shift):
     return xg_idx_arr[tuple(xg_arr.T)]
 
 @q.timer
-def smear_field(field, coef, n_steps=1):
+def smear_field_step_local(field, coef, n_steps=1):
     """
-    only work without comm
+    Only work without comm
+    Not very efficient
     """
     if n_steps == 0:
         return field.copy()
@@ -49,3 +51,115 @@ def smear_field(field, coef, n_steps=1):
             new_field[:] += coef_dir * field[xg_idx_arr]
         new_field *= 1.0 - coef
     return new_field
+
+@q.timer
+def smear_field_step(field, coef, n_steps=1):
+    """
+    Smear a density field
+    Different from smearing the gauge field and measure the density.
+    """
+    if n_steps == 0:
+        return field.copy()
+    xg_shift_list = [
+        [ 0, 0, 0, 1],
+        [ 0, 0, 1, 0],
+        [ 0, 1, 0, 0],
+        [ 1, 0, 0, 0],
+        [ 0, 0, 0, -1],
+        [ 0, 0, -1, 0],
+        [ 0, -1, 0, 0],
+        [ -1, 0, 0, 0],
+    ]
+    xg_shift_list = [ q.Coordinate(xg) for xg in xg_shift_list ]
+    n_dirs = len(xg_shift_list)
+    coef_dir = coef / n_dirs / (1.0 - coef)
+    new_field = field.copy()
+    for k in range(n_steps):
+        new_field *= 1 / coef_dir
+        for xg_shift in xg_shift_list:
+            f1 = field.shift(xg_shift)
+            new_field += field.shift(xg_shift)
+        new_field *= coef_dir * (1.0 - coef)
+    return new_field
+
+@functools.lru_cache(maxsize=4)
+@q.timer_verbose
+def mk_smear_mom_kernel(total_site, radius):
+    r"""
+    return f
+    `radius` is the smear radius in lattice unit.
+    `isinstance(f, FieldRealD)`
+    `isinstance(total_site, tuple)`
+    `f.geo().total_site() == q.Coordinate(total_site)`
+    #
+    f[:] == $G$
+    #
+    $$
+    \ba
+    G(k) = \exp \Big( - r^2 \frac{1}{4} \sum_\mu 2 \sin \big(\frac{2 \pi}{L} \frac{k_\mu}{2} \big)^2 \Big)
+    \ea
+    $$
+    """
+    assert isinstance(total_site, tuple)
+    total_site = q.Coordinate(total_site)
+    geo = Geometry(total_site, 1)
+    f = FieldRealD(geo, 1)
+    total_site_arr = total_site.to_numpy()
+    xg_arr = geo.xg_arr()
+    gg_arr = (2 * np.pi / total_site_arr / 2) * xg_arr[:, :]
+    gg_arr = np.sum(np.sin(gg_arr)**2, axis=-1)
+    gg_arr = (2 / 4 * radius**2) * gg_arr
+    gg_arr = np.exp(-gg_arr)
+    f[:] = gg_arr[:, None]
+    return f
+
+@functools.lru_cache(maxsize=4)
+@q.timer_verbose
+def mk_spatial_smear_mom_kernel(total_site, radius):
+    r"""
+    return f
+    `radius` is the smear radius in lattice unit.
+    `isinstance(f, FieldRealD)`
+    `isinstance(total_site, tuple)`
+    `f.geo().total_site() == q.Coordinate(total_site)`
+    #
+    f[:] == $G$
+    #
+    $$
+    \ba
+    G(k) = \exp \Big( - r^2 \frac{1}{3}\sum_i 2 \sin \big(\frac{2 \pi}{L} \frac{k_i}{2} \big)^2 \Big)
+    \ea
+    $$
+    """
+    assert isinstance(total_site, tuple)
+    total_site = q.Coordinate(total_site)
+    geo = Geometry(total_site, 1)
+    f = FieldRealD(geo, 1)
+    total_site_arr = total_site.to_numpy()
+    xg_arr = geo.xg_arr()
+    gg_arr = (2 * np.pi / total_site_arr[:3] / 2) * xg_arr[:, :3]
+    gg_arr = np.sum(np.sin(gg_arr)**2, axis=-1)
+    gg_arr = (2 / 3 * radius**2) * gg_arr
+    gg_arr = np.exp(-gg_arr)
+    f[:] = gg_arr[:, None]
+    return f
+
+@q.timer
+def smear_field(field, radius, *, is_only_spatial=False):
+    """
+    return smeared_field
+    field must at least be complex type.
+    """
+    total_site = field.geo().total_site()
+    if is_only_spatial:
+        fk = mk_spatial_smear_mom_kernel(total_site.to_tuple(), radius)
+    else:
+        fk = mk_smear_mom_kernel(total_site.to_tuple(), radius)
+    fft1 = mk_fft(True, is_only_spatial=is_only_spatial, is_normalizing=True)
+    fft2 = mk_fft(False, is_only_spatial=is_only_spatial, is_normalizing=True)
+    smeared_field = field.copy()
+    ftmp = fft1 * field
+    ftmp *= fk
+    ftmp = fft2 * ftmp
+    smeared_field @= ftmp
+    return smeared_field

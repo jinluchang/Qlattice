@@ -178,6 +178,27 @@ cdef class PointsSelection:
     def crc32(self):
         return 0
 
+    def __getstate__(self):
+        """
+        Only work when single node (or if all nodes has the same data).
+        """
+        geo = self.geo
+        xg_arr = self.xg_arr()
+        is_distributed = self.is_distributed()
+        return [ xg_arr, geo, is_distributed, ]
+
+    def __setstate__(self, state):
+        """
+        Only work when single node (or if all nodes has the same data).
+        """
+        if self.view_count > 0:
+            raise ValueError("can't load while being viewed")
+        self.__init__()
+        [ xg_arr, geo, is_distributed, ] = state
+        self.set_xg_arr(xg_arr, geo)
+        if is_distributed:
+            self.xx.distributed = True
+
 ### -------------------------------------------------------------------
 
 cdef class FieldSelection:
@@ -383,6 +404,27 @@ cdef class FieldSelection:
         cdef cc.Coordinate xl_xx = self.xx.f_local_idx.get_geo().coordinate_from_index(index)
         cc.assign_direct(xg.xx, self.xx.f_local_idx.get_geo().coordinate_g_from_l(xl_xx))
         return xg
+
+    def __getstate__(self):
+        """
+        Only work when single node.
+        """
+        geo = self.geo()
+        fsel_arr = self[:].copy()
+        return [ fsel_arr, geo, ]
+
+    def __setstate__(self, state):
+        """
+        Only work when single node.
+        """
+        if self.view_count > 0:
+            raise ValueError("can't load while being viewed")
+        self.__init__()
+        cdef Geometry geo
+        [ fsel_arr, geo, ] = state
+        self.set_empty(geo)
+        self[:] = fsel_arr
+        self.update()
 
 ### -------------------------------------------------------------------
 
