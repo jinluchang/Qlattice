@@ -24,6 +24,7 @@ cdef class PointsSelection:
     def __init__(self, xg_arr=None, Geometry geo=None):
         """
         PointsSelection()
+        PointsSelection(None, geo)
         PointsSelection(n_points, geo)
         PointsSelection(xg, geo)
         PointsSelection(xg_arr, geo)
@@ -103,6 +104,7 @@ cdef class PointsSelection:
     def set_xg_arr(self, xg_arr=None, Geometry geo=None):
         """
         psel.set_xg_arr()
+        psel.set_xg_arr(None, geo)
         psel.set_xg_arr(n_points, geo)
         psel.set_xg_arr(xg, geo)
         psel.set_xg_arr(xg_arr, geo)
