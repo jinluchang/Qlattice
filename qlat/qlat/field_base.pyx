@@ -357,6 +357,9 @@ cdef class FieldBase:
         """
         self[idx, m] = val
 
+    def __getnewargs__(self):
+        return ()
+
 ### -------------------------------------------------------------------
 
 def split_fields(fs, f):
@@ -609,6 +612,9 @@ cdef class SelectedFieldBase:
             assert False
         return sp
 
+    def __getnewargs__(self):
+        return ()
+
 ### -------------------------------------------------------------------
 
 cdef class SelectedPointsBase:
@@ -670,5 +676,33 @@ cdef class SelectedPointsBase:
         v_arr = np.asarray(self)
         assert arr.shape[0] == v_arr.shape[0]
         v_arr.ravel()[:] = arr.ravel()
+
+    def __getnewargs__(self):
+        return ()
+
+    def __getstate__(self):
+        """
+        Only work when single node (or if all nodes has the same data).
+        """
+        psel = self.psel
+        n_points = self.n_points()
+        multiplicity = self.multiplicity()
+        is_distributed = self.is_distributed()
+        data_arr = self[:]
+        return [ data_arr, n_points, multiplicity, is_distributed, psel, ]
+
+    def __setstate__(self, state):
+        """
+        Only work when single node (or if all nodes has the same data).
+        """
+        if self.view_count > 0:
+            raise ValueError("can't load while being viewed")
+        self.__init__()
+        cdef cc.Long n_points
+        cdef cc.Int multiplicity
+        [ data_arr, n_points, multiplicity, is_distributed, psel, ] = state
+        self.init_from_n_points(n_points, multiplicity, is_distributed)
+        self.psel = psel
+        self[:] = data_arr
 
 ### -------------------------------------------------------------------

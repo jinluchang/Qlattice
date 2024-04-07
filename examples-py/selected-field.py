@@ -17,8 +17,8 @@ geo = q.Geometry(total_site, 1)
 q.displayln_info("CHECK: geo.show() =", geo.show())
 rs = q.RngState("seed")
 
-q.save_pickle_obj(geo, "results/geo.pickle")
-geo_load = q.load_pickle_obj("results/geo.pickle")
+q.save_pickle_obj(geo, f"results/geo.pickle")
+geo_load = q.load_pickle_obj(f"results/geo.pickle")
 q.displayln_info("CHECK: geo_load.show() =", geo_load.show())
 
 prop = q.Prop(geo)
@@ -49,8 +49,8 @@ psel = q.PointsSelection([
     geo = geo,
     )
 
-q.save_pickle_obj(psel, "results/psel.pickle")
-psel_load = q.load_pickle_obj("results/psel.pickle")
+q.save_pickle_obj(psel, f"results/psel.pickle")
+psel_load = q.load_pickle_obj(f"results/psel.pickle")
 assert np.all(psel[:] == psel_load[:])
 
 n_per_tslice = 16
@@ -60,8 +60,8 @@ fsel.set_rand(geo.total_site(), n_per_tslice, rs.split("fsel"))
 fselc = fsel.copy()
 fselc.add_psel(psel)
 
-q.save_pickle_obj(fselc, "results/fselc-{q.get_id_node()}.pickle", is_sync_node=False)
-fselc_load = q.load_pickle_obj("results/fselc-{q.get_id_node()}.pickle", is_sync_node=False)
+q.save_pickle_obj(fselc, f"results/fselc-{q.get_id_node()}.pickle", is_sync_node=False)
+fselc_load = q.load_pickle_obj(f"results/fselc-{q.get_id_node()}.pickle", is_sync_node=False)
 assert np.all(fselc[:] == fselc_load[:])
 
 s_prop = q.SelProp(fselc)
@@ -74,6 +74,10 @@ q.displayln_info(f"CHECK: s_prop n1={n1} ; n2={n2}")
 
 sp_prop = q.PselProp(s_prop, rs.split("shuffle_selected_field-1"))
 q.displayln_info(f"CHECK: sp_prop from shuffle_selected_field")
+
+q.save_pickle_obj(sp_prop, f"results/sp_prop-{q.get_id_node()}.pickle", is_sync_node=False)
+sp_prop_load = q.load_pickle_obj(f"results/sp_prop-{q.get_id_node()}.pickle", is_sync_node=False)
+assert np.all(sp_prop[:] == sp_prop_load[:])
 
 n3 = sp_prop.n_points()
 n4 = q.glb_sum(n3)
@@ -112,6 +116,10 @@ sp_prop1.from_lat_data(ld)
 sp_prop1 -= sp_prop
 
 q.displayln_info("CHECK: sp_prop", sp_prop.qnorm(), sp_prop1.qnorm(), "lat_data conversion")
+
+q.save_pickle_obj(sp_prop, f"results/sp_prop.pickle")
+sp_prop_load = q.load_pickle_obj(f"results/sp_prop.pickle")
+assert np.all(sp_prop[:] == sp_prop_load[:])
 
 s_prop = q.SelProp(fsel)
 s_prop @= prop

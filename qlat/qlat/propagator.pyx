@@ -74,6 +74,18 @@ cdef class PselProp(SelectedPointsWilsonMatrix):
         np.asarray(wm)[:] = self[idx, m]
         return wm
 
+    def __getstate__(self):
+        """
+        Only work when single node (or if all nodes has the same data).
+        """
+        return super().__getstate__()
+
+    def __setstate__(self, state):
+        """
+        Only work when single node (or if all nodes has the same data).
+        """
+        super().__setstate__(state)
+
 ###
 
 def set_point_src(Prop prop_src not None, Geometry geo not None, Coordinate xg not None, cc.PyComplexD value=1.0):
