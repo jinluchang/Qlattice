@@ -17,6 +17,10 @@ geo = q.Geometry(total_site, 1)
 q.displayln_info("CHECK: geo.show() =", geo.show())
 rs = q.RngState("seed")
 
+q.save_pickle_obj(geo, "results/geo.pickle")
+geo_load = q.load_pickle_obj("results/geo.pickle")
+q.displayln_info("CHECK: geo_load.show() =", geo_load.show())
+
 prop = q.Prop(geo)
 prop.set_rand(rs.split("prop-1"))
 
@@ -44,12 +48,21 @@ psel = q.PointsSelection([
     ],
     geo = geo,
     )
+
+q.save_pickle_obj(psel, "results/psel.pickle")
+psel_load = q.load_pickle_obj("results/psel.pickle")
+assert np.all(psel[:] == psel_load[:])
+
 n_per_tslice = 16
 fsel = q.FieldSelection()
 fsel.set_rand(geo.total_site(), n_per_tslice, rs.split("fsel"))
 
 fselc = fsel.copy()
 fselc.add_psel(psel)
+
+q.save_pickle_obj(fselc, "results/fselc-{q.get_id_node()}.pickle", is_sync_node=False)
+fselc_load = q.load_pickle_obj("results/fselc-{q.get_id_node()}.pickle", is_sync_node=False)
+assert np.all(fselc[:] == fselc_load[:])
 
 s_prop = q.SelProp(fselc)
 s_prop @= prop
