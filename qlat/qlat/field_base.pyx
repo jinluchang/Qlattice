@@ -360,6 +360,25 @@ cdef class FieldBase:
     def __getnewargs__(self):
         return ()
 
+    def __getstate__(self):
+        """
+        Only work when single node (or if all nodes has the same data).
+        """
+        geo = self.geo()
+        data_arr = self[:]
+        return [ data_arr, geo, ]
+
+    def __setstate__(self, state):
+        """
+        Only work when single node (or if all nodes has the same data).
+        """
+        if self.view_count > 0:
+            raise ValueError("can't load while being viewed")
+        self.__init__()
+        [ data_arr, geo, ] = state
+        self.init_from_geo(geo)
+        self[:] = data_arr
+
 ### -------------------------------------------------------------------
 
 def split_fields(fs, f):
@@ -614,6 +633,26 @@ cdef class SelectedFieldBase:
 
     def __getnewargs__(self):
         return ()
+
+    def __getstate__(self):
+        """
+        Only work when single node (or if all nodes has the same data).
+        """
+        fsel = self.fsel
+        multiplicity = self.multiplicity()
+        data_arr = self[:]
+        return [ data_arr, multiplicity, fsel, ]
+
+    def __setstate__(self, state):
+        """
+        Only work when single node (or if all nodes has the same data).
+        """
+        if self.view_count > 0:
+            raise ValueError("can't load while being viewed")
+        self.__init__()
+        [ data_arr, multiplicity, fsel, ] = state
+        self.init_from_fsel(fsel, multiplicity)
+        self[:] = data_arr
 
 ### -------------------------------------------------------------------
 

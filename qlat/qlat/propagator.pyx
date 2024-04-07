@@ -34,11 +34,23 @@ cdef class Prop(FieldWilsonMatrix):
         np.asarray(wm)[:] = self[index, m]
         return wm
 
+    def __getstate__(self):
+        """
+        Only work when single node (or if all nodes has the same data).
+        """
+        return super().__getstate__()
+
+    def __setstate__(self, state):
+        """
+        Only work when single node (or if all nodes has the same data).
+        """
+        super().__setstate__(state)
+
 ###
 
 cdef class SelProp(SelectedFieldWilsonMatrix):
 
-    def __init__(self, FieldSelection fsel):
+    def __init__(self, FieldSelection fsel=None):
         super().__init__(fsel, 1)
 
     cdef cc.Handle[cc.SelProp] xxx(self):
@@ -49,6 +61,18 @@ cdef class SelProp(SelectedFieldWilsonMatrix):
         cdef WilsonMatrix wm = WilsonMatrix()
         np.asarray(wm)[:] = self[idx, m]
         return wm
+
+    def __getstate__(self):
+        """
+        Only work when single node (or if all nodes has the same data).
+        """
+        return super().__getstate__()
+
+    def __setstate__(self, state):
+        """
+        Only work when single node (or if all nodes has the same data).
+        """
+        super().__setstate__(state)
 
 ###
 

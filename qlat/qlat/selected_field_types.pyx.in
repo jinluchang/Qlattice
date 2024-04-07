@@ -59,7 +59,10 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         self.cdata = <cc.Long>&(self.xx)
         self.view_count = 0
 
-    def __init__(self, FieldSelection fsel, int multiplicity=0):
+    def __init__(self, *args):
+        self.init_from_fsel(*args)
+
+    def init_from_fsel(self, FieldSelection fsel=None, cc.Int multiplicity=0):
         self.fsel = fsel
         if multiplicity > 0 and self.fsel is not None:
             if self.view_count > 0:
@@ -210,6 +213,18 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
             raise Exception(f"write_sfw_direct: self.xx.n_elems={self.xx.n_elems} ; self.fsel.xx.n_elems={self.fsel.xx.n_elems}")
         cdef cc.Long total_bytes = cc.write(sfw.xx, fn, sbs.xx, self.xx)
         return total_bytes
+
+    def __getstate__(self):
+        """
+        Only work when single node (or if all nodes has the same data).
+        """
+        return super().__getstate__()
+
+    def __setstate__(self, state):
+        """
+        Only work when single node (or if all nodes has the same data).
+        """
+        super().__setstate__(state)
 
 selected_field_type_dict[ElemType{{name}}] = SelectedField{{name}}
 

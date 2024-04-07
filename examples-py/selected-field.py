@@ -42,6 +42,10 @@ prop.load_double_from_float("results/prop-float.field")
 
 q.displayln_info(f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm():.12E}")
 
+q.save_pickle_obj(prop, f"results/prop-{q.get_id_node()}.pickle", is_sync_node=False)
+prop_load = q.load_pickle_obj(f"results/prop-{q.get_id_node()}.pickle", is_sync_node=False)
+assert np.all(prop[:] == prop_load[:])
+
 psel = q.PointsSelection([
     [ 0, 0, 0, 0, ],
     [ 0, 1, 2, 0, ],
@@ -66,6 +70,10 @@ assert np.all(fselc[:] == fselc_load[:])
 
 s_prop = q.SelProp(fselc)
 s_prop @= prop
+
+q.save_pickle_obj(s_prop, f"results/s_prop-{q.get_id_node()}.pickle", is_sync_node=False)
+s_prop_load = q.load_pickle_obj(f"results/s_prop-{q.get_id_node()}.pickle", is_sync_node=False)
+assert np.all(s_prop[:] == s_prop_load[:])
 
 n1 = s_prop.n_elems()
 n2 = q.glb_sum(n1)

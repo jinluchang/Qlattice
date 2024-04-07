@@ -58,7 +58,10 @@ cdef class Field{{name}}(FieldBase):
         self.cdata = <cc.Long>&(self.xx)
         self.view_count = 0
 
-    def __init__(self, Geometry geo=None, int multiplicity=0):
+    def __init__(self, *args):
+        self.init_from_geo(*args)
+
+    def init_from_geo(self, Geometry geo=None, int multiplicity=0):
         if geo is None:
             self.xx.init()
             return
@@ -225,6 +228,18 @@ cdef class Field{{name}}(FieldBase):
             if sfw.has(fn):
                 return 0
         return cc.write(sfw.xx, fn, self.xx)
+
+    def __getstate__(self):
+        """
+        Only work when single node (or if all nodes has the same data).
+        """
+        return super().__getstate__()
+
+    def __setstate__(self, state):
+        """
+        Only work when single node (or if all nodes has the same data).
+        """
+        super().__setstate__(state)
 
 field_type_dict[ElemType{{name}}] = Field{{name}}
 
