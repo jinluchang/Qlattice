@@ -130,7 +130,7 @@ void set_local_current_from_props(SelectedField<WilsonMatrix>& scf,
 
 template <class M>
 struct CurrentMoments {
-  vector<array<M, 3 * 3>> d;
+  vector_acc<array<M, 3 * 3>> d;
   // moment = 0.5 * epsilon_tensor(i, j, k) * smod_sym(xg[j] - ref[j],
   // total_site[j]) * d[ xg[j] ][3*j + k]
   //
