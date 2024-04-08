@@ -743,31 +743,32 @@ def contract_hlbl_four_labels(job_tag):
     return q.contract_four_pair_labels(tags)
 
 @q.timer_verbose
-def contract_hlbl_four_ama(job_tag, *, inv_type, get_prop, idx_xg_x, idx_xg_y, psel_prob, fsel_prob, weight_pair):
+def contract_hlbl_four_ama(job_tag, *, inv_type, get_prop, idx_xg_x, idx_xg_y, psel_prob, psel_d_prob, weight_pair):
     """
     get_prop(xg) => sprop_ama
     """
     psel = psel_prob.psel
-    fsel = fsel_prob.fsel
+    psel_d = psel_d_prob.psel
     xg_x = psel.coordinate_from_idx(idx_xg_x)
     xg_y = psel.coordinate_from_idx(idx_xg_y)
     muon_mass = get_muon_mass(job_tag)
     coef = complex(weight_pair)
     force_load_muon_line_interpolation()
-    smf_d = q.mk_m_z_field_tag(fsel, xg_x, xg_y, a=muon_mass, tag=0)
+    # q.displayln_info(f"INFO: contract_hlbl_four_ama: {psel_d.geo.total_site()}")
+    smf_d = q.mk_m_z_field_tag(psel_d, xg_x, xg_y, a=muon_mass, tag=0)
     tags = get_hlbl_clbl_info_ref_tags(job_tag)
     r_sq_limit = get_r_sq_limit(job_tag)
     zz_vv = get_param(job_tag, "zz_vv")
-    def f(sprop_x, sprop_y):
+    def f(psprop_x, psprop_y):
         return q.contract_four_pair_no_glb_sum(
                 coef,
                 psel_prob,
-                fsel_prob,
+                psel_d_prob,
                 idx_xg_x,
                 idx_xg_y,
                 smf_d,
-                sprop_x,
-                sprop_y,
+                psprop_x,
+                psprop_y,
                 inv_type,
                 tags,
                 r_sq_limit,
@@ -799,6 +800,9 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     fsel_prob = get_fsel_prob()
     fsel = fsel_prob.fsel
     #
+    ssp = q.SelectedShufflePlan(fsel.n_elems(), q.RngState(f"{job_tag}-{traj}-hlbl-four-fsel-permute"))
+    psel_d_prob = q.SelectedPointsRealD(fsel_prob, ssp)
+    #
     point_pairs = get_point_pairs()
     point_pairs_chunk_list = q.get_chunk_list(point_pairs, chunk_number=num_chunk)
     if id_chunk < len(point_pairs_chunk_list):
@@ -815,7 +819,12 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     def get_prop_cache(xg, inv_acc):
         key = (xg.to_tuple(), inv_type, inv_acc,)
         if key not in prop_cache:
-            prop_cache[key] = get_psrc_prop(job_tag, traj, xg, inv_type, inv_acc, sfr=sfr, fsel=fsel)
+            sprop = get_psrc_prop(job_tag, traj, xg, inv_type, inv_acc, sfr=sfr, fsel=fsel)
+            if sprop is None:
+                psprop = None
+            else:
+                psprop = q.PselProp(sprop, ssp)
+            prop_cache[key] = psprop
         return prop_cache[key]
     #
     @q.timer
@@ -830,12 +839,14 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     idx_point_pairs_sub_chunk_list = q.get_chunk_list(list(enumerate(point_pairs_chunk)), chunk_size=sub_chunk_size)
     for idx_point_pairs_sub_chunk in idx_point_pairs_sub_chunk_list:
         for idx, pp in idx_point_pairs_sub_chunk:
+            q.displayln_info(f"{fname}: load prop ; idx={idx} ; len(chunk)={len(idx_point_pairs_sub_chunk)}")
             xg_x = pp["xg_x"]
             xg_y = pp["xg_y"]
             get_prop(xg_x)
             get_prop(xg_y)
         pairs_data_sub_list = []
         for idx, pp in idx_point_pairs_sub_chunk:
+            q.displayln_info(f"{fname}: contract ; idx={idx} ; len(chunk)={len(idx_point_pairs_sub_chunk)}")
             idx_xg_x = pp["idx_xg_x"]
             idx_xg_y = pp["idx_xg_y"]
             xg_x = pp["xg_x"]
@@ -852,7 +863,7 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
                     idx_xg_x=idx_xg_x,
                     idx_xg_y=idx_xg_y,
                     psel_prob=psel_prob,
-                    fsel_prob=fsel_prob,
+                    psel_d_prob=psel_d_prob,
                     weight_pair=weight_pair,
                     )
             dict_val = dict()
@@ -866,6 +877,7 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             pairs_data_sub_list.append(dict_val)
         pairs_data += pairs_data_sub_list
         for idx, pp in idx_point_pairs_sub_chunk:
+            q.displayln_info(f"{fname}: collect results ; idx={idx} ; len(chunk)={len(idx_point_pairs_sub_chunk)}")
             dict_val = pairs_data[idx]
             lslt = q.glb_sum(dict_val["lslt"])
             lslt_sloppy = q.glb_sum(dict_val["lslt_sloppy"])

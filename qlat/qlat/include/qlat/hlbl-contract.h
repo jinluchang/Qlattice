@@ -6,7 +6,8 @@
 namespace qlat
 {  //
 
-void set_m_z_field_tag(SelectedField<RealD>& smf_d, const FieldSelection& fsel,
+void set_m_z_field_tag(SelectedPoints<RealD>& smf_d,
+                       const PointsSelection& psel_d, const Geometry& geo,
                        const Coordinate& xg_x, const Coordinate& xg_y,
                        const double a, const int tag);
 
@@ -123,10 +124,11 @@ qacc ManyMagneticMoments pion_projection(const Coordinate& x,
 
 // ------------------------------------------------------------------------
 
-void set_local_current_from_props(SelectedField<WilsonMatrix>& scf,
-                                  const SelectedField<WilsonMatrix>& sprop1,
-                                  const SelectedField<WilsonMatrix>& sprop2,
-                                  const FieldSelection& fsel);
+void set_local_current_from_props(SelectedPoints<WilsonMatrix>& scf,
+                                  const SelectedPoints<WilsonMatrix>& sprop1,
+                                  const SelectedPoints<WilsonMatrix>& sprop2,
+                                  const PointsSelection& psel_d,
+                                  const Geometry& geo);
 
 template <class M>
 struct CurrentMoments {
@@ -175,18 +177,13 @@ qacc array<M, 3> simple_moment(const CurrentMoments<M>& cm,
 template <class M>
 qacc array<M, 3> simple_moment_with_contact_subtract(
     const CurrentMoments<M>& cm, const CoordinateD& ref,
-    const Coordinate& total_site, const SelectedField<M>& current,
-    const FieldSelection& fsel, const SelectedField<RealD>& fsel_prob_xy,
-    const Coordinate& xg)
-// xg should refer to a local site
-// xg should be a selected point
+    const Coordinate& total_site, const SelectedPoints<M>& current,
+    const PointsSelection& psel_d, const SelectedPoints<RealD>& psel_d_prob_xy,
+    const Long idx)
+// subtract over weighting due to sparsening for both xg_z and xg_op.
 {
-  const Geometry& geo = fsel.f_rank.geo();
-  const Coordinate xl = geo.coordinate_l_from_g(xg);
-  qassert(geo.is_local(xl));
-  qassert(fsel.f_rank.get_elem(xl) >= 0);
-  const long idx = fsel.f_local_idx.get_elem(xl);
-  const RealD prob = fsel_prob_xy.get_elem(idx);
+  const Coordinate xg_op = psel_d[idx];
+  const RealD prob = psel_d_prob_xy.get_elem(idx);
   const RealD weight = 1.0 / prob;
   const RealD sub_coef = 1.0 - weight;
   const Vector<M> cv = current.get_elems_const(idx);
@@ -200,9 +197,10 @@ qacc array<M, 3> simple_moment_with_contact_subtract(
         if (i == k or j == k) {
           continue;
         }
-        ret[i] += (sub_coef * 0.5 * (Complex)epsilon_tensor_acc(i, j, k) *
-                   (Complex)smod_sym(xg[j] - ref[j], (double)total_site[j])) *
-                  cv[k];
+        ret[i] +=
+            (sub_coef * 0.5 * (Complex)epsilon_tensor_acc(i, j, k) *
+             (Complex)smod_sym(xg_op[j] - ref[j], (double)total_site[j])) *
+            cv[k];
       }
     }
   }
@@ -284,24 +282,26 @@ qacc CoordinateD choose_reference(const Coordinate& xg_x,
 
 void set_current_moments_from_current(
     CurrentMoments<WilsonMatrix>& cm,
-    const SelectedField<WilsonMatrix>& current, const FieldSelection& fsel,
-    const SelectedField<RealD>& fsel_prob_xy);
+    const SelectedPoints<WilsonMatrix>& current, const PointsSelection& psel_d,
+    const SelectedPoints<RealD>& psel_d_prob_xy, const Geometry& geo);
 
-void contract_four_loop(SelectedField<Complex>& f_loop_i_rho_sigma_lambda,
+void contract_four_loop(SelectedPoints<Complex>& f_loop_i_rho_sigma_lambda,
                         const Complex& coef, const Coordinate& xg_x,
                         const Coordinate& xg_y,
-                        const SelectedField<WilsonMatrix>& c_xy,
-                        const SelectedField<WilsonMatrix>& c_yx,
+                        const SelectedPoints<WilsonMatrix>& c_xy,
+                        const SelectedPoints<WilsonMatrix>& c_yx,
                         const CurrentMoments<WilsonMatrix>& cm_xy,
                         const CurrentMoments<WilsonMatrix>& cm_yx,
-                        const FieldSelection& fsel, const Long r_sq_limit,
-                        const std::string& label);
+                        const PointsSelection& psel_d,
+                        const SelectedPoints<RealD>& psel_d_prob_xy,
+                        const Geometry& geo,
+                        const Long r_sq_limit, const std::string& label);
 
 void contract_four_combine(
     SlTable& t, SlTable& t_pi, const Complex& coef, const Geometry& geo,
     const Coordinate& xg_x, const Coordinate& xg_y,
-    const SelectedField<Complex>& f_loop_i_rho_sigma_lambda,
-    const SelectedField<ManyMagneticMoments>& smf, const FieldSelection& fsel,
+    const SelectedPoints<Complex>& f_loop_i_rho_sigma_lambda,
+    const SelectedPoints<ManyMagneticMoments>& smf, const PointsSelection& psel_d,
     const Long r_sq_limit);
 
 inline std::vector<std::string> get_clbl_inf_ref_tags(
@@ -332,11 +332,12 @@ inline std::vector<std::string> contract_four_pair_labels(
 
 std::vector<SlTable> contract_four_pair_no_glb_sum(
     const ComplexD& coef, const PointsSelection& psel,
-    SelectedPoints<RealD>& psel_prob, const FieldSelection& fsel,
-    const SelectedField<RealD>& fsel_prob, const Long idx_xg_x,
-    const Long idx_xg_y, const SelectedField<RealD>& smf_d,
-    const SelectedField<WilsonMatrix>& sprop_x,
-    const SelectedField<WilsonMatrix>& sprop_y, const Int inv_type,
+    SelectedPoints<RealD>& psel_prob, const PointsSelection& psel_d,
+    const SelectedPoints<RealD>& psel_d_prob, const Geometry& geo,
+    const Long idx_xg_x, const Long idx_xg_y,
+    const SelectedPoints<RealD>& smf_d,
+    const SelectedPoints<WilsonMatrix>& sprop_x,
+    const SelectedPoints<WilsonMatrix>& sprop_y, const Int inv_type,
     const std::vector<std::string>& tags, const Long r_sq_limit,
     const RealD muon_mass, const RealD z_v);
 

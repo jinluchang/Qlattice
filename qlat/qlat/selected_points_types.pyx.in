@@ -130,14 +130,14 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
             self.xx.init(psel.xx, multiplicity)
 
     def init_from_sf_ssp(self, SelectedField{{name}} sf, SelectedShufflePlan ssp):
-        cdef PointsSelection psel = PointsSelection()
         cdef FieldSelection fsel = sf.fsel
+        cdef PointsSelection psel = PointsSelection(None, fsel.geo())
         self.psel = psel
         cc.shuffle_selected_field(self.xx, psel.xx, sf.xx, fsel.xx, ssp.xx)
 
     def init_from_sf_rs(self, SelectedField{{name}} sf, RngState rs):
-        cdef PointsSelection psel = PointsSelection()
         cdef FieldSelection fsel = sf.fsel
+        cdef PointsSelection psel = PointsSelection(None, fsel.geo())
         self.psel = psel
         cc.shuffle_selected_field(self.xx, psel.xx, sf.xx, fsel.xx, rs.xx)
 

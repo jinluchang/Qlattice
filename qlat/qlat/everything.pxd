@@ -433,11 +433,11 @@ cdef extern from "qlat/hlbl-contract.h" namespace "qlat":
         void init(const int s, const int l)
         void init(const Coordinate& total_site)
     #
-    void set_m_z_field_tag(SelectedField[RealD]& smf_d, const FieldSelection& fsel, const Coordinate& xg_x, const Coordinate& xg_y, const double a, const int tag) except +
+    void set_m_z_field_tag(SelectedPoints[RealD]& smf_d, const PointsSelection& psel_d, const Geometry& geo, const Coordinate& xg_x, const Coordinate& xg_y, const double a, const int tag) except +
     #
     std_vector[std_string] contract_four_pair_labels(const std_vector[std_string]& tags) except +
     #
-    std_vector[SlTable] contract_four_pair_no_glb_sum(const ComplexD& coef, const PointsSelection& psel, const SelectedPoints[RealD]& psel_prob, const FieldSelection& fsel, const SelectedField[RealD]& fsel_prob, const Long idx_xg_x, const Long idx_xg_y, const SelectedField[RealD]& smf_d, const SelectedField[WilsonMatrix]& sprop_x, const SelectedField[WilsonMatrix]& sprop_y, const Int inv_type, const std_vector[std_string]& tags, const Long r_sq_limit, const RealD muon_mass, const RealD z_v) except +
+    std_vector[SlTable] contract_four_pair_no_glb_sum(const ComplexD& coef, const PointsSelection& psel, const SelectedPoints[RealD]& psel_prob, const PointsSelection& psel_d, const SelectedPoints[RealD]& psel_d_prob, const Geometry& geo, const Long idx_xg_x, const Long idx_xg_y, const SelectedPoints[RealD]& smf_d, const SelectedPoints[WilsonMatrix]& sprop_x, const SelectedPoints[WilsonMatrix]& sprop_y, const Int inv_type, const std_vector[std_string]& tags, const Long r_sq_limit, const RealD muon_mass, const RealD z_v) except +
     #
     std_vector[std_string] contract_two_plus_two_pair_labels() except +
     #

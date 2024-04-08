@@ -9,7 +9,7 @@ from .field_selection cimport FieldSelection, PointsSelection
 from .field_types cimport FieldRealD, FieldComplexD
 from .selected_field_types cimport SelectedFieldRealD, SelectedFieldComplexD
 from .selected_points_types cimport SelectedPointsRealD, SelectedPointsComplexD
-from .propagator cimport SelProp
+from .propagator cimport Prop, SelProp, PselProp
 from .geometry cimport Geometry
 
 cdef numpy.ndarray sl_arr_from_sl_table(const cc.SlTable& x):
@@ -28,7 +28,7 @@ cdef numpy.ndarray sl_arr_from_sl_table(const cc.SlTable& x):
 
 @q.timer
 def mk_m_z_field_tag(
-        FieldSelection fsel,
+        PointsSelection psel_d,
         Coordinate xg_x,
         Coordinate xg_y,
         const cc.RealD a,
@@ -36,13 +36,14 @@ def mk_m_z_field_tag(
         ):
     """
     return smf_d
-    smf is SelectedField("double") as the muon-line-field of vertex z
+    smf is SelectedPointsRealD() as the muon-line-field of vertex z
     a is the lattice spacing (when muon_mass = 1). In lattice unit one should use muon_mass * a for this parameter
-    tag = 0: sub
+    tag = 0: sub # preferred
     tag = 1: nosub
     """
-    cdef SelectedFieldRealD smf_d = SelectedFieldRealD(fsel)
-    cc.set_m_z_field_tag(smf_d.xx, fsel.xx, xg_x.xx, xg_y.xx, a, tag)
+    cdef Geometry geo = psel_d.geo
+    cdef SelectedPointsRealD smf_d = SelectedPointsRealD(psel_d)
+    cc.set_m_z_field_tag(smf_d.xx, psel_d.xx, geo.xx, xg_x.xx, xg_y.xx, a, tag)
     return smf_d
 
 def contract_four_pair_labels(list tags):
@@ -55,12 +56,12 @@ def contract_two_plus_two_pair_labels():
 def contract_four_pair_no_glb_sum(
         cc.PyComplexD coef,
         SelectedPointsRealD psel_prob,
-        SelectedFieldRealD fsel_prob,
+        SelectedPointsRealD psel_d_prob,
         const cc.Long idx_xg_x,
         const cc.Long idx_xg_y,
-        SelectedFieldRealD smf_d,
-        SelProp sprop_x,
-        SelProp sprop_y,
+        SelectedPointsRealD smf_d,
+        PselProp sprop_x,
+        PselProp sprop_y,
         const cc.Int inv_type,
         const cc.std_vector[cc.std_string]& tags,
         const cc.Long r_sq_limit,
@@ -84,16 +85,20 @@ def contract_four_pair_no_glb_sum(
     z, x_op are summed over with in `fsel`. `fsel_prob` factors are already included.
     """
     cdef PointsSelection psel = psel_prob.psel
-    cdef FieldSelection fsel = fsel_prob.fsel
-    assert fsel is smf_d.fsel
-    assert fsel is sprop_x.fsel
-    assert fsel is sprop_y.fsel
+    cdef PointsSelection psel_d = psel_d_prob.psel
+    cdef Geometry geo = psel.geo
+    if geo.local_site() != psel_d.geo.local_site():
+        raise Exception(f"psel site: {geo.local_site()} ; psel_d site: {psel_d.geo.local_site()}.")
+    assert len(psel_d) == len(smf_d.psel)
+    assert len(psel_d) == len(sprop_x.psel)
+    assert len(psel_d) == len(sprop_y.psel)
     cdef cc.std_vector[cc.SlTable] sl_table_vec = cc.contract_four_pair_no_glb_sum(
             cc.ccpy_d(coef),
             psel.xx,
             psel_prob.xx,
-            fsel.xx,
-            fsel_prob.xx,
+            psel_d.xx,
+            psel_d_prob.xx,
+            geo.xx,
             idx_xg_x,
             idx_xg_y,
             smf_d.xx,

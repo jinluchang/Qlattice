@@ -3,47 +3,43 @@
 namespace qlat
 {  //
 
-void set_m_z_field_tag(SelectedField<RealD>& smf_d, const FieldSelection& fsel,
+void set_m_z_field_tag(SelectedPoints<RealD>& smf_d,
+                       const PointsSelection& psel_d, const Geometry& geo,
                        const Coordinate& xg_x, const Coordinate& xg_y,
                        const double a, const int tag)
 // interface
 // tag = 0 sub
 // tag = 1 nosub
 {
-  TIMER_VERBOSE("set_m_z_field_tag(smf_d,fsel,xg_x,xg_y,a,tag)");
+  TIMER_VERBOSE("set_m_z_field_tag(smf_d,psel_d,xg_x,xg_y,a,tag)");
   const int multiplicity = sizeof(ManyMagneticMoments) / sizeof(RealD);
   qassert(multiplicity * (int)sizeof(RealD) ==
           (int)sizeof(ManyMagneticMoments));
-  smf_d.init(fsel, multiplicity);
-  SelectedField<ManyMagneticMoments> smf =
+  smf_d.init(psel_d, multiplicity);
+  SelectedPoints<ManyMagneticMoments> smf =
       smf_d.template view_as<ManyMagneticMoments>();
-  const Geometry& geo = fsel.f_rank.geo();
   const Coordinate total_site = geo.total_site();
-  // smf.init(fsel, 1);
-  qthread_for(idx, fsel.n_elems, {
-    const long index = fsel.indices[idx];
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg_z = geo.coordinate_g_from_l(xl);  // z location
+  qthread_for(idx, psel_d.size(), {
+    const Coordinate xg_z = psel_d[idx];  // z location
     ManyMagneticMoments& mmm = smf.get_elem(idx);
     mmm = get_muon_line_m_extra_lat(xg_x, xg_y, xg_z, total_site, a, tag);
   });
 }
 
-void set_local_current_from_props(SelectedField<WilsonMatrix>& scf,
-                                  const SelectedField<WilsonMatrix>& sprop1,
-                                  const SelectedField<WilsonMatrix>& sprop2,
-                                  const FieldSelection& fsel)
+void set_local_current_from_props(SelectedPoints<WilsonMatrix>& scf,
+                                  const SelectedPoints<WilsonMatrix>& sprop1,
+                                  const SelectedPoints<WilsonMatrix>& sprop2,
+                                  const PointsSelection& psel_d,
+                                  const Geometry& geo)
 // ->- sprop1 ->- gamma_mu ->- gamma5 sprop2^+ gamma5 ->-
 {
+  (void)geo;
   TIMER_VERBOSE("set_local_current_from_props");
-  const Geometry& geo = fsel.f_rank.geo();
-  qassert(geo == sprop1.geo());
-  qassert(geo == sprop2.geo());
   const array<SpinMatrix, 4>& gammas = SpinMatrixConstants::get_cps_gammas();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
-  scf.init(fsel, 4);
+  scf.init(psel_d, 4);
   set_zero(scf);
-  qacc_for(idx, fsel.n_elems, {
+  qacc_for(idx, psel_d.size(), {
     const WilsonMatrix& m1 = sprop1.get_elem(idx);
     const WilsonMatrix& m2 = sprop2.get_elem(idx);
     Vector<WilsonMatrix> v = scf.get_elems(idx);
@@ -57,68 +53,61 @@ void set_local_current_from_props(SelectedField<WilsonMatrix>& scf,
 
 void set_current_moments_from_current(
     CurrentMoments<WilsonMatrix>& cm,
-    const SelectedField<WilsonMatrix>& current, const FieldSelection& fsel,
-    const SelectedField<RealD>& fsel_prob_xy)
+    const SelectedPoints<WilsonMatrix>& current, const PointsSelection& psel_d,
+    const SelectedPoints<RealD>& psel_d_prob_xy, const Geometry& geo)
 {
   TIMER("set_current_moments_from_current");
-  const Geometry& geo = current.geo();
-  qassert(geo.multiplicity == 4);
+  qassert(current.multiplicity == 4);
   const Coordinate total_site = geo.total_site();
   const int lsize =
       std::max(total_site[0], std::max(total_site[1], total_site[2]));
   cm.init(lsize);
-  qfor(idx, fsel.n_elems, {
-    const long index = fsel.indices[idx];
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg = geo.coordinate_g_from_l(xl);
+  qfor(idx, psel_d.size(), {
+    const Coordinate xg_op = psel_d[idx];  // z location
     const Vector<WilsonMatrix> v = current.get_elems_const(idx);
-    const RealD prob = fsel_prob_xy.get_elem(idx);
+    const RealD prob = psel_d_prob_xy.get_elem(idx);
     const ComplexD weight = 1.0 / prob;
     for (int j = 0; j < 3; ++j) {
       for (int k = 0; k < 3; ++k) {
-        cm.d[xg[j]][3 * j + k] += weight * v[k];
+        cm.d[xg_op[j]][3 * j + k] += weight * v[k];
       }
     }
   });
   glb_sum_double_vec(get_data(cm.d));
 }
 
-void contract_four_loop(SelectedField<Complex>& f_loop_i_rho_sigma_lambda,
+void contract_four_loop(SelectedPoints<Complex>& f_loop_i_rho_sigma_lambda,
                         const Complex& coef, const Coordinate& xg_x,
                         const Coordinate& xg_y,
-                        const SelectedField<WilsonMatrix>& c_xy,
-                        const SelectedField<WilsonMatrix>& c_yx,
+                        const SelectedPoints<WilsonMatrix>& c_xy,
+                        const SelectedPoints<WilsonMatrix>& c_yx,
                         const CurrentMoments<WilsonMatrix>& cm_xy,
                         const CurrentMoments<WilsonMatrix>& cm_yx,
-                        const FieldSelection& fsel,
-                        const SelectedField<RealD>& fsel_prob_xy,
+                        const PointsSelection& psel_d,
+                        const SelectedPoints<RealD>& psel_d_prob_xy,
+                        const Geometry& geo,
                         const Long r_sq_limit, const std::string& label)
 {
   TIMER_VERBOSE("contract_four_loop");
   const box<SpinMatrixConstantsT<>>& smc = get_spin_matrix_constants();
-  const Geometry& geo = fsel.f_rank.geo();
   const Coordinate total_site = geo.total_site();
-  qassert(geo == geo_remult(c_yx.geo()));
-  qassert(geo == geo_remult(c_xy.geo()));
-  f_loop_i_rho_sigma_lambda.init(fsel, 3 * 4 * 4 * 4);
+  f_loop_i_rho_sigma_lambda.init(psel_d, 3 * 4 * 4 * 4);
   set_zero(f_loop_i_rho_sigma_lambda);
   const ChooseReferenceLabel cr_label = choose_reference_label(label);
-  qacc_for(idx, fsel.n_elems, {
+  qacc_for(idx, psel_d.size(), {
     const array<SpinMatrix, 4>& gammas = smc().cps_gammas;
-    const RealD prob = fsel_prob_xy.get_elem(idx);
+    const RealD prob = psel_d_prob_xy.get_elem(idx);
     const RealD weight = 1.0 / prob;
     const ComplexD final_coef = coef * weight;
-    const long index = fsel.indices[idx];
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg_z = geo.coordinate_g_from_l(xl);
+    const Coordinate xg_z = psel_d[idx];
     if (sqr(smod(xg_z - xg_x, total_site)) <= r_sq_limit and
         sqr(smod(xg_z - xg_y, total_site)) <= r_sq_limit) {
       const CoordinateD xgref =
           choose_reference(xg_x, xg_y, xg_z, total_site, cr_label);
       const array<WilsonMatrix, 3> sm_yx = simple_moment_with_contact_subtract(
-          cm_yx, xgref, total_site, c_yx, fsel, fsel_prob_xy, xg_z);
+          cm_yx, xgref, total_site, c_yx, psel_d, psel_d_prob_xy, idx);
       const array<WilsonMatrix, 3> sm_xy = simple_moment_with_contact_subtract(
-          cm_xy, xgref, total_site, c_xy, fsel, fsel_prob_xy, xg_z);
+          cm_xy, xgref, total_site, c_xy, psel_d, psel_d_prob_xy, idx);
       const Vector<WilsonMatrix> vc_xy = c_xy.get_elems_const(idx);
       const Vector<WilsonMatrix> vc_yx = c_yx.get_elems_const(idx);
       Vector<Complex> v_loop = f_loop_i_rho_sigma_lambda.get_elems(idx);
@@ -160,21 +149,19 @@ void contract_four_loop(SelectedField<Complex>& f_loop_i_rho_sigma_lambda,
 void contract_four_combine(
     SlTable& t, SlTable& t_pi, const Complex& coef, const Geometry& geo,
     const Coordinate& xg_x, const Coordinate& xg_y,
-    const SelectedField<Complex>& f_loop_i_rho_sigma_lambda,
-    const SelectedField<ManyMagneticMoments>& smf, const FieldSelection& fsel,
+    const SelectedPoints<Complex>& f_loop_i_rho_sigma_lambda,
+    const SelectedPoints<ManyMagneticMoments>& smf, const PointsSelection& psel_d,
     const Long r_sq_limit)
 // x and y are global coordinates
 {
   TIMER("contract_four_combine");
-  qassert(f_loop_i_rho_sigma_lambda.geo().multiplicity == 3 * 4 * 4 * 4);
+  qassert(f_loop_i_rho_sigma_lambda.multiplicity == 3 * 4 * 4 * 4);
   const Coordinate total_site = geo.total_site();
-  SelectedField<Complex> fsum;
-  fsum.init(fsel, 2);
+  SelectedPoints<Complex> fsum;
+  fsum.init(psel_d, 2);
   set_zero(fsum);
-  qacc_for(idx, fsel.n_elems, {
-    const long index = fsel.indices[idx];
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg_z = geo.coordinate_g_from_l(xl);
+  qacc_for(idx, psel_d.size(), {
+    const Coordinate xg_z = psel_d[idx];
     if (sqr(smod(xg_z - xg_x, total_site)) <= r_sq_limit and
         sqr(smod(xg_z - xg_y, total_site)) <= r_sq_limit) {
       const Vector<Complex> v_loop =
@@ -207,10 +194,8 @@ void contract_four_combine(
   });
   t.init(total_site);
   t_pi.init(total_site);
-  qfor(idx, fsel.n_elems, {
-    const long index = fsel.indices[idx];
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg_z = geo.coordinate_g_from_l(xl);
+  qfor(idx, psel_d.size(), {
+    const Coordinate xg_z = psel_d[idx];
     const Vector<Complex> sums = fsum.get_elems_const(idx);
     const Complex& sum = sums[0];
     const Complex& sum_pi = sums[1];
@@ -224,11 +209,12 @@ void contract_four_combine(
 
 std::vector<SlTable> contract_four_pair_no_glb_sum(
     const ComplexD& coef, const PointsSelection& psel,
-    SelectedPoints<RealD>& psel_prob, const FieldSelection& fsel,
-    const SelectedField<RealD>& fsel_prob, const Long idx_xg_x,
-    const Long idx_xg_y, const SelectedField<RealD>& smf_d,
-    const SelectedField<WilsonMatrix>& sprop_x,
-    const SelectedField<WilsonMatrix>& sprop_y, const Int inv_type,
+    SelectedPoints<RealD>& psel_prob, const PointsSelection& psel_d,
+    const SelectedPoints<RealD>& psel_d_prob, const Geometry& geo,
+    const Long idx_xg_x, const Long idx_xg_y,
+    const SelectedPoints<RealD>& smf_d,
+    const SelectedPoints<WilsonMatrix>& sprop_x,
+    const SelectedPoints<WilsonMatrix>& sprop_y, const Int inv_type,
     const std::vector<std::string>& tags, const Long r_sq_limit,
     const RealD muon_mass, const RealD z_v)
 // default coef = 1.0
@@ -241,7 +227,6 @@ std::vector<SlTable> contract_four_pair_no_glb_sum(
   qassert(0 <= idx_xg_y and idx_xg_y < (Long)psel.size());
   const Coordinate& xg_x = psel[idx_xg_x];
   const Coordinate& xg_y = psel[idx_xg_y];
-  const Geometry& geo = fsel.f_rank.geo();
   const Long total_volume = geo.total_volume();
   const Coordinate total_site = geo.total_site();
   if (sqr(smod(xg_y - xg_x, total_site)) > r_sq_limit) {
@@ -254,41 +239,42 @@ std::vector<SlTable> contract_four_pair_no_glb_sum(
   const RealD prob_pair =
       xg_x == xg_y ? std::min(prob_xg_x, prob_xg_y) : prob_xg_x * prob_xg_y;
   const RealD weight_pair = 1.0 / prob_pair;
-  const SelectedField<ManyMagneticMoments> smf =
+  const SelectedPoints<ManyMagneticMoments> smf =
       smf_d.template view_as<ManyMagneticMoments>();
-  qassert(is_matching_geo_mult(geo, fsel_prob.geo()));
-  qassert(is_matching_geo_mult(geo, smf.geo()));
-  qassert(is_matching_geo_mult(geo, sprop_x.geo()));
-  qassert(is_matching_geo_mult(geo, sprop_y.geo()));
-  qassert(fsel.n_elems == fsel_prob.n_elems);
-  qassert(fsel.n_elems == sprop_x.n_elems);
-  qassert(fsel.n_elems == sprop_y.n_elems);
-  SelectedField<RealD> fsel_prob_xy;
-  fsel_prob_xy = fsel_prob;
-  const Long idx_x = idx_from_xg(xg_x, fsel);
-  const Long idx_y = idx_from_xg(xg_y, fsel);
-  if (idx_x == idx_y) {
-    if (idx_x >= 0) {
-      const RealD prob = fsel_prob_xy.get_elem(idx_x);
-      fsel_prob_xy.get_elem(idx_x) =
-          std::min(1.0, prob / std::min(prob_xg_x, prob_xg_y));
-    }
+  qassert(psel_d.size() == psel_d_prob.n_points);
+  qassert(psel_d.size() == sprop_x.n_points);
+  qassert(psel_d.size() == sprop_y.n_points);
+  SelectedPoints<RealD> psel_d_prob_xy;
+  psel_d_prob_xy = psel_d_prob;
+  if (xg_x == xg_y) {
+    qassert(idx_xg_x == idx_xg_y);
+    qassert(prob_xg_x == prob_xg_y);
+    qthread_for(idx, psel_d.size(), {
+      const Coordinate xg_z = psel_d[idx];
+      if (xg_z == xg_x) {
+        qassert(xg_z == xg_y);
+        const RealD prob = psel_d_prob_xy.get_elem(idx);
+        psel_d_prob_xy.get_elem(idx) = std::min(1.0, prob / prob_xg_x);
+      }
+    });
   } else {
-    if (idx_x >= 0) {
-      const RealD prob = fsel_prob_xy.get_elem(idx_x);
-      fsel_prob_xy.get_elem(idx_x) = std::min(1.0, prob / prob_xg_x);
-    }
-    if (idx_y >= 0) {
-      const RealD prob = fsel_prob_xy.get_elem(idx_y);
-      fsel_prob_xy.get_elem(idx_y) = std::min(1.0, prob / prob_xg_y);
-    }
+    qthread_for(idx, psel_d.size(), {
+      const Coordinate xg_z = psel_d[idx];
+      if (xg_z == xg_x) {
+        const RealD prob = psel_d_prob_xy.get_elem(idx);
+        psel_d_prob_xy.get_elem(idx) = std::min(1.0, prob / prob_xg_x);
+      } else if (xg_z == xg_y) {
+        const RealD prob = psel_d_prob_xy.get_elem(idx);
+        psel_d_prob_xy.get_elem(idx) = std::min(1.0, prob / prob_xg_y);
+      }
+    });
   }
-  SelectedField<WilsonMatrix> sc_xy, sc_yx;
-  set_local_current_from_props(sc_xy, sprop_y, sprop_x, fsel);
-  set_local_current_from_props(sc_yx, sprop_x, sprop_y, fsel);
+  SelectedPoints<WilsonMatrix> sc_xy, sc_yx;
+  set_local_current_from_props(sc_xy, sprop_y, sprop_x, psel_d, geo);
+  set_local_current_from_props(sc_yx, sprop_x, sprop_y, psel_d, geo);
   CurrentMoments<WilsonMatrix> cm_xy, cm_yx;
-  set_current_moments_from_current(cm_xy, sc_xy, fsel, fsel_prob_xy);
-  set_current_moments_from_current(cm_yx, sc_yx, fsel, fsel_prob_xy);
+  set_current_moments_from_current(cm_xy, sc_xy, psel_d, psel_d_prob_xy, geo);
+  set_current_moments_from_current(cm_yx, sc_yx, psel_d, psel_d_prob_xy, geo);
   const RealD alpha_inv = 137.035999139;
   const RealD e_charge = std::sqrt(4 * qlat::PI / alpha_inv);
   const Complex coef0 = 1.0E10 * 2.0 * muon_mass * std::pow(e_charge, 6);
@@ -297,13 +283,14 @@ std::vector<SlTable> contract_four_pair_no_glb_sum(
   const Complex coef_all = coef * coef0 * coef1 / 3.0 / (RealD)total_volume * weight_pair;
   std::vector<SlTable> ts;
   for (int i = 0; i < (int)tags.size(); ++i) {
-    SelectedField<Complex> f_loop_i_rho_sigma_lambda;
+    SelectedPoints<Complex> f_loop_i_rho_sigma_lambda;
     contract_four_loop(f_loop_i_rho_sigma_lambda, 1.0, xg_x, xg_y, sc_xy, sc_yx,
-                       cm_xy, cm_yx, fsel, fsel_prob_xy, r_sq_limit, tags[i]);
+                       cm_xy, cm_yx, psel_d, psel_d_prob_xy, geo, r_sq_limit,
+                       tags[i]);
     SlTable t, t_pi;
     // no glb sum performed
     contract_four_combine(t, t_pi, coef_all, geo, xg_x, xg_y,
-                          f_loop_i_rho_sigma_lambda, smf, fsel, r_sq_limit);
+                          f_loop_i_rho_sigma_lambda, smf, psel_d, r_sq_limit);
     ts.push_back(t);
     ts.push_back(t_pi);
   }
