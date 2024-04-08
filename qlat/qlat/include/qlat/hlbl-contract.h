@@ -341,12 +341,13 @@ inline std::vector<std::string> contract_four_pair_labels(
 
 std::vector<SlTable> contract_four_pair_no_glb_sum(
     const ComplexD& coef, const PointsSelection& psel,
-    SelectedPoints<RealD>& psel_prob, const PointsSelection& psel_d,
-    const SelectedPoints<RealD>& psel_d_prob, const Geometry& geo,
-    const Long idx_xg_x, const Long idx_xg_y,
+    const PointsSelection& psel_d, const SelectedPoints<RealD>& psel_d_prob_xy,
+    const Geometry& geo, const Long idx_xg_x, const Long idx_xg_y,
     const SelectedPoints<RealD>& smf_d,
-    const SelectedPoints<WilsonMatrix>& sprop_x,
-    const SelectedPoints<WilsonMatrix>& sprop_y, const Int inv_type,
+    const SelectedPoints<WilsonMatrix>& sc_xy,
+    const SelectedPoints<WilsonMatrix>& sc_yx,
+    const CurrentMoments<WilsonMatrix>& cm_xy,
+    const CurrentMoments<WilsonMatrix>& cm_yx, const Int inv_type,
     const std::vector<std::string>& tags, const Long r_sq_limit,
     const RealD muon_mass, const RealD z_v);
 

@@ -160,8 +160,10 @@ def contract_four_pair_no_glb_sum(
         const cc.Long idx_xg_x,
         const cc.Long idx_xg_y,
         SelectedPointsRealD smf_d,
-        PselProp sprop_x,
-        PselProp sprop_y,
+        SelectedPointsWilsonMatrix sc_xy,
+        SelectedPointsWilsonMatrix sc_yx,
+        CurrentMoments cm_xy,
+        CurrentMoments cm_yx,
         const cc.Int inv_type,
         const cc.std_vector[cc.std_string]& tags,
         const cc.Long r_sq_limit,
@@ -190,20 +192,21 @@ def contract_four_pair_no_glb_sum(
     if geo.local_site() != psel_d.geo.local_site():
         raise Exception(f"psel site: {geo.local_site()} ; psel_d site: {psel_d.geo.local_site()}.")
     assert len(psel_d) == len(smf_d.psel)
-    assert len(psel_d) == len(sprop_x.psel)
-    assert len(psel_d) == len(sprop_y.psel)
+    assert len(psel_d) == len(sc_xy.psel)
+    assert len(psel_d) == len(sc_yx.psel)
     cdef cc.std_vector[cc.SlTable] sl_table_vec = cc.contract_four_pair_no_glb_sum(
             cc.ccpy_d(coef),
             psel.xx,
-            psel_prob.xx,
             psel_d.xx,
             psel_d_prob.xx,
             geo.xx,
             idx_xg_x,
             idx_xg_y,
             smf_d.xx,
-            sprop_x.xx,
-            sprop_y.xx,
+            sc_xy.xx,
+            sc_yx.xx,
+            cm_xy.xx,
+            cm_yx.xx,
             inv_type,
             tags,
             r_sq_limit,

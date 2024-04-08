@@ -743,39 +743,55 @@ def contract_hlbl_four_labels(job_tag):
     return q.contract_four_pair_labels(tags)
 
 @q.timer_verbose
-def contract_hlbl_four_ama(job_tag, *, inv_type, get_prop, idx_xg_x, idx_xg_y, psel_prob, psel_d_prob, weight_pair):
+def contract_hlbl_four_ama(
+        job_tag,
+        *,
+        inv_type,
+        idx_xg_x,
+        idx_xg_y,
+        psel_prob,
+        weight_pair,
+        prob_pair,
+        psel_d_prob_xy,
+        ama_sc_xy,
+        ama_sc_yx,
+        ama_cm_xy,
+        ama_cm_yx,
+        ):
     """
     get_prop(xg) => sprop_ama
     """
     psel = psel_prob.psel
-    psel_d = psel_d_prob.psel
+    psel_d = psel_d_prob_xy.psel
     xg_x = psel.coordinate_from_idx(idx_xg_x)
     xg_y = psel.coordinate_from_idx(idx_xg_y)
     muon_mass = get_muon_mass(job_tag)
-    coef = complex(weight_pair)
+    coef = complex(weight_pair / prob_pair)
     force_load_muon_line_interpolation()
     # q.displayln_info(f"INFO: contract_hlbl_four_ama: {psel_d.geo.total_site()}")
     smf_d = q.mk_m_z_field_tag(psel_d, xg_x, xg_y, a=muon_mass, tag=0)
     tags = get_hlbl_clbl_info_ref_tags(job_tag)
     r_sq_limit = get_r_sq_limit(job_tag)
     zz_vv = get_param(job_tag, "zz_vv")
-    def f(psprop_x, psprop_y):
+    def f(sc_xy, sc_yx, cm_xy, cm_yx):
         return q.contract_four_pair_no_glb_sum(
                 coef,
                 psel_prob,
-                psel_d_prob,
+                psel_d_prob_xy,
                 idx_xg_x,
                 idx_xg_y,
                 smf_d,
-                psprop_x,
-                psprop_y,
+                sc_xy,
+                sc_yx,
+                cm_xy,
+                cm_yx,
                 inv_type,
                 tags,
                 r_sq_limit,
                 muon_mass,
                 zz_vv,
                 )
-    ama_val = ama_apply2(f, get_prop(xg_x), get_prop(xg_y))
+    ama_val = ama_apply(f, ama_sc_xy, ama_sc_yx, ama_cm_xy, ama_cm_yx)
     return (ama_extract(ama_val, is_sloppy=False), ama_extract(ama_val, is_sloppy=True),)
 
 @q.timer
@@ -889,8 +905,6 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             int_results = dict()
             int_results['prob_pair'] = prob_pair
             int_results['psel_d_prob_xy'] = psel_d_prob_xy
-            int_results['ama_sprop_x'] = ama_sprop_x
-            int_results['ama_sprop_y'] = ama_sprop_y
             int_results['ama_sc_xy'] = ama_sc_xy
             int_results['ama_sc_yx'] = ama_sc_yx
             int_results['ama_cm_xy'] = ama_cm_xy
@@ -920,10 +934,9 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             weight_pair = pp["weight_pair"]
             key = (idx_xg_x, idx_xg_y,)
             int_results = pairs_int_results[key]
+            pairs_int_results[key] = None
             prob_pair = int_results['prob_pair']
             psel_d_prob_xy = int_results['psel_d_prob_xy']
-            ama_sprop_x = int_results['ama_sprop_x']
-            ama_sprop_y = int_results['ama_sprop_y']
             ama_sc_xy = int_results['ama_sc_xy']
             ama_sc_yx = int_results['ama_sc_yx']
             ama_cm_xy = int_results['ama_cm_xy']
@@ -931,12 +944,16 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             lslt, lslt_sloppy = contract_hlbl_four_ama(
                     job_tag,
                     inv_type=inv_type,
-                    get_prop=get_prop,
                     idx_xg_x=idx_xg_x,
                     idx_xg_y=idx_xg_y,
                     psel_prob=psel_prob,
-                    psel_d_prob=psel_d_prob,
                     weight_pair=weight_pair,
+                    prob_pair=prob_pair,
+                    psel_d_prob_xy=psel_d_prob_xy,
+                    ama_sc_xy=ama_sc_xy,
+                    ama_sc_yx=ama_sc_yx,
+                    ama_cm_xy=ama_cm_xy,
+                    ama_cm_yx=ama_cm_yx,
                     )
             dict_val = dict()
             dict_val["lslt"] = lslt
@@ -958,8 +975,8 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             xg_x = dict_val["xg_x"]
             xg_y = dict_val["xg_y"]
             r = dict_val["r"] = r
-            prob_accept = dict_val["prob_accept"] = prob_accept
-            weight_pair = dict_val["weight_pair"] = weight_pair
+            prob_accept = dict_val["prob_accept"]
+            weight_pair = dict_val["weight_pair"]
             info_str = f"{job_tag} {traj} {inv_type_name} {id_chunk}/{num_chunk} {idx}/{len(point_pairs_chunk)} {xg_x} {xg_y}"
             q.displayln_info(
                     f"{fname}: {info_str}\n",
