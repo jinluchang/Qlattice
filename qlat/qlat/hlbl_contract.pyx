@@ -64,7 +64,7 @@ def mk_local_current_from_props(
     assert len(psel_d) == len(sprop2.psel)
     cdef Geometry geo = psel_d.geo
     assert geo.local_site() == sprop2.psel.geo.local_site()
-    cdef SelectedPointsWilsonMatrix scf = q.SelectedPointsWilsonMatrix(psel_d)
+    cdef SelectedPointsWilsonMatrix scf = SelectedPointsWilsonMatrix(psel_d)
     cc.set_local_current_from_props(scf.xx, sprop1.xx, sprop2.xx, psel_d.xx, geo.xx)
     return scf
 
@@ -83,7 +83,7 @@ def mk_psel_d_prob_xy(
     cdef Geometry geo = psel.geo
     if geo.local_site() != psel_d.geo.local_site():
         raise Exception(f"psel site: {geo.local_site()} ; psel_d site: {psel_d.geo.local_site()}.")
-    cdef SelectedPointsRealD psel_d_prob_xy = q.SelectedPointsRealD(psel_d)
+    cdef SelectedPointsRealD psel_d_prob_xy = SelectedPointsRealD(psel_d)
     cdef cc.RealD prob_pair = cc.set_psel_d_prob_xy(
             psel_d_prob_xy.xx,
             psel.xx,
@@ -101,6 +101,10 @@ cdef class CurrentMoments:
         self.xx.init()
 
     def __init__(self, *args):
+        """
+        CurrentMoments()
+        CurrentMoments(SelectedPointsWilsonMatrix current, SelectedPointsRealD psel_d_prob_xy)
+        """
         cdef cc.Int len_args = len(args)
         if len_args > 0:
             if isinstance(args[0], SelectedPointsWilsonMatrix):

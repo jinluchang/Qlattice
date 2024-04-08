@@ -832,6 +832,29 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
         val_list = [ get_prop_cache(xg, inv_acc) for inv_acc in rel_acc_list ]
         return mk_ama_val(val_list[0], xg.to_tuple(), val_list, rel_acc_list, prob_list)
     #
+    @q.timer
+    def mk_ama_current(ama_sprop1, ama_sprop2):
+        ama_val = ama_apply2(q.mk_local_current_from_props, ama_sprop1, ama_sprop2)
+        return ama_val
+    #
+    @q.timer
+    def mk_psel_d_prob_xy(idx_xg_x, idx_xg_y):
+        prob_pair, psel_d_prob_xy = q.mk_psel_d_prob_xy(psel_prob, psel_d_prob, idx_xg_x, idx_xg_y)
+        return prob_pair, psel_d_prob_xy
+    #
+    @q.timer
+    def mk_ama_cm(ama_current, psel_d_prob_xy):
+        def f(current):
+            cm = q.CurrentMoments(current, psel_d_prob_xy)
+            return cm
+        return ama_apply1(f, ama_current)
+    #
+    @q.timer
+    def ama_cm_glb_sum(ama_cm):
+        def f(cm):
+            return cm.glb_sum()
+        return ama_apply1(f, ama_cm)
+    #
     q.displayln_info(f"{fname}: len(prop_cache)={len(prop_cache)}")
     labels = contract_hlbl_four_labels(job_tag)
     pairs_data = []
@@ -846,6 +869,45 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             xg_y = pp["xg_y"]
             get_prop(xg_x)
             get_prop(xg_y)
+        pairs_int_results = dict()
+        for idx, pp in idx_point_pairs_sub_chunk:
+            q.displayln_info(f"{fname}: make intermediate results; idx={idx} ; len_chunk={len_chunk} ; len_sub_chunk={len_sub_chunk}")
+            idx_xg_x = pp["idx_xg_x"]
+            idx_xg_y = pp["idx_xg_y"]
+            xg_x = pp["xg_x"]
+            xg_y = pp["xg_y"]
+            assert xg_x == psel.coordinate_from_idx(idx_xg_x)
+            assert xg_y == psel.coordinate_from_idx(idx_xg_y)
+            key = (idx_xg_x, idx_xg_y,)
+            prob_pair, psel_d_prob_xy = mk_psel_d_prob_xy(idx_xg_x, idx_xg_y)
+            ama_sprop_x = get_prop(xg_x)
+            ama_sprop_y = get_prop(xg_y)
+            ama_sc_xy = mk_ama_current(ama_sprop_y, ama_sprop_x)
+            ama_sc_yx = mk_ama_current(ama_sprop_x, ama_sprop_y)
+            ama_cm_xy = mk_ama_cm(ama_sc_xy, psel_d_prob_xy)
+            ama_cm_yx = mk_ama_cm(ama_sc_yx, psel_d_prob_xy)
+            int_results = dict()
+            int_results['prob_pair'] = prob_pair
+            int_results['psel_d_prob_xy'] = psel_d_prob_xy
+            int_results['ama_sprop_x'] = ama_sprop_x
+            int_results['ama_sprop_y'] = ama_sprop_y
+            int_results['ama_sc_xy'] = ama_sc_xy
+            int_results['ama_sc_yx'] = ama_sc_yx
+            int_results['ama_cm_xy'] = ama_cm_xy
+            int_results['ama_cm_yx'] = ama_cm_yx
+            pairs_int_results[key] = int_results
+        for idx, pp in idx_point_pairs_sub_chunk:
+            q.displayln_info(f"{fname}: cm glb sum; idx={idx} ; len_chunk={len_chunk} ; len_sub_chunk={len_sub_chunk}")
+            idx_xg_x = pp["idx_xg_x"]
+            idx_xg_y = pp["idx_xg_y"]
+            key = (idx_xg_x, idx_xg_y,)
+            int_results = pairs_int_results[key]
+            ama_cm_xy = int_results['ama_cm_xy']
+            ama_cm_yx = int_results['ama_cm_yx']
+            ama_cm_xy = ama_cm_glb_sum(ama_cm_xy)
+            ama_cm_yx = ama_cm_glb_sum(ama_cm_yx)
+            int_results['ama_cm_xy'] = ama_cm_xy
+            int_results['ama_cm_yx'] = ama_cm_yx
         pairs_data_sub_list = []
         for idx, pp in idx_point_pairs_sub_chunk:
             q.displayln_info(f"{fname}: contract ; idx={idx} ; len_chunk={len_chunk} ; len_sub_chunk={len_sub_chunk}")
@@ -853,11 +915,19 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             idx_xg_y = pp["idx_xg_y"]
             xg_x = pp["xg_x"]
             xg_y = pp["xg_y"]
-            assert xg_x == psel.coordinate_from_idx(idx_xg_x)
-            assert xg_y == psel.coordinate_from_idx(idx_xg_y)
             r = pp["r"]
             prob_accept = pp["prob_accept"]
             weight_pair = pp["weight_pair"]
+            key = (idx_xg_x, idx_xg_y,)
+            int_results = pairs_int_results[key]
+            prob_pair = int_results['prob_pair']
+            psel_d_prob_xy = int_results['psel_d_prob_xy']
+            ama_sprop_x = int_results['ama_sprop_x']
+            ama_sprop_y = int_results['ama_sprop_y']
+            ama_sc_xy = int_results['ama_sc_xy']
+            ama_sc_yx = int_results['ama_sc_yx']
+            ama_cm_xy = int_results['ama_cm_xy']
+            ama_cm_yx = int_results['ama_cm_yx']
             lslt, lslt_sloppy = contract_hlbl_four_ama(
                     job_tag,
                     inv_type=inv_type,
