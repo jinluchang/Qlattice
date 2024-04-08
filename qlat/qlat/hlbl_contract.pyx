@@ -7,8 +7,7 @@ import numpy as np
 import qlat_utils as q
 from .field_selection cimport FieldSelection, PointsSelection
 from .field_types cimport FieldRealD, FieldComplexD
-from .selected_field_types cimport SelectedFieldRealD, SelectedFieldComplexD
-from .selected_points_types cimport SelectedPointsRealD, SelectedPointsComplexD
+from .selected_points_types cimport SelectedPointsRealD, SelectedPointsComplexD, SelectedPointsWilsonMatrix
 from .propagator cimport Prop, SelProp, PselProp
 from .geometry cimport Geometry
 
@@ -51,6 +50,103 @@ def contract_four_pair_labels(list tags):
 
 def contract_two_plus_two_pair_labels():
     return cc.contract_two_plus_two_pair_labels()
+
+@q.timer
+def mk_local_current_from_props(
+        PselProp sprop1,
+        PselProp sprop2,
+        ):
+    """
+    return scf
+    -<- gamma5 sprop2^+ gamma5 -<- gamma_mu -<- sprop1 -<-
+    """
+    cdef PointsSelection psel_d = sprop1.psel
+    assert len(psel_d) == len(sprop2.psel)
+    cdef Geometry geo = psel_d.geo
+    assert geo.local_site() == sprop2.psel.geo.local_site()
+    cdef SelectedPointsWilsonMatrix scf = q.SelectedPointsWilsonMatrix(psel_d)
+    cc.set_local_current_from_props(scf.xx, sprop1.xx, sprop2.xx, psel_d.xx, geo.xx)
+    return scf
+
+@q.timer
+def mk_psel_d_prob_xy(
+        SelectedPointsRealD psel_prob,
+        SelectedPointsRealD psel_d_prob,
+        const cc.Long idx_xg_x,
+        const cc.Long idx_xg_y,
+        ):
+    """
+    return prob_pair, psel_d_prob_xy
+    """
+    cdef PointsSelection psel = psel_prob.psel
+    cdef PointsSelection psel_d = psel_d_prob.psel
+    cdef Geometry geo = psel.geo
+    if geo.local_site() != psel_d.geo.local_site():
+        raise Exception(f"psel site: {geo.local_site()} ; psel_d site: {psel_d.geo.local_site()}.")
+    cdef SelectedPointsRealD psel_d_prob_xy = q.SelectedPointsRealD(psel_d)
+    cdef cc.RealD prob_pair = cc.set_psel_d_prob_xy(
+            psel_d_prob_xy.xx,
+            psel.xx,
+            psel_prob.xx,
+            psel_d.xx,
+            psel_d_prob.xx,
+            idx_xg_x,
+            idx_xg_y,
+            )
+    return prob_pair, psel_d_prob_xy
+
+cdef class CurrentMoments:
+
+    def __cinit__(self):
+        self.xx.init()
+
+    def __init__(self, *args):
+        cdef cc.Int len_args = len(args)
+        if len_args > 0:
+            if isinstance(args[0], SelectedPointsWilsonMatrix):
+                current, psel_d_prob_xy = args
+                self.set_from_current(current, psel_d_prob_xy)
+            else:
+                raise Exception("CurrentMoments.__init__")
+
+    def __imatmul__(self, CurrentMoments v1):
+        cc.assign_direct(self.xx, v1.xx)
+        return self
+
+    def copy(self, is_copying_data=True):
+        x = CurrentMoments()
+        if is_copying_data:
+            x @= self
+        return x
+
+    def __copy__(self):
+        return self.copy()
+
+    def __deepcopy__(self, memo):
+        return self.copy()
+
+    @q.timer
+    def set_from_current(
+            self,
+            SelectedPointsWilsonMatrix current,
+            SelectedPointsRealD psel_d_prob_xy,
+            ):
+        cdef CurrentMoments cm = CurrentMoments()
+        cdef PointsSelection psel_d = psel_d_prob_xy.psel
+        assert len(psel_d) == len(current.psel)
+        cdef Geometry geo = psel_d.geo
+        cc.set_current_moments_from_current(self.xx, current.xx, psel_d.xx, psel_d_prob_xy.xx, geo.xx)
+
+    @q.timer
+    def glb_sum(self):
+        """
+        Return results. Do NOT modify self.
+        """
+        cdef CurrentMoments cm = self.copy()
+        cc.glb_sum_current_moments(cm.xx)
+        return cm
+
+###
 
 @q.timer
 def contract_four_pair_no_glb_sum(

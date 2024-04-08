@@ -438,7 +438,7 @@ cdef extern from "qlat/hlbl-contract.h" namespace "qlat":
     #
     void set_m_z_field_tag(SelectedPoints[RealD]& smf_d, const PointsSelection& psel_d, const Geometry& geo, const Coordinate& xg_x, const Coordinate& xg_y, const double a, const int tag) except +
     #
-    void set_local_current_from_props(SelectedPoints[WilsonMatrix]& scf, const SelectedPoints[WilsonMatrix]& sprop1, const SelectedPoints[WilsonMatrix]& sprop2, const PointsSelection& psel_d, const Geometry& geo);
+    void set_local_current_from_props(SelectedPoints[WilsonMatrix]& scf, const SelectedPoints[WilsonMatrix]& sprop1, const SelectedPoints[WilsonMatrix]& sprop2, const PointsSelection& psel_d, const Geometry& geo) except +
     #
     RealD set_psel_d_prob_xy(SelectedPoints[RealD]& psel_d_prob_xy, const PointsSelection& psel, SelectedPoints[RealD]& psel_prob, const PointsSelection& psel_d, const SelectedPoints[RealD]& psel_d_prob, const Long idx_xg_x, const Long idx_xg_y) except +
     #

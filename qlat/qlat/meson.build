@@ -42,6 +42,7 @@ pxd_files = files(
   'hmc.pxd',
   'gauge_action.pxd',
   'muon_line.pxd',
+  'hlbl_contract.pxd',
   )
 
 py3.install_sources(init_files + py_files + pxd_files, subdir: 'qlat')

@@ -31,7 +31,7 @@ void set_local_current_from_props(SelectedPoints<WilsonMatrix>& scf,
                                   const SelectedPoints<WilsonMatrix>& sprop2,
                                   const PointsSelection& psel_d,
                                   const Geometry& geo)
-// ->- sprop1 ->- gamma_mu ->- gamma5 sprop2^+ gamma5 ->-
+// -<- gamma5 sprop2^+ gamma5 -<- gamma_mu -<- sprop1 -<-
 {
   (void)geo;
   TIMER_VERBOSE("set_local_current_from_props");
