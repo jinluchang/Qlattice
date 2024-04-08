@@ -280,6 +280,13 @@ qacc CoordinateD choose_reference(const Coordinate& xg_x,
   return CoordinateD();
 }
 
+RealD set_psel_d_prob_xy(SelectedPoints<RealD>& psel_d_prob_xy,
+                         const PointsSelection& psel,
+                         SelectedPoints<RealD>& psel_prob,
+                         const PointsSelection& psel_d,
+                         const SelectedPoints<RealD>& psel_d_prob,
+                         const Long idx_xg_x, const Long idx_xg_y);
+
 void set_current_moments_from_current(
     CurrentMoments<WilsonMatrix>& cm,
     const SelectedPoints<WilsonMatrix>& current, const PointsSelection& psel_d,

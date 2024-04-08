@@ -51,6 +51,50 @@ void set_local_current_from_props(SelectedPoints<WilsonMatrix>& scf,
   });
 }
 
+RealD set_psel_d_prob_xy(SelectedPoints<RealD>& psel_d_prob_xy,
+                         const PointsSelection& psel,
+                         SelectedPoints<RealD>& psel_prob,
+                         const PointsSelection& psel_d,
+                         const SelectedPoints<RealD>& psel_d_prob,
+                         const Long idx_xg_x, const Long idx_xg_y)
+// return prob_pair;
+{
+  TIMER("set_psel_d_prob_xy(psel_d_prob_xy,...)");
+  psel_d_prob_xy = psel_d_prob;
+  qassert(0 <= idx_xg_x and idx_xg_x < (Long)psel.size());
+  qassert(0 <= idx_xg_y and idx_xg_y < (Long)psel.size());
+  const RealD prob_xg_x = psel_prob.get_elem(idx_xg_x);
+  const RealD prob_xg_y = psel_prob.get_elem(idx_xg_y);
+  const Coordinate& xg_x = psel[idx_xg_x];
+  const Coordinate& xg_y = psel[idx_xg_y];
+  if (xg_x == xg_y) {
+    qassert(idx_xg_x == idx_xg_y);
+    qassert(prob_xg_x == prob_xg_y);
+    qthread_for(idx, psel_d.size(), {
+      const Coordinate xg_z = psel_d[idx];
+      if (xg_z == xg_x) {
+        qassert(xg_z == xg_y);
+        const RealD prob = psel_d_prob_xy.get_elem(idx);
+        psel_d_prob_xy.get_elem(idx) = std::min(1.0, prob / prob_xg_x);
+      }
+    });
+  } else {
+    qthread_for(idx, psel_d.size(), {
+      const Coordinate xg_z = psel_d[idx];
+      if (xg_z == xg_x) {
+        const RealD prob = psel_d_prob_xy.get_elem(idx);
+        psel_d_prob_xy.get_elem(idx) = std::min(1.0, prob / prob_xg_x);
+      } else if (xg_z == xg_y) {
+        const RealD prob = psel_d_prob_xy.get_elem(idx);
+        psel_d_prob_xy.get_elem(idx) = std::min(1.0, prob / prob_xg_y);
+      }
+    });
+  }
+  const RealD prob_pair =
+      xg_x == xg_y ? std::min(prob_xg_x, prob_xg_y) : prob_xg_x * prob_xg_y;
+  return prob_pair;
+}
+
 void set_current_moments_from_current_par(
     CurrentMoments<WilsonMatrix>& cm,
     const SelectedPoints<WilsonMatrix>& current, const PointsSelection& psel_d,
@@ -281,41 +325,15 @@ std::vector<SlTable> contract_four_pair_no_glb_sum(
                           show(xg_x).c_str(), show(xg_y).c_str(),
                           show(total_site).c_str(), (long)r_sq_limit));
   }
-  const RealD prob_xg_x = psel_prob.get_elem(idx_xg_x);
-  const RealD prob_xg_y = psel_prob.get_elem(idx_xg_y);
-  const RealD prob_pair =
-      xg_x == xg_y ? std::min(prob_xg_x, prob_xg_y) : prob_xg_x * prob_xg_y;
-  const RealD weight_pair = 1.0 / prob_pair;
   const SelectedPoints<ManyMagneticMoments> smf =
       smf_d.template view_as<ManyMagneticMoments>();
   qassert(psel_d.size() == psel_d_prob.n_points);
   qassert(psel_d.size() == sprop_x.n_points);
   qassert(psel_d.size() == sprop_y.n_points);
   SelectedPoints<RealD> psel_d_prob_xy;
-  psel_d_prob_xy = psel_d_prob;
-  if (xg_x == xg_y) {
-    qassert(idx_xg_x == idx_xg_y);
-    qassert(prob_xg_x == prob_xg_y);
-    qthread_for(idx, psel_d.size(), {
-      const Coordinate xg_z = psel_d[idx];
-      if (xg_z == xg_x) {
-        qassert(xg_z == xg_y);
-        const RealD prob = psel_d_prob_xy.get_elem(idx);
-        psel_d_prob_xy.get_elem(idx) = std::min(1.0, prob / prob_xg_x);
-      }
-    });
-  } else {
-    qthread_for(idx, psel_d.size(), {
-      const Coordinate xg_z = psel_d[idx];
-      if (xg_z == xg_x) {
-        const RealD prob = psel_d_prob_xy.get_elem(idx);
-        psel_d_prob_xy.get_elem(idx) = std::min(1.0, prob / prob_xg_x);
-      } else if (xg_z == xg_y) {
-        const RealD prob = psel_d_prob_xy.get_elem(idx);
-        psel_d_prob_xy.get_elem(idx) = std::min(1.0, prob / prob_xg_y);
-      }
-    });
-  }
+  const RealD prob_pair = set_psel_d_prob_xy(
+      psel_d_prob_xy, psel, psel_prob, psel_d, psel_d_prob, idx_xg_x, idx_xg_y);
+  const RealD weight_pair = 1.0 / prob_pair;
   SelectedPoints<WilsonMatrix> sc_xy, sc_yx;
   set_local_current_from_props(sc_xy, sprop_y, sprop_x, psel_d, geo);
   set_local_current_from_props(sc_yx, sprop_x, sprop_y, psel_d, geo);
@@ -329,7 +347,8 @@ std::vector<SlTable> contract_four_pair_no_glb_sum(
   const Complex coef0 = 1.0E10 * 2.0 * muon_mass * std::pow(e_charge, 6);
   const Complex coef1 =
       (inv_type == 0 ? 16.0 + 1.0 : 1.0) / 81.0 * (-3.0) * std::pow(z_v, 4);
-  const Complex coef_all = coef * coef0 * coef1 / 3.0 / (RealD)total_volume * weight_pair;
+  const Complex coef_all =
+      coef * coef0 * coef1 / 3.0 / (RealD)total_volume * weight_pair;
   std::vector<SlTable> ts;
   for (int i = 0; i < (int)tags.size(); ++i) {
     SelectedPoints<Complex> f_loop_i_rho_sigma_lambda;
