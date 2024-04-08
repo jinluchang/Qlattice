@@ -285,6 +285,8 @@ void set_current_moments_from_current(
     const SelectedPoints<WilsonMatrix>& current, const PointsSelection& psel_d,
     const SelectedPoints<RealD>& psel_d_prob_xy, const Geometry& geo);
 
+void glb_sum_current_moments(CurrentMoments<WilsonMatrix>& cm);
+
 void contract_four_loop(SelectedPoints<Complex>& f_loop_i_rho_sigma_lambda,
                         const Complex& coef, const Coordinate& xg_x,
                         const Coordinate& xg_y,

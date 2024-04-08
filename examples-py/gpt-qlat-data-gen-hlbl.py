@@ -835,18 +835,20 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     q.displayln_info(f"{fname}: len(prop_cache)={len(prop_cache)}")
     labels = contract_hlbl_four_labels(job_tag)
     pairs_data = []
-    sub_chunk_size = len(point_pairs_chunk) // 8 + 1
+    sub_chunk_size = len(point_pairs_chunk) // 16 + 1
+    len_chunk = len(point_pairs_chunk)
     idx_point_pairs_sub_chunk_list = q.get_chunk_list(list(enumerate(point_pairs_chunk)), chunk_size=sub_chunk_size)
     for idx_point_pairs_sub_chunk in idx_point_pairs_sub_chunk_list:
+        len_sub_chunk = len(idx_point_pairs_sub_chunk)
         for idx, pp in idx_point_pairs_sub_chunk:
-            q.displayln_info(f"{fname}: load prop ; idx={idx} ; len(chunk)={len(idx_point_pairs_sub_chunk)}")
+            q.displayln_info(f"{fname}: load prop ; idx={idx} ; len_chunk={len_chunk} ; len_sub_chunk={len_sub_chunk}")
             xg_x = pp["xg_x"]
             xg_y = pp["xg_y"]
             get_prop(xg_x)
             get_prop(xg_y)
         pairs_data_sub_list = []
         for idx, pp in idx_point_pairs_sub_chunk:
-            q.displayln_info(f"{fname}: contract ; idx={idx} ; len(chunk)={len(idx_point_pairs_sub_chunk)}")
+            q.displayln_info(f"{fname}: contract ; idx={idx} ; len_chunk={len_chunk} ; len_sub_chunk={len_sub_chunk}")
             idx_xg_x = pp["idx_xg_x"]
             idx_xg_y = pp["idx_xg_y"]
             xg_x = pp["xg_x"]
@@ -877,7 +879,7 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             pairs_data_sub_list.append(dict_val)
         pairs_data += pairs_data_sub_list
         for idx, pp in idx_point_pairs_sub_chunk:
-            q.displayln_info(f"{fname}: collect results ; idx={idx} ; len(chunk)={len(idx_point_pairs_sub_chunk)}")
+            q.displayln_info(f"{fname}: collect results ; idx={idx} ; len_chunk={len_chunk} ; len_sub_chunk={len_sub_chunk}")
             dict_val = pairs_data[idx]
             lslt = q.glb_sum(dict_val["lslt"])
             lslt_sloppy = q.glb_sum(dict_val["lslt_sloppy"])

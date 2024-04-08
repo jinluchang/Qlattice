@@ -429,11 +429,20 @@ cdef extern from "qlat/hlbl-contract.h" namespace "qlat":
         int s_limit
         int l_limit
         std_vector[ComplexD] table
-        void init()
-        void init(const int s, const int l)
-        void init(const Coordinate& total_site)
+        void init() except +
+        void init(const int s, const int l) except +
+        void init(const Coordinate& total_site) except +
+    cdef cppclass CurrentMoments[T]:
+        void init() except +
+        void init(const int lsize) except +
     #
     void set_m_z_field_tag(SelectedPoints[RealD]& smf_d, const PointsSelection& psel_d, const Geometry& geo, const Coordinate& xg_x, const Coordinate& xg_y, const double a, const int tag) except +
+    #
+    void set_local_current_from_props(SelectedPoints[WilsonMatrix]& scf, const SelectedPoints[WilsonMatrix]& sprop1, const SelectedPoints[WilsonMatrix]& sprop2, const PointsSelection& psel_d, const Geometry& geo);
+    #
+    void set_current_moments_from_current(CurrentMoments[WilsonMatrix]& cm, const SelectedPoints[WilsonMatrix]& current, const PointsSelection& psel_d, const SelectedPoints[RealD]& psel_d_prob_xy, const Geometry& geo) except +
+    #
+    void glb_sum_current_moments(CurrentMoments[WilsonMatrix]& cm) except +
     #
     std_vector[std_string] contract_four_pair_labels(const std_vector[std_string]& tags) except +
     #

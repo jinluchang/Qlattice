@@ -51,28 +51,75 @@ void set_local_current_from_props(SelectedPoints<WilsonMatrix>& scf,
   });
 }
 
-void set_current_moments_from_current(
+void set_current_moments_from_current_par(
     CurrentMoments<WilsonMatrix>& cm,
     const SelectedPoints<WilsonMatrix>& current, const PointsSelection& psel_d,
     const SelectedPoints<RealD>& psel_d_prob_xy, const Geometry& geo)
 {
-  TIMER("set_current_moments_from_current");
+  TIMER("set_current_moments_from_current_par");
+  qassert(current.multiplicity == 4);
+  const Coordinate total_site = geo.total_site();
+  const int lsize =
+      std::max(total_site[0], std::max(total_site[1], total_site[2]));
+  cm.init(lsize);
+  qthread_for(xg_op_j, lsize, {
+    qfor(idx, psel_d.size(), {
+      const Coordinate& xg_op = psel_d[idx];  // z location
+      for (int j = 0; j < 3; ++j) {
+        if (xg_op[j] == xg_op_j) {
+          const Vector<WilsonMatrix> v = current.get_elems_const(idx);
+          const RealD prob = psel_d_prob_xy.get_elem(idx);
+          const ComplexD weight = 1.0 / prob;
+          for (int k = 0; k < 3; ++k) {
+            cm.d[xg_op_j][3 * j + k] += weight * v[k];
+          }
+        }
+      }
+    });
+  });
+}
+
+void set_current_moments_from_current_nopar(
+    CurrentMoments<WilsonMatrix>& cm,
+    const SelectedPoints<WilsonMatrix>& current, const PointsSelection& psel_d,
+    const SelectedPoints<RealD>& psel_d_prob_xy, const Geometry& geo)
+{
+  TIMER("set_current_moments_from_current_nopar");
   qassert(current.multiplicity == 4);
   const Coordinate total_site = geo.total_site();
   const int lsize =
       std::max(total_site[0], std::max(total_site[1], total_site[2]));
   cm.init(lsize);
   qfor(idx, psel_d.size(), {
-    const Coordinate xg_op = psel_d[idx];  // z location
+    const Coordinate& xg_op = psel_d[idx];  // z location
     const Vector<WilsonMatrix> v = current.get_elems_const(idx);
     const RealD prob = psel_d_prob_xy.get_elem(idx);
     const ComplexD weight = 1.0 / prob;
     for (int j = 0; j < 3; ++j) {
-      for (int k = 0; k < 3; ++k) {
-        cm.d[xg_op[j]][3 * j + k] += weight * v[k];
+      const int xg_op_j = xg_op[j];
+      if (xg_op[j] == xg_op_j) {
+        for (int k = 0; k < 3; ++k) {
+          cm.d[xg_op_j][3 * j + k] += weight * v[k];
+        }
       }
     }
   });
+}
+
+void set_current_moments_from_current(
+    CurrentMoments<WilsonMatrix>& cm,
+    const SelectedPoints<WilsonMatrix>& current, const PointsSelection& psel_d,
+    const SelectedPoints<RealD>& psel_d_prob_xy, const Geometry& geo)
+{
+  // set_current_moments_from_current_nopar(cm, current, psel_d, psel_d_prob_xy,
+  //                                        geo);
+  set_current_moments_from_current_par(cm, current, psel_d, psel_d_prob_xy,
+                                       geo);
+}
+
+void glb_sum_current_moments(CurrentMoments<WilsonMatrix>& cm)
+{
+  TIMER("glb_sum_current_moments");
   glb_sum_double_vec(get_data(cm.d));
 }
 
@@ -275,6 +322,8 @@ std::vector<SlTable> contract_four_pair_no_glb_sum(
   CurrentMoments<WilsonMatrix> cm_xy, cm_yx;
   set_current_moments_from_current(cm_xy, sc_xy, psel_d, psel_d_prob_xy, geo);
   set_current_moments_from_current(cm_yx, sc_yx, psel_d, psel_d_prob_xy, geo);
+  glb_sum_current_moments(cm_xy);
+  glb_sum_current_moments(cm_yx);
   const RealD alpha_inv = 137.035999139;
   const RealD e_charge = std::sqrt(4 * qlat::PI / alpha_inv);
   const Complex coef0 = 1.0E10 * 2.0 * muon_mass * std::pow(e_charge, 6);
