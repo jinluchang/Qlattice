@@ -1458,7 +1458,6 @@ def run_hlbl_sub_hvp_sfield(
         fsel_ps_prob.save_double(sfw, f"{tag} ; fsel-prob", skip_if_exist=True)
         s_hvp = q.SelectedFieldComplexD(fsel_ps, 16)
         s_hvp @= hvp
-        s_hvp *= hvp_type_charge_factor
         s_hvp.save_float_from_double(sfw, tag, skip_if_exist=True)
         sfw.flush()
     sfw.close()
@@ -1561,6 +1560,7 @@ def run_hlbl_two_plus_two_chunk(
         ssp = q.SelectedShufflePlan(fsel_ps.n_elems(), q.RngState(f"psel_ps-permute-{idx_xg_x}"))
         psel_lps_prob = q.SelectedPointsRealD(fsel_ps_prob, ssp)
         lps_hvp = q.SelectedPointsComplexD(s_hvp, ssp)
+        lps_hvp *= hvp_type_charge_factor
         num = len(psel_lps_prob.psel)
         tot_num = q.glb_sum(num)
         hvp_list.append((psel_lps_prob, lps_hvp,))
@@ -1577,13 +1577,13 @@ def run_hlbl_two_plus_two_chunk(
         q.displayln_info(0,
                 f"{info_str} idx/chunk_size={idx}/{len(idx_xg_list_chunk)}")
         xg_x = q.Coordinate(xg_arr[idx_xg_x])
-        psel_lps_prob, lps_hvp_x = hvp_list[idx]
+        psel_lps_prob, lps_hvp = hvp_list[idx]
         n_points_selected, n_points_computed, lslt = q.contract_two_plus_two_pair_no_glb_sum(
                 complex(1.0),
                 psel_prob,
                 psel_lps_prob,
                 idx_xg_x,
-                lps_hvp_x,
+                lps_hvp,
                 edl,
                 r_sq_limit,
                 muon_mass,
