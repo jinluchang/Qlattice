@@ -914,8 +914,14 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             q.displayln_info(f"{fname}: cm glb sum; idx={idx} ; len_chunk={len_chunk} ; len_sub_chunk={len_sub_chunk}")
             idx_xg_x = pp["idx_xg_x"]
             idx_xg_y = pp["idx_xg_y"]
+            prob_accept = pp["prob_accept"]
+            weight_pair = pp["weight_pair"]
             key = (idx_xg_x, idx_xg_y,)
             int_results = pairs_int_results[key]
+            prob_pair = int_results['prob_pair']
+            psel_d_prob_xy = int_results['psel_d_prob_xy']
+            ama_sc_xy = int_results['ama_sc_xy']
+            ama_sc_yx = int_results['ama_sc_yx']
             ama_cm_xy = int_results['ama_cm_xy']
             ama_cm_yx = int_results['ama_cm_yx']
             ama_cm_xy = ama_cm_glb_sum(ama_cm_xy)

@@ -200,7 +200,7 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedPoints<M>& sp0,
                          const PointsSelection& psel,
                          const PointsSelection& psel0,
                          const bool is_keeping_data = true)
-// Most efficient is psel and psel0 is the same.
+// Most efficient if psel and psel0 is the same.
 // If not, more efficient if psel and psel0 has the same order.
 {
   if (&sp == &sp0) {
@@ -212,6 +212,7 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedPoints<M>& sp0,
     return;
   }
   const Long n_points = psel.size();
+  const Long n_points0 = psel0.size();
   const Int multiplicity = sp0.multiplicity;
   if (is_keeping_data) {
     sp.init_zero(psel, multiplicity);
@@ -219,14 +220,16 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedPoints<M>& sp0,
     sp.init(psel, multiplicity);
     set_zero(sp);
   }
-  qthread_for(idx, n_points, {
+  SelectedPoints<Long> sp_idx;
+  sp_idx.init(psel, 1);
+  Long idx_last = -1;
+  qfor(idx, n_points, {
     const Coordinate& xg = psel[idx];
     Long idx0 = -1;
-    Long idx_last = 0;
-    for (Long i = 0; i < (Long)psel0.size(); ++i) {
+    for (Long i = 0; i < n_points0; ++i) {
       idx_last += 1;
-      if (idx_last >= (Long)psel0.size()) {
-        idx_last = idx_last % (Long)psel0.size();
+      if (idx_last >= n_points0) {
+        idx_last = idx_last % n_points0;
       }
       const Coordinate& xg0 = psel0[idx_last];
       if (xg0 == xg) {
@@ -234,8 +237,12 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedPoints<M>& sp0,
         break;
       }
     }
+    sp_idx.get_elem(idx) = idx0;
+  });
+  qthread_for(idx, n_points, {
+    const Long idx0 = sp_idx.get_elem(idx);
     if (idx0 >= 0) {
-      qassert(idx0 < (Long)psel0.size());
+      qassert(idx0 < n_points0);
       const Vector<M> spv0 = sp0.get_elems_const(idx0);
       Vector<M> spv = sp.get_elems(idx);
       for (int m = 0; m < multiplicity; ++m) {
