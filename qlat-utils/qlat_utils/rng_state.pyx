@@ -44,7 +44,7 @@ cdef class RngState:
         self.xx = v1.xx
         return self
 
-    def copy(self, cc.bool is_copying_data=True):
+    def copy(self, cc.Bool is_copying_data=True):
         cdef RngState x = RngState()
         if is_copying_data:
             x.xx = self.xx

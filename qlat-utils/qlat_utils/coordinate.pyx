@@ -25,7 +25,7 @@ cdef class Coordinate:
         cc.assign_direct(self.xx, v1.xx)
         return self
 
-    def copy(self, cc.bool is_copying_data=True):
+    def copy(self, cc.Bool is_copying_data=True):
         cdef Coordinate x = Coordinate()
         if is_copying_data:
             cc.assign_direct(x.xx, self.xx)
@@ -242,7 +242,7 @@ cdef class CoordinateD:
         self.xx = v1.xx
         return self
 
-    def copy(self, cc.bool is_copying_data = True):
+    def copy(self, cc.Bool is_copying_data = True):
         cdef CoordinateD x = CoordinateD()
         if is_copying_data:
             x.xx = self.xx

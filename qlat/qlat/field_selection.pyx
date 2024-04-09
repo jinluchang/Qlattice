@@ -21,7 +21,7 @@ cdef class PointsSelection:
         self.geo = None
         self.view_count = 0
 
-    def __init__(self, xg_arr=None, Geometry geo=None, bool distributed=False):
+    def __init__(self, xg_arr=None, Geometry geo=None, cc.Bool distributed=False):
         """
         PointsSelection()
         PointsSelection(None, geo)
@@ -108,7 +108,7 @@ cdef class PointsSelection:
         return np.asarray(self, dtype=np.int32)
 
     @q.timer
-    def set_xg_arr(self, xg_arr=None, Geometry geo=None, bool distributed=False):
+    def set_xg_arr(self, xg_arr=None, Geometry geo=None, cc.Bool distributed=False):
         """
         psel.set_xg_arr()
         psel.set_xg_arr(None, geo)
@@ -332,11 +332,11 @@ cdef class FieldSelection:
         return fsel_new
 
     def is_containing_psel(self, PointsSelection psel):
-        cdef cc.bool x = cc.is_containing(self.xx, psel.xx)
+        cdef cc.Bool x = cc.is_containing(self.xx, psel.xx)
         return x
 
     def is_containing_fsel(self, FieldSelection fsel_small):
-        cdef cc.bool x = cc.is_containing(self.xx, fsel_small.xx)
+        cdef cc.Bool x = cc.is_containing(self.xx, fsel_small.xx)
         return x
 
     def is_containing(self, sel_small):

@@ -18,7 +18,7 @@ cdef class ShuffledFieldsWriter:
     def __cinit__(self):
         self.cdata = <cc.Long>&(self.xx)
 
-    def __init__(self, str path not None, Coordinate new_size_node not None, cc.bool is_append=False):
+    def __init__(self, str path not None, Coordinate new_size_node not None, cc.Bool is_append=False):
         self.xx.init(path, new_size_node.xx, is_append)
 
     def __del__(self):
@@ -202,7 +202,7 @@ def fields_has_duplicates(str path, Coordinate new_size_node=None):
     return ret
 
 @q.timer
-def properly_truncate_fields(str path, cc.bool is_check_all=False, cc.bool is_only_check=False, Coordinate new_size_node=None):
+def properly_truncate_fields(str path, cc.Bool is_check_all=False, cc.Bool is_only_check=False, Coordinate new_size_node=None):
     if path[-14:] == "/geon-info.txt":
         path = path[:-14]
     if new_size_node is None:
@@ -226,7 +226,7 @@ def truncate_fields(str path, list fns_keep, Coordinate new_size_node=None):
         raise Exception(f"truncate_fields: error {ret}")
 
 @q.timer
-def check_fields(str path, cc.bool is_check_all=True, Coordinate new_size_node=None):
+def check_fields(str path, cc.Bool is_check_all=True, Coordinate new_size_node=None):
     """
     return list of field that is stored successful
     """

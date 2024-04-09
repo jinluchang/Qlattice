@@ -110,7 +110,7 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         return self
 
     @q.timer
-    def copy(self, cc.bool is_copying_data=True):
+    def copy(self, cc.Bool is_copying_data=True):
         f = type(self)(self.fsel)
         if is_copying_data:
             f @= self

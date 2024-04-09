@@ -22,7 +22,7 @@ cdef class LatData:
         self.xx = v1.xx
         return self
 
-    def copy(self, cc.bool is_copying_data=True):
+    def copy(self, cc.Bool is_copying_data=True):
         cdef LatData x = type(self)()
         if is_copying_data:
             x.xx = self.xx
@@ -37,7 +37,7 @@ cdef class LatData:
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         cdef int ndim = self.xx.ndim()
         cdef Buffer buf = Buffer(self, ndim)
-        cdef cc.bool is_complex = self.xx.is_complex()
+        cdef cc.Bool is_complex = self.xx.is_complex()
         if is_complex:
             buf.format = 'Zd'
             buf.itemsize = sizeof(cc.ComplexD)
@@ -131,7 +131,7 @@ cdef class LatData:
         assert dim < dim_size
         return self.xx.info[dim].size
 
-    def dim_indices(self, int dim, cc.bool is_filling_default=False):
+    def dim_indices(self, int dim, cc.Bool is_filling_default=False):
         cdef int dim_size = self.xx.info.size()
         assert 0 <= dim
         assert dim < dim_size
@@ -149,7 +149,7 @@ cdef class LatData:
         cdef int i
         return [ self.xx.info[i].size for i in range(ndim) ]
 
-    def set_dim_sizes(self, list dim_sizes, *, cc.bool is_complex=True):
+    def set_dim_sizes(self, list dim_sizes, *, cc.Bool is_complex=True):
         if self.view_count > 0:
             raise ValueError("can't change shape while being viewed")
         cdef int ndim = len(dim_sizes)
@@ -201,7 +201,7 @@ cdef class LatData:
     def to_numpy(self):
         return np.asarray(self).copy()
 
-    def from_numpy(self, numpy.ndarray val, list dim_names=None, *, cc.bool is_complex=True):
+    def from_numpy(self, numpy.ndarray val, list dim_names=None, *, cc.Bool is_complex=True):
         """
         only set LatData shape if it is initially empty
         otherwise only set data and ignore shape completely
@@ -236,7 +236,7 @@ cdef class LatData:
     def to_list(self):
         return np.asarray(self).ravel().tolist()
 
-    def from_list(self, list val, *, cc.bool is_complex=True):
+    def from_list(self, list val, *, cc.Bool is_complex=True):
         if self.view_count > 0:
             raise ValueError("can't load while being viewed")
         if self.ndim() == 0:
@@ -279,7 +279,7 @@ cdef class LatData:
             dim_indices = self.dim_indices(dim)
             return [ dim_name, dim_size, dim_indices, ]
 
-    def set_info(self, list info_list, *, cc.bool is_complex=True):
+    def set_info(self, list info_list, *, cc.Bool is_complex=True):
         """
         ``info_list`` format::\n
             [ [ dim_name, dim_size, dim_indices, ], ... ]
@@ -376,7 +376,7 @@ cdef class LatData:
 
 ### -------------------------------------------------------------------
 
-def mk_lat_data(list info_list, *, cc.bool is_complex=True):
+def mk_lat_data(list info_list, *, cc.Bool is_complex=True):
     """
     ``info_list`` format::\n
         [ [ dim_name, dim_size, dim_indices, ], ... ]

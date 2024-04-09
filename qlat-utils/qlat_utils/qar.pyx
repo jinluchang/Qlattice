@@ -414,7 +414,7 @@ def qappend(const cc.std_string& path, object content):
     else:
         raise Exception(f"qappend: {type(content)}")
 
-def qload_datatable(const cc.std_string& path, const cc.bool is_par=False):
+def qload_datatable(const cc.std_string& path, const cc.Bool is_par=False):
     return cc.qload_datatable(path, is_par)
 
 def compute_crc32(const cc.std_string& path):
@@ -431,12 +431,12 @@ def qar_build_index_info(const cc.std_string& path_qar):
 
 @timer
 def qar_create_info(const cc.std_string& path_qar, const cc.std_string& path_folder,
-               *, const cc.bool is_remove_folder_after=False):
+               *, const cc.Bool is_remove_folder_after=False):
     return cc.qar_create_info(path_qar, path_folder, is_remove_folder_after)
 
 @timer
 def qar_extract_info(const cc.std_string& path_qar, const cc.std_string& path_folder,
-                *, const cc.bool is_remove_qar_after=False):
+                *, const cc.Bool is_remove_qar_after=False):
     return cc.qar_extract_info(path_qar, path_folder, is_remove_qar_after)
 
 @timer
@@ -474,12 +474,12 @@ def does_file_exist_qar_sync_node(const cc.std_string& path):
 
 @timer
 def qar_create_sync_node(const cc.std_string& path_qar, const cc.std_string& path_folder,
-        *, const cc.bool is_remove_folder_after=False):
+        *, const cc.Bool is_remove_folder_after=False):
     return cc.qar_create_sync_node(path_qar, path_folder, is_remove_folder_after)
 
 @timer
 def qar_extract_sync_node(const cc.std_string& path_qar, const cc.std_string& path_folder,
-                *, const cc.bool is_remove_qar_after=False):
+                *, const cc.Bool is_remove_qar_after=False):
     return cc.qar_extract_sync_node(path_qar, path_folder, is_remove_qar_after)
 
 @timer
@@ -494,7 +494,7 @@ def qcat_bytes_sync_node(const cc.std_string& path):
     """Return contents of file as `bytes`"""
     return <bytes>cc.qcat_sync_node(path)
 
-def qload_datatable_sync_node(const cc.std_string& path, const cc.bool is_par=False):
+def qload_datatable_sync_node(const cc.std_string& path, const cc.Bool is_par=False):
     return cc.qload_datatable_sync_node(path, is_par)
 
 ### ----------------------------------------------------------

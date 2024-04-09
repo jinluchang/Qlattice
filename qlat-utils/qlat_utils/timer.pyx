@@ -92,7 +92,7 @@ def displayln_info(*args):
 
 cdef class Timer:
 
-    def __cinit__(self, const cc.std_string& fname, cc.bool is_verbose = False):
+    def __cinit__(self, const cc.std_string& fname, cc.Bool is_verbose = False):
         self.xx = cc.Timer(fname)
 
     def start(self):
@@ -241,7 +241,7 @@ def timer_merge():
 
 ### -------------------------------------------------------------------
 
-def timer_builder(object func, cc.bool is_verbose, cc.bool is_flops) -> object:
+def timer_builder(object func, cc.Bool is_verbose, cc.Bool is_flops) -> object:
     cdef cc.std_string fname = "py:" + func.__name__
     cdef cc.Timer qtimer = cc.Timer(fname)
     if not is_flops:

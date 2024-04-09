@@ -35,7 +35,7 @@ def gf_hyp_smear(GaugeField gf, double alpha1, double alpha2, double alpha3):
 @q.timer
 def prop_smear(Prop prop, GaugeField gf1,
                double coef, int step, CoordinateD mom=None,
-               cc.bool smear_in_time_dir=False,
+               cc.Bool smear_in_time_dir=False,
                int mode_smear=1):
     """
     gf_ape = gf_spatial_ape_smear(gf, 0.5, 30)

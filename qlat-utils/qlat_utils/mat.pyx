@@ -19,7 +19,7 @@ cdef class WilsonMatrix:
         self.xx = v1.xx
         return self
 
-    def copy(self, cc.bool is_copying_data = True):
+    def copy(self, cc.Bool is_copying_data = True):
         cdef WilsonMatrix x = WilsonMatrix()
         if is_copying_data:
             x.xx = self.xx
@@ -76,7 +76,7 @@ cdef class SpinMatrix:
         self.xx = v1.xx
         return self
 
-    def copy(self, cc.bool is_copying_data = True):
+    def copy(self, cc.Bool is_copying_data = True):
         cdef SpinMatrix x = SpinMatrix()
         if is_copying_data:
             x.xx = self.xx
@@ -130,7 +130,7 @@ cdef class ColorMatrix:
         self.xx = v1.xx
         return self
 
-    def copy(self, cc.bool is_copying_data = True):
+    def copy(self, cc.Bool is_copying_data = True):
         cdef ColorMatrix x = ColorMatrix()
         if is_copying_data:
             x.xx = self.xx

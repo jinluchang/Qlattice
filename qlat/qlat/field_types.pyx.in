@@ -107,7 +107,7 @@ cdef class Field{{name}}(FieldBase):
         return self
 
     @q.timer
-    def copy(self, cc.bool is_copying_data=True):
+    def copy(self, cc.Bool is_copying_data=True):
         f = type(self)()
         if is_copying_data:
             f @= self
