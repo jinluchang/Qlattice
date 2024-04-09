@@ -1442,7 +1442,6 @@ def run_hlbl_sub_hvp_sfield(
         hvp = ama_extract(ama_val)
         hvp_avg = glb_hvp_avg.copy().shift(xg)
         hvp -= hvp_avg
-        hvp *= hvp_type_charge_factor
         hvp_sel_prob = q.sqrt_field(q.qnorm_field(hvp))
         hvp_sel_prob *= 1.0 / hvp_sel_threshold
         hvp_sel_prob[:] = np.minimum(1.0, hvp_sel_prob[:])
@@ -1459,6 +1458,7 @@ def run_hlbl_sub_hvp_sfield(
         fsel_ps_prob.save_double(sfw, f"{tag} ; fsel-prob", skip_if_exist=True)
         s_hvp = q.SelectedFieldComplexD(fsel_ps, 16)
         s_hvp @= hvp
+        s_hvp *= hvp_type_charge_factor
         s_hvp.save_float_from_double(sfw, tag, skip_if_exist=True)
         sfw.flush()
     sfw.close()
