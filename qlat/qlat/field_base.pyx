@@ -726,9 +726,9 @@ cdef class SelectedPointsBase:
         psel = self.psel
         n_points = self.n_points()
         multiplicity = self.multiplicity()
-        is_distributed = self.is_distributed()
+        distributed = self.distributed()
         data_arr = self[:]
-        return [ data_arr, n_points, multiplicity, is_distributed, psel, ]
+        return [ data_arr, n_points, multiplicity, distributed, psel, ]
 
     def __setstate__(self, state):
         """
@@ -739,8 +739,8 @@ cdef class SelectedPointsBase:
         self.__init__()
         cdef cc.Long n_points
         cdef cc.Int multiplicity
-        [ data_arr, n_points, multiplicity, is_distributed, psel, ] = state
-        self.init_from_n_points(n_points, multiplicity, is_distributed)
+        [ data_arr, n_points, multiplicity, distributed, psel, ] = state
+        self.init_from_n_points(n_points, multiplicity, distributed)
         self.psel = psel
         self[:] = data_arr
 

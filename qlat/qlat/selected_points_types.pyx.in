@@ -207,8 +207,14 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
     def from_lat_data(self, LatData ld not None):
         cc.selected_points_from_lat_data(self.xx, ld.xx)
 
-    def is_distributed(self):
+    def distributed(self):
         return self.xx.distributed
+
+    def set_distributed(self, const cc.Bool distributed):
+        """
+        set the distributed flag
+        """
+        self.xx.distributed = distributed
 
     def n_points(self):
         return self.xx.n_points

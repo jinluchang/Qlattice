@@ -21,7 +21,7 @@ cdef class PointsSelection:
         self.geo = None
         self.view_count = 0
 
-    def __init__(self, xg_arr=None, Geometry geo=None):
+    def __init__(self, xg_arr=None, Geometry geo=None, bool distributed=False):
         """
         PointsSelection()
         PointsSelection(None, geo)
@@ -29,8 +29,9 @@ cdef class PointsSelection:
         PointsSelection(xg, geo)
         PointsSelection(xg_arr, geo)
         PointsSelection(xg_list, geo)
+        PointsSelection(xg_arr, geo, distributed)
         """
-        self.set_xg_arr(xg_arr, geo)
+        self.set_xg_arr(xg_arr, geo, distributed)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         cdef int ndim = 2
@@ -81,8 +82,14 @@ cdef class PointsSelection:
         self.geo = geo
         cc.assign_direct(self.xx, cc.load_point_selection_info(path))
 
-    def is_distributed(self):
+    def distributed(self):
         return self.xx.distributed
+
+    def set_distributed(self, const cc.Bool distributed):
+        """
+        set the distributed flag
+        """
+        self.xx.distributed = distributed
 
     def n_points(self):
         return self.xx.size()
@@ -101,7 +108,7 @@ cdef class PointsSelection:
         return np.asarray(self, dtype=np.int32)
 
     @q.timer
-    def set_xg_arr(self, xg_arr=None, Geometry geo=None):
+    def set_xg_arr(self, xg_arr=None, Geometry geo=None, bool distributed=False):
         """
         psel.set_xg_arr()
         psel.set_xg_arr(None, geo)
@@ -109,6 +116,7 @@ cdef class PointsSelection:
         psel.set_xg_arr(xg, geo)
         psel.set_xg_arr(xg_arr, geo)
         psel.set_xg_arr(xg_list, geo)
+        psel.set_xg_arr(xg_arr, geo, distributed)
         """
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
@@ -139,6 +147,7 @@ cdef class PointsSelection:
                 self.xx[i] = Coordinate(xg_arr[i]).xx
         else:
             raise Exception(f"PointsSelection.set_xg_arr({xg_arr},{geo})")
+        self.xx.distributed = distributed
 
     def set_geo(self, Geometry geo):
         self.geo = geo
@@ -186,8 +195,8 @@ cdef class PointsSelection:
         """
         geo = self.geo
         xg_arr = self.xg_arr()
-        is_distributed = self.is_distributed()
-        return [ xg_arr, geo, is_distributed, ]
+        distributed = self.distributed()
+        return [ xg_arr, geo, distributed, ]
 
     def __setstate__(self, state):
         """
@@ -196,9 +205,9 @@ cdef class PointsSelection:
         if self.view_count > 0:
             raise ValueError("can't load while being viewed")
         self.__init__()
-        [ xg_arr, geo, is_distributed, ] = state
+        [ xg_arr, geo, distributed, ] = state
         self.set_xg_arr(xg_arr, geo)
-        if is_distributed:
+        if distributed:
             self.xx.distributed = True
 
 ### -------------------------------------------------------------------
