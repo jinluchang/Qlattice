@@ -143,7 +143,7 @@ cdef extern from "qlat/core.h" namespace "qlat":
         vector_acc[T] points
         SelectedPoints()
         void init()
-        void init(const Long n_points, const int multiplicity) except +
+        void init(const Long n_points, const int multiplicity, const bool distributed) except +
         void init(const PointsSelection& psel, const int multiplicity) except +
     Vector[T] get_data[T](const Field[T]& x) except +
     void set_zero[T](Field[T]& x) except +

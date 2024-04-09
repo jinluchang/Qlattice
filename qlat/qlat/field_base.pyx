@@ -379,6 +379,9 @@ cdef class FieldBase:
         self.init_from_geo(geo)
         self[:] = data_arr
 
+    def __len__(self):
+        return self.n_sites()
+
 ### -------------------------------------------------------------------
 
 def split_fields(fs, f):
@@ -654,6 +657,9 @@ cdef class SelectedFieldBase:
         self.init_from_fsel(fsel, multiplicity)
         self[:] = data_arr
 
+    def __len__(self):
+        return self.n_elems()
+
 ### -------------------------------------------------------------------
 
 cdef class SelectedPointsBase:
@@ -743,5 +749,8 @@ cdef class SelectedPointsBase:
         self.init_from_n_points(n_points, multiplicity, distributed)
         self.psel = psel
         self[:] = data_arr
+
+    def __len__(self):
+        return self.n_points()
 
 ### -------------------------------------------------------------------

@@ -914,8 +914,11 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             q.displayln_info(f"{fname}: cm glb sum; idx={idx} ; len_chunk={len_chunk} ; len_sub_chunk={len_sub_chunk}")
             idx_xg_x = pp["idx_xg_x"]
             idx_xg_y = pp["idx_xg_y"]
+            xg_x = pp["xg_x"]
+            xg_y = pp["xg_y"]
             prob_accept = pp["prob_accept"]
             weight_pair = pp["weight_pair"]
+            r = pp["r"]
             key = (idx_xg_x, idx_xg_y,)
             int_results = pairs_int_results[key]
             prob_pair = int_results['prob_pair']
@@ -928,6 +931,38 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             ama_cm_yx = ama_cm_glb_sum(ama_cm_yx)
             int_results['ama_cm_xy'] = ama_cm_xy
             int_results['ama_cm_yx'] = ama_cm_yx
+            sf_pair_f_rand_01 = q.SelectedFieldRealD(fsel, 1)
+            sf_pair_f_rand_01.set_rand(q.RngState(f"{job_tag} {traj} {inv_type} {xg_x.to_tuple()} {xg_y.to_tuple()}"), 1.0, 0.0)
+            sp_pair_f_rand_01 = q.SelectedPointsRealD(sf_pair_f_rand_01, ssp)
+            assert len(sp_pair_f_rand_01) == len(psel_d_prob_xy)
+            psel_d = psel_d_prob_xy.psel
+            sp_norm = q.qnorm_field(ama_extract(ama_sc_xy, is_sloppy=True))
+            sp_norm += q.qnorm_field(ama_extract(ama_sc_yx, is_sloppy=True))
+            sp_norm = q.sqrt_field(sp_norm)
+            sp_norm *= weight_pair / prob_pair
+            sp_norm[:] = sp_norm[:] / psel_d_prob_xy[:]
+            glb_avg = q.glb_sum(sp_norm[:].sum()) / q.glb_sum(len(sp_norm))
+            q.displayln_info(f"{fname}: {inv_type_name} ; r={r} ; weight_pair={weight_pair} ; prob_pair={prob_pair} ; sp_norm_avg={glb_avg}")
+            # q.displayln_info(f"INFO: {fname}: sp_norm=\n{sp_norm[:, 0]}")
+            hlbl_four_contract_sparse_ratio = 1e10 # smaller value means less computation
+            sp_norm[:] = np.minimum(1.0, sp_norm[:] / glb_avg * hlbl_four_contract_sparse_ratio)
+            selection = sp_pair_f_rand_01[:, 0] <= sp_norm[:, 0]
+            psel_d_sel = q.PointsSelection(psel_d[selection, :], psel_d.geo, True)
+            assert psel_d_sel.distributed() == psel_d.distributed()
+            psel_d_sel_prob_xy = q.SelectedPointsRealD(psel_d_sel, 1)
+            psel_d_sel_prob_xy @= psel_d_prob_xy
+            psel_d_sel_prob_xy[:] *= sp_norm[selection, :]
+            def sel_sc(sc):
+                multiplicity = sc.multiplicity()
+                assert multiplicity == 4
+                sc_sel = q.SelectedPointsWilsonMatrix(psel_d_sel, multiplicity)
+                sc_sel @= sc
+                return sc_sel
+            ama_sel_sc_xy = ama_apply1(sel_sc, ama_sc_xy)
+            ama_sel_sc_yx = ama_apply1(sel_sc, ama_sc_yx)
+            int_results['psel_d_prob_xy'] = psel_d_sel_prob_xy
+            int_results['ama_sc_xy'] = ama_sel_sc_xy
+            int_results['ama_sc_yx'] = ama_sel_sc_yx
         pairs_data_sub_list = []
         for idx, pp in idx_point_pairs_sub_chunk:
             q.displayln_info(f"{fname}: contract ; idx={idx} ; len_chunk={len_chunk} ; len_sub_chunk={len_sub_chunk}")

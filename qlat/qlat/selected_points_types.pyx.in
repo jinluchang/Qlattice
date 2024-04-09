@@ -119,8 +119,7 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
 
     def init_from_n_points(self, cc.Long n_points, cc.Int multiplicity, cc.Bool distributed):
         self.psel = None
-        self.xx.init(n_points, multiplicity)
-        self.xx.distributed = distributed
+        self.xx.init(n_points, multiplicity, distributed)
 
     def init_from_psel(self, PointsSelection psel, cc.Int multiplicity=0):
         self.psel = psel

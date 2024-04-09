@@ -61,7 +61,7 @@ cdef class Field{{name}}(FieldBase):
     def __init__(self, *args):
         self.init_from_geo(*args)
 
-    def init_from_geo(self, Geometry geo=None, int multiplicity=0):
+    def init_from_geo(self, Geometry geo=None, cc.Int multiplicity=0):
         if geo is None:
             self.xx.init()
             return
@@ -70,17 +70,17 @@ cdef class Field{{name}}(FieldBase):
         self.xx.init(geo.xx, multiplicity)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
-        cdef int ndim = 2 + ElemType{{name}}.ndim()
+        cdef cc.Int ndim = 2 + ElemType{{name}}.ndim()
         cdef Buffer buf = Buffer(self, ndim)
         buf.format = ElemType{{name}}.format()
         buf.itemsize = ElemType{{name}}.itemsize()
         buf.buf = <char*>(self.xx.field.data())
-        cdef int multiplicity = self.xx.get_geo().multiplicity
+        cdef cc.Int multiplicity = self.xx.get_geo().multiplicity
         buf.set_dim_size(0, self.xx.field.size() // multiplicity)
         buf.set_dim_size(1, multiplicity)
         cdef cc.std_vector[Py_ssize_t] vec = ElemType{{name}}.shape()
-        cdef int dim_size = vec.size()
-        cdef int dim
+        cdef cc.Int dim_size = vec.size()
+        cdef cc.Int dim
         for dim in range(dim_size):
             buf.set_dim_size(2 + dim, vec[dim])
         buf.update_strides_from_shape()
@@ -125,6 +125,10 @@ cdef class Field{{name}}(FieldBase):
         cc.assign_direct(x.xx, self.xx.get_geo().total_site())
         return x
 
+    def n_sites(self):
+        cdef cc.Int multiplicity = self.xx.get_geo().multiplicity
+        return self.xx.field.size() // multiplicity
+
     def multiplicity(self):
         return self.xx.get_geo().multiplicity
 
@@ -156,7 +160,7 @@ cdef class Field{{name}}(FieldBase):
         cc.field_glb_sum(sp.xx, self.xx)
         return sp
 
-    def glb_sum_tslice(self, *, int t_dir=3):
+    def glb_sum_tslice(self, *, cc.Int t_dir=3):
         """
         return SelectedPoints with n_points=total_site[t_dir]
         """
@@ -180,14 +184,14 @@ cdef class Field{{name}}(FieldBase):
         np.asarray(sp).ravel()[:] = np.asarray(val).ravel()
         self @= sp
 
-    def get_elem_xg(self, xg_arr, int m):
+    def get_elem_xg(self, xg_arr, cc.Int m):
         cdef Geometry geo = self.geo()
         cdef PointsSelection psel = PointsSelection(xg_arr, geo)
         cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, 1)
         cc.set_selected_points(sp.xx, self.xx, psel.xx, m)
         return sp
 
-    def set_elem_xg(self, xg_arr, int m, val):
+    def set_elem_xg(self, xg_arr, cc.Int m, val):
         cdef Geometry geo = self.geo()
         cdef PointsSelection psel = PointsSelection(xg_arr, geo)
         cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, 1)
