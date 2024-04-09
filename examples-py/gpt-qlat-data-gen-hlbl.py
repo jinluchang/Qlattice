@@ -936,8 +936,8 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             sp_pair_f_rand_01 = q.SelectedPointsRealD(sf_pair_f_rand_01, ssp)
             assert len(sp_pair_f_rand_01) == len(psel_d_prob_xy)
             psel_d = psel_d_prob_xy.psel
-            sp_norm = q.qnorm_field(ama_extract(ama_sc_xy, is_sloppy=True))
-            sp_norm += q.qnorm_field(ama_extract(ama_sc_yx, is_sloppy=True))
+            sp_norm = q.qnorm_field(ama_extract(ama_sc_xy, is_sloppy=False))
+            sp_norm += q.qnorm_field(ama_extract(ama_sc_yx, is_sloppy=False))
             sp_norm = q.sqrt_field(sp_norm)
             sp_norm *= weight_pair / prob_pair
             sp_norm[:] = sp_norm[:] / psel_d_prob_xy[:]
