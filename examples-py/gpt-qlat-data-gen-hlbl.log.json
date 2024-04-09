@@ -693,7 +693,7 @@
   0.1
  ],
  [
-  "run_hlbl_two_plus_two: run_hlbl_two_plus_two: test-4nt8 1000 light light lslt_sum",
+  "run_hlbl_two_plus_two: test-4nt8 1000 light light lslt_sum",
   {
    "real": 0.004590563351916534,
    "imag": 6.050481467189721e-18,
@@ -702,7 +702,7 @@
   0.02
  ],
  [
-  "run_hlbl_two_plus_two: test-4nt8 1000 light lslt_sum[labels.index('sub proj-all'), -1, -1]",
+  "run_hlbl_two_plus_two: test-4nt8 1000 light light lslt_sum[labels.index('sub proj-all'), -1, -1]",
   {
    "real": -0.000370768211163621,
    "imag": -1.1443042263619137e-18,
@@ -846,7 +846,7 @@
   0.1
  ],
  [
-  "run_hlbl_two_plus_two: run_hlbl_two_plus_two: test-4nt8 1000 light strange lslt_sum",
+  "run_hlbl_two_plus_two: test-4nt8 1000 light strange lslt_sum",
   {
    "real": -0.0007033473281627223,
    "imag": 2.0662724703877542e-18,
@@ -855,7 +855,7 @@
   0.02
  ],
  [
-  "run_hlbl_two_plus_two: test-4nt8 1000 light lslt_sum[labels.index('sub proj-all'), -1, -1]",
+  "run_hlbl_two_plus_two: test-4nt8 1000 light strange lslt_sum[labels.index('sub proj-all'), -1, -1]",
   {
    "real": 0.00024059306785994465,
    "imag": -1.5724363722912412e-19,
@@ -999,7 +999,7 @@
   0.1
  ],
  [
-  "run_hlbl_two_plus_two: run_hlbl_two_plus_two: test-4nt8 1000 strange light lslt_sum",
+  "run_hlbl_two_plus_two: test-4nt8 1000 strange light lslt_sum",
   {
    "real": 0.0004376682298073199,
    "imag": -1.3578020107752676e-18,
@@ -1008,7 +1008,7 @@
   0.02
  ],
  [
-  "run_hlbl_two_plus_two: test-4nt8 1000 strange lslt_sum[labels.index('sub proj-all'), -1, -1]",
+  "run_hlbl_two_plus_two: test-4nt8 1000 strange light lslt_sum[labels.index('sub proj-all'), -1, -1]",
   {
    "real": -0.00020259869139607767,
    "imag": 4.769958658304381e-19,
@@ -1152,7 +1152,7 @@
   0.1
  ],
  [
-  "run_hlbl_two_plus_two: run_hlbl_two_plus_two: test-4nt8 1000 strange strange lslt_sum",
+  "run_hlbl_two_plus_two: test-4nt8 1000 strange strange lslt_sum",
   {
    "real": -0.0002129498552414632,
    "imag": -3.8227436905657357e-19,
@@ -1161,7 +1161,7 @@
   0.02
  ],
  [
-  "run_hlbl_two_plus_two: test-4nt8 1000 strange lslt_sum[labels.index('sub proj-all'), -1, -1]",
+  "run_hlbl_two_plus_two: test-4nt8 1000 strange strange lslt_sum[labels.index('sub proj-all'), -1, -1]",
   {
    "real": 4.5803252927570254e-05,
    "imag": 1.206571540777509e-19,
@@ -2305,7 +2305,7 @@
   0.1
  ],
  [
-  "run_hlbl_two_plus_two: run_hlbl_two_plus_two: test-4nt8 2000 light light lslt_sum",
+  "run_hlbl_two_plus_two: test-4nt8 2000 light light lslt_sum",
   {
    "real": 0.0040150324576597035,
    "imag": -1.2336906133793837e-17,
@@ -2314,7 +2314,7 @@
   0.02
  ],
  [
-  "run_hlbl_two_plus_two: test-4nt8 2000 light lslt_sum[labels.index('sub proj-all'), -1, -1]",
+  "run_hlbl_two_plus_two: test-4nt8 2000 light light lslt_sum[labels.index('sub proj-all'), -1, -1]",
   {
    "real": 6.563608418804792e-05,
    "imag": 2.916210585249355e-18,
@@ -2512,7 +2512,7 @@
   0.1
  ],
  [
-  "run_hlbl_two_plus_two: run_hlbl_two_plus_two: test-4nt8 2000 light strange lslt_sum",
+  "run_hlbl_two_plus_two: test-4nt8 2000 light strange lslt_sum",
   {
    "real": -0.0007291270254834257,
    "imag": 1.1720593531347772e-18,
@@ -2521,7 +2521,7 @@
   0.02
  ],
  [
-  "run_hlbl_two_plus_two: test-4nt8 2000 light lslt_sum[labels.index('sub proj-all'), -1, -1]",
+  "run_hlbl_two_plus_two: test-4nt8 2000 light strange lslt_sum[labels.index('sub proj-all'), -1, -1]",
   {
    "real": 0.0003540320320101207,
    "imag": -6.184528807982461e-19,
@@ -2719,7 +2719,7 @@
   0.1
  ],
  [
-  "run_hlbl_two_plus_two: run_hlbl_two_plus_two: test-4nt8 2000 strange light lslt_sum",
+  "run_hlbl_two_plus_two: test-4nt8 2000 strange light lslt_sum",
   {
    "real": 0.0001734877707018036,
    "imag": -1.6059889508777144e-19,
@@ -2728,7 +2728,7 @@
   0.02
  ],
  [
-  "run_hlbl_two_plus_two: test-4nt8 2000 strange lslt_sum[labels.index('sub proj-all'), -1, -1]",
+  "run_hlbl_two_plus_two: test-4nt8 2000 strange light lslt_sum[labels.index('sub proj-all'), -1, -1]",
   {
    "real": -0.0003503388841699242,
    "imag": -1.169578638282054e-19,
@@ -2926,7 +2926,7 @@
   0.1
  ],
  [
-  "run_hlbl_two_plus_two: run_hlbl_two_plus_two: test-4nt8 2000 strange strange lslt_sum",
+  "run_hlbl_two_plus_two: test-4nt8 2000 strange strange lslt_sum",
   {
    "real": -0.00024362831411135638,
    "imag": 3.516317824684176e-19,
@@ -2935,7 +2935,7 @@
   0.02
  ],
  [
-  "run_hlbl_two_plus_two: test-4nt8 2000 strange lslt_sum[labels.index('sub proj-all'), -1, -1]",
+  "run_hlbl_two_plus_two: test-4nt8 2000 strange strange lslt_sum[labels.index('sub proj-all'), -1, -1]",
   {
    "real": 5.9502836804606335e-05,
    "imag": 4.7995881923819134e-21,

@@ -580,10 +580,10 @@ def get_prob_func(job_tag, inv_type, r_sq_limit, r_sq):
             prob = 0.0
         elif r_sq == 0:
             prob = 1.0 / 128.0
-        elif r_sq <= 12 * 12:
+        elif r_sq <= 20 * 20:
             prob = 1.0
         else:
-            prob = (12.0 / np.sqrt(r_sq))**3
+            prob = (20.0 / np.sqrt(r_sq))**3
     elif job_tag == "24D" and inv_type == 0:
         if r_sq > r_sq_limit:
             prob = 0.0
@@ -1716,12 +1716,12 @@ def run_hlbl_two_plus_two(
             q.displayln_info(-1,
                     f"{info_str}\n avg n_points_selected={n_points_selected} avg n_points_computed={n_points_computed}")
         json_results.append((
-            f"{fname}: {info_str} lslt_sum",
+            f"{info_str} lslt_sum",
             q.get_data_sig(results["lslt_sum"], q.RngState()),
             2e-2,
             ))
         json_results.append((
-            f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum[labels.index('sub proj-all'), -1, -1]",
+            f"{info_str} lslt_sum[labels.index('sub proj-all'), -1, -1]",
             results["lslt_sum"][labels.index('sub proj-all'), -1, -1],
             2e-2,
             ))
@@ -2160,15 +2160,15 @@ tag = "hlbl_four_contract_sparse_ratio"
 set_param("test-4nt8", tag, value=2.0)
 set_param("test-8nt16", tag, value=2.0)
 set_param("24D", tag, value=10.0)
-set_param("48I", tag, value=10.0)
-set_param("64I", tag, value=10.0)
+set_param("48I", tag, value=20.0)
+set_param("64I", tag, value=20.0)
 
 tag = "hlbl_two_plus_two_num_hvp_sel_threshold"
 set_param("test-4nt8", tag, value=5e-3)
 set_param("test-8nt16", tag, value=5e-3)
 set_param("24D", tag, value=5e-4)
-set_param("48I", tag, value=1e-4)
-set_param("64I", tag, value=2e-5)
+set_param("48I", tag, value=5e-5)
+set_param("64I", tag, value=5e-5)
 
 tag = "hlbl_two_plus_two_num_chunk"
 set_param("test-4nt8", tag, value=3)
