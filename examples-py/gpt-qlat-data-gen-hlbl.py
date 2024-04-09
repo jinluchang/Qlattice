@@ -811,6 +811,8 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
     #
+    hlbl_four_contract_sparse_ratio = get_param(job_tag, "hlbl_four_contract_sparse_ratio")
+    #
     psel_prob = get_psel_prob()
     psel = psel_prob.psel
     fsel_prob = get_fsel_prob()
@@ -944,8 +946,7 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             glb_avg = q.glb_sum(sp_norm[:].sum()) / q.glb_sum(len(sp_norm))
             q.displayln_info(f"{fname}: {inv_type_name} ; r={r} ; weight_pair={weight_pair} ; prob_pair={prob_pair} ; sp_norm_avg={glb_avg}")
             # q.displayln_info(f"INFO: {fname}: sp_norm=\n{sp_norm[:, 0]}")
-            hlbl_four_contract_sparse_ratio = 1e10 # smaller value means less computation
-            sp_norm[:] = np.minimum(1.0, sp_norm[:] / glb_avg * hlbl_four_contract_sparse_ratio)
+            sp_norm[:] = np.minimum(1.0, sp_norm[:] / glb_avg / hlbl_four_contract_sparse_ratio)
             selection = sp_pair_f_rand_01[:, 0] <= sp_norm[:, 0]
             psel_d_sel = q.PointsSelection(psel_d[selection, :], psel_d.geo, True)
             assert psel_d_sel.distributed() == psel_d.distributed()
@@ -2150,6 +2151,14 @@ set_param("test-8nt16", tag, value=6)
 set_param("24D", tag, value=32)
 set_param("48I", tag, value=32)
 set_param("64I", tag, value=32)
+
+tag = "hlbl_four_contract_sparse_ratio"
+# larger value means less computation
+set_param("test-4nt8", tag, value=0.001)
+set_param("test-8nt16", tag, value=2.0)
+set_param("24D", tag, value=10.0)
+set_param("48I", tag, value=10.0)
+set_param("64I", tag, value=10.0)
 
 tag = "hlbl_two_plus_two_num_hvp_sel_threshold"
 set_param("test-4nt8", tag, value=5e-3)
