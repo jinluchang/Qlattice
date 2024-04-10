@@ -10,9 +10,11 @@ import cqlat as c
 import qlat_utils as q
 import numpy as np
 
+@q.timer
 def release_lock():
     cc.release_lock()
 
+@q.timer
 def obtain_lock(const cc.std_string& path):
     return cc.obtain_lock(path)
 
@@ -23,10 +25,12 @@ def qquit(const cc.std_string& msg):
     q.clean_cache()
     return cc.qquit(msg)
 
+@q.timer
 def check_time_limit(budget=None):
     if budget is None:
         budget = q.get_time_budget()
     return cc.check_time_limit(budget)
 
+@q.timer
 def check_stop(fn="stop.txt"):
     return cc.check_stop(fn)

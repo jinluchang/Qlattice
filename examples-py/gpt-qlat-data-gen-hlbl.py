@@ -901,6 +901,8 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
         if get_load_path(mk_fn(id_chunk)) is not None:
             q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} {id_chunk}/{num_chunk} done.")
             continue
+        q.check_stop()
+        q.check_time_limit()
         pairs_data = []
         len_chunk = len(point_pairs_chunk)
         len_info_str = f"len_chunk={len_chunk} ; id_chunk={id_chunk} ; num_chunk={num_chunk}"
@@ -1581,6 +1583,8 @@ def run_hlbl_two_plus_two_chunk(
     sfr = q.open_fields(get_load_path(sub_hvp_fn), "r")
     tags = sfr.list()
     for idx, idx_xg_x in enumerate(idx_xg_list_chunk):
+        q.check_stop()
+        q.check_time_limit()
         xg = q.Coordinate(xg_arr[idx_xg_x])
         tag = mk_psrc_tag(xg, inv_type, inv_acc="ama")
         if tag not in tags:
@@ -1609,6 +1613,8 @@ def run_hlbl_two_plus_two_chunk(
     #
     points_data = []
     for idx, idx_xg_x in enumerate(idx_xg_list_chunk):
+        q.check_stop()
+        q.check_time_limit()
         q.displayln_info(0,
                 f"{info_str} idx/chunk_size={idx}/{len(idx_xg_list_chunk)}")
         xg_x = q.Coordinate(xg_arr[idx_xg_x])
