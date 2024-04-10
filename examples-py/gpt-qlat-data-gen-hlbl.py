@@ -372,6 +372,7 @@ def run_job_global_hvp_average(job_tag, *, inv_type):
     q.check_time_limit()
     if not q.obtain_lock(f"locks/{job_tag}-{fname}-{inv_type_name}"):
         return None
+    q.timer_fork()
     #
     @q.timer_verbose
     def compute_glb_hvp_average():
@@ -424,6 +425,7 @@ def run_job_global_hvp_average(job_tag, *, inv_type):
     q.release_lock()
     q.clean_cache()
     q.timer_display()
+    q.timer_merge()
     return ret
 
 @q.timer_verbose
@@ -457,6 +459,7 @@ def run_job_global_hvp_average_for_subtract(job_tag, traj, *, inv_type, get_glb_
         return None
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
         return
+    q.timer_fork()
     glb_hvp_avg_trajs, glb_hvp_avg = get_glb_hvp_avg()
     glb_hvp_avg_for_sub = glb_hvp_avg.copy()
     if traj not in glb_hvp_avg_trajs:
@@ -472,6 +475,8 @@ def run_job_global_hvp_average_for_subtract(job_tag, traj, *, inv_type, get_glb_
     glb_hvp_avg_for_sub *= 1.0 / (num_trajs - 1.0)
     glb_hvp_avg_for_sub.save_float_from_double(get_save_path(fn))
     q.release_lock()
+    q.timer_display()
+    q.timer_merge()
     return ret
 
 # ----
@@ -725,6 +730,7 @@ def run_hlbl_four_point_pairs_info(job_tag, traj, *, inv_type, get_psel_prob):
         return ret
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
         return None
+    q.timer_fork()
     point_pairs = mk_hlbl_four_point_pairs(
             job_tag, traj,
             inv_type=inv_type,
@@ -732,6 +738,8 @@ def run_hlbl_four_point_pairs_info(job_tag, traj, *, inv_type, get_psel_prob):
             )
     q.save_pickle_obj(point_pairs, get_save_path(fn))
     q.release_lock()
+    q.timer_display()
+    q.timer_merge()
     return ret
 
 def get_hlbl_clbl_info_ref_tags(job_tag):
@@ -795,17 +803,28 @@ def contract_hlbl_four_ama(
     return (ama_extract(ama_val, is_sloppy=False), ama_extract(ama_val, is_sloppy=True),)
 
 @q.timer
-def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_point_pairs, prop_cache, id_chunk, num_chunk):
+def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_point_pairs, prop_cache, id_chunk_list, num_chunk):
     fname = q.get_fname()
     inv_type_name_list = [ "light", "strange", ]
     inv_type_name = inv_type_name_list[inv_type]
-    fn = f"{job_tag}/hlbl/clbl-{inv_type_name}/traj-{traj}/chunk_{id_chunk}_{num_chunk}.pickle"
-    if get_load_path(fn) is not None:
+    def mk_fn(id_chunk):
+        fn = f"{job_tag}/hlbl/clbl-pairs-data-{inv_type_name}/traj-{traj}/chunk_{id_chunk}_{num_chunk}.pickle"
+        return fn
+    is_all_done = True
+    for id_chunk in id_chunk_list:
+        fn = mk_fn(id_chunk)
+        if get_load_path(fn) is None:
+            is_all_done = False
+            break
+    if is_all_done:
+        q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} {id_chunk_list} {num_chunk} all done.")
         return
     q.check_stop()
     q.check_time_limit()
-    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}-{id_chunk}-{num_chunk}"):
+    assert len(id_chunk_list) > 0
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}-{id_chunk_list[0]}-{num_chunk}"):
         return
+    q.timer_fork()
     #
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site, 1)
@@ -822,11 +841,14 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     psel_d_prob = q.SelectedPointsRealD(fsel_prob, ssp)
     #
     point_pairs = get_point_pairs()
-    point_pairs_chunk_list = q.get_chunk_list(point_pairs, chunk_number=num_chunk)
-    if id_chunk < len(point_pairs_chunk_list):
-        point_pairs_chunk = point_pairs_chunk_list[id_chunk]
-    else:
-        point_pairs_chunk = []
+    all_point_pairs_chunk_list = q.get_chunk_list(point_pairs, chunk_number=num_chunk)
+    point_pairs_chunk_list = []
+    for id_chunk in id_chunk_list:
+        if id_chunk < len(all_point_pairs_chunk_list):
+            point_pairs_chunk = all_point_pairs_chunk_list[id_chunk]
+        else:
+            point_pairs_chunk = []
+        point_pairs_chunk_list.append(point_pairs_chunk)
     #
     rel_acc_list = [ 0, 1, 2, ]
     prob_list = [ get_param(job_tag, f"prob_acc_{inv_acc}_psrc") for inv_acc in rel_acc_list ]
@@ -875,21 +897,22 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     #
     q.displayln_info(f"{fname}: len(prop_cache)={len(prop_cache)}")
     labels = contract_hlbl_four_labels(job_tag)
-    pairs_data = []
-    sub_chunk_size = len(point_pairs_chunk) // 16 + 1
-    len_chunk = len(point_pairs_chunk)
-    idx_point_pairs_sub_chunk_list = q.get_chunk_list(list(enumerate(point_pairs_chunk)), chunk_size=sub_chunk_size)
-    for idx_point_pairs_sub_chunk in idx_point_pairs_sub_chunk_list:
-        len_sub_chunk = len(idx_point_pairs_sub_chunk)
-        for idx, pp in idx_point_pairs_sub_chunk:
-            q.displayln_info(f"{fname}: load prop ; idx={idx} ; len_chunk={len_chunk} ; len_sub_chunk={len_sub_chunk}")
+    for id_chunk, point_pairs_chunk in zip(id_chunk_list, point_pairs_chunk_list):
+        if get_load_path(mk_fn(id_chunk)) is not None:
+            q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} {id_chunk}/{num_chunk} done.")
+            continue
+        pairs_data = []
+        len_chunk = len(point_pairs_chunk)
+        len_info_str = f"len_chunk={len_chunk} ; id_chunk={id_chunk} ; num_chunk={num_chunk}"
+        for idx, pp in enumerate(point_pairs_chunk):
+            q.displayln_info(f"{fname}: load prop ; idx={idx} ; {len_info_str}")
             xg_x = pp["xg_x"]
             xg_y = pp["xg_y"]
             get_prop(xg_x)
             get_prop(xg_y)
         pairs_int_results = dict()
-        for idx, pp in idx_point_pairs_sub_chunk:
-            q.displayln_info(f"{fname}: make intermediate results; idx={idx} ; len_chunk={len_chunk} ; len_sub_chunk={len_sub_chunk}")
+        for idx, pp in enumerate(point_pairs_chunk):
+            q.displayln_info(f"{fname}: make intermediate results; idx={idx} ; {len_info_str}")
             idx_xg_x = pp["idx_xg_x"]
             idx_xg_y = pp["idx_xg_y"]
             xg_x = pp["xg_x"]
@@ -912,8 +935,8 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             int_results['ama_cm_xy'] = ama_cm_xy
             int_results['ama_cm_yx'] = ama_cm_yx
             pairs_int_results[key] = int_results
-        for idx, pp in idx_point_pairs_sub_chunk:
-            q.displayln_info(f"{fname}: cm glb sum; idx={idx} ; len_chunk={len_chunk} ; len_sub_chunk={len_sub_chunk}")
+        for idx, pp in enumerate(point_pairs_chunk):
+            q.displayln_info(f"{fname}: cm glb sum; idx={idx} ; {len_info_str}")
             idx_xg_x = pp["idx_xg_x"]
             idx_xg_y = pp["idx_xg_y"]
             xg_x = pp["xg_x"]
@@ -967,9 +990,8 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
                 int_results['ama_sc_xy'] = ama_sel_sc_xy
                 int_results['ama_sc_yx'] = ama_sel_sc_yx
             hlbl_four_contract_sparse()
-        pairs_data_sub_list = []
-        for idx, pp in idx_point_pairs_sub_chunk:
-            q.displayln_info(f"{fname}: contract ; idx={idx} ; len_chunk={len_chunk} ; len_sub_chunk={len_sub_chunk}")
+        for idx, pp in enumerate(point_pairs_chunk):
+            q.displayln_info(f"{fname}: contract ; idx={idx} ; {len_info_str}")
             idx_xg_x = pp["idx_xg_x"]
             idx_xg_y = pp["idx_xg_y"]
             xg_x = pp["xg_x"]
@@ -1008,10 +1030,9 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             dict_val["r"] = r
             dict_val["prob_accept"] = prob_accept
             dict_val["weight_pair"] = weight_pair
-            pairs_data_sub_list.append(dict_val)
-        pairs_data += pairs_data_sub_list
-        for idx, pp in idx_point_pairs_sub_chunk:
-            q.displayln_info(f"{fname}: collect results ; idx={idx} ; len_chunk={len_chunk} ; len_sub_chunk={len_sub_chunk}")
+            pairs_data.append(dict_val)
+        for idx, pp in enumerate(point_pairs_chunk):
+            q.displayln_info(f"{fname}: collect results ; idx={idx} ; {len_info_str}")
             dict_val = pairs_data[idx]
             lslt = q.glb_sum(dict_val["lslt"])
             lslt_sloppy = q.glb_sum(dict_val["lslt_sloppy"])
@@ -1039,15 +1060,17 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
                 q.get_data_sig(lslt_sloppy, q.RngState()),
                 10e-2,
                 ))
+        if len(point_pairs_chunk) != len(pairs_data):
+            raise Exception(f"len(point_pairs_chunk)={len(point_pairs_chunk)} len(pairs_data)={len(pairs_data)}")
+        if len(pairs_data) > 0:
+            q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} {id_chunk}/{num_chunk}\n",
+                    show_lslt(labels, sum([ d["lslt"] for d in pairs_data ]) / len(point_pairs_chunk) * len(point_pairs)))
+        q.save_pickle_obj(pairs_data, get_save_path(mk_fn(id_chunk)))
     sfr.close()
-    if len(point_pairs_chunk) != len(pairs_data):
-        raise Exception(f"len(point_pairs_chunk)={len(point_pairs_chunk)} len(pairs_data)={len(pairs_data)}")
-    if len(pairs_data) > 0:
-        q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} {id_chunk}/{num_chunk}\n",
-                show_lslt(labels, sum([ d["lslt"] for d in pairs_data ]) / len(point_pairs_chunk) * len(point_pairs)))
-    q.save_pickle_obj(pairs_data, get_save_path(fn))
     q.displayln_info(f"{fname}: len(prop_cache)={len(prop_cache)}")
     q.release_lock()
+    q.timer_display()
+    q.timer_merge()
 
 @q.timer
 def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_point_pairs):
@@ -1058,12 +1081,12 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
         q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} get_point_pairs is None")
         return
     fn_s = f"{job_tag}/hlbl/clbl-{inv_type_name}/traj-{traj}/results-brief.pickle"
-    fn = f"{job_tag}/hlbl/clbl-{inv_type_name}/traj-{traj}/results.pickle"
-    if get_load_path(fn) is not None:
+    if get_load_path(fn_s) is not None:
         return
     num_chunk = get_param(job_tag, "hlbl_four_num_chunk")
     prop_cache = q.mk_cache(f"{fname}-prop_cache", job_tag, f"{traj}")
-    for id_chunk in range(num_chunk):
+    id_chunk_list_list = q.get_chunk_list(list(range(num_chunk)), chunk_number=4)
+    for id_chunk_list in id_chunk_list_list:
         run_hlbl_four_chunk(
                 job_tag, traj,
                 inv_type=inv_type,
@@ -1071,41 +1094,45 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
                 get_fsel_prob=get_fsel_prob,
                 get_point_pairs=get_point_pairs,
                 prop_cache=prop_cache,
-                id_chunk=id_chunk,
+                id_chunk_list=id_chunk_list,
                 num_chunk=num_chunk,
                 )
     q.clean_cache(prop_cache)
     fn_chunk_list = []
     for id_chunk in range(num_chunk):
-        fn_chunk = f"{job_tag}/hlbl/clbl-{inv_type_name}/traj-{traj}/chunk_{id_chunk}_{num_chunk}.pickle"
+        fn_chunk = f"{job_tag}/hlbl/clbl-pairs-data-{inv_type_name}/traj-{traj}/chunk_{id_chunk}_{num_chunk}.pickle"
         if get_load_path(fn_chunk) is None:
             q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} not finished (missing '{fn_chunk})'")
             return
         else:
             fn_chunk_list.append(fn_chunk)
     assert len(fn_chunk_list) == num_chunk
-    if get_load_path(fn) is not None:
+    if get_load_path(fn_s) is not None:
         return
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
         return
+    q.timer_fork()
     labels = contract_hlbl_four_labels(job_tag)
-    pairs_data = []
+    pairs_data_n_pairs = 0
+    pairs_data_lslt_sum = 0
+    pairs_data_lslt_sloppy_sum = 0
     for fn_chunk in fn_chunk_list:
         path_chunk = get_load_path(fn_chunk)
         assert path_chunk is not None
         if q.get_id_node() == 0:
-            pairs_data += q.load_pickle_obj(path_chunk, is_sync_node=False)
+            pairs_data_chunk = q.load_pickle_obj(path_chunk, is_sync_node=False)
+            pairs_data_n_pairs += len(pairs_data_chunk)
+            pairs_data_lslt_sum += sum([ d["lslt"] for d in pairs_data_chunk ])
+            pairs_data_lslt_sloppy_sum += sum([ d["lslt_sloppy"] for d in pairs_data_chunk ])
     if q.get_id_node() == 0:
-        if len(pairs_data) != len(get_point_pairs()):
-            raise Exception(f"len(pairs_data)={len(pairs_data)} len(get_point_pairs())=len(get_point_pairs())")
+        if pairs_data_n_pairs != len(get_point_pairs()):
+            raise Exception(f"pairs_data_n_pairs={pairs_data_n_pairs} len(get_point_pairs())={len(get_point_pairs())}")
         results = dict()
         results["labels"] = labels
-        results["lslt_sum"] = sum([ d["lslt"] for d in pairs_data ])
-        results["lslt_sloppy_sum"] = sum([ d["lslt_sloppy"] for d in pairs_data ])
-        results["n_pairs"] = len(pairs_data)
+        results["lslt_sum"] = pairs_data_lslt_sum
+        results["lslt_sloppy_sum"] = pairs_data_lslt_sloppy_sum
+        results["n_pairs"] = pairs_data_n_pairs
         q.save_pickle_obj(results, get_save_path(fn_s))
-        results["pairs_data"] = pairs_data
-        q.save_pickle_obj(results, get_save_path(fn))
         q.displayln_info(-1, f"{fname}: {job_tag} {traj} {inv_type_name}\n", show_lslt(labels, results["lslt_sum"]))
         json_results.append((
             f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum",
@@ -1127,10 +1154,11 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
             results["lslt_sloppy_sum"][labels.index('ref-far proj-all'), -1, -1],
             2e-2,
             ))
-    for fn_chunk in fn_chunk_list:
-        q.qremove_info(get_load_path(fn_chunk))
+    q.sync_node()
     q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} done.")
     q.release_lock()
+    q.timer_display()
+    q.timer_merge()
     return [ f"{fname}: {job_tag} {traj} {inv_type_name} done.", ]
 
 # ----
@@ -1286,6 +1314,7 @@ def run_edl(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice):
         return None
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
         return None
+    q.timer_fork()
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     psel = get_psel()
     hvp_sum_tslice = get_hvp_sum_tslice()
@@ -1306,6 +1335,8 @@ def run_edl(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice):
         1e-3,
         ))
     q.release_lock()
+    q.timer_display()
+    q.timer_merge()
     return ret
 
 @q.timer_verbose
@@ -1398,6 +1429,7 @@ def run_hlbl_sub_hvp_sfield(
     q.check_time_limit()
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
         return
+    q.timer_fork()
     #
     sfw = q.open_fields(get_save_path(fn + ".acc"), "w", q.Coordinate([ 1, 2, 2, 2, ]))
     #
@@ -1465,6 +1497,8 @@ def run_hlbl_sub_hvp_sfield(
     q.qrename_info(get_save_path(fn + ".acc"), get_save_path(fn))
     #
     q.release_lock()
+    q.timer_display()
+    q.timer_merge()
 
 @q.timer_verbose
 def run_hlbl_two_plus_two_chunk(
@@ -1486,7 +1520,7 @@ def run_hlbl_two_plus_two_chunk(
     inv_type_name_list = [ "light", "strange", ]
     inv_type_name = inv_type_name_list[inv_type]
     inv_type_e_name = inv_type_name_list[inv_type_e]
-    fn = f"{job_tag}/hlbl/dlbl-{inv_type_name}-{inv_type_e_name}/traj-{traj}/chunk_{id_chunk}_{num_chunk}.pickle"
+    fn = f"{job_tag}/hlbl/dlbl-points-data-{inv_type_name}-{inv_type_e_name}/traj-{traj}/chunk_{id_chunk}_{num_chunk}.pickle"
     if get_load_path(fn) is not None:
         return
     sub_hvp_fn = f"{job_tag}/hlbl/sub-hvp-{inv_type_name}/traj-{traj}/geon-info.txt"
@@ -1496,6 +1530,7 @@ def run_hlbl_two_plus_two_chunk(
     q.check_time_limit()
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}-{inv_type_e_name}-{id_chunk}_{num_chunk}"):
         return
+    q.timer_fork()
     #
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site, 1)
@@ -1617,6 +1652,8 @@ def run_hlbl_two_plus_two_chunk(
                 f"{info_str}\n avg n_points_selected={n_points_selected} avg n_points_computed={n_points_computed}")
     q.displayln_info(0, f"{info_str} done.")
     q.release_lock()
+    q.timer_display()
+    q.timer_merge()
 
 @q.timer_verbose
 def run_hlbl_two_plus_two(
@@ -1641,8 +1678,7 @@ def run_hlbl_two_plus_two(
     inv_type_name = inv_type_name_list[inv_type]
     inv_type_e_name = inv_type_name_list[inv_type_e]
     fn_s = f"{job_tag}/hlbl/dlbl-{inv_type_name}-{inv_type_e_name}/traj-{traj}/results-brief.pickle"
-    fn = f"{job_tag}/hlbl/dlbl-{inv_type_name}-{inv_type_e_name}/traj-{traj}/results.pickle"
-    if get_load_path(fn) is not None:
+    if get_load_path(fn_s) is not None:
         return
     if get_psel_prob is None:
         return
@@ -1680,17 +1716,18 @@ def run_hlbl_two_plus_two(
     info_str = f"{fname}: {job_tag} {traj} {inv_type_name} {inv_type_e_name}"
     fn_chunk_list = []
     for id_chunk in range(num_chunk):
-        fn_chunk = f"{job_tag}/hlbl/dlbl-{inv_type_name}-{inv_type_e_name}/traj-{traj}/chunk_{id_chunk}_{num_chunk}.pickle"
+        fn_chunk = f"{job_tag}/hlbl/dlbl-points-data-{inv_type_name}-{inv_type_e_name}/traj-{traj}/chunk_{id_chunk}_{num_chunk}.pickle"
         if get_load_path(fn_chunk) is None:
             q.displayln_info(-1, f"{info_str} not finished (missing '{fn_chunk})'")
             return
         else:
             fn_chunk_list.append(fn_chunk)
     assert len(fn_chunk_list) == num_chunk
-    if get_load_path(fn) is not None:
+    if get_load_path(fn_s) is not None:
         return
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}-{inv_type_e_name}"):
         return
+    q.timer_fork()
     labels = q.contract_two_plus_two_pair_labels()
     points_data = []
     for fn_chunk in fn_chunk_list:
@@ -1706,8 +1743,6 @@ def run_hlbl_two_plus_two(
         results["n_points_computed"] = sum([ d["n_points_computed"] for d in points_data ]) / len(points_data)
         results["n_points"] = len(points_data)
         q.save_pickle_obj(results, get_save_path(fn_s))
-        results["points_data"] = points_data
-        q.save_pickle_obj(results, get_save_path(fn))
         if results["n_points"] > 0:
             q.displayln_info(0, f"{info_str}\n",
                     show_lslt(labels, results["lslt_sum"]))
@@ -1726,10 +1761,10 @@ def run_hlbl_two_plus_two(
             2e-2,
             ))
     q.sync_node()
-    for fn_chunk in fn_chunk_list:
-        q.qremove_info(get_load_path(fn_chunk))
     q.displayln_info(0, f"{info_str} done.")
     q.release_lock()
+    q.timer_display()
+    q.timer_merge()
     return [ f"{fname}: {job_tag} {traj} {inv_type_name} {inv_type_e_name} done.", ]
 
 # ----
@@ -2065,9 +2100,9 @@ def run_job_contract(job_tag, traj):
             )
     #
     if is_performing_auto_contraction and q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
+        q.timer_fork()
         get_prop = get_get_prop()
         if get_prop is not None:
-            q.timer_fork()
             # ADJUST ME
             auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
             auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
@@ -2081,9 +2116,9 @@ def run_job_contract(job_tag, traj):
             #
             q.qtouch_info(get_save_path(fn_checkpoint_auto_contract))
             q.displayln_info("timer_display for runjob")
-            q.timer_display()
-            q.timer_merge()
         q.release_lock()
+        q.timer_display()
+        q.timer_merge()
         v = [ f"{fname} {job_tag} {traj} done", ]
         add_to_run_ret_list(v)
     #
@@ -2153,7 +2188,7 @@ set_param("test-4nt8", tag, value=3)
 set_param("test-8nt16", tag, value=6)
 set_param("24D", tag, value=32)
 set_param("48I", tag, value=32)
-set_param("64I", tag, value=32)
+set_param("64I", tag, value=512)
 
 tag = "hlbl_four_contract_sparse_ratio"
 # larger value means less computation
