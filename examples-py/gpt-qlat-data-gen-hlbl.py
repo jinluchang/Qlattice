@@ -1613,8 +1613,6 @@ def run_hlbl_two_plus_two_chunk(
     #
     points_data = []
     for idx, idx_xg_x in enumerate(idx_xg_list_chunk):
-        q.check_stop()
-        q.check_time_limit()
         q.displayln_info(0,
                 f"{info_str} idx/chunk_size={idx}/{len(idx_xg_list_chunk)}")
         xg_x = q.Coordinate(xg_arr[idx_xg_x])
