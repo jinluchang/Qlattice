@@ -1943,12 +1943,12 @@ def run_job_contract(job_tag, traj):
     #
     fns_produce = [
             fn_checkpoint_auto_contract,
-            f"{job_tag}/hlbl/dlbl-light-light/traj-{traj}/results.pickle",
-            f"{job_tag}/hlbl/dlbl-light-strange/traj-{traj}/results.pickle",
-            f"{job_tag}/hlbl/dlbl-strange-light/traj-{traj}/results.pickle",
-            f"{job_tag}/hlbl/dlbl-strange-strange/traj-{traj}/results.pickle",
-            f"{job_tag}/hlbl/clbl-light/traj-{traj}/results.pickle",
-            f"{job_tag}/hlbl/clbl-strange/traj-{traj}/results.pickle",
+            f"{job_tag}/hlbl/dlbl-light-light/traj-{traj}/results-brief.pickle",
+            f"{job_tag}/hlbl/dlbl-light-strange/traj-{traj}/results-brief.pickle",
+            f"{job_tag}/hlbl/dlbl-strange-light/traj-{traj}/results-brief.pickle",
+            f"{job_tag}/hlbl/dlbl-strange-strange/traj-{traj}/results-brief.pickle",
+            f"{job_tag}/hlbl/clbl-light/traj-{traj}/results-brief.pickle",
+            f"{job_tag}/hlbl/clbl-strange/traj-{traj}/results-brief.pickle",
             ]
     fns_need = [
             #
