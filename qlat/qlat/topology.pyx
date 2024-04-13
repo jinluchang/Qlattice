@@ -101,7 +101,7 @@ def gf_topology(GaugeField gf):
     """
     return top
     ininstance(top, float)
-    Using the 5 loop improved definition Eq. (2-5)
+    Using the 5 loop improved definition Eq. (2-7)
     https://arxiv.org/pdf/hep-lat/9701012v2.pdf
     """
     return gf_topology_field(gf).glb_sum()[:].item()

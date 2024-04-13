@@ -50,10 +50,7 @@ SelectedPoints<M>& operator+=(SelectedPoints<M>& f, const SelectedPoints<M>& f1)
     qassert(f.multiplicity == f1.multiplicity);
     qassert(f.n_points == f1.n_points);
     qassert(f.points.size() == f1.points.size());
-#pragma omp parallel for
-    for (Long k = 0; k < (Long)f.points.size(); ++k) {
-      f.points[k] += f1.points[k];
-    }
+    qacc_for(k, f.points.size(), { f.points[k] += f1.points[k]; });
   }
   return f;
 }
@@ -71,10 +68,7 @@ SelectedPoints<M>& operator-=(SelectedPoints<M>& f, const SelectedPoints<M>& f1)
     qassert(f.multiplicity == f1.multiplicity);
     qassert(f.n_points == f1.n_points);
     qassert(f.points.size() == f1.points.size());
-#pragma omp parallel for
-    for (Long k = 0; k < (Long)f.points.size(); ++k) {
-      f.points[k] -= f1.points[k];
-    }
+    qacc_for(k, f.points.size(), { f.points[k] -= f1.points[k]; });
   }
   return f;
 }
@@ -84,10 +78,7 @@ SelectedPoints<M>& operator*=(SelectedPoints<M>& f, const double factor)
 {
   TIMER("sel_points_operator*=(F,D)");
   qassert(f.initialized);
-#pragma omp parallel for
-  for (Long k = 0; k < (Long)f.points.size(); ++k) {
-    f.points[k] *= factor;
-  }
+  qacc_for(k, f.points.size(), { f.points[k] *= factor; });
   return f;
 }
 
@@ -96,10 +87,7 @@ SelectedPoints<M>& operator*=(SelectedPoints<M>& f, const ComplexD factor)
 {
   TIMER("sel_points_operator*=(F,C)");
   qassert(f.initialized);
-#pragma omp parallel for
-  for (Long k = 0; k < (Long)f.points.size(); ++k) {
-    f.points[k] *= factor;
-  }
+  qacc_for(k, f.points.size(), { f.points[k] *= factor; });
   return f;
 }
 
@@ -113,8 +101,7 @@ void only_keep_selected_points(Field<M>& f, const PointsSelection& psel)
   f1.init(geo);
   set_zero(f1);
   const Long n_points = psel.size();
-#pragma omp parallel for
-  for (Long idx = 0; idx < n_points; ++idx) {
+  qacc_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {
@@ -124,7 +111,7 @@ void only_keep_selected_points(Field<M>& f, const PointsSelection& psel)
         f1v[m] = fv[m];
       }
     }
-  }
+  });
   qswap(f, f1);
 }
 
@@ -136,7 +123,7 @@ RealD qnorm(const SelectedPoints<M>& sp)
 }
 
 template <class M>
-void qnorm_field(SelectedPoints<double>& sp, const SelectedPoints<M>& sp1)
+void qnorm_field(SelectedPoints<RealD>& sp, const SelectedPoints<M>& sp1)
 {
   TIMER("qnorm_field");
   sp.init();
@@ -161,7 +148,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
   const Long n_points = psel.size();
   sp.init(psel, geo.multiplicity);
   set_zero(sp);  // has to set_zero for glb_sum_byte_vec
-  qthread_for(idx, n_points, {
+  qacc_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {
@@ -185,7 +172,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
   const Long n_points = psel.size();
   sp.init(psel, 1);
   set_zero(sp);  // has to set_zero for glb_sum_byte_vec
-  qthread_for(idx, n_points, {
+  qacc_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {
@@ -240,7 +227,7 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedPoints<M>& sp0,
     }
     sp_idx.get_elem(idx) = idx0;
   });
-  qthread_for(idx, n_points, {
+  qacc_for(idx, n_points, {
     const Long idx0 = sp_idx.get_elem(idx);
     if (idx0 >= 0) {
       qassert(idx0 < n_points0);
@@ -269,7 +256,7 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
     f.init(geo);
     set_zero(f);
   }
-  qthread_for(idx, n_points, {
+  qacc_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {
@@ -298,7 +285,7 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
   const Long n_points = sp.n_points;
   qassert(n_points == (Long)psel.size());
   qassert(sp.multiplicity == 1);
-  qthread_for(idx, n_points, {
+  qacc_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {
@@ -320,8 +307,7 @@ void acc_field(Field<M>& f, const SelectedPoints<M>& sp, const Geometry& geo_,
   const Long n_points = sp.n_points;
   qassert(n_points == (Long)psel.size());
   f.init(geo);
-#pragma omp parallel for
-  for (Long idx = 0; idx < n_points; ++idx) {
+  qacc_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {
@@ -331,7 +317,7 @@ void acc_field(Field<M>& f, const SelectedPoints<M>& sp, const Geometry& geo_,
         fv[m] += spv[m];
       }
     }
-  }
+  });
 }
 
 template <class M>
