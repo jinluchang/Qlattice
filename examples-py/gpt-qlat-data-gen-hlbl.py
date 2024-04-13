@@ -929,6 +929,9 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             ama_sc_yx = mk_ama_current(ama_sprop_x, ama_sprop_y)
             ama_cm_xy = mk_ama_cm(ama_sc_xy, psel_d_prob_xy)
             ama_cm_yx = mk_ama_cm(ama_sc_yx, psel_d_prob_xy)
+            sp_norm = q.qnorm_field(ama_extract(ama_sc_xy, is_sloppy=False))
+            sp_norm += q.qnorm_field(ama_extract(ama_sc_yx, is_sloppy=False))
+            sp_norm = q.sqrt_field(sp_norm)
             int_results = dict()
             int_results['prob_pair'] = prob_pair
             int_results['psel_d_prob_xy'] = psel_d_prob_xy
@@ -936,7 +939,12 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             int_results['ama_sc_yx'] = ama_sc_yx
             int_results['ama_cm_xy'] = ama_cm_xy
             int_results['ama_cm_yx'] = ama_cm_yx
+            int_results['sp_norm'] = sp_norm
             pairs_int_results[key] = int_results
+        @q.timer_verbose
+        def sync_node_after_hlbl_four_current():
+            q.sync_node()
+        sync_node_after_hlbl_four_current()
         for idx, pp in enumerate(point_pairs_chunk):
             q.displayln_info(f"{fname}: cm glb sum; idx={idx} ; {len_info_str}")
             idx_xg_x = pp["idx_xg_x"]
@@ -965,9 +973,7 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
                 sp_pair_f_rand_01 = q.SelectedPointsRealD(sf_pair_f_rand_01, ssp)
                 assert len(sp_pair_f_rand_01) == len(psel_d_prob_xy)
                 psel_d = psel_d_prob_xy.psel
-                sp_norm = q.qnorm_field(ama_extract(ama_sc_xy, is_sloppy=False))
-                sp_norm += q.qnorm_field(ama_extract(ama_sc_yx, is_sloppy=False))
-                sp_norm = q.sqrt_field(sp_norm)
+                sp_norm = int_results['sp_norm'].copy()
                 sp_norm *= weight_pair / prob_pair
                 sp_norm[:] = sp_norm[:] / psel_d_prob_xy[:]
                 glb_avg = q.glb_sum(sp_norm[:].sum()) / q.glb_sum(len(sp_norm))
@@ -1033,6 +1039,10 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             dict_val["prob_accept"] = prob_accept
             dict_val["weight_pair"] = weight_pair
             pairs_data.append(dict_val)
+        @q.timer_verbose
+        def sync_node_after_hlbl_four_contract():
+            q.sync_node()
+        sync_node_after_hlbl_four_contract()
         for idx, pp in enumerate(point_pairs_chunk):
             q.displayln_info(f"{fname}: collect results ; idx={idx} ; {len_info_str}")
             dict_val = pairs_data[idx]
@@ -1635,6 +1645,10 @@ def run_hlbl_two_plus_two_chunk(
         dict_val["n_points_selected"] = n_points_selected
         dict_val["n_points_computed"] = n_points_computed
         points_data.append(dict_val)
+    @q.timer_verbose
+    def sync_node_after_hlbl_two_plus_two_contract():
+        q.sync_node()
+    sync_node_after_hlbl_two_plus_two_contract()
     for d in points_data:
         d["lslt"] = q.glb_sum(d["lslt"])
         d["n_points_selected"] = q.glb_sum(d["n_points_selected"])
