@@ -19,7 +19,7 @@
 
 #endif
 
-#include <qlat-utils/qlat_GPU_translator.h>
+#include <qlat-utils/qacc-translator.h>
 
 namespace qlat
 {  //

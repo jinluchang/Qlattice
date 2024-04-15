@@ -292,8 +292,8 @@ void reduce_vec(const Ty* src, Ty* res,Long n, int nv=1, int GPU = 1, bool clear
   //if(nt_use == 1)nt_use = omp_get_num_threads();
   //unsigned long nv = nt_use*Aoper;
   //#ifdef QLAT_USE_ACC
-  //qlat_GPU_DeviceProp prop;
-  //qlat_GPU_GetDeviceProperties(&prop, 0);
+  //qacc_DeviceProp prop;
+  //qacc_GetDeviceProperties(&prop, 0);
   //unsigned int nthreads = omp_get_num_threads();
   //unsigned long cores = prop.multiProcessorCount;
   //unsigned long maxthreads = prop.maxThreadsPerMultiProcessor;

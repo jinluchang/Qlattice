@@ -232,13 +232,13 @@ void cpy_data_threadT(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, QBOOL 
     if(sizeof(T0) == sizeof(T1) and qlat::qnorm(ADD) <  QLAT_COPY_LIMIT)
     {
       if(stream == NULL){
-        if(GPU == 0){gpuErrchk(qlat_GPU_MemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), qlat_GPU_MemcpyHostToHost));}
-        if(GPU == 1){gpuErrchk(qlat_GPU_MemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), qlat_GPU_MemcpyDeviceToDevice));}
+        if(GPU == 0){gpuErrchk(qacc_MemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), qacc_MemcpyHostToHost));}
+        if(GPU == 1){gpuErrchk(qacc_MemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), qacc_MemcpyDeviceToDevice));}
       }
       else{
-        qlat_GPU_Stream_t* pstream = (qlat_GPU_Stream_t*) stream;
-        if(GPU == 0){gpuErrchk(qlat_GPU_MemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), qlat_GPU_MemcpyHostToHost, *pstream));}
-        if(GPU == 1){gpuErrchk(qlat_GPU_MemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), qlat_GPU_MemcpyDeviceToDevice, *pstream));}
+        qacc_Stream_t* pstream = (qacc_Stream_t*) stream;
+        if(GPU == 0){gpuErrchk(qacc_MemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), qacc_MemcpyHostToHost, *pstream));}
+        if(GPU == 1){gpuErrchk(qacc_MemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), qacc_MemcpyDeviceToDevice, *pstream));}
       }
       if(dummy==QTRUE){qacc_barrier(dummy);}
       return ;
@@ -254,10 +254,10 @@ void cpy_data_threadT(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, QBOOL 
   /////Qassert(sizeof(T0) == sizeof(T1));
   if(sizeof(T0) == sizeof(T1) and qlat::qnorm(ADD) <  QLAT_COPY_LIMIT){
     if(stream == NULL){
-    gpuErrchk(qlat_GPU_MemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), qlat_GPU_MemcpyHostToDevice));}
+    gpuErrchk(qacc_MemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), qacc_MemcpyHostToDevice));}
     else{
-    qlat_GPU_Stream_t* pstream = (qlat_GPU_Stream_t*) stream;
-    gpuErrchk(qlat_GPU_MemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), qlat_GPU_MemcpyHostToDevice, *pstream));
+    qacc_Stream_t* pstream = (qacc_Stream_t*) stream;
+    gpuErrchk(qacc_MemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), qacc_MemcpyHostToDevice, *pstream));
     }
     if(dummy==QTRUE){qacc_barrier(dummy);}
   }else{
@@ -273,7 +273,7 @@ void cpy_data_threadT(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, QBOOL 
   if(GPU ==  3){
   ////Qassert(sizeof(T0) == sizeof(T1));
   if(sizeof(T0) == sizeof(T1) and qlat::qnorm(ADD) <  QLAT_COPY_LIMIT){
-    gpuErrchk(qlat_GPU_MemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), qlat_GPU_MemcpyDeviceToHost));
+    gpuErrchk(qacc_MemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), qacc_MemcpyDeviceToHost));
     if(dummy==QTRUE){qacc_barrier(dummy);}
   }else{
     qlat::vector_acc< T0 > buf;buf.resize(Nvol);T0* s0 = (T0*) qlat::get_data(buf).data();
@@ -327,16 +327,16 @@ int cpy_GPU2D_G(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, cons
   #ifdef QLAT_USE_ACC
   if(sizeof(T0) == sizeof(T1))
   {
-    qlat_GPU_MemcpyKind tmp = qlat_GPU_MemcpyDeviceToDevice;
-    /////if(Gsrc == 0 and Gres == 1){tmp = qlat_GPU_MemcpyHostToDevice  ;diff_cuda = 1;}////===from host   to device
-    /////if(Gsrc == 1 and Gres == 0){tmp = qlat_GPU_MemcpyDeviceToHost  ;diff_cuda = 1;}////===from device to   host
-    if(Gsrc == QMCPU and Gres == QMGPU){tmp = qlat_GPU_MemcpyHostToDevice  ;diff_cuda = 1;}////===from host   to device
-    if(Gsrc == QMGPU and Gres == QMCPU){tmp = qlat_GPU_MemcpyDeviceToHost  ;diff_cuda = 1;}////===from device to   host
+    qacc_MemcpyKind tmp = qacc_MemcpyDeviceToDevice;
+    /////if(Gsrc == 0 and Gres == 1){tmp = qacc_MemcpyHostToDevice  ;diff_cuda = 1;}////===from host   to device
+    /////if(Gsrc == 1 and Gres == 0){tmp = qacc_MemcpyDeviceToHost  ;diff_cuda = 1;}////===from device to   host
+    if(Gsrc == QMCPU and Gres == QMGPU){tmp = qacc_MemcpyHostToDevice  ;diff_cuda = 1;}////===from host   to device
+    if(Gsrc == QMGPU and Gres == QMCPU){tmp = qacc_MemcpyDeviceToHost  ;diff_cuda = 1;}////===from device to   host
 
     if(diff_cuda == 1)
     {
-      qlat_GPU_Stream_t* pstream = (qlat_GPU_Stream_t*) stream;
-      qlat_GPU_Memcpy2DAsync(Pres, rOff*sizeof(T0), Psrc, sOff*sizeof(T0), Nvol * sizeof(T0), NOff, tmp, *pstream);
+      qacc_Stream_t* pstream = (qacc_Stream_t*) stream;
+      qacc_Memcpy2DAsync(Pres, rOff*sizeof(T0), Psrc, sOff*sizeof(T0), Nvol * sizeof(T0), NOff, tmp, *pstream);
       did = 1;
     }
 
@@ -371,16 +371,16 @@ void cpy_GPU2D(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, const
   int diff_cuda = 0;
   int did = 0;
   #ifdef QLAT_USE_ACC
-  qlat_GPU_Stream_t Lstream;
+  qacc_Stream_t Lstream;
   int copy_stream = 0;
   if(stream == NULL){
-    qlat_GPU_StreamCreate(&Lstream);
+    qacc_StreamCreate(&Lstream);
     stream = &Lstream;
     copy_stream = 1;
   }
-  ////qlat_GPU_MemcpyKind tmp = qlat_GPU_MemcpyDeviceToDevice;
-  ////tmp = qlat_GPU_MemcpyHostToDevice  ;
-  ////tmp = qlat_GPU_MemcpyDeviceToHost  ;
+  ////qacc_MemcpyKind tmp = qacc_MemcpyDeviceToDevice;
+  ////tmp = qacc_MemcpyHostToDevice  ;
+  ////tmp = qacc_MemcpyDeviceToHost  ;
   if(Gsrc == QMCPU and Gres == QMGPU){diff_cuda = 1;}////===from host   to device
   if(Gsrc == QMGPU and Gres == QMCPU){diff_cuda = 1;}////===from device to   host
   #endif
@@ -424,7 +424,7 @@ void cpy_GPU2D(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, const
 
   #ifdef QLAT_USE_ACC
   if(copy_stream == 1){
-    qlat_GPU_StreamDestroy(Lstream);
+    qacc_StreamDestroy(Lstream);
     stream = NULL;
     qacc_barrier(dummy);
   }
@@ -458,10 +458,10 @@ void cpy_GPU2D(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, const
 //
 //  #ifdef QLAT_USE_ACC
 //  int gpu_id = -1;
-//  qlat_GPU_GetDevice(&gpu_id);
-//  qlat_GPU_MemAdvise(&Mres[offM], Total*sizeof(Ty), qlat_GPU_MemAdviseSetReadMostly, gpu_id);
+//  qacc_GetDevice(&gpu_id);
+//  qacc_MemAdvise(&Mres[offM], Total*sizeof(Ty), qacc_MemAdviseSetReadMostly, gpu_id);
 //  if(mode == 1){
-//  qlat_GPU_MemPrefetchAsync(&Mres[offM], Total*sizeof(Ty), gpu_id, cudaStreamLegacy);}
+//  qacc_MemPrefetchAsync(&Mres[offM], Total*sizeof(Ty), gpu_id, cudaStreamLegacy);}
 //  #endif
 //}
 
@@ -473,8 +473,8 @@ void cpy_GPU2D(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, const
 //  #ifdef QLAT_USE_ACC
 //  size_t Total = Msize;
 //  int gpu_id = -1;
-//  qlat_GPU_GetDevice(&gpu_id);
-//  qlat_GPU_MemAdvise(&Mres[0], Total*sizeof(Ty), qlat_GPU_MemAdviseUnsetReadMostly, gpu_id);
+//  qacc_GetDevice(&gpu_id);
+//  qacc_MemAdvise(&Mres[0], Total*sizeof(Ty), qacc_MemAdviseUnsetReadMostly, gpu_id);
 //  #endif
 //}
 
@@ -495,9 +495,9 @@ void copy_buffers_vecs(Ty *res, Ty *src,Long N0, Long N1, Long Ncopy, size_t Vol
     for(size_t isp=0;isp<Vol;isp++){
       if(GPU_set==0){memcpy(&res[isp*N0+0], &src[isp*N1+0], Ncopy*sizeof(Ty));}
       #ifdef QLAT_USE_ACC
-      if(GPU_set==1){qlat_GPU_MemcpyAsync(&res[isp*N0+0], &src[isp*N1+0], Ncopy*sizeof(Ty), qlat_GPU_MemcpyDeviceToDevice);}
-      if(GPU_set==2){qlat_GPU_MemcpyAsync(&res[isp*N0+0], &src[isp*N1+0], Ncopy*sizeof(Ty), qlat_GPU_MemcpyHostToDevice);}
-      if(GPU_set==3){qlat_GPU_MemcpyAsync(&res[isp*N0+0], &src[isp*N1+0], Ncopy*sizeof(Ty), qlat_GPU_MemcpyDeviceToHost);}
+      if(GPU_set==1){qacc_MemcpyAsync(&res[isp*N0+0], &src[isp*N1+0], Ncopy*sizeof(Ty), qacc_MemcpyDeviceToDevice);}
+      if(GPU_set==2){qacc_MemcpyAsync(&res[isp*N0+0], &src[isp*N1+0], Ncopy*sizeof(Ty), qacc_MemcpyHostToDevice);}
+      if(GPU_set==3){qacc_MemcpyAsync(&res[isp*N0+0], &src[isp*N1+0], Ncopy*sizeof(Ty), qacc_MemcpyDeviceToHost);}
       #endif
     }
   }

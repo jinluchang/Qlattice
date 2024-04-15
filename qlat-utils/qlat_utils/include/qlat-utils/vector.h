@@ -96,11 +96,11 @@ struct API MemCache {
       qassert(ptr != NULL);
 #ifdef QLAT_USE_ACC
       if (is_acc) {
-        qlat_GPU_Error err = qlat_GPU_Free(ptr);
-        if (qlat_GPU_Success != err) {
-          if (qlat_GPU_ErrorCudartUnloading != err) {
-            qerr(fname + ssprintf(": Cuda error '%s' (%d) after qlat_GPU_Free.",
-                                  qlat_GPU_GetErrorString(err), err));
+        qacc_Error err = qacc_Free(ptr);
+        if (qacc_Success != err) {
+          if (qacc_ErrorCudartUnloading != err) {
+            qerr(fname + ssprintf(": Cuda error '%s' (%d) after qacc_Free.",
+                                  qacc_GetErrorString(err), err));
           }
         }
       } else {
@@ -170,16 +170,16 @@ inline void* alloc_mem(const Long min_size, const bool is_acc = false)
     void* ptr = NULL;
 #ifdef QLAT_USE_ACC
     if (is_acc) {
-      qlat_GPU_Error err = qlat_GPU_GetLastError();
-      if (qlat_GPU_Success != err) {
-        qerr(fname + ssprintf(": Cuda error '%s' before qlat_GPU_MallocManaged.",
-                              qlat_GPU_GetErrorString(err)));
+      qacc_Error err = qacc_GetLastError();
+      if (qacc_Success != err) {
+        qerr(fname + ssprintf(": Cuda error '%s' before qacc_MallocManaged.",
+                              qacc_GetErrorString(err)));
       }
-      err = qlat_GPU_MallocManaged(&ptr, size);
-      if (qlat_GPU_Success != err) {
+      err = qacc_MallocManaged(&ptr, size);
+      if (qacc_Success != err) {
         qerr(fname +
              ssprintf(": Cuda error '%s', min_size=%ld, size=%ld, ptr=%lX.",
-                      qlat_GPU_GetErrorString(err), min_size, size, ptr));
+                      qacc_GetErrorString(err), min_size, size, ptr));
       }
     } else {
       ptr = alloc_mem_alloc_no_acc(size);
@@ -218,7 +218,7 @@ struct API vector {
   // Only used in qacc macros, or if it is already a copy.
   //
   bool is_copy;  // do not free memory if is_copy=true
-  bool is_acc;   // if place data on qlat_GPU_MallocManaged memory (default false)
+  bool is_acc;   // if place data on qacc_MallocManaged memory (default false)
   Vector<M> v;
   //
   vector()
@@ -639,7 +639,7 @@ struct API box {
   // Only used in qacc macros, or if it is already a copy.
   //
   bool is_copy;  // do not free memory if is_copy=true
-  bool is_acc;   // if place data on qlat_GPU_MallocManaged memory (default false)
+  bool is_acc;   // if place data on qacc_MallocManaged memory (default false)
   Handle<M> v;
   //
   box()

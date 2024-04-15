@@ -514,12 +514,12 @@ void set_cuda_device()
   int local_size = 0;
   set_node_rank_size(local_rank, local_size);
   int num_devices = 0;
-  qlat_GPU_GetDeviceCount(&num_devices);
+  qacc_GetDeviceCount(&num_devices);
   if (num_devices > 0) {
     displayln_info(fname +
                    ssprintf(": num_devices=%d (local_rank=%d local_size=%d)",
                             num_devices, local_rank, local_size));
-    qlat_GPU_SetDevice(local_rank % num_devices);
+    qacc_SetDevice(local_rank % num_devices);
   }
 #endif
 }

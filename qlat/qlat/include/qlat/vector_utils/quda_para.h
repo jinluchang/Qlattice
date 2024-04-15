@@ -208,7 +208,7 @@ inline void quda_begin(int mpi_layout[4], int quda_rankx = 1)
   }
 
   // comm_set_gridsize(mpi_layout);
-  //int gpu_id = -1;qlat_GPU_GetDevice(&gpu_id);
+  //int gpu_id = -1;qacc_GetDevice(&gpu_id);
   //initQuda(gpu_id);
   initQuda(-1000);
   //initQuda(-1);
@@ -225,7 +225,7 @@ inline void quda_begin(int mpi_layout[4], int quda_rankx = 1)
   for (int d = 0; d < 4; d++) {
     Qassert(comm_coord(d) == get_coor_node()[d]);
   }
-  qlat_GPU_DeviceSetCacheConfig(qlat_GPU_FuncCachePreferNone );
+  qacc_DeviceSetCacheConfig(qacc_FuncCachePreferNone );
 }
 
 inline void begin_quda_with_qlat()

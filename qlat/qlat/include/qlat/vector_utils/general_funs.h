@@ -324,7 +324,7 @@ inline void clear_move_index_mem(){
 
 #ifdef QLAT_USE_ACC
 #define MAX_CUDA_STEAM 100
-static qlat_GPU_Stream_t Qstream[MAX_CUDA_STEAM];
+static qacc_Stream_t Qstream[MAX_CUDA_STEAM];
 #endif
 
 inline void set_GPU(){
@@ -333,20 +333,20 @@ inline void set_GPU(){
   int id_node;MPI_Comm_rank(get_comm(), &id_node);
 
   int num_gpus = 0;
-  qlat_GPU_GetDeviceCount(&num_gpus);
-  ////qlat_GPU_DeviceReset();
-  qlat_GPU_SetDevice(id_node % num_gpus);
+  qacc_GetDeviceCount(&num_gpus);
+  ////qacc_DeviceReset();
+  qacc_SetDevice(id_node % num_gpus);
   int gpu_id = -1; 
-  qlat_GPU_GetDevice(&gpu_id);
+  qacc_GetDevice(&gpu_id);
 
   //{
-  //qlat_GPU_GetDeviceCount(&num_gpus);
+  //qacc_GetDeviceCount(&num_gpus);
   //printf("CPU node %d (of %d) uses CUDA device %d\n", id_node, num_node, gpu_id);
   //}
 
   fflush(stdout);
   MPI_Barrier(get_comm());
-  for (int i = 0; i < MAX_CUDA_STEAM; ++i)qlat_GPU_StreamCreate(&Qstream[i]) ;
+  for (int i = 0; i < MAX_CUDA_STEAM; ++i)qacc_StreamCreate(&Qstream[i]) ;
   #endif
 
 }
@@ -356,16 +356,16 @@ inline void set_GPU_threads(int mode=0){
   (void)mode;
   #ifdef QLAT_USE_ACC
   int num_gpus = 0;
-  qlat_GPU_GetDeviceCount(&num_gpus);
-  qlat_GPU_DeviceReset();
+  qacc_GetDeviceCount(&num_gpus);
+  qacc_DeviceReset();
   if(mode == 0){
   #pragma omp parallel
   {
     unsigned int cpu_thread_id = omp_get_thread_num();
     unsigned int num_cpu_threads = omp_get_num_threads();
-    qlat_GPU_SetDevice(cpu_thread_id % num_gpus);
+    qacc_SetDevice(cpu_thread_id % num_gpus);
     int gpu_id = -1; 
-    qlat_GPU_GetDevice(&gpu_id);
+    qacc_GetDevice(&gpu_id);
     printf("CPU thread %d (of %d) uses CUDA device %d\n", cpu_thread_id, num_cpu_threads, gpu_id);
   }}
 
@@ -377,10 +377,10 @@ inline void set_GPU_threads(int mode=0){
     if(cpu_thread_id%num_gpus != 0){print0("Wrong mapping of omp !\n");Qassert(false);}
     int Nthreads = cpu_thread_id/num_gpus;
 
-    qlat_GPU_SetDevice(cpu_thread_id / Nthreads);
+    qacc_SetDevice(cpu_thread_id / Nthreads);
     int gpu_id = -1; 
     printf("CPU thread %d (of %d) uses CUDA device %d\n", cpu_thread_id, num_cpu_threads, gpu_id);
-    qlat_GPU_GetDevice(&gpu_id);
+    qacc_GetDevice(&gpu_id);
   }}
 
   #endif
@@ -433,7 +433,7 @@ inline void print_mem_info(std::string stmp = "")
   #ifdef QLAT_USE_ACC
   double freeD = 0;double totalD=0;
   size_t freeM = 0;size_t totalM = 0;
-  qlat_GPU_MemGetInfo(&freeM,&totalM);
+  qacc_MemGetInfo(&freeM,&totalM);
   freeD = freeM*pow(0.5,30);totalD = totalM*pow(0.5,30);
   #endif
   #ifndef QLAT_NO_SYSINFO
@@ -811,7 +811,7 @@ inline void add_nodeL(std::vector<Coordinate>& size_node_list)
 //{
 //    char* local_rank_env;
 //    int local_rank;
-//    qlat_GPU_Error_t cudaRet;
+//    qacc_Error_t cudaRet;
 // 
 //     /* Recovery of the local rank of the process via the environment variable
 //        set by Slurm, as  MPI_Comm_rank cannot be used here because this routine
@@ -821,9 +821,9 @@ inline void add_nodeL(std::vector<Coordinate>& size_node_list)
 //    if (local_rank_env) {
 //        local_rank = atoi(local_rank_env);
 //        /* Define the GPU to use for each MPI process */
-//        cudaRet = qlat_GPU_SetDevice(local_rank);
+//        cudaRet = qacc_SetDevice(local_rank);
 //        if(cudaRet != CUDA_SUCCESS) {
-//            printf("Erreur: qlat_GPU_SetDevice has failed\n");
+//            printf("Erreur: qacc_SetDevice has failed\n");
 //            exit(1);
 //        }
 //    } else {
@@ -900,7 +900,7 @@ inline int end_Lat()
   qlat::end();
   //if(qlat::is_MPI_initialized()){MPI_Finalize();}
   #ifdef QLAT_USE_ACC
-  for (int i = 0; i < MAX_CUDA_STEAM; ++i){qlat_GPU_StreamDestroy(Qstream[i]);}
+  for (int i = 0; i < MAX_CUDA_STEAM; ++i){qacc_StreamDestroy(Qstream[i]);}
   #endif
   return 0;
 }

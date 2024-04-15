@@ -69,7 +69,7 @@ header_files = files(
   'types.h',
   'vector.h',
   'version.h',
-  'qlat_GPU_translator.h',
+  'qacc-translator.h',
   )
 py3.install_sources(header_files, subdir: 'qlat_utils/include/qlat-utils')
 

@@ -269,7 +269,7 @@ void eigen_ov::setup_gpufac(int nprop)
 
   /////buffGPU    = 2;
   size_t freeM = 0;size_t totalM = 0;
-  qlat_GPU_MemGetInfo(&freeM,&totalM);
+  qacc_MemGetInfo(&freeM,&totalM);
   //double freeD = 0;
   //freeD = freeM*pow(0.5,30);
   double totalD=0;
@@ -412,7 +412,7 @@ void eigen_ov::copy_FieldM_to_Mvec(Ty* src, int ncur, int sm, int dir , bool dat
   {
     LInt xi = xini*b_size;
     s1 = getEigenP(ncur, xi, sm, 1);
-    /////qlat_GPU_Memcpy(s1, &s0[xi], b_size*sizeof(Complexq), qlat_GPU_MemcpyHostToDevice);
+    /////qacc_Memcpy(s1, &s0[xi], b_size*sizeof(Complexq), qacc_MemcpyHostToDevice);
     if(dir == 1){cpy_data_thread(s1, &s0[xi], b_size, GPU_cpy, QFALSE);}
     if(dir == 0){cpy_data_thread(&s0[xi], s1, b_size, GPU_cpy, QFALSE);}
   }
@@ -471,12 +471,12 @@ void eigen_ov::copy_evec_to_GPU(int nini)
       /////print0("Test num ncur %d, xi %d, bfac %d \n", ncur, xi, bfac);
 
       s1 = getEigenP(ncur, xi, 0, 0);s0 = getEigenP(ncur, xi, 0, 1);
-      //////qlat_GPU_Memcpy(s1, s0, b_size*sizeof(Complexq), qlat_GPU_MemcpyHostToDevice);
+      //////qacc_Memcpy(s1, s0, b_size*sizeof(Complexq), qacc_MemcpyHostToDevice);
       cpy_data_thread(s1, s0 , b_size, 2, QFALSE);
 
       if(enable_smearE == true){
         s1 = getEigenP(ncur, xi, 1, 0);s0 = getEigenP(ncur, xi, 1, 1);
-        /////qlat_GPU_Memcpy(s1, s0, b_size*sizeof(Complexq), qlat_GPU_MemcpyHostToDevice);
+        /////qacc_Memcpy(s1, s0, b_size*sizeof(Complexq), qacc_MemcpyHostToDevice);
         cpy_data_thread(s1, s0 , b_size, 2, QFALSE);
       }
     }

@@ -587,7 +587,7 @@ struct Nab_distribute{
     else{
       cpy_data_thread(NabN.data(), &NabL[0], bufN*NabL_size, 1);
       ///#ifdef QLAT_USE_ACC
-      ///qlat_GPU_Memcpy(&NabN[0], &NabL[0], bufN*NabL_size*sizeof(Complexq), qlat_GPU_MemcpyDeviceToDevice);
+      ///qacc_Memcpy(&NabN[0], &NabL[0], bufN*NabL_size*sizeof(Complexq), qacc_MemcpyDeviceToDevice);
       ///#else
       ///memcpy(&NabN[0], &NabL[0], bufN*NabL_size*sizeof(Complexq));
       ///#endif
@@ -729,10 +729,10 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
 
 
   //#ifdef QLAT_USE_ACC
-  //qlat_GPU_MemcpyToSymbol(Gmap0C, &Gmap0[0],32*sizeof(signed char),0 , qlat_GPU_MemcpyHostToDevice);
-  //qlat_GPU_MemcpyToSymbol(Gmap1C, &Gmap1[0],32*sizeof(signed char),0 , qlat_GPU_MemcpyHostToDevice);
-  //qlat_GPU_MemcpyToSymbol(Gmap2C, &Gmap2[0],32*sizeof(signed char),0 , qlat_GPU_MemcpyHostToDevice);
-  //qlat_GPU_MemcpyToSymbol(Gmap3C, &Gmap3[0],32*sizeof(signed char),0 , qlat_GPU_MemcpyHostToDevice);
+  //qacc_MemcpyToSymbol(Gmap0C, &Gmap0[0],32*sizeof(signed char),0 , qacc_MemcpyHostToDevice);
+  //qacc_MemcpyToSymbol(Gmap1C, &Gmap1[0],32*sizeof(signed char),0 , qacc_MemcpyHostToDevice);
+  //qacc_MemcpyToSymbol(Gmap2C, &Gmap2[0],32*sizeof(signed char),0 , qacc_MemcpyHostToDevice);
+  //qacc_MemcpyToSymbol(Gmap3C, &Gmap3[0],32*sizeof(signed char),0 , qacc_MemcpyHostToDevice);
   //#endif
 
   }
@@ -798,7 +798,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   /////CPU memory limit, only bufN 1 or a small number
 
   ////if(modeCopy == 1){extra = 0.0;facbufN = 5;}
-  qlat_GPU_MemGetInfo(&freeM,&totalM);
+  qacc_MemGetInfo(&freeM,&totalM);
   double freeD = freeM*pow(0.5,30);double totalD = totalM*pow(0.5,30);
   if(membufN * bufN > extra*totalD){bufN = int(extra*totalD/(membufN));if(bufN == 0)bufN = 1;}
   freeD = freeD - membufN * bufN;
@@ -838,7 +838,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
     bufE.resize(Ncutbuf);
     for(unsigned long iv=0;iv<bufE.size();iv++){gpuMalloc(bufE[iv], npoints, Complexq, 1);}
     //for(unsigned long iv=0;iv<bufE.size();iv++){bufE[iv].init(eigen[0].geo());}
-    //for(unsigned long iv=0;iv<bufE.size();iv++){qlat_GPU_Malloc(&bufE[iv],  npoints*sizeof(Complexq));}
+    //for(unsigned long iv=0;iv<bufE.size();iv++){qacc_Malloc(&bufE[iv],  npoints*sizeof(Complexq));}
   }
 
   print0("===job start 2 \n");
@@ -857,12 +857,12 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
 
   Complexq* NabL = NabV.data();
   ///{TIMER("CUDA mem allocate");gpuMalloc(NabL, bufN*NabL_size, Complexq);}
-  //gpuErrchk(qlat_GPU_Malloc(&NabL, bufN*NabL_size*sizeof(Complexq)))
+  //gpuErrchk(qacc_Malloc(&NabL, bufN*NabL_size*sizeof(Complexq)))
   //qlat::vector<Complexq > NabL;NabL.resize(bufN*NabL_size);
   //NabL.resize(bufN*16*nt);
   //set_zero(NabL);
   //#ifdef QLAT_USE_ACC
-  //qlat_GPU_cudaMemset(NabL, 0, bufN*NabL_size*sizeof(Complexq));
+  //qacc_cudaMemset(NabL, 0, bufN*NabL_size*sizeof(Complexq));
   //#else
   //qacc_for(i, bufN*NabL_size, {NabL[i] = 0.0;});
   //#endif
@@ -923,8 +923,8 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
     if(bv >= bufb0 and bv < bufb1){b0p = bufE[bv%Ncut];}else{
       if(bv % Ncut == 0){
         for(int iv=0;iv<Ncut;iv++){
-          if(bv + iv < n_vec)qlat_GPU_MemcpyAsync(bufE[iv], qlat::get_data(eigen[bv+iv]).data(),
-            npoints*sizeof(Complexq), qlat_GPU_MemcpyHostToDevice);
+          if(bv + iv < n_vec)qacc_MemcpyAsync(bufE[iv], qlat::get_data(eigen[bv+iv]).data(),
+            npoints*sizeof(Complexq), qacc_MemcpyHostToDevice);
         }
         qacc_barrier(dummy);
         bufb0 = (bv/Ncut)*Ncut;bufb1 = bufb0 + Ncut;
@@ -936,8 +936,8 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
     if(av >= bufa0 and av < bufa1){a0p = bufE[Ncut+av%Ncut];}else{
       if(av % Ncut == 0){
         for(int iv=0;iv<Ncut;iv++){
-          if(av + iv < n_vec)qlat_GPU_MemcpyAsync(bufE[Ncut + iv], qlat::get_data(eigen[av+iv]).data(),
-            npoints*sizeof(Complexq), qlat_GPU_MemcpyHostToDevice);
+          if(av + iv < n_vec)qacc_MemcpyAsync(bufE[Ncut + iv], qlat::get_data(eigen[av+iv]).data(),
+            npoints*sizeof(Complexq), qacc_MemcpyHostToDevice);
         }
         qacc_barrier(dummy);
         bufa0 = (av/Ncut)*Ncut;bufa1 = bufa0 + Ncut;
@@ -991,7 +991,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
         //{
         //TIMER("Set zero Nab")
         //#ifdef QLAT_USE_ACC
-        //qlat_GPU_cudaMemset(NabL, 0, bufN*NabL_size*sizeof(Complexq));
+        //qacc_cudaMemset(NabL, 0, bufN*NabL_size*sizeof(Complexq));
         //#else
         //qacc_for(i, bufN*NabL_size, {NabL[i] = 0.0;});
         //#endif
