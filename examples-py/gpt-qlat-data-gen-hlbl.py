@@ -2204,8 +2204,8 @@ set_param("64I", tag, value=1.0)
 tag = "hlbl_four_num_chunk"
 set_param("test-4nt8", tag, value=3)
 set_param("test-8nt16", tag, value=6)
-set_param("24D", tag, value=32)
-set_param("48I", tag, value=32)
+set_param("24D", tag, value=512)
+set_param("48I", tag, value=1024)
 set_param("64I", tag, value=2048)
 
 tag = "hlbl_four_contract_sparse_ratio"
