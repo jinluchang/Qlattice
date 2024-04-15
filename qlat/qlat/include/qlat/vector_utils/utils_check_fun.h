@@ -11,22 +11,23 @@
 namespace qlat
 {
 
-template <class T>
-void diff_gauge( GaugeFieldT<T> &g0, GaugeFieldT<T> &g1)
+template <class Ta, class Tb>
+double diff_gauge( GaugeFieldT<Ta> &g0, GaugeFieldT<Tb> &g1, double err=1e-6)
 {
+  TIMER("diff_gauge");
+  const Geometry& geo = g0.geo();
   double diff = 0.0;int count_print = 0;
-  for (Long index = 0; index < g0.geo().local_volume(); ++index) {
-    Vector<ColorMatrixT<T> > v0 = g0.get_elems(index);
-    Vector<ColorMatrixT<T> > v1 = g1.get_elems(index);
+  for (Long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
     for(int m = 0; m < 4; ++m){
-      const double *p0= (double*) &v0[m](0,0);
-      const double *p1= (double*) &v1[m](0,0);
+      const Ta *p0 = (Ta*)  g0.get_elem(xl, m).p;
+      const Tb *p1 = (Tb*)  g1.get_elem(xl, m).p;
       for(int pi=0;pi<9*2;pi++)
       {
         diff += std::fabs(p0[pi]-p1[pi]);
-        if(std::fabs(p0[pi]-p1[pi])>1e-6 and count_print < 300){
-          Coordinate xl0 = g0.geo().coordinate_from_index(index);
-          Coordinate xg0 = g0.geo().coordinate_g_from_l(xl0);
+        if(std::fabs(p0[pi]-p1[pi]) > err and count_print < 300){
+          Coordinate xl0 = geo.coordinate_from_index(index);
+          Coordinate xg0 = geo.coordinate_g_from_l(xl0);
 
           print0("Wrong %3d %3d %3d %3d, dir %1d, ids %3d, %+.8e %+.8e \n", xg0[0], xg0[1], xg0[2], xg0[3], m, pi,p0[pi],p1[pi]);
           count_print += 1;
@@ -34,9 +35,42 @@ void diff_gauge( GaugeFieldT<T> &g0, GaugeFieldT<T> &g1)
       }
     }
   }
-  sum_all_size(&diff,0);
-  print0("===diff conf %.5e \n",diff);
+  sum_all_size(&diff, 1);
+  diff = diff/(g0.geo().local_volume()*4*9*2.0);
+  print0("==prop diff %.5e \n", diff);
+  MPI_Barrier(get_comm());fflush(stdout);
+  return diff;
 }
+
+template <class Ta, class Tb>
+double diff_gauge_GPU( GaugeFieldT<Ta> &g0, GaugeFieldT<Tb> &g1)
+{
+  TIMER("diff_gauge");
+  const Geometry& geo = g0.geo();
+  const Long V = geo.local_volume();
+  qlat::vector_acc<Ta > dL;dL.resize(V);
+  qlat::vector_acc<Ta > dr;dr.resize(1);dr[0] = 0.0;
+  qacc_for(index, V, {
+    dL[index] = 0.0;
+    const Coordinate xl = geo.coordinate_from_index(index);
+    for(int m = 0; m < 4; ++m){
+      const Ta *p0 = (Ta*)  g0.get_elem(xl, m).p;
+      const Tb *p1 = (Tb*)  g1.get_elem(xl, m).p;
+      for(int pi=0;pi<9*2;pi++)
+      {
+        dL[index] += std::fabs(p0[pi]-p1[pi]);
+      }
+    }
+  });
+
+  reduce_vec(dL.data(), dr.data(), dL.size(), 1, true);
+  sum_all_size(dr.data(), 1);
+  double diff = dr[0];
+  diff = diff/(g0.geo().local_volume()*4*9*2.0);
+  print0("===diff conf %.5e \n",diff);
+  return double(diff);
+}
+
 
 template <class T>
 void diff_prop(Propagator4dT<T>& p0, Propagator4dT<T>& p1, double err=1e-15)
@@ -298,7 +332,7 @@ double check_sum_prop(qpropT& p0)
 }
 
 template <class T, int civ>
-void diff_FieldM(qlat::FieldM<T , civ>& prop0, qlat::FieldM<T , civ>& prop1, double err=1e-15)
+double diff_FieldM(qlat::FieldM<T , civ>& prop0, qlat::FieldM<T , civ>& prop1, double err=1e-15)
 {
   int rank = qlat::get_id_node();
   Long MAX_COUNT = 64;
@@ -335,8 +369,10 @@ void diff_FieldM(qlat::FieldM<T , civ>& prop0, qlat::FieldM<T , civ>& prop1, dou
   }
   sum_all_size(&diffp,1);
   MPI_Barrier(get_comm());fflush(stdout);
-  print0("==prop diff %.5e \n",diffp/(prop0.geo().local_volume()*civ*2.0));
+  double diff = diffp/(prop0.geo().local_volume()*civ*2.0);
+  print0("==prop diff %.5e \n", diff);
   MPI_Barrier(get_comm());fflush(stdout);
+  return diff;
 }
 
 

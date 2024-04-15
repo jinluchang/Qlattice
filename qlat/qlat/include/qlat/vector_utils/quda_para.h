@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include "utils_float_type.h"
 #include "utils_stagger_contractions.h"
+#include "utils_gaugefield.h"
 
 namespace quda
 {
@@ -249,12 +250,17 @@ inline void begin_quda_with_qlat()
   
   int quda_rankx = 0;
   if(rankt != rankx){
-    if(rank == rankt){printf("T rank! %3d %3d \n", rank, rankt);               }
-    if(rank == rankx){printf("X rank! %3d %3d \n", rank, rankx);quda_rankx = 1;}
+    //if(rank == rankt){
+    //  printf("T rank! %3d %3d \n", rank, rankt);               
+    //}
+    if(rank == rankx){
+      //printf("X rank! %3d %3d \n", rank, rankx);
+      quda_rankx = 1;
+    }
     if(rank != rankx and rank != rankt){printf("UNKNOWN rank! \n");}
   }
   qlat::sum_all_size(&quda_rankx, 1);
-  print0("Rank X %d \n", quda_rankx);
+  //print0("Rank X %d \n", quda_rankx);
 
   qlat::quda_begin(mpi_layout, quda_rankx);
 
@@ -282,27 +288,74 @@ inline void quda_end()
   endQuda();
 }
 
-template <class T>
-void quda_convert_gauge(qlat::vector<qlat::ComplexT<T > >& qgf, GaugeField& gf, int dir = 0)
+template <class Ta, class Ty>
+void quda_convert_gauge(Ta* qgf, Ty* gf, const Geometry& geo, int dir = 0, int GPU = 0)
 {
   TIMER("quda_convert_gauge(qgf,gf)");
-  const Geometry& geo = gf.geo();
-  ColorMatrix* quda_pt = reinterpret_cast<ColorMatrix*>(qgf.data());
-  Qassert(geo.multiplicity == 4);
+  Qassert(geo.multiplicity == 1);
+
+  //ColorMatrix* quda_pt = reinterpret_cast<ColorMatrix*>(qgf.data());
   const Long V = geo.local_volume();
   const Long Vh = V / 2;
-  qthread_for(qlat_idx, V, {
+  qGPU_for(qlat_idx, V, GPU, {
     Coordinate xl = geo.coordinate_from_index(qlat_idx);
     //const Vector<ColorMatrix> ms = gf.get_elems_const(xl);
     //Vector<ColorMatrix> ms = gf.get_elems(xl);
     int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
-    for (int mu = 0; mu < 4; mu++) {
-      ColorMatrixT<T>& ms = gf.get_elem_offset(qlat_idx*gf.geo().multiplicity+mu);
-      Long quda_idx = (qlat_idx / 2 + eo * Vh) * 4 + mu;
-      if(dir == 0){quda_pt[quda_idx] = ms;}
-      if(dir == 1){ms = quda_pt[quda_idx];}
-    }
+    Long quda_idx = (qlat_idx / 2 + eo * Vh) * 4 + 0;
+    Ty* ms  =  &gf[su3_n(geo, xl, 0)];
+    Ta*  q  = &qgf[quda_idx*9 + 0];
+    if(dir == 0){for(int i=0;i< 4 * 9;i++){q[i]  = ms[i];}}
+    if(dir == 1){for(int i=0;i< 4 * 9;i++){ms[i] =  q[i];}}
   });
+}
+
+template <class Ta, class Td>
+void quda_convert_gauge(qlat::vector<qlat::ComplexT<Ta > >& qgf, GaugeFieldT<Td >& gf, int dir = 0, int GPU = 0)
+{
+  TIMER("quda_convert_gauge(qgf,gf)");
+  Geometry geo = gf.geo();
+  Qassert(geo.multiplicity == 4);
+  geo.multiplicity = 1;
+  qlat::ComplexT<Ta >* res = (qlat::ComplexT<Ta >*) qgf.data();
+  qlat::ComplexT<Td >* src = (qlat::ComplexT<Td >*) qlat::get_data(gf).data();
+  quda_convert_gauge(res, src, geo, dir, GPU);
+
+  //qlat::ComplexT<T >* res = (qlat::ComplexT<T >*) qgf.data();
+  //qlat::ComplexT<T >* src = (qlat::ComplexT<T >*) qlat::get_data(gf).data();
+  //const Long V = geo.local_volume();
+  //const Long Vh = V / 2;
+
+  //qGPU_for(qlat_idx, V, GPU, {
+  //  const Coordinate xl = geo.coordinate_from_index(qlat_idx);
+  //  const int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
+  //  const Long quda_idx = qlat_idx / 2 + eo * Vh;
+  //  qlat::ComplexT<T >* s0 = &src[(qlat_idx*4 + 0) * 9 ];
+  //  qlat::ComplexT<T >* s1 = &res[(quda_idx*4 + 0) * 9 ];
+  //  if(dir == 0)for(int i=0;i<4*9;i++){s1[i] = s0[i];}
+  //  if(dir == 1)for(int i=0;i<4*9;i++){s0[i] = s1[i];}
+  //});
+  //ColorMatrix* quda_pt = reinterpret_cast<ColorMatrix*>(qgf.data());
+  ////Qassert(geo.multiplicity == 4);
+  //const Long V = geo.local_volume();
+  //const Long Vh = V / 2;
+  //qGPU_for(qlat_idx, V, GPU, {
+  //  Coordinate xl = geo.coordinate_from_index(qlat_idx);
+  //  //const Vector<ColorMatrix> ms = gf.get_elems_const(xl);
+  //  //Vector<ColorMatrix> ms = gf.get_elems(xl);
+  //  int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
+  //  for (int mu = 0; mu < 4; mu++) {
+  //    //ColorMatrixT<T>& ms = gf.get_elem_offset(qlat_idx*gf.geo().multiplicity+mu);
+  //    //ColorMatrixT<Td >& ms = Td* gf.get_elem(xl, mu).p;
+  //    Long quda_idx = (qlat_idx / 2 + eo * Vh) * 4 + mu;
+  //    Td* ms  = (Td*) gf.get_elem(xl, mu).p;
+  //    Ta*  q  = (Ta*)  &quda_pt[quda_idx];
+  //    if(dir == 0){for(int i=0;i<18;i++){q[i]  = ms[i];}}
+  //    if(dir == 1){for(int i=0;i<18;i++){ms[i] = q[i]; }}
+  //    //if(dir == 0){quda_pt[quda_idx] = ms;}
+  //    //if(dir == 1){ms = quda_pt[quda_idx];}
+  //  }
+  //});
 }
 
 QudaPrecision get_quda_precision(int byte)
@@ -373,41 +426,6 @@ QudaPrecision get_quda_precision(int byte)
 //  }
 //}
 
-//template <typename Float> void constructCloverField(Float *res, double norm, double diag, Long V)
-//{
-//
-//  Float c = 2.0 * norm / RAND_MAX;
-//
-//  for (int i = 0; i < V; i++) {
-//    for (int j = 0; j < 72; j++) { res[i * 72 + j] = c * rand() - norm; }
-//
-//    // impose clover symmetry on each chiral block
-//    for (int ch = 0; ch < 2; ch++) {
-//      res[i * 72 + 3 + 36 * ch] = -res[i * 72 + 0 + 36 * ch];
-//      res[i * 72 + 4 + 36 * ch] = -res[i * 72 + 1 + 36 * ch];
-//      res[i * 72 + 5 + 36 * ch] = -res[i * 72 + 2 + 36 * ch];
-//      res[i * 72 + 30 + 36 * ch] = -res[i * 72 + 6 + 36 * ch];
-//      res[i * 72 + 31 + 36 * ch] = -res[i * 72 + 7 + 36 * ch];
-//      res[i * 72 + 32 + 36 * ch] = -res[i * 72 + 8 + 36 * ch];
-//      res[i * 72 + 33 + 36 * ch] = -res[i * 72 + 9 + 36 * ch];
-//      res[i * 72 + 34 + 36 * ch] = -res[i * 72 + 16 + 36 * ch];
-//      res[i * 72 + 35 + 36 * ch] = -res[i * 72 + 17 + 36 * ch];
-//    }
-//
-//    for (int j = 0; j < 6; j++) {
-//      res[i * 72 + j] += diag;
-//      res[i * 72 + j + 36] += diag;
-//    }
-//  }
-//}
-
-//void constructQudaCloverField(void *clover, double norm, double diag, QudaPrecision precision, Long V)
-//{
-//  if (precision == QUDA_DOUBLE_PRECISION)
-//    constructCloverField((double *)clover, norm, diag, V);
-//  else
-//    constructCloverField((float *)clover, norm, diag,  V);
-//}
 
 // Helper functions
 //------------------------------------------------------
@@ -517,6 +535,7 @@ int fullLatticeIndex(int i, int oddBit, int Z[4])
 template <typename Ty>
 void applyGaugeFieldScaling_long(Ty *gauge, Long Vh, QudaGaugeParam *param, QudaDslashType dslash_type = QUDA_STAGGERED_DSLASH)
 {
+  TIMER("applyGaugeFieldScaling_long");
   int X1h = param->X[0] / 2;
   int X1 = param->X[0];
   int X2 = param->X[1];

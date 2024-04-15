@@ -9,6 +9,7 @@
 #include "general_funs.h"
 #include "utils_fft_desc.h"
 #include "utils_eo_copies.h"
+#include "utils_props_type.h"
 
 #define IO_DEFAULT  0
 #define IO_ENDIAN false
@@ -1287,7 +1288,7 @@ void save_gwu_prop(const char *filename,Propagator4dT<Td>& prop){
   Qassert(prop.initialized);
   io_vec& io_use = get_io_vec_plan(prop.geo());
   std::vector<qlat::FermionField4dT<Td > > prop_qlat;
-  prop4d_to_Fermion(prop,prop_qlat, 1);
+  prop4d_to_Fermion(prop_qlat, prop, 1);
   save_gwu_prop(filename,prop_qlat,io_use);
   ///////load_gwu_prop(filename,prop,io_use,false);
 }
@@ -1306,7 +1307,7 @@ void load_gwu_prop(const char *filename,Propagator4dT<Td>& prop){
   io_vec& io_use = get_io_vec_plan(prop.geo());
   std::vector<qlat::FermionField4dT<Td > > prop_qlat;
   load_gwu_prop(filename,prop_qlat,io_use);
-  prop4d_to_Fermion(prop,prop_qlat, 0);
+  prop4d_to_Fermion(prop_qlat, prop, 0);
   ///////load_gwu_prop(filename,prop,io_use,false);
 }
 
@@ -2098,9 +2099,19 @@ void load_qlat_prop(const char *filename, Propagator4dT<Td>& prop, bool read=tru
   
 }
 
+template <typename Td>
+void load_qlat_prop(const std::string& filename, Propagator4dT<Td>& prop, bool read=true, bool single_file=true){
+  load_qlat_prop(filename.c_str(), prop, read, single_file);
+}
+
 template <typename Td >
 void save_qlat_prop(const char *filename,Propagator4dT<Td >& prop, bool single_file=true){
   load_qlat_prop(filename, prop, false, single_file);
+}
+
+template <typename Td >
+void save_qlat_prop(const std::string& filename,Propagator4dT<Td >& prop, bool single_file=true){
+  load_qlat_prop(filename.c_str(), prop, false, single_file);
 }
 
 template <typename Td>

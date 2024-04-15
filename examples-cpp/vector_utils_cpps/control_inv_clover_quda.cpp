@@ -1,24 +1,25 @@
 #include <sys/sysinfo.h>
 #include <unistd.h>
 
-#include <qutils/vector.h>
+//#include <qutils/vector.h>
 #include "general_funs.h"
 #include "utils_io_vec.h"
+#include "utils_clover_inverter.h"
 #include "utils_construction.h"
-#include "quda_para.h"
-#include "utils_quda_inverter.h"
 
 int main(int argc, char* argv[])
 {
   using namespace qlat;
-  inputpara in;int mode_dis = -1; 
-  begin_Lat(&argc, &argv, in, mode_dis);
+  inputpara in;
+  begin_Lat(&argc, &argv, in);
 
   int nx,ny,nz,nt;
   nx = in.nx;
   ny = in.ny;
   nz = in.nz;
   nt = in.nt;
+
+  {
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
   Geometry geo;
   geo.init(total_site, 1); 
@@ -54,64 +55,43 @@ int main(int argc, char* argv[])
   qlat::vector_acc<qlat::ComplexD > quda_gf;quda_gf.resize(V * 4 * 3*3);
   quda_convert_gauge(quda_gf, gf);
 
-  int Nsrc = 12;
+  const int Nsrc = 12;
   //int Nsrc = 1;
-  std::vector<qlat::FermionField4d > qlat_ff;qlat_ff.resize(Nsrc);
-  for(int i=0;i<qlat_ff.size();i++){qlat_ff[i].init(geo);}
+  //std::vector<qlat::FermionField4d > qlat_ff;qlat_ff.resize(Nsrc);
+  //for(int i=0;i<qlat_ff.size();i++){qlat_ff[i].init(geo);}
 
-  quda_inverter qinv(geo, quda_gf);
+  //std::vector<qlat::FermionField4d > qlat_fq;qlat_fq.resize(Nsrc);
+  //for(int i=0;i<qlat_fq.size();i++){qlat_fq[i].init(geo);}
+
+  quda_clover_inverter qinv(geo, QUDA_PERIODIC_T);
+  //quda_clover_inverter qinv(geo, QUDA_ANTI_PERIODIC_T);
+  qinv.setup_link(quda_gf.data());
   qinv.setup_clover(in.kappa, in.clover_csw);
-  qinv.check_residue = 1;
 
-  ////////quda containers
+  Propagator4d qlat_prop;qlat_prop.init(geo);
+  Propagator4d qlat_src; qlat_src.init(geo);
 
-  //////===Invertion part
   {
-  //std::vector<double> time(Nsrc);
-  //std::vector<double> gflops(Nsrc);
-  //std::vector<int> iter(Nsrc);
 
-  qinv.setup_eigen(in.nvec);
-
-  for (int i = 0; i < Nsrc; i++) {
-    //////set point src at zero
-    qlat::ComplexD* res = (qlat::ComplexD*) (qinv.csrc->V());
-    Long Vh = V / 2;
+  qlat::set_zero(qlat_src);
+  qlat::ComplexD* srcP = (qlat::ComplexD*) (qlat::get_data(qlat_src).data());
+  for (int is = 0; is < Nsrc; is++) {
     #pragma omp parallel for
     for (Long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {
       const Coordinate xl = geo.coordinate_from_index(qlat_idx_4d);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
-      int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
-      int quda_idx = eo * Vh + qlat_idx_4d / 2;
 
       for(int dc=0;dc<12;dc++){
-      if(xg[0] == sp[0] and xg[1] == sp[1] and xg[2] == sp[2] and xg[3] == sp[3] and dc == i){
-        res[quda_idx*12 + dc] = qlat::ComplexD(1.0, 0.0);
-      }
-      else{
-        res[quda_idx*12 + dc] = qlat::ComplexD(0.0, 0.0);
+      if(xg[0] == sp[0] and xg[1] == sp[1] and xg[2] == sp[2] and xg[3] == sp[3] and dc == is){
+        srcP[qlat_idx_4d*12*12 + dc * 12 + dc] = qlat::ComplexD(1.0, 0.0);
       }
       }
     }
-    //////set point src at zero
-
-    ///quda_out[i] = quda::ColorSpinorField::Create(cs_param);
-    qinv.do_inv(qinv.cres->V(), qinv.csrc->V());
-
-    //time[i] = quda_inverter.inv_param.secs;
-    //gflops[i] = quda_inverter.inv_param.gflops / quda_inverter.inv_param.secs;
-    //iter[i] = quda_inverter.inv_param.iter;
-    printfQuda("Done: %i iter / %g secs = %g Gflops\n\n", qinv.inv_param.iter, qinv.inv_param.secs,
-               qinv.inv_param.gflops / qinv.inv_param.secs);
-
-    quda_ff_to_Ffield4d(qlat_ff[i], (qlat::ComplexD*) qinv.cres->V());
-
+  }
   }
 
-  }
+  get_clover_prop(qinv, qlat_src, qlat_prop, in.kappa, 1e-12, 10000);
 
-  Propagator4d qlat_prop;
-  Fermion_to_prop4d(qlat_prop, qlat_ff);
   //qlat_prop.init(geo);
 
   //////qlat_prop *= (2*in.kappa);
@@ -121,12 +101,11 @@ int main(int argc, char* argv[])
   //////save_qlat_prop(namew, qlat_prop , false);
   save_gwu_prop(namew, qlat_prop);
 
-  print_meson(qlat_prop, qlat_prop,   "quda ");
-
+  print_pion(qlat_prop, qlat_prop, std::string("quda ") );
 
   qinv.free_mem();
-
   quda_end();
+  }
 
   fflush_MPI();
   qlat::Timer::display();

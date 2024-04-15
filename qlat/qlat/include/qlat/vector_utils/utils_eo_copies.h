@@ -12,7 +12,11 @@ namespace qlat{
 
 inline void qlat_map_eo_site(qlat::FieldM<char, 1>& eo, const Geometry& geo)
 {
-  if(eo.initialized)if(eo.geo() == geo){return ;}
+  TIMER("qlat_map_eo_site");
+  if(eo.initialized){
+    Geometry geo_ = eo.geo();geo_.multiplicity = geo.multiplicity;
+    if(geo_ == geo){return ;}
+  }
   eo.init(geo);
   char* res = (char*) qlat::get_data(eo).data();
   ////only bool is not write thread safe
@@ -172,6 +176,7 @@ void reduce_color(qlat::vector_acc<Ty >& resC, qlat::vector_gpu<Ty >& p0, qlat::
 
 inline void get_index_mappings_reverse(qlat::vector_acc<Long >& map, const Geometry& geo)
 {
+  TIMER("get_index_mappings_reverse");
   const Long V = geo.local_volume();
   const Long Vh = V / 2;
 
@@ -188,6 +193,7 @@ inline void get_index_mappings_reverse(qlat::vector_acc<Long >& map, const Geome
 
 inline void get_index_mappings(qlat::vector_acc<Long >& map, const Geometry& geo)
 {
+  TIMER("get_index_mappings");
   const Long V = geo.local_volume();
   const Long Vh = V / 2;
 

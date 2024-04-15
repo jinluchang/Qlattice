@@ -14,6 +14,7 @@ cppsources = files(
   'smear.cpp',
   'utils-io.cpp',
   'utils_Matrix_prod.cpp',
+  'utils_field_expand.cpp',
   'hlbl-contract.cpp',
   )
 py3.install_sources(cppsources, subdir: 'qlat/lib')

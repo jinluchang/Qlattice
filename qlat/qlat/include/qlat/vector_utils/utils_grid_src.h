@@ -193,7 +193,7 @@ void check_noise_high(qlat::FieldM<Ty, 1>& noise, std::vector<int >& sinkt, doub
 }
 
 /////get positions by spatial setups
-inline void grid_list_pos(const Coordinate& off_L,qlat::vector_acc<Long > &Ngrid)
+inline void grid_list_pos(const Coordinate& off_L, qlat::vector_acc<Long >& Ngrid)
 {
   TIMERA("===grid_list_pos===")
   if(off_L.size() != 4){abort_r("dimention of positions wrong!\n ");}
@@ -258,37 +258,41 @@ inline Coordinate get_grid_off(Long j0, const Coordinate& off_L, const Coordinat
 }
 
 /////get positions by spatial and time setups
-inline void grid_list_posT(std::vector<PointsSelection > &LMS_points, const Coordinate& off_L, const Coordinate& pos, const int combineT, const Coordinate& Lat)
+inline void grid_list_posT(std::vector<PointsSelection >& LMS_points, const Coordinate& off_L, const Coordinate& pos, const int combineT, const Coordinate& Lat)
 {
   TIMERA("===grid_list_posT===")
   qlat::vector_acc<Long > Nfull;
   /////get positions by spatial setups
   grid_list_pos(off_L, Nfull);
+  LMS_points.resize(0);
+  if(combineT == int(0)){LMS_points.resize(Nfull.size()*off_L[3]);}
+  if(combineT == int(1)){LMS_points.resize(Nfull.size()         );}
 
   Coordinate cur_pos;
   Coordinate cur_off;
+  Long ci = 0;
   for(Long gi=0;gi<Nfull.size();gi++){
     cur_pos = get_grid_off(Nfull[gi], off_L, pos, Lat);
     if(combineT == 0){
       for(int it = 0; it < off_L[3]; it++){
         cur_off = cur_pos;
         cur_off[3] += ((Lat[3]/(off_L[3]))*it)%Lat[3]; ////need be careful not to exceed boundaries
-        PointsSelection lms_res;lms_res.push_back_slow(cur_off);
-        LMS_points.push_back(lms_res);
+        PointsSelection lms_res;lms_res.resize(1);lms_res[0] = cur_off;
+        LMS_points[ci] = lms_res;ci += 1;
       }
     }
     if(combineT == 1){
-      PointsSelection lms_res(off_L[3]);
+      PointsSelection lms_res;lms_res.resize(off_L[3]);
       for(int it = 0; it < off_L[3]; it++){
         cur_off = cur_pos;
         cur_off[3] += ((Lat[3]/(off_L[3]))*it)%Lat[3];
         lms_res[it] = cur_off;
       }
-      LMS_points.push_back(lms_res);
+      LMS_points[ci] = lms_res;ci += 1;
     }
   }
-  if(combineT == int(0)){Qassert(Long(LMS_points.size()) == Long(Nfull.size()*off_L[3]));}
-  if(combineT == int(1)){Qassert(Long(LMS_points.size()) == Long(Nfull.size()         ));}
+  //if(combineT == int(0)){Qassert(Long(LMS_points.size()) == Long(Nfull.size()*off_L[3]));}
+  //if(combineT == int(1)){Qassert(Long(LMS_points.size()) == Long(Nfull.size()         ));}
 }
 
 

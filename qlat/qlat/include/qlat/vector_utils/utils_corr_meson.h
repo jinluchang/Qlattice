@@ -19,27 +19,26 @@ namespace qlat{
 
 ////ga1 sink gammas, ga2 src gammas
 template <typename Td>
-void meson_vectorE(std::vector<Propagator4dT<Td > > &pV1, std::vector<Propagator4dT<Td > > &pV2, ga_M &ga1,ga_M &ga2,
-        qlat::vector_acc<qlat::ComplexT<Td > > &res, qlat::fft_desc_basic &fd,int clear=1, int invmode=1){
+void meson_vectorE(std::vector<Propagator4dT<Td >* > &pV1, std::vector<Propagator4dT<Td >* > &pV2, ga_M &ga1,ga_M &ga2,
+        qlat::ComplexT<Td >* res, qlat::fft_desc_basic &fd, int invmode=1){
   TIMER("Meson_vectorE");
   Qassert(fd.order_ch == 0);
   ///////check_prop_size(prop1);check_prop_size(prop2);
   int  NTt  = fd.Nv[3];
   LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   int  nmass = pV1.size();
-  if(nmass == 0){res.resize(0);return;}
 
-  if(clear == 1){ini_resE(res,nmass,fd);}
-
-  if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");Qassert(false);}
+  //if(nmass == 0){res.resize(0);return;}
+  //if(clear == 1){ini_resE(res,nmass,fd);}
+  //if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");Qassert(false);}
   Qassert(pV1.size() == pV2.size());
 
   for(int mi=0;mi<nmass;mi++)
   {
-  Propagator4dT<Td >& pL1 = pV1[mi];
-  Propagator4dT<Td >& pL2 = pV2[mi];
+  Propagator4dT<Td >& pL1 = *pV1[mi];
+  Propagator4dT<Td >& pL2 = *pV2[mi];
 
-  qacc_for(isp, Long(pV1[0].geo().local_volume()),{ 
+  qacc_for(isp, Long(pV1[0]->geo().local_volume()),{ 
     int ti = isp/Nxyz;
     int xi = isp%Nxyz;
       qlat::ComplexT<Td > pres;pres = 0.0;
@@ -68,6 +67,52 @@ void meson_vectorE(std::vector<Propagator4dT<Td > > &pV1, std::vector<Propagator
   });
   }
 
+}
+
+template <typename Td>
+void meson_vectorE(std::vector<Propagator4dT<Td > > &pV1, std::vector<Propagator4dT<Td > > &pV2, ga_M &ga1,ga_M &ga2,
+        qlat::vector_acc<qlat::ComplexT<Td > > &res, qlat::fft_desc_basic &fd,int clear=1, int invmode=1){
+  std::vector<Propagator4dT<Td >* > p1;
+  std::vector<Propagator4dT<Td >* > p2;
+  Qassert(pV1.size() == pV2.size());
+  const int Nprop = pV1.size();
+  p1.resize(Nprop);
+  p2.resize(Nprop);
+  for(int i=0;i<Nprop;i++){
+    p1[i] = &pV1[i];
+    p2[i] = &pV2[i];
+  }
+
+  const int  NTt  = fd.Nv[3];
+  const LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
+  const int  nmass = pV1.size();
+  if(nmass == 0){res.resize(0);return;}
+  if(clear == 1){ini_resE(res,nmass,fd);}
+  if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");Qassert(false);}
+
+  meson_vectorE(p1, p2, ga1, ga2, res.data(), fd, invmode);
+}
+
+template <typename Td>
+void meson_vectorE(Propagator4dT<Td > &pV1, Propagator4dT<Td > &pV2, ga_M &ga1,ga_M &ga2,
+        qlat::ComplexT<Td >* res, int clear=1, int invmode=1){
+  Qassert(pV1.initialized and pV2.initialized);
+  std::vector<Propagator4dT<Td >* > p1;
+  std::vector<Propagator4dT<Td >* > p2;
+  const int Nprop = 1;
+  p1.resize(Nprop);
+  p2.resize(Nprop);
+  p1[0] = &pV1;
+  p2[0] = &pV2;
+  const qlat::Geometry &geo = pV1.geo();
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+  if(clear == 1){
+    const int  NTt  = fd.Nv[3];
+    const LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
+    zero_Ty(res, NTt * Nxyz, 1);
+  }
+
+  meson_vectorE(p1, p2, ga1, ga2, res, fd, invmode);
 }
 
 template <typename Ty >
@@ -708,10 +753,20 @@ void print_pion(std::vector<Propagator4dT<Td > > &prop1, std::vector<Propagator4
   for(int t=0;t<fd.nt;t++)
   {
     qlat::ComplexT<Td > v = resC[iv*fd.nt + t] * qlat::ComplexT<Td >(factor, 0.0);
-    print0("%s iv %d, t %d, v %.6e %.6e \n", tag.c_str(), iv, t, v.real(), v.imag());
+    print0("%s iv %2d, t %3d, v %.15e %.15e \n", tag.c_str(), iv, t, v.real(), v.imag());
   }
 }
 
+template<typename Td>
+void print_pion(Propagator4dT<Td > &p1, Propagator4dT<Td >&p2, const std::string& tag=std::string(""), double factor = 1.0){
+  std::vector<Propagator4dT<Td > > prop1;
+  std::vector<Propagator4dT<Td > > prop2;
+  const qlat::Geometry &geo = p1.geo();
+  prop1.resize(1);prop2.resize(1);
+  prop1[0].init(geo);prop2[0].init(geo);
+  prop1[0] = p1;prop2[0] = p2;
+  print_pion(prop1, prop2, tag, factor);
+}
 
 //template <typename Ta>
 //void meson_corr_write(Propagator4dT<Ta > &propVa, Propagator4dT<Ta > &propVb, int pos, std::vector<double > &write, int offw, const Geometry &geo, int a=0, int b=0, int c=0 , int d=0){

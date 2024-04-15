@@ -442,7 +442,7 @@ inline void print_mem_info(std::string stmp = "")
   #ifdef QLAT_USE_ACC
   print0("===CPU free %.3e GB, total %.3e GB; GPU free %.3e GB, total %.3e GB. \n"
           , s_info.freeram*pow(0.5,30),s_info.totalram*pow(0.5,30),freeD,totalD);
-
+  //Qassert(freeD / totalD > 0.08);//unified memeory expand need more memory
   #else
   print0("===CPU free %.3e GB, total %.3e GB. \n"
           , s_info.freeram*pow(0.5,30),s_info.totalram*pow(0.5,30));
@@ -893,12 +893,14 @@ inline void begin_Lat(int* argc, char** argv[], inputpara& in, int read_Lat = 0)
 
 }
 
-inline int end_Lat()
+inline int end_Lat(int with_mpi = 0, int with_timer = 1)
 {
-  qlat::Timer::display();
+  if(with_timer == 1){
+    qlat::Timer::display();
+  }
   fflush_MPI();
   qlat::end();
-  //if(qlat::is_MPI_initialized()){MPI_Finalize();}
+  if(with_mpi == 1 and qlat::is_MPI_initialized()){MPI_Finalize();}
   #ifdef QLAT_USE_ACC
   for (int i = 0; i < MAX_CUDA_STEAM; ++i){qacc_StreamDestroy(Qstream[i]);}
   #endif
@@ -1122,21 +1124,28 @@ inline std::vector<Long > random_list(const Long n, const Long m, const int seed
 }
 
 template<typename Ty>
-inline Ty vec_norm2(Ty* s0, Ty* s1, Long Ndata, QMEM GPU = QMGPU)
+inline Ty vec_norm2(Ty* s0, Ty* s1, Long Ndata, QMEM GPU = QMGPU, const Long Ngroup = 4)
 {
   TIMERB("vec_norm2 single");
 
   VectorGPUKey gkey(0, ssprintf("vec_norm2_buf"), GPU);
+  Qassert(Ndata % Ngroup == 0);
+  const Long Nvol = Ndata / Ngroup;
+
   vector_gpu<char >& Buf = get_vector_gpu_plan<char >(gkey);
-  Buf.resizeL(size_t(Ndata)* sizeof(Ty));
+  Buf.resizeL(size_t(Nvol)* sizeof(Ty));
   Ty* buf = (Ty*) Buf.data();
 
-  qGPU_for(isp, Ndata, GPU, {
-    buf[isp] = qlat::qconj(s0[isp]) * s1[isp];
+  qGPU_for(isp, Nvol, GPU, {
+    buf[isp] = 0.0;
+    for(int gi=0;gi<Ngroup;gi++){
+      const Long index = gi * Nvol + isp;
+      buf[isp] += qlat::qconj(s0[index]) * s1[index];
+    }
   });
 
   qlat::vector_acc<Ty > rsum;rsum.resize(1);rsum[0] = 0.0;
-  reduce_vec(buf, &rsum[0], Ndata, 1, GPU);
+  reduce_vec(buf, &rsum[0], Nvol, 1, GPU);
   sum_all_size( (Ty*) rsum.data(), 1, true );
   return rsum[0];
 }

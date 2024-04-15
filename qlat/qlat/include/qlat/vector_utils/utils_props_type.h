@@ -19,7 +19,7 @@
 namespace qlat{
 
 template<typename Td, typename Tc>
-void prop4d_to_Fermion(Propagator4dT<Td>& prop,std::vector<qlat::FermionField4dT<Tc > > &buf, int dir=1){
+void prop4d_to_Fermion(std::vector<qlat::FermionField4dT<Tc > > &buf, Propagator4dT<Td>& prop, int dir=1){
 
   if(dir==1){buf.resize(0);buf.resize(12);for(int iv=0;iv<12;iv++){
     if(!buf[iv].initialized){buf[iv].init(prop.geo());}
@@ -48,9 +48,8 @@ void prop4d_to_Fermion(Propagator4dT<Td>& prop,std::vector<qlat::FermionField4dT
 template<typename Td, typename Tc>
 void Fermion_to_prop4d(Propagator4dT<Td>& prop, std::vector<qlat::FermionField4dT<Tc > > &buf){
   Qassert(buf.size() == 12);
-  prop4d_to_Fermion(prop, buf, 0);
+  prop4d_to_Fermion(buf, prop, 0);
 }
-
 
 /////V -- 12a x 12b   to   12b x 12a -- V
 template<class Ty, typename Td>

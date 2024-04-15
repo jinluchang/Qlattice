@@ -221,7 +221,7 @@ inline void gpuAssert(qacc_Error code, const char *file, int line, bool abort=tr
 {
    if (code != qacc_Success)
    {
-      qlat::displayln(qlat::ssprintf("qlat_GPU error: %s %s %d\n", qacc_GetErrorString(code), file, line ));
+      qlat::displayln(qlat::ssprintf("qacc error: %s %s %d\n", qacc_GetErrorString(code), file, line ));
       qassert(false);
    }
 }

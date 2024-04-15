@@ -168,6 +168,23 @@ void prop_to_corr_mom0(std::vector<qlat::vector_gpu<Ty > >& Eprop, qlat::vector_
 
 template<typename Td>
 void prop_corrE(Propagator4dT<Td > &p1,
+  qlat::vector_acc<qlat::ComplexT<Td > >& Eres, const Coordinate& mom = Coordinate(), const int tini = 0)
+{
+  const Geometry& geo = p1.geo();
+  std::vector<Propagator4dT<Td >* > pL;pL.resize(1);
+  pL[0] = &p1;
+
+  qlat::vector_gpu<qlat::ComplexT<Td > > resTa;
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+  prop_to_vec(pL, resTa, fd);
+  vec_corrE(resTa, Eres, fd, 1, mom);
+  if(tini != 0){
+    shift_result_t(Eres, fd.nt, tini);
+  }
+}
+
+template<typename Td>
+void prop_corrE(Propagator4dT<Td > &p1,
   const std::string& filename, const Coordinate& mom = Coordinate(), const int tini = 0,
   const std::string& info = std::string("NONE"), const int shift_end = 1)
 {

@@ -32,7 +32,7 @@ struct quda_inverter {
   int X[4];
   QudaGaugeParam  gauge_param;
   ////void* quda_gf_default;
-  qlat::vector<qlat::ComplexD > quda_gf_default;
+  qlat::vector_acc<qlat::ComplexD > quda_gf_default;
   QudaInvertParam inv_param;
   quda::SolverParam solverParam;
   quda::Solver *solve_cg;
@@ -95,6 +95,9 @@ struct quda_inverter {
   std::vector<quda::Complex > evalsK;
   std::vector<quda::Complex > evalsF;
 
+  std::vector<quda::ColorSpinorField> out_multishift_gpu;
+  std::vector<quda::ColorSpinorField> src_multishift_gpu;
+
   std::vector<quda::ColorSpinorField > ZSpace;
   std::vector<quda::Complex > evalsZ;
   ///std::vector<quda::ColorSpinorField *> evecs_;
@@ -142,7 +145,7 @@ struct quda_inverter {
   quda_inverter(const Geometry& geo_, QudaTboundary t_boundary, int num_src_=1);
 
   inline void free_mem();
-  inline void setup_link(qlat::ComplexD* quda_gf, const int apply_stag_phase = 0);
+  inline void setup_link(qlat::ComplexD* quda_gf, const int apply_stag_phase = 0, const int force_phase = 0);
 
   inline void setup_clover(const double clover_csw);
   inline void setup_stagger();
@@ -174,6 +177,7 @@ struct quda_inverter {
   inline void check_residualF();
 
   inline void setup_inv_param_prec(int prec_type = 0, bool force_reload = false);
+  inline void setup_inv_param_prec_type(int prec_type = 0);
   inline void setup_gauge_param(QudaTboundary t_boundary);
 
   inline void random_src(const int seed);
@@ -226,11 +230,17 @@ inline void quda_inverter::setup_gauge_param(QudaTboundary t_boundary)
   //gauge_param.cuda_prec_precondition = QUDA_DOUBLE_PRECISION;
   //gauge_param.cuda_prec_eigensolver  = QUDA_DOUBLE_PRECISION;
 
-  gauge_param.reconstruct                   = QUDA_RECONSTRUCT_NO;  ////gauge_param.reconstruct = link_recon;
-  gauge_param.reconstruct_sloppy            = QUDA_RECONSTRUCT_NO;
+  // improve performance a little
+  gauge_param.reconstruct                   = QUDA_RECONSTRUCT_13;  ////gauge_param.reconstruct = link_recon;
+  gauge_param.reconstruct_sloppy            = QUDA_RECONSTRUCT_13;
+
+  //gauge_param.reconstruct                   = QUDA_RECONSTRUCT_NO;  ////gauge_param.reconstruct = link_recon;
+  //gauge_param.reconstruct_sloppy            = QUDA_RECONSTRUCT_NO;
+
+  gauge_param.reconstruct_refinement_sloppy = QUDA_RECONSTRUCT_NO;  /////link_recon
   gauge_param.reconstruct_precondition      = QUDA_RECONSTRUCT_NO;
   gauge_param.reconstruct_eigensolver       = QUDA_RECONSTRUCT_NO;
-  gauge_param.reconstruct_refinement_sloppy = QUDA_RECONSTRUCT_NO;  /////link_recon
+
 
   gauge_param.anisotropy = 1.0;
 
@@ -345,12 +355,17 @@ quda_inverter::quda_inverter(const Geometry& geo_, QudaTboundary t_boundary, int
   if(val != ""){quda_verbos = stringtonum(val);}
 }
 
-inline void quda_inverter::setup_link(qlat::ComplexD* quda_gf, const int apply_stag_phase)
+inline void quda_inverter::setup_link(qlat::ComplexD* quda_gf, const int apply_stag_phase, const int force_phase)
 {
   TIMER("setup_link");
   /////load gauge to quda GPU default position
   freeGaugeQuda();
-  if(apply_stag_phase == 1 and gauge_with_phase == false){
+  //{
+  //qlat::ComplexD res =  vec_norm2(quda_gf, quda_gf, geo.local_volume() * 4 * 9, QMGPU, 64);
+  //print0("gauge norm %.8e %.8e \n",  res.real(), res.imag());
+  //}
+
+  if(apply_stag_phase == 1 and (gauge_with_phase == false or force_phase == 1)){
     applyGaugeFieldScaling_long((qlat::ComplexD*) quda_gf, V/2, &gauge_param, QUDA_STAGGERED_DSLASH);
     loadGaugeQuda((void *) quda_gf, &gauge_param);
     gauge_with_phase = true;
@@ -364,6 +379,7 @@ inline void quda_inverter::setup_link(qlat::ComplexD* quda_gf, const int apply_s
     quda_gf_default.resize(V *3*3*4 );
     cpy_data_thread(&quda_gf_default[0], quda_gf, V*3*3*4, false);
   }
+  //print_plaq();
 }
 
 inline void quda_inverter::print_plaq()
@@ -888,6 +904,9 @@ inline void quda_inverter::free_mem(){
   evalsZ.resize(0);
   free_csfield();
 
+  out_multishift_gpu.resize(0);
+  src_multishift_gpu.resize(0);
+
   if(eig_solveF != NULL){delete eig_solveF;eig_solveF=NULL;}
   if(eig_solveK != NULL){delete eig_solveK;eig_solveK=NULL;}
   nvec = 0;
@@ -1288,10 +1307,66 @@ inline void quda_inverter::setup_stagger()
 
 ////0, double to single, 1 single to half, 10 double to double, 11 single to single, 12 half to half
 ////may still cost time even using the comparisons, TODO need to investigate the issues
+inline void quda_inverter::setup_inv_param_prec_type(int prec_type)
+{
+  TIMER("setup_inv_param_prec_type");
+  inv_param.cpu_prec                      = QUDA_DOUBLE_PRECISION;
+  if(prec_type == 0)
+  {
+    inv_param.cuda_prec                     = QUDA_DOUBLE_PRECISION;
+    inv_param.cuda_prec_sloppy              = QUDA_SINGLE_PRECISION;
+    inv_param.cuda_prec_refinement_sloppy   = QUDA_SINGLE_PRECISION;
+  }
+
+  if(prec_type == 1)
+  {
+    inv_param.cuda_prec                     = QUDA_SINGLE_PRECISION;
+    inv_param.cuda_prec_sloppy              = QUDA_HALF_PRECISION;
+    inv_param.cuda_prec_refinement_sloppy   = QUDA_HALF_PRECISION;
+  }
+
+  if(prec_type == 2)
+  {
+    inv_param.cuda_prec                     = QUDA_DOUBLE_PRECISION;
+    inv_param.cuda_prec_sloppy              = QUDA_HALF_PRECISION;
+    inv_param.cuda_prec_refinement_sloppy   = QUDA_HALF_PRECISION;
+  }
+
+  
+  if(prec_type == 10)
+  {
+    inv_param.cuda_prec                     = QUDA_DOUBLE_PRECISION;
+    inv_param.cuda_prec_sloppy              = QUDA_DOUBLE_PRECISION;
+    inv_param.cuda_prec_refinement_sloppy   = QUDA_DOUBLE_PRECISION;
+  }
+ 
+  if(prec_type == 11)
+  {
+    inv_param.cuda_prec                     = QUDA_SINGLE_PRECISION;
+    inv_param.cuda_prec_sloppy              = QUDA_SINGLE_PRECISION;
+    inv_param.cuda_prec_refinement_sloppy   = QUDA_SINGLE_PRECISION;
+  }
+
+  if(prec_type == 12)
+  {
+    inv_param.cuda_prec                     = QUDA_HALF_PRECISION;
+    inv_param.cuda_prec_sloppy              = QUDA_HALF_PRECISION;
+    inv_param.cuda_prec_refinement_sloppy   = QUDA_HALF_PRECISION;
+  }
+
+  gauge_param.cuda_prec              = inv_param.cuda_prec;
+  gauge_param.cuda_prec_sloppy       = inv_param.cuda_prec_sloppy;
+  prec_type_check = -2;////need reload if this function is called
+
+}
+
+////0, double to single, 1 single to half, 10 double to double, 11 single to single, 12 half to half
+////may still cost time even using the comparisons, TODO need to investigate the issues
 inline void quda_inverter::setup_inv_param_prec(int prec_type, bool force_reload)
 {
   TIMER("setup_inv_param_prec");
   if(prec_type_check == prec_type and force_reload == false){return ;}
+  if(prec_type_check == -2){force_reload = true;}///force_reload if setup_inv_param_prec_type is called
   inv_param.cpu_prec                      = QUDA_DOUBLE_PRECISION;
   if(prec_type == 0)
   {
@@ -3404,6 +3479,270 @@ inline double get_stagger_even_flops(const Geometry& geo)
   double flops     = nv[0]  * nv[1] * nv[2] * nv[3] * fac;
   return flops;
 }
+
+////get even-even solutions
+template<typename Ty>
+void get_staggered_multishift(quda_inverter& qinv,
+  std::vector<qlat::FieldM<Ty, 3> >& res,
+  std::vector<qlat::FieldM<Ty, 3> >& src,
+  const std::vector<double >& masses2,
+  const double err, const int niter)
+{
+  TIMER("get_staggered_multishift");
+  Qassert(src.size() != 0);
+
+  //const int DIM = 3;
+  const Geometry& geo = qinv.geo;
+  qlat::vector_acc<Long >& map = qinv.map_index;
+
+  const int Nsrc = src.size();
+  const int Nres = res.size();
+  const int multishift = masses2.size();
+
+  Qassert(Nres  == Nsrc * multishift);
+  for(unsigned int i=0;i<src.size();i++){Qassert(src[i].initialized);}
+  for(unsigned int i=0;i<res.size();i++){Qassert(res[i].initialized);}
+  const Geometry& geo_src = src[0].geo();
+  Qassert(geo_src.node_site == geo.node_site and geo_src.geon.size_node == geo.geon.size_node);
+
+  ///qinv.setup_mat_mass(0.0);
+  //qinv.setup_CG();
+  ////reload QUDA links
+  //qinv.setup_inv_param_prec(prec_type);
+
+  //QudaInvertParam  inv_param_copy = qinv.inv_param;
+
+  //std::vector<quda::ColorSpinorField> out_multishift_gpu(multishift);
+
+  quda::ColorSpinorField& ref = *qinv.gsrc;
+  const int Cdim = ref.CompositeDim();
+  const size_t Lsize = ref.TotalBytes() / Cdim;
+
+  int buf_prec = -1;
+  if(qinv.inv_param.cuda_prec == QUDA_DOUBLE_PRECISION){buf_prec = 0;}
+  if(qinv.inv_param.cuda_prec == QUDA_SINGLE_PRECISION){buf_prec = 1;}
+  if(buf_prec == -1){abort_r("QUDA buffer prec not supported yet!");}
+
+  if(get_data_type_is_double<Ty >()){
+    Qassert(qinv.inv_param.cuda_prec == QUDA_DOUBLE_PRECISION);
+  }else{
+    Qassert(qinv.inv_param.cuda_prec == QUDA_SINGLE_PRECISION);
+  }
+
+  std::vector<quda::ColorSpinorField>& out_multishift_gpu = qinv.out_multishift_gpu;
+  std::vector<quda::ColorSpinorField>& src_multishift_gpu = qinv.src_multishift_gpu;
+
+  bool init = false;
+  if(out_multishift_gpu.size() != multishift){init = true;}
+  if(src_multishift_gpu.size() != 1){init = true;}
+  if(init == false){
+    for(unsigned int i=0;i<out_multishift_gpu.size();i++){
+      if(out_multishift_gpu[i].TotalBytes() != Lsize){init = true;}
+    }
+    for(unsigned int i=0;i<src_multishift_gpu.size();i++){
+      if(src_multishift_gpu[i].TotalBytes() != Lsize){init = true;}
+    }
+  }
+  if(init == true){
+    quda::ColorSpinorParam cs_param = quda::ColorSpinorParam(ref);
+    cs_param.is_composite  = false;cs_param.is_component  = false;
+    cs_param.location = QUDA_CUDA_FIELD_LOCATION;
+    out_multishift_gpu.resize(multishift);
+    src_multishift_gpu.resize(1);
+    for(unsigned int i=0;i<out_multishift_gpu.size();i++){
+      out_multishift_gpu[i] = quda::ColorSpinorField(cs_param);
+    }
+    for(unsigned int i=0;i<src_multishift_gpu.size();i++){
+      src_multishift_gpu[i] = quda::ColorSpinorField(cs_param);
+    }
+  }
+
+  QudaInvertParam inv_param = qinv.inv_param;
+  inv_param.secs = 0;
+  inv_param.gflops = 0;
+  inv_param.iter = 0;
+
+  inv_param.tol = err; 
+  inv_param.maxiter = niter;
+
+  ////check whether multishift is needed
+  if(multishift == 1){
+    inv_param.mass = std::sqrt(masses2[0] / 4.0);
+  }else{
+    inv_param.num_offset = multishift;
+    inv_param.compute_true_res = 0;
+    //inv_param.mass = masses[0]; 
+    for (int i = 0; i < multishift; i++) {
+      // Set masses and offsets
+      //inv_param.offset[i] = 4 * masses[i] * masses[i] - 4 * masses[0] * masses[0];
+      inv_param.offset[i] = masses2[i];
+      inv_param.tol_offset[i]    = inv_param.tol;
+      inv_param.tol_hq_offset[i] = 1e-5; ///donot check heavy quark, tol_hq
+    }
+  }
+
+  inv_param.solution_type = QUDA_MATPC_SOLUTION;
+  inv_param.solve_type    = QUDA_DIRECT_PC_SOLVE;
+  inv_param.input_location  = QUDA_CUDA_FIELD_LOCATION;
+  inv_param.output_location = QUDA_CUDA_FIELD_LOCATION;
+  inv_param.use_init_guess = QUDA_USE_INIT_GUESS_NO;
+
+  std::vector<void *> _hp_multi_x(multishift);
+  for(int di=0;di<multishift;di++)
+  {
+    _hp_multi_x[di] = out_multishift_gpu[di].Even().data();
+  }
+
+  for(int srci=0;srci<Nsrc;srci++)
+  {
+    qlat_cf_to_quda_cf(src_multishift_gpu[0], (Ty*) qlat::get_data(src[srci]).data(), geo, map);
+    //{
+    //double na = quda::blas::norm2(src_multishift_gpu[0].Even());
+    //print0("src %5d, %+.8e, offset %.8e, err %.3e, iter %8d \n", srci, na, inv_param.offset[0], inv_param.tol, inv_param.maxiter);
+    //}
+
+    if(multishift == 1){
+      invertQuda(_hp_multi_x[0],               src_multishift_gpu[0].Even().data(), &inv_param);
+    }
+    else{
+      invertMultiShiftQuda(_hp_multi_x.data(), src_multishift_gpu[0].Even().data(), &inv_param);
+    }
+
+    for(int mi = 0; mi < multishift; mi++)
+    {
+      quda_cf_to_qlat_cf((Ty*) qlat::get_data(res[mi*Nsrc + srci]).data(), out_multishift_gpu[mi], geo, map);
+    }
+  }
+
+  ////restore default inv_param
+  //inv_param = inv_param_copy;
+  if(qinv.quda_verbos >= 0)
+  {
+    print0("Done multishift: %8d iter / %.6f secs = %.3f Gflops, Cost %.3f Gflops \n",
+          inv_param.iter, inv_param.secs, inv_param.gflops / inv_param.secs, inv_param.gflops);
+  }
+}
+
+////get even-even solutions
+template<typename Ty>
+void get_staggered_multishift_even(quda_inverter& qinv,
+  std::vector<Ty* > res, std::vector<Ty* > src,
+  const std::vector<double >& masses2,
+  const double err, const int niter)
+{
+  TIMER("get_staggered_multishift_even");
+  Qassert(src.size() != 0);
+  if(qinv.quda_verbos >= 0){print_mem_info();}
+
+  //const int DIM = 3;
+
+  const int Nsrc = src.size();
+  const int Nres = res.size();
+  const int multishift = masses2.size();
+
+  Qassert(Nres  == Nsrc * multishift);
+  //for(unsigned int i=0;i<src.size();i++){Qassert(src[i].initialized);}
+  //for(unsigned int i=0;i<res.size();i++){Qassert(res[i].initialized);}
+  //const Geometry& geo_src = src[0].geo();
+  //Qassert(geo_src.node_site == geo.node_site and geo_src.geon.size_node == geo.geon.size_node);
+
+  ///qinv.setup_mat_mass(0.0);
+  //qinv.setup_CG();
+  ////reload QUDA links
+  //qinv.setup_inv_param_prec(prec_type);
+
+  //QudaInvertParam  inv_param_copy = qinv.inv_param;
+
+  //std::vector<quda::ColorSpinorField> out_multishift_gpu(multishift);
+
+  //quda::ColorSpinorField& ref = *qinv.gsrc;
+  //const int Cdim = ref.CompositeDim();
+  //const size_t Lsize = ref.TotalBytes() / Cdim;
+
+  //int buf_prec = -1;
+  //if(qinv.inv_param.cuda_prec == QUDA_DOUBLE_PRECISION){buf_prec = 0;}
+  //if(qinv.inv_param.cuda_prec == QUDA_SINGLE_PRECISION){buf_prec = 1;}
+  //if(buf_prec == -1){abort_r("QUDA buffer prec not supported yet!");}
+  //Qassert(qinv.inv_param.cuda_prec == QUDA_DOUBLE_PRECISION or qinv.inv_param.cuda_prec == QUDA_SINGLE_PRECISION);
+
+  if(get_data_type_is_double<Ty >()){
+    Qassert(qinv.inv_param.cuda_prec == QUDA_DOUBLE_PRECISION);
+  }else{
+    Qassert(qinv.inv_param.cuda_prec == QUDA_SINGLE_PRECISION);
+    Qassert(false);// default inverter could not copy single source correcttly
+  }
+
+  QudaInvertParam inv_param = qinv.inv_param;
+  inv_param.secs = 0;
+  inv_param.gflops = 0;
+  inv_param.iter = 0;
+
+  inv_param.tol = err; 
+  inv_param.maxiter = niter;
+
+  ////check whether multishift is needed
+  if(multishift == 1){
+    inv_param.mass = std::sqrt(masses2[0] / 4.0);
+  }else{
+    inv_param.num_offset = multishift;
+    inv_param.compute_true_res = 0;
+    //inv_param.mass = masses[0]; 
+    for (int i = 0; i < multishift; i++) {
+      // Set masses and offsets
+      //inv_param.offset[i] = 4 * masses[i] * masses[i] - 4 * masses[0] * masses[0];
+      inv_param.offset[i] = masses2[i];
+      inv_param.tol_offset[i]    = inv_param.tol;
+      inv_param.tol_hq_offset[i] = 1e-5; ///donot check heavy quark, tol_hq
+    }
+  }
+
+  inv_param.solution_type = QUDA_MATPC_SOLUTION;
+  inv_param.solve_type    = QUDA_DIRECT_PC_SOLVE;
+  inv_param.input_location  = QUDA_CUDA_FIELD_LOCATION;
+  inv_param.output_location = QUDA_CUDA_FIELD_LOCATION;
+  inv_param.use_init_guess = QUDA_USE_INIT_GUESS_NO;
+
+  std::vector<void *> _hp_multi_x(multishift);
+
+  //const Geometry& geo = qinv.geo;
+  //const long Ndata = geo.local_volume() * 3 / 2;
+
+  for(int srci=0;srci<Nsrc;srci++)
+  {
+    for(int mi=0;mi<multishift;mi++)
+    {
+      _hp_multi_x[mi] = res[mi*Nsrc + srci];
+      //zero_Ty((Ty*) _hp_multi_x[mi], Ndata, 1, QFALSE); // no need to clean results
+    }
+    //qacc_barrier(dummy);
+    //{
+    //const Geometry& geo = qinv.geo;
+    //Ty res =  vec_norm2(src[srci], src[srci], geo.local_volume() * 3 / 2);
+    //print0("src %5d, norm %.8e %.8e \n", srci, res.real(), res.imag());
+    //}
+
+    //{
+    //const Geometry& geo = qinv.geo;
+    //Ty res =  vec_norm2(src[srci], src[srci], geo.local_volume() * 3 / 2);
+    //print0("src %5d, norm %.8e %.8e \n", srci, res.real(), res.imag());
+    //}
+
+    if(multishift == 1){
+      invertQuda(_hp_multi_x[0],               src[srci], &inv_param);
+    }
+    else{
+      invertMultiShiftQuda(_hp_multi_x.data(), src[srci], &inv_param);
+    }
+  }
+
+  ////restore default inv_param
+  if(qinv.quda_verbos >= 0)
+  {
+    print0("Done multishift: %8d iter / %.6f secs = %.3f Gflops, Cost %.3f Gflops \n",
+          inv_param.iter, inv_param.secs, inv_param.gflops / inv_param.secs, inv_param.gflops);
+  }
+}
+
 
 }  // namespace qlat
 
