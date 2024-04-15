@@ -125,7 +125,7 @@ RealD qnorm(const SelectedPoints<M>& sp)
 template <class M>
 void qnorm_field(SelectedPoints<RealD>& sp, const SelectedPoints<M>& sp1)
 {
-  TIMER("qnorm_field");
+  TIMER("qnorm_field(sp,sp1)");
   sp.init();
   sp.init(sp1.n_points, 1);
   sp.distributed = sp1.distributed;
