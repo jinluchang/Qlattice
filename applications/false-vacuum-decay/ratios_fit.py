@@ -1,12 +1,10 @@
 import numpy as np
 from scipy.integrate import quad_vec
+from scipy.optimize import curve_fit
 
 class Fit():
-    def __init__(self, ts, start_time_guess, dt):
-        int_range = 1/np.abs(np.min(np.subtract(ts,start_time_guess)))*200
-        self.dE = int_range/1000.0
-        self.E = np.arange(-int_range,int_range,self.dE)
-        self.dt = 0.2
+    def __init__(self, dt):
+        self.dt = dt
     
     def integrand(self, E, t, start_time, E_FV, *argv):
         #Erange = self.E[self.E>-E_FV]
@@ -49,11 +47,31 @@ class Fit():
     def dfit(self, t, start_time, E_FV, *argv):
         # [time, parameter]
         return (self.dRt(t-self.dt,start_time,E_FV,*argv)*self.Rt(t,start_time,E_FV,*argv)[:,np.newaxis] - self.Rt(t-self.dt,start_time,E_FV,*argv)[:,np.newaxis]*self.dRt(t,start_time,E_FV,*argv)) / self.Rt(t,start_time,E_FV,*argv)[:,np.newaxis]**2
+    
+    def get_correction(self, t, *argv):
+        return self.R0(0,*argv[1:])/self.Rt(np.array([t]), *argv)[0]
+    
+    def fit_correction(self, t, ts, data, errs):
+        opt = self.get_fit_params(ts,data,errs)[0]
+        return self.get_correction(t, *opt)
+    
+    def choose_start(self, ts, data, errs, thresh=0.15):
+        ts, data, errs = zip(*sorted(zip(ts, data, errs)))
+        res_dof = []
+        for i in range(len(ts)):
+            try:
+                info = self.get_fit_params(ts[i:], data[i:], errs[i:], full_output=True)[2]
+                res_dof.append(np.linalg.norm(info["fvec"])/(len(ts)-i))
+                if(res_dof[-1]<thresh):
+                    return ts[i]
+            except ValueError:
+                print(f"Could not find res/dof below threshold {thresh}. Values were {res_dof} at times {ts}")
+                return "err"
 
 class GaussianFit(Fit):
-    def __init__(self, ts, start_time, dt):
+    def __init__(self, dt, start_time=0):
         self.start_time = start_time
-        super().__init__(ts, start_time, dt)
+        super().__init__(dt)
     
     def R0(self, E, E_FV, E0, sigma):
         return np.exp(-(E-E0)**2/(2*sigma**2))
@@ -71,6 +89,15 @@ class GaussianFit(Fit):
     def dfit(self, t, E_FV, E0, sigma):
         return super().dfit(t, self.start_time, E_FV, E0, sigma)[:,1:]
     
+    def get_fit_params(self, ts, data, errs, full_output=False):
+        return curve_fit(self.fit, ts, data, sigma=errs, p0=[1.0, 1.0, 1.0], jac=self.dfit, bounds=((-np.inf,-np.inf,0),(np.inf,np.inf,np.inf)),full_output=full_output)
+        #print(np.sqrt(np.diag(cov)))
+    
+    def get_correction(self, t, *argv):
+        argv = (self.start_time,) + argv
+        return super().get_correction(t, *argv)
+
+    
 class GaussianFitNoBounds(GaussianFit):
     def dRt(self, t, start_time, E_FV, *argv):
         # [time, parameter]
@@ -83,6 +110,13 @@ class GaussianFitNoBounds(GaussianFit):
     def dfit(self, t, E0, sigma):
         return super().dfit(t, 1, E0, sigma)[:,1:]
     
+    def get_fit_params(self, ts, data, errs, full_output=False):
+        return curve_fit(self.fit, ts, data, sigma=errs, p0=[1.0, 1.0], jac=self.dfit, bounds=((-np.inf,0),(np.inf,np.inf)), full_output=full_output)
+    
+    def get_correction(self, t, *argv):
+        argv = (1,) + argv
+        return super().get_correction(t, *argv)
+    
 class PowerFit(Fit): 
     def R0(self, E, E_FV, n):
         return np.abs(E+E_FV)**n
@@ -92,3 +126,20 @@ class PowerFit(Fit):
                                 n*np.abs(E+E_FV)**(n-1), #d_dE_FV
                                 np.log(np.abs(E+E_FV))*np.abs(E+E_FV)**n #d_dn
                                ])
+    
+    def get_fit_params(self, ts, data, errs, full_output=False):
+        return curve_fit(self.fit, ts, data, sigma=errs, p0=[1.0, 1.0, 1.0], jac=self.dfit, bounds=((-np.inf,-np.inf,0),(np.inf,np.inf,np.inf)), full_output=full_output)
+
+class PowerFit2(Fit): 
+    def R0(self, E, E_FV, n, a):
+        return np.abs(E+E_FV+a)**n
+    
+    def dR0(self, E, E_FV, n, a):
+        return np.column_stack([0, #d_dstart_time
+                                n*np.abs(E+E_FV+a)**(n-1), #d_dE_FV
+                                np.log(np.abs(E+E_FV+a))*np.abs(E+E_FV+a)**n, #d_dn
+                                n*np.abs(E+E_FV+a)**(n-1) #d_da
+                               ])
+    
+    def get_fit_params(self, ts, data, errs, full_output=False):
+        return curve_fit(self.fit, ts, data, sigma=errs, p0=[1.0, 1.0, 1.0, 0.0], jac=self.dfit, bounds=((-np.inf,-np.inf,0,0),(np.inf,np.inf,np.inf,np.inf)), full_output=full_output)

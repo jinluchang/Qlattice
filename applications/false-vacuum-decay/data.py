@@ -5,6 +5,8 @@ import numpy as np
 import jackknife as jk
 from scipy.optimize import curve_fit
 
+import ratios_fit
+
 class Data:
     def __init__(self, Nt, cutoff, block_size):
         self.Nt = Nt
@@ -81,6 +83,8 @@ class Data:
                 rtn.append(sf)
         return rtn
     
+    #
+    
     def get_M_L_blocks(self, Ms, Ls, profile):
         sfs_M = self.replace_params(profile, ["M", "L"], [[M, 1.0] for M in Ms])
         sfs_L = self.replace_params(profile, ["M", "L"], [[1.0, L] for L in Ls])
@@ -98,6 +102,31 @@ class Data:
             else:
                 ratio /= np.mean(delta_actions[i])
         return ratio
+    
+    def fit_ratios(self, ratios, ratio_errs, t_TVs, fit_time, dt, fitobject=ratios_fit.GaussianFit):
+        fit = fitobject(dt)
+        return fit.fit_correction(fit_time, t_TVs, ratios, ratio_errs)
+    
+    def get_fit_ratios_blocks(self, profile_tFV, t_TV, start=0, stop=100, fitobject=ratios_fit.GaussianFit):
+        sfs = self.get_sfs_list(list(self.delta_actions_t_FV), profile_tFV)
+        sfs.sort(key=lambda x: float(self.get_param(x, "tFV")))
+        dt = float(self.get_param(sfs[0], "dt"))
+        
+        dS_blocks = []
+        errs = []
+        t_TVs = []
+        
+        for sf in sfs:
+            t = self.get_t_TV(sf)
+            if(t>=start and t<=stop):
+                dS_blocks.append(self.get_exp_Ebar_blocks(sf))
+                errs.append(jk.get_errors_from_blocks(np.mean(dS_blocks[-1]),dS_blocks[-1])[1])
+                t_TVs.append(t)
+        
+        mean_fit = self.fit_ratios(np.mean(dS_blocks,axis=1),errs,t_TVs,t_TV,dt,fitobject)
+        print(f"Based on mean, ratios fit is: {mean_fit}")
+        
+        return mean_fit, jk.super_jackknife_combine_blocks(dS_blocks, lambda x: self.fit_ratios(x,errs,t_TVs,t_TV,dt,fitobject))
     
     def calc_gamma(self, R, Ebar, delta_E, t_full, dt):
         return R*(2*np.pi)**0.5/delta_E * np.exp(-Ebar**2/2/delta_E**2)/(t_full*dt)**2
@@ -155,6 +184,8 @@ class Data:
             uerr = lerr
         return [abs(lerr), abs(uerr)]
     
+    #
+    
     def get_exp_Ebar_blocks(self, sf, delta_t=1):
         t_TV = self.get_t_TV(sf)
         t_FV = int(self.get_param(sf,"tFV"))
@@ -197,47 +228,7 @@ class Data:
         bdiv = np.log(np.divide(blocks_FVa2,blocks_TVa2)/np.divide(blocks_FVa,blocks_TVa)**2.0)**0.5/(dt*delta_t2)
         return jk.get_errors_from_blocks(np.mean(bdiv), bdiv)
     
-    def fit_ratios(self, ratios, t_TVs, start_time = -1.0):
-        # This integration range is based on the energy distribution after evolving in Euclidean time
-        int_range = 1/np.abs(np.min(np.subtract(t_TVs,start_time)))*200
-        dE = int_range/1000.0
-        E = np.arange(-int_range,int_range,dE)
-        dt = 0.2
-        
-        opt, cov = curve_fit(fit, t_TVs, ratios, sigma=dS_errs, p0=[1.0, 1.0, 1.0], jac=dfit, bounds=((-np.inf,0,0),(np.inf,np.inf,np.inf)))
-        print(np.sqrt(np.diag(cov)))
-
-        plt.plot(t_TVs, ratios)
-        plt.plot(t_TVs, fit(np.array(t_TVs), opt[0], opt[1],opt[2]))
-
-        #ts = np.array([0, 1, 2, 3])
-        #x, ys = integrand(ts,opt[0],opt[1],opt[2])
-        #norms = np.ones(len(ts))#Rt(ts,opt[0],opt[1],opt[2])
-        #plt.plot(x, ys[0]/norms[0])
-        #plt.plot(x, ys[1]/norms[1])
-        #plt.plot(x, ys[2]/norms[2])
-        #plt.plot(x, ys[3]/norms[3])
-
-        #plt.plot(t_TVs, dfit(np.array(t_TVs), opt[0], opt[1],opt[2]))
-        #plt.plot(t_TVs, [0.32e7*corr_tdse[i][0] for i in range(len(corr_tdse))])
-        #print(ratios)
-        print(opt)
-        print(R0(0,opt[0],opt[1])/Rt(np.array([15.0]),opt[0],opt[1],opt[2])[0])
-        #print(int_range)
-        return opt, fit
-    
-    def get_fit_ratios_blocks(self, profile_tFV, t_TV, before=2, after=2):
-        sfs = self.get_sfs_list(list(self.delta_actions_t_FV), profile_tFV)
-        sfs.sort(key=lambda x: float(self.get_param(x, "tFV")))
-        
-        dS_blocks = []
-        t_TVs = []
-        
-        for sf in sfs:
-            dS_blocks.append(self.get_exp_Ebar_blocks(sf))
-            t_TVs.append(self.get_t_TV(sf))
-        
-        blocks = jk.super_jackknife_combine_blocks(dS_blocks_before[-before:]+dS_blocks_after[:after+1], lambda x: self.ratio_fit(x,t_TVs,t_TV))
+    #
     
     def plot_mean_path(self, profile="*"):
         #x = np.arange(-5,5,0.1)
