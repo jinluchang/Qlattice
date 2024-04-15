@@ -12,12 +12,14 @@
 #include <time.h>
 #include <typeinfo>
 #include <iterator>
-#ifndef QLAT_NO_SYSINFO
-#include <sys/sysinfo.h>
-#endif
 #include <qlat-utils/mat-vec.h>
 #include <qlat-utils/eigen.h>
 #include <qlat/qcd.h>
+
+#ifndef QLAT_NO_SYSINFO
+#include <sys/sysinfo.h>
+#endif
+
 
 namespace qlat{
 
