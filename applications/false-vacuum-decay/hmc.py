@@ -404,7 +404,7 @@ def main():
     # The number of trajectories to calculate
     n_traj = 50000
     #
-    version = "1-1"
+    version = "2-0"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
     steps = 5

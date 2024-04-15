@@ -102,7 +102,7 @@ struct QMAction {
   {
     // Returns the potential evaluated at point x
     if(x>v0) {
-      if(dV_phi4(x)>0) return 0.0;
+      return -alpha*v0;
     }
     return V_phi4(x);
   }
@@ -111,7 +111,7 @@ struct QMAction {
   {
     double rtn = dV_phi4(x);
     if(x>v0) {
-      if(rtn>0) return 0.0;
+      return 0.0;
     }
     return rtn;
   }
