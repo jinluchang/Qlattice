@@ -1,48 +1,64 @@
 SHELL=/bin/bash
 
-GXX=hipcc --cudart shared -std=c++17 -arch compute_80 -code compute_80 -ccbin CC -Xcompiler -fopenmp -x cu -O2 -Xcompiler -fPIC 
-GXX+= -expt-relaxed-constexpr -expt-extended-lambda -expt-relaxed-constexpr
-GXX+= -allow-unsupported-compiler
-LXX=hipcc -O2 --cudart shared -std=c++17 -arch compute_80 -code compute_80 -ccbin CC  -Xcompiler -fopenmp -link
+ROCM_PATH=${5.7.1}
+GXX=${ROCM_PATH}/bin/hipcc
+QLAT_GFLAGS= -O2 -std=c++17 -Xarch_host -fPIC 
+QLAT_GFLAGS+= --offload-arch=gfx90a
+QLAT_GFLAGS+= --amdgpu-target=gfx90a
+QLAT_GFLAGS+= -fopenmp
+QLAT_GFLAGS+= -c -fgpu-rdc
 
-QLAT_INCLUDE=~/build
+QLAT_GFLAGS+= -frelaxed-template-template-args 
+QLAT_GFLAGS+="-I${MPICH_DIR}/include "
+QLAT_GFLAGS+="-I${ROCM_PATH}/include "
+QLAT_GFLAGS+="-I${ROCM_PATH}/hipcub/include "
+QLAT_GFLAGS+="-I/.../AMD/5.0/x86_64/include "
+
+QLAT_INCLUDE=./build/
+FFT_LIB=./fftw/lib
+
 QLAT_HEAD=$(QLAT_INCLUDE)/Qcopy/head_files/
 
-HIP_ROOT=/.../rocm/5.5.1/
-QLAT_GFLAGS= -I$(QLAT_INCLUDE)  -I${HIP_ROOT}/include/
+QLAT_GFLAGS+= -I$(QLAT_INCLUDE)  -I${ROCM_PATH}/include/ -I${MPICH_DIR}/include
 QLAT_GFLAGS+= -I$(QLAT_INCLUDE)/eigen/include
-QLAT_GFLAGS+= -I$(QLAT_INCLUDE)/fftw/include
+QLAT_GFLAGS+= -I./fftw/include
 QLAT_GFLAGS+= -I$(QLAT_HEAD)
+QLAT_GFLAGS+= -mllvm -amdgpu-early-inline-all=true -mllvm -amdgpu-function-calls=false
 
-QLAT_GFLAGS+= -Xcompiler -fopenmp
-QLAT_GFLAGS+= -D__ENABLE_DOUBLE__
-QLAT_GFLAGS+= -D__DEBUG_VECUTILS__
+QLAT_GFLAGS+= -DQLAT_FFT_USE_HIP
 
-FFT_LIB=$(QLAT_INCLUDE)/fftw/lib
+LXX=${ROCM_PATH}/bin/hipcc -O2 --amdgpu-target=gfx90a --offload-arch=gfx90a
+
 FFT_FLAGS=$(FFT_LIB)/libfftw3.a $(FFT_LIB)/libfftw3f.a
 
-QLAT_LDFLAGS=$(FFT_FLAGS) $(QLAT_INCLUDE)/zlib/lib/libz.a -lm -L${HIP_ROOT}/lib64  -lcudart -lcufft
+QLAT_LDFLAGS=$(QLAT_INCLUDE)/lib/libz.a
+QLAT_LDFLAGS+= $(FFT_FLAGS) -lm -L${ROCM_PATH}/lib64 -lhipfft
 
 QUTILS_LIB_PATH=$(QLAT_INCLUDE)/Qcopy/libs/qlat-utils/
 QLAT_LIB_PATH=$(QLAT_INCLUDE)/Qcopy/libs/qlat/
-QLAT_LDFLAGS+=$(QLAT_LIB_PATH)/*.o  $(QUTILS_LIB_PATH)/*.o
+
+QLAT_LDFLAGS+= -L${MPICH_DIR}/lib -lmpi
+QLAT_LDFLAGS+= -L${ROCM_PATH}/lib -lamdhip64 -fopenmp
+QLAT_LDFLAGS+= -fgpu-rdc --hip-link
+QLAT_LDFLAGS+= ${PE_MPICH_GTL_DIR_amd_gfx90a} ${PE_MPICH_GTL_LIBS_amd_gfx90a}
+
+QLAT_LDFLAGS+= $(QLAT_LIB_PATH)/*.o  $(QUTILS_LIB_PATH)/*.o -lm
 
 SRCSU := $(wildcard $(QUTILS_LIB_PATH)/*.cpp)
 SRCSQ := $(wildcard $(QLAT_LIB_PATH)/*.cpp)
 OBJSU := $(patsubst $(QUTILS_LIB_PATH)/%.cpp,$(QUTILS_LIB_PATH)/%.o,$(SRCSU))
 OBJSQ := $(patsubst $(QLAT_LIB_PATH)/%.cpp,$(QLAT_LIB_PATH)/%.o,$(SRCSQ))
 
-control_%.cu :
-	ln -fs $(basename $@).cpp $(basename $@).cu; sleep 1s;
+% : *.h  control_%.cpp control_%.cpp $(OBJSU) $(OBJSQ)
+	$(GXX) $(QLAT_GFLAGS) -c control_$@.cpp -o $@.o;$(LXX) -o $@ $@.o $(QLAT_LDFLAGS);rm $@.o
 
-% : *.h  control_%.cu control_%.cpp $(OBJSU) $(OBJSQ)
-	$(GXX) $(QLAT_GFLAGS) -c control_$@.cu -o program.o;$(LXX) -o $@ $(QLAT_GFLAGS) program.o $(QLAT_LDFLAGS);rm program.o control_$@.cu
 
 $(QUTILS_LIB_PATH)/%.o: $(QUTILS_LIB_PATH)/%.cpp
-	ln -fs $(basename $@).cpp $(basename $@).cu; sleep 1s;$(GXX) $(QLAT_GFLAGS) -c $(basename $@).cu -o $@;rm $(basename $@).cu
+	$(GXX) $(QLAT_GFLAGS) -c $(basename $@).cpp -o $@
         
 $(QLAT_LIB_PATH)/%.o: $(QLAT_LIB_PATH)/%.cpp
-	ln -fs $(basename $@).cpp $(basename $@).cu; sleep 1s;$(GXX) $(QLAT_GFLAGS) -c $(basename $@).cu -o $@;rm $(basename $@).cu
+	$(GXX) $(QLAT_GFLAGS) -c $(basename $@).cpp -o $@
+ 
  
 .PRECIOUS: $(QLAT_LIB_PATH)/%.o $(QUTILS_LIB_PATH)/%.o
 
