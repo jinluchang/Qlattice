@@ -1423,9 +1423,13 @@ struct corr_dat
     }
     size_t double_size = size;
 
-    const int is_double = get_data_type_is_double<Ta >();
-    if( is_double){double_size = size * sizeof(Ta)/sizeof(double);}
-    if(!is_double){double_size = size * sizeof(Ta)/sizeof(float );}
+    using D = typename IsBasicDataType<Ta>::ElementaryType;
+    double_size = size * sizeof(Ta)/sizeof(D);
+    //const int is_double = Is_data_double<M>();
+    //Qassert(is_double == 0 or is_double == 1);
+    //const int is_double = get_data_type_is_double<Ta >();
+    //if( is_double){double_size = size * sizeof(Ta)/sizeof(double);}
+    //if(!is_double){double_size = size * sizeof(Ta)/sizeof(float );}
 
     if(Long(double_size + cur) >  total){ 
       if(key_T.size() < 1){
@@ -1447,8 +1451,9 @@ struct corr_dat
     if( small_size){wdat = &dat[0]  ;}
 
     Qassert(mode_copy == 0 or mode_copy == 3);
-    if( is_double){cpy_data_thread(wdat, (double*) src, double_size, mode_copy);}
-    if(!is_double){cpy_data_thread(wdat, (float* ) src, double_size, mode_copy);}
+    cpy_data_thread(wdat, (D*) src, double_size, mode_copy);
+    //if( is_double){cpy_data_thread(wdat, (double*) src, double_size, mode_copy);}
+    //if(!is_double){cpy_data_thread(wdat, (float* ) src, double_size, mode_copy);}
 
     if(!small_size){
       shift_off(double_size);

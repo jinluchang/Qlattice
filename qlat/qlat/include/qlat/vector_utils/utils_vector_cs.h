@@ -840,10 +840,8 @@ struct vector_cs{
   {
     TIMERA("vector_cs norm2_vec");
 
-    bool is_double = get_data_type_is_double<Ty >();
-    if( is_double){return reduce_vecs<double >(ia);}
-    if(!is_double){return reduce_vecs<float  >(ia);}
-    return 0.0;
+    using D = typename IsBasicDataType<Ty>::ElementaryType;
+    return reduce_vecs<D >(ia);
   }
 
   inline void print_norm2(int ic = -1)
@@ -1007,10 +1005,12 @@ struct vector_cs{
 
     Ty** s1 = b.get_pointers(ib);
     //return reduce_vecs<Ty >(ia, s1);
-    bool is_double = get_data_type_is_double<Ty >();
-    if( is_double){return reduce_vecs<double >(ia, s1);}
-    if(!is_double){return reduce_vecs<float  >(ia, s1);}
-    return 0.0;
+    //bool is_double = get_data_type_is_double<Ty >();
+    //if( is_double){return reduce_vecs<double >(ia, s1);}
+    //if(!is_double){return reduce_vecs<float  >(ia, s1);}
+    using D = typename IsBasicDataType<Ty>::ElementaryType;
+    return reduce_vecs<D >(ia);
+    //return 0.0;
   }
 
   /////alpha_ij = a_i^* x b_j

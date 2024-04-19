@@ -19,7 +19,7 @@ namespace qlat{
 
 struct ga_M
 {
-  ////std::complex<double> g[4];
+  ////ComplexT<double> g[4];
   ////int ind[4];
   
   qlat::vector_acc<Complexq > g;

@@ -138,10 +138,12 @@ struct shift_vec{
   template<typename Ta>
   void set_gauge(Ta* gauge_, int gbfac_, int gd0_, bool Conj_=false, bool src_gauge_ = false)
   { 
-    DATA_TYPE cur = get_data_type<Ta>();
-    if(cur != INVALID_TYPE){
-      if( get_data_type_is_double<Ta >()){gauge_is_double = 1;}
-      else{gauge_is_double = 0;}
+    const int cur = Is_data_double<Ta>();
+    //DATA_TYPE cur = get_data_type<Ta>();
+    if(cur == 0 or cur == 1){
+      gauge_is_double = cur;
+      //if( get_data_type_is_double<Ta >()){gauge_is_double = 1;}
+      //else{gauge_is_double = 0;}
     }else{Qassert(gauge_is_double != -1);}
     gauge = gauge_;gbfac = gbfac_;gd0 = gd0_;Conj = Conj_;src_gauge = src_gauge_;
   }
@@ -578,8 +580,10 @@ void multiply_gauge(void *src, void* gauge, const int dir_gauge,const int biva,c
 template<typename Ty, bool Conj_>
 void shift_vec::mult_gauge(void* pt, int dir_gauge){
   TIMERB("Gauge multiplication");
-  const bool id = get_data_type_is_double<Ty >();
+  const int id = Is_data_double<Ty>();
+  //const bool id = get_data_type_is_double<Ty >();
   ////print0("civ %5d, gbfac %5d, gd0 %5d \n", int(civ), int(gbfac), int(gd0));
+  Qassert(id == 0 or id == 1);
   if( id){Qassert(Long(civ*sizeof(Ty)/16) == gbfac * 3 * gd0);Qassert(gauge_is_double == 1 );}
   if(!id){Qassert(Long(civ*sizeof(Ty)/8 ) == gbfac * 3 * gd0);Qassert(gauge_is_double == 0 );}
   bool cfind = false;

@@ -806,7 +806,7 @@ struct FFTGPUPlanKey {
   bool fft4D;
   int nvec ;
   int civ;
-  DATA_TYPE prec;
+  std::string prec;
 };
 
 struct fft_gpu_copy{
@@ -814,10 +814,10 @@ struct fft_gpu_copy{
   //fft_gpu_copy(){fftP = NULL;}
   //~fft_gpu_copy(){if(fftP != NULL){delete ((fft_schedule*) fftP); fftP = NULL;}}
   fft_schedule* fftP;
-  DATA_TYPE prec;
+  std::string prec;
   bool is_copy;  // do not free memory if is_copy=true
 
-  fft_gpu_copy(){fftP = NULL;is_copy = false;prec = ComplexD_TYPE;}
+  fft_gpu_copy(){fftP = NULL;is_copy = false;prec = "ComplexD";}
   fft_gpu_copy(const fft_gpu_copy& fft) 
   {
     #ifndef QLAT_USE_ACC
@@ -842,7 +842,7 @@ struct fft_gpu_copy{
     fft_schedule* tmp = fftP;
     fftP   = x.fftP;
     x.fftP = tmp;
-    DATA_TYPE tmp_prec = prec;
+    std::string tmp_prec = prec;
     prec   = x.prec;
     x.prec = tmp_prec;
   }
@@ -858,8 +858,8 @@ struct fft_gpu_copy{
     int civ  = fft.fftP->civ;
     std::vector<int > dimN = fft.fftP->dimN;
 
-    if(prec == ComplexD_TYPE ){     fftP->set_mem<ComplexD  >(nvec, civ, dimN, -1 );}
-    else if(prec == ComplexF_TYPE){fftP->set_mem<ComplexF >(nvec, civ, dimN, -1 );}
+    if(prec == "ComplexD" ){     fftP->set_mem<ComplexD  >(nvec, civ, dimN, -1 );}
+    else if(prec == "ComplexF"){fftP->set_mem<ComplexF >(nvec, civ, dimN, -1 );}
     else{print0("Only ComplexD and ComplexF supported for fft on GPU! \n");Qassert(false);}
     ///fft.fftP->print_info();
     ///fftP->print_info();
@@ -898,7 +898,7 @@ inline bool operator<(const FFTGPUPlanKey& x, const FFTGPUPlanKey& y)
 }
 
 
-inline fft_gpu_copy make_fft_gpu_plan(const Geometry& geo, int nvec, int civ , bool GPU, bool fft4D , const DATA_TYPE prec)
+inline fft_gpu_copy make_fft_gpu_plan(const Geometry& geo, int nvec, int civ , bool GPU, bool fft4D , const std::string& prec)
 {
   TIMER_VERBOSE("make_fft_gpu_plan");
 
@@ -916,8 +916,8 @@ inline fft_gpu_copy make_fft_gpu_plan(const Geometry& geo, int nvec, int civ , b
   ft.fftP = new fft_schedule(fd, GPU);
   ft.prec = prec;
 
-  if(prec == ComplexD_TYPE ){     ft.fftP->set_mem<ComplexD  >(nvec, civ, dimN, -1 );}
-  else if(prec == ComplexF_TYPE){ft.fftP->set_mem<ComplexF >(nvec, civ, dimN, -1 );}
+  if(prec == "ComplexD" ){     ft.fftP->set_mem<ComplexD  >(nvec, civ, dimN, -1 );}
+  else if(prec == "ComplexF"){ft.fftP->set_mem<ComplexF >(nvec, civ, dimN, -1 );}
   else{print0("Only ComplexD and ComplexF supported for fft on GPU! \n");Qassert(false);}
   ft.fftP->print_info();
 
@@ -960,7 +960,9 @@ inline FFTGPUPlanKey get_fft_gpu_plan_key(std::vector<qlat::FieldM<Ty, civ> >& s
   fkey.GPU = true;
   fkey.nvec = src.size();
   fkey.civ = civ;
-  fkey.prec = get_data_type<Ty >();
+  //fkey.prec = get_data_type<Ty >();
+  fkey.prec = IsBasicDataType<Ty >::get_type_name();
+  qassert(fkey.prec == "ComplexF" or fkey.prec == "ComplexD");
 
   fkey.fft4D = fft4d;
   return fkey;
@@ -1003,7 +1005,10 @@ void fft_fieldM(std::vector<Ty* >& data, int civ, const Geometry& geo, bool fftd
   fkey.GPU  = true;
   fkey.nvec = data.size();
   fkey.civ = civ;
-  fkey.prec = get_data_type<Ty >();
+  //fkey.prec = get_data_type<Ty >();
+  fkey.prec = IsBasicDataType<Ty >::get_type_name();
+  qassert(fkey.prec == "ComplexF" or fkey.prec == "ComplexD");
+
   fkey.fft4D = fft4d;
   ////std::vector<Ty* > data;data.resize(nvec);
   ////for(int si=0;si<nvec;si++){data[si] = (Ty*) qlat::get_data(src[si]).data();}
@@ -1053,11 +1058,18 @@ template<class M>
 void fft_fieldM(std::vector<Handle<qlat::Field<M> > >& src, bool fftdir=true, bool fft4d = false)
 {
   if(src.size() < 1)return;
-  bool is_double     = get_data_type_is_double<M >();
-  DATA_TYPE prec = ComplexD_TYPE;int civ = 1;
   const Geometry& geo = src[0]().geo();
-  if( is_double){prec = ComplexD_TYPE ; civ = geo.multiplicity * sizeof(M)/sizeof(ComplexD ); }
-  if(!is_double){prec = ComplexF_TYPE; civ = geo.multiplicity * sizeof(M)/sizeof(ComplexF); }
+  const int is_double = Is_data_double<M>();
+  Qassert(is_double == 0 or is_double == 1);
+  //bool is_double     = get_data_type_is_double<M >();
+  //std::string prec = ComplexD_TYPE;int civ = 1;
+  //if( is_double){prec = ComplexD_TYPE ; civ = geo.multiplicity * sizeof(M)/sizeof(ComplexD ); }
+  //if(!is_double){prec = ComplexF_TYPE; civ = geo.multiplicity * sizeof(M)/sizeof(ComplexF); }
+
+  std::string prec = IsBasicDataType<M >::get_type_name();
+  using ElementaryType = typename IsBasicDataType<M >::ElementaryType ;
+  int civ = geo.multiplicity * sizeof(M)/sizeof( ElementaryType );
+  qassert(prec == "ComplexF" or prec == "ComplexD");
 
   int nfft = src.size() * civ;
   bool use_qlat = check_fft_mode(nfft, geo, fft4d);

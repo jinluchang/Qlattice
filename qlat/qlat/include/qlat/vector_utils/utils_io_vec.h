@@ -811,14 +811,14 @@ template<typename Ty>
 Ty get_norm_vec(Ty *src,size_t noden){
   Ty res = 0.0;
 
-  std::complex<Ty > *p = (std::complex<Ty >*) src;
+  ComplexT<Ty > *p = (ComplexT<Ty >*) src;
   /////need sum 12 first to reduce float sum error
   #pragma omp parallel for reduction(+: res)
   for(size_t isp=0;isp<noden;isp++)
   {
     Ty a = 0.0;
     for(unsigned int dc=0;dc<12;dc++){
-       a += std::norm(p[isp*12+dc]);
+       a += qnorm(p[isp*12+dc]);
     }
     res += a;
   }
@@ -1201,9 +1201,9 @@ void load_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Td> > 
     if(read==false){
     for(int iv=0;iv<12;iv++){
       qlat::ComplexT<Td>* res   = (qlat::ComplexT<Td>*) qlat::get_data(prop[iv]).data();
-      std::complex<float> *src = (std::complex<float>*) &prop_qlat[iv*noden*12*2];
+      ComplexT<float> *src = (ComplexT<float>*) &prop_qlat[iv*noden*12*2];
       #pragma omp parallel for
-      for(size_t isp=0;isp<noden*12;isp++)src[isp] = std::complex<float>(res[isp].real(),res[isp].imag());
+      for(size_t isp=0;isp<noden*12;isp++)src[isp] = ComplexT<float>(res[isp].real(),res[isp].imag());
     }
 
     ////Do not rotate source, in ps/ky base
@@ -1225,7 +1225,7 @@ void load_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Td> > 
 
     for(int iv=0;iv<12;iv++){
       qlat::ComplexT<Td>* res   = (qlat::ComplexT<Td>*) qlat::get_data(prop[iv]).data();
-      std::complex<float> *src = (std::complex<float>*) &prop_qlat[iv*noden*12*2];
+      ComplexT<float> *src = (ComplexT<float>*) &prop_qlat[iv*noden*12*2];
       #pragma omp parallel for
       for(size_t isp=0;isp<noden*12;isp++)res[isp]= qlat::ComplexT<Td>(src[isp].real(),src[isp].imag());
     }
@@ -1248,7 +1248,7 @@ void load_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Td> > 
 
     for(int iv=0;iv<12;iv++){
       qlat::ComplexT<Td>* res = (qlat::ComplexT<Td>*) qlat::get_data(prop[iv]).data();
-      std::complex<double> *src = (std::complex<double>*) &prop_qlat[iv*noden*12*2];
+      ComplexT<double> *src = (ComplexT<double>*) &prop_qlat[iv*noden*12*2];
       for(size_t isp=0;isp<noden*12;isp++)res[isp]= qlat::ComplexT<Td>(src[isp].real(),src[isp].imag());
     }
 
@@ -1436,11 +1436,11 @@ void load_gwu_noies(const char *filename,std::vector<qlat::FieldM<Ty, 1> > &nois
       if(!noi.initialized)noi.init(geo);
     }
     if(read==false){
-      std::complex<double> *src = (std::complex<double>*) &prop_noi[0];
+      ComplexT<double> *src = (ComplexT<double>*) &prop_noi[0];
       Ty* res = (Ty*) qlat::get_data(noi).data();
       #pragma omp parallel for
       for(size_t isp=0;isp<noden;isp++){
-        src[isp] = std::complex<double>(res[isp].real(),res[isp].imag());
+        src[isp] = ComplexT<double>(res[isp].real(),res[isp].imag());
       }
       mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 1,sizeof(double), false);
     }
@@ -1452,7 +1452,7 @@ void load_gwu_noies(const char *filename,std::vector<qlat::FieldM<Ty, 1> > &nois
       //reorder_civ((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(double));
       //io_use.mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(double), false);
       mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(double), false);
-      std::complex<double> *src = (std::complex<double>*) &prop_noi[0];
+      ComplexT<double> *src = (ComplexT<double>*) &prop_noi[0];
       Ty* res = (Ty*) qlat::get_data(noi).data();
       #pragma omp parallel for
       for(size_t isp=0;isp<noden;isp++){
@@ -1493,10 +1493,10 @@ void load_gwu_noi(const char *filename,qlat::FieldM<Ty,1> &noi,bool read=true){
   if(!noi.initialized)noi.init(geo);
   }
   if(read==false){
-    std::complex<double> *src = (std::complex<double>*) &prop_noi[0];
+    ComplexT<double> *src = (ComplexT<double>*) &prop_noi[0];
     Ty* res = (Ty*) qlat::get_data(noi).data();
     #pragma omp parallel for
-    for(size_t isp=0;isp<noden;isp++)src[isp] = std::complex<double>(res[isp].real(),res[isp].imag());
+    for(size_t isp=0;isp<noden;isp++)src[isp] = ComplexT<double>(res[isp].real(),res[isp].imag());
     //reorder_civ((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 1,sizeof(double));
     //io_use.mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 1,sizeof(double), false);
     mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 1,sizeof(double), false);
@@ -1514,7 +1514,7 @@ void load_gwu_noi(const char *filename,qlat::FieldM<Ty,1> &noi,bool read=true){
     //reorder_civ((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(double));
     //io_use.mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(double), false);
     mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(double), false);
-    std::complex<double> *src = (std::complex<double>*) &prop_noi[0];
+    ComplexT<double> *src = (ComplexT<double>*) &prop_noi[0];
     Ty* res = (Ty*) qlat::get_data(noi).data();
     #pragma omp parallel for
     for(size_t isp=0;isp<noden;isp++)res[isp]= Ty(src[isp].real(),src[isp].imag());

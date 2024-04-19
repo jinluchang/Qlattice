@@ -172,6 +172,7 @@ void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, Q
   bool do_copy = true;
   if(qlat::qnorm(ADD) <  QLAT_COPY_LIMIT){do_copy = true ;}
   if(qlat::qnorm(ADD) >= QLAT_COPY_LIMIT){do_copy = false;}
+  const T1 tmp = ADD;
 
   #ifdef QLAT_USE_ACC
   if(GPU == 1){
@@ -182,8 +183,8 @@ void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, Q
   dim3 dimBlock(    Threads,    1, 1);
   dim3 dimGrid(     Nb,    1, 1);
 
-  if( do_copy)cpy_data_thread_global<T0, T1, TInt , Biva, 0, Tadd><<< dimGrid, dimBlock >>>(Pres, Psrc, Nvol, ADD);
-  if(!do_copy)cpy_data_thread_global<T0, T1, TInt , Biva, 1, Tadd><<< dimGrid, dimBlock >>>(Pres, Psrc, Nvol, ADD);
+  if( do_copy)cpy_data_thread_global<T0, T1, TInt , Biva, 0, T1><<< dimGrid, dimBlock >>>(Pres, Psrc, Nvol, tmp);
+  if(!do_copy)cpy_data_thread_global<T0, T1, TInt , Biva, 1, T1><<< dimGrid, dimBlock >>>(Pres, Psrc, Nvol, tmp);
 
   if(dummy==QTRUE){qacc_barrier(dummy);}
   return ;}
@@ -203,7 +204,7 @@ void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, Q
     for(TInt i=0;i<Nvol;i++)
     {
       ////Pres[i] = Pres[i] + (ADD*Psrc[i]);
-      Pres[i] += ADD*Psrc[i];
+      Pres[i] += tmp*Psrc[i];
       //Pres[i] = 0.0;
     }
   }
@@ -231,15 +232,16 @@ void cpy_data_threadT(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, QBOOL 
     #ifdef QLAT_USE_ACC
     if(sizeof(T0) == sizeof(T1) and qlat::qnorm(ADD) <  QLAT_COPY_LIMIT)
     {
-      if(stream == NULL){
-        if(GPU == 0){gpuErrchk(qacc_MemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), qacc_MemcpyHostToHost));}
-        if(GPU == 1){gpuErrchk(qacc_MemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), qacc_MemcpyDeviceToDevice));}
-      }
-      else{
-        qacc_Stream_t* pstream = (qacc_Stream_t*) stream;
-        if(GPU == 0){gpuErrchk(qacc_MemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), qacc_MemcpyHostToHost, *pstream));}
-        if(GPU == 1){gpuErrchk(qacc_MemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), qacc_MemcpyDeviceToDevice, *pstream));}
-      }
+      //if(stream == NULL){
+      //  if(GPU == 0){gpuErrchk(qacc_MemcpyAsync((void*) Pres, (void*) Psrc , Nvol*sizeof(T0), qacc_MemcpyHostToHost));}
+      //  if(GPU == 1){gpuErrchk(qacc_MemcpyAsync((void*) Pres, (void*) Psrc , Nvol*sizeof(T0), qacc_MemcpyDeviceToDevice));}
+      //}
+      //else{
+      //  qacc_Stream_t* pstream = (qacc_Stream_t*) stream;
+      //  if(GPU == 0){gpuErrchk(qacc_MemcpyAsync((void*) Pres, (void*) Psrc , Nvol*sizeof(T0), qacc_MemcpyHostToHost, *pstream));}
+      //  if(GPU == 1){gpuErrchk(qacc_MemcpyAsync((void*) Pres, (void*) Psrc , Nvol*sizeof(T0), qacc_MemcpyDeviceToDevice, *pstream));}
+      //}
+      qGPU_forNB(isp, Nvol, GPU, {Pres[isp] = Psrc[isp];})
       if(dummy==QTRUE){qacc_barrier(dummy);}
       return ;
     }

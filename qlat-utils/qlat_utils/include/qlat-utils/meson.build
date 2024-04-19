@@ -70,6 +70,7 @@ header_files = files(
   'vector.h',
   'version.h',
   'qacc-translator.h',
+  'utils-ldouble.h',
   )
 py3.install_sources(header_files, subdir: 'qlat_utils/include/qlat-utils')
 

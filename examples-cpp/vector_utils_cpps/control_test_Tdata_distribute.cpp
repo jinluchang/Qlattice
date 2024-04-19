@@ -2,7 +2,7 @@
 #include "utils_io_vec.h"
 #include "general_funs.h"
 ////#include "utils_smear_src.h"
-#include "check_fun.h"
+#include "utils_check_fun.h"
 #include "utils_Vec_redistribute.h"
 ////#include "utils_low_rho.h"
 

@@ -25,24 +25,23 @@ void clear_fields(qlat::FieldM<T1, civ>& pr, int GPU = 1)
 }
 
 // can be expanded ones, but only double and float
-template <class T1, class T2, int civ >
-void copy_fields(T1* pr, T2* p0, const Geometry& geor, const Geometry& geo0)
+template <class T1, class T2 >
+void copy_fields(T1* pr, T2* p0, const int civ, const Geometry& geor, const Geometry& geo0)
 {
   TIMER("copy_fields");
   Qassert(geor.multiplicity == geo0.multiplicity and geo0.multiplicity == 1);// to avoid complications for pointer issues
+  Qassert(IsBasicDataType<T1>::value and IsBasicDataType<T2>::value);
 
-  int mode_copy = 0;
-  int Ndata1    = 1;
-  int Ndata2    = 1;
-  if(get_data_type_is_double<T1 >()){Ndata1 = sizeof(T1)/sizeof(double);}else{Ndata1 = sizeof(T1)/sizeof(float);}
-  if(get_data_type_is_double<T2 >()){Ndata2 = sizeof(T2)/sizeof(double);}else{Ndata2 = sizeof(T2)/sizeof(float);}
+  using M1 = typename IsBasicDataType<T1>::ElementaryType;
+  using M2 = typename IsBasicDataType<T2>::ElementaryType;
+
+  //int mode_copy = 0;
+  //int Ndata1    = 1;
+  //int Ndata2    = 1;
+  int Ndata1 = sizeof(T1) / sizeof(M1);
+  int Ndata2 = sizeof(T2) / sizeof(M2);
   Qassert(Ndata1 == Ndata2);
   Ndata1 = Ndata1 * civ;// multiplicity
-
-  if( get_data_type_is_double<T1 >() and  get_data_type_is_double<T2 >()){mode_copy = 0;}
-  if( get_data_type_is_double<T1 >() and !get_data_type_is_double<T2 >()){mode_copy = 1;}
-  if(!get_data_type_is_double<T1 >() and  get_data_type_is_double<T2 >()){mode_copy = 2;}
-  if(!get_data_type_is_double<T1 >() and !get_data_type_is_double<T2 >()){mode_copy = 3;}
 
   qacc_for(isp, geor.local_volume(), {
     const Coordinate xl = geor.coordinate_from_index(isp);
@@ -50,11 +49,33 @@ void copy_fields(T1* pr, T2* p0, const Geometry& geor, const Geometry& geo0)
     const Long d0 = geo0.offset_from_coordinate(xl) * civ + 0;
     void* res = (void*) &pr[dr];//qlat::get_data(pr.get_elems(xl)).data();
     void* src = (void*) &p0[d0];//qlat::get_data(p0.get_elems(xl)).data();
-    if(mode_copy == 0){copy_double_float((double*) res, (double*) src, Ndata1);}
-    if(mode_copy == 1){copy_double_float((double*) res, (float* ) src, Ndata1);}
-    if(mode_copy == 2){copy_double_float((float* ) res, (double*) src, Ndata1);}
-    if(mode_copy == 3){copy_double_float((float* ) res, (float* ) src, Ndata1);}
+    copy_double_float((M1*) res, (M2*) src, Ndata1);
   });
+
+  //if(get_data_type_is_double<T1 >()){Ndata1 = sizeof(T1)/sizeof(double);}else{Ndata1 = sizeof(T1)/sizeof(float);}
+  //if(get_data_type_is_double<T2 >()){Ndata2 = sizeof(T2)/sizeof(double);}else{Ndata2 = sizeof(T2)/sizeof(float);}
+
+  //if(get_data_type_is_double<T1 >()){Ndata1 = sizeof(T1)/sizeof(double);}else{Ndata1 = sizeof(T1)/sizeof(float);}
+  //if(get_data_type_is_double<T2 >()){Ndata2 = sizeof(T2)/sizeof(double);}else{Ndata2 = sizeof(T2)/sizeof(float);}
+  //Qassert(Ndata1 == Ndata2);
+  //Ndata1 = Ndata1 * civ;// multiplicity
+
+  //if( get_data_type_is_double<T1 >() and  get_data_type_is_double<T2 >()){mode_copy = 0;}
+  //if( get_data_type_is_double<T1 >() and !get_data_type_is_double<T2 >()){mode_copy = 1;}
+  //if(!get_data_type_is_double<T1 >() and  get_data_type_is_double<T2 >()){mode_copy = 2;}
+  //if(!get_data_type_is_double<T1 >() and !get_data_type_is_double<T2 >()){mode_copy = 3;}
+
+  //qacc_for(isp, geor.local_volume(), {
+  //  const Coordinate xl = geor.coordinate_from_index(isp);
+  //  const Long dr = geor.offset_from_coordinate(xl) * civ + 0;
+  //  const Long d0 = geo0.offset_from_coordinate(xl) * civ + 0;
+  //  void* res = (void*) &pr[dr];//qlat::get_data(pr.get_elems(xl)).data();
+  //  void* src = (void*) &p0[d0];//qlat::get_data(p0.get_elems(xl)).data();
+  //  if(mode_copy == 0){copy_double_float((double*) res, (double*) src, Ndata1);}
+  //  if(mode_copy == 1){copy_double_float((double*) res, (float* ) src, Ndata1);}
+  //  if(mode_copy == 2){copy_double_float((float* ) res, (double*) src, Ndata1);}
+  //  if(mode_copy == 3){copy_double_float((float* ) res, (float* ) src, Ndata1);}
+  //});
 }
 
 template <class T1, class T2, int civ >
@@ -69,25 +90,25 @@ void copy_fields(qlat::FieldM<T1, civ>& pr, qlat::FieldM<T2, civ>& p0)
   geor.multiplicity = 1;geo0.multiplicity = 1;
   T1* res = (T1*) qlat::get_data(pr).data();
   T2* src = (T2*) qlat::get_data(p0).data();
-  copy_fields<T1, T2, civ>(res, src, geor, geo0);
+  copy_fields<T1, T2>(res, src, civ, geor, geo0);
 }
 
 template <class Ty, int civ>
 double fields_quick_checksum(qlat::FieldM<Ty, civ>& fs, const Long block = 128)
 {
   TIMER("fields_quick_checksum");
-  Long Ndata = qlat::get_data_size(fs) / ( 2 * sizeof(double));//complex checksum
-  if(!get_data_type_is_double<Ty >()){Ndata = Ndata * 2;}
+  using D = typename IsBasicDataType<Ty>::ElementaryType;
+  const Long Ndata = qlat::get_data_size(fs) / ( 2 * sizeof(D));//complex checksum
+  //if(!get_data_type_is_double<Ty >()){Ndata = Ndata * 2;}
   Qassert(Ndata % block == 0);
-  qlat::ComplexT<double >  res = 0.0;
+  qlat::ComplexT<D >  res = 0.0;
   void* src = (void*) qlat::get_data(fs).data();
-  if(get_data_type_is_double<Ty >()){
-    res = vec_norm2((qlat::ComplexT<double >*) src, (qlat::ComplexT<double >*)src, Ndata, QMGPU, block);
-  }
-  else{
-    res = vec_norm2((qlat::ComplexT<float  >*) src, (qlat::ComplexT<float  >*)src, Ndata, QMGPU, block);
-  }
-
+  res = vec_norm2((qlat::ComplexT<D >*) src, (qlat::ComplexT<D >*)src, Ndata, QMGPU, block);
+  //if(get_data_type_is_double<Ty >()){
+  //}
+  //else{
+  //  res = vec_norm2((qlat::ComplexT<float  >*) src, (qlat::ComplexT<float  >*)src, Ndata, QMGPU, block);
+  //}
   print0("gauge norm %.15e %.15e \n",  res.real(), res.imag());
   return res.real();
 }

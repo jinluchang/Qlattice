@@ -58,7 +58,7 @@ double diff_gauge_GPU( GaugeFieldT<Ta> &g0, GaugeFieldT<Tb> &g1)
       const Tb *p1 = (Tb*)  g1.get_elem(xl, m).p;
       for(int pi=0;pi<9*2;pi++)
       {
-        dL[index] += std::fabs(p0[pi]-p1[pi]);
+        dL[index] += qfabs(p0[pi]-p1[pi]);
       }
     }
   });

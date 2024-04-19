@@ -178,6 +178,14 @@ struct IsBasicDataType<RealD> {
 };
 
 template <>
+struct IsBasicDataType<Ldouble> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "Ldouble"; }
+  using ElementaryType = Ldouble;
+};
+
+template <>
 struct IsBasicDataType<ComplexF> {
   static constexpr bool value = true;
   static constexpr bool is_complex = true;
@@ -191,6 +199,14 @@ struct IsBasicDataType<ComplexD> {
   static constexpr bool is_complex = true;
   static const std::string get_type_name() { return "ComplexD"; }
   using ElementaryType = RealD;
+};
+
+template <>
+struct IsBasicDataType<ComplexT<Ldouble>> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = true;
+  static const std::string get_type_name() { return "ComplexDD"; }
+  using ElementaryType = Ldouble;
 };
 
 template <int DIMN, class T>
@@ -207,6 +223,14 @@ struct IsBasicDataType<MvectorT<DIMN, T>> {
   static constexpr bool is_complex = IsBasicDataType<T>::is_complex;
   static const std::string get_type_name() { return "MvectorT_" + IsBasicDataType<T>::get_type_name(); }
   using ElementaryType = typename IsBasicDataType<T>::ElementaryType;
+};
+
+template <>
+struct IsBasicDataType<ColorMatrixT<Ldouble>> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = true;
+  static const std::string get_type_name() { return "ColorMatrixDD"; }
+  using ElementaryType = Ldouble;
 };
 
 template <>
@@ -703,6 +727,39 @@ template <>
 qacc DATA_TYPE get_data_type<NonRelWilsonMatrixT<float>>()
 {
   return NonRelWilsonMatrixF_TYPE;
+}
+
+template <class M>
+qacc int get_data_type_is_Double()
+{
+  return -1;
+}
+
+template <>
+qacc int get_data_type_is_Double<RealF>()
+{
+  return  0;
+}
+
+template <>
+qacc int get_data_type_is_Double<RealD>()
+{
+  return  1;
+}
+
+template <>
+qacc int get_data_type_is_Double<Ldouble>()
+{
+  return  2;
+}
+
+template <class M>
+qacc int Is_data_double()
+{
+  using D = typename IsBasicDataType<M>::ElementaryType;
+  int type = get_data_type_is_Double<D>();
+  qassert(type != -1);
+  return type;
 }
 
 template <class M>

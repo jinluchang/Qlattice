@@ -3154,13 +3154,17 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
   //  Qassert( get_data_type_is_double<Ty >());
   //  Qassert(prec_type == 0 or prec_type == 2 or prec_type == 10)
   //}
-  if(!get_data_type_is_double<Ty >()){
-    Qassert(!( prec_type == 0 or prec_type == 2 or prec_type == 10 ) );
-  }
+  //if(!get_data_type_is_double<Ty >()){
+  //  Qassert(!( prec_type == 0 or prec_type == 2 or prec_type == 10 ) );
+  //}
   //if(buf_prec == 1){
   //  Qassert(!get_data_type_is_double<Ty >());
   //  Qassert(prec_type == 1 or prec_type == 11)
   //}
+
+  if(Is_data_double<Ty >() == 0){
+    Qassert(!( prec_type == 0 or prec_type == 2 or prec_type == 10 ) );
+  }
 
   std::vector<quda::ColorSpinorField* > Qvec;Qvec.resize(nsrc * 2);
   ///0--nsrc for Qvec --> src; nsrc -- 2 nsrc --> res

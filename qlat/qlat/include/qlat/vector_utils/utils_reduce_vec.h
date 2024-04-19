@@ -249,7 +249,7 @@ inline void reduce_gpu(const Ty *src,Ty *res,const Long n,const int nv=1,
   Ty *psrc;Ty *pres;Ty *tem;
   Long Nres;
 
-  qlat::vector<Ty > buf0,buf1;
+  qlat::vector_acc<Ty > buf0,buf1;
   buf0.resize(nv*Ny);
   pres = &buf0[0];
   Nres = reduce_T(src,pres, n, nv, Ld);

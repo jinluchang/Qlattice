@@ -24,10 +24,24 @@ qacc void su3_one(Ty* E)
   E[2*3 + 2] = 1.0;
 }
 
+qacc Long su3_6(const Geometry& geo, const Coordinate& xl)
+{
+  const int nD = 6;
+  return geo.offset_from_coordinate(xl)*nD + 0;
+}
+
 qacc Long su3_n(const Geometry& geo, const Coordinate& xl)
 {
   const int nD = 9;
   return geo.offset_from_coordinate(xl)*nD + 0;
+}
+
+qacc Long su3_6(const Geometry& geo, const Coordinate& xl, const int mu)
+{
+  const int Dim = 4;
+  const int nD  = 6;
+  return (geo.offset_from_coordinate(xl) * Dim + mu)*nD + 0;
+  //return geo.offset_from_coordinate(xl)*nD + 0;
 }
 
 qacc Long su3_n(const Geometry& geo, const Coordinate& xl, const int mu)
@@ -90,22 +104,24 @@ template <class Ty, Long N>
 qacc void normalize_array_c(Ty* src)
 {
   RealD norm = 0.0;
-  for(Long i=0;i<N;i++){norm = qlat::qconj(src[i]) * src[i];}
+  for(Long i=0;i<N;i++){norm = (qlat::qconj(src[i]) * src[i]).real();}
   norm = std::sqrt(norm);
   if (not(norm == 1.0))
-  for(Long i=0;i<N;i++){src[i] = src[i] / Ty(norm, 0.0);}
+  for(Long i=0;i<N;i++){src[i] /= Ty(norm, 0.0);}
 }
 
 template <class Ty, Long N>
 qacc void orthogonalize_array_c(Ty* p2, Ty* p1)
 {
   qlat::ComplexT<RealD > c = 0.0;
-  for (Long i = 0; i < N; ++i) {
+  for (Long i = 0; i < N; i++) {
     c += qconj(p1[i]) * p2[i];
   }
-  if (not(c.real() == 0.0)) {
-    for (Long i = 0; i < N; ++i) {
+  //print0("n %.8e %.8e, %.8e %.8e, %.8e %.8e \n", c.real(), c.imag(), p1[0].real(), p1[0].imag(), p2[0].real(), p2[0].imag());
+  if (not(c == 0.0)) {
+    for (Long i = 0; i < N; i++) {
       p2[i] -= c * p1[i];
+      //p2[i] = p2[i] - c * p1[i];
     }
   }
 }
@@ -122,13 +138,64 @@ qacc void cross_product_conj_c(Ty* v3, Ty* v1, Ty* v2)
 template <typename Ty>
 qacc void su3_unitarize(Ty* src)
 {
-  Ty* p1 = src[0 * 3 + 0];// may need to rotate index?
-  Ty* p2 = src[1 * 3 + 0];
-  Ty* p3 = src[2 * 3 + 0];
+  Ty* p1 = &src[0 * 3 + 0];// may need to rotate index?
+  Ty* p2 = &src[1 * 3 + 0];
+  Ty* p3 = &src[2 * 3 + 0];
   normalize_array_c<Ty, 3>(p1);
   orthogonalize_array_c<Ty, 3>(p2, p1);
-  normalize_array_complex<Ty, 3>(p2);
+  normalize_array_c<Ty, 3>(p2);
   cross_product_conj_c(p3, p1, p2);
+  //orthogonalize_array_c<Ty, 3>(p2, p1);
+  //normalize_array_c<Ty, 3>(p2);
+  //cross_product_conj_c(p3, p1, p2);
+}
+
+template <typename Ty>
+qacc void su3_traceless_anti_hermition(Ty* sz, Ty* BUF)
+{
+  for(int i=0;i<9;i++){BUF[i] = sz[i] ;}
+  for(int a=0;a<3;a++)
+  for(int b=0;b<3;b++)
+  {
+    sz[a*3 + b] = (BUF[a*3 + b] - qconj(BUF[b*3 + a])) / Ty(2.0, 0.0);
+  }
+  Ty c_tr = Ty(0.0, 0.0);for(int a=0;a<3;a++){c_tr += sz[a*3 + a]    ;}
+  for(int a=0;a<3;a++){sz[a*3 + a] -= c_tr/Ty(3.0, 0.0 );}
+}
+
+template <typename Tf>
+qacc void su3_reconstruct_row(qlat::ComplexT<Tf >* r)
+{
+  r[2*3 + 0] = qlat::qconj( r[0*3+1]*r[1*3+2] - r[0*3+2]*r[1*3+1] );
+  r[2*3 + 1] = qlat::qconj( r[0*3+2]*r[1*3+0] - r[0*3+0]*r[1*3+2] );
+  r[2*3 + 2] = qlat::qconj( r[0*3+0]*r[1*3+1] - r[0*3+1]*r[1*3+0] );
+}
+
+template <typename Tf , typename Td>
+qacc void su3_reconstruct_row(qlat::ComplexT<Tf >* r, qlat::ComplexT<Td >* s)
+{
+  for(int i=0;i<3;i++){r[0*3 + i] = s[0*3+i];}
+  for(int i=0;i<3;i++){r[1*3 + i] = s[1*3+i];}
+  su3_reconstruct_row(r);
+  //r[2*3 + 0] = qlat::qconj( r[0*3+1]*r[1*3+2] - r[0*3+2]*r[1*3+1] );
+  //r[2*3 + 1] = qlat::qconj( r[0*3+2]*r[1*3+0] - r[0*3+0]*r[1*3+2] );
+  //r[2*3 + 2] = qlat::qconj( r[0*3+0]*r[1*3+1] - r[0*3+1]*r[1*3+0] );
+}
+
+template <typename Tf>
+qacc void su3_reconstruct_col(qlat::ComplexT<Tf >* r)
+{
+  r[0*3 + 2] = qlat::qconj( r[1*3+0]*r[2*3+1] - r[2*3+0]*r[1*3+1] );
+  r[1*3 + 2] = qlat::qconj( r[2*3+0]*r[0*3+1] - r[0*3+0]*r[2*3+1] );
+  r[2*3 + 2] = qlat::qconj( r[0*3+0]*r[1*3+1] - r[1*3+0]*r[0*3+1] );
+}
+
+template <typename Tf , typename Td>
+qacc void su3_reconstruct_col(qlat::ComplexT<Tf >* r, qlat::ComplexT<Td >* s)
+{
+  for(int i=0;i<3;i++){r[i*3 + 0] = s[0*3+i];}
+  for(int i=0;i<3;i++){r[i*3 + 1] = s[1*3+i];}
+  su3_reconstruct_col(r);
 }
 
 template <class Td>
@@ -180,6 +247,36 @@ void copy_gf(GaugeFieldT<Ta> &g1, GaugeFieldT<Td> &g0)
   });
 }
 
+template <class Td>
+void Gauge_antihermition(GaugeFieldT<Td> &gf)
+{
+  const Geometry& geo = gf.geo();
+  const Long V = geo.local_volume();
+  qacc_for(isp, V, {
+    qlat::ComplexT<double > BUF[9];
+    const Coordinate xl = geo.coordinate_from_index(isp);
+    for(int mu=0;mu<4;mu++)
+    {
+      qlat::ComplexT<double >* s1  = (qlat::ComplexT<double >*) gf.get_elem(xl, mu).p;
+      su3_traceless_anti_hermition(s1, BUF);
+    }
+  });
+}
+
+template <class Td>
+void Gauge_reconstruct_col(GaugeFieldT<Td> &gf)
+{
+  const Geometry& geo = gf.geo();
+  const Long V = geo.local_volume();
+  qacc_for(isp, V, {
+    const Coordinate xl = geo.coordinate_from_index(isp);
+    for(int mu=0;mu<4;mu++)
+    {
+      qlat::ComplexT<double >* s1  = (qlat::ComplexT<double >*) gf.get_elem(xl, mu).p;
+      su3_reconstruct_col(s1);
+    }
+  });
+}
 }
 
 #endif

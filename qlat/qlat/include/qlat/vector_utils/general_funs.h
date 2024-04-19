@@ -964,8 +964,8 @@ inline void allocate_buf(std::vector<Ty* >& buf, size_t n0, size_t n1)
 template<typename Ty>
 inline Ty inv_self(const Ty& lam, double m, double rho,int one_minus_halfD=1)
 {
-  std::complex<double > tem(lam.real(),lam.imag());
-  std::complex<double > v0 = (one_minus_halfD>0)?(1.0-tem/2.0)/(rho*tem+m*(1.0-tem/2.0)):1.0/(rho*tem+m*(1.0-tem/2.0));
+  ComplexT<double > tem(lam.real(),lam.imag());
+  ComplexT<double > v0 = (one_minus_halfD>0)?(1.0-tem/2.0)/(rho*tem+m*(1.0-tem/2.0)):1.0/(rho*tem+m*(1.0-tem/2.0));
   Ty res(v0.real(),v0.imag());
   return res;
 }
@@ -1144,8 +1144,9 @@ inline Ty vec_norm2(Ty* s0, Ty* s1, Long Ndata, QMEM GPU = QMGPU, const Long Ngr
     }
   });
 
+
   qlat::vector_acc<Ty > rsum;rsum.resize(1);rsum[0] = 0.0;
-  reduce_vec(buf, &rsum[0], Nvol, 1, GPU);
+  reduce_vec(buf, rsum.data(), Nvol, 1, GPU);
   sum_all_size( (Ty*) rsum.data(), 1, true );
   return rsum[0];
 }
