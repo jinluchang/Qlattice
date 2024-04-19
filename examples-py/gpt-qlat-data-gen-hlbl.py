@@ -1752,8 +1752,9 @@ def run_hlbl_two_plus_two(
         path_chunk = get_load_path(fn_chunk)
         if q.get_id_node() == 0:
             points_data += q.load_pickle_obj(path_chunk, is_sync_node=False)
+    psel = get_psel_prob().psel
     if q.get_id_node() == 0:
-        assert len(points_data) == len(get_psel_prob().psel)
+        assert len(points_data) == len(psel)
         results = dict()
         results["labels"] = labels
         results["lslt_sum"] = sum([ d["lslt"] for d in points_data ])
