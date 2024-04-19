@@ -17,7 +17,8 @@ tests = qlat-vector-utils \
 		heatbath \
 		template \
 		dslash-tests \
-		propagators
+		propagators \
+                ldouble 
 
 tests_grid = grid-with-qlat
 
