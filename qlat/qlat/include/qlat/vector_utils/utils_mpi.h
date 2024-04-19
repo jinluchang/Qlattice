@@ -67,100 +67,112 @@ void reduce_MPI_type(Iy num, MPI_Datatype& curr, unsigned int& size)
 // struct get_MPI_Type<RealDD >{ static MPI_Datatype c=MPI_DOUBLE  ; static constexpr int size = 2;};
 
 template <class M>
-int get_mpi_type(MPI_Datatype& mpi_type)
+int set_mpi_type(MPI_Datatype& mpi_type)
 // set mpi_type and return size
 {
   mpi_type = MPI_LOGICAL;
   if (get_id_node() == 0) {
     printf("Type not found !!!! \n");
   }
-  const int get_mpi_type_size = 0;
-  qassert(get_mpi_type_size != 0);
+  const int set_mpi_type_size = 0;
+  qassert(set_mpi_type_size != 0);
   return 0;
 }
 
 template <>
-inline int get_mpi_type<RealDD>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<RealDD>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_DOUBLE;
   return 2;
 }
 
 template <>
-inline int get_mpi_type<RealD>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<RealD>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_DOUBLE;
   return 1;
 }
 
 template <>
-inline int get_mpi_type<RealF>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<RealF>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_DOUBLE;
   return 1;
 }
 
 template <>
-inline int get_mpi_type<uint64_t>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<uint64_t>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_UINT64_T;
   return 1;
 }
 
 template <>
-inline int get_mpi_type<uint32_t>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<uint32_t>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_UINT32_T;
   return 1;
 }
 
 template <>
-inline int get_mpi_type<uint16_t>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<uint16_t>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_UINT16_T;
   return 1;
 }
 
 template <>
-inline int get_mpi_type<uint8_t>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<uint8_t>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_UINT8_T;
   return 1;
 }
 
 template <>
-inline int get_mpi_type<int64_t>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<int64_t>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_INT64_T;
   return 1;
 }
 
 template <>
-inline int get_mpi_type<int32_t>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<int32_t>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_INT32_T;
   return 1;
 }
 
 template <>
-inline int get_mpi_type<int16_t>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<int16_t>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_INT16_T;
   return 1;
 }
 
 template <>
-inline int get_mpi_type<int8_t>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<int8_t>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_INT8_T;
   return 1;
 }
 
 template <>
-inline int get_mpi_type<char>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<char>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_CHAR;
   return 1;
+}
+
+template<class M>
+unsigned int get_mpi_type(MPI_Datatype& curr)
+{
+  using D = typename IsBasicDataType<M>::ElementaryType;
+  const int Nsize = set_mpi_type<D>(curr);
+  Qassert(sizeof(D) % Nsize == 0);
+  const int size = sizeof(D) / Nsize;
+  if(size == 0)if(get_id_node()== 0){printf("Type not found !!!! \n");}
+  qassert(size != 0);
+  return size;
 }
 
 // template<class M>
