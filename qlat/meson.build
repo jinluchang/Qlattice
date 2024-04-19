@@ -11,6 +11,7 @@ project('qlat', 'cpp', 'cython',
     ])
 
 add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
+add_project_arguments('-lquadmath', language: ['c', 'cpp'])
 
 subdir('depend-qlat-utils')
 
