@@ -11,7 +11,6 @@ project('qlat', 'cpp', 'cython',
     ])
 
 add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
-add_project_arguments('-lquadmath', language: ['c', 'cpp'])
 
 subdir('depend-qlat-utils')
 
@@ -44,7 +43,9 @@ fftw_all = [ fftw, fftwf, ]
 cuba = cpp.find_library('cuba', required: false)
 gsl = dependency('gsl').as_system()
 
-deps = [ qlat_utils, mpic, fftw_all, cuba, gsl, ]
+quadmath = cpp.find_library('quadmath', required: true)
+
+deps = [ qlat_utils, mpic, fftw_all, cuba, gsl, quadmath, ]
 
 py3.install_sources('qlat_gpt.py')
 

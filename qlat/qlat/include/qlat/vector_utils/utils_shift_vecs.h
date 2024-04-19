@@ -357,7 +357,7 @@ void shift_vec::set_MPI_size(int biva_or, int civ_or, int dir_or )
   if(sizeof(Ty) != bsize){
     bsize = sizeof(Ty);
     MPI_off = sizeof(Ty);////MPI_Datatype curr = MPI_BYTE;
-    unsigned int M_size = get_MPI_type<Ty >(MPI_curr );
+    unsigned int M_size = get_mpi_type<Ty >(MPI_curr );
     Qassert(MPI_off%M_size == 0);MPI_off = MPI_off/M_size;Qassert(MPI_off != 0);
   }
 
