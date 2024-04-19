@@ -232,16 +232,16 @@ void cpy_data_threadT(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, QBOOL 
     #ifdef QLAT_USE_ACC
     if(sizeof(T0) == sizeof(T1) and qlat::qnorm(ADD) <  QLAT_COPY_LIMIT)
     {
-      //if(stream == NULL){
-      //  if(GPU == 0){gpuErrchk(qacc_MemcpyAsync((void*) Pres, (void*) Psrc , Nvol*sizeof(T0), qacc_MemcpyHostToHost));}
-      //  if(GPU == 1){gpuErrchk(qacc_MemcpyAsync((void*) Pres, (void*) Psrc , Nvol*sizeof(T0), qacc_MemcpyDeviceToDevice));}
-      //}
-      //else{
-      //  qacc_Stream_t* pstream = (qacc_Stream_t*) stream;
-      //  if(GPU == 0){gpuErrchk(qacc_MemcpyAsync((void*) Pres, (void*) Psrc , Nvol*sizeof(T0), qacc_MemcpyHostToHost, *pstream));}
-      //  if(GPU == 1){gpuErrchk(qacc_MemcpyAsync((void*) Pres, (void*) Psrc , Nvol*sizeof(T0), qacc_MemcpyDeviceToDevice, *pstream));}
-      //}
-      qGPU_forNB(isp, Nvol, GPU, {Pres[isp] = Psrc[isp];})
+      if(stream == NULL){
+        if(GPU == 0){gpuErrchk(qacc_MemcpyAsync((void*) Pres, (void*) Psrc , Nvol*sizeof(T0), qacc_MemcpyHostToHost));}
+        if(GPU == 1){gpuErrchk(qacc_MemcpyAsync((void*) Pres, (void*) Psrc , Nvol*sizeof(T0), qacc_MemcpyDeviceToDevice));}
+      }
+      else{
+        qacc_Stream_t* pstream = (qacc_Stream_t*) stream;
+        if(GPU == 0){gpuErrchk(qacc_MemcpyAsync((void*) Pres, (void*) Psrc , Nvol*sizeof(T0), qacc_MemcpyHostToHost, *pstream));}
+        if(GPU == 1){gpuErrchk(qacc_MemcpyAsync((void*) Pres, (void*) Psrc , Nvol*sizeof(T0), qacc_MemcpyDeviceToDevice, *pstream));}
+      }
+      //qGPU_forNB(isp, Nvol, GPU, {Pres[isp] = Psrc[isp];})
       if(dummy==QTRUE){qacc_barrier(dummy);}
       return ;
     }
