@@ -178,11 +178,11 @@ struct IsBasicDataType<RealD> {
 };
 
 template <>
-struct IsBasicDataType<Ldouble> {
+struct IsBasicDataType<RealDD> {
   static constexpr bool value = true;
   static constexpr bool is_complex = false;
-  static const std::string get_type_name() { return "Ldouble"; }
-  using ElementaryType = Ldouble;
+  static const std::string get_type_name() { return "RealDD"; }
+  using ElementaryType = RealDD;
 };
 
 template <>
@@ -202,11 +202,11 @@ struct IsBasicDataType<ComplexD> {
 };
 
 template <>
-struct IsBasicDataType<ComplexT<Ldouble>> {
+struct IsBasicDataType<ComplexT<RealDD>> {
   static constexpr bool value = true;
   static constexpr bool is_complex = true;
   static const std::string get_type_name() { return "ComplexDD"; }
-  using ElementaryType = Ldouble;
+  using ElementaryType = RealDD;
 };
 
 template <int DIMN, class T>
@@ -226,11 +226,11 @@ struct IsBasicDataType<MvectorT<DIMN, T>> {
 };
 
 template <>
-struct IsBasicDataType<ColorMatrixT<Ldouble>> {
+struct IsBasicDataType<ColorMatrixT<RealDD>> {
   static constexpr bool value = true;
   static constexpr bool is_complex = true;
   static const std::string get_type_name() { return "ColorMatrixDD"; }
-  using ElementaryType = Ldouble;
+  using ElementaryType = RealDD;
 };
 
 template <>
@@ -748,7 +748,7 @@ qacc int get_data_type_is_Double<RealD>()
 }
 
 template <>
-qacc int get_data_type_is_Double<Ldouble>()
+qacc int get_data_type_is_Double<RealDD>()
 {
   return  2;
 }

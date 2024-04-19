@@ -21,7 +21,7 @@ namespace qlat
 {
 
 //y to double, x remaining stuff
-class API Ldouble{
+class API RealDD{
   public:
   qacc double& X(){return x;}
   qacc double& Y(){return y;}
@@ -29,48 +29,48 @@ class API Ldouble{
   qacc const double& X() const {return x;}
   qacc const double& Y() const {return y;}
 
-  qacc Ldouble() = default;
-  //qacc Ldouble(){x = 0;y = 0;}
-  qacc Ldouble(const int&    a){y = double(a);x = 0;}
-  qacc Ldouble(const double& a){y = a;        x = 0;}
-  qacc Ldouble(const float&  a){y = a;        x = 0;}
-  qacc Ldouble(const Ldouble&  a){x = a.x;y = a.y;}
-  inline Ldouble(const __float128&  a){
+  qacc RealDD() = default;
+  //qacc RealDD(){x = 0;y = 0;}
+  qacc RealDD(const int&    a){y = double(a);x = 0;}
+  qacc RealDD(const double& a){y = a;        x = 0;}
+  qacc RealDD(const float&  a){y = a;        x = 0;}
+  qacc RealDD(const RealDD&  a){x = a.x;y = a.y;}
+  inline RealDD(const __float128&  a){
     double rety = (double) a;
     double retx = (double)(a-(__float128)rety);
     y = rety;
     x = retx;
   }
 
-  qacc const Ldouble& operator= (const Ldouble& a)
+  qacc const RealDD& operator= (const RealDD& a)
   {
     x = a.x;
     y = a.y;
     return *this;
   }
 
-  //qacc Ldouble& operator= (const Ldouble& a)
+  //qacc RealDD& operator= (const RealDD& a)
   //{
   //  x = a.x;
   //  y = a.y;
   //  return *this;
   //}
 
-  qacc Ldouble& operator= (const double& a)
+  qacc RealDD& operator= (const double& a)
   {
     x = 0;
     y = a;
     return *this;
   }
   
-  qacc Ldouble& operator= (float& a)
+  qacc RealDD& operator= (float& a)
   {
     x = 0;
     y = a;
     return *this;
   }
 
-  inline Ldouble& operator= (__float128& a)
+  inline RealDD& operator= (__float128& a)
   {
     double rety = (double) a;
     double retx = (double)(a-(__float128)rety);
@@ -79,10 +79,10 @@ class API Ldouble{
     return *this;
   }
 
-  qacc Ldouble operator+=(Ldouble b);
+  qacc RealDD operator+=(RealDD b);
   //{
-  //  Ldouble& a = *this;
-  //  //Ldouble z;
+  //  RealDD& a = *this;
+  //  //RealDD z;
 
   //  double t1, t2, t3, t4, t5, e;
 
@@ -116,19 +116,19 @@ class API Ldouble{
   //  //return  *this;
   //}
 
-  qacc Ldouble operator*=(Ldouble b);
-  qacc Ldouble operator/=(Ldouble b);
-  qacc Ldouble operator-()
+  qacc RealDD operator*=(RealDD b);
+  qacc RealDD operator/=(RealDD b);
+  qacc RealDD operator-()
   {
-    Ldouble am;
+    RealDD am;
     am.y = -1.0 * y;
     am.x = -1.0 * x;
     return  am;
   }
 
-  qacc Ldouble operator-=(Ldouble a)
+  qacc RealDD operator-=(RealDD a)
   {
-    Ldouble am = a;
+    RealDD am = a;
     am.y = -1.0 * am.y;
     am.x = -1.0 * am.x;
     *this += am;
@@ -144,29 +144,29 @@ class API Ldouble{
 
 };
 
-inline __float128 copy_to_float128(const Ldouble& a)
+inline __float128 copy_to_float128(const RealDD& a)
 {
   __float128 a128 = (__float128) a.X() + (__float128) a.Y();
   return a128;
 }
 
-qacc Ldouble minus(const Ldouble& a)
+qacc RealDD minus(const RealDD& a)
 {
-  Ldouble z;
+  RealDD z;
   z.Y() = -1 * a.Y();
   z.X() = -1 * a.X();
   return z;
 }
 
-qacc Ldouble fabsT(Ldouble& a)
+qacc RealDD fabsT(RealDD& a)
 {
-  Ldouble z;
+  RealDD z;
   z.Y() = std::fabs(a.Y());
   z.X() = std::fabs(a.X());
   return z;
 }
 
-qacc bool operator<(Ldouble a, Ldouble b)
+qacc bool operator<(RealDD a, RealDD b)
 {
   if(a.Y() < b.Y()){return true ;}
   if(a.Y() > b.Y()){return false;}
@@ -175,9 +175,9 @@ qacc bool operator<(Ldouble a, Ldouble b)
   return false;
 }
 
-qacc Ldouble operator+(Ldouble a, Ldouble b)
+qacc RealDD operator+(RealDD a, RealDD b)
 {
-  Ldouble z = a;
+  RealDD z = a;
   z += b;
   return z;
 
@@ -210,12 +210,12 @@ qacc Ldouble operator+(Ldouble a, Ldouble b)
   //return z;
 }
 
-qacc Ldouble operator-(Ldouble a, Ldouble b)
+qacc RealDD operator-(RealDD a, RealDD b)
 {
-  Ldouble z = a;
+  RealDD z = a;
   z -= b;
-  //Ldouble bm = minus(b);
-  //Ldouble z = a + bm;
+  //RealDD bm = minus(b);
+  //RealDD z = a + bm;
   return  z;
 }
 
@@ -238,10 +238,10 @@ qacc double __Dmul_rn(double x, double y)
   #endif
 }
 
-qacc Ldouble Ldouble::operator+=(Ldouble b)
+qacc RealDD RealDD::operator+=(RealDD b)
 {
-  Ldouble& a = *this;
-  //Ldouble z;
+  RealDD& a = *this;
+  //RealDD z;
 
   double t1, t2, t3, t4, t5, e;
 
@@ -275,9 +275,9 @@ qacc Ldouble Ldouble::operator+=(Ldouble b)
   //return  *this;
 }
 
-qacc Ldouble Ldouble::operator*=(Ldouble b)
+qacc RealDD RealDD::operator*=(RealDD b)
 {
-  Ldouble& a = *this;
+  RealDD& a = *this;
   #ifndef __CUDA_ARCH__
   //on CPU with __float128
   __float128 a128 = copy_to_float128(a);
@@ -288,7 +288,7 @@ qacc Ldouble Ldouble::operator*=(Ldouble b)
   return *this;
   #else
   double e;
-  Ldouble t;
+  RealDD t;
 
   t.y = __Dmul_rn (a.y, b.y);     /* prevent FMA-merging */
 
@@ -308,9 +308,9 @@ qacc Ldouble Ldouble::operator*=(Ldouble b)
   #endif
 }
 
-qacc Ldouble  operator* (Ldouble x, Ldouble y)
+qacc RealDD  operator* (RealDD x, RealDD y)
 {
-  Ldouble z = x;
+  RealDD z = x;
   z *= y;
   return z;
   
@@ -320,11 +320,11 @@ qacc Ldouble  operator* (Ldouble x, Ldouble y)
   //__float128 b128 = copy_to_float128(y);
   //__float128 z128;
   //z128 = a128 * b128;
-  //Ldouble z(z128);
+  //RealDD z(z128);
   //return z;
   //#else
   //double e;
-  //Ldouble t, z;
+  //RealDD t, z;
 
   //t.y = __Dmul_rn (x.y, y.y);     /* prevent FMA-merging */
 
@@ -350,9 +350,9 @@ qacc Ldouble  operator* (Ldouble x, Ldouble y)
 
 */
 
-qacc Ldouble Ldouble::operator/= (Ldouble b)
+qacc RealDD RealDD::operator/= (RealDD b)
 {
-  Ldouble& a = *this; 
+  RealDD& a = *this; 
   #ifndef __CUDA_ARCH__
   //on CPU with __float128
   __float128 a128 = copy_to_float128(a);
@@ -363,7 +363,7 @@ qacc Ldouble Ldouble::operator/= (Ldouble b)
   return *this;
   #else
 
-  //Ldouble z;
+  //RealDD z;
 
   double c, cc, up;
 
@@ -386,9 +386,9 @@ qacc Ldouble Ldouble::operator/= (Ldouble b)
 }
 
 
-qacc Ldouble operator/ (Ldouble a, Ldouble b)
+qacc RealDD operator/ (RealDD a, RealDD b)
 {
-  Ldouble z = a;
+  RealDD z = a;
   z /= b;
   return z;
  
@@ -398,11 +398,11 @@ qacc Ldouble operator/ (Ldouble a, Ldouble b)
   //__float128 b128 = copy_to_float128(b);
   //__float128 z128;
   //z128 = a128 / b128;
-  //Ldouble z(z128);
+  //RealDD z(z128);
   //return z;
   //#else
 
-  //Ldouble z;
+  //RealDD z;
 
   //double c, cc, up;
 
@@ -430,19 +430,19 @@ qacc Ldouble operator/ (Ldouble a, Ldouble b)
 
 */
 
-qacc Ldouble sqrtT (const Ldouble a)
+qacc RealDD sqrtT (const RealDD a)
 {
   #ifndef __CUDA_ARCH__
   //on CPU with __float128
   __float128 a128 = copy_to_float128(a);
   a128 = sqrtq(a128);
-  Ldouble z(a128);
+  RealDD z(a128);
   return z;
   #else
 
   double e;
 
-  Ldouble t, z;
+  RealDD t, z;
 
   t.Y() = std::sqrt (a.Y());
 

@@ -64,7 +64,7 @@ void reduce_MPI_type(Iy num, MPI_Datatype& curr, unsigned int& size)
 // template<>
 // struct get_MPI_Type<RealD   >{ static MPI_Datatype c=MPI_DOUBLE  ; static constexpr int size = 1;};
 // template<>
-// struct get_MPI_Type<Ldouble >{ static MPI_Datatype c=MPI_DOUBLE  ; static constexpr int size = 2;};
+// struct get_MPI_Type<RealDD >{ static MPI_Datatype c=MPI_DOUBLE  ; static constexpr int size = 2;};
 
 template <class M>
 int get_mpi_type(MPI_Datatype& mpi_type)
@@ -80,7 +80,7 @@ int get_mpi_type(MPI_Datatype& mpi_type)
 }
 
 template <>
-inline int get_mpi_type<Ldouble>(MPI_Datatype& mpi_type)
+inline int get_mpi_type<RealDD>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_DOUBLE;
   return 2;

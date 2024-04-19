@@ -30,9 +30,9 @@ void simple_tests()
         if(c == 0){
           //ld[0] = a;
           //ld[1] = b;
-          Ldouble la = a;
-          Ldouble lb = b;
-          Ldouble lz = 0.0;
+          RealDD la = a;
+          RealDD lb = b;
+          RealDD lz = 0.0;
 
           // add check
           if(casei == 0)
@@ -120,14 +120,14 @@ void simple_tests()
 
     std::complex<__float128 > aC(a0, a1);//(a0, b1);
     std::complex<__float128 > bC(b0, b1);//(a0, b1);
-    ComplexT<Ldouble > adC(a0, a1);//(a0, b1);
-    ComplexT<Ldouble > bdC(b0, b1);//(a0, b1);
+    ComplexT<RealDD > adC(a0, a1);//(a0, b1);
+    ComplexT<RealDD > bdC(b0, b1);//(a0, b1);
 
-    ComplexT<Ldouble > zdC;
+    ComplexT<RealDD > zdC;
     //std::complex<__float128 > zC;
     //zC  = aC  / bC;
     zdC = adC / bdC;
-    zdC = adC * ComplexT<Ldouble>(1.0, 0.0);
+    zdC = adC * ComplexT<RealDD>(1.0, 0.0);
 
     displayln_info(ssprintf("CHECK: a   %+.8e %+.8e, b %+.8e %+.8e \n", a0, a1, b0, b1));
     const int Ncase = 5;
@@ -140,9 +140,9 @@ void simple_tests()
         if(c == 0){
           //ld[0] = a;
           //ld[1] = b;
-          ComplexT<Ldouble > la(a0, a1);//(a0, b1);
-          ComplexT<Ldouble > lb(b0, b1);//(a0, b1);
-          ComplexT<Ldouble > lz(0.0, 0.0);
+          ComplexT<RealDD > la(a0, a1);//(a0, b1);
+          ComplexT<RealDD > lb(b0, b1);//(a0, b1);
+          ComplexT<RealDD > lz(0.0, 0.0);
 
           // add check
           if(casei == 0)
@@ -171,7 +171,7 @@ void simple_tests()
           // / check
           if(casei == 4)
           {
-            lz = ComplexT<Ldouble>(qlat::qnorm(la), 0.0);
+            lz = ComplexT<RealDD>(qlat::qnorm(la), 0.0);
           }
 
           ld[0] = lz.real().Y();
@@ -212,7 +212,7 @@ void simple_tests()
   }
 
   {
-    ComplexT<Ldouble > a(1.0, 0.0);
+    ComplexT<RealDD > a(1.0, 0.0);
     ComplexT<double  > b(0.6, 0.7);
     ComplexT<double  > c(0.0, 0.0);
     c = b;

@@ -66,7 +66,7 @@ qacc constexpr bool is_real()
     ret = true;
   } else if (is_same<M, RealF>()) {
     ret = true;
-  } else if (is_same<M, Ldouble>()){
+  } else if (is_same<M, RealDD>()){
     ret = true;
   }
   return ret;
@@ -194,24 +194,24 @@ qacc ComplexT<float> operator*(const ComplexT<float> &b, const float &a) {
   return ComplexT<float>(b.real() * a, b.imag() * a);
 }
 
-qacc ComplexT<Ldouble> operator*(const double &a, const ComplexT<Ldouble> &b) {
-  return ComplexT<Ldouble>(b.real() * Ldouble(a), b.imag() * Ldouble(a));
+qacc ComplexT<RealDD> operator*(const double &a, const ComplexT<RealDD> &b) {
+  return ComplexT<RealDD>(b.real() * RealDD(a), b.imag() * RealDD(a));
 }
 
-qacc ComplexT<Ldouble> operator*(const ComplexT<Ldouble> &a, const ComplexT<Ldouble> &b) {
-  return ComplexT<Ldouble>(a.real() * b.real() - a.imag()*b.imag(), a.imag()*b.real() + a.real()*b.imag());
+qacc ComplexT<RealDD> operator*(const ComplexT<RealDD> &a, const ComplexT<RealDD> &b) {
+  return ComplexT<RealDD>(a.real() * b.real() - a.imag()*b.imag(), a.imag()*b.real() + a.real()*b.imag());
 }
 
-qacc ComplexT<Ldouble> operator*(const Ldouble &a, const ComplexT<Ldouble> &b) {
-  return ComplexT<Ldouble>(b.real() * a, b.imag() * a);
+qacc ComplexT<RealDD> operator*(const RealDD &a, const ComplexT<RealDD> &b) {
+  return ComplexT<RealDD>(b.real() * a, b.imag() * a);
 }
 
-qacc ComplexT<Ldouble> operator*(const ComplexT<Ldouble> &b, const double &a) {
-  return ComplexT<Ldouble>(b.real() * Ldouble(a), b.imag() * Ldouble(a));
+qacc ComplexT<RealDD> operator*(const ComplexT<RealDD> &b, const double &a) {
+  return ComplexT<RealDD>(b.real() * RealDD(a), b.imag() * RealDD(a));
 }
 
-qacc ComplexT<Ldouble> operator*(const ComplexT<Ldouble> &b, const Ldouble &a) {
-  return ComplexT<Ldouble>(b.real() * a, b.imag() * a);
+qacc ComplexT<RealDD> operator*(const ComplexT<RealDD> &b, const RealDD &a) {
+  return ComplexT<RealDD>(b.real() * a, b.imag() * a);
 }
 
 template <class Ta, class Tb>
@@ -222,7 +222,7 @@ qacc void copy_complex(ComplexT<Ta >& r, const ComplexT<Tb >& a)
 }
 
 template <class Ta>
-qacc void copy_complex(ComplexT<Ta >& r, const ComplexT<Ldouble >& a)
+qacc void copy_complex(ComplexT<Ta >& r, const ComplexT<RealDD >& a)
 {
   r = ComplexT<Ta>(a.real().Y(), a.imag().Y());
 }
@@ -234,7 +234,7 @@ qacc Ta qfabs(Ta a)
 }
 
 template <>
-qacc Ldouble qfabs(Ldouble a)
+qacc RealDD qfabs(RealDD a)
 {
   return fabsT(a);
 }
@@ -246,7 +246,7 @@ qacc Ta qsqrt(Ta a)
 }
 
 template <>
-qacc Ldouble qsqrt(Ldouble a)
+qacc RealDD qsqrt(RealDD a)
 {
   return sqrtT(a);
 }
@@ -258,7 +258,7 @@ qacc Ta qfmin(Ta a, Ta b)
 }
 
 template <>
-qacc Ldouble qfmin(Ldouble a, Ldouble b)
+qacc RealDD qfmin(RealDD a, RealDD b)
 {
   if(a.Y() < b.Y()){return a;}
   if(a.Y() > b.Y()){return b;}
@@ -286,11 +286,11 @@ qacc Ta qacos(Ta a)
 }
 
 template <>
-qacc Ldouble qsin(Ldouble a)
+qacc RealDD qsin(RealDD a)
 {
   double y = a.Y();
   double x = a.X();
-  Ldouble z;
+  RealDD z;
   double siny = std::sin(y);
   double sinx = std::sin(x);
   z.Y() = siny * std::cos(x);
@@ -300,11 +300,11 @@ qacc Ldouble qsin(Ldouble a)
 }
 
 template <>
-qacc Ldouble qcos(Ldouble a)
+qacc RealDD qcos(RealDD a)
 {
   double y = a.Y();
   double x = a.X();
-  Ldouble z;
+  RealDD z;
   z.Y() = std::cos(y) * std::cos(x);
   z.X() = std::sin(y) * std::sin(x);
   return z;
@@ -312,11 +312,11 @@ qacc Ldouble qcos(Ldouble a)
 }
 
 template <>
-qacc Ldouble qacos(Ldouble a)
+qacc RealDD qacos(RealDD a)
 {
   double y = a.Y();
   double x = a.X();
-  Ldouble z;
+  RealDD z;
   z.Y() = std::acos(y);
   z.X() = -1.0 * (1.0/std::sqrt(1.0 - y*y))*x;
   return z;
@@ -324,49 +324,49 @@ qacc Ldouble qacos(Ldouble a)
   //return std::acos(y);
 }
 
-//qacc std::complex<double>& std::complex<double>::operator=(const std::complex<qlat::Ldouble>& a) {
+//qacc std::complex<double>& std::complex<double>::operator=(const std::complex<qlat::RealDD>& a) {
 //  this->real() = a.real().Y();
 //  this->imag() = a.imag().Y();
 //  return *this;
 //}
 
-//qacc ComplexT<float>& ComplexT<float>::operator=(const ComplexT<Ldouble> &a) {
+//qacc ComplexT<float>& ComplexT<float>::operator=(const ComplexT<RealDD> &a) {
 //  return ComplexT<float>(a.real().Y(), a.imag().Y());
 //}
 //
-//qacc ComplexT<Ldouble>& ComplexT<Ldouble>::operator=(const ComplexT<double> &a) {
-//  return ComplexT<Ldouble>(a.real(), a.imag());
+//qacc ComplexT<RealDD>& ComplexT<RealDD>::operator=(const ComplexT<double> &a) {
+//  return ComplexT<RealDD>(a.real(), a.imag());
 //}
 //
-//qacc ComplexT<Ldouble>& ComplexT<Ldouble>::operator=(const ComplexT<float> &a) {
-//  return ComplexT<Ldouble>(a.real(), a.imag());
+//qacc ComplexT<RealDD>& ComplexT<RealDD>::operator=(const ComplexT<float> &a) {
+//  return ComplexT<RealDD>(a.real(), a.imag());
 //}
 
-qacc ComplexT<Ldouble> operator/(const ComplexT<Ldouble> &a, const ComplexT<Ldouble> &b) {
-  Ldouble sq = b.real() * b.real() + b.imag() * b.imag();
-  Ldouble r  = a.real() * b.real() + a.imag() * b.imag();
-  Ldouble i  = a.imag() * b.real() - a.real() * b.imag();
-  return ComplexT<Ldouble>(r/sq, i/sq);
+qacc ComplexT<RealDD> operator/(const ComplexT<RealDD> &a, const ComplexT<RealDD> &b) {
+  RealDD sq = b.real() * b.real() + b.imag() * b.imag();
+  RealDD r  = a.real() * b.real() + a.imag() * b.imag();
+  RealDD i  = a.imag() * b.real() - a.real() * b.imag();
+  return ComplexT<RealDD>(r/sq, i/sq);
 }
 
-qacc ComplexT<Ldouble> operator+(const ComplexT<Ldouble> &a, const ComplexT<Ldouble> &b) {
-  return ComplexT<Ldouble>(a.real() + b.real(), a.imag() + b.imag());
+qacc ComplexT<RealDD> operator+(const ComplexT<RealDD> &a, const ComplexT<RealDD> &b) {
+  return ComplexT<RealDD>(a.real() + b.real(), a.imag() + b.imag());
 }
 
-qacc ComplexT<Ldouble> operator-(const ComplexT<Ldouble> &a, const ComplexT<Ldouble> &b) {
-  return ComplexT<Ldouble>(a.real() - b.real(), a.imag() - b.imag());
+qacc ComplexT<RealDD> operator-(const ComplexT<RealDD> &a, const ComplexT<RealDD> &b) {
+  return ComplexT<RealDD>(a.real() - b.real(), a.imag() - b.imag());
 }
 
-qacc Ldouble qnorm(const ComplexT<Ldouble> &a) {
-  Ldouble sq = a.real() * a.real() + a.imag() * a.imag();
+qacc RealDD qnorm(const ComplexT<RealDD> &a) {
+  RealDD sq = a.real() * a.real() + a.imag() * a.imag();
   return sq;
 }
 
 template <class T>
-qacc ComplexT<Ldouble> qconj(const ComplexT<Ldouble>& x)
+qacc ComplexT<RealDD> qconj(const ComplexT<RealDD>& x)
 {
-  //Ldouble tmp = minus(x.imag());
-  return ComplexT<Ldouble>(x.real(), -x.imag());;
+  //RealDD tmp = minus(x.imag());
+  return ComplexT<RealDD>(x.real(), -x.imag());;
 }
 
 }  // namespace qlat
@@ -375,7 +375,7 @@ namespace std
 {
 
 template<>
-qacc complex<double>& complex<double>::operator=(const complex<qlat::Ldouble>&  __z)
+qacc complex<double>& complex<double>::operator=(const complex<qlat::RealDD>&  __z)
 {
   __real__ _M_value = __z.real();
   __imag__ _M_value = __z.imag();
