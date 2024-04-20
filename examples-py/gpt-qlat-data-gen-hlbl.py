@@ -463,16 +463,17 @@ def run_job_global_hvp_average_for_subtract(job_tag, traj, *, inv_type, get_glb_
     glb_hvp_avg_trajs, glb_hvp_avg = get_glb_hvp_avg()
     glb_hvp_avg_for_sub = glb_hvp_avg.copy()
     if traj not in glb_hvp_avg_trajs:
-        return glb_hvp_avg_for_sub
-    num_trajs = len(glb_hvp_avg_trajs)
-    assert num_trajs > 0
-    if num_trajs == 1:
-        q.displayln_info(-1, f"WARNING: {fname} glb_hvp_avg num_trajs={num_trajs}")
-        return glb_hvp_avg_for_sub
-    hvp_average = get_hvp_average()
-    glb_hvp_avg_for_sub *= num_trajs
-    glb_hvp_avg_for_sub -= hvp_average
-    glb_hvp_avg_for_sub *= 1.0 / (num_trajs - 1.0)
+        q.displayln_info(-1, f"WARNING: {fname} glb_hvp_avg traj={traj} not in glb_hvp_avg_trajs.")
+    else:
+        num_trajs = len(glb_hvp_avg_trajs)
+        assert num_trajs > 0
+        if num_trajs == 1:
+            q.displayln_info(-1, f"WARNING: {fname} glb_hvp_avg num_trajs={num_trajs}")
+        else:
+            hvp_average = get_hvp_average()
+            glb_hvp_avg_for_sub *= num_trajs
+            glb_hvp_avg_for_sub -= hvp_average
+            glb_hvp_avg_for_sub *= 1.0 / (num_trajs - 1.0)
     glb_hvp_avg_for_sub.save_float_from_double(get_save_path(fn))
     q.release_lock()
     q.timer_display()
