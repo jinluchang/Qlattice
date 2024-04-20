@@ -11,6 +11,7 @@ cppsources = files(
   'qcd.cpp',
   'selected-field.cpp',
   'selected-points.cpp',
+  'selected-shuffle.cpp',
   'smear.cpp',
   'utils-io.cpp',
   'utils_Matrix_prod.cpp',

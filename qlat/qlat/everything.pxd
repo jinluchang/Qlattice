@@ -205,7 +205,9 @@ cdef extern from "qlat/selected-field-io.h" namespace "qlat":
     bool is_containing(const FieldSelection& fsel, const PointsSelection& psel) except +
     void intersect_with(FieldSelection& fsel, const FieldSelection& fsel1) except +
     PointsSelection intersect(const FieldSelection& fsel, const PointsSelection& psel) except +
-    #
+
+cdef extern from "qlat/selected-shuffle.h" namespace "qlat":
+
     cdef cppclass SelectedShufflePlan:
         SelectedField[Long] local_shuffle_idx_field
         Long total_send_count;

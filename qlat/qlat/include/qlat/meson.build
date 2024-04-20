@@ -80,6 +80,7 @@ header_files = files(
   'selected-field-io.h',
   'selected-field.h',
   'selected-points.h',
+  'selected-shuffle.h',
   'utils-coordinate.h',
   'utils-io.h',
   'utils.h',
