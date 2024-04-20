@@ -224,7 +224,7 @@ void random_point_src(Propagator4dT<T>& prop, int seed = 0)
     Long index = geo.index_from_coordinate(xl);
     qlat::WilsonMatrixT<T>&  s0 =  prop.get_elem_offset(index);
     for(int d0=0;d0<12;d0++)s0(d0,d0) = 1.0;
-    printf("===set value, node %d, index %ld \n", rank, index );
+    printf("===set value, node %d, index %ld \n", rank, (long)index );
   }
 
 }

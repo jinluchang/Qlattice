@@ -1107,7 +1107,7 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
       const std::vector<InterpolationDim>& dims = interp.dims;
       fprintf(fdims, "# i dims[i].n dims[i].xhigh dims[i].xlow\n");
       for (Long i = 0; i < (Long)dims.size(); ++i) {
-        fprintf(fdims, "%3ld %5d %24.17E %24.17E\n", i, dims[i].n,
+        fprintf(fdims, "%3ld %5d %24.17E %24.17E\n", (long)i, dims[i].n,
                 dims[i].xhigh, dims[i].xlow);
       }
       qfclose(fdims);

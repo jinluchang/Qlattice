@@ -248,8 +248,8 @@ void copy_eo_cs_to_fieldMT(qlat::vector_gpu<Ty >& res, const int civ, const Geom
 {
   TIMER_FLOPS("copy_eo_cs_to_fieldM");
   Qassert(even.initialized and odd.initialized);
-  ////fft_desc_basic& fd = get_fft_desc_basic_plan(res.geo());
-  const bool GPU = even.GPU;
+  // //fft_desc_basic& fd = get_fft_desc_basic_plan(res.geo());
+  // const bool GPU = even.GPU;
   const Long V = geo.local_volume();
   const Long Vh= V/2;
   if(dir == 1){if(Long(res.size()) != civ*V){res.resize(civ * V, QMSYNC);}}

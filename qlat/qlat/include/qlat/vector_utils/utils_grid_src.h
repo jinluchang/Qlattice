@@ -386,10 +386,12 @@ inline void get_grid_psel(PointsSelection& psel, const Coordinate& nv, const Coo
 
   psel.init();
 
-  Long total = 1;
-  for(int i=0;i<4;i++){
-   if(nv[i] < 0 or grid[i] < 0 or nv[i]%grid[i] != 0){print0("Grid offset wrong nv[i] %d, grid[i] %d !\n", nv[i], grid[i]);}
-   total *= grid[i];
+  // Long total = 1;
+  for (int i = 0; i < 4; i++) {
+    if (nv[i] < 0 or grid[i] < 0 or nv[i] % grid[i] != 0) {
+      print0("Grid offset wrong nv[i] %d, grid[i] %d !\n", nv[i], grid[i]);
+    }
+    // total *= grid[i];
   }
 
   Coordinate ini;
