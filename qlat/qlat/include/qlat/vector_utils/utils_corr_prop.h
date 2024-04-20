@@ -428,7 +428,7 @@ void vec_corrE(Ty* srcE, qlat::vector_acc<Ty >& res,qlat::fft_desc_basic &fd,con
   if(clear == 0){if(res.size() != nvec*nt){print0("res size wrong for corr.\n");Qassert(false);}}
 
   qlat::vector_acc<Ty > tmp;tmp.resize(nvec*NTt);qlat::set_zero(tmp);//tmp.set_zero();
-  reduce_vec(src, tmp.data(), Nxyz, nvec*NTt);
+  reduce_vecs(src, tmp.data(), Nxyz, nvec*NTt);
 
   qlat::vector_gpu<Ty > RES;RES.resize(nvec*nt );RES.set_zero();
   Ty* s1 = RES.data();Ty* s0 = tmp.data();

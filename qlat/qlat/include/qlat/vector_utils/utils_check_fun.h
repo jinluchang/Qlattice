@@ -49,7 +49,6 @@ double diff_gauge_GPU( GaugeFieldT<Ta> &g0, GaugeFieldT<Tb> &g1)
   const Geometry& geo = g0.geo();
   const Long V = geo.local_volume();
   qlat::vector_acc<Ta > dL;dL.resize(V);
-  qlat::vector_acc<Ta > dr;dr.resize(1);dr[0] = 0.0;
   qacc_for(index, V, {
     dL[index] = 0.0;
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -63,9 +62,7 @@ double diff_gauge_GPU( GaugeFieldT<Ta> &g0, GaugeFieldT<Tb> &g1)
     }
   });
 
-  reduce_vec(dL.data(), dr.data(), dL.size(), 1, true);
-  sum_all_size(dr.data(), 1);
-  double diff = dr[0];
+  double diff = Reduce(dL.data(), dL.size(), true);
   diff = diff/(g0.geo().local_volume()*4*9*2.0);
   print0("===diff conf %.5e \n",diff);
   return double(diff);
@@ -300,11 +297,8 @@ void get_mom_fft(qlat::FieldM<Ty0, civ> &src, std::vector<int >& mom, std::vecto
 template<typename Ty>
 void print_sum(const Ty* a, size_t size, std::string stmp=std::string(""), int GPU = 1)
 {
-  qlat::vector_acc<Ty > sum;sum.resize(1);sum[0] = 0.0;
-  Ty* pres = sum.data();
-  if(GPU == 1){reduce_vec(a, pres , size, 1);}
-  if(GPU == 0){reduce_cpu(a, pres , size, 1);}
-  print0("%s, sum %.3e \n", stmp.c_str(), qlat::qnorm(sum[0]) );
+  Ty sum = Reduce(a, size, GPU);
+  print0("%s, sum %.3e \n", stmp.c_str(), qlat::qnorm(sum) );
 }
 
 template <typename Ty>

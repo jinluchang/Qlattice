@@ -6,6 +6,12 @@
 
 using namespace qlat;
 
+#if !defined(__QLAT_NO_FLOAT128__)
+#define CFloat __float128
+#else
+#define CFloat double
+#endif
+
 void simple_tests()
 {
   const Coordinate total_site(4, 4, 4, 8);
@@ -17,8 +23,8 @@ void simple_tests()
     double a = (1 - 2 * int(qlat::u_rand_gen(rs)*2)) * qlat::u_rand_gen(rs) * (std::pow(10, int(qlat::u_rand_gen(rs)*10)));
     double b = (1 - 2 * int(qlat::u_rand_gen(rs)*2)) * qlat::u_rand_gen(rs) * (std::pow(10, int(qlat::u_rand_gen(rs)*10)));
 
-    __float128 a128 = a;
-    __float128 b128 = b;
+    CFloat a128 = a;
+    CFloat b128 = b;
     displayln_info(ssprintf("CHECK: a   %+.8e, b %+.8e \n", a, b));
     const int Ncase = 8;
     qlat::vector_acc<double > ld;ld.resize(4);
@@ -89,7 +95,7 @@ void simple_tests()
         }
       });
 
-      __float128 z128;
+      CFloat z128;
       std::string ss = "CHECK: ";
       if(casei == 0){ss += "add ";z128 = a128 + b128;}
       if(casei == 1){ss += "sub ";z128 = a128 - b128;}
@@ -100,7 +106,7 @@ void simple_tests()
       if(casei == 6){ss += "cos ";z128 = qcos(double(a128 + b128));}
       if(casei == 7){ss += "acos";z128 = qacos(qsin(double(a128 + b128)));}
       double rety = (double) z128;
-      double retx = (double)(z128-(__float128)rety);
+      double retx = (double)(z128-(CFloat)rety);
       ld[2] = rety;
       ld[3] = retx;
       qlat::vector_acc<double >& l = ld;
@@ -118,13 +124,13 @@ void simple_tests()
     double b0 = (1 - 2 * int(qlat::u_rand_gen(rs)*2)) * qlat::u_rand_gen(rs) * (std::pow(10, int(qlat::u_rand_gen(rs)*10)));
     double b1 = (1 - 2 * int(qlat::u_rand_gen(rs)*2)) * qlat::u_rand_gen(rs) * (std::pow(10, int(qlat::u_rand_gen(rs)*10)));
 
-    std::complex<__float128 > aC(a0, a1);//(a0, b1);
-    std::complex<__float128 > bC(b0, b1);//(a0, b1);
+    std::complex<CFloat > aC(a0, a1);//(a0, b1);
+    std::complex<CFloat > bC(b0, b1);//(a0, b1);
     ComplexT<RealDD > adC(a0, a1);//(a0, b1);
     ComplexT<RealDD > bdC(b0, b1);//(a0, b1);
 
     ComplexT<RealDD > zdC;
-    //std::complex<__float128 > zC;
+    //std::complex<CFloat > zC;
     //zC  = aC  / bC;
     zdC = adC / bdC;
     zdC = adC * ComplexT<RealDD>(1.0, 0.0);
@@ -181,23 +187,23 @@ void simple_tests()
         }
       });
 
-      std::complex<__float128 > zC;
+      std::complex<CFloat > zC;
       std::string ss = "CHECK: ";
       if(casei == 0){ss += "add ";zC = aC + bC;}
       if(casei == 1){ss += "sub ";zC = aC - bC;}
       if(casei == 2){ss += "mul ";zC = aC * bC;}
       if(casei == 3){ss += "div ";zC = aC / bC;}
       if(casei == 4){ss += "nor ";zC = aC.real() * aC.real() + aC.imag() * aC.imag();}
-      __float128 zt;
+      CFloat zt;
       zt = zC.real();
       double rety = (double) zt;
-      double retx = (double)(zt-(__float128)rety);
+      double retx = (double)(zt-(CFloat)rety);
       ld[4] = rety;
       ld[5] = retx;
 
       zt = zC.imag();
              rety = (double) zt;
-             retx = (double)(zt-(__float128)rety);
+             retx = (double)(zt-(CFloat)rety);
       ld[6] = rety;
       ld[7] = retx;
       qlat::vector_acc<double >& l = ld;

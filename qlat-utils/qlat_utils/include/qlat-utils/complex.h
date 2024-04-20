@@ -320,7 +320,6 @@ qacc RealDD qacos(RealDD a)
   z.Y() = std::acos(y);
   z.X() = -1.0 * (1.0/std::sqrt(1.0 - y*y))*x;
   return z;
-  ////__float128 x = copy_to_float128(a);
   //return std::acos(y);
 }
 

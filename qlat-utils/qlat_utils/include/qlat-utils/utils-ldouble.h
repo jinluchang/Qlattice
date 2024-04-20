@@ -35,12 +35,14 @@ class API RealDD{
   qacc RealDD(const double& a){y = a;        x = 0;}
   qacc RealDD(const float&  a){y = a;        x = 0;}
   qacc RealDD(const RealDD&  a){x = a.x;y = a.y;}
+  #if !defined(__QLAT_NO_FLOAT128__)
   inline RealDD(const __float128&  a){
     double rety = (double) a;
     double retx = (double)(a-(__float128)rety);
     y = rety;
     x = retx;
   }
+  #endif
 
   qacc const RealDD& operator= (const RealDD& a)
   {
@@ -222,7 +224,7 @@ qacc RealDD operator-(RealDD a, RealDD b)
 /* Take full advantage of FMA. Only 8 DP operations */
 qacc double __Fma_rn(double x, double y, double z)
 {
-  #ifndef __CUDA_ARCH__
+  #if !defined(__CUDA_ARCH__) && !defined(__HIP_ARCH__)
   return fma(x , y , z);
   #else
   return __fma_rn(x, y, z);
@@ -231,7 +233,7 @@ qacc double __Fma_rn(double x, double y, double z)
 
 qacc double __Dmul_rn(double x, double y)
 {
-  #ifndef __CUDA_ARCH__
+  #if !defined(__CUDA_ARCH__) && !defined(__HIP_ARCH__)
   return fmul(x , y);
   #else
   return __dmul_rn(x, y);
@@ -278,7 +280,7 @@ qacc RealDD RealDD::operator+=(RealDD b)
 qacc RealDD RealDD::operator*=(RealDD b)
 {
   RealDD& a = *this;
-  #ifndef __CUDA_ARCH__
+  #if !defined(__CUDA_ARCH__) && !defined(__HIP_ARCH__) && !defined(__QLAT_NO_FLOAT128__)
   //on CPU with __float128
   __float128 a128 = copy_to_float128(a);
   __float128 b128 = copy_to_float128(b);
@@ -353,7 +355,7 @@ qacc RealDD  operator* (RealDD x, RealDD y)
 qacc RealDD RealDD::operator/= (RealDD b)
 {
   RealDD& a = *this; 
-  #ifndef __CUDA_ARCH__
+  #if !defined(__CUDA_ARCH__) && !defined(__HIP_ARCH__) && !defined(__QLAT_NO_FLOAT128__)
   //on CPU with __float128
   __float128 a128 = copy_to_float128(a);
   __float128 b128 = copy_to_float128(b);
@@ -432,7 +434,7 @@ qacc RealDD operator/ (RealDD a, RealDD b)
 
 qacc RealDD sqrtT (const RealDD a)
 {
-  #ifndef __CUDA_ARCH__
+  #if !defined(__CUDA_ARCH__) && !defined(__HIP_ARCH__) && !defined(__QLAT_NO_FLOAT128__)
   //on CPU with __float128
   __float128 a128 = copy_to_float128(a);
   a128 = sqrtq(a128);

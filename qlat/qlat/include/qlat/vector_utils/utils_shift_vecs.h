@@ -138,7 +138,9 @@ struct shift_vec{
   template<typename Ta>
   void set_gauge(Ta* gauge_, int gbfac_, int gd0_, bool Conj_=false, bool src_gauge_ = false)
   { 
-    const int cur = Is_data_double<Ta>();
+    using D = typename IsBasicDataType<Ta>::ElementaryType;
+    const int cur = get_data_type_is_Double<D>();
+    //const int cur = Is_data_double<Ta>();
     //DATA_TYPE cur = get_data_type<Ta>();
     if(cur == 0 or cur == 1){
       gauge_is_double = cur;

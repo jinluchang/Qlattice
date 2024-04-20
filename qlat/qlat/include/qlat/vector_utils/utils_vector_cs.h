@@ -772,7 +772,7 @@ struct vector_cs{
   }
 
   template <typename Tf >
-  Ty reduce_vecs(int ia, Ty** s1 = NULL)
+  Ty reduceT(int ia, Ty** s1 = NULL)
   {
     Qassert(initialized);
     bool GPU_set = true;if(GPU == 0){GPU_set = false;}
@@ -807,32 +807,37 @@ struct vector_cs{
         });
       }
     }
+
+    //reduce double / float
+    Ty rsum = 0.0;
+    if(s1 == NULL){
+      rsum = Reduce((Tf*) r,   size, GPU_set);
+    }
+    if(s1 != NULL){
+      rsum = Reduce((Ty*) r,   size, GPU_set);
+    }
+
     ////Ty rsum = 0;Ty rre = 0;
-    qlat::vector_acc<Ty > rsum;rsum.resize(2);rsum[0] = 0.0;
+    //qlat::vector_acc<Ty > rsum;rsum.resize(2);rsum[0] = 0.0;
 
     //{
     //print_numbers((Ty*) &r[0], 10, GPU_set);
     //}
 
-    {
-    //TIMERA("norm2_vec reduce");
-    if(s1 == NULL)reduce_vec(r, (Tf*) &rsum[0],   size, 1, GPU_set);
-    if(s1 != NULL)reduce_vec(r, (Tf*) &rsum[0], 2*size, 1, GPU_set);
-    }
     //{
     ////TIMERA("norm2_vec reduce");
-    //if(s1 == NULL)reduce_vec(r, (Tf*) &rsum[0],   10, 1, GPU_set);
-    //if(s1 != NULL)reduce_vec(r, (Tf*) &rsum[0], 2*10, 1, GPU_set);
+    //if(s1 == NULL)reduce_vecs(r, (Tf*) rsum.data(),   size, 1, GPU_set);
+    //if(s1 != NULL)reduce_vecs(r, (Tf*) rsum.data(), 2*size, 1, GPU_set);
     //}
 
-    //print0("check sum %.8e %.8e \n",  rsum[0].real(), rsum[0].imag() );
-    ////fflush_MPI();
-    {
-    TIMERA("norm2_vec global sum");
-    if(s1 == NULL)sum_all_size( (Tf*) rsum.data(), 1, true );
-    if(s1 != NULL)sum_all_size( (Ty*) rsum.data(), 1, true );
-    }
-    return rsum[0];
+    ////print0("check sum %.8e %.8e \n",  rsum[0].real(), rsum[0].imag() );
+    //////fflush_MPI();
+    //{
+    //TIMERA("norm2_vec global sum");
+    //if(s1 == NULL)sum_all_size( (Tf*) rsum.data(), 1, true );
+    //if(s1 != NULL)sum_all_size( (Ty*) rsum.data(), 1, true );
+    //}
+    return rsum;
   }
 
   ////norm2, ===added
@@ -841,7 +846,7 @@ struct vector_cs{
     TIMERA("vector_cs norm2_vec");
 
     using D = typename IsBasicDataType<Ty>::ElementaryType;
-    return reduce_vecs<D >(ia);
+    return reduceT<D >(ia);
   }
 
   inline void print_norm2(int ic = -1)
@@ -1004,12 +1009,8 @@ struct vector_cs{
     Qassert(b.GPU ==   GPU and b.nsum ==   nsum and b.b_size ==   b_size);
 
     Ty** s1 = b.get_pointers(ib);
-    //return reduce_vecs<Ty >(ia, s1);
-    //bool is_double = get_data_type_is_double<Ty >();
-    //if( is_double){return reduce_vecs<double >(ia, s1);}
-    //if(!is_double){return reduce_vecs<float  >(ia, s1);}
     using D = typename IsBasicDataType<Ty>::ElementaryType;
-    return reduce_vecs<D >(ia);
+    return reduceT<D >(ia, s1);
     //return 0.0;
   }
 

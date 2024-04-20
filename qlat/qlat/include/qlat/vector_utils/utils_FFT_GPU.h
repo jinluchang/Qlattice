@@ -166,6 +166,10 @@ template<typename Ty>
 void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_t > MPI_para_set)
 {
   TIMERB("FFT_Vecs Set up plan");
+
+  using ElementaryType = typename IsBasicDataType<Ty >::ElementaryType ;
+  Qassert(sizeof(Ty) == sizeof(ElementaryType) * 2);
+
   Qassert(nv_set.size()!=0 and civ_set > 0);
   ///Qassert(nv_set.size()!=0 and biva_set>0 and civ_set > 0);
   int do_clear = 0;
@@ -817,7 +821,7 @@ struct fft_gpu_copy{
   std::string prec;
   bool is_copy;  // do not free memory if is_copy=true
 
-  fft_gpu_copy(){fftP = NULL;is_copy = false;prec = "ComplexD";}
+  fft_gpu_copy(){fftP = NULL;is_copy = false;prec = "RealD";}
   fft_gpu_copy(const fft_gpu_copy& fft) 
   {
     #ifndef QLAT_USE_ACC
@@ -858,8 +862,8 @@ struct fft_gpu_copy{
     int civ  = fft.fftP->civ;
     std::vector<int > dimN = fft.fftP->dimN;
 
-    if(prec == "ComplexD" ){     fftP->set_mem<ComplexD  >(nvec, civ, dimN, -1 );}
-    else if(prec == "ComplexF"){fftP->set_mem<ComplexF >(nvec, civ, dimN, -1 );}
+    if(prec == "RealD" ){     fftP->set_mem<ComplexD  >(nvec, civ, dimN, -1 );}
+    else if(prec == "RealF"){fftP->set_mem<ComplexF >(nvec, civ, dimN, -1 );}
     else{print0("Only ComplexD and ComplexF supported for fft on GPU! \n");Qassert(false);}
     ///fft.fftP->print_info();
     ///fftP->print_info();
@@ -916,8 +920,8 @@ inline fft_gpu_copy make_fft_gpu_plan(const Geometry& geo, int nvec, int civ , b
   ft.fftP = new fft_schedule(fd, GPU);
   ft.prec = prec;
 
-  if(prec == "ComplexD" ){     ft.fftP->set_mem<ComplexD  >(nvec, civ, dimN, -1 );}
-  else if(prec == "ComplexF"){ft.fftP->set_mem<ComplexF >(nvec, civ, dimN, -1 );}
+  if(prec == "RealD" ){     ft.fftP->set_mem<ComplexD  >(nvec, civ, dimN, -1 );}
+  else if(prec == "RealF"){ft.fftP->set_mem<ComplexF >(nvec, civ, dimN, -1 );}
   else{print0("Only ComplexD and ComplexF supported for fft on GPU! \n");Qassert(false);}
   ft.fftP->print_info();
 
@@ -961,8 +965,10 @@ inline FFTGPUPlanKey get_fft_gpu_plan_key(std::vector<qlat::FieldM<Ty, civ> >& s
   fkey.nvec = src.size();
   fkey.civ = civ;
   //fkey.prec = get_data_type<Ty >();
-  fkey.prec = IsBasicDataType<Ty >::get_type_name();
-  qassert(fkey.prec == "ComplexF" or fkey.prec == "ComplexD");
+  using ElementaryType = typename IsBasicDataType<Ty >::ElementaryType ;
+  fkey.prec = IsBasicDataType<ElementaryType >::get_type_name();
+  //fkey.prec = IsBasicDataType<Ty >::get_type_name();
+  qassert(fkey.prec == "RealF" or fkey.prec == "RealD");
 
   fkey.fft4D = fft4d;
   return fkey;
@@ -1006,8 +1012,10 @@ void fft_fieldM(std::vector<Ty* >& data, int civ, const Geometry& geo, bool fftd
   fkey.nvec = data.size();
   fkey.civ = civ;
   //fkey.prec = get_data_type<Ty >();
-  fkey.prec = IsBasicDataType<Ty >::get_type_name();
-  qassert(fkey.prec == "ComplexF" or fkey.prec == "ComplexD");
+  using ElementaryType = typename IsBasicDataType<Ty >::ElementaryType ;
+  fkey.prec = IsBasicDataType<ElementaryType >::get_type_name();
+  //fkey.prec = IsBasicDataType<Ty >::get_type_name();
+  qassert(fkey.prec == "RealF" or fkey.prec == "RealD");
 
   fkey.fft4D = fft4d;
   ////std::vector<Ty* > data;data.resize(nvec);
@@ -1066,10 +1074,10 @@ void fft_fieldM(std::vector<Handle<qlat::Field<M> > >& src, bool fftdir=true, bo
   //if( is_double){prec = ComplexD_TYPE ; civ = geo.multiplicity * sizeof(M)/sizeof(ComplexD ); }
   //if(!is_double){prec = ComplexF_TYPE; civ = geo.multiplicity * sizeof(M)/sizeof(ComplexF); }
 
-  std::string prec = IsBasicDataType<M >::get_type_name();
   using ElementaryType = typename IsBasicDataType<M >::ElementaryType ;
-  int civ = geo.multiplicity * sizeof(M)/sizeof( ElementaryType );
-  qassert(prec == "ComplexF" or prec == "ComplexD");
+  std::string prec = IsBasicDataType<ElementaryType >::get_type_name();
+  int civ = geo.multiplicity * sizeof(M)/( 2 *sizeof( ElementaryType ) );
+  qassert(prec == "RealF" or prec == "RealD");
 
   int nfft = src.size() * civ;
   bool use_qlat = check_fft_mode(nfft, geo, fft4d);

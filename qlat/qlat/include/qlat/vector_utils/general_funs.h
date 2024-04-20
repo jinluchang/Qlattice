@@ -1146,22 +1146,20 @@ inline Ty vec_norm2(Ty* s0, Ty* s1, Long Ndata, QMEM GPU = QMGPU, const Long Ngr
 
 
   qlat::vector_acc<Ty > rsum;rsum.resize(1);rsum[0] = 0.0;
-  reduce_vec(buf, rsum.data(), Nvol, 1, GPU);
-  sum_all_size( (Ty*) rsum.data(), 1, true );
+  reduce_vecs(buf, rsum.data(), Ndata, 1, GPU);
+  sum_all_size( (Ty*) rsum.data(), 1, 0 );
   return rsum[0];
 }
 
-template<typename Ty>
-inline Ty reduce_norm2(Ty* buf, Long Ndata, QMEM GPU = QMGPU)
+template<typename Ty, typename Int>
+inline Ty Reduce(Ty* buf, Int Ndata, int GPU = 1)
 {
-  TIMERB("vec_norm2 reduce");
-
+  TIMERB("Reduce");
   qlat::vector_acc<Ty > rsum;rsum.resize(1);rsum[0] = 0.0;
-  reduce_vec(buf, &rsum[0], Ndata, 1, GPU);
-  sum_all_size( (Ty*) rsum.data(), 1, true );
+  reduce_vecs(buf, rsum.data(), Ndata, 1, GPU);
+  sum_all_size( (Ty*) rsum.data(), 1, 0 );
   return rsum[0];
 }
-
 
 template<typename Ty>
 std::vector<Long > get_sort_index(Ty* src, Long size)

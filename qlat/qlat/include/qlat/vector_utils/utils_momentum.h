@@ -587,7 +587,7 @@ void fft_local_to_global(qlat::vector_gpu<Ty >& FG, qlat::vector_gpu<Ty >& FL, m
     }
   });
 
-  sum_all_size(FG.data(), FG.size(), 1);
+  sum_all_size(FG.data(), FG.size(), FG.GPU);
 }
 
 

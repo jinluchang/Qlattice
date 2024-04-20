@@ -97,7 +97,7 @@ inline void reduce_T_global6(const Ty* src,Ty* res,const Long n, const int nv,Lo
 #endif
 
 template<typename Ty>
-void reduce_cpu(const Ty *src,Ty &res,const Long n, bool clear){
+void reduce_cpu(const Ty *src,Ty &res,const Long n){
   //#pragma omp parallel for reduction(+: res)
   //for(unsigned long index=0;index<n;index++){
   //  res += src[index];
@@ -108,8 +108,7 @@ void reduce_cpu(const Ty *src,Ty &res,const Long n, bool clear){
   if(n < 10*Nv)Nv=1;
   //int Nv = 1;
   if(Nv == 1){
-  if( clear){for(Long index=0;index<n;index++){res  = src[index];}}
-  if(!clear){for(Long index=0;index<n;index++){res += src[index];}}
+    for(Long index=0;index<n;index++){res += src[index];}
   }
   else{
     ////print0("====Reduce omp \n");
@@ -132,8 +131,7 @@ void reduce_cpu(const Ty *src,Ty &res,const Long n, bool clear){
     //for(unsigned long index=0;index<n;index++){
     //  buf[omp_get_thread_num()] += src[index];
     //}
-    if(!clear){for(int iv=0;iv<Nv;iv++){res += buf[iv];}}
-    if( clear){for(int iv=0;iv<Nv;iv++){res  = buf[iv];}}
+    for(int iv=0;iv<Nv;iv++){res += buf[iv];}
   }
 }
 
@@ -228,9 +226,9 @@ inline unsigned long reduce_T(const Ty *src,Ty *res,const unsigned long n,const 
 }
 
 template<typename Ty>
-void reduce_cpu(const Ty* src,Ty* res,Long n, int nv, bool clear)
+void reduce_cpu(const Ty* src,Ty* res,Long n, int nv)
 {
-  for(Long i=0;i<nv;i++){reduce_cpu(&src[i*n], res[i],n, clear);}
+  for(Long i=0;i<nv;i++){reduce_cpu(&src[i*n], res[i],n);}
 }
 
 template<typename Ty>
@@ -249,7 +247,7 @@ inline void reduce_gpu(const Ty *src,Ty *res,const Long n,const int nv=1,
   Ty *psrc;Ty *pres;Ty *tem;
   Long Nres;
 
-  qlat::vector_acc<Ty > buf0,buf1;
+  qlat::vector<Ty > buf0,buf1;
   buf0.resize(nv*Ny);
   pres = &buf0[0];
   Nres = reduce_T(src,pres, n, nv, Ld);
@@ -274,15 +272,15 @@ inline void reduce_gpu(const Ty *src,Ty *res,const Long n,const int nv=1,
 
 
 template<typename Ty>
-void reduce_vec(const Ty* src, Ty* res,Long n, int nv=1, int GPU = 1, bool clear = false)
+void reduce_vecs(const Ty* src, Ty* res, const Long n, const int nv, int GPU = 1)
 {
   TIMERA("reduce_vec");
   if(GPU == 0){
-    reduce_cpu(src, res, n , nv, clear);
+    reduce_cpu(src, res, n , nv);
   }
   if(GPU != 0){
   #ifndef QLAT_USE_ACC
-  reduce_cpu(src, res, n , nv, clear);
+  reduce_cpu(src, res, n , nv);
   return ;
   #else
   int thread_pow2 = 1;
@@ -302,8 +300,7 @@ void reduce_vec(const Ty* src, Ty* res,Long n, int nv=1, int GPU = 1, bool clear
   //print0("====cores %8d, maxthreads %8d, maxblock %8d \n",cores,maxthreads,maxblock);
   //if(blockS_use > maxblock)blockS_use = maxblock;
   //#endif
-  if( clear)reduce_gpu2d_6<Ty, 1>(src, res, n, nv, thread_pow2,divide, fac);
-  if(!clear)reduce_gpu2d_6<Ty, 0>(src, res, n, nv, thread_pow2,divide, fac);
+  reduce_gpu2d_6<Ty, false>(src, res, n, nv, thread_pow2,divide, fac);
   #endif
   }
 

@@ -65,7 +65,8 @@ int main(int argc, char* argv[])
   fflush_MPI();
   print_mem_info();
 
-  for(int nx=int(nxi/4);nx<=nxi;nx = nx + int(nxi/4)){
+  for(int nx=int(nxi/4);nx<=nxi;nx = nx + int(nxi/4))
+  {
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
   Geometry geo;
   geo.init(total_site, 1); 

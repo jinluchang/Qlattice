@@ -258,7 +258,7 @@ void seq_high_single(qpropT& src, qpropT& sinkH, qpropT& noiseH, const std::vect
         r0[(dc1*12 + dc2)*Nxyz] = buf;
       }
     });
-    reduce_vec(buf_vec.data(), sum_d[hosti].data(), buf_vec.size()/(12*12), 12*12);
+    reduce_vecs(buf_vec.data(), sum_d[hosti].data(), buf_vec.size()/(12*12), 12*12);
   }
 
   sec.bcast_sink_vecs(sum_d, sinkt);
