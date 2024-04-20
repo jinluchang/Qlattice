@@ -4,13 +4,17 @@ source qcore/conf.sh
 
 (
 
+echo "Update cqlat export."
+
 cd "$wd/qlat/cqlat"
 
 bash update.sh
 
-) || echo "Run update.sh not successful."
+) || echo "Update cqlat export not successful."
 
 (
+
+echo "Update version."
 
 version="$(cat VERSION)"
 version=${version#v}
@@ -28,6 +32,21 @@ echo "Version info updated."
 ) || echo "Update version not successful."
 
 (
+
+echo "Update 'depend-qlat/meson.build'."
+
+for dir in $(find qlat* examples-* -type d -name depend-qlat) ; do
+    fn="$dir/meson.build"
+    if [ -f "$fn" ] ; then
+        cp -pv qlat-cps/depend-qlat/meson.build "$fn"
+    fi
+done
+
+) || echo "Update 'depend-qlat/meson.build' not successful"
+
+(
+
+echo "Update 'sha256sums.txt'."
 
 mkdir -p "$distfiles"
 
@@ -50,4 +69,4 @@ done | sort >> sha256sums.txt
 
 cat sha256sums.txt
 
-) || echo "Update sha256sums.txt not successful."
+) || echo "Update 'sha256sums.txt' not successful."

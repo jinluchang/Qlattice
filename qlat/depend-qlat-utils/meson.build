@@ -26,6 +26,8 @@ else
   qlat_utils_eigen = dependency('eigen3').as_system()
 endif
 
+qlat_utils_quadmath = qlat_utils_cpp.find_library('quadmath', has_headers: 'quadmath.h', required: false)
+
 qlat_utils_include = run_command(qlat_utils_py3, '-c', 'import qlat_utils as q ; print("\\n".join(q.get_include_list()))',
   env: environment({'q_verbose': '-1'}),
   check: true).stdout().strip().split('\n')
@@ -53,5 +55,5 @@ qlat_utils = declare_dependency(
   dependencies: [
     qlat_utils_py3.dependency().as_system(),
     qlat_utils_cpp.find_library('qlat-utils', dirs: qlat_utils_lib),
-    qlat_utils_numpy, qlat_utils_eigen, qlat_utils_omp, qlat_utils_zlib, qlat_utils_math, ],
+    qlat_utils_numpy, qlat_utils_eigen, qlat_utils_omp, qlat_utils_zlib, qlat_utils_quadmath, qlat_utils_math, ],
   )

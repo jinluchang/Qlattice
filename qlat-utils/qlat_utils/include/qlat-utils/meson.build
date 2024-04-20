@@ -22,6 +22,12 @@ elif cpp.check_header('Grid/Eigen/Eigen', dependencies: deps)
   conf_data.set('QLAT_USE_GRID_EIGEN', true)
 endif
 
+if quadmath.found()
+  conf_data.set('__QLAT_NO_FLOAT128__', false)
+else
+  conf_data.set('__QLAT_NO_FLOAT128__', true)
+endif
+
 conf_data.set('NPY_NO_DEPRECATED_API', 'NPY_1_7_API_VERSION')
 
 # conf_data.set('_GLIBCXX_DEBUG', true)

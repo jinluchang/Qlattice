@@ -41,7 +41,9 @@ else
   eigen = dependency('eigen3').as_system()
 endif
 
-deps = [ py3.dependency().as_system(), numpy, eigen, omp, zlib, math, ]
+quadmath = cpp.find_library('quadmath', has_headers: 'quadmath.h', required: false)
+
+deps = [ py3.dependency().as_system(), numpy, eigen, omp, zlib, math, quadmath, ]
 
 subdir('qlat_utils')
 subdir('bin')

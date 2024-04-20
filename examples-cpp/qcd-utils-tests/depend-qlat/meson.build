@@ -16,7 +16,7 @@ qlat_fftw_all = [ qlat_fftw, qlat_fftwf, ]
 qlat_cuba = qlat_cpp.find_library('cuba', required: false)
 qlat_gsl = dependency('gsl').as_system()
 
-qlat_quadmath = qlat_cpp.find_library('quadmath', required: true)
+qlat_quadmath = qlat_cpp.find_library('quadmath', has_headers: 'quadmath.h', required: false)
 
 qlat_math = qlat_cpp.find_library('m')
 

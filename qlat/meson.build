@@ -43,9 +43,7 @@ fftw_all = [ fftw, fftwf, ]
 cuba = cpp.find_library('cuba', required: false)
 gsl = dependency('gsl').as_system()
 
-quadmath = cpp.find_library('quadmath', required: true)
-
-deps = [ qlat_utils, mpic, fftw_all, cuba, gsl, quadmath, ]
+deps = [ qlat_utils, mpic, fftw_all, cuba, gsl, ]
 
 py3.install_sources('qlat_gpt.py')
 
