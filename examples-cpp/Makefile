@@ -47,8 +47,8 @@ run-proj: compile-proj
 	-time meson compile -C build run
 	-cat build/log | grep '^CHECK: \|^INFO: ' >build/log.txt
 	-cat build/log.txt | grep '^CHECK: ' >build/log.check.txt.new
-	-cat log.txt | grep '^CHECK: ' >build/log.check.txt
-	-if diff build/log.check.txt build/log.check.txt.new ; then cat build/log.full ; else echo passed ; fi
+	-cat log | grep '^CHECK: ' >build/log.check.txt
+	-if diff build/log.check.txt build/log.check.txt.new ; then echo passed ; else cat build/log.full ; fi
 	-rm -rfv log
 	-touch log
 	-cp build/log.txt log
