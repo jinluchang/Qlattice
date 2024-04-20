@@ -97,7 +97,7 @@ void simple_tests()
 
       CFloat z128;
       std::string ss = "CHECK: ";
-      std::string ssi = "INFO: ";
+      std::string ssi = "CHECK: ";
       if(casei == 0){ss += "add ";z128 = a128 + b128;}
       if(casei == 1){ss += "sub ";z128 = a128 - b128;}
       if(casei == 2){ss += "mul ";z128 = a128 * b128;}
@@ -196,7 +196,7 @@ void simple_tests()
 
       std::complex<CFloat > zC;
       std::string ss = "CHECK: ";
-      std::string ssi = "INFO: ";
+      std::string ssi = "CHECK: ";
       if(casei == 0){ss += "add ";zC = aC + bC;}
       if(casei == 1){ss += "sub ";zC = aC - bC;}
       if(casei == 2){ss += "mul ";zC = aC * bC;}
