@@ -117,7 +117,7 @@ void simple_tests()
       if(qlat::get_id_node() == 0){
         printf("%+.8e, %+.8e, float128 %+.8e, %+.8e, diff %+.8e, %+.8e \n", l[0], l[1], l[2], l[3], l[0]-l[2], l[1]-l[3]);
       }
-      ss += ssprintf("%+.5e, double %+.5e \n", l[0], l[2]);
+      ss += ssprintf("%+.8e %+.8e, double %+.5e \n", l[0], l[1], l[2]);
       displayln_info(ss);
     }
   }
@@ -217,7 +217,7 @@ void simple_tests()
       }
       //ss += ssprintf("%+.5e %+.5e, %+.5e %+.5e; "    , l[0], l[1], l[2], l[3]);
       //ss += ssprintf("float128 %+.5e %+.5e, %+.5e %+.5e "    , l[4], l[5], l[6], l[7]);
-      ss += ssprintf("%+.5e , %+.5e; "    , l[0], l[2]);
+      ss += ssprintf("%+.5e %+.5e, %+.5e %+.5e; "    , l[0], l[1], l[2], l[3]);
       ss += ssprintf("double %+.5e, %+.5e "    , l[4], l[6]);
       displayln_info(ss);
     }
