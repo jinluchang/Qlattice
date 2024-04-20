@@ -97,6 +97,7 @@ void simple_tests()
 
       CFloat z128;
       std::string ss = "CHECK: ";
+      std::string ssi = "INFO: ";
       if(casei == 0){ss += "add ";z128 = a128 + b128;}
       if(casei == 1){ss += "sub ";z128 = a128 - b128;}
       if(casei == 2){ss += "mul ";z128 = a128 * b128;}
@@ -117,8 +118,10 @@ void simple_tests()
       if(qlat::get_id_node() == 0){
         printf("%+.8e, %+.8e, float128 %+.8e, %+.8e, diff %+.8e, %+.8e \n", l[0], l[1], l[2], l[3], l[0]-l[2], l[1]-l[3]);
       }
-      ss += ssprintf("%+.8e %+.8e, double %+.5e \n", l[0], l[1], l[2]);
+      ssi += ssprintf("%+.8e %+.8e", l[0], l[1]);
+      ss += ssprintf("double %+.5e", l[2]);
       displayln_info(ss);
+      displayln_info(ssi);
     }
   }
 
@@ -193,6 +196,7 @@ void simple_tests()
 
       std::complex<CFloat > zC;
       std::string ss = "CHECK: ";
+      std::string ssi = "INFO: ";
       if(casei == 0){ss += "add ";zC = aC + bC;}
       if(casei == 1){ss += "sub ";zC = aC - bC;}
       if(casei == 2){ss += "mul ";zC = aC * bC;}
@@ -217,9 +221,10 @@ void simple_tests()
       }
       //ss += ssprintf("%+.5e %+.5e, %+.5e %+.5e; "    , l[0], l[1], l[2], l[3]);
       //ss += ssprintf("float128 %+.5e %+.5e, %+.5e %+.5e "    , l[4], l[5], l[6], l[7]);
-      ss += ssprintf("%+.5e %+.5e, %+.5e %+.5e; "    , l[0], l[1], l[2], l[3]);
-      ss += ssprintf("double %+.5e, %+.5e "    , l[4], l[6]);
+      ssi += ssprintf("%+.5e %+.5e, %+.5e %+.5e"    , l[0], l[1], l[2], l[3]);
+      ss += ssprintf("double %+.5e, %+.5e"    , l[4], l[6]);
       displayln_info(ss);
+      displayln_info(ssi);
     }
   }
 

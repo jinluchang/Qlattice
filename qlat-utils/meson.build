@@ -43,6 +43,10 @@ endif
 
 quadmath = cpp.find_library('quadmath', has_headers: 'quadmath.h', required: false)
 
+if not quadmath.found()
+  message('quadmath is not found.')
+endif
+
 deps = [ py3.dependency().as_system(), numpy, eigen, omp, zlib, math, quadmath, ]
 
 subdir('qlat_utils')
