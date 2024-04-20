@@ -5,7 +5,7 @@ from .utils import *
 from .data import *
 
 def mk_data_set(*, n_jk=10, n_ops=4, n_energies=4, t_size=4, sigma=0.1, rng=None):
-    """
+    r"""
     return param_arr, jk_corr_data, corr_data_sigma
     #
     energies[ei] is float
@@ -124,7 +124,7 @@ def mk_fcn(
         is_atw=False, atw_t_start_arr=None, atw_factor_arr=None,
         energy_minimum_arr=None, free_energy_idx_arr=None,
         ):
-    """
+    r"""
     Shape of inputs and parameters are like:
     corr_data.shape == (n_ops, n_ops, t_size,)
     corr_data_sigma.shape == (n_ops, n_ops, t_size,)
@@ -422,7 +422,7 @@ def fit_energy_amplitude(jk_corr_data,
                          rng_seed_list=None,
                          mp_pool=None,
                          ):
-    """
+    r"""
     return res
     #
     res['jk_chisq'] = jk_chisq
