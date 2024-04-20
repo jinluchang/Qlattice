@@ -18,8 +18,8 @@
 //#include <fenv.h>
 //#include <math.h>
 
-#include <float.h>
-#include <math.h>
+#include <cfloat>
+#include <cmath>
 
 namespace qlat
 {
@@ -238,7 +238,7 @@ qacc RealDD operator-(RealDD a, RealDD b)
 qacc double __Fma_rn(double x, double y, double z)
 {
   #if !defined(__CUDA_ARCH__) && !defined(__HIP_ARCH__)
-  return fma(x , y , z);
+  return std::fma(x , y , z);
   #else
   return __fma_rn(x, y, z);
   #endif
@@ -246,11 +246,11 @@ qacc double __Fma_rn(double x, double y, double z)
 
 qacc double __Dmul_rn(double x, double y)
 {
-  #if !defined(__CUDA_ARCH__) && !defined(__HIP_ARCH__)
-  return fmul(x , y);
-  #else
+#if !defined(__CUDA_ARCH__) && !defined(__HIP_ARCH__)
+  return x * y;
+#else
   return __dmul_rn(x, y);
-  #endif
+#endif
 }
 
 qacc RealDD RealDD::operator+=(RealDD b)
@@ -293,8 +293,7 @@ qacc RealDD RealDD::operator+=(RealDD b)
 qacc RealDD RealDD::operator*=(RealDD b)
 {
   RealDD& a = *this;
-#if !defined(__CUDA_ARCH__) && !defined(__HIP_ARCH__)
-#if !defined(__QLAT_NO_FLOAT128__)
+#if !defined(__CUDA_ARCH__) && !defined(__HIP_ARCH__) && !defined(__QLAT_NO_FLOAT128__)
   //on CPU with __float128
   __float128 a128 = copy_to_float128(a);
   __float128 b128 = copy_to_float128(b);
@@ -302,10 +301,6 @@ qacc RealDD RealDD::operator*=(RealDD b)
   z128 = a128 * b128;
   *this = z128;
   return a;
-#else
-  y *= b.y;
-  return a;
-#endif
 #else
   double e;
   RealDD t;
@@ -373,8 +368,7 @@ qacc RealDD  operator* (RealDD x, RealDD y)
 qacc RealDD RealDD::operator/= (RealDD b)
 {
   RealDD& a = *this;
-#if !defined(__CUDA_ARCH__) && !defined(__HIP_ARCH__)
-#if !defined(__QLAT_NO_FLOAT128__)
+#if !defined(__CUDA_ARCH__) && !defined(__HIP_ARCH__) && !defined(__QLAT_NO_FLOAT128__)
   //on CPU with __float128
   __float128 a128 = copy_to_float128(a);
   __float128 b128 = copy_to_float128(b);
@@ -382,10 +376,6 @@ qacc RealDD RealDD::operator/= (RealDD b)
   z128 = a128 / b128;
   a = z128;
   return a;
-#else
-  y /= b.y;
-  return a;
-#endif
 #else
 
   //RealDD z;
@@ -457,17 +447,12 @@ qacc RealDD operator/ (RealDD a, RealDD b)
 
 qacc RealDD sqrtT (const RealDD a)
 {
-#if !defined(__CUDA_ARCH__) && !defined(__HIP_ARCH__)
-#if !defined(__QLAT_NO_FLOAT128__)
+#if !defined(__CUDA_ARCH__) && !defined(__HIP_ARCH__) && !defined(__QLAT_NO_FLOAT128__)
   //on CPU with __float128
   __float128 a128 = copy_to_float128(a);
   a128 = sqrtq(a128);
   RealDD z(a128);
   return z;
-#else
-  RealDD z(std::sqrt(a.Y()));
-  return z;
-#endif
 #else
 
   double e;
