@@ -50,6 +50,7 @@ run-proj: compile-proj
 	-cat log.txt | grep '^CHECK: ' >build/log.check.txt
 	-if diff build/log.check.txt build/log.check.txt.new ; then cat build/log.full ; else echo passed ; fi
 	-rm -rfv log
+	-touch log
 	-cp build/log.txt log
 	-cat build/log.compile build/log.full >log.full
 

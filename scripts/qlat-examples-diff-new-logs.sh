@@ -14,10 +14,9 @@ for prefix in "$prefix_main/qlat-examples-cpp" "$prefix_main/qlat-examples-cpp-g
         if diff "$log" "$prefix/$log" >/dev/null 2>&1 ; then
             :
         else
-            touch "$prefix/$log"
             echo "$log differ"
             diff "$log" "$prefix/$log" || true
-            cp -rpv "$prefix/$log" "$log".new
+            cp -rpv "$prefix/$log" "$log".new || true
             cp -rpv "$prefix/$log.full" "$log".full.txt || true
         fi
     done
@@ -29,10 +28,9 @@ for prefix in "$prefix_main/qlat-examples-py" "$prefix_main/qlat-examples-py-gpt
         if diff "$log" "$prefix/$log" >/dev/null 2>&1 ; then
             :
         else
-            touch "$prefix/$log"
             echo "$log differ"
             diff "$log" "$prefix/$log" || true
-            cp -rpv "$prefix/$log" "$log".new
+            cp -rpv "$prefix/$log" "$log".new || true
             cp -rpv "$prefix/$log".json "$log".json.new || true
             cp -rpv "$prefix/${log%.log}.py.p/log.full.txt" "$log".full.txt || true
         fi
