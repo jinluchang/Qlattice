@@ -9,7 +9,9 @@
 #define UTILS_LDOUBLE_H
 
 //#include "utils_float_type.h"
+#if !defined(__QLAT_NO_FLOAT128__)
 #include <quadmath.h>
+#endif
 //#include <float.h>
 //#include <fenv.h>
 //#include <math.h>
