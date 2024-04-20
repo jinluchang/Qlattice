@@ -101,7 +101,11 @@ void simple_tests()
       if(casei == 1){ss += "sub ";z128 = a128 - b128;}
       if(casei == 2){ss += "mul ";z128 = a128 * b128;}
       if(casei == 3){ss += "div ";z128 = a128 / b128;}
+      #if !defined(__QLAT_NO_FLOAT128__)
       if(casei == 4){ss += "qrt ";z128 = sqrtq(fabsq(a128));}
+      #else
+      if(casei == 4){ss += "qrt ";z128 = std::sqrt(std::fabs(a128));}
+      #endif
       if(casei == 5){ss += "sin ";z128 = qsin(double(a128 + b128));}
       if(casei == 6){ss += "cos ";z128 = qcos(double(a128 + b128));}
       if(casei == 7){ss += "acos";z128 = qacos(qsin(double(a128 + b128)));}
@@ -113,7 +117,7 @@ void simple_tests()
       if(qlat::get_id_node() == 0){
         printf("%+.8e, %+.8e, float128 %+.8e, %+.8e, diff %+.8e, %+.8e \n", l[0], l[1], l[2], l[3], l[0]-l[2], l[1]-l[3]);
       }
-      ss += ssprintf("%+.5e, %+.5e, float128 %+.5e, %+.5e \n", l[0], l[1], l[2], l[3]);
+      ss += ssprintf("%+.5e, double %+.5e \n", l[0], l[2]);
       displayln_info(ss);
     }
   }
@@ -211,8 +215,10 @@ void simple_tests()
         printf("%+.8e, %+.8e, float128 %+.8e, %+.8e, diff %+.8e, %+.8e \n"    , l[0], l[1], l[2], l[3], l[0]-l[4], l[1]-l[5]);
         printf("    %+.8e, %+.8e, float128 %+.8e, %+.8e, diff %+.8e, %+.8e \n", l[4], l[5], l[6], l[7], l[2]-l[6], l[3]-l[7]);
       }
-      ss += ssprintf("%+.5e %+.5e, %+.5e %+.5e; "    , l[0], l[1], l[2], l[3]);
-      ss += ssprintf("float128 %+.5e %+.5e, %+.5e %+.5e "    , l[4], l[5], l[6], l[7]);
+      //ss += ssprintf("%+.5e %+.5e, %+.5e %+.5e; "    , l[0], l[1], l[2], l[3]);
+      //ss += ssprintf("float128 %+.5e %+.5e, %+.5e %+.5e "    , l[4], l[5], l[6], l[7]);
+      ss += ssprintf("%+.5e , %+.5e; "    , l[0], l[2]);
+      ss += ssprintf("double %+.5e, %+.5e "    , l[4], l[6]);
       displayln_info(ss);
     }
   }
