@@ -84,7 +84,7 @@ void meson_vectorE(std::vector<Propagator4dT<Td > > &pV1, std::vector<Propagator
   }
 
   const int  NTt  = fd.Nv[3];
-  const LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
+  // const LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   const int  nmass = pV1.size();
   if(nmass == 0){res.resize(0);return;}
   if(clear == 1){ini_resE(res,nmass,fd);}

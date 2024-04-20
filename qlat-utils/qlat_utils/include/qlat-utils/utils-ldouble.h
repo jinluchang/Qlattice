@@ -36,15 +36,20 @@ class API RealDD{
   qacc RealDD(const int&    a){y = double(a);x = 0;}
   qacc RealDD(const double& a){y = a;        x = 0;}
   qacc RealDD(const float&  a){y = a;        x = 0;}
-  qacc RealDD(const RealDD&  a){x = a.x;y = a.y;}
-  #if !defined(__QLAT_NO_FLOAT128__)
-  inline RealDD(const __float128&  a){
-    double rety = (double) a;
-    double retx = (double)(a-(__float128)rety);
+  qacc RealDD(const RealDD& a)
+  {
+    x = a.x;
+    y = a.y;
+  }
+#if !defined(__QLAT_NO_FLOAT128__)
+  inline RealDD(const __float128& a)
+  {
+    double rety = (double)a;
+    double retx = (double)(a - (__float128)rety);
     y = rety;
     x = retx;
   }
-  #endif
+#endif
 
   qacc const RealDD& operator= (const RealDD& a)
   {
@@ -74,6 +79,7 @@ class API RealDD{
     return *this;
   }
 
+#if !defined(__QLAT_NO_FLOAT128__)
   inline RealDD& operator= (__float128& a)
   {
     double rety = (double) a;
@@ -82,6 +88,7 @@ class API RealDD{
     x = retx;
     return *this;
   }
+#endif
 
   qacc RealDD operator+=(RealDD b);
   //{
@@ -148,11 +155,13 @@ class API RealDD{
 
 };
 
+#if !defined(__QLAT_NO_FLOAT128__)
 inline __float128 copy_to_float128(const RealDD& a)
 {
   __float128 a128 = (__float128) a.X() + (__float128) a.Y();
   return a128;
 }
+#endif
 
 qacc RealDD minus(const RealDD& a)
 {
