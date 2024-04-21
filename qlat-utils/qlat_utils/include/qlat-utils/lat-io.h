@@ -18,6 +18,10 @@ namespace qlat
 {  //
 
 const std::string lat_data_header = "#!/usr/bin/env lat-io-glimpse\n";
+// Recommended file extension ".lat"
+
+const std::string lat_data_long_header = "#!/usr/bin/env lat-io-long-glimpse\n";
+// Recommended file extension ".latl"
 
 struct API LatDim {
   std::string name;
@@ -232,11 +236,13 @@ int LatDataT<T>::ndim() const
   }
 }
 
-template <>
-void LatDataT<RealD>::load(QFile& qfile);
-
-template <>
-void LatDataT<RealD>::save(QFile& qfile) const;
+template <class T>
+struct IsDataVectorType<LatDataT<T>> {
+  using DataType = T;
+  using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
+  using ElementaryType = typename IsDataValueType<DataType>::ElementaryType;
+  static constexpr bool value = is_data_value_type<DataType>();
+};
 
 // ------------------------------------------
 
@@ -342,10 +348,96 @@ Vector<T> lat_data_get_const(const LatDataT<T>& ld)
   return lat_data_get_const(ld, idx);
 }
 
+template <class T>
+int bcast_with_glb_sum(LatDataT<T>& ld, const int root = 0)
+{
+  TIMER("bcast_with_glb_sum(ld)");
+  if (1 == get_num_node()) {
+    return 0;
+  }
+  int ret = 0;
+  std::string info_str;
+  if (get_id_node() == root) {
+    info_str = show(ld.info);
+  }
+  ret = bcast_with_glb_sum(info_str, root);
+  if (ret != 0) {
+    return ret;
+  }
+  if (get_id_node() == root) {
+    qassert((Long)ld.res.size() == lat_data_size(ld));
+  } else {
+    ld.info = read_lat_info(info_str);
+    lat_data_alloc(ld);
+  }
+  ret = bcast_with_glb_sum(ld.res, root);
+  return ret;
+}
+
+template <class T>
+void lat_data_load_sync_node(LatDataT<T>& ld, const std::string& path)
+{
+  TIMER("lat_data_load_sync_node(ld)");
+  ld.init();
+  if (get_id_node() == 0) {
+    ld.load(path);
+  }
+  int ret = bcast_with_glb_sum(ld);
+  qassert(ret == 0);
+}
+
+template <class T>
+void lat_data_save_info(const std::string& path, const LatDataT<T>& ld)
+{
+  TIMER("lat_data_save_info");
+  if (get_id_node() == 0) {
+    ld.save(path);
+  }
+}
+
+// ------------------------------------------
+
+struct API LatDataLong : LatDataT<Long> {
+};
+
+template <>
+void LatDataT<Long>::load(QFile& qfile);
+
+template <>
+void LatDataT<Long>::save(QFile& qfile) const;
+
+inline LatDataLong lat_data_long_load_sync_node(const std::string& path)
+{
+  LatDataLong ld;
+  lat_data_load_sync_node(ld, path);
+  return ld;
+}
+
+template <>
+struct IsDataVectorType<LatDataLong> {
+  using DataType = Long;
+  using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
+  using ElementaryType = typename IsDataValueType<DataType>::ElementaryType;
+  static constexpr bool value = is_data_value_type<DataType>();
+};
+
 // ------------------------------------------
 
 struct API LatData : LatDataT<RealD> {
 };
+
+template <>
+void LatDataT<RealD>::load(QFile& qfile);
+
+template <>
+void LatDataT<RealD>::save(QFile& qfile) const;
+
+inline LatData lat_data_load_sync_node(const std::string& path)
+{
+  LatData ld;
+  lat_data_load_sync_node(ld, path);
+  return ld;
+}
 
 template <>
 struct IsDataVectorType<LatData> {
@@ -354,6 +446,8 @@ struct IsDataVectorType<LatData> {
   using ElementaryType = typename IsDataValueType<DataType>::ElementaryType;
   static constexpr bool value = is_data_value_type<DataType>();
 };
+
+// ------------------------------------------
 
 std::string show_double(const LatData& ld);
 
@@ -444,17 +538,5 @@ inline Vector<ComplexD> lat_data_cget_const(const LatData& ld)
 inline RealD qnorm(const LatData& ld) { return qnorm(ld.res); }
 
 // -------------------
-
-inline void lat_data_save_info(const std::string& path, const LatData& ld)
-{
-  TIMER("lat_data_save_info");
-  if (get_id_node() == 0) {
-    ld.save(path);
-  }
-}
-
-LatData lat_data_load_sync_node(const std::string& path);
-
-int bcast_with_glb_sum(LatData& data, const int root = 0);
 
 }  // namespace qlat

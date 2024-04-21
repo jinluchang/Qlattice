@@ -110,17 +110,21 @@ LatInfo read_lat_info(const std::string& str)
 
 // -----------------------
 
-template <>
-void LatDataT<RealD>::load(QFile& qfile)
+template <class T>
+const std::string& get_lat_data_header();
+
+template <class T>
+void lat_data_load(LatDataT<T>& ld, QFile& qfile)
 {
   qassert(not qfile.null());
-  std::vector<char> check_line(lat_data_header.size(), 0);
+  std::vector<char> check_line(get_lat_data_header<T>().size(), 0);
   const Long fread_check_len =
-      qfread(check_line.data(), lat_data_header.size(), 1, qfile);
+      qfread(check_line.data(), get_lat_data_header<T>().size(), 1, qfile);
   qassert(fread_check_len == 1);
-  qassert(std::string(check_line.data(), check_line.size()) == lat_data_header);
+  qassert(std::string(check_line.data(), check_line.size()) ==
+          get_lat_data_header<T>());
   std::vector<std::string> infos;
-  infos.push_back(lat_data_header);
+  infos.push_back(get_lat_data_header<T>());
   while (infos.back() != "END_HEADER\n" && infos.back() != "") {
     infos.push_back(qgetline(qfile));
   }
@@ -129,52 +133,94 @@ void LatDataT<RealD>::load(QFile& qfile)
     out << infos[i];
   }
   const std::string info_str = out.str();
-  info = read_lat_info(info_str);
+  ld.info = read_lat_info(info_str);
   const std::string& crc_str = infos[infos.size() - 2];
   const std::string crc_prop = "crc32: ";
   qassert(crc_str.compare(0, crc_prop.size(), crc_prop) == 0);
   const crc32_t crc = read_crc32(std::string(crc_str, crc_prop.size()));
-  lat_data_alloc(*this);
-  qassert((Long)res.size() == lat_info_size(info));
-  qassert((Long)res.size() * (Long)sizeof(double) == read_long(infos[2]));
+  lat_data_alloc(ld);
+  qassert((Long)ld.res.size() == lat_info_size(ld.info));
+  qassert((Long)ld.res.size() * (Long)sizeof(T) == read_long(infos[2]));
   const Long fread_res_len =
-      qfread(res.data(), sizeof(double), res.size(), qfile);
-  qassert(fread_res_len == (Long)res.size());
+      qfread(ld.res.data(), sizeof(T), ld.res.size(), qfile);
+  qassert(fread_res_len == (Long)ld.res.size());
   const crc32_t crc_computed =
-      crc32_par(res.data(), res.size() * sizeof(double));
+      crc32_par(ld.res.data(), ld.res.size() * sizeof(T));
   if (crc != crc_computed) {
     qerr(ssprintf("ERROR: crc do not match: file=%08X computed=%08X path='%s'.",
                   crc, crc_computed, qfile.path().c_str()));
   }
-  to_from_little_endian(get_data(res));
+  to_from_little_endian(get_data(ld.res));
 }
 
-template <>
-void LatDataT<RealD>::save(QFile& qfile) const
+template <class T>
+void lat_data_save(const LatDataT<T>& ld, QFile& qfile)
 {
   qassert(not qfile.null());
-  std::vector<double> res_copy;
+  std::vector<T> res_copy;
   if (!is_little_endian()) {
-    res_copy = res;
-    qassert(res_copy.size() == res.size());
+    res_copy = ld.res;
+    qassert(res_copy.size() == ld.res.size());
     to_from_little_endian(get_data(res_copy));
   }
   const std::string data_size =
-      ssprintf("data_size\n%ld\n", res.size() * sizeof(double));
-  const std::string info_str = show(info);
+      ssprintf("data_size\n%ld\n", ld.res.size() * sizeof(T));
+  const std::string info_str = show(ld.info);
   const std::string checksum_str =
       ssprintf("crc32: %08X\n",
-               crc32_par(is_little_endian() ? res.data() : res_copy.data(),
-                         res.size() * sizeof(double)));
+               crc32_par(is_little_endian() ? ld.res.data() : res_copy.data(),
+                         ld.res.size() * sizeof(T)));
   const std::string end_header = "END_HEADER\n";
   qfwrite(lat_data_header.data(), lat_data_header.size(), 1, qfile);
   qfwrite(data_size.data(), data_size.size(), 1, qfile);
   qfwrite(info_str.data(), info_str.size(), 1, qfile);
   qfwrite(checksum_str.data(), checksum_str.size(), 1, qfile);
   qfwrite(end_header.data(), end_header.size(), 1, qfile);
-  qfwrite(is_little_endian() ? res.data() : res_copy.data(), sizeof(double),
-          res.size(), qfile);
+  qfwrite(is_little_endian() ? ld.res.data() : res_copy.data(), sizeof(T),
+          ld.res.size(), qfile);
 }
+
+// -----------------------
+
+template <>
+const std::string& get_lat_data_header<RealD>()
+{
+  return lat_data_header;
+}
+
+template <>
+void LatDataT<RealD>::load(QFile& qfile)
+{
+  lat_data_load(*this, qfile);
+}
+
+template <>
+void LatDataT<RealD>::save(QFile& qfile) const
+{
+  lat_data_save(*this, qfile);
+}
+
+// -----------------------
+
+template <>
+const std::string& get_lat_data_header<Long>()
+{
+  return lat_data_long_header;
+}
+
+template <>
+void LatDataT<Long>::load(QFile& qfile)
+{
+  lat_data_load(*this, qfile);
+}
+
+template <>
+void LatDataT<Long>::save(QFile& qfile) const
+{
+  lat_data_save(*this, qfile);
+}
+
+// -----------------------
 
 std::string show_double(const LatData& ld)
 {
@@ -369,45 +415,6 @@ LatData operator-(const LatData& ld)
 {
   LatData ret;
   ret -= ld;
-  return ret;
-}
-
-// -----------------------
-
-LatData lat_data_load_sync_node(const std::string& path)
-{
-  TIMER("lat_data_load_sync_node");
-  LatData ld;
-  if (get_id_node() == 0) {
-    ld.load(path);
-  }
-  int ret = bcast_with_glb_sum(ld);
-  qassert(ret == 0);
-  return ld;
-}
-
-int bcast_with_glb_sum(LatData& ld, const int root)
-{
-  TIMER("bcast_with_glb_sum(LatData)");
-  if (1 == get_num_node()) {
-    return 0;
-  }
-  int ret = 0;
-  std::string info_str;
-  if (get_id_node() == root) {
-    info_str = show(ld.info);
-  }
-  ret = bcast_with_glb_sum(info_str, root);
-  if (ret != 0) {
-    return ret;
-  }
-  if (get_id_node() == root) {
-    qassert((Long)ld.res.size() == lat_data_size(ld));
-  } else {
-    ld.info = read_lat_info(info_str);
-    lat_data_alloc(ld);
-  }
-  ret = bcast_with_glb_sum(ld.res, root);
   return ret;
 }
 

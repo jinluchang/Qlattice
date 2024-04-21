@@ -409,6 +409,30 @@ int bcast_with_glb_sum(std::vector<std::string>& data, const int root)
   return 0;
 }
 
+int bcast_with_glb_sum(std::vector<Long>& data, const int root)
+{
+  TIMER("bcast_with_glb_sum(vec<Long>)");
+  if (get_num_node() == 1) {
+    return 0;
+  }
+  Long size = 0;
+  if (get_id_node() == root) {
+    size = data.size();
+  }
+  int ret = glb_sum_long(size);
+  if (ret != 0) {
+    return ret;
+  }
+  if (get_id_node() == root) {
+    qassert((Long)data.size() == size);
+  } else {
+    data.resize(size);
+    std::memset(data.data(), 0, data.size() * sizeof(Long));
+  }
+  ret = glb_sum_bytes(data.data(), data.size() * sizeof(Long));
+  return 0;
+}
+
 int bcast_with_glb_sum(std::vector<RealD>& data, const int root)
 {
   TIMER("bcast_with_glb_sum(vec<RealD>)");
