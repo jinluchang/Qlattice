@@ -110,7 +110,8 @@ LatInfo read_lat_info(const std::string& str)
 
 // -----------------------
 
-void LatData::load(QFile& qfile)
+template <>
+void LatDataT<RealD>::load(QFile& qfile)
 {
   qassert(not qfile.null());
   std::vector<char> check_line(lat_data_header.size(), 0);
@@ -148,7 +149,8 @@ void LatData::load(QFile& qfile)
   to_from_little_endian(get_data(res));
 }
 
-void LatData::save(QFile& qfile) const
+template <>
+void LatDataT<RealD>::save(QFile& qfile) const
 {
   qassert(not qfile.null());
   std::vector<double> res_copy;
