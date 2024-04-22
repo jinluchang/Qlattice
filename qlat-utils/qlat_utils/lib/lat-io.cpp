@@ -183,19 +183,19 @@ void lat_data_save(const LatDataT<T>& ld, QFile& qfile)
 // -----------------------
 
 template <>
-const std::string& get_lat_data_header<RealD>()
+const std::string& get_lat_data_header<Int>()
 {
-  return lat_data_header;
+  return lat_data_int_header;
 }
 
 template <>
-void LatDataT<RealD>::load(QFile& qfile)
+void LatDataT<Int>::load(QFile& qfile)
 {
   lat_data_load(*this, qfile);
 }
 
 template <>
-void LatDataT<RealD>::save(QFile& qfile) const
+void LatDataT<Int>::save(QFile& qfile) const
 {
   lat_data_save(*this, qfile);
 }
@@ -216,6 +216,26 @@ void LatDataT<Long>::load(QFile& qfile)
 
 template <>
 void LatDataT<Long>::save(QFile& qfile) const
+{
+  lat_data_save(*this, qfile);
+}
+
+// -----------------------
+
+template <>
+const std::string& get_lat_data_header<RealD>()
+{
+  return lat_data_header;
+}
+
+template <>
+void LatDataT<RealD>::load(QFile& qfile)
+{
+  lat_data_load(*this, qfile);
+}
+
+template <>
+void LatDataT<RealD>::save(QFile& qfile) const
 {
   lat_data_save(*this, qfile);
 }

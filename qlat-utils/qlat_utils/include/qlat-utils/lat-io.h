@@ -20,6 +20,9 @@ namespace qlat
 const std::string lat_data_header = "#!/usr/bin/env lat-io-glimpse\n";
 // Recommended file extension ".lat"
 
+const std::string lat_data_int_header = "#!/usr/bin/env lat-io-int-glimpse\n";
+// Recommended file extension ".lati"
+
 const std::string lat_data_long_header = "#!/usr/bin/env lat-io-long-glimpse\n";
 // Recommended file extension ".latl"
 
@@ -394,6 +397,32 @@ void lat_data_save_info(const std::string& path, const LatDataT<T>& ld)
     ld.save(path);
   }
 }
+
+// ------------------------------------------
+
+struct API LatDataInt : LatDataT<Int> {
+};
+
+template <>
+void LatDataT<Int>::load(QFile& qfile);
+
+template <>
+void LatDataT<Int>::save(QFile& qfile) const;
+
+inline LatDataInt lat_data_int_load_sync_node(const std::string& path)
+{
+  LatDataInt ld;
+  lat_data_load_sync_node(ld, path);
+  return ld;
+}
+
+template <>
+struct IsDataVectorType<LatDataInt> {
+  using DataType = Int;
+  using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
+  using ElementaryType = typename IsDataValueType<DataType>::ElementaryType;
+  static constexpr bool value = is_data_value_type<DataType>();
+};
 
 // ------------------------------------------
 

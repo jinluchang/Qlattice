@@ -520,6 +520,8 @@ int bcast_with_glb_sum(std::string& data, const int root = 0);
 
 int bcast_with_glb_sum(std::vector<std::string>& data, const int root = 0);
 
+int bcast_with_glb_sum(std::vector<Int>& data, const int root = 0);
+
 int bcast_with_glb_sum(std::vector<Long>& data, const int root = 0);
 
 int bcast_with_glb_sum(std::vector<RealD>& data, const int root = 0);
