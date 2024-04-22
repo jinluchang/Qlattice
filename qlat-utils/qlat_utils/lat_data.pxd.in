@@ -2,14 +2,14 @@ from . cimport everything as cqlat_utils
 
 {{py:
 type_name_list = [
-    ('RealD', '', 'd', 'Zd',),
-    ('RealF', 'RealF', 'f', 'Zf',),
-    ('Int', 'Int', 'i', 'Zi'),
-    ('Long', 'Long', 'q', 'Zq',),
+    ('RealD', '', '', 'd', 'Zd', 'True',),
+    ('RealF', 'RealF', '_real_f', 'f', 'Zf', 'True',),
+    ('Int', 'Int', '_int', 'i', 'Zi', 'False',),
+    ('Long', 'Long', '_long', 'q', 'Zq', 'False',),
     ]
 }}
 
-{{for type_name, type_ext, type_fmt, type_zz_fmt in type_name_list}}
+{{for type_name, type_ext, type_ext2, type_fmt, type_zz_fmt, type_default_complex in type_name_list}}
 
 cdef class LatData{{type_ext}}:
     cdef cqlat_utils.LatData{{type_ext}} xx

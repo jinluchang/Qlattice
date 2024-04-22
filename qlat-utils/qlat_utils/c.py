@@ -103,11 +103,12 @@ __all__ += [
         'set_display_method',
         ]
 
-__all__ += [
-        'LatData',
-        'mk_lat_data',
-        'load_lat_data',
-        ]
+for ext, ext2 in [ ('', '',), ('RealF', '_real_f',), ('Int', '_int',), ('Long', '_long',), ]:
+    __all__ += [
+            f'LatData{ext}',
+            f'mk_lat_data{ext2}',
+            f'load_lat_data{ext2}',
+            ]
 
 __all__ += [
         'basename',

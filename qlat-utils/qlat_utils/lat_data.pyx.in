@@ -14,14 +14,14 @@ import numpy as np
 
 {{py:
 type_name_list = [
-    ('RealD', '', 'd', 'Zd',),
-    ('RealF', 'RealF', 'f', 'Zf',),
-    ('Int', 'Int', 'i', 'Zi'),
-    ('Long', 'Long', 'q', 'Zq',),
+    ('RealD', '', '', 'd', 'Zd', 'True',),
+    ('RealF', 'RealF', '_real_f', 'f', 'Zf', 'True',),
+    ('Int', 'Int', '_int', 'i', 'Zi', 'False',),
+    ('Long', 'Long', '_long', 'q', 'Zq', 'False',),
     ]
 }}
 
-{{for type_name, type_ext, type_fmt, type_zz_fmt in type_name_list}}
+{{for type_name, type_ext, type_ext2, type_fmt, type_zz_fmt, type_default_complex in type_name_list}}
 
 cdef class LatData{{type_ext}}:
 
@@ -170,7 +170,7 @@ cdef class LatData{{type_ext}}:
         cdef int i
         return [ self.xx.info[i].size for i in range(ndim) ]
 
-    def set_dim_sizes(self, list dim_sizes, *, cc.Bool is_complex=True):
+    def set_dim_sizes(self, list dim_sizes, *, cc.Bool is_complex={{type_default_complex}}):
         if self.view_count > 0:
             raise ValueError("can't change shape while being viewed")
         cdef int ndim = len(dim_sizes)
@@ -222,7 +222,7 @@ cdef class LatData{{type_ext}}:
     def to_numpy(self):
         return np.asarray(self).copy()
 
-    def from_numpy(self, numpy.ndarray val, list dim_names=None, *, cc.Bool is_complex=True):
+    def from_numpy(self, numpy.ndarray val, list dim_names=None, *, cc.Bool is_complex={{type_default_complex}}):
         """
         only set LatData{{type_ext}} shape if it is initially empty
         otherwise only set data and ignore shape completely
@@ -257,7 +257,7 @@ cdef class LatData{{type_ext}}:
     def to_list(self):
         return np.asarray(self).ravel().tolist()
 
-    def from_list(self, list val, *, cc.Bool is_complex=True):
+    def from_list(self, list val, *, cc.Bool is_complex={{type_default_complex}}):
         if self.view_count > 0:
             raise ValueError("can't load while being viewed")
         if self.ndim() == 0:
@@ -300,7 +300,7 @@ cdef class LatData{{type_ext}}:
             dim_indices = self.dim_indices(dim)
             return [ dim_name, dim_size, dim_indices, ]
 
-    def set_info(self, list info_list, *, cc.Bool is_complex=True):
+    def set_info(self, list info_list, *, cc.Bool is_complex={{type_default_complex}}):
         """
         ``info_list`` format::\n
             [ [ dim_name, dim_size, dim_indices, ], ... ]
@@ -408,24 +408,24 @@ cdef class LatData{{type_ext}}:
 
 {{endif}}
 
-{{endfor}}
-
 ### -------------------------------------------------------------------
 
-def mk_lat_data(list info_list, *, cc.Bool is_complex=True):
+def mk_lat_data{{type_ext2}}(list info_list, *, cc.Bool is_complex={{type_default_complex}}):
     """
     ``info_list`` format::\n
         [ [ dim_name, dim_size, dim_indices, ], ... ]
     dim_indices can be optional
     """
-    ld = LatData()
+    ld = LatData{{type_ext}}()
     ld.set_info(info_list, is_complex=is_complex)
     return ld
 
-def load_lat_data(const cc.std_string& path):
+def load_lat_data{{type_ext2}}(const cc.std_string& path):
     """
     Load ``lat_data`` from file ``path``.
     """
-    ld = LatData()
+    ld = LatData{{type_ext}}()
     ld.load(path)
     return ld
+
+{{endfor}}
