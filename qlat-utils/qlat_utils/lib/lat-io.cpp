@@ -242,7 +242,51 @@ void LatDataT<RealD>::save(QFile& qfile) const
 
 // -----------------------
 
-std::string show_double(const LatData& ld)
+template <>
+const std::string& get_lat_data_header<RealF>()
+{
+  return lat_data_real_f_header;
+}
+
+template <>
+void LatDataT<RealF>::load(QFile& qfile)
+{
+  lat_data_load(*this, qfile);
+}
+
+template <>
+void LatDataT<RealF>::save(QFile& qfile) const
+{
+  lat_data_save(*this, qfile);
+}
+
+// -----------------------
+
+LatData& LatData::operator=(LatDataRealF& ld)
+{
+  info = ld.info;
+  const Long size = ld.res.size();
+  res.resize(size);
+  for (Long i = 0; i < size; ++i) {
+    res[i] = ld.res[i];
+  }
+  return *this;
+}
+
+LatDataRealF& LatDataRealF::operator=(LatData& ld)
+{
+  info = ld.info;
+  const Long size = ld.res.size();
+  res.resize(size);
+  for (Long i = 0; i < size; ++i) {
+    res[i] = ld.res[i];
+  }
+  return *this;
+}
+
+// -----------------------
+
+std::string show_real(const LatData& ld)
 {
   std::ostringstream out;
   const LatInfo& info = ld.info;
@@ -260,7 +304,7 @@ std::string show_double(const LatData& ld)
     for (int a = 0; a < (int)info.size(); ++a) {
       out << ssprintf("%12s ", idx_name(info[a], idx[a]).c_str());
     }
-    const Vector<double> ldv = lat_data_get_const(ld, idx);
+    const Vector<RealD> ldv = lat_data_get_const(ld, idx);
     out << ssprintf("%24.17E\n", ldv[0]);
     idx[(int)info.size() - 1] += 1;
     for (int a = (int)info.size() - 1; a > 0; --a) {
@@ -291,7 +335,7 @@ std::string show_complex(const LatData& ld)
     for (int a = 0; a < (int)info.size() - 1; ++a) {
       out << ssprintf("%12s ", idx_name(info[a], idx[a]).c_str());
     }
-    const Vector<ComplexD> ldv = lat_data_complex_get_const(ld, idx);
+    const Vector<ComplexD> ldv = lat_data_cget_const(ld, idx);
     out << ssprintf("%24.17E %24.17E\n", ldv[0].real(), ldv[0].imag());
     if ((int)info.size() - 2 >= 0) {
       idx[(int)info.size() - 2] += 1;
@@ -312,7 +356,7 @@ std::string show(const LatData& ld)
   if (is_lat_info_complex(info)) {
     return show_complex(ld);
   } else {
-    return show_double(ld);
+    return show_real(ld);
   }
 }
 
@@ -337,9 +381,9 @@ void print(const LatData& ld)
   }
 }
 
-const LatData& operator*=(LatData& ld, const double factor)
+const LatData& operator*=(LatData& ld, const RealD factor)
 {
-  Vector<double> v = lat_data_get(ld);
+  Vector<RealD> v = lat_data_get(ld);
   for (Long i = 0; i < v.size(); ++i) {
     v[i] *= factor;
   }
@@ -355,14 +399,14 @@ const LatData& operator*=(LatData& ld, const ComplexD& factor)
   return ld;
 }
 
-LatData operator*(const LatData& ld, const double factor)
+LatData operator*(const LatData& ld, const RealD factor)
 {
   LatData ret = ld;
   ret *= factor;
   return ret;
 }
 
-LatData operator*(const double factor, const LatData& ld)
+LatData operator*(const RealD factor, const LatData& ld)
 {
   return ld * factor;
 }

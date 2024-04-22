@@ -57,6 +57,7 @@ header_files = files(
   'matrix.h',
   'matrix-hmc.h',
   'mat-vec.h',
+  'mpi-auto.h',
   'mvector.h',
   'py_convert.h',
   'qacc-func.h',

@@ -207,7 +207,7 @@ inline LatData contract_two_point_function(const SelProp& prop1,
   LatData ld = mk_two_point_table(total_site);
   set_zero(ld);
   for (int tsep = 0; tsep < total_site[3]; ++tsep) {
-    Vector<ComplexD> m_src_snk = lat_data_complex_get(ld, make_array(tsep));
+    Vector<ComplexD> m_src_snk = lat_data_cget(ld, make_array(tsep));
     for (int k = 0; k < 16 * 16; ++k) {
       m_src_snk[k] += m_ts[tsep][k];
     }
@@ -246,7 +246,7 @@ inline LatData contract_two_point_wall_snk_function(
   LatData ld = mk_two_point_table(total_site);
   set_zero(ld);
   for (int tsep = 0; tsep < total_site[3]; ++tsep) {
-    Vector<ComplexD> m_src_snk = lat_data_complex_get(ld, make_array(tsep));
+    Vector<ComplexD> m_src_snk = lat_data_cget(ld, make_array(tsep));
     for (int k = 0; k < 16 * 16; ++k) {
       m_src_snk[k] += m_ts[tsep][k];
     }
@@ -401,7 +401,7 @@ inline LatData contract_three_point_function(const SelProp& prop_a,
   const int tsep = mod(tb - ta, total_site[3]);
   for (int t = 0; t < total_site[3]; ++t) {
     const int top = mod(t - ta, total_site[3]);
-    Vector<ComplexD> v = lat_data_complex_get(ld, make_array(tsep, top));
+    Vector<ComplexD> v = lat_data_cget(ld, make_array(tsep, top));
     for (int op = 0; op < 16; ++op) {
       v[op] = matrix_trace(wm_ts[t], gms[op]);
     }

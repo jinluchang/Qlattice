@@ -279,7 +279,7 @@ cdef extern from "qlat-utils/utils-io.h" namespace "qlat":
     int qrename_info(const std_string& old_path, const std_string& new_path) except +
     int qremove_info(const std_string& path) except +
     int qremove_all_info(const std_string& path) except +
-    #
+#
     std_vector[std_string] qls_sync_node(const std_string& path, const bool is_sort) except +
     std_vector[std_string] qls_all_sync_node(const std_string& path, const bool is_folder_before_files, const bool is_sort) except +
     bool does_file_exist_sync_node(const std_string& fn) except +
@@ -344,39 +344,47 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
         Long size
         std_vector[std_string] indices
         LatDim()
-    ctypedef std_vector[LatDim] LatInfo
-    cdef cppclass LatData:
-        LatInfo info
-        std_vector[double] res
-        LatData()
-        void load(const std_string& fn) except +
-        void save(const std_string& fn) except +
-        void load_str(std_string& content) except +
-        std_string save_str() except +
-        bool is_complex()
-        int ndim()
-        double* data()
     LatDim lat_dim_re_im()
     LatDim lat_dim_number(const std_string& name, const Long start, const Long end)
     LatDim lat_dim_number(const std_string& name, const Long start, const Long end, const Long inc)
     LatDim lat_dim_string(const std_string& name, const std_vector[std_string]& indices)
     Long lat_dim_idx(const LatDim& dim, const std_string& idx) except +
+    ctypedef std_vector[LatDim] LatInfo
+    cdef cppclass LatDataT[T]:
+        LatInfo info
+        std_vector[T] res
+        LatDataT()
+        void load(const std_string& fn) except +
+        void save(const std_string& fn) except +
+        void load_str(std_string& content) except +
+        std_string save_str() except +
+        bool is_complex()
+        Int ndim()
+        T* data()
+    bool is_matching[T](const LatDataT[T]& ld1, const LatDataT[T]& ld2) except +
+    Long lat_data_size[T](LatDataT[T]& ld) except +
+    void lat_data_alloc[T](LatDataT[T]& ld) except +
+    Vector[T] get_data[T](const LatDataT[T]& x) except +
+    void set_zero[T](LatDataT[T]& x) except +
+    void clear[T](LatDataT[T]& x) except +
+    Int glb_sum[T](LatDataT[T]& ld) except +
+    Int bcast[T](LatDataT[T]& ld, const Int root) except +
+    void lat_data_load_sync_node[T](LatDataT[T]& ld, const std_string& path) except +
+    void lat_data_save_info[T](const std_string& path, const LatDataT[T]& ld) except +
+    cdef cppclass LatDataInt(LatDataT[Int]):
+        LatDataInt()
+    cdef cppclass LatDataLong(LatDataT[Long]):
+        LatDataLong()
+    cdef cppclass LatData(LatDataT[RealD]):
+        LatData()
     LatData operator*(const ComplexD& a, const LatData& ld) except +
-    LatData operator*(const double a, const LatData& ld) except +
+    LatData operator*(const RealD a, const LatData& ld) except +
     LatData operator*(const LatData& ld, const ComplexD& a) except +
-    LatData operator*(const LatData& ld, const double a) except +
+    LatData operator*(const LatData& ld, const RealD a) except +
     LatData operator+(const LatData& ld1, const LatData& ld2) except +
     LatData operator-(const LatData& ld1, const LatData& ld2) except +
-    bool is_matching(const LatData& ld1, const LatData& ld2)
-    Long lat_data_size(LatData& ld)
-    void lat_data_alloc(LatData& ld) except +
-    Vector[double] get_data(const LatData& x)
-    void set_zero(LatData& x)
     std_string show(const LatData& x)
-    void clear(LatData& x)
-    double qnorm(const LatData& x)
-    void lat_data_save_info(const std_string& path, const LatData& ld) except +
-    LatData lat_data_load_sync_node(const std_string& path) except +
+    RealD qnorm(const LatData& x)
 
 cdef extern from "qlat-utils/qar.h" namespace "qlat":
 

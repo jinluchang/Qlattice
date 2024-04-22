@@ -76,24 +76,7 @@ void PointsSelection::init(const std::vector<Coordinate>& xgs_)
   xgs = xgs_;
 }
 
-PointsSelection& PointsSelection::operator=(const PointsSelection& psel)
-{
-  initialized = psel.initialized;
-  distributed = psel.distributed;
-  xgs = psel.xgs;
-  return *this;
-}
-
-PointsSelection& PointsSelection::operator=(PointsSelection&& psel) noexcept
-{
-  initialized = psel.initialized;
-  distributed = psel.distributed;
-  xgs = std::move(psel.xgs);
-  return *this;
-}
-
-PointsSelection& PointsSelection::operator=(
-    const std::vector<Coordinate>& xgs_) noexcept
+PointsSelection& PointsSelection::operator=(const std::vector<Coordinate>& xgs_)
 {
   init(xgs_);
   return *this;

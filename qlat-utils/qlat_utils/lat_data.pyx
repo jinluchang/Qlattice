@@ -79,16 +79,14 @@ cdef class LatData:
     def load_str(self, cc.std_string& content):
         return self.xx.load_str(content)
 
-    def bcast(self):
+    def bcast(self, cc.Int root=0):
         if cc.get_num_node() != 1:
-            import qlat.c as c
-            c.bcast_lat_data_in_place(self)
+            cc.bcast(self.xx, root)
         return self
 
     def glb_sum_in_place(self):
         if cc.get_num_node() != 1:
-            import qlat.c as c
-            c.glb_sum_lat_data_in_place(self)
+            cc.glb_sum(self.xx)
         return self
 
     def glb_sum(self):
@@ -192,7 +190,7 @@ cdef class LatData:
         """
         return the Long idx_int that dim.indices[idx_int] contains the std::string& idx.
         Will check if the idx_int is unique.
-        #
+#
         For dim.indices does not cover the entire range, will require exact match or (- read_long(idx) - 1).
         Default index being -idx-1.
         """

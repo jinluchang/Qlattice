@@ -170,8 +170,6 @@ int glb_sum(Vector<M> xx)
   return glb_sum<Vector<M>>(xx);
 }
 
-int glb_sum(LatData& ld);
-
 inline bool glb_any(const bool b)
 {
   Long ret = 0;
@@ -285,8 +283,6 @@ int bcast(std::vector<std::vector<M>>& datatable, const int root = 0)
 int bcast(std::string& recv, const int root = 0);
 
 int bcast(std::vector<std::string>& recv, const int root = 0);
-
-int bcast(LatData& ld, const int root = 0);
 
 int bcast(PointsSelection& psel, const int root = 0);
 
@@ -555,12 +551,48 @@ inline RngState& get_sync_node_rs_mpi()
   return get_comm_list().back().sync_node_rs;
 }
 
-inline int glb_sum_long_mpi(Long& x) { return glb_sum(x); }
-
-inline int glb_sum_bytes_mpi(void* ptr, const Long size)
+inline Int glb_sum_long_vec_mpi(void* ptr, const Long size)
 {
-  Vector<char> data((char*)ptr, size);
+  const Long n = size / sizeof(Long);
+  Vector<Long> data((Long*)ptr, n);
+  qassert(data.data_size() == size);
   return glb_sum(data);
+}
+
+inline Int glb_sum_int_vec_mpi(void* ptr, const Long size)
+{
+  const Long n = size / sizeof(Int);
+  Vector<Int> data((Int*)ptr, n);
+  qassert(data.data_size() == size);
+  return glb_sum(data);
+}
+
+inline Int glb_sum_real_d_vec_mpi(void* ptr, const Long size)
+{
+  const Long n = size / sizeof(RealD);
+  Vector<RealD> data((RealD*)ptr, n);
+  qassert(data.data_size() == size);
+  return glb_sum(data);
+}
+
+inline Int glb_sum_real_f_vec_mpi(void* ptr, const Long size)
+{
+  const Long n = size / sizeof(RealF);
+  Vector<RealF> data((RealF*)ptr, n);
+  qassert(data.data_size() == size);
+  return glb_sum(data);
+}
+
+inline Int glb_sum_byte_vec_mpi(void* ptr, const Long size)
+{
+  Vector<Char> data((Char*)ptr, size);
+  return glb_sum(data);
+}
+
+inline Int bcast_byte_vec_mpi(void* ptr, const Long size, const Int root)
+{
+  Vector<Char> data((Char*)ptr, size);
+  return bcast(data, root);
 }
 
 }  // namespace qlat

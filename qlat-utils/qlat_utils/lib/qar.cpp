@@ -3787,7 +3787,7 @@ int qar_create_sync_node(const std::string& path_qar,
       remove_entry_directory_cache(path_folder_);
     }
   }
-  glb_sum_long(ret);
+  glb_sum_val(ret);
   return ret;
 }
 
@@ -3801,7 +3801,7 @@ int qar_extract_sync_node(const std::string& path_qar,
   } else {
     remove_entry_directory_cache(path_folder_);
   }
-  glb_sum_long(ret);
+  glb_sum_val(ret);
   return ret;
 }
 
@@ -3815,7 +3815,7 @@ int qcopy_file_sync_node(const std::string& path_src,
     const std::string path_dir = dirname(path_dst);
     remove_entry_directory_cache(path_dir);
   }
-  glb_sum_long(ret);
+  glb_sum_val(ret);
   return ret;
 }
 
@@ -3827,7 +3827,7 @@ bool does_regular_file_exist_qar_sync_node(const std::string& fn)
       nfile = 1;
     }
   }
-  glb_sum_long(nfile);
+  glb_sum_val(nfile);
   return 0 != nfile;
 }
 
@@ -3839,7 +3839,7 @@ bool does_file_exist_qar_sync_node(const std::string& fn)
       nfile = 1;
     }
   }
-  glb_sum_long(nfile);
+  glb_sum_val(nfile);
   return 0 != nfile;
 }
 
@@ -3850,7 +3850,7 @@ std::string qcat_sync_node(const std::string& path)
   if (0 == get_id_node()) {
     ret = qcat(path);
   }
-  int bret = bcast_with_glb_sum(ret);
+  int bret = bcast_val(ret, 0);
   qassert(bret == 0);
   return ret;
 }
@@ -3862,7 +3862,7 @@ DataTable qload_datatable_sync_node(const std::string& path, const bool is_par)
   if (0 == get_id_node()) {
     dt = qload_datatable(path, is_par);
   }
-  int bret = bcast_with_glb_sum(dt);
+  int bret = bcast_val(dt, 0);
   qassert(bret == 0);
   return dt;
 }

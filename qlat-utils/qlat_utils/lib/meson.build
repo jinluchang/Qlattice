@@ -10,6 +10,7 @@ cppsources = files(
   'timer.cpp',
   'lat-io.cpp',
   'mat.cpp',
+  'mpi-auto.cpp',
   'qar.cpp',
   'utils-io.cpp',
   'utils-vec.cpp',

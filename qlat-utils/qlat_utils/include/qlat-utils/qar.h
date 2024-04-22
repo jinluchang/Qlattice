@@ -3,6 +3,7 @@
 #include <qlat-utils/cache.h>
 #include <qlat-utils/crc32.h>
 #include <qlat-utils/env.h>
+#include <qlat-utils/mpi-auto.h>
 #include <qlat-utils/timer.h>
 #include <qlat-utils/types.h>
 #include <qlat-utils/utils-io.h>

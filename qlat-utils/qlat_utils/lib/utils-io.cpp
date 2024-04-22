@@ -535,7 +535,7 @@ std::vector<std::string> qls_sync_node(const std::string& path,
   if (0 == get_id_node()) {
     ret = qls(path, is_sort);
   }
-  int bret = bcast_with_glb_sum(ret);
+  int bret = bcast_val(ret, 0);
   qassert(bret == 0);
   return ret;
 }
@@ -549,7 +549,7 @@ std::vector<std::string> qls_all_sync_node(const std::string& path,
   if (0 == get_id_node()) {
     ret = qls_all(path, is_folder_before_files, is_sort);
   }
-  int bret = bcast_with_glb_sum(ret);
+  int bret = bcast_val(ret, 0);
   qassert(bret == 0);
   return ret;
 }
@@ -562,7 +562,7 @@ bool does_file_exist_sync_node(const std::string& fn)
       nfile = 1;
     }
   }
-  glb_sum_long(nfile);
+  glb_sum_val(nfile);
   return 0 != nfile;
 }
 
@@ -574,7 +574,7 @@ bool is_directory_sync_node(const std::string& fn)
       nfile = 1;
     }
   }
-  glb_sum_long(nfile);
+  glb_sum_val(nfile);
   return 0 != nfile;
 }
 
@@ -586,7 +586,7 @@ bool is_regular_file_sync_node(const std::string& fn)
       nfile = 1;
     }
   }
-  glb_sum_long(nfile);
+  glb_sum_val(nfile);
   return 0 != nfile;
 }
 
@@ -598,7 +598,7 @@ bool does_file_exist_cache_sync_node(const std::string& fn)
       nfile = 1;
     }
   }
-  glb_sum_long(nfile);
+  glb_sum_val(nfile);
   return 0 != nfile;
 }
 
@@ -610,7 +610,7 @@ bool is_directory_cache_sync_node(const std::string& fn)
       nfile = 1;
     }
   }
-  glb_sum_long(nfile);
+  glb_sum_val(nfile);
   return 0 != nfile;
 }
 
@@ -622,7 +622,7 @@ bool is_regular_file_cache_sync_node(const std::string& fn)
       nfile = 1;
     }
   }
-  glb_sum_long(nfile);
+  glb_sum_val(nfile);
   return 0 != nfile;
 }
 
@@ -635,7 +635,7 @@ int qmkdir_sync_node(const std::string& path, const mode_t mode)
   } else {
     remove_entry_directory_cache(path);
   }
-  glb_sum_long(ret);
+  glb_sum_val(ret);
   return ret;
 }
 
@@ -648,7 +648,7 @@ int qmkdir_p_sync_node(const std::string& path, const mode_t mode)
   } else {
     remove_entry_directory_cache(path);
   }
-  glb_sum_long(ret);
+  glb_sum_val(ret);
   return ret;
 }
 
@@ -663,7 +663,7 @@ int qremove_sync_node(const std::string& path)
     update_qar_cache_due_to_change_of_directory(path);
     update_qar_cache_due_to_change_of_qar_file(path);
   }
-  glb_sum_long(ret);
+  glb_sum_val(ret);
   return ret;
 }
 
@@ -678,7 +678,7 @@ int qremove_all_sync_node(const std::string& path)
     update_qar_cache_due_to_change_of_directory(path);
     update_qar_cache_due_to_change_of_qar_file(path);
   }
-  glb_sum_long(ret);
+  glb_sum_val(ret);
   return ret;
 }
 

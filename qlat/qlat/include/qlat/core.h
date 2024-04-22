@@ -605,6 +605,8 @@ struct API FieldM : Field<M> {
   FieldM<M, multiplicity>() { init(); }
   FieldM(const FieldM<M, multiplicity>&) = default;
   FieldM(FieldM<M, multiplicity>&&) noexcept = default;
+  FieldM<M, multiplicity>& operator=(FieldM<M, multiplicity>&&) noexcept =
+      default;
   //
   FieldM<M, multiplicity>& operator=(const FieldM<M, multiplicity>& f)
   {
@@ -612,8 +614,6 @@ struct API FieldM : Field<M> {
     Field<M>::operator=(f);
     return *this;
   }
-  FieldM<M, multiplicity>& operator=(FieldM<M, multiplicity>&&) noexcept =
-      default;
 };
 
 template <class M>
@@ -829,9 +829,9 @@ struct API PointsSelection {
   }
   PointsSelection(const std::vector<Coordinate>& xgs_) { init(xgs_); }
   //
-  PointsSelection& operator=(const PointsSelection& psel);
-  PointsSelection& operator=(PointsSelection&& psel) noexcept;
-  PointsSelection& operator=(const std::vector<Coordinate>& xgs_) noexcept;
+  PointsSelection& operator=(const PointsSelection& psel) = default;
+  PointsSelection& operator=(PointsSelection&& psel) noexcept = default;
+  PointsSelection& operator=(const std::vector<Coordinate>& xgs_);
   //
   qacc Long size() const { return xgs.size(); }
   qacc const Coordinate* data() const { return xgs.data(); }

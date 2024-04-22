@@ -36,8 +36,8 @@ bool compute_traj_do(const std::string& job_tag, const int traj)
   ld1 = ld;
   qassert(is_matching(ld, ld1));
   for (int t = 0; t < total_site[3]; ++t) {
-    lat_data_complex_get(ld, make_array<int>())[t] = t;
-    lat_data_complex_get(ld1, make_array(t))[0] = t;
+    lat_data_cget(ld, make_array<int>())[t] = t;
+    lat_data_cget(ld1, make_array(t))[0] = t;
   }
   if (0 == get_id_node()) {
     print(ld);

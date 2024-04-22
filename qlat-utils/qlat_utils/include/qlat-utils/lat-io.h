@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qlat-utils/crc32.h>
+#include <qlat-utils/mpi-auto.h>
 #include <qlat-utils/qar.h>
 #include <qlat-utils/show.h>
 #include <qlat-utils/timer.h>
@@ -25,6 +26,9 @@ const std::string lat_data_int_header = "#!/usr/bin/env lat-io-int-glimpse\n";
 
 const std::string lat_data_long_header = "#!/usr/bin/env lat-io-long-glimpse\n";
 // Recommended file extension ".latl"
+
+const std::string lat_data_real_f_header = "#!/usr/bin/env lat-io-real-f-glimpse\n";
+// Recommended file extension ".latf"
 
 struct API LatDim {
   std::string name;
@@ -56,10 +60,10 @@ LatDim read_lat_dim(const std::string& str);
 
 LatInfo read_lat_info(const std::string& str);
 
-inline Long lat_info_size(const LatInfo& info, const int level = 0)
+inline Long lat_info_size(const LatInfo& info, const Int level = 0)
 {
   Long total = 1;
-  for (int i = level; i < (int)info.size(); ++i) {
+  for (Int i = level; i < (Int)info.size(); ++i) {
     total *= info[i].size;
   }
   return total;
@@ -71,7 +75,7 @@ LatDim lat_dim_string(const std::string& name, const VecS& indices)
   LatDim dim;
   dim.name = name;
   dim.size = indices.size();
-  for (int i = 0; i < dim.size; ++i) {
+  for (Int i = 0; i < dim.size; ++i) {
     dim.indices.push_back(indices[i]);
   }
   return dim;
@@ -136,7 +140,7 @@ Long lat_info_offset(const LatInfo& info, const VecS& idx)
 {
   qassert((Long)idx.size() <= (Long)info.size());
   Long ret = 0;
-  for (int i = 0; i < (int)idx.size(); ++i) {
+  for (Int i = 0; i < (Int)idx.size(); ++i) {
     const Long k = lat_dim_idx(info[i], idx[i]);
     ret = ret * info[i].size + k;
   }
@@ -218,7 +222,7 @@ struct API LatDataT {
   }
   //
   bool is_complex() const;
-  int ndim() const;
+  Int ndim() const;
   T* data() { return res.data(); }
   const T* data() const { return res.data(); }
 };
@@ -230,7 +234,7 @@ bool LatDataT<T>::is_complex() const
 }
 
 template <class T>
-int LatDataT<T>::ndim() const
+Int LatDataT<T>::ndim() const
 {
   if (is_lat_info_complex(info)) {
     return info.size() - 1;
@@ -262,7 +266,7 @@ void clear(LatDataT<T>& ld)
 }
 
 template <class T>
-Long lat_data_size(const LatDataT<T>& ld, const int level = 0)
+Long lat_data_size(const LatDataT<T>& ld, const Int level = 0)
 {
   return lat_info_size(ld.info, level);
 }
@@ -338,7 +342,7 @@ Vector<RealD> lat_data_get_const(const LatDataT<T>& ld, const VecS& idx)
 template <class T>
 Vector<T> lat_data_get(LatDataT<T>& ld)
 {
-  array<int, 0> idx;
+  array<Int, 0> idx;
   return lat_data_get(ld, idx);
 }
 
@@ -347,23 +351,29 @@ Vector<T> lat_data_get_const(const LatDataT<T>& ld)
 // Be cautious about the const property
 // 改不改靠自觉
 {
-  array<int, 0> idx;
+  array<Int, 0> idx;
   return lat_data_get_const(ld, idx);
 }
 
 template <class T>
-int bcast_with_glb_sum(LatDataT<T>& ld, const int root = 0)
+Int glb_sum(LatDataT<T>& ld)
 {
-  TIMER("bcast_with_glb_sum(ld)");
+  return glb_sum_vec(get_data(ld.res));
+}
+
+template <class T>
+Int bcast(LatDataT<T>& ld, const Int root)
+{
+  TIMER("bcast(ld,root)");
   if (1 == get_num_node()) {
     return 0;
   }
-  int ret = 0;
+  Int ret = 0;
   std::string info_str;
   if (get_id_node() == root) {
     info_str = show(ld.info);
   }
-  ret = bcast_with_glb_sum(info_str, root);
+  ret = bcast_val(info_str, root);
   if (ret != 0) {
     return ret;
   }
@@ -373,7 +383,7 @@ int bcast_with_glb_sum(LatDataT<T>& ld, const int root = 0)
     ld.info = read_lat_info(info_str);
     lat_data_alloc(ld);
   }
-  ret = bcast_with_glb_sum(ld.res, root);
+  ret = bcast_val(ld.res, root);
   return ret;
 }
 
@@ -385,7 +395,7 @@ void lat_data_load_sync_node(LatDataT<T>& ld, const std::string& path)
   if (get_id_node() == 0) {
     ld.load(path);
   }
-  int ret = bcast_with_glb_sum(ld);
+  Int ret = bcast(ld, 0);
   qassert(ret == 0);
 }
 
@@ -452,7 +462,18 @@ struct IsDataVectorType<LatDataLong> {
 
 // ------------------------------------------
 
+struct API LatData;
+struct API LatDataRealF;
+
+// ------------------------------------------
+
 struct API LatData : LatDataT<RealD> {
+  LatData() = default;
+  LatData(const LatData&) = default;
+  LatData(LatData&&) noexcept = default;
+  LatData& operator=(const LatData&) = default;
+  LatData& operator=(LatData&&) noexcept = default;
+  LatData& operator=(LatDataRealF& ld);
 };
 
 template <>
@@ -478,11 +499,11 @@ struct IsDataVectorType<LatData> {
 
 // ------------------------------------------
 
-std::string show_double(const LatData& ld);
+std::string show(const LatData& ld);
+
+std::string show_real(const LatData& ld);
 
 std::string show_complex(const LatData& ld);
-
-std::string show(const LatData& ld);
 
 void print(const LatData& ld);
 
@@ -509,37 +530,16 @@ LatData operator-(const LatData& ld, const LatData& ld1);
 LatData operator-(const LatData& ld);
 
 template <class VecS>
-Vector<ComplexD> lat_data_complex_get(LatData& ld, const VecS& idx)
-{
-  qassert(is_lat_info_complex(ld.info));
-  qassert((Long)idx.size() < (Long)ld.info.size());
-  const Long offset = lat_data_offset(ld, idx);
-  const Long size = lat_data_size(ld, idx.size());
-  qassert(size % 2 == 0);
-  qassert(offset * size + size <= (Long)ld.res.size());
-  Vector<ComplexD> ret((ComplexD*)&ld.res[offset * size], size / 2);
-  return ret;
-}
-
-template <class VecS>
-Vector<ComplexD> lat_data_complex_get_const(const LatData& ld, const VecS& idx)
-// Be cautious about the const property
-// 改不改靠自觉
-{
-  qassert(is_lat_info_complex(ld.info));
-  qassert((Long)idx.size() < (Long)ld.info.size());
-  const Long offset = lat_data_offset(ld, idx);
-  const Long size = lat_data_size(ld, idx.size());
-  qassert(size % 2 == 0);
-  qassert(offset * size + size <= (Long)ld.res.size());
-  Vector<ComplexD> ret((ComplexD*)&ld.res[offset * size], size / 2);
-  return ret;
-}
-
-template <class VecS>
 Vector<ComplexD> lat_data_cget(LatData& ld, const VecS& idx)
 {
-  return lat_data_complex_get(ld, idx);
+  qassert(is_lat_info_complex(ld.info));
+  qassert((Long)idx.size() < (Long)ld.info.size());
+  const Long offset = lat_data_offset(ld, idx);
+  const Long size = lat_data_size(ld, idx.size());
+  qassert(size % 2 == 0);
+  qassert(offset * size + size <= (Long)ld.res.size());
+  Vector<ComplexD> ret((ComplexD*)&ld.res[offset * size], size / 2);
+  return ret;
 }
 
 template <class VecS>
@@ -547,12 +547,19 @@ Vector<ComplexD> lat_data_cget_const(const LatData& ld, const VecS& idx)
 // Be cautious about the const property
 // 改不改靠自觉
 {
-  return lat_data_complex_get_const(ld, idx);
+  qassert(is_lat_info_complex(ld.info));
+  qassert((Long)idx.size() < (Long)ld.info.size());
+  const Long offset = lat_data_offset(ld, idx);
+  const Long size = lat_data_size(ld, idx.size());
+  qassert(size % 2 == 0);
+  qassert(offset * size + size <= (Long)ld.res.size());
+  Vector<ComplexD> ret((ComplexD*)&ld.res[offset * size], size / 2);
+  return ret;
 }
 
 inline Vector<ComplexD> lat_data_cget(LatData& ld)
 {
-  array<int, 0> idx;
+  array<Int, 0> idx;
   return lat_data_cget(ld, idx);
 }
 
@@ -560,12 +567,42 @@ inline Vector<ComplexD> lat_data_cget_const(const LatData& ld)
 // Be cautious about the const property
 // 改不改靠自觉
 {
-  array<int, 0> idx;
+  array<Int, 0> idx;
   return lat_data_cget_const(ld, idx);
 }
 
 inline RealD qnorm(const LatData& ld) { return qnorm(ld.res); }
 
-// -------------------
+// ------------------------------------------
+
+struct API LatDataRealF : LatDataT<RealF> {
+  LatDataRealF() = default;
+  LatDataRealF(const LatDataRealF&) = default;
+  LatDataRealF(LatDataRealF&&) noexcept = default;
+  LatDataRealF& operator=(const LatDataRealF&) = default;
+  LatDataRealF& operator=(LatDataRealF&&) noexcept = default;
+  LatDataRealF& operator=(LatData& ld);
+};
+
+template <>
+void LatDataT<RealF>::load(QFile& qfile);
+
+template <>
+void LatDataT<RealF>::save(QFile& qfile) const;
+
+inline LatDataRealF lat_data_real_f_load_sync_node(const std::string& path)
+{
+  LatDataRealF ld;
+  lat_data_load_sync_node(ld, path);
+  return ld;
+}
+
+template <>
+struct IsDataVectorType<LatDataRealF> {
+  using DataType = RealF;
+  using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
+  using ElementaryType = typename IsDataValueType<DataType>::ElementaryType;
+  static constexpr bool value = is_data_value_type<DataType>();
+};
 
 }  // namespace qlat

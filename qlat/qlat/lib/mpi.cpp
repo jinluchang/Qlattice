@@ -142,8 +142,6 @@ int glb_sum(Vector<char> recv, const Vector<char>& send)
                        MPI_BYTE, MPI_BXOR, get_comm());
 }
 
-int glb_sum(LatData& ld) { return glb_sum_double_vec(get_data(ld.res)); }
-
 int bcast(Vector<Char> recv, const int root)
 {
   TIMER("bcast(Vector<Char>)");
@@ -180,26 +178,6 @@ int bcast(std::vector<std::string>& recv, const int root)
   for (Long i = 0; i < size; ++i) {
     ret += bcast(recv[i], root);
   }
-  return ret;
-}
-
-int bcast(LatData& ld, const int root)
-{
-  TIMER("bcast(LatData&)");
-  if (1 == get_num_node()) {
-    return 0;
-  }
-  int ret = 0;
-  std::string info_str;
-  if (get_id_node() == root) {
-    info_str = show(ld.info);
-  }
-  ret += bcast(info_str, root);
-  if (get_id_node() != root) {
-    ld.info = read_lat_info(info_str);
-    lat_data_alloc(ld);
-  }
-  ret += bcast(get_data(ld.res), root);
   return ret;
 }
 
@@ -502,8 +480,12 @@ void set_global_geon(const Coordinate& size_node)
   get_id_node_internal() = geon.id_node;
   get_num_node_internal() = geon.num_node;
   get_sync_node_rs_ptr() = &(get_comm_list().back().sync_node_rs);
-  get_glb_sum_long_ptr() = glb_sum_long_mpi;
-  get_glb_sum_bytes_ptr() = glb_sum_bytes_mpi;
+  get_glb_sum_long_vec_ptr() = glb_sum_long_vec_mpi;
+  get_glb_sum_int_vec_ptr() = glb_sum_int_vec_mpi;
+  get_glb_sum_real_d_vec_ptr() = glb_sum_real_d_vec_mpi;
+  get_glb_sum_real_f_vec_ptr() = glb_sum_real_f_vec_mpi;
+  get_glb_sum_byte_vec_ptr() = glb_sum_byte_vec_mpi;
+  get_bcast_byte_vec_ptr() = bcast_byte_vec_mpi;
 }
 
 void set_cuda_device()
