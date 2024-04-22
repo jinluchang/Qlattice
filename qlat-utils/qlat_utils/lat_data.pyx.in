@@ -29,8 +29,20 @@ cdef class LatData{{type_ext}}:
         self.cdata = <cc.Long>&(self.xx)
         self.view_count = 0
 
-    def __imatmul__(self, LatData{{type_ext}} v1):
-        self.xx = v1.xx
+    def __imatmul__(self, v1):
+        if self.view_count > 0:
+            raise ValueError("can't load while being viewed")
+        if isinstance(v1, LatData{{type_ext}}):
+            self.xx = v1.xx
+{{if type_ext == ''}}
+        elif isinstance(v1, LatDataRealF):
+            self.xx = v1.xx
+{{elif type_ext == 'RealF'}}
+        elif isinstance(v1, LatData):
+            self.xx = v1.xx
+{{endif}}
+        else:
+            raise Exception(f"{v1}")
         return self
 
     def copy(self, cc.Bool is_copying_data=True):
