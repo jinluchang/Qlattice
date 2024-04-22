@@ -375,8 +375,12 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
         LatDataInt()
     cdef cppclass LatDataLong(LatDataT[Long]):
         LatDataLong()
+    cdef cppclass LatDataRealF(LatDataT[RealF]):
+        LatDataRealF()
+        LatDataRealF& operator=(const LatData&)
     cdef cppclass LatData(LatDataT[RealD]):
         LatData()
+        LatData& operator=(const LatDataRealF&)
     LatData operator*(const ComplexD& a, const LatData& ld) except +
     LatData operator*(const RealD a, const LatData& ld) except +
     LatData operator*(const LatData& ld, const ComplexD& a) except +
