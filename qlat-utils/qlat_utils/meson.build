@@ -34,6 +34,7 @@ pxd_files = files(
   'mat.pxd',
   'rng_state.pxd',
   'coordinate.pxd',
+  'qar.pxd',
   )
 
 py3.install_sources(init_files + py_files + pxd_files, subdir: 'qlat_utils')
@@ -87,8 +88,10 @@ pyx_name_list = [
   ]
 
 foreach pyx_name: pyx_name_list
+  pyx = files(f'@pyx_name@.pyx')
+  cpyx = fs.copyfile(pyx)
   lib = py3.extension_module(pyx_name,
-    f'@pyx_name@.pyx',
+    cpyx, pxd_tgts,
     dependencies: deps,
     include_directories: incdir,
     link_with: clib,

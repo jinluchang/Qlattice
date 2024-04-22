@@ -276,7 +276,7 @@ cdef class ElemTypeLong(ElemType):
     name = "Long"
     @staticmethod
     cdef char* format():
-        cdef char* fmt = 'l'
+        cdef char* fmt = 'q'
         return fmt
     @staticmethod
     cdef Py_ssize_t itemsize():

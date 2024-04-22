@@ -12,18 +12,29 @@ import numpy as np
 
 ### -------------------------------------------------------------------
 
-cdef class LatData:
+{{py:
+type_name_list = [
+    ('RealD', '', 'd', 'Zd',),
+    ('RealF', 'RealF', 'f', 'Zf',),
+    ('Int', 'Int', 'i', 'Zi'),
+    ('Long', 'Long', 'q', 'Zq',),
+    ]
+}}
+
+{{for type_name, type_ext, type_fmt, type_zz_fmt in type_name_list}}
+
+cdef class LatData{{type_ext}}:
 
     def __cinit__(self):
         self.cdata = <cc.Long>&(self.xx)
         self.view_count = 0
 
-    def __imatmul__(self, LatData v1):
+    def __imatmul__(self, LatData{{type_ext}} v1):
         self.xx = v1.xx
         return self
 
     def copy(self, cc.Bool is_copying_data=True):
-        cdef LatData x = type(self)()
+        cdef LatData{{type_ext}} x = type(self)()
         if is_copying_data:
             x.xx = self.xx
         return x
@@ -39,10 +50,10 @@ cdef class LatData:
         cdef Buffer buf = Buffer(self, ndim)
         cdef cc.Bool is_complex = self.xx.is_complex()
         if is_complex:
-            buf.format = 'Zd'
+            buf.format = '{{type_zz_fmt}}'
             buf.itemsize = sizeof(cc.ComplexD)
         else:
-            buf.format = 'd'
+            buf.format = '{{type_fmt}}'
             buf.itemsize = sizeof(cc.RealD)
         buf.buf = <char*>(self.xx.data())
         cdef int dim
@@ -93,19 +104,10 @@ cdef class LatData:
         ld = self.copy()
         return ld.glb_sum_in_place()
 
-    def __str__(self):
-        return cc.show(self.xx)
-
-    def show(self):
-        return str(self)
-
     def set_zero(self):
         cc.set_zero(self.xx)
 
-    def qnorm(self):
-        return cc.qnorm(self.xx)
-
-    def is_match(self, LatData ld1):
+    def is_match(self, LatData{{type_ext}} ld1):
         """
         ld.info needs to be exactly equal
         """
@@ -201,7 +203,7 @@ cdef class LatData:
 
     def from_numpy(self, numpy.ndarray val, list dim_names=None, *, cc.Bool is_complex=True):
         """
-        only set LatData shape if it is initially empty
+        only set LatData{{type_ext}} shape if it is initially empty
         otherwise only set data and ignore shape completely
         dim_names should be a list of names for each dimension
         """
@@ -229,7 +231,7 @@ cdef class LatData:
         for dim in range(ndim):
             dim_name = dim_names[dim]
             coords[dim_name] = self.dim_indices(dim, is_filling_default=True)
-        return xr.DataArray(np.asarray(self), coords=coords, dims=dim_names, name="LatData")
+        return xr.DataArray(np.asarray(self), coords=coords, dims=dim_names, name="LatData{{type_ext}}")
 
     def to_list(self):
         return np.asarray(self).ravel().tolist()
@@ -299,8 +301,31 @@ cdef class LatData:
                 dim_name, dummy_dim_size, dim_indices = info
                 self.set_dim_name(dim, dim_name, dim_indices)
             else:
-                raise Exception(f"LatData setinfo info_list={info_list}")
+                raise Exception(f"LatData{{type_ext}} setinfo info_list={info_list}")
         self.set_zero()
+
+    def __setitem__(self, idx, val):
+        """
+        Implemented in terms of ``np.asarray``
+        """
+        np.asarray(self)[idx] = val
+
+    def __getitem__(self, idx):
+        """
+        Implemented in terms of ``np.asarray``
+        """
+        return np.asarray(self)[idx]
+
+{{if type_ext == ''}}
+
+    def __str__(self):
+        return cc.show(self.xx)
+
+    def show(self):
+        return str(self)
+
+    def qnorm(self):
+        return cc.qnorm(self.xx)
 
     def __iadd__(self, LatData ld1):
         self.xx = self.xx + ld1.xx
@@ -360,17 +385,9 @@ cdef class LatData:
     def __pos__(self):
         return self
 
-    def __setitem__(self, idx, val):
-        """
-        Implemented in terms of ``np.asarray``
-        """
-        np.asarray(self)[idx] = val
+{{endif}}
 
-    def __getitem__(self, idx):
-        """
-        Implemented in terms of ``np.asarray``
-        """
-        return np.asarray(self)[idx]
+{{endfor}}
 
 ### -------------------------------------------------------------------
 

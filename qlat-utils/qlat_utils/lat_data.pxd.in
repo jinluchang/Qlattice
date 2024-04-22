@@ -1,6 +1,19 @@
 from . cimport everything as cqlat_utils
 
-cdef class LatData:
-    cdef cqlat_utils.LatData xx
+{{py:
+type_name_list = [
+    ('RealD', '', 'd', 'Zd',),
+    ('RealF', 'RealF', 'f', 'Zf',),
+    ('Int', 'Int', 'i', 'Zi'),
+    ('Long', 'Long', 'q', 'Zq',),
+    ]
+}}
+
+{{for type_name, type_ext, type_fmt, type_zz_fmt in type_name_list}}
+
+cdef class LatData{{type_ext}}:
+    cdef cqlat_utils.LatData{{type_ext}} xx
     cdef readonly cqlat_utils.Long cdata
     cdef readonly int view_count
+
+{{endfor}}
