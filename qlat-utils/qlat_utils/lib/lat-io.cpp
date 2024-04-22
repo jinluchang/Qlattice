@@ -171,7 +171,7 @@ void lat_data_save(const LatDataT<T>& ld, QFile& qfile)
                crc32_par(is_little_endian() ? ld.res.data() : res_copy.data(),
                          ld.res.size() * sizeof(T)));
   const std::string end_header = "END_HEADER\n";
-  qfwrite(lat_data_header.data(), lat_data_header.size(), 1, qfile);
+  qfwrite(get_lat_data_header<T>().data(), get_lat_data_header<T>().size(), 1, qfile);
   qfwrite(data_size.data(), data_size.size(), 1, qfile);
   qfwrite(info_str.data(), info_str.size(), 1, qfile);
   qfwrite(checksum_str.data(), checksum_str.size(), 1, qfile);

@@ -72,10 +72,10 @@ cdef class LatData{{type_ext}}:
         cdef cc.Bool is_complex = self.xx.is_complex()
         if is_complex:
             buf.format = '{{type_zz_fmt}}'
-            buf.itemsize = sizeof(cc.ComplexD)
+            buf.itemsize = 2 * sizeof(cc.{{type_name}})
         else:
             buf.format = '{{type_fmt}}'
-            buf.itemsize = sizeof(cc.RealD)
+            buf.itemsize = sizeof(cc.{{type_name}})
         buf.buf = <char*>(self.xx.data())
         cdef int dim
         for dim in range(ndim):
