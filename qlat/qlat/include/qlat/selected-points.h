@@ -347,96 +347,55 @@ void field_glb_sum_tslice(SelectedPoints<M>& sp, const Field<M>& f,
 }
 
 template <class M>
-LatData lat_data_from_selected_points_complex(const SelectedPoints<M>& sp)
-{
-  TIMER("lat_data_from_selected_points_complex");
-  LatData ld;
-  ld.info.push_back(lat_dim_number("idx", 0, sp.n_points - 1));
-  ld.info.push_back(lat_dim_number("m", 0, sp.multiplicity - 1));
-  qassert(sizeof(M) >= sizeof(ComplexD));
-  ld.info.push_back(lat_dim_number("v", 0, (Long)(sizeof(M) / sizeof(ComplexD)) - 1));
-  ld.info.push_back(lat_dim_re_im());
-  lat_data_alloc(ld);
-  assign(get_data(ld.res), get_data(sp.points));
-  return ld;
-}
-
-template <class M>
-void selected_points_from_lat_data_complex(SelectedPoints<M>& sp,
-                                           const LatData& ld)
-{
-  TIMER("selected_points_from_lat_data_complex");
-  qassert(ld.info.size() == 4);
-  qassert(ld.info[0].name == "idx");
-  qassert(ld.info[1].name == "m");
-  qassert(ld.info[2].name == "v");
-  qassert(ld.info[3].name == "re-im");
-  const Long n_points = ld.info[0].size;
-  const Long multiplicity = ld.info[1].size;
-  const Long sizof_M_vs_sizeof_complex = ld.info[2].size;
-  qassert(sizeof(M) == sizof_M_vs_sizeof_complex * sizeof(ComplexD));
-  qassert(ld.info[3].size == 2);
-  sp.init(n_points, multiplicity);
-  assign(get_data(sp.points), get_data(ld.res));
-}
-
-template <class M>
-LatData lat_data_from_selected_points_double(const SelectedPoints<M>& sp)
-{
-  TIMER("lat_data_from_selected_points_double");
-  LatData ld;
-  ld.info.push_back(lat_dim_number("idx", 0, sp.n_points - 1));
-  ld.info.push_back(lat_dim_number("m", 0, sp.multiplicity - 1));
-  qassert(sizeof(M) >= sizeof(double));
-  ld.info.push_back(
-      lat_dim_number("v", 0, (Long)(sizeof(M) / sizeof(double)) - 1));
-  lat_data_alloc(ld);
-  assign(get_data(ld.res), get_data(sp.points));
-  return ld;
-}
-
-template <class M>
-void selected_points_from_lat_data_double(SelectedPoints<M>& sp,
-                                          const LatData& ld)
-{
-  TIMER("selected_points_from_lat_data_double");
-  qassert(ld.info.size() == 3);
-  qassert(ld.info[0].name == "idx");
-  qassert(ld.info[1].name == "m");
-  qassert(ld.info[2].name == "v");
-  const Long n_points = ld.info[0].size;
-  const Long multiplicity = ld.info[1].size;
-  const Long sizof_M_vs_sizeof_double = ld.info[2].size;
-  qassert(sizeof(M) == sizof_M_vs_sizeof_double * sizeof(double));
-  sp.init(n_points, multiplicity);
-  assign(get_data(sp.points), get_data(ld.res));
-}
-
-template <class M>
 LatData lat_data_from_selected_points(const SelectedPoints<M>& sp)
 {
-  TIMER("lat_data_from_selected_points");
+  TIMER("lat_data_from_selected_points(sp)");
+  LatData ld;
+  ld.info.push_back(lat_dim_number("idx", 0, sp.n_points - 1));
+  ld.info.push_back(lat_dim_number("m", 0, sp.multiplicity - 1));
   if (is_composed_of_complex_d<M>()) {
-    return lat_data_from_selected_points_complex(sp);
+    const Long n_v = sizeof(M) / sizeof(ComplexD);
+    qassert(n_v * (Long)sizeof(ComplexD) == (Long)sizeof(M));
+    ld.info.push_back(lat_dim_number("v", 0, n_v - 1));
+    ld.info.push_back(lat_dim_re_im());
   } else if (is_composed_of_real_d<M>()) {
-    return lat_data_from_selected_points_double(sp);
+    const Long n_v = sizeof(M) / sizeof(RealD);
+    qassert(n_v * (Long)sizeof(RealD) == (Long)sizeof(M));
+    ld.info.push_back(lat_dim_number("v", 0, n_v - 1));
   } else {
     qerr(fname + ssprintf(": get_type_name(M)=%s", get_type_name<M>().c_str()));
-    return LatData();
   }
+  lat_data_alloc(ld);
+  assign(get_data(ld.res), get_data(sp.points));
+  return ld;
 }
 
 template <class M>
 void selected_points_from_lat_data(SelectedPoints<M>& sp, const LatData& ld)
 {
-  TIMER("selected_points_from_lat_data");
+  TIMER("selected_points_from_lat_data(sp,ld)");
   if (is_composed_of_complex_d<M>()) {
-    return selected_points_from_lat_data_complex(sp, ld);
+    qassert(ld.info.size() == 4);
   } else if (is_composed_of_real_d<M>()) {
-    return selected_points_from_lat_data_double(sp, ld);
+    qassert(ld.info.size() == 3);
   } else {
     qerr(fname + ssprintf(": get_type_name(M)=%s", get_type_name<M>().c_str()));
   }
+  qassert(ld.info[0].name == "idx");
+  qassert(ld.info[1].name == "m");
+  qassert(ld.info[2].name == "v");
+  const Long n_points = ld.info[0].size;
+  const Long multiplicity = ld.info[1].size;
+  const Long sizof_M_vs_sizeof_v = ld.info[2].size;
+  if (is_composed_of_complex_d<M>()) {
+    qassert(sizeof(M) == sizof_M_vs_sizeof_v * sizeof(ComplexD));
+    qassert(ld.info[3].name == "re-im");
+    qassert(ld.info[3].size == 2);
+  } else {
+    qassert(sizeof(M) == sizof_M_vs_sizeof_v * sizeof(RealD));
+  }
+  sp.init(n_points, multiplicity);
+  assign(get_data(sp.points), get_data(ld.res));
 }
 
 template <class M>
