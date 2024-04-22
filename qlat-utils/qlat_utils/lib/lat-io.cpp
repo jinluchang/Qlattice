@@ -262,7 +262,9 @@ void LatDataT<RealF>::save(QFile& qfile) const
 
 // -----------------------
 
-LatData& LatData::operator=(LatDataRealF& ld)
+LatData::LatData(const LatDataRealF& ld) { *this = ld; }
+
+LatData& LatData::operator=(const LatDataRealF& ld)
 {
   info = ld.info;
   const Long size = ld.res.size();
@@ -273,7 +275,9 @@ LatData& LatData::operator=(LatDataRealF& ld)
   return *this;
 }
 
-LatDataRealF& LatDataRealF::operator=(LatData& ld)
+LatDataRealF::LatDataRealF(const LatData& ld) { *this = ld; }
+
+LatDataRealF& LatDataRealF::operator=(const LatData& ld)
 {
   info = ld.info;
   const Long size = ld.res.size();

@@ -29,20 +29,29 @@ cdef class LatData{{type_ext}}:
         self.cdata = <cc.Long>&(self.xx)
         self.view_count = 0
 
-    def __imatmul__(self, v1):
+    def __imatmul__(self, v):
         if self.view_count > 0:
             raise ValueError("can't load while being viewed")
-        if isinstance(v1, LatData{{type_ext}}):
+        cdef LatData{{type_ext}} v1
+{{if type_ext == ''}}
+        cdef LatDataRealF v2
+{{elif type_ext == 'RealF'}}
+        cdef LatData v2
+{{endif}}
+        if isinstance(v, LatData{{type_ext}}):
+            v1 = v
             self.xx = v1.xx
 {{if type_ext == ''}}
-        elif isinstance(v1, LatDataRealF):
-            self.xx = v1.xx
+        elif isinstance(v, LatDataRealF):
+            v2 = v
+            self.xx = v2.xx
 {{elif type_ext == 'RealF'}}
-        elif isinstance(v1, LatData):
-            self.xx = v1.xx
+        elif isinstance(v, LatData):
+            v2 = v
+            self.xx = v2.xx
 {{endif}}
         else:
-            raise Exception(f"{v1}")
+            raise Exception(f"{type(v)}")
         return self
 
     def copy(self, cc.Bool is_copying_data=True):

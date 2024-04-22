@@ -473,7 +473,8 @@ struct API LatData : LatDataT<RealD> {
   LatData(LatData&&) noexcept = default;
   LatData& operator=(const LatData&) = default;
   LatData& operator=(LatData&&) noexcept = default;
-  LatData& operator=(LatDataRealF& ld);
+  LatData(const LatDataRealF& ld);
+  LatData& operator=(const LatDataRealF& ld);
 };
 
 template <>
@@ -581,7 +582,8 @@ struct API LatDataRealF : LatDataT<RealF> {
   LatDataRealF(LatDataRealF&&) noexcept = default;
   LatDataRealF& operator=(const LatDataRealF&) = default;
   LatDataRealF& operator=(LatDataRealF&&) noexcept = default;
-  LatDataRealF& operator=(LatData& ld);
+  LatDataRealF(const LatData& ld);
+  LatDataRealF& operator=(const LatData& ld);
 };
 
 template <>
