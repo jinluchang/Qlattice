@@ -54,6 +54,28 @@ ld1.load("results/ld1.latf")
 
 assert q.qnorm(np.asarray(ld1) - arr1) == 0
 
+ld2 = q.mk_lat_data_long(info_list)
+arr2 = ld2[:]
+arr2.ravel()[:] = np.arange(len(arr2.ravel()))
+
+ld2.save("results/ld2.latl")
+
+ld2 = q.LatDataLong()
+ld2.load("results/ld2.latl")
+
+assert q.qnorm(ld2[:] - arr2) == 0
+
+ld3 = q.mk_lat_data_int(info_list)
+arr3 = ld3[:]
+arr3.ravel()[:] = np.arange(len(arr3.ravel()))
+
+ld3.save("results/ld3.latl")
+
+ld3 = q.LatDataInt()
+ld3.load("results/ld3.latl")
+
+assert q.qnorm(ld3[:] - arr3) == 0
+
 q.check_all_files_crc32_info("results")
 
 q.timer_display()
