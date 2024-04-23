@@ -225,10 +225,18 @@ cdef extern from "qlat/selected-points.h" namespace "qlat":
     void qnorm_field[M](SelectedPoints[RealD]& sp, const SelectedPoints[M]& sp1) except +
     void lat_data_from_selected_points[M](LatData& ld, const SelectedPoints[M]& sp) except +
     void selected_points_from_lat_data[M](SelectedPoints[M]& sp, const LatData& ld) except +
+    void lat_data_from_selected_points[M](LatDataRealF& ld, const SelectedPoints[M]& sp) except +
+    void selected_points_from_lat_data[M](SelectedPoints[M]& sp, const LatDataRealF& ld) except +
+    void lat_data_from_selected_points[M](LatDataLong& ld, const SelectedPoints[M]& sp) except +
+    void selected_points_from_lat_data[M](SelectedPoints[M]& sp, const LatDataLong& ld) except +
+    void lat_data_from_selected_points[M](LatDataInt& ld, const SelectedPoints[M]& sp) except +
+    void selected_points_from_lat_data[M](SelectedPoints[M]& sp, const LatDataInt& ld) except +
     void save_selected_points[M](const SelectedPoints[M]& sp, QFile& qfile) except +
     void load_selected_points[M](SelectedPoints[M]& sp, QFile& qfile) except +
     void save_selected_points[M](const SelectedPoints[M]& sp, const std_string& fn) except +
     void load_selected_points[M](SelectedPoints[M]& sp, const std_string& fn) except +
+    std_string save_selected_points_str[M](const SelectedPoints[M]& sp) except +
+    void load_selected_points_str[M](SelectedPoints[M]& sp, std_string& content) except +
     PointsSelection mk_tslice_point_selection(const Int t_size, const Int t_dir) except +
     void field_glb_sum[M](SelectedPoints[M]& sp, const Field[M]& f) except +
     void field_glb_sum_tslice[M](SelectedPoints[M]& sp, const Field[M]& f, const Int t_dir) except +

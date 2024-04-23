@@ -611,6 +611,38 @@ void load_selected_points(SelectedPoints<M>& sp, const std::string& fn)
   qfclose(qfile);
 }
 
+template <class M>
+std::string save_selected_points_str(const SelectedPoints<M>& sp)
+// Right now only return content at node 0.
+{
+  QFile qfile;
+  if (get_id_node() == 0) {
+    qfile =
+        qfopen(QFileType::String, "/ save SelectedPoints /", QFileMode::Write);
+  }
+  save_selected_points(sp, qfile);
+  std::string ret;
+  if (get_id_node() == 0) {
+    ret = qfile.content();
+  }
+  qfclose(qfile);
+  return ret;
+}
+
+template <class M>
+void load_selected_points_str(SelectedPoints<M>& sp, std::string& content)
+// Allow to destroy `content` to be more efficient.
+// Only need to set the content at node 0.
+{
+  QFile qfile;
+  if (get_id_node() == 0) {
+    qfile = qfopen(QFileType::String, "/ load SelectedPoints /",
+                   QFileMode::Read, content);
+  }
+  load_selected_points(sp, qfile);
+  qfclose(qfile);
+}
+
 // --------------------
 
 #ifdef QLAT_INSTANTIATE_SELECTED_POINTS
@@ -679,6 +711,24 @@ void load_selected_points(SelectedPoints<M>& sp, const std::string& fn)
   QLAT_EXTERN template void selected_points_from_lat_data<TYPENAME>(      \
       SelectedPoints<TYPENAME> & sp, const LatData& ld);                  \
                                                                           \
+  QLAT_EXTERN template void lat_data_from_selected_points<TYPENAME>(      \
+      LatDataRealF & ld, const SelectedPoints<TYPENAME>& sp);             \
+                                                                          \
+  QLAT_EXTERN template void selected_points_from_lat_data<TYPENAME>(      \
+      SelectedPoints<TYPENAME> & sp, const LatDataRealF& ld);             \
+                                                                          \
+  QLAT_EXTERN template void lat_data_from_selected_points<TYPENAME>(      \
+      LatDataLong & ld, const SelectedPoints<TYPENAME>& sp);              \
+                                                                          \
+  QLAT_EXTERN template void selected_points_from_lat_data<TYPENAME>(      \
+      SelectedPoints<TYPENAME> & sp, const LatDataLong& ld);              \
+                                                                          \
+  QLAT_EXTERN template void lat_data_from_selected_points<TYPENAME>(      \
+      LatDataInt & ld, const SelectedPoints<TYPENAME>& sp);               \
+                                                                          \
+  QLAT_EXTERN template void selected_points_from_lat_data<TYPENAME>(      \
+      SelectedPoints<TYPENAME> & sp, const LatDataInt& ld);               \
+                                                                          \
   QLAT_EXTERN template void save_selected_points<TYPENAME>(               \
       const SelectedPoints<TYPENAME>& sp, QFile& qfile);                  \
                                                                           \
@@ -689,7 +739,13 @@ void load_selected_points(SelectedPoints<M>& sp, const std::string& fn)
       const SelectedPoints<TYPENAME>& sp, const std::string& fn);         \
                                                                           \
   QLAT_EXTERN template void load_selected_points<TYPENAME>(               \
-      SelectedPoints<TYPENAME> & sp, const std::string& fn)
+      SelectedPoints<TYPENAME> & sp, const std::string& fn);              \
+                                                                          \
+  QLAT_EXTERN template std::string save_selected_points_str<TYPENAME>(    \
+      const SelectedPoints<TYPENAME>& sp);                                \
+                                                                          \
+  QLAT_EXTERN template void load_selected_points_str<TYPENAME>(           \
+      SelectedPoints<TYPENAME> & sp, std::string & content)
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 #undef QLAT_EXTERN_TEMPLATE

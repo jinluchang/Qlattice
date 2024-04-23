@@ -19,6 +19,28 @@ type_name_list = [
     'Int8t',
     'Char',
     ]
+real_d_type_name_list = [
+    'ColorMatrix',
+    'WilsonMatrix',
+    'NonRelWilsonMatrix',
+    'IsospinMatrix',
+    'SpinMatrix',
+    'WilsonVector',
+    'ComplexD',
+    'RealD',
+    ]
+real_f_type_name_list = [
+    'ComplexF',
+    'RealF',
+    ]
+long_type_name_list = [
+    'Long',
+    'Int64t',
+    ]
+int_type_name_list = [
+    'Int',
+    'Int32t',
+    ]
 }}
 
 from qlat_utils.all cimport *
@@ -198,13 +220,53 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
     def load(self, const cc.std_string& path):
         cc.load_selected_points(self.xx, path)
 
+    def save_str(self):
+        """
+        only return str at node 0
+        """
+        return <bytes>cc.save_selected_points_str(self.xx)
+
+    def load_str(self, cc.std_string& content):
+        """
+        only need str at node 0
+        """
+        return cc.load_selected_points_str(self.xx, content)
+
+{{if name in real_d_type_name_list}}
     def to_lat_data(self):
-        ld = LatData()
+        cdef LatData ld = LatData()
         cc.lat_data_from_selected_points(ld.xx, self.xx)
         return ld
+{{elif name in real_f_type_name_list}}
+    def to_lat_data(self):
+        cdef LatDataRealF ld = LatDataRealF()
+        cc.lat_data_from_selected_points(ld.xx, self.xx)
+        return ld
+{{elif name in long_type_name_list}}
+    def to_lat_data(self):
+        cdef LatDataLong ld = LatDataLong()
+        cc.lat_data_from_selected_points(ld.xx, self.xx)
+        return ld
+{{elif name in int_type_name_list}}
+    def to_lat_data(self):
+        cdef LatDataInt ld = LatDataInt()
+        cc.lat_data_from_selected_points(ld.xx, self.xx)
+        return ld
+{{endif}}
 
+{{if name in real_d_type_name_list}}
     def from_lat_data(self, LatData ld not None):
         cc.selected_points_from_lat_data(self.xx, ld.xx)
+{{elif name in real_f_type_name_list}}
+    def from_lat_data(self, LatDataRealF ld not None):
+        cc.selected_points_from_lat_data(self.xx, ld.xx)
+{{elif name in long_type_name_list}}
+    def from_lat_data(self, LatDataLong ld not None):
+        cc.selected_points_from_lat_data(self.xx, ld.xx)
+{{elif name in int_type_name_list}}
+    def from_lat_data(self, LatDataInt ld not None):
+        cc.selected_points_from_lat_data(self.xx, ld.xx)
+{{endif}}
 
     def distributed(self):
         return self.xx.distributed

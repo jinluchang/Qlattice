@@ -205,13 +205,14 @@ struct API LatDataT {
   };
   //
   void load_str(std::string& content)
+  // Allow to destroy `content` to be more efficient.
   {
     QFile qfile =
         qfopen(QFileType::String, "/ load LatData /", QFileMode::Read, content);
     load(qfile);
     qfclose(qfile);
   }
-  const std::string save_str() const
+  std::string save_str() const
   {
     QFile qfile =
         qfopen(QFileType::String, "/ save LatData /", QFileMode::Write);
