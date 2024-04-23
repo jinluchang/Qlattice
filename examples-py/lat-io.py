@@ -26,7 +26,9 @@ rs.copy().g_rand_fill(np.asarray(ld).ravel())
 
 arr = ld.to_numpy()
 
-ld.save("results/ld.lat")
+if q.get_id_node() == 0:
+    ld.save("results/ld.lat")
+q.sync_node()
 
 ld = q.LatData()
 
@@ -46,7 +48,9 @@ ld1 @= ld
 
 arr1 = ld1.to_numpy()
 
-ld1.save("results/ld1.latf")
+if q.get_id_node() == 0:
+    ld1.save("results/ld1.latf")
+q.sync_node()
 
 ld1 = q.LatDataRealF()
 
@@ -58,7 +62,9 @@ ld2 = q.mk_lat_data_long(info_list)
 arr2 = ld2[:]
 arr2.ravel()[:] = np.arange(len(arr2.ravel()))
 
-ld2.save("results/ld2.latl")
+if q.get_id_node() == 0:
+    ld2.save("results/ld2.latl")
+q.sync_node()
 
 ld2 = q.LatDataLong()
 ld2.load("results/ld2.latl")
@@ -69,7 +75,9 @@ ld3 = q.mk_lat_data_int(info_list)
 arr3 = ld3[:]
 arr3.ravel()[:] = np.arange(len(arr3.ravel()))
 
-ld3.save("results/ld3.latl")
+if q.get_id_node() == 0:
+    ld3.save("results/ld3.latl")
+q.sync_node()
 
 ld3 = q.LatDataInt()
 ld3.load("results/ld3.latl")

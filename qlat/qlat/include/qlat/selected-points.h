@@ -521,27 +521,27 @@ void selected_points_from_lat_data(SelectedPoints<M>& sp, const LatDataInt& ld)
 // -------------------------------------------
 
 template <class M>
-void save_selected_points(const SelectedPoints<M>& sp, const std::string& path)
+void save_selected_points(const SelectedPoints<M>& sp, QFile& qfile)
 {
-  TIMER_VERBOSE("save_selected_points(sp,path)");
+  TIMER_VERBOSE("save_selected_points(sp,qfile)");
   qassert(not sp.distributed);
   if (get_id_node() == 0) {
     if (is_composed_of_real_d<M>()) {
       LatData ld;
       lat_data_from_selected_points(ld, sp);
-      ld.save(path);
+      ld.save(qfile);
     } else if (is_composed_of_real_f<M>()) {
       LatDataRealF ld;
       lat_data_from_selected_points(ld, sp);
-      ld.save(path);
+      ld.save(qfile);
     } else if (is_composed_of_long<M>()) {
       LatDataLong ld;
       lat_data_from_selected_points(ld, sp);
-      ld.save(path);
+      ld.save(qfile);
     } else if (is_composed_of_int<M>()) {
       LatDataInt ld;
       lat_data_from_selected_points(ld, sp);
-      ld.save(path);
+      ld.save(qfile);
     } else {
       qassert(false);
     }
@@ -549,27 +549,27 @@ void save_selected_points(const SelectedPoints<M>& sp, const std::string& path)
 }
 
 template <class M>
-void load_selected_points(SelectedPoints<M>& sp, const std::string& path)
+void load_selected_points(SelectedPoints<M>& sp, QFile& qfile)
 {
-  TIMER_VERBOSE("load_selected_points(sp,path)");
+  TIMER_VERBOSE("load_selected_points(sp,qfile)");
   Long n_points = 0;
   Long multiplicity = 0;
   if (get_id_node() == 0) {
     if (is_composed_of_real_d<M>()) {
       LatData ld;
-      ld.load(path);
+      ld.load(qfile);
       selected_points_from_lat_data(sp, ld);
     } else if (is_composed_of_real_f<M>()) {
       LatDataRealF ld;
-      ld.load(path);
+      ld.load(qfile);
       selected_points_from_lat_data(sp, ld);
     } else if (is_composed_of_long<M>()) {
       LatDataLong ld;
-      ld.load(path);
+      ld.load(qfile);
       selected_points_from_lat_data(sp, ld);
     } else if (is_composed_of_int<M>()) {
       LatDataInt ld;
-      ld.load(path);
+      ld.load(qfile);
       selected_points_from_lat_data(sp, ld);
     } else {
       qassert(false);
@@ -586,6 +586,29 @@ void load_selected_points(SelectedPoints<M>& sp, const std::string& path)
   assign(get_data(buffer), get_data(sp.points));
   bcast(get_data(buffer));
   assign(get_data(sp.points), get_data(buffer));
+}
+
+template <class M>
+void save_selected_points(const SelectedPoints<M>& sp, const std::string& fn)
+{
+  QFile qfile;
+  if (get_id_node() == 0) {
+    qfile = qfopen(fn + ".partial", "w");
+  }
+  save_selected_points(sp, qfile);
+  qfclose(qfile);
+  qrename_info(fn + ".partial", fn);
+}
+
+template <class M>
+void load_selected_points(SelectedPoints<M>& sp, const std::string& fn)
+{
+  QFile qfile;
+  if (get_id_node() == 0) {
+    qfile = qfopen(fn, "r");
+  }
+  load_selected_points(sp, qfile);
+  qfclose(qfile);
 }
 
 // --------------------
@@ -657,10 +680,16 @@ void load_selected_points(SelectedPoints<M>& sp, const std::string& path)
       SelectedPoints<TYPENAME> & sp, const LatData& ld);                  \
                                                                           \
   QLAT_EXTERN template void save_selected_points<TYPENAME>(               \
-      const SelectedPoints<TYPENAME>& sp, const std::string& path);       \
+      const SelectedPoints<TYPENAME>& sp, QFile& qfile);                  \
                                                                           \
   QLAT_EXTERN template void load_selected_points<TYPENAME>(               \
-      SelectedPoints<TYPENAME> & sp, const std::string& path)
+      SelectedPoints<TYPENAME> & sp, QFile & qfile);                      \
+                                                                          \
+  QLAT_EXTERN template void save_selected_points<TYPENAME>(               \
+      const SelectedPoints<TYPENAME>& sp, const std::string& fn);         \
+                                                                          \
+  QLAT_EXTERN template void load_selected_points<TYPENAME>(               \
+      SelectedPoints<TYPENAME> & sp, const std::string& fn)
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 #undef QLAT_EXTERN_TEMPLATE
