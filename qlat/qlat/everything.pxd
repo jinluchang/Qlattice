@@ -223,7 +223,7 @@ cdef extern from "qlat/selected-points.h" namespace "qlat":
 
     RealD qnorm[M](const SelectedPoints[M]& sp) except +
     void qnorm_field[M](SelectedPoints[RealD]& sp, const SelectedPoints[M]& sp1) except +
-    LatData lat_data_from_selected_points[M](const SelectedPoints[M]& sp) except +
+    void lat_data_from_selected_points[M](LatData& ld, const SelectedPoints[M]& sp) except +
     void selected_points_from_lat_data[M](SelectedPoints[M]& sp, const LatData& ld) except +
     void save_selected_points[M](const SelectedPoints[M]& sp, const std_string& path) except +
     void load_selected_points[M](SelectedPoints[M]& sp, const std_string& path) except +

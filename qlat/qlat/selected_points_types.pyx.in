@@ -200,7 +200,7 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
 
     def to_lat_data(self):
         ld = LatData()
-        cc.assign_direct(ld.xx, cc.lat_data_from_selected_points(self.xx))
+        cc.lat_data_from_selected_points(ld.xx, self.xx)
         return ld
 
     def from_lat_data(self, LatData ld not None):
