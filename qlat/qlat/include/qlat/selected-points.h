@@ -526,9 +526,25 @@ void save_selected_points(const SelectedPoints<M>& sp, const std::string& path)
   TIMER_VERBOSE("save_selected_points(sp,path)");
   qassert(not sp.distributed);
   if (get_id_node() == 0) {
-    LatData ld;
-    lat_data_from_selected_points(ld, sp);
-    ld.save(path);
+    if (is_composed_of_real_d<M>()) {
+      LatData ld;
+      lat_data_from_selected_points(ld, sp);
+      ld.save(path);
+    } else if (is_composed_of_real_f<M>()) {
+      LatDataRealF ld;
+      lat_data_from_selected_points(ld, sp);
+      ld.save(path);
+    } else if (is_composed_of_long<M>()) {
+      LatDataLong ld;
+      lat_data_from_selected_points(ld, sp);
+      ld.save(path);
+    } else if (is_composed_of_int<M>()) {
+      LatDataInt ld;
+      lat_data_from_selected_points(ld, sp);
+      ld.save(path);
+    } else {
+      qassert(false);
+    }
   }
 }
 
@@ -539,9 +555,25 @@ void load_selected_points(SelectedPoints<M>& sp, const std::string& path)
   Long n_points = 0;
   Long multiplicity = 0;
   if (get_id_node() == 0) {
-    LatData ld;
-    ld.load(path);
-    selected_points_from_lat_data(sp, ld);
+    if (is_composed_of_real_d<M>()) {
+      LatData ld;
+      ld.load(path);
+      selected_points_from_lat_data(sp, ld);
+    } else if (is_composed_of_real_f<M>()) {
+      LatDataRealF ld;
+      ld.load(path);
+      selected_points_from_lat_data(sp, ld);
+    } else if (is_composed_of_long<M>()) {
+      LatDataLong ld;
+      ld.load(path);
+      selected_points_from_lat_data(sp, ld);
+    } else if (is_composed_of_int<M>()) {
+      LatDataInt ld;
+      ld.load(path);
+      selected_points_from_lat_data(sp, ld);
+    } else {
+      qassert(false);
+    }
     n_points = sp.n_points;
     multiplicity = sp.multiplicity;
   }
