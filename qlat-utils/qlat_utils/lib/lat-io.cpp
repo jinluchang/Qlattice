@@ -120,6 +120,10 @@ void lat_data_load(LatDataT<T>& ld, QFile& qfile)
   std::vector<char> check_line(get_lat_data_header<T>().size(), 0);
   const Long fread_check_len =
       qfread(check_line.data(), get_lat_data_header<T>().size(), 1, qfile);
+  if (fread_check_len == 0) {
+    ld.init();
+    return;
+  }
   qassert(fread_check_len == 1);
   qassert(std::string(check_line.data(), check_line.size()) ==
           get_lat_data_header<T>());
