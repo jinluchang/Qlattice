@@ -430,6 +430,236 @@ qacc bool is_matching_geo_included(const Geometry& geo1, const Geometry& geo2)
 
 // --------------------
 
+struct API PointsSelection {
+  bool initialized;
+  bool distributed;  // default false (all node has the same data)
+  vector_acc<Coordinate> xgs;
+  //
+  void init();
+  void init(const Long n_points_);
+  void init(const Long n_points_, const Coordinate& xg_init);
+  void init(const std::vector<Coordinate>& xgs_);
+  //
+  PointsSelection() { init(); }
+  PointsSelection(const PointsSelection&) = default;
+  PointsSelection(PointsSelection&&) noexcept = default;
+  PointsSelection(const Long n_points_) { init(n_points_); }
+  PointsSelection(const Long n_points_, const Coordinate& xg_init)
+  {
+    init(n_points_, xg_init);
+  }
+  PointsSelection(const std::vector<Coordinate>& xgs_) { init(xgs_); }
+  //
+  PointsSelection& operator=(const PointsSelection& psel) = default;
+  PointsSelection& operator=(PointsSelection&& psel) noexcept = default;
+  PointsSelection& operator=(const std::vector<Coordinate>& xgs_);
+  //
+  qacc Long size() const { return xgs.size(); }
+  qacc const Coordinate* data() const { return xgs.data(); }
+  qacc Coordinate* data() { return xgs.data(); }
+  //
+  qacc const Coordinate& operator[](const Long i) const { return xgs[i]; }
+  qacc Coordinate& operator[](const Long i) { return xgs[i]; }
+  //
+  void resize(const Long size);
+  void resize(const Long size, const Coordinate& xg_init);
+  //
+  void push_back_slow(const Coordinate& xg);  // Try to avoid. Very inefficient.
+};
+
+bool operator==(const PointsSelection& psel1, const PointsSelection& psel2);
+
+bool operator!=(const PointsSelection& psel1, const PointsSelection& psel2);
+
+// --------------------
+
+template <class M>
+struct API SelectedPoints {
+  // Avoid copy constructor when possible
+  // (it is likely not be what you think it is)
+  //
+  bool initialized;
+  bool distributed;  // default false (all node has the same data)
+  Int multiplicity;
+  Long n_points;
+  vector_acc<M> points;  // global quantity, same on each node
+  // points.size() == n_points * multiplicity if initialized = true
+  //
+  void init();
+  void init(const Long n_points_, const int multiplicity_,
+            const bool distributed_);
+  void init(const PointsSelection& psel, const int multiplicity);
+  //
+  void init_zero(const Long n_points_, const int multiplicity_,
+                 const bool distributed_);
+  void init_zero(const PointsSelection& psel, const int multiplicity);
+  //
+  SelectedPoints() { init(); }
+  SelectedPoints(const SelectedPoints<M>&) = default;
+  SelectedPoints(SelectedPoints<M>&&) noexcept = default;
+  //
+  SelectedPoints<M>& operator=(const SelectedPoints<M>&) = default;
+  SelectedPoints<M>& operator=(SelectedPoints<M>&&) noexcept = default;
+  //
+  SelectedPoints<M> view() const
+  {
+    TIMER("SelectedPoints::view");
+    SelectedPoints<M> f;
+    f.initialized = initialized;
+    f.distributed = distributed;
+    f.multiplicity = multiplicity;
+    f.n_points = n_points;
+    f.points = points.view();
+    return f;
+  }
+  //
+  template <class N>
+  SelectedPoints<N> view_as() const
+  {
+    TIMER("SelectedPoints::view_as");
+    const int total_size = multiplicity * sizeof(M);
+    SelectedPoints<N> f;
+    f.initialized = initialized;
+    f.distributed = distributed;
+    f.multiplicity = total_size / sizeof(N);
+    f.n_points = n_points;
+    f.points = points.template view_as<N>();
+    qassert(f.multiplicity * (int)sizeof(N) == total_size);
+    return f;
+  }
+  //
+  qacc bool is_view() { return points.is_copy; }
+  //
+  qacc M& get_elem(const Long& idx)
+  {
+    qassert(1 == multiplicity);
+    return points[idx];
+  }
+  qacc const M& get_elem(const Long& idx) const
+  {
+    qassert(1 == multiplicity);
+    return points[idx];
+  }
+  //
+  qacc M& get_elem(const Long& idx, const int m)
+  {
+    qassert(0 <= m and m < multiplicity);
+    return points[idx * multiplicity + m];
+  }
+  qacc const M& get_elem(const Long& idx, const int m) const
+  {
+    qassert(0 <= m and m < multiplicity);
+    return points[idx * multiplicity + m];
+  }
+  //
+  qacc Vector<M> get_elems(const Long idx)
+  {
+    return Vector<M>(&points[idx * multiplicity], multiplicity);
+  }
+  qacc Vector<M> get_elems_const(const Long idx) const
+  // Be cautious about the const property
+  // 改不改靠自觉
+  {
+    return Vector<M>(&points[idx * multiplicity], multiplicity);
+  }
+};
+
+template <class M>
+void SelectedPoints<M>::init()
+{
+  initialized = false;
+  distributed = false;
+  multiplicity = 0;
+  n_points = 0;
+  points.init();
+}
+
+template <class M>
+void SelectedPoints<M>::init(const Long n_points_, const int multiplicity_,
+                             const bool distributed_)
+{
+  if (initialized) {
+    qassert(distributed_ == distributed);
+    qassert(multiplicity_ == multiplicity);
+    qassert(n_points_ == n_points);
+    qassert((Long)points.size() == n_points * multiplicity);
+  } else {
+    TIMER("SelectedPoints::init(np,mult,dist)")
+    init();
+    initialized = true;
+    distributed = distributed_;
+    multiplicity = multiplicity_;
+    n_points = n_points_;
+    points.resize(n_points * multiplicity);
+    if (1 == get_field_init()) {
+      set_zero(*this);
+    } else if (2 == get_field_init()) {
+      set_u_rand_float(get_data(points), RngState(show(get_time())));
+    } else {
+      qassert(0 == get_field_init());
+    }
+  }
+}
+
+template <class M>
+void SelectedPoints<M>::init(const PointsSelection& psel,
+                             const int multiplicity)
+{
+  init(psel.size(), multiplicity, psel.distributed);
+}
+
+template <class M>
+void SelectedPoints<M>::init_zero(const Long n_points_, const int multiplicity_,
+                                  const bool distributed_)
+{
+  if (initialized) {
+    qassert(distributed_ == distributed);
+    qassert(multiplicity_ == multiplicity);
+    qassert(n_points_ == n_points);
+    qassert((Long)points.size() == n_points * multiplicity);
+  } else {
+    TIMER("SelectedPoints::init_zero(np,mult,dist)")
+    init();
+    initialized = true;
+    distributed = distributed_;
+    multiplicity = multiplicity_;
+    n_points = n_points_;
+    points.resize(n_points * multiplicity);
+    set_zero(*this);
+  }
+}
+
+template <class M>
+void SelectedPoints<M>::init_zero(const PointsSelection& psel,
+                                  const int multiplicity)
+{
+  init_zero(psel.size(), multiplicity, psel.distributed);
+}
+
+template <class M>
+Vector<M> get_data(const SelectedPoints<M>& sp)
+{
+  return get_data(sp.points);
+}
+
+template <class M>
+void set_zero(SelectedPoints<M>& sp)
+{
+  TIMER("set_zero(SelectedPoints)");
+  set_zero(get_data(sp));
+}
+
+template <class M>
+void qswap(SelectedPoints<M>& f1, SelectedPoints<M>& f2)
+{
+  std::swap(f1.initialized, f2.initialized);
+  std::swap(f1.n_points, f2.n_points);
+  std::swap(f1.multiplicity, f2.multiplicity);
+  qswap(f1.points, f2.points);
+}
+
+// --------------------
+
 template <class M>
 struct API Field {
   // Avoid copy constructor when possible
@@ -466,14 +696,43 @@ struct API Field {
   Field<N> view_as() const
   {
     TIMER("Field::view_as");
-    const int total_size = geo().multiplicity * sizeof(M);
-    const int multiplicity = total_size / sizeof(N);
-    qassert(multiplicity * (int)sizeof(N) == total_size);
+    const Int total_size = geo().multiplicity * sizeof(M);
+    const Int multiplicity = total_size / sizeof(N);
+    qassert(multiplicity * (Int)sizeof(N) == total_size);
     Field<N> f;
     f.initialized = initialized;
     f.geo.set(geo());
     f.geo().multiplicity = multiplicity;
     f.field = field.template view_as<N>();
+    return f;
+  }
+  //
+  SelectedPoints<M> view_sp() const
+  {
+    TIMER("Field::view_sp");
+    qassert(geo().is_only_local);
+    SelectedPoints<M> f;
+    f.initialized = initialized;
+    f.distributed = true;
+    f.multiplicity = geo().multiplicity;
+    f.n_points = geo().local_volume();
+    f.points = field.view();
+    return f;
+  }
+  //
+  template <class N>
+  SelectedPoints<N> view_sp_as() const
+  {
+    TIMER("Field::view_sp_as");
+    qassert(geo().is_only_local);
+    const Int total_size = geo().multiplicity * sizeof(M);
+    SelectedPoints<N> f;
+    f.initialized = initialized;
+    f.distributed = true;
+    f.multiplicity = total_size / sizeof(N);
+    f.n_points = geo().local_volume();
+    f.points = field.template view_as<N>();
+    qassert(f.multiplicity * (Int)sizeof(N) == total_size);
     return f;
   }
   //
@@ -809,234 +1068,6 @@ inline GaugeField& gf_from_field(Field<ColorMatrix>& f)
 
 // --------------------
 
-struct API PointsSelection {
-  bool initialized;
-  bool distributed;  // default false (all node has the same data)
-  vector_acc<Coordinate> xgs;
-  //
-  void init();
-  void init(const Long n_points_);
-  void init(const Long n_points_, const Coordinate& xg_init);
-  void init(const std::vector<Coordinate>& xgs_);
-  //
-  PointsSelection() { init(); }
-  PointsSelection(const PointsSelection&) = default;
-  PointsSelection(PointsSelection&&) noexcept = default;
-  PointsSelection(const Long n_points_) { init(n_points_); }
-  PointsSelection(const Long n_points_, const Coordinate& xg_init)
-  {
-    init(n_points_, xg_init);
-  }
-  PointsSelection(const std::vector<Coordinate>& xgs_) { init(xgs_); }
-  //
-  PointsSelection& operator=(const PointsSelection& psel) = default;
-  PointsSelection& operator=(PointsSelection&& psel) noexcept = default;
-  PointsSelection& operator=(const std::vector<Coordinate>& xgs_);
-  //
-  qacc Long size() const { return xgs.size(); }
-  qacc const Coordinate* data() const { return xgs.data(); }
-  qacc Coordinate* data() { return xgs.data(); }
-  //
-  qacc const Coordinate& operator[](const Long i) const { return xgs[i]; }
-  qacc Coordinate& operator[](const Long i) { return xgs[i]; }
-  //
-  void resize(const Long size);
-  void resize(const Long size, const Coordinate& xg_init);
-  //
-  void push_back_slow(const Coordinate& xg);  // Try to avoid. Very inefficient.
-};
-
-bool operator==(const PointsSelection& psel1, const PointsSelection& psel2);
-
-bool operator!=(const PointsSelection& psel1, const PointsSelection& psel2);
-
-// --------------------
-
-template <class M>
-struct API SelectedPoints {
-  // Avoid copy constructor when possible
-  // (it is likely not be what you think it is)
-  //
-  bool initialized;
-  bool distributed;  // default false (all node has the same data)
-  Int multiplicity;
-  Long n_points;
-  vector_acc<M> points;  // global quantity, same on each node
-  // points.size() == n_points * multiplicity if initialized = true
-  //
-  void init();
-  void init(const Long n_points_, const int multiplicity_,
-            const bool distributed_);
-  void init(const PointsSelection& psel, const int multiplicity);
-  //
-  void init_zero(const Long n_points_, const int multiplicity_,
-                 const bool distributed_);
-  void init_zero(const PointsSelection& psel, const int multiplicity);
-  //
-  SelectedPoints() { init(); }
-  SelectedPoints(const SelectedPoints<M>&) = default;
-  SelectedPoints(SelectedPoints<M>&&) noexcept = default;
-  //
-  SelectedPoints<M>& operator=(const SelectedPoints<M>&) = default;
-  SelectedPoints<M>& operator=(SelectedPoints<M>&&) noexcept = default;
-  //
-  SelectedPoints<M> view() const
-  {
-    TIMER("SelectedPoints::view");
-    SelectedPoints<M> f;
-    f.initialized = initialized;
-    f.distributed = distributed;
-    f.multiplicity = multiplicity;
-    f.n_points = n_points;
-    f.points = points.view();
-    return f;
-  }
-  //
-  template <class N>
-  SelectedPoints<N> view_as() const
-  {
-    TIMER("SelectedPoints::view_as");
-    const int total_size = multiplicity * sizeof(M);
-    SelectedPoints<N> f;
-    f.initialized = initialized;
-    f.distributed = distributed;
-    f.multiplicity = total_size / sizeof(N);
-    f.n_points = n_points;
-    f.points = points.template view_as<N>();
-    qassert(f.multiplicity * (int)sizeof(N) == total_size);
-    return f;
-  }
-  //
-  qacc M& get_elem(const Long& idx)
-  {
-    qassert(1 == multiplicity);
-    return points[idx];
-  }
-  qacc const M& get_elem(const Long& idx) const
-  {
-    qassert(1 == multiplicity);
-    return points[idx];
-  }
-  //
-  qacc M& get_elem(const Long& idx, const int m)
-  {
-    qassert(0 <= m and m < multiplicity);
-    return points[idx * multiplicity + m];
-  }
-  qacc const M& get_elem(const Long& idx, const int m) const
-  {
-    qassert(0 <= m and m < multiplicity);
-    return points[idx * multiplicity + m];
-  }
-  //
-  qacc Vector<M> get_elems(const Long idx)
-  {
-    return Vector<M>(&points[idx * multiplicity], multiplicity);
-  }
-  qacc Vector<M> get_elems_const(const Long idx) const
-  // Be cautious about the const property
-  // 改不改靠自觉
-  {
-    return Vector<M>(&points[idx * multiplicity], multiplicity);
-  }
-};
-
-template <class M>
-void SelectedPoints<M>::init()
-{
-  initialized = false;
-  distributed = false;
-  multiplicity = 0;
-  n_points = 0;
-  points.init();
-}
-
-template <class M>
-void SelectedPoints<M>::init(const Long n_points_, const int multiplicity_,
-                             const bool distributed_)
-{
-  if (initialized) {
-    qassert(distributed_ == distributed);
-    qassert(multiplicity_ == multiplicity);
-    qassert(n_points_ == n_points);
-    qassert((Long)points.size() == n_points * multiplicity);
-  } else {
-    TIMER("SelectedPoints::init(np,mult,dist)")
-    init();
-    initialized = true;
-    distributed = distributed_;
-    multiplicity = multiplicity_;
-    n_points = n_points_;
-    points.resize(n_points * multiplicity);
-    if (1 == get_field_init()) {
-      set_zero(*this);
-    } else if (2 == get_field_init()) {
-      set_u_rand_float(get_data(points), RngState(show(get_time())));
-    } else {
-      qassert(0 == get_field_init());
-    }
-  }
-}
-
-template <class M>
-void SelectedPoints<M>::init(const PointsSelection& psel,
-                             const int multiplicity)
-{
-  init(psel.size(), multiplicity, psel.distributed);
-}
-
-template <class M>
-void SelectedPoints<M>::init_zero(const Long n_points_, const int multiplicity_,
-                                  const bool distributed_)
-{
-  if (initialized) {
-    qassert(distributed_ == distributed);
-    qassert(multiplicity_ == multiplicity);
-    qassert(n_points_ == n_points);
-    qassert((Long)points.size() == n_points * multiplicity);
-  } else {
-    TIMER("SelectedPoints::init_zero(np,mult,dist)")
-    init();
-    initialized = true;
-    distributed = distributed_;
-    multiplicity = multiplicity_;
-    n_points = n_points_;
-    points.resize(n_points * multiplicity);
-    set_zero(*this);
-  }
-}
-
-template <class M>
-void SelectedPoints<M>::init_zero(const PointsSelection& psel,
-                                  const int multiplicity)
-{
-  init_zero(psel.size(), multiplicity, psel.distributed);
-}
-
-template <class M>
-Vector<M> get_data(const SelectedPoints<M>& sp)
-{
-  return get_data(sp.points);
-}
-
-template <class M>
-void set_zero(SelectedPoints<M>& sp)
-{
-  TIMER("set_zero(SelectedPoints)");
-  set_zero(get_data(sp));
-}
-
-template <class M>
-void qswap(SelectedPoints<M>& f1, SelectedPoints<M>& f2)
-{
-  std::swap(f1.initialized, f2.initialized);
-  std::swap(f1.n_points, f2.n_points);
-  std::swap(f1.multiplicity, f2.multiplicity);
-  qswap(f1.points, f2.points);
-}
-
-// --------------------
-
 using FieldRank = FieldM<int64_t, 1>;
 
 using FieldIndex = FieldM<Long, 1>;
@@ -1110,6 +1141,33 @@ struct API SelectedField {
     f.geo.set(geo());
     f.geo().multiplicity = multiplicity;
     f.field = field.template view_as<N>();
+    return f;
+  }
+  //
+  SelectedPoints<M> view_sp() const
+  {
+    TIMER("SelectedField::view_sp");
+    SelectedPoints<M> f;
+    f.initialized = initialized;
+    f.distributed = true;
+    f.multiplicity = geo().multiplicity;
+    f.n_points = n_elems;
+    f.points = field.view();
+    return f;
+  }
+  //
+  template <class N>
+  SelectedPoints<N> view_sp_as() const
+  {
+    TIMER("SelectedField::view_sp_as");
+    const int total_size = geo().multiplicity * sizeof(M);
+    SelectedPoints<N> f;
+    f.initialized = initialized;
+    f.distributed = true;
+    f.multiplicity = total_size / sizeof(N);
+    f.n_points = n_elems;
+    f.points = field.template view_as<N>();
+    qassert(f.multiplicity * (int)sizeof(N) == total_size);
     return f;
   }
   //

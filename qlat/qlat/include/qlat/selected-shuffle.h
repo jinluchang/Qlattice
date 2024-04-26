@@ -37,6 +37,9 @@ void shuffle_selected_field_char(SelectedPoints<char>& spc,
 void set_points_selection_from_selected_points(
     PointsSelection& psel, const SelectedPoints<Coordinate>& spx);
 
+void set_selected_points_from_points_selection(SelectedPoints<Coordinate>& sfx,
+                                               const PointsSelection& psel);
+
 void set_selected_field_from_field_selection(SelectedField<Coordinate>& sfx,
                                              const FieldSelection& fsel);
 
