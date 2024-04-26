@@ -430,6 +430,9 @@ qacc bool is_matching_geo_included(const Geometry& geo1, const Geometry& geo2)
 
 // --------------------
 
+template <class M>
+struct API SelectedPoints;
+
 struct API PointsSelection {
   bool initialized;
   bool distributed;  // default false (all node has the same data)
@@ -439,6 +442,8 @@ struct API PointsSelection {
   void init(const Long n_points_);
   void init(const Long n_points_, const Coordinate& xg_init);
   void init(const std::vector<Coordinate>& xgs_);
+  void init(const vector<Coordinate>& xgs_);
+  void init(const SelectedPoints<Coordinate>& spx);
   //
   PointsSelection() { init(); }
   PointsSelection(const PointsSelection&) = default;
@@ -453,6 +458,8 @@ struct API PointsSelection {
   PointsSelection& operator=(const PointsSelection& psel) = default;
   PointsSelection& operator=(PointsSelection&& psel) noexcept = default;
   PointsSelection& operator=(const std::vector<Coordinate>& xgs_);
+  PointsSelection& operator=(const vector<Coordinate>& xgs_);
+  PointsSelection& operator=(const SelectedPoints<Coordinate>& spx);
   //
   qacc Long size() const { return xgs.size(); }
   qacc const Coordinate* data() const { return xgs.data(); }
@@ -463,6 +470,8 @@ struct API PointsSelection {
   //
   void resize(const Long size);
   void resize(const Long size, const Coordinate& xg_init);
+  //
+  SelectedPoints<Coordinate> view_sp();
   //
   void push_back_slow(const Coordinate& xg);  // Try to avoid. Very inefficient.
 };

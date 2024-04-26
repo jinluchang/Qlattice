@@ -76,9 +76,37 @@ void PointsSelection::init(const std::vector<Coordinate>& xgs_)
   xgs = xgs_;
 }
 
+void PointsSelection::init(const vector<Coordinate>& xgs_)
+{
+  initialized = true;
+  distributed = false;
+  xgs = xgs_;
+}
+
+void PointsSelection::init(const SelectedPoints<Coordinate>& spx)
+{
+  qassert(spx.multiplicity == 1);
+  initialized = spx.initialized;
+  distributed = spx.distributed;
+  xgs = spx.points;
+}
+
 PointsSelection& PointsSelection::operator=(const std::vector<Coordinate>& xgs_)
 {
   init(xgs_);
+  return *this;
+}
+
+PointsSelection& PointsSelection::operator=(const vector<Coordinate>& xgs_)
+{
+  init(xgs_);
+  return *this;
+}
+
+PointsSelection& PointsSelection::operator=(
+    const SelectedPoints<Coordinate>& spx)
+{
+  init(spx);
   return *this;
 }
 
@@ -87,6 +115,18 @@ void PointsSelection::resize(const Long n_points) { xgs.resize(n_points); }
 void PointsSelection::resize(const Long n_points, const Coordinate& xg_init)
 {
   xgs.resize(n_points, xg_init);
+}
+
+SelectedPoints<Coordinate> PointsSelection::view_sp()
+{
+  TIMER("PointsSelection::view_sp");
+  SelectedPoints<Coordinate> f;
+  f.initialized = initialized;
+  f.distributed = distributed;
+  f.multiplicity = 1;
+  f.n_points = xgs.size();
+  f.points = xgs.view();
+  return f;
 }
 
 void PointsSelection::push_back_slow(const Coordinate& xg)

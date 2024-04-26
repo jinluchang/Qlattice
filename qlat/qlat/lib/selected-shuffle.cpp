@@ -34,17 +34,17 @@ void set_selected_shuffle_id_node_send_to(
 
 void set_selected_shuffle_id_node_send_to(
     SelectedPoints<Int>& sf_id_node_send_to,
-    const SelectedPoints<Coordinate>& sfx, const Coordinate& total_site,
+    const SelectedPoints<Coordinate>& spx, const Coordinate& total_site,
     const RngState& rs)
 {
-  TIMER("set_selected_shuffle_id_node_send_to(sf_id_node_send_to,sfx,total_site,rs)");
-  const Long n_points = sfx.n_points;
-  qassert(sfx.multiplicity == 1);
+  TIMER("set_selected_shuffle_id_node_send_to(sf_id_node_send_to,spx,total_site,rs)");
+  const Long n_points = spx.n_points;
+  qassert(spx.multiplicity == 1);
   const Int num_node = get_num_node();
   sf_id_node_send_to.init(n_points, 1, true);
   RngState rsl = rs.split(get_id_node());
   qthread_for(idx, n_points, {
-    const Coordinate& xg = sfx.get_elem(idx);
+    const Coordinate& xg = spx.get_elem(idx);
     const Long gindex = index_from_coordinate(xg, total_site);
     RngState rsi = rsl.newtype(gindex);
     const Int id_node_send_to = rand_gen(rsi) % num_node;
