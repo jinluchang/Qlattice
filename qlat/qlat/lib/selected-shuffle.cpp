@@ -15,18 +15,38 @@ void SelectedShufflePlan::init()
   recvcounts.clear();
 }
 
-void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_elems,
-                               const RngState& rs)
+void set_selected_shuffle_id_node_send_to(
+    SelectedPoints<Int>& sf_id_node_send_to, const Long n_points,
+    const RngState& rs)
+{
+  TIMER("set_selected_shuffle_id_node_send_to(sf_id_node_send_to,n_points,rs)");
+  const Int num_node = get_num_node();
+  sf_id_node_send_to.init(n_points, 1, true);
+  RngState rsl = rs.split(get_id_node());
+  qthread_for(idx, n_points, {
+    RngState rsi = rsl.newtype(idx);
+    const Int id_node_send_to = rand_gen(rsi) % num_node;
+    qassert(0 <= id_node_send_to);
+    qassert(id_node_send_to < num_node);
+    sf_id_node_send_to.get_elem(idx) = id_node_send_to;
+  });
+}
+
+void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
+                               const SelectedPoints<Int>& sf_id_node_send_to)
 // Collective operation.
 {
-  TIMER("set_selected_shuffle_plan(ssp,n_elems,rs)");
+  TIMER("set_selected_shuffle_plan(ssp,sf_id_node_send_to)");
   ssp.init();
   const Int num_node = get_num_node();
+  const Long n_points = sf_id_node_send_to.n_points;
+  qassert(sf_id_node_send_to.initialized == true);
+  qassert(sf_id_node_send_to.distributed == true);
+  qassert(sf_id_node_send_to.multiplicity == 1);
   SelectedPoints<Long>& sfi = ssp.local_shuffle_idx_field;
-  sfi.init(n_elems, 1);
-  sfi.distributed = true;
+  sfi.init(n_points, 1, true);
   set_zero(sfi);
-  ssp.total_send_count = n_elems;
+  ssp.total_send_count = n_points;
   ssp.sdispls.resize(num_node);
   ssp.rdispls.resize(num_node);
   ssp.sendcounts.resize(num_node);
@@ -35,44 +55,42 @@ void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_elems,
   set_zero(ssp.rdispls);
   set_zero(ssp.sendcounts);
   set_zero(ssp.recvcounts);
-  SelectedPoints<Int> sf_id_node_send_to;
-  sf_id_node_send_to.init(n_elems, 1);
-  sf_id_node_send_to.distributed = true;
-  RngState rsl = rs.split(get_id_node());
-  qthread_for(idx, n_elems, {
-    RngState rsi = rsl.newtype(idx);
-    const Int id_node_send_to = rand_gen(rsi) % num_node;
-    qassert(0 <= id_node_send_to);
-    qassert(id_node_send_to < num_node);
-    sf_id_node_send_to.get_elem(idx) = id_node_send_to;
-  });
-  qfor(idx, n_elems, {
+  qfor(idx, n_points, {
     const Int id_node_send_to = sf_id_node_send_to.get_elem(idx);
     ssp.sendcounts[id_node_send_to] += 1;
   });
-  int sdispl = 0;
+  Int sdispl = 0;
   qfor(id_node, num_node, {
     ssp.sdispls[id_node] = sdispl;
     sdispl += ssp.sendcounts[id_node];
   });
   qassert(ssp.total_send_count == sdispl);
-  vector<int> c_idx_vec;
+  vector<Int> c_idx_vec;
   c_idx_vec = ssp.sdispls;
-  qfor(idx, n_elems, {
+  qfor(idx, n_points, {
     const Int id_node_send_to = sf_id_node_send_to.get_elem(idx);
     sfi.get_elem(idx) = c_idx_vec[id_node_send_to];
     c_idx_vec[id_node_send_to] += 1;
   });
   qfor(id_node, num_node - 1,
        { qassert(c_idx_vec[id_node] == ssp.sdispls[id_node + 1]); });
-  MPI_Alltoall(ssp.sendcounts.data(), sizeof(int), MPI_BYTE,
-               ssp.recvcounts.data(), sizeof(int), MPI_BYTE, get_comm());
-  int rdispl = 0;
+  MPI_Alltoall(ssp.sendcounts.data(), sizeof(Int), MPI_BYTE,
+               ssp.recvcounts.data(), sizeof(Int), MPI_BYTE, get_comm());
+  Int rdispl = 0;
   qfor(id_node, num_node, {
     ssp.rdispls[id_node] = rdispl;
     rdispl += ssp.recvcounts[id_node];
   });
   ssp.total_recv_count = rdispl;
+}
+
+void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_points,
+                               const RngState& rs)
+{
+  TIMER("set_selected_shuffle_plan(ssp,n_points,rs)");
+  SelectedPoints<Int> sf_id_node_send_to;
+  set_selected_shuffle_id_node_send_to(sf_id_node_send_to, n_points, rs);
+  set_selected_shuffle_plan(ssp, sf_id_node_send_to);
 }
 
 void shuffle_selected_field_char(SelectedPoints<char>& spc,

@@ -20,7 +20,14 @@ struct SelectedShufflePlan {
   void init();
 };
 
-void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_elems,
+void set_selected_shuffle_id_node_send_to(
+    SelectedPoints<Int>& sf_id_node_send_to, const Long n_points,
+    const RngState& rs);
+
+void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
+                               const SelectedPoints<Int>& sf_id_node_send_to);
+
+void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_points,
                                const RngState& rs);
 
 void shuffle_selected_field_char(SelectedPoints<char>& spc,
