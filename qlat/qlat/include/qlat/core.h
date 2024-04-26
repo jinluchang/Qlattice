@@ -471,7 +471,7 @@ struct API PointsSelection {
   void resize(const Long size);
   void resize(const Long size, const Coordinate& xg_init);
   //
-  SelectedPoints<Coordinate> view_sp();
+  SelectedPoints<Coordinate> view_sp() const;
   //
   void push_back_slow(const Coordinate& xg);  // Try to avoid. Very inefficient.
 };
@@ -519,6 +519,19 @@ struct API SelectedPoints {
     f.multiplicity = multiplicity;
     f.n_points = n_points;
     f.points = points.view();
+    return f;
+  }
+  //
+  SelectedPoints<Char> view_as_char() const
+  {
+    TIMER("SelectedPoints::view_as_char");
+    const int total_size = multiplicity * sizeof(M);
+    SelectedPoints<Char> f;
+    f.initialized = initialized;
+    f.distributed = distributed;
+    f.multiplicity = total_size;
+    f.n_points = n_points;
+    f.points = points.view_as_char();
     return f;
   }
   //
@@ -1099,6 +1112,8 @@ struct API FieldSelection {
   //
   qacc const Geometry& get_geo() const { return f_rank.geo(); }
 };
+
+void set_psel_from_fsel(PointsSelection& psel, const FieldSelection& fsel);
 
 // --------------------
 

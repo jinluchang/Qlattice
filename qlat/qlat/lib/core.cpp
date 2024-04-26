@@ -117,7 +117,7 @@ void PointsSelection::resize(const Long n_points, const Coordinate& xg_init)
   xgs.resize(n_points, xg_init);
 }
 
-SelectedPoints<Coordinate> PointsSelection::view_sp()
+SelectedPoints<Coordinate> PointsSelection::view_sp() const
 {
   TIMER("PointsSelection::view_sp");
   SelectedPoints<Coordinate> f;
@@ -167,6 +167,22 @@ void FieldSelection::init()
   n_elems = 0;
   ranks.init();
   indices.init();
+}
+
+void set_psel_from_fsel(PointsSelection& psel, const FieldSelection& fsel)
+{
+  TIMER("set_psel_from_fsel(psel,fsel)");
+  qassert(fsel.f_rank.initialized);
+  const Geometry& geo = fsel.f_rank.geo();
+  const Long n_points = fsel.n_elems;
+  psel.init(n_points);
+  psel.distributed = true;
+  qthread_for(idx, n_points, {
+    const Long index = fsel.indices[idx];
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    psel[idx] = xg;
+  });
 }
 
 }  // namespace qlat

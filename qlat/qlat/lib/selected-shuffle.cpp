@@ -5,8 +5,8 @@ namespace qlat
 
 void SelectedShufflePlan::init()
 {
-  SelectedPoints<Long>& sfi = local_shuffle_idx_field;
-  sfi.init();
+  SelectedPoints<Long>& spi = local_shuffle_idx_points;
+  spi.init();
   total_send_count = 0;
   total_recv_count = 0;
   sdispls.clear();
@@ -65,9 +65,9 @@ void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
   qassert(sf_id_node_send_to.initialized == true);
   qassert(sf_id_node_send_to.distributed == true);
   qassert(sf_id_node_send_to.multiplicity == 1);
-  SelectedPoints<Long>& sfi = ssp.local_shuffle_idx_field;
-  sfi.init(n_points, 1, true);
-  set_zero(sfi);
+  SelectedPoints<Long>& spi = ssp.local_shuffle_idx_points;
+  spi.init(n_points, 1, true);
+  set_zero(spi);
   ssp.total_send_count = n_points;
   ssp.sdispls.resize(num_node);
   ssp.rdispls.resize(num_node);
@@ -91,7 +91,7 @@ void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
   c_idx_vec = ssp.sdispls;
   qfor(idx, n_points, {
     const Int id_node_send_to = sf_id_node_send_to.get_elem(idx);
-    sfi.get_elem(idx) = c_idx_vec[id_node_send_to];
+    spi.get_elem(idx) = c_idx_vec[id_node_send_to];
     c_idx_vec[id_node_send_to] += 1;
   });
   qfor(id_node, num_node - 1,
@@ -115,42 +115,44 @@ void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_points,
   set_selected_shuffle_plan(ssp, sf_id_node_send_to);
 }
 
-void shuffle_selected_field_char(SelectedPoints<char>& spc,
-                                 const SelectedField<char>& sfc,
-                                 const SelectedShufflePlan& ssp)
+void shuffle_selected_points_char(SelectedPoints<Char>& spc,
+                                  const SelectedPoints<Char>& spc0,
+                                  const SelectedShufflePlan& ssp)
 // const Long n_points = ssp.total_recv_count;
-// const Int multiplicity = sf.geo().multiplicity;
+// const Int multiplicity = sp0.multiplicity;
 // SelectedPoints<M> sp;
 // sp.init(n_points, multiplicity);
 // sp.distributed = true;
-// SelectedPoints<char> spc(sp.template view_as<char>());
-// SelectedField<char> sfc(sf.template view_as<char>());
+// SelectedPoints<Char> spc(sp.view_as_char());
+// SelectedPoints<Char> spc0(sp0.view_as_char());
 {
-  TIMER("shuffle_selected_field_char(spc,sfc,ssp)");
-  const int multiplicity = sfc.geo().multiplicity;
+  TIMER("shuffle_selected_field_char(spc,spc0,ssp)");
+  const SelectedPoints<Long>& spi = ssp.local_shuffle_idx_points;
+  qassert(spi.multiplicity == 1);
+  qassert(spi.n_points == ssp.total_send_count);
+  qassert(spc0.initialized == true);
+  qassert(spc0.distributed == true);
+  qassert(spc0.n_points == ssp.total_send_count);
+  const Int multiplicity = spc0.multiplicity;
   qassert(spc.initialized == true);
   qassert(spc.distributed == true);
   qassert(spc.n_points == ssp.total_recv_count);
   qassert(spc.multiplicity == multiplicity);
-  const SelectedPoints<Long>& sfi = ssp.local_shuffle_idx_field;
-  qassert(sfi.n_points == sfc.n_elems);
-  qassert(sfi.multiplicity == 1);
-  qassert(sfc.geo().is_only_local);
-  SelectedField<char> sf1;
-  sf1.init(sfc.geo(), sfc.n_elems, multiplicity);
-  qthread_for(idx, sfc.n_elems, {
-    const Vector<char> v = sfc.get_elems_const(idx);
-    const Long idx1 = sfi.get_elem(idx);
+  SelectedPoints<Char> sp1;
+  sp1.init(spc0.n_points, multiplicity);
+  qthread_for(idx, spc0.n_points, {
+    const Vector<Char> v = spc0.get_elems_const(idx);
+    const Long idx1 = spi.get_elem(idx);
     qassert(0 <= idx1);
-    qassert(idx1 < sf1.n_elems);
-    Vector<char> v1 = sf1.get_elems(idx1);
+    qassert(idx1 < sp1.n_points);
+    Vector<Char> v1 = sp1.get_elems(idx1);
     assign(v1, v);
   });
   MPI_Datatype mpi_dtype;
-  int mpi_ret = MPI_Type_contiguous(multiplicity, MPI_BYTE, &mpi_dtype);
+  const Int mpi_ret = MPI_Type_contiguous(multiplicity, MPI_BYTE, &mpi_dtype);
   qassert(mpi_ret == 0);
   MPI_Type_commit(&mpi_dtype);
-  MPI_Alltoallv(sfc.field.data(), ssp.sendcounts.data(), ssp.sdispls.data(),
+  MPI_Alltoallv(spc0.points.data(), ssp.sendcounts.data(), ssp.sdispls.data(),
                 mpi_dtype, spc.points.data(), ssp.recvcounts.data(),
                 ssp.rdispls.data(), mpi_dtype, get_comm());
   MPI_Type_free(&mpi_dtype);

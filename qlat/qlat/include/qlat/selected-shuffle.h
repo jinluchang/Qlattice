@@ -9,13 +9,13 @@ namespace qlat
 
 struct SelectedShufflePlan {
   SelectedPoints<Long>
-      local_shuffle_idx_field;  // Reorder field according to this idx field.
+      local_shuffle_idx_points;  // Reorder field according to this idx field.
   Long total_send_count;
   Long total_recv_count;
-  vector<int> sendcounts;
-  vector<int> recvcounts;
-  vector<int> sdispls;
-  vector<int> rdispls;
+  vector<Int> sendcounts;
+  vector<Int> recvcounts;
+  vector<Int> sdispls;
+  vector<Int> rdispls;
   //
   void init();
 };
@@ -30,9 +30,9 @@ void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
 void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_points,
                                const RngState& rs);
 
-void shuffle_selected_field_char(SelectedPoints<char>& spc,
-                                 const SelectedField<char>& sfc,
-                                 const SelectedShufflePlan& ssp);
+void shuffle_selected_points_char(SelectedPoints<Char>& spc,
+                                  const SelectedPoints<Char>& spc0,
+                                  const SelectedShufflePlan& ssp);
 
 void set_points_selection_from_selected_points(
     PointsSelection& psel, const SelectedPoints<Coordinate>& spx);
@@ -52,9 +52,9 @@ void shuffle_selected_field(SelectedPoints<M>& sp, const SelectedField<M>& sf,
   const Int multiplicity = sf.geo().multiplicity;
   sp.init(n_points, multiplicity);
   sp.distributed = true;
-  SelectedPoints<char> spc(sp.template view_as<char>());
-  const SelectedField<char> sfc(sf.template view_as<char>());
-  shuffle_selected_field_char(spc, sfc, ssp);
+  SelectedPoints<Char> spc(sp.view_as_char());
+  const SelectedPoints<Char> spc0(sf.view_sp().view_as_char());
+  shuffle_selected_points_char(spc, spc0, ssp);
 }
 
 template <class M>
@@ -67,11 +67,13 @@ void shuffle_selected_field(SelectedPoints<M>& sp, PointsSelection& psel,
   const Long n_elems = fsel.n_elems;
   qassert(n_elems == ssp.total_send_count);
   shuffle_selected_field(sp, sf, ssp);
-  SelectedField<Coordinate> sfx;
-  set_selected_field_from_field_selection(sfx, fsel);
-  SelectedPoints<Coordinate> spx;
-  shuffle_selected_field(spx, sfx, ssp);
-  set_points_selection_from_selected_points(psel, spx);
+  psel.init(ssp.total_recv_count);
+  psel.distributed = true;
+  PointsSelection psel0;
+  set_psel_from_fsel(psel0, fsel);
+  SelectedPoints<Char> pselc(psel.view_sp().view_as_char());
+  const SelectedPoints<Char> pselc0(psel0.view_sp().view_as_char());
+  shuffle_selected_points_char(pselc, pselc0, ssp);
 }
 
 template <class M>

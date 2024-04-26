@@ -331,7 +331,24 @@ struct API vector {
     vector<M> vec;
     vec.is_copy = true;
     vec.is_acc = is_acc;
+    if (v.p == NULL) {
+      qassert(v.n == 0);
+    }
     vec.v = v;
+    return vec;
+  }
+  //
+  vector<Char> view_as_char() const
+  {
+    vector<Char> vec;
+    vec.is_copy = true;
+    vec.is_acc = is_acc;
+    if (v.p == NULL) {
+      qassert(v.n == 0);
+    }
+    Long total_size = v.n * sizeof(M);
+    vec.v.p = (Char*)v.p;
+    vec.v.n = total_size;
     return vec;
   }
   //
@@ -509,6 +526,13 @@ struct API vector_acc : vector<M> {
     qassert(is_acc);
     vector<M> vec = vector<M>::view();
     return (vector_acc<M>&)vec;
+  }
+  //
+  vector_acc<Char> view_as_char() const
+  {
+    qassert(is_acc);
+    vector<Char> vec = vector<M>::view_as_char();
+    return (vector_acc<Char>&)vec;
   }
   //
   template <class N>
