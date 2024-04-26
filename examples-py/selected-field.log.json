@@ -2,8 +2,8 @@
  [
   "sp_prop from shuffle_selected_field sig1",
   {
-   "real": 43.63570224329563,
-   "imag": 59.81228469085662,
+   "real": 50.395311043259476,
+   "imag": 40.04292957728628,
    "__extended_json_type__": "complex128"
   },
   1e-05
@@ -11,8 +11,8 @@
  [
   "sp_prop from shuffle_selected_field sig2",
   {
-   "real": 13.677557828392672,
-   "imag": 32.919769527512365,
+   "real": 19.97350519852167,
+   "imag": 19.114203320603558,
    "__extended_json_type__": "complex"
   },
   1e-05
