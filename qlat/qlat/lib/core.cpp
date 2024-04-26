@@ -125,7 +125,7 @@ SelectedPoints<Coordinate> PointsSelection::view_sp() const
   f.distributed = distributed;
   f.multiplicity = 1;
   f.n_points = xgs.size();
-  f.points = xgs.view();
+  f.points.set_view(xgs);
   return f;
 }
 

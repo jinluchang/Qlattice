@@ -280,6 +280,7 @@ struct API vector {
   }
   //
   void init()
+  // does not change is_acc
   {
     if (not is_copy) {
       clear();
@@ -326,49 +327,28 @@ struct API vector {
     x.v = t;
   }
   //
-  vector<M> view() const
+  void set_view(const Vector<M>& vec)
+  // does not change is_acc
   {
-    vector<M> vec;
-    vec.is_copy = true;
-    vec.is_acc = is_acc;
-    if (v.p == NULL) {
-      qassert(v.n == 0);
-    }
-    vec.v = v;
-    return vec;
+    init();
+    is_copy = true;
+    v = vec;
   }
-  //
-  vector<Char> view_as_char() const
+  void set_view(const vector<M>& vec)
   {
-    vector<Char> vec;
-    vec.is_copy = true;
-    vec.is_acc = is_acc;
-    if (v.p == NULL) {
-      qassert(v.n == 0);
-    }
-    Long total_size = v.n * sizeof(M);
-    vec.v.p = (Char*)v.p;
-    vec.v.n = total_size;
-    return vec;
+    init();
+    is_copy = true;
+    is_acc = vec.is_acc;
+    v = vec.v;
   }
   //
   template <class N>
-  vector<N> view_as() const
+  void set_view_cast(const vector<N>& vec)
   {
-    vector<N> vec;
-    vec.is_copy = true;
-    vec.is_acc = is_acc;
-    if (v.p == NULL) {
-      qassert(v.n == 0);
-    }
-    Long total_size = v.n * sizeof(M);
-    vec.v.p = (N*)v.p;
-    vec.v.n = total_size / sizeof(N);
-    if (vec.v.n * (Long)sizeof(N) != total_size) {
-      qerr(ssprintf("vector::view_as: n=%ld ; sizeof(N)=%ld ; total_size=%ld .",
-                    (long)vec.v.n, (long)sizeof(N), (long)total_size));
-    }
-    return vec;
+    init();
+    is_copy = true;
+    is_acc = vec.is_acc;
+    v.set_cast(vec.v);
   }
   //
   void resize(const Long size)
@@ -519,28 +499,6 @@ struct API vector_acc : vector<M> {
     is_copy = false;
     is_acc = true;
     *this = vp;
-  }
-  //
-  vector_acc<M> view() const
-  {
-    qassert(is_acc);
-    vector<M> vec = vector<M>::view();
-    return (vector_acc<M>&)vec;
-  }
-  //
-  vector_acc<Char> view_as_char() const
-  {
-    qassert(is_acc);
-    vector<Char> vec = vector<M>::view_as_char();
-    return (vector_acc<Char>&)vec;
-  }
-  //
-  template <class N>
-  vector_acc<N> view_as() const
-  {
-    qassert(is_acc);
-    vector<N> vec = vector<M>::template view_as<N>();
-    return (vector_acc<N>&)vec;
   }
   //
   vector_acc<M>& operator=(const vector_acc<M>& vp)
@@ -710,6 +668,7 @@ struct API box {
   }
   //
   void init()
+  // does not change is_acc
   {
     if (not is_copy) {
       clear();
@@ -756,13 +715,26 @@ struct API box {
     x.v = t;
   }
   //
-  box<M> view() const
+  void set_view(const M& x)
+  // does not change is_acc
   {
-    box<M> b;
-    b.is_copy = true;
-    b.is_acc = is_acc;
-    b.v = v;
-    return b;
+    init();
+    is_copy = true;
+    v.p = &x;
+  }
+  void set_view(const Handle<M> h)
+  // does not change is_acc
+  {
+    init();
+    is_copy = true;
+    v = h;
+  }
+  void set_view(const box<M>& b)
+  {
+    init();
+    is_copy = true;
+    is_acc = b.is_acc;
+    v = b.v;
   }
   //
   void set(const M& x)
@@ -845,13 +817,6 @@ struct API box_acc : box<M> {
     is_copy = false;
     is_acc = true;
     set(x);
-  }
-  //
-  box_acc<M> view() const
-  {
-    qassert(is_acc);
-    box<M> b = box<M>::view();
-    return (box_acc<M>&)b;
   }
   //
   box_acc<M>& operator=(const box_acc<M>& vp)

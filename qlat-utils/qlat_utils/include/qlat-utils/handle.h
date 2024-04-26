@@ -70,6 +70,9 @@ struct API Vector {
   }
   qacc Vector<M>(const Vector<M>& vec)
   {
+    if (vec.p == NULL) {
+      qassert(vec.n == 0);
+    }
     p = vec.p;
     n = vec.n;
   }
@@ -93,6 +96,31 @@ struct API Vector {
   {
     p = (M*)&x;
     n = 1;
+  }
+  //
+  template <class N>
+  qacc void set_cast(const Vector<N>& vec)
+  {
+    if (vec.p == NULL) {
+      qassert(vec.n == 0);
+      p = NULL;
+      n = 0;
+    } else {
+      Long total_size = vec.n * sizeof(N);
+      p = (M*)vec.p;
+      n = total_size / (Long)sizeof(M);
+      if (n * (Long)sizeof(M) != total_size) {
+#ifndef QLAT_IN_ACC
+        qerr(
+            ssprintf("Vector::set_cast: n=%ld ; sizeof(M)=%ld ; "
+                     "total_size=%ld=%ld*%ld .",
+                     (long)n, (long)sizeof(M), (long)total_size, (long)vec.n,
+                     (long)sizeof(N)));
+#else
+        qassert(false);
+#endif
+      }
+    }
   }
   //
   qacc const M& operator[](const Long i) const
@@ -131,10 +159,13 @@ struct API Vector {
   //
   qacc Long data_size() const { return n * sizeof(M); }
   //
-  qacc Vector<M>& operator=(const Vector<M>& v)
+  qacc Vector<M>& operator=(const Vector<M>& vec)
   {
-    n = v.n;
-    p = v.p;
+    if (vec.p == NULL) {
+      qassert(vec.n == 0);
+    }
+    n = vec.n;
+    p = vec.p;
     return *this;
   }
 };

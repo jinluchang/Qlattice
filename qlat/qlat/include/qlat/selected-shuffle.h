@@ -9,7 +9,9 @@ namespace qlat
 
 struct SelectedShufflePlan {
   SelectedPoints<Long>
-      local_shuffle_idx_points;  // Reorder field according to this idx field.
+      send_shuffle_idx_points;  // Reorder field according to this idx field.
+  SelectedPoints<Long>
+      recv_shuffle_idx_points;  // Reorder field according to this idx field.
   Long total_send_count;
   Long total_recv_count;
   vector<Int> sendcounts;
@@ -21,11 +23,11 @@ struct SelectedShufflePlan {
 };
 
 void set_selected_shuffle_id_node_send_to(
-    SelectedPoints<Int>& sf_id_node_send_to, const Long n_points,
+    SelectedPoints<Int>& sp_id_node_send_to, const Long n_points,
     const RngState& rs);
 
 void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
-                               const SelectedPoints<Int>& sf_id_node_send_to);
+                               const SelectedPoints<Int>& sp_id_node_send_to);
 
 void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_points,
                                const RngState& rs);
@@ -33,15 +35,6 @@ void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_points,
 void shuffle_selected_points_char(SelectedPoints<Char>& spc,
                                   const SelectedPoints<Char>& spc0,
                                   const SelectedShufflePlan& ssp);
-
-void set_points_selection_from_selected_points(
-    PointsSelection& psel, const SelectedPoints<Coordinate>& spx);
-
-void set_selected_points_from_points_selection(SelectedPoints<Coordinate>& sfx,
-                                               const PointsSelection& psel);
-
-void set_selected_field_from_field_selection(SelectedField<Coordinate>& sfx,
-                                             const FieldSelection& fsel);
 
 template <class M>
 void shuffle_selected_field(SelectedPoints<M>& sp, const SelectedField<M>& sf,

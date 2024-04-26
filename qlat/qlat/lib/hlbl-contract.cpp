@@ -16,8 +16,8 @@ void set_m_z_field_tag(SelectedPoints<RealD>& smf_d,
   qassert(multiplicity * (int)sizeof(RealD) ==
           (int)sizeof(ManyMagneticMoments));
   smf_d.init(psel_d, multiplicity);
-  SelectedPoints<ManyMagneticMoments> smf =
-      smf_d.template view_as<ManyMagneticMoments>();
+  SelectedPoints<ManyMagneticMoments> smf;
+  smf.set_view_cast(smf_d);
   const Coordinate total_site = geo.total_site();
   qthread_for(idx, psel_d.size(), {
     const Coordinate xg_z = psel_d[idx];  // z location
@@ -327,8 +327,8 @@ std::vector<SlTable> contract_four_pair_no_glb_sum(
                           show(xg_x).c_str(), show(xg_y).c_str(),
                           show(total_site).c_str(), (long)r_sq_limit));
   }
-  const SelectedPoints<ManyMagneticMoments> smf =
-      smf_d.template view_as<ManyMagneticMoments>();
+  SelectedPoints<ManyMagneticMoments> smf;
+  smf.set_view_cast(smf_d);
   qassert(psel_d.size() == psel_d_prob_xy.n_points);
   qassert(psel_d.size() == sc_xy.n_points);
   qassert(psel_d.size() == sc_yx.n_points);

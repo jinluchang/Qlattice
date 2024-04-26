@@ -510,44 +510,43 @@ struct API SelectedPoints {
   SelectedPoints<M>& operator=(const SelectedPoints<M>&) = default;
   SelectedPoints<M>& operator=(SelectedPoints<M>&&) noexcept = default;
   //
+  void set_view(const SelectedPoints<M>& sp)
+  {
+    TIMER("SelectedPoints::set_view");
+    initialized = sp.initialized;
+    distributed = sp.distributed;
+    multiplicity = sp.multiplicity;
+    n_points = sp.n_points;
+    points.set_view(sp.points);
+  }
+  //
+  template <class N>
+  void set_view_cast(const SelectedPoints<N>& sp)
+  {
+    TIMER("SelectedPoints::set_view_cast");
+    const Int total_size = sp.multiplicity * sizeof(N);
+    initialized = sp.initialized;
+    distributed = sp.distributed;
+    multiplicity = total_size / sizeof(M);
+    qassert(multiplicity * (Int)sizeof(M) == total_size);
+    n_points = sp.n_points;
+    points.set_view_cast(sp.points);
+  }
+  //
   SelectedPoints<M> view() const
   {
     TIMER("SelectedPoints::view");
-    SelectedPoints<M> f;
-    f.initialized = initialized;
-    f.distributed = distributed;
-    f.multiplicity = multiplicity;
-    f.n_points = n_points;
-    f.points = points.view();
-    return f;
+    SelectedPoints<M> sp;
+    sp.set_view(*this);
+    return sp;
   }
   //
   SelectedPoints<Char> view_as_char() const
   {
     TIMER("SelectedPoints::view_as_char");
-    const int total_size = multiplicity * sizeof(M);
-    SelectedPoints<Char> f;
-    f.initialized = initialized;
-    f.distributed = distributed;
-    f.multiplicity = total_size;
-    f.n_points = n_points;
-    f.points = points.view_as_char();
-    return f;
-  }
-  //
-  template <class N>
-  SelectedPoints<N> view_as() const
-  {
-    TIMER("SelectedPoints::view_as");
-    const int total_size = multiplicity * sizeof(M);
-    SelectedPoints<N> f;
-    f.initialized = initialized;
-    f.distributed = distributed;
-    f.multiplicity = total_size / sizeof(N);
-    f.n_points = n_points;
-    f.points = points.template view_as<N>();
-    qassert(f.multiplicity * (int)sizeof(N) == total_size);
-    return f;
+    SelectedPoints<Char> sp;
+    sp.set_view_cast(*this);
+    return sp;
   }
   //
   qacc bool is_view() { return points.is_copy; }
@@ -704,29 +703,25 @@ struct API Field {
   Field<M>& operator=(const Field<M>& f);
   Field<M>& operator=(Field<M>&&) noexcept = default;
   //
-  Field<M> view() const
+  void set_view(const Field<M>& f)
   {
-    TIMER("Field::view");
-    Field<M> f;
-    f.initialized = initialized;
-    f.geo = geo.view();
-    f.field = field.view();
-    return f;
+    TIMER("Field::set_view");
+    initialized = f.initialized;
+    geo.set_view(f.geo);
+    field.set_view(f.field);
   }
   //
   template <class N>
-  Field<N> view_as() const
+  void set_view_cast(const Field<N>& f)
   {
-    TIMER("Field::view_as");
-    const Int total_size = geo().multiplicity * sizeof(M);
-    const Int multiplicity = total_size / sizeof(N);
-    qassert(multiplicity * (Int)sizeof(N) == total_size);
-    Field<N> f;
-    f.initialized = initialized;
-    f.geo.set(geo());
-    f.geo().multiplicity = multiplicity;
-    f.field = field.template view_as<N>();
-    return f;
+    TIMER("Field::set_view_cast");
+    const Int total_size = f.geo().multiplicity * sizeof(N);
+    const Int multiplicity = total_size / sizeof(M);
+    qassert(multiplicity * (Int)sizeof(M) == total_size);
+    initialized = f.initialized;
+    geo.set(f.geo());
+    geo().multiplicity = multiplicity;
+    field.set_view_cast(f.field);
   }
   //
   SelectedPoints<M> view_sp() const
@@ -738,23 +733,7 @@ struct API Field {
     f.distributed = true;
     f.multiplicity = geo().multiplicity;
     f.n_points = geo().local_volume();
-    f.points = field.view();
-    return f;
-  }
-  //
-  template <class N>
-  SelectedPoints<N> view_sp_as() const
-  {
-    TIMER("Field::view_sp_as");
-    qassert(geo().is_only_local);
-    const Int total_size = geo().multiplicity * sizeof(M);
-    SelectedPoints<N> f;
-    f.initialized = initialized;
-    f.distributed = true;
-    f.multiplicity = total_size / sizeof(N);
-    f.n_points = geo().local_volume();
-    f.points = field.template view_as<N>();
-    qassert(f.multiplicity * (Int)sizeof(N) == total_size);
+    f.points.set_view(field);
     return f;
   }
   //
@@ -1141,31 +1120,28 @@ struct API SelectedField {
   SelectedField<M>& operator=(const SelectedField<M>&) = default;
   SelectedField<M>& operator=(SelectedField<M>&&) noexcept = default;
   //
-  SelectedField<M> view() const
+  void set_view(const SelectedField<M>& sf)
   {
-    TIMER("SelectedField::view");
+    TIMER("SelectedField::set_view");
     SelectedField<M> f;
-    f.initialized = initialized;
-    f.n_elems = n_elems;
-    f.geo = geo.view();
-    f.field = field.view();
-    return f;
+    initialized = sf.initialized;
+    n_elems = sf.n_elems;
+    geo.set_view(sf.geo);
+    field.set_view(sf.field);
   }
   //
   template <class N>
-  SelectedField<N> view_as() const
+  void set_view_cast(const SelectedField<N>& sf)
   {
-    TIMER("SelectedField::view_as");
-    const int total_size = geo().multiplicity * sizeof(M);
-    const int multiplicity = total_size / sizeof(N);
-    qassert(multiplicity * (int)sizeof(N) == total_size);
-    SelectedField<N> f;
-    f.initialized = initialized;
-    f.n_elems = n_elems;
-    f.geo.set(geo());
-    f.geo().multiplicity = multiplicity;
-    f.field = field.template view_as<N>();
-    return f;
+    TIMER("SelectedField::set_view_cast");
+    const Int total_size = sf.geo().multiplicity * sizeof(N);
+    const Int multiplicity = total_size / sizeof(M);
+    qassert(multiplicity * (Int)sizeof(M) == total_size);
+    initialized = sf.initialized;
+    n_elems = sf.n_elems;
+    geo.set(sf.geo());
+    geo().multiplicity = multiplicity;
+    field.set_view_cast(sf.field);
   }
   //
   SelectedPoints<M> view_sp() const
@@ -1176,22 +1152,7 @@ struct API SelectedField {
     f.distributed = true;
     f.multiplicity = geo().multiplicity;
     f.n_points = n_elems;
-    f.points = field.view();
-    return f;
-  }
-  //
-  template <class N>
-  SelectedPoints<N> view_sp_as() const
-  {
-    TIMER("SelectedField::view_sp_as");
-    const int total_size = geo().multiplicity * sizeof(M);
-    SelectedPoints<N> f;
-    f.initialized = initialized;
-    f.distributed = true;
-    f.multiplicity = total_size / sizeof(N);
-    f.n_points = n_elems;
-    f.points = field.template view_as<N>();
-    qassert(f.multiplicity * (int)sizeof(N) == total_size);
+    f.points.set_view(field);
     return f;
   }
   //
