@@ -9,6 +9,19 @@ import numpy as np
 alpha_qed = 1.0 / 137.035999084
 fminv_gev = 0.197326979 # hbar * c / (1e-15 m * 1e9 electron charge * 1 volt)
 
+float_types = (float, np.float32, np.float64,)
+complex_types = (complex, np.complex64, np.complex128,)
+int_types = (int, np.int32, np.int64,)
+
+try:
+    float_types = float_types + (np.float128,)
+    complex_types = complex_types + (np.complex256,)
+except:
+    pass
+
+real_types = float_types + int_types
+number_types = real_types + complex_types
+
 class use_kwargs:
 
     """
@@ -51,7 +64,7 @@ def interpolate_list(v, i):
 
 def interpolate(v_arr, i_arr):
     vt = v_arr.transpose()
-    if isinstance(i_arr, (int, float,)):
+    if isinstance(i_arr, real_types):
         return interpolate_list(vt, i_arr).transpose()
     else:
         return np.array([ interpolate_list(vt, i) for i in i_arr ]).transpose()
@@ -81,7 +94,7 @@ def partial_sum(x, *, is_half_last = False):
         assert False
 
 def check_zero(x):
-    if isinstance(x, (int, float, complex)) and 0 == x:
+    if isinstance(x, real_types) and 0 == x:
         return True
     return False
 
@@ -91,9 +104,9 @@ def qnorm(x):
     """
     if isinstance(x, np.ndarray):
         return np.abs(np.vdot(x, x))
-    elif isinstance(x, (int, float,)):
+    elif isinstance(x, real_types):
         return x * x
-    elif isinstance(x, complex):
+    elif isinstance(x, complex_types):
         return x.real * x.real + x.imag * x.imag
     elif isinstance(x, (list, tuple,)):
         return sum([ qnorm(x_i) for x_i in x ])
@@ -324,9 +337,9 @@ def jackknife(data_list, eps = 1):
     return jks
 
 def fsqr(data):
-    if isinstance(data, (float, np.float128, int,)):
+    if isinstance(data, real_types):
         return data * data
-    elif isinstance(data, (complex, np.complex256,)):
+    elif isinstance(data, complex_types):
         r = data.real
         i = data.imag
         return complex(r * r, i * i)
@@ -342,9 +355,9 @@ def fsqr(data):
             raise Exception(f"fsqr data={data} type not supported")
 
 def fsqrt(data):
-    if isinstance(data, (float, np.float128, int,)):
+    if isinstance(data, real_types):
         return math.sqrt(data)
-    elif isinstance(data, (complex, np.complex256,)):
+    elif isinstance(data, complex_types):
         r = data.real
         i = data.imag
         return complex(math.sqrt(r), math.sqrt(i))
@@ -414,15 +427,15 @@ def mk_jk_blocking_func(block_size = 1, block_size_dict = None):
     if block_size_dict is None:
         block_size_dict = dict()
     def f(idx):
-        if isinstance(idx, int):
+        if isinstance(idx, int_types):
             traj = idx
             bs = block_size
             return traj // bs
-        elif isinstance(idx, tuple) and len(idx) == 2 and isinstance(idx[1], int):
+        elif isinstance(idx, tuple) and len(idx) == 2 and isinstance(idx[1], int_types):
             job_tag, traj = idx
-            assert isinstance(traj, int)
+            assert isinstance(traj, int_types)
             bs = block_size_dict.get(job_tag, block_size)
-            assert isinstance(bs, int)
+            assert isinstance(bs, int_types)
             return (job_tag, traj // bs,)
         else:
             return idx
@@ -439,7 +452,7 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func
     rjk_list[i] = avg + \\sum_{j=1}^{n} r_{i,j} (jk_list[j] - avg)
     """
     assert jk_idx_list[0] == "avg"
-    assert isinstance(n_rand_sample, int)
+    assert isinstance(n_rand_sample, int_types)
     assert n_rand_sample >= 0
     assert isinstance(rng_state, RngState)
     rs = rng_state
@@ -566,7 +579,7 @@ def g_jk_avg(jk_list):
     """
     Return ``avg`` of the ``jk_list``.
     """
-    if isinstance(jk_list, (int, float, complex)):
+    if isinstance(jk_list, number_types):
         return jk_list
     return jk_avg(jk_list)
 
@@ -575,7 +588,7 @@ def g_jk_err(jk_list, *, eps, jk_type, **_kwargs):
     """
     Return ``err`` of the ``jk_list``.
     """
-    if isinstance(jk_list, (int, float, complex)):
+    if isinstance(jk_list, number_types):
         return 0
     if jk_type == "super":
         return jk_err(jk_list, eps)
