@@ -202,14 +202,17 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedPoints<M>& sp0,
   const Long n_points = psel.size();
   const Long n_points0 = psel0.size();
   const Int multiplicity = sp0.multiplicity;
+  qassert(sp0.n_points == n_points0);
   if (is_keeping_data) {
     sp.init_zero(psel, multiplicity);
   } else {
     sp.init(psel, multiplicity);
     set_zero(sp);
   }
+  qassert(sp.n_points == n_points);
   SelectedPoints<Long> sp_idx;
   sp_idx.init(psel, 1);
+  qassert(sp_idx.n_points == n_points);
   Long idx_last = -1;
   qfor(idx, n_points, {
     const Coordinate& xg = psel[idx];
@@ -225,6 +228,7 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedPoints<M>& sp0,
         break;
       }
     }
+    qassert(idx0 < n_points0);
     sp_idx.get_elem(idx) = idx0;
   });
   qacc_for(idx, n_points, {

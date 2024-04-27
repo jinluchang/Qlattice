@@ -987,6 +987,10 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
                 psel_d_sel_prob_xy = q.SelectedPointsRealD(psel_d_sel, 1)
                 psel_d_sel_prob_xy @= psel_d_prob_xy
                 psel_d_sel_prob_xy[:] *= sp_norm[selection, :]
+                n_avail = q.glb_sum(len(psel_d))
+                n_sel = q.glb_sum(len(psel_d_sel))
+                sel_ratio = n_sel / n_avail
+                q.displayln_info(f"{fname}: {inv_type_name} ; n_avail={n_avail} ; n_sel={n_sel} ; ratio={sel_ratio}")
                 def sel_sc(sc):
                     multiplicity = sc.multiplicity()
                     assert multiplicity == 4

@@ -62,26 +62,28 @@ API inline int& qacc_num_threads()
 
 #define qacc_continue return
 
-#define qacc_for2dNB(iter1, num1, iter2, num2, ...)                         \
-  {                                                                         \
-    typedef Long QACC_FOR_LOOP_ITERATOR;                                    \
-    auto QACC_FOR_LOOP_LAMBDA = [=] __host__ __device__(                    \
-                                    QACC_FOR_LOOP_ITERATOR iter1,           \
-                                    QACC_FOR_LOOP_ITERATOR iter2) mutable { \
-      {__VA_ARGS__};                                                        \
-    };                                                                      \
-    const int QACC_NUM_THREADS = qlat::qacc_num_threads();                  \
-    dim3 CUDA_THREADS_DIM3(QACC_NUM_THREADS, 1, 1);                         \
-    dim3 CUDA_BLOCKS_DIM3((num1 + QACC_NUM_THREADS - 1) / QACC_NUM_THREADS, \
-                          num2, 1);                                         \
-    qacc_Error CUDA_LAST_ERROR_OBJECT = qacc_GetLastError();                  \
-    if (qacc_Success != CUDA_LAST_ERROR_OBJECT) {                            \
-      qerr(qlat::ssprintf("qacc_for: Cuda error %s from '%s' Line %d.",     \
-                          qacc_GetErrorString(CUDA_LAST_ERROR_OBJECT),       \
-                          __FILE__, __LINE__));                             \
-    }                                                                       \
-    qlambda_apply<<<CUDA_BLOCKS_DIM3, CUDA_THREADS_DIM3>>>(                 \
-        num1, num2, QACC_FOR_LOOP_LAMBDA);                                  \
+#define qacc_for2dNB(iter1, num1, iter2, num2, ...)                           \
+  {                                                                           \
+    if ((num1 != 0) and (num2 != 0)) {                                        \
+      typedef Long QACC_FOR_LOOP_ITERATOR;                                    \
+      auto QACC_FOR_LOOP_LAMBDA = [=] __host__ __device__(                    \
+                                      QACC_FOR_LOOP_ITERATOR iter1,           \
+                                      QACC_FOR_LOOP_ITERATOR iter2) mutable { \
+        {__VA_ARGS__};                                                        \
+      };                                                                      \
+      const int QACC_NUM_THREADS = qlat::qacc_num_threads();                  \
+      dim3 CUDA_THREADS_DIM3(QACC_NUM_THREADS, 1, 1);                         \
+      dim3 CUDA_BLOCKS_DIM3((num1 + QACC_NUM_THREADS - 1) / QACC_NUM_THREADS, \
+                            num2, 1);                                         \
+      qacc_Error CUDA_LAST_ERROR_OBJECT = qacc_GetLastError();                \
+      if (qacc_Success != CUDA_LAST_ERROR_OBJECT) {                           \
+        qerr(qlat::ssprintf("qacc_for: Cuda error %s from '%s' Line %d.",     \
+                            qacc_GetErrorString(CUDA_LAST_ERROR_OBJECT),      \
+                            __FILE__, __LINE__));                             \
+      }                                                                       \
+      qlambda_apply<<<CUDA_BLOCKS_DIM3, CUDA_THREADS_DIM3>>>(                 \
+          num1, num2, QACC_FOR_LOOP_LAMBDA);                                  \
+    }                                                                         \
   }
 
 template <typename Lambda>
