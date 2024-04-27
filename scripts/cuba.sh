@@ -17,8 +17,9 @@ source qcore/set-prefix.sh $name
 
     cd $name-*
     time-run ./configure \
-        --build="$(arch)" \
         --prefix=$prefix
+
+        # --build="$(arch)" \
 
     time-run make # do not support parallel build
     time-run make install
