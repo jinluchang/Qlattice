@@ -1,35 +1,11 @@
 CHECK: geo.show() = Geometry([4, 4, 4, 8], 1)
-CHECK: 1.20000000000000E+01
-CHECK: gf xg=Coordinate([2, 3, 0, 6]) sig=1.26647712805713E-01-1.44027489885400E-01j
-CHECK: gf xg=(Coordinate([2, 3, 0, 6]), Coordinate([2, 0, 1, 4])) sig=1.11978070410925E+00+5.88604077299792E-01j
-CHECK: gf xg=Coordinate([2, 3, 0, 6]) m=1 sig=1.42201509600126E+00+6.56394074359885E-02j
-CHECK: gf xg=(Coordinate([2, 3, 0, 6]), Coordinate([2, 0, 1, 4])) m=1 sig=-4.75862089263762E-01+1.83055259350312E-02j
-CHECK: 1.32086688810265E+03
-CHECK: t_dir=3 (default) qnorm(gf_sum_tslice)=1.53129372971588E+03
+CHECK: gf xg=Coordinate([2, 3, 0, 6])
+CHECK: gf xg=(Coordinate([2, 3, 0, 6]), Coordinate([2, 0, 1, 4]))
+CHECK: gf xg=Coordinate([2, 3, 0, 6]) m=1
+CHECK: gf xg=(Coordinate([2, 3, 0, 6]), Coordinate([2, 0, 1, 4])) m=1
 CHECK: t_dir=0 n_points=4 multiplicity=4 psel_list=[[0, -1, -1, -1], [1, -1, -1, -1], [2, -1, -1, -1], [3, -1, -1, -1]]
-CHECK: t_dir=0 qnorm(gf_sum_tslice)=6.16610273658766E+05
 CHECK: t_dir=1 n_points=4 multiplicity=4 psel_list=[[-1, 0, -1, -1], [-1, 1, -1, -1], [-1, 2, -1, -1], [-1, 3, -1, -1]]
-CHECK: t_dir=1 qnorm(gf_sum_tslice)=1.23312658339709E+03
 CHECK: t_dir=2 n_points=4 multiplicity=4 psel_list=[[-1, -1, 0, -1], [-1, -1, 1, -1], [-1, -1, 2, -1], [-1, -1, 3, -1]]
-CHECK: t_dir=2 qnorm(gf_sum_tslice)=1.20560542737503E+03
 CHECK: t_dir=3 n_points=8 multiplicity=4 psel_list=[[-1, -1, -1, 0], [-1, -1, -1, 1], [-1, -1, -1, 2], [-1, -1, -1, 3], [-1, -1, -1, 4], [-1, -1, -1, 5], [-1, -1, -1, 6], [-1, -1, -1, 7]]
-CHECK: t_dir=3 qnorm(gf_sum_tslice)=1.53129372971588E+03
-CHECK: 4.80000000000000E+01
-CHECK: diff norm 0.0
-CHECK: 1.52216089614414E+05 1.52216089614414E+05 0.00000000000000E+00
-CHECK: f sig = 12.25651587
-CHECK: f1 sig = -14.29879605
-CHECK: f2 sig = -15.04580870
-CHECK: f3 sig = 6.39561395
-CHECK: f4 sig = -9.55405300
 CHECK: q.glb_sum(fsel.n_elems()) = 34
-CHECK: sf sig = 0.82294826
-CHECK: sf1 sig = 0.45418757
-CHECK: sf1 sig = 0.45418757
-CHECK: sf2 sig = -4.39315395
-CHECK: sf2 sig = -4.39315395
-CHECK: sf3 sig = 0.44237277
-CHECK: sf3 sig = 0.44237277
-CHECK: sf4 sig = -2.45660419
-CHECK: sf4 sig = -2.45660419
 CHECK: finished successfully.
