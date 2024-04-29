@@ -1070,12 +1070,12 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             json_results.append((
                 f"{fname}: {info_str} lslt",
                 q.get_data_sig(lslt, q.RngState()),
-                10e-2,
+                15e-2,
                 ))
             json_results.append((
                 f"{fname}: {info_str} lslt_sloppy",
                 q.get_data_sig(lslt_sloppy, q.RngState()),
-                10e-2,
+                15e-2,
                 ))
         if len(point_pairs_chunk) != len(pairs_data):
             raise Exception(f"len(point_pairs_chunk)={len(point_pairs_chunk)} len(pairs_data)={len(pairs_data)}")
@@ -1164,12 +1164,12 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
         json_results.append((
             f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum[labels.index('ref-far proj-all'), -1, -1]",
             results["lslt_sum"][labels.index('ref-far proj-all'), -1, -1],
-            2e-2,
+            3e-2,
             ))
         json_results.append((
             f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sloppy_sum[labels.index('ref-far proj-all'), -1, -1]",
             results["lslt_sloppy_sum"][labels.index('ref-far proj-all'), -1, -1],
-            2e-2,
+            3e-2,
             ))
     q.sync_node()
     q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} done.")

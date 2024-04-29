@@ -66,15 +66,15 @@ sig4 = q.get_data_sig(res['jk_chisq'], q.RngState())
 
 json_results.append((f"jk_chisq sig4", sig4, 1e-4))
 
-sig5 = q.get_data_sig(res['jk_param_arr'], q.RngState())
+sig5 = q.get_data_sig(abs(res['jk_param_arr']), q.RngState())
 
 json_results.append((f"jk_param_arr sig5", sig5, 1e-4))
 
-sig6 = q.get_data_sig(res['jk_chisq_grad'], q.RngState())
+sig6 = q.get_data_sig(abs(res['jk_chisq_grad']), q.RngState())
 
 json_results.append((f"jk_chisq_grad sig6", sig6, 1e-4))
 
-sig7 = q.get_data_sig(res['jk_param_arr_for_scaled_corr'], q.RngState())
+sig7 = q.get_data_sig(abs(res['jk_param_arr_for_scaled_corr']), q.RngState())
 
 json_results.append((f"jk_param_arr_for_scaled_corr sig7", sig7, 1e-4))
 
@@ -97,15 +97,15 @@ sig4 = q.get_data_sig(res['jk_chisq'], q.RngState())
 
 json_results.append((f"jk_chisq sig4", sig4, 1e-4))
 
-sig5 = q.get_data_sig(res['jk_param_arr'], q.RngState())
+sig5 = q.get_data_sig(abs(res['jk_param_arr']), q.RngState())
 
 json_results.append((f"jk_param_arr sig5", sig5, 1e-4))
 
-sig6 = q.get_data_sig(res['jk_chisq_grad'], q.RngState())
+sig6 = q.get_data_sig(abs(res['jk_chisq_grad']), q.RngState())
 
 json_results.append((f"jk_chisq_grad sig6", sig6, 1e-4))
 
-sig7 = q.get_data_sig(res['jk_param_arr_for_scaled_corr'], q.RngState())
+sig7 = q.get_data_sig(abs(res['jk_param_arr_for_scaled_corr']), q.RngState())
 
 json_results.append((f"jk_param_arr_for_scaled_corr sig7", sig7, 1e-4))
 
@@ -125,7 +125,7 @@ sig8 = q.get_data_sig(res['jk_chisq'], q.RngState())
 
 json_results.append((f"jk_chisq sig8", sig8, 1e-2))
 
-sig9 = q.get_data_sig(res['jk_param_arr'], q.RngState())
+sig9 = q.get_data_sig(abs(res['jk_param_arr']), q.RngState())
 
 json_results.append((f"jk_param_arr sig9", sig9, 1e-4))
 

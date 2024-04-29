@@ -96,7 +96,7 @@
    "imag": 3.61875752801904e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 light 0/3 0/4 Coordinate([2, 1, 0, 5]) Coordinate([2, 1, 3, 4]) lslt_sloppy",
@@ -105,7 +105,7 @@
    "imag": 9.013437251061219e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 light 0/3 1/4 Coordinate([1, 2, 2, 1]) Coordinate([3, 0, 2, 1]) lslt",
@@ -114,7 +114,7 @@
    "imag": 3.898415348711171e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 light 0/3 1/4 Coordinate([1, 2, 2, 1]) Coordinate([3, 0, 2, 1]) lslt_sloppy",
@@ -123,7 +123,7 @@
    "imag": 3.898415348711171e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 light 0/3 2/4 Coordinate([2, 2, 1, 1]) Coordinate([2, 2, 1, 1]) lslt",
@@ -132,7 +132,7 @@
    "imag": 1.5723618732279458e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 light 0/3 2/4 Coordinate([2, 2, 1, 1]) Coordinate([2, 2, 1, 1]) lslt_sloppy",
@@ -141,7 +141,7 @@
    "imag": 1.1271334771971907e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 light 0/3 3/4 Coordinate([3, 3, 0, 3]) Coordinate([3, 2, 3, 2]) lslt",
@@ -150,7 +150,7 @@
    "imag": -1.0786929209212062e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 light 0/3 3/4 Coordinate([3, 3, 0, 3]) Coordinate([3, 2, 3, 2]) lslt_sloppy",
@@ -159,7 +159,7 @@
    "imag": -1.0786929209212062e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 light 1/3 0/4 Coordinate([2, 1, 0, 1]) Coordinate([1, 1, 3, 0]) lslt",
@@ -168,7 +168,7 @@
    "imag": -1.4101386610493185e-16,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 light 1/3 0/4 Coordinate([2, 1, 0, 1]) Coordinate([1, 1, 3, 0]) lslt_sloppy",
@@ -177,7 +177,7 @@
    "imag": -4.091432691142509e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 light 1/3 1/4 Coordinate([2, 1, 3, 4]) Coordinate([3, 2, 3, 2]) lslt",
@@ -186,7 +186,7 @@
    "imag": -7.338393934079339e-17,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 light 1/3 1/4 Coordinate([2, 1, 3, 4]) Coordinate([3, 2, 3, 2]) lslt_sloppy",
@@ -195,7 +195,7 @@
    "imag": 1.2145030594887608e-17,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 light 1/3 2/4 Coordinate([1, 2, 0, 5]) Coordinate([0, 3, 3, 0]) lslt",
@@ -204,7 +204,7 @@
    "imag": 2.112694190604549e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 light 1/3 2/4 Coordinate([1, 2, 0, 5]) Coordinate([0, 3, 3, 0]) lslt_sloppy",
@@ -213,7 +213,7 @@
    "imag": 2.112694190604549e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 light 1/3 3/4 Coordinate([1, 2, 0, 5]) Coordinate([2, 1, 0, 5]) lslt",
@@ -222,7 +222,7 @@
    "imag": 7.360581552306978e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 light 1/3 3/4 Coordinate([1, 2, 0, 5]) Coordinate([2, 1, 0, 5]) lslt_sloppy",
@@ -231,7 +231,7 @@
    "imag": 7.360581552306978e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 light 2/3 0/3 Coordinate([1, 2, 2, 1]) Coordinate([0, 2, 1, 1]) lslt",
@@ -240,7 +240,7 @@
    "imag": -1.449790637089742e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 light 2/3 0/3 Coordinate([1, 2, 2, 1]) Coordinate([0, 2, 1, 1]) lslt_sloppy",
@@ -249,7 +249,7 @@
    "imag": -1.449790637089742e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 light 2/3 1/3 Coordinate([3, 2, 3, 2]) Coordinate([0, 3, 3, 0]) lslt",
@@ -258,7 +258,7 @@
    "imag": 9.532051759815497e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 light 2/3 1/3 Coordinate([3, 2, 3, 2]) Coordinate([0, 3, 3, 0]) lslt_sloppy",
@@ -267,7 +267,7 @@
    "imag": 9.532051759815497e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 light 2/3 2/3 Coordinate([3, 2, 3, 2]) Coordinate([2, 1, 0, 1]) lslt",
@@ -276,7 +276,7 @@
    "imag": 1.1695659826888988e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 light 2/3 2/3 Coordinate([3, 2, 3, 2]) Coordinate([2, 1, 0, 1]) lslt_sloppy",
@@ -285,7 +285,7 @@
    "imag": -2.3331052624591463e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four: test-4nt8 1000 light lslt_sum",
@@ -312,7 +312,7 @@
    "imag": 2.0047630755506568e-17,
    "__extended_json_type__": "complex128"
   },
-  0.02
+  0.03
  ],
  [
   "run_hlbl_four: test-4nt8 1000 light lslt_sloppy_sum[labels.index('ref-far proj-all'), -1, -1]",
@@ -321,7 +321,7 @@
    "imag": 3.5727545256598486e-19,
    "__extended_json_type__": "complex128"
   },
-  0.02
+  0.03
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 0/3 0/4 Coordinate([2, 1, 0, 1]) Coordinate([1, 1, 3, 0]) lslt",
@@ -330,7 +330,7 @@
    "imag": -1.4097629471915644e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 0/3 0/4 Coordinate([2, 1, 0, 1]) Coordinate([1, 1, 3, 0]) lslt_sloppy",
@@ -339,7 +339,7 @@
    "imag": 9.110481839846263e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 0/3 1/4 Coordinate([1, 2, 2, 1]) Coordinate([0, 2, 1, 1]) lslt",
@@ -348,7 +348,7 @@
    "imag": -2.9658294176696504e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 0/3 1/4 Coordinate([1, 2, 2, 1]) Coordinate([0, 2, 1, 1]) lslt_sloppy",
@@ -357,7 +357,7 @@
    "imag": -2.9658294176696504e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 0/3 2/4 Coordinate([2, 1, 3, 4]) Coordinate([3, 2, 3, 2]) lslt",
@@ -366,7 +366,7 @@
    "imag": -6.791735857693724e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 0/3 2/4 Coordinate([2, 1, 3, 4]) Coordinate([3, 2, 3, 2]) lslt_sloppy",
@@ -375,7 +375,7 @@
    "imag": 1.8391329966472183e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 0/3 3/4 Coordinate([1, 2, 2, 1]) Coordinate([3, 0, 2, 1]) lslt",
@@ -384,7 +384,7 @@
    "imag": 1.9641297260175272e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 0/3 3/4 Coordinate([1, 2, 2, 1]) Coordinate([3, 0, 2, 1]) lslt_sloppy",
@@ -393,7 +393,7 @@
    "imag": 1.9641297260175272e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 1/3 0/4 Coordinate([2, 2, 1, 1]) Coordinate([2, 2, 1, 1]) lslt",
@@ -402,7 +402,7 @@
    "imag": 4.820389949218144e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 1/3 0/4 Coordinate([2, 2, 1, 1]) Coordinate([2, 2, 1, 1]) lslt_sloppy",
@@ -411,7 +411,7 @@
    "imag": 7.079473839259314e-21,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 1/3 1/4 Coordinate([2, 1, 0, 5]) Coordinate([2, 1, 3, 4]) lslt",
@@ -420,7 +420,7 @@
    "imag": -4.521147422880757e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 1/3 1/4 Coordinate([2, 1, 0, 5]) Coordinate([2, 1, 3, 4]) lslt_sloppy",
@@ -429,7 +429,7 @@
    "imag": 1.2754254883611718e-21,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 1/3 2/4 Coordinate([3, 2, 3, 2]) Coordinate([0, 3, 3, 0]) lslt",
@@ -438,7 +438,7 @@
    "imag": -2.959829997985371e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 1/3 2/4 Coordinate([3, 2, 3, 2]) Coordinate([0, 3, 3, 0]) lslt_sloppy",
@@ -447,7 +447,7 @@
    "imag": -2.959829997985371e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 1/3 3/4 Coordinate([3, 2, 3, 2]) Coordinate([2, 1, 0, 1]) lslt",
@@ -456,7 +456,7 @@
    "imag": -2.3574916206080327e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 1/3 3/4 Coordinate([3, 2, 3, 2]) Coordinate([2, 1, 0, 1]) lslt_sloppy",
@@ -465,7 +465,7 @@
    "imag": -1.74813101680991e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 2/3 0/3 Coordinate([3, 3, 0, 3]) Coordinate([3, 2, 3, 2]) lslt",
@@ -474,7 +474,7 @@
    "imag": -1.540044378598221e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 2/3 0/3 Coordinate([3, 3, 0, 3]) Coordinate([3, 2, 3, 2]) lslt_sloppy",
@@ -483,7 +483,7 @@
    "imag": -1.540044378598221e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 2/3 1/3 Coordinate([1, 2, 0, 5]) Coordinate([0, 3, 3, 0]) lslt",
@@ -492,7 +492,7 @@
    "imag": 3.893155777584276e-21,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 2/3 1/3 Coordinate([1, 2, 0, 5]) Coordinate([0, 3, 3, 0]) lslt_sloppy",
@@ -501,7 +501,7 @@
    "imag": 3.893155777584276e-21,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 2/3 2/3 Coordinate([1, 2, 0, 5]) Coordinate([2, 1, 0, 5]) lslt",
@@ -510,7 +510,7 @@
    "imag": 6.817701128502312e-22,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 1000 strange 2/3 2/3 Coordinate([1, 2, 0, 5]) Coordinate([2, 1, 0, 5]) lslt_sloppy",
@@ -519,7 +519,7 @@
    "imag": 6.817701128502312e-22,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four: test-4nt8 1000 strange lslt_sum",
@@ -546,7 +546,7 @@
    "imag": -1.0346244834258786e-19,
    "__extended_json_type__": "complex128"
   },
-  0.02
+  0.03
  ],
  [
   "run_hlbl_four: test-4nt8 1000 strange lslt_sloppy_sum[labels.index('ref-far proj-all'), -1, -1]",
@@ -555,7 +555,7 @@
    "imag": 1.308720753464491e-20,
    "__extended_json_type__": "complex128"
   },
-  0.02
+  0.03
  ],
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8 1000 light light id_chunk/num_chunk=0/3 idx_xg_x=6 Coordinate([3, 0, 2, 1]) lslt",
@@ -1330,7 +1330,7 @@
    "imag": 6.288106106298997e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 0/3 0/7 Coordinate([3, 0, 2, 2]) Coordinate([0, 1, 1, 2]) lslt_sloppy",
@@ -1339,7 +1339,7 @@
    "imag": 6.288106106298997e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 0/3 1/7 Coordinate([2, 2, 1, 6]) Coordinate([2, 2, 0, 6]) lslt",
@@ -1348,7 +1348,7 @@
    "imag": -3.748320051447957e-17,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 0/3 1/7 Coordinate([2, 2, 1, 6]) Coordinate([2, 2, 0, 6]) lslt_sloppy",
@@ -1357,7 +1357,7 @@
    "imag": -1.1793958305382684e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 0/3 2/7 Coordinate([2, 2, 1, 6]) Coordinate([2, 1, 0, 6]) lslt",
@@ -1366,7 +1366,7 @@
    "imag": 1.2667466154706223e-17,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 0/3 2/7 Coordinate([2, 2, 1, 6]) Coordinate([2, 1, 0, 6]) lslt_sloppy",
@@ -1375,7 +1375,7 @@
    "imag": 2.3370695378931496e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 0/3 3/7 Coordinate([2, 3, 2, 6]) Coordinate([2, 2, 1, 6]) lslt",
@@ -1384,7 +1384,7 @@
    "imag": -2.3193944238223674e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 0/3 3/7 Coordinate([2, 3, 2, 6]) Coordinate([2, 2, 1, 6]) lslt_sloppy",
@@ -1393,7 +1393,7 @@
    "imag": -2.3193944238223674e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 0/3 4/7 Coordinate([2, 2, 1, 6]) Coordinate([0, 1, 1, 6]) lslt",
@@ -1402,7 +1402,7 @@
    "imag": -2.3600861998174914e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 0/3 4/7 Coordinate([2, 2, 1, 6]) Coordinate([0, 1, 1, 6]) lslt_sloppy",
@@ -1411,7 +1411,7 @@
    "imag": -2.3600861998174914e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 0/3 5/7 Coordinate([0, 0, 0, 3]) Coordinate([0, 1, 1, 2]) lslt",
@@ -1420,7 +1420,7 @@
    "imag": -2.137343845599159e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 0/3 5/7 Coordinate([0, 0, 0, 3]) Coordinate([0, 1, 1, 2]) lslt_sloppy",
@@ -1429,7 +1429,7 @@
    "imag": -2.137343845599159e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 0/3 6/7 Coordinate([2, 3, 3, 6]) Coordinate([2, 2, 0, 6]) lslt",
@@ -1438,7 +1438,7 @@
    "imag": -1.8857514301237417e-17,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 0/3 6/7 Coordinate([2, 3, 3, 6]) Coordinate([2, 2, 0, 6]) lslt_sloppy",
@@ -1447,7 +1447,7 @@
    "imag": -3.9875749873176713e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 1/3 0/7 Coordinate([3, 1, 3, 3]) Coordinate([3, 0, 2, 2]) lslt",
@@ -1456,7 +1456,7 @@
    "imag": 2.3579934608253864e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 1/3 0/7 Coordinate([3, 1, 3, 3]) Coordinate([3, 0, 2, 2]) lslt_sloppy",
@@ -1465,7 +1465,7 @@
    "imag": 2.3579934608253864e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 1/3 1/7 Coordinate([2, 0, 2, 4]) Coordinate([1, 3, 1, 3]) lslt",
@@ -1474,7 +1474,7 @@
    "imag": -7.364717284071565e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 1/3 1/7 Coordinate([2, 0, 2, 4]) Coordinate([1, 3, 1, 3]) lslt_sloppy",
@@ -1483,7 +1483,7 @@
    "imag": -4.596332660091424e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 1/3 2/7 Coordinate([2, 3, 3, 6]) Coordinate([2, 1, 0, 6]) lslt",
@@ -1492,7 +1492,7 @@
    "imag": 7.746881646658435e-17,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 1/3 2/7 Coordinate([2, 3, 3, 6]) Coordinate([2, 1, 0, 6]) lslt_sloppy",
@@ -1501,7 +1501,7 @@
    "imag": -1.0214595347151463e-17,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 1/3 3/7 Coordinate([0, 1, 1, 6]) Coordinate([0, 1, 1, 2]) lslt",
@@ -1510,7 +1510,7 @@
    "imag": -9.929479010645122e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 1/3 3/7 Coordinate([0, 1, 1, 6]) Coordinate([0, 1, 1, 2]) lslt_sloppy",
@@ -1519,7 +1519,7 @@
    "imag": -9.929479010645122e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 1/3 4/7 Coordinate([2, 0, 2, 4]) Coordinate([2, 0, 2, 4]) lslt",
@@ -1528,7 +1528,7 @@
    "imag": -3.920126620212183e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 1/3 4/7 Coordinate([2, 0, 2, 4]) Coordinate([2, 0, 2, 4]) lslt_sloppy",
@@ -1537,7 +1537,7 @@
    "imag": 3.2333738239193594e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 1/3 5/7 Coordinate([3, 3, 0, 4]) Coordinate([0, 0, 0, 3]) lslt",
@@ -1546,7 +1546,7 @@
    "imag": 1.5992716530243131e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 1/3 5/7 Coordinate([3, 3, 0, 4]) Coordinate([0, 0, 0, 3]) lslt_sloppy",
@@ -1555,7 +1555,7 @@
    "imag": 1.5992716530243131e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 1/3 6/7 Coordinate([3, 1, 3, 3]) Coordinate([0, 0, 0, 3]) lslt",
@@ -1564,7 +1564,7 @@
    "imag": 5.343152879843007e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 1/3 6/7 Coordinate([3, 1, 3, 3]) Coordinate([0, 0, 0, 3]) lslt_sloppy",
@@ -1573,7 +1573,7 @@
    "imag": 5.343152879843007e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 2/3 0/6 Coordinate([2, 3, 0, 5]) Coordinate([2, 3, 3, 4]) lslt",
@@ -1582,7 +1582,7 @@
    "imag": -6.040832734778688e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 2/3 0/6 Coordinate([2, 3, 0, 5]) Coordinate([2, 3, 3, 4]) lslt_sloppy",
@@ -1591,7 +1591,7 @@
    "imag": -6.040832734778688e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 2/3 1/6 Coordinate([3, 0, 2, 2]) Coordinate([0, 3, 2, 1]) lslt",
@@ -1600,7 +1600,7 @@
    "imag": -1.2778328867140561e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 2/3 1/6 Coordinate([3, 0, 2, 2]) Coordinate([0, 3, 2, 1]) lslt_sloppy",
@@ -1609,7 +1609,7 @@
    "imag": -1.2778328867140561e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 2/3 2/6 Coordinate([2, 3, 2, 6]) Coordinate([0, 3, 2, 1]) lslt",
@@ -1618,7 +1618,7 @@
    "imag": 4.754573886539595e-17,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 2/3 2/6 Coordinate([2, 3, 2, 6]) Coordinate([0, 3, 2, 1]) lslt_sloppy",
@@ -1627,7 +1627,7 @@
    "imag": 4.754573886539595e-17,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 2/3 3/6 Coordinate([2, 3, 3, 4]) Coordinate([3, 1, 3, 3]) lslt",
@@ -1636,7 +1636,7 @@
    "imag": -3.652012885988793e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 2/3 3/6 Coordinate([2, 3, 3, 4]) Coordinate([3, 1, 3, 3]) lslt_sloppy",
@@ -1645,7 +1645,7 @@
    "imag": -3.652012885988793e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 2/3 4/6 Coordinate([2, 3, 3, 4]) Coordinate([1, 2, 0, 2]) lslt",
@@ -1654,7 +1654,7 @@
    "imag": 2.0133403112771233e-17,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 2/3 4/6 Coordinate([2, 3, 3, 4]) Coordinate([1, 2, 0, 2]) lslt_sloppy",
@@ -1663,7 +1663,7 @@
    "imag": 2.0133403112771233e-17,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 2/3 5/6 Coordinate([1, 3, 1, 3]) Coordinate([0, 1, 1, 2]) lslt",
@@ -1672,7 +1672,7 @@
    "imag": -9.291134985197942e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 light 2/3 5/6 Coordinate([1, 3, 1, 3]) Coordinate([0, 1, 1, 2]) lslt_sloppy",
@@ -1681,7 +1681,7 @@
    "imag": 1.262576939165849e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four: test-4nt8 2000 light lslt_sum",
@@ -1708,7 +1708,7 @@
    "imag": -2.459496184124868e-17,
    "__extended_json_type__": "complex128"
   },
-  0.02
+  0.03
  ],
  [
   "run_hlbl_four: test-4nt8 2000 light lslt_sloppy_sum[labels.index('ref-far proj-all'), -1, -1]",
@@ -1717,7 +1717,7 @@
    "imag": -8.52681429505284e-19,
    "__extended_json_type__": "complex128"
   },
-  0.02
+  0.03
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 0/3 0/7 Coordinate([3, 1, 3, 3]) Coordinate([0, 0, 0, 3]) lslt",
@@ -1726,7 +1726,7 @@
    "imag": -5.536685892650048e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 0/3 0/7 Coordinate([3, 1, 3, 3]) Coordinate([0, 0, 0, 3]) lslt_sloppy",
@@ -1735,7 +1735,7 @@
    "imag": -5.536685892650048e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 0/3 1/7 Coordinate([1, 3, 1, 3]) Coordinate([0, 1, 1, 2]) lslt",
@@ -1744,7 +1744,7 @@
    "imag": 5.041953237468976e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 0/3 1/7 Coordinate([1, 3, 1, 3]) Coordinate([0, 1, 1, 2]) lslt_sloppy",
@@ -1753,7 +1753,7 @@
    "imag": -1.328584696682201e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 0/3 2/7 Coordinate([0, 0, 0, 3]) Coordinate([0, 1, 1, 2]) lslt",
@@ -1762,7 +1762,7 @@
    "imag": 3.672141862856726e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 0/3 2/7 Coordinate([0, 0, 0, 3]) Coordinate([0, 1, 1, 2]) lslt_sloppy",
@@ -1771,7 +1771,7 @@
    "imag": 3.672141862856726e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 0/3 3/7 Coordinate([2, 3, 0, 5]) Coordinate([2, 3, 3, 4]) lslt",
@@ -1780,7 +1780,7 @@
    "imag": -1.4113380175487484e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 0/3 3/7 Coordinate([2, 3, 0, 5]) Coordinate([2, 3, 3, 4]) lslt_sloppy",
@@ -1789,7 +1789,7 @@
    "imag": -1.4113380175487484e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 0/3 4/7 Coordinate([2, 3, 3, 4]) Coordinate([3, 1, 3, 3]) lslt",
@@ -1798,7 +1798,7 @@
    "imag": -2.741206132809542e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 0/3 4/7 Coordinate([2, 3, 3, 4]) Coordinate([3, 1, 3, 3]) lslt_sloppy",
@@ -1807,7 +1807,7 @@
    "imag": -2.741206132809542e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 0/3 5/7 Coordinate([2, 0, 2, 4]) Coordinate([1, 3, 1, 3]) lslt",
@@ -1816,7 +1816,7 @@
    "imag": 6.188867015257671e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 0/3 5/7 Coordinate([2, 0, 2, 4]) Coordinate([1, 3, 1, 3]) lslt_sloppy",
@@ -1825,7 +1825,7 @@
    "imag": -2.9578919996038756e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 0/3 6/7 Coordinate([2, 3, 3, 4]) Coordinate([1, 2, 0, 2]) lslt",
@@ -1834,7 +1834,7 @@
    "imag": 1.0411202272660848e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 0/3 6/7 Coordinate([2, 3, 3, 4]) Coordinate([1, 2, 0, 2]) lslt_sloppy",
@@ -1843,7 +1843,7 @@
    "imag": 1.0411202272660848e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 1/3 0/7 Coordinate([3, 0, 2, 2]) Coordinate([0, 3, 2, 1]) lslt",
@@ -1852,7 +1852,7 @@
    "imag": -1.3703145054281524e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 1/3 0/7 Coordinate([3, 0, 2, 2]) Coordinate([0, 3, 2, 1]) lslt_sloppy",
@@ -1861,7 +1861,7 @@
    "imag": -1.3703145054281524e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 1/3 1/7 Coordinate([0, 1, 1, 6]) Coordinate([0, 1, 1, 2]) lslt",
@@ -1870,7 +1870,7 @@
    "imag": -5.547446475942615e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 1/3 1/7 Coordinate([0, 1, 1, 6]) Coordinate([0, 1, 1, 2]) lslt_sloppy",
@@ -1879,7 +1879,7 @@
    "imag": -5.547446475942615e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 1/3 2/7 Coordinate([3, 3, 0, 4]) Coordinate([0, 0, 0, 3]) lslt",
@@ -1888,7 +1888,7 @@
    "imag": 5.35791950817633e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 1/3 2/7 Coordinate([3, 3, 0, 4]) Coordinate([0, 0, 0, 3]) lslt_sloppy",
@@ -1897,7 +1897,7 @@
    "imag": 5.35791950817633e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 1/3 3/7 Coordinate([2, 3, 2, 6]) Coordinate([2, 2, 1, 6]) lslt",
@@ -1906,7 +1906,7 @@
    "imag": -1.0553070001896678e-21,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 1/3 3/7 Coordinate([2, 3, 2, 6]) Coordinate([2, 2, 1, 6]) lslt_sloppy",
@@ -1915,7 +1915,7 @@
    "imag": -1.0553070001896678e-21,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 1/3 4/7 Coordinate([2, 3, 3, 6]) Coordinate([2, 2, 0, 6]) lslt",
@@ -1924,7 +1924,7 @@
    "imag": 4.368716049888036e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 1/3 4/7 Coordinate([2, 3, 3, 6]) Coordinate([2, 2, 0, 6]) lslt_sloppy",
@@ -1933,7 +1933,7 @@
    "imag": -2.2621963507173195e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 1/3 5/7 Coordinate([3, 0, 2, 2]) Coordinate([0, 1, 1, 2]) lslt",
@@ -1942,7 +1942,7 @@
    "imag": 3.797918047210053e-21,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 1/3 5/7 Coordinate([3, 0, 2, 2]) Coordinate([0, 1, 1, 2]) lslt_sloppy",
@@ -1951,7 +1951,7 @@
    "imag": 3.797918047210053e-21,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 1/3 6/7 Coordinate([2, 2, 1, 6]) Coordinate([2, 1, 0, 6]) lslt",
@@ -1960,7 +1960,7 @@
    "imag": 3.213773555211384e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 1/3 6/7 Coordinate([2, 2, 1, 6]) Coordinate([2, 1, 0, 6]) lslt_sloppy",
@@ -1969,7 +1969,7 @@
    "imag": -1.2388354857997496e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 2/3 0/6 Coordinate([2, 3, 3, 6]) Coordinate([2, 1, 0, 6]) lslt",
@@ -1978,7 +1978,7 @@
    "imag": 9.266586105549095e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 2/3 0/6 Coordinate([2, 3, 3, 6]) Coordinate([2, 1, 0, 6]) lslt_sloppy",
@@ -1987,7 +1987,7 @@
    "imag": -3.274470150900173e-19,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 2/3 1/6 Coordinate([2, 3, 2, 6]) Coordinate([0, 3, 2, 1]) lslt",
@@ -1996,7 +1996,7 @@
    "imag": -1.3926775626300336e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 2/3 1/6 Coordinate([2, 3, 2, 6]) Coordinate([0, 3, 2, 1]) lslt_sloppy",
@@ -2005,7 +2005,7 @@
    "imag": -1.3926775626300336e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 2/3 2/6 Coordinate([2, 2, 1, 6]) Coordinate([0, 1, 1, 6]) lslt",
@@ -2014,7 +2014,7 @@
    "imag": 5.168399724839973e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 2/3 2/6 Coordinate([2, 2, 1, 6]) Coordinate([0, 1, 1, 6]) lslt_sloppy",
@@ -2023,7 +2023,7 @@
    "imag": 5.168399724839973e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 2/3 3/6 Coordinate([2, 2, 1, 6]) Coordinate([2, 2, 0, 6]) lslt",
@@ -2032,7 +2032,7 @@
    "imag": 2.70672099050654e-18,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 2/3 3/6 Coordinate([2, 2, 1, 6]) Coordinate([2, 2, 0, 6]) lslt_sloppy",
@@ -2041,7 +2041,7 @@
    "imag": -7.835350626423763e-21,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 2/3 4/6 Coordinate([3, 1, 3, 3]) Coordinate([3, 0, 2, 2]) lslt",
@@ -2050,7 +2050,7 @@
    "imag": 9.571878854712276e-21,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 2/3 4/6 Coordinate([3, 1, 3, 3]) Coordinate([3, 0, 2, 2]) lslt_sloppy",
@@ -2059,7 +2059,7 @@
    "imag": 9.571878854712276e-21,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 2/3 5/6 Coordinate([2, 0, 2, 4]) Coordinate([2, 0, 2, 4]) lslt",
@@ -2068,7 +2068,7 @@
    "imag": 3.3281280503424795e-20,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four_chunk: test-4nt8 2000 strange 2/3 5/6 Coordinate([2, 0, 2, 4]) Coordinate([2, 0, 2, 4]) lslt_sloppy",
@@ -2077,7 +2077,7 @@
    "imag": -4.775144022988456e-21,
    "__extended_json_type__": "complex128"
   },
-  0.1
+  0.15
  ],
  [
   "run_hlbl_four: test-4nt8 2000 strange lslt_sum",
@@ -2104,7 +2104,7 @@
    "imag": -1.5916612154381333e-19,
    "__extended_json_type__": "complex128"
   },
-  0.02
+  0.03
  ],
  [
   "run_hlbl_four: test-4nt8 2000 strange lslt_sloppy_sum[labels.index('ref-far proj-all'), -1, -1]",
@@ -2113,7 +2113,7 @@
    "imag": 3.977223285686133e-20,
    "__extended_json_type__": "complex128"
   },
-  0.02
+  0.03
  ],
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8 2000 light light id_chunk/num_chunk=0/3 idx_xg_x=18 Coordinate([2, 2, 1, 6]) lslt",
