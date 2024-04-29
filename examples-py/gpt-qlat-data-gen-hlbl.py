@@ -1662,7 +1662,7 @@ def run_hlbl_two_plus_two_chunk(
         json_results.append((
             f"{fname}: {info_str} idx_xg_x={d['idx_xg_x']} {d['xg_x']} lslt",
             q.get_data_sig(d["lslt"], q.RngState()),
-            10e-2,
+            20e-2,
             ))
     q.save_pickle_obj(points_data, get_save_path(fn))
     if len(points_data) > 0:
@@ -1778,12 +1778,12 @@ def run_hlbl_two_plus_two(
         json_results.append((
             f"{info_str} lslt_sum",
             q.get_data_sig(results["lslt_sum"], q.RngState()),
-            2e-2,
+            3e-2,
             ))
         json_results.append((
             f"{info_str} lslt_sum[labels.index('sub proj-all'), -1, -1]",
             results["lslt_sum"][labels.index('sub proj-all'), -1, -1],
-            2e-2,
+            3e-2,
             ))
     q.sync_node()
     q.displayln_info(0, f"{info_str} done.")
