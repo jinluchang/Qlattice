@@ -12,9 +12,14 @@ if [ "$(uname)" == "Darwin" ]; then
         export LIBRARY_PATH="$(brew --prefix)/opt/openssl@3/lib":"$LIBRARY_PATH"
         export LIBRARY_PATH="$(brew --prefix)/opt/llvm/lib/c++":"$LIBRARY_PATH"
         export LIBRARY_PATH="$(brew --prefix)/opt/llvm/lib":"$LIBRARY_PATH"
+        export LIBRARY_PATH="$(brew --prefix)/opt/zlib/lib":"$LIBRARY_PATH"
+        export LIBRARY_PATH="$(brew --prefix)/opt/lib":"$LIBRARY_PATH"
         export CPATH="$(brew --prefix)/opt/openssl@3/include":"$CPATH"
         export CPATH="$(brew --prefix)/Cellar/fftw/3.3.10_1/include":"$CPATH"
         export CPATH="$(brew --prefix)/opt/llvm/include":"$CPATH"
+        export CPATH="$(brew --prefix)/opt/zlib/include":"$CPATH"
+        export CPATH="$(brew --prefix)/opt/include":"$CPATH"
+        export PKG_CONFIG_PATH="$(brew --prefix)/opt/zlib/lib/pkgconfig":"$PKG_CONFIG_PATH"
     fi
     if [ -z ${USE_COMPILER+x} ] ; then
         export USE_COMPILER=clang
