@@ -237,7 +237,7 @@ qacc void copy_complex(ComplexT<Ta> &r, const ComplexT<Tb> &a)
 template <class Ta>
 qacc void copy_complex(ComplexT<Ta> &r, const ComplexT<RealDD> &a)
 {
-  r = ComplexT<Ta>(a.real().Y(), a.imag().Y());
+  r = a;
 }
 
 template <class Ta>
@@ -311,11 +311,15 @@ qacc RealDD qsin(RealDD a)
 {
   double y = a.Y();
   double x = a.X();
-  RealDD z;
-  double siny = std::sin(y);
-  double sinx = std::sin(x);
-  z.Y() = siny * std::cos(x);
-  z.X() = std::cos(y) * sinx;
+  RealDD z, e;
+  RealDD cosy = std::cos(y);
+  RealDD cosx = std::cos(x);
+  RealDD siny = std::sin(y);
+  RealDD sinx = std::sin(x);
+  e = siny * cosx + cosy * sinx;
+  z.Y() = e.X() + e.Y();
+  z.X() = 0.0;
+  z.X() = e - z;
   return z;
   // return std::sin(y);
 }
@@ -325,9 +329,15 @@ qacc RealDD qcos(RealDD a)
 {
   double y = a.Y();
   double x = a.X();
-  RealDD z;
-  z.Y() = std::cos(y) * std::cos(x);
-  z.X() = std::sin(y) * std::sin(x);
+  RealDD z, e;
+  RealDD cosy = std::cos(y);
+  RealDD cosx = std::cos(x);
+  RealDD siny = std::sin(y);
+  RealDD sinx = std::sin(x);
+  e = cosy * cosx - siny * sinx;
+  z.Y() = e.X() + e.Y();
+  z.X() = 0.0;
+  z.X() = e - z;
   return z;
   // return std::cos(y);
 }
@@ -337,9 +347,12 @@ qacc RealDD qacos(RealDD a)
 {
   double y = a.Y();
   double x = a.X();
-  RealDD z;
-  z.Y() = std::acos(y);
-  z.X() = -1.0 * (1.0 / std::sqrt(1.0 - y * y)) * x;
+  RealDD z,e;
+  e.Y() = std::acos(y);
+  e.X() = -1.0 * (1.0 / std::sqrt(1.0 - y * y)) * x;
+  z.Y() = e.X() + e.Y();
+  z.X() = 0.0;
+  z.X() = e - z;
   return z;
   // return std::acos(y);
 }
@@ -397,7 +410,6 @@ qacc ComplexT<RealDD> qconj(const ComplexT<RealDD> &x)
 {
   // RealDD tmp = minus(x.imag());
   return ComplexT<RealDD>(x.real(), -x.imag());
-  ;
 }
 
 }  // namespace qlat

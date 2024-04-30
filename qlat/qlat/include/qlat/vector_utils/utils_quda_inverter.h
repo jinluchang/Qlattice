@@ -3620,7 +3620,7 @@ void get_staggered_multishift(quda_inverter& qinv,
 
   ////restore default inv_param
   //inv_param = inv_param_copy;
-  if(qinv.quda_verbos >= 0)
+  if(qinv.quda_verbos >= 0 or qinv.quda_verbos == -2)
   {
     print0("Done multishift: %8d iter / %.6f secs = %.3f Gflops, Cost %.3f Gflops \n",
           inv_param.iter, inv_param.secs, inv_param.gflops / inv_param.secs, inv_param.gflops);
@@ -3740,7 +3740,7 @@ void get_staggered_multishift_even(quda_inverter& qinv,
   }
 
   ////restore default inv_param
-  if(qinv.quda_verbos >= 0)
+  if(qinv.quda_verbos >= 0 or qinv.quda_verbos == -2)
   {
     print0("Done multishift: %8d iter / %.6f secs = %.3f Gflops, Cost %.3f Gflops \n",
           inv_param.iter, inv_param.secs, inv_param.gflops / inv_param.secs, inv_param.gflops);

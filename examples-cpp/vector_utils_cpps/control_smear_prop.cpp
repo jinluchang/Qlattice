@@ -2,7 +2,7 @@
 #include "utils_io_vec.h"
 #include "general_funs.h"
 #include "utils_smear_vecs.h"
-#include "check_fun.h"
+#include "utils_check_fun.h"
 
 int main(int argc, char* argv[])
 {
@@ -12,10 +12,10 @@ int main(int argc, char* argv[])
   inputpara in;begin_Lat(&argc, &argv, in);
 
   int icfg  = in.icfg;
-  int ionum = in.ionum;
+  //int ionum = in.ionum;
 
   ////int vini  = 0;
-  int n_vec = in.nvec;
+  //int n_vec = in.nvec;
 
   omp_set_num_threads(omp_get_max_threads());
   print0("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());

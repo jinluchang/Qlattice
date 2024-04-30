@@ -24,8 +24,12 @@ __global__ void gauss_smear_global4(T* pres, const T* psrc, const T* gf, const T
   const Long Nvol, const Long* map_bufD, const Long* map_final)
 {
 
-  __shared__ T ls[(dirL*2)*3*3 + 1];
-  __shared__ T ps[(dirL*2)*bfac*3*d0 + 1];
+  const int offB = dirL == 3? 1 : 3;  // for bank conflicts ?
+  //__shared__ T ls[(dirL*2)*3*3 + offB];
+  //__shared__ T ps[(dirL*2)*bfac*3*d0 + offB];
+  __shared__ T ls[3][(2*dirL)*3 + offB];
+  __shared__ T ps[d0*bfac][2*dirL*3 + offB];
+
   ///tid should larger than 9
   unsigned int   tid   =  threadIdx.x;
   unsigned long  count =  blockIdx.y*gridDim.x + blockIdx.x;
@@ -40,16 +44,17 @@ __global__ void gauss_smear_global4(T* pres, const T* psrc, const T* gf, const T
   unsigned int off = tid;
   {
     const T* gf_t = &gf[count*(2*dir_max)*9];
+    #pragma unroll
     while(off < (2*dirL)*9){
       //int dir = off/9;int c = off%9;
       //ls[(c/3)*(2*dirL)*3 + dir*3 + c%3] = gf[count*(2*dirL)*9 + off];off += ns;
       //ls[off] = gf_t[off];
-      int dir = off/9;
-      int c0 = (off/3)%3;
-      int c1 =  off%3;
-      int dirM = dir - dirL;
-      ls[c1*(2*dirL)*3 + dir*3 + c0 ] = gf_t[(dirM + dir_max)*9 + c1*3 + c0];
-      ////ls[c1*(2*dirL)*3 + dir*3 + c0 ] = gf_t[(dir + 1)*9 + c0*3 + c1];
+      const int dir = off/9;
+      const int c0 = (off/3)%3;
+      const int c1 =  off%3;
+      const int dirM = dir - dirL;
+      //ls[c1*(2*dirL)*3 + dir*3 + c0 ] = gf_t[(dirM + dir_max)*9 + c1*3 + c0];
+      ls[c1][dir*3 + c0 ] = gf_t[(dirM + dir_max)*9 + c1*3 + c0];
       off += ns;
     }
   }
@@ -66,12 +71,14 @@ __global__ void gauss_smear_global4(T* pres, const T* psrc, const T* gf, const T
     //T* res_t     = &ps[(dir+dirL)*bfac*3*d0];
     ////T* res_t     = &ps[dir+dirL];
     off = tid;
+    #pragma unroll
     while(off < nsites){
       //res_t[off] = src_t[off]; off+=ns;
-      unsigned int bi = off/(3*d0);
-      unsigned int c  = (off%(3*d0))/d0;
-      unsigned int di = off%d0;
-      ps[(bi*d0 + di)*(2*dirL*3) + (dir+dirL)*3 + c] = src_t[off];
+      const unsigned int bi = off/(3*d0);
+      const unsigned int c  = (off%(3*d0))/d0;
+      const unsigned int di = off%d0;
+      //ps[(bi*d0 + di)*(2*dirL*3) + (dir+dirL)*3 + c] = src_t[off];
+      ps[(bi*d0 + di)][(dir+dirL)*3 + c] = src_t[off];
       off+=ns;
     }
   }
@@ -87,12 +94,15 @@ __global__ void gauss_smear_global4(T* pres, const T* psrc, const T* gf, const T
     unsigned int c0 = (off%(3*d0))/d0;
     unsigned int di = off%d0;
 
-    T* a = &ls[c0*(2*dirL*3)];
-    T* b = &ps[(bi*d0 + di)*(2*dirL*3)];
-    //T* b = &ps[(bi*d0 + di)];
+    //T* a = &ls[c0*(2*dirL*3)];
+    //T* b = &ps[(bi*d0 + di)*(2*dirL*3)];
+
+    T* a = ls[c0];
+    T* b = ps[(bi*d0 + di)];
 
     tmp = 0.0;
 
+    #pragma unroll
     for(int dir=0;dir<(2*dirL)*3; dir++)
     {
       //tmp += b[dir*bfac*d0] * a[dir];

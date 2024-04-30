@@ -103,22 +103,22 @@ qacc void su3_dagger(Ty* res, Ty* src)
 template <class Ty, Long N>
 qacc void normalize_array_c(Ty* src)
 {
-  RealD norm = 0.0;
-  for(Long i=0;i<N;i++){norm = (qlat::qconj(src[i]) * src[i]).real();}
-  norm = std::sqrt(norm);
-  if (not(norm == 1.0))
-  for(Long i=0;i<N;i++){src[i] /= Ty(norm, 0.0);}
+  Ty norm = Ty(0.0, 0.0);
+  for(Long i=0;i<N;i++){norm += (qlat::qconj(src[i]) * src[i]).real();}
+  norm = qsqrt(norm.real());
+  for(Long i=0;i<N;i++){src[i] /= norm;}
 }
 
 template <class Ty, Long N>
 qacc void orthogonalize_array_c(Ty* p2, Ty* p1)
 {
-  qlat::ComplexT<RealD > c = 0.0;
+  Ty c = Ty(0.0, 0.0);
   for (Long i = 0; i < N; i++) {
     c += qconj(p1[i]) * p2[i];
   }
   //print0("n %.8e %.8e, %.8e %.8e, %.8e %.8e \n", c.real(), c.imag(), p1[0].real(), p1[0].imag(), p2[0].real(), p2[0].imag());
-  if (not(c == 0.0)) {
+  //if (not(c == 0.0)) 
+  {
     for (Long i = 0; i < N; i++) {
       p2[i] -= c * p1[i];
       //p2[i] = p2[i] - c * p1[i];
@@ -136,31 +136,144 @@ qacc void cross_product_conj_c(Ty* v3, Ty* v1, Ty* v2)
 }
 
 template <typename Ty>
-qacc void su3_unitarize(Ty* src)
+qacc void su3_unitarize_col(Ty* src)
 {
-  Ty* p1 = &src[0 * 3 + 0];// may need to rotate index?
-  Ty* p2 = &src[1 * 3 + 0];
-  Ty* p3 = &src[2 * 3 + 0];
+  Ty p1[3],p2[3],p3[3];
+  for(int i=0;i<3;i++)
+  {
+    p1[i] = src[i*3 + 0];
+    p2[i] = src[i*3 + 1];
+    p3[i] = src[i*3 + 2];
+  }
+
   normalize_array_c<Ty, 3>(p1);
   orthogonalize_array_c<Ty, 3>(p2, p1);
   normalize_array_c<Ty, 3>(p2);
   cross_product_conj_c(p3, p1, p2);
+  //normalize_array_c<Ty, 3>(p3);
+
+  for(int i=0;i<3;i++)
+  {
+    src[i*3 + 0] = p1[i];
+    src[i*3 + 1] = p2[i];
+    src[i*3 + 2] = p3[i];
+  }
+}
+
+template <typename Ty>
+qacc void su3_unitarize(Ty* src)
+{
+  //Ty p1[3],p2[3],p3[3];
+  //for(int i=0;i<3;i++)
+  //{
+  //  p1[i] = src[i*3 + 0];
+  //  p2[i] = src[i*3 + 1];
+  //  p3[i] = src[i*3 + 2];
+  //}
+
+  Ty* p1 = &src[0 * 3 + 0];// may need to rotate index?
+  Ty* p2 = &src[1 * 3 + 0];
+  Ty* p3 = &src[2 * 3 + 0];
+
+  normalize_array_c<Ty, 3>(p1);
+  orthogonalize_array_c<Ty, 3>(p2, p1);
+  normalize_array_c<Ty, 3>(p2);
+  cross_product_conj_c(p3, p1, p2);
+  //normalize_array_c<Ty, 3>(p3);
+
+  //for(int i=0;i<3;i++)
+  //{
+  //  src[i*3 + 0] = p1[i];
+  //  src[i*3 + 1] = p2[i];
+  //  src[i*3 + 2] = p3[i];
+  //}
+
   //orthogonalize_array_c<Ty, 3>(p2, p1);
   //normalize_array_c<Ty, 3>(p2);
   //cross_product_conj_c(p3, p1, p2);
 }
 
-template <typename Ty>
-qacc void su3_traceless_anti_hermition(Ty* sz, Ty* BUF)
+//only touch the diagonal part
+template <typename Tb>
+qacc void su3_traceless(ComplexT<Tb>* sz)
 {
-  for(int i=0;i<9;i++){BUF[i] = sz[i] ;}
+  int use_type = 0;
+  if(is_same<RealDD, Tb>()){use_type = 1;}
+  ////==type 0
+  if(use_type == 0)
+  {
+    Tb c_tr = Tb(0.0);
+    for(int a=0;a<3;a++){
+      c_tr += sz[a*3 + a].imag();
+    }
+    Tb one3 = Tb(1.0) / Tb(3.0);
+    c_tr = c_tr * one3;
+
+    for(int a=0;a<3;a++){
+      Tb tmp = sz[a*3 + a].imag();
+      tmp   -= c_tr;
+      sz[a*3 + a] = ComplexT<Tb>(0.0, tmp);
+    }
+  }
+
+  ////type 1, need to split Y, X when sum is near zero ......
+  if(use_type == 1)
+  {
+    RealDD a[3];
+    RealDD b[3];
+    RealDD c0 = 0.0;
+    RealDD c1 = 0.0;
+
+    for(int i=0;i<3;i++){
+      a[i] = sz[i*3 + i].imag();
+
+      b[i].Y() = a[i].X();
+      b[i].X() = 0.0;
+
+      a[i].X() = 0.0;
+      c0 += a[i];
+      c1 += b[i];
+    }
+
+    RealDD one3 = RealDD(1.0) / RealDD(3.0);
+
+    c0  = c0 * one3;
+    c1  = c1 * one3;
+    c0 += c1;
+
+    //if(double(qfabs(c0)) > 1e-50)
+    for(int a=0;a<3;a++){
+      RealDD tmp = sz[a*3 + a].imag();
+      tmp   -= c0;
+      Tb f   = tmp;
+      sz[a*3 + a] = ComplexT<Tb>(0.0, f);
+    }
+  }
+
+  //RealDD one3;
+  //one3.Y() = 0x1.5555555555555p-2;
+  //one3.X() = 0x1.5555555555555p-56;
+  //c_tr = c_tr / Tb(3.0);
+
+}
+
+template <typename Tb>
+qacc void su3_traceless_anti_hermition(ComplexT<Tb>* sz)
+{
+  //for(int i=0;i<9;i++){BUF[i] = sz[i] ;}
   for(int a=0;a<3;a++)
   for(int b=0;b<3;b++)
   {
-    sz[a*3 + b] = (BUF[a*3 + b] - qconj(BUF[b*3 + a])) / Ty(2.0, 0.0);
+    if(a > b){
+      //Ty tmp = BUF[a*3 + b] - qconj(BUF[b*3 + a]);
+      ComplexT<Tb> tmp = sz[a*3 + b] - qconj(sz[b*3 + a]);
+      tmp = Tb(0.5) * tmp;
+      sz[a*3 + b] =        tmp;
+      sz[b*3 + a] = Tb(-1.0) * qconj(tmp);
+    }
   }
-  Ty c_tr = Ty(0.0, 0.0);for(int a=0;a<3;a++){c_tr += sz[a*3 + a]    ;}
-  for(int a=0;a<3;a++){sz[a*3 + a] -= c_tr/Ty(3.0, 0.0 );}
+
+  su3_traceless(sz);
 }
 
 template <typename Tf>
@@ -253,12 +366,11 @@ void Gauge_antihermition(GaugeFieldT<Td> &gf)
   const Geometry& geo = gf.geo();
   const Long V = geo.local_volume();
   qacc_for(isp, V, {
-    qlat::ComplexT<double > BUF[9];
     const Coordinate xl = geo.coordinate_from_index(isp);
     for(int mu=0;mu<4;mu++)
     {
       qlat::ComplexT<double >* s1  = (qlat::ComplexT<double >*) gf.get_elem(xl, mu).p;
-      su3_traceless_anti_hermition(s1, BUF);
+      su3_traceless_anti_hermition(s1);
     }
   });
 }

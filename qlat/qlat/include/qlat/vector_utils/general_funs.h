@@ -335,14 +335,60 @@ inline void set_GPU(){
   int num_gpus = 0;
   qacc_GetDeviceCount(&num_gpus);
   ////qacc_DeviceReset();
-  qacc_SetDevice(id_node % num_gpus);
+
+  // get local rank
+  int localRank  = -1;
+  int localSize  =  0;
+  int globalRank =  0;
+  {
+  MPI_Comm_rank(get_comm(), &globalRank);
+  //Qassert(globalRank == get_id_node());
+  // node local comm
+  MPI_Comm nodeComm;
+  MPI_Comm_split_type(get_comm(), MPI_COMM_TYPE_SHARED, globalRank,
+                      MPI_INFO_NULL, &nodeComm);
+
+  // id within the node
+  MPI_Comm_rank(nodeComm, &localRank);
+  MPI_Comm_size(nodeComm, &localSize);
+
+
+  }
+
+  //Qassert(localSize == num_gpus and localRank >= 0);//same number of GPUs
+
+  qacc_SetDevice(localRank % num_gpus);
   int gpu_id = -1; 
   qacc_GetDevice(&gpu_id);
 
-  //{
-  //qacc_GetDeviceCount(&num_gpus);
-  //printf("CPU node %d (of %d) uses CUDA device %d\n", id_node, num_node, gpu_id);
-  //}
+  int gpu_verbos = 0;
+  std::string val = qlat::get_env(std::string("qlat_GPU_verbos"));
+  if(val != ""){gpu_verbos = stringtonum(val);}
+
+  if(gpu_verbos){
+    int masterRank = -1;
+    int masterSize =  0;
+
+    // comm across node (each node select one process with the same local rank)
+    MPI_Comm masterComm;
+    MPI_Comm_split(get_comm(), localRank, globalRank, &masterComm);
+
+    MPI_Comm_rank(masterComm, &masterRank);
+    // size of each master comm
+    MPI_Comm_size(masterComm, &masterSize);
+
+    char host_name[500];
+    Qassert(gethostname(host_name, 500) == 0);
+    printf("node info lR %d, lS %d, mR %d, mS %d, gi %d, Ng %d, Ni %3d / %3d , host %s \n",
+      localRank, localSize, masterRank, masterSize, gpu_id, num_gpus, id_node, num_node, host_name);
+  }
+
+  {
+  qacc_GetDeviceCount(&num_gpus);
+  if(gpu_verbos){
+    printf("CPU node %d (of %d) uses CUDA device %d\n", id_node, num_node, gpu_id);
+  }
+  }
 
   fflush(stdout);
   MPI_Barrier(get_comm());
@@ -1146,7 +1192,7 @@ inline Ty vec_norm2(Ty* s0, Ty* s1, Long Ndata, QMEM GPU = QMGPU, const Long Ngr
 
 
   qlat::vector_acc<Ty > rsum;rsum.resize(1);rsum[0] = 0.0;
-  reduce_vecs(buf, rsum.data(), Ndata, 1, GPU);
+  reduce_vecs(buf, rsum.data(), Nvol, 1, GPU);
   sum_all_size( (Ty*) rsum.data(), 1, 0 );
   return rsum[0];
 }
@@ -1203,6 +1249,32 @@ void sort_vectors_by_axis(std::vector<std::vector<Ty > >& src, std::vector<std::
       res[ai][ni] = src[ai][index[ni]];
     }
   }
+}
+
+template<typename Ty>
+qacc void decodeT(Ty& src)
+{
+  return ;
+}
+
+template<>
+qacc void decodeT(RealDD& src)
+{
+  RealDD a;
+  a.Y() = src.Y() + src.X();
+  a.X() = 0.0;
+  a.X() = src - a;
+  src = a;
+}
+
+template<>
+qacc void decodeT(qlat::ComplexT<RealDD>& src)
+{
+  RealDD a = src.real();
+  RealDD b = src.imag();
+  decodeT(a);
+  decodeT(b);
+  src = qlat::ComplexT<RealDD>(a, b);
 }
 
 //inline qlat::vector_acc<int > Coordinates_to_list(std::vector<Coordinate >& moms)

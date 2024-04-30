@@ -40,8 +40,8 @@ class API RealDD{
   qacc RealDD(const float&  a){y = a;        x = 0;}
   qacc RealDD(const RealDD& a)
   {
-    x = a.x;
     y = a.y;
+    x = a.x;
   }
 #if !defined(__QLAT_NO_FLOAT128__)
   inline RealDD(const __float128& a)
@@ -55,8 +55,8 @@ class API RealDD{
 
   qacc const RealDD& operator= (const RealDD& a)
   {
-    x = a.x;
-    y = a.y;
+    y = a.Y();
+    x = a.X();
     return *this;
   }
 
@@ -69,15 +69,15 @@ class API RealDD{
 
   qacc RealDD& operator= (const double& a)
   {
-    x = 0;
     y = a;
+    x = 0;
     return *this;
   }
   
   qacc RealDD& operator= (float& a)
   {
-    x = 0;
     y = a;
+    x = 0;
     return *this;
   }
 
@@ -93,44 +93,9 @@ class API RealDD{
 #endif
 
   qacc RealDD operator+=(RealDD b);
-  //{
-  //  RealDD& a = *this;
-  //  //RealDD z;
-
-  //  double t1, t2, t3, t4, t5, e;
-
-  //  t1 = a.y + b.y;
-
-  //  t2 = t1 - a.y;
-
-  //  t3 = (a.y - (t1 - t2)) + (b.y - t2);
-
-  //  t4 = a.x + b.x;
-
-  //  t2 = t4 - a.x;
-
-  //  t5 = (a.x - (t4 - t2)) + (b.x - t2);
-
-  //  t3 = t3 + t4;
-
-  //  t4 = t1 + t3;
-
-  //  t3 = t3 + (t1 - t4);
-
-  //  t3 = t3 + t5;
-
-  //  y = e = t4 + t3;
-
-  //  x = t3 + (e - t4);
-
-  //  return *this;
-
-  //  //*this = *this + a;
-  //  //return  *this;
-  //}
-
   qacc RealDD operator*=(RealDD b);
   qacc RealDD operator/=(RealDD b);
+
   qacc RealDD operator-()
   {
     RealDD am;
@@ -148,19 +113,20 @@ class API RealDD{
     return  *this;
   }
 
-  operator double() const { return Y() + X(); }
-  operator  float() const { return Y() + X(); }
+  qacc operator double() const { return Y() + X(); }
+  qacc operator  float() const { return Y() + X(); }
+  //qacc operator double() const { return Y(); }
+  //qacc operator  float() const { return Y(); }
 
   private:
   double y;
   double x;
-
 };
 
 #if !defined(__QLAT_NO_FLOAT128__)
 inline __float128 copy_to_float128(const RealDD& a)
 {
-  __float128 a128 = (__float128) a.X() + (__float128) a.Y();
+  __float128 a128 = (__float128) a.Y() + (__float128) a.X();
   return a128;
 }
 #endif
@@ -168,8 +134,8 @@ inline __float128 copy_to_float128(const RealDD& a)
 qacc RealDD minus(const RealDD& a)
 {
   RealDD z;
-  z.Y() = -1 * a.Y();
-  z.X() = -1 * a.X();
+  z.Y() = -1.0 * a.Y();
+  z.X() = -1.0 * a.X();
   return z;
 }
 
@@ -195,42 +161,12 @@ qacc RealDD operator+(RealDD a, RealDD b)
   RealDD z = a;
   z += b;
   return z;
-
-  //double t1, t2, t3, t4, t5, e;
-
-  //t1 = a.y + b.y;
-
-  //t2 = t1 - a.y;
-
-  //t3 = (a.y - (t1 - t2)) + (b.y - t2);
-
-  //t4 = a.x + b.x;
-
-  //t2 = t4 - a.x;
-
-  //t5 = (a.x - (t4 - t2)) + (b.x - t2);
-
-  //t3 = t3 + t4;
-
-  //t4 = t1 + t3;
-
-  //t3 = t3 + (t1 - t4);
-
-  //t3 = t3 + t5;
-
-  //z.y = e = t4 + t3;
-
-  //z.x = t3 + (e - t4);
-
-  //return z;
 }
 
 qacc RealDD operator-(RealDD a, RealDD b)
 {
   RealDD z = a;
   z -= b;
-  //RealDD bm = minus(b);
-  //RealDD z = a + bm;
   return  z;
 }
 
@@ -248,6 +184,7 @@ qacc double __Dmul_rn(double x, double y)
 {
 #if !defined(__CUDA_ARCH__) && !defined(__HIP_ARCH__)
   return x * y;
+  //return fmul(x, y);
 #else
   return __dmul_rn(x, y);
 #endif
@@ -257,6 +194,15 @@ qacc RealDD RealDD::operator+=(RealDD b)
 {
   RealDD& a = *this;
   //RealDD z;
+#if !defined(__CUDA_ARCH__) && !defined(__HIP_ARCH__) && !defined(__QLAT_NO_FLOAT128__)
+  //on CPU with __float128
+  __float128 a128 = copy_to_float128(a);
+  __float128 b128 = copy_to_float128(b);
+  __float128 z128;
+  z128 = a128 + b128;
+  *this = z128;
+  return *this;
+#else
 
   double t1, t2, t3, t4, t5, e;
 
@@ -288,6 +234,7 @@ qacc RealDD RealDD::operator+=(RealDD b)
 
   //*this = *this + a;
   //return  *this;
+#endif
 }
 
 qacc RealDD RealDD::operator*=(RealDD b)
@@ -300,7 +247,7 @@ qacc RealDD RealDD::operator*=(RealDD b)
   __float128 z128;
   z128 = a128 * b128;
   *this = z128;
-  return a;
+  return *this;
 #else
   double e;
   RealDD t;
@@ -323,40 +270,11 @@ qacc RealDD RealDD::operator*=(RealDD b)
 #endif
 }
 
-qacc RealDD  operator* (RealDD x, RealDD y)
+qacc RealDD  operator* (RealDD a, RealDD b)
 {
-  RealDD z = x;
-  z *= y;
+  RealDD z = a;
+  z *= b;
   return z;
-  
-  //#ifndef __CUDA_ARCH__
-  ////on CPU with __float128
-  //__float128 a128 = copy_to_float128(x);
-  //__float128 b128 = copy_to_float128(y);
-  //__float128 z128;
-  //z128 = a128 * b128;
-  //RealDD z(z128);
-  //return z;
-  //#else
-  //double e;
-  //RealDD t, z;
-
-  //t.y = __Dmul_rn (x.y, y.y);     /* prevent FMA-merging */
-
-  //t.x = __Fma_rn (x.y, y.y, -t.y);
-
-  //t.x = __Fma_rn (x.x, y.x, t.x); /* remove this for even higher performance */
-
-  //t.x = __Fma_rn (x.y, y.x, t.x);
-
-  //t.x = __Fma_rn (x.x, y.y, t.x);
-
-  //z.y = e = t.y + t.x;
-
-  //z.x = (t.y - e) + t.x;
-
-  //return z;
-  //#endif
 }
 
 /* Take full advantage of the FMA (fused-multiply add) capability of the GPU.
@@ -374,8 +292,8 @@ qacc RealDD RealDD::operator/= (RealDD b)
   __float128 b128 = copy_to_float128(b);
   __float128 z128;
   z128 = a128 / b128;
-  a = z128;
-  return a;
+  *this = z128;
+  return *this;
 #else
 
   //RealDD z;
@@ -406,37 +324,6 @@ qacc RealDD operator/ (RealDD a, RealDD b)
   RealDD z = a;
   z /= b;
   return z;
- 
-  //#ifndef __CUDA_ARCH__
-  ////on CPU with __float128
-  //__float128 a128 = copy_to_float128(a);
-  //__float128 b128 = copy_to_float128(b);
-  //__float128 z128;
-  //z128 = a128 / b128;
-  //RealDD z(z128);
-  //return z;
-  //#else
-
-  //RealDD z;
-
-  //double c, cc, up;
-
-  //c = a.y / b.y;     /* compute most significant quotient "digit" */
-
-  //cc = fma (b.y, -c, a.y); 
-
-  //cc = fma (b.x, -c, cc);
-
-  //cc = cc + a.x;     /* remainder after most significant quotient "digit" */
-
-  //cc = cc / b.y;     /* compute least significant quotient "digit" */
-
-  //z.y = up = c + cc;
-
-  //z.x = (c - up) + cc;
-
-  //return z;
-  //#endif
 }
 
 /* Based on the binomial theorem. x = (a+b)^2 = a*a + 2*a*2b + b*b. If |b| is
@@ -455,25 +342,36 @@ qacc RealDD sqrtT (const RealDD a)
   return z;
 #else
 
-  double e;
+  double e, y, x;
 
-  RealDD t, z;
+  RealDD z;
+  if(a.Y() == 0.0){
+    z.Y() = std::sqrt(a.X());
+    z.X() = 0.0;
+    return z;
+  }
 
-  t.Y() = std::sqrt (a.Y());
+  y     = std::sqrt (a.Y());
 
-  t.X() = __Fma_rn (t.Y(), -t.Y(), a.Y());
+  x     = __Fma_rn (y    , -y    , a.Y());
 
-  t.X() = t.X() + a.X();
+  x     = x     + a.X();
 
-  t.X() = t.X() / (t.Y() + t.Y());
+  x     = x     / (y     + y    );
 
-  z.Y() = e = t.Y() + t.X();
+  z.Y() = e = y     + x  ;
 
-  z.X() = (t.Y() - e) + t.X();
+  z.X() = (y     - e) + x    ;
 
   return z;
 #endif
 }
+
+qacc bool qisnan(const RealDD &a)
+{
+  return std::isnan(a.X()) or std::isnan(a.Y());
+}
+
 
 }
 
