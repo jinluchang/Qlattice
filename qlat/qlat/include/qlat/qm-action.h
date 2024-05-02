@@ -5,55 +5,52 @@ namespace qlat
 
 struct QMAction {
   bool initialized;
-  double lmbd;
-  double v0;
   double alpha;
+  double beta;
+  double center_TV;
+  double center_bar;
   double barrier_strength;
   double M;
   double L;
   Long t_full1;
   Long t_full2;
   Long t_FV;
-  //float t_ramp;
-  double m_particle;
   double dt;
   //
   qacc void init()
   {
     initialized = false;
-    lmbd = 0.01;
-    v0 = 3.0;
-    alpha = 0.0;
+    alpha = 1.0;
+    beta = 1.0;
+    center_TV = 2.0;
+    center_bar = 1.0;
     barrier_strength = 1.0;
     M = 1.0;
     L = 0.0;
     t_full1 = 10;
     t_full2 = 10;
     t_FV = 10;
-    //t_ramp = 5.0;
-    m_particle = 1.0;
     dt = 1.0;
   }
   //
   qacc QMAction() { init(); }
-  qacc QMAction(const double lmbd_, const double v0_, const double alpha_,
+  qacc QMAction(const double alpha_, const double beta_,
                 const double barrier_strength_, const double M_,
                 const double L_, const Long t_full1_, const Long t_full2_, 
-                const Long t_FV_, const double m_particle_, const double dt_)
+                const Long t_FV_, const double dt_)
   {
     init();
     initialized = true;
-    lmbd = lmbd_;
     alpha = alpha_;
+    beta = beta_;
+    center_TV = (3.0+std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
+    center_bar = (3.0-std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
     barrier_strength = barrier_strength_;
     M = M_;
     L = L_;
     t_full1 = t_full1_;
     t_full2 = t_full2_;
     t_FV = t_FV_;
-    //t_ramp = t_ramp_;
-    v0 = v0_;
-    m_particle = m_particle_;
     dt = dt_;
   }
 
@@ -89,28 +86,28 @@ struct QMAction {
 
   inline double V_phi4(const double x)
   {
-    return lmbd*(x*x - v0*v0)*(x*x - v0*v0) - alpha*x;
+    return beta*(x*x/2.0-x*x*x/2.0+alpha*x*x*x*x/8.0);
   }
 
   inline double dV_phi4(const double x)
   {
     // Returns the derivative of the potential with respect to x
-    return 4.0*lmbd*x*(x*x-v0*v0) - alpha;
+    return beta*(x-x*x*3.0/2.0+alpha*x*x*x/2.0);
   }
 
   inline double V_full(const double x)
   {
     // Returns the potential evaluated at point x
-    if(x>v0) {
-      return -alpha*v0;
+    if(x>center_TV) {
+      return 0;
     }
-    return V_phi4(x);
+    return V_phi4(x) - V_phi4(center_TV);
   }
 
   inline double dV_full(const double x)
   {
     double rtn = dV_phi4(x);
-    if(x>v0) {
+    if(x>center_TV) {
       return 0.0;
     }
     return rtn;
@@ -119,36 +116,36 @@ struct QMAction {
   inline double V_FV(const double x)
   {
     double rtn = V_full(x);
-    if(x>0)
-      rtn += barrier_strength*x*x;
+    if(x>center_bar)
+      rtn += barrier_strength*(x-center_bar)*(x-center_bar);
     return rtn;
   }
 
   inline double dV_FV(const double x)
   {
     double rtn = dV_full(x);
-    if(x>0)
-      rtn += 2.0*barrier_strength*x;
+    if(x>center_bar)
+      rtn += 2.0*barrier_strength*(x-center_bar);
     return rtn;
   }
 
   inline double V_TV(const double x)
   {
     double rtn = V_full(x);
-    if(x<0)
-      rtn += M*barrier_strength*x*x;
+    if(x<center_bar)
+      rtn += M*barrier_strength*(x-center_bar)*(x-center_bar);
     else
-      rtn += L*barrier_strength*x*x;
+      rtn += L*barrier_strength*(x-center_bar)*(x-center_bar);
     return rtn;
   }
 
   inline double dV_TV(const double x)
   {
     double rtn = dV_full(x);
-    if(x<0)
-      rtn += M*2.0*barrier_strength*x;
+    if(x<center_bar)
+      rtn += M*2.0*barrier_strength*(x-center_bar);
     else
-      rtn += L*2.0*barrier_strength*x;
+      rtn += L*2.0*barrier_strength*(x-center_bar);
     return rtn;
   }
 
@@ -161,7 +158,7 @@ struct QMAction {
     xl[3]+=1;
     double psi_eps = f.get_elem(xl);
     xl[3]-=1;
-    return (m_particle/2.0/qma.dt/qma.dt)*(psi_eps-psi)*(psi_eps-psi) + qma.V(psi, geo.coordinate_g_from_l(xl)[3]);
+    return (beta/2.0/qma.dt/qma.dt)*(psi_eps-psi)*(psi_eps-psi) + qma.V(psi, geo.coordinate_g_from_l(xl)[3]);
   }
 
   inline double action_node_no_comm(const Field<double>& f)
@@ -267,12 +264,12 @@ struct QMAction {
       Vector<double> force_v = force.get_elems(xl);
       qassert(force_v.size() == 1);
       double psi = f.get_elem(xl);
-      force_v[0] = 2.0 * qma.m_particle / qma.dt / qma.dt * psi;
+      force_v[0] = 2.0 * qma.beta / qma.dt / qma.dt * psi;
       force_v[0] += qma.dV(psi,geo.coordinate_g_from_l(xl)[3]);
       xl[3] += 1;
-      force_v[0] -= qma.m_particle / qma.dt / qma.dt * f.get_elem(xl);
+      force_v[0] -= qma.beta / qma.dt / qma.dt * f.get_elem(xl);
       xl[3] -= 2;
-      force_v[0] -= qma.m_particle / qma.dt / qma.dt * f.get_elem(xl);
+      force_v[0] -= qma.beta / qma.dt / qma.dt * f.get_elem(xl);
       xl[3] += 1;
       force_v[0] *= qma.dt;
     });

@@ -4,8 +4,8 @@ from . import c
 
 class QMAction:
 
-    def __init__(self, lmbd, v0, alpha, barrier_strength, M, L, t_full1, t_full2, t_FV, m_particle, dt):
-        self.cdata = c.mk_qm_action(lmbd, v0, alpha, barrier_strength, M, L, t_full1, t_full2, t_FV, m_particle, dt)
+    def __init__(self, alpha, beta, barrier_strength, M, L, t_full1, t_full2, t_FV, dt):
+        self.cdata = c.mk_qm_action(alpha, beta, barrier_strength, M, L, t_full1, t_full2, t_FV, dt)
 
     def __del__(self):
         assert isinstance(self.cdata, int)
@@ -16,14 +16,11 @@ class QMAction:
         c.set_qm_action(self, v1)
         return self
 
-    def lmbd(self):
-        return c.get_lmbd_qm_action(self)
-
-    def v0(self):
-        return c.get_v0_qm_action(self)
-
     def alpha(self):
         return c.get_alpha_qm_action(self)
+
+    def beta(self):
+        return c.get_beta_qm_action(self)
 
     def barrier_strength(self):
         return c.get_barrier_strength_qm_action(self)
@@ -42,9 +39,6 @@ class QMAction:
 
     def t_full2(self):
         return c.get_t_full2_qm_action(self)
-
-    def m_particle(self):
-        return c.get_m_particle_qm_action(self)
 
     def dt(self):
         return c.get_dt_qm_action(self)

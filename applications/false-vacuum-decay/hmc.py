@@ -391,20 +391,18 @@ def main():
     total_site = q.Coordinate([1,1,1,Nt])
     # The multiplicity of the field
     mult = 1
-    lmbd = 0.01
-    v0 = 3.0
-    alpha = 0.0
+    alpha = 1.0
+    beta = 1.0
     barrier_strength = 100.0
     M = 1.0
     L = 0.0
     t_full = 5
     t_FV = 35
-    m_particle = 1.0
     dt = 0.2
     # The number of trajectories to calculate
     n_traj = 50000
     #
-    version = "2-0"
+    version = "3-0"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
     steps = 5
@@ -416,15 +414,11 @@ def main():
     
     for i in range(1,len(sys.argv)):
         try:
-            if(sys.argv[i]=="-l"):
-                lmbd = float(sys.argv[i+1])
-            elif(sys.argv[i]=="-v"):
-                v0 = float(sys.argv[i+1])
-            elif(sys.argv[i]=="-a"):
+            if(sys.argv[i]=="-a"):
                 alpha = float(sys.argv[i+1])
-            elif(sys.argv[i]=="-m"):
-                m_particle = float(sys.argv[i+1])
             elif(sys.argv[i]=="-b"):
+                beta = float(sys.argv[i+1])
+            elif(sys.argv[i]=="-B"):
                 barrier_strength = float(sys.argv[i+1])
             elif(sys.argv[i]=="-t"):
                 t_full = int(sys.argv[i+1])
@@ -451,11 +445,9 @@ def main():
                 init_length = int(sys.argv[i+1])
         except:
             raise Exception("Invalid arguments: use \
-                            -l for lambda, \
-                            -v for v0, \
                             -a for alpha, \
-                            -m for the mass of the QM particle, \
-                            -b for the barrier strength used in H_FV and H_TV, \
+                            -b for beta, \
+                            -B for the barrier strength used in H_FV and H_TV, \
                             -t for the time to evolve with H_full, \
                             -f for the time to evolve with H_FV, \
                             -M to set the left barrier for H_TV, \
@@ -468,17 +460,17 @@ def main():
                             -R to force restarting with blank initial field, \
                             -i for the number of trajectories to do at the beginning without a Metropolis step.")
     
-    action = q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_full, t_FV, m_particle, dt)
-    hmc = HMC(action,f"lmbd_{lmbd}_v0_{v0}_alpha_{alpha}_m_{m_particle}_dt_{dt}_bar_{barrier_strength}_M_{M}_L_{L}_tfull_{t_full}_tFV_{t_FV}",total_site,mult,steps,init_length,date,version,fresh_start)
+    action = q.QMAction(alpha, beta, barrier_strength, M, L, t_full, t_full, t_FV, dt)
+    hmc = HMC(action,f"alpha_{alpha}_beta{beta}_dt_{dt}_bar_{barrier_strength}_M_{M}_L_{L}_tfull_{t_full}_tFV_{t_FV}",total_site,mult,steps,init_length,date,version,fresh_start)
     
     measure_Ms = [round(min(max(M,0.001)*2**i, 1.0),5) for i in range(1,10)]
     measure_Ls = [round(min(max(L,0.001)*2**i, 1.0),5) for i in range(1,10)]
     measure_deltats = range(0,min(t_full,10))
     
-    actions_M = [q.QMAction(lmbd, v0, alpha, barrier_strength, Mi, L, t_full, t_full, t_FV, m_particle, dt) for Mi in measure_Ms]
-    actions_L = [q.QMAction(lmbd, v0, alpha, barrier_strength, M, Li, t_full, t_full, t_FV, m_particle, dt) for Li in measure_Ls]
-    actions_t_FV = [q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_full-a, t_FV+a, m_particle, dt) for a in measure_deltats]
-    actions_t_TV = [q.QMAction(lmbd, v0, alpha, barrier_strength, M, L, t_full, t_full-a, t_FV, m_particle, dt) for a in measure_deltats]
+    actions_M = [q.QMAction(alpha, beta, barrier_strength, Mi, L, t_full, t_full, t_FV, dt) for Mi in measure_Ms]
+    actions_L = [q.QMAction(alpha, beta, barrier_strength, M, Li, t_full, t_full, t_FV, dt) for Li in measure_Ls]
+    actions_t_FV = [q.QMAction(alpha, beta, barrier_strength, M, L, t_full, t_full-a, t_FV+a, dt) for a in measure_deltats]
+    actions_t_TV = [q.QMAction(alpha, beta, barrier_strength, M, L, t_full, t_full-a, t_FV, dt) for a in measure_deltats]
     measurements = Measurements(total_site, actions_M, actions_L, actions_t_FV, actions_t_TV, f"output_data/measurements_{hmc.fileid}.bin")
     
     # If observables have been saved from a previous calculation (on the
