@@ -461,7 +461,7 @@ def main():
                             -i for the number of trajectories to do at the beginning without a Metropolis step.")
     
     action = q.QMAction(alpha, beta, barrier_strength, M, L, t_full, t_full, t_FV, dt)
-    hmc = HMC(action,f"alpha_{alpha}_beta{beta}_dt_{dt}_bar_{barrier_strength}_M_{M}_L_{L}_tfull_{t_full}_tFV_{t_FV}",total_site,mult,steps,init_length,date,version,fresh_start)
+    hmc = HMC(action,f"alpha_{alpha}_beta_{beta}_dt_{dt}_bar_{barrier_strength}_M_{M}_L_{L}_tfull_{t_full}_tFV_{t_FV}",total_site,mult,steps,init_length,date,version,fresh_start)
     
     measure_Ms = [round(min(max(M,0.001)*2**i, 1.0),5) for i in range(1,10)]
     measure_Ls = [round(min(max(L,0.001)*2**i, 1.0),5) for i in range(1,10)]
