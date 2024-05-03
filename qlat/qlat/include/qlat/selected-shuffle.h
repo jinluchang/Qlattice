@@ -8,10 +8,10 @@ namespace qlat
 {  //
 
 struct SelectedShufflePlan {
-  SelectedPoints<Long>
-      send_shuffle_idx_points;  // Reorder field according to this idx field.
-  SelectedPoints<Long>
-      recv_shuffle_idx_points;  // Reorder field according to this idx field.
+  SelectedPoints<Long> send_shuffle_idx_points;
+  // Reorder field according to this idx field.before sending
+  SelectedPoints<Long> recv_shuffle_idx_points;
+  // Reorder field according to this idx field.after receiving
   Long total_send_count;
   Long total_recv_count;
   vector<Int> sendcounts;

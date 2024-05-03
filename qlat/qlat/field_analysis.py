@@ -146,9 +146,21 @@ def mk_spatial_smear_mom_kernel(total_site, radius):
 
 @q.timer
 def smear_field(field, radius, *, is_only_spatial=False):
-    """
+    r"""
     return smeared_field
     field must at least be complex type.
+    #
+    $$
+    \ba
+    f_\text{smear}(x)
+    \approx
+    \frac{
+    \sum_y f(y) \exp( - (x - y)^2 / (2 r^2) )
+    }{
+    \sum_y \exp( - y^2 / (2 r^2) )
+    }
+    \ea
+    $$
     """
     total_site = field.geo().total_site()
     if is_only_spatial:
