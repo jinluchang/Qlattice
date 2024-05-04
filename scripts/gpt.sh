@@ -20,7 +20,11 @@ source qcore/set-prefix.sh $name
 
     echo "SPIN(4)" > lib/spin_color.h
     echo "COLOR(3)" >> lib/spin_color.h
+    echo "COLOR(2)" >> lib/spin_color.h
+    echo "COLOR(1)" >> lib/spin_color.h
     echo "SPIN_COLOR(4,3)" >> lib/spin_color.h
+    echo "SPIN_COLOR(4,2)" >> lib/spin_color.h
+    echo "SPIN_COLOR(4,1)" >> lib/spin_color.h
 
     time-run ./clean
 
