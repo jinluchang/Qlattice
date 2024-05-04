@@ -154,13 +154,14 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         cdef FieldSelection fsel = sf.fsel
         cdef PointsSelection psel = PointsSelection(None, fsel.geo())
         self.psel = psel
-        cc.shuffle_selected_field(self.xx, psel.xx, sf.xx, fsel.xx, ssp.xx)
+        cc.shuffle_field_selection(psel.xx, fsel.xx, ssp.xx)
+        cc.shuffle_selected_field(self.xx, sf.xx, ssp.xx)
 
     def init_from_sf_rs(self, SelectedField{{name}} sf, RngState rs):
         cdef FieldSelection fsel = sf.fsel
-        cdef PointsSelection psel = PointsSelection(None, fsel.geo())
-        self.psel = psel
-        cc.shuffle_selected_field(self.xx, psel.xx, sf.xx, fsel.xx, rs.xx)
+        cdef cc.Long n_elems = fsel.n_elems()
+        cdef SelectedShufflePlan ssp = SelectedShufflePlan(n_elems, rs)
+        self.init_from_sf_ssp(sf, ssp)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         cdef int ndim = 2 + ElemType{{name}}.ndim()

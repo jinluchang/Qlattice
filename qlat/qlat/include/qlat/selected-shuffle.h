@@ -26,15 +26,46 @@ void set_selected_shuffle_id_node_send_to(
     SelectedPoints<Int>& sp_id_node_send_to, const Long n_points,
     const RngState& rs);
 
+void set_selected_shuffle_id_node_send_to(
+    SelectedPoints<Int>& sp_id_node_send_to, const PointsSelection& psel,
+    const Coordinate& total_site, const RngState& rs);
+
 void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
                                const SelectedPoints<Int>& sp_id_node_send_to);
 
 void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_points,
                                const RngState& rs);
 
+void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
+                               const PointsSelection& psel,
+                               const Coordinate& total_site,
+                               const RngState& rs);
+
 void shuffle_selected_points_char(SelectedPoints<Char>& spc,
                                   const SelectedPoints<Char>& spc0,
                                   const SelectedShufflePlan& ssp);
+
+void shuffle_points_selection(PointsSelection& psel,
+                              const PointsSelection& psel0,
+                              const SelectedShufflePlan& ssp);
+
+void shuffle_field_selection(PointsSelection& psel, const FieldSelection& fsel0,
+                             const SelectedShufflePlan& ssp);
+
+template <class M>
+void shuffle_selected_points(SelectedPoints<M>& sp,
+                             const SelectedPoints<M>& sp0,
+                             const SelectedShufflePlan& ssp)
+{
+  TIMER("shuffle_selected_points(sp,sp0,ssp)");
+  const Long n_points = ssp.total_recv_count;
+  const Int multiplicity = sp0.multiplicity;
+  sp.init(n_points, multiplicity);
+  sp.distributed = true;
+  SelectedPoints<Char> spc(sp.view_as_char());
+  const SelectedPoints<Char> spc0(sp0.view_as_char());
+  shuffle_selected_points_char(spc, spc0, ssp);
+}
 
 template <class M>
 void shuffle_selected_field(SelectedPoints<M>& sp, const SelectedField<M>& sf,
@@ -48,37 +79,6 @@ void shuffle_selected_field(SelectedPoints<M>& sp, const SelectedField<M>& sf,
   SelectedPoints<Char> spc(sp.view_as_char());
   const SelectedPoints<Char> spc0(sf.view_sp().view_as_char());
   shuffle_selected_points_char(spc, spc0, ssp);
-}
-
-template <class M>
-void shuffle_selected_field(SelectedPoints<M>& sp, PointsSelection& psel,
-                            const SelectedField<M>& sf,
-                            const FieldSelection& fsel,
-                            const SelectedShufflePlan& ssp)
-{
-  TIMER("shuffle_selected_field(sp,psel,sf,fsel,ssp)");
-  const Long n_elems = fsel.n_elems;
-  qassert(n_elems == ssp.total_send_count);
-  shuffle_selected_field(sp, sf, ssp);
-  psel.init(ssp.total_recv_count);
-  psel.distributed = true;
-  PointsSelection psel0;
-  set_psel_from_fsel(psel0, fsel);
-  SelectedPoints<Char> pselc(psel.view_sp().view_as_char());
-  const SelectedPoints<Char> pselc0(psel0.view_sp().view_as_char());
-  shuffle_selected_points_char(pselc, pselc0, ssp);
-}
-
-template <class M>
-void shuffle_selected_field(SelectedPoints<M>& sp, PointsSelection& psel,
-                            const SelectedField<M>& sf,
-                            const FieldSelection& fsel, const RngState& rs)
-{
-  TIMER("shuffle_selected_field(sp,psel,sf,fsel,rs)");
-  const Long n_elems = fsel.n_elems;
-  SelectedShufflePlan ssp;
-  set_selected_shuffle_plan(ssp, n_elems, rs);
-  shuffle_selected_field(sp, psel, sf, fsel, ssp);
 }
 
 }  // namespace qlat

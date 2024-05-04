@@ -65,8 +65,9 @@ void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
   qassert(sp_id_node_send_to.initialized == true);
   qassert(sp_id_node_send_to.distributed == true);
   qassert(sp_id_node_send_to.multiplicity == 1);
-  SelectedPoints<Long>& sspi = ssp.send_shuffle_idx_points;
   SelectedPoints<Long>& rspi = ssp.recv_shuffle_idx_points;
+  rspi.init();
+  SelectedPoints<Long>& sspi = ssp.send_shuffle_idx_points;
   sspi.init(n_points, 1, true);
   set_zero(sspi);
   ssp.total_send_count = n_points;
@@ -116,18 +117,53 @@ void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_points,
   set_selected_shuffle_plan(ssp, sp_id_node_send_to);
 }
 
+void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
+                               const PointsSelection& psel,
+                               const Coordinate& total_site, const RngState& rs)
+{
+  TIMER("set_selected_shuffle_plan(ssp,psel,ts,rs)");
+  const Long n_points = psel.size();
+  SelectedPoints<Int> sp_id_node_send_to;
+  set_selected_shuffle_id_node_send_to(sp_id_node_send_to, psel, total_site,
+                                       rs);
+  set_selected_shuffle_plan(ssp, sp_id_node_send_to);
+  SelectedPoints<Long> sp_idx0;
+  sp_idx0.init(n_points, 1, true);
+  qthread_for(idx, n_points, {
+    const Coordinate& xg = psel[idx];
+    const Long gindex = index_from_coordinate(xg, total_site);
+    sp_idx0.get_elem(idx) = gindex;
+  });
+  SelectedPoints<Long> sp_idx;
+  shuffle_selected_points(sp_idx, sp_idx0, ssp);
+  qassert(sp_idx.n_points == ssp.total_recv_count);
+  std::vector<std::pair<Long, Long>> idx_pair_vec(sp_idx.n_points);
+  qthread_for(idx, sp_idx.n_points, {
+    idx_pair_vec[idx].first = sp_idx.get_elem(idx);
+    idx_pair_vec[idx].second = idx;
+  });
+  std::sort(idx_pair_vec.begin(), idx_pair_vec.end());
+  SelectedPoints<Long>& rspi = ssp.recv_shuffle_idx_points;
+  rspi.init(sp_idx.n_points, 1, true);
+  qthread_for(idx, sp_idx.n_points, {
+    const Long idx_src = idx_pair_vec[idx].second;
+    const Long idx_tgt = idx;
+    rspi.get_elem(idx_src) = idx_tgt;
+  });
+}
+
 void shuffle_selected_points_char(SelectedPoints<Char>& spc,
                                   const SelectedPoints<Char>& spc0,
                                   const SelectedShufflePlan& ssp)
 // const Long n_points = ssp.total_recv_count;
 // const Int multiplicity = sp0.multiplicity;
 // SelectedPoints<M> sp;
-// sp.init(n_points, multiplicity);
+// sp.init(n_points, multiplicity, true);
 // sp.distributed = true;
 // SelectedPoints<Char> spc(sp.view_as_char());
 // SelectedPoints<Char> spc0(sp0.view_as_char());
 {
-  TIMER("shuffle_selected_field_char(spc,spc0,ssp)");
+  TIMER("shuffle_selected_points_char(spc,spc0,ssp)");
   const SelectedPoints<Long>& sspi = ssp.send_shuffle_idx_points;
   const SelectedPoints<Long>& rspi = ssp.recv_shuffle_idx_points;
   qassert(sspi.initialized);
@@ -145,12 +181,12 @@ void shuffle_selected_points_char(SelectedPoints<Char>& spc,
   if (rspi.initialized) {
     qassert(rspi.multiplicity == 1);
     qassert(rspi.n_points == ssp.total_recv_count);
-    sp.init(spc.n_points, multiplicity);
+    sp.init(spc.n_points, multiplicity, true);
   } else {
     sp.set_view(spc);
   }
   SelectedPoints<Char> sp0;
-  sp0.init(spc0.n_points, multiplicity);
+  sp0.init(spc0.n_points, multiplicity, true);
   qthread_for(idx, spc0.n_points, {
     const Vector<Char> v = spc0.get_elems_const(idx);
     const Long idx1 = sspi.get_elem(idx);
@@ -177,6 +213,28 @@ void shuffle_selected_points_char(SelectedPoints<Char>& spc,
       assign(v1, v);
     });
   }
+}
+
+void shuffle_points_selection(PointsSelection& psel,
+                              const PointsSelection& psel0,
+                              const SelectedShufflePlan& ssp)
+{
+  TIMER("shuffle_points_selection(sp,psel,psel0,ssp)");
+  const Long n_points = ssp.total_recv_count;
+  psel.init(n_points);
+  psel.distributed = true;
+  SelectedPoints<Char> pselc(psel.view_sp().view_as_char());
+  const SelectedPoints<Char> pselc0(psel0.view_sp().view_as_char());
+  shuffle_selected_points_char(pselc, pselc0, ssp);
+}
+
+void shuffle_field_selection(PointsSelection& psel, const FieldSelection& fsel0,
+                             const SelectedShufflePlan& ssp)
+{
+  TIMER("shuffle_field_selection(psel,fsel0,ssp)");
+  PointsSelection psel0;
+  set_psel_from_fsel(psel0, fsel0);
+  shuffle_points_selection(psel, psel0, ssp);
 }
 
 }  // namespace qlat
