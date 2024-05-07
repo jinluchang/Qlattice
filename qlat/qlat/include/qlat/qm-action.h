@@ -43,7 +43,7 @@ struct QMAction {
     initialized = true;
     alpha = alpha_;
     beta = beta_;
-    center_TV = (3.0+std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
+    center_TV = (2.0-2.0*std::pow(1-alpha, 0.5))/alpha; // (3.0+std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
     center_bar = (3.0-std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
     barrier_strength = barrier_strength_;
     M = M_;
@@ -101,7 +101,7 @@ struct QMAction {
     if(x>center_TV) {
       return 0;
     }
-    return V_phi4(x) - V_phi4(center_TV);
+    return V_phi4(x); // - V_phi4(center_TV);
   }
 
   inline double dV_full(const double x)
