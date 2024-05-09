@@ -25,6 +25,7 @@ tests = \
 		lat-io-test2.log \
 		jackknife-random.log \
 		jackknife-super.log \
+		jackknife-random-bench.log \
 		field-utils.log \
 		field-multi-size.log \
 		field-selection.log \

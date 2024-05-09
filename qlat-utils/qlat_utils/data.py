@@ -319,11 +319,12 @@ def avg_err(data_list, eps = 1, *, block_size = 1):
     err = fac * fsqrt(diff_sqr)
     return (avg, err,)
 
-def jackknife(data_list, eps = 1):
+def jackknife(data_list, eps=1):
     """
     Return jk[i] = avg + \\frac{eps}{N} (v[i] - avg)
     normal jackknife uses eps = 1, scale the fluctuation by eps
     """
+    is_np_arr = isinstance(data_list, np.ndarray)
     data_list_real = [ d for d in data_list if d is not None ]
     n = len(data_list_real)
     fac = eps / n
@@ -334,6 +335,8 @@ def jackknife(data_list, eps = 1):
             jks.append(avg)
         else:
             jks.append(avg - fac * (data - avg))
+    if is_np_arr:
+        jks = np.array(jks, dtype=data_list.dtype)
     return jks
 
 def fsqr(data):
@@ -375,7 +378,7 @@ def fsqrt(data):
 def jk_avg(jk_list):
     return jk_list[0]
 
-def jk_err(jk_list, eps = 1, *, block_size = 1):
+def jk_err(jk_list, eps=1, *, block_size=1):
     """
     Return \\frac{1}{eps} \\sqrt{ \\sum_{i=1}^N (jk[i] - jk_avg)^2 } when block_size=1
     Note: len(jk_list) = N + 1
@@ -403,6 +406,7 @@ def rejk_list(jk_list, jk_idx_list, all_jk_idx):
     assert all_jk_idx[0] == "avg"
     assert len(jk_idx_list) == len(jk_list)
     assert len(jk_idx_list) <= len(all_jk_idx)
+    is_np_arr = isinstance(jk_idx_list, np.ndarray)
     jk_avg = jk_list[0]
     size_new = len(all_jk_idx)
     i_new = 0
@@ -419,6 +423,8 @@ def rejk_list(jk_list, jk_idx_list, all_jk_idx):
         i_new += 1
     assert i_new == size_new
     assert size_new == len(jk_list_new)
+    if is_np_arr:
+        jk_list_new = np.array(jk_list_new, dtype=jk_list.dtype)
     return jk_list_new
 
 # ----------
@@ -442,7 +448,7 @@ def mk_jk_blocking_func(block_size = 1, block_size_dict = None):
     return f
 
 @timer
-def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func=None):
+def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func=None, is_normalizing_rand_sample=True):
     """
     return rjk_list
     len(rjk_list) == 1 + n_rand_sample
@@ -458,11 +464,9 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func
     assert isinstance(n_rand_sample, int_types)
     assert n_rand_sample >= 0
     assert isinstance(rng_state, RngState)
+    is_np_arr = isinstance(jk_idx_list, np.ndarray)
     rs = rng_state
-    avg = jk_avg(jk_list)
     n = len(jk_list) - 1
-    jk_diff = [ jk_list[j] - avg for j in range(1, n + 1) ]
-    rjk_list = [ avg, ]
     if jk_blocking_func is None:
         blocked_jk_idx_list = jk_idx_list
     else:
@@ -475,17 +479,31 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func
             continue
         rsi = rs.split(str(jk_idx))
         garr = rsi.g_rand_arr(n_rand_sample)
-        garr_qnorm = qnorm(garr) # garr_qnorm \approx n_rand_sample
-        garr = garr * np.sqrt(n_rand_sample / garr_qnorm)
+        if is_normalizing_rand_sample:
+            garr_qnorm = qnorm(garr) # garr_qnorm \approx n_rand_sample
+            garr = garr * np.sqrt(n_rand_sample / garr_qnorm)
         assert abs(qnorm(garr) / n_rand_sample - 1) < 1e-8
         r_arr_dict[jk_idx_str] = garr
     r_arr = np.empty((n_rand_sample, n,), dtype=np.float64)
     for j, jk_idx in enumerate(blocked_jk_idx_list[1:]):
         jk_idx_str = str(jk_idx)
         r_arr[:, j] = r_arr_dict[jk_idx_str]
-    for i in range(n_rand_sample):
-        rjk_list.append(avg + sum([ r_arr[i, j] * jk_diff[j] for j in range(n) ]))
-    return rjk_list
+    avg = jk_avg(jk_list)
+    if is_np_arr:
+        jk_arr = jk_list
+        jk_diff = jk_arr[1:] - avg
+        rjk_arr = np.empty((1 + n_rand_sample, *avg.shape,), dtype=jk_arr.dtype)
+        rjk_arr[:] = avg
+        for j in range(n):
+            for i in range(n_rand_sample):
+                rjk_arr[i + 1] += r_arr[i, j] * jk_diff[j]
+        return rjk_arr
+    else:
+        rjk_list = [ avg, ]
+        jk_diff = [ jk_list[j] - avg for j in range(1, n + 1) ]
+        for i in range(n_rand_sample):
+            rjk_list.append(avg + sum([ r_arr[i, j] * jk_diff[j] for j in range(n) ]))
+        return rjk_list
 
 @timer
 def rjk_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state):
@@ -537,6 +555,7 @@ default_g_jk_kwargs["get_all_jk_idx"] = None
 default_g_jk_kwargs["n_rand_sample"] = 1024
 default_g_jk_kwargs["rng_state"] = RngState("rejk")
 default_g_jk_kwargs["jk_blocking_func"] = None
+default_g_jk_kwargs["is_normalizing_rand_sample"] = True
 
 @use_kwargs(default_g_jk_kwargs)
 @timer
@@ -555,6 +574,7 @@ def g_rejk(jk_list, jk_idx_list, *,
         n_rand_sample,
         rng_state,
         jk_blocking_func,
+        is_normalizing_rand_sample,
         **_kwargs,):
     """
     Perform (randomized) Super-Jackknife for the Jackknife data set.
@@ -575,7 +595,7 @@ def g_rejk(jk_list, jk_idx_list, *,
             all_jk_idx = get_all_jk_idx()
         return rejk_list(jk_list, jk_idx_list, all_jk_idx)
     elif jk_type == "rjk":
-        return rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func)
+        return rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func, is_normalizing_rand_sample)
     else:
         assert False
     return None

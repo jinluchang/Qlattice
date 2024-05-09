@@ -27,15 +27,24 @@ rs = q.RngState("seed")
 job_tag = "test1"
 trajs = get_trajs(job_tag)
 
-data_list = np.zeros((len(trajs), 5,)) # can be list or np.array
-rs.g_rand_fill(data_list)
-jk_list = q.g_jk(data_list)
+data_arr = rs.g_rand_arr((len(trajs), 5,)) # can be list or np.array
+jk_arr = q.g_jk(data_arr)
 jk_idx_list = [ "avg", ] + [ (job_tag, traj) for traj in trajs ]
-jk_list = q.g_rejk(jk_list, jk_idx_list)
-avg, err = q.g_jk_avg_err(jk_list)
+jk_arr = q.g_rejk(jk_arr, jk_idx_list)
+avg, err = q.g_jk_avg_err(jk_arr)
 
 q.displayln_info(f"CHECK: {avg}")
 q.displayln_info(f"CHECK: {err}")
+
+json_results = []
+check_eps = 1e-10
+
+for i in range(len(avg)):
+    json_results.append((f"avg[{i}]", avg[i],))
+for i in range(len(avg)):
+    json_results.append((f"err[{i}]", err[i],))
+
+q.check_log_json(__file__, json_results)
 
 q.end_with_mpi()
 

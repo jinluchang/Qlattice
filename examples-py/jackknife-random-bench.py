@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+
+json_results = []
+check_eps = 1e-10
+
+import qlat as q
+import numpy as np
+import functools
+
+q.begin_with_mpi()
+
+@q.timer
+def bench_rjk(n_data_sample, n_rand_sample, is_normalizing_rand_sample):
+    fname = q.get_fname()
+    q.default_g_jk_kwargs["jk_type"] = "rjk"
+    q.default_g_jk_kwargs["n_rand_sample"] = n_rand_sample
+    q.default_g_jk_kwargs["rng_state"] = q.RngState("rejk")
+    q.default_g_jk_kwargs["is_normalizing_rand_sample"] = is_normalizing_rand_sample
+    @functools.lru_cache
+    def get_trajs(job_tag):
+        return list(range(n_data_sample))
+    rs = q.RngState("seed")
+    job_tag = "test1"
+    trajs = get_trajs(job_tag)
+    data_arr = rs.g_rand_arr((len(trajs), 5,)) # can be list or np.array
+    jk_arr = q.g_jk(data_arr)
+    jk_idx_list = [ "avg", ] + [ (job_tag, traj) for traj in trajs ]
+    jk_arr = q.g_rejk(jk_arr, jk_idx_list)
+    avg, err = q.g_jk_avg_err(jk_arr)
+    q.displayln_info(f"CHECK: n_data_sample={n_data_sample}")
+    q.displayln_info(f"CHECK: n_rand_sample={n_rand_sample}")
+    q.displayln_info(f"CHECK: is_normalizing_rand_sample={is_normalizing_rand_sample}")
+    q.displayln_info(f"CHECK: {avg}")
+    q.displayln_info(f"CHECK: {err}")
+    json_results.append((f"{fname}: {n_data_sample} {n_rand_sample} {is_normalizing_rand_sample} avg", q.get_data_sig(avg, q.RngState()),))
+    for i in range(len(avg)):
+        json_results.append((f"avg[{i}]", avg[i],))
+    json_results.append((f"{fname}: {n_data_sample} {n_rand_sample} {is_normalizing_rand_sample} err", q.get_data_sig(err, q.RngState()),))
+    for i in range(len(avg)):
+        json_results.append((f"err[{i}]", err[i],))
+
+for n_data_sample in [ 128, 64, 32, 16, 8, 4, 2, ]:
+    for n_rand_sample in [ 128, 64, 32, 16, 8, 4, 2, ]:
+        for is_normalizing_rand_sample in [ True, False, ]
+            bench_rjk(8, 8, is_normalizing_rand_sample)
+
+q.check_log_json(__file__, json_results)
+
+q.timer_display()
+
+q.end_with_mpi()
+
+q.displayln_info(f"CHECK: finished successfully.")
