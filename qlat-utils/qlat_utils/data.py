@@ -468,10 +468,21 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func
     else:
         blocked_jk_idx_list = [ jk_blocking_func(idx) for idx in jk_idx_list[:] ]
     assert len(blocked_jk_idx_list[1:]) == n
+    r_arr_dict = dict()
+    for jk_idx in blocked_jk_idx_list[1:]:
+        jk_idx_str = str(jk_idx)
+        if jk_idx in r_arr_dict:
+            continue
+        rsi = rs.split(str(jk_idx))
+        garr = rsi.g_rand_arr(n_rand_sample)
+        garr_qnorm = qnorm(garr) # garr_qnorm \approx n_rand_sample
+        garr = garr * np.sqrt(n_rand_sample / garr_qnorm)
+        assert abs(qnorm(garr) / n_rand_sample - 1) < 1e-8
+        r_arr_dict[jk_idx_str] = garr
     r_arr = np.empty((n_rand_sample, n,), dtype=np.float64)
     for j, jk_idx in enumerate(blocked_jk_idx_list[1:]):
-        rsi = rs.split(str(jk_idx))
-        r_arr[:, j] = rsi.g_rand_arr(n_rand_sample)
+        jk_idx_str = str(jk_idx)
+        r_arr[:, j] = r_arr_dict[jk_idx_str]
     for i in range(n_rand_sample):
         rjk_list.append(avg + sum([ r_arr[i, j] * jk_diff[j] for j in range(n) ]))
     return rjk_list
