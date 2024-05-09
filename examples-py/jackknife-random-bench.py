@@ -15,6 +15,7 @@ def bench_rjk(n_data_sample, n_rand_sample, is_normalizing_rand_sample):
     q.default_g_jk_kwargs["jk_type"] = "rjk"
     q.default_g_jk_kwargs["n_rand_sample"] = n_rand_sample
     q.default_g_jk_kwargs["rng_state"] = q.RngState("rejk")
+    q.default_g_jk_kwargs["jk_blocking_func"] = None
     q.default_g_jk_kwargs["is_normalizing_rand_sample"] = is_normalizing_rand_sample
     @functools.lru_cache
     def get_trajs(job_tag):
@@ -22,7 +23,7 @@ def bench_rjk(n_data_sample, n_rand_sample, is_normalizing_rand_sample):
     rs = q.RngState("seed")
     job_tag = "test1"
     trajs = get_trajs(job_tag)
-    data_arr = rs.g_rand_arr((len(trajs), 5,)) # can be list or np.array
+    data_arr = rs.g_rand_arr((len(trajs), 16,)) # can be list or np.array
     jk_arr = q.g_jk(data_arr)
     jk_idx_list = [ "avg", ] + [ (job_tag, traj) for traj in trajs ]
     jk_arr = q.g_rejk(jk_arr, jk_idx_list)
@@ -30,8 +31,8 @@ def bench_rjk(n_data_sample, n_rand_sample, is_normalizing_rand_sample):
     q.displayln_info(f"CHECK: n_data_sample={n_data_sample}")
     q.displayln_info(f"CHECK: n_rand_sample={n_rand_sample}")
     q.displayln_info(f"CHECK: is_normalizing_rand_sample={is_normalizing_rand_sample}")
-    q.displayln_info(f"CHECK: {avg}")
-    q.displayln_info(f"CHECK: {err}")
+    q.displayln_info(f"CHECK: ", " ".join([ f"{x:.4f}" for x in avg]))
+    q.displayln_info(f"CHECK: ", " ".join([ f"{x:.4f}" for x in err]))
     json_results.append((f"{fname}: {n_data_sample} {n_rand_sample} {is_normalizing_rand_sample} avg", q.get_data_sig(avg, q.RngState()),))
     for i in range(len(avg)):
         json_results.append((f"avg[{i}]", avg[i],))
@@ -39,10 +40,10 @@ def bench_rjk(n_data_sample, n_rand_sample, is_normalizing_rand_sample):
     for i in range(len(avg)):
         json_results.append((f"err[{i}]", err[i],))
 
-for n_data_sample in [ 128, 64, 32, 16, 8, 4, 2, ]:
-    for n_rand_sample in [ 128, 64, 32, 16, 8, 4, 2, ]:
-        for is_normalizing_rand_sample in [ True, False, ]
-            bench_rjk(8, 8, is_normalizing_rand_sample)
+for n_data_sample in [ 1024, 128, 32, 8, 2, ]:
+    for n_rand_sample in [ 1024, 128, 32, 8, 2, ]:
+        for is_normalizing_rand_sample in [ True, False, ]:
+            bench_rjk(n_data_sample, n_rand_sample, is_normalizing_rand_sample)
 
 q.check_log_json(__file__, json_results)
 

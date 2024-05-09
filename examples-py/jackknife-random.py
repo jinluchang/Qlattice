@@ -9,6 +9,7 @@ q.begin_with_mpi()
 q.default_g_jk_kwargs["jk_type"] = "rjk"
 q.default_g_jk_kwargs["n_rand_sample"] = 1024
 q.default_g_jk_kwargs["rng_state"] = q.RngState("rejk")
+q.default_g_jk_kwargs["jk_blocking_func"] = None
 q.default_g_jk_kwargs["is_normalizing_rand_sample"] = True
 
 @functools.lru_cache

@@ -482,7 +482,7 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func
         if is_normalizing_rand_sample:
             garr_qnorm = qnorm(garr) # garr_qnorm \approx n_rand_sample
             garr = garr * np.sqrt(n_rand_sample / garr_qnorm)
-        assert abs(qnorm(garr) / n_rand_sample - 1) < 1e-8
+            assert abs(qnorm(garr) / n_rand_sample - 1) < 1e-8
         r_arr_dict[jk_idx_str] = garr
     r_arr = np.empty((n_rand_sample, n,), dtype=np.float64)
     for j, jk_idx in enumerate(blocked_jk_idx_list[1:]):
