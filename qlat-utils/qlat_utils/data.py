@@ -473,8 +473,6 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func
         rsi = rs.split(str(jk_idx))
         r_arr[:, j] = rsi.g_rand_arr(n_rand_sample)
     for i in range(n_rand_sample):
-        rsi = rs.split(str(i))
-        r = [ rsi.split(str(idx)).g_rand_gen() for idx in blocked_jk_idx_list[1:] ]
         rjk_list.append(avg + sum([ r_arr[i, j] * jk_diff[j] for j in range(n) ]))
     return rjk_list
 
