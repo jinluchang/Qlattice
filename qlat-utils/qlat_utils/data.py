@@ -441,7 +441,8 @@ def mk_jk_blocking_func(block_size = 1, block_size_dict = None):
             return idx
     return f
 
-def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func = None):
+@timer
+def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func=None):
     """
     return rjk_list
     len(rjk_list) == 1 + n_rand_sample
@@ -450,6 +451,8 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func
     avg = jk_avg(jk_list)
     len(jk_list) = n + 1
     rjk_list[i] = avg + \\sum_{j=1}^{n} r_{i,j} (jk_list[j] - avg)
+    #
+    jk_blocking_func(jk_idx) => blocked jk_idx
     """
     assert jk_idx_list[0] == "avg"
     assert isinstance(n_rand_sample, int_types)
@@ -465,12 +468,17 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func
     else:
         blocked_jk_idx_list = [ jk_blocking_func(idx) for idx in jk_idx_list[:] ]
     assert len(blocked_jk_idx_list[1:]) == n
+    r_arr = np.empty((n_rand_sample, n,), dtype=np.float64)
+    for j, jk_idx in enumerate(blocked_jk_idx_list[1:]):
+        rsi = rs.split(str(jk_idx))
+        r_arr[:, j] = rsi.g_rand_arr(n_rand_sample)
     for i in range(n_rand_sample):
         rsi = rs.split(str(i))
         r = [ rsi.split(str(idx)).g_rand_gen() for idx in blocked_jk_idx_list[1:] ]
-        rjk_list.append(avg + sum([ r[j] * jk_diff[j] for j in range(n) ]))
+        rjk_list.append(avg + sum([ r_arr[i, j] * jk_diff[j] for j in range(n) ]))
     return rjk_list
 
+@timer
 def rjk_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state):
     """
     return rjk_list
@@ -512,18 +520,20 @@ default_g_jk_kwargs = {}
 default_g_jk_kwargs["jk_type"] = "super"  # choices: "rjk", "super"
 default_g_jk_kwargs["eps"] = 1
 
-default_g_jk_kwargs["all_jk_idx"] = None # for jk_type = "super"
-default_g_jk_kwargs["get_all_jk_idx"] = None # for jk_type = "super"
+# for jk_type = "super"
+default_g_jk_kwargs["all_jk_idx"] = None
+default_g_jk_kwargs["get_all_jk_idx"] = None
 
-default_g_jk_kwargs["n_rand_sample"] = 1024 # for jk_type = "rjk"
-default_g_jk_kwargs["rng_state"] = RngState("rejk")  # for jk_type = "rjk"
-default_g_jk_kwargs["jk_blocking_func"] = None  # for jk_type = "rjk"
+# for jk_type = "rjk"
+default_g_jk_kwargs["n_rand_sample"] = 1024
+default_g_jk_kwargs["rng_state"] = RngState("rejk")
+default_g_jk_kwargs["jk_blocking_func"] = None
 
 @use_kwargs(default_g_jk_kwargs)
 @timer
 def g_jk(data_list, *, eps, **_kwargs):
     """
-    Perform initial Jackknife for the initial data set.\n
+    Perform initial Jackknife for the original data set.\n
     """
     return jackknife(data_list, eps)
 
@@ -562,6 +572,7 @@ def g_rejk(jk_list, jk_idx_list, *,
     return None
 
 @use_kwargs(default_g_jk_kwargs)
+@timer
 def g_mk_jk_val(rs_tag, val, err, *, jk_type, n_rand_sample, rng_state, **_kwargs):
     """
     Create a jackknife sample with random numbers based on central value ``val`` and error ``err``.\n
@@ -598,12 +609,14 @@ def g_jk_err(jk_list, *, eps, jk_type, **_kwargs):
         assert False
     return None
 
+@timer
 def g_jk_avg_err(jk_list, **kwargs):
     """
     Return ``(avg, err,)`` of the ``jk_list``.
     """
     return g_jk_avg(jk_list), g_jk_err(jk_list, **kwargs)
 
+@timer
 def g_jk_avg_err_arr(jk_list, **kwargs):
     avg, err = g_jk_avg_err(jk_list, **kwargs)
     avg_err_arr = np.stack([ avg, err, ])
