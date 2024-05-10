@@ -28,7 +28,7 @@ aget "http://usqcd-software.github.io/downloads/qmp/qmp-2.5.4.tar.gz"
 
 aget "http://usqcd-software.github.io/downloads/qio/qio-3.0.0.tar.gz"
 
-aget "https://downloads.sourceforge.net/libtirpc/libtirpc-1.3.3.tar.bz2"
+aget "https://downloads.sourceforge.net/libtirpc/libtirpc-1.3.4.tar.bz2"
 
 aget "https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.bz2"
 
@@ -37,8 +37,8 @@ aget "https://fftw.org/pub/fftw/fftw-3.3.10.tar.gz"
 # aget "https://feynarts.de/cuba/Cuba-4.2.2.tar.gz"
 aget "https://github.com/jinluchang/Qlattice-distfiles/raw/main/distfiles/Cuba-4.2.2.tar.gz"
 
-# aget "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.2/src/hdf5-1.14.2.tar.bz2"
-aget "https://github.com/jinluchang/Qlattice-distfiles/raw/main/distfiles/hdf5-1.14.2.tar.bz2"
+# aget "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.3/src/hdf5-1.14.3.tar.bz2"
+aget "https://github.com/jinluchang/Qlattice-distfiles/raw/main/distfiles/hdf5-1.14.3.tar.bz2"
 
 if [ -d Grid ] ; then
     ( cd Grid ; git pull )
