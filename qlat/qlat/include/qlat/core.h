@@ -433,33 +433,46 @@ qacc bool is_matching_geo_included(const Geometry& geo1, const Geometry& geo2)
 template <class M>
 struct API SelectedPoints;
 
+enum struct PointsDistType {
+  Global,
+  Local,
+  Random, // shuffle based on coordinate
+};
+
+std::string show(const PointsDistType points_dist_type);
+
+PointsDistType read_points_dist_type(const std::string& points_dist_type_str);
+
 struct API PointsSelection {
   bool initialized;
-  bool distributed;  // default false (all node has the same data)
+  PointsDistType points_dist_type;  // default PointsDistType::Global (all node has the same data)
+  Coordinate total_site;
   vector_acc<Coordinate> xgs;
   //
   void init();
-  void init(const Long n_points_);
-  void init(const Long n_points_, const Coordinate& xg_init);
-  void init(const std::vector<Coordinate>& xgs_);
-  void init(const vector<Coordinate>& xgs_);
-  void init(const SelectedPoints<Coordinate>& spx);
+  void init(const Coordinate& total_site_, const Long n_points_,
+            const PointsDistType points_dist_type_ = PointsDistType::Global);
+  void init(const Coordinate& total_site_, const std::vector<Coordinate>& xgs_);
+  void init(const Coordinate& total_site_, const vector<Coordinate>& xgs_);
+  void init(const Coordinate& total_site_, const SelectedPoints<Coordinate>& spx);
   //
   PointsSelection() { init(); }
   PointsSelection(const PointsSelection&) = default;
   PointsSelection(PointsSelection&&) noexcept = default;
-  PointsSelection(const Long n_points_) { init(n_points_); }
-  PointsSelection(const Long n_points_, const Coordinate& xg_init)
+  PointsSelection(
+      const Coordinate& total_site_, const Long n_points_,
+      const PointsDistType points_dist_type_ = PointsDistType::Global)
   {
-    init(n_points_, xg_init);
+    init(total_site_, n_points_, points_dist_type_);
   }
-  PointsSelection(const std::vector<Coordinate>& xgs_) { init(xgs_); }
+  PointsSelection(const Coordinate& total_site_,
+                  const std::vector<Coordinate>& xgs_)
+  {
+    init(total_site_, xgs_);
+  }
   //
   PointsSelection& operator=(const PointsSelection& psel) = default;
   PointsSelection& operator=(PointsSelection&& psel) noexcept = default;
-  PointsSelection& operator=(const std::vector<Coordinate>& xgs_);
-  PointsSelection& operator=(const vector<Coordinate>& xgs_);
-  PointsSelection& operator=(const SelectedPoints<Coordinate>& spx);
   //
   qacc Long size() const { return xgs.size(); }
   qacc const Coordinate* data() const { return xgs.data(); }
@@ -488,7 +501,7 @@ struct API SelectedPoints {
   // (it is likely not be what you think it is)
   //
   bool initialized;
-  bool distributed;  // default false (all node has the same data)
+  PointsDistType points_dist_type;  // default PointsDistType::Global (all node has the same data)
   Int multiplicity;
   Long n_points;
   vector_acc<M> points;  // global quantity, same on each node
@@ -496,11 +509,11 @@ struct API SelectedPoints {
   //
   void init();
   void init(const Long n_points_, const int multiplicity_,
-            const bool distributed_);
-  void init(const PointsSelection& psel, const int multiplicity);
+            const PointsDistType points_dist_type_);
+  void init(const PointsSelection& psel, const int multiplicity_);
   //
   void init_zero(const Long n_points_, const int multiplicity_,
-                 const bool distributed_);
+                 const PointsDistType points_dist_type_);
   void init_zero(const PointsSelection& psel, const int multiplicity);
   //
   SelectedPoints() { init(); }
@@ -514,7 +527,7 @@ struct API SelectedPoints {
   {
     TIMER("SelectedPoints::set_view");
     initialized = sp.initialized;
-    distributed = sp.distributed;
+    points_dist_type = sp.points_dist_type;
     multiplicity = sp.multiplicity;
     n_points = sp.n_points;
     points.set_view(sp.points);
@@ -526,7 +539,7 @@ struct API SelectedPoints {
     TIMER("SelectedPoints::set_view_cast");
     const Int total_size = sp.multiplicity * sizeof(N);
     initialized = sp.initialized;
-    distributed = sp.distributed;
+    points_dist_type = sp.points_dist_type;
     multiplicity = total_size / sizeof(M);
     qassert(multiplicity * (Int)sizeof(M) == total_size);
     n_points = sp.n_points;
@@ -589,7 +602,7 @@ template <class M>
 void SelectedPoints<M>::init()
 {
   initialized = false;
-  distributed = false;
+  points_dist_type = PointsDistType::Global;
   multiplicity = 0;
   n_points = 0;
   points.init();
@@ -597,10 +610,10 @@ void SelectedPoints<M>::init()
 
 template <class M>
 void SelectedPoints<M>::init(const Long n_points_, const int multiplicity_,
-                             const bool distributed_)
+                             const PointsDistType points_dist_type_)
 {
   if (initialized) {
-    qassert(distributed_ == distributed);
+    qassert(points_dist_type_ == points_dist_type);
     qassert(multiplicity_ == multiplicity);
     qassert(n_points_ == n_points);
     qassert((Long)points.size() == n_points * multiplicity);
@@ -608,7 +621,7 @@ void SelectedPoints<M>::init(const Long n_points_, const int multiplicity_,
     TIMER("SelectedPoints::init(np,mult,dist)")
     init();
     initialized = true;
-    distributed = distributed_;
+    points_dist_type = points_dist_type_;
     multiplicity = multiplicity_;
     n_points = n_points_;
     points.resize(n_points * multiplicity);
@@ -626,15 +639,15 @@ template <class M>
 void SelectedPoints<M>::init(const PointsSelection& psel,
                              const int multiplicity)
 {
-  init(psel.size(), multiplicity, psel.distributed);
+  init(psel.size(), multiplicity, psel.points_dist_type);
 }
 
 template <class M>
 void SelectedPoints<M>::init_zero(const Long n_points_, const int multiplicity_,
-                                  const bool distributed_)
+                                  const PointsDistType points_dist_type_)
 {
   if (initialized) {
-    qassert(distributed_ == distributed);
+    qassert(points_dist_type_ == points_dist_type);
     qassert(multiplicity_ == multiplicity);
     qassert(n_points_ == n_points);
     qassert((Long)points.size() == n_points * multiplicity);
@@ -642,7 +655,7 @@ void SelectedPoints<M>::init_zero(const Long n_points_, const int multiplicity_,
     TIMER("SelectedPoints::init_zero(np,mult,dist)")
     init();
     initialized = true;
-    distributed = distributed_;
+    points_dist_type = points_dist_type_;
     multiplicity = multiplicity_;
     n_points = n_points_;
     points.resize(n_points * multiplicity);
@@ -654,7 +667,7 @@ template <class M>
 void SelectedPoints<M>::init_zero(const PointsSelection& psel,
                                   const int multiplicity)
 {
-  init_zero(psel.size(), multiplicity, psel.distributed);
+  init_zero(psel.size(), multiplicity, psel.points_dist_type);
 }
 
 template <class M>
@@ -730,7 +743,7 @@ struct API Field {
     qassert(geo().is_only_local);
     SelectedPoints<M> f;
     f.initialized = initialized;
-    f.distributed = true;
+    f.points_dist_type = PointsDistType::Local;
     f.multiplicity = geo().multiplicity;
     f.n_points = geo().local_volume();
     f.points.set_view(field);
@@ -1149,7 +1162,7 @@ struct API SelectedField {
     TIMER("SelectedField::view_sp");
     SelectedPoints<M> f;
     f.initialized = initialized;
-    f.distributed = true;
+    f.points_dist_type = PointsDistType::Local;
     f.multiplicity = geo().multiplicity;
     f.n_points = n_elems;
     f.points.set_view(field);

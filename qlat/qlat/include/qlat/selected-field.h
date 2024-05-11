@@ -498,7 +498,7 @@ void field_glb_sum_tslice(SelectedPoints<M>& sp, const SelectedField<M>& sf,
   const int multiplicity = geo.multiplicity;
   std::vector<M> vec = field_sum_tslice(sf, fsel, t_dir);
   glb_sum_vec(get_data(vec));
-  sp.init(t_size, multiplicity);
+  sp.init(t_size, multiplicity, PointsDistType::Global);
   sp.points = vec;
 }
 

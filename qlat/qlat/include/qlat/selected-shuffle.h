@@ -8,6 +8,8 @@ namespace qlat
 {  //
 
 struct SelectedShufflePlan {
+  PointsDistType points_dist_type_send;
+  PointsDistType points_dist_type_recv;
   SelectedPoints<Long> send_shuffle_idx_points;
   // Reorder field according to this idx field.before sending
   SelectedPoints<Long> recv_shuffle_idx_points;
@@ -28,7 +30,7 @@ void set_selected_shuffle_id_node_send_to(
 
 void set_selected_shuffle_id_node_send_to(
     SelectedPoints<Int>& sp_id_node_send_to, const PointsSelection& psel,
-    const Coordinate& total_site, const RngState& rs);
+    const RngState& rs);
 
 void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
                                const SelectedPoints<Int>& sp_id_node_send_to);
@@ -37,9 +39,7 @@ void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_points,
                                const RngState& rs);
 
 void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
-                               const PointsSelection& psel,
-                               const Coordinate& total_site,
-                               const RngState& rs);
+                               const PointsSelection& psel, const RngState& rs);
 
 void shuffle_selected_points_char(SelectedPoints<Char>& spc,
                                   const SelectedPoints<Char>& spc0,
@@ -60,24 +60,22 @@ void shuffle_selected_points(SelectedPoints<M>& sp,
   TIMER("shuffle_selected_points(sp,sp0,ssp)");
   const Long n_points = ssp.total_recv_count;
   const Int multiplicity = sp0.multiplicity;
-  sp.init(n_points, multiplicity);
-  sp.distributed = true;
+  sp.init(n_points, multiplicity, ssp.points_dist_type_recv);
   SelectedPoints<Char> spc(sp.view_as_char());
   const SelectedPoints<Char> spc0(sp0.view_as_char());
   shuffle_selected_points_char(spc, spc0, ssp);
 }
 
 template <class M>
-void shuffle_selected_field(SelectedPoints<M>& sp, const SelectedField<M>& sf,
+void shuffle_selected_field(SelectedPoints<M>& sp, const SelectedField<M>& sf0,
                             const SelectedShufflePlan& ssp)
 {
-  TIMER("shuffle_selected_field(sp,sf,ssp)");
+  TIMER("shuffle_selected_field(sp,sf0,ssp)");
   const Long n_points = ssp.total_recv_count;
-  const Int multiplicity = sf.geo().multiplicity;
-  sp.init(n_points, multiplicity);
-  sp.distributed = true;
+  const Int multiplicity = sf0.geo().multiplicity;
+  sp.init(n_points, multiplicity, ssp.points_dist_type_recv);
   SelectedPoints<Char> spc(sp.view_as_char());
-  const SelectedPoints<Char> spc0(sf.view_sp().view_as_char());
+  const SelectedPoints<Char> spc0(sf0.view_sp().view_as_char());
   shuffle_selected_points_char(spc, spc0, ssp);
 }
 

@@ -139,9 +139,9 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         else:
             raise Exception(f"SelectedPoints.__init__ {args}")
 
-    def init_from_n_points(self, cc.Long n_points, cc.Int multiplicity, cc.Bool distributed):
+    def init_from_n_points(self, cc.Long n_points, cc.Int multiplicity, str points_dist_type):
         self.psel = None
-        self.xx.init(n_points, multiplicity, distributed)
+        self.xx.init(n_points, multiplicity, cc.read_points_dist_type(points_dist_type))
 
     def init_from_psel(self, PointsSelection psel, cc.Int multiplicity=0):
         self.psel = psel
@@ -269,18 +269,25 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         cc.selected_points_from_lat_data(self.xx, ld.xx)
 {{endif}}
 
-    def distributed(self):
-        return self.xx.distributed
-
-    def set_distributed(self, const cc.Bool distributed):
+    @property
+    def points_dist_type(self):
         """
-        set the distributed flag
+        points_dist_type in [ "g", "l", "r", ]
         """
-        self.xx.distributed = distributed
+        return cc.show(self.xx.points_dist_type)
 
+    @points_dist_type.setter
+    def points_dist_type(self, str value):
+        """
+        set the points_dist_type flag
+        """
+        self.xx.points_dist_type = cc.read_points_dist_type(value)
+
+    @property
     def n_points(self):
         return self.xx.n_points
 
+    @property
     def multiplicity(self):
         return self.xx.multiplicity
 

@@ -346,7 +346,8 @@ void write_grid_point_to_src(Ty* res, const qnoiT& src, const PointsSelection& p
 template<typename Ty>
 void write_grid_point_to_src(Ty* res, const qnoiT& src, const Coordinate& pos, int b_size, qlat::fft_desc_basic& fd)
 {
-  PointsSelection posL;posL.init(1);posL[0] = pos;
+  const Coordinate total_site_fake;
+  PointsSelection posL;posL.init(total_site_fake, 1);posL[0] = pos;
   write_grid_point_to_src(res, src, posL, b_size, fd);
 }
 
@@ -432,7 +433,8 @@ inline void get_grid_psel(PointsSelection& psel, const Coordinate& nv, const Coo
     psel_xgs.push_back(xg);
   }
 
-  psel.init(psel_xgs);
+  const Coordinate total_site_fake;
+  psel.init(total_site_fake, psel_xgs);
 
 }
 

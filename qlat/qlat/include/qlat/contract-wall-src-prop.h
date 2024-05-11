@@ -73,7 +73,7 @@ inline PselProp contract_wall_snk_prop(const SelProp& prop,
     gwm_ts[omp_get_thread_num() * total_site[3] + xg[3]] += prop.get_elem(idx);
   }
   PselProp ret;
-  ret.init(total_site[3], 1);
+  ret.init(total_site[3], 1, PointsDistType::Global);
   set_zero(ret);
   for (int i = 0; i < omp_get_max_threads(); ++i) {
     for (int t = 0; t < total_site[3]; ++t) {

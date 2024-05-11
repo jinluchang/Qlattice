@@ -46,68 +46,75 @@ std::string show(const qlat::Geometry& geo)
   return s;
 }
 
+// ----------------
+
+std::string show(const PointsDistType points_dist_type)
+{
+  if (points_dist_type == PointsDistType::Global) {
+    return "g";
+  } else if (points_dist_type == PointsDistType::Local) {
+    return "l";
+  } else if (points_dist_type == PointsDistType::Random) {
+    return "r";
+  } else {
+    qassert(false);
+    return "";
+  }
+}
+
+PointsDistType read_points_dist_type(const std::string& points_dist_type_str)
+{
+  if (points_dist_type_str == "g") {
+    return PointsDistType::Global;
+  } else if (points_dist_type_str == "l") {
+    return PointsDistType::Local;
+  } else if (points_dist_type_str == "r") {
+    return PointsDistType::Random;
+  } else {
+    qassert(false);
+    return PointsDistType::Global;
+  }
+}
+
 void PointsSelection::init()
 {
   initialized = false;
-  distributed = false;
+  points_dist_type = PointsDistType::Global;
   xgs.init();
 }
 
-void PointsSelection::init(const Long n_points)
+void PointsSelection::init(const Coordinate& total_site_, const Long n_points_, const PointsDistType points_dist_type_)
 {
   initialized = true;
-  distributed = false;
+  points_dist_type = points_dist_type_;
+  total_site = total_site_;
   xgs.clear();
-  xgs.resize(n_points);
+  xgs.resize(n_points_);
 }
 
-void PointsSelection::init(const Long n_points, const Coordinate& xg_init)
+void PointsSelection::init(const Coordinate& total_site_, const std::vector<Coordinate>& xgs_)
 {
   initialized = true;
-  distributed = false;
-  xgs.clear();
-  xgs.resize(n_points, xg_init);
-}
-
-void PointsSelection::init(const std::vector<Coordinate>& xgs_)
-{
-  initialized = true;
-  distributed = false;
+  points_dist_type = PointsDistType::Global;
+  total_site = total_site_;
   xgs = xgs_;
 }
 
-void PointsSelection::init(const vector<Coordinate>& xgs_)
+void PointsSelection::init(const Coordinate& total_site_, const vector<Coordinate>& xgs_)
 {
   initialized = true;
-  distributed = false;
+  points_dist_type = PointsDistType::Global;
+  total_site = total_site_;
   xgs = xgs_;
 }
 
-void PointsSelection::init(const SelectedPoints<Coordinate>& spx)
+void PointsSelection::init(const Coordinate& total_site_, const SelectedPoints<Coordinate>& spx)
 {
   qassert(spx.multiplicity == 1);
   initialized = spx.initialized;
-  distributed = spx.distributed;
+  points_dist_type = spx.points_dist_type;
+  total_site = total_site_;
   xgs = spx.points;
-}
-
-PointsSelection& PointsSelection::operator=(const std::vector<Coordinate>& xgs_)
-{
-  init(xgs_);
-  return *this;
-}
-
-PointsSelection& PointsSelection::operator=(const vector<Coordinate>& xgs_)
-{
-  init(xgs_);
-  return *this;
-}
-
-PointsSelection& PointsSelection::operator=(
-    const SelectedPoints<Coordinate>& spx)
-{
-  init(spx);
-  return *this;
 }
 
 void PointsSelection::resize(const Long n_points) { xgs.resize(n_points); }
@@ -122,7 +129,7 @@ SelectedPoints<Coordinate> PointsSelection::view_sp() const
   TIMER("PointsSelection::view_sp");
   SelectedPoints<Coordinate> f;
   f.initialized = initialized;
-  f.distributed = distributed;
+  f.points_dist_type = points_dist_type;
   f.multiplicity = 1;
   f.n_points = xgs.size();
   f.points.set_view(xgs);
@@ -141,7 +148,7 @@ bool operator==(const PointsSelection& psel1, const PointsSelection& psel2)
   if (psel1.initialized != psel2.initialized) {
     return false;
   }
-  if (psel1.distributed != psel2.distributed) {
+  if (psel1.points_dist_type != psel2.points_dist_type) {
     return false;
   }
   if (psel1.xgs.size() != psel2.xgs.size()) {
@@ -160,6 +167,8 @@ bool operator!=(const PointsSelection& psel1, const PointsSelection& psel2)
   return not(psel1 == psel2);
 }
 
+// ----------------
+
 void FieldSelection::init()
 {
   f_rank.init();
@@ -174,9 +183,10 @@ void set_psel_from_fsel(PointsSelection& psel, const FieldSelection& fsel)
   TIMER("set_psel_from_fsel(psel,fsel)");
   qassert(fsel.f_rank.initialized);
   const Geometry& geo = fsel.f_rank.geo();
+  const Coordinate total_site = geo.total_site();
   const Long n_points = fsel.n_elems;
-  psel.init(n_points);
-  psel.distributed = true;
+  psel.init(total_site, n_points);
+  psel.points_dist_type = PointsDistType::Local;
   qthread_for(idx, n_points, {
     const Long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);

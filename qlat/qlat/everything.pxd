@@ -78,6 +78,33 @@ cdef extern from "qlat/utils-io.h" namespace "qlat":
 
 cdef extern from "qlat/core.h" namespace "qlat":
 
+    cdef cppclass PointsDistType:
+        pass
+    std_string show(const PointsDistType points_dist_type) except +
+    PointsDistType read_points_dist_type(const std_string& points_dist_type_str) except +
+    cdef cppclass PointsSelection:
+        bool initialized
+        PointsDistType points_dist_type
+        Coordinate total_site
+        PointsSelection()
+        PointsSelection(const Coordinate& total_site, const Long n_points) except +
+        PointsSelection(const Coordinate& total_site, const Long n_points, const PointsDistType points_dist_type) except +
+        void init()
+        void init(const Coordinate& total_site, const Long n_points) except +
+        void init(const Coordinate& total_site, const Long n_points, const PointsDistType points_dist_type) except +
+        Long size()
+        Coordinate* data()
+        Coordinate& operator[](Long i) except +
+    cdef cppclass SelectedPoints[T]:
+        bool initialized;
+        PointsDistType points_dist_type
+        Int multiplicity
+        Long n_points
+        vector_acc[T] points
+        SelectedPoints()
+        void init()
+        void init(const Long n_points, const Int multiplicity, const PointsDistType points_dist_type) except +
+        void init(const PointsSelection& psel, const Int multiplicity) except +
     cdef cppclass Field[T]:
         vector_acc[T] field
         Field()
@@ -115,18 +142,6 @@ cdef extern from "qlat/core.h" namespace "qlat":
         FieldSelection()
         void init()
         const Geometry& get_geo()
-    cdef cppclass PointsSelection:
-        bool initialized
-        bool distributed
-        PointsSelection()
-        PointsSelection(const Long n_points) except +
-        PointsSelection(const Long n_points, const Coordinate& xg_init) except +
-        void init()
-        void init(const Long n_points) except +
-        void init(const Long n_points, const Coordinate& xg_init) except +
-        Long size()
-        Coordinate* data()
-        Coordinate& operator[](Long i) except +
     cdef cppclass SelectedField[T]:
         Long n_elems;
         vector_acc[T] field
@@ -135,16 +150,6 @@ cdef extern from "qlat/core.h" namespace "qlat":
         void init(const Geometry& geo, const Long n_elems, const Int multiplicity) except +
         void init(const FieldSelection& fsel, const Int multiplicity) except +
         const Geometry& get_geo()
-    cdef cppclass SelectedPoints[T]:
-        bool initialized;
-        bool distributed
-        Int multiplicity
-        Long n_points
-        vector_acc[T] points
-        SelectedPoints()
-        void init()
-        void init(const Long n_points, const Int multiplicity, const bool distributed) except +
-        void init(const PointsSelection& psel, const Int multiplicity) except +
     Vector[T] get_data[T](const Field[T]& x) except +
     void set_zero[T](Field[T]& x) except +
     void qswap[T](Field[T]& x, Field[T]& y) except +
@@ -238,7 +243,7 @@ cdef extern from "qlat/selected-points.h" namespace "qlat":
     void load_selected_points[M](SelectedPoints[M]& sp, const std_string& fn) except +
     std_string save_selected_points_str[M](const SelectedPoints[M]& sp) except +
     void load_selected_points_str[M](SelectedPoints[M]& sp, std_string& content) except +
-    PointsSelection mk_tslice_point_selection(const Int t_size, const Int t_dir) except +
+    PointsSelection mk_tslice_point_selection(const Coordinate& total_site, const Int t_dir) except +
     void field_glb_sum[M](SelectedPoints[M]& sp, const Field[M]& f) except +
     void field_glb_sum_tslice[M](SelectedPoints[M]& sp, const Field[M]& f, const Int t_dir) except +
     void set_sqrt_field(SelectedPoints[RealD]& sp, const SelectedPoints[RealD]& sp1) except +

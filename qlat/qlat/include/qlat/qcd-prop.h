@@ -542,7 +542,7 @@ inline void convert_wm_from_mspincolor(SelectedPoints<WilsonMatrix>& prop_wm, co
 {
   TIMER("convert_wm_from_mspincolor(sp_prop)");
   qassert(prop_msc.multiplicity == 1);
-  prop_wm.init(prop_msc.n_points, 1);
+  prop_wm.init(prop_msc.n_points, 1, prop_msc.points_dist_type);
   qacc_for(idx, prop_msc.n_points, {
     WilsonMatrix& wm = prop_wm.get_elem(idx);
     const WilsonMatrix& msc = prop_msc.get_elem(idx);
@@ -554,7 +554,7 @@ inline void convert_mspincolor_from_wm(SelectedPoints<WilsonMatrix>& prop_msc, c
 {
   TIMER("convert_mspincolor_from_wm(sp_prop)");
   qassert(prop_wm.multiplicity == 1);
-  prop_msc.init(prop_wm.n_points, 1);
+  prop_msc.init(prop_wm.n_points, 1, prop_wm.points_dist_type);
   qacc_for(idx, prop_wm.n_points, {
     WilsonMatrix& msc = prop_msc.get_elem(idx);
     const WilsonMatrix& wm = prop_wm.get_elem(idx);

@@ -189,13 +189,14 @@ int bcast(PointsSelection& psel, const int root)
   }
   if (get_id_node() == root) {
     qassert(psel.initialized);
-    qassert(not psel.distributed);
+    qassert(psel.points_dist_type == PointsDistType::Global);
   } else {
     psel.initialized = true;
-    psel.distributed = false;
+    psel.points_dist_type = PointsDistType::Global;
   }
   int ret = 0;
-  ret += bcast(psel.xgs);
+  ret += bcast(psel.total_site, root);
+  ret += bcast(psel.xgs, root);
   return ret;
 }
 

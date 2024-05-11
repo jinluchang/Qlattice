@@ -5,6 +5,8 @@ namespace qlat
 
 void SelectedShufflePlan::init()
 {
+  points_dist_type_send = PointsDistType::Local;
+  points_dist_type_recv = PointsDistType::Random;
   SelectedPoints<Long>& sspi = send_shuffle_idx_points;
   SelectedPoints<Long>& rspi = recv_shuffle_idx_points;
   sspi.init();
@@ -20,10 +22,11 @@ void SelectedShufflePlan::init()
 void set_selected_shuffle_id_node_send_to(
     SelectedPoints<Int>& sp_id_node_send_to, const Long n_points,
     const RngState& rs)
+// assume `points_dist_type_send` is `PointsDistType::Local`.
 {
   TIMER("set_selected_shuffle_id_node_send_to(spist,n_points,rs)");
   const Int num_node = get_num_node();
-  sp_id_node_send_to.init(n_points, 1, true);
+  sp_id_node_send_to.init(n_points, 1, PointsDistType::Local);
   RngState rsl = rs.split(get_id_node());
   qthread_for(idx, n_points, {
     RngState rsi = rsl.newtype(idx);
@@ -36,16 +39,16 @@ void set_selected_shuffle_id_node_send_to(
 
 void set_selected_shuffle_id_node_send_to(
     SelectedPoints<Int>& sp_id_node_send_to, const PointsSelection& psel,
-    const Coordinate& total_site, const RngState& rs)
+    const RngState& rs)
 {
-  TIMER("set_selected_shuffle_id_node_send_to(spist,psel,ts,rs)");
+  TIMER("set_selected_shuffle_id_node_send_to(spist,psel,rs)");
   const Long n_points = psel.size();
   const Int num_node = get_num_node();
-  sp_id_node_send_to.init(n_points, 1, true);
+  sp_id_node_send_to.init(n_points, 1, psel.points_dist_type);
   RngState rsl = rs.split(get_id_node());
   qthread_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
-    const Long gindex = index_from_coordinate(xg, total_site);
+    const Long gindex = index_from_coordinate(xg, psel.total_site);
     RngState rsi = rsl.newtype(gindex);
     const Int id_node_send_to = rand_gen(rsi) % num_node;
     qassert(0 <= id_node_send_to);
@@ -57,18 +60,24 @@ void set_selected_shuffle_id_node_send_to(
 void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
                                const SelectedPoints<Int>& sp_id_node_send_to)
 // Collective operation.
+// partially set SelectedShufflePlan
+//
+// Missing elements:
+// ssp.points_dist_type_recv
+// ssp.recv_shuffle_idx_points
+//
+// To be set in `set_selected_shuffle_plan(ssp,psel,rs)`.
 {
-  TIMER("set_selected_shuffle_plan(ssp,spist)");
+  TIMER("set_selected_shuffle_plan(ssp,spinst)");
   ssp.init();
   const Int num_node = get_num_node();
   const Long n_points = sp_id_node_send_to.n_points;
   qassert(sp_id_node_send_to.initialized == true);
-  qassert(sp_id_node_send_to.distributed == true);
+  qassert(sp_id_node_send_to.points_dist_type != PointsDistType::Global);
   qassert(sp_id_node_send_to.multiplicity == 1);
-  SelectedPoints<Long>& rspi = ssp.recv_shuffle_idx_points;
-  rspi.init();
+  ssp.points_dist_type_send = sp_id_node_send_to.points_dist_type;
   SelectedPoints<Long>& sspi = ssp.send_shuffle_idx_points;
-  sspi.init(n_points, 1, true);
+  sspi.init(n_points, 1, ssp.points_dist_type_send);
   set_zero(sspi);
   ssp.total_send_count = n_points;
   ssp.sdispls.resize(num_node);
@@ -118,20 +127,23 @@ void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_points,
 }
 
 void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
-                               const PointsSelection& psel,
-                               const Coordinate& total_site, const RngState& rs)
+                               const PointsSelection& psel, const RngState& rs)
+// Call `set_selected_shuffle_plan(ssp,spinst)` to set ssp.
+// In addition, set the missing:
+// `ssp.points_dist_type_recv`
+// `ssp.recv_shuffle_idx_points`
 {
-  TIMER("set_selected_shuffle_plan(ssp,psel,ts,rs)");
+  TIMER("set_selected_shuffle_plan(ssp,psel,rs)");
   const Long n_points = psel.size();
   SelectedPoints<Int> sp_id_node_send_to;
-  set_selected_shuffle_id_node_send_to(sp_id_node_send_to, psel, total_site,
-                                       rs);
+  set_selected_shuffle_id_node_send_to(sp_id_node_send_to, psel, rs);
   set_selected_shuffle_plan(ssp, sp_id_node_send_to);
+  ssp.points_dist_type_recv = PointsDistType::Random;
   SelectedPoints<Long> sp_idx0;
-  sp_idx0.init(n_points, 1, true);
+  sp_idx0.init(n_points, 1, ssp.points_dist_type_send);
   qthread_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
-    const Long gindex = index_from_coordinate(xg, total_site);
+    const Long gindex = index_from_coordinate(xg, psel.total_site);
     sp_idx0.get_elem(idx) = gindex;
   });
   SelectedPoints<Long> sp_idx;
@@ -144,7 +156,7 @@ void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
   });
   std::sort(idx_pair_vec.begin(), idx_pair_vec.end());
   SelectedPoints<Long>& rspi = ssp.recv_shuffle_idx_points;
-  rspi.init(sp_idx.n_points, 1, true);
+  rspi.init(sp_idx.n_points, 1, ssp.points_dist_type_recv);
   qthread_for(idx, sp_idx.n_points, {
     const Long idx_src = idx_pair_vec[idx].second;
     const Long idx_tgt = idx;
@@ -158,8 +170,7 @@ void shuffle_selected_points_char(SelectedPoints<Char>& spc,
 // const Long n_points = ssp.total_recv_count;
 // const Int multiplicity = sp0.multiplicity;
 // SelectedPoints<M> sp;
-// sp.init(n_points, multiplicity, true);
-// sp.distributed = true;
+// sp.init(n_points, multiplicity, ssp.points_dist_type_recv);
 // SelectedPoints<Char> spc(sp.view_as_char());
 // SelectedPoints<Char> spc0(sp0.view_as_char());
 {
@@ -170,23 +181,23 @@ void shuffle_selected_points_char(SelectedPoints<Char>& spc,
   qassert(sspi.multiplicity == 1);
   qassert(sspi.n_points == ssp.total_send_count);
   qassert(spc0.initialized == true);
-  qassert(spc0.distributed == true);
+  qassert(spc0.points_dist_type == ssp.points_dist_type_send);
   qassert(spc0.n_points == ssp.total_send_count);
   const Int multiplicity = spc0.multiplicity;
   qassert(spc.initialized == true);
-  qassert(spc.distributed == true);
+  qassert(spc.points_dist_type == ssp.points_dist_type_recv);
   qassert(spc.n_points == ssp.total_recv_count);
   qassert(spc.multiplicity == multiplicity);
   SelectedPoints<Char> sp;
   if (rspi.initialized) {
     qassert(rspi.multiplicity == 1);
     qassert(rspi.n_points == ssp.total_recv_count);
-    sp.init(spc.n_points, multiplicity, true);
+    sp.init(spc.n_points, multiplicity, ssp.points_dist_type_recv);
   } else {
     sp.set_view(spc);
   }
   SelectedPoints<Char> sp0;
-  sp0.init(spc0.n_points, multiplicity, true);
+  sp0.init(spc0.n_points, multiplicity, ssp.points_dist_type_send);
   qthread_for(idx, spc0.n_points, {
     const Vector<Char> v = spc0.get_elems_const(idx);
     const Long idx1 = sspi.get_elem(idx);
@@ -220,9 +231,10 @@ void shuffle_points_selection(PointsSelection& psel,
                               const SelectedShufflePlan& ssp)
 {
   TIMER("shuffle_points_selection(sp,psel,psel0,ssp)");
+  qassert(psel0.points_dist_type == ssp.points_dist_type_send);
   const Long n_points = ssp.total_recv_count;
-  psel.init(n_points);
-  psel.distributed = true;
+  psel.init(psel0.total_site, n_points);
+  psel.points_dist_type = ssp.points_dist_type_recv;
   SelectedPoints<Char> pselc(psel.view_sp().view_as_char());
   const SelectedPoints<Char> pselc0(psel0.view_sp().view_as_char());
   shuffle_selected_points_char(pselc, pselc0, ssp);

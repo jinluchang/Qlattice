@@ -448,6 +448,8 @@ PointsSelection intersect(const FieldSelection& fsel,
   TIMER("intersect(fsel,psel)");
   const Geometry& geo = fsel.f_rank.geo();
   qassert(geo.is_only_local);
+  qassert(geo.total_site() == psel.total_site);
+  qassert(psel.points_dist_type == PointsDistType::Global);
   vector<Int> is_psel_in_fsel(psel.size(), 0);
   qthread_for(i, (Long)psel.size(), {
     const Coordinate xl = geo.coordinate_l_from_g(psel[i]);
@@ -465,7 +467,7 @@ PointsSelection intersect(const FieldSelection& fsel,
       n_points += 1;
     }
   });
-  PointsSelection psel_new(n_points);
+  PointsSelection psel_new(psel.total_site, n_points);
   n_points = 0;
   qfor(i, is_psel_in_fsel.size(), {
     if (is_psel_in_fsel[i] == 0) {
@@ -503,7 +505,7 @@ PointsSelection psel_from_fsel(const FieldSelection& fsel)
     vec_gindex[idx_offset + idx] = gindex;
   });
   glb_sum(get_data(vec_gindex));
-  PointsSelection psel(total_n_elems);
+  PointsSelection psel(total_site, total_n_elems);
   qthread_for(idx, (Long)psel.size(), {
     Long gindex = vec_gindex[idx];
     psel[idx] = coordinate_from_index(gindex, total_site);
@@ -517,8 +519,8 @@ PointsSelection psel_from_fsel_local(const FieldSelection& fsel)
   const Geometry& geo = fsel.f_rank.geo();
   // const Coordinate total_site = geo.total_site();
   Long n_elems = fsel.n_elems;
-  PointsSelection psel(n_elems);
-  psel.distributed = true;
+  PointsSelection psel(geo.total_site(), n_elems);
+  psel.points_dist_type = PointsDistType::Local;
   qthread_for(idx, (Long)psel.size(), {
     const Long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);

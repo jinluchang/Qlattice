@@ -5,23 +5,19 @@
 namespace qlat
 {  //
 
-PointsSelection mk_tslice_point_selection(const int t_size, const int t_dir)
+PointsSelection mk_tslice_point_selection(const Coordinate& total_site,
+                                          const int t_dir)
 {
-  PointsSelection psel;
-  psel.init(t_size);
   qassert(0 <= t_dir and t_dir < 4);
+  const int t_size = total_site[t_dir];
+  PointsSelection psel;
+  psel.init(total_site, t_size);
   const Coordinate xg_all = Coordinate(-1, -1, -1, -1);
   qthread_for(idx, t_size, {
     psel[idx] = xg_all;
     psel[idx][t_dir] = idx;
   });
   return psel;
-}
-
-PointsSelection mk_tslice_point_selection(const Coordinate& total_site,
-                                          const int t_dir)
-{
-  return mk_tslice_point_selection(total_site[t_dir], t_dir);
 }
 
 PointsSelection mk_random_point_selection(const Coordinate& total_site,
@@ -35,7 +31,7 @@ PointsSelection mk_random_point_selection(const Coordinate& total_site,
     return psel;
   }
   qassert(num > 0);
-  PointsSelection psel_pool(pool_factor * num);
+  PointsSelection psel_pool(total_site, pool_factor * num);
 #pragma omp parallel for
   for (Long i = 0; i < (Long)psel_pool.size(); ++i) {
     RngState rsi = rs.split(i);
@@ -45,7 +41,8 @@ PointsSelection mk_random_point_selection(const Coordinate& total_site,
     }
     psel_pool[i] = xg;
   }
-  PointsSelection psel(num, Coordinate(-1, -1, -1, -1));
+  PointsSelection psel(total_site, num);
+  qthread_for(i, num, { psel[i] = Coordinate(-1, -1, -1, -1); });
   Long idx = 0;
   for (Long i = 0; i < (Long)psel.size(); ++i) {
     while (idx < (Long)psel_pool.size()) {
@@ -78,7 +75,7 @@ PointsSelection mk_random_point_selection(const Coordinate& total_site,
 void save_point_selection(const PointsSelection& psel, const std::string& path)
 {
   TIMER_VERBOSE("save_point_selection");
-  qassert(not psel.distributed);
+  qassert(psel.points_dist_type == PointsDistType::Global);
   QFile qfile = qfopen(path + ".partial", "w");
   qfprintf(qfile, "%ld\n", (Long)psel.size());
   for (Long i = 0; i < (Long)psel.size(); ++i) {
@@ -93,7 +90,7 @@ void save_point_selection_info(const PointsSelection& psel,
                                const std::string& path)
 {
   TIMER_VERBOSE("save_point_selection_info");
-  qassert(not psel.distributed);
+  qassert(psel.points_dist_type == PointsDistType::Global);
   if (0 == get_id_node()) {
     save_point_selection(psel, path);
   }
@@ -102,11 +99,15 @@ void save_point_selection_info(const PointsSelection& psel,
 PointsSelection load_point_selection(const std::string& path)
 {
   TIMER_VERBOSE("load_point_selection");
+  qwarn(
+      fname +
+      ssprintf(": path='%s' with old format. Need to set total_site manually.",
+               path.c_str()));
   const std::vector<std::string> lines = qgetlines(path);
   qassert(lines.size() > 0);
   const Long len = read_long(lines[0]);
   qassert(len + 1 <= (Long)lines.size());
-  PointsSelection psel(len);
+  PointsSelection psel(Coordinate(), len);
   for (Long idx = 0; idx < len; ++idx) {
     const Long k = idx + 1;
     const std::vector<std::string> strs = split_line_with_spaces(lines[k]);
@@ -147,7 +148,7 @@ void set_sqrt_field(SelectedPoints<RealD>& sp, const SelectedPoints<RealD>& sp1)
   TIMER("set_sqrt_field(sp,sp1)");
   const Long n_points = sp1.n_points;
   const Int multiplicity = sp1.multiplicity;
-  sp.init(n_points, multiplicity);
+  sp.init(n_points, multiplicity, sp1.points_dist_type);
   qthread_for(idx, n_points, {
     const Vector<RealD> spv1 = sp1.get_elems_const(idx);
     Vector<RealD> spv = sp.get_elems(idx);

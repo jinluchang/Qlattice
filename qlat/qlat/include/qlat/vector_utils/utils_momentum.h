@@ -420,7 +420,7 @@ struct momentum_dat{
     //});
 
     PointsSelection pconf;
-    pconf.init(Mvol);
+    pconf.init(geo.total_site(), Mvol);
     if(Mvol != 0)
     qthread_for(ai , Mvol , {
       const Long isp = mapA[ai];

@@ -194,7 +194,7 @@ inline void prop_apply_gauge_transformation(
   qassert(prop0.n_points == num_points);
   qassert(prop0.multiplicity == 1);
   SelectedPoints<WilsonMatrix> tmp;
-  tmp.init(num_points, 1);
+  tmp.init(num_points, 1, prop0.points_dist_type);
   set_zero(tmp.points);
   qthread_for(i, num_points, {
     const Coordinate& xg = psel[i];

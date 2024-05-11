@@ -5,8 +5,6 @@
 namespace qlat
 {  //
 
-PointsSelection mk_tslice_point_selection(const int t_size, const int t_dir = 3);
-
 PointsSelection mk_tslice_point_selection(const Coordinate& total_site,
                                           const int t_dir = 3);
 
@@ -60,7 +58,7 @@ SelectedPoints<M>& operator-=(SelectedPoints<M>& f, const SelectedPoints<M>& f1)
 {
   TIMER("sel_points_operator-=");
   if (not f.initialized) {
-    f.init(f1.n_points, f1.multiplicity);
+    f.init(f1.n_points, f1.multiplicity, f1.points_dist_type);
     set_zero(f);
     f -= f1;
   } else {
@@ -127,8 +125,8 @@ void qnorm_field(SelectedPoints<RealD>& sp, const SelectedPoints<M>& sp1)
 {
   TIMER("qnorm_field(sp,sp1)");
   sp.init();
-  sp.init(sp1.n_points, 1);
-  sp.distributed = sp1.distributed;
+  sp.init(sp1.n_points, 1, sp1.points_dist_type);
+  sp.points_dist_type = sp1.points_dist_type;
   qacc_for(idx, sp.n_points,
            { sp.get_elem(idx) = qnorm(sp1.get_elems_const(idx)); });
 }
@@ -332,7 +330,7 @@ void field_glb_sum(SelectedPoints<M>& sp, const Field<M>& f)
   const Geometry& geo = f.geo();
   const int multiplicity = geo.multiplicity;
   std::vector<M> vec = field_glb_sum(f);
-  sp.init(1, multiplicity);
+  sp.init(1, multiplicity, PointsDistType::Global);
   sp.points = vec;
 }
 
@@ -346,7 +344,7 @@ void field_glb_sum_tslice(SelectedPoints<M>& sp, const Field<M>& f,
   const int t_size = geo.total_site()[t_dir];
   const int multiplicity = geo.multiplicity;
   std::vector<M> vec = field_glb_sum_tslice(f, t_dir);
-  sp.init(t_size, multiplicity);
+  sp.init(t_size, multiplicity, PointsDistType::Global);
   sp.points = vec;
 }
 
@@ -401,7 +399,7 @@ void selected_points_from_lat_data(SelectedPoints<M>& sp, const LatData& ld)
   } else {
     qassert(sizeof(M) == sizof_M_vs_sizeof_v * sizeof(RealD));
   }
-  sp.init(n_points, multiplicity);
+  sp.init(n_points, multiplicity, PointsDistType::Global);
   assign(get_data(sp.points), get_data(ld.res));
 }
 
@@ -454,7 +452,7 @@ void selected_points_from_lat_data(SelectedPoints<M>& sp, const LatDataRealF& ld
   } else {
     qassert(sizeof(M) == sizof_M_vs_sizeof_v * sizeof(RealF));
   }
-  sp.init(n_points, multiplicity);
+  sp.init(n_points, multiplicity, PointsDistType::Global);
   assign(get_data(sp.points), get_data(ld.res));
 }
 
@@ -486,7 +484,7 @@ void selected_points_from_lat_data(SelectedPoints<M>& sp, const LatDataLong& ld)
   const Long multiplicity = ld.info[1].size;
   const Long sizof_M_vs_sizeof_v = ld.info[2].size;
   qassert(sizeof(M) == sizof_M_vs_sizeof_v * sizeof(Long));
-  sp.init(n_points, multiplicity);
+  sp.init(n_points, multiplicity, PointsDistType::Global);
   assign(get_data(sp.points), get_data(ld.res));
 }
 
@@ -518,7 +516,7 @@ void selected_points_from_lat_data(SelectedPoints<M>& sp, const LatDataInt& ld)
   const Long multiplicity = ld.info[1].size;
   const Long sizof_M_vs_sizeof_v = ld.info[2].size;
   qassert(sizeof(M) == sizof_M_vs_sizeof_v * sizeof(Int));
-  sp.init(n_points, multiplicity);
+  sp.init(n_points, multiplicity, PointsDistType::Global);
   assign(get_data(sp.points), get_data(ld.res));
 }
 
@@ -528,7 +526,7 @@ template <class M>
 void save_selected_points(const SelectedPoints<M>& sp, QFile& qfile)
 {
   TIMER_VERBOSE("save_selected_points(sp,qfile)");
-  qassert(not sp.distributed);
+  qassert(sp.points_dist_type == PointsDistType::Global);
   if (get_id_node() == 0) {
     if (is_composed_of_real_d<M>()) {
       LatData ld;
@@ -584,7 +582,7 @@ void load_selected_points(SelectedPoints<M>& sp, QFile& qfile)
   bcast(get_data_one_elem(n_points));
   bcast(get_data_one_elem(multiplicity));
   if (get_id_node() != 0) {
-    sp.init(n_points, multiplicity);
+    sp.init(n_points, multiplicity, PointsDistType::Global);
   }
   vector<M> buffer(sp.points.size());
   assign(get_data(buffer), get_data(sp.points));

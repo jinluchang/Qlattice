@@ -41,7 +41,8 @@ from .field_type_dict import field_type_dict
 {{for name in type_name_list}}
 
 cdef void set_field_f_sp_{{name}}(Field{{name}} self, SelectedPoints{{name}} other):
-    cc.set_field_selected(self.xx, other.xx, other.psel.geo.xx, other.psel.xx)
+    cdef Geometry geo = other.psel.geo
+    cc.set_field_selected(self.xx, other.xx, geo.xx, other.psel.xx)
 
 cdef void set_field_f_sf_{{name}}(Field{{name}} self, SelectedField{{name}} other):
     cc.set_field_selected(self.xx, other.xx, other.fsel.xx)
