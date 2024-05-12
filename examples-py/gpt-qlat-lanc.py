@@ -13,7 +13,7 @@ import os
 
 @q.timer
 def test_eig(gf, eig, job_tag, inv_type):
-    geo = gf.geo()
+    geo = gf.geo
     src = q.FermionField4d(geo)
     src.set_rand(q.RngState("test_eig:src.set_rand"))
     q.displayln_info(f"CHECK: src norm {src.qnorm():.10E}")

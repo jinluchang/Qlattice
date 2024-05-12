@@ -79,7 +79,7 @@ cdef class SelectedShufflePlan:
 
     def init_from_n_elems(self, cc.Long n_elems, RngState rs):
         """
-        Only depends on `fsel.geo()`, `fsel.n_elems()`.
+        Only depends on `fsel.geo`, `fsel.n_elems`.
         """
         cc.set_selected_shuffle_plan(self.xx, n_elems, rs.xx)
 
@@ -152,7 +152,7 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
 
     def init_from_sf_ssp(self, SelectedField{{name}} sf, SelectedShufflePlan ssp):
         cdef FieldSelection fsel = sf.fsel
-        cdef PointsSelection psel = PointsSelection(None, fsel.geo())
+        cdef PointsSelection psel = PointsSelection(None, fsel.geo)
         self.psel = psel
         cc.shuffle_field_selection(psel.xx, fsel.xx, ssp.xx)
         cc.shuffle_selected_field(self.xx, sf.xx, ssp.xx)

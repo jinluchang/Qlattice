@@ -66,7 +66,7 @@ def metropolis_accept(delta_h, traj, rs):
 
 @q.timer
 def gm_evolve_fg_pure_gauge(gm, gf_init, ga, fg_dt, dt):
-    geo = gf_init.geo()
+    geo = gf_init.geo
     gf = GaugeField(geo)
     gf @= gf_init
     gm_force = GaugeMomentum(geo)
@@ -101,7 +101,7 @@ def run_hmc_evolve_pure_gauge(gm, gf, ga, rs, n_step, md_time = 1.0):
 def run_hmc_pure_gauge(gf, ga, traj, rs, *, is_reverse_test = False, n_step = 6, md_time = 1.0, is_always_accept = False):
     fname = q.get_fname()
     rs = rs.split(f"{traj}")
-    geo = gf.geo()
+    geo = gf.geo
     gf0 = GaugeField(geo)
     gf0 @= gf
     gm = GaugeMomentum(geo)

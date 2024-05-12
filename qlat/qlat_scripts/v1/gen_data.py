@@ -137,7 +137,7 @@ def avg_weight_from_prop_full(geo, prop_nf_dict):
 @q.timer
 def make_fsel_from_weight(f_weight, f_rand_01, rate):
     fname = q.get_fname()
-    geo = f_weight.geo()
+    geo = f_weight.geo
     fsel = q.FieldSelection(geo)
     sel = f_weight[:].ravel() * rate >= f_rand_01[:].ravel()
     val = np.rint(f_weight[:].ravel()[sel] * 10**8).astype(int)
@@ -530,7 +530,7 @@ def compute_prop_2(inv, src, *, tag, sfw, qar_sp, psel, fsel,
     sol_ps_sel_prob *= 1.0 / fsel_psrc_prop_norm_threshold
     sol_ps_sel_prob[:] = np.minimum(1.0, sol_ps_sel_prob[:])
     ps_sel = f_rand_01[:, 0] <= sol_ps_sel_prob[:, 0]
-    fsel_ps = q.FieldSelection(fsel.geo())
+    fsel_ps = q.FieldSelection(fsel.geo)
     fsel_ps[ps_sel] = 0
     fsel_ps.update()
     fsel_combine = fsel_ps.copy()

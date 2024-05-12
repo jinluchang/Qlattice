@@ -701,7 +701,7 @@ def load_gauge_original(job_tag, traj, *, gf):
     """
     assert gf is not None
     cache_gauge = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"gauge")
-    geo = q.geo_reform(gf.geo())
+    geo = q.geo_reform(gf.geo)
     gf_dagger = q.GaugeField(geo)
     gf_dagger @= gf
     gf_dagger[:] = gf_dagger[:].transpose((0, 1, 3, 2,)).conj()

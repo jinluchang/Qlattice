@@ -124,18 +124,22 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         assert f1.fsel is self.fsel
         cc.qswap(f1.xx, self.xx)
 
+    @property
     def n_elems(self):
         cdef cc.Long x = self.xx.n_elems
         return x
 
+    @property
     def total_site(self):
         cdef Coordinate total_site = Coordinate()
         cc.assign_direct(total_site.xx, self.xx.get_geo().total_site())
         return total_site
 
+    @property
     def multiplicity(self):
         return self.xx.get_geo().multiplicity
 
+    @property
     def geo(self):
         cdef Geometry geo = Geometry()
         cc.assign_direct(geo.xx, self.xx.get_geo())

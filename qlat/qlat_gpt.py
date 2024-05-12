@@ -111,7 +111,7 @@ def qlat_from_gpt_gauge_field(gpt_gf):
 @q.timer
 def gpt_from_qlat_gauge_field(gf):
     assert isinstance(gf, q.GaugeField)
-    geo = gf.geo()
+    geo = gf.geo
     ctype = q.ElemTypeColorMatrix
     total_site = geo.total_site()
     multiplicity = 1
@@ -143,7 +143,7 @@ def qlat_from_gpt_gauge_transform(gpt_gt):
 @q.timer
 def gpt_from_qlat_gauge_transform(gt):
     assert isinstance(gt, q.GaugeTransform)
-    geo = gt.geo()
+    geo = gt.geo
     ctype = q.ElemTypeColorMatrix
     total_site = geo.total_site()
     multiplicity = 1
@@ -170,7 +170,7 @@ def qlat_from_gpt_prop(gpt_prop):
 @q.timer
 def gpt_from_qlat_prop(prop_wm):
     assert isinstance(prop_wm, q.Prop)
-    geo = prop_wm.geo()
+    geo = prop_wm.geo
     ctype = q.ElemTypeWilsonMatrix
     total_site = geo.total_site()
     multiplicity = 1
@@ -197,7 +197,7 @@ def qlat_from_gpt_ff4d(gpt_ff):
 @q.timer
 def gpt_from_qlat_ff4d(ff):
     assert isinstance(ff, q.FermionField4d)
-    geo = ff.geo()
+    geo = ff.geo
     ctype = q.ElemTypeWilsonVector
     total_site = geo.total_site()
     multiplicity = 1
@@ -231,7 +231,7 @@ def qlat_from_gpt_complex(gpt_fcs):
 @q.timer
 def gpt_from_qlat_complex(fc):
     assert isinstance(fc, q.FieldComplexD)
-    geo = fc.geo()
+    geo = fc.geo
     ctype = q.ElemTypeComplexD
     total_site = geo.total_site()
     multiplicity = 1
@@ -539,7 +539,7 @@ def gauge_fix_coulomb(
     rng = None if rng_seed is None else g.random(rng_seed)
     #
     if gt is None:
-        gtu = q.GaugeTransform(gf.geo())
+        gtu = q.GaugeTransform(gf.geo)
         gtu.set_unit()
         V = gpt_from_qlat(gtu)
     else:
@@ -626,7 +626,7 @@ def gauge_fix_coulomb(
 
 @q.timer
 def check_gauge_fix_coulomb(gf, gt, eps=1e-12):
-    t_size = gf.geo().total_site()[3]
+    t_size = gf.total_site[3]
     V = gpt_from_qlat(gt)
     U = gpt_from_qlat(gf)
     Usep = [g.separate(u, 3) for u in U[0:3]]

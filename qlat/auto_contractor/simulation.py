@@ -933,7 +933,7 @@ def compute_eig(gf, job_tag, inv_type = 0, inv_acc = 0, *, path = None):
 
 @q.timer
 def test_eig(gf, eig, job_tag, inv_type):
-    geo = gf.geo()
+    geo = gf.geo
     src = q.FermionField4d(geo)
     q.displayln_info(f"src norm {src.qnorm()}")
     src.set_rand(q.RngState("test_eig:{id(inv)}"))

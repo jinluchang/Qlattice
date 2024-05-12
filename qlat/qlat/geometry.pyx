@@ -40,53 +40,69 @@ cdef class Geometry:
     def __deepcopy__(self, memo):
         return self.copy()
 
+    @property
     def total_site(self):
         cdef Coordinate x = Coordinate()
         cc.assign_direct(x.xx, self.xx.total_site())
         return x
 
+    @property
     def total_volume(self):
         return self.xx.total_volume()
 
+    @property
     def local_site(self):
         cdef Coordinate x = Coordinate()
         cc.assign_direct(x.xx, self.xx.local_site())
         return x
 
+    @property
     def local_volume(self):
         return self.xx.local_volume()
 
+    @property
     def multiplicity(self):
         return self.xx.multiplicity
 
+    @property
     def eo(self):
         return self.xx.eo
 
+    @property
     def expansion_left(self):
         cdef Coordinate x = Coordinate()
         cc.assign_direct(x.xx, self.xx.expansion_left)
         return x
 
+    @property
     def expansion_right(self):
         cdef Coordinate x = Coordinate()
         cc.assign_direct(x.xx, self.xx.expansion_right)
         return x
 
+    @property
     def id_node(self):
         return self.xx.geon.id_node
 
+    @property
     def num_node(self):
         return self.xx.geon.num_node
 
+    @property
     def coor_node(self):
         cdef Coordinate x = Coordinate()
         cc.assign_direct(x.xx, self.xx.geon.coor_node)
         return x
 
+    @property
     def size_node(self):
         cdef Coordinate x = Coordinate()
         cc.assign_direct(x.xx, self.xx.geon.size_node)
         return x
+
+    @property
+    def is_only_local(self):
+        return self.xx.is_only_local
 
     def __str__(self):
         return self.show()

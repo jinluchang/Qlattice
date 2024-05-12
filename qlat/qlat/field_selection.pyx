@@ -356,12 +356,12 @@ cdef class FieldSelection:
             raise Exception("'sel_small' not PointsSelection or FieldSelection")
 
     def to_psel(self):
-        cdef PointsSelection psel = PointsSelection(self.geo().total_site())
+        cdef PointsSelection psel = PointsSelection(self.total_site)
         cc.assign_direct(psel.xx, cc.psel_from_fsel(self.xx))
         return psel
 
     def to_psel_local(self):
-        cdef PointsSelection psel = PointsSelection(self.geo().total_site())
+        cdef PointsSelection psel = PointsSelection(self.total_site)
         cc.assign_direct(psel.xx, cc.psel_from_fsel_local(self.xx))
         return psel
 
@@ -375,16 +375,19 @@ cdef class FieldSelection:
         cdef cc.Long total_bytes = cc.read_field_selection(self.xx, path)
         return total_bytes
 
+    @property
     def geo(self):
         cdef Geometry geo = Geometry()
         geo.xx = self.xx.f_rank.get_geo()
         return geo
 
+    @property
     def total_site(self):
         cdef Coordinate total_site = Coordinate()
         cc.assign_direct(total_site.xx, self.xx.f_rank.get_geo().total_site())
         return total_site
 
+    @property
     def n_elems(self):
         return self.xx.n_elems
 
@@ -410,7 +413,7 @@ cdef class FieldSelection:
             yield self.coordinate_from_idx(idx)
 
     def __len__(self):
-        return self.n_elems()
+        return self.n_elems
 
     def idx_from_coordinate(self, Coordinate xg not None):
         cdef cc.Coordinate xl_xx = self.xx.f_local_idx.get_geo().coordinate_l_from_g(xg.xx)
@@ -428,7 +431,7 @@ cdef class FieldSelection:
         """
         Only work when single node.
         """
-        geo = self.geo()
+        geo = self.geo
         fsel_arr = self[:].copy()
         return [ fsel_arr, geo, ]
 

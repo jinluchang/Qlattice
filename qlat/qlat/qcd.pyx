@@ -182,7 +182,7 @@ def gf_wilson_lines_no_comm(gf_ext, path_list):
     return wlf
     """
     multiplicity = len(path_list)
-    geo = q.geo_reform(gf_ext.geo(), multiplicity)
+    geo = q.geo_reform(gf_ext.geo, multiplicity)
     wlf = FieldColorMatrix(geo)
     for m, p in enumerate(path_list):
         if isinstance(p, tuple) and len(p) == 2:

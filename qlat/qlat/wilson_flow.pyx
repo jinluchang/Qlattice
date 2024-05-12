@@ -17,7 +17,7 @@ def gf_energy_density(GaugeField gf):
 
 @q.timer
 def gf_energy_density_field(GaugeField gf):
-    cdef Geometry geo = gf.geo()
+    cdef Geometry geo = gf.geo
     cdef FieldRealD fd = FieldRealD(geo, 1)
     cc.gf_energy_density_field(fd.xx, gf.xxx().val())
     return fd

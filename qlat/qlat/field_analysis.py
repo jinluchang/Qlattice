@@ -29,7 +29,7 @@ def smear_field_step_local(field, coef, n_steps=1):
     """
     if n_steps == 0:
         return field.copy()
-    geo = field.geo()
+    geo = field.geo
     assert geo.num_node() == 1
     total_site = geo.total_site()
     xg_shift_list = [
@@ -90,7 +90,7 @@ def mk_smear_mom_kernel(total_site, radius):
     `radius` is the smear radius in lattice unit.
     `isinstance(f, FieldRealD)`
     `isinstance(total_site, tuple)`
-    `f.geo().total_site() == q.Coordinate(total_site)`
+    `f.geo.total_site == q.Coordinate(total_site)`
     #
     f[:] == $G$
     #
@@ -121,7 +121,7 @@ def mk_spatial_smear_mom_kernel(total_site, radius):
     `radius` is the smear radius in lattice unit.
     `isinstance(f, FieldRealD)`
     `isinstance(total_site, tuple)`
-    `f.geo().total_site() == q.Coordinate(total_site)`
+    `f.geo.total_site == q.Coordinate(total_site)`
     #
     f[:] == $G$
     #
@@ -162,7 +162,7 @@ def smear_field(field, radius, *, is_only_spatial=False):
     \ea
     $$
     """
-    total_site = field.geo().total_site()
+    total_site = field.geo.total_site
     if is_only_spatial:
         fk = mk_spatial_smear_mom_kernel(total_site.to_tuple(), radius)
     else:

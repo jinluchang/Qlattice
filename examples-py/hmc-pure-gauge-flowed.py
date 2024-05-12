@@ -10,7 +10,7 @@ import qlat as q
 
 @q.timer_verbose
 def gm_evolve_fg(gm, gf_init, ga, fi, fg_dt, dt):
-    geo = gf_init.geo()
+    geo = gf_init.geo
     gf = q.GaugeField(geo)
     gf @= gf_init
     #
@@ -89,7 +89,7 @@ def run_hmc(gf, ga, traj, rs):
     fi = mk_flow_info(rs.split("mk_flow_info"))
     q.displayln_info(fi.show())
     #
-    geo = gf.geo()
+    geo = gf.geo
     gf0 = q.GaugeField(geo)
     q.gf_flow_inv(gf0, gf, fi)
     #

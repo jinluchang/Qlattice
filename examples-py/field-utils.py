@@ -40,7 +40,7 @@ gf1 = fft_b * gfm
 
 gf1.show_info()
 
-f_factor = q.mk_phase_field(gf.geo(), [1, 0, 0, 0,])
+f_factor = q.mk_phase_field(gf.geo, [1, 0, 0, 0,])
 
 gf *= f_factor
 

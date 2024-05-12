@@ -68,7 +68,7 @@ cdef class FieldBase:
         cdef cc.Long size_per_site = other.multiplicity() * other.sizeof_m()
         cdef cc.Long mult = size_per_site // self.sizeof_m()
         assert mult * self.sizeof_m() == size_per_site
-        self.__init__(other.geo(), mult)
+        self.__init__(other.geo, mult)
         self[:].ravel().view(dtype=np.int8)[:] = other[:].ravel().view(dtype=np.int8)
 
     @q.timer
@@ -82,12 +82,12 @@ cdef class FieldBase:
         if self.ctype in field_ctypes_complex:
             fc = FieldComplexD()
             fc.cast_from(self)
-            fu = FieldRealD(fc.geo())
+            fu = FieldRealD(fc.geo)
             fu.set_rand(rng, 1.0, -1.0)
         elif self.ctype in field_ctypes_double:
             fr = FieldComplexD()
             fr.cast_from(self)
-            fu = FieldRealD(fr.geo())
+            fu = FieldRealD(fr.geo)
             fu.set_rand(rng, 1.0, -1.0)
         else:
             raise Exception("get_data_sig: {self.ctype}")
@@ -364,7 +364,7 @@ cdef class FieldBase:
         """
         Only work when single node (or if all nodes has the same data).
         """
-        geo = self.geo()
+        geo = self.geo
         data_arr = self[:]
         return [ data_arr, geo, ]
 
@@ -380,7 +380,7 @@ cdef class FieldBase:
         self[:] = data_arr
 
     def __len__(self):
-        return self.n_sites()
+        return self.n_sites
 
 ### -------------------------------------------------------------------
 
@@ -642,7 +642,7 @@ cdef class SelectedFieldBase:
         Only work when single node (or if all nodes has the same data).
         """
         fsel = self.fsel
-        multiplicity = self.multiplicity()
+        multiplicity = self.multiplicity
         data_arr = self[:]
         return [ data_arr, multiplicity, fsel, ]
 
@@ -658,7 +658,7 @@ cdef class SelectedFieldBase:
         self[:] = data_arr
 
     def __len__(self):
-        return self.n_elems()
+        return self.n_elems
 
 ### -------------------------------------------------------------------
 

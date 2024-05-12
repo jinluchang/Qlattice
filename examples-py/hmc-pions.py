@@ -20,8 +20,9 @@ class Field_fft:
         self.V = geo.total_volume()
         self.mult = mult
 
+    @property
     def geo(self):
-        return self.field.geo()
+        return self.field.geo
 
     def get_field(self):
         if(not self.updated):
@@ -109,7 +110,7 @@ class Field_fft:
         return self.field.glb_sum()
 
     def remove_low_modes(self):
-        total_site = self.geo().total_site()
+        total_site = self.geo.total_site
         self.get_field_ft()
         for m in range(self.mult):
             for x in [[0,0,0,0],[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1],[total_site[0]-1,0,0,0],[0,total_site[1]-1,0,0],[0,0,total_site[2]-1,0],[0,0,0,total_site[3]-1]]:
@@ -193,7 +194,7 @@ class HMC:
             self.load_field()
 
         # Create an auxiliary field to store the field as it evolves
-        self.f0 = Field_fft(self.field.geo(), self.mult)
+        self.f0 = Field_fft(self.field.geo, self.mult)
 
         # Fields to store everything we need to do linear regression to
         # determine what HMC masses to use for Fourier acceleration
@@ -372,7 +373,7 @@ class HMC:
         # Create a copy of the scalar field
         self.f0.set_field(self.field.get_field())
 
-        momentum = Field_fft(self.field.geo(), self.mult)
+        momentum = Field_fft(self.field.geo, self.mult)
 
         # Create a random momentum field, distributed according to a
         # special distribution that is Gaussian for any given point in
@@ -461,9 +462,9 @@ class HMC:
     def sm_evolve(self, field_init, momentum, fg_dt, dt):
         # Evolve the momentum field according to the given action using the
         # force gradient algorithm
-        field = q.Field(q.ElemTypeRealD,field_init.geo(),self.mult)
+        field = q.Field(q.ElemTypeRealD,field_init.geo,self.mult)
         field @= field_init.get_field()
-        force = Field_fft(field_init.geo(), self.mult)
+        force = Field_fft(field_init.geo, self.mult)
         force.hmc_set_force(self.action, field)
 
         force.multiply(fg_dt)
@@ -664,7 +665,7 @@ class Measurements:
         # Calculate the average value of phi^2
         phi_sq = action.sum_sq(field) # Returns sum of field^2/2
         phi_sq = q.glb_sum(phi_sq) # Sums over all nodes
-        geo = field.geo()
+        geo = field.geo
         return phi_sq/geo.total_volume()
         
     def histogram_bin(self,val,midpoint,n):
@@ -818,7 +819,7 @@ def main():
             raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -m for mass squared, -l for lambda, -a for alpha, -s for the number of steps in a trajectory, -f for the factor by which to scale down the force when setting a lower limit for Fourier acceleration masses, -r to force recalculating the masses, -R to force recalculating the masses and the initial field, -i for the number of trajectories to do at the beginning without a Metropolis step, -I for the number of trajectories to omit from the start of each HMC mass estimation block, -b for the number of trajectories in one HMC mass estimation block, -N for the number of HMC mass estimation blocks (excluding the final block), -B for the number of trajectories in the final mass estimation block, and -S for the number of trajectories between each save. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1 -f 100.0")
     
     hmc = HMC(m_sq,lmbd,alpha,total_site,mult,steps,mass_force_coef,recalculate_masses,fresh_start,[init_length,block_init_length,block_length,num_blocks,final_block_length],version,date)
-    measurements = Measurements(total_site, hmc.field.geo(), f"output_data/measurements_{hmc.fileid}.bin")
+    measurements = Measurements(total_site, hmc.field.geo, f"output_data/measurements_{hmc.fileid}.bin")
     
     # If observables have been saved from a previous calculation (on the
     # same day), then load that file first

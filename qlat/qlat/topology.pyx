@@ -18,7 +18,7 @@ from pprint import pformat
 def gf_plaq_action_density_field(GaugeField gf):
     """
     return paf
-    paf.geo().multiplicity == 1
+    paf.geo.multiplicity == 1
     \sum_P (1 - 1/3 * Re Tr U_P)
     #
     Action = beta * total_volume() * action_density
@@ -33,7 +33,7 @@ def gf_plaq_action_density_field(GaugeField gf):
 def gf_spatial_plaq_action_density_field(GaugeField gf):
     """
     return paf
-    paf.geo().multiplicity == 1
+    paf.geo.multiplicity == 1
     \sum_P(spatial only) (1 - 1/3 * Re Tr U_P)
     """
     paf = FieldRealD()
@@ -47,7 +47,7 @@ def gf_plaq_action_density(GaugeField gf):
     ininstance(pa, float)
     pa = gf_plaq_action_density_field(gf).glb_sum()[:].item() / total_volume
     """
-    cdef Geometry geo = gf.geo()
+    cdef Geometry geo = gf.geo
     cdef cc.Long total_volume = geo.total_volume()
     return gf_plaq_action_density_field(gf).glb_sum()[:].item() / total_volume
 
@@ -58,7 +58,7 @@ def gf_spatial_plaq_action_density(GaugeField gf):
     ininstance(pa, float)
     pa = gf_spatial_plaq_action_density_field(gf).glb_sum()[:].item() / total_volume
     """
-    cdef Geometry geo = gf.geo()
+    cdef Geometry geo = gf.geo
     cdef cc.Long total_volume = geo.total_volume()
     return gf_spatial_plaq_action_density_field(gf).glb_sum()[:].item() / total_volume
 
@@ -66,7 +66,7 @@ def gf_spatial_plaq_action_density(GaugeField gf):
 def gf_topology_field_clf(GaugeField gf):
     """
     return topf
-    topf.geo().multiplicity == 1
+    topf.geo.multiplicity == 1
     Use the basic gf_clover_leaf_field
     NOT using 5 loop improved definition
     """
@@ -88,7 +88,7 @@ def gf_topology_clf(GaugeField gf):
 def gf_topology_field(GaugeField gf):
     """
     return topf
-    topf.geo().multiplicity == 1
+    topf.geo.multiplicity == 1
     Using the 5 loop improved definition
     https://arxiv.org/pdf/hep-lat/9701012v2.pdf
     """
@@ -110,7 +110,7 @@ def gf_topology(GaugeField gf):
 def gf_topology_terms_field(GaugeField gf):
     """
     return topf;
-    topf.geo().multiplicity() == 5
+    topf.geo.multiplicity() == 5
     sum of the 5 terms should equal to gf_topology_field
     """
     topf = FieldRealD()
@@ -150,9 +150,9 @@ def smear_measure_topo(gf, smear_info_list=None, *, is_show_topo_terms=False, de
                 ]
     q.displayln_info(0, f"{fname}: smear_info_list =")
     q.displayln_info(0, pformat(smear_info_list))
-    geo = gf.geo()
-    total_volume = geo.total_volume()
-    total_site = geo.total_site()
+    geo = gf.geo
+    total_volume = geo.total_volume
+    total_site = geo.total_site
     spatial_volume = total_volume / total_site[3]
     flow_time = 0
     topo_list = []

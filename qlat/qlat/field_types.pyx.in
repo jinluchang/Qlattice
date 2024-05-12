@@ -127,16 +127,20 @@ cdef class Field{{name}}(FieldBase):
         cc.assign_direct(x.xx, self.xx.get_geo().total_site())
         return x
 
+    @property
     def n_sites(self):
         cdef cc.Int multiplicity = self.xx.get_geo().multiplicity
         return self.xx.field.size() // multiplicity
 
+    @property
     def multiplicity(self):
         return self.xx.get_geo().multiplicity
 
+    @property
     def sizeof_m(self):
         return ElemType{{name}}.size()
 
+    @property
     def geo(self):
         cdef Geometry geo = Geometry()
         # cc.assign_direct(geo.xx, self.xx.get_geo())
@@ -147,7 +151,7 @@ cdef class Field{{name}}(FieldBase):
         return cc.qnorm(self.xx)
 
     def qnorm_field(self):
-        cdef Geometry geo = self.geo()
+        cdef Geometry geo = self.geo
         cdef FieldRealD f_n = FieldRealD(geo, 1)
         cc.qnorm_field(f_n.xx, self.xx)
         return f_n
@@ -179,21 +183,21 @@ cdef class Field{{name}}(FieldBase):
         return sp
 
     def set_elems_xg(self, xg_arr, val):
-        cdef Geometry geo = self.geo()
+        cdef Geometry geo = self.geo
         cdef PointsSelection psel = PointsSelection(self.total_site, xg_arr)
         cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, self.multiplicity())
         np.asarray(sp).ravel()[:] = np.asarray(val).ravel()
         self @= sp
 
     def get_elem_xg(self, xg_arr, cc.Int m):
-        cdef Geometry geo = self.geo()
+        cdef Geometry geo = self.geo
         cdef PointsSelection psel = PointsSelection(self.total_site, xg_arr)
         cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, 1)
         cc.set_selected_points(sp.xx, self.xx, psel.xx, m)
         return sp
 
     def set_elem_xg(self, xg_arr, cc.Int m, val):
-        cdef Geometry geo = self.geo()
+        cdef Geometry geo = self.geo
         cdef PointsSelection psel = PointsSelection(self.total_site, xg_arr)
         cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, 1)
         np.asarray(sp).ravel()[:] = np.asarray(val).ravel()

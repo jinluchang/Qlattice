@@ -24,7 +24,7 @@ rs = q.RngState("seed")
 
 gf = q.GaugeField(geo)
 
-q.displayln_info("CHECK: ", gf.geo().show())
+q.displayln_info("CHECK: ", gf.geo.show())
 
 q.set_unit(gf)
 

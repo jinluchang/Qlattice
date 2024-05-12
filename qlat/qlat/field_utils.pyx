@@ -31,7 +31,7 @@ from .field_base import (
         )
 
 def field_expanded(f, expansion_left, expansion_right):
-    geo = f.geo()
+    geo = f.geo
     multiplicity = geo.multiplicity()
     geo_e = geo_reform(geo, multiplicity, expansion_left, expansion_right)
     f_e = type(f)(geo = geo_e)
