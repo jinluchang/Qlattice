@@ -685,7 +685,7 @@ void random_link(GaugeFieldT<Td> &gf, const int seed = -1)
   }else{
     const Geometry& geo = gf.geo();
     qlat::ComplexT<Td>* res = (qlat::ComplexT<Td>*) qlat::get_data(gf).data();
-    random_Ty(res, geo.local_volume()*geo.multiplicity*sizeof(ColorMatrixT<Td>)/(sizeof(Td)*2), 1, seed);
+    random_Ty(res, geo.local_volume()*gf.multiplicity*sizeof(ColorMatrixT<Td>)/(sizeof(Td)*2), 1, seed);
 
     //qacc_for(isp, gf.field.size(), { set_unit(gf.get_elem_offset(isp), 1.0);});
     //ColorMatrixT<Td>& unit = gf.get_elem_offset(0);set_unit(unit, 1.0);

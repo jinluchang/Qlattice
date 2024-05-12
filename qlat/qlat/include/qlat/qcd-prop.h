@@ -29,7 +29,7 @@ void set_propagator_from_fermion_fields(
   for (int i = 0; i < 4 * NUM_COLOR; ++i) {
     qassert(geo == ffs[i].geo());
   }
-  prop.init(geo_reform(geo));
+  prop.init(geo_resize(geo));
   qassert(prop.geo() == geo);
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
@@ -84,7 +84,7 @@ inline void set_fermion_field_from_propagator_col(FermionField4dT<T>& ff,
 {
   TIMER("set_fermion_field_from_propagator_col");
   const Geometry& geo = prop.geo();
-  ff.init(geo_reform(geo));
+  ff.init(geo_resize(geo));
   qassert(geo == ff.geo());
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
@@ -124,7 +124,7 @@ void fermion_field_4d_from_5d(FermionField4dT<T>& ff4d,
 {
   TIMER("fermion_field_4d_from_5d");
   const Geometry& geo = ff5d.geo();
-  ff4d.init(geo_reform(geo));
+  ff4d.init(geo_resize(geo));
   set_zero(ff4d);
   const int sizewvh = sizeof(WilsonVectorT<T>) / 2;
 #pragma omp parallel for
@@ -147,12 +147,12 @@ inline Long invert_dwf(FermionField4dT<T>& sol, const FermionField4dT<T>& src,
   TIMER_VERBOSE("invert_dwf(4d,4d,inv)");
   const Geometry& geo = src.geo();
   qassert(check_matching_geo(geo, inv.geo()));
-  sol.init(geo);
+  sol.init(geo, src.multiplicity);
   const int ls = ls_ != 0 ? ls_ : inv.fa.ls;
-  const Geometry geo_ls = geo_reform(inv.geo(), ls, 0);
+  const Geometry geo_ls = geo_resize(inv.geo());
   FermionField5dT<T> sol5d, src5d;
-  sol5d.init(geo_ls);
-  src5d.init(geo_ls);
+  sol5d.init(geo_ls, ls);
+  src5d.init(geo_ls, ls);
   fermion_field_5d_from_4d(src5d, src, 0, ls - 1);
   fermion_field_5d_from_4d(sol5d, sol, ls - 1, 0);
   const Long iter = invert(sol5d, src5d, inv);
@@ -168,7 +168,7 @@ void invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
 // invert(4d, 4d, inv) perform the inversion
 {
   TIMER_VERBOSE("invert(p4d,p4d,inv)");
-  const Geometry geo = geo_reform(src.geo());
+  const Geometry geo = geo_resize(src.geo());
   sol.init(geo);
   FermionField4dT<T> ff_sol, ff_src;
   for (int j = 0; j < 4 * NUM_COLOR; ++j) {
@@ -197,7 +197,7 @@ void set_point_src(Propagator4dT<T>& prop, const Geometry& geo_input,
                    const Coordinate& xg, const ComplexD& value = 1.0)
 {
   TIMER_VERBOSE("set_point_src");
-  const Geometry geo = geo_reform(geo_input);
+  const Geometry geo = geo_resize(geo_input);
   prop.init(geo);
   FermionField4dT<T> src;
   src.init(geo);
@@ -212,7 +212,7 @@ void set_point_src_propagator(Propagator4dT<T>& prop, const Inverter& inv,
                               const Coordinate& xg, const ComplexD& value = 1.0)
 {
   TIMER_VERBOSE("set_point_src_propagator");
-  const Geometry geo = geo_reform(inv.geo());
+  const Geometry geo = geo_resize(inv.geo());
   prop.init(geo);
   FermionField4dT<T> sol, src;
   sol.init(geo);
@@ -252,7 +252,7 @@ inline void set_wall_src(Propagator4d& prop, const Geometry& geo_input,
                          const CoordinateD& lmom = CoordinateD())
 {
   TIMER_VERBOSE("set_wall_src");
-  const Geometry geo = geo_reform(geo_input);
+  const Geometry geo = geo_resize(geo_input);
   prop.init(geo);
   FermionField4d src;
   src.init(geo);
@@ -268,7 +268,7 @@ inline void set_wall_src_propagator(Propagator4d& prop, const Inverter& inv,
                                     const CoordinateD& lmom = CoordinateD())
 {
   TIMER_VERBOSE("set_wall_src_propagator");
-  const Geometry geo = geo_reform(inv.geo());
+  const Geometry geo = geo_resize(inv.geo());
   prop.init(geo);
   FermionField4d sol, src;
   sol.init(geo);
@@ -286,7 +286,7 @@ inline void set_rand_u1_src_psel(Propagator4d& prop, FieldM<ComplexD, 1>& fu1,
                                  const Geometry& geo_, const RngState& rs)
 {
   TIMER_VERBOSE("set_rand_u1_src_psel");
-  const Geometry geo = geo_reform(geo_);
+  const Geometry geo = geo_resize(geo_);
   const Coordinate total_site = geo.total_site();
   prop.init(geo);
   fu1.init(geo);
@@ -387,7 +387,7 @@ inline void set_mom_src(Propagator4d& prop, const Geometry& geo_input,
                         const CoordinateD& lmom)
 {
   TIMER_VERBOSE("set_mom_src");
-  const Geometry& geo = geo_reform(geo_input);
+  const Geometry geo = geo_resize(geo_input);
   prop.init(geo);
   qassert(prop.geo() == geo);
   FermionField4d src;
@@ -517,7 +517,7 @@ inline void convert_mspincolor_from_wm(Propagator4d& prop_msc, const Propagator4
 inline void convert_wm_from_mspincolor(SelectedField<WilsonMatrix>& prop_wm, const SelectedField<WilsonMatrix>& prop_msc)
 {
   TIMER("convert_wm_from_mspincolor(s_prop)");
-  qassert(prop_msc.geo().multiplicity == 1);
+  qassert(prop_msc.multiplicity == 1);
   prop_wm.init(prop_msc.geo(), prop_msc.n_elems, 1);
   qacc_for(idx, prop_msc.n_elems, {
     WilsonMatrix& wm = prop_wm.get_elem(idx);
@@ -529,7 +529,7 @@ inline void convert_wm_from_mspincolor(SelectedField<WilsonMatrix>& prop_wm, con
 inline void convert_mspincolor_from_wm(SelectedField<WilsonMatrix>& prop_msc, const SelectedField<WilsonMatrix>& prop_wm)
 {
   TIMER("convert_mspincolor_from_wm(s_prop)");
-  qassert(prop_wm.geo().multiplicity == 1);
+  qassert(prop_wm.multiplicity == 1);
   prop_msc.init(prop_wm.geo(), prop_wm.n_elems, 1);
   qacc_for(idx, prop_wm.n_elems, {
     WilsonMatrix& msc = prop_msc.get_elem(idx);
@@ -659,7 +659,7 @@ inline void set_tslice_mom_src(Propagator4d& prop, const Geometry& geo_input,
                                const int tslice, const CoordinateD& lmom)
 {
   TIMER_VERBOSE("set_tslice_mom_src");
-  const Geometry geo = geo_reform(geo_input);
+  const Geometry geo = geo_resize(geo_input);
   prop.init(geo);
   FermionField4d src;
   src.init(geo);
@@ -713,7 +713,7 @@ inline void set_volume_src(Propagator4d& prop, const Geometry& geo_input,
                            const CoordinateD& lmom = CoordinateD())
 {
   TIMER_VERBOSE("set_volume_src");
-  const Geometry geo = geo_reform(geo_input);
+  const Geometry geo = geo_resize(geo_input);
   prop.init(geo);
   FermionField4d src;
   src.init(geo);
@@ -728,7 +728,7 @@ inline void set_volume_src_propagator(Propagator4d& prop, const Inverter& inv,
                                       const CoordinateD& lmom = CoordinateD())
 {
   TIMER_VERBOSE("set_volume_src_propagator");
-  const Geometry geo = geo_reform(inv.geo());
+  const Geometry geo = geo_resize(inv.geo());
   prop.init(geo);
   FermionField4d sol, src;
   sol.init(geo);

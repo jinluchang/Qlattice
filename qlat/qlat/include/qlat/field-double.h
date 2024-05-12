@@ -36,7 +36,7 @@ void set_complex_from_double(Field<M>& cf, const Field<double>& sf)
     Vector<M> v = cf.get_elems(xl);
     Vector<ComplexD> cf_v((ComplexD*)v.data(), v.data_size() / sizeof(ComplexD));
     int N = cf_v.size();
-    qassert(N == geo.multiplicity);
+    qassert(N == sf.multiplicity);
     for (int m = 0; m < N; ++m) {
       cf_v[m] = ComplexD(sf.get_elem(xl, m));
     }
@@ -54,7 +54,7 @@ void set_double_from_complex(Field<M>& sf, const Field<ComplexD>& cf)
     Vector<M> v = sf.get_elems(xl);
     Vector<double> sf_v((double*)v.data(), v.data_size() / sizeof(double));
     int N = sf_v.size();
-    qassert(N == geo.multiplicity);
+    qassert(N == cf.multiplicity);
     for (int m = 0; m < N; ++m) {
       sf_v[m] = cf.get_elem(xl, m).real();
     }
@@ -72,7 +72,7 @@ void set_abs_from_complex(Field<M>& sf, const Field<ComplexD>& cf)
     Vector<M> v = sf.get_elems(xl);
     Vector<double> sf_v((double*)v.data(), v.data_size() / sizeof(double));
     int N = sf_v.size();
-    qassert(N == geo.multiplicity);
+    qassert(N == cf.multiplicity);
     for (int m = 0; m < N; ++m) {
       double r = cf.get_elem(xl, m).real();
       double i = cf.get_elem(xl, m).imag();
@@ -93,7 +93,7 @@ void set_ratio_double(Field<M>& sf, const Field<double>& sf1,
     Vector<M> v = sf.get_elems(xl);
     Vector<double> sf_v((double*)v.data(), v.data_size() / sizeof(double));
     int N = sf_v.size();
-    qassert(N == geo.multiplicity);
+    qassert(N == sf.multiplicity);
     for (int m = 0; m < N; ++m) {
       sf_v[m] = sf1.get_elem(xl, m) / sf2.get_elem(xl, m);
     }
@@ -114,7 +114,7 @@ void less_than_double(Field<M>& sf1, const Field<double>& sf2,
     const Vector<double> sf1_v((double*)v.data(),
                                v.data_size() / sizeof(double));
     int N = sf1_v.size();
-    qassert(N == geo.multiplicity);
+    qassert(N == sf1.multiplicity);
     for (int m = 0; m < N; ++m) {
       mask_v[m] = sf1_v[m] < sf2.get_elem(xl, m);
     }
@@ -131,7 +131,7 @@ void invert_double(Field<M>& sf)
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> v = sf.get_elems(xl);
     Vector<double> sf_v((double*)v.data(), v.data_size() / sizeof(double));
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < sf.multiplicity; ++m) {
       sf_v[m] = 1 / sf_v[m];
     }
   });
@@ -148,8 +148,8 @@ void multiply_double(Field<M>& sf, const Field<double>& factor)
     Vector<M> v = sf.get_elems(xl);
     Vector<double> sf_v((double*)v.data(), v.data_size() / sizeof(double));
     int N = sf_v.size();
-    qassert(N == geo.multiplicity);
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    qassert(N == factor.multiplicity);
+    for (int m = 0; m < factor.multiplicity; ++m) {
       sf_v[m] *= factor.get_elem(xl, m);
     }
   });

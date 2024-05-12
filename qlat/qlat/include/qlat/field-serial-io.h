@@ -99,18 +99,19 @@ Long serial_read_field(Field<M>& f, const std::string& path,
     return 0;
   }
   const Geometry& geo = f.geo();
+  const Int multiplicity = f.multiplicity;
   std::vector<Field<M> > fs;
   const std::vector<Geometry> new_geos =
-      make_dist_io_geos(geo.total_site(), geo.multiplicity, new_size_node);
+      make_dist_io_geos(geo.total_site(), new_size_node);
   fs.resize(new_geos.size());
   for (size_t i = 0; i < fs.size(); ++i) {
-    fs[i].init(new_geos[i]);
+    fs[i].init(new_geos[i], multiplicity);
   }
   const int mpi_tag = 7;
   if (get_id_node() == 0) {
     qassert(fs.size() > 0);
     Field<M> f;
-    f.init(fs[0].geo());
+    f.init(fs[0].geo(), multiplicity);
     Vector<M> v = get_data(f);
     const int num_node = get_num_node();
     const int new_num_node = product(new_size_node);
@@ -157,12 +158,13 @@ Long serial_read_field_par(Field<M>& f, const std::string& path,
     return 0;
   }
   const Geometry& geo = f.geo();
+  const Int multiplicity = f.multiplicity;
   std::vector<Field<M> > fs;
   const std::vector<Geometry> new_geos =
-      make_dist_io_geos(geo.total_site(), geo.multiplicity, new_size_node);
+      make_dist_io_geos(geo.total_site(), new_size_node);
   fs.resize(new_geos.size());
   for (size_t i = 0; i < fs.size(); ++i) {
-    fs[i].init(new_geos[i]);
+    fs[i].init(new_geos[i], multiplicity);
   }
   if (fs.size() > 0) {
     QFile qfile = qfopen(path, "r");

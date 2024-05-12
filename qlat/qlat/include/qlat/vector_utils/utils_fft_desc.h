@@ -96,7 +96,7 @@ struct fft_desc_basic
 
   inline void get_geo(Geometry& geo ){
     Coordinate total_site = Coordinate(nx, ny, nz, nt);
-    geo.init(total_site, 1);
+    geo.init(total_site);
   }
 
   inline size_t get_prop_size(){
@@ -465,7 +465,7 @@ inline Cache<FFTdescKey, fft_desc_basic >& get_fft_desc_basic_cache()
 inline fft_desc_basic& get_fft_desc_basic_plan(const FFTdescKey& fkey)
 {
   if (!get_fft_desc_basic_cache().has(fkey)) {
-    Geometry geo;geo.init(fkey.total_site, 1);
+    Geometry geo;geo.init(fkey.total_site);
     get_fft_desc_basic_cache()[fkey] = fft_desc_basic(geo, fkey.order_ch_or);
   }
   fft_desc_basic& buf = get_fft_desc_basic_cache()[fkey];

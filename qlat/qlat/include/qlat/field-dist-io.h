@@ -144,8 +144,8 @@ crc32_t field_dist_crc32(const Field<M>& f)
   return dist_crc32(dds, get_num_node());
 }
 
-inline void dist_write_geo_info(const Geometry& geo, const int sizeof_M,
-                                const std::string& path,
+inline void dist_write_geo_info(const Geometry& geo, const Int multiplicity,
+                                const Int sizeof_M, const std::string& path,
                                 const mode_t mode = default_dir_mode())
 {
   TIMER("dist_write_geo_info");
@@ -155,9 +155,9 @@ inline void dist_write_geo_info(const Geometry& geo, const int sizeof_M,
     const std::string fn = path + "/geo-info.txt";
     QFile fp = qfopen(fn, "w");
     qwrite_data(ssprintf("node_file_size = %ld\n",
-                         sizeof_M * geo.multiplicity * geo.local_volume()),
+                         sizeof_M * multiplicity * geo.local_volume()),
                 fp);
-    qwrite_data(ssprintf("geo.multiplicity = %d\n", geo.multiplicity), fp);
+    qwrite_data(ssprintf("multiplicity = %d\n", multiplicity), fp);
     qwrite_data(ssprintf("sizeof(M) = %d\n", sizeof_M), fp);
     qwrite_data(ssprintf("geo.geon.num_node = %d\n", geo.geon.num_node), fp);
     qwrite_data(ssprintf("geo.geon.size_node[0] = %d\n", geo.geon.size_node[0]),
@@ -189,18 +189,18 @@ inline void dist_write_geo_info(const Geometry& geo, const int sizeof_M,
   }
 }
 
-inline void dist_read_geo_info(Geometry& geo, int& sizeof_M,
+inline void dist_read_geo_info(Geometry& geo, Int& multiplicity, Int& sizeof_M,
                                Coordinate& new_size_node,
                                const std::string& path)
 {
   TIMER("dist_read_geo_info");
-  int multiplicity = 0;
   Coordinate size_node;
   Coordinate node_site;
   if (get_id_node() == 0) {
     const std::string fn = path + "/geo-info.txt";
     const std::vector<std::string> lines = qgetlines(fn);
-    reads(multiplicity, info_get_prop(lines, "geo.multiplicity = "));
+    reads(multiplicity,
+          info_get_prop(lines, "multiplicity = ", "geo.multiplicity = "));
     reads(sizeof_M, info_get_prop(lines, "sizeof(M) = "));
     for (int i = 0; i < 4; ++i) {
       reads(size_node[i],
@@ -229,7 +229,7 @@ inline void dist_read_geo_info(Geometry& geo, int& sizeof_M,
   bcast(get_data(size_node));
   bcast(get_data(node_site));
   geo.init();
-  geo.init(size_node * node_site, multiplicity);
+  geo.init(size_node * node_site);
   new_size_node = size_node;
 }
 
@@ -314,13 +314,12 @@ Long dist_write_fields(const std::vector<ConstHandle<Field<M>>>& fs,
     if (id_node == 0) {
       dist_mkdir(path + ".partial", id_node);
       if (get_force_field_write_sizeof_M() == 0) {
-        dist_write_geo_info(f.geo(), sizeof(M), path + ".partial");
+        dist_write_geo_info(f.geo(), f.multiplicity, sizeof(M), path + ".partial");
       } else {
         const int sizeof_M = get_force_field_write_sizeof_M();
-        qassert((f.geo().multiplicity * sizeof(M)) % sizeof_M == 0);
-        const int multiplicity = (f.geo().multiplicity * sizeof(M)) / sizeof_M;
-        dist_write_geo_info(geo_remult(f.geo(), multiplicity), sizeof_M,
-                            path + ".partial");
+        qassert((f.multiplicity * sizeof(M)) % sizeof_M == 0);
+        const int multiplicity = (f.multiplicity * sizeof(M)) / sizeof_M;
+        dist_write_geo_info(f.geo(), multiplicity, sizeof_M, path + ".partial");
         get_force_field_write_sizeof_M() = 0;
       }
       break;
@@ -455,7 +454,7 @@ Long dist_read_dist_data(const std::vector<DistData<M>>& dds,
 }
 
 template <class M>
-Long dist_read_fields(std::vector<Field<M>>& fs, Geometry& geo,
+Long dist_read_fields(std::vector<Field<M>>& fs, Geometry& geo, Int& multiplicity,
                       Coordinate& new_size_node, const std::string& path)
 // will clear fs before read
 {
@@ -464,27 +463,27 @@ Long dist_read_fields(std::vector<Field<M>>& fs, Geometry& geo,
   }
   clear(fs);
   int sizeof_M;
-  dist_read_geo_info(geo, sizeof_M, new_size_node, path);
+  dist_read_geo_info(geo, multiplicity, sizeof_M, new_size_node, path);
   get_incorrect_field_read_sizeof_M() = 0;
   if ((int)sizeof(M) != sizeof_M) {
     displayln_info(
         "dist_read_fields: WARNING: sizeof(M) do not match with data on disk.");
     get_incorrect_field_read_sizeof_M() = sizeof_M;
-    if (geo.multiplicity * sizeof_M % sizeof(M) != 0) {
+    if (multiplicity * sizeof_M % sizeof(M) != 0) {
       displayln_info(
-          ssprintf("dist_read_fields: ERROR: geo.multiplicity = %d ; sizeof_M "
+          ssprintf("dist_read_fields: ERROR: multiplicity = %d ; sizeof_M "
                    "= %d ; sizeof(M) = %d",
-                   geo.multiplicity, sizeof_M, sizeof(M)));
+                   multiplicity, sizeof_M, sizeof(M)));
       qassert(false);
     }
-    geo.remult(geo.multiplicity * sizeof_M / sizeof(M));
+    multiplicity = multiplicity * sizeof_M / sizeof(M);
   }
   std::vector<Geometry> new_geos =
-      make_dist_io_geos(geo.total_site(), geo.multiplicity, new_size_node);
+      make_dist_io_geos(geo.total_site(), new_size_node);
   fs.resize(new_geos.size());
   std::vector<DistData<M>> dds(fs.size());
   for (size_t i = 0; i < fs.size(); ++i) {
-    fs[i].init(new_geos[i]);
+    fs[i].init(new_geos[i], multiplicity);
     dds[i].id_node = fs[i].geo().geon.id_node;
     dds[i].data = get_data(fs[i]);
   }

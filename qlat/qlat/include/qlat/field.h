@@ -41,13 +41,14 @@ const Field<M>& operator+=(Field<M>& f, const Field<M>& f1)
     f = f1;
     return f;
   }
-  qassert(is_matching_geo_mult(f.geo(), f1.geo()));
-  const Geometry& geo = f.geo();
-  qacc_for(index, geo.local_volume(), {
+  qassert(is_matching_geo(f.geo(), f1.geo()));
+  qassert(f.multiplicity == f1.multiplicity);
+  qacc_for(index, f.geo().local_volume(), {
+    const Geometry& geo = f.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<M> v1 = f1.get_elems_const(xl);
     Vector<M> v = f.get_elems(xl);
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < f.multiplicity; ++m) {
       v[m] += v1[m];
     }
   });
@@ -59,18 +60,19 @@ const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
 {
   TIMER("field_operator-=");
   if (not is_initialized(f)) {
-    f.init(f1.geo());
+    f.init(f1.geo(), f1.multiplicity);
     set_zero(f);
     f -= f1;
     return f;
   }
-  qassert(is_matching_geo_mult(f.geo(), f1.geo()));
-  const Geometry& geo = f.geo();
-  qacc_for(index, geo.local_volume(), {
+  qassert(is_matching_geo(f.geo(), f1.geo()));
+  qassert(f.multiplicity == f1.multiplicity);
+  qacc_for(index, f.geo().local_volume(), {
+    const Geometry& geo = f.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<M> v1 = f1.get_elems_const(xl);
     Vector<M> v = f.get_elems(xl);
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < f.multiplicity; ++m) {
       v[m] -= v1[m];
     }
   });
@@ -82,21 +84,21 @@ const Field<M>& operator*=(Field<M>& f, const Field<double>& f_factor)
 {
   TIMER("field_operator*=(F,FD)");
   qassert(is_matching_geo(f.geo(), f_factor.geo()));
-  const Geometry& geo = f.geo();
-  const int multiplicity_f = f_factor.geo().multiplicity;
-  qassert(multiplicity_f == 1 or multiplicity_f == geo.multiplicity);
-  qacc_for(index, geo.local_volume(), {
+  const int multiplicity_f = f_factor.multiplicity;
+  qassert(multiplicity_f == 1 or multiplicity_f == f.multiplicity);
+  qacc_for(index, f.geo().local_volume(), {
+    const Geometry& geo = f.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> v = f.get_elems(xl);
     if (multiplicity_f == 1) {
       const double fac = f_factor.get_elem(xl);
-      for (int m = 0; m < geo.multiplicity; ++m) {
+      for (int m = 0; m < f.multiplicity; ++m) {
         v[m] *= fac;
       }
     } else {
-      qassert(multiplicity_f == geo.multiplicity);
+      qassert(multiplicity_f == f.multiplicity);
       Vector<double> fac = f_factor.get_elems_const(xl);
-      for (int m = 0; m < geo.multiplicity; ++m) {
+      for (int m = 0; m < f.multiplicity; ++m) {
         v[m] *= fac[m];
       }
     }
@@ -109,21 +111,21 @@ const Field<M>& operator*=(Field<M>& f, const Field<ComplexD>& f_factor)
 {
   TIMER("field_operator*=(F,FC)");
   qassert(is_matching_geo(f.geo(), f_factor.geo()));
-  const Geometry& geo = f.geo();
-  const int multiplicity_f = f_factor.geo().multiplicity;
-  qassert(multiplicity_f == 1 or multiplicity_f == geo.multiplicity);
-  qacc_for(index, geo.local_volume(), {
+  const int multiplicity_f = f_factor.multiplicity;
+  qassert(multiplicity_f == 1 or multiplicity_f == f.multiplicity);
+  qacc_for(index, f.geo().local_volume(), {
+    const Geometry& geo = f.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> v = f.get_elems(xl);
     if (multiplicity_f == 1) {
       const ComplexD fac = f_factor.get_elem(xl);
-      for (int m = 0; m < geo.multiplicity; ++m) {
+      for (int m = 0; m < f.multiplicity; ++m) {
         v[m] *= fac;
       }
     } else {
-      qassert(multiplicity_f == geo.multiplicity);
+      qassert(multiplicity_f == f.multiplicity);
       const Vector<ComplexD> fac = f_factor.get_elems_const(xl);
-      for (int m = 0; m < geo.multiplicity; ++m) {
+      for (int m = 0; m < f.multiplicity; ++m) {
         v[m] *= fac[m];
       }
     }
@@ -135,11 +137,11 @@ template <class M>
 const Field<M>& operator*=(Field<M>& f, const double factor)
 {
   TIMER("field_operator*=(F,D)");
-  const Geometry& geo = f.geo();
-  qacc_for(index, geo.local_volume(), {
+  qacc_for(index, f.geo().local_volume(), {
+    const Geometry& geo = f.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> v = f.get_elems(xl);
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < f.multiplicity; ++m) {
       v[m] *= factor;
     }
   });
@@ -150,11 +152,11 @@ template <class M>
 const Field<M>& operator*=(Field<M>& f, const ComplexD& factor)
 {
   TIMER("field_operator*=(F,C)");
-  const Geometry& geo = f.geo();
-  qacc_for(index, geo.local_volume(), {
+  qacc_for(index, f.geo().local_volume(), {
+    const Geometry& geo = f.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> v = f.get_elems(xl);
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < f.multiplicity; ++m) {
       v[m] *= factor;
     }
   });
@@ -174,7 +176,7 @@ double qnorm(const Field<M>& f)
     for (Long index = 0; index < geo.local_volume(); ++index) {
       const Coordinate x = geo.coordinate_from_index(index);
       const Vector<M> fx = f.get_elems_const(x);
-      for (int m = 0; m < geo.multiplicity; ++m) {
+      for (int m = 0; m < f.multiplicity; ++m) {
         psum += qnorm(fx[m]);
       }
     }
@@ -193,9 +195,9 @@ template <class M>
 void qnorm_field(Field<RealD>& f, const Field<M>& f1)
 {
   TIMER("qnorm_field(f,f1)");
-  const Geometry geo = geo_reform(f1.geo());
-  f.init(geo);
-  qacc_for(index, geo.local_volume(), {
+  f.init(f1.geo(), 1);
+  qacc_for(index, f1.geo().local_volume(), {
+    const Geometry& geo = f1.geo();
     const Vector<M> f1v = f1.get_elems_const(index);
     f.get_elem(index) = qnorm(f1v);
   });
@@ -217,7 +219,7 @@ qacc Long get_data_size(const Field<M>& f)
 // NOT including the expended parts, only local volume data size
 // only size on one node
 {
-  return f.geo().local_volume() * f.geo().multiplicity * sizeof(M);
+  return f.geo().local_volume() * f.multiplicity * sizeof(M);
 }
 
 void set_sqrt_field(Field<RealD>& f, const Field<RealD>& f1);
@@ -227,12 +229,11 @@ void set_sqrt_field(Field<RealD>& f, const Field<RealD>& f1);
 template <class M, class N>
 void assign(Field<N>& f, const Field<M>& f1)
 {
-  const Geometry& geo1 = f1.geo();
-  qassert(geo1.is_only_local);
-  const Geometry geo =
-      geo_remult(geo1, geo1.multiplicity * sizeof(M) / sizeof(N));
+  const Geometry& geo = f1.geo();
+  qassert(geo.is_only_local);
   f.init();
-  f.init(geo);
+  f.init(geo, f1.multiplicity * sizeof(M) / sizeof(N));
+  qassert(f.multiplicity * sizeof(N) == f1.multiplicity * sizeof(M));
   qacc_for(index, geo.local_volume(), {
     const Vector<M> v1 = f1.get_elems_const(index);
     Vector<N> v = f.get_elems(index);
@@ -246,7 +247,7 @@ std::vector<M> field_sum(const Field<M>& f)
 {
   TIMER("field_sum");
   const Geometry& geo = f.geo();
-  const int multiplicity = geo.multiplicity;
+  const int multiplicity = f.multiplicity;
   std::vector<M> vec(multiplicity);
   set_zero(vec);
 #pragma omp parallel
@@ -282,7 +283,7 @@ std::vector<M> field_sum_tslice(const Field<M>& f, const int t_dir = 3)
   const Int t_size = geo.total_site()[t_dir];
   const Int t_size_local = geo.node_site[t_dir];
   const Int t_shift = t_size_local * geo.geon.coor_node[t_dir];
-  const Int multiplicity = geo.multiplicity;
+  const Int multiplicity = f.multiplicity;
   std::vector<M> vec(t_size * multiplicity);
   set_zero(vec);
 #pragma omp parallel
@@ -337,7 +338,7 @@ std::vector<M> field_project_mom(const Field<M>& f, const CoordinateD& mom)
 {
   TIMER("field_project_mom");
   const Geometry& geo = f.geo();
-  std::vector<M> ret(geo.multiplicity);
+  std::vector<M> ret(f.multiplicity);
   set_zero(ret);
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -348,7 +349,7 @@ std::vector<M> field_project_mom(const Field<M>& f, const CoordinateD& mom)
     }
     const ComplexD factor = qpolar(1.0, -phase);
     const Vector<M> v = f.get_elems_const(xl);
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < f.multiplicity; ++m) {
       M x = v[m];
       x *= factor;
       ret[m] += x;
@@ -365,7 +366,7 @@ std::vector<M> field_get_elems(const Field<M>& f, const Coordinate& xg)
   const Geometry& geo = f.geo();
   const Coordinate xg_r = mod(xg, geo.total_site());
   const Coordinate xl = geo.coordinate_l_from_g(xg_r);
-  std::vector<M> ret(geo.multiplicity);
+  std::vector<M> ret(f.multiplicity);
   if (geo.is_local(xl)) {
     assign(ret, f.get_elems_const(xl));
   } else {
@@ -396,8 +397,7 @@ template <class M>
 M field_get_elem(const Field<M>& f, const Coordinate& xg)
 // xg is same on all the nodes
 {
-  const Geometry& geo = f.geo();
-  qassert(geo.multiplicity == 1);
+  qassert(f.multiplicity == 1);
   return field_get_elem(f, xg, 0);
 }
 
@@ -447,14 +447,13 @@ void split_fields(std::vector<Handle<Field<M> > >& vec, const Field<M>& f)
   const Long nf = vec.size();
   const Geometry& geo = f.geo();
   qassert(geo.is_only_local);
-  const int multiplicity = geo.multiplicity;
+  const int multiplicity = f.multiplicity;
   const int multiplicity_v = multiplicity / nf;
   qassert(multiplicity_v * nf == multiplicity);
-  const Geometry geo_v = geo_reform(geo, multiplicity_v);
   for (Long i = 0; i < nf; ++i) {
     Field<M>& f1 = vec[i]();
     f1.init();
-    f1.init(geo_v);
+    f1.init(geo, multiplicity_v);
     const int m_offset = i * multiplicity_v;
     qacc_for(index, geo.local_volume(), {
       const Vector<M> fv = f.get_elems_const(index);
@@ -475,15 +474,15 @@ void merge_fields(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& vec)
   qassert(not vec[0].null());
   qassert(is_initialized(vec[0]()));
   const Long nf = vec.size();
-  const Geometry& geo_v = vec[0]().geo();
-  qassert(geo_v.is_only_local);
-  const int multiplicity_v = geo_v.multiplicity;
+  const Geometry& geo = vec[0]().geo();
+  qassert(geo.is_only_local);
+  const int multiplicity_v = vec[0]().multiplicity;
   const int multiplicity = nf * multiplicity_v;
-  const Geometry geo = geo_reform(geo_v, multiplicity);
   for (Long i = 1; i < nf; ++i) {
-    qassert(geo_v == vec[i]().geo());
+    qassert(geo == vec[i]().geo());
+    qassert(multiplicity_v == vec[i]().multiplicity);
   }
-  f.init(geo);
+  f.init(geo, multiplicity);
   for (Long i = 0; i < nf; ++i) {
     const Field<M>& f1 = vec[i]();
     const int m_offset = i * multiplicity_v;
@@ -507,8 +506,8 @@ void merge_fields_ms(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& ve
   qassert(is_initialized(vec[0]()));
   const Long multiplicity = vec.size();
   qassert(multiplicity == (Long)m_vec.size());
-  const Geometry geo = geo_reform(vec[0]().geo(), multiplicity);
-  f.init(geo);
+  const Geometry geo = vec[0]().geo();
+  f.init(geo, multiplicity);
   for (Long m = 0; m < multiplicity; ++m) {
     const Field<M>& f1 = vec[m]();
     const Geometry& geo_v = f1.geo();
@@ -533,14 +532,15 @@ void field_shift_dir(Field<M>& f, const Field<M>& f1, const int dir,
   TIMER("field_shift_dir");
   qassert(0 <= dir and dir < 4);
   const Geometry geo = geo_resize(f1.geo());
+  const Int multiplicity = f1.multiplicity;
   const Coordinate total_site = geo.total_site();
-  f.init(geo);
-  qassert(is_matching_geo_mult(f.geo(), f1.geo()));
+  f.init(geo, multiplicity);
+  qassert(is_matching_geo(f.geo(), f1.geo()));
   Coordinate nvec;
   nvec[dir] = 1;
   Field<M> tmp, tmp1;
-  tmp.init(geo);
-  tmp1.init(geo);
+  tmp.init(geo, multiplicity);
+  tmp1.init(geo, multiplicity);
   tmp1 = f1;
   for (int i = 0; i < geo.geon.size_node[dir]; ++i) {
 #pragma omp parallel for
@@ -585,15 +585,15 @@ void field_shift_local(Field<M>& f, const Field<M>& f1, const Coordinate& shift)
   }
   const Geometry geo = geo_resize(f1.geo());
   Field<M> f0;
-  f0.init(geo);
+  f0.init(geo, f1.multiplicity);
   f0 = f1;
-  f.init(geo);
+  f.init(geo, f1.multiplicity);
   qthread_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xl_s = mod(xl + shift, geo.node_site);
     Vector<M> fv = f.get_elems(xl_s);
     const Vector<M> f0v = f0.get_elems_const(xl);
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < f.multiplicity; ++m) {
       fv[m] = f0v[m];
     }
   });
@@ -660,12 +660,12 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
   for (int i = 0; i < num_node; ++i) {
     const Long size_s = to_send_size[i];
     if (size_s > 0) {
-      to_send[i].resize(size_s * geo.multiplicity);
+      to_send[i].resize(size_s * f1.multiplicity);
       n_send += 1;
     }
     const Long size_r = to_recv_size[i];
     if (size_r > 0) {
-      to_recv[i].resize(size_r * geo.multiplicity);
+      to_recv[i].resize(size_r * f1.multiplicity);
       n_recv += 1;
     }
   }
@@ -674,16 +674,16 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
     const Vector<M> fv = f1.get_elems_const(index);
     const Vector<Long> fsv = f_send_idx.get_elems_const(index);
     const int id_node = fsv[0];
-    const Long offset = fsv[1] * geo.multiplicity;
+    const Long offset = fsv[1] * f1.multiplicity;
     vector<M>& to_send_v = to_send[id_node];
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < f1.multiplicity; ++m) {
       to_send_v[offset + m] = fv[m];
     }
   }
   {
     TIMER_FLOPS("field_shift_direct-comm");
     timer.flops +=
-        geo.local_volume() * (Long)geo.multiplicity * (Long)sizeof(M);
+        geo.local_volume() * (Long)f1.multiplicity * (Long)sizeof(M);
     const Long max_elem = 1 + get_max_field_shift_direct_msg_size() / sizeof(M);
     std::vector<MPI_Request> reqs(n_recv + n_send);
     Vector<MPI_Request> recv_reqs(reqs.data(), n_recv);
@@ -734,7 +734,7 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
     }
     sync_node();
   }
-  f.init(geo);
+  f.init(geo, f1.multiplicity);
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -743,9 +743,9 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
     Vector<M> fv = f.get_elems(index_s);
     const Vector<Long> frv = f_recv_idx.get_elems_const(index);
     const int id_node = frv[0];
-    const Long offset = frv[1] * geo.multiplicity;
+    const Long offset = frv[1] * f1.multiplicity;
     vector<M>& to_recv_v = to_recv[id_node];
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < f1.multiplicity; ++m) {
       fv[m] = to_recv_v[offset + m];
     }
   }

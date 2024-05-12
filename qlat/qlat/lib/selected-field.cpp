@@ -13,9 +13,9 @@ void mk_field_selection(FieldRank& f_rank, const Geometry& geo_,
 // val = -1 deselection everything
 {
   TIMER_VERBOSE("mk_field_selection(f_rank,geo,val)");
-  const Geometry geo = geo_reform(geo_);
+  const Geometry geo = geo_resize(geo_);
   f_rank.init();
-  f_rank.init(geo);
+  f_rank.init(geo, 1);
   qassert(f_rank.geo().is_only_local);
   qacc_for(index, geo.local_volume(), {
     int64_t& rank = f_rank.get_elem(index);
@@ -32,7 +32,7 @@ void mk_field_selection(FieldRank& f_rank, const Coordinate& total_site,
 {
   TIMER_VERBOSE("mk_field_selection(f_rank,total_site,val)");
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   mk_field_selection(f_rank, geo, val);
 }
 
@@ -77,9 +77,9 @@ void mk_grid_field_selection(FieldRank& f_rank, const Coordinate& total_site,
       Coordinate(rand_gen(rs_shift), rand_gen(rs_shift), rand_gen(rs_shift), 0),
       total_site);
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   f_rank.init();
-  f_rank.init(geo);
+  f_rank.init(geo, 1);
   qassert(f_rank.geo().is_only_local);
   qthread_for(index, geo.local_volume(), { f_rank.get_elem(index) = -1; });
   std::vector<Field<int64_t>> fs;
@@ -90,7 +90,6 @@ void mk_grid_field_selection(FieldRank& f_rank, const Coordinate& total_site,
     // require each tslice is on one node.
     Field<int64_t>& nf = fs[0];
     const Geometry& ngeo = nf.geo();
-    qassert(ngeo.multiplicity == 1);
     qassert(new_size_node == ngeo.geon.size_node);
     const int t_start = ngeo.node_site[3] * ngeo.geon.coor_node[3];
     const int t_end = t_start + ngeo.node_site[3];
@@ -564,8 +563,9 @@ Long idx_from_xg(const Coordinate& xg, const FieldSelection& fsel)
   return idx;
 }
 
-std::string make_selected_field_header(const Geometry& geo, const int sizeof_M,
-                                       const crc32_t crc32)
+std::string make_selected_field_header(const Geometry& geo,
+                                       const Int multiplicity,
+                                       const Int sizeof_M, const crc32_t crc32)
 {
   const Coordinate total_site = geo.total_site();
   std::ostringstream out;
@@ -576,7 +576,7 @@ std::string make_selected_field_header(const Geometry& geo, const int sizeof_M,
   out << "total_site[1] = " << total_site[1] << std::endl;
   out << "total_site[2] = " << total_site[2] << std::endl;
   out << "total_site[3] = " << total_site[3] << std::endl;
-  out << "multiplicity = " << geo.multiplicity << std::endl;
+  out << "multiplicity = " << multiplicity << std::endl;
   out << "sizeof(M) = " << sizeof_M << std::endl;
   out << ssprintf("selected_field_crc32 = %08X", crc32) << std::endl;
   out << "END_HEADER" << std::endl;
@@ -647,7 +647,7 @@ void set_sqrt_field(SelectedField<RealD>& f, const SelectedField<RealD>& f1)
 {
   TIMER("set_sqrt_field(f,f1)");
   const Geometry& geo = f1.geo();
-  const Int multiplicity = geo.multiplicity;
+  const Int multiplicity = f1.multiplicity;
   f.init(geo, f1.n_elems, multiplicity);
   qacc_for(idx, f.n_elems, {
     const Vector<RealD> f1v = f1.get_elems_const(idx);

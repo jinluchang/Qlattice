@@ -6,8 +6,8 @@
 namespace qlat
 {  //
 
-std::string make_selected_field_header(const Geometry& geo, const int sizeof_M,
-                                       const crc32_t crc32);
+std::string make_selected_field_header(const Geometry& geo, Int multiplicity,
+                                       const Int sizeof_M, const crc32_t crc32);
 
 Long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
                             int& sizeof_M, crc32_t& crc,
@@ -24,7 +24,7 @@ crc32_t field_crc32(const SelectedField<M>& sf, const FieldSelection& fsel,
   TIMER_VERBOSE_FLOPS("field_crc32(sf)");
   const Geometry& geo = sf.geo();
   qassert(geo.is_only_local);
-  qassert(fsel.f_rank.geo() == geo_remult(geo));
+  qassert(fsel.f_rank.geo() == geo);
   // const Coordinate total_site = geo.total_site();
   const Coordinate new_size_node = new_size_node_ != Coordinate()
                                        ? new_size_node_
@@ -59,8 +59,9 @@ Long write_selected_field(const SelectedField<M>& sf, const std::string& path,
   TIMER_VERBOSE_FLOPS("write_selected_field");
   displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));
   const Geometry& geo = sf.geo();
+  const Int multiplicity = sf.multiplicity;
   qassert(geo.is_only_local);
-  qassert(fsel.f_rank.geo() == geo_remult(geo));
+  qassert(fsel.f_rank.geo() == geo);
   const Coordinate new_size_node =
       new_size_node_ != Coordinate()
           ? new_size_node_
@@ -78,14 +79,14 @@ Long write_selected_field(const SelectedField<M>& sf, const std::string& path,
   for (size_t i = 0; i < sfs.size(); ++i) {
     const int id_node = fsels[i].f_rank.geo().geon.id_node;
     n_elems_vec[id_node] = fsels[i].n_elems;
-    sfs[i].init(fsels[i], geo.multiplicity);
+    sfs[i].init(fsels[i], multiplicity);
   }
   glb_sum_long_vec(get_data(n_elems_vec));
   std::vector<Long> data_offset_vec(new_num_node + 1, 0);
   Long total_bytes = 0;
   for (int i = 0; i < new_num_node; ++i) {
     data_offset_vec[i] = total_bytes;
-    total_bytes += n_elems_vec[i] * geo.multiplicity * sizeof(M);
+    total_bytes += n_elems_vec[i] * multiplicity * sizeof(M);
   }
   data_offset_vec[new_num_node] = total_bytes;
   crc32_t crc = 0;
@@ -99,14 +100,13 @@ Long write_selected_field(const SelectedField<M>& sf, const std::string& path,
   glb_sum_byte(crc);
   if (get_force_field_write_sizeof_M() == 0) {
     qtouch_info(path + ".partial",
-                make_selected_field_header(geo, sizeof(M), crc));
+                make_selected_field_header(geo, multiplicity, sizeof(M), crc));
   } else {
     const int sizeof_M = get_force_field_write_sizeof_M();
-    qassert((geo.multiplicity * sizeof(M)) % sizeof_M == 0);
-    const int multiplicity = (geo.multiplicity * sizeof(M)) / sizeof_M;
+    qassert((multiplicity * sizeof(M)) % sizeof_M == 0);
+    const int multiplicity_new = (multiplicity * sizeof(M)) / sizeof_M;
     qtouch_info(path + ".partial",
-                make_selected_field_header(geo_remult(geo, multiplicity),
-                                           sizeof_M, crc));
+                make_selected_field_header(geo, multiplicity_new, sizeof_M, crc));
     get_force_field_write_sizeof_M() = 0;
   }
   const int mpi_tag = 8;
@@ -116,7 +116,7 @@ Long write_selected_field(const SelectedField<M>& sf, const std::string& path,
     qassert(not fp.null());
     const int num_node = get_num_node();
     for (int new_id_node = 0; new_id_node < new_num_node; ++new_id_node) {
-      vector<M> vec(n_elems_vec[new_id_node] * geo.multiplicity);
+      vector<M> vec(n_elems_vec[new_id_node] * multiplicity);
       Vector<M> v = get_data(vec);
       const int id_node =
           get_id_node_from_new_id_node(new_id_node, new_num_node, num_node);
@@ -171,8 +171,8 @@ Long read_selected_field(SelectedField<M>& sf, const std::string& path,
     multiplicity = (multiplicity * sizeof_M) / sizeof(M);
   }
   Geometry geo;
-  geo.init(total_site, multiplicity);
-  qassert(fsel.f_rank.geo() == geo_remult(geo));
+  geo.init(total_site);
+  qassert(fsel.f_rank.geo() == geo);
   const Coordinate new_size_node =
       new_size_node_ != Coordinate()
           ? new_size_node_
@@ -192,14 +192,14 @@ Long read_selected_field(SelectedField<M>& sf, const std::string& path,
   for (size_t i = 0; i < sfs.size(); ++i) {
     const int id_node = fsels[i].f_rank.geo().geon.id_node;
     n_elems_vec[id_node] = fsels[i].n_elems;
-    sfs[i].init(fsels[i], geo.multiplicity);
+    sfs[i].init(fsels[i], multiplicity);
   }
   glb_sum_long_vec(get_data(n_elems_vec));
   std::vector<Long> data_offset_vec(new_num_node + 1, 0);
   Long total_bytes = 0;
   for (int i = 0; i < new_num_node; ++i) {
     data_offset_vec[i] = total_bytes;
-    total_bytes += n_elems_vec[i] * geo.multiplicity * sizeof(M);
+    total_bytes += n_elems_vec[i] * multiplicity * sizeof(M);
   }
   data_offset_vec[new_num_node] = total_bytes;
   crc32_t crc = 0;
@@ -224,7 +224,7 @@ Long read_selected_field(SelectedField<M>& sf, const std::string& path,
         ssprintf(": crc of data = %08X ; crc of header = %08X", crc, crc_info));
     qassert(false);
   }
-  sf.init(fsel, geo.multiplicity);
+  sf.init(fsel, multiplicity);
   shuffle_field_back(sf, sfs, sp);
   timer.flops += total_bytes;
   return total_bytes;

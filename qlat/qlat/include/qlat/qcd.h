@@ -26,12 +26,11 @@ template <class T>
 void unitarize(Field<ColorMatrixT<T> >& gf)
 {
   TIMER_VERBOSE("unitarize(gf)");
-  const Geometry& geo = gf.geo();
-  qacc_for(index, geo.local_volume(), {
+  qacc_for(index, gf.geo().local_volume(), {
     const Geometry& geo = gf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrixT<T>> v = gf.get_elems(xl);
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < gf.multiplicity; ++m) {
       unitarize(v[m]);
     }
   });
@@ -42,7 +41,7 @@ double gf_avg_plaq_no_comm(const GaugeFieldT<T>& gf)
 // assume proper communication is done
 {
   TIMER("gf_avg_plaq_no_comm");
-  const Geometry geo = geo_reform(gf.geo());
+  const Geometry geo = geo_resize(gf.geo());
   FieldM<double, 1> cf;
   cf.init(geo);
   qacc_for(index, geo.local_volume(), {
@@ -287,6 +286,7 @@ Long save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
   TIMER_VERBOSE_FLOPS("save_gauge_field");
   qassert(is_initialized(gf));
   const Geometry& geo = gf.geo();
+  const Int multiplicity = gf.multiplicity;
   FieldM<ComplexD, 4 * 6> gft;
   gft.init(geo);
 #pragma omp parallel for
@@ -294,7 +294,7 @@ Long save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ColorMatrixT<T> > v = gf.get_elems_const(xl);
     Vector<ComplexD> vt = gft.get_elems(xl);
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < multiplicity; ++m) {
       vt[6 * m + 0] = v[m](0, 0);
       vt[6 * m + 1] = v[m](0, 1);
       vt[6 * m + 2] = v[m](0, 2);
@@ -334,9 +334,10 @@ Long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
     qassert(false);
   }
   Geometry geo;
-  geo.init(gfi.total_site, 4);
+  geo.init(gfi.total_site);
+  const Int multiplicity = 4;
   Field<ComplexD> gft;
-  gft.init(geo_remult(geo, 4 * n_complex_su3));
+  gft.init(geo, multiplicity * n_complex_su3);
   const Long file_size = serial_read_field_par(
       gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
   if (0 == file_size) {
@@ -372,7 +373,7 @@ Long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ComplexD> vt = gft.get_elems(xl);
     Vector<ColorMatrixT<T>> v = gf.get_elems(xl);
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < multiplicity; ++m) {
       v[m](0, 0) = vt[m * n_complex_su3 + 0];
       v[m](0, 1) = vt[m * n_complex_su3 + 1];
       v[m](0, 2) = vt[m * n_complex_su3 + 2];
@@ -414,7 +415,7 @@ inline Long load_gauge_field_cps3x3(GaugeFieldT<T>& gf,
     Vector<ComplexD> vt = gft.get_elems(xl);
     to_from_big_endian(vt);
     Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < gf.multiplicity; ++m) {
       assign_truncate(v[m], vt[m]);
     }
   }
@@ -450,7 +451,7 @@ inline Long load_gauge_field_milc(GaugeFieldT<T>& gf,
     Vector<ComplexF> vt = gft.get_elems(xl);
     to_from_big_endian(vt);
     Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < gf.multiplicity; ++m) {
       // assign_truncate(v[m], vt[m]);
       v[m](0, 0) = vt[9 * m + 0 * 3 + 0];
       v[m](0, 1) = vt[9 * m + 0 * 3 + 1];
@@ -611,8 +612,8 @@ inline Long load_gauge_transform_cps(GaugeTransform& gt, const std::string& path
   GaugeTransformInfo info;
   read_gauge_transform_header(info, path);
   qassert(info.data_per_site == 18);
-  const Geometry geo(info.total_site, 1);
-  gt.init(geo);
+  const Geometry geo(info.total_site);
+  gt.init(geo, 1);
   const Long file_size = serial_read_field_par(
       gt, path, -get_data_size(gt) * get_num_node(), SEEK_END);
   if (0 == file_size) {

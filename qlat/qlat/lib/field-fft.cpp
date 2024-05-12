@@ -8,11 +8,9 @@ namespace qlat
 bool check_fft_plan_key(const Geometry& geo, const int mc, const int dir,
                         const bool is_forward)
 {
-  qassert(0 < geo.multiplicity);
   bool b = true;
   b = b && geo.eo == 0;
   b = b && geo.is_only_local;
-  b = b && mc % geo.multiplicity == 0;
   b = b && 0 <= dir and dir < 4;
   b = b && (is_forward == true or is_forward == false);
   return b;
@@ -69,9 +67,9 @@ FftComplexFieldPlan& get_fft_plan(const Geometry& geo, const int mc,
   qassert(check_fft_plan_key(geo, mc, dir, is_forward));
   Cache<std::string, FftComplexFieldPlan>& cache = get_fft_plan_cache();
   const std::string key =
-      ssprintf("%s %s %d %d %d %d %d", show(geo.node_site).c_str(),
-               show(geo.geon.size_node).c_str(), geo.geon.id_node,
-               geo.multiplicity, mc, dir, is_forward ? 1 : 0);
+      ssprintf("%s %s %d %d %d %d", show(geo.node_site).c_str(),
+               show(geo.geon.size_node).c_str(), geo.geon.id_node, mc, dir,
+               is_forward ? 1 : 0);
   if (cache.has(key)) {
     return cache[key];
   }

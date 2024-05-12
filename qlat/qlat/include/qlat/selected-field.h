@@ -90,9 +90,9 @@ template <class M>
 bool is_consistent(const SelectedField<M>& sf, const FieldSelection& fsel)
 {
   return sf.initialized and sf.n_elems == fsel.n_elems and
-         geo_remult(sf.geo(), 1) == fsel.f_local_idx.geo() and
+         sf.geo() == fsel.f_local_idx.geo() and
          fsel.f_rank.geo() == fsel.f_local_idx.geo() and
-         (Long) sf.field.size() == sf.n_elems * (Long)sf.geo().multiplicity and
+         (Long) sf.field.size() == sf.n_elems * (Long)sf.multiplicity and
          fsel.f_local_idx.geo().is_only_local;
 }
 
@@ -104,7 +104,8 @@ SelectedField<M>& operator+=(SelectedField<M>& f, const SelectedField<M>& f1)
     f = f1;
   } else {
     qassert(f1.initialized);
-    qassert(is_matching_geo_mult(f.geo(), f1.geo()));
+    qassert(is_matching_geo(f.geo(), f1.geo()));
+    qassert(f.multiplicity == f1.multiplicity);
     qassert(f.field.size() == f1.field.size());
 #pragma omp parallel for
     for (Long k = 0; k < (Long)f.field.size(); ++k) {
@@ -119,12 +120,13 @@ SelectedField<M>& operator-=(SelectedField<M>& f, const SelectedField<M>& f1)
 {
   TIMER("sel_field_operator-=");
   if (not f.initialized) {
-    f.init(f1.geo(), f1.n_elems, f1.geo().multiplicity);
+    f.init(f1.geo(), f1.n_elems, f1.multiplicity);
     set_zero(f);
     f -= f1;
   } else {
     qassert(f1.initialized);
-    qassert(is_matching_geo_mult(f.geo(), f1.geo()));
+    qassert(is_matching_geo(f.geo(), f1.geo()));
+    qassert(f.multiplicity == f1.multiplicity);
     qassert(f.field.size() == f1.field.size());
 #pragma omp parallel for
     for (Long k = 0; k < (Long)f.field.size(); ++k) {
@@ -164,7 +166,7 @@ void only_keep_selected_points(Field<M>& f, const FieldSelection& fsel)
   TIMER("only_keep_selected_points");
   qassert(f.geo().is_only_local);
   qassert(fsel.f_local_idx.geo().is_only_local);
-  qassert(geo_remult(f.geo()) == geo_remult(fsel.f_local_idx.geo()));
+  qassert(f.geo() == fsel.f_local_idx.geo());
   const Geometry& geo = f.geo();
   const FieldM<Long, 1>& f_local_idx = fsel.f_local_idx;
 #pragma omp parallel for
@@ -210,9 +212,9 @@ void set_selected_field(SelectedField<M>& sf, const Field<M>& f,
   TIMER("set_selected_field(sf,f,fsel)");
   qassert(f.geo().is_only_local);
   qassert(fsel.f_local_idx.geo().is_only_local);
-  qassert(geo_remult(f.geo()) == fsel.f_local_idx.geo());
+  qassert(f.geo() == fsel.f_local_idx.geo());
   const Geometry& geo = f.geo();
-  const int multiplicity = geo.multiplicity;
+  const int multiplicity = f.multiplicity;
   sf.init(fsel, multiplicity);
   qacc_for(idx, fsel.n_elems, {
     const Long index = fsel.indices[idx];
@@ -243,10 +245,10 @@ void set_selected_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
   qassert(sf0.geo().is_only_local);
   qassert(fsel.f_local_idx.geo().is_only_local);
   qassert(fsel0.f_local_idx.geo().is_only_local);
-  qassert(geo_remult(sf0.geo()) == fsel0.f_local_idx.geo());
-  qassert(geo_remult(sf0.geo()) == fsel.f_local_idx.geo());
+  qassert(sf0.geo() == fsel0.f_local_idx.geo());
+  qassert(sf0.geo() == fsel.f_local_idx.geo());
   const Geometry& geo = sf0.geo();
-  const int multiplicity = geo.multiplicity;
+  const Int multiplicity = sf0.multiplicity;
   if (is_keeping_data) {
     sf.init_zero(fsel, multiplicity);
   } else {
@@ -273,7 +275,7 @@ void set_selected_field(SelectedField<M>& sf, const SelectedPoints<M>& sp,
 {
   TIMER("set_selected_field(sf,sp,fsel,psel)");
   qassert(fsel.f_local_idx.geo().is_only_local);
-  qassert(geo_remult(sf.geo()) == fsel.f_local_idx.geo());
+  qassert(sf.geo() == fsel.f_local_idx.geo());
   const Long n_points = sp.n_points;
   qassert(n_points == (Long)psel.size());
   const Geometry& geo = fsel.f_rank.geo();
@@ -293,7 +295,7 @@ void set_selected_field(SelectedField<M>& sf, const SelectedPoints<M>& sp,
         qassert(sf_idx < sf.n_elems);
         const Vector<M> spv = sp.get_elems_const(idx);
         Vector<M> fv = sf.get_elems(sf_idx);
-        for (int m = 0; m < geo.multiplicity; ++m) {
+        for (int m = 0; m < multiplicity; ++m) {
           fv[m] = spv[m];
         }
       }
@@ -313,7 +315,7 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
   qassert(is_consistent(sf, fsel));
   const Long n_points = psel.size();
   SelectedPoints<M> sp_tmp;
-  sp_tmp.init(psel, geo.multiplicity);
+  sp_tmp.init(psel, sf.multiplicity);
   set_zero(sp_tmp);
   SelectedPoints<int8_t> sp_count;
   sp_count.init(psel, 1);
@@ -328,7 +330,7 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
         sp_count.get_elem(idx) += 1;
         Vector<M> spv = sp_tmp.get_elems(idx);
         const Vector<M> fv = sf.get_elems_const(sf_idx);
-        for (int m = 0; m < geo.multiplicity; ++m) {
+        for (int m = 0; m < sf.multiplicity; ++m) {
           spv[m] = fv[m];
         }
       }
@@ -337,12 +339,12 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
   glb_sum_byte_vec(get_data(sp_tmp.points));
   if (is_keeping_data) {
     glb_sum_byte_vec(get_data(sp_count.points));
-    sp.init_zero(psel, geo.multiplicity);
+    sp.init_zero(psel, sf.multiplicity);
     qthread_for(idx, n_points, {
       if (sp_count.get_elem(idx) > 0) {
         Vector<M> spv = sp.get_elems(idx);
         const Vector<M> spv_tmp = sp_tmp.get_elems_const(idx);
-        for (int m = 0; m < geo.multiplicity; ++m) {
+        for (int m = 0; m < sf.multiplicity; ++m) {
           spv[m] = spv_tmp[m];
         }
       }
@@ -360,13 +362,13 @@ void set_field_selected(Field<M>& f, const SelectedField<M>& sf,
   TIMER("set_field_selected(f,sf,fsel)");
   qassert(sf.geo().is_only_local);
   qassert(fsel.f_local_idx.geo().is_only_local);
-  qassert(geo_remult(sf.geo()) == fsel.f_local_idx.geo());
+  qassert(sf.geo() == fsel.f_local_idx.geo());
   const Geometry& geo = sf.geo();
-  const int multiplicity = geo.multiplicity;
+  const int multiplicity = sf.multiplicity;
   if (is_keeping_data) {
-    f.init_zero(geo);
+    f.init_zero(geo, multiplicity);
   } else {
-    f.init(geo);
+    f.init(geo, multiplicity);
     set_zero(f);
   }
   qacc_for(idx, fsel.n_elems, {
@@ -399,7 +401,7 @@ bool is_consistent(const SelectedPoints<M>& sp, const SelectedField<M>& sf,
       if (sf_idx >= 0) {
         const Vector<M> fv = sf.get_elems_const(sf_idx);
         const Vector<M> spv = sp.get_elems_const(idx);
-        for (int m = 0; m < geo.multiplicity; ++m) {
+        for (int m = 0; m < sf.multiplicity; ++m) {
           qnorm_diff += qnorm(spv[m] - fv[m]);
         }
       }
@@ -409,33 +411,6 @@ bool is_consistent(const SelectedPoints<M>& sp, const SelectedField<M>& sf,
   return qnorm_diff == 0.0;
 }
 
-// template <class M>
-// void acc_field(Field<M>& f, const ComplexD& coef, const SelectedField<M>& sf,
-//                const FieldSelection& fsel)
-// // f can be empty
-// {
-//   TIMER("acc_field(f,coef,sf,fsel)");
-//   const Geometry& geo = fsel.f_rank.geo();
-//   const int multiplicity = sf.geo().multiplicity;
-//   if (not is_initialized(f)) {
-//     f.init(geo_remult(geo, multiplicity));
-//     set_zero(f);
-//   }
-//   qassert(multiplicity == f.geo().multiplicity);
-//   qassert(sf.n_elems == fsel.n_elems);
-//   qacc_for(idx, fsel.n_elems, {
-//     const Long index = fsel.indices[idx];
-//     const Coordinate xl = geo.coordinate_from_index(index);
-//     Vector<M> fv = f.get_elems(xl);
-//     const Vector<M> sfv = sf.get_elems_const(idx);
-//     for (int m = 0; m < multiplicity; ++m) {
-//       M x = sfv[m];
-//       x *= coef;
-//       fv[m] += x;
-//     }
-//   });
-// }
-
 template <class M>
 void acc_field(Field<M>& f, const SelectedField<M>& sf,
                const FieldSelection& fsel)
@@ -443,12 +418,12 @@ void acc_field(Field<M>& f, const SelectedField<M>& sf,
 {
   TIMER("acc_field(f,sf,fsel)");
   const Geometry& geo = fsel.f_rank.geo();
-  const int multiplicity = sf.geo().multiplicity;
+  const int multiplicity = sf.multiplicity;
   if (not is_initialized(f)) {
-    f.init(geo_remult(geo, multiplicity));
+    f.init(geo, multiplicity);
     set_zero(f);
   }
-  qassert(multiplicity == f.geo().multiplicity);
+  qassert(multiplicity == f.multiplicity);
   qassert(sf.n_elems == fsel.n_elems);
   qacc_for(idx, fsel.n_elems, {
     const Long index = fsel.indices[idx];
@@ -469,10 +444,10 @@ std::vector<M> field_sum_tslice(const SelectedField<M>& sf,
   TIMER("field_sum_tslice");
   qassert(sf.geo().is_only_local);
   qassert(fsel.f_local_idx.geo().is_only_local);
-  qassert(geo_remult(sf.geo()) == fsel.f_local_idx.geo());
+  qassert(sf.geo() == fsel.f_local_idx.geo());
   const Geometry& geo = sf.geo();
   const int t_size = geo.total_site()[t_dir];
-  const int multiplicity = geo.multiplicity;
+  const int multiplicity = sf.multiplicity;
   std::vector<M> vec(t_size * multiplicity);
   set_zero(vec);
   for (Long idx = 0; idx < fsel.n_elems; ++idx) {
@@ -495,7 +470,7 @@ void field_glb_sum_tslice(SelectedPoints<M>& sp, const SelectedField<M>& sf,
   sp.init();
   const Geometry& geo = sf.geo();
   const int t_size = geo.total_site()[t_dir];
-  const int multiplicity = geo.multiplicity;
+  const int multiplicity = sf.multiplicity;
   std::vector<M> vec = field_sum_tslice(sf, fsel, t_dir);
   glb_sum_vec(get_data(vec));
   sp.init(t_size, multiplicity, PointsDistType::Global);
@@ -511,7 +486,7 @@ void set_u_rand_double(SelectedField<M>& sf, const FieldSelection& fsel,
   const Geometry& geo = sf.geo();
   qassert(geo.is_only_local);
   qassert(fsel.f_local_idx.geo().is_only_local);
-  qassert(geo_remult(geo) == fsel.f_local_idx.geo());
+  qassert(geo == fsel.f_local_idx.geo());
   qthread_for(idx, fsel.n_elems, {
     const Long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -535,9 +510,9 @@ void convert_field_float_from_double(SelectedField<N>& ff,
   qassert(f.geo().is_only_local);
   qassert(sizeof(M) % sizeof(double) == 0);
   qassert(sizeof(N) % sizeof(float) == 0);
-  qassert(f.geo().multiplicity * sizeof(M) / 2 % sizeof(N) == 0);
-  const int multiplicity = f.geo().multiplicity * sizeof(M) / 2 / sizeof(N);
-  const Geometry geo = geo_remult(f.geo(), multiplicity);
+  qassert(f.multiplicity * sizeof(M) / 2 % sizeof(N) == 0);
+  const int multiplicity = f.multiplicity * sizeof(M) / 2 / sizeof(N);
+  const Geometry& geo = f.geo();
   const Long n_elems = f.n_elems;
   ff.init(geo, n_elems, multiplicity);
   const Vector<M> fdata = get_data(f);
@@ -558,9 +533,9 @@ void convert_field_double_from_float(SelectedField<N>& ff,
   qassert(f.geo().is_only_local);
   qassert(sizeof(M) % sizeof(float) == 0);
   qassert(sizeof(N) % sizeof(double) == 0);
-  qassert(f.geo().multiplicity * sizeof(M) * 2 % sizeof(N) == 0);
-  const int multiplicity = f.geo().multiplicity * sizeof(M) * 2 / sizeof(N);
-  const Geometry geo = geo_remult(f.geo(), multiplicity);
+  qassert(f.multiplicity * sizeof(M) * 2 % sizeof(N) == 0);
+  const int multiplicity = f.multiplicity * sizeof(M) * 2 / sizeof(N);
+  const Geometry& geo = f.geo();
   const Long n_elems = f.n_elems;
   ff.init(geo, n_elems, multiplicity);
   const Vector<M> fdata = get_data(f);

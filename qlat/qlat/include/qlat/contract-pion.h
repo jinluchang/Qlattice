@@ -376,8 +376,8 @@ inline LatData contract_three_point_function(const SelProp& prop_a,
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const Geometry& geo = fsel.f_rank.geo();
   const Coordinate total_site = geo.total_site();
-  qassert(is_matching_geo_mult(prop_a.geo(), geo));
-  qassert(is_matching_geo_mult(prop_b.geo(), geo));
+  qassert(is_matching_geo(prop_a.geo(), geo));
+  qassert(is_matching_geo(prop_b.geo(), geo));
   vector<WilsonMatrix> gwm_ts(omp_get_max_threads() * total_site[3]);
   set_zero(gwm_ts);
 #pragma omp parallel for

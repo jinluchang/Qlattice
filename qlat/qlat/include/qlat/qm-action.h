@@ -170,7 +170,7 @@ struct QMAction {
     const Geometry geo = f.geo();
     // Creates a geometry that is the same as the field geometry, except
     // with multiplicity 1
-    const Geometry geo_r = geo_reform(geo);
+    const Geometry geo_r = geo_resize(geo);
     // Creates a field to save the contribution to the total action from
     // each point
     FieldM<double, 1> fd;
@@ -204,7 +204,7 @@ struct QMAction {
     const Coordinate expand_right(0, 0, 0, 1);
     const Geometry geo_ext = geo_resize(f.geo(), expand_left, expand_right);
     Field<double> f_ext;
-    f_ext.init(geo_ext);
+    f_ext.init(geo_ext, f.multiplicity);
     f_ext = f;
     refresh_expanded(f_ext);
     // Calculate the energy of the scalar field
@@ -228,16 +228,16 @@ struct QMAction {
     const Geometry geo = f.geo();
     // Creates a geometry that is the same as the field geometry, except
     // with multiplicity 1
-    const Geometry geo_r = geo_reform(geo);
+    const Geometry geo_r = geo_resize(geo);
     // Creates a field to save the contribution to the sum of squares
     // from each point
     FieldM<double, 1> fd;
     fd.init(geo_r);
     qacc_for(index, geo_r.local_volume(), {
-      const Geometry& geo = f.geo();
+      const Geometry& geo_r = fd.geo();
       Coordinate xl = geo_r.coordinate_from_index(index);
       double s=0;
-      for (int m = 0; m < geo.multiplicity; ++m) {
+      for (int m = 0; m < f.multiplicity; ++m) {
         double d = f.get_elem(xl,m);
         s += d*d;
       }
@@ -284,7 +284,7 @@ struct QMAction {
     Coordinate expand_right(0, 0, 0, 1);
     const Geometry geo_ext = geo_resize(f.geo(), expand_left, expand_right);
     Field<double> f_ext;
-    f_ext.init(geo_ext);
+    f_ext.init(geo_ext, f.multiplicity);
     f_ext = f;
     refresh_expanded(f_ext);
     hmc_set_force_no_comm(force, f_ext);

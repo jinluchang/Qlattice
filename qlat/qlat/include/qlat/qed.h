@@ -36,11 +36,12 @@ inline void take_real_part_and_multiply_sqrt2(Field<T>& f)
 {
   TIMER("take_real_part_and_multiply_sqrt2");
   const Geometry& geo = f.geo();
+  const Int multiplicity = f.multiplicity;
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<T> fv = f.get_elems(xl);
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < f.multiplicity; ++m) {
       fv[m] = sqrt(2.0) * fv[m].real();
     }
   }
@@ -49,11 +50,12 @@ inline void take_real_part_and_multiply_sqrt2(Field<T>& f)
 template <class T>
 inline void set_mom_stochastic_qed_field_feynman(Field<T>& f,
                                                  const Geometry& geo,
+                                                 const Int multiplicity,
                                                  const RngState& rs)
 // use QED_L scheme: all spatial zero mode removed.
 {
   TIMER("set_mom_stochastic_qed_field_feynman");
-  f.init(geo);
+  f.init(geo, multiplicity);
   const double total_volume = geo.total_volume();
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
@@ -70,12 +72,12 @@ inline void set_mom_stochastic_qed_field_feynman(Field<T>& f,
     }
     Vector<ComplexD> fv = f.get_elems(kl);
     if (0.0 == kk[0] && 0.0 == kk[1] && 0.0 == kk[2]) {
-      for (int m = 0; m < geo.multiplicity; ++m) {
+      for (int m = 0; m < multiplicity; ++m) {
         fv[m] = 0.0;
       }
     } else {
       const double sigma = std::sqrt(1.0 / (2.0 * total_volume * s2));
-      for (int m = 0; m < geo.multiplicity; ++m) {
+      for (int m = 0; m < multiplicity; ++m) {
         const double re = g_rand_gen(rst, 0.0, sigma);
         const double im = g_rand_gen(rst, 0.0, sigma);
         fv[m] = T(re, im);
@@ -85,23 +87,23 @@ inline void set_mom_stochastic_qed_field_feynman(Field<T>& f,
 }
 
 template <class T>
-inline void set_stochastic_qed_field_feynman(Field<T>& f, const Geometry& geo,
+inline void set_stochastic_qed_field_feynman(Field<T>& f, const Geometry& geo, const Int multiplicity,
                                              const RngState& rs)
 {
   TIMER("set_stochastic_qed_field_feynman");
-  set_mom_stochastic_qed_field_feynman(f, geo, rs);
+  set_mom_stochastic_qed_field_feynman(f, geo, multiplicity, rs);
   fft_complex_field(f, false);
   take_real_part_and_multiply_sqrt2(f);
 }
 
 template <class T>
-inline void set_mom_stochastic_qed_field_mass(Field<T>& f, const Geometry& geo,
+inline void set_mom_stochastic_qed_field_mass(Field<T>& f, const Geometry& geo, const Int multiplicity,
                                               const double mass,
                                               const RngState& rs)
 // use mass scheme, all zero modes are kept
 {
   TIMER("set_mom_stochastic_qed_field_mass");
-  f.init(geo);
+  f.init(geo, multiplicity);
   const double total_volume = geo.total_volume();
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
@@ -118,7 +120,7 @@ inline void set_mom_stochastic_qed_field_mass(Field<T>& f, const Geometry& geo,
     }
     Vector<ComplexD> fv = f.get_elems(kl);
     const double sigma = std::sqrt(1.0 / (2.0 * total_volume * s2));
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < multiplicity; ++m) {
       const double re = g_rand_gen(rst, 0.0, sigma);
       const double im = g_rand_gen(rst, 0.0, sigma);
       fv[m] = T(re, im);
@@ -144,6 +146,7 @@ inline void prop_mom_photon_invert(QedGaugeField& egf,
 {
   TIMER("prop_mom_photon_invert");
   const Geometry& geo = egf.geo();
+  const Int multiplicity = egf.multiplicity;
   for (Long index = 0; index < geo.local_volume(); ++index) {
     Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
@@ -156,12 +159,12 @@ inline void prop_mom_photon_invert(QedGaugeField& egf,
       s2 += 4.0 * sqr(std::sin(kk[i] / 2.0));
     }
     if (0.0 == kk[0] && 0.0 == kk[1] && 0.0 == kk[2]) {
-      for (int mu = 0; mu < geo.multiplicity; ++mu) {
+      for (int mu = 0; mu < multiplicity; ++mu) {
         egf.get_elem(kl, mu) *= 0.0;
       }
     } else {
       double s2inv = 1.0 / s2;
-      for (int mu = 0; mu < geo.multiplicity; ++mu) {
+      for (int mu = 0; mu < multiplicity; ++mu) {
         egf.get_elem(kl, mu) *= s2inv;
       }
     }
@@ -188,6 +191,7 @@ inline void prop_mom_complex_scalar_invert(
 {
   TIMER("prop_mom_complex_scalar_invert");
   const Geometry& geo = csf.geo();
+  const Int multiplicity = csf.multiplicity;
   for (Long index = 0; index < geo.local_volume(); ++index) {
     Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
@@ -200,7 +204,7 @@ inline void prop_mom_complex_scalar_invert(
       s2 += 4.0 * sqr(std::sin(kk[i] / 2.0));
     }
     double s2inv = 1.0 / s2;
-    for (int mu = 0; mu < geo.multiplicity; ++mu) {
+    for (int mu = 0; mu < multiplicity; ++mu) {
       csf.get_elem(kl, mu) *= s2inv;
     }
   }

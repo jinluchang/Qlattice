@@ -51,8 +51,9 @@ crc32_t field_crc32_sites(const Field<M>& f)
 {
   TIMER_VERBOSE_FLOPS("field_crc32_sites");
   const Geometry& geo = f.geo();
+  const Int multiplicity = f.multiplicity;
   const Long total_volume = geo.total_volume();
-  const Long data_size_site = geo.multiplicity * sizeof(M);
+  const Long data_size_site = multiplicity * sizeof(M);
   const int v_limit = omp_get_max_threads();
   std::vector<crc32_t> crcs(v_limit, 0);
 #pragma omp parallel
@@ -108,14 +109,16 @@ Long dist_read_field(Field<M>& f, const std::string& path)
   TIMER_VERBOSE_FLOPS("dist_read_field");
   displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));
   Geometry geo;
+  Int multiplicity;
   std::vector<Field<M>> fs;
   Coordinate new_size_node;
-  const Long total_bytes = dist_read_fields(fs, geo, new_size_node, path);
+  const Long total_bytes = dist_read_fields(fs, geo, multiplicity, new_size_node, path);
   if (total_bytes == 0) {
     return 0;
   } else {
-    f.init(geo);
+    f.init(geo, multiplicity);
     qassert(f.geo() == geo);
+    qassert(f.multiplicity == multiplicity);
     shuffle_field_back(f, fs, new_size_node);
     timer.flops += total_bytes;
     return total_bytes;
@@ -127,13 +130,13 @@ void convert_field_float_from_double(Field<N>& ff, const Field<M>& f)
 // interface_function
 {
   TIMER("convert_field_float_from_double");
-  qassert(f.geo().is_only_local);
+  const Geometry& geo = f.geo();
+  qassert(geo.is_only_local);
   qassert(sizeof(M) % sizeof(double) == 0);
   qassert(sizeof(N) % sizeof(float) == 0);
-  qassert(f.geo().multiplicity * sizeof(M) / 2 % sizeof(N) == 0);
-  const int multiplicity = f.geo().multiplicity * sizeof(M) / 2 / sizeof(N);
-  const Geometry geo = geo_remult(f.geo(), multiplicity);
-  ff.init(geo);
+  qassert(f.multiplicity * sizeof(M) / 2 % sizeof(N) == 0);
+  const int multiplicity = f.multiplicity * sizeof(M) / 2 / sizeof(N);
+  ff.init(geo, multiplicity);
   const Vector<M> fdata = get_data(f);
   const Vector<double> fd((double*)fdata.data(),
                           fdata.data_size() / sizeof(double));
@@ -148,13 +151,13 @@ void convert_field_double_from_float(Field<N>& ff, const Field<M>& f)
 // interface_function
 {
   TIMER("convert_field_double_from_float");
-  qassert(f.geo().is_only_local);
+  const Geometry& geo = f.geo();
+  const int multiplicity = f.multiplicity * sizeof(M) * 2 / sizeof(N);
+  qassert(geo.is_only_local);
   qassert(sizeof(M) % sizeof(float) == 0);
   qassert(sizeof(N) % sizeof(double) == 0);
-  qassert(f.geo().multiplicity * sizeof(M) * 2 % sizeof(N) == 0);
-  const int multiplicity = f.geo().multiplicity * sizeof(M) * 2 / sizeof(N);
-  const Geometry geo = geo_remult(f.geo(), multiplicity);
-  ff.init(geo);
+  qassert(f.multiplicity * sizeof(M) * 2 % sizeof(N) == 0);
+  ff.init(geo, multiplicity);
   const Vector<M> fdata = get_data(f);
   const Vector<float> fd((float*)fdata.data(),
                          fdata.data_size() / sizeof(float));
@@ -255,7 +258,7 @@ Long dist_read_field_double(Field<M>& f, const std::string& path)
 
 // ----------------------
 
-inline std::string make_field_header(const Geometry& geo, const int sizeof_M,
+inline std::string make_field_header(const Geometry& geo, const Int multiplicity, const Int sizeof_M,
                                      const crc32_t crc32)
 {
   const Coordinate total_site = geo.total_site();
@@ -267,15 +270,15 @@ inline std::string make_field_header(const Geometry& geo, const int sizeof_M,
   out << "total_site[1] = " << total_site[1] << std::endl;
   out << "total_site[2] = " << total_site[2] << std::endl;
   out << "total_site[3] = " << total_site[3] << std::endl;
-  out << "multiplicity = " << geo.multiplicity << std::endl;
+  out << "multiplicity = " << multiplicity << std::endl;
   out << "sizeof(M) = " << sizeof_M << std::endl;
   out << ssprintf("field_crc32 = %08X", crc32) << std::endl;
   out << "END_HEADER" << std::endl;
   return out.str();
 }
 
-inline void read_geo_info(Coordinate& total_site, int& multiplicity,
-                          int& sizeof_M, crc32_t& crc, const std::string& path)
+inline void read_geo_info(Coordinate& total_site, Int& multiplicity,
+                          Int& sizeof_M, crc32_t& crc, const std::string& path)
 {
   TIMER("read_geo_info");
   if (get_id_node() == 0) {
@@ -322,14 +325,14 @@ Long write_field(const Field<M>& f, const std::string& path,
   const Geometry& geo = f.geo();
   const crc32_t crc32 = field_crc32(f);
   if (get_force_field_write_sizeof_M() == 0) {
-    qtouch_info(path + ".partial", make_field_header(geo, sizeof(M), crc32));
+    qtouch_info(path + ".partial", make_field_header(geo, f.multiplicity, sizeof(M), crc32));
   } else {
     const int sizeof_M = get_force_field_write_sizeof_M();
-    qassert((geo.multiplicity * sizeof(M)) % sizeof_M == 0);
-    const int multiplicity = (geo.multiplicity * sizeof(M)) / sizeof_M;
+    qassert((f.multiplicity * sizeof(M)) % sizeof_M == 0);
+    const Int multiplicity = (f.multiplicity * sizeof(M)) / sizeof_M;
     qtouch_info(
         path + ".partial",
-        make_field_header(geo_remult(geo, multiplicity), sizeof_M, crc32));
+        make_field_header(geo, multiplicity, sizeof_M, crc32));
     get_force_field_write_sizeof_M() = 0;
   }
   const Long file_size = serial_write_field(
@@ -369,10 +372,10 @@ Long read_field(Field<M>& f, const std::string& path,
     multiplicity = (multiplicity * sizeof_M) / sizeof(M);
   }
   Geometry geo;
-  geo.init(total_site, multiplicity);
-  f.init(geo, geo.multiplicity);
+  geo.init(total_site);
+  f.init(geo, multiplicity);
   const Long data_size =
-      geo.geon.num_node * geo.local_volume() * geo.multiplicity * sizeof(M);
+      geo.geon.num_node * geo.local_volume() * multiplicity * sizeof(M);
   const Coordinate new_size_node =
       new_size_node_ == Coordinate()
           ? get_default_serial_new_size_node(geo, dist_read_par_limit())

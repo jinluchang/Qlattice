@@ -36,7 +36,6 @@ std::vector<GeometryNode> make_dist_io_geons(const Coordinate& new_size_node)
 }
 
 std::vector<Geometry> make_dist_io_geos(const Coordinate& total_site,
-                                        const int multiplicity,
                                         const Coordinate& new_size_node)
 {
   TIMER("make_dist_io_geos");
@@ -49,7 +48,7 @@ std::vector<Geometry> make_dist_io_geos(const Coordinate& total_site,
   const Coordinate new_node_site = total_site / new_size_node;
   for (int i = 0; i < (int)geons.size(); ++i) {
     Geometry geo_recv;
-    geo_recv.init(geons[i], new_node_site, multiplicity);
+    geo_recv.init(geons[i], new_node_site);
     ret.push_back(geo_recv);
   }
   return ret;
@@ -85,7 +84,7 @@ ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site, const int dir)
 {
   TIMER_VERBOSE("make_shuffle_plan_fft");
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   // vol_perp_dir -> vpd
   const Long vol_perp_dir =
       product(geo.node_site) / geo.node_site[dir];  // local volume perp to dir
@@ -102,7 +101,7 @@ ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site, const int dir)
     const Coordinate new_coor_node(0, 0, i, geo.geon.id_node);
     const GeometryNode geon(index_from_coordinate(new_coor_node, new_size_node),
                             new_size_node);
-    geos_recv[i].init(geon, Coordinate(vpd_size, 1, 1, 1), 1);
+    geos_recv[i].init(geon, Coordinate(vpd_size, 1, 1, 1));
   }
   // to be shared
   ShufflePlan ret;
@@ -332,227 +331,5 @@ ShufflePlan make_shuffle_plan_shift(FieldSelection& fsel_shift,
   fsel_shift = fsels[0];
   return sp;
 }
-
-// old code
-
-#if 0
-
-ShufflePlan make_shuffle_plan_nofsel_nofunc(const ShufflePlanKey& spk)
-// assume the order is preserved in transfer.
-// obsolete
-{
-  TIMER_VERBOSE("make_shuffle_plan_nofsel_nofunc");
-  const Coordinate& total_site = spk.total_site;
-  const Coordinate& new_size_node = spk.new_size_node;
-  const Coordinate new_node_site = total_site / new_size_node;
-  qassert(new_size_node * new_node_site == total_site);
-  const int new_num_node = product(new_size_node);
-  Geometry geo;
-  geo.init(total_site, 1);
-  const int num_node = geo.geon.num_node;
-  std::vector<Geometry> geos_recv =
-      make_dist_io_geos(geo.total_site(), geo.multiplicity, new_size_node);
-  // to be shared
-  ShufflePlan sp;
-  // geo_send
-  sp.geo_send = geo;
-  // geos_recv
-  sp.geos_recv = geos_recv;
-  // total_send_size
-  sp.scp.total_send_size = geo.local_volume();
-  // send_id_node_size
-  // send_new_id_node_size
-  std::map<int, Long> send_id_node_size;
-  std::map<int, Long> send_new_id_node_size;
-  for (Long index = 0; index < geo.local_volume(); ++index) {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg = geo.coordinate_g_from_l(xl);
-    // custom
-    const Coordinate new_coor_node = xg / new_node_site;
-    const int new_id_node = index_from_coordinate(new_coor_node, new_size_node);
-    // custom
-    const int id_node_in_shuffle = get_id_node_in_shuffle_from_new_id_node(
-        new_id_node, new_num_node, num_node);
-    //
-    send_id_node_size[id_node_in_shuffle] += 1;
-    send_new_id_node_size[new_id_node] += 1;
-  }
-  {
-    Long count = 0;
-    for (std::map<int, Long>::const_iterator it = send_id_node_size.begin();
-         it != send_id_node_size.end(); ++it) {
-      const int id_node_in_shuffle = it->first;
-      const Long node_size = it->second;
-      Long node_size_remain = node_size;
-      while (node_size_remain > 0) {
-        ShufflePlanMsgInfo mi;
-        mi.id_node = get_id_node_from_id_node_in_shuffle(
-            id_node_in_shuffle, new_num_node, num_node);
-        mi.idx = count;
-        mi.size = std::min(node_size_remain, get_shuffle_max_msg_size());
-        sp.scp.send_msg_infos.push_back(mi);
-        node_size_remain -= mi.size;
-        count += mi.size;
-      }
-    }
-    qassert(count == geo.local_volume());
-    qassert(count == sp.scp.total_send_size);
-  }
-  // send_new_id_node_idx
-  std::map<int, Long> send_new_id_node_idx;
-  {
-    Long count = 0;
-    for (std::map<int, Long>::const_iterator it = send_new_id_node_size.begin();
-         it != send_new_id_node_size.end(); ++it) {
-      const int new_id_node = it->first;
-      const Long node_size = it->second;
-      send_new_id_node_idx[new_id_node] = count;
-      count += node_size;
-    }
-    qassert(count == geo.local_volume());
-    qassert(count == sp.scp.total_send_size);
-  }
-  // send_pack_infos
-  {
-    Long last_buffer_idx = -1;
-    for (Long index = 0; index < geo.local_volume(); ++index) {
-      const Coordinate xl = geo.coordinate_from_index(index);
-      const Coordinate xg = geo.coordinate_g_from_l(xl);
-      // custom
-      const Coordinate new_coor_node = xg / new_node_site;
-      const int new_id_node =
-          index_from_coordinate(new_coor_node, new_size_node);
-      //
-      const Long buffer_idx = send_new_id_node_idx[new_id_node];
-      if (buffer_idx == last_buffer_idx and
-          sp.send_pack_infos.back().size < get_shuffle_max_pack_size()) {
-        sp.send_pack_infos.back().size += 1;
-      } else {
-        last_buffer_idx = buffer_idx;
-        ShufflePlanSendPackInfo pi;
-        pi.field_idx = index;
-        pi.buffer_idx = buffer_idx;
-        pi.size = 1;
-        sp.send_pack_infos.push_back(pi);
-      }
-      send_new_id_node_idx[new_id_node] += 1;
-      last_buffer_idx += 1;
-    }
-  }
-  // total_recv_size
-  sp.scp.total_recv_size = 0;
-  for (size_t i = 0; i < sp.geos_recv.size(); ++i) {
-    const Geometry& geos_recv = sp.geos_recv[i];
-    sp.scp.total_recv_size += geos_recv.local_volume();
-  }
-  // recv_id_node_size
-  std::map<int, Long> recv_id_node_size;
-  for (size_t i = 0; i < sp.geos_recv.size(); ++i) {
-    const Geometry& geo_recv = sp.geos_recv[i];
-    for (Long index = 0; index < geo_recv.local_volume(); ++index) {
-      const Coordinate xl = geo_recv.coordinate_from_index(index);
-      const Coordinate xg = geo_recv.coordinate_g_from_l(xl);
-      const Coordinate coor_node = xg / geo.node_site;
-      // custom
-      const Long id_node = index_from_coordinate(coor_node, geo.geon.size_node);
-      //
-      recv_id_node_size[id_node] += 1;
-    }
-  }
-  {
-    Long count = 0;
-    for (std::map<int, Long>::const_iterator it = recv_id_node_size.begin();
-         it != recv_id_node_size.end(); ++it) {
-      const int id_node = it->first;
-      const Long node_size = it->second;
-      Long node_size_remain = node_size;
-      while (node_size_remain > 0) {
-        ShufflePlanMsgInfo mi;
-        mi.id_node = id_node;
-        mi.idx = count;
-        mi.size = std::min(node_size_remain, get_shuffle_max_msg_size());
-        sp.scp.recv_msg_infos.push_back(mi);
-        node_size_remain -= mi.size;
-        count += mi.size;
-      }
-    }
-    qassert(count == sp.scp.total_recv_size);
-  }
-  // recv_id_node_idx
-  std::map<int, Long> recv_id_node_idx;
-  {
-    Long count = 0;
-    for (std::map<int, Long>::const_iterator it = recv_id_node_size.begin();
-         it != recv_id_node_size.end(); ++it) {
-      const int id_node = it->first;
-      const Long node_size = it->second;
-      recv_id_node_idx[id_node] = count;
-      count += node_size;
-    }
-    qassert(count == sp.scp.total_recv_size);
-  }
-  // recv_pack_infos
-  {
-    for (size_t i = 0; i < sp.geos_recv.size(); ++i) {
-      const Geometry& geo_recv = sp.geos_recv[i];
-      Long last_buffer_idx = -1;
-      for (Long index = 0; index < geo_recv.local_volume(); ++index) {
-        const Coordinate xl = geo_recv.coordinate_from_index(index);
-        const Coordinate xg = geo_recv.coordinate_g_from_l(xl);
-        // custom
-        const Coordinate coor_node = xg / geo.node_site;
-        const int id_node =
-            index_from_coordinate(coor_node, geo.geon.size_node);
-        //
-        const Long buffer_idx = recv_id_node_idx[id_node];
-        if (buffer_idx == last_buffer_idx and
-            sp.recv_pack_infos.back().size < get_shuffle_max_pack_size()) {
-          sp.recv_pack_infos.back().size += 1;
-        } else {
-          last_buffer_idx = buffer_idx;
-          ShufflePlanRecvPackInfo pi;
-          pi.local_geos_idx = i;
-          pi.field_idx = index;
-          pi.buffer_idx = buffer_idx;
-          pi.size = 1;
-          sp.recv_pack_infos.push_back(pi);
-        }
-        recv_id_node_idx[id_node] += 1;
-        last_buffer_idx += 1;
-      }
-    }
-  }
-  Long num_send_packs = sp.send_pack_infos.size();
-  Long num_recv_packs = sp.recv_pack_infos.size();
-  Long num_send_msgs = sp.scp.send_msg_infos.size();
-  Long num_recv_msgs = sp.scp.recv_msg_infos.size();
-  displayln_info(0,
-                 fname + ssprintf(": num_send_packs = %10ld", num_send_packs));
-  displayln_info(0,
-                 fname + ssprintf(": num_recv_packs = %10ld", num_recv_packs));
-  displayln_info(0,
-                 fname + ssprintf(": num_send_msgs  = %10ld", num_send_msgs));
-  displayln_info(0,
-                 fname + ssprintf(": num_recv_msgs  = %10ld", num_recv_msgs));
-  glb_sum(num_send_packs);
-  glb_sum(num_recv_packs);
-  glb_sum(num_send_msgs);
-  glb_sum(num_recv_msgs);
-  displayln_info(
-      0, fname + ssprintf(": total num_send_packs = %10ld", num_send_packs));
-  displayln_info(
-      0, fname + ssprintf(": total num_recv_packs = %10ld", num_recv_packs));
-  displayln_info(
-      0, fname + ssprintf(": total num_send_msgs  = %10ld", num_send_msgs));
-  displayln_info(
-      0, fname + ssprintf(": total num_recv_msgs  = %10ld", num_recv_msgs));
-  sp.scp.global_comm_size = sp.scp.total_send_size;
-  glb_sum(sp.scp.global_comm_size);
-  displayln_info(0, fname + ssprintf(": global_comm_size = %10ld",
-                                     sp.scp.global_comm_size));
-  return sp;
-}
-
-#endif
 
 }  // namespace qlat

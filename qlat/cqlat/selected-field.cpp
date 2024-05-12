@@ -153,7 +153,7 @@ template <class M>
 PyObject* get_multiplicity_sfield_ctype(PyObject* pf)
 {
   SelectedField<M>& sf = py_convert_type_sfield<M>(pf);
-  const Long ret = sf.geo().multiplicity;
+  const Long ret = sf.multiplicity;
   return py_convert(ret);
 }
 
@@ -204,7 +204,7 @@ PyObject* set_elems_sfield_ctype(PyObject* p_field, const Long idx,
                                  PyObject* p_val)
 {
   SelectedField<M>& f = py_convert_type_sfield<M>(p_field);
-  const int multiplicity = f.geo().multiplicity;
+  const int multiplicity = f.multiplicity;
   qassert((Long)PyBytes_Size(p_val) == (Long)multiplicity * (Long)sizeof(M));
   const Vector<M> val((M*)PyBytes_AsString(p_val), multiplicity);
   assign(f.get_elems(idx), val);
@@ -490,11 +490,11 @@ EXPORT(set_sqrt_double_sfield, {
   const Geometry& geo = f1.geo();
   qassert(geo.is_only_local);
   f.init();
-  f.init(geo, f1.n_elems, geo.multiplicity);
+  f.init(geo, f1.n_elems, f1.multiplicity);
   qacc_for(idx, f.n_elems, {
     const Vector<double> f1v = f1.get_elems_const(idx);
     Vector<double> fv = f.get_elems(idx);
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < f.multiplicity; ++m) {
       fv[m] = std::sqrt(f1v[m]);
     }
   });

@@ -40,6 +40,7 @@ void rescale_field_with_psel_fsel_distribution(Field<M>& f,
 {
   TIMER_VERBOSE("rescale_field_with_psel_fsel_distribution");
   const Geometry& geo = f.geo();
+  const Int multiplicity = f.multiplicity;
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -47,7 +48,7 @@ void rescale_field_with_psel_fsel_distribution(Field<M>& f,
     Vector<M> fv = f.get_elems(xl);
     if (factor != 0.0) {
       const ComplexD coef = 1.0 / factor;
-      for (int m = 0; m < geo.multiplicity; ++m) {
+      for (int m = 0; m < multiplicity; ++m) {
         fv[m] *= coef;
       }
     } else {
@@ -123,7 +124,7 @@ inline void field_complex_conjugate(Field<ComplexD>& f)
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
     Vector<ComplexD> fv = f.get_elems(index);
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < f.multiplicity; ++m) {
       fv[m] = qconj(fv[m]);
     }
   }
@@ -417,7 +418,7 @@ inline void contract_meson_vv_meson_unshifted(
   qassert(psel[xg_y_psel_idx] == xg_y);
   const Geometry& geo = fsel.f_rank.geo();
   const Coordinate total_site = geo.total_site();
-  const int multiplicity = 8 * 8;
+  const int multiplicity = 7 * 7;
   clear(meson_vv_meson);
   meson_vv_meson.resize(2);
   for (int i = 0; i < (int)meson_vv_meson.size(); ++i) {
@@ -535,14 +536,15 @@ inline void contract_chvp_16(FieldM<ComplexD, 16>& chvp,
   const array<SpinMatrix, 4>& gammas = SpinMatrixConstants::get_cps_gammas();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const Geometry& geo = prop1_x_y.geo();
-  qassert(geo.multiplicity == 1);
-  qassert(is_matching_geo_mult(geo, prop2_x_y.geo()));
+  const Int multiplicity = prop1_x_y.multiplicity;
+  qassert(multiplicity == 1);
+  qassert(is_matching_geo(geo, prop2_x_y.geo()));
   qassert(prop1_x_y.geo().is_only_local);
   qassert(prop2_x_y.geo().is_only_local);
   chvp.init();
   chvp.init(geo);
   set_zero(chvp);
-  qassert(chvp.geo().multiplicity == 16);
+  qassert(chvp.multiplicity == 16);
   qacc_for(index, geo.local_volume(), {
     const WilsonMatrix& wm1_x_y = prop1_x_y.get_elem(index);
     const WilsonMatrix& wm2_x_y = prop2_x_y.get_elem(index);
@@ -596,6 +598,7 @@ inline void contract_meson_chvp_acc(FieldM<ComplexD, 8 * 8>& mchvp,
   qassert(is_initialized(ld_meson_snk_src_1_2));
   qassert(is_initialized(chvp_3_4));
   const Geometry& geo = chvp_3_4.geo();
+  const Int multiplicity = chvp_3_4.multiplicity;
   const Coordinate total_site = geo.total_site();
   if (not is_initialized(mchvp)) {
     mchvp.init(geo);
@@ -619,7 +622,7 @@ inline void contract_meson_chvp_acc(FieldM<ComplexD, 8 * 8>& mchvp,
     const ComplexD mss = lat_data_cget_const(ld_meson_snk_src_1_2, idx)[0];
     Vector<ComplexD> fv = mchvp.get_elems(xl);
     const Vector<ComplexD> fv0 = chvp_3_4.get_elems_const(xl);
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < multiplicity; ++m) {
       fv[m] += mss * fv0[m];
     }
   }

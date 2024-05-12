@@ -72,7 +72,7 @@ void shuffle_selected_field(SelectedPoints<M>& sp, const SelectedField<M>& sf0,
 {
   TIMER("shuffle_selected_field(sp,sf0,ssp)");
   const Long n_points = ssp.total_recv_count;
-  const Int multiplicity = sf0.geo().multiplicity;
+  const Int multiplicity = sf0.multiplicity;
   sp.init(n_points, multiplicity, ssp.points_dist_type_recv);
   SelectedPoints<Char> spc(sp.view_as_char());
   const SelectedPoints<Char> spc0(sf0.view_sp().view_as_char());

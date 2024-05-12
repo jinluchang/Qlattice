@@ -32,9 +32,9 @@ inline std::vector<double> get_gm_force_magnitudes(
 {
   TIMER("get_gm_force_magnitudes");
   qassert(n_elems >= 2);
-  const Geometry geo = geo_reform(gm_force.geo(), n_elems - 1);
+  const Geometry geo = geo_resize(gm_force.geo());
   Field<double> fd;
-  fd.init(geo);
+  fd.init(geo, n_elems - 1);
   set_zero(fd);
   FieldM<double, 1> fd_max;
   fd_max.init(geo);
@@ -139,7 +139,7 @@ inline std::vector<double> get_gauge_field_infos(const GaugeField& gf)
 {
   TIMER("get_gauge_field_infos");
   const int info_vec_size = 4;
-  const Geometry geo = geo_reform(gf.geo());
+  const Geometry geo = geo_resize(gf.geo());
   CloverLeafField clf1, clf2, clf3, clf4, clf5;
   gf_clover_leaf_field_5(clf1, clf2, clf3, clf4, clf5, gf);
   FieldM<double, 1> paf;

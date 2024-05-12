@@ -66,9 +66,10 @@ inline void gf_clover_leaf_field_no_comm(CloverLeafField& clf,
 // F_01, F_02, F_03, F_12, F_13, F_23
 {
   TIMER("gf_clover_leaf_field_no_comm");
-  const Geometry geo = geo_reform(gf1.geo(), 6, 0);
-  clf.init(geo);
-  qassert(is_matching_geo_mult(clf.geo(), geo));
+  const Geometry geo = geo_resize(gf1.geo());
+  const Int multiplicity = 6;
+  clf.init(geo, multiplicity);
+  qassert(is_matching_geo(clf.geo(), geo));
   qacc_for(index, geo.local_volume(), {
     const Geometry& geo = clf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -88,9 +89,10 @@ inline void gf_clover_leaf_field_m_n_no_comm(CloverLeafField& clf,
 // F_01, F_02, F_03, F_12, F_13, F_23
 {
   TIMER("gf_clover_leaf_field_m_n_no_comm");
-  const Geometry geo = geo_reform(gf1.geo(), 6, 0);
-  clf.init(geo);
-  qassert(is_matching_geo_mult(clf.geo(), geo));
+  const Geometry geo = geo_resize(gf1.geo());
+  const Int multiplicity = 6;
+  clf.init(geo, multiplicity);
+  qassert(is_matching_geo(clf.geo(), geo));
   qacc_for(index, geo.local_volume(), {
     const Geometry& geo = clf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);

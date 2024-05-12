@@ -197,7 +197,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   #pragma omp parallel for
   for(Long index=0;index<Nvol;index++){
     const Coordinate xl = geo.coordinate_from_index(index);
-    Long index_ext = geo_ext.offset_from_coordinate(xl);
+    Long index_ext = geo_ext.offset_from_coordinate(xl, 1);
     map_index_typeO_0[index_ext] = index    ;
     map_index_typeO_1[index    ] = index_ext;
     //if(index == 0){
@@ -221,7 +221,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xl1 = coordinate_shifts(xl, dir);
-    Long index_ext = geo_ext.offset_from_coordinate(xl1);
+    Long index_ext = geo_ext.offset_from_coordinate(xl1, 1);
     map_bufD[index*dirL*2 + (dir+dirL)] = index_ext;
     need_pos[ map_bufD[index*dirL*2 + (dir+dirL)] ] += 1;
     //if(map_index_typeO_0[index_ext] == -1)
@@ -251,7 +251,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   //}
   //print0("rank %3d, Nneed %ld, total %ld \n", qlat::get_id_node(), Nneed - Nvol, Nvol_ext - Nvol );
 
-  const CommPlan& plan = get_comm_plan(set_marks_field_1, "", geo_ext);
+  const CommPlan& plan = get_comm_plan(set_marks_field_1, "", geo_ext, 1);
 
   std::vector<qlat::vector_acc<Long > > mapvq_send;
   std::vector<qlat::vector_acc<Long > > mapvq_recv;
@@ -328,7 +328,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   /////QLAT_VEC_CKPOINT
 
   qlat::FieldM<char, 1> eo;
-  qlat::qlat_map_eo_site(eo, geo);
+  qlat::qlat_map_eo_site(eo, geo, 1);
   char* eo_char = (char*) qlat::get_data(eo).data();
 
   std::vector<Long > local_map_typeA0_e;local_map_typeA0_e.resize(Nvol_ext); ////local_map0[count] == original positions
@@ -884,12 +884,14 @@ struct smear_fun{
     if(geo == geo_ and smear_in_time_dir == smear_in_time_dir_ and mem_setup_flag == true){return ;}
     geo = geo_;
     ////move to default geo
-    geo.resize(Coordinate(0, 0, 0, 0), Coordinate(0, 0, 0, 0));geo.multiplicity = 1;geo.eo=0;
+    geo.resize(Coordinate(0, 0, 0, 0), Coordinate(0, 0, 0, 0));
+    // geo.multiplicity = 1;
+    geo.eo=0;
     Geometry geo1 = geo;
     if(!smear_in_time_dir){geo1.resize(Coordinate(1, 1, 1, 0), Coordinate(1, 1, 1, 0));}
     if( smear_in_time_dir){geo1.resize(Coordinate(1, 1, 1, 1), Coordinate(1, 1, 1, 1));}
     geo_ext = geo1;
-    const CommPlan& plan = get_comm_plan(set_marks_field_1, "", geo_ext);
+    const CommPlan& plan = get_comm_plan(set_marks_field_1, "", geo_ext, 1);
     //bfac  = bfac_a;
     ////Tsize = Tsize_a;
 
@@ -1053,7 +1055,7 @@ struct smear_fun{
     (void)GPU;
     check_setup();
     if(redistribution_copy == 1){return ;}
-    const CommPlan& plan = get_comm_plan(set_marks_field_1, "", geo_ext);
+    const CommPlan& plan = get_comm_plan(set_marks_field_1, "", geo_ext, 1);
     const Long total_bytes =
         (plan.total_recv_size + plan.total_send_size) * bfac * sizeof(Ty);
     if (0 == total_bytes) {return;}
@@ -1392,7 +1394,7 @@ inline smear_fun_copy make_smear_plan(const Geometry& geo, const bool smear_in_t
 
 inline smear_fun_copy make_smear_plan(const SmearPlanKey& skey)
 {
-  Geometry geo;geo.init(skey.total_site, 1);
+  Geometry geo;geo.init(skey.total_site);
   return make_smear_plan(geo, skey.smear_in_time_dir, skey.prec);
 }
 
@@ -1913,7 +1915,8 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
   long long Tfloat = 0;
   ///double mem       = 0.0;
   Geometry geo = gf.geo();
-  geo.multiplicity = 1;geo.eo=0;
+  // geo.multiplicity = 1;
+  geo.eo=0;
   #ifdef QLAT_USE_ACC
   if(c0*d0 > 48){abort_r("d0 should be smaller than 48 for gpu mem. \n");}
   #endif

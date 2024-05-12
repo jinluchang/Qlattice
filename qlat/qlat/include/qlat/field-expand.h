@@ -15,7 +15,7 @@ struct API CommMarks : Field<int8_t> {
 };
 
 typedef void (*SetMarksField)(CommMarks& marks, const Geometry& geo,
-                              const std::string& tag);
+                              const Int multiplicity, const std::string& tag);
 
 template <class Vec>
 qacc void set_marks_field_path(CommMarks& marks, const Coordinate xl,
@@ -40,16 +40,16 @@ qacc void set_marks_field_path(CommMarks& marks, const Coordinate xl,
   }
 }
 
-void set_marks_field_all(CommMarks& marks, const Geometry& geo,
+void set_marks_field_all(CommMarks& marks, const Geometry& geo, const Int multiplicity,
                          const std::string& tag);
 
-void set_marks_field_1(CommMarks& marks, const Geometry& geo,
+void set_marks_field_1(CommMarks& marks, const Geometry& geo, const Int multiplicity,
                        const std::string& tag);
 
-void set_marks_field_gf_hamilton(CommMarks& marks, const Geometry& geo,
+void set_marks_field_gf_hamilton(CommMarks& marks, const Geometry& geo, const Int multiplicity,
                                  const std::string& tag);
 
-void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo,
+void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo, const Int multiplicity,
                               const std::string& tag);
 
 struct API CommPackInfo {
@@ -78,6 +78,7 @@ struct API CommPlanKey {
   SetMarksField set_marks_field;
   std::string tag;
   box<Geometry> geo;
+  Int multiplicity;
 };
 
 const int lattice_size_multiplier = 3;
@@ -85,11 +86,11 @@ const int lattice_size_multiplier = 3;
 // (This is a hack, please fix me)
 
 void g_offset_id_node_from_offset(Long& g_offset, int& id_node,
-                                  const Long offset, const Geometry& geo);
+                                  const Long offset, const Geometry& geo, const Int multiplicity);
 
-Long offset_send_from_g_offset(const Long g_offset, const Geometry& geo);
+Long offset_send_from_g_offset(const Long g_offset, const Geometry& geo, const Int multiplicity);
 
-Long offset_recv_from_g_offset(const Long g_offset, const Geometry& geo);
+Long offset_recv_from_g_offset(const Long g_offset, const Geometry& geo, const Int multiplicity);
 
 CommPlan make_comm_plan(const CommMarks& marks);
 
@@ -104,7 +105,8 @@ API inline Cache<std::string, CommPlan>& get_comm_plan_cache()
 const CommPlan& get_comm_plan(const CommPlanKey& cpk);
 
 const CommPlan& get_comm_plan(const SetMarksField& set_marks_field,
-                              const std::string& tag, const Geometry& geo);
+                              const std::string& tag, const Geometry& geo,
+                              const Int multiplicity);
 
 template <class M>
 void refresh_expanded(Field<M>& f, const CommPlan& plan)
@@ -160,14 +162,14 @@ void refresh_expanded(
     Field<M>& f, const SetMarksField& set_marks_field = set_marks_field_all,
     const std::string& tag = "")
 {
-  const CommPlan& plan = get_comm_plan(set_marks_field, tag, f.geo());
+  const CommPlan& plan = get_comm_plan(set_marks_field, tag, f.geo(), f.multiplicity);
   refresh_expanded(f, plan);
 }
 
 template <class M>
 void refresh_expanded_1(Field<M>& f)
 {
-  const CommPlan& plan = get_comm_plan(set_marks_field_1, "", f.geo());
+  const CommPlan& plan = get_comm_plan(set_marks_field_1, "", f.geo(), f.multiplicity);
   refresh_expanded(f, plan);
 }
 

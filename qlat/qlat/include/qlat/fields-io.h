@@ -319,11 +319,11 @@ void set_field_from_data(Field<M>& field, const GeometryNode& geon,
   const Long local_data_size = hdata().size();
   const Long site_data_size = local_data_size / local_volume;
   qassert(site_data_size % sizeof(M) == 0);
-  const int multiplicity = site_data_size / sizeof(M);
+  const Int multiplicity = site_data_size / sizeof(M);
   Geometry geo;
-  geo.init(geon, node_site, multiplicity);
+  geo.init(geon, node_site);
   field.init();
-  field.init(geo);
+  field.init(geo, multiplicity);
   Vector<M> fv = get_data(field);
   qassert(fv.data_size() == (Long)hdata().size());
   memcpy(fv.data(), hdata().data(), fv.data_size());
@@ -413,8 +413,8 @@ Long read(FieldsReader& fr, const std::string& fn, SelectedField<M>& sf,
     return 0;
   }
   Geometry geo;
-  geo.init(fr.geon, total_site / fr.geon.size_node, 1);
-  f_rank.init(geo);
+  geo.init(fr.geon, total_site / fr.geon.size_node);
+  f_rank.init(geo, 1);
   qassert(f_rank.geo().is_only_local);
   set_field_from_data(sf, f_rank, data);
   timer.flops += total_bytes;
@@ -689,7 +689,7 @@ Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
 }
 
 template <class M>
-void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
+void set_field_info_from_fields(Coordinate& total_site, Int& multiplicity,
                                 std::vector<Field<M>>& fs,
                                 const ShuffledFieldsReader& sfr)
 {
@@ -718,7 +718,7 @@ void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
     const int id_node = sfr.frs[i].geon.id_node;
     if (id_node == id_node_first_available) {
       total_site = fs[i].geo().total_site();
-      multiplicity = fs[i].geo().multiplicity;
+      multiplicity = fs[i].multiplicity;
       qassert(get_id_node() == id_node_bcast_from);
     }
   }
@@ -729,15 +729,15 @@ void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
       const GeometryNode& geon = sfr.frs[i].geon;
       const Coordinate node_site = total_site / geon.size_node;
       Geometry geo;
-      geo.init(geon, node_site, multiplicity);
-      fs[i].init(geo);
+      geo.init(geon, node_site);
+      fs[i].init(geo, multiplicity);
       set_zero(fs[i]);
     }
   }
 }
 
 template <class M>
-void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
+void set_field_info_from_fields(Coordinate& total_site, Int& multiplicity,
                                 std::vector<SelectedField<M>>& sfs,
                                 const ShuffledFieldsReader& sfr)
 {
@@ -767,7 +767,7 @@ void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
     if (id_node == id_node_first_available) {
       qassert(is_initialized(sfs[i]));
       total_site = sfs[i].geo().total_site();
-      multiplicity = sfs[i].geo().multiplicity;
+      multiplicity = sfs[i].multiplicity;
       qassert(get_id_node() == id_node_bcast_from);
     }
   }
@@ -778,7 +778,7 @@ void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
       const GeometryNode& geon = sfr.frs[i].geon;
       const Coordinate node_site = total_site / geon.size_node;
       Geometry geo;
-      geo.init(geon, node_site, multiplicity);
+      geo.init(geon, node_site);
       sfs[i].init(geo, 0, multiplicity);
       set_zero(sfs[i]);
     }
@@ -817,8 +817,8 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn, Field<M>& field)
   int multiplicity = 0;
   set_field_info_from_fields(total_site, multiplicity, fs, sfr);
   Geometry geo;
-  geo.init(total_site, multiplicity);
-  field.init(geo);
+  geo.init(total_site);
+  field.init(geo, multiplicity);
   shuffle_field_back(field, fs, sfr.new_size_node);
   timer.flops += total_bytes;
   return total_bytes;
@@ -858,8 +858,8 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn,
   Coordinate total_site;
   int multiplicity = 0;
   set_field_info_from_fields(total_site, multiplicity, sfs, sfr);
-  const Geometry geo(total_site, 1);
-  fsel.f_rank.init(geo);
+  const Geometry geo(total_site);
+  fsel.f_rank.init(geo, 1);
   shuffle_field_back(fsel.f_rank, f_rank_s, sfr.new_size_node);
   update_field_selection(fsel);
   sf.init(fsel, multiplicity);
@@ -1104,11 +1104,11 @@ bool does_file_exist_sync_node(const std::string& path, const std::string& fn);
       const ShuffledBitSet& sbs, const SelectedField<TYPENAME>& sf);           \
                                                                                \
   QLAT_EXTERN template void set_field_info_from_fields(                        \
-      Coordinate& total_site, int& multiplicity,                               \
+      Coordinate& total_site, Int& multiplicity,                               \
       std::vector<Field<TYPENAME>>& fs, const ShuffledFieldsReader& sfr);      \
                                                                                \
   QLAT_EXTERN template void set_field_info_from_fields(                        \
-      Coordinate& total_site, int& multiplicity,                               \
+      Coordinate& total_site, Int& multiplicity,                               \
       std::vector<SelectedField<TYPENAME>>& sfs,                               \
       const ShuffledFieldsReader& sfr);                                        \
                                                                                \

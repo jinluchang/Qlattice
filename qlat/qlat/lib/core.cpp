@@ -16,12 +16,11 @@ std::string show(const qlat::GeometryNode& geon)
   return s;
 }
 
-void Geometry::init(const Coordinate& total_site, const int multiplicity_)
+void Geometry::init(const Coordinate& total_site)
 {
   if (!initialized) {
     init();
     geon = get_geometry_node();
-    multiplicity = multiplicity_;
     for (int i = 0; i < DIMN; ++i) {
       qassert(0 == total_site[i] % geon.size_node[i]);
       node_site[i] = total_site[i] / geon.size_node[i];
@@ -37,7 +36,6 @@ std::string show(const qlat::Geometry& geo)
   s += ssprintf("{ initialized   = %s\n", show(geo.initialized).c_str());
   s += ssprintf(", eo            = %s\n", show(geo.eo).c_str());
   s += ssprintf(", geon          =\n%s\n", show(geo.geon).c_str());
-  s += ssprintf(", multiplicity  = %s\n", show(geo.multiplicity).c_str());
   s += ssprintf(", node_site     = %s\n", show(geo.node_site).c_str());
   s += ssprintf(", expan_left    = %s\n", show(geo.expansion_left).c_str());
   s += ssprintf(", expan_right   = %s\n", show(geo.expansion_right).c_str());

@@ -334,10 +334,10 @@ inline void init_half_vector(HalfVector& hv, const Geometry& geo, const int ls)
 {
   TIMER("init_half_vector");
   hv.ls = ls;
-  const Geometry geo_odd =
-      geo_eo(geo_reform(geo, ls * HalfVector::c_size, 0), 1);
+  const Geometry geo_odd = geo_eo(geo_resize(geo), 1);
+  const Int multiplicity = ls * HalfVector::c_size;
   hv.init();
-  hv.init(geo_odd);
+  hv.init(geo_odd, multiplicity);
 }
 
 struct CompressedEigenSystemData : Field<uint8_t> {
@@ -377,7 +377,7 @@ inline Geometry get_geo_from_cesi(
   geon.num_node = product(geon.size_node);
   geon.coor_node = coordinate_from_index(geon.id_node, geon.size_node);
   Geometry geo_full;
-  geo_full.init(geon, node_site, 1);
+  geo_full.init(geon, node_site);
   return geo_full;
 }
 
@@ -388,7 +388,7 @@ inline Geometry block_geometry(const Geometry& geo_full,
   qassert(geo_full.node_site % block_site == Coordinate());
   const Coordinate node_block = geo_full.node_site / block_site;
   Geometry geo;
-  geo.init(geo_full.geon, node_block, 1);
+  geo.init(geo_full.geon, node_block);
   return geo;
 }
 
@@ -415,9 +415,8 @@ inline void init_compressed_eigen_system_data(
   cesd.coefs_offset = cesd.bases_offset_fp16 + cesd.bases_size_fp16;
   cesd.end_offset = cesd.coefs_offset + cesi.neig * cesd.coef_size;
   const Geometry geo_full = get_geo_from_cesi(cesi, id_node, new_size_node);
-  const Geometry geo =
-      geo_remult(block_geometry(geo_full, cesi.block_site), cesd.end_offset);
-  cesd.init(geo);
+  const Geometry geo = block_geometry(geo_full, cesi.block_site);
+  cesd.init(geo, cesd.end_offset);
 }
 
 struct CompressedEigenSystemBases : Field<ComplexF> {
@@ -457,12 +456,11 @@ inline void init_compressed_eigen_system_bases(CompressedEigenSystemBases& cesb,
   cesb.block_vol_eo = product(block_site) / 2;
   cesb.ls = ls;
   cesb.c_size_vec = cesb.block_vol_eo * cesb.ls * HalfVector::c_size;
-  const Geometry geo = geo_remult(block_geometry(geo_full, block_site),
-                                  n_basis * cesb.c_size_vec);
+  const Geometry geo = block_geometry(geo_full, block_site);
   cesb.geo_full = geo_full;
   cesb.block_site = block_site;
   cesb.init();
-  cesb.init(geo);
+  cesb.init(geo, n_basis * cesb.c_size_vec);
 }
 
 inline void init_compressed_eigen_system_bases(
@@ -485,13 +483,12 @@ inline void init_compressed_eigen_system_coefs(
   cesc.n_vec = n_vec;
   cesc.n_basis = n_basis;
   cesc.c_size_vec = n_basis;
-  const Geometry geo =
-      geo_remult(block_geometry(geo_full, block_site), n_vec * cesc.c_size_vec);
+  const Geometry geo = block_geometry(geo_full, block_site);
   cesc.geo_full = geo_full;
   cesc.block_site = block_site;
   cesc.ls = ls;
   cesc.init();
-  cesc.init(geo);
+  cesc.init(geo, n_vec * cesc.c_size_vec);
 }
 
 inline void init_compressed_eigen_system_coefs(
@@ -1043,7 +1040,7 @@ inline std::vector<crc32_t> load_node(CompressedEigenSystemBases& cesb,
     init_compressed_eigen_system_coefs(cesc, cesi, get_id_node(),
                                        get_size_node());
   }
-  qassert(geo_remult(cesb.geo()) == geo_remult(cesc.geo()));
+  qassert(cesb.geo() == cesc.geo());
   const Geometry& geo = cesb.geo();
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
@@ -1095,12 +1092,11 @@ inline void init_blocked_half_vector(BlockedHalfVector& bhv,
   TIMER("init_blocked_half_vector");
   bhv.block_vol_eo = product(block_site) / 2;
   bhv.ls = ls;
-  const Geometry geo = geo_remult(block_geometry(geo_full, block_site),
-                                  bhv.block_vol_eo * ls * HalfVector::c_size);
+  const Geometry geo = block_geometry(geo_full, block_site);
   bhv.geo_full = geo_full;
   bhv.block_site = block_site;
   bhv.init();
-  bhv.init(geo);
+  bhv.init(geo, bhv.block_vol_eo * ls * HalfVector::c_size);
 }
 
 inline void decompress_eigen_system(std::vector<BlockedHalfVector>& bhvs,
@@ -1109,10 +1105,10 @@ inline void decompress_eigen_system(std::vector<BlockedHalfVector>& bhvs,
 // interface
 {
   TIMER_VERBOSE("decompress_eigen_system");
-  const Geometry geo_full = geo_reform(cesb.geo_full);
+  const Geometry geo_full = geo_resize(cesb.geo_full);
   const Coordinate& block_site = cesb.block_site;
   const int ls = cesb.ls;
-  qassert(geo_remult(cesb.geo()) == geo_remult(cesc.geo()));
+  qassert(cesb.geo() == cesc.geo());
   qassert(geo_full == cesb.geo_full);
   qassert(geo_full == cesc.geo_full);
   qassert(block_site == cesc.block_site);
@@ -1132,7 +1128,7 @@ inline void decompress_eigen_system(std::vector<BlockedHalfVector>& bhvs,
   const Long n_basis = cesb.n_basis;
   qassert(n_basis == cesc.n_basis);
   const Geometry& geo = bhvs[0].geo();
-  qassert(block_size == geo.multiplicity);
+  qassert(block_size == bhvs[0].multiplicity);
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Vector<ComplexF> bases = cesb.get_elems_const(index);
     const Vector<ComplexF> coefs = cesc.get_elems_const(index);
@@ -1158,7 +1154,7 @@ inline void convert_half_vector(BlockedHalfVector& bhv, const HalfVector& hv,
 {
   TIMER("convert_half_vector");
   const int ls = hv.ls;
-  init_blocked_half_vector(bhv, geo_reform(hv.geo()), block_site, ls);
+  init_blocked_half_vector(bhv, geo_resize(hv.geo()), block_site, ls);
   const Geometry& geo = hv.geo();
   const Coordinate node_block = geo.node_site / block_site;
   qassert(geo.is_only_local);

@@ -317,7 +317,7 @@ inline Cache<IOvecKey, io_vec >& get_io_vec_cache()
 inline io_vec& get_io_vec_plan(const IOvecKey& fkey)
 {
   if (!get_io_vec_cache().has(fkey)) {
-    Geometry geo;geo.init(fkey.total_site, 1);
+    Geometry geo;geo.init(fkey.total_site);
     get_io_vec_cache()[fkey] = io_vec(geo, fkey.ionum, IO_THREAD, fkey.do_checksum_set);
   }
   return get_io_vec_cache()[fkey];
@@ -1342,7 +1342,7 @@ void load_gwu_link(const char *filename,GaugeFieldT<Td> &gf, bool read = true){
   if(read == false)
   for (size_t index = 0; index < noden; ++index)
   {
-    ColorMatrixT<Td>& res = gf.get_elem_offset(index*gf.geo().multiplicity+0);
+    ColorMatrixT<Td>& res = gf.get_elem_offset(index*gf.multiplicity+0);
 
     for(int dir=0;dir<4;dir++)
     {
@@ -1373,7 +1373,7 @@ void load_gwu_link(const char *filename,GaugeFieldT<Td> &gf, bool read = true){
   if(read == true)
   for (size_t index = 0; index < noden; ++index)
   {
-    ColorMatrixT<Td>& res = gf.get_elem_offset(index*gf.geo().multiplicity+0);
+    ColorMatrixT<Td>& res = gf.get_elem_offset(index*gf.multiplicity+0);
 
     for(int dir=0;dir<4;dir++)
     {
@@ -1432,7 +1432,7 @@ void load_gwu_noies(const char *filename,std::vector<qlat::FieldM<Ty, 1> > &nois
         size_t sizen = get_file_size_MPI(filename);
         if(sizen != Nnoi*2*Fsize){abort_r("noise size wrong! \n");}
       }
-      qlat::Geometry geo = io_use.geop;geo.multiplicity=1;
+      qlat::Geometry geo = io_use.geop;// geo.multiplicity=1;
       if(!noi.initialized)noi.init(geo);
     }
     if(read==false){
@@ -1489,7 +1489,7 @@ void load_gwu_noi(const char *filename,qlat::FieldM<Ty,1> &noi,bool read=true){
   size_t sizen = get_file_size_MPI(filename);
   if(sizen != 2*Fsize){abort_r("noise size wrong! \n");}
 
-  qlat::Geometry geo = io_use.geop;geo.multiplicity=1;
+  qlat::Geometry geo = io_use.geop;// geo.multiplicity=1;
   if(!noi.initialized)noi.init(geo);
   }
   if(read==false){
@@ -1809,7 +1809,7 @@ inline int load_qlat_noisesT_ini(std::vector<Ty* >& bufP, std::vector<qlat::Fiel
   if(in.read == true){
     Geometry geo;
     Coordinate total_site = Coordinate(in.nx, in.ny, in.nz, in.nt);
-    geo.init(total_site, 1);
+    geo.init(total_site);
 
     if(noises.size() != (LInt) nread){
       noises.resize(0);
@@ -1847,7 +1847,7 @@ void load_qlat_noisesT_file_ini(const char *filename, const int N_noi, inputpara
 
   if(read == true ){
     Coordinate total_site = Coordinate(in.nx, in.ny, in.nz, in.nt);
-    geo.init(total_site, 1);
+    geo.init(total_site);
   }
 
   ////io_vec io_use(geo, IO_DEFAULT, IO_THREAD, in.do_checksum);

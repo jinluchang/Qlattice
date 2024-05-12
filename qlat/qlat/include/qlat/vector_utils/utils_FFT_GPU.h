@@ -1067,16 +1067,17 @@ void fft_fieldM(std::vector<Handle<qlat::Field<M> > >& src, bool fftdir=true, bo
 {
   if(src.size() < 1)return;
   const Geometry& geo = src[0]().geo();
+  const Int multiplicity = src[0]().multiplicity;
   const int is_double = Is_data_double<M>();
   Qassert(is_double == 0 or is_double == 1);
   //bool is_double     = get_data_type_is_double<M >();
   //std::string prec = ComplexD_TYPE;int civ = 1;
-  //if( is_double){prec = ComplexD_TYPE ; civ = geo.multiplicity * sizeof(M)/sizeof(ComplexD ); }
-  //if(!is_double){prec = ComplexF_TYPE; civ = geo.multiplicity * sizeof(M)/sizeof(ComplexF); }
+  //if( is_double){prec = ComplexD_TYPE ; civ = multiplicity * sizeof(M)/sizeof(ComplexD ); }
+  //if(!is_double){prec = ComplexF_TYPE; civ = multiplicity * sizeof(M)/sizeof(ComplexF); }
 
   using ElementaryType = typename IsBasicDataType<M >::ElementaryType ;
   std::string prec = IsBasicDataType<ElementaryType >::get_type_name();
-  int civ = geo.multiplicity * sizeof(M)/( 2 *sizeof( ElementaryType ) );
+  int civ = multiplicity * sizeof(M)/( 2 *sizeof( ElementaryType ) );
   qassert(prec == "RealF" or prec == "RealD");
 
   int nfft = src.size() * civ;

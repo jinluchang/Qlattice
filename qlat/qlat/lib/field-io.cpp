@@ -63,9 +63,10 @@ bool dist_repartition(const Coordinate& new_size_node, const std::string& path,
       (new_npath == npath or new_npath == "")) {
     if (is_dist_field(npath)) {
       Geometry geo;
-      int sizeof_M;
+      Int multiplicity;
+      Int sizeof_M;
       Coordinate size_node;
-      dist_read_geo_info(geo, sizeof_M, size_node, npath);
+      dist_read_geo_info(geo, multiplicity, sizeof_M, size_node, npath);
       if (size_node == new_size_node and
           (new_path == "" or new_npath == npath)) {
         displayln_info(

@@ -7,9 +7,9 @@
 namespace qlat
 {
 
-void setup_expand(const Geometry& geo, qlat::vector_acc<Long >& pack_send, qlat::vector_acc<Long >& pack_recv, const SetMarksField& set_marks_field, const std::string& tag)
+void setup_expand(const Geometry& geo, const Int multiplicity, qlat::vector_acc<Long >& pack_send, qlat::vector_acc<Long >& pack_recv, const SetMarksField& set_marks_field, const std::string& tag)
 {
-  const CommPlan& plan = get_comm_plan(set_marks_field, tag, geo);
+  const CommPlan& plan = get_comm_plan(set_marks_field, tag, geo, multiplicity);
   const Long Nsend = plan.total_send_size;
   const Long Nrecv = plan.total_recv_size;
   /////printf("setup %8d %8d \n", int(Nsend * 2), int(Nrecv * 2));
@@ -43,7 +43,7 @@ void setup_expand(const Geometry& geo, qlat::vector_acc<Long >& pack_send, qlat:
   }
 }
 
-bool compare_geo(const Geometry& g0, const Geometry& g1, const int with_multi)
+bool compare_geo(const Geometry& g0, const Geometry& g1)
 {
   int equal = 1;
   if(g0.initialized           != g1.initialized ){ return 0; }
@@ -59,18 +59,15 @@ bool compare_geo(const Geometry& g0, const Geometry& g1, const int with_multi)
 
   //if(g0.total_site()    != g1.total_site()    ){ return 0; }
 
-  if(with_multi){
-    if(g0.multiplicity  != g1.multiplicity    ){ return 0; }
-  }
   return equal;
 }
 
 bool Compare_geo(const Geometry& g0, const Geometry& g1)
 {
-  return compare_geo(g0, g1, 0);
+  return compare_geo(g0, g1);
 }
 
-bool compare_less(const Geometry& g0, const Geometry& g1, const int with_multi)
+bool compare_less(const Geometry& g0, const Geometry& g1)
 {
   if(g0.total_site()    < g1.total_site()    ){  return true;}
   if(g1.total_site()    < g0.total_site()    ){  return false;}
@@ -81,24 +78,30 @@ bool compare_less(const Geometry& g0, const Geometry& g1, const int with_multi)
   if(g0.expansion_right < g1.expansion_right ){  return true;}
   if(g1.expansion_right < g0.expansion_right ){  return false;}
 
-  if(with_multi){
-    if(g0.multiplicity    < g1.multiplicity    ){  return true;}
-    if(g1.multiplicity    < g0.multiplicity    ){  return false;}
-  }
-
   return false;
 }
 
 bool operator<(const expand_index_Key& x, const expand_index_Key& y)
 {
-  int sr =  x.tag.compare(y.tag);
-  if(sr < 0){return false;}
-  if(sr > 0){return  true;}
-  return compare_less(x.geo, y.geo, 1);
+  int sr = x.tag.compare(y.tag);
+  if (sr < 0) {
+    return false;
+  }
+  if (sr > 0) {
+    return true;
+  }
+  sr = compare_less(x.geo, y.geo);
+  if (sr < 0) {
+    return false;
+  }
+  if (sr > 0) {
+    return true;
+  }
+  return x.multiplicity < y.multiplicity;
 }
 
 void set_marks_field_dir(CommMarks& marks, const Geometry& geo,
-                       const std::string& tag)
+                         const Int multiplicity, const std::string& tag)
 // tag is partialy used
 {
   TIMER_VERBOSE("set_marks_field_dir");
@@ -118,7 +121,7 @@ void set_marks_field_dir(CommMarks& marks, const Geometry& geo,
 
   Qassert(set_tag != -10000);
   marks.init();
-  marks.init(geo);
+  marks.init(geo, multiplicity);
   set_zero(marks);
   Geometry geo_full = geo;
   geo_full.eo = 0;
@@ -140,7 +143,7 @@ void set_marks_field_dir(CommMarks& marks, const Geometry& geo,
 
       if (geo.is_on_node(xl1) and !geo.is_local(xl1)) {
         Vector<int8_t> v = marks.get_elems(xl1);
-        for (int m = 0; m < geo.multiplicity; ++m) {
+        for (int m = 0; m < multiplicity; ++m) {
           v[m] = 1;
         }
       }

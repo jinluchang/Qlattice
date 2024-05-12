@@ -106,13 +106,14 @@ void fieldCastTruncated(Field<M> &dest, const Field<N> &src)
 {
   TIMER("fieldCastTruncated");
   const Geometry &geo = src.geo();
-  dest.init(geo);
+  const Int multiplicity = src.multiplicity;
+  dest.init(geo, multiplicity);
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
     Coordinate xl = geo.coordinate_from_index(index);
     const Vector<N> s = src.get_elems_const(xl);
     Vector<M> d = dest.get_elems(xl);
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < multiplicity; ++m) {
       castTruncated(d[m], s[m]);
     }
   }
@@ -229,12 +230,13 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
   TIMER("sophisticated_serial_write");
   //
   Geometry geo_only_local = geo_resize(origin.geo(), 0);
+  const Int multiplicity = origin.multiplicity;
   //
   Field<M> field_recv;
-  field_recv.init(geo_only_local);
+  field_recv.init(geo_only_local, multiplicity);
   //
   Field<M> field_send;
-  field_send.init(geo_only_local);
+  field_send.init(geo_only_local, multiplicity);
   field_send = origin;
   //
   FILE *outputFile = NULL;
@@ -249,8 +251,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
     if (get_id_node() == 0) {
       M *ptr = get_data(field_send).data();
       qassert(ptr != NULL);
-      Long size = sizeof(M) * geo_only_local.local_volume() *
-                  geo_only_local.multiplicity;
+      Long size = sizeof(M) * geo_only_local.local_volume() * multiplicity;
       std::cout << "Writing CYCLE: " << i << "\tSIZE = " << size << std::endl;
       timer_fwrite((char *)ptr, size, outputFile);
       fflush(outputFile);
@@ -292,6 +293,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
   TIMER_VERBOSE("sophisticated_serial_read");
   //
   Geometry geo_only_local = geo_resize(destination.geo(), 0);
+  const Int multiplicity = destination.multiplicity;
   ;
   //
   Field<M> field_recv;
@@ -335,7 +337,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
                 << std::endl;
       M *ptr = field_send.field.data();
       Long size = sizeof(M) * geo_only_local.local_volume() *
-                  geo_only_local.multiplicity;
+                  multiplicity;
       qassert(!fseek(input, size * get_id_node(), SEEK_CUR));
       timer_fread((char *)ptr, size, input);
       std::cout << "Reading FINISHED: Node Number =\t" << get_id_node()
@@ -414,7 +416,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 #else
   //
   M *ptr = field_rslt.field.data();
-  Long size = geo_only_local.local_volume() * geo_only_local.multiplicity;
+  Long size = geo_only_local.local_volume() * multiplicity;
   //	printf("read = %d\n", fread((char*)ptr, sizeof(M), size, input));
   fread((char *)ptr, sizeof(M), size, input);
   //

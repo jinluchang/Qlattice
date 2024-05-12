@@ -96,7 +96,7 @@ void only_keep_selected_points(Field<M>& f, const PointsSelection& psel)
   const Geometry& geo = f.geo();
   qassert(geo.is_only_local);
   Field<M> f1;
-  f1.init(geo);
+  f1.init(geo, f.multiplicity);
   set_zero(f1);
   const Long n_points = psel.size();
   qacc_for(idx, n_points, {
@@ -105,7 +105,7 @@ void only_keep_selected_points(Field<M>& f, const PointsSelection& psel)
     if (geo.is_local(xl)) {
       const Vector<M> fv = f.get_elems_const(xl);
       Vector<M> f1v = f1.get_elems(xl);
-      for (int m = 0; m < geo.multiplicity; ++m) {
+      for (int m = 0; m < f.multiplicity; ++m) {
         f1v[m] = fv[m];
       }
     }
@@ -144,7 +144,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
   const Geometry& geo = f.geo();
   qassert(geo.is_only_local);
   const Long n_points = psel.size();
-  sp.init(psel, geo.multiplicity);
+  sp.init(psel, f.multiplicity);
   set_zero(sp);  // has to set_zero for glb_sum_byte_vec
   qacc_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
@@ -152,7 +152,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
     if (geo.is_local(xl)) {
       const Vector<M> fv = f.get_elems_const(xl);
       Vector<M> spv = sp.get_elems(idx);
-      for (int m = 0; m < geo.multiplicity; ++m) {
+      for (int m = 0; m < f.multiplicity; ++m) {
         spv[m] = fv[m];
       }
     }
@@ -244,18 +244,17 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedPoints<M>& sp0,
 
 template <class M>
 void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
-                        const Geometry& geo_, const PointsSelection& psel,
+                        const Geometry& geo, const PointsSelection& psel,
                         const bool is_keeping_data = true)
 {
   TIMER("set_field_selected(f,sp,geo,psel)");
-  const Geometry geo = geo_reform(geo_, sp.multiplicity, 0);
   qassert(geo.is_only_local);
   const Long n_points = sp.n_points;
   qassert(n_points == (Long)psel.size());
   if (is_keeping_data) {
-    f.init_zero(geo);
+    f.init_zero(geo, sp.multiplicity);
   } else {
-    f.init(geo);
+    f.init(geo, sp.multiplicity);
     set_zero(f);
   }
   qacc_for(idx, n_points, {
@@ -264,7 +263,7 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
     if (geo.is_local(xl)) {
       const Vector<M> spv = sp.get_elems_const(idx);
       Vector<M> fv = f.get_elems(xl);
-      for (int m = 0; m < geo.multiplicity; ++m) {
+      for (int m = 0; m < sp.multiplicity; ++m) {
         fv[m] = spv[m];
       }
     }
@@ -273,17 +272,18 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
 
 template <class M>
 void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
-                        const Geometry& geo_, const PointsSelection& psel,
-                        const int m, const bool is_keeping_data = true)
+                        const Geometry& geo, const PointsSelection& psel,
+                        const Int multiplicity, const Int m,
+                        const bool is_keeping_data = true)
 {
-  TIMER("set_field_selected(f,sp,geo,psel,m)");
+  TIMER("set_field_selected(f,sp,geo,psel,mult,m)");
   if (is_keeping_data) {
-    f.init_zero(geo_);
+    f.init_zero(geo, multiplicity);
   } else {
-    f.init(geo_);
+    f.init(geo, multiplicity);
     set_zero(f);
   }
-  const Geometry& geo = f.geo();
+  qassert(0 <= m and m < multiplicity);
   const Long n_points = sp.n_points;
   qassert(n_points == (Long)psel.size());
   qassert(sp.multiplicity == 1);
@@ -300,22 +300,21 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
 // -------------------------------------------
 
 template <class M>
-void acc_field(Field<M>& f, const SelectedPoints<M>& sp, const Geometry& geo_,
+void acc_field(Field<M>& f, const SelectedPoints<M>& sp, const Geometry& geo,
                const PointsSelection& psel)
 {
   TIMER("acc_field(f,sp,geo,psel)");
-  const Geometry geo = geo_reform(geo_, sp.multiplicity, 0);
   qassert(geo.is_only_local);
   const Long n_points = sp.n_points;
   qassert(n_points == (Long)psel.size());
-  f.init(geo);
+  f.init(geo, sp.multiplicity);
   qacc_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {
       const Vector<M> spv = sp.get_elems_const(idx);
       Vector<M> fv = f.get_elems(xl);
-      for (int m = 0; m < geo.multiplicity; ++m) {
+      for (int m = 0; m < sp.multiplicity; ++m) {
         fv[m] += spv[m];
       }
     }
@@ -328,7 +327,7 @@ void field_glb_sum(SelectedPoints<M>& sp, const Field<M>& f)
   TIMER("field_glb_sum(sp,f)");
   sp.init();
   const Geometry& geo = f.geo();
-  const int multiplicity = geo.multiplicity;
+  const Int multiplicity = f.multiplicity;
   std::vector<M> vec = field_glb_sum(f);
   sp.init(1, multiplicity, PointsDistType::Global);
   sp.points = vec;
@@ -341,8 +340,8 @@ void field_glb_sum_tslice(SelectedPoints<M>& sp, const Field<M>& f,
   TIMER("field_glb_sum_tslice(sp,f)");
   sp.init();
   const Geometry& geo = f.geo();
-  const int t_size = geo.total_site()[t_dir];
-  const int multiplicity = geo.multiplicity;
+  const Int t_size = geo.total_site()[t_dir];
+  const Int multiplicity = f.multiplicity;
   std::vector<M> vec = field_glb_sum_tslice(f, t_dir);
   sp.init(t_size, multiplicity, PointsDistType::Global);
   sp.points = vec;
@@ -696,8 +695,8 @@ void load_selected_points_str(SelectedPoints<M>& sp, std::string& content)
                                                                           \
   QLAT_EXTERN template void set_field_selected<TYPENAME>(                 \
       Field<TYPENAME> & f, const SelectedPoints<TYPENAME>& sp,            \
-      const Geometry& geo_, const PointsSelection& psel, const int m,     \
-      const bool is_keeping_data);                                        \
+      const Geometry& geo_, const PointsSelection& psel,                  \
+      const Int multiplicity, const Int m, const bool is_keeping_data);   \
                                                                           \
   QLAT_EXTERN template void acc_field<TYPENAME>(                          \
       Field<TYPENAME> & f, const SelectedPoints<TYPENAME>& sp,            \

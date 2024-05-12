@@ -13,7 +13,7 @@ namespace qlat
 
 struct API FftComplexFieldPlan {
   Geometry geo;     // geo.is_only_local == true
-  int mc;           // geo.multiplicity * sizeof(M) / sizeof(ComplexD)
+  int mc;           // multiplicity * sizeof(M) / sizeof(ComplexD)
   int dir;          // direction of the fft
   bool is_forward;  // is forward fft (forward \sum_x f[x] exp(-i k x))
   //
@@ -36,7 +36,7 @@ API inline Cache<std::string, FftComplexFieldPlan>& get_fft_plan_cache()
   return cache;
 }
 
-FftComplexFieldPlan& get_fft_plan(const Geometry& geo, const int mc,
+FftComplexFieldPlan& get_fft_plan(const Geometry& geo, const Int mc,
                                   const int dir, const bool is_forward);
 
 template <class M>
@@ -44,9 +44,9 @@ void fft_complex_field_dir(Field<M>& field1, const Field<M>& field,
                            const int dir, const bool is_forward)
 {
   TIMER("fft_complex_field_dir");
-  Geometry geo = field.geo();
-  geo.resize(0);
-  const int mc = geo.multiplicity * sizeof(M) / sizeof(ComplexD);
+  const Geometry geo = geo_resize(field.geo());
+  const Int multiplicity = field.multiplicity;
+  const int mc = multiplicity * sizeof(M) / sizeof(ComplexD);
   FftComplexFieldPlan& plan = get_fft_plan(geo, mc, dir, is_forward);
   fftw_plan& fftplan = plan.fftplan;
   const int sizec = geo.total_site()[dir];
@@ -84,7 +84,7 @@ void fft_complex_field_dir(Field<M>& field1, const Field<M>& field,
                 (void*)&fftdatac[nc_size * i], get_data_size(fft_fields[i]));
   }
   fftw_free(fftdatac);
-  field1.init(geo);
+  field1.init(geo, multiplicity);
   shuffle_field_back(field1, fft_fields, sp);
 }
 

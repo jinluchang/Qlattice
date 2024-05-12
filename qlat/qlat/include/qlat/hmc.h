@@ -62,7 +62,7 @@ inline void set_rand_gauge_momentum(GaugeMomentum& gm, const double sigma,
 inline double gm_hamilton_node(const GaugeMomentum& gm)
 {
   TIMER("gm_hamilton_node");
-  const Geometry geo = geo_reform(gm.geo());
+  const Geometry geo = geo_resize(gm.geo());
   FieldM<double, 1> fd;
   fd.init(geo);
   qacc_for(index, geo.local_volume(), {
@@ -103,7 +103,7 @@ inline double gf_sum_re_tr_plaq_node_no_comm(const GaugeField& gf)
 // subtract the free field value
 {
   TIMER("gf_sum_re_tr_plaq_node_no_comm");
-  const Geometry geo = geo_reform(gf.geo());
+  const Geometry geo = geo_resize(gf.geo());
   FieldM<double, 1> fd;
   fd.init(geo);
   qacc_for(index, geo.local_volume(), {
@@ -128,7 +128,7 @@ inline double gf_sum_re_tr_rect_node_no_comm(const GaugeField& gf)
 // subtract the free field value
 {
   TIMER("gf_sum_re_tr_rect_node_no_comm");
-  const Geometry geo = geo_reform(gf.geo());
+  const Geometry geo = geo_resize(gf.geo());
   FieldM<double, 1> fd;
   fd.init(geo);
   qacc_for(index, geo.local_volume(), {
@@ -174,8 +174,8 @@ inline double gf_hamilton_node(const GaugeField& gf, const GaugeAction& ga)
   gf_ext.init(geo_ext);
   gf_ext = gf;
   const std::string tag_comm = ga.c1 == 0.0 ? "plaq" : "plaq+rect";
-  const CommPlan& plan =
-      get_comm_plan(set_marks_field_gf_hamilton, tag_comm, gf_ext.geo());
+  const CommPlan& plan = get_comm_plan(set_marks_field_gf_hamilton, tag_comm,
+                                       gf_ext.geo(), gf_ext.multiplicity);
   refresh_expanded(gf_ext, plan);
   return gf_hamilton_node_no_comm(gf_ext, ga);
 }
@@ -304,8 +304,8 @@ inline void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf,
   gf_ext.init(geo_ext);
   gf_ext = gf;
   const std::string tag_comm = ga.c1 == 0.0 ? "plaq" : "plaq+rect";
-  const CommPlan& plan =
-      get_comm_plan(set_marks_field_gm_force, tag_comm, gf_ext.geo());
+  const CommPlan& plan = get_comm_plan(set_marks_field_gm_force, tag_comm,
+                                       gf_ext.geo(), gf_ext.multiplicity);
   refresh_expanded(gf_ext, plan);
   set_gm_force_no_comm(gm_force, gf_ext, ga);
 }

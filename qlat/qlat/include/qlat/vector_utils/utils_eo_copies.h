@@ -10,14 +10,14 @@
 
 namespace qlat{
 
-inline void qlat_map_eo_site(qlat::FieldM<char, 1>& eo, const Geometry& geo)
+inline void qlat_map_eo_site(qlat::FieldM<char, 1>& eo, const Geometry& geo, const Int multiplicity)
 {
   TIMER("qlat_map_eo_site");
   if(eo.initialized){
-    Geometry geo_ = eo.geo();geo_.multiplicity = geo.multiplicity;
+    Geometry geo_ = eo.geo();eo.multiplicity = multiplicity;
     if(geo_ == geo){return ;}
   }
-  eo.init(geo);
+  eo.init(geo, multiplicity);
   char* res = (char*) qlat::get_data(eo).data();
   ////only bool is not write thread safe
   qacc_for(isp, geo.local_volume(), {
@@ -49,7 +49,7 @@ void apply_eo_sign(qlat::FieldM<Ty , civ>& src, qlat::FieldM<Ty , civ>& res, qla
 {
   if(!src.initialized or !res.initialized){abort_r("src should be initialized with geo!\n");}
   const Geometry& geo = src.geo();
-  if(!eo.initialized){qlat_map_eo_site(eo, geo);}
+  if(!eo.initialized){qlat_map_eo_site(eo, geo, src.multiplicity);}
   Ty*   sP = (Ty*  ) qlat::get_data(src).data();
   Ty*   rP = (Ty*  ) qlat::get_data(res).data();
   apply_eo_sign<Ty, civ>(sP, rP, eo, dir);
@@ -89,7 +89,7 @@ void apply_eo_zeros(qlat::FieldM<Ty , civ>& src, qlat::FieldM<Ty , civ>& res, ql
 {
   if(!src.initialized or !res.initialized){abort_r("src should be initialized with geo!\n");}
   const Geometry& geo = src.geo();
-  if(!eo.initialized){qlat_map_eo_site(eo, geo);}
+  if(!eo.initialized){qlat_map_eo_site(eo, geo, src.multiplicity);}
   Ty*   sP = (Ty*  ) qlat::get_data(src).data();
   Ty*   rP = (Ty*  ) qlat::get_data(res).data();
   apply_eo_zeros<Ty, civ>(sP, rP, eo, dir);

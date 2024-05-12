@@ -493,7 +493,7 @@ inline void set_flow_staple_mask_mu_no_comm(FieldM<ColorMatrix, 1>& cf,
   qassert(mask == 1 or mask == 2);
   qassert(0 <= mu and mu < 4);
   qassert(flow_size == 1 or flow_size == 2);
-  const Geometry geo = geo_reform(gf_ext.geo());
+  const Geometry geo = geo_resize(gf_ext.geo());
   const vector_acc<Long>& flowed_indices =
       get_flowed_hmc_indices_mask_flow_size(geo, mask, flow_size);
   cf.init(geo);
@@ -517,7 +517,7 @@ inline void gf_flow_plaq_mask_mu_no_comm(GaugeField& gf,
   qassert(is_initialized(gf0_ext));
   qassert(mask == 1 or mask == 2);
   qassert(0 <= mu and mu < 4);
-  const Geometry geo = geo_reform(gf0_ext.geo());
+  const Geometry geo = geo_resize(gf0_ext.geo());
   const vector_acc<Long>& flowed_indices =
       get_flowed_hmc_indices_mask_flow_size(geo, mask, flow_size);
   gf.init(geo);
@@ -549,7 +549,7 @@ inline void gf_flow_inv_plaq_mask_mu_no_comm(
   qassert(is_initialized(gf1_ext));
   qassert(mask == 1 or mask == 2);
   qassert(0 <= mu and mu < 4);
-  const Geometry geo = geo_reform(gf1_ext.geo());
+  const Geometry geo = geo_resize(gf1_ext.geo());
   const vector_acc<Long>& flowed_indices =
       get_flowed_hmc_indices_mask_flow_size(geo, mask, flow_size);
   gf.init(geo);
@@ -574,12 +574,13 @@ inline void gf_flow_inv_plaq_mask_mu_no_comm(
 }
 
 inline void set_marks_flow_plaq_mask_mu(CommMarks& marks, const Geometry& geo,
+                                        const Int multiplicity,
                                         const std::string& tag)
 {
   TIMER_VERBOSE("set_marks_flow_plaq_mask_mu");
-  qassert(geo.multiplicity == 4);
+  qassert(multiplicity == 4);
   marks.init();
-  marks.init(geo);
+  marks.init(geo, multiplicity);
   set_zero(marks);
   const std::vector<std::string> words = split_line_with_spaces(tag);
   qassert(words.size() == 3);
@@ -614,9 +615,9 @@ inline void refresh_expanded_gf_flow_plaq_mask_mu(GaugeField& gf_ext,
                                                   const int flow_size)
 {
   TIMER("refresh_expanded_gf_flow_plaq_mask_mu");
-  const CommPlan& plan =
-      get_comm_plan(set_marks_flow_plaq_mask_mu,
-                    ssprintf("%d %d %d", mask, mu, flow_size), gf_ext.geo());
+  const CommPlan& plan = get_comm_plan(
+      set_marks_flow_plaq_mask_mu, ssprintf("%d %d %d", mask, mu, flow_size),
+      gf_ext.geo(), gf_ext.multiplicity);
   refresh_expanded(gf_ext, plan);
 }
 
@@ -632,8 +633,8 @@ inline void gf_flow(GaugeField& gf, const GaugeField& gf0, const FlowInfo& fi)
   TIMER("gf_flow");
   const Coordinate expand_left(2, 2, 2, 2);
   const Coordinate expand_right(2, 2, 2, 2);
-  const Geometry geo = geo_reform(gf0.geo());
-  const Geometry geo_ext = geo_reform(gf0.geo(), 1, expand_left, expand_right);
+  const Geometry geo = geo_resize(gf0.geo());
+  const Geometry geo_ext = geo_resize(gf0.geo(), expand_left, expand_right);
   GaugeField gf_ext;
   gf_ext.init(geo_ext);
   gf_ext = gf0;
@@ -661,8 +662,8 @@ inline void gf_flow_inv(GaugeField& gf, const GaugeField& gf1,
   TIMER("gf_flow_inv");
   const Coordinate expand_left(2, 2, 2, 2);
   const Coordinate expand_right(2, 2, 2, 2);
-  const Geometry geo = geo_reform(gf1.geo());
-  const Geometry geo_ext = geo_reform(gf1.geo(), 1, expand_left, expand_right);
+  const Geometry geo = geo_resize(gf1.geo());
+  const Geometry geo_ext = geo_resize(gf1.geo(), expand_left, expand_right);
   GaugeField gf_ext;
   gf_ext.init(geo_ext);
   gf_ext = gf1;
@@ -893,7 +894,7 @@ inline void set_d_uc_mat_plaq_mask_mu_no_comm(
   qassert(is_initialized(gf_ext));
   qassert(mask == 1 or mask == 2);
   qassert(0 <= mu and mu < 4);
-  const Geometry geo = geo_reform(gf_ext.geo());
+  const Geometry geo = geo_resize(gf_ext.geo());
   ducf.init(geo, multiplicity_flow_hmc_max(flow_size));
   qacc_for(index, geo.local_volume(), {
     const Coordinate yl = geo.coordinate_from_index(index);
@@ -937,7 +938,7 @@ inline void set_n_mat_plaq_mask_mu_no_comm(
 {
   TIMER("set_n_mat_plaq_mask_mu_no_comm");
   qassert(is_initialized(ducf));
-  qassert(ducf.geo().multiplicity == multiplicity_flow_hmc_max(flow_size));
+  qassert(ducf.multiplicity == multiplicity_flow_hmc_max(flow_size));
   const Geometry& geo = ducf.geo();
   nf.init(geo, multiplicity_flow_hmc_max(flow_size));
   const box<ColorMatrixConstants>& cmcs =
@@ -995,7 +996,7 @@ inline void set_n_mat_plaq_mask_mu_no_comm(FieldM<AdjointColorMatrix, 1>& nf,
   qassert(0 <= mu and mu < 4);
   const box<ColorMatrixConstants>& cmcs =
       ColorMatrixConstants::get_instance_box();
-  const Geometry geo = geo_reform(gf_ext.geo());
+  const Geometry geo = geo_resize(gf_ext.geo());
   const vector_acc<Long>& flowed_indices =
       get_flowed_hmc_indices_mask_flow_size(geo, mask, flow_size);
   nf.init(geo);
@@ -1019,7 +1020,7 @@ inline void set_ad_x_and_j_n_x_plaq_mask_mu_no_comm(
   qassert(0 <= mu and mu < 4);
   const box<ColorMatrixConstants>& cmcs =
       ColorMatrixConstants::get_instance_box();
-  const Geometry geo = geo_reform(gf.geo());
+  const Geometry geo = geo_resize(gf.geo());
   const vector_acc<Long>& flowed_indices =
       get_flowed_hmc_indices_mask_flow_size(geo, mask, flow_size);
   f_ad_x_and_j_n_x.init(geo);
@@ -1066,7 +1067,7 @@ inline void set_m_mat_plaq_mask_mu_no_comm(
 {
   TIMER("set_m_mat_plaq_mask_mu_no_comm");
   qassert(is_initialized(nf));
-  qassert(nf.geo().multiplicity == multiplicity_flow_hmc_max(flow_size));
+  qassert(nf.multiplicity == multiplicity_flow_hmc_max(flow_size));
   qassert(is_initialized(f_ad_x_and_j_n_x_ext));
   qassert(mask == 1 or mask == 2);
   qassert(0 <= mu and mu < 4);
@@ -1125,7 +1126,7 @@ inline void set_mp_mat_plaq_mask_mu_no_comm(
   qassert(0 <= mu and mu < 4);
   const box<ColorMatrixConstants>& cmcs =
       ColorMatrixConstants::get_instance_box();
-  const Geometry geo = geo_reform(gf.geo());
+  const Geometry geo = geo_resize(gf.geo());
   const vector_acc<Long>& flowed_indices =
       get_flowed_hmc_indices_mask_flow_size(geo, mask, flow_size);
   mpf.init(geo);
@@ -1182,10 +1183,10 @@ inline void set_gm_force_from_flow_no_comm(
   TIMER("set_gm_force_from_flow_no_comm");
   qassert(is_initialized(gm_force_pre_ext));
   qassert(is_initialized(mf));
-  qassert(mf.geo().multiplicity == multiplicity_flow_hmc_max(flow_size));
+  qassert(mf.multiplicity == multiplicity_flow_hmc_max(flow_size));
   qassert(mask == 1 or mask == 2);
   qassert(0 <= mu and mu < 4);
-  const Geometry geo = geo_reform(gm_force_pre_ext.geo());
+  const Geometry geo = geo_resize(gm_force_pre_ext.geo());
   gm_force.init(geo);
   qacc_for(index, geo.local_volume(), {
     const Coordinate yl = geo.coordinate_from_index(index);
@@ -1214,7 +1215,7 @@ inline void set_f_det_util_plaq_mask_mu(
   qassert(0 <= mu and mu < 4);
   const box<ColorMatrixConstants>& cmcs =
       ColorMatrixConstants::get_instance_box();
-  const Geometry geo = geo_reform(gf.geo());
+  const Geometry geo = geo_resize(gf.geo());
   const vector_acc<Long>& flowed_indices =
       get_flowed_hmc_indices_mask_flow_size(geo, mask, flow_size);
   f_n_e_mp_inv_j_x.init(geo);
@@ -1259,12 +1260,12 @@ inline void set_gm_force_from_flow_det_no_comm(
   qassert(is_initialized(f_e2_dj_x_n_mp_inv_ext));
   qassert(is_initialized(f_n_e_mp_inv_j_x_ext));
   qassert(is_initialized(nf));
-  qassert(nf.geo().multiplicity == multiplicity_flow_hmc_max(flow_size));
+  qassert(nf.multiplicity == multiplicity_flow_hmc_max(flow_size));
   qassert(is_initialized(ducf));
-  qassert(ducf.geo().multiplicity == multiplicity_flow_hmc_max(flow_size));
+  qassert(ducf.multiplicity == multiplicity_flow_hmc_max(flow_size));
   qassert(mask == 1 or mask == 2);
   qassert(0 <= mu and mu < 4);
-  const Geometry geo = geo_reform(nf.geo());
+  const Geometry geo = geo_resize(nf.geo());
   gm_force_det.init();
   gm_force_det.init(geo);
   qacc_for(index, geo.local_volume(), {
@@ -1351,8 +1352,8 @@ inline double gf_flow_and_ln_det_node(GaugeField& gf, const GaugeField& gf0,
   TIMER("gf_flow_ln_det_node");
   const Coordinate expand_left(2, 2, 2, 2);
   const Coordinate expand_right(2, 2, 2, 2);
-  const Geometry geo = geo_reform(gf0.geo());
-  const Geometry geo_ext = geo_reform(gf0.geo(), 1, expand_left, expand_right);
+  const Geometry geo = geo_resize(gf0.geo());
+  const Geometry geo_ext = geo_resize(gf0.geo(), expand_left, expand_right);
   GaugeField gf_ext;
   gf_ext.init(geo_ext);
   gf_ext = gf0;
@@ -1414,8 +1415,8 @@ inline void set_gm_force_propagated_from_flow_step(
                                fsi.flow_size);
   const Coordinate expand_right(fsi.flow_size, fsi.flow_size, fsi.flow_size,
                                 fsi.flow_size);
-  const Geometry geo = geo_reform(gf0_ext.geo(), 1);
-  const Geometry geo_ext = geo_reform(geo, 1, expand_left, expand_right);
+  const Geometry geo = geo_resize(gf0_ext.geo(), 1);
+  const Geometry geo_ext = geo_resize(geo, expand_left, expand_right);
   GaugeMomentum gm_force_pre_ext;
   gm_force_pre_ext.init(geo_ext);
   gm_force_pre_ext = gm_force_pre;
@@ -1460,8 +1461,8 @@ inline void set_gm_force_propagated_and_gm_force_det_from_flow_step(
                                fsi.flow_size);
   const Coordinate expand_right(fsi.flow_size, fsi.flow_size, fsi.flow_size,
                                 fsi.flow_size);
-  const Geometry geo = geo_reform(gf0_ext.geo(), 1);
-  const Geometry geo_ext = geo_reform(geo, 1, expand_left, expand_right);
+  const Geometry geo = geo_resize(gf0_ext.geo(), 1);
+  const Geometry geo_ext = geo_resize(geo, expand_left, expand_right);
   GaugeMomentum gm_force_pre_ext;
   gm_force_pre_ext.init(geo_ext);
   gm_force_pre_ext = gm_force_pre;
@@ -1521,7 +1522,7 @@ inline void set_flowed_gauge_fields(std::vector<GaugeField>& gf_ext_vec,
   gf_ext_vec.resize(n_steps + 1);
   const Coordinate expand_left(2, 2, 2, 2);
   const Coordinate expand_right(2, 2, 2, 2);
-  const Geometry geo_ext = geo_reform(gf0.geo(), 1, expand_left, expand_right);
+  const Geometry geo_ext = geo_resize(gf0.geo(), expand_left, expand_right);
   gf_ext_vec[0].init(geo_ext);
   gf_ext_vec[0] = gf0;
   for (int i = 0; i < (int)fi.v.size(); ++i) {
@@ -1545,7 +1546,7 @@ inline void set_gm_force_propagated_det_from_flow(
 // Call set_flowed_gauge_fields(gf_ext_vec, gf0, fi) to obtain gf_ext_vec.
 {
   TIMER("set_gm_force_propagated_det_from_flow");
-  const Geometry geo = geo_reform(gm_force_pre.geo());
+  const Geometry geo = geo_resize(gm_force_pre.geo());
   gm_force.init(geo);
   gm_force = gm_force_pre;
   for (int i = fi.v.size() - 1; i >= 0; --i) {
@@ -1568,7 +1569,7 @@ inline void set_gm_force_propagated_no_det_from_flow(
 // Call set_flowed_gauge_fields(gf_ext_vec, gf0, fi) to obtain gf_ext_vec.
 {
   TIMER("set_gm_force_propagated_no_det_from_flow");
-  const Geometry geo = geo_reform(gm_force_pre.geo());
+  const Geometry geo = geo_resize(gm_force_pre.geo());
   gm_force.init(geo);
   gm_force = gm_force_pre;
   for (int i = fi.v.size() - 1; i >= 0; --i) {

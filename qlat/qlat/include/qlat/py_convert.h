@@ -155,7 +155,7 @@ FieldM<M, multiplicity>& py_convert_type_field(PyObject* in)
   qassert(check_ctype_name<M>(ctype));
   FieldM<M, multiplicity>& f = py_convert_type<FieldM<M, multiplicity>>(in);
   if (is_initialized(f)) {
-    qassert(multiplicity == f.geo().multiplicity);
+    qassert(multiplicity == f.multiplicity);
   }
   return f;
 }

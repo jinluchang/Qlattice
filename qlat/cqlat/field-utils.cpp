@@ -63,7 +63,7 @@ PyObject* set_elems_field_ctype(PyObject* p_field, const Coordinate& xg,
                                 PyObject* p_val)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
-  const int multiplicity = f.geo().multiplicity;
+  const int multiplicity = f.multiplicity;
   qassert((Long)PyBytes_Size(p_val) == (Long)multiplicity * (Long)sizeof(M));
   const Vector<M> val((M*)PyBytes_AsString(p_val), multiplicity);
   field_set_elems(f, xg, val);
@@ -108,7 +108,7 @@ PyObject* set_elems_field_ctype(PyObject* p_field, const Long index,
                                 PyObject* p_val)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
-  const int multiplicity = f.geo().multiplicity;
+  const int multiplicity = f.multiplicity;
   qassert((Long)PyBytes_Size(p_val) == (Long)multiplicity * (Long)sizeof(M));
   const Vector<M> val((M*)PyBytes_AsString(p_val), multiplicity);
   assign(f.get_elems(index), val);
@@ -242,14 +242,15 @@ EXPORT(set_marks_field_all, {
   using namespace qlat;
   PyObject* p_comm_marks = NULL;
   PyObject* p_geo = NULL;
+  int multiplicity = 0;
   PyObject* p_tag = NULL;
-  if (!PyArg_ParseTuple(args, "OOO", &p_comm_marks, &p_geo, &p_tag)) {
+  if (!PyArg_ParseTuple(args, "OOiO", &p_comm_marks, &p_geo, &multiplicity, &p_tag)) {
     return NULL;
   }
   CommMarks& marks = py_convert_type<CommMarks>(p_comm_marks);
   const Geometry& geo = py_convert_type<Geometry>(p_geo);
   std::string tag = py_convert_data<std::string>(p_tag);
-  set_marks_field_all(marks, geo, tag);
+  set_marks_field_all(marks, geo, multiplicity, tag);
   Py_RETURN_NONE;
 })
 
@@ -570,12 +571,12 @@ EXPORT(set_sqrt_field, {
   const Geometry geo = geo_resize(f1.geo());
   qassert(geo.is_only_local);
   f.init();
-  f.init(geo);
+  f.init(geo, f1.multiplicity);
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<double> f1v = f1.get_elems_const(xl);
     Vector<double> fv = f.get_elems(xl);
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < f1.multiplicity; ++m) {
       fv[m] = std::sqrt(f1v[m]);
     }
   });

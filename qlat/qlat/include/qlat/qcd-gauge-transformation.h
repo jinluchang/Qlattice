@@ -17,7 +17,7 @@ inline void gt_apply_gauge_transformation(GaugeTransform& gt0,
 // gt0 <- gt1 * gt0
 {
   TIMER("gt_apply_gauge_transformation");
-  qassert(is_matching_geo_mult(gt0.geo(), gt1.geo()));
+  qassert(is_matching_geo(gt0.geo(), gt1.geo()));
   const Geometry& geo = gt0.geo();
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -34,7 +34,7 @@ inline void gt_apply_gauge_transformation(GaugeTransform& gt,
 // gt <- gt1 * gt0
 {
   TIMER("gt_apply_gauge_transformation");
-  qassert(is_matching_geo_mult(gt0.geo(), gt1.geo()));
+  qassert(is_matching_geo(gt0.geo(), gt1.geo()));
   const Geometry& geo = gt0.geo();
   gt.init(geo_resize(geo, 0));
   qacc_for(index, geo.local_volume(), {
@@ -89,7 +89,7 @@ inline void gt_invert(GaugeTransform& gt, const GaugeTransform& gt0)
   TIMER("gt_invert");
   gt.init(geo_resize(gt0.geo()));
   const Geometry& geo = gt.geo();
-  qassert(is_matching_geo_mult(gt.geo(), gt0.geo()));
+  qassert(is_matching_geo(gt.geo(), gt0.geo()));
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     gt.get_elem(xl) = matrix_adjoint(gt0.get_elem(xl));
@@ -123,7 +123,7 @@ inline void prop_apply_gauge_transformation(Propagator4d& prop,
   qassert(is_matching_geo(prop0.geo(), gt.geo()));
   const Geometry& geo = prop0.geo();
   prop.init(geo_resize(geo));
-  qassert(is_matching_geo_mult(prop.geo(), prop0.geo()));
+  qassert(is_matching_geo(prop.geo(), prop0.geo()));
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<WilsonMatrix> v = prop.get_elems(xl);
@@ -142,9 +142,9 @@ inline void prop_apply_gauge_transformation(
   TIMER("prop_apply_gauge_transformation");
   qassert(is_matching_geo(prop0.geo(), gt.geo()));
   const Geometry& geo = prop0.geo();
-  const int multiplicity = geo.multiplicity;
+  const int multiplicity = prop0.multiplicity;
   prop.init(fsel, multiplicity);
-  qassert(is_matching_geo_mult(prop.geo(), prop0.geo()));
+  qassert(is_matching_geo(prop.geo(), prop0.geo()));
   qacc_for(idx, fsel.indices.size(), {
     const Long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -163,7 +163,7 @@ inline void prop_apply_gauge_transformation(
 {
   TIMER("prop_apply_gauge_transformation");
   const Geometry& geo = gt.geo();
-  qassert(geo.multiplicity == 1);
+  qassert(gt.multiplicity == 1);
   const Long num_points = pcs.size();
   qassert((Long)prop0.size() == num_points);
   vector<WilsonMatrix> tmp;
@@ -188,7 +188,7 @@ inline void prop_apply_gauge_transformation(
 {
   TIMER("prop_apply_gauge_transformation");
   const Geometry& geo = gt.geo();
-  qassert(geo.multiplicity == 1);
+  qassert(gt.multiplicity == 1);
   const Long num_points = psel.size();
   qassert(prop0.initialized == true);
   qassert(prop0.n_points == num_points);
@@ -214,7 +214,7 @@ inline void gf_apply_rand_gauge_transformation(GaugeField& gf,
                                                const GaugeField& gf0,
                                                const RngState& rs)
 {
-  const Geometry geo = geo_reform(gf0.geo());
+  const Geometry geo = geo_resize(gf0.geo());
   GaugeTransform gt;
   gt.init(geo);
   set_g_rand_color_matrix_field(gt, rs, 1.0);
@@ -230,7 +230,7 @@ inline void make_temporal_gauge_transformation(GaugeTransform& gt,
 // ``gt.get_elem(xl) = unit'' if ``xg[dir] = tgref''
 {
   TIMER("make_temporal_gauge_transformation");
-  const Geometry geo = geo_reform(gf.geo(), 0);
+  const Geometry geo = geo_resize(gf.geo());
   gt.init(geo);
   qassert(is_matching_geo(gt.geo(), gf.geo()));
   Coordinate expension_left, expension_right;
@@ -271,7 +271,7 @@ inline void make_tree_gauge_transformation(
     const Coordinate& dirs = Coordinate(0, 1, 2, 3))
 {
   TIMER("make_tree_gauge_transformation");
-  const Geometry& geo = geo_reform(gf.geo());
+  const Geometry geo = geo_resize(gf.geo());
   if (false == is_initialized(gt)) {
     gt.init(geo);
   }

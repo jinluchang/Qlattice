@@ -59,9 +59,9 @@ struct LowModes {
     cesb.init();
     cesc.init();
   }
-  void init(const Geometry& geo, const Coordinate& block_site, const Long neig,
+  void init(const Geometry& geo, const Int multiplicity, const Coordinate& block_site, const Long neig,
             const Long nkeep)
-  // geo.multiplicity = ls
+  // multiplicity = ls
   {
     initialized = true;
     lmi.init();
@@ -69,7 +69,7 @@ struct LowModes {
     CompressedEigenSystemDenseInfo cesdi;
     cesdi.total_site = geo.total_site();
     cesdi.block_site = block_site;
-    cesdi.ls = geo.multiplicity;
+    cesdi.ls = multiplicity;
     cesdi.neig = neig;
     cesdi.nkeep = nkeep;
     cesdi.nkeep_single = nkeep;
@@ -225,7 +225,7 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, LowModes& lm)
 {
   force_low_modes(lm);
   if (not lm.initialized) {
-    hv_out.init(geo_resize(hv_in.geo()));
+    hv_out.init(geo_resize(hv_in.geo()), hv_in.multiplicity);
     set_zero(hv_out);
     return;
   }
@@ -237,10 +237,10 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, LowModes& lm)
   qassert(n_vec == (Long)lm.eigen_values.size());
   BlockedHalfVector bhv;
   convert_half_vector(bhv, hv_in, lm.cesi.block_site);
-  const Geometry geo = geo_reform(bhv.geo(), n_basis);
+  const Geometry geo = geo_resize(bhv.geo());
   Field<ComplexD> chv, phv;
-  chv.init(geo);
-  phv.init(geo_remult(geo, n_vec));
+  chv.init(geo, n_basis);
+  phv.init(geo, n_vec);
   set_zero(chv);
   set_zero(phv);
   {
@@ -331,14 +331,14 @@ inline void deflate(FermionField5d& out, const FermionField5d& in, LowModes& lm)
 {
   force_low_modes(lm);
   if (not lm.initialized) {
-    out.init(geo_resize(in.geo()));
+    out.init(geo_resize(in.geo()), in.multiplicity);
     set_zero(out);
     return;
   }
   TIMER_VERBOSE("deflate(5d,5d,lm)");
   const Geometry& geo = geo_resize(in.geo());
   qassert(geo.eo == 1 or geo.eo == 2);
-  const int ls = geo.multiplicity;
+  const int ls = in.multiplicity;
   qassert(ls == lm.cesi.ls);
   HalfVector hv;
   init_half_vector(hv, geo, ls);
@@ -359,7 +359,7 @@ inline void deflate(FermionField5d& out, const FermionField5d& in, LowModes& lm)
   if (is_initialized(out) and out.geo().eo == 3 - geo.eo) {
     out.geo().eo = geo.eo;
   }
-  out.init(geo);
+  out.init(geo, in.multiplicity);
   qassert(out.geo().eo == geo.eo);
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
@@ -385,11 +385,11 @@ inline void benchmark_deflate(const Geometry& geo, const int ls,
   displayln_info(ssprintf("block_site = %s", show(block_site).c_str()));
   displayln_info(ssprintf("ls = %d, neig = %d, nkeep = %d", ls, neig, nkeep));
   LowModes lm;
-  lm.init(geo_remult(geo, ls), block_site, neig, nkeep);
+  lm.init(geo, ls, block_site, neig, nkeep);
   set_u_rand(lm, rs.split("lm"));
   FermionField5d in, out;
-  in.init(geo_eo(geo_remult(geo, ls), 1));
-  out.init(geo_eo(geo_remult(geo, ls), 1));
+  in.init(geo_eo(geo, 1), ls);
+  out.init(geo_eo(geo, 1), ls);
   set_u_rand_double(in, rs.split("in"));
   sync_node();
   {
@@ -445,7 +445,7 @@ struct InverterDomainWall {
   void setup(const GaugeField& gf_, const FermionAction& fa_)
   {
     TIMER_VERBOSE("Inv::setup(gf,fa)");
-    geo.set(geo_reform(gf_.geo()));
+    geo.set(geo_resize(gf_.geo()));
     gf.init();
     set_left_expanded_gauge_field(gf, gf_);
     fa = fa_;
@@ -456,7 +456,7 @@ struct InverterDomainWall {
              const InverterParams& ip_)
   {
     TIMER_VERBOSE("Inv::setup(gf,fa)");
-    geo.set(geo_reform(gf_.geo()));
+    geo.set(geo_resize(gf_.geo()));
     gf.init();
     set_left_expanded_gauge_field(gf, gf_);
     fa = fa_;
@@ -467,7 +467,7 @@ struct InverterDomainWall {
   void setup(const GaugeField& gf_, const FermionAction& fa_, LowModes& lm_)
   {
     TIMER_VERBOSE("Inv::setup(gf,fa,lm)");
-    geo.set(geo_reform(gf_.geo()));
+    geo.set(geo_resize(gf_.geo()));
     gf.init();
     set_left_expanded_gauge_field(gf, gf_);
     fa = fa_;
@@ -513,12 +513,12 @@ inline void multiply_m_dwf_no_comm(FermionField5d& out,
   TIMER("multiply_m_dwf_no_comm(5d,5d,Inv)");
   const Geometry geo = geo_resize(in.geo());
   qassert(is_matching_geo(inv.geo(), geo));
-  out.init(geo);
+  out.init(geo, in.multiplicity);
   set_zero(out);
   const FermionAction& fa = inv.fa;
   const GaugeField& gf = inv.gf;
-  qassert(in.geo().multiplicity == fa.ls);
-  qassert(out.geo().multiplicity == fa.ls);
+  qassert(in.multiplicity == fa.ls);
+  qassert(out.multiplicity == fa.ls);
   qassert(fa.mobius_scale == 1.0);
   qassert((int)fa.bs.size() == fa.ls);
   qassert((int)fa.cs.size() == fa.ls);
@@ -572,7 +572,7 @@ inline void multiply_m_dwf(FermionField5d& out, const FermionField5d& in,
   TIMER("multiply_m_dwf(5d,5d,Inv)");
   const Geometry geo1 = geo_resize(in.geo(), 1);
   FermionField5d in1;
-  in1.init(geo1);
+  in1.init(geo1, in.multiplicity);
   in1 = in;
   refresh_expanded_1(in1);
   multiply_m_dwf_no_comm(out, in1, inv);
@@ -582,16 +582,17 @@ inline void multiply_wilson_d_no_comm(FermionField5d& out,
                                       const FermionField5d& in,
                                       const GaugeField& gf, const double mass)
 // set_left_expanded_gauge_field(gf, gf_);
-// in.geo() = geo_reform(geo, 1, ls);
+// in.geo() = geo_resize(geo, 1);
+// in.multiplicity == ls;
 // refresh_expanded_1(in);
 {
   TIMER("multiply_wilson_d_no_comm(5d,5d,gf,mass)");
   const Geometry geo = geo_resize(in.geo());
   qassert(is_matching_geo(gf.geo(), geo));
-  out.init(geo);
+  out.init(geo, in.multiplicity);
   set_zero(out);
-  const int ls = in.geo().multiplicity;
-  qassert(out.geo().multiplicity == ls);
+  const int ls = in.multiplicity;
+  qassert(out.multiplicity == ls);
   const array<SpinMatrix, 4>& gammas =
       SpinMatrixConstants::get_cps_gammas();
   const SpinMatrix& unit = SpinMatrixConstants::get_unit();
@@ -632,13 +633,13 @@ inline void multiply_d_minus(FermionField5d& out, const FermionField5d& in,
   TIMER("multiply_d_minus(5d,5d,gf,fa)");
   const Geometry geo = geo_resize(in.geo());
   qassert(is_matching_geo(gf.geo(), in.geo()));
-  qassert(in.geo().multiplicity == fa.ls);
+  qassert(in.multiplicity == fa.ls);
   qassert((int)fa.bs.size() == fa.ls);
   qassert((int)fa.cs.size() == fa.ls);
   const Geometry geo1 = geo_resize(in.geo(), 1);
   FermionField5d in1, out1;
-  in1.init(geo1);
-  out1.init(geo);
+  in1.init(geo1, in.multiplicity);
+  out1.init(geo, in.multiplicity);
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -652,8 +653,8 @@ inline void multiply_d_minus(FermionField5d& out, const FermionField5d& in,
     }
   }
   refresh_expanded_1(in1);
-  out.init(geo);
-  qassert(out.geo().multiplicity == fa.ls);
+  out.init(geo, in.multiplicity);
+  qassert(out.multiplicity == fa.ls);
   qassert(is_matching_geo(gf.geo(), out.geo()));
   multiply_wilson_d_no_comm(out, in1, gf, -fa.m5);
   out += out1;
@@ -672,14 +673,14 @@ inline void multiply_m_full(FermionField5d& out, const FermionField5d& in,
 {
   TIMER("multiply_m_full(5d,5d,Inv)");
   const Geometry geo = geo_resize(in.geo());
-  out.init(geo);
+  out.init(geo, in.multiplicity);
   set_zero(out);
   const FermionAction& fa = inv.fa;
   qassert(is_matching_geo(inv.geo(), in.geo()));
   qassert(is_matching_geo(inv.geo(), out.geo()));
-  qassert(geo.multiplicity == fa.ls);
-  qassert(in.geo().multiplicity == fa.ls);
-  qassert(out.geo().multiplicity == fa.ls);
+  qassert(in.multiplicity == fa.ls);
+  qassert(in.multiplicity == fa.ls);
+  qassert(out.multiplicity == fa.ls);
   qassert((int)fa.bs.size() == fa.ls);
   qassert((int)fa.cs.size() == fa.ls);
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
@@ -689,8 +690,8 @@ inline void multiply_m_full(FermionField5d& out, const FermionField5d& in,
   const GaugeField& gf = inv.gf;
   const Geometry geo1 = geo_resize(in.geo(), 1);
   FermionField5d in1, fftmp;
-  in1.init(geo1);
-  fftmp.init(geo);
+  in1.init(geo1, in.multiplicity);
+  fftmp.init(geo, in.multiplicity);
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -725,7 +726,7 @@ inline void get_half_fermion(FermionField5d& half, const FermionField5d& ff,
   TIMER("get_half_fermion");
   Geometry geoh = geo_resize(ff.geo());
   geoh.eo = eo;
-  half.init(geoh);
+  half.init(geoh, ff.multiplicity);
   qassert(half.geo().eo == eo);
   qassert(ff.geo().eo == 0);
   qassert(is_matching_geo(ff.geo(), half.geo()));
@@ -744,7 +745,7 @@ inline void set_half_fermion(FermionField5d& ff, const FermionField5d& half,
   const Geometry geoh = half.geo();
   Geometry geo = geo_resize(geoh);
   geo.eo = 0;
-  ff.init(geo);
+  ff.init(geo, half.multiplicity);
   qassert(half.geo().eo == eo);
   qassert(ff.geo().eo == 0);
   qassert(is_matching_geo(ff.geo(), half.geo()));
@@ -773,8 +774,8 @@ inline void multiply_m_e_e(FermionField5d& out, const FermionField5d& in,
   if (is_initialized(out) and out.geo().eo == 3 - in.geo().eo) {
     out.geo().eo = in.geo().eo;
   }
-  out.init(geo_resize(in.geo()));
-  qassert(is_matching_geo_mult(out.geo(), in.geo()));
+  out.init(geo_resize(in.geo()), in.multiplicity);
+  qassert(is_matching_geo(out.geo(), in.geo()));
   qassert(in.geo().eo == 1 or in.geo().eo == 2);
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const SpinMatrix& unit = SpinMatrixConstants::get_unit();
@@ -785,7 +786,7 @@ inline void multiply_m_e_e(FermionField5d& out, const FermionField5d& in,
   if (&out != &in) {
     hin.init(in);
   } else {
-    in_copy.init(geo_resize(in.geo()));
+    in_copy.init(geo_resize(in.geo()), in.multiplicity);
     in_copy = in;
     hin.init(in_copy);
   }
@@ -822,8 +823,8 @@ inline void multiply_mdag_e_e(FermionField5d& out, const FermionField5d& in,
   if (is_initialized(out) and out.geo().eo == 3 - in.geo().eo) {
     out.geo().eo = in.geo().eo;
   }
-  out.init(geo_resize(in.geo()));
-  qassert(is_matching_geo_mult(out.geo(), in.geo()));
+  out.init(geo_resize(in.geo()), in.multiplicity);
+  qassert(is_matching_geo(out.geo(), in.geo()));
   qassert(in.geo().eo == 1 or in.geo().eo == 2);
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const SpinMatrix& unit = SpinMatrixConstants::get_unit();
@@ -834,7 +835,7 @@ inline void multiply_mdag_e_e(FermionField5d& out, const FermionField5d& in,
   if (&out != &in) {
     hin.init(in);
   } else {
-    in_copy.init(geo_resize(in.geo()));
+    in_copy.init(geo_resize(in.geo()), in.multiplicity);
     in_copy = in;
     hin.init(in_copy);
   }
@@ -875,8 +876,8 @@ inline void multiply_m_e_e_inv(FermionField5d& out, const FermionField5d& in,
   if (is_initialized(out) and out.geo().eo == 3 - in.geo().eo) {
     out.geo().eo = in.geo().eo;
   }
-  out.init(geo_resize(in.geo()));
-  qassert(is_matching_geo_mult(out.geo(), in.geo()));
+  out.init(geo_resize(in.geo()), in.multiplicity);
+  qassert(is_matching_geo(out.geo(), in.geo()));
   qassert(out.geo().eo == in.geo().eo);
   qassert(in.geo().eo == 1 or in.geo().eo == 2);
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
@@ -949,8 +950,8 @@ inline void multiply_mdag_e_e_inv(FermionField5d& out, const FermionField5d& in,
   if (is_initialized(out) and out.geo().eo == 3 - in.geo().eo) {
     out.geo().eo = in.geo().eo;
   }
-  out.init(geo_resize(in.geo()));
-  qassert(is_matching_geo_mult(out.geo(), in.geo()));
+  out.init(geo_resize(in.geo()), in.multiplicity);
+  qassert(is_matching_geo(out.geo(), in.geo()));
   qassert(out.geo().eo == in.geo().eo);
   qassert(in.geo().eo == 1 or in.geo().eo == 2);
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
@@ -1030,7 +1031,8 @@ inline void multiply_wilson_d_e_o_no_comm(FermionField5d& out,
                                           const FermionField5d& in,
                                           const GaugeField& gf)
 // set_left_expanded_gauge_field(gf, gf_);
-// in.geo() = geo_reform(geo, 1, ls);
+// in.geo() = geo_resize(geo, 1);
+// in.multiplicity = ls;
 // refresh_expanded_1(in);
 {
   TIMER("multiply_wilson_d_e_o_no_comm(5d,5d,gf)");
@@ -1041,10 +1043,10 @@ inline void multiply_wilson_d_e_o_no_comm(FermionField5d& out,
   if (is_initialized(out) and out.geo().eo == 3 - geo.eo) {
     out.geo().eo = geo.eo;
   }
-  out.init(geo);
+  out.init(geo, in.multiplicity);
   set_zero(out);
-  const int ls = in.geo().multiplicity;
-  qassert(out.geo().multiplicity == ls);
+  const int ls = in.multiplicity;
+  qassert(out.multiplicity == ls);
   qassert(is_matching_geo(out.geo(), in.geo()));
   qassert(out.geo().eo != in.geo().eo);
   qassert(out.geo().eo == 1 or out.geo().eo == 2);
@@ -1080,7 +1082,8 @@ inline void multiply_wilson_ddag_e_o_no_comm(FermionField5d& out,
                                              const FermionField5d& in,
                                              const GaugeField& gf)
 // set_left_expanded_gauge_field(gf, gf_);
-// in.geo() = geo_reform(geo, 1, ls);
+// in.geo() = geo_resize(geo, 1);
+// in.multiplicity = ls;
 // refresh_expanded_1(in);
 {
   TIMER("multiply_wilson_ddag_e_o_no_comm(5d,5d,gf)");
@@ -1091,10 +1094,10 @@ inline void multiply_wilson_ddag_e_o_no_comm(FermionField5d& out,
   if (is_initialized(out) and out.geo().eo == 3 - geo.eo) {
     out.geo().eo = geo.eo;
   }
-  out.init(geo);
+  out.init(geo, in.multiplicity);
   set_zero(out);
-  const int ls = in.geo().multiplicity;
-  qassert(out.geo().multiplicity == ls);
+  const int ls = in.multiplicity;
+  qassert(out.multiplicity == ls);
   qassert(is_matching_geo(out.geo(), in.geo()));
   qassert(out.geo().eo != in.geo().eo);
   qassert(out.geo().eo == 1 or out.geo().eo == 2);
@@ -1137,7 +1140,7 @@ inline void multiply_m_e_o(FermionField5d& out, const FermionField5d& in,
   const SpinMatrix p_m = (ComplexD)0.5 * (unit - gamma5);
   const int in_geo_eo = in.geo().eo;
   FermionField5d in1;
-  in1.init(geo_resize(in.geo(), 1));
+  in1.init(geo_resize(in.geo(), 1), in.multiplicity);
   const Geometry& geo = in.geo();
   std::vector<ComplexD> beo(fa.ls), ceo(fa.ls);
   for (int m = 0; m < fa.ls; ++m) {
@@ -1189,7 +1192,7 @@ inline void multiply_mdag_e_o(FermionField5d& out, const FermionField5d& in,
     ceo[m] = qconj(-fa.cs[m]);
   }
   FermionField5d in1;
-  in1.init(geo_resize(in.geo(), 1));
+  in1.init(geo_resize(in.geo(), 1), in.multiplicity);
   in1 = in;
   refresh_expanded_1(in1);
   FermionField5d out1;
@@ -1198,7 +1201,7 @@ inline void multiply_mdag_e_o(FermionField5d& out, const FermionField5d& in,
   if (is_initialized(out) and out.geo().eo == 3 - geo.eo) {
     out.geo().eo = geo.eo;
   }
-  out.init(geo);
+  out.init(geo, in.multiplicity);
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -1277,7 +1280,7 @@ inline void multiply_mpc_sym2(FermionField5d& out, const FermionField5d& in,
   if (is_initialized(out) and out.geo().eo == 3 - in.geo().eo) {
     out.geo().eo = in.geo().eo;
   }
-  out.init(geo_resize(in.geo()));
+  out.init(geo_resize(in.geo()), in.multiplicity);
   out = in;
   out -= tmp;
 }
@@ -1295,7 +1298,7 @@ inline void multiply_mpcdag_sym2(FermionField5d& out, const FermionField5d& in,
   if (is_initialized(out) and out.geo().eo == 3 - in.geo().eo) {
     out.geo().eo = in.geo().eo;
   }
-  out.init(geo_resize(in.geo()));
+  out.init(geo_resize(in.geo()), in.multiplicity);
   out = in;
   out -= tmp;
 }
@@ -1354,7 +1357,7 @@ inline void multiply_m_eo_eo(FermionField5d& out, const FermionField5d& in,
   TIMER("multiply_m_eo_eo");
   Geometry geo = geo_resize(in.geo());
   geo.eo = eo_out;
-  out.init(geo);
+  out.init(geo, in.multiplicity);
   qassert(is_matching_geo(out.geo(), in.geo()));
   qassert(out.geo().eo == eo_out);
   qassert(in.geo().eo == eo_in);
@@ -1373,7 +1376,7 @@ inline void multiply_mdag_eo_eo(FermionField5d& out, const FermionField5d& in,
   TIMER("multiply_mdag_eo_eo");
   Geometry geo = geo_resize(in.geo());
   geo.eo = eo_out;
-  out.init(geo);
+  out.init(geo, in.multiplicity);
   qassert(is_matching_geo(out.geo(), in.geo()));
   qassert(out.geo().eo == eo_out);
   qassert(in.geo().eo == eo_in);
@@ -1479,18 +1482,18 @@ inline Long cg_with_f(
   TIMER("cg_with_f");
   const Geometry geo = geo_resize(in.geo());
   if (not is_initialized(out)) {
-    out.init(geo);
+    out.init(geo, in.multiplicity);
     set_zero(out);
   } else {
-    out.init(geo);
+    out.init(geo, in.multiplicity);
   }
   if (max_num_iter == 0) {
     return 0;
   }
   FermionField5d r, p, tmp, ap;
-  r.init(geo);
-  p.init(geo);
-  tmp.init(geo);
+  r.init(geo, in.multiplicity);
+  p.init(geo, in.multiplicity);
+  tmp.init(geo, in.multiplicity);
   r = in;
   f(tmp, out, inv);
   r -= tmp;
@@ -1593,16 +1596,16 @@ Long invert_with_cg(FermionField5d& out, const FermionField5d& in,
     max_mixed_precision_cycle = inv.max_mixed_precision_cycle();
   }
   if (not is_initialized(out)) {
-    out.init(geo_resize(in.geo()));
+    out.init(geo_resize(in.geo()), in.multiplicity);
     set_zero(out);
   } else {
-    out.init(geo_resize(in.geo()));
+    out.init(geo_resize(in.geo()), in.multiplicity);
   }
   FermionField5d dm_in;
   if (not dminus_multiplied_already and inv.fa.is_multiplying_dminus) {
     multiply_d_minus(dm_in, in, inv);
   } else {
-    dm_in.init(geo_resize(in.geo()));
+    dm_in.init(geo_resize(in.geo()), in.multiplicity);
     dm_in = in;
   }
   const double dm_in_qnorm = qnorm(dm_in);
@@ -1610,7 +1613,7 @@ Long invert_with_cg(FermionField5d& out, const FermionField5d& in,
                  ssprintf(": dm_in sqrt(qnorm) = %E", sqrt(dm_in_qnorm)));
   if (dm_in_qnorm == 0.0) {
     displayln_info(fname + ssprintf(": WARNING: dm_in qnorm is zero."));
-    out.init(geo_resize(in.geo()));
+    out.init(geo_resize(in.geo()), in.multiplicity);
     set_zero(out);
     return 0;
   }
@@ -1618,11 +1621,11 @@ Long invert_with_cg(FermionField5d& out, const FermionField5d& in,
   if (inv.fa.is_using_zmobius == true and inv.fa.cg_diagonal_mee == 2) {
     FermionField5d in_o_p, out_e_p, out_o_p;
     set_odd_prec_field_sym2(in_o_p, out_e_p, dm_in, inv);
-    out_o_p.init(in_o_p.geo());
+    out_o_p.init(in_o_p.geo(), in_o_p.multiplicity);
     set_zero(out_o_p);
     const double qnorm_in_o_p = qnorm(in_o_p);
     FermionField5d tmp, itmp;
-    tmp.init(in_o_p.geo());
+    tmp.init(in_o_p.geo(), in_o_p.multiplicity);
     itmp = in_o_p;
     double qnorm_itmp = qnorm_in_o_p;
     int cycle;
@@ -1733,10 +1736,10 @@ inline double find_max_eigen_value_hermop_sym2(const InverterDomainWall& inv,
                                                const Long max_iter = 100)
 {
   TIMER_VERBOSE("find_max_eigen_value_hermop_sym2");
-  Geometry geo = geo_reform(inv.geo(), inv.fa.ls);
+  Geometry geo = geo_resize(inv.geo());
   geo.eo = 1;
   FermionField5d ff;
-  ff.init(geo);
+  ff.init(geo, inv.fa.ls);
   set_u_rand_double(ff, rs);
   ff *= 1.0 / sqrt(qnorm(ff));
   double sqrt_qnorm_ratio = 1.0;

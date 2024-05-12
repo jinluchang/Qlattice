@@ -9,8 +9,8 @@ void set_sqrt_field(Field<RealD>& f, const Field<RealD>& f1)
 {
   TIMER("set_sqrt_field(f,f1)");
   const Geometry geo = geo_resize(f1.geo());
-  const Int multiplicity = geo.multiplicity;
-  f.init(geo);
+  const Int multiplicity = f.multiplicity;
+  f.init(geo, multiplicity);
   qacc_for(index, geo.local_volume(), {
     const Vector<RealD> f1v = f1.get_elems_const(index);
     Vector<RealD> fv = f.get_elems(index);
@@ -50,8 +50,8 @@ void set_phase_field(FieldM<ComplexD, 1>& f, const CoordinateD& lmom)
 void set_xg_field(Field<Int>& f, const Geometry& geo_)
 {
   TIMER("set_xg_field(f,geo)");
-  const Geometry geo = geo_reform(geo_, DIMN);
-  f.init(geo);
+  const Geometry geo = geo_resize(geo_);
+  f.init(geo, DIMN);
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);

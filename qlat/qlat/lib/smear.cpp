@@ -22,7 +22,7 @@ void gf_ape_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
   qassert(&gf != &gf0);
   const Geometry& geo = gf0.geo();
   gf.init(geo_resize(geo));
-  qassert(is_matching_geo_mult(geo, gf.geo()));
+  qassert(is_matching_geo(geo, gf.geo()));
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -64,7 +64,7 @@ void gf_spatial_ape_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
   qassert(&gf != &gf0);
   const Geometry& geo = gf0.geo();
   gf.init(geo_resize(geo));
-  qassert(is_matching_geo_mult(geo, gf.geo()));
+  qassert(is_matching_geo(geo, gf.geo()));
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -187,7 +187,7 @@ void gf_hyp_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
   qassert(&gf != &gf0);
   const Geometry& geo = gf0.geo();
   gf.init(geo_resize(geo));
-  qassert(is_matching_geo_mult(geo, gf.geo()));
+  qassert(is_matching_geo(geo, gf.geo()));
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);

@@ -221,9 +221,9 @@ struct API Geometry {
     }
   }
   //
-  qacc Long offset_from_index(const Long index) const
+  qacc Long offset_from_index(const Long index, Int multiplicity) const
   {
-    return offset_from_coordinate(coordinate_from_index(index));
+    return offset_from_coordinate(coordinate_from_index(index), multiplicity);
   }
   //
   qacc Long g_index_from_g_coordinate(const Coordinate& xg) const
@@ -703,7 +703,7 @@ struct API Field {
     const Geometry& geo_v = geo();
     qassert(geo_v.is_on_node(x));
     qassert(0 <= m && m < multiplicity);
-    const Long offset = geo_v.offset_from_coordinate(x) + m;
+    const Long offset = geo_v.offset_from_coordinate(x, multiplicity) + m;
     return get_elem_offset(offset);
   }
   qacc const M& get_elem(const Coordinate& x, const int m) const
@@ -711,7 +711,7 @@ struct API Field {
     const Geometry& geo_v = geo();
     qassert(geo_v.is_on_node(x));
     qassert(0 <= m && m < multiplicity);
-    const Long offset = geo_v.offset_from_coordinate(x) + m;
+    const Long offset = geo_v.offset_from_coordinate(x, multiplicity) + m;
     return get_elem_offset(offset);
   }
   //
@@ -730,7 +730,7 @@ struct API Field {
   {
     const Geometry& geo_v = geo();
     qassert(geo_v.is_on_node(x));
-    const Long offset = geo_v.offset_from_coordinate(x);
+    const Long offset = geo_v.offset_from_coordinate(x, multiplicity);
     return Vector<M>(&field[offset], multiplicity);
   }
   qacc Vector<M> get_elems_const(const Coordinate& x) const
@@ -745,7 +745,7 @@ struct API Field {
 #endif
       qassert(false);
     }
-    const Long offset = geo_v.offset_from_coordinate(x);
+    const Long offset = geo_v.offset_from_coordinate(x, multiplicity);
     return Vector<M>(&field[offset], multiplicity);
   }
   //

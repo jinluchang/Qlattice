@@ -142,7 +142,7 @@ template <class M>
 PyObject* get_multiplicity_field_ctype(PyObject* p_field)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
-  const Long ret = f.geo().multiplicity;
+  const Long ret = f.multiplicity;
   return py_convert(ret);
 }
 

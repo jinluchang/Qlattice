@@ -121,12 +121,13 @@ inline void gf_wilson_line_no_comm(Field<ColorMatrix>& wilson_line_field,
                                    const int wilson_line_field_m,
                                    const GaugeField& gf_ext, const Vec& path)
 // wilson_line_field needs to be initialized before hand
-// 0 <= wilson_line_field_m < wilson_line_field.geo().multiplicity
+// 0 <= wilson_line_field_m < wilson_line_field.multiplicity
 {
   TIMER("gf_wilson_line_no_comm")
   const Geometry& geo = wilson_line_field.geo();
+  const Int multiplicity = wilson_line_field.multiplicity;
   qassert(check_matching_geo(geo, gf_ext.geo()));
-  qassert(0 <= wilson_line_field_m and wilson_line_field_m < geo.multiplicity);
+  qassert(0 <= wilson_line_field_m and wilson_line_field_m < multiplicity);
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = wilson_line_field.get_elems(xl);
@@ -140,12 +141,13 @@ inline void gf_wilson_line_no_comm(Field<ColorMatrix>& wilson_line_field,
                                    const GaugeField& gf_ext, const Vec& path,
                                    const Vec& path_n)
 // wilson_line_field needs to be initialized before hand
-// 0 <= wilson_line_field_m < wilson_line_field.geo().multiplicity
+// 0 <= wilson_line_field_m < wilson_line_field.multiplicity
 {
   TIMER("gf_wilson_line_no_comm")
   const Geometry& geo = wilson_line_field.geo();
+  const Int multiplicity = wilson_line_field.multiplicity;
   qassert(check_matching_geo(geo, gf_ext.geo()));
-  qassert(0 <= wilson_line_field_m and wilson_line_field_m < geo.multiplicity);
+  qassert(0 <= wilson_line_field_m and wilson_line_field_m < multiplicity);
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = wilson_line_field.get_elems(xl);
@@ -226,8 +228,8 @@ inline void set_local_current_from_props(FieldM<WilsonMatrix, 4>& cf,
 // ->- prop1 ->- gamma_mu ->- gamma5 prop2^+ gamma5 ->-
 {
   TIMER_VERBOSE("set_local_current_from_props");
-  const Geometry geo = geo_reform(prop1.geo());
-  qassert(geo == geo_reform(prop2.geo()));
+  const Geometry geo = geo_resize(prop1.geo());
+  qassert(geo == geo_resize(prop2.geo()));
   const array<SpinMatrix, 4>& gammas =
       SpinMatrixConstants::get_cps_gammas();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
@@ -404,7 +406,7 @@ inline void set_multiply_simple_wilson_line_field_partial_comm(
 // wlf will be initialized
 {
   TIMER("set_multiply_simple_wilson_line_field_partial_comm");
-  const Geometry geo = geo_reform(gf1.geo());
+  const Geometry geo = geo_resize(gf1.geo());
   qassert(&wlf != &wlf1);
   wlf.init(geo);
   for (size_t i = 0; i < path.size(); ++i) {
@@ -448,7 +450,7 @@ inline void set_multiply_wilson_line_field_partial_comm(
         wlf, wlf1, gf1, pacc.stops[Coordinate()].paths[0]);
     return;
   }
-  const Geometry geo = geo_reform(gf1.geo());
+  const Geometry geo = geo_resize(gf1.geo());
   std::vector<Coordinate> cs;
   std::vector<FieldM<ColorMatrix, 1> > fs(pacc.stops.size());
   std::map<Coordinate, int> dict;
@@ -509,7 +511,7 @@ inline ColorMatrix gf_avg_wilson_line(const GaugeField& gf,
                                       const WilsonLinePath& path)
 {
   TIMER("gf_avg_wilson_line");
-  const Geometry geo = geo_reform(gf.geo());
+  const Geometry geo = geo_resize(gf.geo());
   const Coordinate expansion_left(1, 1, 1, 1);
   const Coordinate expansion_right(0, 0, 0, 0);
   GaugeField gf1;

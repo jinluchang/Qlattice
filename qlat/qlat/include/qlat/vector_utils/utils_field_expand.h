@@ -23,11 +23,13 @@
 namespace qlat
 {
 
-void setup_expand(const Geometry& geo, qlat::vector_acc<Long >& pack_send, qlat::vector_acc<Long >& pack_recv, 
-  const SetMarksField& set_marks_field = set_marks_field_all, const std::string& tag = std::string(""));
+void setup_expand(const Geometry& geo, qlat::vector_acc<Long>& pack_send,
+                  qlat::vector_acc<Long>& pack_recv,
+                  const SetMarksField& set_marks_field = set_marks_field_all,
+                  const std::string& tag = std::string(""));
 
 void set_marks_field_dir(CommMarks& marks, const Geometry& geo,
-                       const std::string& tag);
+                         const Int multiplicity, const std::string& tag);
 
 struct expand_index_buf {
   //Geometry geo; //make a copy of geo if needed
@@ -60,22 +62,24 @@ struct expand_index_buf {
 /////buffers for expand index
 struct expand_index_Key {
   Geometry geo;
+  Int multiplicity;
   std::string tag;
   //Coordinate total_site;
   //Coordinate expansion_left ;
   //Coordinate expansion_right;
-  expand_index_Key(const Geometry& geo_, const std::string& tag_)
+  expand_index_Key(const Geometry& geo_, const Int multiplicity_, const std::string& tag_)
   {
     geo = geo_;
+    multiplicity = multiplicity_;
     tag = tag_;
   }
 };
 
-bool compare_geo(const Geometry& g0, const Geometry& g1, const int with_multi = 1);
+bool compare_geo(const Geometry& g0, const Geometry& g1);
 
 bool Compare_geo(const Geometry& g0, const Geometry& g1);
 
-bool compare_less(const Geometry& g0, const Geometry& g1, const int with_multi = 1);
+bool compare_less(const Geometry& g0, const Geometry& g1);
 
 bool operator<(const expand_index_Key& x, const expand_index_Key& y);
 
@@ -94,9 +98,9 @@ inline expand_index_buf& get_expand_index_buf_plan(const expand_index_Key& ekey)
   return buf;
 }
 
-inline expand_index_buf& get_expand_index_buf_plan(const Geometry& geo, const std::string& tag)
+inline expand_index_buf& get_expand_index_buf_plan(const Geometry& geo, const Int multiplicity, const std::string& tag)
 {
-  expand_index_Key ekey(geo, tag);
+  expand_index_Key ekey(geo, multiplicity, tag);
   return get_expand_index_buf_plan(ekey);
 }
 
@@ -109,11 +113,11 @@ void refresh_expanded_GPUT(M* res, const Geometry& geo, const int MULTI,
   //const int MULTI = geo.multiplicity;
   const Long mpi_size = MULTI * sizeof(M)/sizeof(double);
 
-  Geometry geo1 = geo;
+  // Geometry geo1 = geo;
   //Qassert(geo1 == geo);
-  geo1.multiplicity = 1;// no multiplicity to save buffers
+  // geo1.multiplicity = 1;// no multiplicity to save buffers
 
-  const CommPlan& plan = get_comm_plan(set_marks_field, tag, geo1);
+  const CommPlan& plan = get_comm_plan(set_marks_field, tag, geo, 1);
   const Long total_bytes =
       (plan.total_recv_size + plan.total_send_size) * sizeof(M);
   if (0 == total_bytes) {
@@ -127,7 +131,7 @@ void refresh_expanded_GPUT(M* res, const Geometry& geo, const int MULTI,
 
   qlat::vector_gpu<char >& sbuf = qlat::get_vector_gpu_plan<char >(0, std::string("general_buf0"), GPU);
   qlat::vector_gpu<char >& rbuf = qlat::get_vector_gpu_plan<char >(0, std::string("general_buf1"), GPU);
-  expand_index_buf& ebuf = get_expand_index_buf_plan(geo1, tag);
+  expand_index_buf& ebuf = get_expand_index_buf_plan(geo, 1, tag);
   Qassert(ebuf.pack_send.size() == 2*plan.total_send_size and ebuf.pack_recv.size() == 2*plan.total_recv_size);
 
   const Long Nsend = plan.total_send_size ;
