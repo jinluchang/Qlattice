@@ -318,7 +318,7 @@ inline void test_selected_points(const std::string& tag, const Long n_points)
       psel_std_vec.push_back(xg);
     }
   }
-  PointsSelection psel(psel_std_vec);
+  PointsSelection psel(total_site, psel_std_vec);
   qmkdir_info("huge-data");
   qmkdir_info("huge-data/" + tag);
   save_point_selection_info(psel, "huge-data/" + tag + "/point-selection.txt");
