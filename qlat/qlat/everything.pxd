@@ -41,7 +41,6 @@ cdef extern from "qlat/geometry.h" namespace "qlat":
         bool initialized
         GeometryNode geon
         Int eo
-        Int multiplicity
         Coordinate node_site
         Coordinate expansion_left
         Coordinate expansion_right
@@ -106,6 +105,7 @@ cdef extern from "qlat/core.h" namespace "qlat":
         void init(const Long n_points, const Int multiplicity, const PointsDistType points_dist_type) except +
         void init(const PointsSelection& psel, const Int multiplicity) except +
     cdef cppclass Field[T]:
+        Int multiplicity
         vector_acc[T] field
         Field()
         void init()
@@ -144,6 +144,7 @@ cdef extern from "qlat/core.h" namespace "qlat":
         const Geometry& get_geo()
     cdef cppclass SelectedField[T]:
         Long n_elems;
+        Int multiplicity
         vector_acc[T] field
         SelectedField()
         void init()
