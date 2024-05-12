@@ -108,11 +108,11 @@ def avg_weight_from_prop_full(geo, prop_nf_dict):
         assert n_samples[inv_type] == total_site[3]
         avg_nf_glb_sum_tslice[inv_type] = avg_nf_glb_sum_tslice[inv_type] / (geo.total_volume / total_site[3] * n_samples[inv_type])
         q.displayln_info(-1, fname, "avg_nf_glb_sum_tslice", inv_type_name, avg_nf_glb_sum_tslice[inv_type])
-    local_tsize = geo.local_site()[3]
-    local_t_start = geo.coor_node()[3] * local_tsize
+    local_tsize = geo.local_site[3]
+    local_t_start = geo.coor_node[3] * local_tsize
     local_t_end = local_t_start + local_tsize
     local_tslices = slice(local_t_start, local_t_end, 1)
-    local_field_shape = tuple(reversed(geo.local_site().to_list()))
+    local_field_shape = tuple(reversed(geo.local_site.to_list()))
     f_weight_avg = []
     for inv_type in [ 0, 1, ]:
         f = q.FieldRealD(geo, 1)
