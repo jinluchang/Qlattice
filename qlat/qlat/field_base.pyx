@@ -730,11 +730,11 @@ cdef class SelectedPointsBase:
         Only work when single node (or if all nodes has the same data).
         """
         psel = self.psel
-        n_points = self.n_points()
-        multiplicity = self.multiplicity()
-        distributed = self.distributed()
+        n_points = self.n_points
+        multiplicity = self.multiplicity
+        points_dist_type = self.points_dist_type
         data_arr = self[:]
-        return [ data_arr, n_points, multiplicity, distributed, psel, ]
+        return [ data_arr, n_points, multiplicity, points_dist_type, psel, ]
 
     def __setstate__(self, state):
         """
@@ -745,8 +745,8 @@ cdef class SelectedPointsBase:
         self.__init__()
         cdef cc.Long n_points
         cdef cc.Int multiplicity
-        [ data_arr, n_points, multiplicity, distributed, psel, ] = state
-        self.init_from_n_points(n_points, multiplicity, distributed)
+        [ data_arr, n_points, multiplicity, points_dist_type, psel, ] = state
+        self.init_from_n_points(n_points, multiplicity, points_dist_type)
         self.psel = psel
         self[:] = data_arr
 

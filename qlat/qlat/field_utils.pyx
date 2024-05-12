@@ -117,7 +117,7 @@ class FastFourierTransform:
         c.fft_fields(fields, fft_dirs, fft_is_forwards, self.mode_fft)
         if self.is_normalizing and self.fft_infos:
             for field in fields:
-                total_site = field.total_site()
+                total_site = field.total_site
                 scale_factor = 1
                 for fft_dir, is_forward in self.fft_infos:
                     scale_factor *= total_site[fft_dir]

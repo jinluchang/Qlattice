@@ -46,12 +46,10 @@ q.save_pickle_obj(prop, f"results/prop-{q.get_id_node()}.pickle", is_sync_node=F
 prop_load = q.load_pickle_obj(f"results/prop-{q.get_id_node()}.pickle", is_sync_node=False)
 assert np.all(prop[:] == prop_load[:])
 
-psel = q.PointsSelection([
+psel = q.PointsSelection(total_site, [
     [ 0, 0, 0, 0, ],
     [ 0, 1, 2, 0, ],
-    ],
-    geo = geo,
-    )
+    ])
 
 q.save_pickle_obj(psel, f"results/psel.pickle")
 psel_load = q.load_pickle_obj(f"results/psel.pickle")
@@ -87,7 +85,7 @@ q.save_pickle_obj(sp_prop, f"results/sp_prop-{q.get_id_node()}.pickle", is_sync_
 sp_prop_load = q.load_pickle_obj(f"results/sp_prop-{q.get_id_node()}.pickle", is_sync_node=False)
 assert np.all(sp_prop[:] == sp_prop_load[:])
 
-n3 = sp_prop.n_points()
+n3 = sp_prop.n_points
 n4 = q.glb_sum(n3)
 q.displayln_info(f"CHECK: s_prop n3={n3} ; n4={n4}")
 

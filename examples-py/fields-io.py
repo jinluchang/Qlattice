@@ -12,7 +12,7 @@ total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site, 1)
 q.displayln_info("CHECK: geo.show() =", geo.show())
 
-psel = q.PointsSelection([[0,0,0,0], [0,1,2,0]])
+psel = q.PointsSelection(total_site, [[0,0,0,0], [0,1,2,0]])
 n_per_tslice = 16
 fsel = q.FieldSelection()
 fsel.set_rand(geo.total_site(), n_per_tslice, rs.split("fsel"))

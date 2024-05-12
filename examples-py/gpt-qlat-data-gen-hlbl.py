@@ -982,8 +982,8 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
                 # q.displayln_info(f"INFO: {fname}: sp_norm=\n{sp_norm[:, 0]}")
                 sp_norm[:] = np.minimum(1.0, sp_norm[:] / glb_avg / hlbl_four_contract_sparse_ratio)
                 selection = sp_pair_f_rand_01[:, 0] <= sp_norm[:, 0]
-                psel_d_sel = q.PointsSelection(psel_d[selection, :], psel_d.geo, True)
-                assert psel_d_sel.distributed() == psel_d.distributed()
+                psel_d_sel = q.PointsSelection(psel_d.total_site, psel_d[selection, :], psel_d.points_dist_type)
+                assert psel_d_sel.points_dist_type == psel_d.points_dist_type
                 psel_d_sel_prob_xy = q.SelectedPointsRealD(psel_d_sel, 1)
                 psel_d_sel_prob_xy @= psel_d_prob_xy
                 psel_d_sel_prob_xy[:] *= sp_norm[selection, :]
