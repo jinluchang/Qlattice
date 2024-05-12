@@ -751,6 +751,6 @@ cdef class SelectedPointsBase:
         self[:] = data_arr
 
     def __len__(self):
-        return self.n_points()
+        return self.n_points
 
 ### -------------------------------------------------------------------

@@ -675,7 +675,7 @@ def mk_hlbl_four_point_pairs(job_tag, traj, *, inv_type, get_psel_prob):
     #
     psel_prob = get_psel_prob()
     psel = psel_prob.psel
-    xg_arr = psel.xg_arr()
+    xg_arr = psel.xg_arr
     n_xg_arr = len(xg_arr)
     #
     get_prob = mk_hlbl_four_get_prob(job_tag, inv_type)
@@ -992,7 +992,7 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
                 sel_ratio = n_sel / n_avail
                 q.displayln_info(f"{fname}: {inv_type_name} ; n_avail={n_avail} ; n_sel={n_sel} ; ratio={sel_ratio}")
                 def sel_sc(sc):
-                    multiplicity = sc.multiplicity()
+                    multiplicity = sc.multiplicity
                     assert multiplicity == 4
                     sc_sel = q.SelectedPointsWilsonMatrix(psel_d_sel, multiplicity)
                     sc_sel @= sc
@@ -1376,7 +1376,7 @@ def run_check_hvp_avg(job_tag, traj, *, inv_type, get_psel_prob, get_hvp_sum_tsl
     geo = q.Geometry(total_site, 1)
     psel_prob = get_psel_prob()
     psel = psel_prob.psel
-    xg_arr = psel.xg_arr()
+    xg_arr = psel.xg_arr
     hvp_average = get_hvp_average()
     hvp_sum_tslice = get_hvp_sum_tslice()
     idx_arr = np.arange(len(psel))
@@ -1468,7 +1468,7 @@ def run_hlbl_sub_hvp_sfield(
     hvp_type_charge_factor_list = [ 1.0, 1.0 / 5.0, ]
     hvp_type_charge_factor = hvp_type_charge_factor_list[inv_type]
     #
-    xg_arr = psel.xg_arr()
+    xg_arr = psel.xg_arr
     #
     idx_xg_list = list(range(len(psel)))
     #
@@ -1581,7 +1581,7 @@ def run_hlbl_two_plus_two_chunk(
     hvp_type_charge_factor_list = [ 1.0, 1.0 / 5.0, ]
     hvp_type_charge_factor = hvp_type_charge_factor_list[inv_type]
     #
-    xg_arr = psel.xg_arr()
+    xg_arr = psel.xg_arr
     #
     idx_xg_list = list(range(len(psel)))
     idx_xg_list_chunk_list = q.get_chunk_list(

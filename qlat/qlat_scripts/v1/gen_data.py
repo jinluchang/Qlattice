@@ -475,7 +475,7 @@ def calc_hvp_sum_tslice(chvp_16):
     #
     chvp_16 is a hvp field (from q.contract_chvp_16)
     """
-    total_site = chvp_16.total_site()
+    total_site = chvp_16.total_site
     t_size = max(total_site)
     ld_hvp_ts = q.mk_lat_data([
         [ "t_dir", 4, [ "x", "y", "z", "t", ], ],
