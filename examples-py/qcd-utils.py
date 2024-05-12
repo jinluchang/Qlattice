@@ -103,7 +103,7 @@ if False:
     flow_time = 0.2
     for i in range(1000):
         c1 = -1.4008
-        force_size = np.sqrt(wilson_flow_force(gf_f, c1).qnorm() / geo.total_volume())
+        force_size = np.sqrt(wilson_flow_force(gf_f, c1).qnorm() / geo.total_volume)
         q.displayln_info(f"CHECK: force_size={force_size:.14E} flow_time={flow_time}")
         q.gf_wilson_flow(gf_f, flow_time, 50, existing_flow_time = t, c1 = c1)
         t += flow_time

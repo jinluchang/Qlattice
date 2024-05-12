@@ -80,7 +80,7 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def load_data():
         t_t_list = q.get_mpi_chunk(
                 [ (t_src, t_snk,) for t_snk in range(total_site[3]) for t_src in range(total_site[3]) ],
@@ -141,7 +141,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, ge
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def load_data():
         for t_src in range(total_site[3]):
             for idx in range(fsel_n_elems):
@@ -204,7 +204,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, ge
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def load_data():
         x_t_list = q.get_mpi_chunk(
                 [ (pidx, t_snk,) for t_snk in range(total_site[3]) for pidx in range(len(xg_psel_arr)) ],
@@ -269,7 +269,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     r_list = get_r_list(job_tag)
     r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
     def load_data():
@@ -383,7 +383,7 @@ def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
     xg_psel_arr = psel[:]
     tsep = dict_params[job_tag]["meson_tensor_tsep"]
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def load_data():
         for idx in range(len(xg_fsel_arr)):
             yield idx
@@ -481,7 +481,7 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
     xg_psel_arr = psel[:]
     tsep = dict_params[job_tag]["meson_tensor_tsep"]
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def load_data():
         for idx in range(len(xg_fsel_arr)):
             yield idx
@@ -513,7 +513,7 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
     q.displayln_info("timer_display for auto_contract_meson_m")
     q.timer_display()
     q.timer_merge()
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     res_sum *= 1.0 / total_volume
     q.displayln_info(0, res_sum[0])
     ld_sum = q.mk_lat_data([
@@ -798,7 +798,7 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
     xg_psel_arr = psel[:]
     tsep = dict_params[job_tag]["meson_tensor_tsep"]
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     r_list = get_r_list(job_tag)
     r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
     def load_data():
@@ -1119,7 +1119,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     q.displayln_info("{fname}: timer_display")
     q.timer_display()
     q.timer_merge()
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     res_sum *= 1.0 / (total_volume / t_size)
     ld_sum = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
@@ -1158,7 +1158,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
     n_points = len(xg_psel_arr)
     tsep = get_param(job_tag, "meson_tensor_tsep")
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     r_list = get_r_list(job_tag)
     r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
     n_elems = len(xg_fsel_arr)

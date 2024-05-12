@@ -144,7 +144,7 @@ def test_hmc(total_site, ga):
         traj += 1
         run_hmc(gf, ga, traj, rs.split("hmc-{}".format(traj)))
         plaq_avg = q.gf_avg_plaq(gf)
-        plaq_sum = geo.total_volume() * 6.0 * (1.0 - plaq_avg)
+        plaq_sum = geo.total_volume * 6.0 * (1.0 - plaq_avg)
         q.displayln_info(f"CHECK: traj={traj} ; plaq_avg={plaq_avg:.12E}")
         wilson_loop = q.gf_avg_wilson_loop_normalized_tr(gf, 1, 1)
         q.displayln_info(f"CHECK: wilson_loop {wilson_loop:.12E}")

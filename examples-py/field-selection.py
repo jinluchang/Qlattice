@@ -28,7 +28,7 @@ n_per_tslice = 16
 fsel = q.FieldSelection()
 fsel.set_rand_psel(geo.total_site, n_per_tslice, rs.split("fsel"))
 
-prob = n_per_tslice * total_site[3] / geo.total_volume()
+prob = n_per_tslice * total_site[3] / geo.total_volume
 
 total_n_elems = q.glb_sum(fsel.n_elems)
 q.displayln_info(f"CHECK: fsel info = {fsel.geo.show()} total_n_elems = {total_n_elems}")

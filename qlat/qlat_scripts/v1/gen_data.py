@@ -106,7 +106,7 @@ def avg_weight_from_prop_full(geo, prop_nf_dict):
     for inv_type in [ 0, 1, ]:
         inv_type_name = inv_type_name_list[inv_type]
         assert n_samples[inv_type] == total_site[3]
-        avg_nf_glb_sum_tslice[inv_type] = avg_nf_glb_sum_tslice[inv_type] / (geo.total_volume() / total_site[3] * n_samples[inv_type])
+        avg_nf_glb_sum_tslice[inv_type] = avg_nf_glb_sum_tslice[inv_type] / (geo.total_volume / total_site[3] * n_samples[inv_type])
         q.displayln_info(-1, fname, "avg_nf_glb_sum_tslice", inv_type_name, avg_nf_glb_sum_tslice[inv_type])
     local_tsize = geo.local_site()[3]
     local_t_start = geo.coor_node()[3] * local_tsize
@@ -144,7 +144,7 @@ def make_fsel_from_weight(f_weight, f_rand_01, rate):
     assert np.all(val >= 0)
     fsel[sel] = val
     fsel.update()
-    q.displayln_info(-1, f"{fname} rate = {rate} ; expect_num = {geo.total_volume() * rate} ; actual_num = {q.glb_sum(fsel.n_elems)}")
+    q.displayln_info(-1, f"{fname} rate = {rate} ; expect_num = {geo.total_volume * rate} ; actual_num = {q.glb_sum(fsel.n_elems)}")
     return fsel
 
 @q.timer
@@ -691,7 +691,7 @@ def compute_hvp_average(job_tag, traj, *, inv_type, psel_prob, data_path, geo):
         hvp *= 1 / prob_src
         hvp_average += hvp
     sfr.close()
-    hvp_average *= 1 / geo.total_volume()
+    hvp_average *= 1 / geo.total_volume
     return hvp_average
 
 @q.timer

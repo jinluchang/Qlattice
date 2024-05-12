@@ -17,7 +17,7 @@ class Field_fft:
         self.updated_ft = True
         self.fft = q.mk_fft(True, is_normalizing=True)
         self.ifft = q.mk_fft(False, is_normalizing=True)
-        self.V = geo.total_volume()
+        self.V = geo.total_volume
         self.mult = mult
 
     @property
@@ -666,7 +666,7 @@ class Measurements:
         phi_sq = action.sum_sq(field) # Returns sum of field^2/2
         phi_sq = q.glb_sum(phi_sq) # Sums over all nodes
         geo = field.geo
-        return phi_sq/geo.total_volume()
+        return phi_sq/geo.total_volume
         
     def histogram_bin(self,val,midpoint,n):
         j = 1

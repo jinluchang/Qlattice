@@ -86,7 +86,7 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def load_data():
         t_t_list = q.get_mpi_chunk(
                 [ (t_src, t_snk,) for t_snk in range(total_site[3]) for t_src in range(total_site[3]) ],
@@ -147,7 +147,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, ge
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def load_data():
         for t_src in range(total_site[3]):
             for idx in range(fsel_n_elems):
@@ -210,7 +210,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, ge
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def load_data():
         x_t_list = q.get_mpi_chunk(
                 [ (pidx, t_snk,) for t_snk in range(total_site[3]) for pidx in range(len(xg_psel_arr)) ],
@@ -275,7 +275,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     r_list = get_r_list(job_tag)
     r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
     def load_data():
@@ -669,7 +669,7 @@ def get_hlbl_four_total_prob(job_tag, inv_type):
 def mk_hlbl_four_point_pairs(job_tag, traj, *, inv_type, get_psel_prob):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     inv_type_name_list = [ "light", "strange", ]
     inv_type_name = inv_type_name_list[inv_type]
     #
@@ -829,7 +829,7 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     #
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     #
     hlbl_four_contract_sparse_ratio = get_param(job_tag, "hlbl_four_contract_sparse_ratio")
     #
@@ -1387,7 +1387,7 @@ def run_check_hvp_avg(job_tag, traj, *, inv_type, get_psel_prob, get_hvp_sum_tsl
     tslice_arr[:, ~tslice_arr_sel] = np.broadcast_to(np.arange(t_size), (4, t_size,))[~tslice_arr_sel]
     assert tslice_arr.shape == (len(psel), 4, t_size,)
     hvp_sum_tslice = hvp_sum_tslice[idx_arr[:, None, None], t_dir_arr[None, :, None], tslice_arr]
-    hvp_sum_tslice_avg1 = np.sum(hvp_sum_tslice / psel_prob[:, None, None, None], axis=0) / geo.total_volume()
+    hvp_sum_tslice_avg1 = np.sum(hvp_sum_tslice / psel_prob[:, None, None, None], axis=0) / geo.total_volume
     hvp_sum_tslice_avg2 = calc_hvp_sum_tslice(hvp_average)[:]
     norm_diff_ratio = (
             2 * np.sqrt(q.qnorm(hvp_sum_tslice_avg1 - hvp_sum_tslice_avg2))
@@ -1453,7 +1453,7 @@ def run_hlbl_sub_hvp_sfield(
     #
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     #
     hvp_sel_threshold = get_param(job_tag, "hlbl_two_plus_two_num_hvp_sel_threshold")
     #
