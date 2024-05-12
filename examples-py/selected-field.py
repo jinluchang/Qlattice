@@ -57,7 +57,7 @@ assert np.all(psel[:] == psel_load[:])
 
 n_per_tslice = 16
 fsel = q.FieldSelection()
-fsel.set_rand(geo.total_site(), n_per_tslice, rs.split("fsel"))
+fsel.set_rand(geo.total_site, n_per_tslice, rs.split("fsel"))
 
 fselc = fsel.copy()
 fselc.add_psel(psel)
@@ -73,7 +73,7 @@ q.save_pickle_obj(s_prop, f"results/s_prop-{q.get_id_node()}.pickle", is_sync_no
 s_prop_load = q.load_pickle_obj(f"results/s_prop-{q.get_id_node()}.pickle", is_sync_node=False)
 assert np.all(s_prop[:] == s_prop_load[:])
 
-n1 = s_prop.n_elems()
+n1 = s_prop.n_elems
 n2 = q.glb_sum(n1)
 
 q.displayln_info(f"CHECK: s_prop n1={n1} ; n2={n2}")

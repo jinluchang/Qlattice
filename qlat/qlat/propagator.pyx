@@ -133,7 +133,7 @@ def mk_wall_src(Geometry geo not None, int tslice, CoordinateD lmom=None):
 def mk_rand_u1_src(sel, rs):
     """
     return (prop_src, fu1,) where prop_src = Prop() and fu1 = FieldComplex
-    fu1 stores the random u1 numbers (fu1.multiplicity() == 1)
+    fu1 stores the random u1 numbers (fu1.multiplicity == 1)
     sel can be psel or fsel
     """
     prop_src = Prop()

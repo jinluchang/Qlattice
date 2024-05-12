@@ -94,7 +94,7 @@ def avg_weight_from_prop_full(geo, prop_nf_dict):
     """
     fname = q.get_fname()
     inv_type_name_list = [ "light", "strange", ]
-    total_site = geo.total_site()
+    total_site = geo.total_site
     n_samples = [ 0, 0, ]
     avg_nf_glb_sum_tslice = [ 0, 0, ]
     for k, v in prop_nf_dict.items():
@@ -144,7 +144,7 @@ def make_fsel_from_weight(f_weight, f_rand_01, rate):
     assert np.all(val >= 0)
     fsel[sel] = val
     fsel.update()
-    q.displayln_info(-1, f"{fname} rate = {rate} ; expect_num = {geo.total_volume() * rate} ; actual_num = {q.glb_sum(fsel.n_elems())}")
+    q.displayln_info(-1, f"{fname} rate = {rate} ; expect_num = {geo.total_volume() * rate} ; actual_num = {q.glb_sum(fsel.n_elems)}")
     return fsel
 
 @q.timer
@@ -535,9 +535,9 @@ def compute_prop_2(inv, src, *, tag, sfw, qar_sp, psel, fsel,
     fsel_ps.update()
     fsel_combine = fsel_ps.copy()
     fsel_combine.add_fsel(fsel)
-    num_fsel = q.glb_sum(fsel.n_elems())
-    num_fsel_ps = q.glb_sum(fsel_ps.n_elems())
-    num_fsel_combine = q.glb_sum(fsel_combine.n_elems())
+    num_fsel = q.glb_sum(fsel.n_elems)
+    num_fsel_ps = q.glb_sum(fsel_ps.n_elems)
+    num_fsel_combine = q.glb_sum(fsel_combine.n_elems)
     q.displayln_info(0, f"compute_prop_psrc: tag='{tag}' ; num_fsel={num_fsel} ; num_fsel_ps={num_fsel_ps} ; num_fsel_combine={num_fsel_combine}")
     s_sol_ps_sel_prob = q.SelectedFieldRealD(fsel_ps)
     s_sol_ps_sel_prob @= sol_ps_sel_prob

@@ -159,7 +159,7 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
 
     def init_from_sf_rs(self, SelectedField{{name}} sf, RngState rs):
         cdef FieldSelection fsel = sf.fsel
-        cdef cc.Long n_elems = fsel.n_elems()
+        cdef cc.Long n_elems = fsel.n_elems
         cdef SelectedShufflePlan ssp = SelectedShufflePlan(n_elems, rs)
         self.init_from_sf_ssp(sf, ssp)
 

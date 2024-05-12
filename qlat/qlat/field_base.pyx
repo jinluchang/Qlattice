@@ -65,9 +65,9 @@ cdef class FieldBase:
         other can be Field but of different type
         field geo does not change if already initialized.
         """
-        cdef cc.Long size_per_site = other.multiplicity() * other.sizeof_m()
-        cdef cc.Long mult = size_per_site // self.sizeof_m()
-        assert mult * self.sizeof_m() == size_per_site
+        cdef cc.Long size_per_site = other.multiplicity * other.sizeof_m
+        cdef cc.Long mult = size_per_site // self.sizeof_m
+        assert mult * self.sizeof_m == size_per_site
         self.__init__(other.geo, mult)
         self[:].ravel().view(dtype=np.int8)[:] = other[:].ravel().view(dtype=np.int8)
 
@@ -621,10 +621,10 @@ cdef class SelectedFieldBase:
 
     def glb_sum_tslice(self, *, t_dir=3):
         """
-        return SelectedPoints(self.ctype, get_psel_tslice(self.total_site(), t_dir=t_dir))
+        return SelectedPoints(self.ctype, get_psel_tslice(self.total_site, t_dir=t_dir))
         """
         from .c import get_psel_tslice
-        cdef PointsSelection psel = get_psel_tslice(self.total_site(), t_dir=t_dir)
+        cdef PointsSelection psel = get_psel_tslice(self.total_site, t_dir=t_dir)
         sp = SelectedPoints(self.ctype, psel)
         if self.ctype in field_ctypes_double:
             c.glb_sum_tslice_double_sfield(sp, self, t_dir)

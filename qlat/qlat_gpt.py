@@ -10,7 +10,7 @@ def mk_grid(geo=None):
         t_size = l_size * 2
         total_site = q.Coordinate([ l_size, l_size, l_size, t_size, ])
     else:
-        total_site = geo.total_site()
+        total_site = geo.total_site
     return g.grid(total_site.to_list(), g.double)
 
 def begin_with_gpt():
@@ -113,7 +113,7 @@ def gpt_from_qlat_gauge_field(gf):
     assert isinstance(gf, q.GaugeField)
     geo = gf.geo
     ctype = q.ElemTypeColorMatrix
-    total_site = geo.total_site()
+    total_site = geo.total_site
     multiplicity = 1
     tag = "gpt_from_qlat"
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
@@ -145,7 +145,7 @@ def gpt_from_qlat_gauge_transform(gt):
     assert isinstance(gt, q.GaugeTransform)
     geo = gt.geo
     ctype = q.ElemTypeColorMatrix
-    total_site = geo.total_site()
+    total_site = geo.total_site
     multiplicity = 1
     tag = "gpt_from_qlat"
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
@@ -172,7 +172,7 @@ def gpt_from_qlat_prop(prop_wm):
     assert isinstance(prop_wm, q.Prop)
     geo = prop_wm.geo
     ctype = q.ElemTypeWilsonMatrix
-    total_site = geo.total_site()
+    total_site = geo.total_site
     multiplicity = 1
     tag = "gpt_from_qlat"
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
@@ -199,7 +199,7 @@ def gpt_from_qlat_ff4d(ff):
     assert isinstance(ff, q.FermionField4d)
     geo = ff.geo
     ctype = q.ElemTypeWilsonVector
-    total_site = geo.total_site()
+    total_site = geo.total_site
     multiplicity = 1
     tag = "gpt_from_qlat"
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
@@ -233,11 +233,11 @@ def gpt_from_qlat_complex(fc):
     assert isinstance(fc, q.FieldComplexD)
     geo = fc.geo
     ctype = q.ElemTypeComplexD
-    total_site = geo.total_site()
+    total_site = geo.total_site
     multiplicity = 1
     tag = "gpt_from_qlat"
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
-    n = geo.multiplicity()
+    n = geo.multiplicity
     fs = [ None, ] * n
     q.split_fields(fs, fc)
     grid = mk_grid(geo)

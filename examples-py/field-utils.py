@@ -128,7 +128,7 @@ json_results.append((f"diff norm", gf1.qnorm(), 1e-12,))
 
 n_per_tslice = 16
 fsel = q.FieldSelection()
-fsel.set_rand(geo.total_site(), n_per_tslice, rs.split("fsel"))
+fsel.set_rand(geo.total_site, n_per_tslice, rs.split("fsel"))
 
 prop = q.Prop(geo)
 prop.set_rand(rs.split("prop-1"))
@@ -187,7 +187,7 @@ json_results.append((f"f4 sig", sig, 1e-7,))
 fsel = q.FieldSelection(geo)
 fsel[q.RngState("seed-fsel-init").u_rand_arr(fsel[:].shape) < 1/16] = 0
 fsel.update()
-q.displayln_info(f"CHECK: q.glb_sum(fsel.n_elems()) = {q.glb_sum(fsel.n_elems())}")
+q.displayln_info(f"CHECK: q.glb_sum(fsel.n_elems) = {q.glb_sum(fsel.n_elems)}")
 
 sf = q.SelectedFieldRealD(fsel, 2)
 sf @= f

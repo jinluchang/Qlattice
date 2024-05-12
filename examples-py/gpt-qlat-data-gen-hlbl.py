@@ -81,7 +81,7 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     fsel = fsel_prob.fsel
     if not fsel.is_containing(psel):
         q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
-    fsel_n_elems = fsel.n_elems()
+    fsel_n_elems = fsel.n_elems
     fsel_prob_arr = fsel_prob[:].ravel()
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
@@ -142,7 +142,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, ge
     fsel = fsel_prob.fsel
     if not fsel.is_containing(psel):
         q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
-    fsel_n_elems = fsel.n_elems()
+    fsel_n_elems = fsel.n_elems
     fsel_prob_arr = fsel_prob[:].ravel()
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
@@ -204,7 +204,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, ge
     fsel = fsel_prob.fsel
     if not fsel.is_containing(psel):
         q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
-    fsel_n_elems = fsel.n_elems()
+    fsel_n_elems = fsel.n_elems
     fsel_prob_arr = fsel_prob[:].ravel()
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
@@ -269,7 +269,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
     fsel = fsel_prob.fsel
     if not fsel.is_containing(psel):
         q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
-    fsel_n_elems = fsel.n_elems()
+    fsel_n_elems = fsel.n_elems
     fsel_prob_arr = fsel_prob[:].ravel()
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
@@ -777,7 +777,7 @@ def contract_hlbl_four_ama(
     muon_mass = get_muon_mass(job_tag)
     coef = complex(weight_pair / prob_pair)
     force_load_muon_line_interpolation()
-    # q.displayln_info(f"INFO: contract_hlbl_four_ama: {psel_d.geo.total_site()}")
+    # q.displayln_info(f"INFO: contract_hlbl_four_ama: {psel_d.geo.total_site}")
     smf_d = q.mk_m_z_field_tag(psel_d, xg_x, xg_y, a=muon_mass, tag=0)
     tags = get_hlbl_clbl_info_ref_tags(job_tag)
     r_sq_limit = get_r_sq_limit(job_tag)
@@ -838,7 +838,7 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     fsel_prob = get_fsel_prob()
     fsel = fsel_prob.fsel
     #
-    ssp = q.SelectedShufflePlan(fsel.n_elems(), q.RngState(f"{job_tag}-{traj}-hlbl-four-fsel-permute"))
+    ssp = q.SelectedShufflePlan(fsel.n_elems, q.RngState(f"{job_tag}-{traj}-hlbl-four-fsel-permute"))
     psel_d_prob = q.SelectedPointsRealD(fsel_prob, ssp)
     #
     point_pairs = get_point_pairs()
@@ -1499,7 +1499,7 @@ def run_hlbl_sub_hvp_sfield(
         fsel_ps = q.FieldSelection(geo)
         fsel_ps[ps_sel] = 0
         fsel_ps.update()
-        num_fsel_ps = q.glb_sum(fsel_ps.n_elems())
+        num_fsel_ps = q.glb_sum(fsel_ps.n_elems)
         tag = mk_psrc_tag(xg, inv_type, inv_acc="ama")
         q.displayln_info(0, f"{fname}: {tag} ; num_fsel_ps={num_fsel_ps} ratio={num_fsel_ps/total_volume}")
         assert num_fsel_ps > 0
@@ -1612,7 +1612,7 @@ def run_hlbl_two_plus_two_chunk(
         fsel_ps = fsel_ps_prob.fsel
         s_hvp = q.SelectedFieldComplexD(fsel_ps, 16)
         s_hvp.load_double_from_float(sfr, tag)
-        ssp = q.SelectedShufflePlan(fsel_ps.n_elems(), q.RngState(f"psel_ps-permute-{idx_xg_x}"))
+        ssp = q.SelectedShufflePlan(fsel_ps.n_elems, q.RngState(f"psel_ps-permute-{idx_xg_x}"))
         psel_lps_prob = q.SelectedPointsRealD(fsel_ps_prob, ssp)
         lps_hvp = q.SelectedPointsComplexD(s_hvp, ssp)
         lps_hvp *= hvp_type_charge_factor

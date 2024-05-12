@@ -111,10 +111,10 @@ cdef class Geometry:
         return self.show()
 
     def show(self):
-        cdef Coordinate total_site = self.total_site()
-        cdef int multiplicity = self.multiplicity()
-        cdef Coordinate expan_left = self.expansion_left()
-        cdef Coordinate expan_right = self.expansion_right()
+        cdef Coordinate total_site = self.total_site
+        cdef int multiplicity = self.multiplicity
+        cdef Coordinate expan_left = self.expansion_left
+        cdef Coordinate expan_right = self.expansion_right
         cdef int eo = self.eo()
         cdef Coordinate zero = Coordinate()
         if expan_left == zero and expan_right == zero and eo == 0:
@@ -166,10 +166,10 @@ cdef class Geometry:
         Only work when single node (or if all nodes has the same data).
         Do not support expansion.
         """
-        total_site = self.total_site()
-        multiplicity = self.multiplicity()
-        expan_left = self.expansion_left()
-        expan_right = self.expansion_right()
+        total_site = self.total_site
+        multiplicity = self.multiplicity
+        expan_left = self.expansion_left
+        expan_right = self.expansion_right
         return [ total_site, multiplicity, expan_left, expan_right, ]
 
     def __setstate__(self, state):

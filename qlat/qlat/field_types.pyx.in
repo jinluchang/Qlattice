@@ -162,7 +162,7 @@ cdef class Field{{name}}(FieldBase):
         """
         from .c import get_psel_single
         cdef PointsSelection psel = get_psel_single(self.total_site)
-        cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, self.multiplicity())
+        cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, self.multiplicity)
         cc.field_glb_sum(sp.xx, self.xx)
         return sp
 
@@ -172,20 +172,20 @@ cdef class Field{{name}}(FieldBase):
         """
         from .c import get_psel_tslice
         cdef PointsSelection psel = get_psel_tslice(self.total_site, t_dir=t_dir)
-        cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, self.multiplicity())
+        cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, self.multiplicity)
         cc.field_glb_sum_tslice(sp.xx, self.xx, t_dir)
         return sp
 
     def get_elems_xg(self, xg_arr):
         cdef PointsSelection psel = PointsSelection(self.total_site, xg_arr)
-        cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, self.multiplicity())
+        cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, self.multiplicity)
         sp @= self
         return sp
 
     def set_elems_xg(self, xg_arr, val):
         cdef Geometry geo = self.geo
         cdef PointsSelection psel = PointsSelection(self.total_site, xg_arr)
-        cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, self.multiplicity())
+        cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, self.multiplicity)
         np.asarray(sp).ravel()[:] = np.asarray(val).ravel()
         self @= sp
 

@@ -160,7 +160,7 @@ cdef class PointsSelection:
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
         cc.assign_direct(self.xx, cc.load_point_selection_info(path))
-        cdef Coordinate total_site = geo.total_site()
+        cdef Coordinate total_site = geo.total_site
         self.xx.total_site = total_site.xx
 
     def __setitem__(self, idx, val):
@@ -408,7 +408,7 @@ cdef class FieldSelection:
         iterate over all local selected coordinate as xg
         """
         cdef cc.Long idx
-        cdef cc.Long n_elems = self.n_elems()
+        cdef cc.Long n_elems = self.n_elems
         for idx in range(n_elems):
             yield self.coordinate_from_idx(idx)
 

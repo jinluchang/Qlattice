@@ -110,7 +110,7 @@ def gf_topology(GaugeField gf):
 def gf_topology_terms_field(GaugeField gf):
     """
     return topf;
-    topf.geo.multiplicity() == 5
+    topf.geo.multiplicity == 5
     sum of the 5 terms should equal to gf_topology_field
     """
     topf = FieldRealD()

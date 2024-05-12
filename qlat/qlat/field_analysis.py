@@ -31,7 +31,7 @@ def smear_field_step_local(field, coef, n_steps=1):
         return field.copy()
     geo = field.geo
     assert geo.num_node() == 1
-    total_site = geo.total_site()
+    total_site = geo.total_site
     xg_shift_list = [
         [ 0, 0, 0, 1],
         [ 0, 0, 1, 0],

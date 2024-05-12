@@ -26,23 +26,23 @@ q.displayln_info("CHECK: psel.xg_arr.tolist() =", psel.xg_arr.tolist())
 n_per_tslice = 16
 
 fsel = q.FieldSelection()
-fsel.set_rand_psel(geo.total_site(), n_per_tslice, rs.split("fsel"))
+fsel.set_rand_psel(geo.total_site, n_per_tslice, rs.split("fsel"))
 
 prob = n_per_tslice * total_site[3] / geo.total_volume()
 
-total_n_elems = q.glb_sum(fsel.n_elems())
+total_n_elems = q.glb_sum(fsel.n_elems)
 q.displayln_info(f"CHECK: fsel info = {fsel.geo.show()} total_n_elems = {total_n_elems}")
 
 fsel.save("results/fsel.field")
 fsel.load("results/fsel.field")
 fsel.save("results/fsel-1.field")
 
-total_n_elems = q.glb_sum(fsel.n_elems())
+total_n_elems = q.glb_sum(fsel.n_elems)
 q.displayln_info(f"CHECK: fsel info = {fsel.geo.show()} total_n_elems = {total_n_elems}")
 
 fsel.add_psel(psel)
 
-total_n_elems = q.glb_sum(fsel.n_elems())
+total_n_elems = q.glb_sum(fsel.n_elems)
 q.displayln_info(f"CHECK: fsel info = {fsel.geo.show()} total_n_elems = {total_n_elems}")
 
 psel = q.PointsSelection()
@@ -64,21 +64,21 @@ fsel2 = q.FieldSelection()
 fsel2.set_empty(geo)
 fsel2.set_rand(total_site, n_per_tslice, rs.split("fsel2"))
 
-total_n_elems = q.glb_sum(fsel2.n_elems())
+total_n_elems = q.glb_sum(fsel2.n_elems)
 q.displayln_info(f"CHECK: fsel2 info = {fsel2.geo.show()} total_n_elems = {total_n_elems}")
 
 fsel3 = fsel2.copy()
 
 fsel3.add_fsel(fsel)
-total_n_elems = q.glb_sum(fsel3.n_elems())
+total_n_elems = q.glb_sum(fsel3.n_elems)
 q.displayln_info(f"CHECK: fsel3 info = {fsel3.geo.show()} total_n_elems = {total_n_elems}")
 
 fsel4 = fsel2.intersect(fsel)
-total_n_elems = q.glb_sum(fsel4.n_elems())
+total_n_elems = q.glb_sum(fsel4.n_elems)
 q.displayln_info(f"CHECK: fsel4 info = {fsel4.geo.show()} total_n_elems = {total_n_elems}")
 
 fsel5 = fsel.intersect(fsel2)
-total_n_elems = q.glb_sum(fsel5.n_elems())
+total_n_elems = q.glb_sum(fsel5.n_elems)
 q.displayln_info(f"CHECK: fsel5 info = {fsel4.geo.show()} total_n_elems = {total_n_elems}")
 
 if q.get_id_node() == 0:
