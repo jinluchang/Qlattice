@@ -21,7 +21,7 @@ def gf_plaq_action_density_field(GaugeField gf):
     paf.geo.multiplicity == 1
     \sum_P (1 - 1/3 * Re Tr U_P)
     #
-    Action = beta * total_volume() * action_density
+    Action = beta * total_volume * action_density
     Single instanton action = 8 * sqr(PI) / g^2
     beta = 6/g^2
     """
@@ -48,7 +48,7 @@ def gf_plaq_action_density(GaugeField gf):
     pa = gf_plaq_action_density_field(gf).glb_sum()[:].item() / total_volume
     """
     cdef Geometry geo = gf.geo
-    cdef cc.Long total_volume = geo.total_volume()
+    cdef cc.Long total_volume = geo.total_volume
     return gf_plaq_action_density_field(gf).glb_sum()[:].item() / total_volume
 
 @q.timer
@@ -59,7 +59,7 @@ def gf_spatial_plaq_action_density(GaugeField gf):
     pa = gf_spatial_plaq_action_density_field(gf).glb_sum()[:].item() / total_volume
     """
     cdef Geometry geo = gf.geo
-    cdef cc.Long total_volume = geo.total_volume()
+    cdef cc.Long total_volume = geo.total_volume
     return gf_spatial_plaq_action_density_field(gf).glb_sum()[:].item() / total_volume
 
 @q.timer
