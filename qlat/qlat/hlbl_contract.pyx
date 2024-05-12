@@ -63,7 +63,7 @@ def mk_local_current_from_props(
     cdef PointsSelection psel_d = sprop1.psel
     assert len(psel_d) == len(sprop2.psel)
     cdef Geometry geo = psel_d.geo
-    assert geo.local_site() == sprop2.psel.geo.local_site()
+    assert geo.local_site == sprop2.psel.geo.local_site
     cdef SelectedPointsWilsonMatrix scf = SelectedPointsWilsonMatrix(psel_d)
     cc.set_local_current_from_props(scf.xx, sprop1.xx, sprop2.xx, psel_d.xx, geo.xx)
     return scf
@@ -81,8 +81,8 @@ def mk_psel_d_prob_xy(
     cdef PointsSelection psel = psel_prob.psel
     cdef PointsSelection psel_d = psel_d_prob.psel
     cdef Geometry geo = psel.geo
-    if geo.local_site() != psel_d.geo.local_site():
-        raise Exception(f"psel site: {geo.local_site()} ; psel_d site: {psel_d.geo.local_site()}.")
+    if geo.local_site != psel_d.geo.local_site:
+        raise Exception(f"psel site: {geo.local_site} ; psel_d site: {psel_d.geo.local_site}.")
     cdef SelectedPointsRealD psel_d_prob_xy = SelectedPointsRealD(psel_d)
     cdef cc.RealD prob_pair = cc.set_psel_d_prob_xy(
             psel_d_prob_xy.xx,
@@ -189,8 +189,8 @@ def contract_four_pair_no_glb_sum(
     cdef PointsSelection psel = psel_prob.psel
     cdef PointsSelection psel_d = psel_d_prob.psel
     cdef Geometry geo = psel.geo
-    if geo.local_site() != psel_d.geo.local_site():
-        raise Exception(f"psel site: {geo.local_site()} ; psel_d site: {psel_d.geo.local_site()}.")
+    if geo.local_site != psel_d.geo.local_site:
+        raise Exception(f"psel site: {geo.local_site} ; psel_d site: {psel_d.geo.local_site}.")
     assert len(psel_d) == len(smf_d.psel)
     assert len(psel_d) == len(sc_xy.psel)
     assert len(psel_d) == len(sc_yx.psel)
