@@ -11,7 +11,7 @@ q.qremove_all_info("results")
 q.qmkdir_info("results")
 rs = q.RngState("seed")
 total_site = q.Coordinate([4, 4, 4, 8])
-geo = q.Geometry(total_site, 1)
+geo = q.Geometry(total_site)
 q.displayln_info("CHECK: geo.show() =", geo.show())
 
 psel = q.PointsSelection(total_site, [ [0,0,0,0], [0,1,2,0], ])
