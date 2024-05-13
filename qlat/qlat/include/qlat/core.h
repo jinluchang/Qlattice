@@ -657,6 +657,7 @@ struct API Field {
     TIMER("Field::set_view");
     initialized = f.initialized;
     geo.set_view(f.geo);
+    multiplicity = f.multiplicity;
     field.set_view(f.field);
   }
   //
@@ -932,7 +933,7 @@ Field<M>& Field<M>::operator=(const Field<M>& f)
     const Coordinate xl = geo_v.coordinate_from_index(index);
     const Vector<M> v = f.get_elems_const(xl);
     Vector<M> v0 = f0.get_elems(xl);
-    for (int m = 0; m < multiplicity; ++m) {
+    for (int m = 0; m < f0.multiplicity; ++m) {
       v0[m] = v[m];
     }
   });
