@@ -768,7 +768,9 @@ struct API Field {
   {
     const Geometry& geo_v = geo();
     qassert(geo_v.is_only_local);
-    qassert(1 == multiplicity);
+    if (1 != multiplicity) {
+      qerr(ssprintf("Field::get_elem: mult=%d", multiplicity));
+    }
     return get_elem_offset(index);
   }
   qacc const M& get_elem(const Long index) const
@@ -961,6 +963,7 @@ template <class M>
 void qswap(Field<M>& f1, Field<M>& f2)
 {
   std::swap(f1.initialized, f2.initialized);
+  std::swap(f1.multiplicity, f2.multiplicity);
   qswap(f1.geo, f2.geo);
   qswap(f1.field, f2.field);
 }

@@ -196,6 +196,8 @@ inline void gf_evolve(GaugeField& gf, const GaugeMomentum& gm,
 //  U(t+dt) = exp(i dt H) U(t)
 {
   TIMER("gf_evolve");
+  qassert(gf.multiplicity == 4);
+  qassert(gm.multiplicity == 4);
   qacc_for(index, gf.geo().local_volume(), {
     const Geometry& geo = gf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -278,6 +280,8 @@ inline void set_gm_force_no_comm(GaugeMomentum& gm_force, const GaugeField& gf,
   TIMER("set_gm_force_no_comm");
   const Geometry geo = geo_resize(gf.geo());
   gm_force.init(geo);
+  qassert(gf.multiplicity == 4);
+  qassert(gm_force.multiplicity == 4);
   qacc_for(index, geo.local_volume(), {
     const Geometry& geo = gm_force.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -293,6 +297,7 @@ inline void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf,
                          const GaugeAction& ga)
 {
   TIMER("set_gm_force");
+  qassert(gf.multiplicity == 4);
   Coordinate expand_left(2, 2, 2, 2);
   Coordinate expand_right(2, 2, 2, 2);
   if (ga.c1 == 0.0) {
@@ -302,12 +307,14 @@ inline void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf,
   const Geometry geo_ext = geo_resize(gf.geo(), expand_left, expand_right);
   GaugeField gf_ext;
   gf_ext.init(geo_ext);
+  qassert(gf_ext.multiplicity == 4);
   gf_ext = gf;
   const std::string tag_comm = ga.c1 == 0.0 ? "plaq" : "plaq+rect";
   const CommPlan& plan = get_comm_plan(set_marks_field_gm_force, tag_comm,
                                        gf_ext.geo(), gf_ext.multiplicity);
   refresh_expanded(gf_ext, plan);
   set_gm_force_no_comm(gm_force, gf_ext, ga);
+  qassert(gm_force.multiplicity == 4);
 }
 
 }  // namespace qlat

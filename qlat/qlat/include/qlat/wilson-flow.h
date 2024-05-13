@@ -25,7 +25,7 @@ inline void gf_wilson_flow_step_euler(GaugeField& gf, const double epsilon,
 
 inline void gf_wilson_flow_step(GaugeField& gf, const double epsilon,
                                 const double c1 = 0.0)
-// Runge–Kutta scheme
+// Runge-Kutta scheme
 // http://arxiv.org/abs/1006.4518v3
 {
   TIMER("gf_wilson_flow_step");
@@ -51,7 +51,7 @@ inline void gf_energy_density_field_no_comm(Field<RealD>& fd, const GaugeField& 
 {
   TIMER("gf_energy_density_field_no_comm");
   const Geometry geo = geo_resize(gf.geo());
-  fd.init(geo, gf.multiplicity);
+  fd.init(geo, 1);
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     double s = 0.0;

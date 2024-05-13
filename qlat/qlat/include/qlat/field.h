@@ -66,7 +66,10 @@ const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
     return f;
   }
   qassert(is_matching_geo(f.geo(), f1.geo()));
-  qassert(f.multiplicity == f1.multiplicity);
+  if (f.multiplicity != f1.multiplicity) {
+    qerr(fname +
+         ssprintf(": f.mult=%d ; f1.mult=%d", f.multiplicity, f1.multiplicity));
+  }
   qacc_for(index, f.geo().local_volume(), {
     const Geometry& geo = f.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
