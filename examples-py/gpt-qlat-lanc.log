@@ -26,7 +26,7 @@ CHECK: ('meson_tensor_tsep', 1)
 CHECK: ('meson_jwjj_threshold', 0.1)
 CHECK: ('meson_tsep_list', [1, 2, 3, 4, 5, 6, 7])
 CHECK: ('mk_sample_gauge_field', {'rand_n_step': 2, 'flow_n_step': 8, 'hmc_n_traj': 1})
-CHECK: geo.show() = Geometry([4, 4, 4, 8], 1)
+CHECK: geo.show() = Geometry([4, 4, 4, 8])
 CHECK: src norm 4.0912250193E+03
 CHECK: sol_ref norm 1.1316216041E+04 with eig
 CHECK: sol diff norm 1.6E+02 inv_acc=0 with eig

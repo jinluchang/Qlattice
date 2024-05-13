@@ -1,5 +1,5 @@
 CHECK: total_site = Coordinate([4, 4, 4, 8])
-CHECK: geo.show() = Geometry([4, 4, 4, 8], 1)
+CHECK: geo.show() = Geometry([4, 4, 4, 8])
 CHECK: t=0 topo_clf=-6.1250199999E-03
 CHECK: t=0 topo_5li=-8.9108605358E-03 -8.9108605358E-03
 CHECK: t=1.0 topo_clf=2.2890146266E-01

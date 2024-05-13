@@ -1,4 +1,4 @@
-CHECK: geo.show() = Geometry([4, 4, 4, 8], 1)
+CHECK: geo.show() = Geometry([4, 4, 4, 8])
 CHECK: g.qcd.gauge.plaquette = 0.9451760165
 CHECK: g.qcd.gauge.plaquette = 0.9452 single precision
 CHECK: tag=qm start

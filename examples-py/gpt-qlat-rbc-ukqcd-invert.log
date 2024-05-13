@@ -1,4 +1,4 @@
-CHECK: geo.show() = Geometry([8, 8, 8, 16], 1)
+CHECK: geo.show() = Geometry([8, 8, 8, 16])
 CHECK: prop src 0 qnorm = 7.864792030817E+05 crc32 = 2959112452
 CHECK: prop src 1 qnorm = 7.867496656078E+05 crc32 = 1391639106
 CHECK: prop sol 0 qnorm = 3.658160E+06

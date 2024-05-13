@@ -1,4 +1,4 @@
-CHECK: geo.show() = Geometry([4, 4, 4, 8], 1)
+CHECK: geo.show() = Geometry([4, 4, 4, 8])
 CHECK: gf xg=Coordinate([2, 3, 0, 6])
 CHECK: gf xg=(Coordinate([2, 3, 0, 6]), Coordinate([2, 0, 1, 4]))
 CHECK: gf xg=Coordinate([2, 3, 0, 6]) m=1

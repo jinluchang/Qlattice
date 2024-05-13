@@ -1,4 +1,4 @@
-CHECK: geo.show() = Geometry([4, 4, 4, 8], 1)
+CHECK: geo.show() = Geometry([4, 4, 4, 8])
 CHECK: prop 4021037301 4.93041082746695E+04
 CHECK: q.show_all_shuffled_fields_writer()
 CHECK: 0 ShuffledFieldsWriter(path='results/prop.fields',new_size_node=1x1x1x8)

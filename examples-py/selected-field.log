@@ -1,5 +1,5 @@
-CHECK: geo.show() = Geometry([4, 4, 4, 8], 1)
-CHECK: geo_load.show() = Geometry([4, 4, 4, 8], 1)
+CHECK: geo.show() = Geometry([4, 4, 4, 8])
+CHECK: geo_load.show() = Geometry([4, 4, 4, 8])
 CHECK: prop.crc32() = 4021037301 ; prop.qnorm() = 4.930410827467E+04
 CHECK: prop_arr.dtype = complex128
 CHECK: prop_arr.shape = (256, 1, 12, 12)

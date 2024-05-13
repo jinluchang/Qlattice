@@ -1,4 +1,4 @@
-CHECK: geo.show() = Geometry([4, 4, 4, 8], 1)
+CHECK: geo.show() = Geometry([4, 4, 4, 8])
 CHECK: 9.7368172946E+00 9.7368172946E+00
 CHECK: 1.4746353266E+07 1.4746353266E+07
 CHECK: finished successfully.

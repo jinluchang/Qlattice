@@ -1,4 +1,4 @@
-CHECK: geo.show() = Geometry([4, 4, 4, 8], 1)
+CHECK: geo.show() = Geometry([4, 4, 4, 8])
 CHECK: g.qcd.gauge.plaquette = 0.97450554725460
 CHECK: src info 12.0
 CHECK: src info 2788420690

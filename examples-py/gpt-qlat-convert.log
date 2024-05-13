@@ -1,4 +1,4 @@
-CHECK: geo.show() = Geometry([4, 4, 4, 8], 1)
+CHECK: geo.show() = Geometry([4, 4, 4, 8])
 CHECK: test_gf
 CHECK: gf.plaq()=6.5307709298803E-01 ; g.qcd.gauge.plaquette(gpt_gf) = 0.6530770929880
 CHECK: test_src: xg=[0, 2, 2, 1]
