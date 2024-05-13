@@ -268,7 +268,8 @@ cdef extern from "qlat/selected-field-io.h" namespace "qlat":
     void set_selected_points[t](SelectedPoints[t]& sp, const Field[t] f,
                                 const PointsSelection& psel, const Int m) except +
     void set_field_selected[t](Field[t]& f, const SelectedPoints[t]& sp,
-                               const Geometry& geo, const PointsSelection& psel, const Int m) except +
+                               const Geometry& geo, const PointsSelection& psel,
+                               const Int multiplicity, const Int m) except +
     void set_sqrt_field(SelectedField[RealD]& f, const SelectedField[RealD]& f1) except +
     #
     bool is_selected_field(const std_string& path) except +

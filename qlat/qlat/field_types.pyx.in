@@ -198,10 +198,11 @@ cdef class Field{{name}}(FieldBase):
 
     def set_elem_xg(self, xg_arr, cc.Int m, val):
         cdef Geometry geo = self.geo
+        cdef cc.Int multiplicity = self.multiplicity
         cdef PointsSelection psel = PointsSelection(self.total_site, xg_arr)
         cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, 1)
         np.asarray(sp).ravel()[:] = np.asarray(val).ravel()
-        cc.set_field_selected(self.xx, sp.xx, geo.xx, psel.xx, m)
+        cc.set_field_selected(self.xx, sp.xx, geo.xx, psel.xx, multiplicity, m)
 
     def shift(self, Coordinate shift=None, cc.Bool is_reflect=False):
         """

@@ -848,7 +848,10 @@ void Field<M>::init(const Geometry& geo_, const int multiplicity_)
       displayln("new geo = " + show(geo_new));
       qassert(false);
     }
-    qassert(multiplicity == multiplicity_);
+    if (multiplicity != multiplicity_) {
+      qerr(ssprintf("Field::init: mult=%d ; mult_=%d", multiplicity,
+                    multiplicity_));
+    }
   } else {
     TIMER("Field::init(geo,mult)");
     init();
