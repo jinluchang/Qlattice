@@ -47,16 +47,24 @@ def run_job(job_tag, traj):
     q.check_stop()
     q.check_time_limit()
     #
-    q.qmkdir_info(get_save_path(f""))
-    q.qmkdir_info(get_save_path(f"eig"))
-    q.qmkdir_info(get_save_path(f"eig/{job_tag}"))
-    #
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site)
     q.displayln_info("CHECK: geo.show() =", geo.show())
     #
     get_gf = run_gf(job_tag, traj_gf)
     get_gf().show_info()
+    #
+    get_eig = run_eig(job_tag, traj_gf, get_gf)
+    test_eig(get_gf(), get_eig(), job_tag, inv_type = 0)
+    #
+    # test repartition
+    path = get_load_path(f"{job_tag}/eig/traj-{traj}")
+    q.check_compressed_eigen_vectors(path)
+    #
+    new_size_node = q.Coordinate([ 2, 2, 2, 2, ])
+    path_new = path
+    q.eigen_system_repartition(new_size_node, path, path_new)
+    q.check_compressed_eigen_vectors(path)
     #
     get_eig = run_eig(job_tag, traj_gf, get_gf)
     test_eig(get_gf(), get_eig(), job_tag, inv_type = 0)
