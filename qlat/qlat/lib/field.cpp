@@ -9,7 +9,7 @@ void set_sqrt_field(Field<RealD>& f, const Field<RealD>& f1)
 {
   TIMER("set_sqrt_field(f,f1)");
   const Geometry geo = geo_resize(f1.geo());
-  const Int multiplicity = f.multiplicity;
+  const Int multiplicity = f1.multiplicity;
   f.init(geo, multiplicity);
   qacc_for(index, geo.local_volume(), {
     const Vector<RealD> f1v = f1.get_elems_const(index);
