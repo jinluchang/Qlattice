@@ -22,14 +22,31 @@ source qcore/set-prefix.sh $name
         done
     fi
 
-    # grid_options="--dslash-asm --shm-hugepages --shm 4050"
-    # grid_options="--dslash-asm"
-    grid_options=""
+    if [ -z "$grid_options" ] ; then
+        # grid_options="--dslash-asm --shm-hugepages --shm 4050"
+        # grid_options="--dslash-asm"
+        grid_options=""
+    fi
 
-    geo_options="--grid 16.16.16.16 --mpi 1.1.1.1"
+    if [ -z "$geo_options" ] ; then
+        geo_options="--grid 16.16.16.16 --Ls 12 --N 10 --mpi 1.1.1.1"
+    fi
+
+    if [ -z "$OMP_NUM_THREADS" ] ; then
+        export OMP_NUM_THREADS=4
+    fi
+
+    if [ -z "$mpiexec" ] ; then
+        mpiexec=""
+    fi
+
+    echo "OMP_NUM_THREADS=\"$OMP_NUM_THREADS\""
+    echo "mpiexec=\"$mpiexec\""
+    echo "geo_options=\"$geo_options\""
+    echo "grid_options=\"$grid_options\""
 
     cat "$gpt_path"/../../../src/benchmarks/dslash.py > dslash.py
-    OMP_NUM_THREADS=4 time-run python3 dslash.py $grid_options $geo_options --Ls 12 --N 10
+    time-run $mpiexec python3 dslash.py $grid_options $geo_options
 
     echo "!!!! $name build !!!!"
     rm -rf $temp_dir || true
