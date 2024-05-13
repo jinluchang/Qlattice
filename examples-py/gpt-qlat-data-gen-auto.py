@@ -382,7 +382,7 @@ def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
     tsep = dict_params[job_tag]["meson_tensor_tsep"]
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     total_volume = geo.total_volume
     def load_data():
         for idx in range(len(xg_fsel_arr)):
@@ -480,7 +480,7 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
     tsep = dict_params[job_tag]["meson_tensor_tsep"]
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     total_volume = geo.total_volume
     def load_data():
         for idx in range(len(xg_fsel_arr)):
@@ -797,7 +797,7 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
     tsep = dict_params[job_tag]["meson_tensor_tsep"]
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     total_volume = geo.total_volume
     r_list = get_r_list(job_tag)
     r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
@@ -931,7 +931,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
     tsep = dict_params[job_tag]["meson_tensor_tsep"]
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     r_list = get_r_list(job_tag)
     r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
     n_elems = len(xg_fsel_arr)
@@ -1157,7 +1157,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
     xg_psel_arr = psel[:]
     n_points = len(xg_psel_arr)
     tsep = get_param(job_tag, "meson_tensor_tsep")
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     total_volume = geo.total_volume
     r_list = get_r_list(job_tag)
     r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)

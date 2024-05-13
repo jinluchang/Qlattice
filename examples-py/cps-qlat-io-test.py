@@ -8,7 +8,7 @@ q.begin_with_cps(total_site)
 
 rs = q.RngState()
 
-geo = q.Geometry(total_site, 1)
+geo = q.Geometry(total_site)
 
 gf = q.GaugeField(geo)
 

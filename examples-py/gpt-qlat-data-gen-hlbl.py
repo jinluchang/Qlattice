@@ -85,7 +85,7 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     fsel_prob_arr = fsel_prob[:].ravel()
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     total_volume = geo.total_volume
     def load_data():
         t_t_list = q.get_mpi_chunk(
@@ -146,7 +146,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, ge
     fsel_prob_arr = fsel_prob[:].ravel()
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     total_volume = geo.total_volume
     def load_data():
         for t_src in range(total_site[3]):
@@ -209,7 +209,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, ge
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     total_volume = geo.total_volume
     def load_data():
         x_t_list = q.get_mpi_chunk(
@@ -274,7 +274,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     total_volume = geo.total_volume
     r_list = get_r_list(job_tag)
     r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
@@ -353,7 +353,7 @@ def run_job_global_hvp_average(job_tag, *, inv_type):
     fn = f"{job_tag}/hvp-average/hvp_average_{inv_type_name}.field"
     fn_trajs = f"{job_tag}/hvp-average/hvp_average_{inv_type_name}.trajs.txt"
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     @q.lazy_call
     @q.timer_verbose
     def load_glb_hvp_avg():
@@ -442,7 +442,7 @@ def run_job_global_hvp_average_for_subtract(job_tag, traj, *, inv_type, get_glb_
     inv_type_name = inv_type_name_list[inv_type]
     fn = f"{job_tag}/hlbl/glb-hvp-avg-for-sub/traj-{traj}/hvp_average_{inv_type_name}.field"
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     @q.lazy_call
     def get_glb_hvp_avg_for_sub():
         glb_hvp_avg_for_sub = q.FieldComplexD(geo, 16)
@@ -643,7 +643,7 @@ def get_total_prob(total_site, get_prob):
     """
     get_prob(xg) = prob
     """
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     f_prob = q.FieldRealD(geo)
     f_prob_v = f_prob[:]
     local_volume = geo.local_volume()
@@ -668,7 +668,7 @@ def get_hlbl_four_total_prob(job_tag, inv_type):
 @q.timer
 def mk_hlbl_four_point_pairs(job_tag, traj, *, inv_type, get_psel_prob):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     total_volume = geo.total_volume
     inv_type_name_list = [ "light", "strange", ]
     inv_type_name = inv_type_name_list[inv_type]
@@ -828,7 +828,7 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     q.timer_fork()
     #
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     total_volume = geo.total_volume
     #
     hlbl_four_contract_sparse_ratio = get_param(job_tag, "hlbl_four_contract_sparse_ratio")
@@ -1373,7 +1373,7 @@ def run_check_hvp_avg(job_tag, traj, *, inv_type, get_psel_prob, get_hvp_sum_tsl
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     total_site_arr = total_site.to_numpy()
     t_size = total_site[3]
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     psel_prob = get_psel_prob()
     psel = psel_prob.psel
     xg_arr = psel.xg_arr
@@ -1551,7 +1551,7 @@ def run_hlbl_two_plus_two_chunk(
     q.timer_fork()
     #
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     #
     r_sq_limit = get_r_sq_limit(job_tag)
     muon_mass = get_muon_mass(job_tag)
