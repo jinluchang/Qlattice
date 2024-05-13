@@ -1689,7 +1689,7 @@ Long invert_with_cg_with_guess(FermionField5d& out, const FermionField5d& in,
   if (not dminus_multiplied_already and inv.fa.is_multiplying_dminus) {
     multiply_d_minus(dm_in, in, inv);
   } else {
-    dm_in.init(geo_resize(in.geo()));
+    dm_in.init(geo_resize(in.geo()), in.multiplicity);
     dm_in = in;
   }
   const double qnorm_dm_in = qnorm(dm_in);
