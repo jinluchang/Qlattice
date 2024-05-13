@@ -1148,10 +1148,14 @@ void SelectedField<M>::init(const Geometry& geo_, const Long n_elems_,
   if (initialized) {
     qassert(geo() == geo_);
     qassert(n_elems == n_elems_);
-    qassert(multiplicity == multiplicity_);
+    if (multiplicity != multiplicity_) {
+      qerr(ssprintf("SelectedField::init: mult=%d ; mult_=%d", multiplicity,
+                    multiplicity_));
+    }
     qassert((Long)field.size() == n_elems * multiplicity);
   } else {
     TIMER("SelectedField::init(geo,n_elems,mult)")
+    qassert(multiplicity_ != 0);
     init();
     initialized = true;
     geo.set(geo_);
@@ -1184,7 +1188,8 @@ void SelectedField<M>::init_zero(const Geometry& geo_, const Long n_elems_,
     qassert(multiplicity == multiplicity_);
     qassert((Long)field.size() == n_elems * multiplicity);
   } else {
-    TIMER("SelectedField::init_zero(geo,n_elems,mult)")
+    TIMER("SelectedField::init_zero(geo,n_elems,mult)");
+    qassert(multiplicity_ != 0);
     init();
     initialized = true;
     geo.set(geo_);
@@ -1220,6 +1225,7 @@ void qswap(SelectedField<M>& f1, SelectedField<M>& f2)
 {
   std::swap(f1.initialized, f2.initialized);
   std::swap(f1.n_elems, f2.n_elems);
+  std::swap(f1.multiplicity, f2.multiplicity);
   qswap(f1.geo, f2.geo);
   qswap(f1.field, f2.field);
 }
