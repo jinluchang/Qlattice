@@ -158,7 +158,7 @@ inline Coordinate get_total_site(const std::string& job_tag)
 inline Geometry get_geo(const std::string& job_tag)
 {
   Geometry geo;
-  geo.init(get_total_site(job_tag), 1);
+  geo.init(get_total_site(job_tag));
   return geo;
 }
 
