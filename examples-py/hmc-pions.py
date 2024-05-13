@@ -163,7 +163,7 @@ class HMC:
         self.perform_metro = False
 
         self.action = q.ScalarAction(m_sq, lmbd, alpha)
-        geo = q.Geometry(total_site, mult)
+        geo = q.Geometry(total_site)
         # Create a random number generator that can be split between
         # different portions of the lattice
         self.rs = q.RngState("test_hmc_pions-{}x{}x{}x{}".format(total_site[0], total_site[1], total_site[2], total_site[3]))
@@ -578,12 +578,12 @@ class Measurements:
         self.auxc = q.Field(q.ElemTypeComplexD,field_geo)
         self.auxd = q.Field(q.ElemTypeRealD,field_geo)
         # Create the geometry for the axial current field
-        geo_cur = q.Geometry(total_site, 3)
+        geo_cur = q.Geometry(total_site)
         # This field will store the calculated axial currents
-        self.axial_current = q.Field(q.ElemTypeRealD,geo_cur)
+        self.axial_current = q.Field(q.ElemTypeRealD, geo_cur, 3)
         # Create fields to project out momentum states
         self.mom_factors = []
-        geo_m = q.Geometry(total_site, 1)
+        geo_m = q.Geometry(total_site)
         for m in self.kinematic_ms:
             self.mom_factors.append(q.mk_phase_field(geo_m, m))
     

@@ -1452,7 +1452,7 @@ def run_hlbl_sub_hvp_sfield(
     # qar_sp = q.open_qar_info(get_save_path(fn), "a")
     #
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     total_volume = geo.total_volume
     #
     hvp_sel_threshold = get_param(job_tag, "hlbl_two_plus_two_num_hvp_sel_threshold")

@@ -131,7 +131,7 @@ def test_hmc(total_site, ga):
     q.qmkdir_info("results/wilson_flow_energy_info");
     q.qmkdir_info("results/gm_force_info");
     #
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     rs = q.RngState("test_hmc-{}x{}x{}x{}".format(total_site[0], total_site[1], total_site[2], total_site[3]))
     gf = q.GaugeField(geo)
     q.set_unit(gf);

@@ -21,7 +21,7 @@ rs = q.RngState("seed")
 rs_prop = rs.split("prop")
 
 total_site = q.Coordinate([ 4, 4, 4, 8, ])
-geo = q.Geometry(total_site, 1)
+geo = q.Geometry(total_site)
 
 q.displayln_info(f"CHECK: total_site = {total_site}")
 q.displayln_info(f"CHECK: geo = {geo}")

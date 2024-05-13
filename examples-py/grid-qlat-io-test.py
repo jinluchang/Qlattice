@@ -8,7 +8,7 @@ rs = q.RngState()
 
 total_site = q.Coordinate([ 8, 8, 8, 16, ])
 
-geo = q.Geometry(total_site, 1)
+geo = q.Geometry(total_site)
 
 gf = q.GaugeField(geo)
 

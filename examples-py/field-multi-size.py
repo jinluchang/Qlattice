@@ -28,7 +28,7 @@ for total_site in total_site_list:
     for seed in range(2):
         q.displayln_info(total_site, seed)
         rs = q.RngState(f"{total_site} {seed}")
-        geo = q.Geometry(total_site, 1)
+        geo = q.Geometry(total_site)
         prop = q.Prop(geo)
         prop.set_rand(rs)
         gf = q.GaugeField(geo)
@@ -48,8 +48,8 @@ fft0 = q.mk_fft(is_forward=True, mode_fft=0)
 for total_site in total_site_list:
     rs = q.RngState(f"{total_site}")
     q.displayln_info(total_site, seed)
-    geo = q.Geometry(total_site, 1)
-    f = q.FieldComplexD(geo)
+    geo = q.Geometry(total_site)
+    f = q.FieldComplexD(geo, 1)
     f.set_rand(q.RngState())
     f0 = fft0 * f
     f1 = fft1 * f

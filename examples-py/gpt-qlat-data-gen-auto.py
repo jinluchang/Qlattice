@@ -79,7 +79,7 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     fsel_prob_arr = fsel_prob[:].ravel()
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     total_volume = geo.total_volume
     def load_data():
         t_t_list = q.get_mpi_chunk(
@@ -140,7 +140,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, ge
     fsel_prob_arr = fsel_prob[:].ravel()
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     total_volume = geo.total_volume
     def load_data():
         for t_src in range(total_site[3]):
@@ -203,7 +203,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, ge
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     total_volume = geo.total_volume
     def load_data():
         x_t_list = q.get_mpi_chunk(
@@ -268,7 +268,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     total_volume = geo.total_volume
     r_list = get_r_list(job_tag)
     r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)

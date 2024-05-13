@@ -31,7 +31,7 @@ if is_load_config and q.does_file_exist_sync_node(path):
     total_site = geo.total_site
 else:
     total_site = q.Coordinate([ 4, 4, 4, 8, ])
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     gf = q.GaugeField(geo)
     gf.set_rand(rs.split("gf-init"), 0.5, 10)
 
