@@ -22,7 +22,8 @@ from .field_utils import mk_fft
 
 cdef class Prop(FieldWilsonMatrix):
 
-    def __init__(self, Geometry geo=None):
+    def __init__(self, Geometry geo=None, multiplicity=1):
+        assert multiplicity == 1
         super().__init__(geo, 1)
 
     cdef cc.Handle[cc.Prop] xxx(self):
@@ -50,7 +51,8 @@ cdef class Prop(FieldWilsonMatrix):
 
 cdef class SelProp(SelectedFieldWilsonMatrix):
 
-    def __init__(self, FieldSelection fsel=None):
+    def __init__(self, FieldSelection fsel=None, multiplicity=1):
+        assert multiplicity == 1
         super().__init__(fsel, 1)
 
     cdef cc.Handle[cc.SelProp] xxx(self):
@@ -83,7 +85,11 @@ cdef class PselProp(SelectedPointsWilsonMatrix):
         if len_args == 0:
             super().__init__()
         elif isinstance(args[0], PointsSelection):
-            psel, = args
+            if len(args) == 1:
+                psel, = args
+            else:
+                psel, multiplicity, = args
+                assert multiplicity == 1
             super().__init__(psel, 1)
         elif isinstance(args[0], SelProp):
             super().__init__(*args)

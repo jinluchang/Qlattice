@@ -198,16 +198,16 @@ class HMC:
 
         # Fields to store everything we need to do linear regression to
         # determine what HMC masses to use for Fourier acceleration
-        self.field_av = q.Field(q.ElemTypeRealD,geo,geo.multiplicity)
-        self.force_av = q.Field(q.ElemTypeRealD,geo,geo.multiplicity)
-        self.field_sq_av = q.Field(q.ElemTypeRealD,geo,geo.multiplicity)
-        self.force_mod_av = q.Field(q.ElemTypeRealD,geo,geo.multiplicity)
-        self.field_mod_av = q.Field(q.ElemTypeRealD,geo,geo.multiplicity)
-        self.field_force_cor = q.Field(q.ElemTypeRealD,geo,geo.multiplicity)
+        self.field_av = q.Field(q.ElemTypeRealD,geo,mult)
+        self.force_av = q.Field(q.ElemTypeRealD,geo,mult)
+        self.field_sq_av = q.Field(q.ElemTypeRealD,geo,mult)
+        self.force_mod_av = q.Field(q.ElemTypeRealD,geo,mult)
+        self.field_mod_av = q.Field(q.ElemTypeRealD,geo,mult)
+        self.field_force_cor = q.Field(q.ElemTypeRealD,geo,mult)
         self.divisor = 0
-        self.mask = q.Field(q.ElemTypeRealD,geo,geo.multiplicity)
-        self.aux1 = q.Field(q.ElemTypeRealD,geo,geo.multiplicity)
-        self.aux2 = q.Field(q.ElemTypeRealD,geo,geo.multiplicity)
+        self.mask = q.Field(q.ElemTypeRealD,geo,mult)
+        self.aux1 = q.Field(q.ElemTypeRealD,geo,mult)
+        self.aux2 = q.Field(q.ElemTypeRealD,geo,mult)
         self.reset_fit_variables()
 
     @q.timer_verbose

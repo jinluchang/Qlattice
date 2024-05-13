@@ -365,8 +365,9 @@ cdef class FieldBase:
         Only work when single node (or if all nodes has the same data).
         """
         geo = self.geo
+        multiplicity = self.multiplicity
         data_arr = self[:]
-        return [ data_arr, geo, ]
+        return [ data_arr, geo, multiplicity, ]
 
     def __setstate__(self, state):
         """
@@ -375,8 +376,8 @@ cdef class FieldBase:
         if self.view_count > 0:
             raise ValueError("can't load while being viewed")
         self.__init__()
-        [ data_arr, geo, ] = state
-        self.init_from_geo(geo)
+        [ data_arr, geo, multiplicity, ] = state
+        self.init_from_geo(geo, multiplicity)
         self[:] = data_arr
 
     def __len__(self):

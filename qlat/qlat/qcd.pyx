@@ -21,7 +21,8 @@ from .field_utils import (
 
 cdef class GaugeField(FieldColorMatrix):
 
-    def __init__(self, Geometry geo=None):
+    def __init__(self, Geometry geo=None, multiplicity=4):
+        assert multiplicity == 4
         super().__init__(geo, 4)
 
     cdef cc.Handle[cc.GaugeField] xxx(self):
@@ -67,7 +68,8 @@ cdef class GaugeField(FieldColorMatrix):
 
 cdef class GaugeTransform(FieldColorMatrix):
 
-    def __init__(self, Geometry geo=None):
+    def __init__(self, Geometry geo=None, multiplicity=1):
+        assert multiplicity == 1
         super().__init__(geo, 1)
 
     cdef cc.Handle[cc.GaugeTransform] xxx(self):
