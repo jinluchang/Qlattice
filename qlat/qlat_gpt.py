@@ -40,11 +40,11 @@ def mk_gpt_field(ctype, geo):
 
 @q.timer_verbose
 def mk_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag):
-    geo = q.Geometry(total_site, multiplicity)
+    geo = q.Geometry(total_site)
     # q.displayln_info("qlat geo created")
     f_gpt = mk_gpt_field(ctype, geo)
     # q.displayln_info("gpt field made")
-    f_qlat = q.Field(ctype, geo)
+    f_qlat = q.Field(ctype, geo, multiplicity)
     # q.displayln_info("qlat field made")
     lexicographic_coordinates = g.coordinates(f_gpt)
     # q.displayln_info("gpt coordinates collected")
@@ -99,8 +99,8 @@ def qlat_from_gpt_gauge_field(gpt_gf):
     multiplicity = 1
     tag = "qlat_from_gpt"
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
-    geo = q.Geometry(total_site, 1)
-    fs = [ q.FieldColorMatrix(geo) for i in range(4)]
+    geo = q.Geometry(total_site)
+    fs = [ q.FieldColorMatrix(geo, 1) for i in range(4)]
     assert len(fs) == 4
     for i in range(4):
         plan(fs[i].mview(), gpt_gf[i])
@@ -135,7 +135,7 @@ def qlat_from_gpt_gauge_transform(gpt_gt):
     multiplicity = 1
     tag = "qlat_from_gpt"
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     gt = q.GaugeTransform(geo)
     plan(gt.mview(), gpt_gt)
     return gt
@@ -161,7 +161,7 @@ def qlat_from_gpt_prop(gpt_prop):
     multiplicity = 1
     tag = "qlat_from_gpt"
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     prop_msc = q.Prop(geo)
     plan(prop_msc.mview(), gpt_prop)
     prop_wm = q.convert_wm_from_mspincolor(prop_msc)
@@ -189,8 +189,8 @@ def qlat_from_gpt_ff4d(gpt_ff):
     multiplicity = 1
     tag = "qlat_from_gpt"
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
-    geo = q.Geometry(total_site, 1)
-    ff = q.FermionField4d(geo)
+    geo = q.Geometry(total_site)
+    ff = q.FermionField4d(geo, 1)
     plan(ff.mview(), gpt_ff)
     return ff
 
@@ -217,14 +217,14 @@ def qlat_from_gpt_complex(gpt_fcs):
     multiplicity = 1
     tag = "qlat_from_gpt"
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     n = len(gpt_fcs)
-    fs = [ q.FieldComplexD(geo) for i in range(n) ]
+    fs = [ q.FieldComplexD(geo, multiplicity) for i in range(n) ]
     for i in range(n):
         plan(fs[i].mview(), gpt_fcs[i])
     if n == 1:
         return fs[0]
-    ff = q.FieldComplexD(q.Geometry(total_site, n))
+    ff = q.FieldComplexD(q.Geometry(total_site), n)
     q.merge_fields(ff, fs)
     return ff
 
@@ -348,7 +348,7 @@ class InverterGPT(q.Inverter):
 ###
 
 def get_fgrid(total_site, fermion_params):
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     gf = q.GaugeField(geo)
     gf.set_unit()
     gpt_gf = g.convert(gpt_from_qlat(gf), g.single)
