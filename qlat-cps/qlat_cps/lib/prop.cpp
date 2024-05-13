@@ -12,9 +12,9 @@ void save_cps_prop_double(const Field<WilsonMatrix>& prop,
   const std::string path_dir = dirname(path);
   qmkdir_p_info(path_dir);
   const Geometry& geo = prop.geo();
-  qassert(geo.multiplicity == 1);
+  qassert(prop.multiplicity == 1);
   Field<WilsonMatrix> prop_src;
-  prop_src.init(geo);
+  prop_src.init(geo, prop.multiplicity);
   Vector<WilsonMatrix> prop_vec = get_data(prop);
   Vector<WilsonMatrix> prop_src_vec = get_data(prop_src);
   const std::string path_partial = path + ".partial";
@@ -41,9 +41,9 @@ void load_cps_prop_double(Field<WilsonMatrix>& prop, const std::string& path)
     return;
   }
   const Geometry& geo = prop.geo();
-  qassert(geo.multiplicity == 1);
+  qassert(prop.multiplicity == 1);
   Field<WilsonMatrix> prop_src;
-  prop_src.init(geo);
+  prop_src.init(geo, prop.multiplicity);
   Vector<WilsonMatrix> prop_vec = get_data(prop);
   Vector<WilsonMatrix> prop_src_vec = get_data(prop_src);
   char* infile = (char*)path.c_str();

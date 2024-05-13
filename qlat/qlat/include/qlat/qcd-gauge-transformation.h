@@ -354,7 +354,7 @@ void set_wall_src_propagator(Propagator4d& prop, const int tslice,
 {
   TIMER_VERBOSE("set_wall_src_propagator");
   warn("obsolete");
-  const Geometry geo = geo_reform(inv.geo());
+  const Geometry geo = geo_resize(inv.geo());
   prop.init(geo);
   qassert(prop.geo() == geo);
   FermionField4d src, sol;

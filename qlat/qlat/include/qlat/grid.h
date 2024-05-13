@@ -171,7 +171,7 @@ inline void grid_convert(Grid::LatticePropagatorF& gprop, const Field<WilsonMatr
   TIMER_VERBOSE("grid_convert(gprop,prop)");
   using namespace Grid;
   const Geometry& geo = prop.geo();
-  qassert(geo.multiplicity == 1);
+  qassert(prop.multiplicity == 1);
   autoView(gprop_v, gprop, CpuWrite);
   qthread_for(index, geo.local_volume(), {
     const Geometry& geo = prop.geo();
@@ -193,7 +193,7 @@ inline void grid_convert(Grid::LatticePropagatorD& gprop, const Field<WilsonMatr
   TIMER_VERBOSE("grid_convert(gprop,prop)");
   using namespace Grid;
   const Geometry& geo = prop.geo();
-  qassert(geo.multiplicity == 1);
+  qassert(prop.multiplicity == 1);
   autoView(gprop_v, gprop, CpuWrite);
   qthread_for(index, geo.local_volume(), {
     const Geometry& geo = prop.geo();
@@ -215,7 +215,7 @@ inline void grid_convert(Field<WilsonMatrix>& prop, const Grid::LatticePropagato
   TIMER_VERBOSE("grid_convert(prop,gprop)");
   using namespace Grid;
   const Geometry& geo = prop.geo();
-  qassert(geo.multiplicity == 1);
+  qassert(prop.multiplicity == 1);
   autoView(gprop_v, gprop, CpuRead);
   qthread_for(index, geo.local_volume(), {
     const Geometry& geo = prop.geo();
@@ -237,7 +237,7 @@ inline void grid_convert(Field<WilsonMatrix>& prop, const Grid::LatticePropagato
   TIMER_VERBOSE("grid_convert(prop,gprop)");
   using namespace Grid;
   const Geometry& geo = prop.geo();
-  qassert(geo.multiplicity == 1);
+  qassert(prop.multiplicity == 1);
   autoView(gprop_v, gprop, CpuRead);
   qthread_for(index, geo.local_volume(), {
     const Geometry& geo = prop.geo();
@@ -266,7 +266,7 @@ inline void grid_convert(FermionField5d& ff, const Grid::LatticeFermionF& gff)
     Grid::Coordinate coor = grid_convert(xl, 0);
     Vector<WilsonVector> wvs = ff.get_elems(xl);
     array<ComplexF, sizeof(WilsonVector) / sizeof(ComplexD)> fs;
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < ff.multiplicity; ++m) {
       coor[0] = m;
       peekLocalSite(fs, gff_v, coor);
       array<ComplexD, sizeof(WilsonVector) / sizeof(ComplexD)>& ds =
@@ -290,7 +290,7 @@ inline void grid_convert(Grid::LatticeFermionF& gff, const FermionField5d& ff)
     Grid::Coordinate coor = grid_convert(xl, 0);
     const Vector<WilsonVector> wvs = ff.get_elems_const(xl);
     array<ComplexF, sizeof(WilsonVector) / sizeof(ComplexD)> fs;
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < ff.multiplicity; ++m) {
       coor[0] = m;
       const array<ComplexD, sizeof(WilsonVector) / sizeof(ComplexD)>& ds =
           (const array<ComplexD, sizeof(WilsonVector) / sizeof(ComplexD)>&)
@@ -410,7 +410,7 @@ inline void multiply_m_grid(FermionField5d& out, const FermionField5d& in,
                             const InverterDomainWallGrid& inv)
 {
   TIMER("multiply_m_grid(5d,5d,InvGrid)");
-  out.init(geo_resize(in.geo()));
+  out.init(geo_resize(in.geo()), in.multiplicity);
   using namespace Grid;
   GridCartesian* FGrid = inv.FGrid;
   LatticeFermionF gin(FGrid), gout(FGrid);
@@ -425,7 +425,7 @@ inline void invert_grid_no_dminus(FermionField5d& sol,
 // sol do not need to be initialized
 {
   TIMER_VERBOSE("invert_grid_no_dminus(5d,5d,InvGrid)");
-  sol.init(geo_resize(src.geo()));
+  sol.init(geo_resize(src.geo()), sol.multiplicity);
   using namespace Grid;
   GridCartesian* FGrid = inv.FGrid;
   LatticeFermionF gsrc(FGrid), gsol(FGrid);
@@ -433,7 +433,7 @@ inline void invert_grid_no_dminus(FermionField5d& sol,
   grid_convert(gsol, sol);
   if (is_checking_invert()) {
     FermionField5d ff;
-    ff.init(geo_resize(src.geo()));
+    ff.init(geo_resize(src.geo()), src.multiplicity);
     grid_convert(ff, gsrc);
     displayln_info(fname + ssprintf(": src qnorm = %24.17E", qnorm(ff)));
     grid_convert(ff, gsol);
@@ -446,7 +446,7 @@ inline void invert_grid_no_dminus(FermionField5d& sol,
   grid_convert(sol, gsol);
   if (is_checking_invert()) {
     FermionField5d src1;
-    src1.init(geo_resize(src.geo()));
+    src1.init(geo_resize(src.geo()), src.multiplicity);
     multiply_m(src1, sol, inv);
     src1 -= src;
     displayln_info(fname + ssprintf(": diff qnorm = %24.17E", qnorm(src1)));
@@ -462,7 +462,7 @@ inline Long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
   TIMER_VERBOSE_FLOPS("cg_with_herm_sym_2(5d,5d,InvGrid)");
   displayln_info(fname + ssprintf(": stop_rsd=%8.2E ; max_num_iter=%5ld",
                                   stop_rsd, max_num_iter));
-  sol.init(geo_resize(src.geo()));
+  sol.init(geo_resize(src.geo()), src.multiplicity);
   qassert(sol.geo().eo == 1);
   qassert(src.geo().eo == 1);
   using namespace Grid;

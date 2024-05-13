@@ -9,7 +9,7 @@ void save_grid_prop_float(const Field<WilsonMatrix>& prop, const std::string& pa
   const std::string path_dir = dirname(path);
   qmkdir_p_info(path_dir);
   const Geometry& geo = prop.geo();
-  qassert(geo.multiplicity == 1);
+  qassert(prop.multiplicity == 1);
   const Coordinate total_site = geo.total_site();
   const Coordinate size_node = geo.geon.size_node;
   Grid::GridCartesian UGrid(
@@ -38,7 +38,7 @@ void load_grid_prop_float(Field<WilsonMatrix>& prop, const std::string& path)
     return;
   }
   const Geometry& geo = prop.geo();
-  qassert(geo.multiplicity == 1);
+  qassert(prop.multiplicity == 1);
   const Coordinate total_site = geo.total_site();
   const Coordinate size_node = geo.geon.size_node;
   Grid::GridCartesian UGrid(
@@ -60,7 +60,7 @@ void save_grid_prop_double(const Field<WilsonMatrix>& prop, const std::string& p
   const std::string path_dir = dirname(path);
   qmkdir_p_info(path_dir);
   const Geometry& geo = prop.geo();
-  qassert(geo.multiplicity == 1);
+  qassert(prop.multiplicity == 1);
   const Coordinate total_site = geo.total_site();
   const Coordinate size_node = geo.geon.size_node;
   Grid::GridCartesian UGrid(
@@ -89,7 +89,7 @@ void load_grid_prop_double(Field<WilsonMatrix>& prop, const std::string& path)
     return;
   }
   const Geometry& geo = prop.geo();
-  qassert(geo.multiplicity == 1);
+  qassert(prop.multiplicity == 1);
   const Coordinate total_site = geo.total_site();
   const Coordinate size_node = geo.geon.size_node;
   Grid::GridCartesian UGrid(

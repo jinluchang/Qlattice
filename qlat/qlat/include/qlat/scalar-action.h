@@ -280,8 +280,8 @@ struct ScalarAction {
     TIMER("ScalarAction.axial_current_node_no_comm");
     const Geometry geo = sf.geo();
     const Int multiplicity = sf.multiplicity;
-    // const Geometry geo_r = geo_reform(geo, geo.multiplicity-1);
-    //axial_current.init(geo_r);
+    // const Geometry geo_r = geo_resize(geo);
+    // axial_current.init(geo_r, sf.multiplicity-1);
     qacc_for(index, geo.local_volume(), {
       const Geometry& geo = sf.geo();
       Coordinate xl = geo.coordinate_from_index(index);

@@ -42,7 +42,7 @@ __all__ += [
 
 __all__ += [
         'Geometry',
-        'geo_reform',
+        'geo_resize',
         'geo_eo',
         ]
 

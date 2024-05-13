@@ -23,7 +23,7 @@ import qlat_utils as q
 import numpy as np
 import math
 
-from .geometry import geo_reform
+from .geometry import geo_resize
 from .field_base import (
         Field,
         SelectedField,
@@ -32,9 +32,9 @@ from .field_base import (
 
 def field_expanded(f, expansion_left, expansion_right):
     geo = f.geo
-    multiplicity = geo.multiplicity
-    geo_e = geo_reform(geo, multiplicity, expansion_left, expansion_right)
-    f_e = type(f)(geo = geo_e)
+    multiplicity = f.multiplicity
+    geo_e = geo_resize(geo, expansion_left, expansion_right)
+    f_e = type(f)(geo=geo_e, multiplicity=multiplicity)
     f_e @= f
     return f_e
 
