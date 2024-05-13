@@ -24,7 +24,6 @@ struct Geometry {
   bool initialized;
   GeometryNode geon;
   int eo;  // 0:full; 1:odd; 2:even
-  int multiplicity;
   Coordinate node_site;
   Coordinate expansion_left;
   Coordinate expansion_right;
@@ -60,12 +59,28 @@ struct box_acc : box<M> {
 };
 ```
 
+```c++
+template <class M>
+struct API Vector {
+  M* p;
+  Long n;
+};
+```
+
+```c++
+template <class M>
+struct API Handle {
+	M* p;
+};
+```
+
 ### Field
 
 ```c++
 template <class M>
 struct Field {
   bool initialized;
+  int multiplicity;
   box_acc<Geometry> geo;
   vector_acc<M> field;
 };
@@ -78,6 +93,37 @@ template <class M, int multiplicity>
 struct FieldM : Field<M> {};
 ```
 
+### SelectedPoints
+
+```c++
+enum struct PointsDistType {
+  Global,
+  Local,
+  Random, // shuffle based on coordinate
+};
+```
+
+```c++
+struct API PointsSelection {
+  bool initialized;
+  PointsDistType points_dist_type;  // default PointsDistType::Global (all node has the same data)
+  Coordinate total_site;
+  vector_acc<Coordinate> xgs;
+};
+```
+
+```c++
+template <class M>
+struct SelectedPoints {
+  bool initialized;
+  PointsDistType points_dist_type;  // default PointsDistType::Global (all node has the same data)
+  int multiplicity;
+  long n_points;
+  vector_acc<M> points;
+  // points.size() == n_points * multiplicity if initialized = true
+};
+```
+
 ### SelectedField
 
 ```c++
@@ -85,20 +131,8 @@ template <class M>
 struct SelectedField {
   bool initialized;
   long n_elems;
+  int multiplicity;
   box_acc<Geometry> geo;
   vector_acc<M> field;
-};
-```
-
-### SelectedPoints
-
-```c++
-template <class M>
-struct SelectedPoints {
-  bool initialized;
-  int multiplicity;
-  long n_points;
-  vector_acc<M> points;  // global quantity, same on each node
-  // points.size() == n_points * multiplicity if initialized = true
 };
 ```
