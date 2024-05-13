@@ -197,7 +197,7 @@ void qnorm_field(Field<RealD>& f, const Field<M>& f1)
   TIMER("qnorm_field(f,f1)");
   f.init(f1.geo(), 1);
   qacc_for(index, f1.geo().local_volume(), {
-    const Geometry& geo = f1.geo();
+    // const Geometry& geo = f1.geo();
     const Vector<M> f1v = f1.get_elems_const(index);
     f.get_elem(index) = qnorm(f1v);
   });

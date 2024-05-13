@@ -76,7 +76,7 @@ cdef class Field{{name}}(FieldBase):
         buf.format = ElemType{{name}}.format()
         buf.itemsize = ElemType{{name}}.itemsize()
         buf.buf = <char*>(self.xx.field.data())
-        cdef cc.Int multiplicity = self.xx.get_geo().multiplicity
+        cdef cc.Int multiplicity = self.xx.multiplicity
         buf.set_dim_size(0, self.xx.field.size() // multiplicity)
         buf.set_dim_size(1, multiplicity)
         cdef cc.std_vector[Py_ssize_t] vec = ElemType{{name}}.shape()
@@ -129,12 +129,12 @@ cdef class Field{{name}}(FieldBase):
 
     @property
     def n_sites(self):
-        cdef cc.Int multiplicity = self.xx.get_geo().multiplicity
+        cdef cc.Int multiplicity = self.xx.multiplicity
         return self.xx.field.size() // multiplicity
 
     @property
     def multiplicity(self):
-        return self.xx.get_geo().multiplicity
+        return self.xx.multiplicity
 
     @property
     def sizeof_m(self):

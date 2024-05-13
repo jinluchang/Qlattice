@@ -48,7 +48,7 @@ cdef extern from "qlat/geometry.h" namespace "qlat":
         bool is_only_local
         Geometry()
         void init()
-        void init(Coordinate& total_site, Int multiplicity) except +
+        void init(Coordinate& total_site) except +
         Coordinate total_site()
         Coordinate local_site()
         Long local_volume()
@@ -60,11 +60,7 @@ cdef extern from "qlat/geometry.h" namespace "qlat":
         Coordinate coordinate_l_from_g(const Coordinate& xg)
     std_string show(const Geometry& geo) except +
     Geometry geo_resize(const Geometry& geo, Int thick) except +
-    Geometry geo_resize(const Geometry& geo,
-                        const Coordinate& expansion_left, const Coordinate& expansion_right) except +
-    Geometry geo_reform(const Geometry& geo, Int multiplicity, Int thick) except +
-    Geometry geo_reform(const Geometry& geo, Int multiplicity,
-                        const Coordinate& expansion_left, const Coordinate& expansion_right) except +
+    Geometry geo_resize(const Geometry& geo, const Coordinate& expansion_left, const Coordinate& expansion_right) except +
     Geometry geo_eo(const Geometry& geo, Int eo) except +
 
 cdef extern from "qlat/utils-io.h" namespace "qlat":

@@ -213,7 +213,7 @@ void set_selected_field(SelectedField<M>& sf, const Field<M>& f,
   qassert(f.geo().is_only_local);
   qassert(fsel.f_local_idx.geo().is_only_local);
   qassert(f.geo() == fsel.f_local_idx.geo());
-  const Geometry& geo = f.geo();
+  // const Geometry& geo = f.geo();
   const int multiplicity = f.multiplicity;
   sf.init(fsel, multiplicity);
   qacc_for(idx, fsel.n_elems, {
@@ -247,7 +247,7 @@ void set_selected_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
   qassert(fsel0.f_local_idx.geo().is_only_local);
   qassert(sf0.geo() == fsel0.f_local_idx.geo());
   qassert(sf0.geo() == fsel.f_local_idx.geo());
-  const Geometry& geo = sf0.geo();
+  // const Geometry& geo = sf0.geo();
   const Int multiplicity = sf0.multiplicity;
   if (is_keeping_data) {
     sf.init_zero(fsel, multiplicity);

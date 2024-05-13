@@ -26,7 +26,7 @@ cdef class Prop(FieldWilsonMatrix):
         super().__init__(geo, 1)
 
     cdef cc.Handle[cc.Prop] xxx(self):
-        assert self.xx.get_geo().multiplicity == 1
+        assert self.xx.multiplicity == 1
         return cc.Handle[cc.Prop](<cc.Prop&>self.xx)
 
     def get_elem_wm(self, cc.Long index, int m=0):
@@ -54,7 +54,7 @@ cdef class SelProp(SelectedFieldWilsonMatrix):
         super().__init__(fsel, 1)
 
     cdef cc.Handle[cc.SelProp] xxx(self):
-        assert self.xx.get_geo().multiplicity == 1
+        assert self.xx.multiplicity == 1
         return cc.Handle[cc.SelProp](<cc.SelProp&>self.xx)
 
     def get_elem_wm(self, cc.Long idx, int m=0):
@@ -241,7 +241,7 @@ cdef class FermionField4d(FieldWilsonVector):
         super().__init__(geo, 1)
 
     cdef cc.Handle[cc.FermionField4d] xxx(self):
-        assert self.xx.get_geo().multiplicity == 1
+        assert self.xx.multiplicity == 1
         return cc.Handle[cc.FermionField4d](<cc.FermionField4d&>self.xx)
 
 ###

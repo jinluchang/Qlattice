@@ -326,7 +326,7 @@ void field_glb_sum(SelectedPoints<M>& sp, const Field<M>& f)
 {
   TIMER("field_glb_sum(sp,f)");
   sp.init();
-  const Geometry& geo = f.geo();
+  // const Geometry& geo = f.geo();
   const Int multiplicity = f.multiplicity;
   std::vector<M> vec = field_glb_sum(f);
   sp.init(1, multiplicity, PointsDistType::Global);

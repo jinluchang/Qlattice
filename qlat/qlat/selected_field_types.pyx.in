@@ -77,7 +77,7 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         buf.format = ElemType{{name}}.format()
         buf.itemsize = ElemType{{name}}.itemsize()
         buf.buf = <char*>(self.xx.field.data())
-        cdef int multiplicity = self.xx.get_geo().multiplicity
+        cdef int multiplicity = self.xx.multiplicity
         buf.set_dim_size(0, self.xx.n_elems)
         buf.set_dim_size(1, multiplicity)
         cdef cc.std_vector[Py_ssize_t] vec = ElemType{{name}}.shape()
@@ -137,7 +137,7 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
 
     @property
     def multiplicity(self):
-        return self.xx.get_geo().multiplicity
+        return self.xx.multiplicity
 
     @property
     def geo(self):

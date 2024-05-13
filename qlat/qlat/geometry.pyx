@@ -16,13 +16,12 @@ cdef class Geometry:
         self.xx = cc.Geometry()
         self.cdata = <cc.Long>&(self.xx)
 
-    def __init__(self, Coordinate total_site=None, int multiplicity=1):
+    def __init__(self, Coordinate total_site=None):
         """
         if total_site is None: create geo uninitialized
-        elif multiplicity is None: create geo with multiplicity = 1
         """
         if total_site is not None:
-            self.xx.init(Coordinate(total_site).xx, multiplicity)
+            self.xx.init(Coordinate(total_site).xx)
 
     def __imatmul__(self, Geometry v1):
         cc.assign_direct(self.xx, v1.xx)
@@ -59,10 +58,6 @@ cdef class Geometry:
     @property
     def local_volume(self):
         return self.xx.local_volume()
-
-    @property
-    def multiplicity(self):
-        return self.xx.multiplicity
 
     @property
     def eo(self):
@@ -112,15 +107,14 @@ cdef class Geometry:
 
     def show(self):
         cdef Coordinate total_site = self.total_site
-        cdef int multiplicity = self.multiplicity
         cdef Coordinate expan_left = self.expansion_left
         cdef Coordinate expan_right = self.expansion_right
         cdef int eo = self.eo
         cdef Coordinate zero = Coordinate()
         if expan_left == zero and expan_right == zero and eo == 0:
-            return f"Geometry({total_site.to_list()}, {multiplicity})"
+            return f"Geometry({total_site.to_list()})"
         else:
-            return f"Geometry({total_site.to_list()}, {multiplicity}, expan_left={expan_left.to_list()}, expan_right={expan_right.to_list()}, eo={eo})"
+            return f"Geometry({total_site.to_list()}, expan_left={expan_left.to_list()}, expan_right={expan_right.to_list()}, eo={eo})"
 
     def coordinate_g_from_l(self, Coordinate xl not None):
         cdef Coordinate xg = Coordinate()
@@ -167,10 +161,9 @@ cdef class Geometry:
         Do not support expansion.
         """
         total_site = self.total_site
-        multiplicity = self.multiplicity
         expan_left = self.expansion_left
         expan_right = self.expansion_right
-        return [ total_site, multiplicity, expan_left, expan_right, ]
+        return [ total_site, expan_left, expan_right, ]
 
     def __setstate__(self, state):
         """
@@ -179,17 +172,21 @@ cdef class Geometry:
         """
         self.__init__()
         cdef Coordinate total_site
-        cdef cc.Int multiplicity
         cdef Coordinate expan_left
         cdef Coordinate expan_right
-        [ total_site, multiplicity, expan_left, expan_right, ] = state
-        self.xx.init(total_site.xx, multiplicity)
+        [ total_site, expan_left, expan_right, ] = state
+        self.xx.init(total_site.xx)
         self.xx.expansion_left = expan_left.xx
         self.xx.expansion_right = expan_right.xx
 
 ### -------------------------------------------------------------------
 
-def geo_reform(Geometry geo, int multiplicity=1, expansion_left=None, expansion_right=None):
+def geo_resize(Geometry geo, expansion_left=None, expansion_right=None):
+    """
+    expansion_left can be None, or int, or Coordinate
+    expansion_right can be None, or int, or Coordinate
+    Default is zero.
+    """
     cdef Coordinate el, er
     if expansion_left is None:
         el = Coordinate()
@@ -212,7 +209,7 @@ def geo_reform(Geometry geo, int multiplicity=1, expansion_left=None, expansion_
         assert isinstance(expansion_left, Coordinate)
         er = <Coordinate>expansion_left
     cdef Geometry geo_new = Geometry()
-    geo_new.xx = cc.geo_reform(geo.xx, multiplicity, el.xx, er.xx)
+    geo_new.xx = cc.geo_resize(geo.xx, el.xx, er.xx)
     return geo_new
 
 def geo_eo(Geometry geo, int eo=0):
@@ -221,5 +218,3 @@ def geo_eo(Geometry geo, int eo=0):
     return geo_new
 
 ### -------------------------------------------------------------------
-
-

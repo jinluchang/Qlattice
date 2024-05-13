@@ -241,7 +241,7 @@ cdef class FieldSelection:
         buf.format = 'q'
         buf.itemsize = sizeof(cc.Int64t)
         buf.buf = <char*>(self.xx.f_rank.field.data())
-        cdef int multiplicity = self.xx.f_rank.get_geo().multiplicity
+        cdef int multiplicity = self.xx.f_rank.multiplicity
         assert multiplicity == 1
         buf.set_dim_size(0, self.xx.f_rank.field.size())
         buf.update_strides_from_shape()

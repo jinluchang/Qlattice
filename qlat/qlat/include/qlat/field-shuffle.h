@@ -413,7 +413,7 @@ void shuffle_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
   }
   TIMER_VERBOSE_FLOPS("shuffle_field(sf,sf0,sp)");
   qassert(sp.geos_recv.size() == 1);
-  const Geometry& geo = sf0.geo();
+  // const Geometry& geo = sf0.geo();
   const Int multiplicity = sf0.multiplicity;
   timer.flops += sp.scp.global_comm_size * multiplicity * sizeof(M);
   std::vector<SelectedField<M>> sfs;
@@ -857,7 +857,7 @@ void shuffle_field(std::vector<SelectedField<M>>& fs,
 {
   sync_node();
   TIMER_FLOPS("shuffle_field(fs,f,nsn,fsel)");
-  const Geometry& geo = f.geo();
+  // const Geometry& geo = f.geo();
   const Int multiplicity = f.multiplicity;
   const ShufflePlan sp = make_shuffle_plan(fsels, fsel, new_size_node);
   shuffle_field(fs, f, sp);
@@ -1058,7 +1058,7 @@ void field_shift(SelectedField<M>& sf, FieldSelection& fsel,
   const ShiftShufflePlan ssp =
       make_shift_shuffle_plan(fsel0, shift, is_reflect);
   const ShufflePlan& sp = ssp.sp;
-  const Geometry& geo = sf0.geo();
+  // const Geometry& geo = sf0.geo();
   const Int multiplicity = sf0.multiplicity;
   timer.flops += sp.scp.global_comm_size * multiplicity * sizeof(M);
   fsel = ssp.fsel;
