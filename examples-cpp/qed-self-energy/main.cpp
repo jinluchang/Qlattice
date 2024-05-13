@@ -39,7 +39,7 @@ void set_h_field(FieldM<ComplexD, 1>& h, const Coordinate& total_site,
 {
   TIMER_VERBOSE("set_h_field");
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   h.init(geo);
   set_zero(h);
 #pragma omp parallel for

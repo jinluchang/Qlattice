@@ -14,7 +14,7 @@ void simple_tests()
   RngState rs(get_global_rng_state(), fname);
   const Coordinate total_site(4, 4, 4, 8);
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
 
   {
     vector_gpu<char > buf; buf.resize(500, false);

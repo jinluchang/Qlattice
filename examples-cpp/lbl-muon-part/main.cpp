@@ -232,7 +232,7 @@ void lblMuonPart()
   qlat::Coordinate total_site(4, 4, 4, 8);
   // qlat::Coordinate total_site(32, 32, 32, 128);
   qlat::Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   qlat::DisplayInfo(cname, fname.c_str(), "geo =\n%s\n", qlat::show(geo).c_str());
   qlat::array<double, qlat::DIMN> momtwist;
   momtwist[0] = 0.0;
@@ -309,7 +309,7 @@ void displaySpinPropagator4d()
   // qlat::Coordinate total_site(16, 16, 16, 32);
   qlat::Coordinate total_site(4, 4, 4, 8);
   qlat::Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   qlat::DisplayInfo(cname, fname.c_str(), "geo =\n%s\n", qlat::show(geo).c_str());
   qlat::array<double, qlat::DIMN> momtwist;
   momtwist[0] = 0.0;

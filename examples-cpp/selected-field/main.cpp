@@ -99,7 +99,7 @@ inline void demo()
       const Coordinate xl = f.geo().coordinate_from_index(index);
       const Vector<ComplexD> fv = f.get_elems_const(xl);
       // f.geto.multiplicity = 2 is the number of elements per site
-      for (int m = 0; m < f.geo().multiplicity; ++m) {
+      for (int m = 0; m < f.multiplicity; ++m) {
         sum += fv[m];
       }
     }
@@ -114,7 +114,7 @@ inline void demo()
       }
       const Vector<ComplexD> fv = sf.get_elems_const(idx);
       // f.geto.multiplicity = 2 is the number of elements per site
-      for (int m = 0; m < f.geo().multiplicity; ++m) {
+      for (int m = 0; m < f.multiplicity; ++m) {
         sum += fv[m];
       }
     }
@@ -126,7 +126,7 @@ inline void demo()
       // const Long index = fsel.indices[idx];
       const Vector<ComplexD> fv = sf.get_elems_const(idx);
       // f.geto.multiplicity = 2 is the number of elements per site
-      for (int m = 0; m < f.geo().multiplicity; ++m) {
+      for (int m = 0; m < f.multiplicity; ++m) {
         sum += fv[m];
       }
     }

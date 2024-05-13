@@ -33,7 +33,7 @@ void test_gf_fft()
   Coordinate total_site(4, 4, 4, 8);
   RngState rs(get_global_rng_state(), "test_fft");
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   GaugeField gf;
   gf.init(geo);
 #pragma omp parallel for
@@ -69,7 +69,7 @@ void test_fft()
   Coordinate total_site(4, 4, 4, 8);
   RngState rs(get_global_rng_state(), "test_fft");
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   FieldM<ComplexD, N> f, ff;
   f.init(geo);
 #pragma omp parallel for

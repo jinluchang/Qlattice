@@ -37,7 +37,7 @@ inline bool compute_traj_do(const std::string& job_tag, const int traj)
   const std::string job_path = get_job_path(job_tag, traj);
   const Coordinate total_site = get_total_site(job_tag);
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   //
   FieldSelection fsel;
   set_sparse_parameters(fsel, job_tag, traj);

@@ -19,7 +19,7 @@ void test1()
   // Coordinate total_site(16, 16, 16, 32);
   Coordinate total_site(4, 4, 4, 8);
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   Coordinate total_siteHalf;
   coordinateHalf(total_siteHalf, total_site);
   Geometry geoHalf;

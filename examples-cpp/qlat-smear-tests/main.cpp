@@ -14,7 +14,7 @@ void simple_tests()
   // const Coordinate total_site(8, 8, 8, 8);
   const Coordinate total_site(4, 4, 4, 8);
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   GaugeField gf;
   gf.init(geo);
   set_g_rand_color_matrix_field(gf, RngState(rs, "gf-0.1"), 0.1);

@@ -90,7 +90,7 @@ inline void set_rng_field(RngField& rf, const Coordinate& total_site,
 {
   TIMER("set_rng_field");
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   rf.init();
   rf.init(geo, RngState(seed).split(traj));
 }
@@ -99,7 +99,7 @@ inline void set_scalar_field(ScalarField& sf, const Coordinate& total_site)
 {
   TIMER("set_scalar_field");
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   geo.resize(1);
   sf.init();
   sf.init(geo);

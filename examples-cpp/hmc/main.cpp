@@ -120,7 +120,7 @@ inline void test_hmc(const Coordinate& total_site, const GaugeAction& ga)
   qmkdir_info("results/gm_force_info");
   //
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   //
   const RngState rs =
       RngState(ssprintf("test_hmc-%s", show(total_site).c_str()));

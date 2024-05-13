@@ -14,7 +14,7 @@ void simple_tests()
   // const Coordinate total_site(8, 8, 8, 8);
   const Coordinate total_site(4, 4, 4, 8);
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
 
   qlat::FieldM<qlat::ComplexD, 12> src;src.init(geo);
   set_g_rand_double(src, RngState(rs, "prop-0.1"));

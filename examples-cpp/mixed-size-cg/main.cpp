@@ -60,11 +60,11 @@ inline void reduce_half_gauge_field(GaugeField& hgf, const GaugeField& gf)
   TIMER_VERBOSE("reduce_half_gauge_field");
   const Geometry& geo = gf.geo();
   Geometry hgeo;
-  hgeo.init(geo.geon, geo.node_site / 2, geo.multiplicity);
+  hgeo.init(geo.geon, geo.node_site / 2);
   const Coordinate expansion_left(1, 1, 1, 1);
   const Coordinate expansion_right(0, 0, 0, 0);
   hgeo = geo_resize(hgeo, expansion_left, expansion_right);
-  hgf.init(hgeo);
+  hgf.init(hgeo, geo.multiplicity);
 #pragma omp parallel for
   for (Long hindex = 0; hindex < hgeo.local_volume(); ++hindex) {
     const Coordinate hxl = hgeo.coordinate_from_index(hindex);
@@ -137,9 +137,9 @@ inline void reduce_half_fermion_field(FermionField5d& hff,
   TIMER_VERBOSE("reduce_half_fermion_field");
   const Geometry& geo = ff.geo();
   Geometry hgeo;
-  hgeo.init(geo.geon, geo.node_site / 2, geo.multiplicity);
+  hgeo.init(geo.geon, geo.node_site / 2);
   hgeo.eo = geo.eo;
-  hff.init(hgeo);
+  hff.init(hgeo, geo.multiplicity);
 #pragma omp parallel for
   for (Long hindex = 0; hindex < hgeo.local_volume(); ++hindex) {
     const Coordinate hxl = hgeo.coordinate_from_index(hindex);
@@ -159,9 +159,9 @@ inline void extend_half_fermion_field(FermionField5d& ff, const FermionField5d& 
   TIMER_VERBOSE("extend_half_fermion_field");
   const Geometry& hgeo = hff.geo();
   Geometry geo;
-  geo.init(hgeo.geon, hgeo.node_site * 2, hgeo.multiplicity);
+  geo.init(hgeo.geon, hgeo.node_site * 2);
   geo.eo = hgeo.eo;
-  ff.init(geo);
+  ff.init(geo, hgeo.multiplicity);
   set_zero(ff);
 #pragma omp parallel for
   for (Long hindex = 0; hindex < hgeo.local_volume(); ++hindex) {
@@ -332,7 +332,7 @@ int main(int argc, char* argv[])
   const RngState rs("seed-mixed-size-cg");
   const FermionAction fa(0.01, 16, 1.8, 1.0, true, true);
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   GaugeField gf;
   set_rand_gauge_field(gf, geo, RngState(rs, "set-field"));
   // set_unit(gf);

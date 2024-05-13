@@ -39,7 +39,7 @@ inline void demo(const std::string& tag, const Coordinate& total_site,
 {
   TIMER_VERBOSE("demo");
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   qmkdir_info("huge-data");
   qmkdir_info("huge-data/" + tag);
   //

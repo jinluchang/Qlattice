@@ -366,7 +366,7 @@ inline void set_pion_gg_decay(FieldM<ComplexD, 4 * 4>& decay,
 {
   TIMER_VERBOSE("set_pion_gg_decay");
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   //
   decay.init();
   decay.init(geo);
@@ -415,7 +415,7 @@ inline std::vector<ComplexD> get_pion_corr(const Coordinate& total_site,
 {
   TIMER_VERBOSE("get_pion_corr");
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   //
   FieldM<ComplexD, 1> pion;
   pion.init(geo);

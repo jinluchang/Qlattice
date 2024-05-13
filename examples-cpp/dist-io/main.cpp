@@ -47,7 +47,7 @@ inline void test_shuffle()
   // Coordinate total_site(48, 48, 48, 96);
   // Coordinate total_site(64, 64, 64, 64);
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   GaugeField gf;
   gf.init(geo);
   set_unit(gf);
@@ -129,7 +129,7 @@ inline void test_io()
   // Coordinate total_site(48, 48, 48, 96);
   // Coordinate total_site(64, 64, 64, 64);
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   GaugeField gf;
   gf.init(geo);
   set_unit(gf);

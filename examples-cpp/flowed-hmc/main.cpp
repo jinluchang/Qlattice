@@ -170,7 +170,7 @@ inline void test_hmc(const Coordinate& total_site)
   const int traj_max = 3;
   //
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   //
   // ADJUST ME
   // GaugeAction ga(1.70, -0.331);
