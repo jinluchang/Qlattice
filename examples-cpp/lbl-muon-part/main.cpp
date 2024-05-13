@@ -12,7 +12,7 @@ void setField(qlat::Field<qlat::ComplexD>& f)
   for (qlat::Long index = 0; index < geo.local_volume(); ++index) {
     qlat::Coordinate x = geo.coordinate_from_index(index);
     qlat::Vector<qlat::ComplexD> fx = f.get_elems(x);
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (int m = 0; m < f.multiplicity; ++m) {
       fx[m] =
           geo.geon.id_node * sqrt(2) + index * sqrt(3) * qlat::ii + m * sqrt(5);
     }

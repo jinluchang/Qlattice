@@ -23,7 +23,7 @@ void test1()
   Coordinate total_siteHalf;
   coordinateHalf(total_siteHalf, total_site);
   Geometry geoHalf;
-  geoHalf.init(total_siteHalf, 1);
+  geoHalf.init(total_siteHalf);
   const int seed = 1231;
   const int type = 1;
   const int traj = 1;

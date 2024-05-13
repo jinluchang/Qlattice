@@ -6,7 +6,7 @@ namespace qlat
 inline void test()
 {
   const Coordinate total_site(4, 4, 4, 8);
-  const Geometry geo(total_site, 1);
+  const Geometry geo(total_site);
   GaugeField gf;
   gf.init(geo);
   const RngState rs = RngState().split("load_configuration");
