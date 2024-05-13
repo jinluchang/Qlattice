@@ -39,7 +39,7 @@ def compute_prop_wsrc_full(gf, gt, tslice, job_tag, inv_type, inv_acc, *,
     q.displayln_info(0, f"compute_prop_wsrc_full: idx={idx} tslice={tslice}", job_tag, inv_type, inv_acc)
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     src = q.mk_wall_src(geo, tslice)
     prop = compute_prop_full_1(inv, src, tag=tag, sfw=sfw)
 
@@ -165,7 +165,7 @@ def compute_f_weight_from_wsrc_prop_full(job_tag, traj, *,
     fname = q.get_fname()
     assert get_load_path(fn_f_weight) is None
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     prop_nf_dict = dict()
     for inv_type in inv_type_list:
         path_f = path_f_list[inv_type]
@@ -271,7 +271,7 @@ def run_f_rand_01(job_tag, traj):
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
         return None
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     rs = q.RngState(f"{job_tag}-{traj}").split("run_sel_from_wsrc_prop_full").split("f_rand_01")
     f_rand_01 = q.FieldRealD(geo, 1)
     f_rand_01.set_rand(rs, 1.0, 0.0)
@@ -343,7 +343,7 @@ def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
     fn_psel = f"{job_tag}/point-selection/traj-{traj}.txt"
     fn_psel_prob = f"{job_tag}/field-selection-weight/traj-{traj}/psel-prob.lat"
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     @q.lazy_call
     @q.timer_verbose
     def get_psel_prob():
@@ -410,7 +410,7 @@ def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel,
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
         total_site = q.Coordinate(get_param(job_tag, "total_site"))
-        geo = q.Geometry(total_site, 1)
+        geo = q.Geometry(total_site)
         gt = get_gt()
         fsel = get_fsel()
         psel = get_psel()
@@ -572,7 +572,7 @@ def compute_prop_psrc(job_tag, traj, xg_src, inv_type, inv_acc, *,
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig=eig)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     fsel_psrc_prop_norm_threshold = get_param(job_tag, "field-selection-fsel-psrc-prop-norm-threshold")
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     src = q.mk_point_src(geo, xg_src)
     prop = compute_prop_2(
             inv, src, tag=tag, sfw=sfw, qar_sp=qar_sp,
@@ -710,7 +710,7 @@ def run_hvp_average(job_tag, traj, *, inv_type, get_psel_prob):
     inv_type_name = inv_type_name_list[inv_type]
     fn = f"{job_tag}/hvp-average/traj-{traj}/hvp_average_{inv_type_name}.field"
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     @q.lazy_call
     def load():
         hvp_average = q.FieldComplexD(geo, 16)
@@ -758,7 +758,7 @@ def compute_prop_rand_u1(*, job_tag, traj, inv_type, gf, path_s, fsel, eig=None)
     # use fsel instead of fselc
     n_rand_u1_fsel = get_param(job_tag, "n_rand_u1_fsel")
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     def comp(idx_rand_u1, inv_acc):
         compute_prop_rand_u1_type_acc(
@@ -850,7 +850,7 @@ def compute_prop_smear(job_tag, xg_src, inv_type, inv_acc, *,
     q.displayln_info(f"compute_prop_smear: {job_tag} idx={idx} tag='{tag}'")
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig=eig)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     coef = get_param(job_tag, "prop_smear_coef")
     step = get_param(job_tag, "prop_smear_step")
     def smear(src):
@@ -950,7 +950,7 @@ def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_
 #     q.displayln_info(f"compute_prop_wsrc: idx={idx} tslice={tslice}", job_tag, inv_type, inv_acc)
 #     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
 #     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-#     geo = q.Geometry(total_site, 1)
+#     geo = q.Geometry(total_site)
 #     src = q.mk_wall_src(geo, tslice)
 #     prop = compute_prop_1(inv, src, tag=tag, sfw=sfw, path_sp=path_sp,
 #                           psel=psel, fsel=fsel)

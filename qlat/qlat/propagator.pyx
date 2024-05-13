@@ -243,7 +243,8 @@ def free_scalar_invert_cfield(src, mass, *, mode_fft=1):
 
 cdef class FermionField4d(FieldWilsonVector):
 
-    def __init__(self, Geometry geo=None):
+    def __init__(self, Geometry geo=None, multiplicity=1):
+        assert multiplicity == 1
         super().__init__(geo, 1)
 
     cdef cc.Handle[cc.FermionField4d] xxx(self):

@@ -33,7 +33,7 @@ def get_total_site(job_tag : str):
 def mk_sample_gauge_field(job_tag, fn):
     rs = q.RngState(f"seed {job_tag} {fn}").split("mk_sample_gauge_field")
     total_site = get_total_site(job_tag)
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     gf = q.GaugeField(geo)
     gf.set_rand(rs, sigma = 0.25, n_step = 4)
     for i in range(4):
@@ -44,7 +44,7 @@ def mk_sample_gauge_field(job_tag, fn):
 @q.timer_verbose
 def mk_sample_gauge_field_v2(total_site, tag):
     rs = q.RngState(f"seed {total_site} {tag}").split("mk_sample_gauge_field")
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     gf = q.GaugeField(geo)
     gf.set_rand(rs.split("gf.set_rand"), sigma = 0.25, n_step = 16)
     gf.unitarize()
@@ -80,7 +80,7 @@ def mk_sample_gauge_field_v3(job_tag, fn):
     hmc_beta = get_param(job_tag, "mk_sample_gauge_field", "hmc_beta", default = 6.0)
     hmc_n_step = get_param(job_tag, "mk_sample_gauge_field", "hmc_n_step", default = 6)
     hmc_is_always_accept = get_param(job_tag, "mk_sample_gauge_field", "hmc_is_always_accept", default = True)
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     gf = q.GaugeField(geo)
     gf.set_rand(rs.split("gf.set_rand"), sigma = rand_sigma, n_step = rand_n_step)
     gf.unitarize()

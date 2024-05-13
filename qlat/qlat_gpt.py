@@ -190,7 +190,7 @@ def qlat_from_gpt_ff4d(gpt_ff):
     tag = "qlat_from_gpt"
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
     geo = q.Geometry(total_site)
-    ff = q.FermionField4d(geo, 1)
+    ff = q.FermionField4d(geo, multiplicity)
     plan(ff.mview(), gpt_ff)
     return ff
 

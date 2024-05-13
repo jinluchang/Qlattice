@@ -82,12 +82,12 @@ cdef class FieldBase:
         if self.ctype in field_ctypes_complex:
             fc = FieldComplexD()
             fc.cast_from(self)
-            fu = FieldRealD(fc.geo)
+            fu = FieldRealD(fc.geo, fc.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
         elif self.ctype in field_ctypes_double:
             fr = FieldComplexD()
             fr.cast_from(self)
-            fu = FieldRealD(fr.geo)
+            fu = FieldRealD(fr.geo, fr.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
         else:
             raise Exception("get_data_sig: {self.ctype}")

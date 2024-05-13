@@ -408,8 +408,10 @@ struct ScalarAction {
     qacc_for(index, geo.local_volume(), {
       const Geometry& geo = sf.geo();
       Coordinate xl = geo.coordinate_from_index(index);
+      const Vector<double> sf_v = sf.get_elems_const(xl);
+      qassert(sf_v.size() == 4);
       Vector<double> pf_v = polar_fields.get_elems(xl);
-      qassert(pf_v.size()==4);
+      qassert(pf_v.size() == 4);
       double w = sf.get_elem(xl,0);
       double x = sf.get_elem(xl,1);
       double y = sf.get_elem(xl,2);
