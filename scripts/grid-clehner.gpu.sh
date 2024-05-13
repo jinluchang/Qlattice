@@ -31,7 +31,7 @@ source qcore/set-prefix.sh $name
     export CC=
     export CXX=nvcc
     export CFLAGS=
-    export CXXFLAGS="-Xcompiler -fPIC -ccbin MPICXX.sh -arch=$NVCC_ARCH -std=c++14 -w"
+    export CXXFLAGS="-Xcompiler -fPIC -ccbin MPICXX.sh -arch=$NVCC_ARCH -w"
     export LDFLAGS="-Xcompiler -fopenmp -ccbin MPICXX.sh"
     export LIBS=
     export MPICXX=
@@ -63,6 +63,9 @@ source qcore/set-prefix.sh $name
         export LDFLAGS
         export CXXFLAGS
     fi
+
+    echo "CXXFLAGS='$CXXFLAGS'"
+    echo "LDFLAGS='$LDFLAGS'"
 
     mkdir build
     cd build
