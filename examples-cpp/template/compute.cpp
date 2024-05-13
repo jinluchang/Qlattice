@@ -16,7 +16,7 @@ bool compute_traj_do(const std::string& job_tag, const int traj)
   const RngState rs = RngState("seed").split(job_tag).split(traj);
   const Coordinate total_site = get_total_site(job_tag);
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   //
   GaugeField gf;
   load_configuration(gf, job_tag, traj);

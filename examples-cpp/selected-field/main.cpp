@@ -7,7 +7,7 @@ inline void demo()
   TIMER_VERBOSE("demo");
   const Coordinate total_site(4,4,4,8);
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   qmkdir_info("huge-data");
   //
   displayln_info(fname + ssprintf(": create splittable random number generator 'rs'"));
@@ -139,7 +139,7 @@ inline void test(const std::string& tag, const Long n_per_tslice)
   TIMER_VERBOSE("test");
   const Coordinate total_site(4,4,4,8);
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   RngState rs("selected-field");
   qmkdir_info("huge-data");
   qmkdir_info("huge-data/" + tag);
@@ -245,7 +245,7 @@ inline void test_grid(const std::string& tag, const Long n_per_tslice)
   TIMER_VERBOSE("test_grid");
   const Coordinate total_site(4, 4, 4, 8);
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   RngState rs("selected-field");
   qmkdir_info("huge-data");
   qmkdir_info("huge-data/" + tag);
@@ -303,7 +303,7 @@ inline void test_selected_points(const std::string& tag, const Long n_points)
 {
   const Coordinate total_site(4, 4, 4, 8);
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   const RngState rs = RngState("test_selected_points").split(tag);
   std::vector<Coordinate> psel_std_vec;
   {
@@ -382,7 +382,7 @@ inline void test_shift(const std::string& tag, const Long n_per_tslice, const Lo
   TIMER_VERBOSE("test_shift");
   const Coordinate total_site(4,4,4,8);
   Geometry geo;
-  geo.init(total_site, 1);
+  geo.init(total_site);
   RngState rs = RngState("test_shift");
   Field<ComplexD> f;
   f.init(geo, 2);
