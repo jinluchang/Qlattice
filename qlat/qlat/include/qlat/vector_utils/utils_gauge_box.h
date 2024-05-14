@@ -45,17 +45,17 @@ struct API FieldBoxT {
     // TIMER("FieldBoxT::FieldBoxT(&)")
     //Qassert(get_data_type_is_double<Ty>() == get_data_type_is_double<M>());
     Qassert(Is_data_double<Ty>() == Is_data_double<M>());
-    Qassert(fr.geo().multiplicity == civ);
+    Qassert(fr.multiplicity == civ);
     Qassert(sizeof(M) % sizeof(Ty) == 0);
     const int Nd = sizeof(M) / sizeof(Ty);
     v.p  = (Ty*) qlat::get_data(fr).data();
     geo.set(fr.geo());
-    Multiplicity = fr.geo().multiplicity * Nd;
+    Multiplicity = fr.multiplicity * Nd;
 
     if(type == Su3::u9){Qassert(Multiplicity % 9 == 0);}
     if(type == Su3::u6){Qassert(Multiplicity % 6 == 0);}
     if(type == Su3::uA){Qassert(Multiplicity % 6 == 0);}
-    geo().multiplicity = 1;
+    //geo().multiplicity = 1;
     //print0("multi %5d, geoM %5d \n", Multiplicity, geo().multiplicity);
   }
 
@@ -76,7 +76,7 @@ struct API FieldBoxT {
     Multiplicity = Multiplicity_;
     v.p  = p;
     geo.set(geo_);
-    geo().multiplicity = 1;
+    //geo().multiplicity = 1;
 
     if(type == Su3::u9){Qassert(Multiplicity % 9 == 0);}
     if(type == Su3::u6){Qassert(Multiplicity % 6 == 0);}
@@ -188,15 +188,15 @@ struct API FieldBoxT {
 
   qacc Ty* data(const Coordinate& xl, const Long mu = 0)
   {
-    const Long index = geo().offset_from_coordinate(xl);
+    const Long index = geo().offset_from_coordinate(xl, 1);
     if(type == Su3::u9)
     {
-      qassert(mu < Multiplicity/9 and geo().multiplicity == 1);
+      qassert(mu < Multiplicity/9);
       return &v.p[index * Multiplicity + mu*9 + 0];
     }
     if(type == Su3::u6 or type == Su3::uA)
     {
-      qassert(mu < Multiplicity/6 and geo().multiplicity == 1);
+      qassert(mu < Multiplicity/6);
       return &v.p[index * Multiplicity + mu*6 + 0];
     }
     qassert(false);

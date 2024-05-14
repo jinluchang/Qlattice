@@ -10,14 +10,14 @@
 
 namespace qlat{
 
-inline void qlat_map_eo_site(qlat::FieldM<char, 1>& eo, const Geometry& geo, const Int multiplicity)
+inline void qlat_map_eo_site(qlat::FieldM<char, 1>& eo, const Geometry& geo)
 {
   TIMER("qlat_map_eo_site");
   if(eo.initialized){
-    Geometry geo_ = eo.geo();eo.multiplicity = multiplicity;
+    Geometry geo_ = eo.geo();
     if(geo_ == geo){return ;}
   }
-  eo.init(geo, multiplicity);
+  eo.init(geo, 1);
   char* res = (char*) qlat::get_data(eo).data();
   ////only bool is not write thread safe
   qacc_for(isp, geo.local_volume(), {
@@ -29,17 +29,22 @@ inline void qlat_map_eo_site(qlat::FieldM<char, 1>& eo, const Geometry& geo, con
 
 ///////src and res can be the same pointer
 template <class Ty, int civ>
-void apply_eo_sign(Ty* sP, Ty* rP, qlat::FieldM<char, 1>& eo, const char dir = 1)
+void apply_eo_signT(Ty* sP, Ty* rP, qlat::FieldM<char, 1>& eo, const char dir = 1)
 {
   TIMER("apply_eo_sign");
   const Geometry& geo = eo.geo();
   Qassert(eo.initialized);
   Qassert(dir == 0 or dir == 1 or dir == -1);
   char* eP = (char*) qlat::get_data(eo).data();
+  const Int Nd = civ;
+  //const Int Nd = civ * multiplicity;
   ///////DATA_TYPE typenum = get_data_type<Ty >();
   qacc_for(isp, geo.local_volume(), {
-    qlat::ComplexD sign = qlat::ComplexD(-1.0 * dir *(eP[isp]*2 - 1), 0);
-    for(int ic=0;ic<civ;ic++){rP[isp*civ+ic] = sign * sP[isp*civ+ic];}
+    const Coordinate xl = geo.coordinate_from_index(isp);
+    const Long index    = geo.offset_from_coordinate(xl, 1);
+    //qlat::ComplexD sign = qlat::ComplexD(-1.0 * dir *(eP[index]*2 - 1), 0);
+    Ty sign = double(-1.0 * dir *(eP[index]*2 - 1));
+    for(int ic=0;ic<Nd;ic++){rP[index*Nd+ic] = sign * sP[index*Nd+ic];}
   });
 }
 
@@ -49,10 +54,13 @@ void apply_eo_sign(qlat::FieldM<Ty , civ>& src, qlat::FieldM<Ty , civ>& res, qla
 {
   if(!src.initialized or !res.initialized){abort_r("src should be initialized with geo!\n");}
   const Geometry& geo = src.geo();
-  if(!eo.initialized){qlat_map_eo_site(eo, geo, src.multiplicity);}
+  if(!eo.initialized){qlat_map_eo_site(eo, geo);}
+  Qassert(geo == eo.geo() and src.multiplicity == res.multiplicity);
+  Qassert(civ == res.multiplicity);
+  //print0("eo sizes civ %5d, multi %5d \n", civ, res.multiplicity);
   Ty*   sP = (Ty*  ) qlat::get_data(src).data();
   Ty*   rP = (Ty*  ) qlat::get_data(res).data();
-  apply_eo_sign<Ty, civ>(sP, rP, eo, dir);
+  apply_eo_signT<Ty, civ>(sP, rP, eo, dir);
 }
 
 template <class Ty, int civ>
@@ -89,7 +97,7 @@ void apply_eo_zeros(qlat::FieldM<Ty , civ>& src, qlat::FieldM<Ty , civ>& res, ql
 {
   if(!src.initialized or !res.initialized){abort_r("src should be initialized with geo!\n");}
   const Geometry& geo = src.geo();
-  if(!eo.initialized){qlat_map_eo_site(eo, geo, src.multiplicity);}
+  if(!eo.initialized){qlat_map_eo_site(eo, geo);}
   Ty*   sP = (Ty*  ) qlat::get_data(src).data();
   Ty*   rP = (Ty*  ) qlat::get_data(res).data();
   apply_eo_zeros<Ty, civ>(sP, rP, eo, dir);

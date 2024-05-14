@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
   int n_vec = in.nvec;
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
   Geometry geo;
-  geo.init(total_site, 1); 
+  geo.init(total_site); 
   fflush_MPI();
 
   io_vec io_use(geo,ionum);

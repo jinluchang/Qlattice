@@ -292,7 +292,7 @@ template <class Ta, class Ty>
 void quda_convert_gauge(Ta* qgf, Ty* gf, const Geometry& geo, int dir = 0, int GPU = 0)
 {
   TIMER("quda_convert_gauge(qgf,gf)");
-  Qassert(geo.multiplicity == 1);
+  //Qassert(geo.multiplicity == 1);
 
   //ColorMatrix* quda_pt = reinterpret_cast<ColorMatrix*>(qgf.data());
   const Long V = geo.local_volume();
@@ -315,8 +315,8 @@ void quda_convert_gauge(qlat::vector<qlat::ComplexT<Ta > >& qgf, GaugeFieldT<Td 
 {
   TIMER("quda_convert_gauge(qgf,gf)");
   Geometry geo = gf.geo();
-  Qassert(geo.multiplicity == 4);
-  geo.multiplicity = 1;
+  //Qassert(geo.multiplicity == 4);
+  //geo.multiplicity = 1;
   qlat::ComplexT<Ta >* res = (qlat::ComplexT<Ta >*) qgf.data();
   qlat::ComplexT<Td >* src = (qlat::ComplexT<Td >*) qlat::get_data(gf).data();
   quda_convert_gauge(res, src, geo, dir, GPU);
@@ -700,8 +700,9 @@ void qlat_cf_to_quda_cf(T1*  quda_cf, colorFT& qlat_cf, int dir = 1)
   const Geometry& geo = qlat_cf.geo();
   Long V = geo.local_volume();
   //Long Vh = V / 2;
-  Qassert(geo.multiplicity == 3);
-  const Long Dim = geo.multiplicity;
+  //Qassert(geo.multiplicity == 3);
+  //const Long Dim = geo.multiplicity;
+  const Long Dim = 3;
 
   Ty* src = (Ty*) qlat::get_data(qlat_cf).data();
   qlat_cf_to_quda_cf(quda_cf, src, geo, Dim, dir);

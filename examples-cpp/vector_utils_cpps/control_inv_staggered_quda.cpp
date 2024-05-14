@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
   nt = in.nt;
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
   Geometry geo;
-  geo.init(total_site, 1); 
+  geo.init(total_site); 
   fflush_MPI();
 
   Coordinate sp = string_to_Coordinate(in.paraI);

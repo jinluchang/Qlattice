@@ -507,7 +507,7 @@ void copy_buffers_vecs(Ty *res, Ty *src,Long N0, Long N1, Long Ncopy, size_t Vol
 }
 
 template<typename T1, typename T2>
-qacc void copy_double_float(T1* a, T2* b, const int size)
+qacc void copy_double_float(T1* a, const T2* b, const int size)
 {
   for(int i=0;i<size;i++){a[i] = b[i];}
 }

@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
 
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
   Geometry geo;
-  geo.init(total_site, 1); 
+  geo.init(total_site); 
 
   std::vector<int > nv,Nv,mv;
   geo_to_nv(geo, nv,Nv,mv);

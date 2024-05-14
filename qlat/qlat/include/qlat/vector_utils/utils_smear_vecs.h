@@ -14,6 +14,8 @@
 #include "utils_shift_vecs.h"
 #include "utils_eo_copies.h"
 #include "utils_check_fun.h"
+#include "utils_field_operations.h"
+#include "utils_field_expand.h"
  
 namespace qlat{
 
@@ -44,7 +46,7 @@ __global__ void gauss_smear_global4(T* pres, const T* psrc, const T* gf, const T
   unsigned int off = tid;
   {
     const T* gf_t = &gf[count*(2*dir_max)*9];
-    #pragma unroll
+    //#pragma unroll
     while(off < (2*dirL)*9){
       //int dir = off/9;int c = off%9;
       //ls[(c/3)*(2*dirL)*3 + dir*3 + c%3] = gf[count*(2*dirL)*9 + off];off += ns;
@@ -71,7 +73,7 @@ __global__ void gauss_smear_global4(T* pres, const T* psrc, const T* gf, const T
     //T* res_t     = &ps[(dir+dirL)*bfac*3*d0];
     ////T* res_t     = &ps[dir+dirL];
     off = tid;
-    #pragma unroll
+    //#pragma unroll
     while(off < nsites){
       //res_t[off] = src_t[off]; off+=ns;
       const unsigned int bi = off/(3*d0);
@@ -102,7 +104,7 @@ __global__ void gauss_smear_global4(T* pres, const T* psrc, const T* gf, const T
 
     tmp = 0.0;
 
-    #pragma unroll
+    //#pragma unroll
     for(int dir=0;dir<(2*dirL)*3; dir++)
     {
       //tmp += b[dir*bfac*d0] * a[dir];
@@ -172,6 +174,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   std::vector< qlat::vector_acc<Long > >& copy_extra_index,
   std::vector<Long >& pos_typeA   )
 {
+  TIMER("get_maps_hoppings");
 
   (void)local_map_typeA1;
 
@@ -204,7 +207,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
     //  print0("==rank %3d, x y z t, %3d %3d %3d %3d, ext %ld \n", qlat::get_id_node(), xl[0], xl[1], xl[2], xl[3], index_ext);
     //}
     //print0("index ext %8ld index %8ld\n", index_ext, index);
-    //map_bufV[0][index]  = geo_ext.offset_from_coordinate(xl);
+    //map_bufV[0][index]  = geo_ext.offset_from_coordinate(xl, 1);
     //map_bufV[1][index]  = index;
     //////print0(" mappings %ld %ld \n",map_bufV[0][index], map_bufV[1][index]);
   }
@@ -328,7 +331,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   /////QLAT_VEC_CKPOINT
 
   qlat::FieldM<char, 1> eo;
-  qlat::qlat_map_eo_site(eo, geo, 1);
+  qlat::qlat_map_eo_site(eo, geo);
   char* eo_char = (char*) qlat::get_data(eo).data();
 
   std::vector<Long > local_map_typeA0_e;local_map_typeA0_e.resize(Nvol_ext); ////local_map0[count] == original positions
@@ -693,7 +696,6 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   }
   Qassert(count == Nvol);
 
-
 }
 
 ////Ty must be complex
@@ -733,7 +735,7 @@ struct smear_fun{
   qlat::vector_acc<Long > map_index_typeAL;
   qlat::vector_acc<Long > map_bufD_typeA  ;
 
-  int use_gauge_mapping;
+  int use_gauge_mapping;////hack for box smearings, gaussian is 1
 
   std::vector< qlat::vector_acc<Long > > copy_extra_index;
   std::vector<Long> pos_typeA;
@@ -885,7 +887,7 @@ struct smear_fun{
     geo = geo_;
     ////move to default geo
     geo.resize(Coordinate(0, 0, 0, 0), Coordinate(0, 0, 0, 0));
-    // geo.multiplicity = 1;
+    //geo.multiplicity = 1;
     geo.eo=0;
     Geometry geo1 = geo;
     if(!smear_in_time_dir){geo1.resize(Coordinate(1, 1, 1, 0), Coordinate(1, 1, 1, 0));}
@@ -927,7 +929,7 @@ struct smear_fun{
     //#pragma omp parallel for
     //for(Long index=0;index<Nvol;index++){
     //  const Coordinate xl = geo.coordinate_from_index(index);
-    //  map_bufV[0][index]  = geo_ext.offset_from_coordinate(xl);
+    //  map_bufV[0][index]  = geo_ext.offset_from_coordinate(xl, 1);
     //  map_bufV[1][index]  = index;
     //  //////print0(" mappings %ld %ld \n",map_bufV[0][index], map_bufV[1][index]);
     //}
@@ -941,7 +943,7 @@ struct smear_fun{
     //{
     //  const Coordinate xl = geo.coordinate_from_index(index);
     //  const Coordinate xl1 = coordinate_shifts(xl, dir);
-    //  map_bufD[index*dirL*2 + (dir+dirL)] = geo_ext.offset_from_coordinate(xl1);
+    //  map_bufD[index*dirL*2 + (dir+dirL)] = geo_ext.offset_from_coordinate(xl1, 1);
     //}
 
     mem_setup_flag = true;
@@ -1033,7 +1035,7 @@ struct smear_fun{
       //const Coordinate xl1 = coordinate_shifts(xl, dir);
 
       ///map_bufD[(dir+4)*Nvol + index] = ((xl[3]*Nn[2]+xl[2])*Nn[1] + xl[1])*Nn[0] + xl[0];
-      //map_bufD[index*dirL*2 + (dir+dirL)] = geo_ext.offset_from_coordinate(xl1);
+      //map_bufD[index*dirL*2 + (dir+dirL)] = geo_ext.offset_from_coordinate(xl1, 1);
       const Long pos = ((xl[3]*Nn[2]+xl[2])*Nn[1] + xl[1])*Nn[0] + xl[0]; 
       //map_bufD[index*dirL*2 + (dir+dirL)] = pos;
       map_bufD_typeA[index*dirL*2 + (dir+dirL)] = pos;
@@ -1440,7 +1442,18 @@ void extend_links_to_vecs(T* resE, const GaugeFieldT<Td >& gf, const qlat::vecto
   TIMERB("extend_links_to_vecs");
   const Geometry& geo = gf.geo();
   GaugeFieldT<Td > gf1;
-  set_left_expanded_gauge_field(gf1, gf);
+  Coordinate expan_left(1, 1, 1, 1);
+  Coordinate expan_zero(0, 0, 0, 0);
+  const Geometry geo_ex = geo_resize(gf.geo(), expan_left, expan_zero);
+  gf1.init(geo_ex);
+  copy_fields(gf1, gf);
+  {
+  TIMER("extend_links_to_vecs expand");
+  refresh_expanded_GPU(gf1);
+  }
+
+  //set_left_expanded_gauge_field(gf1, gf);
+
   const int dir_limit = 4;
   ////set up mom factors
   qlat::ComplexD* momF = NULL;
@@ -1457,7 +1470,8 @@ void extend_links_to_vecs(T* resE, const GaugeFieldT<Td >& gf, const qlat::vecto
   const Long Nvol = geo.local_volume();
   if(index_map.size() == 0){
     index_mapR.resize(Nvol);
-    for(Long i=0;i<Nvol;i++){index_mapR[i] = i;}
+    qacc_for(i, Nvol, {index_mapR[i] = i;});
+    //for(Long i=0;i<Nvol;i++){index_mapR[i] = i;}
     index_mapT = index_mapR.data();
   }
   ////set up mom factors
@@ -1497,7 +1511,7 @@ void rotate_Vec_prop(Propagator4dT<T>& prop, qlat::vector_gpu<ComplexT<T> > &pro
   Qassert(groupP >   0);
 
   const Geometry& geo = prop.geo();
-  long long Nvol =  geo.local_volume();
+  const Long Nvol =  geo.local_volume();
   if(dir == 0)propT.resize(NVmpi*Nvol*groupP*12);
 
   qacc_for(index, Long(Nvol), {
@@ -1631,7 +1645,7 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
   if(smf.dirL == 4 ){bw_fac = bw_fac * 3.0/4.0;}
   const T bw = bw_fac;
 
-  Long Nvol = smf.Nvol;
+  const Long Nvol = smf.Nvol;
   const int nsites = bfac*3*civ;
 
   const int GPU = 1;
@@ -1664,7 +1678,7 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
 
   //int nt = 32;
   dim3 dimBlock(nt, 1, 1);
-  Long sn = Nvol;
+  const Long sn = Nvol;
   dim3 dimGrid( sn, 1, 1);
 
   #endif
@@ -1707,7 +1721,7 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
     const int dir_max  = 4;
     const int dir_limit = smf.dirL;
     ////const Long* map_count = smf.map_index_typeAL[0];
-    qthread_for(count,  Long(Nvol),{
+    qthread_for(count,  Nvol,{
       //const Long index  = smf.map_index_typeAL[count];
       //const Long iwrite = smf.map_index_typeA0[index];
       const Long iwrite = map_final[count];
@@ -1885,7 +1899,7 @@ void rotate_prop(Propagator4dT<T>& prop, int dir = 0)
 {
   TIMERB("rotate_prop");
   const Geometry& geo = prop.geo();
-  long long Nvol =  geo.local_volume();
+  const Long Nvol =  geo.local_volume();
 
   ComplexT<T>* src =  (ComplexT<T>*) qlat::get_data(prop).data();
   qacc_for(index, Long(Nvol), {
@@ -1912,10 +1926,10 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
                       const double width, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1, const int dup = -1, const int force_update = 0)
 {
   TIMER_FLOPS("smear propagator");
-  long long Tfloat = 0;
+  Long Tfloat = 0;
   ///double mem       = 0.0;
   Geometry geo = gf.geo();
-  // geo.multiplicity = 1;
+  //geo.multiplicity = 1;
   geo.eo=0;
   #ifdef QLAT_USE_ACC
   if(c0*d0 > 48){abort_r("d0 should be smaller than 48 for gpu mem. \n");}
@@ -1925,9 +1939,9 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
   if(step < 0){ use_gauge_mapping = 0;}////hack for box smearings
 
   {
-    long long Lat = geo.local_volume();
+    const Long Lat = geo.local_volume();
     int nsrc = c0*d0;
-    long long vGb = Lat *nsrc;
+    const Long vGb = Lat *nsrc;
     const int n_avg = smear_in_time_dir ? 8 : 6;
     int Fcount = 3*(3*6 + 2*2); 
     if(step >= 0){

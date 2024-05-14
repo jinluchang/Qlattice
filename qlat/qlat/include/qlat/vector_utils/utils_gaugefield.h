@@ -27,21 +27,21 @@ qacc void su3_one(Ty* E)
 qacc Long su3_6(const Geometry& geo, const Coordinate& xl)
 {
   const int nD = 6;
-  return geo.offset_from_coordinate(xl)*nD + 0;
+  return geo.offset_from_coordinate(xl, 1)*nD + 0;
 }
 
 qacc Long su3_n(const Geometry& geo, const Coordinate& xl)
 {
   const int nD = 9;
-  return geo.offset_from_coordinate(xl)*nD + 0;
+  return geo.offset_from_coordinate(xl, 1)*nD + 0;
 }
 
 qacc Long su3_6(const Geometry& geo, const Coordinate& xl, const int mu)
 {
   const int Dim = 4;
   const int nD  = 6;
-  return (geo.offset_from_coordinate(xl) * Dim + mu)*nD + 0;
-  //return geo.offset_from_coordinate(xl)*nD + 0;
+  return (geo.offset_from_coordinate(xl, 1) * Dim + mu)*nD + 0;
+  //return geo.offset_from_coordinate(xl, 1)*nD + 0;
 }
 
 qacc Long su3_n(const Geometry& geo, const Coordinate& xl, const int mu)
@@ -49,11 +49,11 @@ qacc Long su3_n(const Geometry& geo, const Coordinate& xl, const int mu)
   const int Dim = 4;
   const int nD  = 9;
   qassert(mu >= 0 and mu < Dim);
-  return (geo.offset_from_coordinate(xl) * Dim + mu)*nD + 0;
+  return (geo.offset_from_coordinate(xl, 1) * Dim + mu)*nD + 0;
   //if(mu > 0){
-  //  return (geo.offset_from_coordinate(xl) * Dim + mu)*nD + 0;
+  //  return (geo.offset_from_coordinate(xl, 1) * Dim + mu)*nD + 0;
   //}else{
-  //  return (geo.offset_from_coordinate(xl)           )*nD + 0;
+  //  return (geo.offset_from_coordinate(xl, 1)           )*nD + 0;
   //}
 }
 
@@ -321,7 +321,7 @@ void set_rand_link(GaugeFieldT<Td> &gf, const int seed = -1)
     //T* res = (T*) gf.get_elem_offset(0).p;
     const Geometry& geo = gf.geo();
     qlat::ComplexT<Td>* res = (qlat::ComplexT<Td>*) qlat::get_data(gf).data();
-    random_Ty(res, geo.local_volume()*geo.multiplicity*sizeof(ColorMatrixT<Td>)/(sizeof(Td)*2), 1, seed);
+    random_Ty(res, geo.local_volume()*gf.multiplicity*sizeof(ColorMatrixT<Td>)/(sizeof(Td)*2), 1, seed);
 
     //qacc_for(isp, gf.field.size(), { set_unit(gf.get_elem_offset(isp), 1.0);});
     ColorMatrixT<Td> unit;set_unit(unit, 1.0);

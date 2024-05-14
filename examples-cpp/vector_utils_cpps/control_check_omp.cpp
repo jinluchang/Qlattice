@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
   Geometry geo;
-  geo.init(total_site, 1); 
+  geo.init(total_site); 
 
   std::vector<int > nv(4);
   std::vector<int > Nv(4);

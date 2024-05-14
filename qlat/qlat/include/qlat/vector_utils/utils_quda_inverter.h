@@ -15,6 +15,7 @@
 #include "general_funs.h"
 #include "utils_io_vec.h"
 #include "utils_eo_copies.h"
+#include "utils_Gaugefield_tools.h"
 
 /////use inv_param.dirac_order = QUDA_INTERNAL_DIRAC_ORDER; when we want to work on GPU memeories
 
@@ -613,7 +614,7 @@ inline void quda_inverter::save_evecsF(const char* filename, const bool read)
   qlat::Coordinate total_site;
   qlat::Coordinate node_site = qlat::get_size_node();
   for(int d=0;d<4;d++){total_site[d] = X[d] * node_site[d];}
-  qlat::Geometry geo;geo.init(total_site, 1);
+  qlat::Geometry geo;geo.init(total_site);
 
   for(unsigned int n = 0; n < eigD.size(); n++){eigD[n].init(geo);}
 
@@ -765,7 +766,7 @@ inline void quda_inverter::save_evecs(const char* filename, const bool read, con
   qlat::Coordinate total_site;
   qlat::Coordinate node_site = qlat::get_size_node();
   for(int d=0;d<4;d++){total_site[d] = X[d] * node_site[d];}
-  qlat::Geometry geo;geo.init(total_site, 1);
+  qlat::Geometry geo;geo.init(total_site);
 
   //std::vector<qlat::FieldM<qlat::ComplexF, 3> > eig;eig.resize(nsave);
   Long Nvol = geo.local_volume() * spinor_site_size;
@@ -2973,8 +2974,8 @@ inline void quda_inverter::do_inv(Ty* res, Ty* src, const double mass, const dou
   inv_param.secs += 1e-25;
   //std::string val = qlat::get_env(std::string("qlat_quda_verbos"));
   //if(val != ""){verbos = stringtonum(val);}
-  if(quda_verbos >= -1)
-  if(quda::comm_rank_global() == 0){
+  if(quda_verbos >= 0 or quda_verbos == -2)
+  {
     print0("Done: %8d iter / %.6f secs = %.3f Gflops, Cost %.3f Gflops, %.6f secs \n",
           inv_param.iter, inv_param.secs, inv_param.gflops / inv_param.secs, inv_param.gflops, time0);
   }
@@ -3439,8 +3440,9 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
   qinv.inv_param.secs += 1e-25;
   //std::string val = qlat::get_env(std::string("qlat_quda_verbos"));
   //if(val != ""){verbos = stringtonum(val);}
-  if(qinv.quda_verbos >= -1){
-  if(quda::comm_rank_global() == 0)print0("Done: %8d iter / %.6f secs = %.3f Gflops, Cost %.3f Gflops, %.6f secs \n",
+  if(qinv.quda_verbos >= 0 or qinv.quda_verbos == -2)
+  {
+    print0("Done: %8d iter / %.6f secs = %.3f Gflops, Cost %.3f Gflops, %.6f secs \n",
           qinv.inv_param.iter, qinv.inv_param.secs, qinv.inv_param.gflops / qinv.inv_param.secs, qinv.inv_param.gflops, time0);
   }
   timer.flops += qinv.inv_param.gflops;
@@ -3482,6 +3484,68 @@ inline double get_stagger_even_flops(const Geometry& geo)
   const double fac = 670.00;
   double flops     = nv[0]  * nv[1] * nv[2] * nv[3] * fac;
   return flops;
+}
+
+inline void quda_scaling_test(quda_inverter& qinv, const int seed = 21397)
+{
+  //qinv.setup_stagger(in.fermion_mass, 1e-10);
+  const double mass_kappa = 0.00001;
+  const double cg_err = 1e-15;
+  const int niter = 100;
+  const int bfac  =  20;
+
+  const int quda_verbos_bak = qinv.quda_verbos;
+  qinv.quda_verbos = -1;
+
+  qlat::GaugeField gf0;gf0.init(qinv.geo);
+  qlat::GaugeField gf;gf.init(qinv.geo);
+  set_rand_link(gf0, seed);
+  gauge_smearing_stout(gf, gf0, 0.125, 4, 4);
+
+  qlat::vector<qlat::Complex > quda_gf;quda_gf.resize(qinv.geo.local_volume() * 4 * 3*3);
+  quda_convert_gauge(quda_gf, gf);
+
+  qinv.setup_link(quda_gf.data(), 1); 
+  qinv.setup_stagger();
+
+  qinv.setup_mat_mass(mass_kappa);
+  qinv.check_residue = 0;
+  int precL[3] = {10, 11, 12};
+  int seed_count = seed + 1111;
+  qlat::vector_gpu<qlat::Complex > srcG;
+  qlat::vector_gpu<qlat::Complex > resG;
+  srcG.resize(qinv.gsrc->Volume() * qinv.spinor_site_size);
+  resG.resize(qinv.gsrc->Volume() * qinv.spinor_site_size);
+
+ 
+  for(int preci=0;preci<3;preci++)
+  {
+    const int prec_type = precL[preci];
+    double ava_flop = 0.0;
+    int ava_iter = 0;
+    double total = 0;
+ 
+    for(int j=0;j<bfac + 3;j++){
+      random_Ty(srcG.data(), srcG.size(), 1, seed_count);seed_count += 1;
+      if(j<3){print0("src norm2 ");srcG.print_norm2("%.25e");}
+
+      qinv.do_inv(resG.data(), srcG.data(), mass_kappa, cg_err, niter, prec_type);
+
+      if(j<3){print0("res norm2 ");resG.print_norm2("%.25e");}
+      if(j >= 3){
+        double flops_pers = double(qinv.inv_param.gflops) / qinv.inv_param.secs ;
+        ava_flop += flops_pers;
+        ava_iter += qinv.inv_param.iter;
+        total += qinv.inv_param.secs;
+      }
+    }
+
+    print0("===mode prec %02d, %.3f Gflops per GPU, %6d iter \n", prec_type, ava_flop/(qlat::get_num_node()*bfac), ava_iter/(bfac));
+  }
+  qinv.quda_verbos = quda_verbos_bak;
+  qinv.setup_inv_param_prec(0);
+  qinv.setup_mat_mass(0.0);
+  qinv.gauge_with_phase = false;
 }
 
 ////get even-even solutions
@@ -3689,14 +3753,38 @@ void get_staggered_multishift_even(quda_inverter& qinv,
     inv_param.mass = std::sqrt(masses2[0] / 4.0);
   }else{
     inv_param.num_offset = multishift;
-    inv_param.compute_true_res = 0;
+
+    //temporary hack for refinement
+    int qlat_multi_refine = 0;
+    std::string val = qlat::get_env(std::string("qlat_multi_refine"));
+    if(val != ""){qlat_multi_refine = stringtonum(val);}
+
+    inv_param.compute_true_res = qlat_multi_refine;
     //inv_param.mass = masses[0]; 
+    double max_tol = 1e-13;
+    //inv_param.cuda_prec_sloppy              = QUDA_DOUBLE_PRECISION;
+    if(inv_param.cuda_prec_sloppy == QUDA_SINGLE_PRECISION){
+      max_tol = 1e-8;
+    }
+    double gap = 0.0;
+    const double tol  = inv_param.tol;
+    const double Etol = std::log10(tol);
+    if(tol > max_tol and tol > 0){
+      double Emax = std::log10(max_tol);
+      gap = (Etol - Emax)/ (multishift - 1.0);
+    }
+
+    //(inv_param.tol - max_tol) / std::sqrt(multishift - 1.0);
+    //if(gap < 0 or inv_param.tol < 1e-11){gap = 0.0;}
+    //if(qlat_multi_refine == 0){gap = 0.0;}//to zero if no refinement
+
     for (int i = 0; i < multishift; i++) {
       // Set masses and offsets
       //inv_param.offset[i] = 4 * masses[i] * masses[i] - 4 * masses[0] * masses[0];
       inv_param.offset[i] = masses2[i];
-      inv_param.tol_offset[i]    = inv_param.tol;
-      inv_param.tol_hq_offset[i] = 1e-5; ///donot check heavy quark, tol_hq
+      inv_param.tol_offset[i]    = std::pow(10, Etol - gap * i);
+
+      inv_param.tol_hq_offset[i] = 5e-8; ///donot check heavy quark, tol_hq
     }
   }
 

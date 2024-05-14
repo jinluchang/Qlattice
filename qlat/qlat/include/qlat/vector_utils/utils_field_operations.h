@@ -26,10 +26,10 @@ void clear_fields(qlat::FieldM<T1, civ>& pr, int GPU = 1)
 
 // can be expanded ones, but only double and float
 template <class T1, class T2 >
-void copy_fields(T1* pr, T2* p0, const int civ, const Geometry& geor, const Geometry& geo0)
+void copy_fields(T1* pr, const T2* p0, const int civ, const Geometry& geor, const Geometry& geo0)
 {
   TIMER("copy_fields");
-  Qassert(geor.multiplicity == geo0.multiplicity and geo0.multiplicity == 1);// to avoid complications for pointer issues
+  //Qassert(geor.multiplicity == geo0.multiplicity and geo0.multiplicity == 1);// to avoid complications for pointer issues
   Qassert(IsBasicDataType<T1>::value and IsBasicDataType<T2>::value);
 
   using M1 = typename IsBasicDataType<T1>::ElementaryType;
@@ -45,10 +45,10 @@ void copy_fields(T1* pr, T2* p0, const int civ, const Geometry& geor, const Geom
 
   qacc_for(isp, geor.local_volume(), {
     const Coordinate xl = geor.coordinate_from_index(isp);
-    const Long dr = geor.offset_from_coordinate(xl) * civ + 0;
-    const Long d0 = geo0.offset_from_coordinate(xl) * civ + 0;
+    const Long dr = geor.offset_from_coordinate(xl, 1) * civ + 0;
+    const Long d0 = geo0.offset_from_coordinate(xl, 1) * civ + 0;
     void* res = (void*) &pr[dr];//qlat::get_data(pr.get_elems(xl)).data();
-    void* src = (void*) &p0[d0];//qlat::get_data(p0.get_elems(xl)).data();
+    const void* src = (void*) &p0[d0];//qlat::get_data(p0.get_elems(xl)).data();
     copy_double_float((M1*) res, (M2*) src, Ndata1);
   });
 
@@ -67,8 +67,8 @@ void copy_fields(T1* pr, T2* p0, const int civ, const Geometry& geor, const Geom
 
   //qacc_for(isp, geor.local_volume(), {
   //  const Coordinate xl = geor.coordinate_from_index(isp);
-  //  const Long dr = geor.offset_from_coordinate(xl) * civ + 0;
-  //  const Long d0 = geo0.offset_from_coordinate(xl) * civ + 0;
+  //  const Long dr = geor.offset_from_coordinate(xl, 1) * civ + 0;
+  //  const Long d0 = geo0.offset_from_coordinate(xl, 1) * civ + 0;
   //  void* res = (void*) &pr[dr];//qlat::get_data(pr.get_elems(xl)).data();
   //  void* src = (void*) &p0[d0];//qlat::get_data(p0.get_elems(xl)).data();
   //  if(mode_copy == 0){copy_double_float((double*) res, (double*) src, Ndata1);}
@@ -79,18 +79,18 @@ void copy_fields(T1* pr, T2* p0, const int civ, const Geometry& geor, const Geom
 }
 
 template <class T1, class T2, int civ >
-void copy_fields(qlat::FieldM<T1, civ>& pr, qlat::FieldM<T2, civ>& p0)
+void copy_fields(qlat::FieldM<T1, civ>& pr, const qlat::FieldM<T2, civ>& p0)
 {
   Qassert(p0.initialized);
   const Geometry& geo = p0.geo();
   if(!pr.initialized){pr.init(geo);}
 
-  Geometry geor = pr.geo();
-  Geometry geo0 = p0.geo();
-  geor.multiplicity = 1;geo0.multiplicity = 1;
+  //Geometry geor = pr.geo();
+  //Geometry geo0 = p0.geo();
+  //geor.multiplicity = 1;geo0.multiplicity = 1;
   T1* res = (T1*) qlat::get_data(pr).data();
-  T2* src = (T2*) qlat::get_data(p0).data();
-  copy_fields<T1, T2>(res, src, civ, geor, geo0);
+  const T2* src = (T2*) qlat::get_data(p0).data();
+  copy_fields<T1, T2>(res, src, civ, pr.geo(), p0.geo());
 }
 
 template <class Ty, int civ>

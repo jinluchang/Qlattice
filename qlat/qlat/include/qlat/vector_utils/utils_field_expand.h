@@ -23,7 +23,7 @@
 namespace qlat
 {
 
-void setup_expand(const Geometry& geo, qlat::vector_acc<Long>& pack_send,
+void setup_expand(const Geometry& geo, const Int multiplicity, qlat::vector_acc<Long>& pack_send,
                   qlat::vector_acc<Long>& pack_recv,
                   const SetMarksField& set_marks_field = set_marks_field_all,
                   const std::string& tag = std::string(""));
@@ -35,6 +35,7 @@ struct expand_index_buf {
   //Geometry geo; //make a copy of geo if needed
   qlat::vector_acc<Long >  pack_send;
   qlat::vector_acc<Long >  pack_recv;
+  Int Multiplicity;//record numbers
   //const long Nindex;
   expand_index_buf()
   {
@@ -42,13 +43,15 @@ struct expand_index_buf {
     pack_recv.resize(0);
   }
 
-  expand_index_buf(const Geometry& geo_, const std::string& tag)
+  expand_index_buf(const Geometry& geo_, const Int multiplicity, const std::string& tag)
   {
     //geo = geo_;
+    //const Int multiplicity = 1;//always 1 for the buffers reuse
+    Multiplicity = multiplicity;
     if(tag == std::string("")){
-      setup_expand(geo_, pack_send, pack_recv, set_marks_field_all, tag);
+      setup_expand(geo_, multiplicity, pack_send, pack_recv, set_marks_field_all, tag);
     }else{
-      setup_expand(geo_, pack_send, pack_recv, set_marks_field_dir, tag);
+      setup_expand(geo_, multiplicity, pack_send, pack_recv, set_marks_field_dir, tag);
     }
   }
 
@@ -92,7 +95,7 @@ inline Cache<expand_index_Key, expand_index_buf >& get_expand_index_buf_cache()
 inline expand_index_buf& get_expand_index_buf_plan(const expand_index_Key& ekey)
 {
   if (!get_expand_index_buf_cache().has(ekey)) {
-    get_expand_index_buf_cache()[ekey] = expand_index_buf(ekey.geo, ekey.tag);
+    get_expand_index_buf_cache()[ekey] = expand_index_buf(ekey.geo, ekey.multiplicity, ekey.tag);
   }
   expand_index_buf& buf = get_expand_index_buf_cache()[ekey];
   return buf;
@@ -112,12 +115,13 @@ void refresh_expanded_GPUT(M* res, const Geometry& geo, const int MULTI,
   Qassert(sizeof(M) % sizeof(double) == 0);
   //const int MULTI = geo.multiplicity;
   const Long mpi_size = MULTI * sizeof(M)/sizeof(double);
+  const Int multiplicity = 1;//always 1 for the buffers reuse
 
   // Geometry geo1 = geo;
   //Qassert(geo1 == geo);
   // geo1.multiplicity = 1;// no multiplicity to save buffers
 
-  const CommPlan& plan = get_comm_plan(set_marks_field, tag, geo, 1);
+  const CommPlan& plan = get_comm_plan(set_marks_field, tag, geo, multiplicity);
   const Long total_bytes =
       (plan.total_recv_size + plan.total_send_size) * sizeof(M);
   if (0 == total_bytes) {
@@ -131,7 +135,7 @@ void refresh_expanded_GPUT(M* res, const Geometry& geo, const int MULTI,
 
   qlat::vector_gpu<char >& sbuf = qlat::get_vector_gpu_plan<char >(0, std::string("general_buf0"), GPU);
   qlat::vector_gpu<char >& rbuf = qlat::get_vector_gpu_plan<char >(0, std::string("general_buf1"), GPU);
-  expand_index_buf& ebuf = get_expand_index_buf_plan(geo, 1, tag);
+  expand_index_buf& ebuf = get_expand_index_buf_plan(geo, multiplicity, tag);
   Qassert(ebuf.pack_send.size() == 2*plan.total_send_size and ebuf.pack_recv.size() == 2*plan.total_recv_size);
 
   const Long Nsend = plan.total_send_size ;
@@ -218,7 +222,7 @@ template <class M>
 void refresh_expanded_GPU(Field<M>& f, int dir = -1000, int GPU = 1)
 {
   M* res = (M*) qlat::get_data(f).data();
-  refresh_expanded_GPU(res, f.geo(), f.geo().multiplicity, dir, GPU);
+  refresh_expanded_GPU(res, f.geo(), f.multiplicity, dir, GPU);
 }
 
 

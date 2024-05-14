@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
 
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
   Geometry geo;
-  geo.init(total_site, 1); 
+  geo.init(total_site); 
 
   std::vector< qlat::vector<qlat::ComplexD > > src;
   resize_EigenM(src, 2, 3);

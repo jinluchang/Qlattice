@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
   Geometry geo;
-  geo.init(total_site, 1); 
+  geo.init(total_site); 
 
   //char namew[500],namer[500],prop_tmp[500],name[500],name_tem[500];
   //char name0[500],name1[500],filename[500];

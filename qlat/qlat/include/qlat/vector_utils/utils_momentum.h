@@ -221,13 +221,13 @@ struct momentum_dat{
       //nvec = sf.n_elems / Mvol;
       //nvec = sf.n_elems;
       Qassert(Mvol == sf.n_elems);
-      nvec = sf_.geo().multiplicity;
+      nvec = sf_.multiplicity;
       srcF.resize(Mvol * nvec);
       //print0("nvec %d, Mvol %d, elems %d \n", int(nvec), int(Mvol), int(sf.n_elems));
     }
     sum_value_mpi(nvec);
     nvec_copy = nvec;
-    if(!sf_.initialized or sf_.geo().multiplicity != nvec){sf_.init(fsel, nvec);}
+    if(!sf_.initialized or sf_.multiplicity != nvec){sf_.init(fsel, nvec);}
 
     Ty* src = srcF.data();
     const Long* F = fsel_map.data();

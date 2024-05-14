@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
   Geometry geo;
-  geo.init(total_site, 1); 
+  geo.init(total_site); 
   fflush_MPI();
 
   ////if(nx == 24)twist_boundary_at_boundary(gf, EIGEN_PI/1.0, 3 );

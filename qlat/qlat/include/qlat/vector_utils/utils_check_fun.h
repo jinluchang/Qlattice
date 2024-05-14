@@ -69,8 +69,8 @@ double diff_gauge_GPU( GaugeFieldT<Ta> &g0, GaugeFieldT<Tb> &g1)
 }
 
 
-template <class T>
-void diff_prop(Propagator4dT<T>& p0, Propagator4dT<T>& p1, double err=1e-15)
+template <class Ta, class Tb>
+void diff_prop(Propagator4dT<Ta>& p0, Propagator4dT<Tb>& p1, double err=1e-15)
 {
   int rank = qlat::get_id_node();
   Long MAX_COUNT = 64;
@@ -79,13 +79,13 @@ void diff_prop(Propagator4dT<T>& p0, Propagator4dT<T>& p1, double err=1e-15)
     Coordinate xl0 = p0.geo().coordinate_from_index(index);
     Coordinate xg0 = p0.geo().coordinate_g_from_l(xl0);
 
-    qlat::WilsonMatrixT<T>&  s0 =  p0.get_elem_offset(index);
-    qlat::WilsonMatrixT<T>&  s1 =  p1.get_elem_offset(index);
+    qlat::WilsonMatrixT<Ta>&  s0 =  p0.get_elem_offset(index);
+    qlat::WilsonMatrixT<Tb>&  s1 =  p1.get_elem_offset(index);
     for(int d0=0;d0<12;d0++)
     for(int d1=0;d1<12;d1++)
     {
-      qlat::ComplexT<T > p0 = s0(d0,d1);
-      qlat::ComplexT<T > p1 = s1(d0,d1);
+      qlat::ComplexT<Ta > p0 = s0(d0,d1);
+      qlat::ComplexT<Tb > p1 = s1(d0,d1);
 
       double diff = 0.0;
       double n0 = qlat::qnorm(p0);

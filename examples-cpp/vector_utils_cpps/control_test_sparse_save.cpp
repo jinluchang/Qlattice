@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 
   Coordinate total_site = Coordinate(nl, nl, nl, nt);
   Geometry geo;
-  geo.init(total_site, 1); 
+  geo.init(total_site); 
 
   PointSelection pconf;
   FieldSelection fsel;

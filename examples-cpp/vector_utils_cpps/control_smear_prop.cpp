@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 
   Coordinate total_site = Coordinate(in.nx, in.ny, in.nz, in.nt);
   Geometry geo;
-  geo.init(total_site, 1); 
+  geo.init(total_site); 
   fflush_MPI();
 
   char rbc_conf[500],prop_name[500],namep[500];
