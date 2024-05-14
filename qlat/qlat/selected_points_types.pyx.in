@@ -64,24 +64,26 @@ cdef class SelectedShufflePlan:
     def __init__(self, *args):
         """
         SelectedShufflePlan()
-        SelectedShufflePlan(n_elems, rs)
+        SelectedShufflePlan(psel, rs)
         """
         cdef cc.Int len_args = len(args)
         self.xx.init()
-        if len_args == 2:
-            if isinstance(args[0], int) and isinstance(args[1], RngState):
-                n_elems, rs, = args
-                self.init_from_n_elems(n_elems, rs)
+        if len_args == 0:
+            return
+        elif len_args == 2:
+            if isinstance(args[0], PointsSelection) and isinstance(args[1], RngState):
+                psel, rs, = args
+                self.init_from_psel(psel, rs)
             else:
                 raise Exception(f"SelectedShufflePlan {args}")
         else:
             raise Exception(f"SelectedShufflePlan {args}")
 
-    def init_from_n_elems(self, cc.Long n_elems, RngState rs):
+    def init_from_psel(self, PointsSelection psel, RngState rs):
         """
-        Only depends on `fsel.geo`, `fsel.n_elems`.
+        shuffle to PointsDistType::Random
         """
-        cc.set_selected_shuffle_plan(self.xx, n_elems, rs.xx)
+        cc.set_selected_shuffle_plan(self.xx, psel.xx, rs.xx)
 
 ###
 
@@ -152,15 +154,15 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
 
     def init_from_sf_ssp(self, SelectedField{{name}} sf, SelectedShufflePlan ssp):
         cdef FieldSelection fsel = sf.fsel
-        cdef PointsSelection psel = PointsSelection(None, fsel.geo)
+        cdef PointsSelection psel = PointsSelection()
         self.psel = psel
         cc.shuffle_field_selection(psel.xx, fsel.xx, ssp.xx)
         cc.shuffle_selected_field(self.xx, sf.xx, ssp.xx)
 
     def init_from_sf_rs(self, SelectedField{{name}} sf, RngState rs):
         cdef FieldSelection fsel = sf.fsel
-        cdef cc.Long n_elems = fsel.n_elems
-        cdef SelectedShufflePlan ssp = SelectedShufflePlan(n_elems, rs)
+        cdef PointsSelection psel = PointsSelection(fsel)
+        cdef SelectedShufflePlan ssp = SelectedShufflePlan(psel, rs)
         self.init_from_sf_ssp(sf, ssp)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):

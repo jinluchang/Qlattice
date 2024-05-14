@@ -10,9 +10,9 @@ namespace qlat
 struct SelectedShufflePlan {
   PointsDistType points_dist_type_send;
   PointsDistType points_dist_type_recv;
-  SelectedPoints<Long> send_shuffle_idx_points;
+  SelectedPoints<Long> shuffle_idx_points_send;
   // Reorder field according to this idx field.before sending
-  SelectedPoints<Long> recv_shuffle_idx_points;
+  SelectedPoints<Long> shuffle_idx_points_recv;
   // Reorder field according to this idx field.after receiving
   Long total_send_count;
   Long total_recv_count;
@@ -24,19 +24,19 @@ struct SelectedShufflePlan {
   void init();
 };
 
-void set_selected_shuffle_id_node_send_to(
-    SelectedPoints<Int>& sp_id_node_send_to, const Long n_points,
-    const RngState& rs);
+// void set_selected_shuffle_id_node_send_to(
+//     SelectedPoints<Int>& sp_id_node_send_to, const Long n_points,
+//     const RngState& rs);
 
-void set_selected_shuffle_id_node_send_to(
-    SelectedPoints<Int>& sp_id_node_send_to, const PointsSelection& psel,
-    const RngState& rs);
+// void set_selected_shuffle_id_node_send_to(
+//     SelectedPoints<Int>& sp_id_node_send_to, const PointsSelection& psel,
+//     const RngState& rs);
 
-void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
-                               const SelectedPoints<Int>& sp_id_node_send_to);
+// void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
+//                                const SelectedPoints<Int>& sp_id_node_send_to);
 
-void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_points,
-                               const RngState& rs);
+// void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_points,
+//                                const RngState& rs);
 
 void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
                                const PointsSelection& psel, const RngState& rs);

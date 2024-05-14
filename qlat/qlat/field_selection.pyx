@@ -20,26 +20,40 @@ cdef class PointsSelection:
         self.cdata = <cc.Long>&(self.xx)
         self.view_count = 0
 
-    def __init__(self, Coordinate total_site=None, object xg_arr=None, str points_dist_type=None):
+    def __init__(self, *args):
         """
         PointsSelection()
+        PointsSelection(fsel)
         PointsSelection(total_site)
-        PointsSelection(total_site, n_points)
-        PointsSelection(total_site, xg)
         PointsSelection(total_site, xg_arr)
         PointsSelection(total_site, xg_list)
+        PointsSelection(total_site, xg)
+        PointsSelection(total_site, n_points)
         PointsSelection(total_site, xg_arr, points_dist_type)
         #
         points_dist_type in [ None, "g", "l", "r", ]
         """
-        if total_site is None:
-            self.xx.init()
-        else:
+        cdef cc.Int len_args = len(args)
+        cdef Coordinate total_site
+        cdef FieldSelection fsel
+        self.xx.init()
+        if len_args == 0:
+            return
+        elif isinstance(args[0], Coordinate):
+            total_site = args[0]
             self.xx.init(total_site.xx, 0)
-            if xg_arr is not None:
+            if len_args > 1:
+                xg_arr = args[1]
                 self.xg_arr = xg_arr
-            if points_dist_type is not None:
+            if len_args > 2:
+                points_dist_type = args[2]
                 self.points_dist_type = points_dist_type
+        elif isinstance(args[0], FieldSelection):
+            # self.points_dist_type == "l" for PointsDistType::Local
+            fsel = args[0]
+            cc.set_psel_from_fsel(self.xx, fsel.xx)
+        else:
+            raise Exception(f"SelectedPoints::__init__: {args}")
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         cdef int ndim = 2

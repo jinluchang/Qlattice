@@ -838,7 +838,7 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     fsel_prob = get_fsel_prob()
     fsel = fsel_prob.fsel
     #
-    ssp = q.SelectedShufflePlan(fsel.n_elems, q.RngState(f"{job_tag}-{traj}-hlbl-four-fsel-permute"))
+    ssp = q.SelectedShufflePlan(q.PointsSelection(fsel), q.RngState(f"{job_tag}-{traj}-hlbl-four-fsel-permute"))
     psel_d_prob = q.SelectedPointsRealD(fsel_prob, ssp)
     #
     point_pairs = get_point_pairs()
@@ -1612,7 +1612,7 @@ def run_hlbl_two_plus_two_chunk(
         fsel_ps = fsel_ps_prob.fsel
         s_hvp = q.SelectedFieldComplexD(fsel_ps, 16)
         s_hvp.load_double_from_float(sfr, tag)
-        ssp = q.SelectedShufflePlan(fsel_ps.n_elems, q.RngState(f"psel_ps-permute-{idx_xg_x}"))
+        ssp = q.SelectedShufflePlan(q.PointsSelection(fsel_ps), q.RngState(f"psel_ps-permute-{idx_xg_x}"))
         psel_lps_prob = q.SelectedPointsRealD(fsel_ps_prob, ssp)
         lps_hvp = q.SelectedPointsComplexD(s_hvp, ssp)
         lps_hvp *= hvp_type_charge_factor

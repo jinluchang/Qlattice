@@ -138,6 +138,7 @@ cdef extern from "qlat/core.h" namespace "qlat":
         FieldSelection()
         void init()
         const Geometry& get_geo()
+    void set_psel_from_fsel(PointsSelection& psel, const FieldSelection& fsel) except +
     cdef cppclass SelectedField[T]:
         Long n_elems;
         Int multiplicity
@@ -211,15 +212,20 @@ cdef extern from "qlat/selected-field-io.h" namespace "qlat":
 cdef extern from "qlat/selected-shuffle.h" namespace "qlat":
 
     cdef cppclass SelectedShufflePlan:
-        SelectedField[Long] local_shuffle_idx_field
-        Long total_send_count;
-        Long total_recv_count;
-        void init()
+        PointsDistType points_dist_type_send
+        PointsDistType points_dist_type_recv
+        SelectedPoints[Long] shuffle_idx_points_send
+        SelectedPoints[Long] shuffle_idx_points_recv
+        Long total_send_count
+        Long total_recv_count
+        void init() except +
     #
-    void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_points, const RngState& rs) except +
+    void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const PointsSelection& psel, const RngState& rs) except +
+    void shuffle_selected_points_char(SelectedPoints[Char]& spc, const SelectedPoints[Char]& spc0, const SelectedShufflePlan& ssp) except +
     void shuffle_points_selection(PointsSelection& psel, const PointsSelection& psel0, const SelectedShufflePlan& ssp) except +
-    void shuffle_field_selection(PointsSelection& psel, const FieldSelection& fsel0, const SelectedShufflePlan& ssp) except +
     void shuffle_selected_points[M](SelectedPoints[M]& sp, const SelectedPoints[M]& sf, const SelectedShufflePlan& ssp) except +
+    #
+    void shuffle_field_selection(PointsSelection& psel, const FieldSelection& fsel0, const SelectedShufflePlan& ssp) except +
     void shuffle_selected_field[M](SelectedPoints[M]& sp, const SelectedField[M]& sf, const SelectedShufflePlan& ssp) except +
 
 cdef extern from "qlat/selected-points.h" namespace "qlat":
