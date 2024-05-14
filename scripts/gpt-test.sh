@@ -29,7 +29,7 @@ source qcore/set-prefix.sh $name
     fi
 
     if [ -z "$geo_options" ] ; then
-        geo_options="--grid 16.16.16.16 --Ls 12 --N 10 --mpi 1.1.1.1"
+        geo_options="--grid 16.16.16.16 --Ls 12 --N 10"
     fi
 
     if [ -z "$OMP_NUM_THREADS" ] ; then
@@ -40,13 +40,18 @@ source qcore/set-prefix.sh $name
         mpiexec=""
     fi
 
+    if [ -z "$mpi_options" ] ; then
+        mpi_options="--mpi 1.1.1.1"
+    fi
+
     echo "OMP_NUM_THREADS=\"$OMP_NUM_THREADS\""
     echo "mpiexec=\"$mpiexec\""
+    echo "mpi_options=\"$mpi_options\""
     echo "geo_options=\"$geo_options\""
     echo "grid_options=\"$grid_options\""
 
     cat "$gpt_path"/../../../src/benchmarks/dslash.py > dslash.py
-    time-run $mpiexec python3 dslash.py $grid_options $geo_options
+    time-run $mpiexec python3 dslash.py $mpi_options $grid_options $geo_options
 
     echo "!!!! $name build !!!!"
     rm -rf $temp_dir || true
