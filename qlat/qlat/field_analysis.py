@@ -82,7 +82,7 @@ def smear_field_step(field, coef, n_steps=1):
         new_field *= coef_dir * (1.0 - coef)
     return new_field
 
-@functools.lru_cache(maxsize=4)
+@functools.lru_cache(maxsize=128)
 @q.timer_verbose
 def mk_smear_mom_kernel(total_site, radius):
     r"""
@@ -121,7 +121,7 @@ def mk_smear_mom_kernel(total_site, radius):
         f[:] = gg_arr[:, None]
     return f
 
-@functools.lru_cache(maxsize=4)
+@functools.lru_cache(maxsize=128)
 @q.timer_verbose
 def mk_spatial_smear_mom_kernel(total_site, radius):
     r"""
