@@ -28,6 +28,8 @@ source qcore/set-prefix.sh $name
         -DLLVM_ENABLE_FFI=On \
         -DLLVM_PARALLEL_LINK_JOBS=2 \
         -DLLVM_PARALLEL_COMPILE_JOBS="$num_proc" \
+        -DLLVM_TARGETS_TO_BUILD=host \
+        -DLIBOMPTARGET_BUILD_AMDGPU_PLUGIN=FALSE \
         -Wno-dev
 
     cd build
