@@ -90,7 +90,7 @@ def mk_smear_mom_kernel(total_site, radius):
     `radius` is the smear radius in lattice unit.
     `isinstance(f, FieldRealD)`
     `isinstance(total_site, tuple)`
-    `f.geo.total_site == q.Coordinate(total_site)`
+    `f.total_site == q.Coordinate(total_site)`
     #
     f[:] == $G$
     #
@@ -102,15 +102,23 @@ def mk_smear_mom_kernel(total_site, radius):
     """
     assert isinstance(total_site, tuple)
     total_site = q.Coordinate(total_site)
-    geo = Geometry(total_site, 1)
+    geo = Geometry(total_site)
     f = FieldRealD(geo, 1)
+    q.set_zero(f)
     total_site_arr = total_site.to_numpy()
     xg_arr = geo.xg_arr()
-    gg_arr = (2 * np.pi / total_site_arr / 2) * xg_arr[:, :]
-    gg_arr = np.sum(np.sin(gg_arr)**2, axis=-1)
-    gg_arr = (2 / 4 * radius**2) * gg_arr
-    gg_arr = np.exp(-gg_arr)
-    f[:] = gg_arr[:, None]
+    assert f[:, 0].shape == xg_arr[:, 0].shape
+    if radius == np.inf:
+        sel = True
+        for i in range(4):
+            sel = sel & (xg_arr[:, i] == 0)
+        f[sel] = 1
+    else:
+        gg_arr = (2 * np.pi / total_site_arr / 2) * xg_arr[:, :]
+        gg_arr = np.sum(np.sin(gg_arr)**2, axis=-1)
+        gg_arr = (2 / 4 * radius**2) * gg_arr
+        gg_arr = np.exp(-gg_arr)
+        f[:] = gg_arr[:, None]
     return f
 
 @functools.lru_cache(maxsize=4)
@@ -121,7 +129,7 @@ def mk_spatial_smear_mom_kernel(total_site, radius):
     `radius` is the smear radius in lattice unit.
     `isinstance(f, FieldRealD)`
     `isinstance(total_site, tuple)`
-    `f.geo.total_site == q.Coordinate(total_site)`
+    `f.total_site == q.Coordinate(total_site)`
     #
     f[:] == $G$
     #
@@ -133,15 +141,22 @@ def mk_spatial_smear_mom_kernel(total_site, radius):
     """
     assert isinstance(total_site, tuple)
     total_site = q.Coordinate(total_site)
-    geo = Geometry(total_site, 1)
+    geo = Geometry(total_site)
     f = FieldRealD(geo, 1)
+    q.set_zero(f)
     total_site_arr = total_site.to_numpy()
     xg_arr = geo.xg_arr()
-    gg_arr = (2 * np.pi / total_site_arr[:3] / 2) * xg_arr[:, :3]
-    gg_arr = np.sum(np.sin(gg_arr)**2, axis=-1)
-    gg_arr = (2 / 3 * radius**2) * gg_arr
-    gg_arr = np.exp(-gg_arr)
-    f[:] = gg_arr[:, None]
+    if radius == np.inf:
+        sel = True
+        for i in range(3):
+            sel = sel & (xg_arr[:, i] == 0)
+        f[sel] = 1
+    else:
+        gg_arr = (2 * np.pi / total_site_arr[:3] / 2) * xg_arr[:, :3]
+        gg_arr = np.sum(np.sin(gg_arr)**2, axis=-1)
+        gg_arr = (2 / 3 * radius**2) * gg_arr
+        gg_arr = np.exp(-gg_arr)
+        f[:] = gg_arr[:, None]
     return f
 
 @q.timer
