@@ -9,7 +9,7 @@
 project = 'Qlattice'
 copyright = 'Luchang Jin'
 author = 'Luchang Jin'
-release = '0.62'
+release = '0.63'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
