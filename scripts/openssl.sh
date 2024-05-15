@@ -19,7 +19,7 @@ source qcore/set-prefix.sh $name
         shared
 
     time-run make -j$num_proc
-    time-run make install
+    time-run make install_sw
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"
