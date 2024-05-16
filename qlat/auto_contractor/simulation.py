@@ -60,7 +60,7 @@ def compute_prop_psrc(gf, xg, job_tag, inv_type, inv_acc, *, idx, sfw, eig, fini
     q.displayln_info(f"compute_prop_psrc: idx={idx} xg={xg}", job_tag, inv_type, inv_acc)
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig)
     total_site = ru.get_total_site(job_tag)
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     src = q.mk_point_src(geo, xg)
     compute_prop(inv, src, tag = tag, sfw = sfw)
 
@@ -101,7 +101,7 @@ def compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc, *, idx, sfw, p
     q.displayln_info(f"compute_prop_wsrc: idx={idx} tslice={tslice}", job_tag, inv_type, inv_acc)
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt = gt, eig = eig)
     total_site = ru.get_total_site(job_tag)
-    geo = q.Geometry(total_site, 1)
+    geo = q.Geometry(total_site)
     src = q.mk_wall_src(geo, tslice)
     prop = compute_prop(inv, src, tag = tag, sfw = sfw)
     fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")

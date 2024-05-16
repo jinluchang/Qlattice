@@ -34,7 +34,7 @@ def load_gf():
     if p_source is None:
         q.displayln_info("Need to provide source file with '--source filename'. Use a sample gauge field for now.")
         total_site = [ 4, 4, 4, 8, ]
-        geo = q.Geometry(total_site, 1)
+        geo = q.Geometry(total_site)
         gf = q.GaugeField(geo)
         rs = q.RngState("seed")
         gf.set_rand(rs.split("gf-init"), 0.5, 10)
