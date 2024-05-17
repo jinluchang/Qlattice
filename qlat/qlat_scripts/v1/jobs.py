@@ -527,6 +527,19 @@ def run_gf_ape(job_tag, get_gf):
         return gf_ape
     return q.lazy_call(run)
 
+@q.timer
+def run_gf_hyp(job_tag, get_gf):
+    if get_gf is None:
+        return None
+    step = get_param(job_tag, "gf_hyp_smear_step")
+    @q.timer_verbose
+    def run():
+        gf_hyp = get_gf()
+        for i in range(step):
+            gf_hyp = q.gf_hyp_smear(gf_hyp, 0.75, 0.6, 0.3)
+        return gf_hyp
+    return q.lazy_call(run)
+
 # ----------
 
 @q.timer

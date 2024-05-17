@@ -342,7 +342,7 @@ cdef class FieldBase:
     def get_elems(self, idx):
         return self[idx]
 
-    def get_elem(self, idx, m = 0):
+    def get_elem(self, idx, m=0):
         return self[idx, m]
 
     def set_elems(self, idx, val):

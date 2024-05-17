@@ -696,12 +696,14 @@ def load_prop_rand_u1_fsel(job_tag, traj, flavor, *, psel, fsel):
 ### -------
 
 @q.timer
-def load_gauge_original(job_tag, traj, *, gf):
+def load_gauge_hyp(job_tag, traj, *, gf_hyp):
     """
     """
-    assert gf is not None
-    cache_gauge = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"gauge")
-    geo = q.geo_reform(gf.geo)
+    if gf_hyp is None:
+        return None
+    gf = gf_hyp
+    gauge_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"gauge")
+    geo = q.geo_resize(gf.geo)
     gf_dagger = q.GaugeField(geo)
     gf_dagger @= gf
     gf_dagger[:] = gf_dagger[:].transpose((0, 1, 3, 2,)).conj()
@@ -712,22 +714,47 @@ def load_gauge_original(job_tag, traj, *, gf):
     gf_expand.show_info()
     gf_dagger_expand = q.field_expanded(gf_dagger, expansion_left, expansion_right)
     gf_dagger_expand.show_info()
+    gauge_cache["gauge_hyp"] = gf_expand
+    gauge_cache["gauge_hyp-dagger"] = gf_dagger_expand
+    return True
+
+@q.timer
+def get_gauge_link_lookup_p_mu(prop_cache, tag, p, mu):
+    """
+    tag can be "gauge_hyp", "gauge_hyp-dagger"
+    p should be tuple of 4 int.
+    """
+    gf = prop_cache["gauge"][tag]
+    assert isinstance(p, tuple)
+    assert isinstance(mu, int)
+    geo_pos_dict = prop_cache["geo_pos_dict"]
+    idx = geo_pos_dict[p]
+    cm = q.ColorMatrix()
+    cm[:] = gf[idx, mu]
+    return cm
 
 ### -------
 
 @q.timer_verbose
 def run_get_prop(job_tag, traj, *,
                  get_gf=None,
-                 get_gt,
+                 get_gf_hyp=None,
+                 get_gt=None,
                  get_psel,
                  get_fsel,
-                 get_wi,
+                 get_wi=None,
                  get_psel_smear=None,
                  prop_types=None):
     if get_gf is None:
         get_gf = lambda: None
+    if get_gt is None:
+        get_gt = lambda: None
+    if get_gf_hyp is None:
+        get_gf_hyp = lambda: None
     if get_psel_smear is None:
         get_psel_smear = lambda: None
+    if get_wi is None:
+        get_wi = lambda: None
     if prop_types is None:
         # load psel data before fsel data if possible
         # load strange quark before light quark if possible
@@ -743,13 +770,17 @@ def run_get_prop(job_tag, traj, *,
                 "rand_u1 fsel c",
                 "rand_u1 fsel s",
                 "rand_u1 fsel l",
+                "gf hyp",
                 ]
     @q.timer_verbose
     def mk_get_prop():
         q.timer_fork()
         total_site = q.Coordinate(get_param(job_tag, "total_site"))
-        wi = get_wi()
+        geo = q.Geometry(total_site)
+        gf = get_gf()
+        gf_hyp = get_gf_hyp()
         gt = get_gt()
+        wi = get_wi()
         psel = get_psel()
         psel_smear = get_psel_smear()
         fsel = get_fsel()
@@ -757,6 +788,8 @@ def run_get_prop(job_tag, traj, *,
         prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")
         prop_cache["psel_pos_dict"] = dict([ (pos.to_tuple(), i,) for i, pos in enumerate(psel) ])
         prop_cache["fsel_pos_dict"] = dict([ (pos.to_tuple(), i,) for i, pos in enumerate(fsel.to_psel_local()) ])
+        if "gf hyp" in prop_types:
+            prop_cache["geo_pos_dict"] = dict([ (tuple(pos), i,) for i, pos in enumerate(geo.xg_arr()) ])
         #
         prop_load_dict = dict()
         prop_load_dict["wsrc psel s"] = lambda: load_prop_wsrc_psel(job_tag, traj, "s", wi=wi, psel=psel, fsel=fsel, gt=gt)
@@ -770,6 +803,7 @@ def run_get_prop(job_tag, traj, *,
         prop_load_dict["rand_u1 fsel c"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "c", psel=psel, fsel=fsel)
         prop_load_dict["rand_u1 fsel s"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "s", psel=psel, fsel=fsel)
         prop_load_dict["rand_u1 fsel l"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "l", psel=psel, fsel=fsel)
+        prop_load_dict["gf hyp"] = lambda: load_gauge_hyp(job_tag, traj, gf_hyp=gf_hyp)
         for pt in prop_types:
             v = prop_load_dict[pt]()
             if v is None:
@@ -782,12 +816,15 @@ def run_get_prop(job_tag, traj, *,
         prop_norm_lookup_cache = q.mk_cache(f"prop_norm_lookup_cache", f"{job_tag}", f"{traj}")
         q.timer_display()
         q.timer_merge()
-        def get_prop(flavor, p_snk, p_src, *, is_norm_sqrt=False):
+        def get_prop(flavor, *args, is_norm_sqrt=False):
             if is_norm_sqrt:
+                p_snk, p_src, = args
                 return get_prop_norm_lookup_snk_src(prop_norm_lookup_cache, flavor, p_snk, p_src)
             elif flavor == "U":
-                ...
+                tag, p, mu, = args
+                return get_gauge_link_lookup_p_mu(prop_cache, tag, p, mu)
             else:
+                p_snk, p_src, = args
                 return get_prop_lookup_snk_src(prop_lookup_cache, flavor, p_snk, p_src)
         return get_prop
     return q.lazy_call(mk_get_prop)
