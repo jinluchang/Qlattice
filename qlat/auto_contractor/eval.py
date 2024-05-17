@@ -127,8 +127,8 @@ def cache_compiled_cexpr(
         def gen_code():
             code_py = cexpr_code_gen_py(
                     cexpr_optimized,
-                    is_cython = is_cython,
-                    is_distillation = is_distillation)
+                    is_cython=is_cython,
+                    is_distillation=is_distillation)
             if is_cython:
                 fn_py = path + "/cexpr_code.pyx"
             else:
@@ -330,7 +330,7 @@ def benchmark_eval_cexpr(
 # -----------------------------------------
 
 def get_cexpr_names(ccexpr : CCExpr):
-    q.displayln_info("WARNING: get_expr_names: use get_expr_names instead.")
+    q.displayln_info("WARNING: get_cexpr_names: use get_expr_names instead.")
     return get_expr_names(ccexpr)
 
 meson_build_content = r"""project(

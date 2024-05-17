@@ -17,9 +17,9 @@ def get_cexpr_meson_uu_corr():
                 mk_pi_p("t_2", True) * mk_vec_uu_mu("u", "u", "x1", "x2", 3) * mk_pi_p("t_1"),
                 mk_k_p("t_2", True)  * mk_vec_uu_mu("u", "u", "x1", "x2", 3) * mk_k_p("t_1"),
                 ]
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True)
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython = is_cython)
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
 def get_all_cexpr():
     cexprs = [

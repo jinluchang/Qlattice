@@ -727,8 +727,11 @@ def get_gauge_link_lookup_p_mu(prop_cache, tag, p, mu):
     gf = prop_cache["gauge"][tag]
     assert isinstance(p, tuple)
     assert isinstance(mu, int)
+    p_tag, p_xg = p
+    assert p_tag.startswith("point")
+    assert isinstance(p_xg, tuple)
     geo_pos_dict = prop_cache["geo_pos_dict"]
-    idx = geo_pos_dict[p]
+    idx = geo_pos_dict[p_xg]
     cm = q.ColorMatrix()
     cm[:] = gf[idx, mu]
     return cm
