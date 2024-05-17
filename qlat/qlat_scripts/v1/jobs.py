@@ -287,7 +287,7 @@ def run_psel(job_tag, traj):
         total_site = q.Coordinate(get_param(job_tag, "total_site"))
         psel = q.PointsSelection()
         psel.load(path_psel, q.Geometry(total_site))
-        assert psel.n_points() == get_n_points_psel(job_tag)
+        assert psel.n_points == get_n_points_psel(job_tag)
         return psel
     return q.lazy_call(load_psel)
 
