@@ -3,6 +3,10 @@ import qlat as q
 import numpy as np
 from pprint import pformat
 
+q.displayln_info("Topological charge measurement with Qlattice")
+q.displayln_info("by Luchang Jin")
+q.displayln_info("2024/01/25")
+
 if len(sys.argv) == 1:
     q.displayln_info("Usage: topo-measure [ --source source_config ] [ --output output.pickle ] [ --show-topo-terms ] [ --density-field-path path_for_density_field ]")
 

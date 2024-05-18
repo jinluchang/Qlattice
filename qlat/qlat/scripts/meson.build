@@ -9,6 +9,7 @@ py_fns = [
   'gauge_fix_coulomb.py',
   'qlat_config.py',
   'topo_measure.py',
+  'topo_measure_gpt.py',
   ]
 py_files = files(py_fns)
 

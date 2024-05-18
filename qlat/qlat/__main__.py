@@ -12,6 +12,7 @@ Usage:
     python3 -m qlat fields-properly-truncate ...
     python3 -m qlat gauge-fix-coulomb ...
     python3 -m qlat topo-measure ...
+    python3 -m qlat topo-measure-gpt ...
 """.strip()
 
 if len(sys.argv) < 2:
@@ -41,6 +42,8 @@ elif action == "gauge-fix-coulomb":
     from .scripts import gauge_fix_coulomb
 elif action == "topo-measure":
     from .scripts import topo_measure
+elif action == "topo-measure-gpt":
+    from .scripts import topo_measure_gpt
 else:
     print(usage_message)
     exit()
