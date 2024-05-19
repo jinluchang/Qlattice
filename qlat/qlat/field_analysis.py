@@ -94,11 +94,14 @@ def mk_smear_mom_kernel(total_site, radius):
     #
     f[:] == $G$
     #
-    $$
     \ba
-    G(k) = \exp \Big( - r^2 \frac{1}{4} \sum_\mu 2 \sin \big(\frac{2 \pi}{L} \frac{k_\mu}{2} \big)^2 \Big)
+    G(\sigma, k) =
+    \exp
+    \Big(
+    - \frac{\sigma^2}{2} \sum_\mu \sin^2\big(\frac{k_\mu}{2}\big)
+    \Big)
     \ea
-    $$
+    where k[mu] = 2 pi * n[mu] / total_site[mu]
     """
     assert isinstance(total_site, tuple)
     total_site = q.Coordinate(total_site)
@@ -133,11 +136,14 @@ def mk_spatial_smear_mom_kernel(total_site, radius):
     #
     f[:] == $G$
     #
-    $$
     \ba
-    G(k) = \exp \Big( - r^2 \frac{1}{3}\sum_i 2 \sin \big(\frac{2 \pi}{L} \frac{k_i}{2} \big)^2 \Big)
+    G(\sigma, k) =
+    \exp
+    \Big(
+    - \frac{2\sigma^2}{3} \sum_i \sin^2\big(\frac{k_i}{2}\big)
+    \Big)
     \ea
-    $$
+    where k[i] = 2 pi * n[i] / total_site[i]
     """
     assert isinstance(total_site, tuple)
     total_site = q.Coordinate(total_site)
