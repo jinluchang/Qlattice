@@ -1,0 +1,3 @@
+#!/usr/bin/env python3
+
+import qlat.scripts.topo_measure_wilson_flow

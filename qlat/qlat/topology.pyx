@@ -132,9 +132,9 @@ def smear_measure_topo(
         gf,
         smear_info_list=None,
         *,
-        is_show_topo_terms=False,
-        density_field_path=None,
         energy_derivative_info=None,
+        density_field_path=None,
+        is_show_topo_terms=False,
         ):
     """
     return topo_list, energy_list,
@@ -159,7 +159,7 @@ def smear_measure_topo(
                 ]
     if energy_derivative_info is None:
         energy_derivative_info = [ 0.0125, 0.0, "runge-kutta", ]
-    q.displayln_info(0, f"{fname}: smear_info_list=")
+    q.displayln_info(0, f"{fname}: smear_info_list =")
     q.displayln_info(0, pformat(smear_info_list))
     geo = gf.geo
     total_volume = geo.total_volume

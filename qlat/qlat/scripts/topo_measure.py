@@ -8,16 +8,15 @@ q.displayln_info("by Luchang Jin")
 q.displayln_info("2024/01/25")
 
 if len(sys.argv) == 1:
-    q.displayln_info("Usage: topo-measure [ --source source_config ] [ --output info.pickle ] [ --energy-list energy-list.pickle ] [ --show-topo-terms ] [ --density-field-path path_for_density_field ]")
+    q.displayln_info("Usage: topo-measure [ --source source_config ] [ --output info.pickle ] [ --energy-list energy-list.pickle ] [ --density-field-path path_for_density_field ] [ --show-topo-terms ]")
 
 q.begin_with_mpi()
 
 p_source = q.get_arg("--source")
 p_output = q.get_arg("--output")
-p_show_topo_terms = q.get_arg("--show-topo-terms")
+p_energy_list = q.get_arg("--energy-list")
 density_field_path = q.get_arg("--density-field-path")
-
-is_show_topo_terms = p_show_topo_terms is not None
+is_show_topo_terms = q.get_option("--show-topo-terms")
 
 def load():
     if p_source is None:
@@ -39,8 +38,14 @@ topo_list, energy_list, = q.smear_measure_topo(gf, is_show_topo_terms=is_show_to
 if p_output is not None:
     q.save_pickle_obj(topo_list, p_output)
 else:
-    q.displayln_info("To save the result, use '--output filename.pickle'. Print to screen for now.")
+    q.displayln_info("To save the result, use '--output info.pickle'. Print to screen for now.")
     q.displayln_info(pformat(topo_list))
+
+if p_energy_list is not None:
+    q.save_pickle_obj(energy_list, p_energy_list)
+else:
+    q.displayln_info("To save the result, use '--energy-list energy-list.pickle'. Print to screen for now.")
+    q.displayln_info(pformat(energy_list))
 
 q.timer_display()
 

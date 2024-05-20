@@ -12,6 +12,7 @@ Usage:
     python3 -m qlat fields-properly-truncate ...
     python3 -m qlat gauge-fix-coulomb ...
     python3 -m qlat topo-measure ...
+    python3 -m qlat topo-measure-wilson-flow ...
     python3 -m qlat topo-measure-gpt ...
 """.strip()
 
@@ -42,6 +43,8 @@ elif action == "gauge-fix-coulomb":
     from .scripts import gauge_fix_coulomb
 elif action == "topo-measure":
     from .scripts import topo_measure
+elif action == "topo-measure-wilson-flow":
+    from .scripts import topo_measure_wilson_flow
 elif action == "topo-measure-gpt":
     from .scripts import topo_measure_gpt
 else:
