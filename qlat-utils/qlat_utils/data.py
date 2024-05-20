@@ -311,7 +311,7 @@ def block_data(data_list, block_size, is_overlapping = True):
             stop += block_size
     return blocks
 
-def avg_err(data_list, eps = 1, *, block_size = 1):
+def avg_err(data_list, eps=1, *, block_size=1):
     avg = average(data_list)
     blocks = block_data(data_list, block_size)
     diff_sqr = average([ fsqr(d - avg) for d in blocks ])
