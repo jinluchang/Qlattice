@@ -9,7 +9,7 @@ from .hmc cimport GaugeMomentum
 from .gauge_action cimport GaugeAction
 
 from .hmc import set_gm_force, gf_evolve
-from .wilson_flow import gf_wilson_flow_step, gf_energy_density_field
+from .wilson_flow import gf_wilson_flow_step, gf_energy_density_field, gf_energy_derivative_density_field
 import qlat_utils as q
 
 from pprint import pformat
