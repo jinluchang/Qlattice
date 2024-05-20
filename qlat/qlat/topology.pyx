@@ -128,9 +128,18 @@ def gf_topology_terms(GaugeField gf):
     return gf_topology_terms_field(gf).glb_sum()[0, :]
 
 @q.timer_verbose
-def smear_measure_topo(gf, smear_info_list=None, *, is_show_topo_terms=False, density_field_path=None):
+def smear_measure_topo(
+        gf,
+        smear_info_list=None,
+        *,
+        is_show_topo_terms=False,
+        density_field_path=None,
+        energy_derivative_info=None,
+        ):
     """
-    smear_info = [ [ step_size, n_step, c1 = 0.0, wilson_flow_integrator_type = "runge-kutta", ], ... ]
+    return topo_list, energy_list,
+    smear_info = [ [ step_size, n_step, c1=0.0, wilson_flow_integrator_type="runge-kutta", ], ... ]
+    energy_derivative_info = [ step_size, c1=0.0, wilson_flow_integrator_type="runge-kutta", ]
     c1 = 0.0 # Wilson
     c1 = -0.331 # Iwasaki
     c1 = -1.4008 # DBW2
@@ -148,7 +157,9 @@ def smear_measure_topo(gf, smear_info_list=None, *, is_show_topo_terms=False, de
                 [ 0.01, 50, -1.4008, "euler", ],
                 [ 0.01, 50, -1.4008, "euler", ],
                 ]
-    q.displayln_info(0, f"{fname}: smear_info_list =")
+    if energy_derivative_info is None:
+        energy_derivative_info = [ 0.0125, 0.0, "runge-kutta", ]
+    q.displayln_info(0, f"{fname}: smear_info_list=")
     q.displayln_info(0, pformat(smear_info_list))
     geo = gf.geo
     total_volume = geo.total_volume
@@ -156,54 +167,76 @@ def smear_measure_topo(gf, smear_info_list=None, *, is_show_topo_terms=False, de
     spatial_volume = total_volume / total_site[3]
     flow_time = 0
     topo_list = []
+    energy_list = []
     @q.timer
     def smear(step_size, n_step, c1=0.0, wilson_flow_integrator_type="runge-kutta"):
         nonlocal flow_time
-        flow_time += n_step * step_size
         for i in range(n_step):
             gf_wilson_flow_step(gf, step_size, c1=c1, wilson_flow_integrator_type=wilson_flow_integrator_type)
+            flow_time += step_size
+            plaq = gf.plaq()
+            energy_density_field = gf_energy_density_field(gf)
+            energy_density = energy_density_field.glb_sum()[:].item() / total_volume
+            energy_density_tslice = (energy_density_field.glb_sum_tslice()[:].ravel() / spatial_volume).tolist()
+            energy_list.append({
+                "flow_time": flow_time,
+                "plaq": plaq,
+                "energy_density": energy_density,
+                "energy_density_tslice": energy_density_tslice,
+                })
     @q.timer
     def measure():
         gf.show_info()
         plaq = gf.plaq()
         plaq_action_density_field = gf_plaq_action_density_field(gf)
         plaq_action_density = plaq_action_density_field.glb_sum()[:].item() / total_volume
-        t_sum_plaq_action_density = (plaq_action_density_field.glb_sum_tslice()[:].ravel() / spatial_volume).tolist()
+        plaq_action_density_tslice = (plaq_action_density_field.glb_sum_tslice()[:].ravel() / spatial_volume).tolist()
         energy_density_field = gf_energy_density_field(gf)
         energy_density = energy_density_field.glb_sum()[:].item() / total_volume
-        t_sum_energy_density = (energy_density_field.glb_sum_tslice()[:].ravel() / spatial_volume).tolist()
+        energy_density_tslice = (energy_density_field.glb_sum_tslice()[:].ravel() / spatial_volume).tolist()
         topo_field_clf = gf_topology_field_clf(gf)
         topo_clf = topo_field_clf.glb_sum()[:].item()
-        t_sum_topo_clf = topo_field_clf.glb_sum_tslice()[:].ravel().tolist()
+        topo_clf_tslice = topo_field_clf.glb_sum_tslice()[:].ravel().tolist()
         topo_field = gf_topology_field(gf)
         topo = topo_field.glb_sum()[:].item()
-        t_sum_topo = topo_field.glb_sum_tslice()[:].ravel().tolist()
-        q.displayln_info(0, f"{fname}: t={flow_time} ; energy_density={energy_density} ; plaq_action_density={plaq_action_density} ; topo_clf={topo_clf} ; topo={topo}")
-        q.displayln_info(0, pformat(list(enumerate(zip(t_sum_energy_density, t_sum_plaq_action_density, t_sum_topo_clf, t_sum_topo)))))
+        topo_tslice = topo_field.glb_sum_tslice()[:].ravel().tolist()
+        energy_deriv_density_field = gf_energy_derivative_density_field(
+                gf,
+                epsilon=energy_derivative_info[0],
+                c1=energy_derivative_info[1],
+                wilson_flow_integrator_type=energy_derivative_info[2],
+                )
+        energy_deriv = energy_deriv_density_field.glb_sum()[:].item()
+        energy_deriv_tslice = energy_deriv_density_field.glb_sum_tslice()[:].ravel().tolist()
+        q.displayln_info(0, f"{fname}: t={flow_time} ; energy_density={energy_density} ; energy_deriv={energy_deriv} ; topo={topo}")
+        q.displayln_info(0, pformat(list(enumerate(zip(energy_density_tslice, energy_deriv_tslice, topo_tslice)))))
         if is_show_topo_terms:
             topo_terms = gf_topology_terms(gf)
             q.displayln_info(0, f"{fname}: t={flow_time} ; topo={topo} ; {sum(topo_terms)}")
             topo_terms_str = ',\n  '.join([ str(x) for x in topo_terms ])
             q.displayln_info(0, f"[ {topo_terms_str},\n]")
         if density_field_path is not None:
-            plaq_action_density_field.save_double(f"{density_field_path}/smear-step-{len(topo_list)}/plaq_action_density.field")
+            # plaq_action_density_field.save_double(f"{density_field_path}/smear-step-{len(topo_list)}/plaq_action_density.field")
+            # topo_field_clf.save_double(f"{density_field_path}/smear-step-{len(topo_list)}/topo_clf.field")
             energy_density_field.save_double(f"{density_field_path}/smear-step-{len(topo_list)}/energy_density.field")
-            topo_field_clf.save_double(f"{density_field_path}/smear-step-{len(topo_list)}/topo_clf.field")
             topo_field.save_double(f"{density_field_path}/smear-step-{len(topo_list)}/topo.field")
+            energy_deriv_density_field.save_double(f"{density_field_path}/smear-step-{len(topo_list)}/energy_deriv_density_field.field")
         topo_list.append({
             "flow_time": flow_time,
             "plaq": plaq,
-            "plaq_action_density": plaq_action_density,
-            "plaq_action_density_tslice": t_sum_plaq_action_density,
             "energy_density": energy_density,
-            "energy_density_tslice": t_sum_energy_density,
-            "topo_clf": topo_clf,
-            "topo_clf_tslice": t_sum_topo_clf,
+            "energy_density_tslice": energy_density_tslice,
+            "energy_deriv": energy_deriv,
+            "energy_deriv_tslice": energy_deriv_tslice,
             "topo": topo,
-            "topo_tslice": t_sum_topo,
+            "topo_tslice": topo_tslice,
+            "topo_clf": topo_clf,
+            "topo_clf_tslice": topo_clf_tslice,
+            "plaq_action_density": plaq_action_density,
+            "plaq_action_density_tslice": plaq_action_density_tslice,
             })
     measure()
     for si in smear_info_list:
         smear(*si)
         measure()
-    return topo_list
+    return topo_list, energy_list,

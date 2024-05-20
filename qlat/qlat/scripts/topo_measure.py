@@ -8,7 +8,7 @@ q.displayln_info("by Luchang Jin")
 q.displayln_info("2024/01/25")
 
 if len(sys.argv) == 1:
-    q.displayln_info("Usage: topo-measure [ --source source_config ] [ --output output.pickle ] [ --show-topo-terms ] [ --density-field-path path_for_density_field ]")
+    q.displayln_info("Usage: topo-measure [ --source source_config ] [ --output info.pickle ] [ --energy-list energy-list.pickle ] [ --show-topo-terms ] [ --density-field-path path_for_density_field ]")
 
 q.begin_with_mpi()
 
@@ -34,7 +34,7 @@ def load():
 
 gf = load()
 
-topo_list = q.smear_measure_topo(gf, is_show_topo_terms=is_show_topo_terms, density_field_path=density_field_path)
+topo_list, energy_list, = q.smear_measure_topo(gf, is_show_topo_terms=is_show_topo_terms, density_field_path=density_field_path)
 
 if p_output is not None:
     q.save_pickle_obj(topo_list, p_output)

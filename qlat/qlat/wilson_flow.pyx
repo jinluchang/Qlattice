@@ -31,6 +31,7 @@ def gf_wilson_flow_force(GaugeField gf, cc.RealD c1=0.0):
 @q.timer
 def gf_wilson_flow_step(GaugeField gf, cc.RealD epsilon, *, cc.RealD c1=0.0, str wilson_flow_integrator_type=None):
     """
+    Modify `gf` in place.
     default: Runge-Kutta scheme
     http://arxiv.org/abs/1006.4518v3
     """
@@ -40,6 +41,18 @@ def gf_wilson_flow_step(GaugeField gf, cc.RealD epsilon, *, cc.RealD c1=0.0, str
         cc.gf_wilson_flow_step(gf.xxx().val(), epsilon, c1=c1)
     elif wilson_flow_integrator_type == "euler":
         cc.gf_wilson_flow_step_euler(gf.xxx().val(), epsilon, c1=c1)
+
+@q.timer
+def gf_energy_derivative_density_field(GaugeField gf, *, cc.RealD epsilon=0.0125, cc.RealD c1=0.0, str wilson_flow_integrator_type=None):
+    cdef GaugeField gf1 = gf.copy()
+    gf_wilson_flow_step(gf1, epsilon, c1=c1, wilson_flow_integrator_type=wilson_flow_integrator_type)
+    cdef FieldRealD fd1 = gf_energy_density_field(gf1)
+    gf1 @= gf
+    gf_wilson_flow_step(gf1, -epsilon, c1=c1, wilson_flow_integrator_type=wilson_flow_integrator_type)
+    cdef FieldRealD fd2 = gf_energy_density_field(gf1)
+    fd1 -= fd2
+    fd1 *= 1 / (2 * epsilon)
+    return fd1
 
 @q.timer
 def gf_wilson_flow(GaugeField gf, cc.RealD flow_time, cc.Long steps,
