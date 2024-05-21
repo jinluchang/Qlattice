@@ -206,8 +206,8 @@ def smear_measure_topo(
                 c1=energy_derivative_info[1],
                 wilson_flow_integrator_type=energy_derivative_info[2],
                 )
-        energy_deriv = energy_deriv_density_field.glb_sum()[:].item()
-        energy_deriv_tslice = energy_deriv_density_field.glb_sum_tslice()[:].ravel().tolist()
+        energy_deriv = energy_deriv_density_field.glb_sum()[:].item() / total_volume
+        energy_deriv_tslice = (energy_deriv_density_field.glb_sum_tslice()[:].ravel() / spatial_volume).tolist()
         q.displayln_info(0, f"{fname}: t={flow_time} ; energy_density={energy_density} ; energy_deriv={energy_deriv} ; topo={topo}")
         q.displayln_info(0, pformat(list(enumerate(zip(energy_density_tslice, energy_deriv_tslice, topo_tslice)))))
         if is_show_topo_terms:
