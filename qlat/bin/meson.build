@@ -9,5 +9,7 @@ scripts = files(
   'gauge-fix-coulomb',
   'qlat-config',
   'topo-measure',
+  'topo-measure-wilson-flow',
+  'topo-measure-gpt',
   )
 install_data(scripts, install_dir: get_option('bindir'), install_mode: 'rwxr-xr-x')
