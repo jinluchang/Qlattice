@@ -291,23 +291,28 @@ std::vector<M> field_sum_tslice(const Field<M>& f, const int t_dir = 3)
   set_zero(vec);
 #pragma omp parallel
   {
-    std::vector<M> pvec(multiplicity);
-#pragma omp for
-    for (Int tl = 0; tl < t_size_local; ++tl) {
-      set_zero(pvec);
-      const Int tg = tl + t_shift;
-      for (Long index = 0; index < geo.local_volume(); ++index) {
-        const Coordinate xl = geo.coordinate_from_index(index);
-        if (xl[t_dir] != tl) {
-          continue;
-        }
-        const Vector<M> fvec = f.get_elems_const(xl);
-        for (int m = 0; m < multiplicity; ++m) {
-          pvec[m] += fvec[m];
-        }
+    std::vector<M> pvec(t_size_local * multiplicity);
+    set_zero(pvec);
+#pragma omp for nowait
+    for (Long index = 0; index < geo.local_volume(); ++index) {
+      const Coordinate xl = geo.coordinate_from_index(index);
+      const Int tl = xl[t_dir];
+      qassert(0 <= tl and tl < t_size_local);
+      const Vector<M> fvec = f.get_elems_const(xl);
+      for (Int m = 0; m < multiplicity; ++m) {
+        pvec[tl * multiplicity + m] += fvec[m];
       }
-      for (int m = 0; m < multiplicity; ++m) {
-        vec[tg * multiplicity + m] = pvec[m];
+    }
+    for (Int i = 0; i < omp_get_num_threads(); ++i) {
+#pragma omp barrier
+      if (omp_get_thread_num() == i) {
+        for (Int tl = 0; tl < t_size_local; ++tl) {
+          const Int tg = tl + t_shift;
+          qassert(0 <= tg and tg < t_size);
+          for (Int m = 0; m < multiplicity; ++m) {
+            vec[tg * multiplicity + m] += pvec[tl * multiplicity + m];
+          }
+        }
       }
     }
   }
