@@ -3,14 +3,14 @@ import qlat as q
 import numpy as np
 from pprint import pformat
 
-q.displayln_info("Topological charge measurement based on Wilson flow with Qlattice")
-q.displayln_info("by Luchang Jin")
-q.displayln_info("2024/05/20")
-
 if len(sys.argv) == 1:
     q.displayln_info("Usage: topo-measure-wilson-flow [ --source source_config ] [ --output path-for-results ] [ --density-field ] [ --flow-time 6 ] [ --flow-n-step-per-unit-time 80 ]")
 
 q.begin_with_mpi()
+
+q.displayln_info("Topological charge measurement based on Wilson flow with Qlattice")
+q.displayln_info("by Luchang Jin")
+q.displayln_info("2024/05/20")
 
 p_source = q.get_arg("--source")
 p_output = q.get_arg("--output")
