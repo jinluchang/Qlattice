@@ -16,31 +16,30 @@
 namespace qlat
 {  //
 
-API inline size_t& get_alignment()
+API inline Long& get_alignment()
 // qlat parameter
 //
 // Should NOT change in the middle of the run.
 {
-  static size_t alignment = 256;
+  static Long alignment = 256;
   return alignment;
 }
 
-inline size_t get_aligned_mem_size(const size_t alignment, const Long min_size)
+inline Long get_aligned_mem_size(const Long alignment, const Long min_size)
 {
   const Long n_elem = 1 + (min_size - 1) / alignment;
-  const size_t size = n_elem * alignment;
+  const Long size = n_elem * alignment;
   return size;
 }
 
-API inline size_t& get_mem_cache_max_size(const bool is_acc = false)
+API inline Long& get_mem_cache_max_size(const bool is_acc = false)
 // qlat parameter
 {
-  static size_t max_size =
+  static Long max_size =
       get_env_long_default("q_mem_cache_max_size", 512) * 1024L * 1024L;
-  static size_t max_size_acc =
-      get_env_long_default("q_mem_cache_acc_max_size",
-                           max_size / (1024L * 1024L)) *
-      1024L * 1024L;
+  static Long max_size_acc = get_env_long_default("q_mem_cache_acc_max_size",
+                                                  max_size / (1024L * 1024L)) *
+                             1024L * 1024L;
   if (is_acc) {
     return max_size_acc;
   } else {
@@ -48,36 +47,148 @@ API inline size_t& get_mem_cache_max_size(const bool is_acc = false)
   }
 }
 
+struct MemoryStats {
+  Long alloc;
+  Long alloc_acc;
+  Long cache;
+  Long cache_acc;
+  //
+  MemoryStats() { init(); }
+  //
+  void init()
+  {
+    alloc = 0;
+    alloc_acc = 0;
+    cache = 0;
+    cache_acc = 0;
+  }
+  //
+  Long total()
+  // total memory include the size of the cache
+  {
+    return alloc + alloc_acc;
+  }
+};
+
+API inline MemoryStats& get_mem_stats()
+{
+  static MemoryStats ms;
+  return ms;
+}
+
+inline void* alloc_mem_alloc(const Long size)
+{
+  TIMER_FLOPS("alloc_mem_alloc");
+  timer.flops += size;
+  static MemoryStats& ms = get_mem_stats();
+  ms.alloc += size;
+#if defined QLAT_NO_ALIGNED_ALLOC
+  return malloc(size);
+#else
+  const Long alignment = get_alignment();
+  return aligned_alloc(alignment, size);
+#endif
+}
+
+inline void* alloc_mem_alloc_acc(const Long size)
+{
+#ifdef QLAT_USE_ACC
+  TIMER_FLOPS("alloc_mem_alloc_acc");
+  timer.flops += size;
+  static MemoryStats& ms = get_mem_stats();
+  ms.alloc_acc += size;
+  void* ptr = NULL;
+  qacc_Error err = qacc_GetLastError();
+  if (qacc_Success != err) {
+    qerr(fname + ssprintf(": Cuda error '%s' before qacc_MallocManaged.",
+                          qacc_GetErrorString(err)));
+  }
+  err = qacc_MallocManaged(&ptr, size);
+  if (qacc_Success != err) {
+    qerr(fname + ssprintf(": Cuda error '%s', min_size=%ld, size=%ld, ptr=%lX.",
+                          qacc_GetErrorString(err), min_size, size, ptr));
+  }
+  return ptr;
+#else
+  return alloc_mem_alloc(size);
+#endif
+}
+
+inline void free_mem_free(void* ptr, const Long size)
+{
+  TIMER_FLOPS("free_mem_free");
+  timer.flops += size;
+  static MemoryStats& ms = get_mem_stats();
+  ms.alloc -= size;
+  free(ptr);
+}
+
+inline void free_mem_free_acc(void* ptr, const Long size)
+{
+#ifdef QLAT_USE_ACC
+  TIMER_FLOPS("free_mem_free_acc");
+  timer.flops += size;
+  static MemoryStats& ms = get_mem_stats();
+  ms.alloc_acc -= size;
+  qacc_Error err = qacc_Free(ptr);
+  if (qacc_Success != err) {
+    if (qacc_ErrorCudartUnloading != err) {
+      qerr(fname + ssprintf(": Cuda error '%s' (%d) after qacc_Free.",
+                            qacc_GetErrorString(err), err));
+    }
+  }
+#else
+  free_mem_free(ptr, size);
+#endif
+}
+
 struct API MemCache {
   bool is_acc;
-  size_t mem_cache_size;
-  std::unordered_multimap<size_t, void*> db;
+  Long mem_cache_size;
+  Long mem_cache_max_size;
+  std::unordered_multimap<Long, void*> db;
   //
-  MemCache(const bool is_acc_ = false)
+  MemCache(const bool is_acc_ = false, const Long mem_cache_max_size_ = -1)
   {
     is_acc = is_acc_;
+    mem_cache_max_size = mem_cache_max_size_;
+    if (mem_cache_max_size < 0) {
+      mem_cache_max_size = get_mem_cache_max_size(is_acc);
+    }
     mem_cache_size = 0;
   }
   ~MemCache() { gc(); }
   //
-  void add(void* ptr, const size_t size)
+  void add(void* ptr, const Long size)
   {
     qassert(size > 0);
     mem_cache_size += size;
-    std::pair<size_t, void*> p(size, ptr);
+    static MemoryStats& ms = get_mem_stats();
+    if (is_acc) {
+      ms.cache_acc += size;
+    } else {
+      ms.cache += size;
+    }
+    std::pair<Long, void*> p(size, ptr);
     db.insert(p);
-    if (mem_cache_size > get_mem_cache_max_size(is_acc)) {
+    if (mem_cache_size > mem_cache_max_size) {
       gc();
     }
   }
   //
-  void* del(const size_t size)
+  void* del(const Long size)
   {
     auto iter = db.find(size);
     if (iter == db.end()) {
       return NULL;
     } else {
       mem_cache_size -= size;
+      static MemoryStats& ms = get_mem_stats();
+      if (is_acc) {
+        ms.cache_acc -= size;
+      } else {
+        ms.cache -= size;
+      }
       void* ptr = iter->second;
       db.erase(iter);
       return ptr;
@@ -91,26 +202,24 @@ struct API MemCache {
     }
     TIMER_FLOPS("MemCache::gc()");
     timer.flops += mem_cache_size;
+    static MemoryStats& ms = get_mem_stats();
+    if (is_acc) {
+      ms.cache_acc -= mem_cache_size;
+    } else {
+      ms.cache -= mem_cache_size;
+    }
     for (auto iter = db.cbegin(); iter != db.cend(); ++iter) {
+      const Long size = iter->first;
       void* ptr = iter->second;
       qassert(ptr != NULL);
-#ifdef QLAT_USE_ACC
       if (is_acc) {
-        qacc_Error err = qacc_Free(ptr);
-        if (qacc_Success != err) {
-          if (qacc_ErrorCudartUnloading != err) {
-            qerr(fname + ssprintf(": Cuda error '%s' (%d) after qacc_Free.",
-                                  qacc_GetErrorString(err), err));
-          }
-        }
+        free_mem_free_acc(ptr, size);
       } else {
-        free(ptr);
+        free_mem_free(ptr, size);
       }
-#else
-      free(ptr);
-#endif
+      mem_cache_size -= size;
     }
-    mem_cache_size = 0;
+    qassert(mem_cache_size == 0);
     db.clear();
   }
 };
@@ -140,16 +249,6 @@ inline void clear_mem_cache()
   timer.flops += total_bytes;
 }
 
-inline void* alloc_mem_alloc_no_acc(const Long size)
-{
-  const size_t alignment = get_alignment();
-#if defined QLAT_NO_ALIGNED_ALLOC
-  return malloc(size);
-#else
-  return aligned_alloc(alignment, size);
-#endif
-}
-
 inline void* alloc_mem(const Long min_size, const bool is_acc = false)
 {
   if (min_size <= 0) {
@@ -157,39 +256,25 @@ inline void* alloc_mem(const Long min_size, const bool is_acc = false)
   }
   TIMER_FLOPS("alloc_mem");
   timer.flops += min_size;
-  const size_t alignment = get_alignment();
-  const size_t size = get_aligned_mem_size(alignment, min_size);
+  const Long alignment = get_alignment();
+  const Long size = get_aligned_mem_size(alignment, min_size);
   MemCache& cache = get_mem_cache(is_acc);
   void* ptr = cache.del(size);
   if (NULL != ptr) {
     return ptr;
   }
+  if (size + cache.mem_cache_size > cache.mem_cache_max_size) {
+    cache.gc();
+  }
   {
     TIMER_FLOPS("alloc_mem-alloc");
-    if (size + cache.mem_cache_size > get_mem_cache_max_size(is_acc)) {
-      cache.gc();
-    }
     timer.flops += min_size;
     void* ptr = NULL;
-#ifdef QLAT_USE_ACC
     if (is_acc) {
-      qacc_Error err = qacc_GetLastError();
-      if (qacc_Success != err) {
-        qerr(fname + ssprintf(": Cuda error '%s' before qacc_MallocManaged.",
-                              qacc_GetErrorString(err)));
-      }
-      err = qacc_MallocManaged(&ptr, size);
-      if (qacc_Success != err) {
-        qerr(fname +
-             ssprintf(": Cuda error '%s', min_size=%ld, size=%ld, ptr=%lX.",
-                      qacc_GetErrorString(err), min_size, size, ptr));
-      }
+      ptr = alloc_mem_alloc_acc(size);
     } else {
-      ptr = alloc_mem_alloc_no_acc(size);
+      ptr = alloc_mem_alloc(size);
     }
-#else
-    ptr = alloc_mem_alloc_no_acc(size);
-#endif
     memset(ptr, 0, size);
     return ptr;
   }
@@ -199,8 +284,8 @@ inline void free_mem(void* ptr, const Long min_size, const bool is_acc = false)
 {
   TIMER_FLOPS("free_mem");
   timer.flops += min_size;
-  const size_t alignment = get_alignment();
-  const size_t size = get_aligned_mem_size(alignment, min_size);
+  const Long alignment = get_alignment();
+  const Long size = get_aligned_mem_size(alignment, min_size);
   MemCache& cache = get_mem_cache(is_acc);
   cache.add(ptr, size);
 }
