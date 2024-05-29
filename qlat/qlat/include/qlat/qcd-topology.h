@@ -11,13 +11,16 @@ RealD topology_charge_5(const GaugeField& gf);
 
 void clf_plaq_action_density_field(Field<RealD>& paf, const GaugeField& gf);
 
-void clf_spatial_plaq_action_density_field(Field<RealD>& paf, const GaugeField& gf);
+void clf_spatial_plaq_action_density_field(Field<RealD>& paf,
+                                           const GaugeField& gf);
 
 void clf_topology_field(Field<RealD>& topf, const GaugeField& gf);
 
 void clf_topology_field_5(Field<RealD>& topf, const GaugeField& gf);
 
 void clf_topology_field_5_terms(Field<RealD>& topf, const GaugeField& gf);
+
+// ----------------------------------------------
 
 struct CloverLeafField : FieldM<ColorMatrix, 6> {
 };
@@ -30,10 +33,6 @@ void gf_clover_leaf_field_m_n_no_comm(CloverLeafField& clf,
 
 void gf_clover_leaf_field(CloverLeafField& clf, const GaugeField& gf);
 
-void gf_clover_leaf_field_5(CloverLeafField& clf1, CloverLeafField& clf2,
-                            CloverLeafField& clf3, CloverLeafField& clf4,
-                            CloverLeafField& clf5, const GaugeField& gf);
-
 void clf_plaq_action_density_field(Field<RealD>& paf,
                                    const CloverLeafField& clf);
 
@@ -42,17 +41,7 @@ void clf_spatial_plaq_action_field(Field<RealD>& spaf,
 
 void clf_topology_field(Field<RealD>& topf, const CloverLeafField& clf);
 
-void clf_topology_field_5(Field<RealD>& topf, const CloverLeafField& clf1,
-                          const CloverLeafField& clf2,
-                          const CloverLeafField& clf3,
-                          const CloverLeafField& clf4,
-                          const CloverLeafField& clf5);
-
-void clf_topology_field_5_terms(Field<RealD>& topf, const CloverLeafField& clf1,
-                                const CloverLeafField& clf2,
-                                const CloverLeafField& clf3,
-                                const CloverLeafField& clf4,
-                                const CloverLeafField& clf5);
+// ----------------------------------------------
 
 qacc ColorMatrix gf_clover_leaf_no_comm(const GaugeField& gf1,
                                         const Coordinate& xl, const int mu,
