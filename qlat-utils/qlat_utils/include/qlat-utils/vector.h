@@ -116,8 +116,8 @@ inline void* alloc_mem_alloc_acc(const Long size)
   }
   err = qacc_MallocManaged(&ptr, size);
   if (qacc_Success != err) {
-    qerr(fname + ssprintf(": Cuda error '%s', min_size=%ld, size=%ld, ptr=%lX.",
-                          qacc_GetErrorString(err), min_size, size, ptr));
+    qerr(fname + ssprintf(": Cuda error '%s', size=%ld, ptr=%lX.",
+                          qacc_GetErrorString(err), size, ptr));
   }
   return ptr;
 #else
