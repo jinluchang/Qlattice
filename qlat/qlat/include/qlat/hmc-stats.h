@@ -140,12 +140,10 @@ inline std::vector<double> get_gauge_field_infos(const GaugeField& gf)
   TIMER("get_gauge_field_infos");
   const int info_vec_size = 4;
   const Geometry geo = geo_resize(gf.geo());
-  CloverLeafField clf1, clf2, clf3, clf4, clf5;
-  gf_clover_leaf_field_5(clf1, clf2, clf3, clf4, clf5, gf);
   FieldM<double, 1> paf;
-  clf_plaq_action_density_field(paf, clf1);
+  clf_plaq_action_density_field(paf, gf);
   FieldM<double, 1> topf;
-  clf_topology_field_5(topf, clf1, clf2, clf3, clf4, clf5);
+  clf_topology_field_5(topf, gf);
   std::vector<double> info_vec(info_vec_size, 0.0);
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const double pa = paf.get_elem(index);
