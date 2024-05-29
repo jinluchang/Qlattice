@@ -152,6 +152,7 @@ class Data:
             sf2 = self.replace_param(profile_tFV,"tFV",t_FV)
         dE_blocks = self.get_Ebar_slope_blocks(sf1, sf2)
         print(f"Calculating dE with t_FV={self.get_param(sf1,'tFV')} and t_FV={self.get_param(sf2,'tFV')}")
+        print(f"Correction factor estimated: {1 / (2*np.pi)**0.5 / np.mean(dE_blocks) * np.exp(-np.mean(Ebar_blocks)**2/2/np.mean(dE_blocks)**2)}")
         #
         gamma_blocks = jk.super_jackknife_combine_blocks([R_blocks, Ebar_blocks, dE_blocks], lambda x: self.calc_gamma(x[0], x[1], x[2], t_full, dt))
         gamma_mean = self.calc_gamma(np.mean(R_blocks), np.mean(Ebar_blocks), np.mean(dE_blocks), t_full, dt)
@@ -362,6 +363,7 @@ class Data:
         if len(files):
             for sf in files:
                 with open(sf,"rb") as input:
+                    print(f"Loading {sf}")
                     data = pickle.load(input)
                     sf = self.remove_date(sf)
                     if(sf in list(self.trajs)):
@@ -379,6 +381,6 @@ class Data:
                     self.delta_actions_L[sf] = data["delta_actions_L"]
                     self.delta_actions_t_FV[sf] = data["delta_actions_t_FV"]
                     self.delta_actions_t_TV[sf] = data["delta_actions_t_TV"]
-                    print(f"Loaded {sf}")
                     print(f"# traj: {len(data['trajs'])}")
                     print(f"Accept rate: {np.mean(data['accept_rates'])}")
+                    print(f"Loaded {sf}")
