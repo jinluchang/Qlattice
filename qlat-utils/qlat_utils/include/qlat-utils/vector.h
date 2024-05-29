@@ -166,6 +166,9 @@ inline void* alloc_mem(const Long min_size, const bool is_acc = false)
   }
   {
     TIMER_FLOPS("alloc_mem-alloc");
+    if (size + cache.mem_cache_size > get_mem_cache_max_size(is_acc)) {
+      cache.gc();
+    }
     timer.flops += min_size;
     void* ptr = NULL;
 #ifdef QLAT_USE_ACC
