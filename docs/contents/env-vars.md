@@ -36,6 +36,18 @@
 
   Default is `512` MB.
 
+- `q_mem_cache_acc_max_size`
+
+  Memory cache size in MB (per processes) for `qlat::vector_acc` allocation.
+
+  Default is the same as `q_mem_cache_max_size`.
+
+- `q_alloc_mem_max_size`
+
+  Maximum allocated memory size in MB (per processes) for combined `qlat::vector` and `qlat::vector_acc` allocation. Cache size will be reduced when this limit is reached.
+
+  Default is `256 * 1024` MB.
+
 - `q_num_threads`
 
   Number of OpenMP threads (will be override by `OMP_NUM_THREADS`). Possible setting can be `export OMP_NUM_THREADS=16` number should be adjusted by number of cores.

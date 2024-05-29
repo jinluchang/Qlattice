@@ -34,6 +34,7 @@ inline Long get_aligned_mem_size(const Long alignment, const Long min_size)
 
 API inline Long& get_mem_cache_max_size(const bool is_acc = false)
 // qlat parameter
+// unit in MB
 {
   static Long max_size =
       get_env_long_default("q_mem_cache_max_size", 512) * 1024L * 1024L;
@@ -45,6 +46,16 @@ API inline Long& get_mem_cache_max_size(const bool is_acc = false)
   } else {
     return max_size;
   }
+}
+
+API inline Long& get_alloc_mem_max_size()
+// qlat parameter
+// unit in MB
+{
+  static Long max_size =
+      get_env_long_default("q_alloc_mem_max_size", 256L * 1024L) * 1024L *
+      1024L;
+  return max_size;
 }
 
 struct MemoryStats {
@@ -265,6 +276,17 @@ inline void* alloc_mem(const Long min_size, const bool is_acc = false)
   }
   if (size + cache.mem_cache_size > cache.mem_cache_max_size) {
     cache.gc();
+  }
+  static MemoryStats& ms = get_mem_stats();
+  if (size + ms.total() > get_alloc_mem_max_size()) {
+    displayln_info(
+        fname + ssprintf(": alloc %.1lf (GB) memory (current total %.1lf (GB))",
+                         min_size / (1024 * 1024 * 1024),
+                         ms.total() / (1024 * 1024 * 1024)));
+    clear_mem_cache();
+    displayln_info(
+        fname + ssprintf(": after clear mem_cache (current total %.1lf (GB))",
+                         ms.total() / (1024 * 1024 * 1024)));
   }
   {
     TIMER_FLOPS("alloc_mem-alloc");
