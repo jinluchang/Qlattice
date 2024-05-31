@@ -1584,6 +1584,9 @@ class CExprCodeGenPy:
             elif t == "V_S":
                 append_cy(f"cdef cc.WilsonMatrix {name} = {c}")
                 append_py(f"{name} = {c}")
+            elif t == "V_U":
+                append_cy(f"cdef cc.ColorMatrix {name} = {c}")
+                append_py(f"{name} = {c}")
             else:
                 assert False
         append(f"# compute traces")
