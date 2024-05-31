@@ -742,7 +742,7 @@ def get_gauge_link_lookup_p_mu(prop_cache, tag, p, mu):
         mu = -mu - 1
         xg_shift = q.Coordinate()
         xg_shift[mu] = -1
-        idx = geo_pos_dict[(p_xg + xg_shift) % total_site]
+        idx = geo_pos_dict[((q.Coordinate(p_xg) + xg_shift) % total_site).to_tuple()]
         cm[:] = gf[idx, mu].T.conj()
     return cm
 
