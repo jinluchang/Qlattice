@@ -31,7 +31,7 @@ tests = \
 		field-selection.log \
 		selected-field.log \
 		fields-io.log \
-		hmc-pure-gauge.log \
+		hmc-pure-gauge-test.log \
 		hmc-pions.log \
 		hmc-pure-gauge-flowed.log \
 		qcd-utils.log \

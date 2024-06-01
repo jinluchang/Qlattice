@@ -4,7 +4,7 @@ from . import dict_params
 
 import qlat as q
 
-def get_param(*keys, default = None, dict_params = None):
+def get_param(*keys, default=None, dict_params=None):
     if dict_params is None:
         dict_params = rup.dict_params
     d = dict_params
@@ -15,7 +15,7 @@ def get_param(*keys, default = None, dict_params = None):
             return default
     return d
 
-def set_param(*keys, value, dict_params = None):
+def set_param(*keys, value=None, dict_params=None):
     if dict_params is None:
         dict_params = rup.dict_params
     assert len(keys) >= 1
@@ -24,7 +24,12 @@ def set_param(*keys, value, dict_params = None):
         if key not in d:
             d[key] = dict()
         d = d[key]
-    d[keys[-1]] = value
+    if value is None:
+        def f(value):
+            d[keys[-1]] = value
+        return f
+    else:
+        d[keys[-1]] = value
 
 def get_total_site(job_tag : str):
     return get_param(job_tag, "total_site")
