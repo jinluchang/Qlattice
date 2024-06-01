@@ -65,6 +65,14 @@ set_param(job_tag, "hmc", "beta")(2.13)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(2)
 
+job_tag = "32I-3.5gev"
+set_param(job_tag, "total_site")((32, 32, 32, 64,))
+set_param(job_tag, "hmc", "max_traj")(5000)
+set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "beta")(3.05)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "save_traj_interval")(10)
+
 # ----
 
 if __name__ == "__main__":
