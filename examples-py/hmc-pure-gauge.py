@@ -43,9 +43,9 @@ def run_hmc(job_tag):
         traj = traj_load
         gf.load(get_load_path(f"{job_tag}/configs/ckpoint_lat.{traj}"))
     for traj in range(traj, max_traj):
+        traj += 1
         is_always_accept = traj < max_traj_always_accept
         q.run_hmc_pure_gauge(gf, ga, traj, rs.split("run_hmc_pure_gauge"), n_step=n_step, md_time=md_time, is_always_accept=is_always_accept)
-        traj += 1
         plaq = gf.plaq()
         json_results.append((f"{fname}: {traj} plaq", plaq,))
         if traj % save_traj_interval == 0:
