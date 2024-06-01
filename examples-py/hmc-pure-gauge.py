@@ -21,6 +21,8 @@ def run_hmc(job_tag):
     max_traj = get_param(job_tag, "hmc", "max_traj")
     max_traj_always_accept = get_param(job_tag, "hmc", "max_traj_always_accept")
     save_traj_interval = get_param(job_tag, "hmc", "save_traj_interval")
+    md_time = get_param(job_tag, "hmc", "md_time")
+    n_step = get_param(job_tag, "hmc", "n_step")
     beta = get_param(job_tag, "hmc", "beta")
     c1 = get_param(job_tag, "hmc", "c1")
     ga = q.GaugeAction(beta, c1)
@@ -42,7 +44,7 @@ def run_hmc(job_tag):
         gf.load(get_load_path(f"{job_tag}/configs/ckpoint_lat.{traj}"))
     for traj in range(traj, max_traj):
         is_always_accept = traj < max_traj_always_accept
-        q.run_hmc_pure_gauge(gf, ga, traj, rs.split("run_hmc_pure_gauge"), is_always_accept=is_always_accept)
+        q.run_hmc_pure_gauge(gf, ga, traj, rs.split("run_hmc_pure_gauge"), n_step=n_step, md_time=md_time, is_always_accept=is_always_accept)
         traj += 1
         plaq = gf.plaq()
         json_results.append((f"{fname}: {traj} plaq", plaq,))
@@ -61,6 +63,8 @@ job_tag = "test-4nt8"
 set_param(job_tag, "total_site")((4, 4, 4, 8,))
 set_param(job_tag, "hmc", "max_traj")(8)
 set_param(job_tag, "hmc", "max_traj_always_accept")(4)
+set_param(job_tag, "hmc", "md_time")(1.0)
+set_param(job_tag, "hmc", "n_step")(6)
 set_param(job_tag, "hmc", "beta")(2.13)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(2)
@@ -69,6 +73,8 @@ job_tag = "32I-3.5gev"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "hmc", "max_traj")(5000)
 set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "md_time")(1.0)
+set_param(job_tag, "hmc", "n_step")(20)
 set_param(job_tag, "hmc", "beta")(3.05)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(10)
