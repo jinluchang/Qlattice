@@ -81,7 +81,7 @@ double gf_avg_plaq(const GaugeFieldT<T>& gf)
 {
   TIMER("gf_avg_plaq");
   GaugeFieldT<T> gf1;
-  gf1.init(geo_resize(gf.geo(), Coordinate(0, 0, 0, 0), Coordinate(1, 1, 1, 1)));
+  gf1.init(geo_resize(gf.geo(), Coordinate(1, 1, 1, 1), Coordinate(1, 1, 1, 1)));
   gf1 = gf;
   refresh_expanded(gf1);
   return gf_avg_plaq_no_comm(gf1);
@@ -138,7 +138,7 @@ RealD gf_avg_spatial_plaq(const GaugeFieldT<T>& gf)
 {
   TIMER("gf_avg_spatial_plaq(gf)");
   GaugeFieldT<T> gf1;
-  gf1.init(geo_resize(gf.geo(), Coordinate(0, 0, 0, 0), Coordinate(1, 1, 1, 0)));
+  gf1.init(geo_resize(gf.geo(), Coordinate(1, 1, 1, 1), Coordinate(1, 1, 1, 1)));
   gf1 = gf;
   refresh_expanded(gf1);
   return gf_avg_spatial_plaq_no_comm(gf1);
