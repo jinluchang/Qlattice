@@ -79,7 +79,7 @@ def run_hmc(gf, ga, traj, rs):
         gf_r = q.GaugeField(geo)
         q.gf_flow(gf_r, gf0, fi)
         gf_r -= gf
-        q.displayln_info("gf_flow_inv gf_diff: {} / {}".format(q.qnorm(gf_r), q.qnorm(gf)))
+        q.displayln_info(f"gf_flow_inv gf_diff: {q.qnorm(gf_r)} / {q.qnorm(gf)}")
     #
     gm = q.GaugeMomentum(geo)
     q.set_rand_gauge_momentum(gm, 1.0, rs.split("set_rand_gauge_momentum"))

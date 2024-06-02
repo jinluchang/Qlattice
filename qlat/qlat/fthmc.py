@@ -10,7 +10,7 @@ class FlowInfo:
     def __del__(self):
         c.free_flow_info(self)
 
-    def add_flow(self, eo, mu, epsilon, flow_size = 1):
+    def add_flow(self, eo, mu, epsilon, flow_size=1):
         c.add_flow_flow_info(self, eo, mu, epsilon, flow_size)
 
     def add_rand_order_flow(self, rng, epsilon, *args):
