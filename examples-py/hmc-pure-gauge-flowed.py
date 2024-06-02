@@ -125,6 +125,7 @@ def run_hmc(job_tag):
         json_results.append((f"{fname}: {traj} plaq", plaq,))
         if traj % save_traj_interval == 0:
             gf.save(get_save_path(f"{job_tag}/configs/ckpoint_lat.{traj}"))
+        q.timer_display()
 
 job_tag = "test-4nt8"
 set_param(job_tag, "total_site")((4, 4, 4, 8,))
