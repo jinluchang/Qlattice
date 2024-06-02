@@ -6,7 +6,19 @@ from pprint import pformat
 if len(sys.argv) == 1:
     q.displayln_info("Usage: topo-measure-wilson-flow [ --source source_config ] [ --output path-for-results ] [ --density-field ] [ --flow-time 6 ] [ --flow-n-step-per-unit-time 80 ]")
 
-q.begin_with_mpi()
+size_node_list = [
+        [1, 1, 1, 1],
+        [1, 1, 1, 2],
+        [1, 1, 1, 3],
+        [1, 1, 1, 4],
+        [1, 1, 1, 6],
+        [1, 1, 1, 8],
+        [1, 2, 2, 4],
+        [2, 2, 2, 4],
+        [2, 2, 2, 4],
+        ]
+
+q.begin_with_mpi(size_node_list)
 
 q.displayln_info("Topological charge measurement based on Wilson flow with Qlattice")
 q.displayln_info("by Luchang Jin")

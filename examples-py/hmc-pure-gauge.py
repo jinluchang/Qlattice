@@ -51,14 +51,6 @@ def run_hmc(job_tag):
         if traj % save_traj_interval == 0:
             gf.save(get_save_path(f"{job_tag}/configs/ckpoint_lat.{traj}"))
 
-size_node_list = [
-        [1, 1, 1, 1],
-        [1, 1, 1, 2],
-        [1, 1, 1, 4],
-        [1, 2, 2, 2],
-        [2, 2, 2, 2],
-        [2, 2, 2, 4]]
-
 job_tag = "test-4nt8"
 set_param(job_tag, "total_site")((4, 4, 4, 8,))
 set_param(job_tag, "hmc", "max_traj")(8)
@@ -80,6 +72,18 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(10)
 
 # ----
+
+size_node_list = [
+        [1, 1, 1, 1],
+        [1, 1, 1, 2],
+        [1, 1, 1, 3],
+        [1, 1, 1, 4],
+        [1, 1, 1, 6],
+        [1, 1, 1, 8],
+        [1, 2, 2, 4],
+        [2, 2, 2, 4],
+        [2, 2, 2, 4],
+        ]
 
 if __name__ == "__main__":
 
