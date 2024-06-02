@@ -125,12 +125,6 @@ def run_hmc(gf, ga, traj, rs):
 
 @q.timer_verbose
 def test_hmc(total_site, ga):
-    #
-    q.qmkdir_info("results");
-    q.qmkdir_info("results/gf_info");
-    q.qmkdir_info("results/wilson_flow_energy_info");
-    q.qmkdir_info("results/gm_force_info");
-    #
     geo = q.Geometry(total_site)
     rs = q.RngState("test_hmc-{}x{}x{}x{}".format(total_site[0], total_site[1], total_site[2], total_site[3]))
     gf = q.GaugeField(geo)

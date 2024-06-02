@@ -101,7 +101,6 @@ if __name__ == "__main__":
 
     if job_tags == [ "", ]:
         job_tags = job_tags_default
-        q.qremove_all_info("results")
 
     for job_tag in job_tags:
         run_params(job_tag)
