@@ -28,7 +28,7 @@ def gm_evolve_fg(gm, gf_init, ga, fi, fg_dt, dt):
     gm += gm_force
 
 @q.timer_verbose
-def run_hmc_evolve_flowed(gm, gf, ga, fi, rs, steps, md_time = 1.0):
+def run_hmc_evolve_flowed(gm, gf, ga, fi, rs, steps, md_time=1.0):
     energy = q.gm_hamilton_node(gm) + q.gf_hamilton_flowed_node(gf, ga, fi)
     #
     dt = md_time / steps

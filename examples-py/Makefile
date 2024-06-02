@@ -33,8 +33,8 @@ tests = \
 		fields-io.log \
 		hmc-pure-gauge.log \
 		hmc-pure-gauge-test.log \
+		hmc-pure-gauge-flowed-test.log \
 		hmc-pions.log \
-		hmc-pure-gauge-flowed.log \
 		qcd-utils.log \
 		free-invert.log \
 		q-fit-corr.log \
