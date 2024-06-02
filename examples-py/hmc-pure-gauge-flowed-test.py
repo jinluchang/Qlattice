@@ -8,6 +8,8 @@ import qlat as q
 # import gpt as g
 # import qlat_gpt as qg
 
+from qlat import metropolis_accept
+
 @q.timer_verbose
 def gm_evolve_fg(gm, gf_init, ga, fi, fg_dt, dt):
     geo = gf_init.geo
@@ -52,26 +54,6 @@ def run_hmc_evolve_flowed(gm, gf, ga, fi, rs, steps, md_time=1.0):
     delta_h = q.glb_sum(delta_h)
     #
     return delta_h
-
-@q.timer_verbose
-def metropolis_accept(delta_h, traj, rs):
-    flag_d = 0.0
-    accept_prob = 0.0
-    if q.get_id_node() == 0:
-        if delta_h <= 0.0:
-            accept_prob = 1.0
-            flag_d = 1.0
-        else:
-            accept_prob = m.exp(-delta_h)
-            rand_num = rs.u_rand_gen(1.0, 0.0)
-            if rand_num <= accept_prob:
-                flag_d = 1.0
-    flag_d = q.glb_sum(flag_d)
-    accept_prob = q.glb_sum(accept_prob)
-    flag = flag_d > 0.5
-    q.displayln_info("metropolis_accept: flag={:d} with accept_prob={:.1f}% delta_h={:.16f} traj={:d}".format(
-        flag, accept_prob * 100.0, delta_h, traj))
-    return flag, accept_prob
 
 @q.timer_verbose
 def mk_flow_info(rng):
