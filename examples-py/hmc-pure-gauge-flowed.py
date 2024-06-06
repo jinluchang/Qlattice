@@ -150,7 +150,7 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "fp", "time")(0.1)
 set_param(job_tag, "hmc", "save_traj_interval")(10)
 
-job_tag = "32I_b2p8_ft_2md"
+job_tag = "32I_b2p8_ft_md2"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(3.65) # 2003 lattice spacing 0309017.pdf
 set_param(job_tag, "hmc", "max_traj")(5000)
@@ -162,7 +162,7 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "fp", "time")(0.1)
 set_param(job_tag, "hmc", "save_traj_interval")(5)
 
-job_tag = "32I_b2p8_ft_5md"
+job_tag = "32I_b2p8_ft_md5"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(3.65) # 2003 lattice spacing 0309017.pdf
 set_param(job_tag, "hmc", "max_traj")(5000)
