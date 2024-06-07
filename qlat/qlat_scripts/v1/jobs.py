@@ -4,9 +4,9 @@ from .rbc_ukqcd_params import set_param, get_param
 
 import numpy as np
 
-import pprint
 import functools
 import os
+from pprint import pformat
 
 save_path_default = "results"
 
@@ -68,7 +68,7 @@ def check_job(job_tag, traj, fns_produce, fns_need):
 
 @q.timer_verbose
 def run_params(job_tag):
-    q.displayln_info(pprint.pformat(get_param(job_tag)))
+    q.displayln_info(pformat(get_param(job_tag)))
     for v in get_param(job_tag).items():
         q.displayln_info(f"CHECK: {v}")
     fn_pickle = get_save_path(f"{job_tag}/params.pickle")
@@ -76,7 +76,7 @@ def run_params(job_tag):
     if not q.does_file_exist_qar_sync_node(fn_pickle):
         q.save_pickle_obj(get_param(job_tag), fn_pickle, is_sync_node=True)
     if not q.does_file_exist_qar_sync_node(fn_txt):
-        q.qtouch_info(fn_txt, pprint.pformat(get_param(job_tag)))
+        q.qtouch_info(fn_txt, pformat(get_param(job_tag)))
 
 # ----------
 

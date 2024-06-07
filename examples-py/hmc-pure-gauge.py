@@ -45,8 +45,13 @@ def run_hmc(job_tag):
     for traj in range(traj, max_traj):
         traj += 1
         is_always_accept = traj < max_traj_always_accept
-        q.run_hmc_pure_gauge(gf, ga, traj, rs.split("run_hmc_pure_gauge"), n_step=n_step, md_time=md_time, is_always_accept=is_always_accept)
+        delta_h = q.run_hmc_pure_gauge(gf, ga, traj, rs.split("run_hmc_pure_gauge"), n_step=n_step, md_time=md_time, is_always_accept=is_always_accept)
         plaq = gf.plaq()
+        info = dict()
+        info["traj"] = traj
+        info["plaq"] = plaq
+        info["delta_h"] = delta_h
+        q.qtouch_info(get_save_path(f"{job_tag}/configs/ckpoint_lat_info.{traj}.txt"), pformat(info))
         json_results.append((f"{fname}: {traj} plaq", plaq,))
         if traj % save_traj_interval == 0:
             gf.save(get_save_path(f"{job_tag}/configs/ckpoint_lat.{traj}"))

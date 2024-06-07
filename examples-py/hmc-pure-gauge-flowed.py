@@ -10,6 +10,8 @@ import qlat as q
 
 from qlat_scripts.v1 import *
 
+from pprint import pformat
+
 load_path_list[:] = [
         "results",
         ]
@@ -87,6 +89,7 @@ def run_hmc_pure_gauge(gf, ga, fp, traj, rs, *, is_reverse_test=False, n_step=6,
     if flag or is_always_accept:
         q.displayln_info(f"{fname}: update gf (traj={traj})")
         q.gf_flow(gf, gf0, fi)
+    return delta_h
 
 @q.timer_verbose
 def run_hmc(job_tag):
@@ -122,6 +125,11 @@ def run_hmc(job_tag):
         is_always_accept = traj < max_traj_always_accept
         run_hmc_pure_gauge(gf, ga, fp, traj, rs.split("run_hmc_pure_gauge"), n_step=n_step, md_time=md_time, is_always_accept=is_always_accept)
         plaq = gf.plaq()
+        info = dict()
+        info["traj"] = traj
+        info["plaq"] = plaq
+        info["delta_h"] = delta_h
+        q.qtouch_info(get_save_path(f"{job_tag}/configs/ckpoint_lat_info.{traj}.txt"), pformat(info))
         json_results.append((f"{fname}: {traj} plaq", plaq,))
         if traj % save_traj_interval == 0:
             gf.save(get_save_path(f"{job_tag}/configs/ckpoint_lat.{traj}"))
