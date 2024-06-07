@@ -123,7 +123,7 @@ def run_hmc(job_tag):
     for traj in range(traj, max_traj):
         traj += 1
         is_always_accept = traj < max_traj_always_accept
-        run_hmc_pure_gauge(gf, ga, fp, traj, rs.split("run_hmc_pure_gauge"), n_step=n_step, md_time=md_time, is_always_accept=is_always_accept)
+        delta_h = run_hmc_pure_gauge(gf, ga, fp, traj, rs.split("run_hmc_pure_gauge"), n_step=n_step, md_time=md_time, is_always_accept=is_always_accept)
         plaq = gf.plaq()
         info = dict()
         info["traj"] = traj
