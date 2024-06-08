@@ -110,7 +110,76 @@ if False:
         measure()
     gf_f.save("results/ckpoint.topo1.4nt8.lat")
 
-q.smear_measure_topo(gf, is_show_topo_terms=True, density_field_path="results/topo-measure-density")
+def conv_topo_list(topo_list):
+    return np.array([
+        [
+            v["flow_time"],
+            v["plaq"],
+            v["energy_density"],
+            v["energy_deriv"],
+            v["topo"],
+            v["topo_clf"],
+            v["plaq_action_density"],
+            ]
+        for v in topo_list
+        ], dtype=np.float64)
+
+def conv_energy_list(energy_list):
+    return np.array([
+        [
+            v["flow_time"],
+            v["plaq"],
+            v["energy_density"],
+            ]
+        for v in energy_list
+        ], dtype=np.float64)
+
+def check_topo_energy_list(tag, topo_list, energy_list):
+    topo_arr = conv_topo_list(topo_list)
+    energy_arr = conv_energy_list(energy_list)
+    assert topo_arr.shape[1] == 7
+    assert energy_arr.shape[1] == 3
+    json_results.append((f"{tag} topo flow_time", q.get_data_sig(topo_arr[:, 0], q.RngState("check_topo_energy_list")), 1e-8,))
+    json_results.append((f"{tag} topo plaq", q.get_data_sig(topo_arr[:, 1], q.RngState("check_topo_energy_list")), 1e-8,))
+    json_results.append((f"{tag} topo energy_density", q.get_data_sig(topo_arr[:, 2], q.RngState("check_topo_energy_list")), 1e-8,))
+    json_results.append((f"{tag} topo energy_deriv", q.get_data_sig(topo_arr[:, 3], q.RngState("check_topo_energy_list")), 1e-8,))
+    json_results.append((f"{tag} topo topo", q.get_data_sig(topo_arr[:, 4], q.RngState("check_topo_energy_list")), 1e-8,))
+    json_results.append((f"{tag} topo topo_clf", q.get_data_sig(topo_arr[:, 5], q.RngState("check_topo_energy_list")), 1e-8,))
+    json_results.append((f"{tag} topo plaq_action_density", q.get_data_sig(topo_arr[:, 6], q.RngState("check_topo_energy_list")), 1e-8,))
+    json_results.append((f"{tag} energy flow_time", q.get_data_sig(energy_arr[:, 0], q.RngState("check_topo_energy_list")), 1e-8,))
+    json_results.append((f"{tag} energy plaq", q.get_data_sig(energy_arr[:, 1], q.RngState("check_topo_energy_list")), 1e-8,))
+    json_results.append((f"{tag} energy energy_density", q.get_data_sig(energy_arr[:, 2], q.RngState("check_topo_energy_list")), 1e-8,))
+
+density_field_path = "results/topo-measure-density"
+
+topo_list, energy_list, = q.smear_measure_topo(
+        gf,
+        is_show_topo_terms=True,
+        density_field_path=density_field_path,
+        )
+
+check_topo_energy_list("smear_measure_topo default", topo_list, energy_list)
+
+flow_time = 6
+
+flow_n_step = 80
+
+smear_info_list = [
+        [ 1.0 / flow_n_step, flow_n_step, 0.0, "runge-kutta", ],
+        ] * flow_time
+
+energy_derivative_info = [ 1.0 / flow_n_step, 0.0, "runge-kutta", ]
+
+density_field_path = "results/topo-measure-density-wilson-flow"
+
+topo_list, energy_list, = q.smear_measure_topo(
+        gf,
+        smear_info_list=smear_info_list,
+        energy_derivative_info=energy_derivative_info,
+        density_field_path=density_field_path,
+        )
+
+check_topo_energy_list("smear_measure_topo wilson-flow", topo_list, energy_list)
 
 q.check_log_json(__file__, json_results)
 
