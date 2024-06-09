@@ -158,6 +158,9 @@ topo_list, energy_list, = q.smear_measure_topo(
         density_field_path=density_field_path,
         )
 
+q.save_pickle_obj(topo_list, f"{density_field_path}/info.pickle")
+q.save_pickle_obj(energy_list, f"{density_field_path}/energy-list.pickle")
+
 check_topo_energy_list("smear_measure_topo default", topo_list, energy_list)
 
 flow_time = 6
@@ -178,6 +181,9 @@ topo_list, energy_list, = q.smear_measure_topo(
         energy_derivative_info=energy_derivative_info,
         density_field_path=density_field_path,
         )
+
+q.save_pickle_obj(topo_list, f"{density_field_path}/info.pickle")
+q.save_pickle_obj(energy_list, f"{density_field_path}/energy-list.pickle")
 
 check_topo_energy_list("smear_measure_topo wilson-flow", topo_list, energy_list)
 

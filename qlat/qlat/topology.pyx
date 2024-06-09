@@ -133,18 +133,21 @@ def smear_measure_topo(
         smear_info_list=None,
         *,
         energy_derivative_info=None,
+        info_path=None,
         density_field_path=None,
         is_show_topo_terms=False,
         ):
     """
     return topo_list, energy_list,
-    smear_info = [ [ step_size, n_step, c1=0.0, wilson_flow_integrator_type="runge-kutta", ], ... ]
+    gf will be modified in-place.
+    smear_info_list = [ [ step_size, n_step, c1=0.0, wilson_flow_integrator_type="runge-kutta", ], ... ]
     energy_derivative_info = [ step_size, c1=0.0, wilson_flow_integrator_type="runge-kutta", ]
     c1 = 0.0 # Wilson
     c1 = -0.331 # Iwasaki
     c1 = -1.4008 # DBW2
     wilson_flow_integrator_type = "runge-kutta"
     wilson_flow_integrator_type = "euler"
+    `info_path` can be the same as `density_field_path`.
     """
     fname = q.get_fname()
     if smear_info_list is None:
@@ -239,4 +242,7 @@ def smear_measure_topo(
     for si in smear_info_list:
         smear(*si)
         measure()
+    if info_path is not None:
+        q.save_pickle_obj(topo_list, f"{info_path}/info.pickle")
+        q.save_pickle_obj(energy_list, f"{info_path}/energy-list.pickle")
     return topo_list, energy_list,

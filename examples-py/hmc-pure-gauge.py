@@ -21,6 +21,7 @@ def run_hmc(job_tag):
     max_traj = get_param(job_tag, "hmc", "max_traj")
     max_traj_always_accept = get_param(job_tag, "hmc", "max_traj_always_accept")
     save_traj_interval = get_param(job_tag, "hmc", "save_traj_interval")
+    is_saving_topo_info = get_param(job_tag, "hmc", "is_saving_topo_info")
     md_time = get_param(job_tag, "hmc", "md_time")
     n_step = get_param(job_tag, "hmc", "n_step")
     beta = get_param(job_tag, "hmc", "beta")
@@ -55,6 +56,22 @@ def run_hmc(job_tag):
         json_results.append((f"{fname}: {traj} plaq", plaq,))
         if traj % save_traj_interval == 0:
             gf.save(get_save_path(f"{job_tag}/configs/ckpoint_lat.{traj}"))
+            if is_saving_topo_info:
+                topo_info_path = f"{job_tag}/topo-measure-wilson-flow/traj-{traj}"
+                flow_time = 6
+                flow_n_step = 80
+                smear_info_list = [
+                        [ 1.0 / flow_n_step, flow_n_step, 0.0, "runge-kutta", ],
+                        ] * flow_time
+                energy_derivative_info = [ 1.0 / flow_n_step, 0.0, "runge-kutta", ]
+                topo_list, energy_list, = q.smear_measure_topo(
+                        gf.copy(),
+                        smear_info_list=smear_info_list,
+                        energy_derivative_info=energy_derivative_info,
+                        density_field_path=topo_info_path,
+                        )
+                q.save_pickle_obj(topo_list, f"{topo_info_path}/info.pickle")
+                q.save_pickle_obj(energy_list, f"{topo_info_path}/energy-list.pickle")
         q.timer_display()
 
 job_tag = "test-4nt8"
@@ -66,6 +83,7 @@ set_param(job_tag, "hmc", "n_step")(6)
 set_param(job_tag, "hmc", "beta")(2.13)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(2)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
 job_tag = "32I_b2p8"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -77,6 +95,7 @@ set_param(job_tag, "hmc", "n_step")(32)
 set_param(job_tag, "hmc", "beta")(2.80)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(10)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
 job_tag = "32I_b2p8_md2"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -88,6 +107,7 @@ set_param(job_tag, "hmc", "n_step")(64)
 set_param(job_tag, "hmc", "beta")(2.80)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(5)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
 job_tag = "32I_b2p8_md5"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -99,6 +119,7 @@ set_param(job_tag, "hmc", "n_step")(160)
 set_param(job_tag, "hmc", "beta")(2.80)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(2)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
 job_tag = "32I_b2p8_md10"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -110,6 +131,7 @@ set_param(job_tag, "hmc", "n_step")(320)
 set_param(job_tag, "hmc", "beta")(2.80)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(1)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
 # ----
 

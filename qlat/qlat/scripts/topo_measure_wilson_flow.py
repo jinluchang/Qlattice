@@ -3,9 +3,6 @@ import qlat as q
 import numpy as np
 from pprint import pformat
 
-if len(sys.argv) == 1:
-    q.displayln_info("Usage: topo-measure-wilson-flow [ --source source_config ] [ --output path-for-results ] [ --density-field ] [ --flow-time 6 ] [ --flow-n-step-per-unit-time 80 ]")
-
 size_node_list = [
         [1, 1, 1, 1],
         [1, 1, 1, 2],
@@ -20,6 +17,9 @@ size_node_list = [
 
 q.begin_with_mpi(size_node_list)
 
+if len(sys.argv) == 1:
+    q.displayln_info("Usage: topo-measure-wilson-flow [ --source source_config ] [ --output path-for-results ] [ --density-field ] [ --flow-time 6 ] [ --flow-n-step-per-unit-time 80 ]")
+
 q.displayln_info("Topological charge measurement based on Wilson flow with Qlattice")
 q.displayln_info("by Luchang Jin")
 q.displayln_info("2024/05/20")
@@ -33,9 +33,11 @@ is_density_field = q.get_option("--density-field")
 flow_time = int(p_flow_time)
 flow_n_step = int(p_flow_n_step)
 
+info_path = p_output
+
 if is_density_field:
     assert p_output is not None
-    density_field_path=p_output
+    density_field_path=info_path
 else:
     density_field_path=None
 
@@ -64,14 +66,12 @@ topo_list, energy_list, = q.smear_measure_topo(
         gf,
         smear_info_list=smear_info_list,
         energy_derivative_info=energy_derivative_info,
+        info_path=info_path,
         density_field_path=density_field_path,
         )
 
-if p_output is not None:
-    q.save_pickle_obj(topo_list, f"{p_output}/info.pickle")
-    q.save_pickle_obj(energy_list, f"{p_output}/energy-list.pickle")
-else:
-    q.displayln_info("To save the result, use '--output filename.pickle'. Print to screen for now.")
+if info_path is None:
+    q.displayln_info("To save the result, use '--output path'. Print to screen for now.")
     q.displayln_info(pformat(topo_list))
     q.displayln_info(pformat(energy_list))
 

@@ -3,10 +3,22 @@ import qlat as q
 import numpy as np
 from pprint import pformat
 
-if len(sys.argv) == 1:
-    q.displayln_info("Usage: topo-measure [ --source source_config ] [ --output info.pickle ] [ --energy-list energy-list.pickle ] [ --density-field-path path_for_density_field ] [ --show-topo-terms ]")
+size_node_list = [
+        [1, 1, 1, 1],
+        [1, 1, 1, 2],
+        [1, 1, 1, 3],
+        [1, 1, 1, 4],
+        [1, 1, 1, 6],
+        [1, 1, 1, 8],
+        [1, 2, 2, 4],
+        [2, 2, 2, 4],
+        [2, 2, 2, 4],
+        ]
 
 q.begin_with_mpi()
+
+if len(sys.argv) == 1:
+    q.displayln_info("Usage: topo-measure [ --source source_config ] [ --output path ] [ --density-field ] [ --show-topo-terms ]")
 
 q.displayln_info("Topological charge measurement with Qlattice")
 q.displayln_info("by Luchang Jin")
@@ -14,9 +26,16 @@ q.displayln_info("2024/01/25")
 
 p_source = q.get_arg("--source")
 p_output = q.get_arg("--output")
-p_energy_list = q.get_arg("--energy-list")
-density_field_path = q.get_arg("--density-field-path")
+is_density_field = q.get_option("--density-field")
 is_show_topo_terms = q.get_option("--show-topo-terms")
+
+info_path = p_output
+
+if is_density_field:
+    assert p_output is not None
+    density_field_path=info_path
+else:
+    density_field_path=None
 
 def load():
     if p_source is None:
@@ -33,18 +52,16 @@ def load():
 
 gf = load()
 
-topo_list, energy_list, = q.smear_measure_topo(gf, is_show_topo_terms=is_show_topo_terms, density_field_path=density_field_path)
+topo_list, energy_list, = q.smear_measure_topo(
+        gf,
+        info_path=info_path,
+        density_field_path=density_field_path,
+        is_show_topo_terms=is_show_topo_terms,
+        )
 
-if p_output is not None:
-    q.save_pickle_obj(topo_list, p_output)
-else:
-    q.displayln_info("To save the result, use '--output info.pickle'. Print to screen for now.")
+if info_path is None:
+    q.displayln_info("To save the result, use '--output path'. Print to screen for now.")
     q.displayln_info(pformat(topo_list))
-
-if p_energy_list is not None:
-    q.save_pickle_obj(energy_list, p_energy_list)
-else:
-    q.displayln_info("To save the result, use '--energy-list energy-list.pickle'. Print to screen for now.")
     q.displayln_info(pformat(energy_list))
 
 q.timer_display()
