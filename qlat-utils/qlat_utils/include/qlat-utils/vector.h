@@ -16,6 +16,12 @@
 namespace qlat
 {  //
 
+void clear_mem_cache();
+
+void clear_all_caches();
+
+// --------------------
+
 API inline Long& get_alignment()
 // qlat parameter
 //
@@ -246,20 +252,6 @@ API inline MemCache& get_mem_cache(const bool is_acc = false)
   }
 }
 
-inline void clear_mem_cache()
-{
-  TIMER_VERBOSE_FLOPS("clear_mem_cache");
-  Long total_bytes = 0;
-  total_bytes += get_mem_cache(false).mem_cache_size;
-  total_bytes += get_mem_cache(true).mem_cache_size;
-  get_mem_cache(false).gc();
-  get_mem_cache(true).gc();
-  displayln_info(
-      0, fname + ssprintf(": %ld bytes (%.3f GB) freed.", total_bytes,
-                          (double)total_bytes / (1024.0 * 1024.0 * 1024.0)));
-  timer.flops += total_bytes;
-}
-
 inline void* alloc_mem(const Long min_size, const bool is_acc = false)
 {
   if (min_size <= 0) {
@@ -283,7 +275,7 @@ inline void* alloc_mem(const Long min_size, const bool is_acc = false)
         fname + ssprintf(": alloc %.3lf (GB) memory (current total %.3lf (GB))",
                          (double)min_size / (1024.0 * 1024.0 * 1024.0),
                          (double)ms.total() / (1024.0 * 1024.0 * 1024.0)));
-    clear_mem_cache();
+    clear_all_caches();
     displayln_info(
         fname + ssprintf(": after clear mem_cache (current total %.3lf (GB))",
                          (double)ms.total() / (1024.0 * 1024.0 * 1024.0)));

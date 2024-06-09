@@ -71,21 +71,6 @@ inline std::vector<std::string> get_all_caches_info()
   return infos;
 }
 
-inline void clear_all_caches()
-// (1) Clear all cache using CacheBase (or Cache which internally uses
-// CacheBase).
-//
-// (2) Clear memory cache (for vector and vector_acc memory freed but not
-// cached).
-{
-  TIMER_VERBOSE("clear_all_caches");
-  for (auto it = get_all_caches().cbegin(); it != get_all_caches().cend();
-       ++it) {
-    (*it)->clear();
-  }
-  clear_mem_cache();
-}
-
 template <class K, class M>
 struct API Cache : CacheBase {
   std::map<K, std::pair<Long, M> > m;

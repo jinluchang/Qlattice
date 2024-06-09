@@ -6,6 +6,7 @@ version = custom_target('version',
   build_always_stale: true,
   )
 cppsources = files(
+  'cache.cpp',
   'env.cpp',
   'timer.cpp',
   'lat-io.cpp',
