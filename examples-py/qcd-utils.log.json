@@ -118,5 +118,105 @@
   "gf_ape_list[2] topo",
   0.34506107649998585,
   1e-05
+ ],
+ [
+  "smear_measure_topo default topo flow_time",
+  8.713624425013156,
+  1e-08
+ ],
+ [
+  "smear_measure_topo default topo plaq",
+  3.0767126818310557,
+  1e-08
+ ],
+ [
+  "smear_measure_topo default topo energy_density",
+  1.97873109385188,
+  1e-08
+ ],
+ [
+  "smear_measure_topo default topo energy_deriv",
+  -4.001162785284186,
+  1e-08
+ ],
+ [
+  "smear_measure_topo default topo topo",
+  1.6942982844332994,
+  1e-08
+ ],
+ [
+  "smear_measure_topo default topo topo_clf",
+  1.2991824315817735,
+  1e-08
+ ],
+ [
+  "smear_measure_topo default topo plaq_action_density",
+  -1.2949846158736462,
+  1e-08
+ ],
+ [
+  "smear_measure_topo default energy flow_time",
+  0.653928533830527,
+  1e-08
+ ],
+ [
+  "smear_measure_topo default energy plaq",
+  0.26447940765094824,
+  1e-08
+ ],
+ [
+  "smear_measure_topo default energy energy_density",
+  11.80131405593206,
+  1e-08
+ ],
+ [
+  "smear_measure_topo wilson-flow topo flow_time",
+  12.892556514092671,
+  1e-08
+ ],
+ [
+  "smear_measure_topo wilson-flow topo plaq",
+  3.2532166193781733,
+  1e-08
+ ],
+ [
+  "smear_measure_topo wilson-flow topo energy_density",
+  0.17596087322490364,
+  1e-08
+ ],
+ [
+  "smear_measure_topo wilson-flow topo energy_deriv",
+  -0.06458547133486733,
+  1e-08
+ ],
+ [
+  "smear_measure_topo wilson-flow topo topo",
+  1.1584481008460217,
+  1e-08
+ ],
+ [
+  "smear_measure_topo wilson-flow topo topo_clf",
+  0.8264437604186864,
+  1e-08
+ ],
+ [
+  "smear_measure_topo wilson-flow topo plaq_action_density",
+  0.041391299641244904,
+  1e-08
+ ],
+ [
+  "smear_measure_topo wilson-flow energy flow_time",
+  -3.6506000520097883,
+  1e-08
+ ],
+ [
+  "smear_measure_topo wilson-flow energy plaq",
+  1.973646255760976,
+  1e-08
+ ],
+ [
+  "smear_measure_topo wilson-flow energy energy_density",
+  0.4614969680194459,
+  1e-08
  ]
 ]
