@@ -25,5 +25,5 @@ CHECK: ('prob_acc_2_rand_u1', 0.0625)
 CHECK: ('meson_tensor_tsep', 1)
 CHECK: ('meson_jwjj_threshold', 0.1)
 CHECK: ('meson_tsep_list', [1, 2, 3, 4, 5, 6, 7])
-CHECK: ('hmc', {'max_traj': 8, 'max_traj_always_accept': 4, 'md_time': 1.0, 'n_step': 6, 'beta': 2.13, 'c1': -0.331, 'save_traj_interval': 2, 'is_saving_topo_info': True})
+CHECK: ('hmc', {'max_traj': 8, 'max_traj_always_accept': 4, 'md_time': 1.0, 'n_step': 6, 'beta': 2.13, 'c1': -0.331, 'save_traj_interval': 4, 'is_saving_topo_info': True})
 CHECK: finished successfully.
