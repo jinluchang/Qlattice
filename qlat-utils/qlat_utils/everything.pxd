@@ -507,9 +507,13 @@ cdef extern from "qlat-utils/qar.h" namespace "qlat":
 
 cdef extern from "qlat-utils/cache.h" namespace "qlat":
 
-    std_vector[std_string] get_all_caches_info()
-    void clear_all_caches()
-    void displayln_malloc_stats()
+    std_vector[std_string] get_all_caches_info() except +
+    void displayln_malloc_stats() except +
+
+cdef extern from "qlat-utils/vector.h" namespace "qlat":
+
+    void clear_mem_cache() except +
+    void clear_all_caches() except +
 
 ### --------------------------------------------------------
 

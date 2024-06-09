@@ -58,6 +58,8 @@ def load():
     else:
         gf = q.GaugeField()
         gf.load(p_source)
+    q.clear_all_caches()
+    q.clear_mem_cache()
     return gf
 
 gf = load()

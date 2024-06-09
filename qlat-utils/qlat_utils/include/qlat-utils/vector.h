@@ -275,7 +275,7 @@ inline void* alloc_mem(const Long min_size, const bool is_acc = false)
         fname + ssprintf(": alloc %.3lf (GB) memory (current total %.3lf (GB))",
                          (double)min_size / (1024.0 * 1024.0 * 1024.0),
                          (double)ms.total() / (1024.0 * 1024.0 * 1024.0)));
-    clear_all_caches();
+    clear_mem_cache();
     displayln_info(
         fname + ssprintf(": after clear mem_cache (current total %.3lf (GB))",
                          (double)ms.total() / (1024.0 * 1024.0 * 1024.0)));

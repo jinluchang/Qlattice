@@ -133,3 +133,6 @@ def get_all_caches_info():
 
 def clear_all_caches():
     cc.clear_all_caches()
+
+def clear_mem_cache():
+    cc.clear_mem_cache()
