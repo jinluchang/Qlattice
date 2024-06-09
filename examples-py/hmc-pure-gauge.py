@@ -77,6 +77,8 @@ def run_hmc(job_tag):
                 run_topo_info(job_tag, traj, gf)
         q.timer_display()
 
+# ----
+
 job_tag = "test-4nt8"
 set_param(job_tag, "total_site")((4, 4, 4, 8,))
 set_param(job_tag, "hmc", "max_traj")(8)

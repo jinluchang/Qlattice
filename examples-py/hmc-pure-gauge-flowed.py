@@ -115,6 +115,7 @@ def run_hmc(job_tag):
     max_traj = get_param(job_tag, "hmc", "max_traj")
     max_traj_always_accept = get_param(job_tag, "hmc", "max_traj_always_accept")
     save_traj_interval = get_param(job_tag, "hmc", "save_traj_interval")
+    is_saving_topo_info = get_param(job_tag, "hmc", "is_saving_topo_info")
     md_time = get_param(job_tag, "hmc", "md_time")
     n_step = get_param(job_tag, "hmc", "n_step")
     fp = get_param(job_tag, "hmc", "fp") # field transformation (flow) parameters
@@ -153,6 +154,8 @@ def run_hmc(job_tag):
             if is_saving_topo_info:
                 run_topo_info(job_tag, traj, gf)
         q.timer_display()
+
+# ----
 
 job_tag = "test-4nt8"
 set_param(job_tag, "total_site")((4, 4, 4, 8,))
