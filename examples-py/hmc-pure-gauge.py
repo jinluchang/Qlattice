@@ -85,7 +85,7 @@ set_param(job_tag, "hmc", "md_time")(1.0)
 set_param(job_tag, "hmc", "n_step")(6)
 set_param(job_tag, "hmc", "beta")(2.13)
 set_param(job_tag, "hmc", "c1")(-0.331)
-set_param(job_tag, "hmc", "save_traj_interval")(2)
+set_param(job_tag, "hmc", "save_traj_interval")(4)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
 job_tag = "32I_b2p8"
