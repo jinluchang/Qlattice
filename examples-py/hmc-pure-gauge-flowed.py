@@ -221,6 +221,19 @@ set_param(job_tag, "hmc", "fp", "time")(0.1)
 set_param(job_tag, "hmc", "save_traj_interval")(1)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
+job_tag = "32nt48I_b2p95_ft0p124"
+set_param(job_tag, "total_site")((32, 32, 32, 48,))
+set_param(job_tag, "a_inv_gev")(3.5) # rough guess
+set_param(job_tag, "hmc", "max_traj")(5000)
+set_param(job_tag, "hmc", "max_traj_always_accept")(10)
+set_param(job_tag, "hmc", "md_time")(1.0)
+set_param(job_tag, "hmc", "n_step")(32)
+set_param(job_tag, "hmc", "beta")(2.95)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "fp", "time")(0.124)
+set_param(job_tag, "hmc", "save_traj_interval")(1)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+
 # ----
 
 job_tag = "32I-3.5gev-ft"
