@@ -25,6 +25,8 @@ Qlattice
 
    contents/cpp-structure.md
 
+   contents/hmc.md
+
 Indices and tables
 ==================
 

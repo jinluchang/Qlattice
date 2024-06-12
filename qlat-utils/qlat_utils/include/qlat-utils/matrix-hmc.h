@@ -118,9 +118,9 @@ qacc array<double, 8> basis_projection_anti_hermitian_matrix(
 }
 
 inline ColorMatrix make_g_rand_anti_hermitian_matrix(RngState& rs,
-                                                        const double sigma)
-//  Creates an antihermitian 3x3 complex matrix with each complex
-//  element drawn at random from a gaussian distribution with zero mean.
+                                                     const double sigma)
+//  Creates an anti-hermitian 3x3 complex matrix with each complex
+//  element drawn at random from a Gaussian distribution with zero mean.
 //  Hence the matrices are distributed according to
 //
 //  exp[- Tr(mat^2)/(2 sigma**2)]
@@ -134,6 +134,8 @@ inline ColorMatrix make_g_rand_anti_hermitian_matrix(RngState& rs,
 }
 
 qacc double neg_half_tr_square(const ColorMatrix& m)
+// ret == (basis**2).sum()
+// basis = basis_projection_anti_hermitian_matrix(m)
 {
   const Array<double, 18> p(m.d());
   return sqr(p[3]) + sqr(p[2]) + sqr(p[1] - p[9]) * 0.25 + sqr(p[5]) +
