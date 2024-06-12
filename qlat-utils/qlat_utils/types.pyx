@@ -70,7 +70,7 @@ cdef class Buffer:
 
     cdef Py_ssize_t get_len(self):
         cdef int i
-        cdef Py_ssize_t ret = 1
+        cdef Py_ssize_t ret = self.itemsize
         for i in range(self.ndim):
             ret *= self.shape_strides[i]
         return ret

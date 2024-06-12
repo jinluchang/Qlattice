@@ -48,7 +48,7 @@ def mk_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag):
     # q.displayln_info("qlat field made")
     lexicographic_coordinates = g.coordinates(f_gpt)
     # q.displayln_info("gpt coordinates collected")
-    buf = f_qlat.mview()
+    buf = memoryview(f_qlat)
     # q.displayln_info("qlat mview made")
     if tag == "qlat_from_gpt":
         # q.displayln_info("qlat_from_gpt")
@@ -103,7 +103,7 @@ def qlat_from_gpt_gauge_field(gpt_gf):
     fs = [ q.FieldColorMatrix(geo, 1) for i in range(4)]
     assert len(fs) == 4
     for i in range(4):
-        plan(fs[i].mview(), gpt_gf[i])
+        plan(memoryview(fs[i]), gpt_gf[i])
     gf = q.GaugeField()
     q.merge_fields(gf, fs)
     return gf
@@ -124,7 +124,7 @@ def gpt_from_qlat_gauge_field(gf):
     gpt_gf = [ None, ] * 4
     for i in range(4):
         gpt_gf[i] = g.mcolor(grid)
-        plan(gpt_gf[i], fs[i].mview())
+        plan(gpt_gf[i], memoryview(fs[i]))
         fs[i] = None
     return gpt_gf
 
@@ -137,7 +137,7 @@ def qlat_from_gpt_gauge_transform(gpt_gt):
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
     geo = q.Geometry(total_site)
     gt = q.GaugeTransform(geo)
-    plan(gt.mview(), gpt_gt)
+    plan(memoryview(gt), gpt_gt)
     return gt
 
 @q.timer
@@ -151,7 +151,7 @@ def gpt_from_qlat_gauge_transform(gt):
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
     grid = mk_grid(geo)
     gpt_gt = g.mcolor(grid)
-    plan(gpt_gt, gt.mview())
+    plan(gpt_gt, memoryview(gt))
     return gpt_gt
 
 @q.timer
@@ -163,7 +163,7 @@ def qlat_from_gpt_prop(gpt_prop):
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
     geo = q.Geometry(total_site)
     prop_msc = q.Prop(geo)
-    plan(prop_msc.mview(), gpt_prop)
+    plan(memoryview(prop_msc), gpt_prop)
     prop_wm = q.convert_wm_from_mspincolor(prop_msc)
     return prop_wm
 
@@ -179,7 +179,7 @@ def gpt_from_qlat_prop(prop_wm):
     prop_msc = q.convert_mspincolor_from_wm(prop_wm)
     grid = mk_grid(geo)
     gpt_prop = g.mspincolor(grid)
-    plan(gpt_prop, prop_msc.mview())
+    plan(gpt_prop, memoryview(prop_msc))
     return gpt_prop
 
 @q.timer
@@ -191,7 +191,7 @@ def qlat_from_gpt_ff4d(gpt_ff):
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
     geo = q.Geometry(total_site)
     ff = q.FermionField4d(geo, multiplicity)
-    plan(ff.mview(), gpt_ff)
+    plan(memoryview(ff), gpt_ff)
     return ff
 
 @q.timer
@@ -205,7 +205,7 @@ def gpt_from_qlat_ff4d(ff):
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
     grid = mk_grid(geo)
     gpt_ff = g.vspincolor(grid)
-    plan(gpt_ff, ff.mview())
+    plan(gpt_ff, memoryview(ff))
     return gpt_ff
 
 @q.timer
@@ -221,7 +221,7 @@ def qlat_from_gpt_complex(gpt_fcs):
     n = len(gpt_fcs)
     fs = [ q.FieldComplexD(geo, multiplicity) for i in range(n) ]
     for i in range(n):
-        plan(fs[i].mview(), gpt_fcs[i])
+        plan(memoryview(fs), gpt_fcs[i])
     if n == 1:
         return fs[0]
     ff = q.FieldComplexD(q.Geometry(total_site), n)
@@ -244,7 +244,7 @@ def gpt_from_qlat_complex(fc):
     gpt_fcs = [ None, ] * n
     for i in range(n):
         gpt_fcs[i] = g.complex(grid)
-        plan(gpt_fcs[i], fs[i].mview())
+        plan(gpt_fcs[i], memoryview(fs))
         fs[i] = None
     return gpt_fcs
 
