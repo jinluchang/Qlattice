@@ -31,19 +31,19 @@ cdef class GaugeMomentum(FieldColorMatrix):
 ###
 
 def set_rand_gauge_momentum(GaugeMomentum gm, cc.RealD sigma, RngState rng):
-    return c.set_rand_gauge_momentum(gm, sigma, rng)
+    return cc.set_rand_gauge_momentum(gm.xxx().val(), sigma, rng.xx)
 
 def gm_hamilton_node(GaugeMomentum gm):
-    return c.gm_hamilton_node(gm)
+    return cc.gm_hamilton_node(gm.xxx().val())
 
 def gf_hamilton_node(GaugeField gf, GaugeAction ga):
-    return c.gf_hamilton_node(gf, ga)
+    return cc.gf_hamilton_node(gf.xxx().val(), ga.xx)
 
 def gf_evolve(GaugeField gf, GaugeMomentum gm, cc.RealD step_size):
-    return c.gf_evolve(gf, gm, step_size)
+    return cc.gf_evolve(gf.xxx().val(), gm.xxx().val(), step_size)
 
 def set_gm_force(GaugeMomentum gm_force, GaugeField gf, GaugeAction ga):
-    return c.set_gm_force(gm_force, gf, ga)
+    return cc.set_gm_force(gm_force.xxx().val(), gf.xxx().val(), ga.xx)
 
 @q.timer_verbose
 def metropolis_accept(delta_h, traj, rs):
