@@ -25,6 +25,29 @@ void set_rand_gauge_momentum(GaugeMomentum& gm, const double sigma,
 
 double gm_hamilton_node(const GaugeMomentum& gm);
 
+double gf_sum_re_tr_plaq_node_no_comm(const GaugeField& gf);
+
+double gf_sum_re_tr_rect_node_no_comm(const GaugeField& gf);
+
+double gf_hamilton_node_no_comm(const GaugeField& gf, const GaugeAction& ga);
+
+double gf_hamilton_node(const GaugeField& gf, const GaugeAction& ga);
+
+double gf_hamilton(const GaugeField& gf, const GaugeAction& ga);
+
+void gf_evolve(GaugeField& gf, const GaugeMomentum& gm, const double step_size);
+
+void set_gm_force_no_comm(GaugeMomentum& gm_force, const GaugeField& gf,
+                          const GaugeAction& ga);
+
+void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf,
+                  const GaugeAction& ga);
+
+void set_gm_force_dual(GaugeMomentum& gm_force_dual, const GaugeField& gf,
+                       const GaugeMomentum& gm_force);
+
+// -------------------
+
 qacc double gf_re_tr_plaq_no_comm(const GaugeField& gf, const Coordinate& xl,
                                   const int mu, const int nu)
 {
@@ -40,18 +63,6 @@ qacc double gf_re_tr_rect_no_comm(const GaugeField& gf, const Coordinate& xl,
       gf, xl, make_array<int>(mu, mu, nu, -mu - 1, -mu - 1, -nu - 1));
   return matrix_trace(m).real();
 }
-
-double gf_sum_re_tr_plaq_node_no_comm(const GaugeField& gf);
-
-double gf_sum_re_tr_rect_node_no_comm(const GaugeField& gf);
-
-double gf_hamilton_node_no_comm(const GaugeField& gf, const GaugeAction& ga);
-
-double gf_hamilton_node(const GaugeField& gf, const GaugeAction& ga);
-
-double gf_hamilton(const GaugeField& gf, const GaugeAction& ga);
-
-void gf_evolve(GaugeField& gf, const GaugeMomentum& gm, const double step_size);
 
 qacc ColorMatrix gf_plaq_staple_no_comm(const GaugeField& gf,
                                         const Coordinate& xl, const int mu)
@@ -114,11 +125,5 @@ qacc ColorMatrix gf_force_site_no_comm(const GaugeField& gf,
       (ComplexD)(-beta / 3.0) * (gf.get_elem(xl, mu) * ad_staple);
   return make_tr_less_anti_herm_matrix(force);
 }
-
-void set_gm_force_no_comm(GaugeMomentum& gm_force, const GaugeField& gf,
-                          const GaugeAction& ga);
-
-void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf,
-                  const GaugeAction& ga);
 
 }  // namespace qlat
