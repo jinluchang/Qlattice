@@ -42,8 +42,14 @@ def gf_hamilton_node(GaugeField gf, GaugeAction ga):
 def gf_evolve(GaugeField gf, GaugeMomentum gm, cc.RealD step_size):
     return cc.gf_evolve(gf.xxx().val(), gm.xxx().val(), step_size)
 
+def gf_evolve_dual(GaugeField gf, GaugeMomentum gm_dual, cc.RealD step_size):
+    return cc.gf_evolve(gf.xxx().val(), gm_dual.xxx().val(), step_size)
+
 def set_gm_force(GaugeMomentum gm_force, GaugeField gf, GaugeAction ga):
     return cc.set_gm_force(gm_force.xxx().val(), gf.xxx().val(), ga.xx)
+
+def set_gm_force_dual(GaugeMomentum gm_force_dual, GaugeField gf, GaugeMomentum gm_force):
+    return cc.set_gm_force_dual(gm_force_dual.xxx().val(), gf.xxx().val(), gm_force.xxx().val())
 
 @q.timer_verbose
 def metropolis_accept(delta_h, traj, rs):
