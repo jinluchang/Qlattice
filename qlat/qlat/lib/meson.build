@@ -7,6 +7,7 @@ cppsources = files(
   'field-io.cpp',
   'field-shuffle.cpp',
   'fields-io.cpp',
+  'hmc.cpp',
   'mpi.cpp',
   'qcd.cpp',
   'selected-field.cpp',
