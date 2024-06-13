@@ -37,6 +37,9 @@ double gf_hamilton(const GaugeField& gf, const GaugeAction& ga);
 
 void gf_evolve(GaugeField& gf, const GaugeMomentum& gm, const double step_size);
 
+void gf_evolve_dual(GaugeField& gf, const GaugeMomentum& gm_dual,
+                    const double step_size);
+
 void set_gm_force_no_comm(GaugeMomentum& gm_force, const GaugeField& gf,
                           const GaugeAction& ga);
 
