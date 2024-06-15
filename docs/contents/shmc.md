@@ -14,7 +14,7 @@ $$
 
 
 
-# HMC (dual) formulation
+# SHMC formulation
 
 > Luchang Jin
 >
