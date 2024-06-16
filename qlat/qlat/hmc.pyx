@@ -119,7 +119,7 @@ def run_hmc_pure_gauge(gf, ga, traj, rs, *, is_reverse_test=False, n_step=6, md_
         gf0_r = GaugeField(geo)
         gf0_r @= gf0
         delta_h_rev = run_hmc_evolve_pure_gauge(gm_r, gf0_r, ga, rs, n_step, -md_time)
-        gf0_r -= gf;
+        gf0_r -= gf
         q.displayln_info(f"{fname}: reversed delta_diff: {delta_h + delta_h_rev} / {delta_h}")
         gf_diff_norm = q.qnorm(gf0_r)
         gf_norm = q.qnorm(gf0)

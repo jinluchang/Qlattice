@@ -89,7 +89,7 @@ def run_hmc_traj(gf, ga, fp, traj, rs, *, is_reverse_test=False, n_step=6, md_ti
         gf0_r @= gf0
         delta_h_rev = run_hmc_evolve_flowed(gm_r, gf0_r, ga, fi, rs, n_step, -md_time)
         q.gf_flow(gf0_r, gf0_r, fi)
-        gf0_r -= gf0
+        gf0_r -= gf
         q.displayln_info(f"{fname}: reversed delta_diff: {delta_h + delta_h_rev} / {delta_h}")
         gf_diff_norm = q.qnorm(gf0_r)
         gf_norm = q.qnorm(gf0)
