@@ -169,6 +169,13 @@ U^{ba}(x,\mu) T^a = U(x,\mu) T^b U^{-1}(x,\mu)
 \ea
 $$
 
+therefore
+$$
+\ba
+U^{ba}(x,\mu) T^b = U^{-1}(x,\mu) T^a U(x,\mu)
+\ea
+$$
+
 ### Gauge momentum evolve
 
 $$
@@ -211,16 +218,16 @@ $$
 \ba
 \frac{d}{dt}\pi_2(x,\mu)
 &=
--\frac{1}{2} T^a \frac{\delta S}{\delta s_2(x,\mu)^a}
+-\frac{1}{2} T^b \frac{\delta S}{\delta s_2(x,\mu)^b}
 \\
 &=
-\frac{1}{2} U^{ba}(x,\mu) T^a \frac{\delta S}{\delta s_1(x,\mu)^b}
+\frac{1}{2} U^{ba}(x,\mu) T^b \frac{\delta S}{\delta s_1(x,\mu)^a}
 \\
 &=
-\frac{1}{2} U(x,\mu) T^a U^{-1}(x,\mu) \frac{\delta S}{\delta s_1(x,\mu)^a}
+\frac{1}{2} U(x,\mu) T^a U(x,\mu) \frac{\delta S}{\delta s_1(x,\mu)^a}
 \\
 &=
-- U(x,\mu) \frac{d}{dt}\pi_1(x,\mu) U^{-1}(x,\mu)
+- U^{-1}(x,\mu) \frac{d}{dt}\pi_1(x,\mu) U(x,\mu)
 \ea
 $$
 where

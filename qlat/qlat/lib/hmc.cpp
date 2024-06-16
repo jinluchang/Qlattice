@@ -256,14 +256,14 @@ void set_gm_force_dual(GaugeMomentum& gm_force_dual, const GaugeField& gf,
   qacc_for(index, gf.geo().local_volume(), {
     const Geometry& geo = gf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
-    Vector<ColorMatrix> gm_dual_v = gm_force_dual.get_elems_const(xl);
+    Vector<ColorMatrix> gm_dual_v = gm_force_dual.get_elems(xl);
     const Vector<ColorMatrix> gf_v = gf.get_elems_const(xl);
     const Vector<ColorMatrix> gm_v = gm_force.get_elems_const(xl);
     qassert(gm_dual_v.size() == 4);
     qassert(gf_v.size() == 4);
     qassert(gm_v.size() == 4);
     for (int mu = 0; mu < 4; ++mu) {
-      gm_dual_v[mu] = -gf_v[mu] * gm_v[mu] * matrix_adjoint(gf_v[mu]);
+      gm_dual_v[mu] = -matrix_adjoint(gf_v[mu]) * gm_v[mu] * gf_v[mu];
     }
   });
 }
