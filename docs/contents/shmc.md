@@ -281,13 +281,20 @@ $H$
 
 ```
 double gm_hamilton_node(const GaugeMomentum& gm)
-double gf_hamilton_node_no_comm(const GaugeField& gf, const GaugeAction& ga)
+double gf_hamilton_node(const GaugeField& gf, const GaugeAction& ga)
 ```
 
 $\mathcal P\{m\}$
 
 ```
 ColorMatrix make_tr_less_anti_herm_matrix(const ColorMatrix& m)
+```
+
+```
+void gf_evolve(GaugeField& gf, const GaugeMomentum& gm, const double step_size)
+void gf_evolve_dual(GaugeField& gf, const GaugeMomentum& gm_dual, const double step_size)
+void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf, const GaugeAction& ga)
+void set_gm_force_dual(GaugeMomentum& gm_force_dual, const GaugeField& gf, const GaugeMomentum& gm_force)
 ```
 
 

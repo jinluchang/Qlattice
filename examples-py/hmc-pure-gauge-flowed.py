@@ -12,11 +12,13 @@ from qlat_scripts.v1 import *
 
 from pprint import pformat
 
+from qlat import metropolis_accept
+
 load_path_list[:] = [
         "results",
         ]
 
-from qlat import metropolis_accept
+# ----
 
 @q.timer_verbose
 def gm_evolve_fg(gm, gf_init, ga, fi, fg_dt, dt):

@@ -10,9 +10,94 @@ import qlat as q
 
 from qlat_scripts.v1 import *
 
+from qlat import (
+        GaugeField,
+        GaugeMomentum,
+        metropolis_accept,
+        set_gm_force,
+        set_gm_force_dual,
+        gm_hamilton_node,
+        gf_hamilton_node,
+        glb_sum_double,
+        )
+
 load_path_list[:] = [
         "results",
         ]
+
+# ----
+
+@q.timer
+def gf_evolve(gf, gm, gm_dual, dt):
+    q.gf_evolve(gf, gm, dt)
+    q.gf_evolve_dual(gf, gm_dual, dt)
+
+@q.timer
+def gm_evolve_fg(gm, gm_dual, gf_init, ga, fg_dt, dt):
+    geo = gf_init.geo
+    gf = GaugeField(geo)
+    gf @= gf_init
+    gm_force = GaugeMomentum(geo)
+    gm_force_dual = GaugeMomentum(geo)
+    set_gm_force(gm_force, gf, ga)
+    set_gm_force_dual(gm_force_dual, gf, gm_force)
+    gf_evolve(gf, gm_force, gm_force_dual, fg_dt)
+    set_gm_force(gm_force, gf, ga)
+    set_gm_force_dual(gm_force_dual, gf, gm_force)
+    gm_force *= dt
+    gm_force_dual *= dt
+    gm += gm_force
+    gm_dual += gm_force_dual
+
+@q.timer_verbose
+def run_hmc_evolve(gm, gm_dual, gf, ga, rs, n_step, md_time=1.0):
+    energy = gm_hamilton_node(gm) + gm_hamilton_node(gm_dual) + gf_hamilton_node(gf, ga)
+    dt = md_time / n_step
+    lam = 0.5 * (1.0 - 1.0 / math.sqrt(3.0));
+    theta = (2.0 - math.sqrt(3.0)) / 48.0;
+    ttheta = theta * dt * dt * dt;
+    gf_evolve(gf, gm, gm_dual, lam * dt)
+    for i in range(n_step):
+        gm_evolve_fg(gm, gm_dual, gf, ga, 4.0 * ttheta / dt, 0.5 * dt);
+        gf_evolve(gf, gm, gm_dual, (1.0 - 2.0 * lam) * dt);
+        gm_evolve_fg(gm, gm_dual, gf, ga, 4.0 * ttheta / dt, 0.5 * dt);
+        if i < n_step - 1:
+            gf_evolve(gf, gm, gm_dual, 2.0 * lam * dt);
+        else:
+            gf_evolve(gf, gm, gm_dual, lam * dt);
+    gf.unitarize()
+    delta_h = gm_hamilton_node(gm) + gm_hamilton_node(gm_dual) + gf_hamilton_node(gf, ga) - energy;
+    delta_h = q.glb_sum(delta_h)
+    return delta_h
+
+@q.timer_verbose
+def run_hmc_traj(gf, ga, traj, rs, *, is_reverse_test=False, n_step=6, md_time=1.0, is_always_accept=False):
+    fname = q.get_fname()
+    rs = rs.split(f"{traj}")
+    geo = gf.geo
+    gf0 = GaugeField(geo)
+    gf0 @= gf
+    gm = GaugeMomentum(geo)
+    gm.set_rand(rs.split("set_rand_gauge_momentum"), 1.0)
+    gm_dual = GaugeMomentum(geo)
+    gm_dual.set_rand(rs.split("set_rand_gauge_momentum"), 1.0)
+    delta_h = run_hmc_evolve(gm, gm_dual, gf0, ga, rs, n_step, md_time)
+    if is_reverse_test:
+        gm_r = GaugeMomentum(geo)
+        gm_r @= gm
+        gm_dual_r = GaugeMomentum(geo)
+        gm_dual_r @= gm_dual
+        gf0_r = GaugeField(geo)
+        gf0_r @= gf0
+        delta_h_rev = run_hmc_evolve(gm_r, gm_dual_r, gf0_r, ga, rs, n_step, -md_time)
+        gf0_r -= gf;
+        q.displayln_info(f"{fname}: reversed delta_diff: {delta_h + delta_h_rev} / {delta_h}")
+        q.displayln_info(f"{fname}: reversed gf_diff: {q.qnorm(gf0_r)} / {q.qnorm(gf0)}")
+    flag, accept_prob = metropolis_accept(delta_h, traj, rs.split("metropolis_accept"))
+    if flag or is_always_accept:
+        q.displayln_info(f"{fname}: update gf (traj={traj})")
+        gf @= gf0
+    return delta_h
 
 @q.timer_verbose
 def run_topo_info(job_tag, traj, gf):
@@ -37,6 +122,7 @@ def run_hmc(job_tag):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     max_traj = get_param(job_tag, "hmc", "max_traj")
     max_traj_always_accept = get_param(job_tag, "hmc", "max_traj_always_accept")
+    max_traj_reverse_test= get_param(job_tag, "hmc", "max_traj_reverse_test")
     save_traj_interval = get_param(job_tag, "hmc", "save_traj_interval")
     is_saving_topo_info = get_param(job_tag, "hmc", "is_saving_topo_info")
     md_time = get_param(job_tag, "hmc", "md_time")
@@ -63,7 +149,8 @@ def run_hmc(job_tag):
     for traj in range(traj, max_traj):
         traj += 1
         is_always_accept = traj < max_traj_always_accept
-        delta_h = q.run_hmc_pure_gauge(gf, ga, traj, rs.split("run_hmc_pure_gauge"), n_step=n_step, md_time=md_time, is_always_accept=is_always_accept)
+        is_reverse_test = traj < max_traj_reverse_test
+        delta_h = run_hmc_traj(gf, ga, traj, rs.split("run_hmc_traj"), n_step=n_step, md_time=md_time, is_always_accept=is_always_accept, is_reverse_test=is_reverse_test)
         plaq = gf.plaq()
         info = dict()
         info["traj"] = traj
@@ -83,6 +170,7 @@ job_tag = "test-4nt8"
 set_param(job_tag, "total_site")((4, 4, 4, 8,))
 set_param(job_tag, "hmc", "max_traj")(8)
 set_param(job_tag, "hmc", "max_traj_always_accept")(4)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
 set_param(job_tag, "hmc", "md_time")(1.0)
 set_param(job_tag, "hmc", "n_step")(6)
 set_param(job_tag, "hmc", "beta")(2.13)
@@ -90,7 +178,7 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
-job_tag = "32I_b2p8"
+job_tag = "32I_b2p8_sym"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
 set_param(job_tag, "hmc", "max_traj")(20000)
