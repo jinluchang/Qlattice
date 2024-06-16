@@ -129,4 +129,4 @@ def run_hmc_pure_gauge(gf, ga, traj, rs, *, is_reverse_test=False, n_step=6, md_
     if flag or is_always_accept:
         q.displayln_info(f"{fname}: update gf (traj={traj})")
         gf @= gf0
-    return delta_h
+    return flag, delta_h

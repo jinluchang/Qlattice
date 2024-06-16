@@ -18,7 +18,6 @@ from qlat import (
         set_gm_force_dual,
         gm_hamilton_node,
         gf_hamilton_node,
-        glb_sum_double,
         )
 
 load_path_list[:] = [
@@ -80,7 +79,7 @@ def run_hmc_traj(gf, ga, traj, rs, *, is_reverse_test=False, n_step=6, md_time=1
     gm = GaugeMomentum(geo)
     gm.set_rand(rs.split("set_rand_gauge_momentum"), 1.0)
     gm_dual = GaugeMomentum(geo)
-    gm_dual.set_rand(rs.split("set_rand_gauge_momentum"), 1.0)
+    gm_dual.set_rand(rs.split("set_rand_gauge_momentum_dual"), 1.0)
     delta_h = run_hmc_evolve(gm, gm_dual, gf0, ga, rs, n_step, md_time)
     if is_reverse_test:
         gm_r = GaugeMomentum(geo)
@@ -97,10 +96,11 @@ def run_hmc_traj(gf, ga, traj, rs, *, is_reverse_test=False, n_step=6, md_time=1
         q.displayln_info(f"{fname}: reversed gf_diff: {gf_diff_norm} / {gf_norm}")
         assert gf_diff_norm <= 1e-12 * gf_norm
     flag, accept_prob = metropolis_accept(delta_h, traj, rs.split("metropolis_accept"))
+    q.displayln_info(f"{fname}: delta_h={delta_h}, flag={flag}, accept_prob={accept_prob}")
     if flag or is_always_accept:
         q.displayln_info(f"{fname}: update gf (traj={traj})")
         gf @= gf0
-    return delta_h
+    return flag, delta_h
 
 @q.timer_verbose
 def run_topo_info(job_tag, traj, gf):
@@ -153,11 +153,12 @@ def run_hmc(job_tag):
         traj += 1
         is_always_accept = traj < max_traj_always_accept
         is_reverse_test = traj < max_traj_reverse_test
-        delta_h = run_hmc_traj(gf, ga, traj, rs.split("run_hmc_traj"), n_step=n_step, md_time=md_time, is_always_accept=is_always_accept, is_reverse_test=is_reverse_test)
+        flag, delta_h = run_hmc_traj(gf, ga, traj, rs.split("run_hmc_traj"), n_step=n_step, md_time=md_time, is_always_accept=is_always_accept, is_reverse_test=is_reverse_test)
         plaq = gf.plaq()
         info = dict()
         info["traj"] = traj
         info["plaq"] = plaq
+        info["flag"] = flag
         info["delta_h"] = delta_h
         q.qtouch_info(get_save_path(f"{job_tag}/configs/ckpoint_lat_info.{traj}.txt"), pformat(info))
         json_results.append((f"{fname}: {traj} plaq", plaq,))

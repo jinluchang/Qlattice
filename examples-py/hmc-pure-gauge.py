@@ -65,11 +65,12 @@ def run_hmc(job_tag):
         traj += 1
         is_always_accept = traj < max_traj_always_accept
         is_reverse_test = traj < max_traj_reverse_test
-        delta_h = q.run_hmc_pure_gauge(gf, ga, traj, rs.split("run_hmc_pure_gauge"), n_step=n_step, md_time=md_time, is_always_accept=is_always_accept, is_reverse_test=is_reverse_test)
+        flag, delta_h = q.run_hmc_pure_gauge(gf, ga, traj, rs.split("run_hmc_pure_gauge"), n_step=n_step, md_time=md_time, is_always_accept=is_always_accept, is_reverse_test=is_reverse_test)
         plaq = gf.plaq()
         info = dict()
         info["traj"] = traj
         info["plaq"] = plaq
+        info["flag"] = flag
         info["delta_h"] = delta_h
         q.qtouch_info(get_save_path(f"{job_tag}/configs/ckpoint_lat_info.{traj}.txt"), pformat(info))
         json_results.append((f"{fname}: {traj} plaq", plaq,))
@@ -98,6 +99,7 @@ set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
 set_param(job_tag, "hmc", "max_traj")(20000)
 set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
 set_param(job_tag, "hmc", "md_time")(1.0)
 set_param(job_tag, "hmc", "n_step")(32)
 set_param(job_tag, "hmc", "beta")(2.80)
@@ -110,6 +112,7 @@ set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
 set_param(job_tag, "hmc", "max_traj")(10000)
 set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
 set_param(job_tag, "hmc", "md_time")(2.0)
 set_param(job_tag, "hmc", "n_step")(32 * 2)
 set_param(job_tag, "hmc", "beta")(2.80)
@@ -122,6 +125,7 @@ set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
 set_param(job_tag, "hmc", "max_traj")(5000)
 set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
 set_param(job_tag, "hmc", "md_time")(3.0)
 set_param(job_tag, "hmc", "n_step")(32 * 3)
 set_param(job_tag, "hmc", "beta")(2.80)
@@ -134,6 +138,7 @@ set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
 set_param(job_tag, "hmc", "max_traj")(5000)
 set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
 set_param(job_tag, "hmc", "md_time")(4.0)
 set_param(job_tag, "hmc", "n_step")(32 * 4)
 set_param(job_tag, "hmc", "beta")(2.80)
@@ -146,6 +151,7 @@ set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
 set_param(job_tag, "hmc", "max_traj")(5000)
 set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
 set_param(job_tag, "hmc", "md_time")(5.0)
 set_param(job_tag, "hmc", "n_step")(32 * 5)
 set_param(job_tag, "hmc", "beta")(2.80)
@@ -158,6 +164,7 @@ set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
 set_param(job_tag, "hmc", "max_traj")(5000)
 set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
 set_param(job_tag, "hmc", "md_time")(6.0)
 set_param(job_tag, "hmc", "n_step")(32 * 6)
 set_param(job_tag, "hmc", "beta")(2.80)
@@ -170,6 +177,7 @@ set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
 set_param(job_tag, "hmc", "max_traj")(5000)
 set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
 set_param(job_tag, "hmc", "md_time")(7.0)
 set_param(job_tag, "hmc", "n_step")(32 * 7)
 set_param(job_tag, "hmc", "beta")(2.80)
@@ -182,6 +190,7 @@ set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
 set_param(job_tag, "hmc", "max_traj")(5000)
 set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
 set_param(job_tag, "hmc", "md_time")(8.0)
 set_param(job_tag, "hmc", "n_step")(32 * 8)
 set_param(job_tag, "hmc", "beta")(2.80)
@@ -194,6 +203,7 @@ set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
 set_param(job_tag, "hmc", "max_traj")(5000)
 set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
 set_param(job_tag, "hmc", "md_time")(9.0)
 set_param(job_tag, "hmc", "n_step")(32 * 9)
 set_param(job_tag, "hmc", "beta")(2.80)
@@ -206,6 +216,7 @@ set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
 set_param(job_tag, "hmc", "max_traj")(5000)
 set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
 set_param(job_tag, "hmc", "md_time")(10.0)
 set_param(job_tag, "hmc", "n_step")(32 * 10)
 set_param(job_tag, "hmc", "beta")(2.80)
@@ -218,36 +229,13 @@ set_param(job_tag, "total_site")((32, 32, 32, 48,))
 set_param(job_tag, "a_inv_gev")(3.5) # rough guess
 set_param(job_tag, "hmc", "max_traj")(5000)
 set_param(job_tag, "hmc", "max_traj_always_accept")(10)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
 set_param(job_tag, "hmc", "md_time")(5.0)
 set_param(job_tag, "hmc", "n_step")(32 * 5)
 set_param(job_tag, "hmc", "beta")(2.95)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(2)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
-
-# ----
-
-job_tag = "32I-3.5gev"
-set_param(job_tag, "total_site")((32, 32, 32, 64,))
-set_param(job_tag, "a_inv_gev")(3.4803) # 2003 lattice spacing 0309017.pdf
-set_param(job_tag, "hmc", "max_traj")(5000)
-set_param(job_tag, "hmc", "max_traj_always_accept")(100)
-set_param(job_tag, "hmc", "md_time")(1.0)
-set_param(job_tag, "hmc", "n_step")(32)
-set_param(job_tag, "hmc", "beta")(3.05)
-set_param(job_tag, "hmc", "c1")(-0.331)
-set_param(job_tag, "hmc", "save_traj_interval")(10)
-
-job_tag = "32I-3.5gev-5md"
-set_param(job_tag, "total_site")((32, 32, 32, 64,))
-set_param(job_tag, "a_inv_gev")(3.4803) # 2003 lattice spacing 0309017.pdf
-set_param(job_tag, "hmc", "max_traj")(5000)
-set_param(job_tag, "hmc", "max_traj_always_accept")(100)
-set_param(job_tag, "hmc", "md_time")(5.0)
-set_param(job_tag, "hmc", "n_step")(160)
-set_param(job_tag, "hmc", "beta")(3.05)
-set_param(job_tag, "hmc", "c1")(-0.331)
-set_param(job_tag, "hmc", "save_traj_interval")(2)
 
 # ----
 
