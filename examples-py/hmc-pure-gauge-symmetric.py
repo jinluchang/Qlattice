@@ -202,6 +202,19 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(10)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
+job_tag = "32I_b2p8_sym_md2"
+set_param(job_tag, "total_site")((32, 32, 32, 64,))
+set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
+set_param(job_tag, "hmc", "max_traj")(20000)
+set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
+set_param(job_tag, "hmc", "md_time")(2.0)
+set_param(job_tag, "hmc", "n_step")(32 * 2)
+set_param(job_tag, "hmc", "beta")(2.80)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "save_traj_interval")(5)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+
 job_tag = "32I_b2p8_sym_md3"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
@@ -213,6 +226,32 @@ set_param(job_tag, "hmc", "n_step")(32 * 3)
 set_param(job_tag, "hmc", "beta")(2.80)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+
+job_tag = "32I_b2p8_sym_md4"
+set_param(job_tag, "total_site")((32, 32, 32, 64,))
+set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
+set_param(job_tag, "hmc", "max_traj")(20000)
+set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
+set_param(job_tag, "hmc", "md_time")(4.0)
+set_param(job_tag, "hmc", "n_step")(32 * 4)
+set_param(job_tag, "hmc", "beta")(2.80)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "save_traj_interval")(3)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+
+job_tag = "32I_b2p8_sym_md5"
+set_param(job_tag, "total_site")((32, 32, 32, 64,))
+set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
+set_param(job_tag, "hmc", "max_traj")(20000)
+set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
+set_param(job_tag, "hmc", "md_time")(5.0)
+set_param(job_tag, "hmc", "n_step")(32 * 5)
+set_param(job_tag, "hmc", "beta")(2.80)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "save_traj_interval")(2)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
 # ----
