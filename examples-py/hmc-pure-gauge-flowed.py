@@ -63,7 +63,7 @@ def mk_flow_info(fp, rng):
     return fi
 
 @q.timer_verbose
-def run_hmc_pure_gauge(gf, ga, fp, traj, rs, *, is_reverse_test=False, n_step=6, md_time=1.0, is_always_accept=False):
+def run_hmc_traj(gf, ga, fp, traj, rs, *, is_reverse_test=False, n_step=6, md_time=1.0, is_always_accept=False):
     fname = q.get_fname()
     rs = rs.split(f"{traj}")
     fi = mk_flow_info(fp, rs.split("mk_flow_info"))
@@ -74,7 +74,11 @@ def run_hmc_pure_gauge(gf, ga, fp, traj, rs, *, is_reverse_test=False, n_step=6,
         gf_r = q.GaugeField(geo)
         q.gf_flow(gf_r, gf0, fi)
         gf_r -= gf
-        q.displayln_info(f"gf_flow_inv gf_diff: {q.qnorm(gf_r)} / {q.qnorm(gf)}")
+        gf_diff_norm = q.qnorm(gf_r)
+        gf_norm = q.qnorm(gf)
+        q.displayln_info(f"gf_flow_inv gf_diff: {gf_diff_norm} / {gf_norm}")
+        assert gf_diff_norm <= 1e-12 * gf_norm
+        gf_r = None
     gm = q.GaugeMomentum(geo)
     gm.set_rand(rs.split("set_rand_gauge_momentum"), 1.0)
     delta_h = run_hmc_evolve_flowed(gm, gf0, ga, fi, rs, n_step, md_time)
@@ -84,9 +88,13 @@ def run_hmc_pure_gauge(gf, ga, fp, traj, rs, *, is_reverse_test=False, n_step=6,
         gf0_r = q.GaugeField(geo)
         gf0_r @= gf0
         delta_h_rev = run_hmc_evolve_flowed(gm_r, gf0_r, ga, fi, rs, n_step, -md_time)
-        gf0_r -= gf;
+        q.gf_flow(gf0_r, gf0_r, fi)
+        gf0_r -= gf0
         q.displayln_info(f"{fname}: reversed delta_diff: {delta_h + delta_h_rev} / {delta_h}")
-        q.displayln_info(f"{fname}: reversed gf_diff: {q.qnorm(gf0_r)} / {q.qnorm(gf0)}")
+        gf_diff_norm = q.qnorm(gf0_r)
+        gf_norm = q.qnorm(gf0)
+        q.displayln_info(f"{fname}: reversed gf_diff: {gf_diff_norm} / {gf_norm}")
+        assert gf_diff_norm <= 1e-12 * gf_norm
     flag, accept_prob = metropolis_accept(delta_h, traj, rs.split("metropolis_accept"))
     if flag or is_always_accept:
         q.displayln_info(f"{fname}: update gf (traj={traj})")
@@ -116,6 +124,7 @@ def run_hmc(job_tag):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     max_traj = get_param(job_tag, "hmc", "max_traj")
     max_traj_always_accept = get_param(job_tag, "hmc", "max_traj_always_accept")
+    max_traj_reverse_test= get_param(job_tag, "hmc", "max_traj_reverse_test")
     save_traj_interval = get_param(job_tag, "hmc", "save_traj_interval")
     is_saving_topo_info = get_param(job_tag, "hmc", "is_saving_topo_info")
     md_time = get_param(job_tag, "hmc", "md_time")
@@ -143,7 +152,8 @@ def run_hmc(job_tag):
     for traj in range(traj, max_traj):
         traj += 1
         is_always_accept = traj < max_traj_always_accept
-        delta_h = run_hmc_pure_gauge(gf, ga, fp, traj, rs.split("run_hmc_pure_gauge"), n_step=n_step, md_time=md_time, is_always_accept=is_always_accept)
+        is_reverse_test = traj < max_traj_reverse_test
+        delta_h = run_hmc_traj(gf, ga, fp, traj, rs.split("run_hmc_traj"), n_step=n_step, md_time=md_time, is_always_accept=is_always_accept, is_reverse_test=is_reverse_test)
         plaq = gf.plaq()
         info = dict()
         info["traj"] = traj
@@ -163,6 +173,7 @@ job_tag = "test-4nt8"
 set_param(job_tag, "total_site")((4, 4, 4, 8,))
 set_param(job_tag, "hmc", "max_traj")(8)
 set_param(job_tag, "hmc", "max_traj_always_accept")(4)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
 set_param(job_tag, "hmc", "md_time")(1.0)
 set_param(job_tag, "hmc", "n_step")(6)
 set_param(job_tag, "hmc", "beta")(2.13)

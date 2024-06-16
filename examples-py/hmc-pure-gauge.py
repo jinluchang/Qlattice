@@ -37,6 +37,7 @@ def run_hmc(job_tag):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     max_traj = get_param(job_tag, "hmc", "max_traj")
     max_traj_always_accept = get_param(job_tag, "hmc", "max_traj_always_accept")
+    max_traj_reverse_test= get_param(job_tag, "hmc", "max_traj_reverse_test")
     save_traj_interval = get_param(job_tag, "hmc", "save_traj_interval")
     is_saving_topo_info = get_param(job_tag, "hmc", "is_saving_topo_info")
     md_time = get_param(job_tag, "hmc", "md_time")
@@ -63,7 +64,8 @@ def run_hmc(job_tag):
     for traj in range(traj, max_traj):
         traj += 1
         is_always_accept = traj < max_traj_always_accept
-        delta_h = q.run_hmc_pure_gauge(gf, ga, traj, rs.split("run_hmc_pure_gauge"), n_step=n_step, md_time=md_time, is_always_accept=is_always_accept)
+        is_reverse_test = traj < max_traj_reverse_test
+        delta_h = q.run_hmc_pure_gauge(gf, ga, traj, rs.split("run_hmc_pure_gauge"), n_step=n_step, md_time=md_time, is_always_accept=is_always_accept, is_reverse_test=is_reverse_test)
         plaq = gf.plaq()
         info = dict()
         info["traj"] = traj
@@ -83,6 +85,7 @@ job_tag = "test-4nt8"
 set_param(job_tag, "total_site")((4, 4, 4, 8,))
 set_param(job_tag, "hmc", "max_traj")(8)
 set_param(job_tag, "hmc", "max_traj_always_accept")(4)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
 set_param(job_tag, "hmc", "md_time")(1.0)
 set_param(job_tag, "hmc", "n_step")(6)
 set_param(job_tag, "hmc", "beta")(2.13)

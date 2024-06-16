@@ -90,9 +90,12 @@ def run_hmc_traj(gf, ga, traj, rs, *, is_reverse_test=False, n_step=6, md_time=1
         gf0_r = GaugeField(geo)
         gf0_r @= gf0
         delta_h_rev = run_hmc_evolve(gm_r, gm_dual_r, gf0_r, ga, rs, n_step, -md_time)
-        gf0_r -= gf;
+        gf0_r -= gf
         q.displayln_info(f"{fname}: reversed delta_diff: {delta_h + delta_h_rev} / {delta_h}")
-        q.displayln_info(f"{fname}: reversed gf_diff: {q.qnorm(gf0_r)} / {q.qnorm(gf0)}")
+        gf_diff_norm = q.qnorm(gf0_r)
+        gf_norm = q.qnorm(gf0)
+        q.displayln_info(f"{fname}: reversed gf_diff: {gf_diff_norm} / {gf_norm}")
+        assert gf_diff_norm <= 1e-12 * gf_norm
     flag, accept_prob = metropolis_accept(delta_h, traj, rs.split("metropolis_accept"))
     if flag or is_always_accept:
         q.displayln_info(f"{fname}: update gf (traj={traj})")
@@ -183,131 +186,12 @@ set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
 set_param(job_tag, "hmc", "max_traj")(20000)
 set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
 set_param(job_tag, "hmc", "md_time")(1.0)
 set_param(job_tag, "hmc", "n_step")(32)
 set_param(job_tag, "hmc", "beta")(2.80)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(10)
-set_param(job_tag, "hmc", "is_saving_topo_info")(True)
-
-job_tag = "32I_b2p8_md2"
-set_param(job_tag, "total_site")((32, 32, 32, 64,))
-set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
-set_param(job_tag, "hmc", "max_traj")(10000)
-set_param(job_tag, "hmc", "max_traj_always_accept")(100)
-set_param(job_tag, "hmc", "md_time")(2.0)
-set_param(job_tag, "hmc", "n_step")(32 * 2)
-set_param(job_tag, "hmc", "beta")(2.80)
-set_param(job_tag, "hmc", "c1")(-0.331)
-set_param(job_tag, "hmc", "save_traj_interval")(5)
-set_param(job_tag, "hmc", "is_saving_topo_info")(True)
-
-job_tag = "32I_b2p8_md3"
-set_param(job_tag, "total_site")((32, 32, 32, 64,))
-set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
-set_param(job_tag, "hmc", "max_traj")(5000)
-set_param(job_tag, "hmc", "max_traj_always_accept")(100)
-set_param(job_tag, "hmc", "md_time")(3.0)
-set_param(job_tag, "hmc", "n_step")(32 * 3)
-set_param(job_tag, "hmc", "beta")(2.80)
-set_param(job_tag, "hmc", "c1")(-0.331)
-set_param(job_tag, "hmc", "save_traj_interval")(4)
-set_param(job_tag, "hmc", "is_saving_topo_info")(True)
-
-job_tag = "32I_b2p8_md4"
-set_param(job_tag, "total_site")((32, 32, 32, 64,))
-set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
-set_param(job_tag, "hmc", "max_traj")(5000)
-set_param(job_tag, "hmc", "max_traj_always_accept")(100)
-set_param(job_tag, "hmc", "md_time")(4.0)
-set_param(job_tag, "hmc", "n_step")(32 * 4)
-set_param(job_tag, "hmc", "beta")(2.80)
-set_param(job_tag, "hmc", "c1")(-0.331)
-set_param(job_tag, "hmc", "save_traj_interval")(3)
-set_param(job_tag, "hmc", "is_saving_topo_info")(True)
-
-job_tag = "32I_b2p8_md5"
-set_param(job_tag, "total_site")((32, 32, 32, 64,))
-set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
-set_param(job_tag, "hmc", "max_traj")(5000)
-set_param(job_tag, "hmc", "max_traj_always_accept")(100)
-set_param(job_tag, "hmc", "md_time")(5.0)
-set_param(job_tag, "hmc", "n_step")(32 * 5)
-set_param(job_tag, "hmc", "beta")(2.80)
-set_param(job_tag, "hmc", "c1")(-0.331)
-set_param(job_tag, "hmc", "save_traj_interval")(2)
-set_param(job_tag, "hmc", "is_saving_topo_info")(True)
-
-job_tag = "32I_b2p8_md6"
-set_param(job_tag, "total_site")((32, 32, 32, 64,))
-set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
-set_param(job_tag, "hmc", "max_traj")(5000)
-set_param(job_tag, "hmc", "max_traj_always_accept")(100)
-set_param(job_tag, "hmc", "md_time")(6.0)
-set_param(job_tag, "hmc", "n_step")(32 * 6)
-set_param(job_tag, "hmc", "beta")(2.80)
-set_param(job_tag, "hmc", "c1")(-0.331)
-set_param(job_tag, "hmc", "save_traj_interval")(2)
-set_param(job_tag, "hmc", "is_saving_topo_info")(True)
-
-job_tag = "32I_b2p8_md7"
-set_param(job_tag, "total_site")((32, 32, 32, 64,))
-set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
-set_param(job_tag, "hmc", "max_traj")(5000)
-set_param(job_tag, "hmc", "max_traj_always_accept")(100)
-set_param(job_tag, "hmc", "md_time")(7.0)
-set_param(job_tag, "hmc", "n_step")(32 * 7)
-set_param(job_tag, "hmc", "beta")(2.80)
-set_param(job_tag, "hmc", "c1")(-0.331)
-set_param(job_tag, "hmc", "save_traj_interval")(2)
-set_param(job_tag, "hmc", "is_saving_topo_info")(True)
-
-job_tag = "32I_b2p8_md8"
-set_param(job_tag, "total_site")((32, 32, 32, 64,))
-set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
-set_param(job_tag, "hmc", "max_traj")(5000)
-set_param(job_tag, "hmc", "max_traj_always_accept")(100)
-set_param(job_tag, "hmc", "md_time")(8.0)
-set_param(job_tag, "hmc", "n_step")(32 * 8)
-set_param(job_tag, "hmc", "beta")(2.80)
-set_param(job_tag, "hmc", "c1")(-0.331)
-set_param(job_tag, "hmc", "save_traj_interval")(1)
-set_param(job_tag, "hmc", "is_saving_topo_info")(True)
-
-job_tag = "32I_b2p8_md9"
-set_param(job_tag, "total_site")((32, 32, 32, 64,))
-set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
-set_param(job_tag, "hmc", "max_traj")(5000)
-set_param(job_tag, "hmc", "max_traj_always_accept")(100)
-set_param(job_tag, "hmc", "md_time")(9.0)
-set_param(job_tag, "hmc", "n_step")(32 * 9)
-set_param(job_tag, "hmc", "beta")(2.80)
-set_param(job_tag, "hmc", "c1")(-0.331)
-set_param(job_tag, "hmc", "save_traj_interval")(1)
-set_param(job_tag, "hmc", "is_saving_topo_info")(True)
-
-job_tag = "32I_b2p8_md10"
-set_param(job_tag, "total_site")((32, 32, 32, 64,))
-set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
-set_param(job_tag, "hmc", "max_traj")(5000)
-set_param(job_tag, "hmc", "max_traj_always_accept")(100)
-set_param(job_tag, "hmc", "md_time")(10.0)
-set_param(job_tag, "hmc", "n_step")(32 * 10)
-set_param(job_tag, "hmc", "beta")(2.80)
-set_param(job_tag, "hmc", "c1")(-0.331)
-set_param(job_tag, "hmc", "save_traj_interval")(1)
-set_param(job_tag, "hmc", "is_saving_topo_info")(True)
-
-job_tag = "32nt48I_b2p95_md5"
-set_param(job_tag, "total_site")((32, 32, 32, 48,))
-set_param(job_tag, "a_inv_gev")(3.5) # rough guess
-set_param(job_tag, "hmc", "max_traj")(5000)
-set_param(job_tag, "hmc", "max_traj_always_accept")(10)
-set_param(job_tag, "hmc", "md_time")(5.0)
-set_param(job_tag, "hmc", "n_step")(32 * 5)
-set_param(job_tag, "hmc", "beta")(2.95)
-set_param(job_tag, "hmc", "c1")(-0.331)
-set_param(job_tag, "hmc", "save_traj_interval")(2)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
 # ----

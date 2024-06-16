@@ -121,7 +121,10 @@ def run_hmc_pure_gauge(gf, ga, traj, rs, *, is_reverse_test=False, n_step=6, md_
         delta_h_rev = run_hmc_evolve_pure_gauge(gm_r, gf0_r, ga, rs, n_step, -md_time)
         gf0_r -= gf;
         q.displayln_info(f"{fname}: reversed delta_diff: {delta_h + delta_h_rev} / {delta_h}")
-        q.displayln_info(f"{fname}: reversed gf_diff: {q.qnorm(gf0_r)} / {q.qnorm(gf0)}")
+        gf_diff_norm = q.qnorm(gf0_r)
+        gf_norm = q.qnorm(gf0)
+        q.displayln_info(f"{fname}: reversed gf_diff: {gf_diff_norm} / {gf_norm}")
+        assert gf_diff_norm <= 1e-12 * gf_norm
     flag, accept_prob = metropolis_accept(delta_h, traj, rs.split("metropolis_accept"))
     if flag or is_always_accept:
         q.displayln_info(f"{fname}: update gf (traj={traj})")
