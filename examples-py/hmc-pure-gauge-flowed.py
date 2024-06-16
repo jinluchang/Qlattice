@@ -154,7 +154,14 @@ def run_hmc(job_tag):
         traj += 1
         is_always_accept = traj < max_traj_always_accept
         is_reverse_test = traj < max_traj_reverse_test
-        flag, delta_h = run_hmc_traj(gf, ga, fp, traj, rs.split("run_hmc_traj"), n_step=n_step, md_time=md_time, is_always_accept=is_always_accept, is_reverse_test=is_reverse_test)
+        flag, delta_h = run_hmc_traj(
+                gf, ga, fp, traj,
+                rs.split("run_hmc_traj"),
+                n_step=n_step,
+                md_time=md_time,
+                is_always_accept=is_always_accept,
+                is_reverse_test=is_reverse_test,
+                )
         plaq = gf.plaq()
         info = dict()
         info["traj"] = traj

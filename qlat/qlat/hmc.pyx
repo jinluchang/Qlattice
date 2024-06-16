@@ -43,7 +43,7 @@ def gf_evolve(GaugeField gf, GaugeMomentum gm, cc.RealD step_size):
     return cc.gf_evolve(gf.xxx().val(), gm.xxx().val(), step_size)
 
 def gf_evolve_dual(GaugeField gf, GaugeMomentum gm_dual, cc.RealD step_size):
-    return cc.gf_evolve(gf.xxx().val(), gm_dual.xxx().val(), step_size)
+    return cc.gf_evolve_dual(gf.xxx().val(), gm_dual.xxx().val(), step_size)
 
 def set_gm_force(GaugeMomentum gm_force, GaugeField gf, GaugeAction ga):
     return cc.set_gm_force(gm_force.xxx().val(), gf.xxx().val(), ga.xx)
