@@ -20,10 +20,15 @@ struct API GaugeMomentum : FieldM<ColorMatrix, 4> {
 bool metropolis_accept(double& accept_prob, const double delta_h,
                        const int traj, const RngState& rs_);
 
-void set_rand_gauge_momentum(GaugeMomentum& gm, const double sigma,
+void set_rand_gauge_momentum(GaugeMomentum& gm, const RealD sigma,
                              const RngState& rs);
 
-double gm_hamilton_node(const GaugeMomentum& gm);
+void set_rand_gauge_momentum(GaugeMomentum& gm, const Field<RealD>& mf,
+                             const RngState& rs);
+
+RealD gm_hamilton_node(const GaugeMomentum& gm);
+
+RealD gm_hamilton_node(const GaugeMomentum& gm, const Field<RealD>& mf);
 
 double gf_sum_re_tr_plaq_node_no_comm(const GaugeField& gf);
 

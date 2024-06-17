@@ -181,11 +181,22 @@ __all__ += [
 
 __all__ += [
         'GaugeMomentum',
+        'set_rand_gauge_momentum',
+        'set_rand_gauge_momentum_fa',
+        'gm_hamilton_node',
+        'gm_hamilton_node_fa',
+        'gf_hamilton_node',
         'gf_evolve',
+        'gf_evolve_dual',
+        'gf_evolve_fa',
+        'gf_evolve_fa_dual',
         'set_gm_force',
+        'set_gm_force_dual',
+        'project_gauge_transform',
         'metropolis_accept',
         'gm_evolve_fg_pure_gauge',
         'run_hmc_evolve_pure_gauge',
+        'run_hmc_pure_gauge',
         ]
 
 __all__ += [

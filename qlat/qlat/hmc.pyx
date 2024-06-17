@@ -29,13 +29,22 @@ cdef class GaugeMomentum(FieldColorMatrix):
     def set_rand(self, RngState rng, cc.RealD sigma=1.0):
         set_rand_gauge_momentum(self, sigma, rng)
 
+    def set_rand_fa(self, FieldRealD mf, RngState rng):
+        set_rand_gauge_momentum_fa(self, mf, rng)
+
 ###
 
 def set_rand_gauge_momentum(GaugeMomentum gm, cc.RealD sigma, RngState rng):
     return cc.set_rand_gauge_momentum(gm.xxx().val(), sigma, rng.xx)
 
+def set_rand_gauge_momentum_fa(GaugeMomentum gm, FieldRealD mf, RngState rng):
+    return cc.set_rand_gauge_momentum(gm.xxx().val(), mf.xx, rng.xx)
+
 def gm_hamilton_node(GaugeMomentum gm):
     return cc.gm_hamilton_node(gm.xxx().val())
+
+def gm_hamilton_node_fa(GaugeMomentum gm, FieldRealD mf):
+    return cc.gm_hamilton_node(gm.xxx().val(), mf.xx)
 
 def gf_hamilton_node(GaugeField gf, GaugeAction ga):
     return cc.gf_hamilton_node(gf.xxx().val(), ga.xx)

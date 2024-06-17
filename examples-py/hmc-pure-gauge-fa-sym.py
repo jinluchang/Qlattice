@@ -11,13 +11,15 @@ import qlat as q
 from qlat_scripts.v1 import *
 
 from qlat import (
+        FieldRealD,
         GaugeField,
         GaugeMomentum,
         metropolis_accept,
         set_gm_force,
         set_gm_force_dual,
-        gm_hamilton_node,
+        gm_hamilton_node_fa,
         gf_hamilton_node,
+        project_gauge_transform,
         )
 
 load_path_list[:] = [
@@ -27,12 +29,12 @@ load_path_list[:] = [
 # ----
 
 @q.timer
-def gf_evolve(gf, gm, gm_dual, dt):
-    q.gf_evolve(gf, gm, dt)
-    q.gf_evolve_dual(gf, gm_dual, dt)
+def gf_evolve(gf, gm, gm_dual, mf, mf_dual, dt):
+    q.gf_evolve_fa(gf, gm, mf, dt)
+    q.gf_evolve_fa_dual(gf, gm_dual, mf_dual, dt)
 
 @q.timer
-def gm_evolve_fg(gm, gm_dual, gf_init, ga, fg_dt, dt):
+def gm_evolve_fg(gm, gm_dual, gf_init, mf, mf_dual, ga, fg_dt, dt):
     geo = gf_init.geo
     gf = GaugeField(geo)
     gf @= gf_init
@@ -40,32 +42,34 @@ def gm_evolve_fg(gm, gm_dual, gf_init, ga, fg_dt, dt):
     gm_force_dual = GaugeMomentum(geo)
     set_gm_force(gm_force, gf, ga)
     set_gm_force_dual(gm_force_dual, gf, gm_force)
-    gf_evolve(gf, gm_force, gm_force_dual, fg_dt)
+    project_gauge_transform(gm_force, gm_force_dual, mf, mf_dual)
+    gf_evolve(gf, gm_force, gm_force_dual, mf, mf_dual, fg_dt)
     set_gm_force(gm_force, gf, ga)
     set_gm_force_dual(gm_force_dual, gf, gm_force)
     gm_force *= dt
     gm_force_dual *= dt
     gm += gm_force
     gm_dual += gm_force_dual
+    project_gauge_transform(gm, gm_dual, mf, mf_dual)
 
 @q.timer_verbose
-def run_hmc_evolve(gm, gm_dual, gf, ga, rs, n_step, md_time=1.0):
-    energy = gm_hamilton_node(gm) + gm_hamilton_node(gm_dual) + gf_hamilton_node(gf, ga)
+def run_hmc_evolve(gm, gm_dual, gf, mf, mf_dual, ga, rs, n_step, md_time=1.0):
+    energy = gm_hamilton_node_fa(gm, mf) + gm_hamilton_node_fa(gm_dual, mf_dual) + gf_hamilton_node(gf, ga)
     dt = md_time / n_step
     lam = 0.5 * (1.0 - 1.0 / math.sqrt(3.0));
     theta = (2.0 - math.sqrt(3.0)) / 48.0;
     ttheta = theta * dt * dt * dt;
-    gf_evolve(gf, gm, gm_dual, lam * dt)
+    gf_evolve(gf, gm, gm_dual, mf, mf_dual, lam * dt)
     for i in range(n_step):
-        gm_evolve_fg(gm, gm_dual, gf, ga, 4.0 * ttheta / dt, 0.5 * dt);
-        gf_evolve(gf, gm, gm_dual, (1.0 - 2.0 * lam) * dt);
-        gm_evolve_fg(gm, gm_dual, gf, ga, 4.0 * ttheta / dt, 0.5 * dt);
+        gm_evolve_fg(gm, gm_dual, gf, mf, mf_dual, ga, 4.0 * ttheta / dt, 0.5 * dt);
+        gf_evolve(gf, gm, gm_dual, mf, mf_dual, (1.0 - 2.0 * lam) * dt);
+        gm_evolve_fg(gm, gm_dual, gf, mf, mf_dual, ga, 4.0 * ttheta / dt, 0.5 * dt);
         if i < n_step - 1:
-            gf_evolve(gf, gm, gm_dual, 2.0 * lam * dt);
+            gf_evolve(gf, gm, gm_dual, mf, mf_dual, 2.0 * lam * dt);
         else:
-            gf_evolve(gf, gm, gm_dual, lam * dt);
+            gf_evolve(gf, gm, gm_dual, mf, mf_dual, lam * dt);
     gf.unitarize()
-    delta_h = gm_hamilton_node(gm) + gm_hamilton_node(gm_dual) + gf_hamilton_node(gf, ga) - energy;
+    delta_h = gm_hamilton_node_fa(gm, mf) + gm_hamilton_node_fa(gm_dual, mf_dual) + gf_hamilton_node(gf, ga) - energy;
     delta_h = q.glb_sum(delta_h)
     return delta_h
 
@@ -76,11 +80,16 @@ def run_hmc_traj(gf, ga, traj, rs, *, is_reverse_test=False, n_step=6, md_time=1
     geo = gf.geo
     gf0 = GaugeField(geo)
     gf0 @= gf
+    mf = FieldRealD(geo, 4)
+    mf_dual = FieldRealD(geo, 4)
+    q.set_unit(mf)
+    q.set_unit(mf_dual)
     gm = GaugeMomentum(geo)
-    gm.set_rand(rs.split("set_rand_gauge_momentum"), 1.0)
+    gm.set_rand_fa(mf, rs.split("set_rand_gauge_momentum"))
     gm_dual = GaugeMomentum(geo)
-    gm_dual.set_rand(rs.split("set_rand_gauge_momentum_dual"), 1.0)
-    delta_h = run_hmc_evolve(gm, gm_dual, gf0, ga, rs, n_step, md_time)
+    gm_dual.set_rand_fa(mf_dual, rs.split("set_rand_gauge_momentum_dual"))
+    project_gauge_transform(gm, gm_dual, mf, mf_dual)
+    delta_h = run_hmc_evolve(gm, gm_dual, gf0, mf, mf_dual, ga, rs, n_step, md_time)
     if is_reverse_test:
         gm_r = GaugeMomentum(geo)
         gm_r @= gm
@@ -88,7 +97,7 @@ def run_hmc_traj(gf, ga, traj, rs, *, is_reverse_test=False, n_step=6, md_time=1
         gm_dual_r @= gm_dual
         gf0_r = GaugeField(geo)
         gf0_r @= gf0
-        delta_h_rev = run_hmc_evolve(gm_r, gm_dual_r, gf0_r, ga, rs, n_step, -md_time)
+        delta_h_rev = run_hmc_evolve(gm_r, gm_dual_r, gf0_r, mf, mf_dual, ga, rs, n_step, -md_time)
         gf0_r -= gf
         q.displayln_info(f"{fname}: reversed delta_diff: {delta_h + delta_h_rev} / {delta_h}")
         gf_diff_norm = q.qnorm(gf0_r)

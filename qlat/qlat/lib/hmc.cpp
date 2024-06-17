@@ -33,7 +33,7 @@ bool metropolis_accept(double& accept_prob, const double delta_h,
   return flag;
 }
 
-void set_rand_gauge_momentum(GaugeMomentum& gm, const double sigma,
+void set_rand_gauge_momentum(GaugeMomentum& gm, const RealD sigma,
                              const RngState& rs)
 //  Creates a field of antihermitian 3x3 complex matrices with each complex
 //  element drawn at random from a gaussian distribution with zero mean.
@@ -47,7 +47,32 @@ void set_rand_gauge_momentum(GaugeMomentum& gm, const double sigma,
   set_g_rand_anti_hermitian_matrix_field(gm, rs, sigma);
 }
 
-double gm_hamilton_node(const GaugeMomentum& gm)
+void set_rand_gauge_momentum(GaugeMomentum& gm, const Field<RealD>& mf,
+                             const RngState& rs)
+//  Creates a field of antihermitian 3x3 complex matrices with each complex
+//  element drawn at random from a gaussian distribution with zero mean.
+//  Hence the matrices are distributed according to
+//
+// default mf=1.0
+//
+//  exp[- Tr(mat^2)/(2 mf)]
+{
+  TIMER_VERBOSE("set_rand_gauge_momentum");
+  set_g_rand_anti_hermitian_matrix_field(gm, rs, 1.0);
+  qassert(gm.multiplicity == 4);
+  qassert(mf.multiplicity == 4);
+  const Geometry& geo = gm.geo();
+  qassert(check_matching_geo(geo, mf.geo()));
+  qacc_for(index, geo.local_volume(), {
+    const Vector<RealD> vm = mf.get_elems_const(index);
+    Vector<ColorMatrix> v = gm.get_elems(index);
+    for (int m = 0; m < 4; ++m) {
+      v[m] *= 1.0 / std::sqrt(vm[m]);
+    }
+  });
+}
+
+RealD gm_hamilton_node(const GaugeMomentum& gm)
 {
   TIMER("gm_hamilton_node");
   const Geometry geo = geo_resize(gm.geo());
@@ -61,6 +86,34 @@ double gm_hamilton_node(const GaugeMomentum& gm)
     qassert(gm_v.size() == 4);
     for (int mu = 0; mu < 4; ++mu) {
       s += neg_half_tr_square(gm_v[mu]);
+    }
+    fd.get_elem(index) = s;
+  });
+  double sum = 0.0;
+  for (Long index = 0; index < geo.local_volume(); ++index) {
+    sum += fd.get_elem(index);
+  }
+  return sum;
+}
+
+RealD gm_hamilton_node(const GaugeMomentum& gm, const Field<RealD>& mf)
+{
+  TIMER("gm_hamilton_node");
+  const Geometry geo = geo_resize(gm.geo());
+  qassert(check_matching_geo(geo, mf.geo()));
+  qassert(gm.multiplicity == 4);
+  qassert(mf.multiplicity == 4);
+  FieldM<double, 1> fd;
+  fd.init(geo);
+  qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = fd.geo();
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Vector<ColorMatrix> gm_v = gm.get_elems_const(xl);
+    const Vector<RealD> mf_v = mf.get_elems_const(xl);
+    double s = 0.0;
+    qassert(gm_v.size() == 4);
+    for (int mu = 0; mu < 4; ++mu) {
+      s += neg_half_tr_square(gm_v[mu]) / mf_v[mu];
     }
     fd.get_elem(index) = s;
   });
@@ -330,58 +383,51 @@ void project_gauge_transform(GaugeMomentum& gm, GaugeMomentum& gm_dual,
   qassert(mf.multiplicity == 4);
   qassert(mf_dual.multiplicity == 4);
   const Coordinate expand_left = Coordinate(1, 1, 1, 1);
-  const Coordinate expand_right = Coordinate(1, 1, 1, 1);
-  const Geometry geo_ext = geo_resize(geo, expand_left, expand_right);
-  GaugeMomentum gm1_ext, gm2_ext;
-  gm1_ext.init(geo_ext, 4);
+  const Geometry geo_ext = geo_resize(geo, expand_left, Coordinate());
+  GaugeMomentum gm2_ext;
   gm2_ext.init(geo_ext, 4);
-  gm1_ext = gm;
   gm2_ext = gm_dual;
-  Field<RealD> mf1_ext, mf2_ext;
-  mf1_ext.init(geo_ext, 4);
+  Field<RealD> mf2_ext;
   mf2_ext.init(geo_ext, 4);
-  mf1_ext = mf;
   mf2_ext = mf_dual;
-  refresh_expanded_1(gm1_ext);
   refresh_expanded_1(gm2_ext);
-  refresh_expanded_1(mf1_ext);
   refresh_expanded_1(mf2_ext);
+  const Coordinate expand_right = Coordinate(1, 1, 1, 1);
+  const Geometry geo_extr = geo_resize(geo, Coordinate(), expand_right);
+  Field<ColorMatrix> gm_ag_ext;
+  gm_ag_ext.init(geo_extr, 1);
   qacc_for(index, geo.local_volume(), {
     const Geometry& geo = gm.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
-    const Vector<ColorMatrix> v1 = gm1_ext.get_elems_const(xl);
-    const Vector<ColorMatrix> v2 = gm2_ext.get_elems_const(xl);
-    const Vector<RealD> vm1 = mf1_ext.get_elems_const(xl);
-    const Vector<RealD> vm2 = mf2_ext.get_elems_const(xl);
+    const Vector<ColorMatrix> v1 = gm.get_elems_const(xl);
+    const Vector<RealD> vm1 = mf.get_elems_const(xl);
     RealD inv_m_sum_x = 0.0;
-    RealD inv_m_sum_x_p = 0.0;
     ColorMatrix v_sum;
-    ColorMatrix v_sum_p;
     set_zero(v_sum);
-    set_zero(v_sum_p);
     for (int m = 0; m < 4; ++m) {
-      const Coordinate xl_p = coordinate_shifts(xl, m);
       const Coordinate xl_m = coordinate_shifts(xl, -m - 1);
       const RealD m1 = vm1[m];
-      const RealD m2 = vm2[m];
       const RealD m2m = mf2_ext.get_elem(xl_m, m);
-      const RealD m1p = mf1_ext.get_elem(xl_p, m);
       const ColorMatrix& c1 = v1[m];
-      const ColorMatrix& c2 = v2[m];
       const ColorMatrix& c2m = gm2_ext.get_elem(xl_m, m);
-      const ColorMatrix& c1p = gm1_ext.get_elem(xl_p, m);
       inv_m_sum_x += 1.0 / m1 + 1.0 / m2m;
-      inv_m_sum_x_p += 1.0 / m1p + 1.0 / m2;
-      v_sum += c1 / ComplexD(m1) + c2m / ComplexD(m2m);
-      v_sum_p += c1p / ComplexD(m1p) + c2 / ComplexD(m2);
+      v_sum += c1 * (1.0 / m1) + c2m * (1.0 / m2m);
     }
     const RealD alpha = 8.0 / inv_m_sum_x;
-    const RealD alpha_p = 8.0 / inv_m_sum_x_p;
-    Vector<ColorMatrix> vv1 = gm.get_elems(xl);
-    Vector<ColorMatrix> vv2 = gm_dual.get_elems(xl);
+    ColorMatrix& ag = gm_ag_ext.get_elem(xl);
+    ag = (alpha / 8.0) * v_sum;
+  });
+  refresh_expanded_1(gm_ag_ext);
+  qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = gm.geo();
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<ColorMatrix> v1 = gm.get_elems(index);
+    Vector<ColorMatrix> v2 = gm_dual.get_elems(index);
+    const ColorMatrix& ag1 = gm_ag_ext.get_elem(xl);
     for (int m = 0; m < 4; ++m) {
-      vv1[m] -= alpha / 8.0 * v_sum;
-      vv2[m] -= alpha_p / 8.0 * v_sum_p;
+      const Coordinate xl_p = coordinate_shifts(xl, m);
+      v1[m] -= ag1;
+      v2[m] -= gm_ag_ext.get_elem(xl_p);
     }
   });
 }
