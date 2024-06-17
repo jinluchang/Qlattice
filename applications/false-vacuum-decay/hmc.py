@@ -29,7 +29,7 @@ class HMC:
         self.traj = 1
         self.accept_prob = 0.0
         
-        geo = q.Geometry(total_site, mult)
+        geo = q.Geometry(total_site)
         # Create a random number generator that can be split between
         # different portions of the lattice
         self.rs = q.RngState(f"false_vacuum_decay-{total_site[0]}x{total_site[1]}x{total_site[2]}x{total_site[3]}")
@@ -289,7 +289,7 @@ class Measurements:
         self.psq_list.append(self.calc_psq(hmc.field, hmc.action))
         # Calculate the expectation value of phi
         field_sum = hmc.field.glb_sum()[0]
-        self.phi_list.append([field_sum[i]/hmc.field.geo().total_volume() for i in range(hmc.mult)])
+        self.phi_list.append([field_sum[i]/hmc.field.geo.total_volume for i in range(hmc.mult)])
         #
         self.timeslices.append(hmc.field.glb_sum_tslice().to_numpy())
         #
@@ -334,7 +334,7 @@ class Measurements:
         # Calculate the average value of phi^2
         phi_sq = action.sum_sq(field) # Returns sum of field^2/2
         phi_sq = q.glb_sum(phi_sq) # Sums over all nodes
-        return phi_sq/field.geo().total_volume()
+        return phi_sq/field.geo.total_volume
     
     def save(self):
         with open(self.save_file, "wb") as output:
@@ -393,6 +393,7 @@ def main():
     mult = 1
     alpha = 1.0
     beta = 1.0
+    start_TV = 0.0
     barrier_strength = 100.0
     M = 1.0
     L = 0.0
@@ -418,6 +419,8 @@ def main():
                 alpha = float(sys.argv[i+1])
             elif(sys.argv[i]=="-b"):
                 beta = float(sys.argv[i+1])
+            elif(sys.argv[i]=="-o"):
+                start_TV = float(sys.argv[i+1])
             elif(sys.argv[i]=="-B"):
                 barrier_strength = float(sys.argv[i+1])
             elif(sys.argv[i]=="-t"):
@@ -447,6 +450,7 @@ def main():
             raise Exception("Invalid arguments: use \
                             -a for alpha, \
                             -b for beta, \
+                            -o to offset the start of the TV beyond the point where V_TV=min(V_FV), \
                             -B for the barrier strength used in H_FV and H_TV, \
                             -t for the time to evolve with H_full, \
                             -f for the time to evolve with H_FV, \
@@ -460,17 +464,17 @@ def main():
                             -R to force restarting with blank initial field, \
                             -i for the number of trajectories to do at the beginning without a Metropolis step.")
     
-    action = q.QMAction(alpha, beta, barrier_strength, M, L, t_full, t_full, t_FV, dt)
+    action = q.QMAction(alpha, beta, start_TV, barrier_strength, M, L, t_full, t_full, t_FV, dt)
     hmc = HMC(action,f"alpha_{alpha}_beta_{beta}_dt_{dt}_bar_{barrier_strength}_M_{M}_L_{L}_tfull_{t_full}_tFV_{t_FV}",total_site,mult,steps,init_length,date,version,fresh_start)
     
     measure_Ms = [round(min(max(M,0.001)*2**i, 1.0),5) for i in range(1,10)]
     measure_Ls = [round(min(max(L,0.001)*2**i, 1.0),5) for i in range(1,10)]
     measure_deltats = range(0,min(t_full,10))
     
-    actions_M = [q.QMAction(alpha, beta, barrier_strength, Mi, L, t_full, t_full, t_FV, dt) for Mi in measure_Ms]
-    actions_L = [q.QMAction(alpha, beta, barrier_strength, M, Li, t_full, t_full, t_FV, dt) for Li in measure_Ls]
-    actions_t_FV = [q.QMAction(alpha, beta, barrier_strength, M, L, t_full, t_full-a, t_FV+a, dt) for a in measure_deltats]
-    actions_t_TV = [q.QMAction(alpha, beta, barrier_strength, M, L, t_full, t_full-a, t_FV, dt) for a in measure_deltats]
+    actions_M = [q.QMAction(alpha, beta, start_TV, barrier_strength, Mi, L, t_full, t_full, t_FV, dt) for Mi in measure_Ms]
+    actions_L = [q.QMAction(alpha, beta, start_TV, barrier_strength, M, Li, t_full, t_full, t_FV, dt) for Li in measure_Ls]
+    actions_t_FV = [q.QMAction(alpha, beta, start_TV, barrier_strength, M, L, t_full, t_full-a, t_FV+a, dt) for a in measure_deltats]
+    actions_t_TV = [q.QMAction(alpha, beta, start_TV, barrier_strength, M, L, t_full, t_full-a, t_FV, dt) for a in measure_deltats]
     measurements = Measurements(total_site, actions_M, actions_L, actions_t_FV, actions_t_TV, f"output_data/measurements_{hmc.fileid}.bin")
     
     # If observables have been saved from a previous calculation (on the
