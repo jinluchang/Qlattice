@@ -7,7 +7,7 @@ struct QMAction {
   bool initialized;
   double alpha;
   double beta;
-  double center_TV;
+  double start_TV;
   double center_bar;
   double barrier_strength;
   double M;
@@ -22,7 +22,7 @@ struct QMAction {
     initialized = false;
     alpha = 1.0;
     beta = 1.0;
-    center_TV = 2.0;
+    start_TV = 2.0;
     center_bar = 1.0;
     barrier_strength = 1.0;
     M = 1.0;
@@ -34,7 +34,7 @@ struct QMAction {
   }
   //
   qacc QMAction() { init(); }
-  qacc QMAction(const double alpha_, const double beta_,
+  qacc QMAction(const double alpha_, const double beta_, const double start_TV_,
                 const double barrier_strength_, const double M_,
                 const double L_, const Long t_full1_, const Long t_full2_, 
                 const Long t_FV_, const double dt_)
@@ -43,7 +43,7 @@ struct QMAction {
     initialized = true;
     alpha = alpha_;
     beta = beta_;
-    center_TV = (2.0-2.0*std::pow(1-alpha, 0.5))/alpha; // (3.0+std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
+    start_TV = (2.0-2.0*std::pow(1-alpha, 0.5))/alpha + start_TV_; // (3.0+std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
     center_bar = (3.0-std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
     barrier_strength = barrier_strength_;
     M = M_;
@@ -98,16 +98,16 @@ struct QMAction {
   inline double V_full(const double x)
   {
     // Returns the potential evaluated at point x
-    if(x>center_TV) {
+    if(x>start_TV) {
       return 0;
     }
-    return V_phi4(x); // - V_phi4(center_TV);
+    return V_phi4(x) - V_phi4(start_TV);
   }
 
   inline double dV_full(const double x)
   {
     double rtn = dV_phi4(x);
-    if(x>center_TV) {
+    if(x>start_TV) {
       return 0.0;
     }
     return rtn;

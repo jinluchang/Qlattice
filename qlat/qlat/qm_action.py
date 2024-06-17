@@ -4,8 +4,8 @@ from . import c
 
 class QMAction:
 
-    def __init__(self, alpha, beta, barrier_strength, M, L, t_full1, t_full2, t_FV, dt):
-        self.cdata = c.mk_qm_action(alpha, beta, barrier_strength, M, L, t_full1, t_full2, t_FV, dt)
+    def __init__(self, alpha, beta, start_TV, barrier_strength, M, L, t_full1, t_full2, t_FV, dt):
+        self.cdata = c.mk_qm_action(alpha, beta, start_TV, barrier_strength, M, L, t_full1, t_full2, t_FV, dt)
 
     def __del__(self):
         assert isinstance(self.cdata, int)
