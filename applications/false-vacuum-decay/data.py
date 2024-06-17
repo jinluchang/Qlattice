@@ -3,6 +3,7 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 import jackknife as jk
+from scipy.integrate import quad_vec
 from scipy.optimize import curve_fit
 
 import ratios_fit
@@ -129,6 +130,7 @@ class Data:
         return mean_fit, jk.super_jackknife_combine_blocks(dS_blocks, lambda x: self.fit_ratios(x,errs,t_TVs,t_TV,dt,fitobject))
     
     def calc_gamma(self, R, Ebar, delta_E, t_full, dt):
+        # conversion_factor = (1/E_FV)**0.5*quad_vec(lambda E: np.exp(-(E-Ebar)**2/2/delta_E**2), delta_E/100.0, np.inf)[0] / quad_vec(lambda E: (1/E)**0.5*np.exp(-(E-Ebar)**2/2/delta_E**2), delta_E/100.0, np.inf)[0]
         return R*(2*np.pi)**0.5/delta_E * np.exp(-Ebar**2/2/delta_E**2)/(t_full*dt)**2
     
     def calc_gamma_blocks(self, Ms, Ls, profile_ML, profile_tFV, der=1):
