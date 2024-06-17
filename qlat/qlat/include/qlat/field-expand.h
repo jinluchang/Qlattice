@@ -162,14 +162,16 @@ void refresh_expanded(
     Field<M>& f, const SetMarksField& set_marks_field = set_marks_field_all,
     const std::string& tag = "")
 {
-  const CommPlan& plan = get_comm_plan(set_marks_field, tag, f.geo(), f.multiplicity);
+  const CommPlan& plan =
+      get_comm_plan(set_marks_field, tag, f.geo(), f.multiplicity);
   refresh_expanded(f, plan);
 }
 
 template <class M>
 void refresh_expanded_1(Field<M>& f)
 {
-  const CommPlan& plan = get_comm_plan(set_marks_field_1, "", f.geo(), f.multiplicity);
+  const CommPlan& plan =
+      get_comm_plan(set_marks_field_1, "", f.geo(), f.multiplicity);
   refresh_expanded(f, plan);
 }
 

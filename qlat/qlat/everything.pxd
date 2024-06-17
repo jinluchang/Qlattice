@@ -332,8 +332,12 @@ cdef extern from "qlat/hmc.h" namespace "qlat":
     double gf_hamilton(const GaugeField& gf, const GaugeAction& ga) except +
     void gf_evolve(GaugeField& gf, const GaugeMomentum& gm, const double step_size) except +
     void gf_evolve_dual(GaugeField& gf, const GaugeMomentum& gm_dual, const double step_size) except +
+    void gf_evolve(GaugeField& gf, const GaugeMomentum& gm, const Field[RealD]& mf, const RealD step_size) except +
+    void gf_evolve_dual(GaugeField& gf, const GaugeMomentum& gm_dual, const Field[RealD]& mf_dual, const RealD step_size) except +
     void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf, const GaugeAction& ga) except +
     void set_gm_force_dual(GaugeMomentum& gm_force_dual, const GaugeField& gf, const GaugeMomentum& gm_force) except +
+    void project_gauge_transform(GaugeMomentum& gm, GaugeMomentum& gm_dual, const Field[RealD]& mf, const Field[RealD]& mf_dual) except +
+
 
 cdef extern from "qlat/vector_utils/utils_smear_vecs.h" namespace "qlat":
 

@@ -6,6 +6,7 @@ from .geometry cimport Geometry
 from .gauge_action cimport GaugeAction
 from .field_types cimport (
         FieldColorMatrix,
+        FieldRealD,
         )
 from .qcd cimport GaugeField
 
@@ -45,11 +46,23 @@ def gf_evolve(GaugeField gf, GaugeMomentum gm, cc.RealD step_size):
 def gf_evolve_dual(GaugeField gf, GaugeMomentum gm_dual, cc.RealD step_size):
     return cc.gf_evolve_dual(gf.xxx().val(), gm_dual.xxx().val(), step_size)
 
+def gf_evolve_fa(GaugeField gf, GaugeMomentum gm, FieldRealD mf, cc.RealD step_size):
+    return cc.gf_evolve(gf.xxx().val(), gm.xxx().val(), mf.xx, step_size)
+
+def gf_evolve_fa_dual(GaugeField gf, GaugeMomentum gm_dual, FieldRealD mf_dual, cc.RealD step_size):
+    return cc.gf_evolve_dual(gf.xxx().val(), gm_dual.xxx().val(), mf_dual.xx, step_size)
+
 def set_gm_force(GaugeMomentum gm_force, GaugeField gf, GaugeAction ga):
     return cc.set_gm_force(gm_force.xxx().val(), gf.xxx().val(), ga.xx)
 
 def set_gm_force_dual(GaugeMomentum gm_force_dual, GaugeField gf, GaugeMomentum gm_force):
     return cc.set_gm_force_dual(gm_force_dual.xxx().val(), gf.xxx().val(), gm_force.xxx().val())
+
+def project_gauge_transform(GaugeMomentum gm, GaugeMomentum gm_dual, FieldRealD mf, FieldRealD mf_dual):
+    """
+    Project out the pure gauge transformation movement.
+    """
+    return cc.project_gauge_transform(gm.xxx().val(), gm_dual.xxx().val(), mf.xx, mf_dual.xx)
 
 @q.timer_verbose
 def metropolis_accept(delta_h, traj, rs):

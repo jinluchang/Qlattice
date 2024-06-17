@@ -201,6 +201,54 @@ void gf_evolve_dual(GaugeField& gf, const GaugeMomentum& gm_dual,
   });
 }
 
+void gf_evolve(GaugeField& gf, const GaugeMomentum& gm, const Field<RealD>& mf,
+               const RealD step_size)
+//  U(t+dt) = exp(pi * dt / mass) U(t)
+{
+  TIMER("gf_evolve");
+  qassert(gf.multiplicity == 4);
+  qassert(gm.multiplicity == 4);
+  qassert(mf.multiplicity == 4);
+  qacc_for(index, gf.geo().local_volume(), {
+    const Geometry& geo = gf.geo();
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<ColorMatrix> gf_v = gf.get_elems(xl);
+    const Vector<ColorMatrix> gm_v = gm.get_elems_const(xl);
+    const Vector<RealD> mf_v = mf.get_elems_const(xl);
+    qassert(gf_v.size() == 4);
+    qassert(gm_v.size() == 4);
+    qassert(mf_v.size() == 4);
+    for (int mu = 0; mu < 4; ++mu) {
+      const RealD dt_m = step_size / mf_v[mu];
+      gf_v[mu] = matrix_evolve(gf_v[mu], gm_v[mu], dt_m);
+    }
+  });
+}
+
+void gf_evolve_dual(GaugeField& gf, const GaugeMomentum& gm_dual,
+                    const Field<RealD>& mf_dual, const RealD step_size)
+//  U(t+dt) = U(t) exp(-pi_dual * dt / mass)
+{
+  TIMER("gf_evolve_dual");
+  qassert(gf.multiplicity == 4);
+  qassert(gm_dual.multiplicity == 4);
+  qassert(mf_dual.multiplicity == 4);
+  qacc_for(index, gf.geo().local_volume(), {
+    const Geometry& geo = gf.geo();
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<ColorMatrix> gf_v = gf.get_elems(xl);
+    const Vector<ColorMatrix> gm_v = gm_dual.get_elems_const(xl);
+    const Vector<RealD> mf_v = mf_dual.get_elems_const(xl);
+    qassert(gf_v.size() == 4);
+    qassert(gm_v.size() == 4);
+    qassert(mf_v.size() == 4);
+    for (int mu = 0; mu < 4; ++mu) {
+      const RealD dt_m = step_size / mf_v[mu];
+      gf_v[mu] = matrix_evolve_dual(gf_v[mu], gm_v[mu], dt_m);
+    }
+  });
+}
+
 void set_gm_force_no_comm(GaugeMomentum& gm_force, const GaugeField& gf,
                           const GaugeAction& ga)
 // gf need comm
@@ -264,6 +312,76 @@ void set_gm_force_dual(GaugeMomentum& gm_force_dual, const GaugeField& gf,
     qassert(gm_v.size() == 4);
     for (int mu = 0; mu < 4; ++mu) {
       gm_dual_v[mu] = -matrix_adjoint(gf_v[mu]) * gm_v[mu] * gf_v[mu];
+    }
+  });
+}
+
+void project_gauge_transform(GaugeMomentum& gm, GaugeMomentum& gm_dual,
+                             const Field<RealD>& mf,
+                             const Field<RealD>& mf_dual)
+{
+  TIMER("project_gauge_transform");
+  const Geometry& geo = gm.geo();
+  qassert(check_matching_geo(geo, gm_dual.geo()));
+  qassert(check_matching_geo(geo, mf.geo()));
+  qassert(check_matching_geo(geo, mf_dual.geo()));
+  qassert(gm.multiplicity == 4);
+  qassert(gm_dual.multiplicity == 4);
+  qassert(mf.multiplicity == 4);
+  qassert(mf_dual.multiplicity == 4);
+  const Coordinate expand_left = Coordinate(1, 1, 1, 1);
+  const Coordinate expand_right = Coordinate(1, 1, 1, 1);
+  const Geometry geo_ext = geo_resize(geo, expand_left, expand_right);
+  GaugeMomentum gm1_ext, gm2_ext;
+  gm1_ext.init(geo_ext, 4);
+  gm2_ext.init(geo_ext, 4);
+  gm1_ext = gm;
+  gm2_ext = gm_dual;
+  Field<RealD> mf1_ext, mf2_ext;
+  mf1_ext.init(geo_ext, 4);
+  mf2_ext.init(geo_ext, 4);
+  mf1_ext = mf;
+  mf2_ext = mf_dual;
+  refresh_expanded_1(gm1_ext);
+  refresh_expanded_1(gm2_ext);
+  refresh_expanded_1(mf1_ext);
+  refresh_expanded_1(mf2_ext);
+  qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = gm.geo();
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Vector<ColorMatrix> v1 = gm1_ext.get_elems_const(xl);
+    const Vector<ColorMatrix> v2 = gm2_ext.get_elems_const(xl);
+    const Vector<RealD> vm1 = mf1_ext.get_elems_const(xl);
+    const Vector<RealD> vm2 = mf2_ext.get_elems_const(xl);
+    RealD inv_m_sum_x = 0.0;
+    RealD inv_m_sum_x_p = 0.0;
+    ColorMatrix v_sum;
+    ColorMatrix v_sum_p;
+    set_zero(v_sum);
+    set_zero(v_sum_p);
+    for (int m = 0; m < 4; ++m) {
+      const Coordinate xl_p = coordinate_shifts(xl, m);
+      const Coordinate xl_m = coordinate_shifts(xl, -m - 1);
+      const RealD m1 = vm1[m];
+      const RealD m2 = vm2[m];
+      const RealD m2m = mf2_ext.get_elem(xl_m, m);
+      const RealD m1p = mf1_ext.get_elem(xl_p, m);
+      const ColorMatrix& c1 = v1[m];
+      const ColorMatrix& c2 = v2[m];
+      const ColorMatrix& c2m = gm2_ext.get_elem(xl_m, m);
+      const ColorMatrix& c1p = gm1_ext.get_elem(xl_p, m);
+      inv_m_sum_x += 1.0 / m1 + 1.0 / m2m;
+      inv_m_sum_x_p += 1.0 / m1p + 1.0 / m2;
+      v_sum += c1 / ComplexD(m1) + c2m / ComplexD(m2m);
+      v_sum_p += c1p / ComplexD(m1p) + c2 / ComplexD(m2);
+    }
+    const RealD alpha = 8.0 / inv_m_sum_x;
+    const RealD alpha_p = 8.0 / inv_m_sum_x_p;
+    Vector<ColorMatrix> vv1 = gm.get_elems(xl);
+    Vector<ColorMatrix> vv2 = gm_dual.get_elems(xl);
+    for (int m = 0; m < 4; ++m) {
+      vv1[m] -= alpha / 8.0 * v_sum;
+      vv2[m] -= alpha_p / 8.0 * v_sum_p;
     }
   });
 }

@@ -40,6 +40,12 @@ void gf_evolve(GaugeField& gf, const GaugeMomentum& gm, const double step_size);
 void gf_evolve_dual(GaugeField& gf, const GaugeMomentum& gm_dual,
                     const double step_size);
 
+void gf_evolve(GaugeField& gf, const GaugeMomentum& gm, const Field<RealD>& mf,
+               const RealD step_size);
+
+void gf_evolve_dual(GaugeField& gf, const GaugeMomentum& gm_dual,
+                    const Field<RealD>& mf_dual, const RealD step_size);
+
 void set_gm_force_no_comm(GaugeMomentum& gm_force, const GaugeField& gf,
                           const GaugeAction& ga);
 
@@ -48,6 +54,10 @@ void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf,
 
 void set_gm_force_dual(GaugeMomentum& gm_force_dual, const GaugeField& gf,
                        const GaugeMomentum& gm_force);
+
+void project_gauge_transform(GaugeMomentum& gm, GaugeMomentum& gm_dual,
+                             const Field<RealD>& mf,
+                             const Field<RealD>& mf_dual);
 
 // -------------------
 
