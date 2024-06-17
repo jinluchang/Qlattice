@@ -4,7 +4,7 @@ EXPORT(mk_qm_action, {
   using namespace qlat;
   double alpha = 0.0;
   double beta = 0.0;
-  double star_TV = 0.0;
+  double start_TV = 0.0;
   double barrier_strength = 1.0;
   double M = 1.0;
   double L = 0.0;
