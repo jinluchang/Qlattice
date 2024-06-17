@@ -198,7 +198,7 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
-job_tag = "32I_b2p8_sym"
+job_tag = "32I_b2p8_fa_sym"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
 set_param(job_tag, "hmc", "max_traj")(20000)
@@ -211,7 +211,7 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(10)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
-job_tag = "32I_b2p8_sym_md2"
+job_tag = "32I_b2p8_fa_sym_md2"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
 set_param(job_tag, "hmc", "max_traj")(20000)
@@ -224,7 +224,7 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(5)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
-job_tag = "32I_b2p8_sym_md3"
+job_tag = "32I_b2p8_fa_sym_md3"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
 set_param(job_tag, "hmc", "max_traj")(20000)
@@ -237,7 +237,7 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
-job_tag = "32I_b2p8_sym_md4"
+job_tag = "32I_b2p8_fa_sym_md4"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
 set_param(job_tag, "hmc", "max_traj")(20000)
@@ -250,7 +250,7 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(3)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
-job_tag = "32I_b2p8_sym_md5"
+job_tag = "32I_b2p8_fa_sym_md5"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
 set_param(job_tag, "hmc", "max_traj")(20000)
