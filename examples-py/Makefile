@@ -36,6 +36,7 @@ tests = \
 		hmc-pure-gauge-test.log \
 		hmc-pure-gauge-flowed-test.log \
 		hmc-pure-gauge-symmetric.log \
+		hmc-pure-gauge-fa-sym.log \
 		hmc-pions.log \
 		qcd-utils.log \
 		free-invert.log \
