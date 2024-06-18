@@ -82,8 +82,15 @@ def run_hmc_traj(gf, ga, traj, rs, *, is_reverse_test=False, n_step=6, md_time=1
     gf0 @= gf
     mf = FieldRealD(geo, 4)
     mf_dual = FieldRealD(geo, 4)
-    q.set_unit(mf)
-    q.set_unit(mf_dual)
+    mass_type = get_param(job_tag, "hmc", "fa", "mass_type")
+    if mass_type == None:
+        q.set_unit(mf)
+        q.set_unit(mf_dual)
+    elif mass_type == "random":
+        mf.set_rand(rs.split("fa_mass"), 4.0, 1.0)
+        mf_dual.set_rand(rs.split("fa_mass_dual"), 4.0, 1.0)
+    else:
+        raise Exception(f"{fname}: mass_type={mass_type}")
     gm = GaugeMomentum(geo)
     gm.set_rand_fa(mf, rs.split("set_rand_gauge_momentum"))
     gm_dual = GaugeMomentum(geo)
@@ -188,6 +195,7 @@ def run_hmc(job_tag):
 
 job_tag = "test-4nt8"
 set_param(job_tag, "total_site")((4, 4, 4, 8,))
+set_param(job_tag, "hmc", "fa", "mass_type")("random")
 set_param(job_tag, "hmc", "max_traj")(8)
 set_param(job_tag, "hmc", "max_traj_always_accept")(4)
 set_param(job_tag, "hmc", "max_traj_reverse_test")(2)

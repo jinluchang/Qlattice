@@ -67,7 +67,7 @@ void set_rand_gauge_momentum(GaugeMomentum& gm, const Field<RealD>& mf,
     const Vector<RealD> vm = mf.get_elems_const(index);
     Vector<ColorMatrix> v = gm.get_elems(index);
     for (int m = 0; m < 4; ++m) {
-      v[m] *= 1.0 / std::sqrt(vm[m]);
+      v[m] *= std::sqrt(vm[m]);
     }
   });
 }
