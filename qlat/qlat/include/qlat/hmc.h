@@ -60,9 +60,9 @@ void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf,
 void set_gm_force_dual(GaugeMomentum& gm_force_dual, const GaugeField& gf,
                        const GaugeMomentum& gm_force);
 
-void project_gauge_transform(GaugeMomentum& gm, GaugeMomentum& gm_dual,
-                             const Field<RealD>& mf,
-                             const Field<RealD>& mf_dual);
+RealD project_gauge_transform(GaugeMomentum& gm, GaugeMomentum& gm_dual,
+                              const Field<RealD>& mf,
+                              const Field<RealD>& mf_dual);
 
 // -------------------
 

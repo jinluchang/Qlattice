@@ -35,6 +35,7 @@ def gf_evolve(gf, gm, gm_dual, mf, mf_dual, dt):
 
 @q.timer
 def gm_evolve_fg(gm, gm_dual, gf_init, mf, mf_dual, ga, fg_dt, dt):
+    fname = q.get_fname()
     geo = gf_init.geo
     gf = GaugeField(geo)
     gf @= gf_init
@@ -95,7 +96,9 @@ def run_hmc_traj(
     gm_dual0 = GaugeMomentum(geo)
     gm0 @= gm
     gm_dual0 @= gm_dual
-    project_gauge_transform(gm0, gm_dual0, mf, mf_dual)
+    change_qnorm = project_gauge_transform(gm0, gm_dual0, mf, mf_dual)
+    if change_qnorm > 1e-8:
+        q.displayln_info(f"{fname}: project_gauge_transform: change_qnorm={change_qnorm}")
     delta_h = run_hmc_evolve(gm0, gm_dual0, gf0, mf, mf_dual, ga, rs, n_step, md_time)
     if is_reverse_test:
         gm_r = GaugeMomentum(geo)
@@ -137,36 +140,106 @@ def run_hmc_mass_mom_refresh(
         rs,
         mf, mf_dual,
         gm, gm_dual,
+        sel_list,
+        sel_dual_list,
         ):
     fname = q.get_fname()
     rs = rs.split(f"{traj}")
-    complete_refresh_interval = get_param(job_tag, "hmc", "fa", "complete_refresh_interval")
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    geo = q.Geometry(total_site)
+    complete_refresh_interval = get_param(job_tag, "hmc", "fa", "complete_refresh_interval", default=1)
     mass_type = get_param(job_tag, "hmc", "fa", "mass_type")
+    mass_list = get_param(job_tag, "hmc", "fa", "mass_list")
+    interval_list = get_param(job_tag, "hmc", "fa", "interval_list")
     is_refresh = traj % complete_refresh_interval == 0
     if is_force_refresh:
         if not is_refresh:
             q.displayln_info(f"{fname}: Force complete refresh of mass and momentum. {job_tag} {traj}")
         is_refresh = True
     if is_refresh:
+        # Completely refresh all mass and momentum (and selection)
         if mass_type is None:
             q.set_unit(mf)
             q.set_unit(mf_dual)
+            sel = np.zeros(mf[:].shape, dtype=bool)
+            sel[:] = True
+            sel_list[:] = [
+                    sel,
+                    ]
+            sel_dual_list[:] = [
+                    sel,
+                    ]
         elif mass_type == "random":
             mf.set_rand(rs.split("fa_mass"), 4.0, 1.0)
             mf_dual.set_rand(rs.split("fa_mass_dual"), 4.0, 1.0)
+            sel = mf[:] < 2.0
+            sel_dual = mf_dual[:] < 2.0
+            sel_list[:] = [
+                    sel,
+                    ~sel,
+                    ]
+            sel_dual_list[:] = [
+                    sel_dual,
+                    ~sel_dual,
+                    ]
+            assert isinstance(interval_list, list)
+            assert len(sel_list) == len(interval_list)
+        elif mass_type == "grid-2":
+            xg_arr = geo.xg_arr()
+            c_offset = rs.c_rand_gen(total_site).to_numpy()
+            xg_rel_arr = xg_arr - c_offset
+            count = np.zeros(xg_arr.shape, np.int32)
+            for m in range(4):
+                for n in range(4):
+                    if n == m:
+                        continue
+                    count[xg_rel_arr[:, n] % 2 == 0, m] += 1
+            assert np.all(count >= 0)
+            assert np.all(count <= 3)
+            sel_list[:] = [
+                count == 0,
+                count == 1,
+                count == 2,
+                count == 3,
+            ]
+            sel_dual_list[:] = sel_list
+            assert isinstance(interval_list, list)
+            assert len(sel_list) == len(interval_list)
+            assert isinstance(mass_list, list)
+            assert len(mass_list) == len(interval_list)
+            for idx, mass in enumerate(mass_list):
+                mf[sel_list[idx]] = mass
+                mf_dual[sel_dual_list[idx]] = mass
         else:
             raise Exception(f"{fname}: mass_type={mass_type}")
         gm.set_rand_fa(mf, rs.split("set_rand_gauge_momentum"))
         gm_dual.set_rand_fa(mf_dual, rs.split("set_rand_gauge_momentum_dual"))
     else:
-        sel = mf[:] < 2.0
-        sel_dual = mf_dual[:] < 2.0
-        gm1 = gm.copy()
-        gm_dual1 = gm_dual.copy()
+        # Only refresh some selection momentum (do not change mass and selection)
+        # IMPORTANT: Need to first add the gauge transform component back
+        gm1 = GaugeMomentum(geo)
+        gm_dual1 = GaugeMomentum(geo)
+        gm1.set_rand_fa(mf, rs.split("set_rand_gauge_momentum_g"))
+        gm_dual1.set_rand_fa(mf_dual, rs.split("set_rand_gauge_momentum_dual_g"))
+        gm2 = gm1.copy()
+        gm_dual2 = gm_dual1.copy()
+        project_gauge_transform(gm2, gm_dual2, mf, mf_dual)
+        gm2 -= gm1
+        gm_dual2 -= gm_dual1
+        gm -= gm2
+        gm_dual -= gm_dual2
+        # Then update the selected momentum
         gm1.set_rand_fa(mf, rs.split("set_rand_gauge_momentum"))
         gm_dual1.set_rand_fa(mf_dual, rs.split("set_rand_gauge_momentum_dual"))
-        gm[sel] = gm1[sel]
-        gm_dual[sel] = gm_dual1[sel]
+        assert len(sel_list) == len(interval_list)
+        assert len(sel_dual_list) == len(interval_list)
+        for sel, interval in zip(sel_list, interval_list):
+            if traj % interval == 0:
+                gm[sel] = gm1[sel]
+        for sel_dual, interval in zip(sel_dual_list, interval_list):
+            if traj % interval == 0:
+                gm_dual[sel_dual] = gm_dual1[sel_dual]
+    # Project out the gauge transform movement
     project_gauge_transform(gm, gm_dual, mf, mf_dual)
 
 @q.timer_verbose
@@ -221,6 +294,8 @@ def run_hmc(job_tag):
         traj = traj_load
         gf.load(get_load_path(f"{job_tag}/configs/ckpoint_lat.{traj}"))
     is_force_refresh = True
+    sel_list = []
+    sel_dual_list = []
     for traj in range(traj, max_traj):
         run_hmc_mass_mom_refresh(
                 job_tag, traj,
@@ -228,6 +303,8 @@ def run_hmc(job_tag):
                 rs.split("run_hmc_mass_mom_refresh"),
                 mf, mf_dual,
                 gm, gm_dual,
+                sel_list,
+                sel_dual_list,
                 )
         is_force_refresh = False
         traj += 1
@@ -260,7 +337,7 @@ def run_hmc(job_tag):
 
 # ----
 
-job_tag = "test-4nt8"
+job_tag = "test0-4nt8"
 set_param(job_tag, "total_site")((4, 4, 4, 8,))
 set_param(job_tag, "hmc", "max_traj")(8)
 set_param(job_tag, "hmc", "max_traj_always_accept")(4)
@@ -271,8 +348,37 @@ set_param(job_tag, "hmc", "beta")(2.13)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
-set_param(job_tag, "hmc", "fa", "mass_type")("random")
+
+job_tag = "test1-4nt8"
+set_param(job_tag, "total_site")((4, 4, 4, 8,))
+set_param(job_tag, "hmc", "max_traj")(8)
+set_param(job_tag, "hmc", "max_traj_always_accept")(4)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
+set_param(job_tag, "hmc", "md_time")(1.0)
+set_param(job_tag, "hmc", "n_step")(10)
+set_param(job_tag, "hmc", "beta")(2.13)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "save_traj_interval")(4)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 set_param(job_tag, "hmc", "fa", "complete_refresh_interval")(2)
+set_param(job_tag, "hmc", "fa", "mass_type")("random")
+set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 2, ])
+
+job_tag = "test2-4nt8"
+set_param(job_tag, "total_site")((4, 4, 4, 8,))
+set_param(job_tag, "hmc", "max_traj")(8)
+set_param(job_tag, "hmc", "max_traj_always_accept")(4)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
+set_param(job_tag, "hmc", "md_time")(1.0)
+set_param(job_tag, "hmc", "n_step")(10)
+set_param(job_tag, "hmc", "beta")(2.13)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "save_traj_interval")(4)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+set_param(job_tag, "hmc", "fa", "complete_refresh_interval")(2)
+set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
+set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.25, 1.5, 4.0, ])
+set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 2, ])
 
 job_tag = "32I_b2p8_fa_sym"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -339,6 +445,38 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(2)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
+job_tag = "32I_b2p8_fa_sym_v1"
+set_param(job_tag, "total_site")((32, 32, 32, 64,))
+set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
+set_param(job_tag, "hmc", "max_traj")(20000)
+set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
+set_param(job_tag, "hmc", "md_time")(1.0)
+set_param(job_tag, "hmc", "n_step")(32)
+set_param(job_tag, "hmc", "beta")(2.80)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "save_traj_interval")(10)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
+set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.25, 1.5, 4.0, ])
+set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 2, ])
+
+job_tag = "32I_b2p8_fa_sym_v2"
+set_param(job_tag, "total_site")((32, 32, 32, 64,))
+set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
+set_param(job_tag, "hmc", "max_traj")(20000)
+set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
+set_param(job_tag, "hmc", "md_time")(2.0)
+set_param(job_tag, "hmc", "n_step")(32)
+set_param(job_tag, "hmc", "beta")(2.80)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "save_traj_interval")(10)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
+set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.25, 1.5, 4.0, ])
+set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 2, ])
+
 # ----
 
 size_node_list = [
@@ -364,7 +502,9 @@ if __name__ == "__main__":
     #######################################################
 
     job_tags_default = [
-            "test-4nt8",
+            "test0-4nt8",
+            "test1-4nt8",
+            "test2-4nt8",
             ]
 
     if job_tags == [ "", ]:
