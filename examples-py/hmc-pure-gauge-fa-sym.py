@@ -74,14 +74,12 @@ def run_hmc_evolve(gm, gm_dual, gf, mf, mf_dual, ga, rs, n_step, md_time=1.0):
     return delta_h
 
 @q.timer_verbose
-def run_hmc_traj(gf, ga, traj, rs, *, is_reverse_test=False, n_step=6, md_time=1.0, is_always_accept=False):
+def run_hmc_traj(gf, gm, gm_dual, mf, mf_dual, ga, traj, rs, *, is_reverse_test=False, n_step=6, md_time=1.0, is_always_accept=False):
     fname = q.get_fname()
     rs = rs.split(f"{traj}")
     geo = gf.geo
     gf0 = GaugeField(geo)
     gf0 @= gf
-    mf = FieldRealD(geo, 4)
-    mf_dual = FieldRealD(geo, 4)
     mass_type = get_param(job_tag, "hmc", "fa", "mass_type")
     if mass_type == None:
         q.set_unit(mf)
@@ -91,9 +89,7 @@ def run_hmc_traj(gf, ga, traj, rs, *, is_reverse_test=False, n_step=6, md_time=1
         mf_dual.set_rand(rs.split("fa_mass_dual"), 4.0, 1.0)
     else:
         raise Exception(f"{fname}: mass_type={mass_type}")
-    gm = GaugeMomentum(geo)
     gm.set_rand_fa(mf, rs.split("set_rand_gauge_momentum"))
-    gm_dual = GaugeMomentum(geo)
     gm_dual.set_rand_fa(mf_dual, rs.split("set_rand_gauge_momentum_dual"))
     project_gauge_transform(gm, gm_dual, mf, mf_dual)
     delta_h = run_hmc_evolve(gm, gm_dual, gf0, mf, mf_dual, ga, rs, n_step, md_time)
@@ -152,6 +148,10 @@ def run_hmc(job_tag):
     geo = q.Geometry(total_site)
     rs = q.RngState(f"run_hmc-{job_tag}")
     gf = q.GaugeField(geo)
+    mf = FieldRealD(geo, 4)
+    mf_dual = FieldRealD(geo, 4)
+    gm = GaugeMomentum(geo)
+    gm_dual = GaugeMomentum(geo)
     traj_load = None
     if get_load_path(f"{job_tag}/configs") is not None:
         for traj in range(max_traj):
@@ -170,7 +170,10 @@ def run_hmc(job_tag):
         is_always_accept = traj < max_traj_always_accept
         is_reverse_test = traj < max_traj_reverse_test
         flag, delta_h = run_hmc_traj(
-                gf, ga, traj,
+                gf,
+                gm, gm_dual,
+                mf, mf_dual,
+                ga, traj,
                 rs.split("run_hmc_traj"),
                 n_step=n_step,
                 md_time=md_time,
