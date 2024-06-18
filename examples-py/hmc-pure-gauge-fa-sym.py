@@ -188,8 +188,13 @@ def run_hmc(job_tag):
         traj = traj_load
         gf.load(get_load_path(f"{job_tag}/configs/ckpoint_lat.{traj}"))
     for traj in range(traj, max_traj):
+        run_hmc_mass_mom_refresh(
+                job_tag, traj,
+                rs.split("run_hmc_mass_mom_refresh"),
+                mf, mf_dual,
+                gm, gm_dual,
+                )
         traj += 1
-        run_hmc_mass_mom_refresh(job_tag, traj, rs.split("run_hmc_traj"), mf, mf_dual, gm, gm_dual)
         is_always_accept = traj < max_traj_always_accept
         is_reverse_test = traj < max_traj_reverse_test
         flag, delta_h = run_hmc_traj(
