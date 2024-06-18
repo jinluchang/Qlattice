@@ -91,28 +91,83 @@ def run_hmc_traj(
     geo = gf.geo
     gf0 = GaugeField(geo)
     gf0 @= gf
-    project_gauge_transform(gm, gm_dual, mf, mf_dual)
-    delta_h = run_hmc_evolve(gm, gm_dual, gf0, mf, mf_dual, ga, rs, n_step, md_time)
+    gm0 = GaugeMomentum(geo)
+    gm_dual0 = GaugeMomentum(geo)
+    gm0 @= gm
+    gm_dual0 @= gm_dual
+    project_gauge_transform(gm0, gm_dual0, mf, mf_dual)
+    delta_h = run_hmc_evolve(gm0, gm_dual0, gf0, mf, mf_dual, ga, rs, n_step, md_time)
     if is_reverse_test:
         gm_r = GaugeMomentum(geo)
-        gm_r @= gm
         gm_dual_r = GaugeMomentum(geo)
-        gm_dual_r @= gm_dual
+        gm_r @= gm0
+        gm_dual_r @= gm_dual0
         gf0_r = GaugeField(geo)
         gf0_r @= gf0
         delta_h_rev = run_hmc_evolve(gm_r, gm_dual_r, gf0_r, mf, mf_dual, ga, rs, n_step, -md_time)
         gf0_r -= gf
+        gm_r -= gm
+        gm_dual_r -= gm_dual
         q.displayln_info(f"{fname}: reversed delta_diff: {delta_h + delta_h_rev} / {delta_h}")
+        gm_diff_norm = q.qnorm(gm_r)
+        gm_dual_diff_norm = q.qnorm(gm_dual_r)
+        gm_norm = q.qnorm(gm)
+        gm_dual_norm = q.qnorm(gm_dual)
         gf_diff_norm = q.qnorm(gf0_r)
-        gf_norm = q.qnorm(gf0)
+        gf_norm = q.qnorm(gf)
         q.displayln_info(f"{fname}: reversed gf_diff: {gf_diff_norm} / {gf_norm}")
+        q.displayln_info(f"{fname}: reversed gm_diff: {gm_diff_norm} / {gm_norm}")
+        q.displayln_info(f"{fname}: reversed gm_dual_diff: {gm_dual_diff_norm} / {gm_dual_norm}")
         assert gf_diff_norm <= 1e-12 * gf_norm
+        assert gm_diff_norm <= 1e-12 * gm_norm
+        assert gm_dual_diff_norm <= 1e-12 * gm_dual_norm
     flag, accept_prob = metropolis_accept(delta_h, traj, rs.split("metropolis_accept"))
     q.displayln_info(f"{fname}: delta_h={delta_h}, flag={flag}, accept_prob={accept_prob}")
     if flag or is_always_accept:
         q.displayln_info(f"{fname}: update gf (traj={traj})")
         gf @= gf0
+        gm @= gm0
+        gm_dual @= gm_dual0
     return flag, delta_h
+
+@q.timer_verbose
+def run_hmc_mass_mom_refresh(
+        job_tag, traj,
+        is_force_refresh,
+        rs,
+        mf, mf_dual,
+        gm, gm_dual,
+        ):
+    fname = q.get_fname()
+    rs = rs.split(f"{traj}")
+    complete_refresh_interval = get_param(job_tag, "hmc", "fa", "complete_refresh_interval")
+    mass_type = get_param(job_tag, "hmc", "fa", "mass_type")
+    is_refresh = traj % complete_refresh_interval == 0
+    if is_force_refresh:
+        if not is_refresh:
+            q.displayln_info(f"{fname}: Force complete refresh of mass and momentum. {job_tag} {traj}")
+        is_refresh = True
+    if is_refresh:
+        if mass_type is None:
+            q.set_unit(mf)
+            q.set_unit(mf_dual)
+        elif mass_type == "random":
+            mf.set_rand(rs.split("fa_mass"), 4.0, 1.0)
+            mf_dual.set_rand(rs.split("fa_mass_dual"), 4.0, 1.0)
+        else:
+            raise Exception(f"{fname}: mass_type={mass_type}")
+        gm.set_rand_fa(mf, rs.split("set_rand_gauge_momentum"))
+        gm_dual.set_rand_fa(mf_dual, rs.split("set_rand_gauge_momentum_dual"))
+    else:
+        sel = mf[:] < 2.0
+        sel_dual = mf_dual[:] < 2.0
+        gm1 = gm.copy()
+        gm_dual1 = gm_dual.copy()
+        gm1.set_rand_fa(mf, rs.split("set_rand_gauge_momentum"))
+        gm_dual1.set_rand_fa(mf_dual, rs.split("set_rand_gauge_momentum_dual"))
+        gm[sel] = gm1[sel]
+        gm_dual[sel] = gm_dual1[sel]
+    project_gauge_transform(gm, gm_dual, mf, mf_dual)
 
 @q.timer_verbose
 def run_topo_info(job_tag, traj, gf):
@@ -130,28 +185,6 @@ def run_topo_info(job_tag, traj, gf):
             info_path=info_path,
             density_field_path=info_path,
             )
-
-@q.timer_verbose
-def run_hmc_mass_mom_refresh(
-        job_tag, traj, rs,
-        mf, mf_dual,
-        gm, gm_dual,
-        ):
-    fname = q.get_fname()
-    rs = rs.split(f"{traj}")
-    complete_refresh_interval = set_param(job_tag, "hmc", "fa", "complete_refresh_interval")
-    mass_type = get_param(job_tag, "hmc", "fa", "mass_type")
-    if mass_type is None:
-        q.set_unit(mf)
-        q.set_unit(mf_dual)
-    elif mass_type == "random":
-        mf.set_rand(rs.split("fa_mass"), 4.0, 1.0)
-        mf_dual.set_rand(rs.split("fa_mass_dual"), 4.0, 1.0)
-    else:
-        raise Exception(f"{fname}: mass_type={mass_type}")
-    gm.set_rand_fa(mf, rs.split("set_rand_gauge_momentum"))
-    gm_dual.set_rand_fa(mf_dual, rs.split("set_rand_gauge_momentum_dual"))
-    project_gauge_transform(gm, gm_dual, mf, mf_dual)
 
 @q.timer_verbose
 def run_hmc(job_tag):
@@ -187,13 +220,16 @@ def run_hmc(job_tag):
     else:
         traj = traj_load
         gf.load(get_load_path(f"{job_tag}/configs/ckpoint_lat.{traj}"))
+    is_force_refresh = True
     for traj in range(traj, max_traj):
         run_hmc_mass_mom_refresh(
                 job_tag, traj,
+                is_force_refresh,
                 rs.split("run_hmc_mass_mom_refresh"),
                 mf, mf_dual,
                 gm, gm_dual,
                 )
+        is_force_refresh = False
         traj += 1
         is_always_accept = traj < max_traj_always_accept
         is_reverse_test = traj < max_traj_reverse_test
@@ -226,8 +262,6 @@ def run_hmc(job_tag):
 
 job_tag = "test-4nt8"
 set_param(job_tag, "total_site")((4, 4, 4, 8,))
-set_param(job_tag, "hmc", "fa", "mass_type")("random")
-set_param(job_tag, "hmc", "fa", "complete_refresh_interval")(2)
 set_param(job_tag, "hmc", "max_traj")(8)
 set_param(job_tag, "hmc", "max_traj_always_accept")(4)
 set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
@@ -237,6 +271,8 @@ set_param(job_tag, "hmc", "beta")(2.13)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+set_param(job_tag, "hmc", "fa", "mass_type")("random")
+set_param(job_tag, "hmc", "fa", "complete_refresh_interval")(2)
 
 job_tag = "32I_b2p8_fa_sym"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
