@@ -84,6 +84,12 @@ qacc RealD qnorm(const T &x)
   return x * x;
 }
 
+template <class M, class N, QLAT_ENABLE_IF(is_real<M>() and is_real<N>())>
+qacc RealD qnorm(const M &x, const N &y)
+{
+  return x * y;
+}
+
 template <class T, QLAT_ENABLE_IF(is_real<T>())>
 qacc T qconj(const T &x)
 {
@@ -137,6 +143,12 @@ ComplexT<T> qpolar(const T &r, const T &theta = T())
 }
 
 #endif
+
+template <class T1, class T2>
+RealD qnorm(const ComplexT<T1> &x, const ComplexT<T2> &y)
+{
+  return qnorm(x.real(), y.real()) + qnorm(x.imag(), y.imag());
+}
 
 template <class T>
 bool qisnan(const ComplexT<T> &arg)

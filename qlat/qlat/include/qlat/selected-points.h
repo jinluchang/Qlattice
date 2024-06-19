@@ -124,9 +124,7 @@ template <class M>
 void qnorm_field(SelectedPoints<RealD>& sp, const SelectedPoints<M>& sp1)
 {
   TIMER("qnorm_field(sp,sp1)");
-  sp.init();
   sp.init(sp1.n_points, 1, sp1.points_dist_type);
-  sp.points_dist_type = sp1.points_dist_type;
   qacc_for(idx, sp.n_points,
            { sp.get_elem(idx) = qnorm(sp1.get_elems_const(idx)); });
 }

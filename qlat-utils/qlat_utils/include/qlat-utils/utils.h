@@ -308,14 +308,6 @@ RealD qnorm(const T& xx)
 
 // -------------------
 
-template <class M, class N, QLAT_ENABLE_IF(is_real<M>() and is_real<N>())>
-qacc RealD qnorm(const M& x, const N& y)
-{
-  return x * y;
-}
-
-// -------------------
-
 template <class M>
 void clear(std::vector<M>& vec)
 {

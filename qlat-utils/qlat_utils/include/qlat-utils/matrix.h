@@ -171,6 +171,16 @@ qacc RealD qnorm(const MatrixT<DIMN, T>& m)
 }
 
 template <int DIMN, class T>
+qacc RealD qnorm(const MatrixT<DIMN, T>& m1, const MatrixT<DIMN, T>& m2)
+{
+  RealD s = 0.0;
+  for (int i = 0; i < DIMN * DIMN; ++i) {
+    s += qnorm(m1.p[i], m2.p[i]);
+  }
+  return s;
+}
+
+template <int DIMN, class T>
 qacc ComplexD matrix_trace(const MatrixT<DIMN, T>& x)
 {
   ComplexD s = 0.0;
