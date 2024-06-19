@@ -73,6 +73,13 @@ def project_gauge_transform(GaugeMomentum gm, GaugeMomentum gm_dual, FieldRealD 
     """
     return cc.project_gauge_transform(gm.xxx().val(), gm_dual.xxx().val(), mf.xx, mf_dual.xx)
 
+def dot_gauge_momentum(const GaugeMomentum& gm1, const GaugeMomentum& gm2):
+    """
+    return RealD dot field with multiplicity = 4
+    """
+    cdef FieldRealD f = FieldRealD()
+    return cc.dot_gauge_momentum(f.xx, gm1.xxx().val(), gm2.xxx().val())
+
 @q.timer_verbose
 def metropolis_accept(delta_h, traj, rs):
     flag_d = 0.0
@@ -109,8 +116,8 @@ def run_hmc_evolve_pure_gauge(gm, gf, ga, rs, n_step, md_time=1.0):
     energy = gm_hamilton_node(gm) + gf_hamilton_node(gf, ga)
     dt = md_time / n_step
     lam = 0.5 * (1.0 - 1.0 / math.sqrt(3.0));
-    theta = (2.0 - math.sqrt(3.0)) / 48.0;
-    ttheta = theta * dt * dt * dt;
+theta = (2.0 - math.sqrt(3.0)) / 48.0;
+ttheta = theta * dt * dt * dt;
     gf_evolve(gf, gm, lam * dt)
     for i in range(n_step):
         gm_evolve_fg_pure_gauge(gm, gf, ga, 4.0 * ttheta / dt, 0.5 * dt);

@@ -434,4 +434,23 @@ RealD project_gauge_transform(GaugeMomentum& gm, GaugeMomentum& gm_dual,
   return qnorm(gm_ag_ext) / geo.total_volume();
 }
 
+void dot_gauge_momentum(Field<RealD>& f, const GaugeMomentum& gm1,
+                        const GaugeMomentum& gm2)
+{
+  TIMER("dot_gauge_momentum(f,gm1,gm2)");
+  qassert(check_matching_geo(gm1.geo(), gm2.geo()));
+  qassert(gm1.multiplicity == 4);
+  qassert(gm2.multiplicity == 4);
+  f.init(gm1.geo(), 4);
+  qacc_for(index, f.geo().local_volume(), {
+    // const Geometry& geo = f1.geo();
+    const Vector<ColorMatrix> v1 = gm1.get_elems_const(index);
+    const Vector<ColorMatrix> v2 = gm2.get_elems_const(index);
+    Vector<RealD> v = f.get_elems(index);
+    for (int m = 0; m < v.size(); ++m) {
+      v[m] = qnorm(v1[m], v2[m]);
+    }
+  });
+}
+
 }  // namespace qlat

@@ -339,6 +339,7 @@ cdef extern from "qlat/hmc.h" namespace "qlat":
     void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf, const GaugeAction& ga) except +
     void set_gm_force_dual(GaugeMomentum& gm_force_dual, const GaugeField& gf, const GaugeMomentum& gm_force) except +
     RealD project_gauge_transform(GaugeMomentum& gm, GaugeMomentum& gm_dual, const Field[RealD]& mf, const Field[RealD]& mf_dual) except +
+    void dot_gauge_momentum(Field[RealD]& f, const GaugeMomentum& gm1, const GaugeMomentum& gm2) except +
 
 cdef extern from "qlat/vector_utils/utils_smear_vecs.h" namespace "qlat":
 

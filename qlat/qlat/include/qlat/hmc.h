@@ -64,6 +64,9 @@ RealD project_gauge_transform(GaugeMomentum& gm, GaugeMomentum& gm_dual,
                               const Field<RealD>& mf,
                               const Field<RealD>& mf_dual);
 
+void dot_gauge_momentum(Field<RealD>& f, const GaugeMomentum& gm1,
+                        const GaugeMomentum& gm2);
+
 // -------------------
 
 qacc double gf_re_tr_plaq_no_comm(const GaugeField& gf, const Coordinate& xl,
