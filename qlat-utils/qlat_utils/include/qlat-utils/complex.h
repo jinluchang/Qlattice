@@ -145,13 +145,13 @@ ComplexT<T> qpolar(const T &r, const T &theta = T())
 #endif
 
 template <class T1, class T2>
-RealD qnorm(const ComplexT<T1> &x, const ComplexT<T2> &y)
+qacc RealD qnorm(const ComplexT<T1> &x, const ComplexT<T2> &y)
 {
   return qnorm(x.real(), y.real()) + qnorm(x.imag(), y.imag());
 }
 
 template <class T>
-bool qisnan(const ComplexT<T> &arg)
+qacc bool qisnan(const ComplexT<T> &arg)
 {
   return qisnan(arg.real()) or qisnan(arg.imag());
 }
