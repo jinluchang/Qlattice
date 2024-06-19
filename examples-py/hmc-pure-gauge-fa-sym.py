@@ -30,7 +30,8 @@ load_path_list[:] = [
 
 class MomentumAutoCorr:
 
-    """
+    """"
+    self.info_list
     self.auto_corr_list
     #
     self.time
@@ -44,23 +45,22 @@ class MomentumAutoCorr:
     #
     len(self.auto_corr_list) == len(self.sel_list) + len(self.sel_dual_list)
     #
-    self.auto_corr_list = [ { time: dot_value, ... }, ... ]
+    self.info_list = [ [ is_gm_or_gm_dual, mass, interval, ], ... ]
+    self.auto_corr_list = [ [ [ time, dot_value, ] ... ], ... ]
     #
     """
 
     @q.timer
-    def refresh_mac(self, gm, gm_dual, sel_list, sel_dual_list):
-        self.auto_corr_list = []
+    def refresh_mac(self, gm, gm_dual, sel_list, sel_dual_list, info_list):
+        assert len(sel_list) == len(sel_dual_list)
+        self.info_list = info_list
+        self.auto_corr_list = [ [] for _ in range(2 * len(sel_list)) ]
         self.time = 0.0
         self.gm = gm.copy()
         self.gm_dual = gm_dual.copy()
         self.sel_list = sel_list
         self.sel_dual_list = sel_dual_list
         #
-        for sel in self.sel_list:
-            self.auto_corr_list.append(dict())
-        for sel in self.sel_dual_list:
-            self.auto_corr_list.append(dict())
         self.add_mac(gm, gm_dual, 0.0)
 
     @q.timer
@@ -73,19 +73,25 @@ class MomentumAutoCorr:
         f1 = q.dot_gauge_momentum(gm, self.gm)
         f2 = q.dot_gauge_momentum(gm_dual, self.gm_dual)
         for sel in self.sel_list:
-            dot_value = self.auto_corr_list[idx].get(self.time, 0.0)
-            dot_value += q.glb_sum(f1[sel].sum())
-            self.auto_corr_list[idx][self.time] = dot_value
+            dot_value = q.glb_sum(f1[sel].sum())
+            val = [ self.time, dot_value, ]
+            self.auto_corr_list[idx].append(val)
             idx += 1
         for sel in self.sel_dual_list:
-            dot_value = self.auto_corr_list[idx].get(self.time, 0.0)
-            dot_value += q.glb_sum(f2[sel].sum())
-            self.auto_corr_list[idx][self.time] = dot_value
+            dot_value = q.glb_sum(f2[sel].sum())
+            val = [ self.time, dot_value, ]
+            self.auto_corr_list[idx].append(val)
             idx += 1
 
     @q.timer
     def save_mac(self, fn):
-        q.save_pickle_obj(self.auto_corr_list, fn)
+        data = list(zip(
+            self.info_list,
+            [ np.array(v, dtype=np.float64) for v in self.auto_corr_list ],
+            ))
+        q.displayln_info(f"MomentumAutoCorr::save_mac: info to be saved to '{fn}'.")
+        q.displayln_info(pformat(data))
+        q.save_pickle_obj(data, fn)
 
 # ----
 
@@ -239,6 +245,9 @@ def run_hmc_mass_mom_refresh(
     mass_type = get_param(job_tag, "hmc", "fa", "mass_type")
     mass_list = get_param(job_tag, "hmc", "fa", "mass_list")
     interval_list = get_param(job_tag, "hmc", "fa", "interval_list")
+    if isinstance(interval_list, list):
+        for interval in interval_list:
+            assert complete_refresh_interval % interval == 0
     is_refresh = traj % complete_refresh_interval == 0
     if is_force_refresh:
         if not is_refresh:
@@ -257,6 +266,10 @@ def run_hmc_mass_mom_refresh(
             sel_dual_list[:] = [
                     sel,
                     ]
+            info_list = [
+                    [ True, 1.0, complete_refresh_interval, ],
+                    [ False, 1.0, complete_refresh_interval, ],
+                    ]
         elif mass_type == "random":
             mf.set_rand(rs.split("fa_mass"), 4.0, 1.0)
             mf_dual.set_rand(rs.split("fa_mass_dual"), 4.0, 1.0)
@@ -269,6 +282,12 @@ def run_hmc_mass_mom_refresh(
             sel_dual_list[:] = [
                     sel_dual,
                     ~sel_dual,
+                    ]
+            info_list = [
+                    [ True, 1.5, interval_list[0], ],
+                    [ True, 3.0, interval_list[1], ],
+                    [ False, 1.5, interval_list[0], ],
+                    [ False, 3.0, interval_list[1], ],
                     ]
             assert isinstance(interval_list, list)
             assert len(sel_list) == len(interval_list)
@@ -298,6 +317,11 @@ def run_hmc_mass_mom_refresh(
             for idx, mass in enumerate(mass_list):
                 mf[sel_list[idx]] = mass
                 mf_dual[sel_dual_list[idx]] = mass
+            info_list = []
+            for mass, interval in zip(mass_list, interval_list):
+                info_list.append([ True, mass, interval, ])
+            for mass, interval in zip(mass_list, interval_list):
+                info_list.append([ False, mass, interval, ])
         else:
             raise Exception(f"{fname}: mass_type={mass_type}")
         gm.set_rand_fa(mf, rs.split("set_rand_gauge_momentum"))
@@ -305,7 +329,7 @@ def run_hmc_mass_mom_refresh(
         if is_project_gauge_transform:
             # Project out the gauge transform movement
             project_gauge_transform(gm, gm_dual, mf, mf_dual)
-        mom_auto_corr.refresh_mac(gm, gm_dual, sel_list, sel_dual_list)
+        mom_auto_corr.refresh_mac(gm, gm_dual, sel_list, sel_dual_list, info_list)
     else:
         # Only refresh some selection momentum (do not change mass and selection)
         gm1 = GaugeMomentum(geo)
@@ -362,6 +386,7 @@ def run_hmc(job_tag):
     max_traj_reverse_test= get_param(job_tag, "hmc", "max_traj_reverse_test")
     save_traj_interval = get_param(job_tag, "hmc", "save_traj_interval")
     complete_refresh_interval = get_param(job_tag, "hmc", "fa", "complete_refresh_interval", default=1)
+    assert save_traj_interval % complete_refresh_interval == 0
     is_saving_topo_info = get_param(job_tag, "hmc", "is_saving_topo_info")
     is_project_gauge_transform = get_param(job_tag, "hmc", "fa", "is_project_gauge_transform")
     md_time = get_param(job_tag, "hmc", "md_time")
@@ -430,7 +455,7 @@ def run_hmc(job_tag):
         q.qtouch_info(get_save_path(f"{job_tag}/configs/ckpoint_lat_info.{traj}.txt"), pformat(info))
         json_results.append((f"{fname}: {traj} plaq", plaq,))
         if traj % complete_refresh_interval == 0:
-            mom_auto_corr.save_mac(get_save_path(f"{job_tag}/mom_auto_corr/traj-{traj}.pickle"))
+            mom_auto_corr.save_mac(get_save_path(f"{job_tag}/hmc-mom-auto-corr/traj-{traj}.pickle"))
         if traj % save_traj_interval == 0:
             gf.save(get_save_path(f"{job_tag}/configs/ckpoint_lat.{traj}"))
             if is_saving_topo_info:
@@ -642,6 +667,24 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(False)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.25, 1.5, 4.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 2, ])
+
+job_tag = "32I_b2p8_fa_sym_v5"
+set_param(job_tag, "total_site")((32, 32, 32, 64,))
+set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
+set_param(job_tag, "hmc", "max_traj")(20000)
+set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
+set_param(job_tag, "hmc", "md_time")(1.0)
+set_param(job_tag, "hmc", "n_step")(32)
+set_param(job_tag, "hmc", "beta")(2.80)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "save_traj_interval")(12)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+set_param(job_tag, "hmc", "fa", "complete_refresh_interval")(12)
+set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
+set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
+set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.25, 1.5, 4.0, ])
+set_param(job_tag, "hmc", "fa", "interval_list")([ 6, 6, 6, 12, ])
 
 # ----
 
