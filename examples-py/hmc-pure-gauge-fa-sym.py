@@ -28,6 +28,67 @@ load_path_list[:] = [
 
 # ----
 
+class MomentumAutoCorr:
+
+    """
+    self.auto_corr_list
+    #
+    self.time
+    #
+    # copy of the initial momentum
+    self.gm
+    self.gm_dual
+    #
+    self.sel_list
+    self.sel_dual_list
+    #
+    len(self.auto_corr_list) == len(self.sel_list) + len(self.sel_dual_list)
+    #
+    self.auto_corr_list = [ { time: dot_value, ... }, ... ]
+    #
+    """
+
+    @q.timer
+    def refresh_mac(self, gm, gm_dual, sel_list, sel_dual_list):
+        self.auto_corr_list = []
+        self.time = 0.0
+        self.gm = gm.copy()
+        self.gm_dual = gm_dual.copy()
+        self.sel_list = sel_list
+        self.sel_dual_list = sel_dual_list
+        #
+        for sel in self.sel_list:
+            self.auto_corr_list.append(dict())
+        for sel in self.sel_dual_list:
+            self.auto_corr_list.append(dict())
+        self.add_mac(gm, gm_dual, 0.0)
+
+    @q.timer
+    def add_mac(self, gm, gm_dual, dt):
+        """
+        `dt`: MD time since last call of `add_mac`
+        """
+        self.time += dt
+        idx = 0
+        f1 = q.dot_gauge_momentum(gm, self.gm)
+        f2 = q.dot_gauge_momentum(gm_dual, self.gm_dual)
+        for sel in self.sel_list:
+            dot_value = self.auto_corr_list[idx].get(self.time, 0.0)
+            dot_value += q.glb_sum(f1[sel].sum())
+            self.auto_corr_list[idx][self.time] = dot_value
+            idx += 1
+        for sel in self.sel_dual_list:
+            dot_value = self.auto_corr_list[idx].get(self.time, 0.0)
+            dot_value += q.glb_sum(f2[sel].sum())
+            self.auto_corr_list[idx][self.time] = dot_value
+            idx += 1
+
+    @q.timer
+    def save_mac(self, fn):
+        q.save_pickle_obj(self.auto_corr_list, fn)
+
+# ----
+
 @q.timer
 def gf_evolve(gf, gm, gm_dual, mf, mf_dual, dt):
     q.gf_evolve_fa(gf, gm, mf, dt)
@@ -64,6 +125,7 @@ def run_hmc_evolve(
         gm, gm_dual, gf, mf, mf_dual, ga, rs, n_step, md_time,
         *,
         is_project_gauge_transform,
+        mom_auto_corr=None,
         ):
     energy = gm_hamilton_node_fa(gm, mf) + gm_hamilton_node_fa(gm_dual, mf_dual) + gf_hamilton_node(gf, ga)
     dt = md_time / n_step
@@ -81,6 +143,8 @@ def run_hmc_evolve(
             gf_evolve(gf, gm, gm_dual, mf, mf_dual, 2.0 * lam * dt);
         else:
             gf_evolve(gf, gm, gm_dual, mf, mf_dual, lam * dt);
+        if mom_auto_corr is not None:
+            mom_auto_corr.add_mac(gm, gm_dual, dt)
     gf.unitarize()
     delta_h = gm_hamilton_node_fa(gm, mf) + gm_hamilton_node_fa(gm_dual, mf_dual) + gf_hamilton_node(gf, ga) - energy;
     delta_h = q.glb_sum(delta_h)
@@ -99,6 +163,7 @@ def run_hmc_traj(
         md_time=1.0,
         is_always_accept=False,
         is_project_gauge_transform=True,
+        mom_auto_corr=None,
         ):
     fname = q.get_fname()
     rs = rs.split(f"{traj}")
@@ -116,6 +181,7 @@ def run_hmc_traj(
     delta_h = run_hmc_evolve(
             gm0, gm_dual0, gf0, mf, mf_dual, ga, rs, n_step, md_time,
             is_project_gauge_transform=is_project_gauge_transform,
+            mom_auto_corr=mom_auto_corr,
             )
     if is_reverse_test:
         gm_r = GaugeMomentum(geo)
@@ -162,6 +228,7 @@ def run_hmc_mass_mom_refresh(
         gm, gm_dual,
         sel_list,
         sel_dual_list,
+        mom_auto_corr,
         ):
     fname = q.get_fname()
     rs = rs.split(f"{traj}")
@@ -235,6 +302,10 @@ def run_hmc_mass_mom_refresh(
             raise Exception(f"{fname}: mass_type={mass_type}")
         gm.set_rand_fa(mf, rs.split("set_rand_gauge_momentum"))
         gm_dual.set_rand_fa(mf_dual, rs.split("set_rand_gauge_momentum_dual"))
+        if is_project_gauge_transform:
+            # Project out the gauge transform movement
+            project_gauge_transform(gm, gm_dual, mf, mf_dual)
+        mom_auto_corr.refresh_mac(gm, gm_dual, sel_list, sel_dual_list)
     else:
         # Only refresh some selection momentum (do not change mass and selection)
         gm1 = GaugeMomentum(geo)
@@ -261,9 +332,9 @@ def run_hmc_mass_mom_refresh(
         for sel_dual, interval in zip(sel_dual_list, interval_list):
             if traj % interval == 0:
                 gm_dual[sel_dual] = gm_dual1[sel_dual]
-    if is_project_gauge_transform:
-        # Project out the gauge transform movement
-        project_gauge_transform(gm, gm_dual, mf, mf_dual)
+        if is_project_gauge_transform:
+            # Project out the gauge transform movement
+            project_gauge_transform(gm, gm_dual, mf, mf_dual)
 
 @q.timer_verbose
 def run_topo_info(job_tag, traj, gf):
@@ -290,6 +361,7 @@ def run_hmc(job_tag):
     max_traj_always_accept = get_param(job_tag, "hmc", "max_traj_always_accept")
     max_traj_reverse_test= get_param(job_tag, "hmc", "max_traj_reverse_test")
     save_traj_interval = get_param(job_tag, "hmc", "save_traj_interval")
+    complete_refresh_interval = get_param(job_tag, "hmc", "fa", "complete_refresh_interval", default=1)
     is_saving_topo_info = get_param(job_tag, "hmc", "is_saving_topo_info")
     is_project_gauge_transform = get_param(job_tag, "hmc", "fa", "is_project_gauge_transform")
     md_time = get_param(job_tag, "hmc", "md_time")
@@ -304,6 +376,7 @@ def run_hmc(job_tag):
     mf_dual = FieldRealD(geo, 4)
     gm = GaugeMomentum(geo)
     gm_dual = GaugeMomentum(geo)
+    mom_auto_corr = MomentumAutoCorr()
     traj_load = None
     if get_load_path(f"{job_tag}/configs") is not None:
         for traj in range(max_traj):
@@ -329,6 +402,7 @@ def run_hmc(job_tag):
                 gm, gm_dual,
                 sel_list,
                 sel_dual_list,
+                mom_auto_corr,
                 )
         is_force_refresh = False
         traj += 1
@@ -345,6 +419,7 @@ def run_hmc(job_tag):
                 is_always_accept=is_always_accept,
                 is_reverse_test=is_reverse_test,
                 is_project_gauge_transform=is_project_gauge_transform,
+                mom_auto_corr=mom_auto_corr,
                 )
         plaq = gf.plaq()
         info = dict()
@@ -354,6 +429,8 @@ def run_hmc(job_tag):
         info["delta_h"] = delta_h
         q.qtouch_info(get_save_path(f"{job_tag}/configs/ckpoint_lat_info.{traj}.txt"), pformat(info))
         json_results.append((f"{fname}: {traj} plaq", plaq,))
+        if traj % complete_refresh_interval == 0:
+            mom_auto_corr.save_mac(get_save_path(f"{job_tag}/mom_auto_corr/traj-{traj}.pickle"))
         if traj % save_traj_interval == 0:
             gf.save(get_save_path(f"{job_tag}/configs/ckpoint_lat.{traj}"))
             if is_saving_topo_info:

@@ -193,6 +193,7 @@ __all__ += [
         'set_gm_force',
         'set_gm_force_dual',
         'project_gauge_transform',
+        'dot_gauge_momentum',
         'metropolis_accept',
         'gm_evolve_fg_pure_gauge',
         'run_hmc_evolve_pure_gauge',
