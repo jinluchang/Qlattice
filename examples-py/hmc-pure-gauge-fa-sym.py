@@ -34,7 +34,11 @@ def gf_evolve(gf, gm, gm_dual, mf, mf_dual, dt):
     q.gf_evolve_fa_dual(gf, gm_dual, mf_dual, dt)
 
 @q.timer
-def gm_evolve_fg(gm, gm_dual, gf_init, mf, mf_dual, ga, fg_dt, dt):
+def gm_evolve_fg(
+        gm, gm_dual, gf_init, mf, mf_dual, ga, fg_dt, dt,
+        *,
+        is_project_gauge_transform,
+        ):
     fname = q.get_fname()
     geo = gf_init.geo
     gf = GaugeField(geo)
@@ -43,7 +47,8 @@ def gm_evolve_fg(gm, gm_dual, gf_init, mf, mf_dual, ga, fg_dt, dt):
     gm_force_dual = GaugeMomentum(geo)
     set_gm_force(gm_force, gf, ga)
     set_gm_force_dual(gm_force_dual, gf, gm_force)
-    project_gauge_transform(gm_force, gm_force_dual, mf, mf_dual)
+    if is_project_gauge_transform:
+        project_gauge_transform(gm_force, gm_force_dual, mf, mf_dual)
     gf_evolve(gf, gm_force, gm_force_dual, mf, mf_dual, fg_dt)
     set_gm_force(gm_force, gf, ga)
     set_gm_force_dual(gm_force_dual, gf, gm_force)
@@ -51,10 +56,15 @@ def gm_evolve_fg(gm, gm_dual, gf_init, mf, mf_dual, ga, fg_dt, dt):
     gm_force_dual *= dt
     gm += gm_force
     gm_dual += gm_force_dual
-    project_gauge_transform(gm, gm_dual, mf, mf_dual)
+    if is_project_gauge_transform:
+        project_gauge_transform(gm, gm_dual, mf, mf_dual)
 
 @q.timer_verbose
-def run_hmc_evolve(gm, gm_dual, gf, mf, mf_dual, ga, rs, n_step, md_time=1.0):
+def run_hmc_evolve(
+        gm, gm_dual, gf, mf, mf_dual, ga, rs, n_step, md_time,
+        *,
+        is_project_gauge_transform,
+        ):
     energy = gm_hamilton_node_fa(gm, mf) + gm_hamilton_node_fa(gm_dual, mf_dual) + gf_hamilton_node(gf, ga)
     dt = md_time / n_step
     lam = 0.5 * (1.0 - 1.0 / math.sqrt(3.0));
@@ -62,9 +72,11 @@ def run_hmc_evolve(gm, gm_dual, gf, mf, mf_dual, ga, rs, n_step, md_time=1.0):
     ttheta = theta * dt * dt * dt;
     gf_evolve(gf, gm, gm_dual, mf, mf_dual, lam * dt)
     for i in range(n_step):
-        gm_evolve_fg(gm, gm_dual, gf, mf, mf_dual, ga, 4.0 * ttheta / dt, 0.5 * dt);
+        gm_evolve_fg(gm, gm_dual, gf, mf, mf_dual, ga, 4.0 * ttheta / dt, 0.5 * dt,
+                     is_project_gauge_transform=is_project_gauge_transform);
         gf_evolve(gf, gm, gm_dual, mf, mf_dual, (1.0 - 2.0 * lam) * dt);
-        gm_evolve_fg(gm, gm_dual, gf, mf, mf_dual, ga, 4.0 * ttheta / dt, 0.5 * dt);
+        gm_evolve_fg(gm, gm_dual, gf, mf, mf_dual, ga, 4.0 * ttheta / dt, 0.5 * dt,
+                     is_project_gauge_transform=is_project_gauge_transform);
         if i < n_step - 1:
             gf_evolve(gf, gm, gm_dual, mf, mf_dual, 2.0 * lam * dt);
         else:
@@ -86,6 +98,7 @@ def run_hmc_traj(
         n_step=6,
         md_time=1.0,
         is_always_accept=False,
+        is_project_gauge_transform=True,
         ):
     fname = q.get_fname()
     rs = rs.split(f"{traj}")
@@ -96,10 +109,14 @@ def run_hmc_traj(
     gm_dual0 = GaugeMomentum(geo)
     gm0 @= gm
     gm_dual0 @= gm_dual
-    change_qnorm = project_gauge_transform(gm0, gm_dual0, mf, mf_dual)
-    if change_qnorm > 1e-8:
-        q.displayln_info(f"{fname}: project_gauge_transform: change_qnorm={change_qnorm}")
-    delta_h = run_hmc_evolve(gm0, gm_dual0, gf0, mf, mf_dual, ga, rs, n_step, md_time)
+    if is_project_gauge_transform:
+        change_qnorm = project_gauge_transform(gm0, gm_dual0, mf, mf_dual)
+        if change_qnorm > 1e-8:
+            q.displayln_info(f"{fname}: project_gauge_transform: change_qnorm={change_qnorm}")
+    delta_h = run_hmc_evolve(
+            gm0, gm_dual0, gf0, mf, mf_dual, ga, rs, n_step, md_time,
+            is_project_gauge_transform=is_project_gauge_transform,
+            )
     if is_reverse_test:
         gm_r = GaugeMomentum(geo)
         gm_dual_r = GaugeMomentum(geo)
@@ -107,7 +124,10 @@ def run_hmc_traj(
         gm_dual_r @= gm_dual0
         gf0_r = GaugeField(geo)
         gf0_r @= gf0
-        delta_h_rev = run_hmc_evolve(gm_r, gm_dual_r, gf0_r, mf, mf_dual, ga, rs, n_step, -md_time)
+        delta_h_rev = run_hmc_evolve(
+                gm_r, gm_dual_r, gf0_r, mf, mf_dual, ga, rs, n_step, -md_time,
+                is_project_gauge_transform=is_project_gauge_transform,
+                )
         gf0_r -= gf
         gm_r -= gm
         gm_dual_r -= gm_dual
@@ -147,6 +167,7 @@ def run_hmc_mass_mom_refresh(
     rs = rs.split(f"{traj}")
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site)
+    is_project_gauge_transform = get_param(job_tag, "hmc", "fa", "is_project_gauge_transform")
     complete_refresh_interval = get_param(job_tag, "hmc", "fa", "complete_refresh_interval", default=1)
     mass_type = get_param(job_tag, "hmc", "fa", "mass_type")
     mass_list = get_param(job_tag, "hmc", "fa", "mass_list")
@@ -216,18 +237,19 @@ def run_hmc_mass_mom_refresh(
         gm_dual.set_rand_fa(mf_dual, rs.split("set_rand_gauge_momentum_dual"))
     else:
         # Only refresh some selection momentum (do not change mass and selection)
-        # IMPORTANT: Need to first add the gauge transform component back
         gm1 = GaugeMomentum(geo)
         gm_dual1 = GaugeMomentum(geo)
-        gm1.set_rand_fa(mf, rs.split("set_rand_gauge_momentum_g"))
-        gm_dual1.set_rand_fa(mf_dual, rs.split("set_rand_gauge_momentum_dual_g"))
-        gm2 = gm1.copy()
-        gm_dual2 = gm_dual1.copy()
-        project_gauge_transform(gm2, gm_dual2, mf, mf_dual)
-        gm2 -= gm1
-        gm_dual2 -= gm_dual1
-        gm -= gm2
-        gm_dual -= gm_dual2
+        # IMPORTANT: Need to first add the gauge transform component back
+        if is_project_gauge_transform:
+            gm1.set_rand_fa(mf, rs.split("set_rand_gauge_momentum_g"))
+            gm_dual1.set_rand_fa(mf_dual, rs.split("set_rand_gauge_momentum_dual_g"))
+            gm2 = gm1.copy()
+            gm_dual2 = gm_dual1.copy()
+            project_gauge_transform(gm2, gm_dual2, mf, mf_dual)
+            gm2 -= gm1
+            gm_dual2 -= gm_dual1
+            gm -= gm2
+            gm_dual -= gm_dual2
         # Then update the selected momentum
         gm1.set_rand_fa(mf, rs.split("set_rand_gauge_momentum"))
         gm_dual1.set_rand_fa(mf_dual, rs.split("set_rand_gauge_momentum_dual"))
@@ -239,8 +261,9 @@ def run_hmc_mass_mom_refresh(
         for sel_dual, interval in zip(sel_dual_list, interval_list):
             if traj % interval == 0:
                 gm_dual[sel_dual] = gm_dual1[sel_dual]
-    # Project out the gauge transform movement
-    project_gauge_transform(gm, gm_dual, mf, mf_dual)
+    if is_project_gauge_transform:
+        # Project out the gauge transform movement
+        project_gauge_transform(gm, gm_dual, mf, mf_dual)
 
 @q.timer_verbose
 def run_topo_info(job_tag, traj, gf):
@@ -268,6 +291,7 @@ def run_hmc(job_tag):
     max_traj_reverse_test= get_param(job_tag, "hmc", "max_traj_reverse_test")
     save_traj_interval = get_param(job_tag, "hmc", "save_traj_interval")
     is_saving_topo_info = get_param(job_tag, "hmc", "is_saving_topo_info")
+    is_project_gauge_transform = get_param(job_tag, "hmc", "fa", "is_project_gauge_transform")
     md_time = get_param(job_tag, "hmc", "md_time")
     n_step = get_param(job_tag, "hmc", "n_step")
     beta = get_param(job_tag, "hmc", "beta")
@@ -320,6 +344,7 @@ def run_hmc(job_tag):
                 md_time=md_time,
                 is_always_accept=is_always_accept,
                 is_reverse_test=is_reverse_test,
+                is_project_gauge_transform=is_project_gauge_transform,
                 )
         plaq = gf.plaq()
         info = dict()
@@ -348,6 +373,7 @@ set_param(job_tag, "hmc", "beta")(2.13)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 
 job_tag = "test1-4nt8"
 set_param(job_tag, "total_site")((4, 4, 4, 8,))
@@ -361,6 +387,7 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 set_param(job_tag, "hmc", "fa", "complete_refresh_interval")(2)
+set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("random")
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 2, ])
 
@@ -376,6 +403,23 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 set_param(job_tag, "hmc", "fa", "complete_refresh_interval")(2)
+set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(False)
+set_param(job_tag, "hmc", "fa", "mass_type")("random")
+set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 2, ])
+
+job_tag = "test3-4nt8"
+set_param(job_tag, "total_site")((4, 4, 4, 8,))
+set_param(job_tag, "hmc", "max_traj")(8)
+set_param(job_tag, "hmc", "max_traj_always_accept")(4)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
+set_param(job_tag, "hmc", "md_time")(1.0)
+set_param(job_tag, "hmc", "n_step")(10)
+set_param(job_tag, "hmc", "beta")(2.13)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "save_traj_interval")(4)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+set_param(job_tag, "hmc", "fa", "complete_refresh_interval")(2)
+set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.25, 1.5, 4.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 2, ])
@@ -392,6 +436,7 @@ set_param(job_tag, "hmc", "beta")(2.80)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(10)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 
 job_tag = "32I_b2p8_fa_sym_md2"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -405,6 +450,7 @@ set_param(job_tag, "hmc", "beta")(2.80)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(5)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 
 job_tag = "32I_b2p8_fa_sym_md3"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -418,6 +464,7 @@ set_param(job_tag, "hmc", "beta")(2.80)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 
 job_tag = "32I_b2p8_fa_sym_md4"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -431,6 +478,7 @@ set_param(job_tag, "hmc", "beta")(2.80)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(3)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 
 job_tag = "32I_b2p8_fa_sym_md5"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -444,6 +492,7 @@ set_param(job_tag, "hmc", "beta")(2.80)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(2)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 
 job_tag = "32I_b2p8_fa_sym_v1"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -458,6 +507,7 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(10)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 set_param(job_tag, "hmc", "fa", "complete_refresh_interval")(2)
+set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.25, 1.5, 4.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 2, ])
@@ -475,6 +525,7 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 set_param(job_tag, "hmc", "fa", "complete_refresh_interval")(2)
+set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.25, 1.5, 4.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 2, ])
@@ -507,6 +558,7 @@ if __name__ == "__main__":
             "test0-4nt8",
             "test1-4nt8",
             "test2-4nt8",
+            "test3-4nt8",
             ]
 
     if job_tags == [ "", ]:
