@@ -702,7 +702,7 @@ set_param(job_tag, "hmc", "fa", "complete_refresh_interval")(10)
 set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1e6, 1e6, 1e6, ])
-set_param(job_tag, "hmc", "fa", "interval_list")([ 6, 6, 6, 6, ])
+set_param(job_tag, "hmc", "fa", "interval_list")([ 10, 10, 10, 10, ])
 
 job_tag = "32I_b2p8_fa_sym_v7"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
