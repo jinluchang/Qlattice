@@ -386,7 +386,7 @@ def run_hmc(job_tag):
     max_traj_reverse_test= get_param(job_tag, "hmc", "max_traj_reverse_test")
     save_traj_interval = get_param(job_tag, "hmc", "save_traj_interval")
     complete_refresh_interval = get_param(job_tag, "hmc", "fa", "complete_refresh_interval", default=1)
-    assert save_traj_interval % complete_refresh_interval == 0
+    assert (save_traj_interval % complete_refresh_interval == 0) or (complete_refresh_interval % save_traj_interval == 0)
     is_saving_topo_info = get_param(job_tag, "hmc", "is_saving_topo_info")
     is_project_gauge_transform = get_param(job_tag, "hmc", "fa", "is_project_gauge_transform")
     md_time = get_param(job_tag, "hmc", "md_time")
@@ -1045,6 +1045,24 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(False)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 16.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 4, ])
+
+job_tag = "32I_b2p8_fa_sym_v26"
+set_param(job_tag, "total_site")((32, 32, 32, 64,))
+set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
+set_param(job_tag, "hmc", "max_traj")(20000)
+set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
+set_param(job_tag, "hmc", "md_time")(8.0)
+set_param(job_tag, "hmc", "n_step")(32 * 8)
+set_param(job_tag, "hmc", "beta")(2.80)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "save_traj_interval")(1)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+set_param(job_tag, "hmc", "fa", "complete_refresh_interval")(8)
+set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
+set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
+set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 2.0, ])
+set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 8, ])
 
 # ----
 
