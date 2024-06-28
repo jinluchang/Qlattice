@@ -70,7 +70,12 @@ def run_prop_wsrc_full(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_
         get_eig = lambda: None
     inv_type_name_list = [ "light", "strange", ]
     inv_type_name = inv_type_name_list[inv_type]
-    if get_load_path(f"{job_tag}/prop-wsrc-full-{inv_type_name}/traj-{traj}/geon-info.txt") is not None:
+    path_f = f"{job_tag}/prop-wsrc-full-{inv_type_name}/traj-{traj}/geon-info.txt"
+    path_s = f"{job_tag}/prop-wsrc-{inv_type_name}/traj-{traj}/geon-info.txt"
+    if get_load_path(path_f) is not None:
+        return
+    if get_load_path(path_s) is not None:
+        q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} already have sparse wsrc prop. Skip calculating the full prop.")
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
         gf = get_gf()
@@ -303,8 +308,22 @@ def run_fsel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
         assert total_size > 0
         return fsel_prob
     ret = get_fsel_prob
-    if (get_load_path(fn_fsel) is not None) and (get_load_path(fn_fsel_prob) is not None):
-        return ret
+    if get_load_path(fn_fsel) is not None:
+        if get_load_path(fn_fsel_prob) is not None:
+            return ret
+        else:
+            q.displayln_info(f"{fname}: field-selection exist but prob is not available. Assuming loading load old data format.")
+            total_volume = total_site.volume()
+            @q.lazy_call
+            @q.timer_verbose
+            def get_fsel_prob_old():
+                fsel = q.FieldSelection()
+                total_size = fsel.load(get_load_path(fn_fsel))
+                assert total_size > 0
+                fsel_prob = q.SelectedFieldRealD(fsel, 1)
+                fsel_prob[:] = q.glb_sum(len(fsel)) / total_volume
+                return fsel_prob
+            return get_fsel_prob_old
     if get_f_rand_01 is None:
         q.displayln_info(-1, f"{fname}: get_f_rand_01 is None")
         return None
@@ -353,8 +372,21 @@ def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
         psel_prob.load(get_load_path(fn_psel_prob))
         return psel_prob
     ret = get_psel_prob
-    if (get_load_path(fn_psel) is not None) and (get_load_path(fn_psel_prob) is not None):
-        return ret
+    if get_load_path(fn_psel) is not None:
+        if get_load_path(fn_psel_prob) is not None:
+            return ret
+        else:
+            q.displayln_info(f"{fname}: point-selection exist but prob is not available. Assuming loading load old data format.")
+            total_volume = total_site.volume()
+            @q.lazy_call
+            @q.timer_verbose
+            def get_psel_prob_old():
+                psel = q.PointsSelection()
+                psel.load(get_load_path(fn_psel), geo)
+                psel_prob = q.SelectedPointsRealD(psel, 1)
+                psel_prob[:] = len(psel) / total_volume
+                return psel_prob
+            return get_psel_prob_old
     if get_f_rand_01 is None:
         q.displayln_info(-1, f"{fname}: get_f_rand_01 is None")
         return None
