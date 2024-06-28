@@ -22,8 +22,10 @@ is_cython = False
 load_path_list[:] = [
         "results",
         #
-        "/data1/qcddata3"
-        "/data2/qcddata3-prop"
+        "/data1/qcddata2",
+        "/data1/qcddata3",
+        "/data1/qcddata4",
+        "/data2/qcddata3-prop",
         ]
 
 # ----
@@ -144,9 +146,15 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
 
 @q.timer_verbose
 def run_job(job_tag, traj):
-    # NOTE: If using existing data, should move some entires from `fns_produce` to `fns_need`.
     fns_produce = [
             f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
+            ]
+    fns_need = []
+    fns_props = [
+            f"{job_tag}/gauge-transform/traj-{traj}.field",
+            f"{job_tag}/point-selection/traj-{traj}.txt",
+            f"{job_tag}/field-selection/traj-{traj}.field",
+            # (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
             #
             # (f"{job_tag}/prop-rand-u1-light/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-light/traj-{traj}/geon-info.txt",),
             # (f"{job_tag}/prop-rand-u1-strange/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-strange/traj-{traj}/geon-info.txt",),
@@ -167,14 +175,16 @@ def run_job(job_tag, traj):
             (f"{job_tag}/prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/prop-wsrc-strange/traj-{traj}/geon-info.txt",),
             (f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}/checkpoint.txt",),
             ]
-    fns_need = [
-            # f"{job_tag}/gauge-transform/traj-{traj}.field",
-            # f"{job_tag}/point-selection/traj-{traj}.txt",
-            # f"{job_tag}/field-selection/traj-{traj}.field",
-            # f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
-            # f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
-            # (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
-            ]
+    #
+    # NOTE: If using existing data, should move some entires from `fns_produce` to `fns_need`.
+    #
+    is_generating_props = job_tag[:5] == "test-"
+    #
+    if is_generating_props:
+        fns_produce += fns_props
+    else:
+        fns_need += fns_props
+    #
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
     #
@@ -199,7 +209,8 @@ def run_job(job_tag, traj):
         # run_get_inverter(job_tag, traj, inv_type=1, get_gf=get_gf, get_gt=get_gt, get_eig=get_eig)
         run_prop_wsrc_full(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_wi=get_wi)
     #
-    run_wsrc_full()
+    if is_generating_props:
+        run_wsrc_full()
     #
     get_f_weight = run_f_weight_from_wsrc_prop_full(job_tag, traj, get_wi=get_wi)
     get_f_rand_01 = run_f_rand_01(job_tag, traj)
@@ -210,8 +221,9 @@ def run_job(job_tag, traj):
     #
     get_fselc = run_fselc(job_tag, traj, get_fsel, get_psel)
     #
-    run_prop_wsrc_sparse(job_tag, traj, inv_type=0, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_wi=get_wi)
-    run_prop_wsrc_sparse(job_tag, traj, inv_type=1, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_wi=get_wi)
+    if is_generating_props:
+        run_prop_wsrc_sparse(job_tag, traj, inv_type=0, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_wi=get_wi)
+        run_prop_wsrc_sparse(job_tag, traj, inv_type=1, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_wi=get_wi)
     #
     # get_psel_smear = run_psel_smear(job_tag, traj)
     #
@@ -238,9 +250,10 @@ def run_job(job_tag, traj):
         # run_prop_rand_u1(job_tag, traj, inv_type=2, get_gf=get_gf, get_fsel=get_fsel)
         q.clean_cache(q.cache_inv)
     #
-    run_with_eig()
-    run_with_eig_strange()
-    run_charm()
+    if is_generating_props:
+        run_with_eig()
+        run_with_eig_strange()
+        run_charm()
     #
     get_get_prop = run_get_prop(job_tag, traj,
             get_gf=get_gf,

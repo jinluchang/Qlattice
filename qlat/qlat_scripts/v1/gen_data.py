@@ -313,13 +313,13 @@ def run_fsel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
             return ret
         else:
             q.displayln_info(f"{fname}: field-selection exist but prob is not available. Assuming loading load old data format.")
-            total_volume = total_site.volume()
             @q.lazy_call
             @q.timer_verbose
             def get_fsel_prob_old():
                 fsel = q.FieldSelection()
                 total_size = fsel.load(get_load_path(fn_fsel))
                 assert total_size > 0
+                total_volume = fsel.total_site.volume()
                 fsel_prob = q.SelectedFieldRealD(fsel, 1)
                 fsel_prob[:] = q.glb_sum(len(fsel)) / total_volume
                 return fsel_prob

@@ -48,6 +48,7 @@ tests = \
 tests_gpt = \
 			hlbl-muon-line.log \
 			grid-qlat-io-test.log \
+			gpt-qlat-auto-simple.log \
 			gpt-qlat-data-gen-auto.log \
 			gpt-qlat-data-gen-hlbl.log \
 			gpt-qlat-convert.log \
