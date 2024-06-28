@@ -78,8 +78,9 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
     fsel_prob = get_fsel_prob()
     psel = psel_prob.psel
     fsel = fsel_prob.fsel
-    if not fsel.is_containing(psel):
-        q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
+    is_fsel_containing_psel = fsel.is_containing(psel)
+    if not is_fsel_containing_psel:
+        q.displayln_info(-1, f"WARNING: fsel is not containing psel. Assuming psel and fsel are independent.")
     fsel_n_elems = fsel.n_elems
     fsel_prob_arr = fsel_prob[:].ravel()
     psel_prob_arr = psel_prob[:].ravel()
@@ -100,10 +101,10 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
         res_list = []
         for idx in range(len(xg_fsel_arr)):
             xg_snk = tuple(xg_fsel_arr[idx])
-            if xg_snk == xg_src:
-                prob_snk = 1.0
-            else:
-                prob_snk = fsel_prob_arr[idx]
+            prob_snk = fsel_prob_arr[idx]
+            if is_fsel_containing_psel:
+                if xg_snk == xg_src:
+                    prob_snk = 1.0
             prob = prob_src * prob_snk
             x_rel = [ q.rel_mod(xg_snk[mu] - xg_src[mu], total_site[mu]) for mu in range(4) ]
             r_sq = q.get_r_sq(x_rel)
