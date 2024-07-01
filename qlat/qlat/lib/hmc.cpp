@@ -66,8 +66,13 @@ void set_rand_gauge_momentum(GaugeMomentum& gm, const Field<RealD>& mf,
   qacc_for(index, geo.local_volume(), {
     const Vector<RealD> vm = mf.get_elems_const(index);
     Vector<ColorMatrix> v = gm.get_elems(index);
+    const RealD inf = std::numeric_limits<RealD>::infinity();
     for (int m = 0; m < 4; ++m) {
-      v[m] *= std::sqrt(vm[m]);
+      if (vm[m] == inf) {
+        set_zero(v[m]);
+      } else {
+        v[m] *= std::sqrt(vm[m]);
+      }
     }
   });
 }
@@ -403,6 +408,7 @@ RealD project_gauge_transform(GaugeMomentum& gm, GaugeMomentum& gm_dual,
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ColorMatrix> v1 = gm.get_elems_const(xl);
     const Vector<RealD> vm1 = mf.get_elems_const(xl);
+    const RealD inf = std::numeric_limits<RealD>::infinity();
     ColorMatrix v_sum;
     set_zero(v_sum);
     for (int m = 0; m < 4; ++m) {
@@ -411,7 +417,12 @@ RealD project_gauge_transform(GaugeMomentum& gm, GaugeMomentum& gm_dual,
       const RealD m2m = mf2_ext.get_elem(xl_m, m);
       const ColorMatrix& c1 = v1[m];
       const ColorMatrix& c2m = gm2_ext.get_elem(xl_m, m);
-      v_sum += c1 * (1.0 / std::sqrt(m1)) + c2m * (1.0 / std::sqrt(m2m));
+      if (m1 != inf) {
+        v_sum += c1 * (1.0 / std::sqrt(m1));
+      }
+      if (m2m != inf) {
+        v_sum += c2m * (1.0 / std::sqrt(m2m));
+      }
     }
     ColorMatrix& ag = gm_ag_ext.get_elem(xl);
     ag = (1.0 / 8.0) * v_sum;
@@ -425,10 +436,15 @@ RealD project_gauge_transform(GaugeMomentum& gm, GaugeMomentum& gm_dual,
     const Vector<RealD> vm1 = mf.get_elems_const(xl);
     const Vector<RealD> vm2 = mf_dual.get_elems_const(xl);
     const ColorMatrix& ag1 = gm_ag_ext.get_elem(xl);
+    const RealD inf = std::numeric_limits<RealD>::infinity();
     for (int m = 0; m < 4; ++m) {
       const Coordinate xl_p = coordinate_shifts(xl, m);
-      v1[m] -= std::sqrt(vm1[m]) * ag1;
-      v2[m] -= std::sqrt(vm2[m]) * gm_ag_ext.get_elem(xl_p);
+      if (vm1[m] != inf) {
+        v1[m] -= std::sqrt(vm1[m]) * ag1;
+      }
+      if (vm2[m] != inf) {
+        v2[m] -= std::sqrt(vm2[m]) * gm_ag_ext.get_elem(xl_p);
+      }
     }
   });
   return qnorm(gm_ag_ext) / geo.total_volume();
