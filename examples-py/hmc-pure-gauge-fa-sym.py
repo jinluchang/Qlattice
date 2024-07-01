@@ -322,6 +322,52 @@ def run_hmc_mass_mom_refresh(
                 info_list.append([ True, mass, interval, ])
             for mass, interval in zip(mass_list, interval_list):
                 info_list.append([ False, mass, interval, ])
+        elif mass_type == "grid-2-eo":
+            xg_arr = geo.xg_arr()
+            c_offset = rs.c_rand_gen(total_site).to_numpy()
+            xg_rel_arr = xg_arr - c_offset
+            count = np.zeros(xg_arr.shape, np.int32)
+            for m in range(4):
+                for n in range(4):
+                    if n == m:
+                        continue
+                    count[xg_rel_arr[:, n] % 2 == 0, m] += 1
+            assert np.all(count >= 0)
+            assert np.all(count <= 3)
+            is_even = (xg_rel_arr.sum(-1) % 2 == 0)[:, None]
+            is_odd = ~is_even
+            sel_list[:] = [
+                (count == 0) & is_even,
+                (count == 1) & is_even,
+                (count == 2) & is_even,
+                (count == 3) & is_even,
+                (count == 0) & is_odd,
+                (count == 1) & is_odd,
+                (count == 2) & is_odd,
+                (count == 3) & is_odd,
+            ]
+            sel_dual_list[:] = [
+                (count == 0) & is_odd,
+                (count == 1) & is_odd,
+                (count == 2) & is_odd,
+                (count == 3) & is_odd,
+                (count == 0) & is_even,
+                (count == 1) & is_even,
+                (count == 2) & is_even,
+                (count == 3) & is_even,
+            ]
+            assert isinstance(interval_list, list)
+            assert len(sel_list) == len(interval_list)
+            assert isinstance(mass_list, list)
+            assert len(mass_list) == len(interval_list)
+            for idx, mass in enumerate(mass_list):
+                mf[sel_list[idx]] = mass
+                mf_dual[sel_dual_list[idx]] = mass
+            info_list = []
+            for mass, interval in zip(mass_list, interval_list):
+                info_list.append([ True, mass, interval, ])
+            for mass, interval in zip(mass_list, interval_list):
+                info_list.append([ False, mass, interval, ])
         else:
             raise Exception(f"{fname}: mass_type={mass_type}")
         gm.set_rand_fa(mf, rs.split("set_rand_gauge_momentum"))
@@ -476,6 +522,7 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "test1-4nt8"
 set_param(job_tag, "total_site")((4, 4, 4, 8,))
@@ -492,6 +539,7 @@ set_param(job_tag, "hmc", "fa", "complete_refresh_interval")(2)
 set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("random")
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 2, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "test2-4nt8"
 set_param(job_tag, "total_site")((4, 4, 4, 8,))
@@ -508,6 +556,7 @@ set_param(job_tag, "hmc", "fa", "complete_refresh_interval")(2)
 set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(False)
 set_param(job_tag, "hmc", "fa", "mass_type")("random")
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 2, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "test3-4nt8"
 set_param(job_tag, "total_site")((4, 4, 4, 8,))
@@ -525,6 +574,24 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.25, 1.5, 4.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 2, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
+
+job_tag = "test4-4nt8"
+set_param(job_tag, "total_site")((4, 4, 4, 8,))
+set_param(job_tag, "hmc", "max_traj")(8)
+set_param(job_tag, "hmc", "max_traj_always_accept")(4)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
+set_param(job_tag, "hmc", "md_time")(1.0)
+set_param(job_tag, "hmc", "n_step")(10)
+set_param(job_tag, "hmc", "beta")(2.13)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "save_traj_interval")(4)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+set_param(job_tag, "hmc", "fa", "complete_refresh_interval")(2)
+set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
+set_param(job_tag, "hmc", "fa", "mass_type")("grid-2-eo")
+set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.25, 1.5, 4.0, np.inf, np.inf, np.inf, np.inf, ])
+set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 2, 1, 1, 1, 1, ])
 
 job_tag = "32I_b2p8_fa_sym"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -539,6 +606,7 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(10)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_md2"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -553,6 +621,7 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(5)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_md3"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -567,6 +636,7 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_md4"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -581,6 +651,7 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(3)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_md5"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -595,6 +666,7 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(2)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v1"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -613,6 +685,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.25, 1.5, 4.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 2, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v2"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -631,6 +704,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.25, 1.5, 4.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 2, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v3"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -649,6 +723,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(False)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.25, 1.5, 4.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 2, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v4"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -667,6 +742,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(False)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.25, 1.5, 4.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 2, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v5"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -685,6 +761,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.25, 1.5, 4.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 6, 6, 6, 12, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v6"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -703,6 +780,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1e6, 1e6, 1e6, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 10, 10, 10, 10, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v7"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -721,6 +799,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1e6, 1e6, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 10, 10, 10, 10, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v8"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -739,6 +818,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 1e6, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 10, 10, 10, 10, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v9"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -757,6 +837,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 1.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 10, 10, 10, 10, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v10"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -775,6 +856,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 4.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 10, 10, 10, 10, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v11"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -793,6 +875,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 9.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 10, 10, 10, 10, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v12"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -811,6 +894,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 9.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 10, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v13"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -829,6 +913,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 9.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 20, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v14"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -847,6 +932,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 9.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 30, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v15"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -865,6 +951,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 9.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 40, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v16"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -883,6 +970,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 4.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 10, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v17"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -901,6 +989,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 4.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 20, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v18"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -919,6 +1008,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 4.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 30, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v19"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -937,6 +1027,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 9.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 1, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v20"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -955,6 +1046,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 9.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 3, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v21"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -973,6 +1065,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 9.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 10, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v22"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -991,6 +1084,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 16.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 1, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v23"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -1009,6 +1103,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 16.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 4, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v24"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -1027,6 +1122,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(False)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 16.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 1, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v25"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -1045,6 +1141,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(False)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 16.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 4, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v26"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -1063,6 +1160,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 2.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 8, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v27"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -1081,6 +1179,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 1.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 8, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v28"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -1099,6 +1198,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 1.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 12, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v29"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -1117,6 +1217,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 1.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 20, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 job_tag = "32I_b2p8_fa_sym_v30"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
@@ -1135,6 +1236,7 @@ set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
 set_param(job_tag, "hmc", "fa", "mass_type")("grid-2")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 1.0, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 32, ])
+set_param(job_tag, "analysis", "md_time_factor")(np.sqrt(2))
 
 # ----
 
@@ -1165,6 +1267,7 @@ if __name__ == "__main__":
             "test1-4nt8",
             "test2-4nt8",
             "test3-4nt8",
+            "test4-4nt8",
             ]
 
     if job_tags == [ "", ]:

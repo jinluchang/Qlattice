@@ -68,10 +68,10 @@ void set_rand_gauge_momentum(GaugeMomentum& gm, const Field<RealD>& mf,
     Vector<ColorMatrix> v = gm.get_elems(index);
     const RealD inf = std::numeric_limits<RealD>::infinity();
     for (int m = 0; m < 4; ++m) {
-      if (vm[m] == inf) {
-        set_zero(v[m]);
-      } else {
+      if (vm[m] != inf) {
         v[m] *= std::sqrt(vm[m]);
+      } else {
+        set_zero(v[m]);
       }
     }
   });
