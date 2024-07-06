@@ -244,6 +244,19 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(2)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
+job_tag = "32I_b2p95_md8"
+set_param(job_tag, "total_site")((32, 32, 32, 64,))
+set_param(job_tag, "a_inv_gev")(3.5) # rough guess
+set_param(job_tag, "hmc", "max_traj")(5000)
+set_param(job_tag, "hmc", "max_traj_always_accept")(10)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
+set_param(job_tag, "hmc", "md_time")(8.0)
+set_param(job_tag, "hmc", "n_step")(32 * 8)
+set_param(job_tag, "hmc", "beta")(2.95)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "save_traj_interval")(2)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+
 # ----
 
 size_node_list = [

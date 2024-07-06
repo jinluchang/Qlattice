@@ -1292,6 +1292,96 @@ set_param(job_tag, "hmc", "fa", "mass_type")("grid-2-eo")
 set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 1.0, np.inf, np.inf, np.inf, np.inf, ])
 set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 8, 1, 1, 1, 1, ])
 
+job_tag = "32I_b2p8_fa_sym_v34"
+set_param(job_tag, "total_site")((32, 32, 32, 64,))
+set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
+set_param(job_tag, "hmc", "max_traj")(20000)
+set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
+set_param(job_tag, "hmc", "md_time")(8.0)
+set_param(job_tag, "hmc", "n_step")(32 * 8)
+set_param(job_tag, "hmc", "beta")(2.80)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "save_traj_interval")(1)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+set_param(job_tag, "hmc", "fa", "complete_refresh_interval")(8)
+set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
+set_param(job_tag, "hmc", "fa", "mass_type")("grid-2-eo")
+set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 2.0, np.inf, np.inf, np.inf, np.inf, ])
+set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 8, 1, 1, 1, 1, ])
+
+job_tag = "32I_b2p8_fa_sym_v35"
+set_param(job_tag, "total_site")((32, 32, 32, 64,))
+set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
+set_param(job_tag, "hmc", "max_traj")(20000)
+set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
+set_param(job_tag, "hmc", "md_time")(8.0)
+set_param(job_tag, "hmc", "n_step")(32 * 8)
+set_param(job_tag, "hmc", "beta")(2.80)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "save_traj_interval")(1)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+set_param(job_tag, "hmc", "fa", "complete_refresh_interval")(8)
+set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
+set_param(job_tag, "hmc", "fa", "mass_type")("grid-2-eo")
+set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 4.0, np.inf, np.inf, np.inf, np.inf, ])
+set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 8, 1, 1, 1, 1, ])
+
+job_tag = "32I_b2p8_fa_sym_v36"
+set_param(job_tag, "total_site")((32, 32, 32, 64,))
+set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
+set_param(job_tag, "hmc", "max_traj")(20000)
+set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
+set_param(job_tag, "hmc", "md_time")(8.0)
+set_param(job_tag, "hmc", "n_step")(32 * 8)
+set_param(job_tag, "hmc", "beta")(2.80)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "save_traj_interval")(1)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+set_param(job_tag, "hmc", "fa", "complete_refresh_interval")(12)
+set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
+set_param(job_tag, "hmc", "fa", "mass_type")("grid-2-eo")
+set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 9.0, np.inf, np.inf, np.inf, np.inf, ])
+set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 12, 1, 1, 1, 1, ])
+
+job_tag = "32I_b2p8_fa_sym_v37"
+set_param(job_tag, "total_site")((32, 32, 32, 64,))
+set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
+set_param(job_tag, "hmc", "max_traj")(20000)
+set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
+set_param(job_tag, "hmc", "md_time")(8.0)
+set_param(job_tag, "hmc", "n_step")(32 * 8)
+set_param(job_tag, "hmc", "beta")(2.80)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "save_traj_interval")(1)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+set_param(job_tag, "hmc", "fa", "complete_refresh_interval")(16)
+set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
+set_param(job_tag, "hmc", "fa", "mass_type")("grid-2-eo")
+set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 16.0, np.inf, np.inf, np.inf, np.inf, ])
+set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 16, 1, 1, 1, 1, ])
+
+job_tag = "32I_b2p8_fa_sym_v38"
+set_param(job_tag, "total_site")((32, 32, 32, 64,))
+set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
+set_param(job_tag, "hmc", "max_traj")(20000)
+set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
+set_param(job_tag, "hmc", "md_time")(8.0)
+set_param(job_tag, "hmc", "n_step")(32 * 8)
+set_param(job_tag, "hmc", "beta")(2.80)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "save_traj_interval")(1)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+set_param(job_tag, "hmc", "fa", "complete_refresh_interval")(20)
+set_param(job_tag, "hmc", "fa", "is_project_gauge_transform")(True)
+set_param(job_tag, "hmc", "fa", "mass_type")("grid-2-eo")
+set_param(job_tag, "hmc", "fa", "mass_list")([ 1.0, 1.0, 1.0, 25.0, np.inf, np.inf, np.inf, np.inf, ])
+set_param(job_tag, "hmc", "fa", "interval_list")([ 1, 1, 1, 20, 1, 1, 1, 1, ])
+
 # ----
 
 size_node_list = [
