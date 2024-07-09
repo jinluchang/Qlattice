@@ -9,8 +9,7 @@ from scipy.optimize import curve_fit
 import ratios_fit
 
 class Data:
-    def __init__(self, Nt, cutoff, block_size):
-        self.Nt = Nt
+    def __init__(self, cutoff, block_size):
         self.cutoff = cutoff
         self.block_size = block_size
         # Stores the trajectory number for debugging purposes
@@ -37,6 +36,40 @@ class Data:
         self.delta_actions_t_TV = {}
         self.actions_t_TV = {}
     
+    def load(self, save_file):
+        files = glob.glob(save_file)
+        if len(files):
+            for sf in files:
+                with open(sf,"rb") as input:
+                    print(f"Loading {sf} ...")
+                    data = pickle.load(input)
+                    sf = self.remove_date(sf)
+                    if(sf in list(self.trajs)):
+                        print(f"Already loaded ensemble with same parameters as {sf}")
+                        continue
+                    self.trajs[sf] = data["trajs"]
+                    self.accept_rates[sf] = data["accept_rates"]
+                    self.psq_list[sf] = data["psq_list"]
+                    self.phi_list[sf] = data["phi_list"]
+                    self.timeslices[sf] = data["timeslices"]
+                    self.fields[sf] = data["fields"]
+                    self.momentums[sf] = data["momentums"]
+                    self.forces[sf] = data["forces"]
+                    self.delta_actions_M[sf] = data["delta_actions_M"]
+                    self.delta_actions_L[sf] = data["delta_actions_L"]
+                    self.delta_actions_t_FV[sf] = data["delta_actions_t_FV"]
+                    self.delta_actions_t_TV[sf] = data["delta_actions_t_TV"]
+                    print(f"# traj: {len(data['trajs'])}")
+                    print(f"Accept rate: {np.mean(data['accept_rates'])}")
+                    print(f"... Loaded {sf}")
+    
+    def remove_date(self, sf):
+        a = sf.split("_")
+        for i in range(len(a)):
+            if len(a[i].split("-"))==3:
+                a[i] = "*"
+        return "_".join(a)
+    
     def get_t_TV(self, sf):
         return int(self.get_param(sf, "measurements").split("x")[1]) - 2*int(self.get_param(sf, "tfull")) - int(self.get_param(sf, "tFV"))
     
@@ -58,13 +91,6 @@ class Data:
                 s = self.replace_param(s, params[p], v[p])
             rtn.append(s)
         return rtn
-    
-    def remove_date(self, sf):
-        a = sf.split("_")
-        for i in range(len(a)):
-            if len(a[i].split("-"))==3:
-                a[i] = "*"
-        return "_".join(a)
     
     def get_sfs_list(self, sfs, profile):
         if(profile=="*"):
@@ -234,17 +260,11 @@ class Data:
     #
     
     def plot_mean_path(self, profile="*"):
-        #x = np.arange(-5,5,0.1)
-        #for t in range(0,self.Nt,int(self.Nt/20)):
-        #    plt.plot([min(self.action.V(i,t)*self.Nt/20.0, 200.0) + t for i in x],x)
         sfs = self.get_sfs_list(list(self.timeslices), profile)
         for sf in sfs:
             plt.plot(np.mean(self.timeslices[sf][self.cutoff:],axis=0), label=sf)
     
     def plot_paths(self):
-        #x = np.arange(-5,5,0.1)
-        #for t in range(0,self.Nt,int(self.Nt/20)):
-        #    plt.plot([min(self.action.V(i,t)*self.Nt/20.0, 200.0) + t for i in x],x)
         for sf in self.timeslices:
             i=0
             #plt.plot(self.timeslices[sf][0])
@@ -359,30 +379,3 @@ class Data:
             y.append(meas)
             y_err.append(err)
         plt.errorbar(x,y,yerr=y_err)
-    
-    def load(self, save_file):
-        files = glob.glob(save_file)
-        if len(files):
-            for sf in files:
-                with open(sf,"rb") as input:
-                    print(f"Loading {sf}")
-                    data = pickle.load(input)
-                    sf = self.remove_date(sf)
-                    if(sf in list(self.trajs)):
-                        print(f"Already loaded ensemble with same parameters as {sf}")
-                        continue
-                    self.trajs[sf] = data["trajs"]
-                    self.accept_rates[sf] = data["accept_rates"]
-                    self.psq_list[sf] = data["psq_list"]
-                    self.phi_list[sf] = data["phi_list"]
-                    self.timeslices[sf] = data["timeslices"]
-                    self.fields[sf] = data["fields"]
-                    self.momentums[sf] = data["momentums"]
-                    self.forces[sf] = data["forces"]
-                    self.delta_actions_M[sf] = data["delta_actions_M"]
-                    self.delta_actions_L[sf] = data["delta_actions_L"]
-                    self.delta_actions_t_FV[sf] = data["delta_actions_t_FV"]
-                    self.delta_actions_t_TV[sf] = data["delta_actions_t_TV"]
-                    print(f"# traj: {len(data['trajs'])}")
-                    print(f"Accept rate: {np.mean(data['accept_rates'])}")
-                    print(f"Loaded {sf}")
