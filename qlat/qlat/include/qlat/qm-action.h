@@ -115,27 +115,25 @@ struct QMAction {
 
   inline double V_FV(const double x)
   {
-    double rtn = V_full(x);
     if(x>center_bar)
-      rtn += barrier_strength*(x-center_bar)*(x-center_bar);
-    return rtn;
+      return V_full(center_bar) + barrier_strength*(x-center_bar)*(x-center_bar);
+    return V_full(x);
   }
 
   inline double dV_FV(const double x)
   {
-    double rtn = dV_full(x);
     if(x>center_bar)
-      rtn += 2.0*barrier_strength*(x-center_bar);
-    return rtn;
+      return 2.0*barrier_strength*(x-center_bar);
+    return dV_full(x);
   }
 
   inline double V_TV(const double x)
   {
     double rtn = V_full(x);
     if(x<center_bar)
-      rtn += M*barrier_strength*(x-center_bar)*(x-center_bar);
+      rtn += M*(V_full(center_bar) - rtn + barrier_strength*(x-center_bar)*(x-center_bar));
     else
-      rtn += L*barrier_strength*(x-center_bar)*(x-center_bar);
+      rtn += L*(V_full(center_bar) - rtn + barrier_strength*(x-center_bar)*(x-center_bar));
     return rtn;
   }
 
@@ -143,9 +141,9 @@ struct QMAction {
   {
     double rtn = dV_full(x);
     if(x<center_bar)
-      rtn += M*2.0*barrier_strength*(x-center_bar);
+      rtn += M*(-rtn + 2.0*barrier_strength*(x-center_bar));
     else
-      rtn += L*2.0*barrier_strength*(x-center_bar);
+      rtn += L*(-rtn + 2.0*barrier_strength*(x-center_bar));
     return rtn;
   }
 

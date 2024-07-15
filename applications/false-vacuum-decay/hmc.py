@@ -392,21 +392,21 @@ def main():
     # The multiplicity of the field
     mult = 1
     alpha = 1.0
-    beta = 1.0
+    beta = 9.0
     start_TV = 0.0
-    barrier_strength = 100.0
+    barrier_strength = 10.0
     M = 1.0
     L = 0.0
-    t_full = 5
-    t_FV = 35
+    t_full = 10
+    t_FV = 30
     dt = 0.2
     # The number of trajectories to calculate
     n_traj = 50000
     #
-    version = "3-1"
+    version = "3-2"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
-    steps = 5
+    steps = 10
     #
     init_length = 20
     fresh_start = False
