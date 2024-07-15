@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy.integrate import quad_vec
 from scipy.optimize import curve_fit
 
@@ -51,8 +52,8 @@ class Fit():
     def get_correction(self, t, *argv):
         return self.R0(0,*argv[1:])/self.Rt(np.array([t]), *argv)[0]
     
-    def fit_correction(self, t, ts, data, errs):
-        opt = self.get_fit_params(ts,data,errs)[0]
+    def fit_correction(self, t, ts, data, errs, filter_x=None):
+        opt = self.get_fit_params(ts,data,errs,filter_x)[0]
         return self.get_correction(t, *opt)
     
     def choose_start(self, ts, data, errs, thresh=0.15):
@@ -67,6 +68,22 @@ class Fit():
             except ValueError:
                 print(f"Could not find res/dof below threshold {thresh}. Values were {res_dof} at times {ts}")
                 return "err"
+    
+    def plot_results(self, ts, data, opt, cov, time):
+        plt.plot(ts, data)
+        plt.plot(ts, self.fit(np.array(ts), *opt))
+        print(f"Correction factor: {self.get_correction(time,*opt)}")
+    
+    def filter_data(self, ts, data, errs, filter_x):
+        ts_ = []
+        data_ = []
+        errs_ = []
+        for t in range(len(ts)):
+            if filter_x(ts[t]): continue
+            ts_.append(ts[t])
+            data_.append(data[t])
+            errs_.append(errs[t])
+        return ts_, data_, errs_
 
 class GaussianFit(Fit):
     def __init__(self, dt, start_time=0):
@@ -89,14 +106,22 @@ class GaussianFit(Fit):
     def dfit(self, t, E_FV, E0, sigma):
         return super().dfit(t, self.start_time, E_FV, E0, sigma)[:,1:]
     
-    def get_fit_params(self, ts, data, errs, full_output=False):
+    def get_fit_params(self, ts, data, errs, full_output=False, filter_x=None):
+        if(filter_x!=None): ts, data, errs = self.filter_data(ts,data,errs,filter_x)
         return curve_fit(self.fit, ts, data, sigma=errs, p0=[1.0, 1.0, 1.0], jac=self.dfit, bounds=((-np.inf,-np.inf,0),(np.inf,np.inf,np.inf)),full_output=full_output)
         #print(np.sqrt(np.diag(cov)))
     
     def get_correction(self, t, *argv):
         argv = (self.start_time,) + argv
         return super().get_correction(t, *argv)
-
+    
+    def plot_results(self, ts, data, opt, cov, time):
+        super().plot_results(ts, data, opt, cov, time)
+        try:
+            print(f"E_FV: {opt[0]}, E0: {opt[1]}, sigma: {opt[2]}")
+        except IndexError:
+            print(f"E0: {opt[0]}, sigma: {opt[1]}")
+        print(f"Covariance: {np.sqrt(np.diag(cov))}")
     
 class GaussianFitNoBounds(GaussianFit):
     def dRt(self, t, start_time, E_FV, *argv):
@@ -110,7 +135,8 @@ class GaussianFitNoBounds(GaussianFit):
     def dfit(self, t, E0, sigma):
         return super().dfit(t, 1, E0, sigma)[:,1:]
     
-    def get_fit_params(self, ts, data, errs, full_output=False):
+    def get_fit_params(self, ts, data, errs, full_output=False, filter_x=None):
+        if(filter_x!=None): ts, data, errs = self.filter_data(ts,data,errs,filter_x)
         return curve_fit(self.fit, ts, data, sigma=errs, p0=[1.0, 1.0], jac=self.dfit, bounds=((-np.inf,0),(np.inf,np.inf)), full_output=full_output)
     
     def get_correction(self, t, *argv):
@@ -127,8 +153,14 @@ class PowerFit(Fit):
                                 np.log(np.abs(E+E_FV))*np.abs(E+E_FV)**n #d_dn
                                ])
     
-    def get_fit_params(self, ts, data, errs, full_output=False):
+    def get_fit_params(self, ts, data, errs, full_output=False, filter_x=None):
+        if(filter_x!=None): ts, data, errs = self.filter_data(ts,data,errs,filter_x)
         return curve_fit(self.fit, ts, data, sigma=errs, p0=[1.0, 1.0, 1.0], jac=self.dfit, bounds=((-np.inf,-np.inf,0),(np.inf,np.inf,np.inf)), full_output=full_output)
+    
+    def plot_results(self, ts, data, opt, cov, time):
+        super().plot_results(ts, data, opt, cov, time)
+        print(f"start_time: {opt[0]}, E_FV: {opt[1]}, n: {opt[2]}")
+        print(f"Covariance: {np.sqrt(np.diag(cov))}")
 
 class PowerFit2(Fit): 
     def R0(self, E, E_FV, n, a):
@@ -141,5 +173,11 @@ class PowerFit2(Fit):
                                 n*np.abs(E+E_FV+a)**(n-1) #d_da
                                ])
     
-    def get_fit_params(self, ts, data, errs, full_output=False):
+    def get_fit_params(self, ts, data, errs, full_output=False, filter_x=None):
+        if(filter_x!=None): ts, data, errs = self.filter_data(ts,data,errs,filter_x)
         return curve_fit(self.fit, ts, data, sigma=errs, p0=[1.0, 1.0, 1.0, 0.0], jac=self.dfit, bounds=((-np.inf,-np.inf,0,0),(np.inf,np.inf,np.inf,np.inf)), full_output=full_output)
+    
+    def plot_results(self, ts, data, opt, cov, time):
+        super().plot_results(ts, data, opt, cov, time)
+        print(f"start_time: {opt[0]}, E_FV: {opt[1]}, n: {opt[2]}")
+        print(f"Covariance: {np.sqrt(np.diag(cov))}")
