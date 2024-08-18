@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Need to have gcc, openssl, zlib, gsl, openblas, perl, ffi installed beforehand.
 

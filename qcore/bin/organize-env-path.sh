@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 add-to-colon-list() {
     local name="$1"

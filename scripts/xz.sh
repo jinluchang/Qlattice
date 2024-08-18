@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 name=xz
 source qcore/set-prefix.sh $name

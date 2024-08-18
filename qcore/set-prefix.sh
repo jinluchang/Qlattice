@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Usage:
 # source qcore/set-prefix.sh subdir

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 name=ninja-script
 
@@ -38,7 +38,7 @@ source qcore/set-prefix.sh $name
 
 #
 cat - >"$prefix/bin/ninja" << EOF
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Need to limit the number of JOBS by ninja
 # See https://github.com/ninja-build/ninja/issues/1482

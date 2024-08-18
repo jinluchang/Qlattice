@@ -1,4 +1,4 @@
-SHELL=/bin/bash
+SHELL=/usr/bin/env bash
 
 tests = qlat-vector-utils \
 		qlat-fft-tests \

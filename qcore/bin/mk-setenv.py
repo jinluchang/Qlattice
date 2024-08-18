@@ -43,7 +43,7 @@ if "--keep" in sys.argv and os.path.isfile(setenv_fn):
 
 l = []
 
-l.append("#!/bin/bash")
+l.append("#!/usr/bin/env bash")
 
 l.append("")
 

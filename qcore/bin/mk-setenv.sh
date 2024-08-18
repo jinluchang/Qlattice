@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Usage:
 # "$wd"/qcore/bin/mk-setenv.sh
@@ -18,7 +18,7 @@ fi
 echo "Python mk-setenv.py scripts failed. Fallback to bash version."
 
 cat >"$prefix"/setenv-new.sh <<EOF
-#!/bin/bash
+#!/usr/bin/env bash
 
 func() {
 

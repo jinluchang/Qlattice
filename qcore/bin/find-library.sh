@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Usage:
 # find-library.sh lib-name-1 lib-name-2 ...

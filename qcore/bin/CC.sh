@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if which python3 >/dev/null 2>&1 ; then
     run=compiler-options.py

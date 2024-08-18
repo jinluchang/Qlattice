@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 name=mpc
 source qcore/set-prefix.sh $name

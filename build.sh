@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # This script would install Qlattice and all its dependencies in ``$prefix''.
 # Change $prefix environment variable if you need to install in other directories.

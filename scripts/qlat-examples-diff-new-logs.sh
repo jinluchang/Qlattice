@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source scripts/qlat-examples-clean-new-logs.sh
 
