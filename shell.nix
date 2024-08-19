@@ -5,6 +5,9 @@
 # $ nix-shell
 # $ ./build default-nix
 #
+# May need to have
+# services.envfs.enable = true;
+# in /etc/nixos/configuration.nix
 
 let
   pkgs = import <nixpkgs> {};

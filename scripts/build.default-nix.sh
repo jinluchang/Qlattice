@@ -6,6 +6,8 @@ set -e
     ./scripts/setenv.default.sh
     ./scripts/qcore.sh
 
+    ./scripts/cuba.sh
+    ./scripts/eigen.sh
     ./scripts/ninja-script.sh
 
     ./scripts/c-lime.sh
