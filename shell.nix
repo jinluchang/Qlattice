@@ -16,6 +16,8 @@ in pkgs.mkShell {
     gcc
     mpi
     pkg-config
+    automake
+    autoconf
     zlib
     gsl
     fftw
