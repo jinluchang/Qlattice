@@ -32,6 +32,8 @@ source qcore/set-prefix.sh $name
     time-run pip3 install -vU pkgconfig
 
     time-run pip3 install -vU jax jaxlib
+    time-run pip3 install -vU build
+    time-run pip3 install -vU wheel
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"

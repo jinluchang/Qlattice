@@ -74,4 +74,8 @@ if [ -z "${CUBACORES+x}" ] ; then
     export CUBACORES=0
 fi
 
+if [ -z "${PYTHONHOME+x}" ] ; then
+    export PYTHONHOME=/usr
+fi
+
 export PATH="$setenv_prefix/bin":"$PATH"

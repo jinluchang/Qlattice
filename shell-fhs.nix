@@ -1,21 +1,10 @@
-# Used to set up nix shell.
-#
-# With this file, you can build with:
-#
-# $ nix-shell
-# $ ./build default-nix
-#
-# May need to have
-# services.envfs.enable = true;
-# in /etc/nixos/configuration.nix
-
 {
   pkgs ? import <nixpkgs> {},
 }:
 
-pkgs.mkShell {
-  name = "qlat-build-sh";
-  packages = with pkgs; [
+(pkgs.buildFHSEnv {
+  name = "qlat-build-env";
+  targetPkgs = pkgs: (with pkgs; [
     gcc
     mpi
     pkg-config
@@ -45,5 +34,7 @@ pkgs.mkShell {
       build
       wheel
     ]))
-  ];
-}
+  ]);
+  runScript = "bash";
+  extraOutputsToInstall = [ "man" "doc" "info" "dev" "static" ];
+}).env
