@@ -75,7 +75,9 @@ if [ -z "${CUBACORES+x}" ] ; then
 fi
 
 if [ -z "${PYTHONHOME+x}" ] ; then
-    export PYTHONHOME=/usr
+    if [ "/usr/bin/python3" = "$(which python3)" ] ; then
+        export PYTHONHOME=/usr
+    fi
 fi
 
 export PATH="$setenv_prefix/bin":"$PATH"
