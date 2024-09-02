@@ -2,10 +2,11 @@
 { stdenv
 , fetchurl
 , fetchFromGitHub
+, mpi
+, c-lime
 , zlib
 , eigen
 , openssl
-, mpi
 , gsl
 , hdf5
 , gmp
@@ -33,6 +34,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     mpi
+    c-lime
     zlib
     eigen
     fftw
@@ -67,6 +69,9 @@ stdenv.mkDerivation rec {
       "--enable-comms=mpi-auto"
       "--enable-gparity=no"
     )
+    echo '-- set CFLAGS and CXXFLAGS...'
+    export CFLAGS="-fPIC -w -Wno-psabi"
+    export CXXFLAGS="-fPIC -w -Wno-psabi"
   '';
 
 }
