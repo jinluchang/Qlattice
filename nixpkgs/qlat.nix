@@ -15,6 +15,7 @@
 , psutil
 , zlib
 , eigen
+, cuba
 , mpi
 , git
 , fftw
@@ -57,11 +58,13 @@ buildPythonPackage rec {
     fftw
     fftwFloat
     gsl
+    cuba
   ];
 
   dependencies = [
     mpi
     eigen
+    cuba
     cython
     numpy
     psutil
@@ -69,5 +72,9 @@ buildPythonPackage rec {
     mpi4py
     sympy
   ];
+
+  postPatch = ''
+    sed -i "s/'-j4'/'-j$NIX_BUILD_CORES'/" pyproject.toml
+  '';
 
 }

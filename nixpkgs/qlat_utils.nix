@@ -12,6 +12,7 @@
 , psutil
 , zlib
 , eigen
+, cuba
 , git
 }:
 
@@ -41,17 +42,22 @@ buildPythonPackage rec {
     git
   ];
 
-
   buildInputs = [
     numpy
     zlib
     eigen
+    cuba
   ];
 
   dependencies = [
+    cuba
+    cython
     numpy
     psutil
-    cython
   ];
+
+  postPatch = ''
+    sed -i "s/'-j4'/'-j$NIX_BUILD_CORES'/" pyproject.toml
+  '';
 
 }

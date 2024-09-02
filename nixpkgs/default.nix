@@ -5,8 +5,9 @@ let
     overlays = [];
   };
   qlat-pkgs = {
-    inherit qlat_utils qlat;
+    inherit cuba qlat_utils qlat;
   };
-  qlat_utils = pkgs.python3Packages.callPackage ./qlat_utils.nix {};
-  qlat = pkgs.python3Packages.callPackage ./qlat.nix { inherit qlat_utils; };
+  cuba = pkgs.callPackage ./cuba.nix {};
+  qlat_utils = pkgs.python3Packages.callPackage ./qlat_utils.nix { inherit cuba; };
+  qlat = pkgs.python3Packages.callPackage ./qlat.nix { inherit cuba qlat_utils; };
 in qlat-pkgs

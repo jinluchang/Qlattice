@@ -28,6 +28,7 @@ pkgs.mkShell {
     fftwFloat
     openssl
     eigen
+    (import ./default.nix).cuba
     (python3.withPackages (ps: with ps; [
       meson
       ninja
