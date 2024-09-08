@@ -18,11 +18,19 @@ qlat_utils_numpy = declare_dependency(
   dependencies: [ qlat_utils_py3.dependency(), ],
   ).as_system()
 
-if qlat_utils_cpp.check_header('Eigen/Eigen')
+qlat_utils_eigen_type = run_command(qlat_utils_py3, '-c', 'import qlat_utils as q ; print(q.get_eigen_type())',
+  env: environment({'q_verbose': '-1'}),
+  check: true).stdout().strip()
+message('qlat_utils_eigen_type', qlat_utils_eigen_type)
+
+if qlat_utils_eigen_type == 'grid'
+  assert(qlat_utils_cpp.check_header('Grid/Eigen/Eigen'))
   qlat_utils_eigen = dependency('', required: false)
-elif qlat_utils_cpp.check_header('Grid/Eigen/Eigen')
+elif qlat_utils_cpp.check_header('Eigen/Eigen')
+  assert(qlat_utils_eigen_type == 'system')
   qlat_utils_eigen = dependency('', required: false)
 else
+  assert(qlat_utils_eigen_type == 'system')
   qlat_utils_eigen = dependency('eigen3').as_system()
 endif
 

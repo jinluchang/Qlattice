@@ -33,11 +33,14 @@ numpy = declare_dependency(
   dependencies: [ py3.dependency(), ],
   ).as_system()
 
-if cpp.check_header('Eigen/Eigen')
+if cpp.check_header('Grid/Eigen/Eigen')
+  eigen_type = 'grid'
   eigen = dependency('', required: false)
-elif cpp.check_header('Grid/Eigen/Eigen')
+elif cpp.check_header('Eigen/Eigen')
+  eigen_type = 'system'
   eigen = dependency('', required: false)
 else
+  eigen_type = 'system'
   eigen = dependency('eigen3').as_system()
 endif
 

@@ -136,3 +136,8 @@ def clear_all_caches():
 
 def clear_mem_cache():
     cc.clear_mem_cache()
+
+### -------------------------------------------------------------------
+
+def get_eigen_type():
+    return cc.get_eigen_type()

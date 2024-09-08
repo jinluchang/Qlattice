@@ -215,6 +215,10 @@ cdef extern from "qlat-utils/show.h" namespace "qlat":
     void set_display_ptr(DisplayPtr f) except +
     void display(const std_string& str) except +
 
+cdef extern from "qlat-utils/eigen.h" namespace "qlat":
+
+    std_string get_eigen_type() except +
+
 cdef extern from "qlat-utils/timer.h" namespace "qlat":
 
     int get_id_node()

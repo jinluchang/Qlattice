@@ -154,6 +154,8 @@ __all__ += [
         'get_all_caches_info',
         'clear_all_caches',
         'clear_mem_cache',
+        #
+        'get_eigen_type',
         ]
 
 __all__ += [
