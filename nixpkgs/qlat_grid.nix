@@ -33,14 +33,14 @@
 buildPythonPackage rec {
 
   pname = "qlat_grid";
-  version = "0.68";
+  version = "0.69";
 
   pyproject = true;
 
   src = fetchPypi {
     inherit pname version;
     extension = "tar.gz";
-    hash = "sha256-Gr1Ru0aMvzK5D38IHaIKpDVtl8qjFhGxAIEL+Kg8KLg=";
+    hash = "sha256-1OGzJEin1HeHHBmt0ZbrY6V9OyDM2RQjMqp66GeuhWc=";
   };
 
   enableParallelBuilding = true;

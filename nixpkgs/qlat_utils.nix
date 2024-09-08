@@ -19,14 +19,14 @@
 buildPythonPackage rec {
 
   pname = "qlat_utils";
-  version = "0.68";
+  version = "0.69";
 
   pyproject = true;
 
   src = fetchPypi {
     inherit pname version;
     extension = "tar.gz";
-    hash = "sha256-Dl5cmgWMEj8Xkog7+rPX6H17b6QZQUoiYFbij5b7jLs=";
+    hash = "sha256-gBiJ9ilpzXnkfWrU7wazHNePT4vc1qXouaI9InYcRIg=";
   };
 
   enableParallelBuilding = true;

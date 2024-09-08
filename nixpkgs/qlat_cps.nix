@@ -12,6 +12,13 @@
 , mpi4py
 , sympy
 , qlat_utils
+, qlat
+, qmp
+, qio
+, cps
+, gmp
+, mpfr
+, c-lime
 , psutil
 , zlib
 , eigen
@@ -25,7 +32,7 @@
 
 buildPythonPackage rec {
 
-  pname = "qlat";
+  pname = "qlat_cps";
   version = "0.69";
 
   pyproject = true;
@@ -33,7 +40,7 @@ buildPythonPackage rec {
   src = fetchPypi {
     inherit pname version;
     extension = "tar.gz";
-    hash = "sha256-l/2kAChKFy/1Nnp6zx1OcUmewQi3C5Wl9RVeY0Q3wIY=";
+    hash = "sha256-QQM7k3y+q9K3DDU9JAlZMUcVJ4me0b/8llPxh7VjZ+Y=";
   };
 
   enableParallelBuilding = true;
@@ -44,6 +51,7 @@ buildPythonPackage rec {
     cython
     numpy
     qlat_utils
+    qlat
   ];
 
   nativeBuildInputs = [
@@ -52,6 +60,12 @@ buildPythonPackage rec {
 
   buildInputs = [
     mpi
+    cps
+    qmp
+    qio
+    gmp
+    mpfr
+    c-lime
     zlib
     eigen
     cython
@@ -69,6 +83,7 @@ buildPythonPackage rec {
     numpy
     psutil
     qlat_utils
+    qlat
     mpi4py
     sympy
   ];

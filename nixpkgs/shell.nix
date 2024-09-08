@@ -4,10 +4,6 @@
 #
 # $ nix-shell
 # $ ./build default-nix
-#
-# May need to have
-# services.envfs.enable = true;
-# in /etc/nixos/configuration.nix
 
 {
   pkgs ? import <nixpkgs> {}
@@ -30,8 +26,18 @@ in pkgs.mkShell {
     fftwFloat
     openssl
     eigen
+    hdf5
+    gmp
+    mpfr
+    automake
+    autoconf
+    which
     local-pkgs.cuba
+    local-pkgs.c-lime
     local-pkgs.grid-lehner
+    local-pkgs.qmp
+    local-pkgs.qio
+    local-pkgs.cps
     (python3.withPackages (ps: with ps; [
       meson
       ninja
@@ -52,6 +58,7 @@ in pkgs.mkShell {
       local-pkgs.qlat_utils
       local-pkgs.qlat
       local-pkgs.qlat_grid
+      local-pkgs.qlat_cps
       local-pkgs.gpt-lehner
     ]))
   ];
