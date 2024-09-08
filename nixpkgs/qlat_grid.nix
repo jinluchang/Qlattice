@@ -28,20 +28,28 @@
 , fftw
 , fftwFloat
 , gsl
+, is-pypi-src ? true
 }:
 
 buildPythonPackage rec {
 
   pname = "qlat_grid";
-  version = "0.69";
+  version = if is-pypi-src then version-pypi else version-local;
 
   pyproject = true;
 
-  src = fetchPypi {
-    inherit pname version;
+  src = if is-pypi-src then src-pypi else src-local;
+
+  version-pypi = "0.69";
+  src-pypi = fetchPypi {
+    inherit pname;
+    version = version-pypi;
     extension = "tar.gz";
     hash = "sha256-1OGzJEin1HeHHBmt0ZbrY6V9OyDM2RQjMqp66GeuhWc=";
   };
+
+  version-local = "${../VERSION}";
+  src-local = ../qlat-grid;
 
   enableParallelBuilding = true;
 

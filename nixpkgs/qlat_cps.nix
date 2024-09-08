@@ -28,20 +28,28 @@
 , fftw
 , fftwFloat
 , gsl
+, is-pypi-src ? true
 }:
 
 buildPythonPackage rec {
 
   pname = "qlat_cps";
-  version = "0.69";
+  version = if is-pypi-src then version-pypi else version-local;
 
   pyproject = true;
 
-  src = fetchPypi {
-    inherit pname version;
+  src = if is-pypi-src then src-pypi else src-local;
+
+  version-pypi = "0.69";
+  src-pypi = fetchPypi {
+    inherit pname;
+    version = version-pypi;
     extension = "tar.gz";
     hash = "sha256-QQM7k3y+q9K3DDU9JAlZMUcVJ4me0b/8llPxh7VjZ+Y=";
   };
+
+  version-local = "${../VERSION}";
+  src-local = ../qlat-cps;
 
   enableParallelBuilding = true;
 

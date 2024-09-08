@@ -14,20 +14,28 @@
 , eigen
 , cuba
 , git
+, is-pypi-src ? true
 }:
 
 buildPythonPackage rec {
 
   pname = "qlat_utils";
-  version = "0.69";
+  version = if is-pypi-src then version-pypi else version-local;
 
   pyproject = true;
 
-  src = fetchPypi {
-    inherit pname version;
+  src = if is-pypi-src then src-pypi else src-local;
+
+  version-pypi = "0.69";
+  src-pypi = fetchPypi {
+    inherit pname;
+    version = version-pypi;
     extension = "tar.gz";
     hash = "sha256-gBiJ9ilpzXnkfWrU7wazHNePT4vc1qXouaI9InYcRIg=";
   };
+
+  version-local = "${../VERSION}";
+  src-local = ../qlat-utils;
 
   enableParallelBuilding = true;
 

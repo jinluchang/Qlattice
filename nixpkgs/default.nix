@@ -13,11 +13,14 @@ let
   eigen = grid-lehner;
   # eigen = pkgs.eigen;
   #
+  # is-pypi-src = true;
+  is-pypi-src = false;
+  #
   cuba = pkgs.callPackage ./cuba.nix {};
-  qlat_utils = pkgs.python3Packages.callPackage ./qlat_utils.nix { inherit cuba eigen; };
-  qlat = pkgs.python3Packages.callPackage ./qlat.nix { inherit cuba eigen qlat_utils; };
-  qlat_grid = pkgs.python3Packages.callPackage ./qlat_grid.nix { inherit cuba qlat_utils qlat c-lime grid-lehner; };
-  qlat_cps = pkgs.python3Packages.callPackage ./qlat_cps.nix { inherit cuba qlat_utils qlat c-lime qmp qio cps; };
+  qlat_utils = pkgs.python3Packages.callPackage ./qlat_utils.nix { inherit cuba eigen is-pypi-src; };
+  qlat = pkgs.python3Packages.callPackage ./qlat.nix { inherit cuba eigen qlat_utils is-pypi-src; };
+  qlat_grid = pkgs.python3Packages.callPackage ./qlat_grid.nix { inherit cuba qlat_utils qlat c-lime grid-lehner is-pypi-src; };
+  qlat_cps = pkgs.python3Packages.callPackage ./qlat_cps.nix { inherit cuba qlat_utils qlat c-lime qmp qio cps is-pypi-src; };
   c-lime = pkgs.callPackage ./c-lime.nix {};
   qmp = pkgs.callPackage ./qmp.nix {};
   qio = pkgs.callPackage ./qio.nix { inherit qmp; };
