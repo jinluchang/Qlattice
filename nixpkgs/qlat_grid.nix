@@ -1,33 +1,10 @@
-{ lib
-, stdenv
-, fetchPypi
-, python
+{ fetchPypi
 , buildPythonPackage
-, setuptools
-, setuptools-scm
-, cython
 , meson-python
 , pkg-config
-, numpy
-, mpi4py
-, sympy
-, qlat_utils
 , qlat
 , grid-lehner
-, hdf5
-, openssl
-, gmp
-, mpfr
-, c-lime
-, psutil
-, zlib
-, eigen
-, cuba
-, mpi
 , git
-, fftw
-, fftwFloat
-, gsl
 , is-pypi-src ? true
 }:
 
@@ -56,9 +33,6 @@ buildPythonPackage rec {
   build-system = [
     meson-python
     pkg-config
-    cython
-    numpy
-    qlat_utils
     qlat
   ];
 
@@ -67,35 +41,12 @@ buildPythonPackage rec {
     grid-lehner
   ];
 
-  buildInputs = [
-    mpi
+  propagatedBuildInputs = [
     grid-lehner
-    hdf5
-    openssl
-    gmp
-    mpfr
-    c-lime
-    zlib
-    eigen
-    cython
-    fftw
-    fftwFloat
-    gsl
-    cuba
   ];
 
   dependencies = [
-    mpi
-    eigen
-    cuba
-    cython
-    numpy
-    psutil
-    qlat_utils
     qlat
-    mpi4py
-    sympy
-    grid-lehner
   ];
 
   postPatch = ''

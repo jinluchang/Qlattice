@@ -1,21 +1,10 @@
-{ lib
-, stdenv
-, fetchPypi
-, python
+{ fetchPypi
 , buildPythonPackage
-, setuptools
-, setuptools-scm
-, cython
 , meson-python
 , pkg-config
-, numpy
 , mpi4py
 , sympy
 , qlat_utils
-, psutil
-, zlib
-, eigen
-, cuba
 , mpi
 , git
 , fftw
@@ -49,8 +38,6 @@ buildPythonPackage rec {
   build-system = [
     meson-python
     pkg-config
-    cython
-    numpy
     qlat_utils
   ];
 
@@ -58,25 +45,16 @@ buildPythonPackage rec {
     git
   ];
 
-  buildInputs = [
+  propagatedBuildInputs = [
     mpi
-    zlib
-    eigen
-    cython
     fftw
     fftwFloat
     gsl
-    cuba
   ];
 
   dependencies = [
-    mpi
-    eigen
-    cuba
-    cython
-    numpy
-    psutil
     qlat_utils
+    mpi
     mpi4py
     sympy
   ];

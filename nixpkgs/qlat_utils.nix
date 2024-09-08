@@ -1,10 +1,5 @@
-{ lib
-, stdenv
-, fetchPypi
-, python
+{ fetchPypi
 , buildPythonPackage
-, setuptools
-, setuptools-scm
 , cython
 , meson-python
 , pkg-config
@@ -50,15 +45,13 @@ buildPythonPackage rec {
     git
   ];
 
-  buildInputs = [
-    numpy
+  propagatedBuildInputs = [
     zlib
     eigen
     cuba
   ];
 
   dependencies = [
-    cuba
     cython
     numpy
     psutil
