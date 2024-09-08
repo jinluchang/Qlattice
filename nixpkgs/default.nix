@@ -24,7 +24,7 @@ let
   c-lime = pkgs.callPackage ./c-lime.nix {};
   qmp = pkgs.callPackage ./qmp.nix {};
   qio = pkgs.callPackage ./qio.nix { inherit qmp; };
-  cps = pkgs.callPackage ./cps.nix { inherit qmp qio; };
+  cps = pkgs.callPackage ./cps.nix { inherit c-lime qmp qio; };
   grid-lehner = pkgs.callPackage ./grid-lehner.nix { inherit c-lime; };
   gpt-lehner = pkgs.python3Packages.callPackage ./gpt-lehner.nix { inherit c-lime grid-lehner; };
 in qlat-pkgs

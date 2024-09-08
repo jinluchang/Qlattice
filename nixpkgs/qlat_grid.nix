@@ -48,7 +48,7 @@ buildPythonPackage rec {
     hash = "sha256-ZnsO4Trkihq9fP8Y3viJj14IyFQgXlx99WcwORV2rMY=";
   };
 
-  version-local = "${../VERSION}";
+  version-local = "${../VERSION}-current";
   src-local = ../qlat-grid;
 
   enableParallelBuilding = true;

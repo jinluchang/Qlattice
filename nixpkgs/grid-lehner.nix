@@ -5,7 +5,6 @@
 , mpi
 , c-lime
 , zlib
-, eigen
 , openssl
 , gsl
 , hdf5
@@ -32,12 +31,17 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  buildInputs = [
+  nativeBuildInputs = [
+    mpi
     git
+    autoconf
+    automake
+  ];
+
+  propagatedBuildInputs = [
     mpi
     c-lime
     zlib
-    eigen
     fftw
     fftwFloat
     gsl
@@ -45,8 +49,6 @@ stdenv.mkDerivation rec {
     hdf5
     gmp
     mpfr
-    autoconf
-    automake
   ];
 
   preConfigure = let

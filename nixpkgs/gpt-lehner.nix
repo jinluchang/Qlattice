@@ -10,7 +10,6 @@
 , numpy
 , pkg-config
 , zlib
-, eigen
 , openssl
 , gsl
 , hdf5
@@ -19,8 +18,6 @@
 , fftw
 , fftwFloat
 , git
-, autoconf
-, automake
 , which
 , flock
 , rsync
@@ -48,29 +45,16 @@ buildPythonPackage rec {
   ];
 
   nativeBuildInputs = [
+    mpi
     git
+    grid-lehner
     which
     flock
-    grid-lehner
     rsync
   ];
 
-  buildInputs = [
+  propagatedBuildInputs = [
     grid-lehner
-    git
-    mpi
-    c-lime
-    zlib
-    eigen
-    fftw
-    fftwFloat
-    gsl
-    openssl
-    hdf5
-    gmp
-    mpfr
-    autoconf
-    automake
   ];
 
   dependencies = [

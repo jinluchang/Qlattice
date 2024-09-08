@@ -12,6 +12,7 @@
 , gsl
 , which
 , git
+, c-lime
 }:
 
 stdenv.mkDerivation rec {
@@ -28,18 +29,23 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  buildInputs = [
+  nativeBuildInputs = [
     mpi
+    git
+    which
+  ];
+
+  propagatedBuildInputs = [
+    mpi
+    c-lime
     qmp
     qio
-    gmp
     mpfr
     zlib
     fftw
     fftwFloat
     gsl
-    git
-    which
+    gmp
   ];
 
   preConfigure = ''
