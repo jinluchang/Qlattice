@@ -29,11 +29,19 @@ qlat_numpy = declare_dependency(
   dependencies: [ qlat_py3.dependency(), ],
   ).as_system()
 
-if qlat_cpp.check_header('Eigen/Eigen')
+qlat_eigen_type = run_command(qlat_py3, '-c', 'import qlat as q ; print(q.get_eigen_type())',
+  env: environment({'q_verbose': '-1'}),
+  check: true).stdout().strip()
+message('qlat_eigen_type', qlat_eigen_type)
+
+if qlat_eigen_type == 'grid'
+  assert(qlat_cpp.check_header('Grid/Eigen/Eigen'))
   qlat_eigen = dependency('', required: false)
-elif qlat_cpp.check_header('Grid/Eigen/Eigen')
+elif qlat_cpp.check_header('Eigen/Eigen')
+  assert(qlat_eigen_type == 'system')
   qlat_eigen = dependency('', required: false)
 else
+  assert(qlat_eigen_type == 'system')
   qlat_eigen = dependency('eigen3').as_system()
 endif
 
