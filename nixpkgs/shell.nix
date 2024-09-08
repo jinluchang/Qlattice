@@ -10,10 +10,12 @@
 # in /etc/nixos/configuration.nix
 
 {
-  pkgs ? import <nixpkgs> {},
+  pkgs ? import <nixpkgs> {}
 }:
 
-pkgs.mkShell {
+let
+  local-pkgs = import ./default.nix;
+in pkgs.mkShell {
   name = "qlat-build-sh";
   packages = with pkgs; [
     gcc
@@ -28,7 +30,8 @@ pkgs.mkShell {
     fftwFloat
     openssl
     eigen
-    (import ./default.nix).cuba
+    local-pkgs.cuba
+    local-pkgs.grid-lehner
     (python3.withPackages (ps: with ps; [
       meson
       ninja
@@ -46,8 +49,8 @@ pkgs.mkShell {
       matplotlib
       build
       wheel
-      (import ./default.nix).qlat_utils
-      (import ./default.nix).qlat
+      local-pkgs.qlat_utils
+      local-pkgs.qlat
     ]))
   ];
 }

@@ -33,6 +33,7 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
 
   buildInputs = [
+    git
     mpi
     c-lime
     zlib
@@ -58,20 +59,25 @@ stdenv.mkDerivation rec {
     echo "-- deploying Eigen source..."
     cp -pv '${eigen-src}' '${eigen-file-name}'
     bash ./scripts/update_eigen.sh '${eigen-file-name}'
+    rm '${eigen-file-name}'
+    patch Eigen/unsupported/Eigen/CXX11/Tensor scripts/eigen-3.3.5.Tensor.patch
+    #
     echo '-- generating Make.inc files...'
     bash ./scripts/filelist
     echo '-- generating configure script...'
     autoreconf -fvi
-    echo "set configure options"
-    configureFlagsArray+=(
-      "--enable-simd=AVX2"
-      "--enable-alloc-align=4k"
-      "--enable-comms=mpi-auto"
-      "--enable-gparity=no"
-    )
     echo '-- set CFLAGS and CXXFLAGS...'
     export CFLAGS="-fPIC -w -Wno-psabi"
     export CXXFLAGS="-fPIC -w -Wno-psabi"
+    echo CFLAGS="$CFLAGS"
+    echo CXXFLAGS="$CXXFLAGS"
   '';
+
+  configureFlags = [
+    "--enable-simd=AVX2"
+    "--enable-alloc-align=4k"
+    "--enable-comms=mpi-auto"
+    "--enable-gparity=no"
+  ];
 
 }
