@@ -17,7 +17,10 @@ def get_lib_list():
 
 def get_new_ld_library_path():
     ld_lib_path = os.getenv('LD_LIBRARY_PATH')
-    path_list = ld_lib_path.split(':')
+    if ld_lib_path is None:
+        path_list = []
+    else:
+        path_list = ld_lib_path.split(':')
     new_path_list = []
     for p in get_lib_list() + path_list:
         if p not in new_path_list:
