@@ -125,15 +125,16 @@ buildPythonPackage rec {
 
   preInstall = ''
     cd "$NIX_BUILD_TOP/source"
-    mkdir -pv "$out"/lib/python3/dist-packages
+    pwd
+    mkdir -pv "$out"/${python.sitePackages}
     mkdir -pv "$out"/src
-    rsync -a --delete "lib/gpt "$out"/lib/python3/dist-packages/
-    rsync -a --delete "lib/cgpt/build/cgpt.so "$out"/lib/python3/dist-packages/
-    rsync -a --delete "tests "$out"/src/
-    rsync -a --delete "applications "$out"/src/
-    rsync -a --delete "benchmarks "$out"/src/
-    rsync -a --delete "documentation "$out"/src/
-    rsync -a --delete "docker "$out"/src/
+    rsync -a --delete lib/gpt "$out"/${python.sitePackages}/
+    rsync -a --delete lib/cgpt/build/cgpt.so "$out"/${python.sitePackages}/
+    rsync -a --delete tests "$out"/src/
+    rsync -a --delete applications "$out"/src/
+    rsync -a --delete benchmarks "$out"/src/
+    rsync -a --delete documentation "$out"/src/
+    rsync -a --delete docker "$out"/src/
   '';
 
 }

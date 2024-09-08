@@ -51,6 +51,7 @@ in pkgs.mkShell {
       wheel
       local-pkgs.qlat_utils
       local-pkgs.qlat
+      local-pkgs.gpt-lehner
     ]))
   ];
 }
