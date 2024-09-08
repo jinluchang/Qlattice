@@ -40,12 +40,12 @@ buildPythonPackage rec {
 
   src = if is-pypi-src then src-pypi else src-local;
 
-  version-pypi = "0.69";
+  version-pypi = "0.70";
   src-pypi = fetchPypi {
     inherit pname;
     version = version-pypi;
     extension = "tar.gz";
-    hash = "sha256-1OGzJEin1HeHHBmt0ZbrY6V9OyDM2RQjMqp66GeuhWc=";
+    hash = "sha256-ZnsO4Trkihq9fP8Y3viJj14IyFQgXlx99WcwORV2rMY=";
   };
 
   version-local = "${../VERSION}";
@@ -93,9 +93,9 @@ buildPythonPackage rec {
     psutil
     qlat_utils
     qlat
-    grid-lehner
     mpi4py
     sympy
+    grid-lehner
   ];
 
   postPatch = ''

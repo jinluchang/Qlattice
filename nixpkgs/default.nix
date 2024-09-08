@@ -13,8 +13,8 @@ let
   eigen = grid-lehner;
   # eigen = pkgs.eigen;
   #
-  # is-pypi-src = true;
-  is-pypi-src = false;
+  is-pypi-src = true;
+  # is-pypi-src = false;
   #
   cuba = pkgs.callPackage ./cuba.nix {};
   qlat_utils = pkgs.python3Packages.callPackage ./qlat_utils.nix { inherit cuba eigen is-pypi-src; };

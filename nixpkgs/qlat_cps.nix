@@ -40,12 +40,12 @@ buildPythonPackage rec {
 
   src = if is-pypi-src then src-pypi else src-local;
 
-  version-pypi = "0.69";
+  version-pypi = "0.70";
   src-pypi = fetchPypi {
     inherit pname;
     version = version-pypi;
     extension = "tar.gz";
-    hash = "sha256-QQM7k3y+q9K3DDU9JAlZMUcVJ4me0b/8llPxh7VjZ+Y=";
+    hash = "sha256-X0hCGuFUgsvZ9AKYr7JhhxgM5hCp3zrbHYGpz3zVVj0=";
   };
 
   version-local = "${../VERSION}";
@@ -94,6 +94,7 @@ buildPythonPackage rec {
     qlat
     mpi4py
     sympy
+    cps
   ];
 
   postPatch = ''

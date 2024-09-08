@@ -33,12 +33,12 @@ buildPythonPackage rec {
 
   src = if is-pypi-src then src-pypi else src-local;
 
-  version-pypi = "0.69";
+  version-pypi = "0.70";
   src-pypi = fetchPypi {
     inherit pname;
     version = version-pypi;
     extension = "tar.gz";
-    hash = "sha256-l/2kAChKFy/1Nnp6zx1OcUmewQi3C5Wl9RVeY0Q3wIY=";
+    hash = "sha256-Jm+FcqUt4A5jdlFGHvKBdqNsUa3zU1fNRnWhfWdzDUs=";
   };
 
   version-local = "${../VERSION}";
