@@ -86,7 +86,16 @@ let
         overlay
       ] ++ overlays;
     };
-  in pkgs.qlat-full;
+  in {
+    pkgs.mpi;
+    pkgs.cuba;
+    pkgs.qlat-eigen;
+    pkgs.cps;
+    pkgs.qmp;
+    pkgs.qio;
+    pkgs.grid-lehner;
+    pkgs.qlat-full;
+  }
 
   mk-qlat-std = overlays: let
     pkgs = nixpkgs {
@@ -99,7 +108,12 @@ let
         overlay-std
       ] ++ overlays;
     };
-  in pkgs.qlat-std;
+  in {
+    pkgs.mpi;
+    pkgs.cuba;
+    pkgs.qlat-eigen;
+    pkgs.qlat-std;
+  }
 
   qlat-pkgs = {
     qlat-full = mk-qlat-full [];
