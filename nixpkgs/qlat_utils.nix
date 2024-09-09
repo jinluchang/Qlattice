@@ -7,7 +7,6 @@
 , psutil
 , zlib
 , eigen
-, cuba
 , git
 , is-pypi-src ? true
 }:
@@ -48,7 +47,6 @@ buildPythonPackage rec {
   propagatedBuildInputs = [
     zlib
     eigen
-    cuba
   ];
 
   dependencies = [

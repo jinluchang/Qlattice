@@ -12,7 +12,6 @@
 , gsl
 , which
 , git
-, c-lime
 }:
 
 stdenv.mkDerivation rec {
@@ -37,7 +36,6 @@ stdenv.mkDerivation rec {
 
   propagatedBuildInputs = [
     mpi
-    c-lime
     qmp
     qio
     mpfr

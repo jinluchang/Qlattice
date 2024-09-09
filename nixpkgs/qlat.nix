@@ -4,12 +4,16 @@
 , pkg-config
 , mpi4py
 , sympy
+, scipy
+, jax
+, jaxlib
 , qlat_utils
 , mpi
 , git
 , fftw
 , fftwFloat
 , gsl
+, cuba
 , is-pypi-src ? true
 }:
 
@@ -50,13 +54,16 @@ buildPythonPackage rec {
     fftw
     fftwFloat
     gsl
+    cuba
   ];
 
   dependencies = [
     qlat_utils
-    mpi
     mpi4py
     sympy
+    scipy
+    jax
+    jaxlib
   ];
 
   postPatch = ''
