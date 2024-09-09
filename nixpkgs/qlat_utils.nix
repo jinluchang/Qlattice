@@ -1,4 +1,5 @@
 { fetchPypi
+, stdenv
 , buildPythonPackage
 , cython
 , meson-python
@@ -33,6 +34,8 @@ buildPythonPackage rec {
 
   enableParallelBuilding = true;
 
+  inherit stdenv;
+
   build-system = [
     meson-python
     pkg-config
@@ -50,6 +53,8 @@ buildPythonPackage rec {
   ];
 
   dependencies = [
+    meson-python
+    pkg-config
     cython
     numpy
     psutil

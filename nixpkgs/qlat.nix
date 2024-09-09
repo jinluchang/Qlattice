@@ -1,7 +1,6 @@
 { fetchPypi
+, stdenv
 , buildPythonPackage
-, meson-python
-, pkg-config
 , mpi4py
 , sympy
 , scipy
@@ -39,9 +38,9 @@ buildPythonPackage rec {
 
   enableParallelBuilding = true;
 
+  inherit stdenv;
+
   build-system = [
-    meson-python
-    pkg-config
     qlat_utils
   ];
 

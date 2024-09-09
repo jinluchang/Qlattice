@@ -15,28 +15,32 @@ let
     pkgs = final;
   in rec {
     is-pypi-src = true;
+    qlat-cudaSupport = false;
     qlat-eigen = pkgs.grid-lehner;
-    grid-lehner-c-lime = pkgs.qio;
     qlat-stdenv = pkgs.stdenv;
-    mpi = prev.mpi.override { cudaSupport = true; };
+    mpi = prev.mpi.override { cudaSupport = pkgs.qlat-cudaSupport; };
+    grid-lehner-c-lime = pkgs.qio;
     call-pkg = pkgs.callPackage;
-    py-call-pkg = (pkgs.python3Packages.override { stdenv = pkgs.qlat-stdenv; });
+    py-call-pkg = pkgs.python3Packages.callPackage;
     #
     cuba = call-pkg ./cuba.nix { stdenv = pkgs.qlat-stdenv; };
-    qlat_utils = py-call-pkg ./qlat_utils.nix { eigen = pkgs.qlat-eigen; };
-    qlat = py-call-pkg ./qlat.nix {};
-    qlat_grid = py-call-pkg ./qlat_grid.nix {};
-    qlat_cps = py-call-pkg ./qlat_cps.nix {};
+    qlat_utils = py-call-pkg ./qlat_utils.nix { stdenv = pkgs.qlat-stdenv; eigen = pkgs.qlat-eigen; };
+    qlat = py-call-pkg ./qlat.nix { stdenv = pkgs.qlat-stdenv; };
+    qlat_grid = py-call-pkg ./qlat_grid.nix { stdenv = pkgs.qlat-stdenv; };
+    qlat_cps = py-call-pkg ./qlat_cps.nix { stdenv = pkgs.qlat-stdenv; };
     c-lime = call-pkg ./c-lime.nix { stdenv = pkgs.qlat-stdenv; };
     qmp = call-pkg ./qmp.nix { stdenv = pkgs.qlat-stdenv; };
     qio = call-pkg ./qio.nix { stdenv = pkgs.qlat-stdenv; };
     cps = call-pkg ./cps.nix { stdenv = pkgs.qlat-stdenv; };
     grid-lehner = call-pkg ./grid-lehner.nix { stdenv = pkgs.qlat-stdenv; c-lime = pkgs.grid-lehner-c-lime; };
-    gpt-lehner = py-call-pkg ./gpt-lehner.nix {};
+    gpt-lehner = py-call-pkg ./gpt-lehner.nix { stdenv = pkgs.qlat-stdenv; };
     #
     qlat-std = pkgs.buildEnv {
       name = "qlat-std";
       paths = with pkgs ; [
+        git
+        pkg-config
+        mpi
         cuba
         (pkgs.python3.withPackages (ps: with ps; [
           qlat_utils
@@ -49,11 +53,14 @@ let
     qlat-full = pkgs.buildEnv {
       name = "qlat-full";
       paths = with pkgs ; [
+        git
+        pkg-config
+        mpi
         grid-lehner
         cps
-        cuba
         qmp
         qio
+        cuba
         (pkgs.python3.withPackages (ps: with ps; [
           qlat_utils
           qlat
@@ -78,17 +85,23 @@ let
     qlat-eigen = pkgs.eigen;
   };
 
+  overlay-cuda = final: prev: let
+    pkgs = final;
+  in rec {
+    qlat-cudaSupport = true;
+  };
+
   overlay-clang = final: prev: let
     pkgs = final;
   in rec {
-    qlat-stdenv = prev.clangStdenv;
+    qlat-stdenv = pkgs.clangStdenv;
   };
 
   mk-qlat-full = overlays: let
     pkgs = nixpkgs {
       config = {
         allowUnfree = true;
-        cudaSupport = false;
+        # cudaSupport = true;
       };
       overlays = [
         overlay
@@ -100,7 +113,7 @@ let
     pkgs = nixpkgs {
       config = {
         allowUnfree = true;
-        cudaSupport = false;
+        # cudaSupport = true;
       };
       overlays = [
         overlay
@@ -111,10 +124,13 @@ let
 
   qlat-pkgs = {
     qlat-full = mk-qlat-full [];
+    qlat-full-cuda = mk-qlat-full [ overlay-cuda ];
     qlat-full-local = mk-qlat-full [ overlay-local ];
+    qlat-full-cuda-local = mk-qlat-full [ overlay-cuda overlay-local ];
     qlat-std = mk-qlat-std [];
+    qlat-std-cuda = mk-qlat-std [ overlay-cuda ];
     qlat-std-local = mk-qlat-std [ overlay-local ];
-    qlat-std-clang-local = mk-qlat-std [ overlay-local overlay-clang ];
+    qlat-std-cuda-local = mk-qlat-std [ overlay-cuda overlay-local ];
   };
 
 in qlat-pkgs

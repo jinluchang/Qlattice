@@ -1,5 +1,5 @@
-# hello.nix
 { fetchFromGitHub
+, stdenv
 , python
 , buildPythonPackage
 , mpi
@@ -27,6 +27,8 @@ buildPythonPackage rec {
   };
 
   enableParallelBuilding = true;
+
+  inherit stdenv;
 
   build-system = [
     pkg-config

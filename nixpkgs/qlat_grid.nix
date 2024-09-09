@@ -1,7 +1,6 @@
 { fetchPypi
+, stdenv
 , buildPythonPackage
-, meson-python
-, pkg-config
 , qlat
 , grid-lehner
 , git
@@ -30,9 +29,9 @@ buildPythonPackage rec {
 
   enableParallelBuilding = true;
 
+  inherit stdenv;
+
   build-system = [
-    meson-python
-    pkg-config
     qlat
   ];
 
