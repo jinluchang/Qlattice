@@ -11,7 +11,7 @@
 
 let
   local-pkgs = import ./default.nix;
-  qlat-pkgs = local-pkgs."qlat-pkgs";
+  qlat-pkgs = local-pkgs."qlat-pkgs-local";
   env = pkgs.mkShell {
     name = "qlat-build-sh";
     packages = qlat-pkgs;
