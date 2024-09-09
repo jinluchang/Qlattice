@@ -18,6 +18,13 @@ let
       local-pkgs.qlat-full-cuda-local
     ];
     inputsFrom = with pkgs; [
+      fftw
+      fftwFloat
+      hdf5-cpp
+      gsl
+      cuba
+      zlib
+      local-pkgs.qlat-eigen
       local-pkgs.qlat-full-cuda-local
     ];
   };

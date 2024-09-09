@@ -14,6 +14,7 @@ let
   overlay = final: prev: let
     pkgs = final;
   in rec {
+    #
     is-pypi-src = true;
     qlat-cudaSupport = false;
     qlat-eigen = pkgs.grid-lehner;
@@ -35,56 +36,19 @@ let
     grid-lehner = call-pkg ./grid-lehner.nix { stdenv = pkgs.qlat-stdenv; c-lime = pkgs.grid-lehner-c-lime; };
     gpt-lehner = py-call-pkg ./gpt-lehner.nix { stdenv = pkgs.qlat-stdenv; };
     #
-    qlat-std = pkgs.buildEnv {
-      name = "qlat-std";
-      paths = with pkgs ; [
-        git
-        pkg-config
-        mpi
-        fftw
-        fftwFloat
-        gsl
-        cuba
-        zlib
-        qlat-eigen
-        (pkgs.python3.withPackages (ps: with ps; [
-          qlat_utils
-          qlat
-        ]))
-      ];
-      extraOutputsToInstall = [ "man" "doc" "info" "dev" "static" ];
-    };
+    qlat-std = pkgs.python3.withPackages (ps: with ps; [
+      qlat_utils
+      qlat
+    ]);
     #
-    qlat-full = pkgs.buildEnv {
-      name = "qlat-full";
-      paths = with pkgs ; [
-        git
-        pkg-config
-        mpi
-        grid-lehner-c-lime
-        zlib
-        fftw
-        fftwFloat
-        gsl
-        openssl
-        hdf5
-        gmp
-        mpfr
-        grid-lehner
-        cps
-        qmp
-        qio
-        cuba
-        (pkgs.python3.withPackages (ps: with ps; [
-          qlat_utils
-          qlat
-          qlat_cps
-          qlat_grid
-          gpt-lehner
-        ]))
-      ];
-      extraOutputsToInstall = [ "man" "doc" "info" "dev" "static" ];
-    };
+    qlat-full = pkgs.python3.withPackages (ps: with ps; [
+      qlat_utils
+      qlat
+      qlat_cps
+      qlat_grid
+      gpt-lehner
+    ]);
+    #
   };
 
   overlay-local = final: prev: let

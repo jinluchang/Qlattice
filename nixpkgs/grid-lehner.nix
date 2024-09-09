@@ -7,7 +7,7 @@
 , zlib
 , openssl
 , gsl
-, hdf5
+, hdf5-cpp
 , gmp
 , mpfr
 , fftw
@@ -47,7 +47,7 @@ stdenv.mkDerivation rec {
     fftwFloat
     gsl
     openssl
-    hdf5
+    hdf5-cpp
     gmp
     mpfr
   ]
@@ -84,10 +84,10 @@ stdenv.mkDerivation rec {
     "--enable-gparity=no"
     "--with-gmp=${gmp}"
     "--with-mpfr=${mpfr}"
-    "--with-fftw=${fftw}"
     "--with-lime=${c-lime}"
     "--with-openssl=${openssl}"
-    "--with-hdf5=${hdf5}"
+    "--enable-fftw"
+    "--enable-hdf5"
   ];
 
 }
