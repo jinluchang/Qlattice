@@ -102,7 +102,7 @@ namespace qlat{
 
 enum QBOOL{
   QFALSE,
-  QTRUE 
+  QTRUE
 };
 
 enum QMEM{
@@ -372,7 +372,7 @@ void zero_Ty(Ty* a, size_t size,int GPU=0, QBOOL dummy=QTRUE)
   #pragma omp parallel for
   for(unsigned int isp=0;isp<Nv;isp++)
   {
-    const int step = (isp+1)*dN <= size ? dN : (size - isp*dN); 
+    const int step = (isp+1)*dN <= size ? dN : (size - isp*dN);
     if(step > 0 and isp * dN < size){
       Ty* tmp = &a[isp * dN + 0];
       memset((void*) tmp, 0, sizeof(Ty) * step);

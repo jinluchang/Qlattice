@@ -16,7 +16,7 @@
 #include "utils_check_fun.h"
 #include "utils_field_operations.h"
 #include "utils_field_expand.h"
- 
+
 namespace qlat{
 
 ///////////psrc order, bfac, c, d0, t,z,y,x
@@ -232,7 +232,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
     //  ////const Coordinate xl = geo_ext.coordinate_from_index(i);///this function is wrong!
     //  if(xl[3] == 0){
     //    xlE[xl1[2]] += 1;
-    //    //print0("rank %3d, x y z t, %3d %3d %3d %3d, ext %3d %3d %3d %3d , index %ld ext %ld\n", qlat::get_id_node(), 
+    //    //print0("rank %3d, x y z t, %3d %3d %3d %3d, ext %3d %3d %3d %3d , index %ld ext %ld\n", qlat::get_id_node(),
     //    //  xl[0], xl[1], xl[2], xl[3],
     //    //  xl1[0], xl1[1], xl1[2], xl1[3],
     //    //  index, index_ext
@@ -384,7 +384,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
       //  //}
       //}
       Qassert(not (index == -1 and need_pos[i] > 0));
-      if(index == -1){continue ;} ////corners 
+      if(index == -1){continue ;} ////corners
       //#if GET_MAPS_DEBUG==1
       //////print0("index %ld %ld \n", index, i);
       //Qassert(index != -1);
@@ -504,7 +504,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   std::vector<std::vector<Long > > copy_extra_pos;////send inner boundaries copy
   Long count_sum = 0;
   for(Long i=0;i<Nvol_ext;i++)
-  { 
+  {
     if(copy_extra[i].size() > 1){
       copy_extraL.push_back(copy_extra[i][0]);
       std::vector<Long > pos;
@@ -603,7 +603,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   pos_typeA[1] = pos_recv;
 
   ////Long count_end = max_pos;
-  //for(Long i=pos_send;i<pos_recv;i++){ 
+  //for(Long i=pos_send;i<pos_recv;i++){
   //  if(local_map_typeA1[i] != -1){
   //  Qassert(local_map_typeA0[local_map_typeA1[i]] < pos_recv );}
   //}
@@ -617,7 +617,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   //    print0("layout wrong %ld !\n", i);
   //  }
   //}
-  //print0("send_pos %ld %ld recv_pos %ld %ld, final %ld %ld %ld, vol %ld \n", 
+  //print0("send_pos %ld %ld recv_pos %ld %ld, final %ld %ld %ld, vol %ld \n",
   //  pos_send, pos_recv - pos_send, pos_recv, count_end - pos_recv, count0, count, count_end, Nvol_ext);
   ////Qassert(false);
 
@@ -862,14 +862,14 @@ struct smear_fun{
     //for(Long j=0;j<mapv[0].size();j++){
     //  print0("%8ld %8ld %8ld \n", mapv_copy[0][j], mapv_copy[1][j], mapv_copy[2][j]);
     //}
- 
+
     ////how to check continus
-    //Long maxF = *max_element(std::begin(factorL), std::end(factorL)); 
+    //Long maxF = *max_element(std::begin(factorL), std::end(factorL));
     //int C0 = 1;
     //for(int fi=maxF;fi>0;fi--){
     //  int wrong = 0;
     //  for(unsigned int f=0;f<factorL.size();f++){
-    //    if(factorL[f] % fi != 0){wrong = 1;} 
+    //    if(factorL[f] % fi != 0){wrong = 1;}
     //  }
     //  if(wrong == 0){C0 = fi;break;}
     //}
@@ -1036,7 +1036,7 @@ struct smear_fun{
 
       ///map_bufD[(dir+4)*Nvol + index] = ((xl[3]*Nn[2]+xl[2])*Nn[1] + xl[1])*Nn[0] + xl[0];
       //map_bufD[index*dirL*2 + (dir+dirL)] = geo_ext.offset_from_coordinate(xl1, 1);
-      const Long pos = ((xl[3]*Nn[2]+xl[2])*Nn[1] + xl[1])*Nn[0] + xl[0]; 
+      const Long pos = ((xl[3]*Nn[2]+xl[2])*Nn[1] + xl[1])*Nn[0] + xl[0];
       //map_bufD[index*dirL*2 + (dir+dirL)] = pos;
       map_bufD_typeA[index*dirL*2 + (dir+dirL)] = pos;
     }
@@ -1580,7 +1580,7 @@ void smear_propagator_box(T* src, const int Bsize, smear_fun<T >& smf){
   const int GPU = 1;
   qlat::vector_gpu<T >& gauge_buf = get_vector_gpu_plan<T >(0, smf.gauge_buf_name, GPU);
 
-  //qlat::vector_gpu<T > gfE; 
+  //qlat::vector_gpu<T > gfE;
   //extend_links_to_vecs(gfE, gf);
   ////fft_desc_basic fd(geo);
   shift_vec svec(smf.fd_new, true);
@@ -1631,7 +1631,7 @@ void smear_propagator_box(T* src, const int Bsize, smear_fun<T >& smf){
 
   T* data = vprop.p;
   qacc_for(index, Nvol, {
-    for(int c=0;c<nsites;c++){src[index*nsites + c] = data[index*nsites + c] * (1.0/6.0);} 
+    for(int c=0;c<nsites;c++){src[index*nsites + c] = data[index*nsites + c] * (1.0/6.0);}
   });
 
   smf.clear_mem();
@@ -1730,8 +1730,8 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
       //QLAT_ALIGN(QLAT_ALIGNED_BYTES) T lbuf[3*3];
       //const T* lp = &lbuf[0];
 
-      for(int i=0;i<nsites;i++){ 
-        buf[i] = 0; 
+      for(int i=0;i<nsites;i++){
+        buf[i] = 0;
       }
       for (int dir = -dir_limit; dir < dir_limit; ++dir) {
         ////const Long index_dir = smf.local_map_typeA0[Pdir1[index*dir_limit*2 + (dir + dir_limit)]];
@@ -1943,7 +1943,7 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
     int nsrc = c0*d0;
     const Long vGb = Lat *nsrc;
     const int n_avg = smear_in_time_dir ? 8 : 6;
-    int Fcount = 3*(3*6 + 2*2); 
+    int Fcount = 3*(3*6 + 2*2);
     if(step >= 0){
     Tfloat = step*n_avg*vGb*Fcount;
     }else{
@@ -2049,9 +2049,9 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
 template <typename Td>
 double source_radius(Propagator4dT<Td >& prop, const int tsrc = 0)
 {
-  double radius = 0; 
-  double rho = 0; 
-  double rho_x2 = 0; 
+  double radius = 0;
+  double rho = 0;
+  double rho_x2 = 0;
   const qlat::Geometry &geo = prop.geo();
   const Long Nvol = geo.local_volume();
   std::vector<int > nv, Nv, mv;
@@ -2062,27 +2062,27 @@ double source_radius(Propagator4dT<Td >& prop, const int tsrc = 0)
   //print0("tem_x---------%3d\n",tem_x);
   for(Long isp = 0; isp < Nvol; isp ++)
   {
-    double rx2 = 0; 
+    double rx2 = 0;
     Coordinate xl   = geo.coordinate_from_index(isp);
     Coordinate p    = geo.coordinate_g_from_l(xl);
     if(p[3] == tsrc)
-    {    
+    {
       const qlat::WilsonMatrixT<Td >& p1 =  prop.get_elem_offset(isp);
 
-      double x = 0.0; 
-      double y = 0.0; 
-      double z = 0.0; 
+      double x = 0.0;
+      double y = 0.0;
+      double z = 0.0;
       if(p[0] >= int(nv[0]/2)){x = -nv[0] + p[0];}else{x = p[0];}
       if(p[1] >= int(nv[1]/2)){y = -nv[1] + p[1];}else{y = p[1];}
       if(p[2] >= int(nv[2]/2)){z = -nv[2] + p[2];}else{z = p[2];}
 
-      rx2 = x*x + y*y + z*z; 
+      rx2 = x*x + y*y + z*z;
       qlat::ComplexT<Td > tem = 0.0;
       for(int dc0 =0;dc0<12;dc0++)
       for(int dc1 =0;dc1<12;dc1++)
-      {    
+      {
         tem += qlat::qnorm( p1(dc0, dc1) );
-      }    
+      }
       double tem_rho = tem.real();
       rho_x2 += rx2*(tem_rho);
       rho += (tem_rho);

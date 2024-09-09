@@ -38,7 +38,7 @@ void meson_vectorE(std::vector<Propagator4dT<Td >* > &pV1, std::vector<Propagato
   Propagator4dT<Td >& pL1 = *pV1[mi];
   Propagator4dT<Td >& pL2 = *pV2[mi];
 
-  qacc_for(isp, Long(pV1[0]->geo().local_volume()),{ 
+  qacc_for(isp, Long(pV1[0]->geo().local_volume()),{
     int ti = isp/Nxyz;
     int xi = isp%Nxyz;
       qlat::ComplexT<Td > pres;pres = 0.0;
@@ -53,11 +53,11 @@ void meson_vectorE(std::vector<Propagator4dT<Td >* > &pV1, std::vector<Propagato
       for(int c2=0;c2<3;c2++)
       {
         if(invmode == 1){
-          pres += g_tem * 
+          pres += g_tem *
             p1(ga1.ind[d1]*3+c1,d2*3+c2) * qlat::qconj(p2(d1*3+c1,ga2.ind[d2]*3+c2)) ;
         }
         if(invmode == 0){
-          pres += g_tem * 
+          pres += g_tem *
             p1(ga1.ind[d1]*3+c1,d2*3+c2) *            (p2(d1*3+c1,ga2.ind[d2]*3+c2)) ;
         }
 
@@ -278,7 +278,7 @@ void meson_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, ga_
 
 #ifdef QLAT_USE_ACC
 template <typename Ty, int invmode, int bfac, int Blocks>
-__global__ void meson_vectorEV_global(Ty** p1, Ty** p2, Ty* resP, 
+__global__ void meson_vectorEV_global(Ty** p1, Ty** p2, Ty* resP,
   char** gPP, unsigned char** oPP, const int* ivP,
   const int nmass, const int NTt, const Long Nxyz, const int Ngv){
   const unsigned long gi =  blockIdx.x;
@@ -394,7 +394,7 @@ __global__ void meson_vectorEV_global(Ty** p1, Ty** p2, Ty* resP,
 #endif
 
 template <typename Ty, int invmode, int bfac>
-void meson_vectorEV_kernel(Ty** p1, Ty** p2, Ty* resP, 
+void meson_vectorEV_kernel(Ty** p1, Ty** p2, Ty* resP,
   char** gPP, unsigned char** oPP, const int* ivP,
   const int nmass, const int NTt, const Long Nxyz, const int Ngv){
   Long Ntotal  = nmass*NTt*Nxyz;
@@ -405,7 +405,7 @@ void meson_vectorEV_kernel(Ty** p1, Ty** p2, Ty* resP,
   const int Blocks = nt*bfac;
   dim3 dimBlock(    nt, bfac, 1);
   dim3 dimGrid(  Nbfac,  1, 1);
-  meson_vectorEV_global<Ty, invmode, bfac, Blocks><<<dimGrid, dimBlock>>>(p1, 
+  meson_vectorEV_global<Ty, invmode, bfac, Blocks><<<dimGrid, dimBlock>>>(p1,
         p2, resP, gPP, oPP, ivP, nmass, NTt, Nxyz, Ngv);
   qacc_barrier(dummy);
   #else
@@ -461,7 +461,7 @@ void meson_vectorEV_kernel(Ty** p1, Ty** p2, Ty* resP,
 }
 
 template <typename Ty>
-void meson_vectorEV(Ty** p1, Ty** p2, Ty* resP,  int nmass, 
+void meson_vectorEV(Ty** p1, Ty** p2, Ty* resP,  int nmass,
     std::vector<ga_M > &ga1V, std::vector<ga_M > &ga2V,
     qlat::fft_desc_basic &fd, int clear=1, int invmode=1){
   TIMER("meson_vectorEV");
@@ -712,7 +712,7 @@ void meson_corrE(Propagator4dT<Td > &p1, Propagator4dT<Td > &p2, const int ga, c
   }
   else{
     //char key_T[1000], dimN[1000];
-    //sprintf(key_T, "%d  %d  %d", 1, nt, 2); 
+    //sprintf(key_T, "%d  %d  %d", 1, nt, 2);
     //sprintf(dimN , "nsrc nt complex");
     std::string ktem = ssprintf("%d  %d  %d", 1, nt, 2);
     std::string dtem = ssprintf("nsrc nt complex");
@@ -833,7 +833,7 @@ void print_pion(Propagator4dT<Td > &p1, Propagator4dT<Td >&p2, const std::string
 //  load_gwu_prop(prop_na, propVa);
 //  if(prop_a == prop_b){propVb = propVa;}
 //  else{load_gwu_prop(prop_nb, propVb);}
-//  
+//
 //  ////std::vector<qlat::vector_acc<Complexq > > propa,propb;
 //  std::vector<qprop > propa, propb;
 //  propa.resize(1);propa[0].init(geo);

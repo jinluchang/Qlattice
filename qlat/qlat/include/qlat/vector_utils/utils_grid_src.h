@@ -481,7 +481,7 @@ void get_noises_Coordinate(const qlat::FieldM<Ty, 1>& noise, PointsSelection& ps
 }
 
 template <class Ty, int civ>
-void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp, 
+void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp,
   const std::vector<double >& phases, const FieldSelection& fsel, const int type_src = 0, int seed = 0, const int offT = -1, const Coordinate& offG = Coordinate(1,1,1,1))
 {
   TIMERA("get_mix_color_src");
@@ -530,7 +530,7 @@ void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp,
     {
       rsL[is] = qlat::RngState(seed + qlat::get_id_node()*omp_get_max_threads() + is);
     }
-    
+
     qthread_for(isp, geo.local_volume(), {
       Coordinate xl = geo.coordinate_from_index(isp);
       Coordinate xg = geo.coordinate_g_from_l(xl);
@@ -570,7 +570,7 @@ void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp,
     int src_eo = int(qlat::u_rand_gen(rs) * 2);
     if(type_src == 13){src_eo = 1;}
     if(type_src == 14){src_eo = 0;}
-    
+
     qthread_for(isp, geo.local_volume(), {
       Coordinate xl = geo.coordinate_from_index(isp);
       Coordinate xg = geo.coordinate_g_from_l(xl);
@@ -592,7 +592,7 @@ void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp,
     {
       rsL[is] = qlat::RngState(seed + qlat::get_id_node()*omp_get_max_threads() + is);
     }
-    
+
     qthread_for(isp, geo.local_volume(), {
       const Long rank = fsel.f_local_idx.get_elem_offset(isp);
       if(rank >= 0){
@@ -606,7 +606,7 @@ void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp,
           }
         }
       }
-    }); 
+    });
   }
 
   if(type_src == 3) ////grid src
@@ -639,7 +639,7 @@ void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp,
           srcP[isp*civ + c] = Ty(std::cos(r), std::sin(r));
         }
       }
-    }); 
+    });
   }
 
 
@@ -703,7 +703,7 @@ void vec_apply_cut(qlat::vector_gpu<Ty >& res, const Coordinate& sp, const doubl
 }
 
 template <class Tr, class Ty, int civ>
-void get_point_color_src(std::vector<qlat::FieldM<Tr , civ> >& srcL, 
+void get_point_color_src(std::vector<qlat::FieldM<Tr , civ> >& srcL,
   const PointsSelection& grids, const std::vector<Ty >& phases)
 {
   TIMER("get_point_color_src");
@@ -805,7 +805,7 @@ void make_grid_src(Propagator4dT<Td >& src, const Coordinate& sp, const Coordina
         srcP[(isp*12+dc)*12 + dc] = qlat::ComplexT<Td >(std::cos(r), std::sin(r));
       }
     }
-  }); 
+  });
 
 }
 
@@ -882,7 +882,7 @@ void make_volume_src(Propagator4dT<Td >& src, int seed = 0, int mix_color = 0, i
 
       }
     }
-  }); 
+  });
 
 }
 

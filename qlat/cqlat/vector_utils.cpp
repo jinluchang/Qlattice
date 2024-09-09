@@ -273,7 +273,7 @@ EXPORT(write_output, {
 //  ///#if(a != NULL){meson_corr_write(prop_n, src_n, out_n, geo, a, b, c, d);}
 //  ///#else{meson_corr_write(prop_n, src_n, out_n, geo);}
 //  meson_corr_write(prop_na, prop_nb, src_n, out_n, geo, a,b,c,d);
-//  
+//
 //
 //  Py_RETURN_NONE;
 //});
@@ -293,7 +293,7 @@ EXPORT(write_output, {
 //  std::string src_n; qlat::Coordinate off_L;
 //  py_convert(src_n, p_0);
 //  pos = get_src_pos(src_n, off_L, geo);
-// 
+//
 //  return py_convert(pos);
 //});
 

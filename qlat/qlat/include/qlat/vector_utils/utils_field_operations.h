@@ -114,7 +114,7 @@ double fields_quick_checksum(qlat::FieldM<Ty, civ>& fs, const Long block = 128)
 }
 
 template <class T1, class T2, class T3, class Ty, int civ >
-void fields_operations(qlat::FieldM<T1, civ>& pr, qlat::FieldM<T2, civ>& p0, qlat::FieldM<T3, civ>& p1, 
+void fields_operations(qlat::FieldM<T1, civ>& pr, qlat::FieldM<T2, civ>& p0, qlat::FieldM<T3, civ>& p1,
   const Ty f0 = Ty(1.0, 0.0), const Ty f1 = Ty(1.0, 0.0), const Ty f2 = Ty(1.0, 0.0))
 {
   TIMER("fields_operations");

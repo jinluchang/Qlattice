@@ -129,7 +129,7 @@ void set_marks_field_dir(CommMarks& marks, const Geometry& geo,
   #pragma omp parallel for
   for (Long index = 0; index < geo_full.local_volume(); ++index) {
     const Coordinate xl = geo_full.coordinate_from_index(index);
-    for (int dir = -4; dir < 4; ++dir) 
+    for (int dir = -4; dir < 4; ++dir)
     {
       if((set_tag >= -3 - 1 and set_tag < 4) and dir != set_tag){continue ;}
       if(set_tag == 500 and dir >= 0){continue ;}//only do left
@@ -215,7 +215,7 @@ void set_marks_field_dir(CommMarks& marks, const Geometry& geo,
 //  ////setup reciev
 //  const int mpi_tag = 10;
 //  for (size_t i = 0; i < plan.recv_msg_infos.size(); ++i) {
-//    const CommMsgInfo& cmi = plan.recv_msg_infos[i]; 
+//    const CommMsgInfo& cmi = plan.recv_msg_infos[i];
 //    mpi_irecv(&rP[cmi.buffer_idx], cmi.size * sizeof(M)/sizeof(double), MPI_DOUBLE,
 //              cmi.id_node, mpi_tag, get_comm(), reqs_recv);
 //  }
@@ -246,7 +246,7 @@ void set_marks_field_dir(CommMarks& marks, const Geometry& geo,
 //    sP[ri] = f.get_elem_offset(si);
 //  });
 //
-//  { 
+//  {
 //    //TIMER("refresh_expanded-comm-init");
 //    for (size_t i = 0; i < plan.send_msg_infos.size(); ++i) {
 //      const CommMsgInfo& cmi = plan.send_msg_infos[i];

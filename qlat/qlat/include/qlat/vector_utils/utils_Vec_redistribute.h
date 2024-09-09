@@ -224,8 +224,8 @@ inline void Vec_redistribute::set_mem(int b0_or,int civa_or)
     size_t i =  iv%(LoopN);
     size_t Aoff = (bi*Nts + ti)*svol;
     size_t Boff = (bi*Nts + ti)*Nv[0]*Nv[1]*Nv[2];
-    map_order[iv]  = (Aoff +      i        *Nv[orderN[2]])/Nv[orderN[2]]; 
-    map_Dorder[iv] = (Boff + mapcur_Vtoi[i]*Nv[orderN[2]])/Nv[orderN[2]]; 
+    map_order[iv]  = (Aoff +      i        *Nv[orderN[2]])/Nv[orderN[2]];
+    map_Dorder[iv] = (Boff + mapcur_Vtoi[i]*Nv[orderN[2]])/Nv[orderN[2]];
   });
 
 
@@ -343,7 +343,7 @@ void Vec_redistribute::call_MPI(int flag)
 
     for(int n = 0; n < Nmpi/mt; n++){
       if(recvM[n]!=0){MPI_Recv( &res[currrpls[n]], recvM[n], curr, n, mpi_tag + n, vec_comm, MPI_STATUS_IGNORE);}
-    }    
+    }
 
     MPI_Waitall(c1, send_reqs.data(), MPI_STATUS_IGNORE);
   }
@@ -485,7 +485,7 @@ struct Rotate_vecs{
     Bsize = Bsize0;
     free_buf(buf, GPU);free_buf(src, GPU);buf=NULL;src=NULL;
     if(GPU){gpuMalloc(buf, Bsize/sizeof(Ty), Ty, 1);gpuMalloc(src, Bsize/sizeof(Ty), Ty, 1);}
-    else{ 
+    else{
       src = aligned_alloc_no_acc(Bsize);
       if(mode != -1)buf = aligned_alloc_no_acc(Bsize);
     }}

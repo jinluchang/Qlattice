@@ -220,7 +220,7 @@ class DistArray:
         nvec = np.ascontiguousarray(nvec)
         d_ret = DistArray(comm=comm)
         d_ret.n = vec_len
-        d_ret.x = nvec 
+        d_ret.x = nvec
         return d_ret
 
     def transpose(self, axes=None):

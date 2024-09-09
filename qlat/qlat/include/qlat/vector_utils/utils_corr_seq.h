@@ -167,7 +167,7 @@ struct sec_list{
     TIMERA("bcast_sink_vecs");
     Qassert(nt != 0);
     fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
-  
+
     ////spatial sum only on the host ranks
     for(size_t i=0;i<data.size();i++){
       Qassert(host_ti[i] < fd.nt);
@@ -177,9 +177,9 @@ struct sec_list{
       }
     }
     /////MPI_Barrier(get_comm());
-  
+
     ////bcast to other mt nodes from the host ranks
-    ////assuming host_ti is ordered to avoid sector conflicts 
+    ////assuming host_ti is ordered to avoid sector conflicts
     for(size_t i=0;i<data.size();i++){
       int si   = map_sec[host_ti[i]];   ////current sectors of the data
       int tmi0 = host_ti[i]/fd.Nt;
@@ -197,7 +197,7 @@ struct sec_list{
 
 template <typename Ty>
 void seq_high_single(qpropT& src, qpropT& sinkH, qpropT& noiseH, const std::vector<int >& sinkt, qpropT& res,
-  std::vector<Coordinate >& sink_mom, 
+  std::vector<Coordinate >& sink_mom,
   sec_list& sec, int clear=1)
 {
   const Geometry& geo = src.geo();
@@ -315,7 +315,7 @@ void seq_high_single(qpropT& src, qpropT& sinkH, qpropT& noiseH, const std::vect
 //void baryon_vectorE(std::vector<qpropT >& src, std::vector<qpropT >& sinkH,
 //  std::vector<qpropT >& noiseH, std::vector<int >& sinkT,
 //  std::vector<int > sum_list, const int sum_max,
-//  std::vector<Coordinate >& sink_mom, 
+//  std::vector<Coordinate >& sink_mom,
 //  std::vector<qpropT >& res, std::vector<qpropT >& buf,
 //  ///std::vector<qpropT >& resP, ga_M &A, ga_M &B, qlat::vector_acc<Ty > &G, qlat::vector_acc<int > &mL, int insertion,int clear=1
 //  const int tini, sec_list& sec, int clear=1)

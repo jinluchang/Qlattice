@@ -73,7 +73,7 @@ struct vector_cs{
   std::vector<qlat::vector_gpu<Ty > > buf_g;
   qlat::vector_acc<Ty* > pL; //// pointers to data
   qlat::vector_gpu<Ty > alpha_buf;
-  qlat::vector_acc<Ty* > pointersL; ////grouped with ni -> btotal 
+  qlat::vector_acc<Ty* > pointersL; ////grouped with ni -> btotal
   //qlat::vector_gpu<Ty > buf_V;
 
   qlat::vector_gpu<Ty > alphaG;
@@ -246,8 +246,8 @@ struct vector_cs{
   {
     ////print0("===%5d %5d \n", int(ni), int(nvec));
     Qassert(ni < nvec);
-    //Ty** res = &pointersL[ni*btotal + 0]; 
-    //return res; 
+    //Ty** res = &pointersL[ni*btotal + 0];
+    //return res;
     return &pointersL[ni*btotal + 0];
   }
 
@@ -375,7 +375,7 @@ struct vector_cs{
     double memvec = double(b_size) * sizeof(Ty) / (1024.0 * 1024.0 * 1024.0);
     double total  = nvec * bfac * memvec;
     //#if PRINT_TIMER>5
-    print0("nvec %5ld, nsum %ld, bfac %ld, b_size %ld, bfac_group %ld, %.8e GB, GPU %+1d \n", 
+    print0("nvec %5ld, nsum %ld, bfac %ld, b_size %ld, bfac_group %ld, %.8e GB, GPU %+1d \n",
       nvec, nsum, bfac, b_size, bfac_group, nvec * bfac * memvec, int(GPU));
     //#endif
     return total;
@@ -424,7 +424,7 @@ struct vector_cs{
     if(same_locate){
       //qGPU_for2dNB(jd, b_size, id, btotal, GPU_set, {
       //  //Long id = isp / b_size;
-      //  //Long jd = isp % b_size; 
+      //  //Long jd = isp % b_size;
       //  const Long isp = id * b_size + jd;
       //  if(dir == 1){res[id][jd] = src[isp];}
       //  if(dir == 0){src[isp] = res[id][jd];}
@@ -436,7 +436,7 @@ struct vector_cs{
       const Long  Ndata = btotal * b_size;
       qGPU_forNB(isp, Ndata, GPU_set, {
         const Long id = isp / b_size;
-        const Long jd = isp % b_size; 
+        const Long jd = isp % b_size;
         if(dir == 1){res[id][jd] = src[isp];}
         if(dir == 0){src[isp] = res[id][jd];}
       });
@@ -458,9 +458,9 @@ struct vector_cs{
         if(dir == 0){roff = size_t(b_size);soff = nvec * size_t(b_size) ;}
         ////if(dir == 1)cpy_GPU(res[id], &src[id*b_size], b_size,     GPU, data_GPU, false);
         ////if(dir == 0)cpy_GPU(&src[id*b_size], res[id], b_size,     data_GPU, GPU, false);
-        if(dir == 1)cpy_GPU2D(res[id], &src[id*b_size], 
+        if(dir == 1)cpy_GPU2D(res[id], &src[id*b_size],
           size_t(b_size), size_t(bfac_group), roff, soff,  GPU_r, GPU_s, QFALSE);
-        if(dir == 0)cpy_GPU2D(&src[id*b_size],res[id],  
+        if(dir == 0)cpy_GPU2D(&src[id*b_size],res[id],
           size_t(b_size), size_t(bfac_group), roff, soff,  GPU_r, GPU_s, QFALSE);
       }
     }
@@ -514,7 +514,7 @@ struct vector_cs{
     QMEM GPU_r = this->GPU;
     QMEM GPU_s = src.GPU;
     size_t roff = 0;
-    size_t soff = 0; 
+    size_t soff = 0;
 
     if(dir == 1)
     {
@@ -546,7 +546,7 @@ struct vector_cs{
         //});
         qGPU_forNB(isp, Ndata, GPU_set, {
           Long id = isp / b_size;
-          Long jd = isp % b_size; 
+          Long jd = isp % b_size;
           ////const Long isp = id * b_size + jd;
           if(dir == 1)A[id][jd] = B[id][jd];
           if(dir == 0)B[id][jd] = A[id][jd];
@@ -559,9 +559,9 @@ struct vector_cs{
         for(int id=0;id<btotal/bfac_group;id++)
         {
           ////cpy_GPU(A[id], B[id], nsrc.size()*b_size,  GPU_r, GPU_s, false);
-          if(dir == 1)cpy_GPU2D(A[id*bfac_group], B[id*bfac_group], 
+          if(dir == 1)cpy_GPU2D(A[id*bfac_group], B[id*bfac_group],
             size_t(b_size), size_t(bfac_group), roff, soff,  GPU_r, GPU_s, QFALSE);
-          if(dir == 0)cpy_GPU2D(B[id*bfac_group], A[id*bfac_group], 
+          if(dir == 0)cpy_GPU2D(B[id*bfac_group], A[id*bfac_group],
             size_t(b_size), size_t(bfac_group), roff, soff,  GPU_r, GPU_s, QFALSE);
         }
         //for(int id=0;id<btotal;id++)
@@ -599,9 +599,9 @@ struct vector_cs{
         ////if(sizeof(Ty) != sizeof(Ta)){
         ////  print0("Check %d %d %d %d!\n", int(sizeof(Ty)), int(sizeof(Ta)), int(GPU_r), int(GPU_s));return ;
         ////}
-        if(dir == 1){cpy_GPU2D(A[id*bfac_group], B[id*bfac_group], 
+        if(dir == 1){cpy_GPU2D(A[id*bfac_group], B[id*bfac_group],
           size_t(nsrc.size()*b_size), size_t(bfac_group), roff, soff,  GPU_r, GPU_s, QFALSE);}
-        if(dir == 0){cpy_GPU2D(B[id*bfac_group], A[id*bfac_group], 
+        if(dir == 0){cpy_GPU2D(B[id*bfac_group], A[id*bfac_group],
           size_t(nsrc.size()*b_size), size_t(bfac_group), roff, soff,  GPU_r, GPU_s, QFALSE);}
       }
     }
@@ -702,20 +702,20 @@ struct vector_cs{
     //copy_from(src, nA, nB, dummy, continus, dir);
   }
 
-  ////===added, -1 for copy all vecs, 
+  ////===added, -1 for copy all vecs,
   template <class Ta >
   inline void copy_from(vector_cs<Ta >& src,int ir = -1, int is = -1, QBOOL dummy = QTRUE, int dir = 1)
   {
     if(src.nvec == 0 and ir == -1 and is == -1){return ;}
     if(dir == 1){
-      Qassert(src.initialized); 
+      Qassert(src.initialized);
       if(!initialized){
         if(ir == -1){resize(src.nvec, src);}
         if(ir != -1){Qassert(ir == 0);resize(1, src);}////default resize only to 1
       }
     }
     if(dir == 0){
-      Qassert(    initialized); 
+      Qassert(    initialized);
       if(!src.initialized)
       {
         if(is == -1){src.resize(nvec, *this);}
@@ -1027,7 +1027,7 @@ struct vector_cs{
 
   /////sum the flops of vec_multi, alpha ai --> continus in bi
   template<typename Ta>
-  inline void vec_multi(vector_cs<Ty >& b, Ta* alpha, bool Conj = true, 
+  inline void vec_multi(vector_cs<Ty >& b, Ta* alpha, bool Conj = true,
     int aini = 0, int aend = -1, int bini = 0, int bend = -1, bool do_sum = true)
   {
     TIMER_FLOPS("==vec_multi");
@@ -1041,7 +1041,7 @@ struct vector_cs{
     //print0("%d %d %d %d %d %d  \n", int(b.nsum), int(a.nsum) , int(b.b_size), int(a.b_size), int(b.bfac_group), int(a.bfac_group));
     //abort_r();}
     Qassert(b.nsum == a.nsum and b.b_size == a.b_size and b.bfac_group == a.bfac_group);
-  
+
     //int GPU_multi = 0;///CPU multiplication
     //if(a.GPU == QMSYNC or a.GPU == QMGPU){GPU_multi = 1;}////GPU multiplication
     int GPU_multi = check_GPU_multi(a.GPU, b.GPU);
@@ -1051,7 +1051,7 @@ struct vector_cs{
     Qassert(aend > aini and bend > bini and aend <= a.nvec and bend <= b.nvec);
     const Long nA   = aend - aini;
     const Long nB   = bend - bini;
-  
+
     const bool& GPU  = a.GPU;
     const Long& bfac = a.bfac;
     const int& b_size= a.b_size;
@@ -1072,14 +1072,14 @@ struct vector_cs{
     ////clean the results
     //zero_Ty(alpha_bufP, Nres, GPU);
     Ty* alpha_bufP = (Ty*) alpha_buf.data();
-  
+
     bool trans = false;///A(m, w) and B(n, w)
     {
     TIMERA("vec_multi Matrix");
     Long m =   nA;
     Long n =   nB;
     Long w = b_size;
-  
+
     qlat::vector_gpu<Ty*> apV = a.get_alpha_pointers(alpha_bufP, nA*nB);
     for(LInt jobi=0;jobi < jobA.size()/2; jobi++)
     {
@@ -1091,7 +1091,7 @@ struct vector_cs{
     }
     qacc_barrier(dummy);
     }
-  
+
     if(do_sum)
     {
     const Long Lalpha = nA * nB ;
@@ -1110,7 +1110,7 @@ struct vector_cs{
       alphaP[xi] += buf;
     });
     }
-  
+
     {
     TIMERA("vec_multi alpha Global sum");
     sum_all_size(alpha, Lalpha, GPU);
@@ -1126,7 +1126,7 @@ struct vector_cs{
   }
 
   template<typename Ta>
-  inline void vec_multi(vector_cs<Ty >& b, qlat::vector_gpu<Ta >& alpha, bool Conj = true, 
+  inline void vec_multi(vector_cs<Ty >& b, qlat::vector_gpu<Ta >& alpha, bool Conj = true,
     int aini = 0, int aend = -1, int bini = 0, int bend = -1)
   {
     vector_cs<Ty >& a = *this;
@@ -1158,11 +1158,11 @@ struct vector_cs{
     const Long nA   = aend - aini;
     const Long nB   = bend - bini;
     const Long bfac_group = a.bfac_group;
-  
+
     //int GPU_multi = 0;///CPU multiplication
     //if(a.GPU == QMSYNC or a.GPU == QMGPU){GPU_multi = 1;}////GPU multiplication
     int GPU_multi = check_GPU_multi(a.GPU, b.GPU);
-  
+
     bool trans = true;///A(m, w) and B(w, n)
     const Long m = nB;
     const Long n = b.b_size;
@@ -1433,7 +1433,7 @@ struct vector_cs{
     for(int ni=N0;ni<Nm;ni++){
       const Td* s  = &Q[ni * max_Q_dim + 0];
       Ty* r  = &Qb[Npass + (ni-N0) * Csize + 0];
-      //Ty tmp = 
+      //Ty tmp =
       cpy_GPU(r, s, Csize,  GPU_, GPU_Q, QFALSE);
     }
     qacc_barrier(dummy);

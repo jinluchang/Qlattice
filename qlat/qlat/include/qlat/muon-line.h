@@ -12,7 +12,7 @@
 #include <cassert>
 #include <string>
 
-// Eq. (9) of https://arxiv.org/pdf/2304.04423.pdf 
+// Eq. (9) of https://arxiv.org/pdf/2304.04423.pdf
 //
 // % \mathcal M_{i,\rho,\sigma,\lambda}(x,y,z)
 // % = muonLineSym(m * (x - z), m * (y - z))[16 * sigma + 4 * lambda + rho][i]

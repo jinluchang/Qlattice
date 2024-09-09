@@ -174,7 +174,7 @@ void print_src(qlat::FieldM<T, bfac> &noi)
     Coordinate xg0 = noi.geo().coordinate_g_from_l(xl0);
 
     for(int bi=0;bi<bfac;bi++){
-      qlat::ComplexD tem = noi.get_elems(index)[bi]; 
+      qlat::ComplexD tem = noi.get_elems(index)[bi];
       double sum = 0.0;
       sum += std::fabs(tem.real());
       sum += std::fabs(tem.imag());

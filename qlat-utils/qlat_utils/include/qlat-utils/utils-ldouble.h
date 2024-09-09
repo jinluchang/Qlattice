@@ -1,4 +1,4 @@
-/* Based on: Andrew Thall, Extended-Precision Floating-Point Numbers for GPU 
+/* Based on: Andrew Thall, Extended-Precision Floating-Point Numbers for GPU
 
    Computation. Retrieved from http://andrewthall.org/papers/df64_qf128.pdf
 
@@ -73,7 +73,7 @@ class API RealDD{
     x = 0;
     return *this;
   }
-  
+
   qacc RealDD& operator= (float& a)
   {
     y = a;
@@ -302,7 +302,7 @@ qacc RealDD RealDD::operator/= (RealDD b)
 
   c = a.y / b.y;     /* compute most significant quotient "digit" */
 
-  cc = fma (b.y, -c, a.y); 
+  cc = fma (b.y, -c, a.y);
 
   cc = fma (b.x, -c, cc);
 

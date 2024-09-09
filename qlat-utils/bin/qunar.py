@@ -44,7 +44,7 @@ while True:
     ln = f.readline().decode("utf-8")
     if ln == "":
         break
-    
+
     tags = collapse_whitespace(ln).split(" ")
     assert tags[0] == "QAR-FILE"
     sizes = [int(x) for x in tags[1:]]

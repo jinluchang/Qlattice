@@ -42,10 +42,10 @@ class QMAction:
 
     def dt(self):
         return c.get_dt_qm_action(self)
-    
+
     def V(self, x, t):
         return c.V_qm_action(self, x, t)
-    
+
     def dV(self, x, t):
         return c.dV_qm_action(self, x, t)
 
@@ -56,7 +56,7 @@ class QMAction:
     def hmc_m_hamilton_node(self, m):
         assert isinstance(m, FieldBase)
         return c.hmc_m_hamilton_node_qm_action(self, m)
-    
+
     def sum_sq(self, f):
         assert isinstance(f, FieldBase)
         return c.sum_sq_qm_action(self, f)
