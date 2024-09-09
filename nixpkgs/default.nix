@@ -85,16 +85,17 @@ let
     qlat-eigen = pkgs.eigen;
   };
 
-  overlay-cuda = final: prev: let
-    pkgs = final;
-  in rec {
-    qlat-cudaSupport = true;
-  };
-
   overlay-clang = final: prev: let
     pkgs = final;
   in rec {
     qlat-stdenv = pkgs.clangStdenv;
+    openmp = pkgs.llvmPackages.openmp;
+  };
+
+  overlay-cuda = final: prev: let
+    pkgs = final;
+  in rec {
+    qlat-cudaSupport = true;
   };
 
   mk-qlat-full = overlays: let
@@ -124,12 +125,16 @@ let
 
   qlat-pkgs = {
     qlat-full = mk-qlat-full [];
+    qlat-full-clang = mk-qlat-full [ overlay-clang ];
     qlat-full-cuda = mk-qlat-full [ overlay-cuda ];
     qlat-full-local = mk-qlat-full [ overlay-local ];
+    qlat-full-clang-local = mk-qlat-full [ overlay-clang overlay-local ];
     qlat-full-cuda-local = mk-qlat-full [ overlay-cuda overlay-local ];
     qlat-std = mk-qlat-std [];
+    qlat-std-clang = mk-qlat-std [ overlay-clang ];
     qlat-std-cuda = mk-qlat-std [ overlay-cuda ];
     qlat-std-local = mk-qlat-std [ overlay-local ];
+    qlat-std-clang-local = mk-qlat-std [ overlay-clang overlay-local ];
     qlat-std-cuda-local = mk-qlat-std [ overlay-cuda overlay-local ];
   };
 

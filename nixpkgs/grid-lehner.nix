@@ -1,5 +1,5 @@
-# hello.nix
 { stdenv
+, lib
 , fetchurl
 , fetchFromGitHub
 , mpi
@@ -15,6 +15,7 @@
 , git
 , autoconf
 , automake
+, openmp ? null
 }:
 
 stdenv.mkDerivation rec {
@@ -49,7 +50,8 @@ stdenv.mkDerivation rec {
     hdf5
     gmp
     mpfr
-  ];
+  ]
+  ++ lib.optional stdenv.cc.isClang openmp;
 
   preConfigure = let
     eigen-file-name = "eigen-3.3.7.tar.bz2";

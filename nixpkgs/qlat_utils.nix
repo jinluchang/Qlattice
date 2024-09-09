@@ -1,5 +1,6 @@
 { fetchPypi
 , stdenv
+, lib
 , buildPythonPackage
 , cython
 , meson-python
@@ -10,6 +11,7 @@
 , eigen
 , git
 , is-pypi-src ? true
+, openmp ? null
 }:
 
 buildPythonPackage rec {
@@ -50,7 +52,8 @@ buildPythonPackage rec {
   propagatedBuildInputs = [
     zlib
     eigen
-  ];
+  ]
+  ++ lib.optional stdenv.cc.isClang openmp;
 
   dependencies = [
     meson-python
