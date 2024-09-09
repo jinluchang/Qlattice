@@ -11,9 +11,14 @@
 
 let
   local-pkgs = import ./default.nix;
-in pkgs.mkShell {
-  name = "qlat-build-sh";
-  packages = with pkgs; [
-    local-pkgs.qlat-full-cuda-local
-  ];
-}
+  env = pkgs.mkShell {
+    name = "qlat-build-sh";
+    packages = with pkgs; [
+      pkg-config
+      local-pkgs.qlat-full-cuda-local
+    ];
+    inputsFrom = with pkgs; [
+      local-pkgs.qlat-full-cuda-local
+    ];
+  };
+in env

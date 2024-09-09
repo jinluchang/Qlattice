@@ -82,6 +82,12 @@ stdenv.mkDerivation rec {
     "--enable-alloc-align=4k"
     "--enable-comms=mpi-auto"
     "--enable-gparity=no"
+    "--with-gmp=${gmp}"
+    "--with-mpfr=${mpfr}"
+    "--with-fftw=${fftw}"
+    "--with-lime=${c-lime}"
+    "--with-openssl=${openssl}"
+    "--with-hdf5=${hdf5}"
   ];
 
 }
