@@ -41,7 +41,12 @@ let
         git
         pkg-config
         mpi
+        fftw
+        fftwFloat
+        gsl
         cuba
+        zlib
+        qlat-eigen
         (pkgs.python3.withPackages (ps: with ps; [
           qlat_utils
           qlat
@@ -56,6 +61,15 @@ let
         git
         pkg-config
         mpi
+        grid-lehner-c-lime
+        zlib
+        fftw
+        fftwFloat
+        gsl
+        openssl
+        hdf5
+        gmp
+        mpfr
         grid-lehner
         cps
         qmp
