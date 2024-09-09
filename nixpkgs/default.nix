@@ -15,6 +15,8 @@ let
     pkgs = final;
   in rec {
     #
+    qlat-name = "";
+    #
     is-pypi-src = true;
     qlat-cudaSupport = false;
     qlat-eigen = pkgs.grid-lehner;
@@ -36,36 +38,48 @@ let
     grid-lehner = call-pkg ./grid-lehner.nix { stdenv = pkgs.qlat-stdenv; c-lime = pkgs.grid-lehner-c-lime; };
     gpt-lehner = py-call-pkg ./gpt-lehner.nix { stdenv = pkgs.qlat-stdenv; };
     #
-    qlat-std = pkgs.python3.withPackages (ps: with ps; [
-      qlat_utils
-      qlat
-    ]);
+    qlat-dep-pkgs = with pkgs; [
+      git pkg-config zlib gsl fftw fftwFloat hdf5-cpp openssl gmp mpfr
+    ];
     #
-    qlat-full = pkgs.python3.withPackages (ps: with ps; [
+    qlat-py = pkgs.python3.withPackages (ps: with pkgs; [
       qlat_utils
       qlat
       qlat_cps
       qlat_grid
       gpt-lehner
     ]);
+    qlat-pkgs = with pkgs; [
+      mpi cuba qlat-eigen cps qmp qio grid-lehner qlat-py
+    ] ++ pkgs.qlat-dep-pkgs;
     #
   };
 
   overlay-local = final: prev: let
     pkgs = final;
   in rec {
+    qlat-name = "${prev.qlat-name}-local";
     is-pypi-src = false;
   };
 
   overlay-std = final: prev: let
     pkgs = final;
   in rec {
+    qlat-name = "${prev.qlat-name}-std";
     qlat-eigen = pkgs.eigen;
+    qlat-py = pkgs.python3.withPackages (ps: with pkgs; [
+      qlat_utils
+      qlat
+    ]);
+    qlat-pkgs = with pkgs; [
+      mpi cuba qlat-eigen qlat-py
+    ] ++ pkgs.qlat-dep-pkgs;
   };
 
   overlay-clang = final: prev: let
     pkgs = final;
   in rec {
+    qlat-name = "${prev.qlat-name}-clang";
     qlat-stdenv = pkgs.clangStdenv;
     openmp = pkgs.llvmPackages.openmp;
   };
@@ -73,10 +87,11 @@ let
   overlay-cuda = final: prev: let
     pkgs = final;
   in rec {
+    qlat-name = "${prev.qlat-name}-cuda";
     qlat-cudaSupport = true;
   };
 
-  mk-qlat-full = overlays: let
+  mk-qlat-pkgs = overlays: let
     pkgs = nixpkgs {
       config = {
         allowUnfree = true;
@@ -87,47 +102,27 @@ let
       ] ++ overlays;
     };
   in {
-    pkgs.mpi;
-    pkgs.cuba;
-    pkgs.qlat-eigen;
-    pkgs.cps;
-    pkgs.qmp;
-    pkgs.qio;
-    pkgs.grid-lehner;
-    pkgs.qlat-full;
-  }
-
-  mk-qlat-std = overlays: let
-    pkgs = nixpkgs {
-      config = {
-        allowUnfree = true;
-        # cudaSupport = true;
-      };
-      overlays = [
-        overlay
-        overlay-std
-      ] ++ overlays;
-    };
-  in {
-    pkgs.mpi;
-    pkgs.cuba;
-    pkgs.qlat-eigen;
-    pkgs.qlat-std;
-  }
-
-  qlat-pkgs = {
-    qlat-full = mk-qlat-full [];
-    qlat-full-clang = mk-qlat-full [ overlay-clang ];
-    qlat-full-cuda = mk-qlat-full [ overlay-cuda ];
-    qlat-full-local = mk-qlat-full [ overlay-local ];
-    qlat-full-clang-local = mk-qlat-full [ overlay-clang overlay-local ];
-    qlat-full-cuda-local = mk-qlat-full [ overlay-cuda overlay-local ];
-    qlat-std = mk-qlat-std [];
-    qlat-std-clang = mk-qlat-std [ overlay-clang ];
-    qlat-std-cuda = mk-qlat-std [ overlay-cuda ];
-    qlat-std-local = mk-qlat-std [ overlay-local ];
-    qlat-std-clang-local = mk-qlat-std [ overlay-clang overlay-local ];
-    qlat-std-cuda-local = mk-qlat-std [ overlay-cuda overlay-local ];
+    "qlat-py${pkgs.qlat-name}" = pkgs.qlat-py;
+    "qlat-pkgs${pkgs.qlat-name}" = pkgs.qlat-pkgs;
   };
+
+  qlat-pkgs = {}
+  // mk-qlat-pkgs []
+  // mk-qlat-pkgs [ overlay-local ]
+  // mk-qlat-pkgs [ overlay-cuda ]
+  // mk-qlat-pkgs [ overlay-cuda overlay-local ]
+  // mk-qlat-pkgs [ overlay-clang ]
+  // mk-qlat-pkgs [ overlay-clang overlay-local ]
+  // mk-qlat-pkgs [ overlay-clang overlay-cuda ]
+  // mk-qlat-pkgs [ overlay-clang overlay-cuda overlay-local ]
+  // mk-qlat-pkgs [ overlay-std ]
+  // mk-qlat-pkgs [ overlay-std overlay-local ]
+  // mk-qlat-pkgs [ overlay-std overlay-cuda ]
+  // mk-qlat-pkgs [ overlay-std overlay-cuda overlay-local ]
+  // mk-qlat-pkgs [ overlay-std overlay-clang ]
+  // mk-qlat-pkgs [ overlay-std overlay-clang overlay-local ]
+  // mk-qlat-pkgs [ overlay-std overlay-clang overlay-cuda ]
+  // mk-qlat-pkgs [ overlay-std overlay-clang overlay-cuda overlay-local ]
+  ;
 
 in qlat-pkgs
