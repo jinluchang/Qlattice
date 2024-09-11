@@ -93,8 +93,8 @@ qlat-ext.log: qlat-ext/meson.build
 	-time meson setup qlat-ext.p/qlat-ext-build qlat-ext --prefix="$$PWD"/qlat-ext.p/qlat-ext-install -Dpython.platlibdir="$$PWD"/qlat-ext.p/qlat-ext-install/lib/python3/dist-packages -Dpython.purelibdir="$$PWD"/qlat-ext.p/qlat-ext-install/lib/python3/dist-packages
 	-time meson compile -C qlat-ext.p/qlat-ext-build -j$(num_proc)
 	-time meson install -C qlat-ext.p/qlat-ext-build
-	-time ( cd qlat-ext.p ; PYTHONPATH="$$PWD/qlat-ext-install/lib/python3/dist-packages:$$PYTHONPATH" qlat-ext-install/bin/run.py >log.full.txt 2>&1 ; grep "CHECK: " log.full.txt >log.txt )
-	-if diff qlat-ext.p/log.txt "$@" ; then echo passed ; else cat qlat-ext.p/log.full.txt ; false ; fi
+	-time ( cd qlat-ext.p ; PYTHONPATH="$$PWD/qlat-ext-install/lib/python3/dist-packages:$$PYTHONPATH" qlat-ext-install/bin/run.py >log.full.txt 2>&1 ; grep "CHECK: " log.full.txt >log.check.txt.new ; grep "^CHECK: " ../"$@" >log.check.txt )
+	-if diff qlat-ext.p/log.check.txt qlat-ext.p/log.check.txt.new ; then echo passed ; else cat qlat-ext.p/log.full.txt ; false ; fi
 	-rm -rfv "$@"
 	-touch "$@"
 	-mv -v qlat-ext.p/log.txt "$@"

@@ -38,6 +38,12 @@ let
     grid-lehner = call-pkg ./grid-lehner.nix { stdenv = pkgs.qlat-stdenv; c-lime = pkgs.grid-lehner-c-lime; };
     gpt-lehner = py-call-pkg ./gpt-lehner.nix { stdenv = pkgs.qlat-stdenv; };
     #
+    qlat-examples-cpp = py-call-pkg ./qlat-examples-cpp.nix { stdenv = pkgs.qlat-stdenv; };
+    qlat-examples-cpp-grid = py-call-pkg ./qlat-examples-cpp-grid.nix { stdenv = pkgs.qlat-stdenv; };
+    qlat-examples-py = py-call-pkg ./qlat-examples-py.nix { stdenv = pkgs.qlat-stdenv; };
+    qlat-examples-py-gpt = py-call-pkg ./qlat-examples-py-gpt.nix { stdenv = pkgs.qlat-stdenv; };
+    qlat-examples-py-cps = py-call-pkg ./qlat-examples-py-cps.nix { stdenv = pkgs.qlat-stdenv; };
+    #
     qlat-dep-pkgs = with pkgs; [
       git pkg-config zlib gsl fftw fftwFloat hdf5-cpp openssl gmp mpfr
     ];
@@ -48,6 +54,12 @@ let
       qlat_cps
       qlat_grid
       gpt-lehner
+      #
+      qlat-examples-cpp
+      qlat-examples-cpp-grid
+      qlat-examples-py
+      qlat-examples-py-gpt
+      qlat-examples-py-cps
     ]);
     qlat-pkgs = with pkgs; [
       mpi cuba qlat-eigen cps qmp qio grid-lehner qlat-py
@@ -70,6 +82,9 @@ let
     qlat-py = pkgs.python3.withPackages (ps: with pkgs; [
       qlat_utils
       qlat
+      #
+      qlat-examples-cpp
+      qlat-examples-py
     ]);
     qlat-pkgs = with pkgs; [
       mpi cuba qlat-eigen qlat-py
@@ -108,21 +123,21 @@ let
 
   qlat-pkgs = {}
   // mk-qlat-pkgs []
-  // mk-qlat-pkgs [ overlay-local ]
-  // mk-qlat-pkgs [ overlay-cuda ]
-  // mk-qlat-pkgs [ overlay-cuda overlay-local ]
-  // mk-qlat-pkgs [ overlay-clang ]
-  // mk-qlat-pkgs [ overlay-clang overlay-local ]
-  // mk-qlat-pkgs [ overlay-clang overlay-cuda ]
-  // mk-qlat-pkgs [ overlay-clang overlay-cuda overlay-local ]
-  // mk-qlat-pkgs [ overlay-std ]
-  // mk-qlat-pkgs [ overlay-std overlay-local ]
-  // mk-qlat-pkgs [ overlay-std overlay-cuda ]
-  // mk-qlat-pkgs [ overlay-std overlay-cuda overlay-local ]
-  // mk-qlat-pkgs [ overlay-std overlay-clang ]
-  // mk-qlat-pkgs [ overlay-std overlay-clang overlay-local ]
-  // mk-qlat-pkgs [ overlay-std overlay-clang overlay-cuda ]
-  // mk-qlat-pkgs [ overlay-std overlay-clang overlay-cuda overlay-local ]
+  # // mk-qlat-pkgs [ overlay-local ]
+  # // mk-qlat-pkgs [ overlay-cuda ]
+  # // mk-qlat-pkgs [ overlay-cuda overlay-local ]
+  # // mk-qlat-pkgs [ overlay-clang ]
+  # // mk-qlat-pkgs [ overlay-clang overlay-local ]
+  # // mk-qlat-pkgs [ overlay-clang overlay-cuda ]
+  # // mk-qlat-pkgs [ overlay-clang overlay-cuda overlay-local ]
+  # // mk-qlat-pkgs [ overlay-std ]
+  # // mk-qlat-pkgs [ overlay-std overlay-local ]
+  # // mk-qlat-pkgs [ overlay-std overlay-cuda ]
+  # // mk-qlat-pkgs [ overlay-std overlay-cuda overlay-local ]
+  # // mk-qlat-pkgs [ overlay-std overlay-clang ]
+  # // mk-qlat-pkgs [ overlay-std overlay-clang overlay-local ]
+  # // mk-qlat-pkgs [ overlay-std overlay-clang overlay-cuda ]
+  # // mk-qlat-pkgs [ overlay-std overlay-clang overlay-cuda overlay-local ]
   ;
 
 in qlat-pkgs
