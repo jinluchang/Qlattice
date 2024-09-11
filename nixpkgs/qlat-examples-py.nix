@@ -65,7 +65,7 @@ buildPythonPackage rec {
     patchShebangs --build */run.py
     echo
     #
-    make update-sources
+    make update-sources SHELL=$SHELL
     echo
     make run -j1 SHELL=$SHELL
     echo

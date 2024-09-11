@@ -65,7 +65,7 @@ buildPythonPackage rec {
     echo num_proc=$num_proc
     echo
     #
-    make update-sources
+    make update-sources SHELL=$SHELL
     echo
     make run-cps -j1 SHELL=$SHELL
     echo

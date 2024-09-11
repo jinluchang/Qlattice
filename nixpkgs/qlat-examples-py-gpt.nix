@@ -68,7 +68,7 @@ buildPythonPackage rec {
     echo num_proc=$num_proc
     echo
     #
-    make update-sources
+    make update-sources SHELL=$SHELL
     echo
     make run-gpt -j1 SHELL=$SHELL
     echo
