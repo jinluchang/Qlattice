@@ -83,8 +83,8 @@ update-sources:
 	-if diff "$<".p/log.check.txt "$<".p/log.check.txt.new ; then echo passed ; else tail -n 100 "$<".p/log.full.txt ; echo failed ; fi
 	-rm -rfv "$@"
 	-touch "$@"
-	-mv -v "$<".p/"$@".json.new "$@".json
-	-mv -v "$<".p/log.txt "$@"
+	-cp -v "$<".p/"$@".json.new "$@".json
+	-cp -v "$<".p/log.txt "$@"
 
 qlat-ext.log: qlat-ext/meson.build
 	-touch qlat-ext/meson.build
@@ -97,7 +97,7 @@ qlat-ext.log: qlat-ext/meson.build
 	-if diff qlat-ext.p/log.check.txt qlat-ext.p/log.check.txt.new ; then echo passed ; else cat qlat-ext.p/log.full.txt ; false ; fi
 	-rm -rfv "$@"
 	-touch "$@"
-	-mv -v qlat-ext.p/log.check.txt.new "$@"
+	-cp -v qlat-ext.p/log.check.txt.new "$@"
 
 clean:
 	-rm -rfv *.p
