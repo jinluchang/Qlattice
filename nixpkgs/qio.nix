@@ -1,4 +1,3 @@
-# hello.nix
 { stdenv
 , fetchzip
 , mpi
@@ -17,7 +16,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  buildInputs = [
+  propagatedBuildInputs = [
     mpi
     qmp
   ];

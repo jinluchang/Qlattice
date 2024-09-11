@@ -14,11 +14,12 @@
 , gsl
 , cuba
 , is-pypi-src ? true
+, qlat-name ? ""
 }:
 
 buildPythonPackage rec {
 
-  pname = "qlat";
+  pname = "qlat${qlat-name}";
   version = if is-pypi-src then version-pypi else version-local;
 
   pyproject = true;
@@ -27,7 +28,7 @@ buildPythonPackage rec {
 
   version-pypi = "0.70";
   src-pypi = fetchPypi {
-    inherit pname;
+    pname = "qlat";
     version = version-pypi;
     extension = "tar.gz";
     hash = "sha256-Jm+FcqUt4A5jdlFGHvKBdqNsUa3zU1fNRnWhfWdzDUs=";

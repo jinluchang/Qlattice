@@ -10,13 +10,14 @@
 , zlib
 , eigen
 , git
-, is-pypi-src ? true
 , openmp ? null
+, is-pypi-src ? true
+, qlat-name ? ""
 }:
 
 buildPythonPackage rec {
 
-  pname = "qlat_utils";
+  pname = "qlat_utils${qlat-name}";
   version = if is-pypi-src then version-pypi else version-local;
 
   pyproject = true;
@@ -25,7 +26,7 @@ buildPythonPackage rec {
 
   version-pypi = "0.70";
   src-pypi = fetchPypi {
-    inherit pname;
+    pname = "qlat_utils";
     version = version-pypi;
     extension = "tar.gz";
     hash = "sha256-cfvie6jiE1VWyNPjKgQK26P6hpCgYr008WIIIpEipPA=";

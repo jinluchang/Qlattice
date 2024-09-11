@@ -10,11 +10,12 @@
 , mpi
 , mpiCheckPhaseHook
 , openssh
+, qlat-name ? ""
 }:
 
 buildPythonPackage rec {
 
-  pname = "qlat-examples-py-gpt";
+  pname = "qlat-examples-py-gpt${qlat-name}";
   version = "${../VERSION}-current";
 
   pyproject = false;

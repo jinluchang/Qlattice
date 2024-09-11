@@ -1,7 +1,8 @@
-# hello.nix
 { stdenv
+, lib
 , fetchzip
 , mpi
+, openmp ? null
 }:
 
 stdenv.mkDerivation rec {
@@ -16,9 +17,10 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  buildInputs = [
+  propagatedBuildInputs = [
     mpi
-  ];
+  ]
+  ++ lib.optional stdenv.cc.isClang openmp;
 
   preConfigure = ''
     export CFLAGS="-fPIC -O2"

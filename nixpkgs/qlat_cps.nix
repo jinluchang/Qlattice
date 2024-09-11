@@ -5,11 +5,12 @@
 , cps
 , git
 , is-pypi-src ? true
+, qlat-name ? ""
 }:
 
 buildPythonPackage rec {
 
-  pname = "qlat_cps";
+  pname = "qlat_cps${qlat-name}";
   version = if is-pypi-src then version-pypi else version-local;
 
   pyproject = true;
@@ -18,7 +19,7 @@ buildPythonPackage rec {
 
   version-pypi = "0.70";
   src-pypi = fetchPypi {
-    inherit pname;
+    pname = "qlat_cps";
     version = version-pypi;
     extension = "tar.gz";
     hash = "sha256-X0hCGuFUgsvZ9AKYr7JhhxgM5hCp3zrbHYGpz3zVVj0=";

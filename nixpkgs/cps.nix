@@ -1,4 +1,3 @@
-# hello.nix
 { stdenv
 , fetchFromGitHub
 , mpi

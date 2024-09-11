@@ -8,11 +8,12 @@
 , mpi
 , mpiCheckPhaseHook
 , openssh
+, qlat-name ? ""
 }:
 
 buildPythonPackage rec {
 
-  pname = "qlat-examples-cpp";
+  pname = "qlat-examples-cpp${qlat-name}";
   version = "${../VERSION}-current";
 
   pyproject = false;

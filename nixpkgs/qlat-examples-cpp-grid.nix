@@ -10,11 +10,12 @@
 , mpi
 , mpiCheckPhaseHook
 , openssh
+, qlat-name ? ""
 }:
 
 buildPythonPackage rec {
 
-  pname = "qlat-examples-cpp-grid";
+  pname = "qlat-examples-cpp-grid${qlat-name}";
   version = "${../VERSION}-current";
 
   pyproject = false;
