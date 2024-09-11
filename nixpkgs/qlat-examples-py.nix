@@ -19,7 +19,7 @@ buildPythonPackage rec {
 
   src = ../examples-py;
 
-  enableParallelBuilding = false;
+  enableParallelBuilding = true;
 
   inherit stdenv;
 
@@ -50,7 +50,7 @@ buildPythonPackage rec {
     pwd
     echo
     #
-    export mpi_options="--oversubscribe $mpi_options"
+    export mpi_options="--oversubscribe --bind-to none $mpi_options"
     export SHELL=${bash}/bin/bash
     export num_proc=1
     #

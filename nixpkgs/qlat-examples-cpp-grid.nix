@@ -21,7 +21,7 @@ buildPythonPackage rec {
 
   src = ../examples-cpp;
 
-  enableParallelBuilding = false;
+  enableParallelBuilding = true;
 
   inherit stdenv;
 
@@ -56,7 +56,7 @@ buildPythonPackage rec {
     echo
     #
     export LD_LIBRARY_PATH="$(python3 -m qlat qlat-config --LD_LIBRARY_PATH)"
-    export mpi_options="--oversubscribe $mpi_options"
+    export mpi_options="--oversubscribe --bind-to none $mpi_options"
     export SHELL=${bash}/bin/bash
     #
     echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
