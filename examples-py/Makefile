@@ -97,7 +97,7 @@ qlat-ext.log: qlat-ext/meson.build
 	-if diff qlat-ext.p/log.check.txt qlat-ext.p/log.check.txt.new ; then echo passed ; else cat qlat-ext.p/log.full.txt ; false ; fi
 	-rm -rfv "$@"
 	-touch "$@"
-	-mv -v qlat-ext.p/log.txt "$@"
+	-mv -v qlat-ext.p/log.check.txt.new "$@"
 
 clean:
 	-rm -rfv *.p
