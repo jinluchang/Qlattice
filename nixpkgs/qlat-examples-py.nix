@@ -62,6 +62,9 @@ buildPythonPackage rec {
     echo num_proc=$num_proc
     echo
     #
+    patchShebangs --build */run.py
+    echo
+    #
     make update-sources
     echo
     make run -j1 SHELL=$SHELL
