@@ -59,19 +59,20 @@ buildPythonPackage rec {
     #
     export mpi_options="--oversubscribe --bind-to none $mpi_options"
     export SHELL=${bash}/bin/bash
-    export num_proc=1
     #
     echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
     echo mpi_options=$mpi_options
     echo SHELL=$SHELL
     echo NIX_BUILD_CORES=$NIX_BUILD_CORES
     echo NIX_BUILD_TOP=$NIX_BUILD_TOP
-    echo num_proc=$num_proc
     echo
+    #
+    export num_proc=$((NIX_BUILD_CORES / 4 + 1))
+    echo num_proc=$num_proc
     #
     make update-sources SHELL=$SHELL
     echo
-    make run-gpt -j1 SHELL=$SHELL
+    make run-gpt -j$num_proc SHELL=$SHELL
     echo
     #
     for i in *.p ; do

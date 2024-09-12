@@ -64,8 +64,11 @@ buildPythonPackage rec {
     #
     patchShebangs --build */run.sh
     echo
+	#
+    export num_proc=$((NIX_BUILD_CORES / 4 + 1))
+    echo num_proc=$num_proc
     #
-    make run -j1 SHELL=$SHELL
+    make run -j$num_proc SHELL=$SHELL
     #
     echo
     for i in * ; do

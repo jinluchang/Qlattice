@@ -66,11 +66,14 @@ buildPythonPackage rec {
     echo NIX_BUILD_CORES=$NIX_BUILD_CORES
     echo NIX_BUILD_TOP=$NIX_BUILD_TOP
     echo
+	#
+    export num_proc=$((NIX_BUILD_CORES / 4 + 1))
+    echo num_proc=$num_proc
     #
     patchShebangs --build */run.sh
     echo
     #
-    make run-grid -j1 SHELL=$SHELL
+    make run-grid -j$num_proc SHELL=$SHELL
     #
     echo
     for i in * ; do
