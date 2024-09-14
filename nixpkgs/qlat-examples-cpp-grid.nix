@@ -1,5 +1,7 @@
 { fetchPypi
 , stdenv
+, lib
+, config
 , buildPythonPackage
 , qlat
 , qlat_grid
@@ -11,12 +13,18 @@
 , mpiCheckPhaseHook
 , openssh
 , qlat-name ? ""
+, cudaSupport ? config.cudaSupport
+, cudaPackages ? {}
 }:
+
+let
+  orig-stdenv = stdenv;
+in
 
 buildPythonPackage rec {
 
   pname = "qlat-examples-cpp-grid${qlat-name}";
-  version = "${../VERSION}-current";
+  version = builtins.readFile ../VERSION + "current";
 
   pyproject = false;
 

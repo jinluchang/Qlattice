@@ -1,5 +1,7 @@
 { fetchPypi
 , stdenv
+, lib
+, config
 , buildPythonPackage
 , mpi4py
 , sympy
@@ -15,7 +17,13 @@
 , cuba
 , is-pypi-src ? true
 , qlat-name ? ""
+, cudaSupport ? config.cudaSupport
+, cudaPackages ? {}
 }:
+
+let
+  orig-stdenv = stdenv;
+in
 
 buildPythonPackage rec {
 
@@ -34,12 +42,12 @@ buildPythonPackage rec {
     hash = "sha256-Jm+FcqUt4A5jdlFGHvKBdqNsUa3zU1fNRnWhfWdzDUs=";
   };
 
-  version-local = "${../VERSION}-current";
+  version-local = builtins.readFile ../VERSION + "current";
   src-local = ../qlat;
 
   enableParallelBuilding = true;
 
-  inherit stdenv;
+  stdenv = if cudaSupport then cudaPackages.backendStdenv else orig-stdenv;
 
   build-system = [
     qlat_utils
@@ -47,7 +55,9 @@ buildPythonPackage rec {
 
   nativeBuildInputs = [
     git
-  ];
+  ]
+  ++ lib.optionals cudaSupport (with cudaPackages; [ cuda_nvcc ])
+  ;
 
   propagatedBuildInputs = [
     mpi
@@ -68,6 +78,13 @@ buildPythonPackage rec {
 
   postPatch = ''
     sed -i "s/'-j4'/'-j$NIX_BUILD_CORES'/" pyproject.toml
+  '';
+
+  preConfigure = ''
+    export OMPI_CXX=c++
+    export OMPI_CC=cc
+    #
+    export
   '';
 
 }

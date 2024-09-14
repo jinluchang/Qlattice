@@ -1,5 +1,6 @@
 { fetchPypi
 , stdenv
+, config
 , lib
 , buildPythonPackage
 , cython
@@ -13,7 +14,13 @@
 , openmp ? null
 , is-pypi-src ? true
 , qlat-name ? ""
+, cudaSupport ? config.cudaSupport
+, cudaPackages ? {}
 }:
+
+let
+  orig-stdenv = stdenv;
+in
 
 buildPythonPackage rec {
 
@@ -32,12 +39,12 @@ buildPythonPackage rec {
     hash = "sha256-cfvie6jiE1VWyNPjKgQK26P6hpCgYr008WIIIpEipPA=";
   };
 
-  version-local = "${../VERSION}-current";
+  version-local = builtins.readFile ../VERSION + "current";
   src-local = ../qlat-utils;
 
   enableParallelBuilding = true;
 
-  inherit stdenv;
+  stdenv = if cudaSupport then cudaPackages.backendStdenv else orig-stdenv;
 
   build-system = [
     meson-python
@@ -48,7 +55,9 @@ buildPythonPackage rec {
 
   nativeBuildInputs = [
     git
-  ];
+  ]
+  ++ lib.optionals cudaSupport (with cudaPackages; [ cuda_nvcc ])
+  ;
 
   propagatedBuildInputs = [
     zlib
@@ -66,6 +75,13 @@ buildPythonPackage rec {
 
   postPatch = ''
     sed -i "s/'-j4'/'-j$NIX_BUILD_CORES'/" pyproject.toml
+  '';
+
+  preConfigure = ''
+    export OMPI_CXX=c++
+    export OMPI_CC=cc
+    #
+    export
   '';
 
 }

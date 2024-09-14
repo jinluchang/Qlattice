@@ -1,5 +1,7 @@
 { fetchPypi
 , stdenv
+, lib
+, config
 , buildPythonPackage
 , qlat
 , qlat_grid
@@ -11,12 +13,18 @@
 , mpiCheckPhaseHook
 , openssh
 , qlat-name ? ""
+, cudaSupport ? config.cudaSupport
+, cudaPackages ? {}
 }:
+
+let
+  orig-stdenv = stdenv;
+in
 
 buildPythonPackage rec {
 
   pname = "qlat-examples-py-gpt${qlat-name}";
-  version = "${../VERSION}-current";
+  version = builtins.readFile ../VERSION + "current";
 
   pyproject = false;
 
@@ -24,7 +32,7 @@ buildPythonPackage rec {
 
   enableParallelBuilding = true;
 
-  inherit stdenv;
+  stdenv = if cudaSupport then cudaPackages.backendStdenv else orig-stdenv;
 
   build-system = [
     qlat
@@ -38,7 +46,9 @@ buildPythonPackage rec {
     mpi
     mpiCheckPhaseHook
     openssh
-  ];
+  ]
+  ++ lib.optionals cudaSupport (with cudaPackages; [ cuda_nvcc ])
+  ;
 
   propagatedBuildInputs = [
   ];

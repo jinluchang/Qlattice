@@ -27,22 +27,56 @@ let
     py-call-pkg = pkgs.python3Packages.callPackage;
     #
     cuba = call-pkg ./cuba.nix { stdenv = pkgs.qlat-stdenv; };
-    qlat_utils = py-call-pkg ./qlat_utils.nix { stdenv = pkgs.qlat-stdenv; eigen = pkgs.qlat-eigen; };
-    qlat = py-call-pkg ./qlat.nix { stdenv = pkgs.qlat-stdenv; };
-    qlat_grid = py-call-pkg ./qlat_grid.nix { stdenv = pkgs.qlat-stdenv; };
-    qlat_cps = py-call-pkg ./qlat_cps.nix { stdenv = pkgs.qlat-stdenv; };
+    qlat_utils = py-call-pkg ./qlat_utils.nix {
+      stdenv = pkgs.qlat-stdenv; eigen = pkgs.qlat-eigen;
+      cudaSupport = pkgs.qlat-cudaSupport;
+    };
+    qlat = py-call-pkg ./qlat.nix {
+      stdenv = pkgs.qlat-stdenv;
+      cudaSupport = pkgs.qlat-cudaSupport;
+    };
+    qlat_grid = py-call-pkg ./qlat_grid.nix {
+      stdenv = pkgs.qlat-stdenv;
+      cudaSupport = pkgs.qlat-cudaSupport;
+    };
+    qlat_cps = py-call-pkg ./qlat_cps.nix {
+      stdenv = pkgs.qlat-stdenv;
+      cudaSupport = pkgs.qlat-cudaSupport;
+    };
     c-lime = call-pkg ./c-lime.nix { stdenv = pkgs.qlat-stdenv; };
     qmp = call-pkg ./qmp.nix { stdenv = pkgs.qlat-stdenv; };
     qio = call-pkg ./qio.nix { stdenv = pkgs.qlat-stdenv; };
     cps = call-pkg ./cps.nix { stdenv = pkgs.qlat-stdenv; };
-    grid-lehner = call-pkg ./grid-lehner.nix { stdenv = pkgs.qlat-stdenv; c-lime = pkgs.grid-lehner-c-lime; };
-    gpt-lehner = py-call-pkg ./gpt-lehner.nix { stdenv = pkgs.qlat-stdenv; };
+    grid-lehner = call-pkg ./grid-lehner.nix {
+      stdenv = pkgs.qlat-stdenv;
+      c-lime = pkgs.grid-lehner-c-lime;
+      cudaSupport = pkgs.qlat-cudaSupport;
+    };
+    gpt-lehner = py-call-pkg ./gpt-lehner.nix {
+      stdenv = pkgs.qlat-stdenv;
+      cudaSupport = pkgs.qlat-cudaSupport;
+    };
     #
-    qlat-examples-cpp = py-call-pkg ./qlat-examples-cpp.nix { stdenv = pkgs.qlat-stdenv; };
-    qlat-examples-cpp-grid = py-call-pkg ./qlat-examples-cpp-grid.nix { stdenv = pkgs.qlat-stdenv; };
-    qlat-examples-py = py-call-pkg ./qlat-examples-py.nix { stdenv = pkgs.qlat-stdenv; };
-    qlat-examples-py-gpt = py-call-pkg ./qlat-examples-py-gpt.nix { stdenv = pkgs.qlat-stdenv; };
-    qlat-examples-py-cps = py-call-pkg ./qlat-examples-py-cps.nix { stdenv = pkgs.qlat-stdenv; };
+    qlat-examples-cpp = py-call-pkg ./qlat-examples-cpp.nix {
+      stdenv = pkgs.qlat-stdenv;
+      cudaSupport = pkgs.qlat-cudaSupport;
+    };
+    qlat-examples-cpp-grid = py-call-pkg ./qlat-examples-cpp-grid.nix {
+      stdenv = pkgs.qlat-stdenv;
+      cudaSupport = pkgs.qlat-cudaSupport;
+    };
+    qlat-examples-py = py-call-pkg ./qlat-examples-py.nix {
+      stdenv = pkgs.qlat-stdenv;
+      cudaSupport = pkgs.qlat-cudaSupport;
+    };
+    qlat-examples-py-gpt = py-call-pkg ./qlat-examples-py-gpt.nix {
+      stdenv = pkgs.qlat-stdenv;
+      cudaSupport = pkgs.qlat-cudaSupport;
+    };
+    qlat-examples-py-cps = py-call-pkg ./qlat-examples-py-cps.nix {
+      stdenv = pkgs.qlat-stdenv;
+      cudaSupport = pkgs.qlat-cudaSupport;
+    };
     #
     qlat-dep-pkgs = with pkgs; [
       git pkg-config zlib gsl fftw fftwFloat hdf5-cpp openssl gmp mpfr
@@ -128,16 +162,12 @@ let
   // mk-qlat-pkgs [ overlay-cuda overlay-local ]
   # // mk-qlat-pkgs [ overlay-clang ]
   # // mk-qlat-pkgs [ overlay-clang overlay-local ]
-  # // mk-qlat-pkgs [ overlay-clang overlay-cuda ]
-  # // mk-qlat-pkgs [ overlay-clang overlay-cuda overlay-local ]
   // mk-qlat-pkgs [ overlay-std ]
   // mk-qlat-pkgs [ overlay-std overlay-local ]
   // mk-qlat-pkgs [ overlay-std overlay-cuda ]
   // mk-qlat-pkgs [ overlay-std overlay-cuda overlay-local ]
   // mk-qlat-pkgs [ overlay-std overlay-clang ]
   // mk-qlat-pkgs [ overlay-std overlay-clang overlay-local ]
-  // mk-qlat-pkgs [ overlay-std overlay-clang overlay-cuda ]
-  // mk-qlat-pkgs [ overlay-std overlay-clang overlay-cuda overlay-local ]
   ;
 
 in qlat-pkgs

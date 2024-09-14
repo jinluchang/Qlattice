@@ -1,5 +1,7 @@
-{ fetchFromGitHub
-, stdenv
+{ stdenv
+, config
+, lib
+, fetchFromGitHub
 , python
 , buildPythonPackage
 , mpi
@@ -10,7 +12,13 @@
 , which
 , flock
 , rsync
+, cudaSupport ? config.cudaSupport
+, cudaPackages ? {}
 }:
+
+let
+  orig-stdenv = stdenv;
+in
 
 buildPythonPackage rec {
 
@@ -28,7 +36,7 @@ buildPythonPackage rec {
 
   enableParallelBuilding = true;
 
-  inherit stdenv;
+  stdenv = if cudaSupport then cudaPackages.backendStdenv else orig-stdenv;
 
   build-system = [
     pkg-config
@@ -42,7 +50,9 @@ buildPythonPackage rec {
     which
     flock
     rsync
-  ];
+  ]
+  ++ lib.optionals cudaSupport (with cudaPackages; [ cuda_nvcc ])
+  ;
 
   propagatedBuildInputs = [
     grid-lehner
@@ -54,6 +64,9 @@ buildPythonPackage rec {
   ];
 
   preConfigure = ''
+	export OMPI_CXX=c++
+	export OMPI_CC=cc
+    #
     export
     #
     cd "$NIX_BUILD_TOP/source/lib/cgpt"
