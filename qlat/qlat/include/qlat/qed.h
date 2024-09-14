@@ -36,7 +36,7 @@ inline void take_real_part_and_multiply_sqrt2(Field<T>& f)
 {
   TIMER("take_real_part_and_multiply_sqrt2");
   const Geometry& geo = f.geo();
-  const Int multiplicity = f.multiplicity;
+  // const Int multiplicity = f.multiplicity;
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
