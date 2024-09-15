@@ -530,7 +530,8 @@ inline int read_vector(const char *filename, std::vector<double > &dat)
       if((offr + count) <= (Vsize*8)){sizec = count;}
       else{sizec = Vsize*8 - offr;}
 
-      fread(buf, 1, sizec, filer);
+      long sizec_read = fread(buf, 1, sizec, filer);
+      qassert(sizec_read == (long)sizec);
       offr = offr + sizec;
     }
 

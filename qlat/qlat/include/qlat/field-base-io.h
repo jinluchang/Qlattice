@@ -279,7 +279,8 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 inline void timer_fread(char *ptr, Long size, FILE *inputFile)
 {
   TIMER_VERBOSE("timer_fread");
-  fread(ptr, size, 1, inputFile);
+  Long size_read = fread(ptr, size, 1, inputFile);
+  qassert(size_read == 1);
 }
 
 template <class M>

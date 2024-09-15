@@ -316,6 +316,7 @@ void contract_four_combine(
 inline std::vector<std::string> get_clbl_inf_ref_tags(
     const std::string& job_tag)
 {
+  (void)job_tag;
   std::vector<std::string> tags;
   tags.push_back("ref-far");
   tags.push_back("ref-close");

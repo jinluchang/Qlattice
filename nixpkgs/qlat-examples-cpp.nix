@@ -22,7 +22,7 @@ in
 buildPythonPackage rec {
 
   pname = "qlat-examples-cpp${qlat-name}";
-  version = builtins.readFile ../VERSION + "current";
+  version = builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
 
   pyproject = false;
 

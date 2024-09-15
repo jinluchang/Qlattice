@@ -26,7 +26,7 @@ void grid_end() { end(); }
 
 #undef NDEBUG
 
-#include <Grid/Grid.h>
+#include <qlat/grid-sys.h>
 #include <qlat/qlat.h>
 
 #include <cstdlib>

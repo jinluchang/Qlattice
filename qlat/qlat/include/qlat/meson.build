@@ -50,6 +50,7 @@ header_files = files(
   'gauge-action.h',
   'geometry.h',
   'grid.h',
+  'grid-sys.h',
   'hmc-stats.h',
   'hmc.h',
   'integration-multidimensional.h',

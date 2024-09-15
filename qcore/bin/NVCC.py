@@ -52,7 +52,7 @@ def process_remove_arg(argv):
     return argv_new
 
 def quote_comma(arg):
-    return arg.replace(",", "\\,")
+    return arg.replace(",", "\\,").replace("$", "\\\\$")
 
 class NvccCmdLine:
 
@@ -171,7 +171,7 @@ class NvccCmdLine:
 
     def parse_nv_flags(self):
         opt_pool = set([
-            "-w",
+            # "-w",
             "--expt-extended-lambda",
             "--expt-relaxed-constexpr",
             ])
@@ -197,6 +197,7 @@ class NvccCmdLine:
             "-Wl,--allow-shlib-undefined",
             "-Wl,--as-needed",
             "-Wl,--no-undefined",
+            "-Wl,-O1",
             "-fvisibility=hidden",
             "-fvisibility-inlines-hidden",
             ])
@@ -224,6 +225,7 @@ class NvccCmdLine:
 
     def parse_omit_flags(self):
         opt_pool = set([
+            # "-w",
             "-Wall",
             "-Winvalid-pch",
             "-Wextra",
@@ -374,169 +376,65 @@ class NvccCmdLine:
             argv_new += [ "-o", self.output, ]
         return argv_new
 
+    def call(self, argv):
+        status = p.call(argv)
+        log.log(f"{' '.join([ repr(arg) for arg in argv ])}")
+        log.log(f"status={status}")
+        if status != 0:
+            print(f"pwd={os.getcwd()}")
+            print(f"sys.argv={sys.argv}")
+            print(f"argv={argv}")
+            print(f"status={status}")
+        return status
+
+    def ldd(self):
+        out = self.output
+        if out is None:
+            return
+        if out[-2:] == ".o":
+            return
+        log.log(f"ldd '{out}'")
+        try:
+            ldd_out = p.check_output([ "ldd", out, ], stderr=p.STDOUT).decode("utf-8")
+            log.log(ldd_out)
+        except Exception:
+            log.log(f"ldd failed.")
+
+    def readelf(self):
+        out = self.output
+        if out is None:
+            return
+        if out[-2:] == ".o":
+            return
+        log.log(f"readelf -d '{out}'")
+        try:
+            ldd_out = p.check_output([ "readelf", "-d", out, ], stderr=p.STDOUT).decode("utf-8")
+            log.log(ldd_out)
+        except Exception:
+            log.log(f"readelf failed.")
+
+    def call_and_exit(self, argv):
+        status = self.call(argv)
+        self.ldd()
+        self.readelf()
+        for k, v in os.environ.items():
+            log.log(f"os.environ['{k}'] = '{v}'")
+        sys.exit(status)
+
     def run(self):
         if self.cc_only_flags:
             argv = self.make_cc_argv()
-            call_and_exit(argv)
+            self.call_and_exit(argv)
         elif self.need_dlink():
             argv = self.make_dlink_argv()
             call(argv)
             argv = self.make_link_argv()
-            call_and_exit(argv)
+            self.call_and_exit(argv)
         else:
             argv = self.make_argv()
-            call_and_exit(argv)
-##################################################
+            self.call_and_exit(argv)
 
 ##################################################
-
-def call(argv):
-    status = p.call(argv)
-    log.log(f"{' '.join([ repr(arg) for arg in argv ])}")
-    log.log(f"status={status}")
-    if status != 0:
-        print(f"pwd={os.getcwd()}")
-        print(f"sys.argv={sys.argv}")
-        print(f"argv={argv}")
-        print(f"status={status}")
-    return status
-
-def call_and_exit(argv):
-    status = call(argv)
-    sys.exit(status)
-
-##################################################
-
-def check_gcc_only_options(argv):
-    ccbin = "-ccbin"
-    if ccbin in argv:
-        index = argv.index(ccbin) + 1
-        if index < len(argv):
-            ccbin_arg = argv[index]
-    is_gcc_only = False
-    opt_pool = set([
-        "-E",
-        "--version",
-        "-dM",
-        "-Wl,--version",
-        "--print-search-dirs",
-        ])
-    for arg in argv:
-        if arg in opt_pool:
-            is_gcc_only = True
-            break
-    if is_gcc_only:
-        skip = 0
-        args_gcc = []
-        for arg in argv[1:]:
-            if skip > 0:
-                skip -= 1
-            elif arg in [ "-ccbin", ]:
-                skip = 1
-            elif arg in [ "-Xcompiler", "--NVCC-link", "--NVCC-compile", "--expt-extended-lambda", "--expt-relaxed-constexpr", ]:
-                skip = 0
-            elif arg.startswith("-arch=sm_"):
-                skip = 0
-            else:
-                args_gcc.append(arg)
-        argv = [ ccbin_arg, ] + args_gcc
-        call_and_exit(argv)
-
-def add_x_compiler_flags(argv):
-    opt_pool = set([
-        "-fopenmp",
-        "-fPIC",
-        "-fno-strict-aliasing",
-        "-fdiagnostics-color=always",
-        "-MD",
-        "-MQ",
-        "-MF",
-        "-P",
-        "-fpermissive",
-        "-D_FILE_OFFSET_BITS=64",
-        "-Wl,--start-group",
-        "-Wl,--end-group",
-        "-Wl,--allow-shlib-undefined",
-        "-Wl,--as-needed",
-        "-fvisibility=hidden",
-        "-fvisibility-inlines-hidden",
-        ])
-    opt2_pool = set([
-        "-Wall",
-        "-Winvalid-pch",
-        "-Wextra",
-        "-Wpedantic",
-        ])
-    opt3_pool = set([
-        "--NVCC-compile",
-        "--NVCC-link",
-        ])
-    argv_new = []
-    is_in_wl_group = False
-    x_compiler_number = 0
-    for arg in argv:
-        if arg in opt2_pool:
-            pass
-        elif arg in opt3_pool:
-            argv_new.append(arg)
-        elif x_compiler_number > 0:
-            argv_new.append('-Xcompiler')
-            argv_new.append(quote_comma(arg))
-            x_compiler_number -= 1
-        elif is_in_wl_group:
-            if arg.startswith("-l") or arg.endswith(".a"):
-                argv_new.append(arg)
-            elif arg.endswith(".so"):
-                libname = os.path.basename(arg)
-                assert libname.startswith("lib")
-                libname = libname.removeprefix("lib").removesuffix(".so")
-                argv_new.append(f'-l{libname}')
-            else:
-                argv_new.append('-Xcompiler')
-                argv_new.append(quote_comma(arg))
-        elif arg in opt_pool:
-            argv_new.append('-Xcompiler')
-            argv_new.append(quote_comma(arg))
-            if arg == "-Wl,--start-group":
-                is_in_wl_group = True
-            elif arg == "-Wl,--end-group":
-                is_in_wl_group = False
-            elif arg in [ "-MF", "-MQ", ]:
-                x_compiler_number = 1
-        elif arg.startswith("-isystem"):
-            argv_new.append("-I" + arg.removeprefix("-isystem"))
-        else:
-            argv_new.append(arg)
-    return argv_new
-
-def finalize_argv(argv):
-    argv_new = []
-    assert argv[0].endswith("NVCC.py")
-    argv_new += [ "nvcc", ]
-    argv = argv[1:]
-    is_link = False
-    is_compile = False
-    if "--NVCC-link" in argv:
-        is_link = True
-        argv = list(filter(lambda x: x != "--NVCC-link", argv))
-    if "--NVCC-compile" in argv:
-        argv = list(filter(lambda x: x != "--NVCC-compile", argv))
-        for arg in argv:
-            if arg.endswith(".cpp"):
-                is_compile = True
-                break
-    if is_link and is_compile:
-        argv_new += [ "-x", "cu", "-link", ]
-    elif is_compile:
-        argv_new += [ "-x", "cu", ]
-    elif is_link:
-        argv_new += [ "-link", ]
-    argv_new += argv
-    if is_link:
-        argv_new += [ "-lcudart", "-lcufft", ]
-    if is_compile:
-        argv_new += [ "-dc", ]
-    return argv_new
 
 if __name__ == "__main__":
     argv = sys.argv.copy()

@@ -148,6 +148,7 @@ inline void dist_write_geo_info(const Geometry& geo, const Int multiplicity,
                                 const Int sizeof_M, const std::string& path,
                                 const mode_t mode = default_dir_mode())
 {
+  (void)mode;
   TIMER("dist_write_geo_info");
   const int id_node = geo.geon.id_node;
   qassert(geo.is_only_local);

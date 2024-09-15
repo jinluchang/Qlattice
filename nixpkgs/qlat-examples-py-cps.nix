@@ -23,7 +23,7 @@ in
 buildPythonPackage rec {
 
   pname = "qlat-examples-py-cps${qlat-name}";
-  version = builtins.readFile ../VERSION + "current";
+  version = builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
 
   pyproject = false;
 

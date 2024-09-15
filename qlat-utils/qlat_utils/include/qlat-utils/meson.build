@@ -51,6 +51,7 @@ header_files = files(
   'core.h',
   'crc32.h',
   'eigen.h',
+  'eigen-sys.h',
   'env.h',
   'endian.h',
   'handle.h',

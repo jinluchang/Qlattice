@@ -33,7 +33,7 @@ buildPythonPackage rec {
     hash = "sha256-X0hCGuFUgsvZ9AKYr7JhhxgM5hCp3zrbHYGpz3zVVj0=";
   };
 
-  version-local = builtins.readFile ../VERSION + "current";
+  version-local = builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
   src-local = ../qlat-cps;
 
   enableParallelBuilding = true;

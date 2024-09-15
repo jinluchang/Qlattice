@@ -151,7 +151,7 @@ void fields_operations(std::vector<qlat::FieldM<T1, civ> >& pr, std::vector<qlat
 {
   Qassert(p0.size() == p1.size());
   if(p0.size() == 0){return ;}
-  const Geometry& geo = p0[0].geo();
+  // const Geometry& geo = p0[0].geo();
   const int Nvec = p0.size();
   if(pr.size() != Nvec){pr.resize(Nvec);}
   for(int vi=0;vi<Nvec;vi++){

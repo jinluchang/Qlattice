@@ -10,11 +10,25 @@
 }:
 
 let
-  local-pkgs = import ./default.nix;
-  qlat-pkgs = local-pkgs."qlat-pkgs-local";
-  env = pkgs.mkShell {
+  many-qlat-pkgs = import ./default.nix;
+  #
+  # qlat-pkgs = many-qlat-pkgs.qlat-pkgs-local;
+  # qlat-pkgs = many-qlat-pkgs.qlat-pkgs-cuda-local;
+  # qlat-pkgs = many-qlat-pkgs.qlat-pkgs-std-clang-local;
+  #
+  qlat-pkgs = let pkgs = many-qlat-pkgs.all-pkgs-cuda-local; in [
+    (pkgs.python3.withPackages (ps: with pkgs; [
+      qlat_utils
+    ]))
+  ];
+  # qlat-pkgs = let pkgs = many-qlat-pkgs.all-pkgs-local; in [
+  #   (pkgs.python3.withPackages (ps: with pkgs; [
+  #     qlat_utils
+  #   ]))
+  # ];
+  env = pkgs.mkShell rec {
     name = "qlat-build-sh";
     packages = qlat-pkgs;
-    inputsFrom = qlat-pkgs;
+    inputsFrom = packages;
   };
 in env

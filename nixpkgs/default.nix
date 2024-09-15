@@ -123,6 +123,7 @@ let
     qlat-pkgs = with pkgs; [
       mpi cuba qlat-eigen qlat-py
     ] ++ pkgs.qlat-dep-pkgs;
+    inherit pkgs;
   };
 
   overlay-clang = final: prev: let
@@ -153,27 +154,28 @@ let
   in {
     "qlat-py${pkgs.qlat-name}" = pkgs.qlat-py;
     "qlat-pkgs${pkgs.qlat-name}" = pkgs.qlat-pkgs;
+    "all-pkgs${pkgs.qlat-name}" = pkgs.pkgs;
   };
 
-  qlat-pkgs-core = {}
+  many-qlat-pkgs-core = {}
   // mk-qlat-pkgs [ overlay-local ]
-  // mk-qlat-pkgs [ overlay-cuda overlay-local ]
+  # // mk-qlat-pkgs [ overlay-cuda overlay-local ]
   // mk-qlat-pkgs [ overlay-std overlay-clang overlay-local ]
   ;
 
-  qlat-pkgs-all = qlat-pkgs-core
+  many-qlat-pkgs-all = many-qlat-pkgs-core
   // mk-qlat-pkgs []
-  // mk-qlat-pkgs [ overlay-cuda ]
+  # // mk-qlat-pkgs [ overlay-cuda ]
   # // mk-qlat-pkgs [ overlay-clang ]
   # // mk-qlat-pkgs [ overlay-clang overlay-local ]
   // mk-qlat-pkgs [ overlay-std ]
   // mk-qlat-pkgs [ overlay-std overlay-local ]
-  // mk-qlat-pkgs [ overlay-std overlay-cuda ]
-  // mk-qlat-pkgs [ overlay-std overlay-cuda overlay-local ]
+  # // mk-qlat-pkgs [ overlay-std overlay-cuda ]
+  # // mk-qlat-pkgs [ overlay-std overlay-cuda overlay-local ]
   // mk-qlat-pkgs [ overlay-std overlay-clang ]
   ;
 
-  qlat-pkgs = qlat-pkgs-core;
-  # qlat-pkgs = qlat-pkgs-all;
+  many-qlat-pkgs = many-qlat-pkgs-core;
+  # many-qlat-pkgs = many-qlat-pkgs-all;
 
-in qlat-pkgs
+in many-qlat-pkgs
