@@ -71,6 +71,8 @@ let
     qlat-examples-cpp-grid = py-call-pkg ./qlat-examples-cpp-grid.nix {
       stdenv = pkgs.qlat-stdenv;
       cudaSupport = pkgs.qlat-cudaSupport;
+      nixgl = pkgs.qlat-nixgl;
+      ngpu = pkgs.qlat-ngpu;
     };
     qlat-examples-py = py-call-pkg ./qlat-examples-py.nix {
       stdenv = pkgs.qlat-stdenv;
@@ -85,6 +87,8 @@ let
     qlat-examples-py-cps = py-call-pkg ./qlat-examples-py-cps.nix {
       stdenv = pkgs.qlat-stdenv;
       cudaSupport = pkgs.qlat-cudaSupport;
+      nixgl = pkgs.qlat-nixgl;
+      ngpu = pkgs.qlat-ngpu;
     };
     #
     qlat-dep-pkgs = with pkgs; ([

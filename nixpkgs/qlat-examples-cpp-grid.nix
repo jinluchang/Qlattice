@@ -7,6 +7,7 @@
 , qlat_grid
 , grid-lehner
 , git
+, which
 , bash
 , time
 , mpi
@@ -16,6 +17,8 @@
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
 , NVCC_ARCH ? "sm_86"
+, nixgl ? ""
+, ngpu ? "1"
 }:
 
 let
@@ -46,8 +49,10 @@ buildPythonPackage rec {
     mpi
     mpiCheckPhaseHook
     openssh
+    which
   ]
   ++ lib.optionals cudaSupport (with cudaPackages; [ cuda_nvcc ])
+  ++ lib.optionals cudaSupport [ nixgl ]
   ;
 
   propagatedBuildInputs = [
@@ -65,38 +70,57 @@ buildPythonPackage rec {
       cp -pv "${../qcore/bin/NVCC.py}" "$PWD/NVCC.py"
       patchShebangs --build "$PWD/NVCC.py"
       #
+      cp -pv "${../qcore/bin/bind-gpu.sh}" "$PWD/bind-gpu.sh"
+      patchShebangs --build "$PWD/bind-gpu.sh"
+      export NGPU=${ngpu}
+      export mpi_options="$mpi_options $PWD/bind-gpu.sh"
+      #
       export NVCC_OPTIONS="-w -std=c++14 -arch=${NVCC_ARCH} --expt-extended-lambda --expt-relaxed-constexpr -fopenmp -fno-strict-aliasing" # -D__DEBUG_VECUTILS__
       export QLAT_CXX="$PWD/NVCC.py -ccbin c++ $NVCC_OPTIONS"
       export QLAT_MPICXX="$PWD/NVCC.py -ccbin mpic++ $NVCC_OPTIONS"
       export QLAT_CXXFLAGS="--NVCC-compile -D__QLAT_BARYON_SHARED_SMALL__" # -fPIC
       export QLAT_LDFLAGS="--NVCC-link" # --shared
       #
+      export OMPI_CXX=c++
+      export OMPI_CC=cc
+      #
       export MPICXX="$QLAT_MPICXX"
-      export CXX="$MPICXX"
+      export CXX="$QLAT_MPICXX"
       export CXXFLAGS="$QLAT_CXXFLAGS"
       export LDFLAGS="$QLAT_LDFLAGS"
+      #
+      which nixGL
+      echo
+      echo "run with nixGL"
+      echo
+      nixGL qlat-utils-config
+      echo
+      cat $(which nixGL) | grep -v 'exec ' | grep -v '^#!' > nix-gl.sh
+      echo
+      echo cat nix-gl.sh
+      cat nix-gl.sh
+      source nix-gl.sh
+      echo
+      echo $LD_LIBRARY_PATH
+      echo
     '';
     cpu_extra = ''
     '';
     extra = if cudaSupport then gpu_extra else cpu_extra;
-  in ''
-    export OMPI_CXX=c++
-    export OMPI_CC=cc
+  in extra + ''
     #
-    CXX_ARR=($(grid-config --cxx))
-    export CXX="''${CXX_ARR[0]}"
-    export CXXFLAGS="''${CXX_ARR[@]:1} $CXXFLAGS"
-    export LDFLAGS="''${CXX_ARR[@]:1} $LDFLAGS"
+    # CXX_ARR=($(grid-config --cxx))
+    # export CXX="''${CXX_ARR[0]}"
+    # export CXXFLAGS="''${CXX_ARR[@]:1} $CXXFLAGS"
+    # export LDFLAGS="''${CXX_ARR[@]:1} $LDFLAGS"
     #
     export
-  '' + extra + ''
     echo
     ls -l
     echo
     pwd
     echo
     #
-    export LD_LIBRARY_PATH="$(python3 -m qlat qlat-config --LD_LIBRARY_PATH)"
     export mpi_options="--oversubscribe --bind-to none $mpi_options"
     export SHELL=${bash}/bin/bash
     #

@@ -6,6 +6,7 @@
 , qlat
 , qlat_cps
 , git
+, which
 , bash
 , time
 , mpi
@@ -14,6 +15,9 @@
 , qlat-name ? ""
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
+, NVCC_ARCH ? "sm_86"
+, nixgl ? ""
+, ngpu ? "1"
 }:
 
 let
@@ -44,8 +48,10 @@ buildPythonPackage rec {
     mpi
     mpiCheckPhaseHook
     openssh
+    which
   ]
   ++ lib.optionals cudaSupport (with cudaPackages; [ cuda_nvcc ])
+  ++ lib.optionals cudaSupport [ nixgl ]
   ;
 
   propagatedBuildInputs = [
@@ -56,7 +62,50 @@ buildPythonPackage rec {
     qlat_cps
   ];
 
-  preConfigure = ''
+  preConfigure = let
+    gpu_extra = ''
+      pwd
+      cp -pv "${../qcore/bin/NVCC.py}" "$PWD/NVCC.py"
+      patchShebangs --build "$PWD/NVCC.py"
+      #
+      cp -pv "${../qcore/bin/bind-gpu.sh}" "$PWD/bind-gpu.sh"
+      patchShebangs --build "$PWD/bind-gpu.sh"
+      export NGPU=${ngpu}
+      export mpi_options="$mpi_options $PWD/bind-gpu.sh"
+      #
+      export NVCC_OPTIONS="-w -std=c++14 -arch=${NVCC_ARCH} --expt-extended-lambda --expt-relaxed-constexpr -fopenmp -fno-strict-aliasing" # -D__DEBUG_VECUTILS__
+      export QLAT_CXX="$PWD/NVCC.py -ccbin c++ $NVCC_OPTIONS"
+      export QLAT_MPICXX="$PWD/NVCC.py -ccbin mpic++ $NVCC_OPTIONS"
+      export QLAT_CXXFLAGS="--NVCC-compile -D__QLAT_BARYON_SHARED_SMALL__" # -fPIC
+      export QLAT_LDFLAGS="--NVCC-link" # --shared
+      #
+      export OMPI_CXX=c++
+      export OMPI_CC=cc
+      #
+      export MPICXX="$QLAT_MPICXX"
+      export CXX="$QLAT_MPICXX"
+      export CXXFLAGS="$QLAT_CXXFLAGS"
+      export LDFLAGS="$QLAT_LDFLAGS"
+      #
+      which nixGL
+      echo
+      echo "run with nixGL"
+      echo
+      nixGL qlat-utils-config
+      echo
+      cat $(which nixGL) | grep -v 'exec ' | grep -v '^#!' > nix-gl.sh
+      echo
+      echo cat nix-gl.sh
+      cat nix-gl.sh
+      source nix-gl.sh
+      echo
+      echo $LD_LIBRARY_PATH
+      echo
+    '';
+    cpu_extra = ''
+    '';
+    extra = if cudaSupport then gpu_extra else cpu_extra;
+  in extra + ''
     export
     echo
     ls -l
@@ -73,9 +122,12 @@ buildPythonPackage rec {
     echo NIX_BUILD_CORES=$NIX_BUILD_CORES
     echo NIX_BUILD_TOP=$NIX_BUILD_TOP
     echo
-    #
+	#
     export num_proc=$((NIX_BUILD_CORES / 4 + 1))
     echo num_proc=$num_proc
+    #
+    patchShebangs --build */run.py
+    echo
     #
     make update-sources SHELL=$SHELL
     echo
