@@ -41,6 +41,7 @@ let
     qlat_grid = py-call-pkg ./qlat_grid.nix {
       stdenv = pkgs.qlat-stdenv;
       cudaSupport = pkgs.qlat-cudaSupport;
+      nixgl = pkgs.qlat-nixgl;
     };
     qlat_cps = py-call-pkg ./qlat_cps.nix {
       stdenv = pkgs.qlat-stdenv;

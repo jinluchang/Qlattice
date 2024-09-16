@@ -79,6 +79,9 @@ buildPythonPackage rec {
       export QLAT_CXXFLAGS="--NVCC-compile -D__QLAT_BARYON_SHARED_SMALL__" # -fPIC
       export QLAT_LDFLAGS="--NVCC-link" # --shared
       #
+      export OMPI_CXX=c++
+      export OMPI_CC=cc
+      #
       export MPICXX="$QLAT_MPICXX"
       export CXX="$QLAT_MPICXX"
       export CXXFLAGS="$QLAT_CXXFLAGS"
@@ -103,10 +106,8 @@ buildPythonPackage rec {
     '';
     extra = if cudaSupport then gpu_extra else cpu_extra;
   in ''
-    export OMPI_CXX=c++
-    export OMPI_CC=cc
-    #
+  '' + extra + ''
     export
-  '' + extra;
+  '';
 
 }
