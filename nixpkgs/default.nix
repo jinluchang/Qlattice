@@ -14,11 +14,11 @@ let
   overlay = final: prev: let
     pkgs = final;
   in rec {
-    #
     qlat-name = "";
     #
     is-pypi-src = true;
     qlat-cudaSupport = false;
+    qlat-ngpu = "2"; # adjust with actual number of GPUs
     qlat-eigen = pkgs.grid-lehner;
     qlat-stdenv = pkgs.stdenv;
     mpi = prev.mpi.override { cudaSupport = pkgs.qlat-cudaSupport; };
@@ -65,6 +65,7 @@ let
       stdenv = pkgs.qlat-stdenv;
       cudaSupport = pkgs.qlat-cudaSupport;
       nixgl = pkgs.qlat-nixgl;
+      ngpu = pkgs.qlat-ngpu;
     };
     qlat-examples-cpp-grid = py-call-pkg ./qlat-examples-cpp-grid.nix {
       stdenv = pkgs.qlat-stdenv;
@@ -73,6 +74,8 @@ let
     qlat-examples-py = py-call-pkg ./qlat-examples-py.nix {
       stdenv = pkgs.qlat-stdenv;
       cudaSupport = pkgs.qlat-cudaSupport;
+      nixgl = pkgs.qlat-nixgl;
+      ngpu = pkgs.qlat-ngpu;
     };
     qlat-examples-py-gpt = py-call-pkg ./qlat-examples-py-gpt.nix {
       stdenv = pkgs.qlat-stdenv;
@@ -165,9 +168,9 @@ let
   };
 
   many-qlat-pkgs-core = {}
-  // mk-qlat-pkgs [ overlay-local ]
-  # // mk-qlat-pkgs [ overlay-cuda overlay-local ]
-  // mk-qlat-pkgs [ overlay-std overlay-clang overlay-local ]
+  # // mk-qlat-pkgs [ overlay-local ]
+  // mk-qlat-pkgs [ overlay-cuda overlay-local ]
+  # // mk-qlat-pkgs [ overlay-std overlay-clang overlay-local ]
   ;
 
   many-qlat-pkgs-all = many-qlat-pkgs-core

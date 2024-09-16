@@ -16,6 +16,7 @@
 , cudaPackages ? {}
 , NVCC_ARCH ? "sm_86"
 , nixgl ? ""
+, ngpu ? "1"
 }:
 
 let
@@ -63,6 +64,11 @@ buildPythonPackage rec {
       pwd
       cp -pv "${../qcore/bin/NVCC.py}" "$PWD/NVCC.py"
       patchShebangs --build "$PWD/NVCC.py"
+      #
+      cp -pv "${../qcore/bin/bind-gpu.sh}" "$PWD/bind-gpu.sh"
+      patchShebangs --build "$PWD/bind-gpu.sh"
+      export NGPU=${ngpu}
+      export mpi_options="$mpi_options $PWD/bind-gpu.sh"
       #
       export NVCC_OPTIONS="-w -std=c++14 -arch=${NVCC_ARCH} --expt-extended-lambda --expt-relaxed-constexpr -fopenmp -fno-strict-aliasing" # -D__DEBUG_VECUTILS__
       export QLAT_CXX="$PWD/NVCC.py -ccbin c++ $NVCC_OPTIONS"
