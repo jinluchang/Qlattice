@@ -11,6 +11,7 @@
 , zlib
 , eigen
 , git
+, autoAddDriverRunpath
 , openmp ? null
 , is-pypi-src ? true
 , qlat-name ? ""
@@ -71,6 +72,7 @@ buildPythonPackage rec {
 	cuda_profiler_api
     libcufft
   ])
+  ++ lib.optionals cudaSupport [ autoAddDriverRunpath ]
   ;
 
   dependencies = [
@@ -97,6 +99,9 @@ buildPythonPackage rec {
       export QLAT_CXXFLAGS="--NVCC-compile -D__QLAT_BARYON_SHARED_SMALL__" # -fPIC
       export QLAT_LDFLAGS="--NVCC-link" # --shared
       #
+      export OMPI_CXX=c++
+      export OMPI_CC=cc
+      #
       export MPICXX="$QLAT_MPICXX"
       export CXX="$QLAT_CXX"
       export CXXFLAGS="$QLAT_CXXFLAGS"
@@ -105,12 +110,9 @@ buildPythonPackage rec {
     cpu_extra = ''
     '';
     extra = if cudaSupport then gpu_extra else cpu_extra;
-  in ''
-    export OMPI_CXX=c++
-    export OMPI_CC=cc
-    #
+  in extra + ''
     export
-  '' + extra;
+  '';
 
   preFixup = ''
     echo

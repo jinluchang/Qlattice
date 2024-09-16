@@ -2,14 +2,14 @@ let
 
   nixpkgs = import <nixpkgs>;
 
-  pkgs = nixpkgs {
-    config = {
-      allowUnfree = true;
-    };
-    overlays = [
-      overlay
-    ];
+  nixgl-src = (nixpkgs {}).fetchFromGitHub {
+    owner = "nix-community";
+    repo = "nixGL";
+    rev = "310f8e49a149e4c9ea52f1adf70cdc768ec53f8a";
+    hash = "sha256-lnzZQYG0+EXl/6NkGpyIz+FEOc/DSEG57AP1VsdeNrM=";
   };
+
+  nixgl = import nixgl-src {};
 
   overlay = final: prev: let
     pkgs = final;
@@ -26,6 +26,8 @@ let
     call-pkg = pkgs.callPackage;
     py-call-pkg = pkgs.python3Packages.callPackage;
     #
+    qlat-nixgl = if pkgs.qlat-cudaSupport then nixgl.auto.nixGLDefault else "";
+    #
     cuba = call-pkg ./cuba.nix { stdenv = pkgs.qlat-stdenv; };
     qlat_utils = py-call-pkg ./qlat_utils.nix {
       stdenv = pkgs.qlat-stdenv; eigen = pkgs.qlat-eigen;
@@ -34,6 +36,7 @@ let
     qlat = py-call-pkg ./qlat.nix {
       stdenv = pkgs.qlat-stdenv;
       cudaSupport = pkgs.qlat-cudaSupport;
+      nixgl = pkgs.qlat-nixgl;
     };
     qlat_grid = py-call-pkg ./qlat_grid.nix {
       stdenv = pkgs.qlat-stdenv;
@@ -42,6 +45,7 @@ let
     qlat_cps = py-call-pkg ./qlat_cps.nix {
       stdenv = pkgs.qlat-stdenv;
       cudaSupport = pkgs.qlat-cudaSupport;
+      nixgl = pkgs.qlat-nixgl;
     };
     c-lime = call-pkg ./c-lime.nix { stdenv = pkgs.qlat-stdenv; };
     qmp = call-pkg ./qmp.nix { stdenv = pkgs.qlat-stdenv; };
@@ -60,6 +64,7 @@ let
     qlat-examples-cpp = py-call-pkg ./qlat-examples-cpp.nix {
       stdenv = pkgs.qlat-stdenv;
       cudaSupport = pkgs.qlat-cudaSupport;
+      nixgl = pkgs.qlat-nixgl;
     };
     qlat-examples-cpp-grid = py-call-pkg ./qlat-examples-cpp-grid.nix {
       stdenv = pkgs.qlat-stdenv;
@@ -78,9 +83,11 @@ let
       cudaSupport = pkgs.qlat-cudaSupport;
     };
     #
-    qlat-dep-pkgs = with pkgs; [
+    qlat-dep-pkgs = with pkgs; ([
       git pkg-config zlib gsl fftw fftwFloat hdf5-cpp openssl gmp mpfr
-    ];
+    ]
+    ++ (if qlat-cudaSupport then [ qlat-nixgl ] else [])
+    );
     #
     qlat-py = pkgs.python3.withPackages (ps: with pkgs; [
       qlat_utils

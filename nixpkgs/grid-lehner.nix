@@ -17,6 +17,7 @@
 , autoconf
 , automake
 , which
+, autoAddDriverRunpath
 , openmp ? null
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
@@ -69,6 +70,7 @@ in grid-stdenv.mkDerivation rec {
     cuda_cudart
 	cuda_profiler_api
   ])
+  ++ lib.optionals cudaSupport [ autoAddDriverRunpath ]
   ;
 
   preConfigure = let

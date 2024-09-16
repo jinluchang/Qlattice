@@ -93,6 +93,8 @@ buildPythonPackage rec {
     pwd
     ls -l
     #
+    patchShebangs --build ./clean ./update
+    #
     echo '-- clean source...'
     bash ./clean
     echo '-- update source...'
@@ -100,8 +102,6 @@ buildPythonPackage rec {
     bash ./update
     #
     echo '-- update source...'
-    echo "$PATH"
-    echo "$PATH" | grep Grid
     which grid-config
     bash ./make %grid-config "$NIX_BUILD_CORES"
     #
