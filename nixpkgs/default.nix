@@ -175,20 +175,20 @@ let
   };
 
   many-qlat-pkgs-core = {}
-  # // mk-qlat-pkgs [ overlay-local ]
+  // mk-qlat-pkgs [ overlay-local ]
   // mk-qlat-pkgs [ overlay-cuda overlay-local ]
-  # // mk-qlat-pkgs [ overlay-std overlay-clang overlay-local ]
+  // mk-qlat-pkgs [ overlay-std overlay-clang overlay-local ]
   ;
 
   many-qlat-pkgs-all = many-qlat-pkgs-core
   // mk-qlat-pkgs []
-  # // mk-qlat-pkgs [ overlay-cuda ]
+  // mk-qlat-pkgs [ overlay-cuda ]
   # // mk-qlat-pkgs [ overlay-clang ]
   # // mk-qlat-pkgs [ overlay-clang overlay-local ]
   // mk-qlat-pkgs [ overlay-std ]
   // mk-qlat-pkgs [ overlay-std overlay-local ]
-  # // mk-qlat-pkgs [ overlay-std overlay-cuda ]
-  # // mk-qlat-pkgs [ overlay-std overlay-cuda overlay-local ]
+  // mk-qlat-pkgs [ overlay-std overlay-cuda ]
+  // mk-qlat-pkgs [ overlay-std overlay-cuda overlay-local ]
   // mk-qlat-pkgs [ overlay-std overlay-clang ]
   ;
 
