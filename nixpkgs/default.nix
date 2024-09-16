@@ -83,6 +83,8 @@ let
     qlat-examples-py-gpt = py-call-pkg ./qlat-examples-py-gpt.nix {
       stdenv = pkgs.qlat-stdenv;
       cudaSupport = pkgs.qlat-cudaSupport;
+      nixgl = pkgs.qlat-nixgl;
+      ngpu = pkgs.qlat-ngpu;
     };
     qlat-examples-py-cps = py-call-pkg ./qlat-examples-py-cps.nix {
       stdenv = pkgs.qlat-stdenv;
