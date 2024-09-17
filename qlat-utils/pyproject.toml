@@ -13,6 +13,10 @@ keyword = [ 'qar', 'Timer', 'RngState', ]
 authors = [ { name = 'Luchang Jin', email = 'ljin.luchang@gmail.com' }, ]
 dependencies = [ 'numpy', 'psutil', 'cython', ]
 
+[tool.meson-python.args]
+setup = ['-Doptimization=2']
+compile = [ '-j4', ]
+
 [tool.cibuildwheel]
 build = [ "cp*-manylinux_x86_64", "cp311-manylinux_aarch64", "cp*-macosx_*", ]
 skip = ""
@@ -50,6 +54,3 @@ environment = { PATH="/usr/local/opt/llvm/bin:/usr/local/opt/findutils/libexec/g
 repair-wheel-command = "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
 
 [tool.cibuildwheel.windows]
-
-[tool.meson-python.args]
-compile = [ '-j4', ]
