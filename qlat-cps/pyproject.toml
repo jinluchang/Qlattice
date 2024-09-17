@@ -14,5 +14,5 @@ authors = [ { name = 'Luchang Jin', email = 'ljin.luchang@gmail.com' }, ]
 dependencies = [ 'qlat', ]
 
 [tool.meson-python.args]
-setup = ['-Doptimization=2']
+setup = [ '-Doptimization=2', '-Ddebug=false', '-Dbuildtype=custom', '-Db_ndebug=false', ]
 compile = [ '-j4', ]
