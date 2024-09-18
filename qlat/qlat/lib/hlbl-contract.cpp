@@ -3,6 +3,8 @@
 namespace qlat
 {  //
 
+#define qacc_for_debug qthread_for
+
 void set_m_z_field_tag(SelectedPoints<RealD>& smf_d,
                        const PointsSelection& psel_d, const Geometry& geo,
                        const Coordinate& xg_x, const Coordinate& xg_y,
@@ -177,8 +179,8 @@ void contract_four_loop(SelectedPoints<Complex>& f_loop_i_rho_sigma_lambda,
                         const CurrentMoments<WilsonMatrix>& cm_yx,
                         const PointsSelection& psel_d,
                         const SelectedPoints<RealD>& psel_d_prob_xy,
-                        const Geometry& geo,
-                        const Long r_sq_limit, const std::string& label)
+                        const Geometry& geo, const Long r_sq_limit,
+                        const std::string& label)
 {
   TIMER_VERBOSE("contract_four_loop");
   const box<SpinMatrixConstantsT<>>& smc = get_spin_matrix_constants();
@@ -186,7 +188,12 @@ void contract_four_loop(SelectedPoints<Complex>& f_loop_i_rho_sigma_lambda,
   f_loop_i_rho_sigma_lambda.init(psel_d, 3 * 4 * 4 * 4);
   set_zero(f_loop_i_rho_sigma_lambda);
   const ChooseReferenceLabel cr_label = choose_reference_label(label);
-  qacc_for(idx, psel_d.size(), {
+  SelectedPoints<WilsonMatrix> f_sm_yx_g, f_sm_xy_g, f_vc_yx_g, f_vc_xy_g;
+  f_sm_yx_g.init(psel_d, 3 * 4);
+  f_sm_xy_g.init(psel_d, 3 * 4);
+  f_vc_yx_g.init(psel_d, 4 * 4);
+  f_vc_xy_g.init(psel_d, 4 * 4);
+  qacc_for_debug(idx, psel_d.size(), {
     const array<SpinMatrix, 4>& gammas = smc().cps_gammas;
     const RealD prob = psel_d_prob_xy.get_elem(idx);
     const RealD weight = 1.0 / prob;
@@ -205,16 +212,20 @@ void contract_four_loop(SelectedPoints<Complex>& f_loop_i_rho_sigma_lambda,
       Vector<Complex> v_loop = f_loop_i_rho_sigma_lambda.get_elems(idx);
       // matrix_trace(sm_yx[i] * gammas[rho], vc_xy[lambda] * gammas[sigma])
       // matrix_trace(sm_xy[i] * gammas[sigma], vc_yx[lambda] * gammas[rho])
-      array<WilsonMatrix, 3 * 4> sm_yx_g;
-      array<WilsonMatrix, 3 * 4> sm_xy_g;
+      Vector<WilsonMatrix> sm_yx_g = f_sm_yx_g.get_elems(idx);
+      Vector<WilsonMatrix> sm_xy_g = f_sm_xy_g.get_elems(idx);
+      // array<WilsonMatrix, 3 * 4> sm_yx_g;
+      // array<WilsonMatrix, 3 * 4> sm_xy_g;
       for (int i = 0; i < 3; ++i) {
         for (int rho = 0; rho < 4; ++rho) {
           sm_yx_g[i * 4 + rho] = sm_yx[i] * gammas[rho];
           sm_xy_g[i * 4 + rho] = sm_xy[i] * gammas[rho];
         }
       }
-      array<WilsonMatrix, 4 * 4> vc_yx_g;
-      array<WilsonMatrix, 4 * 4> vc_xy_g;
+      Vector<WilsonMatrix> vc_yx_g = f_vc_yx_g.get_elems(idx);
+      Vector<WilsonMatrix> vc_xy_g = f_vc_xy_g.get_elems(idx);
+      // array<WilsonMatrix, 4 * 4> vc_yx_g;
+      // array<WilsonMatrix, 4 * 4> vc_xy_g;
       for (int lambda = 0; lambda < 4; ++lambda) {
         for (int sigma = 0; sigma < 4; ++sigma) {
           vc_xy_g[lambda * 4 + sigma] = vc_xy[lambda] * gammas[sigma];
@@ -242,8 +253,8 @@ void contract_four_combine(
     SlTable& t, SlTable& t_pi, const Complex& coef, const Geometry& geo,
     const Coordinate& xg_x, const Coordinate& xg_y,
     const SelectedPoints<Complex>& f_loop_i_rho_sigma_lambda,
-    const SelectedPoints<ManyMagneticMoments>& smf, const PointsSelection& psel_d,
-    const Long r_sq_limit)
+    const SelectedPoints<ManyMagneticMoments>& smf,
+    const PointsSelection& psel_d, const Long r_sq_limit)
 // x and y are global coordinates
 {
   TIMER("contract_four_combine");
@@ -337,8 +348,7 @@ std::vector<SlTable> contract_four_pair_no_glb_sum(
   const Complex coef0 = 1.0E10 * 2.0 * muon_mass * std::pow(e_charge, 6);
   const Complex coef1 =
       (inv_type == 0 ? 16.0 + 1.0 : 1.0) / 81.0 * (-3.0) * std::pow(z_v, 4);
-  const Complex coef_all =
-      coef * coef0 * coef1 / 3.0 / (RealD)total_volume;
+  const Complex coef_all = coef * coef0 * coef1 / 3.0 / (RealD)total_volume;
   std::vector<SlTable> ts;
   for (int i = 0; i < (int)tags.size(); ++i) {
     SelectedPoints<Complex> f_loop_i_rho_sigma_lambda;

@@ -98,8 +98,10 @@ buildPythonPackage rec {
       echo
       echo $LD_LIBRARY_PATH
       echo
+      export num_proc=$((NIX_BUILD_CORES / 16 + 1))
     '';
     cpu_extra = ''
+      export num_proc=$((NIX_BUILD_CORES / 4 + 1))
     '';
     extra = if cudaSupport then gpu_extra else cpu_extra;
   in extra + ''
@@ -124,7 +126,6 @@ buildPythonPackage rec {
     patchShebangs --build */run.sh
     echo
 	#
-    export num_proc=$((NIX_BUILD_CORES / 4 + 1))
     echo num_proc=$num_proc
     #
     make run -j$num_proc SHELL=$SHELL
