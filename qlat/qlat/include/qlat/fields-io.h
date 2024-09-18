@@ -584,7 +584,7 @@ ShuffledFieldsReader& get_shuffled_fields_reader(
 
 ShuffledFieldsWriter& get_shuffled_fields_writer(
     const std::string& path,
-    const Coordinate& new_size_node = Coordinate(1, 1, 1, 8),
+    const Coordinate& new_size_node = Coordinate(2, 2, 2, 4),
     const bool is_append = false);
 
 // --------------------------------------------
@@ -1066,7 +1066,9 @@ Long write_field(const Field<M>& field, const std::string& path,
 {
   TIMER_VERBOSE_FLOPS("write_field(field,path,fn,is_append)");
   ShuffledFieldsWriter& sfw = get_shuffled_fields_writer(path);
-  return write(sfw, fn, field);
+  const Long total_bytes = write(sfw, fn, field);
+  flush(sfw);
+  return total_bytes;
 }
 
 // -----------------
