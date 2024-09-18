@@ -1587,11 +1587,25 @@ ShuffledFieldsReader& get_shuffled_fields_reader(
     const std::string& path, const Coordinate& new_size_node)
 {
   TIMER("get_shuffled_fields_reader");
+  qassert(not get_shuffled_fields_writer_cache().has(path));
   ShuffledFieldsReader& sfr = get_shuffled_fields_reader_cache()[path];
   if (sfr.path == "") {
     sfr.init(path, new_size_node);
   }
   return sfr;
+}
+
+ShuffledFieldsWriter& get_shuffled_fields_writer(
+    const std::string& path, const Coordinate& new_size_node,
+    const bool is_append)
+{
+  TIMER("get_shuffled_fields_writer");
+  qassert(not get_shuffled_fields_reader_cache().has(path));
+  ShuffledFieldsWriter& sfw = get_shuffled_fields_writer_cache()[path];
+  if (sfw.path == "") {
+    sfw.init(path, new_size_node, is_append);
+  }
+  return sfw;
 }
 
 std::vector<std::string> list_fields(const std::string& path)

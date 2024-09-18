@@ -565,14 +565,29 @@ void close_all_shuffled_fields_reader();
 
 typedef Cache<std::string, ShuffledFieldsReader> ShuffledFieldsReaderCache;
 
+typedef Cache<std::string, ShuffledFieldsWriter> ShuffledFieldsWriterCache;
+
 API inline ShuffledFieldsReaderCache& get_shuffled_fields_reader_cache()
 {
   static ShuffledFieldsReaderCache cache("ShuffledFieldsReaderCache", 4, 1);
   return cache;
 }
 
+API inline ShuffledFieldsWriterCache& get_shuffled_fields_writer_cache()
+{
+  static ShuffledFieldsWriterCache cache("ShuffledFieldsWriterCache", 4, 1);
+  return cache;
+}
+
 ShuffledFieldsReader& get_shuffled_fields_reader(
     const std::string& path, const Coordinate& new_size_node = Coordinate());
+
+ShuffledFieldsWriter& get_shuffled_fields_writer(
+    const std::string& path,
+    const Coordinate& new_size_node = Coordinate(1, 1, 1, 8),
+    const bool is_append = false);
+
+// --------------------------------------------
 
 Long flush(ShuffledFieldsWriter& sfw);
 
@@ -1000,6 +1015,8 @@ Long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
   }
 }
 
+// -----------------
+
 template <class M>
 Long read_field(Field<M>& field, const std::string& path, const std::string& fn)
 // interface function
@@ -1040,6 +1057,16 @@ Long read_field_double_from_float(SelectedField<M>& sf, const std::string& path,
   TIMER_VERBOSE("read_field_double_from_float(sf,path,fn,sbs)");
   ShuffledFieldsReader& sfr = get_shuffled_fields_reader(path);
   return read_double_from_float(sfr, fn, sbs, sf);
+}
+
+template <class M>
+Long write_field(const Field<M>& field, const std::string& path,
+                 const std::string& fn)
+// interface function
+{
+  TIMER_VERBOSE_FLOPS("write_field(field,path,fn,is_append)");
+  ShuffledFieldsWriter& sfw = get_shuffled_fields_writer(path);
+  return write(sfw, fn, field);
 }
 
 // -----------------
