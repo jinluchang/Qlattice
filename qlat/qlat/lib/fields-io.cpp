@@ -660,6 +660,8 @@ int flush(FieldsWriter& fw)
   return qfflush(fw.qfile);
 }
 
+// ------------------------
+
 ShuffledBitSet mk_shuffled_bitset(const FieldRank& f_rank,
                                   const Coordinate& new_size_node)
 {
@@ -706,6 +708,8 @@ ShuffledBitSet mk_shuffled_bitset(const FieldRank& f_rank,
   add_field_selection(f_rank_combined, psel);
   return mk_shuffled_bitset(f_rank_combined, new_size_node);
 }
+
+// ------------------------
 
 void ShuffledFieldsWriter::init()
 // interface function

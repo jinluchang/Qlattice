@@ -1064,9 +1064,48 @@ Long write_field(const Field<M>& field, const std::string& path,
                  const std::string& fn)
 // interface function
 {
-  TIMER_VERBOSE_FLOPS("write_field(field,path,fn,is_append)");
+  TIMER_VERBOSE_FLOPS("write_field(field,path,fn)");
   ShuffledFieldsWriter& sfw = get_shuffled_fields_writer(path);
   const Long total_bytes = write(sfw, fn, field);
+  flush(sfw);
+  return total_bytes;
+}
+
+template <class M>
+Long write_field(const SelectedField<M>& sf, const ShuffledBitSet& sbs,
+                 const std::string& path, const std::string& fn)
+// interface function
+{
+  TIMER_VERBOSE_FLOPS("write_field(sf,sbs,path,fn,is_append)");
+  ShuffledFieldsWriter& sfw = get_shuffled_fields_writer(path);
+  const Long total_bytes = write(sfw, fn, sbs, sf);
+  flush(sfw);
+  return total_bytes;
+}
+
+template <class M>
+Long write_field_float_from_double(const Field<M>& field,
+                                   const std::string& path,
+                                   const std::string& fn)
+// interface function
+{
+  TIMER_VERBOSE_FLOPS("write_field(field,path,fn)");
+  ShuffledFieldsWriter& sfw = get_shuffled_fields_writer(path);
+  const Long total_bytes = write_float_from_double(sfw, fn, field);
+  flush(sfw);
+  return total_bytes;
+}
+
+template <class M>
+Long write_field_float_from_double(const SelectedField<M>& sf,
+                                   const ShuffledBitSet& sbs,
+                                   const std::string& path,
+                                   const std::string& fn)
+// interface function
+{
+  TIMER_VERBOSE_FLOPS("write_field(sf,sbs,path,fn,is_append)");
+  ShuffledFieldsWriter& sfw = get_shuffled_fields_writer(path);
+  const Long total_bytes = write_float_from_double(sfw, fn, sbs, sf);
   flush(sfw);
   return total_bytes;
 }
@@ -1185,7 +1224,23 @@ bool does_file_exist_sync_node(const std::string& path, const std::string& fn);
                                                                                \
   QLAT_EXTERN template Long read_field_double_from_float(                      \
       SelectedField<TYPENAME>& sf, const std::string& path,                    \
-      const std::string& fn, const ShuffledBitSet& sbs)
+      const std::string& fn, const ShuffledBitSet& sbs);                       \
+                                                                               \
+  QLAT_EXTERN template Long write_field(const Field<TYPENAME>& field,          \
+                                        const std::string& path,               \
+                                        const std::string& fn);                \
+                                                                               \
+  QLAT_EXTERN template Long write_field(                                       \
+      const SelectedField<TYPENAME>& sf, const ShuffledBitSet& sbs,            \
+      const std::string& path, const std::string& fn);                         \
+                                                                               \
+  QLAT_EXTERN template Long write_field_float_from_double(                     \
+      const Field<TYPENAME>& field, const std::string& path,                   \
+      const std::string& fn);                                                  \
+                                                                               \
+  QLAT_EXTERN template Long write_field_float_from_double(                     \
+      const SelectedField<TYPENAME>& sf, const ShuffledBitSet& sbs,            \
+      const std::string& path, const std::string& fn)
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 #undef QLAT_EXTERN_TEMPLATE
