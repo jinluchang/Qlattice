@@ -587,6 +587,18 @@ ShuffledFieldsWriter& get_shuffled_fields_writer(
     const Coordinate& new_size_node = Coordinate(2, 2, 2, 4),
     const bool is_append = false);
 
+inline void clear_shuffled_fields_reader_cache()
+{
+  TIMER_VERBOSE("clear_shuffled_fields_reader_cache");
+  get_shuffled_fields_reader_cache().clear();
+}
+
+inline void clear_shuffled_fields_writer_cache()
+{
+  TIMER_VERBOSE("clear_shuffled_fields_writer_cache");
+  get_shuffled_fields_writer_cache().clear();
+}
+
 // --------------------------------------------
 
 Long flush(ShuffledFieldsWriter& sfw);
