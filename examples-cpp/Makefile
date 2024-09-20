@@ -11,6 +11,7 @@ tests = qlat-vector-utils \
 		dist-io \
 		selected-field \
 		fields-io \
+		fields-io-simple-demo \
 		simple-1 \
 		hmc \
 		flowed-hmc \
