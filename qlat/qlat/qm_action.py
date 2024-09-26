@@ -36,7 +36,10 @@ class QMAction:
 
     def t_FV_mid(self):
         return c.get_t_FV_mid_qm_action(self)
-
+    
+    def t_FV(self):
+        return 2*self.t_FV_out() + self.t_FV_mid()
+    
     def t_full1(self):
         return c.get_t_full1_qm_action(self)
 

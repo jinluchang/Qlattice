@@ -518,12 +518,12 @@ def main():
     q.displayln_info(f"CHECK: The vacuum expectation value of phi_0 is {round(np.mean(measurements.phi_list[int(n_traj/2):], axis=0)[0],2)}.")
     q.displayln_info(f"CHECK: The vacuum expectation value of phi^2 is {round(np.mean(measurements.psq_list[int(n_traj/2):]),2)}.")
     
-    x = np.arange(-5,5,0.1)
-    for t in range(0,Nt, 20):
-        plt.plot([min(action.V(i,t)*Nt/20.0, 3.0) + t for i in x],x)
-    plt.show()
-    plt.plot(range(Nt), np.mean(measurements.timeslices,axis=0))
-    plt.show()
+    #x = np.arange(-5,5,0.1)
+    #for t in range(0,Nt, 5):
+    #    plt.plot([min(action.V(i,t)*Nt/20.0, 10.0) + t for i in x],x)
+    #plt.show()
+    #plt.plot(range(Nt), np.mean(measurements.timeslices,axis=0))
+    #plt.show()
 
 size_node_list = [
         [1, 1, 1, 1],

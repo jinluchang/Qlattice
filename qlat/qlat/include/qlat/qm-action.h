@@ -71,7 +71,7 @@ struct QMAction {
       return V_FV_mid(x);
     else if(t<t_full1+2*t_FV_out+t_FV_mid)
       return V_FV_out(x);
-    else if(t<t_full1+t_FV+2*t_FV_out+t_FV_mid+t_full2)
+    else if(t<t_full1+2*t_FV_out+t_FV_mid+t_full2)
       return V_full(x);
     else {
      //displayln(ssprintf("t (in V): %ld", t));
@@ -87,11 +87,11 @@ struct QMAction {
     if(t<t_full1)
         return dV_full(x);
     else if(t<t_full1+t_FV_out)
-      return dV_FV(x)_out;
+      return dV_FV_out(x);
     else if(t<t_full1+t_FV_out+t_FV_mid)
-      return dV_FV(x)_mid;
+      return dV_FV_mid(x);
     else if(t<t_full1+2*t_FV_out+t_FV_mid)
-      return dV_FV(x)_out;
+      return dV_FV_out(x);
     else if(t<t_full1+2*t_FV_out+t_FV_mid+t_full2)
       return dV_full(x);
     else
