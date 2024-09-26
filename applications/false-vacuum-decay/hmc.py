@@ -354,6 +354,7 @@ class Measurements:
     def load(self):
         if len(glob.glob(self.save_file)):
             with open(self.save_file,"rb") as input:
+                q.displayln_info(f"Loading old measurements from {self.save_file}")
                 data = pickle.load(input)
                 self.trajs.extend(data["trajs"])
                 self.accept_rates.extend(data["accept_rates"])
