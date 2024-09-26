@@ -8,13 +8,15 @@ struct QMAction {
   double alpha;
   double beta;
   double start_TV;
+  double FV_offset;
   double center_bar;
   double barrier_strength;
   double M;
   double L;
   Long t_full1;
   Long t_full2;
-  Long t_FV;
+  Long t_FV_out;
+  Long t_FV_mid;
   double dt;
   //
   qacc void init()
@@ -23,34 +25,38 @@ struct QMAction {
     alpha = 1.0;
     beta = 1.0;
     start_TV = 2.0;
+    FV_offset = 0.2;
     center_bar = 1.0;
     barrier_strength = 1.0;
     M = 1.0;
     L = 0.0;
     t_full1 = 10;
     t_full2 = 10;
-    t_FV = 10;
+    t_FV_out = 10;
+    t_FV_mid = 5;
     dt = 1.0;
   }
   //
   qacc QMAction() { init(); }
-  qacc QMAction(const double alpha_, const double beta_, const double start_TV_,
+  qacc QMAction(const double alpha_, const double beta_, const double FV_offset_,
                 const double barrier_strength_, const double M_,
-                const double L_, const Long t_full1_, const Long t_full2_,
-                const Long t_FV_, const double dt_)
+                const double L_, const Long t_full1_, const Long t_full2_, 
+                const Long t_FV_out_, const Long t_FV_mid_, const double dt_)
   {
     init();
     initialized = true;
     alpha = alpha_;
     beta = beta_;
-    start_TV = (2.0-2.0*std::pow(1-alpha, 0.5))/alpha + start_TV_; // (3.0+std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
+    start_TV = (3.0+std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha; // (2.0-2.0*std::pow(1-alpha, 0.5))/alpha + start_TV_;
+    FV_offset = FV_offset_;
     center_bar = (3.0-std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
     barrier_strength = barrier_strength_;
     M = M_;
     L = L_;
     t_full1 = t_full1_;
     t_full2 = t_full2_;
-    t_FV = t_FV_;
+    t_FV_out = t_FV_out_;
+    t_FV_mid = t_FV_mid_;
     dt = dt_;
   }
 
@@ -59,9 +65,13 @@ struct QMAction {
     // Returns the potential evaluated at point x
     if(t<t_full1)
         return V_full(x);
-    else if(t<t_full1+t_FV)
-      return V_FV(x);
-    else if(t<t_full1+t_FV+t_full2)
+    else if(t<t_full1+t_FV_out)
+      return V_FV_out(x);
+    else if(t<t_full1+t_FV_out+t_FV_mid)
+      return V_FV_mid(x);
+    else if(t<t_full1+2*t_FV_out+t_FV_mid)
+      return V_FV_out(x);
+    else if(t<t_full1+t_FV+2*t_FV_out+t_FV_mid+t_full2)
       return V_full(x);
     else {
      //displayln(ssprintf("t (in V): %ld", t));
@@ -76,9 +86,13 @@ struct QMAction {
     // Returns the potential evaluated at point x
     if(t<t_full1)
         return dV_full(x);
-    else if(t<t_full1+t_FV)
-      return dV_FV(x);
-    else if(t<t_full1+t_FV+t_full2)
+    else if(t<t_full1+t_FV_out)
+      return dV_FV(x)_out;
+    else if(t<t_full1+t_FV_out+t_FV_mid)
+      return dV_FV(x)_mid;
+    else if(t<t_full1+2*t_FV_out+t_FV_mid)
+      return dV_FV(x)_out;
+    else if(t<t_full1+2*t_FV_out+t_FV_mid+t_full2)
       return dV_full(x);
     else
      return dV_TV(x);
@@ -113,14 +127,28 @@ struct QMAction {
     return rtn;
   }
 
-  inline double V_FV(const double x)
+  inline double V_FV_out(const double x)
+  {
+    if(x>center_bar+FV_offset)
+      return V_full(center_bar+FV_offset) + barrier_strength*(x-center_bar-FV_offset)*(x-center_bar-FV_offset);
+    return V_full(x);
+  }
+
+  inline double dV_FV_out(const double x)
+  {
+    if(x>center_bar+FV_offset)
+      return 2.0*barrier_strength*(x-center_bar-FV_offset);
+    return dV_full(x);
+  }
+
+  inline double V_FV_mid(const double x)
   {
     if(x>center_bar)
       return V_full(center_bar) + barrier_strength*(x-center_bar)*(x-center_bar);
     return V_full(x);
   }
 
-  inline double dV_FV(const double x)
+  inline double dV_FV_mid(const double x)
   {
     if(x>center_bar)
       return 2.0*barrier_strength*(x-center_bar);
