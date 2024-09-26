@@ -393,17 +393,18 @@ def main():
     mult = 1
     alpha = 1.0
     beta = 9.0
-    start_TV = 0.0
+    FV_offset = 0.2
     barrier_strength = 10.0
     M = 1.0
     L = 0.0
-    t_full = 10
-    t_FV = 30
+    t_full = 5
+    t_TV = 30
+    t_FV_mid = 6
     dt = 0.2
     # The number of trajectories to calculate
     n_traj = 50000
     #
-    version = "3-2"
+    version = "4-1"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
     steps = 10
@@ -420,13 +421,15 @@ def main():
             elif(sys.argv[i]=="-b"):
                 beta = float(sys.argv[i+1])
             elif(sys.argv[i]=="-o"):
-                start_TV = float(sys.argv[i+1])
+                FV_offset = float(sys.argv[i+1])
             elif(sys.argv[i]=="-B"):
                 barrier_strength = float(sys.argv[i+1])
-            elif(sys.argv[i]=="-t"):
-                t_full = int(sys.argv[i+1])
             elif(sys.argv[i]=="-f"):
-                t_FV = int(sys.argv[i+1])
+                t_full = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-t"):
+                t_TV = int(sys.argv[i+1])
+            elif(sys.argv[i]=="-m"):
+                t_FV_mid = int(sys.argv[i+1])
             elif(sys.argv[i]=="-M"):
                 M = float(sys.argv[i+1])
             elif(sys.argv[i]=="-L"):
@@ -450,10 +453,11 @@ def main():
             raise Exception("Invalid arguments: use \
                             -a for alpha, \
                             -b for beta, \
-                            -o to offset the start of the TV beyond the point where V_TV=min(V_FV), \
+                            -o to offset the barrier location in V_FV, \
                             -B for the barrier strength used in H_FV and H_TV, \
-                            -t for the time to evolve with H_full, \
-                            -f for the time to evolve with H_FV, \
+                            -f for the time to evolve with H_full, \
+                            -t for the time to evolve with H_TV, \
+                            -m for the time to evolve with H_FV_mid, \
                             -M to set the left barrier for H_TV, \
                             -L to set the right barrier for H_TV, \
                             -D for lattice dimensions, \
@@ -464,17 +468,20 @@ def main():
                             -R to force restarting with blank initial field, \
                             -i for the number of trajectories to do at the beginning without a Metropolis step.")
     
-    action = q.QMAction(alpha, beta, start_TV, barrier_strength, M, L, t_full, t_full, t_FV, dt)
-    hmc = HMC(action,f"alpha_{alpha}_beta_{beta}_dt_{dt}_bar_{barrier_strength}_M_{M}_L_{L}_tfull_{t_full}_tFV_{t_FV}",total_site,mult,steps,init_length,date,version,fresh_start)
+    t_FV_out = int((Nt - 2*t_full - t_TV - t_FV_mid)/2)
+    t_FV_mid = Nt - 2*t_full - t_TV - 2*t_FV_out
+    
+    action = q.QMAction(alpha, beta, FV_offset, barrier_strength, M, L, t_full, t_full, t_FV_out, t_FV_mid, dt)
+    hmc = HMC(action,f"alpha_{alpha}_beta_{beta}_dt_{dt}_FVoff_{FV_offset}_bar_{barrier_strength}_M_{M}_L_{L}_tfull_{t_full}_tTV_{t_TV}_tFV_{t_FV_out*2+t_FV_mid}_tFVout_{t_FV_out}_tFVmid_{t_FV_mid}",total_site,mult,steps,init_length,date,version,fresh_start)
     
     measure_Ms = [round(min(max(M,0.001)*2**i, 1.0),5) for i in range(1,10)]
     measure_Ls = [round(min(max(L,0.001)*2**i, 1.0),5) for i in range(1,10)]
     measure_deltats = range(0,min(t_full,10))
     
-    actions_M = [q.QMAction(alpha, beta, start_TV, barrier_strength, Mi, L, t_full, t_full, t_FV, dt) for Mi in measure_Ms]
-    actions_L = [q.QMAction(alpha, beta, start_TV, barrier_strength, M, Li, t_full, t_full, t_FV, dt) for Li in measure_Ls]
-    actions_t_FV = [q.QMAction(alpha, beta, start_TV, barrier_strength, M, L, t_full, t_full-a, t_FV+a, dt) for a in measure_deltats]
-    actions_t_TV = [q.QMAction(alpha, beta, start_TV, barrier_strength, M, L, t_full, t_full-a, t_FV, dt) for a in measure_deltats]
+    actions_M = [q.QMAction(alpha, beta, FV_offset, barrier_strength, Mi, L, t_full, t_full, t_FV_out, t_FV_mid, dt) for Mi in measure_Ms]
+    actions_L = [q.QMAction(alpha, beta, FV_offset, barrier_strength, M, Li, t_full, t_full, t_FV_out, t_FV_mid, dt) for Li in measure_Ls]
+    actions_t_FV = [q.QMAction(alpha, beta, FV_offset, barrier_strength, M, L, t_full, t_full-a, t_FV_out, t_FV_mid+a, dt) for a in measure_deltats]
+    actions_t_TV = [q.QMAction(alpha, beta, FV_offset, barrier_strength, M, L, t_full, t_full-a, t_FV_out, t_FV_mid, dt) for a in measure_deltats]
     measurements = Measurements(total_site, actions_M, actions_L, actions_t_FV, actions_t_TV, f"output_data/measurements_{hmc.fileid}.bin")
     
     # If observables have been saved from a previous calculation (on the
@@ -511,12 +518,12 @@ def main():
     q.displayln_info(f"CHECK: The vacuum expectation value of phi_0 is {round(np.mean(measurements.phi_list[int(n_traj/2):], axis=0)[0],2)}.")
     q.displayln_info(f"CHECK: The vacuum expectation value of phi^2 is {round(np.mean(measurements.psq_list[int(n_traj/2):]),2)}.")
     
-    #x = np.arange(-5,5,0.1)
-    #for t in range(0,Nt, 20):
-    #    plt.plot([min(action.V(i,t)*Nt/20.0, 3.0) + t for i in x],x)
-    #plt.show()
-    #plt.plot(range(Nt), np.mean(measurements.timeslices,axis=0))
-    #plt.show()
+    x = np.arange(-5,5,0.1)
+    for t in range(0,Nt, 20):
+        plt.plot([min(action.V(i,t)*Nt/20.0, 3.0) + t for i in x],x)
+    plt.show()
+    plt.plot(range(Nt), np.mean(measurements.timeslices,axis=0))
+    plt.show()
 
 size_node_list = [
         [1, 1, 1, 1],

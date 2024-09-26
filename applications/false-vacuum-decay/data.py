@@ -186,6 +186,17 @@ class Data:
         gamma_mean, gamma_blocks = self.calc_gamma_blocks(Ms, Ls, fit_start, fit_stop, profile)
         return jk.get_errors_from_blocks(gamma_mean, gamma_blocks)
     
+    # Calculating subtracted decay rate-----
+    def calc_gamma_sub(self, gamma1, t_full1, gamma2, t_full2):
+        return (gamma2**0.5*t_full2-gamma1**0.5*t_full1)**2/(t_full2-t_full1)**2
+    
+    def calc_gamma_sub_blocks(self, gamma1_blocks, t_full1, gamma2_blocks, t_full2):
+        return jk.super_jackknife_combine_blocks([gamma1_blocks, gamma2_blocks], lambda x: self.calc_gamma_sub(x[0], t_full1, x[1], t_full2))
+    
+    def calc_gamma_sub_w_errors(self, gamma1_blocks, t_full1, gamma2_blocks, t_full2):
+        gamma_blocks = self.calc_gamma_sub_blocks(gamma1_blocks, t_full1, gamma2_blocks, t_full2)
+        return jk.get_errors_from_blocks(np.mean(gamma_blocks), gamma_blocks)
+    
     # Estimating systematic errors----------
     
     def calc_gamma_M_L_errors(self, Ms, Ls, fit_start, fit_stop, profile):
