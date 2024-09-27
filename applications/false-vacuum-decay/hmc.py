@@ -438,6 +438,7 @@ def main():
             elif(sys.argv[i]=="-D"):
                 a = sys.argv[i+1].split("x")
                 total_site = q.Coordinate([int(a[j]) for j in range(4)])
+                Nt = total_site[3]
             elif(sys.argv[i]=="-d"):
                 dt = float(sys.argv[i+1])
             elif(sys.argv[i]=="-T"):
