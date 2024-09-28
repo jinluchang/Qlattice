@@ -21,7 +21,7 @@ source qcore/set-prefix.sh $name
         --prefix=$prefix
 
     time-run make MAKEINFO=true -j$num_proc
-    time-run make install
+    time-run make MAKEINFO=true install
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"
