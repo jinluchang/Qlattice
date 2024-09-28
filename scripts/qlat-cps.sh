@@ -54,9 +54,8 @@ source qcore/set-prefix.sh $name
     rm -rfv "$prefix"/lib
     time-run meson install
 
-    touch "$prefix"/build-successfully.txt
-
     mk-setenv.sh
     echo "!!!! $name build !!!!"
     rm -rf "$temp_dir" || true
+    touch "$prefix"/build-successfully.txt
 } } 2>&1 | tee $prefix/log.$name.txt

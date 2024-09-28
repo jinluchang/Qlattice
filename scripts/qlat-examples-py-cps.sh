@@ -19,4 +19,5 @@ source qcore/set-prefix.sh $name
 
     echo "!!!! $name build !!!!"
     rm -rf "$temp_dir" || true
+    touch "$prefix"/build-successfully.txt
 } } 2>&1 | tee $prefix/log.$name.txt
