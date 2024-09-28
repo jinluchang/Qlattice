@@ -3,7 +3,7 @@
 set -e
 
 {
-    ./scripts/setenv.default.sh
+    ./scripts/setenv.jlab24s.sh
     ./scripts/qcore.sh
 
     ./scripts/xz.sh
@@ -46,7 +46,8 @@ set -e
     ./scripts/qmp.sh
     ./scripts/qio.sh
     ./scripts/cps.sh
-    ./scripts/grid-clehner.avx512.sh
+    ./scripts/grid-clehner.avx2.sh
+    # ./scripts/grid-clehner.avx512.sh
     ./scripts/gpt.sh
 
     ./scripts/qlat-packages.sh
