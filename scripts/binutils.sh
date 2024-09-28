@@ -20,7 +20,7 @@ source qcore/set-prefix.sh $name
     time-run $src_dir/$name-*/configure \
         --prefix=$prefix
 
-    time-run make -j$num_proc
+    time-run make MAKEINFO=true -j$num_proc
     time-run make install
 
     mk-setenv.sh
