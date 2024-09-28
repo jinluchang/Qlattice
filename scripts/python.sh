@@ -25,6 +25,9 @@ source qcore/set-prefix.sh $name
         export LIBS="$LIBS -lffi"
     fi
 
+    unset PYTHONPATH
+    unset PYTHONHOME
+
     time-run $src_dir/$name-*/configure \
         --enable-optimizations --with-lto \
         --enable-shared \
