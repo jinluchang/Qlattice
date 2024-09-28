@@ -49,7 +49,13 @@ set -e
     ./scripts/grid-clehner.avx2.sh
     ./scripts/gpt.sh
 
-    ./scripts/qlat-packages.sh
+    ./scripts/qlat-utils.sh
+    ./scripts/qlat.sh
+    ./scripts/qlat-cps.sh
+    ./scripts/qlat-grid.sh
+
+    # ./scripts/qlat-packages.sh
+    ./scripts/qlat-all.sh
 
     ./scripts/qlat-examples-py.sh
     ./scripts/qlat-examples-cpp.sh

@@ -50,7 +50,8 @@ set -e
     # ./scripts/grid-clehner.avx512.sh
     ./scripts/gpt.sh
 
-    ./scripts/qlat-packages.sh
+    # ./scripts/qlat-packages.sh
+    ./scripts/qlat-all.sh
 
     ./scripts/qlat-examples-py.sh
     ./scripts/qlat-examples-cpp.sh
