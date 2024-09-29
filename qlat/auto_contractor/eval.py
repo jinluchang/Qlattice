@@ -99,10 +99,10 @@ def cache_compiled_cexpr(
     fn_pickle = path + "/cexpr_all.pickle"
     @q.timer
     def compile_cexpr_meson_setup():
-        subprocess.run(["meson", "setup", "build"], cwd = path)
+        subprocess.run(["meson", "setup", "build"], cwd=path)
     @q.timer
     def compile_cexpr_meson_compile():
-        subprocess.run(["meson", "compile", "-C", "build"], cwd = path)
+        subprocess.run(["meson", "compile", "-C", "build"], cwd=path)
         objs = glob.glob(f"{path}/build/cexpr_code.*.so")
         if len(objs) != 1:
             raise Exception(f"WARNING: compile_cexpr_meson_compile: {objs}")
@@ -134,11 +134,14 @@ def cache_compiled_cexpr(
             else:
                 fn_py = path + "/cexpr_code.py"
             q.qtouch_info(fn_py, code_py)
+            subprocess.run(["touch", "-d", "1 day ago", fn_py])
             return code_py
         code_py = q.pickle_cache_call(
                 gen_code, path + f"/cexpr_code.pickle", is_sync_node=False)
         if is_cython:
-            q.qtouch_info(path + "/meson.build", meson_build_content)
+            meson_build_fn = path + "/meson.build"
+            q.qtouch_info(meson_build_fn, meson_build_content)
+            subprocess.run(["touch", "-d", "1 day ago", meson_build_fn])
             compile_cexpr_meson_setup()
             compile_cexpr_meson_compile()
         cexpr_all = dict()
