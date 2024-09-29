@@ -105,19 +105,18 @@ def run_gf(job_tag, traj):
 
 @q.timer_verbose
 def run_gt(job_tag, traj, get_gf):
-    if None in [ get_gf, ]:
-        return None
     tfn = f"{job_tag}/gauge-transform/traj-{traj}.field"
     path_gt = get_load_path(tfn)
     if path_gt is None:
-        if q.obtain_lock(f"locks/{job_tag}-{traj}-gauge_fix_coulomb"):
+        if None in [ get_gf, ]:
+            return None
+        elif q.obtain_lock(f"locks/{job_tag}-{traj}-gauge_fix_coulomb"):
             gf = get_gf()
             import qlat_gpt as qg
             gt = qg.gauge_fix_coulomb(gf)
             gt.save_cps(get_save_path(f"{job_tag}/gauge-transform/traj-{traj}.gfix"))
             gt.save_double(get_save_path(tfn))
             q.release_lock()
-            return lambda : gt
         else:
             return None
     @q.timer_verbose

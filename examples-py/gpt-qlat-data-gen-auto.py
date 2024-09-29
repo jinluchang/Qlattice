@@ -1366,8 +1366,6 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
-            f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
-            #
             (f"{job_tag}/prop-rand-u1-light/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-light/traj-{traj}/geon-info.txt",),
             (f"{job_tag}/prop-rand-u1-strange/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-strange/traj-{traj}/geon-info.txt",),
             (f"{job_tag}/prop-rand-u1-charm/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-charm/traj-{traj}/geon-info.txt",),
@@ -1462,6 +1460,54 @@ def run_job(job_tag, traj):
     run_with_eig_strange()
     run_charm()
     #
+    q.clean_cache()
+
+@q.timer_verbose
+def run_job_contract(job_tag, traj):
+    fns_produce = [
+            f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
+            #
+            ]
+    fns_need = [
+            (f"{job_tag}/prop-psrc-light/traj-{traj}.qar", f"{job_tag}/prop-psrc-light/traj-{traj}/geon-info.txt",),
+            (f"{job_tag}/psel-prop-psrc-light/traj-{traj}.qar", f"{job_tag}/psel-prop-psrc-light/traj-{traj}/checkpoint.txt",),
+            (f"{job_tag}/prop-psrc-strange/traj-{traj}.qar", f"{job_tag}/prop-psrc-strange/traj-{traj}/geon-info.txt",),
+            (f"{job_tag}/psel-prop-psrc-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-psrc-strange/traj-{traj}/checkpoint.txt",),
+            #
+            (f"{job_tag}/prop-wsrc-light/traj-{traj}.qar", f"{job_tag}/prop-wsrc-light/traj-{traj}/geon-info.txt",),
+            (f"{job_tag}/psel-prop-wsrc-light/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-light/traj-{traj}/checkpoint.txt",),
+            (f"{job_tag}/prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/prop-wsrc-strange/traj-{traj}/geon-info.txt",),
+            (f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}/checkpoint.txt",),
+            f"{job_tag}/gauge-transform/traj-{traj}.field",
+            f"{job_tag}/point-selection/traj-{traj}.txt",
+            f"{job_tag}/field-selection/traj-{traj}.field",
+            # f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
+            # f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
+            # (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
+            ]
+    if not check_job(job_tag, traj, fns_produce, fns_need):
+        return
+    #
+    traj_gf = traj
+    if job_tag[:5] == "test-":
+        # ADJUST ME
+        traj_gf = 1000
+        #
+    #
+    get_gf = run_gf(job_tag, traj_gf)
+    get_gt = run_gt(job_tag, traj_gf, get_gf)
+    #
+    get_wi = run_wi(job_tag, traj)
+    #
+    get_f_weight = run_f_weight_from_wsrc_prop_full(job_tag, traj, get_wi=get_wi)
+    get_f_rand_01 = run_f_rand_01(job_tag, traj)
+    get_fsel_prob = run_fsel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
+    get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
+    get_fsel = run_fsel_from_fsel_prob(get_fsel_prob)
+    get_psel = run_psel_from_psel_prob(get_psel_prob)
+    #
+    get_psel_smear = run_psel_smear(job_tag, traj)
+    #
     get_get_prop = run_get_prop(job_tag, traj,
             get_gf = get_gf,
             get_gt = get_gt,
@@ -1510,6 +1556,8 @@ def run_job(job_tag, traj):
             q.release_lock()
             q.clean_cache()
 
+### ------
+
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
     benchmark_eval_cexpr(get_cexpr_meson_m())
@@ -1542,11 +1590,13 @@ if __name__ == "__main__":
 
     qg.begin_with_gpt()
 
-    # q.qremove_all_info("results")
-
     ##################### CMD options #####################
 
     job_tags = q.get_arg("--job_tags", default="").split(",")
+
+    is_performing_inversion = q.get_arg("--no-inversion", default=None) is None
+
+    is_performing_contraction = q.get_arg("--no-contract", default=None) is None
 
     #######################################################
 
@@ -1567,6 +1617,17 @@ if __name__ == "__main__":
         run_params(job_tag)
         for traj in get_param(job_tag, "trajs"):
             run_job(job_tag, traj)
+
+    for job_tag in job_tags:
+        run_params(job_tag)
+        for traj in get_param(job_tag, "trajs"):
+            if is_performing_inversion:
+                q.check_time_limit()
+                run_job(job_tag, traj)
+        for traj in get_param(job_tag, "trajs"):
+            if is_performing_contraction:
+                q.check_time_limit()
+                run_job_contract(job_tag, traj)
 
     q.check_log_json(__file__, json_results)
 
