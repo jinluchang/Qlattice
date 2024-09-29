@@ -382,7 +382,7 @@ def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
-    tsep = dict_params[job_tag]["meson_tensor_tsep"]
+    tsep = get_param(job_tag, "meson_tensor_tsep")
     geo = q.Geometry(total_site)
     total_volume = geo.total_volume
     def load_data():
@@ -480,7 +480,7 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
-    tsep = dict_params[job_tag]["meson_tensor_tsep"]
+    tsep = get_param(job_tag, "meson_tensor_tsep")
     geo = q.Geometry(total_site)
     total_volume = geo.total_volume
     def load_data():
@@ -797,7 +797,7 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
-    tsep = dict_params[job_tag]["meson_tensor_tsep"]
+    tsep = get_param(job_tag, "meson_tensor_tsep")
     geo = q.Geometry(total_site)
     total_volume = geo.total_volume
     r_list = get_r_list(job_tag)
@@ -931,7 +931,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
-    tsep = dict_params[job_tag]["meson_tensor_tsep"]
+    tsep = get_param(job_tag, "meson_tensor_tsep")
     geo = q.Geometry(total_site)
     r_list = get_r_list(job_tag)
     r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
@@ -939,7 +939,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     n_points = len(xg_psel_arr)
     n_pairs = n_points * (n_points - 1) // 2 + n_points
     #
-    threshold = dict_params[job_tag]["meson_jwjj_threshold"]
+    threshold = get_param(job_tag, "meson_jwjj_threshold")
     u_rand_prob = q.SelectedField(q.ElemTypeRealD, fsel, 1)
     u_rand_prob.set_rand(q.RngState(f"auto_contract_meson_jwjj,{job_tag},{traj}"), 1.0, 0.0)
     u_rand_prob_arr = np.asarray(u_rand_prob).ravel()
@@ -1526,11 +1526,13 @@ set_param("test-4nt8", "trajs")([ 1000, ])
 
 tag = "meson_tensor_tsep"
 set_param("test-4nt8", tag)(1)
+set_param("24D", tag)(8)
 set_param("48I", tag)(12)
 set_param("64I", tag)(18)
 
 tag = "meson_jwjj_threshold"
 set_param("test-4nt8", tag)(0.1)
+set_param("24D", tag)(0.4)
 set_param("48I", tag)(0.01)
 set_param("64I", tag)(0.01)
 
