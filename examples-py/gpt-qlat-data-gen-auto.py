@@ -21,6 +21,7 @@ is_cython = False
 
 load_path_list[:] = [
         "results",
+        "/lustre20/volatile/decay0n2b/qcddata",
         ]
 
 # ----
@@ -1516,45 +1517,61 @@ def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_jj())
     benchmark_eval_cexpr(get_cexpr_meson_jwjj())
 
-size_node_list = [
-        [1, 1, 1, 1],
-        [1, 1, 2, 1],
-        [1, 2, 2, 1],
-        [2, 2, 2, 1],
-        [2, 2, 4, 1],
-        [2, 4, 4, 1],
-        [4, 4, 4, 1],
-        [4, 4, 8, 1],
-        [4, 8, 8, 1],
-        [8, 8, 8, 1],
-        ]
+### ------
 
-set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step", value=2)
-set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step", value=8)
-set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj", value=1)
-set_param("test-4nt8", "trajs", value=[ 1000, ])
+set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step")(2)
+set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step")(8)
+set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj")(1)
+set_param("test-4nt8", "trajs")([ 1000, ])
 
-qg.begin_with_gpt()
+tag = "meson_tensor_tsep"
+set_param("test-4nt8", tag)(1)
+set_param("48I", tag)(12)
+set_param("64I", tag)(18)
 
-q.qremove_all_info("results")
+tag = "meson_jwjj_threshold"
+set_param("test-4nt8", tag)(0.1)
+set_param("48I", tag)(0.01)
+set_param("64I", tag)(0.01)
 
-job_tags = [
-        "test-4nt8",
-        ]
+# ----
 
-q.check_time_limit()
+if __name__ == "__main__":
 
-get_all_cexpr()
+    qg.begin_with_gpt()
 
-for job_tag in job_tags:
-    run_params(job_tag)
-    for traj in get_param(job_tag, "trajs"):
-        run_job(job_tag, traj)
+    # q.qremove_all_info("results")
 
-q.check_log_json(__file__, json_results)
+    ##################### CMD options #####################
 
-q.timer_display()
+    job_tags = q.get_arg("--job_tags", default="").split(",")
 
-qg.end_with_gpt()
+    #######################################################
 
-q.displayln_info("CHECK: finished successfully.")
+    job_tags_default = [
+            "test-4nt8",
+            ]
+
+    if job_tags == [ "", ]:
+        job_tags = job_tags_default
+    else:
+        is_cython = True
+
+    q.check_time_limit()
+
+    get_all_cexpr()
+
+    for job_tag in job_tags:
+        run_params(job_tag)
+        for traj in get_param(job_tag, "trajs"):
+            run_job(job_tag, traj)
+
+    q.check_log_json(__file__, json_results)
+
+    q.timer_display()
+
+    qg.end_with_gpt()
+
+    q.displayln_info("CHECK: finished successfully.")
+
+# ----

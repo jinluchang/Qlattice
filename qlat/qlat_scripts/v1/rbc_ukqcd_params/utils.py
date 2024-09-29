@@ -5,6 +5,10 @@ from . import dict_params
 import qlat as q
 
 def get_param(*keys, default=None, dict_params=None):
+    """
+    example:
+    get_param("48I", "total_site") ==> [ 48, 48, 48, 96, ]
+    """
     if dict_params is None:
         dict_params = rup.dict_params
     d = dict_params
@@ -16,6 +20,10 @@ def get_param(*keys, default=None, dict_params=None):
     return d
 
 def set_param(*keys, value=None, dict_params=None):
+    """
+    example:
+    set_param("48I", "total_site")([ 48, 48, 48, 96, ])
+    """
     if dict_params is None:
         dict_params = rup.dict_params
     assert len(keys) >= 1
