@@ -22,6 +22,7 @@ bin_dir = os.path.join(prefix, "bin")
 include_dir = os.path.join(prefix, "include")
 
 include_ncurses_dir = os.path.join(prefix, "include/ncurses")
+include_ncursesw_dir = os.path.join(prefix, "include/ncursesw")
 
 lib_dir = os.path.join(prefix, "lib")
 
@@ -76,6 +77,11 @@ if os.path.isdir(include_dir):
 if os.path.isdir(include_ncurses_dir):
     l.append(set_env("C_INCLUDE_PATH", "include/ncurses"))
     l.append(set_env("CPLUS_INCLUDE_PATH", "include/ncurses"))
+    l.append("")
+
+if os.path.isdir(include_ncursesw_dir):
+    l.append(set_env("C_INCLUDE_PATH", "include/ncursesw"))
+    l.append(set_env("CPLUS_INCLUDE_PATH", "include/ncursesw"))
     l.append("")
 
 if glob.glob(f"{lib_dir}/*.a") + glob.glob(f"{lib_dir}/*.la") + glob.glob(f"{lib_dir}/*.so*"):

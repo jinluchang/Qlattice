@@ -58,6 +58,7 @@ done
 for v in \
     "\$setenv_prefix/include" \
     "\$setenv_prefix/include/ncurses" \
+    "\$setenv_prefix/include/ncursesw" \
     ; do
     if [ -d "\$v" ] ; then
         export C_INCLUDE_PATH="\$v":"\$C_INCLUDE_PATH"
