@@ -4,7 +4,7 @@
 export prefix=DEST_DIRECTORY
 ```
 
-If `prefix` environmental variable is not set (or empty), the default `DEST_DIRECTORY` is `$HOME/qlat-build/default`.
+If `prefix` environmental variable is not set (or empty), the default `DEST_DIRECTORY` is `"$HOME/qlat-build/$(cat VERSION)"`.
 
 Optionally, you can also specify a temp directory for the installation procedure:
 

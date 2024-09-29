@@ -11,7 +11,10 @@ source qcore/set-prefix.sh
 #
 cat >"$prefix/setenv.sh" <<EOF
 if [ -z "\$num_proc" ] ; then
-    num_proc=16
+    num_proc=32
+fi
+if [ -z "\$temp_dir" ] ; then
+    temp_dir=/dev/shm/$(whoami)/temp
 fi
 unset PYTHONPATH
 unset PYTHONHOME

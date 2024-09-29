@@ -13,6 +13,9 @@ cat >"$prefix/setenv.sh" <<EOF
 if [ -z "\$num_proc" ] ; then
     export num_proc=8
 fi
+if [ -z "\$temp_dir" ] ; then
+    temp_dir=/dev/shm/$(whoami)/temp
+fi
 echo "May need to run 'source /etc/profile' if your bashrc does not include it."
 # source /etc/profile # cannot run it here as it requires interactive bash.
 module purge

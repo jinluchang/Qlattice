@@ -13,6 +13,9 @@ cat >"$prefix/setenv.sh" <<EOF
 if [ -z "\$num_proc" ] ; then
     num_proc=16
 fi
+if [ -z "\$temp_dir" ] ; then
+    temp_dir=/dev/shm/$(whoami)/temp
+fi
 export PYTHONPATH=
 module purge
 module add gcc-7.1.0

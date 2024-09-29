@@ -7,7 +7,7 @@
 
 subdir="$1"
 
-prefix_default="$HOME/qlat-build/default"
+prefix_default="$HOME/qlat-build/$(cat VERSION)"
 
 if [ -z "$prefix" ] ; then
     prefix="$prefix_default"
