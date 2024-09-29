@@ -6,6 +6,7 @@ set -e
     ./scripts/setenv.default.sh
     ./scripts/qcore.sh
 
+    ./scripts/bison.sh
     ./scripts/ncurses.sh
     ./scripts/libevent.sh
 
