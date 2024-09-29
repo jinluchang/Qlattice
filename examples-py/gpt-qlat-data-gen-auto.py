@@ -1494,7 +1494,7 @@ def run_job_contract(job_tag, traj):
         traj_gf = 1000
         #
     #
-    get_gf = run_gf(job_tag, traj_gf)
+    get_gf = None
     get_gt = run_gt(job_tag, traj_gf, get_gf)
     #
     get_wi = run_wi(job_tag, traj)
