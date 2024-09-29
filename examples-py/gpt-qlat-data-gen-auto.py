@@ -1524,9 +1524,9 @@ def run_job_contract(job_tag, traj):
                 "psrc psel l",
                 "psrc fsel s",
                 "psrc fsel l",
-                "rand_u1 fsel c",
-                "rand_u1 fsel s",
-                "rand_u1 fsel l",
+                # "rand_u1 fsel c",
+                # "rand_u1 fsel s",
+                # "rand_u1 fsel l",
                 ],
             )
     #
@@ -1541,7 +1541,8 @@ def run_job_contract(job_tag, traj):
                 # ADJUST ME
                 auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
                 auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-                auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+                if job_tag[:5] == "test-":
+                    auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
                 auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
                 auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
                 auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
@@ -1612,11 +1613,6 @@ if __name__ == "__main__":
     q.check_time_limit()
 
     get_all_cexpr()
-
-    for job_tag in job_tags:
-        run_params(job_tag)
-        for traj in get_param(job_tag, "trajs"):
-            run_job(job_tag, traj)
 
     for job_tag in job_tags:
         run_params(job_tag)
