@@ -24,6 +24,9 @@ export I_MPI_OFI_PROVIDER_DUMP=1
 export I_MPI_OFI_PROVIDER=psm3
 #
 module list
+#
+export TMPDIR=/dev/shm/$(whoami)/tmp
+mkdir -p "\$TMPDIR"
 if [ -z "\$USE_COMPILER" ] ; then
     export USE_COMPILER=gcc
 fi
