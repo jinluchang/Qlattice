@@ -14,11 +14,15 @@ if [ -z "\$num_proc" ] ; then
     num_proc=16
 fi
 export PYTHONPATH=
-module purge
-module add gcc-7.1.0
-# module add openmpi
-# load intel libraries
-source /dist/intel/parallel_studio_xe/parallel_studio_xe/psxevars.sh intel64
+#
+source /etc/profile.d/modules.sh
+module use /qcd/dist/el9/modulefiles
+module load oneapi/2023.0.0.25537
+#
+export I_MPI_FABRICS=shm:ofi
+export I_MPI_OFI_PROVIDER_DUMP=1
+export I_MPI_OFI_PROVIDER=psm3
+#
 module list
 if [ -z "\$USE_COMPILER" ] ; then
     export USE_COMPILER=gcc

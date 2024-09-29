@@ -15,14 +15,12 @@ set -e
     ./scripts/mpfr.sh
     ./scripts/mpc.sh
     ./scripts/isl.sh
-    ./scripts/gcc.sh
-    ./scripts/bison.sh
-    ./scripts/binutils.sh
-    ./scripts/perl.sh
+    # ./scripts/gcc.sh
+    # ./scripts/bison.sh
+    # ./scripts/binutils.sh
+    # ./scripts/perl.sh
     ./scripts/openssl.sh
-    ./scripts/cmake.sh
     ./scripts/libffi.sh
-    ./scripts/openmpi.sh
 
     ./scripts/hdf5.sh
     ./scripts/openblas.sh
