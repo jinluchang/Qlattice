@@ -1571,7 +1571,12 @@ def get_all_cexpr():
 set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step")(2)
 set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step")(8)
 set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj")(1)
-set_param("test-4nt8", "trajs")([ 1000, ])
+
+tag = "trajs"
+set_param("test-4nt8", tag)([ 1000, ])
+set_param("24D", tag)([ 2430, 2550, 2590, 2610, 2630, 2940, 2960, ])
+set_param("48I", tag)(list(range(1000, 2000, 20)))
+set_param("64I", tag)(list(range(1200, 3000, 40)))
 
 tag = "meson_tensor_tsep"
 set_param("test-4nt8", tag)(1)
