@@ -18,7 +18,7 @@ set -e
     # ./scripts/gcc.sh
     # ./scripts/bison.sh
     # ./scripts/binutils.sh
-    # ./scripts/perl.sh
+    ./scripts/perl.sh
     ./scripts/openssl.sh
     ./scripts/libffi.sh
 
