@@ -13,7 +13,8 @@ cat >"$prefix/setenv.sh" <<EOF
 if [ -z "\$num_proc" ] ; then
     num_proc=16
 fi
-export PYTHONPATH=
+unset PYTHONPATH
+unset PYTHONHOME
 #
 source /etc/profile.d/modules.sh
 module use /qcd/dist/el9/modulefiles
