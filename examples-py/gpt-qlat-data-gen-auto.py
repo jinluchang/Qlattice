@@ -1013,10 +1013,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         flavor_l = 0
         flavor_s = 1
         prob_1 = psel_prob_arr[idx1] * psel_prob_inv_avg
-        if idx1 != idx2:
-            prob_2 = psel_prob_arr[idx2] * psel_prob_inv_avg
-        else:
-            prob_2 = psel_prob_inv_avg
+        prob_2 = psel_prob_arr[idx2] * psel_prob_inv_avg
         prob_w = fsel_prob_arr[idx_snk] * fsel_prob_inv_avg
         xg_snk_t = xg_fsel_arr[idx_snk, 3]
         corr1 = np.abs(meson_corr_arr[1, (xg_snk_t - t_1) % t_size])
@@ -1264,10 +1261,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
         flavor_l = 0
         flavor_s = 1
         prob_1 = psel_prob_arr[idx_1] * psel_prob_inv_avg
-        if idx_1 != idx_w:
-            prob_w = psel_prob_arr[idx_w] * psel_prob_inv_avg
-        else:
-            prob_w = psel_prob_inv_avg
+        prob_w = psel_prob_arr[idx_w] * psel_prob_inv_avg
         prob_2 = fsel_prob_arr[idx_2] * fsel_prob_inv_avg
         corr1 = np.abs(meson_corr_arr[1, (xg_w_t - t_1) % t_size])
         corr2 = np.abs(meson_corr_arr[1, (xg_w_t - t_2) % t_size])
