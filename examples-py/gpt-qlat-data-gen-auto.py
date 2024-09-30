@@ -929,10 +929,13 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     fsel_n_elems = fsel.n_elems
     fsel_prob_arr = fsel_prob[:].ravel()
     psel_prob_arr = psel_prob[:].ravel()
+    fsel_prob_inv_avg = np.average(1.0 / fsel_prob_arr)
+    psel_prob_inv_avg = np.average(1.0 / psel_prob_arr)
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
     tsep = get_param(job_tag, "meson_tensor_tsep")
     geo = q.Geometry(total_site)
+    total_volume = geo.total_volume
     r_list = get_r_list(job_tag)
     r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
     n_elems = len(xg_fsel_arr)
@@ -1009,6 +1012,12 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     def get_estimate(idx_snk, idx1, idx2, t_1, t_2):
         flavor_l = 0
         flavor_s = 1
+        prob_1 = psel_prob_arr[idx1] * psel_prob_inv_avg
+        if idx1 != idx2:
+            prob_2 = psel_prob_arr[idx2] * psel_prob_inv_avg
+        else:
+            prob_2 = psel_prob_inv_avg
+        prob_w = fsel_prob_arr[idx_snk] * fsel_prob_inv_avg
         xg_snk_t = xg_fsel_arr[idx_snk, 3]
         corr1 = np.abs(meson_corr_arr[1, (xg_snk_t - t_1) % t_size])
         corr2 = np.abs(meson_corr_arr[1, (xg_snk_t - t_2) % t_size])
@@ -1025,11 +1034,14 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         value += 2 * (p1t1 * p2t1 / corr1 + p1t2 * p2t2 / corr2) * (wp1 * wp2)
         value += 5 * (p1t1 * wt1 / corr1 + p1t2 * wt2 / corr2) * (p1p2 * wp2)
         value += 5 * (p2t1 * wt1 / corr1 + p2t2 * wt2 / corr2) * (p1p2 * wp1)
+        value /= prob_1 * prob_w * prob_2
         assert np.all(value > 0)
         return value
     @q.timer
     def get_weight(idx_snk, idx1, idx2, t_1, t_2):
-        # return weight for this point (1 / prob or zero)
+        """
+        return weight for this point (1 / prob or zero)
+        """
         idx_snk = np.asarray(idx_snk).ravel()
         est = get_estimate(idx_snk, idx1, idx2, t_1, t_2)
         assert est.shape == idx_snk.shape
@@ -1057,6 +1069,16 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         idx1, idx2 = args
         xg1_src = tuple(xg_psel_arr[idx1])
         xg2_src = tuple(xg_psel_arr[idx2])
+        #
+        # Adaptive sampling method:
+        prob_1 = psel_prob_arr[idx1]
+        prob_2 = psel_prob_arr[idx2]
+        if idx1 != idx2:
+            prob = total_volume * prob_1 * prob_2
+        else:
+            prob = total_volume * prob_1
+        weight_base = 1.0 / prob / total_volume
+        #
         xg1_src_t = xg1_src[3]
         xg2_src_t = xg2_src[3]
         x_rel = [ q.rel_mod(xg2_src[mu] - xg1_src[mu], total_site[mu]) for mu in range(4) ]
@@ -1068,15 +1090,18 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         xg2_xg_t_arr = q.rel_mod_arr(xg2_src_t - xg_t_arr, t_size_arr)
         t_1_arr = (np.minimum(0, np.minimum(xg1_xg_t_arr, xg2_xg_t_arr)) + xg_t_arr - tsep) % t_size
         t_2_arr = (np.maximum(0, np.maximum(xg1_xg_t_arr, xg2_xg_t_arr)) + xg_t_arr + tsep) % t_size
-        weight_arr = get_weight(idx_snk_arr, idx1, idx2, t_1_arr, t_2_arr)
+        weight_arr = weight_base * get_weight(idx_snk_arr, idx1, idx2, t_1_arr, t_2_arr)
         weight_arr[np.abs(xg2_xg_t_arr - xg1_xg_t_arr) >= t_size_arr // 2] = 0.0
         results = []
         for idx_snk in idx_snk_arr[weight_arr > 0]:
             xg_snk = tuple(xg_fsel_arr[idx_snk])
             prob_snk = fsel_prob_arr[idx_snk]
             weight = weight_arr[idx_snk]
+            #
+            # Adaptive sampling method:
             if xg_snk != xg1_src and xg_snk != xg2_src:
                 weight = weight / prob_snk
+            #
             xg_t = xg_t_arr[idx_snk]
             xg1_xg_t = xg1_xg_t_arr[idx_snk]
             xg2_xg_t = xg2_xg_t_arr[idx_snk]
@@ -1120,8 +1145,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     q.displayln_info("{fname}: timer_display")
     q.timer_display()
     q.timer_merge()
-    total_volume = geo.total_volume
-    res_sum *= 1.0 / (total_volume / t_size)
+    res_sum *= 2.0 / (total_volume / t_size) # factor of 2 account for only calculating half of the pairs
     ld_sum = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
         [ "t1", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
@@ -1154,6 +1178,8 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
     fsel_n_elems = fsel.n_elems
     fsel_prob_arr = fsel_prob[:].ravel()
     psel_prob_arr = psel_prob[:].ravel()
+    fsel_prob_inv_avg = np.average(1.0 / fsel_prob_arr)
+    psel_prob_inv_avg = np.average(1.0 / psel_prob_arr)
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
     n_points = len(xg_psel_arr)
@@ -1237,6 +1263,12 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
     def get_estimate(idx_w, idx_1, idx_2, xg_w_t, t_1, t_2):
         flavor_l = 0
         flavor_s = 1
+        prob_1 = psel_prob_arr[idx_1] * psel_prob_inv_avg
+        if idx_1 != idx_w:
+            prob_w = psel_prob_arr[idx_w] * psel_prob_inv_avg
+        else:
+            prob_w = psel_prob_inv_avg
+        prob_2 = fsel_prob_arr[idx_2] * fsel_prob_inv_avg
         corr1 = np.abs(meson_corr_arr[1, (xg_w_t - t_1) % t_size])
         corr2 = np.abs(meson_corr_arr[1, (xg_w_t - t_2) % t_size])
         p1t1 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_1, idx_1]
@@ -1252,6 +1284,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
         value += 2 * (p1t1 * p2t1 / corr1 + p1t2 * p2t2 / corr2) * (wp1 * wp2)
         value += 5 * (p1t1 * wt1 / corr1 + p1t2 * wt2 / corr2) * (p1p2 * wp2)
         value += 5 * (p2t1 * wt1 / corr1 + p2t2 * wt2 / corr2) * (p1p2 * wp1)
+        value /= prob_1 * prob_w * prob_2
         assert np.all(value > 0)
         return value
     @q.timer
@@ -1282,8 +1315,20 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
         idx_2_arr = np.arange(n_elems)
         xg_1 = tuple(xg_psel_arr[idx_1])
         xg_w = tuple(xg_psel_arr[idx_w])
-        xg_rel_array = np.array(xg_1) - np.array(xg_w)
-        prob = get_point_xrel_prob(xg_rel_array, total_site_array, point_distribution, n_points)
+        #
+        # Old method to obtain the prob with previous sampling strategy:
+        #
+        # xg_rel_array = np.array(xg_1) - np.array(xg_w)
+        # prob = get_point_xrel_prob(xg_rel_array, total_site_array, point_distribution, n_points)
+        #
+        # Adaptive sampling method:
+        prob_1 = psel_prob_arr[idx_1]
+        prob_w = psel_prob_arr[idx_w]
+        if idx_1 != idx_w:
+            prob = total_volume * prob_1 * prob_w
+        else:
+            prob = total_volume * prob_1
+        #
         weight_base = 1.0 / prob / total_volume
         xg_1_arr = np.broadcast_to(np.array(xg_1), total_site_arr.shape)
         xg_2_arr = xg_fsel_arr[idx_2_arr]
@@ -1304,7 +1349,16 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
         for idx_2 in idx_2_arr[weight_arr > 0]:
             xg_2 = tuple(xg_fsel_arr[idx_2])
             weight = weight_arr[idx_2]
-            prob_2 = fsel_prob_arr[idx_2]
+            #
+            # Old method to obtain the prob with previous sampling strategy:
+            # prob_2 = fsel_prob_arr[idx_2]
+            #
+            # Adaptive sampling method:
+            if xg_2 != xg_1 and xg_2 != xg_w:
+                prob_2 = fsel_prob_arr[idx_2]
+            else:
+                prob_2 = 1
+            #
             r_sq = r_sq_arr[idx_2]
             xg_1_xg_t = xg_1_xg_t_arr[idx_2]
             xg_2_xg_t = xg_2_xg_t_arr[idx_2]
