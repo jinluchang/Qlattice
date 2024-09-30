@@ -21,7 +21,9 @@ is_cython = False
 
 load_path_list[:] = [
         "results",
+        "/lustre20/volatile/qcdqedta/qcddata",
         "/lustre20/volatile/decay0n2b/qcddata",
+        "/lustre20/volatile/pqpdf/ljin/qcddata",
         ]
 
 # ----
