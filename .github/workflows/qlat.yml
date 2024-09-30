@@ -33,6 +33,7 @@ jobs:
     - name: Build default
       run: |
         export num_proc=2
+        export prefix=~/qlat-build/default
         ./build.sh
     - name: Show python venv
       run: |
@@ -47,20 +48,25 @@ jobs:
     - name: Build qlat-docs
       run: |
         export num_proc=2
+        export prefix=~/qlat-build/default
         ./scripts/qlat-docs.sh
         [ -f /home/runner/qlat-build/default/qlat-docs/share/doc/qlat/html/index.html ]
     - name: Testing pylib qlat
       run: |
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-py.sh
     - name: Testing qlat
       run: |
         export num_proc=2
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-cpp.sh
     - name: Check log diff
       run: |
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-diff-new-logs.sh
     - name: Update log
       run: |
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-update-logs.sh
     - name: Check error
       run: |
@@ -122,6 +128,7 @@ jobs:
     - name: Build default-gpt
       run: |
         export num_proc=2
+        export prefix=~/qlat-build/default
         ./build.sh default-gpt
     - name: Show python venv
       run: |
@@ -135,28 +142,35 @@ jobs:
     - name: Testing pylib qlat
       run: |
         export num_proc=2
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-py.sh
     - name: Testing pylib qlat cps
       run: |
         export num_proc=2
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-py-cps.sh
     - name: Testing pylib qlat gpt
       run: |
         export num_proc=2
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-py-gpt.sh
     - name: Testing qlat
       run: |
         export num_proc=2
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-cpp.sh
     - name: Testing qlat grid
       run: |
         export num_proc=2
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-cpp-grid.sh
     - name: Check log diff
       run: |
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-diff-new-logs.sh
     - name: Update log
       run: |
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-update-logs.sh
     - name: Check error
       run: |
@@ -220,6 +234,7 @@ jobs:
     - name: Build dependencies
       run: |
         export num_proc=2
+        export prefix=~/qlat-build/default
         ./scripts/setenv.default.sh
         ./scripts/qcore.sh
         ./scripts/python-venv.sh
@@ -241,46 +256,57 @@ jobs:
     - name: Build CPS
       run: |
         export num_proc=2
+        export prefix=~/qlat-build/default
         ./scripts/qmp.sh
         ./scripts/qio.sh
         ./scripts/cps.sh
     - name: Build Grid-clehner
       run: |
         export num_proc=2
+        export prefix=~/qlat-build/default
         ./scripts/grid-clehner.avx2.sh
     - name: Build GPT
       run: |
         export num_proc=2
+        export prefix=~/qlat-build/default
         ./scripts/gpt.sh
     - name: Install Qlattice
       run: |
         export num_proc=2
+        export prefix=~/qlat-build/default
         ./scripts/qlat-packages.sh
     - name: Testing pylib qlat
       run: |
         export num_proc=2
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-py.sh
     - name: Testing pylib qlat cps
       run: |
         export num_proc=2
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-py-cps.sh
     - name: Testing qlat
       run: |
         export num_proc=2
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-cpp.sh
     - name: Testing qlat grid
       run: |
         export num_proc=2
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-cpp-grid.sh
     - name: Testing pylib qlat gpt
       run: |
         export num_proc=2
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-py-gpt.sh
     - name: Check log diff
       run: |
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-diff-new-logs.sh
     - name: Update log
       run: |
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-update-logs.sh
     - name: Check error
       run: |
@@ -312,6 +338,7 @@ jobs:
     - name: Build default
       run: |
         export num_proc=3
+        export prefix=~/qlat-build/default
         ./build.sh
     - name: Show python venv
       run: |
@@ -324,16 +351,20 @@ jobs:
         ninja --version
     - name: Testing pylib qlat
       run: |
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-py.sh
     - name: Testing qlat
       run: |
         export num_proc=3
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-cpp.sh
     - name: Check log diff
       run: |
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-diff-new-logs.sh
     - name: Update log
       run: |
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-update-logs.sh
     - name: Check error
       run: |
@@ -367,6 +398,7 @@ jobs:
     - name: Build default-gpt
       run: |
         export num_proc=3
+        export prefix=~/qlat-build/default
         ./build.sh default-gpt
     - name: Show python venv
       run: |
@@ -380,28 +412,35 @@ jobs:
     - name: Testing pylib qlat
       run: |
         export num_proc=3
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-py.sh
     - name: Testing pylib qlat cps
       run: |
         export num_proc=3
+        export prefix=~/qlat-build/default
         # ./scripts/qlat-examples-py-cps.sh # CPS not working on Mac yet
     - name: Testing pylib qlat gpt
       run: |
         export num_proc=3
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-py-gpt.sh
     - name: Testing qlat
       run: |
         export num_proc=3
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-cpp.sh
     - name: Testing qlat grid
       run: |
         export num_proc=3
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-cpp-grid.sh
     - name: Check log diff
       run: |
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-diff-new-logs.sh
     - name: Update log
       run: |
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-update-logs.sh
     - name: Check error
       run: |
@@ -457,13 +496,16 @@ jobs:
         # brew upgrade
     - name: Download dependencies
       run: |
+        export prefix=~/qlat-build/default
         ./scripts/download-core.sh
     - name: Show versions for dependencies
       run: |
+        export prefix=~/qlat-build/default
         ./scripts/update-sources.sh
     - name: Build dependencies
       run: |
         export num_proc=3
+        export prefix=~/qlat-build/default
         ./scripts/setenv.default.sh
         ./scripts/qcore.sh
         ./scripts/python-venv.sh
@@ -485,46 +527,57 @@ jobs:
     - name: Build CPS
       run: |
         export num_proc=2
+        export prefix=~/qlat-build/default
         ./scripts/qmp.sh
         ./scripts/qio.sh
         ./scripts/cps.sh
     - name: Build Grid-clehner
       run: |
         export num_proc=3
+        export prefix=~/qlat-build/default
         ./scripts/grid-clehner.gen16.sh
     - name: Build GPT
       run: |
         export num_proc=3
+        export prefix=~/qlat-build/default
         ./scripts/gpt.sh
     - name: Install Qlattice
       run: |
         export num_proc=3
+        export prefix=~/qlat-build/default
         ./scripts/qlat-packages.sh
     - name: Testing pylib qlat
       run: |
         export num_proc=3
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-py.sh
     - name: Testing pylib qlat cps
       run: |
         export num_proc=3
+        export prefix=~/qlat-build/default
         # ./scripts/qlat-examples-py-cps.sh
     - name: Testing qlat
       run: |
         export num_proc=3
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-cpp.sh
     - name: Testing qlat grid
       run: |
         export num_proc=3
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-cpp-grid.sh
     - name: Testing pylib qlat gpt
       run: |
         export num_proc=3
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-py-gpt.sh
     - name: Check log diff
       run: |
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-diff-new-logs.sh
     - name: Update log
       run: |
+        export prefix=~/qlat-build/default
         ./scripts/qlat-examples-update-logs.sh
     - name: Check error
       run: |
