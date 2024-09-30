@@ -1595,8 +1595,7 @@ def run_job_contract(job_tag, traj):
                 # ADJUST ME
                 auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
                 auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-                if job_tag[:5] == "test-":
-                    auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+                auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
                 auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
                 auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
                 auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
