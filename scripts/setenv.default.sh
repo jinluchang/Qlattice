@@ -14,7 +14,9 @@ if [ -z "\$num_proc" ] ; then
     export num_proc=2
 fi
 if [ -z "\$temp_dir" ] ; then
-    temp_dir=/dev/shm/$(whoami)/temp
+    if [ -d /dev/shm ] ; then
+        temp_dir=/dev/shm/$(whoami)/temp
+    fi
 fi
 EOF
 
