@@ -130,17 +130,17 @@ class GaussianFitNoBounds(GaussianFit):
         return rtn
     
     def fit(self, t, E0, sigma):
-        return super().fit(t, 1, E0, sigma)
+        return super().fit(t, 10, E0, sigma)
     
     def dfit(self, t, E0, sigma):
-        return super().dfit(t, 1, E0, sigma)[:,1:]
+        return super().dfit(t, 10, E0, sigma)[:,1:]
     
     def get_fit_params(self, ts, data, errs, full_output=False, filter_x=None):
         if(filter_x!=None): ts, data, errs = self.filter_data(ts,data,errs,filter_x)
         return curve_fit(self.fit, ts, data, sigma=errs, p0=[1.0, 1.0], jac=self.dfit, bounds=((-np.inf,0),(np.inf,np.inf)), full_output=full_output)
     
     def get_correction(self, t, *argv):
-        argv = (1,) + argv
+        argv = (10,) + argv
         return super().get_correction(t, *argv)
     
 class PowerFit(Fit): 
