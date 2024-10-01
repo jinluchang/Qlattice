@@ -1635,7 +1635,7 @@ set_param("64I", tag)(18)
 
 tag = "meson_jwjj_threshold"
 set_param("test-4nt8", tag)(0.1)
-set_param("24D", tag)(0.1)
+set_param("24D", tag)(0.02)
 set_param("48I", tag)(0.01)
 set_param("64I", tag)(0.0005)
 
