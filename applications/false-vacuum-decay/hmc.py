@@ -476,8 +476,9 @@ def main():
     action = q.QMAction(alpha, beta, FV_offset, barrier_strength, M, L, t_full, t_full, t_FV_out, t_FV_mid, dt)
     hmc = HMC(action,f"alpha_{alpha}_beta_{beta}_dt_{dt}_FVoff_{FV_offset}_bar_{barrier_strength}_M_{M}_L_{L}_tfull_{t_full}_tTV_{t_TV}_tFV_{t_FV_out*2+t_FV_mid}_tFVout_{t_FV_out}_tFVmid_{t_FV_mid}",total_site,mult,steps,init_length,date,version,fresh_start)
     
-    measure_Ms = [round(min(max(M,0.001)*2**i, 1.0),5) for i in range(1,10)]
-    measure_Ls = [round(min(max(L,0.001)*2**i, 1.0),5) for i in range(1,10)]
+    steps = np.array([0.001*(2**int(i/2)+(i%2)*2**(int(i/2)-1)) for i in range (19)] + [1.0])
+    measure_Ms = steps[steps>M] #[round(min(max(M,0.001)*2**i, 1.0),5) for i in range(1,10)]
+    measure_Ls = steps[steps>L] #[round(min(max(L,0.001)*2**i, 1.0),5) for i in range(1,10)]
     measure_deltats = range(0,min(t_full,10))
     
     actions_M = [q.QMAction(alpha, beta, FV_offset, barrier_strength, Mi, L, t_full, t_full, t_FV_out, t_FV_mid, dt) for Mi in measure_Ms]
