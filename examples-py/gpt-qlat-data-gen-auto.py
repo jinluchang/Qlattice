@@ -1414,8 +1414,8 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
 ### ------
 
 @q.timer
-def get_cexpr_pi_gg():
-    fn_base = "cache/auto_contract_cexpr/get_cexpr_pi_gg"
+def get_cexpr_pi0_gg():
+    fn_base = "cache/auto_contract_cexpr/get_cexpr_pi0_gg"
     def calc_cexpr():
         diagram_type_dict = dict()
         diagram_type_dict[()] = '1'
@@ -1455,6 +1455,86 @@ def get_cexpr_pi_gg():
                 mk_expr(1) + f"1",
                 ]
         exprs += exprs_pi0_decay
+        #
+        cexpr = contract_simplify_compile(
+                *exprs,
+                is_isospin_symmetric_limit=True,
+                diagram_type_dict=diagram_type_dict)
+        return cexpr
+        #
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
+
+@q.timer
+def get_cexpr_tadpole_current():
+    """
+    Intend to calculating < J_mu(x_1) >
+    !!! Results needs to be multiplied by (m_s - m_l) and sum over "x_2" over the entire space-time volume !!!
+    After summing over "x_2", the first and second expr should be same (and so is the following exprs). (We can average these two.)
+    1/3 charge factor is already multiplied.
+    """
+    fn_base = "cache/auto_contract_cexpr/get_cexpr_tadpole_current"
+    def calc_cexpr():
+        diagram_type_dict = dict()
+        diagram_type_dict[()] = 'T1'
+        diagram_type_dict[((('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1))] = 'TypeC'
+        diagram_type_dict[((('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
+        #
+        jj_list = [
+            e for l in [
+                [
+                    1/3 * mk_vec_mu("l", "s", "x_1", mu) * mk_scalar("s", "l", "x_2"),
+                    1/3 * mk_vec_mu("s", "l", "x_1", mu) * mk_scalar("l", "s", "x_2"),
+                    1/3 * mk_vec_mu("l", "l", "x_1", mu) * mk_scalar("l", "l", "x_2"),
+                    1/3 * mk_vec_mu("s", "s", "x_1", mu) * mk_scalar("s", "s", "x_2"),
+                ]
+                for mu in range(4)
+            ] for e in l
+        ]
+        #
+        exprs = [
+                mk_expr(1) + f"1",
+                ]
+        exprs += jj_list
+        #
+        cexpr = contract_simplify_compile(
+                *exprs,
+                is_isospin_symmetric_limit=True,
+                diagram_type_dict=diagram_type_dict)
+        return cexpr
+        #
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
+
+@q.timer
+def get_cexpr_pi0_current():
+    """
+    Intend to calculating < J_mu(x_1) pi0(t_1) >
+    """
+    fn_base = "cache/auto_contract_cexpr/get_cexpr_pi0_current"
+    def calc_cexpr():
+        diagram_type_dict = dict()
+        diagram_type_dict[()] = 'T0'
+        diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 't_1'), 1))] = 'TypeC'
+        #
+        jj_d_list = [
+            mk_j_mu("x_1", mu)
+            for mu in range(4)
+        ]
+        assert len(jj_d_list) == 4
+        #
+        pi0d_list = [
+                mk_pi_0("t_1") + "pi0(t_1)",
+                ]
+        assert len(pi0d_list) == 1
+        #
+        exprs_list_pi0_decay = [
+            jj_d * pi0d
+            for pi0d in pi0d_list for jj_d in jj_d_list
+        ]
+        #
+        exprs = [
+                mk_expr(1) + f"1",
+                ]
+        exprs += exprs_list_pi0_decay
         #
         cexpr = contract_simplify_compile(
                 *exprs,
@@ -1667,6 +1747,9 @@ def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_jt())
     benchmark_eval_cexpr(get_cexpr_meson_jj())
     benchmark_eval_cexpr(get_cexpr_meson_jwjj())
+    benchmark_eval_cexpr(get_cexpr_pi0_gg())
+    benchmark_eval_cexpr(get_cexpr_tadpole_current())
+    benchmark_eval_cexpr(get_cexpr_pi0_current())
 
 ### ------
 
