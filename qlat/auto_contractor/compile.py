@@ -806,7 +806,7 @@ def increase_type_dict_count(type_dict, key):
 
 def drop_tag_last_subscript(tag):
     """
-    coordinates with names that are same after dropping last subscript beLong to the same permutation group
+    Coordinates with names that are same after dropping last subscript belong to the same permutation group.
     """
     return tag.rsplit("_", 1)[0]
 
@@ -816,7 +816,7 @@ def mk_permuting_dicts(pos_list):
 
 def get_position_permutation_groups(term):
     """
-    allow permutations within the same permutation group
+    Allow permutations within the same permutation group.
     """
     pos_list = get_positions(term)
     group_dict = dict()
@@ -831,8 +831,8 @@ def get_position_permutation_groups(term):
 
 def mk_combined_permuting_dicts(term):
     """
-    produce all possible permutations allowed by permuting within the permutation groups.
-    generator of dict, each dict is a map of original coordinate and the permuted coordinate.
+    Produce all possible permutations allowed by permuting within the permutation groups.
+    Generator of dict, each dict is a map of original coordinate and the permuted coordinate.
     """
     pos_list_list = list(get_position_permutation_groups(term))
     p_dicts_list = [ list(mk_permuting_dicts(pos_list)) for pos_list in pos_list_list ]
@@ -1002,7 +1002,7 @@ def contract_simplify(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict
         else:
             assert False
         expr = contract_expr(expr)
-        expr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
+        expr.simplify(is_isospin_symmetric_limit=is_isospin_symmetric_limit)
         expr = filter_diagram_type(expr,
                 diagram_type_dict=diagram_type_dict,
                 included_types=included_types)
@@ -1015,7 +1015,7 @@ def compile_expr(*exprs, diagram_type_dict = None):
     interface function
     """
     exprs = copy.deepcopy(exprs)
-    cexpr = mk_cexpr(*exprs, diagram_type_dict = diagram_type_dict)
+    cexpr = mk_cexpr(*exprs, diagram_type_dict=diagram_type_dict)
     return cexpr
 
 @q.timer
@@ -1028,9 +1028,9 @@ def contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram
     """
     contracted_simplified_exprs = contract_simplify(
             *exprs,
-            is_isospin_symmetric_limit = is_isospin_symmetric_limit,
-            diagram_type_dict = diagram_type_dict)
-    cexpr = compile_expr(*contracted_simplified_exprs, diagram_type_dict = diagram_type_dict)
+            is_isospin_symmetric_limit=is_isospin_symmetric_limit,
+            diagram_type_dict=diagram_type_dict)
+    cexpr = compile_expr(*contracted_simplified_exprs, diagram_type_dict=diagram_type_dict)
     return cexpr
 
 def show_variable_value(value):

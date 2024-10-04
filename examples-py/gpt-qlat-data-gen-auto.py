@@ -455,8 +455,8 @@ def get_cexpr_meson_m():
         exprs += [ m * mm for mm in mm_list for m in m_list ]
         cexpr = contract_simplify_compile(
                 *exprs,
-                is_isospin_symmetric_limit = True,
-                diagram_type_dict = diagram_type_dict)
+                is_isospin_symmetric_limit=True,
+                diagram_type_dict=diagram_type_dict)
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
@@ -772,8 +772,8 @@ def get_cexpr_meson_jj():
         assert len(exprs) == 179
         cexpr = contract_simplify_compile(
                 *exprs,
-                is_isospin_symmetric_limit = True,
-                diagram_type_dict = diagram_type_dict)
+                is_isospin_symmetric_limit=True,
+                diagram_type_dict=diagram_type_dict)
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
@@ -1410,6 +1410,59 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
     json_results.append((f"{fname}: ld_sum sig", q.get_data_sig(ld_sum, q.RngState()),))
+
+### ------
+
+@q.timer
+def get_cexpr_pi_gg():
+    fn_base = "cache/auto_contract_cexpr/get_cexpr_pi_gg"
+    def calc_cexpr():
+        diagram_type_dict = dict()
+        diagram_type_dict[()] = '1'
+        diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))] = 'TypeD'
+        diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'TypeC'
+        diagram_type_dict[((('t_2', 'x_1'), 1), (('x_1', 't_2'), 1), (('x_2', 'x_2'), 1))] = 'TypeD'
+        diagram_type_dict[((('t_2', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_2'), 1))] = 'TypeC'
+        #
+        jj_d_list = [
+                sum([
+                    q.epsilon_tensor(mu, nu, rho)
+                    * mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
+                    * mk_j_mu("x_2", nu) * mk_j_mu("x_1", rho)
+                    for mu in range(3) for nu in range(3) for rho in range(3) ])
+                + "e(i,j,k) * x[i] * j_j(x) * j_k(0)",
+                ]
+        assert len(jj_d_list) == 1
+        #
+        pi0d_list = [
+                mk_pi_0("t_1") + "pi0(-tsep)",
+                mk_pi_0("t_2") + "pi0(x[t]+tsep)",
+                ]
+        assert len(pi0d_list) == 2
+        #
+        exprs_list_pi0_decay = [
+                [
+                    jj_d * pi0d,
+                    (jj_d * pi0d, "TypeC"),
+                    (jj_d * pi0d, "TypeD"),
+                ]
+                for pi0d in pi0d_list for jj_d in jj_d_list
+                ]
+        assert len(exprs_list_pi0_decay) == 2
+        exprs_pi0_decay = [ e for el in exprs_list_pi0_decay for e in el ]
+        #
+        exprs = [
+                mk_expr(1) + f"1",
+                ]
+        exprs += exprs_pi0_decay
+        #
+        cexpr = contract_simplify_compile(
+                *exprs,
+                is_isospin_symmetric_limit=True,
+                diagram_type_dict=diagram_type_dict)
+        return cexpr
+        #
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
 ### ------
 
