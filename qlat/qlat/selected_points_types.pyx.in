@@ -111,9 +111,10 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
     def __init__(self, *args):
         """
         SelectedPoints()
+        SelectedPoints(n_points, multiplicity, points_dist_type)
         SelectedPoints(psel)
         SelectedPoints(psel, multiplicity)
-        SelectedPoints(sf, ssp) # via `shuffle_selected_field`
+        SelectedPoints(sf, ssp) # via `shuffle_selected_field` where ssp = SelectedShufflePlan(psel, rs)
         SelectedPoints(sf, rs) # via `shuffle_selected_field`
         """
         cdef cc.Int len_args = len(args)

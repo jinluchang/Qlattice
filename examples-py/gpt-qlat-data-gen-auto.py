@@ -1544,6 +1544,85 @@ def get_cexpr_pi0_current():
         #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
+@q.timer_verbose
+def auto_contract_tadpole_current(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
+    fname = q.get_fname()
+    fn = f"{job_tag}/tadpole-current/traj-{traj}/field.lat"
+    if get_load_path(fn) is not None:
+        return
+    cexpr = get_cexpr_tadpole_current()
+    expr_names = get_expr_names(cexpr)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    t_size = total_site[3]
+    get_prop = get_get_prop()
+    psel_prob = get_psel_prob()
+    fsel_prob = get_fsel_prob()
+    psel = psel_prob.psel
+    fsel = fsel_prob.fsel
+    if not fsel.is_containing(psel):
+        q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
+    fsel_n_elems = fsel.n_elems
+    fsel_prob_arr = fsel_prob[:].ravel()
+    psel_prob_arr = psel_prob[:].ravel()
+    xg_fsel_arr = fsel.to_psel_local()[:]
+    xg_psel_arr = psel[:]
+    geo = q.Geometry(total_site)
+    total_volume = geo.total_volume
+    r_list = get_r_list(job_tag)
+    r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
+    def load_data():
+        for pidx in range(len(xg_psel_arr)):
+            yield pidx
+    @q.timer
+    def feval(args):
+        pidx = args
+        xg_src = tuple(xg_psel_arr[pidx])
+        prob_src = psel_prob_arr[pidx]
+        res_list = []
+        for idx in range(len(xg_fsel_arr)):
+            xg_snk = tuple(xg_fsel_arr[idx])
+            if xg_snk == xg_src:
+                prob_snk = 1.0
+            else:
+                prob_snk = fsel_prob_arr[idx]
+            prob = prob_src * prob_snk
+            x_rel = [ q.rel_mod(xg_snk[mu] - xg_src[mu], total_site[mu]) for mu in range(4) ]
+            r_sq = q.get_r_sq(x_rel)
+            r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
+            t = (xg_snk[3] - xg_src[3]) % total_site[3]
+            pd = {
+                    "x_2": ("point-snk", xg_snk,),
+                    "x_1": ("point", xg_src,),
+                    "size": total_site,
+                    }
+            val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
+            res_list.append((val / prob, t, r_idx_low, r_idx_high, coef_low, coef_high))
+        return res_list
+    def sum_function(val_list):
+        values = np.zeros((total_site[3], len(r_list), len(expr_names),), dtype=complex)
+        for idx, res_list in enumerate(val_list):
+            for val, t, r_idx_low, r_idx_high, coef_low, coef_high in res_list:
+                values[t, r_idx_low] += coef_low * val
+                values[t, r_idx_high] += coef_high * val
+            q.displayln_info(f"{fname}: {idx+1}/{len(xg_psel_arr)}")
+        return values.transpose(2, 0, 1)
+    q.timer_fork(0)
+    res_sum = q.glb_sum(
+            q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1))
+    q.displayln_info("timer_display for auto_contract_meson_corr_psnk_psrc")
+    q.timer_display()
+    q.timer_merge()
+    res_sum *= 1.0 / (total_volume**2 / total_site[3])
+    q.displayln_info(res_sum[0].sum(1))
+    ld = q.mk_lat_data([
+        [ "expr_name", len(expr_names), expr_names, ],
+        [ "t_sep", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
+        [ "r", len(r_list), [ f"{r:.5f}" for r in r_list ], ],
+        ])
+    ld.from_numpy(res_sum)
+    ld.save(get_save_path(fn))
+    json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
+
 ### ------
 
 @q.timer_verbose
