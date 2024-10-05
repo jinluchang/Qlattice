@@ -81,7 +81,7 @@ cdef class SelectedShufflePlan:
 
     def init_from_psel(self, PointsSelection psel, RngState rs):
         """
-        shuffle to PointsDistType::Random
+        shuffle from PointsDistType::Local to PointsDistType::Random
         """
         cc.set_selected_shuffle_plan(self.xx, psel.xx, rs.xx)
 
@@ -90,11 +90,16 @@ cdef class SelectedShufflePlan:
 {{for name in type_name_list}}
 
 cdef void set_field_sp_sp_{{name}}(SelectedPoints{{name}} self, SelectedPoints{{name}} other):
-    # two psel may not be the same object
+    """
+    Two psel may or may NOT be the same object
+    All points need to be set.
+    """
     cc.set_selected_points(self.xx, other.xx, self.psel.xx, other.psel.xx)
 
 cdef void set_field_sp_sf_{{name}}(SelectedPoints{{name}} self, SelectedField{{name}} other):
-    # only assign available points
+    """
+    only assign available points
+    """
     cc.set_selected_points(self.xx, other.xx, self.psel.xx, other.fsel.xx)
 
 cdef void set_field_sp_f_{{name}}(SelectedPoints{{name}} self, Field{{name}} other):
@@ -194,7 +199,9 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         won't change self.psel
         """
         if isinstance(other, SelectedPoints{{name}}):
-            # two psel may not be the same object
+            """
+            two psel may or may NOT be the same object
+            """
             set_field_sp_sp_{{name}}(self, other)
         elif isinstance(other, SelectedField{{name}}):
             # only assign available points

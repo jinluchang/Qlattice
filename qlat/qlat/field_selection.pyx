@@ -49,7 +49,9 @@ cdef class PointsSelection:
                 points_dist_type = args[2]
                 self.points_dist_type = points_dist_type
         elif isinstance(args[0], FieldSelection):
-            # self.points_dist_type == "l" for PointsDistType::Local
+            """
+            self.points_dist_type == "l" for PointsDistType::Local
+            """
             fsel = args[0]
             cc.set_psel_from_fsel(self.xx, fsel.xx)
         else:
@@ -241,6 +243,11 @@ cdef class FieldSelection:
         self.view_count = 0
 
     def __init__(self, Geometry geo=None, cc.Long val=-1):
+        """
+        FieldSelection()
+        FieldSelection(geo) # no points being selected
+        FieldSelection(geo, 0) # selecting all points
+        """
         if geo is not None:
             self.set_uniform(geo, val);
 

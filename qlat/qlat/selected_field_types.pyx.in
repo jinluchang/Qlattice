@@ -60,6 +60,11 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         self.view_count = 0
 
     def __init__(self, *args):
+        """
+        SelectedField()
+        SelectedField(fsel)
+        SelectedField(fsel, multiplicity)
+        """
         self.init_from_fsel(*args)
 
     def init_from_fsel(self, FieldSelection fsel=None, cc.Int multiplicity=0):
