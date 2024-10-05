@@ -57,8 +57,8 @@ void set_selected_shuffle_id_node_send_to(
   });
 }
 
-void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
-                               const SelectedPoints<Int>& sp_id_node_send_to)
+void set_selected_shuffle_plan_no_reorder(
+    SelectedShufflePlan& ssp, const SelectedPoints<Int>& sp_id_node_send_to)
 // Collective operation.
 // partially set SelectedShufflePlan
 //
@@ -68,7 +68,7 @@ void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
 //
 // To be set in `set_selected_shuffle_plan(ssp,psel,rs)`.
 {
-  TIMER("set_selected_shuffle_plan(ssp,spinst)");
+  TIMER("set_selected_shuffle_plan_no_reorder(ssp,spinst)");
   ssp.init();
   const Int num_node = get_num_node();
   const Long n_points = sp_id_node_send_to.n_points;
@@ -117,18 +117,15 @@ void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
   ssp.total_recv_count = rdispl;
 }
 
-void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const Long n_points,
-                               const RngState& rs)
-{
-  TIMER("set_selected_shuffle_plan(ssp,n_points,rs)");
-  SelectedPoints<Int> sp_id_node_send_to;
-  set_selected_shuffle_id_node_send_to(sp_id_node_send_to, n_points, rs);
-  set_selected_shuffle_plan(ssp, sp_id_node_send_to);
-}
-
 void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
                                const PointsSelection& psel, const RngState& rs)
-// Call `set_selected_shuffle_plan(ssp,spinst)` to set ssp.
+// Collective operation.
+// make shuffle plan
+// psel.points_dist_type == PointsDistType::Local
+// ssp.points_dist_type_recv = PointsDistType::Random
+// Sort the shuffled points by order of the gindex of points.
+//
+// Call `set_selected_shuffle_plan_no_reorder(ssp,spinst)` to set ssp.
 // In addition, set the missing:
 // `ssp.points_dist_type_recv`
 // `ssp.shuffle_idx_points_recv`
@@ -137,7 +134,7 @@ void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
   const Long n_points = psel.size();
   SelectedPoints<Int> sp_id_node_send_to;
   set_selected_shuffle_id_node_send_to(sp_id_node_send_to, psel, rs);
-  set_selected_shuffle_plan(ssp, sp_id_node_send_to);
+  set_selected_shuffle_plan_no_reorder(ssp, sp_id_node_send_to);
   ssp.points_dist_type_recv = PointsDistType::Random;
   SelectedPoints<Long> sp_idx0;
   sp_idx0.init(n_points, 1, ssp.points_dist_type_send);
@@ -188,6 +185,7 @@ void shuffle_selected_points_char(SelectedPoints<Char>& spc,
   qassert(spc.points_dist_type == ssp.points_dist_type_recv);
   qassert(spc.n_points == ssp.total_recv_count);
   qassert(spc.multiplicity == multiplicity);
+  // Initialized `sp` to be the target of the shuffle before final shuffle.
   SelectedPoints<Char> sp;
   if (spi_r.initialized) {
     qassert(spi_r.multiplicity == 1);
@@ -196,6 +194,7 @@ void shuffle_selected_points_char(SelectedPoints<Char>& spc,
   } else {
     sp.set_view(spc);
   }
+  // Copy spc0 to sp0. Reordered to be ready to send.
   SelectedPoints<Char> sp0;
   sp0.init(spc0.n_points, multiplicity, ssp.points_dist_type_send);
   qthread_for(idx, spc0.n_points, {
@@ -206,6 +205,7 @@ void shuffle_selected_points_char(SelectedPoints<Char>& spc,
     Vector<Char> v1 = sp0.get_elems(idx1);
     assign(v1, v);
   });
+  // Perform shuffle with `MPI_Alltoallv`.
   MPI_Datatype mpi_dtype;
   const Int mpi_ret = MPI_Type_contiguous(multiplicity, MPI_BYTE, &mpi_dtype);
   qassert(mpi_ret == 0);
@@ -214,6 +214,7 @@ void shuffle_selected_points_char(SelectedPoints<Char>& spc,
                 mpi_dtype, sp.points.data(), ssp.recvcounts.data(),
                 ssp.rdispls.data(), mpi_dtype, get_comm());
   MPI_Type_free(&mpi_dtype);
+  // In case `ssp.shuffle_idx_points_recv` is defined, perform final reordering.
   if (spi_r.initialized) {
     qthread_for(idx, sp.n_points, {
       const Vector<Char> v = sp.get_elems_const(idx);
@@ -239,6 +240,8 @@ void shuffle_points_selection(PointsSelection& psel,
   const SelectedPoints<Char> pselc0(psel0.view_sp().view_as_char());
   shuffle_selected_points_char(pselc, pselc0, ssp);
 }
+
+// ------------------------------
 
 void shuffle_field_selection(PointsSelection& psel, const FieldSelection& fsel0,
                              const SelectedShufflePlan& ssp)

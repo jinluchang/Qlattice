@@ -116,6 +116,8 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         SelectedPoints(psel, multiplicity)
         SelectedPoints(sf, ssp) # via `shuffle_selected_field` where ssp = SelectedShufflePlan(psel, rs)
         SelectedPoints(sf, rs) # via `shuffle_selected_field`
+        #
+        points_dist_type in [ None, "g", "l", "r", ]
         """
         cdef cc.Int len_args = len(args)
         if self.view_count > 0:
