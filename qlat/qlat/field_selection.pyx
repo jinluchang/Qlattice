@@ -55,7 +55,7 @@ cdef class PointsSelection:
             fsel = args[0]
             cc.set_psel_from_fsel(self.xx, fsel.xx)
         else:
-            raise Exception(f"SelectedPoints::__init__: {args}")
+            raise Exception(f"PointsSelection::__init__: {args}")
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         cdef int ndim = 2
@@ -242,14 +242,33 @@ cdef class FieldSelection:
         self.cdata = <cc.Long>&(self.xx)
         self.view_count = 0
 
-    def __init__(self, Geometry geo=None, cc.Long val=-1):
+    def __init__(self, *args):
         """
         FieldSelection()
         FieldSelection(geo) # no points being selected
         FieldSelection(geo, 0) # selecting all points
+        FieldSelection(psel)
         """
-        if geo is not None:
+        cdef cc.Int len_args = len(args)
+        cdef Geometry geo
+        cdef PointsSelection psel
+        cdef cc.Long val = -1
+        self.xx.init()
+        if len_args == 0:
+            return
+        elif isinstance(args[0], Geometry):
+            geo = args[0]
+            if len_args > 1:
+                assert len_args == 2
+                val = args[1]
             self.set_uniform(geo, val);
+        elif isinstance(args[0], PointsSelection):
+            psel = args[0]
+            geo = psel.geo
+            self.set_uniform(geo, -1);
+            self.add_psel(psel)
+        else:
+            raise Exception("FieldSelection.__init__: {args}")
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         """
@@ -374,7 +393,7 @@ cdef class FieldSelection:
         elif isinstance(sel_small, FieldSelection):
             return self.is_containing_fsel(sel_small)
         else:
-            raise Exception("'sel_small' not PointsSelection or FieldSelection")
+            raise Exception("PointsSelection: 'sel_small' not PointsSelection or FieldSelection sel_small={sel_small}")
 
     def to_psel(self):
         cdef PointsSelection psel = PointsSelection(self.total_site)
