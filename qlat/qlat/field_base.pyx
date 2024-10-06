@@ -86,24 +86,28 @@ cdef class FieldBase:
             fc.cast_from(self)
             fu = FieldRealD(fc.geo, fc.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
+            sig = (fc[:] * fu[:]).sum()
         elif self.ctype in field_ctypes_complex_f:
             fcf = FieldComplexF()
             fcf.cast_from(self)
             fu = FieldRealD(fcf.geo, fcf.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
+            sig = (fcf[:] * fu[:]).sum()
         elif self.ctype in field_ctypes_double:
             fr = FieldRealD()
             fr.cast_from(self)
             fu = FieldRealD(fr.geo, fr.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
+            sig = (fr[:] * fu[:]).sum()
         elif self.ctype in field_ctypes_float:
             frf = FieldRealF()
             frf.cast_from(self)
             fu = FieldRealD(frf.geo, frf.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
+            sig = (frf[:] * fu[:]).sum()
         else:
             raise Exception("get_data_sig: {self.ctype}")
-        return glb_sum((fc[:] * fu[:]).sum())
+        return glb_sum(sig)
 
     def mview(self):
         return c.get_mview_field(self)
@@ -462,24 +466,28 @@ cdef class SelectedFieldBase:
             fc.cast_from(self)
             fu = SelectedFieldRealD(fc.fsel, fc.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
+            sig = (fc[:] * fu[:]).sum()
         elif self.ctype in field_ctypes_complex_f:
             fcf = SelectedFieldComplexF()
             fcf.cast_from(self)
             fu = SelectedFieldRealD(fcf.fsel, fcf.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
+            sig = (fcf[:] * fu[:]).sum()
         elif self.ctype in field_ctypes_double:
             fr = SelectedFieldRealD()
             fr.cast_from(self)
             fu = SelectedFieldRealD(fr.fsel, fr.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
+            sig = (fr[:] * fu[:]).sum()
         elif self.ctype in field_ctypes_float:
             frf = SelectedFieldRealF()
             frf.cast_from(self)
             fu = SelectedFieldRealD(frf.fsel, frf.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
+            sig = (frf[:] * fu[:]).sum()
         else:
             raise Exception("get_data_sig: {self.ctype}")
-        return glb_sum((fc[:] * fu[:]).sum())
+        return glb_sum(sig)
 
     def __iadd__(self, f1):
         assert isinstance(f1, SelectedFieldBase)
@@ -728,24 +736,28 @@ cdef class SelectedPointsBase:
             fc.cast_from(self)
             fu = SelectedPointsRealD(fc.psel, fc.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
+            sig = (fc[:] * fu[:]).sum()
         elif self.ctype in field_ctypes_complex_f:
             fcf = SelectedPointsComplexF()
             fcf.cast_from(self)
             fu = SelectedPointsRealD(fcf.psel, fcf.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
+            sig = (fcf[:] * fu[:]).sum()
         elif self.ctype in field_ctypes_double:
             fr = SelectedPointsRealD()
             fr.cast_from(self)
             fu = SelectedPointsRealD(fr.psel, fr.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
+            sig = (fr[:] * fu[:]).sum()
         elif self.ctype in field_ctypes_float:
             frf = SelectedPointsRealF()
             frf.cast_from(self)
             fu = SelectedPointsRealD(frf.psel, frf.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
+            sig = (frf[:] * fu[:]).sum()
         else:
             raise Exception("get_data_sig: {self.ctype}")
-        sig = glb_sum((fc[:] * fu[:]).sum())
+        sig = glb_sum(sig)
         if self.points_dist_type == "g":
             return sig / self.geo.num_node
         else:
