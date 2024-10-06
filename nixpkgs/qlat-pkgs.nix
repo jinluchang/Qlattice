@@ -125,7 +125,7 @@ let
       mpi cuba qlat-eigen cps qmp qio grid-lehner qlat-py
     ] ++ pkgs.qlat-dep-pkgs;
     qlat-env = pkgs.mkShell rec {
-      name = "qlat-sh${qlat-name}";
+      name = "qlat-sh${pkgs.qlat-name}";
       packages = pkgs.qlat-pkgs;
       inputsFrom = packages;
     };
@@ -202,7 +202,7 @@ let
   // mk-qlat-pkgs [ overlay-cuda overlay-local ]
   ;
 
-  many-qlat-pkgs-all = many-qlat-pkgs-core
+  many-qlat-pkgs-all = many-qlat-pkgs-core-w-cuda
   // mk-qlat-pkgs []
   // mk-qlat-pkgs [ overlay-cuda ]
   # // mk-qlat-pkgs [ overlay-clang ]
@@ -213,10 +213,6 @@ let
   // mk-qlat-pkgs [ overlay-std overlay-cuda overlay-local ]
   // mk-qlat-pkgs [ overlay-std overlay-clang ]
   ;
-
-  many-qlat-pkgs = many-qlat-pkgs-core;
-  # many-qlat-pkgs = many-qlat-pkgs-w-cuda;
-  # many-qlat-pkgs = many-qlat-pkgs-all;
 
 in {
   #
@@ -230,4 +226,5 @@ in {
   inherit many-qlat-pkgs-core;
   inherit many-qlat-pkgs-core-w-cuda;
   inherit many-qlat-pkgs-all;
+  #
 }
