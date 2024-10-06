@@ -745,7 +745,11 @@ cdef class SelectedPointsBase:
             fu.set_rand(rng, 1.0, -1.0)
         else:
             raise Exception("get_data_sig: {self.ctype}")
-        return glb_sum((fc[:] * fu[:]).sum())
+        sig = glb_sum((fc[:] * fu[:]).sum())
+        if self.points_dist_type == "g":
+            return sig / self.geo.num_node
+        else:
+            return sig
 
     def __setitem__(self, idx, val):
         """
