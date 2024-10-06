@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 json_results = []
-check_eps = 1e-10
+check_eps = 1e-12
 
 import qlat as q
 
@@ -12,6 +12,8 @@ geo = q.Geometry(total_site)
 multiplicity = 3
 
 rs = q.RngState("seed")
+
+rsi = rs.split(f"{geo.id_node}")
 
 n_points = 16
 psel = q.PointsSelection()
@@ -81,6 +83,11 @@ json_results.append((f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_ep
 json_results.append((f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps))
 json_results.append((f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps))
 
+json_results.append((f"q.glb_sum(q.get_data_sig(f1[:], rs))", q.glb_sum(q.get_data_sig(f1[:], rsi)), check_eps))
+json_results.append((f"q.glb_sum(q.get_data_sig(f2[:], rs))", q.glb_sum(q.get_data_sig(f2[:], rsi)), check_eps))
+json_results.append((f"q.glb_sum(q.get_data_sig(f3[:], rs))", q.glb_sum(q.get_data_sig(f3[:], rsi)), check_eps))
+json_results.append((f"q.glb_sum(q.get_data_sig(f4[:], rs))", q.glb_sum(q.get_data_sig(f4[:], rsi)), check_eps))
+
 sf1.set_rand(rs)
 sf2.set_rand(rs)
 sf3.set_rand(rs)
@@ -91,6 +98,11 @@ json_results.append((f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_
 json_results.append((f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps))
 json_results.append((f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps))
 
+json_results.append((f"q.glb_sum(q.get_data_sig(sf1[:], rs))", q.glb_sum(q.get_data_sig(sf1[:], rsi)), check_eps))
+json_results.append((f"q.glb_sum(q.get_data_sig(sf2[:], rs))", q.glb_sum(q.get_data_sig(sf2[:], rsi)), check_eps))
+json_results.append((f"q.glb_sum(q.get_data_sig(sf3[:], rs))", q.glb_sum(q.get_data_sig(sf3[:], rsi)), check_eps))
+json_results.append((f"q.glb_sum(q.get_data_sig(sf4[:], rs))", q.glb_sum(q.get_data_sig(sf4[:], rsi)), check_eps))
+
 sp1.set_rand(rs)
 sp2.set_rand(rs)
 sp3.set_rand(rs)
@@ -100,6 +112,11 @@ json_results.append((f"q.get_data_sig(sp1, rs)", q.get_data_sig(sp1, rs), check_
 json_results.append((f"q.get_data_sig(sp2, rs)", q.get_data_sig(sp2, rs), check_eps))
 json_results.append((f"q.get_data_sig(sp3, rs)", q.get_data_sig(sp3, rs), check_eps))
 json_results.append((f"q.get_data_sig(sp4, rs)", q.get_data_sig(sp4, rs), check_eps))
+
+json_results.append((f"q.glb_sum(q.get_data_sig(sp1[:], rs))", q.glb_sum(q.get_data_sig(sp1[:], rsi)), check_eps))
+json_results.append((f"q.glb_sum(q.get_data_sig(sp2[:], rs))", q.glb_sum(q.get_data_sig(sp2[:], rsi)), check_eps))
+json_results.append((f"q.glb_sum(q.get_data_sig(sp3[:], rs))", q.glb_sum(q.get_data_sig(sp3[:], rsi)), check_eps))
+json_results.append((f"q.glb_sum(q.get_data_sig(sp4[:], rs))", q.glb_sum(q.get_data_sig(sp4[:], rsi)), check_eps))
 
 f1.set_rand_g(rs)
 f2.set_rand_g(rs)

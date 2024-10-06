@@ -6,7 +6,7 @@
    "imag": 0.0,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f2, rs)",
@@ -15,17 +15,17 @@
    "imag": 0.0,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f3, rs)",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f4, rs)",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf1, rs)",
@@ -34,7 +34,7 @@
    "imag": 0.0,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf2, rs)",
@@ -43,17 +43,17 @@
    "imag": 0.0,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf3, rs)",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf4, rs)",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp1, rs)",
@@ -62,7 +62,7 @@
    "imag": 0.0,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp2, rs)",
@@ -71,17 +71,17 @@
    "imag": 0.0,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp3, rs)",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp4, rs)",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f1, rs)",
@@ -90,7 +90,7 @@
    "imag": -6.823914817163439,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f2, rs)",
@@ -99,17 +99,45 @@
    "imag": -6.823914630247605,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f3, rs)",
   248.97338965824366,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f4, rs)",
   248.9733893421972,
-  1e-10
+  1e-12
+ ],
+ [
+  "q.glb_sum(q.get_data_sig(f1[:], rs))",
+  {
+   "real": -27.385284671311567,
+   "imag": -12.716380902308092,
+   "__extended_json_type__": "complex"
+  },
+  1e-12
+ ],
+ [
+  "q.glb_sum(q.get_data_sig(f2[:], rs))",
+  {
+   "real": -17.054530963886116,
+   "imag": -3.6714522828962775,
+   "__extended_json_type__": "complex"
+  },
+  1e-12
+ ],
+ [
+  "q.glb_sum(q.get_data_sig(f3[:], rs))",
+  9.400482549478454,
+  1e-12
+ ],
+ [
+  "q.glb_sum(q.get_data_sig(f4[:], rs))",
+  19.969187451931624,
+  1e-12
  ],
  [
   "q.get_data_sig(sf1, rs)",
@@ -118,7 +146,7 @@
    "imag": -1.7077600384200378,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf2, rs)",
@@ -127,17 +155,45 @@
    "imag": -1.707760095858493,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf3, rs)",
   17.372732780578435,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf4, rs)",
   17.372732809006315,
-  1e-10
+  1e-12
+ ],
+ [
+  "q.glb_sum(q.get_data_sig(sf1[:], rs))",
+  {
+   "real": 1.9128237543767157,
+   "imag": 0.12945769719484934,
+   "__extended_json_type__": "complex"
+  },
+  1e-12
+ ],
+ [
+  "q.glb_sum(q.get_data_sig(sf2[:], rs))",
+  {
+   "real": 5.214986324546354,
+   "imag": 5.3190095795460035,
+   "__extended_json_type__": "complex"
+  },
+  1e-12
+ ],
+ [
+  "q.glb_sum(q.get_data_sig(sf3[:], rs))",
+  -2.68044109694835,
+  1e-12
+ ],
+ [
+  "q.glb_sum(q.get_data_sig(sf4[:], rs))",
+  -11.306595169809398,
+  1e-12
  ],
  [
   "q.get_data_sig(sp1, rs)",
@@ -146,7 +202,7 @@
    "imag": 0.2486029553879876,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp2, rs)",
@@ -155,17 +211,45 @@
    "imag": 0.24860287290652505,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp3, rs)",
   7.324784220498394,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp4, rs)",
   7.324784264135623,
-  1e-10
+  1e-12
+ ],
+ [
+  "q.glb_sum(q.get_data_sig(sp1[:], rs))",
+  {
+   "real": 2.761207392950616,
+   "imag": 3.1637101418175195,
+   "__extended_json_type__": "complex"
+  },
+  1e-12
+ ],
+ [
+  "q.glb_sum(q.get_data_sig(sp2[:], rs))",
+  {
+   "real": 3.251522863392445,
+   "imag": 3.1851084637207796,
+   "__extended_json_type__": "complex"
+  },
+  1e-12
+ ],
+ [
+  "q.glb_sum(q.get_data_sig(sp3[:], rs))",
+  4.073668378061585,
+  1e-12
+ ],
+ [
+  "q.glb_sum(q.get_data_sig(sp4[:], rs))",
+  1.5944313612640866,
+  1e-12
  ],
  [
   "q.get_data_sig(f1, rs)",
@@ -174,7 +258,7 @@
    "imag": -26.269601918774082,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f2, rs)",
@@ -183,17 +267,17 @@
    "imag": -26.269601074214698,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f3, rs)",
   17.26511406048025,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f4, rs)",
   17.26511441879358,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf1, rs)",
@@ -202,7 +286,7 @@
    "imag": 4.580633593239695,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf2, rs)",
@@ -211,17 +295,17 @@
    "imag": 4.580633849827411,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf3, rs)",
   -1.696702941512642,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf4, rs)",
   -1.6967027918848716,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp1, rs)",
@@ -230,7 +314,7 @@
    "imag": 0.6694485291008363,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp2, rs)",
@@ -239,57 +323,57 @@
    "imag": 0.6694485762537983,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp3, rs)",
   -4.552211610436751,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp4, rs)",
   -4.552211435892828,
-  1e-10
+  1e-12
  ],
  [
   "f1r.qnorm()",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "f3r.qnorm()",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "sf1r.qnorm()",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "sf3r.qnorm()",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "sp1r.qnorm()",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "sp2r.qnorm()",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "sp3r.qnorm()",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "sp4r.qnorm()",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf1, rs)",
@@ -298,7 +382,7 @@
    "imag": 4.580633593239695,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf2, rs)",
@@ -307,17 +391,17 @@
    "imag": 4.580633849827411,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf3, rs)",
   -1.696702941512642,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf4, rs)",
   -1.6967027918848716,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp1, rs)",
@@ -326,7 +410,7 @@
    "imag": 0.6694485291008363,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp2, rs)",
@@ -335,17 +419,17 @@
    "imag": 0.6694485762537983,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp3, rs)",
   -4.552211610436751,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp4, rs)",
   -4.552211435892828,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp1, rs)",
@@ -354,7 +438,7 @@
    "imag": 0.0,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp2, rs)",
@@ -363,17 +447,17 @@
    "imag": 0.0,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp3, rs)",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp4, rs)",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp1, rs)",
@@ -382,7 +466,7 @@
    "imag": 0.6694485291008363,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp2, rs)",
@@ -391,17 +475,17 @@
    "imag": 0.6694485762537983,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp3, rs)",
   -4.552211610436751,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sp4, rs)",
   -4.552211435892828,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f1, rs)",
@@ -410,7 +494,7 @@
    "imag": -26.269601918774082,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f2, rs)",
@@ -419,17 +503,17 @@
    "imag": -26.269601074214698,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f3, rs)",
   17.26511406048025,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f4, rs)",
   17.26511441879358,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f1, rs)",
@@ -438,7 +522,7 @@
    "imag": -26.269601918774082,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f2, rs)",
@@ -447,17 +531,17 @@
    "imag": -26.269601074214698,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f3, rs)",
   17.26511406048025,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f4, rs)",
   17.26511441879358,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf1, rs)",
@@ -466,7 +550,7 @@
    "imag": 4.580633593239695,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf2, rs)",
@@ -475,17 +559,17 @@
    "imag": 4.580633849827411,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf3, rs)",
   -1.696702941512642,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf4, rs)",
   -1.6967027918848716,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f1, rs)",
@@ -494,7 +578,7 @@
    "imag": 0.0,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f2, rs)",
@@ -503,17 +587,17 @@
    "imag": 0.0,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f3, rs)",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f4, rs)",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f1, rs)",
@@ -522,7 +606,7 @@
    "imag": 4.580633593239696,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f2, rs)",
@@ -531,17 +615,17 @@
    "imag": 4.580633849827412,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f3, rs)",
   -1.6967029415126422,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f4, rs)",
   -1.6967027918848716,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f1, rs)",
@@ -550,7 +634,7 @@
    "imag": 0.0,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f2, rs)",
@@ -559,17 +643,17 @@
    "imag": 0.0,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f3, rs)",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f4, rs)",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f1, rs)",
@@ -578,7 +662,7 @@
    "imag": 0.669448529100837,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f2, rs)",
@@ -587,17 +671,17 @@
    "imag": 0.6694485762537972,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f3, rs)",
   -4.552211610436752,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(f4, rs)",
   -4.552211435892829,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf1, rs)",
@@ -606,7 +690,7 @@
    "imag": 0.0,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf2, rs)",
@@ -615,17 +699,17 @@
    "imag": 0.0,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf3, rs)",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf4, rs)",
   0.0,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf1, rs)",
@@ -634,7 +718,7 @@
    "imag": 0.6694485291008365,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf2, rs)",
@@ -643,16 +727,16 @@
    "imag": 0.6694485762537973,
    "__extended_json_type__": "complex"
   },
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf3, rs)",
   -4.552211610436751,
-  1e-10
+  1e-12
  ],
  [
   "q.get_data_sig(sf4, rs)",
   -4.552211435892829,
-  1e-10
+  1e-12
  ]
 ]
