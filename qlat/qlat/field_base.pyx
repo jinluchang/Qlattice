@@ -151,27 +151,6 @@ cdef class FieldBase:
             assert False
         return self
 
-    # @q.timer
-    # def set_unit(self, coef=1.0):
-    #     c.set_unit_field(self, coef)
-
-    # @q.timer
-    # def set_rand(self, RngState rng, upper=1.0, lower=0.0):
-    #     if self.ctype in field_ctypes_double:
-    #         c.set_u_rand_double_field(self, rng, upper, lower)
-    #     elif self.ctype in field_ctypes_float:
-    #         c.set_u_rand_float_field(self, rng, upper, lower)
-    #     else:
-    #         assert False
-
-    # @q.timer
-    # def set_rand_g(self, rng, center=0.0, sigma=1.0):
-    #     assert isinstance(rng, RngState)
-    #     if self.ctype in field_ctypes_double:
-    #         c.set_g_rand_double_field(self, rng, center, sigma)
-    #     else:
-    #         assert False
-
     def crc32(self):
         return c.crc32_field(self)
 
@@ -461,13 +440,6 @@ cdef class SelectedFieldBase:
         assert isinstance(factor, (int, float))
         c.set_mul_double_sfield(self, float(factor))
         return self
-
-    def set_rand(self, rng, upper=1.0, lower=0.0):
-        assert isinstance(rng, RngState)
-        if self.ctype in field_ctypes_double:
-            c.set_u_rand_double_sfield(self, rng, upper, lower)
-        else:
-            assert False
 
     def __setitem__(self, idx, val):
         """
