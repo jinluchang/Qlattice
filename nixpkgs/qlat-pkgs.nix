@@ -1,6 +1,8 @@
-let
+{
+  nixpkgs ? import <nixpkgs>
+}:
 
-  nixpkgs = import <nixpkgs>;
+let
 
   nixgl-src = (nixpkgs {}).fetchFromGitHub {
     owner = "nix-community";
