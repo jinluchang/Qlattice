@@ -21,7 +21,7 @@ inline void demo()
   displayln_info(fname + ssprintf(": compute crc32=%06X.", field_crc32(f)));
   //
   displayln_info(fname + ssprintf(": fill with random numbers"));
-  set_u_rand_double(f, rs.split("f-init"));
+  set_u_rand(f, rs.split("f-init"));
   //
   displayln_info(fname + ssprintf(": compute crc32=%06X.", field_crc32(f)));
   //
@@ -152,7 +152,7 @@ inline void test(const std::string& tag, const Long n_per_tslice)
   set_field_selection(fsel, total_site, n_per_tslice, rs.split("free-4nt8").split(0));
   // test of partial f
   set_zero(f);
-  set_u_rand_double(f, rs.split("f-init"));
+  set_u_rand(f, rs.split("f-init"));
   displayln_info(ssprintf(": %06X <- f-init", field_crc32(f)));
   only_keep_selected_points(f, fsel);
   displayln_info(ssprintf("%06X <- only_keep_selected_points", field_crc32(f)));
@@ -162,39 +162,39 @@ inline void test(const std::string& tag, const Long n_per_tslice)
   read_field_selection(fsel, "huge-data/" + tag + "/fsel.field");
   // test of partial f
   set_zero(f);
-  set_u_rand_double(f, rs.split("f-init"));
+  set_u_rand(f, rs.split("f-init"));
   displayln_info(ssprintf(": %06X <- f-init", field_crc32(f)));
   only_keep_selected_points(f, fsel);
   displayln_info(ssprintf("%06X <- only_keep_selected_points", field_crc32(f)));
   // test of reconstructed f
   set_zero(f);
-  set_u_rand_double(f, rs.split("f-init"));
+  set_u_rand(f, rs.split("f-init"));
   displayln_info(ssprintf(": %06X <- f-init", field_crc32(f)));
   SelectedField<ComplexD> sf;
   set_selected_field(sf, f, fsel);
   set_zero(f);
-  set_u_rand_double(f, rs.split("f-init-1"));
+  set_u_rand(f, rs.split("f-init-1"));
   displayln_info(ssprintf(": %06X <- f-init-1", field_crc32(f)));
   set_field_selected(f, sf, fsel);
   displayln_info(ssprintf("%06X <- set_field_selected", field_crc32(f)));
   // write and read field only selected
   set_zero(f);
-  set_u_rand_double(f, rs.split("f-init"));
+  set_u_rand(f, rs.split("f-init"));
   write_field(f, "huge-data/" + tag + "/free-4nt8-init.field");
   displayln_info(ssprintf(": %06X <- f-init", field_crc32(f)));
   write_selected_field(f, "huge-data/" + tag + "/free-4nt8-init.sfield", fsel);
   set_zero(f);
-  set_u_rand_double(f, rs.split("f-init-3"));
+  set_u_rand(f, rs.split("f-init-3"));
   displayln_info(ssprintf(": %06X <- f-init-3", field_crc32(f)));
   read_selected_field(f, "huge-data/" + tag + "/free-4nt8-init.sfield", fsel, Coordinate(1,1,1,8));
   displayln_info(ssprintf("%06X <- write and read back", field_crc32(f)));
   // write and read field only selected different format
   set_zero(f);
-  set_u_rand_double(f, rs.split("f-init"));
+  set_u_rand(f, rs.split("f-init"));
   const crc32_t crc_0 = field_crc32(f);
   displayln_info(ssprintf("%06X full", crc_0));
   //
-  set_u_rand_double(f, rs.split("f-init"));
+  set_u_rand(f, rs.split("f-init"));
   write_field_64(f, "huge-data/" + tag + "/f-init.64.field");
   write_field_double(f, "huge-data/" + tag + "/f-init.double.field");
   write_field_float_from_double(f, "huge-data/" + tag + "/f-init.float.field");
@@ -203,7 +203,7 @@ inline void test(const std::string& tag, const Long n_per_tslice)
   const crc32_t crc_1 = field_crc32(f);
   displayln_info(ssprintf("%06X selected", crc_1));
   //
-  set_u_rand_double(f, rs.split("f-init"));
+  set_u_rand(f, rs.split("f-init"));
   write_selected_field_64(f, "huge-data/" + tag + "/sf-init.64.field", fsel);
   write_selected_field_double(f, "huge-data/" + tag + "/sf-init.double.field", fsel);
   write_selected_field_float_from_double(f, "huge-data/" + tag + "/sf-init.float.field", fsel);
@@ -259,7 +259,7 @@ inline void test_grid(const std::string& tag, const Long n_per_tslice)
                            rs.split("free-4nt8").split(0));
   // test of partial f
   set_zero(f);
-  set_u_rand_double(f, rs.split("f-init"));
+  set_u_rand(f, rs.split("f-init"));
   displayln_info(ssprintf(": %06X <- f-init", field_crc32(f)));
   only_keep_selected_points(f, fsel);
   displayln_info(ssprintf("%06X <- only_keep_selected_points", field_crc32(f)));
@@ -269,29 +269,29 @@ inline void test_grid(const std::string& tag, const Long n_per_tslice)
   read_field_selection(fsel, "huge-data/" + tag + "/fsel.field");
   // test of partial f
   set_zero(f);
-  set_u_rand_double(f, rs.split("f-init"));
+  set_u_rand(f, rs.split("f-init"));
   displayln_info(ssprintf(": %06X <- f-init", field_crc32(f)));
   only_keep_selected_points(f, fsel);
   displayln_info(ssprintf("%06X <- only_keep_selected_points", field_crc32(f)));
   // test of reconstructed f
   set_zero(f);
-  set_u_rand_double(f, rs.split("f-init"));
+  set_u_rand(f, rs.split("f-init"));
   displayln_info(ssprintf(": %06X <- f-init", field_crc32(f)));
   SelectedField<ComplexD> sf;
   set_selected_field(sf, f, fsel);
   set_zero(f);
-  set_u_rand_double(f, rs.split("f-init-1"));
+  set_u_rand(f, rs.split("f-init-1"));
   displayln_info(ssprintf(": %06X <- f-init-1", field_crc32(f)));
   set_field_selected(f, sf, fsel);
   displayln_info(ssprintf("%06X <- set_field_selected", field_crc32(f)));
   // write and read field only selected
   set_zero(f);
-  set_u_rand_double(f, rs.split("f-init"));
+  set_u_rand(f, rs.split("f-init"));
   write_field(f, "huge-data/" + tag + "/free-4nt8-init.field");
   displayln_info(ssprintf(": %06X <- f-init", field_crc32(f)));
   write_selected_field(f, "huge-data/" + tag + "/free-4nt8-init.sfield", fsel);
   set_zero(f);
-  set_u_rand_double(f, rs.split("f-init-3"));
+  set_u_rand(f, rs.split("f-init-3"));
   displayln_info(ssprintf(": %06X <- f-init-3", field_crc32(f)));
   read_selected_field(f, "huge-data/" + tag + "/free-4nt8-init.sfield", fsel,
                       Coordinate(1, 1, 1, 8));
@@ -333,7 +333,7 @@ inline void test_selected_points(const std::string& tag, const Long n_points)
   Field<ComplexD> f;
   f.init(geo, 2);
   set_zero(f);
-  set_u_rand_double(f, rs.split("f-init"));
+  set_u_rand(f, rs.split("f-init"));
   displayln_info(ssprintf(": %06X <- f-init", field_crc32(f)));
   //
   Field<ComplexD> f1;
@@ -387,7 +387,7 @@ inline void test_shift(const std::string& tag, const Long n_per_tslice, const Lo
   Field<ComplexD> f;
   f.init(geo, 2);
   set_zero(f);
-  set_u_rand_double(f, rs.split("f-init"));
+  set_u_rand(f, rs.split("f-init"));
   displayln_info(fname + ssprintf(": f crc32 = %08X", field_crc32(f)));
   SelectedField<ComplexD> sf;
   const PointsSelection psel =

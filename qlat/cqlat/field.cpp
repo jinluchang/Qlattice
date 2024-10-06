@@ -108,7 +108,7 @@ PyObject* set_u_rand_double_field_ctype(PyObject* p_field, const RngState& rs,
                                         const double upper, const double lower)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
-  set_u_rand_double(f, rs, upper, lower);
+  set_u_rand(f, rs, upper, lower);
   Py_RETURN_NONE;
 }
 
@@ -117,7 +117,7 @@ PyObject* set_u_rand_float_field_ctype(PyObject* p_field, const RngState& rs,
                                         const double upper, const double lower)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
-  set_u_rand_float(f, rs, upper, lower);
+  set_u_rand(f, rs, upper, lower);
   Py_RETURN_NONE;
 }
 
@@ -126,7 +126,7 @@ PyObject* set_g_rand_double_field_ctype(PyObject* p_field, const RngState& rs,
                                         const double center, const double sigma)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
-  set_g_rand_double(f, rs, center, sigma);
+  set_g_rand(f, rs, center, sigma);
   Py_RETURN_NONE;
 }
 

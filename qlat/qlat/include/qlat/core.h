@@ -563,7 +563,7 @@ void SelectedPoints<M>::init(const Long n_points_, const int multiplicity_,
     if (1 == get_field_init()) {
       set_zero(*this);
     } else if (2 == get_field_init()) {
-      set_u_rand_float(get_data(points), RngState(show(get_time())));
+      set_u_rand(get_data(points), RngState(show(get_time())));
     } else {
       qassert(0 == get_field_init());
     }
@@ -863,7 +863,7 @@ void Field<M>::init(const Geometry& geo_, const int multiplicity_)
     if (1 == get_field_init()) {
       set_zero(*this);
     } else if (2 == get_field_init()) {
-      set_u_rand_float(*this, RngState(show(get_time())));
+      set_u_rand(*this, RngState(show(get_time())));
     } else {
       qassert(0 == get_field_init());
     }
@@ -1169,7 +1169,7 @@ void SelectedField<M>::init(const Geometry& geo_, const Long n_elems_,
     if (1 == get_field_init()) {
       set_zero(*this);
     } else if (2 == get_field_init()) {
-      set_u_rand_float(get_data(field), RngState(show(get_time())));
+      set_u_rand(get_data(field), RngState(show(get_time())));
     } else {
       qassert(0 == get_field_init());
     }
@@ -1244,30 +1244,16 @@ using PselProp = SelectedPoints<WilsonMatrix>;
 
 // --------------------
 
-template <class M>
-void set_u_rand_float(Field<M>& f, const RngState& rs, const double upper = 1.0,
-                      const double lower = -1.0)
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+void set_u_rand(Field<M>& f, const RngState& rs, const RealD upper = 1.0,
+                const RealD lower = -1.0)
 {
-  TIMER("set_u_rand_float");
-  const Geometry& geo = f.geo();
-  qthread_for(index, geo.local_volume(), {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const Long gindex = geo.g_index_from_g_coordinate(xg);
-    RngState rsi = rs.newtype(gindex);
-    Vector<M> v = f.get_elems(xl);
-    Vector<float> dv((float*)v.data(), v.data_size() / sizeof(float));
-    for (int m = 0; m < dv.size(); ++m) {
-      dv[m] = u_rand_gen(rsi, upper, lower);
-    }
-  });
-}
-
-template <class M>
-void set_u_rand_double(Field<M>& f, const RngState& rs,
-                       const double upper = 1.0, const double lower = -1.0)
-{
-  TIMER("set_u_rand_double");
+  TIMER("set_u_rand(f,rs,upper,lower)");
+  if (not is_composed_of_real<M>()) {
+    qassert(is_composed_of_real<M>());
+    return;
+  }
+  using Real = typename IsDataValueType<M>::ElementaryType;
   qthread_for(index, f.geo().local_volume(), {
     const Geometry& geo = f.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -1275,18 +1261,23 @@ void set_u_rand_double(Field<M>& f, const RngState& rs,
     const Long gindex = geo.g_index_from_g_coordinate(xg);
     RngState rsi = rs.newtype(gindex);
     Vector<M> v = f.get_elems(xl);
-    Vector<double> dv((double*)v.data(), v.data_size() / sizeof(double));
-    for (int m = 0; m < dv.size(); ++m) {
+    Vector<Real> dv((Real*)v.data(), v.data_size() / sizeof(Real));
+    for (Int m = 0; m < dv.size(); ++m) {
       dv[m] = u_rand_gen(rsi, upper, lower);
     }
   });
 }
 
-template <class M>
-void set_g_rand_double(Field<M>& f, const RngState& rs,
-                       const double center = 0.0, const double sigma = 1.0)
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+void set_g_rand(Field<M>& f, const RngState& rs, const RealD center = 0.0,
+                const RealD sigma = 1.0)
 {
-  TIMER("set_g_rand_double");
+  TIMER("set_g_rand(f,rs,center,sigma)");
+  if (not is_composed_of_real<M>()) {
+    qassert(is_composed_of_real<M>());
+    return;
+  }
+  using Real = typename IsDataValueType<M>::ElementaryType;
   const Geometry& geo = f.geo();
   qthread_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -1294,8 +1285,8 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
     const Long gindex = geo.g_index_from_g_coordinate(xg);
     RngState rsi = rs.newtype(gindex);
     Vector<M> v = f.get_elems(xl);
-    Vector<double> dv((double*)v.data(), v.data_size() / sizeof(double));
-    for (int m = 0; m < dv.size(); ++m) {
+    Vector<Real> dv((Real*)v.data(), v.data_size() / sizeof(Real));
+    for (Int m = 0; m < dv.size(); ++m) {
       dv[m] = g_rand_gen(rsi, center, sigma);
     }
   });
@@ -1380,17 +1371,13 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
   QLAT_EXTERN template void qswap<TYPENAME>(SelectedField<TYPENAME> & f1,     \
                                             SelectedField<TYPENAME> & f2);    \
                                                                               \
-  QLAT_EXTERN template void set_u_rand_double<TYPENAME>(                      \
-      Field<TYPENAME> & f, const RngState& rs, const double upper,            \
-      const double lower);                                                    \
+  QLAT_EXTERN template void set_u_rand<TYPENAME>(                             \
+      Field<TYPENAME> & f, const RngState& rs, const RealD upper,             \
+      const RealD lower);                                                     \
                                                                               \
-  QLAT_EXTERN template void set_u_rand_float<TYPENAME>(                       \
-      Field<TYPENAME> & f, const RngState& rs, const double upper,            \
-      const double lower);                                                    \
-                                                                              \
-  QLAT_EXTERN template void set_g_rand_double<TYPENAME>(                      \
-      Field<TYPENAME> & f, const RngState& rs, const double center,           \
-      const double sigma)
+  QLAT_EXTERN template void set_g_rand<TYPENAME>(                             \
+      Field<TYPENAME> & f, const RngState& rs, const RealD center,            \
+      const RealD sigma)
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 #undef QLAT_EXTERN_TEMPLATE

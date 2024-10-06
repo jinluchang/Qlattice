@@ -15,12 +15,12 @@ inline void demo()
   Field<Complex> f1;
   f1.init(geo, 2);
   set_zero(f1);
-  set_u_rand_double(f1, rs.split("f1"));
+  set_u_rand(f1, rs.split("f1"));
   const crc32_t crc_f1 = field_crc32(f1);
   Field<ComplexF> f2;
   f2.init(geo, 3);
   set_zero(f2);
-  set_u_rand_float(f2, rs.split("f2"));
+  set_u_rand(f2, rs.split("f2"));
   const crc32_t crc_f2 = field_crc32(f2);
   //
   write_field(f1, path, "f1");

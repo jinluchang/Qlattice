@@ -155,9 +155,9 @@ inline void set_u_rand(LowModes& lm, const RngState& rs)
   TIMER_VERBOSE("set_u_rand(lm,rs)");
   qassert(lm.initialized);
   force_low_modes(lm);
-  set_u_rand_double(get_data(lm.eigen_values), rs.split("eigen_values"));
-  set_u_rand_float(lm.cesb, rs.split("cesb"));
-  set_u_rand_float(lm.cesc, rs.split("cesc"));
+  set_u_rand(get_data(lm.eigen_values), rs.split("eigen_values"));
+  set_u_rand(lm.cesb, rs.split("cesb"));
+  set_u_rand(lm.cesc, rs.split("cesc"));
 }
 
 inline Long save_low_modes_decompress(LowModes& lm, const std::string& path)
@@ -390,7 +390,7 @@ inline void benchmark_deflate(const Geometry& geo, const int ls,
   FermionField5d in, out;
   in.init(geo_eo(geo, 1), ls);
   out.init(geo_eo(geo, 1), ls);
-  set_u_rand_double(in, rs.split("in"));
+  set_u_rand(in, rs.split("in"));
   sync_node();
   {
     TIMER_VERBOSE("benchmark_deflate-deflate");
@@ -1740,7 +1740,7 @@ inline double find_max_eigen_value_hermop_sym2(const InverterDomainWall& inv,
   geo.eo = 1;
   FermionField5d ff;
   ff.init(geo, inv.fa.ls);
-  set_u_rand_double(ff, rs);
+  set_u_rand(ff, rs);
   ff *= 1.0 / sqrt(qnorm(ff));
   double sqrt_qnorm_ratio = 1.0;
   for (Long i = 0; i < max_iter; ++i) {

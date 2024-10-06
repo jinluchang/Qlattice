@@ -17,7 +17,7 @@ void simple_tests()
   geo.init(total_site);
 
   qlat::FieldM<qlat::ComplexD, 12> src;src.init(geo);
-  set_g_rand_double(src, RngState(rs, "prop-0.1"));
+  set_g_rand(src, RngState(rs, "prop-0.1"));
 
   std::vector< qlat::FieldM<qlat::ComplexD, 12> > cpuF;cpuF.resize(1);
   std::vector< qlat::FieldM<qlat::ComplexD, 12> > gpuF;gpuF.resize(1);

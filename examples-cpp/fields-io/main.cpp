@@ -76,7 +76,7 @@ inline void demo(const std::string& tag, const Coordinate& total_site,
   displayln_info(fname + ssprintf(": compute crc32=%08X.", crc_1));
   //
   displayln_info(fname + ssprintf(": fill with random numbers"));
-  set_u_rand_double(f, rs.split("f-init"));
+  set_u_rand(f, rs.split("f-init"));
   //
   const crc32_t crc_2 = field_crc32(f);
   displayln_info(fname + ssprintf(": compute crc32=%08X.", crc_2));

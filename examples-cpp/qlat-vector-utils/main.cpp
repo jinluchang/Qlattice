@@ -58,7 +58,7 @@ void simple_tests()
     set_g_rand_color_matrix_field(gf, RngState(rs, "gf-0.1"), 0.1);
     Propagator4d propS;propS.init(geo);
     Propagator4d propT;propT.init(geo);
-    set_g_rand_double(propS, RngState(rs, "prop"));
+    set_g_rand(propS, RngState(rs, "prop"));
     std::vector<double > norm(4);
     for(int di=0;di<4;di++){norm[di] = 0;}
 

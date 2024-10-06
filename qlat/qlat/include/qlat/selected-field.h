@@ -477,7 +477,7 @@ void field_glb_sum_tslice(SelectedPoints<M>& sp, const SelectedField<M>& sf,
   sp.points = vec;
 }
 
-template <class M>
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
 void set_u_rand(SelectedField<M>& sf, const FieldSelection& fsel,
                        const RngState& rs, const RealD upper = 1.0,
                        const RealD lower = -1.0)

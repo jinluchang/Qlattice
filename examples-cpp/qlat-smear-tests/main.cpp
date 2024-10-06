@@ -28,7 +28,7 @@ void simple_tests()
   prop_src.init(geo);
   prop_qlat.init(geo);
   prop_vec.init(geo);
-  set_g_rand_double(prop_src, RngState(rs, "prop-0.1"));
+  set_g_rand(prop_src, RngState(rs, "prop-0.1"));
   prop_qlat = prop_src;
   prop_vec  = prop_src;
 

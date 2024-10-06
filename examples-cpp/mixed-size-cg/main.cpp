@@ -21,7 +21,7 @@ inline void set_rand_fermion_field(FermionField4d& ff, const Geometry& geo,
   TIMER_VERBOSE("set_rand_gauge_field");
   ff.init();
   ff.init(geo);
-  set_u_rand_double(ff, RngState(rs, fname));
+  set_u_rand(ff, RngState(rs, fname));
   displayln_info(fname + ssprintf(": qnorm=%24.17E", qnorm(ff)));
 }
 
