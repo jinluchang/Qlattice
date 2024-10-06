@@ -500,7 +500,7 @@ void selected_points_from_lat_data(SelectedPoints<M>& sp,
   const Long n_points = ld.info[0].size;
   const Long multiplicity = ld.info[1].size;
   const Long sizof_M_vs_sizeof_v = ld.info[2].size;
-  if (is_composed_of_complex_d<M>()) {
+  if (is_composed_of_complex_f<M>()) {
     qassert(sizeof(M) == sizof_M_vs_sizeof_v * sizeof(ComplexF));
     qassert(ld.info[3].name == "re-im");
     qassert(ld.info[3].size == 2);
