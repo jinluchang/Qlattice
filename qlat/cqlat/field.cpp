@@ -88,49 +88,6 @@ PyObject* set_mul_field_ctype(PyObject* p_field, const Field<double>& f_factor)
 }
 
 template <class M>
-PyObject* set_zero_field_ctype(PyObject* p_field)
-{
-  Field<M>& f = py_convert_type_field<M>(p_field);
-  set_zero(f);
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* set_unit_field_ctype(PyObject* p_field, const ComplexD& coef)
-{
-  Field<M>& f = py_convert_type_field<M>(p_field);
-  set_unit(f, coef);
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* set_u_rand_double_field_ctype(PyObject* p_field, const RngState& rs,
-                                        const double upper, const double lower)
-{
-  Field<M>& f = py_convert_type_field<M>(p_field);
-  set_u_rand(f, rs, upper, lower);
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* set_u_rand_float_field_ctype(PyObject* p_field, const RngState& rs,
-                                        const double upper, const double lower)
-{
-  Field<M>& f = py_convert_type_field<M>(p_field);
-  set_u_rand(f, rs, upper, lower);
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* set_g_rand_double_field_ctype(PyObject* p_field, const RngState& rs,
-                                        const double center, const double sigma)
-{
-  Field<M>& f = py_convert_type_field<M>(p_field);
-  set_g_rand(f, rs, center, sigma);
-  Py_RETURN_NONE;
-}
-
-template <class M>
 PyObject* get_total_site_field_ctype(PyObject* p_field)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
@@ -266,82 +223,6 @@ EXPORT(set_mul_cfield_field, {
   } else {
     qassert(false);
   }
-  return p_ret;
-})
-
-EXPORT(set_zero_field, {
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_field)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_zero_field_ctype, ctype, p_field);
-  return p_ret;
-})
-
-EXPORT(set_unit_field, {
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  ComplexD coef = 1.0;
-  if (!PyArg_ParseTuple(args, "O|D", &p_field, &coef)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_unit_field_ctype, ctype, p_field, coef);
-  return p_ret;
-})
-
-EXPORT(set_u_rand_double_field, {
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  PyObject* p_rng = NULL;
-  double upper = 1.0;
-  double lower = 0.0;
-  if (!PyArg_ParseTuple(args, "OO|dd", &p_field, &p_rng, &upper, &lower)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  const RngState& rng = py_convert_type<RngState>(p_rng);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_u_rand_double_field_ctype, ctype, p_field, rng,
-                 upper, lower);
-  return p_ret;
-})
-
-EXPORT(set_u_rand_float_field, {
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  PyObject* p_rng = NULL;
-  double upper = 1.0;
-  double lower = 0.0;
-  if (!PyArg_ParseTuple(args, "OO|dd", &p_field, &p_rng, &upper, &lower)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  const RngState& rng = py_convert_type<RngState>(p_rng);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_u_rand_float_field_ctype, ctype, p_field, rng,
-                 upper, lower);
-  return p_ret;
-})
-
-EXPORT(set_g_rand_double_field, {
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  PyObject* p_rng = NULL;
-  double center = 0.0;
-  double sigma = 1.0;
-  if (!PyArg_ParseTuple(args, "OO|dd", &p_field, &p_rng, &center, &sigma)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  const RngState& rng = py_convert_type<RngState>(p_rng);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_g_rand_double_field_ctype, ctype, p_field, rng,
-                 center, sigma);
   return p_ret;
 })
 
