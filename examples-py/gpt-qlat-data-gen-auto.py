@@ -1480,13 +1480,22 @@ def get_cexpr_tadpole_current():
         diagram_type_dict[((('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
         #
         jj_list = []
-        for mu in range(4):
-            jj_list += [
-                    1/3 * mk_vec_mu("l", "s", "x_1", mu) * mk_scalar("s", "l", "x_2"),
-                    1/3 * mk_vec_mu("s", "l", "x_1", mu) * mk_scalar("l", "s", "x_2"),
-                    1/3 * mk_vec_mu("l", "l", "x_1", mu) * mk_scalar("l", "l", "x_2"),
-                    1/3 * mk_vec_mu("s", "s", "x_1", mu) * mk_scalar("s", "s", "x_2"),
-                    ]
+        jj_list += [
+                1/3 * mk_vec_mu("l", "s", "x_1", mu) * mk_scalar("s", "l", "x_2")
+                for mu in range(4)
+                ]
+        jj_list += [
+                1/3 * mk_vec_mu("s", "l", "x_1", mu) * mk_scalar("l", "s", "x_2")
+                for mu in range(4)
+                ]
+        jj_list += [
+                1/3 * mk_vec_mu("l", "l", "x_1", mu) * mk_scalar("l", "l", "x_2")
+                for mu in range(4)
+                ]
+        jj_list += [
+                1/3 * mk_vec_mu("s", "s", "x_1", mu) * mk_scalar("s", "s", "x_2")
+                for mu in range(4)
+                ]
         #
         exprs = [
                 mk_expr(1) + f"1",
