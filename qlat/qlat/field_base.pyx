@@ -4,8 +4,9 @@ from qlat_utils.all cimport *
 from . cimport everything as cc
 from .geometry cimport Geometry
 from .fields_io cimport ShuffledFieldsReader, ShuffledFieldsWriter
-from .field_types cimport FieldRealD, FieldRealF, FieldComplexD
-from .selected_field_types cimport SelectedFieldRealD, SelectedFieldRealF, SelectedFieldComplexD
+from .field_types cimport FieldRealD, FieldRealF, FieldComplexD, FieldComplexF
+from .selected_field_types cimport SelectedFieldRealD, SelectedFieldRealF, SelectedFieldComplexD, SelectedFieldComplexF
+from .selected_points_types cimport SelectedPointsRealD, SelectedPointsRealF, SelectedPointsComplexD, SelectedPointsComplexF
 from .field_selection cimport PointsSelection, FieldSelection
 
 from cpython cimport Py_buffer
@@ -20,8 +21,8 @@ from .field_type_dict import (
         field_type_dict,
         selected_field_type_dict,
         selected_points_type_dict,
-        field_ctypes_double,
         field_ctypes_complex,
+        field_ctypes_complex_f,
         field_ctypes_double,
         field_ctypes_float,
         field_ctypes_long,
@@ -76,17 +77,29 @@ cdef class FieldBase:
         get a signature of the real_d or complex_d field
         """
         cdef FieldComplexD fc
+        cdef FieldComplexF fcf
         cdef FieldRealD fr
+        cdef FieldRealF frf
         cdef FieldRealD fu
         if self.ctype in field_ctypes_complex:
             fc = FieldComplexD()
             fc.cast_from(self)
             fu = FieldRealD(fc.geo, fc.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
+        elif self.ctype in field_ctypes_complex_f:
+            fcf = FieldComplexF()
+            fcf.cast_from(self)
+            fu = FieldRealD(fcf.geo, fcf.multiplicity)
+            fu.set_rand(rng, 1.0, -1.0)
         elif self.ctype in field_ctypes_double:
-            fr = FieldComplexD()
+            fr = FieldRealD()
             fr.cast_from(self)
             fu = FieldRealD(fr.geo, fr.multiplicity)
+            fu.set_rand(rng, 1.0, -1.0)
+        elif self.ctype in field_ctypes_float:
+            frf = FieldRealF()
+            frf.cast_from(self)
+            fu = FieldRealD(frf.geo, frf.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
         else:
             raise Exception("get_data_sig: {self.ctype}")
@@ -440,17 +453,29 @@ cdef class SelectedFieldBase:
         get a signature of the real_d or complex_d field
         """
         cdef SelectedFieldComplexD fc
+        cdef SelectedFieldComplexF fcf
         cdef SelectedFieldRealD fr
+        cdef SelectedFieldRealF frf
         cdef SelectedFieldRealD fu
         if self.ctype in field_ctypes_complex:
             fc = SelectedFieldComplexD()
             fc.cast_from(self)
             fu = SelectedFieldRealD(fc.fsel, fc.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
+        elif self.ctype in field_ctypes_complex_f:
+            fcf = SelectedFieldComplexF()
+            fcf.cast_from(self)
+            fu = SelectedFieldRealD(fcf.fsel, fcf.multiplicity)
+            fu.set_rand(rng, 1.0, -1.0)
         elif self.ctype in field_ctypes_double:
-            fr = SelectedFieldComplexD()
+            fr = SelectedFieldRealD()
             fr.cast_from(self)
             fu = SelectedFieldRealD(fr.fsel, fr.multiplicity)
+            fu.set_rand(rng, 1.0, -1.0)
+        elif self.ctype in field_ctypes_float:
+            frf = SelectedFieldRealF()
+            frf.cast_from(self)
+            fu = SelectedFieldRealD(frf.fsel, frf.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
         else:
             raise Exception("get_data_sig: {self.ctype}")
@@ -676,6 +701,51 @@ cdef class SelectedPointsBase:
 
     def __deepcopy__(self, memo):
         return self.copy()
+
+    @q.timer
+    def cast_from(self, SelectedPointsBase other):
+        """
+        other can be SelectedPointsBase but of different type
+        """
+        cdef cc.Long size_per_site = other.multiplicity * other.sizeof_m
+        cdef cc.Long mult = size_per_site // self.sizeof_m
+        assert mult * self.sizeof_m == size_per_site
+        self.__init__(other.psel, mult)
+        self[:].ravel().view(dtype=np.int8)[:] = other[:].ravel().view(dtype=np.int8)
+
+    @q.timer
+    def get_data_sig(self, RngState rng):
+        """
+        get a signature of the real_d or complex_d field
+        """
+        cdef SelectedPointsComplexD fc
+        cdef SelectedPointsComplexF fcf
+        cdef SelectedPointsRealD fr
+        cdef SelectedPointsRealF frf
+        cdef SelectedPointsRealD fu
+        if self.ctype in field_ctypes_complex:
+            fc = SelectedPointsComplexD()
+            fc.cast_from(self)
+            fu = SelectedPointsRealD(fc.psel, fc.multiplicity)
+            fu.set_rand(rng, 1.0, -1.0)
+        elif self.ctype in field_ctypes_complex_f:
+            fcf = SelectedPointsComplexF()
+            fcf.cast_from(self)
+            fu = SelectedPointsRealD(fcf.psel, fcf.multiplicity)
+            fu.set_rand(rng, 1.0, -1.0)
+        elif self.ctype in field_ctypes_double:
+            fr = SelectedPointsRealD()
+            fr.cast_from(self)
+            fu = SelectedPointsRealD(fr.psel, fr.multiplicity)
+            fu.set_rand(rng, 1.0, -1.0)
+        elif self.ctype in field_ctypes_float:
+            frf = SelectedPointsRealF()
+            frf.cast_from(self)
+            fu = SelectedPointsRealD(frf.psel, frf.multiplicity)
+            fu.set_rand(rng, 1.0, -1.0)
+        else:
+            raise Exception("get_data_sig: {self.ctype}")
+        return glb_sum((fc[:] * fu[:]).sum())
 
     def __setitem__(self, idx, val):
         """

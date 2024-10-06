@@ -32,6 +32,12 @@ field_ctypes_complex = [
         ElemTypeComplexD,
         ]
 
+field_ctypes_complex_f = [
+        ElemTypeComplexF,
+        ]
+
+field_ctypes_complex_or_complex_f = field_ctypes_complex + field_ctypes_complex_f
+
 field_ctypes_double = [
         ElemTypeColorMatrix,
         ElemTypeWilsonMatrix,
@@ -47,6 +53,8 @@ field_ctypes_float = [
         ElemTypeComplexF,
         ElemTypeRealF,
         ]
+
+field_ctypes_double_or_float = field_ctypes_double + field_ctypes_float
 
 field_ctypes_long = [
         ElemTypeLong,
