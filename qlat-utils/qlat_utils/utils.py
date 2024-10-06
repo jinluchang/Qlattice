@@ -106,7 +106,7 @@ def sqr(x):
 def set_zero(x):
     x.set_zero()
 
-def set_unit(x, coef = 1.0):
+def set_unit(x, coef=1.0):
     x.set_unit(coef)
 
 def show(x):
@@ -240,7 +240,7 @@ def mk_r_sq_list_3d(r_sq_limit):
                 r_sq_set.add(r_sq)
     return sorted(list(r_sq_set))
 
-def mk_r_sq_list(r_sq_limit, dimension = '3D'):
+def mk_r_sq_list(r_sq_limit, dimension='3D'):
     if dimension == '4D':
         # Lagrange's four-square theorem
         # https://en.wikipedia.org/wiki/Lagrange%27s_four-square_theorem
@@ -250,7 +250,7 @@ def mk_r_sq_list(r_sq_limit, dimension = '3D'):
     else:
         raise Exception(f"mk_r_sq_list: dimension='{dimension}' not recognized.")
 
-def mk_r_list(r_limit, *, r_all_limit = 28.0, r_scaling_factor = 5.0, dimension = '3D'):
+def mk_r_list(r_limit, *, r_all_limit=28.0, r_scaling_factor=5.0, dimension='3D'):
     """
     Make a list of `r` values from `0` up to `r_limit`.\n
     Parameters

@@ -2,73 +2,81 @@
  [
   "auto_contract_meson_corr_psnk: ld sig",
   {
-   "real": -9.179256658677657,
-   "imag": -2.9972416402059547,
+   "real": -9.179256658698405,
+   "imag": -2.9972416402190007,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_jwjj2: ld_sum sig",
   {
-   "real": 0.2609418308189897,
-   "imag": 0.00016815582803061534,
+   "real": 0.2609418275438462,
+   "imag": 0.0001681558085310735,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_jwjj: ld_sum sig",
   {
-   "real": -0.026514090003690604,
-   "imag": 6.225958304770024e-05,
+   "real": -0.02651409522813596,
+   "imag": 6.225963453650675e-05,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_jj: ld_sum sig",
   {
-   "real": -200.98998137756934,
-   "imag": 2.342628198086521,
+   "real": -200.98999354227928,
+   "imag": 2.342627370345843,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_jt: ld_sum sig",
   {
-   "real": -273.2812111645002,
-   "imag": 0.2385027248820717,
+   "real": -273.2812111644986,
+   "imag": 0.2385027249304935,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_m: ld_sum sig",
   {
-   "real": -69.63253139115227,
-   "imag": 0.2521916436622784,
+   "real": -69.63253139114978,
+   "imag": 0.2521916440238046,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_corr: ld sig",
   {
-   "real": -25647.51313035655,
-   "imag": -12145.811126382325,
+   "real": -25647.513130356878,
+   "imag": -12145.811126382654,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_corr_psrc: ld sig",
   {
-   "real": -9.647258449497794,
-   "imag": -3.035047985930372,
+   "real": -9.64725844949833,
+   "imag": -3.035047985930327,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_corr_psnk_psrc: ld sig",
   {
-   "real": -0.021265389750253785,
-   "imag": -0.00023113290712074158,
+   "real": -0.02126538892120734,
+   "imag": -0.00023113308596070273,
    "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_tadpole_current: sf_tadpole_current sig",
+  {
+   "real": -13211.779322534334,
+   "imag": 0.47303614752345396,
+   "__extended_json_type__": "complex"
   }
  ]
 ]
