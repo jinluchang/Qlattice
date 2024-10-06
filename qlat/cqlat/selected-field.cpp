@@ -308,7 +308,7 @@ PyObject* set_u_rand_double_sfield_ctype(PyObject* p_field,
                                         const double lower)
 {
   SelectedField<M>& f = py_convert_type_sfield<M>(p_field);
-  set_u_rand_double(f, fsel, rs, upper, lower);
+  set_u_rand(f, fsel, rs, upper, lower);
   Py_RETURN_NONE;
 }
 
