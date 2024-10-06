@@ -303,6 +303,14 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
     def multiplicity(self):
         return self.xx.multiplicity
 
+    @property
+    def sizeof_m(self):
+        return ElemType{{name}}.size()
+
+    @property
+    def geo(self):
+        return self.psel.geo
+
     def __iadd__(self, SelectedPoints{{name}} f):
         cc.iadd_direct(self.xx, f.xx)
         return self

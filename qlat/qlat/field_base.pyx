@@ -5,8 +5,8 @@ from . cimport everything as cc
 from .geometry cimport Geometry
 from .fields_io cimport ShuffledFieldsReader, ShuffledFieldsWriter
 from .field_types cimport FieldRealD, FieldRealF, FieldComplexD
+from .selected_field_types cimport SelectedFieldRealD, SelectedFieldRealF, SelectedFieldComplexD
 from .field_selection cimport PointsSelection, FieldSelection
-from .selected_field_types cimport SelectedFieldRealF
 
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
@@ -63,7 +63,6 @@ cdef class FieldBase:
     def cast_from(self, FieldBase other):
         """
         other can be Field but of different type
-        field geo does not change if already initialized.
         """
         cdef cc.Long size_per_site = other.multiplicity * other.sizeof_m
         cdef cc.Long mult = size_per_site // self.sizeof_m
@@ -423,6 +422,39 @@ cdef class SelectedFieldBase:
 
     def __deepcopy__(self, memo):
         return self.copy()
+
+    @q.timer
+    def cast_from(self, SelectedFieldBase other):
+        """
+        other can be SelectedFieldBase but of different type
+        """
+        cdef cc.Long size_per_site = other.multiplicity * other.sizeof_m
+        cdef cc.Long mult = size_per_site // self.sizeof_m
+        assert mult * self.sizeof_m == size_per_site
+        self.__init__(other.fsel, mult)
+        self[:].ravel().view(dtype=np.int8)[:] = other[:].ravel().view(dtype=np.int8)
+
+    @q.timer
+    def get_data_sig(self, RngState rng):
+        """
+        get a signature of the real_d or complex_d field
+        """
+        cdef SelectedFieldComplexD fc
+        cdef SelectedFieldRealD fr
+        cdef SelectedFieldRealD fu
+        if self.ctype in field_ctypes_complex:
+            fc = SelectedFieldComplexD()
+            fc.cast_from(self)
+            fu = SelectedFieldRealD(fc.fsel, fc.multiplicity)
+            fu.set_rand(rng, 1.0, -1.0)
+        elif self.ctype in field_ctypes_double:
+            fr = SelectedFieldComplexD()
+            fr.cast_from(self)
+            fu = SelectedFieldRealD(fr.fsel, fr.multiplicity)
+            fu.set_rand(rng, 1.0, -1.0)
+        else:
+            raise Exception("get_data_sig: {self.ctype}")
+        return glb_sum((fc[:] * fu[:]).sum())
 
     def __iadd__(self, f1):
         assert isinstance(f1, SelectedFieldBase)

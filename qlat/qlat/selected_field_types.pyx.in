@@ -145,6 +145,10 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         return self.xx.multiplicity
 
     @property
+    def sizeof_m(self):
+        return ElemType{{name}}.size()
+
+    @property
     def geo(self):
         cdef Geometry geo = Geometry()
         cc.assign_direct(geo.xx, self.xx.get_geo())
