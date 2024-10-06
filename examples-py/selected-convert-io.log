@@ -1,0 +1,62 @@
+CHECK: geo.show()= Geometry([4, 4, 4, 8])
+CHECK: psel.points_dist_type=g
+CHECK: fsel.n_elems=21
+CHECK: f1[:].shape=(256, 3)
+CHECK: f1[:].dtype=complex128
+CHECK: f2[:].shape=(256, 3)
+CHECK: f2[:].dtype=complex64
+CHECK: f3[:].shape=(256, 3)
+CHECK: f3[:].dtype=float64
+CHECK: f4[:].shape=(256, 3)
+CHECK: f4[:].dtype=float32
+CHECK: sf1[:].shape=(21, 3)
+CHECK: sf1[:].dtype=complex128
+CHECK: sf2[:].shape=(21, 3)
+CHECK: sf2[:].dtype=complex64
+CHECK: sf3[:].shape=(21, 3)
+CHECK: sf3[:].dtype=float64
+CHECK: sf4[:].shape=(21, 3)
+CHECK: sf4[:].dtype=float32
+CHECK: sp1[:].shape=(16, 3)
+CHECK: sp1[:].dtype=complex128
+CHECK: sp2[:].shape=(16, 3)
+CHECK: sp2[:].dtype=complex64
+CHECK: sp3[:].shape=(16, 3)
+CHECK: sp3[:].dtype=float64
+CHECK: sp4[:].shape=(16, 3)
+CHECK: sp4[:].dtype=float32
+INFO: check_log_json: 16 'q.get_data_sig(sf1, rs)'
+INFO: check_log_json: target eps: 1e-10 ; actual eps: 8.513486952329704e-17 .
+INFO: check_log_json: 18 'q.get_data_sig(sf3, rs)'
+INFO: check_log_json: target eps: 1e-10 ; actual eps: 2.0449941432197704e-16 .
+INFO: check_log_json: 28 'q.get_data_sig(sf1, rs)'
+INFO: check_log_json: target eps: 1e-10 ; actual eps: 1.8890331375226365e-16 .
+INFO: check_log_json: 29 'q.get_data_sig(sf2, rs)'
+INFO: check_log_json: target eps: 1e-10 ; actual eps: 1.889033099371418e-16 .
+INFO: check_log_json: 30 'q.get_data_sig(sf3, rs)'
+INFO: check_log_json: target eps: 1e-10 ; actual eps: 1.3086828548023523e-16 .
+INFO: check_log_json: 31 'q.get_data_sig(sf4, rs)'
+INFO: check_log_json: target eps: 1e-10 ; actual eps: 3.9260489106349846e-16 .
+INFO: check_log_json: 44 'q.get_data_sig(sf1, rs)'
+INFO: check_log_json: target eps: 1e-10 ; actual eps: 1.8890331375226365e-16 .
+INFO: check_log_json: 45 'q.get_data_sig(sf2, rs)'
+INFO: check_log_json: target eps: 1e-10 ; actual eps: 1.889033099371418e-16 .
+INFO: check_log_json: 46 'q.get_data_sig(sf3, rs)'
+INFO: check_log_json: target eps: 1e-10 ; actual eps: 1.3086828548023523e-16 .
+INFO: check_log_json: 47 'q.get_data_sig(sf4, rs)'
+INFO: check_log_json: target eps: 1e-10 ; actual eps: 3.9260489106349846e-16 .
+INFO: check_log_json: 68 'q.get_data_sig(sf1, rs)'
+INFO: check_log_json: target eps: 1e-10 ; actual eps: 1.8890331375226365e-16 .
+INFO: check_log_json: 69 'q.get_data_sig(sf2, rs)'
+INFO: check_log_json: target eps: 1e-10 ; actual eps: 1.889033099371418e-16 .
+INFO: check_log_json: 70 'q.get_data_sig(sf3, rs)'
+INFO: check_log_json: target eps: 1e-10 ; actual eps: 1.3086828548023523e-16 .
+INFO: check_log_json: 71 'q.get_data_sig(sf4, rs)'
+INFO: check_log_json: target eps: 1e-10 ; actual eps: 3.9260489106349846e-16 .
+INFO: check_log_json: 92 'q.get_data_sig(sf1, rs)'
+INFO: check_log_json: target eps: 1e-10 ; actual eps: 5.446866437667651e-16 .
+INFO: check_log_json: 93 'q.get_data_sig(sf2, rs)'
+INFO: check_log_json: target eps: 1e-10 ; actual eps: 4.3779315826187904e-16 .
+INFO: check_log_json: 94 'q.get_data_sig(sf3, rs)'
+INFO: check_log_json: target eps: 1e-10 ; actual eps: 1.9510921189687642e-16 .
+CHECK: finished successfully.

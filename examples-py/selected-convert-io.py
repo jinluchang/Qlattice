@@ -1,207 +1,359 @@
 #!/usr/bin/env python3
 
 json_results = []
-check_eps = 1e-5
+check_eps = 1e-10
 
 import qlat as q
-import os
-import numpy as np
 
 q.begin_with_mpi()
 
 total_site = q.Coordinate([ 4, 4, 4, 8, ])
 geo = q.Geometry(total_site)
+multiplicity = 3
+
 rs = q.RngState("seed")
 
 n_points = 16
 psel = q.PointsSelection()
 psel.set_rand(total_site, n_points, rs)
 
+n_per_tslice = 4
 fsel = q.FieldSelection(geo)
+fsel.set_rand(total_site, n_per_tslice, rs)
 fsel.add_psel(psel)
 
-# many checks
+q.displayln_info("CHECK: geo.show()=", geo.show())
+q.displayln_info(f"CHECK: psel.points_dist_type={psel.points_dist_type}")
+q.displayln_info(f"CHECK: fsel.n_elems={fsel.n_elems}")
 
-q.displayln_info("CHECK: geo.show() =", geo.show())
+f1 = q.FieldComplexD(geo, multiplicity)
+f2 = q.FieldComplexF(geo, multiplicity)
+f3 = q.FieldRealD(geo, multiplicity)
+f4 = q.FieldRealF(geo, multiplicity)
 
-prop = q.Prop(geo)
-prop.set_rand(rs.split("prop-1"))
+sf1 = q.SelectedFieldComplexD(fsel, multiplicity)
+sf2 = q.SelectedFieldComplexF(fsel, multiplicity)
+sf3 = q.SelectedFieldRealD(fsel, multiplicity)
+sf4 = q.SelectedFieldRealF(fsel, multiplicity)
 
-q.displayln_info(f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm():.12E}")
+sp1 = q.SelectedPointsComplexD(psel, multiplicity)
+sp2 = q.SelectedPointsComplexF(psel, multiplicity)
+sp3 = q.SelectedPointsRealD(psel, multiplicity)
+sp4 = q.SelectedPointsRealF(psel, multiplicity)
 
-prop_arr = np.asarray(prop)
-q.displayln_info(f"CHECK: prop_arr.dtype = {prop_arr.dtype}")
-q.displayln_info(f"CHECK: prop_arr.shape = {prop_arr.shape}")
+f1.set_zero()
+f2.set_zero()
+f3.set_zero()
+f4.set_zero()
 
-prop.save_double("results/prop-double.field")
-prop = q.Prop()
-prop.load_double("results/prop-double.field")
+json_results.append((f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps))
+json_results.append((f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps))
+json_results.append((f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps))
+json_results.append((f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps))
 
-q.displayln_info(f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm():.12E}")
+sf1.set_zero()
+sf2.set_zero()
+sf3.set_zero()
+sf4.set_zero()
 
-prop.save_float_from_double("results/prop-float.field")
-prop = q.Prop()
-prop.load_double_from_float("results/prop-float.field")
+json_results.append((f"q.get_data_sig(sf1, rs)", q.get_data_sig(sf1, rs), check_eps))
+json_results.append((f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_eps))
+json_results.append((f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps))
+json_results.append((f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps))
 
-q.displayln_info(f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm():.12E}")
+sp1.set_zero()
+sp2.set_zero()
+sp3.set_zero()
+sp4.set_zero()
 
-q.save_pickle_obj(prop, f"results/prop-{q.get_id_node()}.pickle", is_sync_node=False)
-prop_load = q.load_pickle_obj(f"results/prop-{q.get_id_node()}.pickle", is_sync_node=False)
-assert np.all(prop[:] == prop_load[:])
+json_results.append((f"q.get_data_sig(sp1, rs)", q.get_data_sig(sp1, rs), check_eps))
+json_results.append((f"q.get_data_sig(sp2, rs)", q.get_data_sig(sp2, rs), check_eps))
+json_results.append((f"q.get_data_sig(sp3, rs)", q.get_data_sig(sp3, rs), check_eps))
+json_results.append((f"q.get_data_sig(sp4, rs)", q.get_data_sig(sp4, rs), check_eps))
 
-psel = q.PointsSelection(total_site, [
-    [ 0, 0, 0, 0, ],
-    [ 0, 1, 2, 0, ],
-    ])
+f1.set_rand(rs)
+f2.set_rand(rs)
+f3.set_rand(rs)
+f4.set_rand(rs)
 
-q.save_pickle_obj(psel, f"results/psel.pickle")
-psel_load = q.load_pickle_obj(f"results/psel.pickle")
-assert np.all(psel[:] == psel_load[:])
+json_results.append((f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps))
+json_results.append((f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps))
+json_results.append((f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps))
+json_results.append((f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps))
 
-n_per_tslice = 16
-fsel = q.FieldSelection()
-fsel.set_rand(geo.total_site, n_per_tslice, rs.split("fsel"))
+sf1.set_rand(rs)
+sf2.set_rand(rs)
+sf3.set_rand(rs)
+sf4.set_rand(rs)
 
-fselc = fsel.copy()
-fselc.add_psel(psel)
+json_results.append((f"q.get_data_sig(sf1, rs)", q.get_data_sig(sf1, rs), check_eps))
+json_results.append((f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_eps))
+json_results.append((f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps))
+json_results.append((f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps))
 
-q.save_pickle_obj(fselc, f"results/fselc-{q.get_id_node()}.pickle", is_sync_node=False)
-fselc_load = q.load_pickle_obj(f"results/fselc-{q.get_id_node()}.pickle", is_sync_node=False)
-assert np.all(fselc[:] == fselc_load[:])
+sp1.set_rand(rs)
+sp2.set_rand(rs)
+sp3.set_rand(rs)
+sp4.set_rand(rs)
 
-s_prop = q.SelProp(fselc)
-s_prop @= prop
+json_results.append((f"q.get_data_sig(sp1, rs)", q.get_data_sig(sp1, rs), check_eps))
+json_results.append((f"q.get_data_sig(sp2, rs)", q.get_data_sig(sp2, rs), check_eps))
+json_results.append((f"q.get_data_sig(sp3, rs)", q.get_data_sig(sp3, rs), check_eps))
+json_results.append((f"q.get_data_sig(sp4, rs)", q.get_data_sig(sp4, rs), check_eps))
 
-q.save_pickle_obj(s_prop, f"results/s_prop-{q.get_id_node()}.pickle", is_sync_node=False)
-s_prop_load = q.load_pickle_obj(f"results/s_prop-{q.get_id_node()}.pickle", is_sync_node=False)
-assert np.all(s_prop[:] == s_prop_load[:])
+f1.set_rand_g(rs)
+f2.set_rand_g(rs)
+f3.set_rand_g(rs)
+f4.set_rand_g(rs)
 
-n1 = s_prop.n_elems
-n2 = q.glb_sum(n1)
+json_results.append((f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps))
+json_results.append((f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps))
+json_results.append((f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps))
+json_results.append((f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps))
 
-q.displayln_info(f"CHECK: s_prop n1={n1} ; n2={n2}")
+sf1.set_rand_g(rs)
+sf2.set_rand_g(rs)
+sf3.set_rand_g(rs)
+sf4.set_rand_g(rs)
 
-sp_prop = q.PselProp(s_prop, rs.split("shuffle_selected_field-1"))
-q.displayln_info(f"CHECK: sp_prop from shuffle_selected_field")
+json_results.append((f"q.get_data_sig(sf1, rs)", q.get_data_sig(sf1, rs), check_eps))
+json_results.append((f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_eps))
+json_results.append((f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps))
+json_results.append((f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps))
 
-q.save_pickle_obj(sp_prop, f"results/sp_prop-{q.get_id_node()}.pickle", is_sync_node=False)
-sp_prop_load = q.load_pickle_obj(f"results/sp_prop-{q.get_id_node()}.pickle", is_sync_node=False)
-assert np.all(sp_prop[:] == sp_prop_load[:])
+sp1.set_rand_g(rs)
+sp2.set_rand_g(rs)
+sp3.set_rand_g(rs)
+sp4.set_rand_g(rs)
 
-n3 = sp_prop.n_points
-n4 = q.glb_sum(n3)
-q.displayln_info(f"CHECK: s_prop n3={n3} ; n4={n4}")
+json_results.append((f"q.get_data_sig(sp1, rs)", q.get_data_sig(sp1, rs), check_eps))
+json_results.append((f"q.get_data_sig(sp2, rs)", q.get_data_sig(sp2, rs), check_eps))
+json_results.append((f"q.get_data_sig(sp3, rs)", q.get_data_sig(sp3, rs), check_eps))
+json_results.append((f"q.get_data_sig(sp4, rs)", q.get_data_sig(sp4, rs), check_eps))
 
-assert n4 == n2
+q.displayln_info(f"CHECK: f1[:].shape={f1[:].shape}")
+q.displayln_info(f"CHECK: f1[:].dtype={f1[:].dtype}")
 
-q.displayln_info(f"CHECK: len(sp_prop.psel) = {len(sp_prop.psel)}")
-q.displayln_info(f"CHECK: sp_prop.psel[:].tolist() = {sp_prop.psel[:].tolist()}")
+q.displayln_info(f"CHECK: f2[:].shape={f2[:].shape}")
+q.displayln_info(f"CHECK: f2[:].dtype={f2[:].dtype}")
 
-sig1 = q.get_data_sig(sp_prop[:], q.RngState(f"{q.get_id_node()}"))
-sig2 = q.glb_sum(sig1)
+q.displayln_info(f"CHECK: f3[:].shape={f3[:].shape}")
+q.displayln_info(f"CHECK: f3[:].dtype={f3[:].dtype}")
 
-json_results.append((f"sp_prop from shuffle_selected_field sig1", sig1, check_eps))
-json_results.append((f"sp_prop from shuffle_selected_field sig2", sig2, check_eps))
+q.displayln_info(f"CHECK: f4[:].shape={f4[:].shape}")
+q.displayln_info(f"CHECK: f4[:].dtype={f4[:].dtype}")
 
-sp_prop = q.PselProp(psel)
-sp_prop @= prop
+q.displayln_info(f"CHECK: sf1[:].shape={sf1[:].shape}")
+q.displayln_info(f"CHECK: sf1[:].dtype={sf1[:].dtype}")
 
-q.displayln_info("CHECK: sp_prop", sp_prop.qnorm())
+q.displayln_info(f"CHECK: sf2[:].shape={sf2[:].shape}")
+q.displayln_info(f"CHECK: sf2[:].dtype={sf2[:].dtype}")
 
-sp_prop_arr = np.asarray(sp_prop)
-q.displayln_info(f"CHECK: sp_prop_arr.dtype = {sp_prop_arr.dtype}")
-q.displayln_info(f"CHECK: sp_prop_arr.shape = {sp_prop_arr.shape}")
+q.displayln_info(f"CHECK: sf3[:].shape={sf3[:].shape}")
+q.displayln_info(f"CHECK: sf3[:].dtype={sf3[:].dtype}")
 
-sp_prop.save("results/prop.lat")
-sp_prop1 = q.PselProp(psel)
-sp_prop1.load("results/prop.lat")
-sp_prop1 -= sp_prop
+q.displayln_info(f"CHECK: sf4[:].shape={sf4[:].shape}")
+q.displayln_info(f"CHECK: sf4[:].dtype={sf4[:].dtype}")
 
-q.displayln_info("CHECK: sp_prop", sp_prop.qnorm(), sp_prop1.qnorm(), "save load")
+q.displayln_info(f"CHECK: sp1[:].shape={sp1[:].shape}")
+q.displayln_info(f"CHECK: sp1[:].dtype={sp1[:].dtype}")
 
-ld = sp_prop.to_lat_data()
-sp_prop1 = q.PselProp(psel)
-sp_prop1.from_lat_data(ld)
-sp_prop1 -= sp_prop
+q.displayln_info(f"CHECK: sp2[:].shape={sp2[:].shape}")
+q.displayln_info(f"CHECK: sp2[:].dtype={sp2[:].dtype}")
 
-q.displayln_info("CHECK: sp_prop", sp_prop.qnorm(), sp_prop1.qnorm(), "lat_data conversion")
+q.displayln_info(f"CHECK: sp3[:].shape={sp3[:].shape}")
+q.displayln_info(f"CHECK: sp3[:].dtype={sp3[:].dtype}")
 
-q.save_pickle_obj(sp_prop, f"results/sp_prop.pickle")
-sp_prop_load = q.load_pickle_obj(f"results/sp_prop.pickle")
-assert np.all(sp_prop[:] == sp_prop_load[:])
+q.displayln_info(f"CHECK: sp4[:].shape={sp4[:].shape}")
+q.displayln_info(f"CHECK: sp4[:].dtype={sp4[:].dtype}")
 
-s_prop = q.SelProp(fsel)
-s_prop @= prop
-s_prop.save_double("results/prop.sfield")
-s_prop1 = q.SelProp(fsel)
-s_prop1.load_double("results/prop.sfield")
-s_prop1 -= s_prop
+f1.save_double("results/f1.field")
+f1r = q.FieldComplexD()
+f1r.load_double("results/f1.field")
+f1r -= f1
+json_results.append((f"f1r.qnorm()", f1r.qnorm(), check_eps))
 
-q.displayln_info("CHECK: s_prop", s_prop.qnorm(), s_prop1.qnorm())
+f3.save_double("results/f3.field")
+f3r = q.FieldRealD()
+f3r.load_double("results/f3.field")
+f3r -= f3
+json_results.append((f"f3r.qnorm()", f3r.qnorm(), check_eps))
 
-s_prop_arr = np.asarray(s_prop)
-q.displayln_info(f"CHECK: s_prop_arr.dtype = {s_prop_arr.dtype}")
-q.displayln_info(f"CHECK: s_prop_arr.shape = {s_prop_arr.shape}")
+sf1.save_double("results/sf1.sfield")
+sf1r = q.SelectedFieldComplexD(fsel)
+sf1r.load_double("results/sf1.sfield")
+sf1r -= sf1
+json_results.append((f"sf1r.qnorm()", sf1r.qnorm(), check_eps))
 
-prop1 = q.SelProp(fselc)
-prop1 @= prop
+sf3.save_double("results/sf3.sfield")
+sf3r = q.SelectedFieldRealD(fsel)
+sf3r.load_double("results/sf3.sfield")
+sf3r -= sf3
+json_results.append((f"sf3r.qnorm()", sf3r.qnorm(), check_eps))
 
-q.displayln_info(f"CHECK: prop1 {prop1.qnorm():.12E}")
+sp1.save("results/sp1.lat")
+sp1r = q.SelectedPointsComplexD(psel)
+sp1r.load("results/sp1.lat")
+sp1r -= sp1
+json_results.append((f"sp1r.qnorm()", sp1r.qnorm(), check_eps))
 
-sp_prop1 = q.PselProp(psel)
-sp_prop1 @= prop1
-sp_prop1 -= sp_prop
+sp2.save("results/sp2.latf")
+sp2r = q.SelectedPointsComplexF(psel)
+sp2r.load("results/sp2.latf")
+sp2r -= sp2
+json_results.append((f"sp2r.qnorm()", sp2r.qnorm(), check_eps))
 
-q.displayln_info(f"CHECK: sp_prop1 {sp_prop.qnorm():12E} {sp_prop1.qnorm():.12E}")
+sp3.save("results/sp3.lat")
+sp3r = q.SelectedPointsRealD(psel)
+sp3r.load("results/sp3.lat")
+sp3r -= sp3
+json_results.append((f"sp3r.qnorm()", sp3r.qnorm(), check_eps))
 
-s_prop1 = q.SelProp(fsel)
-s_prop1 @= prop1
-s_prop1 -= s_prop
+sp4.save("results/sp4.latf")
+sp4r = q.SelectedPointsRealF(psel)
+sp4r.load("results/sp4.latf")
+sp4r -= sp4
+json_results.append((f"sp4r.qnorm()", sp4r.qnorm(), check_eps))
 
-q.displayln_info(f"CHECK: s_prop1 {s_prop.qnorm():12E} {s_prop1.qnorm():.12E}")
+sf1 @= f1
+sf2 @= f2
+sf3 @= f3
+sf4 @= f4
 
-prop = q.Prop(geo)
-prop.set_rand(rs.split("prop-1"))
-q.displayln_info(f"CHECK: prop : {prop.crc32()}")
-prop_msc = q.convert_mspincolor_from_wm(prop)
-q.displayln_info(f"CHECK: prop_msc : {prop_msc.crc32()}")
-prop_wm = q.convert_wm_from_mspincolor(prop_msc)
-q.displayln_info(f"CHECK: prop_wm : {prop_wm.crc32()}")
-prop_wm -= prop
-assert prop_wm.qnorm() == 0
+json_results.append((f"q.get_data_sig(sf1, rs)", q.get_data_sig(sf1, rs), check_eps))
+json_results.append((f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_eps))
+json_results.append((f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps))
+json_results.append((f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps))
 
-s_prop = q.SelProp(fsel)
-s_prop_msc = q.SelProp(fsel)
-s_prop_wm = q.SelProp(fsel)
-s_prop @= prop
-s_prop_msc @= prop_msc
-s_prop_wm @= prop
-s_prop_msc1 = q.convert_mspincolor_from_wm(s_prop)
-s_prop_wm1 = q.convert_wm_from_mspincolor(s_prop_msc)
-s_prop_msc1 -= s_prop_msc
-s_prop_wm1 -= s_prop_wm
-assert s_prop_msc1.qnorm() == 0
-assert s_prop_wm1.qnorm() == 0
+sp1 @= f1
+sp2 @= f2
+sp3 @= f3
+sp4 @= f4
 
-sp_prop = q.PselProp(psel)
-sp_prop_msc = q.PselProp(psel)
-sp_prop_wm = q.PselProp(psel)
-sp_prop @= prop
-sp_prop_msc @= prop_msc
-sp_prop_wm @= prop
-sp_prop_msc1 = q.convert_mspincolor_from_wm(sp_prop)
-sp_prop_wm1 = q.convert_wm_from_mspincolor(sp_prop_msc)
-sp_prop_msc1 -= sp_prop_msc
-sp_prop_wm1 -= sp_prop_wm
-assert sp_prop_msc1.qnorm() == 0
-assert sp_prop_wm1.qnorm() == 0
+json_results.append((f"q.get_data_sig(sp1, rs)", q.get_data_sig(sp1, rs), check_eps))
+json_results.append((f"q.get_data_sig(sp2, rs)", q.get_data_sig(sp2, rs), check_eps))
+json_results.append((f"q.get_data_sig(sp3, rs)", q.get_data_sig(sp3, rs), check_eps))
+json_results.append((f"q.get_data_sig(sp4, rs)", q.get_data_sig(sp4, rs), check_eps))
+
+sp1.set_zero()
+sp2.set_zero()
+sp3.set_zero()
+sp4.set_zero()
+
+json_results.append((f"q.get_data_sig(sp1, rs)", q.get_data_sig(sp1, rs), check_eps))
+json_results.append((f"q.get_data_sig(sp2, rs)", q.get_data_sig(sp2, rs), check_eps))
+json_results.append((f"q.get_data_sig(sp3, rs)", q.get_data_sig(sp3, rs), check_eps))
+json_results.append((f"q.get_data_sig(sp4, rs)", q.get_data_sig(sp4, rs), check_eps))
+
+sp1 @= sf1
+sp2 @= sf2
+sp3 @= sf3
+sp4 @= sf4
+
+json_results.append((f"q.get_data_sig(sp1, rs)", q.get_data_sig(sp1, rs), check_eps))
+json_results.append((f"q.get_data_sig(sp2, rs)", q.get_data_sig(sp2, rs), check_eps))
+json_results.append((f"q.get_data_sig(sp3, rs)", q.get_data_sig(sp3, rs), check_eps))
+json_results.append((f"q.get_data_sig(sp4, rs)", q.get_data_sig(sp4, rs), check_eps))
+
+# Keep other values in field unchanged
+
+f1 @= sf1
+f2 @= sf2
+f3 @= sf3
+f4 @= sf4
+
+json_results.append((f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps))
+json_results.append((f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps))
+json_results.append((f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps))
+json_results.append((f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps))
+
+# Keep other values in field unchanged
+
+f1 @= sp1
+f2 @= sp2
+f3 @= sp3
+f4 @= sp4
+
+json_results.append((f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps))
+json_results.append((f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps))
+json_results.append((f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps))
+json_results.append((f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps))
+
+# Keep other values in selected field unchanged
+
+sf1 @= sp1
+sf2 @= sp2
+sf3 @= sp3
+sf4 @= sp4
+
+json_results.append((f"q.get_data_sig(sf1, rs)", q.get_data_sig(sf1, rs), check_eps))
+json_results.append((f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_eps))
+json_results.append((f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps))
+json_results.append((f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps))
+
+f1.set_zero()
+f2.set_zero()
+f3.set_zero()
+f4.set_zero()
+
+json_results.append((f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps))
+json_results.append((f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps))
+json_results.append((f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps))
+json_results.append((f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps))
+
+f1 @= sf1
+f2 @= sf2
+f3 @= sf3
+f4 @= sf4
+
+json_results.append((f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps))
+json_results.append((f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps))
+json_results.append((f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps))
+json_results.append((f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps))
+
+f1.set_zero()
+f2.set_zero()
+f3.set_zero()
+f4.set_zero()
+
+json_results.append((f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps))
+json_results.append((f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps))
+json_results.append((f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps))
+json_results.append((f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps))
+
+f1 @= sp1
+f2 @= sp2
+f3 @= sp3
+f4 @= sp4
+
+json_results.append((f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps))
+json_results.append((f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps))
+json_results.append((f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps))
+json_results.append((f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps))
+
+sf1.set_zero()
+sf2.set_zero()
+sf3.set_zero()
+sf4.set_zero()
+
+json_results.append((f"q.get_data_sig(sf1, rs)", q.get_data_sig(sf1, rs), check_eps))
+json_results.append((f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_eps))
+json_results.append((f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps))
+json_results.append((f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps))
+
+sf1 @= sp1
+sf2 @= sp2
+sf3 @= sp3
+sf4 @= sp4
+
+json_results.append((f"q.get_data_sig(sf1, rs)", q.get_data_sig(sf1, rs), check_eps))
+json_results.append((f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_eps))
+json_results.append((f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps))
+json_results.append((f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps))
 
 q.check_all_files_crc32_info("results")
-
 q.check_log_json(__file__, json_results)
-
 q.timer_display()
 
 q.end_with_mpi()
-
 q.displayln_info(f"CHECK: finished successfully.")

@@ -19,6 +19,7 @@ tests = \
 		set-rand.log \
 		benchmark-matrix-functions.log \
 		make-sample-gauge-field.log \
+		selected-convert-io.log \
 		qar.log \
 		lat-io.log \
 		lat-io-test1.log \
