@@ -435,17 +435,17 @@ Long read_selected_field_double_from_float(
 
 #define QLAT_EXTERN_TEMPLATE(TYPENAME)                                  \
                                                                         \
-  QLAT_EXTERN template SelectedField<TYPENAME>& operator+=<TYPENAME>(   \
-      SelectedField<TYPENAME>& f, const SelectedField<TYPENAME>& f1);   \
+  QLAT_EXTERN template SelectedField<TYPENAME>& operator+= <TYPENAME>(  \
+      SelectedField<TYPENAME> & f, const SelectedField<TYPENAME>& f1);  \
                                                                         \
-  QLAT_EXTERN template SelectedField<TYPENAME>& operator-=<TYPENAME>(   \
-      SelectedField<TYPENAME>& f, const SelectedField<TYPENAME>& f1);   \
-                                                                        \
-  QLAT_EXTERN template SelectedField<TYPENAME>& operator*=              \
-      <TYPENAME>(SelectedField<TYPENAME>& f, const double factor);      \
+  QLAT_EXTERN template SelectedField<TYPENAME>& operator-= <TYPENAME>(  \
+      SelectedField<TYPENAME> & f, const SelectedField<TYPENAME>& f1);  \
                                                                         \
   QLAT_EXTERN template SelectedField<TYPENAME>& operator*=              \
-      <TYPENAME>(SelectedField<TYPENAME>& f, const ComplexD factor);    \
+      <TYPENAME>(SelectedField<TYPENAME> & f, const double factor);     \
+                                                                        \
+  QLAT_EXTERN template SelectedField<TYPENAME>& operator*=              \
+      <TYPENAME>(SelectedField<TYPENAME> & f, const ComplexD factor);   \
                                                                         \
   QLAT_EXTERN template void only_keep_selected_points<TYPENAME>(        \
       Field<TYPENAME> & f, const FieldSelection& fsel);                 \
@@ -497,7 +497,11 @@ Long read_selected_field_double_from_float(
                                                                         \
   QLAT_EXTERN template Long read_selected_field<TYPENAME>(              \
       SelectedField<TYPENAME> & sf, const std::string& path,            \
-      const FieldSelection& fsel, const Coordinate& new_size_node_);
+      const FieldSelection& fsel, const Coordinate& new_size_node_);    \
+                                                                        \
+  QLAT_EXTERN template void set_u_rand<TYPENAME>(                       \
+      SelectedField<TYPENAME> & sp, const FieldSelection& fsel,         \
+      const RngState& rs, const RealD upper, const RealD lower);
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 #undef QLAT_EXTERN_TEMPLATE

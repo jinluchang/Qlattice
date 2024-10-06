@@ -489,6 +489,26 @@ qacc constexpr bool is_char()
 // -------------------------------------------------------------------------
 
 template <class M>
+qacc constexpr bool is_composed_of_real()
+{
+  return is_real<typename IsDataValueType<M>::ElementaryType>();
+}
+
+template <class M>
+qacc constexpr bool is_composed_of_complex()
+{
+  return IsDataValueType<M>::is_complex and is_composed_of_real<M>();
+}
+
+template <class M>
+qacc constexpr bool is_composed_of_integer()
+{
+  return is_integer<typename IsDataValueType<M>::ElementaryType>();
+}
+
+// -------------------------------------------------------------------------
+
+template <class M>
 qacc constexpr bool is_composed_of_real_d()
 {
   return is_same<typename IsDataValueType<M>::ElementaryType, RealD>();

@@ -345,6 +345,34 @@ void field_glb_sum_tslice(SelectedPoints<M>& sp, const Field<M>& f,
   sp.points = vec;
 }
 
+template <class M>
+void set_u_rand(SelectedPoints<M>& sp, const PointsSelection& psel,
+                const RngState& rs, const RealD upper = 1.0,
+                const RealD lower = -1.0)
+{
+  TIMER("set_u_rand(sp,psel,rs)");
+  if (not is_composed_of_real<M>()) {
+    qassert(is_composed_of_real<M>());
+    return;
+  }
+  using Real = typename IsDataValueType<M>::ElementaryType;
+  const Long n_points = sp.n_points;
+  const Int multiplicity = sp.multiplicity;
+  const Coordinate total_site = psel.total_site;
+  qassert(n_points == psel.size());
+  qassert(sp.points.size() == n_points * multiplicity);
+  qthread_for(idx, n_points, {
+    const Coordinate xg = psel[idx];
+    const Long gindex = index_from_coordinate(xg, total_site);
+    RngState rsi = rs.newtype(gindex);
+    Vector<M> v = sp.get_elems(idx);
+    Vector<Real> dv((Real*)v.data(), v.data_size() / sizeof(Real));
+    for (int m = 0; m < dv.size(); ++m) {
+      dv[m] = u_rand_gen(rsi, upper, lower);
+    }
+  });
+}
+
 // -------------------------------------------
 
 template <class M>
@@ -401,7 +429,8 @@ void selected_points_from_lat_data(SelectedPoints<M>& sp, const LatData& ld)
 }
 
 template <class M>
-void lat_data_from_selected_points(LatDataRealF& ld, const SelectedPoints<M>& sp)
+void lat_data_from_selected_points(LatDataRealF& ld,
+                                   const SelectedPoints<M>& sp)
 {
   TIMER("lat_data_from_selected_points(sp)");
   qassert(is_composed_of_real_f<M>());
@@ -425,7 +454,8 @@ void lat_data_from_selected_points(LatDataRealF& ld, const SelectedPoints<M>& sp
 }
 
 template <class M>
-void selected_points_from_lat_data(SelectedPoints<M>& sp, const LatDataRealF& ld)
+void selected_points_from_lat_data(SelectedPoints<M>& sp,
+                                   const LatDataRealF& ld)
 {
   TIMER("selected_points_from_lat_data(sp,ld)");
   qassert(is_composed_of_real_f<M>());
@@ -652,17 +682,17 @@ void load_selected_points_str(SelectedPoints<M>& sp, std::string& content)
 
 #define QLAT_EXTERN_TEMPLATE(TYPENAME)                                    \
                                                                           \
-  QLAT_EXTERN template SelectedPoints<TYPENAME>& operator+=<TYPENAME>(    \
-      SelectedPoints<TYPENAME>& f, const SelectedPoints<TYPENAME>& f1);   \
+  QLAT_EXTERN template SelectedPoints<TYPENAME>& operator+= <TYPENAME>(   \
+      SelectedPoints<TYPENAME> & f, const SelectedPoints<TYPENAME>& f1);  \
                                                                           \
-  QLAT_EXTERN template SelectedPoints<TYPENAME>& operator-=<TYPENAME>(    \
-      SelectedPoints<TYPENAME>& f, const SelectedPoints<TYPENAME>& f1);   \
-                                                                          \
-  QLAT_EXTERN template SelectedPoints<TYPENAME>& operator*=               \
-      <TYPENAME>(SelectedPoints<TYPENAME>& f, const double factor);       \
+  QLAT_EXTERN template SelectedPoints<TYPENAME>& operator-= <TYPENAME>(   \
+      SelectedPoints<TYPENAME> & f, const SelectedPoints<TYPENAME>& f1);  \
                                                                           \
   QLAT_EXTERN template SelectedPoints<TYPENAME>& operator*=               \
-      <TYPENAME>(SelectedPoints<TYPENAME>& f, const ComplexD factor);     \
+      <TYPENAME>(SelectedPoints<TYPENAME> & f, const double factor);      \
+                                                                          \
+  QLAT_EXTERN template SelectedPoints<TYPENAME>& operator*=               \
+      <TYPENAME>(SelectedPoints<TYPENAME> & f, const ComplexD factor);    \
                                                                           \
   QLAT_EXTERN template void only_keep_selected_points<TYPENAME>(          \
       Field<TYPENAME> & f, const PointsSelection& psel);                  \
@@ -744,7 +774,11 @@ void load_selected_points_str(SelectedPoints<M>& sp, std::string& content)
       const SelectedPoints<TYPENAME>& sp);                                \
                                                                           \
   QLAT_EXTERN template void load_selected_points_str<TYPENAME>(           \
-      SelectedPoints<TYPENAME> & sp, std::string & content)
+      SelectedPoints<TYPENAME> & sp, std::string & content);              \
+                                                                          \
+  QLAT_EXTERN template void set_u_rand<TYPENAME>(                         \
+      SelectedPoints<TYPENAME> & sp, const PointsSelection& psel,         \
+      const RngState& rs, const RealD upper, const RealD lower);
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 #undef QLAT_EXTERN_TEMPLATE
