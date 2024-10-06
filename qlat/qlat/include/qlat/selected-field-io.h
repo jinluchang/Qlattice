@@ -500,8 +500,12 @@ Long read_selected_field_double_from_float(
       const FieldSelection& fsel, const Coordinate& new_size_node_);    \
                                                                         \
   QLAT_EXTERN template void set_u_rand<TYPENAME>(                       \
-      SelectedField<TYPENAME> & sp, const FieldSelection& fsel,         \
-      const RngState& rs, const RealD upper, const RealD lower);
+      SelectedField<TYPENAME> & sf, const FieldSelection& fsel,         \
+      const RngState& rs, const RealD upper, const RealD lower);        \
+                                                                        \
+  QLAT_EXTERN template void set_g_rand<TYPENAME>(                       \
+      SelectedField<TYPENAME> & sf, const FieldSelection& fsel,         \
+      const RngState& rs, const RealD center, const RealD sigma);
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 #undef QLAT_EXTERN_TEMPLATE

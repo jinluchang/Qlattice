@@ -116,10 +116,10 @@ cdef class Field{{name}}(FieldBase):
 
     @q.timer
     def set_zero(self):
-        cc.set_zero(self.xx)
+        return cc.set_zero(self.xx)
 
     def swap(self, Field{{name}} f1):
-        cc.qswap(f1.xx, self.xx)
+        return cc.qswap(f1.xx, self.xx)
 
     @property
     def total_site(self):
@@ -155,6 +155,18 @@ cdef class Field{{name}}(FieldBase):
         cdef FieldRealD f_n = FieldRealD(geo, 1)
         cc.qnorm_field(f_n.xx, self.xx)
         return f_n
+
+    @q.timer
+    def set_unit(self, cc.PyComplexD coef=1.0):
+        return cc.set_unit(self.xx, cc.ccpy_d(coef))
+
+    @q.timer
+    def set_rand(self, RngState rng, cc.RealD upper=1.0, cc.RealD lower=0.0):
+        return cc.set_u_rand(self.xx, rng.xx, upper, lower)
+
+    @q.timer
+    def set_rand_g(self, RngState rng, cc.RealD center=0.0, cc.RealD sigma=1.0):
+        return cc.set_g_rand(self.xx, rng.xx, center, sigma)
 
     def glb_sum(self):
         """

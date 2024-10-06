@@ -482,7 +482,7 @@ void set_u_rand(SelectedField<M>& sf, const FieldSelection& fsel,
                        const RngState& rs, const RealD upper = 1.0,
                        const RealD lower = -1.0)
 {
-  TIMER("set_u_rand(sf,fsel,rs)");
+  TIMER("set_u_rand(sf,fsel,rs,upper,lower)");
   if (not is_composed_of_real<M>()) {
     qassert(is_composed_of_real<M>());
     return;
@@ -502,6 +502,35 @@ void set_u_rand(SelectedField<M>& sf, const FieldSelection& fsel,
     Vector<Real> dv((Real*)v.data(), v.data_size() / sizeof(Real));
     for (int m = 0; m < dv.size(); ++m) {
       dv[m] = u_rand_gen(rsi, upper, lower);
+    }
+  });
+}
+
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+void set_g_rand(SelectedField<M>& sf, const FieldSelection& fsel,
+                       const RngState& rs, const RealD center = 0.0,
+                       const RealD sigma = 1.0)
+{
+  TIMER("set_g_rand(sf,fsel,rs,center,sigma)");
+  if (not is_composed_of_real<M>()) {
+    qassert(is_composed_of_real<M>());
+    return;
+  }
+  using Real = typename IsDataValueType<M>::ElementaryType;
+  const Geometry& geo = sf.geo();
+  qassert(geo.is_only_local);
+  qassert(fsel.f_local_idx.geo().is_only_local);
+  qassert(geo == fsel.f_local_idx.geo());
+  qthread_for(idx, fsel.n_elems, {
+    const Long index = fsel.indices[idx];
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const Long gindex = geo.g_index_from_g_coordinate(xg);
+    RngState rsi = rs.newtype(gindex);
+    Vector<M> v = sf.get_elems(idx);
+    Vector<Real> dv((Real*)v.data(), v.data_size() / sizeof(Real));
+    for (int m = 0; m < dv.size(); ++m) {
+      dv[m] = g_rand_gen(rsi, center, sigma);
     }
   });
 }

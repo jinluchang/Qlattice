@@ -373,6 +373,34 @@ void set_u_rand(SelectedPoints<M>& sp, const PointsSelection& psel,
   });
 }
 
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+void set_g_rand(SelectedPoints<M>& sp, const PointsSelection& psel,
+                const RngState& rs, const RealD center = 0.0,
+                const RealD sigma = 1.0)
+{
+  TIMER("set_g_rand(sp,psel,rs,center,sigma)");
+  if (not is_composed_of_real<M>()) {
+    qassert(is_composed_of_real<M>());
+    return;
+  }
+  using Real = typename IsDataValueType<M>::ElementaryType;
+  const Long n_points = sp.n_points;
+  const Int multiplicity = sp.multiplicity;
+  const Coordinate total_site = psel.total_site;
+  qassert(n_points == psel.size());
+  qassert(sp.points.size() == n_points * multiplicity);
+  qthread_for(idx, n_points, {
+    const Coordinate xg = psel[idx];
+    const Long gindex = index_from_coordinate(xg, total_site);
+    RngState rsi = rs.newtype(gindex);
+    Vector<M> v = sp.get_elems(idx);
+    Vector<Real> dv((Real*)v.data(), v.data_size() / sizeof(Real));
+    for (int m = 0; m < dv.size(); ++m) {
+      dv[m] = g_rand_gen(rsi, center, sigma);
+    }
+  });
+}
+
 // -------------------------------------------
 
 template <class M>
@@ -778,7 +806,11 @@ void load_selected_points_str(SelectedPoints<M>& sp, std::string& content)
                                                                           \
   QLAT_EXTERN template void set_u_rand<TYPENAME>(                         \
       SelectedPoints<TYPENAME> & sp, const PointsSelection& psel,         \
-      const RngState& rs, const RealD upper, const RealD lower);
+      const RngState& rs, const RealD upper, const RealD lower);          \
+                                                                          \
+  QLAT_EXTERN template void set_g_rand<TYPENAME>(                         \
+      SelectedPoints<TYPENAME> & sp, const PointsSelection& psel,         \
+      const RngState& rs, const RealD center, const RealD sigma);
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 #undef QLAT_EXTERN_TEMPLATE
