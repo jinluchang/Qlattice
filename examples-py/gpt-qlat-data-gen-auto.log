@@ -25,6 +25,8 @@ CHECK: ('prob_acc_2_rand_u1', 0.0625)
 CHECK: ('meson_tensor_tsep', 1)
 CHECK: ('meson_jwjj_threshold', 0.1)
 CHECK: ('meson_tsep_list', [1, 2, 3, 4, 5, 6, 7])
+CHECK: ('m_l', 0.01)
+CHECK: ('m_h', 0.04)
 CHECK: ('mk_sample_gauge_field', {'rand_n_step': 2, 'flow_n_step': 8, 'hmc_n_traj': 1})
 CHECK: ('measurement', {'auto_contractor_chunk_size': 2})
 CHECK: finished successfully.
