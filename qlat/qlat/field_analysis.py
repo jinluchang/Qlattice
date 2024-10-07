@@ -3,7 +3,7 @@ import qlat_utils as q
 import functools
 import numpy as np
 from .geometry import Geometry
-from .c import FieldRealD, mk_fft
+from .c import FieldRealD, FieldComplexD, mk_fft
 
 @functools.lru_cache(maxsize=16)
 @q.timer
@@ -198,18 +198,18 @@ def smear_field(field, radius, *, is_only_spatial=False):
     return smeared_field
 
 @q.timer
-def field_convolution_4d(f1, f2, idx1=None, idx2=None):
+def field_convolution(f1, f2, idx1=None, idx2=None, *, is_only_spatial=False):
     """
     return ff
     where
     ff[xg_rel] = \\sum_{xg} f2[xg + xg_rel, idx2] * f1[xg, idx1]
     #
-    isinstance(f1, q.FieldComplexD)
-    isinstance(f1, q.FieldComplexD)
+    isinstance(f1, FieldComplexD)
+    isinstance(f1, FieldComplexD)
     len(idx1) == len(idx2)
     """
-    assert isinstance(f1, q.FieldComplexD)
-    assert isinstance(f2, q.FieldComplexD)
+    assert isinstance(f1, FieldComplexD)
+    assert isinstance(f2, FieldComplexD)
     geo = f1.geo
     assert geo.total_site == f2.geo.total_site
     if idx1 is None and idx2 is None:
@@ -219,13 +219,16 @@ def field_convolution_4d(f1, f2, idx1=None, idx2=None):
     assert len(idx1) == len(idx2)
     assert np.all(idx1 < f1.multiplicity)
     assert np.all(idx2 < f2.multiplicity)
-    fft_f = q.mk_fft(True, is_normalizing=False, is_only_spatial=False)
-    fft_b = q.mk_fft(False, is_normalizing=False, is_only_spatial=False)
+    fft_f = mk_fft(True, is_normalizing=False, is_only_spatial=is_only_spatial)
+    fft_b = mk_fft(False, is_normalizing=False, is_only_spatial=is_only_spatial)
     f_f2 = fft_f * f2
     f_f1 = fft_b * f1
-    f_ff = q.FieldComplexD(geo, len(idx1))
+    f_ff = FieldComplexD(geo, len(idx1))
     f_ff[:] = f_f2[:, idx2] * f_f1[:, idx1]
-    f_ff *= 1.0 / (np.sqrt(geo.total_volume) * geo.total_volume)
+    if is_only_spatial:
+        f_ff *= geo.total_site[3] / geo.total_volume
+    else:
+        f_ff *= 1.0 / geo.total_volume
     ff = fft_b * f_ff
     assert ff.multiplicity == len(idx1)
     return ff
