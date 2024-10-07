@@ -1,0 +1,6 @@
+CHECK: geo.show() = Geometry([4, 4, 4, 8])
+INFO: check_log_json: 2 'sf1 data sig'
+INFO: check_log_json: target eps: 1e-10 ; actual eps: 2.025382917782303e-16 .
+INFO: check_log_json: 4 'ff data sig'
+INFO: check_log_json: target eps: 1e-10 ; actual eps: 1.8482516044969225e-16 .
+CHECK: finished successfully.

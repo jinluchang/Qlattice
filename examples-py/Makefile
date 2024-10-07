@@ -28,6 +28,7 @@ tests = \
 		jackknife-super.log \
 		jackknife-random-bench.log \
 		field-utils.log \
+		field-analysis.log \
 		field-multi-size.log \
 		field-selection.log \
 		selected-field.log \

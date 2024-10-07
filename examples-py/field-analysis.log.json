@@ -1,0 +1,56 @@
+[
+ [
+  "f1 data sig",
+  {
+   "real": -11.741240336824971,
+   "imag": -14.723422866763528,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "f2 data sig",
+  {
+   "real": -13.481132753301665,
+   "imag": -13.213039495027775,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "sf1 data sig",
+  {
+   "real": -14.145179904738193,
+   "imag": -13.583812568683124,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "sf2 data sig",
+  {
+   "real": -10.92854072735658,
+   "imag": -11.802735202282523,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "ff data sig",
+  {
+   "real": -78.15057528131466,
+   "imag": -4922.620010195367,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "ff3d data sig",
+  {
+   "real": -22.6060584489791,
+   "imag": -648.7799569347845,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ]
+]
