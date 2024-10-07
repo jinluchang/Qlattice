@@ -164,6 +164,8 @@ def get_data_sig(x, RngState rs):
         return get_data_sig(np.asarray(x), rs)
     elif isinstance(x, (SpinMatrix, ColorMatrix, WilsonMatrix,)):
         return get_data_sig(np.asarray(x), rs)
+    elif isinstance(x, (int, float, complex,)):
+        return complex(x)
     elif hasattr(x, "get_data_sig"):
         return x.get_data_sig(rs)
     else:
