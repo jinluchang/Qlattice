@@ -31,8 +31,8 @@ gf.set_rand(rs.split("gf-init"), 0.3, 1)
 
 gf.show_info()
 
-fft_f = q.mk_fft(True, is_normalizing = True, is_only_spatial = False)
-fft_b = q.mk_fft(False, is_normalizing = True, is_only_spatial = False)
+fft_f = q.mk_fft(True, is_normalizing=True, is_only_spatial=False)
+fft_b = q.mk_fft(False, is_normalizing=True, is_only_spatial=False)
 
 gfm = fft_f * gf
 
