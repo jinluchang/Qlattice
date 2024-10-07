@@ -1663,7 +1663,7 @@ def auto_contract_pi0_current(job_tag, traj, get_get_prop, get_psel_prob, get_fs
     total_volume = geo.total_volume
     sf_pi0_current_list = []
     sf_pi0_current_arr_list = []
-    for t in range(t_size):
+    for t_src in range(t_size):
         sf = q.SelectedFieldComplexD(fsel, len(expr_names))
         q.set_zero(sf)
         sf_pi0_current_list.append(sf)
@@ -1705,7 +1705,8 @@ def auto_contract_pi0_current(job_tag, traj, get_get_prop, get_psel_prob, get_fs
     sfw = q.open_fields(get_save_path(fn + ".acc"), "w", q.Coordinate([ 2, 2, 2, 4, ]))
     for t_src in range(t_size):
         sf = sf_pi0_current_list[t_src]
-        sf.save_double(sfw, f"sf_pi0_current ; t_src={t_src}")
+        tag = f"sf_pi0_current ; t_src={t_src}"
+        sf.save_double(sfw, tag)
     sfw.close()
     q.qrename_info(get_save_path(fn + ".acc"), get_save_path(fn))
     sig_arr = np.zeros((t_size, len(expr_names),), dtype=np.complex128)
@@ -1716,6 +1717,48 @@ def auto_contract_pi0_current(job_tag, traj, get_get_prop, get_psel_prob, get_fs
             sig_arr[t_src, i] = q.glb_sum(q.get_data_sig(sf[:, i], q.RngState(f"t_src={t_src}")))
     for i, en in enumerate(expr_names):
         json_results.append((f"{fname}: sf_pi0_current '{en}' sig", sig_arr[:, i].sum(),))
+
+@q.timer_verbose
+def auto_contract_pi0_gg_disc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
+    fname = q.get_fname()
+    fn = f"{job_tag}/auto-contract/traj-{traj}/pi0-gg-disc.lat"
+    if get_load_path(fn) is not None:
+        return
+    fn_tadpole_current = get_load_path(f"{job_tag}/tadpole-current/traj-{traj}/tadpole-current.sfield")
+    fn_pi0_current = get_load_path(f"{job_tag}/pi0-current/traj-{traj}/pi0-current")
+    if fn_tadpole_current is None or fn_pi0_current is None:
+        return
+    tadpole_current_expr_names = get_expr_names(get_cexpr_tadpole_current())
+    pi0_current_expr_names = get_expr_names(get_cexpr_pi0_current())
+    assert len(tadpole_current_expr_names) == 1 + 4 * 4
+    assert len(pi0_current_expr_names) == 1 + 4
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    t_size = total_site[3]
+    psel_prob = get_psel_prob()
+    fsel_prob = get_fsel_prob()
+    psel = psel_prob.psel
+    fsel = fsel_prob.fsel
+    if not fsel.is_containing(psel):
+        q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
+    fsel_n_elems = fsel.n_elems
+    fsel_prob_arr = fsel_prob[:].ravel()
+    psel_prob_arr = psel_prob[:].ravel()
+    xg_fsel_arr = fsel.to_psel_local()[:]
+    xg_psel_arr = psel[:]
+    geo = q.Geometry(total_site)
+    total_volume = geo.total_volume
+    sf_tadpole_current = q.SelectedFieldComplexD(fsel)
+    sf_tadpole_current.load_double(fn_tadpole_current)
+    assert sf_tadpole_current.multiplicity == len(tadpole_current_expr_names)
+    sfr = q.open_fields(fn_pi0_current, "r")
+    sf_pi0_current_list = []
+    for t_src in range(t_size):
+        sf = q.SelectedFieldComplexD(fsel)
+        tag = f"sf_pi0_current ; t_src={t_src}"
+        sf.load_double(sfr, tag)
+        sf_pi0_current_list.append(sf)
+        assert sf.multiplicity == len(pi0_current_expr_names)
+    sfr.close()
 
 ### ------
 
@@ -1906,6 +1949,7 @@ def run_job_contract(job_tag, traj):
                 auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
                 auto_contract_tadpole_current(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
                 auto_contract_pi0_current(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+                auto_contract_pi0_gg_disc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
                 #
                 q.qtouch_info(get_save_path(fn_checkpoint))
                 q.displayln_info("timer_display for runjob")
@@ -1991,7 +2035,7 @@ if __name__ == "__main__":
                 q.check_time_limit()
                 run_job_contract(job_tag, traj)
 
-    q.check_log_json(__file__, json_results)
+    q.check_log_json(__file__, json_results, check_eps=5e-5)
 
     q.timer_display()
 
