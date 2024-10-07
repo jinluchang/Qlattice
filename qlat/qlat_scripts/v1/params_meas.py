@@ -53,7 +53,8 @@ set_param("64I", tag, value=0.0003116)
 set_param("32IfineH", tag, value=0.0006296)
 
 tag = "m_l"
-set_param("test-4nt16", tag, value=0.001)
+set_param("test-4nt8", tag, value=0.01)
+set_param("test-4nt16", tag, value=0.01)
 set_param("24D", tag, value=0.00107)
 set_param("32D", tag, value=0.00107)
 set_param("48D", tag, value=0.00107)
@@ -62,7 +63,8 @@ set_param("64I", tag, value=0.000678)
 set_param("32IfineH", tag, value=0.0047)
 
 tag = "m_h"
-set_param("test-4nt16", tag, value=0.001)
+set_param("test-4nt8", tag, value=0.04)
+set_param("test-4nt16", tag, value=0.04)
 set_param("24D", tag, value=0.0850)
 set_param("32D", tag, value=0.0850)
 set_param("48D", tag, value=0.0850)
