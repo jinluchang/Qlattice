@@ -1745,8 +1745,13 @@ def auto_contract_pi0_gg_disc(job_tag, traj, get_get_prop, get_psel_prob, get_fs
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
+    tsep = get_param(job_tag, "meson_tensor_tsep")
+    m_l = get_param(job_tag, "m_l")
+    m_h = get_param(job_tag, "m_h")
     geo = q.Geometry(total_site)
     total_volume = geo.total_volume
+    r_list = get_r_list(job_tag)
+    r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
     sf_tadpole_current = q.SelectedFieldComplexD(fsel)
     sf_tadpole_current.load_double(fn_tadpole_current)
     assert sf_tadpole_current.multiplicity == len(tadpole_current_expr_names)
@@ -1759,6 +1764,119 @@ def auto_contract_pi0_gg_disc(job_tag, traj, get_get_prop, get_psel_prob, get_fs
         sf_pi0_current_list.append(sf)
         assert sf.multiplicity == len(pi0_current_expr_names)
     sfr.close()
+    q.displayln_info(f"{len(sf_pi0_current_list)}")
+    expr_names = [
+        "< 1 [disc x] [con 0] >",
+        "< 1 [disc 0] [con x] >",
+    ]
+    for tadpole in [ "ls", "sl", "ll", "ss", ]:
+        expr_names += [
+            f"< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole {tadpole})",
+            f"< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole {tadpole})",
+            f"< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole {tadpole})",
+            f"< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole {tadpole})",
+        ]
+    # Some final modification for sf_tadpole_current
+    sf_tadpole_current[:, 0] *= 1 / total_volume
+    sf_tadpole_current[:, 1:] *= m_h - m_l
+    # compute zero distance counts sum
+    zero_dis_counts_sum = q.glb_sum((fsel_prob_arr * sf_tadpole_current[:, 0] * sf_pi0_current_list[0][:, 0]).sum())
+    # Convert tadpole to field
+    f_tadpole_current = q.FieldComplexD(geo, sf_tadpole_current.multiplicity)
+    q.set_zero(f_tadpole_current)
+    f_tadpole_current @= sf_tadpole_current
+    # Convert pi0 current list to field list
+    f_pi0_current_list = []
+    for t_src in range(t_size):
+        sf = sf_pi0_current_list[t_src]
+        f = q.FieldComplexD(geo, sf.multiplicity)
+        q.set_zero(f)
+        f @= sf
+        f_pi0_current_list.append(f)
+    # make new pi0 current field list based on pi0_current_sep
+    xg_arr = geo.xg_arr()
+    t_arr = xg_arr[:, 3]
+    f_pi0_current_sep_list = []
+    for pi0_current_sep in range(t_size):
+        f = q.FieldComplexD(geo, sf.multiplicity)
+        q.set_zero(f)
+        for t_src in range(t_size):
+            f_src = f_pi0_current_list[t_src]
+            sel = (t_arr - t_src) % t_size == pi0_current_sep
+            f[sel] = f_src[sel]
+        f_pi0_current_sep_list.append(f)
+    # perform all needed convolution
+    ff_idx = 0
+    idx1 = [ 0, ] # for con 0 (f_pi0_current_sep_list)
+    idx2 = [ 0, ] # for disc x (f_tadpole_current)
+    info = [ (ff_idx,), ] # for (i, j, k,) tuple
+    ff_idx += 1
+    for i in range(3):
+        for j in range(3):
+            if i == j:
+                continue
+            for k in range(3):
+                if k == i or k == j:
+                    continue
+                for tadpole_idx in range(4):
+                    idx1.append(1 + k)
+                    idx2.append(1 + tadpole_idx * 4 + j)
+                    info.append((ff_idx, i, j, k, tadpole_idx,))
+                    ff_idx += 1
+    idx1 = np.array(idx1, dtype=np.int32)
+    idx2 = np.array(idx2, dtype=np.int32)
+    info = np.array(info, dtype=object)
+    assert ff_idx == len(idx1)
+    assert ff_idx == len(idx2)
+    assert ff_idx == len(info)
+    ff_list = [
+        q.field_convolution(f_pi0_current_sep_list[pi0_current_sep], f_tadpole_current, idx1, idx2)
+        for pi0_current_sep in range(t_size)
+    ]
+    pos_t_expr_name_idx_arr = np.arange(0, len(expr_names), 2, dtype=np.int32)
+    neg_t_expr_name_idx_arr = np.arange(1, len(expr_names), 2, dtype=np.int32)
+    values = np.zeros((t_size, len(r_list), len(expr_names),), dtype=np.complex128)
+    for xg_idx, xg_rel in enumerate(geo.xg_arr()):
+        x_rel = q.rel_mod_arr(xg_rel, total_site.to_numpy())
+        r_sq = q.get_r_sq(x_rel)
+        r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
+        x_rel_t = x_rel[3]
+        t = x_rel_t % t_size
+        if x_rel_t >= 0:
+            pi0_current_sep1 = tsep
+            pi0_current_sep2 = -tsep - abs(x_rel_t)
+        else:
+            pi0_current_sep1 = tsep + abs(x_rel_t)
+            pi0_current_sep2 = -tsep
+        val = np.zeros(len(expr_names) // 2, dtype=np.complex128)
+        val[0] = ff_list[0][xg_idx, 0]
+        for ff_idx, i, j, k, tadpole_idx in info[1:]:
+            x_i = q.rel_mod_sym(x_rel[i], total_site[i]) # x[i]
+            eijk = q.epsilon_tensor(i, j, k) # e(i,j,k)
+            jjpi0_t1 = ff_list[pi0_current_sep1][xg_idx, ff_idx] # disc[ j_j(x) ] * j_k(0) * pi0(-tsep)
+            jjpi0_t2 = ff_list[pi0_current_sep2][xg_idx, ff_idx] # disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep)
+            val[1 + tadpole_idx * 2] += eijk * x_i * jjpi0_t1
+            val[1 + tadpole_idx * 2 + 1] += eijk * x_i * jjpi0_t2
+        if np.all(x_rel == 0):
+            val[0] = zero_dis_counts_sum
+        if abs(x_rel_t) == t_size // 2:
+            continue
+        values[t, r_idx_low, pos_t_expr_name_idx_arr] += coef_low * val
+        values[t, r_idx_high, pos_t_expr_name_idx_arr] += coef_high * val
+        values[-t, r_idx_low, neg_t_expr_name_idx_arr] += coef_low * val
+        values[-t, r_idx_high, neg_t_expr_name_idx_arr] += coef_high * val
+    res_sum = q.glb_sum(values.transpose(2, 0, 1))
+    res_sum *= 1.0 / total_volume
+    ld_sum = q.mk_lat_data([
+        [ "expr_name", len(expr_names), expr_names, ],
+        [ "t", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
+        [ "r", len(r_list), [ f"{r:.5f}" for r in r_list ], ],
+        ])
+    ld_sum.from_numpy(res_sum)
+    ld_sum.save(get_save_path(fn))
+    json_results.append((f"{fname}: ld_sum sig", q.get_data_sig(ld_sum, q.RngState()),))
+    for i, en in enumerate(expr_names):
+        json_results.append((f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState()),))
 
 ### ------
 
