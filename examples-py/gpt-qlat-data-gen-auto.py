@@ -2115,6 +2115,11 @@ set_param("64I", tag)(0.0005)
 
 # ----
 
+def gracefully_finish():
+    q.timer_display()
+    qg.end_with_gpt()
+    q.displayln_info("CHECK: finished successfully.")
+
 if __name__ == "__main__":
 
     qg.begin_with_gpt()
@@ -2148,17 +2153,21 @@ if __name__ == "__main__":
             if is_performing_inversion:
                 q.check_time_limit()
                 run_job(job_tag, traj)
+                if q.obtained_lock_history_list:
+                    q.displayln_info(f"CHECK: q.obtained_lock_history_list={q.obtained_lock_history_list}")
+                    if job_tag[:5] != "test-":
+                        gracefully_finish()
         for traj in get_param(job_tag, "trajs"):
             if is_performing_contraction:
                 q.check_time_limit()
                 run_job_contract(job_tag, traj)
+                if q.obtained_lock_history_list:
+                    q.displayln_info(f"CHECK: q.obtained_lock_history_list={q.obtained_lock_history_list}")
+                    if job_tag[:5] != "test-":
+                        gracefully_finish()
 
     q.check_log_json(__file__, json_results, check_eps=5e-5)
 
-    q.timer_display()
-
-    qg.end_with_gpt()
-
-    q.displayln_info("CHECK: finished successfully.")
+    gracefully_finish()
 
 # ----
