@@ -982,7 +982,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
             v_list.append(v)
         return np.array(v_list)
     psrc_psrc_prop_norm_sqrt = np.array([
-        q.parallel_map(lambda i: load_psrc_psrc_prop_norm_sqrt(flavor, i), range(n_points))
+        q.parallel_map(lambda i: load_psrc_psrc_prop_norm_sqrt(flavor, i), range(n_points), verbose=1)
         for flavor in [ "l", "s", ]
         ], dtype = float)
     def load_wsrc_psrc_prop_norm_sqrt(flavor, t):
@@ -995,7 +995,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
             v_list.append(v)
         return np.array(v_list)
     wsrc_psrc_prop_norm_sqrt = np.array([
-        q.parallel_map(lambda t: load_wsrc_psrc_prop_norm_sqrt(flavor, t), range(t_size))
+        q.parallel_map(lambda t: load_wsrc_psrc_prop_norm_sqrt(flavor, t), range(t_size), verbose=1)
         for flavor in [ "l", "s", ]
         ], dtype = float)
     def load_wsrc_psnk_prop_norm_sqrt(flavor, t):
@@ -1008,7 +1008,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
             v_list.append(v)
         return np.array(v_list)
     wsrc_psnk_prop_norm_sqrt = np.array([
-        q.parallel_map(lambda t: load_wsrc_psnk_prop_norm_sqrt(flavor, t), range(t_size))
+        q.parallel_map(lambda t: load_wsrc_psnk_prop_norm_sqrt(flavor, t), range(t_size), verbose=1)
         for flavor in [ "l", "s", ]
         ], dtype = float)
     def load_psrc_psnk_prop_norm_sqrt(flavor, i):
@@ -1022,7 +1022,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
             v_list.append(v)
         return np.array(v_list)
     psrc_psnk_prop_norm_sqrt = np.array([
-        q.parallel_map(lambda i: load_psrc_psnk_prop_norm_sqrt(flavor, i), range(n_points))
+        q.parallel_map(lambda i: load_psrc_psnk_prop_norm_sqrt(flavor, i), range(n_points), verbose=1)
         for flavor in [ "l", "s", ]
         ], dtype = float)
     def get_estimate(idx_snk, idx1, idx2, t_1, t_2):
@@ -1232,7 +1232,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
             v_list.append(v)
         return np.array(v_list)
     psrc_psrc_prop_norm_sqrt = np.array([
-        q.parallel_map(lambda i: load_psrc_psrc_prop_norm_sqrt(flavor, i), range(n_points))
+        q.parallel_map(lambda i: load_psrc_psrc_prop_norm_sqrt(flavor, i), range(n_points), verbose=1)
         for flavor in [ "l", "s", ]
         ], dtype = float)
     def load_wsrc_psrc_prop_norm_sqrt(flavor, t):
@@ -1245,7 +1245,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
             v_list.append(v)
         return np.array(v_list)
     wsrc_psrc_prop_norm_sqrt = np.array([
-        q.parallel_map(lambda t: load_wsrc_psrc_prop_norm_sqrt(flavor, t), range(t_size))
+        q.parallel_map(lambda t: load_wsrc_psrc_prop_norm_sqrt(flavor, t), range(t_size), verbose=1)
         for flavor in [ "l", "s", ]
         ], dtype = float)
     def load_wsrc_psnk_prop_norm_sqrt(flavor, t):
@@ -1258,7 +1258,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
             v_list.append(v)
         return np.array(v_list)
     wsrc_psnk_prop_norm_sqrt = np.array([
-        q.parallel_map(lambda t: load_wsrc_psnk_prop_norm_sqrt(flavor, t), range(t_size))
+        q.parallel_map(lambda t: load_wsrc_psnk_prop_norm_sqrt(flavor, t), range(t_size), verbose=1)
         for flavor in [ "l", "s", ]
         ], dtype = float)
     def load_psrc_psnk_prop_norm_sqrt(flavor, i):
@@ -1272,7 +1272,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
             v_list.append(v)
         return np.array(v_list)
     psrc_psnk_prop_norm_sqrt = np.array([
-        q.parallel_map(lambda i: load_psrc_psnk_prop_norm_sqrt(flavor, i), range(n_points))
+        q.parallel_map(lambda i: load_psrc_psnk_prop_norm_sqrt(flavor, i), range(n_points), verbose=1)
         for flavor in [ "l", "s", ]
         ], dtype = float)
     def get_estimate(idx_w, idx_1, idx_2, xg_w_t, t_1, t_2):
@@ -2119,6 +2119,7 @@ def gracefully_finish():
     q.timer_display()
     qg.end_with_gpt()
     q.displayln_info("CHECK: finished successfully.")
+    exit()
 
 if __name__ == "__main__":
 

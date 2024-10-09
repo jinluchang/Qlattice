@@ -47,7 +47,7 @@ def set_q_num_mp_processes(v):
 
 def get_q_verbose_parallel_map():
     global get_q_verbose_parallel_map
-    s = getenv("q_verbose_parallel_map", default = "1")
+    s = getenv("q_verbose_parallel_map", default="2")
     v = int(s)
     get_q_verbose_parallel_map = lambda : v
     return v
@@ -112,7 +112,8 @@ def parallel_map(func, iterable,
                 timer.stop()
             if verbose > 0:
                 p.apply(show_memory_usage)
-                p.apply(timer_display)
+                if verbose > 1:
+                    p.apply(timer_display)
     finally:
         gc_unfreeze()
         gc_collect()
@@ -175,7 +176,8 @@ def parallel_map_sum(func, iterable,
                 timer.stop()
             if verbose > 0:
                 p.apply(show_memory_usage)
-                p.apply(timer_display)
+                if verbose > 1:
+                    p.apply(timer_display)
     finally:
         gc_unfreeze()
         gc_collect()
