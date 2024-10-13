@@ -1,0 +1,42 @@
+CHECK: ('job_tag', 'test-4nt8')
+CHECK: ('total_site', [4, 4, 4, 8])
+CHECK: ('load_config_params', {'twist_boundary_at_boundary': [0.0, 0.0, 0.0, -0.5]})
+CHECK: ('fermion_params', {0: {0: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}, 1: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}, 2: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}}, 1: {0: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.04}, 1: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.04}, 2: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.04}}, 2: {0: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.2}, 1: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.2}, 2: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.2}}})
+CHECK: ('lanc_params', {0: {0: {'fermion_params': {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}, 'pit_params': {'eps': 0.01, 'maxiter': 500, 'real': True}, 'cheby_params': {'low': 0.5, 'high': 5.5, 'order': 40}, 'irl_params': {'Nstop': 100, 'Nk': 150, 'Nm': 200, 'resid': 1e-08, 'betastp': 0.0, 'maxiter': 20, 'Nminres': 0}}}, 1: {0: {'fermion_params': {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.04}, 'pit_params': {'eps': 0.01, 'maxiter': 500, 'real': True}, 'cheby_params': {'low': 0.5, 'high': 5.5, 'order': 40}, 'irl_params': {'Nstop': 100, 'Nk': 150, 'Nm': 200, 'resid': 1e-08, 'betastp': 0.0, 'maxiter': 20, 'Nminres': 0}}}})
+CHECK: ('clanc_params', {0: {0: {'block': [4, 4, 2, 2], 'nbasis': 100, 'cheby_params': {'low': 0.5, 'high': 5.5, 'order': 40}, 'irl_params': {'Nstop': 100, 'Nk': 150, 'Nm': 200, 'resid': 1e-08, 'betastp': 0.0, 'maxiter': 20, 'Nminres': 0}, 'smoother_params': {'eps': 1e-08, 'maxiter': 10}, 'save_params': {'nsingle': 100, 'mpi': [1, 1, 1, 4]}}}, 1: {0: {'block': [4, 4, 2, 2], 'nbasis': 100, 'cheby_params': {'low': 0.5, 'high': 5.5, 'order': 40}, 'irl_params': {'Nstop': 100, 'Nk': 150, 'Nm': 200, 'resid': 1e-08, 'betastp': 0.0, 'maxiter': 20, 'Nminres': 0}, 'smoother_params': {'eps': 1e-08, 'maxiter': 10}, 'save_params': {'nsingle': 100, 'mpi': [1, 1, 1, 4]}}}})
+CHECK: ('gf_ape_smear_coef', 0.5)
+CHECK: ('gf_ape_smear_step', 30)
+CHECK: ('prop_smear_coef', 0.9375)
+CHECK: ('prop_smear_step', 10)
+CHECK: ('trajs', [1000])
+CHECK: ('field-selection-fsel-rate', 0.0625)
+CHECK: ('field-selection-psel-rate', 0.03125)
+CHECK: ('field-selection-fsel-psrc-prop-norm-threshold', 0.001)
+CHECK: ('n_points_psel', 6)
+CHECK: ('n_exact_wsrc', 2)
+CHECK: ('n_per_tslice_smear', 2)
+CHECK: ('prob_acc_1_smear', 0.25)
+CHECK: ('prob_acc_2_smear', 0.0625)
+CHECK: ('prob_acc_1_psrc', 0.25)
+CHECK: ('prob_acc_2_psrc', 0.0625)
+CHECK: ('n_rand_u1_fsel', 4)
+CHECK: ('prob_acc_1_rand_u1', 0.25)
+CHECK: ('prob_acc_2_rand_u1', 0.0625)
+CHECK: ('meson_tensor_tsep', 1)
+CHECK: ('meson_jwjj_threshold', 0.1)
+CHECK: ('meson_tsep_list', [1, 2, 3, 4, 5, 6, 7])
+CHECK: ('m_l', 0.01)
+CHECK: ('m_h', 0.04)
+CHECK: ('mk_sample_gauge_field', {'rand_n_step': 2, 'flow_n_step': 8, 'hmc_n_traj': 1})
+CHECK: ('cg_params-0-2', {'maxiter': 5, 'maxcycle': 1})
+CHECK: ('cg_params-1-2', {'maxiter': 5, 'maxcycle': 1})
+CHECK: ('measurement', {'auto_contract_meson_corr_wf': {'sample_num': 32, 'sample_size': 2, 't_sep_range': 4}, 'auto_contract_meson_meson_i0_j0_corr_wf': {'sample_num': 32, 'sample_size': 2, 't_sep_range': 4}})
+CHECK: auto_contract_meson_meson_i0_j0_corr_wf: ld sig: -9.41973E+06-1.63504E+04j
+CHECK: auto_contract_meson_meson_i0_j0_corr_wf: ld_src_op sig: 1.98634E+03-6.21021E+00j
+CHECK: auto_contract_meson_meson_i0_j0_corr_wf: ld_snk_op sig: 2.21621E+03-8.18203E+00j
+CHECK: auto_contract_meson_corr_wf: ld sig: 2.89706E+03-5.05277E+00j
+CHECK: auto_contract_meson_corr_psnk_psrc_rand: ld sig: -1.36956E-01-5.60429E-04j
+CHECK: auto_contract_meson_corr: ld sig: 3.00766E+05+3.61176E+03j
+CHECK: auto_contract_meson_corr_psnk: ld sig: 7.24663E+01+8.46493E-01j
+CHECK: auto_contract_meson_corr_psnk_psrc: ld sig: -1.02146E-01-5.49030E-04j
+CHECK: finished successfully.
