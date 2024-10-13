@@ -93,7 +93,7 @@ class Term:
         return self.compile_py()
 
     def sort(self) -> None:
-        self.factors.sort(key = repr)
+        self.factors.sort(key=repr)
 
     def simplify_coef(self) -> None:
         self.coef = sympy.simplify(self.coef)
@@ -157,7 +157,7 @@ class Expr:
     def sort(self) -> None:
         for term in self.terms:
             term.sort()
-        self.terms.sort(key = repr)
+        self.terms.sort(key=repr)
 
     def combine_terms(self) -> None:
         self.terms = combine_terms_expr(self).terms
