@@ -15,14 +15,14 @@ def get_ls_from_fermion_params(fermion_params):
     else:
         return fermion_params["Ls"]
 
-def get_lanc_params(job_tag, inv_type, inv_acc = 0):
+def get_lanc_params(job_tag, inv_type, inv_acc=0):
     return rup.dict_params[job_tag]["lanc_params"][inv_type][inv_acc]
 
-def get_clanc_params(job_tag, inv_type, inv_acc = 0):
+def get_clanc_params(job_tag, inv_type, inv_acc=0):
     return rup.dict_params[job_tag]["clanc_params"][inv_type][inv_acc]
 
 @q.timer_verbose
-def mk_eig(gf, job_tag, inv_type, inv_acc = 0):
+def mk_eig(gf, job_tag, inv_type, inv_acc=0):
     import qlat_gpt as qg
     import gpt as g
     qtimer = q.Timer(f"py:mk_eig({job_tag},{inv_type},{inv_acc})", True)
@@ -58,7 +58,7 @@ def mk_eig(gf, job_tag, inv_type, inv_acc = 0):
     return evec, evals
 
 @q.timer_verbose
-def mk_ceig(gf, job_tag, inv_type, inv_acc = 0):
+def mk_ceig(gf, job_tag, inv_type, inv_acc=0):
     import qlat_gpt as qg
     import gpt as g
     qtimer = q.Timer(f"py:mk_ceig({job_tag},{inv_type},{inv_acc})", True)
@@ -121,7 +121,7 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc = 0):
     for i, cv in enumerate(cevec):
         tmpf @= smoother * b.promote * cv
         evals = g.algorithms.eigen.evals(
-            w.Mpc, [tmpf], calculate_eps2 = False, real=True
+            w.Mpc, [tmpf], calculate_eps2=False, real=True
         )
         smoothed_evals = smoothed_evals + evals
     g.mem_report()
@@ -130,7 +130,7 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc = 0):
     return basis, cevec, smoothed_evals
 
 @q.timer_verbose
-def get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc = 0):
+def get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc=0):
     import qlat_gpt as qg
     import gpt as g
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
@@ -153,13 +153,13 @@ def get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc = 0):
     for i, cv in enumerate(cevec):
         tmpf @= smoother * b.promote * cv
         evals = g.algorithms.eigen.evals(
-            w.Mpc, [tmpf], calculate_eps2 = False, real=True
+            w.Mpc, [tmpf], calculate_eps2=False, real=True
         )
         smoothed_evals = smoothed_evals + evals
     return smoothed_evals
 
 @q.timer_verbose
-def save_ceig(path, eig, job_tag, inv_type = 0, inv_acc = 0):
+def save_ceig(path, eig, job_tag, inv_type=0, inv_acc=0):
     import gpt as g
     if path is None:
         return
@@ -171,7 +171,7 @@ def save_ceig(path, eig, job_tag, inv_type = 0, inv_acc = 0):
     g.save(path, eig, fmt);
 
 @q.timer_verbose
-def load_eig_lazy(path, job_tag, inv_type = 0, inv_acc = 0):
+def load_eig_lazy(path, job_tag, inv_type=0, inv_acc=0):
     """
     return ``None'' or a function ``load_eig''
     ``load_eig()'' return the ``eig''
@@ -197,7 +197,7 @@ def load_eig_lazy(path, job_tag, inv_type = 0, inv_acc = 0):
         total_site = q.Coordinate(get_param(job_tag, "total_site"))
         fermion_params = get_fermion_params(job_tag, inv_type, inv_acc)
         grids = qg.get_fgrid(total_site, fermion_params)
-        eig = g.load(path, grids = grids)
+        eig = g.load(path, grids=grids)
         g.mem_report()
         return eig
     #
@@ -222,12 +222,12 @@ def get_cg_mp_maxiter(job_tag, inv_type, inv_acc):
 
 @q.timer_verbose
 def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
-        gt = None,
-        mpi_split = None,
-        n_grouped = 1,
-        eig = None,
-        eps = 1e-8,
-        qtimer = True):
+        gt=None,
+        mpi_split=None,
+        n_grouped=1,
+        eig=None,
+        eps=1e-8,
+        qtimer=True):
     import qlat_gpt as qg
     import gpt as g
     if mpi_split is None:
@@ -320,12 +320,12 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
         return q.InverterGaugeTransform(inverter=inv_qm, gt=gt)
 
 @q.timer_verbose
-def mk_qlat_inverter(gf, job_tag, inv_type, inv_acc, *, gt = None):
+def mk_qlat_inverter(gf, job_tag, inv_type, inv_acc, *, gt=None):
     qtimer = q.Timer(f"py:qinv({job_tag},{inv_type},{inv_acc})", True)
     if job_tag in ["24D", "32D"]:
         if inv_type == 0:
-            fa = q.FermionAction(mass = 0.00107, m5 = 1.8, ls = 24, mobius_scale = 4.0)
-            inv = q.InverterDomainWall(gf = gf, fa = fa, qtimer = qtimer)
+            fa = q.FermionAction(mass=0.00107, m5=1.8, ls=24, mobius_scale=4.0)
+            inv = q.InverterDomainWall(gf=gf, fa=fa, qtimer=qtimer)
             inv.set_stop_rsd(1e-8)
             inv.set_max_num_iter(200)
             if inv_acc == 0:
@@ -338,8 +338,8 @@ def mk_qlat_inverter(gf, job_tag, inv_type, inv_acc, *, gt = None):
                 raise Exception("mk_qlat_inverter")
             inv.set_max_mixed_precision_cycle(maxiter)
         elif inv_type == 1:
-            fa = q.FermionAction(mass = 0.0850, m5 = 1.8, ls = 24, mobius_scale = 4.0)
-            inv = q.InverterDomainWall(gf = gf, fa = fa, qtimer = qtimer)
+            fa = q.FermionAction(mass=0.0850, m5=1.8, ls=24, mobius_scale=4.0)
+            inv = q.InverterDomainWall(gf=gf, fa=fa, qtimer=qtimer)
             inv.set_stop_rsd(1e-8)
             inv.set_max_num_iter(300)
             if inv_acc == 0:
@@ -358,23 +358,23 @@ def mk_qlat_inverter(gf, job_tag, inv_type, inv_acc, *, gt = None):
     if gt is None:
         return inv
     else:
-        return q.InverterGaugeTransform(inverter = inv, gt = gt)
+        return q.InverterGaugeTransform(inverter=inv, gt=gt)
 
 def mk_inverter(*args, **kwargs):
     return mk_gpt_inverter(*args, **kwargs)
 
 @q.timer
-def get_inv(gf, job_tag, inv_type, inv_acc, *, gt = None, mpi_split = None, n_grouped = 1, eig = None, eps = 1e-8, qtimer = True):
+def get_inv(gf, job_tag, inv_type, inv_acc, *, gt=None, mpi_split=None, n_grouped=1, eig=None, eps=1e-8, qtimer=True):
     tag = f"rbc_ukqcd.get_inv gf={id(gf)} {job_tag} inv_type={inv_type} inv_acc={inv_acc} gt={id(gt)} mpi_split={mpi_split} n_grouped={n_grouped} eig={id(eig)} eps={eps} qtimer={id(qtimer)}"
     if tag in q.cache_inv:
         return q.cache_inv[tag]["inv"]
     inv = mk_inverter(gf, job_tag, inv_type, inv_acc,
-            gt = gt,
-            mpi_split = mpi_split,
-            n_grouped = n_grouped,
-            eig = eig,
-            eps = eps,
-            qtimer = qtimer)
+            gt=gt,
+            mpi_split=mpi_split,
+            n_grouped=n_grouped,
+            eig=eig,
+            eps=eps,
+            qtimer=qtimer)
     q.cache_inv[tag] = {
             "inv": inv,
             "gf": gf,
