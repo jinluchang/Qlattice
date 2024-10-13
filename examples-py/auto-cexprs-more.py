@@ -266,12 +266,7 @@ def get_cexpr_meson_jj_mm_types():
         exprs = contract_simplify(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
         typed_exprs = []
         for expr in exprs:
-            typed_exprs.append(expr)
-            typed_exprs.append((expr, [ 'Type2', 'Type3', ]))
-            typed_exprs.append((expr, 'Type1'))
-            typed_exprs.append((expr, 'Type2'))
-            typed_exprs.append((expr, 'Type3'))
-            typed_exprs.append((expr, 'Type4'))
+            typed_exprs.append((expr, None, [ 'Type2', 'Type3', ], 'Type1', 'Type2', 'Type3', 'Type4',))
         cexpr = contract_simplify_compile(*typed_exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
