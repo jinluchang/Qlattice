@@ -31,12 +31,4 @@ CHECK: ('mk_sample_gauge_field', {'rand_n_step': 2, 'flow_n_step': 8, 'hmc_n_tra
 CHECK: ('cg_params-0-2', {'maxiter': 5, 'maxcycle': 1})
 CHECK: ('cg_params-1-2', {'maxiter': 5, 'maxcycle': 1})
 CHECK: ('measurement', {'auto_contract_meson_corr_wf': {'sample_num': 32, 'sample_size': 2, 't_sep_range': 4}, 'auto_contract_meson_meson_i0_j0_corr_wf': {'sample_num': 32, 'sample_size': 2, 't_sep_range': 4}})
-CHECK: auto_contract_meson_meson_i0_j0_corr_wf: ld sig: -9.41973E+06-1.63504E+04j
-CHECK: auto_contract_meson_meson_i0_j0_corr_wf: ld_src_op sig: 1.98634E+03-6.21021E+00j
-CHECK: auto_contract_meson_meson_i0_j0_corr_wf: ld_snk_op sig: 2.21621E+03-8.18203E+00j
-CHECK: auto_contract_meson_corr_wf: ld sig: 2.89706E+03-5.05277E+00j
-CHECK: auto_contract_meson_corr_psnk_psrc_rand: ld sig: -1.36956E-01-5.60429E-04j
-CHECK: auto_contract_meson_corr: ld sig: 3.00766E+05+3.61176E+03j
-CHECK: auto_contract_meson_corr_psnk: ld sig: 7.24663E+01+8.46493E-01j
-CHECK: auto_contract_meson_corr_psnk_psrc: ld sig: -1.02146E-01-5.49030E-04j
 CHECK: finished successfully.

@@ -117,7 +117,6 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop):
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    q.displayln_info(f"CHECK: {fname}: ld sig: {q.get_data_sig(ld, q.RngState()):.5E}")
     json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
     for i, en in enumerate(expr_names):
         json_results.append((f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()),))
@@ -171,7 +170,6 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop):
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    q.displayln_info(f"CHECK: {fname}: ld sig: {q.get_data_sig(ld, q.RngState()):.5E}")
     json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
     for i, en in enumerate(expr_names):
         json_results.append((f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()),))
@@ -235,7 +233,6 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop):
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    q.displayln_info(f"CHECK: {fname}: ld sig: {q.get_data_sig(ld, q.RngState()):.5E}")
     json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
     for i, en in enumerate(expr_names):
         json_results.append((f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()),))
@@ -306,7 +303,6 @@ def auto_contract_meson_corr_psnk_psrc_rand(job_tag, traj, get_get_prop):
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    q.displayln_info(f"CHECK: {fname}: ld sig: {q.get_data_sig(ld, q.RngState()):.5E}")
     json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
     for i, en in enumerate(expr_names):
         json_results.append((f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()),))
@@ -677,7 +673,6 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    q.displayln_info(f"CHECK: {fname}: ld sig: {q.get_data_sig(ld, q.RngState()):.5E}")
     json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
     for i, en in enumerate(expr_names):
         json_results.append((f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()),))
@@ -920,7 +915,6 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    q.displayln_info(f"CHECK: {fname}: ld sig: {q.get_data_sig(ld, q.RngState()):.5E}")
     json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
     for i, en in enumerate(expr_names):
         json_results.append((f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()),))
@@ -930,7 +924,6 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
         ])
     ld_src_op.from_numpy(res_sum_src_op)
     ld_src_op.save(get_save_path(fn_src_op))
-    q.displayln_info(f"CHECK: {fname}: ld_src_op sig: {q.get_data_sig(ld_src_op, q.RngState()):.5E}")
     json_results.append((f"{fname}: ld_src_op sig", q.get_data_sig(ld_src_op, q.RngState()),))
     for i, en in enumerate(expr_names[idx_arr_of_src_op_only]):
         json_results.append((f"{fname}: ld '{en}' sig", q.get_data_sig(ld_src_op[i], q.RngState()),))
@@ -940,7 +933,6 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
         ])
     ld_snk_op.from_numpy(res_sum_snk_op)
     ld_snk_op.save(get_save_path(fn_snk_op))
-    q.displayln_info(f"CHECK: {fname}: ld_snk_op sig: {q.get_data_sig(ld_snk_op, q.RngState()):.5E}")
     json_results.append((f"{fname}: ld_snk_op sig", q.get_data_sig(ld_snk_op, q.RngState()),))
     for i, en in enumerate(expr_names[idx_arr_of_snk_op_only]):
         json_results.append((f"{fname}: ld '{en}' sig", q.get_data_sig(ld_snk_op[i], q.RngState()),))
