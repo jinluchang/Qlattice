@@ -36,7 +36,7 @@ def process_initialization():
 
 def get_q_num_mp_processes():
     global get_q_num_mp_processes
-    s = getenv("q_num_mp_processes", "q_num_threads", "OMP_NUM_THREADS", default = "0")
+    s = getenv("q_num_mp_processes", "q_num_threads", "OMP_NUM_THREADS", default="0")
     v = int(s)
     get_q_num_mp_processes = lambda : v
     return v
