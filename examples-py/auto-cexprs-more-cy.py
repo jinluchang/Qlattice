@@ -267,7 +267,7 @@ def get_cexpr_meson_jj_mm_types():
         typed_exprs = []
         for expr in exprs:
             typed_exprs.append(expr)
-            typed_exprs.append((expr, 'Type2', 'Type3'))
+            typed_exprs.append((expr, [ 'Type2', 'Type3', ]))
             typed_exprs.append((expr, 'Type1'))
             typed_exprs.append((expr, 'Type2'))
             typed_exprs.append((expr, 'Type3'))

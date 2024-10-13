@@ -892,27 +892,55 @@ def filter_diagram_type(expr, diagram_type_dict=None, included_types=None):
     """
     first: drop diagrams with diagram_type_dict[diagram_type] == None
     second:
-        if included_types is not None:
-            only keep diagrams with diagram_type that diagram_type in included_types.
-    ``included_types'' is a list of diagram_type_name
+        if included_types is None:
+            return a list of a single expr with all the remaining diagrams summed together
+        else:
+            assert isinstance(included_types, list)
+            # included_types = [ None, "Type1", [ "Type2", "Type3", ], ]
+            return a list of exprs, each expr only includes the types specified in the `included_types`.
+    `included_types` is a list of specs of included diagram type.
+    Each spec in the list of `included_types` can be
+    (1) None: means all remaining types included
+    (2) a single str, with value be one diagram_type_name: means only include this type
+    (3) a list of str: means include only the types listed in the list.
     """
     if diagram_type_dict is None:
-        return expr
-    new_terms = []
+        return [ expr, ]
+    if included_types is None:
+        included_types_list = [ None, ]
+    else:
+        assert isinstance(included_types, list)
+        included_types_list = []
+        for its in included_types:
+            if its is None:
+                included_types_list.append(its)
+            elif isinstance(its, str):
+                included_types_list.append([ its, ])
+            elif isinstance(its, list):
+                included_types_list.append(its)
+            else:
+                assert False
+    expr_terms_list = [ [] for its in included_types_list ]
     for term in expr.terms:
         diagram_type = get_term_diagram_type_info(term)
         if diagram_type in diagram_type_dict:
-            if diagram_type_dict[diagram_type] is None:
-                continue
-            if included_types is not None:
-                diagram_type_name = diagram_type_dict.get(diagram_type)
-                if diagram_type_name not in included_types:
-                    continue
-        new_terms.append(term)
-    included_types_tag = ""
-    if included_types is not None:
-        included_types_tag = " (" + ','.join(included_types) + ")"
-    return Expr(new_terms, expr.description + included_types_tag)
+            diagram_type_name = diagram_type_dict.get(diagram_type)
+            if diagram_type_name is not None:
+                for i, its in enumerate(included_types_list):
+                    if (its is None) or (diagram_type_name in its):
+                        expr_terms_list[i].append(term)
+        else:
+            for i, its in enumerate(included_types_list):
+                if its is None:
+                    expr_terms_list[i].append(term)
+    expr_list = []
+    for i, its in enumerate(included_types_list):
+        if its is None:
+            its_tag = ""
+        else:
+            its_tag = " (" + ','.join(its) + ")"
+        expr_list.append(Expr(expr_terms_list[i], expr.description + its_tag))
+    return expr_list
 
 def mk_cexpr(*exprs, diagram_type_dict=None):
     """
@@ -964,9 +992,9 @@ def mk_cexpr(*exprs, diagram_type_dict=None):
     for i, expr in enumerate(exprs):
         expr_list = []
         typed_expr_list_dict = { name : [] for name, diagram_type in diagram_types }
-        for j, term in enumerate(expr.terms):
-            coef = term.coef
-            term.coef = 1
+        for j, term_coef in enumerate(expr.terms):
+            coef = term_coef.coef
+            term = Term(term_coef.c_ops, term_coef.a_ops, 1)
             repr_term = repr(term)
             diagram_type_name = diagram_type_term_dict[repr_term]
             assert diagram_type_name is not None
@@ -1003,11 +1031,16 @@ def contract_simplify(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict
             assert False
         expr = contract_expr(expr)
         expr.simplify(is_isospin_symmetric_limit=is_isospin_symmetric_limit)
-        expr = filter_diagram_type(expr,
+        expr_list = filter_diagram_type(
+                expr,
                 diagram_type_dict=diagram_type_dict,
                 included_types=included_types)
-        return expr
-    return q.parallel_map(func, exprs)
+        return expr_list
+    expr_list_list = q.parallel_map(func, exprs)
+    expr_list = []
+    for el in expr_list_list:
+        expr_list += el
+    return expr_list
 
 @q.timer
 def compile_expr(*exprs, diagram_type_dict = None):
