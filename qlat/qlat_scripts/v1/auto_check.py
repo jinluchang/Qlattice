@@ -4,19 +4,13 @@ from .jobs import *
 
 @q.timer
 def get_all_points(total_site):
-    n_points = total_site[0] * total_site[1] * total_site[2] * total_site[3]
-    xg_list = []
-    for index in range(n_points):
-        xg = q.Coordinate()
-        xg.from_index(index, total_site)
-        xg_list.append(xg)
-    return xg_list
+    return list(get_all_points_psel(total_site))
 
 @q.timer
 def get_all_points_psel(total_site):
     geo = q.Geometry(total_site)
-    xg_list = get_all_points(total_site)
-    psel = q.PointsSelection([ xg.to_list() for xg in xg_list ], geo)
+    fsel = q.FieldSelection(geo, 1)
+    psel = fsel.to_psel()
     return psel
 
 # ----
@@ -182,7 +176,7 @@ def load_prop_psrc(job_tag, traj, inv_type):
     path_s = f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}/geon-info.txt"
     psel = get_all_points_psel(total_site)
     prop_list = []
-    xg_list = [ q.Coordinate(xg) for xg in psel.to_list() ]
+    xg_list = [ xg for xg in psel ]
     sfr = q.open_fields(get_load_path(path_s), "r")
     for xg_src in xg_list:
         xg_idx = xg_src.to_index(total_site)
