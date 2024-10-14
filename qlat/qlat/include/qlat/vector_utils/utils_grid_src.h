@@ -773,8 +773,8 @@ void make_grid_src(Propagator4dT<Td >& src, const Coordinate& sp, const Coordina
   qlat::ComplexT<Td >* srcP = (qlat::ComplexT<Td >*) qlat::get_data(src).data();
   zero_Ty(srcP, V_local*civ, 0);
 
-  //fft_desc_basic fd(geo);
-  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+  // fft_desc_basic fd(geo);
+  // fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
 
   std::vector<qlat::RngState > rsL;rsL.resize(omp_get_max_threads());
   for(int is=0;is<omp_get_max_threads();is++)
