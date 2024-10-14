@@ -98,6 +98,7 @@ buildPythonPackage rec {
       echo
       echo $LD_LIBRARY_PATH
       echo
+      export q_num_mp_processes=0
       export num_proc=$((NIX_BUILD_CORES / 16 + 1))
     '';
     cpu_extra = ''
