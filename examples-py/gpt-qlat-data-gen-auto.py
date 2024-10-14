@@ -1459,15 +1459,11 @@ def get_cexpr_pi0_gg():
         assert len(pi0d_list) == 2
         #
         exprs_list_pi0_decay = [
-                [
-                    jj_d * pi0d,
-                    (jj_d * pi0d, "TypeC"),
-                    (jj_d * pi0d, "TypeD"),
-                ]
+                (jj_d * pi0d, None, "TypeC", "TypeD",)
                 for pi0d in pi0d_list for jj_d in jj_d_list
                 ]
         assert len(exprs_list_pi0_decay) == 2
-        exprs_pi0_decay = [ e for el in exprs_list_pi0_decay for e in el ]
+        exprs_pi0_decay = [ e for e in exprs_list_pi0_decay ]
         #
         exprs = [
                 mk_expr(1) + f"1",
