@@ -26,16 +26,16 @@ namespace qlat
 
 ////Only cpu verstion
 ////flag = 1 --> biva * sizeF * civ * size_inner --> biva * civ * sizeF * size_inner
-inline void reorder_civ(char* src,char* res,int biva,int civ,size_t sizeF,int flag,int size_inner)
+inline void reorder_civ(int8_t* src, int8_t* res,int biva,int civ,size_t sizeF,int flag,int size_inner)
 {
-  //TIMER("reorder_civ vectors char");
+  //TIMER("reorder_civ vectors int8_t");
   if(biva == 0 or civ == 0 or sizeF == 0 or size_inner == 0){return ;}
 
-  std::vector<char* > psrc;psrc.resize(civ);
-  std::vector<char > tmp;tmp.resize(biva*sizeF*civ*size_inner);
+  std::vector<int8_t* > psrc;psrc.resize(civ);
+  std::vector<int8_t > tmp;tmp.resize(biva*sizeF*civ*size_inner);
   if(size_inner <= 1){abort_r("size_innter too small ! \n");return;}
 
-  if(flag == 1){memcpy((char*)&tmp[0],(char*)&src[0],sizeof(char)*biva*sizeF*civ*size_inner);}
+  if(flag == 1){memcpy((int8_t*)&tmp[0],(int8_t*)&src[0],sizeof(int8_t)*biva*sizeF*civ*size_inner);}
  
   for(size_t bi=0;bi<size_t(biva);bi++)
   {
@@ -50,15 +50,15 @@ inline void reorder_civ(char* src,char* res,int biva,int civ,size_t sizeF,int fl
     for(int ci=0;ci<civ;ci++)
     {
       if(flag==0){
-        memcpy(&tmp[(bi*sizeF*civ + si*civ + ci)*size_inner],&psrc[ci][si*size_inner],sizeof(char)*size_inner);
+        memcpy(&tmp[(bi*sizeF*civ + si*civ + ci)*size_inner],&psrc[ci][si*size_inner],sizeof(int8_t)*size_inner);
       }
       if(flag==1){
-        memcpy(&psrc[ci][si*size_inner],&tmp[(bi*sizeF*civ + si*civ + ci)*size_inner],sizeof(char)*size_inner);
+        memcpy(&psrc[ci][si*size_inner],&tmp[(bi*sizeF*civ + si*civ + ci)*size_inner],sizeof(int8_t)*size_inner);
       }
     }
   }
  
-  if(flag == 0){memcpy((char*)&res[0],(char*)&tmp[0],biva*sizeF*civ*size_inner);}
+  if(flag == 0){memcpy((int8_t*)&res[0],(int8_t*)&tmp[0],biva*sizeF*civ*size_inner);}
 }
 
 template<typename Ty>
@@ -141,9 +141,9 @@ struct move_index
 {
   //bool GPU;
 
-  //qlat::vector_gpu<char > buf;
+  //qlat::vector_gpu<int8_t > buf;
   ////size_t buf_size;
-  //qlat::vector<char* > pciv;
+  //qlat::vector<int8_t* > pciv;
 
   //move_index(bool GPU_set=false){
   //  #ifndef QLAT_USE_ACC
@@ -160,7 +160,7 @@ struct move_index
   //  TIMERA("move_index set_mem");
   //  if(buf_size != Bsize){
   //    free_mem();
-  //    if(GPU){gpuMalloc(buf, Bsize, char);}
+  //    if(GPU){gpuMalloc(buf, Bsize, int8_t);}
   //    else{buf = (void *)aligned_alloc_no_acc(Bsize);}
   //    buf_size = Bsize;
   //  }
@@ -200,11 +200,11 @@ struct move_index
     MPI_Barrier(get_comm());fflush(stdout);Qassert(false);
   }
 
-  char* tmp_buf = NULL;
+  int8_t* tmp_buf = NULL;
 
   if(src == res){
     VectorGPUKey gkey(Off*sizeof(Ty), std::string("move_index_buf"), GPU);
-    const vector_gpu<char >& buf = get_vector_gpu_plan<char >(gkey);
+    const vector_gpu<int8_t >& buf = get_vector_gpu_plan<int8_t >(gkey);
     tmp_buf = buf.p;
     ////buf.resize(Off*sizeof(Ty), GPU);
   }
@@ -271,8 +271,8 @@ struct move_index
   void free_mem(){
     VectorGPUKey gkey0(0, std::string("move_index_buf"), false);
     VectorGPUKey gkey1(0, std::string("move_index_buf"),  true);
-    safe_free_vector_gpu_plan<char >(gkey0, false);
-    safe_free_vector_gpu_plan<char >(gkey1, false);
+    safe_free_vector_gpu_plan<int8_t >(gkey0, false);
+    safe_free_vector_gpu_plan<int8_t >(gkey1, false);
     //buf.resize(0);
   }
 
@@ -289,7 +289,7 @@ inline void quick_move_civ_in(Ty* res,
   VectorGPUKey gkey(0, ssprintf("quick_move_civ_buf"), GPU);
   const long nsum = civ * sizeF * size_inner;
   const long V    =       sizeF * size_inner;
-  vector_gpu<char >& tmp = get_vector_gpu_plan<char >(gkey);tmp.resizeL(sizeof(Ty) * nsum);
+  vector_gpu<int8_t >& tmp = get_vector_gpu_plan<int8_t >(gkey);tmp.resizeL(sizeof(Ty) * nsum);
   Ty* buf = (Ty*) tmp.data();
   for(int bi = 0; bi < biva; bi++){
     Ty* src = &res[bi * nsum + 0];
@@ -316,10 +316,10 @@ inline void clear_move_index_mem(){
   VectorGPUKey gkey1(0, std::string("move_index_buf"),  true);
   VectorGPUKey qkey0(0, std::string("quick_move_civ_buf"),  false);
   VectorGPUKey qkey1(0, std::string("quick_move_civ_buf"),  true);
-  safe_free_vector_gpu_plan<char >(gkey0, true);
-  safe_free_vector_gpu_plan<char >(gkey1, true);
-  safe_free_vector_gpu_plan<char >(qkey0, true);
-  safe_free_vector_gpu_plan<char >(qkey1, true);
+  safe_free_vector_gpu_plan<int8_t >(gkey0, false);
+  safe_free_vector_gpu_plan<int8_t >(gkey1, false);
+  safe_free_vector_gpu_plan<int8_t >(qkey0, true );
+  safe_free_vector_gpu_plan<int8_t >(qkey1, true );
 }
 
 #ifdef QLAT_USE_ACC
@@ -1208,7 +1208,7 @@ inline Ty vec_norm2(Ty* s0, Ty* s1, Long Ndata, QMEM GPU = QMGPU, const Long Ngr
   Qassert(Ndata % Ngroup == 0);
   const Long Nvol = Ndata / Ngroup;
 
-  vector_gpu<char >& Buf = get_vector_gpu_plan<char >(gkey);
+  vector_gpu<int8_t >& Buf = get_vector_gpu_plan<int8_t >(gkey);
   Buf.resizeL(size_t(Nvol)* sizeof(Ty));
   Ty* buf = (Ty*) Buf.data();
 

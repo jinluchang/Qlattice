@@ -275,7 +275,7 @@ void sum_all_size(Ty *src,Ty *sav,Long size, int GPU=0, const MPI_Comm* commp=NU
   #endif
   VectorGPUKey gkey(size_t(size)*sizeof(Ty), ssprintf("sum_all_size_buf_%d", iomp), GPU_set); ////read buffers for global sum
   if(src == sav){
-    const vector_gpu<char >& tmp = get_vector_gpu_plan<char >(gkey);
+    const vector_gpu<int8_t >& tmp = get_vector_gpu_plan<int8_t >(gkey);
     buf_res = (Ty*) tmp.p;
   }else{buf_res = sav;}////small modify for pointers
 
@@ -298,8 +298,8 @@ void sum_all_size(Ty *src,Ty *sav,Long size, int GPU=0, const MPI_Comm* commp=NU
 
   VectorGPUKey gkey0(0, ssprintf("sum_all_size_buf0_%d", iomp), copy_sum_cpu);
   VectorGPUKey gkey1(0, ssprintf("sum_all_size_buf1_%d", iomp), copy_sum_cpu);
-  qlat::vector_gpu<char >& tem_sHIP = get_vector_gpu_plan<char >(gkey0);
-  qlat::vector_gpu<char >& tem_rHIP = get_vector_gpu_plan<char >(gkey1);
+  qlat::vector_gpu<int8_t >& tem_sHIP = get_vector_gpu_plan<int8_t >(gkey0);
+  qlat::vector_gpu<int8_t >& tem_rHIP = get_vector_gpu_plan<int8_t >(gkey1);
 
   Ty* tem_src = NULL; Ty* tem_res = NULL;
   //#ifdef QLAT_USE_ACC
@@ -342,9 +342,9 @@ void sum_all_size(Ty *src,Ty *sav,Long size, int GPU=0, const MPI_Comm* commp=NU
   }
 
   if(src != sav){
-    safe_free_vector_gpu_plan<char>(gkey);
-    safe_free_vector_gpu_plan<char>(gkey0);
-    safe_free_vector_gpu_plan<char>(gkey1);
+    safe_free_vector_gpu_plan<int8_t>(gkey);
+    safe_free_vector_gpu_plan<int8_t>(gkey0);
+    safe_free_vector_gpu_plan<int8_t>(gkey1);
   }
 }
 
@@ -370,7 +370,7 @@ inline void fflush_MPI(){
 }
 
 //////"INT_MAX"
-//////offset by number of char
+//////offset by number of int8_t
 template<typename Iy0, typename Iy1>
 void MPI_Alltoallv_Send_Recv(char* src, Iy0* send, Iy1* spls, char* res, Iy0* recv, Iy1* rpls, const MPI_Comm& comm)
 {
@@ -868,9 +868,9 @@ inline void geo_to_nv(const qlat::Geometry& geo, qlat::vector_acc<int >& nv, qla
 //  std::vector<MPI_Request> reqs_send;
 //  std::vector<MPI_Request> reqs_recv;
 //
-//  qlat::vector_gpu<char >& sbuf = qlat::get_vector_gpu_plan<char >(0, std::string("general_buf0"), GPU);
-//  qlat::vector_gpu<char >& rbuf = qlat::get_vector_gpu_plan<char >(0, std::string("general_buf1"), GPU);
-//  //qlat::vector_gpu<char >& pack_buf = qlat::get_vector_gpu_plan<char >(0, std::string("general_buf2"), -1);
+//  qlat::vector_gpu<int8_t >& sbuf = qlat::get_vector_gpu_plan<int8_t >(0, std::string("general_buf0"), GPU);
+//  qlat::vector_gpu<int8_t >& rbuf = qlat::get_vector_gpu_plan<int8_t >(0, std::string("general_buf1"), GPU);
+//  //qlat::vector_gpu<int8_t >& pack_buf = qlat::get_vector_gpu_plan<int8_t >(0, std::string("general_buf2"), -1);
 //  expand_index_buf& ebuf = get_expand_index_buf_plan(f.geo());
 //  //expand_index_buf ebuf(f.geo());
 //  //printf("send %8d %8d \n", int(ebuf.pack_send.size()), int( 2*plan.total_send_size));
@@ -881,10 +881,10 @@ inline void geo_to_nv(const qlat::Geometry& geo, qlat::vector_acc<int >& nv, qla
 //  const Long Nsend = plan.total_send_size;
 //  const Long Nrecv = plan.total_recv_size;
 //
-//  sbuf.resizeL(Nsend * sizeof(M) / sizeof(char));
-//  rbuf.resizeL(Nrecv * sizeof(M) / sizeof(char));
-//  //pack_buf.resizeL( 2 * plan.total_send_size * sizeof(Long) / sizeof(char));
-//  //pack_buf.resizeL( 2 * plan.total_recv_size * sizeof(Long) / sizeof(char));
+//  sbuf.resizeL(Nsend * sizeof(M) / sizeof(int8_t));
+//  rbuf.resizeL(Nrecv * sizeof(M) / sizeof(int8_t));
+//  //pack_buf.resizeL( 2 * plan.total_send_size * sizeof(Long) / sizeof(int8_t));
+//  //pack_buf.resizeL( 2 * plan.total_recv_size * sizeof(Long) / sizeof(int8_t));
 //
 //  M* sP = (M*) &sbuf[0];
 //  M* rP = (M*) &rbuf[0];
@@ -957,8 +957,8 @@ inline void geo_to_nv(const qlat::Geometry& geo, qlat::vector_acc<int >& nv, qla
 //  });
 //
 //  mpi_waitall(reqs_send);
-//  //safe_free_vector_gpu_plan<char >(std::string("general_buf0"), GPU);
-//  //safe_free_vector_gpu_plan<char >(std::string("general_buf1"), GPU);
+//  //safe_free_vector_gpu_plan<int8_t >(std::string("general_buf0"), GPU);
+//  //safe_free_vector_gpu_plan<int8_t >(std::string("general_buf1"), GPU);
 //}
 
 

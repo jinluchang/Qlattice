@@ -571,7 +571,7 @@ inline void quda_inverter::save_prop(const void* srcP, const char* filename)
   }   
 
   std::string VECS_TYPE("STAGGERED_Prop");
-  std::string INFO_LIST = ssprintf(i"mass %.8f", inv_param.mass);
+  std::string INFO_LIST = ssprintf("mass %.8f", inv_param.mass);
 
   bool single_file = false;
   bool read = false;

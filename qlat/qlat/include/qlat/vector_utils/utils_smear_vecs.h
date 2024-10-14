@@ -330,9 +330,9 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   ////Qassert(false)
   /////QLAT_VEC_CKPOINT
 
-  qlat::FieldM<char, 1> eo;
+  qlat::FieldM<int8_t, 1> eo;
   qlat::qlat_map_eo_site(eo, geo);
-  char* eo_char = (char*) qlat::get_data(eo).data();
+  int8_t* eo_int8_t = (int8_t*) qlat::get_data(eo).data();
 
   std::vector<Long > local_map_typeA0_e;local_map_typeA0_e.resize(Nvol_ext); ////local_map0[count] == original positions
   std::vector<Long > local_map_typeA0_o;local_map_typeA0_o.resize(Nvol_ext); ////local_map0[count] == original positions
@@ -389,12 +389,12 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
       //////print0("index %ld %ld \n", index, i);
       //Qassert(index != -1);
       //#endif
-      if(eo_char[index] == 0){
+      if(eo_int8_t[index] == 0){
         local_map_typeA0_e[i] = count_e;
         count_e += 1;
       }
 
-      if(eo_char[index] == 1){
+      if(eo_int8_t[index] == 1){
         local_map_typeA0_o[i] = count_o;
         count_o += 1;
       }

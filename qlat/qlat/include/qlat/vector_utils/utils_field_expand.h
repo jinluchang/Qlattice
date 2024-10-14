@@ -133,16 +133,16 @@ void refresh_expanded_GPUT(M* res, const Geometry& geo, const int MULTI,
   std::vector<MPI_Request> reqs_send;
   std::vector<MPI_Request> reqs_recv;
 
-  qlat::vector_gpu<char >& sbuf = qlat::get_vector_gpu_plan<char >(0, std::string("general_buf0"), GPU);
-  qlat::vector_gpu<char >& rbuf = qlat::get_vector_gpu_plan<char >(0, std::string("general_buf1"), GPU);
+  qlat::vector_gpu<int8_t >& sbuf = qlat::get_vector_gpu_plan<int8_t >(0, std::string("general_buf0"), GPU);
+  qlat::vector_gpu<int8_t >& rbuf = qlat::get_vector_gpu_plan<int8_t >(0, std::string("general_buf1"), GPU);
   expand_index_buf& ebuf = get_expand_index_buf_plan(geo, multiplicity, tag);
   Qassert(ebuf.pack_send.size() == 2*plan.total_send_size and ebuf.pack_recv.size() == 2*plan.total_recv_size);
 
   const Long Nsend = plan.total_send_size ;
   const Long Nrecv = plan.total_recv_size ;
 
-  sbuf.resizeL(Nsend * MULTI * sizeof(M) / sizeof(char));
-  rbuf.resizeL(Nrecv * MULTI * sizeof(M) / sizeof(char));
+  sbuf.resizeL(Nsend * MULTI * sizeof(M) / sizeof(int8_t));
+  rbuf.resizeL(Nrecv * MULTI * sizeof(M) / sizeof(int8_t));
 
   M* sP = (M*) &sbuf[0];
   M* rP = (M*) &rbuf[0];
@@ -183,8 +183,8 @@ void refresh_expanded_GPUT(M* res, const Geometry& geo, const int MULTI,
 
   mpi_waitall(reqs_send);
 
-  //safe_free_vector_gpu_plan<char >(std::string("general_buf0"), GPU);
-  //safe_free_vector_gpu_plan<char >(std::string("general_buf1"), GPU);
+  //safe_free_vector_gpu_plan<int8_t >(std::string("general_buf0"), GPU);
+  //safe_free_vector_gpu_plan<int8_t >(std::string("general_buf1"), GPU);
 }
 
 template <class M>

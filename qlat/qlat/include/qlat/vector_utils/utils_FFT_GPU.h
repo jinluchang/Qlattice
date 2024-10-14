@@ -668,7 +668,6 @@ struct fft_schedule{
     /////rotate civ
     if(civ != c0){
       TIMERB("fft mem reorder");
-      //for(int bi=0;bi<bN;bi++)mv_civ.dojob((char*) &data[bi][0],(char*) &data[bi][0], 1, cN, fd.noden, 1, c0*sizeof(Ty));
       for(int bi=0;bi<bN;bi++)mv_civ.dojob((Ty*) &data[bi][0],(Ty*) &data[bi][0], 1, cN, fd.noden, 1, c0, GPU);
     }
 
@@ -732,7 +731,6 @@ struct fft_schedule{
 
     if(civ != c0){
       TIMERB("fft mem reorder");
-      //for(int bi=0;bi<bN;bi++)mv_civ.dojob((char*) &data[bi][0],(char*) &data[bi][0], 1, cN, fd.noden, 0, c0*sizeof(Ty));
       for(int bi=0;bi<bN;bi++)mv_civ.dojob((Ty*) &data[bi][0],(Ty*) &data[bi][0], 1, cN, fd.noden, 0, c0, GPU);
     }
   }

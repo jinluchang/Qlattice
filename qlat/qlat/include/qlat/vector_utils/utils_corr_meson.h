@@ -279,7 +279,7 @@ void meson_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, ga_
 #ifdef QLAT_USE_ACC
 template <typename Ty, int invmode, int bfac, int Blocks>
 __global__ void meson_vectorEV_global(Ty** p1, Ty** p2, Ty* resP, 
-  char** gPP, unsigned char** oPP, const int* ivP,
+  int8_t** gPP, uint8_t** oPP, const int* ivP,
   const int nmass, const int NTt, const Long Nxyz, const int Ngv){
   const unsigned long gi =  blockIdx.x;
   const unsigned int tid = threadIdx.y*blockDim.x+ threadIdx.x;
@@ -316,8 +316,8 @@ __global__ void meson_vectorEV_global(Ty** p1, Ty** p2, Ty* resP,
   const int Nth   = Blocks/bfac;
   const unsigned int Each  =  4*bfacC;
   const unsigned int GROUP = (Blocks/bfac)*Each;
-  unsigned char* s0 = NULL;
-           char* s1 = NULL;
+  uint8_t* s0 = NULL;
+    int8_t* s1 = NULL;
 
   const int bi =  threadIdx.y;
   const int ai =  threadIdx.x;
@@ -326,8 +326,8 @@ __global__ void meson_vectorEV_global(Ty** p1, Ty** p2, Ty* resP,
   const int aa = (threadIdx.y%bfacC)*blockDim.x + threadIdx.x;
 
   __shared__ Ty buf[bfacC*Blocks];
-  __shared__ unsigned char pos[3*GROUP];
-  __shared__ char g0[2*GROUP];
+  __shared__ uint8_t pos[3*GROUP];
+  __shared__  signed  char g0[2*GROUP];
 
   for(int iv=0;iv<Ngv;iv++)
   {
@@ -395,7 +395,7 @@ __global__ void meson_vectorEV_global(Ty** p1, Ty** p2, Ty* resP,
 
 template <typename Ty, int invmode, int bfac>
 void meson_vectorEV_kernel(Ty** p1, Ty** p2, Ty* resP, 
-  char** gPP, unsigned char** oPP, const int* ivP,
+  int8_t** gPP, uint8_t** oPP, const int* ivP,
   const int nmass, const int NTt, const Long Nxyz, const int Ngv){
   Long Ntotal  = nmass*NTt*Nxyz;
   if(Ntotal % bfac != 0){abort_r("Please correct your bfac! \n");}
@@ -473,7 +473,7 @@ void meson_vectorEV(Ty** p1, Ty** p2, Ty* resP,  int nmass,
   if(clear == 1){zero_Ty(resP, Ngv*nmass*NTt*Nxyz , 1);}
 
   qlat::vector_acc<Ty > gMap;
-  qlat::vector_acc<unsigned char > IMap;
+  qlat::vector_acc<uint8_t > IMap;
   gMap.resize(Ngv*4*2);IMap.resize(Ngv*4*2);
   for(int iv=0;iv<Ngv;iv++){
     for(int i=0;i<4;i++){
@@ -486,11 +486,11 @@ void meson_vectorEV(Ty** p1, Ty** p2, Ty* resP,  int nmass,
   }
 
   Ty* gC_P = gMap.data();
-  unsigned char*      gI_P = IMap.data();
+  uint8_t*      gI_P = IMap.data();
 
   #if USEKERNEL==1
-  std::vector<std::vector<char > > giEL;giEL.resize(Ngv);
-  std::vector<std::vector<unsigned char   > > oiL ;oiL.resize(Ngv );
+  std::vector<std::vector<int8_t > > giEL;giEL.resize(Ngv);
+  std::vector<std::vector<uint8_t   > > oiL ;oiL.resize(Ngv );
 
   ////reformulate index
   for(int iv=0;iv<Ngv;iv++){
@@ -500,35 +500,35 @@ void meson_vectorEV(Ty** p1, Ty** p2, Ty* resP,  int nmass,
   const int j2 = 1*Ngv*4 + iv*4 ;
   const Ty* gC1 = &(gC_P[j1]);
   const Ty* gC2 = &(gC_P[j2]);
-  const unsigned char* gI1 = &(gI_P[j1]);
-  const unsigned char* gI2 = &(gI_P[j2]);
+  const uint8_t* gI1 = &(gI_P[j1]);
+  const uint8_t* gI2 = &(gI_P[j2]);
   for(int d2=0;d2<4;d2++)
   for(int c2=0;c2<3;c2++)
   for(int d1=0;d1<4;d1++)
   for(int c1=0;c1<3;c1++)
   {
-    const char off1 = (d2*3+c2)*12+gI1[d1]*3+c1;
-    const char off2 = (gI2[d2]*3+c2)*12+d1*3+c1;
+    const int8_t off1 = (d2*3+c2)*12+gI1[d1]*3+c1;
+    const int8_t off2 = (gI2[d2]*3+c2)*12+d1*3+c1;
     const Ty g_tem = gC2[d2]*gC1[d1];
     const double norm = qlat::qnorm(g_tem);
     if(norm < 1e-20)continue;
 
     oiL[iv].push_back(off1);
     oiL[iv].push_back(off2);
-    giEL[iv].push_back(char(g_tem.real()));
-    giEL[iv].push_back(char(g_tem.imag()));
+    giEL[iv].push_back(int8_t(g_tem.real()));
+    giEL[iv].push_back(int8_t(g_tem.imag()));
   }
   }
 
-  std::vector<qlat::vector_gpu<char > > giEG;giEG.resize(Ngv);
+  std::vector<qlat::vector_gpu<int8_t > > giEG;giEG.resize(Ngv);
   for(int iv=0;iv<Ngv;iv++){giEG[iv].copy_from(giEL[iv]);}
-  qlat::vector_acc<char* > gP = EigenM_to_pointers(giEG);
-  char** gPP = gP.data();
+  qlat::vector_acc<int8_t* > gP = EigenM_to_pointers(giEG);
+  int8_t** gPP = gP.data();
 
-  std::vector<qlat::vector_gpu<unsigned char   > > oiG ; oiG.resize(Ngv);
+  std::vector<qlat::vector_gpu<uint8_t   > > oiG ; oiG.resize(Ngv);
   for(int iv=0;iv<Ngv;iv++){oiG[iv].copy_from(oiL[iv]);}
-  qlat::vector_acc<unsigned char* > oP = EigenM_to_pointers(oiG);
-  unsigned char** oPP = oP.data();
+  qlat::vector_acc<uint8_t* > oP = EigenM_to_pointers(oiG);
+  uint8_t** oPP = oP.data();
 
   qlat::vector_acc<int > iv_size;iv_size.resize(Ngv);
   for(int iv=0;iv<Ngv;iv++){iv_size[iv] = giEL[iv].size()/2;}
@@ -558,8 +558,8 @@ void meson_vectorEV(Ty** p1, Ty** p2, Ty* resP,  int nmass,
     int j2 = 1*Ngv*4 + iv*4 ;
     Ty* gC1 = &(gC_P[j1]);
     Ty* gC2 = &(gC_P[j2]);
-    unsigned char* gI1 = &(gI_P[j1]);
-    unsigned char* gI2 = &(gI_P[j2]);
+    uint8_t* gI1 = &(gI_P[j1]);
+    uint8_t* gI2 = &(gI_P[j2]);
     Long offR = iv*nmass*NTt * Nxyz;
     for(int d2=0;d2<4;d2++)
     for(int c2=0;c2<3;c2++)

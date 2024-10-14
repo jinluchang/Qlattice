@@ -786,7 +786,6 @@ void get_num_time(qlat::FieldM<Ty, 1>& noise,int &number_t, int &t_ini){
 }
 
 inline Coordinate get_src_pos(std::string src_n, Coordinate& off_L, const Geometry &geo){
-  //char noi_name[500];
   std::string noi_name = ssprintf("%s",src_n.c_str()  );
 
   qlat::FieldM<Complexq,1> noi;
@@ -838,7 +837,7 @@ inline int compare_mom(const Coordinate& a, const Coordinate& b){
 ////phases for small number of momenta apply
 template<typename Ty>
 void get_phases(std::vector<vector_gpu<Ty >>& phases, const std::vector<Coordinate >& momL,
-            const Geometry& geo, const signed char sign = 1, const Coordinate& offset = Coordinate() )
+            const Geometry& geo, const int8_t sign = 1, const Coordinate& offset = Coordinate() )
 {
   TIMER("get_phases");
   int Nmom = momL.size();
@@ -872,7 +871,7 @@ void get_phases(std::vector<vector_gpu<Ty >>& phases, const std::vector<Coordina
 
 template<typename Ty>
 void get_phases(vector_gpu<Ty >& phases, const Coordinate& mom,
-            const Geometry& geo, const signed char sign = 1, const Coordinate& offset = Coordinate() )
+            const Geometry& geo, const int8_t sign = 1, const Coordinate& offset = Coordinate() )
 {
   TIMER("get_phases");
   std::vector<Coordinate > momL;momL.resize(1);momL[0] = mom;

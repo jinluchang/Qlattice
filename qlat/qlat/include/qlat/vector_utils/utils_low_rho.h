@@ -17,17 +17,17 @@
 namespace qlat{
 
 #ifdef QLAT_USE_ACC
-//__device__ __constant__  signed char  Gmap0C[32];
-//__device__ __constant__  signed char  Gmap1C[32];
-//__device__ __constant__  signed char  Gmap2C[32];
-//__device__ __constant__  signed char  Gmap3C[32];
+//__device__ __constant__  int8_t  Gmap0C[32];
+//__device__ __constant__  int8_t  Gmap1C[32];
+//__device__ __constant__  int8_t  Gmap2C[32];
+//__device__ __constant__  int8_t  Gmap3C[32];
 
-__global__ void multiplyNab_global(const Complexq* Nab, Ftype *Mres,const Ftype *Mvalues,const int nt,const int nmass,const unsigned long bufN0, signed char* GmapM)
+__global__ void multiplyNab_global(const Complexq* Nab, Ftype *Mres,const Ftype *Mvalues,const int nt,const int nmass,const unsigned long bufN0, int8_t* GmapM)
 {
-  __shared__ signed char G0[32];
-  __shared__ signed char G1[32];
-  __shared__ signed char G2[32];
-  __shared__ signed char G3[32];
+  __shared__ int8_t G0[32];
+  __shared__ int8_t G1[32];
+  __shared__ int8_t G2[32];
+  __shared__ int8_t G3[32];
   extern __shared__ Complexq NMv_values[];
   /////__shared__ Complexq Nabv_multi[16*3];
 
@@ -319,7 +319,7 @@ inline void reducefM(qlat::vector_acc<Complexq > &fd,Complexq* NabL, Long bufN, 
 
 }
 
-inline void multiplyNab_Global(const Complexq* Nab, qlat::vector_acc<Ftype > &Mres,std::vector<int > avL, std::vector<int > bvL,const qlat::vector_acc<Complexq > &values, qlat::vector_acc<signed char> &GmapM,const int &nmass,const int &nt,const int nzero,const unsigned long bufN0, int mode_reduce=1)
+inline void multiplyNab_Global(const Complexq* Nab, qlat::vector_acc<Ftype > &Mres,std::vector<int > avL, std::vector<int > bvL,const qlat::vector_acc<Complexq > &values, qlat::vector_acc<int8_t> &GmapM,const int &nmass,const int &nt,const int nzero,const unsigned long bufN0, int mode_reduce=1)
 {
   unsigned long bufN = avL.size();
   if(bufN == 0)return;
@@ -394,10 +394,10 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector_acc<Ftype > &Mr
 
   ///CPU version
   if(mode_reduce == 0){
-    signed char G0[32];
-    signed char G1[32];
-    signed char G2[32];
-    signed char G3[32];
+    int8_t G0[32];
+    int8_t G1[32];
+    int8_t G2[32];
+    int8_t G3[32];
 
     /////unsigned int tid = threadIdx.x;
     /////Long bi = blockIdx.x;
@@ -489,13 +489,13 @@ inline std::vector<unsigned long > get_loop_cut(int Nx,int Ny, int Nycut, int Nx
   return jobL;
 }
 
-inline void get_map_gammaL(std::vector<ga_M > &g0,std::vector<ga_M > &gL,qlat::vector_acc<signed char > &Gmap){
+inline void get_map_gammaL(std::vector<ga_M > &g0,std::vector<ga_M > &gL,qlat::vector_acc<int8_t > &Gmap){
   Gmap.resize(32);
   for(int i=0;i<16;i++){
     unsigned long r0;unsigned long r1;
     unsigned long a0;unsigned long a1;
-    signed char findi =-1;
-    signed char sign = 1;
+    int8_t findi =-1;
+    int8_t sign = 1;
     g0[i].check_sum(r0,r1);
     for(int j=0;j<16;j++){
       gL[j].check_sum(a0,a1);
@@ -677,7 +677,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   unsigned short Nt = geo.node_site[3];
 
   std::vector<ga_M > gL;gL.resize(Aoper);
-  qlat::vector_acc<signed char> GmapM;GmapM.resize(32*4);
+  qlat::vector_acc<int8_t> GmapM;GmapM.resize(32*4);
 
   {
   TIMER("Copy gammas");
@@ -717,11 +717,11 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
 
   ///std::vector<std::vector<int > > Gmap;Gmap.resize(4);
   ///for(int gi=0;gi<4;gi++){Gmap[gi].resize(32);}
-  //qlat::vector<signed char> Gmap;///g0
-  qlat::vector_acc<signed char> Gmap0;///g0
-  qlat::vector_acc<signed char> Gmap1;///g05
-  qlat::vector_acc<signed char> Gmap2;///g1
-  qlat::vector_acc<signed char> Gmap3;///g15
+  //qlat::vector<int8_t> Gmap;///g0
+  qlat::vector_acc<int8_t> Gmap0;///g0
+  qlat::vector_acc<int8_t> Gmap1;///g05
+  qlat::vector_acc<int8_t> Gmap2;///g1
+  qlat::vector_acc<int8_t> Gmap3;///g15
   get_map_gammaL(g0 ,gL, Gmap0);for(int i=0;i<32;i++){GmapM[0*32+i] = Gmap0[i];}
   get_map_gammaL(g05,gL, Gmap1);for(int i=0;i<32;i++){GmapM[1*32+i] = Gmap1[i];}
   get_map_gammaL(g1 ,gL, Gmap2);for(int i=0;i<32;i++){GmapM[2*32+i] = Gmap2[i];}
@@ -729,10 +729,10 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
 
 
   //#ifdef QLAT_USE_ACC
-  //qacc_MemcpyToSymbol(Gmap0C, &Gmap0[0],32*sizeof(signed char),0 , qacc_MemcpyHostToDevice);
-  //qacc_MemcpyToSymbol(Gmap1C, &Gmap1[0],32*sizeof(signed char),0 , qacc_MemcpyHostToDevice);
-  //qacc_MemcpyToSymbol(Gmap2C, &Gmap2[0],32*sizeof(signed char),0 , qacc_MemcpyHostToDevice);
-  //qacc_MemcpyToSymbol(Gmap3C, &Gmap3[0],32*sizeof(signed char),0 , qacc_MemcpyHostToDevice);
+  //qacc_MemcpyToSymbol(Gmap0C, &Gmap0[0],32*sizeof(int8_t),0 , qacc_MemcpyHostToDevice);
+  //qacc_MemcpyToSymbol(Gmap1C, &Gmap1[0],32*sizeof(int8_t),0 , qacc_MemcpyHostToDevice);
+  //qacc_MemcpyToSymbol(Gmap2C, &Gmap2[0],32*sizeof(int8_t),0 , qacc_MemcpyHostToDevice);
+  //qacc_MemcpyToSymbol(Gmap3C, &Gmap3[0],32*sizeof(int8_t),0 , qacc_MemcpyHostToDevice);
   //#endif
 
   }

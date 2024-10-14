@@ -31,7 +31,7 @@ struct stag_inv_buf{
 
   std::vector< GaugeFieldT<Td >   > gfL;
 
-  qlat::FieldM<char, 1> eo;
+  qlat::FieldM<int8_t, 1> eo;
 
   //qlat::vector_gpu<Ty > prop_src_gpu;
   int prop_load_src;

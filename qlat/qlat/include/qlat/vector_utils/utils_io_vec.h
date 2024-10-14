@@ -660,6 +660,11 @@ inline void save_txt_eigenvalues(std::vector<double > &values,std::vector<double
   }
 }
 
+inline void save_txt_eigenvalues(std::vector<double > &values,std::vector<double > &errors,const std::string& filename, const std::string& sDescription)
+{
+  save_txt_eigenvalues(values, errors, filename.c_str(), sDescription.c_str());
+}
+
 inline void load_txt_eigenvalues(std::vector<double > &values,std::vector<double > &errors,const char* filename)
 {
   int nvec = 0;
@@ -702,6 +707,11 @@ inline void load_txt_eigenvalues(std::vector<double > &values,std::vector<double
   MPI_Bcast(&errors[0],   nvec, MPI_DOUBLE, 0, get_comm());
   }
 
+}
+
+inline void load_txt_eigenvalues(std::vector<double > &values,std::vector<double > &errors, const std::string& filename)
+{
+  load_txt_eigenvalues(values, errors, filename.c_str());
 }
 
 //
@@ -2054,7 +2064,7 @@ void save_qlat_noises(const char *filename, std::vector<qlat::FieldM<T, bfac> > 
 }
 
 template <class T, int bfac>
-void save_qlat_noises(std::string filename, std::vector<qlat::FieldM<T, bfac> > &noises, bool single_file=true, const std::string& INFO_LIST = std::string("NONE")){
+void save_qlat_noises(const std::string& filename, std::vector<qlat::FieldM<T, bfac> > &noises, bool single_file=true, const std::string& INFO_LIST = std::string("NONE")){
   load_qlat_noises(filename.c_str(), noises, false, single_file, INFO_LIST);
 }
 
@@ -2558,6 +2568,15 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
   io_use.clear_buf();
 }
 
+template<typename Ty >
+inline void load_eo_evecs(const std::string& filename, vector_cs<Ty >& even, qlat::vector_acc<Ty >& evals, std::vector<double>& err,
+  Geometry& geo, const int N0=0, const int N1=-1,
+  double mass = 0.0, int mode_c = 0, const bool single_file = true, const bool read = true ,
+  std::string VECS_TYPE = std::string("EO_Eigensystem"), const int n_off_file = 0)
+{
+  load_eo_evecs(filename.c_str(), even, evals, err, geo, N0, N1, mass, mode_c, single_file, read, VECS_TYPE, n_off_file);
+}
+
 template<typename Ty>
 inline void save_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vector_acc<Ty >& evals, std::vector<double>& err,
   Geometry& geo, const int N0=0, const int N1=-1, double mass = 0.0, int mode_c = 0, const bool single_file = true,
@@ -2566,7 +2585,13 @@ inline void save_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
   load_eo_evecs(filename, even, evals, err, geo, N0, N1, mass, mode_c, single_file, false, VECS_TYPE);
 }
 
-
+template<typename Ty>
+inline void save_eo_evecs(const std::string& filename, vector_cs<Ty >& even, qlat::vector_acc<Ty >& evals, std::vector<double>& err,
+  Geometry& geo, const int N0=0, const int N1=-1, double mass = 0.0, int mode_c = 0, const bool single_file = true,
+  std::string VECS_TYPE = std::string("EO_Eigensystem"))
+{
+  load_eo_evecs(filename.c_str(), even, evals, err, geo, N0, N1, mass, mode_c, single_file, false, VECS_TYPE);
+}
 
 }
 

@@ -65,13 +65,13 @@ struct API FieldBoxT {
     init(fr);
   }
 
-  FieldBoxT(Ty* p, const Geometry geo_, char Multiplicity_ = 1)
+  FieldBoxT(Ty* p, const Geometry geo_, int8_t Multiplicity_ = 1)
   {
     // TIMER("FieldBoxT::FieldBoxT(&)")
     init(p, geo_, Multiplicity_);
   }
 
-  void init(Ty* p, const Geometry geo_, char Multiplicity_ = 1)
+  void init(Ty* p, const Geometry geo_, int8_t Multiplicity_ = 1)
   {
     Multiplicity = Multiplicity_;
     v.p  = p;
@@ -144,7 +144,7 @@ struct API FieldBoxT {
     geo   = x.geo;
     x.geo = g;
 
-    char m = x.Multiplicity;
+    int8_t m = x.Multiplicity;
     Multiplicity = x.Multiplicity;
     x.Multiplicity = m;
   }

@@ -73,8 +73,8 @@ struct quda_clover_inverter {
 
   int spinor_site_size;
 
-  std::vector<char > QUDA_clover;
-  std::vector<char > QUDA_clover_inv;
+  std::vector<signed char > QUDA_clover;
+  std::vector<signed char > QUDA_clover_inv;
 
   quda::ColorSpinorParam cs_cpu;
   quda::ColorSpinorParam cs_gpu;

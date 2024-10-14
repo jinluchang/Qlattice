@@ -666,7 +666,7 @@ struct vector_cs{
       if(GPU_set == -2){GPU_set = -1;}
       //Qassert(GPU_set != -2);
       VectorGPUKey gkey(0, ssprintf("vector_cs_buf"), GPU_set);
-      vector_gpu<char >& tmp = get_vector_gpu_plan<char >(gkey);tmp.resizeL(sizeof(Ty) * nsum);
+      vector_gpu<int8_t >& tmp = get_vector_gpu_plan<int8_t >(gkey);tmp.resizeL(sizeof(Ty) * nsum);
       Ty* buf = (Ty*) tmp.data();
       if(dir == 1)
       for(unsigned int vi=0;vi<nA.size();vi++)
@@ -762,7 +762,7 @@ struct vector_cs{
     Qassert(ia < v_size() and ib < vp.v_size());
     bool GPU_set = true;if(GPU == 0){GPU_set = false;}
     VectorGPUKey gkey(0, ssprintf("vector_cs_buf"), GPU_set);
-    vector_gpu<char >& tmp = get_vector_gpu_plan<char >(gkey);tmp.resizeL(sizeof(Ty) * nsum);
+    vector_gpu<int8_t >& tmp = get_vector_gpu_plan<int8_t >(gkey);tmp.resizeL(sizeof(Ty) * nsum);
     Ty* buf = (Ty*) tmp.data();
 
     vp.copy_to(buf, ib, GPU_set);
@@ -1068,7 +1068,7 @@ struct vector_cs{
     alpha_buf.resizeL(Nres , GPU);
     alpha_buf.set_zero(QTRUE);
     //VectorGPUKey gkey(0, ssprintf("vector_cs_alpha_buf"), GPU);
-    //vector_gpu<char >& alpha_V = get_vector_gpu_plan<char >(gkey);
+    //vector_gpu<int8_t >& alpha_V = get_vector_gpu_plan<int8_t >(gkey);
     //alpha_V.resizeL(size_t(Nres)* sizeof(Ty));
     //Ty* alpha_bufP = (Ty*) alpha_V.data();
     ////clean the results
@@ -1420,7 +1420,7 @@ struct vector_cs{
     const Long Npass = Qsize;
     if(transpose){Qsize = Qsize * 2;}
     VectorGPUKey gkey(size_t(Qsize)*sizeof(Ty), ssprintf("rotateQ"), GPU_);
-    vector_gpu<char >& tmp = get_vector_gpu_plan<char >(gkey);
+    vector_gpu<int8_t >& tmp = get_vector_gpu_plan<int8_t >(gkey);
     ////qlat::vector_gpu<Ty > tmp;tmp.resize(Qsize);
     Ty* Qb = (Ty*) tmp.data();
     {
@@ -1455,7 +1455,7 @@ struct vector_cs{
     Qassert(nvec >= Nsize);
 
     VectorGPUKey gkey(0, ssprintf("vector_cs_buf"), GPU_);
-    vector_gpu<char >& buf_V = get_vector_gpu_plan<char >(gkey);
+    vector_gpu<int8_t >& buf_V = get_vector_gpu_plan<int8_t >(gkey);
     ///qlat::vector_gpu<Ty > buf_V;
     ////if(buf_V.size() < nvec*b_size){buf_V.resize(nvec*b_size, GPU_);}////resize to maximium to reduce resize
     buf_V.resizeL(size_t(nvec)*b_size * sizeof(Ty));
@@ -1526,7 +1526,7 @@ void vector_cs_append(vector_cs<Ty >& A, vector_cs<Tb >& B, int b0, int b1, bool
   ////int CPU_buf = 0;
   QMEM CPU_buf = B.GPU;
   VectorGPUKey gkey(0, ssprintf("vector_cs_buf"), CPU_buf);
-  vector_gpu<char >& buf_V = get_vector_gpu_plan<char >(gkey);
+  vector_gpu<int8_t >& buf_V = get_vector_gpu_plan<int8_t >(gkey);
   buf_V.resize(size_t(Nstop)*bfac_group*b_size * sizeof(Ty));
   Ty* bufa = (Ty*) buf_V.data();
 
