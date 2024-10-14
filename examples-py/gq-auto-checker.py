@@ -939,10 +939,136 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
 
 # ----
 
+@q.timer
+def get_cexpr_pi0_gg():
+    fn_base = "cache/auto_contract_cexpr/get_cexpr_pi0_gg"
+    def calc_cexpr():
+        diagram_type_dict = dict()
+        diagram_type_dict[()] = '1'
+        diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))] = 'TypeD'
+        diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'TypeC'
+        diagram_type_dict[((('t_2', 'x_1'), 1), (('x_1', 't_2'), 1), (('x_2', 'x_2'), 1))] = 'TypeD'
+        diagram_type_dict[((('t_2', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_2'), 1))] = 'TypeC'
+        #
+        jj_d_list = [
+                sum([
+                    q.epsilon_tensor(mu, nu, rho)
+                    * mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
+                    * mk_j_mu("x_2", nu) * mk_j_mu("x_1", rho)
+                    for mu in range(3) for nu in range(3) for rho in range(3) ])
+                + "e(i,j,k) * x[i] * j_j(x) * j_k(0)",
+                ]
+        assert len(jj_d_list) == 1
+        #
+        pi0d_list = [
+                mk_pi_0("t_1") + "pi0(-tsep)",
+                mk_pi_0("t_2") + "pi0(x[t]+tsep)",
+                ]
+        assert len(pi0d_list) == 2
+        #
+        exprs_list_pi0_decay = [
+                [
+                    jj_d * pi0d,
+                    (jj_d * pi0d, "TypeC"),
+                    (jj_d * pi0d, "TypeD"),
+                ]
+                for pi0d in pi0d_list for jj_d in jj_d_list
+                ]
+        assert len(exprs_list_pi0_decay) == 2
+        exprs_pi0_decay = [ e for el in exprs_list_pi0_decay for e in el ]
+        #
+        exprs = [
+                mk_expr(1) + f"1",
+                ]
+        exprs += exprs_pi0_decay
+        #
+        cexpr = contract_simplify_compile(
+                *exprs,
+                is_isospin_symmetric_limit=True,
+                diagram_type_dict=diagram_type_dict)
+        return cexpr
+        #
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
+
+@q.timer_verbose
+def auto_contract_pi0_gg(job_tag, traj, get_get_prop):
+    fname = q.get_fname()
+    fn = f"{job_tag}/auto-contract/traj-{traj}/pi0-gg.lat"
+    if get_load_path(fn) is not None:
+        return
+    cexpr = get_cexpr_pi0_gg()
+    expr_names = get_expr_names(cexpr)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    t_size = total_site[3]
+    geo = q.Geometry(total_site)
+    total_volume = geo.total_volume
+    get_prop = get_get_prop()
+    xg_list = get_all_points(total_site)
+    xg_local_list = [ q.Coordinate(xg) for xg in geo.xg_arr() ]
+    r_list = get_r_list(job_tag)
+    r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
+    tsep = get_param(job_tag, "meson_tensor_tsep")
+    def load_data():
+        for xg_snk in xg_local_list:
+            yield xg_snk
+    @q.timer
+    def feval(args):
+        xg_snk = args
+        res_list = []
+        for xg_src in xg_list:
+            x_rel = [ q.rel_mod(xg_snk[mu] - xg_src[mu], total_site[mu]) for mu in range(4) ]
+            r_sq = q.get_r_sq(x_rel)
+            r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
+            x_rel_t = x_rel[3]
+            x_2_t = xg_src[3]
+            x_1_t = x_2_t + x_rel_t
+            t_2 = (max(x_1_t, x_2_t) + tsep) % total_site[3]
+            t_1 = (min(x_1_t, x_2_t) - tsep) % total_site[3]
+            pd = {
+                    "x_2" : ("point", xg_snk,),
+                    "x_1" : ("point", xg_src,),
+                    "t_2" : ("wall", t_2),
+                    "t_1" : ("wall", t_1),
+                    "size" : total_site,
+                    }
+            t = x_rel_t % t_size
+            val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
+            res_list.append((val, t, r_idx_low, r_idx_high, coef_low, coef_high,))
+        return res_list
+    def sum_function(val_list):
+        values = np.zeros((t_size, len(r_list), len(expr_names),), dtype=complex)
+        for idx, res_list in enumerate(val_list):
+            for val, t, r_idx_low, r_idx_high, coef_low, coef_high in res_list:
+                values[t, r_idx_low] += coef_low * val
+                values[t, r_idx_high] += coef_high * val
+            q.displayln_info(f"{fname}: {idx+1}/{len(xg_local_list)}")
+        return q.glb_sum(values.transpose(2, 0, 1))
+    q.timer_fork(0)
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
+    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
+    q.timer_display()
+    q.timer_merge()
+    res_sum *= 1.0 / total_volume
+    ld_sum = q.mk_lat_data([
+        [ "expr_name", len(expr_names), expr_names, ],
+        [ "t", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
+        [ "r", len(r_list), [ f"{r:.5f}" for r in r_list ], ],
+        ])
+    ld_sum.from_numpy(res_sum)
+    ld_sum.save(get_save_path(fn))
+    json_results.append((f"{fname}: ld_sum sig", q.get_data_sig(ld_sum, q.RngState()),))
+    for i, en in enumerate(expr_names):
+        json_results.append((f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState()),))
+
+# ----
+
 @q.timer_verbose
 def run_job(job_tag, traj):
     #
-    traj_gf = 1000 # fix gauge field in checking
+    # fix gauge field in checking
+    # all the props (including psrc props) are generated with Coulomb gauge fixing
+    #
+    traj_gf = 1000
     #
     fns_props = [
             (f"{job_tag}/prop-psrc-light/traj-{traj_gf}.qar", f"{job_tag}/prop-psrc-light/traj-{traj_gf}/geon-info.txt",),
@@ -1007,6 +1133,7 @@ def run_job(job_tag, traj):
         if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
             q.timer_fork()
             # ADJUST ME
+            auto_contract_pi0_gg(job_tag, traj, get_get_prop)
             auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop)
             auto_contract_meson_corr_wf(job_tag, traj, get_get_prop)
             auto_contract_meson_corr_psnk_psrc_rand(job_tag, traj, get_get_prop)
@@ -1024,6 +1151,7 @@ def run_job(job_tag, traj):
 
 @q.timer_verbose
 def get_all_cexpr():
+    benchmark_eval_cexpr(get_cexpr_pi0_gg())
     benchmark_eval_cexpr(get_cexpr_meson_corr())
     benchmark_eval_cexpr(get_cexpr_meson_corr_wf())
     benchmark_eval_cexpr(get_cexpr_meson_meson_i0_j0_corr_wf())
@@ -1099,6 +1227,11 @@ set_param("test-4nt64", "measurement", "auto_contract_meson_corr_wf", "t_sep_ran
 set_param("test-4nt64", "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "sample_num")(512)
 set_param("test-4nt64", "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "sample_size")(128)
 set_param("test-4nt64", "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "t_sep_range")(17)
+
+tag = "meson_tensor_tsep"
+set_param("test-4nt8", tag)(1)
+set_param("test-4nt16", tag)(2)
+set_param("test-4nt64", tag)(8)
 
 # ----
 
