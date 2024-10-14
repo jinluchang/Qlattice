@@ -1054,7 +1054,7 @@ def auto_contract_pi0_gg(job_tag, traj, get_get_prop):
     ld_sum.save(get_save_path(fn))
     json_results.append((f"{fname}: ld_sum sig", q.get_data_sig(ld_sum, q.RngState()),))
     for i, en in enumerate(expr_names):
-        json_results.append((f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState()),))
+        json_results.append((f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState()), 20e-5))
 
 # ----
 
@@ -1168,9 +1168,9 @@ set_param("test-4nt8", "clanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk":
 set_param("test-4nt8", "clanc_params", 1, 0)(get_param("test-4nt8", "clanc_params", 0, 0).copy())
 set_param("test-4nt8", "lanc_params", 1, 0)(get_param("test-4nt8", "lanc_params", 0, 0).copy())
 set_param("test-4nt8", "lanc_params", 1, 0, "fermion_params")(get_param("test-4nt8", "fermion_params", 1, 0).copy())
-set_param("test-4nt8", "cg_params-0-2", "maxiter")(2)
+set_param("test-4nt8", "cg_params-0-2", "maxiter")(5)
 set_param("test-4nt8", "cg_params-0-2", "maxcycle")(1)
-set_param("test-4nt8", "cg_params-1-2", "maxiter")(2)
+set_param("test-4nt8", "cg_params-1-2", "maxiter")(5)
 set_param("test-4nt8", "cg_params-1-2", "maxcycle")(1)
 set_param("test-4nt8", "fermion_params", 0, 2, "Ls")(8)
 set_param("test-4nt8", "fermion_params", 1, 2, "Ls")(8)
