@@ -37,7 +37,7 @@ void proton_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
   Qassert(prop1.size() == prop3.size());
   if(clear == 1){ini_resE(res, nmass, fd);}
   if(clear == 0){Qassert(res.size() == Long(nmass*NTt * Nxyz));}
-
+    
   ////Prop format, src d-4, c-3, sink d-4, c-3, Nt, EigenVTa<Nxyz>
   if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");Qassert(false);}
 
@@ -422,7 +422,7 @@ void baryon_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
 
 template <typename Ty>
 void baryon_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, std::vector<qpropT >& prop3,
-  std::vector< std::vector<qpropT > >& resP, const int ud, const std::vector<int >& map_sec, std::vector< std::vector<qpropT > >& buf)
+  std::vector< std::vector<qpropT > >& resP, const int ud, const std::vector<int >& map_sec, std::vector< std::vector<qpropT > >& buf) 
 {
   if(prop1.size() == 0){resP.resize(0); return ;}
   const qlat::Geometry &geo = prop1[0].geo();
@@ -467,38 +467,38 @@ void baryon_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
   //std::vector<int > inL = {0,0,  1,1,  2,2,  3,3,  0,2,  1,3,  2,0,  3,1 };
   //for(int ind=0;ind<8;ind++)
   //for(int insertion=0;insertion<3;insertion++)
-  //{
-  //  if(udL[insertion] == ud)
-  //  {
+  //{   
+  //  if(udL[insertion] == ud) 
+  //  {   
   //    int ind1 = inL[ind*2 + 0];
   //    int ind2 = inL[ind*2 + 1];
   //    clear_qv(G);G[ind2*4 + ind1] = +1.0/2.0; //// (1+r4)/2, could be non-zero for all elements...
   //    mL[0] = 0;mL[1] = 1;mL[2] = 2;
-  //    baryon_vectorE(prop1, prop2, prop3, resP[0], A, B, G, mL, insertion, 0);
-  //    ////baryon_vectorE(prop1,prop2,prop3, resE, ga2,ga1, G, mL, fd, 1);
+  //    baryon_vectorE(prop1, prop2, prop3, resP[0], A, B, G, mL, insertion, 0); 
+  //    ////baryon_vectorE(prop1,prop2,prop3, resE, ga2,ga1, G, mL, fd, 1); 
   //    clear_qv(G);G[ind2*4 + ind1] = -1.0/2.0;
   //    mL[0] = 1;mL[1] = 0;mL[2] = 2;
   //    baryon_vectorE(prop1, prop2, prop3, resP[0], A, B, G, mL, insertion, 0); //// no clear sum
-  //  }
+  //  }   
   //}
 
   for(int ind=0;ind<16;ind++)
   for(int insertion=0;insertion<3;insertion++)
-  {
-    if(udL[insertion] == ud)
-    {
+  {   
+    if(udL[insertion] == ud) 
+    {   
       int ind1 = ind/4;
       int ind2 = ind%4;
       qlat::vector_acc<Ty > G;G.resize(16);
       qlat::vector_acc<int > mL;mL.resize(3);
       clear_qv(G);G[ind2*4 + ind1] = +1.0/1.0; //// (1+r4)/2, could be non-zero for all elements...
       mL[0] = 0;mL[1] = 1;mL[2] = 2;
-      baryon_vectorE(prop1, prop2, prop3, buf[ind], A, B, G, mL, insertion, 0);
-      ////baryon_vectorE(prop1,prop2,prop3, resE, ga2,ga1, G, mL, fd, 1);
+      baryon_vectorE(prop1, prop2, prop3, buf[ind], A, B, G, mL, insertion, 0); 
+      ////baryon_vectorE(prop1,prop2,prop3, resE, ga2,ga1, G, mL, fd, 1); 
       clear_qv(G);G[ind2*4 + ind1] = -1.0/1.0;
       mL[0] = 1;mL[1] = 0;mL[2] = 2;
       baryon_vectorE(prop1, prop2, prop3, buf[ind], A, B, G, mL, insertion, 0); //// no clear sum
-    }
+    }   
   }
 
 
@@ -644,7 +644,7 @@ __global__ void baryon_vectorEV_global(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
     if(ai == 0){
       //if(clear == 0){resP[iv*Ntotal + bi*Nbfac + gi] += (buf[bi] + buf[bfac+bi]);}
       //if(clear == 1){resP[iv*Ntotal + bi*Nbfac + gi]  = (buf[bi] + buf[bfac+bi]);}
-      resP[iv*Ntotal + bi*Nbfac + gi] += (buf[bi] + buf[bfac+bi]);
+      resP[iv*Ntotal + bi*Nbfac + gi] += (buf[bi] + buf[bfac+bi]); 
     }
     __syncthreads();
 
@@ -656,7 +656,7 @@ __global__ void baryon_vectorEV_global(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
 }
 #endif
 
-////baryon on GPU,
+////baryon on GPU, 
 ////USEGLOBAL then use global functions, else use qacc
 template<typename Ty, int bfac>
 void baryon_vectorEV_kernel(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
@@ -743,7 +743,7 @@ void baryon_vectorEV_kernel(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
 /////A source gamma, B sink Gamma, G projections with fermion sign, mL shape of diagram
 template <typename Ty>
 void baryon_vectorEV(Ty** p1, Ty** p2, Ty** p3, Ty* resP, int nmass,
-  ga_M &A, ga_M &B, qlat::vector_acc<Ty > &GV,
+  ga_M &A, ga_M &B, qlat::vector_acc<Ty > &GV, 
   qlat::vector_acc<int > &mLV, fft_desc_basic &fd, int clear=1)
 {
   TIMER("Proton_vectorEV");
@@ -965,7 +965,7 @@ void baryon_vectorEV(Ty** p1, Ty** p2, Ty** p3, Ty* resP, int nmass,
 
 }
 
-////container
+////container 
 template <typename Ty>
 void baryon_vectorEV(EigenTy& prop1, EigenTy& prop2, EigenTy& prop3,
   qlat::vector_gpu<Ty > &res, ga_M &A, ga_M &B, qlat::vector_acc<Ty > &GV, qlat::vector_acc<int > &mLV,
@@ -1061,7 +1061,7 @@ void Omega_corrE(EigenTy& prop1, EigenTy& prop2, EigenTy& prop3,
     mL[0] = (dia[di]/100)%10;mL[1] =  (dia[di]%100)/10;mL[2] = dia[di]%10;
     baryon_vectorE(prop1,prop2,prop3, resE, ga2,ga1, G, mL, fd, 0);
   }
-
+     
   ////clear_qv(G);G[ind2*4 + ind1] = +1.0;
   ////mL[0] = 0;mL[1] = 1;mL[2] = 2;
   ////baryon_vectorE(prop1,prop2,prop3, ga2,ga1, G, mL, resE, fd, 0);

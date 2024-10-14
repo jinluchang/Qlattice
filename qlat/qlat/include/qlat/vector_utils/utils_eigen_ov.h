@@ -27,7 +27,7 @@ struct eigen_ov {
   Geometry geo;
 
   Elocal Mvec;     //  nvec --> 2*bfac --> b_size*6
-  Elocal Mvec_Sm;  //  Smeared eigensystem
+  Elocal Mvec_Sm;  //  Smeared eigensystem 
 
   bool enable_smearE;
 
@@ -109,8 +109,8 @@ struct eigen_ov {
   void load_eigen_Mvec(const std::string& ename, int sm = 0, int nini=0, int checknorm = 1);
 
   template <typename Tg >
-  void load_eigen_Mvec_smear(const std::string& ename,
-    const GaugeFieldT<Tg >& gf, int nini = 0, int checknorm = 0,
+  void load_eigen_Mvec_smear(const std::string& ename, 
+    const GaugeFieldT<Tg >& gf, int nini = 0, int checknorm = 0,  
     const double src_width  = 0.0, const int src_step  = 0,
     const double sink_width = 0.0, const int sink_step = 0,
     const CoordinateD& src_mom  = CoordinateD(),
@@ -131,7 +131,7 @@ struct eigen_ov {
   void setup_bfac(Long bsize0=-1);
 
   void load_eivals(const std::string& enamev,double rho_or,double Eerr=EIGENERROR, int nini=0);
-
+  
   void load_eigen(const std::string& ov_evecname,
     int checknorm = 1, double kappa=0.2,double eigenerror=EIGENERROR, int nini=0);
 
@@ -299,7 +299,7 @@ void eigen_ov::setup_gpufac(int nprop)
   }
 
   int vfac = ncutgpu;int vini = 8 * vfac;
-  int vres = int((totalD*extra_mem_factor*sm_factor - mem_prop )/memV);
+  int vres = int((totalD*extra_mem_factor*sm_factor - mem_prop )/memV); 
   if(qlat::get_id_node() != 0){vres=0;};sum_all_size(&vres, 1);
   /////TODO Need global sum and average the final result?
   /////TODO need to test the continuous memory less thant 8GB
@@ -474,7 +474,7 @@ void eigen_ov::copy_evec_to_GPU(int nini)
   if(mode_dyn == 0){n0=0;n1 = n0 + ncutbuf; }
   if(mode_dyn == 1){
     int maxN = (nini + ncutgpu)/ncutgpu;
-    n0=(maxN-1)*ncutgpu ;n1 = n0 + ncutgpu;
+    n0=(maxN-1)*ncutgpu ;n1 = n0 + ncutgpu; 
   }
 
   if(mode_dyn == 0){if(npos_Eigenbuf == n1){return ;}else{npos_Eigenbuf = n1;}}
@@ -681,8 +681,8 @@ void eigen_ov::print_norm_Mvec()
 }
 
 template <typename Tg >
-void eigen_ov::load_eigen_Mvec_smear(const std::string& ename,
-    const GaugeFieldT<Tg >& gf, int nini, int checknorm,
+void eigen_ov::load_eigen_Mvec_smear(const std::string& ename, 
+    const GaugeFieldT<Tg >& gf, int nini, int checknorm, 
     const double src_width , const int src_step ,
     const double sink_width, const int sink_step,
     const CoordinateD& src_mom ,
@@ -696,7 +696,7 @@ void eigen_ov::load_eigen_Mvec_smear(const std::string& ename,
   Ftype norm_err  = 1e-3;
   std::string val = get_env(std::string("q_eigen_norm_err"));
   if(val != ""){norm_err = stringtodouble(val);}
-  int print_norms = 0;
+  int print_norms = 0; 
   val = get_env(std::string("q_eigen_print_norm"));
   if(val != ""){print_norms = stringtonum(val);}
 
@@ -729,7 +729,7 @@ void eigen_ov::load_eigen_Mvec_smear(const std::string& ename,
   std::vector<Long > job =  job_create(n_vec, each_io);
   for(LInt ji = 0; ji < job.size()/2 ; ji++)
   {
-    ////int n0 = nini + job[ji*2 + 0]; int n1 = n0 + job[ji*2 + 1];
+    ////int n0 = nini + job[ji*2 + 0]; int n1 = n0 + job[ji*2 + 1]; 
     /////load from file
     load_eigensystem_vecs(file_read ,   buf, io_use , in_read_eigen , 0, job[ji*2 + 1]);
     ////copy to Mvec or Mvec_Sm
@@ -774,7 +774,7 @@ void eigen_ov::load_eigen_Mvec_smear(const std::string& ename,
 
       Complexq* bufP = bufL[sm].data();
       flag = 0;mv_idx.dojob(bufP, bufP, 1, each_sm , geo.local_volume()*12, flag, 1, true);
-      smear_propagator_gwu_convension_inner<Complexq, 4, each_sm  , Tg>(bufP, gf,
+      smear_propagator_gwu_convension_inner<Complexq, 4, each_sm  , Tg>(bufP, gf, 
         widthL[sm], stepL[sm], momL[sm], smear_in_time_dirL[sm]);
 
       flag = 1;mv_idx.dojob(bufP, bufP, 1, each_sm , geo.local_volume()*12, flag, 1, true);
@@ -797,7 +797,7 @@ void eigen_ov::load_eigen_Mvec(const std::string& ename, int sm, int nini, int c
   Ftype norm_err  = 1e-3;
   std::string val = get_env(std::string("q_eigen_norm_err"));
   if(val != ""){norm_err = stringtodouble(val);}
-  int print_norms = 0;
+  int print_norms = 0; 
   val = get_env(std::string("q_eigen_print_norm"));
   if(val != ""){print_norms = stringtonum(val);}
 
@@ -820,7 +820,7 @@ void eigen_ov::load_eigen_Mvec(const std::string& ename, int sm, int nini, int c
   std::vector<Long > job =  job_create(n_vec, each);
   for(LInt ji = 0; ji < job.size()/2 ; ji++)
   {
-    ////int n0 = nini + job[ji*2 + 0]; int n1 = n0 + job[ji*2 + 1];
+    ////int n0 = nini + job[ji*2 + 0]; int n1 = n0 + job[ji*2 + 1]; 
     /////load from file
     load_eigensystem_vecs(file_read ,   buf, io_use , in_read_eigen , 0, job[ji*2 + 1]);
     ////copy to Mvec or Mvec_Sm
@@ -852,14 +852,12 @@ void eigen_ov::load_eigen(const std::string& ov_evecname,
 {
   TIMERB("=====Loading Eigen=====");
 
-  char enamev[600];
-  ////sprintf(ename, "%s", ov_evecname);
-  sprintf(enamev,"%s.eigvals", ov_evecname.c_str());
+  std::string enamev = ssprintf("%s.eigvals", ov_evecname.c_str());
   print0("Vector File name: %s \n", ov_evecname.c_str() );
-  print0("Values File name: %s \n", enamev);
+  print0("Values File name: %s \n", enamev.c_str());
   //////Load eigen values
   double rho_tem = 4 - 1.0/(2*kappa);
-  load_eivals(std::string(enamev), rho_tem, eigenerror, nini);
+  load_eivals(enamev, rho_tem, eigenerror, nini);
 
   load_eigen_Mvec(ov_evecname, 0 ,nini, checknorm);
 
@@ -869,7 +867,7 @@ void eigen_ov::random_eigen(int sm, int seed)
 {
   TIMERB("=====Loading random Eigen=====");
   eval_self.resize(n_vec);random_EigenM(eval_self, 0, seed + 10);
-
+  
   Long La = 2*bfac/BFAC_GROUP_CPU;
   Long Lb = BFAC_GROUP_CPU*n_vec*Long(b_size);
   print_mem_info("Before Eigen Memory Allocate");
@@ -962,7 +960,7 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
   long long Tfloat = ei.n_vec*Ns*mN*vGb*Fcount1 + ei.n_vec*Ns*vGb*Fcount0;
   timer.flops += Tfloat;
   //double mem = Lat*12*(ei.n_vec + Ns + Ns*mN)*sizeof(Complexq);
-  //print0("Memory size %.3e GB, %.3e Gflop \n",
+  //print0("Memory size %.3e GB, %.3e Gflop \n", 
   //  mem/(1024.0*1024*1024), Tfloat/(1024.0*1024*1024));
   ///////qlat::get_num_node()
 
@@ -1012,7 +1010,7 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
     TIMERA("prop low vec reduce");
     //TIMER_FLOPS("vec reduce");
     //long long vGb = 2*bfac*m*n*w;
-    //int Fcount0   = 6 + 2;
+    //int Fcount0   = 6 + 2;  
     //timer.flops  += vGb*Fcount0;
 
     std::vector<Long > jobA = job_create(2*bfac, ei.BFAC_GROUP_CPU);
@@ -1080,7 +1078,7 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
     //TIMER("vec multi");
     TIMER_FLOPS("vec multi");
     long long vGb = 2*bfac*m*n*w;
-    int Fcount0   = 2*(3 + 1);
+    int Fcount0   = 2*(3 + 1);  
     timer.flops  += vGb*Fcount0;
 
     if((nini + ncur) < ei.n_vec){

@@ -332,7 +332,7 @@ void copy_eo_cs_to_fieldM(qlat::vector_gpu<Ty >& res, const int civ, const Geome
 }
 
 template<typename Ty>
-void copy_fieldM_to_eo_cs(vector_cs<Ty >& even, vector_cs<Ty >& odd, qlat::vector_gpu<Ty >& res, const int civ, const Geometry& geo,
+void copy_fieldM_to_eo_cs(vector_cs<Ty >& even, vector_cs<Ty >& odd, qlat::vector_gpu<Ty >& res, const int civ, const Geometry& geo, 
   int e0, int e1, int o0, int o1, qlat::vector_acc<Long >& map, int mode = 0)
 {
   copy_eo_cs_to_fieldM(res, civ, geo, even, odd, e0, e1, o0, o1, map, mode, 0);

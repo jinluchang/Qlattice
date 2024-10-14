@@ -383,13 +383,13 @@ void copy_fields(FieldBoxT<Ty, ta >& fr, FieldBoxT<Tf, ta >& fs)
 //      qlat::ComplexT<Td >* s1  = (qlat::ComplexT<Td >*) gf.get_elem(xl, mu).p;
 //      for(int i=0;i<9;i++){sb[i] = s1[i];}
 //      su3_traceless_anti_hermition(sb);
-//      s2[mu*6 + 0] = sb[1*3 + 0];
-//      s2[mu*6 + 1] = sb[2*3 + 0];
-//      s2[mu*6 + 2] = sb[2*3 + 1];
+//      s2[mu*6 + 0] = sb[1*3 + 0]; 
+//      s2[mu*6 + 1] = sb[2*3 + 0]; 
+//      s2[mu*6 + 2] = sb[2*3 + 1]; 
 //
-//      s2[mu*6 + 3] = sb[0*3 + 0];
-//      s2[mu*6 + 4] = sb[1*3 + 1];
-//      s2[mu*6 + 5] = sb[2*3 + 2];
+//      s2[mu*6 + 3] = sb[0*3 + 0]; 
+//      s2[mu*6 + 4] = sb[1*3 + 1]; 
+//      s2[mu*6 + 5] = sb[2*3 + 2]; 
 //    }
 //  });
 //}

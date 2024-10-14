@@ -173,7 +173,7 @@ struct vector_gpu{
     int tem_GPU = GPU;
     if(GPU_set != -2){tem_GPU = GPU_set;}
     resize(Ndata, tem_GPU);
-
+  
     //int mode_cpu = 0;
     //if(GPU_src == false and GPU == false){mode_cpu =  0;} // host to host
     //if(GPU_src == true  and GPU == true ){mode_cpu =  1;} // device to device
@@ -255,13 +255,12 @@ struct vector_gpu{
     //MPI_Allreduce(&tmp[0], &tmp[1], sizeof(Ty)/M_size, curr, MPI_SUM, get_comm());
     return tmp[0];
   }
-
+  
   inline void print_norm2(std::string prec = std::string("%.8e"))
   {
     Ty normC = norm2();
-    char pr[500];
-    sprintf(pr, prec.c_str(), normC.real());
-    print0("==norm %s \n", pr);
+    std::string ktem = ssprintf( prec.c_str(), normC.real());
+    print0("==norm %s \n", ktem.c_str());
   }
 
   template <class T >
@@ -442,7 +441,7 @@ template <typename Ty >
 inline vector_gpu<Ty >& get_vector_gpu_plan(const VectorGPUKey& gkey)
 {
   if (!get_vector_gpu_cache<Ty>().has(gkey)) {
-    get_vector_gpu_cache<Ty>()[gkey] = vector_gpu<Ty >();
+    get_vector_gpu_cache<Ty>()[gkey] = vector_gpu<Ty >(); 
   }
   vector_gpu<Ty >& buf = get_vector_gpu_cache<Ty>()[gkey];
 
@@ -493,7 +492,7 @@ inline void clear_vector_gpu_cache()
   get_vector_gpu_cache<double >().clear();
   get_vector_gpu_cache<qlat::ComplexT<float> >().clear();
   get_vector_gpu_cache<qlat::ComplexT<double> >().clear();
-
+ 
   //Cache<VectorGPUKey, vector_gpu<char > >& c0 = get_vector_gpu_cache<char >();
   //Cache<VectorGPUKey, vector_gpu<float > >& c1 = get_vector_gpu_cache<float >();
   //Cache<VectorGPUKey, vector_gpu<double > >& c2 = get_vector_gpu_cache<double >();

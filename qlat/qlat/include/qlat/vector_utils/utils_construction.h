@@ -107,7 +107,7 @@ void prop_to_vec(qlat::vector_acc<Ty* >& propP, qlat::vector_gpu<Ty >& resTa, ff
   baryon_vectorEV(p1, p1, p1, ra, nmass, ga2,ga1, G, mL, fd, 1);
   /////add baryon two contractions
   cpy_data_thread(rb, ra, resTa.size()/2, 1, QTRUE,  1.0);
-
+  
   meson_vectorEV( p1, p1, ra, nmass, gL, gL, fd, 1);
 
   //cpy_data_thread( (resTa.data()              ), resT0.data(), resT0.size(), 1, true);
@@ -159,10 +159,10 @@ void prop_to_vec(std::vector<qlat::Propagator4dT<Td > >& prop4d, qlat::vector_gp
 }
 
 template<typename Ty>
-void prop_to_corr_mom0(std::vector<qlat::vector_gpu<Ty > >& Eprop, qlat::vector_acc<Ty >& Eres,
+void prop_to_corr_mom0(std::vector<qlat::vector_gpu<Ty > >& Eprop, qlat::vector_acc<Ty >& Eres, 
   fft_desc_basic& fd, qlat::vector_gpu<Ty >& resTa, int clear = 1)
 {
-  prop_to_vec(Eprop, resTa, fd);
+  prop_to_vec(Eprop, resTa, fd);  
   vec_corrE(resTa, Eres, fd, 0);
 }
 
@@ -210,9 +210,6 @@ void prop_corrE(Propagator4dT<Td > &p1,
     }
   }
   else{
-    //char key_T[1000], dimN[1000];
-    //sprintf(key_T, "%d  %d %d  %d", 1, 32, fd.nt, 2);
-    //sprintf(dimN , "nsrc nop nt complex");
     std::string ktem = ssprintf("%d  %d %d  %d", 1, 32, fd.nt, 2);
     std::string dtem = ssprintf("nsrc nop nt complex");
     corr.create_dat(ktem, dtem);

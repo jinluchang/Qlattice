@@ -109,7 +109,7 @@ inline expand_index_buf& get_expand_index_buf_plan(const Geometry& geo, const In
 
 
 template <class M>
-void refresh_expanded_GPUT(M* res, const Geometry& geo, const int MULTI,
+void refresh_expanded_GPUT(M* res, const Geometry& geo, const int MULTI, 
   const SetMarksField& set_marks_field = set_marks_field_all, const std::string& tag = std::string(""), int GPU = 1)
 {
   Qassert(sizeof(M) % sizeof(double) == 0);
@@ -150,7 +150,7 @@ void refresh_expanded_GPUT(M* res, const Geometry& geo, const int MULTI,
   ////setup reciev
   const int mpi_tag = 10240 + 777;
   for (size_t i = 0; i < plan.recv_msg_infos.size(); ++i) {
-    const CommMsgInfo& cmi = plan.recv_msg_infos[i];
+    const CommMsgInfo& cmi = plan.recv_msg_infos[i]; 
     mpi_irecv(&rP[cmi.buffer_idx * MULTI], cmi.size * mpi_size, MPI_DOUBLE,
               cmi.id_node, mpi_tag, get_comm(), reqs_recv);
   }
@@ -165,7 +165,7 @@ void refresh_expanded_GPUT(M* res, const Geometry& geo, const int MULTI,
     for(int n=0;n<MULTI;n++){sP[ri + n] = res[si + n];}
   });
 
-  {
+  { 
     //TIMER("refresh_expanded-comm-init");
     for (size_t i = 0; i < plan.send_msg_infos.size(); ++i) {
       const CommMsgInfo& cmi = plan.send_msg_infos[i];

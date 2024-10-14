@@ -56,20 +56,23 @@ inline std::vector<std::string > stringtolist(const std::string &tem_string)
 
 inline std::string listtostring(const std::vector<int > src, const int limit = 0)
 {
-  char tmp[1000];
+  //char tmp[1000];
+  std::string tmp;
   std::string buf;
   for(unsigned int i=0;i<src.size();i++){
     if(i==0){
       if(limit == 1){
         Qassert(src[i] <= 99999999);
-        sprintf(tmp,"%-8d ",src[i]);
+        tmp = ssprintf("%-8d ",src[i]);
       }
       else{
-        sprintf(tmp,"%d ",src[i]);
+        tmp = ssprintf("%d ",src[i]);
       }
     }
-    else{    sprintf(tmp,"%d ",src[i]);}
-    buf += std::string(tmp);
+    else{
+      tmp = ssprintf("%d ",src[i]);
+    }
+    buf += tmp;
   }
   return buf;
 }
@@ -77,10 +80,10 @@ inline std::string listtostring(const std::vector<int > src, const int limit = 0
 
 inline std::string listtostring(const std::vector<std::string > src)
 {
-  char tmp[1000];
-  std::string buf;
+  //char tmp[1000];
+  std::string buf, tmp;
   for(unsigned int i=0;i<src.size();i++){
-    sprintf(tmp,"%s ",src[i].c_str());
+    tmp = ssprintf("%s ",src[i].c_str());
     buf += std::string(tmp);
   }
   return buf;
@@ -140,12 +143,12 @@ inline Coordinate string_to_Coordinate(const std::string& paraI = std::string("N
 
 inline std::string mass_to_string(std::vector<double>& massL)
 {
-  std::string mL;char mnum[500];
-  mL += std::string("masses ");
+  std::string mL, mnum;//char mnum[500];
+  mL = std::string("masses ");
   for(unsigned int mi=0;mi<massL.size();mi++)
   {
-    sprintf(mnum, "   %.9f", massL[mi]);
-    mL += std::string(mnum);
+    mnum = ssprintf("   %.9f", massL[mi]);
+    mL += mnum;
   }
   return mL;
 }
@@ -195,9 +198,10 @@ inline size_t get_file_size_MPI(const char *filename, bool silence = false)
 
 inline size_t get_file_size_MPI(const std::string& filename, bool silence = false)
 {
-  char tmp[1000];
-  sprintf(tmp, "%s", filename.c_str());
-  return get_file_size_MPI(tmp, silence);
+  //char tmp[1000];
+  std::string tmp;
+  tmp = ssprintf("%s", filename.c_str());
+  return get_file_size_MPI(tmp.c_str(), silence);
 }
 
 inline size_t guess_factor(size_t n, const Long limit)
@@ -224,7 +228,7 @@ inline size_t get_write_factor(const size_t size)
   size_t large = 1024*1024* QLAT_FILE_IO_SIZE ;
   std::string val = get_env(std::string("q_file_io_each_size"));
   if(val != ""){large = 1024 * 1024 * stringtonum(val);}
-
+  
   size_t factor = 1;
   if(size < large){return factor;}
   size_t limit = size / large;
@@ -336,8 +340,10 @@ inline size_t read_input(const char *filename,std::vector<std::vector<std::strin
   if(get_file_size_o(filename) == 0){print0("input file size zero %s !\n", filename);return 0;}
   FILE* filer = fopen(filename, "r");
   //////Can only be LINE_LIMIT length string
-  char sTemp[LINE_LIMIT+1],tem[LINE_LIMIT+1];
+  //char sTemp[LINE_LIMIT+1],tem[LINE_LIMIT+1];
   ///std::string s0(sTemp);
+  std::string sTemp;
+  char tem[LINE_LIMIT+1];
   if (filer == NULL){printf("Error opening file");return 0;}
 
   int count_line = 0;
@@ -357,10 +363,10 @@ inline size_t read_input(const char *filename,std::vector<std::vector<std::strin
     /////If the file is not binary
     ///printf("line %d %s", count_line, tem);
     if(std::string(tem).size() >= 2){
-      sprintf(sTemp,"%s",tem);
-      std::string s0(sTemp);
-      if(s0 == std::string("END_OF_HEAD\n")){break;}
-      std::vector<std::string > resv = stringtolist(s0);
+      sTemp = ssprintf("%s", tem);
+      //std::string s0(sTemp);
+      if(sTemp == std::string("END_OF_HEAD\n")){break;}
+      std::vector<std::string > resv = stringtolist(sTemp);
       read_f.push_back(resv);
     }
     count_line += 1;
@@ -638,7 +644,7 @@ struct inputpara{
     return 0;
   }
 
-
+  
   template<typename Ty>
   int find_para(const char* str2, Ty &res){
     return find_para(std::string(str2), res);
@@ -773,15 +779,15 @@ struct inputpara{
     if(Long(read_f.size()) < maxline){maxline = read_f.size();}
     for(Long li=0;li<maxline;li++){
       std::string tem = std::string("NONE");
-      char mname[500];sprintf(mname, "INFOA%02d", int(li));
-      if(find_para(std::string(mname), tem)!=0){INFOA.push_back(tem);}
+      std::string mname = ssprintf("INFOA%02d", int(li));
+      if(find_para(mname, tem)!=0){INFOA.push_back(tem);}
     }
 
     if(find_para(std::string("nmass"),nmass)==0)nmass  = 0;
     for(int mi=0;mi<nmass;mi++){
       std::string tem = std::string("NONE");
-      char mname[500];sprintf(mname, "mass%02d", mi);
-      if(find_para(std::string(mname), tem)==0){masses.push_back(0.0);}
+      std::string mname = ssprintf( "mass%02d", mi);
+      if(find_para(mname, tem)==0){masses.push_back(0.0);}
       else{masses.push_back(stringtodouble(tem));}
     }
 
@@ -789,9 +795,9 @@ struct inputpara{
     if(find_para(std::string("nsource"),nsource)==0)nsource  = 0;
     for(int si=0;si<nsource;si++){
       std::string tem = std::string("NONE");
-      char sname[500];sprintf(sname, "nois%05d" , si);
-      char pname[500];sprintf(pname, "prop%05d", si);
-      char Gname[500];sprintf(Gname, "smea%05d", si);
+      std::string sname = ssprintf("nois%05d" , si);
+      std::string pname = ssprintf("prop%05d", si);
+      std::string Gname = ssprintf("smea%05d", si);
       if(find_para(std::string(sname), tem)==0){srcN.push_back(std::string("NONE"));}
       else{srcN.push_back(tem);}
       if(find_para(std::string(pname), tem)==0){propN.push_back(std::string("NONE"));}
@@ -979,10 +985,11 @@ inline size_t string_to_size(std::string &tem_string)
 }
 
 inline std::string print_size(size_t size, int limit = 0){
-  char tem_size[500];
-  if(limit == 0){sprintf(tem_size, "%zu", size_t(size));}
-  if(limit == 1){sprintf(tem_size, "%-20zu", size_t(size));}
-  return std::string(tem_size);
+  //char tem_size[500];
+  std::string tem_size;
+  if(limit == 0){tem_size = ssprintf("%zu", size_t(size));}
+  if(limit == 1){tem_size = ssprintf("%-20zu", size_t(size));}
+  return tem_size;
   ////Qassert(std::string(tem_size) == in.total_size);
 }
 
@@ -1200,7 +1207,7 @@ struct corr_dat
       file = fopen(filename, "rb");
       fseek(file , off_file, SEEK_SET );
 
-
+      
       buf.resize(total* bsize);
 
       if(type==0)write_data((double*) buf.data(), file, total, true, false);
@@ -1220,9 +1227,9 @@ struct corr_dat
   }
 
   inline int read_dat(const std::string& filename, int check_load = 0){
-    char name[1000];
-    sprintf(name, "%s", filename.c_str());
-    return read_dat(name, check_load);
+    //char name[1000];
+    std::string name = ssprintf("%s", filename.c_str());
+    return read_dat(name.c_str(), check_load);
   }
 
   inline std::string get_key_T(){
@@ -1338,7 +1345,7 @@ struct corr_dat
         Ns += 1;
       }
 
-      /////calculate crc32 sum
+      /////calculate crc32 sum 
       size_t end_of_file = head_off;
       for(Long si=0;si<Ns;si++){
         end_of_file += crc32_size[si];
@@ -1388,9 +1395,9 @@ struct corr_dat
   }
 
   inline void write_dat(const std::string& filename){
-    char tmp[1000];
-    sprintf(tmp, "%s", filename.c_str());
-    write_dat(tmp);
+    //char tmp[1000];
+    std::string tmp = ssprintf("%s", filename.c_str());
+    write_dat(tmp.c_str());
   }
 
   ////small_size, only update key_T; others update date and key_T
@@ -1406,7 +1413,7 @@ struct corr_dat
     }
 
     key_T[0] += n;
-    total = 1;
+    total = 1; 
     for(LInt i=0;i<key_T.size();i++){total = total * key_T[i];}
 
     if(!small_size){
@@ -1441,7 +1448,7 @@ struct corr_dat
     //if( is_double){double_size = size * sizeof(Ta)/sizeof(double);}
     //if(!is_double){double_size = size * sizeof(Ta)/sizeof(float );}
 
-    if(Long(double_size + cur) >  total){
+    if(Long(double_size + cur) >  total){ 
       if(key_T.size() < 1){
         print0("key_T size wrong!\n");MPI_Barrier(get_comm());
         fflush(stdout);Qassert(false);}
@@ -1487,7 +1494,7 @@ struct corr_dat
 
   inline void print_info(){
     if(qlat::get_id_node()==node_control){
-      printf("===Corr %s, dim %d, mem size %.3e MB \n",
+      printf("===Corr %s, dim %d, mem size %.3e MB \n", 
             corr_name.c_str(), dim, total * sizeof(double)*1.0/(1024.0*1024.0));
       for(int d=0;d<dim;d++){
         printf("dim %30s   %d \n", dim_name[d].c_str(), key_T[d]);

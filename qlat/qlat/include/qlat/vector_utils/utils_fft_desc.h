@@ -2,7 +2,7 @@
 #ifndef utils_fft_desc_h
 #define utils_fft_desc_h
 
-#include <stdlib.h>
+#include <stdlib.h> 
 #include <time.h>
 #include <stdio.h>
 #include <algorithm>
@@ -23,7 +23,7 @@ struct fft_desc_basic
   int Nx,Ny,Nz,Nt;
   int mx,my,mz,mt;
 
-  qlat::vector_acc<int> iniv,Nv,nv,mv;     ///4
+  qlat::vector_acc<int> iniv,Nv,nv,mv;     ///4 
 
   std::vector<std::vector<int> > Pos0;     ////size Nmpi * 4
   std::vector<std::vector<int>  > mi_list; ////mt , mx*my*mz
@@ -36,12 +36,12 @@ struct fft_desc_basic
   fft_desc_basic(int order_ch_or=0)
   {
     TIMERA("Create fft_desc_basic");
-
+  
     variable_set = -1;
     inix =-1;iniy =-1;iniz =-1;init =-1;
     Nx =-1;  Ny =-1;  Nz =-1;  Nt =-1;
     mx =-1;  my =-1;  mz =-1;  mt =-1;
-
+  
     Nmpi  = qlat::get_num_node();
     rank  = qlat::get_id_node();
     order_ch = order_ch_or;
@@ -53,13 +53,13 @@ struct fft_desc_basic
   fft_desc_basic(const qlat::Geometry& geo,int order_ch_or=0)
   {
     TIMER("Create fft_desc_basic");
-
+  
     variable_set = -1;
     inix =-1;iniy =-1;iniz =-1;init =-1;
     Nx =-1;  Ny =-1;  Nz =-1;  Nt =-1;
     mx =-1;  my =-1;  mz =-1;  mt =-1;
     ////Order change of memory within a node
-
+  
     Nmpi  = qlat::get_num_node();
     rank  = qlat::get_id_node();
 
@@ -428,7 +428,7 @@ inline void desc_xyz_in_one(fft_desc_basic& fd, const Geometry& geo, int mode = 
   //fd.mv[3] = mv[3];
   fd.iniv.resize(4);
   //int t0 = fd.iniv[3];
-  for(unsigned int i=0;i<4;i++){fd.iniv[i] = 0;}
+  for(unsigned int i=0;i<4;i++){fd.iniv[i] = 0;} 
   Coordinate tnode = coor_node_from_id_node(qlat::get_id_node());
   int tA = (tnode[2]*mv[1] + tnode[1])*mv[0] + tnode[0];
   if(mode == 0){fd.iniv[3] = tA*nv[3] + gs[3]; }

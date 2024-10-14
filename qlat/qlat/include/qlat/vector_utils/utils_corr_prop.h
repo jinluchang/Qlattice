@@ -250,7 +250,7 @@ void qprop_sub_add(std::vector<qpropT >& res, std::vector< qpropT >& s0, const T
   for(int vi=0;vi<Nvec;vi++)
   {
     Ty* p0 = (Ty* ) qlat::get_data(s0[vi]).data();
-    Ty* r0 = (Ty* ) qlat::get_data(res[vi]).data();
+    Ty* r0 = (Ty* ) qlat::get_data(res[vi]).data(); 
     for(int dc=0;dc<12*12;dc++){
       qacc_for(isp, geo.local_volume(),{
         r0[dc*Nvol + isp] = r0[dc*Nvol + isp]*f0 + p0[dc*Nvol + isp] * f1;
@@ -272,8 +272,8 @@ void qprop_sub_add(std::vector<qpropT >& res, std::vector< qpropT >& s0, std::ve
   for(int vi=0;vi<Nvec;vi++)
   {
     Ty* p0 = (Ty* ) qlat::get_data(s0[vi]).data();
-    Ty* p1 = (Ty* ) qlat::get_data(s1[vi]).data();
-    Ty* r0 = (Ty* ) qlat::get_data(res[vi]).data();
+    Ty* p1 = (Ty* ) qlat::get_data(s1[vi]).data(); 
+    Ty* r0 = (Ty* ) qlat::get_data(res[vi]).data(); 
     for(int dc=0;dc<12*12;dc++){
       qacc_for(isp, geo.local_volume(),{
         r0[dc*Nvol + isp] = (p0[dc*Nvol + isp] + p1[dc*Nvol + isp] * f0) * f1;
@@ -505,11 +505,10 @@ void vec_corrE(qlat::vector_acc<Ty >& resE, qlat::vector_acc<Ty >& res,qlat::fft
 
 void write_pos_to_string(std::string& POS_LIST, Coordinate& pos){
   std::string buf;
-  char pnum[500];
-  sprintf(pnum," ");
+  std::string pnum = ssprintf(" ");
   for(int i=0;i<4;i++){
-    sprintf(pnum,"%d ", pos[i]);
-    buf += std::string(pnum);
+    pnum = ssprintf("%d ", pos[i]);
+    buf += pnum;
   }
   buf += std::string(" ; ");
   POS_LIST += buf;
@@ -709,7 +708,7 @@ void copy_qprop_to_propG(EigenTy& res, std::vector<qpropT >& src, const qlat::Ge
     }
   }
   if(nvec == 0){return ;}
-
+  
   for(int ni=0;ni<nvec;ni++)
   {
     if(dir == 1){res[ni].copy_from((Complexq*) qlat::get_data(src[ni]).data(), 12*12*geo.local_volume(), GPU);}
@@ -787,15 +786,15 @@ void get_num_time(qlat::FieldM<Ty, 1>& noise,int &number_t, int &t_ini){
 }
 
 inline Coordinate get_src_pos(std::string src_n, Coordinate& off_L, const Geometry &geo){
-  char noi_name[500];
-  sprintf(noi_name ,"%s",src_n.c_str()  );
+  //char noi_name[500];
+  std::string noi_name = ssprintf("%s",src_n.c_str()  );
 
   qlat::FieldM<Complexq,1> noi;
   noi.init(geo);
 
-  print0("Noise %s \n",noi_name);
+  print0("Noise %s \n",noi_name.c_str());
   qlat::set_zero(noi);
-  load_gwu_noi(noi_name,noi);
+  load_gwu_noi(noi_name.c_str(), noi);
   Coordinate pos;////qlat::vector<int > off_L;
   check_noise_pos(noi, pos,off_L);
 
@@ -1042,7 +1041,7 @@ void copy_qprop_to_propE(std::vector<qlat::vector_acc<Ty > >& Eprop, std::vector
   TIMERA("copy_qprop_to_propE");
   const int nmass = src.size();
   std::vector<Ty* > ps;ps.resize(nmass);
-
+  
   for(int mi=0;mi<nmass;mi++){
     Qassert(src[mi].initialized);
     ps[mi] = (Ty*) qlat::get_data(src[mi]).data();
@@ -1051,7 +1050,7 @@ void copy_qprop_to_propE(std::vector<qlat::vector_acc<Ty > >& Eprop, std::vector
   const qlat::Geometry &geo = src[0].geo();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
   if(dir == 1){ini_propE(Eprop, nmass, fd);}
-
+  
   ///const Long sizeF = geo.local_volume();
   const Long nvec  = Eprop.size()/nmass;
   const Long sizeF = Eprop[0].size();
