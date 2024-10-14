@@ -117,7 +117,7 @@ qacc void orthogonalize_array_c(Ty* p2, Ty* p1)
     c += qconj(p1[i]) * p2[i];
   }
   //print0("n %.8e %.8e, %.8e %.8e, %.8e %.8e \n", c.real(), c.imag(), p1[0].real(), p1[0].imag(), p2[0].real(), p2[0].imag());
-  //if (not(c == 0.0)) 
+  //if (not(c == 0.0))
   {
     for (Long i = 0; i < N; i++) {
       p2[i] -= c * p1[i];
@@ -326,7 +326,7 @@ void set_rand_link(GaugeFieldT<Td> &gf, const int seed = -1)
     //qacc_for(isp, gf.field.size(), { set_unit(gf.get_elem_offset(isp), 1.0);});
     ColorMatrixT<Td> unit;set_unit(unit, 1.0);
     /////TODO This function cannot be done on GPU
-    /////Eigen normalize/normalized problem 
+    /////Eigen normalize/normalized problem
     for(Long isp=0;isp<gf.field.size();isp++)
     {
       gf.get_elem_offset(isp) = gf.get_elem_offset(isp) * (1/2.0) + unit;

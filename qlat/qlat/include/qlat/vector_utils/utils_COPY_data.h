@@ -432,7 +432,7 @@ void cpy_GPU2D(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, const
   }
   #endif
   return ;
-  ////sizeof(T0) == sizeof(T1) and 
+  ////sizeof(T0) == sizeof(T1) and
   //qGPU_for2dNB(isp, Long(Nvol), off, Long(NOff), 0, {
   //  Pres[off*rOff + isp] = Psrc[off*sOff + isp];
   //});

@@ -89,7 +89,7 @@ struct io_vec
     }else{return NULL;}
 
   }
-  
+
   inline void io_close(FILE *file){
     if(do_checksum){sum_crc();end_of_file = 0;do_checksum=false;}
     if(node_ioL[rank]>=0){
@@ -403,7 +403,7 @@ inline void send_vec_kentucky(char* src,char* res,int dsize,int gN, io_vec& io, 
   MPI_Comm tem_comm = get_comm();
   if(read==true)
   {MPI_Alltoallv_Send_Recv(
-     (char*) io.tmp.data(), &io.currsend[0], &io.currspls[0], 
+     (char*) io.tmp.data(), &io.currsend[0], &io.currspls[0],
      (char*)    res       , &io.currrecv[0], &io.currrpls[0], tem_comm);}
 
   if(read==false)
@@ -445,8 +445,8 @@ inline void send_vec_kentucky(char* src,char* res,int dsize,int gN, io_vec& io, 
 }
 
 ////file for read/write,
-////props read into pointer, 
-////Nvec number of reading, Rendian change endian, 
+////props read into pointer,
+////Nvec number of reading, Rendian change endian,
 ////dsize inner size of vec can be 12*(8/4),
 ////single_file file format single/double,
 ////gN number of vec read for each io rank, read read/write of file
@@ -594,7 +594,7 @@ inline void read_kentucky_vector(FILE *file,char* props,int Nvec,io_vec& io,bool
     ////////Reordersrc buf
     ///if(gN!=1){if(node_ioL[rank]>=0)reorder_civ((char*)&buf[0],(char*)&buf[0],1,gN,vol,0 ,sizeof(double));}
     /////
-      
+
     if(read==true){
       gettimeofday(&tm2, NULL);
       send_vec_kentucky((char*) &buf[0],(char*) &res[0], dsize,gN, io, read);
@@ -706,7 +706,7 @@ inline void load_txt_eigenvalues(std::vector<double > &values,std::vector<double
 
 //
 //order C, iDir, C_col, C_row, RealIm, t,z,y,x
-  
+
 template<typename Ty>
 void rotate_gwu_vec_file(Ty* src,int n_vec,size_t noden,bool single_file,bool read=true){
   TIMERB("Rotate gwu file vec");
@@ -729,7 +729,7 @@ void rotate_gwu_vec_file(Ty* src,int n_vec,size_t noden,bool single_file,bool re
     #pragma omp parallel for
     for(size_t isp=0;isp<noden;isp++){
       for(int dc0=0;dc0<12;dc0++)
-      {   
+      {
         q[isp*12*2 + dc0*2 + 0] = p[(0*12 + dc0)*noden + isp];
         q[isp*12*2 + dc0*2 + 1] = p[(1*12 + dc0)*noden + isp];
       }
@@ -739,7 +739,7 @@ void rotate_gwu_vec_file(Ty* src,int n_vec,size_t noden,bool single_file,bool re
     #pragma omp parallel for
     for(size_t isp=0;isp<noden;isp++){
       for(int dc0=0;dc0<12;dc0++)
-      {   
+      {
         q[(0*12 + dc0)*noden + isp] = p[isp*12*2 + dc0*2 + 0];
         q[(1*12 + dc0)*noden + isp] = p[isp*12*2 + dc0*2 + 1];
       }
@@ -762,7 +762,7 @@ void gwu_to_cps_rotation_vec(Ty* src,int n_vec,size_t noden,bool source=false,bo
   if(source == true){
     int dr,d0,d1;Ty *q;
     int Nprop = n_vec/12;
-    
+
     size_t Np=noden*12*2;
     for(int ip=0;ip<Nprop;ip++){
       q = &src[(ip*12+0)*Np];
@@ -842,7 +842,7 @@ Ty get_norm_vec(Ty *src,size_t noden){
 }
 
 inline int test_single(const char *filename,io_vec &io_use,int iv=0){
-  
+
   double normd=0.0;double normf=0.0;
   int n_vec = 1;
   size_t noden = io_use.noden;
@@ -958,7 +958,7 @@ void load_gwu_eigen(FILE* file,std::vector<Ty* > resp,io_vec &io_use,int n0,int 
 
   if(single == true){
     /////Load single precision
-      
+
     int count = 0;int off = io_use.ionum;
     std::vector<float > prop_E;
     int n_vec = n1-n0;
@@ -1017,7 +1017,7 @@ void load_gwu_eigen(FILE* file,std::vector<Ty* > resp,io_vec &io_use,int n0,int 
 
     //////file = io_use.io_read(filename,"rb");
     io_use.io_off(file,n0*Fsize*2, true);
-      
+
     for(int iv=0;iv<n_vec;iv++){
       int ri = off;if(count + off > n_vec){ri = n_vec - count;}
       //int offE = count*12*noden*2;
@@ -1200,10 +1200,10 @@ void load_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Td> > 
   for(int iv=0;iv<12;iv++)prop[iv].init(io_use.geop);
   if(sizen == 2*Fsize*12){single=false;}
   }
-    
+
   ////Can only write with single!
   if(read==false){single = true;}
-  
+
   if(single == true)
   {
     ////Single vector read
@@ -1228,7 +1228,7 @@ void load_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Td> > 
     if(read==false)file = io_use.io_read(filename,"wb");
     read_kentucky_vector(file,(char*) &prop_qlat[0], 12,io_use, true, 6*2*sizeof(double), true, 1 , read);
     io_use.io_close(file);
-      
+
     if(read==true){
     /////double precision eigen vector in ps base
     rotate_gwu_vec_file(&prop_qlat[0], 12,noden, true);
@@ -1252,10 +1252,10 @@ void load_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Td> > 
     file = io_use.io_read(filename,"rb");
     read_kentucky_vector(file,(char*) &prop_qlat[0], 12*2*12,io_use, false, sizeof(double), false, 1);
     io_use.io_close(file);
-      
+
     ///double precision eigen vector in ps base
     rotate_gwu_vec_file(&prop_qlat[0], 12,noden, false);
-    //Do not rotate source, 
+    //Do not rotate source,
     gwu_to_cps_rotation_vec(&prop_qlat[0], 12,noden, true, true,true);
 
     for(int iv=0;iv<12;iv++){
@@ -1375,10 +1375,10 @@ void load_gwu_link(const char *filename,GaugeFieldT<Td> &gf, bool read = true){
   if(read==false)file = io_use.io_read(filename,"wb");
   read_kentucky_vector(file,(char*) &link_qlat[0], 4*9*2,io_use, false, sizeof(double), false,9*2, read);
   io_use.io_close(file);
-    
+
   //////double precision eigen vector in ps base
   ///rotate_gwu_vec_file(&prop_qlat[0], 12,noden, false);
-  /////Do not rotate source, 
+  /////Do not rotate source,
   ///gwu_to_cps_rotation_vec(&link_qlat[0], 12,noden, true, true,true);
   ///4 dire --> c0 -- > c1
 
@@ -1544,7 +1544,7 @@ void save_gwu_noiP(const char *filename,Propagator4dT<Td>& prop){
   qlat::FieldM<qlat::ComplexD,1> noi;
   noi.init(prop.geo());
   qlat::set_zero(noi);
-  
+
   const long noden = prop.geo().local_volume();
   qthread_for(index, noden, {
     qlat::WilsonMatrixT<Td>&  src =  prop.get_elem_offset(index);
@@ -1592,7 +1592,7 @@ void load_gwu_noiP(const char *filename,Propagator4dT<Td>& prop){
   prop.init(noi.geo());
 
   noi_to_propP(noi, prop, 0);
-  
+
 }
 
 template <typename Td>
@@ -1611,7 +1611,7 @@ void copy_noise_to_vec(T* noiP, Ty* buf, const Geometry& geo, int bfac, int dir=
 {
   TIMERB("copy_noise_to_vec");
   //T* noiP = (T*) qlat::get_data(noi).data();
-  #pragma omp parallel for 
+  #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index)
   {
     for(int bi=0;bi<bfac;bi++){
@@ -1709,8 +1709,8 @@ inline void close_file_qlat_noisesT(FILE* file, io_vec& io_use, inputpara& in)
       if(bad_crc != 0)
       {
         abort_r("");
-      }    
-    }    
+      }
+    }
   }
 }
 
@@ -1968,11 +1968,11 @@ void load_qlat_eigen(const char *filename, std::vector<qlat::FieldM<T, civ> > &n
   TIMERC("load/save qlat eigen");
   std::string VECS_TYPE;
   if( info == std::string("NONE") ){
-    char tmp[500]; 
+    char tmp[500];
     sprintf(tmp, "Eigen_system_nvec.%d.tzyx.R/I", civ);
     VECS_TYPE = std::string( tmp );
   }else{VECS_TYPE = info;}
-  
+
   //VECS_TYPE = std::string("Eigen_system_nvec.12.tzyx.R/I");
   load_qlat_noisesT(filename, noises, read, single_file, VECS_TYPE, INFO_LIST, n0, n1);
 }
@@ -2076,13 +2076,13 @@ void copy_noise_to_prop(qlat::FieldM<T, 12*12>& noise, Propagator4dT<Td>& prop, 
   if(dir == 1){prop.init(noise.geo());}
   if(dir == 0){noise.init(prop.geo());}
   T* noi = (T*) qlat::get_data(noise).data();
-  #pragma omp parallel for 
+  #pragma omp parallel for
   for (Long index = 0; index < prop.geo().local_volume(); ++index)
   {
     ///qlat::WilsonMatrixT<T>& src =  prop.get_elem_offset(index);
     T* src   = (T*) &noi[index*12*12];
     qlat::ComplexT<Td>* res  = &prop.get_elem_offset(index)(0,0);
-    
+
     for(int d0=0;d0<12;d0++)
     {
       for(int d1=0;d1<12;d1++)
@@ -2126,7 +2126,7 @@ void load_qlat_prop(const char *filename, Propagator4dT<Td>& prop, bool read=tru
   if(read == false){copy_noises_to_prop(noises, prop, 0);}
   load_qlat_noisesT(filename, noises, read, single_file, VECS_TYPE, INFO_LIST);
   if(read == true){copy_noises_to_prop(noises, prop, 1);}
-  
+
 }
 
 template <typename Td>
@@ -2543,7 +2543,7 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
       const int ne = (n0+iv) * 2 + nini;
       if(ne+2 <= even.nvec){
         copy_fieldM_to_eo_cs(even,   even ,eig[iv], 3, geo, ne, ne+1, ne+1, ne+2, map, mode_c);
-      }else{                                               
+      }else{
         copy_fieldM_to_eo_cs(even, tmp_end,eig[iv], 3, geo, ne, ne+1, 0, 1, map, mode_c);
       }
     }

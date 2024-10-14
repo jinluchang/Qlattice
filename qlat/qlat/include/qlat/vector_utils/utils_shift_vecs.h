@@ -137,7 +137,7 @@ struct shift_vec{
 
   template<typename Ta>
   void set_gauge(Ta* gauge_, int gbfac_, int gd0_, bool Conj_=false, bool src_gauge_ = false)
-  { 
+  {
     using D = typename IsBasicDataType<Ta>::ElementaryType;
     const int cur = get_data_type_is_Double<D>();
     //const int cur = Is_data_double<Ta>();
@@ -415,7 +415,7 @@ void shift_vec::write_send_recv(Ty* src, Ty* res)
   for(int bi=0;bi<biva;bi++){
   LInt* s0 = (LInt*) qlat::get_data(sendoffa[dir_cur]).data();
   LInt* s1 = (LInt*) qlat::get_data(sendoffx[dir_cur]).data();
-  cpy_data_from_index( &s_tem[bi*writeN*civ], &src[bi*Length*civ], 
+  cpy_data_from_index( &s_tem[bi*writeN*civ], &src[bi*Length*civ],
        s1, s0, sendoffa[dir_cur].size(), civ, GPU, QFALSE);
   }
   qacc_barrier(dummy);
@@ -428,7 +428,7 @@ void shift_vec::write_send_recv(Ty* src, Ty* res)
   for(int bi=0;bi<biva;bi++){
   LInt* s1 = (LInt*) qlat::get_data(sendoffb[dir_cur]).data();
   LInt* s0 = (LInt*) qlat::get_data(sendoffx[dir_cur]).data();
-  cpy_data_from_index( &res[bi*Length*civ], &r_tem[bi*writeN*civ], 
+  cpy_data_from_index( &res[bi*Length*civ], &r_tem[bi*writeN*civ],
         s1, s0, sendoffb[dir_cur].size(), civ, GPU, QFALSE);
   }
   qacc_barrier(dummy);
@@ -440,7 +440,7 @@ void shift_vec::write_send_recv(Ty* src, Ty* res)
   for(int bi=0;bi<biva;bi++){
   LInt* s1 = (LInt*) qlat::get_data(buffoffb[dir_cur]).data();
   LInt* s0 = (LInt*) qlat::get_data(buffoffa[dir_cur]).data();
-  cpy_data_from_index( &res[bi*Length*civ], &src[bi*Length*civ], 
+  cpy_data_from_index( &res[bi*Length*civ], &src[bi*Length*civ],
        s1, s0, buffoffa[dir_cur].size(), civ, GPU, QFALSE);
   }
   qacc_barrier(dummy);
@@ -493,7 +493,7 @@ void multiply_gauge(void *src, void* gauge, const int dir_gauge,const int biva,c
   const int dir_limit = 4;
   if(cs != -1){Qassert(gd0 == gs);}
   ////convention not the same as Qlattice
-  ////current x, y, z,t ,-x,-y,-z,-t; 
+  ////current x, y, z,t ,-x,-y,-z,-t;
   //////Qlat -t,-z,-y,-x, x, y, z, t
   ///to gwu convention of shift with \psi
   ////shift vec direction opposite to gwu code
@@ -644,7 +644,7 @@ void shift_vec::call_MPI(Ty *src, Ty *res,int dir_or)
   MPI_Request send_req;
   MPI_Request recv_req;
   const int tags = 10240 + 777;  // AMD machine MPI have tag issues with Quda ...
-  const int tagr = 10240 + 777; 
+  const int tagr = 10240 + 777;
   //const int tags = 10;
   //const int tagr = 10;
   //int tags = omp_get_thread_num()*Nmpi + rank;
@@ -693,7 +693,7 @@ inline void get_periodic(int &dx,int nx)
 template<typename Ty>
 void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::vector<int >& iDir, int civ_or)
 {
-  /////TODO change the use of biva, civa 
+  /////TODO change the use of biva, civa
   /////dividable or change inner loop to 1
   LInt Ng = Nt*N0*N1*N2;
   //#if PRINT_TIMER>4
@@ -919,7 +919,7 @@ void shift_vec::shift_vecs_dir(std::vector<qlat::FieldM<Ty , civ_> >& src, std::
 {
   Qassert(src.size() == res.size());
   int Nsrc = src.size();if(Nsrc == 0){return ;}
-  std::vector<Ty* > Psrc; std::vector<Ty* > Pres; 
+  std::vector<Ty* > Psrc; std::vector<Ty* > Pres;
   Psrc.resize(Nsrc);Pres.resize(Nsrc);
   for(int si = 0; si < Nsrc; si++)
   {

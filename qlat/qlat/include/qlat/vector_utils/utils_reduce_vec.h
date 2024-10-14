@@ -199,7 +199,7 @@ inline void reduce_gpu2d_6(const Ty* src,Ty* res,Long n, int nv=1,
   return;
   /////for(int i=0;i<nv;i++)reduce_cpu(&psrc[i*Ny0],res[i],Ny0);return;
   #endif
-  
+
   #ifndef QLAT_USE_ACC
   for(int i=0;i<nv;i++)reduce_cpu(&src[i*n],res[i],n);
   return;

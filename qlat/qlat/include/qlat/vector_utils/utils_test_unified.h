@@ -29,7 +29,7 @@ struct test_unified
       b[coff] = 0.0;
     });
     qlat::displayln_info(qlat::ssprintf("b call"));
- 
+
     alpha.resize(20);
     for(int i=0;i<alpha.size();i++){alpha[i].resize(10);set_zero(alpha[i]);}
 
@@ -53,7 +53,7 @@ struct test_unified
       for(int i=0;i<alpha[coff].size();i++)alpha[coff][i] = 0.0;
     });
     qlat::displayln_info(qlat::ssprintf("a qacc for call"));
-  
+
     //{
     //TIMER("Global sum");
     //sum_all_size(reinterpret_cast<Ftype* > (&alpha[0]),2*alpha.size());

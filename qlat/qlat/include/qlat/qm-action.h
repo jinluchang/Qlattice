@@ -40,7 +40,7 @@ struct QMAction {
   qacc QMAction() { init(); }
   qacc QMAction(const double alpha_, const double beta_, const double FV_offset_,
                 const double barrier_strength_, const double M_,
-                const double L_, const Long t_full1_, const Long t_full2_, 
+                const double L_, const Long t_full1_, const Long t_full2_,
                 const Long t_FV_out_, const Long t_FV_mid_, const double dt_)
   {
     init();

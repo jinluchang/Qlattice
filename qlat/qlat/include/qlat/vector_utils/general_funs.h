@@ -36,7 +36,7 @@ inline void reorder_civ(char* src,char* res,int biva,int civ,size_t sizeF,int fl
   if(size_inner <= 1){abort_r("size_innter too small ! \n");return;}
 
   if(flag == 1){memcpy((char*)&tmp[0],(char*)&src[0],sizeof(char)*biva*sizeF*civ*size_inner);}
- 
+
   for(size_t bi=0;bi<size_t(biva);bi++)
   {
     for(int ci=0;ci<civ;ci++)
@@ -57,7 +57,7 @@ inline void reorder_civ(char* src,char* res,int biva,int civ,size_t sizeF,int fl
       }
     }
   }
- 
+
   if(flag == 0){memcpy((char*)&res[0],(char*)&tmp[0],biva*sizeF*civ*size_inner);}
 }
 
@@ -358,7 +358,7 @@ inline void set_GPU(){
   //Qassert(localSize == num_gpus and localRank >= 0);//same number of GPUs
 
   qacc_SetDevice(localRank % num_gpus);
-  int gpu_id = -1; 
+  int gpu_id = -1;
   qacc_GetDevice(&gpu_id);
 
   int gpu_verbos = 0;
@@ -410,7 +410,7 @@ inline void set_GPU_threads(int mode=0){
     unsigned int cpu_thread_id = omp_get_thread_num();
     unsigned int num_cpu_threads = omp_get_num_threads();
     qacc_SetDevice(cpu_thread_id % num_gpus);
-    int gpu_id = -1; 
+    int gpu_id = -1;
     qacc_GetDevice(&gpu_id);
     printf("CPU thread %d (of %d) uses CUDA device %d\n", cpu_thread_id, num_cpu_threads, gpu_id);
   }}
@@ -424,7 +424,7 @@ inline void set_GPU_threads(int mode=0){
     int Nthreads = cpu_thread_id/num_gpus;
 
     qacc_SetDevice(cpu_thread_id / Nthreads);
-    int gpu_id = -1; 
+    int gpu_id = -1;
     printf("CPU thread %d (of %d) uses CUDA device %d\n", cpu_thread_id, num_cpu_threads, gpu_id);
     qacc_GetDevice(&gpu_id);
   }}
@@ -464,7 +464,7 @@ inline void begin_thread(
     size_node = size_node_list[i];
     if (num_node == product(size_node)) {
       break;
-    }   
+    }
   }
   if (num_node != product(size_node)) {
     size_node = plan_size_node(num_node);
@@ -529,8 +529,8 @@ inline void print_mem_info(std::string stmp = "")
 
 inline int read_vector(const char *filename, std::vector<double > &dat)
 {
-  int prods = 0; 
-  unsigned long Vsize = 0; 
+  int prods = 0;
+  unsigned long Vsize = 0;
   ////{synchronize();fflush(stdout);}
 
   if(qlat::get_id_node() == 0)
@@ -549,10 +549,10 @@ inline int read_vector(const char *filename, std::vector<double > &dat)
   {
     FILE* filer = fopen(filename, "rb");
     unsigned long count = 1024*1024;
-    unsigned long sizec = 0; 
-    unsigned long offr  = 0; 
+    unsigned long sizec = 0;
+    unsigned long offr  = 0;
     for(unsigned int iv=0;iv<Vsize;iv++)
-    {    
+    {
       if(offr >= Vsize*8)break;
       char* buf = (char *)&dat[offr/8];
       if((offr + count) <= (Vsize*8)){sizec = count;}
@@ -562,7 +562,7 @@ inline int read_vector(const char *filename, std::vector<double > &dat)
       long sizec_read = fread(buf, 1, sizec, filer);
       qassert(sizec_read == (long)sizec);
       offr = offr + sizec;
-    }    
+    }
 
     fclose(filer);
   }
@@ -701,9 +701,9 @@ void random_prop(Propagator4dT<Td >& prop, int seed = -1)
   qacc_for(isp,  geo.local_volume(),{
     qlat::WilsonMatrixT<Td>& v0 =  prop.get_elem_offset(isp);
     for(int ci=0;ci<12*12;ci++){
-      v0.p[ci] = (ci/(12*12.0))* qlat::ComplexT<Td>(std::cos((ini+isp + ci*2)*0.5 + ci) , (ci+(5.0+ci)/(isp+1))*ini*0.1 + 0.2); 
+      v0.p[ci] = (ci/(12*12.0))* qlat::ComplexT<Td>(std::cos((ini+isp + ci*2)*0.5 + ci) , (ci+(5.0+ci)/(isp+1))*ini*0.1 + 0.2);
     }
-  }); 
+  });
 }
 
 template <class Td>
@@ -888,12 +888,12 @@ inline void add_nodeL(std::vector<Coordinate>& size_node_list)
 //    char* local_rank_env;
 //    int local_rank;
 //    qacc_Error_t cudaRet;
-// 
+//
 //     /* Recovery of the local rank of the process via the environment variable
 //        set by Slurm, as  MPI_Comm_rank cannot be used here because this routine
 //        is used BEFORE the initialisation of MPI*/
 //    local_rank_env = getenv("SLURM_LOCALID");
-// 
+//
 //    if (local_rank_env) {
 //        local_rank = atoi(local_rank_env);
 //        /* Define the GPU to use for each MPI process */
@@ -1242,18 +1242,18 @@ std::vector<Long > get_sort_index(Ty* src, Long size)
 {
   //std::vector<Ty > copy;copy.resize(size);
   //for(Long it=0;it<size;it++){copy[it] = src[it];}
-  std::vector<std::pair<Ty, Long > > vec; 
-  for(Long it=0;it<size;it++) 
-  {    
+  std::vector<std::pair<Ty, Long > > vec;
+  for(Long it=0;it<size;it++)
+  {
     vec.push_back( std::make_pair(src[it], it) );
-  }    
+  }
 
-  std::sort(vec.begin(), vec.end(), [](std::pair<Ty, Long >& a, std::pair<Ty, Long >& b) { 
+  std::sort(vec.begin(), vec.end(), [](std::pair<Ty, Long >& a, std::pair<Ty, Long >& b) {
     return a.first < b.first;
   });  //check order
 
   std::vector<Long > index;index.resize(size);
-  for(Long it=0;it<size;it++) 
+  for(Long it=0;it<size;it++)
   {
     index[it] = vec[it].second;
   }

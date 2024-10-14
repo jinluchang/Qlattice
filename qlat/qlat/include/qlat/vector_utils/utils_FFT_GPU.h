@@ -177,7 +177,7 @@ void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_
   ///if(do_clear == 0 and biva_set != biva){do_clear = 1;}
   if(do_clear == 0 and civ_set != civ){do_clear = 1;}
   if(do_clear == 0 and sizeof(Ty) != bsize){do_clear = 1;}
-  if(do_clear == 0 and MPI_para_set != MPI_para){do_clear = 1;} 
+  if(do_clear == 0 and MPI_para_set != MPI_para){do_clear = 1;}
 
   if(flag_mem_set == true and do_clear == 0){return ;}
   else{
@@ -206,7 +206,7 @@ void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_
       color_xyz = MPI_para[1];
       ranku = MPI_para[2];
     }
-  
+
   }
 
   int howmany = civ;   //// the number of transforms in fft_dat
@@ -256,7 +256,7 @@ void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_
     plan_cpuF1 = fftwf_mpi_plan_many_dft(dim,nrank, howmany, block0, block0, (fftwf_complex*) fft_dat, (fftwf_complex*) fft_dat,
               fft_comm, FFTW_BACKWARD, FFTW_MEASURE);
     }
-  
+
     /////each node has data vol/("Nv[0]")
     MPI_datasize = datasize/(nrank[0]/block0);
     if(local_0_start != ranku or local_n0 != block0){abort_r("fft_mpi not correct !\n");}
@@ -416,10 +416,10 @@ struct customLess{
     if(a[3] == b[3] and a[2] > b[2]){flag = true;}
     if(a[3] == b[3] and a[2] == b[2] and a[0] < b[0]){flag = true;}
     //////need copy or not
-    //if(a[3] == b[3] and a[4] < b[4]){flag = true;} 
+    //if(a[3] == b[3] and a[4] < b[4]){flag = true;}
     //////c0 to be large
-    //if(a[3] == b[3] and a[4] == b[4] and a[2] > b[2]){flag = true;} 
-    //if(a[3] == b[3] and a[4] == b[4] and a[2] == b[2] and a[0] < b[0]){flag = true;} 
+    //if(a[3] == b[3] and a[4] == b[4] and a[2] > b[2]){flag = true;}
+    //if(a[3] == b[3] and a[4] == b[4] and a[2] == b[2] and a[0] < b[0]){flag = true;}
     return flag;}
 };
 
@@ -505,7 +505,7 @@ struct fft_schedule{
   }
 
   ////-1 auto choose MPI and civ
-  ////-2, nvec, civ with MPI, -3 nvec, civ without MPI 
+  ////-2, nvec, civ with MPI, -3 nvec, civ without MPI
   template<typename Ty>
   void set_mem(const int nvec_set, const int civ_set, const std::vector<int >& dimN_set=std::vector<int >(), int default_MPI_set = -1 , int maxN_set=16, int dataB_set=1)
   {
@@ -543,7 +543,7 @@ struct fft_schedule{
       std::vector<int > job0 = get_factor_jobs(nvec, civ, N0, -1, maxN, dataB);
       std::vector<int > job1 = get_factor_jobs(nvec, civ, N1, -1, maxN, dataB);
       ///////small rotation for 3D not defined, need define it from start;
-        
+
       if(default_MPI == -1 and dim == 3 and fd.my * fd.mx != 1){enable_MPI = 0;}
 
       if(enable_MPI == -1){
@@ -600,11 +600,11 @@ struct fft_schedule{
       MPI_para[1] = fd.init; ////colorxyz for MPI
       MPI_para[2] = fd.iniz; ////initial point of the MPI FFT
       }
-      
+
       if(dim == 4){
-      MPI_para[0] = fd.Nt; 
+      MPI_para[0] = fd.Nt;
       MPI_para[1] = (fd.iniz*fd.ny + fd.iniy)*fd.nx + fd.inix; ////colorxyz for MPI
-      MPI_para[2] = fd.init; ////initial point of the MPI FFT 
+      MPI_para[2] = fd.init; ////initial point of the MPI FFT
       }
 
       fft.set_plan<Ty >(dimN, c0, MPI_para);
@@ -619,7 +619,7 @@ struct fft_schedule{
     print0("==Jobs dim %d, ", dim);
     for(int di=0;di<dim;di++){print0("%d ", dimN[di]);}
     print0(", nvec %d, civ %d, bsize %d. \n", nvec, civ, bsize);
-    print0("==N_extra %d, enable_MPI %d, GPU %d, b0 %d, c0 %d, mode_rot %d, need copy %d. \n", 
+    print0("==N_extra %d, enable_MPI %d, GPU %d, b0 %d, c0 %d, mode_rot %d, need copy %d. \n",
       N_extra , enable_MPI, int(GPU), b0, c0, rot.mode, NEED_COPY );
     fflush_MPI();
   }
@@ -640,7 +640,7 @@ struct fft_schedule{
     if(dim == 4){tsrc=src;fft.do_fft(tsrc, fftdir);}
     ////if(dim==4){for(int ti=0;ti<fd.nt;ti++){tsrc=&src[ti * (fd.nz*fd.ny*fd.nx) *c0]; fft.do_fft(tsrc, fftdir, false);}}
     }
-    
+
     if(flag_GPU_4d){
       for(int ti=0;ti<fd.nt;ti++){tsrc=&src[ti * (fd.nz*fd.ny*fd.nx) *c0]; fft.do_fft(tsrc, fftdir, false);}
       qacc_barrier(dummy);
@@ -740,7 +740,7 @@ struct fft_schedule{
   inline void clear_mem(){
     if(flag_mem_set == false){return;}
     default_MPI = -1;enable_MPI = -1;
-    
+
     dimN.resize(0);
     dim = -1;nvec=-1;civ=-1;b0=-1;c0=-1;N_extra=-1;
     maxN = -1;
@@ -822,7 +822,7 @@ struct fft_gpu_copy{
   bool is_copy;  // do not free memory if is_copy=true
 
   fft_gpu_copy(){fftP = NULL;is_copy = false;prec = "RealD";}
-  fft_gpu_copy(const fft_gpu_copy& fft) 
+  fft_gpu_copy(const fft_gpu_copy& fft)
   {
     #ifndef QLAT_USE_ACC
     Qassert(false);

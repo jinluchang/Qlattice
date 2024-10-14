@@ -188,18 +188,18 @@ unsigned int get_mpi_type(MPI_Datatype& curr)
 //   qassert(size != 0);
 //   //size = size * sizeof(D);
 //   return size;
-//   
+//
 //   //curr = MPI_BYTE;unsigned int size = 1;
 //   //DATA_TYPE typenum = get_data_type<M >();
 //   //if(typenum == INVALID_TYPE){
 //   //  if(get_id_node()== 0){printf("Type not found !!!! \n");}Qassert(false); return 0;
 //   //}
-// 
+//
 //   //int dtype = typenum % MAXTYPE;
 //   //if(dtype <= FLOATIND + 3){
-// 
+//
 //   //  size = typenum/MAXTYPE;
-// 
+//
 //   //  if(dtype == 0){curr =  MPI_CHAR                 ; return size ;}
 //   //  if(dtype == 1){curr =  MPI_UNSIGNED_CHAR        ; return size ;}
 //   //  if(dtype == 2){curr =  MPI_SHORT                ; return size ;}
@@ -218,7 +218,7 @@ unsigned int get_mpi_type(MPI_Datatype& curr)
 //   //  if(dtype ==15){curr =  MPI_UINT32_T             ; return size ;}
 //   //  if(dtype ==16){curr =  MPI_INT64_T              ; return size ;}
 //   //  if(dtype ==17){curr =  MPI_UINT64_T             ; return size ;}
-// 
+//
 //   //  if(dtype ==FLOATIND+0){curr =  MPI_DOUBLE               ; return size ;}
 //   //  if(dtype ==FLOATIND+1){curr =  MPI_FLOAT                ; return size ;}
 //   //  if(dtype ==FLOATIND+2){curr =  MPI_C_DOUBLE_COMPLEX     ; return size ;}
@@ -228,7 +228,7 @@ unsigned int get_mpi_type(MPI_Datatype& curr)
 //   //  if( get_data_type_is_double<M >()){curr = MPI_C_DOUBLE_COMPLEX; size = ComplexD_TYPE/MAXTYPE ;return size ;}
 //   //  if(!get_data_type_is_double<M >()){curr = MPI_C_FLOAT_COMPLEX ; size = ComplexF_TYPE/MAXTYPE;return size ;}
 //   //}
-// 
+//
 //   //if(get_id_node()== 0){printf("Type not found !!!! \n");}Qassert(false);
 //   //return 0;
 // }
@@ -323,7 +323,7 @@ void sum_all_size(Ty *src,Ty *sav,Long size, int GPU=0, const MPI_Comm* commp=NU
     //cpy_data_thread(&tem_sHIP[0], src, size, 3);
     tem_src = (Ty*) &tem_sHIP[0];tem_res = (Ty*) &tem_rHIP[0];
   }
-  
+
   if(commp == NULL){MPI_Allreduce(tem_src,tem_res, size * M_fac, curr, MPI_SUM, get_comm());}
   else{MPI_Allreduce(tem_src,tem_res, size * M_fac, curr, MPI_SUM, *commp);}
 
@@ -893,7 +893,7 @@ inline void geo_to_nv(const qlat::Geometry& geo, qlat::vector_acc<int >& nv, qla
 //  ////setup reciev
 //  const int mpi_tag = 10240 + 777;
 //  for (size_t i = 0; i < plan.recv_msg_infos.size(); ++i) {
-//    const CommMsgInfo& cmi = plan.recv_msg_infos[i]; 
+//    const CommMsgInfo& cmi = plan.recv_msg_infos[i];
 //    mpi_irecv(&rP[cmi.buffer_idx], cmi.size * sizeof(M)/sizeof(double), MPI_DOUBLE,
 //              cmi.id_node, mpi_tag, get_comm(), reqs_recv);
 //  }
@@ -924,7 +924,7 @@ inline void geo_to_nv(const qlat::Geometry& geo, qlat::vector_acc<int >& nv, qla
 //    sP[ri] = f.get_elem_offset(si);
 //  });
 //
-//  { 
+//  {
 //    //TIMER("refresh_expanded-comm-init");
 //    for (size_t i = 0; i < plan.send_msg_infos.size(); ++i) {
 //      const CommMsgInfo& cmi = plan.send_msg_infos[i];

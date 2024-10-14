@@ -192,7 +192,7 @@ inline void quda_begin(int mpi_layout[4], int quda_rankx = 1)
   //Coordinate cor  = qlat::get_coor_node();
   //Coordinate max  =  Coordinate(0,0,0, node[3]-1);
   //if(cor == max)
-  //{ 
+  //{
   //  if(qlat::get_id_node() == cor[3]){
   //    t = 1;
   //  }
@@ -239,19 +239,19 @@ inline void begin_quda_with_qlat()
   int rank = qlat::get_id_node();
   qlat::Coordinate coords  = qlat::get_coor_node();
   int rankx = coords[3];
-  for (int i = 2; i >= 0; i--) { 
+  for (int i = 2; i >= 0; i--) {
     rankx = mpi_layout[i] * rankx + coords[i];
   }
-  
+
   int rankt = coords[0];
-  for (int i = 1; i <= 3; i++) { 
+  for (int i = 1; i <= 3; i++) {
     rankt = mpi_layout[i] * rankt + coords[i];
   }
-  
+
   int quda_rankx = 0;
   if(rankt != rankx){
     //if(rank == rankt){
-    //  printf("T rank! %3d %3d \n", rank, rankt);               
+    //  printf("T rank! %3d %3d \n", rank, rankt);
     //}
     if(rank == rankx){
       //printf("X rank! %3d %3d \n", rank, rankx);
@@ -365,10 +365,10 @@ QudaPrecision get_quda_precision(int byte)
       return QUDA_DOUBLE_PRECISION;
       break;
     case 4:
-      return QUDA_SINGLE_PRECISION; 
+      return QUDA_SINGLE_PRECISION;
       break;
     case 2:
-      return QUDA_HALF_PRECISION; 
+      return QUDA_HALF_PRECISION;
       break;
     default:
       Qassert(false);
@@ -486,7 +486,7 @@ bool last_node_in_t()
 {
   using namespace quda;
   // only apply T-boundary at edge nodes
-  return commCoords(3) == commDim(3) - 1; 
+  return commCoords(3) == commDim(3) - 1;
 }
 
 int fullLatticeIndex(int dim[4], int index, int oddBit)

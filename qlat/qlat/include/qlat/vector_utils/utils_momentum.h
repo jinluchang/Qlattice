@@ -140,7 +140,7 @@ inline void get_mom_single_nodeB(qlat::vector_acc<Long >& mapA, qlat::vector_acc
 
 #define TWOPT_TYPE  qlat::ComplexF
 
-/////write date in float prec 
+/////write date in float prec
 struct momentum_dat{
   ////int nx,ny,nz,nt;
   Geometry geo;
@@ -181,7 +181,7 @@ struct momentum_dat{
 
   int nvec_copy;
 
-  template<typename Ty > 
+  template<typename Ty >
   void pick_mom_from_vecs(qlat::vector_gpu<Ty >& resF, qlat::vector_gpu<Ty >& resV){
     TIMER("pick_mom_from_vecs");
     const Long Mvol = mapA.size();
@@ -205,7 +205,7 @@ struct momentum_dat{
     });
   }
 
-  template<typename Ty, typename Ty1 > 
+  template<typename Ty, typename Ty1 >
   int copy_momF_to_sf(qlat::SelectedField<Ty1  >& sf_, qlat::vector_gpu<Ty >& srcF, int dir = 0 ){
     TIMERA("copy_momF_to_sf");
     const Long Mvol = mapA.size();
@@ -243,13 +243,13 @@ struct momentum_dat{
     return nvec;
   }
 
-  template<typename Ty, typename Ty1 > 
+  template<typename Ty, typename Ty1 >
   int copy_sf_to_momF(qlat::vector_gpu<Ty >& srcF, qlat::SelectedField<Ty1 >& sf_ )
   {
     return copy_momF_to_sf(sf_, srcF, 1);
   }
 
-  template<typename Ty > 
+  template<typename Ty >
   void write(qlat::vector_gpu<Ty >& srcF, const std::string& nameQ, const std::string& tag_ = std::string("-1"), const bool clean = false){
     TIMERA("Qlat write mdat");
     //const Long Mvol =  mapA.size();
@@ -279,7 +279,7 @@ struct momentum_dat{
     sfw.close();
   }
 
-  /////template<typename Ty > 
+  /////template<typename Ty >
   //Long read(qlat::SelectedField<TWOPT_TYPE  >& sf_, const int nvec, const std::string& nameQ, const std::string& tag_){
   //  if(!sf_.initialized or sf_.n_elems != nvec){sf_.init(fsel, nvec);}
   //  ShuffledFieldsReader sfr(nameQ);
@@ -290,7 +290,7 @@ struct momentum_dat{
   //  return total_bytes;
   //}
 
-  template<typename Ty > 
+  template<typename Ty >
   void shift_t(qlat::vector_gpu<Ty >& s1, qlat::vector_gpu<Ty >& s0, const Coordinate& shift_){
     TIMERA("shift_t");
     ////Qassert(t0 < nv[3]);
@@ -322,7 +322,7 @@ struct momentum_dat{
     //});
   }
 
-  template<typename Ty > 
+  template<typename Ty >
   void shift_t(qlat::vector_gpu<Ty >& s1, qlat::vector_gpu<Ty >& s0, const int t0){
     shift_t(s1, s0, Coordinate(0,0,0, t0));
   }
@@ -356,7 +356,7 @@ struct momentum_dat{
   }
 
   // change interface to return number of vectors read
-  template<typename Ty > 
+  template<typename Ty >
   int read(qlat::vector_gpu<Ty >& srcF, const std::string& nameQ, const std::string& tag){
     TIMERA("Qlat read mdat");
     ShuffledFieldsReader sfr(nameQ);
@@ -372,7 +372,7 @@ struct momentum_dat{
     return nread;
   }
 
-  template<typename Ty > 
+  template<typename Ty >
   int read_momcut(qlat::vector_gpu<Ty >& srcF, const std::string& nameQ, const std::string& tag_){
     std::string tag = ssprintf("%s.momcut%05d", tag_.c_str(), mom_cut);
     return read(srcF, nameQ, tag);
@@ -507,7 +507,7 @@ struct momentum_dat{
 
   /////calculate source phases with coordinate `shift`
   /////src phases e^{-i p ( x - y)}
-  template<typename Ty > 
+  template<typename Ty >
   void update_phases(const Coordinate& src , const Coordinate& shift = Coordinate(0,0,0,0), const int sign = -1)
   {
     TIMERA("update_phases");
@@ -525,7 +525,7 @@ struct momentum_dat{
       const Long ilocal = A[isp];
       const Coordinate xl  = geo_.coordinate_from_index(ilocal);
       const Coordinate mom  = geo_.coordinate_g_from_l(xl);
-      double v0 = 0.0; 
+      double v0 = 0.0;
       for(int i=0;i<3;i++){v0 += (2.0* QLAT_PI_LOCAL * src[i] * ((mom[i] + shift[i] + Lat[i])%(Lat[i]))/Lat[i]);}
       resP[isp] = Ty(std::cos(v0), sign * std::sin(v0));
     });
@@ -533,7 +533,7 @@ struct momentum_dat{
   }
 
   /////src phases e^{-i p ( x - y)}
-  template<typename Ty > 
+  template<typename Ty >
   void apply_src_phases(qlat::vector_gpu<Ty >& vec, const Coordinate& src , const Coordinate& shift = Coordinate(0,0,0,0) , const int sign = -1)
   {
     TIMERA("apply_src_phases");
@@ -561,7 +561,7 @@ struct momentum_dat{
 };
 
 #undef TWOPT_TYPE
-  
+
 template<typename Ty >
 void fft_local_to_global(qlat::vector_gpu<Ty >& FG, qlat::vector_gpu<Ty >& FL, momentum_dat& mdat, const Coordinate& mom_off = Coordinate(0, 0, 0, 0))
 {

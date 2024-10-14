@@ -1,4 +1,4 @@
-// Based on gwu kentucky/utils_construction.h 
+// Based on gwu kentucky/utils_construction.h
 // Yi-Bo. Yang
 // Jun. 2013
 // Gen Wang, Jan. 2021
@@ -21,7 +21,7 @@ struct ga_M
 {
   ////ComplexT<double> g[4];
   ////int ind[4];
-  
+
   qlat::vector_acc<Complexq > g;
   qlat::vector_acc<int > ind;
 
@@ -29,7 +29,7 @@ struct ga_M
 
   ////ga_M(const ga_M&) = default;
   ////const ga_M(const ga_M&) = default;
-     
+
   inline void print();
   //void print()
   //{
@@ -96,7 +96,7 @@ struct ga_M
   {
     ga_M res;
     for(int i=0;i<4;i++)
-    { 
+    {
        res.g[i]=g[i]*src.g[ind[i]];
        res.ind[i]=ind[src.ind[i]];
     }
@@ -193,7 +193,7 @@ public:
   ga_matrices_PS()
   {
     Ftype a[4]={-1,1,1,-1};
-    
+
     for(int i=0;i<4;i++)
     {
       unit.g[i]=1.0;unit.ind[i]=i;
@@ -221,7 +221,7 @@ public:
   ga_matrices_milc()
   {
     Ftype a[4]={-1,1,1,-1};
-    
+
     for(int i=0;i<4;i++)
     {
       unit.g[i]=1.0;unit.ind[i]=i;
@@ -292,7 +292,7 @@ template<typename Ty>
 qacc Ty reduce_gamma(const Ty *src,const ga_M &ga){
   Ty res = 0.0;
   for(int i=0;i<4;i++){
-    Ty tem(ga.g[i].real(),ga.g[i].imag()); 
+    Ty tem(ga.g[i].real(),ga.g[i].imag());
     res += tem*src[i*4 + ga.ind[i]];
   }
   return res;
@@ -341,7 +341,7 @@ template<typename Ty>
 qacc Ty reduce_gamma(const Ty *src, const Complexq* gP, const int* iP){
   Ty res = 0.0;
   for(int i=0;i<4;i++){
-    Ty tem(gP[i].real(),gP[i].imag()); 
+    Ty tem(gP[i].real(),gP[i].imag());
     res += tem*src[i*4 + iP[i]];
   }
   return res;
