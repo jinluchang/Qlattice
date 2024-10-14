@@ -3,6 +3,9 @@
 #pragma GCC system_header
 #pragma clang system_header
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
 #ifdef QLAT_USE_GRID_EIGEN
 
 #include <Grid/Eigen/Eigen>
@@ -27,4 +30,4 @@ inline std::string get_eigen_type() { return "system"; }
 
 #endif
 
-// -------------------------------------------------------------------------------------
+#pragma GCC diagnostic pop

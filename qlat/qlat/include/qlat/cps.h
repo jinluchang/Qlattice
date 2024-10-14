@@ -28,9 +28,14 @@ inline void cps_end(const bool is_preserving_cache = false)
 
 #define QLAT_CPS
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcpp"
+
 #include <alg/alg_fix_gauge.h>
 #include <alg/alg_rnd_gauge.h>
 #include <util/gjp.h>
+
+#pragma GCC diagnostic pop
 
 extern MPI_Comm QMP_COMM_WORLD;
 
