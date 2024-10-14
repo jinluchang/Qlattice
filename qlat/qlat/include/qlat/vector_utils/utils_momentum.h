@@ -140,7 +140,7 @@ inline void get_mom_single_nodeB(qlat::vector_acc<Long >& mapA, qlat::vector_acc
 
 #define TWOPT_TYPE  qlat::ComplexF
 
-/////write date in float prec
+/////write date in float prec 
 struct momentum_dat{
   ////int nx,ny,nz,nt;
   Geometry geo;
@@ -181,7 +181,7 @@ struct momentum_dat{
 
   int nvec_copy;
 
-  template<typename Ty >
+  template<typename Ty > 
   void pick_mom_from_vecs(qlat::vector_gpu<Ty >& resF, qlat::vector_gpu<Ty >& resV){
     TIMER("pick_mom_from_vecs");
     const Long Mvol = mapA.size();
@@ -205,8 +205,8 @@ struct momentum_dat{
     });
   }
 
-  template<typename Ty, typename Ty1 >
-  void copy_momF_to_sf(qlat::SelectedField<Ty1  >& sf_, qlat::vector_gpu<Ty >& srcF, int dir = 0 ){
+  template<typename Ty, typename Ty1 > 
+  int copy_momF_to_sf(qlat::SelectedField<Ty1  >& sf_, qlat::vector_gpu<Ty >& srcF, int dir = 0 ){
     TIMERA("copy_momF_to_sf");
     const Long Mvol = mapA.size();
     ///const Long Mvol_ = Mvol;
@@ -240,13 +240,16 @@ struct momentum_dat{
       if(dir == 0){for(int iv=0;iv<nvec;iv++){sfP[iv] = reP[iv];} }
       if(dir == 1){for(int iv=0;iv<nvec;iv++){reP[iv] = sfP[iv];} }
     });
+    return nvec;
   }
 
-  template<typename Ty, typename Ty1 >
-  void copy_sf_to_momF(qlat::vector_gpu<Ty >& srcF, qlat::SelectedField<Ty1 >& sf_ )
-  {copy_momF_to_sf(sf_, srcF, 1);}
+  template<typename Ty, typename Ty1 > 
+  int copy_sf_to_momF(qlat::vector_gpu<Ty >& srcF, qlat::SelectedField<Ty1 >& sf_ )
+  {
+    return copy_momF_to_sf(sf_, srcF, 1);
+  }
 
-  template<typename Ty >
+  template<typename Ty > 
   void write(qlat::vector_gpu<Ty >& srcF, const std::string& nameQ, const std::string& tag_ = std::string("-1"), const bool clean = false){
     TIMERA("Qlat write mdat");
     //const Long Mvol =  mapA.size();
@@ -267,7 +270,8 @@ struct momentum_dat{
     }
     ShuffledFieldsWriter sfw(nameQ, new_size_node, append);
 
-    copy_momF_to_sf(sf, srcF);
+    const int nread = copy_momF_to_sf(sf, srcF);
+    Qassert( nread != 0);// must read or write something
     std::string tag = ssprintf("%s.momcut%05d", tag_.c_str(), mom_cut);
     //qlat::write(sfw, tag, sf, sbs);
     ////default single precision files
@@ -275,7 +279,7 @@ struct momentum_dat{
     sfw.close();
   }
 
-  /////template<typename Ty >
+  /////template<typename Ty > 
   //Long read(qlat::SelectedField<TWOPT_TYPE  >& sf_, const int nvec, const std::string& nameQ, const std::string& tag_){
   //  if(!sf_.initialized or sf_.n_elems != nvec){sf_.init(fsel, nvec);}
   //  ShuffledFieldsReader sfr(nameQ);
@@ -286,7 +290,7 @@ struct momentum_dat{
   //  return total_bytes;
   //}
 
-  template<typename Ty >
+  template<typename Ty > 
   void shift_t(qlat::vector_gpu<Ty >& s1, qlat::vector_gpu<Ty >& s0, const Coordinate& shift_){
     TIMERA("shift_t");
     ////Qassert(t0 < nv[3]);
@@ -295,9 +299,12 @@ struct momentum_dat{
     for(int i=0;i<4;i++){Qassert(shift[i] < nv[i]); shift[i] = -1 * shift_[i];}
     //shift[3] = (nv[3] - t0 + nv[3])%nv[3];
     //shift[3] = -t0;
-    copy_momF_to_sf(sf, s0);
+    int nread = copy_momF_to_sf(sf, s0);
+    Qassert( nread != 0);// must read or write something
+
     qlat::field_shift(sf_1, fsel_1, sf, fsel, shift);
-    copy_sf_to_momF(s1, sf_1);
+        nread = copy_sf_to_momF(s1, sf_1);
+    Qassert( nread != 0);// must read or write something
 
     //Qassert(nvec_copy != 0);
     //Ty* src = s1.data();
@@ -315,7 +322,7 @@ struct momentum_dat{
     //});
   }
 
-  template<typename Ty >
+  template<typename Ty > 
   void shift_t(qlat::vector_gpu<Ty >& s1, qlat::vector_gpu<Ty >& s0, const int t0){
     shift_t(s1, s0, Coordinate(0,0,0, t0));
   }
@@ -348,8 +355,9 @@ struct momentum_dat{
     return check_fn(nameQ, tag);
   }
 
-  template<typename Ty >
-  Long read(qlat::vector_gpu<Ty >& srcF, const std::string& nameQ, const std::string& tag){
+  // change interface to return number of vectors read
+  template<typename Ty > 
+  int read(qlat::vector_gpu<Ty >& srcF, const std::string& nameQ, const std::string& tag){
     TIMERA("Qlat read mdat");
     ShuffledFieldsReader sfr(nameQ);
     if(!check_fn(nameQ, tag)){
@@ -358,12 +366,14 @@ struct momentum_dat{
     Long total_bytes = qlat::read(sfr, tag, sf, fsel);
     sfr.close();
     if(total_bytes ==  0){srcF.resize(0); return  total_bytes;}
-    copy_sf_to_momF(srcF, sf);
-    return total_bytes;
+    const int nread = copy_sf_to_momF(srcF, sf);
+    Qassert( nread != 0);// must read or write something
+    //return total_bytes;
+    return nread;
   }
 
-  template<typename Ty >
-  Long read_momcut(qlat::vector_gpu<Ty >& srcF, const std::string& nameQ, const std::string& tag_){
+  template<typename Ty > 
+  int read_momcut(qlat::vector_gpu<Ty >& srcF, const std::string& nameQ, const std::string& tag_){
     std::string tag = ssprintf("%s.momcut%05d", tag_.c_str(), mom_cut);
     return read(srcF, nameQ, tag);
   }
@@ -497,7 +507,7 @@ struct momentum_dat{
 
   /////calculate source phases with coordinate `shift`
   /////src phases e^{-i p ( x - y)}
-  template<typename Ty >
+  template<typename Ty > 
   void update_phases(const Coordinate& src , const Coordinate& shift = Coordinate(0,0,0,0), const int sign = -1)
   {
     TIMERA("update_phases");
@@ -515,7 +525,7 @@ struct momentum_dat{
       const Long ilocal = A[isp];
       const Coordinate xl  = geo_.coordinate_from_index(ilocal);
       const Coordinate mom  = geo_.coordinate_g_from_l(xl);
-      double v0 = 0.0;
+      double v0 = 0.0; 
       for(int i=0;i<3;i++){v0 += (2.0* QLAT_PI_LOCAL * src[i] * ((mom[i] + shift[i] + Lat[i])%(Lat[i]))/Lat[i]);}
       resP[isp] = Ty(std::cos(v0), sign * std::sin(v0));
     });
@@ -523,7 +533,7 @@ struct momentum_dat{
   }
 
   /////src phases e^{-i p ( x - y)}
-  template<typename Ty >
+  template<typename Ty > 
   void apply_src_phases(qlat::vector_gpu<Ty >& vec, const Coordinate& src , const Coordinate& shift = Coordinate(0,0,0,0) , const int sign = -1)
   {
     TIMERA("apply_src_phases");
@@ -551,7 +561,7 @@ struct momentum_dat{
 };
 
 #undef TWOPT_TYPE
-
+  
 template<typename Ty >
 void fft_local_to_global(qlat::vector_gpu<Ty >& FG, qlat::vector_gpu<Ty >& FL, momentum_dat& mdat, const Coordinate& mom_off = Coordinate(0, 0, 0, 0))
 {

@@ -135,7 +135,7 @@ __global__ void prodab_global(const Complexq *a,const Complexq *b, Complexq *fd,
         //resab[tid*16 + iv] =  bM.dot(aM);
         //#else
 
-        resab[tid*16 + iv] = 0;
+        resab[tid*16 + iv] = 0; 
         for(int doti=0;doti<3;doti++){resab[tid*16 + iv] += qlat::qconj(bs[bi*3+doti]) * as[ai*3+doti];}
 
         //#endif
@@ -212,7 +212,7 @@ void prodab(Complexq* a0,Complexq* b0, const qlat::Geometry &geo, Complexq *fM, 
     //  matrix_prod_cpu(&b[it*m*w], &a[it*n*w], &f0[it*m*n] , m,n, w, 1, true, true);
     //}
     matrix_prod_cpu(b,a, f0 , m, n, w, Nt, true, false);
-
+    
     return ;
   }
 }
@@ -244,7 +244,7 @@ inline void reducefM(qlat::vector_acc<Complexq > &fd,Complexq* NabL, Long bufN, 
     #pragma omp parallel for
     for(int i=0;i<reduce_sum.size();i++){reduce_sum[i] = fd[i];}
   }
-
+  
 
   ///TODO correct the reduce_gamma to GPU
   //qlat::vector_acc<Complexq > NabL_tem;NabL_tem.resize(nvec*Nt*16);
@@ -465,7 +465,7 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector_acc<Ftype > &Mr
     return ;
   }
 
-
+ 
 }
 
 
@@ -513,7 +513,7 @@ inline void get_map_gammaL(std::vector<ga_M > &g0,std::vector<ga_M > &gL,qlat::v
     Gmap[i*2+0] = findi;
     Gmap[i*2+1] = sign;
   }
-
+  
 }
 
 struct Nab_distribute{
@@ -554,7 +554,7 @@ struct Nab_distribute{
 
     ////NabN = NULL;
     set_bufN(fd, bufN_or);
-
+  
   }
 
   void set_bufN(const fft_desc_basic &fd, int bufN_or)
@@ -661,7 +661,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
 
   Ftype facvol = std::sqrt(vg[0]*vg[1]*vg[2]);
 
-  ////0 for nt not on MPIs, 1 for nt on MPIs
+  ////0 for nt not on MPIs, 1 for nt on MPIs 
   //int mode_nt = 1;
   ////0 use CPU to reduce, 1 use GPU to reduce
   int mode_reduce = 1;
@@ -787,7 +787,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
 
   size_t freeM = 0;size_t totalM = 0;double extra = 0.2;double fac_extra=1.5;
   #ifdef __HIP_PLATFORM_HCC__
-  extra = 0.1;fac_extra = 1.1;
+  extra = 0.1;fac_extra = 1.1; 
   #endif
 
   modeCopy = 1;
@@ -825,7 +825,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   #endif
 
   unsigned long bufi = 0;
-  print0("===rank %d, bufN %lu, mem MresL %.3e, NabL %.3e \n", qlat::get_id_node(),
+  print0("===rank %d, bufN %lu, mem MresL %.3e, NabL %.3e \n", qlat::get_id_node(), 
       bufN, bufN*MresL_size*sizeof(Complexq)*pow(0.5,30), bufN*NabL_size*sizeof(Complexq)*pow(0.5,30));
   print0("===rank %d, bufE %d, mem %.3e \n", qlat::get_id_node(), Ncutbuf, Ncutbuf*npoints*sizeof(Complexq)*pow(0.5,30));
 
@@ -1040,7 +1040,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   TIMER("Copy final result");
   Long Nsize = nmass*16*nt;
   qacc_for(isp, Nsize, {
-    int mi  =  isp/(16*nt);
+    int mi  =  isp/(16*nt); 
     int ipr = (isp%(16*nt))/(nt);
     int t0  = (isp)%(nt);
     Ftype *res =  &Mres[((mi*16 + ipr)*nt+t0)*nt + 0];
@@ -1058,7 +1058,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
       ///#pragma omp parallel for
       for(int ti=0;ti<nt;ti++){res[ti] += src[ti*16*nmass];}
     }
-
+  
   });
 
   //for(int mi=0;mi<nmass;mi++)

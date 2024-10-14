@@ -8,6 +8,7 @@
 #pragma once
 #include "general_funs.h"
 #include "utils_fft_desc.h"
+#include "utils_field_operations.h"
 
 ////////dim 12*12 --> Nt --> Nxyz
 ///////only memory size and geo are used, donot use others
@@ -96,7 +97,7 @@ void qprop_to_prop4d(Propagator4dT<Td>& res, qpropT& src){
   prop4d_to_qprop(src, res, 0);
 }
 
-////assumed civ == n*12 with n the source indices, 12 the sink indices
+////assumed civ == n*12 with n the source indices, 12 the sink indices 
 template <typename Ty, int civ >
 void copy_eigen_src_to_FieldM(qlat::vector_gpu<Ty >& src, std::vector<qlat::FieldM<Ty , civ> >& res, LInt b_size, qlat::fft_desc_basic& fd, int dir = 0, int GPU = 1, bool rotate = false)
 {
@@ -218,7 +219,7 @@ void copy_eigen_src_to_FieldM(qlat::vector_gpu<Ty >& src, std::vector<qlat::Fiel
   //  //Ty* r = (Ty*) qlat::get_data(res[i]).data();
   //  Ty* r = psrc;
   //  print0("==value %+.8e %+.8e \n", r[i * 17].real(), r[i * 17].imag());
-  //}
+  //} 
 
   qacc_barrier(dummy);
 
@@ -254,7 +255,7 @@ void ini_propG(std::vector<qlat::vector_gpu<Ty > >& prop, const Long nmass, size
 ////EigenG is the prop type needed for fast contractions
 ////resG, nmass, --> 12 x 12 --> Nvol
 template <typename T, typename Ty>
-void copy_eigen_prop_to_EigenG(std::vector<qlat::vector_gpu<Ty > >& resG, T* src,
+void copy_eigen_prop_to_EigenG(std::vector<qlat::vector_gpu<Ty > >& resG, T* src, 
   LInt b_size, int nmass, qlat::fft_desc_basic& fd, int GPU = 1, int dir = 1)
 {
   TIMERA("copy_eigen_prop_to_EigenG");
@@ -300,7 +301,7 @@ void copy_eigen_prop_to_EigenG(std::vector<qlat::vector_gpu<Ty > >& resG, T* src
     const Long bj = xi%b_size;
     T*  s0  = &src[(chi*bfac+bi)*Ns*b_size  + d0*b_size + bj + offi * Nfac];
     Ty* s1  = (Ty*) &resP[massi][((d0i*12 + d1)*NTt+ti)*Nxyz + vi + offi * Nfac];
-
+ 
     if(dir == 0){
       for(Long i=0;i<Nfac;i++){
         s0[i] = s1[i];
@@ -348,10 +349,12 @@ void FieldM_src_to_FieldM_prop(qlat::FieldM<Ty , 1>& src, qlat::FieldM<Ty , 12*1
   qlat::Geometry& geo = src.geo();
 
   if(!res.initialized){res.init(geo);}
+  Qassert(res.geo() == geo);
 
   //bool do_ini = true;
   //if(res.size() == src.size())if(res[src.size()-1].initialized){do_ini = false;}
   //if(do_ini){res.resize(nV);for(int iv=0;iv<nV;iv++){res[iv].init(geo);}}
+  clear_fields(res);//set all zero... Bug introduced...
 
   //std::vector<int > nv, Nv, mv;
   //geo_to_nv(geo, nv, Nv,mv);
@@ -380,6 +383,45 @@ void FieldM_src_to_FieldM_prop(std::vector<qlat::FieldM<Ty , 1> >& src, std::vec
   for(int iv=0;iv<nV;iv++)FieldM_src_to_FieldM_prop(src[iv], res[iv], GPU, false);
   qacc_barrier(dummy);
 
+}
+
+template <class Ty>
+void copy_color_prop(qlat::vector_gpu<Ty >& res, std::vector<colorFT >& src, int dir = 1)
+{
+  Qassert(src.size() == 3);
+  qlat::vector_acc<Ty* > srcP;srcP.resize(3);
+  for(int ic=0;ic<3;ic++){
+    Qassert(src[ic].initialized);
+    srcP[ic] = (Ty*) qlat::get_data(src[ic]).data();
+  }
+
+  const qlat::Geometry& geo = src[0].geo();
+  const Long V = geo.local_volume();
+  Qassert(Long(res.size()) == V*9);
+  Ty* resP = res.data();
+
+  if(dir == 1){
+  qacc_for(isp, V, {
+    for(int c0=0;c0<3;c0++)
+    for(int c1=0;c1<3;c1++)
+    {
+      resP[isp*9 + c1*3 + c0 ] = srcP[c0][isp*3 + c1];
+    }
+  });}
+
+  if(dir == 0){
+  qacc_for(isp, V, {
+    for(int c0=0;c0<3;c0++)
+    for(int c1=0;c1<3;c1++)
+    {
+      srcP[c0][isp*3 + c1] = resP[isp*9 + c1*3 + c0];
+    }
+  });}
+}
+template <class Ty>
+void copy_to_color_prop(std::vector<colorFT >& res, qlat::vector_gpu<Ty >& src)
+{
+  copy_color_prop(src, res, 0);
 }
 
 

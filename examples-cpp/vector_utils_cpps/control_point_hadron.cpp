@@ -31,10 +31,19 @@ int main(int argc, char* argv[])
   in.find_para(std::string("out_vec_mom"), out_vec_mom);
   in.find_para(std::string("mass_split"), mass_split);
 
+  int check_prop_norm = 0;
+  in.find_para(std::string("check_prop_norm"), check_prop_norm);
+
   int prop_smear_inv_factor = 1; ////1, if use modified factors within inverstion ; 0 --> normal factors
   in.find_para(std::string("prop_smear_inv_factor"), prop_smear_inv_factor);
   int save_full_vec = 0;
   in.find_para(std::string("save_full_vec"), save_full_vec);
+
+  int sleep_for_final = 0;
+  in.find_para(std::string("sleep_for_final"), sleep_for_final);
+
+  int do_point_sink   = 1;
+  in.find_para(std::string("do_point_sink"), do_point_sink);
 
   std::string mom_shift_ = std::string("0 0 0 0");
   in.find_para(std::string("mom_shift"), mom_shift_);
@@ -105,23 +114,51 @@ int main(int argc, char* argv[])
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
   eigen_ov ei(geo, n_vec, in.bini, nmass_group + 1);
 
+  if(src_step != sink_step)
+  {
+    do_point_sink = 0;
+    //Qassert(do_point_sink == 0);// eigen system too large!
+  }
+
   fflush_MPI();
   int mode_sm = 0;
   char ename[500];
   sprintf(ename, in.Ename.c_str(),icfg);
-  ei.load_eigen(std::string(ename));
 
-  //{
-  //  mode_sm = 2;
-  //  sprintf(ename, in.Ename_Sm.c_str(),icfg);
-  //  ei.load_eigen_Mvec(std::string(ename), 1 );
-  //}
+  /////ei.load_eigen(std::string(ename));
+  {
+    char enamev[600];
+    ////sprintf(ename, "%s", ov_evecname);
+    sprintf(enamev,"%s.eigvals", ename);
+    print0("Vector File name: %s \n", ename );
+    print0("Values File name: %s \n", enamev);
+    //////Load eigen values
+    const double kappa= 0.2;
+    const double rho_tem = 4 - 1.0/(2*kappa);
+    const double eigenerror = 1e-11;
+    const int nini = 0;
+    const int checknorm = 1;
+    ei.load_eivals(std::string(enamev), rho_tem, eigenerror, nini);
 
-  if(src_step != 0){
-    sprintf(ename, in.Ename_Sm.c_str(),icfg);
-    ei.smear_eigen(std::string(ename), gf, src_width, src_step, mom_smear);
-    mode_sm = 2;
+    if(src_step == sink_step){
+    ei.load_eigen_Mvec_smear(std::string(ename), gf, nini, checknorm,
+      src_width , src_step , 0.0, 0);}
+
+    if(src_step != sink_step){
+    ei.load_eigen_Mvec_smear(std::string(ename), gf, nini, checknorm,
+      src_width , src_step , sink_width, sink_step);}
+
+    if(src_step != 0){
+      mode_sm = 2;
+    }
   }
+
+  //if(src_step != 0)
+  //{
+  //  sprintf(ename, in.Ename_Sm.c_str(),icfg);
+  //  ei.smear_eigen(std::string(ename), gf, src_width, src_step, mom_smear);
+  //  mode_sm = 2;
+  //}
   print_time();
 
   qnoi noi;noi.init(geo);
@@ -180,11 +217,18 @@ int main(int argc, char* argv[])
     
     /////===load noise and prop
     char names[450],namep[500], names_vec[450], names_mom[450];
-    std::vector<qprop > FpropV;FpropV.resize(bcut);
+    std::vector<qprop > FpropV;FpropV.resize(0);FpropV.resize(bcut);
     lms_para<Complexq > srcI;/////buffers and parameters for lms
     print_time();
     for(int si = 0; si < in.nsource; si++)
     {
+      if(jobi == mass_jobA.size()/2 - 1 and si == in.nsource -1 and sleep_for_final == 1)
+      {
+        print0("SLEEPPING!!!\n");
+        sleep(30);// some weild writting error at final loop
+      }
+      fflush_MPI();
+
       if(out_vec_sinkG != std::string("NONE") and ckpoint == 1){
         const size_t vol = size_t(fd.nx) * fd.ny * fd.nz * fd.nt;
         int flag_do_job = 0;
@@ -197,7 +241,13 @@ int main(int argc, char* argv[])
         if(get_file_size_MPI(namep) > vol * 32 * bcut * 8){ 
           flag_do_job += 1;
         } 
-        if(flag_do_job == 2){
+
+        int flag_need = 0;
+        if(do_point_sink == 1){flag_need = 2;}
+        if(do_point_sink == 0){flag_need = 1;}
+        Qassert(flag_need != 0);
+
+        if(flag_do_job == flag_need){
           print0("Pass %s \n", names);
           continue ;
         }   
@@ -226,6 +276,11 @@ int main(int argc, char* argv[])
         }
 
         prop4d_to_qprop(FpropV[im], tmp);
+
+        if(check_prop_norm == 1){
+          print0("mgroup %2d, source %3d, mass %3d ", int(jobi), si, im);
+          print_norm2(FpropV[im]);
+        }
         ////double sum = check_sum_prop(FpropV[im]);
         ////print0("===checksum %s %.8e \n", namep, sum);
       }
@@ -252,6 +307,7 @@ int main(int argc, char* argv[])
       srcI.mom_cut = in.mom_cut;
       srcI.ckpoint = ckpoint;
       srcI.save_full_vec = save_full_vec;
+      srcI.check_prop_norm = check_prop_norm;
       if(save_vecs_vec){
         sprintf(namep, "%s.pt.zero.vec", names_vec);
         srcI.name_zero_vecs = std::string(namep);
@@ -266,12 +322,21 @@ int main(int argc, char* argv[])
         srcI.save_zero_corr = 0;
       }
 
-      point_corr(noi, FpropV, massL, ei, fd, res, srcI, mdat, 1);
+      // point sink
+      if(do_point_sink == 1){
+        point_corr(noi, FpropV, massL, ei, fd, res, srcI, mdat, 1);
+      }
 
-      if(sink_step != 0){
+      if(sink_step != 0 or do_point_sink == 0)
+      {
         srcI.lms      = in.lms;
         srcI.combineT = in.combineT;
         srcI.mode_eig_sm = 3;
+
+        //replace sink with the modified eigen
+        if(src_step != sink_step){
+          srcI.mode_eig_sm = 2;
+        }
 
         for(int im=0;im<bcut;im++){
         smear_propagator_gwu_convension(FpropV[im], gf, sink_width, sink_step, mom_smear);
@@ -307,6 +372,12 @@ int main(int argc, char* argv[])
 
     srcI.free_buf();
   }
+
+  if(sleep_for_final == 1){
+    print0("SLEEPPING!!!\n");
+    sleep(30);// some weild writting error at final loop
+  }
+  fflush_MPI();
 
   ei.clear_GPU_mem(1);
 

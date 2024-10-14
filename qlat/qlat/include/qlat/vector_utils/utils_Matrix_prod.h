@@ -134,8 +134,8 @@ void matrix_prod_gpu2(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const 
   //}
 
   ////////memory L --> m --> n
-  dim3 dimGrid( nc, mc, L);
-  dim3 dimBlock(sn, sm, 1);
+  dim3 dimGrid( nc, mc, L); 
+  dim3 dimBlock(sn, sm, 1); 
 
   bool jobdo = true;
   switch (cnt)
@@ -269,8 +269,8 @@ void matrix_prod_gpu1(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const 
 
 
   ////////memory L --> m --> n
-  dim3 dimGrid( nc, mc, L);
-  dim3 dimBlock(sn, sn, 1);
+  dim3 dimGrid( nc, mc, L); 
+  dim3 dimBlock(sn, sn, 1); 
 
   bool jobdo = true;
   switch (csn)
@@ -354,8 +354,8 @@ void matrix_prod_gpu0(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const 
   int nc = n/sn + 1;
   int mc = m/sm + 1;
   ////////memory L --> m --> n
-  dim3 dimGrid( nc, mc, L);
-  dim3 dimBlock(sn, sm, 1);
+  dim3 dimGrid( nc, mc, L); 
+  dim3 dimBlock(sn, sm, 1); 
   int snt = 0;if(Conj){snt += 1;}
 
   bool jobdo = true;
@@ -441,7 +441,7 @@ void matrix_prod_cpu(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const L
 
 
   long long vGb = L*m*n*w;
-  int Fcount0   = 6 + 2;
+  int Fcount0   = 6 + 2; 
   timer.flops  += vGb*Fcount0;
 
   //double Gsize = (m*n + m*w + n*w)*sizeof(Complexq)/(1024.0*1024*1024);
@@ -457,13 +457,13 @@ void matrix_prod_gpu(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const L
 
   TIMER_FLOPS("==Matrix Multi GPU");
   long long vGb = L*m*n*w;
-  int Fcount0   = 6 + 2;
+  int Fcount0   = 6 + 2; 
   timer.flops += vGb*Fcount0;
 
   /////int modeGPU = 1;
   if(modeGPU == 0){matrix_prod_gpu0(a, b, c, m, n, w, L, Conj);}
   if(modeGPU == 1){matrix_prod_gpu1(a, b, c, m, n, w, L, Conj);}
-  ///////Trans only works for modeGPU 2
+  ///////Trans only works for modeGPU 2 
   if(modeGPU == 2){matrix_prod_gpu2(a, b, c, m, n, w, L, Conj, trans);}
 
   if(dummy == QTRUE)qacc_barrier(dummy);

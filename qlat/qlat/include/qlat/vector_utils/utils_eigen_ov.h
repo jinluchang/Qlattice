@@ -27,7 +27,7 @@ struct eigen_ov {
   Geometry geo;
 
   Elocal Mvec;     //  nvec --> 2*bfac --> b_size*6
-  Elocal Mvec_Sm;  //  Smeared eigensystem
+  Elocal Mvec_Sm;  //  Smeared eigensystem 
 
   bool enable_smearE;
 
@@ -107,6 +107,17 @@ struct eigen_ov {
     copy_FieldM_to_Mvec(src, ncur, sm, 0);
   }
   void load_eigen_Mvec(const std::string& ename, int sm = 0, int nini=0, int checknorm = 1);
+
+  template <typename Tg >
+  void load_eigen_Mvec_smear(const std::string& ename, 
+    const GaugeFieldT<Tg >& gf, int nini = 0, int checknorm = 0,  
+    const double src_width  = 0.0, const int src_step  = 0,
+    const double sink_width = 0.0, const int sink_step = 0,
+    const CoordinateD& src_mom  = CoordinateD(),
+    const CoordinateD& sink_mom = CoordinateD(),
+    const bool src_smear_in_time_dir  = false,
+    const bool sink_smear_in_time_dir = false
+  );
   void save_eigen_Mvec(const std::string& ename, int sm = 0);
 
   template <typename Tg >
@@ -120,7 +131,7 @@ struct eigen_ov {
   void setup_bfac(Long bsize0=-1);
 
   void load_eivals(const std::string& enamev,double rho_or,double Eerr=EIGENERROR, int nini=0);
-
+  
   void load_eigen(const std::string& ov_evecname,
     int checknorm = 1, double kappa=0.2,double eigenerror=EIGENERROR, int nini=0);
 
@@ -134,8 +145,8 @@ struct eigen_ov {
     print0("Lattice sites on node %10ld bfac %10ld bsize %10ld, tsize %5d !\n",noden,bfac,b_size, Nt);
     print0("num_zero %5d \n",num_zero);
     print0("bfac %10ld, n_vec %10d, b_size %10ld, matrix %10ld x %10ld \n",bfac,n_vec,b_size,2*bfac*n_vec,b_size);
-    print0("===prop %.3e GB, v %d  %.3e GB, buf %d  %.3e GB, bfac_group %d, E %.3e GB. \n"
-            , mem_prop, ncutgpu, memV*ncutgpu, ncutbuf, memV*ncutbuf, int(bfac_group), memV*n_vec);
+    print0("===prop %.3e GB, v %d  %.3e GB, buf %d  %.3e GB, bfac_group %d, E %.3e GB, smear_buf %1d. \n"
+            , mem_prop, ncutgpu, memV*ncutgpu, ncutbuf, memV*ncutbuf, int(bfac_group), memV*n_vec, int(enable_smearE));
   }
 
   /////void checknormM(Ftype err=1e-3);
@@ -150,6 +161,7 @@ struct eigen_ov {
   void setup_gpufac(int nprop=1);
   void allocate_GPU_mem(int nprop=1);
   void clear_GPU_mem(int cpu_also = 0);
+  void print_norm_Mvec();
 
   ~eigen_ov()
   {
@@ -257,6 +269,7 @@ eigen_ov::eigen_ov(const Geometry& geo_,int n_vec_or, Long bsize0, double extra_
 
 void eigen_ov::setup_gpufac(int nprop)
 {
+  TIMERA("setup_gpufac");
   /////To avoid very large continuous memories on CPU
   bfac_group = 1;
   ////bfac_group = 2*bfac;
@@ -286,7 +299,7 @@ void eigen_ov::setup_gpufac(int nprop)
   }
 
   int vfac = ncutgpu;int vini = 8 * vfac;
-  int vres = int((totalD*extra_mem_factor*sm_factor - mem_prop )/memV);
+  int vres = int((totalD*extra_mem_factor*sm_factor - mem_prop )/memV); 
   if(qlat::get_id_node() != 0){vres=0;};sum_all_size(&vres, 1);
   /////TODO Need global sum and average the final result?
   /////TODO need to test the continuous memory less thant 8GB
@@ -332,12 +345,19 @@ void eigen_ov::allocate_GPU_mem(int nprop)
 
   if(Eigenbuf.size() == Lae and Eigendyn.size() == Lax){return ;}
 
-  { if(ncutbuf != 0){allocate_buf(Eigenbuf, Lae, Lbe);}
-    if(ncutgpu != 0){allocate_buf(Eigendyn, Lax, Lbx);}}
+  {
+  TIMERA("allocate_GPU_mem");
+  {
+    if(ncutbuf != 0){allocate_buf(Eigenbuf, Lae, Lbe);}
+    if(ncutgpu != 0){allocate_buf(Eigendyn, Lax, Lbx);}
+  }
 
   { if(ncutgpu != 0 and enable_smearE == true){allocate_buf(Eigendyn_Sm, Lax, Lbx);}
     if(ncutbuf != 0 and enable_smearE == true){allocate_buf(Eigenbuf_Sm, Lae, Lbe);}}
   gpu_mem_set = true;
+  //resize restore buffer positions
+  npos_Eigenbuf = -1;npos_Eigendyn = -1;
+  }
 }
 
 void eigen_ov::clear_GPU_mem(int cpu_also)
@@ -377,11 +397,14 @@ void eigen_ov::load_eivals(const std::string& enamev,double rho_or,double Eerr, 
     //////eval_self[iv] = qconj(Complexq(v[off*2+0],v[off*2+1]));
   }
 
+  num_zero = 0;// initialize the number of zeros
   Eeigenerror = Eerr;
   Ftype rho_tem = rho;
   for(int j=0; j<n_vec; ++j){
     eval_self[j] = eval_self[j]/rho_tem;
-    if(abs(eval_self[j]) < Eerr) num_zero += 1;
+    if(std::sqrt(qnorm(eval_self[j])) < Eerr) num_zero += 1; // this will square the values
+    //if(abs(eval_self[j]) < Eerr) num_zero += 1;
+    //print0("n %3d, abs %.8e, norm %.8e, zero %3d \n", j, abs(eval_self[j]), qnorm(eval_self[j]), num_zero);
   }
 
 }
@@ -451,7 +474,7 @@ void eigen_ov::copy_evec_to_GPU(int nini)
   if(mode_dyn == 0){n0=0;n1 = n0 + ncutbuf; }
   if(mode_dyn == 1){
     int maxN = (nini + ncutgpu)/ncutgpu;
-    n0=(maxN-1)*ncutgpu ;n1 = n0 + ncutgpu;
+    n0=(maxN-1)*ncutgpu ;n1 = n0 + ncutgpu; 
   }
 
   if(mode_dyn == 0){if(npos_Eigenbuf == n1){return ;}else{npos_Eigenbuf = n1;}}
@@ -519,8 +542,8 @@ Complexq* eigen_ov::getEigenP(int ni, size_t xi, int sm, int mode_initial )
   }
   ///////only allocate GPU memory when get the vectors on GPU, reuse later
   //////Free the memory when needed, clear_GPU_mem()
-  //////copy_evec_to_GPU(ni);
   if(bfac_group <= 0){abort_r("Setup bfac_group first !\n");}
+  // copy_evec_to_GPU(ni); // may need to check whether it's done or not ...
 
   if(ni  < ncutbuf){
     size_t off1 = ((chi*bfac + bi)*ncutbuf + ni )*b_size + bj;
@@ -641,13 +664,140 @@ void eigen_ov::save_eigen_Mvec(const std::string& ename, int sm)
   print_mem_info("Eigen Memory Write Done");
 }
 
+void eigen_ov::print_norm_Mvec()
+{
+  qlat::FieldM<Complexq , 12> buf;
+  buf.init(geo);
+
+  const int Nsm = enable_smearE ? 2 : 1 ;
+  for(int sm = 0; sm < Nsm; sm++)
+  for(int ni = 0; ni < n_vec; ni++)
+  {
+    copy_to_FieldM(buf, ni, sm);
+    Ftype* Psrc = (Ftype*) qlat::get_data(buf).data();
+    Ftype normf = get_norm_vec(Psrc, noden);
+    print0("Eigen vector %8d, sm %1d, norm 1.0 + %+.8e flag .", int(ni), sm, normf - 1.0);
+  }
+}
+
+template <typename Tg >
+void eigen_ov::load_eigen_Mvec_smear(const std::string& ename, 
+    const GaugeFieldT<Tg >& gf, int nini, int checknorm, 
+    const double src_width , const int src_step ,
+    const double sink_width, const int sink_step,
+    const CoordinateD& src_mom ,
+    const CoordinateD& sink_mom,
+    const bool src_smear_in_time_dir ,
+    const bool sink_smear_in_time_dir
+  )
+{
+  TIMER("load_eigen_Mvec_smear");
+  int ntotal = nini + n_vec;
+  Ftype norm_err  = 1e-3;
+  std::string val = get_env(std::string("q_eigen_norm_err"));
+  if(val != ""){norm_err = stringtodouble(val);}
+  int print_norms = 0; 
+  val = get_env(std::string("q_eigen_print_norm"));
+  if(val != ""){print_norms = stringtonum(val);}
+
+  io_vec& io_use = get_io_vec_plan(geo);
+  const int each_io = io_use.ionum;
+
+  Long La = 2*bfac/BFAC_GROUP_CPU;
+  Long Lb = BFAC_GROUP_CPU*n_vec*Long(b_size);
+  print_mem_info("Before Eigen Memory Allocate");
+
+  // setup smear tags
+  resize_EigenM(Mvec    , La, Lb);
+  resize_EigenM(Mvec_Sm , La, Lb);enable_smearE = true;
+
+  print_mem_info("Eigen Memory Allocate Done");
+
+  inputpara in_read_eigen;
+  FILE* file_read  = open_eigensystem_file(ename.c_str(), nini, ntotal, true , io_use , in_read_eigen , 2);
+
+  std::vector<double > widthL = {sink_width, src_width};
+  std::vector<int    > stepL  = {sink_step, src_step};
+  std::vector<CoordinateD > momL;momL.resize(2);
+  momL[0] = sink_mom;momL[1] = src_mom;
+  std::vector<bool > smear_in_time_dirL = {sink_smear_in_time_dir, src_smear_in_time_dir};
+
+  {
+  TIMER("load eigen from DISC");
+  std::vector<qlat::FieldM<Complexq , 12> > buf ;buf.resize(each_io);
+  for(int iv=0;iv<each_io;iv++){buf[iv].init(io_use.geop);}
+  std::vector<Long > job =  job_create(n_vec, each_io);
+  for(LInt ji = 0; ji < job.size()/2 ; ji++)
+  {
+    ////int n0 = nini + job[ji*2 + 0]; int n1 = n0 + job[ji*2 + 1]; 
+    /////load from file
+    load_eigensystem_vecs(file_read ,   buf, io_use , in_read_eigen , 0, job[ji*2 + 1]);
+    ////copy to Mvec or Mvec_Sm
+    for(int iv=0;iv<job[ji*2 + 1];iv++){
+      if(checknorm == 1){
+        Ftype* Psrc = (Ftype*) qlat::get_data(buf[iv]).data();
+        Ftype normf = get_norm_vec(Psrc, noden);
+        if(print_norms == 1){
+        print0("Eigen vector %8d, norm 1.0 + %+.8e flag . \n", int(job[ji*2 + 0] + iv + nini), normf - 1.0);}
+        if(fabs(normf - 1.0) > norm_err){
+          print0("Eigen vector %d, norm 1.0 + %.8e wrong. \n", int(job[ji*2 + 0] + iv + nini), normf - 1.0);
+          abort_r("");
+        }
+      }
+
+      copy_FieldM_to_Mvec(buf[iv], job[ji*2 + 0] + iv, 0  );
+    }
+
+  }
+  }
+  close_eigensystem_file(file_read , io_use , in_read_eigen );
+  clear_io_vec_cache();
+
+  {
+  TIMER("smear eigen for src and sink");
+  const int each_sm = 12;
+  const Long Ncopy = geo.local_volume() * 12;
+  std::vector<qlat::vector_gpu<Complexq > > bufL;bufL.resize(2);
+  std::vector<Long > job =  job_create(n_vec, each_sm);
+
+  move_index mv_idx;
+  int flag = 0;
+  for(LInt ji = 0; ji < job.size()/2 ; ji++)
+  {
+    ///do smearings and copy to correct place
+    for(int sm = 0 ; sm < 2; sm++)
+    {
+      if(Long(bufL[sm].size()) != Long(each_sm * Ncopy)){bufL[sm].resize(each_sm * Ncopy);}
+      ////copy to buf
+      for(int iv=0;iv<job[ji*2 + 1];iv++){copy_to_FieldM(&bufL[sm][iv*Ncopy], job[ji*2 + 0] + iv,  0, true);}
+      if(stepL[sm] == 0){continue;}
+
+      Complexq* bufP = bufL[sm].data();
+      flag = 0;mv_idx.dojob(bufP, bufP, 1, each_sm , geo.local_volume()*12, flag, 1, true);
+      smear_propagator_gwu_convension_inner<Complexq, 4, each_sm  , Tg>(bufP, gf, 
+        widthL[sm], stepL[sm], momL[sm], smear_in_time_dirL[sm]);
+
+      flag = 1;mv_idx.dojob(bufP, bufP, 1, each_sm , geo.local_volume()*12, flag, 1, true);
+    }
+    for(int sm = 0 ; sm < 2; sm++)
+    {
+      for(int iv=0;iv<job[ji*2 + 1];iv++){copy_FieldM_to_Mvec(&bufL[sm][iv*Ncopy], job[ji*2 + 0] + iv,  sm, 1, true);}
+    }
+  }
+  }
+
+  print_mem_info("Eigen Memory Load Done");
+  //////mv_civ.free_mem();
+  get_smear_plan_cache().clear();
+}
+
 void eigen_ov::load_eigen_Mvec(const std::string& ename, int sm, int nini, int checknorm)
 {
   int ntotal = nini + n_vec;
   Ftype norm_err  = 1e-3;
   std::string val = get_env(std::string("q_eigen_norm_err"));
   if(val != ""){norm_err = stringtodouble(val);}
-  int print_norms = 0;
+  int print_norms = 0; 
   val = get_env(std::string("q_eigen_print_norm"));
   if(val != ""){print_norms = stringtonum(val);}
 
@@ -670,7 +820,7 @@ void eigen_ov::load_eigen_Mvec(const std::string& ename, int sm, int nini, int c
   std::vector<Long > job =  job_create(n_vec, each);
   for(LInt ji = 0; ji < job.size()/2 ; ji++)
   {
-    ////int n0 = nini + job[ji*2 + 0]; int n1 = n0 + job[ji*2 + 1];
+    ////int n0 = nini + job[ji*2 + 0]; int n1 = n0 + job[ji*2 + 1]; 
     /////load from file
     load_eigensystem_vecs(file_read ,   buf, io_use , in_read_eigen , 0, job[ji*2 + 1]);
     ////copy to Mvec or Mvec_Sm
@@ -719,7 +869,7 @@ void eigen_ov::random_eigen(int sm, int seed)
 {
   TIMERB("=====Loading random Eigen=====");
   eval_self.resize(n_vec);random_EigenM(eval_self, 0, seed + 10);
-
+  
   Long La = 2*bfac/BFAC_GROUP_CPU;
   Long Lb = BFAC_GROUP_CPU*n_vec*Long(b_size);
   print_mem_info("Before Eigen Memory Allocate");
@@ -743,10 +893,16 @@ void eigen_ov::initialize_mass(std::vector<double> &mass, int Ns, int one_minus_
   TIMERB("Set up store memories");
   ////std::vector<double> mass = mass_or;
   massL = mass;
-  int mN = mass.size();
+  const int mN = mass.size();
   one_minus_halfD = one_minus_halfD_or;
 
-  if(gpu_mem_set == false or nV_prop != nprop){allocate_GPU_mem(nprop);}
+  // loss the memory needed, allocate only large props needed
+  #ifdef QLAT_USE_ACC
+  if(gpu_mem_set == false or nprop > nV_prop + 12){
+    print0("===mem %1d, n %5d, %5d, pos %5d %5d \n", int(gpu_mem_set), int(nprop), int(nV_prop), int(npos_Eigenbuf), int(npos_Eigendyn));
+    allocate_GPU_mem(nprop);
+  }
+  #endif
 
   LInt nlarge = ncutgpu;if(ncutbuf > ncutgpu)nlarge = ncutbuf;
 
@@ -780,8 +936,9 @@ void eigen_ov::initialize_mass(std::vector<double> &mass, int Ns, int one_minus_
   cpy_data_thread(eval_list.data(), (Complexq*) qlat::get_data(eval_tem).data(), eval_list.size(),  1, QFALSE);
   ///eval_list.copy_from(eval_tem, 1, 1);
 
-  /////allocate and copy GPU memory
-  copy_evec_to_GPU(0);
+  /////allocate and copy GPU memory, not needed,
+  // only when use will need copy
+  //copy_evec_to_GPU(0);
 
   qacc_barrier(dummy);
 
@@ -795,10 +952,9 @@ void eigen_ov::initialize_mass()
 
 void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vector<double> &mass, int mode_sm = 0,int one_minus_halfD_or=1)
 {
-  int mN   = mass.size();
-
   TIMER_FLOPS("==prop_L");
 
+  const int mN   = mass.size();
   long long Lat = ei.noden;
   long long vGb = Lat*12;
   int Fcount0 = 6 + 2;
@@ -806,7 +962,7 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
   long long Tfloat = ei.n_vec*Ns*mN*vGb*Fcount1 + ei.n_vec*Ns*vGb*Fcount0;
   timer.flops += Tfloat;
   //double mem = Lat*12*(ei.n_vec + Ns + Ns*mN)*sizeof(Complexq);
-  //print0("Memory size %.3e GB, %.3e Gflop \n",
+  //print0("Memory size %.3e GB, %.3e Gflop \n", 
   //  mem/(1024.0*1024*1024), Tfloat/(1024.0*1024*1024));
   ///////qlat::get_num_node()
 
@@ -825,13 +981,13 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
   Complexq* alpha_list  = ei.alpha_list.data();
   Complexq* eval_list   = ei.eval_list.data();
 
-  Long& bfac        = ei.bfac;
-  Long& b_size      = ei.b_size;
+  const Long& bfac        = ei.bfac;
+  const Long& b_size      = ei.b_size;
 
-  int&  n_vec       = ei.n_vec;
-  int& ncutgpu     = ei.ncutgpu;
-  int& ncutbuf     = ei.ncutbuf;
-  int& num_zero    = ei.num_zero;
+  const int&  n_vec      = ei.n_vec;
+  const int& ncutgpu     = ei.ncutgpu;
+  const int& ncutbuf     = ei.ncutbuf;
+  const int& num_zero    = ei.num_zero;
 
   ////QBOOL dummy_test = QFALSE;
 
@@ -849,14 +1005,14 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
     ei.copy_evec_to_GPU(nini);
 
     {
-    Long m = ncur;
-    Long n = Ns;
-    Long w = b_size;
+    const Long m = ncur;
+    const Long n = Ns;
+    const Long w = b_size;
 
     TIMERA("prop low vec reduce");
     //TIMER_FLOPS("vec reduce");
     //long long vGb = 2*bfac*m*n*w;
-    //int Fcount0   = 6 + 2;
+    //int Fcount0   = 6 + 2;  
     //timer.flops  += vGb*Fcount0;
 
     std::vector<Long > jobA = job_create(2*bfac, ei.BFAC_GROUP_CPU);
@@ -896,14 +1052,14 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
 
     {
     TIMERA("Get alpha list")
-    Complexq Iimag(0.0,1.0);
-    Complexq Two2(2.0,0.0);
+    const Complexq Iimag(0.0,1.0);
+    const Complexq Two2(2.0,0.0);
     qacc_for(coff, Long(2*mN*Ns*ncur),{
-      int chi   =  coff/(mN*Ns*ncur);
-      int mi    = (coff/(Ns*ncur  ))%mN;
-      int is    = (coff/(ncur     ))%Ns;
-      int kn    = (coff             )%ncur;
-      long long offA = ((chi*mN+mi)*Ns+is)*ncur + kn;
+      const int chi   =  coff/(mN*Ns*ncur);
+      const int mi    = (coff/(Ns*ncur  ))%mN;
+      const int is    = (coff/(ncur     ))%Ns;
+      const int kn    = (coff             )%ncur;
+      const long long offA = ((chi*mN+mi)*Ns+is)*ncur + kn;
 
       if(kn + nini >= n_vec){alpha_list[offA] = 0.0;}else{
       Complexq li = eval_list[mi*n_vec + kn + nini];
@@ -917,14 +1073,14 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
 
 
     {
-    Long m = mN*Ns;
-    Long n = b_size;
-    Long w = ncur;
+    const Long m = mN*Ns;
+    const Long n = b_size;
+    const Long w = ncur;
 
     //TIMER("vec multi");
     TIMER_FLOPS("vec multi");
     long long vGb = 2*bfac*m*n*w;
-    int Fcount0   = 2*(3 + 1);
+    int Fcount0   = 2*(3 + 1);  
     timer.flops  += vGb*Fcount0;
 
     if((nini + ncur) < ei.n_vec){

@@ -220,10 +220,11 @@ inline size_t guess_factor(size_t n, const Long limit)
 
 inline size_t get_write_factor(const size_t size)
 {
+  TIMER("get_write_factor");
   size_t large = 1024*1024* QLAT_FILE_IO_SIZE ;
   std::string val = get_env(std::string("q_file_io_each_size"));
   if(val != ""){large = 1024 * 1024 * stringtonum(val);}
-
+  
   size_t factor = 1;
   if(size < large){return factor;}
   size_t limit = size / large;
@@ -329,7 +330,6 @@ void read_data(std::vector<Ty > dat,const char *filename, bool single_file = fal
 }
 
 
-
 inline size_t read_input(const char *filename,std::vector<std::vector<std::string > > &read_f)
 {
   read_f.resize(0);
@@ -352,7 +352,7 @@ inline size_t read_input(const char *filename,std::vector<std::vector<std::strin
     /////If the file is binary
     /////print0("==%s \n",tem);
     if(tem[LINE_LIMIT] != 0){binary = true;break;}
-    if(tem[0]    <  0){binary = true;break;}////need to check whether it works or not
+    //if(tem[0]    <  0){binary = true;break;}////need to check whether it works or not
     if(std::string(tem).size() >= LINE_LIMIT){binary = true;break;}
     /////If the file is not binary
     ///printf("line %d %s", count_line, tem);
@@ -372,6 +372,16 @@ inline size_t read_input(const char *filename,std::vector<std::vector<std::strin
   fclose(filer);
 
   return off_file;
+}
+
+inline bool check_qlat_head_exist(const char *filename)
+{
+  std::vector<std::vector<std::string > > read_f;
+  size_t v = read_input(filename, read_f);
+  if(v > 0 and read_f.size() > 0){
+    return true;
+  }
+  return false;
 }
 
 ////Bcast conf_l from zero rank
@@ -628,7 +638,7 @@ struct inputpara{
     return 0;
   }
 
-
+  
   template<typename Ty>
   int find_para(const char* str2, Ty &res){
     return find_para(std::string(str2), res);
@@ -1190,7 +1200,7 @@ struct corr_dat
       file = fopen(filename, "rb");
       fseek(file , off_file, SEEK_SET );
 
-
+      
       buf.resize(total* bsize);
 
       if(type==0)write_data((double*) buf.data(), file, total, true, false);
@@ -1328,7 +1338,7 @@ struct corr_dat
         Ns += 1;
       }
 
-      /////calculate crc32 sum
+      /////calculate crc32 sum 
       size_t end_of_file = head_off;
       for(Long si=0;si<Ns;si++){
         end_of_file += crc32_size[si];
@@ -1396,7 +1406,7 @@ struct corr_dat
     }
 
     key_T[0] += n;
-    total = 1;
+    total = 1; 
     for(LInt i=0;i<key_T.size();i++){total = total * key_T[i];}
 
     if(!small_size){
@@ -1431,7 +1441,7 @@ struct corr_dat
     //if( is_double){double_size = size * sizeof(Ta)/sizeof(double);}
     //if(!is_double){double_size = size * sizeof(Ta)/sizeof(float );}
 
-    if(Long(double_size + cur) >  total){
+    if(Long(double_size + cur) >  total){ 
       if(key_T.size() < 1){
         print0("key_T size wrong!\n");MPI_Barrier(get_comm());
         fflush(stdout);Qassert(false);}
@@ -1477,7 +1487,7 @@ struct corr_dat
 
   inline void print_info(){
     if(qlat::get_id_node()==node_control){
-      printf("===Corr %s, dim %d, mem size %.3e MB \n",
+      printf("===Corr %s, dim %d, mem size %.3e MB \n", 
             corr_name.c_str(), dim, total * sizeof(double)*1.0/(1024.0*1024.0));
       for(int d=0;d<dim;d++){
         printf("dim %30s   %d \n", dim_name[d].c_str(), key_T[d]);

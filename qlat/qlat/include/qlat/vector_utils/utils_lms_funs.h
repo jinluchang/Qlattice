@@ -45,6 +45,7 @@ struct lms_para{
   int mom_cut;
   int save_zero_corr;
   int save_full_vec;
+  int check_prop_norm;
 
   std::string name_mom_vecs;
   std::string name_zero_vecs;
@@ -111,18 +112,53 @@ struct lms_para{
   inline void print(){
     print0("===Source Info %s \n", INFO.c_str());
     print0("  prop with low %3d, lms %3d, combineT %3d \n", SRC_PROP_WITH_LOW, lms, combineT);
-    print0("  init %5d %5d %5d %5d, grid %5d %5d %5d %5d \n",
+    print0("  init %5d %5d %5d %5d, grid %5d %5d %5d %5d \n", 
       ini_pos[0], ini_pos[1], ini_pos[2], ini_pos[3],
       off_L[0], off_L[1], off_L[2], off_L[3] );
 
     int save_vecs = 0; if(name_mom_vecs != std::string("NONE")){save_vecs = 1;}
-    print0("eigen mode sm %1d, src %5d %.3f, sink %5d %.3f , save_low %2d, mom_cut %5d , saveV %1d \n",
+    print0("eigen mode sm %1d, src %5d %.3f, sink %5d %.3f , save_low %2d, mom_cut %5d , saveV %1d \n", 
       mode_eig_sm, src_smear_iter, src_smear_kappa, sink_smear_iter, sink_smear_kappa, do_all_low, mom_cut, save_vecs);
     //print0("  mom vecs %s \n" ,name_mom_vecs);
     //print0("  zero vecs %s \n",name_zero_vecs);
   }
 
 };
+
+template<typename Ty>
+void check_nan_GPU(qlat::vector_gpu<Ty >& resTa)
+{
+  TIMERA("check_nan_GPU");
+  const int GPU = resTa.GPU;
+  const Long V  = resTa.size();
+  const Ty* s   = resTa.data();
+  const Long Bfac  = 64;
+  const Long Neach = (V + Bfac - 1 ) / Bfac;
+  qlat::vector_acc<double > buf;buf.resize(Neach);
+  qGPU_for(ieach, Neach, GPU, {
+    buf[ieach] = 0;
+    for(Long bi=0;bi<Bfac;bi++)
+    {
+      const Long isp = ieach * Bfac + bi;
+      if(isp < V){
+        if(qisnan(s[isp])){
+          buf[ieach] = 1;
+          break;
+          //qerr(ssprintf("WARNING: isnan corr"));
+          //qqwarn(ssprintf("WARNING: isnan corr"));
+        }
+      }
+    }
+  })
+  for(int ieach=0;ieach<Neach;ieach++)
+  {
+    if(buf[ieach] == 1)
+    {
+      qqwarn(ssprintf("WARNING: isnan corr"));
+      break;
+    }
+  }
+}
 
 //template<typename Ty>
 //void pick_mom_data(qlat::vector_gpu<Ty >& res, qlat::vector_gpu<Ty >& src,
@@ -211,7 +247,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   std::vector<qlat::FieldM<Ty, 1> >& Vzero_data = srcI.Vzero_data;
   std::vector<qlat::vector_gpu<Ty > >& Eprop = srcI.Eprop;
 
-  ////FFT_data do not need clean
+  ////FFT_data do not need clean 
   if(src_prop.size() != 1){src_prop.resize(1);}
   if(FFT_data.size() != 2){FFT_data.resize(2);}
   ///qlat::vector_gpu<Ty > stmp, low_prop, high_prop;
@@ -224,9 +260,9 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   //qlat::vector_gpu<Ty > resZero;
 
   if(save_zero_corr){
-    EresH.resize(32 * nmass * fd.nt);
-    EresL.resize(32 * nmass * fd.nt);
-    EresA.resize(32 * nmass * fd.nt);
+    EresH.resize(32 * nmass * fd.nt); 
+    EresL.resize(32 * nmass * fd.nt); 
+    EresA.resize(32 * nmass * fd.nt); 
     clear_qv(EresH , QFALSE);
     clear_qv(EresL , QFALSE);
     clear_qv(EresA , QFALSE);
@@ -240,6 +276,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
 
   copy_eigen_src_to_FieldM(high_prop, propH, ei.b_size, fd, 1, GPU, rotate);
   low_prop.resize(high_prop.size());
+  if(srcI.check_prop_norm){print0("===high norm 0 %ld , ", long(high_prop.size()));high_prop.print_norm2();}
 
   //{
   //print0("===check norm");
@@ -302,16 +339,21 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     low_prop.set_zero();
     FieldM_src_to_FieldM_prop(src, src_prop[0], GPU);
     copy_eigen_src_to_FieldM(stmp, src_prop, ei.b_size, fd, 1, GPU, rotate);
+    if(srcI.check_prop_norm){print0("===src  norm 0 %ld , ", long(stmp.size())); stmp.print_norm2();}
     prop_L_device(ei, stmp.data(), low_prop.data(), 12, massL, srcI.mode_eig_sm);
+    if(srcI.check_prop_norm){print0("===low  norm 0 %ld , ", long(low_prop.size())); low_prop.print_norm2();}
     high_prop -= low_prop;
   }
+  if(srcI.check_prop_norm){print0("===high norm 1 %ld , ", long(high_prop.size())); high_prop.print_norm2();}
   //print0("===check norm");low_prop.print_norm2();high_prop.print_norm2();
   /////reduce the high prop
 
   print0("Do high %s \n", POS_CUR.c_str());
   copy_eigen_prop_to_EigenG(Eprop, high_prop.data(), ei.b_size, nmass, fd, GPU);
-  prop_to_vec(Eprop, resTa, fd);
+  prop_to_vec(Eprop, resTa, fd); 
   if(save_zero_corr){vec_corrE(resTa.data(), EresH, fd, nvecs, 0);}
+
+  if(srcI.check_prop_norm){print0("===resTa norm 0 %ld , ", long(resTa.size()));resTa.print_norm2();}
 
   POS_CUR = std::string("");write_pos_to_string(POS_CUR, pos);POS_LIST += POS_CUR;
   if(savezero){
@@ -325,6 +367,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   }
   if(saveFFT){
     TIMER("saveFFT");
+    check_nan_GPU(resTa);
     fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
     mdat.pick_mom_from_vecs(FFT_data[0], resTa);
     sprintf(name_mom_tmp, "%09d", 0);
@@ -359,22 +402,25 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     ////low mode corr contractions
     if(srcI.do_all_low == 1){
       copy_eigen_prop_to_EigenG(Eprop, low_prop.data(), ei.b_size, nmass, fd, GPU);
-      prop_to_vec(Eprop, resTa, fd);
+      prop_to_vec(Eprop, resTa, fd);  
       if(save_zero_corr){vec_corrE(resTa.data(), EresL, fd, nvecs, 0);}
       //Ty norm0 = low_prop.norm();
       //Ty norm1 = resTa.norm();
-      //print0("Check value %.3f %.3f, %.3f %.3f, %.3f %.3f \n", EresL[0].real(), EresL[0].imag(),
+      //print0("Check value %.3f %.3f, %.3f %.3f, %.3f %.3f \n", EresL[0].real(), EresL[0].imag(), 
       //  norm0.real(), norm0.imag(), norm1.real(), norm1.imag());
     }
     //print0("===check norm");low_prop.print_norm2();high_prop.print_norm2();
 
     low_prop += high_prop;
     //print0("===check norm");low_prop.print_norm2();high_prop.print_norm2();
+    if(srcI.check_prop_norm){print0("===low  norm 1 %ld , ", long(low_prop.size()));low_prop.print_norm2();}
 
     //////format suitable for contractions
     copy_eigen_prop_to_EigenG(Eprop, low_prop.data(), ei.b_size, nmass, fd, GPU);
     prop_to_vec(Eprop, resTa, fd);
     if(save_zero_corr){vec_corrE(resTa.data(), EresA, fd, nvecs, 0);}
+
+    if(srcI.check_prop_norm){print0("===resTa norm 0 %ld , ", long(resTa.size()));resTa.print_norm2();}
 
     if(savezero){
     if(srcI.save_full_vec == 0){
@@ -386,6 +432,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     }
     if(saveFFT){
       TIMER("saveFFT");
+      check_nan_GPU(resTa);
       fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
       mdat.pick_mom_from_vecs(FFT_data[1], resTa);
       FFT_data[1] -= FFT_data[0];
@@ -482,7 +529,7 @@ void test_all_prop_corr(std::vector<double >& massL, eigen_ov& ei, fft_desc_basi
     prop_L_device(ei, stmp.data(), low_prop.data(), 12, massL, mode_sm);
 
     copy_eigen_prop_to_EigenG(Eprop, low_prop.data(),  ei.b_size, nmass, fd, GPU);
-    prop_to_corr_mom0(Eprop, Eres, fd, resTa,  0);
+    prop_to_corr_mom0(Eprop, Eres, fd, resTa,  0); 
     shift_result_t(Eres, fd.nt, tini);
   }
   for(int i=0;i<Eres.size();i++){Eres[i] = Eres[i]/(Ftype(fd.nx*fd.ny*fd.nz*1.0));}

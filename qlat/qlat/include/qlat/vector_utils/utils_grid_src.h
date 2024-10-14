@@ -481,7 +481,7 @@ void get_noises_Coordinate(const qlat::FieldM<Ty, 1>& noise, PointsSelection& ps
 }
 
 template <class Ty, int civ>
-void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp,
+void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp, 
   const std::vector<double >& phases, const FieldSelection& fsel, const int type_src = 0, int seed = 0, const int offT = -1, const Coordinate& offG = Coordinate(1,1,1,1))
 {
   TIMERA("get_mix_color_src");
@@ -499,7 +499,8 @@ void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp,
     double r = phases[c];
     color_phases[c] = Ty(std::cos(r), std::sin(r));
   }
-  fft_desc_basic fd(geo);
+  //fft_desc_basic fd(geo);
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
 
   if(type_src <= -1) ////point src, with only color zero
   {
@@ -530,7 +531,7 @@ void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp,
     {
       rsL[is] = qlat::RngState(seed + qlat::get_id_node()*omp_get_max_threads() + is);
     }
-
+    
     qthread_for(isp, geo.local_volume(), {
       Coordinate xl = geo.coordinate_from_index(isp);
       Coordinate xg = geo.coordinate_g_from_l(xl);
@@ -570,7 +571,7 @@ void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp,
     int src_eo = int(qlat::u_rand_gen(rs) * 2);
     if(type_src == 13){src_eo = 1;}
     if(type_src == 14){src_eo = 0;}
-
+    
     qthread_for(isp, geo.local_volume(), {
       Coordinate xl = geo.coordinate_from_index(isp);
       Coordinate xg = geo.coordinate_g_from_l(xl);
@@ -592,7 +593,7 @@ void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp,
     {
       rsL[is] = qlat::RngState(seed + qlat::get_id_node()*omp_get_max_threads() + is);
     }
-
+    
     qthread_for(isp, geo.local_volume(), {
       const Long rank = fsel.f_local_idx.get_elem_offset(isp);
       if(rank >= 0){
@@ -606,7 +607,7 @@ void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp,
           }
         }
       }
-    });
+    }); 
   }
 
   if(type_src == 3) ////grid src
@@ -639,7 +640,7 @@ void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp,
           srcP[isp*civ + c] = Ty(std::cos(r), std::sin(r));
         }
       }
-    });
+    }); 
   }
 
 
@@ -703,7 +704,7 @@ void vec_apply_cut(qlat::vector_gpu<Ty >& res, const Coordinate& sp, const doubl
 }
 
 template <class Tr, class Ty, int civ>
-void get_point_color_src(std::vector<qlat::FieldM<Tr , civ> >& srcL,
+void get_point_color_src(std::vector<qlat::FieldM<Tr , civ> >& srcL, 
   const PointsSelection& grids, const std::vector<Ty >& phases)
 {
   TIMER("get_point_color_src");
@@ -772,7 +773,8 @@ void make_grid_src(Propagator4dT<Td >& src, const Coordinate& sp, const Coordina
   qlat::ComplexT<Td >* srcP = (qlat::ComplexT<Td >*) qlat::get_data(src).data();
   zero_Ty(srcP, V_local*civ, 0);
 
-  fft_desc_basic fd(geo);
+  //fft_desc_basic fd(geo);
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
 
   std::vector<qlat::RngState > rsL;rsL.resize(omp_get_max_threads());
   for(int is=0;is<omp_get_max_threads();is++)
@@ -805,7 +807,7 @@ void make_grid_src(Propagator4dT<Td >& src, const Coordinate& sp, const Coordina
         srcP[(isp*12+dc)*12 + dc] = qlat::ComplexT<Td >(std::cos(r), std::sin(r));
       }
     }
-  });
+  }); 
 
 }
 
@@ -855,7 +857,7 @@ void make_volume_src(Propagator4dT<Td >& src, int seed = 0, int mix_color = 0, i
           double r = 2 * PI * qlat::u_rand_gen(rs);
           for(int d =0;d<4;d++)
           {
-            srcP[(isp*12+d*3 + c0)*12 + d*3+c1] = qlat::ComplexT<Td >(std::cos(r), std::sin(r)) / 3.0;
+            srcP[(isp*12+d*3 + c0)*12 + d*3+c1] = qlat::ComplexT<Td >(std::cos(r), std::sin(r)) / qlat::ComplexT<Td >(3.0, 0.0);
           }
         }
       }
@@ -868,7 +870,7 @@ void make_volume_src(Propagator4dT<Td >& src, int seed = 0, int mix_color = 0, i
         for(int c1=0;c1<3;c1++)
         {
           double r = 2 * PI * qlat::u_rand_gen(rs);
-          srcP[(isp*12+d0*3 + c0)*12 + d1*3+c1] = qlat::ComplexT<Td >(std::cos(r), std::sin(r))  / 6.0;
+          srcP[(isp*12+d0*3 + c0)*12 + d1*3+c1] = qlat::ComplexT<Td >(std::cos(r), std::sin(r))  / qlat::ComplexT<Td >(6.0, 0.0);
         }
 
         for(int d0 =2;d0<4;d0++)
@@ -877,12 +879,12 @@ void make_volume_src(Propagator4dT<Td >& src, int seed = 0, int mix_color = 0, i
         for(int c1=0;c1<3;c1++)
         {
           double r = 2 * PI * qlat::u_rand_gen(rs);
-          srcP[(isp*12+d0*3 + c0)*12 + d1*3+c1] = qlat::ComplexT<Td >(std::cos(r), std::sin(r))  / 6.0;
+          srcP[(isp*12+d0*3 + c0)*12 + d1*3+c1] = qlat::ComplexT<Td >(std::cos(r), std::sin(r))  / qlat::ComplexT<Td >(6.0, 0.0);
         }
 
       }
     }
-  });
+  }); 
 
 }
 

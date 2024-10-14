@@ -29,7 +29,7 @@ inline void qlat_map_eo_site(qlat::FieldM<char, 1>& eo, const Geometry& geo)
 
 ///////src and res can be the same pointer
 template <class Ty, int civ>
-void apply_eo_signT(Ty* sP, Ty* rP, qlat::FieldM<char, 1>& eo, const char dir = 1)
+void apply_eo_signT(Ty* sP, Ty* rP, qlat::FieldM<char, 1>& eo, const signed char dir = 1)
 {
   TIMER("apply_eo_sign");
   const Geometry& geo = eo.geo();
@@ -50,7 +50,7 @@ void apply_eo_signT(Ty* sP, Ty* rP, qlat::FieldM<char, 1>& eo, const char dir = 
 
 /////src and res can be tthe same pointer
 template <class Ty, int civ>
-void apply_eo_sign(qlat::FieldM<Ty , civ>& src, qlat::FieldM<Ty , civ>& res, qlat::FieldM<char, 1>& eo, const char dir = 1)
+void apply_eo_sign(qlat::FieldM<Ty , civ>& src, qlat::FieldM<Ty , civ>& res, qlat::FieldM<char, 1>& eo, const signed char dir = 1)
 {
   if(!src.initialized or !res.initialized){abort_r("src should be initialized with geo!\n");}
   const Geometry& geo = src.geo();
@@ -64,7 +64,7 @@ void apply_eo_sign(qlat::FieldM<Ty , civ>& src, qlat::FieldM<Ty , civ>& res, qla
 }
 
 template <class Ty, int civ>
-void apply_eo_sign(std::vector<qlat::FieldM<Ty , civ> >& src, std::vector<qlat::FieldM<Ty , civ> >& res, qlat::FieldM<char, 1>& eo, const char dir = 1)
+void apply_eo_sign(std::vector<qlat::FieldM<Ty , civ> >& src, std::vector<qlat::FieldM<Ty , civ> >& res, qlat::FieldM<char, 1>& eo, const signed char dir = 1)
 {
   Qassert(src.size() == res.size());
   for(unsigned int si = 0; si<src.size(); si++){
@@ -74,7 +74,7 @@ void apply_eo_sign(std::vector<qlat::FieldM<Ty , civ> >& src, std::vector<qlat::
 
 ///////src and res can be the same pointer
 template <class Ty, int civ>
-void apply_eo_zeros(Ty* sP, Ty* rP, qlat::FieldM<char, 1>& eo, const char dir = 1)
+void apply_eo_zeros(Ty* sP, Ty* rP, qlat::FieldM<char, 1>& eo, const signed char dir = 1)
 {
   TIMER("apply_eo_zeros");
   const Geometry& geo = eo.geo();
@@ -93,7 +93,7 @@ void apply_eo_zeros(Ty* sP, Ty* rP, qlat::FieldM<char, 1>& eo, const char dir = 
 
 /////src and res can be tthe same pointer
 template <class Ty, int civ>
-void apply_eo_zeros(qlat::FieldM<Ty , civ>& src, qlat::FieldM<Ty , civ>& res, qlat::FieldM<char, 1>& eo, const char dir = 1)
+void apply_eo_zeros(qlat::FieldM<Ty , civ>& src, qlat::FieldM<Ty , civ>& res, qlat::FieldM<char, 1>& eo, const signed char dir = 1)
 {
   if(!src.initialized or !res.initialized){abort_r("src should be initialized with geo!\n");}
   const Geometry& geo = src.geo();
@@ -104,7 +104,7 @@ void apply_eo_zeros(qlat::FieldM<Ty , civ>& src, qlat::FieldM<Ty , civ>& res, ql
 }
 
 template <class Ty, int civ>
-void apply_eo_zeros(std::vector<qlat::FieldM<Ty , civ> >& src, std::vector<qlat::FieldM<Ty , civ> >& res, qlat::FieldM<char, 1>& eo, const char dir = 1)
+void apply_eo_zeros(std::vector<qlat::FieldM<Ty , civ> >& src, std::vector<qlat::FieldM<Ty , civ> >& res, qlat::FieldM<char, 1>& eo, const signed char dir = 1)
 {
   Qassert(src.size() == res.size());
   for(unsigned int si = 0; si<src.size(); si++){
@@ -112,7 +112,7 @@ void apply_eo_zeros(std::vector<qlat::FieldM<Ty , civ> >& src, std::vector<qlat:
   }
 }
 
-template <class Ty, int civ, char Real>
+template <class Ty, int civ, signed char Real>
 void reduce_color_Re(qlat::vector_gpu<Ty >& res, qlat::FieldM<Ty , civ>& p0, qlat::FieldM<Ty , civ>& p1, const int sign)
 {
   TIMER("reduce_color");
@@ -131,7 +131,7 @@ void reduce_color_Re(qlat::vector_gpu<Ty >& res, qlat::FieldM<Ty , civ>& p0, qla
 }
 
 template <class Ty, int civ>
-void reduce_color(qlat::vector_gpu<Ty >& res, qlat::FieldM<Ty , civ>& p0, qlat::FieldM<Ty , civ>& p1, const int sign, char Real )
+void reduce_color(qlat::vector_gpu<Ty >& res, qlat::FieldM<Ty , civ>& p0, qlat::FieldM<Ty , civ>& p1, const int sign, const signed char Real )
 {
   if(Real ==  1){reduce_color_Re<Ty, civ,  1>(res, p0, p1, sign);}
   if(Real ==  0){reduce_color_Re<Ty, civ,  0>(res, p0, p1, sign);}
@@ -140,7 +140,7 @@ void reduce_color(qlat::vector_gpu<Ty >& res, qlat::FieldM<Ty , civ>& p0, qlat::
 
 template <class Ty, int civ>
 void reduce_color(std::vector<qlat::vector_gpu<Ty > >& res, std::vector<qlat::FieldM<Ty , civ> >& p0,
-  std::vector<qlat::FieldM<Ty , civ> >& p1, const int sign, char Real )
+  std::vector<qlat::FieldM<Ty , civ> >& p1, const int sign, const signed char Real )
 {
   const unsigned int nsrc = res.size();
   Qassert(p0.size() == nsrc and p1.size() == nsrc);
@@ -332,7 +332,7 @@ void copy_eo_cs_to_fieldM(qlat::vector_gpu<Ty >& res, const int civ, const Geome
 }
 
 template<typename Ty>
-void copy_fieldM_to_eo_cs(vector_cs<Ty >& even, vector_cs<Ty >& odd, qlat::vector_gpu<Ty >& res, const int civ, const Geometry& geo,
+void copy_fieldM_to_eo_cs(vector_cs<Ty >& even, vector_cs<Ty >& odd, qlat::vector_gpu<Ty >& res, const int civ, const Geometry& geo, 
   int e0, int e1, int o0, int o1, qlat::vector_acc<Long >& map, int mode = 0)
 {
   copy_eo_cs_to_fieldM(res, civ, geo, even, odd, e0, e1, o0, o1, map, mode, 0);

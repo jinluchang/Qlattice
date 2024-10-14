@@ -364,7 +364,7 @@ inline void quda_clover_inverter::alloc_csfield_gpu()
   ////an overall sign for gamma5 compare to cps base
   cs_gpuH.gammaBasis = QUDA_DEGRAND_ROSSI_GAMMA_BASIS;
   //cs_gpuH.gammaBasis = QUDA_UKQCD_GAMMA_BASIS;
-  gsrcH = quda::ColorSpinorField::Create(cs_gpuH);
+  gsrcH = quda::ColorSpinorField::Create(cs_gpuH); 
   gresH = quda::ColorSpinorField::Create(cs_gpuH);
   //cs_tmp.setPrecision(QUDA_DOUBLE_PRECISION, QUDA_DOUBLE_PRECISION, true);
   //gsrcD = quda::ColorSpinorField::Create(cs_tmp);
@@ -492,7 +492,7 @@ inline void quda_clover_inverter::save_prop(const void* srcP, const char* filena
 
   for(int n=0;n<n0;n++){
     quda_cf_to_qlat_cf(prop[n], &src[n*Nvol]);
-  }
+  }   
 
   std::string VECS_TYPE("STAGGERED_Prop");
   char infoL[500];sprintf(infoL,"mass %.8f", inv_param.mass);

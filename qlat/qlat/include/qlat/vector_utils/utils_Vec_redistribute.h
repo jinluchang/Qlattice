@@ -224,8 +224,8 @@ inline void Vec_redistribute::set_mem(int b0_or,int civa_or)
     size_t i =  iv%(LoopN);
     size_t Aoff = (bi*Nts + ti)*svol;
     size_t Boff = (bi*Nts + ti)*Nv[0]*Nv[1]*Nv[2];
-    map_order[iv]  = (Aoff +      i        *Nv[orderN[2]])/Nv[orderN[2]];
-    map_Dorder[iv] = (Boff + mapcur_Vtoi[i]*Nv[orderN[2]])/Nv[orderN[2]];
+    map_order[iv]  = (Aoff +      i        *Nv[orderN[2]])/Nv[orderN[2]]; 
+    map_Dorder[iv] = (Boff + mapcur_Vtoi[i]*Nv[orderN[2]])/Nv[orderN[2]]; 
   });
 
 
@@ -335,17 +335,23 @@ void Vec_redistribute::call_MPI(int flag)
   if(mode_MPI == 1)
   {
     std::vector<MPI_Request> send_reqs(Nmpi/mt);
-    int mpi_tag = omp_get_thread_num()*Nmpi + map_mpi_vec[fd->rank];
+    std::vector<MPI_Request> recv_reqs(Nmpi/mt);
+    //int mpi_tag = omp_get_thread_num()*Nmpi + map_mpi_vec[fd->rank];
+    int mpi_tag = 10240 + 777; // AMD machine MPI have tag issues....
     int c1 = 0;
+    int c2 = 0;
     for(int n = 0; n < Nmpi/mt; n++){
-      if(sendM[n]!=0){MPI_Isend(&src[currspls[n]], sendM[n], curr, n, mpi_tag + n, vec_comm, &send_reqs[c1]);c1 += 1;}
+      //if(sendM[n]!=0){MPI_Isend(&src[currspls[n]], sendM[n], curr, n, mpi_tag + n, vec_comm, &send_reqs[c1]);c1 += 1;}
+      if(sendM[n]!=0){MPI_Isend(&src[currspls[n]], sendM[n], curr, n, mpi_tag, vec_comm, &send_reqs[c1]);c1 += 1;}
     }
 
     for(int n = 0; n < Nmpi/mt; n++){
-      if(recvM[n]!=0){MPI_Recv( &res[currrpls[n]], recvM[n], curr, n, mpi_tag + n, vec_comm, MPI_STATUS_IGNORE);}
-    }
+      //if(recvM[n]!=0){MPI_Irecv(&res[currrpls[n]], recvM[n], curr, n, mpi_tag + n, vec_comm, &recv_reqs[c2]);c2 += 1;}
+      if(recvM[n]!=0){MPI_Irecv(&res[currrpls[n]], recvM[n], curr, n, mpi_tag, vec_comm, &recv_reqs[c2]);c2 += 1;}
+    }    
 
-    MPI_Waitall(c1, send_reqs.data(), MPI_STATUS_IGNORE);
+    if(c2 != 0){MPI_Waitall(c2, recv_reqs.data(), MPI_STATUS_IGNORE);}
+    if(c1 != 0){MPI_Waitall(c1, send_reqs.data(), MPI_STATUS_IGNORE);}
   }
   qacc_barrier(dummy);
 
@@ -485,7 +491,7 @@ struct Rotate_vecs{
     Bsize = Bsize0;
     free_buf(buf, GPU);free_buf(src, GPU);buf=NULL;src=NULL;
     if(GPU){gpuMalloc(buf, Bsize/sizeof(Ty), Ty, 1);gpuMalloc(src, Bsize/sizeof(Ty), Ty, 1);}
-    else{
+    else{ 
       src = aligned_alloc_no_acc(Bsize);
       if(mode != -1)buf = aligned_alloc_no_acc(Bsize);
     }}
