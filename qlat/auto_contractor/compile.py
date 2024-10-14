@@ -160,25 +160,24 @@ def collect_position_in_cexpr(named_terms, named_exprs):
     return positions
 
 @q.timer
-def find_common_prod_in_factors(named_exprs):
+def find_common_prod_in_factors(variables_factor):
     """
     return None or (var_name_1, var_name_2,)
     """
     subexpr_count = {}
-    for name, expr in named_exprs:
-        for ea_coef, term_name in expr:
-            assert isinstance(ea_coef, ea.Expr)
-            for t in ea_coef.terms:
-                x = t.factors
-                if len(x) < 1:
-                    continue
-                for i, f in enumerate(x[:-1]):
-                    assert f.otype == "Var"
-                    f1 = x[i+1]
-                    assert f1.otype == "Var"
-                    prod = (f.code, f1.code,)
-                    count = subexpr_count.get(prod, 0)
-                    subexpr_count[prod] = count + 1
+    for _, ea_coef in variables_factor:
+        assert isinstance(ea_coef, ea.Expr)
+        for t in ea_coef.terms:
+            x = t.factors
+            if len(x) < 1:
+                continue
+            for i, f in enumerate(x[:-1]):
+                assert f.otype == "Var"
+                f1 = x[i+1]
+                assert f1.otype == "Var"
+                prod = (f.code, f1.code,)
+                count = subexpr_count.get(prod, 0)
+                subexpr_count[prod] = count + 1
     max_num_repeat = 0
     best_match = None
     for prod, num_repeat in subexpr_count.items():
@@ -188,62 +187,59 @@ def find_common_prod_in_factors(named_exprs):
     return best_match
 
 @q.timer
-def collect_common_prod_in_factors(named_exprs, common_prod, var):
+def collect_common_prod_in_factors(variables_factor, common_prod, var):
     """
-    common_prod = find_common_prod_in_factors(named_exprs)
+    common_prod = find_common_prod_in_factors(variables_factor)
     var = ea.Factor(name, variables=[], otype="Var")
     """
-    for name, expr in named_exprs:
-        for ea_coef, term_name in expr:
-            assert isinstance(ea_coef, ea.Expr)
-            for t in ea_coef.terms:
-                x = t.factors
-                if len(x) < 1:
-                    continue
-                for i, f in enumerate(x[:-1]):
-                    assert f.otype == "Var"
-                    f1 = x[i+1]
-                    assert f1.otype == "Var"
-                    prod = (f.code, f1.code,)
-                    if prod == common_prod:
-                        x[i] = var
-                        x[i+1] = None
-    for name, expr in named_exprs:
-        for ea_coef, term_name in expr:
-            assert isinstance(ea_coef, ea.Expr)
-            for t in ea_coef.terms:
-                x = t.factors
-                x_new = []
-                for v in x:
-                    if v is not None:
-                        x_new.append(v)
-                t.factors = x_new
+    for _, ea_coef in variables_factor:
+        assert isinstance(ea_coef, ea.Expr)
+        for t in ea_coef.terms:
+            x = t.factors
+            if len(x) < 1:
+                continue
+            for i, f in enumerate(x[:-1]):
+                assert f.otype == "Var"
+                f1 = x[i+1]
+                assert f1.otype == "Var"
+                prod = (f.code, f1.code,)
+                if prod == common_prod:
+                    x[i] = var
+                    x[i+1] = None
+    for _, ea_coef in variables_factor:
+        assert isinstance(ea_coef, ea.Expr)
+        for t in ea_coef.terms:
+            x = t.factors
+            x_new = []
+            for v in x:
+                if v is not None:
+                    x_new.append(v)
+            t.factors = x_new
 
 @q.timer
-def find_common_sum_in_factors(named_exprs):
+def find_common_sum_in_factors(variables_factor):
     """
     return None or (var_name_1, var_name_2,)
     """
     subexpr_count = {}
-    for name, expr in named_exprs:
-        for ea_coef, term_name in expr:
-            assert isinstance(ea_coef, ea.Expr)
-            x = ea_coef.terms
-            if len(x) < 1:
-                continue
-            for i, t in enumerate(x[:-1]):
-                t1 = x[i+1]
-                assert t.coef == 1
-                assert len(t.factors) == 1
-                assert t1.coef == 1
-                assert len(t1.factors) == 1
-                f = t.factors[0]
-                f1 = t1.factors[0]
-                assert f.otype == "Var"
-                assert f1.otype == "Var"
-                pair = (f.code, f1.code,)
-                count = subexpr_count.get(pair, 0)
-                subexpr_count[pair] = count + 1
+    for _, ea_coef in variables_factor:
+        assert isinstance(ea_coef, ea.Expr)
+        x = ea_coef.terms
+        if len(x) < 1:
+            continue
+        for i, t in enumerate(x[:-1]):
+            t1 = x[i+1]
+            assert t.coef == 1
+            assert len(t.factors) == 1
+            assert t1.coef == 1
+            assert len(t1.factors) == 1
+            f = t.factors[0]
+            f1 = t1.factors[0]
+            assert f.otype == "Var"
+            assert f1.otype == "Var"
+            pair = (f.code, f1.code,)
+            count = subexpr_count.get(pair, 0)
+            subexpr_count[pair] = count + 1
     max_num_repeat = 0
     best_match = None
     for pair, num_repeat in subexpr_count.items():
@@ -253,40 +249,38 @@ def find_common_sum_in_factors(named_exprs):
     return best_match
 
 @q.timer
-def collect_common_sum_in_factors(named_exprs, common_pair, var):
+def collect_common_sum_in_factors(variables_factor, common_pair, var):
     """
-    common_pair = find_common_sum_in_factors(named_exprs)
+    common_pair = find_common_sum_in_factors(variables_factor)
     var = ea.Factor(name, variables=[], otype="Var")
     """
-    for name, expr in named_exprs:
-        for ea_coef, term_name in expr:
-            assert isinstance(ea_coef, ea.Expr)
-            x = ea_coef.terms
-            if len(x) < 1:
-                continue
-            for i, t in enumerate(x[:-1]):
-                t1 = x[i+1]
-                assert t.coef == 1
-                assert len(t.factors) == 1
-                assert t1.coef == 1
-                assert len(t1.factors) == 1
-                f = t.factors[0]
-                f1 = t1.factors[0]
-                assert f.otype == "Var"
-                assert f1.otype == "Var"
-                pair = (f.code, f1.code,)
-                if pair == common_pair:
-                    x[i].factors[0] = var
-                    x[i+1] = None
-    for name, expr in named_exprs:
-        for ea_coef, term_name in expr:
-            assert isinstance(ea_coef, ea.Expr)
-            x = ea_coef.terms
-            x_new = []
-            for v in x:
-                if v is not None:
-                    x_new.append(v)
-            ea_coef.terms = x_new
+    for _, ea_coef in variables_factor:
+        assert isinstance(ea_coef, ea.Expr)
+        x = ea_coef.terms
+        if len(x) < 1:
+            continue
+        for i, t in enumerate(x[:-1]):
+            t1 = x[i+1]
+            assert t.coef == 1
+            assert len(t.factors) == 1
+            assert t1.coef == 1
+            assert len(t1.factors) == 1
+            f = t.factors[0]
+            f1 = t1.factors[0]
+            assert f.otype == "Var"
+            assert f1.otype == "Var"
+            pair = (f.code, f1.code,)
+            if pair == common_pair:
+                x[i].factors[0] = var
+                x[i+1] = None
+    for _, ea_coef in variables_factor:
+        assert isinstance(ea_coef, ea.Expr)
+        x = ea_coef.terms
+        x_new = []
+        for v in x:
+            if v is not None:
+                x_new.append(v)
+        ea_coef.terms = x_new
 
 @q.timer
 def collect_factor_in_cexpr(named_exprs):
@@ -297,47 +291,19 @@ def collect_factor_in_cexpr(named_exprs):
     variables_factor_intermediate = []
     variables_factor = []
     var_nameset = set()
-    for name, expr in named_exprs:
+    # Make variables to all coefs of all the terms
+    var_counter = 0
+    var_dataset = {}
+    for _, expr in named_exprs:
         for i, (ea_coef, term_name,) in enumerate(expr):
-            expr[i] = (ea.mk_expr(ea.simplified(ea_coef)), term_name,)
-    # Add ea.Factor with otype "Expr" to variables_factor_intermediate
-    var_counter = 0
-    var_dataset = {} # var_dataset[factor_code] = factor_var
-    for name, expr in named_exprs:
-        for ea_coef, term_name in expr:
-            assert isinstance(ea_coef, ea.Expr)
-            for t in ea_coef.terms:
-                x = t.factors
-                for i, f in enumerate(x):
-                    if f.otype != "Var":
-                        assert f.otype == "Expr"
-                        if f.code in var_dataset:
-                            x[i] = var_dataset[f.code]
-                        else:
-                            while True:
-                                name = f"V_factor_{var_counter}"
-                                var_counter += 1
-                                if name not in var_nameset:
-                                    break
-                            var_nameset.add(name)
-                            variables_factor_intermediate.append((name, ea.mk_expr(f),))
-                            var = ea.Factor(name, f.variables)
-                            x[i] = var
-                            var_dataset[f.code] = var
-    # Add numerical coef to variables_factor_intermediate
-    var_counter = 0
-    var_dataset = {} # var_dataset[factor_code] = factor_var
-    for name, expr in named_exprs:
-        for ea_coef, term_name in expr:
-            assert isinstance(ea_coef, ea.Expr)
-            for t in ea_coef.terms:
-                x = t.coef
-                if x == 1:
-                    continue
-                code = ea.compile_py_complex(x)
-                if code in var_dataset:
-                    t.coef = 1
-                    t.factors.append(var_dataset[code])
+            key = repr(ea_coef)
+            if key in var_dataset:
+                var = var_dataset[key]
+            else:
+                s_ea_coef = ea.mk_expr(ea.simplified(ea_coef))
+                key2 = repr(s_ea_coef)
+                if key2 in var_dataset:
+                    var = var_dataset[key2]
                 else:
                     while True:
                         name = f"V_factor_coef_{var_counter}"
@@ -345,19 +311,64 @@ def collect_factor_in_cexpr(named_exprs):
                         if name not in var_nameset:
                             break
                     var_nameset.add(name)
-                    variables_factor_intermediate.append((name, ea.mk_expr(t.coef),))
-                    t.coef = 1
+                    variables_factor.append((name, s_ea_coef,))
                     var = ea.Factor(name, variables=[], otype="Var")
-                    t.factors.append(var)
-                    var_dataset[code] = var
-    for name, expr in named_exprs:
-        for i, (ea_coef, term_name,) in enumerate(expr):
-            expr[i] = (ea.mk_expr(ea.simplified(ea_coef)), term_name,)
+                    var_dataset[key] = var
+                    var_dataset[key2] = var
+            expr[i] = (ea.mk_expr(var), term_name,)
+    # Add ea.Factor with otype "Expr" to variables_factor_intermediate
+    var_counter = 0
+    var_dataset = {} # var_dataset[factor_code] = factor_var
+    for _, ea_coef in variables_factor:
+        assert isinstance(ea_coef, ea.Expr)
+        for t in ea_coef.terms:
+            x = t.factors
+            for i, f in enumerate(x):
+                if f.otype != "Var":
+                    assert f.otype == "Expr"
+                    if f.code in var_dataset:
+                        x[i] = var_dataset[f.code]
+                    else:
+                        while True:
+                            name = f"V_factor_{var_counter}"
+                            var_counter += 1
+                            if name not in var_nameset:
+                                break
+                        var_nameset.add(name)
+                        variables_factor_intermediate.append((name, ea.mk_expr(f),))
+                        var = ea.Factor(name, f.variables)
+                        x[i] = var
+                        var_dataset[f.code] = var
+    # Add numerical coef to variables_factor_intermediate
+    var_counter = 0
+    var_dataset = {} # var_dataset[factor_code] = factor_var
+    for _, ea_coef in variables_factor:
+        assert isinstance(ea_coef, ea.Expr)
+        for t in ea_coef.terms:
+            x = t.coef
+            if x == 1:
+                continue
+            code = ea.compile_py_complex(x)
+            if code in var_dataset:
+                t.coef = 1
+                t.factors.append(var_dataset[code])
+            else:
+                while True:
+                    name = f"V_factor_coef_{var_counter}"
+                    var_counter += 1
+                    if name not in var_nameset:
+                        break
+                var_nameset.add(name)
+                variables_factor_intermediate.append((name, ea.mk_expr(t.coef),))
+                t.coef = 1
+                var = ea.Factor(name, variables=[], otype="Var")
+                t.factors.append(var)
+                var_dataset[code] = var
     # Common product elimination
     var_counter = 0
     var_dataset = {} # var_dataset[(code1, code2,)] = factor_var
     while True:
-        prod = find_common_prod_in_factors(named_exprs)
+        prod = find_common_prod_in_factors(variables_factor)
         if prod is None:
             break
         code1, code2 = prod
@@ -373,12 +384,12 @@ def collect_factor_in_cexpr(named_exprs):
         variables_factor_intermediate.append((name, prod_expr,))
         var = ea.Factor(name, variables=[], otype="Var")
         var_dataset[prod] = var
-        collect_common_prod_in_factors(named_exprs, prod, var)
+        collect_common_prod_in_factors(variables_factor, prod, var)
     # Common summation elimination
     var_counter = 0
     var_dataset = {} # var_dataset[(code1, code2,)] = factor_var
     while True:
-        pair = find_common_sum_in_factors(named_exprs)
+        pair = find_common_sum_in_factors(variables_factor)
         if pair is None:
             break
         code1, code2 = pair
@@ -394,30 +405,7 @@ def collect_factor_in_cexpr(named_exprs):
         variables_factor_intermediate.append((name, pair_expr,))
         var = ea.Factor(name, variables=[], otype="Var")
         var_dataset[pair] = var
-        collect_common_sum_in_factors(named_exprs, pair, var)
-    # Add remaining variables in variables_factor_intermediate to variables_factor
-    var_counter = 0
-    var_dataset = {} # var_dataset[factor_code] = factor_var
-    for name, expr in named_exprs:
-        for ea_coef, term_name in expr:
-            assert isinstance(ea_coef, ea.Expr)
-            for t in ea_coef.terms:
-                x = t.factors
-                for i, f in enumerate(x):
-                    assert f.otype == "Var"
-                    if f.code in var_dataset:
-                        x[i] = var_dataset[f.code]
-                    else:
-                        while True:
-                            name = f"V_factor_final_{var_counter}"
-                            var_counter += 1
-                            if name not in var_nameset:
-                                break
-                        var_nameset.add(name)
-                        variables_factor.append((name, ea.mk_expr(f)))
-                        var = ea.Factor(name, variables=f.variables, otype=f.otype)
-                        x[i] = var
-                        var_dataset[f.code] = var
+        collect_common_sum_in_factors(variables_factor, pair, var)
     return variables_factor_intermediate, variables_factor
 
 @q.timer
@@ -892,27 +880,55 @@ def filter_diagram_type(expr, diagram_type_dict=None, included_types=None):
     """
     first: drop diagrams with diagram_type_dict[diagram_type] == None
     second:
-        if included_types is not None:
-            only keep diagrams with diagram_type that diagram_type in included_types.
-    ``included_types'' is a list of diagram_type_name
+        if included_types is None:
+            return a list of a single expr with all the remaining diagrams summed together
+        else:
+            assert isinstance(included_types, list)
+            # included_types = [ None, "Type1", [ "Type2", "Type3", ], ]
+            return a list of exprs, each expr only includes the types specified in the `included_types`.
+    `included_types` is a list of specs of included diagram type.
+    Each spec in the list of `included_types` can be
+    (1) None: means all remaining types included
+    (2) a single str, with value be one diagram_type_name: means only include this type
+    (3) a list of str: means include only the types listed in the list.
     """
     if diagram_type_dict is None:
-        return expr
-    new_terms = []
+        return [ expr, ]
+    if included_types is None:
+        included_types_list = [ None, ]
+    else:
+        assert isinstance(included_types, list)
+        included_types_list = []
+        for its in included_types:
+            if its is None:
+                included_types_list.append(its)
+            elif isinstance(its, str):
+                included_types_list.append([ its, ])
+            elif isinstance(its, list):
+                included_types_list.append(its)
+            else:
+                assert False
+    expr_terms_list = [ [] for its in included_types_list ]
     for term in expr.terms:
         diagram_type = get_term_diagram_type_info(term)
         if diagram_type in diagram_type_dict:
-            if diagram_type_dict[diagram_type] is None:
-                continue
-            if included_types is not None:
-                diagram_type_name = diagram_type_dict.get(diagram_type)
-                if diagram_type_name not in included_types:
-                    continue
-        new_terms.append(term)
-    included_types_tag = ""
-    if included_types is not None:
-        included_types_tag = " (" + ','.join(included_types) + ")"
-    return Expr(new_terms, expr.description + included_types_tag)
+            diagram_type_name = diagram_type_dict.get(diagram_type)
+            if diagram_type_name is not None:
+                for i, its in enumerate(included_types_list):
+                    if (its is None) or (diagram_type_name in its):
+                        expr_terms_list[i].append(term)
+        else:
+            for i, its in enumerate(included_types_list):
+                if its is None:
+                    expr_terms_list[i].append(term)
+    expr_list = []
+    for i, its in enumerate(included_types_list):
+        if its is None:
+            its_tag = ""
+        else:
+            its_tag = " (" + ','.join(its) + ")"
+        expr_list.append(Expr(expr_terms_list[i], expr.description + its_tag))
+    return expr_list
 
 def mk_cexpr(*exprs, diagram_type_dict=None):
     """
@@ -964,9 +980,9 @@ def mk_cexpr(*exprs, diagram_type_dict=None):
     for i, expr in enumerate(exprs):
         expr_list = []
         typed_expr_list_dict = { name : [] for name, diagram_type in diagram_types }
-        for j, term in enumerate(expr.terms):
-            coef = term.coef
-            term.coef = 1
+        for j, term_coef in enumerate(expr.terms):
+            coef = term_coef.coef
+            term = Term(term_coef.c_ops, term_coef.a_ops, 1)
             repr_term = repr(term)
             diagram_type_name = diagram_type_term_dict[repr_term]
             assert diagram_type_name is not None
@@ -1003,11 +1019,16 @@ def contract_simplify(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict
             assert False
         expr = contract_expr(expr)
         expr.simplify(is_isospin_symmetric_limit=is_isospin_symmetric_limit)
-        expr = filter_diagram_type(expr,
+        expr_list = filter_diagram_type(
+                expr,
                 diagram_type_dict=diagram_type_dict,
                 included_types=included_types)
-        return expr
-    return q.parallel_map(func, exprs)
+        return expr_list
+    expr_list_list = q.parallel_map(func, exprs)
+    expr_list = []
+    for el in expr_list_list:
+        expr_list += el
+    return expr_list
 
 @q.timer
 def compile_expr(*exprs, diagram_type_dict = None):

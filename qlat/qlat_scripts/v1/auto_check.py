@@ -4,25 +4,19 @@ from .jobs import *
 
 @q.timer
 def get_all_points(total_site):
-    n_points = total_site[0] * total_site[1] * total_site[2] * total_site[3]
-    xg_list = []
-    for index in range(n_points):
-        xg = q.Coordinate()
-        xg.from_index(index, total_site)
-        xg_list.append(xg)
-    return xg_list
+    return list(get_all_points_psel(total_site))
 
 @q.timer
 def get_all_points_psel(total_site):
     geo = q.Geometry(total_site)
-    xg_list = get_all_points(total_site)
-    psel = q.PointsSelection([ xg.to_list() for xg in xg_list ], geo)
+    fsel = q.FieldSelection(geo, 1)
+    psel = fsel.to_psel()
     return psel
 
 # ----
 
 @q.timer
-def run_get_inverter_checker(job_tag, traj, *, inv_type, get_gf, get_gt = None, get_eig = None):
+def run_get_inverter_checker(job_tag, traj, *, inv_type, get_gf, get_gt=None, get_eig=None):
     if None in [ get_gf, ]:
         return
     if get_gt is None:
@@ -34,7 +28,7 @@ def run_get_inverter_checker(job_tag, traj, *, inv_type, get_gf, get_gt = None, 
     eig = get_eig()
     inv_acc = 2
     from . import rbc_ukqcd as ru
-    ru.get_inv(gf, job_tag, inv_type, inv_acc, gt = gt, eig = eig)
+    ru.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
 
 @q.timer_verbose
 def compute_prop_1_checker(inv, src, *, tag, sfw, path_sp):
@@ -54,11 +48,11 @@ def compute_prop_wsrc_checker(job_tag, tslice, inv_type, inv_acc, *,
     if tag in finished_tags:
         return None
     q.displayln_info(f"compute_prop_wsrc: idx={idx} tslice={tslice}", job_tag, inv_type, inv_acc)
-    inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt = gt, eig = eig)
+    inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site)
     src = q.mk_wall_src(geo, tslice)
-    prop = compute_prop_1_checker(inv, src, tag = tag, sfw = sfw, path_sp = path_sp)
+    prop = compute_prop_1_checker(inv, src, tag=tag, sfw=sfw, path_sp=path_sp)
 
 @q.timer_verbose
 def compute_prop_wsrc_all_checker(job_tag, traj, *,
@@ -72,14 +66,14 @@ def compute_prop_wsrc_all_checker(job_tag, traj, *,
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 1, 1, 1, 4, ]))
     inv_acc = 2
     for idx, tslice in enumerate(range(total_site[3])):
-        compute_prop_wsrc_checker(job_tag, tslice, inv_type, inv_acc = 2,
-                                  idx = idx, gf = gf, gt = gt, sfw = sfw, path_sp = path_sp,
-                                  eig = eig, finished_tags = finished_tags)
+        compute_prop_wsrc_checker(job_tag, tslice, inv_type, inv_acc=2,
+                                  idx=idx, gf=gf, gt=gt, sfw=sfw, path_sp=path_sp,
+                                  eig=eig, finished_tags=finished_tags)
     sfw.close()
     q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint.txt")))
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
-    q.qar_create_info(get_save_path(path_sp + ".qar"), get_save_path(path_sp), is_remove_folder_after = True)
-    q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after = True)
+    q.qar_create_info(get_save_path(path_sp + ".qar"), get_save_path(path_sp), is_remove_folder_after=True)
+    q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after=True)
 
 @q.timer
 def run_prop_wsrc_checker(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt):
@@ -98,7 +92,7 @@ def run_prop_wsrc_checker(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt):
         gt = get_gt()
         eig = get_eig()
         compute_prop_wsrc_all_checker(job_tag, traj,
-                                      inv_type = inv_type, gf = gf, gt = gt, eig = eig)
+                                      inv_type=inv_type, gf=gf, gt=gt, eig=eig)
         q.release_lock()
 
 # ----
@@ -120,11 +114,11 @@ def compute_prop_psrc_checker(job_tag, xg_src, inv_type, inv_acc, *,
     if tag in finished_tags:
         return None
     q.displayln_info(f"compute_prop_psrc: {job_tag} idx={idx} tag='{tag}'")
-    inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt = gt, eig = eig)
+    inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site)
-    src = q.mk_point_src(geo, xg)
-    prop = compute_prop_2_checker(inv, src, tag = tag, sfw = sfw)
+    src = q.mk_point_src(geo, q.Coordinate(xg))
+    prop = compute_prop_2_checker(inv, src, tag=tag, sfw=sfw)
 
 @q.timer_verbose
 def compute_prop_psrc_all_checker(job_tag, traj, *,
@@ -137,13 +131,13 @@ def compute_prop_psrc_all_checker(job_tag, traj, *,
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 1, 1, 1, 4, ]))
     def comp(idx, xg_src, inv_acc):
         compute_prop_psrc_checker(job_tag, xg_src, inv_type, inv_acc,
-                idx = idx, gf = gf, gt = gt, sfw = sfw,
-                eig = eig, finished_tags = finished_tags)
+                idx=idx, gf=gf, gt=gt, sfw=sfw,
+                eig=eig, finished_tags=finished_tags)
     for idx, xg_src in enumerate(get_all_points(total_site)):
-        comp(idx, xg_src, inv_acc = 2)
+        comp(idx, xg_src, inv_acc=2)
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
-    q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after = True)
+    q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after=True)
 
 @q.timer
 def run_prop_psrc_checker(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt):
@@ -162,8 +156,8 @@ def run_prop_psrc_checker(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt):
         gt = get_gt()
         eig = get_eig()
         compute_prop_psrc_all_checker(job_tag, traj,
-                                      inv_type = inv_type, gf = gf, gt = gt,
-                                      eig = eig)
+                                      inv_type=inv_type, gf=gf, gt=gt,
+                                      eig=eig)
         q.release_lock()
 
 # ----
@@ -182,7 +176,7 @@ def load_prop_psrc(job_tag, traj, inv_type):
     path_s = f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}/geon-info.txt"
     psel = get_all_points_psel(total_site)
     prop_list = []
-    xg_list = [ q.Coordinate(xg) for xg in psel.to_list() ]
+    xg_list = [ xg for xg in psel ]
     sfr = q.open_fields(get_load_path(path_s), "r")
     for xg_src in xg_list:
         xg_idx = xg_src.to_index(total_site)
@@ -254,10 +248,10 @@ def run_get_prop_checker(job_tag, traj, *,
         gf = get_gf()
         gt = get_gt()
         #
-        load_prop_psrc(job_tag, traj, inv_type = 0)
-        load_prop_psrc(job_tag, traj, inv_type = 1)
-        load_prop_wsrc(job_tag, traj, inv_type = 0)
-        load_prop_wsrc(job_tag, traj, inv_type = 1)
+        load_prop_psrc(job_tag, traj, inv_type=0)
+        load_prop_psrc(job_tag, traj, inv_type=1)
+        load_prop_wsrc(job_tag, traj, inv_type=0)
+        load_prop_wsrc(job_tag, traj, inv_type=1)
         #
         prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")
         def get_prop(flavor, p_snk, p_src):

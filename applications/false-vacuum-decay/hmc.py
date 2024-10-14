@@ -32,7 +32,7 @@ class HMC:
         geo = q.Geometry(total_site)
         # Create a random number generator that can be split between
         # different portions of the lattice
-        self.rs = q.RngState(f"false_vacuum_decay-{total_site[0]}x{total_site[1]}x{total_site[2]}x{total_site[3]}")
+        self.rs = q.RngState(f"false_vacuum_decay-{self.fileidwc}")
         
         # Create the scalar field
         self.field = q.Field(q.ElemTypeRealD, geo, mult)
@@ -405,7 +405,7 @@ def main():
     # The number of trajectories to calculate
     n_traj = 50000
     #
-    version = "4-1"
+    version = "5-0"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
     steps = 10
@@ -476,7 +476,7 @@ def main():
     action = q.QMAction(alpha, beta, FV_offset, barrier_strength, M, L, t_full, t_full, t_FV_out, t_FV_mid, dt)
     hmc = HMC(action,f"alpha_{alpha}_beta_{beta}_dt_{dt}_FVoff_{FV_offset}_bar_{barrier_strength}_M_{M}_L_{L}_tfull_{t_full}_tTV_{t_TV}_tFV_{t_FV_out*2+t_FV_mid}_tFVout_{t_FV_out}_tFVmid_{t_FV_mid}",total_site,mult,steps,init_length,date,version,fresh_start)
     
-    steps = np.array([0.001*(2**int(i/2)+(i%2)*2**(int(i/2)-1)) for i in range (19)] + [1.0])
+    steps = np.concatenate([0.001*np.arange(1,100), 0.1 + 0.01*np.arange(0,91)])
     measure_Ms = steps[steps>M] #[round(min(max(M,0.001)*2**i, 1.0),5) for i in range(1,10)]
     measure_Ls = steps[steps>L] #[round(min(max(L,0.001)*2**i, 1.0),5) for i in range(1,10)]
     measure_deltats = range(0,min(t_full,10))

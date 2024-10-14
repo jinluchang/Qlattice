@@ -10,13 +10,18 @@ import cqlat as c
 import qlat_utils as q
 import numpy as np
 
+obtained_lock_history_list = []
+
 @q.timer
 def release_lock():
     cc.release_lock()
 
 @q.timer
 def obtain_lock(const cc.std_string& path):
-    return cc.obtain_lock(path)
+    b = cc.obtain_lock(path)
+    if b:
+        obtained_lock_history_list.append(path)
+    return b
 
 def qquit(const cc.std_string& msg):
     """

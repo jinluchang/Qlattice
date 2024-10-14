@@ -606,7 +606,7 @@ def run_eig_strange(job_tag, traj, get_gf):
     """
     if None in [ get_gf, ]:
         return None
-    if get_param(job_tag, "clanc-params", 1) is None:
+    if get_param(job_tag, "clanc_params", 1) is None:
         fn = f"{job_tag}/eig-strange/traj-{traj}/no-eig-parameters.txt"
         if get_load_path(fn) is None:
             q.qtouch_info(get_save_path(fn))

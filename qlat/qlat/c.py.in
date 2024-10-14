@@ -90,6 +90,7 @@ __all__ += [
         ]
 
 __all__ += [
+        'obtained_lock_history_list',
         'release_lock',
         'obtain_lock',
         'qquit',

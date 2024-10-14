@@ -108,6 +108,7 @@ buildPythonPackage rec {
     '';
     extra = if cudaSupport then gpu_extra else cpu_extra;
   in extra + ''
+    export OMP_NUM_THREADS=2
     export
     echo
     ls -l

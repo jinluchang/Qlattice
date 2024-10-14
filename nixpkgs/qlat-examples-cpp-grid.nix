@@ -116,6 +116,7 @@ buildPythonPackage rec {
     # export CXXFLAGS="''${CXX_ARR[@]:1} $CXXFLAGS"
     # export LDFLAGS="''${CXX_ARR[@]:1} $LDFLAGS"
     #
+    export OMP_NUM_THREADS=2
     export
     echo
     ls -l
