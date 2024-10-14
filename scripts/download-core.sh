@@ -49,7 +49,7 @@ fi
 if [ -e Grid/configure ] ; then
     echo "Grid bootstrapped."
 else
-    ( cd Grid ; git clean -f ; ./bootstrap.sh ; ls -l Eigen )
+    ( cd Grid ; git clean -f ; ./bootstrap.sh || true ; ls -l Eigen )
 fi
 
 if [ -d Grid-clehner ] ; then
@@ -79,7 +79,7 @@ fi
 if [ -e Hadrons/configure ] ; then
     echo "Hadrons bootstrapped."
 else
-    ( cd Hadrons ; git clean -f ; ./bootstrap.sh )
+    ( cd Hadrons ; git clean -f ; ./bootstrap.sh || true )
 fi
 
 if [ -d Grid-tblum ] ; then
@@ -91,7 +91,7 @@ fi
 if [ -e Grid-tblum/configure ] ; then
     echo "Grid-tblum bootstrapped."
 else
-    ( cd Grid-tblum ; git clean -f ; ./bootstrap.sh ; ls -l Eigen )
+    ( cd Grid-tblum ; git clean -f ; ./bootstrap.sh || true ; ls -l Eigen )
 fi
 
 if [ -d Hadrons-tblum ] ; then
@@ -103,7 +103,7 @@ fi
 if [ -e Hadrons-tblum/configure ] ; then
     echo "Hadrons-tblum bootstrapped."
 else
-    ( cd Hadrons-tblum ; git clean -f ; ./bootstrap.sh )
+    ( cd Hadrons-tblum ; git clean -f ; ./bootstrap.sh || true )
 fi
 
 if [ -d CPS ] ; then
