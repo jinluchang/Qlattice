@@ -6,6 +6,7 @@
 , qlat
 , git
 , which
+, rsync
 , bash
 , time
 , mpi
@@ -47,6 +48,7 @@ buildPythonPackage rec {
     mpiCheckPhaseHook
     openssh
     which
+    rsync
   ]
   ++ lib.optionals cudaSupport (with cudaPackages; [ cuda_nvcc ])
   ++ lib.optionals cudaSupport [ nixgl ]
@@ -150,6 +152,8 @@ buildPythonPackage rec {
     echo
     #
     pwd
+    mkdir -p "$out/share/qlat-examples-cpp"
+    rsync -a --delete . "$out/share/qlat-examples-cpp"
   '';
 
   dontBuild = true;
