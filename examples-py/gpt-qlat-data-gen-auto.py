@@ -2070,7 +2070,7 @@ def run_job_contract(job_tag, traj):
                 q.timer_display()
                 q.timer_merge()
             q.release_lock()
-            q.clean_cache()
+    q.clean_cache()
 
 ### ------
 

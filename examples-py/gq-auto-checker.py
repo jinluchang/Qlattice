@@ -1059,6 +1059,15 @@ def auto_contract_pi0_gg(job_tag, traj, get_get_prop):
 # ----
 
 @q.timer_verbose
+def get_all_cexpr():
+    benchmark_eval_cexpr(get_cexpr_pi0_gg())
+    benchmark_eval_cexpr(get_cexpr_meson_corr())
+    benchmark_eval_cexpr(get_cexpr_meson_corr_wf())
+    benchmark_eval_cexpr(get_cexpr_meson_meson_i0_j0_corr_wf())
+
+# ----
+
+@q.timer_verbose
 def run_job(job_tag, traj):
     #
     # fix gauge field in checking
@@ -1076,8 +1085,6 @@ def run_job(job_tag, traj):
             ]
     #
     fns_produce = fns_props + [
-            f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
-            #
             (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
             #
             f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
@@ -1085,16 +1092,11 @@ def run_job(job_tag, traj):
             f"{job_tag}/eig/traj-{traj_gf}",
             f"{job_tag}/eig-strange/traj-{traj_gf}",
             ]
-    fns_need = [
-            # f"{job_tag}/gauge-transform/traj-{traj}.field",
-            # f"{job_tag}/point-selection/traj-{traj}.txt",
-            # f"{job_tag}/field-selection/traj-{traj}.field",
-            # f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
-            # f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
-            # (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
-            ]
+    fns_need = []
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
+    #
+    num_locks = len(q.obtained_lock_history_list)
     #
     get_gf = run_gf(job_tag, traj_gf)
     get_gt = run_gt(job_tag, traj_gf, get_gf)
@@ -1121,36 +1123,70 @@ def run_job(job_tag, traj):
     run_with_eig()
     run_with_eig_strange()
     #
+    if len(q.obtained_lock_history_list) > num_locks:
+        q.timer_display()
+
+@q.timer_verbose
+def run_job_contract(job_tag, traj):
+    #
+    # fix gauge field in checking
+    # all the props (including psrc props) are generated with Coulomb gauge fixing
+    #
+    traj_gf = 1000
+    #
+    fns_props = [
+            (f"{job_tag}/prop-psrc-light/traj-{traj_gf}.qar", f"{job_tag}/prop-psrc-light/traj-{traj_gf}/geon-info.txt",),
+            (f"{job_tag}/prop-psrc-strange/traj-{traj_gf}.qar", f"{job_tag}/prop-psrc-strange/traj-{traj_gf}/geon-info.txt",),
+            (f"{job_tag}/prop-wsrc-light/traj-{traj_gf}.qar", f"{job_tag}/prop-wsrc-light/traj-{traj_gf}/geon-info.txt",),
+            (f"{job_tag}/prop-wsrc-strange/traj-{traj_gf}.qar", f"{job_tag}/prop-wsrc-strange/traj-{traj_gf}/geon-info.txt",),
+            (f"{job_tag}/psel-prop-wsrc-light/traj-{traj_gf}.qar", f"{job_tag}/psel-prop-wsrc-light/traj-{traj_gf}/checkpoint.txt",),
+            (f"{job_tag}/psel-prop-wsrc-strange/traj-{traj_gf}.qar", f"{job_tag}/psel-prop-wsrc-strange/traj-{traj_gf}/checkpoint.txt",),
+            ]
+    #
+    fns_produce = [
+            f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
+            #
+            ]
+    fns_need = fns_props + [
+            (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
+            #
+            f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
+            #
+            f"{job_tag}/eig/traj-{traj_gf}",
+            f"{job_tag}/eig-strange/traj-{traj_gf}",
+            ]
+    if not check_job(job_tag, traj, fns_produce, fns_need):
+        return
+    #
+    get_gf = run_gf(job_tag, traj_gf)
+    get_gt = run_gt(job_tag, traj_gf, get_gf)
+    get_gf_ape = run_gf_ape(job_tag, get_gf)
+    #
     run_r_list(job_tag)
     get_get_prop = run_get_prop_checker(job_tag, traj_gf, get_gf=get_gf, get_gt=get_gt)
     #
     fn_checkpoint = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
     if get_load_path(fn_checkpoint) is None and get_get_prop is not None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
-            q.timer_fork()
-            # ADJUST ME
-            auto_contract_pi0_gg(job_tag, traj, get_get_prop)
-            auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop)
-            auto_contract_meson_corr_wf(job_tag, traj, get_get_prop)
-            auto_contract_meson_corr_psnk_psrc_rand(job_tag, traj, get_get_prop)
-            #
-            auto_contract_meson_corr(job_tag, traj_gf, get_get_prop)
-            auto_contract_meson_corr_psnk(job_tag, traj_gf, get_get_prop)
-            auto_contract_meson_corr_psnk_psrc(job_tag, traj_gf, get_get_prop)
-            #
-            q.qtouch_info(get_save_path(fn_checkpoint))
-            q.release_lock()
-            q.displayln_info("timer_display for runjob")
-            q.timer_display()
-            q.timer_merge()
-            # q.clean_cache()
-
-@q.timer_verbose
-def get_all_cexpr():
-    benchmark_eval_cexpr(get_cexpr_pi0_gg())
-    benchmark_eval_cexpr(get_cexpr_meson_corr())
-    benchmark_eval_cexpr(get_cexpr_meson_corr_wf())
-    benchmark_eval_cexpr(get_cexpr_meson_meson_i0_j0_corr_wf())
+            get_prop = get_get_prop()
+            if get_prop is not None:
+                q.timer_fork()
+                # ADJUST ME
+                auto_contract_pi0_gg(job_tag, traj, get_get_prop)
+                auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop)
+                auto_contract_meson_corr_wf(job_tag, traj, get_get_prop)
+                auto_contract_meson_corr_psnk_psrc_rand(job_tag, traj, get_get_prop)
+                #
+                auto_contract_meson_corr(job_tag, traj_gf, get_get_prop)
+                auto_contract_meson_corr_psnk(job_tag, traj_gf, get_get_prop)
+                auto_contract_meson_corr_psnk_psrc(job_tag, traj_gf, get_get_prop)
+                #
+                q.qtouch_info(get_save_path(fn_checkpoint))
+                q.release_lock()
+                q.displayln_info("timer_display for runjob")
+                q.timer_display()
+                q.timer_merge()
+    q.clean_cache()
 
 # ----
 
@@ -1231,6 +1267,32 @@ set_param("test-4nt64", tag)(8)
 
 # ----
 
+job_tag = "test-4nt16-checker"
+set_param(job_tag, "trajs")(list(range(1000, 1001)))
+set_param(job_tag, "mk_sample_gauge_field", "rand_n_step")(2)
+set_param(job_tag, "mk_sample_gauge_field", "flow_n_step")(8)
+set_param(job_tag, "mk_sample_gauge_field", "hmc_n_traj")(1)
+set_param(job_tag, "fermion_params", 0, 0, "Ls")(8)
+set_param(job_tag, "fermion_params", 1, 0, "Ls")(8)
+set_param(job_tag, "fermion_params", 2, 0, "Ls")(8)
+set_param(job_tag, "lanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
+set_param(job_tag, "lanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
+set_param(job_tag, "clanc_params", 0, 0, "nbasis")(100)
+set_param(job_tag, "clanc_params", 0, 0, "block")([ 4, 4, 2, 2, ])
+set_param(job_tag, "clanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
+set_param(job_tag, "clanc_params", 0, 0, "save_params")({ "nsingle": 100, "mpi": [ 1, 1, 1, 4, ], })
+set_param(job_tag, "clanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
+set_param(job_tag, "clanc_params", 1, 0)(get_param(job_tag, "clanc_params", 0, 0).copy())
+set_param(job_tag, "lanc_params", 1, 0)(get_param(job_tag, "lanc_params", 0, 0).copy())
+set_param(job_tag, "lanc_params", 1, 0, "fermion_params")(get_param(job_tag, "fermion_params", 1, 0).copy())
+set_param(job_tag, "cg_params-0-2", "maxiter")(5)
+set_param(job_tag, "cg_params-0-2", "maxcycle")(1)
+set_param(job_tag, "cg_params-1-2", "maxiter")(5)
+set_param(job_tag, "cg_params-1-2", "maxcycle")(1)
+set_param(job_tag, "meson_tensor_tsep")(3)
+
+# ----
+
 def gracefully_finish():
     q.timer_display()
     qg.end_with_gpt()
@@ -1267,8 +1329,13 @@ if __name__ == "__main__":
     for job_tag in job_tags:
         run_params(job_tag)
         for traj in get_param(job_tag, "trajs"):
-            q.check_time_limit()
-            run_job(job_tag, traj)
+            if is_performing_inversion:
+                q.check_time_limit()
+                run_job(job_tag, traj)
+        for traj in get_param(job_tag, "trajs"):
+            if is_performing_contraction:
+                q.check_time_limit()
+                run_job_contract(job_tag, traj)
 
     q.check_log_json(__file__, json_results, check_eps=5e-5)
 
