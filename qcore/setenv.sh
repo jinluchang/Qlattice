@@ -3,23 +3,57 @@ if [ "$(uname)" == "Darwin" ]; then
     export q_num_mp_processes=0
     if which brew >/dev/null 2>&1 ; then
         echo "Setting for brew in Mac OS X with prefix: $(brew --prefix)"
-        export PATH="$(brew --prefix)/opt/openssl@3/bin":"$PATH"
-        export PATH="$(brew --prefix)/opt/findutils/libexec/gnubin":"$PATH"
-        export PATH="$(brew --prefix)/opt/coreutils/libexec/gnubin":"$PATH"
-        export PATH="$(brew --prefix)/opt/llvm/bin":"$PATH"
-        export LD_RUN_PATH="$(brew --prefix)/opt/llvm/lib/c++":"$LD_RUN_PATH"
-        export LIBRARY_PATH="$(brew --prefix)/Cellar/fftw/3.3.10_1/lib":"$LIBRARY_PATH"
-        export LIBRARY_PATH="$(brew --prefix)/opt/openssl@3/lib":"$LIBRARY_PATH"
-        export LIBRARY_PATH="$(brew --prefix)/opt/llvm/lib/c++":"$LIBRARY_PATH"
-        export LIBRARY_PATH="$(brew --prefix)/opt/llvm/lib":"$LIBRARY_PATH"
-        export LIBRARY_PATH="$(brew --prefix)/opt/zlib/lib":"$LIBRARY_PATH"
-        export LIBRARY_PATH="$(brew --prefix)/opt/lib":"$LIBRARY_PATH"
-        export CPATH="$(brew --prefix)/opt/openssl@3/include":"$CPATH"
-        export CPATH="$(brew --prefix)/Cellar/fftw/3.3.10_1/include":"$CPATH"
-        export CPATH="$(brew --prefix)/opt/llvm/include":"$CPATH"
-        export CPATH="$(brew --prefix)/opt/zlib/include":"$CPATH"
-        export CPATH="$(brew --prefix)/opt/include":"$CPATH"
-        export PKG_CONFIG_PATH="$(brew --prefix)/opt/zlib/lib/pkgconfig":"$PKG_CONFIG_PATH"
+        if [ -e "$(brew --prefix)/opt/openssl@3/bin" ]; then
+            export PATH="$(brew --prefix)/opt/openssl@3/bin":"$PATH"
+        fi
+        if [ -e "$(brew --prefix)/opt/findutils/libexec/gnubin" ]; then
+            export PATH="$(brew --prefix)/opt/findutils/libexec/gnubin":"$PATH"
+        fi
+        if [ -e "$(brew --prefix)/opt/coreutils/libexec/gnubin" ]; then
+            export PATH="$(brew --prefix)/opt/coreutils/libexec/gnubin":"$PATH"
+        fi
+        if [ -e "$(brew --prefix)/opt/llvm/bin" ]; then
+            export PATH="$(brew --prefix)/opt/llvm/bin":"$PATH"
+        fi
+        if [ -e "$(brew --prefix)/opt/llvm/lib/c++" ]; then
+            export LD_RUN_PATH="$(brew --prefix)/opt/llvm/lib/c++":"$LD_RUN_PATH"
+        fi
+        if [ -e "$(brew --prefix)/Cellar/fftw/3.3.10_1/lib" ]; then
+            export LIBRARY_PATH="$(brew --prefix)/Cellar/fftw/3.3.10_1/lib":"$LIBRARY_PATH"
+        fi
+        if [ -e "$(brew --prefix)/opt/openssl@3/lib" ]; then
+            export LIBRARY_PATH="$(brew --prefix)/opt/openssl@3/lib":"$LIBRARY_PATH"
+        fi
+        if [ -e "$(brew --prefix)/opt/llvm/lib/c++" ]; then
+            export LIBRARY_PATH="$(brew --prefix)/opt/llvm/lib/c++":"$LIBRARY_PATH"
+        fi
+        if [ -e "$(brew --prefix)/opt/llvm/lib" ]; then
+            export LIBRARY_PATH="$(brew --prefix)/opt/llvm/lib":"$LIBRARY_PATH"
+        fi
+        if [ -e "$(brew --prefix)/opt/zlib/lib" ]; then
+            export LIBRARY_PATH="$(brew --prefix)/opt/zlib/lib":"$LIBRARY_PATH"
+        fi
+        if [ -e "$(brew --prefix)/opt/lib" ]; then
+            export LIBRARY_PATH="$(brew --prefix)/opt/lib":"$LIBRARY_PATH"
+        fi
+        if [ -e "$(brew --prefix)/opt/openssl@3/include" ]; then
+            export CPATH="$(brew --prefix)/opt/openssl@3/include":"$CPATH"
+        fi
+        if [ -e "$(brew --prefix)/Cellar/fftw/3.3.10_1/include" ]; then
+            export CPATH="$(brew --prefix)/Cellar/fftw/3.3.10_1/include":"$CPATH"
+        fi
+        if [ -e "$(brew --prefix)/opt/llvm/include" ]; then
+            export CPATH="$(brew --prefix)/opt/llvm/include":"$CPATH"
+        fi
+        if [ -e "$(brew --prefix)/opt/zlib/include" ]; then
+            export CPATH="$(brew --prefix)/opt/zlib/include":"$CPATH"
+        fi
+        if [ -e "$(brew --prefix)/opt/include" ]; then
+            export CPATH="$(brew --prefix)/opt/include":"$CPATH"
+        fi
+        if [ -e "$(brew --prefix)/opt/zlib/lib/pkgconfig" ]; then
+            export PKG_CONFIG_PATH="$(brew --prefix)/opt/zlib/lib/pkgconfig":"$PKG_CONFIG_PATH"
+        fi
     fi
     if [ -z ${USE_COMPILER+x} ] ; then
         export USE_COMPILER=clang
