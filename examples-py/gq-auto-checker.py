@@ -1172,7 +1172,8 @@ def run_job_contract(job_tag, traj):
             if get_prop is not None:
                 q.timer_fork()
                 # ADJUST ME
-                auto_contract_pi0_gg(job_tag, traj, get_get_prop)
+                auto_contract_pi0_gg(job_tag, traj_gf, get_get_prop)
+                #
                 auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop)
                 auto_contract_meson_corr_wf(job_tag, traj, get_get_prop)
                 auto_contract_meson_corr_psnk_psrc_rand(job_tag, traj, get_get_prop)
@@ -1190,7 +1191,7 @@ def run_job_contract(job_tag, traj):
 
 # ----
 
-set_param("test-4nt8", "trajs")(list(range(1000, 1001)))
+set_param("test-4nt8", "trajs")(list(range(1000, 1002)))
 set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step")(2)
 set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step")(8)
 set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj")(1)
@@ -1311,6 +1312,9 @@ set_param(job_tag, "m_l")(get_param(job_tag, "fermion_params", 0, 0, "mass"))
 set_param(job_tag, "m_h")(get_param(job_tag, "fermion_params", 1, 0, "mass"))
 
 set_param(job_tag, "meson_tensor_tsep")(3)
+
+set_param(job_tag, "gf_ape_smear_coef")(0.5)
+set_param(job_tag, "gf_ape_smear_step")(30)
 
 set_param(job_tag, "measurement", "auto_contract_meson_corr_wf", "sample_num")(32)
 set_param(job_tag, "measurement", "auto_contract_meson_corr_wf", "sample_size")(2)
