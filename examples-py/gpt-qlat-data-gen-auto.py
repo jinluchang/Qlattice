@@ -1879,6 +1879,13 @@ def auto_contract_pi0_gg_disc(job_tag, traj, get_get_prop, get_psel_prob, get_fs
 
 @q.timer_verbose
 def run_job(job_tag, traj):
+    #
+    traj_gf = traj
+    if job_tag[:5] == "test-":
+        # ADJUST ME
+        traj_gf = 1000
+        #
+    #
     fns_produce = [
             (f"{job_tag}/prop-rand-u1-light/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-light/traj-{traj}/geon-info.txt",),
             (f"{job_tag}/prop-rand-u1-strange/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-strange/traj-{traj}/geon-info.txt",),
@@ -1909,12 +1916,6 @@ def run_job(job_tag, traj):
             ]
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
-    #
-    traj_gf = traj
-    if job_tag[:5] == "test-":
-        # ADJUST ME
-        traj_gf = 1000
-        #
     #
     get_gf = run_gf(job_tag, traj_gf)
     get_gt = run_gt(job_tag, traj_gf, get_gf)
@@ -1980,6 +1981,13 @@ def run_job(job_tag, traj):
 
 @q.timer_verbose
 def run_job_contract(job_tag, traj):
+    #
+    traj_gf = traj
+    if job_tag[:5] == "test-":
+        # ADJUST ME
+        traj_gf = 1000
+        #
+    #
     fns_produce = [
             f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
             #
@@ -1994,7 +2002,7 @@ def run_job_contract(job_tag, traj):
             (f"{job_tag}/psel-prop-wsrc-light/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-light/traj-{traj}/checkpoint.txt",),
             (f"{job_tag}/prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/prop-wsrc-strange/traj-{traj}/geon-info.txt",),
             (f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}/checkpoint.txt",),
-            f"{job_tag}/gauge-transform/traj-{traj}.field",
+            f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
             f"{job_tag}/point-selection/traj-{traj}.txt",
             f"{job_tag}/field-selection/traj-{traj}.field",
             # f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
@@ -2003,12 +2011,6 @@ def run_job_contract(job_tag, traj):
             ]
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
-    #
-    traj_gf = traj
-    if job_tag[:5] == "test-":
-        # ADJUST ME
-        traj_gf = 1000
-        #
     #
     get_gf = None
     get_gt = run_gt(job_tag, traj_gf, get_gf)
@@ -2191,7 +2193,7 @@ set_param(job_tag, "n_rand_u1_fsel")(16)
 set_param(job_tag, "prob_acc_1_rand_u1")(0.25)
 set_param(job_tag, "prob_acc_2_rand_u1")(0.10)
 
-set_param(job_tag, "meson_jwjj_threshold")(0.1)
+set_param(job_tag, "meson_jwjj_threshold")(0.5)
 
 # ----
 
