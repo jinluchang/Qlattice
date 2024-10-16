@@ -21,6 +21,7 @@ is_cython = False
 
 load_path_list[:] = [
         "results",
+        "qcddata",
         "/lustre20/volatile/qcdqedta/qcddata",
         "/lustre20/volatile/decay0n2b/qcddata",
         "/lustre20/volatile/pqpdf/ljin/qcddata",
@@ -1974,6 +1975,8 @@ def run_job(job_tag, traj):
     run_charm()
     #
     q.clean_cache()
+    if q.obtained_lock_history_list:
+        q.timer_display()
 
 @q.timer_verbose
 def run_job_contract(job_tag, traj):
@@ -2071,6 +2074,8 @@ def run_job_contract(job_tag, traj):
                 q.timer_merge()
             q.release_lock()
     q.clean_cache()
+    if q.obtained_lock_history_list:
+        q.timer_display()
 
 ### ------
 
@@ -2108,6 +2113,85 @@ set_param("test-4nt8", tag)(0.1)
 set_param("24D", tag)(0.02)
 set_param("48I", tag)(0.01)
 set_param("64I", tag)(0.0005)
+
+# ----
+
+job_tag = "test-4nt16-checker"
+
+set_param(job_tag, "trajs")(list(range(1000, 1032)))
+
+set_param(job_tag, "total_site")([ 4, 4, 4, 16, ])
+set_param(job_tag, "load_config_params", "twist_boundary_at_boundary")([ 0.0, 0.0, 0.0, -0.5, ])
+
+set_param(job_tag, "mk_sample_gauge_field", "rand_n_step")(2)
+set_param(job_tag, "mk_sample_gauge_field", "flow_n_step")(8)
+set_param(job_tag, "mk_sample_gauge_field", "hmc_n_traj")(5)
+
+set_param(job_tag, "fermion_params", 0, 0)({ 'Ls': 8, 'M5': 1.8, 'b': 1.5, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'c': 0.5, })
+for inv_type in [ 1, 2, ]:
+    set_param(job_tag, "fermion_params", inv_type, 0)(get_param(job_tag, "fermion_params", 0, 0).copy())
+set_param(job_tag, "fermion_params", 0, 0, "mass")(0.01)
+set_param(job_tag, "fermion_params", 1, 0, "mass")(0.04)
+set_param(job_tag, "fermion_params", 2, 0, "mass")(0.2)
+for inv_type in [ 0, 1, 2, ]:
+    for inv_acc in [ 1, 2, ]:
+        set_param(job_tag, "fermion_params", inv_type, inv_acc)(get_param(job_tag, "fermion_params", inv_type, 0).copy())
+
+set_param(job_tag, "lanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
+set_param(job_tag, "lanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
+set_param(job_tag, "lanc_params", 0, 0, "pit_params")({ 'eps': 0.01, 'maxiter': 500, 'real': True, })
+set_param(job_tag, "lanc_params", 1, 0)(get_param(job_tag, "lanc_params", 0, 0).copy())
+
+for inv_type in [ 0, 1, ]:
+    set_param(job_tag, "lanc_params", inv_type, 0, "fermion_params")(get_param(job_tag, "fermion_params", inv_type, 0).copy())
+
+set_param(job_tag, "clanc_params", 0, 0, "nbasis")(100)
+set_param(job_tag, "clanc_params", 0, 0, "block")([ 4, 4, 2, 2, ])
+set_param(job_tag, "clanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
+set_param(job_tag, "clanc_params", 0, 0, "save_params")({ "nsingle": 100, "mpi": [ 1, 1, 1, 4, ], })
+set_param(job_tag, "clanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
+set_param(job_tag, "clanc_params", 0, 0, "smoother_params")({'eps': 1e-08, 'maxiter': 20})
+set_param(job_tag, "clanc_params", 1, 0)(get_param(job_tag, "clanc_params", 0, 0).copy())
+
+for inv_type in [ 0, 1, 2, ]:
+    set_param(job_tag, f"cg_params-{inv_type}-2", "maxiter")(500)
+    set_param(job_tag, f"cg_params-{inv_type}-2", "maxcycle")(50)
+
+set_param(job_tag, "m_l")(get_param(job_tag, "fermion_params", 0, 0, "mass"))
+set_param(job_tag, "m_h")(get_param(job_tag, "fermion_params", 1, 0, "mass"))
+
+set_param(job_tag, "meson_tensor_tsep")(3)
+
+set_param(job_tag, "gf_ape_smear_coef")(0.5)
+set_param(job_tag, "gf_ape_smear_step")(30)
+
+set_param(job_tag, "measurement", "auto_contract_meson_corr_wf", "sample_num")(32)
+set_param(job_tag, "measurement", "auto_contract_meson_corr_wf", "sample_size")(2)
+set_param(job_tag, "measurement", "auto_contract_meson_corr_wf", "t_sep_range")(6)
+set_param(job_tag, "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "sample_num")(32)
+set_param(job_tag, "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "sample_size")(2)
+set_param(job_tag, "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "t_sep_range")(6)
+
+set_param(job_tag, "field-selection-fsel-rate")(0.3)
+set_param(job_tag, "field-selection-psel-rate")(0.1)
+set_param(job_tag, "field-selection-fsel-psrc-prop-norm-threshold")(0.05)
+
+set_param(job_tag, "prob_exact_wsrc")(0.20)
+
+set_param(job_tag, "prob_acc_1_psrc")(0.25)
+set_param(job_tag, "prob_acc_2_psrc")(0.10)
+
+set_param(job_tag, "n_per_tslice_smear")(4)
+set_param(job_tag, "prop_smear_coef")(0.9375)
+set_param(job_tag, "prop_smear_step")(10)
+set_param(job_tag, "prob_acc_1_smear")(0.25)
+set_param(job_tag, "prob_acc_2_smear")(0.10)
+
+set_param(job_tag, "n_rand_u1_fsel")(16)
+set_param(job_tag, "prob_acc_1_rand_u1")(0.25)
+set_param(job_tag, "prob_acc_2_rand_u1")(0.10)
+
+set_param(job_tag, "meson_jwjj_threshold")(0.1)
 
 # ----
 
