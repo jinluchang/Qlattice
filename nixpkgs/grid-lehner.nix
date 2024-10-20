@@ -31,13 +31,13 @@ let
 in grid-stdenv.mkDerivation rec {
 
   pname = "Grid-lehner";
-  version = "9f89486df5e65c873308df23240a3b826c257d76";
+  version = "7b7c1bf860fa1147d16b715410242231a776b0be";
 
   src = fetchFromGitHub {
     owner = "lehner";
     repo = "Grid";
     rev = version;
-    hash = "sha256-2qdp/HcLEB/lbQ5ipm/3FGW5gofkLfcJj6d4HYtP0fs=";
+    hash = "sha256-t30x7FLRPAPCSwMgib/mMHffNkglhG/V6VdlzaZrSz8=";
   };
 
   enableParallelBuilding = true;

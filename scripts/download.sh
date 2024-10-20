@@ -57,7 +57,8 @@ aget "https://github.com/skvadrik/re2c/releases/download/3.1/re2c-3.1.tar.xz"
 
 aget "https://sourceforge.net/projects/tclap/files/tclap-1.2.5.tar.gz"
 
-aget "https://sourceforge.net/projects/gnuplot/files/gnuplot/6.0.0/gnuplot-6.0.0.tar.gz"
+# aget "https://sourceforge.net/projects/gnuplot/files/gnuplot/6.0.0/gnuplot-6.0.0.tar.gz"
+aget "https://sourceforge.net/projects/gnuplot/files/gnuplot/5.4.8/gnuplot-5.4.8.tar.gz"
 
 aget "https://github.com/OpenMathLib/OpenBLAS/releases/download/v0.3.27/OpenBLAS-0.3.27.tar.gz"
 
