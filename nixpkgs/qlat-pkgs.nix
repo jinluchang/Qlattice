@@ -102,28 +102,28 @@ let
     );
     #
     qlat-py = pkgs.python3.withPackages (ps: with pkgs; [
+      ps.build
+      ps.wheel
       qlat_utils
       qlat
       qlat_cps
       qlat_grid
       gpt-lehner
-    ]);
-    qlat-py-tests = pkgs.python3.withPackages (ps: with pkgs; [
-      qlat_utils
-      qlat
-      qlat_cps
-      qlat_grid
-      gpt-lehner
-      #
-      qlat-examples-cpp
-      qlat-examples-cpp-grid
-      qlat-examples-py
-      qlat-examples-py-gpt
-      qlat-examples-py-cps
     ]);
     qlat-pkgs = with pkgs; [
-      mpi cuba qlat-eigen cps qmp qio grid-lehner qlat-py
+      mpi cuba qlat-eigen cps qmp qio grid-lehner
+      qlat-py
     ] ++ pkgs.qlat-dep-pkgs;
+    qlat-tests = pkgs.buildEnv {
+      name = "qlat-tests${pkgs.qlat-name}";
+      paths = with pkgs; [
+        qlat-examples-cpp
+        qlat-examples-cpp-grid
+        qlat-examples-py
+        qlat-examples-py-gpt
+        qlat-examples-py-cps
+      ];
+    };
     qlat-env = pkgs.mkShell rec {
       name = "qlat-sh${pkgs.qlat-name}";
       packages = pkgs.qlat-pkgs;
@@ -148,16 +148,17 @@ let
       qlat_utils
       qlat
     ]);
-    qlat-py-tests = pkgs.python3.withPackages (ps: with pkgs; [
-      qlat_utils
-      qlat
-      #
-      qlat-examples-cpp
-      qlat-examples-py
-    ]);
     qlat-pkgs = with pkgs; [
-      mpi cuba qlat-eigen qlat-py
+      mpi cuba qlat-eigen
+      qlat-py
     ] ++ pkgs.qlat-dep-pkgs;
+    qlat-tests = pkgs.buildEnv {
+      name = "qlat-tests${pkgs.qlat-name}";
+      paths = with pkgs; [
+        qlat-examples-cpp
+        qlat-examples-py
+      ];
+    };
   };
 
   overlay-clang = final: prev: let
@@ -188,7 +189,7 @@ let
   in {
     "qlat-env${pkgs.qlat-name}" = pkgs.qlat-env;
     "qlat-py${pkgs.qlat-name}" = pkgs.qlat-py;
-    "qlat-py-tests${pkgs.qlat-name}" = pkgs.qlat-py-tests;
+    "qlat-tests${pkgs.qlat-name}" = pkgs.qlat-tests;
     "qlat-pkgs${pkgs.qlat-name}" = pkgs.qlat-pkgs;
     "all-pkgs${pkgs.qlat-name}" = pkgs;
   };
