@@ -70,6 +70,7 @@ buildPythonPackage rec {
     fftwFloat
     gsl
     cuba
+    qlat_utils
   ];
 
   dependencies = [

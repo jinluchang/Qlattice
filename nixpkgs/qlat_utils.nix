@@ -11,6 +11,7 @@
 , zlib
 , eigen
 , git
+, which
 , autoAddDriverRunpath
 , openmp ? null
 , is-pypi-src ? true
@@ -18,6 +19,7 @@
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
 , NVCC_ARCH ? "sm_86"
+, nixgl ? ""
 }:
 
 let
@@ -57,8 +59,10 @@ buildPythonPackage rec {
 
   nativeBuildInputs = [
     git
+    which
   ]
   ++ lib.optionals cudaSupport (with cudaPackages; [ cuda_nvcc ])
+  ++ lib.optionals cudaSupport [ nixgl ]
   ;
 
   propagatedBuildInputs = [
@@ -106,6 +110,17 @@ buildPythonPackage rec {
       export CXX="$QLAT_CXX"
       export CXXFLAGS="$QLAT_CXXFLAGS"
       export LDFLAGS="$QLAT_LDFLAGS"
+      #
+      which nixGL
+      echo
+      cat $(which nixGL) | grep -v 'exec ' | grep -v '^#!' > nix-gl.sh
+      echo
+      echo cat nix-gl.sh
+      cat nix-gl.sh
+      source nix-gl.sh
+      echo
+      echo $LD_LIBRARY_PATH
+      echo
     '';
     cpu_extra = ''
     '';

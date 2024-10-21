@@ -56,6 +56,7 @@ buildPythonPackage rec {
   ;
 
   propagatedBuildInputs = [
+    qlat
     cps
   ];
 
