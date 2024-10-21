@@ -401,9 +401,7 @@ cdef class FieldSelection:
         return psel
 
     def to_psel_local(self):
-        cdef PointsSelection psel = PointsSelection(self.total_site)
-        cc.assign_direct(psel.xx, cc.psel_from_fsel_local(self.xx))
-        return psel
+        return PointsSelection(self)
 
     def save(self, const cc.std_string& path):
         cdef cc.Long total_bytes = cc.write_field_selection(self.xx, path)
