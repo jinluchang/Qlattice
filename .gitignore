@@ -2,5 +2,4 @@
 /projects
 .path
 .transfer
-.mesonpy-native-file.ini
 cmd*
