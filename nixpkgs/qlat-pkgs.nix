@@ -18,7 +18,7 @@ let
   in rec {
     qlat-name = "";
     #
-    is-pypi-src = true;
+    is-pypi-src = false;
     qlat-cudaSupport = false;
     qlat-ngpu = "2"; # adjust with actual number of GPUs
     qlat-eigen = pkgs.grid-lehner;
@@ -94,6 +94,11 @@ let
       nixgl = pkgs.qlat-nixgl;
       ngpu = pkgs.qlat-ngpu;
     };
+    qlat-pypi-pkgs = py-call-pkg ./qlat-pypi-pkgs.nix {
+      stdenv = pkgs.qlat-stdenv;
+      cudaSupport = pkgs.qlat-cudaSupport;
+      nixgl = pkgs.qlat-nixgl;
+    };
     #
     qlat-dep-pkgs = with pkgs; ([
       git pkg-config zlib gsl fftw fftwFloat hdf5-cpp openssl gmp mpfr
@@ -117,6 +122,7 @@ let
     qlat-tests = pkgs.buildEnv {
       name = "qlat-tests${pkgs.qlat-name}";
       paths = with pkgs; [
+        qlat-pypi-pkgs
         qlat-examples-cpp
         qlat-examples-cpp-grid
         qlat-examples-py
@@ -132,11 +138,11 @@ let
     #
   };
 
-  overlay-local = final: prev: let
+  overlay-pypi = final: prev: let
     pkgs = final;
   in rec {
-    qlat-name = "${prev.qlat-name}-local";
-    is-pypi-src = false;
+    qlat-name = "${prev.qlat-name}-pypi";
+    is-pypi-src = true;
   };
 
   overlay-std = final: prev: let
@@ -195,31 +201,31 @@ let
   };
 
   many-qlat-pkgs-core = {}
-  // mk-qlat-pkgs [ overlay-local ]
-  // mk-qlat-pkgs [ overlay-std overlay-clang overlay-local ]
+  // mk-qlat-pkgs []
+  // mk-qlat-pkgs [ overlay-std overlay-clang ]
   ;
 
   many-qlat-pkgs-core-w-cuda = many-qlat-pkgs-core
-  // mk-qlat-pkgs [ overlay-cuda overlay-local ]
+  // mk-qlat-pkgs [ overlay-cuda ]
   ;
 
   many-qlat-pkgs-all = many-qlat-pkgs-core-w-cuda
-  // mk-qlat-pkgs []
-  // mk-qlat-pkgs [ overlay-cuda ]
+  // mk-qlat-pkgs [ overlay-pypi ]
+  // mk-qlat-pkgs [ overlay-cuda overlay-pypi ]
   # // mk-qlat-pkgs [ overlay-clang ]
-  # // mk-qlat-pkgs [ overlay-clang overlay-local ]
+  # // mk-qlat-pkgs [ overlay-clang overlay-pypi ]
   // mk-qlat-pkgs [ overlay-std ]
-  // mk-qlat-pkgs [ overlay-std overlay-local ]
+  // mk-qlat-pkgs [ overlay-std overlay-pypi ]
   // mk-qlat-pkgs [ overlay-std overlay-cuda ]
-  // mk-qlat-pkgs [ overlay-std overlay-cuda overlay-local ]
-  // mk-qlat-pkgs [ overlay-std overlay-clang ]
+  // mk-qlat-pkgs [ overlay-std overlay-cuda overlay-pypi ]
+  // mk-qlat-pkgs [ overlay-std overlay-clang overlay-pypi ]
   ;
 
 in {
   #
   inherit mk-qlat-pkgs;
   inherit overlay;
-  inherit overlay-local;
+  inherit overlay-pypi;
   inherit overlay-std;
   inherit overlay-clang;
   inherit overlay-cuda;
