@@ -483,7 +483,7 @@ PointsSelection psel_from_fsel(const FieldSelection& fsel)
   TIMER("psel_from_fsel")
   const Geometry& geo = fsel.f_rank.geo();
   const Coordinate total_site = geo.total_site();
-  Long n_elems = fsel.n_elems;
+  const Long n_elems = fsel.n_elems;
   Long total_n_elems = n_elems;
   glb_sum(total_n_elems);
   // const int num_node = geo.geon.num_node;
@@ -496,7 +496,7 @@ PointsSelection psel_from_fsel(const FieldSelection& fsel)
   }
   qassert(idx_offset <= total_n_elems);
   vector<Long> vec_gindex(total_n_elems, 0);
-  qthread_for(idx, fsel.n_elems, {
+  qthread_for(idx, n_elems, {
     const Long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
@@ -516,9 +516,9 @@ PointsSelection psel_from_fsel_local(const FieldSelection& fsel)
 {
   TIMER("psel_from_fsel_local")
   const Geometry& geo = fsel.f_rank.geo();
-  // const Coordinate total_site = geo.total_site();
-  Long n_elems = fsel.n_elems;
-  PointsSelection psel(geo.total_site(), n_elems);
+  const Coordinate total_site = geo.total_site();
+  const Long n_elems = fsel.n_elems;
+  PointsSelection psel(total_site, n_elems);
   psel.points_dist_type = PointsDistType::Local;
   qthread_for(idx, (Long)psel.size(), {
     const Long index = fsel.indices[idx];
