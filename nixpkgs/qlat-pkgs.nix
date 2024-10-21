@@ -32,7 +32,8 @@ let
     #
     cuba = call-pkg ./cuba.nix { stdenv = pkgs.qlat-stdenv; };
     qlat_utils = py-call-pkg ./qlat_utils.nix {
-      stdenv = pkgs.qlat-stdenv; eigen = pkgs.qlat-eigen;
+      stdenv = pkgs.qlat-stdenv;
+      eigen = pkgs.qlat-eigen;
       cudaSupport = pkgs.qlat-cudaSupport;
     };
     qlat = py-call-pkg ./qlat.nix {
