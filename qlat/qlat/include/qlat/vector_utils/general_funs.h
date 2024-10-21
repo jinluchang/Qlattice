@@ -1284,6 +1284,7 @@ void sort_vectors_by_axis(std::vector<std::vector<Ty > >& src, std::vector<std::
 template<typename Ty>
 qacc void decodeT(Ty& src)
 {
+  (void)src;
   return ;
 }
 

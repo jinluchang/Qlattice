@@ -916,6 +916,7 @@ struct vector_cs{
   template <class T >
   vector_cs<Ty>& operator=(const vector_cs<T >& vp)
   {
+    (void)vp;
     print0("NO SUPPORT yet!\n");
     Qassert(false);
     return *this;
