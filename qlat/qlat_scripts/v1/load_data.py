@@ -800,7 +800,8 @@ def run_get_prop(job_tag, traj, *,
         #
         prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")
         prop_cache["psel_pos_dict"] = dict([ (pos.to_tuple(), i,) for i, pos in enumerate(psel) ])
-        prop_cache["fsel_pos_dict"] = dict([ (pos.to_tuple(), i,) for i, pos in enumerate(fsel.to_psel_local()) ])
+        psel_local = fsel.to_psel_local()
+        prop_cache["fsel_pos_dict"] = dict([ (pos.to_tuple(), i,) for i, pos in enumerate(psel_local) ])
         if "gf hyp" in prop_types:
             prop_cache["geo_pos_dict"] = dict([ (tuple(pos), i,) for i, pos in enumerate(geo.xg_arr()) ])
         #
