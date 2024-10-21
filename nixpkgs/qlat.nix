@@ -58,6 +58,7 @@ buildPythonPackage rec {
 
   nativeBuildInputs = [
     git
+    mpi
     which
   ]
   ++ lib.optionals cudaSupport (with cudaPackages; [ cuda_nvcc ])
