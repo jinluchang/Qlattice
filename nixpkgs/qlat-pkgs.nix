@@ -197,7 +197,7 @@ let
     "qlat-py${pkgs.qlat-name}" = pkgs.qlat-py;
     "qlat-tests${pkgs.qlat-name}" = pkgs.qlat-tests;
     "qlat-pkgs${pkgs.qlat-name}" = pkgs.qlat-pkgs;
-    "all-pkgs${pkgs.qlat-name}" = pkgs;
+    "pkgs${pkgs.qlat-name}" = pkgs;
   };
 
   many-qlat-pkgs-core = {}
@@ -212,8 +212,8 @@ let
   many-qlat-pkgs-all = many-qlat-pkgs-core-w-cuda
   // mk-qlat-pkgs [ overlay-pypi ]
   // mk-qlat-pkgs [ overlay-cuda overlay-pypi ]
-  # // mk-qlat-pkgs [ overlay-clang ]
-  # // mk-qlat-pkgs [ overlay-clang overlay-pypi ]
+  // mk-qlat-pkgs [ overlay-clang ]
+  // mk-qlat-pkgs [ overlay-clang overlay-pypi ]
   // mk-qlat-pkgs [ overlay-std ]
   // mk-qlat-pkgs [ overlay-std overlay-pypi ]
   // mk-qlat-pkgs [ overlay-std overlay-cuda ]
