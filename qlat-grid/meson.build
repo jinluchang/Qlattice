@@ -17,7 +17,7 @@ subdir('depend-grid')
 
 py_mod = import('python')
 py3 = py_mod.find_installation('python3', pure: false)
-message(py3.path())
+message(py3.full_path())
 message(py3.get_install_dir())
 
 deps = [ qlat, grid, ]
