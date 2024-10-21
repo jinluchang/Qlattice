@@ -119,7 +119,7 @@ buildPythonPackage rec {
     python3 -m build -ns -o qlat-pypi-pkgs ./qlat-grid
     #
     mkdir -p "$out/share/qlat-pypi-pkgs"
-    rsync -a --delete qlat-pypi-pkgs "$out/share/qlat-pypi-pkgs"
+    rsync -a --delete qlat-pypi-pkgs "$out/share/"
   '';
 
   dontBuild = true;
