@@ -78,7 +78,27 @@ buildPythonPackage rec {
     qlat_grid
   ];
 
-  preConfigure = ''
+  preConfigure = let
+    gpu_extra = ''
+      which nixGL
+      echo
+      echo "run with nixGL"
+      echo
+      nixGL qlat-utils-config
+      echo
+      cat $(which nixGL) | grep -v 'exec ' | grep -v '^#!' > nix-gl.sh
+      echo
+      echo cat nix-gl.sh
+      cat nix-gl.sh
+      source nix-gl.sh
+      echo
+      echo $LD_LIBRARY_PATH
+      echo
+    '';
+    cpu_extra = ''
+    '';
+    extra = if cudaSupport then gpu_extra else cpu_extra;
+  in extra + ''
     export OMP_NUM_THREADS=2
     #
     export
