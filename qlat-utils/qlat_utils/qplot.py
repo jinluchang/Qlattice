@@ -101,20 +101,6 @@ gnuplot_png_density = 500
 def mk_tmp_dir():
     return tempfile.mkdtemp(suffix = ".dir", prefix="pyplot.")
 
-def mk_convert_sh():
-    return "\n".join([
-        "for i in *.mp ; do",
-        "fn=${i%.mp}",
-        "rm mpost-job.* 2>&1",
-        "TEX=latex mpost -jobname mpost-job $fn.mp",
-        "for i in mpost-job.? ; do",
-        "echo \"$i\"",
-        "mv \"$i\" \"$fn\"-\"${i#mpost-job.}\".eps",
-        "done",
-        "done",
-        "",
-        ])
-
 valid_fn_chars = ("abcdefghijklmnopqrstuvwxyz"
         + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         + "0123456789"
@@ -141,7 +127,7 @@ def mk_makefile(fn = None):
         name = get_plot_name(fn)
         target = "install"
     else:
-        name = "plot-0"
+        name = "plot"
         target = "png"
     return "\n".join([
         f"all: {target}",
@@ -149,16 +135,15 @@ def mk_makefile(fn = None):
         "gnuplot:",
         "\tgnuplot plotfile",
         "",
-        "mpost: gnuplot",
-        "\tbash ./convert.sh",
+        "latex: gnuplot",
+        "\tpdflatex plot.tex",
         "",
-        "pdf: mpost",
-        "\tepstopdf plot-0.eps",
-        f"\tmv plot-0.pdf tmp ; mv tmp '{name}.pdf'",
+        "pdf: latex",
+        f"\tmv plot.pdf tmp; mv tmp '{name}.pdf'",
         "",
         "png: pdf",
-        f"\tpdftoppm -r {gnuplot_png_density} -png '{name}.pdf' > plot-0.png",
-        f"\tmv plot-0.png tmp ; mv tmp '{name}.png'",
+        f"\tpdftoppm -r {gnuplot_png_density} -png '{name}.pdf' > plot.png",
+        f"\tmv plot.png tmp; mv tmp '{name}.png'",
         "",
         "install-pdf: pdf",
         f"\tmv '{name}.pdf' ../'{name}.pdf'",
@@ -172,8 +157,9 @@ def mk_makefile(fn = None):
 
 def mk_plotfile(plot_cmds, plot_lines):
     plot_prefix = [
-            "set term mp color latex prologues 3 amstex",
-            "set output 'plot.mp'",
+            "set terminal epslatex standalone color clip",
+            # "set term mp color latex prologues 3 amstex",
+            "set output 'plot.tex'",
             ]
     plot = plot_lines[0] + " \\\n    " + ", \\\n    ".join(plot_lines[1:])
     return "\n".join(plot_prefix + [ "", ] + plot_cmds + [ "", plot, "", ])
@@ -193,7 +179,6 @@ def populate_pyplot_folder(
     if plot_lines is not None:
         touch_file(os.path.join(path, "plotfile"),
                 mk_plotfile(plot_cmds, plot_lines))
-    touch_file(os.path.join(path, "convert.sh"), mk_convert_sh())
     touch_file(os.path.join(path, "Makefile"), mk_makefile(fn))
     for key, dt in dict_datatable.items():
         assert key[-4:] == ".txt"
@@ -324,7 +309,7 @@ def plot_save(
             assert status.returncode == 0
         qplot_run_make()
         if target is None:
-            path_img = os.path.join(path, "plot-0.png")
+            path_img = os.path.join(path, "plot.png")
         else:
             path_img = target
         if is_display:
