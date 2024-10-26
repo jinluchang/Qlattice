@@ -448,7 +448,7 @@ def mk_jk_blocking_func(block_size = 1, block_size_dict = None):
     return f
 
 @timer
-def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func=None, is_normalizing_rand_sample=True):
+def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func=None, is_normalizing_rand_sample=True, is_use_old_rand_alg=False):
     """
     return rjk_list
     len(rjk_list) == 1 + n_rand_sample
@@ -472,22 +472,30 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func
     else:
         blocked_jk_idx_list = [ jk_blocking_func(idx) for idx in jk_idx_list[:] ]
     assert len(blocked_jk_idx_list[1:]) == n
-    r_arr_dict = dict()
-    for jk_idx in blocked_jk_idx_list[1:]:
-        jk_idx_str = str(jk_idx)
-        if jk_idx in r_arr_dict:
-            continue
-        rsi = rs.split(str(jk_idx))
-        garr = rsi.g_rand_arr(n_rand_sample)
-        if is_normalizing_rand_sample:
-            garr_qnorm = qnorm(garr) # garr_qnorm \approx n_rand_sample
-            garr = garr * np.sqrt(n_rand_sample / garr_qnorm)
-            assert abs(qnorm(garr) / n_rand_sample - 1) < 1e-8
-        r_arr_dict[jk_idx_str] = garr
     r_arr = np.empty((n_rand_sample, n,), dtype=np.float64)
-    for j, jk_idx in enumerate(blocked_jk_idx_list[1:]):
-        jk_idx_str = str(jk_idx)
-        r_arr[:, j] = r_arr_dict[jk_idx_str]
+    if is_use_old_rand_alg:
+        assert not is_normalizing_rand_sample
+        for i in range(n_rand_sample):
+            rsi = rs.split(str(i))
+            r = [ rsi.split(str(idx)).g_rand_gen() for idx in blocked_jk_idx_list[1:] ]
+            for j in range(n):
+                r_arr[i, j] = r[j]
+    else:
+        r_arr_dict = dict()
+        for jk_idx in blocked_jk_idx_list[1:]:
+            jk_idx_str = str(jk_idx)
+            if jk_idx_str in r_arr_dict:
+                continue
+            rsi = rs.split(str(jk_idx))
+            garr = rsi.g_rand_arr(n_rand_sample)
+            if is_normalizing_rand_sample:
+                garr_qnorm = qnorm(garr) # garr_qnorm \approx n_rand_sample
+                garr = garr * np.sqrt(n_rand_sample / garr_qnorm)
+                assert abs(qnorm(garr) / n_rand_sample - 1) < 1e-8
+            r_arr_dict[jk_idx_str] = garr
+        for j, jk_idx in enumerate(blocked_jk_idx_list[1:]):
+            jk_idx_str = str(jk_idx)
+            r_arr[:, j] = r_arr_dict[jk_idx_str]
     avg = jk_avg(jk_list)
     if is_np_arr:
         jk_arr = jk_list
@@ -523,7 +531,7 @@ def rjk_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state):
         rjk_list.append(val + r * err)
     return rjk_list
 
-def rjackknife(data_list, jk_idx_list, n_rand_sample, rng_state, *, eps = 1):
+def rjackknife(data_list, jk_idx_list, n_rand_sample, rng_state, *, eps=1):
     jk_list = jackknife(data_list, eps)
     return rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state)
 
@@ -556,6 +564,7 @@ default_g_jk_kwargs["n_rand_sample"] = 1024
 default_g_jk_kwargs["rng_state"] = RngState("rejk")
 default_g_jk_kwargs["jk_blocking_func"] = None
 default_g_jk_kwargs["is_normalizing_rand_sample"] = True
+default_g_jk_kwargs["is_use_old_rand_alg"] = False # only need to reproduce old results (need is_normalizing_rand_sample == False)
 
 @use_kwargs(default_g_jk_kwargs)
 @timer
@@ -575,6 +584,7 @@ def g_rejk(jk_list, jk_idx_list, *,
         rng_state,
         jk_blocking_func,
         is_normalizing_rand_sample,
+        is_use_old_rand_alg,
         **_kwargs,):
     """
     Perform (randomized) Super-Jackknife for the Jackknife data set.
@@ -595,7 +605,7 @@ def g_rejk(jk_list, jk_idx_list, *,
             all_jk_idx = get_all_jk_idx()
         return rejk_list(jk_list, jk_idx_list, all_jk_idx)
     elif jk_type == "rjk":
-        return rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func, is_normalizing_rand_sample)
+        return rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func, is_normalizing_rand_sample, is_use_old_rand_alg)
     else:
         assert False
     return None
