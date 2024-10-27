@@ -160,7 +160,7 @@ def mk_makefile(fn=None):
         ])
 
 gnuplot_plotfile_header = [
-        "set terminal epslatex standalone color clip",
+        "set terminal epslatex standalone color clip lw 3",
         ]
 
 def mk_plotfile(plot_cmds, plot_lines):
