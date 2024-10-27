@@ -1,8 +1,11 @@
 __all__ = [
-        'show_datatable', 'read_datatable',
-        'save_datatable', 'load_datatable',
+        'show_datatable',
+        'read_datatable',
+        'save_datatable',
+        'load_datatable',
         'azip',
-        'plot_save', 'plot_view',
+        'plot_save',
+        'plot_view',
         'gnuplot_png_density',
         'gnuplot_plotfile_header',
         'plot_save_display_width',
@@ -36,13 +39,13 @@ def show_number(x):
 def show_vector(vec):
     return " ".join([ show_number(x) for x in vec ])
 
-def show_datatable(arr, *, is_return_list_of_string = False):
+def show_datatable(arr, *, is_return_list_of_string=False):
     lines = [ show_vector(vec) + "\n" for vec in arr ]
     if is_return_list_of_string:
         return lines
     return "".join(lines)
 
-def touch_file(fn, content = "", *, is_directory_exist = False):
+def touch_file(fn, content="", *, is_directory_exist=False):
     if not is_directory_exist:
         mk_file_dirs(fn)
     with open(fn, "w") as f:
@@ -52,11 +55,11 @@ def touch_file(fn, content = "", *, is_directory_exist = False):
             for s in content:
                 f.write(s)
 
-def save_datatable(arr, fn, *, is_directory_exist = False):
+def save_datatable(arr, fn, *, is_directory_exist=False):
     """save_datatable(arr, fn), arr is (numpy) 2-D array, fn is file path name."""
     touch_file(fn,
-            show_datatable(arr, is_return_list_of_string = True),
-            is_directory_exist = is_directory_exist)
+            show_datatable(arr, is_return_list_of_string=True),
+            is_directory_exist=is_directory_exist)
 
 def read_number(s):
     if s[-1] == "i":
@@ -100,7 +103,7 @@ def azip(vec, *vecs):
 gnuplot_png_density = 500
 
 def mk_tmp_dir():
-    return tempfile.mkdtemp(suffix = ".dir", prefix="pyplot.")
+    return tempfile.mkdtemp(suffix=".dir", prefix="pyplot.")
 
 valid_fn_chars = ("abcdefghijklmnopqrstuvwxyz"
         + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -122,7 +125,7 @@ def get_plot_name(fn):
     name = fn[:-4]
     return name
 
-def mk_makefile(fn = None):
+def mk_makefile(fn=None):
     # fn is the target file name, e.g. plot.pdf or plot.png
     if fn is not None:
         name = get_plot_name(fn)
@@ -170,10 +173,10 @@ def mk_plotfile(plot_cmds, plot_lines):
 def populate_pyplot_folder(
         path,
         *,
-        fn = None,
-        dict_datatable = None,
-        plot_cmds = None,
-        plot_lines = None,
+        fn=None,
+        dict_datatable=None,
+        plot_cmds=None,
+        plot_lines=None,
         ):
     if dict_datatable is None:
         dict_datatable = {}
@@ -189,9 +192,9 @@ def populate_pyplot_folder(
         save_datatable(dt, os.path.join(path, key))
 
 def qremove_all(path):
-    return shutil.rmtree(path, ignore_errors = True)
+    return shutil.rmtree(path, ignore_errors=True)
 
-def mk_pyplot_folder(path = None):
+def mk_pyplot_folder(path=None):
     if path is None:
         path = mk_tmp_dir()
     else:
@@ -201,7 +204,7 @@ def mk_pyplot_folder(path = None):
         os.makedirs(path)
     return path
 
-def display_img(fn, *, width = None):
+def display_img(fn, *, width=None):
     from IPython.display import HTML, Image, display
     displayln_info(0, f"display_img: fn='{fn}'")
     show_width = ""
@@ -217,23 +220,23 @@ def display_img(fn, *, width = None):
         is_fn_showable = False
     is_using_html = is_fn_showable and not is_in_colab
     if is_using_html:
-        display(HTML(data = f"<img src='{fn}' {show_width} />"))
+        display(HTML(data=f"<img src='{fn}' {show_width} />"))
     else:
-        display(Image(filename = fn, width = width))
+        display(Image(filename=fn, width=width))
 
 plot_save_display_width = None
 
 @timer
 def plot_save(
-        fn = None,
-        dts = None,
-        cmds = None,
-        lines = None,
+        fn=None,
+        dts=None,
+        cmds=None,
+        lines=None,
         *,
-        is_run_make = True,
-        is_display = False,
-        is_verbose = False,
-        display_width = None,
+        is_run_make=True,
+        is_display=False,
+        is_verbose=False,
+        display_width=None,
         ):
     """
     fn is full name of the plot or None
@@ -295,15 +298,15 @@ def plot_save(
         displayln_info(0, f"display_width={display_width}")
     populate_pyplot_folder(
             path,
-            fn = target_fn,
-            dict_datatable = dts,
-            plot_cmds = cmds,
-            plot_lines = lines,
+            fn=target_fn,
+            dict_datatable=dts,
+            plot_cmds=cmds,
+            plot_lines=lines,
             )
     if is_run_make:
         @timer
         def qplot_run_make():
-            status = subprocess.run([ "make", "-C", path, ], capture_output = True, text = True)
+            status = subprocess.run([ "make", "-C", path, ], capture_output=True, text=True)
             if is_verbose or status.returncode != 0:
                 displayln_info("stdout:")
                 displayln_info(status.stdout)
@@ -316,7 +319,7 @@ def plot_save(
         else:
             path_img = target
         if is_display:
-            display_img(path_img, width = display_width)
+            display_img(path_img, width=display_width)
         else:
             displayln_info(0, f"plot_save: plot created at '{path_img}'.")
         return path_img
@@ -327,18 +330,18 @@ def plot_save(
         return path
 
 def plot_view(
-        fn = None,
-        dts = None,
-        cmds = None,
-        lines = None,
+        fn=None,
+        dts=None,
+        cmds=None,
+        lines=None,
         *,
-        is_verbose = False,
-        display_width = None,
+        is_verbose=False,
+        display_width=None,
         ):
     return plot_save(
-            fn = fn, dts = dts, cmds = cmds, lines = lines,
-            is_run_make = True,
-            is_verbose = is_verbose,
-            is_display = True,
-            display_width = display_width,
+            fn=fn, dts=dts, cmds=cmds, lines=lines,
+            is_run_make=True,
+            is_verbose=is_verbose,
+            is_display=True,
+            display_width=display_width,
             )
