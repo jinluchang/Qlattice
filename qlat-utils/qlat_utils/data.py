@@ -286,7 +286,7 @@ def average_ignore_nan(value_arr_list):
     avg_arr[~sel] = np.nan
     return avg_arr
 
-def block_data(data_list, block_size, is_overlapping = True):
+def block_data(data_list, block_size, is_overlapping=True):
     """
     return the list of block averages
     the blocks may overlap if is_overlapping == True
@@ -315,14 +315,14 @@ def avg_err(data_list, eps=1, *, block_size=1):
     avg = average(data_list)
     blocks = block_data(data_list, block_size)
     diff_sqr = average([ fsqr(d - avg) for d in blocks ])
-    fac = eps * math.sqrt(block_size / (len(data_list) - 1))
+    fac = abs(eps) * math.sqrt(block_size / (len(data_list) - 1))
     err = fac * fsqrt(diff_sqr)
     return (avg, err,)
 
 def jackknife(data_list, eps=1):
     """
-    Return jk[i] = avg + \\frac{eps}{N} (v[i] - avg)
-    normal jackknife uses eps = 1, scale the fluctuation by eps
+    Return jk[i] = avg - \\frac{eps}{N} (v[i] - avg)
+    normal jackknife uses eps=1, scale the fluctuation by eps
     """
     is_np_arr = isinstance(data_list, np.ndarray)
     data_list_real = [ d for d in data_list if d is not None ]
@@ -387,11 +387,11 @@ def jk_err(jk_list, eps=1, *, block_size=1):
     avg = jk_avg(jk_list)
     blocks = block_data(jk_list[1:], block_size)
     diff_sqr = average([ fsqr(jk - avg) for jk in blocks ])
-    fac = math.sqrt(block_size * (len(jk_list) - 1)) / eps
+    fac = math.sqrt(block_size * (len(jk_list) - 1)) / abs(eps)
     return fac * fsqrt(diff_sqr)
 
-def jk_avg_err(jk_list, eps = 1, *, block_size = 1):
-    return jk_avg(jk_list), jk_err(jk_list, eps, block_size = block_size)
+def jk_avg_err(jk_list, eps=1, *, block_size=1):
+    return jk_avg(jk_list), jk_err(jk_list, eps, block_size=block_size)
 
 def merge_jk_idx(*jk_idx_list):
     for jk_idx in jk_idx_list:
@@ -538,14 +538,14 @@ def rjackknife(data_list, jk_idx_list, n_rand_sample, rng_state, *, eps=1):
 def rjk_avg(rjk_list):
     return jk_avg(rjk_list)
 
-def rjk_err(rjk_list, eps = 1):
+def rjk_err(rjk_list, eps=1):
     """Return \\frac{1}{eps} \\sqrt{ \\frac{1}{N} \\sum_{i=1}^N (jk[i] - jk_avg)^2 }
     Note: len(jk_list) = N + 1
     Same eps as the eps used in the 'jackknife' function"""
     n = len(rjk_list) - 1
-    return jk_err(rjk_list, eps * np.sqrt(n))
+    return jk_err(rjk_list, abs(eps) * np.sqrt(n))
 
-def rjk_avg_err(rjk_list, eps = 1):
+def rjk_avg_err(rjk_list, eps=1):
     return rjk_avg(rjk_list), rjk_err(rjk_list, eps)
 
 # ----------
