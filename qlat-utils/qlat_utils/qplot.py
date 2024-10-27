@@ -4,6 +4,7 @@ __all__ = [
         'azip',
         'plot_save', 'plot_view',
         'gnuplot_png_density',
+        'gnuplot_plotfile_header',
         'plot_save_display_width',
         'display_img',
         ]
@@ -155,14 +156,16 @@ def mk_makefile(fn = None):
         "",
         ])
 
+gnuplot_plotfile_header = [
+        "set terminal epslatex standalone color clip",
+        ]
+
 def mk_plotfile(plot_cmds, plot_lines):
-    plot_prefix = [
-            "set terminal epslatex standalone color clip",
-            # "set term mp color latex prologues 3 amstex",
+    plot_output = [
             "set output 'plot.tex'",
             ]
     plot = plot_lines[0] + " \\\n    " + ", \\\n    ".join(plot_lines[1:])
-    return "\n".join(plot_prefix + [ "", ] + plot_cmds + [ "", plot, "", ])
+    return "\n".join(gnuplot_plotfile_header + plot_output + [ "", ] + plot_cmds + [ "", plot, "", ])
 
 def populate_pyplot_folder(
         path,
