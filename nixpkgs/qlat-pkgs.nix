@@ -95,7 +95,7 @@ let
       nixgl = pkgs.qlat-nixgl;
       ngpu = pkgs.qlat-ngpu;
     };
-    qlat-pypi-pkgs = py-call-pkg ./qlat-pypi-pkgs.nix {
+    qlat-pypi = py-call-pkg ./qlat-pypi.nix {
       stdenv = pkgs.qlat-stdenv;
       cudaSupport = pkgs.qlat-cudaSupport;
       nixgl = pkgs.qlat-nixgl;
@@ -123,7 +123,7 @@ let
     qlat-tests = pkgs.buildEnv {
       name = "qlat-tests${pkgs.qlat-name}";
       paths = with pkgs; [
-        qlat-pypi-pkgs
+        qlat-pypi
         qlat-examples-cpp
         qlat-examples-cpp-grid
         qlat-examples-py

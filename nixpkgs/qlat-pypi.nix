@@ -30,7 +30,7 @@ in
 
 buildPythonPackage rec {
 
-  pname = "qlat-pypi-pkgs${qlat-name}";
+  pname = "qlat-pypi${qlat-name}";
   version = builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
 
   pyproject = false;
@@ -112,14 +112,14 @@ buildPythonPackage rec {
     git config user.name "Luchang Jin"
     git add .
     git commit -m "everything"
-    mkdir qlat-pypi-pkgs
-    python3 -m build -ns -o qlat-pypi-pkgs ./qlat-utils
-    python3 -m build -ns -o qlat-pypi-pkgs ./qlat
-    python3 -m build -ns -o qlat-pypi-pkgs ./qlat-cps
-    python3 -m build -ns -o qlat-pypi-pkgs ./qlat-grid
+    mkdir qlat-pypi
+    python3 -m build -ns -o qlat-pypi ./qlat-utils
+    python3 -m build -ns -o qlat-pypi ./qlat
+    python3 -m build -ns -o qlat-pypi ./qlat-cps
+    python3 -m build -ns -o qlat-pypi ./qlat-grid
     #
-    mkdir -p "$out/share/qlat-pypi-pkgs"
-    rsync -a --delete qlat-pypi-pkgs "$out/share/"
+    mkdir -p "$out/share/qlat-pypi"
+    rsync -a --delete qlat-pypi "$out/share/"
   '';
 
   dontBuild = true;
