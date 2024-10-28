@@ -67,7 +67,7 @@ def interpolate(v_arr, i_arr):
     if isinstance(i_arr, real_types):
         return interpolate_list(vt, i_arr).transpose()
     else:
-        return np.array([ interpolate_list(vt, i) for i in i_arr ]).transpose()
+        return np.array([ interpolate_list(vt, i) for i in i_arr ], v_arr.dtype).transpose()
 
 def partial_sum_list(x, *, is_half_last = False):
     """Modify in-place, preserve length"""
@@ -376,7 +376,12 @@ def fsqrt(data):
             raise Exception(f"fsqr data={data} type not supported")
 
 def jk_avg(jk_list):
-    return jk_list[0]
+    is_np_arr = isinstance(jk_list, np.ndarray)
+    val = jk_list[0]
+    if is_np_arr and val.size == 1:
+        return val.item()
+    else:
+        return val
 
 def jk_err(jk_list, eps=1, *, block_size=1):
     """
@@ -384,11 +389,16 @@ def jk_err(jk_list, eps=1, *, block_size=1):
     Note: len(jk_list) = N + 1
     Same eps as the eps used in the 'jackknife' function
     """
+    is_np_arr = isinstance(jk_list, np.ndarray)
     avg = jk_avg(jk_list)
     blocks = block_data(jk_list[1:], block_size)
     diff_sqr = average([ fsqr(jk - avg) for jk in blocks ])
     fac = math.sqrt(block_size * (len(jk_list) - 1)) / abs(eps)
-    return fac * fsqrt(diff_sqr)
+    val = fac * fsqrt(diff_sqr)
+    if is_np_arr and val.size == 1:
+        return val.item()
+    else:
+        return val
 
 def jk_avg_err(jk_list, eps=1, *, block_size=1):
     return jk_avg(jk_list), jk_err(jk_list, eps, block_size=block_size)
@@ -524,12 +534,14 @@ def rjk_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state):
     """
     assert n_rand_sample >= 0
     assert isinstance(rng_state, RngState)
-    rjk_list = [ val, ]
+    assert isinstance(val, real_types)
+    assert isinstance(err, real_types)
     rs = rng_state.split(str(rs_tag))
-    for i in range(n_rand_sample):
-        r = rs.g_rand_gen()
-        rjk_list.append(val + r * err)
-    return rjk_list
+    rjk_arr = np.zeros((n_rand_sample + 1,), dtype=np.float64)
+    rjk_arr[0] = val
+    r_arr = rs.g_rand_arr((n_rand_sample,))
+    rjk_arr[1:] = val * r_arr * err
+    return rjk_arr
 
 def rjackknife(data_list, jk_idx_list, n_rand_sample, rng_state, *, eps=1):
     jk_list = jackknife(data_list, eps)
