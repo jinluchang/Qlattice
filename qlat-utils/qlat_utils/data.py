@@ -439,7 +439,11 @@ def rejk_list(jk_list, jk_idx_list, all_jk_idx):
 
 # ----------
 
-def mk_jk_blocking_func(block_size = 1, block_size_dict = None):
+
+def mk_jk_blocking_func(block_size=1, block_size_dict=None):
+    """
+    block_size_for_this_job_tag = block_size_dict.get(job_tag, block_size)
+    """
     if block_size_dict is None:
         block_size_dict = dict()
     def f(idx):
