@@ -439,7 +439,6 @@ def rejk_list(jk_list, jk_idx_list, all_jk_idx):
 
 # ----------
 
-
 def mk_jk_blocking_func(block_size=1, block_size_dict=None):
     """
     block_size_for_this_job_tag = block_size_dict.get(job_tag, block_size)
@@ -453,6 +452,7 @@ def mk_jk_blocking_func(block_size=1, block_size_dict=None):
             return traj // bs
         elif isinstance(idx, tuple) and len(idx) == 2 and isinstance(idx[1], int_types):
             job_tag, traj = idx
+            assert isinstance(job_tag, str)
             assert isinstance(traj, int_types)
             bs = block_size_dict.get(job_tag, block_size)
             assert isinstance(bs, int_types)
@@ -578,9 +578,12 @@ default_g_jk_kwargs["get_all_jk_idx"] = None
 # for jk_type = "rjk"
 default_g_jk_kwargs["n_rand_sample"] = 1024
 default_g_jk_kwargs["rng_state"] = RngState("rejk")
-default_g_jk_kwargs["jk_blocking_func"] = None # jk_blocking_func(jk_idx) => blocked jk_idx
 default_g_jk_kwargs["is_normalizing_rand_sample"] = True
 default_g_jk_kwargs["is_use_old_rand_alg"] = False # only need to reproduce old results (need is_normalizing_rand_sample == False)
+
+# jk_blocking_func(jk_idx) => blocked jk_idx
+# jk_blocking_func = mk_jk_blocking_func(block_size=1, block_size_dict=None)
+default_g_jk_kwargs["jk_blocking_func"] = None
 
 @use_kwargs(default_g_jk_kwargs)
 @timer
