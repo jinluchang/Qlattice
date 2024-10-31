@@ -445,21 +445,20 @@ def mk_jk_blocking_func(block_size=1, block_size_dict=None):
     """
     if block_size_dict is None:
         block_size_dict = dict()
-    def f(idx):
+    def jk_blocking_func(idx):
         if isinstance(idx, int_types):
             traj = idx
-            bs = block_size
-            return traj // bs
+            return traj // block_size
         elif isinstance(idx, tuple) and len(idx) == 2 and isinstance(idx[1], int_types):
             job_tag, traj = idx
             assert isinstance(job_tag, str)
             assert isinstance(traj, int_types)
-            bs = block_size_dict.get(job_tag, block_size)
-            assert isinstance(bs, int_types)
-            return (job_tag, traj // bs,)
+            block_size_for_this_job_tag = block_size_dict.get(job_tag, block_size)
+            assert isinstance(block_size_for_this_job_tag, int_types)
+            return (job_tag, traj // block_size_for_this_job_tag,)
         else:
             return idx
-    return f
+    return jk_blocking_func
 
 @timer
 def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func=None, is_normalizing_rand_sample=True, is_use_old_rand_alg=False):
