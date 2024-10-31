@@ -61,10 +61,12 @@ let
       xformers
       jupyterlab
       jupyterhub
+      jupyterhub-systemdspawner
     ]);
-    env = (pkgs.buildFHSEnv {
+    jhub-env = pkgs.buildEnv {
       name = "jhub-env";
-      targetPkgs = pkgs: (with pkgs; [
+      paths = with pkgs; [
+        linux-pam
         python3-with-packages
         findutils
         gcc
@@ -88,8 +90,6 @@ let
         pipx
         twine
         poppler_utils
-      ]);
-      runScript = "bash";
-      extraOutputsToInstall = [ "man" "doc" "info" "dev" "static" ];
-    }).env;
-in env
+      ];
+    };
+in jhub-env
