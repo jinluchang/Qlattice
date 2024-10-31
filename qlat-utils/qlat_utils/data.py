@@ -543,7 +543,7 @@ def rjk_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state):
     rjk_arr = np.zeros((n_rand_sample + 1,), dtype=np.float64)
     rjk_arr[0] = val
     r_arr = rs.g_rand_arr((n_rand_sample,))
-    rjk_arr[1:] = val * r_arr * err
+    rjk_arr[1:] = val + r_arr * err
     return rjk_arr
 
 def rjackknife(data_list, jk_idx_list, n_rand_sample, rng_state, *, eps=1):
