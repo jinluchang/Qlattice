@@ -14,8 +14,8 @@ size_node_list = [
 
 q.begin_with_mpi(size_node_list)
 
-q.qremove_all_info("results")
-q.qmkdir_info("results")
+# q.qremove_all_info("results")
+# q.qmkdir_info("results")
 
 rs = q.RngState("seed")
 rs_prop = rs.split("prop")
