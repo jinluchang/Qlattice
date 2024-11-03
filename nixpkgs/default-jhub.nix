@@ -66,6 +66,9 @@ let
     jhub-env = pkgs.buildEnv {
       name = "jhub-env";
       paths = with pkgs; [
+        bash
+        coreutils
+        openssh
         linux-pam
         python3-with-packages
         findutils
