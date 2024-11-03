@@ -77,7 +77,7 @@ def load_pickle_obj(path, default_value=None, *, is_sync_node=True):
 @timer
 def pickle_cache_call(func, path, *, is_sync_node=True):
     """
-    all the nodes compute or load the same data
+    all the nodes compute or load the same data if is_sync_node
     """
     if is_sync_node:
         b = does_file_exist_qar_sync_node(path)

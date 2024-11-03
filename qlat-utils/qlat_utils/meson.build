@@ -15,6 +15,7 @@ py_files = files(
   'data.py',
   'get_include_dir.py',
   'load_prop.py',
+  'lru_cache.py',
   '__main__.py',
   'parallel.py',
   'qplot.py',
