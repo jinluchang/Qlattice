@@ -143,93 +143,91 @@ let
       inputsFrom = packages;
     };
     #
-    qlat-jhub-env = let
-      qlat-jhub-py =
-        pkgs.python3.withPackages (ps: with ps; [
-          ipykernel
-          pip
-          numpy
-          scipy
-          sympy
-          jax
-          jaxlib
-          meson
-          ninja
-          mpi4py
-          psutil
-          cython
-          pybind11
-          pythran
-          poetry-core
-          pkgconfig
-          meson-python
-          scikit-build
-          setuptools-scm
-          pyproject-metadata
-          build
-          wheel
-          pyproject-hooks
-          pep517
-          packaging
-          tomli
-          flit-core
-          virtualenv
-          h5py
-          pandas
-          scikit-learn
-          xarray
-          matplotlib
-          plotly
-          seaborn
-          jupyter-server-mathjax
-          numba
-          transformers
-          torch
-          sphinx
-          myst-parser
-          pycuda
-          pytools
-          lz4
-          torchvision
-          torchaudio
-          xformers
-          jupyterlab
-          jupyterhub
-          jupyterhub-systemdspawner
-        ] ++ pkgs.qlat-py-pkgs);
-        qlat-jhub-env = pkgs.buildEnv {
-          name = "qlat-jhub-env${pkgs.qlat-name}";
-          paths = with pkgs; [
-            qlat-jhub-py
-            bash
-            coreutils
-            openssh
-            linux-pam
-            findutils
-            gcc
-            clang-tools
-            git
-            gnumake
-            zlib
-            pkg-config
-            mpi
-            killall
-            wget
-            rsync
-            automake
-            autoconf
-            gsl
-            fftw
-            fftwFloat
-            openssl
-            gnuplot
-            texliveFull
-            pipx
-            twine
-            poppler_utils
-          ];
-        };
-    in qlat-jhub-env;
+    qlat-jhub-py =
+      pkgs.python3.withPackages (ps: with ps; [
+        ipykernel
+        pip
+        numpy
+        scipy
+        sympy
+        jax
+        jaxlib
+        meson
+        ninja
+        mpi4py
+        psutil
+        cython
+        pybind11
+        pythran
+        poetry-core
+        pkgconfig
+        meson-python
+        scikit-build
+        setuptools-scm
+        pyproject-metadata
+        build
+        wheel
+        pyproject-hooks
+        pep517
+        packaging
+        tomli
+        flit-core
+        virtualenv
+        h5py
+        pandas
+        scikit-learn
+        xarray
+        matplotlib
+        plotly
+        seaborn
+        jupyter-server-mathjax
+        numba
+        transformers
+        torch
+        sphinx
+        myst-parser
+        pycuda
+        pytools
+        lz4
+        torchvision
+        torchaudio
+        xformers
+        jupyterlab
+        jupyterhub
+        jupyterhub-systemdspawner
+      ] ++ pkgs.qlat-py-pkgs);
+      qlat-jhub-env = pkgs.buildEnv {
+        name = "qlat-jhub-env${pkgs.qlat-name}";
+        paths = with pkgs; [
+          qlat-jhub-py
+          bash
+          coreutils
+          openssh
+          linux-pam
+          findutils
+          gcc
+          clang-tools
+          git
+          gnumake
+          zlib
+          pkg-config
+          mpi
+          killall
+          wget
+          rsync
+          automake
+          autoconf
+          gsl
+          fftw
+          fftwFloat
+          openssl
+          gnuplot
+          texliveFull
+          pipx
+          twine
+          poppler_utils
+        ];
+      };
     qlat-jhub-sh = pkgs.mkShell rec {
       name = "qlat-jhub-sh${pkgs.qlat-name}";
       packages = [ qlat-jhub-env ];

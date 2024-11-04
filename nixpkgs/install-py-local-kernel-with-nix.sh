@@ -17,5 +17,5 @@ ls -l
     --env "LIBRARY_PATH" "" \
     --env "PKG_CONFIG_PATH" "" \
     --env "CUBACORES" "0" \
-    --env "OMP_NUM_THREADS" "1" \
+    --env "OMP_NUM_THREADS" "2" \
     --name=py-local
