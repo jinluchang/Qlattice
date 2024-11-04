@@ -107,33 +107,132 @@ let
     ++ (if qlat-cudaSupport then [ qlat-nixgl ] else [])
     );
     #
-    qlat-py = pkgs.python3.withPackages (ps: with pkgs; [
-      ps.build
-      ps.wheel
+    qlat-dep-pkgs-extra = with pkgs; [
+      mpi cuba qlat-eigen cps qmp qio grid-lehner
+    ];
+    qlat-py-pkgs = with pkgs; [
       qlat_utils
       qlat
       qlat_cps
       qlat_grid
       gpt-lehner
-    ]);
+    ];
+    qlat-tests-pkgs = with pkgs; [
+      qlat-pypi
+      qlat-examples-cpp
+      qlat-examples-cpp-grid
+      qlat-examples-py
+      qlat-examples-py-gpt
+      qlat-examples-py-cps
+    ];
+    #
+    qlat-py = pkgs.python3.withPackages (ps: [
+      ps.build
+      ps.wheel
+    ] ++ pkgs.qlat-py-pkgs);
     qlat-pkgs = with pkgs; [
-      mpi cuba qlat-eigen cps qmp qio grid-lehner
       qlat-py
-    ] ++ pkgs.qlat-dep-pkgs;
+    ] ++ pkgs.qlat-dep-pkgs ++ pkgs.qlat-dep-pkgs-extra;
     qlat-tests = pkgs.buildEnv {
       name = "qlat-tests${pkgs.qlat-name}";
-      paths = with pkgs; [
-        qlat-pypi
-        qlat-examples-cpp
-        qlat-examples-cpp-grid
-        qlat-examples-py
-        qlat-examples-py-gpt
-        qlat-examples-py-cps
-      ];
+      paths = qlat-tests-pkgs;
     };
-    qlat-env = pkgs.mkShell rec {
+    qlat-sh = pkgs.mkShell rec {
       name = "qlat-sh${pkgs.qlat-name}";
       packages = pkgs.qlat-pkgs;
+      inputsFrom = packages;
+    };
+    #
+    qlat-jhub-env = let
+      qlat-jhub-py =
+        pkgs.python3.withPackages (ps: with ps; [
+          ipykernel
+          pip
+          numpy
+          scipy
+          sympy
+          jax
+          jaxlib
+          meson
+          ninja
+          mpi4py
+          psutil
+          cython
+          pybind11
+          pythran
+          poetry-core
+          pkgconfig
+          meson-python
+          scikit-build
+          setuptools-scm
+          pyproject-metadata
+          build
+          wheel
+          pyproject-hooks
+          pep517
+          packaging
+          tomli
+          flit-core
+          virtualenv
+          h5py
+          pandas
+          scikit-learn
+          xarray
+          matplotlib
+          plotly
+          seaborn
+          jupyter-server-mathjax
+          numba
+          transformers
+          torch
+          sphinx
+          myst-parser
+          pycuda
+          pytools
+          lz4
+          torchvision
+          torchaudio
+          xformers
+          jupyterlab
+          jupyterhub
+          jupyterhub-systemdspawner
+        ] ++ pkgs.qlat-py-pkgs);
+        qlat-jhub-env = pkgs.buildEnv {
+          name = "qlat-jhub-env${pkgs.qlat-name}";
+          paths = with pkgs; [
+            qlat-jhub-py
+            bash
+            coreutils
+            openssh
+            linux-pam
+            findutils
+            gcc
+            clang-tools
+            git
+            gnumake
+            zlib
+            pkg-config
+            mpi
+            killall
+            wget
+            rsync
+            automake
+            autoconf
+            gsl
+            fftw
+            fftwFloat
+            openssl
+            gnuplot
+            texliveFull
+            pipx
+            twine
+            poppler_utils
+          ];
+        };
+    in qlat-jhub-env;
+    qlat-jhub-sh = pkgs.mkShell rec {
+      name = "qlat-jhub-sh${pkgs.qlat-name}";
+      packages = [ qlat-jhub-env ];
       inputsFrom = packages;
     };
     #
@@ -151,21 +250,17 @@ let
   in rec {
     qlat-name = "${prev.qlat-name}-std";
     qlat-eigen = pkgs.eigen;
-    qlat-py = pkgs.python3.withPackages (ps: with pkgs; [
+    qlat-dep-pkgs-extra = with pkgs; [
+      mpi cuba qlat-eigen
+    ];
+    qlat-py-pkgs = with pkgs; [
       qlat_utils
       qlat
-    ]);
-    qlat-pkgs = with pkgs; [
-      mpi cuba qlat-eigen
-      qlat-py
-    ] ++ pkgs.qlat-dep-pkgs;
-    qlat-tests = pkgs.buildEnv {
-      name = "qlat-tests${pkgs.qlat-name}";
-      paths = with pkgs; [
-        qlat-examples-cpp
-        qlat-examples-py
-      ];
-    };
+    ];
+    qlat-tests-pkgs = with pkgs; [
+      qlat-examples-cpp
+      qlat-examples-py
+    ];
   };
 
   overlay-clang = final: prev: let
@@ -194,7 +289,7 @@ let
       ] ++ overlays;
     };
   in {
-    "qlat-env${pkgs.qlat-name}" = pkgs.qlat-env;
+    "qlat-sh${pkgs.qlat-name}" = pkgs.qlat-sh;
     "qlat-py${pkgs.qlat-name}" = pkgs.qlat-py;
     "qlat-tests${pkgs.qlat-name}" = pkgs.qlat-tests;
     "qlat-pkgs${pkgs.qlat-name}" = pkgs.qlat-pkgs;

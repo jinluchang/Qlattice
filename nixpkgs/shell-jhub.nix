@@ -5,7 +5,5 @@
 let
   qlat-pkgs = import ./qlat-pkgs.nix { inherit nixpkgs; };
   many-qlat-pkgs-all = qlat-pkgs.many-qlat-pkgs-all;
-  sh1 = many-qlat-pkgs-all.qlat-sh;
-  sh2 = many-qlat-pkgs-all.qlat-sh-std;
-  sh3 = many-qlat-pkgs-all.qlat-sh-std-clang;
-in sh1
+  pkgs = many-qlat-pkgs-all.pkgs;
+in pkgs.qlat-jhub-sh
