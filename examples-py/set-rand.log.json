@@ -1,0 +1,62 @@
+[
+ [
+  "total_site = Coordinate([4, 4, 4, 8])",
+  0
+ ],
+ [
+  "geo = Geometry([4, 4, 4, 8])",
+  0
+ ],
+ [
+  "prop.crc32() = 507772097 ; prop.qnorm()",
+  49114.37494021384
+ ],
+ [
+  "sc_prop.qnorm()",
+  13709.094567602948
+ ],
+ [
+  "sc_prop1.qnorm()",
+  0.0
+ ],
+ [
+  "s_prop.qnorm()",
+  12258.458633053084
+ ],
+ [
+  "s_prop1.qnorm()",
+  0.0
+ ],
+ [
+  "s_prop2.qnorm()",
+  0.0
+ ],
+ [
+  "sp_prop.qnorm()",
+  1545.465159186052
+ ],
+ [
+  "sp_prop1.qnorm()",
+  0.0
+ ],
+ [
+  "prop_norm.qnorm()",
+  49114.374940213835
+ ],
+ [
+  "s_prop_norm.qnorm()",
+  12258.458633053084
+ ],
+ [
+  "s_prop_norm1.qnorm()",
+  0.0
+ ],
+ [
+  "sp_prop_norm.qnorm()",
+  1545.465159186052
+ ],
+ [
+  "sp_prop_norm1.qnorm()",
+  0.0
+ ]
+]
