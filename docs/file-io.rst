@@ -189,7 +189,6 @@ Support ``np.asarray(psel)``.
    PointsSelection.save
    PointsSelection.load
    PointsSelection.xg_arr
-   PointsSelection.set_xg_arr
 
 SelectedPointsBase
 ^^^^^^^^^^^^^^^^^^
