@@ -200,7 +200,7 @@ let
         name = "qlat-jhub-env${pkgs.qlat-name}";
         paths = with pkgs; [
           qlat-jhub-py
-          bash
+          bashInteractive
           coreutils
           openssh
           linux-pam
