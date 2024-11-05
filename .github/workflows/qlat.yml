@@ -38,7 +38,7 @@ jobs:
     - name: Show python venv
       run: |
         source ~/qlat-build/default/setenv.sh
-        pip3 install Sphinx myst-parser
+        pip3 install Sphinx myst-parser linkify-it-py
         python3 -c "import sys; print(sys.version)"
         python3 -c "import sys; print(sys.path)"
         python3 -c "import numpy as np ; np.show_config()"
