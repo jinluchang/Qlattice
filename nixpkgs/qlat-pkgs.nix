@@ -185,6 +185,7 @@ let
         transformers
         torch
         sphinx
+        linkify-it-py
         myst-parser
         pycuda
         pytools
