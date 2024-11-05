@@ -20,7 +20,10 @@ def get_errors_from_blocks(est_value, blocks):
         err = np.add(err, (N-1)/N*np.power(np.subtract(est_value,blocks[i]),2))
         bias = np.add(bias,np.divide(blocks[i],N))
     err = np.power(err,0.5)
-    return [np.add(est_value,np.multiply(N-1,np.subtract(est_value,bias))), err]
+    bias_correction = np.multiply(N-1,np.subtract(est_value,bias))
+    if(abs(bias_correction / est_value) > 0.05):
+        print(f"Warning: Large bias correction {bias_correction} to centeral value {est_value}.")
+    return [np.add(est_value,bias_correction), err]
 
 def get_super_jackknife_blocks(data, block_size, f=lambda x:x):
     NE = len(data)
