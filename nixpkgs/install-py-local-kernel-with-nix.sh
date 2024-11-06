@@ -1,4 +1,11 @@
-# Need to run from this directory
+#!/bin/bash
+
+if [ -f default-jhub.nix ]; then
+    :
+else
+    echo "Need to run from the directory containing the script, which also have the file default-jhub.nix"
+    exit 1
+fi
 
 src="$PWD"
 dst="$HOME/.local/share/jupyter/kernels"
