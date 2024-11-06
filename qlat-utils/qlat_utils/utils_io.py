@@ -4,6 +4,7 @@ import hashlib
 import functools
 
 from .c import *
+from .lru_cache import *
 
 @timer
 def qmkdirs(path):
@@ -119,6 +120,66 @@ def pickle_cache(path, is_sync_node=True):
             ret = func(*args, **kwargs)
             res = (func_args, ret,)
             save_pickle_obj(res, fn, is_sync_node=is_sync_node)
+            return ret
+        return f
+    return dec
+
+def cache_call(*, maxsize=128, get_state=None, is_hash_args=True, path=None, is_sync_node=True):
+    """
+    get_state() => object to be used as extra key of cache
+    #
+    `maxsize` can be `0`, where the LRUCache is effectively turned off.
+    if is_hash_args:
+        Pickle all the keys and use hash as the key (default)
+    else:
+        Use `(func.__name__, args, state)` directly as `key`.
+        Note that `kwargs` has to be empty in this case.
+    if path is None:
+        Only cache using LRUCache (default)
+    else:
+        Also cache the results in f"{path}/{key}.pickle".
+        if is_sync_node:
+            Only read/write to f"{path}/{key}.pickle" from process 0 (broadcast to all nodes)
+        else:
+            All the processes independently do the calculation and read/write to f"{path}/{key}.pickle"
+            Use this if (1) `path` or `key` is different for different processes;
+                     or (2) this function is only called from a certain process.
+    #
+    # Usage example:
+    block_size = 10
+    block_size_dict = { "48I": 10, }
+    @cache_call(maxsize=128, get_state=lambda: (block_size, block_size_dict,), is_hash_args=True)
+    def func(x):
+        return x**2
+    """
+    def dec(func):
+        cache = LRUCache(maxsize)
+        @functools.wraps(func)
+        def f(*args, **kwargs):
+            if get_state is None:
+                state = None
+            else:
+                state = get_state()
+            func_args = (func.__name__, args, kwargs, state)
+            if is_hash_args:
+                func_args_str = pickle.dumps(func_args)
+                key = hash_sha256(func_args_str)
+            else:
+                assert kwargs == dict()
+                key = (func.__name__, args, state)
+            if key in cache:
+                return cache[key]
+            if path is not None:
+                fn = f"{path}/{key}.pickle"
+                c_res = load_pickle_obj(fn, is_sync_node=is_sync_node)
+                if c_res is not None:
+                    c_func_args, c_ret = c_res
+                    return c_ret
+            ret = func(*args, **kwargs)
+            cache[key] = ret
+            if path is not None:
+                res = (func_args, ret,)
+                save_pickle_obj(res, fn, is_sync_node=is_sync_node)
             return ret
         return f
     return dec
