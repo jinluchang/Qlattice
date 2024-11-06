@@ -17,11 +17,11 @@ source qcore/set-prefix.sh $name
 
     time-run make html || true
 
-    time-run rsync -a --delete "$build_dir"/docs/_build/ "$prefix"/share/doc/qlat
+    time-run rsync -a --delete "$build_dir"/docs/build/ "$prefix"/share/doc/qlat
 
     # time-run make latexpdf || true
 
-    # time-run rsync -a --delete "$build_dir"/docs/_build/ "$prefix"/share/doc/qlat
+    # time-run rsync -a --delete "$build_dir"/docs/build/ "$prefix"/share/doc/qlat
 
     echo "!!!! $name build !!!!"
     rm -rf "$temp_dir" || true
