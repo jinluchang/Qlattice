@@ -124,11 +124,20 @@ def pickle_cache(path, is_sync_node=True):
         return f
     return dec
 
-def cache_call(*, maxsize=128, get_state=None, is_hash_args=True, path=None, is_sync_node=True):
+def cache_call(
+        *,
+        maxsize=128,
+        get_state=None,
+        is_hash_args=True,
+        path=None,
+        is_sync_node=True,
+        cache=None,
+        ):
     """
     get_state() => object to be used as extra key of cache
     #
     `maxsize` can be `0`, where the LRUCache is effectively turned off.
+    #
     if is_hash_args:
         Pickle all the keys and use hash as the key (default)
     else:
@@ -144,6 +153,10 @@ def cache_call(*, maxsize=128, get_state=None, is_hash_args=True, path=None, is_
             All the processes independently do the calculation and read/write to f"{path}/{key}.pickle"
             Use this if (1) `path` or `key` is different for different processes;
                      or (2) this function is only called from a certain process.
+    if cache is None:
+        cache = LRUCache(maxsize)
+    else:
+        The input `cache` will be used. This cache may be shared for other purpose
     #
     # Usage example:
     block_size = 10
@@ -152,8 +165,9 @@ def cache_call(*, maxsize=128, get_state=None, is_hash_args=True, path=None, is_
     def func(x):
         return x**2
     """
-    def dec(func):
+    if cache is None:
         cache = LRUCache(maxsize)
+    def dec(func):
         @functools.wraps(func)
         def f(*args, **kwargs):
             if get_state is None:
@@ -168,7 +182,9 @@ def cache_call(*, maxsize=128, get_state=None, is_hash_args=True, path=None, is_
                 assert kwargs == dict()
                 key = (func.__name__, args, state)
             if key in cache:
-                return cache[key]
+                c_res = cache[key]
+                c_func_args, c_ret = c_res
+                return c_ret
             if path is not None:
                 fn = f"{path}/{key}.pickle"
                 c_res = load_pickle_obj(fn, is_sync_node=is_sync_node)
@@ -176,9 +192,9 @@ def cache_call(*, maxsize=128, get_state=None, is_hash_args=True, path=None, is_
                     c_func_args, c_ret = c_res
                     return c_ret
             ret = func(*args, **kwargs)
-            cache[key] = ret
+            res = (func_args, ret,)
+            cache[key] = res
             if path is not None:
-                res = (func_args, ret,)
                 save_pickle_obj(res, fn, is_sync_node=is_sync_node)
             return ret
         return f
