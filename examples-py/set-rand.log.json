@@ -1,11 +1,9 @@
 [
  [
-  "total_site = Coordinate([4, 4, 4, 8])",
-  0
+  "total_site = Coordinate([4, 4, 4, 8])"
  ],
  [
-  "geo = Geometry([4, 4, 4, 8])",
-  0
+  "geo = Geometry([4, 4, 4, 8])"
  ],
  [
   "prop.crc32() = 507772097 ; prop.qnorm()",

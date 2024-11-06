@@ -315,6 +315,9 @@ def mk_r_sq_interp_idx_coef_list(r_list):
 
 @timer
 def check_log_json(script_file, json_results, *, check_eps=1e-5):
+    """
+    json_results = [ (name, value, check_eps,), (name, value,), (name,), ... ]
+    """
     fname = get_fname()
     if 0 == get_id_node():
         json_fn_name = os.path.splitext(script_file)[0] + ".log.json"
@@ -326,7 +329,14 @@ def check_log_json(script_file, json_results, *, check_eps=1e-5):
                     displayln(-1, f"CHECK: {i} {p} load:{pl}")
                     displayln(-1, f"CHECK: ERROR: JSON results length does not match.")
                     continue
-                if len(p) == 2:
+                if len(p) == 1:
+                    eps = check_eps
+                    epsl = check_eps
+                    v = 0
+                    vl = 0
+                    n, = p
+                    nl, = pl
+                elif len(p) == 2:
                     eps = check_eps
                     epsl = check_eps
                     n, v = p
