@@ -39,7 +39,7 @@ v = cache.get(12)
 json_results_append(f"{v}")
 v = cache.get(12, "not found")
 json_results_append(f"{v}")
-v = cache.cache
+v = list(cache.cache.items())
 json_results_append(f"{v}")
 
 json_results_append(f"test cache_call")
