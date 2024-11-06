@@ -17,6 +17,7 @@ tests = \
 		mat-op-qcd.log \
 		qlat-id-node.log \
 		set-rand.log \
+		utils.log \
 		benchmark-matrix-functions.log \
 		make-sample-gauge-field.log \
 		selected-convert-io.log \
