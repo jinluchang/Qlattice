@@ -135,7 +135,7 @@ let
     ] ++ pkgs.qlat-dep-pkgs ++ pkgs.qlat-dep-pkgs-extra;
     qlat-tests = pkgs.buildEnv {
       name = "qlat-tests${pkgs.qlat-name}";
-      paths = qlat-tests-pkgs;
+      paths = pkgs.qlat-tests-pkgs;
     };
     qlat-sh = pkgs.mkShell rec {
       name = "qlat-sh${pkgs.qlat-name}";
