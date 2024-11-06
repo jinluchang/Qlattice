@@ -20,6 +20,8 @@ size_node_list = [
 
 q.begin_with_mpi(size_node_list)
 
+json_results_append(f"test LRUCache")
+
 cache = q.LRUCache(4)
 cache.clear()
 v = 12 in cache
@@ -39,6 +41,80 @@ v = cache.get(12, "not found")
 json_results_append(f"{v}")
 v = cache.cache
 json_results_append(f"{v}")
+
+json_results_append(f"test cache_call")
+
+block_size = 10
+
+block_size_dict = { "48I": 10, }
+
+@q.cache_call(
+    maxsize=4,
+)
+def func(x):
+    json_results_append(f"run: func({x}) ; block_size={block_size} ; block_size_dict={block_size_dict}")
+    return x, block_size, block_size_dict
+
+for i in range(10):
+    json_results_append(f"i={i} ; func(i % 4)")
+
+@q.cache_call(
+    maxsize=4,
+    get_state=lambda: (block_size, block_size_dict,),
+)
+def func(x):
+    json_results_append(f"run: func({x}) ; block_size={block_size} ; block_size_dict={block_size_dict}")
+    return x, block_size, block_size_dict
+
+for i in range(10):
+    json_results_append(f"i={i} ; func(i % 4)")
+
+block_size = 2
+
+for i in range(10):
+    json_results_append(f"i={i} ; func(i % 4)")
+
+block_size_dict["64I"] = 20
+
+for i in range(10):
+    json_results_append(f"i={i} ; func(i % 4)")
+
+for i in range(20):
+    json_results_append(f"i={i} ; func(i % 10)")
+
+@q.cache_call(
+    maxsize=2,
+    get_state=lambda: (block_size, block_size_dict,),
+    path="cache/func",
+)
+def func(x):
+    json_results_append(f"run: func({x}) ; block_size={block_size} ; block_size_dict={block_size_dict}")
+    return x, block_size, block_size_dict
+
+for i in range(10):
+    json_results_append(f"i={i} ; func(i % 4)")
+
+block_size = 2
+
+for i in range(10):
+    json_results_append(f"i={i} ; func(i % 4)")
+
+block_size_dict["64I"] = 20
+
+for i in range(20):
+    json_results_append(f"i={i} ; func(i % 10)")
+
+@q.cache_call(
+    maxsize=4,
+    get_state=lambda: (block_size,),
+    is_hash_args=False,
+)
+def func(x):
+    json_results_append(f"run: func({x}) ; block_size={block_size} ; block_size_dict={block_size_dict}")
+    return x, block_size, block_size_dict
+
+for i in range(10):
+    json_results_append(f"i={i} ; {func(i % 4)}")
 
 q.check_log_json(__file__, json_results, check_eps=check_eps)
 
