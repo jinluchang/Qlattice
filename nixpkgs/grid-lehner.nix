@@ -76,8 +76,10 @@ in grid-stdenv.mkDerivation rec {
   preConfigure = let
     eigen-file-name = "eigen-3.3.7.tar.bz2";
     eigen-src = fetchurl {
-      url = "https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.bz2";
-      hash = "sha256-aFrfFL2OnAFbeAl8HcIvLwE0N1bxlqzcdqZ44a41LhE=";
+      # url = "https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.bz2";
+      # hash = "sha256-aFrfFL2OnAFbeAl8HcIvLwE0N1bxlqzcdqZ44a41LhE=";
+      url = "https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.bz2";
+      hash = "sha256-tMGYRg66byjTSJTjpXEJmIGFFRBNbnTlzDMc4x5G5iY=";
     };
     cpu_cxx = "c++";
     gpu_cxx = "nvcc";
@@ -100,7 +102,7 @@ in grid-stdenv.mkDerivation rec {
     cp -pv '${eigen-src}' '${eigen-file-name}'
     bash ./scripts/update_eigen.sh '${eigen-file-name}'
     rm '${eigen-file-name}'
-    patch Eigen/unsupported/Eigen/CXX11/Tensor scripts/eigen-3.3.5.Tensor.patch
+    # patch Eigen/unsupported/Eigen/CXX11/Tensor scripts/eigen-3.3.5.Tensor.patch
     #
     echo '-- generating Make.inc files...'
     bash ./scripts/filelist

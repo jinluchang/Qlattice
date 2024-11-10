@@ -28,12 +28,12 @@ buildPythonPackage rec {
 
   src = if is-pypi-src then src-pypi else src-local;
 
-  version-pypi = "0.71";
+  version-pypi = "0.73";
   src-pypi = fetchPypi {
     pname = "qlat_cps";
     version = version-pypi;
     extension = "tar.gz";
-    hash = "sha256-RGazvEmnZHSfqt/0VzzS7XJ8RQCgtgfLe9z1i5rAc7g=";
+    hash = "sha256-5a6/OYhRrcxVVB/5ZRU+av8jAcd0bEbOQukGau2rdE0=";
   };
 
   version-local = builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
