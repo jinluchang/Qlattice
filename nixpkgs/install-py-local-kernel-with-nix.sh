@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [ -f default-jhub.nix ]; then
     :
@@ -11,7 +11,7 @@ src="$PWD"
 dst="$HOME/.local/share/jupyter/kernels"
 mkdir -p "$dst"
 cd "$dst"
-time nix-build "$src"/default-jhub.nix
+time nix-build "$src"/default-jhub.nix "$@"
 ls -l
 ./result/bin/python3 -m ipykernel \
     install --user \
