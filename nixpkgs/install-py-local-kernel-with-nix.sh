@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 
-if [ -f default-jhub.nix ]; then
+script_path="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+
+if [ -f "$script_path"/default-jhub.nix ]; then
     :
 else
-    echo "Need to run from the directory containing the script, which also have the file default-jhub.nix"
+    echo "Need to run the script inside its original directory, which also have the file default-jhub.nix and other files."
     exit 1
 fi
 
-src="$PWD"
+src="$script_path"
 dst="$HOME/.local/share/jupyter/kernels"
 mkdir -p "$dst"
 cd "$dst"
