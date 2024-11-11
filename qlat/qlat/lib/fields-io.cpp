@@ -1591,9 +1591,12 @@ ShuffledFieldsReader& get_shuffled_fields_reader(
     const std::string& path, const Coordinate& new_size_node)
 {
   TIMER("get_shuffled_fields_reader");
-  qassert(not get_shuffled_fields_writer_cache().has(path));
   ShuffledFieldsReader& sfr = get_shuffled_fields_reader_cache()[path];
-  if (sfr.path == "") {
+  if (get_shuffled_fields_writer_cache().has(path)) {
+    // always re-init if there is a writer in cache
+    qwarn(fname + ssprintf(": path='%s' is in writer cache.", path.c_str()));
+    sfr.init(path, new_size_node);
+  } else if (sfr.path == "") {
     sfr.init(path, new_size_node);
   }
   return sfr;
@@ -1604,8 +1607,13 @@ ShuffledFieldsWriter& get_shuffled_fields_writer(
     const bool is_append)
 {
   TIMER("get_shuffled_fields_writer");
-  qassert(not get_shuffled_fields_reader_cache().has(path));
   ShuffledFieldsWriter& sfw = get_shuffled_fields_writer_cache()[path];
+  if (get_shuffled_fields_reader_cache().has(path)) {
+    qwarn(fname +
+          ssprintf(": path='%s' is in reader cache. Remove this cached reader.",
+                   path.c_str()));
+    get_shuffled_fields_reader_cache().erase(path);
+  }
   if (sfw.path == "") {
     sfw.init(path, new_size_node, is_append);
   }
