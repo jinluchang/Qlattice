@@ -480,17 +480,18 @@ struct API ShuffledFieldsWriter {
   ShuffledFieldsWriter() { init(); }
   ShuffledFieldsWriter(const std::string& path_,
                        const Coordinate& new_size_node_,
-                       const bool is_append = false)
+                       const bool is_append = false,
+                       const bool is_removing_old = false)
   // interface function
   {
-    init(path_, new_size_node_, is_append);
+    init(path_, new_size_node_, is_append, is_removing_old);
   }
   //
   ~ShuffledFieldsWriter() { close(); }
   //
   void init();
   void init(const std::string& path_, const Coordinate& new_size_node_,
-            const bool is_append = false);
+            const bool is_append = false, const bool is_removing_old = false);
   //
   void close();
 };
@@ -585,7 +586,19 @@ ShuffledFieldsReader& get_shuffled_fields_reader(
 ShuffledFieldsWriter& get_shuffled_fields_writer(
     const std::string& path,
     const Coordinate& new_size_node = Coordinate(2, 2, 2, 4),
-    const bool is_append = false);
+    const bool is_append = false, const bool is_removing_old = false);
+
+inline void close_shuffled_fields_reader(const std::string& path)
+{
+  TIMER("close_all_shuffled_fields_reader");
+  get_shuffled_fields_reader_cache().erase(path);
+}
+
+inline void close_shuffled_fields_writer(const std::string& path)
+{
+  TIMER("close_all_shuffled_fields_writer");
+  get_shuffled_fields_writer_cache().erase(path);
+}
 
 inline void clear_shuffled_fields_reader_cache()
 {

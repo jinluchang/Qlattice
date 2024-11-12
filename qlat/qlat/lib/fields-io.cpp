@@ -721,7 +721,8 @@ void ShuffledFieldsWriter::init()
 
 void ShuffledFieldsWriter::init(const std::string& path_,
                                 const Coordinate& new_size_node_,
-                                const bool is_append)
+                                const bool is_append,
+                                const bool is_removing_old)
 // interface function
 {
   TIMER_VERBOSE("ShuffledFieldsWriter::init(p,sn,app)")
@@ -755,12 +756,23 @@ void ShuffledFieldsWriter::init(const std::string& path_,
     }
   } else {
     if (does_file_exist_sync_node(path + "/geon-info.txt")) {
-      qerr(fname + ssprintf(": cannot open for write '%s/geon-info.txt' exist",
-                            path.c_str()));
+      if (is_removing_old) {
+        qwarn(fname + ssprintf(": 'geon-info.txt' exist. Removing '%s'."));
+        qremove_all_sync_node(path);
+      } else {
+        qerr(fname +
+             ssprintf(": cannot open for write '%s/geon-info.txt' exist",
+                      path.c_str()));
+      }
     }
     if (does_file_exist_sync_node(path)) {
-      qerr(fname +
-           ssprintf(": cannot open for write '%s' exist", path.c_str()));
+      if (is_removing_old) {
+        qwarn(fname + ssprintf(": directory exist. Removing '%s'."));
+        qremove_all_sync_node(path);
+      } else {
+        qerr(fname +
+             ssprintf(": cannot open for write '%s' exist", path.c_str()));
+      }
     }
     if (get_id_node() == 0) {
       qar_index.init(path + "/index.qar", QFileMode::Write);
@@ -1593,9 +1605,8 @@ ShuffledFieldsReader& get_shuffled_fields_reader(
   TIMER("get_shuffled_fields_reader");
   ShuffledFieldsReader& sfr = get_shuffled_fields_reader_cache()[path];
   if (get_shuffled_fields_writer_cache().has(path)) {
-    // always re-init if there is a writer in cache
+    // warn if there is a writer in cache
     qwarn(fname + ssprintf(": path='%s' is in writer cache.", path.c_str()));
-    sfr.init(path, new_size_node);
   } else if (sfr.path == "") {
     sfr.init(path, new_size_node);
   }
@@ -1604,7 +1615,7 @@ ShuffledFieldsReader& get_shuffled_fields_reader(
 
 ShuffledFieldsWriter& get_shuffled_fields_writer(
     const std::string& path, const Coordinate& new_size_node,
-    const bool is_append)
+    const bool is_append, const bool is_removing_old)
 {
   TIMER("get_shuffled_fields_writer");
   ShuffledFieldsWriter& sfw = get_shuffled_fields_writer_cache()[path];
@@ -1612,10 +1623,10 @@ ShuffledFieldsWriter& get_shuffled_fields_writer(
     qwarn(fname +
           ssprintf(": path='%s' is in reader cache. Remove this cached reader.",
                    path.c_str()));
-    get_shuffled_fields_reader_cache().erase(path);
+    close_shuffled_fields_reader(path);
   }
   if (sfw.path == "") {
-    sfw.init(path, new_size_node, is_append);
+    sfw.init(path, new_size_node, is_append, is_removing_old);
   }
   return sfw;
 }
