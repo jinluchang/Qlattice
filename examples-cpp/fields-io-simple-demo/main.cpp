@@ -7,7 +7,8 @@ inline void demo()
   const std::string path = "huge-data/fields";
   const Coordinate new_size_node = Coordinate(2, 2, 2, 4);
   const bool is_append = false;
-  get_shuffled_fields_writer(path, new_size_node, is_append);
+  const bool is_removing_old = true;
+  get_shuffled_fields_writer(path, new_size_node, is_append, is_removing_old);
   const Coordinate total_site = Coordinate(4, 4, 4, 8);
   const Geometry geo(total_site);
   const RngState rs = RngState("seed");
@@ -25,19 +26,22 @@ inline void demo()
   //
   write_field(f1, path, "f1");
   write_field(f2, path, "f2");
-  clear_shuffled_fields_writer_cache();
+  close_shuffled_fields_writer(path);
   //
   Field<Complex> f1r;
   Field<ComplexF> f2r;
   //
   read_field(f1r, path, "f1");
   read_field(f2r, path, "f2");
-  clear_shuffled_fields_reader_cache();
+  close_shuffled_fields_reader(path);
   //
   const crc32_t crc_f1r = field_crc32(f1r);
   qassert(crc_f1 == crc_f1r);
   const crc32_t crc_f2r = field_crc32(f2r);
   qassert(crc_f2 == crc_f2r);
+  //
+  clear_shuffled_fields_writer_cache();
+  clear_shuffled_fields_reader_cache();
 }
 
 int main(int argc, char* argv[])
