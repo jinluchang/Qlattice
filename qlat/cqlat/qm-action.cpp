@@ -8,16 +8,17 @@ EXPORT(mk_qm_action, {
   double barrier_strength = 1.0;
   double M = 1.0;
   double L = 0.0;
+  long t_TV_start = 0;
   long t_full1 = 10;
   long t_full2 = 10;
   long t_FV_out = 10;
   long t_FV_mid = 5;
   double dt = 1.0;
-  if (!PyArg_ParseTuple(args, "d|d|d|d|d|d|l|l|l|l|d", &alpha, &beta, &FV_offset,
-      &barrier_strength, &M, &L, &t_full1, &t_full2, &t_FV_out, &t_FV_mid, &dt)) {
+  if (!PyArg_ParseTuple(args, "d|d|d|d|d|d|l|l|l|l|l|d", &alpha, &beta, &FV_offset,
+      &barrier_strength, &M, &L, &t_full1, &t_full2, &t_FV_out, &t_FV_mid, &t_TV_start, &dt)) {
     return NULL;
   }
-  QMAction* pqma = new QMAction(alpha, beta, FV_offset, barrier_strength, M, L, t_full1, t_full2, t_FV_out, t_FV_mid, dt);
+  QMAction* pqma = new QMAction(alpha, beta, FV_offset, barrier_strength, M, L, t_full1, t_full2, t_FV_out, t_FV_mid, t_TV_start, dt);
   return py_convert((void*)pqma);
 })
 

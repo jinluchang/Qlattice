@@ -13,6 +13,7 @@ struct QMAction {
   double barrier_strength;
   double M;
   double L;
+  Long t_TV_start;
   Long t_full1;
   Long t_full2;
   Long t_FV_out;
@@ -30,6 +31,7 @@ struct QMAction {
     barrier_strength = 1.0;
     M = 1.0;
     L = 0.0;
+    t_TV_start = 0;
     t_full1 = 10;
     t_full2 = 10;
     t_FV_out = 10;
@@ -41,7 +43,8 @@ struct QMAction {
   qacc QMAction(const double alpha_, const double beta_, const double FV_offset_,
                 const double barrier_strength_, const double M_,
                 const double L_, const Long t_full1_, const Long t_full2_,
-                const Long t_FV_out_, const Long t_FV_mid_, const double dt_)
+                const Long t_FV_out_, const Long t_FV_mid_, const Long t_TV_start_, 
+                const double dt_)
   {
     init();
     initialized = true;
@@ -53,6 +56,7 @@ struct QMAction {
     barrier_strength = barrier_strength_;
     M = M_;
     L = L_;
+    t_TV_start = t_TV_start_;
     t_full1 = t_full1_;
     t_full2 = t_full2_;
     t_FV_out = t_FV_out_;
@@ -63,15 +67,17 @@ struct QMAction {
   inline double V(const double x, const Long t)
   {
     // Returns the potential evaluated at point x
-    if(t<t_full1)
+    if(t<t_TV_start)
+        return V_TV(x);
+    else if(t<t_TV_start+t_full1)
         return V_full(x);
-    else if(t<t_full1+t_FV_out)
+    else if(t<t_TV_start+t_full1+t_FV_out)
       return V_FV_out(x);
-    else if(t<t_full1+t_FV_out+t_FV_mid)
+    else if(t<t_TV_start+t_full1+t_FV_out+t_FV_mid)
       return V_FV_mid(x);
-    else if(t<t_full1+2*t_FV_out+t_FV_mid)
+    else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid)
       return V_FV_out(x);
-    else if(t<t_full1+2*t_FV_out+t_FV_mid+t_full2)
+    else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid+t_full2)
       return V_full(x);
     else {
      //displayln(ssprintf("t (in V): %ld", t));
@@ -84,15 +90,17 @@ struct QMAction {
   inline double dV(const double x, const Long t)
   {
     // Returns the potential evaluated at point x
-    if(t<t_full1)
+    if(t<t_TV_start)
+        return dV_TV(x);
+    else if(t<t_TV_start+t_full1)
         return dV_full(x);
-    else if(t<t_full1+t_FV_out)
+    else if(t<t_TV_start+t_full1+t_FV_out)
       return dV_FV_out(x);
-    else if(t<t_full1+t_FV_out+t_FV_mid)
+    else if(t<t_TV_start+t_full1+t_FV_out+t_FV_mid)
       return dV_FV_mid(x);
-    else if(t<t_full1+2*t_FV_out+t_FV_mid)
+    else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid)
       return dV_FV_out(x);
-    else if(t<t_full1+2*t_FV_out+t_FV_mid+t_full2)
+    else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid+t_full2)
       return dV_full(x);
     else
      return dV_TV(x);
