@@ -360,7 +360,7 @@ class Measurements:
                 "delta_actions_L": self.delta_actions_L,
                 "delta_actions_t_FV": self.delta_actions_t_FV,
                 "delta_actions_t_FV2": self.delta_actions_t_FV2,
-                "delta_actions_t_FV3": self.delta_actions_t_FV2,
+                "delta_actions_t_FV3": self.delta_actions_t_FV3,
                 "delta_actions_t_TV": self.delta_actions_t_TV,
                 "delta_actions_t_TV2": self.delta_actions_t_TV2,
                 "delta_actions_t_TV3": self.delta_actions_t_TV3}, output)
