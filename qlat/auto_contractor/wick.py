@@ -205,7 +205,9 @@ class S(Op):
         return self.list() == other.list()
 
     def isospin_symmetric_limit(self) -> None:
-        # can also use these fictitious quark field to remove some unwanted disconnected diagrams
+        """
+        can also use these fictitious quark field to remove some unwanted disconnected diagrams
+        """
         if self.f in [ "u", "d", "u'", "d'", "u''", "d''", "u'''", "d'''", ]:
             self.f = "l"
         elif self.f in [ "s", "s'", "s''", "s'''", ]:
