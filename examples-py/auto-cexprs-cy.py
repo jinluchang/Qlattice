@@ -17,9 +17,9 @@ def get_cexpr_zeros():
                 mk_expr(0),
                 mk_k_p("t_2", True)     * mk_k_0("t_1")     + "k+^dag  * k0    ",
                 ]
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True)
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython = is_cython)
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
 @q.timer
 def get_cexpr_meson_corr():
@@ -29,9 +29,9 @@ def get_cexpr_meson_corr():
                 mk_pi_p("t_2", True)    * mk_pi_p("t_1")    + "pi^dag * pi   ",
                 mk_k_p("t_2", True)     * mk_k_p("t_1")     + "k^dag  * k    ",
                 ]
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True)
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython = is_cython)
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
 @q.timer
 def get_cexpr_meson_f_corr():
@@ -41,9 +41,9 @@ def get_cexpr_meson_f_corr():
                 mk_j5pi_mu("x_2", 3)    * mk_pi_p("t_1")    + "a_pi   * pi   ",
                 mk_j5k_mu("x_2", 3)     * mk_k_p("t_1")     + "a_k    * k    ",
                 ]
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True)
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython = is_cython)
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
 @q.timer
 def get_cexpr_meson_corr2():
@@ -55,9 +55,9 @@ def get_cexpr_meson_corr2():
                 mk_a0_p("x_2", True)    * mk_a0_p("x_1")    + "a0     * a0   ",
                 mk_kappa_p("x_2", True) * mk_kappa_p("x_1") + "kappa  * kappa",
                 ]
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True)
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython = is_cython)
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
 @q.timer
 def get_cexpr_meson_corr3():
@@ -70,9 +70,9 @@ def get_cexpr_meson_corr3():
                     + mk_k_0_bar("t_1", True) * mk_k_0_bar("t_2")
                     ),
                 ]
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True)
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython = is_cython)
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
 @q.timer
 def get_cexpr_meson_f_corr2():
@@ -85,9 +85,9 @@ def get_cexpr_meson_f_corr2():
                     + mk_j5km_mu("x_2", 3)  * mk_k_m("t_1")
                     ) + "(a_k  * k )",
                 ]
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True)
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython = is_cython)
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
 @q.timer
 def get_cexpr_meson_quark_mass():
@@ -121,9 +121,9 @@ def get_cexpr_meson_quark_mass():
                     + mk_k_m("t_1", True) * mk_m("s", "x_1") * mk_k_m("t_2")
                     ),
                 ]
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True)
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython = is_cython)
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
 def get_all_cexpr():
     cexprs = [
