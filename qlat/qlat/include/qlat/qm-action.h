@@ -9,6 +9,7 @@ struct QMAction {
   double beta;
   double start_TV;
   double FV_offset;
+  double TV_offset;
   double center_bar;
   double barrier_strength;
   double M;
@@ -26,7 +27,8 @@ struct QMAction {
     alpha = 1.0;
     beta = 1.0;
     start_TV = 2.0;
-    FV_offset = 0.2;
+    FV_offset = 0.0;
+    TV_offset = 0.0;
     center_bar = 1.0;
     barrier_strength = 1.0;
     M = 1.0;
@@ -41,7 +43,7 @@ struct QMAction {
   //
   qacc QMAction() { init(); }
   qacc QMAction(const double alpha_, const double beta_, const double FV_offset_,
-                const double barrier_strength_, const double M_,
+                const double TV_offset_, const double barrier_strength_, const double M_,
                 const double L_, const Long t_full1_, const Long t_full2_,
                 const Long t_FV_out_, const Long t_FV_mid_, const Long t_TV_start_, 
                 const double dt_)
@@ -52,6 +54,7 @@ struct QMAction {
     beta = beta_;
     start_TV = (3.0+std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha; // (2.0-2.0*std::pow(1-alpha, 0.5))/alpha + start_TV_;
     FV_offset = FV_offset_;
+    TV_offset = TV_offset_;
     center_bar = (3.0-std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
     barrier_strength = barrier_strength_;
     M = M_;
@@ -166,20 +169,20 @@ struct QMAction {
   inline double V_TV(const double x)
   {
     double rtn = V_full(x);
-    if(x<center_bar)
-      rtn += M*(V_full(center_bar) - rtn + barrier_strength*(x-center_bar)*(x-center_bar));
+    if(x<center_bar+TV_offset)
+      rtn += M*(V_full(center_bar+TV_offset) - rtn + barrier_strength*(x-center_bar-TV_offset)*(x-center_bar-TV_offset));
     else
-      rtn += L*(V_full(center_bar) - rtn + barrier_strength*(x-center_bar)*(x-center_bar));
+      rtn += L*(V_full(center_bar+TV_offset) - rtn + barrier_strength*(x-center_bar-TV_offset)*(x-center_bar-TV_offset));
     return rtn;
   }
 
   inline double dV_TV(const double x)
   {
     double rtn = dV_full(x);
-    if(x<center_bar)
-      rtn += M*(-rtn + 2.0*barrier_strength*(x-center_bar));
+    if(x<center_bar+TV_offset)
+      rtn += M*(-rtn + 2.0*barrier_strength*(x-center_bar-TV_offset));
     else
-      rtn += L*(-rtn + 2.0*barrier_strength*(x-center_bar));
+      rtn += L*(-rtn + 2.0*barrier_strength*(x-center_bar-TV_offset));
     return rtn;
   }
 

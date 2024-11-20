@@ -5,6 +5,7 @@ EXPORT(mk_qm_action, {
   double alpha = 0.0;
   double beta = 0.0;
   double FV_offset = 0.0;
+  double TV_offset = 0.0;
   double barrier_strength = 1.0;
   double M = 1.0;
   double L = 0.0;
@@ -14,11 +15,11 @@ EXPORT(mk_qm_action, {
   long t_FV_out = 10;
   long t_FV_mid = 5;
   double dt = 1.0;
-  if (!PyArg_ParseTuple(args, "d|d|d|d|d|d|l|l|l|l|l|d", &alpha, &beta, &FV_offset,
+  if (!PyArg_ParseTuple(args, "d|d|d|d|d|d|d|l|l|l|l|l|d", &alpha, &beta, &FV_offset, &TV_offset,
       &barrier_strength, &M, &L, &t_full1, &t_full2, &t_FV_out, &t_FV_mid, &t_TV_start, &dt)) {
     return NULL;
   }
-  QMAction* pqma = new QMAction(alpha, beta, FV_offset, barrier_strength, M, L, t_full1, t_full2, t_FV_out, t_FV_mid, t_TV_start, dt);
+  QMAction* pqma = new QMAction(alpha, beta, FV_offset, TV_offset barrier_strength, M, L, t_full1, t_full2, t_FV_out, t_FV_mid, t_TV_start, dt);
   return py_convert((void*)pqma);
 })
 
