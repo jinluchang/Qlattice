@@ -19,7 +19,7 @@ EXPORT(mk_qm_action, {
       &barrier_strength, &M, &L, &t_full1, &t_full2, &t_FV_out, &t_FV_mid, &t_TV_start, &dt)) {
     return NULL;
   }
-  QMAction* pqma = new QMAction(alpha, beta, FV_offset, TV_offset barrier_strength, M, L, t_full1, t_full2, t_FV_out, t_FV_mid, t_TV_start, dt);
+  QMAction* pqma = new QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, t_full1, t_full2, t_FV_out, t_FV_mid, t_TV_start, dt);
   return py_convert((void*)pqma);
 })
 

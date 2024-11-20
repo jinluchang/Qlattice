@@ -537,6 +537,7 @@ def main():
         hmc.run_traj()
         measurements.measure(hmc)
         measurements.display_measurements()
+        q.displayln_info(f"{hmc.fileid}")
         #if hmc.traj%10 == 0:
         #    measurements.plot_measurements()
         
