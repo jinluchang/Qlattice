@@ -441,6 +441,8 @@ def rejk_list(jk_list, jk_idx_list, all_jk_idx):
 
 def mk_jk_blocking_func(block_size=1, block_size_dict=None, all_jk_idx_set=None):
     """
+    Recommend to use `jk_blocking_func_default` instead.
+    #
     block_size_for_this_job_tag = block_size_dict.get(job_tag, block_size)
     """
     if block_size_dict is None:
@@ -567,7 +569,7 @@ def rjk_avg_err(rjk_list, eps=1):
 
 # ----------
 
-default_g_jk_kwargs = {}
+default_g_jk_kwargs = dict()
 
 default_g_jk_kwargs["jk_type"] = "super"  # choices: "rjk", "super"
 default_g_jk_kwargs["eps"] = 1
@@ -582,9 +584,71 @@ default_g_jk_kwargs["rng_state"] = RngState("rejk")
 default_g_jk_kwargs["is_normalizing_rand_sample"] = True
 default_g_jk_kwargs["is_use_old_rand_alg"] = False # only need to reproduce old results (need is_normalizing_rand_sample == False)
 
-# jk_blocking_func(jk_idx) => blocked jk_idx
-# jk_blocking_func = mk_jk_blocking_func(block_size=1, block_size_dict=None, all_jk_idx_set=None)
-default_g_jk_kwargs["jk_blocking_func"] = None
+# these parameters are used in jk_blocking_func_default
+default_g_jk_kwargs["block_size"] = 1
+default_g_jk_kwargs["block_size_dict"] = {
+        "job_tag": 1,
+        }
+default_g_jk_kwargs["all_jk_idx_set"] = set()
+
+@use_kwargs(default_g_jk_kwargs)
+def get_jk_state(
+        jk_type,
+        eps,
+        n_rand_sample,
+        is_normalizing_rand_sample,
+        is_use_old_rand_alg,
+        block_size,
+        block_size_dict,
+        ):
+    """
+    Currently only useful if we set
+    #
+    q.default_g_jk_kwargs["jk_type"] = "rjk" # this not yet the default
+    #
+    and
+    #
+    q.default_g_jk_kwargs["jk_blocking_func"] = jk_blocking_func_default
+    #
+    """
+    assert jk_type == "rjk"
+    return (
+            jk_type,
+            eps,
+            n_rand_sample,
+            is_normalizing_rand_sample,
+            is_use_old_rand_alg,
+            block_size,
+            block_size_dict,
+            )
+
+@use_kwargs(default_g_jk_kwargs)
+def jk_blocking_func_default(jk_idx, *, block_size, block_size_dict, all_jk_idx_set):
+    """
+    block_size_for_this_job_tag = block_size_dict.get(job_tag, block_size)
+    """
+    block_size = default_g_jk_kwargs["block_size"]
+    block_size_dict = default_g_jk_kwargs["block_size_dict"]
+    all_jk_idx_set = default_g_jk_kwargs["all_jk_idx_set"]
+    if block_size_dict is None:
+        block_size_dict = dict()
+    if all_jk_idx_set is not None:
+        all_jk_idx_set.add(jk_idx)
+    if isinstance(jk_idx, int_types):
+        traj = jk_idx
+        return traj // block_size
+    elif isinstance(jk_idx, tuple) and len(jk_idx) == 2 and isinstance(jk_idx[1], int_types):
+        job_tag, traj = jk_idx
+        assert isinstance(job_tag, str)
+        assert isinstance(traj, int_types)
+        block_size_for_this_job_tag = block_size_dict.get(job_tag, block_size)
+        assert isinstance(block_size_for_this_job_tag, int_types)
+        return (job_tag, traj // block_size_for_this_job_tag,)
+    else:
+        return jk_idx
+    assert False
+
+default_g_jk_kwargs["jk_blocking_func"] = jk_blocking_func_default # jk_blocking_func(jk_idx) => blocked jk_idx
 
 @use_kwargs(default_g_jk_kwargs)
 @timer
@@ -712,3 +776,33 @@ def g_jk_blocking_func(idx, *, jk_blocking_func, **_kwargs):
         return idx
     else:
         return jk_blocking_func(idx)
+
+class JkKwargs:
+
+    """
+    Example:
+    #
+    with q.JkKwargs(n_rand_sample=1024, block_size=10, block_size_dict={ "48I": 20, }):
+        ...
+    #
+    """
+
+    def __init__(self, **kwargs):
+        self.new_kwargs = kwargs
+        self.original = dict()
+
+    def __enter__(self):
+        for key, value in self.new_kwargs.items():
+            self.original[key] = default_g_jk_kwargs[key]
+            default_g_jk_kwargs[key] = self.new_kwargs[key]
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        assert exc_type is None
+        assert exc_value is None
+        assert traceback is None
+        for key, value in self.new_kwargs.items():
+            default_g_jk_kwargs[key] = self.original[key]
+        self.new_kwargs = None
+        self.original = None
+
+# ----
