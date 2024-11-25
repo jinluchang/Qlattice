@@ -159,11 +159,17 @@ def cache_call(
         The input `cache` will be used. This cache may be shared for other purpose
     #
     # Usage example:
+    #
+    @cache_call(maxsize=128, get_state=q.get_jk_state)
+    def func(x):
+        return x**2
+    #
     block_size = 10
     block_size_dict = { "48I": 10, }
     @cache_call(maxsize=128, get_state=lambda: (block_size, block_size_dict,), is_hash_args=True)
     def func(x):
         return x**2
+    #
     """
     if cache is None:
         cache = LRUCache(maxsize)
