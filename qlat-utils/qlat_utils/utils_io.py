@@ -195,6 +195,7 @@ def cache_call(
                 fn = f"{path}/{key}.pickle"
                 c_res = load_pickle_obj(fn, is_sync_node=is_sync_node)
                 if c_res is not None:
+                    cache[key] = c_res
                     c_func_args, c_ret = c_res
                     return c_ret
             ret = func(*args, **kwargs)
