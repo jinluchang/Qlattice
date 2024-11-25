@@ -593,6 +593,7 @@ default_g_jk_kwargs["all_jk_idx_set"] = set()
 
 @use_kwargs(default_g_jk_kwargs)
 def get_jk_state(
+        *,
         jk_type,
         eps,
         n_rand_sample,
@@ -600,6 +601,7 @@ def get_jk_state(
         is_use_old_rand_alg,
         block_size,
         block_size_dict,
+        **_kwargs,
         ):
     """
     Currently only useful if we set
@@ -623,7 +625,14 @@ def get_jk_state(
             )
 
 @use_kwargs(default_g_jk_kwargs)
-def jk_blocking_func_default(jk_idx, *, block_size, block_size_dict, all_jk_idx_set):
+def jk_blocking_func_default(
+        jk_idx,
+        *,
+        block_size,
+        block_size_dict,
+        all_jk_idx_set,
+        **_kwargs,
+        ):
     """
     block_size_for_this_job_tag = block_size_dict.get(job_tag, block_size)
     """
