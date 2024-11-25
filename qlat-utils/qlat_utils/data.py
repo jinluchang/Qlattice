@@ -48,6 +48,9 @@ class use_kwargs:
 ###
 
 def interpolate_list(v, i):
+    """
+    return approximately v[i]
+    """
     size = len(v)
     i1 = math.floor(i)
     assert i1 >= 0
@@ -63,11 +66,55 @@ def interpolate_list(v, i):
     return a1 * v1 + a2 * v2
 
 def interpolate(v_arr, i_arr):
+    """
+    return approximately v_arr[..., i_arr]
+    """
     vt = v_arr.transpose()
     if isinstance(i_arr, real_types):
         return interpolate_list(vt, i_arr).transpose()
     else:
         return np.array([ interpolate_list(vt, i) for i in i_arr ], v_arr.dtype).transpose()
+
+def get_threshold_idx(arr, threshold):
+    """
+    return x
+    interpolate(arr, x) = threshold
+    arr.shape == (len(arr),)
+    """
+    i1 = 0
+    i2 = len(arr) - 1
+    v1 = arr[i1]
+    v2 = arr[i2]
+    if v1 >= v2:
+        i1, i2 = i2, i1
+        v1, v2 = v2, v1
+    while True:
+        assert v2 >= v1
+        if v1 <= threshold and threshold <= v2:
+            if i2 - i1 == 1:
+                d_v = v2 - v1
+                d_i = i2 - i1
+                i3 = i1 + (threshold - v1) / d_v * d_i
+                return i3
+            i3 = (i1 + i2) // 2
+            v3 = arr[i3]
+            if threshold <= v3:
+                i2 = i3
+                v2 = v3
+                continue
+            elif v3 <= threshold:
+                i1 = i3
+                v1 = v3
+                continue
+            else:
+                assert False
+        elif threshold <= v1:
+            return i1
+        elif v2 <= threshold:
+            return i2
+        else:
+            assert False
+    assert False
 
 def partial_sum_list(x, *, is_half_last = False):
     """Modify in-place, preserve length"""
