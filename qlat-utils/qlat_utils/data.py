@@ -578,7 +578,7 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func
         return rjk_list
 
 @timer
-def rjk_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state):
+def rjk_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state, is_normalizing_rand_sample=True):
     """
     return rjk_list
     n = n_rand_sample
@@ -594,6 +594,10 @@ def rjk_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state):
     rjk_arr = np.zeros((n_rand_sample + 1,), dtype=np.float64)
     rjk_arr[0] = val
     r_arr = rs.g_rand_arr((n_rand_sample,))
+    if is_normalizing_rand_sample:
+        r_arr_qnorm = qnorm(r_arr)
+        r_arr = r_arr * np.sqrt(n_rand_sample / r_arr_qnorm)
+        assert abs(qnorm(r_arr) / n_rand_sample - 1) < 1e-8
     rjk_arr[1:] = val + r_arr * err
     return rjk_arr
 
@@ -752,7 +756,7 @@ def g_rejk(jk_list, jk_idx_list, *,
 
 @use_kwargs(default_g_jk_kwargs)
 @timer
-def g_mk_jk_val(rs_tag, val, err, *, jk_type, n_rand_sample, rng_state, **_kwargs):
+def g_mk_jk_val(rs_tag, val, err, *, jk_type, n_rand_sample, rng_state, is_normalizing_rand_sample, **_kwargs):
     """
     Create a jackknife sample with random numbers based on central value ``val`` and error ``err``.\n
     Need::\n
@@ -761,9 +765,11 @@ def g_mk_jk_val(rs_tag, val, err, *, jk_type, n_rand_sample, rng_state, **_kwarg
         # e.g. n_rand_sample = 1024
         default_g_jk_kwargs["rng_state"] = rng_state
         # e.g. rng_state = RngState("rejk")
+        default_g_jk_kwargs["is_normalizing_rand_sample"] = is_normalizing_rand_sample
+        # e.g. is_normalizing_rand_sample = True
     """
     assert jk_type == "rjk"
-    return rjk_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state)
+    return rjk_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state, is_normalizing_rand_sample)
 
 def g_jk_avg(jk_list):
     """
