@@ -189,12 +189,18 @@ cdef class Field{{name}}(FieldBase):
         return sp
 
     def get_elems_xg(self, xg_arr):
+        """
+        xg_arr can be xg_arr, xg_list, or xg
+        """
         cdef PointsSelection psel = PointsSelection(self.total_site, xg_arr)
         cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, self.multiplicity)
         sp @= self
         return sp
 
     def set_elems_xg(self, xg_arr, val):
+        """
+        xg_arr can be xg_arr, xg_list, or xg
+        """
         cdef Geometry geo = self.geo
         cdef PointsSelection psel = PointsSelection(self.total_site, xg_arr)
         cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, self.multiplicity)
@@ -202,6 +208,9 @@ cdef class Field{{name}}(FieldBase):
         self @= sp
 
     def get_elem_xg(self, xg_arr, cc.Int m):
+        """
+        xg_arr can be xg_arr, xg_list, or xg
+        """
         cdef Geometry geo = self.geo
         cdef PointsSelection psel = PointsSelection(self.total_site, xg_arr)
         cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, 1)
@@ -209,6 +218,9 @@ cdef class Field{{name}}(FieldBase):
         return sp
 
     def set_elem_xg(self, xg_arr, cc.Int m, val):
+        """
+        xg_arr can be xg_arr, xg_list, or xg
+        """
         cdef Geometry geo = self.geo
         cdef cc.Int multiplicity = self.multiplicity
         cdef PointsSelection psel = PointsSelection(self.total_site, xg_arr)
