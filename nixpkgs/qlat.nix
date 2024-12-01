@@ -135,20 +135,20 @@ buildPythonPackage rec {
   preFixup = ''
     echo
     echo ldd $out
-    ldd $out/lib/python3.11/site-packages/cqlat.cpython-311-x86_64-linux-gnu.so
+    ldd $out/lib/python3*/site-packages/cqlat.cpython-*.so
     echo
     echo readelf -d $out
-    readelf -d $out/lib/python3.11/site-packages/cqlat.cpython-311-x86_64-linux-gnu.so
+    readelf -d $out/lib/python3*/site-packages/cqlat.cpython-*.so
     echo
   '';
 
   postFixup = ''
     echo
     echo ldd $out
-    ldd $out/lib/python3.11/site-packages/cqlat.cpython-311-x86_64-linux-gnu.so
+    ldd $out/lib/python3*/site-packages/cqlat.cpython-*.so
     echo
     echo readelf -d $out
-    readelf -d $out/lib/python3.11/site-packages/cqlat.cpython-311-x86_64-linux-gnu.so
+    readelf -d $out/lib/python3*/site-packages/cqlat.cpython-*.so
     echo
   '';
 
