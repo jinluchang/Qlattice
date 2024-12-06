@@ -31,7 +31,7 @@ cdef class PointsSelection:
         PointsSelection(total_site, n_points)
         PointsSelection(total_site, xg_arr, points_dist_type)
         #
-        points_dist_type in [ None, "g", "l", "r", ]
+        points_dist_type in [ "g", "l", "r", ]
         """
         cdef cc.Int len_args = len(args)
         cdef Coordinate total_site
@@ -247,7 +247,7 @@ cdef class FieldSelection:
         FieldSelection()
         FieldSelection(geo) # no points being selected
         FieldSelection(geo, 0) # selecting all points
-        FieldSelection(psel)
+        FieldSelection(psel) # psel.points_dist_type == "g"
         """
         cdef cc.Int len_args = len(args)
         cdef Geometry geo
