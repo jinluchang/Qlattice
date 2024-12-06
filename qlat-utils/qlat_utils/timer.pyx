@@ -226,18 +226,39 @@ def timer_display_stack():
 def timer_display_stack_always():
     cc.Timer.display_stack_always()
 
-def timer_reset(cc.Long max_call_times_for_always_show_info = -1):
+def timer_reset(cc.Long max_call_times_for_always_show_info=-1):
     """
     Reset all timers, ``get_total_time``, ``get_start_time``.
     But does not reset ``get_actual_start_time`` or ``get_actual_total_time``
     """
     cc.Timer.reset(max_call_times_for_always_show_info)
 
-def timer_fork(cc.Long max_call_times_for_always_show_info = -1):
+def timer_fork(cc.Long max_call_times_for_always_show_info=-1):
     cc.Timer.fork(max_call_times_for_always_show_info)
 
 def timer_merge():
     cc.Timer.merge()
+
+### -------------------------------------------------------------------
+
+class TimerFork:
+
+    """
+    with TimerFork():
+        ...
+    """
+
+    def __init__(self, max_call_times_for_always_show_info=-1):
+        self.max_call_times_for_always_show_info = max_call_times_for_always_show_info
+
+    def __enter__(self):
+        timer_fork(self.max_call_times_for_always_show_info)
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        assert exc_type is None
+        assert exc_value is None
+        assert traceback is None
+        timer_merge()
 
 ### -------------------------------------------------------------------
 
