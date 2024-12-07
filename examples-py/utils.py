@@ -116,6 +116,9 @@ def func(x):
 for i in range(10):
     json_results_append(f"i={i} ; {func(i % 4)}")
 
+with q.TimerFork():
+    json_results_append(f"run: in TimerFork")
+
 q.check_log_json(__file__, json_results, check_eps=check_eps)
 
 q.timer_display()
