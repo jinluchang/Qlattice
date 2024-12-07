@@ -227,6 +227,9 @@ let
           pipx
           twine
           poppler_utils
+          file
+          zip
+          unzip
         ];
       };
     qlat-jhub-sh = pkgs.mkShell rec {
