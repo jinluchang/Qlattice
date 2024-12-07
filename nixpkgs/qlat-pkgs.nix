@@ -295,7 +295,7 @@ let
   };
 
   mk-qlat-pkgs = mk-qlat-pkgs-gen {};
-  mk-qlat-pkgs-cuda = mk-qlat-pkgs-gen { cudaSupport = true; };
+  mk-qlat-pkgs-cuda = mk-qlat-pkgs-gen { cudaSupport = false; };
 
   many-qlat-pkgs-core = {}
   // mk-qlat-pkgs []

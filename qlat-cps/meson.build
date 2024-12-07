@@ -14,7 +14,7 @@ add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
 
 py_mod = import('python')
 py3 = py_mod.find_installation('python3', pure: false)
-message(py3.path())
+message(py3.full_path())
 message(py3.get_install_dir())
 
 cxx = run_command('bash', '-c', 'echo "$CXX"', check: true).stdout().strip()
