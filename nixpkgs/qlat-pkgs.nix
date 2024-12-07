@@ -137,104 +137,107 @@ let
       name = "qlat-tests${pkgs.qlat-name}";
       paths = pkgs.qlat-tests-pkgs;
     };
+    qlat-env = pkgs.buildEnv {
+      name = "qlat-env${pkgs.qlat-name}";
+      paths = pkgs.qlat-pkgs;
+    };
     qlat-sh = pkgs.mkShell rec {
       name = "qlat-sh${pkgs.qlat-name}";
-      packages = pkgs.qlat-pkgs;
+      packages = [ pkgs.qlat-env ];
       inputsFrom = packages;
     };
     #
-    qlat-jhub-py =
-      pkgs.python3.withPackages (ps: with ps; [
-        ipykernel
-        pip
-        numpy
-        scipy
-        sympy
-        jax
-        jaxlib
-        meson
-        ninja
-        mpi4py
-        psutil
-        cython
-        pybind11
-        pythran
-        poetry-core
-        pkgconfig
-        meson-python
-        scikit-build
-        setuptools-scm
-        pyproject-metadata
-        build
-        wheel
-        pyproject-hooks
-        pep517
-        packaging
-        tomli
-        flit-core
-        virtualenv
-        h5py
-        pandas
-        scikit-learn
-        xarray
-        matplotlib
-        plotly
-        seaborn
-        jupyter-server-mathjax
-        numba
-        transformers
-        torch
-        sphinx
-        linkify-it-py
-        myst-parser
-        pycuda
-        pytools
-        lz4
-        torchvision
-        torchaudio
-        xformers
-        jupyterlab
-        jupyterhub
-        jupyterhub-systemdspawner
-      ] ++ pkgs.qlat-py-pkgs);
-      qlat-jhub-env = pkgs.buildEnv {
-        name = "qlat-jhub-env${pkgs.qlat-name}";
-        paths = with pkgs; [
-          qlat-jhub-py
-          bashInteractive
-          coreutils
-          openssh
-          linux-pam
-          findutils
-          gcc
-          clang-tools
-          git
-          gnumake
-          zlib
-          pkg-config
-          mpi
-          killall
-          wget
-          rsync
-          automake
-          autoconf
-          gsl
-          fftw
-          fftwFloat
-          openssl
-          gnuplot
-          texliveFull
-          pipx
-          twine
-          poppler_utils
-          file
-          zip
-          unzip
-        ];
-      };
+    qlat-jhub-py = pkgs.python3.withPackages (ps: with ps; [
+      ipykernel
+      pip
+      numpy
+      scipy
+      sympy
+      jax
+      jaxlib
+      meson
+      ninja
+      mpi4py
+      psutil
+      cython
+      pybind11
+      pythran
+      poetry-core
+      pkgconfig
+      meson-python
+      scikit-build
+      setuptools-scm
+      pyproject-metadata
+      build
+      wheel
+      pyproject-hooks
+      pep517
+      packaging
+      tomli
+      flit-core
+      virtualenv
+      h5py
+      pandas
+      scikit-learn
+      xarray
+      matplotlib
+      plotly
+      seaborn
+      jupyter-server-mathjax
+      numba
+      transformers
+      torch
+      sphinx
+      linkify-it-py
+      myst-parser
+      pycuda
+      pytools
+      lz4
+      torchvision
+      torchaudio
+      xformers
+      jupyterlab
+      jupyterhub
+      jupyterhub-systemdspawner
+    ] ++ pkgs.qlat-py-pkgs);
+    qlat-jhub-env = pkgs.buildEnv {
+      name = "qlat-jhub-env${pkgs.qlat-name}";
+      paths = with pkgs; [
+        qlat-jhub-py
+        bashInteractive
+        coreutils
+        openssh
+        linux-pam
+        findutils
+        gcc
+        clang-tools
+        git
+        gnumake
+        zlib
+        pkg-config
+        mpi
+        killall
+        wget
+        rsync
+        automake
+        autoconf
+        gsl
+        fftw
+        fftwFloat
+        openssl
+        gnuplot
+        texliveFull
+        pipx
+        twine
+        poppler_utils
+        file
+        zip
+        unzip
+      ];
+    };
     qlat-jhub-sh = pkgs.mkShell rec {
       name = "qlat-jhub-sh${pkgs.qlat-name}";
-      packages = [ qlat-jhub-env ];
+      packages = [ pkgs.qlat-jhub-env ];
       inputsFrom = packages;
     };
     #
@@ -290,9 +293,13 @@ let
       ] ++ overlays;
     };
   in {
-    "qlat-sh${pkgs.qlat-name}" = pkgs.qlat-sh;
     "qlat-py${pkgs.qlat-name}" = pkgs.qlat-py;
+    "qlat-env${pkgs.qlat-name}" = pkgs.qlat-env;
+    "qlat-sh${pkgs.qlat-name}" = pkgs.qlat-sh;
     "qlat-tests${pkgs.qlat-name}" = pkgs.qlat-tests;
+    "qlat-jhub-py${pkgs.qlat-name}" = pkgs.qlat-jhub-py;
+    "qlat-jhub-env${pkgs.qlat-name}" = pkgs.qlat-jhub-env;
+    "qlat-jhub-sh${pkgs.qlat-name}" = pkgs.qlat-jhub-sh;
     "qlat-pkgs${pkgs.qlat-name}" = pkgs.qlat-pkgs;
     "pkgs${pkgs.qlat-name}" = pkgs;
   };
