@@ -319,8 +319,8 @@ void Timer::display(const std::string& tag)
   }
   displayln_info(ssprintf(
       "Timer::display-end:   %s (level=%ld) --------------------- total %.4E "
-      "sec ----------------------",
-      tag.c_str(), (Long)tdb_history.size(), total_time));
+      "sec (%.6F hour)----------------------",
+      tag.c_str(), (Long)tdb_history.size(), total_time, total_time / 3600));
 }
 
 void Timer::autodisplay(const double time)
