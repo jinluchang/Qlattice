@@ -354,7 +354,7 @@ add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
 qlat_utils_cpp = meson.get_compiler('cpp')
 #
 qlat_utils_py3 = import('python').find_installation('python3')
-message(qlat_utils_py3.path())
+message(qlat_utils_py3.full_path())
 message(qlat_utils_py3.get_install_dir())
 #
 qlat_utils_omp = dependency('openmp').as_system()
