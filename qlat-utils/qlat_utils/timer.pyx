@@ -246,17 +246,24 @@ class TimerFork:
     """
     with TimerFork():
         ...
+    #
+    Will always restore `verbose` level to initial value.
     """
 
     def __init__(self,
-                 max_call_times_for_always_show_info=-1,
                  *,
                  show_display=True,
+                 verbose=None,
+                 max_call_times_for_always_show_info=-1,
                  ):
         self.max_call_times_for_always_show_info = max_call_times_for_always_show_info
         self.show_display = show_display
+        self.orig_verbose_level = get_verbose_level()
+        self.verbose_level = verbose
 
     def __enter__(self):
+        if self.verbose_level is not None:
+            set_verbose_level(self.verbose_level)
         timer_fork(self.max_call_times_for_always_show_info)
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -266,6 +273,7 @@ class TimerFork:
         if self.show_display:
             timer_display("TimerFork")
         timer_merge()
+        set_verbose_level(self.orig_verbose_level)
 
 ### -------------------------------------------------------------------
 
