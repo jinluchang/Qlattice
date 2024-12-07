@@ -277,12 +277,11 @@ let
     qlat-cudaSupport = true;
   };
 
-  mk-qlat-pkgs = overlays: let
+  mk-qlat-pkgs-gen = config: overlays: let
     pkgs = nixpkgs {
       config = {
         allowUnfree = true;
-        # cudaSupport = true;
-      };
+      } // config;
       overlays = [
         overlay
       ] ++ overlays;
@@ -295,30 +294,35 @@ let
     "pkgs${pkgs.qlat-name}" = pkgs;
   };
 
+  mk-qlat-pkgs = mk-qlat-pkgs-gen {};
+  mk-qlat-pkgs-cuda = mk-qlat-pkgs-gen { cudaSupport = true; };
+
   many-qlat-pkgs-core = {}
   // mk-qlat-pkgs []
   // mk-qlat-pkgs [ overlay-std overlay-clang ]
   ;
 
   many-qlat-pkgs-core-w-cuda = many-qlat-pkgs-core
-  // mk-qlat-pkgs [ overlay-cuda ]
+  // mk-qlat-pkgs-cuda [ overlay-cuda ]
   ;
 
   many-qlat-pkgs-all = many-qlat-pkgs-core-w-cuda
   // mk-qlat-pkgs [ overlay-pypi ]
-  // mk-qlat-pkgs [ overlay-cuda overlay-pypi ]
+  // mk-qlat-pkgs-cuda [ overlay-cuda overlay-pypi ]
   // mk-qlat-pkgs [ overlay-clang ]
   // mk-qlat-pkgs [ overlay-clang overlay-pypi ]
   // mk-qlat-pkgs [ overlay-std ]
   // mk-qlat-pkgs [ overlay-std overlay-pypi ]
-  // mk-qlat-pkgs [ overlay-std overlay-cuda ]
-  // mk-qlat-pkgs [ overlay-std overlay-cuda overlay-pypi ]
+  // mk-qlat-pkgs-cuda [ overlay-std overlay-cuda ]
+  // mk-qlat-pkgs-cuda [ overlay-std overlay-cuda overlay-pypi ]
   // mk-qlat-pkgs [ overlay-std overlay-clang overlay-pypi ]
   ;
 
 in {
   #
+  inherit mk-qlat-pkgs-gen;
   inherit mk-qlat-pkgs;
+  inherit mk-qlat-pkgs-cuda;
   inherit overlay;
   inherit overlay-pypi;
   inherit overlay-std;
