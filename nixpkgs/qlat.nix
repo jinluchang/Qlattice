@@ -20,7 +20,7 @@
 , qlat-name ? ""
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
-, NVCC_ARCH ? "sm_86"
+, nvcc-arch ? "sm_86"
 , nixgl ? ""
 }:
 
@@ -95,7 +95,7 @@ buildPythonPackage rec {
       cp -pv "${../qcore/bin/NVCC.py}" "$PWD/NVCC.py"
       patchShebangs --build "$PWD/NVCC.py"
       #
-      export NVCC_OPTIONS="-w -std=c++14 -arch=${NVCC_ARCH} --expt-extended-lambda --expt-relaxed-constexpr -fopenmp -fno-strict-aliasing" # -D__DEBUG_VECUTILS__
+      export NVCC_OPTIONS="-w -std=c++14 -arch=${nvcc-arch} --expt-extended-lambda --expt-relaxed-constexpr -fopenmp -fno-strict-aliasing" # -D__DEBUG_VECUTILS__
       export QLAT_CXX="$PWD/NVCC.py -ccbin c++ $NVCC_OPTIONS"
       export QLAT_MPICXX="$PWD/NVCC.py -ccbin mpic++ $NVCC_OPTIONS"
       export QLAT_CXXFLAGS="--NVCC-compile -D__QLAT_BARYON_SHARED_SMALL__" # -fPIC

@@ -21,7 +21,7 @@
 , openmp ? null
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
-, NVCC_ARCH ? "sm_86"
+, nvcc-arch ? "sm_86"
 }:
 
 let
@@ -84,7 +84,7 @@ in grid-stdenv.mkDerivation rec {
     cpu_cxx = "c++";
     gpu_cxx = "nvcc";
     cpu_cflags = "-fPIC -w -Wno-psabi";
-    gpu_cflags = "-Xcompiler -fPIC -ccbin mpic++ -arch=${NVCC_ARCH} -w";
+    gpu_cflags = "-Xcompiler -fPIC -ccbin mpic++ -arch=${nvcc-arch} -w";
     cpu_ldflags = "";
     gpu_ldflags = "-Xcompiler -fopenmp -ccbin mpic++";
     cxx = if cudaSupport then gpu_cxx else cpu_cxx;

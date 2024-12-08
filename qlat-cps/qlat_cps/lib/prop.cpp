@@ -26,7 +26,7 @@ void save_cps_prop_double(const Field<WilsonMatrix>& prop,
   const cps::FP_FORMAT floatFormat = cps::FP_AUTOMATIC;
   cps::qio_writePropagator(outfile, sType, prop_data, prop_src_data, volFormat,
                            floatFormat);
-  qrename(path + ".partial", path);
+  qrename_info(path + ".partial", path);
 }
 
 void load_cps_prop_double(Field<WilsonMatrix>& prop, const std::string& path)

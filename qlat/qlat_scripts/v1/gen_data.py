@@ -426,6 +426,38 @@ def run_psel_from_psel_prob(get_psel_prob):
 # -----------------------------------------------------------------------------
 
 @q.timer_verbose
+def save_prop_wsrc_sparse(job_tag, traj, *, load_prop, tslice, inv_type, inv_acc, sfw, qar_sp, psel, fsel):
+    """
+    `load_prop()` is the wall source propagator, as if generated in a Coulomb gauge fixed gauge configuration.
+    `tslice` is the integer indicate the source time slice.
+    `inv_type` is `0` (light quark) or `1` (strange quark) or `2` (charm quark)
+    `inv_acc` for wall source typically be integer `1` (sloppy accuracy) or `2` (exact accuracy).
+    """
+    fname = q.get_fname()
+    tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
+    if sfw.has(tag):
+        assert qar_sp.has_regular_file(f"{tag}.lat")
+        assert qar_sp.has_regular_file(f"{tag} ; wsnk.lat")
+        q.displayln_info(0, f"{fname}: tag='{tag}' of '{job_tag}/{traj}' already saved. Skipping.")
+        return
+    prop = load_prop()
+    if prop is None:
+        return
+    q.displayln_info(-1, f"{fname}: write wsrc prop tag='{tag}' of '{job_tag}/{traj}'")
+    s_prop = q.SelProp(fsel)
+    ps_prop = q.PselProp(psel)
+    q.set_zero(s_prop)
+    q.set_zero(ps_prop)
+    s_prop @= prop
+    ps_prop @= prop
+    ps_prop_ws = prop.glb_sum_tslice()
+    qar_sp.write(f"{tag}.lat", "", ps_prop.save_str(), skip_if_exist=True)
+    qar_sp.write(f"{tag} ; wsnk.lat", "", ps_prop_ws.save_str(), skip_if_exist=True)
+    s_prop.save_float_from_double(sfw, tag, skip_if_exist=True)
+    qar_sp.flush()
+    sfw.flush()
+
+@q.timer_verbose
 def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel, get_wi):
     fname = q.get_fname()
     if None in [ get_gt, get_psel, get_fsel, ]:
@@ -452,32 +484,23 @@ def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel,
         q.displayln_info(0, f"available_tags={available_tags}")
         sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
         qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar"), "a")
-        prop = q.Prop(geo)
-        s_prop = q.SelProp(fsel)
-        ps_prop = q.PselProp(psel)
         for idx, tslice, inv_type_wi, inv_acc in wi:
             if inv_type_wi != inv_type:
                 continue
-            tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
-            if sfw.has(tag):
-                assert qar_sp.has_regular_file(f"{tag}.lat")
-                assert qar_sp.has_regular_file(f"{tag} ; wsnk.lat")
-                continue
-            q.displayln_info(-1, f"{fname}: idx={idx} tag='{tag}'")
-            if not sfr.has(tag):
-                raise Exception(f"{tag} not in {sfr.list()}")
-            q.set_zero(prop)
-            q.set_zero(s_prop)
-            q.set_zero(ps_prop)
-            prop.load_double(sfr, tag)
-            s_prop @= prop
-            ps_prop @= prop
-            ps_prop_ws = prop.glb_sum_tslice()
-            qar_sp.write(f"{tag}.lat", "", ps_prop.save_str(), skip_if_exist=True)
-            qar_sp.write(f"{tag} ; wsnk.lat", "", ps_prop_ws.save_str(), skip_if_exist=True)
-            s_prop.save_float_from_double(sfw, tag, skip_if_exist=True)
-            qar_sp.flush()
-            sfw.flush()
+            def load_prop():
+                tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
+                prop = q.Prop(geo)
+                if not sfr.has(tag):
+                    raise Exception(f"{tag} not in {sfr.list()}")
+                prop.load_double(sfr, tag)
+                return prop
+            save_prop_wsrc_sparse(
+                    job_tag, traj,
+                    load_prop=load_prop,
+                    tslice=tslice, inv_type=inv_type, inv_acc=inv_acc,
+                    sfw=sfw, qar_sp=qar_sp,
+                    psel=psel, fsel=fsel,
+                    )
         sfw.close()
         qar_sp.write("checkpoint.txt", "", "", skip_if_exist=True)
         qar_sp.flush()

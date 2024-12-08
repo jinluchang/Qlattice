@@ -20,7 +20,7 @@
 , qlat-name ? ""
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
-, NVCC_ARCH ? "sm_86"
+, nvcc-arch ? "sm_86"
 , nixgl ? ""
 }:
 

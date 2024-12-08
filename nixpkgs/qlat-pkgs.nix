@@ -1,6 +1,7 @@
 {
   nixpkgs ? import ./nixpkgs.nix,
   ngpu ? "2", # adjust with actual number of GPUs
+  nvcc-arch ? "sm_86", # adjust with actual arch of Nvidia GPU
 }:
 
 let
@@ -22,6 +23,7 @@ let
     is-pypi-src = false;
     qlat-cudaSupport = false;
     qlat-ngpu = ngpu;
+    qlat-nvcc-arch = nvcc-arch;
     qlat-eigen = pkgs.grid-lehner;
     qlat-stdenv = pkgs.stdenv;
     mpi = prev.mpi.override { cudaSupport = pkgs.qlat-cudaSupport; };
@@ -36,20 +38,24 @@ let
       stdenv = pkgs.qlat-stdenv;
       eigen = pkgs.qlat-eigen;
       cudaSupport = pkgs.qlat-cudaSupport;
+      nvcc-arch = pkgs.qlat-nvcc-arch;
     };
     qlat = py-call-pkg ./qlat.nix {
       stdenv = pkgs.qlat-stdenv;
       cudaSupport = pkgs.qlat-cudaSupport;
+      nvcc-arch = pkgs.qlat-nvcc-arch;
       nixgl = pkgs.qlat-nixgl;
     };
     qlat_grid = py-call-pkg ./qlat_grid.nix {
       stdenv = pkgs.qlat-stdenv;
       cudaSupport = pkgs.qlat-cudaSupport;
+      nvcc-arch = pkgs.qlat-nvcc-arch;
       nixgl = pkgs.qlat-nixgl;
     };
     qlat_cps = py-call-pkg ./qlat_cps.nix {
       stdenv = pkgs.qlat-stdenv;
       cudaSupport = pkgs.qlat-cudaSupport;
+      nvcc-arch = pkgs.qlat-nvcc-arch;
       nixgl = pkgs.qlat-nixgl;
     };
     c-lime = call-pkg ./c-lime.nix { stdenv = pkgs.qlat-stdenv; };
@@ -60,6 +66,7 @@ let
       stdenv = pkgs.qlat-stdenv;
       c-lime = pkgs.grid-lehner-c-lime;
       cudaSupport = pkgs.qlat-cudaSupport;
+      nvcc-arch = pkgs.qlat-nvcc-arch;
     };
     gpt-lehner = py-call-pkg ./gpt-lehner.nix {
       stdenv = pkgs.qlat-stdenv;
@@ -69,36 +76,42 @@ let
     qlat-examples-cpp = py-call-pkg ./qlat-examples-cpp.nix {
       stdenv = pkgs.qlat-stdenv;
       cudaSupport = pkgs.qlat-cudaSupport;
+      nvcc-arch = pkgs.qlat-nvcc-arch;
       nixgl = pkgs.qlat-nixgl;
       ngpu = pkgs.qlat-ngpu;
     };
     qlat-examples-cpp-grid = py-call-pkg ./qlat-examples-cpp-grid.nix {
       stdenv = pkgs.qlat-stdenv;
       cudaSupport = pkgs.qlat-cudaSupport;
+      nvcc-arch = pkgs.qlat-nvcc-arch;
       nixgl = pkgs.qlat-nixgl;
       ngpu = pkgs.qlat-ngpu;
     };
     qlat-examples-py = py-call-pkg ./qlat-examples-py.nix {
       stdenv = pkgs.qlat-stdenv;
       cudaSupport = pkgs.qlat-cudaSupport;
+      nvcc-arch = pkgs.qlat-nvcc-arch;
       nixgl = pkgs.qlat-nixgl;
       ngpu = pkgs.qlat-ngpu;
     };
     qlat-examples-py-gpt = py-call-pkg ./qlat-examples-py-gpt.nix {
       stdenv = pkgs.qlat-stdenv;
       cudaSupport = pkgs.qlat-cudaSupport;
+      nvcc-arch = pkgs.qlat-nvcc-arch;
       nixgl = pkgs.qlat-nixgl;
       ngpu = pkgs.qlat-ngpu;
     };
     qlat-examples-py-cps = py-call-pkg ./qlat-examples-py-cps.nix {
       stdenv = pkgs.qlat-stdenv;
       cudaSupport = pkgs.qlat-cudaSupport;
+      nvcc-arch = pkgs.qlat-nvcc-arch;
       nixgl = pkgs.qlat-nixgl;
       ngpu = pkgs.qlat-ngpu;
     };
     qlat-pypi = py-call-pkg ./qlat-pypi.nix {
       stdenv = pkgs.qlat-stdenv;
       cudaSupport = pkgs.qlat-cudaSupport;
+      nvcc-arch = pkgs.qlat-nvcc-arch;
       nixgl = pkgs.qlat-nixgl;
     };
     #
