@@ -262,18 +262,18 @@ class TimerFork:
         self.verbose_level = verbose
 
     def __enter__(self):
+        timer_fork(self.max_call_times_for_always_show_info)
         if self.verbose_level is not None:
             set_verbose_level(self.verbose_level)
-        timer_fork(self.max_call_times_for_always_show_info)
 
     def __exit__(self, exc_type, exc_value, traceback):
         assert exc_type is None
         assert exc_value is None
         assert traceback is None
+        set_verbose_level(self.orig_verbose_level)
         if self.show_display:
             timer_display("TimerFork")
         timer_merge()
-        set_verbose_level(self.orig_verbose_level)
 
 ### -------------------------------------------------------------------
 
