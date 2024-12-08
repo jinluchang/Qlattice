@@ -160,6 +160,8 @@ buildPythonPackage rec {
     #
     pwd
     #
+    rm -rfv ./*.p/results
+    #
     mkdir -p "$out/share/qlat-examples-py-gpt"
     rsync -a --delete . "$out/share/qlat-examples-py-gpt"
   '';

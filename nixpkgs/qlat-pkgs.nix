@@ -1,5 +1,6 @@
 {
-  nixpkgs ? import ./nixpkgs.nix
+  nixpkgs ? import ./nixpkgs.nix,
+  ngpu ? "2", # adjust with actual number of GPUs
 }:
 
 let
@@ -20,7 +21,7 @@ let
     #
     is-pypi-src = false;
     qlat-cudaSupport = false;
-    qlat-ngpu = "2"; # adjust with actual number of GPUs
+    qlat-ngpu = ngpu;
     qlat-eigen = pkgs.grid-lehner;
     qlat-stdenv = pkgs.stdenv;
     mpi = prev.mpi.override { cudaSupport = pkgs.qlat-cudaSupport; };

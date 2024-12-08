@@ -151,6 +151,8 @@ buildPythonPackage rec {
     done
     echo
     #
+    rm -rfv ./*/build/results
+    #
     pwd
     mkdir -p "$out/share/qlat-examples-cpp"
     rsync -a --delete . "$out/share/qlat-examples-cpp"
