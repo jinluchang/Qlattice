@@ -139,7 +139,7 @@ buildPythonPackage rec {
     make run-cps -j$num_proc SHELL=$SHELL
     echo
     #
-    for i in *.p ; do
+    for i in *.p sparse-from-cps ; do
       if [ -d "$i" ] ; then
         if diff "$i"/log.check.txt "$i"/log.check.txt.new ; then
           echo "$i" passed
@@ -158,6 +158,7 @@ buildPythonPackage rec {
     pwd
     #
     rm -rfv ./*.p/results
+    rm -rfv ./sparse-from-cps/results*
     #
     mkdir -p "$out/share/qlat-examples-py-cps"
     rsync -a --delete . "$out/share/qlat-examples-py-cps"

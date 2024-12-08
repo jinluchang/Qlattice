@@ -66,7 +66,8 @@ tests_gpt = \
 			gpt-qlat-madwf.log
 
 tests_cps = \
-			cps-qlat-io-test.log
+			cps-qlat-io-test.log \
+			sparse-from-cps/log.txt
 
 all: run run-gpt run-cps
 
@@ -79,6 +80,7 @@ run-cps: update-sources $(tests_cps)
 update-sources:
 	-for i in $(tests) $(tests_gpt) $(tests_cps) ; do touch "$${i%.log}.py" ; done
 	-touch qlat-ext/meson.build
+	make -C sparse-from-cps update-sources
 
 %.log: %.py
 	-rm -rfv "$<".p
@@ -103,5 +105,9 @@ qlat-ext.log: qlat-ext/meson.build
 	-touch "$@"
 	-cp -v qlat-ext.p/log.check.txt.new "$@"
 
+sparse-from-cps/log.txt:
+	make -C sparse-from-cps
+
 clean:
 	-rm -rfv *.p
+	make -C sparse-from-cps clean
