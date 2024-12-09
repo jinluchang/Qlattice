@@ -5,6 +5,8 @@
 , buildPythonPackage
 , qlat
 , qlat_cps
+, qlat_grid
+, gpt-lehner
 , git
 , which
 , rsync
@@ -41,6 +43,8 @@ buildPythonPackage rec {
   build-system = [
     qlat
     qlat_cps
+    qlat_grid
+    gpt-lehner
   ];
 
   nativeBuildInputs = [
@@ -61,7 +65,9 @@ buildPythonPackage rec {
 
   dependencies = [
     qlat
+    qlat_grid
     qlat_cps
+    gpt-lehner
   ];
 
   preConfigure = let
