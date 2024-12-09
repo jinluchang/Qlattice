@@ -105,7 +105,7 @@ qlat-ext.log: qlat-ext/meson.build
 	-touch "$@"
 	-cp -v qlat-ext.p/log.check.txt.new "$@"
 
-sparse-from-cps/log.txt:
+sparse-from-cps/log.txt: sparse-from-cps/run.py
 	make -C sparse-from-cps
 
 clean:
