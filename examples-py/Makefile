@@ -48,39 +48,13 @@ tests = \
 		mpi-utils.log \
 		mat-mpi-test.log
 
-tests_gpt = \
-			hlbl-muon-line.log \
-			gq-auto-checker.log \
-			grid-qlat-io-test.log \
-			gpt-qlat-auto-simple.log \
-			gpt-qlat-data-gen-auto.log \
-			gpt-qlat-data-gen-hlbl.log \
-			gpt-qlat-convert.log \
-			gpt-qlat-sample-gauge-field.log \
-			gpt-qlat-smear.log \
-			gpt-qlat-mdwf.log \
-			gpt-qlat-gfix-mdwf.log \
-			gpt-qlat-free-invert.log \
-			gpt-qlat-lanc.log \
-			gpt-qlat-rbc-ukqcd-invert.log \
-			gpt-qlat-madwf.log
-
-tests_cps = \
-			cps-qlat-io-test.log \
-			sparse-from-cps/log.txt
-
-all: run run-gpt run-cps
+all: run
 
 run: update-sources $(tests) qlat-ext.log
 
-run-gpt: update-sources $(tests_gpt)
-
-run-cps: update-sources $(tests_cps)
-
 update-sources:
-	-for i in $(tests) $(tests_gpt) $(tests_cps) ; do touch "$${i%.log}.py" ; done
+	-for i in $(tests) ; do touch "$${i%.log}.py" ; done
 	-touch qlat-ext/meson.build
-	make -C sparse-from-cps update-sources
 
 %.log: %.py
 	-rm -rfv "$<".p
@@ -105,9 +79,5 @@ qlat-ext.log: qlat-ext/meson.build
 	-touch "$@"
 	-cp -v qlat-ext.p/log.check.txt.new "$@"
 
-sparse-from-cps/log.txt: sparse-from-cps/run.py
-	make -C sparse-from-cps
-
 clean:
 	-rm -rfv *.p
-	make -C sparse-from-cps clean

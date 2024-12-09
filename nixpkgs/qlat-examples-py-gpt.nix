@@ -33,7 +33,7 @@ buildPythonPackage rec {
 
   pyproject = false;
 
-  src = ../examples-py;
+  src = ../examples-py-gpt;
 
   enableParallelBuilding = true;
 
