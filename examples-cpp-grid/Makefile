@@ -1,35 +1,16 @@
 SHELL=/usr/bin/env bash
 
-tests = qlat-vector-utils \
-		qlat-fft-tests \
-		qlat-smear-tests \
-		qcd-utils-tests \
-		lbl-muon-part \
-		rng-state-tests \
-		field-rng-tests \
-		benchmark \
-		dist-io \
-		selected-field \
-		fields-io \
-		fields-io-simple-demo \
-		simple-1 \
-		hmc \
-		flowed-hmc \
-		heatbath \
-		template \
-		dslash-tests \
-		propagators \
-		ldouble
+tests_grid = grid-with-qlat
 
 all: run
 
 all-grid: run-grid
 
-compile: $(patsubst %, %.compile, $(tests))
+compile-grid: $(patsubst %, %.compile, $(tests_grid))
 
-run: $(patsubst %, %.run, $(tests))
+run-grid: $(patsubst %, %.run, $(tests_grid))
 
-clean: $(patsubst %, %.clean, $(tests))
+clean: $(patsubst %, %.clean, $(tests_grid))
 
 compile-proj:
 	-mkdir -p build

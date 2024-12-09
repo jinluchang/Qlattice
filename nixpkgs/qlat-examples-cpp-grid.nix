@@ -33,7 +33,7 @@ buildPythonPackage rec {
 
   pyproject = false;
 
-  src = ../examples-cpp;
+  src = ../examples-cpp-grid;
 
   enableParallelBuilding = true;
 
