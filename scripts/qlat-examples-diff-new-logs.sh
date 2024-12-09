@@ -45,7 +45,7 @@ echo
 echo "Summary:"
 echo
 
-for log in examples-py/*.log examples-cpp/*/log ; do
+for log in examples-py*/*.log examples-cpp*/*/log ; do
     if [ -f "$log".new ] ; then
         echo diff "$log".new "$log"
         diff "$log".new "$log" | grep 'CHECK: ' || true
@@ -56,7 +56,7 @@ echo
 echo "Summary for all diff:"
 echo
 
-for log in examples-py/*.log examples-cpp/*/log ; do
+for log in examples-py*/*.log examples-cpp*/*/log ; do
     if [ -f "$log".new ] ; then
         echo diff "$log".new "$log"
         diff "$log".new "$log" || true
@@ -67,7 +67,7 @@ echo
 echo "Full log:"
 echo
 
-for log in examples-py/*.log examples-cpp/*/log ; do
+for log in examples-py*/*.log examples-cpp*/*/log ; do
     if [ -f "$log".new ] ; then
         echo diff "$log".new "$log"
         diff "$log".new "$log" || true
@@ -83,7 +83,7 @@ echo
 echo "Final Summary:"
 echo
 
-for log in examples-py/*.log examples-cpp/*/log ; do
+for log in examples-py*/*.log examples-cpp*/*/log ; do
     if [ -f "$log".new ] ; then
         echo diff "$log".new "$log"
         diff "$log".new "$log" | grep 'CHECK: ' || true

@@ -8,12 +8,12 @@ source qcore/set-prefix.sh $name
     echo "!!!! build $name !!!!"
     source qcore/conf.sh ..
 
-    time-run rsync -a --delete "$wd"/examples-py "$prefix"/
+    time-run rsync -a --delete "$wd"/examples-py-cps "$prefix"/
 
     export mpi_options="--oversubscribe $mpi_options"
 
-    q_verbose=1 time-run make -C "$prefix"/examples-py update-sources || true
-    q_verbose=1 time-run make -C "$prefix"/examples-py run-cps -j "$num_test" || true
+    q_verbose=1 time-run make -C "$prefix"/examples-py-cps update-sources || true
+    q_verbose=1 time-run make -C "$prefix"/examples-py-cps run-cps -j "$num_test" || true
 
     cd "$wd"
 
