@@ -179,13 +179,13 @@ struct QMAction {
   
   inline double V_proj(const double x)
   {
-    return -P*log(1-exp(-(V_FV_out(x) - V_full(x) + epsilon)*dt))/dt;
+    return -P*log(1-exp(-(V_FV_out(x) - V_full(x) + epsilon)*dt));
   }
   
   inline double dV_proj(const double x)
   {
     double Vbar = V_FV_out(x) - V_full(x);
-    return -P*((dV_FV_out(x) - dV_full(x))*exp(-(Vbar + epsilon)*dt))/(1-exp(-(Vbar + epsilon)*dt));
+    return -P*((dV_FV_out(x) - dV_full(x))*dt*exp(-(Vbar + epsilon)*dt))/(1-exp(-(Vbar + epsilon)*dt));
   }
 
   inline double V_FV_mid(const double x)

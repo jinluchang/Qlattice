@@ -6,7 +6,7 @@ import pickle
 import datetime
 import glob
 import fnmatch
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 import qlat as q
 
@@ -443,13 +443,13 @@ def main():
     mult = 1
     alpha = 1.0
     beta = 9.0
-    FV_offset = 0.0
+    FV_offset = 0.3
     TV_offset = 0.0
     barrier_strength = 1000.0
     M = 1.0
     L = 0.0
     P = 0.0
-    epsilon = 1e-12
+    epsilon = 1e-10
     C = 100
     t_full = 5
     t_TV = 30
@@ -458,7 +458,7 @@ def main():
     # The number of trajectories to calculate
     n_traj = 50000
     #
-    version = "8-0"
+    version = "8-1"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
     steps = 10
@@ -575,8 +575,8 @@ def main():
         #    measurements.plot_measurements()
         
         #x = np.arange(-5,5,0.1)
-        #for t in [0,t_full,t_full+t_FV_out,t_full+t_FV_out+t_FV_mid,t_full+t_FV_out*2+t_FV_mid,t_full*2+t_FV_out*2+t_FV_mid]:
-        #    plt.plot([min((action.V(i,t)-action.V(0,t))*Nt/20.0, 10.0) + t for i in x],x)
+        #for t in [0,t_full,t_full+t_FV_out,t_full+t_FV_out+t_FV_mid,t_full+t_FV_out*2+t_FV_mid]: #,t_full*2+t_FV_out*2+t_FV_mid]:
+        #    plt.plot([min((action.V(i,t) - action.V(0,t))*Nt/20.0, 10.0) + t for i in x],x)
         #plt.plot(range(Nt), np.mean(measurements.timeslices,axis=0))
         #plt.show()
         
