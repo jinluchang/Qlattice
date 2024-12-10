@@ -84,7 +84,7 @@ struct QMAction {
     else if(t<t_TV_start+t_full1)
         return V_full(x);
     else if(t==t_TV_start+t_full1)
-      return V_FV_out(x) + V_proj(x);
+      return V_proj(x);
     else if(t<t_TV_start+t_full1+t_FV_out)
       return V_FV_out(x);
     else if(t<t_TV_start+t_full1+t_FV_out+t_FV_mid)
@@ -92,7 +92,7 @@ struct QMAction {
     else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid-1)
       return V_FV_out(x);
     else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid-1)
-      return V_FV_out(x) + V_proj(x);
+      return V_proj(x);
     else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid+t_full2)
       return V_full(x);
     else {
@@ -116,7 +116,7 @@ struct QMAction {
     else if(t<t_TV_start+t_full1)
         return dV_full(x);
     else if(t==t_TV_start+t_full1)
-      return dV_FV_out(x) + dV_proj(x);
+      return dV_proj(x);
     else if(t<t_TV_start+t_full1+t_FV_out)
       return dV_FV_out(x);
     else if(t<t_TV_start+t_full1+t_FV_out+t_FV_mid)
@@ -124,7 +124,7 @@ struct QMAction {
     else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid-1)
       return dV_FV_out(x);
     else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid-1)
-      return dV_FV_out(x) + dV_proj(x);
+      return dV_proj(x);
     else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid+t_full2)
       return dV_full(x);
     else {
