@@ -14,6 +14,9 @@ struct QMAction {
   double barrier_strength;
   double M;
   double L;
+  double P;
+  double epsilon;
+  double C;
   Long t_TV_start;
   Long t_full1;
   Long t_full2;
@@ -33,6 +36,9 @@ struct QMAction {
     barrier_strength = 1.0;
     M = 1.0;
     L = 0.0;
+    P = 0.0;
+    epsilon = 0.0;
+    C = 1.0;
     t_TV_start = 0;
     t_full1 = 10;
     t_full2 = 10;
@@ -44,9 +50,9 @@ struct QMAction {
   qacc QMAction() { init(); }
   qacc QMAction(const double alpha_, const double beta_, const double FV_offset_,
                 const double TV_offset_, const double barrier_strength_, const double M_,
-                const double L_, const Long t_full1_, const Long t_full2_,
-                const Long t_FV_out_, const Long t_FV_mid_, const Long t_TV_start_, 
-                const double dt_)
+                const double L_, const double P_, const double epsilon_, const double C_, 
+                const Long t_full1_, const Long t_full2_, const Long t_FV_out_, 
+                const Long t_FV_mid_, const Long t_TV_start_, const double dt_)
   {
     init();
     initialized = true;
@@ -59,6 +65,9 @@ struct QMAction {
     barrier_strength = barrier_strength_;
     M = M_;
     L = L_;
+    P = P_;
+    epsilon = epsilon_;
+    C = C_;
     t_TV_start = t_TV_start_;
     t_full1 = t_full1_;
     t_full2 = t_full2_;
@@ -74,12 +83,16 @@ struct QMAction {
         return V_TV(x);
     else if(t<t_TV_start+t_full1)
         return V_full(x);
+    else if(t==t_TV_start+t_full1)
+      return V_FV_out(x) + V_proj(x);
     else if(t<t_TV_start+t_full1+t_FV_out)
       return V_FV_out(x);
     else if(t<t_TV_start+t_full1+t_FV_out+t_FV_mid)
       return V_FV_mid(x);
-    else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid)
+    else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid-1)
       return V_FV_out(x);
+    else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid-1)
+      return V_FV_out(x) + V_proj(x);
     else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid+t_full2)
       return V_full(x);
     else {
@@ -89,6 +102,11 @@ struct QMAction {
      return V_TV(x);
     }
   }
+  
+  inline double V_zeroed(const double x, const Long t)
+  {
+    return V(x, t) + P*log(C);
+  }
 
   inline double dV(const double x, const Long t)
   {
@@ -97,16 +115,21 @@ struct QMAction {
         return dV_TV(x);
     else if(t<t_TV_start+t_full1)
         return dV_full(x);
+    else if(t==t_TV_start+t_full1)
+      return dV_FV_out(x) + dV_proj(x);
     else if(t<t_TV_start+t_full1+t_FV_out)
       return dV_FV_out(x);
     else if(t<t_TV_start+t_full1+t_FV_out+t_FV_mid)
       return dV_FV_mid(x);
-    else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid)
+    else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid-1)
       return dV_FV_out(x);
+    else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid-1)
+      return dV_FV_out(x) + dV_proj(x);
     else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid+t_full2)
       return dV_full(x);
-    else
+    else {
      return dV_TV(x);
+    }
   }
 
   inline double V_phi4(const double x)
@@ -141,15 +164,28 @@ struct QMAction {
   inline double V_FV_out(const double x)
   {
     if(x>center_bar+FV_offset)
-      return V_full(center_bar+FV_offset) + barrier_strength*(x-center_bar-FV_offset)*(x-center_bar-FV_offset);
-    return V_full(x);
+        return V_full(center_bar+FV_offset) + barrier_strength*(x-center_bar-FV_offset)*(x-center_bar-FV_offset);
+    else
+        return V_full(x);
   }
 
   inline double dV_FV_out(const double x)
   {
     if(x>center_bar+FV_offset)
-      return 2.0*barrier_strength*(x-center_bar-FV_offset);
-    return dV_full(x);
+        return 2.0*barrier_strength*(x-center_bar-FV_offset);
+    else
+        return dV_full(x);
+  }
+  
+  inline double V_proj(const double x)
+  {
+    return -P*log(1-exp(-(V_FV_out(x) - V_full(x) + epsilon)*dt))/dt;
+  }
+  
+  inline double dV_proj(const double x)
+  {
+    double Vbar = V_FV_out(x) - V_full(x);
+    return -P*((dV_FV_out(x) - dV_full(x))*exp(-(Vbar + epsilon)*dt))/(1-exp(-(Vbar + epsilon)*dt));
   }
 
   inline double V_FV_mid(const double x)
@@ -195,7 +231,7 @@ struct QMAction {
     xl[3]+=1;
     double psi_eps = f.get_elem(xl);
     xl[3]-=1;
-    return (beta/2.0/qma.dt/qma.dt)*(psi_eps-psi)*(psi_eps-psi) + qma.V(psi, geo.coordinate_g_from_l(xl)[3]);
+    return (beta/2.0/qma.dt/qma.dt)*(psi_eps-psi)*(psi_eps-psi) + qma.V_zeroed(psi, geo.coordinate_g_from_l(xl)[3]);
   }
 
   inline double action_node_no_comm(const Field<double>& f)

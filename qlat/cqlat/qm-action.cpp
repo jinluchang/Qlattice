@@ -9,17 +9,20 @@ EXPORT(mk_qm_action, {
   double barrier_strength = 1.0;
   double M = 1.0;
   double L = 0.0;
+  double P = 0.0;
+  double epsilon = 0.0;
+  double C = 1.0;
   long t_TV_start = 0;
   long t_full1 = 10;
   long t_full2 = 10;
   long t_FV_out = 10;
   long t_FV_mid = 5;
   double dt = 1.0;
-  if (!PyArg_ParseTuple(args, "d|d|d|d|d|d|d|l|l|l|l|l|d", &alpha, &beta, &FV_offset, &TV_offset,
-      &barrier_strength, &M, &L, &t_full1, &t_full2, &t_FV_out, &t_FV_mid, &t_TV_start, &dt)) {
+  if (!PyArg_ParseTuple(args, "d|d|d|d|d|d|d|d|d|d|l|l|l|l|l|d", &alpha, &beta, &FV_offset, &TV_offset,
+      &barrier_strength, &M, &L, &P, &epsilon, &C, &t_full1, &t_full2, &t_FV_out, &t_FV_mid, &t_TV_start, &dt)) {
     return NULL;
   }
-  QMAction* pqma = new QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, t_full1, t_full2, t_FV_out, t_FV_mid, t_TV_start, dt);
+  QMAction* pqma = new QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, P, epsilon, C, t_full1, t_full2, t_FV_out, t_FV_mid, t_TV_start, dt);
   return py_convert((void*)pqma);
 })
 
@@ -81,6 +84,16 @@ EXPORT(get_L_qm_action, {
   }
   const QMAction& qma = py_convert_type<QMAction>(p_qma);
   return py_convert(qma.L);
+})
+
+EXPORT(get_P_qm_action, {
+  using namespace qlat;
+  PyObject* p_qma = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_qma)) {
+    return NULL;
+  }
+  const QMAction& qma = py_convert_type<QMAction>(p_qma);
+  return py_convert(qma.P);
 })
 
 EXPORT(get_t_full1_qm_action, {
