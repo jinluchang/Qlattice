@@ -179,7 +179,7 @@ struct QMAction {
   
   inline double V_proj(const double x)
   {
-    return -P*log(1-exp(-(V_FV_out(x) - V_full(x) + epsilon)*dt)) / dt;
+    return -P*log((1-exp(-(V_FV_out(x) - V_full(x) + epsilon)*dt)) / dt) / dt;
   }
   
   inline double dV_proj(const double x)
