@@ -932,10 +932,10 @@ def filter_diagram_type(expr, diagram_type_dict=None, included_types=None):
 
 def mk_cexpr(*exprs, diagram_type_dict=None):
     """
+    interface function
     exprs already finished wick contraction,
     otherwise use contract_simplify_compile(*exprs, is_isospin_symmetric_limit, diagram_type_dict)
     !!!if diagram_type_dict[diagram_type] == None: this diagram_type should have already be dropped!!!
-    interface function
     """
     if diagram_type_dict is None:
         diagram_type_dict = dict()
@@ -1003,6 +1003,7 @@ def mk_cexpr(*exprs, diagram_type_dict=None):
 @q.timer
 def contract_simplify(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=None):
     """
+    interface function
     exprs = [ expr, (expr, *included_types,), ... ]\n
     In case diagram_type_dict is not None, perform the following filter
     If diagram_type_dict[diagram_type] is None: term is removed.
@@ -1031,7 +1032,7 @@ def contract_simplify(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict
     return expr_list
 
 @q.timer
-def compile_expr(*exprs, diagram_type_dict = None):
+def compile_expr(*exprs, diagram_type_dict=None):
     """
     interface function
     """
@@ -1040,8 +1041,9 @@ def compile_expr(*exprs, diagram_type_dict = None):
     return cexpr
 
 @q.timer
-def contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = None):
+def contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=None):
     """
+    interface function
     Call ``contract_simplify`` and then ``compile_expr``\n
     This function can be used to construct the first argument of ``cached_comipled_cexpr``.
     e.g. exprs = [ Qb("u", "x", s, c) * Qv("u", "x", s, c) + "u_bar*u", Qb("s", "x", s, c) * Qv("s", "x", s, c) + "s_bar*s", Qb("c", "x", s, c) * Qv("c", "x", s, c) + "c_bar*c", ]
@@ -1145,14 +1147,14 @@ def display_cexpr(cexpr : CExpr):
     return "\n".join(lines)
 
 @q.timer_verbose
-def cexpr_code_gen_py(cexpr : CExpr, *, is_cython = True, is_distillation = False):
+def cexpr_code_gen_py(cexpr : CExpr, *, is_cython=True, is_distillation=False):
     """
     return a string
     interface function
     """
     gen = CExprCodeGenPy(cexpr,
-                         is_cython = is_cython,
-                         is_distillation = is_distillation)
+                         is_cython=is_cython,
+                         is_distillation=is_distillation)
     return gen.code_gen()
 
 class CExprCodeGenPy:

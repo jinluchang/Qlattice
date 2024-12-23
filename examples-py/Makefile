@@ -13,6 +13,7 @@ tests = \
 		auto-cexprs-kpipi-cy.log \
 		auto-cexprs-kpipi-qed-cy.log \
 		auto-cexprs-uu-cy.log \
+		auto-contract.log \
 		mat-op-distillation.log \
 		mat-op-qcd.log \
 		qlat-id-node.log \

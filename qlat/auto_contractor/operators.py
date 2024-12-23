@@ -64,7 +64,7 @@ def restore_sc_indices():
     global color_index_counter
     spin_index_counter, color_index_counter = saved_sc_indices.pop()
 
-def jump_sc_indices(step = 100):
+def jump_sc_indices(step=100):
     if saved_sc_indices is None:
         return
     global spin_index_counter
