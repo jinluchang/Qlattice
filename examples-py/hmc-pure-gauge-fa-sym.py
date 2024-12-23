@@ -223,6 +223,10 @@ def run_hmc_traj(
         gf @= gf0
         gm @= gm0
         gm_dual @= gm_dual0
+    else:
+        q.displayln_info(f"{fname}: metropolis reject (traj={traj}) reverse momentum")
+        gm *= -1
+        gm_dual *= -1
     return flag, delta_h
 
 @q.timer_verbose
