@@ -123,7 +123,9 @@ class Qv(Qfield):
     """
 
     def __init__(self, f, p, s, c):
-        # interface function
+        """
+        interface function
+        """
         Qfield.__init__(self, "Qv", f, p, s, c)
 
 ### ------
@@ -135,7 +137,9 @@ class Qb(Qfield):
     """
 
     def __init__(self, f, p, s, c):
-        # interface function
+        """
+        interface function
+        """
         Qfield.__init__(self, "Qb", f, p, s, c)
 
 ### ------
@@ -662,7 +666,9 @@ class Expr:
         self.terms = drop_zero_terms(self).terms
 
     def round(self, ndigit : int = 20) -> None:
-        # interface function
+        """
+        interface function
+        """
         sexpr = copy.deepcopy(self)
         for term in sexpr.terms:
             coef = term.coef
@@ -682,7 +688,9 @@ class Expr:
 
     @q.timer
     def simplify(self, *, is_isospin_symmetric_limit : bool = True) -> None:
-        # interface function
+        """
+        interface function
+        """
         if is_isospin_symmetric_limit:
             self.isospin_symmetric_limit()
         self.sort()
@@ -695,7 +703,10 @@ class Expr:
 ### ------
 
 def simplified(expr : Expr, *, is_isospin_symmetric_limit : bool = True) -> Expr:
-    # interface function
+    """
+    interface function
+    does not change expr
+    """
     sexpr = copy.deepcopy(expr)
     sexpr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
     return sexpr
