@@ -1093,15 +1093,6 @@ def show_variable_value(value):
     else:
         return f"{value}"
 
-def get_diagram_type_dict(cexpr : CExpr):
-    """
-    interface function
-    """
-    diagram_type_dict = dict()
-    for name, diagram_type in cexpr.diagram_types:
-        diagram_type_dict[name] = diagram_type
-    return diagram_type_dict
-
 def display_cexpr(cexpr : CExpr):
     """
     interface function
@@ -1164,6 +1155,15 @@ def display_cexpr(cexpr : CExpr):
             lines.append(f"exprs[{idx}] += {show_variable_value(e)}")
     lines.append(f"# End CExpr")
     return "\n".join(lines)
+
+def get_diagram_type_dict(cexpr : CExpr):
+    """
+    interface function
+    """
+    diagram_type_dict = dict()
+    for name, diagram_type in cexpr.diagram_types:
+        diagram_type_dict[name] = diagram_type
+    return diagram_type_dict
 
 @q.timer_verbose
 def cexpr_code_gen_py(cexpr : CExpr, *, is_cython=True, is_distillation=False):
