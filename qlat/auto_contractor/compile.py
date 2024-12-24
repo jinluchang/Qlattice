@@ -1193,7 +1193,7 @@ class CExprCodeGenPy:
     flops per trace2 6 M N + 2 (M N - 1) ==> 1150 (sc, sc)
     """
 
-    def __init__(self, cexpr, *, is_cython = True, is_distillation = False):
+    def __init__(self, cexpr, *, is_cython=True, is_distillation=False):
         self.cexpr = cexpr
         self.is_cython = is_cython
         self.is_distillation = is_distillation
@@ -1714,7 +1714,10 @@ class CExprCodeGenPy:
                     raise Exception(f"term_type_set={term_type_set}")
                 expr_type, = term_type_set
                 expr_var_name = f"expr_{expr_type}"
-                append_cy(f"cc.set_zero({expr_var_name})")
+                if expr_type == "V_a":
+                    append_cy(f"{expr_var_name} = 0")
+                else:
+                    append_cy(f"cc.set_zero({expr_var_name})")
                 append_py(f"{expr_var_name} = 0")
                 for coef, tname in expr:
                     s = show_coef_term(coef, tname)
