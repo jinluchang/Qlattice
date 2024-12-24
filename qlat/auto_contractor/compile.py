@@ -934,7 +934,7 @@ def mk_cexpr(*exprs, diagram_type_dict=None):
     """
     interface function
     exprs already finished wick contraction,
-    otherwise use contract_simplify_compile(*exprs, is_isospin_symmetric_limit, diagram_type_dict)
+    otherwise use `contract_simplify_compile(*exprs, is_isospin_symmetric_limit, diagram_type_dict)`
     !!!if diagram_type_dict[diagram_type] == None: this diagram_type should have already be dropped!!!
     """
     if diagram_type_dict is None:
@@ -1044,8 +1044,11 @@ def compile_expr(*exprs, diagram_type_dict=None):
 def contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=None):
     """
     interface function
-    Call ``contract_simplify`` and then ``compile_expr``\n
-    This function can be used to construct the first argument of ``cached_comipled_cexpr``.
+    Call `contract_simplify` and then `compile_expr`
+    #
+    This function can be used to construct the first argument of `cached_comipled_cexpr`.
+    `cached_comipled_cexpr` will call `cexpr.optimize()`.
+    #
     e.g. exprs = [ Qb("u", "x", s, c) * Qv("u", "x", s, c) + "u_bar*u", Qb("s", "x", s, c) * Qv("s", "x", s, c) + "s_bar*s", Qb("c", "x", s, c) * Qv("c", "x", s, c) + "c_bar*c", ]
     e.g. exprs = [ mk_pi_p("x2", True) * mk_pi_p("x1") + "(pi   * pi)", mk_j5pi_mu("x2", 3) * mk_pi_p("x1") + "(a_pi * pi)", mk_k_p("x2", True)  * mk_k_p("x1")  + "(k    * k )", mk_j5k_mu("x2", 3)  * mk_k_p("x1")  + "(a_k  * k )", ]
     """
@@ -1083,10 +1086,19 @@ def show_variable_value(value):
     else:
         return f"{value}"
 
+def get_diagram_type_dict(cexpr : CExpr):
+    """
+    interface function
+    """
+    diagram_type_dict = dict()
+    for name, diagram_type in cexpr.diagram_types:
+        diagram_type_dict[name] = diagram_type
+    return diagram_type_dict
+
 def display_cexpr(cexpr : CExpr):
     """
-    return a string
     interface function
+    return a string
     """
     lines = []
     lines.append(f"# Begin CExpr")
@@ -1149,8 +1161,8 @@ def display_cexpr(cexpr : CExpr):
 @q.timer_verbose
 def cexpr_code_gen_py(cexpr : CExpr, *, is_cython=True, is_distillation=False):
     """
-    return a string
     interface function
+    return a string
     """
     gen = CExprCodeGenPy(cexpr,
                          is_cython=is_cython,
