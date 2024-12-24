@@ -157,6 +157,12 @@ cdef extern from "qlat-utils/utils-vec.h" namespace "qlat":
 
 cdef extern from "qlat-utils/mat.h" namespace "qlat":
 
+    void set_zero(RealD& x)
+    void set_zero(RealF& x)
+    void set_zero(ComplexD& x)
+    void set_zero(ComplexF& x)
+    void set_zero(PyComplexD& x)
+    void set_zero(PyComplexF& x)
     void set_zero(ColorMatrix& x)
     void set_zero(SpinMatrix& x)
     void set_zero(WilsonMatrix& x)

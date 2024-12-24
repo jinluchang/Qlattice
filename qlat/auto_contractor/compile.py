@@ -1255,6 +1255,7 @@ class CExprCodeGenPy:
     def gen_expr(self, x):
         """
         return code_str, type_str
+        `type_str` follows convention of `get_var_name_type`
         """
         if isinstance(x, (int, float, complex)):
             return f"{x}", "V_a"
@@ -1327,6 +1328,10 @@ class CExprCodeGenPy:
                 return f"{x.name}", get_var_name_type(x.name)
 
     def gen_expr_prod(self, ct1, ct2):
+        """
+        return code_str, type_str
+        `type_str` follows convention of `get_var_name_type`
+        """
         c1, t1 = ct1
         c2, t2 = ct2
         if c1 == "(1+0j)":
@@ -1418,6 +1423,10 @@ class CExprCodeGenPy:
             assert False
 
     def gen_expr_prod_list(self, x_list):
+        """
+        return code_str, type_str
+        `type_str` follows convention of `get_var_name_type`
+        """
         if len(x_list) == 0:
             return f"1", "V_a"
         elif len(x_list) == 1:
@@ -1642,6 +1651,7 @@ class CExprCodeGenPy:
             append_cy(f"cdef cc.PyComplexD {name} = cc.pycc_d({c})")
             append_py(f"{name} = {c}")
         append(f"# set terms")
+        term_type_dict = dict()
         for name, term in cexpr.named_terms:
             x = term
             if x.coef == 1:
@@ -1649,13 +1659,33 @@ class CExprCodeGenPy:
             else:
                 c_ops = [ x.coef, ] + x.c_ops
             c, t = self.gen_expr_prod_list(c_ops)
-            append_cy(f"cdef cc.PyComplexD {name} = {c}")
-            append_py(f"{name} = {c}")
+            term_type_dict[name] = t
+            if t == "V_a":
+                append_cy(f"cdef cc.PyComplexD {name} = {c}")
+                append_py(f"{name} = {c}")
+            elif t == "V_G":
+                append_cy(f"cdef cc.SpinMatrix {name} = {c}")
+                append_py(f"{name} = {c}")
+            elif t == "V_S":
+                append_cy(f"cdef cc.WilsonMatrix {name} = {c}")
+                append_py(f"{name} = {c}")
+            elif t == "V_U":
+                append_cy(f"cdef cc.ColorMatrix {name} = {c}")
+                append_py(f"{name} = {c}")
+            else:
+                assert False
+        is_terms_all_complex_number = all("V_a" == x for x in term_type_dict.values())
         append(f"# declare exprs")
-        append_cy(f"cdef numpy.ndarray[numpy.complex128_t] exprs")
-        append(f"exprs = np.zeros({len(cexpr.named_exprs)}, dtype = np.complex128)")
-        append_cy(f"cdef cc.PyComplexD[:] exprs_view = exprs")
-        append_py(f"exprs_view = exprs")
+        if is_terms_all_complex_number:
+            # Return complex array if all the exprs return complex numbers
+            append_cy(f"cdef numpy.ndarray[numpy.complex128_t] exprs")
+            append(f"exprs = np.zeros({len(cexpr.named_exprs)}, dtype=np.complex128)")
+            append_cy(f"cdef cc.PyComplexD[:] exprs_view = exprs")
+            append_py(f"exprs_view = exprs")
+        else:
+            # Return object array if some exprs return Matrices
+            append(f"exprs = np.empty({len(cexpr.named_exprs)}, dtype=object)")
+            append(f"exprs_view = exprs")
         append(f"# set exprs")
         def show_coef_term(coef, tname):
             coef, t = self.gen_expr(coef)
@@ -1664,15 +1694,43 @@ class CExprCodeGenPy:
                 return f"{tname}"
             else:
                 return f"({coef}) * {tname}"
-        append_cy(f"cdef cc.PyComplexD expr")
+        append_cy(f"cdef cc.PyComplexD expr_V_a")
+        if not is_terms_all_complex_number:
+            append_cy(f"cdef cc.SpinMatrix expr_V_G")
+            append_cy(f"cdef cc.WilsonMatrix expr_V_S")
+            append_cy(f"cdef cc.ColorMatrix expr_V_U")
+            append_cy(f"cdef SpinMatrix expr_V_G_box")
+            append_cy(f"cdef WilsonMatrix expr_V_S_box")
+            append_cy(f"cdef ColorMatrix expr_V_U_box")
         for idx, (name, expr,) in enumerate(cexpr.named_exprs):
             name = name.replace("\n", "  ")
             append(f"# {idx} name='{name}' ")
-            append(f"expr = 0")
-            for coef, tname in expr:
-                s = show_coef_term(coef, tname)
-                append(f"expr += {s}")
-            append(f"exprs_view[{idx}] = expr")
+            if len(expr) == 0:
+                append(f"exprs_view[{idx}] = 0")
+            else:
+                assert len(expr) >= 1
+                term_type_set = set(term_type_dict[tname] for _, tname in expr)
+                if len(term_type_set) != 1:
+                    raise Exception(f"term_type_set={term_type_set}")
+                expr_type, = term_type_set
+                expr_var_name = f"expr_{expr_type}"
+                append_cy(f"cc.set_zero({expr_var_name})")
+                append_py(f"{expr_var_name} = 0")
+                for coef, tname in expr:
+                    s = show_coef_term(coef, tname)
+                    append(f"{expr_var_name} += {s}")
+                if expr_type == "V_a":
+                    append(f"exprs_view[{idx}] = {expr_var_name}")
+                else:
+                    if expr_type == "V_S":
+                        append_cy(f"{expr_var_name}_box = WilsonMatrix()")
+                    elif expr_type == "V_G":
+                        append_cy(f"{expr_var_name}_box = SpinMatrix()")
+                    elif expr_type == "V_U":
+                        append_cy(f"{expr_var_name}_box = ColorMatrix()")
+                    append_cy(f"{expr_var_name}_box.xx = {expr_var_name}")
+                    append_cy(f"exprs_view[{idx}] = {expr_var_name}_box")
+                    append_py(f"exprs_view[{idx}] = {expr_var_name}")
         append(f"# set flops")
         append(f"total_flops = total_sloppy_flops")
         append(f"# return")

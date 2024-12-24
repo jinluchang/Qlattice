@@ -33,6 +33,9 @@ from qlat_utils.ama import \
 
 from auto_contractor.distillation_mat_op import \
         load_prop, \
+        WilsonMatrix, \
+        SpinMatrix, \
+        ColorMatrix, \
         get_gamma_matrix, \
         wilson_matrix_g5_herm, \
         mat_tr_sm, \
