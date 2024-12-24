@@ -118,6 +118,13 @@ class Expr:
     def __init__(self, terms):
         self.terms = terms
 
+    @q.timer
+    def copy(self):
+        """
+        return a deep copy of this object.
+        """
+        return copy.deepcopy(self)
+
     def __repr__(self) -> str:
         return f"ea.Expr({self.terms})"
 
@@ -195,7 +202,7 @@ def simplified(x):
     """
     interface function
     """
-    x = copy.deepcopy(mk_expr(x))
+    x = mk_expr(x).copy()
     x.simplify()
     if not x.terms:
         x = 0
@@ -208,7 +215,7 @@ def coef_simplified(x):
     """
     interface function
     """
-    x = copy.deepcopy(mk_expr(x))
+    x = mk_expr(x).copy()
     x.simplify_coef()
     return x
 

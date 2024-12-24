@@ -577,6 +577,13 @@ class Expr:
         self.description = description
         self.terms = terms
 
+    @q.timer
+    def copy(self):
+        """
+        return a deep copy of this object.
+        """
+        return copy.deepcopy(self)
+
     def __imul__(self, factor):
         for term in self.terms:
             term *= factor
@@ -669,7 +676,7 @@ class Expr:
         """
         interface function
         """
-        sexpr = copy.deepcopy(self)
+        sexpr = self.copy()
         for term in sexpr.terms:
             coef = term.coef
             term.coef = term.coef.evalf(ndigit)
@@ -707,7 +714,7 @@ def simplified(expr : Expr, *, is_isospin_symmetric_limit : bool = True) -> Expr
     interface function
     does not change expr
     """
-    sexpr = copy.deepcopy(expr)
+    sexpr = expr.copy()
     sexpr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
     return sexpr
 

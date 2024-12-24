@@ -117,7 +117,7 @@ def cache_compiled_cexpr(
         cexpr_original = q.pickle_cache_call(
                 compile_cexpr, path + "/cexpr_original.pickle", is_sync_node=False)
         def optimize():
-            cexpr_optimized = copy.deepcopy(cexpr_original)
+            cexpr_optimized = cexpr_original.copy()
             cexpr_optimized.optimize()
             content_optimized = display_cexpr(cexpr_optimized)
             q.qtouch_info(path + "/cexpr_optimized.txt", content_optimized)

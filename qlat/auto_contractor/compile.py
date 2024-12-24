@@ -744,6 +744,13 @@ class CExpr:
         self.named_exprs = []
 
     @q.timer
+    def copy(self):
+        """
+        return a deep copy of this object.
+        """
+        return copy.deepcopy(self)
+
+    @q.timer
     def optimize(self):
         """
         interface function
@@ -1036,7 +1043,7 @@ def compile_expr(*exprs, diagram_type_dict=None):
     """
     interface function
     """
-    exprs = copy.deepcopy(exprs)
+    exprs = [ expr.copy() for expr in exprs ]
     cexpr = mk_cexpr(*exprs, diagram_type_dict=diagram_type_dict)
     return cexpr
 
@@ -1686,7 +1693,7 @@ if __name__ == "__main__":
     expr = simplified(contract_expr(expr))
     print(expr)
     print()
-    cexpr = copy.deepcopy(mk_cexpr(expr))
+    cexpr = mk_cexpr(expr).copy()
     print(cexpr)
     print()
     cexpr.optimize()
