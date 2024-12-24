@@ -1170,6 +1170,9 @@ def cexpr_code_gen_py(cexpr : CExpr, *, is_cython=True, is_distillation=False):
     """
     interface function
     return a string
+    #
+    if is_distillation:
+        assert is_cython == False
     """
     gen = CExprCodeGenPy(cexpr,
                          is_cython=is_cython,
