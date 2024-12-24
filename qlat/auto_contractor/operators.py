@@ -49,6 +49,16 @@ spin_index_counter = 0
 
 color_index_counter = 0
 
+def new_spin_index():
+    global spin_index_counter
+    spin_index_counter += 1
+    return f"a_s_{spin_index_counter}"
+
+def new_color_index():
+    global color_index_counter
+    color_index_counter += 1
+    return f"a_c_{color_index_counter}"
+
 saved_sc_indices = []
 # saved_sc_indices = None
 
@@ -64,6 +74,10 @@ def restore_sc_indices():
     global color_index_counter
     spin_index_counter, color_index_counter = saved_sc_indices.pop()
 
+def rsc_call(x, *args):
+    restore_sc_indices()
+    return x(*args)
+
 def jump_sc_indices(step=100):
     if saved_sc_indices is None:
         return
@@ -72,15 +86,7 @@ def jump_sc_indices(step=100):
     spin_index_counter += 100
     color_index_counter += 100
 
-def new_spin_index():
-    global spin_index_counter
-    spin_index_counter += 1
-    return f"a_s_{spin_index_counter}"
-
-def new_color_index():
-    global color_index_counter
-    color_index_counter += 1
-    return f"a_c_{color_index_counter}"
+###################
 
 def show_dagger(is_dagger):
     if not is_dagger:
@@ -554,10 +560,6 @@ def mk_4qOp_PS(f1 : str, f2 : str, f3 : str, f4 : str, p, is_dagger=False ):
 
 def mk_4qOp_PP(f1 : str, f2 : str, f3 : str, f4 : str, p, is_dagger=False ):
     return mk_scalar5(f1,f2,p,is_dagger) * mk_scalar5(f3,f4,p,is_dagger)
-
-def rsc_call(x, *args):
-    restore_sc_indices()
-    return x(*args)
 
 def mk_4qOp_LL(*args):
     for mu in range(4):
