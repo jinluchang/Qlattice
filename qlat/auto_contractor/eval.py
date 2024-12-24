@@ -49,14 +49,18 @@ class CCExpr:
     self.total_sloppy_flops
     self.expr_names
     self.positions
+    self.options
     """
 
-    def __init__(self, cexpr_all, module, *, base_positions_dict=None):
+    def __init__(self, cexpr_all, module, *, base_positions_dict=None, options=None):
         self.cexpr_all = cexpr_all
         self.module = module
         if base_positions_dict is None:
             base_positions_dict = {}
         self.base_positions_dict = base_positions_dict
+        if options is None:
+            options = dict()
+        self.options = options
         # module.cexpr_function(positions_dict, get_prop, is_ama_and_sloppy=False) => val as 1-D np.array
         self.cexpr_function_bare = module.cexpr_function
         self.total_sloppy_flops = module.total_sloppy_flops
@@ -173,7 +177,8 @@ def cache_compiled_cexpr(
         h = q.hash_sha256(file_path)
         module = q.import_file(f"auto_contract_py_{h}.cexpr_code", file_path)
     q.displayln_info(1, f"{fname}: Loaded '{path}'.")
-    ccexpr = CCExpr(cexpr_all, module, base_positions_dict=base_positions_dict)
+    options = dict(is_cython=is_cython, is_distillation=is_distillation)
+    ccexpr = CCExpr(cexpr_all, module, base_positions_dict=base_positions_dict, options=options)
     return ccexpr
 
 @q.timer
@@ -209,6 +214,7 @@ def benchmark_eval_cexpr(
     if benchmark_rng_state is None:
         benchmark_rng_state = q.RngState("benchmark_eval_cexpr")
     expr_names = get_expr_names(cexpr)
+    is_distillation = cexpr.options["is_distillation"]
     n_expr = len(expr_names)
     # prop_dict = {}
     size = q.Coordinate([ 8, 8, 8, 16, ])
@@ -238,13 +244,13 @@ def benchmark_eval_cexpr(
     #
     @functools.lru_cache(maxsize=None)
     def mk_prop(flavor, pos_snk, pos_src):
-        prop = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop {flavor} {pos_snk} {pos_src}"))
-        prop_ama = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop ama {flavor} {pos_snk} {pos_src}"))
+        prop = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop {flavor} {pos_snk} {pos_src}"), is_distillation=is_distillation)
+        prop_ama = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop ama {flavor} {pos_snk} {pos_src}"), is_distillation=is_distillation)
         ama_val = mk_ama_val(prop, pos_src, [ prop, prop_ama, ], [ 0, 1, ], [ 1.0, 0.5, ])
         return ama_val
     @functools.lru_cache(maxsize=None)
     def mk_prop_uu(tag, p, mu):
-        uu = make_rand_color_matrix(benchmark_rng_state.split(f"prop U {tag} {p} {mu}"))
+        uu = make_rand_color_matrix(benchmark_rng_state.split(f"prop U {tag} {p} {mu}"), is_distillation=is_distillation)
         return uu
     #
     def convert_pos(p):
@@ -422,31 +428,49 @@ codelib = py3.extension_module('cexpr_code',
   )
 """
 
-def make_rand_spin_color_matrix(rng_state):
+def make_rand_spin_color_matrix(rng_state, *, is_distillation=False):
     rs = rng_state
-    wm = q.WilsonMatrix()
-    wm_arr = np.asarray(wm)
-    wm_arr[:] = np.array(
-            [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(144) ],
-            dtype = complex).reshape(12, 12)
+    if is_distillation:
+        nc = 10
+        ns = 4
+        shape = (ns, nc, ns, nc,)
+        wm = rs.u_rand_arr(shape) + 1j * rs.u_rand_arr(shape)
+    else:
+        wm = q.WilsonMatrix()
+        wm_arr = np.asarray(wm)
+        wm_arr[:] = np.array(
+                [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(144) ],
+                dtype=complex).reshape(12, 12)
     return wm
 
-def make_rand_spin_matrix(rng_state):
+def make_rand_spin_matrix(rng_state, *, is_distillation=False):
     rs = rng_state
-    sm = q.SpinMatrix()
-    sm_arr = np.asarray(sm)
-    sm_arr[:] = np.array(
-            [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(16) ],
-            dtype = complex).reshape(4, 4)
+    if is_distillation:
+        nc = 10
+        ns = 4
+        shape = (ns, ns,)
+        sm = rs.u_rand_arr(shape) + 1j * rs.u_rand_arr(shape)
+    else:
+        sm = q.SpinMatrix()
+        sm_arr = np.asarray(sm)
+        sm_arr[:] = np.array(
+                [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(16) ],
+                dtype=complex).reshape(4, 4)
     return sm
 
-def make_rand_color_matrix(rng_state):
+def make_rand_color_matrix(rng_state, *, is_distillation=False):
     rs = rng_state
-    cm = q.ColorMatrix()
-    cm_arr = np.asarray(cm)
-    cm_arr[:] = np.array(
-            [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(9) ],
-            dtype = complex).reshape(3, 3)
+    if is_distillation:
+        nc = 10
+        ns = 4
+        shape = (nc, nc,)
+        cm = rs.u_rand_arr(shape) + 1j * rs.u_rand_arr(shape)
+    else:
+        cm = q.ColorMatrix()
+        cm_arr = np.asarray(cm)
+        cm_arr[:] = np.array(
+                [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(9) ],
+                dtype=complex).reshape(3, 3)
     return cm
 
 def benchmark_show_check(check):
