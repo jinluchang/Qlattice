@@ -81,12 +81,35 @@ for is_cython in [ False, True, ]:
     json_results_append(
         qac.cexpr_code_gen_py(cexpr_opt, is_cython=is_cython)
     )
-    cexpr = get_cexpr_test(is_cython=is_cython)
-    check, check_ama = qac.benchmark_eval_cexpr(cexpr)
+    ccexpr = get_cexpr_test(is_cython=is_cython)
+    check, check_ama = qac.benchmark_eval_cexpr(ccexpr)
     json_results_append(f"get_cexpr_test benchmark_eval_cexpr check get_data_sig is_cython={is_cython}", q.get_data_sig(np.array(check, dtype=np.complex128), q.RngState()))
     json_results_append(f"get_cexpr_test benchmark_eval_cexpr check_ama get_data_sig is_cython={is_cython}", q.get_data_sig(np.array(check_ama, dtype=np.complex128), q.RngState()))
 
+def get_prop(flavor, p1, p2):
+    tag = f"get_prop({flavor!r},{p1!r},{p2!r})"
+    q.displayln_info(f"Call {tag}")
+    rs = q.RngState(tag)
+    wm = qac.make_rand_spin_color_matrix(rs)
+    assert isinstance(wm, q.WilsonMatrix)
+    return wm
 
+wm = get_prop(
+    "u",
+    ("point-snk", q.Coordinate([ 1, 2, 3, 4, ]),),
+    ("point", q.Coordinate([ 3, 7, 2, 1, ]),),
+)
+json_results_append("get_prop wm: {wm[:].tolist()!r}")
+
+pd = {
+    "x1": ("point-snk", q.Coordinate([ 1, 2, 3, 4, ]),),
+    "x2": ("point", q.Coordinate([ 3, 7, 2, 1, ]),),
+}
+
+res = qac.eval_cexpr(ccexpr=get_cexpr_test(), positions_dict=pd, get_prop=get_prop)
+
+for idx, v in enumerate(res):
+    json_results_append(f"eval_cexpr res[{idx}]: {v}")
 
 q.check_log_json(__file__, json_results, check_eps=check_eps)
 
