@@ -1702,9 +1702,9 @@ class CExprCodeGenPy:
             append_cy(f"cdef cc.SpinMatrix expr_V_G")
             append_cy(f"cdef cc.WilsonMatrix expr_V_S")
             append_cy(f"cdef cc.ColorMatrix expr_V_U")
-            append_cy(f"cdef SpinMatrix expr_V_G_box")
-            append_cy(f"cdef WilsonMatrix expr_V_S_box")
-            append_cy(f"cdef ColorMatrix expr_V_U_box")
+            append_cy(f"cdef qu.SpinMatrix expr_V_G_box")
+            append_cy(f"cdef qu.WilsonMatrix expr_V_S_box")
+            append_cy(f"cdef qu.ColorMatrix expr_V_U_box")
         for idx, (name, expr,) in enumerate(cexpr.named_exprs):
             name = name.replace("\n", "  ")
             append(f"# {idx} name='{name}' ")
