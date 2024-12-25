@@ -48,6 +48,9 @@ from qlat_utils import \
         mat_tr_wm_cm, \
         mat_tr_cm_wm, \
         mat_tr_cm_cm, \
+        mat_mul_a_wm, \
+        mat_mul_a_sm, \
+        mat_mul_a_cm, \
         mat_mul_wm_wm, \
         mat_mul_wm_sm, \
         mat_mul_sm_wm, \

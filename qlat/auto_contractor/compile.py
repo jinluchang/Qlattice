@@ -1690,13 +1690,25 @@ class CExprCodeGenPy:
             append(f"exprs = np.empty({len(cexpr.named_exprs)}, dtype=object)")
             append(f"exprs_view = exprs")
         append(f"# set exprs")
-        def show_coef_term(coef, tname):
+        def show_coef_term(coef, tname, ttype):
             coef, t = self.gen_expr(coef)
             assert t == "V_a"
             if coef == "1":
                 return f"{tname}"
             else:
-                return f"({coef}) * {tname}"
+                if self.is_cython:
+                    return f"cc.ccpy_d({coef}) * {tname}"
+                else:
+                    if ttype == "V_A":
+                        return f"({coef}) * {tname}"
+                    elif ttype == "V_S":
+                        return f"mat_mul_a_wm({coef}, {tname})"
+                    elif ttype == "V_G":
+                        return f"mat_mul_a_sm({coef}, {tname})"
+                    elif ttype == "V_U":
+                        return f"mat_mul_a_cm({coef}, {tname})"
+                    else:
+                        raise Exception(f"coef={coef}; tname={tname} ttype={ttype}")
         append_cy(f"cdef cc.PyComplexD expr_V_a")
         if not is_terms_all_complex_number:
             append_cy(f"cdef cc.SpinMatrix expr_V_G")
@@ -1723,7 +1735,7 @@ class CExprCodeGenPy:
                     append_cy(f"cc.set_zero({expr_var_name})")
                 append_py(f"{expr_var_name} = 0")
                 for coef, tname in expr:
-                    s = show_coef_term(coef, tname)
+                    s = show_coef_term(coef, tname, expr_type)
                     append(f"{expr_var_name} += {s}")
                 if expr_type == "V_a":
                     append(f"exprs_view[{idx}] = {expr_var_name}")
