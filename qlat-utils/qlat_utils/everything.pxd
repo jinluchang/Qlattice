@@ -214,6 +214,9 @@ cdef extern from "qlat-utils/mat.h" namespace "qlat":
     ColorMatrix matrix_conjugate(const ColorMatrix& m)
     ColorMatrix matrix_transpose(const ColorMatrix& m)
     ColorMatrix matrix_adjoint(const ColorMatrix& m)
+    RealD qnorm(const WilsonMatrix& x)
+    RealD qnorm(const SpinMatrix& x)
+    RealD qnorm(const ColorMatrix& x)
 
 cdef extern from "qlat-utils/env.h" namespace "qlat":
 

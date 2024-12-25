@@ -65,6 +65,12 @@ cdef class WilsonMatrix:
     def g5_herm(self):
         self.xx = cc.g5_herm(self.xx)
 
+    def qnorm(self):
+        return cc.qnorm(self.xx)
+
+    def __eq__(self, WilsonMatrix v1):
+        return cc.qnorm(self.xx - v1.xx) == 0.0
+
     def __iadd__(self, WilsonMatrix v1):
         self.xx += v1.xx
         return self
@@ -161,6 +167,12 @@ cdef class SpinMatrix:
         """
         return np.asarray(self)[idx]
 
+    def qnorm(self):
+        return cc.qnorm(self.xx)
+
+    def __eq__(self, SpinMatrix v1):
+        return cc.qnorm(self.xx - v1.xx) == 0.0
+
     def __iadd__(self, SpinMatrix v1):
         self.xx += v1.xx
         return self
@@ -256,6 +268,12 @@ cdef class ColorMatrix:
         Implemented in terms of ``np.asarray``
         """
         return np.asarray(self)[idx]
+
+    def qnorm(self):
+        return cc.qnorm(self.xx)
+
+    def __eq__(self, ColorMatrix v1):
+        return cc.qnorm(self.xx - v1.xx) == 0.0
 
     def __iadd__(self, ColorMatrix v1):
         self.xx += v1.xx
