@@ -14,7 +14,7 @@ tests = \
 		auto-cexprs-kpipi-qed-cy.log \
 		auto-cexprs-uu-cy.log \
 		auto-cexprs-distillation.log \
-		auto-contract.log \
+		auto-contract-01.log \
 		mat-op-distillation.log \
 		mat-op-qcd.log \
 		qlat-id-node.log \
