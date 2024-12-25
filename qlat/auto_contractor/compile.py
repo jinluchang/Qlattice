@@ -1742,19 +1742,10 @@ class CExprCodeGenPy:
                     append_py(f"{expr_var_name}.set_zero()")
                 for coef, tname in expr:
                     s = show_coef_term(coef, tname, expr_type)
-                    append_cy(f"{expr_var_name} += {s}")
-                    if expr_type == "V_a":
-                        append_py(f"{expr_var_name} += {s}")
-                    elif expr_type == "V_S":
-                        append_py(f"{expr_var_name} = mat_add_wm_wm({expr_var_name}, {s})")
-                    elif expr_type == "V_G":
-                        append_py(f"{expr_var_name} = mat_add_sm_sm({expr_var_name}, {s})")
-                    elif expr_type == "V_U":
-                        append_py(f"{expr_var_name} = mat_add_cm_cm({expr_var_name}, {s})")
-                    else:
-                        raise Exception(f"{expr_var_name} {expr_type} {s}")
+                    append(f"{expr_var_name} += {s}")
                 if expr_type == "V_a":
-                    append(f"exprs_view[{idx}] = {expr_var_name}")
+                    append_cy(f"exprs_view[{idx}] = {expr_var_name}")
+                    append_py(f"exprs_view[{idx}] = {expr_var_name}")
                 else:
                     if expr_type == "V_S":
                         append_cy(f"{expr_var_name}_box = WilsonMatrix()")
@@ -1766,7 +1757,7 @@ class CExprCodeGenPy:
                         raise Exception(f"{expr_type}")
                     append_cy(f"{expr_var_name}_box.xx = {expr_var_name}")
                     append_cy(f"exprs_view[{idx}] = {expr_var_name}_box")
-                    append_py(f"exprs_view[{idx}] = {expr_var_name}")
+                    append_py(f"exprs_view[{idx}] = {expr_var_name}.copy()")
         append(f"# set flops")
         append(f"total_flops = total_sloppy_flops")
         append(f"# return")
