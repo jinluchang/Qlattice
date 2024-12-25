@@ -24,7 +24,7 @@ ls -l
     --env "CPLUS_INCLUDE_PATH" "" \
     --env "C_INCLUDE_PATH" "" \
     --env "LIBRARY_PATH" "" \
-    --env "PKG_CONFIG_PATH" "" \
+    --env "PKG_CONFIG_PATH" "$dst/result/lib/pkgconfig" \
     --env "CUBACORES" "0" \
     --env "OMP_NUM_THREADS" "2" \
     --name=py-local

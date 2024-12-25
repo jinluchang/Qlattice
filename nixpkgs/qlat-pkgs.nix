@@ -150,10 +150,12 @@ let
     qlat-tests = pkgs.buildEnv {
       name = "qlat-tests${pkgs.qlat-name}";
       paths = pkgs.qlat-tests-pkgs;
+      extraOutputsToInstall = [ "bin" "dev" "out" "doc" ];
     };
     qlat-env = pkgs.buildEnv {
       name = "qlat-env${pkgs.qlat-name}";
       paths = pkgs.qlat-pkgs;
+      extraOutputsToInstall = [ "bin" "dev" "out" "doc" ];
     };
     qlat-sh = pkgs.mkShell rec {
       name = "qlat-sh${pkgs.qlat-name}";
@@ -247,7 +249,7 @@ let
         file
         zip
         unzip
-      ];
+      ] ++ pkgs.qlat-dep-pkgs ++ pkgs.qlat-dep-pkgs-extra;
       extraOutputsToInstall = [ "bin" "dev" "out" "doc" ];
     };
     qlat-jhub-sh = pkgs.mkShell rec {
