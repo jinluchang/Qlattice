@@ -1697,12 +1697,12 @@ class CExprCodeGenPy:
                 return f"{tname}"
             else:
                 if self.is_cython:
-                    if ttype == "V_A":
+                    if ttype == "V_a":
                         return f"({coef}) * {tname}"
                     else:
                         return f"cc.ccpy_d({coef}) * {tname}"
                 else:
-                    if ttype == "V_A":
+                    if ttype == "V_a":
                         return f"({coef}) * {tname}"
                     elif ttype == "V_S":
                         return f"mat_mul_a_wm({coef}, {tname})"

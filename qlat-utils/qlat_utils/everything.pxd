@@ -199,6 +199,9 @@ cdef extern from "qlat-utils/mat.h" namespace "qlat":
     WilsonMatrix operator*(const WilsonMatrix& m1, const SpinMatrix& m2)
     WilsonMatrix operator*(const ColorMatrix& m1, const WilsonMatrix& m2)
     WilsonMatrix operator*(const WilsonMatrix& m1, const ColorMatrix& m2)
+    WilsonMatrix operator+(const WilsonMatrix& m1, const WilsonMatrix& m2)
+    SpinMatrix operator+(const SpinMatrix& m1, const SpinMatrix& m2)
+    ColorMatrix operator+(const ColorMatrix& m1, const ColorMatrix& m2)
 
 cdef extern from "qlat-utils/env.h" namespace "qlat":
 
