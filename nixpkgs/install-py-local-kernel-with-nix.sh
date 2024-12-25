@@ -19,11 +19,11 @@ ls -l
     install --user \
     --env "PATH" "$dst/result/bin" \
     --env "PYTHONPATH" "" \
-    --env "LD_LIBRARY_PATH" "" \
-    --env "LD_RUN_PATH" "" \
-    --env "CPLUS_INCLUDE_PATH" "" \
-    --env "C_INCLUDE_PATH" "" \
-    --env "LIBRARY_PATH" "" \
+    --env "LD_LIBRARY_PATH" "$dst/result/lib" \
+    --env "LD_RUN_PATH" "$dst/result/lib" \
+    --env "CPLUS_INCLUDE_PATH" "$dst/result/include" \
+    --env "C_INCLUDE_PATH" "$dst/result/include" \
+    --env "LIBRARY_PATH" "$dst/result/lib" \
     --env "PKG_CONFIG_PATH" "$dst/result/lib/pkgconfig" \
     --env "CUBACORES" "0" \
     --env "OMP_NUM_THREADS" "2" \
