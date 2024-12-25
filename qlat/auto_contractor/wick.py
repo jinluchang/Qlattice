@@ -109,7 +109,7 @@ class Qfield(Op):
             return f"{self.otype}({self.f!r},{self.p!r},{self.s!r},{self.c!r})"
 
     def list(self):
-        return [self.otype, self.f, self.p, self.s, self.c]
+        return [ self.otype, self.f, self.p, self.s, self.c, ]
 
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
@@ -203,7 +203,7 @@ class S(Op):
             return f"{self.otype}({self.f!r},{self.p1!r},{self.p2!r},{self.s1!r},{self.s2!r},{self.c1!r},{self.c2!r})"
 
     def list(self):
-        return [self.otype, self.f, self.p1, self.p2, self.s1, self.s2, self.c1, self.c2]
+        return [ self.otype, self.f, self.p1, self.p2, self.s1, self.s2, self.c1, self.c2, ]
 
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
@@ -246,7 +246,7 @@ class G(Op):
             return f"{self.otype}({self.tag!r},{self.s1!r},{self.s2!r})"
 
     def list(self):
-        return [self.otype, self.tag, self.s1, self.s2]
+        return [ self.otype, self.tag, self.s1, self.s2, ]
 
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
@@ -280,7 +280,7 @@ class U(Op):
             return f"{self.otype}({self.tag!r},{self.p!r},{self.mu!r},{self.c1!r},{self.c2!r})"
 
     def list(self):
-        return [self.otype, self.tag, self.p, self.mu, self.c1, self.c2]
+        return [ self.otype, self.tag, self.p, self.mu, self.c1, self.c2, ]
 
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
@@ -340,7 +340,7 @@ class Tr(Op):
         return f"{self.otype}({self.ops!r},{self.tag!r})"
 
     def list(self):
-        return [self.otype, self.tag, self.ops]
+        return [ self.otype, self.tag, self.ops, ]
 
     def __eq__(self, other) -> bool:
         return self.list() == other.list()

@@ -791,6 +791,20 @@ class CExpr:
         # collect common prod into variables
         self.variables_prod = collect_subexpr_in_cexpr(self.variables_tr)
 
+    def list(self):
+        return [
+                self.diagram_types,
+                self.positions,
+                self.variables_factor_intermediate,
+                self.variables_factor,
+                self.variables_prop,
+                self.variables_color_matrix,
+                self.variables_prod,
+                self.variables_tr,
+                self.named_terms,
+                self.named_exprs,
+                ]
+
 ### ----
 
 def increase_type_dict_count(type_dict, key):
