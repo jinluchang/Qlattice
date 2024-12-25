@@ -205,6 +205,15 @@ cdef extern from "qlat-utils/mat.h" namespace "qlat":
     WilsonMatrix operator-(const WilsonMatrix& m1, const WilsonMatrix& m2)
     SpinMatrix operator-(const SpinMatrix& m1, const SpinMatrix& m2)
     ColorMatrix operator-(const ColorMatrix& m1, const ColorMatrix& m2)
+    WilsonMatrix matrix_conjugate(const WilsonMatrix& m)
+    WilsonMatrix matrix_transpose(const WilsonMatrix& m)
+    WilsonMatrix matrix_adjoint(const WilsonMatrix& m)
+    SpinMatrix matrix_conjugate(const SpinMatrix& m)
+    SpinMatrix matrix_transpose(const SpinMatrix& m)
+    SpinMatrix matrix_adjoint(const SpinMatrix& m)
+    ColorMatrix matrix_conjugate(const ColorMatrix& m)
+    ColorMatrix matrix_transpose(const ColorMatrix& m)
+    ColorMatrix matrix_adjoint(const ColorMatrix& m)
 
 cdef extern from "qlat-utils/env.h" namespace "qlat":
 

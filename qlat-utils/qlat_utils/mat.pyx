@@ -92,6 +92,21 @@ cdef class WilsonMatrix:
         x.xx = cc.ccpy_d(v1) * self.xx
         return self
 
+    def conjugate(self):
+        cdef WilsonMatrix x = WilsonMatrix()
+        x.xx = cc.matrix_conjugate(self.xx)
+        return x
+
+    def transpose(self):
+        cdef WilsonMatrix x = WilsonMatrix()
+        x.xx = cc.matrix_transpose(self.xx)
+        return x
+
+    def adjoint(self):
+        cdef WilsonMatrix x = WilsonMatrix()
+        x.xx = cc.matrix_adjoint(self.xx)
+        return x
+
 ### -------------------------------------------------------------------
 
 cdef class SpinMatrix:
@@ -173,6 +188,21 @@ cdef class SpinMatrix:
         x.xx = cc.ccpy_d(v1) * self.xx
         return self
 
+    def conjugate(self):
+        cdef SpinMatrix x = SpinMatrix()
+        x.xx = cc.matrix_conjugate(self.xx)
+        return x
+
+    def transpose(self):
+        cdef SpinMatrix x = SpinMatrix()
+        x.xx = cc.matrix_transpose(self.xx)
+        return x
+
+    def adjoint(self):
+        cdef SpinMatrix x = SpinMatrix()
+        x.xx = cc.matrix_adjoint(self.xx)
+        return x
+
 ### -------------------------------------------------------------------
 
 cdef class ColorMatrix:
@@ -253,6 +283,21 @@ cdef class ColorMatrix:
         cdef ColorMatrix x = ColorMatrix()
         x.xx = cc.ccpy_d(v1) * self.xx
         return self
+
+    def conjugate(self):
+        cdef ColorMatrix x = ColorMatrix()
+        x.xx = cc.matrix_conjugate(self.xx)
+        return x
+
+    def transpose(self):
+        cdef ColorMatrix x = ColorMatrix()
+        x.xx = cc.matrix_transpose(self.xx)
+        return x
+
+    def adjoint(self):
+        cdef ColorMatrix x = ColorMatrix()
+        x.xx = cc.matrix_adjoint(self.xx)
+        return x
 
 ### -------------------------------------------------------------------
 
