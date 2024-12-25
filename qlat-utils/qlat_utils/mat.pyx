@@ -259,6 +259,23 @@ def mat_mul_cm_cm(ColorMatrix v1, ColorMatrix v2):
 
 ### -------------------------------------------------------------------
 
+def mat_add_wm_wm(WilsonMatrix v1, WilsonMatrix v2):
+    cdef WilsonMatrix x = WilsonMatrix()
+    x.xx = v1.xx + v2.xx
+    return x
+
+def mat_add_sm_sm(SpinMatrix v1, SpinMatrix v2):
+    cdef SpinMatrix x = SpinMatrix()
+    x.xx = v1.xx + v2.xx
+    return x
+
+def mat_add_cm_cm(ColorMatrix v1, ColorMatrix v2):
+    cdef ColorMatrix x = ColorMatrix()
+    x.xx = v1.xx + v2.xx
+    return x
+
+### -------------------------------------------------------------------
+
 def get_gamma_matrix(int mu):
     cdef SpinMatrix x = SpinMatrix()
     x.xx = cc.get_gamma_matrix(mu)

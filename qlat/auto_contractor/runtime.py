@@ -57,6 +57,9 @@ from qlat_utils import \
         mat_mul_sm_sm, \
         mat_mul_wm_cm, \
         mat_mul_cm_wm, \
-        mat_mul_cm_cm
+        mat_mul_cm_cm, \
+        mat_add_wm_wm, \
+        mat_add_sm_sm, \
+        mat_add_cm_cm
 
 from . import auto_fac_funcs as aff

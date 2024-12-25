@@ -1697,7 +1697,10 @@ class CExprCodeGenPy:
                 return f"{tname}"
             else:
                 if self.is_cython:
-                    return f"cc.ccpy_d({coef}) * {tname}"
+                    if ttype == "V_A":
+                        return f"({coef}) * {tname}"
+                    else:
+                        return f"cc.ccpy_d({coef}) * {tname}"
                 else:
                     if ttype == "V_A":
                         return f"({coef}) * {tname}"
@@ -1717,6 +1720,9 @@ class CExprCodeGenPy:
             append_cy(f"cdef qu.SpinMatrix expr_V_G_box")
             append_cy(f"cdef qu.WilsonMatrix expr_V_S_box")
             append_cy(f"cdef qu.ColorMatrix expr_V_U_box")
+            append_py(f"expr_V_G = SpinMatrix()")
+            append_py(f"expr_V_S = WilsonMatrix()")
+            append_py(f"expr_V_U = ColorMatrix()")
         for idx, (name, expr,) in enumerate(cexpr.named_exprs):
             name = name.replace("\n", "  ")
             append(f"# {idx} name='{name}' ")
@@ -1730,13 +1736,23 @@ class CExprCodeGenPy:
                 expr_type, = term_type_set
                 expr_var_name = f"expr_{expr_type}"
                 if expr_type == "V_a":
-                    append_cy(f"{expr_var_name} = 0")
+                    append(f"{expr_var_name} = 0")
                 else:
                     append_cy(f"cc.set_zero({expr_var_name})")
-                append_py(f"{expr_var_name} = 0")
+                    append_py(f"{expr_var_name}.set_zero()")
                 for coef, tname in expr:
                     s = show_coef_term(coef, tname, expr_type)
-                    append(f"{expr_var_name} += {s}")
+                    append_cy(f"{expr_var_name} += {s}")
+                    if expr_type == "V_a":
+                        append_py(f"{expr_var_name} += {s}")
+                    elif expr_type == "V_S":
+                        append_py(f"{expr_var_name} = mat_add_wm_wm({expr_var_name}, {s})")
+                    elif expr_type == "V_G":
+                        append_py(f"{expr_var_name} = mat_add_sm_sm({expr_var_name}, {s})")
+                    elif expr_type == "V_U":
+                        append_py(f"{expr_var_name} = mat_add_cm_cm({expr_var_name}, {s})")
+                    else:
+                        raise Exception(f"{expr_var_name} {expr_type} {s}")
                 if expr_type == "V_a":
                     append(f"exprs_view[{idx}] = {expr_var_name}")
                 else:
@@ -1746,6 +1762,8 @@ class CExprCodeGenPy:
                         append_cy(f"{expr_var_name}_box = SpinMatrix()")
                     elif expr_type == "V_U":
                         append_cy(f"{expr_var_name}_box = ColorMatrix()")
+                    else:
+                        raise Exception(f"{expr_type}")
                     append_cy(f"{expr_var_name}_box.xx = {expr_var_name}")
                     append_cy(f"exprs_view[{idx}] = {expr_var_name}_box")
                     append_py(f"exprs_view[{idx}] = {expr_var_name}")
