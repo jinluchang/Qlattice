@@ -73,6 +73,10 @@ cdef class WilsonMatrix:
         self.xx -= v1.xx
         return self
 
+    def __imul__(self, cc.PyComplexD v1):
+        self.xx *= v1
+        return self
+
     def __add__(self, WilsonMatrix v1):
         cdef WilsonMatrix x = WilsonMatrix()
         x.xx = self.xx + v1.xx
@@ -145,6 +149,10 @@ cdef class SpinMatrix:
         self.xx -= v1.xx
         return self
 
+    def __imul__(self, cc.PyComplexD v1):
+        self.xx *= v1
+        return self
+
     def __add__(self, SpinMatrix v1):
         cdef SpinMatrix x = SpinMatrix()
         x.xx = self.xx + v1.xx
@@ -215,6 +223,10 @@ cdef class ColorMatrix:
 
     def __isub__(self, ColorMatrix v1):
         self.xx -= v1.xx
+        return self
+
+    def __imul__(self, cc.PyComplexD v1):
+        self.xx *= v1
         return self
 
     def __add__(self, ColorMatrix v1):
