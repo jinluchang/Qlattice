@@ -248,6 +248,7 @@ let
         zip
         unzip
       ];
+      extraOutputsToInstall = [ "bin" "dev" "out" "doc" ];
     };
     qlat-jhub-sh = pkgs.mkShell rec {
       name = "qlat-jhub-sh${pkgs.qlat-name}";
