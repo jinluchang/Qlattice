@@ -73,6 +73,16 @@ cdef class WilsonMatrix:
         self.xx -= v1.xx
         return self
 
+    def __add__(self, WilsonMatrix v1):
+        cdef WilsonMatrix x = WilsonMatrix()
+        x.xx = self.xx + v1.xx
+        return x
+
+    def __sub__(self, WilsonMatrix v1):
+        cdef WilsonMatrix x = WilsonMatrix()
+        x.xx = self.xx - v1.xx
+        return x
+
 ### -------------------------------------------------------------------
 
 cdef class SpinMatrix:
@@ -135,6 +145,16 @@ cdef class SpinMatrix:
         self.xx -= v1.xx
         return self
 
+    def __add__(self, SpinMatrix v1):
+        cdef SpinMatrix x = SpinMatrix()
+        x.xx = self.xx + v1.xx
+        return x
+
+    def __sub__(self, SpinMatrix v1):
+        cdef SpinMatrix x = SpinMatrix()
+        x.xx = self.xx - v1.xx
+        return x
+
 ### -------------------------------------------------------------------
 
 cdef class ColorMatrix:
@@ -196,6 +216,16 @@ cdef class ColorMatrix:
     def __isub__(self, ColorMatrix v1):
         self.xx -= v1.xx
         return self
+
+    def __add__(self, ColorMatrix v1):
+        cdef ColorMatrix x = ColorMatrix()
+        x.xx = self.xx + v1.xx
+        return x
+
+    def __sub__(self, ColorMatrix v1):
+        cdef ColorMatrix x = ColorMatrix()
+        x.xx = self.xx - v1.xx
+        return x
 
 ### -------------------------------------------------------------------
 
