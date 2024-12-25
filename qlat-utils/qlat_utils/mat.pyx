@@ -74,7 +74,7 @@ cdef class WilsonMatrix:
         return self
 
     def __imul__(self, cc.PyComplexD v1):
-        self.xx *= v1
+        self.xx *= cc.ccpy_d(v1)
         return self
 
     def __add__(self, WilsonMatrix v1):
@@ -86,6 +86,11 @@ cdef class WilsonMatrix:
         cdef WilsonMatrix x = WilsonMatrix()
         x.xx = self.xx - v1.xx
         return x
+
+    def __mul__(self, cc.PyComplexD v1):
+        cdef WilsonMatrix x = WilsonMatrix()
+        x.xx = cc.ccpy_d(v1) * self.xx
+        return self
 
 ### -------------------------------------------------------------------
 
@@ -150,7 +155,7 @@ cdef class SpinMatrix:
         return self
 
     def __imul__(self, cc.PyComplexD v1):
-        self.xx *= v1
+        self.xx *= cc.ccpy_d(v1)
         return self
 
     def __add__(self, SpinMatrix v1):
@@ -162,6 +167,11 @@ cdef class SpinMatrix:
         cdef SpinMatrix x = SpinMatrix()
         x.xx = self.xx - v1.xx
         return x
+
+    def __mul__(self, cc.PyComplexD v1):
+        cdef SpinMatrix x = SpinMatrix()
+        x.xx = cc.ccpy_d(v1) * self.xx
+        return self
 
 ### -------------------------------------------------------------------
 
@@ -226,7 +236,7 @@ cdef class ColorMatrix:
         return self
 
     def __imul__(self, cc.PyComplexD v1):
-        self.xx *= v1
+        self.xx *= cc.ccpy_d(v1)
         return self
 
     def __add__(self, ColorMatrix v1):
@@ -238,6 +248,11 @@ cdef class ColorMatrix:
         cdef ColorMatrix x = ColorMatrix()
         x.xx = self.xx - v1.xx
         return x
+
+    def __mul__(self, cc.PyComplexD v1):
+        cdef ColorMatrix x = ColorMatrix()
+        x.xx = cc.ccpy_d(v1) * self.xx
+        return self
 
 ### -------------------------------------------------------------------
 
