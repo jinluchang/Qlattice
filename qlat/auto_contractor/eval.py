@@ -191,7 +191,7 @@ def eval_cexpr(ccexpr : CCExpr, *, positions_dict, get_prop, is_ama_and_sloppy=F
     return 1 dimensional np.array
     cexpr can be cexpr object or can be a compiled function
     xg = positions_dict[position]
-    mat_mspincolor = get_prop(flavor, xg_snk, xg_src)
+    wilson_matrix = get_prop(flavor, xg_snk, xg_src)
     e.g. ("point-snk", [ 1, 2, 3, 4, ]) = positions_dict["x_1"]
     e.g. flavor = "l"
     e.g. xg_snk = ("point-snk", [ 1, 2, 3, 4, ])

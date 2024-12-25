@@ -113,6 +113,9 @@ cdef class WilsonMatrix:
         x.xx = cc.matrix_adjoint(self.xx)
         return x
 
+    def __repr__(self):
+        return f"WilsonMatrix({self[:].tolist()!r})"
+
 ### -------------------------------------------------------------------
 
 cdef class SpinMatrix:
@@ -215,6 +218,9 @@ cdef class SpinMatrix:
         x.xx = cc.matrix_adjoint(self.xx)
         return x
 
+    def __repr__(self):
+        return f"SpinMatrix({self[:].tolist()!r})"
+
 ### -------------------------------------------------------------------
 
 cdef class ColorMatrix:
@@ -316,6 +322,9 @@ cdef class ColorMatrix:
         cdef ColorMatrix x = ColorMatrix()
         x.xx = cc.matrix_adjoint(self.xx)
         return x
+
+    def __repr__(self):
+        return f"ColorMatrix({self[:].tolist()!r})"
 
 ### -------------------------------------------------------------------
 

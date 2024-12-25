@@ -69,22 +69,24 @@ json_results_append(
 for v in cexpr_opt.list():
     json_results_append(str(v))
 
+@q.timer
+def get_cexpr_test(is_cython=False):
+    fn_base = f"cache/auto_contract_cexpr/get_cexpr_test"
+    def calc_cexpr():
+        cexpr = qac.contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True)
+        return cexpr
+    return qac.cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
+
 for is_cython in [ False, True, ]:
     json_results_append(
         qac.cexpr_code_gen_py(cexpr_opt, is_cython=is_cython)
     )
-    @q.timer
-    def get_cexpr_test():
-        fn_base = f"cache/auto_contract_cexpr/get_cexpr_test"
-        def calc_cexpr():
-            cexpr = qac.contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True)
-            return cexpr
-        return qac.cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
-    cexpr = get_cexpr_test()
+    cexpr = get_cexpr_test(is_cython=is_cython)
     check, check_ama = qac.benchmark_eval_cexpr(cexpr)
     json_results_append(f"get_cexpr_test benchmark_eval_cexpr check get_data_sig is_cython={is_cython}", q.get_data_sig(np.array(check, dtype=np.complex128), q.RngState()))
     json_results_append(f"get_cexpr_test benchmark_eval_cexpr check_ama get_data_sig is_cython={is_cython}", q.get_data_sig(np.array(check_ama, dtype=np.complex128), q.RngState()))
+
+
 
 q.check_log_json(__file__, json_results, check_eps=check_eps)
 
