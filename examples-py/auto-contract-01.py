@@ -98,11 +98,13 @@ def get_prop(flavor, p1, p2):
     return wm
 
 wm = get_prop(
-    "u",
+    "l",
     ("point-snk", q.Coordinate([ 1, 2, 3, 4, ]),),
     ("point", q.Coordinate([ 3, 7, 2, 1, ]),),
 )
-json_results_append("get_prop wm: {wm[:].tolist()!r}")
+
+json_results_append(f"get_prop wm: {q.get_data_sig(wm, q.RngState())}")
+q.displayln_info(-1, f"{wm}")
 
 pd = {
     "x1": ("point-snk", q.Coordinate([ 1, 2, 3, 4, ]),),
@@ -112,7 +114,8 @@ pd = {
 res = qac.eval_cexpr(ccexpr=get_cexpr_test(), positions_dict=pd, get_prop=get_prop)
 
 for idx, v in enumerate(res):
-    json_results_append(f"eval_cexpr res[{idx}]: {v}")
+    json_results_append(f"eval_cexpr res[{idx}]: {q.get_data_sig(v, q.RngState())}")
+    q.displayln_info(-1, f"{v}")
 
 q.check_log_json(__file__, json_results, check_eps=check_eps)
 
