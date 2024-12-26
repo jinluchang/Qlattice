@@ -1104,11 +1104,12 @@ def mk_cexpr(*exprs, diagram_type_dict=None):
 def contract_simplify(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=None):
     """
     interface function
-    exprs = [ expr, (expr, *included_types,), ... ]\n
-    In case diagram_type_dict is not None, perform the following filter
-    If diagram_type_dict[diagram_type] is None: term is removed.
-    For (expr, *included_types,), only terms (in expr) with diagram_type that is in included_types is kept
-    included_types should be a list/tuple of string
+    `exprs = [ expr, (expr, *included_types,), ... ]`
+    #
+    In case `diagram_type_dict` is not `None`, perform the following filter
+    If `diagram_type_dict[diagram_type]` is `None`: term is removed.
+    For `(expr, *included_types,)`, only terms (in `expr`) with `diagram_type` that is in `included_types` is kept included_types should be a list/tuple of string.
+    See `filter_diagram_type` for more details.
     """
     def func(expr):
         expr = copy.deepcopy(expr)

@@ -10,12 +10,22 @@ Evaluation
 .. autosummary::
    :toctree: generated
 
+   contract_simplify_compile
+   filter_diagram_type
    contract_simplify
    compile_expr
-   contract_simplify_compile
+   display_cexpr
+   cexpr_code_gen_py
+
+   CExpr
+
    cache_compiled_cexpr
+
+   CCExpr
+
    eval_cexpr
    get_expr_names
+   get_diagram_type_dict
 
    mk_sym
    mk_fac
