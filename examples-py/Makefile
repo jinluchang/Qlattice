@@ -15,6 +15,7 @@ tests = \
 		auto-cexprs-uu-cy.log \
 		auto-cexprs-distillation.log \
 		auto-contract-01.log \
+		auto-contract-02.log \
 		mat-op-distillation.log \
 		mat-op-qcd.log \
 		qlat-id-node.log \
