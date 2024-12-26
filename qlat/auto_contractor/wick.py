@@ -378,10 +378,11 @@ class Chain(Op):
         else:
             self.tag = ""
         n_ops = len(ops)
-        assert n_ops >= 2
+        assert n_ops >= 1
         for i, op in enumerate(ops):
             if i == 0:
-                ops[i] = copy_op_index_auto(op, is_auto_sc1=False)
+                if i < n_ops - 1:
+                    ops[i] = copy_op_index_auto(op, is_auto_sc1=False)
             elif i == n_ops - 1:
                 ops[i] = copy_op_index_auto(op, is_auto_sc2=False)
             else:
@@ -468,7 +469,7 @@ def check_chain_color_index(ops : list, c : str):
 def check_chain_op(ops : list, op : Op):
     """
     for a operator `op`,
-    return "begin" or "middle" or "end",
+    return "single" or "begin" or "middle" or "end",
     if this `op` is part of a longer chain of contraction
     """
     if op.otype not in [ "S", "G", "U", ]:
@@ -491,7 +492,7 @@ def check_chain_op(ops : list, op : Op):
         if check_chain_color_index(ops, op.c2)[0]:
             b_end = False
     if b_begin and b_end:
-        return False
+        return "single"
     elif b_begin:
         return "begin"
     elif b_end:
@@ -560,7 +561,7 @@ def find_chain(ops : list):
     """
     size = len(ops)
     for i, op in enumerate(ops):
-        if check_chain_op(ops, op) not in [ "begin", ]:
+        if check_chain_op(ops, op) not in [ "single", "begin", ]:
             continue
         masks = [ False for op in ops ]
         ch_ops = []
@@ -570,7 +571,7 @@ def find_chain(ops : list):
         ch_ops.append(op)
         s, c, = update_chain_sc(op, s, c)
         while True:
-            p_op = pick_chain_op(ops, masks, s, c, [ "begin", "middle", "end", ])
+            p_op = pick_chain_op(ops, masks, s, c, [ "single", "begin", "middle", "end", ])
             if p_op is None:
                 # chain found
                 return Chain(ch_ops), [ op for i, op in enumerate(ops) if not masks[i] ]

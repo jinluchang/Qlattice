@@ -57,6 +57,8 @@ def get_var_name_type(x):
         return "V_U"
     elif x.startswith("V_tr_"):
         return "V_a"
+    elif x.startswith("V_chain_"):
+        return "V_S"
     elif x.startswith("V_prod_GG_"):
         return "V_G"
     elif x.startswith("V_prod_GS_"):
@@ -93,6 +95,8 @@ def get_op_type(x):
         return "U"
     elif x.otype == "Tr":
         return "Tr"
+    elif x.otype == "Chain":
+        return "Chain"
     elif x.otype == "Var":
         return get_var_name_type(x.name)
     else:
@@ -125,6 +129,9 @@ def add_positions(s, x):
             if isinstance(x.mu, str):
                 s.add(x.mu)
         elif x.otype == "Tr":
+            for op in x.ops:
+                add_positions(s, op)
+        elif x.otype == "Chain":
             for op in x.ops:
                 add_positions(s, op)
         elif x.otype == "Qfield":
@@ -439,6 +446,8 @@ def collect_prop_in_cexpr(named_terms):
                         var_dataset[op_repr] = var
                 elif op.otype == "Tr":
                     add_prop_variables(op.ops)
+                elif op.otype == "Chain":
+                    add_prop_variables(op.ops)
         elif isinstance(x, Term):
             add_prop_variables(x.c_ops)
         elif isinstance(x, Expr):
@@ -480,6 +489,8 @@ def collect_color_matrix_in_cexpr(named_terms):
                         var_dataset[op_repr] = var
                 elif op.otype == "Tr":
                     add_variables(op.ops)
+                elif op.otype == "Chain":
+                    add_variables(op.ops)
         elif isinstance(x, Term):
             add_variables(x.c_ops)
         elif isinstance(x, Expr):
@@ -489,6 +500,49 @@ def collect_color_matrix_in_cexpr(named_terms):
         add_variables(term)
         term.sort()
     return variables_color_matrix
+
+@q.timer
+def collect_chain_in_cexpr(named_terms):
+    """
+    collect common chains
+    modify named_terms in-place and return definitions as variables_chain
+    variables_chain = [ (name, value,), ... ]
+    possible (name, value,) includes
+    ("V_chain_0", op,) where op.otype == "Chain"
+    """
+    var_nameset = set()
+    variables_chain = []
+    var_counter = 0
+    var_dataset_chain = {} # var_dataset[op_repr] = op_var
+    def add_ch_varibles(x):
+        nonlocal var_counter
+        if isinstance(x, Term):
+            add_ch_varibles(x.c_ops)
+        elif isinstance(x, Op) and x.otype == "Chain":
+            add_ch_varibles(x.ops) # not very necessary, do not expect Chain in Chain
+        elif isinstance(x, list):
+            for op in x:
+                add_ch_varibles(op)
+            for i, op in enumerate(x):
+                if isinstance(op, Op) and op.otype == "Chain":
+                    op_repr = repr(op)
+                    if op_repr in var_dataset_chain:
+                        x[i] = var_dataset_chain[op_repr]
+                    else:
+                        while True:
+                            name = f"V_chain_{var_counter}"
+                            var_counter += 1
+                            if name not in var_nameset:
+                                break
+                        var_nameset.add(name)
+                        variables_chain.append((name, op,))
+                        var = Var(name)
+                        x[i] = var
+                        var_dataset_chain[op_repr] = var
+    for name, term in named_terms:
+        add_ch_varibles(term)
+        term.sort()
+    return variables_chain
 
 @q.timer
 def collect_tr_in_cexpr(named_terms):
@@ -508,7 +562,7 @@ def collect_tr_in_cexpr(named_terms):
         if isinstance(x, Term):
             add_tr_varibles(x.c_ops)
         elif isinstance(x, Op) and x.otype == "Tr":
-            add_tr_varibles(x.ops)
+            add_tr_varibles(x.ops) # not very necessary, do not expect Tr in Tr
         elif isinstance(x, list):
             for op in x:
                 add_tr_varibles(op)
@@ -547,7 +601,7 @@ def find_common_subexpr_in_tr(variables_tr):
             subexpr_count[op_repr] = (c + count_added, x)
         else:
             subexpr_count[op_repr] = (count_added, x)
-    def find_op_pair(x):
+    def find_op_pair(x, is_periodic=True):
         if len(x) < 2:
             return None
         for i, op in enumerate(x):
@@ -556,7 +610,13 @@ def find_common_subexpr_in_tr(variables_tr):
                 factor = 2
             op_type = get_op_type(op)
             if op_type in [ "V_S", "V_G", "V_U", "S", "G", "U", ]:
-                op1 = x[(i+1) % len(x)]
+                i1 = i + 1
+                if i1 >= len(x):
+                    if is_periodic:
+                        i1 = i1 % len(x)
+                    else:
+                        continue
+                op1 = x[i1]
                 op1_type = get_op_type(op1)
                 if op1_type in [ "V_S", "V_G", "V_U", "S", "G", "U", ]:
                     prod = (op, op1,)
@@ -583,7 +643,9 @@ def find_common_subexpr_in_tr(variables_tr):
             for op in x:
                 find(op)
         elif isinstance(x, Op) and x.otype == "Tr" and len(x.ops) >= 2:
-            find_op_pair(x.ops)
+            find_op_pair(x.ops, is_periodic=True)
+        elif isinstance(x, Op) and x.otype == "Chain" and len(x.ops) >= 2:
+            find_op_pair(x.ops, is_periodic=False)
         elif isinstance(x, Term):
             find(x.c_ops)
         elif isinstance(x, Expr):
@@ -602,18 +664,23 @@ def find_common_subexpr_in_tr(variables_tr):
 @q.timer
 def collect_common_subexpr_in_tr(variables_tr, op_common, var):
     op_repr = repr(op_common)
-    def replace(x):
+    def replace(x, is_periodic=True):
         if x is None:
             return None
         elif isinstance(x, list):
             # need to represent the product of the list of operators
             for op in x:
-                replace(op)
+                replace(op, is_periodic=is_periodic)
             if len(x) < 2:
                 return None
             for i, op in enumerate(x):
                 if isinstance(op, Op) and op.otype in [ "Var", "S", "G", "U", ]:
-                    i1 = (i+1) % len(x)
+                    i1 = i + 1
+                    if i1 >= len(x):
+                        if is_periodic:
+                            i1 = i1 % len(x)
+                        else:
+                            continue
                     op1 = x[i1]
                     if isinstance(op1, Op) and op1.otype in [ "Var", "S", "G", "U", ]:
                         prod = (op, op1,)
@@ -621,9 +688,11 @@ def collect_common_subexpr_in_tr(variables_tr, op_common, var):
                             x[i1] = None
                             x[i] = var
         elif isinstance(x, Op) and x.otype == "Tr" and len(x.ops) >= 2:
-            replace(x.ops)
+            replace(x.ops, is_periodic=True)
+        elif isinstance(x, Op) and x.otype == "Chain" and len(x.ops) >= 2:
+            replace(x.ops, is_periodic=False)
         elif isinstance(x, Term):
-            replace(x.c_ops)
+            replace(x.c_ops, is_periodic=True)
         elif isinstance(x, Expr):
             for t in x.terms:
                 replace(t)
@@ -636,6 +705,8 @@ def collect_common_subexpr_in_tr(variables_tr, op_common, var):
             return [ remove_none(op) for op in x if op is not None ]
         elif isinstance(x, Op):
             if x.otype == "Tr":
+                x.ops = remove_none(x.ops)
+            elif x.otype == "Chain":
                 x.ops = remove_none(x.ops)
             return x
         elif isinstance(x, Term):
@@ -722,6 +793,7 @@ class CExpr:
     self.variables_prop
     self.variables_color_matrix
     self.variables_prod
+    self.variables_chain
     self.variables_tr
     self.named_terms
     self.named_exprs
@@ -739,6 +811,7 @@ class CExpr:
         self.variables_prop = []
         self.variables_color_matrix = []
         self.variables_prod = []
+        self.variables_chain = []
         self.variables_tr = []
         self.named_terms = []
         self.named_exprs = []
@@ -775,6 +848,7 @@ class CExpr:
                 self.variables_prop == [],
                 self.variables_color_matrix == [],
                 self.variables_prod == [],
+                self.variables_chain == [],
                 self.variables_tr == [],
                 ]
         if not all(checks):
@@ -786,6 +860,8 @@ class CExpr:
         self.variables_prop = collect_prop_in_cexpr(self.named_terms)
         # collect color matrix expr into variables
         self.variables_color_matrix = collect_color_matrix_in_cexpr(self.named_terms)
+        # collect chain expr into variables
+        self.variables_chain = collect_chain_in_cexpr(self.named_terms)
         # collect trace expr into variables
         self.variables_tr = collect_tr_in_cexpr(self.named_terms)
         # collect common prod into variables
@@ -800,6 +876,7 @@ class CExpr:
                 self.variables_prop,
                 self.variables_color_matrix,
                 self.variables_prod,
+                self.variables_chain,
                 self.variables_tr,
                 self.named_terms,
                 self.named_exprs,
@@ -862,6 +939,8 @@ def loop_term_ops(type_dict, ops):
             # diagram type elem definition
             increase_type_dict_count(type_dict, (op.p1, op.p2,))
         elif op.otype == "Tr":
+            loop_term_ops(type_dict, op.ops)
+        elif op.otype == "Chain":
             loop_term_ops(type_dict, op.ops)
 
 def get_term_diagram_type_info_no_permutation(term):
@@ -1097,6 +1176,9 @@ def show_variable_value(value):
     elif isinstance(value, Tr):
         expr = "*".join(map(show_variable_value, value.ops))
         return f"tr({expr})"
+    elif isinstance(value, Chain):
+        expr = "*".join(map(show_variable_value, value.ops))
+        return f"chain({expr})"
     elif isinstance(value, Term):
         if value.coef == 1:
             return "*".join(map(show_variable_value, value.c_ops + value.a_ops))
@@ -1141,6 +1223,10 @@ def display_cexpr(cexpr : CExpr):
     if cexpr.variables_prod:
         lines.append(f"# Variables prod:")
     for name, value in cexpr.variables_prod:
+        lines.append(f"{name:<30} = {show_variable_value(value)}")
+    if cexpr.variables_chain:
+        lines.append(f"# Variables chain:")
+    for name, value in cexpr.variables_chain:
         lines.append(f"{name:<30} = {show_variable_value(value)}")
     if cexpr.variables_tr:
         lines.append(f"# Variables tr:")
@@ -1293,6 +1379,13 @@ class CExprCodeGenPy:
                     return f"cc.get_gamma_matrix({x.tag})", "V_G"
             else:
                 return f"get_gamma_matrix({x.tag})", "V_G"
+        elif x.otype == "Chain":
+            if len(x.ops) == 0:
+                assert False
+            else:
+                c, t = self.gen_expr_prod_list(x.ops)
+                assert t == "V_S"
+                return c, t
         elif x.otype == "Tr":
             if len(x.ops) == 0:
                 assert False
@@ -1657,6 +1750,16 @@ class CExprCodeGenPy:
                 append_py(f"{name} = {c}")
             else:
                 assert False
+        append(f"# compute chains")
+        for name, value in cexpr.variables_chain:
+            assert name.startswith("V_chain_")
+            x = value
+            assert isinstance(x, Op)
+            assert x.otype == "Chain"
+            c, t = self.gen_expr(x)
+            assert t == "V_S"
+            append_cy(f"cdef cc.WilsonMatrix {name} = {c}")
+            append_py(f"{name} = {c}")
         append(f"# compute traces")
         for name, value in cexpr.variables_tr:
             assert name.startswith("V_tr_")
