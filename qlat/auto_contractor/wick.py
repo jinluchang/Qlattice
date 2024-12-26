@@ -377,10 +377,15 @@ class Chain(Op):
             self.tag = "c"
         else:
             self.tag = ""
-        ops[0] = copy_op_index_auto(op, is_auto_sc1=False)
-        ops[-1] = copy_op_index_auto(op, is_auto_sc2=False)
-        for i, op in enumerate(ops[1:-1]):
-            ops[i] = copy_op_index_auto(op)
+        n_ops = len(ops)
+        assert n_ops >= 2
+        for i, op in enumerate(ops):
+            if i == 0:
+                ops[i] = copy_op_index_auto(op, is_auto_sc1=False)
+            elif i == n_ops - 1:
+                ops[i] = copy_op_index_auto(op, is_auto_sc2=False)
+            else:
+                ops[i] = copy_op_index_auto(op)
         self.ops = ops
 
     def __repr__(self) -> str:
@@ -576,6 +581,9 @@ def find_chain(ops : list):
     return None
 
 def collect_traces(ops : list) -> list:
+    """
+    First collect all the `Chain`s, then `Tr`s
+    """
     chs = []
     while True:
         fc = find_chain(ops)
