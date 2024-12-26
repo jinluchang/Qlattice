@@ -308,7 +308,7 @@ class Tr(Op):
     self.tag
     """
 
-    def __init__(self, ops : list, tag = None):
+    def __init__(self, ops : list, tag=None):
         Op.__init__(self, "Tr")
         if tag is not None:
             # do not perform check if tag is set
@@ -321,9 +321,9 @@ class Tr(Op):
         s = None
         c = None
         for op in ops + ops:
-            if not check_trace_sc(op, s, c):
+            if not check_chain_sc(op, s, c):
                 raise Exception(f"ops={ops} tag={tag}")
-            update_trace_sc(op, s, c)
+            s, c, = update_chain_sc(op, s, c)
         if s is not None and c is not None:
             self.tag = "sc"
         elif s is not None:
@@ -359,7 +359,11 @@ class Tr(Op):
 def pick_one(xs, i):
     return xs[i], xs[:i] + xs[i + 1:]
 
-def check_trace_spin_index(ops : list, s : str):
+def check_chain_spin_index(ops : list, s : str):
+    """
+    for a spin index `s`,
+    return is_having_repeated_index, first_index_of_operator, second_index_of_operator
+    """
     count1 = 0
     count2 = 0
     i1 = None
@@ -374,7 +378,11 @@ def check_trace_spin_index(ops : list, s : str):
                 count2 += 1
     return count1 == 1 and count2 == 1, i1, i2
 
-def check_trace_color_index(ops : list, c : str):
+def check_chain_color_index(ops : list, c : str):
+    """
+    for a color index `s`,
+    return is_having_repeated_index, first_index_of_operator, second_index_of_operator
+    """
     count1 = 0
     count2 = 0
     i1 = None
@@ -389,22 +397,41 @@ def check_trace_color_index(ops : list, c : str):
                 count2 += 1
     return count1 == 1 and count2 == 1, i1, i2
 
-def check_trace_op(ops : list, op : Op):
+def check_chain_op(ops : list, op : Op):
+    """
+    for a operator `op`,
+    return "begin" or "middle" or "end",
+    if this `op` is part of a longer chain of contraction
+    """
     if op.otype not in [ "S", "G", "U", ]:
         return False
-    if op.otype in [ "S", "G", ]:
-        if not check_trace_spin_index(ops, op.s1)[0]:
-            return False
-        if not check_trace_spin_index(ops, op.s2)[0]:
-            return False
-    if op.otype in [ "S", "U", ]:
-        if not check_trace_color_index(ops, op.c1)[0]:
-            return False
-        if not check_trace_color_index(ops, op.c2)[0]:
-            return False
-    return True
+    b_begin = True
+    b_end = True
+    if op.otype in [ "S", ]:
+        if check_chain_spin_index(ops, op.s1)[0] and check_chain_color_index(ops, op.c1)[0]:
+            b_begin = False;
+        if check_chain_spin_index(ops, op.s2)[0] and check_chain_color_index(ops, op.c2)[0]:
+            b_end = False
+    elif op.otype in [ "G", ]:
+        if check_chain_spin_index(ops, op.s1)[0]:
+            b_begin = False
+        if check_chain_spin_index(ops, op.s2)[0]:
+            b_end = False
+    elif op.otype in [ "U", ]:
+        if check_chain_color_index(ops, op.c1)[0]:
+            b_begin = False
+        if check_chain_color_index(ops, op.c2)[0]:
+            b_end = False
+    if b_begin and b_end:
+        return False
+    elif b_begin:
+        return "begin"
+    elif b_end:
+        return "end"
+    else:
+        return "middle"
 
-def check_trace_sc(op, s, c):
+def check_chain_sc(op, s, c):
     if op.otype in [ "S", "G", ]:
         if s is not None and s != op.s1:
             return False
@@ -413,24 +440,22 @@ def check_trace_sc(op, s, c):
             return False
     return True
 
-def update_trace_sc(op, s, c):
+def update_chain_sc(op, s, c):
     if op.otype in [ "S", "G", ]:
         s = op.s2
     if op.otype in [ "S", "U", ]:
         c = op.c2
     return s, c
 
-def pick_trace_op(ops : list, masks : list, s, c):
+def pick_chain_op(ops : list, masks : list, s, c, type_list=None):
+    if type_list is None:
+        type_list = [ "begin", "end", "middle", ]
     for i, op in enumerate(ops):
         if masks[i]:
             continue
-        if op.otype in [ "S", "G", ]:
-            if s is not None and s != op.s1:
-                continue
-        if op.otype in [ "S", "U", ]:
-            if c is not None and c != op.c1:
-                continue
-        if not check_trace_op(ops, op):
+        if not check_chain_sc(op, s, c):
+            continue
+        if check_chain_op(ops, op) not in type_list:
             continue
         return i, op
     return None
@@ -441,7 +466,7 @@ def find_trace(ops : list):
     """
     size = len(ops)
     for i, op in enumerate(ops):
-        if not check_trace_op(ops, op):
+        if check_chain_op(ops, op) not in [ "middle", ]:
             continue
         masks = [ False for op in ops ]
         tr_ops = []
@@ -449,19 +474,42 @@ def find_trace(ops : list):
         c = None
         masks[i] = True
         tr_ops.append(op)
-        s, c = update_trace_sc(op, s, c)
+        s, c, = update_chain_sc(op, s, c)
         while True:
-            p_op = pick_trace_op(ops, masks, s, c)
+            p_op = pick_chain_op(ops, masks, s, c, [ "middle", ])
             if p_op is None:
-                for op2 in tr_ops:
-                    if not check_trace_sc(op2, s, c):
-                        break
-                    update_trace_sc(op2, s, c)
+                # trace found
                 return Tr(tr_ops), [ op for i, op in enumerate(ops) if not masks[i] ]
             i2, op2 = p_op
             masks[i2] = True
             tr_ops.append(op2)
-            s, c = update_trace_sc(op2, s, c)
+            s, c, = update_chain_sc(op2, s, c)
+    return None
+
+def find_chain(ops : list):
+    """
+    return None or (Tr(tr_ops), remaining_ops,)
+    """
+    size = len(ops)
+    for i, op in enumerate(ops):
+        if check_chain_op(ops, op) not in [ "begin", ]:
+            continue
+        masks = [ False for op in ops ]
+        tr_ops = []
+        s = None
+        c = None
+        masks[i] = True
+        tr_ops.append(op)
+        s, c, = update_chain_sc(op, s, c)
+        while True:
+            p_op = pick_chain_op(ops, masks, s, c, [ "begin", "middle", "end", ])
+            if p_op is None:
+                # chain found
+                return Tr(tr_ops), [ op for i, op in enumerate(ops) if not masks[i] ]
+            i2, op2 = p_op
+            masks[i2] = True
+            tr_ops.append(op2)
+            s, c, = update_chain_sc(op2, s, c)
     return None
 
 def collect_traces(ops : list) -> list:
