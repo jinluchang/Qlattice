@@ -1392,6 +1392,7 @@ class CExprCodeGenPy:
             else:
                 return f"get_gamma_matrix({x.tag})", "V_G"
         elif x.otype == "Chain":
+            assert x.tag == "sc"
             if len(x.ops) == 0:
                 assert False
             else:
@@ -1399,6 +1400,7 @@ class CExprCodeGenPy:
                 assert t == "V_S"
                 return c, t
         elif x.otype == "Tr":
+            assert x.tag == "sc"
             if len(x.ops) == 0:
                 assert False
             elif len(x.ops) == 1:
