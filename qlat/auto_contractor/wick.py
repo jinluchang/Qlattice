@@ -287,18 +287,6 @@ class U(Op):
 
 ### ------
 
-def copy_op_index_auto(op : Op):
-    if op.otype not in [ "S", "G", "U", ]:
-        return op
-    op = copy.copy(op)
-    if op.otype in [ "S", "G", ]:
-        op.s1 = "auto"
-        op.s2 = "auto"
-    if op.otype in [ "S", "U", ]:
-        op.c1 = "auto"
-        op.c2 = "auto"
-    return op
-
 class Tr(Op):
 
     """
@@ -348,13 +336,88 @@ class Tr(Op):
     def sort(self):
         ops = self.ops
         if len(ops) > 1:
-            self.ops = sorted([ ops[i:] + ops[:i] for i in range(len(ops)) ], key = repr)[0]
+            self.ops = sorted([ ops[i:] + ops[:i] for i in range(len(ops)) ], key=repr)[0]
 
     def isospin_symmetric_limit(self) -> None:
         for op in self.ops:
             op.isospin_symmetric_limit()
 
 ### ------
+
+class Chain(Op):
+
+    """
+    a collection of ops multiplying together but do not form a loop
+    #
+    self.ops
+    self.tag
+    """
+
+    def __init__(self, ops : list, tag=None):
+        Op.__init__(self, "Chain")
+        if tag is not None:
+            # do not perform check if tag is set
+            self.ops = ops
+            self.tag = tag
+            return
+        for op in ops:
+            assert op.is_commute()
+            assert op.otype in [ "S", "G", "U", ]
+        s = None
+        c = None
+        for op in ops:
+            if not check_chain_sc(op, s, c):
+                raise Exception(f"ops={ops} tag={tag}")
+            s, c, = update_chain_sc(op, s, c)
+        if s is not None and c is not None:
+            self.tag = "sc"
+        elif s is not None:
+            self.tag = "s"
+        elif c is not None:
+            self.tag = "c"
+        else:
+            self.tag = ""
+        ops[0] = copy_op_index_auto(op, is_auto_sc1=False)
+        ops[-1] = copy_op_index_auto(op, is_auto_sc2=False)
+        for i, op in enumerate(ops[1:-1]):
+            ops[i] = copy_op_index_auto(op)
+        self.ops = ops
+
+    def __repr__(self) -> str:
+        return f"{self.otype}({self.ops!r},{self.tag!r})"
+
+    def list(self):
+        return [ self.otype, self.tag, self.ops, ]
+
+    def __eq__(self, other) -> bool:
+        return self.list() == other.list()
+
+    def sort(self):
+        ops = self.ops
+        if len(ops) > 1:
+            self.ops = sorted([ ops[i:] + ops[:i] for i in range(len(ops)) ], key=repr)[0]
+
+    def isospin_symmetric_limit(self) -> None:
+        for op in self.ops:
+            op.isospin_symmetric_limit()
+
+### ------
+
+def copy_op_index_auto(op : Op, is_auto_sc1=True, is_auto_sc2=True):
+    if op.otype not in [ "S", "G", "U", ]:
+        return op
+    op = copy.copy(op)
+    if op.otype in [ "S", "G", ]:
+        if is_auto_sc1:
+            op.s1 = "auto"
+        if is_auto_sc2:
+            op.s2 = "auto"
+    if op.otype in [ "S", "U", ]:
+        if is_auto_sc1:
+            op.c1 = "auto"
+        if is_auto_sc2:
+            op.c2 = "auto"
+    return op
 
 def pick_one(xs, i):
     return xs[i], xs[:i] + xs[i + 1:]
@@ -488,38 +551,46 @@ def find_trace(ops : list):
 
 def find_chain(ops : list):
     """
-    return None or (Tr(tr_ops), remaining_ops,)
+    return None or (Chain(ch_ops), remaining_ops,)
     """
     size = len(ops)
     for i, op in enumerate(ops):
         if check_chain_op(ops, op) not in [ "begin", ]:
             continue
         masks = [ False for op in ops ]
-        tr_ops = []
+        ch_ops = []
         s = None
         c = None
         masks[i] = True
-        tr_ops.append(op)
+        ch_ops.append(op)
         s, c, = update_chain_sc(op, s, c)
         while True:
             p_op = pick_chain_op(ops, masks, s, c, [ "begin", "middle", "end", ])
             if p_op is None:
                 # chain found
-                return Tr(tr_ops), [ op for i, op in enumerate(ops) if not masks[i] ]
+                return Chain(ch_ops), [ op for i, op in enumerate(ops) if not masks[i] ]
             i2, op2 = p_op
             masks[i2] = True
-            tr_ops.append(op2)
+            ch_ops.append(op2)
             s, c, = update_chain_sc(op2, s, c)
     return None
 
 def collect_traces(ops : list) -> list:
+    chs = []
+    while True:
+        fc = find_chain(ops)
+        if fc is None:
+            break
+        ch, ops = fc
+        chs.append(ch)
     trs = []
     while True:
         ft = find_trace(ops)
         if ft is None:
-            return trs + ops
+            break
         tr, ops = ft
         trs.append(tr)
+    return chs + trs + ops
 
 class Term:
 
@@ -589,7 +660,7 @@ class Term:
         # only sort commutable factors
         for op in self.c_ops:
             op.sort()
-        self.c_ops.sort(key = repr)
+        self.c_ops.sort(key=repr)
 
     def simplify_coef(self) -> None:
         self.coef = ea.coef_simplified(self.coef)
@@ -698,7 +769,7 @@ class Expr:
     def sort(self) -> None:
         for term in self.terms:
             term.sort()
-        self.terms.sort(key = repr)
+        self.terms.sort(key=repr)
 
     @q.timer
     def simplify_coef(self) -> None:
