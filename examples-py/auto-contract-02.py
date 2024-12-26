@@ -65,6 +65,8 @@ json_results_append(
 for v in cexpr.list():
     json_results_append(str(v))
 
+json_results_append(f"qac.get_diagram_type_dict(cexpr) = {qac.get_diagram_type_dict(cexpr)}")
+
 cexpr_opt = cexpr.copy()
 cexpr_opt.optimize()
 
@@ -74,6 +76,8 @@ json_results_append(
 
 for v in cexpr_opt.list():
     json_results_append(str(v))
+
+json_results_append(f"qac.get_diagram_type_dict(cexpr) = {qac.get_diagram_type_dict(cexpr_opt)}")
 
 @q.timer
 def get_cexpr_test(is_cython=False):
@@ -88,6 +92,7 @@ for is_cython in [ False, True, ]:
         qac.cexpr_code_gen_py(cexpr_opt, is_cython=is_cython)
     )
     ccexpr = get_cexpr_test(is_cython=is_cython)
+    json_results_append(f"qac.get_diagram_type_dict(ccexpr) = {qac.get_diagram_type_dict(ccexpr)}")
     check, check_ama = qac.benchmark_eval_cexpr(ccexpr)
     json_results_append(f"get_cexpr_test benchmark_eval_cexpr check get_data_sig is_cython={is_cython}", q.get_data_sig(np.array(check, dtype=np.complex128), q.RngState()))
     json_results_append(f"get_cexpr_test benchmark_eval_cexpr check_ama get_data_sig is_cython={is_cython}", q.get_data_sig(np.array(check_ama, dtype=np.complex128), q.RngState()))
