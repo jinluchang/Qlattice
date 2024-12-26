@@ -398,9 +398,9 @@ class Chain(Op):
         return self.list() == other.list()
 
     def sort(self):
-        ops = self.ops
-        if len(ops) > 1:
-            self.ops = sorted([ ops[i:] + ops[:i] for i in range(len(ops)) ], key=repr)[0]
+        """
+        Do not need to sort
+        """
 
     def isospin_symmetric_limit(self) -> None:
         for op in self.ops:
