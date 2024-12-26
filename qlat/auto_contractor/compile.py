@@ -1166,13 +1166,25 @@ def show_variable_value(value):
         return f"{value.name}"
     elif isinstance(value, G) and value.tag in [ 0, 1, 2, 3, 5, ]:
         tag = { 0: "x", 1: "y", 2: "z", 3: "t", 5: "5", }[value.tag]
-        return f"gamma_{tag}"
+        if value.s1 == "auto" and value.s2 == "auto":
+            return f"gamma_{tag}"
+        else:
+            return f"gamma_{tag}({value.s1},{value.s2})"
     elif isinstance(value, G):
-        return f"gamma({value.tag})"
+        if value.s1 == "auto" and value.s2 == "auto":
+            return f"gamma({value.tag})"
+        else:
+            return f"gamma({value.tag},{value.s1},{value.s2})"
     elif isinstance(value, U):
-        return f"U({value.tag},{value.p},{value.mu})"
+        if value.c1 == "auto" and value.c2 == "auto":
+            return f"U({value.tag},{value.p},{value.mu})"
+        else:
+            return f"U({value.tag},{value.p},{value.mu},{value.c1},{value.c2})"
     elif isinstance(value, S):
-        return f"S_{value.f}({value.p1},{value.p2})"
+        if value.s1 == "auto" and value.s2 == "auto" and value.c1 == "auto" and value.c2 == "auto":
+            return f"S_{value.f}({value.p1},{value.p2})"
+        else:
+            return f"S_{value.f}({value.p1},{value.p2},{value.s1},{value.s2},{value.c1},{value.c2})"
     elif isinstance(value, Tr):
         expr = "*".join(map(show_variable_value, value.ops))
         return f"tr({expr})"

@@ -425,9 +425,6 @@ def copy_op_index_auto(op : Op, is_auto_sc1=True, is_auto_sc2=True):
             op.c2 = "auto"
     return op
 
-def pick_one(xs, i):
-    return xs[i], xs[:i] + xs[i + 1:]
-
 def check_chain_spin_index(ops : list, s : str):
     """
     for a spin index `s`,
@@ -445,6 +442,8 @@ def check_chain_spin_index(ops : list, s : str):
             if op.s2 == s:
                 i2 = i
                 count2 += 1
+    assert count1 < 2
+    assert count2 < 2
     return count1 == 1 and count2 == 1, i1, i2
 
 def check_chain_color_index(ops : list, c : str):
@@ -464,21 +463,24 @@ def check_chain_color_index(ops : list, c : str):
             if op.c2 == c:
                 i2 = i
                 count2 += 1
+    assert count1 < 2
+    assert count2 < 2
     return count1 == 1 and count2 == 1, i1, i2
 
 def check_chain_op(ops : list, op : Op):
     """
     for a operator `op`,
     return "single" or "begin" or "middle" or "end",
-    if this `op` is part of a longer chain of contraction
+    if this `op` is part of a (longer) chain of contraction
+    if `op` does not have right type, return `None`.
     """
     if op.otype not in [ "S", "G", "U", ]:
-        return False
+        return None
     b_begin = True
     b_end = True
     if op.otype in [ "S", ]:
         if check_chain_spin_index(ops, op.s1)[0] and check_chain_color_index(ops, op.c1)[0]:
-            b_begin = False;
+            b_begin = False
         if check_chain_spin_index(ops, op.s2)[0] and check_chain_color_index(ops, op.c2)[0]:
             b_end = False
     elif op.otype in [ "G", ]:
@@ -491,6 +493,8 @@ def check_chain_op(ops : list, op : Op):
             b_begin = False
         if check_chain_color_index(ops, op.c2)[0]:
             b_end = False
+    else:
+        assert False
     if b_begin and b_end:
         return "single"
     elif b_begin:
@@ -518,7 +522,7 @@ def update_chain_sc(op, s, c):
 
 def pick_chain_op(ops : list, masks : list, s, c, type_list=None):
     if type_list is None:
-        type_list = [ "begin", "end", "middle", ]
+        type_list = [ "single", "begin", "end", "middle", ]
     for i, op in enumerate(ops):
         if masks[i]:
             continue
@@ -678,7 +682,8 @@ class Term:
         self.coef = ea.simplified(self.coef)
 
     def collect_traces(self) -> None:
-        self.c_ops = collect_traces(self.c_ops)
+        if len(self.a_ops) == 0:
+            self.c_ops = collect_traces(self.c_ops)
 
     def isospin_symmetric_limit(self) -> None:
         for op in self.c_ops:
