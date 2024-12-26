@@ -87,10 +87,12 @@ class Op:
 
 class Qfield(Op):
 
-    # self.f
-    # self.p
-    # self.s
-    # self.c
+    """
+    self.f
+    self.p
+    self.s
+    self.c
+    """
 
     def __init__(self, otype : str, flavor : str, position : str, spin : str, color : str):
         Op.__init__(self, otype)

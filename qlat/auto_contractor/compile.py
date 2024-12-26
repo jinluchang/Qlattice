@@ -1273,10 +1273,11 @@ def get_diagram_type_dict(cexpr):
     interface function
     #
     cexpr and be CExpr or CCExpr
+    diagram_type_dict[diagram_type] = name
     """
     diagram_type_dict = dict()
     for name, diagram_type in cexpr.diagram_types:
-        diagram_type_dict[name] = diagram_type
+        diagram_type_dict[diagram_type] = name
     return diagram_type_dict
 
 @q.timer_verbose
