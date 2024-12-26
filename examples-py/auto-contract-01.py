@@ -4,6 +4,9 @@ json_results = []
 check_eps = 1e-14
 
 def json_results_append(*args):
+    q.displayln_info(r"//------------------------------------------------------------\\")
+    q.displayln_info(-1, *args)
+    q.displayln_info(r"\\------------------------------------------------------------//")
     json_results.append(args)
 
 import sys
