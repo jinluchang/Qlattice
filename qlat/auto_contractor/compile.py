@@ -1268,9 +1268,11 @@ def display_cexpr(cexpr : CExpr):
     lines.append(f"# End CExpr")
     return "\n".join(lines)
 
-def get_diagram_type_dict(cexpr : CExpr):
+def get_diagram_type_dict(cexpr):
     """
     interface function
+    #
+    cexpr and be CExpr or CCExpr
     """
     diagram_type_dict = dict()
     for name, diagram_type in cexpr.diagram_types:

@@ -48,6 +48,7 @@ class CCExpr:
     self.cexpr_function_bare
     self.total_sloppy_flops
     self.expr_names
+    self.diagram_types
     self.positions
     self.options
     """
@@ -66,6 +67,7 @@ class CCExpr:
         self.total_sloppy_flops = module.total_sloppy_flops
         cexpr = self.cexpr_all["cexpr_optimized"]
         self.expr_names = [ name for name, expr in cexpr.named_exprs ]
+        self.diagram_types = cexpr.diagram_types
         self.positions = cexpr.positions
 
     def get_expr_names(self):
