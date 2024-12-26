@@ -287,6 +287,43 @@ class U(Op):
 
 ### ------
 
+class Bfield(Op):
+
+    """
+    baryon tensor
+    #
+    self.tag
+    self.s1
+    self.s2
+    self.s3
+    self.c1
+    self.c2
+    self.c3
+    #
+    tag in [ "std", ]
+    """
+
+    def __init__(self, tag, s1:str, s2:str, s3:str, c1:str, c2:str, c3:str):
+        Op.__init__(self, "Bfield")
+        self.tag = tag
+        self.s1 = s1
+        self.s2 = s2
+        self.s3 = s3
+        self.c1 = c1
+        self.c2 = c2
+        self.c3 = c3
+
+    def __repr__(self) -> str:
+        return f"{self.otype}({self.tag!r},{self.s1!r},{self.s2!r},{self.s3!r},{self.c1!r},{self.c2!r},{self.c3!r})"
+
+    def list(self):
+        return [ self.otype, self.tag, self.s1, self.s2, self.s3, self.c1, self.c2, self.c3, ]
+
+    def __eq__(self, other) -> bool:
+        return self.list() == other.list()
+
+### ------
+
 class Tr(Op):
 
     """
