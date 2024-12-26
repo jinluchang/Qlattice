@@ -28,12 +28,12 @@ buildPythonPackage rec {
 
   src = if is-pypi-src then src-pypi else src-local;
 
-  version-pypi = "0.73";
+  version-pypi = "0.74";
   src-pypi = fetchPypi {
     pname = "qlat_grid";
     version = version-pypi;
     extension = "tar.gz";
-    hash = "sha256-RTW9c0BholuVjX4bY7g1rCClLm74WPr9EeY0OvbdKjU=";
+    hash = "sha256-F5dwOjIDMrpB1prCFGAKxmCDquuF/3XfHP1/FcwwgXk=";
   };
 
   version-local = builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";

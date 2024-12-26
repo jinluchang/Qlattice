@@ -333,16 +333,20 @@ let
   // mk-qlat-pkgs-cuda [ overlay-cuda ]
   ;
 
-  many-qlat-pkgs-all = many-qlat-pkgs-core-w-cuda
+  many-qlat-pkgs-core-w-cuda-pypi = {}
   // mk-qlat-pkgs [ overlay-pypi ]
   // mk-qlat-pkgs-cuda [ overlay-cuda overlay-pypi ]
+  // mk-qlat-pkgs [ overlay-std overlay-clang overlay-pypi ]
+  ;
+
+  many-qlat-pkgs-all = many-qlat-pkgs-core-w-cuda
+  // many-qlat-pkgs-core-w-cuda-pypi
   // mk-qlat-pkgs [ overlay-clang ]
   // mk-qlat-pkgs [ overlay-clang overlay-pypi ]
   // mk-qlat-pkgs [ overlay-std ]
   // mk-qlat-pkgs [ overlay-std overlay-pypi ]
   // mk-qlat-pkgs-cuda [ overlay-std overlay-cuda ]
   // mk-qlat-pkgs-cuda [ overlay-std overlay-cuda overlay-pypi ]
-  // mk-qlat-pkgs [ overlay-std overlay-clang overlay-pypi ]
   ;
 
 in {
@@ -358,6 +362,7 @@ in {
   #
   inherit many-qlat-pkgs-core;
   inherit many-qlat-pkgs-core-w-cuda;
+  inherit many-qlat-pkgs-core-w-cuda-pypi;
   inherit many-qlat-pkgs-all;
   #
 }
