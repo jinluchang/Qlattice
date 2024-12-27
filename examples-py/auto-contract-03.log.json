@@ -314,16 +314,16 @@
  [
   "get_cexpr_test benchmark_eval_cexpr check get_data_sig is_cython=False",
   {
-   "real": -38.16800314969218,
-   "imag": 45.299464381971006,
+   "real": 21.511440542111245,
+   "imag": 130.0796611053753,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "get_cexpr_test benchmark_eval_cexpr check_ama get_data_sig is_cython=False",
   {
-   "real": 798.5984083230326,
-   "imag": -621.6141009828094,
+   "real": 1886.412452153016,
+   "imag": 369.6859833953503,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -396,24 +396,24 @@
  [
   "get_cexpr_test benchmark_eval_cexpr check get_data_sig is_cython=True",
   {
-   "real": -38.16800314969218,
-   "imag": 45.299464381971006,
+   "real": 21.511440542111245,
+   "imag": 130.0796611053753,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "get_cexpr_test benchmark_eval_cexpr check_ama get_data_sig is_cython=True",
   {
-   "real": 798.5984083230326,
-   "imag": -621.6141009828094,
+   "real": 1886.412452153016,
+   "imag": 369.6859833953503,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "get_prop c_pi",
   {
-   "real": 3.406126189592982,
-   "imag": 0.5031801622445452,
+   "real": 0.4147571078797414,
+   "imag": -1.6355977342588832,
    "__extended_json_type__": "complex"
   }
  ],
@@ -428,96 +428,96 @@
  [
   "eval_cexpr res[1]",
   {
-   "real": 3.406126189592982,
-   "imag": 0.5031801622445452,
+   "real": 0.4147571078797414,
+   "imag": -1.6355977342588832,
    "__extended_json_type__": "complex"
   }
  ],
  [
   "eval_cexpr res[2]",
   {
-   "real": -6.2513279681862155,
-   "imag": -25.049784173751014,
+   "real": -16.828688209927744,
+   "imag": 18.763914171459835,
    "__extended_json_type__": "complex"
   }
  ],
  [
   "eval_cexpr res[3]",
   {
-   "real": -27.0686629100114,
-   "imag": 15.95616552379429,
+   "real": 15.014437522161112,
+   "imag": 11.35663220804474,
    "__extended_json_type__": "complex"
   }
  ],
  [
   "eval_cexpr res[4]",
   {
-   "real": -13.7582616144976,
-   "imag": -18.728771515415595,
+   "real": 5.596240268452623,
+   "imag": 2.3472281516704983,
    "__extended_json_type__": "complex"
   }
  ],
  [
   "eval_cexpr res[5]",
   {
-   "real": -24.081481407345258,
-   "imag": -38.18226052928047,
+   "real": 0.3140937422644905,
+   "imag": -18.6361096335873,
    "__extended_json_type__": "complex"
   }
  ],
  [
   "eval_cexpr res[6]",
   {
-   "real": -19.680477728375653,
-   "imag": -25.85352894315698,
+   "real": -5.52009748716045,
+   "imag": -0.005029420152316222,
    "__extended_json_type__": "complex"
   }
  ],
  [
   "eval_cexpr res[7]",
   {
-   "real": -4.401003678969605,
-   "imag": -12.328731586123492,
+   "real": 5.83419122942494,
+   "imag": -18.631080213434984,
    "__extended_json_type__": "complex"
   }
  ],
  [
   "eval_cexpr res[8]",
   {
-   "real": -31.9335062205535,
-   "imag": 14.075329160452128,
+   "real": -15.54735358155239,
+   "imag": 18.02356238435194,
    "__extended_json_type__": "complex"
   }
  ],
  [
   "eval_cexpr res[9]",
   {
-   "real": -19.680477728375653,
-   "imag": -25.85352894315698,
+   "real": -5.52009748716045,
+   "imag": -0.005029420152316222,
    "__extended_json_type__": "complex"
   }
  ],
  [
   "eval_cexpr res[10]",
   {
-   "real": -12.253028492177847,
-   "imag": 39.92885810360911,
+   "real": -10.02725609439194,
+   "imag": 18.028591804504256,
    "__extended_json_type__": "complex"
   }
  ],
  [
   "eval_cexpr res[11]",
   {
-   "real": -14.88536411291442,
-   "imag": -30.373174553971115,
+   "real": 0.8843792191544837,
+   "imag": 5.037044902835048,
    "__extended_json_type__": "complex"
   }
  ],
  [
   "eval_cexpr res[12]",
   {
-   "real": -14.88536411291442,
-   "imag": -30.373174553971115,
+   "real": 0.8843792191544837,
+   "imag": 5.037044902835048,
    "__extended_json_type__": "complex"
   }
  ],

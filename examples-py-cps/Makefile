@@ -1,7 +1,5 @@
 SHELL=/usr/bin/env bash
 
-all: run
-
 tests_cps = \
 			cps-qlat-io-test.log \
 			sparse-from-cps/log.txt

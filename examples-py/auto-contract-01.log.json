@@ -158,16 +158,16 @@
  [
   "get_cexpr_test benchmark_eval_cexpr check get_data_sig is_cython=False",
   {
-   "real": 15.325849886336291,
-   "imag": -15.659291332109987,
+   "real": -0.8221798433269569,
+   "imag": 12.522383950798009,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "get_cexpr_test benchmark_eval_cexpr check_ama get_data_sig is_cython=False",
   {
-   "real": 11.492942956036883,
-   "imag": -13.926566927529471,
+   "real": 3.2178849968989516,
+   "imag": -19.122790847538006,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -198,24 +198,24 @@
  [
   "get_cexpr_test benchmark_eval_cexpr check get_data_sig is_cython=True",
   {
-   "real": 15.325849886336291,
-   "imag": -15.659291332109987,
+   "real": -0.8221798433269569,
+   "imag": 12.522383950798009,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "get_cexpr_test benchmark_eval_cexpr check_ama get_data_sig is_cython=True",
   {
-   "real": 11.492942956036883,
-   "imag": -13.926566927529471,
+   "real": 3.2178849968989516,
+   "imag": -19.122790847538006,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "get_prop wm",
   {
-   "real": -4.279347621219844,
-   "imag": -2.828311792337785,
+   "real": 0.7479361264365885,
+   "imag": 3.7221107753466054,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -230,8 +230,8 @@
  [
   "eval_cexpr res[1]",
   {
-   "real": -4.279347621219844,
-   "imag": -2.828311792337785,
+   "real": 0.7479361264365885,
+   "imag": 3.7221107753466054,
    "__extended_json_type__": "complex128"
   }
  ],

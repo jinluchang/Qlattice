@@ -23,8 +23,6 @@ tests = qlat-vector-utils \
 
 all: run
 
-all-grid: run-grid
-
 compile: $(patsubst %, %.compile, $(tests))
 
 run: $(patsubst %, %.run, $(tests))

@@ -2,9 +2,7 @@ SHELL=/usr/bin/env bash
 
 tests_grid = grid-with-qlat
 
-all: run
-
-all-grid: run-grid
+all: run-grid
 
 compile-grid: $(patsubst %, %.compile, $(tests_grid))
 

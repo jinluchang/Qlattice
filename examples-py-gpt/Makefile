@@ -1,7 +1,5 @@
 SHELL=/usr/bin/env bash
 
-all: run
-
 tests_gpt = \
 			hlbl-muon-line.log \
 			gq-auto-checker.log \

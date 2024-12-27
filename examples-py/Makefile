@@ -1,7 +1,5 @@
 SHELL=/usr/bin/env bash
 
-all: run
-
 tests = \
 		auto-cexprs.log \
 		auto-cexprs-more.log \

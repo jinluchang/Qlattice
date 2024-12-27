@@ -2,8 +2,8 @@
  [
   "auto_contract_meson_corr_psnk_psrc: ld sig",
   {
-   "real": -0.021265389750253785,
-   "imag": -0.00023113290712074158,
+   "real": -0.02126538892120734,
+   "imag": -0.00023113308596070273,
    "__extended_json_type__": "complex128"
   }
  ]

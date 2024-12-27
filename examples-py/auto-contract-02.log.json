@@ -188,16 +188,16 @@
  [
   "get_cexpr_test benchmark_eval_cexpr check get_data_sig is_cython=False",
   {
-   "real": -183.1607357285402,
-   "imag": 56.96970666883128,
+   "real": -31.108423331846495,
+   "imag": 60.376473293246136,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "get_cexpr_test benchmark_eval_cexpr check_ama get_data_sig is_cython=False",
   {
-   "real": -178.16859244788978,
-   "imag": -57.22022914585705,
+   "real": -44.79755994756558,
+   "imag": 2.1058289091739617,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -234,24 +234,24 @@
  [
   "get_cexpr_test benchmark_eval_cexpr check get_data_sig is_cython=True",
   {
-   "real": -183.1607357285402,
-   "imag": 56.96970666883128,
+   "real": -31.108423331846495,
+   "imag": 60.376473293246136,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "get_cexpr_test benchmark_eval_cexpr check_ama get_data_sig is_cython=True",
   {
-   "real": -178.16859244788978,
-   "imag": -57.22022914585705,
+   "real": -44.79755994756558,
+   "imag": 2.1058289091739617,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "get_prop wm",
   {
-   "real": -5.359149161093655,
-   "imag": -29.46637782923552,
+   "real": 5.600966731349816,
+   "imag": -10.751656877093408,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -266,32 +266,32 @@
  [
   "eval_cexpr res[1]",
   {
-   "real": -5.359149161093655,
-   "imag": -29.46637782923552,
+   "real": 5.600966731349816,
+   "imag": -10.751656877093408,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "eval_cexpr res[2]",
   {
-   "real": -8.880966074110884,
-   "imag": -0.4633682349342694,
+   "real": 8.828760490851458,
+   "imag": 4.189790358788812,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "eval_cexpr res[3]",
   {
-   "real": -11.469993568888151,
-   "imag": -26.767435087895233,
+   "real": 0.45909846533858145,
+   "imag": 4.301540706000649,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "eval_cexpr res[4]",
   {
-   "real": -4.2381611152566885,
-   "imag": -11.987312091277337,
+   "real": 5.507826285319718,
+   "imag": 6.840946884022242,
    "__extended_json_type__": "complex128"
   }
  ]
