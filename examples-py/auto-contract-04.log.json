@@ -1,0 +1,258 @@
+[
+ [
+  "diagram_type_dict = qac.get_diagram_type_dict(cexpr)"
+ ],
+ [
+  "diagram_type_dict[()] = '1'"
+ ],
+ [
+  "diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))] = 'TypeD'"
+ ],
+ [
+  "diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'TypeC'"
+ ],
+ [
+  "diagram_type_dict[((('t_2', 'x_1'), 1), (('x_1', 't_2'), 1), (('x_2', 'x_2'), 1))] = 'TypeD'"
+ ],
+ [
+  "diagram_type_dict[((('t_2', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_2'), 1))] = 'TypeC'"
+ ],
+ [
+  "qac.get_expr_names(cexpr)"
+ ],
+ [
+  "< 1 >  exprs[0]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(-tsep) >  exprs[1]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(-tsep) > (TypeC)  exprs[2]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(-tsep) > (TypeD)  exprs[3]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(x[t]+tsep) >  exprs[4]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(x[t]+tsep) > (TypeC)  exprs[5]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(x[t]+tsep) > (TypeD)  exprs[6]"
+ ],
+ [
+  "diagram_type_dict = qac.get_diagram_type_dict(cexpr_opt)"
+ ],
+ [
+  "diagram_type_dict[()] = '1'"
+ ],
+ [
+  "diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))] = 'TypeD'"
+ ],
+ [
+  "diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'TypeC'"
+ ],
+ [
+  "diagram_type_dict[((('t_2', 'x_1'), 1), (('x_1', 't_2'), 1), (('x_2', 'x_2'), 1))] = 'TypeD'"
+ ],
+ [
+  "diagram_type_dict[((('t_2', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_2'), 1))] = 'TypeC'"
+ ],
+ [
+  "qac.get_expr_names(cexpr_opt)"
+ ],
+ [
+  "< 1 >  exprs[0]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(-tsep) >  exprs[1]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(-tsep) > (TypeC)  exprs[2]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(-tsep) > (TypeD)  exprs[3]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(x[t]+tsep) >  exprs[4]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(x[t]+tsep) > (TypeC)  exprs[5]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(x[t]+tsep) > (TypeD)  exprs[6]"
+ ],
+ [
+  "diagram_type_dict = qac.get_diagram_type_dict(ccexpr)"
+ ],
+ [
+  "diagram_type_dict[()] = '1'"
+ ],
+ [
+  "diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))] = 'TypeD'"
+ ],
+ [
+  "diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'TypeC'"
+ ],
+ [
+  "diagram_type_dict[((('t_2', 'x_1'), 1), (('x_1', 't_2'), 1), (('x_2', 'x_2'), 1))] = 'TypeD'"
+ ],
+ [
+  "diagram_type_dict[((('t_2', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_2'), 1))] = 'TypeC'"
+ ],
+ [
+  "qac.get_expr_names(ccexpr)"
+ ],
+ [
+  "< 1 >  exprs[0]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(-tsep) >  exprs[1]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(-tsep) > (TypeC)  exprs[2]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(-tsep) > (TypeD)  exprs[3]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(x[t]+tsep) >  exprs[4]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(x[t]+tsep) > (TypeC)  exprs[5]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(x[t]+tsep) > (TypeD)  exprs[6]"
+ ],
+ [
+  "get_cexpr_test benchmark_eval_cexpr check get_data_sig is_cython=False",
+  {
+   "real": 82.65622796416515,
+   "imag": -25.416711965267098,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "get_cexpr_test benchmark_eval_cexpr check_ama get_data_sig is_cython=False",
+  {
+   "real": 5159.6546999235015,
+   "imag": 1011.7412652015172,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "diagram_type_dict = qac.get_diagram_type_dict(ccexpr)"
+ ],
+ [
+  "diagram_type_dict[()] = '1'"
+ ],
+ [
+  "diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))] = 'TypeD'"
+ ],
+ [
+  "diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'TypeC'"
+ ],
+ [
+  "diagram_type_dict[((('t_2', 'x_1'), 1), (('x_1', 't_2'), 1), (('x_2', 'x_2'), 1))] = 'TypeD'"
+ ],
+ [
+  "diagram_type_dict[((('t_2', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_2'), 1))] = 'TypeC'"
+ ],
+ [
+  "qac.get_expr_names(ccexpr)"
+ ],
+ [
+  "< 1 >  exprs[0]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(-tsep) >  exprs[1]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(-tsep) > (TypeC)  exprs[2]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(-tsep) > (TypeD)  exprs[3]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(x[t]+tsep) >  exprs[4]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(x[t]+tsep) > (TypeC)  exprs[5]"
+ ],
+ [
+  "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(x[t]+tsep) > (TypeD)  exprs[6]"
+ ],
+ [
+  "get_cexpr_test benchmark_eval_cexpr check get_data_sig is_cython=True",
+  {
+   "real": 82.65622796416515,
+   "imag": -25.416711965267098,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "get_cexpr_test benchmark_eval_cexpr check_ama get_data_sig is_cython=True",
+  {
+   "real": 5159.6546999235015,
+   "imag": 1011.7412652015172,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "eval_cexpr res[0]",
+  {
+   "real": 1.0,
+   "imag": 0.0,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "eval_cexpr res[1]",
+  {
+   "real": 33.05049494626488,
+   "imag": -8.90643262931334,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "eval_cexpr res[2]",
+  {
+   "real": 19.110252514736707,
+   "imag": 15.063296341032888,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "eval_cexpr res[3]",
+  {
+   "real": 13.940242431528162,
+   "imag": -23.969728970346225,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "eval_cexpr res[4]",
+  {
+   "real": 6.449659708941059,
+   "imag": 0.4802641948391613,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "eval_cexpr res[5]",
+  {
+   "real": 0.7604587984911395,
+   "imag": 9.288392932051506,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "eval_cexpr res[6]",
+  {
+   "real": 5.689200910449921,
+   "imag": -8.808128737212348,
+   "__extended_json_type__": "complex"
+  }
+ ]
+]

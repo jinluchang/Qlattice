@@ -881,7 +881,8 @@ def mk_fac(x) -> Expr:
     Stand for "make factor", the result of this function can be used in auto contractor as a factor.
     Make an Expr obj (can be sympy expression).
     `x` can have type `str`, which will be viewed as code segment.
-    The code segment can use functions and variables defined in `position_dict`, `base_position_dict` or `auto_contractor.auto_fac_funcs`.
+    The code segment can use functions and variables defined in `auto_contractor.auto_fac_funcs`, `position_dict`, `base_position_dict`.
+    You can define functions in `position_dict` or `base_position_dict`.
     `position_dict` is argument in function `eval_cexpr`.
     `base_position_dict` is argument in function `cache_compiled_cexpr`.
     """
