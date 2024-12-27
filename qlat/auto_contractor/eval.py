@@ -231,9 +231,12 @@ def benchmark_eval_cexpr(
         benchmark_num=10,
         benchmark_num_ama=2,
         benchmark_rng_state=None,
+        base_positions_dict=None,
         ):
     if benchmark_rng_state is None:
         benchmark_rng_state = q.RngState("benchmark_eval_cexpr")
+    if base_positions_dict is None:
+        base_positions_dict = dict()
     expr_names = get_expr_names(cexpr)
     is_distillation = cexpr.options["is_distillation"]
     n_expr = len(expr_names)
@@ -247,6 +250,8 @@ def benchmark_eval_cexpr(
             continue
         if pos in cexpr.base_positions_dict:
             continue
+        if pos in base_positions_dict:
+            continue
         positions_vars.append(pos)
     n_pos = len(positions_vars)
     positions = [
@@ -255,11 +260,12 @@ def benchmark_eval_cexpr(
             ]
     #
     def mk_pos_dict(k):
-        positions_dict = {}
+        positions_dict = dict()
         positions_dict["size"] = size
         idx_list = q.random_permute(list(range(n_pos)), benchmark_rng_state.split(f"pos_dict {k}"))
         for pos, idx in zip(positions_vars, idx_list):
             positions_dict[pos] = positions[idx]
+        positions_dict.update(base_positions_dict)
         return positions_dict
     positions_dict_list = [ mk_pos_dict(k) for k in range(benchmark_size) ]
     #
