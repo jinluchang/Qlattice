@@ -42,7 +42,7 @@ class Op:
     self.otype
     """
 
-    def __init__(self, otype : str):
+    def __init__(self, otype:str):
         self.otype = otype
 
     def is_commute(self) -> bool:
@@ -94,7 +94,7 @@ class Qfield(Op):
     self.c
     """
 
-    def __init__(self, otype : str, flavor : str, position : str, spin : str, color : str):
+    def __init__(self, otype:str, flavor:str, position:str, spin:str, color:str):
         Op.__init__(self, otype)
         self.f = flavor
         self.p = position
@@ -188,7 +188,7 @@ class S(Op):
     self.c2
     """
 
-    def __init__(self, flavor : str, p1 : str, p2 : str, s1 : str = "auto", s2 : str = "auto", c1 : str = "auto", c2 : str = "auto"):
+    def __init__(self, flavor:str, p1:str, p2:str, s1:str="auto", s2:str="auto", c1:str="auto", c2:str="auto"):
         Op.__init__(self, "S")
         self.f = flavor
         self.p1 = p1
@@ -235,7 +235,7 @@ class G(Op):
     tag = 0, 1, 2, 3, 5 for gamma matrices
     """
 
-    def __init__(self, tag, s1 : str = "auto", s2 : str = "auto"):
+    def __init__(self, tag, s1:str="auto", s2:str="auto"):
         Op.__init__(self, "G")
         self.tag = tag
         self.s1 = s1
@@ -267,7 +267,7 @@ class U(Op):
     self.c2
     """
 
-    def __init__(self, tag, p, mu, c1 : str = "auto", c2 : str = "auto"):
+    def __init__(self, tag, p, mu, c1:str="auto", c2:str="auto"):
         Op.__init__(self, "U")
         self.tag = tag
         self.p = p
@@ -335,7 +335,7 @@ class Tr(Op):
     self.tag
     """
 
-    def __init__(self, ops : list, tag=None):
+    def __init__(self, ops:list, tag=None):
         Op.__init__(self, "Tr")
         if tag is not None:
             # do not perform check if tag is set
@@ -392,7 +392,7 @@ class Chain(Op):
     self.tag
     """
 
-    def __init__(self, ops : list, tag=None):
+    def __init__(self, ops:list, tag=None):
         Op.__init__(self, "Chain")
         if tag is not None:
             # do not perform check if tag is set
@@ -448,7 +448,7 @@ class Chain(Op):
 
 ### ------
 
-def copy_op_index_auto(op : Op, is_auto_sc1=True, is_auto_sc2=True):
+def copy_op_index_auto(op:Op, is_auto_sc1=True, is_auto_sc2=True):
     if op.otype not in [ "S", "G", "U", ]:
         return op
     op = copy.copy(op)
@@ -464,7 +464,7 @@ def copy_op_index_auto(op : Op, is_auto_sc1=True, is_auto_sc2=True):
             op.c2 = "auto"
     return op
 
-def check_chain_spin_index(ops : list, s : str):
+def check_chain_spin_index(ops:list, s:str):
     """
     for a spin index `s`,
     return is_having_repeated_index, first_index_of_operator, second_index_of_operator
@@ -485,7 +485,7 @@ def check_chain_spin_index(ops : list, s : str):
     assert count2 < 2
     return count1 == 1 and count2 == 1, i1, i2
 
-def check_chain_color_index(ops : list, c : str):
+def check_chain_color_index(ops:list, c:str):
     """
     for a color index `s`,
     return is_having_repeated_index, first_index_of_operator, second_index_of_operator
@@ -506,7 +506,7 @@ def check_chain_color_index(ops : list, c : str):
     assert count2 < 2
     return count1 == 1 and count2 == 1, i1, i2
 
-def check_chain_op(ops : list, op : Op):
+def check_chain_op(ops:list, op:Op):
     """
     for a operator `op`,
     return "single" or "begin" or "middle" or "end",
@@ -559,7 +559,7 @@ def update_chain_sc(op, s, c):
         c = op.c2
     return s, c
 
-def pick_chain_op(ops : list, masks : list, s, c, type_list=None):
+def pick_chain_op(ops:list, masks:list, s, c, type_list=None):
     if type_list is None:
         type_list = [ "single", "begin", "end", "middle", ]
     for i, op in enumerate(ops):
@@ -572,7 +572,7 @@ def pick_chain_op(ops : list, masks : list, s, c, type_list=None):
         return i, op
     return None
 
-def find_trace(ops : list):
+def find_trace(ops:list):
     """
     return None or (Tr(tr_ops), remaining_ops,)
     """
@@ -598,7 +598,7 @@ def find_trace(ops : list):
             s, c, = update_chain_sc(op2, s, c)
     return None
 
-def find_chain(ops : list):
+def find_chain(ops:list):
     """
     return None or (Chain(ch_ops), remaining_ops,)
     """
@@ -624,7 +624,7 @@ def find_chain(ops : list):
             s, c, = update_chain_sc(op2, s, c)
     return None
 
-def collect_traces(ops : list) -> list:
+def collect_traces(ops:list) -> list:
     """
     First collect all the `Chain`s, then `Tr`s
     """
@@ -730,7 +730,7 @@ class Term:
 
 ### ------
 
-def combine_two_terms(t1 : Term, t2 : Term, t1_sig : str, t2_sig : str):
+def combine_two_terms(t1:Term, t2:Term, t1_sig:str, t2_sig:str):
     if t1_sig == t2_sig:
         coef = t1.coef + t2.coef
         if ea.is_zero(coef):
@@ -844,7 +844,7 @@ class Expr:
     def drop_zeros(self) -> None:
         self.terms = drop_zero_terms(self).terms
 
-    def round(self, ndigit : int = 20) -> None:
+    def round(self, ndigit:int=20) -> None:
         """
         interface function
         """
@@ -866,7 +866,7 @@ class Expr:
             term.isospin_symmetric_limit()
 
     @q.timer
-    def simplify(self, *, is_isospin_symmetric_limit : bool = True) -> None:
+    def simplify(self, *, is_isospin_symmetric_limit:bool=True) -> None:
         """
         interface function
         """
@@ -881,7 +881,7 @@ class Expr:
 
 ### ------
 
-def simplified(expr : Expr, *, is_isospin_symmetric_limit : bool = True) -> Expr:
+def simplified(expr:Expr, *, is_isospin_symmetric_limit:bool=True) -> Expr:
     """
     interface function
     does not change expr
@@ -907,7 +907,7 @@ def mk_expr(x) -> Expr:
         assert False
 
 @q.timer
-def combine_terms_expr(expr : Expr) -> Expr:
+def combine_terms_expr(expr:Expr) -> Expr:
     if not expr.terms:
         return expr
     def get_sig(t):
@@ -938,14 +938,14 @@ def combine_terms_expr(expr : Expr) -> Expr:
     return Expr(terms, expr.description)
 
 @q.timer
-def drop_zero_terms(expr : Expr) -> Expr:
+def drop_zero_terms(expr:Expr) -> Expr:
     terms = []
     for t in expr.terms:
         if not ea.is_zero(t.coef):
             terms.append(t)
     return Expr(terms, expr.description)
 
-def op_derivative_exp(op : Op):
+def op_derivative_exp(op:Op):
     if op.otype == "Qv":
         return Term([], [SHv(op.f, op.p, op.s, op.c),], -1)
     elif op.otype == "Qb":
@@ -953,7 +953,7 @@ def op_derivative_exp(op : Op):
     else:
         return None
 
-def op_derivative_op(op : Op, op1 : Op):
+def op_derivative_op(op:Op, op1:Op):
     if op.otype == "Qv" and op1.otype == "HbS" and op.f == op1.f:
         return Term([S(op.f, op.p, op1.p, op.s, op1.s, op.c, op1.c),], [], 1)
     elif op.otype == "Qb" and op1.otype == "SHv" and op.f == op1.f:
@@ -961,13 +961,13 @@ def op_derivative_op(op : Op, op1 : Op):
     else:
         return None
 
-def flip_sign(i : int) -> int:
+def flip_sign(i:int) -> int:
     if i % 2 == 0:
         return 1
     else:
         return -1
 
-def op_derivative_term(op : Op, term : Term) -> Expr:
+def op_derivative_term(op:Op, term:Term) -> Expr:
     coef = term.coef
     c_ops = term.c_ops
     a_ops = term.a_ops
@@ -984,7 +984,7 @@ def op_derivative_term(op : Op, term : Term) -> Expr:
         terms.append(Term(de.c_ops + c_ops, a_ops + de.a_ops, sign * de.coef * coef))
     return Expr(terms)
 
-def op_push_term(op : Op, term : Term) -> Expr:
+def op_push_term(op:Op, term:Term) -> Expr:
     if op.otype == "Qv" or op.otype == "Qb":
         return op_derivative_term(op, term)
     else:
@@ -996,20 +996,20 @@ def op_push_term(op : Op, term : Term) -> Expr:
         else:
             return Expr([Term(c_ops, [op,] + a_ops, coef),])
 
-def op_push_expr(op : Op, expr : Expr) -> Expr:
+def op_push_expr(op:Op, expr:Expr) -> Expr:
     terms = []
     for term in expr.terms:
         terms += op_push_term(op, term).terms
     return Expr(terms)
 
-def is_hop(op : Op) -> bool:
+def is_hop(op:Op) -> bool:
     if op.otype == "SHv" or op.otype == "HbS":
         return True
     if op.otype == "Hv" or op.otype == "Hb":
         return True
     return False
 
-def has_hops(term : Term, count_limit : int = 0) -> bool:
+def has_hops(term:Term, count_limit:int = 0) -> bool:
     c = 0
     for op in term.a_ops:
         if is_hop(op):
@@ -1018,14 +1018,14 @@ def has_hops(term : Term, count_limit : int = 0) -> bool:
                 return True
     return False
 
-def remove_hops(expr : Expr, count_limit : int = 0) -> Expr:
+def remove_hops(expr:Expr, count_limit:int = 0) -> Expr:
     terms = []
     for term in expr.terms:
         if not has_hops(term, count_limit):
             terms.append(term)
     return Expr(terms)
 
-def contract_term(term : Term) -> Expr:
+def contract_term(term:Term) -> Expr:
     coef = term.coef
     c_ops = term.c_ops
     a_ops = term.a_ops

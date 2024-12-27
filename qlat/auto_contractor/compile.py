@@ -32,7 +32,7 @@ import qlat as q
 
 class Var(Op):
 
-    def __init__(self, name : str):
+    def __init__(self, name:str):
         Op.__init__(self, "Var")
         self.name = name
 
@@ -1079,7 +1079,7 @@ def mk_cexpr(*exprs, diagram_type_dict=None):
     named_exprs = []
     for i, expr in enumerate(exprs):
         expr_list = []
-        typed_expr_list_dict = { name : [] for name, diagram_type in diagram_types }
+        typed_expr_list_dict = { name: [] for name, diagram_type in diagram_types }
         for j, term_coef in enumerate(expr.terms):
             coef = term_coef.coef
             term = Term(term_coef.c_ops, term_coef.a_ops, 1)
@@ -1202,7 +1202,7 @@ def show_variable_value(value):
     else:
         return f"{value}"
 
-def display_cexpr(cexpr : CExpr):
+def display_cexpr(cexpr:CExpr):
     """
     interface function
     return a string
@@ -1282,7 +1282,7 @@ def get_diagram_type_dict(cexpr):
     return diagram_type_dict
 
 @q.timer_verbose
-def cexpr_code_gen_py(cexpr : CExpr, *, is_cython=True, is_distillation=False):
+def cexpr_code_gen_py(cexpr:CExpr, *, is_cython=True, is_distillation=False):
     """
     interface function
     return a string

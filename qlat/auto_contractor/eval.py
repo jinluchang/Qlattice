@@ -184,11 +184,11 @@ def cache_compiled_cexpr(
     return ccexpr
 
 @q.timer
-def get_expr_names(ccexpr : CCExpr):
+def get_expr_names(ccexpr:CCExpr):
     return ccexpr.get_expr_names()
 
 @q.timer
-def eval_cexpr(ccexpr : CCExpr, *, positions_dict, get_prop, is_ama_and_sloppy=False):
+def eval_cexpr(ccexpr:CCExpr, *, positions_dict, get_prop, is_ama_and_sloppy=False):
     """
     return 1 dimensional np.array
     cexpr can be cexpr object or can be a compiled function
@@ -206,7 +206,7 @@ def eval_cexpr(ccexpr : CCExpr, *, positions_dict, get_prop, is_ama_and_sloppy=F
 
 @q.timer
 def benchmark_eval_cexpr(
-        cexpr : CCExpr,
+        cexpr:CCExpr,
         *,
         benchmark_size=10,
         benchmark_num=10,
@@ -345,10 +345,6 @@ def benchmark_eval_cexpr(
     return check, check_ama
 
 # -----------------------------------------
-
-def get_cexpr_names(ccexpr : CCExpr):
-    q.displayln_info("WARNING: get_cexpr_names: use get_expr_names instead.")
-    return get_expr_names(ccexpr)
 
 meson_build_content = r"""project(
   'qlat-auto-contractor-cexpr', 'cpp', 'cython',
