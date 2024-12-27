@@ -26,25 +26,30 @@ size_node_list = [
 
 q.begin_with_mpi(size_node_list)
 
-f = "u" # flavor, can be "u", "d", "s", "c"
+f1 = "u"
+f2 = "d"
+f3 = "s"
 
 p1 = "x1"
-s1 = "s1"
-c1 = "c1"
-
 p2 = "x2"
-s2 = "s2"
-c2 = "c2"
+p3 = "x3"
 
-q1v = qac.Qv(f, p1, s1, c1)
-q1b = qac.Qb(f, p1, s1, c1)
-q2v = qac.Qv(f, p2, s2, c2)
-q2b = qac.Qb(f, p2, s2, c2)
+diagram_type_dict = dict()
+diagram_type_dict[()] = 'Type0'
+diagram_type_dict[((('x1', 'x2'), 1), (('x2', 'x1'), 1))] = 'Type1'
+diagram_type_dict[((('x1', 'x2'), 1), (('x2', 'x3'), 1), (('x3', 'x1'), 1))] = 'Type2'
+diagram_type_dict[((('x1', 'x3'), 1), (('x2', 'x1'), 1), (('x3', 'x2'), 1))] = 'Type3'
+diagram_type_dict[((('x1', 'x2'), 1), (('x2', 'x1'), 1), (('x3', 'x3'), 1))] = 'Type4'
 
 exprs = [
     qac.mk_expr(1),
-    q1v * q2b,
-    q1v * q2b + q2b * q1v,
+    qac.mk_pi_p(p2, is_dagger=True) * qac.mk_pi_p(p1),
+    qac.mk_pi_p(p2, is_dagger=True) * qac.mk_pi_p(p1) * qac.mk_scalar(f1, f1, p3),
+    qac.mk_pi_p(p2, is_dagger=True) * qac.mk_pi_p(p1) * qac.mk_scalar(f2, f2, p3),
+    qac.mk_pi_p(p2, is_dagger=True) * qac.mk_pi_p(p1) * qac.mk_scalar(f3, f3, p3),
+    (qac.mk_pi_p(p2, is_dagger=True) * qac.mk_pi_p(p1) * qac.mk_vec_mu(f1, f1, p3, 3), None, "Type4", [ "Type2", "Type3", ]),
+    (qac.mk_pi_p(p2, is_dagger=True) * qac.mk_pi_p(p1) * qac.mk_vec_mu(f2, f2, p3, 3), None, "Type4", [ "Type2", "Type3", ]),
+    (qac.mk_pi_p(p2, is_dagger=True) * qac.mk_pi_p(p1) * qac.mk_vec_mu(f3, f3, p3, 3), None, "Type4", [ "Type2", "Type3", ]),
 ]
 
 for expr in exprs:
@@ -53,7 +58,7 @@ for expr in exprs:
 for expr in qac.contract_simplify(*exprs):
     json_results_append(str(expr))
 
-cexpr = qac.contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True)
+cexpr = qac.contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
 
 json_results_append(
     qac.display_cexpr(cexpr)
@@ -92,7 +97,7 @@ for name in qac.get_expr_names(cexpr_opt):
 def get_cexpr_test(is_cython=False):
     fn_base = f"cache/auto_contract_cexpr/get_cexpr_test"
     def calc_cexpr():
-        cexpr = qac.contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True)
+        cexpr = qac.contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
         return cexpr
     return qac.cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
@@ -119,18 +124,34 @@ def get_prop(flavor, p1, p2):
     assert isinstance(wm, q.WilsonMatrix)
     return wm
 
-wm = get_prop(
+# S_l(x1,x2)
+wm1 = get_prop(
     "l",
-    ("point-snk", q.Coordinate([ 1, 2, 3, 4, ]),),
+    ("point", q.Coordinate([ 1, 2, 3, 4, ]),),
     ("point", q.Coordinate([ 3, 7, 2, 1, ]),),
 )
 
-json_results_append(f"get_prop wm", q.get_data_sig(wm, q.RngState()))
-q.displayln_info(-1, f"{wm}")
+# S_l(x2,x1)
+wm2 = get_prop(
+    "l",
+    ("point", q.Coordinate([ 3, 7, 2, 1, ]),),
+    ("point", q.Coordinate([ 1, 2, 3, 4, ]),),
+)
+
+# tr(gamma_5*S_l(x1,x2)*gamma_5*S_l(x2,x1))
+
+c_pi = q.mat_tr_wm_wm(
+    q.mat_mul_sm_wm(q.get_gamma_matrix(5), wm1),
+    q.mat_mul_sm_wm(q.get_gamma_matrix(5), wm2),
+)
+
+json_results_append(f"get_prop c_pi", q.get_data_sig(c_pi, q.RngState()))
+q.displayln_info(-1, f"{c_pi}")
 
 pd = {
-    "x1": ("point-snk", q.Coordinate([ 1, 2, 3, 4, ]),),
+    "x1": ("point", q.Coordinate([ 1, 2, 3, 4, ]),),
     "x2": ("point", q.Coordinate([ 3, 7, 2, 1, ]),),
+    "x3": ("point-snk", q.Coordinate([ 3, 7, 2, 1, ]),),
 }
 
 res = qac.eval_cexpr(ccexpr=get_cexpr_test(), positions_dict=pd, get_prop=get_prop)

@@ -212,15 +212,35 @@
   }
  ],
  [
-  "get_prop wm: (-4.279347621219844-2.828311792337785j)"
+  "get_prop wm",
+  {
+   "real": -4.279347621219844,
+   "imag": -2.828311792337785,
+   "__extended_json_type__": "complex128"
+  }
  ],
  [
-  "eval_cexpr res[0]: (1+0j)"
+  "eval_cexpr res[0]",
+  {
+   "real": 1.0,
+   "imag": 0.0,
+   "__extended_json_type__": "complex"
+  }
  ],
  [
-  "eval_cexpr res[1]: (-4.279347621219844-2.828311792337785j)"
+  "eval_cexpr res[1]",
+  {
+   "real": -4.279347621219844,
+   "imag": -2.828311792337785,
+   "__extended_json_type__": "complex128"
+  }
  ],
  [
-  "eval_cexpr res[2]: 0j"
+  "eval_cexpr res[2]",
+  {
+   "real": 0.0,
+   "imag": 0.0,
+   "__extended_json_type__": "complex"
+  }
  ]
 ]

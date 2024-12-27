@@ -138,7 +138,7 @@ wm2 = get_prop(
 
 wm = q.mat_mul_wm_wm(wm1, wm2)
 
-json_results_append(f"get_prop wm: {q.get_data_sig(wm, q.RngState())}")
+json_results_append(f"get_prop wm", q.get_data_sig(wm, q.RngState()))
 q.displayln_info(-1, f"{wm}")
 
 pd = {
@@ -150,7 +150,7 @@ pd = {
 res = qac.eval_cexpr(ccexpr=get_cexpr_test(), positions_dict=pd, get_prop=get_prop)
 
 for idx, v in enumerate(res):
-    json_results_append(f"eval_cexpr res[{idx}]: {q.get_data_sig(v, q.RngState())}")
+    json_results_append(f"eval_cexpr res[{idx}]", q.get_data_sig(v, q.RngState()))
     q.displayln_info(-1, f"{v}")
 
 q.check_log_json(__file__, json_results, check_eps=check_eps)

@@ -248,21 +248,51 @@
   }
  ],
  [
-  "get_prop wm: (-5.359149161093655-29.46637782923552j)"
+  "get_prop wm",
+  {
+   "real": -5.359149161093655,
+   "imag": -29.46637782923552,
+   "__extended_json_type__": "complex128"
+  }
  ],
  [
-  "eval_cexpr res[0]: (1+0j)"
+  "eval_cexpr res[0]",
+  {
+   "real": 1.0,
+   "imag": 0.0,
+   "__extended_json_type__": "complex"
+  }
  ],
  [
-  "eval_cexpr res[1]: (-5.359149161093655-29.46637782923552j)"
+  "eval_cexpr res[1]",
+  {
+   "real": -5.359149161093655,
+   "imag": -29.46637782923552,
+   "__extended_json_type__": "complex128"
+  }
  ],
  [
-  "eval_cexpr res[2]: (-8.880966074110884-0.4633682349342694j)"
+  "eval_cexpr res[2]",
+  {
+   "real": -8.880966074110884,
+   "imag": -0.4633682349342694,
+   "__extended_json_type__": "complex128"
+  }
  ],
  [
-  "eval_cexpr res[3]: (-11.469993568888151-26.767435087895233j)"
+  "eval_cexpr res[3]",
+  {
+   "real": -11.469993568888151,
+   "imag": -26.767435087895233,
+   "__extended_json_type__": "complex128"
+  }
  ],
  [
-  "eval_cexpr res[4]: (-4.2381611152566885-11.987312091277337j)"
+  "eval_cexpr res[4]",
+  {
+   "real": -4.2381611152566885,
+   "imag": -11.987312091277337,
+   "__extended_json_type__": "complex128"
+  }
  ]
 ]
