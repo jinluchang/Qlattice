@@ -108,6 +108,12 @@ let
       nixgl = pkgs.qlat-nixgl;
       ngpu = pkgs.qlat-ngpu;
     };
+    qlat-docs = py-call-pkg ./qlat-docs.nix {
+      stdenv = pkgs.qlat-stdenv;
+      cudaSupport = pkgs.qlat-cudaSupport;
+      nvcc-arch = pkgs.qlat-nvcc-arch;
+      nixgl = pkgs.qlat-nixgl;
+    };
     qlat-pypi = py-call-pkg ./qlat-pypi.nix {
       stdenv = pkgs.qlat-stdenv;
       cudaSupport = pkgs.qlat-cudaSupport;
@@ -130,9 +136,10 @@ let
       qlat_cps
       qlat_grid
       gpt-lehner
+      qlat-docs
+      qlat-pypi
     ];
     qlat-tests-pkgs = with pkgs; [
-      qlat-pypi
       qlat-examples-cpp
       qlat-examples-cpp-grid
       qlat-examples-py
