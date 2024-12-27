@@ -457,13 +457,12 @@ def make_rand_spin_color_matrix(rng_state, *, is_distillation=False):
         nc = 10
         ns = 4
         shape = (ns, nc, ns, nc,)
-        wm = rs.u_rand_arr(shape) + 1j * rs.u_rand_arr(shape)
+        wm = 2 * rs.u_rand_arr(shape) + 2j * rs.u_rand_arr(shape) - (1+1j)
     else:
         wm = q.WilsonMatrix()
-        wm_arr = np.asarray(wm)
-        wm_arr[:] = np.array(
-                [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(144) ],
-                dtype=complex).reshape(12, 12)
+        arr = wm[:]
+        shape = arr.shape
+        arr[:] = 2 * rs.u_rand_arr(shape) + 2j * rs.u_rand_arr(shape) - (1+1j)
     return wm
 
 def make_rand_spin_matrix(rng_state, *, is_distillation=False):
@@ -472,13 +471,12 @@ def make_rand_spin_matrix(rng_state, *, is_distillation=False):
         nc = 10
         ns = 4
         shape = (ns, ns,)
-        sm = rs.u_rand_arr(shape) + 1j * rs.u_rand_arr(shape)
+        sm = 2 * rs.u_rand_arr(shape) + 2j * rs.u_rand_arr(shape) - (1+1j)
     else:
         sm = q.SpinMatrix()
-        sm_arr = np.asarray(sm)
-        sm_arr[:] = np.array(
-                [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(16) ],
-                dtype=complex).reshape(4, 4)
+        arr = sm[:]
+        shape = arr.shape
+        arr[:] = 2 * rs.u_rand_arr(shape) + 2j * rs.u_rand_arr(shape) - (1+1j)
     return sm
 
 def make_rand_color_matrix(rng_state, *, is_distillation=False):
@@ -487,13 +485,12 @@ def make_rand_color_matrix(rng_state, *, is_distillation=False):
         nc = 10
         ns = 4
         shape = (nc, nc,)
-        cm = rs.u_rand_arr(shape) + 1j * rs.u_rand_arr(shape)
+        cm = 2 * rs.u_rand_arr(shape) + 2j * rs.u_rand_arr(shape) - (1+1j)
     else:
         cm = q.ColorMatrix()
-        cm_arr = np.asarray(cm)
-        cm_arr[:] = np.array(
-                [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(9) ],
-                dtype=complex).reshape(3, 3)
+        arr = cm[:]
+        shape = arr.shape
+        arr[:] = 2 * rs.u_rand_arr(shape) + 2j * rs.u_rand_arr(shape) - (1+1j)
     return cm
 
 def benchmark_show_check(check):
