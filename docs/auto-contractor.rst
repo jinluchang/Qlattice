@@ -158,6 +158,10 @@ Two propagators and a operator: ``examples-py/auto-contract-02.py``
 
 .. literalinclude:: ../examples-py/auto-contract-02.py
 
+Pion correlator and a operator: ``examples-py/auto-contract-03.py``
+
+.. literalinclude:: ../examples-py/auto-contract-03.py
+
 Examples
 --------
 
