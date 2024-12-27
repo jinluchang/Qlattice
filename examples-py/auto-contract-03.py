@@ -64,8 +64,8 @@ json_results_append(
     qac.display_cexpr(cexpr)
 )
 
-# for v in cexpr.list():
-#     json_results_append(str(v))
+for v in cexpr.list():
+    json_results_append(str(v))
 
 json_results_append(f"diagram_type_dict = qac.get_diagram_type_dict(cexpr)")
 for k, v in qac.get_diagram_type_dict(cexpr).items():
@@ -82,8 +82,8 @@ json_results_append(
     qac.display_cexpr(cexpr_opt)
 )
 
-# for v in cexpr_opt.list():
-#     json_results_append(str(v))
+for v in cexpr_opt.list():
+    json_results_append(str(v))
 
 json_results_append(f"diagram_type_dict = qac.get_diagram_type_dict(cexpr_opt)")
 for k, v in qac.get_diagram_type_dict(cexpr_opt).items():

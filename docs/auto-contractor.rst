@@ -167,6 +167,14 @@ Pion correlator and a operator: ``examples-py/auto-contract-03.py``
 
 .. literalinclude:: ../examples-py/auto-contract-03.py
 
+Neutral pion to two photon: ``examples-py/auto-contract-04.py``
+
+.. literalinclude:: ../examples-py/auto-contract-04.py
+
+Pion correlation function with pion wave function: ``examples-py/auto-contract-05.py``
+
+.. literalinclude:: ../examples-py/auto-contract-05.py
+
 Examples
 --------
 
