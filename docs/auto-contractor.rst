@@ -30,6 +30,11 @@ Evaluation
    mk_sym
    mk_fac
 
+   aff.rel_mod
+   aff.rel_mod_sym
+   aff.rel_mod_sym
+   aff.c_rel_mod_sqr
+
 Operators
 ---------
 

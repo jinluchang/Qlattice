@@ -82,7 +82,7 @@ class Term:
     coef should be a number or a sympy expression
     """
 
-    def __init__(self, factors, coef = 1):
+    def __init__(self, factors, coef=1):
         self.coef = coef
         self.factors = factors
 
@@ -198,7 +198,7 @@ class Expr:
 
 ### ------
 
-def simplified(x):
+def simplified(x) -> Expr:
     """
     interface function
     """
@@ -211,7 +211,7 @@ def simplified(x):
             x = x.terms[0].coef
     return x
 
-def coef_simplified(x):
+def coef_simplified(x) -> Expr:
     """
     interface function
     """
@@ -219,7 +219,7 @@ def coef_simplified(x):
     x.simplify_coef()
     return x
 
-def compile_py(x, var_dict=None):
+def compile_py(x, var_dict=None) -> str:
     """
     interface function
     """
@@ -228,7 +228,7 @@ def compile_py(x, var_dict=None):
     else:
         return mk_expr(x).compile_py(var_dict)
 
-def is_zero(x):
+def is_zero(x) -> bool:
     """
     interface function
     """
@@ -240,7 +240,7 @@ def is_zero(x):
         print(x)
         assert False
 
-def mk_expr(x):
+def mk_expr(x) -> Expr:
     """
     interface function
     """
@@ -259,21 +259,21 @@ def mk_expr(x):
         print(x)
         assert False
 
-def compile_py_complex(x):
+def compile_py_complex(x) -> str:
     """
     interface function
     """
     v = complex(x)
     return f"{v}"
 
-def drop_zero_terms(expr : Expr) -> Expr:
+def drop_zero_terms(expr:Expr) -> Expr:
     terms = []
     for t in expr.terms:
         if t.coef != 0:
             terms.append(t)
     return Expr(terms)
 
-def combine_two_terms(t1 : Term, t2 : Term, t1_sig : str, t2_sig : str):
+def combine_two_terms(t1:Term, t2:Term, t1_sig:str, t2_sig:str) -> Term|None:
     if t1_sig == t2_sig:
         coef = t1.coef + t2.coef
         if coef == 0:
@@ -283,7 +283,7 @@ def combine_two_terms(t1 : Term, t2 : Term, t1_sig : str, t2_sig : str):
     else:
         return None
 
-def combine_terms_expr(expr : Expr) -> Expr:
+def combine_terms_expr(expr:Expr) -> Expr:
     if not expr.terms:
         return expr
     def get_sig(t):
@@ -317,13 +317,20 @@ def combine_terms_expr(expr : Expr) -> Expr:
 
 def mk_sym(x):
     """
-    make a sympy simplified value
+    interface function
+    Make a sympy simplified value with `sympy.simplify(x)`
     """
     return sympy.simplify(x)
 
-def mk_fac(x):
+def mk_fac(x) -> Expr:
     """
-    make an Expr obj (can be sympy expression)
+    interface function
+    Stand for "make factor", the result of this function can be used in auto contractor as a factor.
+    Make an Expr obj (can be sympy expression).
+    `x` can have type `str`, which will be viewed as code segment.
+    The code segment can use functions and variables defined in `position_dict`, `base_position_dict` or `auto_contractor.auto_fac_funcs`.
+    `position_dict` is argument in function `eval_cexpr`.
+    `base_position_dict` is argument in function `cache_compiled_cexpr`.
     """
     return mk_expr(x)
 

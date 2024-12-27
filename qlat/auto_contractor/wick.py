@@ -30,12 +30,6 @@ except:
     import expr_arithmetic as ea
     from expr_arithmetic import mk_sym
 
-def mk_fac(x):
-    """
-    make an Expr obj (can be sympy expression)
-    """
-    return mk_expr(ea.mk_fac(x))
-
 class Op:
 
     """
@@ -880,6 +874,18 @@ class Expr:
         self.simplify_ea()
 
 ### ------
+
+def mk_fac(x) -> Expr:
+    """
+    interface function
+    Stand for "make factor", the result of this function can be used in auto contractor as a factor.
+    Make an Expr obj (can be sympy expression).
+    `x` can have type `str`, which will be viewed as code segment.
+    The code segment can use functions and variables defined in `position_dict`, `base_position_dict` or `auto_contractor.auto_fac_funcs`.
+    `position_dict` is argument in function `eval_cexpr`.
+    `base_position_dict` is argument in function `cache_compiled_cexpr`.
+    """
+    return mk_expr(ea.mk_fac(x))
 
 def simplified(expr:Expr, *, is_isospin_symmetric_limit:bool=True) -> Expr:
     """
