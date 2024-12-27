@@ -147,6 +147,17 @@ mk_Q8_b81
 
 :math:`Q_a^{e/o} = A_a^{e/o} Q_0^{e/o} + M_{a,i} Q_i^{e/o} ( i = 1, ... ,4; a = 5, ... ,8 )`
 
+Tutorials
+---------
+
+Single propagator: ``examples-py/auto-contract-01.py``
+
+.. literalinclude:: ../examples-py/auto-contract-01.py
+
+Two propagators and a operator: ``examples-py/auto-contract-02.py``
+
+.. literalinclude:: ../examples-py/auto-contract-02.py
+
 Examples
 --------
 
@@ -162,6 +173,6 @@ K->pipi example: ``examples-py/auto-cexprs-kpipi.py``
 
 .. literalinclude:: ../examples-py/auto-cexprs-kpipi.py
 
-A more complete example: ``examples-py/gpt-qlat-data-gen-auto.py``
+A more complete example: ``examples-py-gpt/gpt-qlat-auto-simple.py``
 
-.. literalinclude:: ../examples-py/gpt-qlat-data-gen-auto.py
+.. literalinclude:: ../examples-py-gpt/gpt-qlat-auto-simple.py
