@@ -56,7 +56,7 @@ for expr in exprs:
 for expr in qac.contract_simplify(*exprs):
     json_results_append(str(expr))
 
-cexpr = qac.contract_simplify_compile(*exprs)
+cexpr = qac.contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True)
 
 json_results_append(
     qac.display_cexpr(cexpr)
