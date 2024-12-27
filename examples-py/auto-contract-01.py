@@ -74,7 +74,7 @@ json_results_append(
 for v in cexpr_opt.list():
     json_results_append(str(v))
 
-json_results_append(f"qac.get_diagram_type_dict(cexpr) = {qac.get_diagram_type_dict(cexpr_opt)}")
+json_results_append(f"qac.get_diagram_type_dict(cexpr_opt) = {qac.get_diagram_type_dict(cexpr_opt)}")
 
 @q.timer
 def get_cexpr_test(is_cython=False):

@@ -867,6 +867,9 @@ class CExpr:
         # collect common prod into variables
         self.variables_prod = collect_subexpr_in_cexpr(self.variables_tr)
 
+    def get_expr_names(self):
+        return [ name for name, expr in self.named_exprs ]
+
     def list(self):
         return [
                 self.diagram_types,
@@ -1268,18 +1271,6 @@ def display_cexpr(cexpr:CExpr):
             lines.append(f"exprs[{idx}] += {show_variable_value(e)}")
     lines.append(f"# End CExpr")
     return "\n".join(lines)
-
-def get_diagram_type_dict(cexpr):
-    """
-    interface function
-    #
-    cexpr and be CExpr or CCExpr
-    diagram_type_dict[diagram_type] = name
-    """
-    diagram_type_dict = dict()
-    for name, diagram_type in cexpr.diagram_types:
-        diagram_type_dict[diagram_type] = name
-    return diagram_type_dict
 
 @q.timer_verbose
 def cexpr_code_gen_py(cexpr:CExpr, *, is_cython=True, is_distillation=False):

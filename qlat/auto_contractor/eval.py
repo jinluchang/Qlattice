@@ -66,7 +66,7 @@ class CCExpr:
         self.cexpr_function_bare = module.cexpr_function
         self.total_sloppy_flops = module.total_sloppy_flops
         cexpr = self.cexpr_all["cexpr_optimized"]
-        self.expr_names = [ name for name, expr in cexpr.named_exprs ]
+        self.expr_names = cexpr.get_expr_names()
         self.diagram_types = cexpr.diagram_types
         self.positions = cexpr.positions
 
@@ -184,8 +184,27 @@ def cache_compiled_cexpr(
     return ccexpr
 
 @q.timer
-def get_expr_names(ccexpr:CCExpr):
+def get_expr_names(ccexpr:CExpr|CCExpr):
+    """
+    interface function
+    #
+    cexpr and be CExpr or CCExpr
+    diagram_type_dict[diagram_type] = name
+    """
     return ccexpr.get_expr_names()
+
+@q.timer
+def get_diagram_type_dict(cexpr:CExpr|CCExpr):
+    """
+    interface function
+    #
+    cexpr and be CExpr or CCExpr
+    diagram_type_dict[diagram_type] = name
+    """
+    diagram_type_dict = dict()
+    for name, diagram_type in cexpr.diagram_types:
+        diagram_type_dict[diagram_type] = name
+    return diagram_type_dict
 
 @q.timer
 def eval_cexpr(ccexpr:CCExpr, *, positions_dict, get_prop, is_ama_and_sloppy=False):

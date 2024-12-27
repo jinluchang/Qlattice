@@ -66,6 +66,7 @@ for v in cexpr.list():
     json_results_append(str(v))
 
 json_results_append(f"qac.get_diagram_type_dict(cexpr) = {qac.get_diagram_type_dict(cexpr)}")
+json_results_append(f"qac.get_expr_names(cexpr) = {qac.get_expr_names(cexpr)}")
 
 cexpr_opt = cexpr.copy()
 cexpr_opt.optimize()
@@ -77,7 +78,8 @@ json_results_append(
 for v in cexpr_opt.list():
     json_results_append(str(v))
 
-json_results_append(f"qac.get_diagram_type_dict(cexpr) = {qac.get_diagram_type_dict(cexpr_opt)}")
+json_results_append(f"qac.get_diagram_type_dict(cexpr_opt) = {qac.get_diagram_type_dict(cexpr_opt)}")
+json_results_append(f"qac.get_expr_names(cexpr_opt) = {qac.get_expr_names(cexpr_opt)}")
 
 @q.timer
 def get_cexpr_test(is_cython=False):
