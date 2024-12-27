@@ -77,7 +77,23 @@ buildPythonPackage rec {
     examples-py = ../examples-py;
     examples-py-cps = ../examples-py-cps;
     examples-py-gpt = ../examples-py-gpt;
-  in ''
+    gpu_extra = ''
+      which nixGL
+      echo
+      echo "run with nixGL"
+      cat $(which nixGL) | grep -v 'exec ' | grep -v '^#!' > nix-gl.sh
+      echo
+      echo cat nix-gl.sh
+      cat nix-gl.sh
+      source nix-gl.sh
+      echo
+      echo $LD_LIBRARY_PATH
+      echo
+    '';
+    cpu_extra = ''
+    '';
+    extra = if cudaSupport then gpu_extra else cpu_extra;
+  in extra + ''
     pwd
     echo
     rsync -a "${examples-cpp}/" ../examples-cpp/
