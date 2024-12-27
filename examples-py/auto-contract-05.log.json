@@ -1,0 +1,212 @@
+[
+ [
+  "Expr([Term([],[],1)],'1')"
+ ],
+ [
+  "Expr([Term([G(5,'a_s_1','a_s_2'), G(5,'a_s_5','a_s_6')],[Qb('u','x22','a_s_1','a_c_1'), Qv('u','x21','a_s_2','a_c_1'), Qb('u','x11','a_s_5','a_c_3'), Qv('u','x12','a_s_6','a_c_3')],(-0.5+0j)*(wave_function(x21,x22,r_pi,size))*(momentum_factor(-mom,x22,size))*(wave_function(x11,x12,r_pi,size))*(momentum_factor(mom,x12,size))), Term([G(5,'a_s_1','a_s_2'), G(5,'a_s_7','a_s_8')],[Qb('u','x22','a_s_1','a_c_1'), Qv('u','x21','a_s_2','a_c_1'), Qb('d','x11','a_s_7','a_c_4'), Qv('d','x12','a_s_8','a_c_4')],(0.5+0j)*(wave_function(x21,x22,r_pi,size))*(momentum_factor(-mom,x22,size))*(wave_function(x11,x12,r_pi,size))*(momentum_factor(mom,x12,size))), Term([G(5,'a_s_3','a_s_4'), G(5,'a_s_5','a_s_6')],[Qb('d','x22','a_s_3','a_c_2'), Qv('d','x21','a_s_4','a_c_2'), Qb('u','x11','a_s_5','a_c_3'), Qv('u','x12','a_s_6','a_c_3')],(0.5+0j)*(wave_function(x21,x22,r_pi,size))*(momentum_factor(-mom,x22,size))*(wave_function(x11,x12,r_pi,size))*(momentum_factor(mom,x12,size))), Term([G(5,'a_s_3','a_s_4'), G(5,'a_s_7','a_s_8')],[Qb('d','x22','a_s_3','a_c_2'), Qv('d','x21','a_s_4','a_c_2'), Qb('d','x11','a_s_7','a_c_4'), Qv('d','x12','a_s_8','a_c_4')],(-0.5+0j)*(wave_function(x21,x22,r_pi,size))*(momentum_factor(-mom,x22,size))*(wave_function(x11,x12,r_pi,size))*(momentum_factor(mom,x12,size)))],'pi0(x21,x22,r_pi,mom)^dag * pi0(x11,x12,r_pi,mom)')"
+ ],
+ [
+  "Expr([Term([],[],1)],'< 1 >')"
+ ],
+ [
+  "Expr([Term([Tr([G(5), S('l','x12','x22'), G(5), S('l','x21','x11')],'sc')],[],(momentum_factor(-mom,x22,size))*(momentum_factor(mom,x12,size))*(wave_function(x11,x12,r_pi,size))*(wave_function(x21,x22,r_pi,size)))],'< pi0(x21,x22,r_pi,mom)^dag * pi0(x11,x12,r_pi,mom) >')"
+ ],
+ [
+  "# Begin CExpr\ndiagram_type_dict = dict()\ndiagram_type_dict[()] = 'Type0'\ndiagram_type_dict[((('x12', 'x22'), 1), (('x21', 'x11'), 1))] = 'Type1'\n# Positions:\nmom, momentum_factor, r_pi, size, wave_function, x11, x12, x21, x22 = ['mom', 'momentum_factor', 'r_pi', 'size', 'wave_function', 'x11', 'x12', 'x21', 'x22']\n# Diagram type coef:\ncoef_Type0                     = 1\ncoef_Type1                     = 1\n# Named terms:\nterm_Type0_0                   = coef_Type0 * \nterm_Type1_0                   = coef_Type1 * tr(gamma_5*S_l(x12,x22)*gamma_5*S_l(x21,x11))\nterms = [ 0 for i in range(2) ]\nterms[0] = term_Type0_0\nterms[1] = term_Type1_0\n# Named exprs:\nexprs = [ 0 for i in range(2) ]\n# < 1 >  exprs[0]\nexprs[0] += 1*term_Type0_0\n# < pi0(x21,x22,r_pi,mom)^dag * pi0(x11,x12,r_pi,mom) >  exprs[1]\nexprs[1] += (momentum_factor(-mom,x22,size))*(momentum_factor(mom,x12,size))*(wave_function(x11,x12,r_pi,size))*(wave_function(x21,x22,r_pi,size))*term_Type1_0\n# End CExpr"
+ ],
+ [
+  "[('Type0', ()), ('Type1', ((('x12', 'x22'), 1), (('x21', 'x11'), 1)))]"
+ ],
+ [
+  "['mom', 'momentum_factor', 'r_pi', 'size', 'wave_function', 'x11', 'x12', 'x21', 'x22']"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[('term_Type0_0', Term([],[],1)), ('term_Type1_0', Term([Tr([G(5), S('l','x12','x22'), G(5), S('l','x21','x11')],'sc')],[],1))]"
+ ],
+ [
+  "[('< 1 >  exprs[0]', [(1, 'term_Type0_0')]), ('< pi0(x21,x22,r_pi,mom)^dag * pi0(x11,x12,r_pi,mom) >  exprs[1]', [(ea.Expr([ea.Term([ea.Factor(momentum_factor(-mom,x22,size),['mom', 'momentum_factor', 'size', 'x22'],Expr), ea.Factor(momentum_factor(mom,x12,size),['mom', 'momentum_factor', 'size', 'x12'],Expr), ea.Factor(wave_function(x11,x12,r_pi,size),['r_pi', 'size', 'wave_function', 'x11', 'x12'],Expr), ea.Factor(wave_function(x21,x22,r_pi,size),['r_pi', 'size', 'wave_function', 'x21', 'x22'],Expr)],1)]), 'term_Type1_0')])]"
+ ],
+ [
+  "diagram_type_dict = qac.get_diagram_type_dict(cexpr)"
+ ],
+ [
+  "diagram_type_dict[()] = 'Type0'"
+ ],
+ [
+  "diagram_type_dict[((('x12', 'x22'), 1), (('x21', 'x11'), 1))] = 'Type1'"
+ ],
+ [
+  "qac.get_expr_names(cexpr)"
+ ],
+ [
+  "< 1 >  exprs[0]"
+ ],
+ [
+  "< pi0(x21,x22,r_pi,mom)^dag * pi0(x11,x12,r_pi,mom) >  exprs[1]"
+ ],
+ [
+  "# Begin CExpr\ndiagram_type_dict = dict()\ndiagram_type_dict[()] = 'Type0'\ndiagram_type_dict[((('x12', 'x22'), 1), (('x21', 'x11'), 1))] = 'Type1'\n# Positions:\nmom, momentum_factor, r_pi, size, wave_function, x11, x12, x21, x22 = ['mom', 'momentum_factor', 'r_pi', 'size', 'wave_function', 'x11', 'x12', 'x21', 'x22']\n# Variables prop:\nV_S_0                          = S_l(x12,x22)\nV_S_1                          = S_l(x21,x11)\n# Variables factor intermediate:\nV_factor_0                     = (momentum_factor(-mom,x22,size))\nV_factor_1                     = (momentum_factor(mom,x12,size))\nV_factor_2                     = (wave_function(x11,x12,r_pi,size))\nV_factor_3                     = (wave_function(x21,x22,r_pi,size))\nV_factor_prod_0                = (V_factor_0)*(V_factor_1)\nV_factor_prod_1                = (V_factor_prod_0)*(V_factor_2)\nV_factor_prod_2                = (V_factor_prod_1)*(V_factor_3)\n# Variables factor:\nV_factor_coef_0                = 1\nV_factor_coef_1                = (V_factor_prod_2)\n# Variables prod:\nV_prod_GS_0                    = gamma_5*V_S_0\nV_prod_SG_0                    = V_prod_GS_0*gamma_5\n# Variables tr:\nV_tr_0                         = tr(V_prod_SG_0*V_S_1)\n# Diagram type coef:\ncoef_Type0                     = 1\ncoef_Type1                     = 1\n# Named terms:\nterm_Type0_0                   = coef_Type0 * \nterm_Type1_0                   = coef_Type1 * V_tr_0\nterms = [ 0 for i in range(2) ]\nterms[0] = term_Type0_0\nterms[1] = term_Type1_0\n# Named exprs:\nexprs = [ 0 for i in range(2) ]\n# < 1 >  exprs[0]\nexprs[0] += (V_factor_coef_0)*term_Type0_0\n# < pi0(x21,x22,r_pi,mom)^dag * pi0(x11,x12,r_pi,mom) >  exprs[1]\nexprs[1] += (V_factor_coef_1)*term_Type1_0\n# End CExpr"
+ ],
+ [
+  "[('Type0', ()), ('Type1', ((('x12', 'x22'), 1), (('x21', 'x11'), 1)))]"
+ ],
+ [
+  "['mom', 'momentum_factor', 'r_pi', 'size', 'wave_function', 'x11', 'x12', 'x21', 'x22']"
+ ],
+ [
+  "[('V_factor_0', ea.Expr([ea.Term([ea.Factor(momentum_factor(-mom,x22,size),['mom', 'momentum_factor', 'size', 'x22'],Expr)],1)])), ('V_factor_1', ea.Expr([ea.Term([ea.Factor(momentum_factor(mom,x12,size),['mom', 'momentum_factor', 'size', 'x12'],Expr)],1)])), ('V_factor_2', ea.Expr([ea.Term([ea.Factor(wave_function(x11,x12,r_pi,size),['r_pi', 'size', 'wave_function', 'x11', 'x12'],Expr)],1)])), ('V_factor_3', ea.Expr([ea.Term([ea.Factor(wave_function(x21,x22,r_pi,size),['r_pi', 'size', 'wave_function', 'x21', 'x22'],Expr)],1)])), ('V_factor_prod_0', ea.Expr([ea.Term([ea.Factor(V_factor_0,[],Var), ea.Factor(V_factor_1,[],Var)],1)])), ('V_factor_prod_1', ea.Expr([ea.Term([ea.Factor(V_factor_prod_0,[],Var), ea.Factor(V_factor_2,[],Var)],1)])), ('V_factor_prod_2', ea.Expr([ea.Term([ea.Factor(V_factor_prod_1,[],Var), ea.Factor(V_factor_3,[],Var)],1)]))]"
+ ],
+ [
+  "[('V_factor_coef_0', ea.Expr([ea.Term([],1)])), ('V_factor_coef_1', ea.Expr([ea.Term([ea.Factor(V_factor_prod_2,[],Var)],1)]))]"
+ ],
+ [
+  "[('V_S_0', S('l','x12','x22')), ('V_S_1', S('l','x21','x11'))]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[('V_prod_GS_0', (G(5), Var('V_S_0'))), ('V_prod_SG_0', (Var('V_prod_GS_0'), G(5)))]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[('V_tr_0', Tr([Var('V_prod_SG_0'), Var('V_S_1')],'sc'))]"
+ ],
+ [
+  "[('term_Type0_0', Term([],[],1)), ('term_Type1_0', Term([Var('V_tr_0')],[],1))]"
+ ],
+ [
+  "[('< 1 >  exprs[0]', [(ea.Expr([ea.Term([ea.Factor(V_factor_coef_0,[],Var)],1)]), 'term_Type0_0')]), ('< pi0(x21,x22,r_pi,mom)^dag * pi0(x11,x12,r_pi,mom) >  exprs[1]', [(ea.Expr([ea.Term([ea.Factor(V_factor_coef_1,[],Var)],1)]), 'term_Type1_0')])]"
+ ],
+ [
+  "diagram_type_dict = qac.get_diagram_type_dict(cexpr_opt)"
+ ],
+ [
+  "diagram_type_dict[()] = 'Type0'"
+ ],
+ [
+  "diagram_type_dict[((('x12', 'x22'), 1), (('x21', 'x11'), 1))] = 'Type1'"
+ ],
+ [
+  "qac.get_expr_names(cexpr_opt)"
+ ],
+ [
+  "< 1 >  exprs[0]"
+ ],
+ [
+  "< pi0(x21,x22,r_pi,mom)^dag * pi0(x11,x12,r_pi,mom) >  exprs[1]"
+ ],
+ [
+  "from auto_contractor.runtime import *\n\n### ----\n\n@timer\ndef cexpr_function(*, positions_dict, get_prop, is_ama_and_sloppy=False):\n    # get_props\n    props, cms, factors = cexpr_function_get_prop(positions_dict, get_prop)\n    # eval\n    ama_val = cexpr_function_eval(positions_dict, props, cms, factors)\n    # extract sloppy val\n    val_sloppy = ama_extract(ama_val, is_sloppy = True)\n    # extract AMA val\n    val_ama = ama_extract(ama_val)\n    # return\n    if is_ama_and_sloppy:\n        # return both AMA corrected results and sloppy results\n        return val_ama, val_sloppy\n    else:\n        # return AMA corrected results by default\n        return val_ama\n\n### ----\n\n@timer_flops\ndef cexpr_function_get_prop(positions_dict, get_prop):\n    # set positions\n    mom = positions_dict['mom']\n    momentum_factor = positions_dict['momentum_factor']\n    r_pi = positions_dict['r_pi']\n    size = positions_dict['size']\n    wave_function = positions_dict['wave_function']\n    x11 = positions_dict['x11']\n    x12 = positions_dict['x12']\n    x21 = positions_dict['x21']\n    x22 = positions_dict['x22']\n    # get prop\n    V_S_0 = get_prop('l', x12, x22)\n    V_S_1 = get_prop('l', x21, x11)\n    # get color matrix\n    # set props for return\n    props = [\n        V_S_0,\n        V_S_1,\n        ]\n    # set color matrix for return\n    cms = [\n        ]\n    # set intermediate factors\n    # 0 V_factor_0\n    V_factor_0 = ((momentum_factor(-mom,x22,size))) # Python only\n    # 1 V_factor_1\n    V_factor_1 = ((momentum_factor(mom,x12,size))) # Python only\n    # 2 V_factor_2\n    V_factor_2 = ((wave_function(x11,x12,r_pi,size))) # Python only\n    # 3 V_factor_3\n    V_factor_3 = ((wave_function(x21,x22,r_pi,size))) # Python only\n    # 4 V_factor_prod_0\n    V_factor_prod_0 = ((V_factor_0)*(V_factor_1)) # Python only\n    # 5 V_factor_prod_1\n    V_factor_prod_1 = ((V_factor_prod_0)*(V_factor_2)) # Python only\n    # 6 V_factor_prod_2\n    V_factor_prod_2 = ((V_factor_prod_1)*(V_factor_3)) # Python only\n    # declare factors\n    factors = np.zeros(2, dtype=np.complex128)\n    factors_view = factors # Python only\n    # set factors\n    # V_factor_coef_0\n    V_factor_coef_0 = (1) # Python only\n    factors_view[0] = V_factor_coef_0\n    # V_factor_coef_1\n    V_factor_coef_1 = ((V_factor_prod_2)) # Python only\n    factors_view[1] = V_factor_coef_1\n    # set flops\n    total_flops = len(props) * 144 * 2 * 8 + len(cms) * 9 * 2 * 8 + len(factors) * 2 * 8\n    # return\n    return total_flops, (props, cms, factors,)\n\n### ----\n\n@timer_flops\ndef cexpr_function_eval(positions_dict, props, cms, factors):\n    # load AMA props with proper format\n    props = [ load_prop(p) for p in props ]\n    # join the AMA props\n    ama_props = ama_list(*props)\n    # apply eval to the factors and AMA props\n    ama_val = ama_apply1(lambda x_props: cexpr_function_eval_with_props(positions_dict, x_props, cms, factors), ama_props)\n    # set flops\n    total_flops = ama_counts(ama_val) * total_sloppy_flops\n    # return\n    return total_flops, ama_val\n\n### ----\n\n@timer_flops\ndef cexpr_function_eval_with_props(positions_dict, props, cms, factors_view): # Python only\n    # set positions\n    mom = positions_dict['mom']\n    momentum_factor = positions_dict['momentum_factor']\n    r_pi = positions_dict['r_pi']\n    size = positions_dict['size']\n    wave_function = positions_dict['wave_function']\n    x11 = positions_dict['x11']\n    x12 = positions_dict['x12']\n    x21 = positions_dict['x21']\n    x22 = positions_dict['x22']\n    # set props\n    p_V_S_0 = props[0] # Python only\n    p_V_S_1 = props[1] # Python only\n    # set cms\n    # set factors\n    V_factor_coef_0 = factors_view[0] # Python only\n    V_factor_coef_1 = factors_view[1] # Python only\n    # compute products\n    V_prod_GS_0 = mat_mul_sm_wm(get_gamma_matrix(5), p_V_S_0) # Python only\n    V_prod_SG_0 = mat_mul_wm_sm(V_prod_GS_0, get_gamma_matrix(5)) # Python only\n    # compute chains\n    # compute traces\n    V_tr_0 = mat_tr_wm_wm(V_prod_SG_0, p_V_S_1) # Python only\n    # set terms\n    term_Type0_0 = 1 # Python only\n    term_Type1_0 = V_tr_0 # Python only\n    # declare exprs\n    exprs = np.zeros(2, dtype=np.complex128)\n    exprs_view = exprs # Python only\n    # set exprs\n    # 0 name='< 1 >  exprs[0]' \n    expr_V_a = 0\n    expr_V_a += (((V_factor_coef_0))) * term_Type0_0\n    exprs_view[0] = expr_V_a # Python only\n    # 1 name='< pi0(x21,x22,r_pi,mom)^dag * pi0(x11,x12,r_pi,mom) >  exprs[1]' \n    expr_V_a = 0\n    expr_V_a += (((V_factor_coef_1))) * term_Type1_0\n    exprs_view[1] = expr_V_a # Python only\n    # set flops\n    total_flops = total_sloppy_flops\n    # return\n    return total_flops, exprs\n\n### ----\n\n# Total flops per sloppy call is: 9790\ntotal_sloppy_flops = 9790"
+ ],
+ [
+  "diagram_type_dict = qac.get_diagram_type_dict(ccexpr)"
+ ],
+ [
+  "diagram_type_dict[()] = 'Type0'"
+ ],
+ [
+  "diagram_type_dict[((('x12', 'x22'), 1), (('x21', 'x11'), 1))] = 'Type1'"
+ ],
+ [
+  "qac.get_expr_names(ccexpr)"
+ ],
+ [
+  "< 1 >  exprs[0]"
+ ],
+ [
+  "< pi0(x21,x22,r_pi,mom)^dag * pi0(x11,x12,r_pi,mom) >  exprs[1]"
+ ],
+ [
+  "get_cexpr_test benchmark_eval_cexpr check get_data_sig is_cython=False",
+  {
+   "real": -3159112300.273179,
+   "imag": 16949454205.100449,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "get_cexpr_test benchmark_eval_cexpr check_ama get_data_sig is_cython=False",
+  {
+   "real": 11020278227.7444,
+   "imag": 5388131287.585457,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "from auto_contractor.runtime import *\nimport cython # Cython\ncimport qlat_utils.everything as cc # Cython\ncimport qlat_utils.all as qu # Cython\ncimport libcpp.complex # Cython\ncimport numpy # Cython\n\n### ----\n\n@timer\ndef cexpr_function(*, positions_dict, get_prop, is_ama_and_sloppy=False):\n    # get_props\n    props, cms, factors = cexpr_function_get_prop(positions_dict, get_prop)\n    # eval\n    ama_val = cexpr_function_eval(positions_dict, props, cms, factors)\n    # extract sloppy val\n    val_sloppy = ama_extract(ama_val, is_sloppy = True)\n    # extract AMA val\n    val_ama = ama_extract(ama_val)\n    # return\n    if is_ama_and_sloppy:\n        # return both AMA corrected results and sloppy results\n        return val_ama, val_sloppy\n    else:\n        # return AMA corrected results by default\n        return val_ama\n\n### ----\n\n@timer_flops\n@cython.boundscheck(False) # Cython\n@cython.wraparound(False) # Cython\ndef cexpr_function_get_prop(positions_dict, get_prop):\n    # set positions\n    mom = positions_dict['mom']\n    momentum_factor = positions_dict['momentum_factor']\n    r_pi = positions_dict['r_pi']\n    size = positions_dict['size']\n    wave_function = positions_dict['wave_function']\n    x11 = positions_dict['x11']\n    x12 = positions_dict['x12']\n    x21 = positions_dict['x21']\n    x22 = positions_dict['x22']\n    # get prop\n    V_S_0 = get_prop('l', x12, x22)\n    V_S_1 = get_prop('l', x21, x11)\n    # get color matrix\n    # set props for return\n    props = [\n        V_S_0,\n        V_S_1,\n        ]\n    # set color matrix for return\n    cms = [\n        ]\n    # set intermediate factors\n    # 0 V_factor_0\n    cdef cc.PyComplexD V_factor_0 = ((momentum_factor(-mom,x22,size))) # Cython\n    # 1 V_factor_1\n    cdef cc.PyComplexD V_factor_1 = ((momentum_factor(mom,x12,size))) # Cython\n    # 2 V_factor_2\n    cdef cc.PyComplexD V_factor_2 = ((wave_function(x11,x12,r_pi,size))) # Cython\n    # 3 V_factor_3\n    cdef cc.PyComplexD V_factor_3 = ((wave_function(x21,x22,r_pi,size))) # Cython\n    # 4 V_factor_prod_0\n    cdef cc.PyComplexD V_factor_prod_0 = ((V_factor_0)*(V_factor_1)) # Cython\n    # 5 V_factor_prod_1\n    cdef cc.PyComplexD V_factor_prod_1 = ((V_factor_prod_0)*(V_factor_2)) # Cython\n    # 6 V_factor_prod_2\n    cdef cc.PyComplexD V_factor_prod_2 = ((V_factor_prod_1)*(V_factor_3)) # Cython\n    # declare factors\n    cdef numpy.ndarray[numpy.complex128_t] factors # Cython\n    factors = np.zeros(2, dtype=np.complex128)\n    cdef cc.PyComplexD[:] factors_view = factors # Cython\n    # set factors\n    # V_factor_coef_0\n    cdef cc.PyComplexD V_factor_coef_0 = (1) # Cython\n    factors_view[0] = V_factor_coef_0\n    # V_factor_coef_1\n    cdef cc.PyComplexD V_factor_coef_1 = ((V_factor_prod_2)) # Cython\n    factors_view[1] = V_factor_coef_1\n    # set flops\n    total_flops = len(props) * 144 * 2 * 8 + len(cms) * 9 * 2 * 8 + len(factors) * 2 * 8\n    # return\n    return total_flops, (props, cms, factors,)\n\n### ----\n\n@timer_flops\ndef cexpr_function_eval(positions_dict, props, cms, factors):\n    # load AMA props with proper format\n    props = [ load_prop(p) for p in props ]\n    # join the AMA props\n    ama_props = ama_list(*props)\n    # apply eval to the factors and AMA props\n    ama_val = ama_apply1(lambda x_props: cexpr_function_eval_with_props(positions_dict, x_props, cms, factors), ama_props)\n    # set flops\n    total_flops = ama_counts(ama_val) * total_sloppy_flops\n    # return\n    return total_flops, ama_val\n\n### ----\n\n@timer_flops\n@cython.boundscheck(False) # Cython\n@cython.wraparound(False) # Cython\ndef cexpr_function_eval_with_props(dict positions_dict, list props, list cms, cc.PyComplexD[:] factors_view): # Cython\n    # set positions\n    mom = positions_dict['mom']\n    momentum_factor = positions_dict['momentum_factor']\n    r_pi = positions_dict['r_pi']\n    size = positions_dict['size']\n    wave_function = positions_dict['wave_function']\n    x11 = positions_dict['x11']\n    x12 = positions_dict['x12']\n    x21 = positions_dict['x21']\n    x22 = positions_dict['x22']\n    # set props\n    cdef cc.WilsonMatrix* p_V_S_0 = &(<qu.WilsonMatrix>props[0]).xx # Cython\n    cdef cc.WilsonMatrix* p_V_S_1 = &(<qu.WilsonMatrix>props[1]).xx # Cython\n    # set cms\n    # set factors\n    cdef cc.PyComplexD V_factor_coef_0 = factors_view[0] # Cython\n    cdef cc.PyComplexD V_factor_coef_1 = factors_view[1] # Cython\n    # compute products\n    cdef cc.WilsonMatrix V_prod_GS_0 = qu.gamma_matrix_5 * p_V_S_0[0] # Cython\n    cdef cc.WilsonMatrix V_prod_SG_0 = V_prod_GS_0 * qu.gamma_matrix_5 # Cython\n    # compute chains\n    # compute traces\n    cdef cc.PyComplexD V_tr_0 = cc.pycc_d(cc.matrix_trace(V_prod_SG_0, p_V_S_1[0])) # Cython\n    # set terms\n    cdef cc.PyComplexD term_Type0_0 = 1 # Cython\n    cdef cc.PyComplexD term_Type1_0 = V_tr_0 # Cython\n    # declare exprs\n    cdef numpy.ndarray[numpy.complex128_t] exprs # Cython\n    exprs = np.zeros(2, dtype=np.complex128)\n    cdef cc.PyComplexD[:] exprs_view = exprs # Cython\n    # set exprs\n    cdef cc.PyComplexD expr_V_a # Cython\n    # 0 name='< 1 >  exprs[0]' \n    expr_V_a = 0\n    expr_V_a += (((V_factor_coef_0))) * term_Type0_0\n    exprs_view[0] = expr_V_a # Cython\n    # 1 name='< pi0(x21,x22,r_pi,mom)^dag * pi0(x11,x12,r_pi,mom) >  exprs[1]' \n    expr_V_a = 0\n    expr_V_a += (((V_factor_coef_1))) * term_Type1_0\n    exprs_view[1] = expr_V_a # Cython\n    # set flops\n    total_flops = total_sloppy_flops\n    # return\n    return total_flops, exprs\n\n### ----\n\n# Total flops per sloppy call is: 9790\ntotal_sloppy_flops = 9790"
+ ],
+ [
+  "diagram_type_dict = qac.get_diagram_type_dict(ccexpr)"
+ ],
+ [
+  "diagram_type_dict[()] = 'Type0'"
+ ],
+ [
+  "diagram_type_dict[((('x12', 'x22'), 1), (('x21', 'x11'), 1))] = 'Type1'"
+ ],
+ [
+  "qac.get_expr_names(ccexpr)"
+ ],
+ [
+  "< 1 >  exprs[0]"
+ ],
+ [
+  "< pi0(x21,x22,r_pi,mom)^dag * pi0(x11,x12,r_pi,mom) >  exprs[1]"
+ ],
+ [
+  "get_cexpr_test benchmark_eval_cexpr check get_data_sig is_cython=True",
+  {
+   "real": -3159112300.273179,
+   "imag": 16949454205.100449,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "get_cexpr_test benchmark_eval_cexpr check_ama get_data_sig is_cython=True",
+  {
+   "real": 11020278227.7444,
+   "imag": 5388131287.585457,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "eval_cexpr res[0]",
+  {
+   "real": 1.0,
+   "imag": 0.0,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "eval_cexpr res[1]",
+  {
+   "real": 1656945.6040570743,
+   "imag": 3025600.3920076056,
+   "__extended_json_type__": "complex"
+  }
+ ]
+]
