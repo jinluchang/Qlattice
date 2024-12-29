@@ -18,16 +18,16 @@
   "Expr([Term([],[],1)],'< (1) >')"
  ],
  [
-  "Expr([Term([Chain([S('l','x1','x3'), S('s','x3','x2')],'sc','a_s_1','s2','a_c_1','c2')],[],1)],\"< Qv('u','x1','s1','c1') * Qb('s','x2','s2','c2') * (ubar s)(x3) >\")"
+  "Expr([Term([Chain([S('l','x1','x3'), S('s','x3','x2')],'sc','s1','s2','c1','c2')],[],1)],\"< Qv('u','x1','s1','c1') * Qb('s','x2','s2','c2') * (ubar s)(x3) >\")"
  ],
  [
-  "Expr([Term([Chain([S('l','x1','x3'), G(5), S('s','x3','x2')],'sc','a_s_2','s2','a_c_2','c2')],[],1)],\"< Qv('u','x1','s1','c1') * Qb('s','x2','s2','c2') * (ubar g5 s)(x3) >\")"
+  "Expr([Term([Chain([S('l','x1','x3'), G(5), S('s','x3','x2')],'sc','s1','s2','c1','c2')],[],1)],\"< Qv('u','x1','s1','c1') * Qb('s','x2','s2','c2') * (ubar g5 s)(x3) >\")"
  ],
  [
-  "Expr([Term([Chain([S('l','x1','x3'), G(3), S('s','x3','x2')],'sc','a_s_4','s2','a_c_3','c2')],[],1)],\"< Qv('u','x1','s1','c1') * Qb('s','x2','s2','c2') * (ubar g3 s)(x3) >\")"
+  "Expr([Term([Chain([S('l','x1','x3'), G(3), S('s','x3','x2')],'sc','s1','s2','c1','c2')],[],1)],\"< Qv('u','x1','s1','c1') * Qb('s','x2','s2','c2') * (ubar g3 s)(x3) >\")"
  ],
  [
-  "Expr([Term([Chain([S('l','x1','x3'), G(3), G(5), S('s','x3','x2')],'sc','a_s_6','s2','a_c_4','c2')],[],1)],\"< Qv('u','x1','s1','c1') * Qb('s','x2','s2','c2') * (ubar g3 g5 s)(x3) >\")"
+  "Expr([Term([Chain([S('l','x1','x3'), G(3), G(5), S('s','x3','x2')],'sc','s1','s2','c1','c2')],[],1)],\"< Qv('u','x1','s1','c1') * Qb('s','x2','s2','c2') * (ubar g3 g5 s)(x3) >\")"
  ],
  [
   "# Begin CExpr\ndiagram_type_dict = dict()\ndiagram_type_dict[()] = 'ADT0'\ndiagram_type_dict[((('x1', 'x3'), 1), (('x3', 'x2'), 1))] = 'ADT1'\n# Positions:\nx1, x2, x3 = ['x1', 'x2', 'x3']\n# Diagram type coef:\ncoef_ADT0                      = 1\ncoef_ADT1                      = 1\n# Named terms:\nterm_ADT0_0                    = coef_ADT0 * \nterm_ADT1_0                    = coef_ADT1 * chain(S_l(x1,x3)*S_s(x3,x2))\nterm_ADT1_1                    = coef_ADT1 * chain(S_l(x1,x3)*gamma_5*S_s(x3,x2))\nterm_ADT1_2                    = coef_ADT1 * chain(S_l(x1,x3)*gamma_t*S_s(x3,x2))\nterm_ADT1_3                    = coef_ADT1 * chain(S_l(x1,x3)*gamma_t*gamma_5*S_s(x3,x2))\nterms = [ 0 for i in range(5) ]\nterms[0] = term_ADT0_0\nterms[1] = term_ADT1_0\nterms[2] = term_ADT1_1\nterms[3] = term_ADT1_2\nterms[4] = term_ADT1_3\n# Named exprs:\nexprs = [ 0 for i in range(5) ]\n# < (1) >  exprs[0]\nexprs[0] += 1*term_ADT0_0\n# < Qv('u','x1','s1','c1') * Qb('s','x2','s2','c2') * (ubar s)(x3) >  exprs[1]\nexprs[1] += 1*term_ADT1_0\n# < Qv('u','x1','s1','c1') * Qb('s','x2','s2','c2') * (ubar g5 s)(x3) >  exprs[2]\nexprs[2] += 1*term_ADT1_1\n# < Qv('u','x1','s1','c1') * Qb('s','x2','s2','c2') * (ubar g3 s)(x3) >  exprs[3]\nexprs[3] += 1*term_ADT1_2\n# < Qv('u','x1','s1','c1') * Qb('s','x2','s2','c2') * (ubar g3 g5 s)(x3) >  exprs[4]\nexprs[4] += 1*term_ADT1_3\n# End CExpr"
@@ -60,7 +60,7 @@
   "[]"
  ],
  [
-  "[('term_ADT0_0', Term([],[],1)), ('term_ADT1_0', Term([Chain([S('l','x1','x3'), S('s','x3','x2')],'sc','a_s_1','s2','a_c_1','c2')],[],1)), ('term_ADT1_1', Term([Chain([S('l','x1','x3'), G(5), S('s','x3','x2')],'sc','a_s_2','s2','a_c_2','c2')],[],1)), ('term_ADT1_2', Term([Chain([S('l','x1','x3'), G(3), S('s','x3','x2')],'sc','a_s_4','s2','a_c_3','c2')],[],1)), ('term_ADT1_3', Term([Chain([S('l','x1','x3'), G(3), G(5), S('s','x3','x2')],'sc','a_s_6','s2','a_c_4','c2')],[],1))]"
+  "[('term_ADT0_0', Term([],[],1)), ('term_ADT1_0', Term([Chain([S('l','x1','x3'), S('s','x3','x2')],'sc','s1','s2','c1','c2')],[],1)), ('term_ADT1_1', Term([Chain([S('l','x1','x3'), G(5), S('s','x3','x2')],'sc','s1','s2','c1','c2')],[],1)), ('term_ADT1_2', Term([Chain([S('l','x1','x3'), G(3), S('s','x3','x2')],'sc','s1','s2','c1','c2')],[],1)), ('term_ADT1_3', Term([Chain([S('l','x1','x3'), G(3), G(5), S('s','x3','x2')],'sc','s1','s2','c1','c2')],[],1))]"
  ],
  [
   "[('< (1) >  exprs[0]', [(1, 'term_ADT0_0')]), (\"< Qv('u','x1','s1','c1') * Qb('s','x2','s2','c2') * (ubar s)(x3) >  exprs[1]\", [(1, 'term_ADT1_0')]), (\"< Qv('u','x1','s1','c1') * Qb('s','x2','s2','c2') * (ubar g5 s)(x3) >  exprs[2]\", [(1, 'term_ADT1_1')]), (\"< Qv('u','x1','s1','c1') * Qb('s','x2','s2','c2') * (ubar g3 s)(x3) >  exprs[3]\", [(1, 'term_ADT1_2')]), (\"< Qv('u','x1','s1','c1') * Qb('s','x2','s2','c2') * (ubar g3 g5 s)(x3) >  exprs[4]\", [(1, 'term_ADT1_3')])]"
@@ -117,7 +117,7 @@
   "[]"
  ],
  [
-  "[('V_chain_0', Chain([Var('V_S_0'), Var('V_S_1')],'sc','a_s_1','s2','a_c_1','c2')), ('V_chain_1', Chain([Var('V_S_0'), G(5), Var('V_S_1')],'sc','a_s_2','s2','a_c_2','c2')), ('V_chain_2', Chain([Var('V_S_0'), G(3), Var('V_S_1')],'sc','a_s_4','s2','a_c_3','c2')), ('V_chain_3', Chain([Var('V_S_0'), G(3), G(5), Var('V_S_1')],'sc','a_s_6','s2','a_c_4','c2'))]"
+  "[('V_chain_0', Chain([Var('V_S_0'), Var('V_S_1')],'sc','s1','s2','c1','c2')), ('V_chain_1', Chain([Var('V_S_0'), G(5), Var('V_S_1')],'sc','s1','s2','c1','c2')), ('V_chain_2', Chain([Var('V_S_0'), G(3), Var('V_S_1')],'sc','s1','s2','c1','c2')), ('V_chain_3', Chain([Var('V_S_0'), G(3), G(5), Var('V_S_1')],'sc','s1','s2','c1','c2'))]"
  ],
  [
   "[]"
