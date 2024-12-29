@@ -22,6 +22,7 @@
 import qlat_utils as q
 import copy
 import sympy
+import numpy
 
 try:
     from . import expr_arithmetic as ea
@@ -277,43 +278,6 @@ class U(Op):
 
     def list(self):
         return [ self.otype, self.tag, self.p, self.mu, self.c1, self.c2, ]
-
-    def __eq__(self, other) -> bool:
-        return self.list() == other.list()
-
-### ------
-
-class Bfield(Op):
-
-    """
-    baryon tensor
-    #
-    self.tag
-    self.s1
-    self.s2
-    self.s3
-    self.c1
-    self.c2
-    self.c3
-    #
-    tag in [ "std", ]
-    """
-
-    def __init__(self, tag, s1:str, s2:str, s3:str, c1:str, c2:str, c3:str):
-        Op.__init__(self, "Bfield")
-        self.tag = tag
-        self.s1 = s1
-        self.s2 = s2
-        self.s3 = s3
-        self.c1 = c1
-        self.c2 = c2
-        self.c3 = c3
-
-    def __repr__(self) -> str:
-        return f"{self.otype}({self.tag!r},{self.s1!r},{self.s2!r},{self.s3!r},{self.c1!r},{self.c2!r},{self.c3!r})"
-
-    def list(self):
-        return [ self.otype, self.tag, self.s1, self.s2, self.s3, self.c1, self.c2, self.c3, ]
 
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
@@ -637,6 +601,235 @@ def collect_traces(ops:list) -> list:
         tr, ops = ft
         trs.append(tr)
     return chs + trs + ops
+
+### ------
+
+class BfieldCoef:
+
+    """
+    self.coef_dict
+    #
+    self.coef_dict[chiral_projection] = spin_coef_dict
+    spin_coef_dict[spin] = spin_coef
+    #
+    chiral_projection = ((1, 1,), (1, 0,), (1, 0,),)
+    spin = (0, 1, 0,)
+    spin_coef = 1
+    """
+
+    def __init__(self):
+        self.coef_dict = dict()
+
+    def get_spin_tensor(self, permute=None) -> np.ndarray:
+        """
+        return spin_tensor
+        spin_tensor[s1, s2, s3] = spin_coef
+        Euclidean convention, not the code convention
+        """
+        shape = (4, 4, 4,)
+        spin_tensor = np.zeros(shape, dtype=object)
+        for k, spin_coef_dict in self.coef_dict:
+            ((c00, c01,), (c10, c11,), (c20, c21,),) = k
+            for sk, spin_coef in spin_coef_dict:
+                s1, s2, s3, = sk
+                spin_tensor[s1, s2, s3] += c00 * c10 * c20 * spin_coef
+                spin_tensor[s1, s2, s3 + 2] += c00 * c10 * c21 * spin_coef
+                spin_tensor[s1, s2 + 2, s3] += c00 * c11 * c20 * spin_coef
+                spin_tensor[s1, s2 + 2, s3 + 2] += c00 * c11 * c21 * spin_coef
+                spin_tensor[s1 + 2, s2, s3] += c01 * c10 * c20 * spin_coef
+                spin_tensor[s1 + 2, s2, s3 + 2] += c01 * c10 * c21 * spin_coef
+                spin_tensor[s1 + 2, s2 + 2, s3] += c01 * c11 * c20 * spin_coef
+                spin_tensor[s1 + 2, s2 + 2, s3 + 2] += c01 * c11 * c21 * spin_coef
+        spin_tensor = q.epsilon_tensor(*permute) * spin_tensor.transpose(permute)
+        return spin_tensor
+
+    def get_spin_tensor_code(self, permute=None) -> np.ndarray:
+        """
+        return spin_tensor_code
+        spin_tensor_code[s1, s2, s3] = spin_coef
+        CPS/Grid/GPT code convention, not the Euclidean convention
+        #
+        psi^Eucl_0 = -1j * psi^Code_1
+        psi^Eucl_1 = +1j * psi^Code_0
+        psi^Eucl_2 = -1j * psi^Code_3
+        psi^Eucl_3 = +1j * psi^Code_2
+        """
+        shape = (4, 4, 4,)
+        spin_tensor_code = np.zeros(shape, dtype=object)
+        sidx_arr = [
+                (1, -sympy.I)
+                (0, sympy.I)
+                (3, -sympy.I)
+                (2, sympy.I)
+                ]
+        spin_tensor = self.get_spin_tensor(permute=permute)
+        assert spin_tensor.shape == shape
+        for s1 in range(4):
+            s1p, fac1, = sidx_arr[s1]
+            for s2 in range(4):
+                s2p, fac2, = sidx_arr[s2]
+                for s3 in range(4):
+                    s3p, fac3, = sidx_arr[s3]
+                    spin_tensor_code[s1p, s2p, s3p] = fac1 * fac2 * fac3 * spin_tensor[s1, s2, s3]
+        return spin_tensor
+
+    def add(self, chiral_projection, spin, coef) -> BfieldCoef:
+        """
+        return self
+        Allow keep add.
+        """
+        if mk_sym(coef) == 0:
+            return self
+        ((c00, c01,), (c10, c11,), (c20, c21,),) = chiral_projection
+        chiral_projection = (
+                (mk_sym(c00), mk_sym(c01),),
+                (mk_sym(c10), mk_sym(c11),),
+                (mk_sym(c20), mk_sym(c21),),
+                )
+        if chiral_projection not in self.coef_dict:
+            self.coef_dict[chiral_projection] = dict()
+        spin_coef_dict = self.coef_dict[chiral_projection]
+        s1, s2, s3, = spin
+        assert isinstance(s1, int) and 0 <= s1 and s1 <= 1
+        assert isinstance(s2, int) and 0 <= s2 and s2 <= 1
+        assert isinstance(s3, int) and 0 <= s3 and s3 <= 1
+        if spin not in spin_coef_dict:
+            spin_coef_dict[spin] = coef
+        else:
+            v = spin_coef_dict[spin] + coef
+            if v == 0:
+                spin_coef_dict.pop(spin)
+            else:
+                spin_coef_dict[spin] = v
+        return self
+
+    def __repr__(self):
+        return f"BfieldCoef()"
+
+### ------
+
+bfield_tag_dict = dict()
+
+bfield_tag_dict["std-u"] = BfieldCoef()
+bfield_tag_dict["std-u"].add(((1, 1,), (1, 0,), (1, 0,),), (0, 1, 0,), mk_sym(1))
+bfield_tag_dict["std-u"].add(((1, 1,), (1, 0,), (1, 0,),), (0, 0, 1,), mk_sym(-1))
+bfield_tag_dict["std-u"].add(((1, 1,), (0, 1,), (0, 1,),), (0, 1, 0,), mk_sym(1))
+bfield_tag_dict["std-u"].add(((1, 1,), (0, 1,), (0, 1,),), (0, 0, 1,), mk_sym(-1))
+
+bfield_tag_dict["std-d"] = BfieldCoef()
+bfield_tag_dict["std-d"].add(((1, 1,), (1, 0,), (1, 0,),), (1, 1, 0,), mk_sym(1))
+bfield_tag_dict["std-d"].add(((1, 1,), (1, 0,), (1, 0,),), (1, 0, 1,), mk_sym(-1))
+bfield_tag_dict["std-d"].add(((1, 1,), (0, 1,), (0, 1,),), (1, 1, 0,), mk_sym(1))
+bfield_tag_dict["std-d"].add(((1, 1,), (0, 1,), (0, 1,),), (1, 0, 1,), mk_sym(-1))
+
+### ------
+
+class Bfield(Op):
+
+    """
+    baryon tensor
+    #
+    self.tag
+    self.s1
+    self.s2
+    self.s3
+    self.c1
+    self.c2
+    self.c3
+    #
+    tag in bfield_available_tag_list
+    #
+    The tensor is assumed to take the form:
+        baryon(s1,s2,s3,c1,c2,c3) = spin_tensor[s1,s2,s3] * q.epsilon_tensor(c1,c2,c3)
+        spin_tensor = bfield_tag_dict[self.tag].get_spin_tensor_code()
+    """
+
+    def __init__(self, tag:str, s1:str, s2:str, s3:str, c1:str, c2:str, c3:str):
+        assert tag in bfield_available_tag_list
+        Op.__init__(self, "Bfield")
+        self.tag = tag
+        self.s1 = s1
+        self.s2 = s2
+        self.s3 = s3
+        self.c1 = c1
+        self.c2 = c2
+        self.c3 = c3
+
+    def __repr__(self) -> str:
+        return f"{self.otype}({self.tag!r},{self.s1!r},{self.s2!r},{self.s3!r},{self.c1!r},{self.c2!r},{self.c3!r})"
+
+    def list(self):
+        return [ self.otype, self.tag, self.s1, self.s2, self.s3, self.c1, self.c2, self.c3, ]
+
+    def __eq__(self, other) -> bool:
+        return self.list() == other.list()
+
+### ------
+
+class BS(Op):
+
+    """
+    single baryon prop
+    #
+    self.tag_pair_list
+    self.chain_list
+    #
+    tag_pair_list = [ (tag_v, permute_v, tag_b, permute_b,), ... ]
+    chain_list = [ prop_0, prop_1, prop_2, ]
+    tag_v or tag_b in `bfield_available_tag_list`
+    permute_v = (spin_color_index_that_prop_0_contract_with,
+                 spin_color_index_that_prop_1_contract_with,
+                 spin_color_index_that_prop_2_contract_with,)
+    """
+
+    def __init__(self, tag_pair_list:list, chain_list:list):
+        assert isinstance(tag_pair_list, list)
+        for v in tag_pair_list:
+            (tag_v, permute_v, tag_b, permute_b,) = v
+            assert isinstance(tag_v, str)
+            assert isinstance(tag_b, str)
+            assert tag_v in bfield_tag_dict
+            assert tag_b in bfield_tag_dict
+            assert isinstance(permute_v, tuple)
+            assert isinstance(permute_b, tuple)
+            assert len(permute_v) == 3
+            assert len(permute_b) == 3
+            for i in permute_v:
+                assert 0 <= i and i < 3
+            for i in permute_b:
+                assert 0 <= i and i < 3
+        assert isinstance(chain_list, list)
+        assert len(chain_list) == 3
+        for ch in chain_list:
+            assert isinstance(ch, Chain)
+            assert ch.otype == "Chain"
+        Op.__init__(self, "BS")
+        self.tag_pair_list = tag_pair_list
+        self.prop_list = prop_list
+
+    def sort(self):
+        sp_chain_list = sorted(list(enumerate(self.chain_list)), key=lambda x: repr(x[1]))[0]
+        s_chain_list = []
+        i_list = []
+        for sp in sp_chain_list:
+            i, ch = sp
+            i_list.append(i)
+            s_chain_list(ch)
+        def permute_permute(p):
+            return tuple(p[i] for i in i_list)
+        s_tag_pair_list = []
+        for tag_pair in self.tag_pair_list:
+            (tag_v, permute_v, tag_b, permute_b,) = tag_pair
+            s_tag_pair = (tag_v, permute_permute(permute_v), tag_b, permute_permute(permute_b),)
+            s_tag_pair_list.append(s_tag_pair)
+        self.chain_list = s_chain_list
+        self.tag_pair_list = sorted(s_tag_pair_list, key=repr)
+
+    def isospin_symmetric_limit(self) -> None:
+        for op in self.chain_list:
+            op.isospin_symmetric_limit()
+
+### ------
 
 class Term:
 
