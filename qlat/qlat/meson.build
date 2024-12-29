@@ -12,7 +12,6 @@ py_files = files(
   'contract_field.py',
   'contract_hvp.py',
   'contract_pion.py',
-  'coordinate.py',
   'fermion_action.py',
   'field_double.py',
   'field_type_dict.py',

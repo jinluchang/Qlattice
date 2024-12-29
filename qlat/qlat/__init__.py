@@ -13,8 +13,6 @@ from .c import *
 
 from .mpi_utils import *
 
-from .coordinate import *
-
 from .scalar_action import *
 
 from .qm_action import *

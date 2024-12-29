@@ -629,9 +629,9 @@ class BfieldCoef:
         """
         shape = (4, 4, 4,)
         spin_tensor = np.zeros(shape, dtype=object)
-        for k, spin_coef_dict in self.coef_dict:
+        for k, spin_coef_dict in self.coef_dict.items():
             ((c00, c01,), (c10, c11,), (c20, c21,),) = k
-            for sk, spin_coef in spin_coef_dict:
+            for sk, spin_coef in spin_coef_dict.items():
                 s1, s2, s3, = sk
                 spin_tensor[s1, s2, s3] += c00 * c10 * c20 * spin_coef
                 spin_tensor[s1, s2, s3 + 2] += c00 * c10 * c21 * spin_coef
@@ -658,10 +658,10 @@ class BfieldCoef:
         shape = (4, 4, 4,)
         spin_tensor_code = np.zeros(shape, dtype=object)
         sidx_arr = [
-                (1, -sympy.I)
-                (0, sympy.I)
-                (3, -sympy.I)
-                (2, sympy.I)
+                (1, -sympy.I),
+                (0, sympy.I),
+                (3, -sympy.I),
+                (2, sympy.I),
                 ]
         spin_tensor = self.get_spin_tensor(permute=permute)
         assert spin_tensor.shape == shape
@@ -1311,3 +1311,4 @@ if __name__ == "__main__":
     c_expr.simplify(is_isospin_symmetric_limit = True)
     print(c_expr)
     print(Qb("u", "x2", "s23", "c23") * Qv("u", "x1", "s11", "c11") - Qb("d", "x2", "s23", "c23") * Qv("d", "x1", "s11", "c11"))
+    print(bfield_tag_dict['std-u'].get_spin_tensor_code())
