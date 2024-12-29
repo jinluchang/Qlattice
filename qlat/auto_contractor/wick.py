@@ -405,7 +405,7 @@ class Chain(Op):
             return f"{self.otype}({self.ops!r},{self.tag!r},{self.s1!r},{self.s2!r},{self.c1!r},{self.c2!r})"
 
     def list(self):
-        return [ self.otype, self.tag, self.s1, self.s2, self.c1, self.c2, self.ops, ]
+        return [ self.otype, self.ops, self.tag, self.s1, self.s2, self.c1, self.c2, ]
 
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
