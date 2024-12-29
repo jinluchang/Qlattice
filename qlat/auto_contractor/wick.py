@@ -22,7 +22,8 @@
 import qlat_utils as q
 import copy
 import sympy
-import numpy
+import numpy as np
+from typing import Self
 
 try:
     from . import expr_arithmetic as ea
@@ -673,7 +674,7 @@ class BfieldCoef:
                     spin_tensor_code[s1p, s2p, s3p] = fac1 * fac2 * fac3 * spin_tensor[s1, s2, s3]
         return spin_tensor
 
-    def add(self, chiral_projection, spin, coef) -> BfieldCoef:
+    def add(self, chiral_projection, spin, coef) -> Self:
         """
         return self
         Allow keep add.
@@ -737,7 +738,7 @@ class Bfield(Op):
     self.c2
     self.c3
     #
-    tag in bfield_available_tag_list
+    tag in bfield_tag_dict
     #
     The tensor is assumed to take the form:
         baryon(s1,s2,s3,c1,c2,c3) = spin_tensor[s1,s2,s3] * q.epsilon_tensor(c1,c2,c3)
@@ -745,7 +746,7 @@ class Bfield(Op):
     """
 
     def __init__(self, tag:str, s1:str, s2:str, s3:str, c1:str, c2:str, c3:str):
-        assert tag in bfield_available_tag_list
+        assert tag in bfield_tag_dict
         Op.__init__(self, "Bfield")
         self.tag = tag
         self.s1 = s1
@@ -776,7 +777,7 @@ class BS(Op):
     #
     tag_pair_list = [ (tag_v, permute_v, tag_b, permute_b,), ... ]
     chain_list = [ prop_0, prop_1, prop_2, ]
-    tag_v or tag_b in `bfield_available_tag_list`
+    tag_v or tag_b in `bfield_tag_dict`
     permute_v = (spin_color_index_that_prop_0_contract_with,
                  spin_color_index_that_prop_1_contract_with,
                  spin_color_index_that_prop_2_contract_with,)
