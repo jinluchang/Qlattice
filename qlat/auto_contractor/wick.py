@@ -44,7 +44,7 @@ class Op:
     def is_commute(self) -> bool:
         return True
 
-    def show(self, is_multiply = False):
+    def show(self, is_multiply=False):
         return repr(self)
 
     def __repr__(self) -> str:
@@ -318,9 +318,9 @@ class Tr(Op):
             self.tag = "c"
         else:
             self.tag = ""
-        for i, op in enumerate(ops):
-            ops[i] = copy_op_index_auto(op)
-        self.ops = ops
+        self.ops = []
+        for op in ops:
+            self.ops.append(copy_op_index_auto(op))
 
     def __repr__(self) -> str:
         return f"{self.otype}({self.ops!r},{self.tag!r})"
@@ -349,6 +349,10 @@ class Chain(Op):
     #
     self.ops
     self.tag
+    self.s1
+    self.s2
+    self.c1
+    self.c2
     """
 
     def __init__(self, ops:list, tag=None):
@@ -361,12 +365,22 @@ class Chain(Op):
         for op in ops:
             assert op.is_commute()
             assert op.otype in [ "S", "G", "U", ]
+        self.s1 = None
+        self.s2 = None
+        self.c1 = None
+        self.c2 = None
         s = None
         c = None
         for op in ops:
             if not check_chain_sc(op, s, c):
                 raise Exception(f"ops={ops} tag={tag}")
             s, c, = update_chain_sc(op, s, c)
+            if self.s1 is None:
+                self.s1 = s
+            if self.c1 is None:
+                self.c1 = c
+        self.s2 = s
+        self.c2 = c
         if s is not None and c is not None:
             self.tag = "sc"
         elif s is not None:
@@ -375,17 +389,9 @@ class Chain(Op):
             self.tag = "c"
         else:
             self.tag = ""
-        n_ops = len(ops)
-        assert n_ops >= 1
-        for i, op in enumerate(ops):
-            if i == 0:
-                if i < n_ops - 1:
-                    ops[i] = copy_op_index_auto(op, is_auto_sc1=False)
-            elif i == n_ops - 1:
-                ops[i] = copy_op_index_auto(op, is_auto_sc2=False)
-            else:
-                ops[i] = copy_op_index_auto(op)
-        self.ops = ops
+        self.ops = []
+        for op in ops:
+            self.ops.append(copy_op_index_auto(op))
 
     def __repr__(self) -> str:
         return f"{self.otype}({self.ops!r},{self.tag!r})"
@@ -407,20 +413,16 @@ class Chain(Op):
 
 ### ------
 
-def copy_op_index_auto(op:Op, is_auto_sc1=True, is_auto_sc2=True):
+def copy_op_index_auto(op:Op):
     if op.otype not in [ "S", "G", "U", ]:
         return op
     op = copy.copy(op)
     if op.otype in [ "S", "G", ]:
-        if is_auto_sc1:
-            op.s1 = "auto"
-        if is_auto_sc2:
-            op.s2 = "auto"
+        op.s1 = "auto"
+        op.s2 = "auto"
     if op.otype in [ "S", "U", ]:
-        if is_auto_sc1:
-            op.c1 = "auto"
-        if is_auto_sc2:
-            op.c2 = "auto"
+        op.c1 = "auto"
+        op.c2 = "auto"
     return op
 
 def check_chain_spin_index(ops:list, s:str):
@@ -627,6 +629,8 @@ class BfieldCoef:
         spin_tensor[s1, s2, s3] = spin_coef
         Euclidean convention, not the code convention
         """
+        if permute is None:
+            permute = (0, 1, 2,)
         shape = (4, 4, 4,)
         spin_tensor = np.zeros(shape, dtype=object)
         for k, spin_coef_dict in self.coef_dict.items():
@@ -783,7 +787,7 @@ class BS(Op):
                  spin_color_index_that_prop_2_contract_with,)
     """
 
-    def __init__(self, tag_pair_list:list, chain_list:list):
+    def __init__(self, tag_pair_list:list, chain_list:list[Chain]):
         assert isinstance(tag_pair_list, list)
         for v in tag_pair_list:
             (tag_v, permute_v, tag_b, permute_b,) = v
@@ -832,6 +836,11 @@ class BS(Op):
 
 ### ------
 
+def mk_baryon_prop(bf1:Bfield, bf2:Bfield, chain_list:list[Chain]) -> BS:
+    pass
+
+### ------
+
 class Term:
 
     """
@@ -840,7 +849,7 @@ class Term:
     self.a_ops
     """
 
-    def __init__(self, c_ops, a_ops, coef = 1):
+    def __init__(self, c_ops, a_ops, coef=1):
         self.coef = coef
         self.c_ops = c_ops
         self.a_ops = a_ops
@@ -897,7 +906,9 @@ class Term:
         return f"Term({self.c_ops},{self.a_ops},{self.coef})"
 
     def sort(self) -> None:
-        # only sort commutable factors
+        """
+        only sort commutable factors
+        """
         for op in self.c_ops:
             op.sort()
         self.c_ops.sort(key=repr)
@@ -930,8 +941,10 @@ def combine_two_terms(t1:Term, t2:Term, t1_sig:str, t2_sig:str):
 
 class Expr:
 
-    # self.description
-    # self.terms
+    """
+    self.description
+    self.terms
+    """
 
     def __init__(self, terms, description = None):
         self.description = description
@@ -950,10 +963,12 @@ class Expr:
         description = f"{factor} * {self.show(True)}"
 
     def __add__(self, other):
-        # if other is str, then it is used to set the description of the result expr
+        """
+        If other is str, then it is used to set the description of the resulting `expr`.
+        Otherwise return self + other.
+        """
         if isinstance(other, str):
             return Expr(self.terms, other)
-        # otherwise return self + other
         other = mk_expr(other)
         terms = self.terms + other.terms
         return Expr(terms, f"+{self.show()} + {other.show()}")
