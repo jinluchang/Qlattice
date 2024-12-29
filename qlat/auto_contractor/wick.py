@@ -791,10 +791,10 @@ class BS(Op):
     """
     single baryon prop
     #
-    self.tag_pair_list
+    self.tag_pair
     self.chain_list
     #
-    tag_pair_list = [ (tag_v, permute_v, tag_b, permute_b,), ... ]
+    tag_pair = (tag_v, permute_v, tag_b, permute_b,)
     chain_list = [ prop_0, prop_1, prop_2, ]
     tag_v or tag_b in `bfield_tag_dict`
     permute_v = (spin_color_index_that_prop_0_contract_with,
@@ -802,36 +802,35 @@ class BS(Op):
                  spin_color_index_that_prop_2_contract_with,)
     """
 
-    def __init__(self, tag_pair_list:list, chain_list:list[Chain]):
-        assert isinstance(tag_pair_list, list)
-        for v in tag_pair_list:
-            (tag_v, permute_v, tag_b, permute_b,) = v
-            assert isinstance(tag_v, str)
-            assert isinstance(tag_b, str)
-            assert tag_v in bfield_tag_dict
-            assert tag_b in bfield_tag_dict
-            assert isinstance(permute_v, tuple)
-            assert isinstance(permute_b, tuple)
-            assert len(permute_v) == 3
-            assert len(permute_b) == 3
-            for i in permute_v:
-                assert 0 <= i and i < 3
-            for i in permute_b:
-                assert 0 <= i and i < 3
+    def __init__(self, tag_pair:list, chain_list:list[Chain]):
+        assert isinstance(tag_pair, tuple)
+        (tag_v, permute_v, tag_b, permute_b,) = tag_pair
+        assert isinstance(tag_v, str)
+        assert isinstance(tag_b, str)
+        assert tag_v in bfield_tag_dict
+        assert tag_b in bfield_tag_dict
+        assert isinstance(permute_v, tuple)
+        assert isinstance(permute_b, tuple)
+        assert len(permute_v) == 3
+        assert len(permute_b) == 3
+        for i in permute_v:
+            assert 0 <= i and i < 3
+        for i in permute_b:
+            assert 0 <= i and i < 3
         assert isinstance(chain_list, list)
         assert len(chain_list) == 3
         for ch in chain_list:
             assert isinstance(ch, Chain)
             assert ch.otype == "Chain"
         Op.__init__(self, "BS")
-        self.tag_pair_list = tag_pair_list
+        self.tag_pair = tag_pair
         self.chain_list = chain_list
 
     def __repr__(self) -> str:
-        return f"{self.otype}({self.tag_pair_list!r},{self.chain_list!r})"
+        return f"{self.otype}({self.tag_pair!r},{self.chain_list!r})"
 
     def list(self):
-        return [ self.otype, self.tag_pair_list, self.chain_list, ]
+        return [ self.otype, self.tag_pair, self.chain_list, ]
 
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
@@ -846,13 +845,10 @@ class BS(Op):
             s_chain_list.append(ch)
         def permute_permute(p):
             return tuple(p[i] for i in i_list)
-        s_tag_pair_list = []
-        for tag_pair in self.tag_pair_list:
-            (tag_v, permute_v, tag_b, permute_b,) = tag_pair
-            s_tag_pair = (tag_v, permute_permute(permute_v), tag_b, permute_permute(permute_b),)
-            s_tag_pair_list.append(s_tag_pair)
+        (tag_v, permute_v, tag_b, permute_b,) = self.tag_pair
+        s_tag_pair = (tag_v, permute_permute(permute_v), tag_b, permute_permute(permute_b),)
+        self.tag_pair = s_tag_pair
         self.chain_list = s_chain_list
-        self.tag_pair_list = sorted(s_tag_pair_list, key=repr)
 
     def isospin_symmetric_limit(self) -> None:
         for op in self.chain_list:
@@ -943,9 +939,9 @@ def mk_baryon_prop(bf_v:Bfield, bf_b:Bfield, chain_list:list[Chain]) -> BS:
     assert len(re_op_list) == 0
     tag_v = bf_v.tag
     tag_b = bf_b.tag
-    tag_pair_list = [ (tag_v, permute_v, tag_b, permute_b,),]
+    tag_pair = (tag_v, permute_v, tag_b, permute_b,)
     chain_list = [ copy_op_index_auto(ch) for ch in chain_list ]
-    return BS(tag_pair_list, chain_list)
+    return BS(tag_pair, chain_list)
 
 def find_baryon_prop(op_list:list) -> tuple[BS,list[Op]]|None:
     """
