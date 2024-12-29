@@ -520,6 +520,8 @@ def collect_chain_in_cexpr(named_terms):
             add_ch_varibles(x.c_ops)
         elif isinstance(x, Op) and x.otype == "Chain":
             add_ch_varibles(x.ops) # not very necessary, do not expect Chain in Chain
+        elif isinstance(x, Op) and x.otype == "BS":
+            add_ch_varibles(x.chain_list)
         elif isinstance(x, list):
             for op in x:
                 add_ch_varibles(op)
@@ -588,6 +590,47 @@ def collect_tr_in_cexpr(named_terms):
     return variables_tr
 
 @q.timer
+def collect_baryon_prop_in_cexpr(named_terms):
+    """
+    collect common baryon_prop
+    modify named_terms in-place and return definitions as variables_baryon_prop
+    variables_baryon_prop = [ (name, value,), ... ]
+    possible (name, value,) includes
+    ("V_bs_0", op,) where op.otype == "BS"
+    """
+    var_nameset = set()
+    variables = []
+    var_counter = 0
+    var_dataset = {} # var_dataset[op_repr] = op_var
+    def add_varibles(x):
+        nonlocal var_counter
+        if isinstance(x, Term):
+            add_varibles(x.c_ops)
+        elif isinstance(x, list):
+            for op in x:
+                add_varibles(op)
+            for i, op in enumerate(x):
+                if isinstance(op, Op) and op.otype == "BS":
+                    op_repr = repr(op)
+                    if op_repr in var_dataset:
+                        x[i] = var_dataset[op_repr]
+                    else:
+                        while True:
+                            name = f"V_bs_{var_counter}"
+                            var_counter += 1
+                            if name not in var_nameset:
+                                break
+                        var_nameset.add(name)
+                        variables.append((name, op,))
+                        var = Var(name)
+                        x[i] = var
+                        var_dataset[op_repr] = var
+    for name, term in named_terms:
+        add_varibles(term)
+        term.sort()
+    return variables
+
+@q.timer
 def find_common_subexpr_in_tr(variables_tr):
     """
     return None or (op, op1,)
@@ -601,7 +644,7 @@ def find_common_subexpr_in_tr(variables_tr):
             subexpr_count[op_repr] = (c + count_added, x)
         else:
             subexpr_count[op_repr] = (count_added, x)
-    def find_op_pair(x, is_periodic=True):
+    def find_op_pair(x:list, is_periodic=True):
         if len(x) < 2:
             return None
         for i, op in enumerate(x):
@@ -646,6 +689,8 @@ def find_common_subexpr_in_tr(variables_tr):
             find_op_pair(x.ops, is_periodic=True)
         elif isinstance(x, Op) and x.otype == "Chain" and len(x.ops) >= 2:
             find_op_pair(x.ops, is_periodic=False)
+        elif isinstance(x, Op) and x.otype == "BS":
+            find(x.chain_list)
         elif isinstance(x, Term):
             find(x.c_ops)
         elif isinstance(x, Expr):
@@ -691,6 +736,8 @@ def collect_common_subexpr_in_tr(variables_tr, op_common, var):
             replace(x.ops, is_periodic=True)
         elif isinstance(x, Op) and x.otype == "Chain" and len(x.ops) >= 2:
             replace(x.ops, is_periodic=False)
+        elif isinstance(x, Op) and x.otype == "BS":
+            replace(x.chain_list, is_periodic=True)
         elif isinstance(x, Term):
             replace(x.c_ops, is_periodic=True)
         elif isinstance(x, Expr):
@@ -708,13 +755,15 @@ def collect_common_subexpr_in_tr(variables_tr, op_common, var):
                 x.ops = remove_none(x.ops)
             elif x.otype == "Chain":
                 x.ops = remove_none(x.ops)
+            elif x.otype == "BS":
+                x.chain_list = remove_none(x.chain_list)
             return x
         elif isinstance(x, Term):
             x.c_ops = remove_none(x.c_ops)
             x.a_ops = remove_none(x.a_ops)
             return x
         elif isinstance(x, Expr):
-            x.terms = [ remove_none(t) for t in x.terms]
+            x.terms = [ remove_none(t) for t in x.terms ]
             return x
         else:
             assert False
@@ -795,6 +844,8 @@ class CExpr:
     self.variables_prod
     self.variables_chain
     self.variables_tr
+    self.variables_baryon_field_coef
+    self.variables_baryon_prop
     self.named_terms
     self.named_exprs
     #
@@ -813,6 +864,7 @@ class CExpr:
         self.variables_prod = []
         self.variables_chain = []
         self.variables_tr = []
+        self.variables_baryon_prop = []
         self.named_terms = []
         self.named_exprs = []
 
@@ -864,6 +916,8 @@ class CExpr:
         self.variables_chain = collect_chain_in_cexpr(self.named_terms)
         # collect trace expr into variables
         self.variables_tr = collect_tr_in_cexpr(self.named_terms)
+        # collect baryon_prop expr into variables
+        self.variables_baryon_prop = collect_baryon_prop_in_cexpr(self.named_terms)
         # collect common prod into variables
         self.variables_prod = collect_subexpr_in_cexpr(self.variables_tr)
 
@@ -945,6 +999,8 @@ def loop_term_ops(type_dict, ops):
             loop_term_ops(type_dict, op.ops)
         elif op.otype == "Chain":
             loop_term_ops(type_dict, op.ops)
+        elif op.otype == "BS":
+            loop_term_ops(type_dict, op.chain_list)
 
 def get_term_diagram_type_info_no_permutation(term):
     type_dict = dict()
@@ -1195,6 +1251,9 @@ def show_variable_value(value):
     elif isinstance(value, Chain):
         expr = "*".join(map(show_variable_value, value.ops))
         return f"chain({expr})"
+    elif isinstance(value, BS):
+        chain_list_expr = ",".join(map(show_variable_value, value.chain_list))
+        return f"bs({value.tag_pair},{chain_list_expr})"
     elif isinstance(value, Term):
         if value.coef == 1:
             return "*".join(map(show_variable_value, value.c_ops + value.a_ops))
@@ -1247,6 +1306,10 @@ def display_cexpr(cexpr:CExpr):
     if cexpr.variables_tr:
         lines.append(f"# Variables tr:")
     for name, value in cexpr.variables_tr:
+        lines.append(f"{name:<30} = {show_variable_value(value)}")
+    if cexpr.variables_baryon_prop:
+        lines.append(f"# Variables baryon_prop:")
+    for name, value in cexpr.variables_baryon_prop:
         lines.append(f"{name:<30} = {show_variable_value(value)}")
     if cexpr.diagram_types:
         lines.append(f"# Diagram type coef:")
@@ -1897,8 +1960,12 @@ class CExprCodeGenPy:
 
 #### ----
 
-if __name__ == "__main__":
+def mk_test_expr_compile_01():
     expr = Qb("d", "x1", "s1", "c1") * G(5, "s1", "s2") * Qv("u", "x1", "s2", "c1") * Qb("u", "x2", "s3", "c2") * G(5, "s3", "s4") * Qv("d", "x2", "s4", "c2")
+    return expr
+
+if __name__ == "__main__":
+    expr = mk_test_expr_compile_01()
     print(expr)
     print()
     expr = simplified(contract_expr(expr))
@@ -1914,9 +1981,17 @@ if __name__ == "__main__":
     print()
     print(expr)
     print()
-    cexpr = contract_simplify_compile(expr, is_isospin_symmetric_limit = True)
+    cexpr = contract_simplify_compile(expr, is_isospin_symmetric_limit=True)
     print(display_cexpr(cexpr))
     print()
     cexpr.optimize()
     print(display_cexpr(cexpr))
     print(cexpr_code_gen_py(cexpr))
+    print()
+    print("mk_test_expr_wick_03")
+    print()
+    expr = mk_test_expr_wick_03()
+    cexpr = contract_simplify_compile(expr, is_isospin_symmetric_limit=True)
+    cexpr.optimize()
+    print(display_cexpr(cexpr))
+    print()

@@ -622,21 +622,83 @@ def collect_traces(ops:list) -> list:
 
 ### ------
 
+def baryon_spin_tensor_to_code(spin_tensor:np.ndarray) -> np.ndarray:
+    """
+    return spin_tensor_code
+    spin_tensor_code[s1, s2, s3] = spin_coef
+    Note CPS/Grid/GPT code convention is not the Euclidean convention
+    #
+    psi^Code_0 = -1j * psi^Eucl_1
+    psi^Code_1 = +1j * psi^Eucl_0
+    psi^Code_2 = -1j * psi^Eucl_3
+    psi^Code_3 = +1j * psi^Eucl_2
+    """
+    shape = (4, 4, 4,)
+    assert spin_tensor.shape == shape
+    spin_tensor_code = np.zeros(shape, dtype=object)
+    sidx_arr = [
+            (1, -sympy.I),
+            (0, sympy.I),
+            (3, -sympy.I),
+            (2, sympy.I),
+            ]
+    for s1 in range(4):
+        s1p, fac1, = sidx_arr[s1]
+        for s2 in range(4):
+            s2p, fac2, = sidx_arr[s2]
+            for s3 in range(4):
+                s3p, fac3, = sidx_arr[s3]
+                spin_tensor_code[s1, s2, s3] = fac1 * fac2 * fac3 * spin_tensor[s1p, s2p, s3p]
+    return spin_tensor_code
+
+def baryon_spin_tensor_from_code(spin_tensor_code:np.ndarray) -> np.ndarray:
+    """
+    return spin_tensor
+    spin_tensor[s1, s2, s3] = spin_coef
+    Note CPS/Grid/GPT code convention is not the Euclidean convention
+    #
+    psi^Eucl_0 = -1j * psi^Code_1
+    psi^Eucl_1 = +1j * psi^Code_0
+    psi^Eucl_2 = -1j * psi^Code_3
+    psi^Eucl_3 = +1j * psi^Code_2
+    """
+    shape = (4, 4, 4,)
+    assert spin_tensor_code.shape == shape
+    spin_tensor = np.zeros(shape, dtype=object)
+    sidx_arr = [
+            (1, -sympy.I),
+            (0, sympy.I),
+            (3, -sympy.I),
+            (2, sympy.I),
+            ]
+    for s1 in range(4):
+        s1p, fac1, = sidx_arr[s1]
+        for s2 in range(4):
+            s2p, fac2, = sidx_arr[s2]
+            for s3 in range(4):
+                s3p, fac3, = sidx_arr[s3]
+                spin_tensor[s1, s2, s3] = fac1 * fac2 * fac3 * spin_tensor_code[s1p, s2p, s3p]
+    return spin_tensor
+
 class BfieldCoef:
 
     """
-    self.coef_dict
-    #
-    self.coef_dict[chiral_projection] = spin_coef_dict
-    spin_coef_dict[spin] = spin_coef
-    #
-    chiral_projection = ((1, 1,), (1, 0,), (1, 0,),)
-    spin = (0, 1, 0,)
-    spin_coef = 1
+    self.spin_tensor
     """
 
-    def __init__(self):
-        self.coef_dict = dict()
+    def __init__(self, st_list_code:list|None=None):
+        shape = (4, 4, 4,)
+        if st_list_code is None:
+            self.spin_tensor = np.zeros(shape, dtype=object)
+        else:
+            spin_tensor_code = np.zeros(shape, dtype=object)
+            spin_tensor_code.ravel()[:] = st_list_code
+            self.spin_tensor = baryon_spin_tensor_from_code(spin_tensor_code)
+
+    def get_spin_tensor_list_code(self) -> list:
+        st = self.get_spin_tensor_code()
+        st_list_code = st.ravel().tolist()
+        return st_list_code
 
     def get_spin_tensor(self, permute=None) -> np.ndarray:
         """
@@ -646,59 +708,30 @@ class BfieldCoef:
         """
         if permute is None:
             permute = (0, 1, 2,)
+        spin_tensor = q.epsilon_tensor(*permute) * self.spin_tensor.transpose(permute)
         shape = (4, 4, 4,)
-        spin_tensor = np.zeros(shape, dtype=object)
-        for k, spin_coef_dict in self.coef_dict.items():
-            ((c00, c01,), (c10, c11,), (c20, c21,),) = k
-            for sk, spin_coef in spin_coef_dict.items():
-                s1, s2, s3, = sk
-                spin_tensor[s1, s2, s3] += c00 * c10 * c20 * spin_coef
-                spin_tensor[s1, s2, s3 + 2] += c00 * c10 * c21 * spin_coef
-                spin_tensor[s1, s2 + 2, s3] += c00 * c11 * c20 * spin_coef
-                spin_tensor[s1, s2 + 2, s3 + 2] += c00 * c11 * c21 * spin_coef
-                spin_tensor[s1 + 2, s2, s3] += c01 * c10 * c20 * spin_coef
-                spin_tensor[s1 + 2, s2, s3 + 2] += c01 * c10 * c21 * spin_coef
-                spin_tensor[s1 + 2, s2 + 2, s3] += c01 * c11 * c20 * spin_coef
-                spin_tensor[s1 + 2, s2 + 2, s3 + 2] += c01 * c11 * c21 * spin_coef
-        spin_tensor = q.epsilon_tensor(*permute) * spin_tensor.transpose(permute)
+        assert spin_tensor.shape == shape
         return spin_tensor
 
     def get_spin_tensor_code(self, permute=None) -> np.ndarray:
         """
         return spin_tensor_code
-        spin_tensor_code[s1, s2, s3] = spin_coef
-        CPS/Grid/GPT code convention, not the Euclidean convention
-        #
-        psi^Eucl_0 = -1j * psi^Code_1
-        psi^Eucl_1 = +1j * psi^Code_0
-        psi^Eucl_2 = -1j * psi^Code_3
-        psi^Eucl_3 = +1j * psi^Code_2
+        See `baryon_spin_tensor_to_code` and `baryon_spin_tensor_from_code`.
         """
-        shape = (4, 4, 4,)
-        spin_tensor_code = np.zeros(shape, dtype=object)
-        sidx_arr = [
-                (1, -sympy.I),
-                (0, sympy.I),
-                (3, -sympy.I),
-                (2, sympy.I),
-                ]
         spin_tensor = self.get_spin_tensor(permute=permute)
-        assert spin_tensor.shape == shape
-        for s1 in range(4):
-            s1p, fac1, = sidx_arr[s1]
-            for s2 in range(4):
-                s2p, fac2, = sidx_arr[s2]
-                for s3 in range(4):
-                    s3p, fac3, = sidx_arr[s3]
-                    spin_tensor_code[s1p, s2p, s3p] = fac1 * fac2 * fac3 * spin_tensor[s1, s2, s3]
-        return spin_tensor
+        spin_tensor_code = baryon_spin_tensor_to_code(spin_tensor)
+        return spin_tensor_code
 
-    def add(self, chiral_projection, spin, coef) -> Self:
+    def add(self, chiral_projection, spin, spin_coef) -> Self:
         """
         return self
         Allow keep add.
+        #
+        chiral_projection = ((1, 1,), (1, 0,), (1, 0,),)
+        spin = (0, 1, 0,)
+        spin_coef = 1
         """
-        if mk_sym(coef) == 0:
+        if mk_sym(spin_coef) == 0:
             return self
         ((c00, c01,), (c10, c11,), (c20, c21,),) = chiral_projection
         chiral_projection = (
@@ -706,25 +739,25 @@ class BfieldCoef:
                 (mk_sym(c10), mk_sym(c11),),
                 (mk_sym(c20), mk_sym(c21),),
                 )
-        if chiral_projection not in self.coef_dict:
-            self.coef_dict[chiral_projection] = dict()
-        spin_coef_dict = self.coef_dict[chiral_projection]
         s1, s2, s3, = spin
-        assert isinstance(s1, int) and 0 <= s1 and s1 <= 1
-        assert isinstance(s2, int) and 0 <= s2 and s2 <= 1
-        assert isinstance(s3, int) and 0 <= s3 and s3 <= 1
-        if spin not in spin_coef_dict:
-            spin_coef_dict[spin] = coef
-        else:
-            v = spin_coef_dict[spin] + coef
-            if v == 0:
-                spin_coef_dict.pop(spin)
-            else:
-                spin_coef_dict[spin] = v
+        spin_tensor = self.spin_tensor
+        spin_tensor[s1, s2, s3] += c00 * c10 * c20 * spin_coef
+        spin_tensor[s1, s2, s3 + 2] += c00 * c10 * c21 * spin_coef
+        spin_tensor[s1, s2 + 2, s3] += c00 * c11 * c20 * spin_coef
+        spin_tensor[s1, s2 + 2, s3 + 2] += c00 * c11 * c21 * spin_coef
+        spin_tensor[s1 + 2, s2, s3] += c01 * c10 * c20 * spin_coef
+        spin_tensor[s1 + 2, s2, s3 + 2] += c01 * c10 * c21 * spin_coef
+        spin_tensor[s1 + 2, s2 + 2, s3] += c01 * c11 * c20 * spin_coef
+        spin_tensor[s1 + 2, s2 + 2, s3 + 2] += c01 * c11 * c21 * spin_coef
         return self
 
-    def __repr__(self):
-        return f"BfieldCoef()"
+    def list(self) -> list:
+        return [ self.spin_tensor, ]
+
+    def __repr__(self) -> str:
+        st_list_code = self.get_spin_tensor_list_code()
+        st_str = ",".join([ repr(v) for v in st_list_code ])
+        return f"BfieldCoef([{st_str}])"
 
 ### ------
 
@@ -1451,7 +1484,8 @@ def gamma_va(tag):
 
 ### ------
 
-if __name__ == "__main__":
+
+def mk_test_expr_wick_01():
     expr = (1
             * Qb("d", "x1", "s1", "c1")
             * G(5, "s1", "s2")
@@ -1459,6 +1493,94 @@ if __name__ == "__main__":
             * Qb("u", "x2", "s3", "c2")
             * G(5, "s3", "s4")
             * Qv("d", "x2", "s4", "c2"))
+    return expr
+
+def mk_test_expr_wick_02():
+    f1 = "u"
+    f2 = "u"
+    f3 = "d"
+    #
+    p1 = "x1"
+    s1 = "s1"
+    c1 = "c1"
+    #
+    p2 = "x2"
+    s2 = "s2"
+    c2 = "c2"
+    #
+    p3 = "x3"
+    s3 = "s3"
+    c3 = "c3"
+    #
+    p1p = "x1p"
+    s1p = "s1p"
+    c1p = "c1p"
+    #
+    p2p = "x2p"
+    s2p = "s2p"
+    c2p = "c2p"
+    #
+    p3p = "x3p"
+    s3p = "s3p"
+    c3p = "c3p"
+    #
+    q1v = Qv(f1, p1p, s1p, c1p)
+    q2v = Qv(f2, p2p, s2p, c2p)
+    q3v = Qv(f3, p3p, s3p, c3p)
+    q1b = Qb(f1, p1, s1, c1)
+    q2b = Qb(f2, p2, s2, c2)
+    q3b = Qb(f3, p3, s3, c3)
+    #
+    bf_b = Bfield("std-u", s1, s2, s3, c1, c2, c3)
+    bf_v = Bfield("std-u", s1p, s2p, s3p, c1p, c2p, c3p)
+    #
+    expr = bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr"
+    return expr
+
+def mk_test_expr_wick_03():
+    f1 = "d"
+    f2 = "u"
+    f3 = "u"
+    #
+    p1 = "x1"
+    s1 = "s1"
+    c1 = "c1"
+    #
+    p2 = "x2"
+    s2 = "s2"
+    c2 = "c2"
+    #
+    p3 = "x2"
+    s3 = "s3"
+    c3 = "c3"
+    #
+    p1p = "x1p"
+    s1p = "s1p"
+    c1p = "c1p"
+    #
+    p2p = "x2p"
+    s2p = "s2p"
+    c2p = "c2p"
+    #
+    p3p = "x2p"
+    s3p = "s3p"
+    c3p = "c3p"
+    #
+    q1v = Qv(f1, p1p, s1p, c1p)
+    q2v = Qv(f2, p2p, s2p, c2p)
+    q3v = Qv(f3, p3p, s3p, c3p)
+    q1b = Qb(f1, p1, s1, c1)
+    q2b = Qb(f2, p2, s2, c2)
+    q3b = Qb(f3, p3, s3, c3)
+    #
+    bf_b = Bfield("std-u", s1, s2, s3, c1, c2, c3)
+    bf_v = Bfield("std-u", s1p, s2p, s3p, c1p, c2p, c3p)
+    #
+    expr = bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr"
+    return expr
+
+if __name__ == "__main__":
+    expr = mk_test_expr_wick_01()
     print(expr)
     c_expr = contract_expr(expr)
     c_expr.simplify(is_isospin_symmetric_limit = False)
@@ -1470,51 +1592,10 @@ if __name__ == "__main__":
     print(c_expr)
     print(Qb("u", "x2", "s23", "c23") * Qv("u", "x1", "s11", "c11") - Qb("d", "x2", "s23", "c23") * Qv("d", "x1", "s11", "c11"))
     print(bfield_tag_dict['std-u'].get_spin_tensor_code())
-
-    f1 = "u"
-    f2 = "u"
-    f3 = "d"
-
-    p1 = "x1"
-    s1 = "s1"
-    c1 = "c1"
-
-    p2 = "x2"
-    s2 = "s2"
-    c2 = "c2"
-
-    p3 = "x3"
-    s3 = "s3"
-    c3 = "c3"
-
-    p1p = "x1p"
-    s1p = "s1p"
-    c1p = "c1p"
-
-    p2p = "x2p"
-    s2p = "s2p"
-    c2p = "c2p"
-
-    p3p = "x3p"
-    s3p = "s3p"
-    c3p = "c3p"
-
-    q1v = Qv(f1, p1p, s1p, c1p)
-    q2v = Qv(f2, p2p, s2p, c2p)
-    q3v = Qv(f3, p3p, s3p, c3p)
-    q1b = Qb(f1, p1, s1, c1)
-    q2b = Qb(f2, p2, s2, c2)
-    q3b = Qb(f3, p3, s3, c3)
-
-    bf_b = Bfield("std-u", s1, s2, s3, c1, c2, c3)
-    bf_v = Bfield("std-u", s1p, s2p, s3p, c1p, c2p, c3p)
-
-    expr = bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr"
-
+    print(bfield_tag_dict['std-u'])
+    expr = mk_test_expr_wick_02()
     print(expr)
-
     c_expr = contract_expr(expr)
     print(c_expr)
-
     c_expr.simplify()
     print(c_expr)
