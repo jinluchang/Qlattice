@@ -355,11 +355,15 @@ class Chain(Op):
     self.c2
     """
 
-    def __init__(self, ops:list, tag=None):
+    def __init__(self, ops:list, tag=None, s1:str="auto", s2:str="auto", c1:str="auto", c2:str="auto"):
         Op.__init__(self, "Chain")
         if tag is not None:
             # do not perform check if tag is set
             self.ops = ops
+            self.s1 = s1
+            self.s2 = s2
+            self.c1 = c1
+            self.c2 = c2
             self.tag = tag
             return
         for op in ops:
@@ -374,11 +378,12 @@ class Chain(Op):
         for op in ops:
             if not check_chain_sc(op, s, c):
                 raise Exception(f"ops={ops} tag={tag}")
-            s, c, = update_chain_sc(op, s, c)
+            s, c, = update_chain_sc1(op, s, c)
             if self.s1 is None:
                 self.s1 = s
             if self.c1 is None:
                 self.c1 = c
+            s, c, = update_chain_sc(op, s, c)
         self.s2 = s
         self.c2 = c
         if s is not None and c is not None:
@@ -394,10 +399,13 @@ class Chain(Op):
             self.ops.append(copy_op_index_auto(op))
 
     def __repr__(self) -> str:
-        return f"{self.otype}({self.ops!r},{self.tag!r})"
+        if self.s1 == "auto" and self.s2 == "auto" and self.c1 == "auto" and self.c2 == "auto":
+            return f"{self.otype}({self.ops!r},{self.tag!r})"
+        else:
+            return f"{self.otype}({self.ops!r},{self.tag!r},{self.s1!r},{self.s2!r},{self.c1!r},{self.c2!r})"
 
     def list(self):
-        return [ self.otype, self.tag, self.ops, ]
+        return [ self.otype, self.tag, self.s1, self.s2, self.c1, self.c2, self.ops, ]
 
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
@@ -414,13 +422,13 @@ class Chain(Op):
 ### ------
 
 def copy_op_index_auto(op:Op):
-    if op.otype not in [ "S", "G", "U", ]:
+    if op.otype not in [ "S", "G", "U", "Chain", ]:
         return op
     op = copy.copy(op)
-    if op.otype in [ "S", "G", ]:
+    if op.otype in [ "S", "Chain", "G", ]:
         op.s1 = "auto"
         op.s2 = "auto"
-    if op.otype in [ "S", "U", ]:
+    if op.otype in [ "S", "Chain", "U", ]:
         op.c1 = "auto"
         op.c2 = "auto"
     return op
@@ -513,10 +521,17 @@ def check_chain_sc(op, s, c):
             return False
     return True
 
+def update_chain_sc1(op, s, c):
+    if op.otype in [ "S", "Chain", "G", ]:
+        s = op.s1
+    if op.otype in [ "S", "Chain", "U", ]:
+        c = op.c1
+    return s, c
+
 def update_chain_sc(op, s, c):
-    if op.otype in [ "S", "G", ]:
+    if op.otype in [ "S", "Chain", "G", ]:
         s = op.s2
-    if op.otype in [ "S", "U", ]:
+    if op.otype in [ "S", "Chain", "U", ]:
         c = op.c2
     return s, c
 
@@ -535,7 +550,7 @@ def pick_chain_op(ops:list, masks:list, s, c, type_list=None):
 
 def find_trace(ops:list):
     """
-    return None or (Tr(tr_ops), remaining_ops,)
+    return None or (Tr(tr_ops), remaining_op_list,)
     """
     size = len(ops)
     for i, op in enumerate(ops):
@@ -561,7 +576,7 @@ def find_trace(ops:list):
 
 def find_chain(ops:list):
     """
-    return None or (Chain(ch_ops), remaining_ops,)
+    return None or (Chain(ch_ops), remaining_op_list,)
     """
     size = len(ops)
     for i, op in enumerate(ops):
@@ -810,16 +825,25 @@ class BS(Op):
             assert ch.otype == "Chain"
         Op.__init__(self, "BS")
         self.tag_pair_list = tag_pair_list
-        self.prop_list = prop_list
+        self.chain_list = chain_list
+
+    def __repr__(self) -> str:
+        return f"{self.otype}({self.tag_pair_list!r},{self.chain_list!r})"
+
+    def list(self):
+        return [ self.otype, self.tag_pair_list, self.chain_list, ]
+
+    def __eq__(self, other) -> bool:
+        return self.list() == other.list()
 
     def sort(self):
-        sp_chain_list = sorted(list(enumerate(self.chain_list)), key=lambda x: repr(x[1]))[0]
+        sp_chain_list = sorted(list(enumerate(self.chain_list)), key=lambda x: repr(x[1]))
         s_chain_list = []
         i_list = []
         for sp in sp_chain_list:
             i, ch = sp
             i_list.append(i)
-            s_chain_list(ch)
+            s_chain_list.append(ch)
         def permute_permute(p):
             return tuple(p[i] for i in i_list)
         s_tag_pair_list = []
@@ -836,8 +860,127 @@ class BS(Op):
 
 ### ------
 
-def mk_baryon_prop(bf1:Bfield, bf2:Bfield, chain_list:list[Chain]) -> BS:
-    pass
+def find_chains_for_bfield_v(bf:Bfield, op_list:list[Op]) -> tuple[list[Chain], list[Op]]|None:
+    """
+    return chain_list, remaining_op_list
+    """
+    s_list = [ bf.s1, bf.s2, bf.s3, ]
+    c_list = [ bf.c1, bf.c2, bf.c3, ]
+    chain_list = [ None for i in range(3) ]
+    masks = [ False for op in op_list ]
+    for op in op_list:
+        if op.otype != "Chain":
+            continue
+        for i, s in enumerate(s_list):
+            if op.s1 == s:
+                assert masks[i] == False
+                chain_list[i] = op
+                masks[i] = True
+    assert len(chain_list) == 3
+    for i in range(3):
+        ch = chain_list[i]
+        if ch is None:
+            return None
+        assert ch is not None
+        assert ch.s1 == s_list[i]
+        assert ch.c1 == c_list[i]
+    remaining_op_list = []
+    for mask, op in zip(masks, op_list):
+        if mask == False:
+            remaining_op_list.append(op)
+    return chain_list, remaining_op_list
+
+def find_bfield_b_from_chains(chain_list:list[Chain], op_list:list[Op]) -> tuple[Bfield, tuple[int], list[Op]]|None:
+    """
+    return (bf_b, permute, remaining_op_list) or None
+    """
+    assert len(chain_list) == 3
+    s_ch_list = [ ch.s2 for ch in chain_list ]
+    c_ch_list = [ ch.c2 for ch in chain_list ]
+    for idx, op in enumerate(op_list):
+        if op.otype != "Bfield":
+            continue
+        bf = op
+        s_list = [ bf.s1, bf.s2, bf.s3, ]
+        c_list = [ bf.c1, bf.c2, bf.c3, ]
+        if sorted(s_list) != sorted(s_ch_list):
+            continue
+        assert sorted(c_list) == sorted(c_ch_list)
+        permute = []
+        for s, c in zip(s_ch_list, c_ch_list):
+            i = s_list.index(s)
+            assert s == s_list[i]
+            assert c == c_list[i]
+            permute.append(i)
+        permute = tuple(permute)
+        remaining_op_list = []
+        for i, op in enumerate(op_list):
+            if i != idx:
+                remaining_op_list.append(op)
+        return bf, permute, remaining_op_list
+    return None
+
+def mk_baryon_prop(bf_v:Bfield, bf_b:Bfield, chain_list:list[Chain]) -> BS:
+    assert len(chain_list) == 3
+    assert chain_list[0].s1 != chain_list[1].s1
+    assert chain_list[0].s1 != chain_list[2].s1
+    assert chain_list[1].s1 != chain_list[2].s1
+    assert chain_list[0].s2 != chain_list[1].s2
+    assert chain_list[0].s2 != chain_list[2].s2
+    assert chain_list[1].s2 != chain_list[2].s2
+    assert bf_v.s1 != bf_v.s2
+    assert bf_v.s1 != bf_v.s3
+    assert bf_v.s2 != bf_v.s3
+    assert bf_b.s1 != bf_b.s2
+    assert bf_b.s1 != bf_b.s3
+    assert bf_b.s2 != bf_b.s3
+    ch_list, re_op_list = find_chains_for_bfield_v(bf_v, chain_list)
+    assert len(re_op_list) == 0
+    assert ch_list == chain_list
+    permute_v = (0, 1, 2,)
+    bf, permute_b, re_op_list = find_bfield_b_from_chains(chain_list, [ bf_b, ])
+    assert bf == bf_b
+    assert len(re_op_list) == 0
+    tag_v = bf_v.tag
+    tag_b = bf_b.tag
+    tag_pair_list = [ (tag_v, permute_v, tag_b, permute_b,),]
+    chain_list = [ copy_op_index_auto(ch) for ch in chain_list ]
+    return BS(tag_pair_list, chain_list)
+
+def find_baryon_prop(op_list:list) -> tuple[BS,list[Op]]|None:
+    """
+    return (baryon_prop, remaining_op_list,) or None
+    """
+    size = len(op_list)
+    for i, op in enumerate(op_list):
+        if op.otype != "Bfield":
+            continue
+        bf_v = op
+        remaining_op_list = op_list[:i] + op_list[i + 1:]
+        p = find_chains_for_bfield_v(bf_v, remaining_op_list)
+        if p is None:
+            continue
+        chain_list, remaining_op_list = p
+        p = find_bfield_b_from_chains(chain_list, remaining_op_list)
+        if p is None:
+            continue
+        bf_b, permute, remaining_op_list = p
+        baryon_prop = mk_baryon_prop(bf_v, bf_b, chain_list)
+        return baryon_prop, remaining_op_list
+    return None
+
+def collect_baryon_props(op_list:list[Op]) -> list[Op]:
+    """
+    Collect all the `BS`s.
+    """
+    bs_list = []
+    while True:
+        p = find_baryon_prop(op_list)
+        if p is None:
+            break
+        bs, op_list = p
+        bs_list.append(bs)
+    return bs_list + op_list
 
 ### ------
 
@@ -920,8 +1063,12 @@ class Term:
         self.coef = ea.simplified(self.coef)
 
     def collect_traces(self) -> None:
+        """
+        Collect `Chain`s, `Tr`s, `BS`s.
+        """
         if len(self.a_ops) == 0:
             self.c_ops = collect_traces(self.c_ops)
+            self.c_ops = collect_baryon_props(self.c_ops)
 
     def isospin_symmetric_limit(self) -> None:
         for op in self.c_ops:
@@ -1253,7 +1400,7 @@ def contract_term(term:Term) -> Expr:
     return expr
 
 @q.timer
-def contract_expr(expr: Expr) -> Expr:
+def contract_expr(expr:Expr) -> Expr:
     """
     interface function
     does not change expr
@@ -1327,3 +1474,51 @@ if __name__ == "__main__":
     print(c_expr)
     print(Qb("u", "x2", "s23", "c23") * Qv("u", "x1", "s11", "c11") - Qb("d", "x2", "s23", "c23") * Qv("d", "x1", "s11", "c11"))
     print(bfield_tag_dict['std-u'].get_spin_tensor_code())
+
+    f1 = "u"
+    f2 = "u"
+    f3 = "d"
+
+    p1 = "x1"
+    s1 = "s1"
+    c1 = "c1"
+
+    p2 = "x2"
+    s2 = "s2"
+    c2 = "c2"
+
+    p3 = "x3"
+    s3 = "s3"
+    c3 = "c3"
+
+    p1p = "x1p"
+    s1p = "s1p"
+    c1p = "c1p"
+
+    p2p = "x2p"
+    s2p = "s2p"
+    c2p = "c2p"
+
+    p3p = "x3p"
+    s3p = "s3p"
+    c3p = "c3p"
+
+    q1v = Qv(f1, p1p, s1p, c1p)
+    q2v = Qv(f2, p2p, s2p, c2p)
+    q3v = Qv(f3, p3p, s3p, c3p)
+    q1b = Qb(f1, p1, s1, c1)
+    q2b = Qb(f2, p2, s2, c2)
+    q3b = Qb(f3, p3, s3, c3)
+
+    bf_b = Bfield("std-u", s1, s2, s3, c1, c2, c3)
+    bf_v = Bfield("std-u", s1p, s2p, s3p, c1p, c2p, c3p)
+
+    expr = bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr"
+
+    print(expr)
+
+    c_expr = contract_expr(expr)
+    print(c_expr)
+
+    c_expr.simplify()
+    print(c_expr)
