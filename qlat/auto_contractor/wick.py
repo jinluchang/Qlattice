@@ -622,6 +622,7 @@ def collect_traces(ops:list) -> list:
 
 ### ------
 
+@q.timer
 def baryon_spin_tensor_to_code(spin_tensor:np.ndarray) -> np.ndarray:
     """
     return spin_tensor_code
@@ -651,6 +652,7 @@ def baryon_spin_tensor_to_code(spin_tensor:np.ndarray) -> np.ndarray:
                 spin_tensor_code[s1, s2, s3] = fac1 * fac2 * fac3 * spin_tensor[s1p, s2p, s3p]
     return spin_tensor_code
 
+@q.timer
 def baryon_spin_tensor_from_code(spin_tensor_code:np.ndarray) -> np.ndarray:
     """
     return spin_tensor
@@ -713,6 +715,7 @@ class BfieldCoef:
         assert spin_tensor.shape == shape
         return spin_tensor
 
+    @q.timer
     def get_spin_tensor_code(self, permute=None) -> np.ndarray:
         """
         return spin_tensor_code
@@ -731,7 +734,7 @@ class BfieldCoef:
         spin = (0, 1, 0,)
         spin_coef = 1
         """
-        if mk_sym(spin_coef) == 0:
+        if spin_coef == 0:
             return self
         ((c00, c01,), (c10, c11,), (c20, c21,),) = chiral_projection
         s1, s2, s3, = spin
@@ -943,6 +946,7 @@ class BS(Op):
         for op in self.chain_list:
             op.isospin_symmetric_limit()
 
+    @q.timer
     def get_spin_spin_tensor_code(self) -> np.ndarray|None:
         """
         return sst or None
@@ -1308,6 +1312,7 @@ class Expr:
             t.simplify_ea()
         self.drop_zeros()
 
+    @q.timer
     def rescale_bs_term(self) -> None:
         terms = []
         for t in self.terms:
@@ -1433,6 +1438,7 @@ def simplify_bs_tag_pair_list(tag_pair_list:list) -> list:
     tag_pair_list = sorted(tag_pair_list, key=repr)
     return tag_pair_list
 
+@q.timer
 def combine_two_terms(t1:Term, t2:Term, t1_sig:str, t2_sig:str) -> Term|None:
     """
     Combine two terms together.
@@ -1527,18 +1533,6 @@ def drop_zero_terms(expr:Expr) -> Expr:
     terms = []
     for t in expr.terms:
         if ea.is_zero(t.coef):
-            continue
-        bs_list, re_op_list, = get_bs_list_from_op_list(t.c_ops)
-        is_b_zero = False
-        scaled_bs_list = []
-        for bs in bs_list:
-            sst_el = bs.get_spin_spin_tensor_elem_list_code()
-            if len(sst_el) == 0:
-                is_b_zero = True
-                coef = 1
-            else:
-                coef = sst_el[0][1]
-        if is_b_zero:
             continue
         terms.append(t)
     return Expr(terms, expr.description)
@@ -1957,6 +1951,53 @@ def mk_test_expr_wick_06():
     #
     expr = bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr-std3-pos3-u3"
     expr_list.append(expr)
+    #
+    bf_v = Bfield("std3-u3", s1p, s2p, s3p, c1p, c2p, c3p)
+    bf_b = Bfield("std3-u3", s1, s2, s3, c1, c2, c3)
+    #
+    from operators import mk_j_mu
+    expr = mk_j_mu("xx_1", 3) * mk_j_mu("xx_2", 3) * bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr-std3-std3-u3"
+    expr_list.append(expr)
+    #
+    return expr_list
+
+def mk_test_expr_wick_07():
+    f1 = "s"
+    f2 = "s"
+    f3 = "s"
+    #
+    p1 = "x1"
+    s1 = "s1"
+    c1 = "c1"
+    #
+    p2 = "x1"
+    s2 = "s2"
+    c2 = "c2"
+    #
+    p3 = "x1"
+    s3 = "s3"
+    c3 = "c3"
+    #
+    p1p = "x1p"
+    s1p = "s1p"
+    c1p = "c1p"
+    #
+    p2p = "x1p"
+    s2p = "s2p"
+    c2p = "c2p"
+    #
+    p3p = "x1p"
+    s3p = "s3p"
+    c3p = "c3p"
+    #
+    q1v = Qv(f1, p1p, s1p, c1p)
+    q2v = Qv(f2, p2p, s2p, c2p)
+    q3v = Qv(f3, p3p, s3p, c3p)
+    q1b = Qb(f1, p1, s1, c1)
+    q2b = Qb(f2, p2, s2, c2)
+    q3b = Qb(f3, p3, s3, c3)
+    #
+    expr_list = []
     #
     bf_v = Bfield("std3-u3", s1p, s2p, s3p, c1p, c2p, c3p)
     bf_b = Bfield("std3-u3", s1, s2, s3, c1, c2, c3)
