@@ -1962,7 +1962,7 @@ def mk_test_expr_wick_06():
     bf_b = Bfield("std3-u3", s1, s2, s3, c1, c2, c3)
     #
     from operators import mk_j_mu
-    expr = mk_j_mu("xx", 3) * bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr-std3-std3-u3"
+    expr = mk_j_mu("xx_1", 3) * mk_j_mu("xx_2", 3) * bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr-std3-std3-u3"
     expr_list.append(expr)
     #
     return expr_list
