@@ -905,6 +905,25 @@ class BS(Op):
         for op in self.chain_list:
             op.isospin_symmetric_limit()
 
+    def get_spin_spin_tensor_code(self) -> np.ndarray|None:
+        """
+        return sst or None
+        sst[v_s1, v_s2, v_s3, b_s1, b_s2, b_s3] = coef
+        """
+        if len(self.tag_pair_list) == 0:
+            return None
+        sst = 0
+        for tag_pair in self.tag_pair_list:
+            ((tag_v, permute_v, tag_b, permute_b,), coef,) = tag_pair
+            assert tag_v in bfield_tag_dict
+            assert tag_b in bfield_tag_dict
+            v_st = bfield_tag_dict[tag_v].get_spin_tensor_code(permute_v)
+            b_st = bfield_tag_dict[tag_b].get_spin_tensor_code(permute_b)
+            sst += v_st[:, :, :, None, None, None] * b_st[None, None, None, :, :, :] * coef
+        if np.all(sst == 0):
+            return None
+        return sst
+
 ### ------
 
 def find_chains_for_bfield_v(bf:Bfield, op_list:list[Op]) -> tuple[list[Chain], list[Op]]|None:
@@ -1340,6 +1359,10 @@ def get_bs_list_from_op_list(op_list:list[Op]) -> tuple[list[BS], list[Op]]:
             remaining_op_list.append(op)
     return bs_list, remaining_op_list
 
+def simplify_bs_tag_pair_list(tag_pair_list:list) -> list:
+    tag_pair_list = sorted(tag_pair_list, key=repr)
+    return tag_pair_list
+
 def combine_two_terms(t1:Term, t2:Term, t1_sig:str, t2_sig:str) -> Term|None:
     """
     Combine two terms together.
@@ -1367,7 +1390,7 @@ def combine_two_terms(t1:Term, t2:Term, t1_sig:str, t2_sig:str) -> Term|None:
             bs2 = copy.copy(bs2)
             bs1 *= coef1
             bs2 *= coef2
-            tag_pair_list = bs1.tag_pair_list + bs2.tag_pair_list
+            tag_pair_list = simplify_bs_tag_pair_list(bs1.tag_pair_list + bs2.tag_pair_list)
             bs = BS(tag_pair_list, bs1.chain_list)
             c_ops = [ bs, ] + re_c_ops1
             return Term(c_ops, t1.a_ops, 1)
@@ -1415,8 +1438,17 @@ def combine_terms_expr(expr:Expr) -> Expr:
 def drop_zero_terms(expr:Expr) -> Expr:
     terms = []
     for t in expr.terms:
-        if not ea.is_zero(t.coef):
-            terms.append(t)
+        if ea.is_zero(t.coef):
+            continue
+        bs_list, re_op_list, = get_bs_list_from_op_list(t.c_ops)
+        is_b_zero = False
+        for bs in bs_list:
+            sst = bs.get_spin_spin_tensor_code()
+            if sst is None:
+                is_b_zero = True
+        if is_b_zero:
+            continue
+        terms.append(t)
     return Expr(terms, expr.description)
 
 def op_derivative_exp(op:Op):
@@ -1703,6 +1735,49 @@ def mk_test_expr_wick_04():
     ubar_u = Qb(f2, "xx", "s01", "c01") * Qv(f2, "xx", "s01", "c01")
     #
     expr = ubar_u * bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr"
+    return expr
+
+def mk_test_expr_wick_05():
+    f1 = "u"
+    f2 = "u"
+    f3 = "d"
+    #
+    p1 = "x1"
+    s1 = "s1"
+    c1 = "c1"
+    #
+    p2 = "x1"
+    s2 = "s2"
+    c2 = "c2"
+    #
+    p3 = "x1"
+    s3 = "s3"
+    c3 = "c3"
+    #
+    p1p = "x1p"
+    s1p = "s1p"
+    c1p = "c1p"
+    #
+    p2p = "x1p"
+    s2p = "s2p"
+    c2p = "c2p"
+    #
+    p3p = "x1p"
+    s3p = "s3p"
+    c3p = "c3p"
+    #
+    q1v = Qv(f1, p1p, s1p, c1p)
+    q2v = Qv(f2, p2p, s2p, c2p)
+    q3v = Qv(f3, p3p, s3p, c3p)
+    q1b = Qb(f1, p1, s1, c1)
+    q2b = Qb(f2, p2, s2, c2)
+    q3b = Qb(f3, p3, s3, c3)
+    #
+    bf_b = Bfield("std-u", s1, s2, s3, c1, c2, c3)
+    # bf_v = Bfield("std-u", s1p, s2p, s3p, c1p, c2p, c3p)
+    bf_v = Bfield("std-u", s3p, s2p, s1p, c3p, c2p, c1p)
+    #
+    expr = bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr"
     return expr
 
 if __name__ == "__main__":

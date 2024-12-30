@@ -201,6 +201,7 @@ class Expr:
 def simplified(x) -> Expr:
     """
     interface function
+    Only perform structure simplification.
     """
     x = mk_expr(x).copy()
     x.simplify()
@@ -214,6 +215,7 @@ def simplified(x) -> Expr:
 def coef_simplified(x) -> Expr:
     """
     interface function
+    Only perform sympy simplification.
     """
     x = mk_expr(x).copy()
     x.simplify_coef()
