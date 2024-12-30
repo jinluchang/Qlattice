@@ -857,6 +857,24 @@ class Bfield(Op):
 
 ### ------
 
+def simplify_bs_tag_pair_list(tag_pair_list:list) -> list:
+    """
+    Merge `tag_pair` with the same `tag` (combine the `coef`s).
+    """
+    tag_pair_list = sorted(tag_pair_list, key=repr)
+    if len(tag_pair_list) == 0:
+        return []
+    s_tag_pair_list = []
+    value, coef, = tag_pair_list[0]
+    for v, c in tag_pair_list[1:]:
+        if v == value:
+            coef += c
+        else:
+            s_tag_pair_list.append((value, coef,))
+            value, coef, = v, c,
+    s_tag_pair_list.append((value, coef,))
+    return s_tag_pair_list
+
 class BS(Op):
 
     """
@@ -906,8 +924,8 @@ class BS(Op):
             self.tag_pair_list = []
         tag_pair_list = []
         for tag_pair in self.tag_pair_list:
-            ((tag_v, permute_v, tag_b, permute_b,), coef,) = tag_pair
-            tag_pair = ((tag_v, permute_v, tag_b, permute_b,), coef * factor,)
+            (tag, coef,) = tag_pair
+            tag_pair = (tag, coef * factor,)
             tag_pair_list.append(tag_pair)
         self.tag_pair_list = tag_pair_list
         return self
@@ -957,7 +975,7 @@ class BS(Op):
         sst = 0
         for tag_pair in self.tag_pair_list:
             ((tag_v, permute_v, tag_b, permute_b,), coef,) = tag_pair
-            print(f"get_spin_spin_tensor_code: coef={coef}")
+            # print(f"get_spin_spin_tensor_code: coef={coef}")
             assert tag_v in bfield_tag_dict
             assert tag_b in bfield_tag_dict
             v_st = bfield_tag_dict[tag_v].get_spin_tensor_code(permute_v)
@@ -989,6 +1007,9 @@ class BS(Op):
                                     continue
                                 elem_list.append(((v_s1, b_s1, v_s2, b_s2, v_s3, b_s3,), coef,))
         return elem_list
+
+    def simplify_tag_pair_list(self):
+        self.tag_pair_list = simplify_bs_tag_pair_list(self.tag_pair_list)
 
 ### ------
 
@@ -1435,21 +1456,6 @@ def get_bs_list_from_op_list(op_list:list[Op]) -> tuple[list[BS], list[Op]]:
             remaining_op_list.append(op)
     return bs_list, remaining_op_list
 
-def simplify_bs_tag_pair_list(tag_pair_list:list) -> list:
-    tag_pair_list = sorted(tag_pair_list, key=repr)
-    if len(tag_pair_list) == 0:
-        return []
-    s_tag_pair_list = []
-    value, coef, = tag_pair_list[0]
-    for v, c in tag_pair_list[1:]:
-        if v == value:
-            coef += c
-        else:
-            s_tag_pair_list.append((value, coef,))
-            value, coef, = v, c,
-    s_tag_pair_list.append((value, coef,))
-    return s_tag_pair_list
-
 @q.timer
 def combine_two_terms(t1:Term, t2:Term, t1_sig:str, t2_sig:str) -> Term|None:
     """
@@ -1477,8 +1483,8 @@ def combine_two_terms(t1:Term, t2:Term, t1_sig:str, t2_sig:str) -> Term|None:
             bs2 = copy.copy(bs2)
             bs1 *= coef1
             bs2 *= coef2
-            tag_pair_list = simplify_bs_tag_pair_list(bs1.tag_pair_list + bs2.tag_pair_list)
-            bs = BS(tag_pair_list, bs1.chain_list)
+            bs = BS(bs1.tag_pair_list + bs2.tag_pair_list, bs1.chain_list)
+            bs.simplify_tag_pair_list()
             c_ops = [ bs, ] + re_c_ops1
             return Term(c_ops, t1.a_ops, 1)
         else:

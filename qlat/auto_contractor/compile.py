@@ -2004,6 +2004,6 @@ if __name__ == "__main__":
     expr_list = mk_test_expr_wick_07()
     with q.TimerFork():
         cexpr = contract_simplify_compile(*expr_list, is_isospin_symmetric_limit=True)
-        # cexpr.optimize()
+        cexpr.optimize()
     print(display_cexpr(cexpr))
     print()
