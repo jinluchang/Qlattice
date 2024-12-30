@@ -97,6 +97,8 @@ def get_op_type(x):
         return "Tr"
     elif x.otype == "Chain":
         return "Chain"
+    elif x.otype == "BS":
+        return "BS"
     elif x.otype == "Var":
         return get_var_name_type(x.name)
     else:
@@ -133,6 +135,9 @@ def add_positions(s, x):
                 add_positions(s, op)
         elif x.otype == "Chain":
             for op in x.ops:
+                add_positions(s, op)
+        elif x.otype == "BS":
+            for op in x.chain_list:
                 add_positions(s, op)
         elif x.otype == "Qfield":
             if isinstance(x.p, str):
@@ -448,6 +453,8 @@ def collect_prop_in_cexpr(named_terms):
                     add_prop_variables(op.ops)
                 elif op.otype == "Chain":
                     add_prop_variables(op.ops)
+                elif op.otype == "BS":
+                    add_prop_variables(op.chain_list)
         elif isinstance(x, Term):
             add_prop_variables(x.c_ops)
         elif isinstance(x, Expr):
@@ -491,6 +498,8 @@ def collect_color_matrix_in_cexpr(named_terms):
                     add_variables(op.ops)
                 elif op.otype == "Chain":
                     add_variables(op.ops)
+                elif op.otype == "BS":
+                    add_variables(op.chain_list)
         elif isinstance(x, Term):
             add_variables(x.c_ops)
         elif isinstance(x, Expr):
@@ -1253,7 +1262,7 @@ def show_variable_value(value):
         return f"chain({expr})"
     elif isinstance(value, BS):
         chain_list_expr = ",".join(map(show_variable_value, value.chain_list))
-        return f"bs({value.tag_pair},{chain_list_expr})"
+        return f"bs({value.tag_pair_list},{chain_list_expr})"
     elif isinstance(value, Term):
         if value.coef == 1:
             return "*".join(map(show_variable_value, value.c_ops + value.a_ops))
@@ -1988,9 +1997,9 @@ if __name__ == "__main__":
     print(display_cexpr(cexpr))
     print(cexpr_code_gen_py(cexpr))
     print()
-    print("mk_test_expr_wick_03")
+    print("mk_test_expr_wick_04")
     print()
-    expr = mk_test_expr_wick_03()
+    expr = mk_test_expr_wick_04()
     cexpr = contract_simplify_compile(expr, is_isospin_symmetric_limit=True)
     cexpr.optimize()
     print(display_cexpr(cexpr))

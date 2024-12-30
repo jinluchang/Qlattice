@@ -824,10 +824,10 @@ class BS(Op):
     """
     single baryon prop
     #
-    self.tag_pair
+    self.tag_pair_list
     self.chain_list
     #
-    tag_pair = (tag_v, permute_v, tag_b, permute_b,)
+    tag_pair_list = [ ((tag_v, permute_v, tag_b, permute_b,), coef,) ... ]
     chain_list = [ prop_0, prop_1, prop_2, ]
     tag_v or tag_b in `bfield_tag_dict`
     permute_v = (spin_color_index_that_prop_0_contract_with,
@@ -835,35 +835,50 @@ class BS(Op):
                  spin_color_index_that_prop_2_contract_with,)
     """
 
-    def __init__(self, tag_pair:list, chain_list:list[Chain]):
-        assert isinstance(tag_pair, tuple)
-        (tag_v, permute_v, tag_b, permute_b,) = tag_pair
-        assert isinstance(tag_v, str)
-        assert isinstance(tag_b, str)
-        assert tag_v in bfield_tag_dict
-        assert tag_b in bfield_tag_dict
-        assert isinstance(permute_v, tuple)
-        assert isinstance(permute_b, tuple)
-        assert len(permute_v) == 3
-        assert len(permute_b) == 3
-        for i in permute_v:
-            assert 0 <= i and i < 3
-        for i in permute_b:
-            assert 0 <= i and i < 3
+    def __init__(self, tag_pair_list:list, chain_list:list[Chain]):
+        assert isinstance(tag_pair_list, list)
+        for tag_pair in tag_pair_list:
+            assert isinstance(tag_pair, tuple)
+            assert len(tag_pair) == 2
+            assert isinstance(tag_pair[0], tuple)
+            ((tag_v, permute_v, tag_b, permute_b,), coef,) = tag_pair
+            assert isinstance(tag_v, str)
+            assert isinstance(tag_b, str)
+            assert tag_v in bfield_tag_dict
+            assert tag_b in bfield_tag_dict
+            assert isinstance(permute_v, tuple)
+            assert isinstance(permute_b, tuple)
+            assert len(permute_v) == 3
+            assert len(permute_b) == 3
+            for i in permute_v:
+                assert 0 <= i and i < 3
+            for i in permute_b:
+                assert 0 <= i and i < 3
         assert isinstance(chain_list, list)
         assert len(chain_list) == 3
         for ch in chain_list:
             assert isinstance(ch, Chain)
             assert ch.otype == "Chain"
         Op.__init__(self, "BS")
-        self.tag_pair = tag_pair
+        self.tag_pair_list = tag_pair_list
         self.chain_list = chain_list
 
+    def __imul__(self, factor):
+        if factor == 0:
+            self.tag_pair_list = []
+        tag_pair_list = []
+        for tag_pair in self.tag_pair_list:
+            ((tag_v, permute_v, tag_b, permute_b,), coef,) = tag_pair
+            tag_pair = ((tag_v, permute_v, tag_b, permute_b,), coef * factor,)
+            tag_pair_list.append(tag_pair)
+        self.tag_pair_list = tag_pair_list
+        return self
+
     def __repr__(self) -> str:
-        return f"{self.otype}({self.tag_pair!r},{self.chain_list!r})"
+        return f"{self.otype}({self.tag_pair_list!r},{self.chain_list!r})"
 
     def list(self):
-        return [ self.otype, self.tag_pair, self.chain_list, ]
+        return [ self.otype, self.tag_pair_list, self.chain_list, ]
 
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
@@ -878,9 +893,12 @@ class BS(Op):
             s_chain_list.append(ch)
         def permute_permute(p):
             return tuple(p[i] for i in i_list)
-        (tag_v, permute_v, tag_b, permute_b,) = self.tag_pair
-        s_tag_pair = (tag_v, permute_permute(permute_v), tag_b, permute_permute(permute_b),)
-        self.tag_pair = s_tag_pair
+        s_tag_pair_list = []
+        for tag_pair in self.tag_pair_list:
+            ((tag_v, permute_v, tag_b, permute_b,), coef,) = tag_pair
+            s_tag_pair = ((tag_v, permute_permute(permute_v), tag_b, permute_permute(permute_b),), coef,)
+            s_tag_pair_list.append(s_tag_pair)
+        self.tag_pair_list = s_tag_pair_list
         self.chain_list = s_chain_list
 
     def isospin_symmetric_limit(self) -> None:
@@ -972,9 +990,10 @@ def mk_baryon_prop(bf_v:Bfield, bf_b:Bfield, chain_list:list[Chain]) -> BS:
     assert len(re_op_list) == 0
     tag_v = bf_v.tag
     tag_b = bf_b.tag
-    tag_pair = (tag_v, permute_v, tag_b, permute_b,)
+    tag_pair = ((tag_v, permute_v, tag_b, permute_b,), 1,)
+    tag_pair_list = [ tag_pair, ]
     chain_list = [ copy_op_index_auto(ch) for ch in chain_list ]
-    return BS(tag_pair, chain_list)
+    return BS(tag_pair_list, chain_list)
 
 def find_baryon_prop(op_list:list) -> tuple[BS,list[Op]]|None:
     """
@@ -1044,6 +1063,7 @@ class Term:
 
     def __imul__(self, factor):
         self.coef *= factor
+        return self
 
     def __add__(self, other):
         return mk_expr(self) + other
@@ -1071,7 +1091,7 @@ class Term:
     def __rsub__(self, other):
         return mk_expr(other) + mk_expr(-1) * self
 
-    def show(self, is_multiply = False) -> str:
+    def show(self, is_multiply=False) -> str:
         return "*".join([ f"({self.coef})", ] + self.c_ops + self.a_ops)
 
     def __repr__(self) -> str:
@@ -1080,6 +1100,8 @@ class Term:
     def sort(self) -> None:
         """
         only sort commutable factors
+        #
+        Important to keep the `BS` factors in front of other factors.
         """
         for op in self.c_ops:
             op.sort()
@@ -1105,16 +1127,6 @@ class Term:
 
 ### ------
 
-def combine_two_terms(t1:Term, t2:Term, t1_sig:str, t2_sig:str):
-    if t1_sig == t2_sig:
-        coef = t1.coef + t2.coef
-        if ea.is_zero(coef):
-            return Term([], [], 0)
-        else:
-            return Term(t1.c_ops, t1.a_ops, coef)
-    else:
-        return None
-
 class Expr:
 
     """
@@ -1136,7 +1148,8 @@ class Expr:
     def __imul__(self, factor):
         for term in self.terms:
             term *= factor
-        description = f"{factor} * {self.show(True)}"
+        self.description = f"{factor} * {self.show(True)}"
+        return self
 
     def __add__(self, other):
         """
@@ -1178,7 +1191,7 @@ class Expr:
     def __rsub__(self, other):
         return mk_expr(other) + mk_expr(-1) * self
 
-    def show(self, is_multiply = False):
+    def show(self, is_multiply=False):
         if self.description is not None:
             assert isinstance(self.description, str)
             if len(self.description) >= 1 and self.description[0] == "+":
@@ -1256,6 +1269,7 @@ class Expr:
         self.collect_traces()
         self.sort()
         self.combine_terms()
+        self.sort()
         self.simplify_ea()
 
 ### ------
@@ -1295,22 +1309,89 @@ def mk_expr(x) -> Expr:
     elif isinstance(x, (int, float, complex, sympy.Basic, ea.Expr)):
         return Expr([Term([], [], x),], f"({x})")
     else:
-        print(x)
-        assert False
+        raise Exception(f"{x}")
+
+def get_op_signature(op:Op, bs_count:int) -> str:
+    if bs_count == 0:
+        if op.otype == "BS":
+            return f"{op.otype}(tag_pair_list,{op.chain_list!r})"
+    return f"{op!r}"
+
+def get_term_signature(term:Term) -> str:
+    """
+    Terms with the same signature can be combined together.
+    """
+    c_ops_str_list = []
+    bs_count = 0
+    for op in term.c_ops:
+        c_ops_str_list.append(get_op_signature(op, bs_count))
+        if op.otype == "BS":
+            bs_count += 1
+    c_ops_str = ",".join(c_ops_str_list)
+    return (f"[{c_ops_str}],{term.a_ops!r}", bs_count,)
+
+def get_bs_list_from_op_list(op_list:list[Op]) -> tuple[list[BS], list[Op]]:
+    bs_list = []
+    remaining_op_list = []
+    for op in op_list:
+        if op.otype == "BS":
+            bs_list.append(op)
+        else:
+            remaining_op_list.append(op)
+    return bs_list, remaining_op_list
+
+def combine_two_terms(t1:Term, t2:Term, t1_sig:str, t2_sig:str) -> Term|None:
+    """
+    Combine two terms together.
+    If not possible, return None.
+    """
+    if t1_sig == t2_sig:
+        print(f"combine_two_terms:{t1_sig}")
+        (sig_str, bs_count,) = t1_sig
+        assert t1.a_ops == t2.a_ops
+        if bs_count == 0:
+            assert t1.c_ops == t2.c_ops
+            coef = t1.coef + t2.coef
+            if ea.is_zero(coef):
+                return Term([], [], 0)
+            else:
+                return Term(t1.c_ops, t1.a_ops, coef)
+        elif bs_count == 1:
+            coef1 = t1.coef
+            coef2 = t2.coef
+            [ bs1, ], re_c_ops1, = get_bs_list_from_op_list(t1.c_ops)
+            [ bs2, ], re_c_ops2, = get_bs_list_from_op_list(t2.c_ops)
+            assert re_c_ops1 == re_c_ops2
+            assert bs1.chain_list == bs2.chain_list
+            bs1 = copy.copy(bs1)
+            bs2 = copy.copy(bs2)
+            bs1 *= coef1
+            bs2 *= coef2
+            tag_pair_list = bs1.tag_pair_list + bs2.tag_pair_list
+            bs = BS(tag_pair_list, bs1.chain_list)
+            c_ops = [ bs, ] + re_c_ops1
+            return Term(c_ops, t1.a_ops, 1)
+        else:
+            return None
+    else:
+        return None
 
 @q.timer
 def combine_terms_expr(expr:Expr) -> Expr:
+    """
+    combine terms with the same signatures.
+    """
     if not expr.terms:
         return expr
-    def get_sig(t):
-        return f"{t.c_ops},{t.a_ops}"
     zero_term = Term([], [], 0)
-    zero_term_sig = get_sig(zero_term)
-    signatures = [ get_sig(t) for t in expr.terms ]
+    zero_term_sig = get_term_signature(zero_term)
+    signatures = [ get_term_signature(t) for t in expr.terms ]
+    s_pairs = sorted(list(zip(expr.terms, signatures)), key=lambda x: x[1])
+    s_terms, s_signatures, = list(zip(*s_pairs))
     terms = []
-    term = expr.terms[0]
-    term_sig = signatures[0]
-    for t, t_sig in zip(expr.terms[1:], signatures[1:]):
+    term = s_terms[0]
+    term_sig = s_signatures[0]
+    for t, t_sig in zip(s_terms[1:], s_signatures[1:]):
         if ea.is_zero(term.coef):
             term = t
             term_sig = t_sig
@@ -1325,6 +1406,7 @@ def combine_terms_expr(expr:Expr) -> Expr:
                 term_sig = zero_term_sig
             else:
                 term = ct
+                assert term_sig == get_term_signature(term)
     if not ea.is_zero(term.coef):
         terms.append(term)
     return Expr(terms, expr.description)
@@ -1577,6 +1659,50 @@ def mk_test_expr_wick_03():
     bf_v = Bfield("std-u", s1p, s2p, s3p, c1p, c2p, c3p)
     #
     expr = bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr"
+    return expr
+
+def mk_test_expr_wick_04():
+    f1 = "d"
+    f2 = "u"
+    f3 = "u"
+    #
+    p1 = "x1"
+    s1 = "s1"
+    c1 = "c1"
+    #
+    p2 = "x2"
+    s2 = "s2"
+    c2 = "c2"
+    #
+    p3 = "x2"
+    s3 = "s3"
+    c3 = "c3"
+    #
+    p1p = "x1p"
+    s1p = "s1p"
+    c1p = "c1p"
+    #
+    p2p = "x2p"
+    s2p = "s2p"
+    c2p = "c2p"
+    #
+    p3p = "x2p"
+    s3p = "s3p"
+    c3p = "c3p"
+    #
+    q1v = Qv(f1, p1p, s1p, c1p)
+    q2v = Qv(f2, p2p, s2p, c2p)
+    q3v = Qv(f3, p3p, s3p, c3p)
+    q1b = Qb(f1, p1, s1, c1)
+    q2b = Qb(f2, p2, s2, c2)
+    q3b = Qb(f3, p3, s3, c3)
+    #
+    bf_b = Bfield("std-u", s1, s2, s3, c1, c2, c3)
+    bf_v = Bfield("std-u", s1p, s2p, s3p, c1p, c2p, c3p)
+    #
+    ubar_u = Qb(f2, "xx", "s01", "c01") * Qv(f2, "xx", "s01", "c01")
+    #
+    expr = ubar_u * bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr"
     return expr
 
 if __name__ == "__main__":
