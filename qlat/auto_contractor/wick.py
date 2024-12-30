@@ -629,19 +629,19 @@ def baryon_spin_tensor_to_code(spin_tensor:np.ndarray) -> np.ndarray:
     spin_tensor_code[s1, s2, s3] = spin_coef
     Note CPS/Grid/GPT code convention is not the Euclidean convention
     #
-    psi^Code_0 = -1j * psi^Eucl_1
-    psi^Code_1 = +1j * psi^Eucl_0
-    psi^Code_2 = -1j * psi^Eucl_3
-    psi^Code_3 = +1j * psi^Eucl_2
+    psi^Code_0 = -1 * psi^Eucl_1
+    psi^Code_1 = +1 * psi^Eucl_0
+    psi^Code_2 = -1 * psi^Eucl_3
+    psi^Code_3 = +1 * psi^Eucl_2
     """
     shape = (4, 4, 4,)
     assert spin_tensor.shape == shape
     spin_tensor_code = np.zeros(shape, dtype=object)
     sidx_arr = [
-            (1, -sympy.I),
-            (0, sympy.I),
-            (3, -sympy.I),
-            (2, sympy.I),
+            (1, -1),
+            (0, 1),
+            (3, -1),
+            (2, 1),
             ]
     for s1 in range(4):
         s1p, fac1, = sidx_arr[s1]
@@ -659,19 +659,19 @@ def baryon_spin_tensor_from_code(spin_tensor_code:np.ndarray) -> np.ndarray:
     spin_tensor[s1, s2, s3] = spin_coef
     Note CPS/Grid/GPT code convention is not the Euclidean convention
     #
-    psi^Eucl_0 = -1j * psi^Code_1
-    psi^Eucl_1 = +1j * psi^Code_0
-    psi^Eucl_2 = -1j * psi^Code_3
-    psi^Eucl_3 = +1j * psi^Code_2
+    psi^Eucl_0 = +1 * psi^Code_1
+    psi^Eucl_1 = -1 * psi^Code_0
+    psi^Eucl_2 = +1 * psi^Code_3
+    psi^Eucl_3 = -1 * psi^Code_2
     """
     shape = (4, 4, 4,)
     assert spin_tensor_code.shape == shape
     spin_tensor = np.zeros(shape, dtype=object)
     sidx_arr = [
-            (1, -sympy.I),
-            (0, sympy.I),
-            (3, -sympy.I),
-            (2, sympy.I),
+            (1, 1),
+            (0, -1),
+            (3, 1),
+            (2, -1),
             ]
     for s1 in range(4):
         s1p, fac1, = sidx_arr[s1]
@@ -957,6 +957,7 @@ class BS(Op):
         sst = 0
         for tag_pair in self.tag_pair_list:
             ((tag_v, permute_v, tag_b, permute_b,), coef,) = tag_pair
+            print(f"get_spin_spin_tensor_code: coef={coef}")
             assert tag_v in bfield_tag_dict
             assert tag_b in bfield_tag_dict
             v_st = bfield_tag_dict[tag_v].get_spin_tensor_code(permute_v)
@@ -1436,7 +1437,18 @@ def get_bs_list_from_op_list(op_list:list[Op]) -> tuple[list[BS], list[Op]]:
 
 def simplify_bs_tag_pair_list(tag_pair_list:list) -> list:
     tag_pair_list = sorted(tag_pair_list, key=repr)
-    return tag_pair_list
+    if len(tag_pair_list) == 0:
+        return []
+    s_tag_pair_list = []
+    value, coef, = tag_pair_list[0]
+    for v, c in tag_pair_list[1:]:
+        if v == value:
+            coef += c
+        else:
+            s_tag_pair_list.append((value, coef,))
+            value, coef, = v, c,
+    s_tag_pair_list.append((value, coef,))
+    return s_tag_pair_list
 
 @q.timer
 def combine_two_terms(t1:Term, t2:Term, t1_sig:str, t2_sig:str) -> Term|None:
@@ -1517,14 +1529,28 @@ def rescale_bs_term(term:Term) -> Term:
     coef_prod = 1
     for bs in bs_list:
         sst_el = bs.get_spin_spin_tensor_elem_list_code()
-        if len(sst_el) == 0:
+        over_all_coef = 0
+        for _, coef, in sst_el:
+            if isinstance(coef, ea.Expr):
+                coef = ea.simplified(coef)
+            if ea.is_zero(coef):
+                continue
+            if isinstance(coef, ea.Expr):
+                if coef.is_zero():
+                    continue
+                over_all_coef = coef.terms[0].coef
+                break
+            else:
+                if coef == 0:
+                    continue
+                over_all_coef = coef
+                break
+        if over_all_coef == 0:
             return Term([], [], 0)
-        else:
-            coef = sst_el[0][1]
         scaled_bs = copy.copy(bs)
-        scaled_bs *= 1 / mk_sym(coef)
+        scaled_bs *= 1 / mk_sym(over_all_coef)
         scaled_bs_list.append(scaled_bs)
-        coef_prod *= coef
+        coef_prod *= over_all_coef
     scaled_term = Term(scaled_bs_list + re_op_list, term.a_ops, coef_prod * term.coef)
     return scaled_term
 

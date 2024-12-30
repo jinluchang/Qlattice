@@ -174,6 +174,9 @@ class Expr:
 
     @q.timer
     def simplify_coef(self) -> None:
+        """
+        call `coef_simplified` instead
+        """
         for t in self.terms:
             t.simplify_coef()
         self.drop_zeros()
@@ -181,11 +184,12 @@ class Expr:
     @q.timer
     def simplify(self) -> None:
         """
-        interface function
+        call `simplified` instead
         """
         self.sort()
         self.combine_terms()
         self.drop_zeros()
+        self.sort()
 
     def is_zero(self) -> bool:
         return not self.terms
@@ -198,7 +202,7 @@ class Expr:
 
 ### ------
 
-def simplified(x) -> Expr:
+def simplified(x) -> Expr|int:
     """
     interface function
     Only perform structure simplification.
@@ -212,14 +216,14 @@ def simplified(x) -> Expr:
             x = x.terms[0].coef
     return x
 
-def coef_simplified(x) -> Expr:
+def coef_simplified(x) -> Expr|int:
     """
     interface function
     Only perform sympy simplification.
     """
     x = mk_expr(x).copy()
     x.simplify_coef()
-    return x
+    return simplified(x)
 
 def compile_py(x, var_dict=None) -> str:
     """
