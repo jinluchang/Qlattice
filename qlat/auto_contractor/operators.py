@@ -40,8 +40,12 @@ Operators for pi and K follows Eq.(103,122) of the following reference
 
 """
 
-from auto_contractor.wick import *
-from auto_contractor.compile import *
+try:
+    from .wick import *
+    from .compile import *
+except:
+    from wick import *
+    from compile import *
 
 import sympy
 

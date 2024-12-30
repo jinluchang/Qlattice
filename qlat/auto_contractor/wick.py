@@ -734,11 +734,6 @@ class BfieldCoef:
         if mk_sym(spin_coef) == 0:
             return self
         ((c00, c01,), (c10, c11,), (c20, c21,),) = chiral_projection
-        chiral_projection = (
-                (mk_sym(c00), mk_sym(c01),),
-                (mk_sym(c10), mk_sym(c11),),
-                (mk_sym(c20), mk_sym(c21),),
-                )
         s1, s2, s3, = spin
         spin_tensor = self.spin_tensor
         spin_tensor[s1, s2, s3] += c00 * c10 * c20 * spin_coef
@@ -764,16 +759,56 @@ class BfieldCoef:
 bfield_tag_dict = dict()
 
 bfield_tag_dict["std-u"] = BfieldCoef()
-bfield_tag_dict["std-u"].add(((1, 1,), (1, 0,), (1, 0,),), (0, 1, 0,), mk_sym(1))
-bfield_tag_dict["std-u"].add(((1, 1,), (1, 0,), (1, 0,),), (0, 0, 1,), mk_sym(-1))
-bfield_tag_dict["std-u"].add(((1, 1,), (0, 1,), (0, 1,),), (0, 1, 0,), mk_sym(1))
-bfield_tag_dict["std-u"].add(((1, 1,), (0, 1,), (0, 1,),), (0, 0, 1,), mk_sym(-1))
+bfield_tag_dict["std-u"].add(((1, 1,), (1, 0,), (1, 0,),), (0, 1, 0,), mk_sym(1)/2)
+bfield_tag_dict["std-u"].add(((1, 1,), (1, 0,), (1, 0,),), (0, 0, 1,), -mk_sym(1)/2)
+bfield_tag_dict["std-u"].add(((1, 1,), (0, 1,), (0, 1,),), (0, 1, 0,), mk_sym(1)/2)
+bfield_tag_dict["std-u"].add(((1, 1,), (0, 1,), (0, 1,),), (0, 0, 1,), -mk_sym(1)/2)
 
 bfield_tag_dict["std-d"] = BfieldCoef()
-bfield_tag_dict["std-d"].add(((1, 1,), (1, 0,), (1, 0,),), (1, 1, 0,), mk_sym(1))
-bfield_tag_dict["std-d"].add(((1, 1,), (1, 0,), (1, 0,),), (1, 0, 1,), mk_sym(-1))
-bfield_tag_dict["std-d"].add(((1, 1,), (0, 1,), (0, 1,),), (1, 1, 0,), mk_sym(1))
-bfield_tag_dict["std-d"].add(((1, 1,), (0, 1,), (0, 1,),), (1, 0, 1,), mk_sym(-1))
+bfield_tag_dict["std-d"].add(((1, 1,), (1, 0,), (1, 0,),), (1, 1, 0,), mk_sym(1)/2)
+bfield_tag_dict["std-d"].add(((1, 1,), (1, 0,), (1, 0,),), (1, 0, 1,), -mk_sym(1)/2)
+bfield_tag_dict["std-d"].add(((1, 1,), (0, 1,), (0, 1,),), (1, 1, 0,), mk_sym(1)/2)
+bfield_tag_dict["std-d"].add(((1, 1,), (0, 1,), (0, 1,),), (1, 0, 1,), -mk_sym(1)/2)
+
+bfield_tag_dict["std3-u3"] = BfieldCoef()
+bfield_tag_dict["std3-u3"].add(((1, 1,), (1, 0,), (0, 1,),), (0, 0, 0,), 1/sympy.sqrt(2))
+bfield_tag_dict["std3-u3"].add(((1, 1,), (0, 1,), (1, 0,),), (0, 0, 0,), 1/sympy.sqrt(2))
+
+bfield_tag_dict["std3-u1"] = BfieldCoef()
+bfield_tag_dict["std3-u1"].add(((1, 1,), (1, 0,), (0, 1,),), (1, 0, 0,), 1/sympy.sqrt(6))
+bfield_tag_dict["std3-u1"].add(((1, 1,), (0, 1,), (1, 0,),), (1, 0, 0,), 1/sympy.sqrt(6))
+bfield_tag_dict["std3-u1"].add(((1, 1,), (1, 0,), (0, 1,),), (0, 1, 0,), 1/sympy.sqrt(6))
+bfield_tag_dict["std3-u1"].add(((1, 1,), (0, 1,), (1, 0,),), (0, 1, 0,), 1/sympy.sqrt(6))
+bfield_tag_dict["std3-u1"].add(((1, 1,), (1, 0,), (0, 1,),), (0, 0, 1,), 1/sympy.sqrt(6))
+bfield_tag_dict["std3-u1"].add(((1, 1,), (0, 1,), (1, 0,),), (0, 0, 1,), 1/sympy.sqrt(6))
+
+bfield_tag_dict["std3-d1"] = BfieldCoef()
+bfield_tag_dict["std3-d1"].add(((1, 1,), (1, 0,), (0, 1,),), (1, 1, 0,), 1/sympy.sqrt(6))
+bfield_tag_dict["std3-d1"].add(((1, 1,), (0, 1,), (1, 0,),), (1, 1, 0,), 1/sympy.sqrt(6))
+bfield_tag_dict["std3-d1"].add(((1, 1,), (1, 0,), (0, 1,),), (0, 1, 1,), 1/sympy.sqrt(6))
+bfield_tag_dict["std3-d1"].add(((1, 1,), (0, 1,), (1, 0,),), (0, 1, 1,), 1/sympy.sqrt(6))
+bfield_tag_dict["std3-d1"].add(((1, 1,), (1, 0,), (0, 1,),), (1, 0, 1,), 1/sympy.sqrt(6))
+bfield_tag_dict["std3-d1"].add(((1, 1,), (0, 1,), (1, 0,),), (1, 0, 1,), 1/sympy.sqrt(6))
+
+bfield_tag_dict["std3-d3"] = BfieldCoef()
+bfield_tag_dict["std3-d3"].add(((1, 1,), (1, 0,), (0, 1,),), (1, 1, 1,), 1/sympy.sqrt(2))
+bfield_tag_dict["std3-d3"].add(((1, 1,), (0, 1,), (1, 0,),), (1, 1, 1,), 1/sympy.sqrt(2))
+
+bfield_tag_dict["pos3-u3"] = BfieldCoef()
+bfield_tag_dict["pos3-u3"].add(((1, 1,), (1, 1,), (1, 1,),), (0, 0, 0,), 1)
+
+bfield_tag_dict["pos3-u1"] = BfieldCoef()
+bfield_tag_dict["pos3-u1"].add(((1, 1,), (1, 1,), (1, 1,),), (1, 0, 0,), 1/sympy.sqrt(3))
+bfield_tag_dict["pos3-u1"].add(((1, 1,), (1, 1,), (1, 1,),), (0, 1, 0,), 1/sympy.sqrt(3))
+bfield_tag_dict["pos3-u1"].add(((1, 1,), (1, 1,), (1, 1,),), (0, 0, 1,), 1/sympy.sqrt(3))
+
+bfield_tag_dict["pos3-d1"] = BfieldCoef()
+bfield_tag_dict["pos3-d1"].add(((1, 1,), (1, 1,), (1, 1,),), (1, 1, 0,), 1/sympy.sqrt(3))
+bfield_tag_dict["pos3-d1"].add(((1, 1,), (1, 1,), (1, 1,),), (0, 1, 1,), 1/sympy.sqrt(3))
+bfield_tag_dict["pos3-d1"].add(((1, 1,), (1, 1,), (1, 1,),), (1, 0, 1,), 1/sympy.sqrt(3))
+
+bfield_tag_dict["pos3-d3"] = BfieldCoef()
+bfield_tag_dict["pos3-d3"].add(((1, 1,), (1, 1,), (1, 1,),), (1, 1, 1,), 1)
 
 ### ------
 
@@ -877,6 +912,9 @@ class BS(Op):
     def __repr__(self) -> str:
         return f"{self.otype}({self.tag_pair_list!r},{self.chain_list!r})"
 
+    def repr_value(self) -> str:
+        return f"{self.otype}({self.get_spin_spin_tensor_elem_list_code()!r},{self.chain_list!r})"
+
     def list(self):
         return [ self.otype, self.tag_pair_list, self.chain_list, ]
 
@@ -908,7 +946,7 @@ class BS(Op):
     def get_spin_spin_tensor_code(self) -> np.ndarray|None:
         """
         return sst or None
-        sst[v_s1, v_s2, v_s3, b_s1, b_s2, b_s3] = coef
+        sst[v_s1, b_s1, v_s2, b_s2, v_s3, b_s3] = coef
         """
         if len(self.tag_pair_list) == 0:
             return None
@@ -919,10 +957,33 @@ class BS(Op):
             assert tag_b in bfield_tag_dict
             v_st = bfield_tag_dict[tag_v].get_spin_tensor_code(permute_v)
             b_st = bfield_tag_dict[tag_b].get_spin_tensor_code(permute_b)
-            sst += v_st[:, :, :, None, None, None] * b_st[None, None, None, :, :, :] * coef
+            sst += v_st[:, None, :, None, :, None] * b_st[None, :, None, :, None, :] * coef
         if np.all(sst == 0):
             return None
         return sst
+
+    def get_spin_spin_tensor_elem_list_code(self) -> list:
+        """
+        return [ ((v_s1, b_s1, v_s2, b_s2, v_s3, b_s3,), coef,), ... ]
+        #
+        sst = self.get_spin_spin_tensor_code()
+        coef = sst[v_s1, b_s1, v_s2, b_s2, v_s3, b_s3]
+        """
+        sst = self.get_spin_spin_tensor_code()
+        if sst is None:
+            return []
+        elem_list = []
+        for v_s1 in range(4):
+            for v_s2 in range(4):
+                for v_s3 in range(4):
+                    for b_s1 in range(4):
+                        for b_s2 in range(4):
+                            for b_s3 in range(4):
+                                coef = sst[v_s1, b_s1, v_s2, b_s2, v_s3, b_s3]
+                                if coef == 0:
+                                    continue
+                                elem_list.append(((v_s1, b_s1, v_s2, b_s2, v_s3, b_s3,), coef,))
+        return elem_list
 
 ### ------
 
@@ -1247,6 +1308,13 @@ class Expr:
             t.simplify_ea()
         self.drop_zeros()
 
+    def rescale_bs_term(self) -> None:
+        terms = []
+        for t in self.terms:
+            t = rescale_bs_term(t)
+            terms.append(t)
+        self.terms = terms
+
     @q.timer
     def combine_terms(self) -> None:
         self.terms = combine_terms_expr(self).terms
@@ -1288,8 +1356,10 @@ class Expr:
         self.collect_traces()
         self.sort()
         self.combine_terms()
+        self.rescale_bs_term()
         self.sort()
         self.simplify_ea()
+        self.sort()
 
 ### ------
 
@@ -1369,7 +1439,6 @@ def combine_two_terms(t1:Term, t2:Term, t1_sig:str, t2_sig:str) -> Term|None:
     If not possible, return None.
     """
     if t1_sig == t2_sig:
-        print(f"combine_two_terms:{t1_sig}")
         (sig_str, bs_count,) = t1_sig
         assert t1.a_ops == t2.a_ops
         if bs_count == 0:
@@ -1434,6 +1503,25 @@ def combine_terms_expr(expr:Expr) -> Expr:
         terms.append(term)
     return Expr(terms, expr.description)
 
+def rescale_bs_term(term:Term) -> Term:
+    bs_list, re_op_list, = get_bs_list_from_op_list(term.c_ops)
+    if len(bs_list) == 0:
+        return term
+    scaled_bs_list = []
+    coef_prod = 1
+    for bs in bs_list:
+        sst_el = bs.get_spin_spin_tensor_elem_list_code()
+        if len(sst_el) == 0:
+            return Term([], [], 0)
+        else:
+            coef = sst_el[0][1]
+        scaled_bs = copy.copy(bs)
+        scaled_bs *= 1 / mk_sym(coef)
+        scaled_bs_list.append(scaled_bs)
+        coef_prod *= coef
+    scaled_term = Term(scaled_bs_list + re_op_list, term.a_ops, coef_prod * term.coef)
+    return scaled_term
+
 @q.timer
 def drop_zero_terms(expr:Expr) -> Expr:
     terms = []
@@ -1442,10 +1530,14 @@ def drop_zero_terms(expr:Expr) -> Expr:
             continue
         bs_list, re_op_list, = get_bs_list_from_op_list(t.c_ops)
         is_b_zero = False
+        scaled_bs_list = []
         for bs in bs_list:
-            sst = bs.get_spin_spin_tensor_code()
-            if sst is None:
+            sst_el = bs.get_spin_spin_tensor_elem_list_code()
+            if len(sst_el) == 0:
                 is_b_zero = True
+                coef = 1
+            else:
+                coef = sst_el[0][1]
         if is_b_zero:
             continue
         terms.append(t)
@@ -1779,6 +1871,101 @@ def mk_test_expr_wick_05():
     #
     expr = bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr"
     return expr
+
+def mk_test_expr_wick_06():
+    f1 = "s"
+    f2 = "s"
+    f3 = "s"
+    #
+    p1 = "x1"
+    s1 = "s1"
+    c1 = "c1"
+    #
+    p2 = "x1"
+    s2 = "s2"
+    c2 = "c2"
+    #
+    p3 = "x1"
+    s3 = "s3"
+    c3 = "c3"
+    #
+    p1p = "x1p"
+    s1p = "s1p"
+    c1p = "c1p"
+    #
+    p2p = "x1p"
+    s2p = "s2p"
+    c2p = "c2p"
+    #
+    p3p = "x1p"
+    s3p = "s3p"
+    c3p = "c3p"
+    #
+    q1v = Qv(f1, p1p, s1p, c1p)
+    q2v = Qv(f2, p2p, s2p, c2p)
+    q3v = Qv(f3, p3p, s3p, c3p)
+    q1b = Qb(f1, p1, s1, c1)
+    q2b = Qb(f2, p2, s2, c2)
+    q3b = Qb(f3, p3, s3, c3)
+    #
+    expr_list = []
+    #
+    bf_b = Bfield("std3-u3", s1, s2, s3, c1, c2, c3)
+    bf_v = Bfield("std3-u3", s1p, s2p, s3p, c1p, c2p, c3p)
+    #
+    expr = bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr-std3-u3"
+    expr_list.append(expr)
+    #
+    bf_b = Bfield("std3-u1", s1, s2, s3, c1, c2, c3)
+    bf_v = Bfield("std3-u1", s1p, s2p, s3p, c1p, c2p, c3p)
+    #
+    expr = bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr-std3-u1"
+    expr_list.append(expr)
+    #
+    bf_b = Bfield("std3-d1", s1, s2, s3, c1, c2, c3)
+    bf_v = Bfield("std3-d1", s1p, s2p, s3p, c1p, c2p, c3p)
+    #
+    expr = bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr-std3-d1"
+    expr_list.append(expr)
+    #
+    bf_b = Bfield("std3-d3", s1, s2, s3, c1, c2, c3)
+    bf_v = Bfield("std3-d3", s1p, s2p, s3p, c1p, c2p, c3p)
+    #
+    expr = bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr-std3-d3"
+    expr_list.append(expr)
+    #
+    bf_v = Bfield("std3-u3", s1p, s2p, s3p, c1p, c2p, c3p)
+    bf_b = Bfield("std3-u3", s1, s2, s3, c1, c2, c3)
+    #
+    expr = bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr-std3-std3-u3"
+    expr_list.append(expr)
+    #
+    bf_v = Bfield("pos3-u3", s1p, s2p, s3p, c1p, c2p, c3p)
+    bf_b = Bfield("pos3-u3", s1, s2, s3, c1, c2, c3)
+    #
+    expr = bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr-pos3-pos3-u3"
+    expr_list.append(expr)
+    #
+    bf_v = Bfield("pos3-u3", s1p, s2p, s3p, c1p, c2p, c3p)
+    bf_b = Bfield("std3-u3", s1, s2, s3, c1, c2, c3)
+    #
+    expr = bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr-pos3-std3-u3"
+    expr_list.append(expr)
+    #
+    bf_v = Bfield("std3-u3", s1p, s2p, s3p, c1p, c2p, c3p)
+    bf_b = Bfield("pos3-u3", s1, s2, s3, c1, c2, c3)
+    #
+    expr = bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr-std3-pos3-u3"
+    expr_list.append(expr)
+    #
+    bf_v = Bfield("std3-u3", s1p, s2p, s3p, c1p, c2p, c3p)
+    bf_b = Bfield("std3-u3", s1, s2, s3, c1, c2, c3)
+    #
+    from operators import mk_j_mu
+    expr = mk_j_mu("xx", 3) * bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr-std3-std3-u3"
+    expr_list.append(expr)
+    #
+    return expr_list
 
 if __name__ == "__main__":
     expr = mk_test_expr_wick_01()

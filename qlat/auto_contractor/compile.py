@@ -620,7 +620,7 @@ def collect_baryon_prop_in_cexpr(named_terms):
                 add_varibles(op)
             for i, op in enumerate(x):
                 if isinstance(op, Op) and op.otype == "BS":
-                    op_repr = repr(op)
+                    op_repr = op.repr_value()
                     if op_repr in var_dataset:
                         x[i] = var_dataset[op_repr]
                     else:
@@ -1261,8 +1261,10 @@ def show_variable_value(value):
         expr = "*".join(map(show_variable_value, value.ops))
         return f"chain({expr})"
     elif isinstance(value, BS):
+        # tag_pair_list_expr = value.tag_pair_list
+        tag_pair_list_expr = value.get_spin_spin_tensor_elem_list_code()
         chain_list_expr = ",".join(map(show_variable_value, value.chain_list))
-        return f"bs({value.tag_pair_list},{chain_list_expr})"
+        return f"bs({tag_pair_list_expr},{chain_list_expr})"
     elif isinstance(value, Term):
         if value.coef == 1:
             return "*".join(map(show_variable_value, value.c_ops + value.a_ops))
@@ -1999,8 +2001,8 @@ if __name__ == "__main__":
     print()
     print("mk_test_expr_wick")
     print()
-    expr = mk_test_expr_wick_05()
-    cexpr = contract_simplify_compile(expr, is_isospin_symmetric_limit=True)
+    expr_list = mk_test_expr_wick_06()
+    cexpr = contract_simplify_compile(*expr_list, is_isospin_symmetric_limit=True)
     cexpr.optimize()
     print(display_cexpr(cexpr))
     print()
