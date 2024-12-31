@@ -797,6 +797,14 @@ bfield_tag_dict["std3-d3"] = BfieldCoef()
 bfield_tag_dict["std3-d3"].add(((1, 1,), (1, 0,), (0, 1,),), (1, 1, 1,), 1/sympy.sqrt(2))
 bfield_tag_dict["std3-d3"].add(((1, 1,), (0, 1,), (1, 0,),), (1, 1, 1,), 1/sympy.sqrt(2))
 
+bfield_tag_dict["pos-u"] = BfieldCoef()
+bfield_tag_dict["pos-u"].add(((1, 1,), (1, 1,), (1, 1,),), (0, 1, 0,), mk_sym(1)/2)
+bfield_tag_dict["pos-u"].add(((1, 1,), (1, 1,), (1, 1,),), (0, 0, 1,), -mk_sym(1)/2)
+
+bfield_tag_dict["pos-d"] = BfieldCoef()
+bfield_tag_dict["pos-d"].add(((1, 1,), (1, 1,), (1, 1,),), (1, 1, 0,), mk_sym(1)/2)
+bfield_tag_dict["pos-d"].add(((1, 1,), (1, 1,), (1, 1,),), (1, 0, 1,), -mk_sym(1)/2)
+
 bfield_tag_dict["pos3-u3"] = BfieldCoef()
 bfield_tag_dict["pos3-u3"].add(((1, 1,), (1, 1,), (1, 1,),), (0, 0, 0,), 1)
 
@@ -1716,7 +1724,6 @@ def gamma_va(tag):
         assert False
 
 ### ------
-
 
 def mk_test_expr_wick_01():
     expr = (1
