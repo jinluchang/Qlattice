@@ -1,5 +1,62 @@
 [
  [
+  "Expr([Term([],[],1)],'1')"
+ ],
+ [
+  "(Expr([Term([G(0,'a_s_1','a_s_2'), G(0,'a_s_7','a_s_8'), G(5,'a_s_325','a_s_326')],[Qb('u','x_2','a_s_1','a_c_1'), Qv('u','x_2','a_s_2','a_c_1'), Qb('u','x_1','a_s_7','a_c_4'), Qv('u','x_1','a_s_8','a_c_4'), Qb('u','t_1','a_s_325','a_c_163'), Qv('u','t_1',"
+ ],
+ [
+  "(Expr([Term([G(0,'a_s_1','a_s_2'), G(0,'a_s_7','a_s_8'), G(5,'a_s_329','a_s_330')],[Qb('u','x_2','a_s_1','a_c_1'), Qv('u','x_2','a_s_2','a_c_1'), Qb('u','x_1','a_s_7','a_c_4'), Qv('u','x_1','a_s_8','a_c_4'), Qb('u','t_2','a_s_329','a_c_165'), Qv('u','t_2',"
+ ],
+ [
+  "Expr([Term([],[],1)],'< 1 >')"
+ ],
+ [
+  "Expr([Term([Tr([G(0), S('l','x_1','t_1'), G(5), S('l','t_1','x_1')],'sc'), Tr([G(1), S('l','x_2','x_2')],'sc')],[],-0.23570226039551584j*(rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))), Term([Tr([G(0), S('l','x_1','t_1'), G(5), S('l','t_1','x_1')],'sc'), Tr"
+ ],
+ [
+  "Expr([Term([Tr([G(0), S('l','x_1','t_2'), G(5), S('l','t_2','x_1')],'sc'), Tr([G(1), S('l','x_2','x_2')],'sc')],[],-0.23570226039551584j*(rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))), Term([Tr([G(0), S('l','x_1','t_2'), G(5), S('l','t_2','x_1')],'sc'), Tr"
+ ],
+ [
+  "# Begin CExpr\ndiagram_type_dict = dict()\ndiagram_type_dict[()] = '1'\ndiagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))] = 'TypeD'\ndiagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'TypeC'\nd"
+ ],
+ [
+  "[('1', ()), ('TypeD', ((('t_1', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))), ('TypeC', ((('t_1', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_1'), 1))), ('TypeD', ((('t_2', 'x_1'), 1), (('x_1', 't_2'), 1), (('x_2', 'x_2'), 1))), ('TypeC', ((('t_"
+ ],
+ [
+  "['rel_mod_sym', 'size', 't_1', 't_2', 'x_1', 'x_2']"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[('term_1_0', Term([],[],1)), ('term_TypeC_0', Term([Tr([G(0), S('l','x_1','t_1'), G(5), S('l','t_1','x_2'), G(1), S('l','x_2','x_1')],'sc')],[],1)), ('term_TypeC_1', Term([Tr([G(0), S('l','x_1','t_1'), G(5), S('l','t_1','x_2'), G(2), S('l','x_2','x_1')],'"
+ ],
+ [
+  "[('< 1 >  exprs[0]', [(1, 'term_1_0')]), ('< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(-tsep) >  exprs[1]', [(ea.Expr([ea.Term([ea.Factor(rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]),['rel_mod_sym', 'size', 'x_1', 'x_2'],Expr)],-sqrt(2)*I/6)]), 'term_TypeD_0'"
+ ],
+ [
   "diagram_type_dict = qac.get_diagram_type_dict(cexpr)"
  ],
  [
@@ -42,6 +99,45 @@
   "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(x[t]+tsep) > (TypeD)  exprs[6]"
  ],
  [
+  "# Begin CExpr\ndiagram_type_dict = dict()\ndiagram_type_dict[()] = '1'\ndiagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))] = 'TypeD'\ndiagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'TypeC'\nd"
+ ],
+ [
+  "[('1', ()), ('TypeD', ((('t_1', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))), ('TypeC', ((('t_1', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_1'), 1))), ('TypeD', ((('t_2', 'x_1'), 1), (('x_1', 't_2'), 1), (('x_2', 'x_2'), 1))), ('TypeC', ((('t_"
+ ],
+ [
+  "['rel_mod_sym', 'size', 't_1', 't_2', 'x_1', 'x_2']"
+ ],
+ [
+  "[('V_factor_0', ea.Expr([ea.Term([ea.Factor(rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]),['rel_mod_sym', 'size', 'x_1', 'x_2'],Expr)],1)])), ('V_factor_1', ea.Expr([ea.Term([ea.Factor(rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]),['rel_mod_sym', 'size', 'x_1'"
+ ],
+ [
+  "[('V_factor_coef_0', ea.Expr([ea.Term([],1)])), ('V_factor_coef_1', ea.Expr([ea.Term([ea.Factor(V_factor_prod_0,[],Var)],1)])), ('V_factor_coef_2', ea.Expr([ea.Term([ea.Factor(V_factor_prod_1,[],Var)],1)])), ('V_factor_coef_3', ea.Expr([ea.Term([ea.Factor("
+ ],
+ [
+  "[('V_S_0', S('l','x_1','t_1')), ('V_S_1', S('l','t_1','x_2')), ('V_S_2', S('l','x_2','x_1')), ('V_S_3', S('l','x_2','t_1')), ('V_S_4', S('l','t_1','x_1')), ('V_S_5', S('l','x_1','x_2')), ('V_S_6', S('l','x_1','t_2')), ('V_S_7', S('l','t_2','x_2')), ('V_S_8"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[('V_prod_SG_0', (Var('V_S_0'), G(5))), ('V_prod_SG_1', (Var('V_S_3'), G(5))), ('V_prod_SG_2', (Var('V_S_6'), G(5))), ('V_prod_SG_3', (Var('V_S_8'), G(5))), ('V_prod_SS_0', (Var('V_prod_SG_0'), Var('V_S_1'))), ('V_prod_SS_1', (Var('V_prod_SG_1'), Var('V_S_"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[('V_tr_0', Tr([Var('V_prod_GS_6'), Var('V_prod_GS_0')],'sc')), ('V_tr_1', Tr([Var('V_prod_GS_6'), Var('V_prod_GS_1')],'sc')), ('V_tr_2', Tr([Var('V_prod_GS_7'), Var('V_prod_GS_2')],'sc')), ('V_tr_3', Tr([Var('V_prod_SG_4'), Var('V_prod_SS_0')],'sc')), ('V"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[('term_1_0', Term([],[],1)), ('term_TypeC_0', Term([Var('V_tr_0')],[],1)), ('term_TypeC_1', Term([Var('V_tr_1')],[],1)), ('term_TypeC_10', Term([Var('V_tr_2')],[],1)), ('term_TypeC_11', Term([Var('V_tr_3')],[],1)), ('term_TypeC_12', Term([Var('V_tr_4')],["
+ ],
+ [
+  "[('< 1 >  exprs[0]', [(ea.Expr([ea.Term([ea.Factor(V_factor_coef_0,[],Var)],1)]), 'term_1_0')]), ('< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(-tsep) >  exprs[1]', [(ea.Expr([ea.Term([ea.Factor(V_factor_coef_1,[],Var)],1)]), 'term_TypeD_0'), (ea.Expr([ea.Ter"
+ ],
+ [
   "diagram_type_dict = qac.get_diagram_type_dict(cexpr_opt)"
  ],
  [
@@ -82,6 +178,9 @@
  ],
  [
   "< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(x[t]+tsep) > (TypeD)  exprs[6]"
+ ],
+ [
+  "from auto_contractor.runtime import *\n\n### ----\n\n@timer\ndef cexpr_function(*, positions_dict, get_prop, is_ama_and_sloppy=False):\n    # get_props\n    props, cms, factors = cexpr_function_get_prop(positions_dict, get_prop)\n    # eval\n    ama_val = cexpr_fun"
  ],
  [
   "diagram_type_dict = qac.get_diagram_type_dict(ccexpr)"
@@ -140,6 +239,9 @@
    "imag": 1011.7412652015172,
    "__extended_json_type__": "complex128"
   }
+ ],
+ [
+  "from auto_contractor.runtime import *\nimport cython # Cython\ncimport qlat_utils.everything as cc # Cython\ncimport qlat_utils.all as qu # Cython\ncimport libcpp.complex # Cython\ncimport numpy # Cython\n\n### ----\n\n@timer\ndef cexpr_function(*, positions_dict, g"
  ],
  [
   "diagram_type_dict = qac.get_diagram_type_dict(ccexpr)"

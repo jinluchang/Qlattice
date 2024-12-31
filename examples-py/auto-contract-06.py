@@ -10,6 +10,9 @@ def json_results_append(*args):
     json_results.append(args)
 
 import sys
+import sympy
+import math
+import cmath
 import numpy as np
 import qlat as q
 
@@ -27,41 +30,24 @@ size_node_list = [
 q.begin_with_mpi(size_node_list)
 
 diagram_type_dict = dict()
-diagram_type_dict[()] = '1'
-diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))] = 'TypeD'
-diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'TypeC'
-diagram_type_dict[((('t_2', 'x_1'), 1), (('x_1', 't_2'), 1), (('x_2', 'x_2'), 1))] = 'TypeD'
-diagram_type_dict[((('t_2', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_2'), 1))] = 'TypeC'
-
-jj_d_list = [
-        sum([
-            q.epsilon_tensor(mu, nu, rho)
-            * qac.mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
-            * qac.mk_j_mu("x_2", nu) * qac.mk_j_mu("x_1", rho)
-            for mu in range(3) for nu in range(3) for rho in range(3) ])
-        + "e(i,j,k) * x[i] * j_j(x) * j_k(0)",
-        ]
-
-pi0d_list = [
-        qac.mk_pi_0("t_1") + "pi0(-tsep)",
-        qac.mk_pi_0("t_2") + "pi0(x[t]+tsep)",
-        ]
-
-exprs_list_pi0_decay = [
-        (jj_d * pi0d, None, "TypeC", "TypeD",)
-        for pi0d in pi0d_list for jj_d in jj_d_list
-        ]
 
 exprs = [
         qac.mk_expr(1) + f"1",
+        qac.mk_proton("x_2", "u", is_dagger=True) * qac.mk_proton("x_1", "u"),
+        qac.mk_proton("x_2", "d", is_dagger=True) * qac.mk_proton("x_1", "d"),
+        qac.mk_neutron("x_2", "u", is_dagger=True) * qac.mk_neutron("x_1", "u"),
+        qac.mk_neutron("x_2", "d", is_dagger=True) * qac.mk_neutron("x_1", "d"),
+        qac.mk_omega("x_2", "u3", is_dagger=True) * qac.mk_omega("x_1", "u3"),
+        qac.mk_omega("x_2", "u1", is_dagger=True) * qac.mk_omega("x_1", "u1"),
+        qac.mk_omega("x_2", "d1", is_dagger=True) * qac.mk_omega("x_1", "d1"),
+        qac.mk_omega("x_2", "d3", is_dagger=True) * qac.mk_omega("x_1", "d3"),
         ]
-exprs += exprs_list_pi0_decay
 
 for expr in exprs:
-    json_results_append(str(expr)[:256])
+    json_results_append(str(expr))
 
 for expr in qac.contract_simplify(*exprs):
-    json_results_append(str(expr)[:256])
+    json_results_append(str(expr))
 
 cexpr = qac.contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
 
@@ -84,7 +70,7 @@ cexpr_opt = cexpr.copy()
 cexpr_opt.optimize()
 
 json_results_append(
-        qac.display_cexpr(cexpr_opt)[:256]
+    qac.display_cexpr(cexpr_opt)[:256]
 )
 
 for v in cexpr_opt.list():
@@ -104,7 +90,8 @@ def get_cexpr_test(is_cython=False):
     def calc_cexpr():
         cexpr = qac.contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
         return cexpr
-    return qac.cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython, base_positions_dict=None)
+    base_positions_dict = dict()
+    return qac.cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython, base_positions_dict=base_positions_dict)
 
 for is_cython in [ False, True, ]:
     json_results_append(
@@ -117,7 +104,8 @@ for is_cython in [ False, True, ]:
     json_results_append(f"qac.get_expr_names(ccexpr)")
     for name in qac.get_expr_names(ccexpr):
         json_results_append(name)
-    check, check_ama = qac.benchmark_eval_cexpr(ccexpr)
+    base_positions_dict = dict()
+    check, check_ama = qac.benchmark_eval_cexpr(ccexpr, base_positions_dict=base_positions_dict)
     json_results_append(f"get_cexpr_test benchmark_eval_cexpr check get_data_sig is_cython={is_cython}", q.get_data_sig(np.array(check, dtype=np.complex128), q.RngState()))
     json_results_append(f"get_cexpr_test benchmark_eval_cexpr check_ama get_data_sig is_cython={is_cython}", q.get_data_sig(np.array(check_ama, dtype=np.complex128), q.RngState()))
 
@@ -130,10 +118,8 @@ def get_prop(flavor, p1, p2):
     return wm
 
 pd = {
-    "x_1": ("point", q.Coordinate([ 1, 2, 3, 2, ]),),
-    "x_2": ("point-snk", q.Coordinate([ 3, 1, 2, 1, ]),),
-    "t_1": ("wall", 7,),
-    "t_2": ("wall", 4,),
+    "x_1": ("point", q.Coordinate([ 1, 2, 3, 1, ]),),
+    "x_2": ("point", q.Coordinate([ 0, 2, 1, 3, ]),),
     "size": q.Coordinate([ 4, 4, 4, 8, ]),
 }
 

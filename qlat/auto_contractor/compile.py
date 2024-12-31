@@ -866,7 +866,6 @@ class CExpr:
     self.variables_prod
     self.variables_chain
     self.variables_tr
-    self.variables_baryon_field_coef
     self.variables_baryon_prop
     self.named_terms
     self.named_exprs
@@ -959,6 +958,7 @@ class CExpr:
                 self.variables_prod,
                 self.variables_chain,
                 self.variables_tr,
+                self.variables_baryon_prop,
                 self.named_terms,
                 self.named_exprs,
                 ]
