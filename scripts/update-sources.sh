@@ -46,6 +46,12 @@ done
 
 (
 
+find . -name "__pycache__" -exec rm -rfv '{}' \;
+
+) || echo "Clean '__pycache__' not successful."
+
+(
+
 echo "Update 'sha256sums.txt'."
 
 mkdir -p "$distfiles"
