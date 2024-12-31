@@ -791,6 +791,79 @@ def mk_vec_uu_mu(f1, f2, p1, p2, mu, is_dagger=False):
 
 ###################
 
+def mk_baryon(f1:str, f2:str, f3:str, p:str, spin:str, baryon_type:str="std", is_dagger=False):
+    """
+    spin in [ "u", "d", ]
+    baryon_type in [ "std", "pos", ]
+    """
+    assert spin in [ "u", "d", ]
+    assert baryon_type in [ "std", "pos", ]
+    s1 = new_spin_index()
+    s2 = new_spin_index()
+    s3 = new_spin_index()
+    c1 = new_color_index()
+    c2 = new_color_index()
+    c3 = new_color_index()
+    tag = f"{baryon_type}-{spin}"
+    if not is_dagger:
+        v = Bfield(tag, s1, s2, s3, c1, c2, c3)
+        v = v * Qb(f1, p, s1, c1) * Qb(f2, p, s2, c2) * Qb(f3, p, s3, c3)
+        v = v + f"Bb_{baryon_type}({f1},{f2},{f3},{spin})({p})"
+        return v
+    else:
+        v = Bfield(tag, s1, s2, s3, c1, c2, c3)
+        v = v * Qv(f3, p, s3, c3) * Qv(f2, p, s2, c2) * Qv(f1, p, s1, c1)
+        v = v + f"Bv_{baryon_type}({f1},{f2},{f3},{spin})({p})"
+        return v
+
+def mk_proton(p:str, spin:str, baryon_type:str="std", is_dagger=False):
+    """
+    spin in [ "u", "d", ]
+    baryon_type in [ "std", "pos", ]
+    """
+    return mk_baryon("u", "u", "d", p, spin, baryon_type=baryon_type, is_dagger=is_dagger)
+
+def mk_neutron(p:str, spin:str, baryon_type:str="std", is_dagger=False):
+    """
+    spin in [ "u", "d", ]
+    baryon_type in [ "std", "pos", ]
+    """
+    return mk_baryon("d", "d", "u", p, spin, baryon_type=baryon_type, is_dagger=is_dagger)
+
+def mk_baryon3(f1:str, f2:str, f3:str, p:str, spin:str, baryon_type:str="std3", is_dagger=False):
+    """
+    spin in [ "u3", "u1", "d1", "d3", ]
+    baryon_type in [ "std3", "pos3", ]
+    """
+    assert spin in [ "u3", "u1", "d1", "d3", ]
+    assert baryon_type in [ "std3", "pos3", ]
+    s1 = new_spin_index()
+    s2 = new_spin_index()
+    s3 = new_spin_index()
+    c1 = new_color_index()
+    c2 = new_color_index()
+    c3 = new_color_index()
+    tag = f"{baryon_type}-{spin}"
+    if not is_dagger:
+        v = Bfield(tag, s1, s2, s3, c1, c2, c3)
+        v = v * Qb(f1, p, s1, c1) * Qb(f2, p, s2, c2) * Qb(f3, p, s3, c3)
+        v = v + f"Bb_{baryon_type}({f1},{f2},{f3},{spin})({p})"
+        return v
+    else:
+        v = Bfield(tag, s1, s2, s3, c1, c2, c3)
+        v = v * Qv(f3, p, s3, c3) * Qv(f2, p, s2, c2) * Qv(f1, p, s1, c1)
+        v = v + f"Bv_{baryon_type}({f1},{f2},{f3},{spin})({p})"
+        return v
+
+def mk_omega(p:str, spin:str, baryon_type:str="std3", is_dagger=False):
+    """
+    spin in [ "u3", "u1", "d1", "d3", ]
+    baryon_type in [ "std3", "pos3", ]
+    """
+    return mk_baryon3("s", "s", "s", p, spin, baryon_type=baryon_type, is_dagger=is_dagger)
+
+###################
+
 def test():
     print("test")
     args = ["x", None]
