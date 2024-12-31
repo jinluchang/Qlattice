@@ -175,6 +175,14 @@ Pion correlation function with pion wave function: ``examples-py/auto-contract-0
 
 .. literalinclude:: ../examples-py/auto-contract-05.py
 
+Baryon correlation functions: ``examples-py/auto-contract-06.py``
+
+.. literalinclude:: ../examples-py/auto-contract-06.py
+
+Baryon matrix elements: ``examples-py/auto-contract-07.py``
+
+.. literalinclude:: ../examples-py/auto-contract-07.py
+
 Examples
 --------
 
