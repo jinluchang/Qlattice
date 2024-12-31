@@ -965,6 +965,7 @@ class BS(Op):
             ((tag_v, permute_v, tag_b, permute_b,), coef,) = tag_pair
             s_tag_pair = ((tag_v, permute_permute(permute_v), tag_b, permute_permute(permute_b),), coef,)
             s_tag_pair_list.append(s_tag_pair)
+        s_tag_pair_list = sorted(s_tag_pair_list)
         self.tag_pair_list = s_tag_pair_list
         self.chain_list = s_chain_list
 

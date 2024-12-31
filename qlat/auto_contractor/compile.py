@@ -2082,7 +2082,7 @@ def get_bs_factor_variable_list(bs:BS) -> list[str]:
     variables_set = set()
     for v, c in bs.tag_pair_list:
         variables_set |= ea.mk_fac(c).get_variable_set()
-    return list(variables_set)
+    return sorted(variables_set)
 
 #### ----
 
