@@ -19,13 +19,18 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from .compile import *
+try:
+    from .compile import *
+    from . import auto_fac_funcs as aff
+except:
+    from compile import *
+    import auto_fac_funcs as aff
+
 from qlat_utils.ama import *
 
 from qlat_utils.c import \
         as_wilson_matrix, as_wilson_matrix_g5_herm
 
-from . import auto_fac_funcs as aff
 
 import numpy as np
 import qlat as q
@@ -513,3 +518,44 @@ def sqr_component_array(arr):
 
 def sqrt_component_array(arr):
     return np.array([ sqrt_component(x) for x in arr ])
+
+# -----
+
+if __name__ == "__main__":
+    expr = mk_test_expr_compile_01()
+    print(expr)
+    print()
+    expr = simplified(contract_expr(expr))
+    print(expr)
+    print()
+    cexpr = mk_cexpr(expr).copy()
+    print(cexpr)
+    print()
+    cexpr.optimize()
+    print(cexpr)
+    print()
+    print(display_cexpr(cexpr))
+    print()
+    print(expr)
+    print()
+    cexpr = contract_simplify_compile(expr, is_isospin_symmetric_limit=True)
+    print(display_cexpr(cexpr))
+    print()
+    cexpr.optimize()
+    print(display_cexpr(cexpr))
+    print(cexpr_code_gen_py(cexpr))
+    print()
+    print("mk_test_expr_wick")
+    print()
+    expr_list = mk_test_expr_wick_07()
+    with q.TimerFork():
+        cexpr = contract_simplify_compile(*expr_list, is_isospin_symmetric_limit=True)
+        cexpr.optimize()
+    print(display_cexpr(cexpr))
+    print()
+    is_cython = False
+    base_positions_dict = dict()
+    print(cexpr_code_gen_py(cexpr, is_cython=is_cython))
+    ccexpr = cache_compiled_cexpr(lambda : cexpr, "cache/test", is_cython=is_cython, base_positions_dict=base_positions_dict)
+    print(benchmark_eval_cexpr(ccexpr, base_positions_dict=base_positions_dict))
+    print()

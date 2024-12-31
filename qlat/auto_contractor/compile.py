@@ -1470,7 +1470,8 @@ class CExprCodeGenPy:
             for ch in bs.chain_list:
                 assert ch.otype == "Var"
                 assert ch.name.startswith("V_chain_")
-                chain_list.append(ch.name)
+                if ch.name not in chain_list:
+                    chain_list.append(ch.name)
             arg_list_cy = []
             arg_list_py = []
             for c in chain_list:
@@ -1561,6 +1562,7 @@ class CExprCodeGenPy:
                     return f"p_{x.name}", get_var_name_type(x.name)
             else:
                 return f"{x.name}", get_var_name_type(x.name)
+        raise Exception(f"gen_expr: x='{x}'")
 
     def gen_expr_prod(self, ct1, ct2):
         """
@@ -1654,8 +1656,7 @@ class CExprCodeGenPy:
                 return f"mat_mul_a_cm({c1}, {c2})", "V_U"
         #
         else:
-            print(ct1, ct2)
-            assert False
+            raise Exception(f"gen_expr_prod: ct1='{ct1}' ; ct1='{ct1}'")
 
     def gen_expr_prod_list(self, x_list):
         """
@@ -1841,7 +1842,8 @@ class CExprCodeGenPy:
             for ch in bs.chain_list:
                 assert ch.otype == "Var"
                 assert ch.name.startswith("V_chain_")
-                chain_list.append(ch.name)
+                if ch.name not in chain_list:
+                    chain_list.append(ch.name)
             arg_list_cy = []
             arg_list_py = []
             for c in chain_list:
@@ -1852,7 +1854,7 @@ class CExprCodeGenPy:
                 arg_list_py.append(f"{f}")
             arg_str_cy = ", ".join(arg_list_cy)
             arg_str_py = ", ".join(arg_list_py)
-            append(f"@timer_flops")
+            append(f"@timer")
             append_cy(f"@cython.boundscheck(False)")
             append_cy(f"@cython.wraparound(False)")
             append_cy(f"def cexpr_function_bs_eval_{name}({arg_str_cy}):")
@@ -1867,7 +1869,10 @@ class CExprCodeGenPy:
                 assert t == "V_a"
                 append(f"v = {c}")
                 v_s1, b_s1, v_s2, b_s2, v_s3, b_s3, = tag
-                ch1, ch2, ch3, = chain_list
+                ch1, ch2, ch3, = bs.chain_list
+                ch1 = ch1.name
+                ch2 = ch2.name
+                ch3 = ch3.name
                 append_cy(f"v *= cc.pycc_d(cc.epsilon_contraction({v_s1}, {b_s1}, {v_s2}, {b_s2}, {v_s3}, {b_s3}, {ch1}[0], {ch2}[0], {ch3}[0]))")
                 append_py(f"v *= mat_epsilon_contraction_wm_wm_wm({v_s1}, {b_s1}, {v_s2}, {b_s2}, {v_s3}, {b_s3}, {ch1}, {ch2}, {ch3})")
                 append(f"s += v")
@@ -2117,5 +2122,7 @@ if __name__ == "__main__":
         cexpr.optimize()
     print(display_cexpr(cexpr))
     print()
-    print(cexpr_code_gen_py(cexpr, is_cython=True))
+    is_cython = False
+    base_positions_dict = dict()
+    print(cexpr_code_gen_py(cexpr, is_cython=is_cython))
     print()
