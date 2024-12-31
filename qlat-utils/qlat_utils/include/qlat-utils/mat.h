@@ -86,4 +86,15 @@ qacc IsospinMatrix matrix_adjoint(const IsospinMatrix& m)
   return matrix_adjoint<2, ComplexD>(m);
 }
 
+qacc ComplexD epsilon_contraction(const int v_s1, const int b_s1,
+                                  const int v_s2, const int b_s2,
+                                  const int v_s3, const int b_s3,
+                                  const WilsonMatrix& wm1,
+                                  const WilsonMatrix& wm2,
+                                  const WilsonMatrix& wm3)
+{
+  return epsilon_contraction<RealD>(v_s1, b_s1, v_s2, b_s2, v_s3, b_s3, wm1,
+                                    wm2, wm3);
+}
+
 }  // namespace qlat

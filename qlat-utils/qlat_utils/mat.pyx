@@ -429,6 +429,14 @@ def mat_add_cm_cm(ColorMatrix v1, ColorMatrix v2):
 
 ### -------------------------------------------------------------------
 
+def mat_epsilon_contraction_wm_wm_wm(int v_s1, int b_s1, int v_s2, int b_s2, int v_s3, int b_s3,
+                                     WilsonMatrix wm1, WilsonMatrix wm2, WilsonMatrix wm3):
+    cdef cc.ComplexD val
+    val = cc.epsilon_contraction(v_s1, b_s1, v_s2, b_s2, v_s3, b_s3, wm1.xx, wm2.xx, wm3.xx)
+    return cc.pycc_d(val)
+
+### -------------------------------------------------------------------
+
 def get_gamma_matrix(int mu):
     cdef SpinMatrix x = SpinMatrix()
     x.xx = cc.get_gamma_matrix(mu)

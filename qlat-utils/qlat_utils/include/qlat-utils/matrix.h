@@ -766,6 +766,52 @@ qacc void convert_wm_from_mspincolor(WilsonMatrixT<T>& wm,
   }
 }
 
+template <class T>
+qacc ComplexT<T> epsilon_contraction(const int v_s1, const int b_s1, const int v_s2,
+                           const int b_s2, const int v_s3, const int b_s3,
+                           const WilsonMatrixT<T>& wm1,
+                           const WilsonMatrixT<T>& wm2,
+                           const WilsonMatrixT<T>& wm3)
+{
+  array<array<int, 4>, 6> eps_table;
+  for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j < 3; ++j) {
+      eps_table[i][j] = (i + j) % 3;
+      eps_table[i + 3][j] = (i + 3 - j) % 3;
+    }
+    eps_table[i][3] = 1;
+    eps_table[i + 3][3] = -1;
+  }
+  const int n_color = NUM_COLOR;
+  const int n_spin_color = 4 * NUM_COLOR;
+  const int n_color_spin_color = NUM_COLOR * 4 * NUM_COLOR;
+  ComplexT<T> sum = 0;
+  for (int v = 0; v < 6; ++v) {
+    const int v_c1 = eps_table[v][0];
+    const int v_c2 = eps_table[v][1];
+    const int v_c3 = eps_table[v][2];
+    const int v_sign = eps_table[v][3];
+    for (int b = 0; b < 6; ++b) {
+      const int b_c1 = eps_table[b][0];
+      const int b_c2 = eps_table[b][1];
+      const int b_c3 = eps_table[b][2];
+      const int b_sign = eps_table[b][3];
+      const int sign = v_sign * b_sign;
+      const ComplexT<T>& val1 =
+          wm1.p[v_s1 * n_color_spin_color + v_c1 * n_spin_color +
+                b_s1 * n_color + b_c1];
+      const ComplexT<T>& val2 =
+          wm2.p[v_s2 * n_color_spin_color + v_c2 * n_spin_color +
+                b_s2 * n_color + b_c2];
+      const ComplexT<T>& val3 =
+          wm3.p[v_s3 * n_color_spin_color + v_c3 * n_spin_color +
+                b_s3 * n_color + b_c3];
+      sum += sign * val1 * val2 * val3;
+    }
+  }
+  return sum;
+}
+
 #ifndef QLAT_NO_DEFAULT_TYPE
 
 typedef SpinMatrixConstantsT<> SpinMatrixConstants;

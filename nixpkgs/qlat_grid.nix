@@ -113,7 +113,7 @@ buildPythonPackage rec {
     # export CXXFLAGS="''${CXX_ARR[@]:1} $CXXFLAGS"
     # export LDFLAGS="''${CXX_ARR[@]:1} $LDFLAGS"
   '' + extra + ''
-    export
+    # export
   '';
 
 }

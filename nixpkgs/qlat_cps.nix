@@ -108,7 +108,7 @@ buildPythonPackage rec {
     extra = if cudaSupport then gpu_extra else cpu_extra;
   in ''
   '' + extra + ''
-    export
+    # export
   '';
 
 }

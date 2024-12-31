@@ -217,6 +217,10 @@ cdef extern from "qlat-utils/mat.h" namespace "qlat":
     RealD qnorm(const WilsonMatrix& x)
     RealD qnorm(const SpinMatrix& x)
     RealD qnorm(const ColorMatrix& x)
+    ComplexD epsilon_contraction(const int v_s1, const int b_s1, const int v_s2,
+                                 const int b_s2, const int v_s3, const int b_s3,
+                                 const WilsonMatrix& wm1, const WilsonMatrix& wm2,
+                                 const WilsonMatrix& wm3)
 
 cdef extern from "qlat-utils/env.h" namespace "qlat":
 

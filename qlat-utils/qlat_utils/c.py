@@ -51,6 +51,7 @@ __all__ += [
         'mat_add_wm_wm',
         'mat_add_sm_sm',
         'mat_add_cm_cm',
+        'mat_epsilon_contraction_wm_wm_wm',
         ]
 
 __all__ += [

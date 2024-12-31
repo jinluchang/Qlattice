@@ -60,6 +60,7 @@ from qlat_utils import \
         mat_mul_cm_cm, \
         mat_add_wm_wm, \
         mat_add_sm_sm, \
-        mat_add_cm_cm
+        mat_add_cm_cm, \
+        mat_epsilon_contraction_wm_wm_wm
 
 from . import auto_fac_funcs as aff

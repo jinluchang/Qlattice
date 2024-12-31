@@ -129,27 +129,27 @@ buildPythonPackage rec {
     extra = if cudaSupport then gpu_extra else cpu_extra;
   in ''
   '' + extra + ''
-    export
+    # export
   '';
 
   preFixup = ''
-    echo
-    echo ldd $out
-    ldd $out/lib/python3*/site-packages/cqlat.cpython-*.so
-    echo
-    echo readelf -d $out
-    readelf -d $out/lib/python3*/site-packages/cqlat.cpython-*.so
-    echo
+    # echo
+    # echo ldd $out
+    # ldd $out/lib/python3*/site-packages/cqlat.cpython-*.so
+    # echo
+    # echo readelf -d $out
+    # readelf -d $out/lib/python3*/site-packages/cqlat.cpython-*.so
+    # echo
   '';
 
   postFixup = ''
-    echo
-    echo ldd $out
-    ldd $out/lib/python3*/site-packages/cqlat.cpython-*.so
-    echo
-    echo readelf -d $out
-    readelf -d $out/lib/python3*/site-packages/cqlat.cpython-*.so
-    echo
+    # echo
+    # echo ldd $out
+    # ldd $out/lib/python3*/site-packages/cqlat.cpython-*.so
+    # echo
+    # echo readelf -d $out
+    # readelf -d $out/lib/python3*/site-packages/cqlat.cpython-*.so
+    # echo
   '';
 
 }
