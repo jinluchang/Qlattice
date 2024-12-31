@@ -141,7 +141,7 @@ def add_positions(s, x):
         elif x.otype == "BS":
             for op in x.chain_list:
                 add_positions(s, op)
-            for v, c, in x.tag_pair_list:
+            for v, c, in x.elem_list:
                 add_positions(s, c)
         elif x.otype == "Qfield":
             if isinstance(x.p, str):
@@ -340,9 +340,9 @@ def collect_factor_in_cexpr(named_exprs, named_terms):
     for _, term in named_terms:
         for op in term.c_ops:
             if op.otype == "BS":
-                for i, (val, ea_coef,) in enumerate(op.tag_pair_list):
+                for i, (val, ea_coef,) in enumerate(op.elem_list):
                     ea_var = add_variables(ea_coef)
-                    op.tag_pair_list[i] = (val, ea_var)
+                    op.elem_list[i] = (val, ea_var)
     # Add ea.Factor with otype "Expr" to variables_factor_intermediate
     var_counter = 0
     var_dataset = {} # var_dataset[factor_code] = factor_var
@@ -635,7 +635,7 @@ def collect_baryon_prop_in_cexpr(named_terms):
                 add_varibles(op)
             for i, op in enumerate(x):
                 if isinstance(op, Op) and op.otype == "BS":
-                    op_repr = op.repr_value()
+                    op_repr = repr(op)
                     if op_repr in var_dataset:
                         x[i] = var_dataset[op_repr]
                     else:
@@ -1278,11 +1278,10 @@ def show_variable_value(value):
         expr = "*".join(map(show_variable_value, value.ops))
         return f"chain({expr})"
     elif isinstance(value, BS):
-        # tag_pair_list = value.tag_pair_list
-        tag_pair_list = value.get_spin_spin_tensor_elem_list_code()
-        tag_pair_list_expr = ",".join([ f"({v},{c!r},)" for v, c, in tag_pair_list ])
+        elem_list = value.elem_list
+        elem_list_expr = ",".join([ f"({v},{c!r},)" for v, c, in elem_list ])
         chain_list_expr = ",".join(map(show_variable_value, value.chain_list))
-        return f"bs([{tag_pair_list_expr}],{chain_list_expr})"
+        return f"bs([{elem_list_expr}],{chain_list_expr})"
     elif isinstance(value, Term):
         if value.coef == 1:
             return "*".join(map(show_variable_value, value.c_ops + value.a_ops))
@@ -1862,15 +1861,15 @@ class CExprCodeGenPy:
             append_cy(f"cdef cc.PyComplexD cexpr_function_bs_eval_{name}({arg_str_cy}):")
             append_py(f"def cexpr_function_bs_eval_{name}({arg_str_py}):")
             self.indent += 4
-            tag_pair_list = bs.get_spin_spin_tensor_elem_list_code()
+            elem_list = bs.get_spin_spin_tensor_elem_list_code()
             append_cy(f"cdef cc.PyComplexD v")
             append_cy(f"cdef cc.PyComplexD s = 0")
             append_py(f"s = 0")
-            for tag, coef, in tag_pair_list:
+            for ss, coef, in elem_list:
                 c, t, = self.gen_expr(coef)
                 assert t == "V_a"
                 append(f"v = {c}")
-                v_s1, b_s1, v_s2, b_s2, v_s3, b_s3, = tag
+                v_s1, b_s1, v_s2, b_s2, v_s3, b_s3, = ss
                 ch1, ch2, ch3, = bs.chain_list
                 ch1 = ch1.name
                 ch2 = ch2.name
@@ -2082,7 +2081,7 @@ def get_bs_factor_variable_list(bs:BS) -> list[str]:
     Get the factor variable names used in `bs`.
     """
     variables_set = set()
-    for v, c in bs.tag_pair_list:
+    for v, c in bs.elem_list:
         variables_set |= ea.mk_fac(c).get_variable_set()
     return sorted(variables_set)
 

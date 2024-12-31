@@ -600,6 +600,7 @@ def find_chain(ops:list):
             s, c, = update_chain_sc(op2, s, c)
     return None
 
+@q.timer
 def collect_traces(ops:list) -> list:
     """
     First collect all the `Chain`s, then `Tr`s
@@ -865,33 +866,70 @@ class Bfield(Op):
 
 ### ------
 
-def simplify_bs_tag_pair_list(tag_pair_list:list) -> list:
+@q.timer
+def simplify_bs_elem_list(elem_list:list) -> list:
     """
-    Merge `tag_pair` with the same `tag` (combine the `coef`s).
+    Merge `elem_pair` with the same spin settings (combine the `coef`s).
     """
-    tag_pair_list = sorted(tag_pair_list, key=repr)
-    if len(tag_pair_list) == 0:
+    elem_list = sorted(elem_list, key=repr)
+    if len(elem_list) == 0:
         return []
-    s_tag_pair_list = []
-    value, coef, = tag_pair_list[0]
-    for v, c in tag_pair_list[1:]:
+    s_elem_list = []
+    value, coef, = elem_list[0]
+    for v, c in elem_list[1:]:
         if v == value:
             coef += c
         else:
-            s_tag_pair_list.append((value, coef,))
+            coef = ea.simplified(coef)
+            if coef != 0:
+                s_elem_list.append((value, coef,))
             value, coef, = v, c,
-    s_tag_pair_list.append((value, coef,))
-    return s_tag_pair_list
+    coef = ea.simplified(coef)
+    if coef != 0:
+        s_elem_list.append((value, coef,))
+    return s_elem_list
+
+@q.timer
+def mk_bs_elem_list(tag_v, permute_v, tag_b, permute_b):
+    assert isinstance(tag_v, str)
+    assert isinstance(tag_b, str)
+    assert tag_v in bfield_tag_dict
+    assert tag_b in bfield_tag_dict
+    assert isinstance(permute_v, tuple)
+    assert isinstance(permute_b, tuple)
+    assert len(permute_v) == 3
+    assert len(permute_b) == 3
+    for i in permute_v:
+        assert 0 <= i and i < 3
+    for i in permute_b:
+        assert 0 <= i and i < 3
+    v_st = bfield_tag_dict[tag_v].get_spin_tensor_code(permute_v)
+    b_st = bfield_tag_dict[tag_b].get_spin_tensor_code(permute_b)
+    sst = v_st[:, None, :, None, :, None] * b_st[None, :, None, :, None, :]
+    if np.all(sst == 0):
+        return
+    elem_list = []
+    for v_s1 in range(4):
+        for v_s2 in range(4):
+            for v_s3 in range(4):
+                for b_s1 in range(4):
+                    for b_s2 in range(4):
+                        for b_s3 in range(4):
+                            c = sst[v_s1, b_s1, v_s2, b_s2, v_s3, b_s3]
+                            if c == 0:
+                                continue
+                            elem_list.append(((v_s1, b_s1, v_s2, b_s2, v_s3, b_s3,), c,))
+    return elem_list
 
 class BS(Op):
 
     """
     single baryon prop
     #
-    self.tag_pair_list
+    self.elem_list
     self.chain_list
     #
-    tag_pair_list = [ ((tag_v, permute_v, tag_b, permute_b,), coef,) ... ]
+    elem_list = [ ((v_s1, b_s1, v_s2, b_s2, v_s3, b_s3,), coef,) ... ]
     chain_list = [ prop_0, prop_1, prop_2, ]
     tag_v or tag_b in `bfield_tag_dict`
     permute_v = (spin_color_index_that_prop_0_contract_with,
@@ -899,53 +937,58 @@ class BS(Op):
                  spin_color_index_that_prop_2_contract_with,)
     """
 
-    def __init__(self, tag_pair_list:list, chain_list:list[Chain]):
-        assert isinstance(tag_pair_list, list)
-        for tag_pair in tag_pair_list:
-            assert isinstance(tag_pair, tuple)
-            assert len(tag_pair) == 2
-            assert isinstance(tag_pair[0], tuple)
-            ((tag_v, permute_v, tag_b, permute_b,), coef,) = tag_pair
-            assert isinstance(tag_v, str)
-            assert isinstance(tag_b, str)
-            assert tag_v in bfield_tag_dict
-            assert tag_b in bfield_tag_dict
-            assert isinstance(permute_v, tuple)
-            assert isinstance(permute_b, tuple)
-            assert len(permute_v) == 3
-            assert len(permute_b) == 3
-            for i in permute_v:
-                assert 0 <= i and i < 3
-            for i in permute_b:
-                assert 0 <= i and i < 3
+    def __init__(self, elem_list:list, chain_list:list[Chain]):
+        assert isinstance(elem_list, list)
+        for elem in elem_list:
+            assert isinstance(elem, tuple)
+            assert len(elem) == 2
+            assert isinstance(elem[0], tuple)
+            ((v_s1, b_s1, v_s2, b_s2, v_s3, b_s3,), coef,) = elem
+            assert 0 <= v_s1 and v_s1 < 4
+            assert 0 <= b_s1 and b_s1 < 4
+            assert 0 <= v_s2 and v_s2 < 4
+            assert 0 <= b_s2 and b_s2 < 4
+            assert 0 <= v_s3 and v_s3 < 4
+            assert 0 <= b_s3 and b_s3 < 4
         assert isinstance(chain_list, list)
         assert len(chain_list) == 3
         for ch in chain_list:
             assert isinstance(ch, Chain)
             assert ch.otype == "Chain"
         Op.__init__(self, "BS")
-        self.tag_pair_list = tag_pair_list
+        self.elem_list = elem_list
         self.chain_list = chain_list
+
+    def add(self, tag:tuple, coef):
+        return self.bs_add_tag_coef(tag, coef)
+
+    @q.timer
+    def bs_add_tag_coef(self, tag:tuple, coef):
+        """
+        (tag_v, permute_v, tag_b, permute_b,) = tag
+        """
+        (tag_v, permute_v, tag_b, permute_b,) = tag
+        elem_list = mk_bs_elem_list(tag_v, permute_v, tag_b, permute_b)
+        for ss, c in elem_list:
+            self.elem_list.append((ss, coef * c))
+        self.simplify_elem_list()
 
     def __imul__(self, factor):
         if factor == 0:
-            self.tag_pair_list = []
-        tag_pair_list = []
-        for tag_pair in self.tag_pair_list:
-            (tag, coef,) = tag_pair
-            tag_pair = (tag, coef * factor,)
-            tag_pair_list.append(tag_pair)
-        self.tag_pair_list = tag_pair_list
+            self.elem_list = []
+        elem_list = []
+        for elem in self.elem_list:
+            (value, coef,) = elem
+            elem = (value, coef * factor,)
+            elem_list.append(elem)
+        self.elem_list = elem_list
         return self
 
     def __repr__(self) -> str:
-        return f"{self.otype}({self.tag_pair_list!r},{self.chain_list!r})"
-
-    def repr_value(self) -> str:
-        return f"{self.otype}({self.get_spin_spin_tensor_elem_list_code()!r},{self.chain_list!r})"
+        return f"{self.otype}({self.elem_list!r},{self.chain_list!r})"
 
     def list(self):
-        return [ self.otype, self.tag_pair_list, self.chain_list, ]
+        return [ self.otype, self.elem_list, self.chain_list, ]
 
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
@@ -958,68 +1001,48 @@ class BS(Op):
             i, ch = sp
             i_list.append(i)
             s_chain_list.append(ch)
-        def permute_permute(p):
-            return tuple(p[i] for i in i_list)
-        s_tag_pair_list = []
-        for tag_pair in self.tag_pair_list:
-            ((tag_v, permute_v, tag_b, permute_b,), coef,) = tag_pair
-            s_tag_pair = ((tag_v, permute_permute(permute_v), tag_b, permute_permute(permute_b),), coef,)
-            s_tag_pair_list.append(s_tag_pair)
-        s_tag_pair_list = sorted(s_tag_pair_list)
-        self.tag_pair_list = s_tag_pair_list
+        def permute_ss(ss):
+            pss = []
+            for i in i_list:
+                pss.append(ss[2 * i])
+                pss.append(ss[2 * i + 1])
+            return tuple(pss)
+        s_elem_list = []
+        for elem in self.elem_list:
+            (ss, coef,) = elem
+            s_elem = (permute_ss(ss), coef,)
+            s_elem_list.append(s_elem)
+        s_elem_list = sorted(s_elem_list)
+        self.elem_list = s_elem_list
         self.chain_list = s_chain_list
 
     def isospin_symmetric_limit(self) -> None:
         for op in self.chain_list:
             op.isospin_symmetric_limit()
 
-    @q.timer
     def get_spin_spin_tensor_code(self) -> np.ndarray|None:
         """
         return sst or None
         sst[v_s1, b_s1, v_s2, b_s2, v_s3, b_s3] = coef
         """
-        if len(self.tag_pair_list) == 0:
+        if len(self.elem_list) == 0:
             return None
-        sst = 0
-        for tag_pair in self.tag_pair_list:
-            ((tag_v, permute_v, tag_b, permute_b,), coef,) = tag_pair
-            # print(f"get_spin_spin_tensor_code: coef={coef}")
-            assert tag_v in bfield_tag_dict
-            assert tag_b in bfield_tag_dict
-            v_st = bfield_tag_dict[tag_v].get_spin_tensor_code(permute_v)
-            b_st = bfield_tag_dict[tag_b].get_spin_tensor_code(permute_b)
-            sst += v_st[:, None, :, None, :, None] * b_st[None, :, None, :, None, :] * coef
-        if np.all(sst == 0):
-            return None
+        shape = (4, 4, 4, 4, 4, 4,)
+        sst = np.zeros(shape, dtype=object)
+        for elem in self.elem_list:
+            ((v_s1, b_s1, v_s2, b_s2, v_s3, b_s3,), coef,) = elem
+            sst[v_s1, b_s1, v_s2, b_s2, v_s3, b_s3] += coef
         return sst
 
     def get_spin_spin_tensor_elem_list_code(self) -> list:
         """
-        return [ ((v_s1, b_s1, v_s2, b_s2, v_s3, b_s3,), coef,), ... ]
-        #
-        sst = self.get_spin_spin_tensor_code()
-        coef = sst[v_s1, b_s1, v_s2, b_s2, v_s3, b_s3]
+        return self.elem_list
+        self.elem_list = [ ((v_s1, b_s1, v_s2, b_s2, v_s3, b_s3,), coef,), ... ]
         """
-        sst = self.get_spin_spin_tensor_code()
-        if sst is None:
-            return []
-        elem_list = []
-        for v_s1 in range(4):
-            for v_s2 in range(4):
-                for v_s3 in range(4):
-                    for b_s1 in range(4):
-                        for b_s2 in range(4):
-                            for b_s3 in range(4):
-                                coef = sst[v_s1, b_s1, v_s2, b_s2, v_s3, b_s3]
-                                coef = ea.simplified(coef)
-                                if coef == 0:
-                                    continue
-                                elem_list.append(((v_s1, b_s1, v_s2, b_s2, v_s3, b_s3,), coef,))
-        return elem_list
+        return self.elem_list
 
-    def simplify_tag_pair_list(self):
-        self.tag_pair_list = simplify_bs_tag_pair_list(self.tag_pair_list)
+    def simplify_elem_list(self):
+        self.elem_list = simplify_bs_elem_list(self.elem_list)
 
 ### ------
 
@@ -1106,10 +1129,10 @@ def mk_baryon_prop(bf_v:Bfield, bf_b:Bfield, chain_list:list[Chain]) -> BS:
     assert len(re_op_list) == 0
     tag_v = bf_v.tag
     tag_b = bf_b.tag
-    tag_pair = ((tag_v, permute_v, tag_b, permute_b,), 1,)
-    tag_pair_list = [ tag_pair, ]
     chain_list = [ copy_op_index_auto(ch) for ch in chain_list ]
-    return BS(tag_pair_list, chain_list)
+    bs = BS([], chain_list)
+    bs.add((tag_v, permute_v, tag_b, permute_b,), 1)
+    return bs
 
 def find_baryon_prop(op_list:list) -> tuple[BS,list[Op]]|None:
     """
@@ -1133,6 +1156,7 @@ def find_baryon_prop(op_list:list) -> tuple[BS,list[Op]]|None:
         return baryon_prop, remaining_op_list
     return None
 
+@q.timer
 def collect_baryon_props(op_list:list[Op]) -> list[Op]:
     """
     Collect all the `BS`s.
@@ -1440,7 +1464,7 @@ def mk_expr(x) -> Expr:
 def get_op_signature(op:Op, bs_count:int) -> str:
     if bs_count == 0:
         if op.otype == "BS":
-            return f"{op.otype}(tag_pair_list,{op.chain_list!r})"
+            return f"{op.otype}(elem_list,{op.chain_list!r})"
     return f"{op!r}"
 
 def get_term_signature(term:Term) -> str:
@@ -1493,8 +1517,8 @@ def combine_two_terms(t1:Term, t2:Term, t1_sig:str, t2_sig:str) -> Term|None:
             bs2 = copy.copy(bs2)
             bs1 *= coef1
             bs2 *= coef2
-            bs = BS(bs1.tag_pair_list + bs2.tag_pair_list, bs1.chain_list)
-            bs.simplify_tag_pair_list()
+            bs = BS(bs1.elem_list + bs2.elem_list, bs1.chain_list)
+            bs.simplify_elem_list()
             c_ops = [ bs, ] + re_c_ops1
             return Term(c_ops, t1.a_ops, 1)
         else:
@@ -2066,3 +2090,4 @@ if __name__ == "__main__":
     print(c_expr)
     c_expr.simplify()
     print(c_expr)
+    q.timer_display()
