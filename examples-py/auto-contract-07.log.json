@@ -1,0 +1,406 @@
+[
+ [
+  "Expr([Term([],[],1)],'1')"
+ ],
+ [
+  "Expr([Term([Bfield('std-u','a_s_109','a_s_110','a_s_111','a_c_55','a_c_56','a_c_57'), Bfield('std-u','a_s_112','a_s_113','a_s_114','a_c_58','a_c_59','a_c_60')],[Qv('d','x_2','a_s_111','a_c_57'), Qv('u','x_2','a_s_110','a_c_56'), Qv('u','x_2','a_s_109','a_c"
+ ],
+ [
+  "Expr([Term([Bfield('std-u','a_s_116','a_s_117','a_s_118','a_c_62','a_c_63','a_c_64'), Bfield('std-u','a_s_119','a_s_120','a_s_121','a_c_65','a_c_66','a_c_67')],[Qb('u','xx','a_s_115','a_c_61'), Qv('u','xx','a_s_115','a_c_61'), Qv('d','x_2','a_s_118','a_c_6"
+ ],
+ [
+  "Expr([Term([Bfield('std-u','a_s_123','a_s_124','a_s_125','a_c_69','a_c_70','a_c_71'), Bfield('std-u','a_s_126','a_s_127','a_s_128','a_c_72','a_c_73','a_c_74')],[Qb('d','xx','a_s_122','a_c_68'), Qv('d','xx','a_s_122','a_c_68'), Qv('d','x_2','a_s_125','a_c_7"
+ ],
+ [
+  "Expr([Term([Bfield('std-u','a_s_130','a_s_131','a_s_132','a_c_76','a_c_77','a_c_78'), Bfield('std-u','a_s_133','a_s_134','a_s_135','a_c_79','a_c_80','a_c_81')],[Qb('s','xx','a_s_129','a_c_75'), Qv('s','xx','a_s_129','a_c_75'), Qv('d','x_2','a_s_132','a_c_7"
+ ],
+ [
+  "Expr([Term([G(0,'a_s_1','a_s_2'), G(0,'a_s_7','a_s_8'), Bfield('std-u','a_s_136','a_s_137','a_s_138','a_c_82','a_c_83','a_c_84'), Bfield('std-u','a_s_139','a_s_140','a_s_141','a_c_85','a_c_86','a_c_87')],[Qb('u','xx_1','a_s_1','a_c_1'), Qv('u','xx_1','a_s_"
+ ],
+ [
+  "Expr([Term([],[],1)],'< 1 >')"
+ ],
+ [
+  "Expr([Term([BS([(('std-u', (0, 1, 2), 'std-u', (0, 1, 2)), 4), (('std-u', (0, 1, 2), 'std-u', (1, 0, 2)), -4)],[Chain([S('l','x_2','x_1')],'sc'), Chain([S('l','x_2','x_1')],'sc'), Chain([S('l','x_2','x_1')],'sc')])],[],1/4)],'< Bv_std(u,u,d,u)(x_2) * Bb_st"
+ ],
+ [
+  "Expr([Term([BS([(('std-u', (0, 1, 2), 'std-u', (0, 1, 2)), 4), (('std-u', (0, 1, 2), 'std-u', (1, 0, 2)), -4)],[Chain([S('l','x_2','x_1')],'sc'), Chain([S('l','x_2','x_1')],'sc'), Chain([S('l','x_2','x_1')],'sc')]), Tr([S('l','xx','xx')],'sc')],[],-1/4), T"
+ ],
+ [
+  "Expr([Term([BS([(('std-u', (0, 1, 2), 'std-u', (0, 1, 2)), 4), (('std-u', (0, 1, 2), 'std-u', (1, 0, 2)), -4)],[Chain([S('l','x_2','x_1')],'sc'), Chain([S('l','x_2','x_1')],'sc'), Chain([S('l','x_2','x_1')],'sc')]), Tr([S('l','xx','xx')],'sc')],[],-1/4), T"
+ ],
+ [
+  "Expr([Term([BS([(('std-u', (0, 1, 2), 'std-u', (0, 1, 2)), 4), (('std-u', (0, 1, 2), 'std-u', (1, 0, 2)), -4)],[Chain([S('l','x_2','x_1')],'sc'), Chain([S('l','x_2','x_1')],'sc'), Chain([S('l','x_2','x_1')],'sc')]), Tr([S('s','xx','xx')],'sc')],[],-1/4)],'"
+ ],
+ [
+  "Expr([Term([BS([(('std-u', (0, 1, 2), 'std-u', (0, 1, 2)), ea.Expr([ea.Term([ea.Factor(rel_mod_sym(xx_1[1][0]-xx_2[1][0],size[0]),['rel_mod_sym', 'size', 'xx_1', 'xx_2'],Expr), ea.Factor(rel_mod_sym(xx_1[1][0]-xx_2[1][0],size[0]),['rel_mod_sym', 'size', 'x"
+ ],
+ [
+  "# Begin CExpr\ndiagram_type_dict = dict()\ndiagram_type_dict[()] = 'ADT0'\ndiagram_type_dict[((('x_1', 'x_2'), 3),)] = 'ADT1'\ndiagram_type_dict[((('x_1', 'x_2'), 3), (('xx', 'xx'), 1))] = 'ADT2'\ndiagram_type_dict[((('x_1', 'x_2'), 2), (('x_1', 'xx'), 1), (('x"
+ ],
+ [
+  "[('ADT0', ()), ('ADT1', ((('x_1', 'x_2'), 3),)), ('ADT2', ((('x_1', 'x_2'), 3), (('xx', 'xx'), 1))), ('ADT3', ((('x_1', 'x_2'), 2), (('x_1', 'xx'), 1), (('xx', 'x_2'), 1))), ('ADT4', ((('x_1', 'x_2'), 2), (('x_1', 'xx_1'), 1), (('xx_1', 'x_2'), 1), (('xx_2"
+ ],
+ [
+  "['rel_mod_sym', 'size', 'x_1', 'x_2', 'xx', 'xx_1', 'xx_2']"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[('term_ADT0_0', Term([],[],1)), ('term_ADT1_0', Term([BS([(('std-u', (0, 1, 2), 'std-u', (0, 1, 2)), 4), (('std-u', (0, 1, 2), 'std-u', (1, 0, 2)), -4)],[Chain([S('l','x_2','x_1')],'sc'), Chain([S('l','x_2','x_1')],'sc'), Chain([S('l','x_2','x_1')],'sc')]"
+ ],
+ [
+  "[('< 1 >  exprs[0]', [(1, 'term_ADT0_0')]), ('< Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[1]', [(1/4, 'term_ADT1_0')]), ('< ubaru(xx) * Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[2]', [(-1/4, 'term_ADT2_0'), (1/4, 'term_ADT3_0')]), ('<"
+ ],
+ [
+  "diagram_type_dict = qac.get_diagram_type_dict(cexpr)"
+ ],
+ [
+  "diagram_type_dict[()] = 'ADT0'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 3),)] = 'ADT1'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 3), (('xx', 'xx'), 1))] = 'ADT2'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 2), (('x_1', 'xx'), 1), (('xx', 'x_2'), 1))] = 'ADT3'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 2), (('x_1', 'xx_1'), 1), (('xx_1', 'x_2'), 1), (('xx_2', 'xx_2'), 1))] = 'ADT4'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 1), (('x_1', 'xx_1'), 1), (('x_1', 'xx_2'), 1), (('xx_1', 'x_2'), 1), (('xx_2', 'x_2'), 1))] = 'ADT5'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 3), (('xx_1', 'xx_1'), 1), (('xx_2', 'xx_2'), 1))] = 'ADT6'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 2), (('x_1', 'xx_1'), 1), (('xx_1', 'xx_2'), 1), (('xx_2', 'x_2'), 1))] = 'ADT7'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 3), (('xx_1', 'xx_2'), 1), (('xx_2', 'xx_1'), 1))] = 'ADT8'"
+ ],
+ [
+  "qac.get_expr_names(cexpr)"
+ ],
+ [
+  "< 1 >  exprs[0]"
+ ],
+ [
+  "< Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[1]"
+ ],
+ [
+  "< ubaru(xx) * Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[2]"
+ ],
+ [
+  "< dbard(xx) * Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[3]"
+ ],
+ [
+  "< sbars(xx) * Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[4]"
+ ],
+ [
+  "< (xx_1-xx_2)_i * (xx_1-xx_2)_j * j_i(xx_1) * j_j(xx_2) * Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[5]"
+ ],
+ [
+  "# Begin CExpr\ndiagram_type_dict = dict()\ndiagram_type_dict[()] = 'ADT0'\ndiagram_type_dict[((('x_1', 'x_2'), 3),)] = 'ADT1'\ndiagram_type_dict[((('x_1', 'x_2'), 3), (('xx', 'xx'), 1))] = 'ADT2'\ndiagram_type_dict[((('x_1', 'x_2'), 2), (('x_1', 'xx'), 1), (('x"
+ ],
+ [
+  "[('ADT0', ()), ('ADT1', ((('x_1', 'x_2'), 3),)), ('ADT2', ((('x_1', 'x_2'), 3), (('xx', 'xx'), 1))), ('ADT3', ((('x_1', 'x_2'), 2), (('x_1', 'xx'), 1), (('xx', 'x_2'), 1))), ('ADT4', ((('x_1', 'x_2'), 2), (('x_1', 'xx_1'), 1), (('xx_1', 'x_2'), 1), (('xx_2"
+ ],
+ [
+  "['rel_mod_sym', 'size', 'x_1', 'x_2', 'xx', 'xx_1', 'xx_2']"
+ ],
+ [
+  "[('V_factor_0', ea.Expr([ea.Term([ea.Factor(rel_mod_sym(xx_1[1][0]-xx_2[1][0],size[0]),['rel_mod_sym', 'size', 'xx_1', 'xx_2'],Expr)],1)])), ('V_factor_1', ea.Expr([ea.Term([ea.Factor(rel_mod_sym(xx_1[1][2]-xx_2[1][2],size[2]),['rel_mod_sym', 'size', 'xx_1"
+ ],
+ [
+  "[('V_factor_coef_0', ea.Expr([ea.Term([],1)])), ('V_factor_coef_1', ea.Expr([ea.Term([ea.Factor(V_factor_coef_72,[],Var)],1)])), ('V_factor_coef_2', ea.Expr([ea.Term([ea.Factor(V_factor_coef_73,[],Var)],1)])), ('V_factor_coef_3', ea.Expr([ea.Term([ea.Facto"
+ ],
+ [
+  "[('V_S_0', S('l','x_2','x_1')), ('V_S_1', S('l','xx','xx')), ('V_S_2', S('s','xx','xx')), ('V_S_3', S('l','x_2','xx')), ('V_S_4', S('l','xx','x_1')), ('V_S_5', S('l','x_2','xx_1')), ('V_S_6', S('l','xx_1','x_1')), ('V_S_7', S('s','xx_2','xx_2')), ('V_S_8',"
+ ],
+ [
+  "[]"
+ ],
+ [
+  "[('V_prod_GS_0', (G(0), Var('V_S_15'))), ('V_prod_GS_1', (G(0), Var('V_S_16'))), ('V_prod_GS_2', (G(0), Var('V_S_13'))), ('V_prod_GS_3', (G(0), Var('V_S_14'))), ('V_prod_GS_4', (G(1), Var('V_S_15'))), ('V_prod_GS_5', (G(2), Var('V_S_16'))), ('V_prod_GS_6',"
+ ],
+ [
+  "[('V_chain_0', Chain([Var('V_S_0')],'sc')), ('V_chain_1', Chain([Var('V_S_3'), Var('V_S_4')],'sc')), ('V_chain_2', Chain([Var('V_S_5'), G(0), Var('V_S_6')],'sc')), ('V_chain_3', Chain([Var('V_S_8'), G(0), Var('V_S_9')],'sc')), ('V_chain_4', Chain([Var('V_S"
+ ],
+ [
+  "[('V_tr_0', Tr([Var('V_S_1')],'sc')), ('V_tr_1', Tr([Var('V_S_2')],'sc')), ('V_tr_2', Tr([G(0), Var('V_S_7')],'sc')), ('V_tr_3', Tr([G(0), Var('V_S_10')],'sc')), ('V_tr_4', Tr([G(2), Var('V_S_11')],'sc')), ('V_tr_5', Tr([G(0), Var('V_S_12')],'sc')), ('V_tr"
+ ],
+ [
+  "[('V_bs_0', BS([(('std-u', (0, 1, 2), 'std-u', (0, 1, 2)), ea.Expr([ea.Term([ea.Factor(V_factor_coef_10,[],Var)],1)])), (('std-u', (0, 1, 2), 'std-u', (1, 0, 2)), ea.Expr([ea.Term([ea.Factor(V_factor_coef_11,[],Var)],1)]))],[Var('V_chain_0'), Var('V_chain_"
+ ],
+ [
+  "[('term_ADT0_0', Term([],[],1)), ('term_ADT1_0', Term([Var('V_bs_0')],[],1)), ('term_ADT2_0', Term([Var('V_bs_0'), Var('V_tr_0')],[],1)), ('term_ADT2_1', Term([Var('V_bs_0'), Var('V_tr_1')],[],1)), ('term_ADT3_0', Term([Var('V_bs_1')],[],1)), ('term_ADT3_1"
+ ],
+ [
+  "[('< 1 >  exprs[0]', [(ea.Expr([ea.Term([ea.Factor(V_factor_coef_0,[],Var)],1)]), 'term_ADT0_0')]), ('< Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[1]', [(ea.Expr([ea.Term([ea.Factor(V_factor_coef_1,[],Var)],1)]), 'term_ADT1_0')]), ('< ubaru(xx) *"
+ ],
+ [
+  "diagram_type_dict = qac.get_diagram_type_dict(cexpr_opt)"
+ ],
+ [
+  "diagram_type_dict[()] = 'ADT0'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 3),)] = 'ADT1'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 3), (('xx', 'xx'), 1))] = 'ADT2'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 2), (('x_1', 'xx'), 1), (('xx', 'x_2'), 1))] = 'ADT3'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 2), (('x_1', 'xx_1'), 1), (('xx_1', 'x_2'), 1), (('xx_2', 'xx_2'), 1))] = 'ADT4'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 1), (('x_1', 'xx_1'), 1), (('x_1', 'xx_2'), 1), (('xx_1', 'x_2'), 1), (('xx_2', 'x_2'), 1))] = 'ADT5'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 3), (('xx_1', 'xx_1'), 1), (('xx_2', 'xx_2'), 1))] = 'ADT6'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 2), (('x_1', 'xx_1'), 1), (('xx_1', 'xx_2'), 1), (('xx_2', 'x_2'), 1))] = 'ADT7'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 3), (('xx_1', 'xx_2'), 1), (('xx_2', 'xx_1'), 1))] = 'ADT8'"
+ ],
+ [
+  "qac.get_expr_names(cexpr_opt)"
+ ],
+ [
+  "< 1 >  exprs[0]"
+ ],
+ [
+  "< Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[1]"
+ ],
+ [
+  "< ubaru(xx) * Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[2]"
+ ],
+ [
+  "< dbard(xx) * Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[3]"
+ ],
+ [
+  "< sbars(xx) * Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[4]"
+ ],
+ [
+  "< (xx_1-xx_2)_i * (xx_1-xx_2)_j * j_i(xx_1) * j_j(xx_2) * Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[5]"
+ ],
+ [
+  "from auto_contractor.runtime import *\n\n### ----\n\n@timer\ndef cexpr_function(*, positions_dict, get_prop, is_ama_and_sloppy=False):\n    # get_props\n    props, cms, factors = cexpr_function_get_prop(positions_dict, get_prop)\n    # eval\n    ama_val = cexpr_fun"
+ ],
+ [
+  "diagram_type_dict = qac.get_diagram_type_dict(ccexpr)"
+ ],
+ [
+  "diagram_type_dict[()] = 'ADT0'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 3),)] = 'ADT1'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 3), (('xx', 'xx'), 1))] = 'ADT2'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 2), (('x_1', 'xx'), 1), (('xx', 'x_2'), 1))] = 'ADT3'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 2), (('x_1', 'xx_1'), 1), (('xx_1', 'x_2'), 1), (('xx_2', 'xx_2'), 1))] = 'ADT4'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 1), (('x_1', 'xx_1'), 1), (('x_1', 'xx_2'), 1), (('xx_1', 'x_2'), 1), (('xx_2', 'x_2'), 1))] = 'ADT5'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 3), (('xx_1', 'xx_1'), 1), (('xx_2', 'xx_2'), 1))] = 'ADT6'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 2), (('x_1', 'xx_1'), 1), (('xx_1', 'xx_2'), 1), (('xx_2', 'x_2'), 1))] = 'ADT7'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 3), (('xx_1', 'xx_2'), 1), (('xx_2', 'xx_1'), 1))] = 'ADT8'"
+ ],
+ [
+  "qac.get_expr_names(ccexpr)"
+ ],
+ [
+  "< 1 >  exprs[0]"
+ ],
+ [
+  "< Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[1]"
+ ],
+ [
+  "< ubaru(xx) * Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[2]"
+ ],
+ [
+  "< dbard(xx) * Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[3]"
+ ],
+ [
+  "< sbars(xx) * Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[4]"
+ ],
+ [
+  "< (xx_1-xx_2)_i * (xx_1-xx_2)_j * j_i(xx_1) * j_j(xx_2) * Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[5]"
+ ],
+ [
+  "get_cexpr_test benchmark_eval_cexpr check get_data_sig is_cython=False",
+  {
+   "real": -3888.3590122787405,
+   "imag": -8809.586778166935,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "get_cexpr_test benchmark_eval_cexpr check_ama get_data_sig is_cython=False",
+  {
+   "real": 7462.076011072947,
+   "imag": 28433.239870246398,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "from auto_contractor.runtime import *\nimport cython # Cython\ncimport qlat_utils.everything as cc # Cython\ncimport qlat_utils.all as qu # Cython\ncimport libcpp.complex # Cython\ncimport numpy # Cython\n\n### ----\n\n@timer\ndef cexpr_function(*, positions_dict, g"
+ ],
+ [
+  "diagram_type_dict = qac.get_diagram_type_dict(ccexpr)"
+ ],
+ [
+  "diagram_type_dict[()] = 'ADT0'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 3),)] = 'ADT1'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 3), (('xx', 'xx'), 1))] = 'ADT2'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 2), (('x_1', 'xx'), 1), (('xx', 'x_2'), 1))] = 'ADT3'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 2), (('x_1', 'xx_1'), 1), (('xx_1', 'x_2'), 1), (('xx_2', 'xx_2'), 1))] = 'ADT4'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 1), (('x_1', 'xx_1'), 1), (('x_1', 'xx_2'), 1), (('xx_1', 'x_2'), 1), (('xx_2', 'x_2'), 1))] = 'ADT5'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 3), (('xx_1', 'xx_1'), 1), (('xx_2', 'xx_2'), 1))] = 'ADT6'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 2), (('x_1', 'xx_1'), 1), (('xx_1', 'xx_2'), 1), (('xx_2', 'x_2'), 1))] = 'ADT7'"
+ ],
+ [
+  "diagram_type_dict[((('x_1', 'x_2'), 3), (('xx_1', 'xx_2'), 1), (('xx_2', 'xx_1'), 1))] = 'ADT8'"
+ ],
+ [
+  "qac.get_expr_names(ccexpr)"
+ ],
+ [
+  "< 1 >  exprs[0]"
+ ],
+ [
+  "< Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[1]"
+ ],
+ [
+  "< ubaru(xx) * Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[2]"
+ ],
+ [
+  "< dbard(xx) * Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[3]"
+ ],
+ [
+  "< sbars(xx) * Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[4]"
+ ],
+ [
+  "< (xx_1-xx_2)_i * (xx_1-xx_2)_j * j_i(xx_1) * j_j(xx_2) * Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[5]"
+ ],
+ [
+  "get_cexpr_test benchmark_eval_cexpr check get_data_sig is_cython=True",
+  {
+   "real": -3888.3590122787405,
+   "imag": -8809.586778166935,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "get_cexpr_test benchmark_eval_cexpr check_ama get_data_sig is_cython=True",
+  {
+   "real": 7462.076011072947,
+   "imag": 28433.239870246398,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "eval_cexpr res[0]",
+  {
+   "real": 1.0,
+   "imag": 0.0,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "eval_cexpr res[1]",
+  {
+   "real": 3.707525365736641,
+   "imag": 6.596903978360375,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "eval_cexpr res[2]",
+  {
+   "real": 54.525689202857336,
+   "imag": 38.757202170295955,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "eval_cexpr res[3]",
+  {
+   "real": 13.720506954642756,
+   "imag": 27.714010403943686,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "eval_cexpr res[4]",
+  {
+   "real": -6.205355432530445,
+   "imag": 5.497826796380411,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "eval_cexpr res[5]",
+  {
+   "real": -45.56867506413681,
+   "imag": -58.15074020981507,
+   "__extended_json_type__": "complex"
+  }
+ ]
+]
