@@ -59,6 +59,8 @@ def get_var_name_type(x):
         return "V_a"
     elif x.startswith("V_chain_"):
         return "V_S"
+    elif x.startswith("V_bs_"):
+        return "V_a"
     elif x.startswith("V_prod_GG_"):
         return "V_G"
     elif x.startswith("V_prod_GS_"):
@@ -295,7 +297,7 @@ def collect_common_sum_in_factors(variables_factor, common_pair, var):
         ea_coef.terms = x_new
 
 @q.timer
-def collect_factor_in_cexpr(named_exprs):
+def collect_factor_in_cexpr(named_exprs, named_terms):
     """
     collect the factors in all ea_coef
     collect common sub-expressions in ea_coef
@@ -306,28 +308,39 @@ def collect_factor_in_cexpr(named_exprs):
     # Make variables to all coefs of all the terms
     var_counter = 0
     var_dataset = {}
+    def add_variables(ea_coef):
+        nonlocal var_counter
+        key = repr(ea_coef)
+        if key in var_dataset:
+            var = var_dataset[key]
+        else:
+            s_ea_coef = ea.mk_expr(ea.simplified(ea_coef))
+            key2 = repr(s_ea_coef)
+            if key2 in var_dataset:
+                var = var_dataset[key2]
+            else:
+                while True:
+                    name = f"V_factor_coef_{var_counter}"
+                    var_counter += 1
+                    if name not in var_nameset:
+                        break
+                var_nameset.add(name)
+                variables_factor.append((name, s_ea_coef,))
+                var = ea.Factor(name, variables=[], otype="Var")
+                var_dataset[key] = var
+                var_dataset[key2] = var
+        ea_var = ea.mk_expr(var)
+        return ea_var
     for _, expr in named_exprs:
         for i, (ea_coef, term_name,) in enumerate(expr):
-            key = repr(ea_coef)
-            if key in var_dataset:
-                var = var_dataset[key]
-            else:
-                s_ea_coef = ea.mk_expr(ea.simplified(ea_coef))
-                key2 = repr(s_ea_coef)
-                if key2 in var_dataset:
-                    var = var_dataset[key2]
-                else:
-                    while True:
-                        name = f"V_factor_coef_{var_counter}"
-                        var_counter += 1
-                        if name not in var_nameset:
-                            break
-                    var_nameset.add(name)
-                    variables_factor.append((name, s_ea_coef,))
-                    var = ea.Factor(name, variables=[], otype="Var")
-                    var_dataset[key] = var
-                    var_dataset[key2] = var
-            expr[i] = (ea.mk_expr(var), term_name,)
+            ea_var = add_variables(ea_coef)
+            expr[i] = (ea_var, term_name,)
+    for _, term in named_terms:
+        for op in term.c_ops:
+            if op.otype == "BS":
+                for i, (val, ea_coef,) in enumerate(op.tag_pair_list):
+                    ea_var = add_variables(ea_coef)
+                    op.tag_pair_list[i] = (val, ea_var)
     # Add ea.Factor with otype "Expr" to variables_factor_intermediate
     var_counter = 0
     var_dataset = {} # var_dataset[factor_code] = factor_var
@@ -888,6 +901,8 @@ class CExpr:
     def optimize(self):
         """
         interface function
+        #
+        This is necessary step to run the `CExpr`.
         """
         self.collect_op()
 
@@ -916,7 +931,7 @@ class CExpr:
             # likely collect_op is already performed
             return
         # collect ea_coef factors into variables
-        self.variables_factor_intermediate, self.variables_factor = collect_factor_in_cexpr(self.named_exprs)
+        self.variables_factor_intermediate, self.variables_factor = collect_factor_in_cexpr(self.named_exprs, self.named_terms)
         # collect prop expr into variables
         self.variables_prop = collect_prop_in_cexpr(self.named_terms)
         # collect color matrix expr into variables
@@ -1261,10 +1276,11 @@ def show_variable_value(value):
         expr = "*".join(map(show_variable_value, value.ops))
         return f"chain({expr})"
     elif isinstance(value, BS):
-        # tag_pair_list_expr = value.tag_pair_list
-        tag_pair_list_expr = value.get_spin_spin_tensor_elem_list_code()
+        # tag_pair_list = value.tag_pair_list
+        tag_pair_list = value.get_spin_spin_tensor_elem_list_code()
+        tag_pair_list_expr = ",".join([ f"({v},{c!r},)" for v, c, in tag_pair_list ])
         chain_list_expr = ",".join(map(show_variable_value, value.chain_list))
-        return f"bs({tag_pair_list_expr},{chain_list_expr})"
+        return f"bs([{tag_pair_list_expr}],{chain_list_expr})"
     elif isinstance(value, Term):
         if value.coef == 1:
             return "*".join(map(show_variable_value, value.c_ops + value.a_ops))
@@ -1417,12 +1433,14 @@ class CExprCodeGenPy:
         self.sep()
         self.cexpr_function_eval_with_props()
         self.sep()
+        self.cexpr_function_bs_eval()
+        self.sep()
         self.total_flops()
         return "\n".join(lines)
 
     def set_var_dict_for_factors(self):
         """
-        if this function is called (currently not),
+        If this function is called (currently not),
         factor will be referred use array and index,
         instead of its variable name.
         """
@@ -1445,6 +1463,30 @@ class CExprCodeGenPy:
             return f"{x}", "V_a"
         elif isinstance(x, (ea.Expr, ea.Factor)):
             return f"({ea.compile_py(x, self.var_dict_for_factors)})", "V_a"
+        elif isinstance(x, tuple) and len(x) == 2 and x[1].otype == "BS":
+            name, bs, = x
+            factor_list = get_bs_factor_variable_list(bs)
+            chain_list = []
+            for ch in bs.chain_list:
+                assert ch.otype == "Var"
+                assert ch.name.startswith("V_chain_")
+                chain_list.append(ch.name)
+            arg_list_cy = []
+            arg_list_py = []
+            for c in chain_list:
+                arg_list_cy.append(f"&{c}")
+                arg_list_py.append(f"{c}")
+            for f in factor_list:
+                arg_list_cy.append(f"{f}")
+                arg_list_py.append(f"{f}")
+            arg_str_cy = ", ".join(arg_list_cy)
+            arg_str_py = ", ".join(arg_list_py)
+            c_cy = f"cexpr_function_bs_eval_{name}({arg_str_cy})"
+            c_py = f"cexpr_function_bs_eval_{name}({arg_str_py})"
+            if self.is_cython:
+                return c_cy, "V_a"
+            else:
+                return c_py, "V_a"
         assert isinstance(x, Op)
         if x.otype == "S":
             return f"get_prop('{x.f}', {x.p1}, {x.p2})", "V_S"
@@ -1785,6 +1827,54 @@ class CExprCodeGenPy:
         append(f"return total_flops, ama_val")
         self.indent -= 4
 
+    def cexpr_function_bs_eval(self):
+        append = self.append
+        append_cy = self.append_cy
+        append_py = self.append_py
+        cexpr = self.cexpr
+        for name, value in cexpr.variables_baryon_prop:
+            bs = value
+            assert isinstance(bs, BS)
+            bs.otype == "BS"
+            factor_list = get_bs_factor_variable_list(bs)
+            chain_list = []
+            for ch in bs.chain_list:
+                assert ch.otype == "Var"
+                assert ch.name.startswith("V_chain_")
+                chain_list.append(ch.name)
+            arg_list_cy = []
+            arg_list_py = []
+            for c in chain_list:
+                arg_list_cy.append(f"cc.WilsonMatrix* {c}")
+                arg_list_py.append(f"{c}")
+            for f in factor_list:
+                arg_list_cy.append(f"cc.PyComplexD {f}")
+                arg_list_py.append(f"{f}")
+            arg_str_cy = ", ".join(arg_list_cy)
+            arg_str_py = ", ".join(arg_list_py)
+            append(f"@timer_flops")
+            append_cy(f"@cython.boundscheck(False)")
+            append_cy(f"@cython.wraparound(False)")
+            append_cy(f"def cexpr_function_bs_eval_{name}({arg_str_cy}):")
+            append_py(f"def cexpr_function_bs_eval_{name}({arg_str_py}):")
+            self.indent += 4
+            tag_pair_list = bs.get_spin_spin_tensor_elem_list_code()
+            append_cy(f"cdef cc.PyComplexD v")
+            append_cy(f"cdef cc.PyComplexD s = 0")
+            append_py(f"s = 0")
+            for tag, coef, in tag_pair_list:
+                c, t, = self.gen_expr(coef)
+                assert t == "V_a"
+                append(f"v = {c}")
+                v_s1, b_s1, v_s2, b_s2, v_s3, b_s3, = tag
+                ch1, ch2, ch3, = chain_list
+                append_cy(f"v *= cc.pycc_d(cc.epsilon_contraction({v_s1}, {b_s1}, {v_s2}, {b_s2}, {v_s3}, {b_s3}, {ch1}[0], {ch2}[0], {ch3}[0]))")
+                append_py(f"v *= mat_epsilon_contraction_wm_wm_wm({v_s1}, {b_s1}, {v_s2}, {b_s2}, {v_s3}, {b_s3}, {ch1}, {ch2}, {ch3})")
+                append(f"s += v")
+            append(f"return s")
+            self.indent -= 4
+            append(f"")
+
     def cexpr_function_eval_with_props(self):
         append = self.append
         append_cy = self.append_cy
@@ -1852,6 +1942,15 @@ class CExprCodeGenPy:
             c, t = self.gen_expr(x)
             assert t == "V_a"
             append_cy(f"cdef cc.PyComplexD {name} = cc.pycc_d({c})")
+            append_py(f"{name} = {c}")
+        append(f"# compute baryon_props")
+        for name, value in cexpr.variables_baryon_prop:
+            x = value
+            assert isinstance(x, Op)
+            assert x.otype == "BS"
+            c, t = self.gen_expr((name, x))
+            assert t == "V_a"
+            append_cy(f"cdef cc.PyComplexD {name} = {c}")
             append_py(f"{name} = {c}")
         append(f"# set terms")
         term_type_dict = dict()
@@ -1971,6 +2070,17 @@ class CExprCodeGenPy:
 
 #### ----
 
+def get_bs_factor_variable_list(bs:BS) -> list[str]:
+    """
+    Get the factor variable names used in `bs`.
+    """
+    variables_set = set()
+    for v, c in bs.tag_pair_list:
+        variables_set |= ea.mk_fac(c).get_variable_set()
+    return list(variables_set)
+
+#### ----
+
 def mk_test_expr_compile_01():
     expr = Qb("d", "x1", "s1", "c1") * G(5, "s1", "s2") * Qv("u", "x1", "s2", "c1") * Qb("u", "x2", "s3", "c2") * G(5, "s3", "s4") * Qv("d", "x2", "s4", "c2")
     return expr
@@ -2006,4 +2116,6 @@ if __name__ == "__main__":
         cexpr = contract_simplify_compile(*expr_list, is_isospin_symmetric_limit=True)
         cexpr.optimize()
     print(display_cexpr(cexpr))
+    print()
+    print(cexpr_code_gen_py(cexpr, is_cython=True))
     print()

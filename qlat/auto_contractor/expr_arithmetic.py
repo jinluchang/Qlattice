@@ -71,6 +71,12 @@ class Factor:
             return f"{self.code}"
         return var_dict[self.code]
 
+    def get_variable_set(self) -> set[str]:
+        s = set(self.variables)
+        if self.otype == "Var":
+            s |= set([ self.code, ])
+        return s
+
 ### ------
 
 class Term:
@@ -106,6 +112,12 @@ class Term:
             else:
                 return '*'.join(fs)
         return '*'.join([ compile_py_complex(self.coef), ] + fs)
+
+    def get_variable_set(self) -> set[str]:
+        s = set()
+        for f in self.factors:
+            s |= f.get_variable_set()
+        return s
 
 ### ------
 
@@ -199,6 +211,12 @@ class Expr:
             return '+'.join([ f"{t.compile_py(var_dict)}" for t in self.terms ])
         else:
             return '0'
+
+    def get_variable_set(self) -> set[str]:
+        s = set()
+        for t in self.terms:
+            s |= t.get_variable_set()
+        return s
 
 ### ------
 

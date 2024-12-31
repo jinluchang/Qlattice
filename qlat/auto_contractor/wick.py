@@ -1003,6 +1003,7 @@ class BS(Op):
                         for b_s2 in range(4):
                             for b_s3 in range(4):
                                 coef = sst[v_s1, b_s1, v_s2, b_s2, v_s3, b_s3]
+                                coef = ea.simplified(coef)
                                 if coef == 0:
                                     continue
                                 elem_list.append(((v_s1, b_s1, v_s2, b_s2, v_s3, b_s3,), coef,))
@@ -1981,14 +1982,11 @@ def mk_test_expr_wick_06():
     bf_v = Bfield("std3-u3", s1p, s2p, s3p, c1p, c2p, c3p)
     bf_b = Bfield("pos3-u3", s1, s2, s3, c1, c2, c3)
     #
-    expr = bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr-std3-pos3-u3"
-    expr_list.append(expr)
-    #
-    bf_v = Bfield("std3-u3", s1p, s2p, s3p, c1p, c2p, c3p)
-    bf_b = Bfield("std3-u3", s1, s2, s3, c1, c2, c3)
-    #
     from operators import mk_j_mu
-    expr = mk_j_mu("xx_1", 3) * mk_j_mu("xx_2", 3) * bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr-std3-std3-u3"
+    mu = 2
+    fac = mk_fac(f"rel_mod_sym(x1[1][{mu}] - x1p[1][{mu}], size[{mu}])")
+    #
+    expr = fac * mk_j_mu("xx_1", 3) * bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + f"expr-std3-pos3-u3"
     expr_list.append(expr)
     #
     return expr_list
