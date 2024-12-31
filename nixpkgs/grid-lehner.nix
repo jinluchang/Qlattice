@@ -31,13 +31,13 @@ let
 in grid-stdenv.mkDerivation rec {
 
   pname = "Grid-lehner";
-  version = "7b7c1bf860fa1147d16b715410242231a776b0be";
+  version = "64c227cdbc12ea2206425f46b1fc02c2f080a66e";
 
   src = fetchFromGitHub {
     owner = "lehner";
     repo = "Grid";
     rev = version;
-    hash = "sha256-t30x7FLRPAPCSwMgib/mMHffNkglhG/V6VdlzaZrSz8=";
+    hash = "sha256-dMSm9OL85BOYZnrp16WCsv3zL2SDhhemlPIQQxK5s8Q=";
   };
 
   enableParallelBuilding = true;
@@ -74,10 +74,8 @@ in grid-stdenv.mkDerivation rec {
   ;
 
   preConfigure = let
-    eigen-file-name = "eigen-3.3.7.tar.bz2";
+    eigen-file-name = "eigen-3.4.0.tar.bz2";
     eigen-src = fetchurl {
-      # url = "https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.bz2";
-      # hash = "sha256-aFrfFL2OnAFbeAl8HcIvLwE0N1bxlqzcdqZ44a41LhE=";
       url = "https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.bz2";
       hash = "sha256-tMGYRg66byjTSJTjpXEJmIGFFRBNbnTlzDMc4x5G5iY=";
     };
