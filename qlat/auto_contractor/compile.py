@@ -1854,10 +1854,10 @@ class CExprCodeGenPy:
                 arg_list_py.append(f"{f}")
             arg_str_cy = ", ".join(arg_list_cy)
             arg_str_py = ", ".join(arg_list_py)
-            append(f"@timer")
+            append_py(f"@timer")
             append_cy(f"@cython.boundscheck(False)")
             append_cy(f"@cython.wraparound(False)")
-            append_cy(f"def cexpr_function_bs_eval_{name}({arg_str_cy}):")
+            append_cy(f"cdef cc.PyComplexD cexpr_function_bs_eval_{name}({arg_str_cy}):")
             append_py(f"def cexpr_function_bs_eval_{name}({arg_str_py}):")
             self.indent += 4
             tag_pair_list = bs.get_spin_spin_tensor_elem_list_code()
