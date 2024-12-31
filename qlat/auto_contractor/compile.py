@@ -141,6 +141,8 @@ def add_positions(s, x):
         elif x.otype == "BS":
             for op in x.chain_list:
                 add_positions(s, op)
+            for v, c, in x.tag_pair_list:
+                add_positions(s, c)
         elif x.otype == "Qfield":
             if isinstance(x.p, str):
                 s.add(x.p)

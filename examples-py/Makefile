@@ -18,6 +18,7 @@ tests = \
 		auto-contract-04.log \
 		auto-contract-05.log \
 		auto-contract-06.log \
+		auto-contract-07.log \
 		mat-op-distillation.log \
 		mat-op-qcd.log \
 		qlat-id-node.log \

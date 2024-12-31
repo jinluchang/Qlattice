@@ -66,8 +66,8 @@ for expr in qac.contract_simplify(*exprs):
 cexpr = qac.contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
 
 json_results_append(
-    qac.display_cexpr(cexpr)[:256]
-)
+        qac.display_cexpr(cexpr)[:256]
+        )
 
 for v in cexpr.list():
     json_results_append(str(v)[:256])
@@ -85,7 +85,7 @@ cexpr_opt.optimize()
 
 json_results_append(
         qac.display_cexpr(cexpr_opt)[:256]
-)
+        )
 
 for v in cexpr_opt.list():
     json_results_append(str(v)[:256])
