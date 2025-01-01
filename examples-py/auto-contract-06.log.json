@@ -162,7 +162,7 @@
   "[]"
  ],
  [
-  "[('V_bs_0', BS([((1, 0, 0, 1, 1, 1), ea.Expr([ea.Term([ea.Factor(V_factor_coef_0,[],Var)],1)])), ((1, 0, 0, 3, 1, 1), ea.Expr([ea.Term([ea.Factor(V_factor_coef_0,[],Var)],1)])), ((1, 0, 1, 1, 0, 1), ea.Expr([ea.Term([ea.Factor(V_factor_coef_5,[],Var)],1)])"
+  "[(['V_bs_0', 'V_bs_1'], [BS([((1, 0, 0, 1, 1, 1), ea.Expr([ea.Term([ea.Factor(V_factor_coef_0,[],Var)],1)])), ((1, 0, 0, 3, 1, 1), ea.Expr([ea.Term([ea.Factor(V_factor_coef_0,[],Var)],1)])), ((1, 0, 1, 1, 0, 1), ea.Expr([ea.Term([ea.Factor(V_factor_coef_5,"
  ],
  [
   "[('term_ADT0_0', Term([],[],1)), ('term_ADT1_0', Term([Var('V_bs_0')],[],1)), ('term_ADT1_1', Term([Var('V_bs_1')],[],1)), ('term_ADT1_2', Term([Var('V_bs_2')],[],1)), ('term_ADT1_3', Term([Var('V_bs_3')],[],1)), ('term_ADT1_4', Term([Var('V_bs_4')],[],1))"

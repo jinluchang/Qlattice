@@ -556,6 +556,6 @@ if __name__ == "__main__":
     is_cython = False
     base_positions_dict = dict()
     print(cexpr_code_gen_py(cexpr, is_cython=is_cython))
-    ccexpr = cache_compiled_cexpr(lambda : cexpr, "cache/test", is_cython=is_cython, base_positions_dict=base_positions_dict)
-    print(benchmark_eval_cexpr(ccexpr, base_positions_dict=base_positions_dict))
+    # ccexpr = cache_compiled_cexpr(lambda : cexpr, "cache/test", is_cython=is_cython, base_positions_dict=base_positions_dict)
+    # print(benchmark_eval_cexpr(ccexpr, base_positions_dict=base_positions_dict))
     print()

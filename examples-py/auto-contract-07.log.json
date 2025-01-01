@@ -156,7 +156,7 @@
   "[('V_tr_0', Tr([Var('V_S_3')],'sc')), ('V_tr_1', Tr([Var('V_S_4')],'sc')), ('V_tr_2', Tr([G(0), Var('V_S_7')],'sc')), ('V_tr_3', Tr([G(0), Var('V_S_8')],'sc')), ('V_tr_4', Tr([G(0), Var('V_S_11')],'sc')), ('V_tr_5', Tr([G(0), Var('V_S_12')],'sc')), ('V_tr_"
  ],
  [
-  "[('V_bs_0', BS([((1, 0, 0, 1, 1, 1), ea.Expr([ea.Term([ea.Factor(V_factor_coef_0,[],Var)],1)])), ((1, 0, 0, 3, 1, 1), ea.Expr([ea.Term([ea.Factor(V_factor_coef_0,[],Var)],1)])), ((1, 0, 1, 1, 0, 1), ea.Expr([ea.Term([ea.Factor(V_factor_coef_10,[],Var)],1)]"
+  "[(['V_bs_0', 'V_bs_48', 'V_bs_49', 'V_bs_50', 'V_bs_51', 'V_bs_52', 'V_bs_53'], [BS([((1, 0, 0, 1, 1, 1), ea.Expr([ea.Term([ea.Factor(V_factor_coef_0,[],Var)],1)])), ((1, 0, 0, 3, 1, 1), ea.Expr([ea.Term([ea.Factor(V_factor_coef_0,[],Var)],1)])), ((1, 0, 1"
  ],
  [
   "[('term_ADT0_0', Term([],[],1)), ('term_ADT1_0', Term([Var('V_bs_0')],[],1)), ('term_ADT2_0', Term([Var('V_bs_1')],[],1)), ('term_ADT2_1', Term([Var('V_bs_2')],[],1)), ('term_ADT3_0', Term([Var('V_bs_0'), Var('V_tr_0')],[],1)), ('term_ADT3_1', Term([Var('V"
